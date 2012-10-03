@@ -12,7 +12,7 @@
 
 #define CLIP_TEXT	1
 
-bool TextInBoxMoveInView(POINT *offset, RECT *brect){
+bool TextInBoxMoveInView(const RECT *clipRect, POINT *offset, RECT *brect){
 
   bool res = false;
 
@@ -21,8 +21,8 @@ bool TextInBoxMoveInView(POINT *offset, RECT *brect){
   offset->x = 0;
   offset->y = 0;
 
-  if (MapWindow::DrawRect.top > brect->top){
-    int d = MapWindow::DrawRect.top - brect->top;
+  if (clipRect->top > brect->top){
+    int d = clipRect->top - brect->top;
     brect->top += d;
     brect->bottom += d;
     offset->y += d;
@@ -32,8 +32,8 @@ bool TextInBoxMoveInView(POINT *offset, RECT *brect){
     res = true;
   }
 
-  if (MapWindow::DrawRect.right < brect->right){
-    int d = MapWindow::DrawRect.right - brect->right;
+  if (clipRect->right < brect->right){
+    int d = clipRect->right - brect->right;
 
     if (offset->y < LabelMargin){
       int dy;
@@ -67,9 +67,9 @@ bool TextInBoxMoveInView(POINT *offset, RECT *brect){
     res = true;
   }
 
-  if (MapWindow::DrawRect.bottom < brect->bottom){
+  if (clipRect->bottom < brect->bottom){
     if (offset->x == 0){
-      int d = MapWindow::DrawRect.bottom - brect->bottom;
+      int d = clipRect->bottom - brect->bottom;
       brect->top += d;
       brect->bottom += d;
       offset->y += d;
@@ -89,8 +89,8 @@ bool TextInBoxMoveInView(POINT *offset, RECT *brect){
     res = true;
   }
 
-  if (MapWindow::DrawRect.left > brect->left){
-    int d = MapWindow::DrawRect.left - brect->left;
+  if (clipRect->left > brect->left){
+    int d = clipRect->left - brect->left;
     brect->right+= d;
     brect->left += d;
     offset->x += d;
@@ -103,7 +103,7 @@ bool TextInBoxMoveInView(POINT *offset, RECT *brect){
 
 
 
-bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y, 
+bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, int y, 
                           int size, TextInBoxMode_t *Mode, bool noOverlap) {
 
   SIZE tsize;
@@ -111,10 +111,10 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
   HFONT oldFont=0;
   bool drawn=false;
 
-  if ((x<DrawRect.left-WPCIRCLESIZE) || 
-      (x>DrawRect.right+(WPCIRCLESIZE*3)) || 
-      (y<DrawRect.top-WPCIRCLESIZE) ||
-      (y>DrawRect.bottom+WPCIRCLESIZE)) {
+  if ((x<clipRect->left-WPCIRCLESIZE) || 
+      (x>clipRect->right+(WPCIRCLESIZE*3)) || 
+      (y<clipRect->top-WPCIRCLESIZE) ||
+      (y>clipRect->bottom+WPCIRCLESIZE)) {
     return drawn; 
   }
 
@@ -171,13 +171,13 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     if (Mode->AlligneRight)
       x -= 3;
 
-    if (TextInBoxMoveInView(&offset, &brect)){
+    if (TextInBoxMoveInView(clipRect, &offset, &brect)){
       x += offset.x;
       y += offset.y;
     }
 
     #if CLIP_TEXT
-    if (y>=DrawRect.bottom || brect.bottom>=DrawRect.bottom ) return false;
+    if (y>=clipRect->bottom || brect.bottom>=clipRect->bottom ) return false;
     #endif
 
 	#if TOPOFASTLABEL
@@ -220,13 +220,13 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     if (Mode->AlligneRight)
       x -= 2;
 
-    if (TextInBoxMoveInView(&offset, &brect)){
+    if (TextInBoxMoveInView(clipRect, &offset, &brect)){
       x += offset.x;
       y += offset.y;
     }
 
     #if CLIP_TEXT
-    if (y>=DrawRect.bottom || brect.bottom>=DrawRect.bottom ) return false;
+    if (y>=clipRect->bottom || brect.bottom>=clipRect->bottom ) return false;
     #endif
 
 	#if TOPOFASTLABEL
@@ -277,7 +277,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     }
 
     #if CLIP_TEXT
-    if (brect.bottom >= DrawRect.bottom) return false;
+    if (brect.bottom >= clipRect->bottom) return false;
     #endif
 
 	#if TOPOFASTLABEL
@@ -359,7 +359,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     }
 
     #if CLIP_TEXT
-    if (brect.bottom >= DrawRect.bottom) return false;
+    if (brect.bottom >= clipRect->bottom) return false;
     #endif
 
 	#if TOPOFASTLABEL

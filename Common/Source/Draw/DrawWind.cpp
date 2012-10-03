@@ -74,9 +74,9 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
     TextInBoxMode.AlligneCenter = true;   // { 16 | 32 }; // JMW test {2 | 16};
     TextInBoxMode.WhiteBorder = true;
     if (Arrow[5].y>=Arrow[6].y) {
-      TextInBox(hdc, sTmp, Arrow[5].x-kx, Arrow[5].y, 0, &TextInBoxMode);
+      TextInBox(hdc, &rc, sTmp, Arrow[5].x-kx, Arrow[5].y, 0, &TextInBoxMode);
     } else {
-      TextInBox(hdc, sTmp, Arrow[6].x-kx, Arrow[6].y, 0, &TextInBoxMode);
+      TextInBox(hdc, &rc, sTmp, Arrow[6].x-kx, Arrow[6].y, 0, &TextInBoxMode);
     }
   }
   Polygon(hdc,Arrow,5);

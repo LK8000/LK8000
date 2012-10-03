@@ -153,7 +153,7 @@ static int	iRectangleSize = 4;
 		displaymode.Border=1;
 
 		if (_tcslen(lbuffer)>0)
-		TextInBox(hDC, lbuffer, sc.x+tscaler, sc.y+tscaler, 0, &displaymode, false);
+		TextInBox(hDC, &rc, lbuffer, sc.x+tscaler, sc.y+tscaler, 0, &displaymode, false);
 
 		// red circle
 		if ((DrawInfo.FLARM_Traffic[i].AlarmLevel>0) && (DrawInfo.FLARM_Traffic[i].AlarmLevel<4)) {

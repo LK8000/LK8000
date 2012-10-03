@@ -37,24 +37,24 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     TextInBoxMode.WhiteBorder = 1;
     TextInBoxMode.Border = 1;
     if (ComPortStatus[0]==CPS_OPENKO) {
-      TextInBox(hDC, gettext(_T("_@M971_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode); // No ComPort
+      TextInBox(hDC, &rc, gettext(_T("_@M971_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode); // No ComPort
     } else {
     	if (ComPortStatus[0]==CPS_OPENOK) {
 		if ((ComPortRx[0]>0) && !firstrun) {
 			// Gps is missing
-      TextInBox(hDC, gettext(_T("_@M973_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+      TextInBox(hDC, &rc, gettext(_T("_@M973_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 			firstrun=false; // 100214
 		} else {
 			// No Data Rx
-      TextInBox(hDC, gettext(_T("_@M972_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+      TextInBox(hDC, &rc, gettext(_T("_@M972_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 		}
 	} else  {
 		if (ComPortStatus[0]==CPS_EFRAME)  {
 			// Data error
-      TextInBox(hDC, gettext(_T("_@M975_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+      TextInBox(hDC, &rc, gettext(_T("_@M975_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 		} else {
 			// Not Connected
-      TextInBox(hDC, gettext(_T("_@M974_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+      TextInBox(hDC, &rc, gettext(_T("_@M974_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 		}
 	}
 
@@ -71,7 +71,7 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     TextInBoxMode.WhiteBorder = 1;
     TextInBoxMode.Border = 1;
     // No Valid Fix
-    TextInBox(hDC, gettext(_T("_@M970_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+    TextInBox(hDC, &rc, gettext(_T("_@M970_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 
     }
 
@@ -88,9 +88,9 @@ goto_DrawLockModeStatus:
     TextInBoxModeL.AlligneCenter = 1;
     TextInBoxModeL.WhiteBorder = 1;
     TextInBoxModeL.Border = 1;
-    if (ISPARAGLIDER) TextInBox(hDC, gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), 0, &TextInBoxModeL);
+    if (ISPARAGLIDER) TextInBox(hDC, &rc,gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), 0, &TextInBoxModeL);
     SelectObject(hDC,LK8MapFont);
-    TextInBox(hDC, gettext(_T("_@M1601_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), 0, &TextInBoxModeL);
+    TextInBox(hDC, &rc, gettext(_T("_@M1601_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), 0, &TextInBoxModeL);
   }
 
   SelectObject(hDC,oldfont);

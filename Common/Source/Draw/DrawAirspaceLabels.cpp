@@ -77,7 +77,7 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
                      TextDisplayMode.WhiteBold = 1; // outlined  
               }
 
-              hlabel_draws = TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
+              hlabel_draws = TextInBox(hdc, &rc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
            }
            
           // Vertical warning point
@@ -114,7 +114,7 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
                      TextDisplayMode.WhiteBold = 1; // outlined  
               }
 
-              vlabel_draws = TextInBox(hdc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
+              vlabel_draws = TextInBox(hdc, &rc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
            }
            if (!label_sequencing_divider) CAirspaceManager::Instance().AirspaceWarningLabelPrinted(**it, hlabel_draws || vlabel_draws);
            

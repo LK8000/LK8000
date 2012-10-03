@@ -455,7 +455,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	      } // end intask/irange/dowrite
 
     if (MapWindow::zoom.RealScale()<20 && islandable && dowrite) {
-      TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, &TextDisplayMode, true); 
+      TextInBox(hdc, &rc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, &TextDisplayMode, true); 
       dowrite=false; // do not pass it along
     }
 
@@ -508,7 +508,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
     // otherwise, does comparison
     if ( E->inTask || (E->isLandable && !E->isExcluded) ) { 
 
-	TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), false); 
+	TextInBox(hdc, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), false); 
 
 	// At low zoom, dont print the bitmap because drawn task would make it look offsetted
 	if(MapWindow::zoom.RealScale() > 2) continue;
@@ -547,7 +547,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
     MapWaypointLabel_t *E = &MapWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
-      if ( TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), true) == true) {
+      if ( TextInBox(hdc, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), true) == true) {
 
 	// If we are at low zoom, use a dot for icons, so we dont clutter the screen
 	if(MapWindow::zoom.RealScale() > 4) {

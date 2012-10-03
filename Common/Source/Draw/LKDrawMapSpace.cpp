@@ -180,7 +180,7 @@ RECT frc = rc;
     TextDisplayMode.AlligneCenter = 1;
     SelectObject(hdc, LK8TargetFont);
     _stprintf(Buffer,TEXT("MapSpaceMode=%d"),MapSpaceMode);
-    TextInBox(hdc, Buffer, (rc.right-rc.left)/2, NIBLSCALE(50) , 0, &TextDisplayMode, false);
+    TextInBox(hdc, &rc, Buffer, (rc.right-rc.left)/2, NIBLSCALE(50) , 0, &TextDisplayMode, false);
     break;
   }
 #ifdef DRAWLKSTATUS

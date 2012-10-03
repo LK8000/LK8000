@@ -1165,7 +1165,7 @@ for (j=0; j<nEntrys; j++)
 		    SetBkMode(hdc, TRANSPARENT);
 		    GetTextExtentPoint(hdc, lbuffer, _tcslen(lbuffer), &tsize);
 		    if (_tcslen(lbuffer)>0)
-			  TextInBox(hdc, lbuffer, x+tscaler,  y+tscaler, 0, &displaymode, false);
+			  TextInBox(hdc, &rc, lbuffer, x+tscaler,  y+tscaler, 0, &displaymode, false);
 
 			break;
 	  }
@@ -1275,7 +1275,7 @@ if(bSideview)
 	  SetBkMode(hdc, TRANSPARENT);
 	  GetTextExtentPoint(hdc, lbuffer,  _tcslen(lbuffer), &tsize);
 	  if (_tcslen(lbuffer)>0)
-		TextInBox(hdc, lbuffer, x+tscaler,  hy+tscaler, 0, &displaymode, false);
+		TextInBox(hdc, &rc, lbuffer, x+tscaler,  hy+tscaler, 0, &displaymode, false);
 
 	  /*********************************************
 	   * draw lines to target if target selected
