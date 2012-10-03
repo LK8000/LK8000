@@ -322,6 +322,9 @@ TCHAR szRegistryMultiAsp3[] = _T("MultimapAirspace3");
 TCHAR szRegistryMultiWpt1[] = _T("MultimapWpt1");
 TCHAR szRegistryMultiWpt2[] = _T("MultimapWpt2");
 TCHAR szRegistryMultiWpt3[] = _T("MultimapWpt3");
+TCHAR szRegistryMultiSizeY1[]= _T("MultimapSizeY1");
+TCHAR szRegistryMultiSizeY2[]= _T("MultimapSizeY2");
+TCHAR szRegistryMultiSizeY3[]= _T("MultimapSizeY3");
 
 //
 //
@@ -564,6 +567,9 @@ extern TCHAR szRegistryMultiAsp3[];
 extern TCHAR szRegistryMultiWpt1[];
 extern TCHAR szRegistryMultiWpt2[];
 extern TCHAR szRegistryMultiWpt3[];
+extern TCHAR szRegistryMultiSizeY1[];
+extern TCHAR szRegistryMultiSizeY2[];
+extern TCHAR szRegistryMultiSizeY3[];
 
 //
 //

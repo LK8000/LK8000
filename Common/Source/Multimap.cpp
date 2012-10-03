@@ -100,6 +100,7 @@ void ToggleMultimapWaypoints(void) {
 
 //
 // Default flags for multimaps, used at init and at reset config
+// They are eventually overloaded by a profile.
 //
 void Reset_Multimap_Flags(void) {
   short i;
@@ -108,6 +109,7 @@ void Reset_Multimap_Flags(void) {
 	Multimap_Flags_Topology[i]=true;
 	Multimap_Flags_Airspace[i]=true;
 	Multimap_Flags_Waypoints[i]=true;
+	Multimap_SizeY[i]=0;	// this would force reset
   }
 }
 

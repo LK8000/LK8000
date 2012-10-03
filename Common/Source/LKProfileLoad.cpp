@@ -623,6 +623,13 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMultiWpt2,&Multimap_Flags_Waypoints[MP_MAPWPT]);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiWpt3,&Multimap_Flags_Waypoints[MP_MAPASP]);
+  if (matchedstring) return;
+
+  PREAD(sname,svalue,szRegistryMultiSizeY1,&Multimap_SizeY[MP_MAPTRK]);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryMultiSizeY2,&Multimap_SizeY[MP_MAPWPT]);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryMultiSizeY3,&Multimap_SizeY[MP_MAPASP]);
 
   return;
 
