@@ -113,7 +113,6 @@ COLORREF col           =  RGB_BLACK;
 			  fHeigtScaleFact /= ZOOMFACTOR;
 			else
 			  fZOOMScale /= ZOOMFACTOR;
-		    if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
 			break;
 
 		case LKEVENT_DOWN:
@@ -122,7 +121,6 @@ COLORREF col           =  RGB_BLACK;
 			  fHeigtScaleFact *= ZOOMFACTOR;
 			else
 		  	  fZOOMScale *= ZOOMFACTOR;
-		    if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
 			break;
 
 		case LKEVENT_LONGCLICK:
