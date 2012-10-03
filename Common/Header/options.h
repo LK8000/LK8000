@@ -107,7 +107,9 @@
 #define DYNASCREEN		1	
 
 
-
+// Bottombar TRM0 automatically triggered upon entering a thermal.
+// This will be soon removed entirely - 121002
+// #define AUTO_BBTRM		1
 
 
 
