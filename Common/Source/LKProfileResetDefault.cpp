@@ -343,7 +343,7 @@ void LKProfileResetDefault(void) {
   OverlayClock = 0;
 
   // default BB and IP is all ON
-  ConfBB0 = 1;
+  ConfBB0 = 0; // TRM is off by default on v4
   ConfBB1 = 1;
   ConfBB2 = 1;
   ConfBB3 = 1;

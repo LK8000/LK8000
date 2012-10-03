@@ -277,6 +277,7 @@ void BottomBarChange(bool advance) {
   wanted=BottomMode+1;
   while (true) {
     if (wanted >BM_LAST) {
+	#if AUTO_BBTRM
 	if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && ConfBB[BM_TRM]) {
 		wanted=BM_TRM;
 		break;
@@ -284,6 +285,10 @@ void BottomBarChange(bool advance) {
 		wanted=BM_FIRST;
 		continue;
 	}
+	#else
+	wanted=BM_FIRST;
+	continue;
+	#endif
     }
     if (ConfBB[wanted]) break;
     wanted++;
@@ -294,6 +299,7 @@ void BottomBarChange(bool advance) {
 bbc_previous:
   wanted=BottomMode-1;
   while (true) {
+    #if AUTO_BBTRM
     if (wanted == BM_TRM) {
 	if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && ConfBB[BM_TRM]) {
 		break;
@@ -302,6 +308,7 @@ bbc_previous:
 		continue;
 	}
     }
+    #endif
     if (wanted<0) {
 	wanted=BM_LAST;
 	continue;

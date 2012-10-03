@@ -353,7 +353,7 @@
 #define BM_CUS3		8	// FIN
 #define BM_CUS		9	// AUX
 // these are limiters
-#define BM_FIRST	1
+#define BM_FIRST	0
 #define BM_LAST		9
 
 // Global MapSpaceModes : order is not important and you can also have unused modes

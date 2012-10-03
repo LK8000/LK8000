@@ -43,9 +43,10 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
   static bool flipflop=true;
   static short flipflopcount=0;
+  #if AUTO_BBTRM
   static bool wascircling=false; // init not circling of course
   static short OldBottomMode=BM_FIRST;
-
+  #endif
   static COLORREF barTextColor=RGB_WHITE; // default bottom bar text color, reversable
 
   short tlen;
@@ -111,8 +112,10 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	bigFont=(HFONT *)LK8TargetFont;
 
   if (DoInit[MDI_DRAWLOOK8000]) {
+	#if AUTO_BBTRM
 	wascircling=false;
 	OldBottomMode=BM_FIRST;
+	#endif
 	TCHAR Tdummy[]=_T("T");
 	int iconsize;
 	SelectObject(hdc, bigFont); 
@@ -548,8 +551,8 @@ nextinit:
 	if (ScreenSizeX==240 && ScreenSizeY==400)
 		yClockposition=yrightoffset - ySizeLK8BigFont- (ySizeLK8MediumFont*4);
 
-	// set correct initial bottombar stripe
-	for (ii=BM_FIRST; ii<=BM_LAST;ii++) {
+	// set correct initial bottombar stripe, excluding TRM
+	for (ii=BM_CRU; ii<=BM_LAST;ii++) {
 		if (ConfBB[ii]) break;
 	}
 	BottomMode=ii;
@@ -1268,6 +1271,7 @@ Drawbottom:
 
   bool showunit=false;
 
+  #if AUTO_BBTRM
   if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && !wascircling) {
 	// switch to thermal mode
 	if (ConfBB[BM_TRM]) {
@@ -1283,6 +1287,7 @@ Drawbottom:
 	}
 	wascircling=false;
   }
+  #endif
 
   /*
    *   FIRST VALUE
