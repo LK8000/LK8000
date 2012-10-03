@@ -518,7 +518,11 @@ int InputEvents::mode2int(const TCHAR *mode, bool create) {
   }
 
   // Should never reach this point
-  LKASSERT(false);
+  MessageBoxX(hWndMapWindow,
+        _T("DEFAULT_PROFILE IS NOT UPDATED"),
+        _T("CONFIGURATION ERROR"),
+        MB_OK|MB_ICONEXCLAMATION);
+
   return -1;
 }
 
