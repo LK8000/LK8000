@@ -225,6 +225,13 @@ static void GetWaypointValues(void) {
       CHECK_CHANGED(Task[twItemIndex].AATFinishRadial, 
                     wp->GetDataField()->GetAsInteger());
     }  
+	
+	wp = (WndProperty*)wf->FindByName(TEXT("prpOutCircle"));
+	if (wp) {
+		CHECK_CHANGED(Task[twItemIndex].OutCircle,
+			wp->GetDataField()->GetAsInteger());
+	}
+
     if (changed) {
       TaskModified = true;
     }
@@ -285,6 +292,22 @@ static void SetWaypointValues(bool first=false) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOutCircle"));
+  if (wp) {
+	  DataFieldEnum* dfe;
+	  dfe = (DataFieldEnum*)wp->GetDataField();
+	  if (dfe) {
+		  if (first) {
+			  // LKTOKEN  _@M2226_ = "Enter" 
+			  dfe->addEnumText(gettext(TEXT("_@M2145_")));
+			  // LKTOKEN  _@M2227_ = "Exit" 
+			  dfe->addEnumText(gettext(TEXT("_@M2146_")));
+		  }
+		  dfe->Set(Task[twItemIndex].OutCircle);
+	  }
+	  wp->SetVisible(Task[twItemIndex].AATType==0 && DoOptimizeRoute());
+	  wp->RefreshDisplay();
+  }
 }
 
 

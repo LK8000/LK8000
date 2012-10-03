@@ -53,6 +53,9 @@
 <WndProperty Name="prpAATFinishRadial" Caption="_@M294_" X=2 Y=-1 Width=240 Height=22 CaptionWidth=150 Font=2 Help="_@H512_">
 <DataField name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min=0 Max=360 Step=1/>
 </WndProperty>
+<WndProperty Name="prpOutCircle" Caption="_@M2147_"     X="2" Y="-1"  Width="240" Height="22" CaptionWidth="150" Font="2" Help="_@HXXX_">
+  <DataField name="" DataType="enum"  Min="0" Max="50" Step="1"/>
+</WndProperty>
 </WndFrame>
 <WndFrame Name="frmFinish" X=80 Y=0 Width=240 Height=222 Font=2>
 <WndProperty Name="prpTaskFinishLine" Caption="_@M298_" X=2 Y=-1 Width=240 Height=22 CaptionWidth=150 Font=2 Help="_@H513_">
