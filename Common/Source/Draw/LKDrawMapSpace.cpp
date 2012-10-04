@@ -13,6 +13,7 @@
 #include "DoInits.h"
 #include "Modeltype.h"
 #include "Sideview.h"
+#include "Multimap.h"
 
 extern void LoadSplash(HDC hDC, TCHAR *splashfile);
 extern void LKDrawMultimap_Asp(HDC hdc,RECT rc);
@@ -74,9 +75,8 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 	DoInit[MDI_DRAWMAPSPACE]=false; 
   }
 
-  // Paint borders in green, but not on white pages
-  // Currently only RADAR is a whitepage
-//  if (MapSpaceMode!=MSM_RADAR)
+  // Paint borders in green, but only in nearest pages and welcome
+  if (MapSpaceMode==MSM_WELCOME || (!IsMultiMap() && MapSpaceMode!=MSM_MAP) )
   {
 	  if (INVERTCOLORS) {
 		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[2], p[3], RGB_GREEN, rc);
