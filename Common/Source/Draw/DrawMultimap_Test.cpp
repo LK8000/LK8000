@@ -67,7 +67,9 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
   double sunelevation = 40.0;
   double sunazimuth=GetAzimuth();
   if (EnableTerrain && DerivedDrawInfo.TerrainValid) {
+	LockTerrainDataGraphics();
 	DrawTerrain(hdc, rct, sunazimuth, sunelevation);
+	UnlockTerrainDataGraphics();
   }
 
   ResetLabelDeclutter();	// This is needed to reset at each run the declutter, for topology and waypoints!

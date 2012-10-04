@@ -644,7 +644,9 @@ double fFact = 1.0 ;
   if (IsMultimapTerrain() &&  DerivedDrawInfo.TerrainValid ) {
         LKTextBlack=false;
         BlackScreen=false;
+	LockTerrainDataGraphics();
 	DrawTerrain(hdc, rct, GetAzimuth(), 40.0);
+	UnlockTerrainDataGraphics();
   } else {
 	// We fill up the background wity chosen empty map color
 
