@@ -144,6 +144,12 @@ void MultiMapSound() {
 		case 5:
 			PlayResource(TEXT("IDR_WAV_MM4"));
 			break;
+		case 6:
+			PlayResource(TEXT("IDR_WAV_MM5"));
+			break;
+		case 7:
+			PlayResource(TEXT("IDR_WAV_MM6"));
+			break;
 		default:
 			break;
 	}
