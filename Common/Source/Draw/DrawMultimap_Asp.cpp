@@ -119,7 +119,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 		// No need to print "Heading". It is obvious.
 		// _stprintf(topcenter_txt, TEXT("%s"), MsgToken(1290));
 		_tcscpy(topcenter_txt,_T("HEADING"));
-		_stprintf(topleft_txt, TEXT("M1: TRK"));
+		_stprintf(topleft_txt, TEXT(" 1 TRK "));
 		break;
 
 	case IM_NEXT_WP:
@@ -128,7 +128,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 			TCHAR szOvtname[80];
 			GetOvertargetName(szOvtname);
 			_stprintf(topcenter_txt, TEXT("%s"), szOvtname);
-			_stprintf(topleft_txt, TEXT("M2: WPT"));
+			_stprintf(topleft_txt, TEXT(" 2 WPT "));
 		}
 		else
 		{
@@ -138,7 +138,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 
 	case IM_NEAR_AS:
 		_stprintf(topcenter_txt, TEXT("%s"), Sideview_szNearAS );
-		_stprintf(topleft_txt, TEXT("M3: ASP"));
+		_stprintf(topleft_txt, TEXT(" 3 ASP "));
 		break;
 	default:
 		break;
@@ -149,8 +149,15 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   //SetBkMode(hdc, OPAQUE);
 
 
-  HFONT hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
-  LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_WHITE, true);
+//  HFONT hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
+  HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
+
+  HBRUSH oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Mdark);
+  HPEN oldPen=(HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
+
+  LKWriteBoxedText(hdc, &rci, topleft_txt, 0, 0, 0, WTALIGN_LEFT);
+
+  //LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_DARKGREY, true);
 
 
   //SelectObject(hdc, LK8InfoSmallFont);
@@ -190,6 +197,8 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   //SetBkMode(hdc, TRANSPARENT);
 
   SonarNotify();
+  SelectObject(hdc,oldBrush);
+  SelectObject(hdc,oldPen);
   SelectObject(hdc, hfOld);
   LKevent=LKEVENT_NONE;
 
