@@ -766,6 +766,7 @@ _redo:
 			oldrc.left,oldrc.top,oldrc.right,oldrc.bottom, rc.left, rc.top, rc.right,rc.bottom);
 	}
 	#endif
+	LKASSERT(rc.right!=0 && rc.bottom!=0);
 	LKSW_ResetTerrainRenderer=false; // in any case
 	CloseTerrainRenderer();
 	goto _redo;

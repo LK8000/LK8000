@@ -10,7 +10,7 @@
 #include "LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
-
+#include "Multimap.h"
 
 #define GC_HORIZONTAL_TOLERANCE      100
 #define GC_HORIZONTAL_THRESHOLD     2500
@@ -162,7 +162,8 @@ RECT rct = rc; /* rectangle for topview */
 rc.top     = (int)((double)(rci.bottom-rci.top  )*fSplitFact);
 rct.bottom = rc.top ;
 HFONT	 hfOldFnt = (HFONT)SelectObject(hdc,LK8PanelUnitFont/* Sender->GetFont()*/);
-static int iSplit = 30;
+
+int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 
 int  k;
 static double fZOOMScale= 1.0;
@@ -257,9 +258,9 @@ static  bool bHeightScale = false;
 			else
 #endif
 			{
-			  if(iSplit == SIZE1) iSplit = SIZE0;
-			  if(iSplit == SIZE2) iSplit = SIZE1;
-			  if(iSplit == SIZE3) iSplit = SIZE2;
+			  if(*iSplit == SIZE1) *iSplit = SIZE0;
+			  if(*iSplit == SIZE2) *iSplit = SIZE1;
+			  if(*iSplit == SIZE3) *iSplit = SIZE2;
 			}
 		break;
 		case LKEVENT_PAGEDOWN:
@@ -269,24 +270,23 @@ static  bool bHeightScale = false;
 			else
 #endif
 			{
-			  if(iSplit == SIZE2) iSplit = SIZE3;
-			  if(iSplit == SIZE1) iSplit = SIZE2;
-			  if(iSplit == SIZE0) iSplit = SIZE1;
+			  if(*iSplit == SIZE2) *iSplit = SIZE3;
+			  if(*iSplit == SIZE1) *iSplit = SIZE2;
+			  if(*iSplit == SIZE0) *iSplit = SIZE1;
 			}
 		break;
 
 	  }
 	  LKevent=LKEVENT_NONE;
 
-static int oldSplit = 0;
-	  if(oldSplit != iSplit)
-	  {
-		oldSplit=iSplit;
-		SetSplitScreenSize(iSplit);
+	  if(Current_Multimap_SizeY != *iSplit)
+          {
+		Current_Multimap_SizeY=*iSplit;
+		SetSplitScreenSize(*iSplit);
 		rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
 		rct.bottom = rc.top ;
+          }
 
-	  }
 
   /************************************************************************************/
   if(bInvCol)

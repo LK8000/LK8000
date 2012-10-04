@@ -11,6 +11,8 @@
 
 #define NUMBER_OF_MULTIMAPS	MP_TOP
 
+extern int Current_Multimap_SizeY;
+
 bool IsMultiMap(void);
 void MultiMapSound(void);
 
@@ -24,6 +26,7 @@ bool IsMultimapAirspace(void);
 bool IsMultimapTopology(void);
 bool IsMultimapWaypoints(void);
 
+short Get_Current_Multimap_Type();
 void Reset_Multimap_Flags(void);
 
 #endif

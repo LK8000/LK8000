@@ -17,6 +17,7 @@
 #include "RGB.h"
 #include "Sideview.h"
 #include "LKObjects.h"
+#include "Multimap.h"
 
 extern	 int Sideview_iNoHandeldSpaces;
 extern	 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
@@ -48,7 +49,6 @@ static bool bHeightScale = false;
 RECT rc  = rci; /* rectangle for sideview */
 bool bInvCol = true; //INVERTCOLORS;
 static double fHeigtScaleFact = 1.0;
-static int iSplit = SIZE1;
 double fDist = 50.0*1000; // kmbottom
 double aclat, aclon, ach, acb, speed, calc_average30s;
 double GPSbrg=0;
@@ -72,6 +72,13 @@ COLORREF RED_COL       = RGB_LIGHTORANGE;
 COLORREF BLUE_COL      = RGB_BLUE;
 COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 COLORREF col           =  RGB_BLACK;
+
+int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
+
+#if 0
+StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
+	Get_Current_Multimap_Type(), Current_Multimap_SizeY, Multimap_SizeY[Get_Current_Multimap_Type()], *iSplit);
+#endif
 
   if(bInvCol)
 	col =  RGB_WHITE;
@@ -150,9 +157,9 @@ COLORREF col           =  RGB_BLACK;
 			else
 #endif
 			{
-			  if(iSplit == SIZE1) iSplit = SIZE0;
-			  if(iSplit == SIZE2) iSplit = SIZE1;
-			  if(iSplit == SIZE3) iSplit = SIZE2;
+			  if(*iSplit == SIZE1) *iSplit = SIZE0;
+			  if(*iSplit == SIZE2) *iSplit = SIZE1;
+			  if(*iSplit == SIZE3) *iSplit = SIZE2;
 			}
 		break;
 		case LKEVENT_PAGEDOWN:
@@ -162,24 +169,33 @@ COLORREF col           =  RGB_BLACK;
 			else
 #endif
 			{
-			  if(iSplit == SIZE2) iSplit = SIZE3;
-			  if(iSplit == SIZE1) iSplit = SIZE2;
-			  if(iSplit == SIZE0) iSplit = SIZE1;
+			  if(*iSplit == SIZE2) *iSplit = SIZE3;
+			  if(*iSplit == SIZE1) *iSplit = SIZE2;
+			  if(*iSplit == SIZE0) *iSplit = SIZE1;
 			}
 		break;
 
 	  }
 	  LKevent=LKEVENT_NONE;
 
-static int oldSplit = 0;
-	  if(oldSplit != iSplit)
+	  // Current_Multimap_SizeY is global, and must be used by all multimaps!
+	  // It is defined in Multimap.cpp and as an external in Multimap.h
+	  // It is important that it is updated, because we should resize terrain
+	  // only if needed! Resizing terrain takes some cpu and some time.
+	  // So we need to know when this is not necessary, having the same size of previous
+	  // multimap, if we are switching.
+	  // The current implementation is terribly wrong by managing resizing of sideview in
+	  // each multimap: it should be done by a common layer.
+	  // CAREFUL:
+	  // If for any reason DrawTerrain() is called after resizing to 0 (full sideview)
+	  // LK WILL CRASH with no hope to recover.
+	  if(Current_Multimap_SizeY != *iSplit)
 	  {
-		oldSplit=iSplit;
-		SetSplitScreenSize(iSplit);
+		Current_Multimap_SizeY=*iSplit;
+		SetSplitScreenSize(*iSplit);
 		rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
 		rct.bottom = rc.top ;
 	  }
-
 
 	  double hmin = max(0.0, DerivedDrawInfo.NavAltitude-2300);
 	  double hmax = max(MAXALTTODAY, DerivedDrawInfo.NavAltitude+1000);

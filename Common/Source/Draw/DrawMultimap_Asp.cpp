@@ -20,7 +20,8 @@
 extern int XstartScreen, YstartScreen;
 
 extern long  iSonarLevel;
- bool Sonar_IsEnabled;
+bool Sonar_IsEnabled;
+
 extern AirSpaceSonarLevelStruct sSonarLevel[];
 extern TCHAR Sideview_szNearAS[];
 extern double fZOOMScale;

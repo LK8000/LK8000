@@ -7,7 +7,15 @@
 */
 
 #include "externs.h"
+#include "Sideview.h"
 
+//
+// This is GLOBAL to all multimaps! 
+// It is IMPERATIVE that multimaps using a split screen keep this variable updated.
+// AND IT IS IMPERATIVE also that the screen splitter is using the same algorithm for calculating
+// screen coordinates out of SIZE.
+// For this reason we short rewrite many parts of sideview and RenderAirspace/etc.
+int Current_Multimap_SizeY=SIZE1;
 
 bool IsMultiMap() {
   if ( (MapSpaceMode >= MSM_MAPRADAR) && (MapSpaceMode <= MSM_MAPTEST) )
@@ -22,28 +30,30 @@ bool IsMultiMap() {
 //
 short Get_Current_Multimap_Type() {
 
+  short ret=MP_MOVING;
   if (!IsMultiMap()) return MP_MOVING;
   switch(MapSpaceMode) {
 	case MSM_MAPRADAR:
-		return MP_RADAR;
+		ret=MP_RADAR;
 		break;
 	case MSM_MAPTRK:
-		return MP_MAPTRK;
+		ret=MP_MAPTRK;
 		break;
 	case MSM_MAPWPT:
-		return MP_MAPWPT;
+		ret=MP_MAPWPT;
 		break;
 	case MSM_MAPASP:
-		return MP_MAPASP;
+		ret=MP_MAPASP;
 		break;
 	case MSM_MAPTEST:
-		return MP_TEST;
+		ret=MP_TEST;
 		break;
 	default:
-		return MP_MOVING;
+		ret=MP_MOVING;
 		break;
   }
-  return MP_MOVING;
+  LKASSERT(ret<=(MP_TOP+1));
+  return ret;
 }
 
 bool IsMultimapTerrain(void) {
@@ -109,7 +119,7 @@ void Reset_Multimap_Flags(void) {
 	Multimap_Flags_Topology[i]=true;
 	Multimap_Flags_Airspace[i]=true;
 	Multimap_Flags_Waypoints[i]=true;
-	Multimap_SizeY[i]=0;	// this would force reset
+	Multimap_SizeY[i]=SIZE1;	// default
   }
 }
 
