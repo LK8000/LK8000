@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "Calculations2.h"
 
 
 void RefreshTask(void) {
@@ -75,5 +76,7 @@ void RefreshTask(void) {
   CalculateTaskSectors();
   CalculateAATTaskSectors();
   UnlockTaskData();
+
+  ClearOptimizedTargetPos();
 }
 

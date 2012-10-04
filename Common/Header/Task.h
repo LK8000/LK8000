@@ -54,6 +54,7 @@ typedef struct _TASK_POINT
   double AATTargetLon;
   POINT	 Target;
   bool   AATTargetLocked;
+  bool	 OutCircle;
 }TASK_POINT;
 
 typedef TASK_POINT Task_t[MAXTASKPOINTS +1];

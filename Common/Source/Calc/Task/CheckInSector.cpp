@@ -20,6 +20,29 @@ void CheckInSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
   AddAATPoint(Basic, Calculated, ActiveWayPoint);
 
+  if(DoOptimizeRoute()) {
+	  if(ValidTaskPoint(ActiveWayPoint+1) && Task[ActiveWayPoint].OutCircle) {
+		  if (aatdistance.HasEntered(ActiveWayPoint)) {
+
+			  double CenterDist = 0.0;
+			  DistanceBearing( WayPointList[TASKINDEX].Latitude, 
+								WayPointList[TASKINDEX].Longitude,
+								Basic->Latitude,
+								Basic->Longitude,
+								&CenterDist, NULL );
+
+			  if(CenterDist > Task[ActiveWayPoint].AATCircleRadius) {
+				  if (ReadyToAdvance(Calculated, true, false)) {
+					  AnnounceWayPointSwitch(Calculated, true);
+					  Calculated->LegStartTime = Basic->Time;
+					  flightstats.LegStartTime[ActiveWayPoint] = Basic->Time;
+				  }
+			  }
+		  }
+		  return;
+	  }
+  }
+  
   // JMW Start bug XXX
 
   if (aatdistance.HasEntered(ActiveWayPoint)) {
