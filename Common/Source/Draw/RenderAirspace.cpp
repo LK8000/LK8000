@@ -469,17 +469,16 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
     } else {
       double t = fDist/(speed!=0?speed:1);
+      if (ISGLIDER || ISPARAGLIDER)
 
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
       line[0].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude, &sDia);
       line[1].x = rc.right;
       line[1].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude+calc_average30s*t, &sDia);
-      /***********************************************************************************
-       * ToDo: here is the glidingslope for the heading view
-       * for gliders it does not make sense to point upwards but for GA it may make sense
-       ***********************************************************************************/
-      if ( line[1].y  < line[0].y )
-    	  line[1].y  = line[0].y;
+      // Limit climb rate to flat, for free flyers
+      if (ISGLIDER || ISPARAGLIDER)
+	if ( line[1].y  < line[0].y )  line[1].y  = line[0].y;
+
       DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
     }
   }
