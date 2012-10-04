@@ -194,7 +194,7 @@ return;
 
 void DrawSelectionFrame(HDC hdc, RECT rci)
 {
-  HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_GREEN);
+  HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_DARKBLUE);
   HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
   HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
   if(rci.top <= 1)
@@ -438,7 +438,7 @@ RECT rc =	psDia->rc;
 int CalcHeightCoordinatOutbound(double fHeight, DiagrammStruct* psDia)
 {
 	RECT rc =	psDia->rc;
-	  int y0 = rc.bottom-BORDER_Y;
+	  int y0 = rc.bottom ; //-BORDER_Y;
 
 	//  fMaxAltToday = 3300;
 	//  double hmin = max(0.0, alt-2300);

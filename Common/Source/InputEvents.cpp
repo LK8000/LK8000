@@ -2061,11 +2061,11 @@ void InputEvents::eventService(const TCHAR *misc) {
 	}
 	return;
   }
-  if (_tcscmp(misc, TEXT("ASPNEAR")) == 0) {
+//  if (_tcscmp(misc, TEXT("ASPNEAR")) == 0) {
 	// should be fixed by Ulli
-	dlgAnalysisShowModal(ANALYSIS_PAGE_NEAR_AIRSPACE);
-	return;
-  }
+//	dlgAnalysisShowModal(ANALYSIS_PAGE_NEAR_AIRSPACE);
+//	return;
+//  }
 #if (WINDOWSPC>0)
   if (_tcscmp(misc, TEXT("SS320x240")) == 0) {
 	SCREENWIDTH=320;
@@ -2545,10 +2545,6 @@ void InputEvents::eventSetup(const TCHAR *misc) {
   } else if (_tcscmp(misc,TEXT("Switches"))==0){
     dlgSwitchesShowModal();
 #endif
-  } else if (_tcscmp(misc,TEXT("AspAnalysis"))==0){
-	dlgAnalysisShowModal(ANALYSIS_PAGE_AIRSPACE);
-  } else if (_tcscmp(misc,TEXT("AspNextAnalysis"))==0){
-    dlgAnalysisShowModal(ANALYSIS_PAGE_NEAR_AIRSPACE);
   } else if (_tcscmp(misc,TEXT("OlcAnalysis"))==0){
     dlgAnalysisShowModal(ANALYSIS_PAGE_CONTEST);
   } else if (_tcscmp(misc,TEXT("Teamcode"))==0){

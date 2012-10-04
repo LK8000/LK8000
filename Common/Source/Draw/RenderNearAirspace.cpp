@@ -508,7 +508,11 @@ if(bValid)
   /****************************************************************************************************
    * draw airspace and terrain elements
    ****************************************************************************************************/
-  sDia.rc = rc;
+  RECT rcc = rc;          /* rc corrected      */
+  if(sDia.fYMin < 100)
+    rcc.bottom -= BORDER_Y; /* scale witout sea  */
+  sDia.rc = rcc;
+
   RenderAirspaceTerrain( hdc, GPSlat, GPSlon, iAS_Bearing, &sDia );
 
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
@@ -742,8 +746,8 @@ if(bValid)
    ****************************************************************************************************/
   if(bHeightScale)
 	DrawSelectionFrame(hdc,  rc);
-  else
-	DrawSelectionFrame(hdc,  rci);
+//  else
+//	DrawSelectionFrame(hdc,  rci);
 
   SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
   SetBkMode(hdc, TRANSPARENT);

@@ -1505,22 +1505,21 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
   RECT  rcgfx;
   HFONT hfOld;
-COLORREF Sideview_TextColor;
+
   CopyRect(&rcgfx, Sender->GetBoundRect());
   hfOld = (HFONT)SelectObject(hDC,LK8PanelUnitFont/* Sender->GetFont()*/);
 
     if(INVERTCOLORS)
     {
       Sender->SetBackColor(SKY_HORIZON_COL);
-      Sideview_TextColor = INV_GROUND_TEXT_COLOUR;
+      SetTextColor(hDC, RGB_DARKBLUE);
     }
     else
-      Sideview_TextColor = RGB_WHITE;
-
-    SetTextColor(hDC, Sideview_TextColor);
+      SetTextColor(hDC, RGB_WHITE);
 
   SetBkMode(hDC, TRANSPARENT);
-  SetTextColor(hDC, Sender->GetForeColor());
+//  SetTextColor(hDC, Sender->GetForeColor());
+//  SetTextColor(hDC, Sideview_TextColor);
 
 
   switch (page) {
@@ -1584,12 +1583,12 @@ static void Update(void){
   //  WndProperty *wp;
 
   // Hide airspace heading switch button by default if not on ASP page
-  if (page != ANALYSIS_PAGE_AIRSPACE) {
-    WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdAspBear"));
-    if(wb) {
-      wb->SetVisible(false);
-    }
-  }
+//  if (page != ANALYSIS_PAGE_AIRSPACE) {
+//    WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdAspBear"));
+//    if(wb) {
+//      wb->SetVisible(false);
+ //   }
+//  }
 
 
   switch(page){

@@ -331,7 +331,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   sDia.fYMin = hmin;
   sDia.fYMax = hmax;
 
-  sDia.rc = rc;
+  RECT rcc =  rc;
+  if(sDia.fYMin < 100)
+    rcc.bottom -= BORDER_Y; /* scale witout sea  */
+  sDia.rc = rcc;
+
   RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
 
 
@@ -371,7 +375,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
     if (GetSideviewPage() == IM_NEXT_WP)
   	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
-  	sDia.rc = rc;
+  	sDia.rc = rcc;
   }
   SelectObject(hdc, LK8PanelUnitFont);
   COLORREF txtCol = GROUND_TEXT_COLOUR;
@@ -397,7 +401,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	 ytick = ytick * 4.0;
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
-  DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
+
+  DrawYGrid(hdc, rcc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
   POINT line[4];
 
   // draw target symbolic line
@@ -688,8 +693,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
    ****************************************************************************************************/
 	if(bHeightScale)
 	  DrawSelectionFrame(hdc,  rc);
-	else
-	  DrawSelectionFrame(hdc,  rci);
+//	else
+//	  DrawSelectionFrame(hdc,  rci);
 
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
   zoom.SetLimitMapScale(true);

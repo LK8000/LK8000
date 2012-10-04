@@ -28,7 +28,7 @@ extern int Sideview_iNoHandeldSpaces;
 void RenderAirspaceTerrain(HDC hdc, double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
 {
 RECT rc	= psDiag->rc;
-rc.bottom +=BORDER_Y;
+//rc.bottom +=BORDER_Y;
 double range =psDiag->fXMax - psDiag->fXMin; // km
 double hmax = psDiag->fYMax;
 double lat, lon;
@@ -225,7 +225,7 @@ int i,j;
   // draw sea
   if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
   {
-	RECT sea= {rc.left,rc.bottom - BORDER_Y,rc.right,rc.bottom-2*BORDER_Y};
+	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom+BORDER_Y};
 	RenderSky( hdc,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
 	iBottom-=BORDER_Y;
 
