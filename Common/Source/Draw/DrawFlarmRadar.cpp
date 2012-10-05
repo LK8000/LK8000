@@ -16,6 +16,8 @@
 #include "FlarmIdFile.h"
 #include "FlarmRadar.h"
 #include "Globals.h"
+#include "Multimap.h"
+
 extern int XstartScreen, YstartScreen;
 
 
@@ -1329,6 +1331,8 @@ if(bSideview)
   else
 	DrawSelectionFrame(hdc,  rci);
 #endif
+
+DrawMultimap_Topleft(hdc, rci);
 
 SelectObject(hdc, hfOldFont);
 SelectObject(hdc, hOldPen);

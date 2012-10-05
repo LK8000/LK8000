@@ -33,9 +33,9 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 //oldFont = (HFONT)SelectObject(hdc, MapWindowFont);
 //oldFont = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
 
-  switch(GetSideviewPage())
+  switch(MapSpaceMode)
   {
-	case IM_HEADING:
+	case MSM_MAPTRK:
 		_stprintf(topleft_txt, TEXT(" 1 TRK"));
 
 		oldFont = (HFONT)SelectObject(hdc, LK8ValueFont);
@@ -44,7 +44,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 		MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
 		break;
 
-	case IM_NEXT_WP:
+	case MSM_MAPWPT:
 		_stprintf(topleft_txt, TEXT(" 2 WPT"));
 
 		oldFont = (HFONT)SelectObject(hdc, LK8MediumFont);
@@ -53,7 +53,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 		MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
 		break;
 
-	case IM_NEAR_AS:
+	case MSM_MAPASP:
 		_stprintf(topleft_txt, TEXT(" 3"));
 
 		oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
@@ -61,6 +61,14 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 		oldPen=(HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
 		MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
 		break;
+
+	case MSM_MAPRADAR:
+		_stprintf(topleft_txt, TEXT(" 4"));
+
+		oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
+		oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Mdark);
+		oldPen=(HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
+		MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
 	default:
 		break;
   } 
@@ -110,15 +118,6 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
         else
                 LKWriteText(hdc, MsgToken(1293),  (rci.right), rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true);
   }
-
-  if(GetSideviewPage()== IM_NEXT_WP)
-  {
-        TCHAR topcenter_txt[80];
-        _stprintf(topcenter_txt, TEXT("BADRAGAZ  61.2Km  >>63  +1234m"));
-        SelectObject(hdc,LKBrush_Green);
-        MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rci.right/3, midsplit, 0, WTALIGN_CENTER, RGB_BLACK, RGB_BLACK);
-  }
-
 
   SelectObject(hdc,oldBrush);
   SelectObject(hdc,oldFont);
