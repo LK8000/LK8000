@@ -120,8 +120,6 @@ M1779-1782 new Live tracker config options
 H1258 new livetracker help
 M2123 M2124  (menu buttons)
 H168 H494 FAI Finish Height
--_@M822_ "Winpilot"
-+_@M822_ "Vector"
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
 _@M2201_ "Menu"
@@ -174,8 +172,6 @@ By default, quick gestures are enabled. Quick gestures allow the pilot to click
 on right or left nearest/info pages to switch to next/previous like with gestures.
 Using gloves during the flight will require this option be disabled.
 
-Change in ENG_MSG
-_@M1029_ "Next Waypoint" --> _@M1029_ "_Reserved 2"
 
 Add : used in Status dialog
 _@M2133_ "Position"
@@ -191,7 +187,6 @@ HLP 139 and HLP 612:  added [External]   to wind choices!
 _@M1795_ "BARO ALTITUDE IS AVAILABLE"
 _@M1796_ "USING BARO ALTITUDE"
 
-# Replacing 822, Winpilot/Vector with new Vector
 _@M1797_ "Vector"
 
 Changed HELP for 184 
@@ -223,4 +218,5 @@ M1293 SONAR
 _@M2145_ "Entry"
 _@M2146_ "Exit"
 _@M2147_ "Exit/Entry"
+_@M1807_ "_Reserved 2"
 

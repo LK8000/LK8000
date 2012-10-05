@@ -1055,6 +1055,7 @@ _@M1025_ "Next Alt.Arrival"
 _@M1026_ "NxtArr"
 _@M1027_ "Next Alt.Required"
 _@M1028_ "NxtAltR"
+# 1029 UNUSED REMOVED
 _@M1029_ "_Reserved 2"
 _@M1030_ "Next"
 _@M1031_ "Task Alt.Arrival"
@@ -1804,6 +1805,8 @@ _@M1803_ "Head Up"
 _@M1804_ "Head Right"
 _@M1805_ "Line+NextWP"
 _@M1806_ "Shade+NextWP"
+_@M1807_ "_Reserved 2"
+
 
 ############################################################
 #                  - MENU MESSAGES - 
