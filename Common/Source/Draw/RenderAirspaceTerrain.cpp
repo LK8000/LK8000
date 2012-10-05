@@ -247,7 +247,7 @@ int i,j;
   // draw sea
   if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
   {
-	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom+BORDER_Y};
+	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom+SV_BORDER_Y};
 	RenderSky( hdc,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
   }
 #else

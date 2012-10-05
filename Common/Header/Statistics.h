@@ -15,7 +15,8 @@
 
 #include "leastsqs.h"
 
-
+#define BORDER_X 15
+#define BORDER_Y 19
 
 
 class Statistics {

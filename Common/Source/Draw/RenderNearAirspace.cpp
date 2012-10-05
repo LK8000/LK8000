@@ -460,7 +460,7 @@ if(bValid)
   //  if(ExternalTriggerCircling)
     sDia.fYMax =  ((int)((GPSalt+abs(iAS_VertDistance))/400) + 2) *400 ;
     sDia.fYMin =  ((int)((GPSalt-abs(iAS_VertDistance))/400) - 1) *400 ;
-    if(sDia.fYMin-200 < 0)
+    if(sDia.fYMin-MIN_ALTITUDE < 0)
       sDia.fYMin = 0;
   }
 
@@ -469,14 +469,14 @@ if(bValid)
   {
     sDia.fYMax =  ((int)((GPSalt+abs(iAS_VertDistance))/100) + 2) *100 ;
     sDia.fYMin =  ((int)((GPSalt-abs(iAS_VertDistance))/100) - 1) *100 ;
-    if(sDia.fYMin-200 < 0)
+    if(sDia.fYMin-MIN_ALTITUDE < 0)
       sDia.fYMin = 0;
   }
 #endif
   sDia.fYMin = max((double)0.0f,(double) sDia.fYMin);
 
 #ifdef OFFSET_SETP
-	  if(( sDia.fYMax + fOffset) > 12000.0)
+	  if(( sDia.fYMax + fOffset) > MAX_ALTITUDE)
 		fOffset -= OFFSET_SETP;
 	  if(( sDia.fYMin + fOffset) < 0.0)
 		fOffset += OFFSET_SETP;
@@ -484,10 +484,10 @@ if(bValid)
 	  sDia.fYMin +=  fOffset;
 	  sDia.fYMax +=  fOffset;
 #endif
-  if(fHeigtScaleFact * sDia.fYMax > 14000.0 )
+  if(fHeigtScaleFact * sDia.fYMax > MAX_ALTITUDE )
 	  fHeigtScaleFact /=ZOOMFACTOR;
 
-  if(fHeigtScaleFact * sDia.fYMax < 200.0 )
+  if(fHeigtScaleFact * sDia.fYMax < MIN_ALTITUDE )
 	  fHeigtScaleFact *=ZOOMFACTOR;
   sDia.fYMax *= fHeigtScaleFact;
 }
@@ -510,7 +510,7 @@ if(bValid)
    ****************************************************************************************************/
   RECT rcc = rc;          /* rc corrected      */
   if(sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
-    rcc.bottom -= BORDER_Y; /* scale witout sea  */
+    rcc.bottom -= SV_BORDER_Y; /* scale witout sea  */
   sDia.rc = rcc;
 
   RenderAirspaceTerrain( hdc, GPSlat, GPSlon, iAS_Bearing, &sDia );
@@ -583,7 +583,7 @@ if(bValid)
   if (fHeight >8000.0) ytick = 4000.0;
 
   if(Units::GetUserAltitudeUnit() == unFeet)
-	 ytick = ytick * 4.0;
+	 ytick = ytick * FEET_FACTOR;
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
   DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);

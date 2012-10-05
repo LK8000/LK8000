@@ -33,9 +33,8 @@ extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
 double fHeigtScaleFact;
 
-#define IM_NEAR_AS 2
-#define IM_NEXT_WP 1
-#define IM_HEADING 0
+
+#define ADDITIONAL_INFO_THRESHOLD 0.5
 
 void MapWindow::RenderAirspace(HDC hdc, const RECT rci) {
   zoom.SetLimitMapScale(false);
@@ -197,10 +196,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 		rct.bottom = rc.top ;
 	  }
 
-	  double hmin = max(0.0, DerivedDrawInfo.NavAltitude-2300);
+	  double hmin =  max(0.0, DerivedDrawInfo.NavAltitude-2300);
 	  double hmax = max(MAXALTTODAY, DerivedDrawInfo.NavAltitude+1000);
 #ifdef OFFSET_SETP
-	  if((hmax + fOffset) > 12000.0)
+	  if((hmax + fOffset) > MAX_ALTITUDE)
 		fOffset -= OFFSET_SETP;
 	  if((hmin + fOffset) < 0.0)
 		fOffset += OFFSET_SETP;
@@ -208,11 +207,12 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  hmin +=  fOffset;
 	  hmax +=  fOffset;
 #endif
-
-	  if( (hmax *  fHeigtScaleFact) > 15000.0)
+if(fHeigtScaleFact >= 1.0)
+	hmin =0.0;
+	  if( (hmax *  fHeigtScaleFact) > MAX_ALTITUDE)
 		fHeigtScaleFact /= ZOOMFACTOR;
 
-	  if( (hmax *  fHeigtScaleFact) < 200.0)
+	  if( (hmax *  fHeigtScaleFact) < MIN_ALTITUDE)
 		fHeigtScaleFact *= ZOOMFACTOR;
 
 	  hmax *=  fHeigtScaleFact;
@@ -333,7 +333,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   RECT rcc =  rc;
   if(sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
-    rcc.bottom -= BORDER_Y; /* scale witout sea  */
+    rcc.bottom -= SV_BORDER_Y; /* scale witout sea  */
   sDia.rc = rcc;
 
   RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
@@ -398,7 +398,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if (fHeight >8000.0) ytick = 4000.0;
 
   if(Units::GetUserAltitudeUnit() == unFeet)
-	 ytick = ytick * 4.0;
+	 ytick = ytick * FEET_FACTOR;
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
 
@@ -418,7 +418,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       line[0].y = y0;
       line[1].x = line[0].x;
       line[1].y = rc.top;
-      DrawDashLine(hdc,4, line[0], line[1],  RGB_GREY, rc);
+      DrawDashLine(hdc,4, line[0], line[1],  RGB_DARKGREY, rc);
     }
     else
     {
@@ -476,15 +476,13 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
     } else {
       double t = fDist/(speed!=0?speed:1);
-      if (ISGLIDER || ISPARAGLIDER)
-
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
       line[0].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude, &sDia);
       line[1].x = rc.right;
       line[1].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude+calc_average30s*t, &sDia);
       // Limit climb rate to flat, for free flyers
       if (ISGLIDER || ISPARAGLIDER)
-	if ( line[1].y  < line[0].y )  line[1].y  = line[0].y;
+	    if ( line[1].y  < line[0].y )  line[1].y  = line[0].y;
 
       DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
     }
@@ -521,13 +519,15 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  SelectObject(hdc,LKBrush_LightCyan);
 	MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  line[0].x, y-3, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
 
-    // Print wpt distance
+
+	// Print wpt distance
     Units::FormatUserDistance(wpt_dist, text, 7);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = line[0].x - tsize.cx - NIBLSCALE(5);
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
     y += tsize.cy;
-    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
+      ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     double altarriv = wpt_altarriv_mc0; // + wpt_altitude;
     if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
 
@@ -552,7 +552,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     } else {
   	  SetTextColor(hdc, RED_COL);
     }
-    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
+      ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     
     // Print arrival altitude
     if (wpt_altarriv > ALTDIFFLIMIT) {
@@ -561,7 +562,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       Units::FormatUserArrival(wpt_altarriv, buffer, 7);
       _tcscat(text,buffer);
     } else {
-      LK_tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]) - 1);
+      if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
+        LK_tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]) - 1);
     }
 
     if(  WayPointList[overindex].Reachable) {
@@ -573,7 +575,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     x = line[0].x - tsize.cx - NIBLSCALE(5);
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
     y += tsize.cy;
-    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
+      ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
     // Print arrival AGL
     altarriv = wpt_altarriv;
@@ -593,8 +596,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       } else {
         SetTextColor(hdc, RED_COL);
       }
-      ExtTextOut(hdc, x, y-tsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
+        ExtTextOut(hdc, x, y-tsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
+
     // Print current Elevation
     SetTextColor(hdc, RGB_BLACK);
     if((calc_terrainalt- hmin) > 0)

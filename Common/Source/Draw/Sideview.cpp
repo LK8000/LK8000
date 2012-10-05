@@ -201,7 +201,7 @@ RECT rci = rc;
 	rci.top -=1;
 	rci.right -=2;
 	rci.bottom -=2;
-	int iSize = 3;//IBLSCALE(1);
+	int iSize = NIBLSCALE(2);
 	COLORREF col = RGB_BLACK;
 
 

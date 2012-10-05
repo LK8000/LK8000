@@ -16,8 +16,6 @@
 #include "FlarmIdFile.h"
 #include "FlarmRadar.h"
 #include "Globals.h"
-#include "Multimap.h"
-
 extern int XstartScreen, YstartScreen;
 
 
@@ -506,13 +504,15 @@ static int aiSortArray[FLARM_MAX_TRAFFIC];
 static bool bHeightScale = true;
 static double fHeigtScaleFact = 1.0f;
 
-bool bInvCol = false;
+bool bInvCol =  false ;// INVERTCOLORS;
 /****************************************************************
  * clear background
  ****************************************************************/
+if(!bInvCol)
+  SelectObject(hdc,LKBrush_White);
+else
+  SelectObject(hdc,LKBrush_Black);
 
-//SelectObject(hdc,LKBrush_White);
-SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
 Rectangle(hdc,rci.left , rci.bottom ,rci.right, rci.top);
 
 /****************************************************************/
@@ -637,7 +637,7 @@ else
   hDrawPen   = (HPEN)  GetStockObject( BLACK_PEN );
   hDrawBrush = (HBRUSH)GetStockObject( BLACK_BRUSH) ;
   hOrangePen = (HPEN)CreatePen(PS_SOLID, 2,RGB_LIGHTORANGE);
-  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_GREEN);
+  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_DARKGREY);
   hWhitePen  = (HPEN)CreatePen(PS_SOLID, 1,RGB_BLACK);
 
 }
@@ -836,7 +836,7 @@ DiagrammStruct sDia;
    * draw sky
    *******************************************************/
 
- //  if(!bInvCol)
+   if(!bInvCol)
      RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
 
 
@@ -1331,8 +1331,6 @@ if(bSideview)
   else
 	DrawSelectionFrame(hdc,  rci);
 #endif
-
-DrawMultimap_Topleft(hdc, rci);
 
 SelectObject(hdc, hfOldFont);
 SelectObject(hdc, hOldPen);

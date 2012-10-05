@@ -15,14 +15,16 @@
 
 #include <windows.h>
 
-#define BORDER_X 0 //24
-#define BORDER_Y 19
 
+#define SV_BORDER_Y NIBLSCALE (10)
+
+#define MAX_ALTITUDE 12050.0 /* maximum altitude (in m) */
+#define MIN_ALTITUDE 200.0 /* maximum altitude (in m) */
 //#define OFFSET_SETP 500.0
 
 #define  MSL_SEA_DRAW
-#define GC_SEA_LEVEL_TOLERANCE       100
-
+#define GC_SEA_LEVEL_TOLERANCE    100.0
+#define FEET_FACTOR    3
 //#define SHOW_YELLO_RED_WARNING
 #define NEAR_AS_ZOOM_1000FT
 #define NEAR_AS_ZOOM_1000M
