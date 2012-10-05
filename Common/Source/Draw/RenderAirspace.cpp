@@ -49,7 +49,7 @@ static bool bHeightScale = false;
 RECT rc  = rci; /* rectangle for sideview */
 bool bInvCol = true; //INVERTCOLORS;
 static double fHeigtScaleFact = 1.0;
-double fDist = 50.0*1000; // kmbottom
+double fDist = 55.0*1000; // kmbottom
 double aclat, aclon, ach, acb, speed, calc_average30s;
 double GPSbrg=0;
 double wpt_brg;
@@ -324,7 +324,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   }
   fDist *=fZOOMScale;
   DiagrammStruct sDia;
-  sDia.fXMin =-5000.0f;
+  sDia.fXMin =-9500.0f;
   if( sDia.fXMin > (-0.1f * fDist))
 	sDia.fXMin = -0.1f * fDist;
   sDia.fXMax = fDist;
@@ -332,7 +332,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   sDia.fYMax = hmax;
 
   RECT rcc =  rc;
-  if(sDia.fYMin < 100)
+  if(sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
     rcc.bottom -= BORDER_Y; /* scale witout sea  */
   sDia.rc = rcc;
 
@@ -390,12 +390,12 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   SetTextColor(hdc, Sideview_TextColor);
 
   double fHeight = sDia.fYMax - sDia.fYMin;
-  double  ytick = 10.0;
-  if (fHeight >100.0) ytick = 100.0;
+  double  ytick = 100.0;
+  if (fHeight >500.0) ytick = 200.0;
   if (fHeight >1000.0) ytick = 500.0;
   if (fHeight >2000.0) ytick = 1000.0;
   if (fHeight >4000.0) ytick = 2000.0;
-
+  if (fHeight >8000.0) ytick = 4000.0;
 
   if(Units::GetUserAltitudeUnit() == unFeet)
 	 ytick = ytick * 4.0;
@@ -427,7 +427,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       line[0].y = CalcHeightCoordinat( wpt_altitude, &sDia);
       line[1].x = line[0].x;
       line[1].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude,  &sDia );
-      DrawLine(hdc, line[0], line[1],  rc, PS_SOLID,  (5), RGB_ORANGE);
+      _DrawLine   (hdc, PS_SOLID, 5, line[0], line[1], RGB_ORANGE, rc);
+
+
       float fArrHight = 0.0f;
       if(wpt_altarriv > 0.0f)
       {
@@ -436,14 +438,14 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
         line[0].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude,  &sDia );
         line[1].x = line[0].x;
         line[1].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude+fArrHight, &sDia );
-        DrawLine(hdc, line[0], line[1],  rc, PS_SOLID,  4, RGB_GREEN);
+        _DrawLine   (hdc, PS_SOLID, 4, line[0], line[1], RGB_GREEN, rc);
       }
       // Mark wpt with a vertical marker line
       line[0].x = iWpPos;
       line[0].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude+fArrHight,  &sDia );
       line[1].x = line[0].x;
       line[1].y = rc.top;
-      DrawDashLine(hdc,4, line[0], line[1],  RGB_GREY, rc);
+      DrawDashLine(hdc,4, line[0], line[1],  RGB_DARKGREY, rc);
     }
   }
 
@@ -693,8 +695,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
    ****************************************************************************************************/
 	if(bHeightScale)
 	  DrawSelectionFrame(hdc,  rc);
-//	else
-//	  DrawSelectionFrame(hdc,  rci);
+#ifdef TOP_SELECTION_FRAME
+	else
+	  DrawSelectionFrame(hdc,  rci);
+#endif
 
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
   zoom.SetLimitMapScale(true);

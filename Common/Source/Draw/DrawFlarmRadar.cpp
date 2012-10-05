@@ -15,7 +15,7 @@
 #include "LKMapWindow.h"
 #include "FlarmIdFile.h"
 #include "FlarmRadar.h"
-
+#include "Globals.h"
 extern int XstartScreen, YstartScreen;
 
 
@@ -153,7 +153,7 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 
   }
 
-  for (xval=zero; xval>= x_min; xval-= ticstep) {
+  for (xval=zero; xval> x_min; xval-= ticstep) {
 
     xmin = (int)((xval-x_min)*xscale)+rc.left;
     ymin = rc.top;
@@ -506,10 +506,11 @@ static double fHeigtScaleFact = 1.0f;
 
 bool bInvCol = false;
 /****************************************************************
- * white background
+ * clear background
  ****************************************************************/
 
-SelectObject(hdc,LKBrush_White);
+//SelectObject(hdc,LKBrush_White);
+SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
 Rectangle(hdc,rci.left , rci.bottom ,rci.right, rci.top);
 
 /****************************************************************/
@@ -622,7 +623,7 @@ if(bInvCol)
   hDrawPen   = (HPEN)  GetStockObject( WHITE_PEN );
   hDrawBrush = (HBRUSH)GetStockObject( WHITE_BRUSH) ;
   hOrangePen = (HPEN)CreatePen(PS_SOLID, 2,RGB_ORANGE);
-  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_BLUE);
+  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_GREEN);
   hWhitePen  = (HPEN)CreatePen(PS_SOLID, 1,RGB_WHITE);
 
 }
@@ -634,7 +635,7 @@ else
   hDrawPen   = (HPEN)  GetStockObject( BLACK_PEN );
   hDrawBrush = (HBRUSH)GetStockObject( BLACK_BRUSH) ;
   hOrangePen = (HPEN)CreatePen(PS_SOLID, 2,RGB_LIGHTORANGE);
-  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_DARKBLUE);
+  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_GREEN);
   hWhitePen  = (HPEN)CreatePen(PS_SOLID, 1,RGB_BLACK);
 
 }
@@ -832,10 +833,10 @@ DiagrammStruct sDia;
   /*******************************************************
    * draw sky
    *******************************************************/
-  #if (WINDOWSPC>0)
-      if(!bInvCol)
-        RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
-  #endif
+
+ //  if(!bInvCol)
+     RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
+
 
   double xtick = 0.001;
   if (range>0.05*1000.0) xtick = 0.01;
@@ -898,13 +899,14 @@ DiagrammStruct sDia;
   if (fHeight >1000.0) ytick = 500.0;
   if (fHeight >2000.0) ytick = 1000.0;
   if (fHeight >4000.0) ytick = 2000.0;
+  if (fHeight >8000.0) ytick = 4000.0;
   if(Units::GetUserAltitudeUnit() == unFeet)
 	 ytick = ytick * 4.0;
 
   if(bSideview)
   {
 	_stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
-    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,rgbGridColor,  &sDia, text);
+    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_MIDDLE_RIGHT ,rgbGridColor,  &sDia, text);
   }
 
   /****************************************************************************************************
@@ -1323,9 +1325,10 @@ if(bSideview)
 
   if(bHeightScale)
     DrawSelectionFrame(hdc,  rc);
+#ifdef TOP_SELECTION_FRAME
   else
 	DrawSelectionFrame(hdc,  rci);
-
+#endif
 
 SelectObject(hdc, hfOldFont);
 SelectObject(hdc, hOldPen);

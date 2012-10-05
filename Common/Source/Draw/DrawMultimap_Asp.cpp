@@ -20,7 +20,7 @@
 extern int XstartScreen, YstartScreen;
 
 extern long  iSonarLevel;
-bool Sonar_IsEnabled;
+bool Sonar_IsEnabled = true;
 
 extern AirSpaceSonarLevelStruct sSonarLevel[];
 extern TCHAR Sideview_szNearAS[];
@@ -107,7 +107,18 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   //
   // This is doing all rendering, including terrain and topology, which is not good.
   //
+#ifdef ENABLE_ALL_AS_FOR_SIDEVIEW
+  int oldAltMode = AltitudeMode ;
+
+  AltitudeMode = ALLON;
+#endif
+
   RenderAirspace( hdc,   rci);
+
+#ifdef ENABLE_ALL_AS_FOR_SIDEVIEW
+  AltitudeMode = oldAltMode;
+#endif
+
 
   TCHAR topleft_txt[10];
   TCHAR topcenter_txt[80];

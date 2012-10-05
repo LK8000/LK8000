@@ -509,7 +509,7 @@ if(bValid)
    * draw airspace and terrain elements
    ****************************************************************************************************/
   RECT rcc = rc;          /* rc corrected      */
-  if(sDia.fYMin < 100)
+  if(sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
     rcc.bottom -= BORDER_Y; /* scale witout sea  */
   sDia.rc = rcc;
 
@@ -574,12 +574,14 @@ if(bValid)
 
   SetTextColor(hdc, Sideview_TextColor);
 
-  double  ytick = 10.0;
   double  fHeight = (sDia.fYMax-sDia.fYMin);
-  if (fHeight >100.0) ytick = 100.0;
+  double  ytick = 100.0;
+  if (fHeight >500.0) ytick = 200.0;
   if (fHeight >1000.0) ytick = 500.0;
   if (fHeight >2000.0) ytick = 1000.0;
   if (fHeight >4000.0) ytick = 2000.0;
+  if (fHeight >8000.0) ytick = 4000.0;
+
   if(Units::GetUserAltitudeUnit() == unFeet)
 	 ytick = ytick * 4.0;
 
@@ -746,9 +748,10 @@ if(bValid)
    ****************************************************************************************************/
   if(bHeightScale)
 	DrawSelectionFrame(hdc,  rc);
-//  else
-//	DrawSelectionFrame(hdc,  rci);
-
+#ifdef TOP_SELECTION_FRAME
+  else
+	DrawSelectionFrame(hdc,  rci);
+#endif
   SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
   SetBkMode(hdc, TRANSPARENT);
   SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);

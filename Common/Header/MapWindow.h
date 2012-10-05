@@ -554,9 +554,6 @@ class MapWindow {
   static void DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
                         COLORREF color, DiagrammStruct *psDia,  const TCHAR *pLable=NULL);
 
-  static void DrawLine(const HDC& hdc, const POINT &ptStart,
-                                const POINT &ptEnd, const RECT rc, int PenStyle,  int width, COLORREF col);
-
 
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
   static void DrawTeammate(HDC hdc, const RECT rc);

@@ -192,18 +192,36 @@ ExtTextOut(hdc,  x-tsize.cx/2,  y-tsize.cy/2 , ETO_OPAQUE, NULL, text, _tcslen(t
 return;
 }
 
-void DrawSelectionFrame(HDC hdc, RECT rci)
+void DrawSelectionFrame(HDC hdc, RECT rc)
 {
-  HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_DARKBLUE);
-  HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
-  HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-  if(rci.top <= 1)
-	rci.top++;
-  Rectangle(hdc,rci.left+1,rci.top,rci.right,rci.bottom);
-  SelectObject(hdc, OldBrush);
-  SelectObject(hdc, OldPen);
-  DeleteObject(pFrame);
+SetBkMode(hdc, TRANSPARENT);
+RECT rci = rc;
+#define SHRINK 1
+	rci.left +=1;
+	rci.top -=1;
+	rci.right -=2;
+	rci.bottom -=2;
+	int iSize = 3;//IBLSCALE(1);
+	COLORREF col = RGB_BLACK;
+
+
+
+
+
+  MapWindow::_DrawLine   (hdc, PS_SOLID, iSize, (POINT) {rci.left,rci.top}     ,(POINT) {rci.left,rci.bottom} , col, rci);
+  MapWindow::_DrawLine   (hdc, PS_SOLID, iSize, (POINT) {rci.left,rci.bottom}  ,(POINT) {rci.right,rci.bottom}, col, rci);
+  MapWindow::_DrawLine   (hdc, PS_SOLID, iSize, (POINT) {rci.right,rci.bottom} ,(POINT) {rci.right,rci.top}   , col, rci);
+  MapWindow::_DrawLine   (hdc, PS_SOLID, iSize, (POINT) {rci.right,rci.top}    ,(POINT) {rci.left,rci.top}    , col, rci);
+
+  col = RGB_YELLOW;
+  MapWindow::DrawDashLine(hdc,iSize,(POINT) {rci.left,rci.top}    ,(POINT) {rci.left,rci.bottom} ,  col, rci);
+  MapWindow::DrawDashLine(hdc,iSize,(POINT) {rci.left,rci.bottom} ,(POINT) {rci.right,rci.bottom},  col, rci);
+  MapWindow::DrawDashLine(hdc,iSize,(POINT) {rci.right,rci.bottom},(POINT) {rci.right,rci.top}   ,  col, rci);
+  MapWindow::DrawDashLine(hdc,iSize,(POINT) {rci.right,rci.top}   ,(POINT) {rci.left,rci.top}    ,  col, rci);
+
+
 }
+
 
 
 void RenderBearingDiff(HDC hdc,double brg, DiagrammStruct* psDia )
@@ -535,7 +553,9 @@ return Inter;
 
 }
 
-void RenderSky(HDC hdc, const RECT rc, COLORREF Col1, COLORREF Col2 , int iSteps)
+
+
+void RenderCircleSky(HDC hdc, const RECT rc, COLORREF Col1, COLORREF Col2 , int iSteps)
 {
 RECT rcd;
 int i;
@@ -564,6 +584,54 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 
 //	  rcd = RectIntersect(rcd,rc);
 	  hpHorizon = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), Col);
+	  hbHorizon = (HBRUSH)CreateSolidBrush(Col);
+	  SelectObject(hdc, hpHorizon);
+	  SelectObject(hdc, hbHorizon);
+
+	//  Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
+	//  Circle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
+	//  int Circle(HDC hdc, long x, long y, int radius, RECT rc, bool clip, bool fill)
+	  SelectObject(hdc, OldPen);
+	  SelectObject(hdc, OldBrush);
+
+	  DeleteObject(hpHorizon);
+	  DeleteObject(hbHorizon);
+   }
+}
+
+
+
+void RenderSky(HDC hdc, const RECT rci, COLORREF Col1, COLORREF Col2 , int iSteps)
+{
+	RECT rc = rci;
+
+RECT rcd=rc;
+int i;
+
+
+double fdy = (double)(rc.top - rc.bottom)/(double)(iSteps-1);
+HPEN   hpHorizon;
+HBRUSH hbHorizon;
+COLORREF Col;
+double fTop;
+LKASSERT(iSteps!=0);
+
+/* just take something in order to store the old brush and pen for restoring them */
+HPEN OldPen     = (HPEN)   SelectObject(hdc, GetStockObject(WHITE_PEN));
+HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+	rcd = rc;
+
+	fTop = (double)rcd.bottom-fdy;
+	for(i=0 ; i < iSteps ; i++)
+	{
+	  rcd.bottom  = rcd.top ;
+	  fTop += fdy;
+	  rcd.top     = (long)fTop;
+
+	  Col = MixColors( Col2, Col1,  (double) i / (double) iSteps);
+
+//	  rcd = RectIntersect(rcd,rc);
+	  hpHorizon = (HPEN)CreatePen(PS_SOLID, (1), Col);
 	  hbHorizon = (HBRUSH)CreateSolidBrush(Col);
 	  SelectObject(hdc, hpHorizon);
 	  SelectObject(hdc, hbHorizon);
@@ -685,7 +753,7 @@ double fFact = 1.0 ;
    ****************************************************************************************************/
    POINT line[2];
    line[0].x = rct.left;
-   line[0].y = Orig_Aircraft.y-2;
+   line[0].y = Orig_Aircraft.y-1;
    line[1].x = rct.right;
    line[1].y = line[0].y;
 

@@ -209,7 +209,7 @@ int i,j;
   /*************************************************************
    * draw ground
    *************************************************************/
-  int iBottom = rc.bottom;
+
   // draw ground
 
   HPEN   hpHorizonGround;
@@ -221,19 +221,7 @@ int i,j;
   SelectObject(hdc, hbHorizonGround);
 
 
-#ifdef MSL_SEA_DRAW
-  // draw sea
-  if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
-  {
-	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom+BORDER_Y};
-	RenderSky( hdc,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
-	iBottom-=BORDER_Y;
 
-  }
-#else
-  if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
-	Rectangle(hdc,rc.left,rc.bottom,rc.right,rc.bottom-BORDER_Y);
-#endif
 
   /*********************************************************************
    * draw terrain
@@ -241,9 +229,10 @@ int i,j;
   SelectObject(hdc, hpHorizonGround);
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
 	apTerrainPolygon[j].x = iround(j*dx)+x0;
-	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag)+2;
+	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag);
 
   }
+
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx)+x0;; // x0;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag)+2 ;//iBottom;
 
@@ -251,7 +240,20 @@ int i,j;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag)+2 ;//iBottom;
   Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
 
-
+  /*********************************************************************
+   * draw sea
+   *********************************************************************/
+#ifdef MSL_SEA_DRAW
+  // draw sea
+  if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
+  {
+	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom+BORDER_Y};
+	RenderSky( hdc,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
+  }
+#else
+  if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
+	Rectangle(hdc,rc.left,rc.bottom,rc.right,rc.bottom+BORDER_Y);
+#endif
 
   SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
   SelectObject(hdc, (HPEN)oldpen);

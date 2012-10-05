@@ -79,23 +79,6 @@ void MapWindow::DrawSolidLine(const HDC& hdc, const POINT &ptStart,
   _Polyline(hdc, pt, 2, rc);
 } 
 
-void MapWindow::DrawLine(const HDC& hdc, const POINT &ptStart,
-                              const POINT &ptEnd, const RECT rc, int PenStyle,  int width, COLORREF col)
-{
-  POINT pt[2];
-
-  pt[0].x= ptStart.x;
-  pt[0].y= ptStart.y;
-  pt[1].x= ptEnd.x;
-  pt[1].y= ptEnd.y;
-
-  HPEN hpPen = (HPEN)CreatePen(PenStyle, width, col);
-  HPEN hpOld = (HPEN)SelectObject(hdc, hpPen);
-  _Polyline(hdc, pt, 2, rc);
-  SelectObject(hdc, hpOld);
-  DeleteObject((HPEN)hpPen);
-}
-
 
 
 void MapWindow::_DrawLine(HDC hdc, const int PenStyle, const int width, 

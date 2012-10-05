@@ -594,7 +594,7 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
   for (yval=zero; yval<= y_max; yval+= tic_step) {
 
     xmin = rc.left;
-    ymin = (int)((y_max-yval)*yscale)+rc.top;
+    ymin = (int)((y_max-yval)*yscale)+rc.top -BORDER_Y;
     xmax = rc.right;
     ymax = ymin;
     line[0].x = xmin+BORDER_X;
@@ -623,7 +623,7 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
   for (yval=zero-tic_step; yval>= y_min; yval-= tic_step) {
 
     xmin = rc.left;
-    ymin = (int)((y_max-yval)*yscale)+rc.top;
+    ymin = (int)((y_max-yval)*yscale)+rc.top-BORDER_Y;
     xmax = rc.right;
     ymax = ymin;
     line[0].x = xmin+BORDER_X;
