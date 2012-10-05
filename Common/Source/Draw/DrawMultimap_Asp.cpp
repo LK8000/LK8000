@@ -25,6 +25,8 @@ bool Sonar_IsEnabled = true;
 extern AirSpaceSonarLevelStruct sSonarLevel[];
 extern TCHAR Sideview_szNearAS[];
 extern double fZOOMScale;
+
+
 AirSpaceSonarLevelStruct sSonarLevel[10] = {
     /* horizontal sonar levels */
     /* Dist , Delay *0.5s, V/H,      soundfile */
@@ -42,24 +44,22 @@ AirSpaceSonarLevelStruct sSonarLevel[10] = {
    };
 
 
+
 int SonarNotify(void)
 {
-static unsigned long lSonarCnt = 0;
+  static unsigned long lSonarCnt = 0;
+  lSonarCnt++;
 
-   lSonarCnt++;
-
-   if(GetSideviewPage()== IM_NEAR_AS)
-   {
-     if((iSonarLevel >=0) && (iSonarLevel < 10))
-      if( lSonarCnt > (unsigned)sSonarLevel[iSonarLevel].iSoundDelay)
-		{
-		  lSonarCnt = 0;
-                  // StartupStore(_T("... level=%d PLAY <%s>\n"),iSonarLevel,&sSonarLevel[iSonarLevel].szSoundFilename);
-		  LKSound((TCHAR*) &(sSonarLevel[iSonarLevel].szSoundFilename));
-		}
-    }
+  if((iSonarLevel >=0) && (iSonarLevel < 10))
+	if( lSonarCnt > (unsigned)sSonarLevel[iSonarLevel].iSoundDelay)
+	{
+	  lSonarCnt = 0;
+          // StartupStore(_T("... level=%d PLAY <%s>\n"),iSonarLevel,&sSonarLevel[iSonarLevel].szSoundFilename);
+	  LKSound((TCHAR*) &(sSonarLevel[iSonarLevel].szSoundFilename));
+	}
   return 0;
 }
+
 
 
 void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
@@ -69,11 +69,11 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   RECT rci = rc;
   rci.bottom -= BottomSize;
 
+  #if 0
   if (DoInit[MDI_MAPASP]) {
-	// init statics here and then clear init to false
 	DoInit[MDI_MAPASP]=false;
   }
-
+  #endif
 
   switch(LKevent) {
 	//
@@ -113,107 +113,20 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   AltitudeMode = ALLON;
 #endif
 
-  RenderAirspace( hdc,   rci);
+  RenderAirspace(hdc, rci);
 
 #ifdef ENABLE_ALL_AS_FOR_SIDEVIEW
   AltitudeMode = oldAltMode;
 #endif
 
 
-  TCHAR topleft_txt[10];
-  TCHAR topcenter_txt[80];
+  DrawMultimap_Topleft(hdc, rci);
+  DrawMultimap_DynaLabel(hdc, rci);
+
+  if(GetSideviewPage()== IM_NEAR_AS) SonarNotify();
 
 
-  switch(GetSideviewPage())
-  {
-	case IM_HEADING:
-		// No need to print "Heading". It is obvious.
-		// _stprintf(topcenter_txt, TEXT("%s"), MsgToken(1290));
-		_tcscpy(topcenter_txt,_T("HEADING"));
-		_stprintf(topleft_txt, TEXT(" 1 TRK "));
-		break;
-
-	case IM_NEXT_WP:
-		if (GetOvertargetIndex()>=0)
-		{
-			TCHAR szOvtname[80];
-			GetOvertargetName(szOvtname);
-			_stprintf(topcenter_txt, TEXT("%s"), szOvtname);
-			_stprintf(topleft_txt, TEXT(" 2 WPT "));
-		}
-		else
-		{
-			_stprintf(topcenter_txt, TEXT("---"));
-		}
-		break;
-
-	case IM_NEAR_AS:
-		_stprintf(topcenter_txt, TEXT("%s"), Sideview_szNearAS );
-		_stprintf(topleft_txt, TEXT(" 3 ASP "));
-		break;
-	default:
-		break;
-  } 
-
-
-
-  //SetBkMode(hdc, OPAQUE);
-
-
-//  HFONT hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
-
-  HBRUSH oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Mdark);
-  HPEN oldPen=(HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
-
-  LKWriteBoxedText(hdc, &rci, topleft_txt, 0, 0, 0, WTALIGN_LEFT);
-
-  //LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_DARKGREY, true);
-
-
-  //SelectObject(hdc, LK8InfoSmallFont);
-  //LKWriteText(hdc, topcenter_txt, rci.right/3, rci.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, true);
-
-  if (INVERTCOLORS)
-	SelectObject(hdc,LKBrush_Petrol);
-  else
-	SelectObject(hdc,LKBrush_LightCyan);
-
-  extern double fSplitFact;
-  SIZE textSize;
-  int midsplit=(long)((double)(rci.bottom-rci.top)*fSplitFact);
-  SelectObject(hdc, LK8UnitFont);
-  GetTextExtentPoint(hdc, _T("Y"), 1, &textSize);
-  // move the label on top view when the topview window is big enough
-  if (fSplitFact >0.5)
-	midsplit-=textSize.cy;
-  if (fSplitFact <0.5)
-	midsplit+=textSize.cy;
-
-
-
-
-  if(GetSideviewPage()== IM_NEAR_AS)
-  {
-	MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rc.right/3, midsplit, 0, WTALIGN_CENTER);
-	SelectObject(hdc, MapWindowFont);
-	if(Sonar_IsEnabled)
-	    LKWriteText(hdc, MsgToken(1293),  (rc.right), rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true);
-	  else
- 	    LKWriteText(hdc, MsgToken(1293),  (rc.right), rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true);
-  }
-
-
-
-  //SetBkMode(hdc, TRANSPARENT);
-
-  SonarNotify();
-  SelectObject(hdc,oldBrush);
-  SelectObject(hdc,oldPen);
-  SelectObject(hdc, hfOld);
   LKevent=LKEVENT_NONE;
-
-
 
 }
 

@@ -29,4 +29,6 @@ bool IsMultimapWaypoints(void);
 short Get_Current_Multimap_Type();
 void Reset_Multimap_Flags(void);
 
+void DrawMultimap_Topleft(HDC hdc, RECT rci);
+
 #endif

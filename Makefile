@@ -338,6 +338,7 @@ DRAW	:=\
 	$(DRW)/DrawHeading.cpp \
 	$(DRW)/DrawLKAlarms.cpp \
 	$(DRW)/DrawMapScale.cpp \
+	$(DRW)/DrawMultimap.cpp \
 	$(DRW)/DrawMultimap_Asp.cpp \
 	$(DRW)/DrawMultimap_Radar.cpp \
 	$(DRW)/DrawMultimap_Test.cpp \
