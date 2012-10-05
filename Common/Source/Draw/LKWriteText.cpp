@@ -184,52 +184,52 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 // A note about DrawRect: in main moving map, DrawRect is the part of screen excluding BottomBar, 
 // when the bottom bar is opaque. So choose carefully.
 //
-void MapWindow::LKWriteBoxedText(HDC hDC, RECT *clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align ) {
+void MapWindow::LKWriteBoxedText(HDC hDC, RECT *clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align , 
+	COLORREF dir_rgb, COLORREF inv_rgb  ) {
 
-	SIZE tsize;
-	if (maxsize==0) maxsize=_tcslen(wText);
+  COLORREF oldTextColor;
+  oldTextColor=SetTextColor(hDC,INVERTCOLORS?dir_rgb:inv_rgb);
+
+  SIZE tsize;
+  if (maxsize==0) maxsize=_tcslen(wText);
   
-	GetTextExtentPoint(hDC, wText, maxsize, &tsize);
-	short vy;
-	switch(align) {
-		case WTALIGN_LEFT:
-			vy=y+tsize.cy+NIBLSCALE(2)+1;
-			if (vy>=clipRect->bottom) return;
-			Rectangle(hDC, x+tsize.cx+NIBLSCALE(8), vy, x, y);
-			x += NIBLSCALE(4);
-			break;
-		case WTALIGN_RIGHT:
-			vy=y+tsize.cy+NIBLSCALE(2)+1;
-			if (vy>=clipRect->bottom) return;
-			Rectangle(hDC, x-tsize.cx-NIBLSCALE(8), vy, x, y);
-			x -= (tsize.cx+NIBLSCALE(4));
-			break;
-		case WTALIGN_CENTER:
-			vy=y+(tsize.cy/2)+NIBLSCALE(1)+1;
-			if (vy>=clipRect->bottom) return;
-			Rectangle(hDC, 
-				x-(tsize.cx/2)-NIBLSCALE(4), 
-				y-(tsize.cy/2)-NIBLSCALE(1)-1,
-				x+(tsize.cx/2)+NIBLSCALE(4), 
-				vy);
-			x -= (tsize.cx/2);
-			// just a trick to avoid calculating:
-			// y -= ((tsize.cy/2)+NIBLSCALE(1));
-			y -= (vy-y);
-			break;
-	}
-	y += NIBLSCALE(1);
+  GetTextExtentPoint(hDC, wText, maxsize, &tsize);
+  short vy;
+  switch(align) {
+	case WTALIGN_LEFT:
+		vy=y+tsize.cy+NIBLSCALE(2)+1;
+		if (vy>=clipRect->bottom) return;
+		Rectangle(hDC, x+tsize.cx+NIBLSCALE(8), vy, x, y);
+		x += NIBLSCALE(4);
+		break;
+	case WTALIGN_RIGHT:
+		vy=y+tsize.cy+NIBLSCALE(2)+1;
+		if (vy>=clipRect->bottom) return;
+		Rectangle(hDC, x-tsize.cx-NIBLSCALE(8), vy, x, y);
+		x -= (tsize.cx+NIBLSCALE(4));
+		break;
+	case WTALIGN_CENTER:
+		vy=y+(tsize.cy/2)+NIBLSCALE(1)+1;
+		if (vy>=clipRect->bottom) return;
+		Rectangle(hDC, 
+			x-(tsize.cx/2)-NIBLSCALE(4), 
+			y-(tsize.cy/2)-NIBLSCALE(1)-1,
+			x+(tsize.cx/2)+NIBLSCALE(4), 
+			vy);
+		x -= (tsize.cx/2);
+		// just a trick to avoid calculating:
+		// y -= ((tsize.cy/2)+NIBLSCALE(1));
+		y -= (vy-y);
+		break;
+  }
+  y += NIBLSCALE(1);
 
-	if (INVERTCOLORS)
-		SetTextColor(hDC,RGB_WHITE); 
-	else
-		SetTextColor(hDC,RGB_BLACK); 
 
-	ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
+  ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
 
-	SetTextColor(hDC,RGB_BLACK); 
-	
-	return;
-
+  //SetTextColor(hDC,RGB_BLACK);   THIS WAS FORCED BLACk SO FAR 121005
+  SetTextColor(hDC,oldTextColor);
+  return;
 }
+
 

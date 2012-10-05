@@ -519,7 +519,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  SelectObject(hdc,LKBrush_Petrol);
 	else
 	  SelectObject(hdc,LKBrush_LightCyan);
-	MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  line[0].x, y-3, 0, WTALIGN_CENTER);
+	MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  line[0].x, y-3, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
 
     // Print wpt distance
     Units::FormatUserDistance(wpt_dist, text, 7);

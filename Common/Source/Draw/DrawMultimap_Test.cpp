@@ -83,7 +83,7 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
 
   DrawWaypointsNew(hdc,rct);
 
-  LKWriteBoxedText(hdc, &rct, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT);
+  LKWriteBoxedText(hdc, &rct, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
 
 
   TCHAR ttext[100];
@@ -145,14 +145,14 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
 		break;
   }
 
-  LKWriteBoxedText(hdc, &rct, ttext, 1, 50 , 0, WTALIGN_LEFT);
+  LKWriteBoxedText(hdc, &rct, ttext, 1, 50 , 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
 
   //
   // Be sure to check that an EVENT was generated, otherwise you are checking even bottombar key presses.
   //
   if (LKevent!=LKEVENT_NONE) {
 	_stprintf(ttext,_T("Last coords: X=%d Y=%d  , duration=%ld ms"),X,Y,VKtime);
-	LKWriteBoxedText(hdc, &rct, ttext, 1, 100 , 0, WTALIGN_LEFT);
+	LKWriteBoxedText(hdc, &rct, ttext, 1, 100 , 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
   }
 
 
