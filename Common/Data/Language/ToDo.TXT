@@ -212,16 +212,11 @@ Changed HELP 200 and 507
 
 - Changed help 194.  Only significant change was addition of description of new [...+NextWP] options.  Other changes were too minor to require translation.
 
-ATTENTION:
-- _@M94_ & _@M99_ ..  new [...+NextWP] glide terrain line options, update them!
+_@M1800/1805
+_@M1805_  _@M1806_ ..  ...+NextWP] glide terrain line options
 
 _@M2230_ "Force\nLanded"
 _@M1799_ "Stop moving!"
-
--_@M1290_ "Showing towards heading"
-+_@M1290_ "Heading"
-
-_@M1800/1805
 
 M1293 SONAR   
 

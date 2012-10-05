@@ -2000,10 +2000,10 @@ static void setVariables(void) {
 	// LKTOKEN  _@M609_ = "Shade" 
     dfe->addEnumText(gettext(TEXT("_@M609_")));
     #ifdef GTL2
-        // LKTOKEN  _@M94_  = "Line+NextWP"
-    dfe->addEnumText(gettext(TEXT("_@M94_")));
-        // LKTOKEN  _@M99_  = "Shade+NextWP"
-    dfe->addEnumText(gettext(TEXT("_@M99_")));
+        // "Line+NextWP"
+    dfe->addEnumText(gettext(TEXT("_@M1805_")));
+        // "Shade+NextWP"
+    dfe->addEnumText(gettext(TEXT("_@M1806_")));
     #endif
     dfe->Set(FinalGlideTerrain);
     wp->RefreshDisplay();
