@@ -110,15 +110,15 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
         else
                 LKWriteText(hdc, MsgToken(1293),  (rci.right), rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true);
   }
-/*
+
   if(GetSideviewPage()== IM_NEXT_WP)
   {
         TCHAR topcenter_txt[80];
-        _stprintf(topcenter_txt, TEXT("BADRAGAZ 61.2Km >>63 +1234m"));
+        _stprintf(topcenter_txt, TEXT("BADRAGAZ  61.2Km  >>63  +1234m"));
         SelectObject(hdc,LKBrush_Green);
-        MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rci.right/3, midsplit, 0, WTALIGN_CENTER);
+        MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rci.right/3, midsplit, 0, WTALIGN_CENTER, RGB_BLACK, RGB_BLACK);
   }
-*/
+
 
   SelectObject(hdc,oldBrush);
   SelectObject(hdc,oldFont);
