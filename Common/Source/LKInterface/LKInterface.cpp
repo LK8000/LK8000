@@ -49,6 +49,8 @@ redo:
 	if (CURMODE == MSM_INFO_TRI) goto redo;
 #endif
 	if (CURMODE == MSM_WELCOME) goto redo;
+
+	if (CURMODE == MSM_MAPRADAR && !GPS_INFO.FLARM_Available) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();
@@ -87,6 +89,8 @@ redo:
 	if (CURMODE == MSM_INFO_TRI) goto redo;
 #endif
 	if (CURMODE == MSM_WELCOME) goto redo;
+
+	if (CURMODE == MSM_MAPRADAR && !GPS_INFO.FLARM_Available) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();
