@@ -201,94 +201,9 @@ static  bool bHeightScale = false;
   COLORREF BLUE_COL      = RGB_BLUE;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
   BOOL bInvCol = true; //INVERTCOLORS
-  /************************************************************************************/
 
-  /****************************************************************/
-	  switch(LKevent) {
-		case LKEVENT_NEWRUN:
-			// CALLED ON ENTRY: when we select this page coming from another mapspace
-			fZOOMScale = 1.0;
-			fHeigtScaleFact = 1.0;
-		break;
-		case LKEVENT_UP:
-			// click on upper part of screen, excluding center
-			if(bHeightScale)
-			  fHeigtScaleFact /= ZOOMFACTOR;
-			else
-			  fZOOMScale /= ZOOMFACTOR;
-			break;
+  #include "RenderAirspace_IncludeEvents.cpp"
 
-		case LKEVENT_DOWN:
-			// click on lower part of screen,  excluding center
-			if(bHeightScale)
-			  fHeigtScaleFact *= ZOOMFACTOR;
-			else
-		  	  fZOOMScale *= ZOOMFACTOR;
-			break;
-
-		case LKEVENT_LONGCLICK:
-				 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
-				 {
-				   if( Sideview_pHandeled[k].psAS != NULL)
-				   {
-					 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
-					 {
-					   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
-					   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-					   bFound = true;
-				//	   LKevent=LKEVENT_NONE;
-					 }
-				   }
-				 }
-				// if(!bFound)
-				 {
-				   if (PtInRect(XstartScreen, YstartScreen,rc ))
-				     bHeightScale = true;
-
-				   if (PtInRect(XstartScreen, YstartScreen,rct ))
-				     bHeightScale = false;
-				 }
-	     break;
-
-
-		case LKEVENT_PAGEUP:
-#ifdef OFFSET_SETP
-			if(bHeightScale)
-			  fOffset -= OFFSET_SETP;
-			else
-#endif
-			{
-			  if(*iSplit == SIZE1) *iSplit = SIZE0;
-			  if(*iSplit == SIZE2) *iSplit = SIZE1;
-			  if(*iSplit == SIZE3) *iSplit = SIZE2;
-			}
-		break;
-		case LKEVENT_PAGEDOWN:
-#ifdef OFFSET_SETP
-			if(bHeightScale)
-			  fOffset += OFFSET_SETP;
-			else
-#endif
-			{
-			  if(*iSplit == SIZE2) *iSplit = SIZE3;
-			  if(*iSplit == SIZE1) *iSplit = SIZE2;
-			  if(*iSplit == SIZE0) *iSplit = SIZE1;
-			}
-		break;
-
-	  }
-	  LKevent=LKEVENT_NONE;
-
-	  if(Current_Multimap_SizeY != *iSplit)
-          {
-		Current_Multimap_SizeY=*iSplit;
-		SetSplitScreenSize(*iSplit);
-		rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
-		rct.bottom = rc.top ;
-          }
-
-
-  /************************************************************************************/
   if(bInvCol)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
