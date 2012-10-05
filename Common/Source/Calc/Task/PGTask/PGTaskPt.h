@@ -30,6 +30,7 @@ public:
     inline ProjPt operator-(const ProjPt& pt) const {
         return ProjPt(m_X - pt.m_X, m_Y - pt.m_Y);
     }
+
     inline ProjPt operator-() const {
         return ProjPt(-m_X, -m_Y);
     }
@@ -56,18 +57,30 @@ public:
 
     double m_X;
     double m_Y;
+
+    const static ProjPt null;
 };
 
 class PGTaskPt {
+    friend class PGTaskMgr;
 public:
     PGTaskPt();
     virtual ~PGTaskPt();
 
-    const ProjPt& getOptimized() const;
+    inline const ProjPt& getOptimized() const {
+        return (!m_Optimized) ? m_Center : m_Optimized;
+    }
+
+    inline const ProjPt& getCenter() const {
+        return m_Center;
+    }
+
     void Optimize(const ProjPt& prev, const ProjPt& next);
+    void OptimizeFinishLine(const ProjPt& prev, const ProjPt& prevCenter);
 
     bool CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized);
 
+protected:
     ProjPt m_Center;
     ProjPt m_Optimized;
     double m_Radius;
