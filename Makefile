@@ -68,7 +68,7 @@ endif
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC),y)
-TCPATH		:=i386-mingw32-
+TCPATH		:=
 CPU		:=i586
 MCPU		:= -mcpu=$(CPU)
 else
@@ -491,6 +491,8 @@ TASK	:=\
 	$(TSK)/RefreshTask/CalculateAATTaskSectors.cpp\
 	$(TSK)/RefreshTask/CalculateTaskSectors.cpp\
 	$(TSK)/RefreshTask/RefreshTask.cpp\
+	$(TSK)/PGTask/PGTaskMgr.cpp\
+	$(TSK)/PGTask/PGTaskPt.cpp\
 
 TERRAIN	:=\
 	$(TER)/Cache.cpp	\

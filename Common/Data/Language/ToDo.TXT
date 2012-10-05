@@ -33,6 +33,7 @@ Things to be fixed in LK languages files/tokens:
 - Changed HELP 199 FLarm on Map
 - New H1213 pg autozoom threshold
 - New help 916 -> 924
+
   NEW MSG TOKENS
   --------------
 
@@ -223,4 +224,8 @@ _@M1799_ "Stop moving!"
 _@M1800/1805
 
 M1293 SONAR   
+
+_@M2145_ "Entry"
+_@M2146_ "Exit"
+_@M2147_ "Exit/Entry"
 

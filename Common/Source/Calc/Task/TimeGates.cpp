@@ -148,11 +148,22 @@ bool CorrectSide() {
 #if DEBUGTGATES
 StartupStore(_T("CorrectSide: PGstartout=%d InSector=%d\n"),PGStartOut,CALCULATED_INFO.IsInSector);
 #endif
-  if (PGStartOut && CALCULATED_INFO.IsInSector) return false;
-  if (!PGStartOut && !CALCULATED_INFO.IsInSector) return false;
+
+  if (ActiveWayPoint==0 && PGStartOut && CALCULATED_INFO.IsInSector) 
+	  return false;
+  if (ActiveWayPoint==0 && !PGStartOut && !CALCULATED_INFO.IsInSector) 
+	  return false;
+
+  LockTaskData();
+  bool ExitWpt = Task[ActiveWayPoint].OutCircle;
+  UnlockTaskData();
+
+  if (ExitWpt==0 && PGStartOut && CALCULATED_INFO.IsInSector) 
+	  return false;
+  if (ExitWpt==0 && !PGStartOut && !CALCULATED_INFO.IsInSector) 
+	  return false;
 
   return true;
-
 }
 
 // autonomous check for usegates, and current chosen activegate is open, so a valid start
