@@ -26,52 +26,38 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 {
 
   TCHAR topleft_txt[10];
-  HPEN oldPen;
-  HBRUSH oldBrush;
-  HFONT oldFont;
+  // HFONT oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
 
-//oldFont = (HFONT)SelectObject(hdc, MapWindowFont);
-//oldFont = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
+  HFONT  oldFont = (HFONT) SelectObject(hdc, LK8MediumFont);
+  HBRUSH oldBrush= (HBRUSH)SelectObject(hdc,LKBrush_Mdark);
+  HPEN     oldPen= (HPEN)  SelectObject(hdc, GetStockObject(WHITE_PEN));
 
   switch(MapSpaceMode)
   {
 	case MSM_MAPTRK:
-		_stprintf(topleft_txt, TEXT(" 1 TRK"));
+		_stprintf(topleft_txt, TEXT(" M1 "));
 
-		oldFont = (HFONT)SelectObject(hdc, LK8ValueFont);
-		oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Mdark);
-		oldPen=(HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
-		MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
 		break;
 
 	case MSM_MAPWPT:
-		_stprintf(topleft_txt, TEXT(" 2 WPT"));
+		_stprintf(topleft_txt, TEXT(" M2 "));
 
-		oldFont = (HFONT)SelectObject(hdc, LK8MediumFont);
-		oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Mdark);
-		oldPen=(HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
-		MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
 		break;
 
 	case MSM_MAPASP:
-		_stprintf(topleft_txt, TEXT(" 3"));
+		_stprintf(topleft_txt, TEXT(" M3"));
 
-		oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
-		oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Mdark);
-		oldPen=(HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
-		MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
 		break;
 
 	case MSM_MAPRADAR:
-		_stprintf(topleft_txt, TEXT(" 4"));
+		_stprintf(topleft_txt, TEXT(" M4"));
 
-		oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
-		oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Mdark);
-		oldPen=(HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
-		MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
+		break;
 	default:
 		break;
   } 
+
+  MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
 
   SelectObject(hdc,oldBrush);
   SelectObject(hdc,oldPen);

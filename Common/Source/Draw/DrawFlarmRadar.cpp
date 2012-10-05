@@ -1332,6 +1332,8 @@ if(bSideview)
 	DrawSelectionFrame(hdc,  rci);
 #endif
 
+DrawMultimap_Topleft(hdc, rci);
+
 SelectObject(hdc, hfOldFont);
 SelectObject(hdc, hOldPen);
 SelectObject(hdc, hOldBrush);
