@@ -2000,7 +2000,9 @@ _@M2227_ "Toggle\nWndRose"
 _@M2228_ "FLARM\nRadar"
 _@M2229_ "Reset\nOdomet"
 _@M2230_ "Force\nLanded"
-
+_@M2231_ "ACTIVE"
+# short version of "Waypoints" for menu button must be max 8 characters!
+_@M2232_ "Waypts"
 # Reserved for custom menus up to 2300!
 
 
