@@ -94,7 +94,7 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
     for (size_t i = ActiveWayPoint; i < m_Task.size(); ++i) {
         if (i == 0 && StartLine == 1) {
             // Find next Tp not same as current.
-            int j = i + 1;
+            unsigned int j = i + 1;
             while (j < m_Task.size() && m_Task[j].getCenter() == m_Task[i].getCenter()) {
                 ++j;
             }
