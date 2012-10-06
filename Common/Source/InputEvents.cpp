@@ -555,7 +555,23 @@ void InputEvents::setMode(const TCHAR *mode) {
 			// event=Mode DoesNotExist)
     return;	// TODO enhancement: Add debugging here
 
-  if (thismode == lastmode) return;
+  if (thismode == lastmode) {
+	//
+	// Clicking again would switch menu off for these cases
+	//
+	if (
+	(_tcscmp(mode, TEXT("MMCONF")) == 0)	||
+	(_tcscmp(mode, TEXT("MTarget")) == 0) )
+	{
+		_tcscpy(mode_current, _T("default"));
+		thismode = mode2int(_T("default"),false);
+	} else {
+	//
+	// For all other cases, simply do nothing
+	//
+		return;
+	}
+  }
 
   ButtonLabel::SetLabelText(0,NULL);
 
