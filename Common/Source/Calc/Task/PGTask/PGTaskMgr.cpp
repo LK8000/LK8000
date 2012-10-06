@@ -13,6 +13,8 @@
 #include "algorithm"
 #include "math.h"
 
+const ProjPt ProjPt::null;
+
 // WGS84 data
 const PGTaskMgr::DATUM PGTaskMgr::m_Datum = (PGTaskMgr::DATUM){
     6378137.0, // a
@@ -68,14 +70,14 @@ void PGTaskMgr::Initialize() {
         lat *= RAD_TO_DEG;
         lon *= RAD_TO_DEG;
 
-        if(curwp == 0) {
-            m_Task[curwp].m_Radius =  StartRadius;
-        } else if(ValidWayPoint(Task[curwp+1].Index)) {
+        if (curwp == 0) {
+            m_Task[curwp].m_Radius = StartRadius;
+        } else if (ValidWayPoint(Task[curwp + 1].Index)) {
             m_Task[curwp].m_Radius = (Task[curwp].AATCircleRadius);
         } else {
             m_Task[curwp].m_Radius = FinishRadius;
         }
-        
+
         m_Task[curwp].m_bExit = ((curwp > 0) ? (Task[curwp].OutCircle) : !PGStartOut);
     }
     UnlockTaskData();
@@ -88,14 +90,33 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
 
     ProjPt PrevPos;
     LatLon2Grid(Basic->Latitude*DEG_TO_RAD, Basic->Longitude*DEG_TO_RAD, PrevPos.m_Y, PrevPos.m_X);
-    
-    for (size_t i = ActiveWayPoint; i < m_Task.size(); ++i) {
-        ProjPt NextPos;
-        if((i+1) < m_Task.size()) {
-            NextPos = m_Task[i+1].getOptimized();
-        }
-        m_Task[i].Optimize(PrevPos, NextPos);
 
+    for (size_t i = ActiveWayPoint; i < m_Task.size(); ++i) {
+        if (i == 0 && StartLine == 1) {
+            // Find next Tp not same as current.
+            int j = i + 1;
+            while (j < m_Task.size() && m_Task[j].getCenter() == m_Task[i].getCenter()) {
+                ++j;
+            }
+            if (j < m_Task.size()) { // if previous doesn't exit don't optimize, use center.
+                m_Task[i].OptimizeFinishLine(PrevPos, m_Task[j].m_Center);
+            }
+        } else if ((i + 1) < m_Task.size()) {
+            m_Task[i].Optimize(PrevPos, m_Task[i + 1].getOptimized());
+        } else {
+            if (FinishLine == 1) {
+                // Find prev Tp not same as current.
+                int j = i - 1;
+                while (j > 0 && m_Task[j].getCenter() == m_Task[i].getCenter()) {
+                    --j;
+                }
+                if (j >= 0) { // if previous doesn't exit don't optimize, use center.
+                    m_Task[i].OptimizeFinishLine(PrevPos, m_Task[j].m_Center);
+                }
+            } else {
+                m_Task[i].Optimize(PrevPos, ProjPt::null);
+            }
+        }
         PrevPos = m_Task[i].getOptimized();
     }
 }

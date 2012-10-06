@@ -35,16 +35,46 @@ void RefreshTaskWaypoint(int i) {
   if(i==0)
     { 
       Task[i].Leg = 0;
-      Task[i].InBound = 0;
+      Task[i].InBound = 0; 
     }
   else
     {
-      DistanceBearing(WayPointList[Task[i-1].Index].Latitude, 
+      if (Task[i-1].Index == Task[i].Index) {
+        // InBound need calculated with previous not same as current.
+        int j = i-1;
+        while(j>=0 && Task[j].Index == Task[i].Index) {
+            --j;
+        }
+        if(j>=0) {
+            DistanceBearing(WayPointList[Task[j].Index].Latitude, 
+                            WayPointList[Task[j].Index].Longitude,
+                            WayPointList[Task[i].Index].Latitude,   
+                            WayPointList[Task[i].Index].Longitude,
+                            &Task[i].Leg,
+                            &Task[i].InBound);
+        } else {
+            j = i+1;
+            while(j>=0 && ValidWayPoint(Task[j].Index) && Task[j].Index == Task[i].Index) {
+                j++;
+            }
+            if(ValidWayPoint(Task[j].Index)) {
+                DistanceBearing(WayPointList[Task[j].Index].Latitude, 
+                                WayPointList[Task[j].Index].Longitude,
+                                WayPointList[Task[i].Index].Latitude,   
+                                WayPointList[Task[i].Index].Longitude,
+                                &Task[i].Leg,
+                                &Task[i].InBound);                
+            }
+        }
+      } else {
+            DistanceBearing(WayPointList[Task[i-1].Index].Latitude, 
                       WayPointList[Task[i-1].Index].Longitude,
                       WayPointList[Task[i].Index].Latitude,   
                       WayPointList[Task[i].Index].Longitude,
                       &Task[i].Leg,
-                      &Task[i].InBound);
+                      &Task[i].InBound);          
+      }
+           
 
 	// Apply Great Circle convergency
 	double chlon =  (WayPointList[Task[i-1].Index].Longitude - WayPointList[Task[i].Index].Longitude) * DEG_TO_RAD;

@@ -16,13 +16,6 @@ PGTaskPt::~PGTaskPt() {
 
 }
 
-const ProjPt& PGTaskPt::getOptimized() const {
-    if (!m_Optimized) {
-        return m_Center;
-    }
-    return m_Optimized;
-}
-
 class OptimizedDistance {
 public:
 
@@ -116,4 +109,36 @@ bool PGTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimi
 
     // no point
     return false;
+}
+
+void PGTaskPt::OptimizeFinishLine(const ProjPt& prev, const ProjPt& prevCenter) {
+
+    ProjPt u = prevCenter - m_Center; // center to prev Vector
+    double d = u.length();
+    if (d > 0) {
+        u = (u * m_Radius) / d;
+        // rotate vector 90°
+        ProjPt u2;
+        u2.m_X = u.m_X * cos(PI / 2) - u.m_Y * sin(PI / 2);
+        u2.m_Y = u.m_X * sin(PI / 2) + u.m_Y * cos(PI / 2);
+
+        ProjPt B = m_Center + u2; // begin of line
+        ProjPt A = m_Center - u2; // end of line
+
+        ProjPt AB = B - A;
+        ProjPt AC = prev - A;
+
+        double theta = vector_angle(AB, AC);
+        if (theta >= PI / 2) {
+            m_Optimized = A;
+        } else {
+            double b = cos(theta) * AC.length();
+            double dAB = 2 * m_Radius/*AB.length()*/;
+            if (b < dAB) {
+                m_Optimized = A + (AB / dAB * b);
+            } else {
+                m_Optimized = B;
+            }
+        }
+    }
 }
