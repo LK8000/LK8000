@@ -92,7 +92,16 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
     LatLon2Grid(Basic->Latitude*DEG_TO_RAD, Basic->Longitude*DEG_TO_RAD, PrevPos.m_Y, PrevPos.m_X);
 
     for (size_t i = ActiveWayPoint; i < m_Task.size(); ++i) {
-        if ((i + 1) < m_Task.size()) {
+        if (i == 0 && StartLine == 1) {
+            // Find next Tp not same as current.
+            int j = i + 1;
+            while (j < m_Task.size() && m_Task[j].getCenter() == m_Task[i].getCenter()) {
+                ++j;
+            }
+            if (j < m_Task.size()) { // if previous doesn't exit don't optimize, use center.
+                m_Task[i].OptimizeFinishLine(PrevPos, m_Task[j].m_Center);
+            }
+        } else if ((i + 1) < m_Task.size()) {
             m_Task[i].Optimize(PrevPos, m_Task[i + 1].getOptimized());
         } else {
             if (FinishLine == 1) {
