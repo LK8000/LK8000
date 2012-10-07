@@ -355,6 +355,7 @@ DRAW	:=\
 	$(DRW)/DrawWind.cpp \
 	$(DRW)/Draw_Primitives.cpp \
 	$(DRW)/LKDrawAspNearest.cpp \
+	$(DRW)/LKDrawBottomBar.cpp \
 	$(DRW)/LKDrawCommon.cpp \
 	$(DRW)/LKDrawCpuStatsDebug.cpp \
 	$(DRW)/LKDrawFLARMTraffic.cpp \

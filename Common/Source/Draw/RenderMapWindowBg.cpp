@@ -121,6 +121,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   {
 QuickRedraw: // 100318 speedup redraw
 	DrawLook8000(hdc,rc);
+	DrawBottomBar(hdc,rc);
 #ifdef CPUSTATS
 	DrawCpuStats(hdc,rc);
 #endif
@@ -249,7 +250,10 @@ fastzoom:
   #endif
 
   if (QUICKDRAW)  {
-	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
+	if ( !mode.AnyPan()) {
+		DrawLook8000(hdc,rc); 
+		DrawBottomBar(hdc,rc);
+	}
   	SelectObject(hdcDrawWindow, hfOld);
 	return;
   }
@@ -377,6 +381,7 @@ fastzoom:
       if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
     
     DrawLook8000(hdc,rc); 
+    DrawBottomBar(hdc,rc);
   }
     
 	if (LKVarioBar && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode

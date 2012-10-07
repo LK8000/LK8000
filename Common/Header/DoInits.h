@@ -63,6 +63,7 @@
 	MDI_MAPASP,			// screen change?
 	MDI_MAPRADAR,			// screen change?
 	MDI_MAPTEST,			// testing purposes
+	MDI_DRAWBOTTOMBAR,		// screen change
 	MDI_LAST_DOINIT,		
  } MDI_t;
 

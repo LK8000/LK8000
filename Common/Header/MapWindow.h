@@ -516,6 +516,7 @@ class MapWindow {
   static void DrawWaypoints(HDC hdc, const RECT rc);
   static void DrawWaypointsNew(HDC hdc, const RECT rc);
   static void DrawLook8000(HDC hdc, const RECT rc);
+  static void DrawBottomBar(HDC hdc, const RECT rc);
   static void DrawMapSpace(HDC hdc, const RECT rc);
   static void DrawNearest(HDC hdc, const RECT rc);
   static void DrawAspNearest(HDC hdc, const RECT rc);
