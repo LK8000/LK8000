@@ -1805,7 +1805,7 @@ _@M1804_ "Head Right"
 _@M1805_ "Line+NextWP"
 _@M1806_ "Shade+NextWP"
 _@M1807_ "_Reserved 2"
-
+_@M1808_ "Loading FLARMNET database"
 
 ############################################################
 #                  - MENU MESSAGES - 

@@ -18,8 +18,6 @@ FlarmIdFile::FlarmIdFile(void)
 {
   TCHAR path[MAX_PATH];
 
-  LKSound(_T("LK_CONNECT.WAV"));
-
   TCHAR flarmIdFileName[MAX_PATH] = TEXT("\0");
 
   LocalPath(path);

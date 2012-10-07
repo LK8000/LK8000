@@ -9,9 +9,7 @@
 #include "externs.h"
 #include "FlarmIdFile.h" 
 
-// Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
-FlarmIdFile file; 
-
+FlarmIdFile *file=NULL; 
 
 int NumberOfFLARMNames = 0;
 
@@ -31,27 +29,34 @@ void CloseFLARMDetails() {
   NumberOfFLARMNames = 0;
 }
 
+
 void OpenFLARMDetails() {
 
-  StartupStore(_T(". FlarmNet ids found: %d%s"),FlarmNetCount,NEWLINE);
+  static FlarmIdFile flarmidfile;
+  file=&flarmidfile;
+  LKASSERT(file!=NULL);
 
-  StartupStore(TEXT(". OpenFLARMDetails: \""));
+  StartupStore(_T(". FLARMNET database, found %d IDs%s"),FlarmNetCount,NEWLINE);
 
   if (NumberOfFLARMNames) {
-    CloseFLARMDetails(); // BUGFIX TESTFIX 091020 attempt NOT to reset flarmnet preloaded list 100321 NO
+    CloseFLARMDetails(); 
   }
 
   TCHAR filename[MAX_PATH];
-  LocalPath(filename,TEXT(LKD_CONF)); // 091103
+  LocalPath(filename,TEXT(LKD_CONF));
   _tcscat(filename,_T("\\"));
   _tcscat(filename,_T(LKF_FLARMIDS));
-  
-  StartupStore(filename);
-  StartupStore(_T("\"%s"),NEWLINE);
+
+  #if TESTBENCH  
+  StartupStore(TEXT(". OpenFLARMDetails: <%s>%s"),filename,NEWLINE);
+  #endif
+
   HANDLE hFile = CreateFile(filename,GENERIC_READ,0,NULL,
 			    OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
   if( hFile == INVALID_HANDLE_VALUE) {
+	#if TESTBENCH
 	StartupStore(_T("... No flarm details local file found%s"),NEWLINE);
+	#endif
 	return;
   }
 
@@ -68,8 +73,10 @@ void OpenFLARMDetails() {
     }
   }
 
-  _stprintf(filename,_T(". Local Flarm ids found=%d%s"),NumberOfFLARMNames,NEWLINE);
-  StartupStore(filename);
+  if (NumberOfFLARMNames>0) {
+	_stprintf(filename,_T(". Local FLARM IDs found: %d%s"),NumberOfFLARMNames,NEWLINE);
+	StartupStore(filename);
+  }
 
   CloseHandle(hFile);
 
@@ -145,7 +152,7 @@ TCHAR* LookupFLARMCn(long id) {
     }
   
   // try to find flarm from FLARMNet.org File
-  FlarmId* flarmId = file.GetFlarmIdItem(id);
+  FlarmId* flarmId = file->GetFlarmIdItem(id);
   if (flarmId != NULL)
     {
       return flarmId->cn;
@@ -163,7 +170,7 @@ TCHAR* LookupFLARMDetails(long id) {
     }
   
   // try to find flarm from FLARMNet.org File
-  FlarmId* flarmId = file.GetFlarmIdItem(id);
+  FlarmId* flarmId = file->GetFlarmIdItem(id);
   if (flarmId != NULL)
     {
       // return flarmId->cn;
@@ -183,7 +190,7 @@ int LookupFLARMDetails(TCHAR *cn)
     }
   
   // try to find flarm from FLARMNet.org File
-  FlarmId* flarmId = file.GetFlarmIdItem(cn);
+  FlarmId* flarmId = file->GetFlarmIdItem(cn);
   if (flarmId != NULL)
     {
       return flarmId->GetId();

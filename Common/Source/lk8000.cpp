@@ -133,9 +133,11 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   }
   bool realexitforced=false;
 
+  LKSound(_T("LK_CONNECT.WAV"));
+
   wsprintf(LK8000_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
   wcscat(LK8000_Version, TEXT(__DATE__));
-  StartupStore(_T("%s------------------------------------------------------------%s"),NEWLINE,NEWLINE);
+  StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
   #ifdef PNA
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PNA"),NEWLINE);
   #else
@@ -400,6 +402,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   TopologyInitialiseMarks();
   #endif
 
+  CreateProgressDialog(MsgToken(1808));	// Loading FLARMNET database
   OpenFLARMDetails();
 
   // ... register all supported devices

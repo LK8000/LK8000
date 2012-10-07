@@ -142,3 +142,4 @@ void PGTaskPt::OptimizeFinishLine(const ProjPt& prev, const ProjPt& prevCenter) 
         }
     }
 }
+
