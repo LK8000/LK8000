@@ -24,7 +24,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   HBRUSH	oldbrush=0;
   HPEN		oldpen=0;
 
-  //SIZE TextSize, TextSize2;
   SIZE TextSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
   TCHAR BufferValue[LKSIZEBUFFERVALUE];
@@ -70,18 +69,20 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static TCHAR StartGateNameFS[12];
 
   redwarning=false;
-  if (!Appearance.InverseInfoBox) {
-    oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
-    oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_White);
-    oldpen=(HPEN)SelectObject(hdc, LKPen_Grey_N1);
-  } else {
+
+  if (INVERTCOLORS) {
     oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
     oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_Black);
     oldpen=(HPEN)SelectObject(hdc, LKPen_Grey_N1);
+  } else {
+    oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
+    oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_White);
+    oldpen=(HPEN)SelectObject(hdc, LKPen_Grey_N1);
   }
 
+
   if ( !mode.AnyPan() )
-	DrawBottom=true; // TODO maybe also !TargetPan
+	DrawBottom=true;
   else
 	DrawBottom=false;
 
@@ -484,9 +485,9 @@ nextinit:
   overcolor=OverColorRef;
   distcolor=OverColorRef;
 
-  if (DrawBottom && MapSpaceMode!= MSM_MAP) {
+  if (MapSpaceMode!= MSM_MAP) {
 	DrawMapSpace(hdc, rc);
-	goto Drawbottom;
+	goto TheEnd;
   }
 
 
@@ -645,14 +646,12 @@ nextinit:
 		} else
 			LKWriteText(hdc,BufferValue, rcx+NIBLSCALE(2), rcy+ ySizeLK8TargetFont, 0, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
 
- 		///GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize2); REMOVE
  		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
 		if (!HideUnits) {
 			SelectObject(hdc, LKMAPFONT); // TODO FIX BUG here.. using different font from size
 			if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
 
 			} else {
-			 ///LKWriteText(hdc, BufferUnit, rcx+NIBLSCALE(4)+TextSize2.cx,rcy+ySizeLK8TargetFont+(ySizeLK8TargetFont/3)-NIBLSCALE(1), 0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);  REMOVE
 			 LKWriteText(hdc, BufferUnit, rcx+NIBLSCALE(4)+TextSize.cx,rcy+ySizeLK8TargetFont+(ySizeLK8TargetFont/3)-NIBLSCALE(1), 0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true); 
 			}
 		}
@@ -1140,7 +1139,7 @@ drawOverlay:
 
 Drawbottom:
 
-  if (DrawBottom && MapSpaceMode != MSM_MAP) goto TheEnd;
+  if (MapSpaceMode != MSM_MAP) goto TheEnd;
 
 
   //
