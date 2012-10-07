@@ -875,9 +875,6 @@ void ReadWayPoints(void)
   TCHAR szFile2[MAX_PATH] = TEXT("\0");
         
   ZZIP_FILE *fp=NULL;
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
 
     LockTaskData();
     CloseWayPoints(); // BUGFIX 091104 duplicate waypoints entries
@@ -885,9 +882,7 @@ void ReadWayPoints(void)
 
     _tcscpy(szFile1,szWaypointFile);
 
-    #ifndef HAVEEXCEPTIONS
     _tcscpy(szWaypointFile,_T(""));
-    #endif
       
     if (_tcslen(szFile1)>0) {
       ExpandLocalPath(szFile1);
@@ -902,32 +897,13 @@ void ReadWayPoints(void)
         zzip_fclose(fp);
         fp = 0;
         // read OK, so set the registry to the actual file name
-        #ifndef HAVEEXCEPTIONS
         ContractLocalPath(szFile1);
 	_tcscpy(szWaypointFile,szFile1);
-        #endif
       } else {
       StartupStore(TEXT("--- No waypoint file 1%s"),NEWLINE);
     }
-#ifdef HAVEEXCEPTIONS
-  }__except(EXCEPTION_EXECUTE_HANDLER){
-    MessageBoxX(hWndMainWindow,
-                TEXT("Unhandled Error in first Waypoint file\r\nNo Wp's loaded from that File!"),
-	// LKTOKEN  _@M266_ = "Error" 
-                gettext(TEXT("_@M266_")),
-                MB_OK|MB_ICONSTOP);
-    _tcscpy(szWaypointFile,_T(""));
-  }
-#endif
 
   // read additional waypoint file
-#ifdef HAVEEXCEPTIONS
-  int NumberOfWayPointsAfterFirstFile = NumberOfWayPoints;
-#endif
-
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
 
     // reset to empty until we verified it is existing
     _tcscpy(szFile2,szAdditionalWaypointFile);
@@ -948,30 +924,6 @@ void ReadWayPoints(void)
         StartupStore(TEXT("--- No waypoint file 2%s"),NEWLINE);
       }
     }
-
-#ifdef HAVEEXCEPTIONS
-  }__except(EXCEPTION_EXECUTE_HANDLER){
-
-    if (NumberOfWayPointsAfterFirstFile == 0){
-    } else {
-      unsigned int i;
-      for (i=NumberOfWayPointsAfterFirstFile; i<NumberOfWayPoints; i++) {
-        if (WayPointList[i].Details) {
-          free(WayPointList[i].Details);
-        }
-        if (WayPointList[i].Comment) {
-          free(WayPointList[i].Comment);
-        }
-      }
-    }
-    MessageBoxX(hWndMainWindow,
-                TEXT("Unhandled Error in second Waypoint file\r\nNo Wp's loaded from that File!"),
-	// LKTOKEN  _@M266_ = "Error" 
-                gettext(TEXT("_@M266_")),
-                MB_OK|MB_ICONSTOP);
-    _tcscpy(szAdditionalWaypointFile,_T(""));
-  }
-#endif
 
   UnlockTaskData();
 

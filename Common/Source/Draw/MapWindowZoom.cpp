@@ -68,9 +68,6 @@ void MapWindow::Zoom::CalculateAutoZoom()
   }
   
   LockTaskData();  // protect from external task changes
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
     // if we aren't looking at a waypoint, see if we are now
     if(autoMapScaleWaypointIndex == -1) {
       if(ValidTaskPoint(ActiveWayPoint))
@@ -86,9 +83,6 @@ void MapWindow::Zoom::CalculateAutoZoom()
         _modeScale[SCALE_CRUISE] = _modeScale[SCALE_AUTO_ZOOM];
       }
     }
-#ifdef HAVEEXCEPTIONS
-  }__finally
-#endif
      {
        UnlockTaskData();
      }

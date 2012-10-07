@@ -170,10 +170,6 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
       if(WayPointList[i].Visible )
 	{
 
-#ifdef HAVEEXCEPTIONS
-	  __try{
-#endif
-
 	    bool irange = false;
 	    bool intask = false;
 	    bool islandable;	// isairport+islandpoint
@@ -486,9 +482,6 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	      }
 	    } // end if intask
       
-#ifdef HAVEEXCEPTIONS
-	  }__finally
-#endif
 	     { ; }
 	} // if visible
     } // for all waypoints

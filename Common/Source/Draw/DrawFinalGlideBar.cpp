@@ -59,9 +59,6 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
   }
   
   LockTaskData();  // protect from external task changes
-  #ifdef HAVEEXCEPTIONS
-  __try{
-  #endif
 
   #if 101004
   int barindex;
@@ -261,9 +258,6 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	SelectObject(hDC, hbOld);
 	SelectObject(hDC, hpOld);
     } else GlideBarOffset=0; 	// 091125 BUGFIX glidebaroffset is zero when no task point
-#ifdef HAVEEXCEPTIONS
-  }__finally
-#endif
      {
        UnlockTaskData();
      }

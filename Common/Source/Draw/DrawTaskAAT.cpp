@@ -22,9 +22,6 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
   HPEN oldpen=0;
   
   LockTaskData();  // protect from external task changes
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
 
     COLORREF whitecolor = RGB_WHITE;
     COLORREF origcolor = SetTextColor(hDCTemp, whitecolor);
@@ -126,9 +123,6 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
                    );
 #endif
   
-#ifdef HAVEEXCEPTIONS
-  }__finally
-#endif
      {
        UnlockTaskData();
      }

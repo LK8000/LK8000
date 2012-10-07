@@ -72,32 +72,20 @@ void DeInitCriticalSections() {
 
 
 void LockComm() {
-#ifdef HAVEEXCEPTIONS
-  if (!csCommInitialized) throw TEXT("LockComm Error");
-#endif
   EnterCriticalSection(&CritSec_Comm);
 }
 
 void UnlockComm() {
-#ifdef HAVEEXCEPTIONS
-  if (!csCommInitialized) throw TEXT("LockComm Error");
-#endif
   LeaveCriticalSection(&CritSec_Comm);
 }
 
 
 void LockTaskData() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTaskDataInitialized) throw TEXT("LockTaskData Error");
-#endif
   EnterCriticalSection(&CritSec_TaskData);
   csCount_TaskData++;
 }
 
 void UnlockTaskData() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTaskDataInitialized) throw TEXT("LockTaskData Error");
-#endif
   if (csCount_TaskData) 
     csCount_TaskData--;
   LeaveCriticalSection(&CritSec_TaskData);
@@ -105,17 +93,11 @@ void UnlockTaskData() {
 
 
 void LockFlightData() {
-#ifdef HAVEEXCEPTIONS
-  if (!csFlightDataInitialized) throw TEXT("LockFlightData Error");
-#endif
   EnterCriticalSection(&CritSec_FlightData);
   csCount_FlightData++;
 }
 
 void UnlockFlightData() {
-#ifdef HAVEEXCEPTIONS
-  if (!csFlightDataInitialized) throw TEXT("LockFlightData Error");
-#endif
   if (csCount_FlightData)
     csCount_FlightData--;
   LeaveCriticalSection(&CritSec_FlightData);
@@ -134,46 +116,28 @@ void CheckAndUnlockFlightData() {
 
 
 void LockTerrainDataCalculations() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTerrainDataCalculationsInitialized) throw TEXT("LockTerrainDataCalculations Error");
-#endif
   EnterCriticalSection(&CritSec_TerrainDataCalculations);
 }
 
 void UnlockTerrainDataCalculations() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTerrainDataCalculationsInitialized) throw TEXT("LockTerrainDataCalculations Error");
-#endif
   LeaveCriticalSection(&CritSec_TerrainDataCalculations);
 }
 
 void LockTerrainDataGraphics() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTerrainDataGraphicsInitialized) throw TEXT("LockTerrainDataGraphics Error");
-#endif
   EnterCriticalSection(&CritSec_TerrainDataGraphics);
 }
 
 void UnlockTerrainDataGraphics() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTerrainDataGraphicsInitialized) throw TEXT("LockTerrainDataGraphics Error");
-#endif
   LeaveCriticalSection(&CritSec_TerrainDataGraphics);
 }
 
 
 void LockEventQueue() {
-#ifdef HAVEEXCEPTIONS
-  if (!csEventQueueInitialized) throw TEXT("LockEventQueue Error");
-#endif
   EnterCriticalSection(&CritSec_EventQueue);
   csCount_EventQueue++;
 }
 
 void UnlockEventQueue() {
-#ifdef HAVEEXCEPTIONS
-  if (!csEventQueueInitialized) throw TEXT("LockEventQueue Error");
-#endif
   if (csCount_EventQueue) 
     csCount_EventQueue--;
   LeaveCriticalSection(&CritSec_EventQueue);

@@ -47,10 +47,6 @@ int dlgWaypointOutOfTerrain(TCHAR *Message){
   WndFrame* wfrm;
   int res = 0;
 
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
-
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWaypointOutOfTerrain.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
@@ -79,14 +75,6 @@ int dlgWaypointOutOfTerrain(TCHAR *Message){
 
     wf = NULL;
 
-#ifdef HAVEEXCEPTIONS
-  }__except(EXCEPTION_EXECUTE_HANDLER ){
-
-    res = 0; 
-    // ToDo: log that problem
-
-  };
-#endif
 
   return(res);
 

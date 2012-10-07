@@ -30,9 +30,6 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
   oldpen=(HPEN)SelectObject(hdc, hpStartFinishThick);
 
   LockTaskData();  // protect from external task changes
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
 
     if(ValidTaskPoint(0) && ValidTaskPoint(1) && (ActiveWayPoint<2))
       {
@@ -213,9 +210,6 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	}
       }
     }
-#ifdef HAVEEXCEPTIONS
-  }__finally
-#endif
      {
        UnlockTaskData();
      }
