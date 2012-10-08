@@ -12,9 +12,18 @@
 
 #include "algorithm"
 #include "math.h"
+#include "PGCicrcleTaskPt.h"
+#include "PGLineTaskPt.h"
 
 const ProjPt ProjPt::null;
 
+struct deleter {
+    template<typename T>
+    void operator()(T* ptr) {
+        delete ptr;
+        ptr = NULL;
+    }
+};
 // WGS84 data
 const PGTaskMgr::DATUM PGTaskMgr::m_Datum = (PGTaskMgr::DATUM){
     6378137.0, // a
@@ -29,10 +38,15 @@ PGTaskMgr::PGTaskMgr() {
 }
 
 PGTaskMgr::~PGTaskMgr() {
-
+    std::for_each(m_Task.begin(), m_Task.end(), deleter() );
+    m_Task.clear();
 }
 
 void PGTaskMgr::Initialize() {
+    
+    std::for_each(m_Task.begin(), m_Task.end(), deleter() );
+    m_Task.clear();
+    
     LockTaskData();
     // build Mercator Reference Grid
     // find center of Task
@@ -58,29 +72,141 @@ void PGTaskMgr::Initialize() {
 
     // build task point list
     for (int curwp = 0; ValidWayPoint(Task[curwp].Index); ++curwp) {
-        m_Task.resize(curwp + 1);
 
-        LatLon2Grid(WayPointList[Task[curwp].Index].Latitude*DEG_TO_RAD,
-                WayPointList[Task[curwp].Index].Longitude*DEG_TO_RAD,
-                m_Task[curwp].m_Center.m_Y,
-                m_Task[curwp].m_Center.m_X);
-
-        double lat, lon;
-        Grid2LatLon(m_Task[curwp].m_Center.m_Y, m_Task[curwp].m_Center.m_X, lat, lon);
-        lat *= RAD_TO_DEG;
-        lon *= RAD_TO_DEG;
-
+        int TpType = 0;
         if (curwp == 0) {
-            m_Task[curwp].m_Radius = StartRadius;
+            // Start
+            TpType = StartLine;
         } else if (ValidWayPoint(Task[curwp + 1].Index)) {
-            m_Task[curwp].m_Radius = (Task[curwp].AATCircleRadius);
+            // All Other
+            TpType = Task[curwp].AATType?2:0;
         } else {
-            m_Task[curwp].m_Radius = FinishRadius;
+            // Finnish
+            TpType = FinishLine;
         }
-
-        m_Task[curwp].m_bExit = ((curwp > 0) ? (Task[curwp].OutCircle) : !PGStartOut);
+        switch (TpType) {
+            case 0: // circle
+                AddCircle(curwp);
+                break;
+            case 1: // line
+                AddLine(curwp);
+                break;
+            case 2: // sector
+                AddSector(curwp);
+                break;
+        }
     }
     UnlockTaskData();
+}
+
+void PGTaskMgr::AddCircle(int TskIdx) {
+    PGCicrcleTaskPt *pTskPt = new PGCicrcleTaskPt;
+
+    LatLon2Grid(WayPointList[Task[TskIdx].Index].Latitude*DEG_TO_RAD,
+            WayPointList[Task[TskIdx].Index].Longitude*DEG_TO_RAD,
+            pTskPt->m_Center.m_Y,
+            pTskPt->m_Center.m_X);
+
+    if (TskIdx == 0) {
+        pTskPt->m_Radius = StartRadius;
+    } else if (ValidWayPoint(Task[TskIdx + 1].Index)) {
+        pTskPt->m_Radius = (Task[TskIdx].AATCircleRadius);
+    } else {
+        pTskPt->m_Radius = FinishRadius;
+    }
+
+    pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
+
+    m_Task.push_back(pTskPt);
+}
+
+void PGTaskMgr::AddLine(int TskIdx) {
+
+    PGLineTaskPt *pTskPt = new PGLineTaskPt;
+
+    LatLon2Grid(WayPointList[Task[TskIdx].Index].Latitude*DEG_TO_RAD,
+            WayPointList[Task[TskIdx].Index].Longitude*DEG_TO_RAD,
+            pTskPt->m_Center.m_Y,
+            pTskPt->m_Center.m_X);
+
+    double radius = 0;
+    if (TskIdx == 0) {
+        radius = StartRadius;
+    } else if (ValidWayPoint(Task[TskIdx + 1].Index)) {
+        radius = (Task[TskIdx].AATCircleRadius);
+    } else {
+        radius = FinishRadius;
+    }
+
+    // Find prev Tp not same as current.
+    int PrevIdx = TskIdx - 1;
+    while (PrevIdx > 0 && Task[PrevIdx].Index == Task[TskIdx].Index) {
+        --PrevIdx;
+    }
+
+    // Find next Tp not same as current.
+    int NextIdx = TskIdx + 1;
+    while (ValidWayPoint(Task[NextIdx].Index) && Task[NextIdx].Index == Task[TskIdx].Index) {
+        ++NextIdx;
+    }
+
+    // Calc Cross Dir Vector
+    ProjPt InB, OutB;
+    if (ValidWayPoint(Task[NextIdx].Index)) {
+        LatLon2Grid(WayPointList[Task[NextIdx].Index].Latitude*DEG_TO_RAD,
+            WayPointList[Task[NextIdx].Index].Longitude*DEG_TO_RAD,
+            OutB.m_Y,
+            OutB.m_X);
+        
+        OutB = OutB - pTskPt->m_Center;
+
+        double d = OutB.length();
+        if(d != 0.0) {
+            OutB = OutB/d;
+        }
+    } else if (PrevIdx >= 0) {
+        InB = m_Task[PrevIdx]->getCenter();
+
+        InB = pTskPt->m_Center - InB;
+
+        double d = InB.length();
+        if(d != 0.0) {
+            InB = InB/d;
+        }
+    }
+    
+    if(InB && OutB) {
+        pTskPt->m_DirVector = InB+OutB;
+        double d = pTskPt->m_DirVector.length();
+        if(d != 0.0) {
+            pTskPt->m_DirVector=pTskPt->m_DirVector/d;
+        }
+    } else if(InB){
+        pTskPt->m_DirVector = InB;
+    } else if (OutB) {
+        pTskPt->m_DirVector = OutB;
+    }
+    
+    // Calc begin and end off line.
+    double d = pTskPt->m_DirVector.length();
+    if (d > 0) {
+        // rotate vector 90°
+        ProjPt u;
+        u.m_X = pTskPt->m_DirVector.m_X * cos(PI / 2) - pTskPt->m_DirVector.m_Y * sin(PI / 2);
+        u.m_Y = pTskPt->m_DirVector.m_X * sin(PI / 2) + pTskPt->m_DirVector.m_Y * cos(PI / 2);
+
+        u = u * radius;
+        
+        pTskPt->m_LineBegin = pTskPt->m_Center + u; // begin of line
+        pTskPt->m_LineEnd = pTskPt->m_Center - u; // end of line
+    }
+    
+    m_Task.push_back(pTskPt);
+}
+
+void PGTaskMgr::AddSector(int TskIdx) {
+    //TODO : Handle Sector Turn Point
+    AddCircle(TskIdx);
 }
 
 void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
@@ -92,37 +218,18 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
     LatLon2Grid(Basic->Latitude*DEG_TO_RAD, Basic->Longitude*DEG_TO_RAD, PrevPos.m_Y, PrevPos.m_X);
 
     for (size_t i = ActiveWayPoint; i < m_Task.size(); ++i) {
-        if (i == 0 && StartLine == 1) {
-            // Find next Tp not same as current.
-            unsigned int j = i + 1;
-            while (j < m_Task.size() && m_Task[j].getCenter() == m_Task[i].getCenter()) {
-                ++j;
-            }
-            if (j < m_Task.size()) { // if previous doesn't exit don't optimize, use center.
-                m_Task[i].OptimizeFinishLine(PrevPos, m_Task[j].m_Center);
-            }
-        } else if ((i + 1) < m_Task.size()) {
-            m_Task[i].Optimize(PrevPos, m_Task[i + 1].getOptimized());
+        if ((i + 1) < m_Task.size()) {
+            m_Task[i]->Optimize(PrevPos, m_Task[i + 1]->getOptimized());
         } else {
-            if (FinishLine == 1) {
-                // Find prev Tp not same as current.
-                int j = i - 1;
-                while (j > 0 && m_Task[j].getCenter() == m_Task[i].getCenter()) {
-                    --j;
-                }
-                if (j >= 0) { // if previous doesn't exit don't optimize, use center.
-                    m_Task[i].OptimizeFinishLine(PrevPos, m_Task[j].m_Center);
-                }
-            } else {
-                m_Task[i].Optimize(PrevPos, ProjPt::null);
-            }
+            m_Task[i]->Optimize(PrevPos, ProjPt::null);
         }
-        PrevPos = m_Task[i].getOptimized();
+        PrevPos = m_Task[i]->getOptimized();
     }
 }
 
 void PGTaskMgr::getOptimized(const int i, double& lat, double& lon) const {
-    Grid2LatLon(m_Task[i].getOptimized().m_Y, m_Task[i].getOptimized().m_X, lat, lon);
+
+    Grid2LatLon(m_Task[i]->getOptimized().m_Y, m_Task[i]->getOptimized().m_X, lat, lon);
     lat *= RAD_TO_DEG;
     lon *= RAD_TO_DEG;
 }
@@ -132,6 +239,7 @@ void PGTaskMgr::getOptimized(const int i, double& lat, double& lon) const {
 //====================================
 
 void PGTaskMgr::Grid2LatLon(double N, double E, double& lat, double& lon) const {
+
     double a = m_Datum.a; // Semi-major axis of reference ellipsoid
     double f = m_Datum.f; // Ellipsoidal flattening
     double b = a * (1 - f);

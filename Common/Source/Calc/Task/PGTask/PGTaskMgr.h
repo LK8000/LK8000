@@ -26,6 +26,10 @@ public:
     }
 
 protected:
+    void AddCircle(int TpIndex);
+    void AddLine(int TpIndex);
+    void AddSector(int TpIndex);
+
     void Grid2LatLon(double N, double E, double& lat, double& lon) const;
     void LatLon2Grid(double lat, double lon, double& N, double& E) const;
 
@@ -45,7 +49,7 @@ protected:
         double false_n;
     } GRID, *PGRID;
 
-    typedef std::vector<PGTaskPt> Task_t;
+    typedef std::vector<PGTaskPt*> Task_t;
 
     // WGS84 data
     static const DATUM m_Datum;
