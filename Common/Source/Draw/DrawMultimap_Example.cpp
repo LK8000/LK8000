@@ -31,6 +31,9 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
   // In some cases, you will read old coordinates because for example after clicking in the center of 
   // bottom bar, the page changed out of multimap and entered nearest pages.  
   // 
+  // Beware that they are by no means a trigger: they are always set!
+  // If you want to know if user has touched the screen, you need to check for an event!
+  // 
   int X=XstartScreen;
   int Y=YstartScreen;
 
@@ -49,6 +52,8 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 	// 
 	case LKEVENT_NEWRUN:
 		// CALLED ON ENTRY: when we select this page coming from another mapspace
+		// After the first run on entry, this will be no more passed until next time 
+		// you enter a new mapspace again.
 		_tcscpy(ttext,_T("Event = NEW RUN"));
 		break;
 	case LKEVENT_UP:
@@ -61,6 +66,14 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		break;
 	case LKEVENT_LONGCLICK:
 		_stprintf(ttext,_T("Event = LONG CLICK"));
+		break;
+	case LKEVENT_SHORTCLICK:
+		// 
+		// This is triggered when a click was detected not part of anything else.
+		// OR, if you have ActiveMap_IsEnabled, anywhere, since UP and DOWN are disabled.
+		// Even in this last case, TOPRIGHT, TOPLEFT are managed all the way and SHORTCLICK 
+		// will not be sent.
+		_stprintf(ttext,_T("Event = SHORT CLICK"));
 		break;
 	case LKEVENT_PAGEUP:
 		_tcscpy(ttext,_T("Event = PAGE UP"));

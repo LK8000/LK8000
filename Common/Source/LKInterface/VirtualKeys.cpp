@@ -19,6 +19,7 @@
 void BottomSounds();
 
 long VKtime=0;
+extern bool ActiveMap_IsEnabled;
 
 // vkmode 0=normal 1=gesture up 2=gesture down
 // however we consider a down as up, and viceversa
@@ -465,8 +466,7 @@ gesture_left:
 		return 0;
 	}
 
-	if (dontdrawthemap && IsMultiMap()) {
-		//if (keytime>=AIRSPACECLICK) {
+	if (!MapWindow::mode.AnyPan() && IsMultiMap()) {
 		if (keytime>=(VKSHORTCLICK*4)) {
 			LKevent=LKEVENT_LONGCLICK;
 			MapWindow::RefreshMap();
@@ -486,6 +486,11 @@ gesture_left:
 		}
 	}
 
+	if (!MapWindow::mode.AnyPan() && IsMultiMap() && ActiveMap_IsEnabled) {
+		LKevent=LKEVENT_SHORTCLICK;
+		MapWindow::RefreshMap();
+		return 0;
+	}
 
 	if (Y<yup) {
 		// we are processing up/down in mapspacemode i.e. browsing waypoints on the page
@@ -529,6 +534,13 @@ gesture_left:
 			return 40;
 	}
 
+	// This will not be detected in case of UP and DOWN was detected, of course.
+	// We must handle this separately, before checking for UP DOWN, above.
+	if (!MapWindow::mode.AnyPan() && IsMultiMap()) {
+		LKevent=LKEVENT_SHORTCLICK;
+		MapWindow::RefreshMap();
+		return 0;
+	}
 
 	// no click for already clicked events
 

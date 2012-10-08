@@ -460,6 +460,7 @@
 #define LKEVENT_NEWRUN		9
 #define LKEVENT_NEWPAGE		10	// this is for both up and now, out of multimap 
 #define LKEVENT_LONGCLICK	11
+#define LKEVENT_SHORTCLICK	12	// Only in multimaps, as of 121009
 
 // Virtual Keys Gestures
 // Detected in MapWindow and passed to ProcessVirtualKey in Utils2

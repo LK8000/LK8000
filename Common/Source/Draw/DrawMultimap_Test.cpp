@@ -16,6 +16,7 @@ extern int XstartScreen, YstartScreen;
 extern long VKtime;
 
 #if TESTBENCH
+extern bool ActiveMap_IsEnabled;
 
 void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
 {
@@ -105,7 +106,8 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
 		_tcscpy(ttext,_T("Event = DOWN"));
 		break;
 	case LKEVENT_LONGCLICK:
-		_stprintf(ttext,_T("Event = LONG CLICK"));
+		ActiveMap_IsEnabled=!ActiveMap_IsEnabled;
+		_stprintf(ttext,_T("Event = LONG CLICK, ActiveMap switch"));
 		break;
 	case LKEVENT_PAGEUP:
 		_tcscpy(ttext,_T("Event = PAGE UP"));
@@ -118,6 +120,9 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
 		break;
 	case LKEVENT_TOPRIGHT:
 		_tcscpy(ttext,_T("Event = TOP RIGHT"));
+		break;
+	case LKEVENT_SHORTCLICK:
+		_tcscpy(ttext,_T("Event = SHORT CLICK"));
 		break;
 
 
