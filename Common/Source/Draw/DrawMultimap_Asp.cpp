@@ -118,6 +118,29 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 		break;
   }
 
+  //
+  // If the map is active in the proper mapspace, we shall manage here the action
+  //
+  extern double fSplitFact;
+
+  if (LKevent==LKEVENT_SHORTCLICK && ActiveMap_IsEnabled && (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT)) {
+		//
+		// It would be a GOOD IDEA to keep this as a global, updated of course.
+		// We need to know very often how is the screen splitted, and where!
+		// It should be made global somewhere else, not here.
+		//
+		int vsplit=(int)(fSplitFact*(double)(DrawRect.bottom-DrawRect.top));
+		if ( YstartScreen < vsplit) {
+			double Xstart, Ystart;
+			Screen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
+
+			MapWindow::Event_NearestWaypointDetails(Xstart, Ystart, 1.0e5, false);
+			LKevent=LKEVENT_NONE;
+			ActiveMap_IsEnabled=false;
+			return;
+		}
+  }
+
 
   //
   // This is doing all rendering, including terrain and topology, which is not good.
