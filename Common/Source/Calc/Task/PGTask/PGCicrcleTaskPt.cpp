@@ -52,19 +52,12 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
             O = m_Optimized - m_Center;
         }
         double x0 = atan2(O.m_Y, O.m_X);
+        double x1 = x0+PI;
 
         OptimizedDistance Fmin(prev, m_Center, next, m_Radius);
-        double d1 = min_newuoa<double, OptimizedDistance > (1, &x0, Fmin);
+        double d1 = min_newuoa<double, OptimizedDistance > (1, &x0, Fmin, PI, 1E-4);
         if(m_bExit) {
-            if (m_Optimized == m_Center) {
-                // First Pass : In with prev bearing if Entry Next Bearing if Exit.
-                O = next - m_Center;
-            } else {
-                // For All next Pass use previous Point.
-                O = m_Center - m_Optimized;
-            }            
-            double x1 = atan2(O.m_Y, O.m_X);
-            double d2 = min_newuoa<double, OptimizedDistance > (1, &x1, Fmin);
+            double d2 = min_newuoa<double, OptimizedDistance > (1, &x1, Fmin, PI, 1E-4);
             
             x0 = (std::min(d1,d2)==d1)?x0:x1;
         }
