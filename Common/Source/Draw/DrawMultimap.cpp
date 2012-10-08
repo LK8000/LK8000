@@ -14,6 +14,7 @@
 #include "Multimap.h"
 
 extern bool Sonar_IsEnabled;
+extern bool ActiveMap_IsEnabled;
 extern TCHAR Sideview_szNearAS[];
 
 
@@ -26,11 +27,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 {
 
   TCHAR topleft_txt[10];
-  // HFONT oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
-
-  HFONT  oldFont = (HFONT) SelectObject(hdc, LK8MediumFont);
-  HBRUSH oldBrush= (HBRUSH)SelectObject(hdc,LKBrush_Mdark);
-  HPEN     oldPen= (HPEN)  SelectObject(hdc, GetStockObject(WHITE_PEN));
+  bool noaction=false;
 
   switch(MapSpaceMode)
   {
@@ -54,10 +51,69 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
 		break;
 	default:
+		noaction=true;
 		break;
   } 
 
+  if (noaction) return;
+
+  // HFONT oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
+  HFONT  oldFont = (HFONT) SelectObject(hdc, LK8MediumFont);
+  HBRUSH oldBrush= (HBRUSH)SelectObject(hdc,LKBrush_Mdark);
+  HPEN     oldPen= (HPEN)  SelectObject(hdc, GetStockObject(WHITE_PEN));
+
   MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
+
+  SelectObject(hdc,oldBrush);
+  SelectObject(hdc,oldPen);
+  SelectObject(hdc,oldFont);
+}
+
+
+#define MMCOLOR_ENABLED	RGB_GREEN
+#define MMCOLOR_DISABLED RGB_LIGHTGREY
+
+void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
+
+  TCHAR topright_txt[10];
+  bool noaction=false;
+  COLORREF wcolor;
+
+  switch(MapSpaceMode)
+  {
+	case MSM_MAPTRK:
+	case MSM_MAPWPT:
+		_stprintf(topright_txt, MsgToken(2231));
+		if(ActiveMap_IsEnabled)
+			wcolor=MMCOLOR_ENABLED;
+		else
+			wcolor=MMCOLOR_DISABLED;
+		break;
+
+	case MSM_MAPASP:
+		_stprintf(topright_txt, MsgToken(1293));
+		if(Sonar_IsEnabled)
+			wcolor=MMCOLOR_ENABLED;
+		else
+			wcolor=MMCOLOR_DISABLED;
+		break;
+
+	case MSM_MAPRADAR:
+		noaction=true;
+
+		break;
+	default:
+		noaction=true;
+		break;
+  } 
+
+  if (noaction) return;
+
+  HFONT  oldFont = (HFONT) SelectObject(hdc, MapWindowFont);
+  HBRUSH oldBrush= (HBRUSH)SelectObject(hdc,LKBrush_Mdark);
+  HPEN   oldPen= (HPEN)  SelectObject(hdc, GetStockObject(WHITE_PEN));
+
+  LKWriteText(hdc, topright_txt, rci.right-RIGHTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, wcolor, true);
 
   SelectObject(hdc,oldBrush);
   SelectObject(hdc,oldPen);
@@ -97,12 +153,6 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
         _stprintf(topcenter_txt, TEXT("%s"), Sideview_szNearAS );
 
         MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rci.right/3, midsplit, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
-
-        SelectObject(hdc, MapWindowFont);
-        if(Sonar_IsEnabled)
-                LKWriteText(hdc, MsgToken(1293),  (rci.right), rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true);
-        else
-                LKWriteText(hdc, MsgToken(1293),  (rci.right), rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true);
   }
 
   SelectObject(hdc,oldBrush);

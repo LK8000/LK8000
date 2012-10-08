@@ -32,11 +32,11 @@ extern AirSpaceSonarLevelStruct sSonarLevel[10];
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern int Sideview_iNoHandeldSpaces;
 extern bool Sonar_IsEnabled;
+extern bool ActiveMap_IsEnabled;
 extern int XstartScreen, YstartScreen;
 
 TCHAR Sideview_szNearAS[80];
 int iSonarLevel=0;
-//bool Sonar_IsEnabled = true;
 bool bNearAirspace_CheckAllAirspaces =false;
 
 

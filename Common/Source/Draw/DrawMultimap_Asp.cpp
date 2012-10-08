@@ -22,6 +22,10 @@ extern int XstartScreen, YstartScreen;
 extern long  iSonarLevel;
 bool Sonar_IsEnabled = true;
 
+// Active map can be triggered only for a mapspace run. Changing mapspace will
+// disable active map automatically. Entering a mapspace will make active map off.
+bool ActiveMap_IsEnabled = false;
+
 extern AirSpaceSonarLevelStruct sSonarLevel[];
 extern TCHAR Sideview_szNearAS[];
 extern double fZOOMScale;
@@ -79,24 +83,35 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 	//
 	// USABLE EVENTS
 	// 
+	case LKEVENT_NEWRUN:
+		// Upon entering a new multimap, Active is reset.
+		ActiveMap_IsEnabled=false;
+		break;
 
 	case LKEVENT_TOPLEFT:
 		InputEvents::setMode(_T("MMCONF"));
 		break;
-	break;
 
 	case LKEVENT_TOPRIGHT:
-	  if(GetSideviewPage()== IM_NEAR_AS)
-	  {
-	    Sonar_IsEnabled = !Sonar_IsEnabled;
-	    if (EnableSoundModes) {
-	    	if (Sonar_IsEnabled)
-			LKSound(TEXT("LK_TONEUP.WAV"));
-		else
-			LKSound(TEXT("LK_TONEDOWN.WAV"));
-	    }
-	  }
-	break;
+		if (MapSpaceMode==MSM_MAPASP) {
+			Sonar_IsEnabled = !Sonar_IsEnabled;
+			if (EnableSoundModes) {
+				if (Sonar_IsEnabled)
+					LKSound(TEXT("LK_TONEUP.WAV"));
+				else
+					LKSound(TEXT("LK_TONEDOWN.WAV"));
+			}
+		}
+		if (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT) {
+			ActiveMap_IsEnabled = !ActiveMap_IsEnabled;
+			if (EnableSoundModes) {
+				if (ActiveMap_IsEnabled)
+					LKSound(TEXT("LK_TONEUP.WAV"));
+				else
+					LKSound(TEXT("LK_TONEDOWN.WAV"));
+			}
+		}
+		break;
 
 	default:
 		// THIS SHOULD NEVER HAPPEN, but always CHECK FOR IT!
@@ -121,6 +136,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 
 
   DrawMultimap_Topleft(hdc, rci);
+  DrawMultimap_Topright(hdc, rci);
   DrawMultimap_DynaLabel(hdc, rci);
 
   if(GetSideviewPage()== IM_NEAR_AS) SonarNotify();
