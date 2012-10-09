@@ -34,6 +34,7 @@ extern int Sideview_iNoHandeldSpaces;
 extern bool Sonar_IsEnabled;
 extern bool ActiveMap_IsEnabled;
 extern int XstartScreen, YstartScreen;
+extern   RECT Sideview_TopRect_InUse;
 
 TCHAR Sideview_szNearAS[80];
 int iSonarLevel=0;
@@ -161,6 +162,9 @@ RECT rct = rc; /* rectangle for topview */
 
 rc.top     = (int)((double)(rci.bottom-rci.top  )*fSplitFact);
 rct.bottom = rc.top ;
+// Expose the topview rect size in use..
+Sideview_TopRect_InUse=rct;
+
 HFONT	 hfOldFnt = (HFONT)SelectObject(hdc,LK8PanelUnitFont/* Sender->GetFont()*/);
 
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];

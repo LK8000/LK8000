@@ -21,6 +21,7 @@
 
 extern	 int Sideview_iNoHandeldSpaces;
 extern	 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
+extern   RECT Sideview_TopRect_InUse;
 
 double fSplitFact = 0.30;
 double fOffset = 0.0;
@@ -97,7 +98,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   RECT rct = rc; /* rectangle for topview */
   rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
   rct.bottom = rc.top ;
-
+  // Expose the topview rect size in use..
+  Sideview_TopRect_InUse=rct;
 
   if(bInvCol)
     Sideview_TextColor = INV_GROUND_TEXT_COLOUR;

@@ -25,6 +25,13 @@ int Sideview_asp_heading_task=0;
 int Sideview_iNoHandeldSpaces=0;
 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
+//
+// Exposed variables for topviews
+//
+RECT   Sideview_TopRect_InUse={0,0,1,1};
+POINT  Sideview_Orig_InUse={0,0};
+double Sideview_Zoom_InUse=1;
+double Sideview_Angle_InUse=0;
 
 int SetSplitScreenSize(int iPercent)
 {
@@ -708,6 +715,13 @@ double fFact = 1.0 ;
 
    CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
    CalculateScreenPositionsAirspace();
+
+   // 
+   // Expose variables in use for topview drawing
+   // 
+   Sideview_Orig_InUse=Orig_Aircraft;
+   Sideview_Zoom_InUse=GetInvDrawScale();
+   Sideview_Angle_InUse=DisplayAngle;
 
   if (IsMultimapTerrain() &&  DerivedDrawInfo.TerrainValid ) {
         LKTextBlack=false;
