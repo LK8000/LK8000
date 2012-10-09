@@ -234,10 +234,10 @@ int i,j;
   }
 
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx)+x0;; // x0;
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag)+2 ;//iBottom;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag) ;//iBottom;
 
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx)+x0;  //iround(j*dx)+x0;
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag)+2 ;//iBottom;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag) ;//iBottom;
   Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
 
   /*********************************************************************

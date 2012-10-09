@@ -18,8 +18,10 @@
 
 #define SV_BORDER_Y NIBLSCALE (10)
 
-#define MAX_ALTITUDE 12050.0 /* maximum altitude (in m) */
-#define MIN_ALTITUDE 200.0 /* maximum altitude (in m) */
+
+#define MIN_ALTITUDE 1000.0 /* maximum altitude (in m) */
+#define MIN_OFFSET   200.0  /* maximum altitude offset (in m) */
+
 //#define OFFSET_SETP 500.0
 
 #define  MSL_SEA_DRAW
@@ -61,6 +63,7 @@
 
 #define ELV_FACT 2.2
 #define MAXALTTODAY   2500.0
+#define MAX_ALTITUDE   5000.0
 
 #define NO_SIDEVIEW_PAGES 3
 

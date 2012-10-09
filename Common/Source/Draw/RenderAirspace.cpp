@@ -29,7 +29,7 @@ using std::min;
 using std::max;
 int k;
 double fZOOMScale = 1.0;
-
+double fDelta = MIN_ALTITUDE;
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
 double fHeigtScaleFact;
@@ -48,7 +48,7 @@ void MapWindow::RenderAirspace(HDC hdc, const RECT rci) {
 static bool bHeightScale = false;
 RECT rc  = rci; /* rectangle for sideview */
 bool bInvCol = true; //INVERTCOLORS;
-static double fHeigtScaleFact = 1.0;
+static double fHeigtScaleFact = MIN_ALTITUDE;
 double fDist = 55.0*1000; // kmbottom
 double aclat, aclon, ach, acb, speed, calc_average30s;
 double GPSbrg=0;
@@ -101,6 +101,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   // Expose the topview rect size in use..
   Sideview_TopRect_InUse=rct;
 
+
   if(bInvCol)
     Sideview_TextColor = INV_GROUND_TEXT_COLOUR;
   else
@@ -108,10 +109,98 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   SetTextColor(hdc, Sideview_TextColor);
 
-  #include "RenderAirspace_IncludeEvents.cpp"
+  /****************************************************************/
+	  switch(LKevent) {
+		case LKEVENT_NEWRUN:
+			// CALLED ON ENTRY: when we select this page coming from another mapspace
+			fZOOMScale = 1.0;
+		//	fHeigtScaleFact = 1000;
+		break;
+		case LKEVENT_UP:
+			// click on upper part of screen, excluding center
+			if(bHeightScale)
+			  fHeigtScaleFact -=  fDelta;
+			else
+			  fZOOMScale /= ZOOMFACTOR;
+			break;
 
-	  double hmin =  max(0.0, DerivedDrawInfo.NavAltitude-2300);
-	  double hmax = max(MAXALTTODAY, DerivedDrawInfo.NavAltitude+1000);
+		case LKEVENT_DOWN:
+			// click on lower part of screen,  excluding center
+			if(bHeightScale)
+			  fHeigtScaleFact += fDelta;
+			else
+		  	  fZOOMScale *= ZOOMFACTOR;
+			break;
+
+		case LKEVENT_LONGCLICK:
+		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
+			 {
+			   if( Sideview_pHandeled[k].psAS != NULL)
+			   {
+				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
+				 {
+				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
+				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
+				   bFound = true;
+			//	   LKevent=LKEVENT_NONE;
+				 }
+			   }
+			 }
+			 if (PtInRect(XstartScreen, YstartScreen,rc ))
+			   bHeightScale = true;
+			 if (PtInRect(XstartScreen, YstartScreen,rct ))
+			   bHeightScale = false;
+	     break;
+
+		case LKEVENT_PAGEUP:
+#ifdef OFFSET_SETP
+			if(bHeightScale)
+			  fOffset -= OFFSET_SETP;
+			else
+#endif
+			{
+			  if(*iSplit == SIZE1) *iSplit = SIZE0;
+			  if(*iSplit == SIZE2) *iSplit = SIZE1;
+			  if(*iSplit == SIZE3) *iSplit = SIZE2;
+			}
+		break;
+		case LKEVENT_PAGEDOWN:
+#ifdef OFFSET_SETP
+			if(bHeightScale)
+			  fOffset += OFFSET_SETP;
+			else
+#endif
+			{
+			  if(*iSplit == SIZE2) *iSplit = SIZE3;
+			  if(*iSplit == SIZE1) *iSplit = SIZE2;
+			  if(*iSplit == SIZE0) *iSplit = SIZE1;
+			}
+		break;
+
+	  }
+	  LKevent=LKEVENT_NONE;
+
+	  // Current_Multimap_SizeY is global, and must be used by all multimaps!
+	  // It is defined in Multimap.cpp and as an external in Multimap.h
+	  // It is important that it is updated, because we should resize terrain
+	  // only if needed! Resizing terrain takes some cpu and some time.
+	  // So we need to know when this is not necessary, having the same size of previous
+	  // multimap, if we are switching.
+	  // The current implementation is terribly wrong by managing resizing of sideview in
+	  // each multimap: it should be done by a common layer.
+	  // CAREFUL:
+	  // If for any reason DrawTerrain() is called after resizing to 0 (full sideview)
+	  // LK WILL CRASH with no hope to recover.
+	  if(Current_Multimap_SizeY != *iSplit)
+	  {
+		Current_Multimap_SizeY=*iSplit;
+		SetSplitScreenSize(*iSplit);
+		rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
+		rct.bottom = rc.top ;
+	  }
+
+	  double hmin =  max(0.0, DerivedDrawInfo.NavAltitude-0);
+	  double hmax = max(MAXALTTODAY, DerivedDrawInfo.NavAltitude+0);
 #ifdef OFFSET_SETP
 	  if((hmax + fOffset) > MAX_ALTITUDE)
 		fOffset -= OFFSET_SETP;
@@ -121,15 +210,19 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  hmin +=  fOffset;
 	  hmax +=  fOffset;
 #endif
-if(fHeigtScaleFact >= 1.0)
-	hmin =0.0;
-	  if( (hmax *  fHeigtScaleFact) > MAX_ALTITUDE)
-		fHeigtScaleFact /= ZOOMFACTOR;
 
-	  if( (hmax *  fHeigtScaleFact) < MIN_ALTITUDE)
-		fHeigtScaleFact *= ZOOMFACTOR;
+    if(  ( fHeigtScaleFact) < MIN_OFFSET)
+      fHeigtScaleFact = MIN_OFFSET;
+//	if(  (DerivedDrawInfo.NavAltitude +  fHeigtScaleFact) > MAX_ALTITUDE)
+//	  fHeigtScaleFact -= fDelta;
 
-	  hmax *=  fHeigtScaleFact;
+	hmax =  DerivedDrawInfo.NavAltitude +  fHeigtScaleFact;
+	hmin = DerivedDrawInfo.NavAltitude -  2*fHeigtScaleFact;
+	if( hmin <0 )
+	 hmin = 0;
+
+
+
 
 
   if(bInvCol)
