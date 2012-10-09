@@ -68,7 +68,7 @@ endif
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC),y)
-TCPATH		:=
+TCPATH		:=i386-mingw32-
 CPU		:=i586
 MCPU		:= -mcpu=$(CPU)
 else
