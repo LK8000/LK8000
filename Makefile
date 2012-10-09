@@ -99,6 +99,8 @@ endif
 endif
 endif
 
+-include local.mk
+
 ############# platform info
 
 ifeq ($(CONFIG_PPC2002),y)
