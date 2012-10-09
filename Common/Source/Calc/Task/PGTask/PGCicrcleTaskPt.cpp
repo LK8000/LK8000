@@ -9,7 +9,7 @@
 #include "PGCicrcleTaskPt.h"
 #include "Library/newuoa.h"
 
-PGCicrcleTaskPt::PGCicrcleTaskPt(): m_Radius(0), m_bExit(false) {
+PGCicrcleTaskPt::PGCicrcleTaskPt() : m_Radius(0), m_bExit(false) {
 }
 
 PGCicrcleTaskPt::~PGCicrcleTaskPt() {
@@ -33,7 +33,7 @@ private:
     const ProjPt& m_prev;
     const ProjPt& m_cur;
     const ProjPt& m_next;
-    const double m_radius; 
+    const double m_radius;
 };
 
 void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
@@ -42,41 +42,39 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
         m_Optimized = m_Center;
     }
 
-    if (!CrossPoint(prev, !!next ? next : m_Center, m_Optimized)) {
-        ProjPt O;
-        if (m_Optimized == m_Center) {
-            // First Pass : In with prev bearing if Entry Next Bearing if Exit.
-            O = (m_bExit ? next : prev) - m_Center;
-        } else {
-            // For All next Pass use previous Point.
-            O = m_Optimized - m_Center;
-        }
-        double x0 = atan2(O.m_Y, O.m_X);
-        double x1 = x0+PI;
-
+    if (!CrossPoint(prev, next ? next : m_Center, m_Optimized)) {
         OptimizedDistance Fmin(prev, m_Center, next, m_Radius);
-        double d1 = min_newuoa<double, OptimizedDistance > (1, &x0, Fmin, PI, 1E-4);
-        if(m_bExit) {
-            double d2 = min_newuoa<double, OptimizedDistance > (1, &x1, Fmin, PI, 1E-4);
-            
-            x0 = (std::min(d1,d2)==d1)?x0:x1;
+        double x0 = 0;
+        double d1 = min_newuoa<double, OptimizedDistance > (1, &x0, Fmin, PI, 0.01 / m_Radius);
+        if (m_bExit) {
+            double x1 = x0 + PI;
+            double d2 = min_newuoa<double, OptimizedDistance > (1, &x1, Fmin, PI, 0.01 / m_Radius);
+
+            x0 = (std::min(d1, d2) == d1) ? x0 : x1;
         }
         m_Optimized = ProjPt(m_Center.m_X + m_Radius * cos(x0), m_Center.m_Y + m_Radius * sin(x0));
     }
 }
 
 bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized) {
-    bool PrevOutside = (((m_Center.m_X - prev.m_X)*(m_Center.m_X - prev.m_X)) + ((m_Center.m_Y - prev.m_Y)*(m_Center.m_Y - prev.m_Y))) > (m_Radius * m_Radius);
-    bool NextOutside = (((m_Center.m_X - next.m_X)*(m_Center.m_X - next.m_X)) + ((m_Center.m_Y - next.m_Y)*(m_Center.m_Y - next.m_Y))) > (m_Radius * m_Radius);
+    ProjPt A = prev - m_Center;
+    ProjPt B = next - m_Center;
+    ProjPt A2(A.m_X * A.m_X, A.m_Y * A.m_Y);
+    ProjPt B2(B.m_X * B.m_X, B.m_Y * B.m_Y);
+    double R2 = (m_Radius * m_Radius);
+
+    bool PrevOutside = (A2.m_X + A2.m_Y) > R2;
+    bool NextOutside = (B2.m_X + B2.m_Y) > R2;
 
     if (!PrevOutside && !NextOutside) {
         return false; // no cross point
     }
 
-    double a = ((next.m_X - prev.m_X)*(next.m_X - prev.m_X)) + ((next.m_Y - prev.m_Y)*(next.m_Y - prev.m_Y));
-    double b = 2 * (((next.m_X - prev.m_X)*(prev.m_X - m_Center.m_X)) + ((next.m_Y - prev.m_Y)*(prev.m_Y - m_Center.m_Y)));
-    double c = (m_Center.m_X * m_Center.m_X)+(m_Center.m_Y * m_Center.m_Y)+(prev.m_X * prev.m_X)+(prev.m_Y * prev.m_Y)
-            - (2 * ((m_Center.m_X * prev.m_X)+(m_Center.m_Y * prev.m_Y))) - (m_Radius * m_Radius);
+    ProjPt AB = B - A;
+
+    double a = (AB.m_X * AB.m_X) + (AB.m_Y * AB.m_Y);
+    double b = 2 * ((AB.m_X * A.m_X) + (AB.m_Y * A.m_Y));
+    double c = A2.m_X + A2.m_Y - R2;
 
     double bb4ac = (b * b) -(4 * a * c);
     if (bb4ac < 0.0) {
@@ -104,9 +102,8 @@ bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt&
 
     if (bCrossPoint) {
         ProjPt O = prev + ((next - prev) * k);
-
-        if (dot_product((next - prev), optimized - prev) >= 0.0 &&
-                dot_product((prev - next), optimized - next) >= 0.0) {
+        if (dot_product((next - prev), O - prev) > 0.0 &&
+                dot_product((prev - next), O - next) > 0.0) {
             optimized = O;
             return true;
         }
