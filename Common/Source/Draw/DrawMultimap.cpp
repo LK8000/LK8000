@@ -29,26 +29,42 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
   TCHAR topleft_txt[10];
   bool noaction=false;
+  static unsigned short counter=0;
+  #define COUNT_VERBOSE	5	// 5 seconds, normally
+
+  if (LKevent==LKEVENT_NEWRUN) counter=0;
 
   switch(MapSpaceMode)
   {
 	case MSM_MAPTRK:
-		_stprintf(topleft_txt, TEXT(" M1 "));
+		if (counter<COUNT_VERBOSE)
+			_stprintf(topleft_txt, TEXT("1 TRK"));
+		else
+			_stprintf(topleft_txt, TEXT("1"));
 
 		break;
 
 	case MSM_MAPWPT:
-		_stprintf(topleft_txt, TEXT(" M2 "));
+		if (counter<COUNT_VERBOSE)
+			_stprintf(topleft_txt, TEXT("2 WPT"));
+		else
+			_stprintf(topleft_txt, TEXT("2"));
 
 		break;
 
 	case MSM_MAPASP:
-		_stprintf(topleft_txt, TEXT(" M3"));
+		if (counter<COUNT_VERBOSE)
+			_stprintf(topleft_txt, TEXT("3 ASP"));
+		else
+			_stprintf(topleft_txt, TEXT("3"));
 
 		break;
 
 	case MSM_MAPRADAR:
-		_stprintf(topleft_txt, TEXT(" M4"));
+		if (counter<COUNT_VERBOSE)
+			_stprintf(topleft_txt, TEXT("4 RDR"));
+		else
+			_stprintf(topleft_txt, TEXT("4"));
 
 		break;
 	default:
@@ -58,12 +74,14 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
   if (noaction) return;
 
-  // HFONT oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
-  HFONT  oldFont = (HFONT) SelectObject(hdc, LK8MediumFont);
+  HFONT oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
+ // HFONT  oldFont = (HFONT) SelectObject(hdc, LK8MediumFont);
   HBRUSH oldBrush= (HBRUSH)SelectObject(hdc,LKBrush_Mdark);
   HPEN     oldPen= (HPEN)  SelectObject(hdc, GetStockObject(WHITE_PEN));
 
-  MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_BLACK, true);
+  MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_SBLACK, true);
+
+  if (counter<255) counter++;
 
   SelectObject(hdc,oldBrush);
   SelectObject(hdc,oldPen);
@@ -72,7 +90,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
 
 #define MMCOLOR_ENABLED	RGB_GREEN
-#define MMCOLOR_DISABLED RGB_LIGHTGREY
+#define MMCOLOR_DISABLED RGB_GREY
 
 void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
 
