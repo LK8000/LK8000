@@ -257,7 +257,7 @@ void SelectMapSpace(short i) {
 		MapSpaceMode!=MSM_MAPWPT && 
 		MapSpaceMode!=MSM_MAPASP) {
 		InputEvents::setMode(TEXT("default"));
-	} else
+	}
 }
 
 
