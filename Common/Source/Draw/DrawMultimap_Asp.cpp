@@ -18,6 +18,7 @@
 #include "Multimap.h"
 
 extern int XstartScreen, YstartScreen;
+extern bool IsMultimapConfigShown;
 
 extern long  iSonarLevel;
 bool Sonar_IsEnabled = true;
@@ -89,6 +90,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 		break;
 
 	case LKEVENT_TOPLEFT:
+		IsMultimapConfigShown=true;
 		InputEvents::setMode(_T("MMCONF"));
 		break;
 

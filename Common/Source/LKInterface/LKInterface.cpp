@@ -12,6 +12,7 @@
 #include "Multimap.h"
 
 extern void ShowMenu();
+extern bool IsMultimapConfigShown;
 
 void SetModeType(short modeindex, short modetype) {
 
@@ -247,6 +248,16 @@ void SelectMapSpace(short i) {
 			break;
 	}
 	MapSpaceMode=i;
+
+	//
+	// If we are showing special menus for special pages, here we disable them.
+	//
+	if (IsMultimapConfigShown &&
+		MapSpaceMode!=MSM_MAPTRK && 
+		MapSpaceMode!=MSM_MAPWPT && 
+		MapSpaceMode!=MSM_MAPASP) {
+		InputEvents::setMode(TEXT("default"));
+	} else
 }
 
 

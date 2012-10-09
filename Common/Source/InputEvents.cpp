@@ -93,6 +93,9 @@ bool IsMenuShown = false;
 long LastActiveSelectMode = 0;//GetTickCount()
 #endif
 
+// This is set when multimaps are calling MMCONF menu.
+bool IsMultimapConfigShown=false;
+
 // Mapping text names of events to the real thing
 typedef struct {
   const TCHAR *text;
@@ -563,6 +566,7 @@ void InputEvents::setMode(const TCHAR *mode) {
 	(_tcscmp(mode, TEXT("MMCONF")) == 0)	||
 	(_tcscmp(mode, TEXT("MTarget")) == 0) )
 	{
+		IsMultimapConfigShown=false;
 		_tcscpy(mode_current, _T("default"));
 		thismode = mode2int(_T("default"),false);
 	} else {
@@ -571,6 +575,11 @@ void InputEvents::setMode(const TCHAR *mode) {
 	//
 		return;
 	}
+  }
+
+  // Special flags cleanup..
+  if (_tcscmp(mode, TEXT("MMCONF")) != 0) {
+	IsMultimapConfigShown=false;
   }
 
   ButtonLabel::SetLabelText(0,NULL);
