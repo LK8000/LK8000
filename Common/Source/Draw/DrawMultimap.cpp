@@ -136,8 +136,8 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 
   extern double fSplitFact;
   SIZE textSize;
-  //int midsplit=(long)((double)(rci.bottom-rci.top)*fSplitFact);	 // this is ok
-  int midsplit=Sideview_TopRect_InUse.bottom;	// this SHOULD be ok, but in M3 the TopRect is updated 1s late
+  int midsplit=(long)((double)(rci.bottom-rci.top)*fSplitFact);	 // this is ok
+  //int midsplit=Sideview_TopRect_InUse.bottom;	// this SHOULD be ok, but in M3 the TopRect is updated 1s late
 
   oldFont=(HFONT)SelectObject(hdc, LK8UnitFont);
 
