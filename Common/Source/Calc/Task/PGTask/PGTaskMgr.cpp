@@ -11,19 +11,13 @@
 #include "Waypointparser.h"
 
 #include "algorithm"
+#include "utils/stl_utils.h"
 #include "math.h"
 #include "PGCicrcleTaskPt.h"
 #include "PGLineTaskPt.h"
 
 const ProjPt ProjPt::null;
 
-struct deleter {
-    template<typename T>
-    void operator()(T* ptr) {
-        delete ptr;
-        ptr = NULL;
-    }
-};
 // WGS84 data
 const PGTaskMgr::DATUM PGTaskMgr::m_Datum = (PGTaskMgr::DATUM){
     6378137.0, // a
@@ -38,13 +32,13 @@ PGTaskMgr::PGTaskMgr() {
 }
 
 PGTaskMgr::~PGTaskMgr() {
-    std::for_each(m_Task.begin(), m_Task.end(), deleter() );
+    std::for_each(m_Task.begin(), m_Task.end(), safe_delete() );
     m_Task.clear();
 }
 
 void PGTaskMgr::Initialize() {
     
-    std::for_each(m_Task.begin(), m_Task.end(), deleter() );
+    std::for_each(m_Task.begin(), m_Task.end(), safe_delete() );
     m_Task.clear();
     
     LockTaskData();

@@ -401,6 +401,11 @@ void Shutdown(void) {
   #if TESTBENCH
   StartupStore(TEXT(".... Delete Critical Sections%s"),NEWLINE);
   #endif
+
+  // Wait end of Calculation thread before deinit critical section.
+  WaitForSingleObject(hCalculationThread, INFINITE);
+  CloseHandle(hCalculationThread);
+
   extern void DeInitCriticalSections(void);
   DeInitCriticalSections(); 
 
