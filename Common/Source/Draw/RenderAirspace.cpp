@@ -142,7 +142,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
 				   bFound = true;
-			//	   LKevent=LKEVENT_NONE;
+			//	   LKevent=LKEVENT_NONE; 
 				 }
 			   }
 			 }
@@ -232,7 +232,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
     LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
   }
-  LockFlightData();
+//  LockFlightData();
   {
     fMC0 = GlidePolar::SafetyMacCready;
     aclat = DrawInfo.Latitude;
@@ -249,7 +249,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     calc_terrainalt = DerivedDrawInfo.TerrainAlt;
     calc_altitudeagl = DerivedDrawInfo.AltitudeAGL;
   }
-  UnlockFlightData();
+//  UnlockFlightData();
 
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
   overindex = GetOvertargetIndex();
@@ -279,7 +279,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 
 
-      LockFlightData();
+      //LockFlightData();
       wpt_altarriv_mc0 =   DerivedDrawInfo.NavAltitude -
         GlidePolar::MacCreadyAltitude( fMC0,
                                        wpt_dist,
@@ -308,7 +308,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv -= SAFETYALTITUDEARRIVAL;
 
 
-      UnlockFlightData();
+      //UnlockFlightData();
 
     }
     else
