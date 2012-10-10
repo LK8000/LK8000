@@ -288,7 +288,6 @@ void MapWindow::CloseDrawingThread(void)
   UnlockTerrainDataGraphics();
   
   WaitForSingleObject(hDrawThread, INFINITE);
-  WaitForSingleObject(hCalculationThread, INFINITE);
           
   while(!THREADEXIT) { Sleep(100); };
   #if TESTBENCH

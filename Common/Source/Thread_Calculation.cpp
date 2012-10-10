@@ -135,20 +135,10 @@ DWORD CalculationThread (LPVOID lpvoid) {
 // and we save 500ms at startup. 
 // At the end of thread creation, we expect goCalc and goInst flags are true
 void CreateCalculationThread() {
-  #ifndef CPUSTATS
-  // Need to keep them global to make them accessible from GetThreadTimes if in use
-  HANDLE hCalculationThread;
-  DWORD dwCalcThreadID;
-  #endif
-
   // Create a read thread for performing calculations
   if ((hCalculationThread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE )CalculationThread, 0, 0, &dwCalcThreadID)) != NULL)
   {
 	SetThreadPriority(hCalculationThread, THREAD_PRIORITY_NORMAL); 
-	#ifndef CPUSTATS
-	// Do not close if we need to use the handle 
-	CloseHandle (hCalculationThread); 
-	#endif
   } else {
 	LKASSERT(1);
   }
