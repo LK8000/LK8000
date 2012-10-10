@@ -89,7 +89,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   HBRUSH OldBrush  = (HBRUSH) SelectObject(hdc, hbHorizon);
 
 
-  bool bFound = false;
+  //bool bFound = false;
   SelectObject(hdc, OldPen);
   SelectObject(hdc, OldBrush);
   DeleteObject(hpHorizon);
@@ -141,8 +141,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 				 {
 				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-				   bFound = true;
+				   //bFound = true;
 			//	   LKevent=LKEVENT_NONE; 
+				   return;
 				 }
 			   }
 			 }

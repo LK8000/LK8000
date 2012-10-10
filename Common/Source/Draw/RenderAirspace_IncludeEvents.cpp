@@ -43,7 +43,8 @@
 				 {
 				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-				   bFound = true;
+				   //bFound = true;
+				   return;
 				 }
 			   }
 			 }

@@ -186,7 +186,7 @@ static double fHeigtScaleFact = 1.0;
 
   CAirspace near_airspace;
   CAirspace *found = NULL;
-  bool bFound = false;
+//  bool bFound = false;
   DiagrammStruct sDia;
   bool bAS_Inside=false;
   int iAS_Bearing=0;
