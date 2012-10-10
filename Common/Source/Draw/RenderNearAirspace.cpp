@@ -304,7 +304,7 @@ static  bool bHeightScale = false;
     BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
     LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
   }
-  LockFlightData();
+  //LockFlightData();
   {
     GPSlat = DrawInfo.Latitude;
     GPSlon = DrawInfo.Longitude;
@@ -318,7 +318,7 @@ static  bool bHeightScale = false;
     calc_average30s  = DerivedDrawInfo.Average30s;
     GPSalt =  DerivedDrawInfo.NavAltitude;
   }
-  UnlockFlightData();
+  //UnlockFlightData();
 calc_circling = false;
   bValid = false;
   iAS_HorDistance = 5000;
