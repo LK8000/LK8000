@@ -13,7 +13,7 @@
 
 
 #include "FlarmIdFile.h"
-extern FlarmIdFile file; // in Utils
+extern FlarmIdFile *file;
 
 static WndForm *wf=NULL;
 static void SetValues(int indexid);
@@ -299,7 +299,7 @@ static void SetValues(int indexid) {
 	wp->RefreshDisplay();
   }
 
-  FlarmId* flarmId = file.GetFlarmIdItem(LKTraffic[indexid].ID);
+  FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[indexid].ID);
   if (flarmId != NULL) {
 	wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
 	if (wp) {

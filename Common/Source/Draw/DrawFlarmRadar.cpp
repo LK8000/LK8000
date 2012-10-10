@@ -616,7 +616,6 @@ static double oldSplit = 0;
  * change colors on inversion
  *********************************************************************************/
 
-
 if(bInvCol)
 {
   rgbDrawColor = RGB_GREY;
@@ -708,7 +707,6 @@ DiagrammStruct sDia;
 
   fMaxHeight = GPSalt;
   fMinHeight = GPSalt;
-
 
 
   if (DoInit[MDI_FLARMRADAR]) {
@@ -1047,11 +1045,10 @@ RECT rcc = rct;
 		asFLRAMPos[i].iColorIdx = max( asFLRAMPos[i].iColorIdx, 0);
 		asFLRAMPos[i].iColorIdx = min( asFLRAMPos[i].iColorIdx, NO_VARIO_COLORS-1);
 
-		extern FlarmIdFile file; // in Utils
+		extern FlarmIdFile *file;
 
 		wsprintf(asFLRAMPos[i].szGliderType,_T(""));
-		FlarmId* flarmId = file.GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
-
+		FlarmId* flarmId = file->GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
 
 		if(flarmId!= NULL)
 		  _tcscat(asFLRAMPos[i].szGliderType,flarmId->type);
@@ -1059,7 +1056,6 @@ RECT rcc = rct;
 	  	int iCnt= 19;
 	    while ((asFLRAMPos[i].szGliderType[iCnt] ==_T(' ')) && (iCnt > 0))
 		  asFLRAMPos[i].szGliderType[iCnt--]= 0;
-
 
 		aiSortArray[nEntrys++] = i;
 	  }
