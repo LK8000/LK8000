@@ -729,10 +729,8 @@ GEXTERN short TerrainRamp;
 GEXTERN Appearance_t Appearance;
 GEXTERN bool InverseInfoBox_Config;
 
-#ifdef CPUSTATS
 GEXTERN HANDLE hCalculationThread;
 GEXTERN DWORD dwCalcThreadID;
-#endif
 
 GEXTERN BOOL extGPSCONNECT;
 GEXTERN bool DialogActive;
