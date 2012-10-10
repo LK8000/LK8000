@@ -25,6 +25,7 @@ extern int Sideview_iNoHandeldSpaces;
 
 
 
+
 void RenderAirspaceTerrain(HDC hdc, double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
 {
 RECT rc	= psDiag->rc;
@@ -260,6 +261,142 @@ int i,j;
   DeleteObject(mpen);
   DeleteObject(hpHorizonGround);
   DeleteObject(hbHorizonGround);
+
+
+}
+
+
+
+
+
+
+void Render3DTerrain(HDC hdc, double PosLat, double PosLon,  double Bearing,  DiagrammStruct* psDiag, double Altitude )
+{
+RECT rc	= psDiag->rc;
+//rc.bottom +=BORDER_Y;
+//double range =psDiag->fXMax - psDiag->fXMin; // km
+double hmax = psDiag->fYMax;
+double lat, lon;
+int i,j,k;
+double OffSetlat, Offsetlon,brg;
+double fXMax = psDiag->fXMax;
+double fXMin = psDiag->fXMin ; // km
+#define NO_SLICES 20
+double fMaxDis = 3*psDiag->fXMax;
+#define MAX_COL_DIS 50000.0
+if(fMaxDis > MAX_COL_DIS)
+	fMaxDis = MAX_COL_DIS;
+COLORREF rgb_Depth = RGB_LIGHTGREY;// MixColors(  GROUND_COLOUR,RGB_LIGHTGREY,fMaxDis/MAX_COL_DIS);
+
+
+double dx =  fMaxDis / NO_SLICES;
+for(k=0; k < NO_SLICES; k++)
+{
+  fXMin	 = psDiag->fXMin - k *  dx/10 ;
+  fXMax	 = psDiag->fXMax + k *  dx/10 ;
+  double range = fXMax - fXMin; // km
+
+
+  FindLatitudeLongitude(PosLat, PosLon, Bearing  , fMaxDis - k *  dx, &OffSetlat, &Offsetlon);
+
+  brg = Bearing +90;
+  FindLatitudeLongitude(OffSetlat, Offsetlon, brg  ,fXMin , &lat, &lon);
+
+
+  POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X+4];
+  double d_lat[AIRSPACE_SCANSIZE_X];
+  double d_lon[AIRSPACE_SCANSIZE_X];
+  double d_h[AIRSPACE_SCANSIZE_X];
+  double dfj = 1.0/(AIRSPACE_SCANSIZE_X-1);
+
+
+#define   FRAMEWIDTH 2
+  RasterTerrain::Lock(); // want most accurate rounding here
+  RasterTerrain::SetTerrainRounding(0,0);
+  double fj;
+  for (j=0; j< AIRSPACE_SCANSIZE_X; j++)
+  { // scan range
+    fj = j*1.0/(AIRSPACE_SCANSIZE_X-1);
+    FindLatitudeLongitude(lat, lon, brg, range*fj, &d_lat[j], &d_lon[j]);
+    d_h[j] = RasterTerrain::GetTerrainHeight(d_lat[j], d_lon[j]);
+    if (d_h[j] == TERRAIN_INVALID) d_h[j]=0; //@ 101027 BUGFIX
+    hmax = max(hmax, d_h[j]);
+  }
+
+  RasterTerrain::Unlock();
+
+
+  /********************************************************************************
+   * scan line
+   ********************************************************************************/
+  Sideview_iNoHandeldSpaces =  CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h, Sideview_pHandeled,MAX_NO_SIDE_AS); //  Sideview_pHandeled[GC_MAX_NO];
+
+  /**********************************************************************************
+   * transform into diagram coordinates
+   **********************************************************************************/
+  double dx = dfj*(rc.right-rc.left);
+  int x0 = rc.left; //+BORDER_X;
+
+
+
+  double maxy =0;
+  /*********************************************************************
+   * draw terrain
+   *********************************************************************/
+  double hx = (double) k / (double) NO_SLICES *  CalcHeightCoordinat( Altitude, psDiag);
+
+  for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
+	apTerrainPolygon[j].x = iround(j*dx)+x0;
+	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag) + hx ;
+	if(d_h[j] > maxy)
+      maxy = d_h[j];
+  }
+  /*************************************************************
+   * draw ground
+   *************************************************************/
+
+  // draw ground
+
+  HPEN   hpHorizonGround;
+  HBRUSH hbHorizonGround;
+
+  hpHorizonGround = (HPEN)CreatePen(PS_SOLID,1/* IBLSCALE(1)*/,MixColors(  RGB_BLACK,rgb_Depth,  (double) k / (double) NO_SLICES)   /*GROUND_COLOUR*/);
+  hbHorizonGround = (HBRUSH)CreateSolidBrush( MixColors(  GROUND_COLOUR,rgb_Depth,  (double) k / (double) NO_SLICES)  );
+  SelectObject(hdc, hpHorizonGround);
+  SelectObject(hdc, hbHorizonGround);
+
+
+
+
+
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx)+x0;; // x0;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag)   + hx ;//iBottom;
+
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx)+x0;  //iround(j*dx)+x0;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag)  +hx;//iBottom;
+  Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
+
+
+  SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
+
+  DeleteObject(hpHorizonGround);
+  DeleteObject(hbHorizonGround);
+}
+
+/*********************************************************************
+ * draw sea
+ *********************************************************************/
+#ifdef MSL_SEA_DRAW
+// draw sea
+if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
+{
+	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom+SV_BORDER_Y};
+	RenderSky( hdc,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
+}
+#else
+if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
+	Rectangle(hdc,rc.left,rc.bottom,rc.right,rc.bottom+BORDER_Y);
+#endif
 
 
 }

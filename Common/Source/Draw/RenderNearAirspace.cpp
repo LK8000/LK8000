@@ -173,7 +173,7 @@ int  k;
 static double fZOOMScale= 1.0;
 static double fHeigtScaleFact = 1.0;
 
-  double range = 50.0*1000; // km
+
   double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
   bool GPSValid;
   double calc_terrainalt;
@@ -548,16 +548,15 @@ if(bValid)
    * draw diagram
    ****************************************************************************************************/
   double xtick = 1.0;
-  range =sDia.fXMax - sDia.fXMin ;
-  if (range>0.01*1000.0) xtick = 0.01;
-  if (range>0.1*1000.0) xtick = 0.1;
-  if (range>1.0*1000.0) xtick = 1.0;
-  if (range>10.0*1000.0) xtick = 5.0;
-  if (range>50.0*1000.0) xtick = 10.0;
-  if (range>100.0*1000.0) xtick = 20.0;
-  if (range>200.0*1000.0) xtick = 25.0;
-  if (range>250.0*1000.0) xtick = 50.0;
-  if (range>500.0*1000.0) xtick = 100.0;
+  double fRange =fabs(sDia.fXMax - sDia.fXMin) ;
+  if (fRange>3.0*1000.0) xtick = 2.0;
+  if (fRange>15*1000.0) xtick = 5.0;
+  if (fRange>50.0*1000.0) xtick = 10.0;
+  if (fRange>100.0*1000.0) xtick = 20.0;
+  if (fRange>200.0*1000.0) xtick = 25.0;
+  if (fRange>250.0*1000.0) xtick = 50.0;
+  if (fRange>500.0*1000.0) xtick = 100.0;
+
 
   if(bInvCol)
   {
