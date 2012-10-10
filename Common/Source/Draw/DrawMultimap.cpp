@@ -89,7 +89,8 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 }
 
 
-#define MMCOLOR_ENABLED	RGB_GREEN
+#define MMCOLOR_ENABLED_FLIP	RGB_LIGHTGREEN
+#define MMCOLOR_ENABLED_FLOP	RGB_GREEN
 #define MMCOLOR_DISABLED RGB_GREY
 
 void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
@@ -97,23 +98,32 @@ void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
   TCHAR topright_txt[10];
   bool noaction=false;
   COLORREF wcolor;
+  static bool flip= true;
+
+  flip = !flip;
 
   switch(MapSpaceMode)
   {
 	case MSM_MAPTRK:
 	case MSM_MAPWPT:
 		_stprintf(topright_txt, MsgToken(2231));
-		if(ActiveMap_IsEnabled)
-			wcolor=MMCOLOR_ENABLED;
-		else
+		if(ActiveMap_IsEnabled) {
+			if (flip)
+				wcolor=MMCOLOR_ENABLED_FLIP;
+			else
+				wcolor=MMCOLOR_ENABLED_FLOP;
+		} else
 			wcolor=MMCOLOR_DISABLED;
 		break;
 
 	case MSM_MAPASP:
 		_stprintf(topright_txt, MsgToken(1293));
-		if(Sonar_IsEnabled)
-			wcolor=MMCOLOR_ENABLED;
-		else
+		if(Sonar_IsEnabled) {
+			if (flip)
+				wcolor=MMCOLOR_ENABLED_FLIP;
+			else
+				wcolor=MMCOLOR_ENABLED_FLOP;
+		} else
 			wcolor=MMCOLOR_DISABLED;
 		break;
 
