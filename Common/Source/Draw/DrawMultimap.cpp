@@ -93,7 +93,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
 #define MMCOLOR_ENABLED_FLIP	RGB_LIGHTGREEN
 #define MMCOLOR_ENABLED_FLOP	RGB_GREEN
-#define MMCOLOR_DISABLED RGB_GREY
+#define MMCOLOR_DISABLED RGB_AMBER
 
 void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
 
@@ -108,6 +108,10 @@ void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
   {
 	case MSM_MAPTRK:
 	case MSM_MAPWPT:
+		//
+		// If there is no topview, there is also no ACTIVE choice!
+		//
+		if (Sideview_TopRect_InUse.bottom==0) return;
 		_stprintf(topright_txt, MsgToken(2231));
 		if(ActiveMap_IsEnabled) {
 			if (flip)

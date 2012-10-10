@@ -104,7 +104,8 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 					LKSound(TEXT("LK_TONEDOWN.WAV"));
 			}
 		}
-		if (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT) {
+		// ACTIVE is available only when there is a topview shown!
+		if ( (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT) && (Sideview_TopRect_InUse.bottom>0)) {
 			ActiveMap_IsEnabled = !ActiveMap_IsEnabled;
 			if (EnableSoundModes) {
 				if (ActiveMap_IsEnabled)
