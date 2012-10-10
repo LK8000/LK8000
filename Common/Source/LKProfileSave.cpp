@@ -331,6 +331,10 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMultiWpt2,Multimap_Flags_Waypoints[MP_MAPWPT]);
   rprintf(szRegistryMultiWpt3,Multimap_Flags_Waypoints[MP_MAPASP]);
 
+  rprintf(szRegistryMultiOvr1,Multimap_Flags_Overlays[MP_MAPTRK]);
+  rprintf(szRegistryMultiOvr2,Multimap_Flags_Overlays[MP_MAPWPT]);
+  rprintf(szRegistryMultiOvr3,Multimap_Flags_Overlays[MP_MAPASP]);
+
   rprintf(szRegistryMultiSizeY1,Multimap_SizeY[MP_MAPTRK]);
   rprintf(szRegistryMultiSizeY2,Multimap_SizeY[MP_MAPWPT]);
   rprintf(szRegistryMultiSizeY3,Multimap_SizeY[MP_MAPASP]);

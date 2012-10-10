@@ -2002,6 +2002,7 @@ _@M2230_ "Force\nLanded"
 _@M2231_ "ACTIVE"
 # short version of "Waypoints" for menu button must be max 8 characters!
 _@M2232_ "Waypts"
+_@M2233_ "Overlay"
 # Reserved for custom menus up to 2300!
 
 

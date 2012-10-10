@@ -160,6 +160,8 @@ void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
 void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 {
 
+  if (!IsMultimapOverlays()) return;
+
   HBRUSH oldBrush;
   HFONT oldFont;
 

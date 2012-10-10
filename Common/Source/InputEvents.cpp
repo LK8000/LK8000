@@ -2188,6 +2188,10 @@ extern bool RotateScreen(short angle);
 	ToggleMultimapWaypoints();
 	return;
   }
+  if (_tcscmp(misc, TEXT("MMOVERLAYS")) == 0) {
+	ToggleMultimapOverlays();
+	return;
+  }
 
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);

@@ -80,6 +80,12 @@ bool IsMultimapWaypoints(void) {
   return Multimap_Flags_Waypoints[i];
 }
 
+bool IsMultimapOverlays(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  return Multimap_Flags_Overlays[i];
+}
+
 
 
 void ToggleMultimapTerrain(void) {
@@ -106,6 +112,12 @@ void ToggleMultimapWaypoints(void) {
   Multimap_Flags_Waypoints[i]=!Multimap_Flags_Waypoints[i];
 }
 
+void ToggleMultimapOverlays(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Overlays[i]=!Multimap_Flags_Overlays[i];
+}
+
 
 
 //
@@ -119,6 +131,7 @@ void Reset_Multimap_Flags(void) {
 	Multimap_Flags_Topology[i]=true;
 	Multimap_Flags_Airspace[i]=true;
 	Multimap_Flags_Waypoints[i]=true;
+	Multimap_Flags_Overlays[i]=true;
 	Multimap_SizeY[i]=SIZE1;	// default
   }
 }

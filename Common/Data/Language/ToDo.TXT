@@ -220,3 +220,8 @@ _@M2146_ "Exit"
 _@M2147_ "Exit/Entry"
 _@M1807_ "_Reserved 2"
 
+_@M2230_ "Force\nLanded"
+_@M2231_ "ACTIVE"
+# short version of "Waypoints" for menu button must be max 8 characters!
+_@M2232_ "Waypts"
+_@M2233_ "Overlay"

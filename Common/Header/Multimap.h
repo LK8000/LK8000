@@ -20,11 +20,13 @@ void ToggleMultimapTerrain(void);
 void ToggleMultimapAirspace(void);
 void ToggleMultimapTopology(void);
 void ToggleMultimapWaypoints(void);
+void ToggleMultimapOverlays(void);
 
 bool IsMultimapTerrain(void);
 bool IsMultimapAirspace(void);
 bool IsMultimapTopology(void);
 bool IsMultimapWaypoints(void);
+bool IsMultimapOverlays(void);
 
 short Get_Current_Multimap_Type();
 void Reset_Multimap_Flags(void);

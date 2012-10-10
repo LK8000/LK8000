@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 121002
+# Release 9 , 121009
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -3031,8 +3031,8 @@ location=3
 mode=MMCONF
 type=key
 data=APP4
-event=Null
-label=
+event=Service MMOVERLAYS
+label=_@M2233_
 location=4
 
 mode=MMCONF
