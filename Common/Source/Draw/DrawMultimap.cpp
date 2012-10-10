@@ -12,6 +12,7 @@
 #include "RGB.h"
 #include "Sideview.h"
 #include "Multimap.h"
+#include "LKInterface.h"
 
 extern bool Sonar_IsEnabled;
 extern bool ActiveMap_IsEnabled;
@@ -177,14 +178,33 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
         midsplit+=textSize.cy;
 
 
-  if(GetSideviewPage()== IM_NEAR_AS)
+  if(MapSpaceMode==MSM_MAPASP)
   {
         TCHAR topcenter_txt[80];
         _stprintf(topcenter_txt, TEXT("%s"), Sideview_szNearAS );
 
         MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rci.right/3, midsplit, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
+	goto _return;
   }
 
+#if 0
+  if(MapSpaceMode==MSM_MAPWPT)
+  {
+        TCHAR topcenter_txt[80];
+	int index=GetOvertargetIndex();
+	if (index<0) goto _return;
+
+	TCHAR wpname[NAME_SIZE+1];
+	LK_tcsncpy(wpname, WayPointList[index].Name, 8);
+
+        _stprintf(topcenter_txt, TEXT("%s  12.2km reqE=12 +123  "), wpname);
+
+        MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rci.right/4, midsplit, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
+	goto _return;
+  }
+#endif
+
+_return:
   SelectObject(hdc,oldBrush);
   SelectObject(hdc,oldFont);
 
