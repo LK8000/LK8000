@@ -158,9 +158,9 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
   HFONT oldFont;
 
   if (INVERTCOLORS)
-        oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Petrol);
+        oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Ndark);
   else
-        oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_LightCyan);
+        oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_LightGrey);
 
   extern double fSplitFact;
   SIZE textSize;
