@@ -199,6 +199,8 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 	goto _return;
   }
 
+
+#if 0
   if(MapSpaceMode==MSM_MAPWPT || MapSpaceMode==MSM_MAPTRK)
   {
         TCHAR topcenter_txt[80];
@@ -260,6 +262,7 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 	SelectObject(hdc,oldpen);
 	//goto _return;
   }
+#endif // experimental "eyes style" overlays
 
 _return:
   SelectObject(hdc,oldBrush);
