@@ -28,7 +28,7 @@ double fOffset = 0.0;
 using std::min;
 using std::max;
 int k;
-double fZOOMScale = 1.0;
+static double fZOOMScale = 1.0;
 double fDelta = MIN_ALTITUDE;
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
@@ -351,12 +351,14 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   int y0 = CalcHeightCoordinat  ( 0,  &sDia);
 
   double xtick = 1.0;
-  if (fDist>10.0*1000.0) xtick = 5.0;
-  if (fDist>50.0*1000.0) xtick = 10.0;
-  if (fDist>100.0*1000.0) xtick = 20.0;
-  if (fDist>200.0*1000.0) xtick = 25.0;
-  if (fDist>250.0*1000.0) xtick = 50.0;
-  if (fDist>500.0*1000.0) xtick = 100.0;
+  double fRange = fabs (sDia.fXMax-sDia.fXMin);
+  if (fRange>3.0*1000.0) xtick = 2.0;
+  if (fRange>15*1000.0) xtick = 5.0;
+  if (fRange>50.0*1000.0) xtick = 10.0;
+  if (fRange>100.0*1000.0) xtick = 20.0;
+  if (fRange>200.0*1000.0) xtick = 25.0;
+  if (fRange>250.0*1000.0) xtick = 50.0;
+  if (fRange>500.0*1000.0) xtick = 100.0;
 
   if(bInvCol)
   {
