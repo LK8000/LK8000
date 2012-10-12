@@ -14,12 +14,12 @@
 #include "Bitmaps.h"
 #include "RGB.h"
 #include "DoInits.h"
+#include "Multimap.h"
 
 
 // #define DEBUG_VIRTUALKEYS
 // #define DEBUG_MAPINPUT
 
-extern bool IsMultiMap();
 
 COLORREF taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
@@ -407,7 +407,12 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
       // Careful! If you ignorenext, any event timed as double click of course will be affected.
       // and this means also fast clicking on bottombar!!
       // so first lets see if we are in lk8000 text screens.. 
-      if (DONTDRAWTHEMAP || (MAPMODE8000 && (YstartScreen >=BottomBarY))) {  
+	// The idea was/is: break if we are in the nearest pages, or in main map but on the bottom bar.
+	#if NEWMULTIMAPS
+	if (DONTDRAWTHEMAP || (IsMultiMap() && (YstartScreen >=BottomBarY))) {  
+	#else
+	if (DONTDRAWTHEMAP || (MAPMODE8000 && (YstartScreen >=BottomBarY))) {  
+	#endif
 		// do not ignore next, let buttonup get the signal
 		break;
       }
@@ -621,8 +626,12 @@ goto_menu:
       // end aircraft icon check				
       } 
 
-	// MultiMap specials, we use same geometry of MSM_MAP
+	// MultiMap custom specials, we use same geometry of MSM_MAP
+	#if NEWMULTIMAPS
+	if (NOTANYPAN && IsMultiMapCustom() ) {
+	#else
 	if (!MapWindow::mode.AnyPan() && IsMultiMap() ) {
+	#endif
 		if ( (lparam_X <= P_UngestureLeft.x) && (lparam_Y <= P_UngestureLeft.y) ) {
 			#ifndef DISABLEAUDIO
          		 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -642,7 +651,11 @@ goto_menu:
 	}
 
 	// Otherwise not in multimap, proceed with normal checks
-	if (mapmode8000) { 
+	#if NEWMULTIMAPS
+	if (NOTANYPAN && IsMultiMapShared()) {
+	#else
+	if (mapmode8000) {
+	#endif
 	if ( (lparam_X <= P_UngestureLeft.x) && (lparam_Y <= P_UngestureLeft.y) ) {
 		
 		if (!CustomKeyHandler(CKI_TOPLEFT)) {
@@ -719,7 +732,11 @@ goto_menu:
 	// they are processed even when virtual keys are disabled, because they concern special lk8000 menus.
 
 	// First case: for mapspacemodes we manage gestures as well
+	#if NEWMULTIMAPS
+	if (dontdrawthemap||(NOTANYPAN && IsMultiMapSharedNoMain())) {
+	#else
 	if (dontdrawthemap) {
+	#endif
 
 		if ( gestDir == LKGESTURE_UP) {
 			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_UP);

@@ -858,7 +858,7 @@
 #define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    !MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
 #define QUICKDRAW (FastZoom || MapWindow::zoom.BigZoom())
-
+#define NOTANYPAN	!MapWindow::mode.AnyPan()
 
 
 // For debugging and trace tests

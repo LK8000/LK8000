@@ -336,11 +336,15 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 shortcut_gesture:
 	// UP gesture
 	if (vkmode>LKGESTURE_NONE) {
+		#if NEWMULTIMAPS
+		// WE MANAGE GESTURES IN ALL MAPSPACES
+		#else
 		// do not handle gestures outside mapspacemode
 		if (!dontdrawthemap) {
 			// DoStatusMessage(_T("DBG-033 gesture not used here"));
 			return 0;
 		}
+		#endif
 		switch(MapSpaceMode) {
 			case MSM_LANDABLE:
 			case MSM_AIRPORTS:
@@ -374,7 +378,12 @@ shortcut_gesture:
 		switch(vkmode) {
 			// SCROLL DOWN
 			case LKGESTURE_DOWN:
+				#if NEWMULTIMAPS
+				// no pagedown for main map.. where do you want to go??
+				if (NOTANYPAN && IsMultiMapNoMain()) {
+				#else
 				if (dontdrawthemap && IsMultiMap()) {
+				#endif
 					LKevent=LKEVENT_PAGEDOWN;
 					MapWindow::RefreshMap();
 					return 0;
@@ -395,7 +404,12 @@ shortcut_gesture:
 				return 0;
 			// SCROLL UP
 			case LKGESTURE_UP:
-				if (dontdrawthemap && IsMultiMap()) {
+				#if NEWMULTIMAPS
+				// no pagedown for main map.. where do you want to go??
+				if (NOTANYPAN && IsMultiMapNoMain()) {
+				#else
+				if (dontdrawthemap && (IsMultiMap())) {
+				#endif
 					LKevent=LKEVENT_PAGEUP;
 					MapWindow::RefreshMap();
 					return 0;
@@ -466,7 +480,7 @@ gesture_left:
 		return 0;
 	}
 
-	if (!MapWindow::mode.AnyPan() && IsMultiMap()) {
+	if (!MapWindow::mode.AnyPan() && (IsMultiMap()||MapSpaceMode==MSM_MAPTRK)) {
 		if (keytime>=(VKSHORTCLICK*4)) {
 			LKevent=LKEVENT_LONGCLICK;
 			MapWindow::RefreshMap();
@@ -544,23 +558,6 @@ gesture_left:
 
 	// no click for already clicked events
 
-	//  Swap white and black colours on LK8000 : working only with virtual keys on, map mode
-	//  Currently as of 2.1 virtual keys are almost obsoleted, and it is very unlikely that 
-	//  someone will ever use this feature, which is also undocumented!!
-	if (keytime>=VKTIMELONG && !dontdrawthemap) {
-			static short oldOutline=OutlinedTp;
-			if (OutlinedTp>(OutlinedTp_t)otDisabled) OutlinedTp=(OutlinedTp_t)otDisabled;
-			else
-				OutlinedTp=oldOutline;
-			Appearance.InverseInfoBox = !Appearance.InverseInfoBox;
-			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
-			MapWindow::RefreshMap();
-		return 0;
-
-		// return 27; virtual ESC 
-	} else {
 		// If in mapspacemode process ENTER 
 		if ( (keytime>=(VKSHORTCLICK*2)) && dontdrawthemap && !IsMultiMap()) {
 			#ifndef DISABLEAUDIO
@@ -590,7 +587,6 @@ gesture_left:
 		} else {
 			return 0;
 		}
-	}
 	DoStatusMessage(_T("VirtualKey Error")); 
 	return 0;
 }

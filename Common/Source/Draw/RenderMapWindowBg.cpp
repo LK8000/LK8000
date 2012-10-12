@@ -11,7 +11,7 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 #include "LKGeneralAviation.h"
-
+#include "Multimap.h"
 
 #if NEWSMARTZOOM
 // We do smart zoom only with real map painted, and in quickdraw mode
@@ -115,12 +115,18 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 		}
 	}
   }
-	
+ 
   // let the calculations run, but dont draw anything but the look8000 when in MapSpaceMode != MSM_MAP
   if (DONTDRAWTHEMAP) 
   {
-QuickRedraw: // 100318 speedup redraw
+QuickRedraw:
+	#if NEWMULTIMAPS
+	DrawMapSpace(hdc, rc);
+	// Is this a "shared" environment, and overlays are enabled for it?
+	if (IsMultiMapShared() && IsMultimapOverlays()) DrawLook8000(hdc,rc);
+	#else
 	DrawLook8000(hdc,rc);
+	#endif
 	DrawBottomBar(hdc,rc);
 #ifdef CPUSTATS
 	DrawCpuStats(hdc,rc);
@@ -251,7 +257,12 @@ fastzoom:
 
   if (QUICKDRAW)  {
 	if ( !mode.AnyPan()) {
-		DrawLook8000(hdc,rc); 
+		#if NEWMULTIMAPS
+		if (MapSpaceMode!= MSM_MAP) DrawMapSpace(hdc, rc);
+		if (IsMultiMapShared() && IsMultimapOverlays()) DrawLook8000(hdc,rc);
+		#else
+		DrawLook8000(hdc,rc);
+		#endif
 		DrawBottomBar(hdc,rc);
 	}
   	SelectObject(hdcDrawWindow, hfOld);
@@ -379,7 +390,7 @@ fastzoom:
     // REMINDER TODO let it be configurable for not circling also, as before
     if ((mode.Is(Mode::MODE_CIRCLING)) )
       if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
-    
+  
     DrawLook8000(hdc,rc); 
     DrawBottomBar(hdc,rc);
   }

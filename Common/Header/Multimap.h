@@ -14,6 +14,10 @@
 extern int Current_Multimap_SizeY;
 
 bool IsMultiMap(void);
+bool IsMultiMapNoMain(void);
+bool IsMultiMapCustom(void);
+bool IsMultiMapShared(void);
+bool IsMultiMapSharedNoMain(void);
 void MultiMapSound(void);
 
 void ToggleMultimapTerrain(void);

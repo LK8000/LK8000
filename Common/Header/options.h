@@ -106,6 +106,9 @@
 // screen portion, on demand.
 #define DYNASCREEN		1	
 
+// Multimaps custom and shared, concerning events and customkeys 
+#define NEWMULTIMAPS		1
+
 
 // Bottombar TRM0 automatically triggered upon entering a thermal.
 // This will be soon removed entirely - 121002

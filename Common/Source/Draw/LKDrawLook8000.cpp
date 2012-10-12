@@ -485,10 +485,13 @@ nextinit:
   overcolor=OverColorRef;
   distcolor=OverColorRef;
 
+  #if NEWMULTIMAPS
+  #else
   if (MapSpaceMode!= MSM_MAP) {
 	DrawMapSpace(hdc, rc);
 	goto TheEnd;
   }
+  #endif
 
 
   tlen=tlenFullScreen;

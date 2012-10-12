@@ -16,6 +16,9 @@ extern int XstartScreen, YstartScreen;
 extern long VKtime;
 
 
+//
+// This is normally called by DrawMapSpace
+//
 
 void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 {
@@ -45,7 +48,13 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 
 
   TCHAR ttext[100];
-  
+ 
+  //
+  // Attention! Some events are NOT AVAILABLE in "shared" multimaps.
+  // Shared multimaps are sharing events and customkeys with the main map.
+  // They are hardconfigured in Multimap.cpp
+  //
+ 
   switch(LKevent) {
 	//
 	// USABLE EVENTS
@@ -69,6 +78,8 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		break;
 	case LKEVENT_SHORTCLICK:
 		// 
+		// NOT AVAILABLE IN SHARED MULTIMAPS
+		//
 		// This is triggered when a click was detected not part of anything else.
 		// OR, if you have ActiveMap_IsEnabled, anywhere, since UP and DOWN are disabled.
 		// Even in this last case, TOPRIGHT, TOPLEFT are managed all the way and SHORTCLICK 
@@ -82,10 +93,16 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		_tcscpy(ttext,_T("Event = PAGE DOWN"));
 		break;
 	case LKEVENT_TOPLEFT:
-	_tcscpy(ttext,_T("Event = TOP LEFT"));
+		// 
+		// NOT AVAILABLE IN SHARED MULTIMAPS
+		//
+		_tcscpy(ttext,_T("Event = TOP LEFT"));
 	break;
 	case LKEVENT_TOPRIGHT:
-	_tcscpy(ttext,_T("Event = TOP RIGHT"));
+		// 
+		// NOT AVAILABLE IN SHARED MULTIMAPS
+		//
+		_tcscpy(ttext,_T("Event = TOP RIGHT"));
 	break;
 
 
@@ -94,19 +111,22 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 	// THESE EVENTS ARE NOT AVAILABLE IN MULTIMAPS!
 	//	
 	case LKEVENT_ENTER:
+		// WORKING ONLY in nearest pages
 		// click longer on center, like to confirm a selection
 		_tcscpy(ttext,_T("Event = ENTER"));
 		break;
 	case LKEVENT_NEWPAGE:
+		// WORKING ONLY in nearest pages
 		// swipe gesture up/down produces NEW PAGE in this case
 		_tcscpy(ttext,_T("Event = NEW PAGE"));
 		break;
+
+
+
 	case LKEVENT_NONE:
 		// Normally no event.
 		_tcscpy(ttext,_T("Event = NONE"));
 		break;
-	//
-
 
 	default:
 		// THIS SHOULD NEVER HAPPEN, but always CHECK FOR IT!

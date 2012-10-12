@@ -17,12 +17,68 @@
 // For this reason we short rewrite many parts of sideview and RenderAirspace/etc.
 int Current_Multimap_SizeY=SIZE1;
 
+
+//
+// All multimaps including MSM_MAP main
+//
 bool IsMultiMap() {
+
+#if NEWMULTIMAPS
+  if ( (MapSpaceMode >= MSM_MAPRADAR) && (MapSpaceMode <= MSM_MAPTEST)||MapSpaceMode==MSM_MAP)
+#else
   if ( (MapSpaceMode >= MSM_MAPRADAR) && (MapSpaceMode <= MSM_MAPTEST) )
+#endif
 	return true;
   else
 	return false;
 }
+
+
+//
+// All multimaps excluded MSM_MAP
+//
+bool IsMultiMapNoMain() {
+
+  if ( (MapSpaceMode >= MSM_MAPRADAR) && (MapSpaceMode <= MSM_MAPTEST))
+	return true;
+  else
+	return false;
+}
+	
+
+//
+// All multimapped page, not sharing map customkeys and events
+//
+bool IsMultiMapCustom() {
+  //if ( (MapSpaceMode >= MSM_MAPRADAR) && (MapSpaceMode <= MSM_MAPTEST))
+  if ( (MapSpaceMode == MSM_MAPRADAR) || (MapSpaceMode == MSM_MAPTEST))
+	return true;
+  else
+	return false;
+}
+
+
+//
+// Multimaps sharing events and customkeys with main map, INCLUDING MSM_MAP
+//
+bool IsMultiMapShared() {
+  // TODO!
+  // static bool shared[]={ false, false, false..} 
+  // return shared[MapSpaceMode];  simply...
+  //
+  if ( (MapSpaceMode==MSM_MAP) || (MapSpaceMode == MSM_MAPTRK) || (MapSpaceMode == MSM_MAPWPT) || (MapSpaceMode==MSM_MAPASP) )
+	return true;
+  else
+	return false;
+}
+
+bool IsMultiMapSharedNoMain() {
+  if ( (MapSpaceMode == MSM_MAPTRK) || (MapSpaceMode == MSM_MAPWPT) || (MapSpaceMode==MSM_MAPASP) )
+	return true;
+  else
+	return false;
+}
+
 
 
 //
@@ -123,6 +179,9 @@ void ToggleMultimapOverlays(void) {
 //
 // Default flags for multimaps, used at init and at reset config
 // They are eventually overloaded by a profile.
+// See Defines.h for MP_ definitions.
+// Of course MapWindowBg may decide not to use overlays, for example, by itself for a 
+// particular MapSpaceMode.. nevertheless, here are the defaults.
 //
 void Reset_Multimap_Flags(void) {
   short i;
@@ -134,6 +193,12 @@ void Reset_Multimap_Flags(void) {
 	Multimap_Flags_Overlays[i]=true;
 	Multimap_SizeY[i]=SIZE1;	// default
   }
+
+  // We should always get these flags set correctly, because the LKInterface is working
+  // in a separated thread by Draw
+  Multimap_Flags_Overlays[MP_WELCOME]=false;
+  Multimap_Flags_Overlays[MP_RADAR]=false;
+  Multimap_Flags_Overlays[MP_TEST]=false;
 }
 
 
@@ -142,13 +207,15 @@ void MultiMapSound() {
 #ifndef DISABLEAUDIO
   if (EnableSoundModes) {
 	switch(CURTYPE) {
+		case 0: // MP_WELCOME
+			break;
 		case 1: // MP_MOVING
 			PlayResource(TEXT("IDR_WAV_MM0"));
 			break;
-		case 2: // MAPASP
+		case 2: 
 			PlayResource(TEXT("IDR_WAV_MM1"));
 			break;
-		case 3: // MP_RADAR
+		case 3: 
 			PlayResource(TEXT("IDR_WAV_MM2"));
 			break;
 		case 4:
@@ -160,9 +227,11 @@ void MultiMapSound() {
 		case 6:
 			PlayResource(TEXT("IDR_WAV_MM5"));
 			break;
+#if 0
 		case 7:
 			PlayResource(TEXT("IDR_WAV_MM6"));
 			break;
+#endif
 		default:
 			break;
 	}
