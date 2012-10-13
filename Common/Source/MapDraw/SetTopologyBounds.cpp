@@ -11,7 +11,7 @@
 #include "RasterTerrain.h"
 #include "STScreenBuffer.h"
 #include "RGB.h"
-
+#include "Multimap.h"
 
 
 extern Topology* TopoStore[MAXTOPOLOGY];
@@ -100,7 +100,11 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
   }
   #endif
   
+#if NEWMULTIMAPS
+  if (IsMultimapTopology()) {
+#else
   if (EnableTopology) {
+#endif
     // check if any needs to have cache updates because wasnt 
     // visible previously when bounds moved
     bool sneaked= false;

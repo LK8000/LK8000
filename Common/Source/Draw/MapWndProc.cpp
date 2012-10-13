@@ -926,7 +926,11 @@ goto_menu:
 
 				// Select airspace on moving map only if they are visible
 				// 120526 moved out of anypan, buggy because we want airspace selection with priority
+				#if NEWMULTIMAPS
+				if (IsMultimapAirspace() && Event_InteriorAirspaceDetails(Xstart, Ystart))
+				#else
 				if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart))
+				#endif
 					break;
 
 				if (!mode.AnyPan()) {

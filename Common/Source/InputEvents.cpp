@@ -1079,6 +1079,12 @@ void InputEvents::eventVisualGlide(const TCHAR *misc) {
 }
 
 void InputEvents::eventAirSpace(const TCHAR *misc) {
+
+  #if NEWMULTIMAPS
+  if (_tcscmp(misc, TEXT("toggle")) == 0) {
+	ToggleMultimapAirspace();
+  }
+  #else
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
     OnAirSpace ++;
     if (OnAirSpace>1) {
@@ -1097,6 +1103,7 @@ void InputEvents::eventAirSpace(const TCHAR *misc) {
 	// LKTOKEN  _@M614_ = "Show AirSpace ON" 
       DoStatusMessage(gettext(TEXT("_@M614_")));
   }  
+  #endif
 }
 
 void InputEvents::eventActiveMap(const TCHAR *misc) {
@@ -1241,6 +1248,19 @@ void InputEvents::eventPan(const TCHAR *misc) {
 
 }
 
+#if NEWMULTIMAPS
+void InputEvents::eventTerrainTopology(const TCHAR *misc) {
+
+  if (_tcscmp(misc, TEXT("terrain toggle")) == 0) {
+	ToggleMultimapTerrain();
+	//MapWindow::RefreshMap();
+  }
+  if (_tcscmp(misc, TEXT("topology toggle")) == 0) {
+	ToggleMultimapTopology();
+	//MapWindow::RefreshMap();
+  }
+}
+#else
 // Do JUST Terrain/Toplogy (toggle any, on/off any, show)
 void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 
@@ -1269,7 +1289,7 @@ void InputEvents::eventTerrainTopology(const TCHAR *misc) {
     MapWindow::Event_TerrainTopology(-1);
 
 }
-
+#endif
 
 
 // ArmAdvance

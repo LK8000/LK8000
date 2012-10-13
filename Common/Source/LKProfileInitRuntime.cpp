@@ -50,8 +50,11 @@ void LKProfileInitRuntime(void) {
   AutoMcMode			= AutoMcMode_Config;
   BgMapColor			= BgMapColor_Config;
   EnableNavBaroAltitude		= EnableNavBaroAltitude_Config;
+#if NEWMULTIMAPS
+#else
   EnableTerrain 		= EnableTerrain_Config;
   EnableTopology		= EnableTopology_Config;
+#endif
   Orbiter			= Orbiter_Config;
   Shading			= Shading_Config;
   TerrainRamp			= TerrainRamp_Config;

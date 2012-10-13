@@ -399,8 +399,11 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryDisplayUpValue,&DisplayOrientation_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryDistanceUnitsValue,&DistanceUnit_Config );
+#if NEWMULTIMAPS
+#else
   PREAD(sname,svalue,szRegistryDrawTerrain,&EnableTerrain_Config);
   PREAD(sname,svalue,szRegistryDrawTopology,&EnableTopology_Config);
+#endif
   PREAD(sname,svalue,szRegistryEnableFLARMMap,&EnableFLARMMap);
   PREAD(sname,svalue,szRegistryEnableNavBaroAltitude,&EnableNavBaroAltitude_Config);
   PREAD(sname,svalue,szRegistryFAIFinishHeight,&EnableFAIFinishHeight);
@@ -597,6 +600,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname, svalue, szRegistryUseWindRose, &UseWindRose);
   if (matchedstring) return;
 
+  PREAD(sname,svalue,szRegistryMultiTerr0,&Multimap_Flags_Terrain[MP_MOVING]);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiTerr1,&Multimap_Flags_Terrain[MP_MAPTRK]);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiTerr2,&Multimap_Flags_Terrain[MP_MAPWPT]);
@@ -604,6 +609,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMultiTerr3,&Multimap_Flags_Terrain[MP_MAPASP]);
   if (matchedstring) return;
 
+  PREAD(sname,svalue,szRegistryMultiTopo0,&Multimap_Flags_Topology[MP_MOVING]);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiTopo1,&Multimap_Flags_Topology[MP_MAPTRK]);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiTopo2,&Multimap_Flags_Topology[MP_MAPWPT]);
@@ -611,6 +618,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMultiTopo3,&Multimap_Flags_Topology[MP_MAPASP]);
   if (matchedstring) return;
 
+  PREAD(sname,svalue,szRegistryMultiAsp0,&Multimap_Flags_Airspace[MP_MOVING]);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiAsp1,&Multimap_Flags_Airspace[MP_MAPTRK]);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiAsp2,&Multimap_Flags_Airspace[MP_MAPWPT]);
@@ -618,6 +627,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMultiAsp3,&Multimap_Flags_Airspace[MP_MAPASP]);
   if (matchedstring) return;
 
+  PREAD(sname,svalue,szRegistryMultiWpt0,&Multimap_Flags_Waypoints[MP_MOVING]);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiWpt1,&Multimap_Flags_Waypoints[MP_MAPTRK]);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiWpt2,&Multimap_Flags_Waypoints[MP_MAPWPT]);
@@ -625,6 +636,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMultiWpt3,&Multimap_Flags_Waypoints[MP_MAPASP]);
   if (matchedstring) return;
 
+  PREAD(sname,svalue,szRegistryMultiOvr0,&Multimap_Flags_Overlays[MP_MOVING]);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiOvr1,&Multimap_Flags_Overlays[MP_MAPTRK]);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultiOvr2,&Multimap_Flags_Overlays[MP_MAPWPT]);

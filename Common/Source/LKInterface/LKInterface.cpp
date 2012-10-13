@@ -268,6 +268,9 @@ void SelectMapSpace(short i) {
 
 //
 void ToggleOverlays() {
+#if NEWMULTIMAPS
+	ToggleMultimapOverlays();
+#else
   static int oldLook8000;
   static bool doinit=true;
 
@@ -283,6 +286,7 @@ void ToggleOverlays() {
 	Look8000=lxcNoOverlay;
   else
 	Look8000=oldLook8000;
+#endif
 
 }
 

@@ -25,6 +25,7 @@
 #include "LKProfiles.h"
 #include "Calculations2.h"
 #include "DoInits.h"
+#include "Multimap.h"
 
 extern void UpdateAircraftConfig(void);
 extern void dlgCustomMenuShowModal(void);
@@ -1933,13 +1934,23 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTerrain"));
   if (wp) {
+#if NEWMULTIMAPS
+    // THIS SHOULD BE ENTIRELY REMOVED FROM CONFIG
+    wp->GetDataField()->Set(IsMultimapTerrain());
+#else
     wp->GetDataField()->Set(EnableTerrain_Config);
+#endif
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTopology"));
   if (wp) {
+#if NEWMULTIMAPS
+    // THIS SHOULD BE ENTIRELY REMOVED FROM CONFIG
+    wp->GetDataField()->Set(IsMultimapTopology());
+#else
     wp->GetDataField()->Set(EnableTopology_Config);
+#endif
     wp->RefreshDisplay();
   }
 
@@ -3745,6 +3756,8 @@ int ival;
     }
   }
 
+#if NEWMULTIMAPS
+#else
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTerrain"));
   if (wp) {
     if (EnableTerrain_Config != wp->GetDataField()->GetAsBoolean()) {
@@ -3760,6 +3773,7 @@ int ival;
       EnableTopology=EnableTopology_Config;
     }
   }
+#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCirclingZoom"));
   if (wp) {

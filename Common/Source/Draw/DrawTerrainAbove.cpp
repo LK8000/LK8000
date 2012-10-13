@@ -9,7 +9,8 @@
 #include "externs.h"
 
 //
-// Draw the reachable terrain glide amoeba
+// Draw the reachable SHADED terrain glide amoeba
+// This is not the outlined perimeter
 //
 void MapWindow::DrawTerrainAbove(HDC hDC, const RECT rc) {
 

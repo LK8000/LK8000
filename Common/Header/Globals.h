@@ -153,7 +153,10 @@ GEXTERN int  CustomKeyModeLeftUpCorner;
 GEXTERN int  CustomKeyModeRightUpCorner;
 GEXTERN int  CustomKeyModeCenterScreen;
 GEXTERN double QFEAltitudeOffset; // VENTA3
+#if NEWMULTIMAPS
+#else
 GEXTERN int OnAirSpace; // VENTA3 toggle DrawAirSpace
+#endif
 
 // used by auto QFE: do not reset QFE if previously in flight. So you can check QFE
 // on the ground, otherwise it turns to zero at once!
@@ -587,10 +590,13 @@ GEXTERN bool bAirspaceBlackOutline;
 GEXTERN int TrailActive;
 GEXTERN int TrailActive_Config;
 GEXTERN int VisualGlide;
+#if NEWMULTIMAPS
+#else
 GEXTERN bool EnableTopology;
 GEXTERN bool EnableTopology_Config;
 GEXTERN bool EnableTerrain;
 GEXTERN bool EnableTerrain_Config;
+#endif
 GEXTERN int FinalGlideTerrain;
 
 // 0: Manual

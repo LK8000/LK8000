@@ -184,8 +184,11 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryDisplayText,DisplayTextType);
   rprintf(szRegistryDisplayUpValue,DisplayOrientation_Config);
   rprintf(szRegistryDistanceUnitsValue,DistanceUnit_Config );
+#if NEWMULTIMAPS
+#else
   rprintf(szRegistryDrawTerrain,EnableTerrain_Config);
   rprintf(szRegistryDrawTopology,EnableTopology_Config);
+#endif
   rprintf(szRegistryEnableFLARMMap,EnableFLARMMap);
   rprintf(szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude_Config);
   rprintf(szRegistryFAIFinishHeight,EnableFAIFinishHeight);
@@ -315,22 +318,27 @@ void LKProfileSave(const TCHAR *szFile)
   //
   // Multimaps added 121003
   //
+  rprintf(szRegistryMultiTerr0,Multimap_Flags_Terrain[MP_MOVING]);
   rprintf(szRegistryMultiTerr1,Multimap_Flags_Terrain[MP_MAPTRK]);
   rprintf(szRegistryMultiTerr2,Multimap_Flags_Terrain[MP_MAPWPT]);
   rprintf(szRegistryMultiTerr3,Multimap_Flags_Terrain[MP_MAPASP]);
 
+  rprintf(szRegistryMultiTopo0,Multimap_Flags_Topology[MP_MOVING]);
   rprintf(szRegistryMultiTopo1,Multimap_Flags_Topology[MP_MAPTRK]);
   rprintf(szRegistryMultiTopo2,Multimap_Flags_Topology[MP_MAPWPT]);
   rprintf(szRegistryMultiTopo3,Multimap_Flags_Topology[MP_MAPASP]);
 
+  rprintf(szRegistryMultiAsp0,Multimap_Flags_Airspace[MP_MOVING]);
   rprintf(szRegistryMultiAsp1,Multimap_Flags_Airspace[MP_MAPTRK]);
   rprintf(szRegistryMultiAsp2,Multimap_Flags_Airspace[MP_MAPWPT]);
   rprintf(szRegistryMultiAsp3,Multimap_Flags_Airspace[MP_MAPASP]);
 
+  rprintf(szRegistryMultiWpt0,Multimap_Flags_Waypoints[MP_MOVING]);
   rprintf(szRegistryMultiWpt1,Multimap_Flags_Waypoints[MP_MAPTRK]);
   rprintf(szRegistryMultiWpt2,Multimap_Flags_Waypoints[MP_MAPWPT]);
   rprintf(szRegistryMultiWpt3,Multimap_Flags_Waypoints[MP_MAPASP]);
 
+  rprintf(szRegistryMultiOvr0,Multimap_Flags_Overlays[MP_MOVING]);
   rprintf(szRegistryMultiOvr1,Multimap_Flags_Overlays[MP_MAPTRK]);
   rprintf(szRegistryMultiOvr2,Multimap_Flags_Overlays[MP_MAPWPT]);
   rprintf(szRegistryMultiOvr3,Multimap_Flags_Overlays[MP_MAPASP]);

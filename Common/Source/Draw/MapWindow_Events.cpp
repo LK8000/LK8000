@@ -66,7 +66,8 @@ void MapWindow::Event_PanCursor(int dx, int dy) {
 }
 
 
-
+#if NEWMULTIMAPS
+#else
 void MapWindow::Event_TerrainTopology(int vswitch) {
   char val;
 
@@ -125,7 +126,7 @@ void MapWindow::Event_TerrainTopology(int vswitch) {
     // DoStatusMessage(TEXT("Topology / Terrain"), buf);
   }
 }
-
+#endif
 
 
 void MapWindow::Event_Pan(int vswitch) {
