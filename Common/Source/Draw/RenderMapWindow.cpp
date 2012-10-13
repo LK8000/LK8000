@@ -43,6 +43,12 @@ bool FastZoom;
 //
 void MapWindow::RenderMapWindow(RECT rc)
 {
+  // First of all we set the flag for DrawBottom. This is critical.
+  if (NOTANYPAN)
+	DrawBottom=true;
+  else
+	DrawBottom=false;
+
   //HFONT hfOld; REMOVE
   static DWORD fastzoomStart=0;
   // static short ZoomDelayTimes=0; // alternate rebouncing, with the lowest possible interval: 1 loop

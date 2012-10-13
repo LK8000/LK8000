@@ -81,11 +81,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   }
 
 
-  if ( !mode.AnyPan() )
-	DrawBottom=true;
-  else
-	DrawBottom=false;
-
   if ( ++flipflopcount >2 ) {
 	flipflop = !flipflop;
 	flipflopcount=0;
