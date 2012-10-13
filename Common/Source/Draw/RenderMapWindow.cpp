@@ -43,7 +43,7 @@ bool FastZoom;
 //
 void MapWindow::RenderMapWindow(RECT rc)
 {
-  HFONT hfOld;
+  //HFONT hfOld; REMOVE
   static DWORD fastzoomStart=0;
   // static short ZoomDelayTimes=0; // alternate rebouncing, with the lowest possible interval: 1 loop
 
@@ -110,38 +110,32 @@ void MapWindow::RenderMapWindow(RECT rc)
 	DrawFunctions1HZ(hdcDrawWindow,rc);
 	return;
   }
-  // overlays
 
-  hfOld = (HFONT)SelectObject(hdcDrawWindow, MapWindowFont);
+//  hfOld = (HFONT)SelectObject(hdcDrawWindow, MapWindowFont); // REMOVE
   
-  DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom 
+///  DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom  REMOVE
 
   //
   // When fast zoom requested, do not loose time with frills
   //
   if (QUICKDRAW) {
 	DrawFlightMode(hdcDrawWindow, rc);
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	// do a mapdirty and rerun the loop
 	MapWindow::RefreshMap();
 	return;
   }
 
-  DrawCompass(hdcDrawWindow, rc);
-  
+  // Logger indicator, flight indicator, battery indicator
   DrawFlightMode(hdcDrawWindow, rc);
   
-  if (!mode.AnyPan()) {
-    DrawFinalGlide(hdcDrawWindow,rc);
-  }
-  
-  // DrawSpeedToFly(hdcDrawWindow, rc);  // Usable
-
+  // GPS FIX warnings
   DrawGPSStatus(hdcDrawWindow, rc);
 
+  // Alarms &C.
   DrawFunctions1HZ(hdcDrawWindow,rc);
 
-  SelectObject(hdcDrawWindow, hfOld);
+ // SelectObject(hdcDrawWindow, hfOld);
 
 }
 

@@ -488,6 +488,11 @@ fastzoom:
     if (IsMultimapOverlays()) DrawLook8000(hdc,rc); 
     DrawBottomBar(hdc,rc);
   }
+
+  if (DONTDRAWTHEMAP) {
+	SelectObject(hdcDrawWindow, hfOld);
+	goto QuickRedraw;
+  }
     
   if (LKVarioBar && !mode.AnyPan()) 
 	LKDrawVario(hdc,rc);
@@ -507,6 +512,12 @@ fastzoom:
   #endif
 
   if (ISGAAIRCRAFT) DrawHSI(hdc,Orig,DrawRect); 
+
+  DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom
+  DrawCompass(hdcDrawWindow, rc);
+
+  if (NOTANYPAN) DrawFinalGlide(hdcDrawWindow,rc);
+
 
 #ifdef CPUSTATS
   DrawCpuStats(hdc,rc);
