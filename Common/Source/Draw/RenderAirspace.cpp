@@ -327,7 +327,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     if( (fDist *fZOOMScale) > 750000)
 	  fZOOMScale /= ZOOMFACTOR;
 
-    if((fDist *fZOOMScale) < 5000)
+    if((fDist *fZOOMScale) < 500)
 	  fZOOMScale *= ZOOMFACTOR;
   }
   fDist *=fZOOMScale;
@@ -335,6 +335,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   sDia.fXMin =-9500.0f;
   if( sDia.fXMin > (-0.1f * fDist))
 	sDia.fXMin = -0.1f * fDist;
+  if( -sDia.fXMin > (fDist))
+    sDia.fXMin = -fDist;
   sDia.fXMax = fDist;
   sDia.fYMin = hmin;
   sDia.fYMax = hmax;
@@ -350,9 +352,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   int x0 = CalcDistanceCoordinat( 0,  &sDia);
   int y0 = CalcHeightCoordinat  ( 0,  &sDia);
 
-  double xtick = 1.0;
+  double xtick = 0.5;
   double fRange = fabs (sDia.fXMax-sDia.fXMin);
-  if (fRange>3.0*1000.0) xtick = 2.0;
+  if (fRange>2.0*1000.0) xtick = 1.0;
+  if (fRange>8.0*1000.0) xtick = 2.0;
   if (fRange>15*1000.0) xtick = 5.0;
   if (fRange>50.0*1000.0) xtick = 10.0;
   if (fRange>100.0*1000.0) xtick = 20.0;
