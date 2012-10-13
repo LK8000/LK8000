@@ -120,6 +120,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 
   // 
   // "Checkpoint Charlie"
+  // This is were we process stuff for anything else but main map.
   // We let the calculations run also for MapSpace modes.
   // But for multimaps, we can also draw some more stuff..
   // We are also sent back here from next code, when we detect that
@@ -138,29 +139,38 @@ QuickRedraw:
 	if (IsMultiMapShared()) { 
 		// Shared map, of course not MSN_MAP, since dontdrawthemap was checked
 		//
-		if (IsMultimapOverlays()) DrawLook8000(hdc,rc);
-		if (LKVarioBar) LKDrawVario(hdc,rc);
+		if (IsMultimapOverlays()) {
 
-		/* THIS STUFF DOES NOT WORK IN SHARED MAPS, YET
-		   NEED FIXING LatLon2Screen for shared maps using Sideview
+			DrawLook8000(hdc,rc);
+			if (LKVarioBar) LKDrawVario(hdc,rc);
+
+			/* THIS STUFF DOES NOT WORK IN SHARED MAPS, YET
+			   NEED FIXING LatLon2Screen for shared maps using Sideview
 			//
-			// TODO dont draw when no topview!
+			// THIS IS DRAWRECT DEPENDENTs
 			//
-        	#ifdef GTL2
-    		if (((FinalGlideTerrain == 2) || (FinalGlideTerrain == 4)) && 
-        	    DerivedDrawInfo.TerrainValid)
-			DrawTerrainAbove(hdc, DrawRect);
-	        #endif
-		if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
-			DrawGlideThroughTerrain(hdc, DrawRect);
-		*/
-		if ((mode.Is(Mode::MODE_CIRCLING)) )
-			if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc);
-		if (extGPSCONNECT) {
-			DrawBearing(hdc, DrawRect);
+	        	#ifdef GTL2
+	    		if (((FinalGlideTerrain == 2) || (FinalGlideTerrain == 4)) && 
+	        	    DerivedDrawInfo.TerrainValid)
+				DrawTerrainAbove(hdc, DrawRect);
+		        #endif
+			if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
+				DrawGlideThroughTerrain(hdc, DrawRect);
+
+			if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) 
+				DrawTask(hdc, DrawRect, Sideview_Orig_InUse);
+
+			if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
+
+			// draw wind vector at aircraft
+			DrawWindAtAircraft2(hdc, Sideview_Orig_InUse, DrawRect);
+			*/
+
+			if ((mode.Is(Mode::MODE_CIRCLING)) )
+				if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc);
+
+			DrawFinalGlide(hdcDrawWindow,rc);
 		}
-		// draw wind vector at aircraft
-		DrawWindAtAircraft2(hdc, Sideview_Orig_InUse, DrawRect);
 
 	} else {
 		// Not in map painting environment 
