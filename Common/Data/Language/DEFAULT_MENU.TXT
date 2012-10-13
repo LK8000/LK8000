@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 121009
+# Release 9 , 121013
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -643,7 +643,6 @@ mode=Display1
 type=key
 data=9
 event=AirSpace toggle
-event=Mode default
 # label=_@M2029_\n$(AirSpaceToggleName)
 label=$(AC19)
 location=8
@@ -651,10 +650,9 @@ location=8
 mode=Display1
 type=key
 data=0
-event=VisualGlide toggle
-event=Mode default
-# label=_@M2030_\n$(VisualGlideToggleName)
-label=$(AC12)
+event=Service OVERLAYS
+# label=_@M2079_\n$(OVERLAY)
+label=$(AC17)
 location=9
 
 mode=Display1
