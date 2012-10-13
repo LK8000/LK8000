@@ -2672,8 +2672,47 @@ void InputEvents::eventRun(const TCHAR *misc) {
 
 void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
+
+	#if NEWMULTIMAPS
+	short i=GetMultimap_Labels();
+	LKASSERT( (i>=0) && (i<=MAPLABELS_END));
+	if (++i>MAPLABELS_END) i=MAPLABELS_START;
+	SetMultimap_Labels(i);
+	#else
 	MapWindow::DeclutterLabels ++;
 	MapWindow::DeclutterLabels = MapWindow::DeclutterLabels % 4;
+	#endif
+
+	#if NEWMULTIMAPS
+	switch (GetMultimap_Labels()) {
+
+		case 0:	// MAPLABELS_ALLON
+			EnableMultimapWaypoints();
+			break;
+
+		case 1: // MAPLABELS_ONLYWPS
+			EnableMultimapWaypoints();
+			break;
+
+		case 2: // MAPLABELS ONLYTOPO
+			DisableMultimapWaypoints();
+			break;
+
+		case 3: // MAPLABELS ALLOFF
+			DisableMultimapWaypoints();
+			break;
+
+		default:
+			#if TESTBENCH
+			LKASSERT(0);
+			#endif
+			break;
+	}
+
+	#endif
+  #if NEWMULTIMAPS
+  }
+  #else
   } else if (_tcscmp(misc, TEXT("on")) == 0)
     MapWindow::DeclutterLabels = MAPLABELS_ALLOFF;
   else if (_tcscmp(misc, TEXT("off")) == 0)
@@ -2691,6 +2730,7 @@ void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
 	// LKTOKEN  _@M421_ = "Map labels OFF" 
       DoStatusMessage(gettext(TEXT("_@M421_")));  
   }
+  #endif
 }
 
 

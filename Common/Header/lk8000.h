@@ -94,14 +94,6 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo);
 void UpdateBatteryInfos(void);      
 void SwitchToMapWindow(void);
 
-
-#define MAPLABELS_ALLON		0
-#define MAPLABELS_ONLYWPS	1
-#define MAPLABELS_ONLYTOPO	2
-#define MAPLABELS_ALLOFF	3
-
-
-
 #if 0
 typedef struct {
         int     array[RASIZE]; // rotary array with a predefined max capacity

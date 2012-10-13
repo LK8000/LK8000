@@ -798,6 +798,18 @@
 #define TOMETER         (double)1.0
 
 
+//
+// MAP LABELS ROUND ROBIN CHOICES
+//
+#define MAPLABELS_START         0       // mark limit
+#define MAPLABELS_ALLON         0
+#define MAPLABELS_ONLYWPS       1
+#define MAPLABELS_ONLYTOPO      2
+#define MAPLABELS_ALLOFF        3
+#define MAPLABELS_END           3       // mark limit
+
+
+
 // 
 // Special chars
 //

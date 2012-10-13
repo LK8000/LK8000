@@ -333,6 +333,11 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMultiAsp2,Multimap_Flags_Airspace[MP_MAPWPT]);
   rprintf(szRegistryMultiAsp3,Multimap_Flags_Airspace[MP_MAPASP]);
 
+  rprintf(szRegistryMultiLab0,Multimap_Labels[MP_MOVING]);
+  rprintf(szRegistryMultiLab1,Multimap_Labels[MP_MAPTRK]);
+  rprintf(szRegistryMultiLab2,Multimap_Labels[MP_MAPWPT]);
+  rprintf(szRegistryMultiLab3,Multimap_Labels[MP_MAPASP]);
+
   rprintf(szRegistryMultiWpt0,Multimap_Flags_Waypoints[MP_MOVING]);
   rprintf(szRegistryMultiWpt1,Multimap_Flags_Waypoints[MP_MAPTRK]);
   rprintf(szRegistryMultiWpt2,Multimap_Flags_Waypoints[MP_MAPWPT]);

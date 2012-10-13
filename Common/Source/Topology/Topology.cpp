@@ -9,7 +9,7 @@
 #include "externs.h"
 #include <ctype.h> // needed for Wine
 #include "Topology.h"
-
+#include "Multimap.h"
 
 
 XShape::XShape() {
@@ -872,7 +872,11 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 
 // Print topology labels
 bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
+  #if NEWMULTIMAPS
+  if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
+  #else
   if (label && ((MapWindow::DeclutterLabels==MAPLABELS_ALLON)||(MapWindow::DeclutterLabels==MAPLABELS_ONLYTOPO))) {
+  #endif
 
 	TCHAR Temp[100];
 	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;

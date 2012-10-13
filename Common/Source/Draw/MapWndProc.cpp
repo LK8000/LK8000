@@ -69,7 +69,10 @@ int MapWindow::GliderScreenPosition = 40; // 20% from bottom
 int MapWindow::GliderScreenPositionX = 50;  // 100216
 int MapWindow::GliderScreenPositionY = 40;
 
+#if NEWMULTIMAPS
+#else
 unsigned char MapWindow::DeclutterLabels = MAPLABELS_ALLON;
+#endif
 
 double MapWindow::DisplayAngle = 0.0;
 double MapWindow::DisplayAircraftAngle = 0.0;

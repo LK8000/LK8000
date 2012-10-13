@@ -881,6 +881,9 @@ GEXTERN bool Multimap_Flags_Topology[MP_TOP+1];
 GEXTERN bool Multimap_Flags_Airspace[MP_TOP+1];
 GEXTERN bool Multimap_Flags_Waypoints[MP_TOP+1];
 GEXTERN bool Multimap_Flags_Overlays[MP_TOP+1];
+
+GEXTERN unsigned short Multimap_Labels[MP_TOP+1];
+
 GEXTERN int  Multimap_SizeY[MP_TOP+1];
 
 //

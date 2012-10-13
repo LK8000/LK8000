@@ -412,7 +412,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 34: // MapLabelsToggleActionName
+			#if NEWMULTIMAPS
+			switch(GetMultimap_Labels()) {
+			#else
 			switch(MapWindow::DeclutterLabels) {
+			#endif
 				case MAPLABELS_ALLON:
 					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2026),MsgToken(1203)); // WPTS
 					break;

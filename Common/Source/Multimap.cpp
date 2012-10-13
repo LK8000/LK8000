@@ -112,6 +112,18 @@ short Get_Current_Multimap_Type() {
   return ret;
 }
 
+unsigned short GetMultimap_Labels(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  return Multimap_Labels[i];
+}
+
+void SetMultimap_Labels(const unsigned short val) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Labels[i]=val;
+}
+
 bool IsMultimapTerrain(void) {
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
@@ -176,6 +188,68 @@ void ToggleMultimapOverlays(void) {
 
 
 
+void EnableMultimapTerrain(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Terrain[i]=true;
+}
+
+void EnableMultimapTopology(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Topology[i]=true;
+}
+
+void EnableMultimapAirspace(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Airspace[i]=true;
+}
+
+void EnableMultimapWaypoints(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Waypoints[i]=true;
+}
+
+void EnableMultimapOverlays(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Overlays[i]=true;
+}
+
+
+void DisableMultimapTerrain(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Terrain[i]=false;
+}
+
+void DisableMultimapTopology(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Topology[i]=false;
+}
+
+void DisableMultimapAirspace(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Airspace[i]=false;
+}
+
+void DisableMultimapWaypoints(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Waypoints[i]=false;
+}
+
+void DisableMultimapOverlays(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Overlays[i]=false;
+}
+
+
 //
 // Default flags for multimaps, used at init and at reset config
 // They are eventually overloaded by a profile.
@@ -191,6 +265,7 @@ void Reset_Multimap_Flags(void) {
 	Multimap_Flags_Airspace[i]=true;
 	Multimap_Flags_Waypoints[i]=true;
 	Multimap_Flags_Overlays[i]=true;
+	Multimap_Labels[i]=MAPLABELS_ALLON;
 	Multimap_SizeY[i]=SIZE1;	// default
   }
 
