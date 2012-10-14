@@ -746,7 +746,7 @@ if(bValid)
 
 
   hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
-  DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(13),  rct.top  + NIBLSCALE(28));
+  DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(11),  rct.top  + NIBLSCALE(11));
 
 
   /****************************************************************************************************

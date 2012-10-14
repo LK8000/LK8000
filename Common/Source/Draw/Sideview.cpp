@@ -13,6 +13,7 @@
 #include "LKInterface.h"
 #include "Terrain.h"
 #include "Multimap.h"
+#include "LKObjects.h"
 
 extern double fSplitFact;
 extern COLORREF  Sideview_TextColor;
@@ -121,7 +122,10 @@ SelectObject(hdc, oldBPen);
 
 
 
-
+//
+// We could use DrawCompass easily after adding a displayangle parameter there.
+// This is the exact copy of it, with no optimization.
+//
 void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
 {
 BOOL bInvCol = true ; //INVERTCOLORS
@@ -135,14 +139,19 @@ BOOL bInvCol = true ; //INVERTCOLORS
   oldBPen= (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
   if(bInvCol)
 	  oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+	  //oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
   else
 	  oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+	  //oldBrush = (HBRUSH) SelectObject(hdc, LKBrush_White);
   Polygon(hdc,Arrow,5);
 
   if(bInvCol)
 	SelectObject(hdc, GetStockObject(WHITE_PEN));
+	//SelectObject(hdc, LKPen_White_N1);
+
   else
 	SelectObject(hdc, GetStockObject(BLACK_PEN));
+	//SelectObject(hdc, LKPen_Black_N1);
 
 
   Polygon(hdc,Arrow,5);
