@@ -143,28 +143,6 @@ QuickRedraw:
 			DrawLook8000(hdc,rc);
 			if (LKVarioBar) LKDrawVario(hdc,rc);
 
-			/* THIS STUFF DOES NOT WORK IN SHARED MAPS, YET
-			   NEED FIXING LatLon2Screen for shared maps using Sideview
-			//
-			// THIS IS DRAWRECT DEPENDENTs
-			//
-	        	#ifdef GTL2
-	    		if (((FinalGlideTerrain == 2) || (FinalGlideTerrain == 4)) && 
-	        	    DerivedDrawInfo.TerrainValid)
-				DrawTerrainAbove(hdc, DrawRect);
-		        #endif
-			if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
-				DrawGlideThroughTerrain(hdc, DrawRect);
-
-			if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) 
-				DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
-
-			if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
-
-			// draw wind vector at aircraft
-			DrawWindAtAircraft2(hdc, Current_Multimap_TopOrig, DrawRect);
-			*/
-
 			if ((mode.Is(Mode::MODE_CIRCLING)) )
 				if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc);
 

@@ -752,7 +752,27 @@ double fFact = 1.0 ;
 
   if (IsMultimapWaypoints()) {
 	DrawWaypointsNew(hdc,DrawRect);
+	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))
+		DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
+	
   }
+
+ /* THIS STUFF DOES NOT WORK IN SHARED MAPS, YET
+    NEED FIXING LatLon2Screen for shared maps using Sideview
+    #ifdef GTL2
+    if (((FinalGlideTerrain == 2) || (FinalGlideTerrain == 4)) &&
+	DerivedDrawInfo.TerrainValid)
+	DrawTerrainAbove(hdc, DrawRect);
+    #endif
+    if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
+	DrawGlideThroughTerrain(hdc, DrawRect);
+  */
+
+
+  if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
+
+  // draw wind vector at aircraft
+  DrawWindAtAircraft2(hdc, Current_Multimap_TopOrig, DrawRect);
 
 
   /****************************************************************************************************
