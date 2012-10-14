@@ -101,9 +101,13 @@ void LKObjects_Create() {
 	case ss320x240:
 	case ss400x240:
 	case ss480x272:
+		MapWindow::hpAircraft = LKPen_Black_N5; // LK v4 has it bolder
+		MapWindow::hpAircraftBorder = LKPen_White_N2;
 		LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(5),RGB_MAGENTA);
 		break;
 	default:
+		MapWindow::hpAircraft = LKPen_Black_N4; // up to LK version 3
+		MapWindow::hpAircraftBorder = LKPen_White_N2;
 		LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_MAGENTA);
 		break;
   }
@@ -169,8 +173,6 @@ void LKObjects_Create() {
   MapWindow::hInvBackgroundBrush[9] = LKBrush_Black;
 
   MapWindow::hpCompassBorder = LKPen_Black_N2;
-  MapWindow::hpAircraft = LKPen_White_N3;
-  MapWindow::hpAircraftBorder = LKPen_Black_N1;
   MapWindow::hpWind = LKPen_Black_N2;
   MapWindow::hpBearing = LKPen_GABRG;
   MapWindow::hpBestCruiseTrack = LKPen_Blue_N1;

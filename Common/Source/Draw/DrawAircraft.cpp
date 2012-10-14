@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "LKObjects.h"
-
+#include "Multimap.h"
 
 
 void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
@@ -38,7 +38,7 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     }
 
     HBRUSH hbPOld = (HBRUSH)SelectObject(hdc, hbPAircraftSolidBg);
-    hpPOld = (HPEN)SelectObject(hdc, hpAircraft);
+    hpPOld = (HPEN)SelectObject(hdc, LKPen_White_N3);
   
     PolygonRotateShift(Para, NUMPARAPOINTS, Orig.x+1, Orig.y+1,
                        DisplayAircraftAngle+
@@ -47,7 +47,7 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     Polygon(hdc, Para, NUMPARAPOINTS);
 
     // draw it again so can get white border
-    SelectObject(hdc, hpAircraftBorder);
+    SelectObject(hdc, LKPen_Black_N1);
     SelectObject(hdc, hbPAircraftSolid);
 
     for(pi=0; pi<NUMPARAPOINTS; pi++)
