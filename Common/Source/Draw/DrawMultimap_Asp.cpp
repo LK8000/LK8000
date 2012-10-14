@@ -159,6 +159,10 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 
 
 #if NEWMULTIMAPS
+
+  if (!IsMultimapOverlays())
+	DrawMultimap_Topleft(hdc, rci);
+
 #else
   DrawMultimap_Topleft(hdc, rci);
   DrawMultimap_Topright(hdc, rci);

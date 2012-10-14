@@ -30,7 +30,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
   TCHAR topleft_txt[10];
   bool noaction=false;
   static unsigned short counter=0;
-  #define COUNT_VERBOSE	5	// 5 seconds, normally
+  #define COUNT_VERBOSE	3	// 5 seconds, normally
 
   if (LKevent==LKEVENT_NEWRUN) counter=0;
 
@@ -40,7 +40,8 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 		if (counter<COUNT_VERBOSE)
 			_stprintf(topleft_txt, TEXT("1 TRK"));
 		else
-			_stprintf(topleft_txt, TEXT("1"));
+			//_stprintf(topleft_txt, TEXT("1"));
+			noaction=true;
 
 		break;
 
@@ -48,7 +49,8 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 		if (counter<COUNT_VERBOSE)
 			_stprintf(topleft_txt, TEXT("2 WPT"));
 		else
-			_stprintf(topleft_txt, TEXT("2"));
+			//_stprintf(topleft_txt, TEXT("2"));
+			noaction=true;
 
 		break;
 
@@ -56,7 +58,8 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 		if (counter<COUNT_VERBOSE)
 			_stprintf(topleft_txt, TEXT("3 ASP"));
 		else
-			_stprintf(topleft_txt, TEXT("3"));
+			//_stprintf(topleft_txt, TEXT("3"));
+			noaction=true;
 
 		break;
 
