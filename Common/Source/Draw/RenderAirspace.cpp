@@ -162,6 +162,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			  if(*iSplit == SIZE1) *iSplit = SIZE0;
 			  if(*iSplit == SIZE2) *iSplit = SIZE1;
 			  if(*iSplit == SIZE3) *iSplit = SIZE2;
+			  if(*iSplit == SIZE4) *iSplit = SIZE3;
 			}
 		break;
 		case LKEVENT_PAGEDOWN:
@@ -171,6 +172,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			else
 #endif
 			{
+			  if(*iSplit == SIZE3) *iSplit = SIZE4;
 			  if(*iSplit == SIZE2) *iSplit = SIZE3;
 			  if(*iSplit == SIZE1) *iSplit = SIZE2;
 			  if(*iSplit == SIZE0) *iSplit = SIZE1;
@@ -369,6 +371,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   sDia.rc = rcc;
 
 
+  if (fSplitFact<SIZE4)
   RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
 
 
@@ -398,6 +401,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   }
 
 #if 0
+  // THIS HAS BEEN MOVED UP, BEFORE PAINTING SIDEVIEW
   SetTextColor(hdc, GROUND_TEXT_COLOUR);
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
@@ -440,14 +444,16 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
 
-  DrawYGrid(hdc, rcc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
+  if (Current_Multimap_SizeY<SIZE3)
+	DrawYGrid(hdc, rcc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
+
   POINT line[4];
 
   // draw target symbolic line
 
 
   int iWpPos =  CalcDistanceCoordinat( wpt_dist,  &sDia);
-  if (GetSideviewPage() == IM_NEXT_WP)
+  if ( (GetSideviewPage() == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4))
   {
     if(WayPointCalc[overindex].IsLandable == 0)
     {
@@ -490,8 +496,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   // Draw estimated gliding line (blue)
  // if (speed>10.0)
+  if ( Current_Multimap_SizeY<SIZE4 ) 
   {
-    if (GetSideviewPage()== IM_NEXT_WP) {
+    if ( GetSideviewPage() == IM_NEXT_WP) {
       double altarriv;
 
       // Draw estimated gliding line MC=0 (green)
@@ -532,7 +539,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 
   //Draw wpt info texts
-  if (GetSideviewPage() == IM_NEXT_WP) {
+  if ( (GetSideviewPage() == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4)) {
 //HFONT hfOld = (HFONT)SelectObject(hdc, LK8MapFont);
     line[0].x = CalcDistanceCoordinat( wpt_dist,  &sDia);
     // Print wpt name next to marker line
@@ -709,7 +716,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   if (GetSideviewPage()== IM_HEADING)
     wpt_brg =90.0;
+
+  if ( Current_Multimap_SizeY<SIZE4)
   RenderPlaneSideview( hdc,  0.0f, DerivedDrawInfo.NavAltitude,wpt_brg, &sDia );
+
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   SetTextColor(hdc, Sideview_TextColor);
 
@@ -730,6 +740,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   hfOld = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
 
 // DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
+  if ( Current_Multimap_SizeY<SIZE3)
   DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(28));
 //  RenderBearingDiff( hdc, wpt_brg,  &sDia );
 

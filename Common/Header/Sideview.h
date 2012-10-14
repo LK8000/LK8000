@@ -40,6 +40,7 @@
 #define SIZE1 30
 #define SIZE2 50
 #define SIZE3 70
+#define SIZE4 100
 
 #define MAXPAGE 8
 #define ZOOMFACTOR 1.3

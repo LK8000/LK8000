@@ -28,9 +28,12 @@ AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 int SetSplitScreenSize(int iPercent)
 {
-     LKASSERT(iPercent>=0 && iPercent<=100);
-int iOld = 	(int)(fSplitFact *100.0);
- fSplitFact = (double)(iPercent%100)/ 100.0f;
+ LKASSERT(iPercent>=0 && iPercent<=100);
+ int iOld = 	(int)(fSplitFact *100.0);
+ if (iPercent==100)
+	fSplitFact=1;
+ else
+	fSplitFact = (double)(iPercent%100)/ 100.0f;
 
  return iOld;
 }
