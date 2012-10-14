@@ -29,7 +29,6 @@ bool ActiveMap_IsEnabled = false;
 
 extern AirSpaceSonarLevelStruct sSonarLevel[];
 extern TCHAR Sideview_szNearAS[];
-extern RECT Sideview_TopRect_InUse;
 
 
 AirSpaceSonarLevelStruct sSonarLevel[10] = {
@@ -106,7 +105,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 			}
 		}
 		// ACTIVE is available only when there is a topview shown!
-		if ( (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT) && (Sideview_TopRect_InUse.bottom>0)) {
+		if ( (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT) && (Current_Multimap_TopRect.bottom>0)) {
 			ActiveMap_IsEnabled = !ActiveMap_IsEnabled;
 			if (EnableSoundModes) {
 				if (ActiveMap_IsEnabled)
@@ -132,7 +131,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 		// We need to know very often how is the screen splitted, and where!
 		// It should be made global somewhere else, not here.
 		//
-		if ( YstartScreen < Sideview_TopRect_InUse.bottom) {
+		if ( YstartScreen < Current_Multimap_TopRect.bottom) {
 			double Xstart, Ystart;
 			SideviewScreen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
 			MapWindow::Event_NearestWaypointDetails(Xstart, Ystart, 1.0e5, false);

@@ -11,7 +11,12 @@
 
 #define NUMBER_OF_MULTIMAPS	MP_TOP
 
-extern int Current_Multimap_SizeY;
+extern int	Current_Multimap_SizeY;
+extern RECT	Current_Multimap_TopRect;
+extern double	Current_Multimap_TopAngle;
+extern double	Current_Multimap_TopZoom;
+extern POINT	Current_Multimap_TopOrig;
+
 
 bool IsMultiMap(void);
 bool IsMultiMapNoMain(void);

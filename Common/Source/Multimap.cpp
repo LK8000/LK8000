@@ -10,12 +10,20 @@
 #include "Sideview.h"
 
 //
-// This is GLOBAL to all multimaps! 
-// It is IMPERATIVE that multimaps using a split screen keep this variable updated.
-// AND IT IS IMPERATIVE also that the screen splitter is using the same algorithm for calculating
-// screen coordinates out of SIZE.
-// For this reason we short rewrite many parts of sideview and RenderAirspace/etc.
-int Current_Multimap_SizeY=SIZE1;
+// It is IMPERATIVE that multimaps using a split screen keep these variables updated!
+// Normally all "shared" multimaps should do it!
+//
+
+// SizeY is the percentage of screen size for topview.
+int	Current_Multimap_SizeY=SIZE1;
+// TopRect is the geometry of topview. Can be 0,0,0,0  if it is off.
+RECT	Current_Multimap_TopRect={0,0,1,1};
+// The view angle  in topview
+double	Current_Multimap_TopAngle=0;
+double	Current_Multimap_TopZoom=1;
+POINT	Current_Multimap_TopOrig={0,0};
+
+
 
 
 //

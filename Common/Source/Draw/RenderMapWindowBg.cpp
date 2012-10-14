@@ -21,7 +21,6 @@
 #endif
 
 extern bool FastZoom;
-extern POINT Sideview_Orig_InUse;
 
 
 void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
@@ -158,12 +157,12 @@ QuickRedraw:
 				DrawGlideThroughTerrain(hdc, DrawRect);
 
 			if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) 
-				DrawTask(hdc, DrawRect, Sideview_Orig_InUse);
+				DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
 
 			if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
 
 			// draw wind vector at aircraft
-			DrawWindAtAircraft2(hdc, Sideview_Orig_InUse, DrawRect);
+			DrawWindAtAircraft2(hdc, Current_Multimap_TopOrig, DrawRect);
 			*/
 
 			if ((mode.Is(Mode::MODE_CIRCLING)) )
