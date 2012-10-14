@@ -330,6 +330,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  fZOOMScale *= ZOOMFACTOR;
   }
   fDist *=fZOOMScale;
+
   DiagrammStruct sDia;
   sDia.fXMin =-9500.0f;
   if( sDia.fXMin > (-0.1f * fDist))
@@ -340,10 +341,33 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   sDia.fYMin = hmin;
   sDia.fYMax = hmax;
 
+
+  #if 1
+  // TO CHECK, MOVED FROM OTHER FORWARD POSITION
+  // What is this text color used for.. apparently there is no difference to take it off.
+  SetTextColor(hdc, GROUND_TEXT_COLOUR);
+  if(bInvCol)
+    if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
+	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+
+  if(fSplitFact > 0.0)
+  {
+  	sDia.rc = rct;
+    if (GetSideviewPage() == IM_HEADING)
+  	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
+
+    if (GetSideviewPage() == IM_NEXT_WP)
+  	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
+
+    //sDia.rc = rcc;
+  }
+  #endif
+
   RECT rcc =  rc;
   if(sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
     rcc.bottom -= SV_BORDER_Y; /* scale witout sea  */
   sDia.rc = rcc;
+
 
   RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
 
@@ -373,11 +397,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   }
 
+#if 0
   SetTextColor(hdc, GROUND_TEXT_COLOUR);
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
-
 
   if(fSplitFact > 0.0)
   {
@@ -389,6 +413,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
   	sDia.rc = rcc;
   }
+#endif
+
   SelectObject(hdc, LK8PanelUnitFont);
   COLORREF txtCol = GROUND_TEXT_COLOUR;
   if(bInvCol)
