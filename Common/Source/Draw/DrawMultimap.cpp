@@ -27,7 +27,7 @@ extern TCHAR Sideview_szNearAS[];
 void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 {
 
-  TCHAR topleft_txt[10];
+  TCHAR topleft_txt[80];
   bool noaction=false;
   static unsigned short counter=0;
   #define COUNT_VERBOSE	3	// 5 seconds, normally
@@ -99,7 +99,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
 void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
 
-  TCHAR topright_txt[10];
+  TCHAR topright_txt[80];
   bool noaction=false;
   COLORREF wcolor;
   static bool flip= true;
