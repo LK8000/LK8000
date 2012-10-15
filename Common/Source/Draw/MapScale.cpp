@@ -70,7 +70,7 @@ double MapWindow::FindMapScale(double Value){
   double BestFit = 99999;
   int    BestFitIdx=-1;
   LKASSERT(DrawRect.right!=0);
-  LKASSERT(GetMapResolutionFactor!=0);
+  LKASSERT(GetMapResolutionFactor()!=0);
   double DesiredScale = 
     (Value*IBLSCALE(/*Appearance.DefaultMapWidth*/ DrawRect.right))/GetMapResolutionFactor();
 

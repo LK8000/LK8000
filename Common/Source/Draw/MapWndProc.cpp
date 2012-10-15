@@ -184,7 +184,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
   static int lparam_Y;
   static int gestX, gestY, gestDir, gestDist;
   static bool dontdrawthemap;
+#if NEWMULTIMAPS
+#else
   static bool mapmode8000;
+#endif
 
   //
   // Candidates to be simplified, or to be made globals
@@ -412,9 +415,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
       // so first lets see if we are in lk8000 text screens.. 
 	// The idea was/is: break if we are in the nearest pages, or in main map but on the bottom bar.
 	#if NEWMULTIMAPS
-	if (DONTDRAWTHEMAP || (IsMultiMap() && (YstartScreen >=BottomBarY))) {  
+	if ((DONTDRAWTHEMAP) || (IsMultiMap() && (YstartScreen >=BottomBarY))) {  
 	#else
-	if (DONTDRAWTHEMAP || (MAPMODE8000 && (YstartScreen >=BottomBarY))) {  
+	if ((DONTDRAWTHEMAP) || ((MAPMODE8000) && (YstartScreen >=BottomBarY))) {  
 	#endif
 		// do not ignore next, let buttonup get the signal
 		break;
@@ -532,7 +535,10 @@ _buttondown:
 	// we save these flags for the entire processing, just in case they change
 	// while processing a virtual key for example, and also for acceleration.
 	dontdrawthemap=(DONTDRAWTHEMAP);
+#if NEWMULTIMAPS
+#else
 	mapmode8000=(MAPMODE8000);
+#endif
 
 	dwUpTime = GetTickCount(); 
 	dwInterval=dwUpTime-dwDownTime;

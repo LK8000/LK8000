@@ -101,7 +101,6 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
   // However, this will prevent direct customkey access to pages!
   // Instead, we do it when we call next page from InfoPageChange
   // if (!ConfIP[ModeIndex][CURTYPE]) NextModeType();
-RECT frc = rc;
   switch (MapSpaceMode) {
 	case MSM_WELCOME:
 #if (1)
