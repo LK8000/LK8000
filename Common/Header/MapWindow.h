@@ -445,6 +445,7 @@ class MapWindow {
   static void LatLon2Screen(const double &lon, const double &lat, POINT &sc);
   static void LatLon2Screen(pointObj *ptin, POINT *ptout, const int n,
 			    const int skip);
+  static void LatLon2ScreenMultimap(pointObj *ptin, POINT *ptout, const int n, const int skip);
 
   static void CloseDrawingThread(void);
   static void CreateDrawingThread(void);

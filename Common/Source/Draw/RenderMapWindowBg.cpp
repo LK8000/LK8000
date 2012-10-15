@@ -86,6 +86,9 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   LKCalculateWaypointReachable(multicalc_slot, numslots);
   CalculateScreenPositionsAirspace();
   CalculateScreenPositionsThermalSources();
+
+  // Make the glide amoeba out of the latlon points, converting them to screen
+  // (This function is updated for supporting multimaps )
   CalculateScreenPositionsGroundline();
 
   if (PGZoomTrigger) {

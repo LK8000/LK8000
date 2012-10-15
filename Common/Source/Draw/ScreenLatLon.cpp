@@ -52,8 +52,9 @@ void MapWindow::LatLon2Screen(const double &lon, const double &lat, POINT &sc) {
 }
 
 
-
+//
 // This one is optimised for long polygons
+//
 void MapWindow::LatLon2Screen(pointObj *ptin, POINT *ptout, const int n, const int skip) {
   static double lastangle = -1;
   static int cost=1024, sint=0;
@@ -83,4 +84,38 @@ void MapWindow::LatLon2Screen(pointObj *ptin, POINT *ptout, const int n, const i
   }
 }
 
+
+//
+// Since many functions call LatLon2screen, and only a few need multimap checks for display angle,
+// we separate functions to avoid slow downs. First used by CalculateScreenPositionsGroundline
+//
+void MapWindow::LatLon2ScreenMultimap(pointObj *ptin, POINT *ptout, const int n, const int skip) {
+  static double lastangle = -1;
+  static int cost=1024, sint=0;
+
+  const double mDisplayAngle = Current_Multimap_TopAngle;
+  if(mDisplayAngle != lastangle) {
+	lastangle = mDisplayAngle;
+	int deg = DEG_TO_INT(AngleLimit360(mDisplayAngle));
+	cost = ICOSTABLE[deg];
+	sint = ISINETABLE[deg];
+  }
+
+  const int xxs = Current_Multimap_TopOrig.x*1024-512;
+  const int yys = Current_Multimap_TopOrig.y*1024+512;
+  const double mDrawScale = zoom.DrawScale();
+  const double mPanLongitude = PanLongitude;
+  const double mPanLatitude = PanLatitude;
+  pointObj* p = ptin;
+  const pointObj* ptend = ptin+n;
+
+  while (p<ptend) {
+    int Y = Real2Int((mPanLatitude-p->y)*mDrawScale);
+    int X = Real2Int((mPanLongitude-p->x)*fastcosine(p->y)*mDrawScale);
+    ptout->x = (xxs-X*cost + Y*sint)/1024;
+    ptout->y = (Y*cost + X*sint + yys)/1024;
+    ptout++;
+    p+= skip;
+  }
+}
 

@@ -776,10 +776,18 @@ double fFact = 1.0 ;
 	DerivedDrawInfo.TerrainValid)
 	DrawTerrainAbove(hdc, DrawRect);
     #endif
-    if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
-	DrawGlideThroughTerrain(hdc, DrawRect);
   */
 
+  // These overlays should be activated/disabled using a new overlay functionality
+  // TODO!
+  // By now, only a temporary solution
+
+  if(IsMultimapTerrain() || IsMultimapTopology() ) {
+
+	if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
+		DrawGlideThroughTerrain(hdc, DrawRect);
+
+  }
 
   if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
 
