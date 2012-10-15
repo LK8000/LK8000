@@ -38,7 +38,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
   {
 	case MSM_MAPTRK:
 		if (counter<COUNT_VERBOSE)
-			_stprintf(topleft_txt, TEXT("1 TRK"));
+			_stprintf(topleft_txt, TEXT("1 %s"),MsgToken(1287)); // Heading
 		else
 			//_stprintf(topleft_txt, TEXT("1"));
 			noaction=true;
@@ -47,7 +47,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
 	case MSM_MAPWPT:
 		if (counter<COUNT_VERBOSE)
-			_stprintf(topleft_txt, TEXT("2 WPT"));
+			_stprintf(topleft_txt, TEXT("2 %s"),MsgToken(1289)); // Next WP
 		else
 			//_stprintf(topleft_txt, TEXT("2"));
 			noaction=true;
@@ -56,7 +56,7 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
 	case MSM_MAPASP:
 		if (counter<COUNT_VERBOSE)
-			_stprintf(topleft_txt, TEXT("3 ASP"));
+			_stprintf(topleft_txt, TEXT("3 %s"),MsgToken(1292)); // Nearest airspace
 		else
 			//_stprintf(topleft_txt, TEXT("3"));
 			noaction=true;
@@ -65,9 +65,10 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
 	case MSM_MAPRADAR:
 		if (counter<COUNT_VERBOSE)
-			_stprintf(topleft_txt, TEXT("4 RDR"));
+			_stprintf(topleft_txt, TEXT("4 FLARM Radar"));
 		else
-			_stprintf(topleft_txt, TEXT("4"));
+			//_stprintf(topleft_txt, TEXT("4"));
+			noaction=true;
 
 		break;
 	default:
