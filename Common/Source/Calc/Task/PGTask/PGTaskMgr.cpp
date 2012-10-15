@@ -27,11 +27,19 @@ const ProjPt ProjPt::null;
 
 // WGS84 data
 const PGTaskMgr::DATUM PGTaskMgr::m_Datum = (PGTaskMgr::DATUM){
+#ifdef _WGS84
     6378137.0, // a
     6356752.3142, // b
     0.00335281066474748, // f = 1/298.257223563
     0.006694380004260807, // esq
-    0.0818191909289062, // e
+    0.0818191909289062, // e    
+#else
+    6371000.0, // a
+    6371000.0, // b
+    0,  // f = 1/298.257223563
+    0,  // esq
+    0,  // e
+#endif
 };
 
 PGTaskMgr::PGTaskMgr() {
