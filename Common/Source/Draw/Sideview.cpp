@@ -789,7 +789,11 @@ double fFact = 1.0 ;
 
   }
 
-  if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
+  if (MapSpaceMode!=MSM_MAPWPT) {
+	// Of course the dashed horizontal line in WPT mode is always the bearing!
+	// No need to draw this one more!
+	if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
+  }
 
   // draw wind vector at aircraft
   DrawWindAtAircraft2(hdc, Current_Multimap_TopOrig, DrawRect);
