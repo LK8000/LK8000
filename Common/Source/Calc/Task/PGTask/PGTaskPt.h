@@ -44,6 +44,7 @@ public:
     }
 
     inline ProjPt operator/(const double c) const {
+        LKASSERT(c);
         return ProjPt(m_X / c, m_Y / c);
     }
 
@@ -94,9 +95,6 @@ public:
     }
 
     virtual void Optimize(const ProjPt& prev, const ProjPt& next) = 0;
-    void OptimizeFinishLine(const ProjPt& prev, const ProjPt& prevCenter);
-
-    bool CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized);
 
 protected:
     ProjPt m_Center;

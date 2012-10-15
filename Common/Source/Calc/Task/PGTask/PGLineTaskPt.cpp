@@ -51,6 +51,8 @@ void PGLineTaskPt::OptimizeGoal(const ProjPt& prev) {
     } else {
         double b = cos(theta) * AC.length();
         if (b < m_dAB) {
+            LKASSERT(m_dAB);
+            LKASSERT(b);
             m_Optimized = m_LineBegin + (m_AB / m_dAB * b);
         } else {
             m_Optimized = m_LineEnd;
@@ -67,6 +69,7 @@ void PGLineTaskPt::OptimizeRegular(const ProjPt& prev, const ProjPt& next) {
     ProjPt D = next - m_LineBegin;
 
     //  (2) Rotate the system so that point B is on the positive X axis.
+    LKASSERT(m_dAB);
     theCos = B.m_X / m_dAB;
     theSin = B.m_Y / m_dAB;
     newX = C.m_X * theCos + C.m_Y*theSin;
@@ -82,6 +85,7 @@ void PGLineTaskPt::OptimizeRegular(const ProjPt& prev, const ProjPt& next) {
     }
 
     //  (3) Discover the position of the intersection point along line A-B.
+    LKASSERT(D.m_Y - C.m_Y);
     ABpos = D.m_X + (C.m_X - D.m_X) * D.m_Y / (D.m_Y - C.m_Y);
 
     //  if segment C-D crosses line A-B outside of segment A-B return nearest endpoint
