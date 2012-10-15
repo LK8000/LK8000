@@ -18,6 +18,7 @@
 #include "Sideview.h"
 #include "LKObjects.h"
 #include "Multimap.h"
+#include "Topology.h"
 
 extern	 int Sideview_iNoHandeldSpaces;
 extern	 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
@@ -498,11 +499,16 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
  // if (speed>10.0)
   if ( Current_Multimap_SizeY<SIZE4 ) 
   {
+    //
+    // WE FORCE CLIPPING, BEING IN MULTIMAPS
+    //
+    ForcedClipping=true;
+
     if ( GetSideviewPage() == IM_NEXT_WP) {
       double altarriv;
 
       // Draw estimated gliding line MC=0 (green)
-      if( show_mc0 )
+      if( !ISCAR && show_mc0 )
       {
         altarriv = wpt_altarriv_mc0 + wpt_altitude;
         if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
@@ -516,9 +522,16 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
       line[0].y = CalcHeightCoordinat( DerivedDrawInfo.NavAltitude, &sDia );
-      line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
-      line[1].y = CalcHeightCoordinatOutbound( altarriv ,  &sDia );
-      DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
+
+	if (ISCAR) {
+		line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
+		line[1].y = CalcHeightCoordinatOutbound( wpt_altitude ,  &sDia );
+	} else {
+		line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
+		line[1].y = CalcHeightCoordinatOutbound( altarriv ,  &sDia );
+	}
+	DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
+
     } else {
       double t = fDist/(speed!=0?speed:1);
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
@@ -531,6 +544,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
       DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
     }
+    ForcedClipping=false;
   }
 
 
