@@ -125,7 +125,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 		    Task[i].AATFinishRadial-DisplayAngle); 
 
 	  }
-	} else {
+        } else if(!DoOptimizeRoute()){
 		// ELSE HERE IS   *** AAT ***
 	  // JMW added iso lines
 	  if ((i==ActiveWayPoint) || (mode.Is(Mode::MODE_TARGET_PAN) && (i==TargetPanIndex))) {
