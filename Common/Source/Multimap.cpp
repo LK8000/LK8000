@@ -32,7 +32,7 @@ POINT	Current_Multimap_TopOrig={0,0};
 bool IsMultiMap() {
 
 #if NEWMULTIMAPS
-  if ( (MapSpaceMode >= MSM_MAPRADAR) && (MapSpaceMode <= MSM_MAPTEST)||(MapSpaceMode==MSM_MAP))
+  if ( ((MapSpaceMode >= MSM_MAPRADAR) && (MapSpaceMode <= MSM_MAPTEST))||(MapSpaceMode==MSM_MAP))
 #else
   if ( (MapSpaceMode >= MSM_MAPRADAR) && (MapSpaceMode <= MSM_MAPTEST) )
 #endif
