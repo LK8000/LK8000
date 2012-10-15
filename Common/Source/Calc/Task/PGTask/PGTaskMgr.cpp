@@ -16,6 +16,13 @@
 #include "PGCicrcleTaskPt.h"
 #include "PGLineTaskPt.h"
 
+inline double rad2deg(double rad) { 
+    return (rad * 180 / PI); 
+}
+inline double deg2rad(double deg) { 
+    return (deg * PI / 180); 
+}
+
 const ProjPt ProjPt::null;
 
 // WGS84 data
@@ -57,8 +64,8 @@ void PGTaskMgr::Initialize() {
         }
     }
 
-    m_Grid.lat0 = ((minlat + maxlat) / 2) * DEG_TO_RAD;
-    m_Grid.lon0 = ((minlon + maxlon) / 2) * DEG_TO_RAD;
+    m_Grid.lat0 = deg2rad(minlat + maxlat) * 1/2;
+    m_Grid.lon0 = deg2rad(minlon + maxlon) * 1/2;
     m_Grid.k0 = 1;
     m_Grid.false_e = 0.0; // ????
     m_Grid.false_n = 0.0; // ????
@@ -94,10 +101,10 @@ void PGTaskMgr::Initialize() {
 void PGTaskMgr::AddCircle(int TskIdx) {
     PGCicrcleTaskPt *pTskPt = new PGCicrcleTaskPt;
 
-    LatLon2Grid(WayPointList[Task[TskIdx].Index].Latitude*DEG_TO_RAD,
-            WayPointList[Task[TskIdx].Index].Longitude*DEG_TO_RAD,
-            pTskPt->m_Center.m_Y,
-            pTskPt->m_Center.m_X);
+    LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
+                deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
+                pTskPt->m_Center.m_Y,
+                pTskPt->m_Center.m_X);
 
     if (TskIdx == 0) {
         pTskPt->m_Radius = StartRadius;
@@ -116,10 +123,10 @@ void PGTaskMgr::AddLine(int TskIdx) {
 
     PGLineTaskPt *pTskPt = new PGLineTaskPt;
 
-    LatLon2Grid(WayPointList[Task[TskIdx].Index].Latitude*DEG_TO_RAD,
-            WayPointList[Task[TskIdx].Index].Longitude*DEG_TO_RAD,
-            pTskPt->m_Center.m_Y,
-            pTskPt->m_Center.m_X);
+    LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
+                deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
+                pTskPt->m_Center.m_Y,
+                pTskPt->m_Center.m_X);
 
     double radius = 0;
     if (TskIdx == 0) {
@@ -145,10 +152,10 @@ void PGTaskMgr::AddLine(int TskIdx) {
     // Calc Cross Dir Vector
     ProjPt InB, OutB;
     if (ValidWayPoint(Task[NextIdx].Index)) {
-        LatLon2Grid(WayPointList[Task[NextIdx].Index].Latitude*DEG_TO_RAD,
-            WayPointList[Task[NextIdx].Index].Longitude*DEG_TO_RAD,
-            OutB.m_Y,
-            OutB.m_X);
+        LatLon2Grid(deg2rad(WayPointList[Task[NextIdx].Index].Latitude),
+                    deg2rad(WayPointList[Task[NextIdx].Index].Longitude),
+                    OutB.m_Y,
+                    OutB.m_X);
         
         OutB = OutB - pTskPt->m_Center;
 
@@ -207,7 +214,7 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
     }
 
     ProjPt PrevPos;
-    LatLon2Grid(Basic->Latitude*DEG_TO_RAD, Basic->Longitude*DEG_TO_RAD, PrevPos.m_Y, PrevPos.m_X);
+    LatLon2Grid(deg2rad(Basic->Latitude), deg2rad(Basic->Longitude), PrevPos.m_Y, PrevPos.m_X);
 
     for (size_t i = ActiveWayPoint; i < m_Task.size(); ++i) {
         if ((i + 1) < m_Task.size()) {
@@ -222,8 +229,8 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
 void PGTaskMgr::getOptimized(const int i, double& lat, double& lon) const {
 
     Grid2LatLon(m_Task[i]->getOptimized().m_Y, m_Task[i]->getOptimized().m_X, lat, lon);
-    lat *= RAD_TO_DEG;
-    lon *= RAD_TO_DEG;
+    lat = rad2deg(lat);
+    lon = rad2deg(lon);
 }
 
 //====================================

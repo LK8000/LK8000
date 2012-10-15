@@ -14,8 +14,8 @@
 #include <vector>
 
 #ifndef DEG_TO_RAD
-#define DEG_TO_RAD .0174532925199432958
-#define RAD_TO_DEG 57.2957795131
+#define DEG_TO_RAD  (PI / 180)
+#define RAD_TO_DEG  (180 / PI)
 #endif
 
 /** 
