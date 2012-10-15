@@ -40,8 +40,7 @@ void PGTaskMgr::Initialize() {
     
     std::for_each(m_Task.begin(), m_Task.end(), safe_delete() );
     m_Task.clear();
-    
-    LockTaskData();
+
     // build Mercator Reference Grid
     // find center of Task
     double minlat = 0.0, minlon = 0.0, maxlat = 0.0, maxlon = 0.0;
@@ -90,7 +89,6 @@ void PGTaskMgr::Initialize() {
                 break;
         }
     }
-    UnlockTaskData();
 }
 
 void PGTaskMgr::AddCircle(int TskIdx) {

@@ -37,6 +37,10 @@ private:
 };
 
 void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
+    if(m_Radius == 0.0){
+        return;
+    }
+    
     if (!m_Optimized) {
         // first run : init m_Optimized with center ...
         m_Optimized = m_Center;
@@ -84,6 +88,7 @@ bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt&
     bool bCrossPoint = false;
     double k = 0.0;
     if (bb4ac == 0.0) {
+        LKASSERT(a);
         // one point
         k = -b / (2 * a);
         bCrossPoint = true;
@@ -92,9 +97,11 @@ bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt&
     if (bb4ac > 0.0) {
         // Two point, 
         if ((PrevOutside && m_bExit) || (!PrevOutside && NextOutside)) {
+            LKASSERT(a);
             k = (-b + sqrt(bb4ac)) / (2 * a); // ouput : prev ouside && Exit TP || prev inside && next outside
             bCrossPoint = true;
         } else {
+            LKASSERT(a);
             k = (-b - sqrt(bb4ac)) / (2 * a); // input : prev outside && Enter TP 
             bCrossPoint = true;
         }

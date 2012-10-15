@@ -12,16 +12,16 @@
 #include "NavFunctions.h"
 #include "PGTask/PGTaskMgr.h"
 
-PGTaskMgr gPGTask;
+PGTaskMgr gPGTask; // This Is Shared ressource, never use without Locking Task Data ( LockTaskData()/UnlockTaskData() )!
 
 void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	if (!DoOptimizeRoute()) 
 		return;
 
-	gPGTask.Optimize(Basic);
-
 	LockTaskData();
+
+	gPGTask.Optimize(Basic);
 
 	for(size_t i=0; i<gPGTask.Count(); ++i) {
 		gPGTask.getOptimized(i, Task[i].AATTargetLat, Task[i].AATTargetLon);
@@ -59,8 +59,8 @@ void ClearOptimizedTargetPos() {
 		Task[i].AATTargetLocked = false;
 	}
 
-	UnlockTaskData();
-
 	gPGTask.Initialize();
+
+	UnlockTaskData();
 }
 
