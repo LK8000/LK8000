@@ -149,7 +149,7 @@ void LKProfileInitRuntime(void) {
   //
   #if (WINDOWSPC<1)
   if (GlobalModelType == MODELTYPE_PNA_HP31X ) {
-	needclipping=true;
+	DeviceNeedClipping=true;
 	// key transcoding for this one
 	StartupStore(TEXT(". Loading HP31X settings%s"),NEWLINE);
   }
@@ -170,11 +170,11 @@ void LKProfileInitRuntime(void) {
   else
   if (GlobalModelType == MODELTYPE_PNA_MEDION_P5 ) {
 	StartupStore(TEXT(".Loading Medion settings%s"),NEWLINE);
-	needclipping=true;
+	DeviceNeedClipping=true;
   }
   if (GlobalModelType == MODELTYPE_PNA_NAVIGON ) {
 	StartupStore(TEXT(".Loading Navigon settings%s"),NEWLINE);
-	needclipping=true;
+	DeviceNeedClipping=true;
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_PNA ) {

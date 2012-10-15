@@ -262,7 +262,7 @@ void LKProfileResetDefault(void) {
 
   debounceTimeout = 250;
 
-  needclipping=false;
+  DeviceNeedClipping=false;
 
   Appearance.DefaultMapWidth=206;
   // Landables style

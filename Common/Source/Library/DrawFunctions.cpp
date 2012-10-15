@@ -131,24 +131,15 @@ int Circle(HDC hdc, long x, long y, int radius, RECT rc, bool clip, bool fill)
     ClipPolygon(hdc,pt,step+1,rc, fill);
   } else {
     if (fill) {
-#ifdef PNA
-    if (needclipping==true)
-      	ClipPolygon(hdc,pt,step+1,rc, true); // VNT10 090909 fixed bug was false FIX CHECK IF WORKING 
+    if (ForcedClipping || DeviceNeedClipping)
+      	ClipPolygon(hdc,pt,step+1,rc, true);
     else
         Polygon(hdc,pt,step+1);
-#else
-      Polygon(hdc,pt,step+1); 
-#endif 
     } else {
-// VENTA3 FIX HP clipping bug
-#ifdef PNA
-      if (needclipping==true)
+      if (ForcedClipping||DeviceNeedClipping)
       	MapWindow::_Polyline(hdc,pt,step+1,rc);
       else
         Polyline(hdc,pt,step+1);
-#else
-      Polyline(hdc,pt,step+1);
-#endif
     }
   }
   return TRUE;

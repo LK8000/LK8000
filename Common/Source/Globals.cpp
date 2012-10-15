@@ -213,7 +213,8 @@ void Globals_Init(void) {
   WasFlying = false;
 
   LastDoRangeWaypointListTime=0;
-  needclipping=false;
+  DeviceNeedClipping=false; // forcing extensive clipping 
+  ForcedClipping=false;	    // force clipping around
   EnableAutoBacklight=true;
   EnableAutoSoundVolume=true;
   AircraftCategory=0;

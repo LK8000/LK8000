@@ -51,17 +51,11 @@ void MapWindow::DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h, co
 
 void MapWindow::_Polyline(HDC hdc, POINT* pt, const int npoints, 
 			  const RECT rc) {
-#ifdef BUG_IN_CLIPPING
-  ClipPolygon(hdc, pt, npoints, rc, false);
-  //VENTA2
-#elif defined(PNA)
-  if (needclipping==true)
-    ClipPolygon(hdc, pt, npoints, rc, false);
+
+  if (ForcedClipping||DeviceNeedClipping)
+	ClipPolygon(hdc, pt, npoints, rc, false);
   else
-    Polyline(hdc, pt, npoints);
-#else
-  Polyline(hdc, pt, npoints);
-#endif
+	Polyline(hdc, pt, npoints);
 }
 
 

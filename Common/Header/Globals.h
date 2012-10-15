@@ -163,7 +163,8 @@ GEXTERN int OnAirSpace; // VENTA3 toggle DrawAirSpace
 GEXTERN bool WasFlying;
 
 GEXTERN double LastDoRangeWaypointListTime;
-GEXTERN bool needclipping;
+GEXTERN bool DeviceNeedClipping;
+GEXTERN bool ForcedClipping;
 GEXTERN bool EnableAutoBacklight;
 GEXTERN bool EnableAutoSoundVolume;
 GEXTERN DWORD EnableFLARMMap;
