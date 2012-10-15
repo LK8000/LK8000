@@ -11,13 +11,32 @@
 extern COLORREF taskcolor;
 
 
-void MapWindow::DrawStartSector(HDC hdc, const RECT rc, 
-                                POINT &Start,
-                                POINT &End, int Index) {
-  double tmp;
+void MapWindow::DrawStartEndSector(HDC hdc, const RECT& rc, 
+                                    const POINT &Start, const POINT &End, int Index, 
+                                    int Type, double Radius) {
+    double tmp;
   HPEN oldpen;
+  HBRUSH oldbrush;
 
-  if(StartLine) {
+  switch (Type) {
+  case 0: // CIRCLE
+    tmp = Radius * zoom.ResScaleOverDistanceModify();
+    oldpen = (HPEN) SelectObject(hdc, hpStartFinishThick);
+    oldbrush = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+    Circle(hdc, WayPointList[Index].Screen.x,
+        		WayPointList[Index].Screen.y, (int) tmp, rc, false, false);
+    SelectObject(hdc, hpStartFinishThin);
+    Circle(hdc, WayPointList[Index].Screen.x,
+    			WayPointList[Index].Screen.y, (int) tmp, rc, false, false);
+
+    SelectObject(hdc, oldpen);
+    SelectObject(hdc, oldbrush);
+    break;
+  case 1: // LINE
+    _DrawLine(hdc, PS_SOLID, NIBLSCALE(5), End, Start, taskcolor, rc);
+    _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), End, Start, RGB(255, 0, 0), rc);
+    break;
+  case 2: // SECTOR
     _DrawLine(hdc, PS_SOLID, NIBLSCALE(5), WayPointList[Index].Screen,
               Start, taskcolor, rc);
     _DrawLine(hdc, PS_SOLID, NIBLSCALE(5), WayPointList[Index].Screen,
@@ -26,19 +45,7 @@ void MapWindow::DrawStartSector(HDC hdc, const RECT rc,
               Start, RGB(255,0,0), rc);
     _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), WayPointList[Index].Screen,
               End, RGB(255,0,0), rc);
-  } else {
-    tmp = StartRadius*zoom.ResScaleOverDistanceModify();
-    oldpen=(HPEN)SelectObject(hdc, hpStartFinishThick);
-    SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-    Circle(hdc,
-           WayPointList[Index].Screen.x,
-           WayPointList[Index].Screen.y,(int)tmp, rc, false, false);
-    SelectObject(hdc, hpStartFinishThin);
-    Circle(hdc,
-           WayPointList[Index].Screen.x,
-           WayPointList[Index].Screen.y,(int)tmp, rc, false, false);
-
-    SelectObject(hdc,oldpen);
+    break;
   }
 
 }

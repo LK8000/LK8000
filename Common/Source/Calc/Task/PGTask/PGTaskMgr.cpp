@@ -51,7 +51,7 @@ void PGTaskMgr::Initialize() {
     // build Mercator Reference Grid
     // find center of Task
     double minlat = 0.0, minlon = 0.0, maxlat = 0.0, maxlon = 0.0;
-    for (int curwp = 0; ValidWayPoint(Task[curwp].Index); ++curwp) {
+    for (int curwp = 0; ValidTaskPoint(curwp); ++curwp) {
         if (curwp == 0) {
             maxlat = minlat = WayPointList[Task[curwp].Index].Latitude;
             maxlat = minlon = WayPointList[Task[curwp].Index].Longitude;
@@ -71,13 +71,13 @@ void PGTaskMgr::Initialize() {
     m_Grid.false_n = 0.0; // ????
 
     // build task point list
-    for (int curwp = 0; ValidWayPoint(Task[curwp].Index); ++curwp) {
+    for (int curwp = 0; ValidTaskPoint(curwp); ++curwp) {
 
         int TpType = 0;
         if (curwp == 0) {
             // Start
             TpType = StartLine;
-        } else if (ValidWayPoint(Task[curwp + 1].Index)) {
+        } else if (ValidTaskPoint(curwp + 1)) {
             // All Other
             TpType = Task[curwp].AATType?2:0;
         } else {
@@ -108,7 +108,7 @@ void PGTaskMgr::AddCircle(int TskIdx) {
 
     if (TskIdx == 0) {
         pTskPt->m_Radius = StartRadius;
-    } else if (ValidWayPoint(Task[TskIdx + 1].Index)) {
+    } else if (ValidTaskPoint(TskIdx + 1)) {
         pTskPt->m_Radius = (Task[TskIdx].AATCircleRadius);
     } else {
         pTskPt->m_Radius = FinishRadius;
@@ -131,7 +131,7 @@ void PGTaskMgr::AddLine(int TskIdx) {
     double radius = 0;
     if (TskIdx == 0) {
         radius = StartRadius;
-    } else if (ValidWayPoint(Task[TskIdx + 1].Index)) {
+    } else if (ValidTaskPoint(TskIdx + 1)) {
         radius = (Task[TskIdx].AATCircleRadius);
     } else {
         radius = FinishRadius;
@@ -145,13 +145,13 @@ void PGTaskMgr::AddLine(int TskIdx) {
 
     // Find next Tp not same as current.
     int NextIdx = TskIdx + 1;
-    while (ValidWayPoint(Task[NextIdx].Index) && Task[NextIdx].Index == Task[TskIdx].Index) {
+    while (ValidTaskPoint(NextIdx) && Task[NextIdx].Index == Task[TskIdx].Index) {
         ++NextIdx;
     }
 
     // Calc Cross Dir Vector
     ProjPt InB, OutB;
-    if (ValidWayPoint(Task[NextIdx].Index)) {
+    if (ValidTaskPoint(NextIdx)) {
         LatLon2Grid(deg2rad(WayPointList[Task[NextIdx].Index].Latitude),
                     deg2rad(WayPointList[Task[NextIdx].Index].Longitude),
                     OutB.m_Y,
