@@ -4206,9 +4206,7 @@ int ival;
 	    if(PGOptimizeRoute) {
 		  AATEnabled = true;
 	    }
-	    else{
-	      ClearOptimizedTargetPos();
-	    }
+        ClearOptimizedTargetPos();
 	  }
 	}
   }
