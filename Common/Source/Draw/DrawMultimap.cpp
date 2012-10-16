@@ -26,11 +26,12 @@ extern TCHAR Sideview_szNearAS[];
 //
 void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 {
+  return;
 
   TCHAR topleft_txt[80];
   bool noaction=false;
   static unsigned short counter=0;
-  #define COUNT_VERBOSE	3	// 5 seconds, normally
+  #define COUNT_VERBOSE	1	// How many seconds we display the page indicator
 
   if (LKevent==LKEVENT_NEWRUN) counter=0;
 
