@@ -110,6 +110,7 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		if ( DrawInfo.Time > (firsttime+1.0) ) {
 			SetModeType(LKMODE_MAP,MP_MOVING);
 			LKevent=LKEVENT_NONE;
+			RefreshMap();
 			break;
 		}
 		}

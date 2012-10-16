@@ -248,6 +248,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 			// normally, we fall down here.
 			// If CustomKeyHandler returned false, back as well here (nothing configured in custom).
+			//
+			// If we are clicking on center bottom bar while still in welcome page, set map before nextmode.
 			if (MapSpaceMode==MSM_WELCOME)  SetModeType(LKMODE_MAP, MP_MOVING);
 			NextModeIndex();
 			MapWindow::RefreshMap();
@@ -558,10 +560,21 @@ gesture_left:
 
 	// no click for already clicked events
 
+	if (MapSpaceMode==MSM_WELCOME) {
+		SetModeType(LKMODE_MAP,MP_MOVING);
+		LKevent=LKEVENT_NONE;
+		MapWindow::RefreshMap();
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) LKSound(_T("LK_BEEP0.WAV"));
+		#endif
+		return 0;
+	}
+		
+
 		// If in mapspacemode process ENTER 
 		if ( (keytime>=(VKSHORTCLICK*2)) && dontdrawthemap && !IsMultiMap()) {
 			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
+			if (EnableSoundModes) LKSound(_T("LK_BEEP1.WAV"));
 			#endif
 			LKevent=LKEVENT_ENTER;
 			MapWindow::RefreshMap();
