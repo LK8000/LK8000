@@ -16,6 +16,8 @@
 #include "FlarmIdFile.h"
 #include "FlarmRadar.h"
 #include "Globals.h"
+#include "Multimap.h"
+
 extern int XstartScreen, YstartScreen;
 
 
@@ -228,8 +230,8 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     line[1].x = xmax;
     line[1].y = ymax;
 
-
-    DrawDashLine(hdc,1, line[0], line[1], color, rc);
+    // If sideview is at minimal size, print units but not the dashed lines to avoid cluttering.
+    if (Current_Multimap_SizeY<SIZE3) DrawDashLine(hdc,1, line[0], line[1], color, rc);
 
     if (iTextAling != TEXT_NO_TEXT)
     {
@@ -269,7 +271,7 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     line[1].x = xmax;
     line[1].y = ymax;
 
-    DrawDashLine((HDC)hdc,(int)1,(POINT) line[0],(POINT) line[1], color, rc);
+    if (Current_Multimap_SizeY<SIZE3) DrawDashLine((HDC)hdc,(int)1,(POINT) line[0],(POINT) line[1], color, rc);
 
     if (iTextAling != TEXT_NO_TEXT)
     {

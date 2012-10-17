@@ -445,7 +445,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
 
-  if (Current_Multimap_SizeY<SIZE3)
+  // Do not draw anything if there is no sideview. 
+  if (Current_Multimap_SizeY<SIZE4)
 	DrawYGrid(hdc, rcc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
 
   POINT line[4];
