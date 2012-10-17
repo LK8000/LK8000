@@ -121,7 +121,15 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     line[1].x = xmax;
     line[1].y = ymax;
 
+    // We always print the dashed vertical lines in the sideview.
+    // But we cannot print them in the topview, if available, when topology is also painted!
+    if ( IsMultiMapShared() && (Current_Multimap_SizeY>SIZE0) && IsMultimapTopology() ) {
+	ymin = Current_Multimap_TopRect.bottom;
+	line[0].y = ymin;
+    }
+
     DrawDashLine(hdc,1, line[0], line[1], color, rc);
+    
 
 
 	if (iTextAling>TEXT_NO_TEXT)
@@ -166,6 +174,10 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     line[1].x = xmax;
     line[1].y = ymax;
 
+    if ( IsMultiMapShared() && (Current_Multimap_SizeY>SIZE0) && IsMultimapTopology() ) {
+	ymin = Current_Multimap_TopRect.bottom;
+	line[0].y = ymin;
+    }
 
     DrawDashLine(hdc,1, line[0], line[1],  color, rc);
 
