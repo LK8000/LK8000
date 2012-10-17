@@ -245,6 +245,10 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     // If sideview is at minimal size, print units but not the dashed lines to avoid cluttering.
     if (Current_Multimap_SizeY<SIZE3) DrawDashLine(hdc,1, line[0], line[1], color, rc);
 
+    // Do not print 0 altitude in shared maps, it is useless and we have no spare space to do it.
+    // Beside, we would print it black on blue.
+    if (IsMultiMapShared() && yval==0) continue;
+
     if (iTextAling != TEXT_NO_TEXT)
     {
 	  TCHAR unit_text[MAX_PATH];
@@ -284,6 +288,10 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     line[1].y = ymax;
 
     if (Current_Multimap_SizeY<SIZE3) DrawDashLine((HDC)hdc,(int)1,(POINT) line[0],(POINT) line[1], color, rc);
+
+    // Do not print 0 altitude in shared maps, it is useless and we have no spare space to do it.
+    // Beside, we would print it black on blue.
+    if (IsMultiMapShared() && yval==0) continue;
 
     if (iTextAling != TEXT_NO_TEXT)
     {
