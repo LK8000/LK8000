@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "DoInits.h"
 
-void MapWindow::DrawCompass(HDC hDC, const RECT rc)
+void MapWindow::DrawCompass(HDC hDC, const RECT rc, const double angle)
 {
   POINT Start;
   HPEN hpOld;
@@ -25,7 +25,7 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
 	DoInit[MDI_COMPASS]=false;
     }
 
-    if (lastDisplayAngle != DisplayAngle || lastRcRight != rc.right || lastRcTop != rc.top){
+    if (lastDisplayAngle != angle || lastRcRight != rc.right || lastRcTop != rc.top){
 
       Arrow[0].x  = 0;
       Arrow[0].y  = -11;
@@ -44,9 +44,9 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
 
       // North arrow
       PolygonRotateShift(Arrow, 5, Start.x, Start.y, 
-                         -DisplayAngle);
+                         -angle);
 
-      lastDisplayAngle = DisplayAngle;
+      lastDisplayAngle = angle;
       lastRcRight = rc.right;
       lastRcTop = rc.top;
     }

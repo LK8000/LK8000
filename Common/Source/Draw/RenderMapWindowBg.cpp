@@ -504,7 +504,7 @@ fastzoom:
   if (ISGAAIRCRAFT) DrawHSI(hdc,Orig,DrawRect); 
 
   DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom
-  DrawCompass(hdcDrawWindow, rc);
+  DrawCompass(hdcDrawWindow, rc, DisplayAngle);
 
   if (NOTANYPAN) DrawFinalGlide(hdcDrawWindow,rc);
 

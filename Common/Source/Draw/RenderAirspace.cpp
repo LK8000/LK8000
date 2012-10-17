@@ -756,7 +756,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 // DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
   //DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(28));
-  DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(11),  rct.top   + NIBLSCALE(11));
+  //DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(11),  rct.top   + NIBLSCALE(11));
+  DrawCompass( hdc,  rct, acb-90.0);
 //  RenderBearingDiff( hdc, wpt_brg,  &sDia );
 
   /****************************************************************************************************

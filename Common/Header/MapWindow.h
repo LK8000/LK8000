@@ -509,7 +509,7 @@ class MapWindow {
   static void DrawGlideCircle(HDC hdc, const POINT Orig, const RECT rc); // VENTA3
   static void DrawHeading(HDC hdc, const POINT Orig, const RECT rc); // VENTA10
   static void DrawBestCruiseTrack(HDC hdc, const POINT Orig);
-  static void DrawCompass(HDC hdc, const RECT rc);
+  static void DrawCompass(HDC hdc, const RECT rc,const double angle);
   static void DrawTRI(HDC hdc, const RECT rc);
   static void DrawAcceleration(HDC hdc, const RECT rc);
   static void DrawTarget(HDC hdc, const RECT rc,int ttop,int tbottom,int tleft,int tright);
