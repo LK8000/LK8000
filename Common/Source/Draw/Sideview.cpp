@@ -749,6 +749,18 @@ double fFact = 1.0 ;
 
   ResetLabelDeclutter();
 
+  // We reduce screen cluttering for some cases..
+  short olddecluttermode=DeclutterMode;
+  if (Current_Multimap_SizeY==SIZE4) goto _nomoredeclutter;
+  if (Current_Multimap_SizeY<SIZE3)
+	DeclutterMode+=2;
+  else {
+	if (Current_Multimap_SizeY==SIZE3)
+		DeclutterMode++;
+  }
+  if (DeclutterMode>dmVeryHigh) DeclutterMode=dmVeryHigh;
+_nomoredeclutter:
+
   if (IsMultimapTopology()) {
 	// Do not print topology labels, to be used with another config later!
 	// SaturateLabelDeclutter();
@@ -768,6 +780,8 @@ double fFact = 1.0 ;
 		DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
 	
   }
+
+  DeclutterMode=olddecluttermode; // set it back correctly
 
  /* THIS STUFF DOES NOT WORK IN SHARED MAPS, YET
     NEED FIXING LatLon2Screen for shared maps using Sideview
