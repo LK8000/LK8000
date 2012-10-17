@@ -12,9 +12,6 @@
 // all other functions are called from windows message loop thread
 
 
-#define  LOGSTREAM 0
-
-
 #include "externs.h"
 #include "McReady.h"
 

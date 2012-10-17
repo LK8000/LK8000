@@ -12,80 +12,63 @@
 // all other functions are called from windows message loop thread
 
 
-#define  LOGSTREAM 0
-
 #include "externs.h"
 
 #include "devCaiGpsNav.h"
 
 
-#define  CtrlC  0x03
-#define  swap(x)      x = ((((x<<8) & 0xff00) | ((x>>8) & 0x00ff)) & 0xffff)
+const TCHAR *CDevCAIGpsNav::GetName()
+{
+  return(_T("CAI GPS-NAV"));
+}
 
 
-BOOL caiGpsNavOpen(PDeviceDescriptor_t d, int Port){
-
-  if (!SIMMODE) {
-	  d->Com->WriteString(TEXT("\x03"));
-	  Sleep(50);
-	  d->Com->WriteString(TEXT("NMEA\r"));
+BOOL CDevCAIGpsNav::Init(DeviceDescriptor_t *d)
+{
+  if(!SIMMODE) {
+    d->Com->WriteString(TEXT("\x03"));
+    Sleep(50);
+    d->Com->WriteString(TEXT("NMEA\r"));
 	  
-	  // This is for a slightly different mode, that
-	  // apparently outputs pressure info too...
-	  //(d->Com.WriteString)(TEXT("PNP\r\n"));
-	  //(d->Com.WriteString)(TEXT("LOG 0\r\n"));
+    // This is for a slightly different mode, that
+    // apparently outputs pressure info too...
+    //(d->Com.WriteString)(TEXT("PNP\r\n"));
+    //(d->Com.WriteString)(TEXT("LOG 0\r\n"));
   }
   
   return(TRUE);
 }
 
-BOOL caiGpsNavClose(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
+
+BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
+{
+  return false;
 }
 
 
+BOOL CDevCAIGpsNav::Install(PDeviceDescriptor_t d){
 
-
-BOOL caiGpsNavIsLogger(PDeviceDescriptor_t d){
+  _tcscpy(d->Name, GetName());
+  d->ParseNMEA    = NULL;
+  d->PutMacCready = NULL;
+  d->PutBugs      = NULL;
+  d->PutBallast   = NULL;
+  d->Open         = NULL;
+  d->Close        = NULL;
+  d->Init         = Init;
+  d->LinkTimeout  = NULL;
+  d->Declare      = DeclareTask;
   // There is currently no support for task declaration
   // from XCSoar
-	(void)d; // TODO feature: CAI GPS NAV declaration
-  return(FALSE);
+  d->IsLogger     = GetFalse;
+  d->IsGPSSource  = GetTrue;
+  d->IsBaroSource = GetTrue;
+  
+  return TRUE;
 }
 
 
-BOOL caiGpsNavIsGPSSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
+bool CDevCAIGpsNav::Register()
+{
+  return devRegister(GetName(), cap_gps | cap_baro_alt | cap_logger, Install);
 }
-
-
-BOOL caiGpsNavInstall(PDeviceDescriptor_t d){
-
-  _tcscpy(d->Name, TEXT("CAI GPS-NAV"));
-  d->ParseNMEA = NULL;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = caiGpsNavOpen;
-  d->Close = caiGpsNavClose;
-  d->Init = NULL;
-  d->LinkTimeout = NULL;
-  d->Declare = NULL;
-  d->IsLogger = caiGpsNavIsLogger;
-  d->IsGPSSource = caiGpsNavIsGPSSource;
-
-  return(TRUE);
-
-}
-
-
-BOOL caiGpsNavRegister(void){
-  return(devRegister(
-    TEXT("CAI GPS-NAV"), 
-    (1l << dfGPS),
-    caiGpsNavInstall
-  ));
-}
-
