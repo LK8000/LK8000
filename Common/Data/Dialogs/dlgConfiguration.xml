@@ -56,20 +56,14 @@
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmTerrain" X=70 Y=0 Width=-246 Height=222 Font=2>
-<WndProperty Name="prpEnableTerrain" Caption="_@M705_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H115_">
-<DataField name="" DataType="boolean"/>
-</WndProperty>
-<WndProperty Name="prpEnableTopology" Caption="_@M733_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H116_">
-<DataField name="" DataType="boolean"/>
+<WndProperty Name="prpTerrainRamp" Caption="_@M703_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H119_">
+<DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpTerrainContrast" Caption="_@M704_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H117_">
 <DataField name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min=0 Max=100 Step=5/>
 </WndProperty>
 <WndProperty Name="prpTerrainBrightness" Caption="_@M702_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H118_">
 <DataField name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min=0 Max=100 Step=5/>
-</WndProperty>
-<WndProperty Name="prpTerrainRamp" Caption="_@M703_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H119_">
-<DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpShading" Caption="_@M610_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H120_">
 <DataField name="" DataType="boolean"/>

@@ -1932,28 +1932,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTerrain"));
-  if (wp) {
-#if NEWMULTIMAPS
-    // THIS SHOULD BE ENTIRELY REMOVED FROM CONFIG
-    wp->GetDataField()->Set(IsMultimapTerrain());
-#else
-    wp->GetDataField()->Set(EnableTerrain_Config);
-#endif
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTopology"));
-  if (wp) {
-#if NEWMULTIMAPS
-    // THIS SHOULD BE ENTIRELY REMOVED FROM CONFIG
-    wp->GetDataField()->Set(IsMultimapTopology());
-#else
-    wp->GetDataField()->Set(EnableTopology_Config);
-#endif
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpCirclingZoom"));
   if (wp) {
     wp->GetDataField()->Set(MapWindow::zoom.CircleZoom());
@@ -3755,25 +3733,6 @@ int ival;
       DisplayTextType = wp->GetDataField()->GetAsInteger();
     }
   }
-
-#if NEWMULTIMAPS
-#else
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTerrain"));
-  if (wp) {
-    if (EnableTerrain_Config != wp->GetDataField()->GetAsBoolean()) {
-      EnableTerrain_Config = wp->GetDataField()->GetAsBoolean();
-      EnableTerrain=EnableTerrain_Config;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTopology"));
-  if (wp) {
-    if (EnableTopology_Config != wp->GetDataField()->GetAsBoolean()) {
-      EnableTopology_Config = wp->GetDataField()->GetAsBoolean();
-      EnableTopology=EnableTopology_Config;
-    }
-  }
-#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCirclingZoom"));
   if (wp) {
