@@ -1106,25 +1106,31 @@ void InputEvents::eventAirSpace(const TCHAR *misc) {
   #endif
 }
 
+extern bool ActiveMap_IsEnabled;
 void InputEvents::eventActiveMap(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
-	if (ActiveMap)
-		ActiveMap=false;
+	if (IsMultiMapSharedNoMain())
+		ActiveMap_IsEnabled=!ActiveMap_IsEnabled;
 	else
-		ActiveMap=true;
+		ActiveMap=!ActiveMap;
   } 
   else if (_tcscmp(misc, TEXT("off")) == 0)
     ActiveMap=false;
   else if (_tcscmp(misc, TEXT("on")) == 0)
     ActiveMap=true;
   else if (_tcscmp(misc, TEXT("show")) == 0) {
-    if (ActiveMap)
-	// 854 ActiveMap ON
-      DoStatusMessage(gettext(TEXT("_@M854_")));
-    if (!ActiveMap) 
-	// 855 ActiveMap OFF
-      DoStatusMessage(gettext(TEXT("_@M855_")));
-  }  
+	if ( IsMultiMapSharedNoMain() ) {
+		if (ActiveMap_IsEnabled)
+			DoStatusMessage(gettext(TEXT("_@M854_"))); // ActiveMap ON
+		else
+			DoStatusMessage(gettext(TEXT("_@M855_"))); // ActiveMap OFF
+	} else {
+		if (ActiveMap)
+			DoStatusMessage(gettext(TEXT("_@M854_"))); // ActiveMap ON
+		else
+			DoStatusMessage(gettext(TEXT("_@M855_"))); // ActiveMap OFF
+	}  
+  }
 }
 
 

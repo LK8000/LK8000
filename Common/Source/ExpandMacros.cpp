@@ -239,10 +239,19 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 16:
-			if (ActiveMap)
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(491)); // OFF
-			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(894)); // ON
+			extern bool ActiveMap_IsEnabled;
+			if (IsMultiMapSharedNoMain()) {
+				if (ActiveMap_IsEnabled)
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(491)); // OFF
+				else
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(894)); // ON
+
+			} else {
+				if (ActiveMap)
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(491)); // OFF
+				else
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(894)); // ON
+			}
 			break;
 
 		case 17:
