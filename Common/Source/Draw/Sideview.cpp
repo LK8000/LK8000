@@ -823,7 +823,7 @@ _nomoredeclutter:
    line[1].y = line[0].y;
 
    DrawAircraft(hdc, Orig_Aircraft);
-   DrawDashLine(hdc,3, line[0], line[1],  Sideview_TextColor, rct);
+   DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
 
 
    #if 0
