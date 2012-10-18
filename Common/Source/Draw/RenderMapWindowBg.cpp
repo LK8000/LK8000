@@ -305,18 +305,14 @@ fastzoom:
   }
   #endif
 
-  #if TESTBENCH
-  if (MapSpaceMode!=MSM_MAP) {
-	DoStatusMessage(_T("RENDERMAPWINDOWBG NOT IN MSM_MAP!"));
-  }
-  #endif
-
   //
-  // REMINDER: WE ARE IN MAIN MAP HERE: MSM_MAP ONLY.
+  // REMINDER: WE ARE IN MAIN MAP HERE: MSM_MAP ONLY, OR PANNING MODE!
+  // MAPSPACEMODE CAN STILL CHANGE, DUE TO USER INPUT. BUT WE GOT HERE IN
+  // EITHER PAN OR MSM_MAP.
   //
 
   // If we detect the quick draw request, we accelerate drawing of main map.
-  // We paing the minimum: overlays and bottom bar, and quickly we return.
+  // We paint the minimum: overlays and bottom bar, and quickly we return.
   //
   if (QUICKDRAW)  {
 	if ( !mode.AnyPan()) {
@@ -442,7 +438,7 @@ fastzoom:
   }
 
   // draw wind vector at aircraft
-  if (!mode.AnyPan()) {
+  if (NOTANYPAN) {
     DrawWindAtAircraft2(hdc, Orig_Aircraft, DrawRect);
   } else if (mode.Is(Mode::MODE_TARGET_PAN)) {
     DrawWindAtAircraft2(hdc, Orig, rc);
@@ -458,7 +454,7 @@ fastzoom:
   #endif
 
   // VisualGlide drawn BEFORE lk8000 overlays
-  if (!mode.AnyPan() && VisualGlide > 0) {
+  if (NOTANYPAN && (VisualGlide > 0)) {
     DrawGlideCircle(hdc, Orig, rc); 
   }
 
@@ -468,9 +464,9 @@ fastzoom:
   }
 
   // Draw traffic and other specifix LK gauges
-  	LKDrawFLARMTraffic(hdc, DrawRect, Orig_Aircraft);
+  LKDrawFLARMTraffic(hdc, DrawRect, Orig_Aircraft);
 
-  if (!mode.AnyPan()) {
+  if (NOTANYPAN) {
     // REMINDER TODO let it be configurable for not circling also, as before
     if ((mode.Is(Mode::MODE_CIRCLING)) )
       if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
@@ -484,7 +480,7 @@ fastzoom:
 	goto QuickRedraw;
   }
     
-  if (LKVarioBar && !mode.AnyPan()) 
+  if (LKVarioBar && NOTANYPAN) 
 	LKDrawVario(hdc,rc);
   
   // Draw glider or paraglider
@@ -492,7 +488,7 @@ fastzoom:
     DrawAircraft(hdc, Orig_Aircraft);
   }
 
-  if (!mode.AnyPan()) {
+  if (NOTANYPAN) {
 	if (TrackBar) DrawHeading(hdc, Orig, DrawRect); 
   }
 
@@ -501,7 +497,7 @@ fastzoom:
   DrawMarks(hdc, rc);
   #endif
 
-  if (ISGAAIRCRAFT) DrawHSI(hdc,Orig,DrawRect); 
+  if (ISGAAIRCRAFT && NOTANYPAN) DrawHSI(hdc,Orig,DrawRect); 
 
   DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom
   DrawCompass(hdcDrawWindow, rc, DisplayAngle);
