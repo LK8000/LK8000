@@ -27,7 +27,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 				  const POINT &Orig,
 				  const POINT &Orig_Aircraft)
 {
-  HFONT hfOld;
+  //HFONT hfOld;
 
   // Calculations are taking time and slow down painting of map, beware
   #define MULTICALC_MINROBIN	5	// minimum split
@@ -243,9 +243,9 @@ fastzoom:
   }
   #endif
 
-  SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-  SelectObject(hdc, GetStockObject(BLACK_PEN));
-  hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
+//  SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+//  SelectObject(hdc, GetStockObject(BLACK_PEN));
+//  hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
   
 
   // Logic of DONTDRAWTHEMAP is the following:
@@ -256,7 +256,7 @@ fastzoom:
   // reset our intentions and go back to beginning, or nearby..
   // We have a new job to do, for another MapSpace, no more MAP.
   if (DONTDRAWTHEMAP) {
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -278,13 +278,13 @@ fastzoom:
     LockTerrainDataGraphics();
  	if (DONTDRAWTHEMAP) { // 100318
 		UnlockTerrainDataGraphics();
-		SelectObject(hdcDrawWindow, hfOld);
+		//SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
     DrawTerrain(hdc, DrawRect, sunazimuth, sunelevation);
  	if (DONTDRAWTHEMAP) {
 		UnlockTerrainDataGraphics();
-		SelectObject(hdcDrawWindow, hfOld);
+		//SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
     if (!QUICKDRAW) {
@@ -334,12 +334,12 @@ fastzoom:
 		DrawLook8000(hdc,rc);
 		DrawBottomBar(hdc,rc);
 	}
-  	SelectObject(hdcDrawWindow, hfOld);
+  	//SelectObject(hdcDrawWindow, hfOld);
 	return;
   }
 
   if (DONTDRAWTHEMAP) {
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -367,7 +367,7 @@ fastzoom:
 
   
   if (DONTDRAWTHEMAP) {
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -384,7 +384,7 @@ fastzoom:
   }
 
   if (DONTDRAWTHEMAP) {
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
   
@@ -394,7 +394,7 @@ fastzoom:
   }
 
   if (DONTDRAWTHEMAP) {
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -407,7 +407,7 @@ fastzoom:
   }
   
   if (DONTDRAWTHEMAP) { 
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -419,7 +419,7 @@ fastzoom:
   {
 	DrawAirspaceLabels(hdc, DrawRect, Orig_Aircraft);
 	if (DONTDRAWTHEMAP) { // 100319
-		SelectObject(hdcDrawWindow, hfOld);
+		//SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
   }
@@ -427,7 +427,7 @@ fastzoom:
   DrawWaypointsNew(hdc,DrawRect);
 
   if (DONTDRAWTHEMAP) {
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -463,7 +463,7 @@ fastzoom:
   }
 
   if (DONTDRAWTHEMAP) {
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -476,11 +476,11 @@ fastzoom:
       if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
   
     if (IsMultimapOverlays()) DrawLook8000(hdc,rc); 
-    DrawBottomBar(hdc,rc);
+   // DrawBottomBar(hdc,rc);
   }
 
   if (DONTDRAWTHEMAP) {
-	SelectObject(hdcDrawWindow, hfOld);
+	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
     
@@ -516,7 +516,7 @@ fastzoom:
   DrawDebug(hdc,rc);
 #endif
 
-  SelectObject(hdcDrawWindow, hfOld);
+  //SelectObject(hdcDrawWindow, hfOld);
 
 }
 
