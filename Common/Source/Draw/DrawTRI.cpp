@@ -25,20 +25,20 @@
 //
 void MapWindow::DrawAcceleration(HDC hDC, const RECT rc)
 {
-	double ScaleX= (rc.right - rc.left)/2/5;
-	double ScaleY= (rc.top - rc.bottom)/2/5;
-	double ScaleZ= (rc.top - rc.bottom)/2/20;
-	POINT Pos;
-	Pos.x = (rc.right - rc.left)/2 +(int)( GPS_INFO.AccelY * ScaleX);
-	Pos.y = (rc.bottom   - rc.top)/2+ (int)(GPS_INFO.AccelZ * ScaleY);
-
-	HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
-	HBRUSH  oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
-
-	  Circle( hDC, Pos.x, Pos.y-10, 20+ (int)(ScaleZ*GPS_INFO.AccelX),  rc,true, true);
-
-	SelectObject(hDC, oldBrush);
-	SelectObject(hDC, oldPen);
+  const double ScaleX = (rc.right - rc.left)/5;
+  const double ScaleY = (rc.top - rc.bottom)/5;
+  const double ScaleZ = (rc.top - rc.bottom)/20;
+  POINT Pos;
+  Pos.x = (rc.right - rc.left)/2 + (int)(GPS_INFO.AccelY * ScaleX);
+  Pos.y = (rc.bottom - rc.top)/2 + (int)((GPS_INFO.AccelZ - 1) * ScaleY);
+  const double radius = 20 + (int)(GPS_INFO.AccelX * ScaleZ);
+  
+  const HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
+  const HBRUSH  oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
+  Circle(hDC, Pos.x, Pos.y - radius/2, radius, rc, true, true);
+  
+  SelectObject(hDC, oldBrush);
+  SelectObject(hDC, oldPen);
 }
 
 void MapWindow::DrawTRI(HDC hDC, const RECT rc)
@@ -187,6 +187,13 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   hpOld = (HPEN)SelectObject(hDC, hpWhite);
   hbOld = (HBRUSH)SelectObject(hDC, hbWhite);
   Circle(hDC, Start.x, Start.y, radius, rc, false, true );
+
+  if(GPS_INFO.AccelerationAvailable)
+  {
+    DrawAcceleration(hDC, rc);
+    MapWindow::RequestFastRefresh();
+  }
+
   SelectObject(hDC, hpBorder);
   SelectObject(hDC, hbBorder);
   Circle(hDC, Start.x, Start.y, radius+NIBLSCALE(2), rc, false, false );
@@ -260,11 +267,6 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   SelectObject(hDC, hbOld);
   SelectObject(hDC, hpOld);
-  if(GPS_INFO.AccelerationAvailable)
-  {
-    DrawAcceleration( hDC,   rc);
-    MapWindow::RequestFastRefresh();
-  }
 }
 
 #else
