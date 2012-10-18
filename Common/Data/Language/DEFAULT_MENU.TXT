@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 121013
+# Release 9 , 121019
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -806,17 +806,15 @@ location=6
 mode=Display3
 type=key
 data=8
-event=Mode default
-event=InvertColor
-label=_@M2036_
+event=Null
+label=$(AC03)
 location=7
 
 mode=Display3
 type=key
 data=9
-event=ChangeBack
-# label=_@M2037_$(TerrainVisible)
-label=$(AC09)
+event=Null
+label=$(AC03)
 location=8
 
 
@@ -1151,9 +1149,8 @@ location=6
 mode=Info1
 type=key
 data=8
-event=Mode default
-event=Service ASPNEAR
-label=_@M2060_$(CheckAirspace)
+event=Null
+label=$(AC03)
 location=7
 
 mode=Info1
@@ -1546,10 +1543,8 @@ location=11
 mode=ScreenMode
 type=key
 data=APP1
-event=Mode default
-event=Service OVERLAYS
-# label=_@M2079_\n$(OVERLAY)
-label=$(AC17)
+event=Null
+label=
 location=1
 
 mode=ScreenMode
