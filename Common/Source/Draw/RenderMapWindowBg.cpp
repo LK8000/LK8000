@@ -476,7 +476,7 @@ fastzoom:
       if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
   
     if (IsMultimapOverlays()) DrawLook8000(hdc,rc); 
-   // DrawBottomBar(hdc,rc);
+    DrawBottomBar(hdc,rc);
   }
 
   if (DONTDRAWTHEMAP) {
