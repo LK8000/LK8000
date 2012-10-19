@@ -660,15 +660,15 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 
 
 
-GEXTERN bool ActiveMap;
+//GEXTERN bool ActiveMap;
 int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* pDia , double fAS_Bearing, double fWP_Bearing)
 {
 //fAS_Bearing+=3.0;
 
 double fOldScale  =  zoom.Scale();
 RECT rct = pDia->rc;
-bool OldAM = ActiveMap;
-ActiveMap = true ;
+//bool OldAM = ActiveMap;
+//ActiveMap = true ;
 if(zoom.AutoZoom())
   zoom.AutoZoom(false);
 double fFact = 1.0 ;
@@ -846,6 +846,6 @@ _nomoredeclutter:
 
    MapWindow::zoom.RequestedScale(fOldScale);
    EnableThermalLocator = iOldLocator;
-   ActiveMap = OldAM ;
+   //ActiveMap = OldAM ;
  return 0;
 }
