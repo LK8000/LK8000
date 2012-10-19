@@ -222,11 +222,12 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][3], d60[1][3], RGB_BLUE,rc);
 
   POINT a1, a2;
-
-  a1.x = Start.x - (long) ( planesize * fastcosine(beta));
-  a1.y = Start.y - (long) ( planesize * fastsine(beta));
-  a2.x = Start.x + (long) ( planesize * fastcosine(beta));
-  a2.y = Start.y + (long) ( planesize * fastsine(beta));
+  const double beta_sine = fastsine(beta);
+  const double beta_cosine = fastcosine(beta);
+  a1.x = Start.x - (long)(planesize * beta_cosine);
+  a1.y = Start.y - (long)(planesize * beta_sine);
+  a2.x = Start.x + (long)(planesize * beta_cosine);
+  a2.y = Start.y + (long)(planesize * beta_sine);
     if (disabled) 
 	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
     else
@@ -234,8 +235,8 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   a1.x = Start.x;
   a1.y = Start.y;
-  a2.x = Start.x + (long) ( tailsize * fastsine(beta));
-  a2.y = Start.y - (long) ( tailsize * fastcosine(beta));
+  a2.x = Start.x + (long)(tailsize * beta_sine);
+  a2.y = Start.y - (long)(tailsize * beta_cosine);
   if (disabled) 
 	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
   else
