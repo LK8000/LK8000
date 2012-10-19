@@ -336,10 +336,19 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   DiagrammStruct sDia;
   sDia.fXMin =-9500.0f;
+
+  #if 0
   if( sDia.fXMin > (-0.1f * fDist))
 	sDia.fXMin = -0.1f * fDist;
   if( -sDia.fXMin > (fDist))
     sDia.fXMin = -fDist;
+  #else
+  if (IsMultimapOverlays())
+	sDia.fXMin = -0.35f * fDist;
+  else
+	sDia.fXMin = -0.2f * fDist;
+  #endif
+
   sDia.fXMax = fDist;
   sDia.fYMin = hmin;
   sDia.fYMax = hmax;
