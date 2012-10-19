@@ -24,7 +24,7 @@ LastPositions asRingBuf[NO_TRACE_PTS];
 int iLastPtr=0;
 bool bBuffFull;
 
-
+static bool GotFirstBaroAltitude=false;
 
 static double EastOrWest(double in, TCHAR EoW);
 static double NorthOrSouth(double in, TCHAR NoS);
@@ -95,7 +95,8 @@ bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceD
 		DoStatusMessage(_T("INVALID BARO ALTITUDE!"));
 		notifyErr=false;
 	}
-  }
+  } else
+	GotFirstBaroAltitude=true;
 
   // First we keep memory of what we got so far.
   // RMZ_FLARM must be granted to be real (not a ghost baro), all checks in calling function.
@@ -386,18 +387,19 @@ void NMEAParser::UpdateMonitor(void)
 		StartupStore(_T("... GPS baro source back available%s"),NEWLINE);
 		#endif
 
-		if (EnableNavBaroAltitude) {
-			DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
-		} else {
-			DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
+		if (GotFirstBaroAltitude) {
+			if (EnableNavBaroAltitude) {
+				DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
+			} else {
+				DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
+			}
+			lastvalidBaro=true;
 		}
-
-		lastvalidBaro=true;
 	} 
 	else {
 		// last baro was Ok, currently we still have a validbaro, but no HBs...
 		// Probably it is a special case when no gps fix was found on the secondary baro source.
-		if (invalidBaro) {
+		if (invalidBaro||!GotFirstBaroAltitude) {
 			GPS_INFO.BaroAltitudeAvailable=FALSE;
 			#ifdef DEBUGNPM
 			StartupStore(_T(".... We still have valid baro, resetting BaroAltitude OFF\n"));
