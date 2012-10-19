@@ -25,12 +25,12 @@
 //
 void MapWindow::DrawAcceleration(HDC hDC, const RECT rc)
 {
-  const double ScaleX = (rc.right - rc.left)/5;
-  const double ScaleY = (rc.top - rc.bottom)/5;
+  const double ScaleX = (rc.right - rc.left)/10;
+  const double ScaleY = (rc.top - rc.bottom)/10;
   const double ScaleZ = (rc.top - rc.bottom)/20;
   POINT Pos;
   Pos.x = (rc.right - rc.left)/2 + (int)(GPS_INFO.AccelY * ScaleX);
-  Pos.y = (rc.bottom - rc.top)/2 + (int)((GPS_INFO.AccelZ - 1) * ScaleY);
+  Pos.y = (rc.bottom - rc.top)/2 - (int)((GPS_INFO.AccelZ - 1) * ScaleY);
   const double radius = 20 + (int)(GPS_INFO.AccelX * ScaleZ);
   
   const HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
