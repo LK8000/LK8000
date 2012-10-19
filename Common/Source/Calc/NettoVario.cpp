@@ -16,7 +16,7 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double n;
   // get load factor
   if (Basic->AccelerationAvailable) {
-	n = fabs(Basic->Gload);
+	n = fabs(Basic->AccelZ);
   } else {
 	n = fabs(Calculated->Gload);
   }

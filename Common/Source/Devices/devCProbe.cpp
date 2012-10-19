@@ -203,8 +203,6 @@ BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 	pINFO->AccelY = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
 	pINFO->AccelZ = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
 
-	pINFO->Gload = sqrt(pow(pINFO->AccelX,2.0)+pow(pINFO->AccelY,2.0)+pow(pINFO->AccelZ,2.0));
-
 	pINFO->TemperatureAvailable=TRUE;
 	pINFO->OutsideAirTemperature = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.1;
 

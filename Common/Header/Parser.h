@@ -97,7 +97,6 @@ typedef struct _NMEA_INFO
   double NettoVario;
   double Ballast;
   double Bugs;
-  double Gload;
   BOOL AccelerationAvailable;
   double AccelX;
   double AccelY;

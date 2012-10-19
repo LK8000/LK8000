@@ -816,7 +816,7 @@ goto_bearing:
 			//wsprintf(BufferUnit,_T("g")); 100302 obs
 			// _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title ); 100302 obs
 			if ( DrawInfo.AccelerationAvailable) { 
-				value=DrawInfo.Gload;
+				value=DrawInfo.AccelZ;
 				_stprintf(BufferValue,TEXT("%+.1f"), value);
 				valid=true;
 				// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
