@@ -567,10 +567,17 @@ _buttondown:
 				else
 					gestDir=IphoneGestures?LKGESTURE_LEFT:LKGESTURE_RIGHT;
 			} else { 
-				if (gestY>0)
-					gestDir=IphoneGestures?LKGESTURE_DOWN:LKGESTURE_UP;
-				else
-					gestDir=IphoneGestures?LKGESTURE_UP:LKGESTURE_DOWN;
+				if (IsMultiMapNoMain()) {
+					if (gestY>0)
+						gestDir=LKGESTURE_UP;
+					else
+						gestDir=LKGESTURE_DOWN;
+				} else {
+					if (gestY>0)
+						gestDir=IphoneGestures?LKGESTURE_DOWN:LKGESTURE_UP;
+					else
+						gestDir=IphoneGestures?LKGESTURE_UP:LKGESTURE_DOWN;
+				}
 			}
 		}
 		// end dontdrawthemap and inside mapscreen looking for a gesture
