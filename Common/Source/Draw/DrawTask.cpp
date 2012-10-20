@@ -55,50 +55,47 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
                 _DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
             }
 
-            if (i < ActiveWayPoint || (AATEnabled != TRUE)) {
-                int Type = SectorType;
-                double Radius = SectorRadius;
-                if (AATEnabled) {
-                    Type = Task[i].AATType;
-                    Radius = Task[i].AATCircleRadius;
-                }
+            int Type = SectorType;
+            double Radius = SectorRadius;
+            if (AATEnabled) {
+                Type = Task[i].AATType;
+                Radius = Task[i].AATCircleRadius;
+            }
 
-                switch (Type) {
-                    case CIRCLE:
-                        tmp = Radius * zoom.ResScaleOverDistanceModify();
-
+            switch (Type) {
+                case CIRCLE:
+                    tmp = Radius * zoom.ResScaleOverDistanceModify();
+                    Circle(hdc,
+                            WayPointList[Task[i].Index].Screen.x,
+                            WayPointList[Task[i].Index].Screen.y,
+                            (int) tmp, rc, false, false);
+                    break;
+                case SECTOR:
+                    tmp = Radius * zoom.ResScaleOverDistanceModify();
+                    Segment(hdc,
+                            WayPointList[Task[i].Index].Screen.x,
+                            WayPointList[Task[i].Index].Screen.y, (int) tmp, rc,
+                            Task[i].AATStartRadial - DisplayAngle,
+                            Task[i].AATFinishRadial - DisplayAngle);
+                    break;
+                case 2:
+                    if (!AATEnabled) { // this Type exist only if not AAT task
+                        // JMW added german rules
+                        tmp = 500 * zoom.ResScaleOverDistanceModify();
                         Circle(hdc,
                                 WayPointList[Task[i].Index].Screen.x,
                                 WayPointList[Task[i].Index].Screen.y,
                                 (int) tmp, rc, false, false);
-                        break;
-                    case SECTOR:
-                        tmp = Radius * zoom.ResScaleOverDistanceModify();
+
+                        tmp = 10e3 * zoom.ResScaleOverDistanceModify();
+
                         Segment(hdc,
                                 WayPointList[Task[i].Index].Screen.x,
                                 WayPointList[Task[i].Index].Screen.y, (int) tmp, rc,
                                 Task[i].AATStartRadial - DisplayAngle,
                                 Task[i].AATFinishRadial - DisplayAngle);
-                        break;
-                    case 2:
-                        if (!AATEnabled) { // this Type exist only if not AAT task
-                            // JMW added german rules
-                            tmp = 500 * zoom.ResScaleOverDistanceModify();
-                            Circle(hdc,
-                                    WayPointList[Task[i].Index].Screen.x,
-                                    WayPointList[Task[i].Index].Screen.y,
-                                    (int) tmp, rc, false, false);
-
-                            tmp = 10e3 * zoom.ResScaleOverDistanceModify();
-
-                            Segment(hdc,
-                                    WayPointList[Task[i].Index].Screen.x,
-                                    WayPointList[Task[i].Index].Screen.y, (int) tmp, rc,
-                                    Task[i].AATStartRadial - DisplayAngle,
-                                    Task[i].AATFinishRadial - DisplayAngle);
-                        }
-                        break;
-                }
+                    }
+                    break;
             }
 
             if (AATEnabled && !DoOptimizeRoute()) {
