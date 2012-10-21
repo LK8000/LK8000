@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "InputEvents.h"
 #include "LKInterface.h"
+#include "Calculations2.h"
 
 extern void ShowMenu();
 
@@ -280,6 +281,7 @@ passthrough:
 		PGOptimizeRoute=!PGOptimizeRoute;
 		if (ISPARAGLIDER && PGOptimizeRoute) {
 			AATEnabled = true;
+            ClearOptimizedTargetPos();
 		}
 		return true;
 	case ckLockScreen:

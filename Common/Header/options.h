@@ -109,6 +109,17 @@
 // Multimaps custom and shared, concerning events and customkeys 
 #define NEWMULTIMAPS		1
 
+// PWC Scoring use WGS84 earth model, but LK8000 use FAISphere
+// PG optimise can Work with WGS84 but Wapoint validation not..
+// we need change Waypoint validation before use it
+// #define _WGS84
+
+// we cn use transparent filling for Turnpoint
+// cpu cost : ~40ms on Vertica V1
+// Set to 1 for Activate
+#define AATALPHABEND 1
+        
+
 
 // Bottombar TRM0 automatically triggered upon entering a thermal.
 // This will be soon removed entirely - 121002

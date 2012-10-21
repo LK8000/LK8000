@@ -572,8 +572,9 @@ class MapWindow {
   static void DrawTeammate(HDC hdc, const RECT rc);
   static void DrawOffTrackIndicator(HDC hdc, const RECT rc);
   static void DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig);
-  static void DrawStartSector(HDC hdc, const RECT rc, POINT &Start,
-                              POINT &End, int Index);
+  static void DrawStartEndSector(HDC hdc, const RECT& rc, 
+                                    const POINT &Start, const POINT &End, int Index, 
+                                    int Type, double Radius);
   static void DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft);
   static void DrawThermalEstimate(HDC hdc, const RECT rc);
   static void DrawThermalEstimateMultitarget(HDC hdc, const RECT rc);

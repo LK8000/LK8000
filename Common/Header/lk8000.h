@@ -45,15 +45,15 @@ extern void PopupAnalysis();
 extern void RestartCommPorts();
 
 #ifndef DEG_TO_RAD
-#define DEG_TO_RAD                                      0.0174532925199432958
-#define RAD_TO_DEG                                      57.2957795131
+#define DEG_TO_RAD  (PI / 180)
+#define RAD_TO_DEG  (180 / PI)
 #endif
 
 #if defined(M_PI)
   #undef M_PI
 #endif
-#define M_PI 3.14159265359
-#define M_2PI 6.28318530718
+#define M_PI PI
+#define M_2PI (2*PI)
 
 extern "C" {
 void DebugStore(const char *Str, ...);

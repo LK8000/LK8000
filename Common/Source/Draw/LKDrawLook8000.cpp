@@ -582,16 +582,7 @@ nextinit:
 			 LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 		}
 
-		bool isExitTP = false;
-		if(DoOptimizeRoute()) {
-			LockTaskData();
-			if(ValidTaskPoint(ActiveWayPoint+1)) {
-				isExitTP = Task[ActiveWayPoint].OutCircle;
-			}
-			UnlockTaskData();
-		}
-
-		 if (gateinuse>=-1 || isExitTP ) {
+		 if (gateinuse>=-1 ) {
 			// if we are still painting , it means we did not start yet..so we use colors
 			if (CorrectSide() ) {
 				distcolor=overcolor;
