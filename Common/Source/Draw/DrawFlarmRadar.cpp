@@ -17,6 +17,7 @@
 #include "FlarmRadar.h"
 #include "Globals.h"
 #include "Multimap.h"
+#include "Bitmaps.h"
 
 extern int XstartScreen, YstartScreen;
 
@@ -56,10 +57,7 @@ typedef struct
 	double fAlt;
 	double fFlarmBearing;
 	int iColorIdx;
-//	bool bBuffFull;
-//	int iLastPtr;
 	TCHAR szGliderType[20];
-//	LastPositions asRingBuf[NO_TRACE_PTS];
 } sFlarmPositions;
 static sFlarmPositions asFLRAMPos[FLARM_MAX_TRAFFIC+1];
 
@@ -523,10 +521,10 @@ double fOwnTopPlaneSize = 1.0;
 double fTopViewPlaneSize = 1.0;
 static int aiSortArray[FLARM_MAX_TRAFFIC];
 
-static bool bHeightScale = true;
+static bool bHeightScale = false;
 static double fHeigtScaleFact = 1.0f;
 
-bool bInvCol =  false ;// INVERTCOLORS;
+bool bInvCol =  INVERTCOLORS;
 /****************************************************************
  * clear background
  ****************************************************************/
@@ -1323,25 +1321,29 @@ if(bSideview)
 }
 
 
-  SelectObject(hdc, LK8InfoNormalFont);
+  /********************************************************
+   * draw trace icon
+   ********************************************************/
   switch(bTrace)
   {
     default:
-    case 0: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M1800_"))) ; break; //   "no trace"
-    case 1: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M1802_"))); break; //  climb/sink trace"
-    case 2: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M1801_"))); break; //  "climb trace"
+    case 0:  SelectObject(hDCTemp,hNoTrace) ;  ; break; //   "no trace"
+    case 1:  SelectObject(hDCTemp,hFullTrace) ; break;  //  climb/sink trace"
+    case 2:  SelectObject(hDCTemp,hClimbTrace) ; break;  //  "climb trace"
   }
-  LKWriteText(hdc, lbuffer, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_DARKGREY, false);
-//  LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, rgbTextColor, false);
-
+  DrawBitmapX(hdc,	rci.left+10,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
+  DrawBitmapX(hdc,	rci.left+10,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
+  /********************************************************
+   * draw head up/right icon
+   ********************************************************/
   switch(iTurn)
   {
     default:
-    case 0: _stprintf(lbuffer,TEXT("%s"), gettext(TEXT("_@M1803_"))) ; break; //     "Head Up"
-    case 1: _stprintf(lbuffer,TEXT("%s"), gettext(TEXT("_@M1804_"))); break; //      Head Right"
+    case 0:  SelectObject(hDCTemp,hHeadUp) ; break; //     "Head Up"
+    case 1:  SelectObject(hDCTemp,hHeadRight); break; //      Head Right"
   }
-  LKWriteText(hdc, lbuffer, rci.right-RIGHTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_DARKGREY, false);
-
+  DrawBitmapX(hdc,	rci.right-50,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
+  DrawBitmapX(hdc,	rci.right-50,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
 
   if(bHeightScale)
     DrawSelectionFrame(hdc,  rc);

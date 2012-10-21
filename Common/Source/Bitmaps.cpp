@@ -63,7 +63,6 @@ void LKLoadFixedBitmaps(void) {
   _stprintf(srcfile,_T("%s\\TPOINT_SML_INV%s.BMP"),sDir,hires_suffix);
   hInvSmall=LKLoadBitmap(srcfile);
 
-
   _stprintf(srcfile,_T("%s\\BATTERY_FULL.BMP"),sDir);
   hBatteryFull=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%s\\BATTERY_70.BMP"),sDir);
@@ -74,6 +73,19 @@ void LKLoadFixedBitmaps(void) {
   hBattery25=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%s\\BATTERY_15.BMP"),sDir);
   hBattery15=LKLoadBitmap(srcfile);
+
+
+  _stprintf(srcfile,_T("%s\\TRACE_NO.BMP"),sDir);
+  hNoTrace=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\TRACE_FULL.BMP"),sDir);
+  hFullTrace=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\TRACE_CLIMB.BMP"),sDir);
+  hClimbTrace=LKLoadBitmap(srcfile);
+
+  _stprintf(srcfile,_T("%s\\HEAD_UP.BMP"),sDir);
+  hHeadUp=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\HEAD_RIGHT.BMP"),sDir);
+  hHeadRight=LKLoadBitmap(srcfile);
 
   _stprintf(srcfile,_T("%s\\BUTTONLEFT32.BMP"),sDir);
   hBmpLeft32=LKLoadBitmap(srcfile);
@@ -230,12 +242,21 @@ void LKUnloadFixedBitmaps(void) {
   if (hAirspaceWarning!=NULL) DeleteObject(hAirspaceWarning);
   if (hLogger!=NULL) DeleteObject(hLogger);
   if (hLoggerOff!=NULL) DeleteObject(hLoggerOff);
+
   if (hBatteryFull!=NULL) DeleteObject(hBatteryFull);
   if (hBattery70!=NULL) DeleteObject(hBattery70);
   if (hBattery50!=NULL) DeleteObject(hBattery50);
   if (hBattery25!=NULL) DeleteObject(hBattery25);
   if (hBattery15!=NULL) DeleteObject(hBattery15);
-    
+
+
+  if (hNoTrace   !=NULL) DeleteObject(hNoTrace);
+  if (hFullTrace !=NULL) DeleteObject(hFullTrace);
+  if (hClimbTrace!=NULL) DeleteObject(hClimbTrace);
+  if (hHeadRight !=NULL) DeleteObject(hHeadRight);
+  if (hHeadUp    !=NULL) DeleteObject(hHeadUp);
+
+
   if (hBmpThermalSource!=NULL) DeleteObject(hBmpThermalSource);
   if (hBmpTarget!=NULL) DeleteObject(hBmpTarget);
   if (hBmpTeammatePosition!=NULL) DeleteObject(hBmpTeammatePosition);
