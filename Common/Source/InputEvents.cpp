@@ -627,6 +627,12 @@ int InputEvents::getModeID() {
 bool InputEvents::processButton(int bindex) {
   if (!(ProgramStarted==psNormalOp)) return false;
 
+  #if TESTBENCH
+  LKASSERT(bindex>=0);
+  #else
+  if (bindex<0) return false;
+  #endif
+
   #ifdef LXMINIMAP
   SelectedButtonIndex= bindex;
   #endif
@@ -760,7 +766,7 @@ bool InputEvents::processKey(int dWord) {
       }
     }
 
-    if (!ButtonLabel::ButtonDisabled[bindex]) {
+    if ((bindex<0) || (!ButtonLabel::ButtonDisabled[bindex])) {
       InputEvents::processGo(event_id);
     }
 
@@ -3526,7 +3532,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		   int bindex = SelectedButtonIndex;
 		   // Note - reverse order - last one wins
 		   for (i = ModeLabel_count[thismode]; i >= 0; i--) {
-		 	if ((ModeLabel[thismode][i].location == bindex) ) {
+		 	if ((ModeLabel[thismode][i].location == bindex && bindex>=0) ) {
 
 		 		int lastMode = thismode;
 		 		// JMW need a debounce method here..
