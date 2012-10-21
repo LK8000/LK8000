@@ -1,8 +1,12 @@
 /*
- * PGTaskPt.h
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ * 
+ * File:   PGTaskPt.h
+ * Author: Bruno de Lacheisserie
  *
- *  Created on: 11 sept. 2012
- *      Author: Bruno
+ * Created on 11 sept. 2012
  */
 
 #ifndef PGTASKPT_H_
@@ -55,7 +59,7 @@ public:
     inline bool operator!() const {
         return m_X == 0.0 && m_Y == 0.0;
     }
-    
+
     inline operator bool () const {
         return (*this) != null;
     }

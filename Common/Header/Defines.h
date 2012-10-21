@@ -773,13 +773,13 @@
 // Math
 //
 #ifndef PI
-#define PI               3.14159265358979323846
+static const double PI = (4*atan(1));
 #endif
 #define EARTH_DIAMETER		12733426.0		// Diameter of earth in meters
 #define SQUARED_EARTH_DIAMETER	162140137697476.0	// Diameter of earth in meters (EARTH_DIAMETER*EARTH_DIAMETER)
 #ifndef DEG_TO_RAD
-#define DEG_TO_RAD		0.0174532925199432958
-#define RAD_TO_DEG		57.2957795131
+#define DEG_TO_RAD  (PI / 180)
+#define RAD_TO_DEG  (180 / PI)
 #endif
 
 #define NAUTICALMILESTOMETRES (double)1851.96

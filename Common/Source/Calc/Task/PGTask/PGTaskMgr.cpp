@@ -1,8 +1,12 @@
 /*
- * PGTaskMgr.cpp
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ * 
+ * File:   PGTaskMgr.cpp
+ * Author: Bruno de Lacheisserie
  *
- *  Created on: 11 sept. 2012
- *      Author: Bruno
+ * Created on 11 sept. 2012
  */
 
 #include "PGTaskMgr.h"
@@ -15,16 +19,33 @@
 #include "math.h"
 #include "PGCicrcleTaskPt.h"
 #include "PGLineTaskPt.h"
+#include "PGSectorTaskPt.h"
+
+inline double rad2deg(double rad) {
+    return (rad * 180 / PI);
+}
+
+inline double deg2rad(double deg) {
+    return (deg * PI / 180);
+}
 
 const ProjPt ProjPt::null;
 
 // WGS84 data
 const PGTaskMgr::DATUM PGTaskMgr::m_Datum = (PGTaskMgr::DATUM){
+#ifdef _WGS84
     6378137.0, // a
     6356752.3142, // b
     0.00335281066474748, // f = 1/298.257223563
     0.006694380004260807, // esq
-    0.0818191909289062, // e
+    0.0818191909289062, // e    
+#else
+    6371000.0, // a
+    6371000.0, // b
+    0, // f = 1/298.257223563
+    0, // esq
+    0, // e
+#endif
 };
 
 PGTaskMgr::PGTaskMgr() {
@@ -32,19 +53,19 @@ PGTaskMgr::PGTaskMgr() {
 }
 
 PGTaskMgr::~PGTaskMgr() {
-    std::for_each(m_Task.begin(), m_Task.end(), safe_delete() );
+    std::for_each(m_Task.begin(), m_Task.end(), safe_delete());
     m_Task.clear();
 }
 
 void PGTaskMgr::Initialize() {
-    
-    std::for_each(m_Task.begin(), m_Task.end(), safe_delete() );
+
+    std::for_each(m_Task.begin(), m_Task.end(), safe_delete());
     m_Task.clear();
 
     // build Mercator Reference Grid
     // find center of Task
     double minlat = 0.0, minlon = 0.0, maxlat = 0.0, maxlon = 0.0;
-    for (int curwp = 0; ValidWayPoint(Task[curwp].Index); ++curwp) {
+    for (int curwp = 0; ValidTaskPoint(curwp); ++curwp) {
         if (curwp == 0) {
             maxlat = minlat = WayPointList[Task[curwp].Index].Latitude;
             maxlat = minlon = WayPointList[Task[curwp].Index].Longitude;
@@ -57,22 +78,22 @@ void PGTaskMgr::Initialize() {
         }
     }
 
-    m_Grid.lat0 = ((minlat + maxlat) / 2) * DEG_TO_RAD;
-    m_Grid.lon0 = ((minlon + maxlon) / 2) * DEG_TO_RAD;
+    m_Grid.lat0 = deg2rad(minlat + maxlat) * 1 / 2;
+    m_Grid.lon0 = deg2rad(minlon + maxlon) * 1 / 2;
     m_Grid.k0 = 1;
     m_Grid.false_e = 0.0; // ????
     m_Grid.false_n = 0.0; // ????
 
     // build task point list
-    for (int curwp = 0; ValidWayPoint(Task[curwp].Index); ++curwp) {
+    for (int curwp = 0; ValidTaskPoint(curwp); ++curwp) {
 
         int TpType = 0;
         if (curwp == 0) {
             // Start
             TpType = StartLine;
-        } else if (ValidWayPoint(Task[curwp + 1].Index)) {
+        } else if (ValidTaskPoint(curwp + 1)) {
             // All Other
-            TpType = Task[curwp].AATType?2:0;
+            TpType = Task[curwp].AATType ? 2 : 0;
         } else {
             // Finnish
             TpType = FinishLine;
@@ -94,14 +115,14 @@ void PGTaskMgr::Initialize() {
 void PGTaskMgr::AddCircle(int TskIdx) {
     PGCicrcleTaskPt *pTskPt = new PGCicrcleTaskPt;
 
-    LatLon2Grid(WayPointList[Task[TskIdx].Index].Latitude*DEG_TO_RAD,
-            WayPointList[Task[TskIdx].Index].Longitude*DEG_TO_RAD,
+    LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
+            deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
             pTskPt->m_Center.m_Y,
             pTskPt->m_Center.m_X);
 
     if (TskIdx == 0) {
         pTskPt->m_Radius = StartRadius;
-    } else if (ValidWayPoint(Task[TskIdx + 1].Index)) {
+    } else if (ValidTaskPoint(TskIdx + 1)) {
         pTskPt->m_Radius = (Task[TskIdx].AATCircleRadius);
     } else {
         pTskPt->m_Radius = FinishRadius;
@@ -116,15 +137,15 @@ void PGTaskMgr::AddLine(int TskIdx) {
 
     PGLineTaskPt *pTskPt = new PGLineTaskPt;
 
-    LatLon2Grid(WayPointList[Task[TskIdx].Index].Latitude*DEG_TO_RAD,
-            WayPointList[Task[TskIdx].Index].Longitude*DEG_TO_RAD,
+    LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
+            deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
             pTskPt->m_Center.m_Y,
             pTskPt->m_Center.m_X);
 
     double radius = 0;
     if (TskIdx == 0) {
         radius = StartRadius;
-    } else if (ValidWayPoint(Task[TskIdx + 1].Index)) {
+    } else if (ValidTaskPoint(TskIdx + 1)) {
         radius = (Task[TskIdx].AATCircleRadius);
     } else {
         radius = FinishRadius;
@@ -138,23 +159,23 @@ void PGTaskMgr::AddLine(int TskIdx) {
 
     // Find next Tp not same as current.
     int NextIdx = TskIdx + 1;
-    while (ValidWayPoint(Task[NextIdx].Index) && Task[NextIdx].Index == Task[TskIdx].Index) {
+    while (ValidTaskPoint(NextIdx) && Task[NextIdx].Index == Task[TskIdx].Index) {
         ++NextIdx;
     }
 
     // Calc Cross Dir Vector
     ProjPt InB, OutB;
-    if (ValidWayPoint(Task[NextIdx].Index)) {
-        LatLon2Grid(WayPointList[Task[NextIdx].Index].Latitude*DEG_TO_RAD,
-            WayPointList[Task[NextIdx].Index].Longitude*DEG_TO_RAD,
-            OutB.m_Y,
-            OutB.m_X);
-        
+    if (ValidTaskPoint(NextIdx)) {
+        LatLon2Grid(deg2rad(WayPointList[Task[NextIdx].Index].Latitude),
+                deg2rad(WayPointList[Task[NextIdx].Index].Longitude),
+                OutB.m_Y,
+                OutB.m_X);
+
         OutB = OutB - pTskPt->m_Center;
 
         double d = OutB.length();
-        if(d != 0.0) {
-            OutB = OutB/d;
+        if (d != 0.0) {
+            OutB = OutB / d;
         }
     } else if (PrevIdx >= 0) {
         InB = m_Task[PrevIdx]->getCenter();
@@ -162,23 +183,23 @@ void PGTaskMgr::AddLine(int TskIdx) {
         InB = pTskPt->m_Center - InB;
 
         double d = InB.length();
-        if(d != 0.0) {
-            InB = InB/d;
+        if (d != 0.0) {
+            InB = InB / d;
         }
     }
-    
-    if(InB && OutB) {
-        pTskPt->m_DirVector = InB+OutB;
+
+    if (InB && OutB) {
+        pTskPt->m_DirVector = InB + OutB;
         double d = pTskPt->m_DirVector.length();
-        if(d != 0.0) {
-            pTskPt->m_DirVector=pTskPt->m_DirVector/d;
+        if (d != 0.0) {
+            pTskPt->m_DirVector = pTskPt->m_DirVector / d;
         }
-    } else if(InB){
+    } else if (InB) {
         pTskPt->m_DirVector = InB;
     } else if (OutB) {
         pTskPt->m_DirVector = OutB;
     }
-    
+
     // Calc begin and end off line.
     double d = pTskPt->m_DirVector.length();
     if (d > 0) {
@@ -188,17 +209,25 @@ void PGTaskMgr::AddLine(int TskIdx) {
         u.m_Y = pTskPt->m_DirVector.m_X * sin(PI / 2) + pTskPt->m_DirVector.m_Y * cos(PI / 2);
 
         u = u * radius;
-        
+
         pTskPt->m_LineBegin = pTskPt->m_Center + u; // begin of line
         pTskPt->m_LineEnd = pTskPt->m_Center - u; // end of line
     }
-    
+
     m_Task.push_back(pTskPt);
 }
 
 void PGTaskMgr::AddSector(int TskIdx) {
+    PGSectorTaskPt *pTskPt = new PGSectorTaskPt;
+
+    LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
+            deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
+            pTskPt->m_Center.m_Y,
+            pTskPt->m_Center.m_X);
+
     //TODO : Handle Sector Turn Point
-    AddCircle(TskIdx);
+    
+    m_Task.push_back(pTskPt);
 }
 
 void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
@@ -207,7 +236,7 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
     }
 
     ProjPt PrevPos;
-    LatLon2Grid(Basic->Latitude*DEG_TO_RAD, Basic->Longitude*DEG_TO_RAD, PrevPos.m_Y, PrevPos.m_X);
+    LatLon2Grid(deg2rad(Basic->Latitude), deg2rad(Basic->Longitude), PrevPos.m_Y, PrevPos.m_X);
 
     for (size_t i = ActiveWayPoint; i < m_Task.size(); ++i) {
         if ((i + 1) < m_Task.size()) {
@@ -222,8 +251,8 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
 void PGTaskMgr::getOptimized(const int i, double& lat, double& lon) const {
 
     Grid2LatLon(m_Task[i]->getOptimized().m_Y, m_Task[i]->getOptimized().m_X, lat, lon);
-    lat *= RAD_TO_DEG;
-    lon *= RAD_TO_DEG;
+    lat = rad2deg(lat);
+    lon = rad2deg(lon);
 }
 
 //====================================
