@@ -198,7 +198,6 @@ void LKObjects_Create() {
 
 
   MapWindow::hpStartFinishThin=LKPen_Red_N1;
-  MapWindow::hpMapScale = LKPen_Black_N1;
   MapWindow::hbThermalBand=LKBrush_Emerald;
   MapWindow::hbCompass=LKBrush_White;
   MapWindow::hbBestCruiseTrack=LKBrush_Blue;

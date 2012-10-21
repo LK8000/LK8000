@@ -664,7 +664,6 @@ class MapWindow {
   static      HPEN hpThermalBandGlider;
   static      HPEN hpFinalGlideAbove;
   static      HPEN hpFinalGlideBelow;
-  static      HPEN hpMapScale;
   static      HPEN hpMapScale2;
   static      HPEN hpTerrainLine;
   static      HPEN hpTerrainLineBg;

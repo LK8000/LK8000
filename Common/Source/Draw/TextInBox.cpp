@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "RGB.h"
 #include "DoInits.h"
+#include "LKObjects.h"
 
 #define CLIP_TEXT	1
 
@@ -190,7 +191,7 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, i
     if (!noOverlap || notoverlapping) {
       HPEN oldPen;
       if (Mode->Border) {
-        oldPen = (HPEN)SelectObject(hDC, hpMapScale);
+        oldPen = (HPEN)SelectObject(hDC, LKPen_Black_N1);
       } else {
         oldPen = (HPEN)SelectObject(hDC, GetStockObject(WHITE_PEN));
       }

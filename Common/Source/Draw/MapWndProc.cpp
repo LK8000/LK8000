@@ -132,7 +132,6 @@ HPEN MapWindow::hpThermalBand;
 HPEN MapWindow::hpThermalBandGlider;
 HPEN MapWindow::hpFinalGlideAbove;
 HPEN MapWindow::hpFinalGlideBelow;
-HPEN MapWindow::hpMapScale;
 HPEN MapWindow::hpMapScale2;
 HPEN MapWindow::hpTerrainLine;
 HPEN MapWindow::hpTerrainLineBg;
