@@ -11,13 +11,14 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "RasterTerrain.h"
-
+#include "LKObjects.h"
 
 void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/, 
                              const bool ScaleChangeFeedback)
 {
     static short terrainwarning=0;
     static POINT lineOneStart, lineOneEnd,lineTwoStart,lineTwoEnd,lineThreeStart,lineThreeEnd;
+    static POINT lineTwoStartB,lineThreeStartB;
 
     if (DoInit[MDI_DRAWMAPSCALE]) {
 	lineOneStart.x = rc.right-NIBLSCALE(6); 
@@ -35,6 +36,11 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 	lineThreeStart.x = lineTwoStart.x;
 	lineThreeEnd.x = lineTwoEnd.x;
 
+	lineTwoStartB=lineTwoStart;
+	lineTwoStartB.x++;
+	lineThreeStartB=lineThreeStart;
+	lineThreeStartB.x++;
+
 	DoInit[MDI_DRAWMAPSCALE]=false;
     }
 
@@ -42,14 +48,17 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     TCHAR Scale1[200];
     TCHAR Scale2[200];
     TCHAR TEMP[20];
-    COLORREF origcolor = SetTextColor(hDC, OverColorRef);
 
-    HPEN hpOld;
-    hpOld = (HPEN)SelectObject(hDC, hpMapScale2);
+    HPEN hpOld = (HPEN)SelectObject(hDC, hpMapScale2);
 
     DrawSolidLine(hDC,lineOneStart,lineOneEnd, rc);
     DrawSolidLine(hDC,lineTwoStart,lineTwoEnd, rc);
     DrawSolidLine(hDC,lineThreeStart,lineThreeEnd, rc);
+
+    SelectObject(hDC, LKPen_White_N0);
+    DrawSolidLine(hDC,lineOneStart,lineOneEnd, rc);
+    DrawSolidLine(hDC,lineTwoStartB,lineTwoEnd, rc);
+    DrawSolidLine(hDC,lineThreeStartB,lineThreeEnd, rc);
 
     SelectObject(hDC, hpOld);
 
@@ -188,26 +197,20 @@ _skip2:
     SIZE tsize;
 
     GetTextExtentPoint(hDC, Scale, _tcslen(Scale), &tsize);
-    LKWriteText(hDC, Scale, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3), 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true); 
+    COLORREF mapscalecolor=OverColorRef;
+    if (mapscalecolor==RGB_SBLACK) mapscalecolor=RGB_WHITE;
+
+    LKWriteText(hDC, Scale, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3), 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true); 
 
     GetTextExtentPoint(hDC, Scale2, _tcslen(Scale2), &tsize);
-    COLORREF mapscalecolor=OverColorRef;
 
     if (!DerivedDrawInfo.TerrainValid) {
 	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
-    } else {
-	if (mapscalecolor==RGB_SBLACK) mapscalecolor=RGB_WHITE;
     }
-
 		
     LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3)+tsize.cy, 
 	0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true); 
 
-
-    // restore original color
-    SetTextColor(hDC, origcolor);
-
-    SelectObject(hDC, hpOld);
 
 
 }
