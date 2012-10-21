@@ -1828,8 +1828,13 @@ unsigned int iHIdx,iDIdx;
       {
         if ((*it)->IsHorizontalInside(lons[i], lats[i]))
         {
+          BOOL bPrevIn = false;
+          if(i > 0)
+        	if((*it)->IsHorizontalInside(lons[i-1], lats[i-1]))
+        	  bPrevIn = true;
+
 		  iDIdx = i;
-		  if(airspacetype[iSelAS].psAS != (*it)) /* new AS in this view*/
+		  if( !bPrevIn)/* new AS section in this view*/
 		  {
 		   /*********************************************************************
 		    * switch to next airspace
@@ -2767,6 +2772,7 @@ void CAirspaceManager::LoadSettings()
     fclose(f);
   } else StartupStore(TEXT(". Failed to load airspace settings from file <%s>%s"),szFileName,NEWLINE);
 }
+
 
 
 
