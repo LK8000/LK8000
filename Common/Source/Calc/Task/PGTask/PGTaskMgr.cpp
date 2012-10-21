@@ -19,6 +19,7 @@
 #include "math.h"
 #include "PGCicrcleTaskPt.h"
 #include "PGLineTaskPt.h"
+#include "PGSectorTaskPt.h"
 
 inline double rad2deg(double rad) {
     return (rad * 180 / PI);
@@ -217,8 +218,16 @@ void PGTaskMgr::AddLine(int TskIdx) {
 }
 
 void PGTaskMgr::AddSector(int TskIdx) {
+    PGSectorTaskPt *pTskPt = new PGSectorTaskPt;
+
+    LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
+            deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
+            pTskPt->m_Center.m_Y,
+            pTskPt->m_Center.m_X);
+
     //TODO : Handle Sector Turn Point
-    AddCircle(TskIdx);
+    
+    m_Task.push_back(pTskPt);
 }
 
 void PGTaskMgr::Optimize(NMEA_INFO *Basic) {

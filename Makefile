@@ -499,6 +499,7 @@ TASK	:=\
 	$(TSK)/PGTask/PGCicrcleTaskPt.cpp\
 	$(TSK)/PGTask/PGLineTaskPt.cpp\
 	$(TSK)/PGTask/PGTaskMgr.cpp\
+	$(TSK)/PGTask/PGSectorTaskPt.cpp\
 
 TERRAIN	:=\
 	$(TER)/Cache.cpp	\
