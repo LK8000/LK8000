@@ -556,6 +556,7 @@ _Shutdown:
   else return 111;
 }
 
+extern void DeInitCriticalSections(void);
 
 void CleanupForShutdown(void) {
 
@@ -570,6 +571,8 @@ void CleanupForShutdown(void) {
   MapWindow::FreeSlot();
   #endif
 
+  DeInitCriticalSections(); 
+  
   ReleaseMutex(hMutex);
   CloseHandle(hMutex);
 

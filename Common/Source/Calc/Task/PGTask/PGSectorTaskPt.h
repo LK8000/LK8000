@@ -6,27 +6,25 @@
  * File:   PGCicrcleTaskPt.h
  * Author: Bruno de Lacheisserie
  *
- * Created on 6 octobre 2012, 12:27
+ * Created on 21 octobre 2012, 16:16
  */
 
-#ifndef PGCICRCLETASKPT_H
-#define	PGCICRCLETASKPT_H
+#ifndef PGSECTORTASKPT_H
+#define	PGSECTORTASKPT_H
 
 #include "PGTaskPt.h"
 
-class PGCicrcleTaskPt : public PGTaskPt {
+class PGSectorTaskPt : public PGTaskPt {
     friend class PGTaskMgr;
 public:
-    PGCicrcleTaskPt();
-    virtual ~PGCicrcleTaskPt();
-
+    PGSectorTaskPt();
+    virtual ~PGSectorTaskPt();
+    
     virtual void Optimize(const ProjPt& prev, const ProjPt& next);
+    
+protected:
 
-protected: 
-    bool CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized);
-
-    double m_Radius;
-    bool m_bExit;
 };
 
-#endif	/* PGCICRCLETASKPT_H */
+#endif	/* PGSECTORTASKPT_H */
+

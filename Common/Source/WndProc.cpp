@@ -406,9 +406,6 @@ void Shutdown(void) {
   WaitForSingleObject(hCalculationThread, INFINITE);
   CloseHandle(hCalculationThread);
 
-  extern void DeInitCriticalSections(void);
-  DeInitCriticalSections(); 
-
   #if TESTBENCH
   StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
   #endif

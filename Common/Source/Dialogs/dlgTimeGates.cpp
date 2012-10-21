@@ -126,9 +126,7 @@ void dlgTimeGatesShowModal(void){
 		  changed = !AATEnabled;
 		  AATEnabled = true;
 	    }
-	    else{
-	      ClearOptimizedTargetPos();
-	    }
+        ClearOptimizedTargetPos();
 	  }
 	}
   }
