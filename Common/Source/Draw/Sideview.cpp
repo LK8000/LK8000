@@ -666,6 +666,7 @@ int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* pDia , double fAS_Bearin
 //fAS_Bearing+=3.0;
 
 double fOldScale  =  zoom.Scale();
+HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 RECT rct = pDia->rc;
 //bool OldAM = ActiveMap;
 //ActiveMap = true ;
@@ -846,6 +847,7 @@ _nomoredeclutter:
 
    MapWindow::zoom.RequestedScale(fOldScale);
    EnableThermalLocator = iOldLocator;
+   SelectObject(hdc, hfOld);
    //ActiveMap = OldAM ;
  return 0;
 }

@@ -859,9 +859,10 @@ DiagrammStruct sDia;
 
 
   double xtick = 0.001;
-  if (range>0.05*1000.0) xtick = 0.01;
-  if (range>0.1*1000.0) xtick = 0.1;
-  if (range>1.0*1000.0) xtick = 1.0;
+  if (range>0.05*1000.0) xtick = 0.1;
+  if (range>0.1*1000.0) xtick = 0.2;
+  if (range>1.0*1000.0) xtick = 0.5;
+  if (range>2.0*1000.0) xtick = 1.0;
   if (range>10.0*1000.0) xtick = 5.0;
   if (range>50.0*1000.0) xtick = 10.0;
   if (range>100.0*1000.0) xtick = 20.0;
@@ -926,7 +927,7 @@ DiagrammStruct sDia;
   if(bSideview)
   {
 	_stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
-    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_MIDDLE_RIGHT ,rgbGridColor,  &sDia, text);
+    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,rgbGridColor,  &sDia, text);
   }
 
   /****************************************************************************************************
@@ -1268,7 +1269,7 @@ if(bSideview)
 	   * get the climb color
 	   *************************************************************************/
 	  SelectObject(hdc, *variobrush[asFLRAMPos[i].iColorIdx]);
-
+	  SelectObject(hdc, hDrawPen);
 	  /*************************************************************************
 	   * draw side view
 	   *************************************************************************/
@@ -1327,9 +1328,9 @@ if(bSideview)
   switch(bTrace)
   {
     default:
-    case 0:  SelectObject(hDCTemp,hNoTrace) ;  ; break; //   "no trace"
-    case 1:  SelectObject(hDCTemp,hFullTrace) ; break;  //  climb/sink trace"
-    case 2:  SelectObject(hDCTemp,hClimbTrace) ; break;  //  "climb trace"
+    case 0:  SelectObject(hDCTemp,hNoTrace)   ; break; //  no trace
+    case 1:  SelectObject(hDCTemp,hFullTrace) ; break; //  climb/sink trace
+    case 2:  SelectObject(hDCTemp,hClimbTrace); break; //  climb trace
   }
   DrawBitmapX(hdc,	rci.left+10,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
   DrawBitmapX(hdc,	rci.left+10,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
