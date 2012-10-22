@@ -962,6 +962,7 @@ sTopDia.fYMax =  (sDia.fXMax-sDia.fXMin)/2 * fRatio;
 /*******************************************************
  * draw radar circles
  *******************************************************/
+
 double fRing = 0; //sTopDia.fXMax;
 int iCircleRadius = 0;
 RECT rcc = rct;
@@ -1038,6 +1039,7 @@ RECT rcc = rct;
 	/**********************************************
 	 * loop over FLARM objects.
 	 */
+
 	for (i=0; i<FLARM_MAX_TRAFFIC; i++)
 	{
 	  if (DrawInfo.FLARM_Traffic[i].Status == LKT_EMPTY)
@@ -1099,7 +1101,8 @@ RECT rcc = rct;
     unsigned long lStartTime = GetTickCount();
     if(bTrace)
     //   if((iNoDos < NO_DOT_LIMIT) || (DrawInfo.FLARM_Traffic[i].Locked))
-    if(	 ((GetTickCount()- lStartTime ) < 350))
+    if(SPLITSCREEN_FACTOR >0)
+      if(	 ((GetTickCount()- lStartTime ) < 350))
         iNoDos =  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia);
 
 /***********************************************
@@ -1107,7 +1110,7 @@ RECT rcc = rct;
  ***********************************************/
 bool bCenter = false;
 
-
+if(SPLITSCREEN_FACTOR >0)
 for (j=0; j<nEntrys; j++)
 {
   i = aiSortArray[j];
@@ -1129,12 +1132,12 @@ for (j=0; j<nEntrys; j++)
 	displaymode.Border=1;
 
 
-//    if(fx > sTopDia.fXMin )  /* sing sight ? */
-//    if(fx < sTopDia.fXMax )
-//    if(fy < sTopDia.fYMax )
-//	if(fy > sTopDia.fYMin )
-//	if(fFlarmAlt < sDia.fYMax )
-//	if(fFlarmAlt > sDia.fYMin )
+    if(fx > sTopDia.fXMin )  /* sing sight ? */
+    if(fx < sTopDia.fXMax )
+    if(fy < sTopDia.fYMax )
+	if(fy > sTopDia.fYMin )
+	if(fFlarmAlt < sDia.fYMax )
+	if(fFlarmAlt > sDia.fYMin )
 	{
 	  /***********************************************
 	   * draw center aircraft if first time above
@@ -1204,7 +1207,7 @@ for (j=0; j<nEntrys; j++)
  * draw center aircraft if highest (was never drawn)
  ***********************************************/
 
-
+if(SPLITSCREEN_FACTOR >0)
 if(bCenter == false)
 {
   SelectObject(hdc, hDrawBrush);
@@ -1252,8 +1255,8 @@ if(bSideview)
 	TextInBoxMode_t displaymode = {1};
 	displaymode.NoSetFont = 1;
 	displaymode.Border=1;
-  //  if(fx > sTopDia.fXMin )  /* in sight ? */
-  //  if(fx < sTopDia.fXMax )
+    if(fx > sTopDia.fXMin )  /* in sight ? */
+    if(fx < sTopDia.fXMax )
 	if(fFlarmAlt < sDia.fYMax )
 	if(fFlarmAlt > sDia.fYMin )
 	{
