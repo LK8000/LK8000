@@ -777,7 +777,7 @@ _nomoredeclutter:
 
   if (IsMultimapWaypoints()) {
 	DrawWaypointsNew(hdc,DrawRect);
-	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))
+	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)&&MapSpaceMode!=MSM_MAPASP)
 		DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
 	
   }
@@ -793,25 +793,22 @@ _nomoredeclutter:
     #endif
   */
 
-  // These overlays should be activated/disabled using a new overlay functionality
-  // TODO!
-  // By now, only a temporary solution
 
-  if(IsMultimapTerrain() || IsMultimapTopology() ) {
-
-	if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
-		DrawGlideThroughTerrain(hdc, DrawRect);
-
-  }
-
-  if (MapSpaceMode!=MSM_MAPWPT) {
+  // 
+  // Stuff for MAPTRK only (M1)
+  if (MapSpaceMode==MSM_MAPTRK) {
+	if(IsMultimapTerrain() || IsMultimapTopology() ) {
+		if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
+			DrawGlideThroughTerrain(hdc, DrawRect);
+	}
 	// Of course the dashed horizontal line in WPT mode is always the bearing!
 	// No need to draw this one more!
-	if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
+	if (IsMultimapWaypoints() && extGPSCONNECT)
+		DrawBearing(hdc, DrawRect);
+	// Wind arrow
+	if (IsMultimapOverlays())
+		DrawWindAtAircraft2(hdc, Current_Multimap_TopOrig, DrawRect);
   }
-
-  // draw wind vector at aircraft
-  DrawWindAtAircraft2(hdc, Current_Multimap_TopOrig, DrawRect);
 
 
   /****************************************************************************************************
