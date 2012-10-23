@@ -141,9 +141,10 @@ QuickRedraw:
 	if (IsMultiMapShared()) { 
 		// Shared map, of course not MSN_MAP, since dontdrawthemap was checked
 		//
-		if (IsMultimapOverlays()) {
-
+		if (IsMultimapOverlaysText()) {
 			DrawLook8000(hdc,rc);
+		}
+		if (IsMultimapOverlaysGauges()) {
 			if (LKVarioBar) LKDrawVario(hdc,rc);
 
 			if ((mode.Is(Mode::MODE_CIRCLING)) )
@@ -471,7 +472,7 @@ fastzoom:
     if ((mode.Is(Mode::MODE_CIRCLING)) )
       if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
   
-    if (IsMultimapOverlays()) DrawLook8000(hdc,rc); 
+    if (IsMultimapOverlaysText()) DrawLook8000(hdc,rc); 
     DrawBottomBar(hdc,rc);
   }
 

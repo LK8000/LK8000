@@ -2000,9 +2000,12 @@ _@M2228_ "FLARM\nRadar"
 _@M2229_ "Reset\nOdomet"
 _@M2230_ "Force\nLanded"
 _@M2231_ "ACTIVE"
-# short version of "Waypoints" for menu button must be max 8 characters!
-_@M2232_ "Waypts"
+# 2232 unused but reserved for mmaps
+_@M2232_ "abcd"
 _@M2233_ "Overlay"
+_@M2234_ "TEXT"
+_@M2235_ "GAUGES"
+
 # Reserved for custom menus up to 2300!
 
 

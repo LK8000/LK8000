@@ -343,10 +343,15 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMultiWpt2,Multimap_Flags_Waypoints[MP_MAPWPT]);
   rprintf(szRegistryMultiWpt3,Multimap_Flags_Waypoints[MP_MAPASP]);
 
-  rprintf(szRegistryMultiOvr0,Multimap_Flags_Overlays[MP_MOVING]);
-  rprintf(szRegistryMultiOvr1,Multimap_Flags_Overlays[MP_MAPTRK]);
-  rprintf(szRegistryMultiOvr2,Multimap_Flags_Overlays[MP_MAPWPT]);
-  rprintf(szRegistryMultiOvr3,Multimap_Flags_Overlays[MP_MAPASP]);
+  rprintf(szRegistryMultiOvrT0,Multimap_Flags_Overlays_Text[MP_MOVING]);
+  rprintf(szRegistryMultiOvrT1,Multimap_Flags_Overlays_Text[MP_MAPTRK]);
+  rprintf(szRegistryMultiOvrT2,Multimap_Flags_Overlays_Text[MP_MAPWPT]);
+  rprintf(szRegistryMultiOvrT3,Multimap_Flags_Overlays_Text[MP_MAPASP]);
+
+  rprintf(szRegistryMultiOvrG0,Multimap_Flags_Overlays_Gauges[MP_MOVING]);
+  rprintf(szRegistryMultiOvrG1,Multimap_Flags_Overlays_Gauges[MP_MAPTRK]);
+  rprintf(szRegistryMultiOvrG2,Multimap_Flags_Overlays_Gauges[MP_MAPWPT]);
+  rprintf(szRegistryMultiOvrG3,Multimap_Flags_Overlays_Gauges[MP_MAPASP]);
 
   rprintf(szRegistryMultiSizeY1,Multimap_SizeY[MP_MAPTRK]);
   rprintf(szRegistryMultiSizeY2,Multimap_SizeY[MP_MAPWPT]);

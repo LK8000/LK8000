@@ -157,12 +157,15 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   AltitudeMode = oldAltMode;
 #endif
 
-
+//
+// We dont use this stuff, however it is ready
+//
 #if NEWMULTIMAPS
-
-  if (!IsMultimapOverlays())
+  #if 0
+  if (!IsMultimapOverlaysText()) {
 	DrawMultimap_Topleft(hdc, rci);
-
+  }
+  #endif
 #else
   DrawMultimap_Topleft(hdc, rci);
   DrawMultimap_Topright(hdc, rci);

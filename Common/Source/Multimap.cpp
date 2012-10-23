@@ -156,13 +156,24 @@ bool IsMultimapWaypoints(void) {
   return Multimap_Flags_Waypoints[i];
 }
 
-bool IsMultimapOverlays(void) {
+// Both Texta and Gauges active! 
+bool IsMultimapOverlaysAll(void) {
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
-  return Multimap_Flags_Overlays[i];
+  return (Multimap_Flags_Overlays_Text[i]&&Multimap_Flags_Overlays_Gauges[i]);
 }
 
+bool IsMultimapOverlaysText(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  return (Multimap_Flags_Overlays_Text[i]);
+}
 
+bool IsMultimapOverlaysGauges(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  return (Multimap_Flags_Overlays_Gauges[i]);
+}
 
 void ToggleMultimapTerrain(void) {
   short i=Get_Current_Multimap_Type();
@@ -188,10 +199,44 @@ void ToggleMultimapWaypoints(void) {
   Multimap_Flags_Waypoints[i]=!Multimap_Flags_Waypoints[i];
 }
 
+//
+// Overlays toggle order is:
+// ALL ON, TEXT ONLY, GAUGES ONLY, ALL OFF
+//
 void ToggleMultimapOverlays(void) {
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
-  Multimap_Flags_Overlays[i]=!Multimap_Flags_Overlays[i];
+  // ALLON-> TEXT ONLY
+  if ( Multimap_Flags_Overlays_Text[i] && Multimap_Flags_Overlays_Gauges[i] ) {
+	Multimap_Flags_Overlays_Gauges[i]=false;
+	return;
+  }
+  // TEXT->GAUGES
+  if ( Multimap_Flags_Overlays_Text[i] && !Multimap_Flags_Overlays_Gauges[i] ) {
+	Multimap_Flags_Overlays_Text[i]=false;
+	Multimap_Flags_Overlays_Gauges[i]=true;
+	return;
+  }
+  // GAUGES->ALLOFF
+  if ( !Multimap_Flags_Overlays_Text[i] && Multimap_Flags_Overlays_Gauges[i] ) {
+	Multimap_Flags_Overlays_Text[i]=false;
+	Multimap_Flags_Overlays_Gauges[i]=false;
+	return;
+  }
+  // ALLOFF->ALLON
+  Multimap_Flags_Overlays_Text[i]=true;
+  Multimap_Flags_Overlays_Gauges[i]=true;
+}
+
+void ToggleMultimapOverlaysText(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Overlays_Text[i]=!Multimap_Flags_Overlays_Text[i];
+}
+void ToggleMultimapOverlaysGauges(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Overlays_Gauges[i]=!Multimap_Flags_Overlays_Gauges[i];
 }
 
 
@@ -220,10 +265,15 @@ void EnableMultimapWaypoints(void) {
   Multimap_Flags_Waypoints[i]=true;
 }
 
-void EnableMultimapOverlays(void) {
+void EnableMultimapOverlaysText(void) {
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
-  Multimap_Flags_Overlays[i]=true;
+  Multimap_Flags_Overlays_Text[i]=true;
+}
+void EnableMultimapOverlaysGauges(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Overlays_Gauges[i]=true;
 }
 
 
@@ -251,10 +301,15 @@ void DisableMultimapWaypoints(void) {
   Multimap_Flags_Waypoints[i]=false;
 }
 
-void DisableMultimapOverlays(void) {
+void DisableMultimapOverlaysText(void) {
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
-  Multimap_Flags_Overlays[i]=false;
+  Multimap_Flags_Overlays_Text[i]=false;
+}
+void DisableMultimapOverlaysGauges(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Overlays_Gauges[i]=false;
 }
 
 
@@ -272,16 +327,20 @@ void Reset_Multimap_Flags(void) {
 	Multimap_Flags_Topology[i]=true;
 	Multimap_Flags_Airspace[i]=true;
 	Multimap_Flags_Waypoints[i]=true;
-	Multimap_Flags_Overlays[i]=true;
+	Multimap_Flags_Overlays_Text[i]=true;
+	Multimap_Flags_Overlays_Gauges[i]=true;
 	Multimap_Labels[i]=MAPLABELS_ALLON;
 	Multimap_SizeY[i]=SIZE1;	// default
   }
 
   // We should always get these flags set correctly, because the LKInterface is working
   // in a separated thread by Draw
-  Multimap_Flags_Overlays[MP_WELCOME]=false;
-  Multimap_Flags_Overlays[MP_RADAR]=false;
-  Multimap_Flags_Overlays[MP_TEST]=false;
+  Multimap_Flags_Overlays_Text[MP_WELCOME]=false;
+  Multimap_Flags_Overlays_Gauges[MP_WELCOME]=false;
+  Multimap_Flags_Overlays_Text[MP_RADAR]=false;
+  Multimap_Flags_Overlays_Gauges[MP_RADAR]=false;
+  Multimap_Flags_Overlays_Text[MP_TEST]=false;
+  Multimap_Flags_Overlays_Gauges[MP_TEST]=false;
 }
 
 

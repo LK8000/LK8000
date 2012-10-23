@@ -30,24 +30,30 @@ void ToggleMultimapAirspace(void);
 void ToggleMultimapTopology(void);
 void ToggleMultimapWaypoints(void);
 void ToggleMultimapOverlays(void);
+void ToggleMultimapOverlaysText(void);
+void ToggleMultimapOverlaysGauges(void);
 
 bool IsMultimapTerrain(void);
 bool IsMultimapAirspace(void);
 bool IsMultimapTopology(void);
 bool IsMultimapWaypoints(void);
-bool IsMultimapOverlays(void);
+bool IsMultimapOverlaysAll(void);
+bool IsMultimapOverlaysText(void);
+bool IsMultimapOverlaysGauges(void);
 
 void EnableMultimapTerrain(void);
 void EnableMultimapAirspace(void);
 void EnableultimapTopology(void);
 void EnableMultimapWaypoints(void);
-void EnableMultimapOverlays(void);
+void EnableMultimapOverlaysText(void);
+void EnableMultimapOverlaysGauges(void);
 
 void DisableMultimapTerrain(void);
 void DisableMultimapAirspace(void);
 void DisableMultimapTopology(void);
 void DisableMultimapWaypoints(void);
-void DisableMultimapOverlays(void);
+void DisableMultimapOverlaysText(void);
+void DisableMultimapOverlaysGauges(void);
 
 unsigned short GetMultimap_Labels(void);
 void SetMultimap_Labels(const unsigned short);

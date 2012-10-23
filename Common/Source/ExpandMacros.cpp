@@ -256,13 +256,25 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 17:
 			#if NEWMULTIMAPS
-			if (IsMultimapOverlays())
+			// Order is:  ALL ON, TEXT ONLY, GAUGES ONLY, ALL OFF
+			if (!IsMultimapOverlaysText()&&!IsMultimapOverlaysGauges()) {
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(899)); // ALL ON
+			} else {
+				if (IsMultimapOverlaysAll()) {
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(2234)); // TEXT
+				} else {
+					if (IsMultimapOverlaysText())
+						_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(2235)); // GAUGES
+					else
+						_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(898)); // ALL OFF
+				}
+			}
 			#else
 			if (Look8000==(Look8000_t)lxcNoOverlay)
-			#endif
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(491)); // OFF
 			else
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(894)); // ON
+			#endif
 			break;
 
 		case 18:

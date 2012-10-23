@@ -343,10 +343,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if( -sDia.fXMin > (fDist))
     sDia.fXMin = -fDist;
   #else
-  if (IsMultimapOverlays())
+  if (IsMultimapOverlaysText()|| IsMultimapOverlaysGauges()) {
 	sDia.fXMin = -0.35f * fDist;
-  else
+  } else {
 	sDia.fXMin = -0.2f * fDist;
+  }
   #endif
 
   sDia.fXMax = fDist;

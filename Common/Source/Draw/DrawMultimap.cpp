@@ -26,7 +26,6 @@ extern TCHAR Sideview_szNearAS[];
 //
 void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 {
-  return;
 
   TCHAR topleft_txt[80];
   bool noaction=false;
@@ -162,7 +161,8 @@ void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
 
 void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 {
-
+#if NEWMULTIMAPS
+#else
   if (!IsMultimapOverlays()) return;
 
   HBRUSH oldBrush;
@@ -201,7 +201,6 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 	SelectObject(hdc,oldpen);
 	goto _return;
   }
-
 
 #if 0
   if(MapSpaceMode==MSM_MAPWPT || MapSpaceMode==MSM_MAPTRK)
@@ -270,7 +269,7 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 _return:
   SelectObject(hdc,oldBrush);
   SelectObject(hdc,oldFont);
-
+#endif // NOT NEWMULTIMAPS
 }
 
 

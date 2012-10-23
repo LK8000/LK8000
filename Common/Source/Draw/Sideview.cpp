@@ -806,7 +806,7 @@ _nomoredeclutter:
 	if (IsMultimapWaypoints() && extGPSCONNECT)
 		DrawBearing(hdc, DrawRect);
 	// Wind arrow
-	if (IsMultimapOverlays())
+	if (IsMultimapOverlaysGauges())
 		DrawWindAtAircraft2(hdc, Current_Multimap_TopOrig, DrawRect);
   }
 

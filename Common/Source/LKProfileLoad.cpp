@@ -645,13 +645,22 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMultiWpt3,&Multimap_Flags_Waypoints[MP_MAPASP]);
   if (matchedstring) return;
 
-  PREAD(sname,svalue,szRegistryMultiOvr0,&Multimap_Flags_Overlays[MP_MOVING]);
+  PREAD(sname,svalue,szRegistryMultiOvrT0,&Multimap_Flags_Overlays_Text[MP_MOVING]);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryMultiOvr1,&Multimap_Flags_Overlays[MP_MAPTRK]);
+  PREAD(sname,svalue,szRegistryMultiOvrT1,&Multimap_Flags_Overlays_Text[MP_MAPTRK]);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryMultiOvr2,&Multimap_Flags_Overlays[MP_MAPWPT]);
+  PREAD(sname,svalue,szRegistryMultiOvrT2,&Multimap_Flags_Overlays_Text[MP_MAPWPT]);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryMultiOvr3,&Multimap_Flags_Overlays[MP_MAPASP]);
+  PREAD(sname,svalue,szRegistryMultiOvrT3,&Multimap_Flags_Overlays_Text[MP_MAPASP]);
+  if (matchedstring) return;
+
+  PREAD(sname,svalue,szRegistryMultiOvrG0,&Multimap_Flags_Overlays_Gauges[MP_MOVING]);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryMultiOvrG1,&Multimap_Flags_Overlays_Gauges[MP_MAPTRK]);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryMultiOvrG2,&Multimap_Flags_Overlays_Gauges[MP_MAPWPT]);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryMultiOvrG3,&Multimap_Flags_Overlays_Gauges[MP_MAPASP]);
   if (matchedstring) return;
 
   PREAD(sname,svalue,szRegistryMultiSizeY1,&Multimap_SizeY[MP_MAPTRK]);
