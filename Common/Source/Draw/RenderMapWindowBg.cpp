@@ -498,7 +498,7 @@ fastzoom:
   DrawMarks(hdc, rc);
   #endif
 
-  if (ISGAAIRCRAFT && NOTANYPAN) DrawHSI(hdc,Orig,DrawRect); 
+  if (ISGAAIRCRAFT && IsMultimapOverlaysGauges() && NOTANYPAN) DrawHSI(hdc,Orig,DrawRect); 
 
   DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom
   DrawCompass(hdcDrawWindow, rc, DisplayAngle);
