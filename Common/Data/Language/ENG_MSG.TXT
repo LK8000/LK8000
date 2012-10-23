@@ -506,6 +506,7 @@ _@M471_ "No fix"
 _@M472_ "No gliders"
 _@M473_ "No landables"
 _@M474_ "No logger connected"
+#475 unused since 3.1i
 _@M475_ "No overlay"
 _@M476_ "No task"
 _@M477_ "No valid path"

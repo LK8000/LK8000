@@ -595,10 +595,13 @@ static void OnLk8000ModeChange(DataField *Sender, DataField::DataAccessKind_t Mo
 	wp = (WndProperty*)wf->FindByName(TEXT("prpLook8000"));
 	if (wp) {
 		if (Look8000 != (Look8000_t) (wp->GetDataField()->GetAsInteger())) {
+			#if NEWMULTIMAPS
+			Look8000 = lxcStandard+(Look8000_t) (wp->GetDataField()->GetAsInteger());
+			#else
 			Look8000 = (Look8000_t) (wp->GetDataField()->GetAsInteger());
 			if (Look8000==0) { // 091115 do not allow Reserved mode , do not disable LK8000 !
 				Look8000=1;
-			}
+			#endif
 		}
 	}
 
@@ -2562,6 +2565,14 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField(); 
+#if NEWMULTIMAPS
+	// LKTOKEN  _@M333_ = "Half overlay" 
+     dfe->addEnumText(gettext(TEXT("_@M333_")));
+	// LKTOKEN  _@M311_ = "Full overlay" 
+    	dfe->addEnumText(gettext(TEXT("_@M311_")));
+     dfe = (DataFieldEnum*)wp->GetDataField(); // see above
+     dfe->Set(Look8000-lxcStandard);
+#else
      dfe->addEnumText(TEXT("(Reserved)"));
 	// LKTOKEN  _@M475_ = "No overlay" 
      dfe->addEnumText(gettext(TEXT("_@M475_"))); // 091115
@@ -2571,6 +2582,7 @@ static void setVariables(void) {
     	dfe->addEnumText(gettext(TEXT("_@M311_")));
      dfe = (DataFieldEnum*)wp->GetDataField(); // see above
      dfe->Set(Look8000);
+#endif
     wp->RefreshDisplay();
   }
 
