@@ -14,8 +14,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "McReady.h"
-
-
+#include "Multimap.h"
 
 
 void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
@@ -495,7 +494,7 @@ nextinit:
 
   // First we draw flight related values such as instant efficiency, altitude, new infoboxes etc.
 
-  if (LKVarioBar && !mode.AnyPan()) { // 091214 Vario non available in pan mode
+  if (IsMultimapOverlaysGauges() && (LKVarioBar && !mode.AnyPan()) ) {
 	leftmargin=(LKVarioSize+NIBLSCALE(3)); // VARIOWIDTH + middle separator right extension
 	tlen-=2; // 091115
 	
@@ -1037,11 +1036,11 @@ drawOverlay:
 			LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
 	}
 	GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
-	if (!mode.AnyPan()) // 091214
-		rcx=rc.left+NIBLSCALE(10)+leftmargin+GlideBarOffset;   // 091115
+	if (IsMultimapOverlaysGauges() && !mode.AnyPan())
+		rcx=rc.left+NIBLSCALE(10)+leftmargin+GlideBarOffset;
 	else
 		rcx=rc.left+NIBLSCALE(10)+leftmargin;   // 091115
-	if (ISPARAGLIDER||LKVarioBar)
+	if (ISPARAGLIDER||(IsMultimapOverlaysGauges()&&LKVarioBar))
 		rcy=(rc.bottom + rc.top-BottomSize)/2 -TextSize.cy-NIBLSCALE(5);
 	else
 		rcy=(rc.bottom + rc.top)/2 -TextSize.cy-NIBLSCALE(10);
@@ -1063,7 +1062,7 @@ drawOverlay:
 		}
 	}
 
-	if (ISPARAGLIDER || LKVarioBar) { // 100213
+	if (ISPARAGLIDER || (IsMultimapOverlaysGauges()&&LKVarioBar)) {
 		if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal==vValVarioVario) {
 			LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle);
 			// wcscpy(BufferUnit,_T("VAR"));

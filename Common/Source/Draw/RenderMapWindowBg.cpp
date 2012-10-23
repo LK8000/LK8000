@@ -481,7 +481,7 @@ fastzoom:
 	goto QuickRedraw;
   }
     
-  if (LKVarioBar && NOTANYPAN) 
+  if (IsMultimapOverlaysGauges() && (LKVarioBar && NOTANYPAN)) 
 	LKDrawVario(hdc,rc);
   
   // Draw glider or paraglider
@@ -503,7 +503,7 @@ fastzoom:
   DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom
   DrawCompass(hdcDrawWindow, rc, DisplayAngle);
 
-  if (NOTANYPAN) DrawFinalGlide(hdcDrawWindow,rc);
+  if (IsMultimapOverlaysGauges() && NOTANYPAN) DrawFinalGlide(hdcDrawWindow,rc);
 
 
 #ifdef CPUSTATS
