@@ -25,7 +25,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   static bool first_mc = true;
 
   if ( AutoMcMode==amcEquivalent ) {
-	if ( Calculated->Circling != TRUE && Calculated->OnGround != TRUE) {
+	if ( (!Calculated->Circling)  && (!Calculated->OnGround)) {
 		if (Calculated->EqMc>=0) {
 			// MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8); 
 			MACCREADY = Calculated->EqMc;

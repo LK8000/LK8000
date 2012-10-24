@@ -30,7 +30,7 @@ void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   long index = 0; 
   double Gain;
   static int num_samples = 0;
-  static BOOL lastCircling = false;
+  static bool lastCircling = false;
 
   if (DoInit[MDI_AVERAGE30S]) {
 	LastTime = 0;
