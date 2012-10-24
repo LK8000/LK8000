@@ -334,7 +334,7 @@ passthrough:
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
-		if (CALCULATED_INFO.Flying == FALSE) {
+		if (!CALCULATED_INFO.Flying) {
 			DoStatusMessage(MsgToken(922)); // NOT FLYING
 		} else {
 			if (MessageBoxX(hWndMapWindow, MsgToken(1754), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -429,7 +429,7 @@ passthrough:
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
-		if ( CALCULATED_INFO.Flying == FALSE ) {
+		if ( !CALCULATED_INFO.Flying ) {
 			DoStatusMessage(MsgToken(922)); // NOT FLYING
 		} else {
 			if ( (GPS_INFO.Speed > TakeOffSpeedThreshold) && (!GPS_INFO.NAVWarning) ) {

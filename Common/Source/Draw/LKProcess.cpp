@@ -1887,7 +1887,7 @@ goto_bearing:
 		case LK_EQMC:
 			// LKTOKEN  _@M1175_ = "MacCready Equivalent", _@M1176_ = "eqMC"
 			wsprintf(BufferTitle, MsgToken(1176));
-			if ( DerivedDrawInfo.Circling == TRUE || DerivedDrawInfo.EqMc<0 || DerivedDrawInfo.OnGround == TRUE) {
+			if ( DerivedDrawInfo.Circling || DerivedDrawInfo.EqMc<0 || DerivedDrawInfo.OnGround) {
 				wsprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
 				value = iround(LIFTMODIFY*DerivedDrawInfo.EqMc*10)/10.0;

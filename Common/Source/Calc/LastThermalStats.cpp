@@ -59,9 +59,9 @@ static void ThermalSources(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 void LastThermalStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
-  static int LastCircling = FALSE;
+  static bool LastCircling = false;
 
-  if((Calculated->Circling == FALSE) && (LastCircling == TRUE)
+  if((!Calculated->Circling) && (LastCircling)
      && (Calculated->ClimbStartTime>=0))
     {
       double ThermalTime = Calculated->CruiseStartTime 
