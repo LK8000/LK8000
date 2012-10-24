@@ -182,6 +182,7 @@ _@M159_ "CONFIRM goto, ABORTING task?"
 _@M160_ "Calc"
 _@M161_ "Cancel"
 _@M162_ "Cannot overwrite!"
+#M163 unused, changed to CarTrek
 _@M163_ "Car"
 _@M164_ "Category "
 _@M165_ "Ceiling trend"
@@ -1967,6 +1968,7 @@ _@M2145_ "Entry"
 _@M2146_ "Exit"
 _@M2147_ "Exit/Entry"
 
+_@M2148_ "Car,Bike & Trekking"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"

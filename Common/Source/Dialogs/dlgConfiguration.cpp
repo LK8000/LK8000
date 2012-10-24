@@ -2553,7 +2553,7 @@ static void setVariables(void) {
 	// LKTOKEN  _@M520_ = "Paraglider/Delta" 
     dfe->addEnumText(gettext(TEXT("_@M520_")));
 	// LKTOKEN  _@M163_ = "Car" 
-    dfe->addEnumText(gettext(TEXT("_@M163_")));
+    dfe->addEnumText(gettext(TEXT("_@M2148_")));
 	// LKTOKEN  _@M313_ = "GA Aircraft" 
     dfe->addEnumText(gettext(TEXT("_@M313_")));
     dfe = (DataFieldEnum*)wp->GetDataField();

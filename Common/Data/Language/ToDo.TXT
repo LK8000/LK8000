@@ -218,6 +218,7 @@ M1293 SONAR
 _@M2145_ "Entry"
 _@M2146_ "Exit"
 _@M2147_ "Exit/Entry"
+_@M2148_ "Car,Bike & Trekking"
 _@M1807_ "_Reserved 2"
 
 _@M2230_ "Force\nLanded"
