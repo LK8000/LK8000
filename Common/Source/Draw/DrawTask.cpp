@@ -30,18 +30,6 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
 
     LockTaskData(); // protect from external task changes
 
-    if ((ActiveWayPoint < 2) && ValidTaskPoint(0) && ValidTaskPoint(1)) {
-        DrawStartEndSector(hdc, rc, Task[0].Start, Task[0].End, Task[0].Index, StartLine, StartRadius);
-        if (EnableMultipleStartPoints) {
-            for (i = 0; i < MAXSTARTPOINTS; i++) {
-                if (StartPoints[i].Active && ValidWayPoint(StartPoints[i].Index)) {
-                    DrawStartEndSector(hdc, rc, StartPoints[i].Start, StartPoints[i].End,
-                            StartPoints[i].Index, StartLine, StartRadius);
-                }
-            }
-        }
-    }
-
     for (i = 1; ValidTaskPoint(i); i++) {
         if (!ValidTaskPoint(i + 1)) { // final waypoint
             if (ActiveWayPoint > 1 || !ValidTaskPoint(2)) {
@@ -126,6 +114,18 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
         }
     }
 
+    if ((ActiveWayPoint < 2) && ValidTaskPoint(0) && ValidTaskPoint(1)) {
+        DrawStartEndSector(hdc, rc, Task[0].Start, Task[0].End, Task[0].Index, StartLine, StartRadius);
+        if (EnableMultipleStartPoints) {
+            for (i = 0; i < MAXSTARTPOINTS; i++) {
+                if (StartPoints[i].Active && ValidWayPoint(StartPoints[i].Index)) {
+                    DrawStartEndSector(hdc, rc, StartPoints[i].Start, StartPoints[i].End,
+                            StartPoints[i].Index, StartLine, StartRadius);
+                }
+            }
+        }
+    }    
+    
     for (i = 0; ValidTaskPoint(i + 1); i++) {
         bool is_first = (Task[i].Index < Task[i + 1].Index);
         int imin = min(Task[i].Index, Task[i + 1].Index);
