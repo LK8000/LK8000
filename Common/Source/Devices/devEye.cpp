@@ -87,7 +87,11 @@ bool CDevEye::PEYA(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
   if(status) {
     info->BaroAltitudeAvailable = true;
     info->BaroAltitude = data.pAlt;
-
+    if(QNH != data.qnh) {
+      QNH = data.qnh;
+      CAirspaceManager::Instance().QnhChangeNotify(QNH);
+    }
+    
     info->AirspeedAvailable = true;
     info->TrueAirspeed = data.tas / TOKPH;
     info->IndicatedAirspeed = info->TrueAirspeed / AirDensityRatio(info->BaroAltitude);
@@ -196,5 +200,5 @@ BOOL CDevEye::Install(PDeviceDescriptor_t d)
 
 bool CDevEye::Register()
 {
-  return devRegister(GetName(), cap_gps | cap_baro_alt | cap_speed, Install);
+  return devRegister(GetName(), cap_gps | cap_baro_alt | cap_speed | cap_vario | cap_wind, Install);
 }
