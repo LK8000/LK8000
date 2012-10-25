@@ -75,9 +75,9 @@ typedef struct _SWITCH_INFO
 
 typedef struct _NMEA_INFO
 {
-
   double Latitude;
   double Longitude;
+  BOOL TrackBearingAvailable;
   double TrackBearing;
   double Speed;
   double Altitude;

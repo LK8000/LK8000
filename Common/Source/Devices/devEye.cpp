@@ -147,6 +147,7 @@ bool CDevEye::PEYI(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
     info->Pitch = data.eulerPitch;
     info->Roll = data.eulerRoll;
     
+    info->TrackBearingAvailable = true;
     info->TrackBearing = data.trueHeading;
     
     info->MagneticHeadingAvailable = true;
