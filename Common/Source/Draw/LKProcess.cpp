@@ -1008,18 +1008,34 @@ goto_bearing:
 
 		// B48 091216  OAT Outside Air Temperature
 		case LK_OAT:
-			value=DrawInfo.OutsideAirTemperature;
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if (value<-50||value>100) {
-				wsprintf(BufferValue, TEXT("---"));
-			} else {
-                	        sprintf(text,"%.0lf",value);
-                	        wsprintf(BufferValue, TEXT("%S%S"),text,_T(DEG));
-                	}
-			break;
-
-		// B49 B50 UNSUPPORTED
+                  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+                  if (!DrawInfo.TemperatureAvailable || value<-50||value>100) {
+                    wsprintf(BufferValue, TEXT("---"));
+                  }
+                  else {
+                    value = DrawInfo.OutsideAirTemperature;
+                    sprintf(text,"%.0lf",value);
+                    wsprintf(BufferValue, TEXT("%S"), text);
+                    wsprintf(BufferUnit,  TEXT("%S"), _T(DEG));
+                    valid = true;
+                  }
+                  break;
+                  
+		// B49
 		case LK_RELHUM:
+                  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+                  if(DrawInfo.HumidityAvailable) {
+                    value = DrawInfo.RelativeHumidity;
+                    sprintf(text, "%.0lf", value);
+                    wsprintf(BufferValue, TEXT("%S"), text);
+                    wsprintf(BufferUnit, TEXT("%%"));
+                    valid = true;
+                  }
+                  else
+                    wsprintf(BufferValue, TEXT("---"));
+                  break;
+
+		// B50 UNSUPPORTED
 		case LK_MAXTEMP:
 			goto lk_error;
 			break;
