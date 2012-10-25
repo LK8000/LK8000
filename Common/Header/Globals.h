@@ -888,6 +888,9 @@ GEXTERN unsigned short Multimap_Labels[MP_TOP+1];
 
 GEXTERN int  Multimap_SizeY[MP_TOP+1];
 
+GEXTERN unsigned int Trip_Moving_Time;
+GEXTERN unsigned int Trip_Steady_Time;
+
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.

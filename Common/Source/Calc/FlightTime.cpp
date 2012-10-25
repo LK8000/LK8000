@@ -13,6 +13,37 @@
 extern void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
+#define STEADY_MINTIME	10	// seconds
+
+//
+// This is good for car/trekking mode mainly
+//
+void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+  static unsigned int steady=0;
+
+  if (Basic->NAVWarning) return;
+
+  if (Basic->Speed<0.1) {
+	//
+	// We are NOT moving
+	//
+	steady++;
+	if (steady==STEADY_MINTIME) Trip_Steady_Time+=STEADY_MINTIME;
+	if (steady >STEADY_MINTIME) Trip_Steady_Time++;
+  } else {
+	//
+	// We are moving!
+	//
+	// Logic is: if we moved at least in last 10 seconds, we count the entire period as moving.
+	// This will smooth the slow-speed inhertial of gps fixes
+	if (steady>0 && steady<STEADY_MINTIME) {
+		Trip_Moving_Time+=steady;
+	}
+	Trip_Moving_Time++;
+	steady=0;
+  }
+}
+
 
 int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // we want this to display landing time until next takeoff
@@ -85,6 +116,8 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   #endif
 
   TakeoffLanding(Basic, Calculated);
+
+  if (ISCAR) TripTimes(Basic, Calculated);
 
   return true;
 }

@@ -639,6 +639,9 @@ void Globals_Init(void) {
 
   Reset_Multimap_Flags();
 
+  Trip_Moving_Time=0;
+  Trip_Steady_Time=0;
+
   // ^ ADD NEW GLOBALS up here ^ 
   // ---------------------------
 
