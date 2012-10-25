@@ -14,18 +14,19 @@ bool	ActiveIsFinalWaypoint();
 
 void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
-  bool is_final_glide = false;
 
   if (!Calculated->AutoMacCready) return;
 
+  bool is_final_glide = false;
   //  LockFlightData();
   LockTaskData();
 
   double mc_new = MACCREADY;
   static bool first_mc = true;
 
+  // Use EqMC only while Flying!
   if ( AutoMcMode==amcEquivalent ) {
-	if ( (!Calculated->Circling)  && (!Calculated->OnGround)) {
+	if ( (!Calculated->Circling)  && (!Calculated->OnGround) && Calculated->Flying) {
 		if (Calculated->EqMc>=0) {
 			// MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8); 
 			MACCREADY = Calculated->EqMc;
