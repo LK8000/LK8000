@@ -61,7 +61,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
 
   // reset on ground
-  if (Calculated->Flying == FALSE) {
+  if (Calculated->Flying == false) {
     Calculated->FreeFlying=false;
     ffDetected=false;
     lastMaxAltitude=-1000;

@@ -53,6 +53,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->FreeFlightStartQFE = 0;
     Calculated->FreeFlying=false;
     Calculated->Flying=false;	// Takeoff will immediately set it TRUE again
+    Calculated->OnGround=true;	// we must init this value
     Calculated->Circling = false;
     Calculated->FinalGlide = false;
     Calculated->timeCruising = 0;
