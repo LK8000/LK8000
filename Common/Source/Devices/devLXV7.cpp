@@ -634,16 +634,9 @@ bool DevLXV7::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
 
 
   if (ParToDouble(sentence, 1, &info->AccelX))
-	if (ParToDouble(sentence, 2, &info->AccelY))
-	  if (ParToDouble(sentence, 3, &info->AccelZ))
-	  {
-		info->AccelerationAvailable = true;
-		info->Gload =info->AccelX*info->AccelX;
-		info->Gload+=info->AccelY*info->AccelY;
-		info->Gload+=info->AccelZ*info->AccelZ;
-		info->Gload = sqrt(info->Gload);
-	  }
-
+    if (ParToDouble(sentence, 2, &info->AccelY))
+      if (ParToDouble(sentence, 3, &info->AccelZ))
+        info->AccelerationAvailable = true;
 
   if (ParToDouble(sentence, 5, &airspeed))
   {

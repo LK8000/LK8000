@@ -514,7 +514,7 @@ static bool WindZigZagCheckAirData(NMEA_INFO* Basic, DERIVED_INFO* Calculated)
 #ifdef DEBUG_ZIGZAG_A
     DebugStore("zigzag airdata invalid - ground speed\n");
 #endif
-  } else if (Basic->AccelerationAvailable && (fabs(Basic->Gload-1.0)>0.3)) {
+  } else if (Basic->AccelerationAvailable && (fabs(Basic->AccelZ-1.0)>0.3)) {
     airdata_invalid = true;
 #ifdef DEBUG_ZIGZAG_A
     DebugStore("zigzag airdata invalid - acceleration\n");

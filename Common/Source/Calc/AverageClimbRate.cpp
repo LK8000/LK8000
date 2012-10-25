@@ -20,7 +20,7 @@ void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       return;
     }
     if (Basic->AccelerationAvailable) {
-      if (fabs(fabs(Basic->Gload)-1.0)>0.25) {
+      if (fabs(fabs(Basic->AccelZ)-1.0)>0.25) {
         // G factor too high
         return;
       }
