@@ -1335,8 +1335,8 @@ if(bSideview)
     case 1:  SelectObject(hDCTemp,hFullTrace) ; break; //  climb/sink trace
     case 2:  SelectObject(hDCTemp,hClimbTrace); break; //  climb trace
   }
-  DrawBitmapX(hdc,	rci.left+10,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
-  DrawBitmapX(hdc,	rci.left+10,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
+  DrawBitmapX(hdc,	rci.left+NIBLSCALE(5),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
+  DrawBitmapX(hdc,	rci.left+NIBLSCALE(5),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
   /********************************************************
    * draw head up/right icon
    ********************************************************/
@@ -1346,8 +1346,8 @@ if(bSideview)
     case 0:  SelectObject(hDCTemp,hHeadUp) ; break; //     "Head Up"
     case 1:  SelectObject(hDCTemp,hHeadRight); break; //      Head Right"
   }
-  DrawBitmapX(hdc,	rci.right-50,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
-  DrawBitmapX(hdc,	rci.right-50,	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
+  DrawBitmapX(hdc,	rci.right-NIBLSCALE(27),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
+  DrawBitmapX(hdc,	rci.right-NIBLSCALE(27),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
 
   if(bHeightScale)
     DrawSelectionFrame(hdc,  rc);

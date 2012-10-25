@@ -441,8 +441,13 @@ calc_circling = false;
 	  fZOOMScale *= ZOOMFACTOR;
    }
 
+  double fOldZoomScale=-1;
+  if(fZOOMScale != fOldZoomScale)
+  {
+   fOldZoomScale =  fZOOMScale;
    sDia.fXMax = sDia.fXMax *fZOOMScale;
    sDia.fXMin = -sDia.fXMax /5;
+  }
  //  if(( sDia.fXMax ) < 5000)
  //    sDia.fXMin -= sDia.fXMax;
 
