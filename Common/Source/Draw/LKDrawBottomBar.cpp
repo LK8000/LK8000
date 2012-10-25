@@ -551,7 +551,10 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_AUX:
-		showunit=LKFormatValue(LK_MAXALT, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		if (ISCAR)
+			showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle);
+		else
+			showunit=LKFormatValue(LK_MAXALT, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_TSK:
 // TODO MAKE IT LKPROCESS
@@ -631,7 +634,10 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		showunit=LKFormatValue(LK_AQNH, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
 	case BM_AUX:
-		showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		if (ISCAR)
+			showunit=LKFormatValue(LK_MAXALT, true, BufferValue, BufferUnit, BufferTitle);
+		else
+			showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
 	case BM_TSK:
 		showunit=LKFormatValue(LK_SPEEDTASK_ACH, true, BufferValue, BufferUnit, BufferTitle);
