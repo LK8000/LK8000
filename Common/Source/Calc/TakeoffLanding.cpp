@@ -94,6 +94,8 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if ((time_on_ground<=10)||(ReplayLogger::IsEnabled())) {
 	// Don't allow 'OnGround' calculations if in IGC replay mode
+	// This is creating a possible problem: there is a time when we are not
+	// OnGround and we are not Flying! Careful.
 	Calculated->OnGround = false;
   }
 
