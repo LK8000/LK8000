@@ -126,9 +126,10 @@ typedef struct _NMEA_INFO
   #endif
 
   double StallRatio;
+  
+  BOOL MagneticHeadingAvailable;
+  double MagneticHeading;  
 
-  BOOL MagneticCompassAvailable;
-  double Heading;
   BOOL GyroscopeAvailable;
   double Pitch;
   double Roll;

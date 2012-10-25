@@ -187,14 +187,14 @@ BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 	double sin_pitch = -2 * (q0 * q2 - q3 * q1); // if sin_pitch > 1 or sin_pitch < -1, discard the data
 
 	if(sin_pitch < 1.0 && sin_pitch > -1.0){
-		pINFO->MagneticCompassAvailable=TRUE;
-		pINFO->Heading = (PI + atan2(2*(q1 * q2 + q3 * q0), q3 * q3 - q0 * q0 - q1 * q1 + q2 * q2))*RAD_TO_DEG;
+		pINFO->MagneticHeadingAvailable=TRUE;
+		pINFO->MagneticHeading = (PI + atan2(2*(q1 * q2 + q3 * q0), q3 * q3 - q0 * q0 - q1 * q1 + q2 * q2))*RAD_TO_DEG;
 
 		pINFO->GyroscopeAvailable=TRUE;
 		pINFO->Pitch = asin(sin_pitch)*RAD_TO_DEG;
 		pINFO->Roll = atan2( 2 * (q0 * q1 + q3 * q2), q3 * q3 + q0 * q0 - q1 * q1 - q2 * q2)*RAD_TO_DEG;
 	}else{
-		pINFO->MagneticCompassAvailable=FALSE;
+		pINFO->MagneticHeadingAvailable=FALSE;
 		pINFO->GyroscopeAvailable=FALSE;
 	}
 
@@ -424,7 +424,7 @@ void CDevCProbe::Update() {
 	}
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpHeading"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f°"), _INFO.Heading);
+		_stprintf(Temp, TEXT("%.2f°"), _INFO.MagneticHeading);
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpRoll"));
