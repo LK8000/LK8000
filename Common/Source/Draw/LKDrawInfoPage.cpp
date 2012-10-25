@@ -855,10 +855,7 @@ label_TRI:
 	LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
 
-	_stprintf(BufferValue,_T("%.0f°"),CALCULATED_INFO.BankAngle);
-	// LKTOKEN _@M1197_ "Bank"
-	_stprintf(BufferTitle, gettext(TEXT("_@M1197_")));
-	_stprintf(BufferUnit,_T(""));
+	LKFormatValue(LK_BANK_ANGLE, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
 
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
@@ -887,10 +884,7 @@ label_TRI:
 	_stprintf(BufferUnit,_T(""));
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
 
-	_stprintf(BufferValue,_T("%.0f°"),CALCULATED_INFO.BankAngle);
-	// LKTOKEN _@M1197_ "Bank"
-	_stprintf(BufferTitle, gettext(TEXT("_@M1197_")));
-	_stprintf(BufferUnit,_T(""));
+	LKFormatValue(LK_BANK_ANGLE, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
 
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);

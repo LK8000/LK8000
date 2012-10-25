@@ -2251,7 +2251,21 @@ olc_score:
 			  }
 			break;
 
-		case 125:
+                // B125
+		case LK_BANK_ANGLE:
+                        valid=true;
+			if(DrawInfo.GyroscopeAvailable) { 
+				value=DrawInfo.Roll;
+                                // LKTOKEN _@M1197_ "Bank"
+                                _tcscpy(BufferTitle, gettext(TEXT("_@M1197_")));
+			} else {
+				value=DerivedDrawInfo.BankAngle;
+				_stprintf(BufferTitle, TEXT("e%s"), gettext(TEXT("_@M1197_")));
+			}
+                        _stprintf(BufferValue,TEXT("%.0f°"), value);
+			wsprintf(BufferUnit, TEXT(""));
+			break;
+
 		case 126:
 		case 127:
 		case 128:
@@ -2659,7 +2673,6 @@ lkfin_ete:
 			// LKTOKEN  _@M1192_ = "StDis"
 			_tcscpy(BufferTitle, MsgToken(1192));
 			break;
-
 
 		// B253
 		case LK_DUMMY:
