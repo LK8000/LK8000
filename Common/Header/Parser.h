@@ -97,7 +97,6 @@ typedef struct _NMEA_INFO
   double NettoVario;
   double Ballast;
   double Bugs;
-  double Gload;
   BOOL AccelerationAvailable;
   double AccelX;
   double AccelY;
@@ -127,9 +126,10 @@ typedef struct _NMEA_INFO
   #endif
 
   double StallRatio;
+  
+  BOOL MagneticHeadingAvailable;
+  double MagneticHeading;  
 
-  BOOL MagneticCompassAvailable;
-  double Heading;
   BOOL GyroscopeAvailable;
   double Pitch;
   double Roll;

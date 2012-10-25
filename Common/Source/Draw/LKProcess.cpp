@@ -816,7 +816,7 @@ goto_bearing:
 			//wsprintf(BufferUnit,_T("g")); 100302 obs
 			// _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title ); 100302 obs
 			if ( DrawInfo.AccelerationAvailable) { 
-				value=DrawInfo.Gload;
+				value=DrawInfo.AccelZ;
 				_stprintf(BufferValue,TEXT("%+.1f"), value);
 				valid=true;
 				// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
@@ -1008,18 +1008,34 @@ goto_bearing:
 
 		// B48 091216  OAT Outside Air Temperature
 		case LK_OAT:
-			value=DrawInfo.OutsideAirTemperature;
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if (value<-50||value>100) {
-				wsprintf(BufferValue, TEXT("---"));
-			} else {
-                	        sprintf(text,"%.0lf",value);
-                	        wsprintf(BufferValue, TEXT("%S%S"),text,_T(DEG));
-                	}
-			break;
-
-		// B49 B50 UNSUPPORTED
+                  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+                  if (!DrawInfo.TemperatureAvailable || value<-50||value>100) {
+                    wsprintf(BufferValue, TEXT("---"));
+                  }
+                  else {
+                    value = DrawInfo.OutsideAirTemperature;
+                    sprintf(text,"%.0lf",value);
+                    wsprintf(BufferValue, TEXT("%S"), text);
+                    wsprintf(BufferUnit,  TEXT("%S"), _T(DEG));
+                    valid = true;
+                  }
+                  break;
+                  
+		// B49
 		case LK_RELHUM:
+                  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+                  if(DrawInfo.HumidityAvailable) {
+                    value = DrawInfo.RelativeHumidity;
+                    sprintf(text, "%.0lf", value);
+                    wsprintf(BufferValue, TEXT("%S"), text);
+                    wsprintf(BufferUnit, TEXT("%%"));
+                    valid = true;
+                  }
+                  else
+                    wsprintf(BufferValue, TEXT("---"));
+                  break;
+
+		// B50 UNSUPPORTED
 		case LK_MAXTEMP:
 			goto lk_error;
 			break;
@@ -2235,7 +2251,21 @@ olc_score:
 			  }
 			break;
 
-		case 125:
+                // B125
+		case LK_BANK_ANGLE:
+                        valid=true;
+			if(DrawInfo.GyroscopeAvailable) { 
+				value=DrawInfo.Roll;
+                                // LKTOKEN _@M1197_ "Bank"
+                                _tcscpy(BufferTitle, gettext(TEXT("_@M1197_")));
+			} else {
+				value=DerivedDrawInfo.BankAngle;
+				_stprintf(BufferTitle, TEXT("e%s"), gettext(TEXT("_@M1197_")));
+			}
+                        _stprintf(BufferValue,TEXT("%.0f°"), value);
+			wsprintf(BufferUnit, TEXT(""));
+			break;
+
 		case 126:
 		case 127:
 		case 128:
@@ -2643,7 +2673,6 @@ lkfin_ete:
 			// LKTOKEN  _@M1192_ = "StDis"
 			_tcscpy(BufferTitle, MsgToken(1192));
 			break;
-
 
 		// B253
 		case LK_DUMMY:

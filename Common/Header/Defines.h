@@ -617,6 +617,8 @@
 #define LK_MAXHGAINED			123
 #define LK_HEADWINDSPEED		124
 
+#define LK_BANK_ANGLE                   125
+
 
 // The following values are not available for custom configuration
 

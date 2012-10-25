@@ -25,20 +25,20 @@
 //
 void MapWindow::DrawAcceleration(HDC hDC, const RECT rc)
 {
-	double ScaleX= (rc.right - rc.left)/2/5;
-	double ScaleY= (rc.top - rc.bottom)/2/5;
-	double ScaleZ= (rc.top - rc.bottom)/2/20;
-	POINT Pos;
-	Pos.x = (rc.right - rc.left)/2 +(int)( GPS_INFO.AccelY * ScaleX);
-	Pos.y = (rc.bottom   - rc.top)/2+ (int)(GPS_INFO.AccelZ * ScaleY);
-
-	HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
-	HBRUSH  oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
-
-	  Circle( hDC, Pos.x, Pos.y-10, 20+ (int)(ScaleZ*GPS_INFO.AccelX),  rc,true, true);
-
-	SelectObject(hDC, oldBrush);
-	SelectObject(hDC, oldPen);
+  const double ScaleX = (rc.right - rc.left)/10;
+  const double ScaleY = (rc.top - rc.bottom)/10;
+  const double ScaleZ = (rc.top - rc.bottom)/20;
+  POINT Pos;
+  Pos.x = (rc.right - rc.left)/2 + (int)(GPS_INFO.AccelY * ScaleX);
+  Pos.y = (rc.bottom - rc.top)/2 - (int)((GPS_INFO.AccelZ - 1) * ScaleY);
+  const double radius = 20 + (int)(GPS_INFO.AccelX * ScaleZ);
+  
+  const HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
+  const HBRUSH  oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
+  Circle(hDC, Pos.x, Pos.y - radius/2, radius, rc, true, true);
+  
+  SelectObject(hDC, oldBrush);
+  SelectObject(hDC, oldPen);
 }
 
 void MapWindow::DrawTRI(HDC hDC, const RECT rc)
@@ -164,7 +164,8 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   //if (!CALCULATED_INFO.Flying) {
   // speed is in m/s
-  if (GPS_INFO.Speed <5.5) disabled=true; 
+  if(GPS_INFO.Speed <5.5 && !GPS_INFO.GyroscopeAvailable)
+    disabled=true; 
 
   if (disabled) {
 	hpBlack = LKPen_Grey_N1;
@@ -172,11 +173,7 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   } else {
 	hpBlack = LKPen_Black_N1;
 	hbBlack = LKBrush_Black;
-  	beta = DerivedDrawInfo.BankAngle;
-  }
-
-  if(GPS_INFO.GyroscopeAvailable){
-	  beta = GPS_INFO.Roll;
+        beta = GPS_INFO.GyroscopeAvailable ? GPS_INFO.Roll : DerivedDrawInfo.BankAngle;
   }
 
   hpWhite = LKPen_White_N1;
@@ -187,6 +184,13 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   hpOld = (HPEN)SelectObject(hDC, hpWhite);
   hbOld = (HBRUSH)SelectObject(hDC, hbWhite);
   Circle(hDC, Start.x, Start.y, radius, rc, false, true );
+
+  if(GPS_INFO.AccelerationAvailable)
+  {
+    DrawAcceleration(hDC, rc);
+    MapWindow::RequestFastRefresh();
+  }
+
   SelectObject(hDC, hpBorder);
   SelectObject(hDC, hbBorder);
   Circle(hDC, Start.x, Start.y, radius+NIBLSCALE(2), rc, false, false );
@@ -215,11 +219,12 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][3], d60[1][3], RGB_BLUE,rc);
 
   POINT a1, a2;
-
-  a1.x = Start.x - (long) ( planesize * fastcosine(beta));
-  a1.y = Start.y - (long) ( planesize * fastsine(beta));
-  a2.x = Start.x + (long) ( planesize * fastcosine(beta));
-  a2.y = Start.y + (long) ( planesize * fastsine(beta));
+  const double beta_sine = fastsine(beta);
+  const double beta_cosine = fastcosine(beta);
+  a1.x = Start.x - (long)(planesize * beta_cosine);
+  a1.y = Start.y - (long)(planesize * beta_sine);
+  a2.x = Start.x + (long)(planesize * beta_cosine);
+  a2.y = Start.y + (long)(planesize * beta_sine);
     if (disabled) 
 	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
     else
@@ -227,8 +232,8 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   a1.x = Start.x;
   a1.y = Start.y;
-  a2.x = Start.x + (long) ( tailsize * fastsine(beta));
-  a2.y = Start.y - (long) ( tailsize * fastcosine(beta));
+  a2.x = Start.x + (long)(tailsize * beta_sine);
+  a2.y = Start.y - (long)(tailsize * beta_cosine);
   if (disabled) 
 	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
   else
@@ -260,11 +265,6 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   SelectObject(hDC, hbOld);
   SelectObject(hDC, hpOld);
-  if(GPS_INFO.AccelerationAvailable)
-  {
-    DrawAcceleration( hDC,   rc);
-    MapWindow::RequestFastRefresh();
-  }
 }
 
 #else
