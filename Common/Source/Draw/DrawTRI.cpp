@@ -164,7 +164,8 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   //if (!CALCULATED_INFO.Flying) {
   // speed is in m/s
-  if (GPS_INFO.Speed <5.5) disabled=true; 
+  if(GPS_INFO.Speed <5.5 && !GPS_INFO.GyroscopeAvailable)
+    disabled=true; 
 
   if (disabled) {
 	hpBlack = LKPen_Grey_N1;
@@ -172,11 +173,7 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   } else {
 	hpBlack = LKPen_Black_N1;
 	hbBlack = LKBrush_Black;
-  	beta = DerivedDrawInfo.BankAngle;
-  }
-
-  if(GPS_INFO.GyroscopeAvailable){
-	  beta = GPS_INFO.Roll;
+        beta = GPS_INFO.GyroscopeAvailable ? GPS_INFO.Roll : DerivedDrawInfo.BankAngle;
   }
 
   hpWhite = LKPen_White_N1;
