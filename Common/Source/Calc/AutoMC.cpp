@@ -24,9 +24,8 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   double mc_new = MACCREADY;
   static bool first_mc = true;
 
-  // Use EqMC only while Flying!
   if ( AutoMcMode==amcEquivalent ) {
-	if ( (!Calculated->Circling)  && (!Calculated->OnGround) && Calculated->Flying) {
+	if ( Calculated->Circling != TRUE && Calculated->OnGround != TRUE) {
 		if (Calculated->EqMc>=0) {
 			// MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8); 
 			MACCREADY = Calculated->EqMc;

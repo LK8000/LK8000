@@ -78,7 +78,7 @@ _forcereset:
     if (MODE!=CRUISE) {
 	MODE = CRUISE;
         // Finally do the transition to cruise
-        Calculated->Circling = false;
+        Calculated->Circling = FALSE;
         SwitchZoomClimb(Basic, Calculated, false, LEFT);
         InputEvents::processGlideComputer(GCE_FLIGHTMODE_CRUISE);
     }
@@ -205,7 +205,7 @@ _forcereset:
            break;
          #endif
 
-       Calculated->Circling = true;
+       Calculated->Circling = TRUE;
         // JMW Transition to climb
         MODE = CLIMB;
 	// Probably a replay flight, with fast forward with no cruise init
@@ -311,7 +311,7 @@ _forcereset:
                                Calculated->CruiseStartAlt);
         
         // Finally do the transition to cruise
-        Calculated->Circling = false;
+        Calculated->Circling = FALSE;
         MODE = CRUISE;
         SwitchZoomClimb(Basic, Calculated, false, LEFT);
         InputEvents::processGlideComputer(GCE_FLIGHTMODE_CRUISE);

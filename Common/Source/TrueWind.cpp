@@ -35,11 +35,11 @@ static short errs=0;
 char ventabuffer[200];
 FILE *fp;
 #endif
-	if (CALCULATED_INFO.OnGround) {
+	if (CALCULATED_INFO.OnGround == TRUE) {
 		return;
 	}
 	
-	if (CALCULATED_INFO.Circling) {
+	if (CALCULATED_INFO.Circling == TRUE) {
 		return;
 	}
 

@@ -267,14 +267,14 @@ bool LockMode(const short lmode) {
 	case 3:		// query button is usable or not
 		if (ISPARAGLIDER)
 			// Positive if not flying
-			return (!CALCULATED_INFO.Flying);
+			return CALCULATED_INFO.Flying==TRUE?false:true;
 		else return true;
 		break;
 
 	case 9:		// Check if we can unlock the screen
 		if (ISPARAGLIDER) {
 			// Automatic unlock
-			if (CALCULATED_INFO.Flying) {
+			if (CALCULATED_INFO.Flying == TRUE) {
 				if ( (GPS_INFO.Time - CALCULATED_INFO.TakeOffTime)>10) {
 					LockModeStatus=false;
 				}

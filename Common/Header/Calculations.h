@@ -77,10 +77,10 @@ typedef struct _DERIVED_INFO
   bool   TerrainValid;
   double Heading;
   double AltitudeAGL;
-  bool   Circling;
+  int    Circling;
   int    FinalGlide;
-  bool   AutoMacCready;
-  bool   Flying;
+  int    AutoMacCready; // TODO FIX bool
+  int    Flying;	// TODO FIX bool ?
   bool	 FreeFlying;	// set true when powerless flight is detected. Always true for paragliders.
   double NextAltitudeRequired;
   double NextAltitudeRequired0; // mc=0

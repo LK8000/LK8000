@@ -81,7 +81,7 @@ static short errs=0;
 char ventabuffer[200];
 FILE *fp;
 #endif
-	if (Calculated->OnGround) {
+	if (Calculated->OnGround == TRUE) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"OnGround, ignore LDrotary\r\n");
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
@@ -90,7 +90,7 @@ FILE *fp;
 		return;
 	}
 	
-	if (Calculated->Circling) {
+	if (Calculated->Circling == TRUE) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"Circling, ignore LDrotary\r\n");
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
@@ -171,7 +171,7 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 	double averias;
 	double avertas;
 
-	if ( Calculated->Circling || Calculated->OnGround ) {
+	if ( Calculated->Circling == TRUE || Calculated->OnGround == TRUE) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"Not Calculating, on ground or circling\r\n");
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
