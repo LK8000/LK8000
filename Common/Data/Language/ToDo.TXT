@@ -235,5 +235,6 @@ _@M1810_ "Steady"
 _@M1811_ "Total"
 
 _@M2236_ "Reset\nTrip"
+_@M2237_ "Sonar\nToggle"
 
 

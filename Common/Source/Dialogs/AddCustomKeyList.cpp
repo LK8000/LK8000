@@ -89,6 +89,7 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
     dfe->addEnumTextNoLF(MsgToken(2229)); // ResetOdometer
     dfe->addEnumTextNoLF(MsgToken(2230)); // Force Landing
     dfe->addEnumTextNoLF(MsgToken(2236)); // ResetTripComputer
+    dfe->addEnumTextNoLF(MsgToken(2237)); // Sonar Toggle
 
     dfe->Sort(0);
 

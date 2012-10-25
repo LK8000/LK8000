@@ -2014,6 +2014,7 @@ _@M2233_ "Overlay"
 _@M2234_ "TEXT"
 _@M2235_ "GAUGES"
 _@M2236_ "Reset\nTrip"
+_@M2237_ "Sonar\nToggle"
 
 # Reserved for custom menus up to 2300!
 

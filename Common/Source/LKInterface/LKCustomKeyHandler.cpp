@@ -12,6 +12,7 @@
 #include "Calculations2.h"
 
 extern void ShowMenu();
+extern bool Sonar_IsEnabled;
 
 unsigned int CustomKeyLabel[(CustomKeyMode_t)ckTOP];
 
@@ -449,6 +450,24 @@ passthrough:
 			LKSW_ResetTripComputer=true;
 		}
 		return true;
+	case ckSonarToggle:
+		Sonar_IsEnabled = !Sonar_IsEnabled;
+		TCHAR sonarmsg[60];
+		_stprintf(sonarmsg,_T("%s "),MsgToken(1293)); // SONAR
+		if (Sonar_IsEnabled)
+			_tcscat(sonarmsg,MsgToken(1643)); // ENABLED
+		else
+			_tcscat(sonarmsg,MsgToken(1600)); // DISABLED
+		DoStatusMessage(sonarmsg);
+		// This is not nice, we should not play a sound after DoStatus, or we should remove
+		// sound from DoStatus as an option.
+		if (EnableSoundModes) {
+			if (Sonar_IsEnabled)
+				LKSound(TEXT("LK_TONEUP.WAV"));
+			else
+				LKSound(TEXT("LK_TONEDOWN.WAV"));
+		}
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -523,6 +542,7 @@ CustomKeyLabel[52]=2144;	// Device B Config
 CustomKeyLabel[53]=2229;	// Reset Odometer
 CustomKeyLabel[54]=2230;	// Force landing
 CustomKeyLabel[55]=2236;	// ResetTripComputer
+CustomKeyLabel[56]=2237;	// Sonar toggle
 }
 
 

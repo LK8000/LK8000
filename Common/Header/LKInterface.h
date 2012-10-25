@@ -94,6 +94,7 @@ typedef enum{
 	ckResetOdometer,
 	ckForceLanding,
 	ckResetTripComputer,
+	ckSonarToggle,
 	ckTOP,
 } CustomKeyMode_t;
 
