@@ -1809,6 +1809,11 @@ _@M1806_ "Shade+NextWP"
 _@M1807_ "_Reserved 2"
 _@M1808_ "Loading FLARMNET database"
 
+# Trip computer, Infobox title, max 6-7 chars
+_@M1809_ "Moving"
+_@M1810_ "Steady"
+_@M1811_ "Total"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

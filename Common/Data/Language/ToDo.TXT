@@ -229,4 +229,10 @@ _@M2233_ "Overlay"
 _@M2234_ "TEXT"
 _@M2235_ "GAUGES"
 
+# Trip computer, Infobox title, max 6-7 chars
+_@M1809_ "Moving"
+_@M1810_ "Steady"
+_@M1811_ "Total"
+
+
 

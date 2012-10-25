@@ -226,7 +226,22 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		showunit=LKFormatValue(LK_HGPS, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_AUX:
-		showunit=LKFormatValue(LK_TC_ALL, true, BufferValue, BufferUnit, BufferTitle);
+		if (ISCAR) {
+			_stprintf(BufferTitle, MsgToken(1809)); // Moving
+			if (DerivedDrawInfo.Flying) {
+                                showunit=Units::TimeToTextDown(BufferValue, (int)Trip_Moving_Time);
+				if (showunit)
+					_stprintf(BufferUnit, _T("h"));
+				else 
+					_stprintf(BufferUnit, _T(""));
+				showunit=true;
+                        } else {
+                                wsprintf(BufferValue, TEXT("--:--"));
+				showunit=false;
+                        }
+		} else {
+			showunit=LKFormatValue(LK_TC_ALL, true, BufferValue, BufferUnit, BufferTitle);
+		}
 		break;
 	case BM_TSK:
 		showunit=LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
@@ -284,12 +299,25 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		showunit=LKFormatValue(LK_HBARO, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_AUX:
-		if (UseContestEngine())
-		  showunit=LKFormatValue(LK_OLC_CLASSIC_DIST, true, BufferValue, BufferUnit, BufferTitle);
-		else
-		  showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
-
-		// showunit=false; 100221
+		if (ISCAR) {
+			_stprintf(BufferTitle, MsgToken(1810)); // Steady
+			if (DerivedDrawInfo.Flying) {
+                                showunit=Units::TimeToTextDown(BufferValue, (int)Trip_Steady_Time);
+				if (showunit)
+					_stprintf(BufferUnit, _T("h"));
+				else 
+					_stprintf(BufferUnit, _T(""));
+				showunit=true;
+                        } else {
+                                wsprintf(BufferValue, TEXT("--:--"));
+				showunit=false;
+                        }
+		} else {
+			if (UseContestEngine())
+			  showunit=LKFormatValue(LK_OLC_CLASSIC_DIST, true, BufferValue, BufferUnit, BufferTitle);
+			else
+			  showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		}
 		break;
 	case BM_TSK:
 		showunit=LKFormatValue(LK_FIN_ALTDIFF, true, BufferValue, BufferUnit, BufferTitle); // 100221
@@ -356,6 +384,7 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		break;
 	case BM_AUX:
 		showunit=LKFormatValue(LK_TIMEFLIGHT, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		if (ISCAR) _stprintf(BufferTitle, MsgToken(1811)); // Total
 		break;
 	case BM_TSK:
 		showunit=LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);

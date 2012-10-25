@@ -23,6 +23,9 @@ void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (Basic->NAVWarning) return;
 
+  // For CAR mode, Flying is set true after the very first departure.
+  if (!Calculated->Flying) return;
+
   if (Basic->Speed<0.1) {
 	//
 	// We are NOT moving
