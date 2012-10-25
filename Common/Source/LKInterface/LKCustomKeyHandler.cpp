@@ -441,6 +441,14 @@ passthrough:
 			}
 		}
 		return true;
+	case ckResetTripComputer:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		if (MessageBoxX(hWndMapWindow, MsgToken(2236), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+			LKSW_ResetTripComputer=true;
+		}
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -514,6 +522,7 @@ CustomKeyLabel[51]=2143;	// Device A Config
 CustomKeyLabel[52]=2144;	// Device B Config
 CustomKeyLabel[53]=2229;	// Reset Odometer
 CustomKeyLabel[54]=2230;	// Force landing
+CustomKeyLabel[55]=2236;	// ResetTripComputer
 }
 
 

@@ -93,6 +93,7 @@ typedef enum{
 	ckDeviceB,
 	ckResetOdometer,
 	ckForceLanding,
+	ckResetTripComputer,
 	ckTOP,
 } CustomKeyMode_t;
 

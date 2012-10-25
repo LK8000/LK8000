@@ -21,6 +21,18 @@ extern void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static unsigned int steady=0;
 
+  if (LKSW_ResetTripComputer) {
+	LKSW_ResetTripComputer=false;
+	#if TESTBENCH
+	StartupStore(_T("... Trip Computer RESET by request\n"));
+	#endif
+	Trip_Steady_Time=0;
+	Trip_Moving_Time=0;
+	if (ISCAR) Calculated->FlightTime = 0; // se later in DetecStartTime also
+	Calculated->Odometer = 0;
+	steady=0;
+  }
+
   if (Basic->NAVWarning) return;
 
   // For CAR mode, Flying is set true after the very first departure.
@@ -53,6 +65,13 @@ int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   static int starttime = -1;
   static int lastflighttime = -1;
+
+  // The DetectStartTime is called BEFORE we call TripTimes, which will take care of 
+  // resetting to false the LKSW switch.
+  if (LKSW_ResetTripComputer && ISCAR) {
+	starttime=-1;
+	lastflighttime=-1;
+  }
 
   if (Calculated->Flying) {
     if (starttime == -1) {

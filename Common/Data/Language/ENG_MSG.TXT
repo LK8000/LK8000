@@ -2013,6 +2013,7 @@ _@M2232_ "abcd"
 _@M2233_ "Overlay"
 _@M2234_ "TEXT"
 _@M2235_ "GAUGES"
+_@M2236_ "Reset\nTrip"
 
 # Reserved for custom menus up to 2300!
 
