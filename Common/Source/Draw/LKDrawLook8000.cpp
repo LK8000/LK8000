@@ -35,7 +35,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   bool redwarning; // 091203
   int gatechrono=0;
 
-  HFONT *bigFont;
+  HFONT *bigFont, *medFont;
 
   short leftmargin=0;
 
@@ -85,10 +85,13 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	flipflopcount=0;
   }
 
-  if (OverlaySize==0)
+  if (OverlaySize==0) {
 	bigFont=(HFONT *)LK8BigFont;
-  else
+	medFont=(HFONT *)LK8TargetFont;
+  } else {
 	bigFont=(HFONT *)LK8TargetFont;
+	medFont=(HFONT *)LK8TargetFont;
+  }
 
   if (DoInit[MDI_DRAWLOOK8000]) {
 	TCHAR Tdummy[]=_T("T");
@@ -96,7 +99,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8BigFont = TextSize.cy;
 
-	SelectObject(hdc, LK8TargetFont); 
+	SelectObject(hdc, medFont); 
 	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8TargetFont = TextSize.cy;
 
@@ -529,7 +532,7 @@ nextinit:
 			rcy=rc.top+NIBLSCALE(1);
 		}
 		// Waypoint name and distance
-		SelectObject(hdc, LK8TargetFont);
+		SelectObject(hdc, medFont);
 
 	if ( index >=0 ) {
 		#if 0
@@ -629,7 +632,7 @@ nextinit:
 
 		if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates())) ) {
 			_stprintf(BufferValue,_T("%s %s"),BufferValue,BufferUnit);
-			SelectObject(hdc, LK8TargetFont); 
+			SelectObject(hdc, medFont); 
 			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 		} else
 			LKWriteText(hdc,BufferValue, rcx+NIBLSCALE(2), rcy+ ySizeLK8TargetFont, 0, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
@@ -677,7 +680,7 @@ nextinit:
 					break;
 			}
 
-			SelectObject(hdc, bigFont);
+			SelectObject(hdc, medFont); 
 			if (!ISGAAIRCRAFT) {
 				if (ScreenLandscape)
 					LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, 
@@ -1113,7 +1116,7 @@ drawOverlay:
 	LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
 
 	if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
-		SelectObject(hdc, LK8TargetFont); 
+		SelectObject(hdc, medFont); 
 		if ( ScreenSize < (ScreenSize_t)sslandscape )
 			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(10),
 				yClockposition,
@@ -1133,7 +1136,7 @@ Drawbottom:
   //
   // Draw wind 
   //
-  SelectObject(hdc, LK8TargetFont);
+  SelectObject(hdc, medFont);
 
   if (Look8000 == lxcNoOverlay) goto afterWind; // 100930
 
