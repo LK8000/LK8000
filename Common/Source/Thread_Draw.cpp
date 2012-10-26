@@ -112,7 +112,8 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	PolygonRotateShift((POINT*)NULL,0,0,0,DisplayAngle+1);
 
 	// Restart from moving map
-	if (MapSpaceMode!=MSM_WELCOME) SetModeIndex(LKMODE_MAP);
+	if (MapSpaceMode!=MSM_WELCOME) SetModeType(LKMODE_MAP, MP_MOVING);
+
 
 	LKSW_ReloadProfileBitmaps=false;
 	first=true; // check it
