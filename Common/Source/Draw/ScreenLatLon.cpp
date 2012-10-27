@@ -93,6 +93,8 @@ void MapWindow::LatLon2ScreenMultimap(pointObj *ptin, POINT *ptout, const int n,
   static double lastangle = -1;
   static int cost=1024, sint=0;
 
+  LKASSERT(Current_Multimap_TopZoom!=0);
+
   const double mDisplayAngle = Current_Multimap_TopAngle;
   if(mDisplayAngle != lastangle) {
 	lastangle = mDisplayAngle;
@@ -103,15 +105,15 @@ void MapWindow::LatLon2ScreenMultimap(pointObj *ptin, POINT *ptout, const int n,
 
   const int xxs = Current_Multimap_TopOrig.x*1024-512;
   const int yys = Current_Multimap_TopOrig.y*1024+512;
-  const double mDrawScale = zoom.DrawScale();
+  const double mDrawScale = Current_Multimap_TopZoom;
   const double mPanLongitude = PanLongitude;
   const double mPanLatitude = PanLatitude;
   pointObj* p = ptin;
   const pointObj* ptend = ptin+n;
 
   while (p<ptend) {
-    int Y = Real2Int((mPanLatitude-p->y)*mDrawScale);
-    int X = Real2Int((mPanLongitude-p->x)*fastcosine(p->y)*mDrawScale);
+    int Y = Real2Int((mPanLatitude-p->y)/mDrawScale);
+    int X = Real2Int((mPanLongitude-p->x)*fastcosine(p->y)/mDrawScale);
     ptout->x = (xxs-X*cost + Y*sint)/1024;
     ptout->y = (Y*cost + X*sint + yys)/1024;
     ptout++;
