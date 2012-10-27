@@ -35,7 +35,7 @@ void MapWindow::DrawAcceleration(HDC hDC, const RECT rc)
   
   const HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
   const HBRUSH  oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
-  Circle(hDC, Pos.x, Pos.y - radius/2, radius, rc, true, true);
+  Circle(hDC, Pos.x, Pos.y - (int)(radius/2), (int)radius, rc, true, true);
   
   SelectObject(hDC, oldBrush);
   SelectObject(hDC, oldPen);
