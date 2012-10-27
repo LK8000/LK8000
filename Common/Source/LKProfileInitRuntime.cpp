@@ -139,7 +139,8 @@ void LKProfileInitRuntime(void) {
 
   if ( ISPARAGLIDER || ISCAR ) {
 	// paragliders can takeoff at 5kmh ground with some head wind!
-	TakeOffSpeedThreshold=1.39;
+	TakeOffSpeedThreshold=1.39;	// 5kmh
+	if (ISCAR) TakeOffSpeedThreshold=0.83; // 3 kmh
   } else {
 	TakeOffSpeedThreshold=11.12; // 40kmh
   }
