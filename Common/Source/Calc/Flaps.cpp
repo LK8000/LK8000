@@ -24,7 +24,7 @@ void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	for (int i=0;i<GlidePolar::FlapsPosCount-1;i++) {
 		if (speed >= GlidePolar::FlapsPos[i]*massCorrectionFactor 
 			&& speed < GlidePolar::FlapsPos[i+1]*massCorrectionFactor) {
-			wcscpy(Calculated->Flaps,GlidePolar::FlapsName[i]);
+			LK_tcsncpy(Calculated->Flaps,GlidePolar::FlapsName[i],MAXFLAPSNAME);
 		}
 	}	
 }
