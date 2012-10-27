@@ -742,7 +742,7 @@ bool InputEvents::processKey(int dWord) {
 	// Sound clicks would delay too much fast zoom: we only play them once
 	//
 	#ifndef DISABLEAUDIO
-	if ((GetTickCount()-lastClickTime)>800) {
+	if ((GetTickCount()-lastClickTime)>1800) {
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 	}
 	lastClickTime=GetTickCount();

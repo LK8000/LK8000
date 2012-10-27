@@ -69,7 +69,7 @@ void MapWindow::RenderMapWindow(RECT rc)
 		// a click pressed.
 		//if (ZoomDelayTimes >0) {
 		//	ZoomDelayTimes--;
-		if ( (GetTickCount()-fastzoomStart) <350 ) {
+		if ( (GetTickCount()-fastzoomStart) <(unsigned int)debounceTimeout ) {
 			#if (WINDOWSPC>0)	
 			  #if TESTBENCH
 			  FastZoom=true;
@@ -77,6 +77,8 @@ void MapWindow::RenderMapWindow(RECT rc)
 			#else
 			  FastZoom=true;
 			#endif
+			// 
+			return;
 		} else {
 			fastzoomStart=0;
 		}
@@ -104,6 +106,7 @@ void MapWindow::RenderMapWindow(RECT rc)
     CalculateScreenPositions(Orig, rc, &Orig_Aircraft);
     LKUpdateOlc();
   } else {
+	CalculateScreenPositions(Orig, rc, &Orig_Aircraft);
 	FastZoom=true;
   }
 
@@ -121,19 +124,19 @@ void MapWindow::RenderMapWindow(RECT rc)
   
 ///  DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom  REMOVE
 
+  // Logger indicator, flight indicator, battery indicator
+  DrawFlightMode(hdcDrawWindow, rc);
+
   //
   // When fast zoom requested, do not loose time with frills
   //
   if (QUICKDRAW) {
-	DrawFlightMode(hdcDrawWindow, rc);
 	//SelectObject(hdcDrawWindow, hfOld);
 	// do a mapdirty and rerun the loop
 	MapWindow::RefreshMap();
 	return;
   }
 
-  // Logger indicator, flight indicator, battery indicator
-  DrawFlightMode(hdcDrawWindow, rc);
   
   // GPS FIX warnings
   DrawGPSStatus(hdcDrawWindow, rc);

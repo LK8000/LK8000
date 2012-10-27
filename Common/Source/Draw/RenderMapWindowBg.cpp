@@ -59,10 +59,8 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   MapWindow::ChangeDrawRect(MapRect);
   #endif
 
-  // If we have a BigZoom request, we serve it immediately without calculating anything
-  // TODO: stretch the old map bitmap to the new zoom, while fastzooming
   if (QUICKDRAW) {
-	goto fastzoom;
+	goto _skip_calcs;
   }
 
   if (NumberOfWayPoints>200) {
@@ -84,7 +82,10 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   // Basically we assume -like for nearest- that values will not change that much in the multicalc split time.
   // Target and tasks are recalculated in real time in any case. Nearest too. 
   LKCalculateWaypointReachable(multicalc_slot, numslots);
+
+_skip_calcs:
   CalculateScreenPositionsAirspace();
+
   CalculateScreenPositionsThermalSources();
 
   // Make the glide amoeba out of the latlon points, converting them to screen
@@ -198,8 +199,6 @@ QuickRedraw:
 	BlackScreen=false;
   }
 
-fastzoom:  
-
   #if NEWSMARTZOOM
   // Copy the old background map with no overlays
   if (ONSMARTZOOM) {
@@ -312,6 +311,7 @@ fastzoom:
   // EITHER PAN OR MSM_MAP.
   //
 
+#if 0
   // If we detect the quick draw request, we accelerate drawing of main map.
   // We paint the minimum: overlays and bottom bar, and quickly we return.
   //
@@ -334,6 +334,7 @@ fastzoom:
   	//SelectObject(hdcDrawWindow, hfOld);
 	return;
   }
+#endif
 
   if (DONTDRAWTHEMAP) {
 	//SelectObject(hdcDrawWindow, hfOld);
@@ -384,7 +385,10 @@ fastzoom:
 	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
-  
+
+  // In QUICKDRAW dont draw trail, thermals, glide terrain
+  if (QUICKDRAW) goto _skip_stuff;
+ 
   if(TrailActive) {
 	// NEED REWRITING
 	LKDrawTrail(hdc, Orig_Aircraft, DrawRect);
@@ -407,6 +411,8 @@ fastzoom:
 	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
+
+_skip_stuff:
 
   #if NEWMULTIMAPS
   if (IsMultimapAirspace() && AirspaceWarningMapLabels)
@@ -431,6 +437,15 @@ fastzoom:
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
 	DrawTask(hdc, DrawRect, Orig_Aircraft);
   }
+
+  // In QUICKDRAW do not paint other useless stuff
+  if (QUICKDRAW) {
+	if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
+	goto _skip_2;
+  }
+
+  // ---------------------------------------------------
+
   DrawTeammate(hdc, rc);
 
   if (extGPSCONNECT) {
@@ -467,6 +482,9 @@ fastzoom:
   // Draw traffic and other specifix LK gauges
   LKDrawFLARMTraffic(hdc, DrawRect, Orig_Aircraft);
 
+  // ---------------------------------------------------
+_skip_2:
+
   if (NOTANYPAN) {
     // REMINDER TODO let it be configurable for not circling also, as before
     if ((mode.Is(Mode::MODE_CIRCLING)) )
@@ -489,7 +507,7 @@ fastzoom:
     DrawAircraft(hdc, Orig_Aircraft);
   }
 
-  if (NOTANYPAN) {
+  if (NOTANYPAN && !QUICKDRAW) {
 	if (TrackBar) DrawHeading(hdc, Orig, DrawRect); 
   }
 

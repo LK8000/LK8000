@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Bitmaps.h"
 
+extern bool FastZoom;
 
 //
 // Bottom right corner indicators: Flight mode, Battery, Logger
@@ -81,7 +82,7 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 
   #if TESTBENCH
   // Battery test in Simmode
-  if (SIMMODE) {; PDABatteryPercent-=5; if (PDABatteryPercent<0) PDABatteryPercent=100; }
+  if (SIMMODE && !(QUICKDRAW)) {; PDABatteryPercent-=5; if (PDABatteryPercent<0) PDABatteryPercent=100; }
   #endif
 
   if (PDABatteryPercent==0 && PDABatteryStatus==AC_LINE_ONLINE && PDABatteryFlag!=BATTERY_FLAG_CHARGING) {

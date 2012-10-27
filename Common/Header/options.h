@@ -125,6 +125,8 @@
 // This will be soon removed entirely - 121002
 // #define AUTO_BBTRM		1
 
+// Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
+#define USEBIGZOOM	1	
 
 
 /*
@@ -136,7 +138,6 @@
 
 // #define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
 					// Needs USEBIGZOOM
-// #define USEBIGZOOM		1	// will fast redraw only terrain, with no topology &c.
 
 // #define USESWITCHES	1	// External device switch support / to be completed because unused
 				// Do not remove, it can be worked out with no problems if we want to
