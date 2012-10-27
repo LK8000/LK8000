@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "LKObjects.h"
 #include "LKProfiles.h"
+#include "Dialogs.h"
 
 
 extern void Shutdown(void);

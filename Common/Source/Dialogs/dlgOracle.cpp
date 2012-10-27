@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "Dialogs.h"
 
 static WndForm *wf=NULL;
 extern void WhereAmI(void);

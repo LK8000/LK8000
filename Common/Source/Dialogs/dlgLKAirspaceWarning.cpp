@@ -11,6 +11,7 @@
 
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"
+#include "Dialogs.h"
 
 #include "RGB.h"
 

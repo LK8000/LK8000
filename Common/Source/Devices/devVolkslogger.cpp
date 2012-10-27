@@ -8,6 +8,7 @@
 
 
 #include "externs.h"
+#include "Dialogs.h"
 
 #include "devVolkslogger.h"
 extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);

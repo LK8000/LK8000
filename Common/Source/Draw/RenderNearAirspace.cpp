@@ -11,6 +11,7 @@
 #include "RGB.h"
 #include "Sideview.h"
 #include "Multimap.h"
+#include "Dialogs.h"
 
 #define GC_HORIZONTAL_TOLERANCE      100
 #define GC_HORIZONTAL_THRESHOLD     2500

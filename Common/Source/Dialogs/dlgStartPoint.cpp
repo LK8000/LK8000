@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include <aygshell.h>
+#include "Dialogs.h"
 
 #include "InfoBoxLayout.h"
 

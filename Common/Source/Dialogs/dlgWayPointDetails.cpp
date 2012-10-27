@@ -13,7 +13,7 @@
 #include "McReady.h"
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
-
+#include "Dialogs.h"
 
 extern void DrawJPG(HDC hdc, RECT rc);
 

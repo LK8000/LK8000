@@ -12,7 +12,7 @@
 #include "InfoBoxLayout.h"
 #include "NavFunctions.h"
 #include "TeamCodeCalculation.h"
-
+#include "Dialogs.h"
 
 static WndForm *wf=NULL;
 static void SetValues(int indexid);

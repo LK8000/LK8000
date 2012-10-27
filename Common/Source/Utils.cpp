@@ -10,7 +10,7 @@
 #include "McReady.h"
 #include "RGB.h"
 #include "Modeltype.h"
-
+#include "dlgTools.h"
 
 
 long GetUTCOffset(void) {

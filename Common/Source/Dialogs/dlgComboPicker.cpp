@@ -10,6 +10,7 @@
 #include "InputEvents.h"
 #include "WindowControls.h"
 #include "InfoBoxLayout.h"
+#include "Dialogs.h"
 
 
 extern HWND   hWndMainWindow;

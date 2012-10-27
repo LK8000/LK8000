@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include <aygshell.h>
-
+#include "Dialogs.h"
 #include "InfoBoxLayout.h"
 #include "WindowControls.h"
 #include "DoInits.h"

@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
-
+#include "Dialogs.h"
 
 extern void ResetTaskWaypoint(int j);
 

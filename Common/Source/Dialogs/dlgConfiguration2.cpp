@@ -11,6 +11,7 @@
 
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
+#include "Dialogs.h"
 
 
 extern short config_page[];

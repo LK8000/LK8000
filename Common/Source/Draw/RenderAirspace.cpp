@@ -19,6 +19,7 @@
 #include "LKObjects.h"
 #include "Multimap.h"
 #include "Topology.h"
+#include "Dialogs.h"
 
 extern	 int Sideview_iNoHandeldSpaces;
 extern	 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];

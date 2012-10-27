@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "dlgTools.h"
 
 
 void SaveTask(TCHAR *szFileName)

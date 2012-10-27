@@ -10,7 +10,7 @@
 #include "LKInterface.h"
 #include <aygshell.h>
 #include "InfoBoxLayout.h"
-
+#include "Dialogs.h"
 
 #include "FlarmIdFile.h"
 extern FlarmIdFile *file;

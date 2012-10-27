@@ -11,7 +11,6 @@ void LKReadLanguageFile(void);
 void LKUnloadMessage();
 
 void SetWindowText_gettext(HWND hDlg, int entry);
-#define gettext	LKGetText
 void ClearStatusMessages(void);
 
 void StartupScreen();
@@ -21,7 +20,6 @@ void CloseProgressDialog();
 void StartHourglassCursor();
 void StopHourglassCursor();
 
-extern void DoStatusMessage(const TCHAR* text, const TCHAR* data = NULL, const bool playsound = true);
 
 
 

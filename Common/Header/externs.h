@@ -43,7 +43,6 @@
 #include "Airspace.h"
 #include "MapWindow.h"
 #include "Utils.h"
-#include "Dialogs.h"
 #include "ContestMgr.h"
 #include "Port.h"
 #include "device.h"
@@ -57,7 +56,7 @@
 #include "LKAssert.h"
 
 //
-// Functions
+// Common Functions
 //
 extern TCHAR 		*gmfpathname();
 extern TCHAR		*gmfbasename();
@@ -72,6 +71,11 @@ extern bool		CheckRegistryProfile();
 extern void		ConvToUpper( TCHAR *);
 extern bool		Debounce(int debouncetime);
 extern bool		Debounce();
+
+extern void DoStatusMessage(const TCHAR* text, const TCHAR* data = NULL, const bool playsound = true);
+
+
+
 
 //
 // Various

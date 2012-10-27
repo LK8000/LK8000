@@ -13,6 +13,7 @@
 #include "McReady.h"
 #include "AirfieldDetails.h"
 #include "InfoBoxLayout.h"
+#include "Dialogs.h"
 
 #include <commctrl.h>
 #include <aygshell.h>

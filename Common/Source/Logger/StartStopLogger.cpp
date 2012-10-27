@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
-
+#include "dlgTools.h"
 
 void guiStartLogger(bool noAsk) {
   int i;

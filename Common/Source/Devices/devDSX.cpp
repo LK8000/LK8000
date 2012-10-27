@@ -9,6 +9,7 @@
 
 #include "externs.h"
 #include "devDSX.h"
+#include "Dialogs.h"
 
 extern NMEA_INFO GPS_INFO;
 

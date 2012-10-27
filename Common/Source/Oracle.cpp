@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Process.h"
 #include "Waypointparser.h"
-
+#include "dlgTools.h"
 
 
 TCHAR *DegreesToText(double brg) {

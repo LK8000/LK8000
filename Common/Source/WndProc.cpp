@@ -18,6 +18,7 @@
 #include "LKProfiles.h"
 #include "Logger.h"
 #include "LiveTracker.h"
+#include "Dialogs.h"
 
 HBRUSH hBrushSelected;
 HBRUSH hBrushUnselected;

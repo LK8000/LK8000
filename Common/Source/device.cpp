@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "Dialogs.h"
 
 // A note about locking.
 //  The ComPort RX threads lock using FlightData critical section.

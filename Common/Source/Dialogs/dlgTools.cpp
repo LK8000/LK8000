@@ -13,7 +13,7 @@
 #include "xmlParser.h"
 #include "InfoBoxLayout.h"
 #include "RGB.h"
-
+#include "Dialogs.h"
 
 
 int DLGSCALE(int x) {

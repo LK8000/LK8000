@@ -15,7 +15,7 @@
 #include "RasterTerrain.h"
 #include "McReady.h"
 #include "AirfieldDetails.h"
-
+#include "Dialogs.h"
 
 
 void SettingsEnter() {

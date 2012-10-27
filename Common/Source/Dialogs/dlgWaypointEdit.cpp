@@ -10,6 +10,7 @@
 #include "InputEvents.h"
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
+#include "Dialogs.h"
 
 
 

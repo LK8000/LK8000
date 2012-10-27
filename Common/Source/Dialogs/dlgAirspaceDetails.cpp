@@ -12,6 +12,7 @@
 #include "InputEvents.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"
+#include "Dialogs.h"
 
 
 static CAirspace *airspace = NULL;

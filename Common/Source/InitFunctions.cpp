@@ -11,6 +11,7 @@
 #include "Waypointparser.h"
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
+#include "Dialogs.h"
 
 #include <commctrl.h>
 #include <aygshell.h>

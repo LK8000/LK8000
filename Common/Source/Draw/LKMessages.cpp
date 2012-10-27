@@ -8,7 +8,7 @@
 
 
 #include "externs.h"
-
+#include "dlgTools.h"
 
 void MSG_NotEnoughMemory(void) {
 

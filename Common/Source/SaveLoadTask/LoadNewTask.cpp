@@ -7,6 +7,8 @@
 */
 
 #include "externs.h"
+#include "dlgTools.h"
+
 
 bool LoadTaskWaypoints(HANDLE hFile);
 

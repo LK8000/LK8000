@@ -11,6 +11,7 @@
 
 #include "Process.h"
 #include "LKProfiles.h"
+#include "Dialogs.h"
 
 
 

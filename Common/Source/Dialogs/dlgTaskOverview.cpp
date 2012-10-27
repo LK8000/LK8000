@@ -13,6 +13,7 @@
 #include "McReady.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
+#include "Dialogs.h"
 
 
 static WndForm *wf=NULL;

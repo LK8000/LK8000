@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "LKProfiles.h"
+#include "Dialogs.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

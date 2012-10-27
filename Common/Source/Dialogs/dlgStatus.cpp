@@ -11,6 +11,7 @@
 #include "Waypointparser.h"
 #include "Logger.h"
 #include "Process.h"
+#include "Dialogs.h"
 
 
 extern BOOL extGPSCONNECT;

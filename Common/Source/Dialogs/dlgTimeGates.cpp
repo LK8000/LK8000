@@ -12,6 +12,7 @@
 #include "Process.h"
 #include "LKProfiles.h"
 #include "Calculations2.h"
+#include "Dialogs.h"
 
 
 static bool changed = false;

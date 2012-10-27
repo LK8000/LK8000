@@ -8,6 +8,7 @@
 
 
 #include "externs.h"
+#include "Dialogs.h"
 
 #include "devEWMicroRecorder.h"
 

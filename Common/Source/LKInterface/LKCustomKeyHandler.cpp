@@ -10,6 +10,7 @@
 #include "InputEvents.h"
 #include "LKInterface.h"
 #include "Calculations2.h"
+#include "dlgTools.h"
 
 extern void ShowMenu();
 extern bool Sonar_IsEnabled;

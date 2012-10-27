@@ -12,6 +12,8 @@
 #include "LKHolux.h"
 #endif
 #include "utils/stringext.h"
+#include "dlgTools.h"
+
 
 extern TCHAR LastTaskFileName[MAX_PATH];
 

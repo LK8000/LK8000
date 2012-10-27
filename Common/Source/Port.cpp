@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "dlgTools.h"
 
 
 void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...)

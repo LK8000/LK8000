@@ -18,6 +18,7 @@
 #include "Globals.h"
 #include "Multimap.h"
 #include "Bitmaps.h"
+#include "Dialogs.h"
 
 extern int XstartScreen, YstartScreen;
 

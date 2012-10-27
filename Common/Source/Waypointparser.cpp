@@ -11,6 +11,7 @@
 #include "LKStyle.h"
 #include "LKProfiles.h"
 #include "resource.h"
+#include "Dialogs.h"
 
 #include "RasterTerrain.h"
 

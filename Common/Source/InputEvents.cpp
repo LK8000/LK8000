@@ -29,6 +29,7 @@
 #include "utils/stl_utils.h"
 #include "RasterTerrain.h"
 #include "Multimap.h"
+#include "Dialogs.h"
 
 // Sensible maximums 
 #define MAX_MODE 100

@@ -878,6 +878,7 @@ static const double PI = (4*atan(1));
 // For debugging and trace tests
 #define IMHERE	StartupStore(_T(">>> %s:%u\n"), _T(__FILE__), __LINE__);
 
+#define gettext LKGetText
 
 
 #endif

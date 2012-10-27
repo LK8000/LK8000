@@ -10,6 +10,7 @@
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "RGB.h"
+#include "Dialogs.h"
 #include "DoInits.h"
 
 

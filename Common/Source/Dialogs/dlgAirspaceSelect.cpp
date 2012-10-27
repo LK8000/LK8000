@@ -12,7 +12,7 @@
 #include "InfoBoxLayout.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"
-
+#include "Dialogs.h"
 
 
 typedef struct{

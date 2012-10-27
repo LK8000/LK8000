@@ -11,6 +11,7 @@
 #include "Terrain.h"
 #include "LKMapWindow.h"
 #include "LKProfiles.h"
+#include "Dialogs.h"
 
 extern void AddCustomKeyList( DataFieldEnum* dfe);
 

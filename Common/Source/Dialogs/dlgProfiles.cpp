@@ -9,6 +9,7 @@
 #include "externs.h"
 #include <aygshell.h>
 #include "LKProfiles.h"
+#include "Dialogs.h"
 
 
 static WndForm *wf=NULL;

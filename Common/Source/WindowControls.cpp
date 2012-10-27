@@ -12,7 +12,7 @@
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "RGB.h"
-
+#include "Dialogs.h"
 #include "Modeltype.h"
 
 #if (WINDOWSPC<1)

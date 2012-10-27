@@ -9,7 +9,7 @@
 
 #include "externs.h"
 #include "devBase.h"
-
+#include "Dialogs.h"
 
 //____________________________________________________________class_definitions_
 

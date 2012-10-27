@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "LKInterface.h"
 #include "Logger.h"
+#include "Dialogs.h"
 #include "RGB.h"
 
 

@@ -10,7 +10,7 @@
 #include <aygshell.h>
 
 #include "InfoBoxLayout.h"
-
+#include "Dialogs.h"
 
 
 static WndForm *wf=NULL;

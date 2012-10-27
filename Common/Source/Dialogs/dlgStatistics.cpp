@@ -14,6 +14,7 @@
 #include "LKInterface.h"
 #include "RGB.h"
 #include "Sideview.h"
+#include "Dialogs.h"
 
 
 

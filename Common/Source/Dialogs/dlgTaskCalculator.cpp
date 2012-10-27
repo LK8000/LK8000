@@ -7,6 +7,8 @@
 */
 #include "externs.h"
 #include "McReady.h"
+#include "Dialogs.h"
+
 
 #include "Calculations2.h"
 

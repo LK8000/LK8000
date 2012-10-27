@@ -10,7 +10,7 @@
 #include "McReady.h"
 #include "Atmosphere.h"
 #include "InfoBoxLayout.h"
-
+#include "Dialogs.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

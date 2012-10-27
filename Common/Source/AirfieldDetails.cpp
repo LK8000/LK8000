@@ -9,7 +9,7 @@
 
 #include "externs.h"
 #include "LKProfiles.h"
-
+#include "Dialogs.h"
 #include <aygshell.h>
 
 #include "AirfieldDetails.h"

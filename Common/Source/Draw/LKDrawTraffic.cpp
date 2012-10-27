@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
+#include "Dialogs.h"
 #include "RGB.h"
 #include "DoInits.h"
 

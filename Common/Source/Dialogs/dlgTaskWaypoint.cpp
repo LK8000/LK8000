@@ -12,6 +12,7 @@
 #include "Logger.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
+#include "Dialogs.h"
 
 
 static int twItemIndex= 0;

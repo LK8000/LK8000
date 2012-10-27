@@ -10,7 +10,7 @@
 #include "Logger.h"
 #include "InputEvents.h"
 #include "LKProfiles.h"
-
+#include "dlgTools.h"
 
 // Once done with all validations we can switch to XK8 code
 // #define USEXK8	1

@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "LKProfiles.h"
 #include <aygshell.h>
+#include "Dialogs.h"
 
 
 static bool changed = false;

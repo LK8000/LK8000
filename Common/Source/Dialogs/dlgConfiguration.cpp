@@ -26,6 +26,8 @@
 #include "Calculations2.h"
 #include "DoInits.h"
 #include "Multimap.h"
+#include "Dialogs.h"
+
 
 extern void UpdateAircraftConfig(void);
 extern void dlgCustomMenuShowModal(void);

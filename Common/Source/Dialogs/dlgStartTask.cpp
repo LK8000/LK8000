@@ -9,6 +9,8 @@
 
 #include "externs.h"
 #include "Process.h"
+#include "Dialogs.h"
+
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

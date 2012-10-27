@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "Dialogs.h"
 
 extern void AddCustomKeyList( DataFieldEnum* dfe);
 
