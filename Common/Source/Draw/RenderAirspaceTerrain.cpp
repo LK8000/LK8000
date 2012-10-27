@@ -277,7 +277,7 @@ RECT rc	= psDiag->rc;
 //double range =psDiag->fXMax - psDiag->fXMin; // km
 double hmax = psDiag->fYMax;
 double lat, lon;
-int i,j,k;
+int j,k;
 double OffSetlat, Offsetlon,brg;
 double fXMax = psDiag->fXMax;
 double fXMin = psDiag->fXMin ; // km
@@ -347,7 +347,7 @@ for(k=0; k < NO_SLICES; k++)
 
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
 	apTerrainPolygon[j].x = iround(j*dx)+x0;
-	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag) + hx ;
+	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag) + (long)hx ;
 	if(d_h[j] > maxy)
       maxy = d_h[j];
   }
@@ -370,10 +370,10 @@ for(k=0; k < NO_SLICES; k++)
 
 
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx)+x0;; // x0;
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag)   + hx ;//iBottom;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag)   + (long)hx ;//iBottom;
 
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx)+x0;  //iround(j*dx)+x0;
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag)  +hx;//iBottom;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag)  +(long)hx;//iBottom;
   Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
 
 
