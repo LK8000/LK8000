@@ -136,7 +136,6 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
 extern int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 extern bool OnFastPanning;
-
       // While we are moving in bitblt mode, ignore RefreshMap requests from LK
       // unless a timeout was triggered by MapWndProc itself.
       if (OnFastPanning) {

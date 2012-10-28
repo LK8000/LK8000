@@ -17,7 +17,14 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
         (void)derived_info;
 
   if (MapWindow::IsDisplayRunning()) {
-	MapWindow::MapDirty = true;
+	// 121028 Do not set MapDirty when we are fast panning, otherwise we shall overpass the
+	// timeout (700ms) there, resulting in messy refreshes.
+	#if (WINDOWSPC>0) && !TESTBENCH
+	#else
+	if (!INPAN)
+	#endif
+		MapWindow::MapDirty = true;
+
 	PulseEvent(drawTriggerEvent);
   }
 }
@@ -90,15 +97,8 @@ DWORD CalculationThread (LPVOID lpvoid) {
         
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
-    // 121028 Do not set MapDirty when we are fast panning, otherwise we shall overpass the
-    // timeout (700ms) there, resulting in messy refreshes.
-    #if (WINDOWSPC>0) && !TESTBENCH
-    #else
-    if (!INPAN)
-    #endif
-    {
-       TriggerRedraws(&tmp_GPS_INFO, &tmp_CALCULATED_INFO);
-    }
+    // This is activating another run for Thread Draw
+    TriggerRedraws(&tmp_GPS_INFO, &tmp_CALCULATED_INFO);
 
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 

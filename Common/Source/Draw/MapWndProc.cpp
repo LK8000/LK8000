@@ -472,6 +472,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				// dragging, or we endup on another window -f.e. a button - then we will NOT
 				// receive any more events in this loop! For this reason we must let the
 				// DrawThread clear this flag. Not thread safe, I know.
+				//
+				// There is a situation to consider, here: we are setting OnFastPanning but
+				// if we stop moving the mouse/finger, we shall never be back in MapWndProc .
+				// Remember.
 				OnFastPanning=true;
 
 				// This will force BitBlt operation in RenderMapWindow
