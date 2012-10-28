@@ -869,10 +869,12 @@ static const double PI = (4*atan(1));
                               && ValidTaskPoint(ActiveWayPoint + 1))
 #endif
 
-#define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    !MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#define QUICKDRAW (FastZoom || MapWindow::zoom.BigZoom())
-#define NOTANYPAN	!MapWindow::mode.AnyPan()
+#define DONTDRAWTHEMAP  (!MapWindow::mode.AnyPan()&&MapSpaceMode!=MSM_MAP)
+#define MAPMODE8000     (!MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP)
+#define QUICKDRAW	(FastZoom || MapWindow::zoom.BigZoom())
+#define NOTANYPAN	(!MapWindow::mode.AnyPan())
+#define INPAN		(!MapWindow::mode.Is(MapWindow::Mode::MODE_PAN))
+
 
 
 // For debugging and trace tests

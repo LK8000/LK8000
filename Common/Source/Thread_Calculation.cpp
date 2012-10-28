@@ -71,7 +71,11 @@ DWORD CalculationThread (LPVOID lpvoid) {
     } 
     
     if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)){
-        MapWindow::MapDirty = true;
+	#if (WINDOWSPC>0) && !TESTBENCH
+	#else
+        if (!INPAN)
+	#endif
+           MapWindow::MapDirty = true;
         needcalculationsslow = true;
 
         if (tmp_CALCULATED_INFO.Circling)
@@ -86,7 +90,10 @@ DWORD CalculationThread (LPVOID lpvoid) {
 
     // 121028 Do not set MapDirty when we are fast panning, otherwise we shall overpass the
     // timeout (700ms) there, resulting in messy refreshes.
-    if (!MapWindow::mode.Is(MapWindow::Mode::MODE_PAN))
+    #if (WINDOWSPC>0) && !TESTBENCH
+    #else
+    if (!INPAN)
+    #endif
        TriggerRedraws(&tmp_GPS_INFO, &tmp_CALCULATED_INFO);
 
     if (MapWindow::CLOSETHREAD) break; // drop out on exit

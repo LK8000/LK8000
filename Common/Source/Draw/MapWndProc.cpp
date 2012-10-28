@@ -455,13 +455,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			// forget the Redraw requests from other parts of LK, which would cause PanRefreshed.
 			// We have no control on those requests issued for example by Calc thread.
 			// However we force full map refresh after some time in ms
-			#if (WINDOWSPC>0)
-			// on pc force full rendering at 3hz, but not in TESTBENCH
-			  #if TESTBENCH
-			if ( (GetTickCount()-dwDownTime)>700) {
-			  #else
+			#if (WINDOWSPC>0) && !TESTBENCH
 			if ( (GetTickCount()-dwDownTime)>300) {
-			  #endif
 			#else
 			// If time has passed  then force a MapDirty and redraw the whole screen.
 			// This was previously not working in v3 because ThreadCalculations was forcing MapDirty 
