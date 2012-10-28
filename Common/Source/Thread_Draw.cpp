@@ -81,6 +81,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   FillScaleListForEngineeringUnits();
   
   bool first = true;
+  bool lastdrawwasbitblitted=false;
 
   while (!CLOSETHREAD) 
     {
@@ -173,8 +174,9 @@ extern bool OnFastPanning;
 		POINT centerscreen;
 		centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
 		DrawCrossHairs(hdcScreen, centerscreen, MapRect);
-
+		lastdrawwasbitblitted=true;
 	} else {
+		// THIS IS NOT GOING TO HAPPEN!
 		//
 		// The map was not dirty, and we are not in fastpanning mode.
 		// FastRefresh!  We simply redraw old bitmap. 
@@ -182,6 +184,7 @@ extern bool OnFastPanning;
 		BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
 		       MapRect.bottom-MapRect.top, 
 		       hdcDrawWindow, 0, 0, SRCCOPY);
+		lastdrawwasbitblitted=true;
 	}
 
 	// Now we can clear the flag. If it was off already, no problems.
@@ -193,10 +196,27 @@ extern bool OnFastPanning;
 	// Else the map wasy dirty, and we must render it..
 	// Notice: if we were fastpanning, than the map could not be dirty.
 	//
+	#if 0 // EXPERIMENTAL, ZOOM NOT WORKING IN PNAs
+	// Only for special case: PAN mode, map not dirty (including requests for zooms!)
+	// not in the first run and last time was a real rendering. THEN, at these conditions,
+	// we simply redraw old bitmap, for the scope of accelerating touch response.
+	// In fact, if we are panning the map while rendering, there would be an annoying delay.
+	// This is using lastdrawwasbitblitted
+	if (INPAN && !MapDirty && !lastdrawwasbitblitted && !first) {
+		BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
+		       MapRect.bottom-MapRect.top, 
+		       hdcDrawWindow, 0, 0, SRCCOPY);
+
+		// Add CROSS painting here
+
+		continue;
+	}
+	#endif
 	MapDirty = false;
-	PanRefreshed=true; // faster with no checks
+	PanRefreshed=true;
       } // MapDirty
 
+      lastdrawwasbitblitted=false;
       MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
       RenderMapWindow(MapRect);
