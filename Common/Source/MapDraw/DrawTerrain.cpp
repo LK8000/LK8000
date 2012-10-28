@@ -269,6 +269,7 @@ public:
 
     unsigned int rfact=1;
 
+#if 0
     if (QUICKDRAW) {
       #if USERASTERCACHE
       // Raster map is always DirectAccess for LK
@@ -282,6 +283,7 @@ public:
       rfact = 4;
       #endif
     }
+#endif
 
     double pixelDX, pixelDY;
 
