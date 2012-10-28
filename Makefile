@@ -11,6 +11,7 @@ TER=Common/Source/Terrain
 NTR=Common/Source/LKInterface
 CLC=Common/Source/Calc
 TSK=Common/Source/Calc/Task
+CMM=Common/Source/Comm
 HDR=Common/Header
 
 BIN=Bin/$(TARGET)
@@ -527,6 +528,10 @@ UTILS	:=\
 	$(SRC)/utils/md5internal.cpp \
 	$(SRC)/utils/md5.cpp
 
+COMMS	:=\
+	$(CMM)/Parser.cpp\
+	$(CMM)/Port.cpp \
+	$(CMM)/device.cpp
 
 DEVS	:=\
 	$(DEV)/devBase.cpp \
@@ -639,7 +644,6 @@ SRC_FILES :=\
 	$(SRC)/ConditionMonitor.cpp \
 	$(SRC)/CpuLoad.cpp \
 	$(SRC)/DataOptions.cpp \
-	$(SRC)/device.cpp \
 	$(SRC)/Dialogs.cpp\
 	$(SRC)/DLL.cpp \
 	$(SRC)/DoInits.cpp\
@@ -684,9 +688,7 @@ SRC_FILES :=\
 	$(SRC)/Models.cpp\
 	$(SRC)/Multimap.cpp\
 	$(SRC)/Oracle.cpp\
-	$(SRC)/Parser.cpp\
 	$(SRC)/Polar.cpp		\
-	$(SRC)/Port.cpp \
 	$(SRC)/ProcessTimer.cpp \
 	$(SRC)/Progress.cpp\
 	$(SRC)/RotateScreen.cpp\
@@ -717,6 +719,7 @@ SRC_FILES :=\
 	$(TOPOL) \
 	$(MAPDRAW) \
 	$(UTILS) \
+	$(COMMS) \
 	$(DEVS) \
 	$(DLGS) \
 	$(VOLKS)
