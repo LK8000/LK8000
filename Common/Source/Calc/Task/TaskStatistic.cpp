@@ -51,7 +51,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     Calculated->GRFinish = INVALID_GR;
    
 
-    Calculated->FinalGlide = 0;
+    Calculated->FinalGlide = false;
     CheckGlideThroughTerrain(Basic, Calculated); // BUGFIX 091123
     
     // no task selected, so work things out at current heading
@@ -62,7 +62,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                   Calculated->WindBearing, 
                                   &(Calculated->BestCruiseTrack),
                                   &(Calculated->VMacCready),
-                                  (Calculated->FinalGlide==1),
+                                  (Calculated->FinalGlide==true),
                                   NULL, 1.0e6, CRUISE_EFFICIENCY);
     return;
   }

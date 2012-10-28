@@ -18,13 +18,13 @@ void CheckTransitionFinalGlide(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
        ||(ForceFinalGlide)) 
       && (ValidTaskPoint(ActiveWayPoint))) {
     
-    if (Calculated->FinalGlide == 0)
+    if (Calculated->FinalGlide == false)
       InputEvents::processGlideComputer(GCE_FLIGHTMODE_FINALGLIDE);
-    Calculated->FinalGlide = 1;
+    Calculated->FinalGlide = true;
   } else {
-    if (Calculated->FinalGlide == 1)
+    if (Calculated->FinalGlide == true)
       InputEvents::processGlideComputer(GCE_FLIGHTMODE_CRUISE);
-    Calculated->FinalGlide = 0;
+    Calculated->FinalGlide = false;
   }
 
 }

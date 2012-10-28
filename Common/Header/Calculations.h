@@ -78,7 +78,7 @@ typedef struct _DERIVED_INFO
   double Heading;
   double AltitudeAGL;
   bool   Circling;
-  int    FinalGlide;
+  bool   FinalGlide;
   bool   AutoMacCready;
   bool   Flying;
   bool	 FreeFlying;	// set true when powerless flight is detected. Always true for paragliders.
