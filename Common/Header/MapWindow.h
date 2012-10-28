@@ -334,9 +334,9 @@ class MapWindow {
     Mode();
     
     TModeFly UserForcedMode() const    { return _userForcedFlyMode; }
-    void UserForcedMode(TModeFly mode) { _userForcedFlyMode = mode; }
+    void UserForcedMode(TModeFly umode) { _userForcedFlyMode = umode; }
     
-    bool Is(TMode mode) const   { return _mode & mode; }
+    bool Is(TMode tmode) const   { return _mode & tmode; }
     void Fly(TModeFly flyMode);
     TModeFly Fly() const        { return static_cast<TModeFly>(_mode & FLY_MASK); }
     

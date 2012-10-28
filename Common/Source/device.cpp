@@ -337,7 +337,7 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port){
 
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
-BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS_INFO){
   PDeviceDescriptor_t d;
   d = devGetDeviceOnPort(portNum);
 
@@ -386,14 +386,14 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *GPS_INFO){
     }
 
     if (d->ParseNMEA != NULL)
-	if ((d->ParseNMEA)(d, String, GPS_INFO)) {
+	if ((d->ParseNMEA)(d, String, pGPS_INFO)) {
 		GPSCONNECT  = TRUE;
 		return(TRUE);
 	}
   }
 
   if(String[0]=='$') {  // Additional "if" to find GPS strings
-	if(NMEAParser::ParseNMEAString(portNum, String, GPS_INFO)) {
+	if(NMEAParser::ParseNMEAString(portNum, String, pGPS_INFO)) {
 		GPSCONNECT  = TRUE;
 		return(TRUE);
 	} 
@@ -821,13 +821,13 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   if(result == TRUE)
-    for (int i = 0; i < decl->num_waypoints; i++) {
+    for (int j = 0; j < decl->num_waypoints; j++) {
       int DegLat, DegLon;
       double MinLat, MinLon;
       char NoS, EoW;
 
-      DegLat = (int)decl->waypoint[i]->Latitude;
-      MinLat = decl->waypoint[i]->Latitude - DegLat;
+      DegLat = (int)decl->waypoint[j]->Latitude;
+      MinLat = decl->waypoint[j]->Latitude - DegLat;
       NoS = 'N';
       if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0)))
       {
@@ -837,8 +837,8 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
       MinLat *= 60;
       MinLat *= 1000;
     
-      DegLon = (int)decl->waypoint[i]->Longitude;
-      MinLon = decl->waypoint[i]->Longitude - DegLon;
+      DegLon = (int)decl->waypoint[j]->Longitude;
+      MinLon = decl->waypoint[j]->Longitude - DegLon;
       EoW = 'E';
       if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
       {
@@ -851,7 +851,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
       _stprintf(Buffer,
 	      TEXT("PFLAC,S,ADDWP,%02d%05.0f%c,%03d%05.0f%c,%s"),
 	      DegLat, MinLat, NoS, DegLon, MinLon, EoW, 
-	      decl->waypoint[i]->Name);
+	      decl->waypoint[j]->Name);
       if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
   }
 

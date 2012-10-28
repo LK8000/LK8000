@@ -208,7 +208,7 @@ CPPFLAGS	+= -Wall -Wno-write-strings -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
-#CPPFLAGS	+= -Wshadow
+CPPFLAGS	+= -Wshadow
 #CPPFLAGS	+= -Wsign-compare -Wsign-conversion
 ifeq ($(CONFIG_PNA),y)
 CPPFLAGS	+= -DCECORE -DPNA
