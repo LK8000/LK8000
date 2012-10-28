@@ -30,10 +30,10 @@ using std::min;
 using std::max;
 int k;
 static double fZOOMScale = 1.0;
-double fDelta = MIN_ALTITUDE;
+double fDelta = MIN_OFFSET;
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
-double fHeigtScaleFact;
+//double fHeigtScaleFact;
 
 
 #define ADDITIONAL_INFO_THRESHOLD 0.5
@@ -49,7 +49,7 @@ void MapWindow::RenderAirspace(HDC hdc, const RECT rci) {
 static bool bHeightScale = false;
 RECT rc  = rci; /* rectangle for sideview */
 bool bInvCol = true; //INVERTCOLORS;
-static double fHeigtScaleFact = MIN_ALTITUDE;
+static double fHeigtScaleFact = MIN_OFFSET;
 double fDist = 55.0*1000; // kmbottom
 double aclat, aclon, ach, acb, speed, calc_average30s;
 double GPSbrg=0;
@@ -215,8 +215,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  hmax +=  fOffset;
 #endif
 
-    if(  ( fHeigtScaleFact) < MIN_OFFSET)
-      fHeigtScaleFact = MIN_OFFSET;
+    if(  ( fHeigtScaleFact) < MIN_ALTITUDE)
+      fHeigtScaleFact = MIN_ALTITUDE;
 //	if(  (DerivedDrawInfo.NavAltitude +  fHeigtScaleFact) > MAX_ALTITUDE)
 //	  fHeigtScaleFact -= fDelta;
 

@@ -11,7 +11,7 @@
 #include "LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
-
+#include "Multimap.h"
 
 using std::min;
 using std::max;
@@ -67,7 +67,10 @@ int i,j;
   /********************************************************************************
    * scan line
    ********************************************************************************/
-  Sideview_iNoHandeldSpaces =  CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h, Sideview_pHandeled,MAX_NO_SIDE_AS); //  Sideview_pHandeled[GC_MAX_NO];
+  if(IsMultimapAirspace())
+    Sideview_iNoHandeldSpaces =  CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h, Sideview_pHandeled,MAX_NO_SIDE_AS); //  Sideview_pHandeled[GC_MAX_NO];
+  else
+	Sideview_iNoHandeldSpaces =0;
   /********************************************************************************
    * bubble sort to start with biggest airspaces
    ********************************************************************************/

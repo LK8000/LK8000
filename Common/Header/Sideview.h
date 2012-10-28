@@ -18,9 +18,9 @@
 
 #define SV_BORDER_Y NIBLSCALE (10)
 
-
-#define MIN_ALTITUDE 1000.0 /* maximum altitude (in m) */
-#define MIN_OFFSET   200.0  /* maximum altitude offset (in m) */
+#define ENABLE_ALL_AS_FOR_SIDEVIEW
+#define MIN_ALTITUDE 1500.0 /* maximum altitude (in m) */
+#define MIN_OFFSET   500.0  /* maximum altitude offset (in m) */
 
 //#define OFFSET_SETP 500.0
 

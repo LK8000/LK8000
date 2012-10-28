@@ -772,7 +772,7 @@ _nomoredeclutter:
 
   if (IsMultimapAirspace()) {
 	DrawAirSpace( hdc, rct);
-	DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
+//	DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
   }
 
   if (IsMultimapWaypoints()) {

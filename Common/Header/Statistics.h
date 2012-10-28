@@ -113,7 +113,7 @@ class Statistics {
     static void RenderTask(HDC hdc, const RECT rc, const bool olcmode);
     static void RenderSpeed(HDC hdc, const RECT rc);
 
-    static void RenderNearAirspace(HDC hdc, const RECT rc) ;
+//    static void RenderNearAirspace(HDC hdc, const RECT rc) ;
 
 };
 
