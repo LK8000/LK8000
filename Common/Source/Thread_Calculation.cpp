@@ -75,7 +75,9 @@ DWORD CalculationThread (LPVOID lpvoid) {
 	#else
         if (!INPAN)
 	#endif
+	{
            MapWindow::MapDirty = true;
+	}
         needcalculationsslow = true;
 
         if (tmp_CALCULATED_INFO.Circling)
@@ -94,7 +96,9 @@ DWORD CalculationThread (LPVOID lpvoid) {
     #else
     if (!INPAN)
     #endif
+    {
        TriggerRedraws(&tmp_GPS_INFO, &tmp_CALCULATED_INFO);
+    }
 
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 

@@ -873,7 +873,7 @@ static const double PI = (4*atan(1));
 #define MAPMODE8000     (!MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP)
 #define QUICKDRAW	(FastZoom || MapWindow::zoom.BigZoom())
 #define NOTANYPAN	(!MapWindow::mode.AnyPan())
-#define INPAN		(!MapWindow::mode.Is(MapWindow::Mode::MODE_PAN))
+#define INPAN		(MapWindow::mode.Is(MapWindow::Mode::MODE_PAN))
 
 
 
