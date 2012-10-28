@@ -107,7 +107,7 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
   l = (int)(l * fScaleFact); if(l==0) l=1;
   b = (int)(b * fScaleFact); if(b==0) b=1;
   p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
-  int iScale = (int)(fScaleFact*2.0);if(iScale==0) iScale=1;
+  //int iScale = (int)(fScaleFact*2.0);if(iScale==0) iScale=1; REMOVE UNUSED
 
   switch(wp->Style) {
 	case STYLE_AIRFIELDSOLID: solid = true;  bRunway  = true;  bOutland = false;  bGlider  = false;	break;

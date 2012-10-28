@@ -407,9 +407,9 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
                         LK_tcsncpy(Buffer, CopyThermalHistory[rli].Name, wlen);
                 }
 		if (IsThermalMultitarget(rli)) {
-			TCHAR Buffer2[40];
-			_stprintf(Buffer2,_T(">%s"),Buffer);
-			wcscpy(Buffer,Buffer2);
+			TCHAR buffer2[40];
+			_stprintf(buffer2,_T(">%s"),Buffer);
+			wcscpy(Buffer,buffer2);
 		}
                 ConvToUpper(Buffer);
 

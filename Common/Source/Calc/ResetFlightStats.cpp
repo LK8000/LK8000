@@ -91,7 +91,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       Calculated->AverageClimbRateN[i]= 0;
     }
 
-    for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
+    for (i=0; i<=NUMTERRAINSWEEPS; i++) {
       Calculated->GlideFootPrint[i].x = 0;
       Calculated->GlideFootPrint[i].y = 0;
     }

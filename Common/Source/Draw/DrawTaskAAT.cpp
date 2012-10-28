@@ -12,7 +12,7 @@
 
 void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
     int i;
-    double tmp;
+    double tmp1;
 
     if (!WayPointList) return;
     if (!AATEnabled) return;
@@ -30,11 +30,11 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
     RECT rcDraw = (RECT){rc.right, rc.bottom, rc.left, rc.top};
 
     for (maxTp = std::max(1, ActiveWayPoint); ValidTaskPoint(maxTp + 1); ++maxTp) {
-        double tmp = Task[maxTp].AATCircleRadius * zoom.ResScaleOverDistanceModify();
+        double tmp2 = Task[maxTp].AATCircleRadius * zoom.ResScaleOverDistanceModify();
 
         LONG x = WayPointList[Task[maxTp].Index].Screen.x;
         LONG y = WayPointList[Task[maxTp].Index].Screen.y;
-        rectObj rect = (rectObj){x - tmp, y - tmp, x + tmp, y + tmp};
+        rectObj rect = (rectObj){x - tmp2, y - tmp2, x + tmp2, y + tmp2};
 
         if (msRectOverlap(&rect, &rcrect) == MS_TRUE) {
             rcDraw.top = std::min((LONG) rect.miny, rcDraw.top);
@@ -78,18 +78,18 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
 
         for (i = maxTp - 1; i > std::max(0, ActiveWayPoint - 1); i--) {
             if (ValidTaskPoint(i)) {
-            tmp = Task[i].AATCircleRadius * zoom.ResScaleOverDistanceModify();
+            tmp1 = Task[i].AATCircleRadius * zoom.ResScaleOverDistanceModify();
             switch (Task[i].AATType) {
                 case CIRCLE:
                     Circle(hDCTemp,
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y,
-                            (int) tmp, rc, true, true);
+                            (int) tmp1, rc, true, true);
                     break;
                 case SECTOR:
                     Segment(hDCTemp,
                             WayPointList[Task[i].Index].Screen.x,
-                            WayPointList[Task[i].Index].Screen.y, (int) tmp, rc,
+                            WayPointList[Task[i].Index].Screen.y, (int) tmp1, rc,
                             Task[i].AATStartRadial - DisplayAngle,
                             Task[i].AATFinishRadial - DisplayAngle);
                     break;

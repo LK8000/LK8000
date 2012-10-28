@@ -14,7 +14,7 @@ void MapWindow::DrawBitmapX(const HDC hdc, const int x, const int y,
                             const int sizex, const int sizey,
                             const HDC source,
                             const int offsetx, const int offsety,
-                            const DWORD mode, const bool autostretch) {
+                            const DWORD dbxmode, const bool autostretch) {
 
   if (autostretch && ScreenScale>1) {
     StretchBlt(hdc, x, y, 
@@ -22,9 +22,9 @@ void MapWindow::DrawBitmapX(const HDC hdc, const int x, const int y,
                IBLSCALE(sizey), 
                source,
                offsetx, offsety, sizex, sizey,
-               mode);
+               dbxmode);
   } else {
-    BitBlt(hdc, x, y, sizex, sizey, source, offsetx, offsety, mode); 
+    BitBlt(hdc, x, y, sizex, sizey, source, offsetx, offsety, dbxmode); 
   }
 }
 

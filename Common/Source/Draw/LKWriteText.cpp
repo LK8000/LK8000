@@ -14,7 +14,7 @@
 // invertable is used coped with LKTextBlack: if both are active, then text is forced reversed
 //
 void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y, 
-                          int maxsize, const bool mode, const short align, COLORREF rgb_text, bool invertable ) {
+                          int maxsize, const bool lwmode, const short align, COLORREF rgb_text, bool invertable ) {
 
 	SIZE tsize;
 	if (maxsize==0) maxsize=_tcslen(wText);
@@ -64,7 +64,7 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 	}
 //rgb_text=RGB_MAGENTA;
 
-	switch(mode) {
+	switch(lwmode) {
 		case  WTMODE_OUTLINED:
 			switch (rgb_text ) {
 				// Here we invert colors, looking at the foreground. The trick is that the foreground

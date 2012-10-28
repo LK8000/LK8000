@@ -20,6 +20,7 @@ extern void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWayp
 bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
    int i;
+   short j;
 
 
    CommonNumber=0;
@@ -53,7 +54,7 @@ bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
    // We insert Markers in common list in reverse order, Last in first out
    if (CurrentMarker>=RESWP_FIRST_MARKER || CurrentMarker<=RESWP_LAST_MARKER) {
-	for (short j=0, i=CurrentMarker; j<NUMRESMARKERS; j++) {
+	for (j=0, i=CurrentMarker; j<NUMRESMARKERS; j++) {
 
 		if (WayPointList[i].Latitude!=RESWP_INVALIDNUMBER)
    			InsertCommonList(i);
