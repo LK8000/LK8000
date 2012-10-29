@@ -278,21 +278,21 @@ void InputEvents::readFile() {
 
 	  // Make key (Keyboard input)
 	  if (_tcscmp(d_type, TEXT("key")) == 0)	{	// key - Hardware key or keyboard
-	    int key = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
-	    if (key > 0)
-	      Key2Event[mode_id][key] = event_id;
+	    int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
+	    if (ikey > 0)
+	      Key2Event[mode_id][ikey] = event_id;
 			    
 	    // Make gce (Glide Computer Event)
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
-	    int key = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
-	    if (key >= 0)
-	      GC2Event[mode_id][key] = event_id;
+	    int iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
+	    if (iikey >= 0)
+	      GC2Event[mode_id][iikey] = event_id;
 			    
 	    // Make ne (NMEA Event)
 	  } else if (_tcscmp(d_type, TEXT("ne")) == 0) { 		// NE - NMEA Event
-	    int key = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
-	    if (key >= 0)
-	      N2Event[mode_id][key] = event_id;
+	    int iiikey = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
+	    if (iiikey >= 0)
+	      N2Event[mode_id][iiikey] = event_id;
 	  } else if (_tcscmp(d_type, TEXT("label")) == 0)	{	// label only - no key associated (label can still be touch screen)
 	    // Nothing to do here...
 			    
