@@ -38,16 +38,16 @@ void WeightOffset(double wload) {
 }
 
 
-void PolarWinPilot2XCSoar(double POLARV[3], double POLARW[3], double ww[2]) {
+void PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]) {
   double d;
   double v1,v2,v3;
   double w1,w2,w3;
 
-  v1 = POLARV[0]/3.6; v2 = POLARV[1]/3.6; v3 = POLARV[2]/3.6;
+  v1 = dPOLARV[0]/3.6; v2 = dPOLARV[1]/3.6; v3 = dPOLARV[2]/3.6;
   //	w1 = -POLARV[0]/POLARLD[0];
   //    w2 = -POLARV[1]/POLARLD[1];
   //    w3 = -POLARV[2]/POLARLD[2];
-  w1 = POLARW[0]; w2 = POLARW[1]; w3 = POLARW[2];
+  w1 = dPOLARW[0]; w2 = dPOLARW[1]; w3 = dPOLARW[2];
 
   d = v1*v1*(v2-v3)+v2*v2*(v3-v1)+v3*v3*(v1-v2);
   if (d == 0.0)
@@ -94,8 +94,8 @@ bool ReadWinPilotPolar(void) {
   TCHAR TempString[READLINE_LENGTH+1];
   HANDLE hFile;
 
-  double POLARV[3];
-  double POLARW[3];
+  double dPOLARV[3];
+  double dPOLARW[3];
   double ww[2];
   bool foundline = false;
 
@@ -104,12 +104,12 @@ bool ReadWinPilotPolar(void) {
   // 337, 80, 93.23, -0.74, 149.17, -1.71, 205.1, -4.2, 10.04
   ww[0]= 337;
   ww[1]= 80;
-  POLARV[0]= 93.23;
-  POLARW[0]= -0.74;
-  POLARV[1]= 149.17;
-  POLARW[1]= -1.71;
-  POLARV[2]= 205.1;
-  POLARW[2]= -4.2;
+  dPOLARV[0]= 93.23;
+  dPOLARW[0]= -0.74;
+  dPOLARV[1]= 149.17;
+  dPOLARW[1]= -1.71;
+  dPOLARV[2]= 205.1;
+  dPOLARW[2]= -4.2;
 
   _tcscpy(szFile,szPolarFile);
   if (_tcscmp(szFile,_T(""))==0) {
@@ -138,19 +138,19 @@ bool ReadWinPilotPolar(void) {
               ww[1] = StrToDouble(ctemp,NULL);
 
               PExtractParameter(TempString, ctemp, 2);
-              POLARV[0] = StrToDouble(ctemp,NULL);
+              dPOLARV[0] = StrToDouble(ctemp,NULL);
               PExtractParameter(TempString, ctemp, 3);
-              POLARW[0] = StrToDouble(ctemp,NULL);
+              dPOLARW[0] = StrToDouble(ctemp,NULL);
 
               PExtractParameter(TempString, ctemp, 4);
-              POLARV[1] = StrToDouble(ctemp,NULL);
+              dPOLARV[1] = StrToDouble(ctemp,NULL);
               PExtractParameter(TempString, ctemp, 5);
-              POLARW[1] = StrToDouble(ctemp,NULL);
+              dPOLARW[1] = StrToDouble(ctemp,NULL);
 
               PExtractParameter(TempString, ctemp, 6);
-              POLARV[2] = StrToDouble(ctemp,NULL);
+              dPOLARV[2] = StrToDouble(ctemp,NULL);
               PExtractParameter(TempString, ctemp, 7);
-              POLARW[2] = StrToDouble(ctemp,NULL);
+              dPOLARW[2] = StrToDouble(ctemp,NULL);
 
 		_stprintf(ctemp,_T(""));
               	PExtractParameter(TempString, ctemp, 8);
@@ -162,12 +162,12 @@ bool ReadWinPilotPolar(void) {
 		}
 		
 
-		if (ww[0]<=0 || POLARV[0]==0 || POLARW[0]==0 || POLARV[1]==0 || POLARW[1]==0 || POLARV[2]==0 || POLARW[2]==0) {
+		if (ww[0]<=0 || dPOLARV[0]==0 || dPOLARW[0]==0 || dPOLARV[1]==0 || dPOLARW[1]==0 || dPOLARV[2]==0 || dPOLARW[2]==0) {
 			// StartupStore(_T("... WARNING found invalid Polar line, skipping%s"),NEWLINE);
 			continue; // read another line searching for polar
 		} else {
 			foundline = true;
-			PolarWinPilot2XCSoar(POLARV, POLARW, ww);
+			PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
 			if (GlidePolar::WingArea == 0) {
 				StartupStore(_T("... WARNING Polar file has NO wing area%s"),NEWLINE);
 			}
@@ -233,14 +233,14 @@ bool ReadWinPilotPolar(void) {
 		StartupStore(_T("... INVALID POLAR FILE! POLAR RESET TO DEFAULT: Std.Cirrus\n"));
 		ww[0]= 337;
 		ww[1]= 80;
-		POLARV[0]= 93.23;
-		POLARW[0]= -0.74;
-		POLARV[1]= 149.17;
-		POLARW[1]= -1.71;
-		POLARV[2]= 205.1;
-		POLARW[2]= -4.2;
+		dPOLARV[0]= 93.23;
+		dPOLARW[0]= -0.74;
+		dPOLARV[1]= 149.17;
+		dPOLARW[1]= -1.71;
+		dPOLARV[2]= 205.1;
+		dPOLARW[2]= -4.2;
               	GlidePolar::WingArea = 10.04;
-		PolarWinPilot2XCSoar(POLARV, POLARW, ww);
+		PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
 		wcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Std Cirrus.plr"));
 	} // !foundline
       }
@@ -318,8 +318,8 @@ TCHAR* GetWinPilotPolarInternalName(int i) {
 }
 
 bool ReadWinPilotPolarInternal(int i) {
-  double POLARV[3];
-  double POLARW[3];
+  double dPOLARV[3];
+  double dPOLARW[3];
   double ww[2];
 
   if (!(i < (int)(sizeof(WinPilotPolars) / sizeof(WinPilotPolars[0])))) { 
@@ -329,13 +329,13 @@ bool ReadWinPilotPolarInternal(int i) {
   // 0 is glider+pilot,  1 is ballast
   ww[0] = WinPilotPolars[i].ww0;
   ww[1] = WinPilotPolars[i].ww1;
-  POLARV[0] = WinPilotPolars[i].v0;
-  POLARV[1] = WinPilotPolars[i].v1;
-  POLARV[2] = WinPilotPolars[i].v2;
-  POLARW[0] = WinPilotPolars[i].w0;
-  POLARW[1] = WinPilotPolars[i].w1;
-  POLARW[2] = WinPilotPolars[i].w2;
-  PolarWinPilot2XCSoar(POLARV, POLARW, ww);
+  dPOLARV[0] = WinPilotPolars[i].v0;
+  dPOLARV[1] = WinPilotPolars[i].v1;
+  dPOLARV[2] = WinPilotPolars[i].v2;
+  dPOLARW[0] = WinPilotPolars[i].w0;
+  dPOLARW[1] = WinPilotPolars[i].w1;
+  dPOLARW[2] = WinPilotPolars[i].w2;
+  PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
   GlidePolar::WingArea = WinPilotPolars[i].wing_area;
 
   return(TRUE);
