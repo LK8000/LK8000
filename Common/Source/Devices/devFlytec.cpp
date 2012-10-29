@@ -10,6 +10,9 @@
 
 #include "devFlytec.h"
 
+extern double EastOrWest(double in, TCHAR EoW);
+extern double NorthOrSouth(double in, TCHAR NoS);
+extern double MixedFormatToDegrees(double mixed);
 extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
@@ -76,31 +79,6 @@ BOOL FlytecRegister(void){
     | (1l << dfVario),
     FlytecInstall
   ));
-}
-
-// TODO use GPSUtils for this stuff
-double EastOrWest(double in, TCHAR EoW)
-{
-  if(EoW == 'W')
-    return -in;
-  else
-    return in;
-}
-double NorthOrSouth(double in, TCHAR NoS)
-{
-  if(NoS == 'S')
-    return -in;
-  else
-    return in;
-}
-double MixedFormatToDegrees(double mixed)
-{
-  double mins, degrees;
-
-  degrees = (int) (mixed/100);
-  mins = (mixed - degrees*100)/60;
-
-  return degrees+mins;
 }
 
 

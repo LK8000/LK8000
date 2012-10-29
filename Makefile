@@ -209,7 +209,7 @@ CPPFLAGS	+= -Wall -Wno-write-strings -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
-CPPFLAGS	+= -Wshadow
+#CPPFLAGS	+= -Wshadow
 #CPPFLAGS	+= -Wsign-compare -Wsign-conversion
 ifeq ($(CONFIG_PNA),y)
 CPPFLAGS	+= -DCECORE -DPNA
@@ -529,8 +529,13 @@ UTILS	:=\
 	$(SRC)/utils/md5.cpp
 
 COMMS	:=\
+	$(CMM)/LKFlarm.cpp\
+	$(CMM)/LKSimTraffic.cpp\
 	$(CMM)/Parser.cpp\
 	$(CMM)/Port.cpp \
+	$(CMM)/UpdateBaroSource.cpp \
+	$(CMM)/UpdateMonitor.cpp \
+	$(CMM)/UtilsParser.cpp \
 	$(CMM)/device.cpp
 
 DEVS	:=\
@@ -674,6 +679,7 @@ SRC_FILES :=\
 	$(SRC)/Logger/FlightDataRec.cpp 	\
 	$(SRC)/Logger/LogBook.cpp\
 	$(SRC)/Logger/Logger.cpp \
+	$(SRC)/Logger/NMEAlogger.cpp\
 	$(SRC)/Logger/StartStopLogger.cpp \
 	$(SHP)/mapbits.cpp \
 	$(SHP)/maperror.cpp 	\
