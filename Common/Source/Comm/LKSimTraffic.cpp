@@ -11,7 +11,7 @@
 #include "FlarmCalculations.h"
 
 extern int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
-extern void CheckBackTarget(int flarmslot);
+extern void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
 extern FlarmCalculations flarmCalculations;
 
 // #define DEBUG_SIMLKT
@@ -34,6 +34,8 @@ double SimNewSpeed(const double speed) {
 // The purpose of simulating flarm traffic is NOT to play a videogame against flarm objects:
 // we only need some traffic to display for testing on ground during simulations.
 //
+// >>>>> This is accessing directly the GPS_INFO main struct, writing inside it. <<<<<
+//
 void SimFlarmTraffic(long ID, double offset)
 {
   int flarm_slot = 0;
@@ -49,7 +51,7 @@ void SimFlarmTraffic(long ID, double offset)
   }
 
   // before changing timefix, see if it was an old target back locked in!
-  CheckBackTarget(flarm_slot);
+  CheckBackTarget(&GPS_INFO, flarm_slot);
   // and then set time of fix to current time
   GPS_INFO.FLARM_Traffic[flarm_slot].Time_Fix = GPS_INFO.Time;
 

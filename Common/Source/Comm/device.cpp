@@ -63,6 +63,7 @@ BOOL devHasBaroSource(void) {
   }
 }
 
+#if 0
 BOOL devGetBaroAltitude(double *Value){
   // hack, just return GPS_INFO->BaroAltitude
   if (Value == NULL)
@@ -72,6 +73,7 @@ BOOL devGetBaroAltitude(double *Value){
   return(TRUE);
 
 }
+#endif
 
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
 
@@ -337,7 +339,7 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port){
 
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
-BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS_INFO){
+BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   PDeviceDescriptor_t d;
   d = devGetDeviceOnPort(portNum);
 
@@ -386,14 +388,14 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS_INFO){
     }
 
     if (d->ParseNMEA != NULL)
-	if ((d->ParseNMEA)(d, String, pGPS_INFO)) {
+	if ((d->ParseNMEA)(d, String, pGPS)) {
 		GPSCONNECT  = TRUE;
 		return(TRUE);
 	}
   }
 
   if(String[0]=='$') {  // Additional "if" to find GPS strings
-	if(NMEAParser::ParseNMEAString(portNum, String, pGPS_INFO)) {
+	if(NMEAParser::ParseNMEAString(portNum, String, pGPS)) {
 		GPSCONNECT  = TRUE;
 		return(TRUE);
 	} 
