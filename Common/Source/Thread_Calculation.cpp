@@ -38,8 +38,8 @@ DWORD CalculationThread (LPVOID lpvoid) {
 	(void)lpvoid;
   bool needcalculationsslow;
 
-  NMEA_INFO     tmp_GPS_INFO;
-  DERIVED_INFO  tmp_CALCULATED_INFO;
+  NMEA_INFO     tmpGPS;
+  DERIVED_INFO  tmpCALCULATED;
   #ifdef CPUSTATS
   FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime ;
   #endif
@@ -68,16 +68,16 @@ DWORD CalculationThread (LPVOID lpvoid) {
     // make local copy before editing...
     LockFlightData();
       FLARM_RefreshSlots(&GPS_INFO);
-      memcpy(&tmp_GPS_INFO,&GPS_INFO,sizeof(NMEA_INFO));
-      memcpy(&tmp_CALCULATED_INFO,&CALCULATED_INFO,sizeof(DERIVED_INFO));
+      memcpy(&tmpGPS,&GPS_INFO,sizeof(NMEA_INFO));
+      memcpy(&tmpCALCULATED,&CALCULATED_INFO,sizeof(DERIVED_INFO));
     UnlockFlightData();
 
-    DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
-    if (!tmp_GPS_INFO.VarioAvailable) {
+    DoCalculationsVario(&tmpGPS,&tmpCALCULATED);
+    if (!tmpGPS.VarioAvailable) {
     	TriggerVarioUpdate(); // emulate vario update
     } 
     
-    if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)){
+    if(DoCalculations(&tmpGPS,&tmpCALCULATED)){
 	#if (WINDOWSPC>0) && !TESTBENCH
 	#else
         if (!INPAN)
@@ -87,9 +87,9 @@ DWORD CalculationThread (LPVOID lpvoid) {
 	}
         needcalculationsslow = true;
 
-        if (tmp_CALCULATED_INFO.Circling)
+        if (tmpCALCULATED.Circling)
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CIRCLING);
-        else if (tmp_CALCULATED_INFO.FinalGlide)
+        else if (tmpCALCULATED.FinalGlide)
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
         else
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CRUISE);
@@ -98,18 +98,18 @@ DWORD CalculationThread (LPVOID lpvoid) {
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
     // This is activating another run for Thread Draw
-    TriggerRedraws(&tmp_GPS_INFO, &tmp_CALCULATED_INFO);
+    TriggerRedraws(&tmpGPS, &tmpCALCULATED);
 
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
     if (SIMMODE) {
 	if (needcalculationsslow || ( ReplayLogger::IsEnabled() ) ) { 
-		DoCalculationsSlow(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
+		DoCalculationsSlow(&tmpGPS,&tmpCALCULATED);
 		needcalculationsslow = false;
 	}
     } else {
 	if (needcalculationsslow) {
-		DoCalculationsSlow(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
+		DoCalculationsSlow(&tmpGPS,&tmpCALCULATED);
 		needcalculationsslow = false;
 	}
     }
@@ -120,14 +120,14 @@ DWORD CalculationThread (LPVOID lpvoid) {
     // should be changed in DoCalculations, so we only need to write
     // that one back (otherwise we may write over new data)
     LockFlightData();
-    memcpy(&CALCULATED_INFO,&tmp_CALCULATED_INFO,sizeof(DERIVED_INFO));
+    memcpy(&CALCULATED_INFO,&tmpCALCULATED,sizeof(DERIVED_INFO));
     UnlockFlightData();
 
     // update live tracker with new values
     // this is a nonblocking call, live tracker runs on different thread
-     LiveTrackerUpdate(&tmp_GPS_INFO, &tmp_CALCULATED_INFO);
+     LiveTrackerUpdate(&tmpGPS, &tmpCALCULATED);
 
-    if (FlightDataRecorderActive) UpdateFlightDataRecorder(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
+    if (FlightDataRecorderActive) UpdateFlightDataRecorder(&tmpGPS,&tmpCALCULATED);
    
     
     #ifdef CPUSTATS
