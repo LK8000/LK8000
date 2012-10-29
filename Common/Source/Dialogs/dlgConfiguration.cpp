@@ -1334,14 +1334,14 @@ static void AskWaypointSave(void) {
       
       WaypointWriteFiles();
       
-      WAYPOINTFILECHANGED= true;
+///      WAYPOINTFILECHANGED= true;
       
     }
   } else {
     
     WaypointWriteFiles();
     
-    WAYPOINTFILECHANGED= true;
+///    WAYPOINTFILECHANGED= true;
   }
   waypointneedsave = false;
 }
@@ -1387,6 +1387,10 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
 		WayPointList[res].FileNum = -1;
 		UnlockTaskData();
 		waypointneedsave = true;
+		// Only for DELETE we shall reload the entire waypoints files
+		// because we still do not have a "valid" flag for wpts.
+		// Mostly because a text file is not a database!
+		WAYPOINTFILECHANGED= true;
 	}
   }
 }
