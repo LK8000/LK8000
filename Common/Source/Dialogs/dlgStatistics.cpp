@@ -973,7 +973,8 @@ void Statistics::ScaleMakeSquare(const RECT rc) {
 
 void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 {
-  int i;
+  int i, j;
+  unsigned int ui;
 
   double lat1 = 0;
   double lon1 = 0;
@@ -1011,9 +1012,9 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 
   CPointGPSArray trace;
   CContestMgr::Instance().Trace(trace);
-  for(unsigned i=0; i<trace.size(); i++) {
-    lat1 = trace[i].Latitude();
-    lon1 = trace[i].Longitude();
+  for(ui=0; ui<trace.size(); ui++) {
+    lat1 = trace[ui].Latitude();
+    lon1 = trace[ui].Longitude();
     ScaleYFromValue(rc, lat1);
     ScaleXFromValue(rc, lon1);
   }
@@ -1057,7 +1058,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
           } else {
             radius = Task[i].AATCircleRadius;
           }
-          for (int j=0; j<4; j++) {
+          for (j=0; j<4; j++) {
             bearing = j*360.0/4;
             
             FindLatitudeLongitude(WayPointList[Task[i].Index].Latitude,
@@ -1080,9 +1081,9 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   }
 
 olcmode:
-  for(unsigned i=0; i<trace.size(); i++) {
-    lat1 = trace[i].Latitude();
-    lon1 = trace[i].Longitude();
+  for(ui=0; ui<trace.size(); ui++) {
+    lat1 = trace[ui].Latitude();
+    lon1 = trace[ui].Longitude();
     x1 = (lon1-lon_c)*fastcosine(lat1);
     y1 = (lat1-lat_c);
     ScaleXFromValue(rc, x1);
@@ -1136,11 +1137,11 @@ olcmode:
   }
 
   // draw track
-  for(unsigned i=0; trace.size() && i<trace.size()-1; i++) {
-    lat1 = trace[i].Latitude();
-    lon1 = trace[i].Longitude();
-    lat2 = trace[i+1].Latitude();
-    lon2 = trace[i+1].Longitude();
+  for(ui=0; trace.size() && ui<trace.size()-1; ui++) {
+    lat1 = trace[ui].Latitude();
+    lon1 = trace[ui].Longitude();
+    lat2 = trace[ui+1].Latitude();
+    lon2 = trace[ui+1].Longitude();
     x1 = (lon1-lon_c)*fastcosine(lat1);
     y1 = (lat1-lat_c);
     x2 = (lon2-lon_c)*fastcosine(lat2);
@@ -1236,11 +1237,11 @@ olcmode:
     CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, true);
     if(result.Type() == contestType) {
       const CPointGPSArray &points = result.PointArray();
-      for(unsigned i=0; i<points.size()-1; i++) {
-        lat1 = points[i].Latitude();
-        lon1 = points[i].Longitude();
-        lat2 = points[i+1].Latitude();
-        lon2 = points[i+1].Longitude();
+      for(ui=0; ui<points.size()-1; ui++) {
+        lat1 = points[ui].Latitude();
+        lon1 = points[ui].Longitude();
+        lat2 = points[ui+1].Latitude();
+        lon2 = points[ui+1].Longitude();
         x1 = (lon1-lon_c)*fastcosine(lat1);
         y1 = (lat1-lat_c);
         x2 = (lon2-lon_c)*fastcosine(lat2);
@@ -1248,13 +1249,13 @@ olcmode:
         int style = STYLE_REDTHICK;
         if((result.Type() == CContestMgr::TYPE_OLC_FAI ||
             result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) &&
-           (i==0 || i==3)) {
+           (ui==0 || ui==3)) {
           // triangle start and finish
           style = STYLE_DASHGREEN;
         }
         else if(result.Predicted() &&
                 (result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED ||
-                 i == points.size() - 2)) {
+                 ui == points.size() - 2)) {
           // predicted edge
           style = STYLE_BLUETHIN;
         }

@@ -2085,7 +2085,7 @@ static void setVariables(void) {
     TCHAR buf1[32];
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (int i=0; i<=5; ++i) {
+    for (i=0; i<=5; ++i) {
       MapWindow::zoom.GetPgClimbInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]));
       dfe->addEnumText(buf1);
     }
@@ -2098,7 +2098,7 @@ static void setVariables(void) {
     TCHAR buf1[32];
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (int i=0; i<=9; ++i) {
+    for (i=0; i<=9; ++i) {
       if (MapWindow::zoom.GetPgCruiseInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
 	dfe->addEnumText(buf1);
       } else {
