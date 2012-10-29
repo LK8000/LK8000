@@ -21,7 +21,7 @@ typedef struct
   MD5 d;
 } md5generators_t;
 
-LineList lines;
+LineList Linelist;
 md5generators_t md5gen;
 
 #define MAXLINELEN 1000
@@ -169,13 +169,13 @@ int DoSignature(TCHAR *homepath) {
 	return 12;
   }
 
-  if (ReadInputFile(lines, fullsrcfile)) {
+  if (ReadInputFile(Linelist, fullsrcfile)) {
 	StartupStore(_T("... DoSignature: ERROR source file <%S> disappeared%s"),fullsrcfile,NEWLINE);
 	return 1;
   }
-  GenerateMD5(lines, &md5gen);
-  AddGRecordToBuffer(lines, &md5gen);
-  WriteOutputFile(lines, fulldstfile);	
+  GenerateMD5(Linelist, &md5gen);
+  AddGRecordToBuffer(Linelist, &md5gen);
+  WriteOutputFile(Linelist, fulldstfile);	
 
   #if TESTBENCH
   StartupStore(_T("... DoSignature: signature OK%s"),NEWLINE);
