@@ -247,7 +247,7 @@ void msRectToPolygon(rectObj rect, shapeObj *poly)
 ** from "Getting Graphic: Programming Fundamentals in C and C++" by Mark Finlay
 ** and John Petritis. (pages 179-182)
 */
- int clipLine(double *x1, double *y1, double *x2, double *y2, rectObj rect)
+ int clipLine(double *x1, double *y01, double *x2, double *y2, rectObj rect)
 {
   double x, y;
   double slope;
@@ -261,52 +261,52 @@ void msRectToPolygon(rectObj rect, shapeObj *poly)
   check1 = CLIP_CHECK(rect.minx, *x1, rect.maxx);
   check2 = CLIP_CHECK(rect.minx, *x2, rect.maxx);
   if(check1 == CLIP_LEFT || check2 == CLIP_LEFT) {
-    slope = (*y2 - *y1)/(*x2 - *x1);
-    y = *y1 + (rect.minx - *x1)*slope;
+    slope = (*y2 - *y01)/(*x2 - *x1);
+    y = *y01 + (rect.minx - *x1)*slope;
     if(check1 == CLIP_LEFT) {
       *x1 = rect.minx;
-      *y1 = y;
+      *y01 = y;
     } else {
       *x2 = rect.minx;
       *y2 = y;
     }
   }
   if(check1 == CLIP_RIGHT || check2 == CLIP_RIGHT) {
-    slope = (*y2 - *y1)/(*x2 - *x1);
-    y = *y1 + (rect.maxx - *x1)*slope;
+    slope = (*y2 - *y01)/(*x2 - *x1);
+    y = *y01 + (rect.maxx - *x1)*slope;
     if(check1 == CLIP_RIGHT) {
       *x1 = rect.maxx;
-      *y1 = y;
+      *y01 = y;
     } else {
       *x2 = rect.maxx;
       *y2 = y;
     }
   }
 
-  if(*y1 < rect.miny && *y2 < rect.miny)
+  if(*y01 < rect.miny && *y2 < rect.miny)
     return(MS_FALSE);
-  if(*y1 > rect.maxy && *y2 > rect.maxy)
+  if(*y01 > rect.maxy && *y2 > rect.maxy)
     return(MS_FALSE);
 
-  check1 = CLIP_CHECK(rect.miny, *y1, rect.maxy);
+  check1 = CLIP_CHECK(rect.miny, *y01, rect.maxy);
   check2 = CLIP_CHECK(rect.miny, *y2, rect.maxy);
   if(check1 == CLIP_LEFT || check2 == CLIP_LEFT) {
-    slope = (*x2 - *x1)/(*y2 - *y1);
-    x = *x1 + (rect.miny - *y1)*slope;
+    slope = (*x2 - *x1)/(*y2 - *y01);
+    x = *x1 + (rect.miny - *y01)*slope;
     if(check1 == CLIP_LEFT) {
       *x1 = x;
-      *y1 = rect.miny;
+      *y01 = rect.miny;
     } else {
       *x2 = x;
       *y2 = rect.miny;
     }
   }
   if(check1 == CLIP_RIGHT || check2 == CLIP_RIGHT) {
-    slope = (*x2 - *x1)/(*y2 - *y1);
-    x = *x1 + (rect.maxy - *y1)*slope;
+    slope = (*x2 - *x1)/(*y2 - *y01);
+    x = *x1 + (rect.maxy - *y01)*slope;
     if(check1 == CLIP_RIGHT) {
       *x1 = x;
-      *y1 = rect.maxy;
+      *y01 = rect.maxy;
     } else {
       *x2 = x;
       *y2 = rect.maxy;
@@ -324,7 +324,7 @@ void msClipPolylineRect(shapeObj *shape, rectObj rect)
 {
   int i,j;
   lineObj line={0,NULL};
-  double x1, x2, y1, y2;
+  double x1, x2, y01, y2;
   shapeObj tmp={0,NULL};
 
   if(shape->numlines == 0) /* nothing to clip */
@@ -336,15 +336,15 @@ void msClipPolylineRect(shapeObj *shape, rectObj rect)
     line.numpoints = 0;
 
     x1 = shape->line[i].point[0].x;
-    y1 = shape->line[i].point[0].y;
+    y01 = shape->line[i].point[0].y;
     for(j=1; j<shape->line[i].numpoints; j++) {
       x2 = shape->line[i].point[j].x;
       y2 = shape->line[i].point[j].y;
 
-      if(clipLine(&x1,&y1,&x2,&y2,rect) == MS_TRUE) {
+      if(clipLine(&x1,&y01,&x2,&y2,rect) == MS_TRUE) {
 	if(line.numpoints == 0) { /* first segment, add both points */
 	  line.point[0].x = x1;
-	  line.point[0].y = y1;
+	  line.point[0].y = y01;
 	  line.point[1].x = x2;
 	  line.point[1].y = y2;
 	  line.numpoints = 2;
@@ -361,7 +361,7 @@ void msClipPolylineRect(shapeObj *shape, rectObj rect)
       }
 
       x1 = shape->line[i].point[j].x;
-      y1 = shape->line[i].point[j].y;
+      y01 = shape->line[i].point[j].y;
     }
 
     if(line.numpoints > 0)
@@ -385,7 +385,7 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
   int i, j;
   double deltax, deltay, xin,xout,  yin,yout;
   double tinx,tiny,  toutx,touty,  tin1, tin2,  tout;
-  double x1,y1, x2,y2;
+  double x1,y01, x2,y2;
 
   shapeObj tmp;
   lineObj line={0,NULL};
@@ -403,7 +403,7 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
     for (i = 0; i < shape->line[j].numpoints-1; i++) {
       
       x1 = shape->line[j].point[i].x;
-      y1 = shape->line[j].point[i].y;
+      y01 = shape->line[j].point[i].y;
       x2 = shape->line[j].point[i+1].x;
       y2 = shape->line[j].point[i+1].y;
       
@@ -411,9 +411,9 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
       if (deltax == 0) { /* bump off of the vertical */
 	deltax = (x1 > rect.minx) ? -NEARZERO : NEARZERO ;
       }
-      deltay = y2-y1;
+      deltay = y2-y01;
       if (deltay == 0) { /* bump off of the horizontal */
-	deltay = (y1 > rect.miny) ? -NEARZERO : NEARZERO ;
+	deltay = (y01 > rect.miny) ? -NEARZERO : NEARZERO ;
       }
       
       if (deltax > 0) {		/*  points to right */
@@ -434,7 +434,7 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
       }
       
       tinx = (xin - x1)/deltax;
-      tiny = (yin - y1)/deltay;
+      tiny = (yin - y01)/deltay;
       
       if (tinx < tiny) {	/* hits x first */
 	tin1 = tinx;
@@ -452,7 +452,7 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
 	}
 	if (1 >= tin2) {
 	  toutx = (xout - x1)/deltax;
-	  touty = (yout - y1)/deltay;
+	  touty = (yout - y01)/deltay;
 	  
 	  tout = (toutx < touty) ? toutx : touty ;
 	  
@@ -461,7 +461,7 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
 	      if (0 < tin2) {
 		if (tinx > tiny) {
 		  line.point[line.numpoints].x = xin;
-		  line.point[line.numpoints].y = y1 + tinx*deltay;
+		  line.point[line.numpoints].y = y01 + tinx*deltay;
 		  line.numpoints++;
 		} else {
 		  line.point[line.numpoints].x = x1 + tiny*deltax;
@@ -472,7 +472,7 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
 	      if (1 > tout) {
 		if (toutx < touty) {
 		  line.point[line.numpoints].x = xout;
-		  line.point[line.numpoints].y = y1 + toutx*deltay;
+		  line.point[line.numpoints].y = y01 + toutx*deltay;
 		  line.numpoints++;
 		} else {
 		  line.point[line.numpoints].x = x1 + touty*deltax;
