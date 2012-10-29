@@ -250,7 +250,7 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
 
    switch(ScreenSize) {
 	case ss800x480:
-		hWndButtonWindow[i] = CreateWindowEx( WS_EX_OVERLAPPEDWINDOW,
+		hWndButtonWindow[i] = CreateWindowEx( WS_EX_STATICEDGE,
 			TEXT("STATIC"), TEXT("\0"),
 			WS_CHILD|WS_TABSTOP
 			|SS_CENTER|SS_NOTIFY
@@ -259,7 +259,8 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
 			buttonWidth, buttonHeight, hWndMainWindow, NULL, hInst, NULL);
 			break;
 	default:
-		hWndButtonWindow[i] = CreateWindow(
+		//hWndButtonWindow[i] = CreateWindow(
+		hWndButtonWindow[i] = CreateWindowEx( WS_EX_STATICEDGE,
 			TEXT("STATIC"), TEXT("\0"),
 			WS_CHILD|WS_TABSTOP
 			|SS_CENTER|SS_NOTIFY
