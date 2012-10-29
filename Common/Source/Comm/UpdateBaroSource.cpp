@@ -26,7 +26,7 @@ bool GotFirstBaroAltitude=false;
  */
 
 
-bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt)
+bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt)
 {
 
   //static double	lastBaroHB=0;		// updated only when baro is assigned as valid
@@ -91,8 +91,8 @@ bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceD
 		#if DEBUGBARO
 		StartupStore(_T("....> Using RMZ from Flarm:  %.1f\n"),fAlt);
 		#endif
-		GPS_INFO->BaroAltitudeAvailable = true;
-		GPS_INFO->BaroAltitude = fAlt;
+		pGPS->BaroAltitudeAvailable = true;
+		pGPS->BaroAltitude = fAlt;
 		//lastBaroHB=LKHearthBeats;
 		return true;
 	}
@@ -111,8 +111,8 @@ bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceD
 	#if DEBUGBARO
 	StartupStore(_T("....> Using custom device <%d>, alt=%.1f\n"),parserid,fAlt);
 	#endif
-	GPS_INFO->BaroAltitudeAvailable = true;
-	GPS_INFO->BaroAltitude = fAlt;
+	pGPS->BaroAltitudeAvailable = true;
+	pGPS->BaroAltitude = fAlt;
 	//lastBaroHB=LKHearthBeats;
 	return true;
   }
@@ -123,8 +123,8 @@ bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceD
 		#if DEBUGBARO
 		StartupStore(_T("....> Using Primary alt=%.1f\n"),fAlt);
 		#endif
-		GPS_INFO->BaroAltitudeAvailable = true;
-		GPS_INFO->BaroAltitude = fAlt;
+		pGPS->BaroAltitudeAvailable = true;
+		pGPS->BaroAltitude = fAlt;
 		//lastBaroHB=LKHearthBeats;
 		return true;
   	}
@@ -138,8 +138,8 @@ bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceD
   #if DEBUGBARO
   StartupStore(_T("....> Using fallback baro alt=%.1f\n"),fAlt);
   #endif
-  GPS_INFO->BaroAltitudeAvailable = true;
-  GPS_INFO->BaroAltitude = fAlt;
+  pGPS->BaroAltitudeAvailable = true;
+  pGPS->BaroAltitude = fAlt;
   //lastBaroHB=LKHearthBeats;
   return true;
 

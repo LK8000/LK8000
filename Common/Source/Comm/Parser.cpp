@@ -20,7 +20,7 @@
 extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
 extern double MixedFormatToDegrees(double mixed);
-extern bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 extern int NAVWarn(TCHAR c);
 
 extern double trackbearingminspeed; // minimal speed to use gps bearing, init by UpdateMonitor
@@ -71,20 +71,20 @@ void NMEAParser::Reset(void) {
 
 
 BOOL NMEAParser::ParseNMEAString(int device,
-				 TCHAR *String, NMEA_INFO *GPS_INFO)
+				 TCHAR *String, NMEA_INFO *pGPS)
 {
   switch (device) {
   case 0: 
-    return nmeaParser1.ParseNMEAString_Internal(String, GPS_INFO);
+    return nmeaParser1.ParseNMEAString_Internal(String, pGPS);
   case 1:
-    return nmeaParser2.ParseNMEAString_Internal(String, GPS_INFO);
+    return nmeaParser2.ParseNMEAString_Internal(String, pGPS);
   };
   return FALSE;
 }
 
 
 
-BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
 {
   TCHAR ctemp[MAX_NMEA_LEN];
   TCHAR *params[MAX_NMEA_PARAMS];
@@ -104,63 +104,63 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO)
 #ifdef DSX
       if(_tcscmp(params[0] + 1,TEXT("PDSXT"))==0)
         {
-          return PDSXT(&String[7], params + 1, n_params, GPS_INFO);
+          return PDSXT(&String[7], params + 1, n_params, pGPS);
         }
 #endif 
 
 
       if(_tcscmp(params[0] + 1,TEXT("PTAS1"))==0)
         {
-          return PTAS1(&String[7], params + 1, n_params, GPS_INFO);
+          return PTAS1(&String[7], params + 1, n_params, pGPS);
         }
 
       // FLARM sentences
       if(_tcscmp(params[0] + 1,TEXT("PFLAA"))==0)
         {
-          return PFLAA(&String[7], params + 1, n_params, GPS_INFO);
+          return PFLAA(&String[7], params + 1, n_params, pGPS);
         }
 
       if(_tcscmp(params[0] + 1,TEXT("PFLAU"))==0)
         {
-          return PFLAU(&String[7], params + 1, n_params, GPS_INFO);
+          return PFLAU(&String[7], params + 1, n_params, pGPS);
         }
 
       if(_tcscmp(params[0] + 1,TEXT("PGRMZ"))==0)
 	{
-	  return RMZ(&String[7], params + 1, n_params, GPS_INFO);
+	  return RMZ(&String[7], params + 1, n_params, pGPS);
 	}
       if(_tcscmp(params[0] + 1,TEXT("PLKAS"))==0)
         {
-          return PLKAS(&String[7], params + 1, n_params, GPS_INFO);
+          return PLKAS(&String[7], params + 1, n_params, pGPS);
         }
       return FALSE;
     }
 
   if(_tcscmp(params[0] + 3,TEXT("GSA"))==0)
     {
-      return GSA(&String[7], params + 1, n_params, GPS_INFO);
+      return GSA(&String[7], params + 1, n_params, pGPS);
     }
   if(_tcscmp(params[0] + 3,TEXT("GLL"))==0)
     {
-      //    return GLL(&String[7], params + 1, n_params, GPS_INFO);
+      //    return GLL(&String[7], params + 1, n_params, pGPS);
       return FALSE;
     }
   if(_tcscmp(params[0] + 3,TEXT("RMB"))==0)
     {
-      //return RMB(&String[7], params + 1, n_params, GPS_INFO);
+      //return RMB(&String[7], params + 1, n_params, pGPS);
           return FALSE;
       }
   if(_tcscmp(params[0] + 3,TEXT("RMC"))==0)
     {
-      return RMC(&String[7], params + 1, n_params, GPS_INFO);
+      return RMC(&String[7], params + 1, n_params, pGPS);
     }
   if(_tcscmp(params[0] + 3,TEXT("GGA"))==0)
     {
-      return GGA(&String[7], params + 1, n_params, GPS_INFO);
+      return GGA(&String[7], params + 1, n_params, pGPS);
     }
   if(_tcscmp(params[0] + 3,TEXT("VTG"))==0)
     {
-      return VTG(&String[7], params + 1, n_params, GPS_INFO);
+      return VTG(&String[7], params + 1, n_params, pGPS);
     }
 
   return FALSE;
@@ -171,43 +171,43 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO)
 // Make time absolute, over 86400seconds when day is changing
 // We need a valid date to use it. We are relying on StartDay.
 //
-double NMEAParser::TimeModify(double FixTime, NMEA_INFO* GPS_INFO)
+double NMEAParser::TimeModify(double FixTime, NMEA_INFO* pGPS)
 {
   static  int day_difference=0, previous_months_day_difference=0;
   double hours, mins,secs;
   
   hours = FixTime / 10000;
-  GPS_INFO->Hour = (int)hours;
+  pGPS->Hour = (int)hours;
 
   mins = FixTime / 100;
-  mins = mins - (GPS_INFO->Hour*100);
-  GPS_INFO->Minute = (int)mins;
+  mins = mins - (pGPS->Hour*100);
+  pGPS->Minute = (int)mins;
 
-  secs = FixTime - (GPS_INFO->Hour*10000) - (GPS_INFO->Minute*100);
-  GPS_INFO->Second = (int)secs;
+  secs = FixTime - (pGPS->Hour*10000) - (pGPS->Minute*100);
+  pGPS->Second = (int)secs;
 
-  FixTime = secs + (GPS_INFO->Minute*60) + (GPS_INFO->Hour*3600);
+  FixTime = secs + (pGPS->Minute*60) + (pGPS->Hour*3600);
 
-  if ((StartDay== -1) && (GPS_INFO->Day != 0)) {
-    StartupStore(_T(". First GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
-    StartDay = GPS_INFO->Day;
+  if ((StartDay== -1) && (pGPS->Day != 0)) {
+    StartupStore(_T(". First GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
+    StartDay = pGPS->Day;
     day_difference=0;
     previous_months_day_difference=0;
   }
   if (StartDay != -1) {
-    if (GPS_INFO->Day < StartDay) {
+    if (pGPS->Day < StartDay) {
       // detect change of month (e.g. day=1, startday=26)
       previous_months_day_difference=day_difference+1;
       day_difference=0;
-      StartDay = GPS_INFO->Day;
+      StartDay = pGPS->Day;
       StartupStore(_T(". Change GPS DATE to NEW MONTH: %d-%d-%d  (%d days running)%s"), 
-	GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,previous_months_day_difference,NEWLINE);
+	pGPS->Year, pGPS->Month, pGPS->Day,previous_months_day_difference,NEWLINE);
     }
-    if ( (GPS_INFO->Day-StartDay)!=day_difference) {
-      StartupStore(_T(". Change GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
+    if ( (pGPS->Day-StartDay)!=day_difference) {
+      StartupStore(_T(". Change GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
     }
 
-    day_difference = GPS_INFO->Day-StartDay;
+    day_difference = pGPS->Day-StartDay;
     if ((day_difference+previous_months_day_difference)>0) {
       // Add seconds to fix time so time doesn't wrap around when
       // going past midnight in UTC
@@ -217,7 +217,7 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* GPS_INFO)
   return FixTime;
 }
 
-bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO) {
+bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
 
   // If simulating, we might be in the future already.
   // We CANNOT check for <= because this check may be done by several GGA RMC GLL etc. sentences
@@ -228,13 +228,13 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO) {
     MasterTimeReset();
     return false;
   } else {
-    GPS_INFO->Time = ThisTime;
+    pGPS->Time = ThisTime;
     LastTime = ThisTime;
     return true;
   }
 }
 
-BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   int iSatelliteCount =0;
 
@@ -250,8 +250,8 @@ BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   for (int i = 0; i < MAXSATELLITES; i++)
   {
     if (3+i < (int) nparams) {
-      GPS_INFO->SatelliteIDs[i] = (int)(StrToDouble(params[2+i], NULL)); // 2 because params is 0-index
-      if (GPS_INFO->SatelliteIDs[i] > 0)
+      pGPS->SatelliteIDs[i] = (int)(StrToDouble(params[2+i], NULL)); // 2 because params is 0-index
+      if (pGPS->SatelliteIDs[i] > 0)
 	iSatelliteCount ++;
     }
   }
@@ -260,7 +260,7 @@ BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 // we need to parse GLL as well because it can mark the start of a new quantum data
 // followed by values with no data, ex. altitude, vario, etc.
-BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
 
   gpsValid = !NAVWarn(params[5][0]);
@@ -271,13 +271,13 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	return TRUE;
   }
   
-  GPS_INFO->NAVWarning = !gpsValid;
+  pGPS->NAVWarning = !gpsValid;
   
   // use valid time with invalid fix
   GLLtime = StrToDouble(params[4],NULL);
   if (!RMCAvailable &&  !GGAAvailable && (GLLtime>0)) {
-	double ThisTime = TimeModify(GLLtime, GPS_INFO);
-	if (!TimeHasAdvanced(ThisTime, GPS_INFO)) return FALSE; 
+	double ThisTime = TimeModify(GLLtime, pGPS);
+	if (!TimeHasAdvanced(ThisTime, pGPS)) return FALSE; 
   }
   if (!gpsValid) return FALSE;
   
@@ -291,8 +291,8 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   tmplon = EastOrWest(tmplon,params[3][0]);
   
   if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-	GPS_INFO->Latitude = tmplat;
-	GPS_INFO->Longitude = tmplon;
+	pGPS->Latitude = tmplat;
+	pGPS->Longitude = tmplon;
   } else {
     
   }
@@ -302,27 +302,27 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 
 
-BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-  (void)GPS_INFO;
+  (void)pGPS;
   (void)String;
   (void)params;
   (void)nparams;
   /* we calculate all this stuff now 
   TCHAR ctemp[MAX_NMEA_LEN];
 
-  GPS_INFO->NAVWarning = NAVWarn(params[0][0]);
+  pGPS->NAVWarning = NAVWarn(params[0][0]);
 
-  GPS_INFO->CrossTrackError = NAUTICALMILESTOMETRES * StrToDouble(params[1], NULL);
-  GPS_INFO->CrossTrackError = LeftOrRight(GPS_INFO->CrossTrackError,params[2][0]);
+  pGPS->CrossTrackError = NAUTICALMILESTOMETRES * StrToDouble(params[1], NULL);
+  pGPS->CrossTrackError = LeftOrRight(pGPS->CrossTrackError,params[2][0]);
 
   _tcscpy(ctemp, params[4]);
   ctemp[WAY_POINT_ID_SIZE] = '\0';
-  _tcscpy(GPS_INFO->WaypointID,ctemp);
+  _tcscpy(pGPS->WaypointID,ctemp);
 
-  GPS_INFO->WaypointDistance = NAUTICALMILESTOMETRES * StrToDouble(params[9], NULL);
-  GPS_INFO->WaypointBearing = StrToDouble(params[10], NULL);
-  GPS_INFO->WaypointSpeed = KNOTSTOMETRESSECONDS * StrToDouble(params[11], NULL);
+  pGPS->WaypointDistance = NAUTICALMILESTOMETRES * StrToDouble(params[9], NULL);
+  pGPS->WaypointBearing = StrToDouble(params[10], NULL);
+  pGPS->WaypointSpeed = KNOTSTOMETRESSECONDS * StrToDouble(params[11], NULL);
   */
 
   return TRUE;
@@ -331,7 +331,7 @@ BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 
 
-BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   GPSCONNECT = TRUE;
   if (RMCAvailable) return FALSE;
@@ -354,11 +354,11 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 		}
 	}
 
-	GPS_INFO->Speed = KNOTSTOMETRESSECONDS * speed;
+	pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
   
 	if (ISCAR)
-	if (GPS_INFO->Speed>trackbearingminspeed) {
-		GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(params[0], NULL));
+	if (pGPS->Speed>trackbearingminspeed) {
+		pGPS->TrackBearing = AngleLimit360(StrToDouble(params[0], NULL));
 	}
   }
 
@@ -375,7 +375,7 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 
 
-BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   TCHAR *Stop;
   static bool logbaddate=true;
@@ -396,7 +396,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	RMZAvailable = TRUE;
 
 	if (!ReplayLogger::IsEnabled()) {
-		UpdateBaroSource(GPS_INFO, BARO__GM130, NULL,   RMZAltitude);
+		UpdateBaroSource(pGPS, BARO__GM130, NULL,   RMZAltitude);
 	}
   }
   if (DeviceIsRoyaltek3200) {
@@ -405,15 +405,15 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 		RMZAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 
 		#if 0
-		GPS_INFO->TemperatureAvailable=true;
-		GPS_INFO->OutsideAirTemperature = Royaltek3200_GetTemperature();
+		pGPS->TemperatureAvailable=true;
+		pGPS->OutsideAirTemperature = Royaltek3200_GetTemperature();
 		#endif
 	}
 
 	RMZAvailable = TRUE;
 
 	if (!ReplayLogger::IsEnabled()) {
-	  UpdateBaroSource(GPS_INFO, BARO__ROYALTEK3200,  NULL,  RMZAltitude);
+	  UpdateBaroSource(pGPS, BARO__ROYALTEK3200,  NULL,  RMZAltitude);
 	}
 
   }
@@ -428,7 +428,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	speed = StrToDouble(params[6], NULL);
   }
   
-  GPS_INFO->NAVWarning = !gpsValid;
+  pGPS->NAVWarning = !gpsValid;
 
   // say we are updated every time we get this,
   // so infoboxes get refreshed if GPS connected
@@ -444,16 +444,16 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 	// SeeYou PC is sending NMEA sentences with RMC date 2072-02-27
 	if ( ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) { 
-		GPS_INFO->Year = gy;
-		GPS_INFO->Month = gm;
-		GPS_INFO->Day = gd;
+		pGPS->Year = gy;
+		pGPS->Month = gm;
+		pGPS->Day = gd;
 
 force_advance:
 		RMCtime = StrToDouble(params[0],NULL);
-		double ThisTime = TimeModify(RMCtime, GPS_INFO);
+		double ThisTime = TimeModify(RMCtime, pGPS);
 
 		// RMC time has priority on GGA and GLL etc. so if we have it we use it at once
-		if (!TimeHasAdvanced(ThisTime, GPS_INFO)) {
+		if (!TimeHasAdvanced(ThisTime, pGPS)) {
 			#if DEBUGSEQ
 			StartupStore(_T("..... RMC time not advanced, skipping \n")); // 31C
 			#endif
@@ -492,14 +492,14 @@ force_advance:
 	tmplon = EastOrWest(tmplon,params[5][0]);
   
 	if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-		GPS_INFO->Latitude = tmplat;
-		GPS_INFO->Longitude = tmplon;
+		pGPS->Latitude = tmplat;
+		pGPS->Longitude = tmplon;
 	}
   
-	GPS_INFO->Speed = KNOTSTOMETRESSECONDS * speed;
+	pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
   
-	if (GPS_INFO->Speed>trackbearingminspeed) {
-		GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
+	if (pGPS->Speed>trackbearingminspeed) {
+		pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
 	}
   } // gpsvalid 091108
     
@@ -507,20 +507,20 @@ force_advance:
   // system clock to the GPS time.
   static bool sysTimeInitialised = false;
   
-  if (!GPS_INFO->NAVWarning && (gpsValid)) {
+  if (!pGPS->NAVWarning && (gpsValid)) {
 	if (SetSystemTimeFromGPS) {
 		if (!sysTimeInitialised) {
-			if ( ( GPS_INFO->Year > 1980 && GPS_INFO->Year<2100) && ( GPS_INFO->Month > 0) && ( GPS_INFO->Hour > 0)) {
+			if ( ( pGPS->Year > 1980 && pGPS->Year<2100) && ( pGPS->Month > 0) && ( pGPS->Hour > 0)) {
         
 				sysTimeInitialised =true; // Attempting only once
 				SYSTEMTIME sysTime;
 				// ::GetSystemTime(&sysTime);
-				int hours = (int)GPS_INFO->Hour;
-				int mins = (int)GPS_INFO->Minute;
-				int secs = (int)GPS_INFO->Second;
-				sysTime.wYear = (unsigned short)GPS_INFO->Year;
-				sysTime.wMonth = (unsigned short)GPS_INFO->Month;
-				sysTime.wDay = (unsigned short)GPS_INFO->Day;
+				int hours = (int)pGPS->Hour;
+				int mins = (int)pGPS->Minute;
+				int secs = (int)pGPS->Second;
+				sysTime.wYear = (unsigned short)pGPS->Year;
+				sysTime.wMonth = (unsigned short)pGPS->Month;
+				sysTime.wDay = (unsigned short)pGPS->Day;
 				sysTime.wHour = (unsigned short)hours;
 				sysTime.wMinute = (unsigned short)mins;
 				sysTime.wSecond = (unsigned short)secs;
@@ -533,18 +533,18 @@ force_advance:
 
   if (!ReplayLogger::IsEnabled()) {      
 	if(RMZAvailable) {
-		UpdateBaroSource(GPS_INFO, BARO__RMZ, NULL,  RMZAltitude);
+		UpdateBaroSource(pGPS, BARO__RMZ, NULL,  RMZAltitude);
 	}
 	else if(RMAAvailable) {
-	     UpdateBaroSource(GPS_INFO, BARO__RMA, NULL,  RMAAltitude);
+	     UpdateBaroSource(pGPS, BARO__RMA, NULL,  RMAAltitude);
 	}
   }
   if (!GGAAvailable) {
 	// update SatInUse, some GPS receiver dont emmit GGA sentance
 	if (!gpsValid) { 
-		GPS_INFO->SatellitesUsed = 0;
+		pGPS->SatellitesUsed = 0;
 	} else {
-		GPS_INFO->SatellitesUsed = -1;
+		pGPS->SatellitesUsed = -1;
 	}
   }
   
@@ -562,7 +562,7 @@ force_advance:
 
 
 
-BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
 
   if (ReplayLogger::IsEnabled()) {
@@ -590,8 +590,8 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
   if (!activeGPS) return TRUE;
 
-  GPS_INFO->SatellitesUsed = nSatellites; // 091208
-  GPS_INFO->NAVWarning = !gpsValid; // 091208
+  pGPS->SatellitesUsed = nSatellites; // 091208
+  pGPS->NAVWarning = !gpsValid; // 091208
 
   GGAtime=StrToDouble(params[0],NULL);
   // Even with invalid fix, we might still have valid time
@@ -619,9 +619,9 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	#if DEBUGSEQ
 	StartupStore(_T("... GGA update time = %f RMCtime=%f\n"),GGAtime,RMCtime); // 31C
 	#endif
-	double ThisTime = TimeModify(GGAtime, GPS_INFO);
+	double ThisTime = TimeModify(GGAtime, pGPS);
 
-	if (!TimeHasAdvanced(ThisTime, GPS_INFO)) {
+	if (!TimeHasAdvanced(ThisTime, pGPS)) {
 		#if DEBUGSEQ
 		StartupStore(_T(".... GGA time not advanced, skip\n")); // 31C
 		#endif
@@ -636,8 +636,8 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	tmplon = MixedFormatToDegrees(StrToDouble(params[3], NULL));
 	tmplon = EastOrWest(tmplon,params[4][0]);
 	if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-		GPS_INFO->Latitude = tmplat;
-		GPS_INFO->Longitude = tmplon;
+		pGPS->Latitude = tmplat;
+		pGPS->Longitude = tmplon;
 	} 
 	else {
 		#ifdef DEBUG_GPS
@@ -656,10 +656,10 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
   if(RMZAvailable)
   {
-	UpdateBaroSource(GPS_INFO, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
+	UpdateBaroSource(pGPS, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
   }
   else if(RMAAvailable) {
-	UpdateBaroSource(GPS_INFO,  BARO__RMA,NULL, RMAAltitude);
+	UpdateBaroSource(pGPS,  BARO__RMA,NULL, RMAAltitude);
   }
 
   // If  no gps fix, at this point we trigger refresh and quit
@@ -672,8 +672,8 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   }
 
   // "Altitude" should always be GPS Altitude.
-  GPS_INFO->Altitude = ParseAltitude(params[8], params[9]);
-  GPS_INFO->Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
+  pGPS->Altitude = ParseAltitude(params[8], params[9]);
+  pGPS->Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
   
   double GeoidSeparation;
 
@@ -683,8 +683,8 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
     GeoidSeparation = ParseAltitude(params[10], params[11]);
   } else {
 	if (UseGeoidSeparation) {
-		GeoidSeparation = LookupGeoidSeparation(GPS_INFO->Latitude, GPS_INFO->Longitude);
-		GPS_INFO->Altitude -= GeoidSeparation;
+		GeoidSeparation = LookupGeoidSeparation(pGPS->Latitude, pGPS->Longitude);
+		pGPS->Altitude -= GeoidSeparation;
 	}
   }
 
@@ -707,28 +707,28 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 
 // LK8000 IAS , in m/s*10  example: 346 for 34.6 m/s  which is = 124.56 km/h
-BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-  (void)GPS_INFO;
+  (void)pGPS;
 
   double vias=StrToDouble(params[0],NULL)/10.0;
   if (vias >1) {
-    GPS_INFO->TrueAirspeed = vias*AirDensityRatio(CALCULATED_INFO.NavAltitude);
-    GPS_INFO->IndicatedAirspeed = vias;
+    pGPS->TrueAirspeed = vias*AirDensityRatio(CALCULATED_INFO.NavAltitude);
+    pGPS->IndicatedAirspeed = vias;
   } else {
-    GPS_INFO->TrueAirspeed = 0;
-    GPS_INFO->IndicatedAirspeed = 0;
+    pGPS->TrueAirspeed = 0;
+    pGPS->IndicatedAirspeed = 0;
   }
 
-  GPS_INFO->AirspeedAvailable = TRUE;
+  pGPS->AirspeedAvailable = TRUE;
 
   return FALSE;
 }
 
 
-BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-  (void)GPS_INFO;
+  (void)pGPS;
 
   RMZAltitude = ParseAltitude(params[0], params[1]);
   RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
@@ -739,9 +739,9 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 }
 
 
-BOOL NMEAParser::RMA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::RMA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-  (void)GPS_INFO;
+  (void)pGPS;
 
   RMAAltitude = ParseAltitude(params[0], params[1]);
   RMAAltitude = AltitudeToQNHAltitude(RMAAltitude); 
@@ -752,7 +752,7 @@ BOOL NMEAParser::RMA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 
 // TASMAN instruments support for Tasman Flight Pack model Fp10
-BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   double wnet,baralt,vtas;
 
@@ -760,12 +760,12 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   baralt = max(0.0, (StrToDouble(params[2],NULL)-2000)/TOFEET);
   vtas = StrToDouble(params[3],NULL)/TOKNOTS;
   
-  GPS_INFO->AirspeedAvailable = TRUE;
-  GPS_INFO->TrueAirspeed = vtas;
-  GPS_INFO->VarioAvailable = TRUE;
-  GPS_INFO->Vario = wnet;
-  UpdateBaroSource(GPS_INFO, BARO__TASMAN, NULL,  AltitudeToQNHAltitude(baralt));
-  GPS_INFO->IndicatedAirspeed = vtas/AirDensityRatio(baralt);
+  pGPS->AirspeedAvailable = TRUE;
+  pGPS->TrueAirspeed = vtas;
+  pGPS->VarioAvailable = TRUE;
+  pGPS->Vario = wnet;
+  UpdateBaroSource(pGPS, BARO__TASMAN, NULL,  AltitudeToQNHAltitude(baralt));
+  pGPS->IndicatedAirspeed = vtas/AirDensityRatio(baralt);
  
   TASAvailable = true; // 100411 
   TriggerVarioUpdate();
@@ -777,7 +777,7 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 #ifdef DSX
 // warning, TODO FIX, calling AddMessage from wrong thread? CHECK
-BOOL NMEAParser::PDSXT(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+BOOL NMEAParser::PDSXT(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   TCHAR mbuf[300];
 
