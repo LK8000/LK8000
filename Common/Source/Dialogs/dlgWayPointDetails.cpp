@@ -273,6 +273,34 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   if (!wf) return;
 
+  wInfo    = ((WndFrame *)wf->FindByName(TEXT("frmInfos")));
+  wCommand = ((WndFrame *)wf->FindByName(TEXT("frmCommands")));
+  wSpecial = ((WndFrame *)wf->FindByName(TEXT("frmSpecial")));
+  wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
+
+  LKASSERT(wInfo!=NULL);
+  LKASSERT(wCommand!=NULL);
+  LKASSERT(wSpecial!=NULL);
+  LKASSERT(wDetails!=NULL);
+
+  // Resize Frames up to real screen size on the right.
+  wInfo->SetBorderKind(BORDERLEFT);
+  wInfo->SetWidth(wf->GetWidth() - wInfo->GetLeft()-2);
+  wCommand->SetBorderKind(BORDERLEFT);
+  wCommand->SetWidth(wf->GetWidth() - wCommand->GetLeft()-2);
+  wSpecial->SetBorderKind(BORDERLEFT);
+  wSpecial->SetWidth(wf->GetWidth() - wSpecial->GetLeft()-2);
+  wDetails->SetBorderKind(BORDERLEFT);
+  wDetails->SetWidth(wf->GetWidth() - wDetails->GetLeft()-2);
+
+  wCommand->SetVisible(false);
+  wSpecial->SetVisible(false);
+
+
+  //
+  // CAPTION: top line in black
+  //
+
   // if SeeYou waypoint
   if (WPLSEL.Format == LKW_CUP) { 
 	TCHAR ttmp[50];
@@ -313,33 +341,49 @@ void dlgWayPointDetailsShowModal(short mypage){
 	wf->SetCaption(sTmp);
   }
 
+  //
+  // Waypoint Comment
+  //
   wp = ((WndProperty *)wf->FindByName(TEXT("prpWpComment")));
+  LKASSERT(wp);
   if (WayPointList[SelectedWaypoint].Comment==NULL)
 	wp->SetText(_T(""));
   else
 	wp->SetText(WayPointList[SelectedWaypoint].Comment);
   wp->SetButtonSize(16);
 
+
+  //
+  // Lat and Lon
+  //
   Units::CoordinateToString(
 		  WayPointList[SelectedWaypoint].Longitude,
 		  WayPointList[SelectedWaypoint].Latitude,
 		  sTmp, sizeof(sTmp)-1);
 
   ((WndProperty *)wf->FindByName(TEXT("prpCoordinate")))->SetText(sTmp);
-
+	
+  //
+  // Waypoint Altitude 
+  //
   Units::FormatUserAltitude(WayPointList[SelectedWaypoint].Altitude, sTmp, sizeof(sTmp)-1);
-  ((WndProperty *)wf->FindByName(TEXT("prpAltitude")))
-    ->SetText(sTmp);
+  ((WndProperty *)wf->FindByName(TEXT("prpAltitude")))->SetText(sTmp);
 
+  //
+  // SUNSET at waypoint
+  //
   sunsettime = DoSunEphemeris(WayPointList[SelectedWaypoint].Longitude,
                               WayPointList[SelectedWaypoint].Latitude);
   sunsethours = (int)sunsettime;
   sunsetmins = (int)((sunsettime-sunsethours)*60);
 
   _stprintf(sTmp, TEXT("%02d:%02d"), sunsethours, sunsetmins);
-  ((WndProperty *)wf->FindByName(TEXT("prpSunset")))
-    ->SetText(sTmp);
+  ((WndProperty *)wf->FindByName(TEXT("prpSunset")))->SetText(sTmp);
 
+
+  // 
+  // Distance and bearing
+  //
   double distance, bearing;
   DistanceBearing(GPS_INFO.Latitude,
                   GPS_INFO.Longitude,
@@ -350,17 +394,16 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   TCHAR DistanceText[MAX_PATH];
   Units::FormatUserDistance(distance, DistanceText, 10);
-  ((WndProperty *)wf->FindByName(TEXT("prpDistance")))
-    ->SetText(DistanceText);
+  ((WndProperty *)wf->FindByName(TEXT("prpDistance")))->SetText(DistanceText);
 
   _stprintf(sTmp, TEXT("%d")TEXT(DEG), iround(bearing));
-  ((WndProperty *)wf->FindByName(TEXT("prpBearing")))
-    ->SetText(sTmp);
+  ((WndProperty *)wf->FindByName(TEXT("prpBearing")))->SetText(sTmp);
 
+
+  //
+  // Altitude reqd at mc 0
+  // 
   double alt=0;
-
-  // alt reqd at mc 0
-  
   alt = CALCULATED_INFO.NavAltitude - 
     GlidePolar::MacCreadyAltitude(0.0,
 				  distance,
@@ -378,6 +421,8 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpMc0")));
   if (wp) wp->SetText(sTmp);
+
+
 
   // alt reqd at current mc
   alt = CALCULATED_INFO.NavAltitude - 
@@ -397,24 +442,23 @@ void dlgWayPointDetailsShowModal(short mypage){
 	    Units::GetAltitudeName());
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpMc2")));
-  if (wp) wp->SetText(sTmp);
+  if (wp) {
+	wp->SetText(sTmp);
+  }
+
 
   wf->SetKeyDownNotify(FormKeyDown);
 
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 
-  wInfo    = ((WndFrame *)wf->FindByName(TEXT("frmInfos")));
-  wCommand = ((WndFrame *)wf->FindByName(TEXT("frmCommands")));
-  wSpecial = ((WndFrame *)wf->FindByName(TEXT("frmSpecial")));
-  wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
+  // We DONT use PREV  anymore
+  ((WndButton *)wf->FindByName(TEXT("cmdPrev")))->SetVisible(false);
 
-  LKASSERT(wInfo!=NULL);
-  LKASSERT(wCommand!=NULL);
-  LKASSERT(wSpecial!=NULL);
-  LKASSERT(wDetails!=NULL);
 
-  wDetailsEntry = 
-    (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
+  //
+  // Details (WAYNOTES) page
+  //
+  wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
   LKASSERT(wDetailsEntry!=NULL);
   wDetailsEntry->SetCanFocus(true);
 
@@ -422,39 +466,47 @@ void dlgWayPointDetailsShowModal(short mypage){
 				 LineOffsets,
 				 MAXLINES);
 
-  wInfo->SetBorderKind(BORDERLEFT);
-  wCommand->SetBorderKind(BORDERLEFT);
-  wSpecial->SetBorderKind(BORDERLEFT);
-  wDetails->SetBorderKind(BORDERLEFT);
 
-  wCommand->SetVisible(false);
-  wSpecial->SetVisible(false);
 
   WndButton *wb;
 
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdReplace")));
-  if (wb)
-    wb->SetOnClickNotify(OnReplaceClicked);
-
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdNewHome")));
-  if (wb) 
-    wb->SetOnClickNotify(OnNewHomeClicked);
-
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdTeamCode")));
-  if (wb) 
-    wb->SetOnClickNotify(OnTeamCodeClicked);
-
+  // Resize also buttons
   wb = ((WndButton *)wf->FindByName(TEXT("cmdInserInTask")));
-  if (wb) 
+  if (wb) {
     wb->SetOnClickNotify(OnInserInTaskClicked);
+    wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
+  }
 
   wb = ((WndButton *)wf->FindByName(TEXT("cmdAppendInTask")));
-  if (wb) 
+  if (wb) {
     wb->SetOnClickNotify(OnAppendInTaskClicked);
+    wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
+  }
 
   wb = ((WndButton *)wf->FindByName(TEXT("cmdRemoveFromTask")));
-  if (wb) 
+  if (wb) {
     wb->SetOnClickNotify(OnRemoveFromTaskClicked);
+    wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
+  }
+
+  wb = ((WndButton *)wf->FindByName(TEXT("cmdReplace")));
+  if (wb) {
+    wb->SetOnClickNotify(OnReplaceClicked);
+    wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
+  }
+
+
+  wb = ((WndButton *)wf->FindByName(TEXT("cmdNewHome")));
+  if (wb)  {
+    wb->SetOnClickNotify(OnNewHomeClicked);
+    wb->SetWidth(wSpecial->GetWidth()-wb->GetLeft()*2);
+  }
+
+  wb = ((WndButton *)wf->FindByName(TEXT("cmdTeamCode")));
+  if (wb) {
+    wb->SetOnClickNotify(OnTeamCodeClicked);
+    wb->SetWidth(wSpecial->GetWidth()-wb->GetLeft()*2);
+  }
 
   page = mypage;
 
