@@ -1813,6 +1813,8 @@ _@M1808_ "Loading FLARMNET database"
 _@M1809_ "Moving"
 _@M1810_ "Steady"
 _@M1811_ "Total"
+_@M1812_ "Chrono"
+
 
 ############################################################
 #                  - MENU MESSAGES - 

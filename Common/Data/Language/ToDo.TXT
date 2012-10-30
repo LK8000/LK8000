@@ -233,6 +233,7 @@ _@M2235_ "GAUGES"
 _@M1809_ "Moving"
 _@M1810_ "Steady"
 _@M1811_ "Total"
+_@M1812_ "Chrono"
 
 _@M2236_ "Reset\nTrip"
 _@M2237_ "Sonar\nToggle"
