@@ -220,7 +220,10 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		BufferTitle[7]='\0';
 		break;
 	case BM_CRU:
-		showunit=LKFormatValue(LK_TL_AVG, true, BufferValue, BufferUnit, BufferTitle);
+		if (ISCAR)
+			showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle);
+		else
+			showunit=LKFormatValue(LK_TL_AVG, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_HGH:
 		showunit=LKFormatValue(LK_HGPS, true, BufferValue, BufferUnit, BufferTitle);
@@ -563,15 +566,26 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		BufferTitle[7]='\0';
 		break;
 	case BM_CRU: 
-		showunit=LKFormatValue(LK_HEADWINDSPEED, true, BufferValue, BufferUnit, BufferTitle);
+		if (ISCAR)
+			showunit=LKFormatValue(LK_TIME_LOCAL, false, BufferValue, BufferUnit, BufferTitle);
+		else
+			showunit=LKFormatValue(LK_HEADWINDSPEED, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_HGH:
 		showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_AUX:
-		if (ISCAR)
-			showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle);
-		else
+		if (ISCAR) {
+			_tcscpy(BufferTitle,MsgToken(632)); // Speed
+			int totime=(int)(Trip_Steady_Time+Trip_Moving_Time);
+			if (totime>0) {
+				_stprintf(BufferValue,_T("%.1f"),(DerivedDrawInfo.Odometer*SPEEDMODIFY)/totime);
+  				wsprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
+			} else {
+				wsprintf(BufferValue, TEXT("---"));
+				showunit=false;
+			}
+		} else
 			showunit=LKFormatValue(LK_MAXALT, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_TSK:
