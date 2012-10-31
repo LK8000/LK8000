@@ -272,4 +272,17 @@ _return:
 #endif // NOT NEWMULTIMAPS
 }
 
+//
+// Simple thin black line separator between side and topview, if needed
+//
+void MapWindow::DrawMultimap_SideTopSeparator(const HDC hdc, const RECT rct) {
+  if ( DrawRect.bottom>0 && Current_Multimap_SizeY<SIZE4 ) {
+	POINT line[2];
+	line[0].x = rct.left;
+	line[1].x = rct.right;
+	line[0].y=DrawRect.bottom;
+	line[1].y=DrawRect.bottom;
+        _DrawLine(hdc, PS_SOLID, 1, line[0], line[1], RGB_BLACK,rct);
+  }
+}
 

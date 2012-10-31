@@ -487,6 +487,7 @@ class MapWindow {
   static void DrawMultimap_Topleft(const HDC hdc, const RECT rci);
   static void DrawMultimap_Topright(const HDC hdc, const RECT rci);
   static void DrawMultimap_DynaLabel(const HDC hdc, const RECT rci);
+  static void DrawMultimap_SideTopSeparator(const HDC hdc, const RECT rci);
 
 
 

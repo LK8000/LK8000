@@ -823,7 +823,6 @@ _nomoredeclutter:
    DrawAircraft(hdc, Orig_Aircraft);
    DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
 
-
    #if 0
    HPEN hpGreen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
    HPEN oldPen  = (HPEN) SelectObject(hdc, hpGreen);
@@ -831,15 +830,7 @@ _nomoredeclutter:
    Rectangle(hdc,rct.left-1 , rct.bottom ,rct.right+2, rct.top);
    SelectObject(hdc, oldPen);
    DeleteObject(hpGreen);
-   #else
-   // Draw separator between topview and sideview, if needed
-   if ( DrawRect.bottom>0 && Current_Multimap_SizeY<SIZE4 ) {
-	line[0].y=DrawRect.bottom;
-	line[1].y=DrawRect.bottom;
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(2), line[0], line[1], RGB_BLACK,rct);
-   }
    #endif
-
 
 
    MapWindow::zoom.RequestedScale(fOldScale);
@@ -848,3 +839,4 @@ _nomoredeclutter:
    //ActiveMap = OldAM ;
  return 0;
 }
+

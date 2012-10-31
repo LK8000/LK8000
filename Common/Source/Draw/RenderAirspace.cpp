@@ -367,6 +367,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if(fSplitFact > 0.0)
   {
   	sDia.rc = rct;
+	sDia.rc.bottom-=1;
+
     if (GetSideviewPage() == IM_HEADING)
   	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
 
@@ -771,6 +773,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   DrawCompass( hdc,  rct, acb-90.0);
 //  RenderBearingDiff( hdc, wpt_brg,  &sDia );
 
+  DrawMultimap_SideTopSeparator(hdc,rct);
+
   /****************************************************************************************************
    * draw selection frame
    ****************************************************************************************************/
@@ -780,6 +784,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	else
 	  DrawSelectionFrame(hdc,  rci);
 #endif
+
 
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
   zoom.SetLimitMapScale(true);

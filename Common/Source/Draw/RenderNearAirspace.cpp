@@ -755,6 +755,7 @@ if(bValid)
   //DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(11),  rct.top  + NIBLSCALE(11));
   DrawCompass( hdc, rct, iAS_Bearing-90);
 
+  DrawMultimap_SideTopSeparator(hdc,rct);
 
   /****************************************************************************************************
    * draw selection frame
