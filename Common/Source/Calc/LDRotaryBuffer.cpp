@@ -68,6 +68,9 @@ FILE *fp;
 	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
                     {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
+
+	Rotary_Speed=0;
+	Rotary_Distance=0;
   return false; 
 }
 
@@ -89,6 +92,17 @@ FILE *fp;
 #endif
 		return;
 	}
+
+	if (ISCAR) {
+		if (LKSW_ResetLDRotary) {
+			#if TESTBENCH
+			StartupStore(_T("... LD ROTARY SWITCH RESET\n"));
+			#endif
+			LKSW_ResetLDRotary=false;
+			InitLDRotary(&rotaryLD);
+		}
+		goto _noautoreset;
+	}
 	
 	if (Calculated->Circling) {
 #ifdef DEBUG_ROTARY
@@ -98,7 +112,6 @@ FILE *fp;
 #endif
 		return;
 	}
-
 
 	if (distance<3 || distance>150) { // just ignore, no need to reset rotary
 		if (errs>2) {
@@ -121,6 +134,8 @@ FILE *fp;
 		return;
 	}
 	errs=0;
+
+_noautoreset:
 
 	if (++buf->start >=buf->size) { 
 #ifdef DEBUG_ROTARY
@@ -223,6 +238,10 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 	// bcsize<=0  should NOT happen, but we check it for safety
 	if ( (bc.valid == true) && bc.size>0 ) {
 		averias = bc.totalias/bc.size;
+
+		if (ISCAR) {
+			Rotary_Speed=averias*AirDensityRatio(Calculated->NavAltitude);
+		}
 		// According to Welch & Irving, suggested by Dave..
 		// MC = Vso*[ (V/Vo)^3 - (Vo/V)]
 		// Vso: sink at best L/D
@@ -260,6 +279,7 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 		return(INVALID_GR); // infinitum
 	}
 	eff= (double)bc.totaldistance / (double)altdiff;
+	Rotary_Distance=bc.totaldistance;
 
 #ifdef DEBUG_ROTARY
 	sprintf(ventabuffer,"bcstart=%d bcold=%d altnew=%d altold=%d altdiff=%d totaldistance=%d eff=%d\r\n",

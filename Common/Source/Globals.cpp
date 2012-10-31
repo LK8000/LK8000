@@ -642,6 +642,9 @@ void Globals_Init(void) {
   Trip_Moving_Time=0;
   Trip_Steady_Time=0;
 
+  Rotary_Speed=0;
+  Rotary_Distance=0;
+
   // ^ ADD NEW GLOBALS up here ^ 
   // ---------------------------
 

@@ -891,6 +891,9 @@ GEXTERN int  Multimap_SizeY[MP_TOP+1];
 GEXTERN unsigned int Trip_Moving_Time;
 GEXTERN unsigned int Trip_Steady_Time;
 
+GEXTERN double Rotary_Speed;
+GEXTERN double Rotary_Distance;
+
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.
@@ -915,11 +918,15 @@ GEXTERN bool LKSW_ResetOdometer GEXTFALSE;
 // Reset Trip computer values, by Calc
 GEXTERN bool LKSW_ResetTripComputer GEXTFALSE;
 
+// Reset LD Rotary buffer
+GEXTERN bool LKSW_ResetLDRotary GEXTFALSE;
+
 // Force landing if we are stationary, or below 3kmh, otherwise ignore
 GEXTERN bool LKSW_ForceLanding GEXTFALSE;
 
 // Close and reopen TerrainRenderer, to quickly use a new screen resolution
 GEXTERN bool LKSW_ResetTerrainRenderer GEXTFALSE;
+
 
 #endif
 
