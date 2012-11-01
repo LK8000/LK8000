@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Bitmaps.h"
+#include "Multimap.h"
 
 extern bool FastZoom;
 
@@ -49,31 +50,76 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
   //
   // Flight mode Icon
   //
+  short iconsizex, iconsizey;
+
+  if (IsMultiMapNoMain()) {
+
+	short i=Get_Current_Multimap_Type()-1;
+	switch(i) {
+		case 1:
+			SelectObject(hDCTemp,hMM1);
+			break;
+		case 2:
+			SelectObject(hDCTemp,hMM2);
+			break;
+		case 3:
+			SelectObject(hDCTemp,hMM3);
+			break;
+		case 4:
+			SelectObject(hDCTemp,hMM4);
+			break;
+		case 5:
+			SelectObject(hDCTemp,hMM5);
+			break;
+		case 6:
+			SelectObject(hDCTemp,hMM6);
+			break;
+		case 7:
+			SelectObject(hDCTemp,hMM7);
+			break;
+		case 8:
+			SelectObject(hDCTemp,hMM8);
+			break;
+		default:
+			SelectObject(hDCTemp,hMM0);
+			break;
+	}
+	iconsizex=22;
+	iconsizey=22;
+	goto _afternotmultimap;
+  } else {
+	iconsizex=20;
+	iconsizey=24;
+  }
+
 
   if (mode.Is(Mode::MODE_CIRCLING)) {
 	SelectObject(hDCTemp,hClimb);
-  } else
+  } else {
 	if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
 		SelectObject(hDCTemp,hFinalGlide);
 	} else {
 		SelectObject(hDCTemp,hCruise);
 	}
+ }
 
-  offset -= 24;
+_afternotmultimap:
+
+  offset -= iconsizey;
 
   DrawBitmapX(hdc,
 	rc.right+IBLSCALE(offset-1),
-	rc.bottom+IBLSCALE(-20-1),
-	24,20,
+	rc.bottom+IBLSCALE(-iconsizex-1),
+	iconsizey,iconsizex,
 	hDCTemp,
 	0,0,SRCPAINT,true);
     
   DrawBitmapX(hdc,
 	rc.right+IBLSCALE(offset-1),
-	rc.bottom+IBLSCALE(-20-1),
-	24,20,
+	rc.bottom+IBLSCALE(-iconsizex-1),
+	iconsizey,iconsizex,
 	hDCTemp,
-	24,0,SRCAND,true);
+	iconsizey,0,SRCAND,true);
 
 
   //

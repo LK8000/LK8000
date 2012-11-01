@@ -87,6 +87,25 @@ void LKLoadFixedBitmaps(void) {
   _stprintf(srcfile,_T("%s\\HEAD_RIGHT.BMP"),sDir);
   hHeadRight=LKLoadBitmap(srcfile);
 
+  _stprintf(srcfile,_T("%s\\MM0.BMP"),sDir);
+  hMM0=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\MM1.BMP"),sDir);
+  hMM1=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\MM2.BMP"),sDir);
+  hMM2=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\MM3.BMP"),sDir);
+  hMM3=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\MM4.BMP"),sDir);
+  hMM4=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\MM5.BMP"),sDir);
+  hMM5=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\MM6.BMP"),sDir);
+  hMM6=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\MM7.BMP"),sDir);
+  hMM7=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\MM8.BMP"),sDir);
+  hMM8=LKLoadBitmap(srcfile);
+
   _stprintf(srcfile,_T("%s\\BUTTONLEFT32.BMP"),sDir);
   hBmpLeft32=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%s\\BUTTONRIGHT32.BMP"),sDir);
@@ -256,6 +275,15 @@ void LKUnloadFixedBitmaps(void) {
   if (hHeadRight !=NULL) DeleteObject(hHeadRight);
   if (hHeadUp    !=NULL) DeleteObject(hHeadUp);
 
+  if (hMM0	 !=NULL) DeleteObject(hMM0);
+  if (hMM1	 !=NULL) DeleteObject(hMM1);
+  if (hMM2	 !=NULL) DeleteObject(hMM2);
+  if (hMM3	 !=NULL) DeleteObject(hMM3);
+  if (hMM4	 !=NULL) DeleteObject(hMM4);
+  if (hMM5	 !=NULL) DeleteObject(hMM5);
+  if (hMM6	 !=NULL) DeleteObject(hMM6);
+  if (hMM7	 !=NULL) DeleteObject(hMM7);
+  if (hMM8	 !=NULL) DeleteObject(hMM8);
 
   if (hBmpThermalSource!=NULL) DeleteObject(hBmpThermalSource);
   if (hBmpTarget!=NULL) DeleteObject(hBmpTarget);
