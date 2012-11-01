@@ -52,9 +52,11 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
   //
   short iconsizex, iconsizey;
 
-  if (IsMultiMapNoMain()) {
+  //if (IsMultiMapNoMain()) {
+  if (IsMultiMap()) {
 
-	short i=Get_Current_Multimap_Type()-1;
+	// short i=Get_Current_Multimap_Type()-1; if we want old style..
+	short i=Get_Current_Multimap_Type();
 	switch(i) {
 		case 1:
 			SelectObject(hDCTemp,hMM1);
