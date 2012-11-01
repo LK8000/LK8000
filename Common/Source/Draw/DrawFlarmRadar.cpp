@@ -183,7 +183,7 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 
     if (iTextAling>TEXT_NO_TEXT)
     {
-       TCHAR unit_text[MAX_PATH];
+
        FormatTicText(unit_text, xval*unit_step/ticstep, unit_step);
        GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
 	   switch(iTextAling)
@@ -1176,7 +1176,7 @@ for (j=0; j<nEntrys; j++)
 			Circle(hdc, x, y, iCircleSize, rct, true, true );
 			break;
 		default:
-			POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
+	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
 			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360( asFLRAMPos[i].fFlarmBearing ));
 			Polygon(hdc,Triangle,5);
 
@@ -1190,7 +1190,7 @@ for (j=0; j<nEntrys; j++)
 		    SetBkMode(hdc, TRANSPARENT);
 		    GetTextExtentPoint(hdc, lbuffer, _tcslen(lbuffer), &tsize);
 		    if (_tcslen(lbuffer)>0)
-			  TextInBox(hdc, &rc, lbuffer, x+tscaler,  y+tscaler, 0, &displaymode, false);
+			  TextInBox(hdc, &rct, lbuffer,x+tscaler, y+tscaler, 0, &displaymode, false);
 
 			break;
 	  }
