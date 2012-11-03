@@ -611,10 +611,12 @@ class MapWindow {
   static HBITMAP hDrawBitMap;
   static HBITMAP hDrawBitMapTmp;
   static HBITMAP hMaskBitMap;
+  static HBITMAP mhbbuffer;
   static HDC hdcDrawWindow;
   static HDC hdcScreen;
   static HDC hDCTemp;
   static HDC hDCMask;
+  static HDC mhdcbuffer;
 #if NEWSMARTZOOM
   static HBITMAP hQuickDrawBitMap;
   static HDC hdcQuickDrawWindow;
@@ -736,7 +738,7 @@ private:
   static POINT Orig_Screen;
   static double TargetZoomDistance;
   static int TargetPanIndex; 
-  static void ClearAirSpace(bool fill);
+  static void ClearAirSpace(bool fill, const RECT& rc);
 
  public:
   static bool checkLabelBlock(RECT *rc);
