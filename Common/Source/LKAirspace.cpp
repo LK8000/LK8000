@@ -16,6 +16,7 @@
 #include <Point2D.h>
 #include "md5.h"
 
+#include "utils/2dpclip.h"
 
 static const int k_nAreaCount = 14;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
@@ -716,6 +717,8 @@ CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &
         _loncenter(Center_Longitude),
         _radius(Airspace_Radius)
 {
+    _screenpoints_clipped.reserve(65);
+    _screenpoints.reserve(65);
     CalcBounds();
     AirspaceAGLLookup(Center_Latitude, Center_Longitude, &_base.Altitude, &_top.Altitude);
 }
@@ -810,7 +813,7 @@ void CAirspace_Circle::CalcBounds()
 }
 
 // Calculate screen coordinates for drawing
-void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
+void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) 
 {
   _drawstyle = adsHidden;
   if (!_enabled) return;
@@ -829,15 +832,30 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
 
         MapWindow::LatLon2Screen(_loncenter, _latcenter, _screencenter);
         _screenradius = iround(_radius * ResMapScaleOverDistanceModify);
+        
+        buildCircle(_screencenter, _screenradius, _screenpoints);
+        
+        _screenpoints_clipped.clear();
+        LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
       }
     }
   }
 }
 
 // Draw airspace
-void CAirspace_Circle::Draw(HDC hDCTemp, const RECT &rc, bool param1) const
-{
-  Circle(hDCTemp, _screencenter.x, _screencenter.y, _screenradius ,rc, true, param1);
+void CAirspace_Circle::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
+    size_t outLength = _screenpoints_clipped.size();
+    const POINT * clip_ptout = &(*_screenpoints_clipped.begin());
+
+    if (param1) {
+        if (outLength > 2) {
+            Polygon(hDCTemp, clip_ptout, outLength);
+        }
+    } else {
+        if (outLength > 1) {
+            Polyline(hDCTemp, clip_ptout, outLength);
+        }
+    }
 }
 
 
@@ -1043,7 +1061,7 @@ void CAirspace_Area::CalcBounds()
 }
 
 // Calculate screen coordinates for drawing
-void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
+void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) 
 {
   _drawstyle = adsHidden;
   if (!_enabled) return;
@@ -1064,19 +1082,39 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
     for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
         MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), *itr);
     }
+    // add extra point for final point if it doesn't equal the first
+    // this is required to close some airspace areas that have missing
+    // final point
+    if ((_screenpoints[_screenpoints.size() - 1].x != _screenpoints[0].x) || (_screenpoints[_screenpoints.size() - 1].y != _screenpoints[0].y)) {
+        _screenpoints.push_back(_screenpoints[0]);
+    }
+    
+    _screenpoints_clipped.clear();
+    _screenpoints_clipped.reserve(_screenpoints.size());
+
+    LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
+    
       }
     }
   }
 }
 
 // Draw airspace
-void CAirspace_Area::Draw(HDC hDCTemp, const RECT &rc, bool param1) const
-{
-  ClipPolygon(hDCTemp, (POINT*)&(*_screenpoints.begin()), _screenpoints.size(), rc, param1);
+void CAirspace_Area::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
+
+    size_t outLength = _screenpoints_clipped.size();
+    const POINT * clip_ptout = &(*_screenpoints_clipped.begin());
+
+    if (param1) {
+        if (outLength > 2) {
+            Polygon(hDCTemp, clip_ptout, outLength);
+        }
+    } else {
+        if (outLength > 1) {
+            Polyline(hDCTemp, clip_ptout, outLength);
+        }
+    }
 }
-
-
-
 //
 // CAIRSPACEMANAGER CLASS
 //
@@ -2273,13 +2311,13 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
 }
 
 
-void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify)
+void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify)
 {
   CAirspaceList::iterator it;
 
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces_near.begin(); it!= _airspaces_near.end(); ++it) {
-    (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, ResMapScaleOverDistanceModify);
+    (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, ResMapScaleOverDistanceModify);
   }
 }
 

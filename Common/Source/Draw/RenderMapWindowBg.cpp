@@ -79,7 +79,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   LKCalculateWaypointReachable(multicalc_slot, numslots);
 
 _skip_calcs:
-  CalculateScreenPositionsAirspace();
+  CalculateScreenPositionsAirspace(rc);
 
   CalculateScreenPositionsThermalSources();
 

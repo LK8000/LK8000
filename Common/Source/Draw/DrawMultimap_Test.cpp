@@ -64,7 +64,7 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
   //zoom.UpdateMapScale();
 
   CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
-  CalculateScreenPositionsAirspace();
+  CalculateScreenPositionsAirspace(rct);
 
   double sunelevation = 40.0;
   double sunazimuth=GetAzimuth();

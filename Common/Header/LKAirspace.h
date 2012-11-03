@@ -116,7 +116,7 @@ public:
   // Dump this airspace to runtime.log
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
-  virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) {}
+  virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) {}
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const {}
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
@@ -309,7 +309,7 @@ public:
   // Dump this airspace to runtime.log
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
-  virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify);
+  virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
@@ -320,6 +320,7 @@ public:
 private:
   CPoint2DArray _geopoints;        // polygon points
   POINTList _screenpoints;        // screen coordinates
+  POINTList _screenpoints_clipped;        // screen coordinates
   
   // Winding number calculation to check a point is horizontally inside polygon
   int wn_PnPoly( const double &longitude, const double &latitude ) const;
@@ -341,7 +342,7 @@ public:
   // Dump this airspace to runtime.log
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
-  virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify);
+  virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
@@ -355,6 +356,9 @@ private:
   double _latcenter;        // center point latitude
   double _loncenter;        // center point longitude
   double _radius;            // radius
+  
+  POINTList _screenpoints;
+  POINTList _screenpoints_clipped;        // screen coordinates
   
   // Bound calculation helper function
   void ScanCircleBounds(double bearing);
@@ -433,7 +437,7 @@ public:
   
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
-  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify);
+  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
   const CAirspaceList& GetNearAirspacesRef() const;
 
   //Nearest page 2.4

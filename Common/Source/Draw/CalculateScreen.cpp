@@ -133,9 +133,9 @@ void MapWindow::CalculateScreenPositionsThermalSources() {
 
 
 
-void MapWindow::CalculateScreenPositionsAirspace()
+void MapWindow::CalculateScreenPositionsAirspace(const RECT& rcDraw)
 {
-  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, zoom.ResScaleOverDistanceModify());
+  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, zoom.ResScaleOverDistanceModify());
 }
 
 

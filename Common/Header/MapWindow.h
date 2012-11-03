@@ -492,7 +492,7 @@ class MapWindow {
   static void CalculateScreenPositions(POINT Orig, RECT rc, 
                                        POINT *Orig_Aircraft);
   static void CalculateScreenPositionsGroundline();
-  static void CalculateScreenPositionsAirspace();
+  static void CalculateScreenPositionsAirspace(const RECT& rcDraw);
   static void CalculateScreenPositionsThermalSources();
   static void LKCalculateWaypointReachable(short multicalc_slot, short numslots);
   
