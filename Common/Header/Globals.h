@@ -458,14 +458,12 @@ GEXTERN long ComPortErrors[NUMDEV+1];
 GEXTERN double ComPortHB[NUMDEV+1];
 
 // Cpu stats
-#ifdef CPUSTATS
 GEXTERN int Cpu_Draw;
 GEXTERN int Cpu_Calc;
 GEXTERN int Cpu_Instrument;
 GEXTERN int Cpu_PortA;
 GEXTERN int Cpu_PortB;
 GEXTERN int Cpu_Aver;
-#endif
 
 GEXTERN double	NearestAirspaceHDist;
 GEXTERN double	NearestAirspaceVDist;

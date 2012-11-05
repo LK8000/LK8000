@@ -27,18 +27,13 @@ HANDLE MapWindow::hDrawThread;
 
 extern bool PanRefreshed;
 
-#ifdef CPUSTATS
-extern void DrawCpuStats(HDC hdc, RECT rc );
-#endif
 
 extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 
 DWORD MapWindow::DrawThread (LPVOID lpvoid)
 {
 
-#ifdef CPUSTATS
   FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime ;
-#endif
 
 
   while ((!ProgramStarted) || (!Initialised)) {
@@ -122,9 +117,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
 
 
-#ifdef CPUSTATS
 	GetThreadTimes( hDrawThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
-#endif
 
       // Until MapDirty is set true again, we shall only repaint the screen. No Render, no calculations, no updates.
       // This is intended for very fast immediate screen refresh.
@@ -246,13 +239,11 @@ extern bool OnFastPanning;
 	ProgramStarted = psFirstDrawDone;
 
       }
-#ifdef CPUSTATS
 	if ( (GetThreadTimes( hDrawThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
 		Cpu_Draw=9999;
 	} else {
 		Cpustats(&Cpu_Draw,&StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
 	}
-#endif
     
     }
   #if TESTBENCH

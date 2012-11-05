@@ -40,9 +40,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
 
   NMEA_INFO     tmpGPS;
   DERIVED_INFO  tmpCALCULATED;
-  #ifdef CPUSTATS
   FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime ;
-  #endif
   needcalculationsslow = false;
 
   // let's not create a deadlock here, setting the go after another race condition
@@ -61,9 +59,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
     ResetEvent(dataTriggerEvent);
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
-    #ifdef CPUSTATS
     GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
-    #endif
 
     // make local copy before editing...
     LockFlightData();
@@ -130,13 +126,11 @@ DWORD CalculationThread (LPVOID lpvoid) {
     if (FlightDataRecorderActive) UpdateFlightDataRecorder(&tmpGPS,&tmpCALCULATED);
    
     
-    #ifdef CPUSTATS
     if ( (GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
                Cpu_Calc=9999;
     } else {
                Cpustats(&Cpu_Calc,&StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
     }
-    #endif
   }
   return 0;
 }

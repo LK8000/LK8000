@@ -10,8 +10,8 @@
 
 
 #if (WINDOWSPC>0)
-typedef DWORD (_stdcall *GetIdleTimeProc) (void);
-GetIdleTimeProc GetIdleTime;
+//typedef DWORD (_stdcall *GetIdleTimeProc) (void);
+//GetIdleTimeProc GetIdleTime;
 #endif
 
 #if DEBUG_MEM
@@ -43,6 +43,7 @@ int MeasureCPULoad() {
   if (!start) {
     dwStopTick = GetTickCount();
     dwIdleEd = GetIdleTime();
+    LKASSERT((dwStopTick-dwStartTick)!=0);
     pi = ((100 * (dwIdleEd - dwIdleSt))/(dwStopTick - dwStartTick));
     PercentIdle = (PercentIdle+pi)/2;
   }
@@ -54,7 +55,6 @@ int MeasureCPULoad() {
 
 
 
-#ifdef CPUSTATS
 // Warning this is called by several concurrent threads, no static variables here
 void Cpustats(int *accounting, FILETIME *kernel_old, FILETIME *kernel_new, FILETIME *user_old, FILETIME *user_new) {
    __int64 knew=0, kold=0, unew=0, uold=0;
@@ -86,4 +86,15 @@ void Cpustats(int *accounting, FILETIME *kernel_old, FILETIME *kernel_new, FILET
 
 }
 
+int CpuSummary() {
+
+  int s;
+#if (WINDOWSPC>0)
+  s=((Cpu_Draw+Cpu_Calc+Cpu_PortA+Cpu_PortB)/10000);
+#else
+  s=((Cpu_Draw+Cpu_Calc+Cpu_PortA+Cpu_PortB)/10);
 #endif
+  if (s>999) s=999;
+  return s;
+} 
+

@@ -406,14 +406,12 @@ void Globals_Init(void) {
   LKForceComPortReset=false;
   LKDoNotResetComms=false;
 
-  #ifdef CPUSTATS
   Cpu_Draw=0;
   Cpu_Calc=0;
   Cpu_Instrument=0;
   Cpu_PortA=0;
   Cpu_PortB=0;
   Cpu_Aver=0;
-  #endif
 
   Experimental1=0, Experimental2=0;
 

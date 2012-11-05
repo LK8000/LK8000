@@ -631,8 +631,12 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		}
 		break;
 	case BM_SYS:
-		//showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
+		//showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=true;
+		extern int CpuSummary();
+		_stprintf(BufferValue,_T("%d"),CpuSummary());
+		wcscpy(BufferTitle,_T("CPU"));
+		wcscpy(BufferUnit,_T("%"));
 		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CRUISE);
@@ -700,6 +704,7 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 			wcscpy(BufferTitle,_T(""));
 		break;
 	case BM_SYS:
+		#if 0 // REMOVE
 		if (LoggerGActive()) {
   			wsprintf(BufferValue, MsgToken(1700));
 		} else {
@@ -708,6 +713,9 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
   		wsprintf(BufferTitle, TEXT("GRec"));
   		wsprintf(BufferUnit, TEXT("")); // 100221
 		showunit=true;
+		#else
+		showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
+		#endif
 		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CRUISE);

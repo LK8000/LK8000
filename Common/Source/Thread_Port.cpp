@@ -27,9 +27,7 @@ DWORD ComPort::ReadThread()
   #endif
   DWORD dwBytesTransferred=0; // 091117 initialized variables
   BYTE inbuf[1024];
-  #ifdef CPUSTATS
   FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime ;
-  #endif
 
   // JMW added purging of port on open to prevent overflow
   Purge();
@@ -54,9 +52,7 @@ DWORD ComPort::ReadThread()
 
   while ((hPort != INVALID_HANDLE_VALUE) && (!MapWindow::CLOSETHREAD) && (!CloseThread)) 
   {
-	#ifdef CPUSTATS
 	GetThreadTimes( hReadThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
-	#endif
 
 	ClearCommError(hPort,&dwErrors,&comStat);
 	if ( dwErrors & CE_FRAME ) {
@@ -113,7 +109,6 @@ DWORD ComPort::ReadThread()
 			Sleep(50); // JMW20070515: give port some time to
 			// fill... prevents ReadFile from causing the
 			// thread to take up too much CPU
-			#ifdef CPUSTATS
 			if ( (GetThreadTimes( hReadThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
 				if(sportnumber==0)
 					Cpu_PortA=9999;
@@ -122,7 +117,6 @@ DWORD ComPort::ReadThread()
 			} else {
 				Cpustats((sportnumber==0)?&Cpu_PortA:&Cpu_PortB,&StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
 			}
-			#endif
 		  
 			if (CloseThread) {
 				dwBytesTransferred = 0;
