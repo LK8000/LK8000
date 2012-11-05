@@ -317,6 +317,7 @@ void MasterTimeReset(void) {
 
   // Future possible handlings of this exception:
   // . Battery manager
+  // . Trip computer
 
   // Remember to lock anything needed to be locked
 

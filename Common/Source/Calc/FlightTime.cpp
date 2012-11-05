@@ -17,9 +17,13 @@ extern void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 //
 // This is good for car/trekking mode mainly
+// Reminder: to gain accuracy we cannot rely on the internal timers in Hz because
+// they are only approximated.
 //
 void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static unsigned int steady=0;
+  static double steady_start_time=0;
+  static unsigned int old_trip_steady_time=0;
 
   if (LKSW_ResetTripComputer) {
 	LKSW_ResetTripComputer=false;
@@ -28,7 +32,9 @@ void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	#endif
 	Trip_Steady_Time=0;
 	Trip_Moving_Time=0;
-	if (ISCAR) Calculated->FlightTime = 0; // se later in DetecStartTime also
+	steady_start_time=0;
+	old_trip_steady_time=0;
+	if (ISCAR) Calculated->FlightTime = 0; // see later in DetecStartTime also
 	Calculated->Odometer = 0;
 	LKSW_ResetLDRotary=true;
 	steady=0;
@@ -37,26 +43,35 @@ void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (Basic->NAVWarning) return;
 
   // For CAR mode, Flying is set true after the very first departure.
+  // This is granting us a valid TakeOffTime .
   if (!Calculated->Flying) return;
+
+  if ((steady_start_time>(Basic->Time+1))||(Basic->Time<Calculated->TakeOffTime)) {
+	StartupStore(_T("... TripTimes back in time! Reset!\n"));
+	DoStatusMessage(_T("TRIP COMPUTER RESET"));
+	LKSW_ResetTripComputer=true;
+	return;
+  }
 
   if (Basic->Speed<0.1) {
 	//
 	// We are NOT moving
 	//
-	steady++;
-	if (steady==STEADY_MINTIME) Trip_Steady_Time+=STEADY_MINTIME;
-	if (steady >STEADY_MINTIME) Trip_Steady_Time++;
+	if (steady_start_time==0) steady_start_time=Basic->Time;
+	steady=(unsigned int) (Basic->Time-steady_start_time);
+	if (steady>=STEADY_MINTIME) {
+		// we are really steady
+		Trip_Steady_Time=old_trip_steady_time + steady;
+	} 
   } else {
-	//
 	// We are moving!
-	//
 	// Logic is: if we moved at least in last 10 seconds, we count the entire period as moving.
 	// This will smooth the slow-speed inhertial of gps fixes
-	if (steady>0 && steady<STEADY_MINTIME) {
-		Trip_Moving_Time+=steady;
-	}
-	Trip_Moving_Time++;
-	steady=0;
+
+	// first we reset predicted steady start time
+	steady_start_time=Basic->Time+1;
+	old_trip_steady_time=Trip_Steady_Time;
+	Trip_Moving_Time= (unsigned int)Calculated->FlightTime - Trip_Steady_Time;
   }
 }
 
