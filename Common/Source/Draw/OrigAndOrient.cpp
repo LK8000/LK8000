@@ -70,10 +70,18 @@ void MapWindow::CalculateOrientationTargetPan(void) {
 
 
 void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig) {
-  if (mode.Is(Mode::MODE_TARGET_PAN)) {
-	CalculateOrientationTargetPan();
+
+  if (mode.Is(Mode::MODE_PAN)) {
+	// North up
+	DisplayAngle = 0.0;
+	DisplayAircraftAngle = DrawInfo.TrackBearing;
+	GliderCenter = true;
   } else {
-	CalculateOrientationNormal();
+	if (mode.Is(Mode::MODE_TARGET_PAN)) {
+		CalculateOrientationTargetPan();
+	} else {
+		CalculateOrientationNormal();
+	}
   }
   
   if(mode.Is(Mode::MODE_TARGET_PAN)) {
