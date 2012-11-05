@@ -52,11 +52,13 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
   //
   short iconsizex, iconsizey;
 
-  //if (IsMultiMapNoMain()) {
+  #if 0
   if (IsMultiMap()) {
-
-	// short i=Get_Current_Multimap_Type()-1; if we want old style..
 	short i=Get_Current_Multimap_Type();
+  #else
+  if (1) {
+	short i=ModeType[LKMODE_MAP];
+  #endif
 	switch(i) {
 		case 1:
 			SelectObject(hDCTemp,hMM1);
