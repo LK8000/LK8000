@@ -388,7 +388,7 @@ void Statistics::DrawTrendN(HDC hdc, const RECT rc,
 
 int Statistics::ScaleX(const RECT rc, double x)
 {
-  return ((x-x_min)*xscale)+rc.left+BORDER_X;
+  return (int)((x-x_min)*xscale)+rc.left+BORDER_X;
 }
 
 int Statistics::ScaleY(const RECT rc,double y)
@@ -919,28 +919,49 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
 
   TCHAR text[80];
   SetBkMode(hdc, OPAQUE);
+
   if(INVERTCOLORS)
-    SetTextColor(hdc,RGB(50,50,160));
+    SetTextColor(hdc,RGB_BLACK);
   else
-	SetTextColor(hdc,RGB_WHITE);
+    SetTextColor(hdc,RGB_WHITE);
+
   HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
   LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, text, (WCHAR*) NULL);
 
    ExtTextOut(hdc, rc.left+IBLSCALE(30),
- 	               rc.bottom-IBLSCALE(90),
+ 	               rc.bottom-IBLSCALE(130),
  	               ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
   _stprintf(text,TEXT("%s %.0f kg"),  
             gettext(TEXT("_@M814_")), // Weight
 	        GlidePolar::GetAUW());
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
-	              rc.bottom-IBLSCALE(70),
+	              rc.bottom-IBLSCALE(110),
 	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
   _stprintf(text,TEXT("%s %.1f kg/m2"),  
 	             gettext(TEXT("_@M821_")), // Wing load
 	             GlidePolar::WingLoading);
+  ExtTextOut(hdc, rc.left+IBLSCALE(30), 
+	              rc.bottom-IBLSCALE(90),
+	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
+  _stprintf(text, TEXT("%s: %3.0f  @ %3.0f %s"),
+		MsgToken(140), // Best LD
+                  GlidePolar::bestld,
+                  GlidePolar::Vbestld*SPEEDMODIFY,
+                  Units::GetHorizontalSpeedName());
+  ExtTextOut(hdc, rc.left+IBLSCALE(30), 
+	              rc.bottom-IBLSCALE(70),
+	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
+  _stprintf(text, TEXT("%s: %3.2f %s @ %3.0f %s"),
+		MsgToken(437), // Min sink
+                  GlidePolar::minsink*LIFTMODIFY,
+                  Units::GetVerticalSpeedName(),
+                  GlidePolar::Vminsink*SPEEDMODIFY,
+                  Units::GetHorizontalSpeedName());
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
 	              rc.bottom-IBLSCALE(50),
 	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
@@ -1662,43 +1683,23 @@ static void Update(void){
       wInfo->SetCaption(sTmp);
     break;
     case ANALYSIS_PAGE_POLAR:
-      _stprintf(sTmp, TEXT("%s: %s %s (%s %3.0f kg)"),
-	// LKTOKEN  _@M93_ = "Analysis" 
-                gettext(TEXT("_@M93_")),
-	// LKTOKEN  _@M325_ = "Glide Polar"
-                szPolarName,
-                gettext(TEXT("_@M325_")),
-                gettext(TEXT("_@M889_")), // Mass
-                GlidePolar::GetAUW());
+	if (ScreenLandscape) {
+	      	_stprintf(sTmp, TEXT("%s: %s %s (%s %3.0f kg)"),
+	                MsgToken(93), // Analysis:
+	                szPolarName,
+	                MsgToken(325),  // Glide Polar
+	                MsgToken(889), // Mass
+	                GlidePolar::GetAUW());
+	} else {
+		// Portrait reduced size
+	      	_stprintf(sTmp, TEXT("%s: %s (%3.0f kg)"),
+	                MsgToken(93), // Analysis:
+	                szPolarName,
+	                GlidePolar::GetAUW());
+
+	}
       wf->SetCaption(sTmp);
-      if (ScreenLandscape) {
-        _stprintf(sTmp, TEXT("%s:\r\n  %3.0f\r\n  @ %3.0f %s\r\n\r\n%s:\r\n%3.2f %s\r\n  @ %3.0f %s"),
-	// LKTOKEN  _@M140_ = "Best LD" 
-                  gettext(TEXT("_@M140_")),
-                  GlidePolar::bestld,
-                  GlidePolar::Vbestld*SPEEDMODIFY,
-                  Units::GetHorizontalSpeedName(),
-	// LKTOKEN  _@M437_ = "Min sink" 
-                  gettext(TEXT("_@M437_")),
-                  GlidePolar::minsink*LIFTMODIFY,
-                  Units::GetVerticalSpeedName(),
-                  GlidePolar::Vminsink*SPEEDMODIFY,
-                  Units::GetHorizontalSpeedName()
-                  );
-      } else {
-        _stprintf(sTmp, TEXT("%s:\r\n  %3.0f @ %3.0f %s\r\n%s:\r\n  %3.2f %s @ %3.0f %s"),
-	// LKTOKEN  _@M140_ = "Best LD" 
-                  gettext(TEXT("_@M140_")),
-                  GlidePolar::bestld,
-                  GlidePolar::Vbestld*SPEEDMODIFY,
-                  Units::GetHorizontalSpeedName(),
-	// LKTOKEN  _@M437_ = "Min sink" 
-                  gettext(TEXT("_@M437_")),
-                  GlidePolar::minsink*LIFTMODIFY,
-                  Units::GetVerticalSpeedName(),
-                  GlidePolar::Vminsink*SPEEDMODIFY,
-                  Units::GetHorizontalSpeedName());
-      }
+      _stprintf(sTmp, TEXT(" "));
       wInfo->SetCaption(sTmp);
     break;
   case ANALYSIS_PAGE_TEMPTRACE:
