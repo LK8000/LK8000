@@ -19,7 +19,7 @@
 #define SV_BORDER_Y NIBLSCALE (10)
 
 #define ENABLE_ALL_AS_FOR_SIDEVIEW
-#define MIN_ALTITUDE 1500.0 /* maximum altitude (in m) */
+#define MIN_ALTITUDE 1200.0 /* maximum altitude (in m) */
 #define MIN_OFFSET   500.0  /* maximum altitude offset (in m) */
 
 //#define OFFSET_SETP 500.0
@@ -42,7 +42,7 @@
 #define SIZE3 70
 #define SIZE4 100
 
-#define MAXPAGE 8
+
 #define ZOOMFACTOR 1.3
 
 #define GROUND_COLOUR	RGB(157,101,60)

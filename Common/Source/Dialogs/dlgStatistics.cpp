@@ -12,10 +12,13 @@
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
 #include "LKInterface.h"
+#include "NavFunctions.h"
 #include "RGB.h"
 #include "Sideview.h"
 #include "Dialogs.h"
 
+#include "math.h"
+#include "LKAirspace.h"
 
 
 double Statistics::yscale;
@@ -264,7 +267,7 @@ void Statistics::DrawLabel(HDC hdc, const RECT rc, const TCHAR *text,
   GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
   int x = (int)((xv-x_min)*xscale)+rc.left-tsize.cx/2+BORDER_X;
   int y = (int)((y_max-yv)*yscale)+rc.top-tsize.cy/2;
-  SetBkMode(hdc, OPAQUE);
+//  SetBkMode(hdc, OPAQUE);
   if(INVERTCOLORS)
     SelectObject(hdc, GetStockObject(BLACK_PEN));
 
@@ -381,6 +384,16 @@ void Statistics::DrawTrendN(HDC hdc, const RECT rc,
 
   StyleLine(hdc, line[0], line[1], Style, rc);
 
+}
+
+int Statistics::ScaleX(const RECT rc, double x)
+{
+  return ((x-x_min)*xscale)+rc.left+BORDER_X;
+}
+
+int Statistics::ScaleY(const RECT rc,double y)
+{
+  return(int)((y_max-y)*yscale)+rc.top;
 }
 
 
@@ -975,7 +988,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 {
   int i, j;
   unsigned int ui;
-
+double fXY_Scale = 1.5;
   double lat1 = 0;
   double lon1 = 0;
   double lat2 = 0;
@@ -987,17 +1000,22 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   // find center
   ResetScale();
 
-  if ( (!ValidTaskPoint(0) || !ValidTaskPoint(1)) && !olcmode) {
+  if ( (!ValidTaskPoint(0) || !ValidTaskPoint(1)) && !olcmode)
+  {
 	DrawNoData(hdc,rc);
 	return;
   }
 
-  for (i=0; i<MAXTASKPOINTS; i++) {
+  for (i=0; i<MAXTASKPOINTS; i++)
+  {
     aatradius[i]=0;
   }
   bool nowaypoints = true;
-  for (i=0; i<MAXTASKPOINTS; i++) {
-    if (ValidTaskPoint(i)) {
+
+  for (i=0; i<MAXTASKPOINTS; i++)
+  {
+    if (ValidTaskPoint(i))
+    {
       lat1 = WayPointList[Task[i].Index].Latitude;
       lon1 = WayPointList[Task[i].Index].Longitude;
       ScaleYFromValue(rc, lat1);
@@ -1005,20 +1023,24 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
       nowaypoints = false;
     }
   }
-  if (nowaypoints && !olcmode) {
+
+  if (nowaypoints )
+  {
     DrawNoData(hdc, rc);
     return;
   }
 
   CPointGPSArray trace;
   CContestMgr::Instance().Trace(trace);
-  for(ui=0; ui<trace.size(); ui++) {
+  for(ui=0; ui<trace.size(); ui++)
+  {
     lat1 = trace[ui].Latitude();
     lon1 = trace[ui].Longitude();
     ScaleYFromValue(rc, lat1);
     ScaleXFromValue(rc, lon1);
   }
   HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;
 
@@ -1031,251 +1053,216 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   lon1 = GPS_INFO.Longitude;
   x1 = (lon1-lon_c)*fastcosine(lat1);
   y1 = (lat1-lat_c);
-  ScaleXFromValue(rc, x1);
-  ScaleYFromValue(rc, y1);
+  ScaleXFromValue(rc, x1*fXY_Scale);
+  ScaleYFromValue(rc, y1*fXY_Scale);
 
-  if (olcmode) goto olcmode;	 // by Mazuk 18.4.2012
 
-  for (i=0; i<MAXTASKPOINTS; i++) {
-    if (ValidTaskPoint(i)) {
+
+  for (i=0; i<MAXTASKPOINTS; i++)
+  {
+    if (ValidTaskPoint(i))
+    {
       nwps++;
       lat1 = WayPointList[Task[i].Index].Latitude;
       lon1 = WayPointList[Task[i].Index].Longitude;
       x1 = (lon1-lon_c)*fastcosine(lat1);
       y1 = (lat1-lat_c);
-      ScaleXFromValue(rc, x1);
-      ScaleYFromValue(rc, y1);
+      ScaleXFromValue(rc, x1*fXY_Scale);
+      ScaleYFromValue(rc, y1*fXY_Scale);
 
-      if (AATEnabled) {
-	double aatlat;
-	double aatlon;
-	double bearing;
-	double radius;
+      if (AATEnabled)
+      {
+	    double aatlat;
+	    double aatlon;
+	    double bearing;
+	    double radius;
 
-        if (ValidTaskPoint(i+1)) {
-          if (Task[i].AATType == SECTOR) {
+        if (ValidTaskPoint(i+1))
+        {
+          if (Task[i].AATType == SECTOR)
             radius = Task[i].AATSectorRadius;
-          } else {
+          else
             radius = Task[i].AATCircleRadius;
-          }
-          for (j=0; j<4; j++) {
+
+          for (j=0; j<4; j++)
+          {
             bearing = j*360.0/4;
-            
-            FindLatitudeLongitude(WayPointList[Task[i].Index].Latitude,
-                                  WayPointList[Task[i].Index].Longitude, 
-                                  bearing, radius,
-                                  &aatlat, &aatlon);
+            FindLatitudeLongitude(WayPointList[Task[i].Index].Latitude, WayPointList[Task[i].Index].Longitude, bearing, radius,  &aatlat, &aatlon);
             x1 = (aatlon-lon_c)*fastcosine(aatlat);
             y1 = (aatlat-lat_c);
             ScaleXFromValue(rc, x1);
             ScaleYFromValue(rc, y1);
-            if (j==0) {
+            if (j==0)
+            {
               aatradius[i] = fabs(aatlat-WayPointList[Task[i].Index].Latitude);
             }
           }
-        } else {
+        }
+        else
+        {
           aatradius[i] = 0;
         }
       }
     }
   }
 
-olcmode:
-  for(ui=0; ui<trace.size(); ui++) {
+
+  for(ui=0; ui<trace.size(); ui++)
+  {
     lat1 = trace[ui].Latitude();
     lon1 = trace[ui].Longitude();
     x1 = (lon1-lon_c)*fastcosine(lat1);
     y1 = (lat1-lat_c);
-    ScaleXFromValue(rc, x1);
-    ScaleYFromValue(rc, y1);
+    ScaleXFromValue(rc, x1*fXY_Scale);
+    ScaleYFromValue(rc, y1*fXY_Scale);
   }
 
   ScaleMakeSquare(rc);
 
-  DrawXGrid(hdc, rc, 
-            1.0, 0,
-            STYLE_THINDASHPAPER, 1.0, false);
-  DrawYGrid(hdc, rc, 
-            1.0, 0,
-            STYLE_THINDASHPAPER, 1.0, false);
 
   // draw aat areas
-  if (!olcmode) {
-    if (AATEnabled) {
-      for (i=MAXTASKPOINTS-1; i>0; i--) {
-	if (ValidTaskPoint(i)) {
-	  lat1 = WayPointList[Task[i-1].Index].Latitude;
-	  lon1 = WayPointList[Task[i-1].Index].Longitude;
-	  lat2 = WayPointList[Task[i].Index].Latitude;
-	  lon2 = WayPointList[Task[i].Index].Longitude;
-	  x1 = (lon1-lon_c)*fastcosine(lat1);
-	  y1 = (lat1-lat_c);
-	  x2 = (lon2-lon_c)*fastcosine(lat2);
-	  y2 = (lat2-lat_c);
-	  
-	  SelectObject(hdc, 
-		       MapWindow::GetAirspaceBrushByClass(AATASK));
-	  SelectObject(hdc, GetStockObject(WHITE_PEN));
-	  if (Task[i].AATType == SECTOR) {
-	    Segment(hdc,
-		    (long)((x2-x_min)*xscale+rc.left+BORDER_X),
-		    (long)((y_max-y2)*yscale+rc.top),
-		    (long)(aatradius[i]*yscale), 
-		    rc, 
-		    Task[i].AATStartRadial, 
-		    Task[i].AATFinishRadial); 
-	  } else {
-	    Circle(hdc,
-		   (long)((x2-x_min)*xscale+rc.left+BORDER_X),
-		   (long)((y_max-y2)*yscale+rc.top),
-		   (long)(aatradius[i]*yscale), 
-		   rc);
-	  }
-	}
+    if (AATEnabled)
+    {
+      for (i=MAXTASKPOINTS-1; i>0; i--)
+      {
+	    if (ValidTaskPoint(i))
+	    {
+		  lat1 = WayPointList[Task[i-1].Index].Latitude;
+		  lon1 = WayPointList[Task[i-1].Index].Longitude;
+		  lat2 = WayPointList[Task[i].Index].Latitude;
+		  lon2 = WayPointList[Task[i].Index].Longitude;
+		  x1 = (lon1-lon_c)*fastcosine(lat1);
+		  y1 = (lat1-lat_c);
+		  x2 = (lon2-lon_c)*fastcosine(lat2);
+		  y2 = (lat2-lat_c);
+
+		  SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(AATASK));
+		  SelectObject(hdc, GetStockObject(WHITE_PEN));
+		  if (Task[i].AATType == SECTOR)
+		  {
+			Segment(hdc,(long)((x2-x_min)*xscale+rc.left+BORDER_X),(long)((y_max-y2)*yscale+rc.top),(long)(aatradius[i]*yscale),rc,	Task[i].AATStartRadial,	Task[i].AATFinishRadial);
+		  }
+		  else
+		  {
+	        Circle(hdc, (long)((x2-x_min)*xscale+rc.left+BORDER_X), (long)((y_max-y2)*yscale+rc.top),  (long)(aatradius[i]*yscale), rc);
+	      }
+        }
       }
     }
-  }
 
-  // draw track
-  for(ui=0; trace.size() && ui<trace.size()-1; ui++) {
-    lat1 = trace[ui].Latitude();
-    lon1 = trace[ui].Longitude();
-    lat2 = trace[ui+1].Latitude();
-    lon2 = trace[ui+1].Longitude();
-    x1 = (lon1-lon_c)*fastcosine(lat1);
-    y1 = (lat1-lat_c);
-    x2 = (lon2-lon_c)*fastcosine(lat2);
-    y2 = (lat2-lat_c);
-    DrawLine(hdc, rc,
-	     x1, y1, x2, y2,
-	     STYLE_MEDIUMBLACK);
-  }
 
-  // draw task lines and labels
-
-  if (!olcmode) {
-    for (i=MAXTASKPOINTS-1; i>0; i--) {
-      if (ValidTaskPoint(i) && ValidTaskPoint(i-1)) {
-        lat1 = WayPointList[Task[i-1].Index].Latitude;
-	lon1 = WayPointList[Task[i-1].Index].Longitude;
+	for (i=MAXTASKPOINTS-1; i>0; i--)
+	{
+	  if (ValidTaskPoint(i) && ValidTaskPoint(i-1))
+	  {
+		lat1 = WayPointList[Task[i-1].Index].Latitude;
+		lon1 = WayPointList[Task[i-1].Index].Longitude;
 		if (!ValidTaskPoint(1) ) {
 		  lat2 = GPS_INFO.Latitude;
 		  lon2 = GPS_INFO.Longitude;
-		} else {
+		}
+		else
+		{
 		  lat2 = WayPointList[Task[i].Index].Latitude;
 		  lon2 = WayPointList[Task[i].Index].Longitude;
 		}
-	x1 = (lon1-lon_c)*fastcosine(lat1);
-	y1 = (lat1-lat_c);
-	x2 = (lon2-lon_c)*fastcosine(lat2);
-	y2 = (lat2-lat_c);
-	
-	DrawLine(hdc, rc,
-		 x1, y1, x2, y2,
-		 STYLE_BLUETHIN /* STYLE_DASHGREEN*/);
-	
-	TCHAR text[100];
-	if ((i==nwps-1) && (Task[i].Index == Task[0].Index)) {
-	  _stprintf(text,TEXT("%0d"),1);
-	  DrawLabel(hdc, rc, text, x2, y2);
-	} else {
-	  _stprintf(text,TEXT("%0d"),i+1);
-	  DrawLabel(hdc, rc, text, x2, y2);
-	}
-	
-	if ((i==ActiveWayPoint)&&(!AATEnabled)) {
-	  lat1 = GPS_INFO.Latitude;
-	  lon1 = GPS_INFO.Longitude;
-	  x1 = (lon1-lon_c)*fastcosine(lat1);
-	  y1 = (lat1-lat_c);
-	  DrawLine(hdc, rc,
-		   x1, y1, x2, y2,
-		   STYLE_REDTHICK);
-	}
+		x1 = (lon1-lon_c)*fastcosine(lat1);
+		y1 = (lat1-lat_c);
+		x2 = (lon2-lon_c)*fastcosine(lat2);
+		y2 = (lat2-lat_c);
 
-
-	
-      }
-    }
-
-    // draw aat task line 
-    
-    if (AATEnabled) {
-      for (i=MAXTASKPOINTS-1; i>0; i--) {
-	if (ValidTaskPoint(i) && ValidTaskPoint(i-1)) {
-          if (i==1) {
-            lat1 = WayPointList[Task[i-1].Index].Latitude;
-            lon1 = WayPointList[Task[i-1].Index].Longitude;
-          } else {
-            lat1 = Task[i-1].AATTargetLat;
-            lon1 = Task[i-1].AATTargetLon;
-          }
-          lat2 = Task[i].AATTargetLat;
-          lon2 = Task[i].AATTargetLon;
-
-          /*	  
-	  if (i==ActiveWayPoint) {
-	    lat1 = GPS_INFO.Latitude;
-	    lon1 = GPS_INFO.Longitude;
+	//	DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
+		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
+	    RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
+		DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
+		Segment(hdc,(long)((x2-x_min)*xscale+rc.left+BORDER_X),(long)((y_max-y2)*yscale+rc.top),(long)(aatradius[i]*yscale),rc,	Task[i].AATStartRadial,	Task[i].AATFinishRadial);
 	  }
-          */
-
-	  x1 = (lon1-lon_c)*fastcosine(lat1);
-	  y1 = (lat1-lat_c);
-	  x2 = (lon2-lon_c)*fastcosine(lat2);
-	  y2 = (lat2-lat_c);
-	  
-	  DrawLine(hdc, rc,
-		   x1, y1, x2, y2,
-		   STYLE_REDTHICK);
 	}
-      }
-    }
-  }
-  
-  if(olcmode) {
-    CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, true);
-    if(result.Type() == contestType) {
-      const CPointGPSArray &points = result.PointArray();
-      for(ui=0; ui<points.size()-1; ui++) {
-        lat1 = points[ui].Latitude();
-        lon1 = points[ui].Longitude();
-        lat2 = points[ui+1].Latitude();
-        lon2 = points[ui+1].Longitude();
-        x1 = (lon1-lon_c)*fastcosine(lat1);
-        y1 = (lat1-lat_c);
-        x2 = (lon2-lon_c)*fastcosine(lat2);
-        y2 = (lat2-lat_c);
-        int style = STYLE_REDTHICK;
-        if((result.Type() == CContestMgr::TYPE_OLC_FAI ||
-            result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) &&
-           (ui==0 || ui==3)) {
-          // triangle start and finish
-          style = STYLE_DASHGREEN;
-        }
-        else if(result.Predicted() &&
-                (result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED ||
-                 ui == points.size() - 2)) {
-          // predicted edge
-          style = STYLE_BLUETHIN;
-        }
-        DrawLine(hdc, rc, x1, y1, x2, y2, style);
-      }
-      if(result.Type() == CContestMgr::TYPE_OLC_FAI ||
-         result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
-        // draw the last edge of a triangle
-        lat1 = points[1].Latitude();
-        lon1 = points[1].Longitude();
-        lat2 = points[3].Latitude();
-        lon2 = points[3].Longitude();
-        x1 = (lon1-lon_c)*fastcosine(lat1);
-        y1 = (lat1-lat_c);
-        x2 = (lon2-lon_c)*fastcosine(lat2);
-        y2 = (lat2-lat_c);
-        DrawLine(hdc, rc, x1, y1, x2, y2, result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
-      }
-    }
-  }
+
+
+	// draw task lines and label
+	for (i=MAXTASKPOINTS-1; i>0; i--)
+	{
+	  if (ValidTaskPoint(i) && ValidTaskPoint(i-1))
+	  {
+		lat1 = WayPointList[Task[i-1].Index].Latitude;
+		lon1 = WayPointList[Task[i-1].Index].Longitude;
+		if (!ValidTaskPoint(1) ) {
+		  lat2 = GPS_INFO.Latitude;
+		  lon2 = GPS_INFO.Longitude;
+		}
+		else
+		{
+		  lat2 = WayPointList[Task[i].Index].Latitude;
+		  lon2 = WayPointList[Task[i].Index].Longitude;
+		}
+		x1 = (lon1-lon_c)*fastcosine(lat1);
+		y1 = (lat1-lat_c);
+		x2 = (lon2-lon_c)*fastcosine(lat2);
+		y2 = (lat2-lat_c);
+
+		DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_BLUETHIN);
+	    SetBkMode(hdc,OPAQUE);
+	    SetBkMode(hdc, OPAQUE);
+		TCHAR text[100];
+		 SetTextColor(hdc, RGB_BLUE);
+/*
+		if ((i==nwps-1) && (Task[i].Index == Task[0].Index))
+		{
+		  _stprintf(text,TEXT("%0d"),1);
+		  DrawLabel(hdc, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
+		}
+		else */
+		{
+		  _stprintf(text,TEXT("%0d"),i);
+		  DrawLabel(hdc, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
+		}
+
+		if ((i==ActiveWayPoint)&&(!AATEnabled))
+		{
+		  lat1 = GPS_INFO.Latitude;
+		  lon1 = GPS_INFO.Longitude;
+		  x1 = (lon1-lon_c)*fastcosine(lat1);
+		  y1 = (lat1-lat_c);
+		  DrawLine(hdc, rc, x1, y1, x2, y2,  STYLE_REDTHICK);
+		}
+	  }
+	}
+	
+	// draw aat task line
+	
+	if (AATEnabled)
+	{
+	  for (i=MAXTASKPOINTS-1; i>0; i--)
+	  {
+		if (ValidTaskPoint(i) && ValidTaskPoint(i-1))
+		{
+		  if (i==1)
+		  {
+			lat1 = WayPointList[Task[i-1].Index].Latitude;
+			lon1 = WayPointList[Task[i-1].Index].Longitude;
+		  }
+		  else
+		  {
+			lat1 = Task[i-1].AATTargetLat;
+			lon1 = Task[i-1].AATTargetLon;
+		  }
+		  lat2 = Task[i].AATTargetLat;
+		  lon2 = Task[i].AATTargetLon;
+	
+		  x1 = (lon1-lon_c)*fastcosine(lat1);
+		  y1 = (lat1-lat_c);
+		  x2 = (lon2-lon_c)*fastcosine(lat2);
+		  y2 = (lat2-lat_c);
+
+		  DrawLine(hdc, rc,   x1, y1, x2, y2,  STYLE_REDTHICK);
+		}
+	  }
+	}
+
+	  DrawXGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+	  DrawYGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+
 
   SelectObject(hdc, hfOldU);
   // Draw aircraft on top
@@ -1286,6 +1273,9 @@ olcmode:
   SetBkMode(hdc, TRANSPARENT);
   DrawLabel(hdc, rc, TEXT("+"), x1, y1);
 }
+
+
+
 
 
 void Statistics::RenderTemperature(HDC hdc, const RECT rc)
@@ -1551,10 +1541,11 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
     Statistics::RenderTask(hDC, rcgfx, false);
     UnlockTaskData();
     break;
+
   case ANALYSIS_PAGE_CONTEST:
     SetCalcCaption(gettext(TEXT("_@M1451_"))); // Change
     LockTaskData();
-    Statistics::RenderTask(hDC, rcgfx, true);
+    Statistics::RenderContest(hDC, rcgfx);
     UnlockTaskData();
     break;
 
@@ -1988,8 +1979,12 @@ static void OnCalcClicked(WindowControl * Sender,
       contestType = CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
       break;
     case CContestMgr::TYPE_FAI_3_TPS_PREDICTED:
+      contestType = CContestMgr::TYPE_FAI_TRIANGLE;
+      break;
+    case CContestMgr::TYPE_FAI_TRIANGLE:
       contestType = CContestMgr::TYPE_OLC_CLASSIC;
       break;
+
     default:
       contestType = CContestMgr::TYPE_OLC_CLASSIC;
     }
@@ -2111,5 +2106,409 @@ if (entered == true) /* prevent re entrance */
   FullScreen();
   entered = false;
 }
+
+
+
+
+
+/*****************************************************************
+ * Alpha Lima splitted RenderContest from Render Task for CC
+ * adding FAI Sector display
+ ****************************************************************/
+void Statistics::RenderContest(HDC hdc, const RECT rc)
+{
+  unsigned int ui;
+  double fXY_Scale = 1.0;
+  double lat1 = 0;
+  double lon1 = 0;
+  double lat2 = 0;
+  double lon2 = 0;
+  double x1, y1, x2=0, y2=0;
+  double lat_c, lon_c;
+
+  ResetScale();
+  CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, true);
+
+  if(result.Type() == CContestMgr::TYPE_FAI_TRIANGLE)
+     fXY_Scale = 1.5;
+
+  // find center
+
+
+  CPointGPSArray trace;
+  CContestMgr::Instance().Trace(trace);
+  for(ui=0; ui<trace.size(); ui++)
+  {
+    lat1 = trace[ui].Latitude();
+    lon1 = trace[ui].Longitude();
+    ScaleYFromValue(rc, lat1);
+    ScaleXFromValue(rc, lon1);
+  }
+
+  HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+  lat_c = (y_max+y_min)/2;
+  lon_c = (x_max+x_min)/2;
+
+
+  // find scale
+  ResetScale();
+
+  lat1 = GPS_INFO.Latitude;
+  lon1 = GPS_INFO.Longitude;
+  x1 = (lon1-lon_c)*fastcosine(lat1);
+  y1 = (lat1-lat_c);
+  ScaleXFromValue(rc, x1*fXY_Scale);
+  ScaleYFromValue(rc, y1*fXY_Scale);
+  for(ui=0; ui<trace.size(); ui++)
+  {
+    lat1 = trace[ui].Latitude();
+    lon1 = trace[ui].Longitude();
+    x1 = (lon1-lon_c)*fastcosine(lat1);
+    y1 = (lat1-lat_c);
+    ScaleXFromValue(rc, x1*fXY_Scale);
+    ScaleYFromValue(rc, y1*fXY_Scale);
+  }
+
+
+  ScaleMakeSquare(rc);
+  // draw track
+  for(ui=0; trace.size() && ui<trace.size()-1; ui++)
+  {
+    lat1 = trace[ui].Latitude();
+    lon1 = trace[ui].Longitude();
+    lat2 = trace[ui+1].Latitude();
+    lon2 = trace[ui+1].Longitude();
+    x1 = (lon1-lon_c)*fastcosine(lat1);
+    y1 = (lat1-lat_c);
+    x2 = (lon2-lon_c)*fastcosine(lat2);
+    y2 = (lat2-lat_c);
+    DrawLine(hdc, rc,  x1, y1, x2, y2, STYLE_MEDIUMBLACK);
+  }
+
+
+  if(result.Type() == contestType)
+  {
+    const CPointGPSArray &points = result.PointArray();
+
+    for(ui=0; ui<points.size()-1; ui++)
+    {
+      lat1 = points[ui].Latitude();
+      lon1 = points[ui].Longitude();
+      lat2 = points[ui+1].Latitude();
+      lon2 = points[ui+1].Longitude();
+
+      x1 = (lon1-lon_c)*fastcosine(lat1);
+      y1 = (lat1-lat_c);
+      x2 = (lon2-lon_c)*fastcosine(lat2);
+      y2 = (lat2-lat_c);
+      int style = STYLE_REDTHICK;
+      if((result.Type() == CContestMgr::TYPE_OLC_FAI ||
+          result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) &&
+         (ui==0 || ui==3))
+      {
+        // triangle start and finish
+        style = STYLE_DASHGREEN;
+      }
+      else if(result.Predicted() &&
+              (result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED ||
+               ui == points.size() - 2))
+      {
+        // predicted edge
+        style = STYLE_BLUETHIN;
+      }
+
+      if((result.Type() == CContestMgr::TYPE_FAI_3_TPS) ||// TYPE_FAI_3_TPS_PREDICTED
+       (result.Type() == CContestMgr::TYPE_FAI_3_TPS_PREDICTED) )
+      {
+        DrawLine(hdc, rc, x1, y1, x2, y2, style);
+      }
+
+      if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE))// TYPE_FAI_TRIANGLE
+      {
+        double fDist, fAngle;
+        DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
+        if(ui < 2)
+        if(fDist > 10000)
+        { COLORREF rgbCol = RGB_BLUE;
+          switch(ui)
+          {
+        	case 0: rgbCol = RGB_LIGHTYELLOW; break;
+        	case 1: rgbCol = RGB_LIGHTCYAN  ; break;
+        	case 2: rgbCol = RGB_LIGHTGREEN ; break;
+        	default:
+        	break;
+          }
+    	  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, rgbCol );
+    	  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, rgbCol );
+        }
+        DrawLine(hdc, rc, x1, y1, x2, y2, style);
+      }
+    }
+
+    if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE))// TYPE_FAI_TRIANGLE
+    {
+	  // draw track again 8over sectors
+	  for(ui=0; trace.size() && ui<trace.size()-1; ui++)
+	  {
+		lat1 = trace[ui].Latitude();
+		lon1 = trace[ui].Longitude();
+		lat2 = trace[ui+1].Latitude();
+		lon2 = trace[ui+1].Longitude();
+		x1 = (lon1-lon_c)*fastcosine(lat1);
+		y1 = (lat1-lat_c);
+		x2 = (lon2-lon_c)*fastcosine(lat2);
+		y2 = (lat2-lat_c);
+		DrawLine(hdc, rc,  x1, y1, x2, y2, STYLE_MEDIUMBLACK);
+	  }
+
+    for(ui=0; ui<points.size()-1; ui++)
+    {
+      lat1 = points[ui].Latitude();
+      lon1 = points[ui].Longitude();
+      lat2 = points[ui+1].Latitude();
+      lon2 = points[ui+1].Longitude();
+
+      x1 = (lon1-lon_c)*fastcosine(lat1);
+      y1 = (lat1-lat_c);
+      x2 = (lon2-lon_c)*fastcosine(lat2);
+      y2 = (lat2-lat_c);
+      int style = STYLE_REDTHICK;
+      if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE))// TYPE_FAI_TRIANGLE
+      {
+        double fDist, fAngle;
+        DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
+        if(fDist > 10000)
+        {
+//    		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, 0 );
+//    	    RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, 0   );
+        }
+        DrawLine(hdc, rc, x1, y1, x2, y2, style);
+      }
+    }
+
+    }
+
+    if(result.Type() == CContestMgr::TYPE_OLC_FAI ||
+       result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED)
+    {
+      // draw the last edge of a triangle
+      lat1 = points[1].Latitude();
+      lon1 = points[1].Longitude();
+      lat2 = points[3].Latitude();
+      lon2 = points[3].Longitude();
+      x1 = (lon1-lon_c)*fastcosine(lat1);
+      y1 = (lat1-lat_c);
+      x2 = (lon2-lon_c)*fastcosine(lat2);
+      y2 = (lat2-lat_c);
+      DrawLine(hdc, rc, x1, y1, x2, y2, result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
+    }
+  }
+
+  DrawXGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+  DrawYGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+
+
+  SelectObject(hdc, hfOldU);
+  // Draw aircraft on top
+  lat1 = GPS_INFO.Latitude;
+  lon1 = GPS_INFO.Longitude;
+  x1 = (lon1-lon_c)*fastcosine(lat1);
+  y1 = (lat1-lat_c);
+  SetBkMode(hdc, TRANSPARENT);
+  DrawLabel(hdc, rc, TEXT("+"), x1, y1);
+}
+
+
+
+
+int Statistics::RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , COLORREF fillcolor)
+{
+#define FAI_MIN_PERCENTAGE 0.28
+#define STEPS 10
+#define N_PLOYGON (3*STEPS)
+double fDist_a, fDist_b, fDist_c, fAngle;
+int i;
+
+int iPolyPtr=0;
+double lat_d,lon_d;
+double alpha, fDistTri, cos_alpha=0;
+POINT apSectorPolygon[N_PLOYGON];
+DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
+
+double x1=0,y1=0;
+double fDistMax = fDist_c/FAI_MIN_PERCENTAGE;
+double fDistMin = fDist_c/(1.0-2.0*FAI_MIN_PERCENTAGE);
+double fDelta_Dist = 2.0* fDist_c*FAI_MIN_PERCENTAGE / (double)(STEPS);
+
+double dir = -1.0;
+
+//COLORREF fillcolor = RGB_LIGHTCYAN;
+  if (iOpposite >0)
+  {
+	dir = 1.0;
+  }
+
+#ifdef HELP_LINES
+  FindLatitudeLongitude(lat1, lon1, AngleLimit360 (fAngle), fDist_c/2, &lat_d, &lon_d);
+  x1 = (lon_d - lon_c)*fastcosine(lat_d);
+  y1 = (lat_d - lat_c);
+  FindLatitudeLongitude(lat_d, lon_d, AngleLimit360 (fAngle-90.0), fDist_c, &lat_d, &lon_d);
+  x2 = (lon_d - lon_c)*fastcosine(lat_d);
+  y2 = (lat_d - lat_c);
+  DrawLine(hdc, rc, x1, y1, x2, y2, style);
+#endif
+
+  /********************************************************************
+   * calc right leg
+   ********************************************************************/
+  fDelta_Dist =(fDistMax-fDistMin)/ (double)(STEPS);
+  fDistTri = fDistMin;
+  fDist_a = fDistMin * FAI_MIN_PERCENTAGE;
+  fDist_b = fDistMin * FAI_MIN_PERCENTAGE;
+  for(i =0 ;i < STEPS; i++)
+  {
+	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
+	alpha = acos(cos_alpha)*180/PI * dir;
+	FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
+    x1 = (lon_d - lon_c)*fastcosine(lat_d);
+    y1 = (lat_d - lat_c);
+
+    apSectorPolygon[iPolyPtr].x   = ScaleX(rc, x1);
+    apSectorPolygon[iPolyPtr++].y = ScaleY(rc, y1);
+
+    fDistTri += fDelta_Dist;
+    fDist_a = FAI_MIN_PERCENTAGE * fDistTri;
+	fDist_b = fDistTri - fDist_a - fDist_c;
+  }
+
+  /********************************************************************
+   * calc top leg
+   ********************************************************************/
+  fDelta_Dist =  (fDistMax*(1.0-3.0*FAI_MIN_PERCENTAGE)) / (double)(STEPS);
+  fDist_a = fDist_c;
+  fDist_b = fDistMax - fDist_a - fDist_c;
+  for(i =0 ;i < STEPS; i++)
+  {
+	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
+	alpha = acos(cos_alpha)*180/PI * dir;
+	FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
+    x1 = (lon_d - lon_c)*fastcosine(lat_d);
+    y1 = (lat_d - lat_c);
+
+    apSectorPolygon[iPolyPtr].x   = ScaleX(rc, x1);
+    apSectorPolygon[iPolyPtr++].y = ScaleY(rc, y1);
+	fDist_a += fDelta_Dist;
+	fDist_b = fDistMax - fDist_a - fDist_c;
+  }
+
+  /********************************************************************
+   * calc left leg
+   ********************************************************************/
+  fDelta_Dist =(fDistMax-fDistMin)/ (double)(STEPS);
+  fDistTri = fDistMax;
+  fDist_b = fDistMax * FAI_MIN_PERCENTAGE;
+  fDist_a = fDistTri - fDist_b - fDist_c;
+  for(i =0 ;i < STEPS; i++)
+  {
+	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
+	alpha = acos(cos_alpha)*180/PI * dir;
+	FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
+    x1 = (lon_d - lon_c)*fastcosine(lat_d);
+    y1 = (lat_d - lat_c);
+
+    apSectorPolygon[iPolyPtr].x   = ScaleX(rc, x1);
+    apSectorPolygon[iPolyPtr++].y = ScaleY(rc, y1);
+
+    fDistTri -= fDelta_Dist;
+    fDist_b = FAI_MIN_PERCENTAGE * fDistTri;
+	fDist_a = fDistTri - fDist_b - fDist_c;
+  }
+
+  /********************************************************************
+   * draw polygon
+   ********************************************************************/
+
+  HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), RGB_GREEN );
+  HBRUSH hpSectorFill = NULL;
+
+  HPEN hpOldPen     = (HPEN)  SelectObject(hdc, hpSectorPen);
+  HBRUSH hpOldBrush;
+  if (fillcolor != 0)
+  {
+	hpSectorFill = (HBRUSH)CreateSolidBrush(fillcolor);
+    hpOldBrush = (HBRUSH)SelectObject(hdc, hpSectorFill);
+  }
+  else
+    hpOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+
+
+  /********************************************/
+  Polygon(hdc, apSectorPolygon,iPolyPtr);
+  /********************************************/
+
+  SelectObject(hdc, (HPEN)hpOldPen);
+  SelectObject(hdc, (HBRUSH)hpOldBrush);
+  DeleteObject(hpSectorPen);
+  if(hpSectorFill != NULL)
+    DeleteObject(hpSectorFill);
+
+
+
+  /********************************************************************
+   * calc round leg grid
+   ********************************************************************/
+  hpSectorPen  = (HPEN)CreatePen(PS_SOLID, (1), RGB_GREY );
+  SelectObject(hdc, hpSectorPen);
+
+  double fTic= 1/DISTANCEMODIFY;
+  if(fDist_c > 10/DISTANCEMODIFY)  fTic = 10/DISTANCEMODIFY;
+  if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
+  if(fDist_c > 100/DISTANCEMODIFY) fTic = 50/DISTANCEMODIFY;
+  if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
+  if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
+  POINT line[2];
+  BOOL bFirstUnit = true;
+  fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
+  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+  while(fDistTri < fDistMax)
+  {
+    fDelta_Dist =  (fDistTri-fDistMin)*(1.0-2.0*FAI_MIN_PERCENTAGE) / (double)(STEPS-1);
+    fDist_a = fDistTri*FAI_MIN_PERCENTAGE;
+    fDist_b = fDistTri - fDist_a - fDist_c;
+    for(i =0 ;i < STEPS; i++)
+    {
+      cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
+	    alpha = acos(cos_alpha)*180/PI * dir;
+	    FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
+      x1 = (lon_d - lon_c)*fastcosine(lat_d);
+      y1 = (lat_d - lat_c);
+      line[0].x = ScaleX(rc, x1);
+	    line[0].y =	ScaleY(rc, y1);
+
+      if(i> 0)
+	    Polyline(hdc, line, 2);
+      line[1] =  line[0];
+	  fDist_a += fDelta_Dist;
+	  fDist_b = fDistTri - fDist_a - fDist_c;
+    }
+    TCHAR text[180];; SIZE tsize;
+    if(bFirstUnit)
+      _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
+    else
+      _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
+    bFirstUnit = false;
+    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    SetTextColor(hdc, RGB_GREY);
+    ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
+    fDistTri+=fTic;
+  }
+
+SelectObject(hdc, hfOld);
+SelectObject(hdc, (HPEN)hpOldPen);
+DeleteObject( hpSectorPen);
+return 0;
+}
+
 
 

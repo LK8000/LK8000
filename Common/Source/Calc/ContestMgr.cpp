@@ -35,6 +35,7 @@ const TCHAR *CContestMgr::TypeToString(TType type)
     _T("OLC-League"),
     _T("FAI 3 TPs"),
     _T("FAI 3 TPs (P)"),
+    _T("FAI triangle"),
     _T("[invalid]") 
   };
   return typeStr[type];
@@ -337,17 +338,29 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
   }
   PointsResult(type, traceResult);
   
+
   if(!sprint) {
     // calculate TYPE_FAI_3_TPS
-    traceResult.Compress(5);
+	  /*
+if(result.Type() ==ContestMgr::TYPE_FAI_TRIANGLE)
+   traceResult.Compress(3);
+else*/
+   traceResult.Compress(5);
     // store result
     if(predicted) {
       // do it just in a case if predicted trace is worst than the current one
       CCriticalSection::CGuard guard(_resultsCS);
       _resultArray[TYPE_FAI_3_TPS_PREDICTED] = CResult(TYPE_FAI_3_TPS_PREDICTED, _resultArray[TYPE_FAI_3_TPS]);
     }
+
     PointsResult(predicted ? TYPE_FAI_3_TPS_PREDICTED : TYPE_FAI_3_TPS, traceResult);
+
+    traceResult.Compress(4);
+     // store result
+    PointsResult(TYPE_FAI_TRIANGLE, traceResult);
+
   }
+
 }
 
 

@@ -46,7 +46,7 @@ public:
     TYPE_OLC_LEAGUE,                              /**< @brief OLC-League (Sprint) */
     TYPE_FAI_3_TPS,                               /**< @brief FAI with 3 turnpoints */
     TYPE_FAI_3_TPS_PREDICTED,                     /**< @brief FAI with 3 turnpoints predicted for returning to start */
-    
+    TYPE_FAI_TRIANGLE,                            /**< @brief FAI triangle 2 turnpoints predicted for returning to start */
     TYPE_NUM,                                     /**< @brief Do not use it! */
     TYPE_INVALID = TYPE_NUM
   };
