@@ -62,9 +62,6 @@ typedef struct
 } sFlarmPositions;
 static sFlarmPositions asFLRAMPos[FLARM_MAX_TRAFFIC+1];
 
-extern LastPositions asRingBuf[];
-extern int iLastPtr;
-extern bool bBuffFull;
 
 HBRUSH * variobrush[NO_VARIO_COLORS] = {
 		  &LKBrush_Vario_neg4,
@@ -1026,16 +1023,22 @@ RECT rcc = rct;
 	  iColorIdx = max( iColorIdx, 0);
 	  iColorIdx = min( iColorIdx, NO_VARIO_COLORS-1);
 
-	  i = iLastPtr;
-      asRingBuf[i].fLat = GPSlat;
-      asRingBuf[i].fLon = GPSlon;
-      asRingBuf[i].iColorIdx = iColorIdx;
-      iLastPtr++;
-      if(iLastPtr >= NO_TRACE_PTS)
+	  i = DrawInfo.FLARMTRACE_iLastPtr;
+#if 0 // ULLI FIX PLEASE
+      // THIS CANNOT BE DONE. ORIGINALLY OVERWRITING DATA FROM THE WRONG THREAD.
+      // THIS IS NOW ONLY A COPY OF THE STRUCTURE, AND ANYTHING INSIDE THIS STRUCT IS READ ONLY.
+      // YOU CAN ALSO WRITE IN IT, but it will be overwritten after less than a second.
+      //
+      DrawInfo.FLARM_RingBuf[i].fLat = GPSlat;
+      DrawInfo.FLARM_RingBuf[i].fLon = GPSlon;
+      DrawInfo.FLARM_RingBuf[i].iColorIdx = iColorIdx;
+      DrawInfo.FLARMTRACE_iLastPtr++;
+      if(DrawInfo.FLARMTRACE_iLastPtr >= MAX_FLARM_TRACES)
       {
-        iLastPtr=0;
-        bBuffFull = true;
+        DrawInfo.FLARMTRACE_iLastPtr=0;
+        DrawInfo.FLARMTRACE_bBuffFull = true;
       }
+#endif
     } // if
 	/**********************************************
 	 * loop over FLARM objects.
@@ -1045,8 +1048,10 @@ RECT rcc = rct;
 	{
 	  if (DrawInfo.FLARM_Traffic[i].Status == LKT_EMPTY)
 	  {
-	//	bBuffFull= false;
-	//	iLastPtr = 0;
+	#if 0 // REMOVE, WRONG HERE CANNOT BE DONE IN WRONG THREAD
+	//	DrawInfo.FLARMTRACE_bBuffFull= false;
+	//	DrawInfo->FLARMTRACE_iLastPtr = 0;
+	#endif
 	  }
 	  else
 	  {
@@ -1383,15 +1388,15 @@ double fFlarmDist;
 //double fAlt;
 POINT Pnt;
 int i;
-int iTo= iLastPtr;
-int iIdx = iLastPtr;
+int iTo= DrawInfo.FLARMTRACE_iLastPtr;
+int iIdx = DrawInfo.FLARMTRACE_iLastPtr;
 int iCnt = 0;
 if(fZoom  < 0.05)
  return 0;
 
-if( bBuffFull)
+if( DrawInfo.FLARMTRACE_bBuffFull)
 {
-  iTo  = NO_TRACE_PTS;
+  iTo  = MAX_FLARM_TRACES;
 }
 HBRUSH *pOldBrush =NULL;
 HPEN oldPen =	(HPEN)SelectObject(hDC, GetStockObject(NULL_PEN));
@@ -1407,7 +1412,7 @@ unsigned long lStartTime = GetTickCount();
 
 	for(i= 0; i < iTo; i=i+iStep)
 	{
-      LL_to_BearRange( GPSlat, GPSlon, asRingBuf[iIdx].fLat ,asRingBuf[iIdx].fLon, &fDistBearing, &fFlarmDist);
+      LL_to_BearRange( GPSlat, GPSlon, DrawInfo.FLARM_RingBuf[iIdx].fLat ,DrawInfo.FLARM_RingBuf[iIdx].fLon, &fDistBearing, &fFlarmDist);
 
 	  fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
 
@@ -1421,13 +1426,13 @@ unsigned long lStartTime = GetTickCount();
 		  if( Pnt.y  < pDia->rc.bottom )
 		    if( Pnt.y > pDia->rc.top    )
 		    {
-		      if((bTrace == IM_POS_TRACE_ONLY) && (asRingBuf[iIdx].iColorIdx <(NO_VARIO_COLORS/2)))
+		      if((bTrace == IM_POS_TRACE_ONLY) && (DrawInfo.FLARM_RingBuf[iIdx].iColorIdx <(NO_VARIO_COLORS/2)))
 		    	; // do nothing (skip drawing if neg vario)!!
 		      else
 		      {
-		        if(variobrush[asRingBuf[iIdx].iColorIdx]!= pOldBrush)
+		        if(variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx]!= pOldBrush)
 		        {
-			      pOldBrush  = variobrush[asRingBuf[iIdx].iColorIdx];
+			      pOldBrush  = variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx];
 		          SelectObject(hDC, *pOldBrush);
 		        }
 		        Rectangle(hDC,Pnt.x-iTraceDotSize, Pnt.y-iTraceDotSize,Pnt.x+iTraceDotSize, Pnt.y+iTraceDotSize);
@@ -1436,7 +1441,7 @@ unsigned long lStartTime = GetTickCount();
 		    }
 	  iIdx-=iStep ;
 	  if(iIdx < 0)
-		iIdx += NO_TRACE_PTS;
+		iIdx += MAX_FLARM_TRACES;
 	  if(	 ((GetTickCount()- lStartTime ) > 350))
 		i=0;
 	}

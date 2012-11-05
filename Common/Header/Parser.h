@@ -39,6 +39,18 @@ typedef struct _FLARM_TRAFFIC
   double EIAS;
 } FLARM_TRAFFIC;
 
+//
+// FLARM TRACES
+//
+typedef struct
+{
+        double fLat;
+        double fLon;
+        double fAlt;
+//      double fIntegrator;
+        int iColorIdx;
+} FLARM_TRACE;
+
 
 
 #if USESWITCHES
@@ -117,6 +129,10 @@ typedef struct _NMEA_INFO
   unsigned short FLARM_AlarmLevel;
   bool FLARM_Available;
   FLARM_TRAFFIC FLARM_Traffic[FLARM_MAX_TRAFFIC];
+  FLARM_TRACE	FLARM_RingBuf[MAX_FLARM_TRACES];
+  bool FLARMTRACE_bBuffFull;
+  int  FLARMTRACE_iLastPtr;
+
   int SatelliteIDs[MAXSATELLITES];
 
   double SupplyBatteryVoltage;

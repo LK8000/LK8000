@@ -16,9 +16,9 @@ FlarmCalculations flarmCalculations;
 //
 // This should be renamed to something clear to understand, being global.
 //
-LastPositions asRingBuf[NO_TRACE_PTS];
-int iLastPtr=0;
-bool bBuffFull;
+//LastPositions pGPS->FLARM_RingBuf[MAX_FLARM_TRACES];
+//int FLARMTRACE_iLastPtr=0;
+//bool FLARMTRACE_bBuffFull;
 
 
 void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
@@ -113,8 +113,8 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
             if(iTraceSpaceCnt == 0)
             {
 
-		      asRingBuf[iLastPtr].fLat = pGPS->FLARM_Traffic[i].Latitude;
-		      asRingBuf[iLastPtr].fLon = pGPS->FLARM_Traffic[i].Longitude;
+		      pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLat = pGPS->FLARM_Traffic[i].Latitude;
+		      pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLon = pGPS->FLARM_Traffic[i].Longitude;
 
 		      double Vario = pGPS->FLARM_Traffic[i].Average30s;
 			  int iColorIdx = (int)(2*Vario  -0.5)+NO_VARIO_COLORS/2;
@@ -122,12 +122,12 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
 			  iColorIdx = min( iColorIdx, NO_VARIO_COLORS-1);
 
 
-		      asRingBuf[iLastPtr].iColorIdx = iColorIdx;
-		      iLastPtr++;
-		      if(iLastPtr >= NO_TRACE_PTS)
+		      pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].iColorIdx = iColorIdx;
+		      pGPS->FLARMTRACE_iLastPtr++;
+		      if(pGPS->FLARMTRACE_iLastPtr >= MAX_FLARM_TRACES)
 		      {
-		        iLastPtr=0;
-		        bBuffFull = true;
+		        pGPS->FLARMTRACE_iLastPtr=0;
+		        pGPS->FLARMTRACE_bBuffFull = true;
 		      }
             }
 			/*
