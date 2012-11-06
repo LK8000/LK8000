@@ -247,14 +247,7 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		}
 		break;
 	case BM_TSK:
-		if (ISCAR) {
-			_stprintf(BufferValue,_T("%.1f"),SPEEDMODIFY*Rotary_Speed);
-			_stprintf(BufferTitle,_T("AvgSpeed"));
-			wsprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
-			showunit=true;
-		} else {
-			showunit=LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
-		}
+		showunit=LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_ALT:
 		showunit=LKFormatValue(LK_BESTALTERN_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
@@ -330,18 +323,7 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		}
 		break;
 	case BM_TSK:
-		if (ISCAR) {
-			if (Rotary_Distance<100000) {
-				_stprintf(BufferValue,_T("%.2f"),DISTANCEMODIFY*Rotary_Distance);
-			} else {
-				_stprintf(BufferValue,_T("%.2f"),0);
-			}
-			_stprintf(BufferTitle,_T("AvgDist"));
-			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-			showunit=true;
-		} else {
-			showunit=LKFormatValue(LK_FIN_ALTDIFF, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		}
+		showunit=LKFormatValue(LK_FIN_ALTDIFF, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
 	case BM_ALT:
 		if (ScreenLandscape) {
@@ -509,8 +491,10 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		break;
 	case BM_AUX:  
 		if (ISCAR) {
-			showunit=LKFormatValue(LK_TIMEFLIGHT, true, BufferValue, BufferUnit, BufferTitle); // 100221
-			_stprintf(BufferTitle, MsgToken(1812)); // Chrono
+			_stprintf(BufferValue,_T("%.1f"),SPEEDMODIFY*Rotary_Speed);
+			_stprintf(BufferTitle,_T("AvgSpd"));
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
+			showunit=true;
 		} else {
 			showunit=LKFormatValue(LK_HOME_DIST, true, BufferValue, BufferUnit, BufferTitle);
 		}
@@ -584,17 +568,8 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		BufferTitle[7]='\0';
 		break;
 	case BM_CRU: 
-		if (ISCAR)
-			showunit=LKFormatValue(LK_TIME_LOCAL, false, BufferValue, BufferUnit, BufferTitle);
-		else
-			showunit=LKFormatValue(LK_HEADWINDSPEED, true, BufferValue, BufferUnit, BufferTitle);
-		break;
-	case BM_HGH:
-		showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
-		break;
-	case BM_AUX:
 		if (ISCAR) {
-			_tcscpy(BufferTitle,MsgToken(632)); // Speed
+			_tcscpy(BufferTitle,MsgToken(2091)); // Averag (speed average really)
 			int totime=(int)(Trip_Steady_Time+Trip_Moving_Time);
 			if (totime>0) {
 				_stprintf(BufferValue,_T("%.1f"),(DerivedDrawInfo.Odometer*SPEEDMODIFY)/totime);
@@ -604,7 +579,24 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 				showunit=false;
 			}
 		} else
+			showunit=LKFormatValue(LK_HEADWINDSPEED, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_HGH:
+		showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_AUX:
+		if (ISCAR) {
+			if (Rotary_Distance<100000) {
+				_stprintf(BufferValue,_T("%.2f"),DISTANCEMODIFY*Rotary_Distance);
+			} else {
+				_stprintf(BufferValue,_T("%.2f"),0);
+			}
+			_stprintf(BufferTitle,_T("AvgDist"));
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+			showunit=true;
+		} else {
 			showunit=LKFormatValue(LK_MAXALT, true, BufferValue, BufferUnit, BufferTitle);
+		}
 		break;
 	case BM_TSK:
 // TODO MAKE IT LKPROCESS
@@ -682,7 +674,10 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 		BufferTitle[7]='\0';
 		break;
 	case BM_CRU:
-		showunit=LKFormatValue(LK_LD_INST, true, BufferValue, BufferUnit, BufferTitle);
+		if (ISCAR)
+			showunit=LKFormatValue(LK_TIME_LOCAL, false, BufferValue, BufferUnit, BufferTitle);
+		else
+			showunit=LKFormatValue(LK_LD_INST, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_HGH:
 		showunit=LKFormatValue(LK_AQNH, true, BufferValue, BufferUnit, BufferTitle); // 100221
