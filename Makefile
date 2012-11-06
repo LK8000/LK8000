@@ -609,7 +609,6 @@ DLGS	:=\
 	$(DLG)/dlgStartPoint.cpp \
 	$(DLG)/dlgStartTask.cpp \
 	$(DLG)/dlgStartup.cpp \
-	$(DLG)/dlgStatistics.cpp \
 	$(DLG)/dlgStatus.cpp \
 	$(DLG)/dlgTarget.cpp \
 	$(DLG)/dlgTaskCalculator.cpp \
@@ -628,6 +627,21 @@ DLGS	:=\
 	$(DLG)/dlgWayPointSelect.cpp \
 	$(DLG)/dlgWaypointOutOfTerrain.cpp \
 	$(DLG)/dlgWindSettings.cpp \
+	$(DLG)/Analysis/DrawOtherFunctions.cpp \
+	$(DLG)/Analysis/DrawXYGrid.cpp \
+	$(DLG)/Analysis/RenderBarograph.cpp \
+	$(DLG)/Analysis/RenderClimb.cpp \
+	$(DLG)/Analysis/RenderContest.cpp \
+	$(DLG)/Analysis/RenderFAISector.cpp \
+	$(DLG)/Analysis/RenderGlidePolar.cpp \
+	$(DLG)/Analysis/RenderSpeed.cpp\
+	$(DLG)/Analysis/RenderTask.cpp \
+	$(DLG)/Analysis/RenderTemperature.cpp \
+	$(DLG)/Analysis/RenderWind.cpp \
+	$(DLG)/Analysis/ScaleFunctions.cpp \
+	$(DLG)/Analysis/StyleLine.cpp \
+	$(DLG)/Analysis/Update.cpp \
+	$(DLG)/Analysis/dlgStatistics.cpp \
 	$(DLG)/Task/AdjustAATTargets.cpp\
 	$(DLG)/Task/InsertWaypoint.cpp\
 	$(DLG)/Task/LoadTaskWaypoints.cpp\
