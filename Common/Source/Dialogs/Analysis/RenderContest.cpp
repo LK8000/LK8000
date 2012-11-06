@@ -8,12 +8,9 @@
 
 #include "externs.h"
 #include "ContestMgr.h"
+#include "LKObjects.h"
 
 CContestMgr::TType contestType = CContestMgr::TYPE_OLC_CLASSIC;
-
-
-
-
 
 /*****************************************************************
  * Alpha Lima splitted RenderContest from Render Task for CC
@@ -29,12 +26,16 @@ void Statistics::RenderContest(HDC hdc, const RECT rc)
   double lon2 = 0;
   double x1, y1, x2=0, y2=0;
   double lat_c, lon_c;
+  BOOL bFAI = false;
 
   ResetScale();
+
   CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, true);
 
-  if(result.Type() == CContestMgr::TYPE_FAI_TRIANGLE)
+  if(contestType == CContestMgr::TYPE_FAI_TRIANGLE)
+  {
      fXY_Scale = 1.5;
+  }
 
   // find center
 
@@ -127,13 +128,18 @@ void Statistics::RenderContest(HDC hdc, const RECT rc)
         DrawLine(hdc, rc, x1, y1, x2, y2, style);
       }
 
-      if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE))// TYPE_FAI_TRIANGLE
+
+      if((contestType == CContestMgr::TYPE_FAI_TRIANGLE))// TYPE_FAI_TRIANGLE
       {
         double fDist, fAngle;
         DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
+       // if((fDist/(double)result.Distance()) < 0.28)
+        if(points.size() > 4)
+          bFAI = true;
         if(ui < 2)
-        if(fDist > 10000)
-        { COLORREF rgbCol = RGB_BLUE;
+        if(fDist > 5000)
+        {
+          COLORREF rgbCol = RGB_BLUE;
           switch(ui)
           {
         	case 0: rgbCol = RGB_LIGHTYELLOW; break;
@@ -149,9 +155,9 @@ void Statistics::RenderContest(HDC hdc, const RECT rc)
       }
     }
 
-    if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE))// TYPE_FAI_TRIANGLE
+    if((contestType == CContestMgr::TYPE_FAI_TRIANGLE))// TYPE_FAI_TRIANGLE
     {
-	  // draw track again 8over sectors
+	  // draw track again over sectors
 	  for(ui=0; trace.size() && ui<trace.size()-1; ui++)
 	  {
 		lat1 = trace[ui].Latitude();
@@ -165,31 +171,54 @@ void Statistics::RenderContest(HDC hdc, const RECT rc)
 		DrawLine(hdc, rc,  x1, y1, x2, y2, STYLE_MEDIUMBLACK);
 	  }
 
-    for(ui=0; ui<points.size()-1; ui++)
-    {
-      lat1 = points[ui].Latitude();
-      lon1 = points[ui].Longitude();
-      lat2 = points[ui+1].Latitude();
-      lon2 = points[ui+1].Longitude();
-
-      x1 = (lon1-lon_c)*fastcosine(lat1);
-      y1 = (lat1-lat_c);
-      x2 = (lon2-lon_c)*fastcosine(lat2);
-      y2 = (lat2-lat_c);
-      int style = STYLE_REDTHICK;
-      if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE))// TYPE_FAI_TRIANGLE
+      for(ui=0; ui<points.size()-1; ui++)
       {
+        lat1 = points[ui].Latitude();
+        lon1 = points[ui].Longitude();
+        lat2 = points[ui+1].Latitude();
+        lon2 = points[ui+1].Longitude();
+
+        x1 = (lon1-lon_c)*fastcosine(lat1);
+        y1 = (lat1-lat_c);
+        x2 = (lon2-lon_c)*fastcosine(lat2);
+        y2 = (lat2-lat_c);
         double fDist, fAngle;
         DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
-        if(fDist > 10000)
-        {
-//    		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, 0 );
-//    	    RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, 0   );
-        }
-        DrawLine(hdc, rc, x1, y1, x2, y2, style);
-      }
-    }
 
+		if(result.Distance()> 5000)
+		{
+		  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+		  TCHAR text[180];
+		  SIZE tsize;
+		  _stprintf(text, TEXT("%3.1f%%"), (fDist/result.Distance()*100.0));
+		  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+		  SetTextColor(hdc, RGB_LIGHTBLUE);
+		  ExtTextOut(hdc, ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+		  SelectObject(hdc,(HFONT)  hfOld);
+		}
+
+   	    if (ISPARAGLIDER)
+   	    {
+          if(ui == 0)
+          {
+    	    double lat, lon;
+            if(bFAI)
+            {
+    	  	  HPEN hpSectorPen  = (HPEN)CreatePen(PS_SOLID, 1, RGB_LIGHTGREY );
+    		  HPEN hpOldPen     = (HPEN)  SelectObject(hdc, hpSectorPen);
+		      FindLatitudeLongitude(lat1, lon1, 0 , result.Distance()/5, &lat, &lon);/* 5%*/
+		      int iRadius = (int)((lat-lat1)*yscale);
+
+		      Circle(hdc, ScaleX(rc, x1), ScaleY(rc, y1), iRadius  , rc, true ,  false);/* 20% */
+		      Circle(hdc, ScaleX(rc, x1), ScaleY(rc, y1), iRadius/4, rc, true ,  false);/* 5%  */
+	 		  SelectObject(hdc, hpOldPen);
+	 		  DeleteObject(hpSectorPen);
+            }
+          }
+          int style = STYLE_REDTHICK;
+          DrawLine(hdc, rc, x1, y1, x2, y2, style);
+        }
+      }
     }
 
     if(result.Type() == CContestMgr::TYPE_OLC_FAI ||

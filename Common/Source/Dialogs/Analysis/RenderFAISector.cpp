@@ -10,7 +10,6 @@
 
 
 
-
 int Statistics::RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , COLORREF fillcolor)
 {
 #define FAI_MIN_PERCENTAGE 0.28
@@ -38,6 +37,7 @@ double dir = -1.0;
 	dir = 1.0;
   }
 
+
 #ifdef HELP_LINES
   FindLatitudeLongitude(lat1, lon1, AngleLimit360 (fAngle), fDist_c/2, &lat_d, &lon_d);
   x1 = (lon_d - lon_c)*fastcosine(lat_d);
@@ -57,6 +57,7 @@ double dir = -1.0;
   fDist_b = fDistMin * FAI_MIN_PERCENTAGE;
   for(i =0 ;i < STEPS; i++)
   {
+	LKASSERT(fDist_c*fDist_b!=0);
 	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
 	alpha = acos(cos_alpha)*180/PI * dir;
 	FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
@@ -79,6 +80,7 @@ double dir = -1.0;
   fDist_b = fDistMax - fDist_a - fDist_c;
   for(i =0 ;i < STEPS; i++)
   {
+	LKASSERT(fDist_c*fDist_b!=0);
 	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
 	alpha = acos(cos_alpha)*180/PI * dir;
 	FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
@@ -100,6 +102,7 @@ double dir = -1.0;
   fDist_a = fDistTri - fDist_b - fDist_c;
   for(i =0 ;i < STEPS; i++)
   {
+    LKASSERT(fDist_c*fDist_b!=0);
 	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
 	alpha = acos(cos_alpha)*180/PI * dir;
 	FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
@@ -117,7 +120,6 @@ double dir = -1.0;
   /********************************************************************
    * draw polygon
    ********************************************************************/
-
   HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), RGB_GREEN );
   HBRUSH hpSectorFill = NULL;
 
@@ -151,7 +153,7 @@ double dir = -1.0;
   SelectObject(hdc, hpSectorPen);
 
   double fTic= 1/DISTANCEMODIFY;
-  if(fDist_c > 10/DISTANCEMODIFY)  fTic = 10/DISTANCEMODIFY;
+  if(fDist_c > 5/DISTANCEMODIFY)   fTic = 20/DISTANCEMODIFY;
   if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
   if(fDist_c > 100/DISTANCEMODIFY) fTic = 50/DISTANCEMODIFY;
   if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
@@ -167,13 +169,14 @@ double dir = -1.0;
     fDist_b = fDistTri - fDist_a - fDist_c;
     for(i =0 ;i < STEPS; i++)
     {
+      LKASSERT(fDist_c*fDist_b!=0);
       cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
-	    alpha = acos(cos_alpha)*180/PI * dir;
-	    FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
+	  alpha = acos(cos_alpha)*180/PI * dir;
+	  FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
       x1 = (lon_d - lon_c)*fastcosine(lat_d);
       y1 = (lat_d - lat_c);
       line[0].x = ScaleX(rc, x1);
-	    line[0].y =	ScaleY(rc, y1);
+	  line[0].y = ScaleY(rc, y1);
 
       if(i> 0)
 	    Polyline(hdc, line, 2);
@@ -199,6 +202,5 @@ SelectObject(hdc, (HPEN)hpOldPen);
 DeleteObject( hpSectorPen);
 return 0;
 }
-
 
 
