@@ -429,7 +429,7 @@ public:
   //Get/Set airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
   const CAirspaceList GetAllAirspaces() const;
-  const CAirspaceList GetAirspacesForWarningLabels();
+  const CAirspaceList& GetAirspacesForWarningLabels();
   CAirspaceList GetAirspacesInWarning() const;
   CAirspace GetAirspaceCopy(const CAirspace* airspace) const;
   bool AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);

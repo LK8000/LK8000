@@ -52,10 +52,6 @@ static const int k_nAreaType[k_nAreaCount] = {
                     CLASSTMZ};
 
 
-//for Draw()
-extern void ClipPolygon(HDC hdc, POINT *ptin, unsigned int n, 
-                 RECT rc, bool fill=true);
-
 // CAirspaceManager class attributes
 CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager::_instance);
 
@@ -1093,7 +1089,6 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
     _screenpoints_clipped.reserve(_screenpoints.size());
 
     LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
-    
       }
     }
   }
@@ -1122,14 +1117,19 @@ void CAirspace_Area::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
 bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) const
 {
   while(1) {
-    if (!(*LookFor)) return TRUE;
-    if (*Text != *LookFor) return FALSE;
+    if (!(*LookFor)) return true;
+    if (*Text != *LookFor) return false;
     ++Text; ++LookFor;
   }
 }
 
 bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const
 {
+    if(AltitudeMode == ALLON) {
+        return true;
+    } else if(AltitudeMode == ALLOFF) {
+        return false;
+    } 
   
   double alt;
   double basealt;
@@ -1158,31 +1158,31 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
 
   switch (AltitudeMode)
     {
-    case ALLON : return TRUE;
+    case ALLON : return true;
         
     case CLIP : 
-      if ((basealt < ClipAltitude) || base_is_sfc) return TRUE; else return FALSE;
+      if ((basealt < ClipAltitude) || base_is_sfc) return true; else return false;
 
     case AUTO:
       if( (( alt > (basealt - AltWarningMargin)) || base_is_sfc )
       && ( alt < (topalt + AltWarningMargin) ))
-    return TRUE;
+    return true;
       else
-    return FALSE;
+    return false;
 
     case ALLBELOW:
       if(  ((basealt - AltWarningMargin) < alt ) || base_is_sfc )
-    return  TRUE;
+    return  true;
       else
-    return FALSE;
+    return false;
     case INSIDE:
       if( (( alt >= basealt ) || base_is_sfc ) && ( alt < topalt ) )
-    return TRUE;
+    return true;
       else
-        return FALSE;
-    case ALLOFF : return FALSE;
+        return false;
+    case ALLOFF : return false;
     }
-  return TRUE;
+  return true;
 }
 
 void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
@@ -2340,7 +2340,7 @@ bool airspace_label_priority_sorter( CAirspace *a, CAirspace *b )
 }
 
 // Get airspaces list for label drawing
-const CAirspaceList CAirspaceManager::GetAirspacesForWarningLabels()
+const CAirspaceList& CAirspaceManager::GetAirspacesForWarningLabels()
 {
   CCriticalSection::CGuard guard(_csairspaces);
   if (_airspaces_of_interest.size()>1) std::sort(_airspaces_of_interest.begin(), _airspaces_of_interest.end(), airspace_label_priority_sorter);

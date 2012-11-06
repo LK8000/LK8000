@@ -139,6 +139,10 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
+   
+  int nDC1 = SaveDC(mhdcbuffer);
+  int nDC2 = SaveDC(hDCMask);
+  int nDC3 = SaveDC(hDCTemp);
   
   // Draw airspace area
     if (1) {
@@ -212,6 +216,10 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   
   // restore original PEN
   SelectObject(hdc, hOrigPen);
+  
+  RestoreDC(mhdcbuffer, nDC1);
+  RestoreDC(hDCMask, nDC2);    
+  RestoreDC(hDCTemp, nDC3);    
 } // DrawTptAirSpace()
 
 

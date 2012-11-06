@@ -52,6 +52,10 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
   
+  int nDC1 = SaveDC(mhdcbuffer);
+  int nDC2 = SaveDC(hDCMask);
+  int nDC3 = SaveDC(hDCTemp);
+  
   if (GetAirSpaceFillType() != asp_fill_border_only) {
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
@@ -155,6 +159,9 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
     //    SetTextColor(hDCTemp, origcolor);
     SetBkMode(hDCTemp,OPAQUE);
   }
+  RestoreDC(mhdcbuffer, nDC1);
+  RestoreDC(hDCMask, nDC2);    
+  RestoreDC(hDCTemp, nDC3);    
 }
 
 
