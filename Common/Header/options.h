@@ -100,12 +100,6 @@
  // Eric Carden, April 21, 2012
  // #define BCT_ALT_FIX
 
-// Dynamic screen resizing. If NOT using alphablending for bottom bar, or using 100% opacity,
-// then terrain and generally the moving map will not be drawn under the bottombar.
-// On 480x272 this is saving around 12% CPU. This is also needed to allow DrawTerrain choosing any
-// screen portion, on demand.
-#define DYNASCREEN		1	
-
 // PWC Scoring use WGS84 earth model, but LK8000 use FAISphere
 // PG optimise can Work with WGS84 but Wapoint validation not..
 // we need change Waypoint validation before use it

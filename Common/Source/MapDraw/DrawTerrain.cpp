@@ -360,18 +360,10 @@ public:
 
     POINT orig = MapWindow::GetOrigScreen();
 
-    #if 0
-    //#if DYNASCREEN
-    rect_visible.left = max((long)MapWindow::DrawRect.left, (long)(MapWindow::DrawRect.left-(long)epx*dtquant))-orig.x;
-    rect_visible.right = min((long)MapWindow::DrawRect.right, (long)(MapWindow::DrawRect.right+(long)epx*dtquant))-orig.x;
-    rect_visible.top = max((long)MapWindow::DrawRect.top, (long)(MapWindow::DrawRect.top-(long)epx*dtquant))-orig.y;
-    rect_visible.bottom = min((long)MapWindow::DrawRect.bottom, (long)(MapWindow::DrawRect.bottom+(long)epx*dtquant))-orig.y;
-    #else
     rect_visible.left = max((long)MapWindow::MapRect.left, (long)(MapWindow::MapRect.left-(long)epx*dtquant))-orig.x;
     rect_visible.right = min((long)MapWindow::MapRect.right, (long)(MapWindow::MapRect.right+(long)epx*dtquant))-orig.x;
     rect_visible.top = max((long)MapWindow::MapRect.top, (long)(MapWindow::MapRect.top-(long)epx*dtquant))-orig.y;
     rect_visible.bottom = min((long)MapWindow::MapRect.bottom, (long)(MapWindow::MapRect.bottom+(long)epx*dtquant))-orig.y;
-    #endif
 
     FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
 
@@ -741,21 +733,16 @@ void DrawTerrain( const HDC hdc, const RECT rc,
     return;
   }
 
-#if DYNASCREEN
   static RECT oldrc;
-#endif
 _redo:
 
   if (!trenderer) {
-#if DYNASCREEN
     oldrc=rc;
-#endif
     trenderer = new TerrainRenderer(rc);
     LKASSERT(trenderer);
     if (!trenderer) return;
   }
 
-#if DYNASCREEN
   // Resolution has changed, probably PAN mode on with bottombar full opaque
   // We paint full screen, so we resize it.
   if (LKSW_ResetTerrainRenderer || (rc.bottom != oldrc.bottom) || (rc.right != oldrc.right)
@@ -773,16 +760,6 @@ _redo:
 	CloseTerrainRenderer();
 	goto _redo;
   }
-#else
-  if (LKSW_ResetTerrainRenderer) {
-    	#if (WINDOWSPC>0) && TESTBENCH
-	StartupStore(_T("... SWITCH forced for TerrainRenderer Reset\n"));
-	#endif
-	LKSW_ResetTerrainRenderer=false;
-	CloseTerrainRenderer();
-	goto _redo;
-  }
-#endif
 
   if (!trenderer->SetMap()) {
     return;
@@ -819,11 +796,7 @@ _redo:
   trenderer->Slope(sx, sy, sz); 
  
   // step 5: draw
-#if DYNASCREEN
   trenderer->Draw(hdc, rc);
-#else
-  trenderer->Draw(hdc, MapWindow::MapRect);
-#endif
 
 }
 

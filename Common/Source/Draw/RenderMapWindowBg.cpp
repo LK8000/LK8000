@@ -47,16 +47,12 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   TestChangeRect();
   #endif
 
-  #if DYNASCREEN
   if ((MapWindow::AlphaBlendSupported() && BarOpacity<100) || mode.AnyPan()) {
 	MapWindow::ChangeDrawRect(MapRect);
   } else {
 	RECT newRect={0,0,ScreenSizeX,ScreenSizeY-BottomSize};
 	MapWindow::ChangeDrawRect(newRect);
   }
-  #else
-  MapWindow::ChangeDrawRect(MapRect);
-  #endif
 
   if (QUICKDRAW) {
 	goto _skip_calcs;
