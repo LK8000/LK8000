@@ -679,11 +679,6 @@ goto_menu:
 			// Well we better NOT play a click while zoomin in and out, because on slow
 			// devices it will slow down the entire process.
 			// Instead, we make a click from InputEvents, debounced.
-			#if 0
-			#ifndef DISABLEAUDIO
-         		 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
-			#endif
 			wParam = 0x26; 
 			// zoom in
 			InputEvents::processKey(wParam);
@@ -726,11 +721,6 @@ goto_menu:
 	{ 
 		if ( (lparam_X > P_UngestureRight.x) && (lparam_Y <= P_UngestureRight.y) ) {
 			if (!CustomKeyHandler(CKI_TOPRIGHT)) {
-				#if 0
-				#ifndef DISABLEAUDIO
-         			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-				#endif
 				wParam = 0x26; 
 				InputEvents::processKey(wParam);
 				return TRUE;
@@ -888,21 +878,6 @@ goto_menu:
 						break;
 					}
 				} else {
-/* REMOVE
-					int yup, ydown, ytmp;
-					ytmp=(int)((MapWindow::MapRect.bottom-MapWindow::MapRect.top-BottomSize)/2);
-					yup=ytmp+MapWindow::MapRect.top;
-					ydown=MapWindow::MapRect.bottom-BottomSize-ytmp;
-					// 
-					// 120912 Process ungesture left and right on the moving map
-					// THE SAME AS IN: PROCESS_VIRTUALKEY
-					//
-					int s_sizeright=MapWindow::MapRect.right-MapWindow::MapRect.left;
-					// used by ungesture fast click on infopages
-					int s_unxleft=(s_sizeright/2)-(s_sizeright/3);
-					int s_unxright=(s_sizeright/2)+(s_sizeright/3);
-*/
-
 					if (!mode.AnyPan() && (UseUngestures || !ISPARAGLIDER)) {
 						if (lparam_X<=X_Left) {
 							PreviousModeType();
@@ -930,11 +905,6 @@ goto_menu:
 						}
 					}
 					// no sound for zoom clicks
-					#if 0 // REMOVE
-					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-					#endif
-					#endif
 					InputEvents::processKey(wParam);
 					dwDownTime= 0L;
 					return TRUE; 

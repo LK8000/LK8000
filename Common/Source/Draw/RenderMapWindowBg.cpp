@@ -27,7 +27,6 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 				  const POINT &Orig,
 				  const POINT &Orig_Aircraft)
 {
-  //HFONT hfOld;
 
   // Calculations are taking time and slow down painting of map, beware
   #define MULTICALC_MINROBIN	5	// minimum split
@@ -243,10 +242,6 @@ QuickRedraw:
   }
   #endif
 
-//  SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-//  SelectObject(hdc, GetStockObject(BLACK_PEN));
-//  hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
-  
 
   // Logic of DONTDRAWTHEMAP is the following:
   // We are rendering the screen page here. If we are here, we passed Checkpoint Charlie.
@@ -256,7 +251,6 @@ QuickRedraw:
   // reset our intentions and go back to beginning, or nearby..
   // We have a new job to do, for another MapSpace, no more MAP.
   if (DONTDRAWTHEMAP) {
-	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -278,13 +272,11 @@ QuickRedraw:
     LockTerrainDataGraphics();
  	if (DONTDRAWTHEMAP) { // 100318
 		UnlockTerrainDataGraphics();
-		//SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
     DrawTerrain(hdc, DrawRect, sunazimuth, sunelevation);
  	if (DONTDRAWTHEMAP) {
 		UnlockTerrainDataGraphics();
-		//SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
     if (!QUICKDRAW) {
@@ -311,33 +303,7 @@ QuickRedraw:
   // EITHER PAN OR MSM_MAP.
   //
 
-#if 0
-  // If we detect the quick draw request, we accelerate drawing of main map.
-  // We paint the minimum: overlays and bottom bar, and quickly we return.
-  //
-  if (QUICKDRAW)  {
-	if ( !mode.AnyPan()) {
-		#if 0 
-		//
-		// ALl of this is not needed, we are in main map -- REMOVE!
-		// 
-		#if NEWMULTIMAPS
-		if (MapSpaceMode!= MSM_MAP) DrawMapSpace(hdc, rc);
-		if (IsMultiMapShared() && IsMultimapOverlays()) DrawLook8000(hdc,rc);
-		#else
-		DrawLook8000(hdc,rc);
-		#endif
-		#endif
-		DrawLook8000(hdc,rc);
-		DrawBottomBar(hdc,rc);
-	}
-  	//SelectObject(hdcDrawWindow, hfOld);
-	return;
-  }
-#endif
-
   if (DONTDRAWTHEMAP) {
-	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -365,7 +331,6 @@ QuickRedraw:
 
   
   if (DONTDRAWTHEMAP) {
-	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -382,7 +347,6 @@ QuickRedraw:
   }
 
   if (DONTDRAWTHEMAP) {
-	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -395,7 +359,6 @@ QuickRedraw:
   }
 
   if (DONTDRAWTHEMAP) {
-	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -408,7 +371,6 @@ QuickRedraw:
   }
   
   if (DONTDRAWTHEMAP) { 
-	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -422,7 +384,6 @@ _skip_stuff:
   {
 	DrawAirspaceLabels(hdc, DrawRect, Orig_Aircraft);
 	if (DONTDRAWTHEMAP) { // 100319
-		//SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
   }
@@ -430,7 +391,6 @@ _skip_stuff:
   DrawWaypointsNew(hdc,DrawRect);
 
   if (DONTDRAWTHEMAP) {
-	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -475,7 +435,6 @@ _skip_stuff:
   }
 
   if (DONTDRAWTHEMAP) {
-	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
 
@@ -495,7 +454,6 @@ _skip_2:
   }
 
   if (DONTDRAWTHEMAP) {
-	//SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
     
@@ -530,8 +488,6 @@ _skip_2:
 #ifdef DRAWDEBUG
   DrawDebug(hdc,rc);
 #endif
-
-  //SelectObject(hdcDrawWindow, hfOld);
 
 }
 

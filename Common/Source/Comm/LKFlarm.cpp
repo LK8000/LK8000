@@ -13,13 +13,6 @@
 #include "FlarmCalculations.h"
 FlarmCalculations flarmCalculations;
 
-//
-// This should be renamed to something clear to understand, being global.
-//
-//LastPositions pGPS->FLARM_RingBuf[MAX_FLARM_TRACES];
-//int FLARMTRACE_iLastPtr=0;
-//bool FLARMTRACE_bBuffFull;
-
 
 void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
 

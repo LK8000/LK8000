@@ -184,15 +184,6 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
         continue;
       }
     }
-    #if 0
-    else {
-      //  if ((P1.Circling)&&( snail_index % 5 != 0 )) {
-        // JMW TODO code: This won't work properly!
-        // draw only every 5 points from circling when in cruise mode
-	//        continue;
-      //      }
-    }
-    #endif
 
     ///////// Filter if far visible
 

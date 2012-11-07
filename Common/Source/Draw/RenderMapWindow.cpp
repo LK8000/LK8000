@@ -49,7 +49,6 @@ void MapWindow::RenderMapWindow(RECT rc)
   else
 	DrawBottom=false;
 
-  //HFONT hfOld; REMOVE
   static DWORD fastzoomStart=0;
   // static short ZoomDelayTimes=0; // alternate rebouncing, with the lowest possible interval: 1 loop
 
@@ -120,10 +119,6 @@ void MapWindow::RenderMapWindow(RECT rc)
 	return;
   }
 
-//  hfOld = (HFONT)SelectObject(hdcDrawWindow, MapWindowFont); // REMOVE
-  
-///  DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom  REMOVE
-
   // Logger indicator, flight indicator, battery indicator
   DrawFlightMode(hdcDrawWindow, rc);
 
@@ -143,8 +138,6 @@ void MapWindow::RenderMapWindow(RECT rc)
 
   // Alarms &C.
   DrawFunctions1HZ(hdcDrawWindow,rc);
-
- // SelectObject(hdcDrawWindow, hfOld);
 
 }
 

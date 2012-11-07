@@ -699,18 +699,7 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 			wcscpy(BufferTitle,_T(""));
 		break;
 	case BM_SYS:
-		#if 0 // REMOVE
-		if (LoggerGActive()) {
-  			wsprintf(BufferValue, MsgToken(1700));
-		} else {
-  			wsprintf(BufferValue, MsgToken(1701));
-		}
-  		wsprintf(BufferTitle, TEXT("GRec"));
-  		wsprintf(BufferUnit, TEXT("")); // 100221
-		showunit=true;
-		#else
 		showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
-		#endif
 		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CRUISE);

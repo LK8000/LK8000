@@ -180,7 +180,6 @@ void MapWindow::Zoom::SwitchMode()
     // TARGET_PAN enabled
     _requestedScale = &_modeScale[SCALE_TARGET_PAN];
     CalculateTargetPanZoom();
-    // zoom._bigZoom = true; REMOVE
   }
   else if(mode._mode & Mode::MODE_TARGET_PAN) {
     // do not change zoom for other mode changes while in TARGET_PAN mode
@@ -199,7 +198,6 @@ void MapWindow::Zoom::SwitchMode()
   else if((mode._mode & Mode::MODE_PANORAMA) && !(mode._lastMode & Mode::MODE_PANORAMA)) {
     // PANORAMA enabled
     _requestedScale = &_modeScale[SCALE_PANORAMA];
-    // zoom._bigZoom = true; REMOVE
   }
   else if(mode._mode & Mode::MODE_PANORAMA) {
     // do not change zoom for mode changes while in PANORAMA mode
@@ -215,7 +213,6 @@ void MapWindow::Zoom::SwitchMode()
       if(_autoZoom)
         CalculateAutoZoom();
     }
-    // _bigZoom = true; REMOVE
   }
   *_requestedScale = LimitMapScale(*_requestedScale);
   
@@ -258,7 +255,6 @@ void MapWindow::Zoom::EventSetZoom(double value)
   double _lastRequestedScale = *_requestedScale;
   *_requestedScale = LimitMapScale(value);
   if(*_requestedScale != _lastRequestedScale) {
-    // zoom._bigZoom = true; REMOVE
     RefreshMap();
   }
 }
@@ -309,7 +305,6 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
   double _lastRequestedScale = *_requestedScale;
   *_requestedScale = LimitMapScale(value);
   if(*_requestedScale != _lastRequestedScale) {
-    // zoom._bigZoom = true; REMOVE
     RefreshMap();
   }
 }
