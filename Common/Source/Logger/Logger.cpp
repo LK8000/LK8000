@@ -12,15 +12,8 @@
 #include "LKProfiles.h"
 #include "dlgTools.h"
 
-// Once done with all validations we can switch to XK8 code
-// #define USEXK8	1
 
-#if USEXK8
- #define LOGGER_MANUFACTURER	"XK8"
-#else
- #define LOGGER_MANUFACTURER	"XCS"
-#endif
-
+#define LOGGER_MANUFACTURER	"XLK"
 
 extern NMEA_INFO GPS_INFO;
 
@@ -625,73 +618,38 @@ void LoggerHeader(void)
   sprintf(temp,"HFCIDCOMPETITIONID:%S\r\n", CompetitionID_Config);
   IGCWriteRecord(temp);
 
-  // until LK is using xcsoar G signature, we keep XCSOAR as main logger type
-  // The comma is currently declared invalid as a igc character, which is probably wrong
-
-  #if USEXK8
     #ifndef LKCOMPETITION
   sprintf(temp,"HFFTYFRTYPE:%s\r\n", LKFORK); // default
     #else
   sprintf(temp,"HFFTYFRTYPE:%sC\r\n", LKFORK); // default
     #endif
-  #else
-    #ifndef LKCOMPETITION
-  sprintf(temp,"HFFTYFRTYPE:XCSOAR %s\r\n", LKFORK); // default
-    #else
-  sprintf(temp,"HFFTYFRTYPE:XCSOAR %sC\r\n", LKFORK); // default
-    #endif
-  #endif
 
   // PNAs are also PPC2003, so careful
   #ifdef PNA
   char pnamodel[MAX_PATH+1];
   ConvertTToC(pnamodel,GlobalModelName);
   pnamodel[_tcslen(GlobalModelName)]='\0';
-    #if USEXK8
     	#ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s PNA %s\r\n", LKFORK,pnamodel);
 	#else
     sprintf(temp,"HFFTYFRTYPE:%sC PNA %s\r\n", LKFORK,pnamodel);
 	#endif
-    #else
-    	#ifndef LKCOMPETITION
-    sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PNA %s\r\n", LKFORK,pnamodel);
-	#else
-    sprintf(temp,"HFFTYFRTYPE:XCSOAR %sC PNA %s\r\n", LKFORK,pnamodel);
-	#endif
-    #endif
   #else
 
   #ifdef PPC2002 
-    #if USEXK8
     	#ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s PPC2002\r\n", LKFORK);
 	#else
     sprintf(temp,"HFFTYFRTYPE:%sC PPC2002\r\n", LKFORK);
 	#endif
-    #else
-    	#ifndef LKCOMPETITION
-    sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2002\r\n", LKFORK);
-	#else
-    sprintf(temp,"HFFTYFRTYPE:XCSOAR %sC PPC2002\r\n", LKFORK);
-	#endif
-    #endif
   #endif
   // PNA is also PPC2003..
   #ifdef PPC2003 
-    #if USEXK8
     	#ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s PPC2003\r\n", LKFORK);
 	#else
     sprintf(temp,"HFFTYFRTYPE:%sC PPC2003\r\n", LKFORK);
 	#endif
-    #else
-    	#ifndef LKCOMPETITION
-    sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2003\r\n", LKFORK);
-	#else
-    sprintf(temp,"HFFTYFRTYPE:XCSOAR %sC PPC2003\r\n", LKFORK);
-	#endif
-    #endif
   #endif
 
   #endif

@@ -30,10 +30,10 @@ md5generators_t md5gen;
 void GenerateMD5(LineList &lines, md5generators_t *md5s)
 {
     
-  md5s->a.Init( 0x1C80A301,0x9EB30b89,0x39CB2Afe,0x0D0FEA76 );
-  md5s->b.Init( 0x48327203,0x3948ebea,0x9a9b9c9e,0xb3bed89a );
-  md5s->c.Init(	0x67452301,0xefcdab89,0x98badcfe,0x10325476 );
-  md5s->d.Init( 0xc8e899e8,0x9321c28a,0x438eba12,0x8cbe0aee );
+  md5s->a.Init( 0x63e54c01, 0x25adab89, 0x44baecfe, 0x60f25476 );
+  md5s->b.Init( 0x41e24d03, 0x23b8ebea, 0x4a4bfc9e, 0x640ed89a );
+  md5s->c.Init( 0x61e54e01, 0x22cdab89, 0x48b20cfe, 0x62125476 );
+  md5s->d.Init( 0xc1e84fe8, 0x21d1c28a, 0x438e1a12, 0x6c250aee );
 
   int skipwhitespaces = 1;
   
