@@ -19,8 +19,8 @@ void MapWindow::DrawCrossHairs(HDC hdc, const POINT Orig,
 {
   POINT o1, o2;
   
-  o1.x = Orig.x+20;
-  o2.x = Orig.x-20;
+  o1.x = Orig.x+NIBLSCALE(20);
+  o2.x = Orig.x-NIBLSCALE(20);
   o1.y = Orig.y;
   o2.y = Orig.y;
 
@@ -29,15 +29,21 @@ void MapWindow::DrawCrossHairs(HDC hdc, const POINT Orig,
   else
 	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_DARKGREY, rc);
 
+  SetPixel(hdc,o1.x,o1.y,RGB_YELLOW);
+  SetPixel(hdc,o2.x,o2.y,RGB_YELLOW);
+
   o1.x = Orig.x;
   o2.x = Orig.x;
-  o1.y = Orig.y+20;
-  o2.y = Orig.y-20;
+  o1.y = Orig.y+NIBLSCALE(20);
+  o2.y = Orig.y-NIBLSCALE(20);
 
   if (BlackScreen)
 	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_INVDRAW, rc); // 091219
   else
 	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_DARKGREY, rc); // 091219
+
+  SetPixel(hdc,o1.x,o1.y,RGB_YELLOW);
+  SetPixel(hdc,o2.x,o2.y,RGB_YELLOW);
 
 
 }
