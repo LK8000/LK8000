@@ -120,13 +120,13 @@ void MapWindow::RenderMapWindow(RECT rc)
   }
 
   // Logger indicator, flight indicator, battery indicator
-  DrawFlightMode(hdcDrawWindow, rc);
+  // Not while panning
+  if (!INPAN) DrawFlightMode(hdcDrawWindow, rc);
 
   //
   // When fast zoom requested, do not loose time with frills
   //
   if (QUICKDRAW) {
-	//SelectObject(hdcDrawWindow, hfOld);
 	// do a mapdirty and rerun the loop
 	MapWindow::RefreshMap();
 	return;

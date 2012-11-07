@@ -67,9 +67,14 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     bool inpanmode= (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN));
 
     if (inpanmode) {
+	if (DerivedDrawInfo.TerrainValid) {
+		_stprintf(Scale2, _T(" %.0f%s "),ALTITUDEMODIFY*RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()),
+		Units::GetUnitName(Units::GetUserAltitudeUnit()));
+	}
 	double pandistance, panbearing;
 	DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
-	_stprintf(Scale2, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,_T(DEG) );
+	_stprintf(Scale, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,_T(DEG) );
+	_tcscat(Scale2,Scale);
 	goto _skip1;
     }
 
@@ -182,12 +187,7 @@ _skip2:
 	TCHAR sCoordinate[32]={0};
 	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, sizeof(sCoordinate)-1);
 	_tcscat(Scale, sCoordinate);
-	// Paint terrain altitude only if valid terrain!
-	if (DerivedDrawInfo.TerrainValid) {
-	   _stprintf(Scale1, _T(" %.0f%s "),ALTITUDEMODIFY*RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()),
-		Units::GetUnitName(Units::GetUserAltitudeUnit()));
-	   _tcscat(Scale, Scale1);
-	}
+	_tcscat(Scale, _T(" "));
     }
     double mapScale=Units::ToSysDistance(zoom.Scale()*1.4);	// 1.4 for mapscale symbol size on map screen
     // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
@@ -195,6 +195,11 @@ _skip2:
     _tcscat(Scale,Scale1);
 
     SIZE tsize;
+
+    SetBkMode(hDC,TRANSPARENT);
+    HFONT oldFont = (HFONT)SelectObject(hDC, MapWindowFont);
+    HPEN  oldPen=(HPEN)SelectObject(hDC, GetStockObject(BLACK_PEN));
+    HBRUSH oldBrush=(HBRUSH)SelectObject(hDC, GetStockObject(BLACK_BRUSH));
 
     GetTextExtentPoint(hDC, Scale, _tcslen(Scale), &tsize);
     COLORREF mapscalecolor=OverColorRef;
@@ -211,7 +216,9 @@ _skip2:
     LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3)+tsize.cy, 
 	0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true); 
 
-
+    SelectObject(hDC, oldPen);
+    SelectObject(hDC, oldBrush);
+    SelectObject(hDC,oldFont);
 
 }
 

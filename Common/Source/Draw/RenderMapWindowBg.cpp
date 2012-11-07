@@ -444,8 +444,10 @@ _skip_2:
 
   if (ISGAAIRCRAFT && IsMultimapOverlaysGauges() && NOTANYPAN) DrawHSI(hdc,Orig,DrawRect); 
 
-  DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom
-  DrawCompass(hdcDrawWindow, rc, DisplayAngle);
+  if (!INPAN) {
+	DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom
+	DrawCompass(hdcDrawWindow, rc, DisplayAngle);
+  }
 
   if (IsMultimapOverlaysGauges() && NOTANYPAN) DrawFinalGlide(hdcDrawWindow,rc);
 

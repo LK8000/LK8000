@@ -166,6 +166,7 @@ extern bool OnFastPanning;
 
 		POINT centerscreen;
 		centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
+		DrawMapScale(hdcScreen,MapRect,false);
 		DrawCrossHairs(hdcScreen, centerscreen, MapRect);
 		lastdrawwasbitblitted=true;
 	} else {
@@ -227,6 +228,8 @@ extern bool OnFastPanning;
       if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
 		POINT centerscreen;
 		centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
+		DrawMapScale(hdcScreen,MapRect,false);
+		DrawCompass(hdcScreen, MapRect, DisplayAngle);
 		DrawCrossHairs(hdcScreen, centerscreen, MapRect);
       }
 
