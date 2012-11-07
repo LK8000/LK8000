@@ -194,7 +194,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 		// Else the map wasy dirty, and we must render it..
 		// Notice: if we were fastpanning, than the map could not be dirty.
 		//
-		#if 0 // EXPERIMENTAL, ZOOM NOT WORKING IN PNAs
+		#if 1 // EXPERIMENTAL, CHECK ZOOM IS WORKING IN PNA
 		// Only for special case: PAN mode, map not dirty (including requests for zooms!)
 		// not in the first run and last time was a real rendering. THEN, at these conditions,
 		// we simply redraw old bitmap, for the scope of accelerating touch response.
@@ -205,10 +205,13 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 				MapRect.bottom-MapRect.top, 
 				hdcDrawWindow, 0, 0, SRCCOPY);
 
-			// Add CROSS painting here
+			POINT centerscreen;
+			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
+			DrawMapScale(hdcScreen,MapRect,false);
+			DrawCrossHairs(hdcScreen, centerscreen, MapRect);
 
 			continue;
-		}
+		} 
 		#endif
 		MapDirty = false;
 		PanRefreshed=true;
