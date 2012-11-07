@@ -1006,6 +1006,8 @@ RECT rcc = rct;
   // if(DrawInfo.FLARM_Traffic[i].Average30s > -1.5)
 
 	int iTmp;
+
+#if 0 // ULLI FIX PLEASE
 	/***********************************************
 	 * own trace data
 	 **********************************************/
@@ -1024,7 +1026,6 @@ RECT rcc = rct;
 	  iColorIdx = min( iColorIdx, NO_VARIO_COLORS-1);
 
 	  i = DrawInfo.FLARMTRACE_iLastPtr;
-#if 0 // ULLI FIX PLEASE
       // THIS CANNOT BE DONE. ORIGINALLY OVERWRITING DATA FROM THE WRONG THREAD.
       // THIS IS NOW ONLY A COPY OF THE STRUCTURE, AND ANYTHING INSIDE THIS STRUCT IS READ ONLY.
       // YOU CAN ALSO WRITE IN IT, but it will be overwritten after less than a second.
@@ -1038,8 +1039,9 @@ RECT rcc = rct;
         DrawInfo.FLARMTRACE_iLastPtr=0;
         DrawInfo.FLARMTRACE_bBuffFull = true;
       }
-#endif
     } // if
+#endif
+
 	/**********************************************
 	 * loop over FLARM objects.
 	 */
