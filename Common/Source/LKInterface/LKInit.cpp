@@ -87,7 +87,7 @@ void UpdateConfIP(void) {
   ConfIP[0][4]=true; 	// multimap asp
   ConfIP[0][5]=true; 	// multimap radar
 #if TESTBENCH
-  ConfIP[0][6]=true; 	// multimap test page
+  ConfIP[0][6]=false; 	// multimap test page
 #else
   ConfIP[0][6]=false; 	// multimap test page
 #endif
