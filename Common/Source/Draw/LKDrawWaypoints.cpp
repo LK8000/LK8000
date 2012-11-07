@@ -206,11 +206,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		else
 		  SelectObject(hDCTemp,hBmpFieldReachable);
 
-		#if NEWMULTIMAPS
 		if ((GetMultimap_Labels()<MAPLABELS_ALLOFF)||intask) { 
-		#else
-		if ((DeclutterLabels<MAPLABELS_ALLOFF)||intask) { 
-		#endif
 
 		  dowrite = true;
 		  // exclude outlandings worst than visible airports, only when there are visible reachable airports!
@@ -297,11 +293,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	    // here come both turnpoints and landables..
 	    if( intask || irange || dowrite) {  // irange always set when MapScale <=10 
 
-		#if NEWMULTIMAPS
 	      bool draw_alt = TextDisplayMode.Reachable && ((GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask); // 100711 reachable landing point!
-		#else
-	      bool draw_alt = TextDisplayMode.Reachable && ((DeclutterLabels<MAPLABELS_ONLYTOPO) || intask); // 100711 reachable landing point!
-		#endif
 
 	      if (excluded==true) draw_alt=false; // exclude close outlandings
 
@@ -314,11 +306,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	     case DISPLAYFIRST10:
 	     case DISPLAYFIRST12:
 
-		#if NEWMULTIMAPS
 		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
-		#else
-		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
-		#endif
 		if ( (islandable && !isairport) && MapWindow::zoom.RealScale() >=10 ) dowrite=0; // FIX then no need to go further
 
 		// 101215 
@@ -356,11 +344,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				  
 		break;
 	      case DISPLAYNUMBER:
-		#if NEWMULTIMAPS
 		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable; 
-		#else
-		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100620
-		#endif
 		if ( (islandable && !isairport) && MapWindow::zoom.RealScale() >=10 ) dowrite=0; // FIX then no need to go further
 
 		if (draw_alt) {
@@ -432,11 +416,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 			}
 		break;
 	      case DISPLAYNONE:
-		#if NEWMULTIMAPS
 		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable; 
-		#else
-		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
-		#endif
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )

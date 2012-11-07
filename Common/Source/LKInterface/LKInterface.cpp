@@ -271,25 +271,7 @@ void SelectMapSpace(short i) {
 
 //
 void ToggleOverlays() {
-#if NEWMULTIMAPS
 	ToggleMultimapOverlays();
-#else
-  static int oldLook8000;
-  static bool doinit=true;
-
-  if (doinit) {
-	if (Look8000 == (Look8000_t)lxcNoOverlay)
-		oldLook8000=(Look8000_t)lxcAdvanced;
-	else
-		oldLook8000=Look8000;
-	doinit=false;
-  }
-
-  if (Look8000>lxcNoOverlay)
-	Look8000=lxcNoOverlay;
-  else
-	Look8000=oldLook8000;
-#endif
 
 }
 

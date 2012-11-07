@@ -184,11 +184,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryDisplayText,DisplayTextType);
   rprintf(szRegistryDisplayUpValue,DisplayOrientation_Config);
   rprintf(szRegistryDistanceUnitsValue,DistanceUnit_Config );
-#if NEWMULTIMAPS
-#else
-  rprintf(szRegistryDrawTerrain,EnableTerrain_Config);
-  rprintf(szRegistryDrawTopology,EnableTopology_Config);
-#endif
   rprintf(szRegistryEnableFLARMMap,EnableFLARMMap);
   rprintf(szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude_Config);
   rprintf(szRegistryFAIFinishHeight,EnableFAIFinishHeight);

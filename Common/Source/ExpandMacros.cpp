@@ -163,11 +163,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 9: // TerrainVisible for ChangeBack topology color
-			#if NEWMULTIMAPS
 			if (CALCULATED_INFO.TerrainValid && IsMultimapTerrain() && !LKVarioBar) {
-			#else
-			if (CALCULATED_INFO.TerrainValid && EnableTerrain && !LKVarioBar) {
-			#endif
 				invalid = true;
 			}
 			_tcscpy(OutBuffer,MsgToken(2037)); // Change topo back
@@ -255,7 +251,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 17:
-			#if NEWMULTIMAPS
 			// Order is:  ALL ON, TEXT ONLY, GAUGES ONLY, ALL OFF
 			if (!IsMultimapOverlaysText()&&!IsMultimapOverlaysGauges()) {
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(899)); // ALL ON
@@ -269,12 +264,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 						_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(898)); // ALL OFF
 				}
 			}
-			#else
-			if (Look8000==(Look8000_t)lxcNoOverlay)
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(491)); // OFF
-			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(894)); // ON
-			#endif
 			break;
 
 		case 18:
@@ -286,22 +275,10 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 19:
-			#if NEWMULTIMAPS
 			if (IsMultimapAirspace())
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(491)); // OFF
 			else
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(894)); // ON
-			#else
-			switch(OnAirSpace) {
-				case 0:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(894)); // ON
-					break;
-				case 1:
-				default:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(491)); // OFF
-					break;
-			}
-			#endif
 			break;
 
 		case 20:
@@ -312,22 +289,14 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 21:
-			#if NEWMULTIMAPS
 			if (IsMultimapTopology())
-			#else
-			if (EnableTopology)
-			#endif
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2027),MsgToken(491)); // OFF
 			else
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2027),MsgToken(894)); // ON
 			break;
 
 		case 22:
-			#if NEWMULTIMAPS
 			if (IsMultimapTerrain())
-			#else
-			if (EnableTerrain)
-			#endif
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2028),MsgToken(491)); // OFF
 			else
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2028),MsgToken(894)); // ON
@@ -433,11 +402,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 34: // MapLabelsToggleActionName
-			#if NEWMULTIMAPS
 			switch(GetMultimap_Labels()) {
-			#else
-			switch(MapWindow::DeclutterLabels) {
-			#endif
 				case MAPLABELS_ALLON:
 					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2026),MsgToken(1203)); // WPTS
 					break;

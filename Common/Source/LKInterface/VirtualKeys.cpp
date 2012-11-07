@@ -338,15 +338,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 shortcut_gesture:
 	// UP gesture
 	if (vkmode>LKGESTURE_NONE) {
-		#if NEWMULTIMAPS
 		// WE MANAGE GESTURES IN ALL MAPSPACES
-		#else
-		// do not handle gestures outside mapspacemode
-		if (!dontdrawthemap) {
-			// DoStatusMessage(_T("DBG-033 gesture not used here"));
-			return 0;
-		}
-		#endif
 		switch(MapSpaceMode) {
 			case MSM_LANDABLE:
 			case MSM_AIRPORTS:
@@ -380,12 +372,8 @@ shortcut_gesture:
 		switch(vkmode) {
 			// SCROLL DOWN
 			case LKGESTURE_DOWN:
-				#if NEWMULTIMAPS
 				// no pagedown for main map.. where do you want to go??
 				if (NOTANYPAN && IsMultiMapNoMain()) {
-				#else
-				if (dontdrawthemap && IsMultiMap()) {
-				#endif
 					LKevent=LKEVENT_PAGEDOWN;
 					MapWindow::RefreshMap();
 					return 0;
@@ -406,12 +394,8 @@ shortcut_gesture:
 				return 0;
 			// SCROLL UP
 			case LKGESTURE_UP:
-				#if NEWMULTIMAPS
 				// no pagedown for main map.. where do you want to go??
 				if (NOTANYPAN && IsMultiMapNoMain()) {
-				#else
-				if (dontdrawthemap && (IsMultiMap())) {
-				#endif
 					LKevent=LKEVENT_PAGEUP;
 					MapWindow::RefreshMap();
 					return 0;

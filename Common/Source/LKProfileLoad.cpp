@@ -399,11 +399,6 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryDisplayUpValue,&DisplayOrientation_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryDistanceUnitsValue,&DistanceUnit_Config );
-#if NEWMULTIMAPS
-#else
-  PREAD(sname,svalue,szRegistryDrawTerrain,&EnableTerrain_Config);
-  PREAD(sname,svalue,szRegistryDrawTopology,&EnableTopology_Config);
-#endif
   PREAD(sname,svalue,szRegistryEnableFLARMMap,&EnableFLARMMap);
   PREAD(sname,svalue,szRegistryEnableNavBaroAltitude,&EnableNavBaroAltitude_Config);
   PREAD(sname,svalue,szRegistryFAIFinishHeight,&EnableFAIFinishHeight);

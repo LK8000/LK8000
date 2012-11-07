@@ -129,13 +129,10 @@ _skip_calcs:
   // the MapSpace mode has changed from MAP to something else while we
   // were rendering.
   //
-#if NEWMULTIMAPS
 QuickRedraw:
-#endif
   //
   if (DONTDRAWTHEMAP) 
   {
-	#if NEWMULTIMAPS
 	DrawMapSpace(hdc, rc);
 	// Is this a "shared map" environment? 
 	if (IsMultiMapShared()) { 
@@ -157,11 +154,6 @@ QuickRedraw:
 		// Not in map painting environment 
 		// ex. nearest pages, but also MAPRADAR..
 	}
-	#else
-	// Drawing Look8000 here was probably a mistake!
-QuickRedraw:
-	DrawLook8000(hdc,rc);
-	#endif
 
 	// 
 	DrawBottomBar(hdc,rc);
@@ -177,11 +169,7 @@ QuickRedraw:
 
   // When no terrain is painted, set a background0
   // Remember that in this case we have plenty of cpu time to spend for best result
-  #if NEWMULTIMAPS
   if (!IsMultimapTerrain() || !DerivedDrawInfo.TerrainValid || !RasterTerrain::isTerrainLoaded() ) {
-  #else
-  if (!EnableTerrain || !DerivedDrawInfo.TerrainValid || !RasterTerrain::isTerrainLoaded() ) {
-  #endif
 
     // display border and fill background..
 	SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
@@ -258,11 +246,7 @@ QuickRedraw:
   if ( OFFSMARTZOOM ) {
   #endif
 
-  #if NEWMULTIMAPS
   if ((IsMultimapTerrain() && (DerivedDrawInfo.TerrainValid) 
-  #else
-  if ((EnableTerrain && (DerivedDrawInfo.TerrainValid) 
-  #endif
        && RasterTerrain::isTerrainLoaded())
 	) {
 	// sunelevation is never used, it is still a todo in Terrain
@@ -307,11 +291,7 @@ QuickRedraw:
 	goto QuickRedraw;
   }
 
-  #if NEWMULTIMAPS
   if (IsMultimapTopology()) {
-  #else
-  if (EnableTopology) {
-  #endif
     DrawTopology(hdc, DrawRect);
   }
   #if 0
@@ -334,11 +314,7 @@ QuickRedraw:
 	goto QuickRedraw;
   }
 
-  #if NEWMULTIMAPS
   if (IsMultimapAirspace())
-  #else 
-  if (OnAirSpace > 0)  // Default is true, always true at startup no regsave 
-  #endif
   {
     if ( (GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders) )
       DrawTptAirSpace(hdc, rc);
@@ -376,11 +352,7 @@ QuickRedraw:
 
 _skip_stuff:
 
-  #if NEWMULTIMAPS
   if (IsMultimapAirspace() && AirspaceWarningMapLabels)
-  #else
-  if ((OnAirSpace > 0) && AirspaceWarningMapLabels)
-  #endif
   {
 	DrawAirspaceLabels(hdc, DrawRect, Orig_Aircraft);
 	if (DONTDRAWTHEMAP) { // 100319

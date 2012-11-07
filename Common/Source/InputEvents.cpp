@@ -1087,30 +1087,9 @@ void InputEvents::eventVisualGlide(const TCHAR *misc) {
 
 void InputEvents::eventAirSpace(const TCHAR *misc) {
 
-  #if NEWMULTIMAPS
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
 	ToggleMultimapAirspace();
   }
-  #else
-  if (_tcscmp(misc, TEXT("toggle")) == 0) {
-    OnAirSpace ++;
-    if (OnAirSpace>1) {
-      OnAirSpace=0;
-    }
-  } 
-  else if (_tcscmp(misc, TEXT("off")) == 0)
-    OnAirSpace = 0;
-  else if (_tcscmp(misc, TEXT("on")) == 0)
-    OnAirSpace = 1;
-  else if (_tcscmp(misc, TEXT("show")) == 0) {
-    if (OnAirSpace==0)
-	// LKTOKEN  _@M613_ = "Show AirSpace OFF" 
-      DoStatusMessage(gettext(TEXT("_@M613_")));
-    if (OnAirSpace==1) 
-	// LKTOKEN  _@M614_ = "Show AirSpace ON" 
-      DoStatusMessage(gettext(TEXT("_@M614_")));
-  }  
-  #endif
 }
 
 extern bool ActiveMap_IsEnabled;
@@ -1261,7 +1240,6 @@ void InputEvents::eventPan(const TCHAR *misc) {
 
 }
 
-#if NEWMULTIMAPS
 void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("terrain toggle")) == 0) {
@@ -1273,36 +1251,6 @@ void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 	//MapWindow::RefreshMap();
   }
 }
-#else
-// Do JUST Terrain/Toplogy (toggle any, on/off any, show)
-void InputEvents::eventTerrainTopology(const TCHAR *misc) {
-
-  if (_tcscmp(misc, TEXT("terrain toggle")) == 0) 
-    MapWindow::Event_TerrainTopology(-2);
-
-  else if (_tcscmp(misc, TEXT("topology toggle")) == 0) 
-    MapWindow::Event_TerrainTopology(-3);
-
-  else if (_tcscmp(misc, TEXT("terrain on")) == 0) 
-    MapWindow::Event_TerrainTopology(3);
-
-  else if (_tcscmp(misc, TEXT("terrain off")) == 0) 
-    MapWindow::Event_TerrainTopology(4);
-
-  else if (_tcscmp(misc, TEXT("topology on")) == 0) 
-    MapWindow::Event_TerrainTopology(1);
-
-  else if (_tcscmp(misc, TEXT("topology off")) == 0) 
-    MapWindow::Event_TerrainTopology(2);
-
-  else if (_tcscmp(misc, TEXT("show")) == 0) 
-    MapWindow::Event_TerrainTopology(0);
-
-  else if (_tcscmp(misc, TEXT("toggle")) == 0) 
-    MapWindow::Event_TerrainTopology(-1);
-
-}
-#endif
 
 
 // ArmAdvance
@@ -2687,17 +2635,11 @@ void InputEvents::eventRun(const TCHAR *misc) {
 void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
 
-	#if NEWMULTIMAPS
 	short i=GetMultimap_Labels();
 	LKASSERT( (i>=0) && (i<=MAPLABELS_END));
 	if (++i>MAPLABELS_END) i=MAPLABELS_START;
 	SetMultimap_Labels(i);
-	#else
-	MapWindow::DeclutterLabels ++;
-	MapWindow::DeclutterLabels = MapWindow::DeclutterLabels % 4;
-	#endif
 
-	#if NEWMULTIMAPS
 	switch (GetMultimap_Labels()) {
 
 		case 0:	// MAPLABELS_ALLON
@@ -2723,28 +2665,7 @@ void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
 			break;
 	}
 
-	#endif
-  #if NEWMULTIMAPS
   }
-  #else
-  } else if (_tcscmp(misc, TEXT("on")) == 0)
-    MapWindow::DeclutterLabels = MAPLABELS_ALLOFF;
-  else if (_tcscmp(misc, TEXT("off")) == 0)
-    MapWindow::DeclutterLabels = MAPLABELS_ALLON;
-  else if (_tcscmp(misc, TEXT("mid")) == 0)
-    MapWindow::DeclutterLabels = MAPLABELS_ONLYTOPO;
-  else if (_tcscmp(misc, TEXT("show")) == 0) {
-    if (MapWindow::DeclutterLabels==MAPLABELS_ALLON)
-	// LKTOKEN  _@M422_ = "Map labels ON" 
-      DoStatusMessage(gettext(TEXT("_@M422_")));
-    else if (MapWindow::DeclutterLabels==MAPLABELS_ONLYTOPO)
-	// LKTOKEN  _@M423_ = "Map labels TOPO" 
-      DoStatusMessage(gettext(TEXT("_@M423_")));  
-    else 
-	// LKTOKEN  _@M421_ = "Map labels OFF" 
-      DoStatusMessage(gettext(TEXT("_@M421_")));  
-  }
-  #endif
 }
 
 

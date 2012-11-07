@@ -66,68 +66,6 @@ void MapWindow::Event_PanCursor(int dx, int dy) {
 }
 
 
-#if NEWMULTIMAPS
-#else
-void MapWindow::Event_TerrainTopology(int vswitch) {
-  char val;
-
-  if (vswitch== -1) { // toggle through 4 possible options
-    val = 0;
-    if (EnableTopology) val++;
-    if (EnableTerrain) val += (char)2;
-    val++;
-    if (val>3) val=0;
-    EnableTopology = ((val & 0x01) == 0x01);
-    EnableTerrain  = ((val & 0x02) == 0x02);
-    RefreshMap();
-
-  } else if (vswitch == -2) { // toggle terrain
-    EnableTerrain = !EnableTerrain;
-    RefreshMap();
-
-  } else if (vswitch == -3) { // toggle topology
-    EnableTopology = !EnableTopology;
-    RefreshMap();
-
-  } else if (vswitch == 1) { // Turn on toplogy
-    EnableTopology = true;
-    RefreshMap();
-
-  } else if (vswitch == 2) { // Turn off toplogy
-    EnableTopology = false;
-    RefreshMap();
-
-  } else if (vswitch == 3) { // Turn on terrain 
-    EnableTerrain = true;
-    RefreshMap();
-
-  } else if (vswitch == 4) { // Turn off terrain
-    EnableTerrain = false;
-    RefreshMap();
-
-  } else if (vswitch == 0) { // Show terrain/Topology
-    // ARH Let user know what's happening
-    TCHAR buf[128];
-    if (EnableTopology) {
-	if (EnableTerrain)
-		_stprintf(buf, _T("Topo:ON   Terra:ON"));
-	else
-		_stprintf(buf, _T("Topo:ON   Terra:OFF"));
-    } else {
-	if (EnableTerrain)
-		_stprintf(buf, _T("Topo:OFF   Terra:ON"));
-	else
-		_stprintf(buf, _T("Topo:OFF   Terra:OFF"));
-    }
-
-    Message::Lock(); // 091211
-    Message::AddMessage(500, 3, buf); // 091125
-    Message::Unlock();
-    // DoStatusMessage(TEXT("Topology / Terrain"), buf);
-  }
-}
-#endif
-
 
 void MapWindow::Event_Pan(int vswitch) {
   //  static bool oldfullscreen = 0;  never assigned!

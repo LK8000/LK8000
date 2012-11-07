@@ -206,10 +206,6 @@ void Globals_Init(void) {
   CustomKeyModeCenterScreen=(CustomKeyMode_t)ckDisabled;
 
   QFEAltitudeOffset = 0;
-  #if NEWMULTIMAPS
-  #else
-  OnAirSpace=1;
-  #endif
   WasFlying = false;
 
   LastDoRangeWaypointListTime=0;
@@ -437,13 +433,6 @@ void Globals_Init(void) {
   //CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 
   // user interface settings
-#if NEWMULTIMAPS
-#else
-  EnableTopology = true;
-  EnableTopology_Config = true;
-  EnableTerrain = true;
-  EnableTerrain_Config = true;
-#endif
   FinalGlideTerrain = 1;
   EnableSoundModes = true;
   OverlayClock = false;

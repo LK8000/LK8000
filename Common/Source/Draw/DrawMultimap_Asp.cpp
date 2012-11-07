@@ -88,7 +88,6 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 		ActiveMap_IsEnabled=false;
 		break;
 
-#if NEWMULTIMAPS
 	case LKEVENT_TOPLEFT:
 		IsMultimapConfigShown=true;
 		InputEvents::setMode(_T("MMCONF"));
@@ -115,13 +114,11 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 			}
 		}
 		break;
-#endif
 	default:
 		// THIS SHOULD NEVER HAPPEN, but always CHECK FOR IT!
 		break;
   }
 
-#if NEWMULTIMAPS
   //
   // If the map is active in the proper mapspace, we shall manage here the action
   //
@@ -140,7 +137,6 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 			return;
 		}
   }
-#endif
 
   //
   // This is doing all rendering, including terrain and topology, which is not good.
@@ -155,21 +151,6 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 
 #ifdef ENABLE_ALL_AS_FOR_SIDEVIEW
   AltitudeMode = oldAltMode;
-#endif
-
-//
-// We dont use this stuff, however it is ready
-//
-#if NEWMULTIMAPS
-  #if 0
-  if (!IsMultimapOverlaysText()) {
-	DrawMultimap_Topleft(hdc, rci);
-  }
-  #endif
-#else
-  DrawMultimap_Topleft(hdc, rci);
-  DrawMultimap_Topright(hdc, rci);
-  DrawMultimap_DynaLabel(hdc, rci);
 #endif
 
   if(GetSideviewPage()== IM_NEAR_AS) SonarNotify();

@@ -69,11 +69,6 @@ int MapWindow::GliderScreenPosition = 40; // 20% from bottom
 int MapWindow::GliderScreenPositionX = 50;  // 100216
 int MapWindow::GliderScreenPositionY = 40;
 
-#if NEWMULTIMAPS
-#else
-unsigned char MapWindow::DeclutterLabels = MAPLABELS_ALLON;
-#endif
-
 double MapWindow::DisplayAngle = 0.0;
 double MapWindow::DisplayAircraftAngle = 0.0;
 
@@ -183,10 +178,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
   static int lparam_Y;
   static int gestX, gestY, gestDir, gestDist;
   static bool dontdrawthemap;
-#if NEWMULTIMAPS
-#else
-  static bool mapmode8000;
-#endif
 
   //
   // Candidates to be simplified, or to be made globals
@@ -413,11 +404,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
       // and this means also fast clicking on bottombar!!
       // so first lets see if we are in lk8000 text screens.. 
 	// The idea was/is: break if we are in the nearest pages, or in main map but on the bottom bar.
-	#if NEWMULTIMAPS
 	if ((DONTDRAWTHEMAP) || (IsMultiMap() && (YstartScreen >=BottomBarY))) {  
-	#else
-	if ((DONTDRAWTHEMAP) || ((MAPMODE8000) && (YstartScreen >=BottomBarY))) {  
-	#endif
 		// do not ignore next, let buttonup get the signal
 		break;
       }
@@ -536,10 +523,6 @@ _buttondown:
 	// we save these flags for the entire processing, just in case they change
 	// while processing a virtual key for example, and also for acceleration.
 	dontdrawthemap=(DONTDRAWTHEMAP);
-#if NEWMULTIMAPS
-#else
-	mapmode8000=(MAPMODE8000);
-#endif
 
 	dwUpTime = GetTickCount(); 
 	dwInterval=dwUpTime-dwDownTime;
@@ -644,11 +627,7 @@ goto_menu:
       } 
 
 	// MultiMap custom specials, we use same geometry of MSM_MAP
-	#if NEWMULTIMAPS
 	if (NOTANYPAN && IsMultiMapCustom() ) {
-	#else
-	if (!MapWindow::mode.AnyPan() && IsMultiMap() ) {
-	#endif
 		if ( (lparam_X <= P_UngestureLeft.x) && (lparam_Y <= P_UngestureLeft.y) ) {
 			#ifndef DISABLEAUDIO
          		 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -668,11 +647,7 @@ goto_menu:
 	}
 
 	// Otherwise not in multimap, proceed with normal checks
-	#if NEWMULTIMAPS
 	if (NOTANYPAN && IsMultiMapShared()) {
-	#else
-	if (mapmode8000) {
-	#endif
 	if ( (lparam_X <= P_UngestureLeft.x) && (lparam_Y <= P_UngestureLeft.y) ) {
 		
 		if (!CustomKeyHandler(CKI_TOPLEFT)) {
@@ -739,11 +714,7 @@ goto_menu:
 	// they are processed even when virtual keys are disabled, because they concern special lk8000 menus.
 
 	// First case: for mapspacemodes we manage gestures as well
-	#if NEWMULTIMAPS
 	if (dontdrawthemap||(NOTANYPAN && IsMultiMapSharedNoMain())) {
-	#else
-	if (dontdrawthemap) {
-	#endif
 
 		if ( gestDir == LKGESTURE_UP) {
 			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_UP);
@@ -913,11 +884,7 @@ goto_menu:
 
 				// Select airspace on moving map only if they are visible
 				// 120526 moved out of anypan, buggy because we want airspace selection with priority
-				#if NEWMULTIMAPS
 				if (IsMultimapAirspace() && Event_InteriorAirspaceDetails(Xstart, Ystart))
-				#else
-				if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart))
-				#endif
 					break;
 
 				if (!mode.AnyPan()) {

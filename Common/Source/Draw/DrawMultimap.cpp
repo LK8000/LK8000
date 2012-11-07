@@ -161,8 +161,7 @@ void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
 
 void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 {
-#if NEWMULTIMAPS
-#else
+#if 0
   if (!IsMultimapOverlays()) return;
 
   HBRUSH oldBrush;
@@ -269,7 +268,7 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 _return:
   SelectObject(hdc,oldBrush);
   SelectObject(hdc,oldFont);
-#endif // NOT NEWMULTIMAPS
+#endif // NOT IN NEWMULTIMAPS
 }
 
 //

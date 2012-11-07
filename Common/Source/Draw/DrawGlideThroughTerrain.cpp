@@ -77,17 +77,9 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
   // draw perimeter if selected and during a flight
   #ifdef GTL2
   if (((FinalGlideTerrain == 1) || (FinalGlideTerrain == 3)) || 
-#if NEWMULTIMAPS
      ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && FinalGlideTerrain)) { 
-#else
-     ((!EnableTerrain || !DerivedDrawInfo.Flying) && FinalGlideTerrain)) { 
-#endif
   #else
-#if NEWMULTIMAPS
   if ((FinalGlideTerrain==1) || ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && (FinalGlideTerrain==2))) { 
-#else
-  if ((FinalGlideTerrain==1) || ((!EnableTerrain || !DerivedDrawInfo.Flying) && (FinalGlideTerrain==2))) { 
-#endif
   #endif
 	SelectObject(hDC,hpTerrainLine);
 	_Polyline(hDC,Groundline,NUMTERRAINSWEEPS+1, rc);

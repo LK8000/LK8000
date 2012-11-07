@@ -109,13 +109,6 @@ void LKProfileResetDefault(void) {
 
   EnableThermalLocator = 1;
 
-#if NEWMULTIMAPS
-#else
-  EnableTopology_Config = 1;
-
-  EnableTerrain_Config = 1;
-#endif
-
   FinalGlideTerrain = 1;
 
   AutoWindMode_Config = D_AUTOWIND_CIRCLING;

@@ -394,10 +394,6 @@ class MapWindow {
 
   static bool MapDirty;
 
-#if NEWMULTIMAPS
-#else
-  static unsigned char DeclutterLabels;
-#endif
   static bool EnableTrailDrift;
   static int GliderScreenPosition;
   static int GliderScreenPositionX;

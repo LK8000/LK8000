@@ -68,11 +68,7 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
 
   double sunelevation = 40.0;
   double sunazimuth=GetAzimuth();
-#if NEWMULTIMAPS
   if (IsMultimapTerrain() && DerivedDrawInfo.TerrainValid) {
-#else
-  if (EnableTerrain && DerivedDrawInfo.TerrainValid) {
-#endif
 	LockTerrainDataGraphics();
 	DrawTerrain(hdc, rct, sunazimuth, sunelevation);
 	UnlockTerrainDataGraphics();
