@@ -356,7 +356,9 @@ _skip_stuff:
 	}
   }
 
-  DrawWaypointsNew(hdc,DrawRect);
+  if (IsMultimapWaypoints()) {
+	DrawWaypointsNew(hdc,DrawRect);
+  }
 
   if (DONTDRAWTHEMAP) {
 	goto QuickRedraw;
@@ -364,8 +366,7 @@ _skip_stuff:
 
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
 	DrawTask(hdc, DrawRect, Orig_Aircraft);
-    DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);
-
+	DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);
   }
 
   // In QUICKDRAW do not paint other useless stuff
