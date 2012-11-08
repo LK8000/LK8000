@@ -980,6 +980,8 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	short th= RasterTerrain::GetTerrainHeight(MapWindow::GetPanLatitude(), MapWindow::GetPanLongitude());
 	if (th==TERRAIN_INVALID) th=0;
 	MarkLocation(MapWindow::GetPanLongitude(), MapWindow::GetPanLatitude(), th );
+	extern bool ForceRenderMap;
+	ForceRenderMap=true;
   } else {
 	#if USETOPOMARKS
 	MarkLocation(GPS_INFO.Longitude, GPS_INFO.Latitude);
@@ -2151,6 +2153,9 @@ extern bool RotateScreen(short angle);
 	GPS_INFO.Latitude=MapWindow::GetPanLatitude();
 	GPS_INFO.Longitude=MapWindow::GetPanLongitude();
 	LastDoRangeWaypointListTime=0; // force DoRange
+	if (EnableSoundModes) LKSound(_T("LK_BEEP1.WAV"));
+	extern bool ForceRenderMap;
+	ForceRenderMap=true;
 	return;
   }
 

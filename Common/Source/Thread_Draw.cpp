@@ -26,7 +26,7 @@ DWORD  MapWindow::dwDrawThreadID;
 HANDLE MapWindow::hDrawThread;
 
 extern bool PanRefreshed;
-
+bool ForceRenderMap=true;
 
 extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 
@@ -75,7 +75,6 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   zoom.ModifyMapScale();
   FillScaleListForEngineeringUnits();
   
-  bool first = true;
   bool lastdrawwasbitblitted=false;
 
   // 
@@ -115,7 +114,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 		if (MapSpaceMode!=MSM_WELCOME) SetModeType(LKMODE_MAP, MP_MOVING);
 
 		LKSW_ReloadProfileBitmaps=false;
-		first=true; // check it
+		ForceRenderMap=true; // check it
 	}
 
 
@@ -146,7 +145,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	//
 	// Notice: we could be !MapDirty without OnFastPanning, of course!
 	//
-	if (!MapDirty && !first && OnFastPanning) {
+	if (!MapDirty && !ForceRenderMap && OnFastPanning) {
 		if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
 
 			int fromX=0, fromY=0;
@@ -196,11 +195,11 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 		//
 		#if 1 // EXPERIMENTAL, CHECK ZOOM IS WORKING IN PNA
 		// Only for special case: PAN mode, map not dirty (including requests for zooms!)
-		// not in the first run and last time was a real rendering. THEN, at these conditions,
+		// not in the ForceRenderMap run and last time was a real rendering. THEN, at these conditions,
 		// we simply redraw old bitmap, for the scope of accelerating touch response.
 		// In fact, if we are panning the map while rendering, there would be an annoying delay.
 		// This is using lastdrawwasbitblitted
-		if (INPAN && !MapDirty && !lastdrawwasbitblitted && !first) {
+		if (INPAN && !MapDirty && !lastdrawwasbitblitted && !ForceRenderMap) {
 			BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
 				hdcDrawWindow, 0, 0, SRCCOPY);
@@ -222,7 +221,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
 	RenderMapWindow(MapRect);
     
-	if (!first) {
+	if (!ForceRenderMap) {
 		BitBlt(hdcScreen, 0, 0, 
 			MapRect.right-MapRect.left,
 			MapRect.bottom-MapRect.top, 
@@ -243,8 +242,8 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	UpdateTimeStats(false);
 
 	// we do caching after screen update, to minimise perceived delay
-	UpdateCaches(first);
-	first = false;
+	UpdateCaches(ForceRenderMap);
+	ForceRenderMap = false;
 	if (ProgramStarted==psInitDone) {
 		ProgramStarted = psFirstDrawDone;
 	}
