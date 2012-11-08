@@ -21,6 +21,7 @@ double Statistics::y_max;
 bool   Statistics::unscaled_x;
 bool   Statistics::unscaled_y;
 
+
 HPEN penThinSignal = NULL;
 
 int analysis_page=0;
@@ -48,6 +49,17 @@ void Statistics::Reset() {
   }
 }
 
+static int OnTimerNotify(WindowControl *Sender)
+{
+  static short i=0;
+
+  if(i++ < 5)
+    return 0;
+  i=0;
+   UpdateAnalysis();
+
+  return 0;
+}
 
 
 void Statistics::FormatTicText(TCHAR *text, const double val, const double step) {
@@ -228,6 +240,9 @@ static void OnCalcClicked(WindowControl * Sender,
     // Rotate presented contest
     switch(contestType) {
     case CContestMgr::TYPE_OLC_CLASSIC:
+      contestType = CContestMgr::TYPE_FAI_TRIANGLE;
+      break;
+    case CContestMgr::TYPE_FAI_TRIANGLE:
       contestType = CContestMgr::TYPE_OLC_FAI;
       break;
     case CContestMgr::TYPE_OLC_FAI:
@@ -246,9 +261,6 @@ static void OnCalcClicked(WindowControl * Sender,
       contestType = CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
       break;
     case CContestMgr::TYPE_FAI_3_TPS_PREDICTED:
-      contestType = CContestMgr::TYPE_FAI_TRIANGLE;
-      break;
-    case CContestMgr::TYPE_FAI_TRIANGLE:
       contestType = CContestMgr::TYPE_OLC_CLASSIC;
       break;
 
@@ -275,12 +287,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAspBearClicked),
   DeclareCallBackEntry(NULL)
 };
-
-
-
-
-
-
 
 
 
@@ -354,11 +360,12 @@ if (entered == true) /* prevent re entrance */
     waGrid->SetWidth( wfa->GetWidth() - waGrid->GetLeft()-6);
   }
 
-//  wfa->SetTimerNotify(OnTimerNotify);
+  wfa->SetTimerNotify(OnTimerNotify);
 
-  UpdateAnalysis();
+//  UpdateAnalysis();
 
   if (inPage!=ANALYSYS_PAGE_DEFAULT) analysis_page=inPage;
+  UpdateAnalysis();
 
   wfa->ShowModal();
 
@@ -371,7 +378,9 @@ if (entered == true) /* prevent re entrance */
 
   MapWindow::RequestFastRefresh();
   FullScreen();
+
   entered = false;
 }
+
 
 

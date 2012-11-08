@@ -31,7 +31,6 @@ double fDelta_Dist = 2.0* fDist_c*FAI_MIN_PERCENTAGE / (double)(STEPS);
 
 double dir = -1.0;
 
-//COLORREF fillcolor = RGB_LIGHTCYAN;
   if (iOpposite >0)
   {
 	dir = 1.0;
@@ -184,7 +183,7 @@ double dir = -1.0;
 	  fDist_a += fDelta_Dist;
 	  fDist_b = fDistTri - fDist_a - fDist_c;
     }
-    TCHAR text[180];; SIZE tsize;
+    TCHAR text[180]; SIZE tsize;
     if(bFirstUnit)
       _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
     else
