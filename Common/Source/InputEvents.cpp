@@ -2380,11 +2380,8 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
   // StartHourglassCursor();
   CAirspace *found = CAirspaceManager::Instance().FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
 		      &nearestdistance, &nearestbearing );
-  InputEvents::eventSetup(_T("AspNextAnalysis"));
+  SetModeType(LKMODE_MAP,MP_MAPASP);
 
-  if (found != NULL) {
-	// dlgAirspaceDetails(found);
-  }
 }
 
 // NearestWaypointDetails

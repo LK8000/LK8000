@@ -12,6 +12,7 @@
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"
 #include "Dialogs.h"
+#include "LKInterface.h"
 
 #include "RGB.h"
 
@@ -81,7 +82,7 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
 
 static void OnAnalysisClicked(WindowControl * Sender){
   (void)Sender;
-  InputEvents::eventSetup(_T("AspNextAnalysis"));
+  SetModeType(LKMODE_MAP,MP_MAPASP);
   dlg->SetModalResult(mrOK);
 }
 
