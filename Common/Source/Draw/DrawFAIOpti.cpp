@@ -25,7 +25,7 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
   HBRUSH oldbrush = 0;
   oldpen = (HPEN) SelectObject(hdc, hpStartFinishThick);
   oldbrush = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-  LockTaskData(); // protect from external task changes
+
 
 /********************************************************************/
   unsigned int ui;
@@ -36,20 +36,29 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
   POINT Pt1,Pt2;
   BOOL bFAI = false;
   double fDist, fAngle;
-  CContestMgr::CResult result = CContestMgr::Instance().Result( CContestMgr::TYPE_FAI_TRIANGLE, true);
-  const CPointGPSArray &points = result.PointArray();
+  LockTaskData(); // protect from external task changes
 
-  if((result.Type() ==  CContestMgr::TYPE_FAI_TRIANGLE))
+    CContestMgr::CResult result = CContestMgr::Instance().Result( CContestMgr::TYPE_FAI_TRIANGLE, true);
+    const CPointGPSArray &points = result.PointArray();
+    unsigned int iSize = points.size();
+    if(iSize > 4)
+      bFAI = true;
+    CContestMgr::TType sType = result.Type();
+
+  UnlockTaskData(); // protect from external task changes
+  if((sType ==  CContestMgr::TYPE_FAI_TRIANGLE))
   {
-    for(ui=0; ui<points.size()-1; ui++)
+    for(ui=0; ui< iSize-1; ui++)
     {
+      LockTaskData(); // protect from external task changes
       lat1 = points[ui].Latitude();
       lon1 = points[ui].Longitude();
       lat2 = points[ui+1].Latitude();
       lon2 = points[ui+1].Longitude();
+      UnlockTaskData();
+
       DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
-      if(points.size() > 4)
-        bFAI = true;
+
       if((fDist > FAI_MIN_DISTANCE_THRESHOLD) && (ui < 2))
   	  {
   		COLORREF rgbCol = RGB_BLUE;
@@ -67,12 +76,14 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
     }
 
 
-    for(ui=0; ui<points.size()-1; ui++)
+    for(ui=0; ui< iSize-1; ui++)
     {
+      LockTaskData();
       lat1 = points[ui].Latitude();
       lon1 = points[ui].Longitude();
       lat2 = points[ui+1].Latitude();
       lon2 = points[ui+1].Longitude();
+      UnlockTaskData();
       DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
   	  MapWindow::LatLon2Screen(lon1, lat1,  Pt1);
   	  MapWindow::LatLon2Screen(lon2, lat2,  Pt2);
@@ -114,7 +125,6 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 
     
 /********************************************************************/
-    UnlockTaskData();
     // restore original color
     SetTextColor(hDCTemp, origcolor);
     SelectObject(hdc, oldpen);
