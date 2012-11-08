@@ -72,7 +72,7 @@ void Statistics::RenderContest(HDC hdc, const RECT rc)
   }
 
   ScaleMakeSquare(rc);
-  // draw track
+
 
   if((result.Type() == contestType) && (contestType == CContestMgr::TYPE_FAI_TRIANGLE))
   {
@@ -87,7 +87,6 @@ void Statistics::RenderContest(HDC hdc, const RECT rc)
       y1 = (lat1-lat_c);
       x2 = (lon2-lon_c)*fastcosine(lat2);
       y2 = (lat2-lat_c);
-
       DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
       if(points.size() > 4)
         bFAI = true;
@@ -158,10 +157,10 @@ void Statistics::RenderContest(HDC hdc, const RECT rc)
       if((result.Type() == CContestMgr::TYPE_FAI_3_TPS) ||// TYPE_FAI_3_TPS_PREDICTED
        (result.Type() == CContestMgr::TYPE_FAI_3_TPS_PREDICTED) )
       {
-//        DrawLine(hdc, rc, x1, y1, x2, y2, style);
       }
-
+      DrawLine(hdc, rc, x1, y1, x2, y2, style);
       if((contestType == CContestMgr::TYPE_FAI_TRIANGLE))// TYPE_FAI_TRIANGLE
+      {
       {
         DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
 
@@ -172,51 +171,45 @@ void Statistics::RenderContest(HDC hdc, const RECT rc)
   		  SIZE tsize;
   		  _stprintf(text, TEXT("%3.1f%%"), (fDist/result.Distance()*100.0));
   		  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-  		  SetTextColor(hdc, RGB_LIGHTBLUE);
+  		  SetTextColor(hdc, RGB_BLUE);
   		  ExtTextOut(hdc, ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   		  SetTextColor(hdc, RGB_BLUE);
   		  SelectObject(hdc,(HFONT)  hfOld);
   		}
 
-     	if (ISPARAGLIDER)
+     	if ((ISPARAGLIDER) &&  bFAI && (ui == 0))
      	{
-          if(ui == 0)
-          {
-      	    double lat, lon;
-            if(bFAI)
-            {
-      	  	  HPEN hpSectorPen  = (HPEN)CreatePen(PS_SOLID, 1, RGB_LIGHTGREY );
-      		  HPEN hpOldPen     = (HPEN)  SelectObject(hdc, hpSectorPen);
-  		      FindLatitudeLongitude(lat1, lon1, 0 , result.Distance()/5, &lat, &lon);/* 5%*/
-  		      int iRadius = (int)((lat-lat1)*yscale);
+      	  double lat, lon;
+      	  HPEN hpSectorPen  = (HPEN)CreatePen(PS_SOLID, 1, RGB_LIGHTGREY );
+      	  HPEN hpOldPen     = (HPEN)  SelectObject(hdc, hpSectorPen);
+  	      FindLatitudeLongitude(lat1, lon1, 0 , result.Distance()/5, &lat, &lon);/* 5%*/
+  		  int iRadius = (int)((lat-lat1)*yscale);
 
-  		      Circle(hdc, ScaleX(rc, x1), ScaleY(rc, y1), iRadius  , rc, true ,  false);/* 20% */
-  		      Circle(hdc, ScaleX(rc, x1), ScaleY(rc, y1), iRadius/4, rc, true ,  false);/* 5%  */
-  	 		  SelectObject(hdc, hpOldPen);
-  	 		  DeleteObject(hpSectorPen);
-            }
-          }
-          style = STYLE_REDTHICK;
+  		  Circle(hdc, ScaleX(rc, x1), ScaleY(rc, y1), iRadius  , rc, true ,  false);/* 20% */
+  		  Circle(hdc, ScaleX(rc, x1), ScaleY(rc, y1), iRadius/4, rc, true ,  false);/* 5%  */
+  	 	  SelectObject(hdc, hpOldPen);
+  	 	  DeleteObject(hpSectorPen);
         }
       }
+
       DrawLine(hdc, rc, x1, y1, x2, y2, style);
     }
   }
 
-    if(result.Type() == CContestMgr::TYPE_OLC_FAI ||
-       result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED)
-    {
-      // draw the last edge of a triangle
-      lat1 = points[1].Latitude();
-      lon1 = points[1].Longitude();
-      lat2 = points[3].Latitude();
-      lon2 = points[3].Longitude();
-      x1 = (lon1-lon_c)*fastcosine(lat1);
-      y1 = (lat1-lat_c);
-      x2 = (lon2-lon_c)*fastcosine(lat2);
-      y2 = (lat2-lat_c);
-      DrawLine(hdc, rc, x1, y1, x2, y2, result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
-    }
+  if(result.Type() == CContestMgr::TYPE_OLC_FAI ||
+     result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED)
+  {
+    // draw the last edge of a triangle
+    lat1 = points[1].Latitude();
+    lon1 = points[1].Longitude();
+    lat2 = points[3].Latitude();
+    lon2 = points[3].Longitude();
+    x1 = (lon1-lon_c)*fastcosine(lat1);
+    y1 = (lat1-lat_c);
+    x2 = (lon2-lon_c)*fastcosine(lat2);
+    y2 = (lat2-lat_c);
+    DrawLine(hdc, rc, x1, y1, x2, y2, result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
+  }
 
 
   DrawXGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
@@ -232,5 +225,5 @@ void Statistics::RenderContest(HDC hdc, const RECT rc)
   SetBkMode(hdc, TRANSPARENT);
   DrawLabel(hdc, rc, TEXT("+"), x1, y1);
 }
-
+}
 

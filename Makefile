@@ -332,6 +332,7 @@ DRAW	:=\
 	$(DRW)/DrawBestCruiseTrack.cpp \
 	$(DRW)/DrawCompass.cpp \
 	$(DRW)/DrawCross.cpp \
+	$(DRW)/DrawFAIOpti.cpp \
 	$(DRW)/DrawFinalGlideBar.cpp \
 	$(DRW)/DrawFlarmRadar.cpp \
 	$(DRW)/DrawFlightMode.cpp \

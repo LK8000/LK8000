@@ -779,7 +779,7 @@ _nomoredeclutter:
 	DrawWaypointsNew(hdc,DrawRect);
 	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)&&MapSpaceMode!=MSM_MAPASP)
 		DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
-	
+    DrawFAIOptimizer(hdc, DrawRect, Current_Multimap_TopOrig);
   }
 
   DeclutterMode=olddecluttermode; // set it back correctly

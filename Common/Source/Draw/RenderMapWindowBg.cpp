@@ -364,6 +364,8 @@ _skip_stuff:
 
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
 	DrawTask(hdc, DrawRect, Orig_Aircraft);
+    DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);
+
   }
 
   // In QUICKDRAW do not paint other useless stuff

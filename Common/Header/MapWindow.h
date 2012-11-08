@@ -573,6 +573,7 @@ class MapWindow {
                                     const POINT &Start, const POINT &End, int Index, 
                                     int Type, double Radius);
   static void DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft);
+  static void DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft) ;
   static void DrawThermalEstimate(HDC hdc, const RECT rc);
   static void DrawThermalEstimateMultitarget(HDC hdc, const RECT rc);
   static void DrawTaskAAT(HDC hdc, const RECT rc);

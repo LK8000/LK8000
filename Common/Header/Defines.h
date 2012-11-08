@@ -278,7 +278,11 @@
 
 #define MAXPAGE                    ANALYSIS_PAGE_CONTEST /* 8 */
 
-
+#define FAI_MIN_DISTANCE_THRESHOLD 5000
+#define FAI_BIG_THRESHOLD	       750000  /* FAI distance threshold                   */
+#define FAI_NORMAL_PERCENTAGE	   0.28    /* min % of FAI triangle if distance < 750km */
+#define FAI_BIG_PERCENTAGE         0.25    /* min % of FAI triangle if distance >= 750km */
+#define FAI_SECTOR_COLOR           0x8B0A50
 
 #define D_AUTOWIND_MANUAL	0	// totally manual
 #define D_AUTOWIND_CIRCLING	1	// while circling

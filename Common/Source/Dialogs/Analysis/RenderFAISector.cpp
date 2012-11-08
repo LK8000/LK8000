@@ -7,14 +7,17 @@
 */
 
 #include "externs.h"
+#include "Defines.h"
 
 
 
 int Statistics::RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , COLORREF fillcolor)
 {
-#define FAI_MIN_PERCENTAGE 0.28
+
 #define STEPS 10
 #define N_PLOYGON (3*STEPS)
+
+float fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
 double fDist_a, fDist_b, fDist_c, fAngle;
 int i;
 
@@ -25,9 +28,16 @@ POINT apSectorPolygon[N_PLOYGON];
 DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
 
 double x1=0,y1=0;
-double fDistMax = fDist_c/FAI_MIN_PERCENTAGE;
-double fDistMin = fDist_c/(1.0-2.0*FAI_MIN_PERCENTAGE);
-double fDelta_Dist = 2.0* fDist_c*FAI_MIN_PERCENTAGE / (double)(STEPS);
+double fDistMax = fDist_c/FAI_BIG_THRESHOLD;
+double fDistMin = fDist_c/(1.0-2.0*FAI_BIG_THRESHOLD);
+double fDelta_Dist = 2.0* fDist_c*fFAI_Percentage / (double)(STEPS-1);
+
+if(fDistMax < FAI_BIG_THRESHOLD)
+{
+  fDistMax = fDist_c/FAI_NORMAL_PERCENTAGE;
+  fDistMin = fDist_c/(1.0-2.0*FAI_NORMAL_PERCENTAGE);
+}
+
 
 double dir = -1.0;
 
@@ -50,10 +60,15 @@ double dir = -1.0;
   /********************************************************************
    * calc right leg
    ********************************************************************/
-  fDelta_Dist =(fDistMax-fDistMin)/ (double)(STEPS);
+  fDelta_Dist =(fDistMax-fDistMin)/ (double)(STEPS-1);
   fDistTri = fDistMin;
-  fDist_a = fDistMin * FAI_MIN_PERCENTAGE;
-  fDist_b = fDistMin * FAI_MIN_PERCENTAGE;
+  if(fDistTri < FAI_BIG_THRESHOLD)
+	fFAI_Percentage =  FAI_NORMAL_PERCENTAGE;
+  else
+	fFAI_Percentage =  FAI_BIG_PERCENTAGE;
+
+  fDist_a = fDistMin * fFAI_Percentage;
+  fDist_b = fDistMin * fFAI_Percentage;
   for(i =0 ;i < STEPS; i++)
   {
 	LKASSERT(fDist_c*fDist_b!=0);
@@ -67,15 +82,26 @@ double dir = -1.0;
     apSectorPolygon[iPolyPtr++].y = ScaleY(rc, y1);
 
     fDistTri += fDelta_Dist;
-    fDist_a = FAI_MIN_PERCENTAGE * fDistTri;
+    if(fDistTri < FAI_BIG_THRESHOLD)
+  	  fFAI_Percentage =  FAI_NORMAL_PERCENTAGE;
+    else
+  	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
+
+    fDist_a = fFAI_Percentage * fDistTri;
 	fDist_b = fDistTri - fDist_a - fDist_c;
   }
 
   /********************************************************************
    * calc top leg
    ********************************************************************/
-  fDelta_Dist =  (fDistMax*(1.0-3.0*FAI_MIN_PERCENTAGE)) / (double)(STEPS);
+  if(fDistMax < FAI_BIG_THRESHOLD)
+	  fFAI_Percentage =  FAI_NORMAL_PERCENTAGE;
+  else
+	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
+
+
   fDist_a = fDist_c;
+  fDelta_Dist =  (fDistMax-2*fDist_a-fDist_c) / (double)(STEPS-1);
   fDist_b = fDistMax - fDist_a - fDist_c;
   for(i =0 ;i < STEPS; i++)
   {
@@ -95,9 +121,13 @@ double dir = -1.0;
   /********************************************************************
    * calc left leg
    ********************************************************************/
-  fDelta_Dist =(fDistMax-fDistMin)/ (double)(STEPS);
+  fDelta_Dist =(fDistMax-fDistMin)/ (double)(STEPS-1);
   fDistTri = fDistMax;
-  fDist_b = fDistMax * FAI_MIN_PERCENTAGE;
+  if(fDistTri < FAI_BIG_THRESHOLD)
+	  fFAI_Percentage =  FAI_NORMAL_PERCENTAGE;
+  else
+	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
+  fDist_b = fDistMax * fFAI_Percentage;
   fDist_a = fDistTri - fDist_b - fDist_c;
   for(i =0 ;i < STEPS; i++)
   {
@@ -112,7 +142,11 @@ double dir = -1.0;
     apSectorPolygon[iPolyPtr++].y = ScaleY(rc, y1);
 
     fDistTri -= fDelta_Dist;
-    fDist_b = FAI_MIN_PERCENTAGE * fDistTri;
+    if(fDistTri < FAI_BIG_THRESHOLD)
+  	  fFAI_Percentage =  FAI_NORMAL_PERCENTAGE;
+    else
+  	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
+    fDist_b = fFAI_Percentage * fDistTri;
 	fDist_a = fDistTri - fDist_b - fDist_c;
   }
 
@@ -161,10 +195,18 @@ double dir = -1.0;
   BOOL bFirstUnit = true;
   fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+
+
   while(fDistTri < fDistMax)
   {
-    fDelta_Dist =  (fDistTri-fDistMin)*(1.0-2.0*FAI_MIN_PERCENTAGE) / (double)(STEPS-1);
-    fDist_a = fDistTri*FAI_MIN_PERCENTAGE;
+	if(fDistTri < FAI_BIG_THRESHOLD)
+	  fFAI_Percentage =  FAI_NORMAL_PERCENTAGE;
+	else
+	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
+
+    fDist_a = fDistTri*fFAI_Percentage;
+    fDelta_Dist =  (fDistTri-2*fDist_a-fDist_c)/ (double)(STEPS-1);
+ //   fDist_c = fDist_a;
     fDist_b = fDistTri - fDist_a - fDist_c;
     for(i =0 ;i < STEPS; i++)
     {
