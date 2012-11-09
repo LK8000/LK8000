@@ -777,10 +777,11 @@ _nomoredeclutter:
 
   if (IsMultimapWaypoints()) {
 	DrawWaypointsNew(hdc,DrawRect);
-	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)&&MapSpaceMode!=MSM_MAPASP)
-		DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
-    DrawFAIOptimizer(hdc, DrawRect, Current_Multimap_TopOrig);
   }
+  if (Flags_DrawTask && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)&&MapSpaceMode!=MSM_MAPASP)
+	DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
+  if (Flags_DrawFAI)
+	DrawFAIOptimizer(hdc, DrawRect, Current_Multimap_TopOrig);
 
   DeclutterMode=olddecluttermode; // set it back correctly
 

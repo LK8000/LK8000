@@ -426,6 +426,22 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 				_tcscpy(OutBuffer,_T(""));
 			break;
 
+		case 36: // 
+			// Order is:  ALL ON, TASK ONLY, FAI ONLY, ALL OFF
+			if (Flags_DrawTask&&Flags_DrawFAI) {
+				_stprintf(OutBuffer,MsgToken(2238)); // Draw Task
+			} else {
+				if (Flags_DrawTask&&!Flags_DrawFAI) {
+					_stprintf(OutBuffer,MsgToken(2239)); // Draw FAI
+				} else {
+					if (!Flags_DrawTask&&Flags_DrawFAI) {
+						_stprintf(OutBuffer,MsgToken(2240)); // NoDraw TaskFAI
+					} else {
+						_stprintf(OutBuffer,MsgToken(2241)); // Draw TaskFAI
+					}
+				}
+			}
+			break;
 		default:
 			_stprintf(OutBuffer, _T("INVALID\n%d"),i);
 			break;

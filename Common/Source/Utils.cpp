@@ -292,5 +292,32 @@ bool LockMode(const short lmode) {
 
 }
 
+//
+// Rotate flags: ALL ON, TASK, FAI, ALLOFF
+//
+void ToggleDrawTaskFAI(void) {
+
+  // AllOn -> Task
+  if (Flags_DrawTask&&Flags_DrawFAI) {
+	Flags_DrawFAI=false;
+	return;
+  }
+  // Task -> FAI
+  if (Flags_DrawTask&&!Flags_DrawFAI) {
+	Flags_DrawTask=false;
+	Flags_DrawFAI=true;
+	return;
+  }
+  // FAI --> ALLOFF
+  if (!Flags_DrawTask&&Flags_DrawFAI) {
+	Flags_DrawTask=false;
+	Flags_DrawFAI=false;
+	return;
+  }
+  // ALLOFF -> ALLON
+  Flags_DrawTask=true;
+  Flags_DrawFAI=true;
+
+}
 
 

@@ -2179,6 +2179,11 @@ extern bool RotateScreen(short angle);
 	ToggleMultimapOverlays();
 	return;
   }
+  extern void ToggleDrawTaskFAI(void);
+  if (_tcscmp(misc, TEXT("TASKFAI")) == 0) {
+	ToggleDrawTaskFAI();
+	return;
+  }
 
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);

@@ -301,7 +301,7 @@ QuickRedraw:
   // Reset for topology labels decluttering engine occurs also in another place here!
   ResetLabelDeclutter();
   
-  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+  if (Flags_DrawTask && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
 	DrawTaskAAT(hdc, DrawRect);
   }
 
@@ -364,10 +364,12 @@ _skip_stuff:
 	goto QuickRedraw;
   }
 
-  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
+  if (Flags_DrawTask && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
 	DrawTask(hdc, DrawRect, Orig_Aircraft);
-	DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);
   }
+
+  // FAI optimizer does not depend on tasks, being based on trace
+  if (Flags_DrawFAI)  DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);
 
   // In QUICKDRAW do not paint other useless stuff
   if (QUICKDRAW) {

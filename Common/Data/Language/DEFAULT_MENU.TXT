@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 121019
+# Release 9 , 121110
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -806,8 +806,8 @@ location=6
 mode=Display3
 type=key
 data=8
-event=Null
-label=$(AC03)
+event=Service TASKFAI
+label=$(AC36)
 location=7
 
 mode=Display3

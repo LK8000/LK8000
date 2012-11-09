@@ -237,5 +237,10 @@ _@M1812_ "Chrono"
 
 _@M2236_ "Reset\nTrip"
 _@M2237_ "Sonar\nToggle"
++_@M2238_ "Draw\nTask"
++_@M2239_ "Draw\nFAI"
++_@M2240_ "NoDraw\nTaskFAI"
++_@M2241_ "Draw\nTaskFAI"
+
 
 
