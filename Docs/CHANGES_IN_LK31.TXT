@@ -234,6 +234,187 @@ New Takeoff safety alarm (configuration menu Alarms)
    in use again for the next takeoff.
 
 
+
+LK8000 VERSION 3.1i 1211xx
+==========================
+
+
+
+NEW THINGS
+
+    New Multimaps
+
+    New FAI triangle optimization
+
+    New G Record Key for LK8000 Logger, valid for OLC. We have our own 3 letters code which is XLK.
+
+    New support for external validators of IGC logs.
+    This is for online contests or even real contests currently rejecting LK logs because the signature key is in public.
+    An external program called LKRECORD_PNA.LK8  should be copied inside _Logger folder to activate the special signature.
+    This action is required only for some contests, like UK XC.
+    Support files .LK8 will be released in the public distribution.
+
+    New CAR/TREKKING functions
+
+
+Overtarget rotation:
+
+    Skip MATE overtarget if no target mate is set.
+    To access MATE own code the direct multitarget menu is available.
+
+    Skip F> overtarget if there is no Target set while Flarm is detected.
+
+
+Buttons
+
+    Add Button INFO 1/2 for SONAR TOGGLE
+
+
+Pan Mode
+    PAN mode: smoother coordinates printed in overlay, fixed portrait mode glitch, DrawMapScale missing SetBKMode, Pen and Brush.
+    Do not paint battery/logger while panning, paint compass while panning only while steady touch.
+
+    Change PAN mode orientation: always NORTH UP.
+    So it will not twist around while panning in flight and circling!
+
+
+
+Bottom Bar
+    BottomBar SYS6 showing CPU load percentage in place of Grecord available.
+
+
+New Infoboxes
+
+    New Rotary_Speed and Rotary_Distance  values, for CAR mode, calculated average speed and distance achieved in the last LD average period of time. These values are reset by Trip Reset.
+
+New Customkeys
+    Add new customkey SONAR TOGGLE , will toggle the sonar sounds on and off in multimap ASP
+
+    New customkey Reset Trip Computer .
+    Will reset Trip timers,  FlightTime, and Odometer.
+    Can be used in any mode, but currently only ISCAR mode is calculating Trip values.
+    Only in ISCAR mode the FlightTime will be reset
+    This function is performing a classic Trip computer reset like on bike computers.
+    Todo> add more informations for Trip, such as averages, climb values etc. for trekking
+
+    Add new "Force landing" customkey.
+    This will force landed status, so that logbook is updated, and eventually logger is stopped.
+    This customkey requires to be below the takeoff speed, otherwise it will simply say "Stop moving".
+
+
+
+CAR/BIKE/TREKKING MODE
+
+    CAR mode: NAV1 showing Odo and local time. STA3 showing average speed.
+
+
+    CAR TREKKING STA3 added Chrono box.
+    Timers in Trekking/Car mode are the following:
+    Moving time
+    Steady time
+    Total (moving + steady)
+    The above are relative to working gps, with valid fix, and thus with the PNA unit turned on.
+    Forth value is Chrono: time passed since start of trip, counting also the time passed when the
+    unit actually was with no valid fix or turned off for any reason.
+    All of these values are reset by the Trip reset button (configurable in custom menu)
+
+    CAR / TREK mode start trip speed is 3kmh .
+
+    CAR TREK  Bottom bar STA3 inverted Odo and MaxAlt to show ODOmeter on 4.3 devices, with priority.
+
+    CAR TREK mode: BottomBat STA3 showing Moving, Steady and Total trip times.
+
+    Add new  Trip timers for Car/Trekking mode: Moving and Steady times in seconds
+
+    Change Aircraft category "Car" to "Car, Bike & Trekking"
+
+
+PARAGLIDERS
+
+    Add Sector Turnpoint in PGTaskMgr,
+    for now optimization for type of turnpoint, use always center point !
+
+    Remove AAT Iso Line Drawing for PG Task
+
+    Add IN/OUT type in Task Waypoint dialog for PGTask
+
+    disable AAT Time notification for PG optimized Task
+
+
+CHANGES
+
+    Add optional glide footprint around active WP
+
+    Faster Zoom and more responsive PAN mode
+
+    Add BEEP to startup timeout on welcome page, so we know the LK has got the GPS fix.
+
+    Do not force reload of waypoints when creating or editing a new one.
+    We unload and reload waypoints only for the DELETE case.
+
+    Reduce CPU Usage in Task system
+
+    Make the map scale indicator with a better look and contrast.
+
+    Remove system configuration items for Enable Terrain and Enable Topology: multimaps have a button for that.
+
+    Accept a short click for welcome page confirmation, and change sounds for welcome page.
+
+
+    Change aircraft shape and color, a bit. White colored, black outlined, and bolder on low res devices.
+    The problem was on low resolution the shape was almost invisible under the sun.
+
+    Change DEFAULT_MENU  for Display 1  page.
+    Visualglide removed from menu, Overlay toggle is replacing it.
+    In addition, Airspace toggle will not force immediate menu off.
+
+    BottomBar stripe "TRM0" is no more enabled by default, and if enabled it will not be automatically selected while thermalling.
+    When entering and leaving a thermal, pilot often want to keep their own bottombar information under control.
+    Up to now, it was disturbing more than helping, to have an automatic triggering of this information.
+    It is still available in the normal bottom bar rotation, once it is enabled in the configuration.
+
+    Location marker altitude in pan mode is the terrain altitude, if available. Otherwise it is zero.
+
+    Improve battery warning messaging: after 1 hour with no errors, accept back warnings even if they were disabled because too many, previousy.
+
+
+
+FIXES
+
+    Fix bug in FastPanning mode, forcing unwanted refresh. Panning mode much better and smoother now.
+
+    Fix very old bug disabling keypress actions randomly.
+
+    Fix : Crash on shutdown when task edit dialog is open !
+
+    Fix Distance To Next Overlay for Exit Waypoint
+
+    Fix bug announcing Baro Altitude available if it was never really received at least once.
+    Minor bug because this was happening only at startup when a device providing baro altitude was declared to be used but not really connected, or not really providing valuable data.
+
+
+    Load FlarmNET database during startup, not before LK launch!
+    This will dramatically speed up startup of LK and gain to the splash screen, while using FlarmNet.
+
+    Fix Calc of Start and End of sector and ligne in case of first & second Task point is same Turnpoint
+
+    Fix PG optimization for Line Start
+    
+    Fix Calc of Start and End of sector and ligne if current turn point is same as previous turnpoint
+
+    Fix PG optimization for Line Goal
+
+    Fix 3.1 bug not showing pan altitude in correct units
+
+    Fix small bug showing infinite current glide ratio when on ground, not flying.
+
+    Fix small bug in 3.0 showing E.20 even when not flying
+
+    Fix bug in 3.0 not setting the default altitude when creating a new waypoint.
+    We are now using terrain altitude, or gps altitude if we are in non-sim mode, and the altitude from the gps is higher than the terrain (which is always approximated).
+
+
+
 LK8000 VERSION 3.1h 120906
 ==========================
 
