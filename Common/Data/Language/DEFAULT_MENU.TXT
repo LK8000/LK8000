@@ -797,7 +797,6 @@ location=5
 mode=Display3
 type=key
 data=7
-event=SnailTrail show
 event=SnailTrail toggle
 # label=_@M2035_\n$(SnailTrailToggleName)
 label=$(AC33)
