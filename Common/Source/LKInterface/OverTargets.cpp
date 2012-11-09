@@ -134,19 +134,25 @@ TCHAR *GetOvertargetHeader(void) {
 
 void RotateOvertarget(void) {
 
+_tryagain:
   OvertargetMode++;
 
   // For PG/HG, skip BALT overtarget if nothing valid. 
   // We assume that this means no landables ever seen around, because
   // the BA function would keep the old one even if invalid.
   if (ISPARAGLIDER && OvertargetMode==OVT_BALT) {
-	if (!ValidWayPoint(BestAlternate)) OvertargetMode++;
+	if (!ValidWayPoint(BestAlternate)) goto _tryagain;
   }
 
   // Skip F rotation if no flarm or no valid flarm target
   if (OvertargetMode==OVT_FLARM) {
 	if ( (!GPS_INFO.FLARM_Available)|| (!ValidResWayPoint(RESWP_FLARMTARGET)) )
-		OvertargetMode++;
+		goto _tryagain;
+  }
+
+  if (OvertargetMode==OVT_MATE) {
+	if (!ValidResWayPoint(RESWP_TEAMMATE))
+		goto _tryagain;
   }
 
   if (OvertargetMode>OVT_ROTATE) {
