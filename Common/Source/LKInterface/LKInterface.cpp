@@ -56,7 +56,7 @@ redo:
 	if (CURMODE == MSM_MAPRADAR && !GPS_INFO.FLARM_Available) goto redo;
 #endif
 
-	if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
+	//if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();
@@ -99,7 +99,7 @@ redo:
 #else
 	if (CURMODE == MSM_MAPRADAR && !GPS_INFO.FLARM_Available) goto redo;
 #endif
-	if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
+	//if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();

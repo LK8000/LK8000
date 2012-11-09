@@ -315,15 +315,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       //UnlockFlightData();
 
     }
-    else
-    {
-      // no selected target
-      Statistics::DrawNoData(hdc, rc);
-      return;
-    }
   }
   
-
+  // Else in MAPWPT with no overtarget we paint a track heading
 
   if(fZOOMScale != 1.0)
   {

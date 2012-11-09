@@ -130,12 +130,14 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		LKDrawMultimap_Asp(hdc,rc);
 		break;
 	case MSM_MAPWPT:
-		// If there is no destination, print the map
+		#if 0
+		// If there is no destination, force jump to the map
 		if (GetOvertargetIndex()<0) {
 			SetModeType(LKMODE_MAP,MP_MOVING);
 			LKevent=LKEVENT_NONE;
 			break;
 		}
+		#endif
 		SetSideviewPage(1);
 		LKDrawMultimap_Asp(hdc,rc);
 		break;
