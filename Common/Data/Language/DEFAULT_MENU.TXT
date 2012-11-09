@@ -670,94 +670,8 @@ event=Null
 location=11
 
 # -------------
-# mode=Display2
+# mode=Display3 (Display2 follows!)
 # -------------
-mode=Display2
-type=key
-data=APP1
-label=
-location=1
-
-mode=Display2
-type=key
-data=APP2
-event=Mode Menu
-label=_@M2012_
-location=2
-
-mode=Display2
-type=key
-data=APP3
-event=Mode default
-label=_@M2011_
-location=3
-
-mode=Display2
-type=key
-data=APP4
-event=Mode Display3
-label=_@M2007_
-location=4
-
-mode=Display2
-type=key
-data=6
-event=UserDisplayModeForce forceclimb
-# label=DspMode\n$(DispModeClimbShortIndicator)_@M2031_&(DispModeClimbShortIndicator)
-label=$(AC23)
-location=5
-
-mode=Display2
-type=key
-data=7
-event=UserDisplayModeForce forcecruise
-# label=DspMode\n$(DispModeCruiseShortIndicator)_@M2032_&(DispModeCruiseShortIndicator)
-label=$(AC24)
-location=6
-
-mode=Display2
-type=key
-data=8
-event=UserDisplayModeForce forcefinal
-# label=DspMode\n$(DispModeFinalShortIndicator)_@M2033_&(DispModeFinalShortIndicator)
-label=$(AC26)
-location=7
-
-mode=Display2
-type=key
-data=9
-event=UserDisplayModeForce unforce
-# label=DspMode\n$(DispModeAutoShortIndicator)_@M2034_&(DispModeAutoShortIndicator)
-label=$(AC25)
-location=8
-
-mode=Display2
-type=key
-data=0
-event=Mode default
-event=FlightMode show
-event=FlightMode finalglide toggle
-label=$(CheckTask)_@M2033_\n&(FinalForceToggleActionName)
-location=9
-
-mode=Display2
-type=key
-data=11
-label= 
-event=Null
-location=10
-
-mode=Display2
-type=key
-data=12
-label= 
-event=Null
-location=11
-
-# -------------
-# mode=Display3
-# -------------
-
 mode=Display3
 type=key
 data=APP1
@@ -788,40 +702,42 @@ location=4
 mode=Display3
 type=key
 data=6
-event=Zoom auto show
-event=Zoom auto toggle
-# label=_@M2009_\n$(ZoomAutoToggleActionName)
-label=$(AC20)
+event=UserDisplayModeForce forceclimb
+# label=DspMode\n$(DispModeClimbShortIndicator)_@M2031_&(DispModeClimbShortIndicator)
+label=$(AC23)
 location=5
 
 mode=Display3
 type=key
 data=7
-event=SnailTrail toggle
-# label=_@M2035_\n$(SnailTrailToggleName)
-label=$(AC33)
+event=UserDisplayModeForce forcecruise
+# label=DspMode\n$(DispModeCruiseShortIndicator)_@M2032_&(DispModeCruiseShortIndicator)
+label=$(AC24)
 location=6
 
 mode=Display3
 type=key
 data=8
-event=Service TASKFAI
-label=$(AC36)
+event=UserDisplayModeForce forcefinal
+# label=DspMode\n$(DispModeFinalShortIndicator)_@M2033_&(DispModeFinalShortIndicator)
+label=$(AC26)
 location=7
 
 mode=Display3
 type=key
 data=9
-event=Null
-label=$(AC03)
+event=UserDisplayModeForce unforce
+# label=DspMode\n$(DispModeAutoShortIndicator)_@M2034_&(DispModeAutoShortIndicator)
+label=$(AC25)
 location=8
-
 
 mode=Display3
 type=key
 data=0
-event=Mode Orientation
-label=_@M2038_
+event=Mode default
+event=FlightMode show
+event=FlightMode finalglide toggle
+label=$(CheckTask)_@M2033_\n&(FinalForceToggleActionName)
 location=9
 
 mode=Display3
@@ -832,6 +748,90 @@ event=Null
 location=10
 
 mode=Display3
+type=key
+data=12
+label= 
+event=Null
+location=11
+
+# -------------
+# mode=Display2 (Display3 moved up!)
+# -------------
+
+mode=Display2
+type=key
+data=APP1
+label=
+location=1
+
+mode=Display2
+type=key
+data=APP2
+event=Mode Menu
+label=_@M2012_
+location=2
+
+mode=Display2
+type=key
+data=APP3
+event=Mode default
+label=_@M2011_
+location=3
+
+mode=Display2
+type=key
+data=APP4
+event=Mode Display3
+label=_@M2007_
+location=4
+
+mode=Display2
+type=key
+data=6
+event=Zoom auto show
+event=Zoom auto toggle
+# label=_@M2009_\n$(ZoomAutoToggleActionName)
+label=$(AC20)
+location=5
+
+mode=Display2
+type=key
+data=7
+event=SnailTrail toggle
+# label=_@M2035_\n$(SnailTrailToggleName)
+label=$(AC33)
+location=6
+
+mode=Display2
+type=key
+data=8
+event=Service TASKFAI
+label=$(AC36)
+location=7
+
+mode=Display2
+type=key
+data=9
+event=Null
+label=$(AC03)
+location=8
+
+
+mode=Display2
+type=key
+data=0
+event=Mode Orientation
+label=_@M2038_
+location=9
+
+mode=Display2
+type=key
+data=11
+label= 
+event=Null
+location=10
+
+mode=Display2
 type=key
 data=12
 label= 

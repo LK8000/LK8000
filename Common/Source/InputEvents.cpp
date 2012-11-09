@@ -523,7 +523,7 @@ int InputEvents::mode2int(const TCHAR *mode, bool create) {
 
   // Should never reach this point
   MessageBoxX(hWndMapWindow,
-        _T("DEFAULT_PROFILE IS NOT UPDATED"),
+        _T("DEFAULT_PROFILE IS NOT CORRECT"),
         _T("CONFIGURATION ERROR"),
         MB_OK|MB_ICONEXCLAMATION);
 
