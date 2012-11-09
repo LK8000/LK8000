@@ -2184,6 +2184,10 @@ extern bool RotateScreen(short angle);
 	ToggleDrawTaskFAI();
 	return;
   }
+  if (_tcscmp(misc, TEXT("SONAR")) == 0) {
+	CustomKeyHandler(ckSonarToggle+1000); // passthrough mode
+	return;
+  }
 
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);

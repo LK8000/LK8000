@@ -25,6 +25,10 @@
 # Starting from version 4G, $(  will assume only 1 $( is there.
 # If  &( is found, it is replaced with $( and we assume two $( are there.
 # MAXIMUM 2 $() labels are allowed!
+# 
+# To add a RESERVED button use:
+# event=Null
+# label=$(AC03)
 #
 # -------------------
 # GlideComputerEvents
@@ -1148,8 +1152,8 @@ location=6
 mode=Info1
 type=key
 data=8
-event=Null
-label=$(AC03)
+event=Service SONAR
+label=_@M2237_
 location=7
 
 mode=Info1

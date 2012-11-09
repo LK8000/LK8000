@@ -62,7 +62,7 @@ bool CustomKeyHandler(const int key) {
 		ckeymode=CustomKeyModeCenterScreen;
 		break;
 	default:
-		DoStatusMessage(_T("ERR-725 UNKNWOWN CUSTOMKEY"));
+		DoStatusMessage(_T("ERR-725 UNKNOWN CUSTOMKEY"));
 		return false;
 		break;
   }
