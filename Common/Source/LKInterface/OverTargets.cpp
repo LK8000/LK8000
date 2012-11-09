@@ -143,8 +143,10 @@ void RotateOvertarget(void) {
 	if (!ValidWayPoint(BestAlternate)) OvertargetMode++;
   }
 
+  // Skip F rotation if no flarm or no valid flarm target
   if (OvertargetMode==OVT_FLARM) {
-	if (!GPS_INFO.FLARM_Available) OvertargetMode++;
+	if ( (!GPS_INFO.FLARM_Available)|| (!ValidResWayPoint(RESWP_FLARMTARGET)) )
+		OvertargetMode++;
   }
 
   if (OvertargetMode>OVT_ROTATE) {
