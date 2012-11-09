@@ -634,7 +634,7 @@ void Globals_Init(void) {
 
   // These are not saved to profile
   Flags_DrawTask=true;
-  Flags_DrawFAI=false;
+  Flags_DrawFAI=true;
 
 
   // ^ ADD NEW GLOBALS up here ^ 
