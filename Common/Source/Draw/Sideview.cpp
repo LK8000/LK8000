@@ -802,15 +802,17 @@ _nomoredeclutter:
 		if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
 			DrawGlideThroughTerrain(hdc, DrawRect);
 	}
-	// Of course the dashed horizontal line in WPT mode is always the bearing!
-	// No need to draw this one more!
-	if (IsMultimapWaypoints() && extGPSCONNECT)
+	if (extGPSCONNECT)
 		DrawBearing(hdc, DrawRect);
 	// Wind arrow
 	if (IsMultimapOverlaysGauges())
 		DrawWindAtAircraft2(hdc, Current_Multimap_TopOrig, DrawRect);
   }
 
+  if (MapSpaceMode==MSM_MAPWPT) {
+	if (extGPSCONNECT)
+		DrawBearing(hdc, DrawRect);
+  }
 
   /****************************************************************************************************
    * draw vertical line
