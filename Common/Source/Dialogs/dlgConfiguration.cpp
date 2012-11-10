@@ -4678,11 +4678,6 @@ void UpdateAircraftConfig(void){
       requirerestart = true;
 	LKSW_ReloadProfileBitmaps=true;
 
-	time_in_flight=0;
-	time_on_ground=0;
-	CALCULATED_INFO.Flying=false;
-	CALCULATED_INFO.FreeFlying=false;
-
         if (ISPARAGLIDER) AATEnabled=TRUE; // NOT SURE THIS IS NEEDED ANYMORE. 
     }
   }

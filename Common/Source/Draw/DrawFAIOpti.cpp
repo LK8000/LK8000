@@ -73,8 +73,9 @@ if(iCallCnt++ > 10)
     CContestMgr::TType sType = result.Type();
 
   UnlockTaskData(); // protect from external task changes
-  if((sType ==  CContestMgr::TYPE_FAI_TRIANGLE))
+  if((sType ==  CContestMgr::TYPE_FAI_TRIANGLE) && iSize>0)
   {
+    LKASSERT(iSize<100);
     for(ui=0; ui< iSize-1; ui++)
     {
       LockTaskData(); // protect from external task changes
