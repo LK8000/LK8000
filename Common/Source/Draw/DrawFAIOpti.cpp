@@ -8,35 +8,17 @@
 
 #include "externs.h"
 #include "LKInterface.h"
-#include "AATDistance.h"
 #include "RGB.h"
 #include "ContestMgr.h"
 #include "Defines.h"
 
-#define STEPS 6
-#define N_PLOYGON (3*STEPS)
-#define NO_CACHE_SECTORS 6
-#define MAX_GRID_TEXT_LEN 20
-
-typedef struct
-{
-	double fLon;
-	double fLat;
-}fPOINT ;
-
-fPOINT apFAISectors[NO_CACHE_SECTORS][N_PLOYGON];
-/*
-fPOINT apFAISectorGrids[NO_CACHE_SECTORS][STEPS];
-TCHAR  apFAISectorGridText[NO_CACHE_SECTORS][MAX_GRID_TEXT_LEN];
-*/
-int DrawFAISector(HDC hdc, fPOINT apSectorPolygon[],	COLORREF fillcolor);
-int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2,
-		int iOpposite ,
-		COLORREF fillcolor,
-		BOOL bGrid,
-		fPOINT apSectorPolygon[]);
-
+#ifdef PNA
+  #define STEPS 7
+#else
+  #define STEPS 15
+#endif
 extern COLORREF taskcolor;
+int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor);
 
 
 void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
@@ -47,13 +29,8 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
   HBRUSH oldbrush = 0;
   oldpen = (HPEN) SelectObject(hdc, hpStartFinishThick);
   oldbrush = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-BOOL  bRecalc = false;
-static int iCallCnt = 0;
-if(iCallCnt++ > 10)
-{
-  bRecalc = true;
-  iCallCnt =0;
-}
+
+
 /********************************************************************/
   unsigned int ui;
   double lat1 = 0;
@@ -98,14 +75,8 @@ if(iCallCnt++ > 10)
   		  default:
   		  break;
   		}
-
-  		if((ui < NO_CACHE_SECTORS) && (bRecalc))
-  		{
-  	 	  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 1, 0, 0, apFAISectors[ui] );
-  		  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 0, 0, 0, apFAISectors[ui+1] );
-  		}
-  		DrawFAISector( hdc,  apFAISectors[ui],	 0);
-  		DrawFAISector( hdc,  apFAISectors[ui+1], 0);
+  		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 1, 0 );
+  		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 0, 0 );
   	  }
     }
 
@@ -137,6 +108,7 @@ if(iCallCnt++ > 10)
 		SelectObject(hdc,(HFONT)  hfOld);
 	  }
 #endif
+#ifdef PARA_CIRCLES
 
    	  if ((ISPARAGLIDER) &&  bFAI && (ui == 0))
    	  {
@@ -151,6 +123,7 @@ if(iCallCnt++ > 10)
 	    SelectObject(hdc, hpOldPen);
 	    DeleteObject(hpSectorPen);
       }
+#endif
     }
   }
 
@@ -166,22 +139,19 @@ if(iCallCnt++ > 10)
 
 
 
-int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2,
-		int iOpposite ,
-		COLORREF fillcolor,
-		BOOL bGrid,
-		fPOINT apSectorPolygon[])
+int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor)
 {
 float fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
 
+#define N_PLOYGON (3*STEPS)
 double fDist_a, fDist_b, fDist_c, fAngle;
 int i;
 
 int iPolyPtr=0;
 double lat_d,lon_d;
 double alpha, fDistTri, cos_alpha=0;
-
-
+POINT apSectorPolygon[N_PLOYGON];
+POINT Pt1;
 DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
 
 
@@ -190,8 +160,6 @@ double fDistMin = fDist_c/(1.0-2.0*fFAI_Percentage);
 double fDelta_Dist = 2.0* fDist_c*fFAI_Percentage / (double)(STEPS);
 
 double dir = -1.0;
-
-
 
   if(fDistMax < FAI_BIG_THRESHOLD)
   {
@@ -218,14 +186,14 @@ double dir = -1.0;
   fDist_b = fDistMin * fFAI_Percentage;
   for(i =0 ;i < STEPS; i++)
   {
-	LKASSERT(fDist_c*fDist_b!=0);
+  	LKASSERT(fDist_c*fDist_b!=0);
 	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
 	alpha = acos(cos_alpha)*180/PI * dir;
 	FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
 
-    apSectorPolygon[iPolyPtr].fLon   = lon_d;
-    apSectorPolygon[iPolyPtr++].fLat = lat_d;
+	MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
+    apSectorPolygon[iPolyPtr++] = Pt1;
 
     fDistTri += fDelta_Dist;
     if(fDistTri < FAI_BIG_THRESHOLD)
@@ -254,8 +222,8 @@ double dir = -1.0;
 	alpha = acos(cos_alpha)*180/PI * dir;
 	FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-    apSectorPolygon[iPolyPtr].fLon   = lon_d;
-    apSectorPolygon[iPolyPtr++].fLat = lat_d;
+	MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
+    apSectorPolygon[iPolyPtr++] = Pt1;
 
 	fDist_a += fDelta_Dist;
 	fDist_b = fDistMax - fDist_a - fDist_c;
@@ -276,8 +244,8 @@ double dir = -1.0;
 	alpha = acos(cos_alpha)*180/PI * dir;
 	FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-    apSectorPolygon[iPolyPtr].fLon   = lon_d;
-    apSectorPolygon[iPolyPtr++].fLat = lat_d;
+	MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
+    apSectorPolygon[iPolyPtr++] = Pt1;
 
     fDistTri -= fDelta_Dist;
     if(fDistTri < FAI_BIG_THRESHOLD)
@@ -289,15 +257,39 @@ double dir = -1.0;
 	fDist_a = fDistTri - fDist_b - fDist_c;
   }
 
+  /********************************************************************
+   * draw polygon
+   ********************************************************************/
+  HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
+  HBRUSH hpSectorFill = NULL;
+
+  HPEN hpOldPen     = (HPEN)  SelectObject(hdc, hpSectorPen);
+  HBRUSH hpOldBrush;
+  if (fillcolor != 0)
+  {
+	hpSectorFill = (HBRUSH)CreateSolidBrush(fillcolor);
+    hpOldBrush = (HBRUSH)SelectObject(hdc, hpSectorFill);
+  }
+  else
+    hpOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+
+
+  /********************************************/
+  Polygon(hdc, apSectorPolygon,iPolyPtr);
+  /********************************************/
+
+  SelectObject(hdc, (HPEN)hpOldPen);
+  SelectObject(hdc, (HBRUSH)hpOldBrush);
+  DeleteObject(hpSectorPen);
+  if(hpSectorFill != NULL)
+    DeleteObject(hpSectorFill);
 
 
 
   /********************************************************************
    * calc round leg grid
    ********************************************************************/
-if(bGrid)
-{
-HPEN  hpSectorPen  = (HPEN)CreatePen(PS_SOLID, (2), RGB_DARKGREY );
+  hpSectorPen  = (HPEN)CreatePen(PS_SOLID, (2), RGB_DARKGREY );
   SelectObject(hdc, hpSectorPen);
 
   double fTic= 1/DISTANCEMODIFY;
@@ -343,47 +335,11 @@ HPEN  hpSectorPen  = (HPEN)CreatePen(PS_SOLID, (2), RGB_DARKGREY );
 
     fDistTri+=fTic;
   }
-  SelectObject(hdc, hfOld);
-}
 
-
+SelectObject(hdc, hfOld);
+SelectObject(hdc, (HPEN)hpOldPen);
+DeleteObject( hpSectorPen);
 return 0;
 }
 
 
-
-
-int DrawFAISector(HDC hdc, fPOINT apSectPolygon[],	COLORREF fillcolor)
-{
-	/********************************************************************
-	 * draw polygon
-	 ********************************************************************/
-	HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
-	HBRUSH hpSectorFill = NULL;
-
-	HPEN hpOldPen     = (HPEN)  SelectObject(hdc, hpSectorPen);
-	HBRUSH hpOldBrush;
-	if (fillcolor != 0)
-	{
-	  hpSectorFill = (HBRUSH)CreateSolidBrush(fillcolor);
-	  hpOldBrush = (HBRUSH)SelectObject(hdc, hpSectorFill);
-	}
-	else
-	  hpOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-
-
-	POINT apDrawPoly[N_PLOYGON];
-
-	for(int i=0 ; i <  N_PLOYGON; i++)
-	  MapWindow::LatLon2Screen(apSectPolygon[i].fLon,  apSectPolygon[i].fLat, apDrawPoly [i]);
-	/********************************************/
-	Polygon(hdc, apDrawPoly,N_PLOYGON);
-	/********************************************/
-
-	SelectObject(hdc, (HPEN)hpOldPen);
-	SelectObject(hdc, (HBRUSH)hpOldBrush);
-	DeleteObject(hpSectorPen);
-	if(hpSectorFill != NULL)
-	  DeleteObject(hpSectorFill);
-	return 0;
-}
