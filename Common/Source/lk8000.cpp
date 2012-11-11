@@ -422,7 +422,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   atrRegister();
   vgaRegister();
   #endif
-  caiGpsNavRegister();
+  CDevCAIGpsNav::Register();
   nmoRegister();
   pgRegister();
   b50Register();
