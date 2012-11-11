@@ -105,7 +105,6 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   _tcscpy(sAltUnit, Units::GetAltitudeName());
 
   MapWaypointLabelListCount = 0;
-StartupStore(_T("... RealScale=%f\n"),MapWindow::zoom.RealScale());
 
   int arrivalcutoff=0, foundairport=0;
   bool isairport;
