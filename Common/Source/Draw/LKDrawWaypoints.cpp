@@ -199,7 +199,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
       if(fScaleFact < 0.1)  fScaleFact = 0.1; // prevent division by zero
 
       fScaleFact = zoom.DrawScale();
-      if(fScaleFact > 10000.0) fScaleFact = 10000.0; // limit to prevent huge airfiel symbols
+      if(fScaleFact > 20000.0) fScaleFact = 20000.0; // limit to prevent huge airfiel symbols
       if(fScaleFact < 1600)   fScaleFact = 1600; // limit to prevent tiny airfiel symbols
 
 	if (decluttericons) {
