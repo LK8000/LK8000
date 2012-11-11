@@ -536,3 +536,44 @@ void MapWindow::ResetLabelDeclutter(void) {
 void MapWindow::SaturateLabelDeclutter(void) {
   for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=MAXVLABELBLOCKS;
 }
+
+#if 0
+//
+// Adjust icon rect area according to desired decluttering level
+//
+void MapWindow::SetDeclutterIcon(RECT *drect) {
+
+  switch (DeclutterMode) {
+	case (DeclutterMode_t)dmDisabled:
+		break;
+	case (DeclutterMode_t)dmLow:
+		drect->left -= 1;
+		drect->right += 1;
+		drect->top -= NIBLSCALE(1);
+		drect->bottom += NIBLSCALE(1);
+		break;
+	case (DeclutterMode_t)dmMedium:
+		drect->left -= NIBLSCALE(2);
+		drect->right += NIBLSCALE(2);
+		drect->top -= NIBLSCALE(3);
+		drect->bottom += NIBLSCALE(3);
+		break;
+	case (DeclutterMode_t)dmHigh:
+		drect->left -= NIBLSCALE(5);
+		drect->right += NIBLSCALE(5);
+		drect->top -= NIBLSCALE(6);
+		drect->bottom += NIBLSCALE(6);
+		break;
+	case (DeclutterMode_t)dmVeryHigh:
+		drect->left -= NIBLSCALE(10);
+		drect->right += NIBLSCALE(10);
+		drect->top -= NIBLSCALE(12);
+		drect->bottom += NIBLSCALE(12);
+		break;
+	default:
+		break;
+
+    }
+}
+#endif
+

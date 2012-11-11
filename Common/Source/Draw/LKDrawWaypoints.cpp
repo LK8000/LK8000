@@ -26,10 +26,6 @@ MapWaypointLabel_t MapWaypointLabelList[200];
 int MapWaypointLabelListCount=0;
 
 
-bool MapWindow::WaypointInRange(int i) {
-  return (zoom.RealScale() <= 10);
-}
-
 void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact);
 
 int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
@@ -109,10 +105,64 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   _tcscpy(sAltUnit, Units::GetAltitudeName());
 
   MapWaypointLabelListCount = 0;
+StartupStore(_T("... RealScale=%f\n"),MapWindow::zoom.RealScale());
 
   int arrivalcutoff=0, foundairport=0;
   bool isairport;
   bool islandpoint;
+
+  // setting decluttericons will not paint outlanding, and use minrunway to declutter even more
+  bool decluttericons=false;
+  // inrange : max scale allowed to print non-landable waypoints 
+  bool inrange=true; 
+  // minimal size of a runway to paint it while decluttering
+  int minrunway=0;
+
+  //
+  // RealScale
+  //
+  //   2km 	 1.42
+  // 3.5km	 2.5
+  //   5km	 3.57
+  // 7.5km	 5.35
+  //  10km	 7.14
+  //  15km	10.71
+  //  20km	14.28
+  //  25km	17.85
+  //  40km	28.57
+  //  50km	35.71
+  //  75km	53.57
+
+  switch(DeclutterMode) {
+	case dmDisabled:
+		//inrange=(MapWindow::zoom.RealScale() <=18 ? true:false); // 17.85, 25km scale
+		inrange=(MapWindow::zoom.RealScale() <=15 ? true:false); // 14.28, 20km scale
+		decluttericons=false;
+		break;
+	case dmLow:
+		inrange=(MapWindow::zoom.RealScale() <=11 ? true:false); // 10.71, 15km scale
+		decluttericons=(MapWindow::zoom.RealScale() >=14 ? true : false);
+		minrunway=200;
+		break;
+	case dmMedium:
+		inrange=(MapWindow::zoom.RealScale() <=10 ? true:false);
+		decluttericons=(MapWindow::zoom.RealScale() >=10 ? true : false);
+		minrunway=400;
+		break;
+	case dmHigh:
+		inrange=(MapWindow::zoom.RealScale() <=10 ? true:false);
+		decluttericons=(MapWindow::zoom.RealScale() >=10 ? true : false);
+		minrunway=800;
+		break;
+	case dmVeryHigh:
+		inrange=(MapWindow::zoom.RealScale() <=10 ? true:false);
+		decluttericons=(MapWindow::zoom.RealScale() >=10 ? true : false);
+		minrunway=1600;
+		break;
+	default:
+		LKASSERT(0);
+		break;
+  }
 
   if (MapWindow::zoom.RealScale() <=20) for(i=0;i<NumberOfWayPoints;i++) {
 
@@ -143,6 +193,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 			}
 		} else continue; // do not draw icons for normal turnpoints here
 	}
+
     if(Appearance.IndLandable == wpLandableDefault) 
     {
       double fScaleFact =MapWindow::zoom.RealScale();
@@ -152,6 +203,12 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
       if(fScaleFact > 10000.0) fScaleFact = 10000.0; // limit to prevent huge airfiel symbols
       if(fScaleFact < 1600)   fScaleFact = 1600; // limit to prevent tiny airfiel symbols
 
+	if (decluttericons) {
+		if (WayPointCalc[i].IsAirport && (WayPointList[i].RunwayLen>minrunway || WayPointList[i].RunwayLen==0)) {
+  	  		DrawRunway(hdc,&WayPointList[i],rc, fScaleFact);
+		}
+
+	} else
   	  DrawRunway(hdc,&WayPointList[i],rc, fScaleFact);
     }
     else
@@ -187,7 +244,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	islandable=WayPointCalc[i].IsLandable;
 
  	    // always in range if MapScale <=10 
-	    irange = WaypointInRange(i); 
+	    irange = inrange;
 
 	    if(MapWindow::zoom.RealScale() > 20) { 
 	      SelectObject(hDCTemp,hInvSmall);

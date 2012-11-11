@@ -638,8 +638,6 @@ class MapWindow {
   
   static double LimitMapScale(double value);
 
-  static bool WaypointInRange(int i);
-
   static void SetTargetPan(bool dopan, int task_index, DWORD dlgSize = 0);
 
   static double GetPanLatitude() { return PanLatitude; }
@@ -754,6 +752,7 @@ private:
   #endif
   static void ResetLabelDeclutter(void);
   static void SaturateLabelDeclutter(void);
+  static void SetDeclutterIcon(RECT *drect);
   static bool RenderTimeAvailable();
   static int SnailWidthScale; 
   static bool TargetMoved(double &longitude, double &latitude);
