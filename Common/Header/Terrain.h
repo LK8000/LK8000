@@ -30,7 +30,7 @@ void CloseTopology();
 void ChangeZoomTopology(int iCategory, double newScale, short cztmode);
 double ReadZoomTopology(int iCategory);
 bool HaveZoomTopology(int iCategory);
-void DrawTopology(const HDC hdc, const RECT rc);
+void DrawTopology(const HDC hdc, const RECT rc, const bool wateronly=false);
 void DrawTerrain(const HDC hdc, const RECT rc, const double sunazimuth, const double sunelevation);
 void DrawSpotHeights(const HDC hdc);
 #if USETOPOMARKS

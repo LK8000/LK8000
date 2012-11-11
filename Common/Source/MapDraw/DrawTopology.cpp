@@ -18,7 +18,7 @@
 extern Topology* TopoStore[MAXTOPOLOGY];
 
 
-void DrawTopology(const HDC hdc, const RECT rc)
+void DrawTopology(const HDC hdc, const RECT rc, const bool wateronly)
 {
   static double lastForceNearest=0;
 
@@ -50,9 +50,22 @@ void DrawTopology(const HDC hdc, const RECT rc)
 	LKSW_ForceNearestTopologyCalculation=false; // Done, the Oracle can compute now.
   } else {
 	lastForceNearest=0;
-	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) {
-			TopoStore[z]->Paint(hdc,rc);
+	if (wateronly) {
+		for (int z=0; z<MAXTOPOLOGY; z++) {
+			if (TopoStore[z]) {
+				if (	TopoStore[z]->scaleCategory == 5 ||
+			     		TopoStore[z]->scaleCategory == 10 ||
+			     		TopoStore[z]->scaleCategory == 20 
+				) {
+					TopoStore[z]->Paint(hdc,rc);
+				}
+			}
+		}
+	} else {
+		for (int z=0; z<MAXTOPOLOGY; z++) {
+			if (TopoStore[z]) {
+				TopoStore[z]->Paint(hdc,rc);
+			}
 		}
 	}
   }

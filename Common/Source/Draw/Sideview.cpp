@@ -12,6 +12,7 @@
 #include "Sideview.h"
 #include "LKInterface.h"
 #include "Terrain.h"
+#include "RasterTerrain.h"
 #include "Multimap.h"
 #include "LKObjects.h"
 
@@ -729,12 +730,15 @@ double fFact = 1.0 ;
    Current_Multimap_TopZoom=GetInvDrawScale();
    Current_Multimap_TopAngle=DisplayAngle;
 
-  if (IsMultimapTerrain() &&  DerivedDrawInfo.TerrainValid ) {
+  bool terrainpainted=false;
+
+  if (IsMultimapTerrain() &&  DerivedDrawInfo.TerrainValid && RasterTerrain::isTerrainLoaded() ) {
         LKTextBlack=false;
         BlackScreen=false;
 	LockTerrainDataGraphics();
 	DrawTerrain(hdc, rct, GetAzimuth(), 40.0);
 	UnlockTerrainDataGraphics();
+	terrainpainted=true;
   } else {
 	// We fill up the background wity chosen empty map color
 
@@ -768,6 +772,13 @@ _nomoredeclutter:
 	RECT rc_red = rct;
 	rc_red.bottom -= 3;
 	DrawTopology  (hdc, rc_red);
+  } else {
+	// No topology is desired, but terrain requires water areas nevertheless
+	if (terrainpainted) {
+		RECT rc_red = rct;
+		rc_red.bottom -= 3;
+		DrawTopology  (hdc, rc_red,true); // water only!
+	}
   }
 
   if (IsMultimapAirspace()) {

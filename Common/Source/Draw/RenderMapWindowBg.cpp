@@ -242,6 +242,8 @@ QuickRedraw:
   if ( OFFSMARTZOOM ) {
   #endif
 
+  bool terrainpainted=false;
+
   if ((IsMultimapTerrain() && (DerivedDrawInfo.TerrainValid) 
        && RasterTerrain::isTerrainLoaded())
 	) {
@@ -255,6 +257,7 @@ QuickRedraw:
 		goto QuickRedraw;
 	}
     DrawTerrain(hdc, DrawRect, sunazimuth, sunelevation);
+    terrainpainted=true;
  	if (DONTDRAWTHEMAP) {
 		UnlockTerrainDataGraphics();
 		goto QuickRedraw;
@@ -289,6 +292,9 @@ QuickRedraw:
 
   if (IsMultimapTopology()) {
     DrawTopology(hdc, DrawRect);
+  } else {
+	// If no topology wanted, but terrain painted, we paint only water stuff
+	if (terrainpainted) DrawTopology(hdc, DrawRect,true);
   }
   #if 0
   StartupStore(_T("... Experimental1=%.0f\n"),Experimental1);
