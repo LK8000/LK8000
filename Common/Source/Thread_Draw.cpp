@@ -146,6 +146,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	// Notice: we could be !MapDirty without OnFastPanning, of course!
 	//
 	if (!MapDirty && !ForceRenderMap && OnFastPanning) {
+		
 		if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
 
 			int fromX=0, fromY=0;
@@ -193,13 +194,20 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 		// Else the map wasy dirty, and we must render it..
 		// Notice: if we were fastpanning, than the map could not be dirty.
 		//
-		#if 1 // EXPERIMENTAL, CHECK ZOOM IS WORKING IN PNA
+
+		#if 1 // --------------------- EXPERIMENTAL, CHECK ZOOM IS WORKING IN PNA
+		static double lasthere=0;
 		// Only for special case: PAN mode, map not dirty (including requests for zooms!)
 		// not in the ForceRenderMap run and last time was a real rendering. THEN, at these conditions,
 		// we simply redraw old bitmap, for the scope of accelerating touch response.
 		// In fact, if we are panning the map while rendering, there would be an annoying delay.
 		// This is using lastdrawwasbitblitted
 		if (INPAN && !MapDirty && !lastdrawwasbitblitted && !ForceRenderMap) {
+			// In any case, after 5 seconds redraw all
+			if ( (LKHearthBeats-8) >lasthere ) {
+				lasthere=LKHearthBeats;
+				goto _dontbitblt;
+			}
 			BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
 				hdcDrawWindow, 0, 0, SRCCOPY);
@@ -208,10 +216,10 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
 			DrawMapScale(hdcScreen,MapRect,false);
 			DrawCrossHairs(hdcScreen, centerscreen, MapRect);
-
 			continue;
 		} 
-		#endif
+		#endif // --------------------------
+_dontbitblt:
 		MapDirty = false;
 		PanRefreshed=true;
 	} // MapDirty

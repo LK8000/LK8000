@@ -132,7 +132,6 @@ void MapWindow::RenderMapWindow(RECT rc)
 	MapWindow::RefreshMap();
 	return;
   }
-
   
   // GPS FIX warnings
   DrawGPSStatus(hdcDrawWindow, rc);
