@@ -721,7 +721,7 @@ double fFact = 1.0 ;
    zoom.UpdateMapScale();
 
    CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
-   CalculateScreenPositionsAirspace();
+   CalculateScreenPositionsAirspace(rct);
 
    // 
    // Expose variables in use for topview drawing

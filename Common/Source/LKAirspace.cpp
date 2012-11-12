@@ -16,6 +16,7 @@
 #include <Point2D.h>
 #include "md5.h"
 
+#include "utils/2dpclip.h"
 
 static const int k_nAreaCount = 14;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
@@ -50,10 +51,6 @@ static const int k_nAreaType[k_nAreaCount] = {
                     CLASSG,
                     CLASSTMZ};
 
-
-//for Draw()
-extern void ClipPolygon(HDC hdc, POINT *ptin, unsigned int n, 
-                 RECT rc, bool fill=true);
 
 // CAirspaceManager class attributes
 CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager::_instance);
@@ -716,6 +713,8 @@ CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &
         _loncenter(Center_Longitude),
         _radius(Airspace_Radius)
 {
+    _screenpoints_clipped.reserve(65);
+    _screenpoints.reserve(65);
     CalcBounds();
     AirspaceAGLLookup(Center_Latitude, Center_Longitude, &_base.Altitude, &_top.Altitude);
 }
@@ -810,7 +809,7 @@ void CAirspace_Circle::CalcBounds()
 }
 
 // Calculate screen coordinates for drawing
-void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
+void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) 
 {
   _drawstyle = adsHidden;
   if (!_enabled) return;
@@ -829,15 +828,30 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
 
         MapWindow::LatLon2Screen(_loncenter, _latcenter, _screencenter);
         _screenradius = iround(_radius * ResMapScaleOverDistanceModify);
+        
+        buildCircle(_screencenter, _screenradius, _screenpoints);
+        
+        _screenpoints_clipped.clear();
+        LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
       }
     }
   }
 }
 
 // Draw airspace
-void CAirspace_Circle::Draw(HDC hDCTemp, const RECT &rc, bool param1) const
-{
-  Circle(hDCTemp, _screencenter.x, _screencenter.y, _screenradius ,rc, true, param1);
+void CAirspace_Circle::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
+    size_t outLength = _screenpoints_clipped.size();
+    const POINT * clip_ptout = &(*_screenpoints_clipped.begin());
+
+    if (param1) {
+        if (outLength > 2) {
+            Polygon(hDCTemp, clip_ptout, outLength);
+        }
+    } else {
+        if (outLength > 1) {
+            Polyline(hDCTemp, clip_ptout, outLength);
+        }
+    }
 }
 
 
@@ -1043,7 +1057,7 @@ void CAirspace_Area::CalcBounds()
 }
 
 // Calculate screen coordinates for drawing
-void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
+void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) 
 {
   _drawstyle = adsHidden;
   if (!_enabled) return;
@@ -1064,19 +1078,38 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
     for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
         MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), *itr);
     }
+    // add extra point for final point if it doesn't equal the first
+    // this is required to close some airspace areas that have missing
+    // final point
+    if ((_screenpoints[_screenpoints.size() - 1].x != _screenpoints[0].x) || (_screenpoints[_screenpoints.size() - 1].y != _screenpoints[0].y)) {
+        _screenpoints.push_back(_screenpoints[0]);
+    }
+    
+    _screenpoints_clipped.clear();
+    _screenpoints_clipped.reserve(_screenpoints.size());
+
+    LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
       }
     }
   }
 }
 
 // Draw airspace
-void CAirspace_Area::Draw(HDC hDCTemp, const RECT &rc, bool param1) const
-{
-  ClipPolygon(hDCTemp, (POINT*)&(*_screenpoints.begin()), _screenpoints.size(), rc, param1);
+void CAirspace_Area::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
+
+    size_t outLength = _screenpoints_clipped.size();
+    const POINT * clip_ptout = &(*_screenpoints_clipped.begin());
+
+    if (param1) {
+        if (outLength > 2) {
+            Polygon(hDCTemp, clip_ptout, outLength);
+        }
+    } else {
+        if (outLength > 1) {
+            Polyline(hDCTemp, clip_ptout, outLength);
+        }
+    }
 }
-
-
-
 //
 // CAIRSPACEMANAGER CLASS
 //
@@ -1084,14 +1117,19 @@ void CAirspace_Area::Draw(HDC hDCTemp, const RECT &rc, bool param1) const
 bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) const
 {
   while(1) {
-    if (!(*LookFor)) return TRUE;
-    if (*Text != *LookFor) return FALSE;
+    if (!(*LookFor)) return true;
+    if (*Text != *LookFor) return false;
     ++Text; ++LookFor;
   }
 }
 
 bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const
 {
+    if(AltitudeMode == ALLON) {
+        return true;
+    } else if(AltitudeMode == ALLOFF) {
+        return false;
+    } 
   
   double alt;
   double basealt;
@@ -1120,31 +1158,31 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
 
   switch (AltitudeMode)
     {
-    case ALLON : return TRUE;
+    case ALLON : return true;
         
     case CLIP : 
-      if ((basealt < ClipAltitude) || base_is_sfc) return TRUE; else return FALSE;
+      if ((basealt < ClipAltitude) || base_is_sfc) return true; else return false;
 
     case AUTO:
       if( (( alt > (basealt - AltWarningMargin)) || base_is_sfc )
       && ( alt < (topalt + AltWarningMargin) ))
-    return TRUE;
+    return true;
       else
-    return FALSE;
+    return false;
 
     case ALLBELOW:
       if(  ((basealt - AltWarningMargin) < alt ) || base_is_sfc )
-    return  TRUE;
+    return  true;
       else
-    return FALSE;
+    return false;
     case INSIDE:
       if( (( alt >= basealt ) || base_is_sfc ) && ( alt < topalt ) )
-    return TRUE;
+    return true;
       else
-        return FALSE;
-    case ALLOFF : return FALSE;
+        return false;
+    case ALLOFF : return false;
     }
-  return TRUE;
+  return true;
 }
 
 void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
@@ -2273,13 +2311,13 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
 }
 
 
-void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify)
+void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify)
 {
   CAirspaceList::iterator it;
 
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces_near.begin(); it!= _airspaces_near.end(); ++it) {
-    (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, ResMapScaleOverDistanceModify);
+    (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, ResMapScaleOverDistanceModify);
   }
 }
 
@@ -2302,7 +2340,7 @@ bool airspace_label_priority_sorter( CAirspace *a, CAirspace *b )
 }
 
 // Get airspaces list for label drawing
-const CAirspaceList CAirspaceManager::GetAirspacesForWarningLabels()
+const CAirspaceList& CAirspaceManager::GetAirspacesForWarningLabels()
 {
   CCriticalSection::CGuard guard(_csairspaces);
   if (_airspaces_of_interest.size()>1) std::sort(_airspaces_of_interest.begin(), _airspaces_of_interest.end(), airspace_label_priority_sorter);

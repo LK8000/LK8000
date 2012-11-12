@@ -107,6 +107,16 @@ void MapWindow::ClearTptAirSpace(HDC hdc, const RECT rc) {
   int width  = rc.right - rc.left;
   int height = rc.bottom - rc.top;
   BitBlt(hDCTemp, rc.left, rc.top, width, height, hdc, rc.left, rc.top, SRCCOPY);
+
+  if (GetAirSpaceFillType() == asp_fill_ablend_borders) {
+    // Prepare layers
+    FillRect(mhdcbuffer, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));   
+    SelectObject(mhdcbuffer, GetStockObject(NULL_PEN));
+  
+    FillRect(hDCMask, &rc, (HBRUSH)GetStockObject(BLACK_BRUSH));   
+    SelectObject(hDCMask, hAirspaceBorderPen);
+    SelectObject(hDCMask, GetStockObject(HOLLOW_BRUSH));
+  }  
 } // ClearTptAirSpace()
 
 
@@ -127,24 +137,13 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   int airspace_type;
   bool found = false;
   bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
-  HDC hdcbuffer = NULL;
-  HBITMAP hbbufferold = NULL, hbbuffer = NULL;
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
+   
+  int nDC1 = SaveDC(mhdcbuffer);
+  int nDC2 = SaveDC(hDCMask);
+  int nDC3 = SaveDC(hDCTemp);
   
-  if (borders_only) {
-    // Prepare layers
-    hdcbuffer = CreateCompatibleDC(hdc);
-    hbbuffer = CreateCompatibleBitmap(hdc, rc.right - rc.left, rc.bottom - rc.top);
-    hbbufferold = (HBITMAP)SelectObject(hdcbuffer, hbbuffer);
-    BitBlt(hdcbuffer, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
-    SelectObject(hdcbuffer, GetStockObject(NULL_PEN));
-  
-    BitBlt(hDCMask, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
-    SelectObject(hDCMask, hAirspaceBorderPen);
-    SelectObject(hDCMask, GetStockObject(HOLLOW_BRUSH));
-  }
-
   // Draw airspace area
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
@@ -161,8 +160,8 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
                 ClearTptAirSpace(hdc, rc);
               }
               // set filling brush
-              SelectObject(hdcbuffer, GetAirSpaceSldBrushByClass(airspace_type));
-              (*itr)->Draw(hdcbuffer, rc, true);
+              SelectObject(mhdcbuffer, GetAirSpaceSldBrushByClass(airspace_type));
+              (*itr)->Draw(mhdcbuffer, rc, true);
               (*itr)->Draw(hDCMask, rc, false);
             }
       }//for
@@ -186,41 +185,11 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // alpha blending
   if (found) {
     if (borders_only) {
-      #if (WINDOWSPC<1)
-        TransparentImage(hdcbuffer,
+        MaskBlt(hDCTemp,
                 rc.left,rc.top,
                 rc.right-rc.left,rc.bottom-rc.top,
-                hDCMask,
-                rc.left,rc.top,
-                rc.right-rc.left,rc.bottom-rc.top,
-                RGB_WHITE
-                );
-        TransparentImage(hDCTemp,
-                rc.left,rc.top,
-                rc.right-rc.left,rc.bottom-rc.top,
-                hdcbuffer,
-                rc.left,rc.top,
-                rc.right-rc.left,rc.bottom-rc.top,
-                RGB_BLACK
-                );
-        #else
-        TransparentBlt(hdcbuffer,
-                      rc.left,rc.top,
-                      rc.right-rc.left,rc.bottom-rc.top,
-                      hDCMask,
-                      rc.left,rc.top,
-                      rc.right-rc.left,rc.bottom-rc.top,
-                      RGB_WHITE
-                      );
-        TransparentBlt(hDCTemp,
-                      rc.left,rc.top,
-                      rc.right-rc.left,rc.bottom-rc.top,
-                      hdcbuffer,
-                      rc.left,rc.top,
-                      rc.right-rc.left,rc.bottom-rc.top,
-                      RGB_BLACK
-                      );
-        #endif
+                mhdcbuffer,rc.left,rc.top,
+                hMaskBitMap,rc.left,rc.top, MAKEROP4(SRCAND,  0x00AA0029));
     }
     DoAlphaBlend(hdc, rc, hDCTemp, rc, (255 * GetAirSpaceOpacity()) / 100);
   }
@@ -244,16 +213,13 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
         }
 	}//for
     }
-
-  if (borders_only) {
-    // Free up GDI resources
-    SelectObject(hdcbuffer, hbbufferold);
-    DeleteObject(hbbuffer);
-    DeleteDC(hdcbuffer);
-  }
   
   // restore original PEN
   SelectObject(hdc, hOrigPen);
+  
+  RestoreDC(mhdcbuffer, nDC1);
+  RestoreDC(hDCMask, nDC2);    
+  RestoreDC(hDCTemp, nDC3);    
 } // DrawTptAirSpace()
 
 

@@ -17,7 +17,7 @@
 #endif
 
 
-void MapWindow::ClearAirSpace(bool fill) {
+void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
   COLORREF whitecolor = RGB(0xff,0xff,0xff);
 
   SetTextColor(hDCTemp, whitecolor);
@@ -26,9 +26,15 @@ void MapWindow::ClearAirSpace(bool fill) {
   SetBkColor(hDCTemp, whitecolor);	  
   SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
   SelectObject(hDCTemp, GetStockObject(WHITE_BRUSH));
-  Rectangle(hDCTemp,DrawRect.left,DrawRect.top,DrawRect.right,DrawRect.bottom);
-  if (fill) {
-    SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
+  FillRect(hDCTemp, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));        
+
+  if (GetAirSpaceFillType() == asp_fill_patterns_borders) {
+    FillRect(mhdcbuffer, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));        
+    SelectObject(mhdcbuffer, GetStockObject(NULL_PEN));
+  
+    FillRect(hDCMask, &rc, (HBRUSH)GetStockObject(BLACK_BRUSH));        
+    SelectObject(hDCMask, hAirspaceBorderPen);
+    SelectObject(hDCMask, GetStockObject(HOLLOW_BRUSH));
   }
 }
 
@@ -43,23 +49,12 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   int airspace_type;
   bool found = false;
   bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
-  HDC hdcbuffer = NULL;
-  HBITMAP hbbufferold = NULL, hbbuffer = NULL;
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
   
-  if (borders_only) {
-    // Prepare layers
-    hdcbuffer = CreateCompatibleDC(hdc);
-    hbbuffer = CreateCompatibleBitmap(hdc, rc.right - rc.left, rc.bottom - rc.top);
-    hbbufferold = (HBITMAP)SelectObject(hdcbuffer, hbbuffer);
-    BitBlt(hdcbuffer, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
-    SelectObject(hdcbuffer, GetStockObject(NULL_PEN));
-  
-    BitBlt(hDCMask, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
-    SelectObject(hDCMask, hAirspaceBorderPen);
-    SelectObject(hDCMask, GetStockObject(HOLLOW_BRUSH));
-  }
+  int nDC1 = SaveDC(mhdcbuffer);
+  int nDC2 = SaveDC(hDCMask);
+  int nDC3 = SaveDC(hDCTemp);
   
   if (GetAirSpaceFillType() != asp_fill_border_only) {
     if (1) {
@@ -73,14 +68,14 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
           if ((*itr)->DrawStyle() == adsFilled) {
             airspace_type = (*itr)->Type();
             if (!found) {
-              ClearAirSpace(true);
+              ClearAirSpace(true, rc);
               found = true;
             }
             // this color is used as the black bit
-            SetTextColor(hdcbuffer, Colours[iAirspaceColour[airspace_type]]);
+            SetTextColor(mhdcbuffer, Colours[iAirspaceColour[airspace_type]]);
             // get brush, can be solid or a 1bpp bitmap
-            SelectObject(hdcbuffer, hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
-            (*itr)->Draw(hdcbuffer, rc, true);
+            SelectObject(mhdcbuffer, hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+            (*itr)->Draw(mhdcbuffer, rc, true);
             (*itr)->Draw(hDCMask, rc, false);
         }
       }//for
@@ -89,7 +84,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
           if ((*it)->DrawStyle() == adsFilled) {
             airspace_type = (*it)->Type();
             if (!found) {
-              ClearAirSpace(true);
+              ClearAirSpace(true, rc);
               found = true;
             }
             // this color is used as the black bit
@@ -106,42 +101,12 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 
   if (found) {
     if (borders_only) {
-        SetTextColor(hdcbuffer, RGB_BLACK);
-        #if (WINDOWSPC<1)
-        TransparentImage(hdcbuffer,
+        SetTextColor(mhdcbuffer, RGB_BLACK);
+        MaskBlt(hDCTemp,
                 rc.left,rc.top,
                 rc.right-rc.left,rc.bottom-rc.top,
-                hDCMask,
-                rc.left,rc.top,
-                rc.right-rc.left,rc.bottom-rc.top,
-                RGB_WHITE
-                );
-        TransparentImage(hDCTemp,
-                rc.left,rc.top,
-                rc.right-rc.left,rc.bottom-rc.top,
-                hdcbuffer,
-                rc.left,rc.top,
-                rc.right-rc.left,rc.bottom-rc.top,
-                RGB_BLACK
-                );
-        #else
-        TransparentBlt(hdcbuffer,
-                      rc.left,rc.top,
-                      rc.right-rc.left,rc.bottom-rc.top,
-                      hDCMask,
-                      rc.left,rc.top,
-                      rc.right-rc.left,rc.bottom-rc.top,
-                      RGB_WHITE
-                      );
-        TransparentBlt(hDCTemp,
-                      rc.left,rc.top,
-                      rc.right-rc.left,rc.bottom-rc.top,
-                      hdcbuffer,
-                      rc.left,rc.top,
-                      rc.right-rc.left,rc.bottom-rc.top,
-                      RGB_BLACK
-                      );
-        #endif
+                mhdcbuffer,rc.left,rc.top,
+                hMaskBitMap,rc.left,rc.top, MAKEROP4(SRCAND,  0x00AA0029));
     }
     SelectObject(hDCTemp, GetStockObject(HOLLOW_BRUSH));
     SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
@@ -153,7 +118,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
         if ((*it)->DrawStyle()) {
           airspace_type = (*it)->Type();
           if (!found) {
-            ClearAirSpace(true);
+            ClearAirSpace(true, rc);
             found = true;
           }
           if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected()) ) {
@@ -194,14 +159,9 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
     //    SetTextColor(hDCTemp, origcolor);
     SetBkMode(hDCTemp,OPAQUE);
   }
-  
-  if (borders_only) {
-    // Free up GDI resources
-    SelectObject(hdcbuffer, hbbufferold);
-    DeleteObject(hbbuffer);
-    DeleteDC(hdcbuffer);
-  }
-  
+  RestoreDC(mhdcbuffer, nDC1);
+  RestoreDC(hDCMask, nDC2);    
+  RestoreDC(hDCTemp, nDC3);    
 }
 
 

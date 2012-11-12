@@ -22,7 +22,7 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
 {
   static short int label_sequencing_divider = 0;
   CAirspaceList::const_iterator it;
-  const CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesForWarningLabels();
+  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesForWarningLabels();
   
   if (label_sequencing_divider) --label_sequencing_divider;
 
