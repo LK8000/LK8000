@@ -26,6 +26,7 @@ void MapWindow::DrawFunctions1HZ(HDC hDC, const RECT rc) {
   #if (WINDOWSPC<1)
   LKBatteryManager();
   #endif
+  DoSonar();
 }
 
 

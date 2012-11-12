@@ -394,6 +394,7 @@ DRAW	:=\
 	$(DRW)/RenderNearAirspace.cpp\
 	$(DRW)/ScreenLatLon.cpp \
 	$(DRW)/Sideview.cpp \
+	$(DRW)/Sonar.cpp \
 	$(DRW)/TextInBox.cpp \
 	$(DRW)/UpdateAndRefresh.cpp \
 

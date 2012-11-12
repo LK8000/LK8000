@@ -13,146 +13,17 @@
 #include "Multimap.h"
 #include "Dialogs.h"
 
-#define GC_HORIZONTAL_TOLERANCE      100
-#define GC_HORIZONTAL_THRESHOLD     2500
-#define GC_VERTICAL_THRESHOLD        250
-#define GC_VERTICAL_TOLERANCE         50
-#define GC_HORIZONTAL_DELAY_FACT   250.0f
-#define GC_VERTICAL_DELAY_FACT      25.0f
-
 #define THICK_LINE 3
-
-using std::min;
-using std::max;
-
 
 extern double fSplitFact;
 extern double fOffset;
 extern COLORREF  Sideview_TextColor;
-extern AirSpaceSonarLevelStruct sSonarLevel[10];
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern int Sideview_iNoHandeldSpaces;
-extern bool Sonar_IsEnabled;
 extern bool ActiveMap_IsEnabled;
 extern int XstartScreen, YstartScreen;
 
 TCHAR Sideview_szNearAS[80];
-int iSonarLevel=0;
-bool bNearAirspace_CheckAllAirspaces =false;
-
-
-int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[], int a1, int a2);
-
-
-
-
-/*********************************************************************
- * calc the sonar delay time
- *********************************************************************/
-int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[], int iAltitudeAGL, int iAltitude)
-{
-int iAS_HorDist;
-int iAS_VertDist;
-int iAS_Bearing;
-int i;
-bool bAS_Inside = false;
-bool bOK = false;
-
-int iTreadLevel;
-CAirspace SelectedAS;
-CAirspace *Sel_AS_Ptr = NULL;
-
-int	iH_Level = 1000;
-int	iV_Level = 1000;
-int	divider=1;
-
-
-	if (ISPARAGLIDER) divider=2;
-
-	for( i =  0 ; i < iNoAs ; i++)
-	{
-
-	  Sel_AS_Ptr =	asAirspaces[i].psAS;
-	  if(Sel_AS_Ptr != NULL)
-	  {
-		SelectedAS = CAirspaceManager::Instance().GetAirspaceCopy( Sel_AS_Ptr );
-		bOK = SelectedAS.GetDistanceInfo(bAS_Inside, iAS_HorDist, iAS_Bearing, iAS_VertDist);
-
-		if(bOK)
-		{
-		  int iTmpV_Level = -1;
-		  if((iAS_HorDist) < GC_HORIZONTAL_TOLERANCE)                          /* horizontal near or inside */
-		  {
-			int iTmp =	abs(iAS_VertDist);
-			if(iTmp < sSonarLevel[9].iDistantrance)  {
-			  iTmpV_Level = 9;
-			  if(iTmp < sSonarLevel[8].iDistantrance)  {
-			    iTmpV_Level = 8;
-			    if(iTmp < sSonarLevel[7].iDistantrance)  {
-			      iTmpV_Level = 7;
-			      if(iTmp < sSonarLevel[6].iDistantrance)  {
-			        iTmpV_Level = 6;
-			        if(iTmp < sSonarLevel[5].iDistantrance)  {
-			          iTmpV_Level = 5;
-			        }
-			      }
-			    }
-			  }
-			}
-		  }
-		  if(iTmpV_Level != -1)
-            if(iTmpV_Level < iV_Level )
-        	  iV_Level = iTmpV_Level;
-
-
-		  int iTmpH_Level = -1;
-		  if(SelectedAS.IsAltitudeInside(iAltitude,iAltitudeAGL,GC_VERTICAL_TOLERANCE))  /* vertically near or inside ? */
-		  {
-			int iTmp =	(iAS_HorDist);
-			if(iTmp > 0) {
-		LKASSERT(divider!=0);
-              if(iTmp < sSonarLevel[4].iDistantrance/divider)   {
-                iTmpH_Level = 4;
-                if(iTmp < sSonarLevel[3].iDistantrance/divider)   {
-                  iTmpH_Level = 3;
-                  if(iTmp < sSonarLevel[2].iDistantrance/divider)   {
-                    iTmpH_Level = 2;
-                    if(iTmp < sSonarLevel[1].iDistantrance/divider)   {
-                      iTmpH_Level = 1;
-                      if(iTmp < sSonarLevel[0].iDistantrance/divider)   {
-                        iTmpH_Level = 0;
-                      }
-                    }
-                  }
-                }
-              }
-		    }
-		}
-		  if(iTmpH_Level != -1)
-            if(iTmpH_Level < iH_Level )
-        	  iH_Level = iTmpH_Level;
-
-		  if(SelectedAS.IsAltitudeInside(iAltitude,iAltitudeAGL,0))  /* vertically inside ? */
-			if(iAS_HorDist < 0)                                             /* complete inside, do no beep! */
-			{
-			  iV_Level = -1;   /* red allert */
-			  iH_Level = -1;   /* red allert */
-			}
-		  }
-	  }
-	}
-
-    iTreadLevel = iV_Level;
-	if(iH_Level > -1)
-	  if((iH_Level+5) <= iV_Level)
-	    iTreadLevel = iH_Level;
-
-    // StartupStore(_T("... HDist=%d Vdist=%d SonarLevel=%d \n"), iAS_HorDist, iAS_VertDist,iTreadLevel);
-return iTreadLevel;
-}
-
-
-
 
 
 void  MapWindow::RenderNearAirspace(HDC hdc, const RECT rci)
@@ -366,30 +237,6 @@ calc_circling = false;
   //           awYellow - current position is near to a warning position
   //           awRed - current posisiton is forbidden by asp system, we are in a warning position
 
-  /*********************************************************************
-   * calc sonar delay
-   *********************************************************************/
-
-  iSonarLevel = -1;
-  if(bValid)
-    if(Sonar_IsEnabled)
-      if(GPSValid) {
-	    #if TESTBENCH
-	    if(1)
-	    #else
-	    if(DerivedDrawInfo.FreeFlying)
-	    #endif
-	    {
-	      if(bNearAirspace_CheckAllAirspaces)
-	        iSonarLevel = CalcSonarDelay(Sideview_iNoHandeldSpaces, Sideview_pHandeled, (int)DerivedDrawInfo.AltitudeAGL, (int)DerivedDrawInfo.NavAltitude );
-	      else
-	      {
-	    	AirSpaceSideViewSTRUCT Tmp;
-	    	Tmp.psAS =  &near_airspace;
-    	    iSonarLevel = CalcSonarDelay( 1, &Tmp, (int)DerivedDrawInfo.AltitudeAGL, (int)DerivedDrawInfo.NavAltitude);
-	      }
-	    }
-      }
 
   /*********************************************************************
    * calc the horizontal zoom

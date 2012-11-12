@@ -20,49 +20,12 @@
 extern int XstartScreen, YstartScreen;
 extern bool IsMultimapConfigShown;
 
-extern long  iSonarLevel;
-bool Sonar_IsEnabled = true;
+extern bool Sonar_IsEnabled;
 
 // Active map can be triggered only for a mapspace run. Changing mapspace will
 // disable active map automatically. Entering a mapspace will make active map off.
 bool ActiveMap_IsEnabled = false;
 
-extern AirSpaceSonarLevelStruct sSonarLevel[];
-extern TCHAR Sideview_szNearAS[];
-
-
-AirSpaceSonarLevelStruct sSonarLevel[10] = {
-    /* horizontal sonar levels */
-    /* Dist , Delay *0.5s, V/H,      soundfile */
-    {  150,     3,         true, TEXT("LK_SONAR_H1.WAV")},
-    {  330,     3,         true, TEXT("LK_SONAR_H2.WAV")},
-    {  500,     5,         true, TEXT("LK_SONAR_H3.WAV")},
-    {  650,     5,         true, TEXT("LK_SONAR_H4.WAV")},
-    {  850,     7,         true, TEXT("LK_SONAR_H5.WAV")},
-    /* vertical sonar levels */
-    {  30 ,     3,         false, TEXT("LK_SONAR_H1.WAV")},
-    {  50 ,     3,         false, TEXT("LK_SONAR_H2.WAV")},
-    {  70,      5,         false, TEXT("LK_SONAR_H3.WAV")},
-    {  90,      5,         false, TEXT("LK_SONAR_H4.WAV")},
-    {  110,     7,         false, TEXT("LK_SONAR_H5.WAV")}
-   };
-
-
-
-int SonarNotify(void)
-{
-  static unsigned long lSonarCnt = 0;
-  lSonarCnt++;
-
-  if((iSonarLevel >=0) && (iSonarLevel < 10))
-	if( lSonarCnt > (unsigned)sSonarLevel[iSonarLevel].iSoundDelay)
-	{
-	  lSonarCnt = 0;
-          // StartupStore(_T("... level=%d PLAY <%s>\n"),iSonarLevel,&sSonarLevel[iSonarLevel].szSoundFilename);
-	  LKSound((TCHAR*) &(sSonarLevel[iSonarLevel].szSoundFilename));
-	}
-  return 0;
-}
 
 
 
@@ -152,8 +115,6 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 #ifdef ENABLE_ALL_AS_FOR_SIDEVIEW
   AltitudeMode = oldAltMode;
 #endif
-
-  if(GetSideviewPage()== IM_NEAR_AS) SonarNotify();
 
 
   LKevent=LKEVENT_NONE;
