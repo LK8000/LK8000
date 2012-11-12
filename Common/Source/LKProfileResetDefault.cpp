@@ -153,7 +153,7 @@ void LKProfileResetDefault(void) {
   PGCruiseZoom=4;
   PGAutoZoomThreshold = 5000;
   PGClimbZoom=1;
-  AutoOrientScale=7;
+  AutoOrientScale=15;
 
   PGOpenTimeH=12;
   PGOpenTimeM=0;
