@@ -90,14 +90,14 @@ int i,j;
   /**********************************************************************************
    * transform into diagram coordinates
    **********************************************************************************/
-  double dx = dfj*(rc.right-rc.left);
+  double dx1 = dfj*(rc.right-rc.left);
   int x0 = rc.left; //+BORDER_X;
 
 
   for( i = 0 ; i < Sideview_iNoHandeldSpaces ;i++)
   {
-	Sideview_pHandeled[i].rc.left   = iround((Sideview_pHandeled[i].rc.left  )*dx)+x0 -FRAMEWIDTH/2;
-	Sideview_pHandeled[i].rc.right  = iround((Sideview_pHandeled[i].rc.right+1)*dx)+x0+ FRAMEWIDTH/2;
+	Sideview_pHandeled[i].rc.left   = iround((Sideview_pHandeled[i].rc.left  )*dx1)+x0 -FRAMEWIDTH/2;
+	Sideview_pHandeled[i].rc.right  = iround((Sideview_pHandeled[i].rc.right+1)*dx1)+x0+ FRAMEWIDTH/2;
 
 	Sideview_pHandeled[i].rc.bottom  = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.bottom,  psDiag);//+FRAMEWIDTH/2;
 	Sideview_pHandeled[i].rc.top     = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.top,     psDiag)-FRAMEWIDTH/2;
@@ -109,7 +109,7 @@ int i,j;
 	if(Sideview_pHandeled[i].bRectAllowed == false)
       for(j =0 ; j < iN  ; j++)
       {
-        Sideview_pHandeled[i].apPolygon[j].x = iround(Sideview_pHandeled[i].apPolygon[j].x * dx)+x0;
+        Sideview_pHandeled[i].apPolygon[j].x = iround(Sideview_pHandeled[i].apPolygon[j].x * dx1)+x0;
         Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double)   Sideview_pHandeled[i].apPolygon[j].y, psDiag);
         if(j != iN-1)
         {
@@ -153,16 +153,16 @@ int i,j;
 	  else
 		fFrameColFact *= 1.2;
 	  long lColor = ChangeBrightness( MapWindow::GetAirspaceColourByClass(type), fFrameColFact);
-	  HPEN mpen =(HPEN)CreatePen(PS_SOLID,FRAMEWIDTH,lColor);
-	  HPEN oldpen = (HPEN)SelectObject(hdc, (HPEN)mpen);
+	  HPEN mpen2 =(HPEN)CreatePen(PS_SOLID,FRAMEWIDTH,lColor);
+	  HPEN oldpen2 = (HPEN)SelectObject(hdc, (HPEN)mpen2);
 
 	  if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
 		Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
 	  else
 	    Polygon(hdc,Sideview_pHandeled[iSizeIdx].apPolygon ,Sideview_pHandeled[iSizeIdx].iNoPolyPts );
 
-	  SelectObject(hdc, (HPEN)oldpen);
-	  DeleteObject (mpen);
+	  SelectObject(hdc, (HPEN)oldpen2);
+	  DeleteObject (mpen2);
 
 #define LINE_DIFF 2
 
@@ -232,15 +232,15 @@ int i,j;
    *********************************************************************/
   SelectObject(hdc, hpHorizonGround);
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
-	apTerrainPolygon[j].x = iround(j*dx)+x0;
+	apTerrainPolygon[j].x = iround(j*dx1)+x0;
 	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag);
 
   }
 
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx)+x0;; // x0;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx1)+x0;; // x0;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag) ;//iBottom;
 
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx)+x0;  //iround(j*dx)+x0;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx1)+x0;  //iround(j*dx1)+x0;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag) ;//iBottom;
   Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
 
@@ -337,7 +337,7 @@ for(k=0; k < NO_SLICES; k++)
   /**********************************************************************************
    * transform into diagram coordinates
    **********************************************************************************/
-  double dx = dfj*(rc.right-rc.left);
+  double dx2 = dfj*(rc.right-rc.left);
   int x0 = rc.left; //+BORDER_X;
 
 
@@ -349,7 +349,7 @@ for(k=0; k < NO_SLICES; k++)
   double hx = (double) k / (double) NO_SLICES *  CalcHeightCoordinat( Altitude, psDiag);
 
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
-	apTerrainPolygon[j].x = iround(j*dx)+x0;
+	apTerrainPolygon[j].x = iround(j*dx2)+x0;
 	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag) + (long)hx ;
 	if(d_h[j] > maxy)
       maxy = d_h[j];
@@ -372,10 +372,10 @@ for(k=0; k < NO_SLICES; k++)
 
 
 
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx)+x0;; // x0;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx2)+x0;; // x0;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag)   + (long)hx ;//iBottom;
 
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx)+x0;  //iround(j*dx)+x0;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx2)+x0;  //iround(j*dx2)+x0;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag)  +(long)hx;//iBottom;
   Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
 
