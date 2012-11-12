@@ -2021,6 +2021,8 @@ _@M2238_ "Draw\nTask"
 _@M2239_ "Draw\nFAI"
 _@M2240_ "NoDraw\nTaskFAI"
 _@M2241_ "Draw\nTaskFAI"
+_@M2242_ "Sonar\nON"
+_@M2243_ "Sonar\nOFF"
 
 # MAX 2250! 
 # (Reserved for custom menus up to 2300!)

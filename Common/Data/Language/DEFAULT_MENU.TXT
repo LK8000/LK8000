@@ -1153,7 +1153,7 @@ mode=Info1
 type=key
 data=8
 event=Service SONAR
-label=_@M2237_
+label=$(AC37)
 location=7
 
 mode=Info1
