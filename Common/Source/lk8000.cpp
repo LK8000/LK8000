@@ -567,10 +567,8 @@ void CleanupForShutdown(void) {
 
   LKUnloadMessage();
   InputEvents::UnloadString();
-  #if TOPOFASTLABEL
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
-  #endif
 
   DeInitCriticalSections(); 
   

@@ -194,11 +194,10 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
   // very important
   screenbounds_latlon = CalculateScreenBounds(0.0);
 
-  #if TOPOFASTLABEL
+  // Old note obsoleted 121111: 
   // preserve this calculation for 0.0 until next round!
   // This is already done since screenbounds_latlon is global. Beware that DrawTrail will change it later on
   // to expand boundaries by 1 minute
-  #endif
 
   // get screen coordinates for all task waypoints
 

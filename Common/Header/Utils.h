@@ -184,11 +184,7 @@ void LK8000GetOpts(LPSTR CommandLine);
 void LK8000GetOpts(LPWSTR CommandLine);
 #endif
 
-#if TOPOFASTLABEL
 bool CheckRectOverlap(const RECT *rc1, const RECT *rc2);
-#else
-bool CheckRectOverlap(RECT rc1, RECT rc2);
-#endif
 int MeasureCPULoad();
 
 TCHAR* GetWinPilotPolarInternalName(int i);

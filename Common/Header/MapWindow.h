@@ -709,7 +709,6 @@ class MapWindow {
   static void FillScaleListForEngineeringUnits(void);
   
 
-  #if TOPOFASTLABEL
 public:
 	static void FreeSlot(); 
 private:
@@ -724,11 +723,6 @@ private:
   static int nVLabelBlocks[SCREENVSLOTS+1];
   static RECT LabelBlockCoords[SCREENVSLOTS+1][MAXVLABELBLOCKS+1];
   static char *slot;
-  #else
-  #define MAXLABELBLOCKS 100
-  static int nLabelBlocks;
-  static RECT LabelBlockCoords[MAXLABELBLOCKS];
-  #endif
 
   static void StoreRestoreFullscreen(bool);
  public:
@@ -745,11 +739,7 @@ private:
   static void ClearAirSpace(bool fill);
 
  public:
-  #if TOPOFASTLABEL
   static bool checkLabelBlock(RECT *rc);
-  #else
-  static bool checkLabelBlock(RECT rc);
-  #endif
   static void ResetLabelDeclutter(void);
   static void SaturateLabelDeclutter(void);
   static void SetDeclutterIcon(RECT *drect);

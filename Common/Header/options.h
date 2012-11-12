@@ -46,7 +46,6 @@
 
  // New topology OPTIMIZE options
  #define TOPOFAST	1
- #define TOPOFASTLABEL	1
  #define TOPOFASTCACHE	1
 
  #define IBLSCALE(x) (   (ScreenIntScale) ? ((x)*ScreenScale) : ((int)((x)*ScreenDScale)))

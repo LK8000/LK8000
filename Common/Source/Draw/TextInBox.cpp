@@ -181,11 +181,7 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, i
     if (y>=clipRect->bottom || brect.bottom>=clipRect->bottom ) return false;
     #endif
 
-	#if TOPOFASTLABEL
 	notoverlapping = checkLabelBlock(&brect); 
-	#else
-    notoverlapping = checkLabelBlock(brect); 
-	#endif
 
   
     if (!noOverlap || notoverlapping) {
@@ -230,11 +226,7 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, i
     if (y>=clipRect->bottom || brect.bottom>=clipRect->bottom ) return false;
     #endif
 
-	#if TOPOFASTLABEL
 	notoverlapping = checkLabelBlock(&brect); 
-	#else
-    notoverlapping = checkLabelBlock(brect); 
-	#endif
   
     if (!noOverlap || notoverlapping) {
       COLORREF oldColor = SetBkColor(hDC, RGB_WHITE);
@@ -281,11 +273,7 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, i
     if (brect.bottom >= clipRect->bottom) return false;
     #endif
 
-	#if TOPOFASTLABEL
 	notoverlapping = checkLabelBlock(&brect); 
-	#else
-    notoverlapping = checkLabelBlock(brect); 
-	#endif
   
     if (!noOverlap || notoverlapping) { 
       if (OutlinedTp)
@@ -363,11 +351,7 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, i
     if (brect.bottom >= clipRect->bottom) return false;
     #endif
 
-	#if TOPOFASTLABEL
 	notoverlapping = checkLabelBlock(&brect); 
-	#else
-    notoverlapping = checkLabelBlock(brect); 
-	#endif
   
     if (!noOverlap || notoverlapping) {
 #if (WINDOWSPC>0)
@@ -395,7 +379,6 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, i
 
 
 
-#if TOPOFASTLABEL
 
 int MapWindow::nLabelBlocks;
 int MapWindow::nVLabelBlocks[SCREENVSLOTS+1];
@@ -515,7 +498,6 @@ void MapWindow::FreeSlot(){
 	slot=NULL;
 }
 
-#endif
 
 //
 // Called by Thread_Draw, for init
@@ -523,9 +505,7 @@ void MapWindow::FreeSlot(){
 //
 void MapWindow::ResetLabelDeclutter(void) {
   nLabelBlocks = 0;
-  #if TOPOFASTLABEL
   for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=0;
-  #endif
 }
 
 

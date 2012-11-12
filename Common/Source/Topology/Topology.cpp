@@ -629,12 +629,8 @@ void Topology::Paint(HDC hdc, RECT rc) {
   }
   }
 
-  #if TOPOFASTLABEL
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
   rectObj screenRect = MapWindow::screenbounds_latlon;
-  #else
-  rectObj screenRect = MapWindow::CalculateScreenBounds(0.0);
-  #endif
 
   static POINT pt[MAXCLIPPOLYGON];
   bool labelprinted=false;
@@ -684,7 +680,6 @@ void Topology::Paint(HDC hdc, RECT rc) {
 	}
 	#endif
 
-	//#if TOPOFASTLABEL
 	if (checkVisible(*shape, screenRect))
 		for (int tt = 0; tt < shape->numlines; tt++) {
 			for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
@@ -894,11 +889,7 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 	brect.bottom = brect.top+tsize.cy+NIBLSCALE(3);
 
 	if ( DeclutterMode != (DeclutterMode_t)dmDisabled ) {
-		#if TOPOFASTLABEL
 		if (!MapWindow::checkLabelBlock(&brect)) return false;
-		#else
-		if (!MapWindow::checkLabelBlock(brect)) return false;
-		#endif
 	}
 
 	// Do not print outside boundaries of Draw area
