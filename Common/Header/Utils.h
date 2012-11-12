@@ -62,6 +62,8 @@ void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit2Index);
 void WritePort1Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index);
 void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit2Index);
 //void WritePort3Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit3Index);
+
+void buildCircle(const POINT& center, int radius, std::vector<POINT>& list);
 int  Circle(HDC hdc, long x, long y, int radius, RECT rc, bool clip=false,
             bool fill=true);
 int Segment(HDC hdc, long x, long y, int radius, RECT rc, 

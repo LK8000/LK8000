@@ -45,10 +45,12 @@ RECT MapWindow::DrawRect;	// the portion of MapRect for drawing terrain, topolog
 HBITMAP MapWindow::hDrawBitMap = NULL;
 HBITMAP MapWindow::hDrawBitMapTmp = NULL;
 HBITMAP MapWindow::hMaskBitMap = NULL;
+HBITMAP MapWindow::mhbbuffer = NULL;
 HDC MapWindow::hdcDrawWindow = NULL;
 HDC MapWindow::hdcScreen = NULL;
 HDC MapWindow::hDCTemp = NULL;
 HDC MapWindow::hDCMask = NULL;
+HDC MapWindow::mhdcbuffer = NULL;
 
 #if NEWSMARTZOOM
 HBITMAP MapWindow::hQuickDrawBitMap = NULL;
@@ -282,6 +284,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		hDCMask = CreateCompatibleDC(hdcDrawWindow);
 		LKASSERT(hdcDrawWindow);
 
+        mhdcbuffer = CreateCompatibleDC(hdcDrawWindow);
+        LKASSERT(mhdcbuffer);
 	}
 
 	if (hDrawBitMap) DeleteObject(hDrawBitMap);
@@ -298,6 +302,12 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	hMaskBitMap = CreateBitmap(lparam_X+1, lparam_Y+1, 1, 1, NULL);
 	LKASSERT(hMaskBitMap);
 	SelectObject(hDCMask, (HBITMAP)hMaskBitMap);
+    
+	if (mhbbuffer) DeleteObject(mhbbuffer);
+    mhbbuffer = CreateCompatibleBitmap(hdcDrawWindow, lparam_X, lparam_Y);
+    SelectObject(mhdcbuffer, mhbbuffer);
+    LKASSERT(mhbbuffer);
+
 
 	#if NEWSMARTZOOM
 	if (hQuickDrawBitMap) DeleteObject(hQuickDrawBitMap);
@@ -330,6 +340,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	hDCMask = CreateCompatibleDC(hdcDrawWindow);
 	LKASSERT(hDCMask);
   
+    mhdcbuffer = CreateCompatibleDC(hdcDrawWindow);
+    LKASSERT(mhdcbuffer);
+    
 	AlphaBlendInit();
 
 	// Signal that draw thread can run now
@@ -357,6 +370,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		DeleteDC(hDCMask);
 		hDCMask=NULL;
 	}
+    if(mhdcbuffer) {
+        DeleteDC(mhdcbuffer);
+        mhdcbuffer=NULL;
+    }
 	if (hDrawBitMap) {
 		DeleteObject(hDrawBitMap);
 		hDrawBitMap=NULL;
@@ -365,7 +382,12 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		DeleteObject(hMaskBitMap);
 		hMaskBitMap=NULL;
 	}
-	#if NEWSMARTZOOM
+    if (mhbbuffer) {
+        DeleteObject(mhbbuffer);
+        mhbbuffer=NULL;
+    }
+
+    #if NEWSMARTZOOM
 	if (hdcQuickDrawWindow) {
 		DeleteDC(hdcQuickDrawWindow);
 		hdcQuickDrawWindow=NULL;
