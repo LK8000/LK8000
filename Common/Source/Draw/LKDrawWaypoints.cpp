@@ -250,6 +250,13 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	      irange=false;
 	      goto NiklausWirth; // with compliments
 	    } 
+	    if (decluttericons) {
+		if (! (WayPointCalc[i].IsAirport && (WayPointList[i].RunwayLen>minrunway || WayPointList[i].RunwayLen==0))) {
+		      SelectObject(hDCTemp,hInvSmall);
+		      irange=false;
+		      goto NiklausWirth;
+		}
+            }
 
 	    if( islandable ) { 
 
