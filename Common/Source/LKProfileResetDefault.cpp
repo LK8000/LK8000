@@ -162,18 +162,18 @@ void LKProfileResetDefault(void) {
   PGStartOut=0;
 
   // These values are used on startup, but on reset change also OpenCloseTopology
-  LKTopoZoomCat05=9999;
-  LKTopoZoomCat10=9999;
-  LKTopoZoomCat20=9999;
+  LKTopoZoomCat05=9999;		// coast area
+  LKTopoZoomCat10=12;		// water labels threshold, over this realscale, no water labels are printed
+  LKTopoZoomCat20=9999;		// water line
   LKTopoZoomCat30=25;		// Big Roads
   LKTopoZoomCat40=6;		// Medium road
   LKTopoZoomCat50=3;		// Small road
   LKTopoZoomCat60=8;		// Railroad
   LKTopoZoomCat70=15;		// Big cities
-  LKTopoZoomCat80=9999;
-  LKTopoZoomCat90=9999;
+  LKTopoZoomCat80=9999;		// Med city
+  LKTopoZoomCat90=9999;		// Small city
   LKTopoZoomCat100=3;		// Very small cities
-  LKTopoZoomCat110=9999;
+  LKTopoZoomCat110=9999;	// city polyline area
 
   LKMaxLabels=70;
 
