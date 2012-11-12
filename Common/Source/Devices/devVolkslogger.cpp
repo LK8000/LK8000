@@ -11,7 +11,7 @@
 #include "Dialogs.h"
 
 #include "devVolkslogger.h"
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 #include "Volkslogger/vlapi2.h"
 #include "Volkslogger/vlapihlp.h"
@@ -21,7 +21,7 @@ extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PD
 // Source data:
 // $PGCS,1,0EC0,FFF9,0C6E,02*61
 // $PGCS,1,0EC0,FFFA,0C6E,03*18
-BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
     
   TCHAR ctemp[80];
@@ -42,30 +42,30 @@ BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
         AltitudeToQNHAltitude(InternalAltitude);  
     // typo corrected 21.04.07
     // Else the altitude is good enough.
-    UpdateBaroSource( GPS_INFO, 0,d,  fBaroAltitude);
+    UpdateBaroSource( pGPS, 0,d,  fBaroAltitude);
 	
   // ExtractParameter(String,ctemp,3);		
   // four characters, hex, constant.  Value 1371 (dec)
 
   // nSatellites = (int)(min(12,HexStrToDouble(ctemp, NULL)));
   
-  if (GPS_INFO->SatellitesUsed <= 0) {
-    GPS_INFO->SatellitesUsed = 4; 
+  if (pGPS->SatellitesUsed <= 0) {
+    pGPS->SatellitesUsed = 4; 
   }
   
   return FALSE;
 }
 
 
-BOOL VLParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL VLParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
   
-  if (!NMEAParser::NMEAChecksum(String) || (GPS_INFO == NULL)){
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
   
   if(_tcsstr(String,TEXT("$PGCS,")) == String){
-    return vl_PGCS1(d, &String[6], GPS_INFO);
+    return vl_PGCS1(d, &String[6], pGPS);
   }
 
   return FALSE;

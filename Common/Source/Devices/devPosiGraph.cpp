@@ -19,20 +19,20 @@
 
 #include "devPosiGraph.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
-static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-BOOL PGParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL PGParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
   (void)String;
-  (void)GPS_INFO;
+  (void)pGPS;
 
   // $GPWIN ... Winpilot proprietary sentance includinh baro altitude
   // $GPWIN ,01900 , 0 , 5159 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 * 6 B , 0 7 * 6 0 E
   if(_tcsncmp(TEXT("$GPWIN"), String, 6)==0)
     {
-      return GPWIN(d, &String[7], GPS_INFO);
+      return GPWIN(d, &String[7], pGPS);
     }
 
   return FALSE;
@@ -97,15 +97,15 @@ BOOL pgRegister(void){
 // *****************************************************************************
 // local stuff
 
-static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
   TCHAR ctemp[80];
-  (void)GPS_INFO;
+  (void)pGPS;
   (void)d;
 
   NMEAParser::ExtractParameter(String, ctemp, 2);
 
-  UpdateBaroSource( GPS_INFO, 0, d,   AltitudeToQNHAltitude(  iround(StrToDouble(ctemp, NULL) / 10)));
+  UpdateBaroSource( pGPS, 0, d,   AltitudeToQNHAltitude(  iround(StrToDouble(ctemp, NULL) / 10)));
 
   return FALSE;
 

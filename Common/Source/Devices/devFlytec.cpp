@@ -13,18 +13,18 @@
 extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
 extern double MixedFormatToDegrees(double mixed);
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
-static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
   if(_tcsncmp(TEXT("$FLYSEN"), String, 7)==0)
     {
-      return FLYSEN(d, &String[8], GPS_INFO);
+      return FLYSEN(d, &String[8], pGPS);
     } 
 
   return FALSE;
@@ -83,7 +83,7 @@ BOOL FlytecRegister(void){
 
 
 
-static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 
   TCHAR ctemp[80];
@@ -110,7 +110,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   // VOID GPS SIGNAL
   NMEAParser::ExtractParameter(String,ctemp,8+offset);
   if (_tcscmp(ctemp,_T("V"))==0) {
-	GPS_INFO->NAVWarning=true;
+	pGPS->NAVWarning=true;
 	GPSCONNECT=false;
 	goto label_nogps;
   }
@@ -130,32 +130,32 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   tmplon = EastOrWest(tmplon,ctemp[0]);
 
   if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-        GPS_INFO->Latitude = tmplat;
-        GPS_INFO->Longitude = tmplon;
-	GPS_INFO->NAVWarning=false;
+        pGPS->Latitude = tmplat;
+        pGPS->Longitude = tmplon;
+	pGPS->NAVWarning=false;
 	GPSCONNECT=true;
   }
 
   // GPS SPEED
   NMEAParser::ExtractParameter(String,ctemp,6+offset);
-  GPS_INFO->Speed = StrToDouble(ctemp,NULL)/10;
+  pGPS->Speed = StrToDouble(ctemp,NULL)/10;
 
   // TRACK BEARING
-  if (GPS_INFO->Speed>1.0) {
+  if (pGPS->Speed>1.0) {
 	NMEAParser::ExtractParameter(String,ctemp,5+offset);
-	GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(ctemp, NULL));
+	pGPS->TrackBearing = AngleLimit360(StrToDouble(ctemp, NULL));
   }
 
   // HGPS
   NMEAParser::ExtractParameter(String,ctemp,7+offset);
-  GPS_INFO->Altitude = StrToDouble(ctemp,NULL);
+  pGPS->Altitude = StrToDouble(ctemp,NULL);
 
   // ------------------------
   label_nogps: 
 
   // SATS
   NMEAParser::ExtractParameter(String,ctemp,9+offset);
-  GPS_INFO->SatellitesUsed = (int) StrToDouble(ctemp,NULL);
+  pGPS->SatellitesUsed = (int) StrToDouble(ctemp,NULL);
 
   // DATE
   // Firmware 3.32 has got the date 
@@ -170,9 +170,9 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
         gd = _tcstol(&ctemp[0], &Stop, 10);
 
 	if ( ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) {
-		GPS_INFO->Year = gy;
-		GPS_INFO->Month = gm;
-		GPS_INFO->Day = gd;
+		pGPS->Year = gy;
+		pGPS->Month = gm;
+		pGPS->Day = gd;
 	}
   }
 
@@ -185,90 +185,90 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   static  int day_difference=0, previous_months_day_difference=0;
   static int startday=-1;
 
-  if (fixTime>0 && GPS_INFO->SatellitesUsed>0) {
+  if (fixTime>0 && pGPS->SatellitesUsed>0) {
 	double hours, mins,secs;
 	hours = fixTime / 10000;
-	GPS_INFO->Hour = (int)hours;
+	pGPS->Hour = (int)hours;
 	mins = fixTime / 100;
-	mins = mins - (GPS_INFO->Hour*100);
-	GPS_INFO->Minute = (int)mins;
-	secs = fixTime - (GPS_INFO->Hour*10000) - (GPS_INFO->Minute*100);
-	GPS_INFO->Second = (int)secs;
+	mins = mins - (pGPS->Hour*100);
+	pGPS->Minute = (int)mins;
+	secs = fixTime - (pGPS->Hour*10000) - (pGPS->Minute*100);
+	pGPS->Second = (int)secs;
 
-        fixTime = secs + (GPS_INFO->Minute*60) + (GPS_INFO->Hour*3600);
+        fixTime = secs + (pGPS->Minute*60) + (pGPS->Hour*3600);
 
-        if ((startday== -1) && (GPS_INFO->Day != 0)) {
+        if ((startday== -1) && (pGPS->Day != 0)) {
 	   if (offset)
-              StartupStore(_T(". FLYSEN First GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
+              StartupStore(_T(". FLYSEN First GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
 	   else
-              StartupStore(_T(". FLYSEN No Date, using PNA GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
-           startday = GPS_INFO->Day;
+              StartupStore(_T(". FLYSEN No Date, using PNA GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
+           startday = pGPS->Day;
            day_difference=0;
            previous_months_day_difference=0;
         }
         if (startday != -1) {
-           if (GPS_INFO->Day < startday) {
+           if (pGPS->Day < startday) {
               // detect change of month (e.g. day=1, startday=26)
               previous_months_day_difference=day_difference+1;
               day_difference=0;
-              startday = GPS_INFO->Day;
+              startday = pGPS->Day;
               StartupStore(_T(". FLYSEN Change GPS DATE to NEW MONTH: %d-%d-%d  (%d days running)%s"),
-              GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,previous_months_day_difference,NEWLINE);
+              pGPS->Year, pGPS->Month, pGPS->Day,previous_months_day_difference,NEWLINE);
            }
-           if ( (GPS_INFO->Day-startday)!=day_difference) {
-              StartupStore(_T(". FLYSEN Change GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
+           if ( (pGPS->Day-startday)!=day_difference) {
+              StartupStore(_T(". FLYSEN Change GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
            }
 
-           day_difference = GPS_INFO->Day-startday;
+           day_difference = pGPS->Day-startday;
            if ((day_difference+previous_months_day_difference)>0) {
               fixTime += (day_difference+previous_months_day_difference) * 86400;
            }
         }
-	GPS_INFO->Time = fixTime;
+	pGPS->Time = fixTime;
   }
 
 
   // HPA from the pressure sensor
   //   NMEAParser::ExtractParameter(String,ctemp,10+offset);
   //   double ps = StrToDouble(ctemp,NULL)/100;
-  //   GPS_INFO->BaroAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
+  //   pGPS->BaroAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 
   // HBAR 1013.25
   NMEAParser::ExtractParameter(String,ctemp,11+offset);
-  UpdateBaroSource( GPS_INFO, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
+  UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
 
   // VARIO
   NMEAParser::ExtractParameter(String,ctemp,12+offset);
-  GPS_INFO->Vario = StrToDouble(ctemp,NULL)/100;
+  pGPS->Vario = StrToDouble(ctemp,NULL)/100;
 
   // TAS
   NMEAParser::ExtractParameter(String,ctemp,13+offset);
   vtas=StrToDouble(ctemp,NULL)/10;
-  GPS_INFO->IndicatedAirspeed = vtas/AirDensityRatio(GPS_INFO->BaroAltitude);
-  GPS_INFO->TrueAirspeed = vtas;
-  if (GPS_INFO->IndicatedAirspeed >0) 
-	GPS_INFO->AirspeedAvailable = TRUE;
+  pGPS->IndicatedAirspeed = vtas/AirDensityRatio(pGPS->BaroAltitude);
+  pGPS->TrueAirspeed = vtas;
+  if (pGPS->IndicatedAirspeed >0) 
+	pGPS->AirspeedAvailable = TRUE;
   else 
-	GPS_INFO->AirspeedAvailable = FALSE;
+	pGPS->AirspeedAvailable = FALSE;
 
   // ignore n.14 airspeed source
 
   // OAT
   NMEAParser::ExtractParameter(String,ctemp,15+offset);
-  GPS_INFO->OutsideAirTemperature = StrToDouble(ctemp,NULL);
-  GPS_INFO->TemperatureAvailable=TRUE;
+  pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL);
+  pGPS->TemperatureAvailable=TRUE;
 
   // ignore n.16 baloon temperature  
 
   // BATTERY PERCENTAGES
   NMEAParser::ExtractParameter(String,ctemp,17+offset);
-  GPS_INFO->ExtBatt1_Voltage = StrToDouble(ctemp,NULL)+1000;
+  pGPS->ExtBatt1_Voltage = StrToDouble(ctemp,NULL)+1000;
   NMEAParser::ExtractParameter(String,ctemp,18+offset);
-  GPS_INFO->ExtBatt2_Voltage = StrToDouble(ctemp,NULL)+1000;
+  pGPS->ExtBatt2_Voltage = StrToDouble(ctemp,NULL)+1000;
 
 
 
-  GPS_INFO->VarioAvailable = TRUE;
+  pGPS->VarioAvailable = TRUE;
 
   // currently unused in LK, but ready for next future
   TriggerVarioUpdate();

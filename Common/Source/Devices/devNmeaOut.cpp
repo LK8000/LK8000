@@ -10,11 +10,11 @@
 
 
 
-BOOL nmoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL nmoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void) d;
   (void) String;
-  (void) GPS_INFO;
+  (void) pGPS;
 
   return FALSE;
 

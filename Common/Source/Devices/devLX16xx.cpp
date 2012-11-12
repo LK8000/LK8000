@@ -472,8 +472,8 @@ if(BugsUpdateTimeout > 0)
 else
   if(ParToDouble(sentence, 2, &fTmp))
   {
-	int iTmp = 100-(int)(fTmp+0.5);
-	fTmp =  (double)iTmp/100.0;
+	int iTmp2 = 100-(int)(fTmp+0.5);
+	fTmp =  (double)iTmp2/100.0;
 	if(  fabs(fTmp -BUGS) >= 0.03)
     {
       BUGS = fTmp;

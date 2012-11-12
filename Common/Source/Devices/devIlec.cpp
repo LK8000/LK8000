@@ -10,17 +10,17 @@
 
 #include "devIlec.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
-static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
   if(_tcsncmp(TEXT("$PILC"), String, 5)==0)
     {
-      return PILC(d, &String[6], GPS_INFO);
+      return PILC(d, &String[6], pGPS);
     } 
 
   return FALSE;
@@ -78,7 +78,7 @@ BOOL IlecRegister(void){
 }
 
 
-static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 
   TCHAR ctemp[80];
@@ -88,10 +88,10 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   if (_tcscmp(ctemp,_T("PDA1"))==0) {
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
-	UpdateBaroSource( GPS_INFO, 0,d, AltitudeToQNHAltitude(StrToDouble(ctemp, NULL)));
+	UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude(StrToDouble(ctemp, NULL)));
 
 	NMEAParser::ExtractParameter(String,ctemp,2);
-	GPS_INFO->Vario = StrToDouble(ctemp,NULL);
+	pGPS->Vario = StrToDouble(ctemp,NULL);
 
 	NMEAParser::ExtractParameter(String,ctemp,3); // wind direction, integer
 	double wfrom;
@@ -107,10 +107,10 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 			NMEAParser::ExtractParameter(String,ctemp,5); // confidence  0-100 percentage
 			wconfidence = StrToDouble(ctemp,NULL);
 
-			GPS_INFO->ExternalWindAvailable = TRUE;
+			pGPS->ExternalWindAvailable = TRUE;
 			if (wconfidence>=1) {
-				GPS_INFO->ExternalWindSpeed = wspeed/TOKPH;
-				GPS_INFO->ExternalWindDirection = wfrom;
+				pGPS->ExternalWindSpeed = wspeed/TOKPH;
+				pGPS->ExternalWindDirection = wfrom;
 			}
 
 		#else
@@ -127,10 +127,10 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 		#endif
 
 
-	} else	GPS_INFO->ExternalWindAvailable = FALSE;
+	} else	pGPS->ExternalWindAvailable = FALSE;
 	
 	
-	GPS_INFO->VarioAvailable = TRUE;
+	pGPS->VarioAvailable = TRUE;
 	TriggerVarioUpdate();
 	return TRUE;
   }

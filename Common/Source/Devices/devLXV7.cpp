@@ -12,7 +12,7 @@
 #include "LKInterface.h"
 #include "InputEvents.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 int iLXV7_RxUpdateTime=0;
 double LXV7_oldMC = MACCREADY;
@@ -536,8 +536,8 @@ if(LXV7_BugsUpdateTimeout > 0)
 else
   if(ParToDouble(sentence, 2, &fTmp))
   {
-	int iTmp = 100-(int)(fTmp+0.5);
-	fTmp =  (double)iTmp/100.0;
+	int iTmp2 = 100-(int)(fTmp+0.5);
+	fTmp =  (double)iTmp2/100.0;
 	if(  fabs(fTmp -BUGS) >= 0.03)
     {
       BUGS = fTmp;

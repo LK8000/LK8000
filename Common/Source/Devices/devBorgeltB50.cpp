@@ -12,23 +12,23 @@
 
 BOOL bBaroAvailable = FALSE;
 
-BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO);
+BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS);
 
-extern BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+extern BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
 
   if(_tcsncmp(TEXT("$PBB50"), String, 6)==0)
-    return PBB50(&String[7], GPS_INFO);
+    return PBB50(&String[7], pGPS);
   else
     if(_tcsncmp(TEXT("$PGCS"), String, 5)==0)
     {
       bBaroAvailable = true;
-      return vl_PGCS1( d, &String[6], GPS_INFO);
+      return vl_PGCS1( d, &String[6], pGPS);
     }
 //  if(_tcsstr(String,TEXT("$PGCS,")) == String){
-//    return vl_PGCS1(d, &String[6], GPS_INFO);
+//    return vl_PGCS1(d, &String[6], pGPS);
 #ifdef GPRMZ__
     else
       if(_tcsncmp(TEXT("$GPRMZ"), String, 6)==0)
@@ -39,7 +39,7 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
     	  return FALSE;
 
     	  double altitude = NMEAParser::ParseAltitude(params[1], params[2]);
-    	  UpdateBaroSource( GPS_INFO, BARO__RMZ, d, AltitudeToQNHAltitude(altitude));
+    	  UpdateBaroSource( pGPS, BARO__RMZ, d, AltitudeToQNHAltitude(altitude));
 
     	return TRUE;
       }
@@ -136,7 +136,7 @@ CHK = standard NMEA checksum
 
 */
 
-BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
+BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
   // $PBB50,100,0,10,1,10000,0,1,0,20*4A..
   // $PBB50,0,.0,.0,0,0,1.07,0,-228*58
   // $PBB50,14,-.2,.0,196,0,.92,0,-228*71
@@ -151,8 +151,8 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
   wnet = StrToDouble(ctemp,NULL)/TOKNOTS;
 
   NMEAParser::ExtractParameter(String,ctemp,2);
-  GPS_INFO->MacReady = StrToDouble(ctemp,NULL)/TOKNOTS;
-  MACCREADY = GPS_INFO->MacReady;
+  pGPS->MacReady = StrToDouble(ctemp,NULL)/TOKNOTS;
+  MACCREADY = pGPS->MacReady;
 
   NMEAParser::ExtractParameter(String,ctemp,3);
   vias = sqrt(StrToDouble(ctemp,NULL))/TOKNOTS;
@@ -165,8 +165,8 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
   JMW disabled bugs/ballast due to problems with test b50
 */
   NMEAParser::ExtractParameter(String,ctemp,4);
- // GPS_INFO->Bugs = StrToDouble(ctemp,NULL);
- // BUGS = GPS_INFO->Bugs;
+ // pGPS->Bugs = StrToDouble(ctemp,NULL);
+ // BUGS = pGPS->Bugs;
 //  StartupStore(TEXT(">>>>>BUGS<<<< %s %f "),ctemp, BUGS);
   // for Borgelt it's % of empty weight,
   // for us, it's % of ballast capacity
@@ -174,17 +174,17 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   //double bal = StrToDouble(ctemp,NULL); UNUSED!
-//  BALLAST = GPS_INFO->Ballast = bal;
+//  BALLAST = pGPS->Ballast = bal;
   /*************************************************/
  // StartupStore(TEXT(">NMEA:$PBB50,%s                                    BUG:%d %4.2f:BAL %s%s"),String, (int)BUGS,BALLAST, NEWLINE, NEWLINE);
   /*************************************************/
   /*
   if (WEIGHTS[2]>0) {
-    GPS_INFO->Ballast = min(1.0, max(0.0,
+    pGPS->Ballast = min(1.0, max(0.0,
                                      bal*(WEIGHTS[0]+WEIGHTS[1])/WEIGHTS[2]));
-    BALLAST = GPS_INFO->Ballast;
+    BALLAST = pGPS->Ballast;
   } else {
-    GPS_INFO->Ballast = 0;
+    pGPS->Ballast = 0;
     BALLAST = 0;
   }
   */
@@ -198,7 +198,7 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
 
   #if USESWITCHES
   int climb = lround(StrToDouble(ctemp,NULL));
-  GPS_INFO->SwitchState.VarioCircling = (climb==1);
+  pGPS->SwitchState.VarioCircling = (climb==1);
   #endif
 
   #if 0 // UNUSED EnableExternalTriggerCruise
@@ -217,15 +217,15 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
   NMEAParser::ExtractParameter(String,ctemp,7);
 //  if()
   {
-    GPS_INFO->OutsideAirTemperature = StrToDouble(ctemp,NULL);
-    GPS_INFO->TemperatureAvailable = true;
+    pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL);
+    pGPS->TemperatureAvailable = true;
   }
 
-  GPS_INFO->AirspeedAvailable = TRUE;
-  GPS_INFO->IndicatedAirspeed = vias;
-  GPS_INFO->TrueAirspeed = vtas;
-  GPS_INFO->VarioAvailable = TRUE;
-  GPS_INFO->Vario = wnet;
+  pGPS->AirspeedAvailable = TRUE;
+  pGPS->IndicatedAirspeed = vias;
+  pGPS->TrueAirspeed = vtas;
+  pGPS->VarioAvailable = TRUE;
+  pGPS->Vario = wnet;
 
   TriggerVarioUpdate();
 

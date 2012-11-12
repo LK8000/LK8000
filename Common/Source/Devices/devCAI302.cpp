@@ -17,7 +17,7 @@
 
 #include "devCAI302.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
 using std::min;
@@ -99,9 +99,9 @@ static cai302_OdataNoArgs_t cai302_OdataNoArgs;
 static cai302_OdataPilot_t cai302_OdataPilot;
 
 // Additional sentance for CAI302 support
-static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
-static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *GPS_INFO);
-static BOOL cai_PCAID(PDeviceDescriptor_t d,TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cai_PCAID(PDeviceDescriptor_t d,TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai302Install(PDeviceDescriptor_t d); 
 
 static int  MacCreadyUpdateTimeout = 0;
@@ -109,22 +109,22 @@ static int  BugsUpdateTimeout = 0;
 static int  BallastUpdateTimeout = 0;
 
 
-BOOL cai302ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL cai302ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   
-  if (!NMEAParser::NMEAChecksum(String) || (GPS_INFO == NULL)){
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
   
   if(_tcsstr(String,TEXT("$PCAIB")) == String){
-    return cai_PCAIB(&String[7], GPS_INFO);
+    return cai_PCAIB(&String[7], pGPS);
   }
 
   if(_tcsstr(String,TEXT("$PCAID")) == String){
-    return cai_PCAID(d,&String[7], GPS_INFO);
+    return cai_PCAID(d,&String[7], pGPS);
   }
 
   if(_tcsstr(String,TEXT("!w")) == String){
-    return cai_w(d, &String[3], GPS_INFO);
+    return cai_w(d, &String[3], pGPS);
   }
 
   return FALSE;
@@ -518,8 +518,8 @@ $PCAIB,<1>,<2>,<CR><LF>
 <2> Destination Navpoint attribute word, format XXXXX (leading zeros will be transmitted)
 */
 
-BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *GPS_INFO){
-  (void)GPS_INFO;
+BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *pGPS){
+  (void)pGPS;
   (void)String;
   return TRUE;
 }
@@ -534,16 +534,16 @@ $PCAID,<1>,<2>,<3>,<4>*hh<CR><LF>
 *hh Checksum, XOR of all bytes of the sentence after the ‘$’ and before the ‘*’
 */
 
-BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 /*
-	(void)GPS_INFO;
+	(void)pGPS;
 	(void)String;
 */
   TCHAR ctemp[80];
 
   NMEAParser::ExtractParameter(String,ctemp,1);
   double ps = StrToDouble(ctemp,NULL);
-  UpdateBaroSource( GPS_INFO ,0, d,  AltitudeToQNHAltitude(ps));
+  UpdateBaroSource( pGPS ,0, d,  AltitudeToQNHAltitude(ps));
 
 
   return TRUE;
@@ -567,53 +567,53 @@ BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
 *hh  Checksum, XOR of all bytes
 */
 
-BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   TCHAR ctemp[80];
 
   
   NMEAParser::ExtractParameter(String,ctemp,1);
-  GPS_INFO->ExternalWindAvailable = TRUE;
-  GPS_INFO->ExternalWindSpeed = (StrToDouble(ctemp,NULL) / 10.0);
+  pGPS->ExternalWindAvailable = TRUE;
+  pGPS->ExternalWindSpeed = (StrToDouble(ctemp,NULL) / 10.0);
   NMEAParser::ExtractParameter(String,ctemp,0);
-  GPS_INFO->ExternalWindDirection = StrToDouble(ctemp,NULL);  
+  pGPS->ExternalWindDirection = StrToDouble(ctemp,NULL);  
 
 
   NMEAParser::ExtractParameter(String,ctemp,4);
 
-  UpdateBaroSource( GPS_INFO , 0, d,   AltitudeToQNHAltitude( StrToDouble(ctemp, NULL) - 1000));
+  UpdateBaroSource( pGPS , 0, d,   AltitudeToQNHAltitude( StrToDouble(ctemp, NULL) - 1000));
 
 //  ExtractParameter(String,ctemp,5);
-//  GPS_INFO->QNH = StrToDouble(ctemp, NULL) - 1000;
+//  pGPS->QNH = StrToDouble(ctemp, NULL) - 1000;
   
   NMEAParser::ExtractParameter(String,ctemp,6);
-  GPS_INFO->AirspeedAvailable = TRUE;
-  GPS_INFO->TrueAirspeed = (StrToDouble(ctemp,NULL) / 100.0);
-  GPS_INFO->IndicatedAirspeed = GPS_INFO->TrueAirspeed / AirDensityRatio(GPS_INFO->BaroAltitude);
+  pGPS->AirspeedAvailable = TRUE;
+  pGPS->TrueAirspeed = (StrToDouble(ctemp,NULL) / 100.0);
+  pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(pGPS->BaroAltitude);
   
   NMEAParser::ExtractParameter(String,ctemp,7);
-  GPS_INFO->VarioAvailable = TRUE;
-  GPS_INFO->Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
+  pGPS->VarioAvailable = TRUE;
+  pGPS->Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
 
   NMEAParser::ExtractParameter(String,ctemp,10);
-  GPS_INFO->MacReady = (StrToDouble(ctemp,NULL) / 10.0) * KNOTSTOMETRESSECONDS;
+  pGPS->MacReady = (StrToDouble(ctemp,NULL) / 10.0) * KNOTSTOMETRESSECONDS;
   if (MacCreadyUpdateTimeout <= 0)
-    MACCREADY = GPS_INFO->MacReady;
+    MACCREADY = pGPS->MacReady;
   else
     MacCreadyUpdateTimeout--; 
 
   NMEAParser::ExtractParameter(String,ctemp,11);
-  GPS_INFO->Ballast = StrToDouble(ctemp,NULL) / 100.0;
+  pGPS->Ballast = StrToDouble(ctemp,NULL) / 100.0;
   if (BallastUpdateTimeout <= 0)
-    BALLAST = GPS_INFO->Ballast;
+    BALLAST = pGPS->Ballast;
   else 
     BallastUpdateTimeout--;
 
 
   NMEAParser::ExtractParameter(String,ctemp,12);
-  GPS_INFO->Bugs = StrToDouble(ctemp,NULL) / 100.0;
+  pGPS->Bugs = StrToDouble(ctemp,NULL) / 100.0;
   if (BugsUpdateTimeout <= 0)
-    BUGS = GPS_INFO->Bugs;
+    BUGS = pGPS->Bugs;
   else 
     BugsUpdateTimeout--;
 

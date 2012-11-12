@@ -11,26 +11,26 @@
 #include "devCondor.h"
 
 
-static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
-static BOOL cLXWP1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
-static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cLXWP1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
-static BOOL CondorParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+static BOOL CondorParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
   if(_tcsncmp(TEXT("$LXWP0"), String, 6)==0)
     {
-      return cLXWP0(d, &String[7], GPS_INFO);
+      return cLXWP0(d, &String[7], pGPS);
     } 
   if(_tcsncmp(TEXT("$LXWP1"), String, 6)==0)
     {
-      return cLXWP1(d, &String[7], GPS_INFO);
+      return cLXWP1(d, &String[7], pGPS);
     } 
   if(_tcsncmp(TEXT("$LXWP2"), String, 6)==0)
     {
-      return cLXWP2(d, &String[7], GPS_INFO);
+      return cLXWP2(d, &String[7], pGPS);
     }
 
   return FALSE;
@@ -99,19 +99,19 @@ BOOL condorRegister(void){
 // local stuff
 
 
-static BOOL cLXWP1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL cLXWP1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
   //  TCHAR ctemp[80];
-  (void)GPS_INFO;
+  (void)pGPS;
   // do nothing!
   return TRUE;
 }
 
 
-static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
   TCHAR ctemp[80];
-  (void)GPS_INFO;
+  (void)pGPS;
 
   NMEAParser::ExtractParameter(String,ctemp,0);
   MACCREADY = StrToDouble(ctemp,NULL);
@@ -119,7 +119,7 @@ static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 }
 
 
-static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO) {
+static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   TCHAR ctemp[80];
 
   /*
@@ -143,16 +143,16 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO) {
   NMEAParser::ExtractParameter(String,ctemp,2);
   alt = StrToDouble(ctemp,NULL);
 
-  GPS_INFO->IndicatedAirspeed = airspeed/AirDensityRatio(alt);
-  GPS_INFO->TrueAirspeed = airspeed;
+  pGPS->IndicatedAirspeed = airspeed/AirDensityRatio(alt);
+  pGPS->TrueAirspeed = airspeed;
 
-  UpdateBaroSource( GPS_INFO, 0,d,  AltitudeToQNHAltitude(alt));
+  UpdateBaroSource( pGPS, 0,d,  AltitudeToQNHAltitude(alt));
 
   NMEAParser::ExtractParameter(String,ctemp,3);
-  GPS_INFO->Vario = StrToDouble(ctemp,NULL);
+  pGPS->Vario = StrToDouble(ctemp,NULL);
 
-  GPS_INFO->AirspeedAvailable = TRUE;
-  GPS_INFO->VarioAvailable = TRUE;
+  pGPS->AirspeedAvailable = TRUE;
+  pGPS->VarioAvailable = TRUE;
 
   // we don't use heading for wind calculation since... wind is already calculated in condor!!
   NMEAParser::ExtractParameter(String,ctemp,11);
@@ -167,9 +167,9 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO) {
   if (wfrom>360) wfrom-=360;
   wspeed/=3.6;
 
-  GPS_INFO->ExternalWindAvailable = TRUE;
-  GPS_INFO->ExternalWindSpeed = wspeed;
-  GPS_INFO->ExternalWindDirection = wfrom;
+  pGPS->ExternalWindAvailable = TRUE;
+  pGPS->ExternalWindSpeed = wspeed;
+  pGPS->ExternalWindDirection = wfrom;
 
   #else
   if (wspeed>0) {

@@ -24,10 +24,10 @@ static int nDeclErrorCode = 0;
 static int ewDecelTpIndex = 0;
 
 
-BOOL EWParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL EWParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
   (void)String;
-  (void)GPS_INFO;
+  (void)pGPS;
   // no propriatary sentence
   
   return FALSE;

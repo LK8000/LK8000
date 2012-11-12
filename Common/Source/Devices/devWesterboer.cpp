@@ -11,13 +11,13 @@
 #include "devWesterboer.h"
 #include "InputEvents.h"
 
-static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
-static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc);
 BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bus);
 BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload);
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 int iReceiveSuppress = 0;
 
@@ -57,7 +57,7 @@ TCHAR  szTmp[254];
 
 
 
-static BOOL WesterboerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+static BOOL WesterboerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -97,7 +97,7 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
   if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
     {
 	   RequestInfos(d);
-      return PWES0(d, &String[7], GPS_INFO);
+      return PWES0(d, &String[7], pGPS);
 
     } 
   else
@@ -108,7 +108,7 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
 		iReceiveSuppress--;
 		return false;
 	  }
-      return PWES1(d, &String[7], GPS_INFO);
+      return PWES1(d, &String[7], pGPS);
     }
   return FALSE;
 
@@ -160,7 +160,7 @@ BOOL WesterboerRegister(void){
 }
 
 
-static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
 	Sent by Westerboer VW1150  combining data stream from Flarm and VW1020.
@@ -193,16 +193,16 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
   // instant vario
   NMEAParser::ExtractParameter(String,ctemp,1);
-  GPS_INFO->Vario = StrToDouble(ctemp,NULL)/10;
-  GPS_INFO->VarioAvailable = TRUE;
+  pGPS->Vario = StrToDouble(ctemp,NULL)/10;
+  pGPS->VarioAvailable = TRUE;
 
   // netto vario
   NMEAParser::ExtractParameter(String,ctemp,3);
   if (ctemp[0] != '\0') {
-	GPS_INFO->NettoVario = StrToDouble(ctemp,NULL)/10;
-	GPS_INFO->NettoVarioAvailable = TRUE;
+	pGPS->NettoVario = StrToDouble(ctemp,NULL)/10;
+	pGPS->NettoVarioAvailable = TRUE;
   } else
-	GPS_INFO->NettoVarioAvailable = FALSE;
+	pGPS->NettoVarioAvailable = FALSE;
 
 
   // Baro altitudes. To be verified, because I have no docs from Westerboer of any kind.
@@ -226,7 +226,7 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	}
   }
 
-  UpdateBaroSource( GPS_INFO, 0,d,  AltitudeToQNHAltitude(altqne));
+  UpdateBaroSource( pGPS, 0,d,  AltitudeToQNHAltitude(altqne));
 
 
   // IAS and TAS
@@ -236,20 +236,20 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   vtas = StrToDouble(ctemp,NULL)/36;
 
   if (vias >1) {
-	GPS_INFO->TrueAirspeed = vtas;
-	GPS_INFO->IndicatedAirspeed = vias;
-	GPS_INFO->AirspeedAvailable = TRUE;
+	pGPS->TrueAirspeed = vtas;
+	pGPS->IndicatedAirspeed = vias;
+	pGPS->AirspeedAvailable = TRUE;
   } else
-	GPS_INFO->AirspeedAvailable = FALSE;
+	pGPS->AirspeedAvailable = FALSE;
 
   // external battery voltage
   NMEAParser::ExtractParameter(String,ctemp,10);
-  GPS_INFO->ExtBatt1_Voltage = StrToDouble(ctemp,NULL)/10;
+  pGPS->ExtBatt1_Voltage = StrToDouble(ctemp,NULL)/10;
 
   // OAT
   NMEAParser::ExtractParameter(String,ctemp,11);
-  GPS_INFO->OutsideAirTemperature = StrToDouble(ctemp,NULL)/10;
-  GPS_INFO->TemperatureAvailable=TRUE;
+  pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL)/10;
+  pGPS->TemperatureAvailable=TRUE;
 
 
   TriggerVarioUpdate();
@@ -267,7 +267,7 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 //GEXTERN double POLARV[POLARSIZE];
 //GEXTERN double POLARLD[POLARSIZE];
 
-static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
 	Sent by Westerboer VW1150  combining data stream from Flarm and VW1020.

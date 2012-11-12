@@ -12,7 +12,7 @@
 
 #include "devEWMicroRecorder.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
 // Additional sentance for EW support
@@ -58,7 +58,7 @@ BOOL ExpectStringWait(PDeviceDescriptor_t d, TCHAR *token) {
 
 
 BOOL EWMicroRecorderParseNMEA(PDeviceDescriptor_t d, 
-                              TCHAR *String, NMEA_INFO *GPS_INFO){
+                              TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80], *params[5];
   int nparams = NMEAParser::ValidateAndExtract(String, ctemp, 80, params, 5);
   if (nparams < 1)
@@ -66,7 +66,7 @@ BOOL EWMicroRecorderParseNMEA(PDeviceDescriptor_t d,
 
   if (!_tcscmp(params[0], TEXT("$PGRMZ")) && nparams >= 3) {
       double altitude = NMEAParser::ParseAltitude(params[1], params[2]);
-      UpdateBaroSource( GPS_INFO, 0,d, AltitudeToQNHAltitude(altitude));
+      UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude(altitude));
 
     return TRUE;
   }

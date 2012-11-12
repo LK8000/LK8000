@@ -10,18 +10,18 @@
 
 #include "devCompeo.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
-static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
   if(_tcsncmp(TEXT("$VMVABD"), String, 7)==0)
     {
-      return VMVABD(d, &String[8], GPS_INFO);
+      return VMVABD(d, &String[8], pGPS);
     } 
 
   return FALSE;
@@ -81,7 +81,7 @@ BOOL CompeoRegister(void){
 }
 
 
-static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
 	$VMVABD,  
@@ -106,31 +106,31 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   double vtas, vias;
 
   NMEAParser::ExtractParameter(String,ctemp,0);
-  GPS_INFO->Altitude = StrToDouble(ctemp,NULL);
+  pGPS->Altitude = StrToDouble(ctemp,NULL);
 
   NMEAParser::ExtractParameter(String,ctemp,2);
 
-   UpdateBaroSource( GPS_INFO, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
+   UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
 
   NMEAParser::ExtractParameter(String,ctemp,4);
-  GPS_INFO->Vario = StrToDouble(ctemp,NULL);
-  GPS_INFO->VarioAvailable = TRUE;
+  pGPS->Vario = StrToDouble(ctemp,NULL);
+  pGPS->VarioAvailable = TRUE;
 
   NMEAParser::ExtractParameter(String,ctemp,8);
   if (ctemp[0] != '\0') { // 100209
 	// we store m/s  , so we convert it from kmh
 	vias = StrToDouble(ctemp,NULL)/3.6;
-	GPS_INFO->IndicatedAirspeed = vias;
+	pGPS->IndicatedAirspeed = vias;
 	// Check if zero?
-	vtas = vias*AirDensityRatio(GPS_INFO->BaroAltitude);
-	GPS_INFO->TrueAirspeed = vtas;
+	vtas = vias*AirDensityRatio(pGPS->BaroAltitude);
+	pGPS->TrueAirspeed = vtas;
 
-	if (GPS_INFO->IndicatedAirspeed >0) 
-		GPS_INFO->AirspeedAvailable = TRUE;
+	if (pGPS->IndicatedAirspeed >0) 
+		pGPS->AirspeedAvailable = TRUE;
 	else 
-		GPS_INFO->AirspeedAvailable = FALSE;
+		pGPS->AirspeedAvailable = FALSE;
   } else
-		GPS_INFO->AirspeedAvailable = FALSE;
+		pGPS->AirspeedAvailable = FALSE;
 
 
   TriggerVarioUpdate();

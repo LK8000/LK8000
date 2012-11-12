@@ -10,24 +10,24 @@
 
 #include "devDigifly.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 extern double LowPassFilter(double y_last, double x_in, double fact);
 
-static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
-static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL DigiflyParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+static BOOL DigiflyParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
   if(_tcsncmp(TEXT("$PDGFTL1"), String, 8)==0)
     {
-      return PDGFTL1(d, &String[9], GPS_INFO);
+      return PDGFTL1(d, &String[9], pGPS);
     } 
   if(_tcsncmp(TEXT("$PDGFTTL"), String, 8)==0)
     {
-      return PDGFTTL(d, &String[9], GPS_INFO);
+      return PDGFTTL(d, &String[9], pGPS);
     } 
 
   return FALSE;
@@ -93,7 +93,7 @@ BOOL DigiflyRegister(void){
 }
 
 
-static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
 	$PDGFTL1		     field     example
@@ -139,25 +139,25 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 		// else continue entering initqnh until somebody changes qnh in either digifly or lk8000
 	}
   }
-  UpdateBaroSource( GPS_INFO,0, d,  AltitudeToQNHAltitude(altqne));
+  UpdateBaroSource( pGPS,0, d,  AltitudeToQNHAltitude(altqne));
 
 
   NMEAParser::ExtractParameter(String,ctemp,2);
 #if 1
-  GPS_INFO->Vario = StrToDouble(ctemp,NULL)/100;
+  pGPS->Vario = StrToDouble(ctemp,NULL)/100;
 #else
   double newVario = StrToDouble(ctemp,NULL)/100;
-  GPS_INFO->Vario = LowPassFilter(GPS_INFO->Vario,newVario,0.1);
+  pGPS->Vario = LowPassFilter(pGPS->Vario,newVario,0.1);
 #endif
-  GPS_INFO->VarioAvailable = TRUE;
+  pGPS->VarioAvailable = TRUE;
 
 
   NMEAParser::ExtractParameter(String,ctemp,3);
   if (ctemp[0] != '\0') {
-	GPS_INFO->NettoVario = StrToDouble(ctemp,NULL)/10; // dm/s
-	GPS_INFO->NettoVarioAvailable = TRUE;
+	pGPS->NettoVario = StrToDouble(ctemp,NULL)/10; // dm/s
+	pGPS->NettoVarioAvailable = TRUE;
   } else
-	GPS_INFO->NettoVarioAvailable = FALSE;
+	pGPS->NettoVarioAvailable = FALSE;
 
 
   NMEAParser::ExtractParameter(String,ctemp,4);
@@ -166,20 +166,20 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	vias = StrToDouble(ctemp,NULL)/3.6;
 
 	if (vias >1) {
-		vtas = vias*AirDensityRatio(GPS_INFO->BaroAltitude);
-		GPS_INFO->TrueAirspeed = vtas;
-		GPS_INFO->IndicatedAirspeed = vias;
-		GPS_INFO->AirspeedAvailable = TRUE;
+		vtas = vias*AirDensityRatio(pGPS->BaroAltitude);
+		pGPS->TrueAirspeed = vtas;
+		pGPS->IndicatedAirspeed = vias;
+		pGPS->AirspeedAvailable = TRUE;
   	}
   } else {
-	GPS_INFO->AirspeedAvailable = FALSE;
+	pGPS->AirspeedAvailable = FALSE;
   }
 
 
   NMEAParser::ExtractParameter(String,ctemp,8);
-  GPS_INFO->ExtBatt1_Voltage = StrToDouble(ctemp,NULL)/100;
+  pGPS->ExtBatt1_Voltage = StrToDouble(ctemp,NULL)/100;
   NMEAParser::ExtractParameter(String,ctemp,9);
-  GPS_INFO->ExtBatt2_Voltage = StrToDouble(ctemp,NULL)/100;
+  pGPS->ExtBatt2_Voltage = StrToDouble(ctemp,NULL)/100;
 
   TriggerVarioUpdate();
 
@@ -190,7 +190,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 // Support for new 2011 Digifly TOURTELL protocol 
 // (Subset of TL1, pending upgrade in june 2011 for all devices)
 //
-static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
 	$PDGFTTL		     field     example
@@ -226,24 +226,24 @@ static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 		// else continue entering initqnh until somebody changes qnh in either digifly or lk8000
 	}
   }
-  UpdateBaroSource( GPS_INFO, 0,d,  AltitudeToQNHAltitude(altqne));
+  UpdateBaroSource( pGPS, 0,d,  AltitudeToQNHAltitude(altqne));
 
   NMEAParser::ExtractParameter(String,ctemp,2);
 #if 1
-  GPS_INFO->Vario = StrToDouble(ctemp,NULL)/100;
+  pGPS->Vario = StrToDouble(ctemp,NULL)/100;
 #else
   double newVario = StrToDouble(ctemp,NULL)/100;
-  GPS_INFO->Vario = LowPassFilter(GPS_INFO->Vario,newVario,0.1);
+  pGPS->Vario = LowPassFilter(pGPS->Vario,newVario,0.1);
 #endif
-  GPS_INFO->VarioAvailable = TRUE;
+  pGPS->VarioAvailable = TRUE;
 
 
   NMEAParser::ExtractParameter(String,ctemp,4);
   if (ctemp[0] != '\0') {
-	GPS_INFO->NettoVario = StrToDouble(ctemp,NULL)/10; // dm/s
-	GPS_INFO->NettoVarioAvailable = TRUE;
+	pGPS->NettoVario = StrToDouble(ctemp,NULL)/10; // dm/s
+	pGPS->NettoVarioAvailable = TRUE;
   } else
-	GPS_INFO->NettoVarioAvailable = FALSE;
+	pGPS->NettoVarioAvailable = FALSE;
 
 
   NMEAParser::ExtractParameter(String,ctemp,4);
@@ -252,13 +252,13 @@ static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	vias = StrToDouble(ctemp,NULL)/3.6;
 
 	if (vias >1) {
-		vtas = vias*AirDensityRatio(GPS_INFO->BaroAltitude);
-		GPS_INFO->TrueAirspeed = vtas;
-		GPS_INFO->IndicatedAirspeed = vias;
-		GPS_INFO->AirspeedAvailable = TRUE;
+		vtas = vias*AirDensityRatio(pGPS->BaroAltitude);
+		pGPS->TrueAirspeed = vtas;
+		pGPS->IndicatedAirspeed = vias;
+		pGPS->AirspeedAvailable = TRUE;
   	}
   } else {
-	GPS_INFO->AirspeedAvailable = FALSE;
+	pGPS->AirspeedAvailable = FALSE;
   }
 
 

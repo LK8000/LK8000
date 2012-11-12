@@ -10,18 +10,18 @@
 
 #include "devFlymasterF1.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
-static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
   if(_tcsncmp(TEXT("$VARIO"), String, 6)==0)
     {
-      return VARIO(d, &String[7], GPS_INFO);
+      return VARIO(d, &String[7], pGPS);
     } 
 
   return FALSE;
@@ -91,25 +91,25 @@ BOOL flymasterf1Register(void){
 // *****************************************************************************
 // local stuff
 
-static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
   // $VARIO,fPressure,fVario,Bat1Volts,Bat2Volts,BatBank,TempSensor1,TempSensor2*CS
 
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
   double ps = StrToDouble(ctemp,NULL);
-  UpdateBaroSource( GPS_INFO, 0,d,  	 (1 - pow(fabs(ps / QNH), 0.190284)) * 44307.69);
+  UpdateBaroSource( pGPS, 0,d,  	 (1 - pow(fabs(ps / QNH), 0.190284)) * 44307.69);
 
   NMEAParser::ExtractParameter(String,ctemp,1);
-  GPS_INFO->Vario = StrToDouble(ctemp,NULL)/10.0;
+  pGPS->Vario = StrToDouble(ctemp,NULL)/10.0;
   // JMW vario is in dm/s
 
   NMEAParser::ExtractParameter(String,ctemp,2);
-  GPS_INFO->ExtBatt1_Voltage = StrToDouble(ctemp,NULL);
+  pGPS->ExtBatt1_Voltage = StrToDouble(ctemp,NULL);
   NMEAParser::ExtractParameter(String,ctemp,3);
-  GPS_INFO->ExtBatt2_Voltage = StrToDouble(ctemp,NULL);
+  pGPS->ExtBatt2_Voltage = StrToDouble(ctemp,NULL);
   NMEAParser::ExtractParameter(String,ctemp,4);
-  GPS_INFO->ExtBatt_Bank = (int)StrToDouble(ctemp,NULL);
+  pGPS->ExtBatt_Bank = (int)StrToDouble(ctemp,NULL);
 
 /*
   StartupStore(_T("++++++ BATTBANK: "));
@@ -117,7 +117,7 @@ static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   StartupStore(_T("\n"));
 */
 
-  GPS_INFO->VarioAvailable = TRUE;
+  pGPS->VarioAvailable = TRUE;
 
   TriggerVarioUpdate();
 

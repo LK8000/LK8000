@@ -10,17 +10,17 @@
 
 #include "devLK8EX1.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
-static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
+static BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
   if(_tcsncmp(TEXT("$LK8EX1"), String, 7)==0)
     {
-      return LK8EX1(d, &String[8], GPS_INFO);
+      return LK8EX1(d, &String[8], pGPS);
     } 
 
   return FALSE;
@@ -110,7 +110,7 @@ BOOL LK8EX1Register(void){
 
 */
 
-static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
+static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 
   TCHAR ctemp[80];
@@ -121,7 +121,7 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   double ps = StrToDouble(ctemp,NULL);
   if (ps!=999999) {
 	ps/=100;
-	UpdateBaroSource( GPS_INFO, 0,d, (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69);
+	UpdateBaroSource( pGPS, 0,d, (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69);
   }
 
   // QNE
@@ -129,7 +129,7 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	NMEAParser::ExtractParameter(String,ctemp,1);
 	double ba = StrToDouble(ctemp,NULL);
 	if (ba!=99999) {
-	    UpdateBaroSource( GPS_INFO, 0,d,  AltitudeToQNHAltitude(ba));
+	    UpdateBaroSource( pGPS, 0,d,  AltitudeToQNHAltitude(ba));
 	}
   }
 
@@ -138,24 +138,24 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   NMEAParser::ExtractParameter(String,ctemp,2);
   double va = StrToDouble(ctemp,NULL);
   if (va != 9999) {
-	GPS_INFO->Vario = va/100;
-	GPS_INFO->VarioAvailable = TRUE;
+	pGPS->Vario = va/100;
+	pGPS->VarioAvailable = TRUE;
   } else
-	GPS_INFO->VarioAvailable = FALSE;
+	pGPS->VarioAvailable = FALSE;
 
   // OAT
   NMEAParser::ExtractParameter(String,ctemp,3);
   double ta = StrToDouble(ctemp,NULL);
   if (ta != 99) {
-	GPS_INFO->OutsideAirTemperature = ta;
-	GPS_INFO->TemperatureAvailable=TRUE;
+	pGPS->OutsideAirTemperature = ta;
+	pGPS->TemperatureAvailable=TRUE;
   }
 
   // BATTERY PERCENTAGES
   NMEAParser::ExtractParameter(String,ctemp,4);
   double voa = StrToDouble(ctemp,NULL);
   if (voa!=999) {
-	GPS_INFO->ExtBatt1_Voltage = voa;
+	pGPS->ExtBatt1_Voltage = voa;
   }
 
 
