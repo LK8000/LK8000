@@ -243,6 +243,7 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_FLARMRADAR);
   Reset_Single_DoInits(MDI_MAPWNDPROC);
   Reset_Single_DoInits(MDI_DRAWBOTTOMBAR);
+  Reset_Single_DoInits(MDI_DRAWTASK);
 
   #if TESTBENCH
   StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));

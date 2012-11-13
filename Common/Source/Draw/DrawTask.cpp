@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "LKInterface.h"
 #include "AATDistance.h"
+#include "DoInits.h"
 #include "RGB.h"
 
 
@@ -22,6 +23,23 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
     COLORREF origcolor = SetTextColor(hDCTemp, whitecolor);
     HPEN oldpen = 0;
     HBRUSH oldbrush = 0;
+
+    static short size_tasklines=0;
+
+    if (DoInit[MDI_DRAWTASK]) {
+	switch (ScreenSize) {
+		case ss480x272:
+		case ss272x480:
+		case ss320x240:
+		case ss240x320:
+			size_tasklines=NIBLSCALE(4);
+			break;
+		default:
+			size_tasklines=NIBLSCALE(3);
+			break;
+	}
+	DoInit[MDI_DRAWTASK]=false;
+    }
 
     if (!WayPointList) return;
 
@@ -39,8 +57,10 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
             }
         } else { // normal sector
             if (AATEnabled != TRUE) {
-                _DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
-                _DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
+                //_DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
+                //_DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
+                DrawDashLine(hdc,  size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
+                DrawDashLine(hdc,  size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
             }
 
             int Type = SectorType;
@@ -158,15 +178,15 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
 
         if ((i >= ActiveWayPoint && DoOptimizeRoute()) || !DoOptimizeRoute()) {
             if (is_first) {
-                DrawDashLine(hdc, NIBLSCALE(3),
+                DrawMulticolorDashLine(hdc, size_tasklines,
                         sct1,
                         sct2,
-                        taskcolor, rc);
+                        taskcolor, RGB_BLACK,rc);
             } else {
-                DrawDashLine(hdc, NIBLSCALE(3),
+                DrawMulticolorDashLine(hdc, size_tasklines,
                         sct2,
                         sct1,
-                        taskcolor, rc);
+                        taskcolor, RGB_BLACK,rc);
             }
 
             // draw small arrow along task direction
@@ -180,8 +200,8 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
             PolygonRotateShift(Arrow, 2, p_p.x, p_p.y,
                     bearing - DisplayAngle);
 
-            _DrawLine(hdc, PS_SOLID, NIBLSCALE(2), Arrow[0], p_p, taskcolor, rc);
-            _DrawLine(hdc, PS_SOLID, NIBLSCALE(2), Arrow[1], p_p, taskcolor, rc);
+            _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[0], p_p, taskcolor, rc);
+            _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[1], p_p, taskcolor, rc);
         }
     }
 

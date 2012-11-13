@@ -407,6 +407,10 @@ class MapWindow {
 			   const COLORREF , 
 			   const RECT rc);
 
+  static void DrawMulticolorDashLine(HDC , const int , const POINT , const POINT , 
+			   const COLORREF , const COLORREF,
+			   const RECT rc);
+
   #ifdef GTL2
   static void DrawDashPoly(HDC hdc, const int width, const COLORREF color,
                            POINT* pt, const int npoints, const RECT rc);

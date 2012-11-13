@@ -168,3 +168,67 @@ void MapWindow::DrawDashPoly(HDC hdc, const int width, const COLORREF color,
   }
 }
 #endif
+
+
+//
+// Like DrawDashLine, but with two alternating colors
+//
+void MapWindow::DrawMulticolorDashLine(HDC hdc, const int width, 
+			     const POINT ptStart, const POINT ptEnd, const COLORREF cr1, const COLORREF cr2,
+			     const RECT rc)
+{
+  int i;
+  HPEN hpDash1, hpDash2,hpOld;
+  POINT pt[2];
+  bool flipcol=false;
+  #ifdef GTL2
+  int Offset = ((width - 1) / 2) + 1;
+               // amount to shift 1st line to center
+               // the group of lines properly
+  #endif
+
+  //Create a dot pen
+  hpDash1 = (HPEN)CreatePen(PS_DASH, 1, cr1);
+  hpDash2 = (HPEN)CreatePen(PS_DASH, 1, cr2);
+  hpOld = (HPEN)SelectObject(hdc, hpDash1);
+
+  #ifdef GTL2
+  pt[0] = ptStart;
+  pt[1] = ptEnd;
+  #else
+  pt[0].x = ptStart.x;
+  pt[0].y = ptStart.y;
+  pt[1].x = ptEnd.x;
+  pt[1].y = ptEnd.y;
+  #endif
+  
+  //increment on smallest variance
+  if(abs(ptStart.x - ptEnd.x) < abs(ptStart.y - ptEnd.y)){
+    #ifdef GTL2
+    pt[0].x -= Offset;
+    pt[1].x -= Offset;
+    #endif
+    for (i = 0; i < width; i++, flipcol=!flipcol){
+      flipcol ?  SelectObject(hdc,hpDash2) : SelectObject(hdc,hpDash1);
+      pt[0].x += 1;
+      pt[1].x += 1;     
+      _Polyline(hdc, pt, 2, rc);
+    }   
+  } else {
+    #ifdef GTL2
+    pt[0].y -= Offset;
+    pt[1].y -= Offset;
+    #endif
+    for (i = 0; i < width; i++, flipcol=!flipcol){
+      flipcol ?  SelectObject(hdc,hpDash2) : SelectObject(hdc,hpDash1);
+      pt[0].y += 1;
+      pt[1].y += 1;     
+      _Polyline(hdc, pt, 2, rc);
+    }   
+  }
+  
+  SelectObject(hdc, hpOld);
+  DeleteObject((HPEN)hpDash1);
+  DeleteObject((HPEN)hpDash2);
+  
+} 
