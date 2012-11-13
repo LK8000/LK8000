@@ -39,6 +39,7 @@
 #define MAX_LABEL NUMBUTTONLABELS
 
 extern AATDistance aatdistance;
+extern bool ForceRenderMap;
 
 // Current modes - map mode to integer (primitive hash)
 static TCHAR mode_current[MAX_MODE_STRING] = TEXT("default");	// Current mode
@@ -980,7 +981,6 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	short th= RasterTerrain::GetTerrainHeight(MapWindow::GetPanLatitude(), MapWindow::GetPanLongitude());
 	if (th==TERRAIN_INVALID) th=0;
 	MarkLocation(MapWindow::GetPanLongitude(), MapWindow::GetPanLatitude(), th );
-	extern bool ForceRenderMap;
 	ForceRenderMap=true;
   } else {
 	#if USETOPOMARKS
@@ -1147,6 +1147,7 @@ void InputEvents::eventZoom(const TCHAR* misc) {
   // 0 means off
   // 1 means on
   float zoom;
+  ForceRenderMap=true;
 
   if (_tcscmp(misc, TEXT("auto toggle")) == 0)
     MapWindow::zoom.EventAutoZoom(-1);
