@@ -133,6 +133,7 @@ namespace LKGeom {
                     // At least one endpoint is outside the clip rectangle; pick it.
                     unsigned outcodeOut = CStart ? CStart : CEnd;
 
+                    LKASSERT(Cp_end.y!=Cp_start.y);
                     // Now find the intersection point;
                     // use formulas y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
                     if (outcodeOut & _TOP) { // point is above the clip rectangle
