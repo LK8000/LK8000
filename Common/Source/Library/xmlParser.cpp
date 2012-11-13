@@ -577,7 +577,7 @@ LPCTSTR XMLNode::getError(XMLError error)
 }
 
 // private:
-XMLNode::XMLNode(XMLNode *pParent, LPCTSTR lpszName, int isDeclaration)
+XMLNode::XMLNode(XMLNode *pParent, LPCTSTR lpszName, int _isDeclaration)
 {
     d=(XMLNodeData*)malloc(sizeof(XMLNodeData));
     //ASSERT(d);
@@ -590,7 +590,7 @@ XMLNode::XMLNode(XMLNode *pParent, LPCTSTR lpszName, int isDeclaration)
     d->nClear = 0;
     d->nAttribute = 0;
 
-    d->isDeclaration = isDeclaration;
+    d->isDeclaration = _isDeclaration;
 
     d->pParent = pParent;
     d->pChild= NULL;
@@ -626,14 +626,14 @@ void XMLNode::addToOrder(int index, int type)
 }
 
 // Add a child node to the given element.
-XMLNode XMLNode::AddChild(LPCTSTR lpszName, int isDeclaration)
+XMLNode XMLNode::AddChild(LPCTSTR lpszName, int _isDeclaration)
 {
     if (!lpszName) return emptyXMLNode;
     int nc=d->nChild;
     d->pChild=(XMLNode*)myRealloc(d->pChild,(nc+1),memoryIncrease,sizeof(XMLNode));
     //ASSERT(d->pChild);
     d->pChild[nc].d=NULL;
-    d->pChild[nc]=XMLNode(this,lpszName,isDeclaration);
+    d->pChild[nc]=XMLNode(this,lpszName,_isDeclaration);
     addToOrder(nc,eNodeChild);
     d->nChild++;
     return d->pChild[nc];

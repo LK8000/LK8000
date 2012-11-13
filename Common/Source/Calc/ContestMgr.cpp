@@ -70,7 +70,7 @@ void CContestMgr::Reset(unsigned handicap)
   CCriticalSection::CGuard guard(_mainCS);
   _handicap = handicap;
   {
-    CCriticalSection::CGuard guard(_traceCS);
+    CCriticalSection::CGuard TraceGuard(_traceCS);
     _trace.reset(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
   }
   _traceSprint.reset(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM));
@@ -81,7 +81,7 @@ void CContestMgr::Reset(unsigned handicap)
   _prevFAIPredictedBack.reset(0);
 
   {
-    CCriticalSection::CGuard guard(_resultsCS);
+    CCriticalSection::CGuard Resultguard(_resultsCS);
     for(unsigned i=0; i<TYPE_NUM; i++)
       _resultArray[i] = CResult();
   }
@@ -544,7 +544,7 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   CCriticalSection::CGuard guard(_mainCS);
   {
     // Update main trace
-    CCriticalSection::CGuard guard(_traceCS);
+    CCriticalSection::CGuard Traceguard(_traceCS);
     _trace->Push(gps);
     _trace->Compress();
   }

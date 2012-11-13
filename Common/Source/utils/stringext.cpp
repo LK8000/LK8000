@@ -186,126 +186,126 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
   '!',  // 00A1 ! Inverted Exclamation Mark
   'c',  // 00A2 c Cent sign
   'L',  // 00A3 L Pound sign
-  '*',  // 00A4 § Currency sign
+  '*',  // 00A4 ÔøΩ Currency sign
   'Y',  // 00A5 Y Yen sign
-  '!',  // 00A6 ¶ Broken bar
-  'S',  // 00A7 ß Section sign
-  '"',  // 00A8 ® Diaeresis
-  'c',  // 00A9 © Copyright sign
+  '!',  // 00A6 ÔøΩ Broken bar
+  'S',  // 00A7 ÔøΩ Section sign
+  '"',  // 00A8 ÔøΩ Diaeresis
+  'c',  // 00A9 ÔøΩ Copyright sign
   'a',  // 00AA a Feminine Ordinal Indicator
-  '<',  // 00AB ´ Left-pointing double angle quotation mark
-  '-',  // 00AC ¨ Not sign
-  '-',  // 00AD ≠ Soft hyphen
-  '-',  // 00AE Æ Registered sign
-  '-',  // 00AF ó Macron
-  'o',  // 00B0 ∞ Degree symbol
-  '+',  // 00B1 ± Plus-minus sign
+  '<',  // 00AB ÔøΩ Left-pointing double angle quotation mark
+  '-',  // 00AC ÔøΩ Not sign
+  '-',  // 00AD ÔøΩ Soft hyphen
+  '-',  // 00AE ÔøΩ Registered sign
+  '-',  // 00AF ÔøΩ Macron
+  'o',  // 00B0 ÔøΩ Degree symbol
+  '+',  // 00B1 ÔøΩ Plus-minus sign
   '2',  // 00B2 2 Superscript two
   '3',  // 00B3 3 Superscript three
-  '`',  // 00B4 ¥ Acute accent
-  'u',  // 00B5 µ Micro sign
-  '?',  // 00B6 ∂ Pilcrow sign
-  '.',  // 00B7 ∑ Middle dot
-  ',',  // 00B8 ∏ Cedilla
+  '`',  // 00B4 ÔøΩ Acute accent
+  'u',  // 00B5 ÔøΩ Micro sign
+  '?',  // 00B6 ÔøΩ Pilcrow sign
+  '.',  // 00B7 ÔøΩ Middle dot
+  ',',  // 00B8 ÔøΩ Cedilla
   '1',  // 00B9 1 Superscript one
   'o',  // 00BA o Masculine ordinal indicator
-  '>',  // 00BB ª Right-pointing double-angle quotation mark
+  '>',  // 00BB ÔøΩ Right-pointing double-angle quotation mark
   '?',  // 00BC 1 Vulgar fraction one quarter
   '?',  // 00BD 1 Vulgar fraction one half
   '?',  // 00BE 3 Vulgar fraction three quarters
   '?',  // 00BF ? Inverted Question Mark
   'A',  // 00C0 A Latin Capital Letter A with grave
-  'A',  // 00C1 ¡ Latin Capital letter A with acute
-  'A',  // 00C2 ¬ Latin Capital letter A with circumflex
+  'A',  // 00C1 ÔøΩ Latin Capital letter A with acute
+  'A',  // 00C2 ÔøΩ Latin Capital letter A with circumflex
   'A',  // 00C3 A Latin Capital letter A with tilde
-  'A',  // 00C4 ƒ Latin Capital letter A with diaeresis
+  'A',  // 00C4 ÔøΩ Latin Capital letter A with diaeresis
   'A',  // 00C5 A Latin Capital letter A with ring above
   'A',  // 00C6 A Latin Capital letter AE
-  'C',  // 00C7 « Latin Capital letter C with cedilla
+  'C',  // 00C7 ÔøΩ Latin Capital letter C with cedilla
   'E',  // 00C8 E Latin Capital letter E with grave
-  'E',  // 00C9 … Latin Capital letter E with acute
+  'E',  // 00C9 ÔøΩ Latin Capital letter E with acute
   'E',  // 00CA E Latin Capital letter E with circumflex
-  'E',  // 00CB À Latin Capital letter E with diaeresis
+  'E',  // 00CB ÔøΩ Latin Capital letter E with diaeresis
   'I',  // 00CC I Latin Capital letter I with grave
-  'I',  // 00CD Õ Latin Capital letter I with acute
-  'I',  // 00CE Œ Latin Capital letter I with circumflex
+  'I',  // 00CD ÔøΩ Latin Capital letter I with acute
+  'I',  // 00CE ÔøΩ Latin Capital letter I with circumflex
   'I',  // 00CF I Latin Capital letter I with diaeresis
   '?',  // 00D0 ? Latin Capital letter Eth
   'N',  // 00D1 N Latin Capital letter N with tilde
   'O',  // 00D2 O Latin Capital letter O with grave
-  'O',  // 00D3 ” Latin Capital letter O with acute
-  'O',  // 00D4 ‘ Latin Capital letter O with circumflex
+  'O',  // 00D3 ÔøΩ Latin Capital letter O with acute
+  'O',  // 00D4 ÔøΩ Latin Capital letter O with circumflex
   'O',  // 00D5 O Latin Capital letter O with tilde
-  'O',  // 00D6 ÷ Latin Capital letter O with diaeresis
-  'x',  // 00D7 ◊ Multiplication sign
+  'O',  // 00D6 ÔøΩ Latin Capital letter O with diaeresis
+  'x',  // 00D7 ÔøΩ Multiplication sign
   'O',  // 00D8 O Latin Capital letter O with stroke
   'U',  // 00D9 U Latin Capital letter U with grave
-  'U',  // 00DA ⁄ Latin Capital letter U with acute
+  'U',  // 00DA ÔøΩ Latin Capital letter U with acute
   'U',  // 00DB U Latin Capital Letter U with circumflex
-  'U',  // 00DC ‹ Latin Capital Letter U with diaeresis
-  'Y',  // 00DD › Latin Capital Letter Y with acute
+  'U',  // 00DC ÔøΩ Latin Capital Letter U with diaeresis
+  'Y',  // 00DD ÔøΩ Latin Capital Letter Y with acute
   '?',  // 00DE ? Latin Capital Letter Thorn
-  's',  // 00DF ﬂ Latin Small Letter sharp S
+  's',  // 00DF ÔøΩ Latin Small Letter sharp S
   'a',  // 00E0 a Latin Small Letter A with grave
-  'a',  // 00E1 · Latin Small Letter A with acute
-  'a',  // 00E2 ‚ Latin Small Letter A with circumflex
+  'a',  // 00E1 ÔøΩ Latin Small Letter A with acute
+  'a',  // 00E2 ÔøΩ Latin Small Letter A with circumflex
   'a',  // 00E3 a Latin Small Letter A with tilde
-  'a',  // 00E4 ‰ Latin Small Letter A with diaeresis
+  'a',  // 00E4 ÔøΩ Latin Small Letter A with diaeresis
   'a',  // 00E5 a Latin Small Letter A with ring above
   'a',  // 00E6 a Latin Small Letter AE
-  'c',  // 00E7 Á Latin Small Letter C with cedilla
+  'c',  // 00E7 ÔøΩ Latin Small Letter C with cedilla
   'e',  // 00E8 e Latin Small Letter E with grave
-  'e',  // 00E9 È Latin Small Letter E with acute
+  'e',  // 00E9 ÔøΩ Latin Small Letter E with acute
   'e',  // 00EA e Latin Small Letter E with circumflex
-  'e',  // 00EB Î Latin Small Letter E with diaeresis
+  'e',  // 00EB ÔøΩ Latin Small Letter E with diaeresis
   'i',  // 00EC i Latin Small Letter I with grave
-  'i',  // 00ED Ì Latin Small Letter I with acute
-  'i',  // 00EE Ó Latin Small Letter I with circumflex
+  'i',  // 00ED ÔøΩ Latin Small Letter I with acute
+  'i',  // 00EE ÔøΩ Latin Small Letter I with circumflex
   'i',  // 00EF i Latin Small Letter I with diaeresis
   '?',  // 00F0 ? Latin Small Letter Eth
   'n',  // 00F1 n Latin Small Letter N with tilde
   'o',  // 00F2 o Latin Small Letter O with grave
-  'o',  // 00F3 Û Latin Small Letter O with acute
-  'o',  // 00F4 Ù Latin Small Letter O with circumflex
+  'o',  // 00F3 ÔøΩ Latin Small Letter O with acute
+  'o',  // 00F4 ÔøΩ Latin Small Letter O with circumflex
   'o',  // 00F5 o Latin Small Letter O with tilde
-  'o',  // 00F6 ˆ Latin Small Letter O with diaeresis
-  '-',  // 00F7 ˜ Division sign
+  'o',  // 00F6 ÔøΩ Latin Small Letter O with diaeresis
+  '-',  // 00F7 ÔøΩ Division sign
   'o',  // 00F8 o Latin Small Letter O with stroke
   'u',  // 00F9 u Latin Small Letter U with grave
-  'u',  // 00FA ˙ Latin Small Letter U with acute
+  'u',  // 00FA ÔøΩ Latin Small Letter U with acute
   'u',  // 00FB u Latin Small Letter U with circumflex
-  'u',  // 00FC ¸ Latin Small Letter U with diaeresis
-  'y',  // 00FD ˝ Latin Small Letter Y with acute
+  'u',  // 00FC ÔøΩ Latin Small Letter U with diaeresis
+  'y',  // 00FD ÔøΩ Latin Small Letter Y with acute
   '?',  // 00FE ? Latin Small Letter Thorn
   'y',  // 00FF y Latin Small Letter Y with diaeresis
   'A',  // 0100 A Latin Capital Letter A with macron
   'a',  // 0101 a Latin Small Letter A with macron
-  'A',  // 0102 √ Latin Capital Letter A with breve
-  'a',  // 0103 „ Latin Small Letter A with breve
-  'A',  // 0104 • Latin Capital Letter A with ogonek
-  'a',  // 0105 π Latin Small Letter A with ogonek
-  'C',  // 0106 ∆ Latin Capital Letter C with acute
-  'c',  // 0107 Ê Latin Small Letter C with acute
+  'A',  // 0102 ÔøΩ Latin Capital Letter A with breve
+  'a',  // 0103 ÔøΩ Latin Small Letter A with breve
+  'A',  // 0104 ÔøΩ Latin Capital Letter A with ogonek
+  'a',  // 0105 ÔøΩ Latin Small Letter A with ogonek
+  'C',  // 0106 ÔøΩ Latin Capital Letter C with acute
+  'c',  // 0107 ÔøΩ Latin Small Letter C with acute
   'C',  // 0108 C Latin Capital Letter C with circumflex
   'c',  // 0109 c Latin Small Letter C with circumflex
   'C',  // 010A C Latin Capital Letter C with dot above
   'c',  // 010B c Latin Small Letter C with dot above
-  'C',  // 010C » Latin Capital Letter C with caron
-  'c',  // 010D Ë Latin Small Letter C with caron
-  'D',  // 010E œ Latin Capital Letter D with caron
-  'd',  // 010F Ô Latin Small Letter D with caron
-  'D',  // 0110 – Latin Capital Letter D with stroke
-  'd',  // 0111  Latin Small Letter D with stroke
+  'C',  // 010C ÔøΩ Latin Capital Letter C with caron
+  'c',  // 010D ÔøΩ Latin Small Letter C with caron
+  'D',  // 010E ÔøΩ Latin Capital Letter D with caron
+  'd',  // 010F ÔøΩ Latin Small Letter D with caron
+  'D',  // 0110 ÔøΩ Latin Capital Letter D with stroke
+  'd',  // 0111 ÔøΩ Latin Small Letter D with stroke
   'E',  // 0112 E Latin Capital Letter E with macron
   'e',  // 0113 e Latin Small Letter E with macron
   'E',  // 0114 E Latin Capital Letter E with breve
   'e',  // 0115 e Latin Small Letter E with breve
   'E',  // 0116 E Latin Capital Letter E with dot above
   'e',  // 0117 e Latin Small Letter E with dot above
-  'E',  // 0118   Latin Capital Letter E with ogonek
-  'e',  // 0119 Í Latin Small Letter E with ogonek
-  'E',  // 011A Ã Latin Capital Letter E with caron
-  'e',  // 011B Ï Latin Small Letter E with caron
+  'E',  // 0118 ÔøΩ Latin Capital Letter E with ogonek
+  'e',  // 0119 ÔøΩ Latin Small Letter E with ogonek
+  'E',  // 011A ÔøΩ Latin Capital Letter E with caron
+  'e',  // 011B ÔøΩ Latin Small Letter E with caron
   'G',  // 011C G Latin Capital Letter G with circumflex
   'g',  // 011D g Latin Small Letter G with circumflex
   'G',  // 011E G Latin Capital Letter G with breve
@@ -335,22 +335,22 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
   'K',  // 0136 K Latin Capital Letter K with cedilla
   'k',  // 0137 k Latin Small Letter K with cedilla
   'K',  // 0138 ? Latin Small Letter Kra
-  'L',  // 0139 ≈ Latin Capital Letter L with acute
-  'l',  // 013A Â Latin Small Letter L with acute
+  'L',  // 0139 ÔøΩ Latin Capital Letter L with acute
+  'l',  // 013A ÔøΩ Latin Small Letter L with acute
   'L',  // 013B L Latin Capital Letter L with cedilla
   'l',  // 013C l Latin Small Letter L with cedilla
-  'L',  // 013D º Latin Capital Letter L with caron
-  'l',  // 013E æ Latin Small Letter L with caron
+  'L',  // 013D ÔøΩ Latin Capital Letter L with caron
+  'l',  // 013E ÔøΩ Latin Small Letter L with caron
   'L',  // 013F ? Latin Capital Letter L with middle dot
   'l',  // 0140 ? Latin Small Letter L with middle dot
-  'L',  // 0141 £ Latin Capital Letter L with stroke
-  'l',  // 0142 ≥ Latin Small Letter L with stroke
-  'N',  // 0143 — Latin Capital Letter N with acute
-  'n',  // 0144 Ò Latin Small Letter N with acute
+  'L',  // 0141 ÔøΩ Latin Capital Letter L with stroke
+  'l',  // 0142 ÔøΩ Latin Small Letter L with stroke
+  'N',  // 0143 ÔøΩ Latin Capital Letter N with acute
+  'n',  // 0144 ÔøΩ Latin Small Letter N with acute
   'N',  // 0145 N Latin Capital Letter N with cedilla
   'n',  // 0146 n Latin Small Letter N with cedilla
-  'N',  // 0147 “ Latin Capital Letter N with caron
-  'n',  // 0148 Ú Latin Small Letter N with caron
+  'N',  // 0147 ÔøΩ Latin Capital Letter N with caron
+  'n',  // 0148 ÔøΩ Latin Small Letter N with caron
   'n',  // 0149 ? Latin Small Letter N preceded by apostrophe
   'n',  // 014A ? Latin Capital Letter Eng
   'n',  // 014B ? Latin Small Letter Eng
@@ -358,28 +358,28 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
   'o',  // 014D o Latin Small Letter O with macron
   'O',  // 014E O Latin Capital Letter O with breve
   'o',  // 014F o Latin Small Letter O with breve
-  'O',  // 0150 ’ Latin Capital Letter O with double acute
-  'o',  // 0151 ı Latin Small Letter O with double acute
+  'O',  // 0150 ÔøΩ Latin Capital Letter O with double acute
+  'o',  // 0151 ÔøΩ Latin Small Letter O with double acute
   'O',  // 0152 O Latin Capital Ligature OE
   'o',  // 0153 o Latin Small Ligature OE
-  'R',  // 0154 ¿ Latin Capital Letter R with acute
-  'r',  // 0155 ‡ Latin Small Letter R with acute
+  'R',  // 0154 ÔøΩ Latin Capital Letter R with acute
+  'r',  // 0155 ÔøΩ Latin Small Letter R with acute
   'R',  // 0156 R Latin Capital Letter R with cedilla
   'r',  // 0157 r Latin Small Letter R with cedilla
-  'R',  // 0158 ÿ Latin Capital Letter R with caron
-  'r',  // 0159 ¯ Latin Small Letter R with caron
-  'S',  // 015A å Latin Capital Letter S with acute
-  's',  // 015B ú Latin Small Letter S with acute
+  'R',  // 0158 ÔøΩ Latin Capital Letter R with caron
+  'r',  // 0159 ÔøΩ Latin Small Letter R with caron
+  'S',  // 015A ÔøΩ Latin Capital Letter S with acute
+  's',  // 015B ÔøΩ Latin Small Letter S with acute
   'S',  // 015C S Latin Capital Letter S with circumflex
   's',  // 015D s Latin Small Letter S with circumflex
-  'S',  // 015E ™ Latin Capital Letter S with cedilla
-  's',  // 015F ∫ Latin Small Letter S with cedilla
-  'S',  // 0160 ä Latin Capital Letter S with caron
-  's',  // 0161 ö Latin Small Letter S with caron
-  'T',  // 0162 ﬁ Latin Capital Letter T with cedilla
-  't',  // 0163 ˛ Latin Small Letter T with cedilla
-  'T',  // 0164 ç Latin Capital Letter T with caron
-  't',  // 0165 ù Latin Small Letter T with caron
+  'S',  // 015E ÔøΩ Latin Capital Letter S with cedilla
+  's',  // 015F ÔøΩ Latin Small Letter S with cedilla
+  'S',  // 0160 ÔøΩ Latin Capital Letter S with caron
+  's',  // 0161 ÔøΩ Latin Small Letter S with caron
+  'T',  // 0162 ÔøΩ Latin Capital Letter T with cedilla
+  't',  // 0163 ÔøΩ Latin Small Letter T with cedilla
+  'T',  // 0164 ÔøΩ Latin Capital Letter T with caron
+  't',  // 0165 ÔøΩ Latin Small Letter T with caron
   'T',  // 0166 T Latin Capital Letter T with stroke
   't',  // 0167 t Latin Small Letter T with stroke
   'U',  // 0168 U Latin Capital Letter U with tilde
@@ -388,10 +388,10 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
   'u',  // 016B u Latin Small Letter U with macron
   'U',  // 016C U Latin Capital Letter U with breve
   'u',  // 016D u Latin Small Letter U with breve
-  'U',  // 016E Ÿ Latin Capital Letter U with ring above
-  'u',  // 016F ˘ Latin Small Letter U with ring above
-  'U',  // 0170 € Latin Capital Letter U with double acute
-  'u',  // 0171 ˚ Latin Small Letter U with double acute
+  'U',  // 016E ÔøΩ Latin Capital Letter U with ring above
+  'u',  // 016F ÔøΩ Latin Small Letter U with ring above
+  'U',  // 0170 ÔøΩ Latin Capital Letter U with double acute
+  'u',  // 0171 ÔøΩ Latin Small Letter U with double acute
   'U',  // 0172 U Latin Capital Letter U with ogonek
   'u',  // 0173 u Latin Small Letter U with ogonek
   'W',  // 0174 W Latin Capital Letter W with circumflex
@@ -399,12 +399,12 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
   'Y',  // 0176 Y Latin Capital Letter Y with circumflex
   'y',  // 0177 y Latin Small Letter Y with circumflex
   'Y',  // 0178 Y Latin Capital Letter Y with diaeresis
-  'Z',  // 0179 è Latin Capital Letter Z with acute
-  'z',  // 017A ü Latin Small Letter Z with acute
-  'Z',  // 017B Ø Latin Capital Letter Z with dot above
-  'z',  // 017C ø Latin Small Letter Z with dot above
-  'Z',  // 017D é Latin Capital Letter Z with caron
-  'z',  // 017E û Latin Small Letter Z with caron
+  'Z',  // 0179 ÔøΩ Latin Capital Letter Z with acute
+  'z',  // 017A ÔøΩ Latin Small Letter Z with acute
+  'Z',  // 017B ÔøΩ Latin Capital Letter Z with dot above
+  'z',  // 017C ÔøΩ Latin Small Letter Z with dot above
+  'Z',  // 017D ÔøΩ Latin Capital Letter Z with caron
+  'z',  // 017E ÔøΩ Latin Small Letter Z with caron
   's',  // 017F ? Latin Small Letter long S
   'b',  // 0180 b Latin Small Letter B with stroke
   'B',  // 0181 ? Latin Capital Letter B with hook
@@ -415,7 +415,7 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
   'o',  // 0186 ? Latin Capital Letter Open O
   'C',  // 0187 ? Latin Capital Letter C with hook
   'c',  // 0188 ? Latin Small Letter C with hook
-  'D',  // 0189 – Latin Capital Letter African D
+  'D',  // 0189 ÔøΩ Latin Capital Letter African D
   'D',  // 018A ? Latin Capital Letter D with hook
   'd',  // 018B ? Latin Capital Letter D with top bar
   'd',  // 018C ? Latin Small Letter D with top bar
@@ -635,9 +635,9 @@ template <class ItemType> class array_back_insert_iterator
   public:
     typedef ItemType container_type;
 
-    explicit array_back_insert_iterator(ItemType* array, int size)
-    : array(array),
-      size(size),
+    explicit array_back_insert_iterator(ItemType* _array, int _size)
+    : array(_array),
+      size(_size),
       elements(0),
       overflow(false)
     {}
