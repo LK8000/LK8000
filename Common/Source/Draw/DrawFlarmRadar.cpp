@@ -523,9 +523,42 @@ static bool bHeightScale = false;
 static double fHeigtScaleFact = 1.0f;
 
 bool bInvCol =  INVERTCOLORS;
+/*********************************************************************************
+ * change colors on inversion
+ *********************************************************************************/
+
+if(bInvCol)
+{
+  rgbDrawColor = RGB_GREY;
+  rgbGridColor = RGB_GREY;
+  rgb_targetlinecol = RGB_LIGHTBLUE;
+  hDrawPen   = (HPEN)  GetStockObject( WHITE_PEN );
+  hDrawBrush = (HBRUSH)GetStockObject( WHITE_BRUSH) ;
+  hOrangePen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_ORANGE);
+  hGreenPen  = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_GREEN);
+  hWhitePen  = LKPen_White_N1;
+}
+else
+{
+  rgbDrawColor = RGB_DARKGREY;
+  rgbGridColor = RGB_DARKGREY;
+  rgb_targetlinecol = RGB_BLUE;
+  hDrawPen   = (HPEN)  GetStockObject( BLACK_PEN );
+  hDrawBrush = (HBRUSH)GetStockObject( BLACK_BRUSH) ;
+  hOrangePen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_LIGHTORANGE);
+  hGreenPen  = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_DARKGREY);
+  hWhitePen  = LKPen_Black_N1;
+}
+
+SetTextColor(hdc, rgbDrawColor);
+hOldPen   = (HPEN)SelectObject(hdc, hDrawPen);
+hOldBrush = (HBRUSH)SelectObject(hdc, hDrawBrush);
+
 /****************************************************************
  * clear background
  ****************************************************************/
+
+SelectObject(hdc,hGreenPen);
 if(!bInvCol)
   SelectObject(hdc,LKBrush_White);
 else
@@ -630,38 +663,6 @@ static double oldSplit = 0;
 
 /****************************************************************/
 
-/*********************************************************************************
- * change colors on inversion
- *********************************************************************************/
-
-if(bInvCol)
-{
-  rgbDrawColor = RGB_GREY;
-  rgbGridColor = RGB_GREY;
-  rgb_targetlinecol = RGB_LIGHTBLUE;
-  hDrawPen   = (HPEN)  GetStockObject( WHITE_PEN );
-  hDrawBrush = (HBRUSH)GetStockObject( WHITE_BRUSH) ;
-  hOrangePen = (HPEN)CreatePen(PS_SOLID, 2,RGB_ORANGE);
-  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_GREEN);
-  hWhitePen  = (HPEN)CreatePen(PS_SOLID, 1,RGB_WHITE);
-
-}
-else
-{
-  rgbDrawColor = RGB_DARKGREY;
-  rgbGridColor = RGB_DARKGREY;
-  rgb_targetlinecol = RGB_BLUE;
-  hDrawPen   = (HPEN)  GetStockObject( BLACK_PEN );
-  hDrawBrush = (HBRUSH)GetStockObject( BLACK_BRUSH) ;
-  hOrangePen = (HPEN)CreatePen(PS_SOLID, 2,RGB_LIGHTORANGE);
-  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_DARKGREY);
-  hWhitePen  = (HPEN)CreatePen(PS_SOLID, 1,RGB_BLACK);
-
-}
-
-SetTextColor(hdc, rgbDrawColor);
-hOldPen   = (HPEN)SelectObject(hdc, hDrawPen);
-hOldBrush = (HBRUSH)SelectObject(hdc, hDrawBrush);
 
 
 #define NUMAIRCRAFTPTS 16
@@ -1371,8 +1372,6 @@ SelectObject(hdc, hOldPen);
 SelectObject(hdc, hOldBrush);
 DeleteObject (hGreenPen);
 DeleteObject (hOrangePen);
-DeleteObject (hWhitePen);
-
 }
 
 
