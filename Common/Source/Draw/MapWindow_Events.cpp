@@ -71,10 +71,8 @@ void MapWindow::Event_Pan(int vswitch) {
   //  static bool oldfullscreen = 0;  never assigned!
   bool oldPan = mode.AnyPan();
   if (vswitch == -2) { // superpan, toggles fullscreen also
-
     // new mode
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
-
   } else if (vswitch == -1) {
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
   } else {
@@ -86,8 +84,11 @@ void MapWindow::Event_Pan(int vswitch) {
       PanLongitude = DrawInfo.Longitude;
       PanLatitude = DrawInfo.Latitude;
       InputEvents::setMode(TEXT("pan"));
-    } else 
+    } else {
       InputEvents::setMode(TEXT("default"));
+      MapWindow::ForceVisibilityScan=true;
+    }
+	
   }
   RefreshMap();
 }

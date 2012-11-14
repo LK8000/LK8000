@@ -1147,7 +1147,6 @@ void InputEvents::eventZoom(const TCHAR* misc) {
   // 0 means off
   // 1 means on
   float zoom;
-  ForceRenderMap=true;
 
   if (_tcscmp(misc, TEXT("auto toggle")) == 0)
     MapWindow::zoom.EventAutoZoom(-1);
@@ -1199,6 +1198,11 @@ void InputEvents::eventZoom(const TCHAR* misc) {
 	// LKTOKEN  _@M172_ = "Circling Zoom OFF" 
       DoStatusMessage(gettext(TEXT("_@M172_")));
   }
+
+  ForceRenderMap=true; // needed to force refresh!
+  #if USEBIGZOOM
+  MapWindow::zoom.BigZoom(true);
+  #endif
 
 }
 
@@ -2157,6 +2161,7 @@ extern bool RotateScreen(short angle);
 	if (EnableSoundModes) LKSound(_T("LK_BEEP1.WAV"));
 	extern bool ForceRenderMap;
 	ForceRenderMap=true;
+	MapWindow::ForceVisibilityScan=true;
 	return;
   }
 

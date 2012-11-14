@@ -76,6 +76,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   FillScaleListForEngineeringUnits();
   
   bool lastdrawwasbitblitted=false;
+  bool first_run=true;
 
   // 
   // Big LOOP
@@ -114,7 +115,9 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 		if (MapSpaceMode!=MSM_WELCOME) SetModeType(LKMODE_MAP, MP_MOVING);
 
 		LKSW_ReloadProfileBitmaps=false;
-		ForceRenderMap=true; // check it
+		// These should be better checked. first_run is forcing also cache update for topo.
+		ForceRenderMap=true;
+		first_run=true;
 	}
 
 
@@ -145,7 +148,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	//
 	// Notice: we could be !MapDirty without OnFastPanning, of course!
 	//
-	if (!MapDirty && !ForceRenderMap && OnFastPanning) {
+	if (!MapDirty && !ForceRenderMap && OnFastPanning && !first_run) {
 		
 		if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
 
@@ -202,7 +205,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 		// we simply redraw old bitmap, for the scope of accelerating touch response.
 		// In fact, if we are panning the map while rendering, there would be an annoying delay.
 		// This is using lastdrawwasbitblitted
-		if (INPAN && !MapDirty && !lastdrawwasbitblitted && !ForceRenderMap) {
+		if (INPAN && !MapDirty && !lastdrawwasbitblitted && !ForceRenderMap && !first_run) {
 			// In any case, after 5 seconds redraw all
 			if ( (LKHearthBeats-8) >lasthere ) {
 				lasthere=LKHearthBeats;
@@ -229,7 +232,7 @@ _dontbitblt:
 
 	RenderMapWindow(MapRect);
     
-	if (!ForceRenderMap) {
+	if (!ForceRenderMap && !first_run) {
 		BitBlt(hdcScreen, 0, 0, 
 			MapRect.right-MapRect.left,
 			MapRect.bottom-MapRect.top, 
@@ -250,8 +253,13 @@ _dontbitblt:
 	UpdateTimeStats(false);
 
 	// we do caching after screen update, to minimise perceived delay
-	UpdateCaches(ForceRenderMap);
+	// UpdateCaches is updating topology bounds when either forced (only here)
+	// or because MapWindow::ForceVisibilityScan  is set true.
+	UpdateCaches(first_run);
+	first_run=false;
+
 	ForceRenderMap = false;
+
 	if (ProgramStarted==psInitDone) {
 		ProgramStarted = psFirstDrawDone;
 	}
