@@ -459,9 +459,7 @@ passthrough:
 			_tcscat(sonarmsg,MsgToken(1643)); // ENABLED
 		else
 			_tcscat(sonarmsg,MsgToken(1600)); // DISABLED
-		DoStatusMessage(sonarmsg);
-		// This is not nice, we should not play a sound after DoStatus, or we should remove
-		// sound from DoStatus as an option.
+		DoStatusMessage(sonarmsg,false);
 		if (EnableSoundModes) {
 			if (Sonar_IsEnabled)
 				LKSound(TEXT("LK_TONEUP.WAV"));
