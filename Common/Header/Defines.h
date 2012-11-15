@@ -224,13 +224,6 @@
 // Nearest hold time: when asking for example waypoint details, put the nearest on hold for..
 #define	NEARESTONHOLD		60.0	// seconds, double
 
-// Number of reserved waypoints at the beginning of WP struct. 
-// All loops with NumberOfWayPoints should start from NUMRESWP in place of the old 0
-// Position 0 is takeoff, etc
-// moving waypoints will have assigned fixed slots and positions
-#define NUMRESMARKERS		10
-#define NUMRESWP		5+NUMRESMARKERS
-
 // Number of background colors available in MapWindow.h for NON-terrain maps
 #define LKMAXBACKGROUNDS        10
 
@@ -306,8 +299,14 @@
 #define WPT_OUTLANDING		2
 #define WPT_TURNPOINT		3
 
-// Reserved Waypoints positions
-// ATTENTION!! Adjust also in Defines.h   NUMRESWP !!!
+// Number of reserved waypoints at the beginning of WP struct. 
+// All loops with NumberOfWayPoints should start from NUMRESWP in place of the old 0
+// Position 0 is takeoff, etc
+// moving waypoints will have assigned fixed slots and positions
+#define NUMRESMARKERS		10
+#define NUMRESWP		8+NUMRESMARKERS
+
+// Reserved Waypoints positions. Adjust also NUMRESWP!
 #define RESWP_INVALIDNUMBER	1.23	// an invalid number for latitude, longitude, altitude etc.
 #define RESWP_TAKEOFF		0
 #define RESWP_TAKEOFF_NAME		"_@M1316_"			// LKTOKEN _@M1316_ "TAKEOFF"
@@ -318,8 +317,15 @@
 #define RESWP_FLARMTARGET	3
 #define RESWP_FLARMTARGET_NAME	"_@M1319_"			// LKTOKEN _@M1319_ "TARGET"
 #define RESWP_OPTIMIZED		4	// optimized virtual waypoint as target turnpoint for overlays
-#define RESWP_FIRST_MARKER	5
-#define RESWP_LAST_MARKER	RESWP_FIRST_MARKER+NUMRESMARKERS-1	// 14
+#define RESWP_FAIOPTIMIZED	5
+#define RESWP_FAIOPTIMIZED_NAME "_@M1813_"	// FAI OPTIMIZED
+#define RESWP_FREEFLY		6
+#define RESWP_FREEFLY_NAME	"_@M1814_"	// FREEFLY
+#define RESWP_UNUSED		7
+#define RESWP_UNUSED_NAME	"_@M1815_"	// UNUSED
+
+#define RESWP_FIRST_MARKER	8
+#define RESWP_LAST_MARKER	RESWP_FIRST_MARKER+NUMRESMARKERS-1	// 17
 #define RESWP_END		RESWP_LAST_MARKER
 // WayPointList .Number int identifier 
 #define RESWP_ID		9999

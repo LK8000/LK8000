@@ -1670,6 +1670,75 @@ void AddReservedWaypoints()
 	WayPointCalc[RESWP_OPTIMIZED].IsOutlanding = false;
 	WayPointList[RESWP_OPTIMIZED].Format= LKW_VIRTUAL;
 
+	//
+	// VIRTUAL FAIOPTIMIZED
+	//
+	WayPointList[RESWP_FAIOPTIMIZED].Number=RESWP_FAIOPTIMIZED+1;
+	WayPointList[RESWP_FAIOPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_FAIOPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_FAIOPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_FAIOPTIMIZED].Flags=TURNPOINT;
+	_tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Name, gettext(TEXT(RESWP_FAIOPTIMIZED_NAME)) );
+	if ( WayPointList[RESWP_FAIOPTIMIZED].Comment == NULL)
+		WayPointList[RESWP_FAIOPTIMIZED].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+	if (WayPointList[RESWP_FAIOPTIMIZED].Comment!=NULL)
+		_tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("FAI OPTIMIZED VIRTUAL TURNPOINT"));
+	WayPointList[RESWP_FAIOPTIMIZED].Reachable=FALSE;
+	WayPointList[RESWP_FAIOPTIMIZED].AltArivalAGL=0.0;
+	WayPointList[RESWP_FAIOPTIMIZED].Visible=FALSE;
+	WayPointList[RESWP_FAIOPTIMIZED].InTask=false;
+	WayPointList[RESWP_FAIOPTIMIZED].Details=(TCHAR *)NULL;
+	
+	WayPointList[RESWP_FAIOPTIMIZED].FarVisible=false;
+	WayPointList[RESWP_FAIOPTIMIZED].FileNum=-1;
+	WayPointList[RESWP_FAIOPTIMIZED].Format= LKW_VIRTUAL;
+
+	//
+	// VIRTUAL FREEFLY START
+	//
+	WayPointList[RESWP_FREEFLY].Number=RESWP_FREEFLY+1;
+	WayPointList[RESWP_FREEFLY].Latitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_FREEFLY].Longitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_FREEFLY].Altitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_FREEFLY].Flags=TURNPOINT;
+	_tcscpy(WayPointList[RESWP_FREEFLY].Name, gettext(TEXT(RESWP_FREEFLY_NAME)) );
+	if ( WayPointList[RESWP_FREEFLY].Comment == NULL)
+		WayPointList[RESWP_FREEFLY].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+	if (WayPointList[RESWP_FREEFLY].Comment!=NULL)
+		_tcscpy(WayPointList[RESWP_FREEFLY].Comment,_T("START OF FREEFLIGHT VIRTUAL TURNPOINT"));
+	WayPointList[RESWP_FREEFLY].Reachable=FALSE;
+	WayPointList[RESWP_FREEFLY].AltArivalAGL=0.0;
+	WayPointList[RESWP_FREEFLY].Visible=FALSE;
+	WayPointList[RESWP_FREEFLY].InTask=false;
+	WayPointList[RESWP_FREEFLY].Details=(TCHAR *)NULL;
+	
+	WayPointList[RESWP_FREEFLY].FarVisible=false;
+	WayPointList[RESWP_FREEFLY].FileNum=-1;
+	WayPointList[RESWP_FREEFLY].Format= LKW_VIRTUAL;
+
+	//
+	// VIRTUAL UNUSED (RESERVED FOR NEXT TIME..)
+	//
+	WayPointList[RESWP_UNUSED].Number=RESWP_UNUSED+1;
+	WayPointList[RESWP_UNUSED].Latitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_UNUSED].Longitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_UNUSED].Altitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_UNUSED].Flags=TURNPOINT;
+	_tcscpy(WayPointList[RESWP_UNUSED].Name, gettext(TEXT(RESWP_UNUSED_NAME)) );
+	if ( WayPointList[RESWP_UNUSED].Comment == NULL)
+		WayPointList[RESWP_UNUSED].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+	if (WayPointList[RESWP_UNUSED].Comment!=NULL)
+		_tcscpy(WayPointList[RESWP_UNUSED].Comment,_T("UNUSED VIRTUAL TURNPOINT"));
+	WayPointList[RESWP_UNUSED].Reachable=FALSE;
+	WayPointList[RESWP_UNUSED].AltArivalAGL=0.0;
+	WayPointList[RESWP_UNUSED].Visible=FALSE;
+	WayPointList[RESWP_UNUSED].InTask=false;
+	WayPointList[RESWP_UNUSED].Details=(TCHAR *)NULL;
+	
+	WayPointList[RESWP_UNUSED].FarVisible=false;
+	WayPointList[RESWP_UNUSED].FileNum=-1;
+	WayPointList[RESWP_UNUSED].Format= LKW_VIRTUAL;
+
    for (short i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
 	WayPointList[i].Number=i+1;
 	WayPointList[i].Latitude=RESWP_INVALIDNUMBER;

@@ -242,5 +242,11 @@ _@M2237_ "Sonar\nToggle"
 +_@M2240_ "NoDraw\nTaskFAI"
 +_@M2241_ "Draw\nTaskFAI"
 
++# New virtual waypoints
++_@M1813_ "FAI OPTIMIZED"
++_@M1814_ "FREEFLY"
++# 1815 can be changed anytime, do not reuse!
++_@M1815_ "UNUSED"
+
 
 
