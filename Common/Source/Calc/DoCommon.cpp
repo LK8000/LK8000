@@ -50,6 +50,16 @@ bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		InsertCommonList(Task[i].Index);
    }
 
+   // FAI Optimizer goes next
+   if (WayPointList[RESWP_FAIOPTIMIZED].Latitude!=RESWP_INVALIDNUMBER) {
+   	InsertCommonList(RESWP_FAIOPTIMIZED);
+   }
+
+   // Before markers we insert Start of freeflight, if available
+   if (WayPointList[RESWP_FREEFLY].Latitude!=RESWP_INVALIDNUMBER) {
+   	InsertCommonList(RESWP_FREEFLY);
+   }
+
    extern int CurrentMarker;
 
    // We insert Markers in common list in reverse order, Last in first out

@@ -134,7 +134,17 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			Calculated->FreeFlightStartTime=Basic->Time;
 			Calculated->FreeFlightStartQNH=Basic->Altitude;
 			Calculated->FreeFlightStartQFE=Basic->Altitude;
+		} else {
+			// ResetFlightStats should have reset FreeFlight calculated values already.
+			WayPointList[RESWP_FREEFLY].Latitude=RESWP_INVALIDNUMBER;
+			WayPointList[RESWP_FREEFLY].Longitude=RESWP_INVALIDNUMBER;
+			WayPointList[RESWP_FREEFLY].Altitude=RESWP_INVALIDNUMBER;
+			WayPointList[RESWP_FREEFLY].Reachable=FALSE;
+			WayPointList[RESWP_FREEFLY].Visible=FALSE;
+			WayPointList[RESWP_FREEFLY].InTask=false;
+			WayPointList[RESWP_FREEFLY].FarVisible=false;
 		}
+
 
 		WasFlying=true;
 		Calculated->TakeOffTime= Basic->Time;

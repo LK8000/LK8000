@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
+#include "Process.h"
 #include "DoInits.h"
 
 /* 
@@ -267,6 +268,27 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   Calculated->FreeFlightStartTime=Basic->Time;
   Calculated->FreeFlightStartQNH=Basic->Altitude;
   Calculated->FreeFlightStartQFE=gndAltitude;
+
+  WayPointList[RESWP_FREEFLY].Latitude=Basic->Latitude;
+  WayPointList[RESWP_FREEFLY].Longitude=Basic->Longitude;
+  WayPointList[RESWP_FREEFLY].Altitude=Basic->Altitude;
+  if (WayPointList[RESWP_FREEFLY].Altitude==0) WayPointList[RESWP_FREEFLY].Altitude=0.001;
+  WayPointList[RESWP_FREEFLY].Reachable=TRUE;
+  WayPointList[RESWP_FREEFLY].Visible=TRUE;
+  WayPointList[RESWP_FREEFLY].Format = LKW_VIRTUAL;
+
+  TCHAR Temp[30];
+  Units::TimeToTextS(Temp, (int)TimeLocal((long)Calculated->FreeFlightStartTime));
+
+  LKASSERT(WayPointList[RESWP_FREEFLY].Comment!=NULL);
+
+  WayPointList[RESWP_FREEFLY].Comment[99]='\0'; // for safety
+  _stprintf(WayPointList[RESWP_FREEFLY].Comment,_T("%s: %s  @%.0f%s QNH"),
+	gettext(_T("_@M1754_")), 	// Free flight start
+	Temp,
+	ALTITUDEMODIFY*Calculated->FreeFlightStartQNH,
+	Units::GetAltitudeName());
+
   ResetFreeFlightStats(Calculated);
   return true;
 
