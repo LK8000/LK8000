@@ -13,6 +13,8 @@
 //
 // This function is called by DoLogging only
 //
+// Note that Visibility is updated by DrawThread in ScanVisibility, inside MapWindow_Utils
+//
 void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   // In CAR mode, we call this function when at least 5m were made in 5 seconds
