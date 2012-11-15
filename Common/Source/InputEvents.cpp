@@ -1893,7 +1893,11 @@ void InputEvents::eventService(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("TAKEOFF")) == 0) {
 	// No MESSAGE on screen, only a sound
-	if (ISCAR) DoStatusMessage(MsgToken(571)); // START
+	if (ISCAR)
+		DoStatusMessage(MsgToken(571),NULL,false); // START
+	else {
+		if (SIMMODE) DoStatusMessage(MsgToken(930),NULL,false); // Takeoff
+	}
         if (EnableSoundModes) {
                 LKSound(_T("LK_TAKEOFF.WAV"));
         }
