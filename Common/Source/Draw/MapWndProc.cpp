@@ -939,7 +939,7 @@ goto_menu:
 	// Special SIM mode keys for PC
 	//
 	#if (WINDOWSPC>0)
-	if (SIMMODE) {
+	if (SIMMODE && IsMultiMapShared()) {
 		switch(wParam) {
 			case 0x21:	// VK_PRIOR PAGE UP
 				if (Units::GetUserAltitudeUnit() == unFeet)
