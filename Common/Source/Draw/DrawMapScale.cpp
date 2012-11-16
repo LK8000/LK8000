@@ -167,8 +167,10 @@ _skip1:
     if (inpanmode) goto _skip2;
 
     if (ReplayLogger::IsEnabled()) {
-		// LKTOKEN _@M1350_ " REPLAY"
-      _tcscat(Scale2, MsgToken(1350));
+	_stprintf(Scale,_T("%s %.0fX"),
+		MsgToken(1350), // " REPLAY"
+		ReplayLogger::TimeScale);
+      _tcscat(Scale2, Scale);
     }
     if (BallastTimerActive) {
 		// LKTOKEN _@M1351_ " BALLAST"

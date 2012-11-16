@@ -13,6 +13,7 @@
 
 extern int NumLoggerBuffered;
 
+// #define DEBUG_REPLAY 1
 
 bool ReplayLogger::ReadLine(TCHAR *buffer) {
   static FILE *fp = NULL;
@@ -283,7 +284,8 @@ private:
 };
 
 
-
+// IGC time of replay running log
+double ReplayTime=0;
 
 bool ReplayLogger::UpdateInternal(void) {
   static bool init=true;
@@ -305,11 +307,11 @@ bool ReplayLogger::UpdateInternal(void) {
   }
   static double time=0;
   double deltatimereal;
-  static double tthis=0;
 
   bool finished = false;
 
   double timelast = time;
+
   time = (st.wHour*3600+st.wMinute*60+st.wSecond-time_lstart);
   deltatimereal = time-timelast;
 
@@ -317,17 +319,25 @@ bool ReplayLogger::UpdateInternal(void) {
     time_lstart = time;
     time = 0;
     deltatimereal = 0;
-    tthis = 0;
+    ReplayTime = 0;
     cli.Reset();
   }
 
-  tthis += TimeScale*deltatimereal;
+  ReplayTime += TimeScale*deltatimereal;
+
+#if DEBUG_REPLAY
+  TCHAR tutc[20];
+  Units::TimeToText(tutc, (int)ReplayTime);
+  StartupStore(_T("........ REPLAY: UTC h%s\n"),tutc);
+#endif
 
   double mintime = cli.GetMinTime(); // li_lat.GetMinTime();
-  if (tthis<mintime) { tthis = mintime; }
+  if (ReplayTime<mintime) {
+	ReplayTime = mintime;
+  }
 
   // if need a new point
-  while (cli.NeedData(tthis)&&(!finished)) {
+  while (cli.NeedData(ReplayTime)&&(!finished)) {
 
     double t1, Lat1, Lon1, Alt1;
     finished = !ReadPoint(&t1,&Lat1,&Lon1,&Alt1);
@@ -344,10 +354,10 @@ bool ReplayLogger::UpdateInternal(void) {
     double LatX, LonX, AltX, SpeedX, BearingX;
     double LatX1, LonX1, AltX1;
 
-    cli.Interpolate(tthis, &LonX, &LatX, &AltX);
-    cli.Interpolate(tthis+0.1, &LonX1, &LatX1, &AltX1);
+    cli.Interpolate(ReplayTime, &LonX, &LatX, &AltX);
+    cli.Interpolate(ReplayTime+0.1, &LonX1, &LatX1, &AltX1);
 
-    SpeedX = cli.GetSpeed(tthis);
+    SpeedX = cli.GetSpeed(ReplayTime);
     DistanceBearing(LatX, LonX, LatX1, LonX1, NULL, &BearingX);
 
     if ((SpeedX>0) && (LatX != LatX1) && (LonX != LonX1)) {
@@ -362,17 +372,20 @@ bool ReplayLogger::UpdateInternal(void) {
       GPS_INFO.TrackBearing = BearingX;
       GPS_INFO.Altitude = AltX;
       GPS_INFO.BaroAltitude = AltitudeToQNHAltitude(AltX);
-      GPS_INFO.Time = tthis;
+      GPS_INFO.Time = ReplayTime;
       UnlockFlightData();
     } else {
       // This is required in case the integrator fails,
       // which can occur due to parsing faults
-      tthis = cli.GetMaxTime();
+      ReplayTime = cli.GetMaxTime();
     }
   }
 
   // quit if finished.
   if (finished) {
+    #if DEBUG_REPLAY
+    StartupStore(_T("......... REPLAY: FINISHED\n"));
+    #endif
     Stop();
   }
   init = false;

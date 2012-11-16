@@ -15,7 +15,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "Multimap.h"
-
+#include "Logger.h"
 
 // #define DEBUG_VIRTUALKEYS
 // #define DEBUG_MAPINPUT
@@ -951,7 +951,7 @@ goto_menu:
 	// Special SIM mode keys for PC
 	//
 	#if (WINDOWSPC>0)
-	if (SIMMODE && IsMultiMapShared()) {
+	if (SIMMODE && IsMultiMapShared() && (!ReplayLogger::IsEnabled())) {
 		switch(wParam) {
 			case 0x21:	// VK_PRIOR PAGE UP
 				if (Units::GetUserAltitudeUnit() == unFeet)
@@ -994,6 +994,28 @@ goto_menu:
 				TriggerGPSUpdate();
 				return TRUE;
 				break;
+
+		}
+	}
+
+	extern double ReplayTime;
+	if (SIMMODE && IsMultiMapShared() && ReplayLogger::IsEnabled()) {
+		switch(wParam) {
+			case 0x21:	// VK_PRIOR PAGE UP
+				ReplayTime+=300;
+				return TRUE;
+			case 0x26:	// VK_UP
+				ReplayLogger::TimeScale++;
+				return TRUE;
+				break;
+			case 0x28:	// VK_DOWN
+				if (ReplayLogger::TimeScale>0) ReplayLogger::TimeScale--;
+				if (ReplayLogger::TimeScale<0) ReplayLogger::TimeScale=0; // to be safe
+				return TRUE;
+				break;
+			case 0x27:	// VK_RIGHT
+				ReplayTime+=60;
+				return TRUE;
 		}
 	}
 
