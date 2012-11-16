@@ -21,6 +21,7 @@ double Statistics::y_max;
 bool Statistics::unscaled_x;
 bool Statistics::unscaled_y;
 
+#define DEBUG_FOCUS 1
 
 void Statistics::ResetScale() {
   unscaled_y = true;  
@@ -859,6 +860,20 @@ LRESULT CALLBACK AnalysisProc (HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
       EndPaint(hDlg, &ps);
 
       return FALSE;
+
+   case WM_SETFOCUS:
+        #if DEBUG_FOCUS
+        StartupStore(_T("............ ANALYSIS HAS FOCUS\n"));
+        #endif
+        extern HWND hWndWithFocus;
+        hWndWithFocus=hDlg;
+	return 0;
+
+   case WM_KILLFOCUS:
+        #if DEBUG_FOCUS
+        StartupStore(_T("............ ANALYSIS LOST FOCUS\n"));
+        #endif
+	return 0;
 
     case WM_CLOSE:
       MapWindow::RequestFastRefresh();

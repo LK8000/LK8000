@@ -21,7 +21,6 @@
 #endif
 #endif
 
-
 #define ISCALE ScreenScale
 
 #define DEFAULTBORDERPENWIDTH 1*ISCALE
@@ -2052,10 +2051,22 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
       break;
 
     case WM_SETFOCUS:
+#if FIXFOCUS
+	#if DEBUG_FOCUS
+	StartupStore(_T("............ WNDCONTROL HAS FOCUS\n"));
+	#endif
+	extern HWND hWndWithFocus;
+	hWndWithFocus=hwnd;
+#endif
       SetFocused(true, (HWND) wParam);
     return(0);
 
     case WM_KILLFOCUS:
+#if FIXFOCUS
+	#if DEBUG_FOCUS
+	StartupStore(_T("............ WNDCONTROL LOST FOCUS\n"));
+	#endif
+#endif
       SetFocused(false, (HWND) wParam);
     return(0);
 
@@ -3167,11 +3178,25 @@ int WndProperty::WndProcEditControl(HWND hwnd, UINT uMsg,
         if ((HWND)wParam != GetHandle()){
           SetFocused(true, (HWND) wParam);
         }
+#if FIXFOCUS
+	else {
+		#if DEBUG_FOCUS
+		StartupStore(_T("............ WNDPROCEDIT HAS FOCUS\n"));
+		#endif
+		extern HWND hWndWithFocus;
+		hWndWithFocus=hwnd;
+	}
+#endif
       }
     break;
 
     case WM_KILLFOCUS:
       KeyTimer(true, 0);
+#if FIXFOCUS
+	#if DEBUG_FOCUS
+	StartupStore(_T("............ WNDPROCEDIT LOST FOCUS\n"));
+	#endif
+#endif
       if ((HWND)wParam != GetHandle()){
         SetFocused(false, (HWND) wParam);
       }

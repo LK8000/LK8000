@@ -20,7 +20,6 @@
 // #define DEBUG_VIRTUALKEYS
 // #define DEBUG_MAPINPUT
 
-
 COLORREF taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
 static bool MouseWasPanMoving=false;
@@ -248,6 +247,18 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
     {
     case WM_ERASEBKGND:
 	return TRUE;
+
+#if FIXFOCUS
+    case WM_SETFOCUS:
+		#if DEBUG_FOCUS
+		StartupStore(_T("............ MAPWINDOWS HAS FOCUS\n"));
+		#endif
+		extern HWND hWndWithFocus;
+		hWndWithFocus=hWnd;
+		return 0;
+		break;
+#endif
+
     case WM_SIZE:
 	if (!THREADRUNNING) {
 		#if TESTBENCH
@@ -495,6 +506,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	break;
 
     case WM_LBUTTONDOWN:
+
 _buttondown:
       if (LockModeStatus) break;
       dwDownTime = GetTickCount();
@@ -1174,7 +1186,6 @@ goto_menu:
                 }
 	}
 	#endif // not LXMINIMAP
-
 	dwDownTime= 0L; // removable? check
 	InputEvents::processKey(wParam);
 	dwDownTime= 0L;

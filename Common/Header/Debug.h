@@ -9,6 +9,7 @@
 
 #if TESTBENCH
 /*
+#define DEBUG_FOCUS 1	  // show SETFOCUS and KILLFOCUS traces in LK
 #define DEBUG_DEVSETTING  // startupstore messages to understand sequence of device and com port init
 #define DEBUG_DBLCLK      // show double click is being pressed
 #define VENTA_DEBUG_EVENT // show key events, actually very few.

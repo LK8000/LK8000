@@ -118,6 +118,8 @@
 // Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
 #define USEBIGZOOM	1	
 
+// Fix SETFOCUS problem 
+#define FIXFOCUS	1
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
