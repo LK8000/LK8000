@@ -924,14 +924,68 @@ goto_menu:
       break;
 
 
-    // VENTA-TODO careful here, keyup no more trapped for PNA. 
-    // Forbidden usage of keypress timing.
     #if defined(PNA)
     case WM_KEYDOWN:
     #else
+	#if (WINDOWSPC>0)
+	case WM_KEYDOWN:
+		if (!Debounce(50)) return FALSE;
+	#else
     case WM_KEYUP: 
+	#endif
     #endif
 
+	//
+	// Special SIM mode keys for PC
+	//
+	#if (WINDOWSPC>0)
+	if (SIMMODE) {
+		switch(wParam) {
+			case 0x21:	// VK_PRIOR PAGE UP
+				if (Units::GetUserAltitudeUnit() == unFeet)
+					GPS_INFO.Altitude += 45.71999999;
+				else
+					GPS_INFO.Altitude += 10;
+				TriggerGPSUpdate();
+				return TRUE;
+				break;
+			case 0x22:	// VK_NEXT PAGE DOWN
+				if (Units::GetUserAltitudeUnit() == unFeet)
+					GPS_INFO.Altitude -= 45.71999999;
+				else
+					GPS_INFO.Altitude -= 10;
+				if (GPS_INFO.Altitude<=0) GPS_INFO.Altitude=0;
+				TriggerGPSUpdate();
+				return TRUE;
+				break;
+			case 0x26:	// VK_UP
+				InputEvents::eventChangeGS(_T("up"));
+				TriggerGPSUpdate();
+				return TRUE;
+				break;
+			case 0x28:	// VK_DOWN
+				InputEvents::eventChangeGS(_T("down"));
+				TriggerGPSUpdate();
+				return TRUE;
+				break;
+			case 0x25:	// VK_LEFT
+				GPS_INFO.TrackBearing -= 5;
+				if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
+				else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
+				TriggerGPSUpdate();
+				return TRUE;
+				break;
+			case 0x27:	// VK_RIGHT
+				GPS_INFO.TrackBearing += 5;
+				if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
+				else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
+				TriggerGPSUpdate();
+				return TRUE;
+				break;
+		}
+	}
+
+	#endif
 
       #if defined(PNA)
 
