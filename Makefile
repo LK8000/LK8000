@@ -696,6 +696,7 @@ SRC_FILES :=\
 	$(SRC)/Logger/LogBook.cpp\
 	$(SRC)/Logger/Logger.cpp \
 	$(SRC)/Logger/NMEAlogger.cpp\
+	$(SRC)/Logger/ReplayLogger.cpp \
 	$(SRC)/Logger/StartStopLogger.cpp \
 	$(SHP)/mapbits.cpp \
 	$(SHP)/maperror.cpp 	\
