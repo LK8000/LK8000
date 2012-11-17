@@ -739,6 +739,7 @@ bool InputEvents::processKey(int dWord) {
 	MapWindow::zoom.BigZoom(true);
 	#endif
 	#endif
+	MapWindow::RefreshMap();
 	//
 	// Sound wave player latency 
 	//
