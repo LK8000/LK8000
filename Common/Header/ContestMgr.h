@@ -31,6 +31,9 @@ class CTestContest;
  * Contest Manager remembers the best results obtained for each contest during
  * a flight.
  */
+
+
+
 class CContestMgr {
 public:
   /** 
@@ -65,6 +68,7 @@ public:
     unsigned       _duration;                     /**< @brief Contest duration */
     float          _speed;                        /**< @brief Contest speed */
     CPointGPSArray _pointArray;                   /**< @brief The list of contest result points */
+
     void Update();
   public:
     CResult();
@@ -107,6 +111,7 @@ private:
   // Other
   static const unsigned DEFAULT_HANDICAP = 100;
   
+
   static CContestMgr _instance;                   /**< @brief Singleton */
   unsigned _handicap;                             /**< @brief Glider handicap */
   CTracePtr _trace;                               /**< @brief Main trace */
@@ -118,6 +123,20 @@ private:
   std::auto_ptr<CPointGPS> _prevFAIPredictedBack; /**< @brief Last reviewed OLC-FAI Predicted loop end points */
   CResultArray _resultArray;                      /**< @brief Array of results */
   
+  CPointGPS _pgpsClosePoint;
+  CPointGPS _pgpsBestClosePoint;
+  CPointGPS _pgpsNearPoint;
+  /*
+  double _pgpsNearPoint_lat ;
+  double _pgpsNearPoint_lon ;
+  double _pgpsNearPoint_Alt ;
+*/
+  double _fTogo     ;                          /**< @brief current closing distance */
+  double _fBestTogo ;                          /**< @brief best minimal closing distance */
+  double _uiFAIDist ;
+  BOOL   _bFAI;                                /**< @brief Is FAI triangle? */
+
+
   mutable CCriticalSection _mainCS;               /**< @brief Main critical section that prevents Reset() and Add() at the same time */
   mutable CCriticalSection _traceCS;              /**< @brief Main trace critical section for returning _trace points */
   mutable CCriticalSection _resultsCS;            /**< @brief Contests results critical section for returning results */
@@ -131,15 +150,30 @@ private:
   void SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack, bool predicted);
   void SolveOLCPlus(bool predicted);
   
+
 public:
+
+
   static CContestMgr &Instance() { return _instance; }
   static const TCHAR *TypeToString(TType type);
   
+  CPointGPS GetClosingPoint(void ) {return _pgpsClosePoint;};
+  double GetClosingPointLat(void ) {return _pgpsClosePoint.Latitude();};
+  double GetClosingPointLon(void ) {return _pgpsClosePoint.Longitude();};
+  double GetClosingPointAlt(void ) {return _pgpsClosePoint.Altitude();};
+
+  double GetBestClosingPointLat(void ) {return _pgpsBestClosePoint.Latitude();};
+  double GetBestClosingPointLon(void ) {return _pgpsBestClosePoint.Longitude();};
+  double GetBestClosingPointAlt(void ) {return _pgpsBestClosePoint.Altitude();};
+
+  double GetClosingPointDist(void) { return _trace->Back()->GPS().Distance(_pgpsBestClosePoint);};
+  double GetBestClosingPointDist(void) {return _fBestTogo;};
+  BOOL FAI(void) {return _bFAI;};
   CContestMgr();
   
   void Reset(unsigned handicap);
   void Add(const CPointGPSSmart &gps);
-  
+
   CResult Result(TType type, bool fillArray) const;
   void Trace(CPointGPSArray &array) const;
 };
@@ -153,6 +187,7 @@ public:
  */
 inline CContestMgr::CResult::CResult():
   _type(TYPE_INVALID), _predicted(0), _distance(0), _score(0)
+
 {
 }
 
@@ -171,6 +206,7 @@ inline CContestMgr::CResult::CResult(TType type, bool predicted, unsigned distan
   _duration(pointArray.empty() ? 0 : (pointArray.back().TimeDelta(pointArray.front()))),
   _speed(pointArray.empty() ? 0 : ((float)_distance / _duration)),
   _pointArray(pointArray)
+
 {
 }
 

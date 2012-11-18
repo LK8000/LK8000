@@ -13,9 +13,12 @@
 
 int Statistics::RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , COLORREF fillcolor)
 {
-
-#define STEPS 10
-#define N_PLOYGON (3*STEPS)
+#ifdef PNA
+#define FAI_SECTRO_STEPS 7
+#else
+#define FAI_SECTRO_STEPS 15
+#endif
+#define N_PLOYGON (3*FAI_SECTRO_STEPS)
 
 float fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
 double fDist_a, fDist_b, fDist_c, fAngle;
@@ -30,7 +33,7 @@ DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
 double x1=0,y1=0;
 double fDistMax = fDist_c/FAI_BIG_THRESHOLD;
 double fDistMin = fDist_c/(1.0-2.0*FAI_BIG_THRESHOLD);
-double fDelta_Dist = 2.0* fDist_c*fFAI_Percentage / (double)(STEPS-1);
+double fDelta_Dist = 2.0* fDist_c*fFAI_Percentage / (double)(FAI_SECTRO_STEPS-1);
 
 if(fDistMax < FAI_BIG_THRESHOLD)
 {
@@ -60,7 +63,7 @@ double dir = -1.0;
   /********************************************************************
    * calc right leg
    ********************************************************************/
-  fDelta_Dist =(fDistMax-fDistMin)/ (double)(STEPS-1);
+  fDelta_Dist =(fDistMax-fDistMin)/ (double)(FAI_SECTRO_STEPS-1);
   fDistTri = fDistMin;
   if(fDistTri < FAI_BIG_THRESHOLD)
 	fFAI_Percentage =  FAI_NORMAL_PERCENTAGE;
@@ -69,7 +72,8 @@ double dir = -1.0;
 
   fDist_a = fDistMin * fFAI_Percentage;
   fDist_b = fDistMin * fFAI_Percentage;
-  for(i =0 ;i < STEPS; i++)
+
+  for(i =0 ;i < FAI_SECTRO_STEPS; i++)
   {
 	LKASSERT(fDist_c*fDist_b!=0);
 	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
@@ -89,6 +93,11 @@ double dir = -1.0;
 
     fDist_a = fFAI_Percentage * fDistTri;
 	fDist_b = fDistTri - fDist_a - fDist_c;
+	  /************************************/
+	  if(fDistTri >= FAI_BIG_THRESHOLD)
+	    if(fDist_b/fDistTri > 0.44)
+	    	fDist_b = fDistTri * 0.44;
+	  /************************************/
   }
 
   /********************************************************************
@@ -101,9 +110,14 @@ double dir = -1.0;
 
 
   fDist_a = fDist_c;
-  fDelta_Dist =  (fDistMax-2*fDist_a-fDist_c) / (double)(STEPS-1);
+  fDelta_Dist =  (fDistMax-2*fDist_a-fDist_c) / (double)(FAI_SECTRO_STEPS-1);
   fDist_b = fDistMax - fDist_a - fDist_c;
-  for(i =0 ;i < STEPS; i++)
+  /************************************/
+  if(fDistTri >= FAI_BIG_THRESHOLD)
+    if(fDist_a/fDistTri > 0.44)
+      fDist_a = fDistTri * 0.44;
+  /************************************/
+  for(i =0 ;i < FAI_SECTRO_STEPS; i++)
   {
 	LKASSERT(fDist_c*fDist_b!=0);
 	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
@@ -116,12 +130,17 @@ double dir = -1.0;
     apSectorPolygon[iPolyPtr++].y = ScaleY(rc, y1);
 	fDist_a += fDelta_Dist;
 	fDist_b = fDistMax - fDist_a - fDist_c;
+	  /************************************/
+	  if(fDistTri >= FAI_BIG_THRESHOLD)
+	    if(fDist_a/fDistTri > 0.44)
+	      fDist_a = fDistTri * 0.44;
+	  /************************************/
   }
 
   /********************************************************************
    * calc left leg
    ********************************************************************/
-  fDelta_Dist =(fDistMax-fDistMin)/ (double)(STEPS-1);
+  fDelta_Dist =(fDistMax-fDistMin)/ (double)(FAI_SECTRO_STEPS-1);
   fDistTri = fDistMax;
   if(fDistTri < FAI_BIG_THRESHOLD)
 	  fFAI_Percentage =  FAI_NORMAL_PERCENTAGE;
@@ -129,7 +148,12 @@ double dir = -1.0;
 	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
   fDist_b = fDistMax * fFAI_Percentage;
   fDist_a = fDistTri - fDist_b - fDist_c;
-  for(i =0 ;i < STEPS; i++)
+  /************************************/
+  if(fDistTri >= FAI_BIG_THRESHOLD)
+    if(fDist_a/fDistTri > 0.44)
+      fDist_a = fDistTri * 0.44;
+  /************************************/
+  for(i =0 ;i < FAI_SECTRO_STEPS; i++)
   {
     LKASSERT(fDist_c*fDist_b!=0);
 	cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
@@ -148,6 +172,11 @@ double dir = -1.0;
   	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
     fDist_b = fFAI_Percentage * fDistTri;
 	fDist_a = fDistTri - fDist_b - fDist_c;
+	  /************************************/
+	  if(fDistTri >= FAI_BIG_THRESHOLD)
+	    if(fDist_a/fDistTri > 0.44)
+	    	fDist_a = fDistTri * 0.44;
+	  /************************************/
   }
 
   /********************************************************************
@@ -186,7 +215,7 @@ double dir = -1.0;
   SelectObject(hdc, hpSectorPen);
 
   double fTic= 1/DISTANCEMODIFY;
-  if(fDist_c > 5/DISTANCEMODIFY)   fTic = 20/DISTANCEMODIFY;
+  if(fDist_c > 5/DISTANCEMODIFY)   fTic = 10/DISTANCEMODIFY;
   if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
   if(fDist_c > 100/DISTANCEMODIFY) fTic = 50/DISTANCEMODIFY;
   if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
@@ -196,7 +225,7 @@ double dir = -1.0;
   fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 
-
+int iCnt = 0;
   while(fDistTri < fDistMax)
   {
 	if(fDistTri < FAI_BIG_THRESHOLD)
@@ -205,10 +234,24 @@ double dir = -1.0;
 	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
 
     fDist_a = fDistTri*fFAI_Percentage;
-    fDelta_Dist =  (fDistTri-2*fDist_a-fDist_c)/ (double)(STEPS-1);
+    fDelta_Dist =  (fDistTri-2*fDist_a-fDist_c)/ (double)(FAI_SECTRO_STEPS-1);
  //   fDist_c = fDist_a;
     fDist_b = fDistTri - fDist_a - fDist_c;
-    for(i =0 ;i < STEPS; i++)
+    /************************************/
+    if(fDistTri >= FAI_BIG_THRESHOLD)
+      if(fDist_b/fDistTri > 0.44)
+    	fDist_b = fDistTri * 0.44;
+    /************************************/
+    TCHAR text[180]; SIZE tsize;
+	if(bFirstUnit)
+	  _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
+	else
+	  _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
+	bFirstUnit = false;
+	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+	SetTextColor(hdc, RGB_GREY);
+
+    for(i =0 ;i < FAI_SECTRO_STEPS; i++)
     {
       LKASSERT(fDist_c*fDist_b!=0);
       cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
@@ -221,21 +264,25 @@ double dir = -1.0;
 
       if(i> 0)
 	    Polyline(hdc, line, 2);
+
+
+      if(i==0)
+    	ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+/*
+      if(iCnt> 1)
+    	if(i == FAI_SECTRO_STEPS-1)
+    	  ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
+      if(iCnt> 2)
+    	if(i== (FAI_SECTRO_STEPS/2))
+    	  ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+*/
+
       line[1] =  line[0];
 	  fDist_a += fDelta_Dist;
 	  fDist_b = fDistTri - fDist_a - fDist_c;
     }
-    TCHAR text[180]; SIZE tsize;
-    if(bFirstUnit)
-      _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
-    else
-      _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
-    bFirstUnit = false;
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-    SetTextColor(hdc, RGB_GREY);
-    ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-
-    fDistTri+=fTic;
+    fDistTri+=fTic;iCnt++;
   }
 
 SelectObject(hdc, hfOld);

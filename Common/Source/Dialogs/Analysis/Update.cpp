@@ -247,23 +247,37 @@ void UpdateAnalysis(void){
     {
       CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, false);
       if(result.Type() == contestType) {
-        TCHAR distStr[50];
-        _stprintf(distStr, _T("%.1f %s\r\n"),
-                  DISTANCEMODIFY * result.Distance(),
-                  Units::GetDistanceName());
-        
-        TCHAR speedStr[50];
-        _stprintf(speedStr, TEXT("%.1f %s\r\n"),
-                  TASKSPEEDMODIFY * result.Speed(),
-                  Units::GetTaskSpeedName());
-        
+        BOOL bFAI = CContestMgr::Instance().FAI();
+        double  fDist     = result.Distance();
+        double  fCPDist   = CContestMgr::Instance().GetClosingPointDist();
+        double  fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
+    // 	LKASSERT( fDist >0 );
+        if(fDist < 10.0)
+          fDist= 1000.0;
+
+
+        TCHAR distStr[50];  TCHAR speedStr[50];
+        if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && (bFAI))
+          _stprintf(distStr, _T("%.1f %s FAI\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
+        else
+          _stprintf(distStr, _T("%.1f %s\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
+
+        if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && (bFAI))
+          _stprintf(speedStr, _T("C:%-.1f %s\r\n(%.1f %%)\r\n"),  DISTANCEMODIFY * fCPDist, Units::GetDistanceName(),fCPDist/fDist*100.0);
+        else
+          _stprintf(speedStr, TEXT("%.1f %s\r\n"),TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
         TCHAR timeTempStr[50];
         Units::TimeToText(timeTempStr, result.Duration());
         TCHAR timeStr[50];
-        _stprintf(timeStr, _T("%s\r\n"), timeTempStr);
-        
+
+        if( (result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && (bFAI) /*&& (( fCPDist - fB_CPDist ) > 1000)*/)
+          _stprintf(timeStr, _T("\r\nB:%-.1f %s\r\n(%.1f %%)\r\n"), DISTANCEMODIFY * fB_CPDist, Units::GetDistanceName(), fB_CPDist/fDist*100.0);
+        else
+          _stprintf(timeStr, _T("%s\r\n"), timeTempStr);
+
         TCHAR scoreStr[50] = _T("");
         if(result.Type() != CContestMgr::TYPE_FAI_3_TPS &&
+           result.Type() != CContestMgr::TYPE_FAI_TRIANGLE &&
            result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED)
           _stprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
         

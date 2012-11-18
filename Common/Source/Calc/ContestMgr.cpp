@@ -12,7 +12,7 @@
 #include "ContestMgr.h"
 #include <memory>
 
-
+#define MAX_EARTH_DIST_IN_M   40000000.0
 CContestMgr CContestMgr::_instance;
 
 
@@ -52,8 +52,18 @@ CContestMgr::CContestMgr():
   _traceSprint(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM)),
   _traceLoop(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
   _prevFAIFront(0), _prevFAIBack(0),
-  _prevFAIPredictedFront(0), _prevFAIPredictedBack(0)
+  _prevFAIPredictedFront(0), _prevFAIPredictedBack(0),
+  _pgpsClosePoint(0,0,0,0),
+  _pgpsBestClosePoint(0,0,0,0),
+  _pgpsNearPoint(0,0,0,0)
 {
+
+	  _fTogo     =  MAX_EARTH_DIST_IN_M;
+	  _fBestTogo =  MAX_EARTH_DIST_IN_M;
+
+	  _uiFAIDist  =0;
+	  _bFAI              =false;
+
   CCriticalSection::CGuard guard(_resultsCS);
   for(unsigned i=0; i<TYPE_NUM; i++)
     _resultArray.push_back(CResult());
@@ -79,7 +89,10 @@ void CContestMgr::Reset(unsigned handicap)
   _prevFAIBack.reset(0);
   _prevFAIPredictedFront.reset(0);
   _prevFAIPredictedBack.reset(0);
-
+  _bFAI = false;
+  _uiFAIDist =0;
+  _fTogo     = MAX_EARTH_DIST_IN_M;
+  _fBestTogo = MAX_EARTH_DIST_IN_M;
   {
     CCriticalSection::CGuard Resultguard(_resultsCS);
     for(unsigned i=0; i<TYPE_NUM; i++)
@@ -355,7 +368,7 @@ else*/
 
     PointsResult(predicted ? TYPE_FAI_3_TPS_PREDICTED : TYPE_FAI_3_TPS, traceResult);
 
-    traceResult.Compress(4);
+    traceResult.Compress(3);
     if(predicted)
     {
       // do it just in a case if predicted trace is worst than the current one
@@ -363,10 +376,54 @@ else*/
       _resultArray[TYPE_FAI_TRIANGLE] = CResult(TYPE_FAI_TRIANGLE, _resultArray[TYPE_OLC_FAI_PREDICTED]);
     }
 
-     // store result
     PointsResult(TYPE_FAI_TRIANGLE, traceResult);
 
+
+    const CPointGPSArray &points = _resultArray[TYPE_FAI_TRIANGLE]._pointArray;
+	double fDist=0, fAngle =0.0;
+	 _bFAI = false;
+	if(points.size() > 3)
+	{
+	  _bFAI = true;
+	  double fLeg1 = points[1].Distance(points[2]);
+	  double fLeg2 = points[2].Distance(points[3]);
+	  double fLeg3 = points[3].Distance(points[1]);
+	  double fFAIDist = fLeg1 + fLeg2 + fLeg3;
+	  if(fFAIDist <=0.0) fFAIDist = 1000.0;
+	  if ((fLeg1 / fFAIDist) < 0.28) _bFAI = false;
+	  if ((fLeg2 / fFAIDist) < 0.28) _bFAI = false;
+	  if ((fLeg3 / fFAIDist) < 0.28) _bFAI = false;
+	  _pgpsClosePoint = points[0];
+	  if(_uiFAIDist != (unsigned int)fFAIDist)  /* reset previous  infos */
+	  {
+		_uiFAIDist = (unsigned int)fFAIDist;
+		_pgpsBestClosePoint = _pgpsClosePoint;
+		_fBestTogo = _fTogo;
+	  }
+
+	  DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, _pgpsClosePoint.Latitude() , _pgpsClosePoint.Longitude() , &_fTogo, &fAngle);
+	  point = first;
+	  while( (point->GPS().Time() <=  points[1].Time()) && (point != last) && point)
+	  {
+	//	fDist = last->GPS().Distance( point->GPS());
+		DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &fDist, &fAngle);
+	    if(fDist < _fTogo )
+	    {
+		  _pgpsClosePoint = point->GPS();
+		  _fTogo = fDist;
+		  if(_fTogo < _fBestTogo)
+		  {
+		    _pgpsBestClosePoint = _pgpsClosePoint;
+		    _pgpsNearPoint      = last->GPS();
+		    _fBestTogo          = _fTogo;
+		  }
+	    }
+	    point = point->Next();
+	  }
+
+	}
   }
+
 
 }
 

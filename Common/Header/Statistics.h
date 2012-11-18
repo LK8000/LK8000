@@ -116,6 +116,7 @@ class Statistics {
     static void RenderTemperature(HDC hdc, const RECT rc);
     static void RenderTask(HDC hdc, const RECT rc, const bool olcmode);
     static void RenderContest(HDC hdc, const RECT rc);
+    static void RenderFAIOptimizer(HDC hdc, const RECT rc);
     static int  RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , COLORREF fillcolor);
     static void RenderSpeed(HDC hdc, const RECT rc);
 
