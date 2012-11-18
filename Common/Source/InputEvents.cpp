@@ -720,7 +720,6 @@ bool InputEvents::processKey(int dWord) {
     // We do this only for the case of zoom in/out virtual key pressed.
     // The fastzoom process is triggered by BigZoom set.
     // To get oldstyle zoom simply skip all of this.
-    static DWORD lastClickTime=0;
     if (dWord==38||dWord==40) {
 	#if (WINDOWSPC>0)
 	if (!Debounce(100)) return true;
@@ -740,15 +739,6 @@ bool InputEvents::processKey(int dWord) {
 	#endif
 	#endif
 	MapWindow::RefreshMap();
-	//
-	// Sound wave player latency 
-	//
-	#ifndef DISABLEAUDIO
-	if ((GetTickCount()-lastClickTime)>300) {
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		lastClickTime=GetTickCount();
-	}
-	#endif
     } else {
 	if (!Debounce()) return true;
     }

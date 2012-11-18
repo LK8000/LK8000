@@ -909,6 +909,12 @@ goto_menu:
 							break;
 						}
 					}
+					static DWORD lastClickTime=0;
+					if ((GetTickCount()-lastClickTime)>300) {
+						if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+						lastClickTime=GetTickCount();
+					}
+
 					// no sound for zoom clicks
 					InputEvents::processKey(wParam);
 					dwDownTime= 0L;
