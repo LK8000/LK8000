@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
+#include "DoInits.h"
 
 
 extern void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -18,13 +19,36 @@ int FastLogNum = 0; // number of points to log at high rate
 // Logger activity, and also add snailpoints
 //
 void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+
   static double SnailLastTime=0;
   static double LogLastTime=0;
   static double StatsLastTime=0;
+  static short maxerrlog=30;
+
+  // prevent bad fixes from being logged or added to OLC store
+  static double Time_last=0;
+  static double Longitude_last = 10;
+  static double Latitude_last = 10;
+  static double Longitude_snailed = 10;
+  static double Latitude_snailed = 10;
+
   double dtLog = 5.0;
   double dtSnail = 2.0;
   double dtStats = 60.0;
   double dtFRecord = 270; // 4.5 minutes (required minimum every 5)
+
+  if (DoInit[MDI_CALCLOGGING]) {
+	SnailLastTime=0;
+	LogLastTime=0;
+	StatsLastTime=0;
+	maxerrlog=30;
+	Time_last=0;
+	Longitude_last = 10;
+	Latitude_last = 10;
+	Longitude_snailed = 10;
+	Latitude_snailed = 10;
+	DoInit[MDI_CALCLOGGING]=false;
+  }
 
   if (Basic->NAVWarning) return;
 
@@ -53,30 +77,39 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     dtLog = 1.0;
   }
 
-  // prevent bad fixes from being logged or added to OLC store
-  static double Longitude_last = 10;
-  static double Latitude_last = 10;
-  static double Longitude_snailed = 10;
-  static double Latitude_snailed = 10;
   double distance;
 
   DistanceBearing(Basic->Latitude, Basic->Longitude, 
 		  Latitude_last, Longitude_last,
 		  &distance, NULL);
-  Latitude_last = Basic->Latitude;
-  Longitude_last = Basic->Longitude;
 
   // Do not log or add a snail point if in a single second we made more than 300m. (1000kmh)
   // This should allow loggin and snail logging also while using LK on a liner for fun.
   // This filter is necessary for managing wrong position fixes by the gps
   // Until 3.1f it was set to 200m
-  if (distance>300.0) {
-	#if TESTBENCH
-	StartupStore(_T("... At %s distance jumped too much, %f!  No DoLogging.\n"),WhatTimeIsIt(),distance);
-	#endif
+  double timepassed=Basic->Time - Time_last;
+
+  // Now we can save values, because we want to compare fix after fix. If we really jumped away,
+  // we shall accept this fact after the second fix far away.
+  Latitude_last = Basic->Latitude;
+  Longitude_last = Basic->Longitude;
+  Time_last=Basic->Time;
+
+  if (timepassed>0 && ((distance/timepassed)>300.0) ) {
+	if (maxerrlog>0) {
+		StartupStore(_T("... DoLogging: at %s distance jumped too much, %f in %fs!\n"),WhatTimeIsIt(),distance,timepassed);
+		maxerrlog--;
+	}
 	return;
   }
 
+  Latitude_last = Basic->Latitude;
+  Longitude_last = Basic->Longitude;
+  Time_last=Basic->Time;
+
+  //
+  // If time has advanced enough, add point to IGC
+  //
   if (Basic->Time - LogLastTime >= dtLog) {
     double balt = -1;
     if (Basic->BaroAltitudeAvailable) {
@@ -91,7 +124,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     // to remove, resulting currently in data loss inside IGC.
     // Since at takeoff calculation and main thread are using IGCWrite, we want to be sure
     // that the initial declaration is completed before proceeding with F and B records here!
-    static bool dowarn=true;
     if (IGCWriteLock) {
 	unsigned short loop=0;
 	while (++loop<50) {
@@ -99,12 +131,12 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if (!IGCWriteLock) break;
 	}
 	if (IGCWriteLock) {
-		if (dowarn) StartupStore(_T("..... LogPoint failed, IGCWriteLock %s!%s"),WhatTimeIsIt(),NEWLINE);
+		if (maxerrlog>0) StartupStore(_T("..... LogPoint failed, IGCWriteLock %s!%s"),WhatTimeIsIt(),NEWLINE);
 	} else {
-		if (dowarn) StartupStore(_T("..... LogPoint delayed by IGCWriteLock, ok.%s"),NEWLINE);
+		if (maxerrlog>0) StartupStore(_T("..... LogPoint delayed by IGCWriteLock, ok.%s"),NEWLINE);
 		LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt);
 	}
-	dowarn=false;
+	maxerrlog--;
     } else
 	LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt);
 
@@ -115,7 +147,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       LogLastTime = Basic->Time-dtLog;
     }
     if (FastLogNum) FastLogNum--;
-  }
+  } // time has advanced enough: >=dtLog
 
   if (Basic->Time - GetFRecordLastTime() >= dtFRecord) 
   { 

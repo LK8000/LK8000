@@ -65,6 +65,7 @@
 	MDI_MAPTEST,			// testing purposes
 	MDI_DRAWBOTTOMBAR,		// screen change
 	MDI_DRAWTASK,			// screen change
+	MDI_CALCLOGGING,		// generic reset
 	MDI_LAST_DOINIT,		
  } MDI_t;
 
