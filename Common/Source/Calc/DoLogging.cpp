@@ -26,6 +26,8 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double dtStats = 60.0;
   double dtFRecord = 270; // 4.5 minutes (required minimum every 5)
 
+  if (Basic->NAVWarning) return;
+
   if(Basic->Time <= LogLastTime) {
     LogLastTime = Basic->Time;
   }
