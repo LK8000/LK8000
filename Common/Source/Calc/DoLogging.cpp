@@ -88,6 +88,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // This filter is necessary for managing wrong position fixes by the gps
   // Until 3.1f it was set to 200m
   double timepassed=Basic->Time - Time_last;
+  if (Time_last==0) timepassed=0; // skip check
 
   // Now we can save values, because we want to compare fix after fix. If we really jumped away,
   // we shall accept this fact after the second fix far away.
