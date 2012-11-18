@@ -18,7 +18,9 @@
 void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   // In CAR mode, we call this function when at least 5m were made in 5 seconds
-  if (!Calculated->Flying && !ISCAR) return;
+  // We add points every second AFTER start of flight/trip
+  // The interpolator need (apparently) a fix a second right now, we should make it dynamical.
+  if (!Calculated->Flying) return;
 
   SnailTrail[SnailNext].Latitude = (float)(Basic->Latitude);
   SnailTrail[SnailNext].Longitude = (float)(Basic->Longitude);

@@ -69,7 +69,10 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // This filter is necessary for managing wrong position fixes by the gps
   // Until 3.1f it was set to 200m
   if (distance>300.0) {
-    return;
+	#if TESTBENCH
+	StartupStore(_T("... At %s distance jumped too much, %f!  No DoLogging.\n"),WhatTimeIsIt(),distance);
+	#endif
+	return;
   }
 
   if (Basic->Time - LogLastTime >= dtLog) {
@@ -102,6 +105,8 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	dowarn=false;
     } else
 	LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt);
+
+    // Remarks: LogPoint is also checking that there is a valid fix to proceed
 
     LogLastTime += dtLog;
     if (LogLastTime< Basic->Time-dtLog) {
