@@ -281,6 +281,27 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, i
       else
 	SetTextColor(hDC,RGB_WHITE); 
 
+#if 1
+    #ifdef WINE
+    SetBkMode(hDC,TRANSPARENT);
+    #endif
+    // Simplified, shadowing better and faster
+    // ETO_OPAQUE not necessary since we pass a NULL rect
+    //
+    ExtTextOut(hDC, x-1, y-1, 0, NULL, Value, size, NULL);
+    ExtTextOut(hDC, x-1, y+1, 0, NULL, Value, size, NULL);
+    ExtTextOut(hDC, x+1, y-1, 0, NULL, Value, size, NULL);
+    ExtTextOut(hDC, x+1, y+1, 0, NULL, Value, size, NULL);
+
+    if (OutlinedTp && 1) {
+	ExtTextOut(hDC, x-2, y, 0, NULL, Value, size, NULL);
+	ExtTextOut(hDC, x+2, y, 0, NULL, Value, size, NULL);
+	ExtTextOut(hDC, x, y-2, 0, NULL, Value, size, NULL);
+	ExtTextOut(hDC, x, y+2, 0, NULL, Value, size, NULL);
+    }
+#endif
+
+#if 0 //  UNUSED since 3.1i REMOVE
 #ifdef WINE
       SetBkMode(hDC,TRANSPARENT);
       ExtTextOut(hDC, x+2, y, 0, NULL, Value, size, NULL);
@@ -289,6 +310,8 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, i
       ExtTextOut(hDC, x-2, y, 0, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y+1, 0, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y-1, 0, NULL, Value, size, NULL);
+  //    ExtTextOut(hDC, x+1, y+1, 0, NULL, Value, size, NULL);
+   //   ExtTextOut(hDC, x-1, y-1, 0, NULL, Value, size, NULL);
 #else /* WINE */
       ExtTextOut(hDC, x+2, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x+1, y, ETO_OPAQUE, NULL, Value, size, NULL);
@@ -296,7 +319,12 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, i
       ExtTextOut(hDC, x-2, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y+1, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
+    //  ExtTextOut(hDC, x-1, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
+     // ExtTextOut(hDC, x+1, y+1, ETO_OPAQUE, NULL, Value, size, NULL);
+      //ExtTextOut(hDC, x+2, y+1, ETO_OPAQUE, NULL, Value, size, NULL);
+    //  ExtTextOut(hDC, x-2, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
 #endif /* WINE */
+#endif
 
       if (OutlinedTp) {
         SetTextColor(hDC,Mode->Color);

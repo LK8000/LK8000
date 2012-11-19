@@ -63,9 +63,14 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 			break;
 	}
 //rgb_text=RGB_MAGENTA;
+bool moreoutline=false;
 
 	switch(lwmode) {
 		case  WTMODE_OUTLINED:
+			//
+			// First set a background color for outlining
+			// black outline requires more width, to gain contrast.
+			//
 			switch (rgb_text ) {
 				// Here we invert colors, looking at the foreground. The trick is that the foreground
 				// colour is slightly different white to white, in order to understand how to invert it
@@ -74,9 +79,11 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 				//case RGB_SWHITE:
 					// text black, light background
 					SetTextColor(hDC,RGB_WHITE);
+					
 					break;
 				case RGB_SWHITE:  
 					SetTextColor(hDC,RGB_SBLACK);
+					moreoutline=true;
 					break;
 				case RGB_SBLACK:
 					SetTextColor(hDC,RGB_SWHITE);
@@ -86,6 +93,7 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 					break;
 				case RGB_GREEN:
 					SetTextColor(hDC,RGB_BLACK);
+					moreoutline=true;
 					break;
 				case RGB_PETROL:
 				case RGB_DARKGREY:
@@ -95,21 +103,51 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 					break;
 				case RGB_ICEWHITE:  
 					SetTextColor(hDC,RGB_DARKBLUE);
+					moreoutline=true;
 					break;
 				case RGB_WHITENOREV:
 					SetTextColor(hDC,RGB_BLACK);
+					moreoutline=true;
 					break;
 				case RGB_AMBERNOREV:
 					SetTextColor(hDC,RGB_BLACK);
+					moreoutline=true;
 					break;
 				default:
 					// this is the default also for white text. Normally we are writing on a 
 					// not-too-light background
 					SetTextColor(hDC,RGB_BLACK);
+					moreoutline=true;
 					break;
 			}
 				
 
+#if 1
+			// 
+			// Simplified, shadowing better and faster
+			// ETO_OPAQUE not necessary since we pass a NULL rect
+			//
+			ExtTextOut(hDC, x-1, y-1, 0, NULL, wText, maxsize, NULL);
+			ExtTextOut(hDC, x-1, y+1, 0, NULL, wText, maxsize, NULL);
+			ExtTextOut(hDC, x+1, y-1, 0, NULL, wText, maxsize, NULL);
+			ExtTextOut(hDC, x+1, y+1, 0, NULL, wText, maxsize, NULL);
+
+			// SetTextColor(hDC,RGB_GREY);  // This would give an Emboss effect
+			// ExtTextOut(hDC, x, y+2, 0, NULL, wText, maxsize, NULL);
+
+			if (moreoutline) {
+				ExtTextOut(hDC, x-2, y, 0, NULL, wText, maxsize, NULL);
+				ExtTextOut(hDC, x+2, y, 0, NULL, wText, maxsize, NULL);
+				ExtTextOut(hDC, x, y-2, 0, NULL, wText, maxsize, NULL);
+				ExtTextOut(hDC, x, y+2, 0, NULL, wText, maxsize, NULL);
+			}
+
+			SetTextColor(hDC,rgb_text); 
+			ExtTextOut(hDC, x, y, 0, NULL, wText, maxsize, NULL);
+			SetTextColor(hDC,RGB_BLACK); 
+#endif
+
+/*	UNUSED since 3.1i  REMOVE
 #if (WINDOWSPC>0)
 			ExtTextOut(hDC, x+1, y, 0, NULL, wText, maxsize, NULL);
 			ExtTextOut(hDC, x+2, y, 0, NULL, wText, maxsize, NULL);
@@ -119,10 +157,10 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 			ExtTextOut(hDC, x, y-1, 0, NULL, wText, maxsize, NULL);
 
 			if (ScreenSize == (ScreenSize_t)ss800x480) {
+				ExtTextOut(hDC, x+3, y, 0, NULL, wText, maxsize, NULL); 
+				ExtTextOut(hDC, x-3, y, 0, NULL, wText, maxsize, NULL); 
 				ExtTextOut(hDC, x, y+2, 0, NULL, wText, maxsize, NULL); 
 				ExtTextOut(hDC, x, y-2, 0, NULL, wText, maxsize, NULL); 
-				ExtTextOut(hDC, x-3, y, 0, NULL, wText, maxsize, NULL); 
-				ExtTextOut(hDC, x+3, y, 0, NULL, wText, maxsize, NULL); 
 				ExtTextOut(hDC, x, y+3, 0, NULL, wText, maxsize, NULL); 
 				ExtTextOut(hDC, x, y-3, 0, NULL, wText, maxsize, NULL); 
 			}
@@ -132,8 +170,8 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 			SetTextColor(hDC,RGB_BLACK); 
 #else
 
-			ExtTextOut(hDC, x+2, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
 			ExtTextOut(hDC, x+1, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
+			ExtTextOut(hDC, x+2, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
 			ExtTextOut(hDC, x-1, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
 			ExtTextOut(hDC, x-2, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
 			ExtTextOut(hDC, x, y+1, ETO_OPAQUE, NULL, wText, maxsize, NULL);
@@ -147,12 +185,12 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 				ExtTextOut(hDC, x, y+3, ETO_OPAQUE, NULL, wText, maxsize, NULL);
 				ExtTextOut(hDC, x, y-3, ETO_OPAQUE, NULL, wText, maxsize, NULL);
 			}
-
 			SetTextColor(hDC,rgb_text);
 
 			ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
 			SetTextColor(hDC,RGB_BLACK);
 #endif
+*/
 			break;
 
 		case WTMODE_NORMAL:
@@ -169,8 +207,6 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 			break;
 
 	}
-
-//	SelectObject(hDC, hbOld);
 
 	return;
 
