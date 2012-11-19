@@ -256,38 +256,37 @@ NEW THINGS
 
     New CAR/TREKKING functions
 
+    GPS-NAV task declaration support
 
-Overtarget rotation:
 
-    Skip MATE overtarget if no target mate is set.
+    Overtarget rotation:
+
+    -Skip MATE overtarget if no target mate is set.
     To access MATE own code the direct multitarget menu is available.
 
-    Skip F> overtarget if there is no Target set while Flarm is detected.
+    -Skip F> overtarget if there is no Target set while Flarm is detected.
 
 
-Buttons
-
+    Buttons
     Add Button INFO 1/2 for SONAR TOGGLE
 
 
-Pan Mode
-    PAN mode: smoother coordinates printed in overlay, fixed portrait mode glitch, DrawMapScale missing SetBKMode, Pen and Brush.
-    Do not paint battery/logger while panning, paint compass while panning only while steady touch.
+    Pan Mode
+    PAN mode: smoother coordinates printed in overlay, fixed portrait mode glitch
 
     Change PAN mode orientation: always NORTH UP.
-    So it will not twist around while panning in flight and circling!
+    (So it will not twist around while panning in flight and circling!)
 
 
-
-Bottom Bar
+    Bottom Bar
     BottomBar SYS6 showing CPU load percentage in place of Grecord available.
 
 
-New Infoboxes
+    New Infoboxes
 
     New Rotary_Speed and Rotary_Distance  values, for CAR mode, calculated average speed and distance achieved in the last LD average period of time. These values are reset by Trip Reset.
 
-New Customkeys
+    New Customkeys
     Add new customkey SONAR TOGGLE , will toggle the sonar sounds on and off in multimap ASP
 
     New customkey Reset Trip Computer .
@@ -300,6 +299,39 @@ New Customkeys
     Add new "Force landing" customkey.
     This will force landed status, so that logbook is updated, and eventually logger is stopped.
     This customkey requires to be below the takeoff speed, otherwise it will simply say "Stop moving".
+
+    New declutter engine for landable waypoints at low zoom levels
+
+    New virtual waypoint:  FREEFLY  and FAIOPTIM  .
+    They indicate start of freeflight and the current optimized triangle turnpoints.
+    They appear automatically inside COMMONs page, and in the waypoint list of course.
+
+    New PC SIMULATOR KEYS, working as an optional in addition to SIM buttons.
+    On PC, in SIM mode only, it is possible to trigger changes of altitude, direction and speed very quickly by using arrows and PageUp Pa
+geDown.
+    - Arrow Up/Down changes speed as with SIMULATOR buttons.
+    - Arrow Left/Right changes direction by 5 degrees, WITHOUT setting a turn rate.
+    - Page Up and Page Down will change altitude by 10 meters or 45 feet.
+
+    . By keeping the keys pressed, values will change rapidly.
+    . You cannot go below altitude 0.
+    . At altitude 0, while steady on ground, the simulator will set ground altitude.
+
+
+   NEW Replay logger keyboard commands for PC.
+    Only when in map pages (any multimap page) you can use PC keys to interact with the replay logger.
+    . Arrow Up  : lower replay speed , up to 0X .
+    . Arrow Down : higher replay speed, no limit.
+    . Arrow Right:  advance one minute forward in time
+    . Page Up:  advance 5 minutes forward in time
+
+    Remarks>
+    - you cannot go back in time .
+    - replay speed over 10x will report inaccurate values in calculations
+    - advancing in time will not update correctly calculations, doing interpolations.
+      It will simply skip all intermediate points .
+    - Setting replay speed 0 will let you examine the situation like freezing flight at that moment.
+    - this is working only on PC
 
 
 
@@ -328,6 +360,14 @@ CAR/BIKE/TREKKING MODE
 
     Change Aircraft category "Car" to "Car, Bike & Trekking"
 
+    CAR mode variometer is using horizontal G load . Other settngs are ignored.
+    The variobar will display acceleration and deceleration of your car/bike/boat/pedestrian ability.
+    The positive and negative acceleration have different scales, calculated dynamically during the trip.
+    Decelerations in cars are more effective and accelerations, and thus we have a separated scale.
+    After a few minutes the system will be autocalibrated to show accelerations and decelerations at best.
+    So even while running, or biking, this variobar will be usable.
+
+
 
 PARAGLIDERS
 
@@ -342,6 +382,15 @@ PARAGLIDERS
 
 
 CHANGES
+
+    Better white text outlinining, smoother and much nicer
+
+    Faster panning and zooming 
+    30% faster drawing airspaces "border only"
+
+    Airspace Sonar is now working globally, and can be disabled/enabled with a button
+
+    TASK lines made thicker and better visible
 
     Add optional glide footprint around active WP
 
@@ -378,8 +427,12 @@ CHANGES
     Improve battery warning messaging: after 1 hour with no errors, accept back warnings even if they were disabled because too many, previousy.
 
 
+    Terrain with no topology will print water areas all the same
+
 
 FIXES
+
+    Fix old bug  hardware keys no more working after defocusing LK windows, on PC or PDAs.
 
     Fix bug in FastPanning mode, forcing unwanted refresh. Panning mode much better and smoother now.
 
