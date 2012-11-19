@@ -1056,7 +1056,7 @@ drawOverlay:
 		}
 	}
 
-	if (ISPARAGLIDER || (IsMultimapOverlaysGauges()&&LKVarioBar)) {
+	if (ISPARAGLIDER || ((IsMultimapOverlaysGauges()&&LKVarioBar)&&!ISCAR)) {
 		if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal==vValVarioVario) {
 			LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle);
 			// wcscpy(BufferUnit,_T("VAR"));

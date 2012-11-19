@@ -14,9 +14,10 @@
 
 void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
-  double x0, y0, mag;
+  double x0, y0, mag=0;
   static double LastTime = 0;
   static double lastHeading = 0;
+  static double lastSpeed = 0;
 
   if (DoInit[MDI_HEADING]) {
 	LastTime = 0;
@@ -47,18 +48,34 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
       lastHeading = Calculated->Heading;
     }
-    LastTime = Basic->Time;
 
-    // calculate estimated true airspeed
-    mag = isqrt4((unsigned long)(x0*x0*100+y0*y0*100))/10.0;
-    Calculated->TrueAirspeedEstimated = mag;
+    if (ISCAR) {
+	// On ground, TAS is GS. Wind gradient irrilevant, normally.
+	Calculated->TrueAirspeedEstimated = Basic->Speed;
+    } else {
+	// calculate estimated true airspeed
+	mag = isqrt4((unsigned long)(x0*x0*100+y0*y0*100))/10.0;
+	Calculated->TrueAirspeedEstimated = mag;
+    }
     Calculated->IndicatedAirspeedEstimated = mag/AirDensityRatio(Calculated->NavAltitude);
     // estimate bank angle (assuming balanced turn)
     double angle = atan(DEG_TO_RAD*Calculated->TurnRateWind*
 			Calculated->TrueAirspeedEstimated/9.81);
 
     Calculated->BankAngle = RAD_TO_DEG*angle;
-    Calculated->Gload = 1.0/max(0.001,fabs(cos(angle)));
+
+    if (ISCAR) {
+	if(Basic->Time > LastTime) {
+		Calculated->Gload = ((Basic->Speed - lastSpeed) / (Basic->Time-LastTime))/9.81;
+		lastSpeed=Basic->Speed;
+	} else {
+		Calculated->Gload = 0;
+	}
+    } else {
+	Calculated->Gload = 1.0/max(0.001,fabs(cos(angle)));
+    }
+
+    LastTime = Basic->Time;
 
     // estimate pitch angle (assuming balanced turn)
 /*

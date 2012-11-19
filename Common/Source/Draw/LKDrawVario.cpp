@@ -235,6 +235,15 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 
   double value;
 
+  if (ISCAR) {
+	// Since we use currently a scale 0-6 for vario, we can use 0-2 for cars.
+	// This accounts for an acceleration topscale of 0-100kmh in 13.9 seconds.
+	// Not a big acceleration, but very good for normal car usage.
+	// 3 * 9.81 =29.43
+	value = DerivedDrawInfo.Gload*29.43;
+	goto _aftercar;
+  }
+
   if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal==vValVarioVario) {
 	if (DrawInfo.VarioAvailable) {
 		// UHM. I think we are not painting values correctly for knots &c.
@@ -269,6 +278,7 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 	}
   }
 
+_aftercar:
 
   if (dogaugeinit) {
 
