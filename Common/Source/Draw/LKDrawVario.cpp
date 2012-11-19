@@ -37,6 +37,8 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 
   static short startInitCounter=0;
   static bool dogaugeinit=true;
+  static double max_positiveGload;
+  static double max_negativeGload;
 
   if (DoInit[MDI_DRAWVARIO]) {
 
@@ -46,6 +48,9 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 
   startInitCounter=0;
   dogaugeinit=true;
+
+  max_positiveGload=1;
+  max_negativeGload=-1;
 
   // A dirty hack for an impossible division solution
   // lowres devices should have 8 bricks, and not 16 as asked by users!
@@ -233,14 +238,28 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   else
 	  SelectObject(hDC,blackThinPen);
 
-  double value;
+  double value=0;
 
   if (ISCAR) {
 	// Since we use currently a scale 0-6 for vario, we can use 0-2 for cars.
 	// This accounts for an acceleration topscale of 0-100kmh in 13.9 seconds.
 	// Not a big acceleration, but very good for normal car usage.
-	// 3 * 9.81 =29.43
-	value = DerivedDrawInfo.Gload*29.43;
+	// We make this concept dynamical, and different for positive and negative accelerations.
+	// Because negative accelerations are much higher, on a car. Of course!
+	//
+	if (DerivedDrawInfo.Gload>0) {
+		if (DerivedDrawInfo.Gload>max_positiveGload)
+			max_positiveGload=DerivedDrawInfo.Gload;
+		LKASSERT(max_positiveGload>0);
+		value = DerivedDrawInfo.Gload*(6/max_positiveGload)*9.81;
+	}
+	if (DerivedDrawInfo.Gload<0) {
+		if (DerivedDrawInfo.Gload<max_negativeGload)
+			max_negativeGload=DerivedDrawInfo.Gload;
+		LKASSERT(max_negativeGload<0);
+		value = DerivedDrawInfo.Gload*(6/(-1)*max_negativeGload)*9.81;
+	}
+
 	goto _aftercar;
   }
 
