@@ -49,8 +49,10 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   startInitCounter=0;
   dogaugeinit=true;
 
-  max_positiveGload=1;
-  max_negativeGload=-1;
+  // initial fullscale G loads for 2D driving.
+  // These values are then rescaled (only increased) automatically.
+  max_positiveGload=0.1;
+  max_negativeGload=-0.1;
 
   // A dirty hack for an impossible division solution
   // lowres devices should have 8 bricks, and not 16 as asked by users!
@@ -240,7 +242,10 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 
   double value=0;
 
-  if (ISCAR) {
+  if (ISCAR && DrawInfo.Speed>0) {
+	// Heading is setting Gload, but Heading is not calculated while steady!
+	// For this case, we force value to 0.
+	//
 	// Since we use currently a scale 0-6 for vario, we can use 0-2 for cars.
 	// This accounts for an acceleration topscale of 0-100kmh in 13.9 seconds.
 	// Not a big acceleration, but very good for normal car usage.
@@ -248,16 +253,22 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 	// Because negative accelerations are much higher, on a car. Of course!
 	//
 	if (DerivedDrawInfo.Gload>0) {
-		if (DerivedDrawInfo.Gload>max_positiveGload)
+		if (DerivedDrawInfo.Gload>max_positiveGload) {
 			max_positiveGload=DerivedDrawInfo.Gload;
+			StartupStore(_T("..... NEW MAXPOSITIVE G=%f\n"),max_positiveGload);
+		}
 		LKASSERT(max_positiveGload>0);
-		value = DerivedDrawInfo.Gload*(6/max_positiveGload)*9.81;
+		value = (DerivedDrawInfo.Gload/max_positiveGload)*6;
+		//StartupStore(_T("Speed=%f G=%f max=%f val=%f\n"),DrawInfo.Speed, DerivedDrawInfo.Gload, max_positiveGload,value);
 	}
 	if (DerivedDrawInfo.Gload<0) {
-		if (DerivedDrawInfo.Gload<max_negativeGload)
+		if (DerivedDrawInfo.Gload<max_negativeGload) {
 			max_negativeGload=DerivedDrawInfo.Gload;
+			StartupStore(_T("..... NEW MAXNEGATIVE G=%f\n"),max_negativeGload);
+		}
 		LKASSERT(max_negativeGload<0);
-		value = DerivedDrawInfo.Gload*(6/(-1)*max_negativeGload)*9.81;
+		value = (DerivedDrawInfo.Gload/max_negativeGload)*-6;
+		//StartupStore(_T("Speed=%f G=%f max=%f val=%f\n"),DrawInfo.Speed, DerivedDrawInfo.Gload, max_negativeGload,value);
 	}
 
 	goto _aftercar;
