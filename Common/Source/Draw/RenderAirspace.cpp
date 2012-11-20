@@ -135,7 +135,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 		case LKEVENT_LONGCLICK:
 		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
-			 {
+	             {
 			   if( Sideview_pHandeled[k].psAS != NULL)
 			   {
 				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
@@ -148,7 +148,19 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 				   // otherwise upon exiting we have no map underneath.
 				 }
 			   }
-			 }
+		     }
+#if 0
+		     // This is not working correctly because InteriorAirspaceDetails is finding
+		     // only the first airspace in the list, only one.
+		     if (LKevent!=LKEVENT_NONE) {
+			double xlat, ylon;
+			SideviewScreen2LatLon(XstartScreen,YstartScreen,xlat,ylon);
+			if (Event_InteriorAirspaceDetails(xlat, ylon))
+			{
+			        LKevent=LKEVENT_NONE; 
+			}
+	             }			
+#endif
 
 		     if (LKevent!=LKEVENT_NONE) {
 			 if (PtInRect(XstartScreen, YstartScreen,rc ))
