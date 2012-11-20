@@ -178,21 +178,23 @@ static void SetWPNameCaption(TCHAR* tFilter) {
 
 }
 
+unsigned int numvalidwp=0;
 
 static void PrepareData(void){
 
   TCHAR sTmp[20];
+  numvalidwp=0; // Reset them on entry!!
 
   if (!WayPointList) return;
 
   sNameFilter[0]='\0';
   SetWPNameCaption(TEXT("*"));
-
   WayPointSelectInfo = (WayPointSelectInfo_t*)malloc(sizeof(WayPointSelectInfo_t) * NumberOfWayPoints);
   if (WayPointSelectInfo==NULL) {
 	OutOfMemory(__FILE__,__LINE__);
 	return;
   }
+  memset(WayPointSelectInfo,0,sizeof(WayPointSelectInfo));
 
   StrIndex = (int*)malloc(sizeof(int)*(NumberOfWayPoints+1));
   if (StrIndex==NULL) {
@@ -203,30 +205,37 @@ static void PrepareData(void){
   }
 
   for (int i=0; i<(int)NumberOfWayPoints; i++){
-    WayPointSelectInfo[i].Index = i;
+
+    LKASSERT(numvalidwp<=NumberOfWayPoints);
+
+    if (WayPointList[i].Latitude==RESWP_INVALIDNUMBER) continue;
+    WayPointSelectInfo[numvalidwp].Index = i;
 
     DistanceBearing(Latitude,
                     Longitude,
                     WayPointList[i].Latitude,
                     WayPointList[i].Longitude,
-                    &(WayPointSelectInfo[i].Distance),
-                    &(WayPointSelectInfo[i].Direction));
-    WayPointSelectInfo[i].Distance *= DISTANCEMODIFY;
+                    &(WayPointSelectInfo[numvalidwp].Distance),
+                    &(WayPointSelectInfo[numvalidwp].Direction));
+    WayPointSelectInfo[numvalidwp].Distance *= DISTANCEMODIFY;
 
     LK_tcsncpy(sTmp, WayPointList[i].Name, 4);
     _tcsupr(sTmp);
 
-    WayPointSelectInfo[i].FourChars =
+    WayPointSelectInfo[numvalidwp].FourChars =
                     (((DWORD)sTmp[0] & 0xff) << 24)
                   + (((DWORD)sTmp[1] & 0xff) << 16)
                   + (((DWORD)sTmp[2] & 0xff) << 8)
                   + (((DWORD)sTmp[3] & 0xff) );
 
-    WayPointSelectInfo[i].Type = WayPointList[i].Flags;
+    WayPointSelectInfo[numvalidwp].Type = WayPointList[i].Flags;
 
-    WayPointSelectInfo[i].FileIdx = WayPointList[i].FileNum;
+    WayPointSelectInfo[numvalidwp].FileIdx = WayPointList[i].FileNum;
+    numvalidwp++;
 
   }
+  // we exit with numvalidwp pointing to next *not valid* position
+  // so all checks must be done using <numvalidwp
 
   qsort(WayPointSelectInfo, UpLimit,
       sizeof(WayPointSelectInfo_t), WaypointNameCompare);
@@ -242,15 +251,16 @@ static void UpdateList(void){
 
   ItemIndex = 0;
 
-  UpLimit=NumberOfWayPoints;
+  UpLimit=numvalidwp;
+  LKASSERT(UpLimit>0);
   LowLimit =0;
 
   FullFlag=false; // 100502
 
   if (TypeFilterIdx == 1){
-    qsort(WayPointSelectInfo, NumberOfWayPoints,
+    qsort(WayPointSelectInfo, numvalidwp-1,
         sizeof(WayPointSelectInfo_t), WaypointAirportCompare);
-    for (i=0; i<(int)NumberOfWayPoints; i++){
+    for (i=0; i<(int)numvalidwp; i++){
       if (!(WayPointSelectInfo[i].Type & (AIRPORT))){
         UpLimit = i;
         break;
@@ -259,9 +269,9 @@ static void UpdateList(void){
   }
 
   if (TypeFilterIdx == 2){
-    qsort(WayPointSelectInfo, NumberOfWayPoints,
+    qsort(WayPointSelectInfo, numvalidwp-1,
         sizeof(WayPointSelectInfo_t), WaypointLandableCompare);
-    for (i=0; i<(int)NumberOfWayPoints; i++){
+    for (i=0; i<(int)numvalidwp; i++){
       if (!(WayPointSelectInfo[i].Type & (AIRPORT | LANDPOINT))){
         UpLimit = i;
         break;
@@ -270,9 +280,9 @@ static void UpdateList(void){
   }
 
   if (TypeFilterIdx == 3){
-    qsort(WayPointSelectInfo, NumberOfWayPoints,
+    qsort(WayPointSelectInfo, numvalidwp-1,
         sizeof(WayPointSelectInfo_t), WaypointWayPointCompare);
-    for (i=0; i<(int)NumberOfWayPoints; i++){
+    for (i=0; i<(int)numvalidwp; i++){
       if (!(WayPointSelectInfo[i].Type & (TURNPOINT))){
         UpLimit = i;
         break;
@@ -283,9 +293,9 @@ static void UpdateList(void){
   if (TypeFilterIdx == 4 || TypeFilterIdx == 5){
     // distancemode = true;
     SelectedWayPointFileIdx = TypeFilterIdx-4;
-    qsort(WayPointSelectInfo, NumberOfWayPoints,
+    qsort(WayPointSelectInfo, numvalidwp-1,
         sizeof(WayPointSelectInfo_t), WaypointFileIdxCompare);
-    for (i=0; i<(int)NumberOfWayPoints; i++){
+    for (i=0; i<(int)numvalidwp; i++){
       if (WayPointSelectInfo[i].FileIdx != SelectedWayPointFileIdx){
         UpLimit = i;
         break;
@@ -842,8 +852,6 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
 
   if (!wf) return -1;
 
-  //ASSERT(wf!=NULL);
-
   wf->SetKeyDownNotify(FormKeyDown);
 
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnWPSCloseClicked);
@@ -851,13 +859,13 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   ((WndButton *)wf->FindByName(TEXT("cmdSelect")))->SetOnClickNotify(OnWPSSelectClicked);
 
   wWayPointList = (WndListFrame*)wf->FindByName(TEXT("frmWayPointList"));
-  //ASSERT(wWayPointList!=NULL);
+  LKASSERT(wWayPointList!=NULL);
   wWayPointList->SetBorderKind(BORDERLEFT);
   wWayPointList->SetEnterCallback(OnWaypointListEnter);
   wWayPointList->SetWidth(wf->GetWidth() - wWayPointList->GetLeft()-2);
 
   wWayPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWayPointListEntry"));
-  //ASSERT(wWayPointListEntry!=NULL);
+  LKASSERT(wWayPointListEntry!=NULL);
   wWayPointListEntry->SetCanFocus(true);
    // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
    if ( wWayPointList->ScrollbarWidth == -1) {  
@@ -878,7 +886,6 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   PrepareData();
   if (WayPointSelectInfo==NULL) goto _return; // Will be null also if strindex was null
   UpdateList();
-
   wf->SetTimerNotify(OnTimerNotify);
 
   if ((wf->ShowModal() == mrOK) && (UpLimit - LowLimit > 0) && (ItemIndex >= 0) 
