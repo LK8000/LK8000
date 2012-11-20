@@ -113,15 +113,16 @@ static  bool bHeightScale = false;
 				 {
 				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-				   //bFound = true;
-				   return;
+				   LKevent=LKEVENT_NONE;
 				 }
 			   }
 			 }
+		     if ( LKevent != LKEVENT_NONE ) {
 			 if (PtInRect(XstartScreen, YstartScreen,rc ))
 			   bHeightScale = true;
 			 if (PtInRect(XstartScreen, YstartScreen,rct ))
 			   bHeightScale = false;
+		     }
 	     break;
 
 		case LKEVENT_PAGEUP:

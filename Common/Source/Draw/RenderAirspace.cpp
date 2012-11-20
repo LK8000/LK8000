@@ -143,15 +143,19 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
 				   //bFound = true;
-			//	   LKevent=LKEVENT_NONE; 
-				   return;
+				   LKevent=LKEVENT_NONE; 
+				   // return; // NO. We must finish painting the background instead.
+				   // otherwise upon exiting we have no map underneath.
 				 }
 			   }
 			 }
+
+		     if (LKevent!=LKEVENT_NONE) {
 			 if (PtInRect(XstartScreen, YstartScreen,rc ))
 			   bHeightScale = true;
 			 if (PtInRect(XstartScreen, YstartScreen,rct ))
 			   bHeightScale = false;
+		     }
 	     break;
 
 		case LKEVENT_PAGEUP:
