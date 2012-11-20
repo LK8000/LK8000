@@ -89,7 +89,6 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
     }
 /*********************************************************/
 
-
     if(ISPARAGLIDER && bFAI)
     {
       HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
@@ -100,6 +99,7 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
       int iRadius = (int)((lat2-lat1)*zoom.DrawScale());
       Circle(hdc, Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
       SelectObject (hdc, hOldPen);
+      DeleteObject(hpSectorPen);
     }
 
 /*********************************************************/
