@@ -249,6 +249,8 @@ void UpdateAnalysis(void){
       if(result.Type() == contestType) {
         BOOL bFAI = CContestMgr::Instance().FAI();
         double  fDist     = result.Distance();
+        if(!bFAI)
+        	fDist /=2.0;
         double  fCPDist   = CContestMgr::Instance().GetClosingPointDist();
         double  fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
     // 	LKASSERT( fDist >0 );
@@ -257,12 +259,12 @@ void UpdateAnalysis(void){
 
 
         TCHAR distStr[50];  TCHAR speedStr[50];
-        if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && (bFAI))
+        if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && bFAI)
           _stprintf(distStr, _T("%.1f %s FAI\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
         else
           _stprintf(distStr, _T("%.1f %s\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
 
-        if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && (bFAI))
+        if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && bFAI )
           _stprintf(speedStr, _T("C:%-.1f %s\r\n(%.1f %%)\r\n"),  DISTANCEMODIFY * fCPDist, Units::GetDistanceName(),fCPDist/fDist*100.0);
         else
           _stprintf(speedStr, TEXT("%.1f %s\r\n"),TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
@@ -270,7 +272,7 @@ void UpdateAnalysis(void){
         Units::TimeToText(timeTempStr, result.Duration());
         TCHAR timeStr[50];
 
-        if( (result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && (bFAI) /*&& (( fCPDist - fB_CPDist ) > 1000)*/)
+        if( (result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && bFAI && ISPARAGLIDER)
           _stprintf(timeStr, _T("\r\nB:%-.1f %s\r\n(%.1f %%)\r\n"), DISTANCEMODIFY * fB_CPDist, Units::GetDistanceName(), fB_CPDist/fDist*100.0);
         else
           _stprintf(timeStr, _T("%s\r\n"), timeTempStr);

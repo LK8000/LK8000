@@ -14,6 +14,7 @@
 #include <map>
 #include <memory>
 
+
 #ifdef TEST_CONTEST
 class CTestContest;
 #endif
@@ -157,17 +158,12 @@ public:
   static CContestMgr &Instance() { return _instance; }
   static const TCHAR *TypeToString(TType type);
   
-  CPointGPS GetClosingPoint(void ) {return _pgpsClosePoint;};
-  double GetClosingPointLat(void ) {return _pgpsClosePoint.Latitude();};
-  double GetClosingPointLon(void ) {return _pgpsClosePoint.Longitude();};
-  double GetClosingPointAlt(void ) {return _pgpsClosePoint.Altitude();};
+  CPointGPS GetClosingPoint(void )         {return _pgpsClosePoint;};
+  CPointGPS GetBestNearClosingPoint(void ) {return _pgpsNearPoint;};
+  CPointGPS GetBestClosingPoint(void )     {return _pgpsBestClosePoint;};
 
-  double GetBestClosingPointLat(void ) {return _pgpsBestClosePoint.Latitude();};
-  double GetBestClosingPointLon(void ) {return _pgpsBestClosePoint.Longitude();};
-  double GetBestClosingPointAlt(void ) {return _pgpsBestClosePoint.Altitude();};
-
-  double GetClosingPointDist(void) { return _trace->Back()->GPS().Distance(_pgpsBestClosePoint);};
-  double GetBestClosingPointDist(void) {return _fBestTogo;};
+  double GetClosingPointDist(void) { return _fTogo/*_trace->Back()->GPS().Distance(_pgpsBestClosePoint)*/;};
+  double GetBestClosingPointDist(void) { return  _fBestTogo /*return min(_fTogo,_fBestTogo)*/;};
   BOOL FAI(void) {return _bFAI;};
   CContestMgr();
   

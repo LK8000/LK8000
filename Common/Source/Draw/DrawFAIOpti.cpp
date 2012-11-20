@@ -47,8 +47,9 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
     const CPointGPSArray &points = result.PointArray();
     unsigned int iSize = points.size();
     CContestMgr::TType sType = result.Type();
-    double lat_CP = CContestMgr::Instance().GetClosingPointLat();
-    double lon_CP = CContestMgr::Instance().GetClosingPointLon();
+
+    double lat_CP = CContestMgr::Instance().GetClosingPoint().Latitude();
+    double lon_CP = CContestMgr::Instance().GetClosingPoint().Longitude();
     double fFAIDistance = result.Distance();
   UnlockTaskData(); // protect from external task changes
   if((sType ==  CContestMgr::TYPE_FAI_TRIANGLE) && iSize>0)
@@ -89,13 +90,16 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 /*********************************************************/
 
 
-    if(bFAI)
+    if(ISPARAGLIDER && bFAI)
     {
+      HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
+      HPEN hOldPen = (HPEN) SelectObject (hdc, hpSectorPen);
       POINT Pt1;
 	  MapWindow::LatLon2Screen(lon_CP, lat_CP,  Pt1);
-      FindLatitudeLongitude(lat1, lon1, 0 , 500, &lat2, &lon2); /* 1000m destination circle */
+      FindLatitudeLongitude(lat1, lon1, 0 , fFAIDistance* 0.20, &lat2, &lon2); /* 1000m destination circle */
       int iRadius = (int)((lat2-lat1)*zoom.DrawScale());
       Circle(hdc, Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
+      SelectObject (hdc, hOldPen);
     }
 
 /*********************************************************/

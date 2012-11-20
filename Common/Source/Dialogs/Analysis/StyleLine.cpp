@@ -85,6 +85,19 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
     DeleteObject(mpen);
   break;
 
+  case STYLE_ORANGETHIN:
+	COL =  RGB(255,165,0);
+	if(INVERTCOLORS)
+	  COL = ChangeBrightness(COL,0.7);
+
+	line[0].x +=2;
+	line[1].x +=2;
+  mpen = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  COL);
+  oldpen = (HPEN)SelectObject(hdc, (HPEN)mpen);
+  MapWindow::_Polyline(hdc, line, 2, rc);
+  SelectObject(hdc, oldpen);
+  DeleteObject(mpen);
+  break;
   case STYLE_DASHGREEN:
 	COL = RGB(0,255,0);
 	if(INVERTCOLORS)

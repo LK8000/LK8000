@@ -339,6 +339,22 @@ ResetScale();
     {
 	  if(points.size() >3)
 	  {
+
+        if(ISPARAGLIDER)
+        {
+		  lat0 = CContestMgr::Instance().GetBestNearClosingPoint().Latitude();
+		  lon0 = CContestMgr::Instance().GetBestNearClosingPoint().Longitude();
+		  lat1 = CContestMgr::Instance().GetBestClosingPoint().Latitude();
+		  lon1 = CContestMgr::Instance().GetBestClosingPoint().Longitude();
+		  x1 = (lon0-lon_c)*fastcosine(lat0);
+		  y1 = (lat0-lat_c);
+		  x2 = (lon1-lon_c)*fastcosine(lat1);
+		  y2 = (lat1-lat_c);
+        }
+//	    DrawDashLine(hdc,NIBLSCALE(1), (POINT){x0,y0}, (POINT){x1,y1},  RGB_ORANGE, rc);
+		DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_ORANGETHIN ); //result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
+
+
 	    lat1 = points[1].Latitude();
 	    lon1 = points[1].Longitude();
 	    lat2 = points[3].Latitude();
@@ -358,14 +374,21 @@ ResetScale();
 	    ExtTextOut(hdc, ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 #endif
 
-	    lat0 = CContestMgr::Instance().GetClosingPointLat();
-	    lon0 = CContestMgr::Instance().GetClosingPointLon();
+	    lat0 = CContestMgr::Instance().GetClosingPoint().Latitude();
+	    lon0 = CContestMgr::Instance().GetClosingPoint().Longitude();
 	    x0 = (lon0-lon_c)*fastcosine(lat0);
 	    y0 = (lat0-lat_c);
 	    DrawLine(hdc, rc, xp, yp, x0, y0, STYLE_REDTHICK);
+
+
+
+
+
 	  }
     }
   }
+
+
 
 
 DrawXGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
