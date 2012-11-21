@@ -399,11 +399,17 @@ else*/
 		_uiFAIDist = (unsigned int)fFAIDist;
 		_pgpsBestClosePoint = _pgpsClosePoint;
 		_fBestTogo = _fTogo;
+		_pgpsBestClosePoint = _pgpsClosePoint;
+		_pgpsNearPoint      = trace.Back()->GPS();
 	  }
 
-	  point = first;
+	  point = trace.Front();
 	  if(point)
+	  {
 	    DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &_fTogo, &fAngle);
+		_pgpsClosePoint = point->GPS();
+	  }
+
 	  while( (point->GPS().Time() <=  points[1].Time()) && (point != last) && point)
 	  {
 		DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &fDist, &fAngle);
@@ -414,36 +420,33 @@ else*/
 	    }
 	    point = point->Next();
 	  }
-    }
 
-	if(last)
-	  if(_fTogo < _fBestTogo)
+	  if((_fTogo < _fBestTogo) && trace.Back())
 	  {
 		_pgpsBestClosePoint = _pgpsClosePoint;
-		_pgpsNearPoint      = last->GPS();
+		_pgpsNearPoint      = trace.Back()->GPS();
 		_fBestTogo          = _fTogo;
 	  }
-	  if(_bFAI)
-	  {
-	    WayPointList[RESWP_FAIOPTIMIZED].Latitude=_pgpsClosePoint.Latitude();
-	    WayPointList[RESWP_FAIOPTIMIZED].Longitude=_pgpsClosePoint.Longitude();
-	    WayPointList[RESWP_FAIOPTIMIZED].Altitude=_pgpsClosePoint.Altitude();
-	    if (WayPointList[RESWP_FAIOPTIMIZED].Altitude==0) WayPointList[RESWP_FREEFLY].Altitude=0.001;
-	    WayPointList[RESWP_FAIOPTIMIZED].Reachable=TRUE;
-	    WayPointList[RESWP_FAIOPTIMIZED].Visible=TRUE;
-	  }
-	  else
-	  {
-		WayPointList[RESWP_FAIOPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
-		WayPointList[RESWP_FAIOPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
-		WayPointList[RESWP_FAIOPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
-	    WayPointList[RESWP_FAIOPTIMIZED].Reachable=false;
-	    WayPointList[RESWP_FAIOPTIMIZED].Visible=false;
-	  }
+	}
 
+	if(_bFAI)
+	{
+	  WayPointList[RESWP_FAIOPTIMIZED].Latitude=_pgpsClosePoint.Latitude();
+	  WayPointList[RESWP_FAIOPTIMIZED].Longitude=_pgpsClosePoint.Longitude();
+	  WayPointList[RESWP_FAIOPTIMIZED].Altitude=_pgpsClosePoint.Altitude();
+	  if (WayPointList[RESWP_FAIOPTIMIZED].Altitude==0) WayPointList[RESWP_FREEFLY].Altitude=0.001;
+	  WayPointList[RESWP_FAIOPTIMIZED].Reachable=TRUE;
+	  WayPointList[RESWP_FAIOPTIMIZED].Visible=TRUE;
+	}
+	else
+	{
+	  WayPointList[RESWP_FAIOPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
+	  WayPointList[RESWP_FAIOPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
+	  WayPointList[RESWP_FAIOPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
+	  WayPointList[RESWP_FAIOPTIMIZED].Reachable=false;
+	  WayPointList[RESWP_FAIOPTIMIZED].Visible=false;
+	}
   }
-
-
 }
 
 

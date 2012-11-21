@@ -68,7 +68,7 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
       DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
 
 
-      if((fDist > FAI_MIN_DISTANCE_THRESHOLD) && (ui < 2) && !bFlat && (fDist/ fFAIDistance  > 0.05))
+      if((fDist > FAI_MIN_DISTANCE_THRESHOLD) && (ui < 3) && !bFlat && (fDist/ fFAIDistance  > 0.05))
   	  {
     	fPrefAngle = fAngle;
   		COLORREF rgbCol = RGB_BLUE;
@@ -89,6 +89,7 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
     }
 /*********************************************************/
 
+
     if(ISPARAGLIDER && bFAI)
     {
       HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
@@ -97,6 +98,9 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  MapWindow::LatLon2Screen(lon_CP, lat_CP,  Pt1);
       FindLatitudeLongitude(lat1, lon1, 0 , fFAIDistance* 0.20, &lat2, &lon2); /* 1000m destination circle */
       int iRadius = (int)((lat2-lat1)*zoom.DrawScale());
+      Circle(hdc, Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
+      FindLatitudeLongitude(lat1, lon1, 0 , 500, &lat2, &lon2); /* 1000m destination circle */
+      iRadius = (int)((lat2-lat1)*zoom.DrawScale());
       Circle(hdc, Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
       SelectObject (hdc, hOldPen);
       DeleteObject(hpSectorPen);

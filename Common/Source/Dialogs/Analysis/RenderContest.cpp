@@ -191,7 +191,7 @@ double lat_c, lon_c;
 double  lat_p = GPS_INFO.Latitude;
 double  lon_p = GPS_INFO.Longitude;
 BOOL bFlat = false;
-#define DRAWPERCENT
+//#define DRAWPERCENT
 #ifdef DRAWPERCENT
 double fTotalPercent = 1.0;
 #endif
@@ -350,10 +350,8 @@ ResetScale();
 		  y1 = (lat0-lat_c);
 		  x2 = (lon1-lon_c)*fastcosine(lat1);
 		  y2 = (lat1-lat_c);
+		  DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_ORANGETHIN ); //result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
         }
-//	    DrawDashLine(hdc,NIBLSCALE(1), (POINT){x0,y0}, (POINT){x1,y1},  RGB_ORANGE, rc);
-		DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_ORANGETHIN ); //result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
-
 
 	    lat1 = points[1].Latitude();
 	    lon1 = points[1].Longitude();
@@ -379,11 +377,6 @@ ResetScale();
 	    x0 = (lon0-lon_c)*fastcosine(lat0);
 	    y0 = (lat0-lat_c);
 	    DrawLine(hdc, rc, xp, yp, x0, y0, STYLE_REDTHICK);
-
-
-
-
-
 	  }
     }
   }
