@@ -380,8 +380,11 @@ else*/
 
 
     const CPointGPSArray &points = _resultArray[TYPE_FAI_TRIANGLE]._pointArray;
-	double fDist=0, fAngle =0.0;
+
+	double fDist= _resultArray[TYPE_FAI_TRIANGLE].Distance(), fAngle =0.0;
 	 _bFAI = false;
+	if(points.size() > 1)
+	  _pgpsClosePoint = points[0];
 	if(points.size() > 3)
 	{
 	  _bFAI = true;
@@ -393,7 +396,6 @@ else*/
 	  if ((fLeg1 / fFAIDist) < 0.28) _bFAI = false;
 	  if ((fLeg2 / fFAIDist) < 0.28) _bFAI = false;
 	  if ((fLeg3 / fFAIDist) < 0.28) _bFAI = false;
-	  _pgpsClosePoint = points[0];
 	  if(_uiFAIDist != (unsigned int)fFAIDist)  /* reset previous  infos */
 	  {
 		_uiFAIDist = (unsigned int)fFAIDist;
@@ -403,22 +405,23 @@ else*/
 		_pgpsNearPoint      = trace.Back()->GPS();
 	  }
 
-	  point = trace.Front();
+	  _pgpsClosePoint = points[0];
+	  point = first;
 	  if(point)
 	  {
-	    DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &_fTogo, &fAngle);
+		DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &_fTogo, &fAngle);
 		_pgpsClosePoint = point->GPS();
 	  }
 
 	  while( (point->GPS().Time() <=  points[1].Time()) && (point != last) && point)
 	  {
 		DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &fDist, &fAngle);
-	    if(fDist < _fTogo )
-	    {
+		if(fDist < _fTogo )
+		{
 		  _pgpsClosePoint = point->GPS();
 		  _fTogo = fDist;
-	    }
-	    point = point->Next();
+		}
+		point = point->Next();
 	  }
 
 	  if((_fTogo < _fBestTogo) && trace.Back())
@@ -429,7 +432,8 @@ else*/
 	  }
 	}
 
-	if(_bFAI)
+
+	if(points.size() > 1) //	if(_bFAI)
 	{
 	  WayPointList[RESWP_FAIOPTIMIZED].Latitude=_pgpsClosePoint.Latitude();
 	  WayPointList[RESWP_FAIOPTIMIZED].Longitude=_pgpsClosePoint.Longitude();
@@ -437,6 +441,10 @@ else*/
 	  if (WayPointList[RESWP_FAIOPTIMIZED].Altitude==0) WayPointList[RESWP_FREEFLY].Altitude=0.001;
 	  WayPointList[RESWP_FAIOPTIMIZED].Reachable=TRUE;
 	  WayPointList[RESWP_FAIOPTIMIZED].Visible=TRUE;
+	  if(_bFAI)
+	    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("%-.1f %s %s"),_uiFAIDist *DISTANCEMODIFY,Units::GetDistanceName(), gettext(TEXT("_@M1816_"))); // FAI triangle closing point
+	  else
+		_stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("%-.1f %s %s"),fDist      *DISTANCEMODIFY,Units::GetDistanceName(), gettext(TEXT("_@M1817_"))); // JoJo closing point
 	}
 	else
 	{
@@ -445,6 +453,7 @@ else*/
 	  WayPointList[RESWP_FAIOPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
 	  WayPointList[RESWP_FAIOPTIMIZED].Reachable=false;
 	  WayPointList[RESWP_FAIOPTIMIZED].Visible=false;
+	  _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("no triangle closing point found!"));
 	}
   }
 }

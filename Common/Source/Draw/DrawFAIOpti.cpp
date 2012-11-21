@@ -74,14 +74,14 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
   		COLORREF rgbCol = RGB_BLUE;
   		switch(ui)
   		{
-  		  case 0: rgbCol = RGB_LIGHTYELLOW; break;
-  		  case 1: rgbCol = RGB_LIGHTCYAN  ; break;
-  		  case 2: rgbCol = RGB_LIGHTGREEN ; break;
+  		  case 0: rgbCol = RGB_YELLOW; break;
+  		  case 1: rgbCol = RGB_CYAN  ; break;
+  		  case 2: rgbCol = RGB_GREEN ; break;
   		  default:
   		  break;
   		}
-  		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 1, 0 );
-  		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 0, 0 );
+  		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 1, rgbCol );
+  		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 0, rgbCol );
   	  }
       if (fFAIDistance > 0)  /* check if triangle is too flat for second sector */
         if(fDist/ fFAIDistance  > 0.45)
@@ -244,17 +244,17 @@ double dir = -1.0;
   /********************************************************************
    * draw polygon
    ********************************************************************/
-  HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
+  HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  fillcolor );
   HBRUSH hpSectorFill = NULL;
 
   HPEN hpOldPen     = (HPEN)  SelectObject(hdc, hpSectorPen);
   HBRUSH hpOldBrush;
-  if (fillcolor != 0)
+/*  if (fillcolor != 0)
   {
 	hpSectorFill = (HBRUSH)CreateSolidBrush(fillcolor);
     hpOldBrush = (HBRUSH)SelectObject(hdc, hpSectorFill);
   }
-  else
+  else */
     hpOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
 
 

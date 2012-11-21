@@ -1816,10 +1816,13 @@ _@M1811_ "Total"
 _@M1812_ "Chrono"
 
 # New virtual waypoints
-_@M1813_ "FAI OPTIMIZED"
+_@M1813_ "FAI CLOSE"
 _@M1814_ "FREEFLY"
 # 1815 can be changed anytime, do not reuse!
 _@M1815_ "UNUSED"
+_@M1816_ "FAI closing point"
+_@M1817_ "out and return closing point"
+
 
 ############################################################
 #                  - MENU MESSAGES - 
