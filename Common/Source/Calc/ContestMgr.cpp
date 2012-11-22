@@ -384,30 +384,33 @@ else*/
 	 _bFAI = false;
 	if(points.size() > 3)
 	{
+	  double fRelMin = 0.28;
 	  _bFAI = true;
 	  double fLeg1 = points[1].Distance(points[2]);
 	  double fLeg2 = points[2].Distance(points[3]);
 	  double fLeg3 = points[3].Distance(points[1]);
 	  double fFAIDist = fLeg1 + fLeg2 + fLeg3;
 	  if(fFAIDist <=0.0) fFAIDist = 1.0;
-	  if ((fLeg1 / fFAIDist) < 0.28) _bFAI = false;
-	  if ((fLeg2 / fFAIDist) < 0.28) _bFAI = false;
-	  if ((fLeg3 / fFAIDist) < 0.28) _bFAI = false;
-	  _pgpsClosePoint = points[0];
-	  if(_uiFAIDist != (unsigned int)fFAIDist)  /* reset previous  infos */
-	  {
-		_uiFAIDist = (unsigned int)fFAIDist;
-		_pgpsBestClosePoint = _pgpsClosePoint;
-		_fBestTogo = _fTogo;
-		_pgpsBestClosePoint = _pgpsClosePoint;
-		_pgpsNearPoint      = trace.Back()->GPS();
-	  }
+	  if(fFAIDist > 500000)
+		  fRelMin = 0.25;
+	  if ((fLeg1 / fFAIDist) < fRelMin) _bFAI = false;
+	  if ((fLeg2 / fFAIDist) < fRelMin) _bFAI = false;
+	  if ((fLeg3 / fFAIDist) < fRelMin) _bFAI = false;
 
 	  point = trace.Front();
 	  if(point)
 	  {
 	    DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &_fTogo, &fAngle);
 		_pgpsClosePoint = point->GPS();
+	  }
+
+	  if((unsigned int)(_uiFAIDist*100.0) != (unsigned int)(fFAIDist*100.0))  /* copare if still the same FAI ? */
+	  {
+		_uiFAIDist = fFAIDist;     /* reset previous  infos */
+		_pgpsBestClosePoint = _pgpsClosePoint;
+		_fBestTogo = _fTogo;
+		_pgpsBestClosePoint = _pgpsClosePoint;
+		_pgpsNearPoint      = trace.Back()->GPS();
 	  }
 
 	  while( (point->GPS().Time() <=  points[1].Time()) && (point != last) && point)
@@ -421,11 +424,12 @@ else*/
 	    point = point->Next();
 	  }
 
-	  if((_fTogo < _fBestTogo) && trace.Back())
+	  if((_fTogo < _fBestTogo) && trace.Back())     /* shorter than before ? */
 	  {
-		_pgpsBestClosePoint = _pgpsClosePoint;
-		_pgpsNearPoint      = trace.Back()->GPS();
-		_fBestTogo          = _fTogo;
+		_fBestTogo          = _fTogo;               /* remember closest distance */
+		_pgpsBestClosePoint = _pgpsClosePoint;      /* best closing point        */
+		_pgpsNearPoint      = trace.Back()->GPS();  /* with current position     */
+
 	  }
 	}
 
