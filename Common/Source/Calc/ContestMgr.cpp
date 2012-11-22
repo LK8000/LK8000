@@ -380,11 +380,8 @@ else*/
 
 
     const CPointGPSArray &points = _resultArray[TYPE_FAI_TRIANGLE]._pointArray;
-
-	double fDist= _resultArray[TYPE_FAI_TRIANGLE].Distance(), fAngle =0.0;
+	double fDist=0, fAngle =0.0;
 	 _bFAI = false;
-	if(points.size() > 1)
-	  _pgpsClosePoint = points[0];
 	if(points.size() > 3)
 	{
 	  _bFAI = true;
@@ -396,6 +393,7 @@ else*/
 	  if ((fLeg1 / fFAIDist) < 0.28) _bFAI = false;
 	  if ((fLeg2 / fFAIDist) < 0.28) _bFAI = false;
 	  if ((fLeg3 / fFAIDist) < 0.28) _bFAI = false;
+	  _pgpsClosePoint = points[0];
 	  if(_uiFAIDist != (unsigned int)fFAIDist)  /* reset previous  infos */
 	  {
 		_uiFAIDist = (unsigned int)fFAIDist;
@@ -405,23 +403,22 @@ else*/
 		_pgpsNearPoint      = trace.Back()->GPS();
 	  }
 
-	  _pgpsClosePoint = points[0];
-	  point = first;
+	  point = trace.Front();
 	  if(point)
 	  {
-		DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &_fTogo, &fAngle);
+	    DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &_fTogo, &fAngle);
 		_pgpsClosePoint = point->GPS();
 	  }
 
 	  while( (point->GPS().Time() <=  points[1].Time()) && (point != last) && point)
 	  {
 		DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &fDist, &fAngle);
-		if(fDist < _fTogo )
-		{
+	    if(fDist < _fTogo )
+	    {
 		  _pgpsClosePoint = point->GPS();
 		  _fTogo = fDist;
-		}
-		point = point->Next();
+	    }
+	    point = point->Next();
 	  }
 
 	  if((_fTogo < _fBestTogo) && trace.Back())
@@ -432,8 +429,7 @@ else*/
 	  }
 	}
 
-
-	if(points.size() > 1) //	if(_bFAI)
+	if(_bFAI)
 	{
 	  WayPointList[RESWP_FAIOPTIMIZED].Latitude=_pgpsClosePoint.Latitude();
 	  WayPointList[RESWP_FAIOPTIMIZED].Longitude=_pgpsClosePoint.Longitude();
