@@ -36,10 +36,6 @@ static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
 static HFONT TempUseCustomFontsFont;
 
-extern void LKAircraftSave(const TCHAR *szFile);
-extern void LKPilotSave(const TCHAR *szFile);
-extern void LKDeviceSave(const TCHAR *szFile);
-
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 
                                LOGFONT autoLogFont, 
@@ -48,6 +44,8 @@ extern void InitializeOneFont (HFONT * theFont,
 extern bool dlgFontEditShowModal(const TCHAR * FontDescription, 
                           const TCHAR * FontRegKey, 
                           LOGFONT autoLogFont);
+
+// #define OLDSAVEPROFILE 1
 
 static bool taskchanged = false;
 static bool requirerestart = false;
@@ -1040,6 +1038,7 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
 }
 
 
+#if OLDSAVEPROFILE
 // mode 0: Aircraft
 // mode 1: Pilot
 // mode 2: Device
@@ -1275,7 +1274,7 @@ static void OnPilotSaveNewClicked(WindowControl * Sender) {
 static void OnDeviceSaveNewClicked(WindowControl * Sender) {
 	OnProfileSaveNew(Sender,2 );
 }
-
+#endif // OLDSAVEPROFILE
 
 extern void OnInfoBoxHelp(WindowControl * Sender);
 
@@ -1484,6 +1483,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnDeviceAData),
   DeclareCallBackEntry(OnDeviceBData),
 
+#if OLDSAVEPROFILE
   DeclareCallBackEntry(OnPilotSaveAsClicked),
   DeclareCallBackEntry(OnPilotSaveNewClicked),
 
@@ -1492,6 +1492,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
   DeclareCallBackEntry(OnDeviceSaveAsClicked),
   DeclareCallBackEntry(OnDeviceSaveNewClicked),
+#endif
 
   DeclareCallBackEntry(OnUseCustomFontData),
   DeclareCallBackEntry(OnEditMapWindowFontClicked),
