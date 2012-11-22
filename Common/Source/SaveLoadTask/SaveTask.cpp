@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "dlgTools.h"
 
+void RenameIfVirtual(const unsigned int i);
 
 void SaveTask(TCHAR *szFileName)
 {
@@ -50,6 +51,7 @@ void SaveTask(TCHAR *szFileName)
 
 	for(i=0;i<MAXTASKPOINTS;i++) {
 		if (ValidWayPoint(Task[i].Index)) {
+			RenameIfVirtual(Task[i].Index);
 			WriteFile(hFile,&WayPointList[Task[i].Index],
 			sizeof(WAYPOINT), &dwBytesWritten, (OVERLAPPED*)NULL);
 		} else {
@@ -61,6 +63,7 @@ void SaveTask(TCHAR *szFileName)
 
 	for(i=0;i<MAXSTARTPOINTS;i++) {
 		if (ValidWayPoint(StartPoints[i].Index)) { // 091223
+			RenameIfVirtual(StartPoints[i].Index);
 			WriteFile(hFile,&WayPointList[StartPoints[i].Index], sizeof(WAYPOINT), &dwBytesWritten, (OVERLAPPED*)NULL);
 		} else {
 			// dummy data..
@@ -86,4 +89,24 @@ void SaveTask(TCHAR *szFileName)
   }
   UnlockTaskData();
 }
+
+
+//
+// If it is a virtual waypoint, rename it before saving to task
+//
+void RenameIfVirtual(const unsigned int i) {
+
+  if (i>RESWP_END) return;
+  LKASSERT(i<=NumberOfWayPoints);
+
+  if ( _tcslen(WayPointList[i].Name)> (NAME_SIZE-5)) return;
+
+  TCHAR tmp[NAME_SIZE+10];
+  _stprintf(tmp,_T("TSK_%s"),WayPointList[i].Name);
+  LK_tcsncpy(WayPointList[i].Name,tmp,NAME_SIZE);
+ 
+} 
+
+
+
 
