@@ -334,9 +334,11 @@ void Shutdown(void) {
   CreateProgressDialog(gettext(TEXT("_@M1221_")));
   extern void LKAircraftSave(const TCHAR *szFile);
   extern void LKPilotSave(const TCHAR *szFile);
+  extern void LKDeviceSave(const TCHAR *szFile);
   LKPilotSave(defaultPilotFile);
   LKAircraftSave(defaultAircraftFile);
   LKProfileSave(defaultProfileFile);
+  LKDeviceSave(defaultDeviceFile);
 
   #if TESTBENCH
   StartupStore(TEXT(". Save_Recent_WP_history%s"),NEWLINE);

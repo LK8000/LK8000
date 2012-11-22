@@ -249,6 +249,15 @@ _@M2237_ "Sonar\nToggle"
 +_@M1815_ "UNUSED"
 +_@M1816_ "FAI closing point"
 +_@M1817_ "out and return closing point"
++# profile button, keep short!
++_@M1818_ "DEVICE"
++# configuration SETUP save
++_@M1819_ "Device Profiles"
++# page name
++_@M1820_ "Device configuration"
++_@M2244_ "Device\nSetup"
++_@M2245_ "Device\nSave"
+
 
 
 

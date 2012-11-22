@@ -1823,6 +1823,12 @@ _@M1815_ "UNUSED"
 _@M1816_ "FAI closing point"
 _@M1817_ "out and return closing point"
 
+# profile button, keep short!
+_@M1818_ "DEVICE"
+# configuration SETUP save 
+_@M1819_ "Device Profiles"
+# page name
+_@M1820_ "Device configuration"
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -2031,6 +2037,8 @@ _@M2240_ "NoDraw\nTaskFAI"
 _@M2241_ "Draw\nTaskFAI"
 _@M2242_ "Sonar\nON"
 _@M2243_ "Sonar\nOFF"
+_@M2244_ "Device\nSetup"
+_@M2245_ "Device\nSave"
 
 # MAX 2250! 
 # (Reserved for custom menus up to 2300!)

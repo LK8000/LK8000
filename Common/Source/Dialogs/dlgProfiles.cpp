@@ -18,6 +18,7 @@ static TCHAR profilesuffix[10];
 
 extern void LKAircraftSave(const TCHAR *szFile);
 extern void LKPilotSave(const TCHAR *szFile);
+extern void LKDeviceSave(const TCHAR *szFile);
 
 static void OnSaveExistingClicked(WindowControl * Sender) {
   (void)Sender;
@@ -58,6 +59,9 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
 				break;
 			case 2:
                         	LKAircraftSave(dfe->GetPathFile());
+				break;
+			case 3:
+                        	LKDeviceSave(dfe->GetPathFile());
 				break;
 			default:
 				return;
@@ -120,6 +124,9 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 			case 2:
                         	LKAircraftSave(file_name);
 				break;
+			case 3:
+                        	LKDeviceSave(file_name);
+				break;
 			default:
 				return;
 		}
@@ -161,6 +168,9 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 					break;
 				case 2:
 	                        	LKAircraftSave(file_name);
+					break;
+				case 3:
+	                        	LKDeviceSave(file_name);
 					break;
 				default:
 					return;
@@ -274,6 +284,11 @@ void dlgProfilesShowModal(short mode){
 			wf->SetCaption(MsgToken(1783)); // Pilot profiles
 			_stprintf(profilesuffix,_T("%S"),LKS_AIRCRAFT);
 			_stprintf(tsuff,_T("*%S"),LKS_AIRCRAFT);
+			break;
+		case 3:
+			wf->SetCaption(MsgToken(1819)); // Device profiles
+			_stprintf(profilesuffix,_T("%S"),LKS_DEVICE);
+			_stprintf(tsuff,_T("*%S"),LKS_DEVICE);
 			break;
 		default:
 			return;

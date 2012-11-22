@@ -231,6 +231,8 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   _tcscpy(startAircraftFile, defaultAircraftFile);
   _stprintf(defaultPilotFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKPILOT));
   _tcscpy(startPilotFile, defaultPilotFile);
+  _stprintf(defaultDeviceFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKDEVICE));
+  _tcscpy(startDeviceFile, defaultDeviceFile);
 
 
   LK8000GetOpts(lpCmdLine);

@@ -265,6 +265,12 @@ static void OnAIRCRAFTClicked(WindowControl * Sender){
   if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
   wf->SetModalResult(mrOK);
 }
+static void OnDEVICEClicked(WindowControl * Sender){
+	(void)Sender;
+  RUN_MODE=RUN_DEVICE;
+  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+  wf->SetModalResult(mrOK);
+}
 static void OnPILOTClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_PILOT;
@@ -319,7 +325,7 @@ short dlgStartupShowModal(void){
   }
 
   // CHOOSE PROFILE
-  if (RUN_MODE==RUN_PROFILE || RUN_MODE==RUN_AIRCRAFT || RUN_MODE==RUN_PILOT) {
+  if (RUN_MODE==RUN_PROFILE || RUN_MODE==RUN_AIRCRAFT || RUN_MODE==RUN_PILOT || RUN_MODE==RUN_DEVICE) {
 	if (!ScreenLandscape) {
 		LocalPathS(filename, TEXT("dlgStartup_L.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP_L"));
@@ -402,64 +408,62 @@ short dlgStartupShowModal(void){
   if (RUN_MODE==RUN_DUALPROF) {
 	((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetOnClickNotify(OnAIRCRAFTClicked);
 	((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetOnClickNotify(OnPROFILEClicked);
+	((WndButton *)wf->FindByName(TEXT("cmdDEVICE"))) ->SetOnClickNotify(OnDEVICEClicked);
 	((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetOnClickNotify(OnPILOTClicked);
 	((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetOnClickNotify(OnCloseClicked);
 
-	//((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetOnClickNotify(OnFLYClicked);
-	//((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetOnClickNotify(OnSIMClicked);
-	//((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetOnClickNotify(OnDUALPROFILEClicked);
-	//((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetOnClickNotify(OnEXITClicked);
+	unsigned int lx;
+	unsigned int w;
+	unsigned int SPACEBORDER;
+
 	if (ScreenLandscape) {
-		
-		PROFWIDTH=(ScreenSizeX-IBLSCALE(320))/3; 
 
+		PROFWIDTH=(ScreenSizeX-IBLSCALE(320))/3;
 
-		switch(ScreenSize) {
-			case ss800x480:
-			case ss400x240:
-				((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetWidth(IBLSCALE(110));
-				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetWidth(IBLSCALE(110));
-				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(IBLSCALE(208)+PROFWIDTH*3);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(88)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(92)+PROFWIDTH/6);
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetLeft(IBLSCALE(161)+PROFWIDTH*2);
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetWidth(IBLSCALE(65)+PROFWIDTH/5);
-				break;
-			case ss480x272:
-				((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetWidth(IBLSCALE(117));
-				((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetHeight(IBLSCALE(38));
-				((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetTop(IBLSCALE(197));
-				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetWidth(IBLSCALE(117));
-				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(IBLSCALE(201)+PROFWIDTH*3);
-				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetHeight(IBLSCALE(38));
-				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetTop(IBLSCALE(197));
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(88)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(99)+PROFWIDTH/6);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetHeight(IBLSCALE(38));
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetTop(IBLSCALE(197));
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetLeft(IBLSCALE(161)+PROFWIDTH*2);
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetWidth(IBLSCALE(65)+PROFWIDTH/5);
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetHeight(IBLSCALE(38));
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetTop(IBLSCALE(197));
-				break;
-			case ss640x480:
-			case ss320x240:
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetLeft(IBLSCALE(166)+PROFWIDTH*2);
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetWidth(IBLSCALE(60)+PROFWIDTH/5);
-				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(IBLSCALE(228)+PROFWIDTH*3);
-				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetWidth(IBLSCALE(88));
-				break;
-			default:
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetLeft(IBLSCALE(166)+PROFWIDTH*2);
-				((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetWidth(IBLSCALE(60)+PROFWIDTH/5);
-				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(IBLSCALE(228)+PROFWIDTH*3);
-				break;
-		}	
+		SPACEBORDER=NIBLSCALE(2);
+
+		w= ( ScreenSizeX - (SPACEBORDER*6) ) /5;
+
+		((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetWidth(w);
+		((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(w);
+		((WndButton *)wf->FindByName(TEXT("cmdDEVICE"))) ->SetWidth(w);
+		((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetWidth(w);
+		((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetWidth(w);
+
+		lx=SPACEBORDER-1; // count from 0
+		((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetLeft(lx);
+		lx+=w+SPACEBORDER;
+		((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(lx);
+		lx+=w+SPACEBORDER;
+		((WndButton *)wf->FindByName(TEXT("cmdDEVICE"))) ->SetLeft(lx);
+		lx+=w+SPACEBORDER;
+		((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetLeft(lx);
+		lx+=w+SPACEBORDER;
+		((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(lx);
+
 	} else {
+		SPACEBORDER=NIBLSCALE(2);
+		w= ( ScreenSizeX - (SPACEBORDER*3) ) /2;
+
+		((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetWidth(w);
+		((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(w);
+		lx=SPACEBORDER-1; // count from 0
+		((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetLeft(lx);
+		lx+=w+SPACEBORDER;
+		((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(lx);
+
+		w= ( ScreenSizeX - (SPACEBORDER*4) ) /3;
+		((WndButton *)wf->FindByName(TEXT("cmdDEVICE"))) ->SetWidth(w);
+		((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetWidth(w);
+		((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetWidth(w);
+		lx=SPACEBORDER-1; // count from 0
+		((WndButton *)wf->FindByName(TEXT("cmdDEVICE"))) ->SetLeft(lx);
+		lx+=w+SPACEBORDER;
+		((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetLeft(lx);
+		lx+=w+SPACEBORDER;
+		((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(lx);
+
+		// We could greatly simplify these, now that we use dynamic scaling here.
 		PROFWIDTH=IBLSCALE(236);
 		PROFACCEPTWIDTH=NIBLSCALE(45);
 		PROFHEIGHT=NIBLSCALE(25);
@@ -469,7 +473,7 @@ short dlgStartupShowModal(void){
 
 
 
-  if (RUN_MODE==RUN_PROFILE || RUN_MODE==RUN_AIRCRAFT || RUN_MODE==RUN_PILOT) {
+  if (RUN_MODE==RUN_PROFILE || RUN_MODE==RUN_AIRCRAFT || RUN_MODE==RUN_PILOT || RUN_MODE==RUN_DEVICE) {
 	((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
 	if (ScreenLandscape) {
 		PROFWIDTH=IBLSCALE(256);
@@ -495,6 +499,9 @@ short dlgStartupShowModal(void){
   wf->SetHeight(ScreenSizeY);
   wf->SetWidth(ScreenSizeX);
 
+  //
+  // File selection shared  by PROFILEs choices
+  //
   wp = ((WndProperty *)wf->FindByName(TEXT("prpProfile")));
   if (wp) {
     DataFieldFileReader* dfe;
@@ -511,14 +518,22 @@ short dlgStartupShowModal(void){
 	    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
 	    dfe->Lookup(startAircraftFile);
     }
+    if (RUN_MODE==RUN_DEVICE) {
+	    _stprintf(temp,_T("*%S"),LKS_DEVICE); 
+	    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
+	    dfe->Lookup(startDeviceFile);
+    }
     if (RUN_MODE==RUN_PILOT) {
 	    _stprintf(temp,_T("*%S"),LKS_PILOT); 
 	    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
 	    dfe->Lookup(startPilotFile);
     }
 
+    // Set the black stripe in size with ACCEPT button
     wp->SetHeight(PROFHEIGHT);
     wp->SetWidth(PROFWIDTH);
+
+    // Set rescaled offset for positioning the ACCEPT
     if (ScreenLandscape)
     	wp->SetLeft(((ScreenSizeX-PROFWIDTH-PROFSEPARATOR-PROFACCEPTWIDTH)/2)-NIBLSCALE(2));
     else
@@ -664,6 +679,17 @@ short dlgStartupShowModal(void){
 				StartupStore(_T("... Selected new aircraft, preloading..\n"));
 				#endif
 				LKProfileLoad(startAircraftFile);
+			}
+		}
+	}
+	if (RUN_MODE==RUN_DEVICE) {
+		if (_tcslen(dfe->GetPathFile())>0) {
+			if (_tcscmp(dfe->GetPathFile(),startDeviceFile) ) { // if they are not the same
+				_tcscpy(startDeviceFile,dfe->GetPathFile());
+				#if TESTBENCH
+				StartupStore(_T("... Selected new device, preloading..\n"));
+				#endif
+				LKProfileLoad(startDeviceFile);
 			}
 		}
 	}

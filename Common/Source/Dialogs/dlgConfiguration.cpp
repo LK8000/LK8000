@@ -38,6 +38,7 @@ static HFONT TempUseCustomFontsFont;
 
 extern void LKAircraftSave(const TCHAR *szFile);
 extern void LKPilotSave(const TCHAR *szFile);
+extern void LKDeviceSave(const TCHAR *szFile);
 
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 
@@ -54,8 +55,8 @@ static bool utcchanged = false;
 static bool waypointneedsave = false;
 static bool FontRegistryChanged=false;
 
-short configMode=0;	// current configuration mode, 0=system 1=pilot 2=aircraft
-short config_page[3]={0,0,0}; // remember last page we were using, for each profile
+short configMode=0;	// current configuration mode, 0=system 1=pilot 2=aircraft 3=device
+short config_page[4]={0,0,0,0}; // remember last page we were using, for each profile
 
 static WndForm *wf=NULL;
 static WndFrame *wConfig1=NULL;
@@ -224,6 +225,7 @@ static void UpdateButtons(void) {
 
 
 static void NextPage(int Step){
+  LKASSERT((unsigned int)configMode<sizeof(config_page));
   config_page[configMode] += Step;
 
   if (configMode==0) {
@@ -234,10 +236,10 @@ static void NextPage(int Step){
 		if (config_page[configMode]>=numPages) { config_page[configMode]=0; }
 		if (config_page[configMode]<0) { config_page[configMode]=numPages-1; }
 	}
-	// temporary skip page 7, old aircraft/polar setup
-	if (config_page[configMode]==6) {
+	// temporary skip page 7 and 8, old aircraft/polar/comm setup
+	if (config_page[configMode]==6 || config_page[configMode]==7) {
 		if (Step>0) 
-			config_page[configMode]=7;
+			config_page[configMode]=8;
 		else
 			config_page[configMode]=5;
 	}
@@ -255,6 +257,9 @@ static void NextPage(int Step){
     }
     if (configMode==2) {
 	wf->SetCaption(MsgToken(1786)); // aircraft configuration
+    }
+    if (configMode==3) {
+	wf->SetCaption(MsgToken(1820)); // device configuration
     }
     break;
   case 1:
@@ -279,11 +284,11 @@ static void NextPage(int Step){
     break;
   case 6:
 	// LKTOKEN  _@M36_ = "7 Aircraft" 
-    wf->SetCaption(gettext(TEXT("_@M36_")));
+    wf->SetCaption(gettext(TEXT("_@M36_")));	// UNUSED
     break;
   case 7:
 	// LKTOKEN  _@M37_ = "8 Devices" 
-    wf->SetCaption(gettext(TEXT("_@M37_")));
+    wf->SetCaption(gettext(TEXT("_@M37_")));	// UNUSED
     break;
   case 8:
 	// LKTOKEN  _@M38_ = "9 Units" 
@@ -1037,6 +1042,7 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 // mode 0: Aircraft
 // mode 1: Pilot
+// mode 2: Device
 static void OnProfileSaveAs(WindowControl * Sender, short mode) {
   (void)Sender;
 
@@ -1050,10 +1056,20 @@ static void OnProfileSaveAs(WindowControl * Sender, short mode) {
 	return;
   }
 
-  if (mode==0)
-	wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
-  else
-	wp = (WndProperty*)wf->FindByName(TEXT("prpPilotFile"));
+  switch(mode) {
+	case 0:
+		wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
+		break;
+	case 1:
+		wp = (WndProperty*)wf->FindByName(TEXT("prpPilotFile"));
+		break;
+	case 2:
+		wp = (WndProperty*)wf->FindByName(TEXT("prpDeviceFile"));
+		break;
+	default:
+		LKASSERT(0);
+		break;
+  }
 
   if (!wp) return;
 
@@ -1069,13 +1085,23 @@ static void OnProfileSaveAs(WindowControl * Sender, short mode) {
 	// LKTOKEN  _@M509_ = "Overwrite profile?" 
 		gettext(TEXT("_@M509_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
-		if (mode==0) {
-			UpdateAircraftConfig();
-			LKAircraftSave(dfe->GetPathFile());
-		} else {
-			LKPilotSave(dfe->GetPathFile());
+  		switch(mode) {
+			case 0:
+				UpdateAircraftConfig();
+				LKAircraftSave(dfe->GetPathFile());
+				break;
+			case 1:
+				LKPilotSave(dfe->GetPathFile());
+				break;
+			case 2:
+				LKDeviceSave(dfe->GetPathFile());
+				break;
+			default:
+				LKASSERT(0);
+				break;
 		}
-	// LKTOKEN  _@M535_ = "Profile saved!" 
+
+		// LKTOKEN  _@M535_ = "Profile saved!" 
 		MessageBoxX(hWndMapWindow, gettext(TEXT("_@M535_")),_T(""), MB_OK|MB_ICONEXCLAMATION);
 		return;
 	}
@@ -1092,9 +1118,14 @@ static void OnPilotSaveAsClicked(WindowControl * Sender) {
   (void)Sender;
 	OnProfileSaveAs(Sender,1 );
 }
+static void OnDeviceSaveAsClicked(WindowControl * Sender) {
+  (void)Sender;
+	OnProfileSaveAs(Sender,2 );
+}
 
 // mode 0: Aircraft
 // mode 1: Pilot
+// mode 2: Device
 static void OnProfileSaveNew(WindowControl * Sender, short mode) {
   (void)Sender;
 
@@ -1105,12 +1136,24 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
   WndProperty* wp;
   DataFieldFileReader *dfe;
 
-  if (mode==0)
-	wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
-  else
-	wp = (WndProperty*)wf->FindByName(TEXT("prpPilotFile"));
+  switch(mode) {
+	case 0:
+		wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
+		break;
+	case 1:
+		wp = (WndProperty*)wf->FindByName(TEXT("prpPilotFile"));
+		break;
+	case 2:
+		wp = (WndProperty*)wf->FindByName(TEXT("prpDeviceFile"));
+		break;
+	default:
+		LKASSERT(0);
+		break;
+  }
 
+  LKASSERT(wp!=NULL);
   if (!wp) return;
+
   dfe = (DataFieldFileReader*) wp->GetDataField();
 
   _tcscpy(profile_name,_T(""));
@@ -1118,10 +1161,20 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 
   if (_tcslen(profile_name)<=0) return;
 
-  if (mode==0)
-	_tcscat(profile_name, TEXT(LKS_AIRCRAFT));
-  else
-	_tcscat(profile_name, TEXT(LKS_PILOT));
+  switch (mode) {
+	case 0:
+		_tcscat(profile_name, TEXT(LKS_AIRCRAFT));
+		break;
+	case 1:
+		_tcscat(profile_name, TEXT(LKS_PILOT));
+		break;
+	case 2:
+		_tcscat(profile_name, TEXT(LKS_DEVICE));
+		break;
+	default:
+		LKASSERT(0);
+		break;
+  }
 
   LocalPath(file_name,TEXT(LKD_CONF));
   _tcscat(file_name,TEXT("\\"));
@@ -1140,12 +1193,22 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 	// LKTOKEN  _@M579_ = "Save ?" 
 		gettext(TEXT("_@M579_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
-		if (mode==0) {
-			UpdateAircraftConfig();
-			LKAircraftSave(file_name);
-		} else {
-			LKPilotSave(file_name);
+		switch(mode) {
+			case 0:
+				UpdateAircraftConfig();
+				LKAircraftSave(file_name);
+				break;
+			case 1:
+				LKPilotSave(file_name);
+				break;
+			case 2:
+				LKDeviceSave(file_name);
+				break;
+			default:
+				LKASSERT(0);
+				break;
 		}
+
 		dfe->addFile(profile_name, file_name);
 
 		MessageBoxX(hWndMapWindow, 
@@ -1175,11 +1238,21 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 		gettext(TEXT("_@M510_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 
-			if (mode==0) {
-				LKAircraftSave(file_name);
-			} else {
-				LKPilotSave(file_name);
+			switch (mode) {
+				case 0:
+					LKAircraftSave(file_name);
+					break;
+				case 1:
+					LKPilotSave(file_name);
+					break;
+				case 2:
+					LKDeviceSave(file_name);
+					break;
+				default:
+					LKASSERT(0);
+					break;
 			}
+
 			MessageBoxX(hWndMapWindow, 
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 			gettext(TEXT("_@M535_")),
@@ -1198,6 +1271,9 @@ static void OnAircraftSaveNewClicked(WindowControl * Sender) {
 }
 static void OnPilotSaveNewClicked(WindowControl * Sender) {
 	OnProfileSaveNew(Sender,1 );
+}
+static void OnDeviceSaveNewClicked(WindowControl * Sender) {
+	OnProfileSaveNew(Sender,2 );
 }
 
 
@@ -1413,6 +1489,9 @@ static CallBackTableEntry_t CallBackTable[]={
 
   DeclareCallBackEntry(OnAircraftSaveAsClicked),
   DeclareCallBackEntry(OnAircraftSaveNewClicked),
+
+  DeclareCallBackEntry(OnDeviceSaveAsClicked),
+  DeclareCallBackEntry(OnDeviceSaveNewClicked),
 
   DeclareCallBackEntry(OnUseCustomFontData),
   DeclareCallBackEntry(OnEditMapWindowFontClicked),
@@ -2351,6 +2430,15 @@ static void setVariables(void) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _stprintf(tsuf,_T("*%S"),LKS_AIRCRAFT);
+    dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
+    dfe->Set(0);
+    wp->RefreshDisplay();
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpDeviceFile"));
+  if (wp) {
+    DataFieldFileReader* dfe;
+    dfe = (DataFieldFileReader*)wp->GetDataField();
+    _stprintf(tsuf,_T("*%S"),LKS_DEVICE);
     dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
     dfe->Set(0);
     wp->RefreshDisplay();
@@ -3322,6 +3410,13 @@ void dlgConfigurationShowModal(short mode){
 				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGAIRCRAFT_L"));
 			break;
+		case 3:
+			LocalPathS(filename, TEXT("dlgConfigDevice_L.xml"));
+			wf = dlgLoadFromXML(CallBackTable, 
+				filename, 
+				hWndMainWindow,
+				TEXT("IDR_XML_CONFIGDEVICE_L"));
+			break;
 		default:
 			break;
 	}
@@ -3349,6 +3444,13 @@ void dlgConfigurationShowModal(short mode){
 				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGAIRCRAFT"));
 			break;
+		case 3:
+			LocalPathS(filename, TEXT("dlgConfigDevice.xml"));
+			wf = dlgLoadFromXML(CallBackTable, 
+				filename, 
+				hWndMainWindow,
+				TEXT("IDR_XML_CONFIGDEVICE"));
+			break;
 		default:
 			break;
 	}
@@ -3374,7 +3476,7 @@ void dlgConfigurationShowModal(short mode){
 	wConfig5    = ((WndFrame *)wf->FindByName(TEXT("frmFinalGlide")));
 	wConfig6    = ((WndFrame *)wf->FindByName(TEXT("frmSafety")));
 	wConfig7    = ((WndFrame *)wf->FindByName(TEXT("frmEmpty")));
-	wConfig8    = ((WndFrame *)wf->FindByName(TEXT("frmComm")));
+	wConfig8    = ((WndFrame *)wf->FindByName(TEXT("frmEmpty")));
 	wConfig9    = ((WndFrame *)wf->FindByName(TEXT("frmUnits")));
 	wConfig10    = ((WndFrame *)wf->FindByName(TEXT("frmInterface")));
 	wConfig11    = ((WndFrame *)wf->FindByName(TEXT("frmAppearance")));
@@ -3435,12 +3537,17 @@ void dlgConfigurationShowModal(short mode){
 	numPages=1;
 	LKASSERT(wConfig1);
   }
+  if (configMode==3) {
+	wConfig1 = ((WndFrame *)wf->FindByName(TEXT("frmComm")));
+	numPages=1;
+	LKASSERT(wConfig1);
+  }
 
   wf->FilterAdvanced(1); // useless, we dont use advanced options anymore TODO remove
 
   setVariables();
 
-  if (mode==0) {
+  if (mode==3) {
 	TCHAR deviceName1[MAX_PATH];
 	TCHAR deviceName2[MAX_PATH];
 	ReadDeviceSettings(0, deviceName1);

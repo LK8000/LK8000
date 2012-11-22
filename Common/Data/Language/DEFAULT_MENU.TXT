@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 121110
+# Release 9 , 121122
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -2897,15 +2897,15 @@ location=9
 mode=SETUP
 type=key
 data=11
-label=
-event=Null
+label=_@M2244_
+event=Setup Device
 location=10
 
 mode=SETUP
 type=key
 data=12
-label=
-event=Null
+label=_@M2245_
+event=Service SAVEDEV
 location=11
 
 # -------------

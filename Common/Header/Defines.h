@@ -91,6 +91,7 @@
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
 #define LKAIRCRAFT	"DEFAULT_AIRCRAFT.acf"
 #define LKPILOT		"DEFAULT_PILOT.plt"
+#define LKDEVICE	"DEFAULT_DEVICE.dvc"
 
 /*
  * LK8000 directories
@@ -119,6 +120,7 @@
 #define LKS_TXT		".txt"
 #define LKS_PRF		".prf"
 #define LKS_AIRCRAFT	".acf"
+#define LKS_DEVICE	".dvc"
 #define LKS_PILOT	".plt"
 #define LKS_AIRSPACES	".txt"
 #define LKS_POLARS	".plr"
@@ -759,6 +761,7 @@
 #define RUN_PROFILE		0x02
 #define RUN_AIRCRAFT		0x03
 #define RUN_PILOT		0x04
+#define RUN_DEVICE		0x05
 #define RUN_EXIT		0x08
 #define RUN_SHUTDOWN		0x09
 #define RUN_FLY			0x11

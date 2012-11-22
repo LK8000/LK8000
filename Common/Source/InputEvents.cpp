@@ -2139,6 +2139,10 @@ extern bool RotateScreen(short angle);
 	dlgProfilesShowModal(2);
 	return;
   }
+  if (_tcscmp(misc, TEXT("SAVEDEV")) == 0) {
+	dlgProfilesShowModal(3);
+	return;
+  }
   if (_tcscmp(misc, TEXT("CLEARALTERNATES")) == 0) {
 	LockTaskData();
 	Alternate1 = -1;
@@ -2559,6 +2563,8 @@ void InputEvents::eventSetup(const TCHAR *misc) {
     SystemConfiguration(2);
   } else if (_tcscmp(misc,TEXT("Pilot"))==0){
     SystemConfiguration(1);
+  } else if (_tcscmp(misc,TEXT("Device"))==0){
+    SystemConfiguration(3);
   } else if (_tcscmp(misc,TEXT("Task"))==0){
     dlgTaskOverviewShowModal();
   } else if (_tcscmp(misc,TEXT("Airspace"))==0){

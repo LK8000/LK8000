@@ -764,6 +764,8 @@ GEXTERN TCHAR startProfileFile[MAX_PATH];
 GEXTERN TCHAR defaultProfileFile[MAX_PATH];
 GEXTERN TCHAR startAircraftFile[MAX_PATH];
 GEXTERN TCHAR defaultAircraftFile[MAX_PATH];
+GEXTERN TCHAR startDeviceFile[MAX_PATH];
+GEXTERN TCHAR defaultDeviceFile[MAX_PATH];
 GEXTERN TCHAR startPilotFile[MAX_PATH];
 GEXTERN TCHAR defaultPilotFile[MAX_PATH];
 

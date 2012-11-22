@@ -65,7 +65,7 @@ void LKProfileSave(const TCHAR *szFile)
   fprintf(pfp,"### LK8000 PROFILE - DO NOT EDIT%s",PNEWLINE);
   fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
   fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
-  fprintf(pfp,"PROFILEVERSION=1%s",PNEWLINE);
+  fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
 
   // 
   // RESPECT LKPROFILE.H ALPHA ORDER OR WE SHALL GET LOST SOON!
@@ -126,10 +126,10 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryBarOpacity,BarOpacity);
   rprintf(szRegistryBestWarning,BestWarning);
   rprintf(szRegistryBgMapColor,BgMapColor_Config);
-  rprintf(szRegistryBit1Index,dwBit1Index);
-  rprintf(szRegistryBit2Index,dwBit2Index);
+//  rprintf(szRegistryBit1Index,dwBit1Index);
+//  rprintf(szRegistryBit2Index,dwBit2Index);
   rprintf(szRegistryBugs,BUGS_Config*100);
-  rprintf(szRegistryCheckSum,CheckSum);
+//  rprintf(szRegistryCheckSum,CheckSum);
   rprintf(szRegistryCircleZoom,MapWindow::zoom.CircleZoom());
   rprintf(szRegistryClipAlt,ClipAltitude);
 //  >> Moved to AircraftFile <<
@@ -178,8 +178,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryCustomMenu10,CustomMenu10);
   rprintf(szRegistryDebounceTimeout,debounceTimeout);
   rprintf(szRegistryDeclutterMode,DeclutterMode);
-  rprintf(szRegistryDeviceA,dwDeviceName1);
-  rprintf(szRegistryDeviceB,dwDeviceName2);
+  ///rprintf(szRegistryDeviceA,dwDeviceName1);
+  ///rprintf(szRegistryDeviceB,dwDeviceName2);
   rprintf(szRegistryDisableAutoLogger,DisableAutoLogger);
   rprintf(szRegistryDisplayText,DisplayTextType);
   rprintf(szRegistryDisplayUpValue,DisplayOrientation_Config);
@@ -197,7 +197,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryFontRenderer,FontRenderer);
   rprintf(szRegistryGlideBarMode,GlideBarMode);
   rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);
-  rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
+//  rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
 //  >> Moved to AircraftFile <<
 //  rprintf(szRegistryHandicap,Handicap);
   rprintf(szRegistryHideUnits,HideUnits);
@@ -254,9 +254,9 @@ void LKProfileSave(const TCHAR *szFile)
 //  rprintf(szRegistryPilotName,PilotName_Config);
 //  >> Moved to AircraftFile <<
 //  rprintf(szRegistryPolarFile,szPolarFile);
-  rprintf(szRegistryPollingMode,PollingMode);
-  rprintf(szRegistryPort1Index,dwPortIndex1);
-  rprintf(szRegistryPort2Index,dwPortIndex2);
+//  rprintf(szRegistryPollingMode,PollingMode);
+//  rprintf(szRegistryPort1Index,dwPortIndex1);
+//  rprintf(szRegistryPort2Index,dwPortIndex2);
   rprintf(szRegistryPressureHg,PressureHg);
   rprintf(szRegistrySafetyAltitudeArrival,SAFETYALTITUDEARRIVAL);
   rprintf(szRegistrySafetyAltitudeMode,SafetyAltitudeMode);
@@ -269,8 +269,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryShading,Shading_Config);
   rprintf(szRegistrySnailTrail,TrailActive_Config);
   rprintf(szRegistrySnailWidthScale,MapWindow::SnailWidthScale);
-  rprintf(szRegistrySpeed1Index,dwSpeedIndex1);
-  rprintf(szRegistrySpeed2Index,dwSpeedIndex2);
+//  rprintf(szRegistrySpeed1Index,dwSpeedIndex1);
+//  rprintf(szRegistrySpeed2Index,dwSpeedIndex2);
   rprintf(szRegistrySpeedUnitsValue,SpeedUnit_Config);
   rprintf(szRegistryStartHeightRef,StartHeightRef);
   rprintf(szRegistryStartLine,StartLine);
@@ -292,7 +292,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryTrailDrift,EnableTrailDrift_Config);
   rprintf(szRegistryUTCOffset,UTCOffset);
   rprintf(szRegistryUseCustomFonts,UseCustomFonts);
-  rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
+//  rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
   rprintf(szRegistryUseUngestures,UseUngestures);
   rprintf(szRegistryUseTotalEnergy,UseTotalEnergy_Config);
   rprintf(szRegistryWarningTime,WarningTime);
@@ -399,7 +399,7 @@ void LKAircraftSave(const TCHAR *szFile)
   fprintf(pfp,"### LK8000 AICRAFT PROFILE - DO NOT EDIT%s",PNEWLINE);
   fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
   fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
-  fprintf(pfp,"PROFILEVERSION=1%s",PNEWLINE);
+  fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
 
   rprintf(szRegistryAircraftCategory, AircraftCategory);
   rprintf(szRegistryPolarFile,szPolarFile);
@@ -443,13 +443,62 @@ void LKPilotSave(const TCHAR *szFile)
   fprintf(pfp,"### LK8000 PILOT PROFILE - DO NOT EDIT%s",PNEWLINE);
   fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
   fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
-  fprintf(pfp,"PROFILEVERSION=1%s",PNEWLINE);
+  fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
 
   rprintf(szRegistryPilotName,PilotName_Config);
   rprintf(szRegistryLiveTrackerInterval,LiveTrackerInterval);
   rprintf(szRegistryLiveTrackersrv,LiveTrackersrv_Config);
   rprintf(szRegistryLiveTrackerusr,LiveTrackerusr_Config);
   rprintf(szRegistryLiveTrackerpwd,LiveTrackerpwd_Config);
+
+  fprintf(pfp,PNEWLINE); // end of file
+  fflush(pfp);
+  fclose(pfp);
+
+}
+
+//
+// Save only Device related parameters
+//
+void LKDeviceSave(const TCHAR *szFile)
+{
+  #if TESTBENCH
+  StartupStore(_T("... DeviceSave <%s>%s"),szFile,NEWLINE);
+  #endif
+
+  if (_tcslen(szFile)>0)
+	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
+
+  if(pfp == NULL) {
+	StartupStore(_T("......  DeviceSaveProfile <%s> open for write FAILED!%s"),szFile,NEWLINE);
+	return;
+  }
+
+  //
+  // Standard header
+  //
+  fprintf(pfp,"### LK8000 DEVICE PROFILE - DO NOT EDIT%s",PNEWLINE);
+  fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
+  fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
+  fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
+
+  rprintf(szRegistryDeviceA,dwDeviceName1);
+  rprintf(szRegistryDeviceB,dwDeviceName2);
+
+  rprintf(szRegistryPort1Index,dwPortIndex1);
+  rprintf(szRegistryPort2Index,dwPortIndex2);
+
+  rprintf(szRegistrySpeed1Index,dwSpeedIndex1);
+  rprintf(szRegistrySpeed2Index,dwSpeedIndex2);
+
+  rprintf(szRegistryBit1Index,dwBit1Index);
+  rprintf(szRegistryBit2Index,dwBit2Index);
+
+  rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
+  rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
+  rprintf(szRegistryPollingMode,PollingMode);
+  rprintf(szRegistryCheckSum,CheckSum);
+
 
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);

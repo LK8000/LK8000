@@ -64,6 +64,7 @@ void PreloadInitialisation(bool ask) {
     LKProfileResetDefault();
     LKProfileLoad(startAircraftFile);
     LKProfileLoad(startPilotFile);
+    LKProfileLoad(startDeviceFile);
     // if DEFAULT PROFILE does not exist, initialize ResetDefaults!
     // This is because LKProfileLoad will do this at its end, normally.
     // Notice: aircraft and pilot files will not be overridden by defaults
@@ -92,6 +93,11 @@ void PreloadInitialisation(bool ask) {
 	if (!LKProfileLoad(startPilotFile)) {
 		#if TESTBENCH
 		StartupStore(_T(". PilotFile RESET to defaults%s"),NEWLINE);
+		#endif
+	}
+	if (!LKProfileLoad(startDeviceFile)) {
+		#if TESTBENCH
+		StartupStore(_T(". DeviceFile RESET to defaults%s"),NEWLINE);
 		#endif
 	}
 	if (!LKProfileLoad(startAircraftFile)) {
