@@ -2593,8 +2593,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-#ifdef PNA
-// VENTA-ADDON Model change config menu 11
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2613,25 +2611,6 @@ static void setVariables(void) {
     dfe->Set(GlobalToBoxType(GlobalModelType));
     wp->RefreshDisplay();
   }
-#else
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-// VENTA2- PC model
-#if (WINDOWSPC>0)
-	// LKTOKEN  _@M511_ = "PC/normal" 
-    dfe->addEnumText(gettext(TEXT("_@M511_")));
-    wp->SetVisible(true); // no more gaps in menus
-#else
-	// LKTOKEN  _@M512_ = "PDA/normal" 
-    dfe->addEnumText(gettext(TEXT("_@M512_")));
-    wp->SetVisible(true);
-#endif
-        dfe->Set(0);
-    wp->RefreshDisplay();
-  }
-#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftCategory"));
   if (wp) {
@@ -3200,10 +3179,6 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoBacklight")); // VENTA4
   if (wp) {
     wp->SetVisible(true); // 091115 changed to true
-#ifdef PNA
-    if (GlobalModelType == MODELTYPE_PNA_HP31X )
-    	wp->SetVisible(true);
-#endif
     wp->GetDataField()->Set(EnableAutoBacklight);
     wp->RefreshDisplay();
   }
@@ -4430,8 +4405,6 @@ int ival;
     }
   }
 
-#if defined(PNA) 
-// VENTA-ADDON MODEL CHANGE
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
   if (wp) {
     if (GlobalToBoxType(Appearance.InfoBoxModel) != (InfoBoxModelAppearance_t)
@@ -4483,7 +4456,6 @@ int ival;
     }
   }
 //
-#endif
 
   //Fonts
   int UseCustomFontsold = UseCustomFonts;

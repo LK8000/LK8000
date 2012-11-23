@@ -1027,7 +1027,6 @@ goto_menu:
 
 	#endif
 
-      #if defined(PNA)
 
       if ( GlobalModelType == MODELTYPE_PNA_HP31X )
 	{
@@ -1087,8 +1086,6 @@ goto_menu:
 	    break;
 	  }
 	}
-
-      #endif // PNA TRANSCODING
 
 	//
 	// LX MINIMAP II HARDWARE KEYS

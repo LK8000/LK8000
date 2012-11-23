@@ -108,7 +108,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
   rprintf(szRegistryAppDefaultMapWidth, Appearance.DefaultMapWidth);
   rprintf(szRegistryAppIndLandable,Appearance.IndLandable);
-  rprintf(szRegistryAppInfoBoxModel,GlobalModelType); // We save GlobalModelType, not InfoBoxModel
+//  rprintf(szRegistryAppInfoBoxModel,GlobalModelType); // We save GlobalModelType, not InfoBoxModel
   rprintf(szRegistryAppInverseInfoBox,InverseInfoBox_Config);
   rprintf(szRegistryArrivalValue,ArrivalValue);
   rprintf(szRegistryAutoAdvance,AutoAdvance_Config);
@@ -197,7 +197,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryFontRenderer,FontRenderer);
   rprintf(szRegistryGlideBarMode,GlideBarMode);
   rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);
-//  rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
+  rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
 //  >> Moved to AircraftFile <<
 //  rprintf(szRegistryHandicap,Handicap);
   rprintf(szRegistryHideUnits,HideUnits);
@@ -495,10 +495,10 @@ void LKDeviceSave(const TCHAR *szFile)
   rprintf(szRegistryBit2Index,dwBit2Index);
 
   rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
-  rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
   rprintf(szRegistryPollingMode,PollingMode);
   rprintf(szRegistryCheckSum,CheckSum);
 
+  rprintf(szRegistryAppInfoBoxModel,GlobalModelType); // We save GlobalModelType, not InfoBoxModel
 
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);

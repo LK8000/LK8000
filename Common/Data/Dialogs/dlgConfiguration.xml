@@ -445,11 +445,11 @@
 <WndButton Name="cmdWaypointDelete" Caption="_@M230_" X=50 Y=-1 Width=100  Height=28 Font=2 Tag=4 OnClickNotify="OnWaypointDeleteClicked" />
 </WndFrame>
 <WndFrame Name="frmSpecials1" X=70 Y=0 Width=-246 Height=222 Font=2>
-<WndProperty Name="prpAppInfoBoxModel" Caption="_@M234_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H209_">
-<DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
-</WndProperty>
 <WndProperty Name="prpSetSystemTimeFromGPS" Caption="_@M766_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H210_">
 <DataField name="" DataType="boolean"/>
+</WndProperty>
+<WndProperty Name="prpGPSAltitudeOffset" Caption="_@M318_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H159_">
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=-1000 Max=1000 Step=1/>
 </WndProperty>
 <WndProperty Name="prpAutoBacklight" Caption="_@M106_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H211_">
 <DataField name="" DataType="boolean"/>
