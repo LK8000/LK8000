@@ -41,7 +41,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	short longpress_yup, longpress_ydown;
 
 	static short s_bottomY=0;
+	#if 0 // 121123 CHECK AND REMOVE
 	static short oldMapSpaceMode=0;
+	#endif
 
 	bool dontdrawthemap=(DONTDRAWTHEMAP);
 	VKtime=keytime;
@@ -274,6 +276,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				}
 			}
 
+			#if 0 // 121123 CHECK AND REMOVE
 			// 120504 if we are clicking on the already selected sort button, within the same mapspacemode,
 			// then simulate a gesture down to advance to next page, if available.
 			if ( (MapSpaceMode==oldMapSpaceMode && SortedMode[MapSpaceMode]==j)  ||
@@ -283,6 +286,13 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			} else {
 				oldMapSpaceMode=MapSpaceMode; // becomes current
 			}
+			#else
+			if ( (SortedMode[MapSpaceMode]==j)  ||
+			     (MapSpaceMode==MSM_COMMON) || (MapSpaceMode==MSM_RECENT) ) {
+				vkmode=LKGESTURE_DOWN;
+				goto shortcut_gesture;
+			}
+			#endif
 
 			switch(MapSpaceMode) {
 				case MSM_LANDABLE:
