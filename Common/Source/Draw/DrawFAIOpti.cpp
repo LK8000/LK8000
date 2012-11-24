@@ -138,6 +138,8 @@ POINT apSectorPolygon[N_PLOYGON];
 POINT Pt1;
 DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
 
+if(fabs(fDist_c) < 1000.0)  /* distance too short for a FAI sector */
+	return -1;
 
 double fDistMax = fDist_c/fFAI_Percentage;
 double fDistMin = fDist_c/(1.0-2.0*fFAI_Percentage);

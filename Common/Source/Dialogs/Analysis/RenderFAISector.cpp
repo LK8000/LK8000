@@ -30,10 +30,15 @@ double alpha, fDistTri, cos_alpha=0;
 POINT apSectorPolygon[N_PLOYGON];
 DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
 
+if(fabs(fDist_c) < 1000.0)  /* distance too short for a FAI sector */
+	return -1;
+
 double x1=0,y1=0;
 double fDistMax = fDist_c/FAI_BIG_THRESHOLD;
 double fDistMin = fDist_c/(1.0-2.0*FAI_BIG_THRESHOLD);
 double fDelta_Dist = 2.0* fDist_c*fFAI_Percentage / (double)(FAI_SECTRO_STEPS-1);
+
+
 
 if(fDistMax < FAI_BIG_THRESHOLD)
 {
@@ -59,7 +64,6 @@ double dir = -1.0;
   y2 = (lat_d - lat_c);
   DrawLine(hdc, rc, x1, y1, x2, y2, style);
 #endif
-
   /********************************************************************
    * calc right leg
    ********************************************************************/
