@@ -330,8 +330,12 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
       //UnlockFlightData();
 
+    } // valid overindex
+    else {
+	// Not valid overindex, we paint like HEADING
+	wpt_brg=90.0;
     }
-  }
+  } // NEXTWP
   
   // Else in MAPWPT with no overtarget we paint a track heading
 
@@ -476,7 +480,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   // draw target symbolic line
 
-
+ if (overindex>=0) {
   int iWpPos =  CalcDistanceCoordinat( wpt_dist,  &sDia);
   if ( (GetSideviewPage() == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4))
   {
@@ -517,7 +521,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       DrawDashLine(hdc,4, line[0], line[1],  RGB_DARKGREY, rc);
     }
   }
-
+ } // overindex is valid
 
   // Draw estimated gliding line (blue)
  // if (speed>10.0)
@@ -528,7 +532,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     //
     ForcedClipping=true;
 
-    if ( GetSideviewPage() == IM_NEXT_WP) {
+    if ( (GetSideviewPage() == IM_NEXT_WP) && (overindex>=0)) {
       double altarriv;
 
       // Draw estimated gliding line MC=0 (green)
@@ -577,7 +581,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 
   //Draw wpt info texts
-  if ( (GetSideviewPage() == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4)) {
+  if ( (GetSideviewPage() == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4) && (overindex>=0)) {
 //HFONT hfOld = (HFONT)SelectObject(hdc, LK8MapFont);
     line[0].x = CalcDistanceCoordinat( wpt_dist,  &sDia);
     // Print wpt name next to marker line
@@ -674,7 +678,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       x = line[0].x - tsize.cx - NIBLSCALE(5);
       if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
       y = CalcHeightCoordinat(  altarriv + wpt_altitude , &sDia );
-      if(  WayPointList[overindex].Reachable) {
+      if(  WayPointList[overindex].Reachable) { // CAREFUL, overindex<0 was making sw crash here.
         SetTextColor(hdc, GREEN_COL);
       } else {
         SetTextColor(hdc, RED_COL);
@@ -749,7 +753,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     SetBkMode(hdc, TRANSPARENT);
     SelectObject(hdc, hfOld);
 //SelectObject(hdc, hfOld);
-  } // if Sideview_asp_heading_task
+  } // IM_NEXT_WP with valid overindex
 
 
   if (GetSideviewPage()== IM_HEADING)
