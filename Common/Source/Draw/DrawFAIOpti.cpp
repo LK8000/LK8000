@@ -141,7 +141,9 @@ DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
 if(fabs(fDist_c) < 1000.0)  /* distance too short for a FAI sector */
 	return -1;
 
+LKASSERT(fFAI_Percentage>0);
 double fDistMax = fDist_c/fFAI_Percentage;
+LKASSERT(fFAI_Percentage!=0.5);
 double fDistMin = fDist_c/(1.0-2.0*fFAI_Percentage);
 double fDelta_Dist = 2.0* fDist_c*fFAI_Percentage / (double)(FAI_SECTOR_STEPS);
 

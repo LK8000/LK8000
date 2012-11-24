@@ -226,6 +226,7 @@ double dir = -1.0;
   if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
   POINT line[2];
   BOOL bFirstUnit = true;
+  LKASSERT(fTic!=0);
   fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 
