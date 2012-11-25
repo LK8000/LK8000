@@ -729,7 +729,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     // Print L/D
       _stprintf(text, TEXT("1/%i"), (int)fLD);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-      SetTextColor(hdc, BLUE_COL);
+      SetTextColor(hdc, RGB_BLACK);
       x = CalcDistanceCoordinat(wpt_dist/2, &sDia)- tsize.cx/2;
       y = CalcHeightCoordinat( (DerivedDrawInfo.NavAltitude + altarriv)/2 + wpt_altitude , &sDia ) + tsize.cy;
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);

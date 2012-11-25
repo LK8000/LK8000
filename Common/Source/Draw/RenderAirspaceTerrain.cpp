@@ -219,7 +219,7 @@ int i,j;
   HPEN   hpHorizonGround;
   HBRUSH hbHorizonGround;
 
-  hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK /*GROUND_COLOUR*/);
+  hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1)+1, RGB(126,62,50));
   hbHorizonGround = (HBRUSH)CreateSolidBrush(GROUND_COLOUR);
   SelectObject(hdc, hpHorizonGround);
   SelectObject(hdc, hbHorizonGround);
