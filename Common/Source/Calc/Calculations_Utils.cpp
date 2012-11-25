@@ -105,12 +105,9 @@ double CalculateGlideRatio(const double grdistance, const double havailable) {
 // SafetyAltitudeMode:  0=landables only,  1=landables and turnpoints
 //
 bool CheckSafetyAltitudeApplies(const int wpindex) {
-  #if TESTBENCH
-  if (!ValidWayPoint(wpindex)) {
-	StartupStore(_T("..... CheckSafetyAlt for invalid wp=%d !%s"),wpindex,NEWLINE);
-	return false;
-  }
-  #endif
+
+  LKASSERT(wpindex>=0);
+  if (!ValidWayPoint(wpindex)) return false;
   //
   if (SafetyAltitudeMode==0 && !WayPointCalc[wpindex].IsLandable)
 	return false;
