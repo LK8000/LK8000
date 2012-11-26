@@ -14,7 +14,7 @@
 #define wpTerrainBoundsNoAll  103
 
 // for extended formats, returns the type of file
-int ReadWayPointFile(HANDLE hFile);
+///int ReadWayPointFile(HANDLE hFile);
 void ReadWayPoints(void);
 void SetHome(bool reset);
 int FindNearestWayPoint(double X, double Y, double MaxRange, bool exhaustive=false);
@@ -28,6 +28,27 @@ int FindMatchingWaypoint(WAYPOINT *waypoint);
 void InitWayPointCalc(void); 
 void AddReservedWaypoints();
 void InitVirtualWaypoints();
+bool AllocateWaypointList(void);
+
+void WaypointFlagsToString(int FlagsNum, TCHAR *Flags);
+void WaypointLongitudeToString(double Longitude, TCHAR *Buffer);
+void WaypointLatitudeToString(double Latitude, TCHAR *Buffer);
+void LongitudeToCUPString(double Longitude, TCHAR *Buffer);
+void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
+int dlgWaypointOutOfTerrain(TCHAR *Message);
+double ReadAltitude(TCHAR *temp);
+double CUPToLat(TCHAR *temp);
+double CUPToLon(TCHAR *temp);
+int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName);
+int ParseDAT(TCHAR *String,WAYPOINT *Temp);
+bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp);
+bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
+bool ParseCOMPEWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
+bool WaypointInTerrainRange(WAYPOINT *List);
+
+
+
+
 
 #endif
 

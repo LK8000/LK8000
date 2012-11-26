@@ -12,6 +12,7 @@ NTR=Common/Source/LKInterface
 CLC=Common/Source/Calc
 TSK=Common/Source/Calc/Task
 CMM=Common/Source/Comm
+WPT=Common/Source/Waypoints
 HDR=Common/Header
 
 BIN=Bin/$(TARGET)
@@ -313,6 +314,31 @@ LIBRARY	:=\
 	$(LIB)/TimeFunctions.cpp\
 	$(LIB)/Utm.cpp \
 	$(LIB)/xmlParser.cpp \
+
+
+WAYPT	:=\
+	$(WPT)/AllocateWaypointList.cpp\
+	$(WPT)/AltitudeFromTerrain.cpp\
+	$(WPT)/CUPToLatLon.cpp\
+	$(WPT)/Close.cpp\
+	$(WPT)/FindMatchingWaypoint.cpp\
+	$(WPT)/FindNearestFarVisible.cpp\
+	$(WPT)/FindNearestWayPoint.cpp\
+	$(WPT)/GrowWaypointList.cpp\
+	$(WPT)/InTerrainRange.cpp\
+	$(WPT)/InitWayPointCalc.cpp\
+	$(WPT)/ParseCOMPE.cpp\
+	$(WPT)/ParseCUP.cpp\
+	$(WPT)/ParseDAT.cpp\
+	$(WPT)/ParseOZI.cpp\
+	$(WPT)/Read.cpp\
+	$(WPT)/ReadAltitude.cpp\
+	$(WPT)/ReadFile.cpp\
+	$(WPT)/SetHome.cpp\
+	$(WPT)/ToString.cpp\
+	$(WPT)/Virtuals.cpp\
+	$(WPT)/Write.cpp\
+
 
 LKINTER	:=\
 	$(NTR)/LKCustomKeyHandler.cpp\
@@ -729,12 +755,12 @@ SRC_FILES :=\
 	$(SRC)/TrueWind.cpp		\
 	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\
-	$(SRC)/Waypointparser.cpp \
 	$(SRC)/WndProc.cpp\
 	$(SRC)/WindowControls.cpp \
 	\
 	$(LKINTER) \
 	$(LIBRARY) \
+	$(WAYPT) \
 	$(DRAW) \
 	$(CALC) \
 	$(TASK) \
