@@ -73,6 +73,9 @@ void NMEAParser::Reset(void) {
 BOOL NMEAParser::ParseNMEAString(int device,
 				 TCHAR *String, NMEA_INFO *pGPS)
 {
+
+  LKASSERT(!ReplayLogger::IsEnabled());
+
   switch (device) {
   case 0: 
     return nmeaParser1.ParseNMEAString_Internal(String, pGPS);
@@ -241,10 +244,6 @@ BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   GSAAvailable = TRUE;
   if (!activeGPS) return TRUE;
 
-  if (ReplayLogger::IsEnabled()) {
-    return TRUE;
-  }
-
   // satellites are in items 4-15 of GSA string (4-15 is 1-indexed)
   // but 1st item in string is not passed, so start at item 3
   for (int i = 0; i < MAXSATELLITES; i++)
@@ -268,10 +267,6 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
   if (!activeGPS) return TRUE;
 
-  if (ReplayLogger::IsEnabled()) {
-	return TRUE;
-  }
-  
   pGPS->NAVWarning = !gpsValid;
   
   // use valid time with invalid fix
@@ -342,18 +337,6 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   if (gpsValid)
   {
 	speed = StrToDouble(params[4], NULL);
-	// speed is in knots, 2 = 3.7kmh
-	if (speed>2.0) {
-		if (ReplayLogger::IsEnabled()) {
-			// stop logger replay if aircraft is actually moving.
-			ReplayLogger::Stop();
-		}
-	} else {
-		if (ReplayLogger::IsEnabled()) {
-			// block actual GPS signal if not moving and a log is being replayed
-			return TRUE;
-		}
-	}
 
 	pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
   
@@ -396,9 +379,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 	RMZAvailable = TRUE;
 
-	if (!ReplayLogger::IsEnabled()) {
-		UpdateBaroSource(pGPS, BARO__GM130, NULL,   RMZAltitude);
-	}
+	UpdateBaroSource(pGPS, BARO__GM130, NULL,   RMZAltitude);
   }
   if (DeviceIsRoyaltek3200) {
 	if (Royaltek3200_ReadBarData()) {
@@ -413,9 +394,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 	RMZAvailable = TRUE;
 
-	if (!ReplayLogger::IsEnabled()) {
-	  UpdateBaroSource(pGPS, BARO__ROYALTEK3200,  NULL,  RMZAltitude);
-	}
+	UpdateBaroSource(pGPS, BARO__ROYALTEK3200,  NULL,  RMZAltitude);
 
   }
   #endif // PNA
@@ -532,13 +511,11 @@ force_advance:
 	}
   }
 
-  if (!ReplayLogger::IsEnabled()) {      
-	if(RMZAvailable) {
-		UpdateBaroSource(pGPS, BARO__RMZ, NULL,  RMZAltitude);
-	}
-	else if(RMAAvailable) {
-	     UpdateBaroSource(pGPS, BARO__RMA, NULL,  RMAAltitude);
-	}
+  if(RMZAvailable) {
+	UpdateBaroSource(pGPS, BARO__RMZ, NULL,  RMZAltitude);
+  }
+  else if(RMAAvailable) {
+     UpdateBaroSource(pGPS, BARO__RMA, NULL,  RMAAltitude);
   }
   if (!GGAAvailable) {
 	// update SatInUse, some GPS receiver dont emmit GGA sentance
@@ -565,10 +542,6 @@ force_advance:
 
 BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-
-  if (ReplayLogger::IsEnabled()) {
-        return TRUE;
-  }
 
   GGAAvailable = TRUE;
   GPSCONNECT = TRUE;     // 091208
