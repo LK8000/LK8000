@@ -90,6 +90,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   double vtas;
   static int offset=-1;
 
+  GPSCONNECT=true;
 
   // firmware 3.31h no offset
   // firmware 3.32  1 offset
@@ -111,7 +112,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,8+offset);
   if (_tcscmp(ctemp,_T("V"))==0) {
 	pGPS->NAVWarning=true;
-	GPSCONNECT=false;
+	// GPSCONNECT=false; // 121127 NO!!
 	goto label_nogps;
   }
   // ------------------------
@@ -133,7 +134,6 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
         pGPS->Latitude = tmplat;
         pGPS->Longitude = tmplon;
 	pGPS->NAVWarning=false;
-	GPSCONNECT=true;
   }
 
   // GPS SPEED

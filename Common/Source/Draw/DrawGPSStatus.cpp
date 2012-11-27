@@ -41,20 +41,20 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     } else {
     	if (ComPortStatus[0]==CPS_OPENOK) {
 		if ((ComPortRx[0]>0) && !firstrun) {
-			// Gps is missing
-      TextInBox(hDC, &rc, gettext(_T("_@M973_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
-			firstrun=false; // 100214
+			// GPS IS MISSING
+			TextInBox(hDC, &rc, MsgToken(973), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+			firstrun=false; 
 		} else {
-			// No Data Rx
-      TextInBox(hDC, &rc, gettext(_T("_@M972_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+			// NO DATA RX
+			TextInBox(hDC, &rc, MsgToken(972), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 		}
 	} else  {
 		if (ComPortStatus[0]==CPS_EFRAME)  {
-			// Data error
-      TextInBox(hDC, &rc, gettext(_T("_@M975_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+			// DATA ERROR
+			TextInBox(hDC, &rc, MsgToken(975), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 		} else {
-			// Not Connected
-      TextInBox(hDC, &rc, gettext(_T("_@M974_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+			// GPS NOT CONNECTED
+			TextInBox(hDC, &rc, MsgToken(974), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 		}
 	}
 
@@ -70,8 +70,8 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     TextInBoxMode.AlligneCenter = 1;
     TextInBoxMode.WhiteBorder = 1;
     TextInBoxMode.Border = 1;
-    // No Valid Fix
-    TextInBox(hDC, &rc, gettext(_T("_@M970_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+    // NO VALID FIX
+    TextInBox(hDC, &rc, MsgToken(970), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 
     }
 

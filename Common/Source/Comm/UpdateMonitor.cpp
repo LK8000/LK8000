@@ -21,10 +21,11 @@ double trackbearingminspeed=0; // minimal speed to use gps bearing
 
 //
 // Run every 5 seconds, approx.
+// This is the hearth of LK. Questions? Ask Paolo..
 //
 void NMEAParser::UpdateMonitor(void) 
 {
-  short active; // active port number for gps
+  short active=0; // active port number for gps
   static short lastactive=0;
   static bool  lastvalidBaro=false;
   short invalidGps=0;
@@ -39,6 +40,7 @@ void NMEAParser::UpdateMonitor(void)
 		nmeaParser1.activeGPS = true;
 		active=1;
 	} else {
+		// only one valid, pick it up
 		nmeaParser1.activeGPS = nmeaParser1.gpsValid;
 		nmeaParser2.activeGPS = nmeaParser2.gpsValid;
 		active= nmeaParser1.activeGPS ? 1 : 2;
@@ -47,20 +49,44 @@ void NMEAParser::UpdateMonitor(void)
 	// No valid fix on any port. We use the first port with at least some data going through!
 	// This will keep probably at least the time updated since the gps may still be receiving a 
 	// valid time, good for us.
-	if ( (LKHearthBeats-ComPortHB[0])<10 ) active=1;
-	else 
-		if ( (LKHearthBeats-ComPortHB[1])<10 ) active=2;
-		else
-			active=1;	// lets keep waiting for the first port
-
-	if (active==1) {
-		nmeaParser1.activeGPS = true;
-		nmeaParser2.activeGPS = false;
+	if ( (LKHearthBeats-ComPortHB[0])<10 ) {
+		// It is not granted that devA is really a GPS source.
+		// Very unlikely, but possible..
+		if (devIsGPSSource(devA())) active=1;
 	} else {
-		nmeaParser1.activeGPS = false;
-		nmeaParser2.activeGPS = true;
+		if ( (LKHearthBeats-ComPortHB[1])<10 ) {
+			// portB is really active, although there is no valid fix on it.
+			// Before electing it to gps, lets be sure it really has one!
+			// LKEXT1 and other instruments do not provide GPS source in fact.
+			if (devIsGPSSource(devB())) active=2;
+		} else {
+			// nothing coming in from any port, recently.
+			if (devIsGPSSource(devA())) active=1;	// lets keep waiting for the first port
+		}
+	}
+
+	switch(active) {
+		case 0:
+			nmeaParser1.activeGPS = false;
+			nmeaParser2.activeGPS = false;
+			break;
+		case 1:
+			nmeaParser1.activeGPS = true;
+			nmeaParser2.activeGPS = false;
+			break;
+		case 2:
+			nmeaParser1.activeGPS = false;
+			nmeaParser2.activeGPS = true;
+			break;
+		default:
+			nmeaParser1.activeGPS = false;
+			nmeaParser2.activeGPS = false;
+			LKASSERT(0);
+			break;
 	}
   }
+
+
   if (nmeaParser2.activeGPS==true && active==1) {
 	StartupStore(_T(".... GPS Update error: port 1 and 2 are active!%s"),NEWLINE);
 	nmeaParser2.activeGPS=false; // force it off
@@ -146,7 +172,7 @@ void NMEAParser::UpdateMonitor(void)
   if (validBaro==0) {
 	if ( GPS_INFO.BaroAltitudeAvailable ) {
 		StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off%s"),NEWLINE);
-		if (EnableNavBaroAltitude) {
+		if (EnableNavBaroAltitude && active) {
 			// LKTOKEN  _@M122_ = "BARO ALTITUDE NOT AVAILABLE, USING GPS ALTITUDE" 
 			DoStatusMessage(MsgToken(122));
 			PortMonitorMessages++;
@@ -176,8 +202,6 @@ void NMEAParser::UpdateMonitor(void)
 			_tcscpy(devname,_T("unknown"));
 		}
 		StartupStore(_T("... GPS baro source back available from <%s>%s"),devname,NEWLINE);
-		#else
-		StartupStore(_T("... GPS baro source back available%s"),NEWLINE);
 		#endif
 
 		if (GotFirstBaroAltitude) {
@@ -186,7 +210,14 @@ void NMEAParser::UpdateMonitor(void)
 			} else {
 				DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
 			}
+			StartupStore(_T("... GPS baro source back available%s"),NEWLINE);
 			lastvalidBaro=true;
+		} else {
+			static bool said=false;
+			if (!said) {
+				StartupStore(_T("... GPS BARO SOURCE PROBLEM, port activity but no valid data. Wrong device?%s"),NEWLINE);
+				said=true;
+			}
 		}
 	} 
 	else {
@@ -215,41 +246,43 @@ void NMEAParser::UpdateMonitor(void)
 	nmeaParser2.RMZAvailable = FALSE;
   }
 
-  // Set some fine tuning parameters here, dependint on device/situation/mode
+  // Set some fine tuning parameters here, depending on device/situation/mode
   if (ISCAR)
 	trackbearingminspeed=0; // trekking mode/car mode, min speed >0
   else
 	trackbearingminspeed=1; // flymode,  min speed >1 knot
 
-  // Following diagnostics only
+  //
+  // Following is for diagnostics only
+  //
+
+  // Nothing has changed? No need to give new alerts. We might have no active gps at all, also.
+  // In this case, active and lastactive are 0, nothing we can do about it.
   if (active == lastactive) return;
-  if (lastactive==0) {
-	lastactive=active;
-	StartupStore(_T(". GPS NMEA init delegated to port %d%s"),active,NEWLINE);
-	return;
+
+  if (active!=0)
+	StartupStore(_T(". GPS NMEA source changed to port %d%s"),active,NEWLINE);
+  else
+	StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!%s"),NEWLINE);
+
+
+  if (PortMonitorMessages<15) { // do not overload pilot with messages!
+	// do not say anything if we never got the first port, on startup essentially
+	if ((lastactive!=0) && (nmeaParser1.gpsValid || nmeaParser2.gpsValid)){
+		TCHAR vbuf[100];
+		_stprintf(vbuf,_T("%s %d"), MsgToken(277),active); // FALLBACK USING GPS ON PORT ..
+		DoStatusMessage(vbuf);
+		PortMonitorMessages++;
+	} 
+  } else {
+	if (PortMonitorMessages==15) { 
+		StartupStore(_T("... GOING SILENT on too many Com reportings.%s"),NEWLINE);
+		DoStatusMessage(MsgToken(317)); // GOING SILENT ON COM REPORTING
+		PortMonitorMessages++;	// we go to 16, and never be back here
+	}
   }
 
   lastactive=active;
-  // in case of no gps at all, port 1 is selected but we dont want to tell unless really working
-  if (PortMonitorMessages<10) { // 100221 do not overload pilot with messages!
-	StartupStore(_T("... GPS NMEA source changed to port %d %s"),active,NEWLINE);
-	if (nmeaParser1.gpsValid || nmeaParser2.gpsValid){
-		TCHAR vbuf[100]; _stprintf(vbuf,_T("%s %d"),
-	// LKTOKEN  _@M277_ = "FALLBACK USING GPS ON PORT" 
-		gettext(TEXT("_@M277_")),active);
-		DoStatusMessage(vbuf);
-	}
-	PortMonitorMessages++;
-  } else {
-	if (PortMonitorMessages==10) { // 100221
-		StartupStore(_T("... GOING SILENT on too many Com reportings.%s"),NEWLINE);
-	// LKTOKEN  _@M317_ = "GOING SILENT ON COM REPORTING" 
-		DoStatusMessage(gettext(TEXT("_@M317_")));
-		PortMonitorMessages++;
-	} else
-		PortMonitorMessages++;
-  }
-
 
 }
 

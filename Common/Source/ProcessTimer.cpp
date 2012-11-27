@@ -126,14 +126,15 @@ int ConnectionProcessTimer(int itimeout) {
   static bool s_lastGpsConnect = false;
   static bool s_connectWait = false;
   static bool s_lockWait = false;
-  
+ 
+  // save status for this run 
   bool gpsconnect = BOOL2bool(GPSCONNECT);
   
-  if (GPSCONNECT) {
+  if (gpsconnect) {
     extGPSCONNECT = TRUE;
   } 
 
-  if (extGPSCONNECT == FALSE) {
+  if ((extGPSCONNECT == FALSE) && (GPS_INFO.NAVWarning!=true)) {
 	// If gps is not connected, set navwarning to true so
 	// calculations flight timers don't get updated
 	LockFlightData();

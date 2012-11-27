@@ -389,14 +389,14 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 
     if (d->ParseNMEA != NULL)
 	if ((d->ParseNMEA)(d, String, pGPS)) {
-		GPSCONNECT  = TRUE;
+		//GPSCONNECT  = TRUE; // NO! 121126
 		return(TRUE);
 	}
   }
 
   if(String[0]=='$') {  // Additional "if" to find GPS strings
 	if(NMEAParser::ParseNMEAString(portNum, String, pGPS)) {
-		GPSCONNECT  = TRUE;
+		//GPSCONNECT  = TRUE; // NO! 121126
 		return(TRUE);
 	} 
   }

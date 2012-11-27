@@ -264,6 +264,7 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 {
 
   gpsValid = !NAVWarn(params[5][0]);
+  GPSCONNECT=TRUE;
 
   if (!activeGPS) return TRUE;
 
@@ -333,7 +334,7 @@ BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-  GPSCONNECT = TRUE;
+  // GPSCONNECT = TRUE; // 121127  NO! VTG gives no position fix
   if (RMCAvailable) return FALSE;
   double speed=0;
 
