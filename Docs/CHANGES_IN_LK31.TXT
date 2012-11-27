@@ -104,14 +104,15 @@ Screen Rotation is still experimental.
 
 ENHANCED PROFILE SETUP
 ----------------------
-From Menu, Config 2/3, LK8000 Setup  you enter a new menu, with 6 buttons:
+From Menu, Config 2/3, LK8000 Setup  you enter a new menu, with 8 buttons:
 
 . System Setup, System Save
 . Aircraft Setup, Aircraft Save
 . Pilot Setup, Pilot Save
+. Device Setup, Device Save
 
-Aircraft and Pilot configurations have been exported from the old configuration setup 
-and they are now independent items.
+Aircraft, Pilot and Device configurations have been exported from the old configuration setup 
+and they are now independent items. Some predefined profiles for devices and system are available.
 
 
 LXnav V7 support
@@ -256,6 +257,9 @@ NEW THINGS
 
     New CAR/TREKKING functions
 
+    New Device profile buttons, made independent from system configuration. We now have predefined 
+    profiles for different devices. Profiles can now be shared among devices, and among pilots.
+
     GPS-NAV task declaration support
 
 
@@ -390,11 +394,18 @@ CHANGES
 
     Airspace Sonar is now working globally, and can be disabled/enabled with a button
 
+    Rename virtual waypoints if they are part of a task, when saved.
+    Virtual, like TAKEOFF or FREEFLY are renamed with a leading TSK_ .
+    There waypoints can be saved to task, and made real waypoints.
+
+
     TASK lines made thicker and better visible
 
     Add optional glide footprint around active WP
 
     Faster Zoom and more responsive PAN mode
+
+    Reset COMM ports automatically on no activity after 3 minutes, not after 30 seconds.
 
     Add BEEP to startup timeout on welcome page, so we know the LK has got the GPS fix.
 
@@ -440,7 +451,13 @@ FIXES
 
     Fix : Crash on shutdown when task edit dialog is open !
 
+    Fix waypoint selection list not showing invalid virtual waypoints.
+    Like LKMARKER for example!
+
     Fix Distance To Next Overlay for Exit Waypoint
+
+    Fix handling GPS comm failures, passing control to a secondary (port B) device if connected, even
+    if it was not giving GPS (example, LK8EX1)
 
     Fix bug announcing Baro Altitude available if it was never really received at least once.
     Minor bug because this was happening only at startup when a device providing baro altitude was declared to be used but not really connected, or not really providing valuable data.
