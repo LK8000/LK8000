@@ -115,6 +115,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 		case LKEVENT_NEWRUN:
 			// CALLED ON ENTRY: when we select this page coming from another mapspace
 			fZOOMScale = 1.0;
+			bHeightScale = false;
 		//	fHeigtScaleFact = 1000;
 		break;
 		case LKEVENT_UP:
@@ -164,7 +165,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 		     if (LKevent!=LKEVENT_NONE) {
 			 if (PtInRect(XstartScreen, YstartScreen,rc ))
-			   bHeightScale = true;
+			   bHeightScale = !bHeightScale;
 			 if (PtInRect(XstartScreen, YstartScreen,rct ))
 			   bHeightScale = false;
 		     }

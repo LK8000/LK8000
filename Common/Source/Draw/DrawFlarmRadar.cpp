@@ -601,7 +601,7 @@ switch(LKevent)
 	if( PtInRect(XstartScreen,YstartScreen, rct))
 		bHeightScale	= false;
 	if( PtInRect(XstartScreen,YstartScreen, rc))
-		bHeightScale	= true;
+		bHeightScale	= !bHeightScale;
 
 	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
 	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )

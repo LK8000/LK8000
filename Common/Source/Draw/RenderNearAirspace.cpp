@@ -85,6 +85,7 @@ static  bool bHeightScale = false;
 	  switch(LKevent) {
 		case LKEVENT_NEWRUN:
 			// CALLED ON ENTRY: when we select this page coming from another mapspace
+			bHeightScale = false;
 			fZOOMScale = 1.0;
 			fHeigtScaleFact = 1.0;
 		break;
@@ -119,7 +120,7 @@ static  bool bHeightScale = false;
 			 }
 		     if ( LKevent != LKEVENT_NONE ) {
 			 if (PtInRect(XstartScreen, YstartScreen,rc ))
-			   bHeightScale = true;
+			   bHeightScale = !bHeightScale;
 			 if (PtInRect(XstartScreen, YstartScreen,rct ))
 			   bHeightScale = false;
 		     }
