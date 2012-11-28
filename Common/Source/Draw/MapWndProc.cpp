@@ -957,7 +957,9 @@ goto_menu:
 	// Special SIM mode keys for PC
 	//
 	#if (WINDOWSPC>0)
+	extern void SimFastForward(void);
 	if (SIMMODE && IsMultiMapShared() && (!ReplayLogger::IsEnabled())) {
+		short nn;
 		switch(wParam) {
 			case 0x21:	// VK_PRIOR PAGE UP
 				if (Units::GetUserAltitudeUnit() == unFeet)
@@ -977,7 +979,12 @@ goto_menu:
 				return TRUE;
 				break;
 			case 0x26:	// VK_UP
-				InputEvents::eventChangeGS(_T("up"));
+				nn=GetKeyState(VK_SHIFT);
+				if (nn<0) {
+					SimFastForward();
+				} else {
+					InputEvents::eventChangeGS(_T("up"));
+				}
 				TriggerGPSUpdate();
 				return TRUE;
 				break;
@@ -1000,7 +1007,6 @@ goto_menu:
 				TriggerGPSUpdate();
 				return TRUE;
 				break;
-
 		}
 	}
 

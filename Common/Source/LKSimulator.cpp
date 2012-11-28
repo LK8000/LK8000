@@ -248,5 +248,21 @@ void LKSimulator(void) {
   GPS_INFO.Second = (tsec-GPS_INFO.Hour*3600-GPS_INFO.Minute*60);
 
   UnlockFlightData();
-  }
+}
+
+
+#if (WINDOWSPC>0)
+//
+// This is called 
+void SimFastForward() {
+
+  FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
+                          GPS_INFO.TrackBearing, GPS_INFO.Speed*10.0,
+                          &GPS_INFO.Latitude,
+                          &GPS_INFO.Longitude);
+
+}
+
+
+#endif
 
