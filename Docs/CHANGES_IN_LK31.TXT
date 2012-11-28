@@ -315,6 +315,7 @@ NEW THINGS
 geDown.
     - Arrow Up/Down changes speed as with SIMULATOR buttons.
     - Arrow Left/Right changes direction by 5 degrees, WITHOUT setting a turn rate.
+    - SHIFT Arrow UP  will fast forward at 10x speed, many times per second.
     - Page Up and Page Down will change altitude by 10 meters or 45 feet.
 
     . By keeping the keys pressed, values will change rapidly.
