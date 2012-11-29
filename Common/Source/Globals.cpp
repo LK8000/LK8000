@@ -644,14 +644,14 @@ void Globals_Init(void) {
 
 
 void Reset_CustomMenu(void) {
-	CustomMenu1  = ckLockScreen;			// Landscape: 1st on top right
+	CustomMenu1  = ckForceLanding;			// Landscape: 1st on top right
 	CustomMenu2  = ckForceFreeFlightRestart;
-	CustomMenu3  = ckForceLanding;
+	CustomMenu3  = ckResetTripComputer;
 	CustomMenu4  = ckResetOdometer;
 	CustomMenu5  = ckTrueWind;			// Landscape: 1st on the bottom left
 	CustomMenu6  = ckWindRose;
-	CustomMenu7  = ckPanorama;
-	CustomMenu8  = ckDisabled;
+	CustomMenu7  = ckUseTotalEnergy;
+	CustomMenu8  = ckLockScreen;
 	CustomMenu9  = ckDisabled;			// Landscape> 1st top left
 	CustomMenu10 = ckDisabled;
 }

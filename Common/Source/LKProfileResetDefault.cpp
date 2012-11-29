@@ -187,7 +187,7 @@ void LKProfileResetDefault(void) {
 
   OverColor = (OverColor_t)OcBlack;
 
-  DeclutterMode = (DeclutterMode_t)dmMedium;
+  DeclutterMode = (DeclutterMode_t)dmHigh;
 
   // full size overlay by default
   OverlaySize = 0;
