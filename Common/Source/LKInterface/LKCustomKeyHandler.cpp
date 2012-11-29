@@ -271,10 +271,9 @@ passthrough:
 		SoundModeIndex();
 		return true;
 	case ckAirspaceAnalysis:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
-		InputEvents::eventSetup(_T("AspAnalysis"));
+		SetModeType(LKMODE_MAP,MP_MAPASP);
+		MapWindow::RefreshMap();
+		SoundModeIndex();
 		return true;
 	case ckOptimizeRoute:
 		#ifndef DISABLEAUDIO
@@ -397,17 +396,9 @@ passthrough:
 		return true;
 
 	case ckFlarmRadar:
-/* Customkey FlarmRadar: THIS IS DISABLED TEMPORARILY while working on the multimap version
-		#ifndef DISABLEAUDIO
-		//if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
-		if (ModeIndex==LKMODE_MAP)
-			SetModeType(LKMODE_TRF,IM_RADAR);
-		else
-			SetModeIndex(LKMODE_MAP);
+		SetModeType(LKMODE_MAP,MP_RADAR);
 		MapWindow::RefreshMap();
 		SoundModeIndex();
-*/
 		return true;
 	case ckDeviceA:
 		if(devA() && devA()->Config) {
