@@ -318,6 +318,7 @@ void DisableMultimapOverlaysGauges(void) {
 //
 void Reset_Multimap_Flags(void) {
   short i;
+  // First, we reset them equal, just to be sure we dont forget anyone
   for (i=0; i<=MP_TOP; i++) {
 	Multimap_Flags_Terrain[i]=true;
 	Multimap_Flags_Topology[i]=true;
@@ -329,14 +330,51 @@ void Reset_Multimap_Flags(void) {
 	Multimap_SizeY[i]=SIZE1;	// default
   }
 
-  // We should always get these flags set correctly, because the LKInterface is working
-  // in a separated thread by Draw
+  // NOW, we do custom config
   Multimap_Flags_Overlays_Text[MP_WELCOME]=false;
   Multimap_Flags_Overlays_Gauges[MP_WELCOME]=false;
+
+  Multimap_Flags_Terrain[MP_MAPTRK]=true;
+  Multimap_Flags_Topology[MP_MAPTRK]=true;
+  Multimap_Flags_Airspace[MP_MAPTRK]=true;
+  Multimap_Flags_Waypoints[MP_MAPTRK]=true;
+  Multimap_Flags_Overlays_Text[MP_MAPTRK]=true;
+  Multimap_Flags_Overlays_Gauges[MP_MAPTRK]=false;
+  Multimap_Labels[MP_MAPTRK]=MAPLABELS_ALLON;
+  Multimap_SizeY[MP_MAPTRK]=SIZE3;
+
+
+  Multimap_Flags_Terrain[MP_MAPWPT]=true;
+  Multimap_Flags_Topology[MP_MAPWPT]=false;
+  Multimap_Flags_Airspace[MP_MAPWPT]=true;
+  Multimap_Flags_Waypoints[MP_MAPWPT]=true;
+  Multimap_Flags_Overlays_Text[MP_MAPWPT]=false;
+  Multimap_Flags_Overlays_Gauges[MP_MAPWPT]=false;
+  Multimap_Labels[MP_MAPWPT]=MAPLABELS_ALLON;
+  Multimap_SizeY[MP_MAPWPT]=SIZE1;
+
+
+  Multimap_Flags_Terrain[MP_MAPASP]=true;
+  Multimap_Flags_Topology[MP_MAPASP]=false;
+  Multimap_Flags_Airspace[MP_MAPASP]=true;
+  Multimap_Flags_Waypoints[MP_MAPASP]=false;
+  Multimap_Flags_Overlays_Text[MP_MAPASP]=false;
+  Multimap_Flags_Overlays_Gauges[MP_MAPASP]=false;
+  Multimap_Labels[MP_MAPASP]=MAPLABELS_ALLOFF;
+  Multimap_SizeY[MP_MAPASP]=SIZE2;
+
+
+  // Radar is custom multimap, so no terrain, etc.
   Multimap_Flags_Overlays_Text[MP_RADAR]=false;
   Multimap_Flags_Overlays_Gauges[MP_RADAR]=false;
+  Multimap_SizeY[MP_RADAR]=SIZE2;
+
+  // this is not enabled normally
   Multimap_Flags_Overlays_Text[MP_TEST]=false;
   Multimap_Flags_Overlays_Gauges[MP_TEST]=false;
+
+
+
 }
 
 

@@ -429,6 +429,9 @@ void LKProfileResetDefault(void) {
   extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
 
+  extern void Reset_Multimap_Flags(void);
+  Reset_Multimap_Flags();
+
    UseWindRose=false;	// use wind rose (ex: NNE) for wind direction, instead of degrees
                         // only Changed by custom Key
 

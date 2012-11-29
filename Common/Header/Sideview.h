@@ -36,6 +36,9 @@
 #define IM_NEXT_WP 1
 #define IM_HEADING 0
 
+//
+// TOPVIEW size
+//
 #define SIZE0 0
 #define SIZE1 30
 #define SIZE2 50
