@@ -147,7 +147,9 @@ void LKProfileInitRuntime(void) {
   if (GlobalModelType == MODELTYPE_PNA_HP31X ) {
 	DeviceNeedClipping=true;
 	// key transcoding for this one
+  	#if TESTBENCH
 	StartupStore(TEXT(". Loading HP31X settings%s"),NEWLINE);
+	#endif
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_PN6000 ) {
@@ -155,26 +157,37 @@ void LKProfileInitRuntime(void) {
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_MIO ) {
+  	#if TESTBENCH
 	StartupStore(TEXT(". Loading MIO settings%s"),NEWLINE);
+	#endif
 	// currently no special settings from MIO but need to handle hw keys
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_NOKIA_500 ) {
+  	#if TESTBENCH
 	StartupStore(TEXT(". Loading Nokia500 settings%s"),NEWLINE);
+	#endif
 	// key transcoding is made
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_MEDION_P5 ) {
+  	#if TESTBENCH
 	StartupStore(TEXT(".Loading Medion settings%s"),NEWLINE);
+	#endif
 	DeviceNeedClipping=true;
   }
   if (GlobalModelType == MODELTYPE_PNA_NAVIGON ) {
+  	#if TESTBENCH
 	StartupStore(TEXT(".Loading Navigon settings%s"),NEWLINE);
+	#endif
 	DeviceNeedClipping=true;
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_PNA ) {
+  	#if TESTBENCH
 	StartupStore(TEXT(". Loading default PNA settings%s"),NEWLINE);
+	#endif
+		
   }
   #if TESTBENCH
   else

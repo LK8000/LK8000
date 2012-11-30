@@ -1,7 +1,7 @@
 VERSION 3.1 MANUAL ADDENDUM (NOT UPDATED TO THE LATEST 3.1h version yet!)
 ===========================
 
-FLARM RADAR
+FLARM RADAR (INCOMPLETE DESCRIPTION, OBSOLETED BY MULTIMAP RADAR.. TODO)
 -----------
 
 The Radar page works similar to the well-known Butterfly displays and it's derivates, but has some more features: 
@@ -13,20 +13,6 @@ The Radar page works similar to the well-known Butterfly displays and it's deriv
 -direct "link line" to target object
 
 Zoom works like in normal map from 1km..100km, clicking in the upper third of the display zooms the scale, clicking in the lower third unzooms the scale.
-
-Press on center (enter) will switch between 4 different Radar screens (RDR.x), optimized for different screen modes (landscape and portrait):
-
-RDR.1
-Glider position left of center, heading to the right screen position, to see more space in front. (for landscape)
-
-RDR.2
-Glider position center, heading to top of the screen. (for protrait)
-
-RDR.3
-Same as RDR.2 but without the sideview diagram for maximum top view (similar to Butterfly displays)
-
-RDR.4
-glider position center heading to right side of the screen. (for landscape)
 
 
 Colors scheme to indicate the current climb rates (30s integral):
@@ -236,7 +222,7 @@ New Takeoff safety alarm (configuration menu Alarms)
 
 
 
-LK8000 VERSION 3.1i 1211xx
+LK8000 VERSION 3.1i 121130
 ==========================
 
 
@@ -445,6 +431,8 @@ CHANGES
 FIXES
 
     Fix old bug  hardware keys no more working after defocusing LK windows, on PC or PDAs.
+
+    Fix old bug not correctly saving some CUP waypoint files (file name disappearing in configuration)
 
     Fix bug in FastPanning mode, forcing unwanted refresh. Panning mode much better and smoother now.
 
