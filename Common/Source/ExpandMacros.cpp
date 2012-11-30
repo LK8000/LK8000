@@ -503,6 +503,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
         ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), MsgToken(893), Size); // (auto)
         invalid = true;
       }
+      break;
       // TODO bug: no need to arm finish
     case 4:
       if (ActiveWayPoint>0) {
