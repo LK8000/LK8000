@@ -82,7 +82,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   double w0lat;
   double w0lon;
   
-  if (AATEnabled && (ActiveWayPoint>0) && (ValidTaskPoint(ActiveWayPoint+1))) {
+  if (AATEnabled && (ActiveWayPoint>0) && (ValidTaskPoint(ActiveWayPoint))) {
     w1lat = Task[ActiveWayPoint].AATTargetLat;
     w1lon = Task[ActiveWayPoint].AATTargetLon;
   } else {
