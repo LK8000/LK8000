@@ -78,13 +78,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   TCHAR sTmp[120];
   LockTaskData();
 
-  int w0;
-  if (ScreenLandscape) {
-    w0 = 200*ScreenScale;
-  } else {
-    w0 = 210*ScreenScale;
-  }
-
+  int w0 = Sender->GetWidth()-1;
   int w1 = GetTextWidth(hDC, TEXT(" 000km"));
   int w2 = GetTextWidth(hDC, TEXT("  000")TEXT(DEG));
 
@@ -95,8 +89,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
     int i = LowLimit + DrawListIndex;
 
     if (Task[i].Index>=0) {
-      if (ScreenLandscape && 
-          AATEnabled && ValidTaskPoint(i+1) && (i>0)) {
+      if (AATEnabled && ValidTaskPoint(i+1) && (i>0)) {
         if (Task[i].AATType==0) {
           _stprintf(sTmp, TEXT("%s %.1f"), 
                     WayPointList[Task[i].Index].Name,
@@ -127,7 +120,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
                  2*ScreenScale,
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
-    
+      
     }
 
   } else {
