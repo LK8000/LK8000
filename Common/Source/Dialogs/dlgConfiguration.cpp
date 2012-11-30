@@ -3259,13 +3259,10 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M418_ = "Manual" 
-    dfe->addEnumText(gettext(TEXT("_@M418_")));
-    dfe->addEnumText(gettext(TEXT("Auto")));
-	// LKTOKEN  _@M97_ = "Arm" 
-    dfe->addEnumText(gettext(TEXT("_@M97_")));
-	// LKTOKEN  _@M96_ = "Arm start" 
-    dfe->addEnumText(gettext(TEXT("_@M96_")));
+    dfe->addEnumText(MsgToken(418)); // Manual
+    dfe->addEnumText(MsgToken(897)); // Auto
+    dfe->addEnumText(MsgToken(97)); // Arm
+    dfe->addEnumText(MsgToken(96)); // Arm start
     dfe->Set(AutoAdvance_Config);
     wp->RefreshDisplay();
   }

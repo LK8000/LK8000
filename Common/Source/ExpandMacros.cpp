@@ -478,37 +478,27 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       if (ActiveWayPoint>0) {
         if (ValidTaskPoint(ActiveWayPoint+1)) {
           CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
-	// LKTOKEN  _@M161_ = "Cancel" 
-                              MsgToken(161), 
-	// LKTOKEN  _@M678_ = "TURN" 
-				MsgToken(678), Size);
+		MsgToken(161),  // Cancel
+		MsgToken(678), Size); // TURN
         } else {
-          ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), 
-	// LKTOKEN  _@M8_ = "(finish)" 
-                          MsgToken(8), Size);
+          ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), MsgToken(8), Size); // (finish)
           invalid = true;
         }
       } else {
         CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
-	// LKTOKEN  _@M161_ = "Cancel" 
-                            MsgToken(161), 
-	// LKTOKEN  _@M571_ = "START" 
-			MsgToken(571), Size);
+		MsgToken(161),  // Cancel
+		MsgToken(571), Size); // START
       }
       break;
     case 3:
       if (ActiveWayPoint==0) {
         CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
-	// LKTOKEN  _@M161_ = "Cancel" 
-                            MsgToken(161), 
-	// LKTOKEN  _@M571_ = "START" 
-			MsgToken(571), Size);
+		MsgToken(161),  // Cancel
+		MsgToken(571), Size); // START
       } else if (ActiveWayPoint==1) {
         CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
-	// LKTOKEN  _@M161_ = "Cancel" 
-                            MsgToken(161), 
-	// LKTOKEN  _@M539_ = "RESTART" 
-			MsgToken(539), Size);
+		MsgToken(161),  // Cancel
+		MsgToken(539), Size); // RESTART
       } else {
         ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), MsgToken(893), Size); // (auto)
         invalid = true;
@@ -518,14 +508,10 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       if (ActiveWayPoint>0) {
         if (ValidTaskPoint(ActiveWayPoint+1)) {
           CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
-	// LKTOKEN  _@M161_ = "Cancel" 
-                              MsgToken(161), 
-	// LKTOKEN  _@M678_ = "TURN" 
-				MsgToken(678), Size);
+		MsgToken(161),  // Cancel
+		MsgToken(678), Size); // TURN
         } else {
-          ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), 
-	// LKTOKEN  _@M8_ = "(finish)" 
-                          MsgToken(8), Size);
+          ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), MsgToken(8), Size); // (finish)
           invalid = true;
         }
       }
