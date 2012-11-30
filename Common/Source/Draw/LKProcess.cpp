@@ -1386,7 +1386,7 @@ goto_bearing:
 				_stprintf(BufferTitle, MsgToken(1134));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					// the ValidFinish() seem to return FALSE when is actually valid.
