@@ -372,7 +372,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
     
   }
 
-  if (EnableLogNMEA) LogNMEA(String); // 091108 force all input to be saved by nmealog!!
+  LogNMEA(String); // We must manage EnableLogNMEA internally from LogNMEA
 
   if (portNum>=0 && portNum<=1) {
 	ComPortHB[portNum]=LKHearthBeats;
