@@ -34,10 +34,8 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
   SIZE TextSize;
 
 
-  #if AUTO_BBTRM
   static bool wascircling=false; // init not circling of course
   static short OldBottomMode=BM_FIRST;
-  #endif
 
   COLORREF barTextColor=RGB_WHITE; // default bottom bar text color, reversable
 
@@ -62,10 +60,8 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 
   if (DoInit[MDI_DRAWBOTTOMBAR]) {
 
-	#if AUTO_BBTRM
 	wascircling=false;
 	OldBottomMode=BM_FIRST;
-	#endif
 
 	TCHAR Tdummy[]=_T("T");
 	int iconsize;
@@ -188,7 +184,8 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 
   bool showunit=false;
 
-  #if AUTO_BBTRM
+  if (!ISPARAGLIDER) goto _afterpg;
+
   if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && !wascircling) {
 	// switch to thermal mode
 	if (ConfBB[BM_TRM]) {
@@ -204,7 +201,8 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 	}
 	wascircling=false;
   }
-  #endif
+
+_afterpg:
 
   /*
    *   FIRST VALUE
