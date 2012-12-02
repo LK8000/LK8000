@@ -12,12 +12,6 @@
 #include "RGB.h"
 #include "DoInits.h"
 
-//
-// ATTENTION ATTENTION
-//
-// WE ARE IN DRAW THREAD, USING CALC THREAD VALUES FOR QUICK RESPONSE> THIS CAN BE DANGEROUS
-// AVOID USING ANY POINTER THERE!
-//
 
 #ifndef LKCOMPETITION
 //
@@ -29,9 +23,9 @@ void MapWindow::DrawAcceleration(HDC hDC, const RECT rc)
   const double ScaleY = (rc.top - rc.bottom)/10;
   const double ScaleZ = (rc.top - rc.bottom)/20;
   POINT Pos;
-  Pos.x = (rc.right - rc.left)/2 + (int)(GPS_INFO.AccelY * ScaleX);
-  Pos.y = (rc.bottom - rc.top)/2 - (int)((GPS_INFO.AccelZ - 1) * ScaleY);
-  const double radius = 20 + (int)(GPS_INFO.AccelX * ScaleZ);
+  Pos.x = (rc.right - rc.left)/2 + (int)(DrawInfo.AccelY * ScaleX);
+  Pos.y = (rc.bottom - rc.top)/2 - (int)((DrawInfo.AccelZ - 1) * ScaleY);
+  const double radius = 20 + (int)(DrawInfo.AccelX * ScaleZ);
   
   const HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
   const HBRUSH  oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
@@ -164,7 +158,7 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   //if (!CALCULATED_INFO.Flying) {
   // speed is in m/s
-  if(GPS_INFO.Speed <5.5 && !GPS_INFO.GyroscopeAvailable)
+  if(DrawInfo.Speed <5.5 && !DrawInfo.GyroscopeAvailable)
     disabled=true; 
 
   if (disabled) {
@@ -173,7 +167,7 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   } else {
 	hpBlack = LKPen_Black_N1;
 	hbBlack = LKBrush_Black;
-        beta = GPS_INFO.GyroscopeAvailable ? GPS_INFO.Roll : DerivedDrawInfo.BankAngle;
+        beta = DrawInfo.GyroscopeAvailable ? DrawInfo.Roll : DerivedDrawInfo.BankAngle;
   }
 
   hpWhite = LKPen_White_N1;
@@ -185,7 +179,7 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   hbOld = (HBRUSH)SelectObject(hDC, hbWhite);
   Circle(hDC, Start.x, Start.y, radius, rc, false, true );
 
-  if(GPS_INFO.AccelerationAvailable)
+  if(DrawInfo.AccelerationAvailable)
   {
     DrawAcceleration(hDC, rc);
     MapWindow::RequestFastRefresh();
