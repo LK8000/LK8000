@@ -35,7 +35,7 @@ extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
 //double fHeigtScaleFact;
 
-
+#define TBSIZE 80
 #define ADDITIONAL_INFO_THRESHOLD 0.5
 
 void MapWindow::RenderAirspace(HDC hdc, const RECT rci) {
@@ -65,8 +65,8 @@ int overindex=-1;
 bool show_mc0= true;
 double fLD;
 SIZE tsize;
-TCHAR text[80];
-TCHAR buffer[80];
+TCHAR text[TBSIZE+1];
+TCHAR buffer[TBSIZE+1];
 BOOL bDrawRightSide =false;
 COLORREF GREEN_COL     = RGB_GREEN;
 COLORREF RED_COL       = RGB_LIGHTORANGE;
@@ -628,7 +628,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       Units::FormatUserArrival(wpt_altarriv_mc0, buffer, 7);
       _tcscat(text,buffer);
     } else {
-      LK_tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]) - 1);
+      _tcscpy(text, TEXT("---"));
     }
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = line[0].x - tsize.cx - NIBLSCALE(5);
@@ -651,7 +651,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       _tcscat(text,buffer);
     } else {
       if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
-        LK_tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]) - 1);
+        _tcscpy(text, TEXT("---"));
     }
 
     if(  WayPointList[overindex].Reachable) {
@@ -672,7 +672,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     if(altarriv  > 0)
     {
   	  Units::FormatUserAltitude(altarriv, buffer, 7);
-      LK_tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0]) - 1);
+      LK_tcsncpy(text, MsgToken(1742), TBSIZE-_tcslen(buffer));
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
    //   x = CalcDistanceCoordinat(wpt_dist,  rc) - tsize.cx - NIBLSCALE(5);;
@@ -693,7 +693,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     if((calc_terrainalt- hmin) > 0)
     {
   	  Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
-      LK_tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0]) - 1);   // ELV:
+      LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer));
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       x = CalcDistanceCoordinat(0, &sDia)- tsize.cx/2;
@@ -710,7 +710,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     if((wpt_altitude- hmin) > 0)
     {
   	  Units::FormatUserAltitude(wpt_altitude, buffer, 7);
-      LK_tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0]) - 1);   // ELV:
+      LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer));
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       x0 = CalcDistanceCoordinat(wpt_dist, &sDia)- tsize.cx/2;
@@ -741,7 +741,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     {
       SetTextColor(hdc, LIGHTBLUE_COL);
       Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
-      LK_tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0]) - 1);
+      LK_tcsncpy(text, MsgToken(1742), TBSIZE-_tcslen(buffer));
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       x = CalcDistanceCoordinat( 0, &sDia) - tsize.cx/2;

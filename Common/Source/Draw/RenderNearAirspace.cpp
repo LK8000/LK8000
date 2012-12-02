@@ -23,8 +23,11 @@ extern int Sideview_iNoHandeldSpaces;
 extern bool ActiveMap_IsEnabled;
 extern int XstartScreen, YstartScreen;
 
-TCHAR Sideview_szNearAS[80];
 
+#define TBSIZE	80
+
+
+TCHAR Sideview_szNearAS[TBSIZE+1];
 
 void  MapWindow::RenderNearAirspace(HDC hdc, const RECT rci)
 {
@@ -52,8 +55,8 @@ static double fHeigtScaleFact = 1.0;
 
  // double alt;
   int calc_circling;
-  TCHAR text[80];
-  TCHAR buffer[80];
+  TCHAR text[TBSIZE+1];
+  TCHAR buffer[TBSIZE+1];
 
   CAirspace near_airspace;
   CAirspace *found = NULL;
@@ -382,11 +385,12 @@ if(bValid)
   RenderAirspaceTerrain( hdc, GPSlat, GPSlon, iAS_Bearing, &sDia );
 
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-  if(bValid)
-    _stprintf(Sideview_szNearAS,TEXT("%s"),  near_airspace.Name() );
-  else
+  if(bValid) {
+    LKASSERT(_tcslen(near_airspace.Name())<TBSIZE); // Diagnostic only in 3.1j, to be REMOVED
+    LK_tcsncpy(Sideview_szNearAS, near_airspace.Name(), TBSIZE );
+  } else
   {
-	_stprintf(text,TEXT("%s"), gettext(TEXT("_@M1259_"))); 	 // LKTOKEN _@M1259_ "Too far, not calculated"
+	_stprintf(text,TEXT("%s"), MsgToken(1259)); 	 // LKTOKEN _@M1259_ "Too far, not calculated"
 	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 	TxYPt.x = (rc.right-rc.left-tsize.cx)/2;
 	TxYPt.y = (rc.bottom-rc.top)/2;
@@ -462,7 +466,7 @@ if(bValid)
   {
     SetTextColor(hdc, LIGHTBLUE_COL);
     Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
-    LK_tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0])-1); // AGL:
+    LK_tcsncpy(text, MsgToken(1742), TBSIZE-_tcslen(buffer)); // AGL:
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     TxYPt.x = CalcDistanceCoordinat(0,  &sDia)- tsize.cx/2;
@@ -482,7 +486,7 @@ if(bValid)
   if((calc_terrainalt-  sDia.fYMin)  > 0)
   {
 	Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
-    LK_tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0])-1);   // ELV:
+    LK_tcsncpy(text, MsgToken(1743), TBSIZE-_tcslen(buffer));   // ELV:
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = CalcDistanceCoordinat(0, &sDia) - tsize.cx/2;
@@ -552,8 +556,7 @@ if(bValid)
       bLeft = true;
 
     Units::FormatUserDistance(iABS_AS_HorDistance, buffer, 7);
-    LK_tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0])-1);
-    _tcscat(text,buffer);
+    _stprintf(text,_T(" %s"),buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 
     if((GPSalt- sDia.fYMin /*-calc_terrainalt */) < 300)
@@ -580,8 +583,7 @@ if(bValid)
 
     DrawDashLine(hdc,THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
     Units::FormatUserAltitude( (double)abs(iAS_VertDistance), buffer, 7);
-    LK_tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0])-1);
-    _tcscat(text,buffer);
+    _stprintf(text,_T(" %s"),buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 
     if ( bLeft )
