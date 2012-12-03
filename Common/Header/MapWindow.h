@@ -533,7 +533,7 @@ class MapWindow {
   static void DrawThermalHistory(HDC hdc, const RECT rc);
   static int DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc, double bearing);
   static void DrawHSI(HDC hdc, POINT Orig, RECT rc );
-
+  static void DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc , double, double);
 
 
 

@@ -30,7 +30,7 @@
 #include "RasterTerrain.h"
 #include "Multimap.h"
 #include "Dialogs.h"
-
+#include "Sideview.h"
 // Sensible maximums 
 #define MAX_MODE 100
 #define MAX_MODE_STRING 25
@@ -2889,9 +2889,15 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
 
 void InputEvents::eventOrientation(const TCHAR *misc){
   if (_tcscmp(misc, TEXT("northup")) == 0){
-    DisplayOrientation = NORTHUP;
+	if(!IsMultiMap())
+      DisplayOrientation = NORTHUP;
+	else
+	  SetMMNorthUp(GetSideviewPage(),true);
   }
-  else if (_tcscmp(misc, TEXT("northcircle")) == 0){
+  else
+  {
+	if(IsMultiMap())  	  SetMMNorthUp(GetSideviewPage(),false);
+	  if (_tcscmp(misc, TEXT("northcircle")) == 0){
     DisplayOrientation = NORTHCIRCLE;
   }
   else if (_tcscmp(misc, TEXT("trackcircle")) == 0){
@@ -2911,6 +2917,7 @@ void InputEvents::eventOrientation(const TCHAR *misc){
 	else
 		DisplayOrientation = NORTHUP;
 	*/
+  }
   }
   MapWindow::SetAutoOrientation(true); // 101008 reset it
 }

@@ -23,7 +23,7 @@ extern int Sideview_iNoHandeldSpaces;
 extern bool ActiveMap_IsEnabled;
 extern int XstartScreen, YstartScreen;
 
-extern bool bNorthUp;
+
 #define TBSIZE	80
 
 
@@ -109,7 +109,9 @@ static  bool bHeightScale = false;
 			break;
 
 		case LKEVENT_LONGCLICK:
-			bNorthUp = !bNorthUp;
+
+		//	ToggleMMNorthUp(GetSideviewPage());
+
 		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 			 {
 			   if( Sideview_pHandeled[k].psAS != NULL)
@@ -369,13 +371,10 @@ if(bValid)
 
   if(fSplitFact > 0.0)
   {
-    double fYMinSave= sDia.fXMin;
-    if(bNorthUp)
-      sDia.fXMin = -sDia.fXMax;
     sDia.rc = rct;
     sDia.rc.bottom-=1;
     AirspaceTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg);
-    sDia.fXMin = fYMinSave;
+
   }
 
   /****************************************************************************************************
@@ -441,7 +440,7 @@ if(bValid)
   SetBkMode(hdc, TRANSPARENT);
   SetTextColor(hdc, txtCol);
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
-  if(bNorthUp)
+  if( GetMMNorthUp(GetSideviewPage())  )
     DrawXGrid(hdc, rc , xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
   else
     DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
@@ -612,7 +611,7 @@ if(bValid)
 
   hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
   //DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(11),  rct.top  + NIBLSCALE(11));
-  if(bNorthUp)
+  if( GetMMNorthUp(GetSideviewPage()) )
     DrawCompass( hdc, rct, 0);
   else
     DrawCompass( hdc, rct, iAS_Bearing-90);

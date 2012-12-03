@@ -16,9 +16,12 @@
 #include "Multimap.h"
 #include "LKObjects.h"
 
+
+bool bNorthUp[3] = {false,false, false};
+
 extern double fSplitFact;
 extern COLORREF  Sideview_TextColor;
-extern bool bNorthUp;
+
 COLORREF  Sideview_TextColor = RGB_WHITE;
 using std::min;
 using std::max;
@@ -27,6 +30,27 @@ int Sideview_asp_heading_task=0;
 int Sideview_iNoHandeldSpaces=0;
 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
+
+void ToggleMMNorthUp(int iPage)
+{
+  SetMMNorthUp(iPage, !GetMMNorthUp(iPage));
+}
+
+
+void SetMMNorthUp( int iPage, bool bVal)
+{
+if(	iPage < 0 ) iPage=0;
+if(	iPage > 2 ) iPage=2;
+	bNorthUp[iPage]	= bVal;
+}
+
+
+bool GetMMNorthUp( int iPage)
+{
+	if(	iPage < 0 ) iPage=0;
+	if(	iPage > 2 ) iPage=2;
+	return bNorthUp[iPage];
+}
 
 int SetSplitScreenSize(int iPercent)
 {
@@ -662,13 +686,20 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 
 
 //GEXTERN bool ActiveMap;
-int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* pDia , double fAS_Bearing, double fWP_Bearing)
+int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing)
 {
 //fAS_Bearing+=3.0;
 
+DiagrammStruct m_Dia =	*psDia;
+
+if( GetMMNorthUp(GetSideviewPage())  )
+{
+	m_Dia.fXMax *=1.5;
+	m_Dia.fXMin = -m_Dia.fXMax;
+}
 double fOldScale  =  zoom.Scale();
 HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
-RECT rct = pDia->rc;
+RECT rct = m_Dia.rc;
 //bool OldAM = ActiveMap;
 //ActiveMap = true ;
 if(zoom.AutoZoom())
@@ -703,7 +734,7 @@ double fFact = 1.0 ;
 
    PanLatitude  = DrawInfo.Latitude;
    PanLongitude = DrawInfo.Longitude;
-   if( bNorthUp )
+   if( GetMMNorthUp(GetSideviewPage()) )
    {
      DisplayAngle = 0;
      if( GetSideviewPage() == IM_HEADING)
@@ -722,9 +753,9 @@ double fFact = 1.0 ;
   MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
 
   zoom.ModifyMapScale();
-  zoom.RequestedScale((pDia->fXMax -pDia->fXMin)  * fFact *  (DISTANCEMODIFY)/10.0f);
+  zoom.RequestedScale((m_Dia.fXMax -m_Dia.fXMin)  * fFact *  (DISTANCEMODIFY)/10.0f);
 
-   POINT Orig           =  { CalcDistanceCoordinat(0.0,   pDia),(rct.bottom-rct.top)/2};
+   POINT Orig           =  { CalcDistanceCoordinat(0.0,  (DiagrammStruct*) &m_Dia),(rct.bottom-rct.top)/2};
    POINT Orig_Aircraft= {0,0};
 
    zoom.ModifyMapScale();
@@ -838,16 +869,30 @@ _nomoredeclutter:
   /****************************************************************************************************
    * draw vertical line
    ****************************************************************************************************/
-   POINT line[2];
-   line[0].x = rct.left;
-   line[0].y = Orig_Aircraft.y-1;
-   line[1].x = rct.right;
-   line[1].y = line[0].y;
+  /*
+  if( GetSideviewPage() == IM_NEAR_AS)
+	DrawHeadUpLine(hdc, Orig, rct, 0 ,psDia->fXMax);
 
-   DrawAircraft(hdc, Orig_Aircraft);
+  if( GetSideviewPage() == IM_NEXT_WP)
+	DrawHeadUpLine(hdc, Orig, rct, 0 ,psDia->fXMax/2);
+*/
+  POINT line[2];
+  line[0].x = rct.left;
+  line[0].y = Orig_Aircraft.y-1;
+  line[1].x = rct.right;
+  line[1].y = line[0].y;
 
-   if(!bNorthUp)
-     DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
+  if( GetMMNorthUp(GetSideviewPage()) )
+  {
+	DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
+  }
+  else
+  {
+	DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
+  }
+  DrawAircraft(hdc, Orig_Aircraft);
+
+
 
    #if 0
    HPEN hpGreen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
@@ -865,4 +910,35 @@ _nomoredeclutter:
    //ActiveMap = OldAM ;
  return 0;
 }
+
+
+void MapWindow::DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc, double fMin, double fMax  ) {
+
+COLORREF rgbCol = RGB_BLACK;
+   POINT p1, p2;
+   double tmp = fMax*zoom.ResScaleOverDistanceModify();
+   {
+	double trackbearing =  DisplayAircraftAngle+  (DerivedDrawInfo.Heading-DrawInfo.TrackBearing);
+	p2.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
+	p2.x= Orig.x + (int)(tmp*fastsine(trackbearing));
+
+	 tmp = fMin*zoom.ResScaleOverDistanceModify();
+	p1.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
+	p1.x= Orig.x + (int)(tmp*fastsine(trackbearing));
+
+   }
+   if (BlackScreen)
+	rgbCol = RGB_INVDRAW;
+/*
+   if(p2.y > rc.bottom ) rgbCol = RGB_BLUE;
+   if(p2.y < rc.top )    rgbCol = RGB_BLUE;
+   if(p2.x < rc.left)    rgbCol = RGB_BLUE;
+*/
+ //  if(p2.x > rc.right)   rgbCol = RGB_GREEN;
+
+	_DrawLine(hdc, PS_DASH, NIBLSCALE(1), p1, p2, rgbCol, rc);
+}
+
+
+
 

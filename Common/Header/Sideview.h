@@ -94,4 +94,7 @@ COLORREF ChangeBrightness(long Color, double fBrightFact);
 COLORREF MixColors(COLORREF Color1, COLORREF Color2, double fFact1);
 bool PtInRect(int X,int Y, RECT rcd );
 
+void ToggleMMNorthUp(int iPage);
+void SetMMNorthUp( int iPage, bool bVal);
+bool GetMMNorthUp( int iPage);
 #endif
