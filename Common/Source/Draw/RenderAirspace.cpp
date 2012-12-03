@@ -568,6 +568,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
     } else {
     //  double t = fDist/(speed!=0?speed:1);
+      if (calc_average30s<1) calc_average30s=1;
       double t = fabs(DerivedDrawInfo.NavAltitude / calc_average30s);
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
       line[0].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude, &sDia);
