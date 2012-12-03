@@ -567,11 +567,12 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
 
     } else {
-      double t = fDist/(speed!=0?speed:1);
+    //  double t = fDist/(speed!=0?speed:1);
+      double t = fabs(DerivedDrawInfo.NavAltitude / calc_average30s);
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
       line[0].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude, &sDia);
-      line[1].x = rc.right;
-      line[1].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude+calc_average30s*t, &sDia);
+      line[1].x = CalcDistanceCoordinat( speed * t, &sDia);
+      line[1].y = CalcHeightCoordinat  ( 0, &sDia);
       // Limit climb rate to flat, for free flyers
       if (ISGLIDER || ISPARAGLIDER)
 	    if ( line[1].y  < line[0].y )  line[1].y  = line[0].y;
