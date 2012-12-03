@@ -68,7 +68,7 @@ void PGTaskMgr::Initialize() {
     for (int curwp = 0; ValidTaskPoint(curwp); ++curwp) {
         if (curwp == 0) {
             maxlat = minlat = WayPointList[Task[curwp].Index].Latitude;
-            maxlat = minlon = WayPointList[Task[curwp].Index].Longitude;
+            maxlon = minlon = WayPointList[Task[curwp].Index].Longitude;
         } else {
             minlat = std::min(minlat, WayPointList[Task[curwp].Index].Latitude);
             maxlat = std::max(maxlat, WayPointList[Task[curwp].Index].Latitude);
