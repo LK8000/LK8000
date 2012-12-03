@@ -23,7 +23,7 @@
 
 extern	 int Sideview_iNoHandeldSpaces;
 extern	 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
-
+bool bNorthUp = false;
 double fSplitFact = 0.30;
 double fOffset = 0.0;
 using std::min;
@@ -135,6 +135,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			break;
 
 		case LKEVENT_LONGCLICK:
+		//	if( GetSideviewPage() == IM_HEADING)
+			  bNorthUp = !bNorthUp;
+		//	else
+		//	  bNorthUp = false;
 		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 	             {
 			   if( Sideview_pHandeled[k].psAS != NULL)
@@ -196,6 +200,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			  if(*iSplit == SIZE1) *iSplit = SIZE2;
 			  if(*iSplit == SIZE0) *iSplit = SIZE1;
 			}
+
 		break;
 
 	  }
@@ -383,13 +388,15 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   {
   	sDia.rc = rct;
 	sDia.rc.bottom-=1;
-
+	double fXminOld = sDia.fXMin ;
+	if( bNorthUp )
+	  sDia.fXMin = -sDia.fXMax;
     if (GetSideviewPage() == IM_HEADING)
   	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
 
     if (GetSideviewPage() == IM_NEXT_WP)
   	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
-
+    sDia.fXMin = fXminOld;
     //sDia.rc = rcc;
   }
   #endif
@@ -457,7 +464,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   SetTextColor(hdc, txtCol);
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
-  DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
+  if(bNorthUp)
+    DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
+  else
+    DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
   SetTextColor(hdc, Sideview_TextColor);
 
   double fHeight = sDia.fYMax - sDia.fYMin;
@@ -785,7 +795,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 // DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
   //DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(28));
   //DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(11),  rct.top   + NIBLSCALE(11));
-  DrawCompass( hdc,  rct, acb-90.0);
+  if( bNorthUp)
+	DrawCompass( hdc,  rct, 0);
+  else
+    DrawCompass( hdc,  rct, acb-90.0);
 //  RenderBearingDiff( hdc, wpt_brg,  &sDia );
 
   DrawMultimap_SideTopSeparator(hdc,rct);

@@ -18,7 +18,7 @@
 
 extern double fSplitFact;
 extern COLORREF  Sideview_TextColor;
-
+extern bool bNorthUp;
 COLORREF  Sideview_TextColor = RGB_WHITE;
 using std::min;
 using std::max;
@@ -703,9 +703,19 @@ double fFact = 1.0 ;
 
    PanLatitude  = DrawInfo.Latitude;
    PanLongitude = DrawInfo.Longitude;
-   DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
-   DisplayAircraftAngle = AngleLimit360(fWP_Bearing);
-
+   if( bNorthUp )
+   {
+     DisplayAngle = 0;
+     if( GetSideviewPage() == IM_HEADING)
+       DisplayAircraftAngle = AngleLimit360(fAS_Bearing);
+     else
+       DisplayAircraftAngle = AngleLimit360(DrawInfo.TrackBearing);
+   }
+   else
+   {
+     DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
+     DisplayAircraftAngle = AngleLimit360(fWP_Bearing);
+   }
   int iOldLocator = EnableThermalLocator;
   EnableThermalLocator =0;
 
@@ -835,7 +845,9 @@ _nomoredeclutter:
    line[1].y = line[0].y;
 
    DrawAircraft(hdc, Orig_Aircraft);
-   DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
+
+   if(!bNorthUp)
+     DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
 
    #if 0
    HPEN hpGreen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
