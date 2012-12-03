@@ -53,8 +53,8 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
   short iconsizex, iconsizey;
 
   #if 1
-  if (IsMultiMap() || ISCAR || ISGAAIRCRAFT) {
-	short i=Get_Current_Multimap_Type();
+  if (IsMultiMapNoMain()) {
+	short i=Get_Current_Multimap_Type()-1;
   #else
   if (1) {
 	short i=ModeType[LKMODE_MAP];
