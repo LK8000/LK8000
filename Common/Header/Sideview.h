@@ -18,7 +18,7 @@
 
 #define SV_BORDER_Y NIBLSCALE (10)
 
-#define ENABLE_ALL_AS_FOR_SIDEVIEW
+//#define ENABLE_ALL_AS_FOR_SIDEVIEW
 #define MIN_ALTITUDE 1200.0 /* maximum altitude (in m) */
 #define MIN_OFFSET   500.0  /* maximum altitude offset (in m) */
 
@@ -95,6 +95,6 @@ COLORREF MixColors(COLORREF Color1, COLORREF Color2, double fFact1);
 bool PtInRect(int X,int Y, RECT rcd );
 
 void ToggleMMNorthUp(int iPage);
-void SetMMNorthUp( int iPage, bool bVal);
-bool GetMMNorthUp( int iPage);
+void SetMMNorthUp( int iPage, int bVal);
+int GetMMNorthUp( int iPage);
 #endif
