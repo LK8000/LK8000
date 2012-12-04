@@ -891,6 +891,8 @@ GEXTERN unsigned short Multimap1;
 GEXTERN unsigned short Multimap2;
 GEXTERN unsigned short Multimap3;
 
+GEXTERN bool MMNorthUp_Runtime[3];
+
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.

@@ -17,8 +17,6 @@
 #include "LKObjects.h"
 
 
-bool bNorthUp[3] = {false,false, false};
-
 extern double fSplitFact;
 extern COLORREF  Sideview_TextColor;
 
@@ -41,7 +39,7 @@ void SetMMNorthUp( int iPage, bool bVal)
 {
 if(	iPage < 0 ) iPage=0;
 if(	iPage > 2 ) iPage=2;
-	bNorthUp[iPage]	= bVal;
+	MMNorthUp_Runtime[iPage]	= bVal;
 }
 
 
@@ -49,7 +47,7 @@ bool GetMMNorthUp( int iPage)
 {
 	if(	iPage < 0 ) iPage=0;
 	if(	iPage > 2 ) iPage=2;
-	return bNorthUp[iPage];
+	return MMNorthUp_Runtime[iPage];
 }
 
 int SetSplitScreenSize(int iPercent)

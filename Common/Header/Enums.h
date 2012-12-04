@@ -202,7 +202,7 @@ typedef enum{
 typedef enum{
 	mm_disabled=0,
 	mm_enabled_normal,
-	mm_enabled_north,
+	mm_enabled_northup,
 } Multimap_t;
 
 

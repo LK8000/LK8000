@@ -204,6 +204,7 @@ void LKProfileInitRuntime(void) {
 
   UpdateConfBB();
   UpdateConfIP();
+  UpdateMultimapOrient();
 
 }
 

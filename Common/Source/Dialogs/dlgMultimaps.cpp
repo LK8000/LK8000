@@ -128,6 +128,8 @@ void dlgMultimapsShowModal(void){
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap3"));
   if (wp) Multimap3 = (wp->GetDataField()->GetAsInteger());
 
+  UpdateMultimapOrient();
+
   delete wf;
   wf = NULL;
 

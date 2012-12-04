@@ -324,6 +324,7 @@ int GetTextWidth(HDC hDC, TCHAR *text);
 void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width);
 void UpdateConfBB(void);
 void UpdateConfIP(void);
+void UpdateMultimapOrient(void);
 void SetInitialModeTypes(void);
 
 bool	InitLDRotary(ldrotary_s *buf);

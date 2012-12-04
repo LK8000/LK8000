@@ -56,6 +56,10 @@ redo:
 	if (CURMODE == MSM_MAPRADAR && !GPS_INFO.FLARM_Available) goto redo;
 #endif
 
+	if ( (CURMODE == MSM_MAPTRK) && (Multimap1==mm_disabled) ) goto redo;
+	if ( (CURMODE == MSM_MAPWPT) && (Multimap2==mm_disabled) ) goto redo;
+	if ( (CURMODE == MSM_MAPASP) && (Multimap3==mm_disabled) ) goto redo;
+
 	//if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
@@ -99,6 +103,11 @@ redo:
 #else
 	if (CURMODE == MSM_MAPRADAR && !GPS_INFO.FLARM_Available) goto redo;
 #endif
+
+	if ( (CURMODE == MSM_MAPTRK) && (Multimap1==mm_disabled) ) goto redo;
+	if ( (CURMODE == MSM_MAPWPT) && (Multimap2==mm_disabled) ) goto redo;
+	if ( (CURMODE == MSM_MAPASP) && (Multimap3==mm_disabled) ) goto redo;
+
 	//if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
