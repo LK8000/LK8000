@@ -135,7 +135,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			break;
 
 		case LKEVENT_LONGCLICK:
-		//	ToggleMMNorthUp(GetSideviewPage());
+	//		ToggleMMNorthUp(GetSideviewPage());
 		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 	             {
 			   if( Sideview_pHandeled[k].psAS != NULL)
@@ -459,10 +459,17 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   SetTextColor(hdc, txtCol);
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
-  if(GetMMNorthUp(GetSideviewPage())  )
-    DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
-  else
-    DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
+  switch(GetMMNorthUp(GetSideviewPage()))
+  {
+	 case NORTHUP:
+	 default:
+       DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
+     break;
+
+	 case TRACKUP:
+       DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
+     break;
+  }
   SetTextColor(hdc, Sideview_TextColor);
 
   double fHeight = sDia.fYMax - sDia.fYMin;
@@ -789,14 +796,18 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   hfOld = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
 
-// DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
-  //DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(28));
-  //DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(11),  rct.top   + NIBLSCALE(11));
-  if( GetMMNorthUp(GetSideviewPage())  )
-	DrawCompass( hdc,  rct, 0);
-  else
-    DrawCompass( hdc,  rct, acb-90.0);
-//  RenderBearingDiff( hdc, wpt_brg,  &sDia );
+
+  switch(GetMMNorthUp(GetSideviewPage()))
+  {
+	 case NORTHUP:
+	 default:
+		 DrawCompass( hdc,  rct, 0);
+     break;
+
+	 case TRACKUP:
+		 DrawCompass( hdc,  rct, acb-90.0);
+     break;
+  }
 
   DrawMultimap_SideTopSeparator(hdc,rct);
 

@@ -440,10 +440,19 @@ if(bValid)
   SetBkMode(hdc, TRANSPARENT);
   SetTextColor(hdc, txtCol);
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
-  if( GetMMNorthUp(GetSideviewPage())  )
-    DrawXGrid(hdc, rc , xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
-  else
-    DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
+
+  switch(GetMMNorthUp(GetSideviewPage()))
+  {
+	 case NORTHUP:
+	 default:
+	   DrawXGrid(hdc, rc , xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
+     break;
+
+	 case TRACKUP:
+	   DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
+     break;
+  }
+
   SetTextColor(hdc, Sideview_TextColor);
 
   double  fHeight = (sDia.fYMax-sDia.fYMin);
@@ -607,14 +616,20 @@ if(bValid)
   ****************************************************************************************************/
   RenderPlaneSideview( hdc, 0.0 , GPSalt,wpt_brg, &sDia );
 
-
-
   hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
   //DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(11),  rct.top  + NIBLSCALE(11));
-  if( GetMMNorthUp(GetSideviewPage()) )
-    DrawCompass( hdc, rct, 0);
-  else
-    DrawCompass( hdc, rct, iAS_Bearing-90);
+
+  switch(GetMMNorthUp(GetSideviewPage()))
+  {
+	 case NORTHUP:
+	 default:
+		 DrawCompass( hdc, rct, 0);
+     break;
+
+	 case TRACKUP:
+		 DrawCompass( hdc, rct, iAS_Bearing-90);
+     break;
+  }
 
   DrawMultimap_SideTopSeparator(hdc,rct);
 

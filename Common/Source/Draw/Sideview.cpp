@@ -31,19 +31,20 @@ AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 void ToggleMMNorthUp(int iPage)
 {
-  SetMMNorthUp(iPage, !GetMMNorthUp(iPage));
+//  SetMMNorthUp(iPage, !GetMMNorthUp(iPage));
+
 }
 
 
-void SetMMNorthUp( int iPage, bool bVal)
+void SetMMNorthUp( int iPage, int  iVal)
 {
 if(	iPage < 0 ) iPage=0;
 if(	iPage > 2 ) iPage=2;
-	MMNorthUp_Runtime[iPage]	= bVal;
+	MMNorthUp_Runtime[iPage]	= iVal;
 }
 
 
-bool GetMMNorthUp( int iPage)
+int GetMMNorthUp( int iPage)
 {
 	if(	iPage < 0 ) iPage=0;
 	if(	iPage > 2 ) iPage=2;
@@ -687,17 +688,29 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing)
 {
 //fAS_Bearing+=3.0;
-
+int iOldDisplayOrientation =  DisplayOrientation;
 DiagrammStruct m_Dia =	*psDia;
-
-if( GetMMNorthUp(GetSideviewPage())  )
+RECT rct = m_Dia.rc;
+DisplayOrientation = GetMMNorthUp(GetSideviewPage());
+switch(GetMMNorthUp(GetSideviewPage()))
 {
-	m_Dia.fXMax *=1.5;
-	m_Dia.fXMin = -m_Dia.fXMax;
+   case TRACKUP:
+   break;
+
+   case NORTHUP:
+   default:
+	if((rct.bottom-rct.top) > 0)
+	  if((rct.right - rct.left) >0)
+	    m_Dia.fXMax *=  (double)(rct.right-rct.left) / (double)(rct.bottom-rct.top);
+
+	 m_Dia.fXMin = -m_Dia.fXMax;
+   break;
+
 }
+
 double fOldScale  =  zoom.Scale();
 HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
-RECT rct = m_Dia.rc;
+
 //bool OldAM = ActiveMap;
 //ActiveMap = true ;
 if(zoom.AutoZoom())
@@ -732,18 +745,22 @@ double fFact = 1.0 ;
 
    PanLatitude  = DrawInfo.Latitude;
    PanLongitude = DrawInfo.Longitude;
-   if( GetMMNorthUp(GetSideviewPage()) )
+
+   switch(GetMMNorthUp(GetSideviewPage()))
    {
-     DisplayAngle = 0;
-     if( GetSideviewPage() == IM_HEADING)
-       DisplayAircraftAngle = AngleLimit360(fAS_Bearing);
-     else
-       DisplayAircraftAngle = AngleLimit360(DrawInfo.TrackBearing);
-   }
-   else
-   {
-     DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
-     DisplayAircraftAngle = AngleLimit360(fWP_Bearing);
+      case TRACKUP:
+    	DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
+    	DisplayAircraftAngle = AngleLimit360(fWP_Bearing);
+      break;
+
+      case NORTHUP:
+      default:
+    	DisplayAngle = 0;
+    	if( GetSideviewPage() == IM_HEADING)
+    	  DisplayAircraftAngle = AngleLimit360(fAS_Bearing);
+    	else
+    	  DisplayAircraftAngle = AngleLimit360(DrawInfo.TrackBearing);
+      break;
    }
   int iOldLocator = EnableThermalLocator;
   EnableThermalLocator =0;
@@ -880,16 +897,19 @@ _nomoredeclutter:
   line[1].x = rct.right;
   line[1].y = line[0].y;
 
-  if( GetMMNorthUp(GetSideviewPage()) )
+  switch(GetMMNorthUp(GetSideviewPage()))
   {
-	DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
-  }
-  else
-  {
-	DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
+     case TRACKUP:
+       DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
+     break;
+
+     case NORTHUP:
+     default:
+       if( GetSideviewPage() == IM_HEADING)
+    	 DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
+     break;
   }
   DrawAircraft(hdc, Orig_Aircraft);
-
 
 
    #if 0
@@ -904,6 +924,7 @@ _nomoredeclutter:
 
    MapWindow::zoom.RequestedScale(fOldScale);
    EnableThermalLocator = iOldLocator;
+   DisplayOrientation = iOldDisplayOrientation;
    SelectObject(hdc, hfOld);
    //ActiveMap = OldAM ;
  return 0;

@@ -95,6 +95,6 @@ COLORREF MixColors(COLORREF Color1, COLORREF Color2, double fFact1);
 bool PtInRect(int X,int Y, RECT rcd );
 
 void ToggleMMNorthUp(int iPage);
-void SetMMNorthUp( int iPage, bool bVal);
-bool GetMMNorthUp( int iPage);
+void SetMMNorthUp( int iPage, int bVal);
+int GetMMNorthUp( int iPage);
 #endif
