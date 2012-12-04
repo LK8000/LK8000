@@ -1671,21 +1671,21 @@ mode=Orientation
 type=key
 data=8
 event=Orientation northcircle
-label=_@M2085_
+label=_@M2085_$(ONLYMAP)
 location=7
 
 mode=Orientation
 type=key
 data=9
 event=Orientation trackcircle
-label=_@M2086_
+label=_@M2086_$(ONLYMAP)
 location=8
 
 mode=Orientation
 type=key
 data=0
 event=Orientation northsmart
-label=_@M2087_
+label=_@M2087_$(ONLYMAP)
 location=9
 
 mode=Orientation

@@ -682,7 +682,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     if (--items<=0) goto label_ret;
   }
 
+  if (_tcsstr(OutBuffer, TEXT("$(ONLYMAP)"))) {
+    if (MapSpaceMode!=MSM_MAP) invalid=true;
+    ReplaceInString(OutBuffer, TEXT("$(ONLYMAP)"), TEXT(""), Size);
 
+    if (--items<=0) goto label_ret;
+  }
 
   extern unsigned int CustomKeyLabel[];
   // We dont replace macro, we do replace the entire label
