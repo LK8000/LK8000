@@ -303,6 +303,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 23:
+			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_CIRCLING)
 				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2031));
 			else
@@ -310,18 +311,21 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 24:
+			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_CRUISE)
 				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2032));
 			else
 				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken(2032));
 			break;
 		case 25:
+			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_NONE)
 				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2034));
 			else
 				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken(2034));
 			break;
 		case 26:
+			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_FINAL_GLIDE)
 				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2033));
 			else
@@ -384,6 +388,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 33: // SnailTrailToggleName
+			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			switch(TrailActive) {
 				case 0:
 					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(410)); // Long
