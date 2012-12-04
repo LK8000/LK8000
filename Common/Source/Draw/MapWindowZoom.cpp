@@ -8,7 +8,7 @@
 
 
 #include "externs.h"
-
+#include "Multimap.h"
 
 const double MapWindow::Zoom::SCALE_CRUISE_INIT      = 3.5;
 const double MapWindow::Zoom::SCALE_CIRCLING_INIT    = 0.1;
@@ -267,6 +267,15 @@ void MapWindow::Zoom::EventSetZoom(double value)
  */
 void MapWindow::Zoom::EventScaleZoom(int vswitch)
 {
+
+  if (IsMultiMapNoMain()) {
+	if (vswitch>0)
+		LKevent=LKEVENT_UP;
+	else
+		LKevent=LKEVENT_DOWN;
+	return;
+  }
+
   // disable AutoZoom if possible
   if(_autoZoom &&
      mode.Special() == Mode::MODE_SPECIAL_NONE &&
