@@ -268,7 +268,7 @@ void MapWindow::Zoom::EventSetZoom(double value)
 void MapWindow::Zoom::EventScaleZoom(int vswitch)
 {
 
-  if (IsMultiMapNoMain()) {
+  if (IsMultiMapNoMain() && !INPAN) {
 	if (vswitch>0)
 		LKevent=LKEVENT_UP;
 	else
