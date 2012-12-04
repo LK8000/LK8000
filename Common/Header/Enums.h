@@ -199,7 +199,11 @@ typedef enum{
 	// avDistance,
 } ArrivalValue_t;
 
-
+typedef enum{
+	mm_disabled=0,
+	mm_enabled_normal,
+	mm_enabled_north,
+} Multimap_t;
 
 
 

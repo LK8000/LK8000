@@ -352,6 +352,10 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMultiSizeY2,Multimap_SizeY[MP_MAPWPT]);
   rprintf(szRegistryMultiSizeY3,Multimap_SizeY[MP_MAPASP]);
 
+  rprintf(szRegistryMultimap1,Multimap1);
+  rprintf(szRegistryMultimap2,Multimap2);
+  rprintf(szRegistryMultimap3,Multimap3);
+
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);
   fclose(pfp);

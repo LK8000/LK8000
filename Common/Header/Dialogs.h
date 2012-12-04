@@ -67,6 +67,7 @@ void dlgBottomBarShowModal(void);
 void dlgInfoPagesShowModal(void);
 void dlgProfilesShowModal(short mode);
 void dlgAirspaceWarningParamsShowModal(void);
+void dlgMultimapsShowModal(void);
 
 #if (WINDOWSPC>0)
 #ifdef DEBUG

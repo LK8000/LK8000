@@ -625,6 +625,8 @@ void Globals_Init(void) {
   Reset_CustomMenu();
 
   Reset_Multimap_Flags();
+  extern void Reset_Multimap_Mode(void);
+  Reset_Multimap_Mode();
 
   Trip_Moving_Time=0;
   Trip_Steady_Time=0;
@@ -655,4 +657,5 @@ void Reset_CustomMenu(void) {
 	CustomMenu9  = ckDisabled;			// Landscape> 1st top left
 	CustomMenu10 = ckDisabled;
 }
+
 

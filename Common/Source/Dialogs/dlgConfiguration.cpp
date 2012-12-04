@@ -859,6 +859,10 @@ static void OnResetTopologyClicked(WindowControl * Sender){
   dlgTopologyShowModal();
 }
 */
+static void OnMultimapsClicked(WindowControl * Sender){
+	(void)Sender;
+  dlgMultimapsShowModal();
+}
 static void OnSetCustomKeysClicked(WindowControl * Sender){
 	(void)Sender;
   dlgCustomKeysShowModal();
@@ -1500,6 +1504,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
   DeclareCallBackEntry(OnSetTopologyClicked),
   DeclareCallBackEntry(OnSetCustomKeysClicked),
+  DeclareCallBackEntry(OnMultimapsClicked),
   DeclareCallBackEntry(OnSetCustomMenuClicked),
   DeclareCallBackEntry(OnSetBottomBarClicked),
   DeclareCallBackEntry(OnSetInfoPagesClicked),

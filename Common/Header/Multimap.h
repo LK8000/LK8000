@@ -59,6 +59,7 @@ unsigned short GetMultimap_Labels(void);
 void SetMultimap_Labels(const unsigned short);
 short Get_Current_Multimap_Type();
 void Reset_Multimap_Flags(void);
+void Reset_Multimap_Mode(void);
 
 
 #endif

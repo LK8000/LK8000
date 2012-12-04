@@ -632,6 +632,7 @@ DLGS	:=\
 	$(DLG)/dlgLKAirspaceWarning.cpp \
 	$(DLG)/dlgLKTraffic.cpp \
 	$(DLG)/dlgLoggerReplay.cpp \
+	$(DLG)/dlgMultimaps.cpp\
 	$(DLG)/dlgOracle.cpp \
 	$(DLG)/dlgProfiles.cpp \
 	$(DLG)/dlgStartPoint.cpp \

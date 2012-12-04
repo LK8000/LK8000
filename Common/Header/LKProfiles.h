@@ -340,6 +340,9 @@ TCHAR szRegistryMultiSizeY1[]= _T("MultimapSizeY1");
 TCHAR szRegistryMultiSizeY2[]= _T("MultimapSizeY2");
 TCHAR szRegistryMultiSizeY3[]= _T("MultimapSizeY3");
 
+TCHAR szRegistryMultimap1[]= _T("Multimap1a");
+TCHAR szRegistryMultimap2[]= _T("Multimap2a");
+TCHAR szRegistryMultimap3[]= _T("Multimap3a");
 //
 //
 //
@@ -599,6 +602,9 @@ extern TCHAR szRegistryMultiSizeY1[];
 extern TCHAR szRegistryMultiSizeY2[];
 extern TCHAR szRegistryMultiSizeY3[];
 
+extern TCHAR szRegistryMultimap1[];
+extern TCHAR szRegistryMultimap2[];
+extern TCHAR szRegistryMultimap3[];
 //
 //
 #endif

@@ -887,6 +887,10 @@ GEXTERN unsigned int Trip_Steady_Time;
 GEXTERN double Rotary_Speed;
 GEXTERN double Rotary_Distance;
 
+GEXTERN unsigned short Multimap1;
+GEXTERN unsigned short Multimap2;
+GEXTERN unsigned short Multimap3;
+
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.

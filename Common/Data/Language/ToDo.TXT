@@ -258,6 +258,12 @@ _@M2237_ "Sonar\nToggle"
 +_@M2244_ "Device\nSetup"
 +_@M2245_ "Device\nSave"
 
+-_@M1604_ "Configure xxxx"
++_@M1604_ "Configure Multimaps"
+
+HELP
++@1262
++[Multimap options]
 
 
 

@@ -316,6 +316,8 @@ void DisableMultimapOverlaysGauges(void) {
 // Of course MapWindowBg may decide not to use overlays, for example, by itself for a 
 // particular MapSpaceMode.. nevertheless, here are the defaults.
 //
+// Multimap modality (enabled/disabled and orientation) are in Multimap_Mode, not here.
+//
 void Reset_Multimap_Flags(void) {
   short i;
   // First, we reset them equal, just to be sure we dont forget anyone
@@ -414,4 +416,18 @@ void MultiMapSound() {
   }
 #endif
 }
+
+
+//
+// Default configuration for multimaps
+//
+void Reset_Multimap_Mode(void) {
+
+  Multimap1=mm_enabled_normal;
+  Multimap2=mm_enabled_normal;
+  Multimap3=mm_enabled_normal;
+
+}
+
+
 

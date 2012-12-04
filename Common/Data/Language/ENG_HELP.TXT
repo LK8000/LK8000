@@ -1693,5 +1693,8 @@ For gliders this is normally the altitude above which it is possible to turn 180
 Set this value to 0 to disable the alarm. 
 This alarm will be armed again only after landing.
 
+@1262
+[Multimap options]
+
 @9999
 No help available on this item!
