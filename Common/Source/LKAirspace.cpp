@@ -1860,6 +1860,9 @@ unsigned int iHIdx,iDIdx;
   airspacetype[0].psAS= NULL;
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
   {
+// CAirspaceManager::Instance().
+//	if( CAirspaceManager::Instance().CheckAirspaceAltitude( (AIRSPACE_ALT)&(*it)->Base(), (AIRSPACE_ALT)&(*it)->Top() ) )
+	if( CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top())==TRUE)
     if(iNoFoundAS < iMaxNoAs-1)
     {
       for (i=0; i<AIRSPACE_SCANSIZE_X; i++)
