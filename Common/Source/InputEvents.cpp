@@ -2888,38 +2888,42 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
 
 
 void InputEvents::eventOrientation(const TCHAR *misc){
-  if (_tcscmp(misc, TEXT("northup")) == 0){
-	if(!IsMultiMap())
-      DisplayOrientation = NORTHUP;
-	else
+
+  if(IsMultiMap())
+  {
+	if (_tcscmp(misc, TEXT("northup")) == 0)
 	  SetMMNorthUp(GetSideviewPage(),true);
+	else
+	   SetMMNorthUp(GetSideviewPage(),false);
   }
   else
   {
-	if(IsMultiMap())  	  SetMMNorthUp(GetSideviewPage(),false);
-	  if (_tcscmp(misc, TEXT("northcircle")) == 0){
-    DisplayOrientation = NORTHCIRCLE;
-  }
-  else if (_tcscmp(misc, TEXT("trackcircle")) == 0){
-    DisplayOrientation = TRACKCIRCLE;
-  }
-  else if (_tcscmp(misc, TEXT("trackup")) == 0){
-    DisplayOrientation = TRACKUP;
-  }
-  else if (_tcscmp(misc, TEXT("northtrack")) == 0){
-    DisplayOrientation = NORTHTRACK;
-  }
-  else if (_tcscmp(misc, TEXT("northsmart")) == 0){ // 100417
-    DisplayOrientation = NORTHSMART;
+    if (_tcscmp(misc, TEXT("northup")) == 0){
+	    SetMMNorthUp(GetSideviewPage(),true);
+    }
+    else if (_tcscmp(misc, TEXT("northcircle")) == 0){
+      DisplayOrientation = NORTHCIRCLE;
+    }
+    else if (_tcscmp(misc, TEXT("trackcircle")) == 0){
+      DisplayOrientation = TRACKCIRCLE;
+    }
+    else if (_tcscmp(misc, TEXT("trackup")) == 0){
+      DisplayOrientation = TRACKUP;
+    }
+    else if (_tcscmp(misc, TEXT("northtrack")) == 0){
+      DisplayOrientation = NORTHTRACK;
+    }
+    else if (_tcscmp(misc, TEXT("northsmart")) == 0){ // 100417
+      DisplayOrientation = NORTHSMART;
 	/*
 	if (InfoBoxLayout::landscape) 
 		DisplayOrientation = NORTHSMART;
 	else
 		DisplayOrientation = NORTHUP;
 	*/
+    }
+    MapWindow::SetAutoOrientation(true); // 101008 reset it
   }
-  }
-  MapWindow::SetAutoOrientation(true); // 101008 reset it
 }
 
 void SwitchToMapWindow(void)
