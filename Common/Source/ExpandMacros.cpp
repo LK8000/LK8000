@@ -445,6 +445,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			else
 				_stprintf(OutBuffer,MsgToken(2242)); // Sonar ON
 			break;
+		case 38: //
+			if (MapSpaceMode!=MSM_MAP) invalid=true;
+			_stprintf(OutBuffer,MsgToken(2081)); // Set Map
+			break;
+
 		default:
 			_stprintf(OutBuffer, _T("INVALID\n%d"),i);
 			break;

@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 121122
+# Release 9 , 121204
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -1590,7 +1590,7 @@ mode=ScreenMode
 type=key
 data=8
 event=Mode Center
-label=_@M2081_
+label=$(AC38)_
 location=7
 
 mode=ScreenMode
@@ -2262,22 +2262,22 @@ location=11
 mode=Center
 type=key
 data=APP1
-event=Orientation northup
-label=_@M2083_
+event=Null
+label=
 location=1
 
 mode=Center
 type=key
 data=APP2
-event=Orientation northcircle
-label=_@M2084_
+event=Null
+label=
 location=2
 
 mode=Center
 type=key
 data=APP3
-event=Orientation northsmart
-label=_@M2087_
+event=Null
+label=
 location=3
 
 mode=Center
