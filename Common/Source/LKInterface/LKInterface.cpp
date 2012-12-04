@@ -51,10 +51,7 @@ redo:
 #endif
 	if (CURMODE == MSM_WELCOME) goto redo;
 
-#if TESTBENCH
-#else
 	if (CURMODE == MSM_MAPRADAR && !GPS_INFO.FLARM_Available) goto redo;
-#endif
 
 	if ( (CURMODE == MSM_MAPTRK) && (Multimap1==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_MAPWPT) && (Multimap2==mm_disabled) ) goto redo;
@@ -99,10 +96,8 @@ redo:
 	if (CURMODE == MSM_INFO_TRI) goto redo;
 #endif
 	if (CURMODE == MSM_WELCOME) goto redo;
-#if TESTBENCH
-#else
+
 	if (CURMODE == MSM_MAPRADAR && !GPS_INFO.FLARM_Available) goto redo;
-#endif
 
 	if ( (CURMODE == MSM_MAPTRK) && (Multimap1==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_MAPWPT) && (Multimap2==mm_disabled) ) goto redo;
