@@ -396,14 +396,16 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   }
   #endif
 
+
   RECT rcc =  rc;
   if(sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
     rcc.bottom -= SV_BORDER_Y; /* scale witout sea  */
   sDia.rc = rcc;
 
 
-  if (fSplitFact<SIZE4)
-  RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
+  if (( (fSplitFact*100)<SIZE4) || ( GetMMNorthUp(GetSideviewPage())  != NORTHUP))
+    RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
+
 
 
   int x0 = CalcDistanceCoordinat( 0,  &sDia);
@@ -459,6 +461,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   SetTextColor(hdc, txtCol);
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
+
+ if (((fSplitFact*100)<SIZE4) || (GetMMNorthUp(GetSideviewPage())!= NORTHUP) )
   switch(GetMMNorthUp(GetSideviewPage()))
   {
 	 case NORTHUP:

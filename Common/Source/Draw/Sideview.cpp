@@ -699,10 +699,11 @@ switch(GetMMNorthUp(GetSideviewPage()))
 
    case NORTHUP:
    default:
+/*
 	if((rct.bottom-rct.top) > 0)
 	  if((rct.right - rct.left) >0)
 	    m_Dia.fXMax *=  (double)(rct.right-rct.left) / (double)(rct.bottom-rct.top);
-
+*/
 	 m_Dia.fXMin = -m_Dia.fXMax;
    break;
 
