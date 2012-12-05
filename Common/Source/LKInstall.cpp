@@ -44,7 +44,7 @@ short InstallSystem() {
   // Remember that SHGetSpecialFolder works differently on CE platforms, and you cannot check for result.
   // We need to verify if directory does really exist.
 
-  SHGetSpecialFolderPath(hWndMainWindow, dstdir, CSIDL_WINDOWS, false);
+//  SHGetSpecialFolderPath(hWndMainWindow, dstdir, CSIDL_WINDOWS, false);
   if ( wcslen(dstdir) <6) {
 	_stprintf(tbuf,_T("------ InstallSystem PROBLEM: cannot locate the Windows folder, got string:<%s>%s"),dstdir,NEWLINE);
 	StartupStore(tbuf);
@@ -196,7 +196,7 @@ short InstallSystem() {
   #ifdef PNA
   if ( GetFontPath(fontdir) == FALSE ) {
 	StartupStore(_T(". Special RegKey for fonts not found on this PNA, using standard folder.%s"), NEWLINE);
-	SHGetSpecialFolderPath(hWndMainWindow, dstdir, CSIDL_FONTS, false);
+//	SHGetSpecialFolderPath(hWndMainWindow, dstdir, CSIDL_FONTS, false);
 	if ( wcslen(dstdir) <5 ) {
 		_stprintf(tbuf,_T("------ PROBLEM: cannot locate the Fonts folder, got string:<%s>%s"),dstdir,NEWLINE);
 		StartupStore(tbuf);
