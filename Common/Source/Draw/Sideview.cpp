@@ -867,7 +867,7 @@ _nomoredeclutter:
   if (MapSpaceMode==MSM_MAPTRK) {
 	if(IsMultimapTerrain() || IsMultimapTopology() ) {
 		if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
-			DrawGlideThroughTerrain(hdc, DrawRect);
+			DrawGlideThroughTerrain(hdc, DrawRect); 
 	}
 	if (extGPSCONNECT)
 		DrawBearing(hdc, DrawRect);
