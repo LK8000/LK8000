@@ -50,7 +50,11 @@ void GlidePolar::SetBallast() {
     WingLoading = 0;
   }
   BallastWeight = (double)sqrt(BallastWeight);
+  LKASSERT(BUGS!=0);
+  if (BUGS==0) BUGS=1;
   double bugfactor = 1.0/BUGS;
+  LKASSERT(BallastWeight!=0);
+  if (BallastWeight==0) BallastWeight=1;
   polar_a = POLAR[0] / BallastWeight*bugfactor;
   polar_b = POLAR[1] * bugfactor;
   polar_c = POLAR[2] * BallastWeight*bugfactor;
@@ -80,6 +84,8 @@ void GlidePolar::SetBallast() {
       double thesinkrate 
         =  -SinkRate(polar_a,polar_b,polar_c,0,0,vtrack);
 
+      LKASSERT(thesinkrate!=0);
+      if (thesinkrate==0) thesinkrate=0.001;
       double ld = vtrack/thesinkrate;
       if (ld>=bestld) {
         bestld = ld;
@@ -220,6 +226,8 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
 	// WE ARE REWRITING EMCREADY!
       emcready = max(MIN_MACCREADY,emcready);
       sinkrate = -_SinkRateFast(0.0, i);
+      LKASSERT((sinkrate+emcready)!=0);
+      if ( (sinkrate+emcready)==0 ) sinkrate+=0.1; // to check
       tc = max(0.0,min(1.0,emcready/(sinkrate+emcready)));
     }
 
@@ -255,6 +263,8 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
     } else {
       // time spent in cruise
       double Time_cruise = (tc/vtot)*Distance;
+      LKASSERT(emcready!=0);
+      if (emcready==0) emcready=0.1;
       double Time_climb = sinkrate*(Time_cruise/emcready);
 
       // total time to destination
@@ -416,6 +426,8 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
         // use law of sines to calc other triangle side lengths.
         // We’ll use multiplier twice, so calculate it just once:
 
+	LKASSERT(AngelBrg!=0);
+	if (AngleBrg==0) AngleBrg=1;
         Multiplier = Distance / fastsine(AngleBrg);
 
         // lengths of circling/drifting & cruise sides of triangle

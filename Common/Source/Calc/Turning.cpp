@@ -22,7 +22,7 @@ extern void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 #define MinTurnRate  4
 #define CruiseClimbSwitch 15
-#define ClimbCruiseSwitch 10
+#define ClimbCruiseSwitch 9
 #define CRUISE 0
 #define WAITCLIMB 1
 #define CLIMB 2
@@ -87,6 +87,7 @@ _forcereset:
   dT = Basic->Time - LastTime;
   LastTime = Basic->Time;
 
+  LKASSERT(dT!=0);
   Rate = AngleLimit180(Basic->TrackBearing-LastTrack)/dT;
 
   if (dT<2.0) {
@@ -132,7 +133,11 @@ _forcereset:
   
   Calculated->Essing = fabs(rate_ave)*100/MinTurnRate;
 
-  Rate = LowPassFilter(LastRate,Rate,0.3);
+  if (MODE==CLIMB||MODE==WAITCRUISE)
+	Rate = LowPassFilter(LastRate,Rate,0.9);
+  else
+	Rate = LowPassFilter(LastRate,Rate,0.3);
+
   LastRate = Rate;
 
   if(Rate <0)

@@ -47,7 +47,7 @@ TCHAR *WhatTimeIsIt(void) {
   TCHAR tlocal[20];
   TCHAR tutc[20];
 
-  Units::TimeToText(tlocal, (int)TimeLocal((int)(GPS_INFO.Time))),
+  Units::TimeToTextS(tlocal, (int)TimeLocal((int)(GPS_INFO.Time))),
   Units::TimeToText(tutc, (int)GPS_INFO.Time);
   wsprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
 
