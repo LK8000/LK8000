@@ -2915,12 +2915,16 @@ int iOrientation = DisplayOrientation ;
 	*/
     }
 
-  if(IsMultiMap())
-    SetMMNorthUp(GetSideviewPage(),iOrientation);
-  else
-	DisplayOrientation = iOrientation;
+//  if(IsMultiMap())
+    if  (MapSpaceMode==MSM_MAP)
+    {
+  	  DisplayOrientation = iOrientation;
+      MapWindow::SetAutoOrientation(true); // 101008 reset it
+    }
+    else
+	  SetMMNorthUp(GetSideviewPage(),iOrientation);
 
-    MapWindow::SetAutoOrientation(true); // 101008 reset it
+
 
 }
 
