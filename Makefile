@@ -70,7 +70,7 @@ endif
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC),y)
-TCPATH		:=i386-mingw32-
+TCPATH		:=i686-pc-mingw32-
 CPU		:=i586
 MCPU		:= -mcpu=$(CPU)
 else
@@ -376,6 +376,7 @@ DRAW	:=\
 	$(DRW)/DrawStartSector.cpp \
 	$(DRW)/DrawTRI.cpp \
 	$(DRW)/DrawTask.cpp \
+	$(DRW)/DrawFAIOpti.cpp \
 	$(DRW)/DrawTaskAAT.cpp \
 	$(DRW)/DrawTeamMate.cpp \
 	$(DRW)/DrawTerrainAbove.cpp \
