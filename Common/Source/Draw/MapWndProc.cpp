@@ -994,16 +994,31 @@ goto_menu:
 				return TRUE;
 				break;
 			case 0x25:	// VK_LEFT
-				GPS_INFO.TrackBearing -= 5;
-				if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
-				else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
+				nn=GetKeyState(VK_SHIFT);
+				if (nn<0) {
+				  InputEvents::eventChangeTurn(_T("left"));
+				}
+				else
+				{
+				  GPS_INFO.TrackBearing -= 5;
+				  if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
+				  else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
+				}
+
 				TriggerGPSUpdate();
 				return TRUE;
 				break;
 			case 0x27:	// VK_RIGHT
-				GPS_INFO.TrackBearing += 5;
-				if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
-				else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
+				nn=GetKeyState(VK_SHIFT);
+				if (nn<0) {
+					InputEvents::eventChangeTurn(_T("right"));
+				}
+				else
+				{
+				  GPS_INFO.TrackBearing += 5;
+				  if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
+				  else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
+				}
 				TriggerGPSUpdate();
 				return TRUE;
 				break;

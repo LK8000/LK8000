@@ -972,7 +972,10 @@ goto_bearing:
 				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+			//		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+					// THIS WOULD SET BEARING while circling
+					// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+					if (true)
 					{
 						if (AATEnabled && !DoOptimizeRoute())
 							value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
@@ -992,12 +995,22 @@ goto_bearing:
 							else
 								_tcscpy(BufferValue, TEXT("\xAB\xBB"));
 #else
-						if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f°»"), value);
-						else if (value < -1)
-						_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+						//						_stprintf(BufferValue, TEXT("%2.0f��"), value);
+						//						else if (value < -1)
+						//						_stprintf(BufferValue, TEXT("�%2.0f�"), -value);
+						if (value > 45)
+						  _stprintf(BufferValue, TEXT("%2.0f°»"), value);
 						else
-							_tcscpy(BufferValue, TEXT("«»"));
+						  if (value > 1)
+							_stprintf(BufferValue, TEXT("%2.0f°»"), value);  //TEXT("%2.0f°"), value);
+						  else
+						    if (value < -45)
+						      _stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+						    else
+						      if  (value < -1)
+							    _stprintf(BufferValue, TEXT("«%2.0f°"), -value); // TEXT("%2.0f°")
+					          else
+						  	   _tcscpy(BufferValue, TEXT("«|»"));
 #endif
 					}
 					else goto goto_bearing;
@@ -2773,7 +2786,9 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
   _tcscpy(BufferValue,_T(NULLMEDIUM)); 
   _tcscpy(BufferUnit,_T(""));
   if (index>=0) {
-	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+	// THIS is forcing bearing while circling
+	// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+	if (true) {
 		// Warning, for AAT this should be WaypointBearing, so do not use it!
 		value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 		if (value < -180.0)

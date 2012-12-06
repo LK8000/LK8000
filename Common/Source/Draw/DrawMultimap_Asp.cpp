@@ -107,7 +107,8 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 #ifdef ENABLE_ALL_AS_FOR_SIDEVIEW
   int oldAltMode = AltitudeMode ;
 
-  AltitudeMode = ALLON;
+  if (GetSideviewPage() == IM_NEAR_AS)
+   AltitudeMode = ALLON;
 #endif
 
   RenderAirspace(hdc, rci);

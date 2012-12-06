@@ -29,7 +29,8 @@ double fOffset = 0.0;
 using std::min;
 using std::max;
 int k;
-static double fZOOMScale = 1.0;
+double fZOOMScale[3] = {1.0,1.0,1.0};
+
 double fDelta = MIN_OFFSET;
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
@@ -64,6 +65,7 @@ double fMC0 = 0.0f;
 int overindex=-1;
 bool show_mc0= true;
 double fLD;
+bool bSideView = false;
 SIZE tsize;
 TCHAR text[TBSIZE+1];
 TCHAR buffer[TBSIZE+1];
@@ -114,8 +116,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  switch(LKevent) {
 		case LKEVENT_NEWRUN:
 			// CALLED ON ENTRY: when we select this page coming from another mapspace
-			fZOOMScale = 1.0;
+		//	fZOOMScale[GetSideviewPage()] = 1.0;
 			bHeightScale = false;
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 		//	fHeigtScaleFact = 1000;
 		break;
 		case LKEVENT_UP:
@@ -123,7 +126,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			if(bHeightScale)
 			  fHeigtScaleFact -=  fDelta;
 			else
-			  fZOOMScale /= ZOOMFACTOR;
+				fZOOMScale[GetSideviewPage()] /= ZOOMFACTOR;
+
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_DOWN:
@@ -131,7 +136,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			if(bHeightScale)
 			  fHeigtScaleFact += fDelta;
 			else
-		  	  fZOOMScale *= ZOOMFACTOR;
+				fZOOMScale[GetSideviewPage()] *= ZOOMFACTOR;
+
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_LONGCLICK:
@@ -201,6 +208,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 		break;
 
 	  }
+	  if ( (fSplitFact*100)<SIZE4 )
+		bSideView = true;
+
 	  //LKevent=LKEVENT_NONE;
 
 	  // Current_Multimap_SizeY is global, and must be used by all multimaps!
@@ -342,15 +352,15 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   
   // Else in MAPWPT with no overtarget we paint a track heading
 
-  if(fZOOMScale != 1.0)
+  if(fZOOMScale[GetSideviewPage()] != 1.0)
   {
-    if( (fDist *fZOOMScale) > 750000)
-	  fZOOMScale /= ZOOMFACTOR;
+    if( (fDist *fZOOMScale[GetSideviewPage()]) > 750000)
+    	fZOOMScale[GetSideviewPage()] /= ZOOMFACTOR;
 
-    if((fDist *fZOOMScale) < 500)
-	  fZOOMScale *= ZOOMFACTOR;
+    if((fDist *fZOOMScale[GetSideviewPage()]) < 500)
+    	fZOOMScale[GetSideviewPage()] *= ZOOMFACTOR;
   }
-  fDist *=fZOOMScale;
+  fDist *=fZOOMScale[GetSideviewPage()];
 
   DiagrammStruct sDia;
   sDia.fXMin =-9500.0f;
@@ -386,10 +396,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   	sDia.rc = rct;
 	sDia.rc.bottom-=1;
     if (GetSideviewPage() == IM_HEADING)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
+  	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0, bSideView);
 
     if (GetSideviewPage() == IM_NEXT_WP)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
+  	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg, false );
 
     //sDia.rc = rcc;
 

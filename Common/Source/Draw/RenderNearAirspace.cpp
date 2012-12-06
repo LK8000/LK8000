@@ -23,7 +23,8 @@ extern int Sideview_iNoHandeldSpaces;
 extern bool ActiveMap_IsEnabled;
 extern int XstartScreen, YstartScreen;
 
-
+extern double fZOOMScale[];
+ //double fZOOMScale[3] = {1.0,1.0,1.0};
 #define TBSIZE	80
 
 
@@ -44,7 +45,7 @@ HFONT	 hfOldFnt = (HFONT)SelectObject(hdc,LK8PanelUnitFont/* Sender->GetFont()*/
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 
 int  k;
-static double fZOOMScale= 1.0;
+//static double fZOOMScale= 1.0;
 static double fHeigtScaleFact = 1.0;
 
 
@@ -89,15 +90,18 @@ static  bool bHeightScale = false;
 		case LKEVENT_NEWRUN:
 			// CALLED ON ENTRY: when we select this page coming from another mapspace
 			bHeightScale = false;
-			fZOOMScale = 1.0;
+		//	fZOOMScale[GetSideviewPage()] = 1.0;
 			fHeigtScaleFact = 1.0;
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 		break;
 		case LKEVENT_UP:
 			// click on upper part of screen, excluding center
 			if(bHeightScale)
 			  fHeigtScaleFact /= ZOOMFACTOR;
 			else
-			  fZOOMScale /= ZOOMFACTOR;
+			  fZOOMScale[GetSideviewPage()] /= ZOOMFACTOR;
+
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_DOWN:
@@ -105,7 +109,8 @@ static  bool bHeightScale = false;
 			if(bHeightScale)
 			  fHeigtScaleFact *= ZOOMFACTOR;
 			else
-		  	  fZOOMScale *= ZOOMFACTOR;
+				fZOOMScale[GetSideviewPage()] *= ZOOMFACTOR;
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_LONGCLICK:
@@ -293,19 +298,19 @@ calc_circling = false;
   // sDia.fXMin = iTmp * RND_FACT;
 
 
-   if( ( sDia.fXMax  *fZOOMScale) > 100000)
-	  fZOOMScale /= ZOOMFACTOR;
+   if( ( sDia.fXMax  *fZOOMScale[GetSideviewPage()]) > 100000)
+	   fZOOMScale[GetSideviewPage()] /= ZOOMFACTOR;
 
-   if(( sDia.fXMax *fZOOMScale) < 2000)
+   if(( sDia.fXMax *fZOOMScale[GetSideviewPage()]) < 2000)
    {
-	  fZOOMScale *= ZOOMFACTOR;
+	   fZOOMScale[GetSideviewPage()] *= ZOOMFACTOR;
    }
 
   double fOldZoomScale=-1;
-  if(fZOOMScale != fOldZoomScale)
+  if(fZOOMScale[GetSideviewPage()] != fOldZoomScale)
   {
-   fOldZoomScale =  fZOOMScale;
-   sDia.fXMax = sDia.fXMax *fZOOMScale;
+   fOldZoomScale =  fZOOMScale[GetSideviewPage()];
+   sDia.fXMax = sDia.fXMax *fZOOMScale[GetSideviewPage()];
    sDia.fXMin = -sDia.fXMax /5;
   }
  //  if(( sDia.fXMax ) < 5000)
@@ -373,7 +378,7 @@ if(bValid)
   {
     sDia.rc = rct;
     sDia.rc.bottom-=1;
-    AirspaceTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg);
+    AirspaceTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg, false);
 
   }
 
