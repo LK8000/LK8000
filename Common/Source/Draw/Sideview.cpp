@@ -959,8 +959,9 @@ COLORREF rgbCol = RGB_BLACK;
    if(p2.x < rc.left)    rgbCol = RGB_BLUE;
 */
  //  if(p2.x > rc.right)   rgbCol = RGB_GREEN;
-
+	ForcedClipping=true;
 	_DrawLine(hdc, PS_DASH, NIBLSCALE(1), p1, p2, rgbCol, rc);
+	ForcedClipping=false;
 }
 
 
