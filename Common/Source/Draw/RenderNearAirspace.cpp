@@ -91,6 +91,7 @@ static  bool bHeightScale = false;
 			bHeightScale = false;
 			fZOOMScale = 1.0;
 			fHeigtScaleFact = 1.0;
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 		break;
 		case LKEVENT_UP:
 			// click on upper part of screen, excluding center
@@ -98,6 +99,8 @@ static  bool bHeightScale = false;
 			  fHeigtScaleFact /= ZOOMFACTOR;
 			else
 			  fZOOMScale /= ZOOMFACTOR;
+
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_DOWN:
@@ -106,6 +109,7 @@ static  bool bHeightScale = false;
 			  fHeigtScaleFact *= ZOOMFACTOR;
 			else
 		  	  fZOOMScale *= ZOOMFACTOR;
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_LONGCLICK:
