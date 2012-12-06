@@ -67,7 +67,7 @@ void MapWindow::UpdateCaches(bool force) {
 
   // have some time, do shape file cache update if necessary
   LockTerrainDataGraphics();
-  SetTopologyBounds(MapRect, force);
+  SetTopologyBounds(DrawRect, force);
   UnlockTerrainDataGraphics();
 
   #if RASTERCACHE

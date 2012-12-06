@@ -118,6 +118,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			// CALLED ON ENTRY: when we select this page coming from another mapspace
 		//	fZOOMScale[GetSideviewPage()] = 1.0;
 			bHeightScale = false;
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 		//	fHeigtScaleFact = 1000;
 		break;
 		case LKEVENT_UP:
@@ -126,6 +127,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			  fHeigtScaleFact -=  fDelta;
 			else
 				fZOOMScale[GetSideviewPage()] /= ZOOMFACTOR;
+
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_DOWN:
@@ -134,6 +137,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			  fHeigtScaleFact += fDelta;
 			else
 				fZOOMScale[GetSideviewPage()] *= ZOOMFACTOR;
+
+			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_LONGCLICK:

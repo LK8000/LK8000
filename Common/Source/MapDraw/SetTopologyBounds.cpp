@@ -59,12 +59,16 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
 
   if (recompute || force || LKSW_ForceNearestTopologyCalculation) {
 
+    #if 0 // 121208
     // make bounds bigger than screen
     if (range_real<MINRANGE) {
       scale = BORDERFACTOR*MINRANGE/range_real;
     } else {
-      scale = BORDERFACTOR;
+      // 121208 this is creating problems after a low zoom
+      // scale = BORDERFACTOR;
     }
+    #endif
+
     bounds_active = MapWindow::CalculateScreenBounds(scale);
 
     range_active = max((bounds_active.maxx-bounds_active.minx), 
