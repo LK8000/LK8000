@@ -29,7 +29,8 @@ double fOffset = 0.0;
 using std::min;
 using std::max;
 int k;
-static double fZOOMScale = 1.0;
+double fZOOMScale[3] = {1.0,1.0,1.0};
+
 double fDelta = MIN_OFFSET;
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
@@ -115,7 +116,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  switch(LKevent) {
 		case LKEVENT_NEWRUN:
 			// CALLED ON ENTRY: when we select this page coming from another mapspace
-			fZOOMScale = 1.0;
+		//	fZOOMScale[GetSideviewPage()] = 1.0;
 			bHeightScale = false;
 		//	fHeigtScaleFact = 1000;
 		break;
@@ -124,7 +125,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			if(bHeightScale)
 			  fHeigtScaleFact -=  fDelta;
 			else
-			  fZOOMScale /= ZOOMFACTOR;
+				fZOOMScale[GetSideviewPage()] /= ZOOMFACTOR;
 			break;
 
 		case LKEVENT_DOWN:
@@ -132,7 +133,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			if(bHeightScale)
 			  fHeigtScaleFact += fDelta;
 			else
-		  	  fZOOMScale *= ZOOMFACTOR;
+				fZOOMScale[GetSideviewPage()] *= ZOOMFACTOR;
 			break;
 
 		case LKEVENT_LONGCLICK:
@@ -346,15 +347,15 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   
   // Else in MAPWPT with no overtarget we paint a track heading
 
-  if(fZOOMScale != 1.0)
+  if(fZOOMScale[GetSideviewPage()] != 1.0)
   {
-    if( (fDist *fZOOMScale) > 750000)
-	  fZOOMScale /= ZOOMFACTOR;
+    if( (fDist *fZOOMScale[GetSideviewPage()]) > 750000)
+    	fZOOMScale[GetSideviewPage()] /= ZOOMFACTOR;
 
-    if((fDist *fZOOMScale) < 500)
-	  fZOOMScale *= ZOOMFACTOR;
+    if((fDist *fZOOMScale[GetSideviewPage()]) < 500)
+    	fZOOMScale[GetSideviewPage()] *= ZOOMFACTOR;
   }
-  fDist *=fZOOMScale;
+  fDist *=fZOOMScale[GetSideviewPage()];
 
   DiagrammStruct sDia;
   sDia.fXMin =-9500.0f;
