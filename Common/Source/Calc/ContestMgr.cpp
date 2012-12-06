@@ -448,8 +448,8 @@ else*/
 	}
 	else
 	{
-	  WayPointList[RESWP_FAIOPTIMIZED].Latitude= WayPointList[RESWP_TAKEOFF].Latitude;
-	  WayPointList[RESWP_FAIOPTIMIZED].Longitude= WayPointList[RESWP_TAKEOFF].Longitude;
+	//  WayPointList[RESWP_FAIOPTIMIZED].Latitude= WayPointList[RESWP_TAKEOFF].Latitude;
+	//  WayPointList[RESWP_FAIOPTIMIZED].Longitude= WayPointList[RESWP_TAKEOFF].Longitude;
 	  WayPointList[RESWP_FAIOPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
 	  WayPointList[RESWP_FAIOPTIMIZED].Reachable=false;
 	  WayPointList[RESWP_FAIOPTIMIZED].Visible=false;
