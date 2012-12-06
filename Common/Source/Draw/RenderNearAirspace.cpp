@@ -24,6 +24,7 @@ extern bool ActiveMap_IsEnabled;
 extern int XstartScreen, YstartScreen;
 
 
+extern double fZOOMScale[];
 #define TBSIZE	80
 
 
@@ -44,7 +45,6 @@ HFONT	 hfOldFnt = (HFONT)SelectObject(hdc,LK8PanelUnitFont/* Sender->GetFont()*/
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 
 int  k;
-static double fZOOMScale= 1.0;
 static double fHeigtScaleFact = 1.0;
 
 
@@ -80,6 +80,9 @@ static  bool bHeightScale = false;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
   BOOL bInvCol = true; //INVERTCOLORS
 
+  unsigned short getsideviewpage=GetSideviewPage();
+  LKASSERT(getsideviewpage<3);
+
   if(bInvCol)
     Sideview_TextColor = INV_GROUND_TEXT_COLOUR;
   else
@@ -89,7 +92,7 @@ static  bool bHeightScale = false;
 		case LKEVENT_NEWRUN:
 			// CALLED ON ENTRY: when we select this page coming from another mapspace
 			bHeightScale = false;
-			fZOOMScale = 1.0;
+			fZOOMScale[getsideviewpage] = 1.0;
 			fHeigtScaleFact = 1.0;
 			if (IsMultimapTopology()) ForceVisibilityScan=true;
 		break;
@@ -98,7 +101,7 @@ static  bool bHeightScale = false;
 			if(bHeightScale)
 			  fHeigtScaleFact /= ZOOMFACTOR;
 			else
-			  fZOOMScale /= ZOOMFACTOR;
+			  fZOOMScale[getsideviewpage] /= ZOOMFACTOR;
 
 			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
@@ -108,13 +111,13 @@ static  bool bHeightScale = false;
 			if(bHeightScale)
 			  fHeigtScaleFact *= ZOOMFACTOR;
 			else
-		  	  fZOOMScale *= ZOOMFACTOR;
+		  	  fZOOMScale[getsideviewpage] *= ZOOMFACTOR;
 			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_LONGCLICK:
 
-		//	ToggleMMNorthUp(GetSideviewPage());
+		//	ToggleMMNorthUp(getsideviewpage);
 
 		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 			 {
@@ -297,19 +300,19 @@ calc_circling = false;
   // sDia.fXMin = iTmp * RND_FACT;
 
 
-   if( ( sDia.fXMax  *fZOOMScale) > 100000)
-	  fZOOMScale /= ZOOMFACTOR;
+   if( ( sDia.fXMax  *fZOOMScale[getsideviewpage]) > 100000)
+	  fZOOMScale[getsideviewpage] /= ZOOMFACTOR;
 
-   if(( sDia.fXMax *fZOOMScale) < 2000)
+   if(( sDia.fXMax *fZOOMScale[getsideviewpage]) < 2000)
    {
-	  fZOOMScale *= ZOOMFACTOR;
+	  fZOOMScale[getsideviewpage] *= ZOOMFACTOR;
    }
 
   double fOldZoomScale=-1;
-  if(fZOOMScale != fOldZoomScale)
+  if(fZOOMScale[getsideviewpage] != fOldZoomScale)
   {
-   fOldZoomScale =  fZOOMScale;
-   sDia.fXMax = sDia.fXMax *fZOOMScale;
+   fOldZoomScale =  fZOOMScale[getsideviewpage];
+   sDia.fXMax = sDia.fXMax *fZOOMScale[getsideviewpage];
    sDia.fXMin = -sDia.fXMax /5;
   }
  //  if(( sDia.fXMax ) < 5000)
@@ -445,7 +448,7 @@ if(bValid)
   SetTextColor(hdc, txtCol);
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
 
-  switch(GetMMNorthUp(GetSideviewPage()))
+  switch(GetMMNorthUp(getsideviewpage))
   {
 	 case NORTHUP:
 	 default:
@@ -623,7 +626,7 @@ if(bValid)
   hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
   //DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(11),  rct.top  + NIBLSCALE(11));
 
-  switch(GetMMNorthUp(GetSideviewPage()))
+  switch(GetMMNorthUp(getsideviewpage))
   {
 	 case NORTHUP:
 	 default:

@@ -29,7 +29,7 @@ double fOffset = 0.0;
 using std::min;
 using std::max;
 int k;
-static double fZOOMScale = 1.0;
+double fZOOMScale[3] = {1.0,1.0,1.0};
 double fDelta = MIN_OFFSET;
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
@@ -75,6 +75,8 @@ COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 COLORREF col           =  RGB_BLACK;
 
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
+unsigned short getsideviewpage=GetSideviewPage();
+LKASSERT(getsideviewpage<3);
 
 #if 0
 StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
@@ -114,7 +116,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  switch(LKevent) {
 		case LKEVENT_NEWRUN:
 			// CALLED ON ENTRY: when we select this page coming from another mapspace
-			fZOOMScale = 1.0;
+			///fZOOMScale = 1.0;
 			bHeightScale = false;
 			if (IsMultimapTopology()) ForceVisibilityScan=true;
 		//	fHeigtScaleFact = 1000;
@@ -124,7 +126,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			if(bHeightScale)
 			  fHeigtScaleFact -=  fDelta;
 			else
-			  fZOOMScale /= ZOOMFACTOR;
+			  fZOOMScale[getsideviewpage] /= ZOOMFACTOR;
 
 			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
@@ -134,13 +136,13 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			if(bHeightScale)
 			  fHeigtScaleFact += fDelta;
 			else
-		  	  fZOOMScale *= ZOOMFACTOR;
+		  	  fZOOMScale[getsideviewpage] *= ZOOMFACTOR;
 
 			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
 
 		case LKEVENT_LONGCLICK:
-	//		ToggleMMNorthUp(GetSideviewPage());
+	//		ToggleMMNorthUp(getsideviewpage);
 		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 	             {
 			   if( Sideview_pHandeled[k].psAS != NULL)
@@ -289,7 +291,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   fMC0 = 0.0;
   fLD  = 0.0;
 
-  if (GetSideviewPage()==IM_NEXT_WP )
+  if (getsideviewpage==IM_NEXT_WP )
   {
     // Show towards target
     if (overindex>=0)
@@ -347,15 +349,15 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   
   // Else in MAPWPT with no overtarget we paint a track heading
 
-  if(fZOOMScale != 1.0)
+  if(fZOOMScale[getsideviewpage] != 1.0)
   {
-    if( (fDist *fZOOMScale) > 750000)
-	  fZOOMScale /= ZOOMFACTOR;
+    if( (fDist *fZOOMScale[getsideviewpage]) > 750000)
+	  fZOOMScale[getsideviewpage] /= ZOOMFACTOR;
 
-    if((fDist *fZOOMScale) < 500)
-	  fZOOMScale *= ZOOMFACTOR;
+    if((fDist *fZOOMScale[getsideviewpage]) < 500)
+	  fZOOMScale[getsideviewpage] *= ZOOMFACTOR;
   }
-  fDist *=fZOOMScale;
+  fDist *=fZOOMScale[getsideviewpage];
 
   DiagrammStruct sDia;
   sDia.fXMin =-9500.0f;
@@ -390,10 +392,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   {
   	sDia.rc = rct;
 	sDia.rc.bottom-=1;
-    if (GetSideviewPage() == IM_HEADING)
+    if (getsideviewpage == IM_HEADING)
   	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
 
-    if (GetSideviewPage() == IM_NEXT_WP)
+    if (getsideviewpage == IM_NEXT_WP)
   	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
 
     //sDia.rc = rcc;
@@ -408,7 +410,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   sDia.rc = rcc;
 
 
-  if (( (fSplitFact*100)<SIZE4) || ( GetMMNorthUp(GetSideviewPage())  != NORTHUP))
+  if (( (fSplitFact*100)<SIZE4) || ( GetMMNorthUp(getsideviewpage)  != NORTHUP))
     RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
 
 
@@ -448,10 +450,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if(fSplitFact > 0.0)
   {
   	sDia.rc = rct;
-    if (GetSideviewPage() == IM_HEADING)
+    if (getsideviewpage == IM_HEADING)
   	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
 
-    if (GetSideviewPage() == IM_NEXT_WP)
+    if (getsideviewpage == IM_NEXT_WP)
   	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
   	sDia.rc = rcc;
   }
@@ -467,8 +469,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
 
- if (((fSplitFact*100)<SIZE4) || (GetMMNorthUp(GetSideviewPage())!= NORTHUP) )
-  switch(GetMMNorthUp(GetSideviewPage()))
+ if (((fSplitFact*100)<SIZE4) || (GetMMNorthUp(getsideviewpage)!= NORTHUP) )
+  switch(GetMMNorthUp(getsideviewpage))
   {
 	 case NORTHUP:
 	 default:
@@ -504,7 +506,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
  if (overindex>=0) {
   int iWpPos =  CalcDistanceCoordinat( wpt_dist,  &sDia);
-  if ( (GetSideviewPage() == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4))
+  if ( (getsideviewpage == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4))
   {
     if(WayPointCalc[overindex].IsLandable == 0)
     {
@@ -554,7 +556,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     //
     ForcedClipping=true;
 
-    if ( (GetSideviewPage() == IM_NEXT_WP) && (overindex>=0)) {
+    if ( (getsideviewpage == IM_NEXT_WP) && (overindex>=0)) {
       double altarriv;
 
       // Draw estimated gliding line MC=0 (green)
@@ -605,7 +607,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 
   //Draw wpt info texts
-  if ( (GetSideviewPage() == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4) && (overindex>=0)) {
+  if ( (getsideviewpage == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4) && (overindex>=0)) {
 //HFONT hfOld = (HFONT)SelectObject(hdc, LK8MapFont);
     line[0].x = CalcDistanceCoordinat( wpt_dist,  &sDia);
     // Print wpt name next to marker line
@@ -780,7 +782,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   } // IM_NEXT_WP with valid overindex
 
 
-  if (GetSideviewPage()== IM_HEADING)
+  if (getsideviewpage== IM_HEADING)
     wpt_brg =90.0;
 
   if ( Current_Multimap_SizeY<SIZE4)
@@ -806,7 +808,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   hfOld = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
 
 
-  switch(GetMMNorthUp(GetSideviewPage()))
+  switch(GetMMNorthUp(getsideviewpage))
   {
 	 case NORTHUP:
 	 default:
