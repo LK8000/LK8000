@@ -685,7 +685,7 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 
 
 //GEXTERN bool ActiveMap;
-int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing)
+int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing, bool bShowHeadUp)
 {
 //fAS_Bearing+=3.0;
 int iOldDisplayOrientation =  DisplayOrientation;
@@ -906,7 +906,7 @@ _nomoredeclutter:
 
      case NORTHUP:
      default:
-       if( GetSideviewPage() == IM_HEADING)
+       if(bShowHeadUp)
     	 DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
      break;
   }

@@ -12,7 +12,7 @@
 #include "ContestMgr.h"
 #include <memory>
 
-#define MAX_EARTH_DIST_IN_M   40000000.0
+//#define MAX_EARTH_DIST_IN_M   40000000.0
 CContestMgr CContestMgr::_instance;
 
 
@@ -58,8 +58,8 @@ CContestMgr::CContestMgr():
   _pgpsNearPoint(0,0,0,0)
 {
 
-	  _fTogo     =  MAX_EARTH_DIST_IN_M;
-	  _fBestTogo =  MAX_EARTH_DIST_IN_M;
+	  _fTogo     =  0;
+	  _fBestTogo =  0;
 
 	  _uiFAIDist  =0;
 	  _bFAI              =false;
@@ -91,8 +91,8 @@ void CContestMgr::Reset(unsigned handicap)
   _prevFAIPredictedBack.reset(0);
   _bFAI = false;
   _uiFAIDist =0;
-  _fTogo     = MAX_EARTH_DIST_IN_M;
-  _fBestTogo = MAX_EARTH_DIST_IN_M;
+  _fTogo     = 0;
+  _fBestTogo = 0;
   {
     CCriticalSection::CGuard Resultguard(_resultsCS);
     for(unsigned i=0; i<TYPE_NUM; i++)
@@ -448,8 +448,8 @@ else*/
 	}
 	else
 	{
-	  WayPointList[RESWP_FAIOPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
-	  WayPointList[RESWP_FAIOPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
+	  //WayPointList[RESWP_FAIOPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
+	  //WayPointList[RESWP_FAIOPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
 	  WayPointList[RESWP_FAIOPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
 	  WayPointList[RESWP_FAIOPTIMIZED].Reachable=false;
 	  WayPointList[RESWP_FAIOPTIMIZED].Visible=false;

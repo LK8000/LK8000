@@ -64,6 +64,7 @@ double fMC0 = 0.0f;
 int overindex=-1;
 bool show_mc0= true;
 double fLD;
+bool bSideView = false;
 SIZE tsize;
 TCHAR text[TBSIZE+1];
 TCHAR buffer[TBSIZE+1];
@@ -208,6 +209,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 		break;
 
 	  }
+          if ( (fSplitFact*100)<SIZE4 )
+           bSideView = true;
 	  //LKevent=LKEVENT_NONE;
 
 	  // Current_Multimap_SizeY is global, and must be used by all multimaps!
@@ -393,10 +396,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   	sDia.rc = rct;
 	sDia.rc.bottom-=1;
     if (getsideviewpage == IM_HEADING)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
+  	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0, bSideView);
 
     if (getsideviewpage == IM_NEXT_WP)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
+  	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg, false );
 
     //sDia.rc = rcc;
 

@@ -476,7 +476,7 @@ class MapWindow {
   static int HeightToY(double fHeight,  DiagrammStruct* psDia);
   static int DistanceToX(double fDist,  DiagrammStruct* psDia)  ;
   static void RenderNearAirspace(HDC hdc, const RECT rci);
-  static int AirspaceTopView(HDC hdc,   DiagrammStruct* pDia, double iAS_Bearing, double wpt_brg);
+  static int AirspaceTopView(HDC hdc,   DiagrammStruct* pDia, double iAS_Bearing, double wpt_brg,bool bShowHeadUp);
   static void RenderAirspace(HDC hdc, const RECT rc);
   static void LKDrawFlarmRadar(HDC hdc, const RECT rci);
   static void LKDrawMultimap_Example(HDC hdc, const RECT rci);
