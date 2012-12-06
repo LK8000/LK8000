@@ -972,7 +972,9 @@ goto_bearing:
 				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+					// THIS WOULD SET BEARING while circling
+					// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+					if (true)
 					{
 						if (AATEnabled && !DoOptimizeRoute())
 							value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
@@ -2773,7 +2775,9 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
   _tcscpy(BufferValue,_T(NULLMEDIUM)); 
   _tcscpy(BufferUnit,_T(""));
   if (index>=0) {
-	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+	// THIS is forcing bearing while circling
+	// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+	if (true) {
 		// Warning, for AAT this should be WaypointBearing, so do not use it!
 		value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 		if (value < -180.0)
