@@ -373,7 +373,7 @@ if(bValid)
   {
     sDia.rc = rct;
     sDia.rc.bottom-=1;
-    AirspaceTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg);
+    AirspaceTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg, false);
 
   }
 
