@@ -92,7 +92,7 @@ static  bool bHeightScale = false;
 		case LKEVENT_NEWRUN:
 			// CALLED ON ENTRY: when we select this page coming from another mapspace
 			bHeightScale = false;
-			fZOOMScale[getsideviewpage] = 1.0;
+			// fZOOMScale[getsideviewpage] = 1.0;
 			fHeigtScaleFact = 1.0;
 			if (IsMultimapTopology()) ForceVisibilityScan=true;
 		break;
