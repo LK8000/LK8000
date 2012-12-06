@@ -942,9 +942,13 @@ COLORREF rgbCol = RGB_BLACK;
 	p2.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
 	p2.x= Orig.x + (int)(tmp*fastsine(trackbearing));
 
+/*
 	 tmp = fMin*zoom.ResScaleOverDistanceModify();
 	p1.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
 	p1.x= Orig.x + (int)(tmp*fastsine(trackbearing));
+*/
+	p1.y= Orig.y;
+	p1.x= Orig.x;
 
    }
    if (BlackScreen)
