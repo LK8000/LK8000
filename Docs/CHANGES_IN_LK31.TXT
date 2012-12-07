@@ -237,6 +237,9 @@ NEW THINGS
 
 CHANGES
 
+. New configuration for Bottom Bar TRM0 AUTO mode: selection can be made automatic upon
+  entering thermal mode. By default it is enabled, as it has been so far.
+
 . Fast exit from thermal mode. Previously up to 15 seconds, now 10 seconds.
 
 . Show required Task Req. Efficiency also before valid start.
