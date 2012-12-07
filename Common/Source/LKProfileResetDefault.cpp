@@ -345,6 +345,7 @@ void LKProfileResetDefault(void) {
   ConfBB7 = 1;
   ConfBB8 = 1;
   ConfBB9 = 1;
+  ConfBB0Auto = 1;
 
   ConfIP11 = 1;
   ConfIP12 = 1;

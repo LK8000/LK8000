@@ -90,6 +90,12 @@ static void setVariables(void) {
     dfb->Set(ConfBB9);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0Auto"));
+  if (wp) {
+    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    dfb->Set(ConfBB0Auto);
+    wp->RefreshDisplay();
+  }
 
 }
 
@@ -194,6 +200,14 @@ void dlgBottomBarShowModal(void){
 	if (ConfBB9 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB9 = (wp->GetDataField()->GetAsBoolean());
 		changed=true;
+	}
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0Auto"));
+  if (wp) {
+	if (ConfBB0Auto != (wp->GetDataField()->GetAsBoolean())) {
+		ConfBB0Auto = (wp->GetDataField()->GetAsBoolean());
+		changed=true; // not needed really
 	}
   }
 

@@ -1829,6 +1829,8 @@ _@M1818_ "DEVICE"
 _@M1819_ "Device Profiles"
 # page name
 _@M1820_ "Device configuration"
+# Bottom bar configuration button
+_@M1821_ "AUTO"
 
 ############################################################
 #                  - MENU MESSAGES - 

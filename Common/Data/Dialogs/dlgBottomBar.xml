@@ -5,28 +5,28 @@
 <WndProperty Name="prpConfBB1" Caption="_@M1341_" X=2 Y=-998 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpConfBB7" Caption="_@M1347_" X=120 Y=-999 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
+<WndProperty Name="prpConfBB6" Caption="_@M1346_" X=120 Y=-999 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
 
 <WndProperty Name="prpConfBB2" Caption="_@M1342_" X=2 Y=-1 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpConfBB8" Caption="_@M1348_" X=120 Y=-999 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
+<WndProperty Name="prpConfBB7" Caption="_@M1347_" X=120 Y=-999 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
 
 <WndProperty Name="prpConfBB3" Caption="_@M1343_" X=2 Y=-1 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpConfBB9" Caption="_@M1349_" X=120 Y=-999 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
+<WndProperty Name="prpConfBB8" Caption="_@M1348_" X=120 Y=-999 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
 
 <WndProperty Name="prpConfBB4" Caption="_@M1344_" X=2 Y=-1 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpConfBB0" Caption="_@M1340_" X=120 Y=-999 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
+<WndProperty Name="prpConfBB9" Caption="_@M1349_" X=120 Y=-999 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
 
@@ -34,7 +34,11 @@
 <DataField name="" DataType="boolean" />
 </WndProperty>
 
-<WndProperty Name="prpConfBB6" Caption="_@M1346_" X=2 Y=-1 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
+
+<WndProperty Name="prpConfBB0" Caption="_@M1340_" X=2 Y=-997 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1220_">
+<DataField name="" DataType="boolean" />
+</WndProperty>
+<WndProperty Name="prpConfBB0Auto" Caption="_@M1821_" X=120 Y=-999 Width=118 Height=22 CaptionWidth=60 Font=2 Help="_@H1263_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
 

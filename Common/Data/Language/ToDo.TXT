@@ -261,9 +261,21 @@ _@M2237_ "Sonar\nToggle"
 -_@M1604_ "Configure xxxx"
 +_@M1604_ "Configure Multimaps"
 
++# Bottom bar configuration button
++_@M1821_ "AUTO"
+
+
+
 HELP
 +@1262
 +[Multimap options]
 
+Changed 1220.
+
++@1263
++[Bottom Bar AUTO]
++If enabled, TRM0 bottom bar will be automatically activated while thermalling,
++and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
++
 
 

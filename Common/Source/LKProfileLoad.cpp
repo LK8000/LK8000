@@ -354,6 +354,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryConfBB8,&ConfBB8);
   PREAD(sname,svalue,szRegistryConfBB9,&ConfBB9);
+  PREAD(sname,svalue,szRegistryConfBB0Auto,&ConfBB0Auto);
   PREAD(sname,svalue,szRegistryConfIP11,&ConfIP11);
   PREAD(sname,svalue,szRegistryConfIP12,&ConfIP12);
   PREAD(sname,svalue,szRegistryConfIP13,&ConfIP13);

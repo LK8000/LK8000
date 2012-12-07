@@ -1609,7 +1609,7 @@ After you reach the waypoint the previous Cruise zoom restored. And as soon you 
 
 @1220
 [Bottom Bar Configuration]
-Turn on/off each bottom bar stripe while rotating navboxes.  At least one (not counting TRM0) must be on.  TRM0 can only be seen in thermal mode.
+Turn on/off each bottom bar stripe while rotating navboxes.  At least one (not counting TRM0) must be on. 
 
 @1221
 [InfoPages rotation configuration]
@@ -1695,6 +1695,11 @@ This alarm will be armed again only after landing.
 
 @1262
 [Multimap options]
+
+@1263
+[Bottom Bar AUTO]
+If enabled, TRM0 bottom bar will be automatically activated while thermalling,
+and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
 
 @9999
 No help available on this item!

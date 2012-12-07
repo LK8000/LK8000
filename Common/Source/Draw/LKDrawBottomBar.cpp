@@ -184,25 +184,21 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 
   bool showunit=false;
 
-  if (!ISPARAGLIDER) goto _afterpg;
+  if (!ConfBB0Auto) goto _afterautotrm;
 
   if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && !wascircling) {
 	// switch to thermal mode
-	if (ConfBB[BM_TRM]) {
-		OldBottomMode=BottomMode;
-		BottomMode=BM_TRM;
-	}
+	OldBottomMode=BottomMode;
+	BottomMode=BM_TRM;
 	wascircling=true;
   }
   if ( !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && wascircling) {
 	// back to cruise mode
-	if (ConfBB[BM_TRM]) {
-		BottomMode=OldBottomMode;
-	}
+	BottomMode=OldBottomMode;
 	wascircling=false;
   }
 
-_afterpg:
+_afterautotrm:
 
   /*
    *   FIRST VALUE
