@@ -220,6 +220,66 @@ New Takeoff safety alarm (configuration menu Alarms)
    The takeoff safety sound will be armed again only after landing, and be automatically 
    in use again for the next takeoff.
 
+LK8000 VERSION 3.1j 121207
+==========================
+
+NEW THINGS
+
+. Add north up roientation and  configuration for Multimaps in config menu 10.
+  Multimaps 1-3 are saved to profiles.
+  Values can be Disabled, Normal, North up.
+  Default Normal for everybody.
+
+. We remember zoom levels for each multimap, changed at runtime.
+
+. Airspace Filter (All below, Auto, Clip) now work in multimap
+
+
+CHANGES
+
+. Fast exit from thermal mode. Previously up to 15 seconds, now 10 seconds.
+
+. Show required Task Req. Efficiency also before valid start.
+
+. Use full width for turn point list in task edit window and always draw tp radius after tp name 
+  in this list.
+
+. (3.1i) Bottom bar 0 thermal automatically selected (as in v3) only for paragliders
+
+. (3.1i) Change sequence number of multimaps, from 1 to 4, leaving main map using old style 
+  bottom bitmaps icons for final glide etc
+
+. Menu Screen View: Set Map submenu not available out of main moving map, to avoid confusion.
+  Removed duplicated buttons map orientation inside Set Map menu, to simplify.
+
+.  Snail trail button in Display 2/3 disabled out of main moving map.
+   Same thing for DspMode Thermal/Cruise/Final/Auto in Display 3/3
+   Display menu now consistent with multimaps
+
+. Some Map Orient buttons  not available in multimaps, except for north up and track up
+
+. While circling keep showing Bearing Diff, instead of adopting bearing on overlays and in infopage
+
+
+FIXES
+
+. Fix 3,0 bug after loading a waypoint file without a valid header line , LK was correctly discovering the
+  real waypoint format and it was correctly loading waypoints, but the filename of wp file was 
+  disappearing in config.  So at the next run, wp file was no more configured.
+
+. Fix 3.1i bug AutoAdvance not working for Arm Start mode.
+
+. Fix GlideSlope bug in 3.1i, found by Dave
+
+. Fix bug FAI Close jumping far away if not defined
+
+. Fix bug in 3.1 not closing correctly NMEA log.
+
+. Fix PG Task optimized point offset with negative longitude
+
+. Fix zoom in/out screenview buttons working in multimaps
+
+. Fix topology not shown correctly after changing from low zoom levels
 
 
 LK8000 VERSION 3.1i 121130
