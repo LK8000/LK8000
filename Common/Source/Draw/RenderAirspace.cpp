@@ -408,12 +408,12 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 
   RECT rcc =  rc;
-  if(sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
+  if( (Current_Multimap_SizeY<SIZE4) && (sDia.fYMin < GC_SEA_LEVEL_TOLERANCE))
     rcc.bottom -= SV_BORDER_Y; /* scale witout sea  */
   sDia.rc = rcc;
 
 
-  if (( (fSplitFact*100)<SIZE4) || ( GetMMNorthUp(getsideviewpage)  != NORTHUP))
+  if ((Current_Multimap_SizeY<SIZE4) || ( GetMMNorthUp(getsideviewpage)  != NORTHUP))
     RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
 
 
@@ -473,7 +473,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
 
- if (((fSplitFact*100)<SIZE4) || (GetMMNorthUp(getsideviewpage)!= NORTHUP) )
+ if (Current_Multimap_SizeY<SIZE4)
   switch(GetMMNorthUp(getsideviewpage))
   {
 	 case NORTHUP:
@@ -500,7 +500,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
 
-  // Do not draw anything if there is no sideview. 
+  // Draw only if topview is not fullscreen
   if (Current_Multimap_SizeY<SIZE4)
 	DrawYGrid(hdc, rcc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
 
