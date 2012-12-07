@@ -431,6 +431,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if (fRange>200.0*1000.0) xtick = 25.0;
   if (fRange>250.0*1000.0) xtick = 50.0;
   if (fRange>500.0*1000.0) xtick = 100.0;
+  if (fRange>1000.0*1000.0) xtick = 500.0;
 
   if(bInvCol)
   {
