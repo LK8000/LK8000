@@ -123,7 +123,7 @@ to reposition the glider manually from menu buttons.
 @126
 When zoom level is greater or equal to this value, map orientation will change to NorthUp. 
 If below this value, the Orientation setting will be used normally. 
-Setting an high value will result in never using this option. Default is 7.
+Setting an high value will result in never using this option. 
 
 @127
 Auto-zoom changes the zoom level during flight so that the map zooms in as the active waypoint is approached.  
