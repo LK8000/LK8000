@@ -104,6 +104,13 @@ void RenameIfVirtual(const unsigned int i) {
   TCHAR tmp[NAME_SIZE+10];
   _stprintf(tmp,_T("TSK_%s"),WayPointList[i].Name);
   LK_tcsncpy(WayPointList[i].Name,tmp,NAME_SIZE);
+  if (WayPointList[i].Latitude==RESWP_INVALIDNUMBER && WayPointList[i].Longitude==RESWP_INVALIDNUMBER) {
+	if (WayPointList[RESWP_TAKEOFF].Latitude!=RESWP_INVALIDNUMBER) {
+		WayPointList[i].Latitude=WayPointList[RESWP_TAKEOFF].Latitude;
+		WayPointList[i].Longitude=WayPointList[RESWP_TAKEOFF].Longitude;
+		WayPointList[i].Altitude=WayPointList[RESWP_TAKEOFF].Altitude;
+	}
+  }
  
 } 
 
