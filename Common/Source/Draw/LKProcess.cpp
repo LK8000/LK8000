@@ -994,12 +994,21 @@ goto_bearing:
 							else
 								_tcscpy(BufferValue, TEXT("\xAB\xBB"));
 #else
-						if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f°»"), value);
-						else if (value < -1)
-						_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
-						else
-							_tcscpy(BufferValue, TEXT("«»"));
+
+              if (value > 30)
+                _stprintf(BufferValue, TEXT("%2.0f°»"), value);
+              else
+                if (value > 2)
+                  _stprintf(BufferValue, TEXT("%2.0f°›"), value);
+                else
+                  if (value < -30)
+                    _stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+                  else
+                    if (value < -2)
+                      _stprintf(BufferValue, TEXT("‹%2.0f°"),- value);
+                    else
+                      _stprintf(BufferValue, TEXT("«»"));
+                  //    _stprintf(BufferValue, TEXT("‹%2.0f°›"),0 /*fabs(value)*/);
 #endif
 					}
 					else goto goto_bearing;

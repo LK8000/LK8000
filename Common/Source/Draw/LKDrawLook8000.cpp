@@ -671,15 +671,42 @@ nextinit:
 					break;
 			}
 
+		  SIZE tsize;
+      TCHAR Tmp[5];
+int len = _tcslen(BufferValue);
+GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
+      tsize.cx = -tsize.cx;
+      _stprintf(Tmp, TEXT("›"));
+      if(BufferValue[0] == Tmp[0])
+      {
+        GetTextExtentPoint(hdc, Tmp, 1, &tsize);
+      }
+      _stprintf(Tmp, TEXT("«"));
+		  if(BufferValue[0] == Tmp[0])
+		  {
+	      GetTextExtentPoint(hdc, Tmp, 1, &tsize);
+		  }
+		  _stprintf(Tmp, TEXT("‹"));
+      if(BufferValue[0] == Tmp[0])
+      {
+        GetTextExtentPoint(hdc, Tmp, 1, &tsize);
+        _stprintf(Tmp, TEXT("›"));
+    //    if(BufferValue[len-1] == Tmp[0])
+      //    tsize.cx =0;
+      }
+
+
+
 			SelectObject(hdc, medFont); 
 			if (!ISGAAIRCRAFT) {
 				if (ScreenLandscape)
-					LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, 
+					LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2-tsize.cx, rc.top+ NIBLSCALE(15), 0,
 						WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
 				else
-					LKWriteText(hdc, BufferValue, ((rc.right+rc.left)/3)*2, rc.top+ NIBLSCALE(15), 0, 
+					LKWriteText(hdc, BufferValue, ((rc.right+rc.left)/3)*2-tsize.cx/2, rc.top+ NIBLSCALE(15), 0,
 						WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
 			}
+
 		// } // only when circling
 
 		// Draw efficiency required and altitude arrival for destination waypoint
