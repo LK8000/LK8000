@@ -33,7 +33,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 			
 		oldPen=(HPEN)SelectObject(hdc, LKPen_White_N3); 
 		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
-		SelectObject(hdc, hpAircraftBorder); 
+		SelectObject(hdc, LKPen_Black_N1); 
 		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
 		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
 
