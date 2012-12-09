@@ -221,9 +221,9 @@ _skip2:
     if (mapscalecolor!=RGB_RED) {
 	if (ActiveMap) {
 		if (flipflop)
-			mapscalecolor=RGB_WHITE;
+			mapscalecolor=RGB_YELLOW;
 		else
-			mapscalecolor=RGB_GREEN;
+			mapscalecolor=RGB_RED;
 	}
     }
 		

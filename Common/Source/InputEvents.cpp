@@ -1088,12 +1088,18 @@ void InputEvents::eventAirSpace(const TCHAR *misc) {
 void InputEvents::eventActiveMap(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
 	ActiveMap=!ActiveMap;
+	if (ActiveMap)
+		LKSound(TEXT("LK_TONEUP.WAV"));
+	else
+		LKSound(TEXT("LK_TONEDOWN.WAV"));
   } 
-  else if (_tcscmp(misc, TEXT("off")) == 0)
+  else if (_tcscmp(misc, TEXT("off")) == 0) {
     ActiveMap=false;
-  else if (_tcscmp(misc, TEXT("on")) == 0)
+    LKSound(TEXT("LK_TONEDOWN.WAV"));
+  } else if (_tcscmp(misc, TEXT("on")) == 0) {
     ActiveMap=true;
-  else if (_tcscmp(misc, TEXT("show")) == 0) {
+    LKSound(TEXT("LK_TONEUP.WAV"));
+  } else if (_tcscmp(misc, TEXT("show")) == 0) {
 	if (ActiveMap)
 		DoStatusMessage(gettext(TEXT("_@M854_")),NULL,false); // ActiveMap ON
 	else

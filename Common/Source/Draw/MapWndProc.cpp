@@ -863,6 +863,7 @@ goto_menu:
 			if(dwInterval < AIRSPACECLICK) { // original and untouched interval
 				if (ActiveMap) {
                                   if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.RealScale(), false)) {
+						ActiveMap=false;
 						break;
 					}
 				} else {

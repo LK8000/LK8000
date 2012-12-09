@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 121204
+# Release 9 , 121209
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -894,7 +894,6 @@ mode=Config1
 type=key
 data=8
 event=Mode default
-event=ActiveMap show
 event=ActiveMap toggle
 # label=_@M2044_\n$(ActiveMap)
 label=$(AC16)
