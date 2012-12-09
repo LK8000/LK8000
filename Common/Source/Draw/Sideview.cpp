@@ -923,6 +923,10 @@ _nomoredeclutter:
   }
   DrawAircraft(hdc, Orig_Aircraft);
 
+  // M3 has sideview always on, so wont apply here, and no need to check
+  if (Current_Multimap_SizeY==SIZE4) {
+	DrawMapScale(hdc,rct,0);
+  }
 
    #if 0
    HPEN hpGreen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
