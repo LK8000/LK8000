@@ -19,6 +19,7 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     static short terrainwarning=0;
     static POINT lineOneStart, lineOneEnd,lineTwoStart,lineTwoEnd,lineThreeStart,lineThreeEnd;
     static POINT lineTwoStartB,lineThreeStartB;
+    static bool flipflop=true;
 
     if (DoInit[MDI_DRAWMAPSCALE]) {
 	lineOneStart.x = rc.right-NIBLSCALE(6); 
@@ -61,6 +62,8 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     DrawSolidLine(hDC,lineThreeStartB,lineThreeEnd, rc);
 
     SelectObject(hDC, hpOld);
+
+    flipflop=!flipflop;
 
     _tcscpy(Scale2,TEXT(""));
 
@@ -213,6 +216,15 @@ _skip2:
 
     if (!DerivedDrawInfo.TerrainValid) {
 	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
+    }
+
+    if (mapscalecolor!=RGB_RED) {
+	if (ActiveMap) {
+		if (flipflop)
+			mapscalecolor=RGB_WHITE;
+		else
+			mapscalecolor=RGB_GREEN;
+	}
     }
 		
     LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3)+tsize.cy, 
