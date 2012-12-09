@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "LKObjects.h"
 
 
 void MapWindow::DrawBestCruiseTrack(HDC hdc, const POINT Orig)
@@ -29,8 +29,8 @@ void MapWindow::DrawBestCruiseTrack(HDC hdc, const POINT Orig)
   } 
 
 
-  hpOld = (HPEN)SelectObject(hdc, hpBestCruiseTrack);
-  hbOld = (HBRUSH)SelectObject(hdc, hbBestCruiseTrack);
+  hpOld = (HPEN)SelectObject(hdc, LKPen_Blue_N1);
+  hbOld = (HBRUSH)SelectObject(hdc, LKBrush_Blue);
 
   if (Appearance.BestCruiseTrack == ctBestCruiseTrackDefault){
 

@@ -13,6 +13,7 @@
 #include "RGB.h"
 #include "Multimap.h"
 extern void ClearGTL2(void);
+#include "LKObjects.h"
 #endif
 
 //
@@ -89,7 +90,7 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
   // draw glide terrain line around next waypoint
   if (DrawGTL2) {
     // Draw a solid white line.
-    SelectObject(hDC, hpTerrainLine2Bg);
+    SelectObject(hDC, LKPen_White_N2);
     _Polyline(hDC, Groundline2, NUMTERRAINSWEEPS+1, rc);
 
     // Draw a dashed red line.

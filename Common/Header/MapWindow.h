@@ -655,12 +655,8 @@ class MapWindow {
   static HBRUSH   hInvBackgroundBrush[LKMAXBACKGROUNDS]; // fixed number of backgrounds in MapWindow
 
   static      HPEN hpAircraft;
-  static      HPEN hpAircraftBorder;
   static      HPEN hpWind;
   static      HPEN hpWindThick;
-  static      HPEN hpBearing;
-  static      HPEN hpBestCruiseTrack;
-  static      HPEN hpCompass;
   static	HPEN hpThermalCircle;
   static      HPEN hpOvertarget;
   static      HPEN hpThermalBand;
@@ -670,26 +666,13 @@ class MapWindow {
   static      HPEN hpMapScale2;
   static      HPEN hpTerrainLine;
   static      HPEN hpTerrainLineBg;
-#ifdef GTL2
-  static      HPEN hpTerrainLine2Bg; // for next-WP glide terrain line
-#endif
   static      HPEN hpVisualGlideLightRed; // VENTA3
   static      HPEN hpVisualGlideHeavyRed; // 
   static      HPEN hpVisualGlideLightBlack; // VENTA3
   static      HPEN hpVisualGlideHeavyBlack; // 
   static      HPEN hpVisualGlideExtra; // future use
   static      HPEN hpStartFinishThick;
-  static      HPEN hpStartFinishThin;
   
-  static      HBRUSH hbCompass;
-  static      HBRUSH hbThermalBand;
-  static      HBRUSH hbBestCruiseTrack;
-  static      HBRUSH hbFinalGlideBelow;
-  static      HBRUSH hbFinalGlideAbove;
-  static      HBRUSH hbWind;
-
-  static HPEN    hpCompassBorder;
-
  private:
 
   static DWORD fpsTime0;

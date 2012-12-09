@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "LKObjects.h"
 
 void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
 {
@@ -109,7 +109,7 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
   // position of thermal band
   if (numtherm>1) {
     hpOld = (HPEN)SelectObject(hDC, hpThermalBand);
-    HBRUSH hbOld = (HBRUSH)SelectObject(hDC, hbThermalBand);
+    HBRUSH hbOld = (HBRUSH)SelectObject(hDC, LKBrush_Emerald);
  
 
     POINT ThermalProfile[NUMTHERMALBUCKETS+2];

@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "LKInterface.h"
-
+#include "LKObjects.h"
 
 
 //
@@ -158,10 +158,10 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 
 	if (Offset<=0) {
 		hpOld = (HPEN)SelectObject(hDC, hpFinalGlideBelow);
-		hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideBelow);
+		hbOld = (HBRUSH)SelectObject(hDC, LKBrush_Red);
 	} else {
 		hpOld = (HPEN)SelectObject(hDC, hpFinalGlideAbove);
-		hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideAbove);
+		hbOld = (HBRUSH)SelectObject(hDC, LKBrush_Green);
 	}
 	Polygon(hDC,GlideBar,6);
 
@@ -179,13 +179,12 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 			Polygon(hDC,GlideBar0,6);
 		}
 
-		// JMW draw x on final glide bar if unreachable at current Mc
-		// hpAircraftBorder
 
+		// Draw an X  on final glide bar if unreachable at current Mc
 		if ( (GlideBarMode == (GlideBarMode_t)gbFinish) ) {
 			if ((DerivedDrawInfo.TaskTimeToGo>0.9*ERROR_TIME) || 
 			((MACCREADY<0.01) && (DerivedDrawInfo.TaskAltitudeDifference<0))) {
-				SelectObject(hDC, hpAircraftBorder);
+				SelectObject(hDC, LKPen_White_N2);
 				POINT Cross[4] = { {-5, -5}, { 5,  5}, {-5,  5}, { 5, -5} };
 				for (i=0; i<4; i++) {
 					Cross[i].x = IBLSCALE(Cross[i].x+9)+lkVarioOffset; //@ 091114
@@ -196,7 +195,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 			}
 		} else {
 			if ((MACCREADY<0.01) && (DerivedDrawInfo.NextAltitudeDifference<0)) {
-				SelectObject(hDC, hpAircraftBorder);
+				SelectObject(hDC, LKPen_White_N2);
 				POINT Cross[4] = { {-5, -5}, { 5,  5}, {-5,  5}, { 5, -5} };
 				for (i=0; i<4; i++) {
 					Cross[i].x = IBLSCALE(Cross[i].x+9)+lkVarioOffset;

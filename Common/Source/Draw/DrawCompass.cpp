@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "DoInits.h"
+#include "LKObjects.h"
 
 void MapWindow::DrawCompass(HDC hDC, const RECT rc, const double angle)
 {
@@ -51,11 +52,11 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc, const double angle)
       lastRcTop = rc.top;
     }
 
-    hpOld = (HPEN)SelectObject(hDC, hpCompassBorder);
-    hbOld = (HBRUSH)SelectObject(hDC, hbCompass);
+    hpOld = (HPEN)SelectObject(hDC, LKPen_Black_N2);
+    hbOld = (HBRUSH)SelectObject(hDC, LKBrush_White);
     Polygon(hDC,Arrow,5);
 
-    SelectObject(hDC, hpCompass);
+    SelectObject(hDC, LKPen_Black_N1);
     Polygon(hDC,Arrow,5);
 
     SelectObject(hDC, hbOld);

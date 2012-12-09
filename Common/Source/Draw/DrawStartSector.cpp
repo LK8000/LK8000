@@ -7,6 +7,7 @@
  */
 
 #include "externs.h"
+#include "LKObjects.h"
 
 extern COLORREF taskcolor;
 
@@ -25,7 +26,7 @@ void MapWindow::DrawStartEndSector(HDC hdc, const RECT& rc,
             oldbrush = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
             Circle(hdc, WayPointList[Index].Screen.x,
                     WayPointList[Index].Screen.y, (int) tmp, rc, false, false);
-            SelectObject(hdc, hpStartFinishThin);
+            SelectObject(hdc, LKPen_Red_N1);
             Circle(hdc, WayPointList[Index].Screen.x,
                     WayPointList[Index].Screen.y, (int) tmp, rc, false, false);
 

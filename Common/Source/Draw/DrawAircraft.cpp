@@ -104,7 +104,7 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     Polygon(hdc, Aircraft, NUMAIRCRAFTPOINTS);
 
     // draw it again so can get white border
-    SelectObject(hdc, hpAircraftBorder);
+    SelectObject(hdc, LKPen_White_N2);
     SelectObject(hdc, hbAircraftSolid);
 
     for(i=0; i<NUMAIRCRAFTPOINTS; i++)
@@ -157,7 +157,7 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
 
       HBRUSH hbOld;
       hbOld = (HBRUSH)SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-      SelectObject(hdc, hpAircraftBorder); // hpBearing
+      SelectObject(hdc, LKPen_White_N2);
       Polygon(hdc, Aircraft, n);
 
       SelectObject(hdc, oldPen);

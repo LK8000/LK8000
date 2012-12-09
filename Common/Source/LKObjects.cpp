@@ -102,12 +102,10 @@ void LKObjects_Create() {
 	case ss400x240:
 	case ss480x272:
 		MapWindow::hpAircraft = LKPen_Black_N5; // LK v4 has it bolder
-		MapWindow::hpAircraftBorder = LKPen_White_N2;
 		LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(5),RGB_MAGENTA);
 		break;
 	default:
 		MapWindow::hpAircraft = LKPen_Black_N4; // up to LK version 3
-		MapWindow::hpAircraftBorder = LKPen_White_N2;
 		LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_MAGENTA);
 		break;
   }
@@ -172,38 +170,21 @@ void LKObjects_Create() {
   MapWindow::hInvBackgroundBrush[8] = LKBrush_RifleGrey;
   MapWindow::hInvBackgroundBrush[9] = LKBrush_Black;
 
-  MapWindow::hpCompassBorder = LKPen_Black_N2;
-  MapWindow::hpWind = LKPen_Black_N2;
-  MapWindow::hpBearing = LKPen_GABRG;
-  MapWindow::hpBestCruiseTrack = LKPen_Blue_N1;
 
   extern COLORREF taskcolor;
   MapWindow::hpStartFinishThick=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(2)+1, taskcolor);
   MapWindow::hpMapScale2 = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1)+1, RGB_BLACK);
   MapWindow::hpWindThick = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(4), RGB(255,220,220));
-  MapWindow::hpCompass = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
   MapWindow::hpThermalBand = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x40,0x40,0xFF));
   MapWindow::hpThermalBandGlider = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x00,0x00,0x30));
   MapWindow::hpFinalGlideBelow = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xFF,0xA0,0xA0)); // another light red
   MapWindow::hpFinalGlideAbove = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xA0,0xFF,0xA0)); // another light green
   MapWindow::hpTerrainLine = (HPEN)CreatePen(PS_DASH, (1), RGB(0x30,0x30,0x30)); // shade
   MapWindow::hpTerrainLineBg = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN); // perimeter
-#ifdef GTL2
-  MapWindow::hpTerrainLine2Bg = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_WHITE);
-#endif
   MapWindow::hpVisualGlideLightBlack = (HPEN)CreatePen(PS_DASH, (1), RGB_BLACK);
   MapWindow::hpVisualGlideHeavyBlack = (HPEN)CreatePen(PS_DASH, (2), RGB_BLACK);
   MapWindow::hpVisualGlideLightRed = (HPEN)CreatePen(PS_DASH, (1), RGB_RED);
   MapWindow::hpVisualGlideHeavyRed = (HPEN)CreatePen(PS_DASH, (2), RGB_RED);
-
-
-  MapWindow::hpStartFinishThin=LKPen_Red_N1;
-  MapWindow::hbThermalBand=LKBrush_Emerald;
-  MapWindow::hbCompass=LKBrush_White;
-  MapWindow::hbBestCruiseTrack=LKBrush_Blue;
-  MapWindow::hbFinalGlideBelow=LKBrush_Red;
-  MapWindow::hbFinalGlideAbove=LKBrush_Green;
-  MapWindow::hbWind=LKBrush_Grey;
 
 
 }
@@ -291,16 +272,12 @@ void LKObjects_Delete() {
   if (MapWindow::hpStartFinishThick) DeleteObject((HPEN)MapWindow::hpStartFinishThick);
   if (MapWindow::hpMapScale2) DeleteObject((HPEN)MapWindow::hpMapScale2);
   if (MapWindow::hpWindThick) DeleteObject((HPEN)MapWindow::hpWindThick);
-  if (MapWindow::hpCompass) DeleteObject((HPEN)MapWindow::hpCompass);
   if (MapWindow::hpThermalBand) DeleteObject((HPEN)MapWindow::hpThermalBand);
   if (MapWindow::hpThermalBandGlider) DeleteObject((HPEN)MapWindow::hpThermalBandGlider);
   if (MapWindow::hpFinalGlideBelow) DeleteObject((HPEN)MapWindow::hpFinalGlideBelow);
   if (MapWindow::hpFinalGlideAbove) DeleteObject((HPEN)MapWindow::hpFinalGlideAbove);
   if (MapWindow::hpTerrainLine) DeleteObject((HPEN)MapWindow::hpTerrainLine);
   if (MapWindow::hpTerrainLineBg) DeleteObject((HPEN)MapWindow::hpTerrainLineBg);
-#ifdef GTL2
-  if (MapWindow::hpTerrainLine2Bg) DeleteObject((HPEN)MapWindow::hpTerrainLine2Bg);
-#endif
   if (MapWindow::hpVisualGlideLightBlack) DeleteObject((HPEN)MapWindow::hpVisualGlideLightBlack);
   if (MapWindow::hpVisualGlideHeavyBlack) DeleteObject((HPEN)MapWindow::hpVisualGlideHeavyBlack);
   if (MapWindow::hpVisualGlideLightRed) DeleteObject((HPEN)MapWindow::hpVisualGlideLightRed);

@@ -29,7 +29,6 @@ MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
 
 HBRUSH  MapWindow::hAboveTerrainBrush;
-HPEN    MapWindow::hpCompassBorder;
 
 int MapWindow::SnailWidthScale = 16;
 int MapWindow::ScaleListCount = 0;
@@ -108,21 +107,9 @@ COLORREF MapWindow::Colours[NUMAIRSPACECOLORS] =
    RGB(0xFF,0xFF,0xFF), RGB(0xC0,0xC0,0xC0),
    RGB(0x7F,0x7F,0x7F), RGB(0x00,0x00,0x00)};
 
-HBRUSH MapWindow::hbCompass;
-HBRUSH MapWindow::hbThermalBand;
-HBRUSH MapWindow::hbBestCruiseTrack;
-HBRUSH MapWindow::hbFinalGlideBelow;
-HBRUSH MapWindow::hbFinalGlideAbove;
-HBRUSH MapWindow::hbWind;
-
 
 HPEN MapWindow::hpAircraft;
-HPEN MapWindow::hpAircraftBorder;
-HPEN MapWindow::hpWind;
 HPEN MapWindow::hpWindThick;
-HPEN MapWindow::hpBearing;
-HPEN MapWindow::hpBestCruiseTrack;
-HPEN MapWindow::hpCompass;
 
 HPEN MapWindow::hpThermalBand;
 HPEN MapWindow::hpThermalBandGlider;
@@ -131,11 +118,7 @@ HPEN MapWindow::hpFinalGlideBelow;
 HPEN MapWindow::hpMapScale2;
 HPEN MapWindow::hpTerrainLine;
 HPEN MapWindow::hpTerrainLineBg;
-#ifdef GTL2
-HPEN MapWindow::hpTerrainLine2Bg;
-#endif
 HPEN MapWindow::hpStartFinishThick;
-HPEN MapWindow::hpStartFinishThin;
 HPEN MapWindow::hpVisualGlideLightBlack; // VENTA3
 HPEN MapWindow::hpVisualGlideHeavyBlack; // VENTA3
 HPEN MapWindow::hpVisualGlideLightRed; // VENTA3

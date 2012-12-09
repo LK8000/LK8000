@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "LKObjects.h"
 
 void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   int i;
@@ -29,8 +29,8 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
     tsize.cx = tsize.cx/2;
   }
 
-  hpOld = (HPEN)SelectObject(hdc, hpWind);
-  hbOld = (HBRUSH)SelectObject(hdc, hbWind);
+  hpOld = (HPEN)SelectObject(hdc, LKPen_Black_N2);
+  hbOld = (HBRUSH)SelectObject(hdc, LKBrush_Grey);
   
   int wmag = iround(4.0*DerivedDrawInfo.WindSpeed);
   

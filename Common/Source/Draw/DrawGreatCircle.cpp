@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Terrain.h"
+#include "LKObjects.h"
 
 //
 // Draw bearing line to target
@@ -15,7 +16,7 @@
 void MapWindow::DrawGreatCircle(HDC hdc, double startLon, double startLat, double targetLon, double targetLat,
 				const RECT rc) {
 
-  HPEN hpOld = (HPEN)SelectObject(hdc, hpBearing);
+  HPEN hpOld = (HPEN)SelectObject(hdc, LKPen_GABRG);
   POINT pt[2];
 
   LatLon2Screen(startLon, startLat, pt[0]);
