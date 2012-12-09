@@ -16,7 +16,6 @@
 #include "McReady.h"
 
 extern bool Sonar_IsEnabled;
-extern bool ActiveMap_IsEnabled;
 extern TCHAR Sideview_szNearAS[];
 
 
@@ -115,7 +114,7 @@ void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
 		//
 		if (Current_Multimap_TopRect.bottom==0) return;
 		_stprintf(topright_txt, MsgToken(2231));
-		if(ActiveMap_IsEnabled) {
+		if(ActiveMap) {
 			if (flip)
 				wcolor=MMCOLOR_ENABLED_FLIP;
 			else

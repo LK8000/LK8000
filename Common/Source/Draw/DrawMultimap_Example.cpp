@@ -81,7 +81,7 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		// NOT AVAILABLE IN SHARED MULTIMAPS
 		//
 		// This is triggered when a click was detected not part of anything else.
-		// OR, if you have ActiveMap_IsEnabled, anywhere, since UP and DOWN are disabled.
+		// OR, if you have ActiveMap enabled, anywhere, since UP and DOWN are disabled.
 		// Even in this last case, TOPRIGHT, TOPLEFT are managed all the way and SHORTCLICK 
 		// will not be sent.
 		_stprintf(ttext,_T("Event = SHORT CLICK"));

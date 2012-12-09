@@ -22,12 +22,6 @@ extern bool IsMultimapConfigShown;
 
 extern bool Sonar_IsEnabled;
 
-// Active map can be triggered only for a mapspace run. Changing mapspace will
-// disable active map automatically. Entering a mapspace will make active map off.
-bool ActiveMap_IsEnabled = false;
-
-
-
 
 void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 {
@@ -47,8 +41,8 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 	// USABLE EVENTS
 	// 
 	case LKEVENT_NEWRUN:
-		// Upon entering a new multimap, Active is reset.
-		ActiveMap_IsEnabled=false;
+		// Upon entering a new multimap, Active is forced reset. It should not be necessary
+		ActiveMap=false;
 		break;
 
 	case LKEVENT_TOPLEFT:
@@ -68,9 +62,9 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 		}
 		// ACTIVE is available only when there is a topview shown!
 		if ( (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT) && (Current_Multimap_TopRect.bottom>0)) {
-			ActiveMap_IsEnabled = !ActiveMap_IsEnabled;
+			ActiveMap = !ActiveMap;
 			if (EnableSoundModes) {
-				if (ActiveMap_IsEnabled)
+				if (ActiveMap)
 					LKSound(TEXT("LK_TONEUP.WAV"));
 				else
 					LKSound(TEXT("LK_TONEDOWN.WAV"));
@@ -85,7 +79,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   //
   // If the map is active in the proper mapspace, we shall manage here the action
   //
-  if (LKevent==LKEVENT_SHORTCLICK && ActiveMap_IsEnabled && (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT)) {
+  if (LKevent==LKEVENT_SHORTCLICK && ActiveMap && (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT)) {
 		//
 		// It would be a GOOD IDEA to keep this as a global, updated of course.
 		// We need to know very often how is the screen splitted, and where!
@@ -96,7 +90,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 			SideviewScreen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
 			MapWindow::Event_NearestWaypointDetails(Xstart, Ystart, 1.0e5, false);
 			LKevent=LKEVENT_NONE;
-			ActiveMap_IsEnabled=false;
+			ActiveMap=false;
 			return;
 		}
   }

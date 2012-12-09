@@ -20,7 +20,6 @@ extern double fOffset;
 extern COLORREF  Sideview_TextColor;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern int Sideview_iNoHandeldSpaces;
-extern bool ActiveMap_IsEnabled;
 extern int XstartScreen, YstartScreen;
 
 

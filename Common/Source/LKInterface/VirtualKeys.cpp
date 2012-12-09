@@ -19,7 +19,6 @@
 void BottomSounds();
 
 long VKtime=0;
-extern bool ActiveMap_IsEnabled;
 
 // vkmode 0=normal 1=gesture up 2=gesture down
 // however we consider a down as up, and viceversa
@@ -496,7 +495,7 @@ gesture_left:
 		}
 	}
 
-	if (!MapWindow::mode.AnyPan() && IsMultiMap() && ActiveMap_IsEnabled) {
+	if (!MapWindow::mode.AnyPan() && IsMultiMapNoMain() && ActiveMap) {
 		LKevent=LKEVENT_SHORTCLICK;
 		MapWindow::RefreshMap();
 		return 0;
