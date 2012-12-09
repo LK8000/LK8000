@@ -29,12 +29,6 @@ int Sideview_iNoHandeldSpaces=0;
 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 
-void ToggleMMNorthUp(int iPage)
-{
-//  SetMMNorthUp(iPage, !GetMMNorthUp(iPage));
-
-}
-
 
 void SetMMNorthUp( int iPage, int  iVal)
 {
@@ -91,6 +85,8 @@ int oldPage = Sideview_asp_heading_task;
 return oldPage;
 }
 
+
+#if 0 // UNUSED
 void DrawTelescope(HDC hdc, double fAngle, int x, int y)
 {
 	POINT Telescope[17] = {
@@ -143,47 +139,9 @@ Polygon(hdc,Telescope,17);
 SelectObject(hdc, oldBrush);
 SelectObject(hdc, oldBPen);
 }
+#endif // UNUSED DrawTelescope
 
 
-
-//
-// We could use DrawCompass easily after adding a displayangle parameter there.
-// This is the exact copy of it, with no optimization.
-//
-void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
-{
-BOOL bInvCol = true ; //INVERTCOLORS
-  // Draw north arrow
-  POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
-//  DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
-  PolygonRotateShift(Arrow, 5, x, y, AngleLimit360( -fAngle));
-
-  HPEN	oldBPen ;
-  HBRUSH oldBrush ;
-  oldBPen= (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
-  if(bInvCol)
-	  oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-	  //oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-  else
-	  oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-	  //oldBrush = (HBRUSH) SelectObject(hdc, LKBrush_White);
-  Polygon(hdc,Arrow,5);
-
-  if(bInvCol)
-	SelectObject(hdc, GetStockObject(WHITE_PEN));
-	//SelectObject(hdc, LKPen_White_N1);
-
-  else
-	SelectObject(hdc, GetStockObject(BLACK_PEN));
-	//SelectObject(hdc, LKPen_Black_N1);
-
-
-  Polygon(hdc,Arrow,5);
-
-  SelectObject(hdc, oldBrush);
-  SelectObject(hdc, oldBPen);
-
-}
 
 void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y)
 {
@@ -259,7 +217,7 @@ RECT rci = rc;
 }
 
 
-
+#if 0 // UNUSED RenderBearingDiff
 void RenderBearingDiff(HDC hdc,double brg, DiagrammStruct* psDia )
 {
 RECT rc	= psDia->rc;
@@ -327,6 +285,8 @@ RECT rc	= psDia->rc;
 	ExtTextOut(hdc, x-tsize.cx/2, y, ETO_OPAQUE, NULL, szOvtname, _tcslen(szOvtname), NULL);
   }
 }
+#endif // UNUSED RenderBearingDiff
+
 
 
 // draw aircraft
@@ -437,7 +397,7 @@ RECT rc =	psDia->rc;
   else
 */
   {
-	oldPen   = (HPEN) SelectObject(hdc, GetStockObject(BLACK_PEN));
+    oldPen   = (HPEN) SelectObject(hdc, GetStockObject(BLACK_PEN));
     oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   }
 
@@ -550,7 +510,6 @@ green = (int)(fBrightFact * (double)green); if(green > 255)  green = 255;
 COLORREF  result = RGB((BYTE)red,(BYTE)green,(BYTE) blue);
 return(result);
 
-//return(RGB(red,green,blue));
 }
 
 COLORREF MixColors(COLORREF Color1, COLORREF Color2, double fFact1)
@@ -571,7 +530,6 @@ int  blue   = (int)(fFact1 * (double)blue1  + fFact2 * (double)blue2 ); if(blue 
 COLORREF  result = RGB((BYTE)red,(BYTE)green,(BYTE) blue);
 return(result);
 
-//return(RGB(red,green,blue));
 }
 
 
@@ -684,26 +642,23 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 
 
 
-//GEXTERN bool ActiveMap;
 int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing, bool bShowHeadUp)
 {
-//fAS_Bearing+=3.0;
 int iOldDisplayOrientation =  DisplayOrientation;
 DiagrammStruct m_Dia =	*psDia;
 RECT rct = m_Dia.rc;
-DisplayOrientation = GetMMNorthUp(GetSideviewPage());
-switch(GetMMNorthUp(GetSideviewPage()))
+
+unsigned short getsideviewpage=GetSideviewPage();
+LKASSERT(getsideviewpage<3);
+
+DisplayOrientation = GetMMNorthUp(getsideviewpage);
+switch(GetMMNorthUp(getsideviewpage))
 {
    case TRACKUP:
    break;
 
    case NORTHUP:
    default:
-/*
-	if((rct.bottom-rct.top) > 0)
-	  if((rct.right - rct.left) >0)
-	    m_Dia.fXMax *=  (double)(rct.right-rct.left) / (double)(rct.bottom-rct.top);
-*/
 	 m_Dia.fXMin = -m_Dia.fXMax;
    break;
 
@@ -712,8 +667,6 @@ switch(GetMMNorthUp(GetSideviewPage()))
 double fOldScale  =  zoom.Scale();
 HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 
-//bool OldAM = ActiveMap;
-//ActiveMap = true ;
 if(zoom.AutoZoom())
   zoom.AutoZoom(false);
 double fFact = 1.0 ;
@@ -747,7 +700,7 @@ double fFact = 1.0 ;
    PanLatitude  = DrawInfo.Latitude;
    PanLongitude = DrawInfo.Longitude;
 
-   switch(GetMMNorthUp(GetSideviewPage()))
+   switch(GetMMNorthUp(getsideviewpage))
    {
       case TRACKUP:
     	DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
@@ -757,7 +710,7 @@ double fFact = 1.0 ;
       case NORTHUP:
       default:
     	DisplayAngle = 0;
-    	if( GetSideviewPage() == IM_HEADING)
+    	if( getsideviewpage == IM_HEADING)
     	  DisplayAircraftAngle = AngleLimit360(fAS_Bearing);
     	else
     	  DisplayAircraftAngle = AngleLimit360(DrawInfo.TrackBearing);
@@ -882,7 +835,7 @@ _nomoredeclutter:
 		DrawBearing(hdc, DrawRect);
   }
 
-  switch(GetMMNorthUp(GetSideviewPage())) {
+  switch(GetMMNorthUp(getsideviewpage)) {
 	case NORTHUP:
 	default:
 		DrawCompass( hdc,  rct, 0);
@@ -896,20 +849,13 @@ _nomoredeclutter:
   /****************************************************************************************************
    * draw vertical line
    ****************************************************************************************************/
-  /*
-  if( GetSideviewPage() == IM_NEAR_AS)
-	DrawHeadUpLine(hdc, Orig, rct, 0 ,psDia->fXMax);
-
-  if( GetSideviewPage() == IM_NEXT_WP)
-	DrawHeadUpLine(hdc, Orig, rct, 0 ,psDia->fXMax/2);
-*/
   POINT line[2];
   line[0].x = rct.left;
   line[0].y = Orig_Aircraft.y-1;
   line[1].x = rct.right;
   line[1].y = line[0].y;
 
-  switch(GetMMNorthUp(GetSideviewPage()))
+  switch(GetMMNorthUp(getsideviewpage))
   {
      case TRACKUP:
        DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
@@ -942,7 +888,6 @@ _nomoredeclutter:
    EnableThermalLocator = iOldLocator;
    DisplayOrientation = iOldDisplayOrientation;
    SelectObject(hdc, hfOld);
-   //ActiveMap = OldAM ;
  return 0;
 }
 

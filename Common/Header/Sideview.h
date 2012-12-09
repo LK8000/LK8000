@@ -80,12 +80,11 @@ int GetSideviewPage (void);
 int SetSideviewPage (int i);
 
 void DrawSelectionFrame(HDC hdc, RECT rc);
-void DrawTelescope (HDC hdc, double fAngle, int x, int y);
-void DrawNorthArrow(HDC hdc, double fAngle, int x, int y);
+//void DrawTelescope (HDC hdc, double fAngle, int x, int y);
 void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y);
 void RenderSky(HDC hdc, const RECT rc, COLORREF Col1, COLORREF Col2 , int iSteps);
 void RenderPlaneSideview(HDC hdc, double fDist, double fAltitude,double brg, DiagrammStruct* psDia );
-void RenderBearingDiff(HDC hdc, double brg, DiagrammStruct* psDia );
+//void RenderBearingDiff(HDC hdc, double brg, DiagrammStruct* psDia );
 void RenderAirspaceTerrain(HDC hdc, double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag );
 int CalcHeightCoordinat(double fHeight,   DiagrammStruct* psDia);
 int CalcHeightCoordinatOutbound(double fHeight,   DiagrammStruct* psDia);
@@ -94,7 +93,6 @@ COLORREF ChangeBrightness(long Color, double fBrightFact);
 COLORREF MixColors(COLORREF Color1, COLORREF Color2, double fFact1);
 bool PtInRect(int X,int Y, RECT rcd );
 
-void ToggleMMNorthUp(int iPage);
 void SetMMNorthUp( int iPage, int bVal);
 int GetMMNorthUp( int iPage);
 #endif
