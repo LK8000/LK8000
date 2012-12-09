@@ -627,17 +627,6 @@ if(bValid)
   hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
   //DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(11),  rct.top  + NIBLSCALE(11));
 
-  switch(GetMMNorthUp(getsideviewpage))
-  {
-	 case NORTHUP:
-	 default:
-		 DrawCompass( hdc, rct, 0);
-     break;
-
-	 case TRACKUP:
-		 DrawCompass( hdc, rct, iAS_Bearing-90);
-     break;
-  }
 
   DrawMultimap_SideTopSeparator(hdc,rct);
 
