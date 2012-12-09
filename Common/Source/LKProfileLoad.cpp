@@ -241,7 +241,6 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 	AcknowledgementTime = max(10, AcknowledgementTime);
 	return;
   }
-  PREAD(sname,svalue,szRegistryActiveMap, &ActiveMap_Config);
   PREAD(sname,svalue,szRegistryAdditionalAirspaceFile, &*szAdditionalAirspaceFile);
   PREAD(sname,svalue,szRegistryAdditionalWayPointFile, &*szAdditionalWaypointFile);
   PREAD(sname,svalue,szRegistryAircraftCategory, &AircraftCategory);

@@ -94,7 +94,6 @@ TCHAR *szRegistryAirspaceMode[] =     {  TEXT("AirspaceMode0"),
 };
 
 TCHAR szRegistryAcknowledgementTime[]=	 TEXT("AcknowledgementTime1");
-TCHAR szRegistryActiveMap[]= TEXT("ActiveMap");
 TCHAR szRegistryAdditionalAirspaceFile[]=  TEXT("AdditionalAirspaceFile");
 TCHAR szRegistryAdditionalWayPointFile[]=  TEXT("AdditionalWPFile");
 TCHAR szRegistryAircraftCategory[]= TEXT("AircraftCategory1");
@@ -356,7 +355,6 @@ extern TCHAR *szRegistryBrush[];	// 16
 extern TCHAR *szRegistryColour[];	// 16
 extern TCHAR *szRegistryDisplayType[];	// MAXINFOWINDOWS
 extern TCHAR szRegistryAcknowledgementTime[];
-extern TCHAR szRegistryActiveMap[];
 extern TCHAR szRegistryAdditionalAirspaceFile[];
 extern TCHAR szRegistryAdditionalWayPointFile[];
 extern TCHAR szRegistryAircraftCategory[];

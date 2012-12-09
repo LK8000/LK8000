@@ -80,7 +80,6 @@ void LKProfileSave(const TCHAR *szFile)
 
 
   rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
-  rprintf(szRegistryActiveMap, ActiveMap_Config);
   rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
   rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
 //  >> Moved to AircraftFile <<

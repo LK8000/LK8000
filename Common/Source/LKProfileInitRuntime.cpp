@@ -44,7 +44,6 @@ void LKProfileInitRuntime(void) {
   // Runtime from Config
   //
 
-  ActiveMap			= ActiveMap_Config;
   Appearance.InverseInfoBox	= InverseInfoBox_Config;
   AutoAdvance			= AutoAdvance_Config;
   AutoMcMode			= AutoMcMode_Config;

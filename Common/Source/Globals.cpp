@@ -226,7 +226,6 @@ void Globals_Init(void) {
   MapBox=0;
 
   ActiveMap=false;
-  ActiveMap_Config=false;
   GlideBarMode=0;
   OverlaySize=0;
   BarOpacity=255;
