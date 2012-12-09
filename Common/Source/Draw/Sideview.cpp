@@ -882,6 +882,17 @@ _nomoredeclutter:
 		DrawBearing(hdc, DrawRect);
   }
 
+  switch(GetMMNorthUp(GetSideviewPage())) {
+	case NORTHUP:
+	default:
+		DrawCompass( hdc,  rct, 0);
+		break;
+	case TRACKUP:
+		DrawCompass( hdc,  rct, DrawInfo.TrackBearing-90.0);
+		break;
+  }
+
+
   /****************************************************************************************************
    * draw vertical line
    ****************************************************************************************************/

@@ -811,7 +811,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   hfOld = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
 
-
+/*
   switch(GetMMNorthUp(getsideviewpage))
   {
 	 case NORTHUP:
@@ -823,6 +823,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 		 DrawCompass( hdc,  rct, acb-90.0);
      break;
   }
+*/
 
   DrawMultimap_SideTopSeparator(hdc,rct);
 
