@@ -74,10 +74,16 @@ COLORREF RED_COL       = RGB_LIGHTORANGE;
 COLORREF BLUE_COL      = RGB_BLUE;
 COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 COLORREF col           =  RGB_BLACK;
+double zoomfactor=1;
 
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 unsigned short getsideviewpage=GetSideviewPage();
 LKASSERT(getsideviewpage<3);
+
+  if ( Current_Multimap_SizeY<SIZE4 )
+	zoomfactor=ZOOMFACTOR;
+  else
+	zoomfactor=2.0;
 
 #if 0
 StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
@@ -127,7 +133,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			if(bHeightScale)
 			  fHeigtScaleFact -=  fDelta;
 			else
-			  fZOOMScale[getsideviewpage] /= ZOOMFACTOR;
+			  fZOOMScale[getsideviewpage] /= zoomfactor;
 
 			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
@@ -137,7 +143,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			if(bHeightScale)
 			  fHeigtScaleFact += fDelta;
 			else
-		  	  fZOOMScale[getsideviewpage] *= ZOOMFACTOR;
+		  	  fZOOMScale[getsideviewpage] *= zoomfactor;
 
 			if (IsMultimapTopology()) ForceVisibilityScan=true;
 			break;
@@ -355,10 +361,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if(fZOOMScale[getsideviewpage] != 1.0)
   {
     if( (fDist *fZOOMScale[getsideviewpage]) > 750000)
-	  fZOOMScale[getsideviewpage] /= ZOOMFACTOR;
+	  fZOOMScale[getsideviewpage] /= zoomfactor;
 
     if((fDist *fZOOMScale[getsideviewpage]) < 500)
-	  fZOOMScale[getsideviewpage] *= ZOOMFACTOR;
+	  fZOOMScale[getsideviewpage] *= zoomfactor;
   }
   fDist *=fZOOMScale[getsideviewpage];
 
