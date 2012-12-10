@@ -266,6 +266,7 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
   // store result
   if(distance > _resultArray[type].Distance()) {
     float score;
+    LKASSERT(_handicap>0);
     switch(type) {
     case TYPE_OLC_CLASSIC:
     case TYPE_OLC_CLASSIC_PREDICTED:
@@ -433,18 +434,41 @@ else*/
 	  }
 	}
 
+	static bool needfilling_notriangle=true;
+	static bool needfilling_yestriangle=true;
+	static double oldFAIDist=0;
+
+	if (_bFAI && (_uiFAIDist != oldFAIDist)) {
+		needfilling_yestriangle=true;
+		oldFAIDist=_uiFAIDist;
+	}
+
+
 	if(_bFAI)
 	{
+	  needfilling_notriangle=true;
 	  WayPointList[RESWP_FAIOPTIMIZED].Latitude=_pgpsClosePoint.Latitude();
 	  WayPointList[RESWP_FAIOPTIMIZED].Longitude=_pgpsClosePoint.Longitude();
 	  WayPointList[RESWP_FAIOPTIMIZED].Altitude=_pgpsClosePoint.Altitude();
-	  if (WayPointList[RESWP_FAIOPTIMIZED].Altitude==0) WayPointList[RESWP_FREEFLY].Altitude=0.001;
+	  if (WayPointList[RESWP_FAIOPTIMIZED].Altitude==0) WayPointList[RESWP_FAIOPTIMIZED].Altitude=0.001;
 	  WayPointList[RESWP_FAIOPTIMIZED].Reachable=TRUE;
 	  WayPointList[RESWP_FAIOPTIMIZED].Visible=TRUE;
+
+	#if 0 // REMOVE
 	  if(_bFAI)
+	#endif
+
+	  if(needfilling_yestriangle) {
 	    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("%-.1f %s %s"),_uiFAIDist *DISTANCEMODIFY,Units::GetDistanceName(), gettext(TEXT("_@M1816_"))); // FAI triangle closing point
+		needfilling_yestriangle=false;
+	  }
+
+	#if 0 // THIS CANNOT HAPPEN
 	  else
 		_stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("%-.1f %s %s"),fDist      *DISTANCEMODIFY,Units::GetDistanceName(), gettext(TEXT("_@M1817_"))); // JoJo closing point
+	#endif
+
+
 	}
 	else
 	{
@@ -453,7 +477,10 @@ else*/
 	  WayPointList[RESWP_FAIOPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
 	  WayPointList[RESWP_FAIOPTIMIZED].Reachable=false;
 	  WayPointList[RESWP_FAIOPTIMIZED].Visible=false;
-	  _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("no triangle closing point found!"));
+	  if (needfilling_notriangle) {
+	     _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("no triangle closing point found!"));
+	     needfilling_notriangle=false;
+          }
 	}
   }
 }
@@ -537,6 +564,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
             // check if valid FAI triangle
             if(FAITriangleEdgeCheck(dist1st, dist2nd, dist3rd)) {
               // store new result
+              LKASSERT(_handicap>0);
               float score = distance / 1000.0 * 0.3 * 100 / _handicap;
               CPointGPSArray pointArray;
               pointArray.push_back(trace.Front()->GPS());
