@@ -333,6 +333,7 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
     unsigned time = end.Time();
     if(speed) {
       time += static_cast<unsigned>(end.DistanceXYZ(start) / speed);
+      LKASSERT(CPointGPS::DAY_SECONDS!=0);
       time %= CPointGPS::DAY_SECONDS;
     }
     

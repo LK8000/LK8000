@@ -144,6 +144,7 @@ void CuSonde::findThermalHeight(unsigned short level) {
   // ti = dlevel * dti + ti0;
   // (-1.6 - ti0)/dti = dlevel;
 
+  LKASSERT(dti!=0);
   double dlevel = (TITHRESHOLD-cslevels[level].thermalIndex)/dti;
   double dthermalheight = (level+dlevel)*CUSONDE_HEIGHTSTEP;
   if (dlevel>0.0) {
@@ -184,6 +185,7 @@ void CuSonde::findCloudBase(unsigned short level) {
   // ti = dlevel * dti + ti0;
   // (-3 - ti0)/dti = dlevel;
 
+  LKASSERT(dti!=0);
   double dlevel = -(cslevels[level].tempDry-cslevels[level].dewpoint)/dti;
   double dcloudbase = (level+dlevel)*CUSONDE_HEIGHTSTEP;
   if (dlevel>0.0) {
@@ -217,7 +219,9 @@ void CuSondeLevel::updateTemps(double rh, double t)
 {
    double logEx, adewpoint;
 
+   LKASSERT((237.3+t)!=0);
    logEx=0.66077+7.5*t/(237.3+t)+(log10(rh)-2);
+   LKASSERT((0.66077+7.5-logEx)!=0);
    adewpoint = (logEx - 0.66077)*237.3/(0.66077+7.5-logEx);
  
    // update statistics 

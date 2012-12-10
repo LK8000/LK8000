@@ -341,6 +341,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
 
     // add time for climb from start height to height above start
     if (height_below_start<0) {
+      LKASSERT(mc_effective!=0);
       time_total -= height_below_start/mc_effective;
     }
     // now check time..

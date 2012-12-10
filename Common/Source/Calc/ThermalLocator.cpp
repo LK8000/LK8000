@@ -187,6 +187,7 @@ void ThermalLocator::Update_Internal(double t_0,
       slogw += points[i].iweight;
     }
   }
+  LKASSERT(slogw!=0);
   xav/= slogw;
   yav/= slogw;
 
@@ -221,6 +222,7 @@ void ThermalLocator::Update_Internal(double t_0,
 
     est_t =  t_0;
     est_latitude = est_y+latitude_0;
+    LKASSERT(fastcosine(latitude_0)!=0);
     est_longitude = est_x/fastcosine(latitude_0)+longitude_0;
     
     *Thermal_Longitude = est_longitude;

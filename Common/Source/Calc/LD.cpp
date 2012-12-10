@@ -35,8 +35,10 @@ double UpdateLD(double LD, double d, double h, double filter_factor) {
     glideangle = 1.0;
   }
   if (d!=0) {
+    LKASSERT(LD!=0);
     glideangle = LowPassFilter(1.0/LD, h/d, filter_factor);
     if (fabs(glideangle) > 1.0/INVALID_GR) {
+      LKASSERT(glideangle!=0);
       LD = LimitLD(1.0/glideangle);
     } else {
       LD = INVALID_GR;

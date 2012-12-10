@@ -55,6 +55,7 @@ bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	y0 += fastcosine(Calculated->WindBearing)*Calculated->WindSpeed;
 	// LKTARG.Heading = AngleLimit360(atan2(x0,y0)*RAD_TLK_DEG); // 101210 check
 	etas = isqrt4((unsigned long)(x0*x0*100+y0*y0*100))/10.0;
+	LKASSERT(AirDensityRatio(LKTARG.Altitude)!=0);
 	LKTARG.EIAS = etas/AirDensityRatio(LKTARG.Altitude);
    } else {
 	LKTARG.EIAS=0;

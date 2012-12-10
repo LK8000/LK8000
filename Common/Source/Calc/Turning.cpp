@@ -88,9 +88,10 @@ _forcereset:
   LastTime = Basic->Time;
 
   LKASSERT(dT!=0);
+  if (dT==0) dT=1;
   Rate = AngleLimit180(Basic->TrackBearing-LastTrack)/dT;
 
-  if (dT<2.0) {
+  if (dT<2.0 && dT!=0) {
     // time step ok
 
     // calculate acceleration

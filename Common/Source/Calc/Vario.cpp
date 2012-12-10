@@ -25,6 +25,8 @@ void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   } else {
     double Gain = Calculated->NavAltitude - LastAlt;
     double dT = (Basic->Time - LastTime);
+    LKASSERT(dT!=0);
+    if (dT==0) dT=1;
     Calculated->GPSVario = Gain / dT;
     LastAlt = Calculated->NavAltitude;
     LastTime = myTime;

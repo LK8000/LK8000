@@ -325,6 +325,7 @@ void WindAnalyser::_calcWind(NMEA_INFO *nmeaInfo,
     rthis += cmag*cmag;
   }
   rthis/= numwindsamples;
+  LKASSERT(rthis>=0);
   rthis = sqrt(rthis);
 
   int quality;
@@ -342,6 +343,9 @@ void WindAnalyser::_calcWind(NMEA_INFO *nmeaInfo,
   quality= min(quality,5);  //5 is maximum quality, make sure we honour that.
 
   Vector a;
+
+  LKASSERT(windsamples[jmax].mag!=0);
+  if (windsamples[jmax].mag==0) windsamples[jmax].mag=0.01;
 
   a.x = -mag*maxVector.x/windsamples[jmax].mag;
   a.y = -mag*maxVector.y/windsamples[jmax].mag;

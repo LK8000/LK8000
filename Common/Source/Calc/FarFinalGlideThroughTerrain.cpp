@@ -146,8 +146,8 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
       }
     } else if (dh<=0) {
       if ((dh<last_dh) && (last_dh>0)) {
-	if ( dh-last_dh==0 ) { // 091213
-		StartupStore(_T("++++++++ FarFinalGlide recovered from division by zero!%s"),NEWLINE); // 091213
+	LKASSERT((dh-last_dh)!=0);
+	if ( dh-last_dh==0 ) {
 		f = 0.0;
 	} else
         f = max(0.0,min(1.0,(-last_dh)/(dh-last_dh)));

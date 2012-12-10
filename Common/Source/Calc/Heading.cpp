@@ -10,7 +10,7 @@
 #include "DoInits.h"
 #include "Logger.h"
 #include "WindZigZag.h"
-
+#include "LKAssert.h"
 
 void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
@@ -43,6 +43,7 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     if(Basic->Time > LastTime) {
       double dT = Basic->Time - LastTime;
 
+      LKASSERT(dT!=0);
       Calculated->TurnRateWind = AngleLimit180(Calculated->Heading
                                                - lastHeading)/dT;
 
@@ -57,6 +58,7 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	mag = isqrt4((unsigned long)(x0*x0*100+y0*y0*100))/10.0;
 	Calculated->TrueAirspeedEstimated = mag;
     }
+    LKASSERT(AirDensityRatio(Calculated->NavAltitude)!=0);
     Calculated->IndicatedAirspeedEstimated = mag/AirDensityRatio(Calculated->NavAltitude);
     // estimate bank angle (assuming balanced turn)
     double angle = atan(DEG_TO_RAD*Calculated->TurnRateWind*

@@ -7,7 +7,7 @@
 */
 
 #include "ClimbAverageCalculator.h"
-
+#include "LKAssert.h"
 
 ClimbAverageCalculator::ClimbAverageCalculator(void)
 {
@@ -59,6 +59,7 @@ double ClimbAverageCalculator::GetAverage(double curTime, double curAltitude, in
   // calculate the average !
   if (bestHistory != newestValIndex)
     {
+      LKASSERT((curTime - history[bestHistory].time)!=0);
       result = (curAltitude - history[bestHistory].altitude) / (curTime - history[bestHistory].time);
     }
   
