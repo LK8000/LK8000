@@ -164,6 +164,9 @@ static  bool bHeightScale = false;
 		break;
 
 	  }
+
+	  LKASSERT(((*iSplit==SIZE0)||(*iSplit==SIZE1)||(*iSplit==SIZE2)||(*iSplit==SIZE3)||(*iSplit==SIZE4)));
+
 	  //LKevent=LKEVENT_NONE;
 
 	  // Current_Multimap_SizeY is global, and must be used by all multimaps!
@@ -193,8 +196,7 @@ static  bool bHeightScale = false;
     BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
     LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
   }
-  //LockFlightData();
-  {
+
     GPSlat = DrawInfo.Latitude;
     GPSlon = DrawInfo.Longitude;
     GPSalt = DrawInfo.Altitude;
@@ -206,9 +208,8 @@ static  bool bHeightScale = false;
     calc_altitudeagl = DerivedDrawInfo.AltitudeAGL;
     calc_average30s  = DerivedDrawInfo.Average30s;
     GPSalt =  DerivedDrawInfo.NavAltitude;
-  }
-  //UnlockFlightData();
-calc_circling = false;
+
+  calc_circling = false;
   bValid = false;
   iAS_HorDistance = 5000;
   iAS_Bearing     = (int)GPSbrg;
@@ -218,25 +219,10 @@ calc_circling = false;
     near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
     bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
   }
-//if(bValid)
-//  near_airspace.CalculateDistance(&iAS_sHorDistance,&iAS_VertDistance, &iAS_Bearing);
- // if(bLeft)
- // fAS_HorDistance = fabs(fAS_HorDistance);
-   iABS_AS_HorDistance = abs( iAS_HorDistance);
+  iABS_AS_HorDistance = abs( iAS_HorDistance);
   wpt_brg = (long)AngleLimit360(GPSbrg - iAS_Bearing + 90.0);
 
 
-//  bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const
-//  if(near_airspace.IsAltitudeInside(alt,calc_altitudeagl,0) && near_airspace.IsAltitudeInside(GPSlon,GPSlat))
-//    bAS_Inside = true;
-/*
-  int iHor,iVer,  iBear;
-   near_airspace.CalculateDistance(&iHor,&iVer, &iBear);
-
-  fAS_HorDistance = (double) iHor;
-  fAS_Bearing     = (double) iBear;
-  iAS_VertDistance= iVer;
-*/
   // Variables from ASP system here contain the following informations:
   // fAS_HorDistance - always contains horizontal distance from the asp, negative if horizontally inside (This does not mean that we're inside vertically as well!)
   // fAS_Bearing - always contains bearing to the nearest horizontal point
@@ -292,11 +278,6 @@ calc_circling = false;
 
 
 #define RND_FACT 10.0
- //  int iTmp =  (int) (sDia.fXMax / RND_FACT);
-  // sDia.fXMax = iTmp * RND_FACT;
-
-  // iTmp =  (int) (sDia.fXMin / RND_FACT);
-  // sDia.fXMin = iTmp * RND_FACT;
 
 
    if( ( sDia.fXMax  *fZOOMScale[getsideviewpage]) > 100000)
@@ -314,8 +295,6 @@ calc_circling = false;
    sDia.fXMax = sDia.fXMax *fZOOMScale[getsideviewpage];
    sDia.fXMin = -sDia.fXMax /5;
   }
- //  if(( sDia.fXMax ) < 5000)
- //    sDia.fXMin -= sDia.fXMax;
 
 
   /*********************************************************************
@@ -326,7 +305,6 @@ sDia.fYMax = max(MAXALTTODAY, GPSalt+1000);
 
 if(bValid)
 {
- // double fTop    = near_airspace.Top()->Altitude;
   double fBottom = near_airspace.Base()->Altitude;
   sDia.fYMin = min(fBottom*0.8, sDia.fYMin );
   sDia.fYMin = max(0.0, sDia.fYMin );
@@ -335,11 +313,9 @@ if(bValid)
 
   if(abs(iAS_VertDistance) < 250)
   {
-  //  if(ExternalTriggerCircling)
     sDia.fYMax =  ((int)((GPSalt+abs(iAS_VertDistance))/400) + 2) *400 ;
     sDia.fYMin =  ((int)((GPSalt-abs(iAS_VertDistance))/400) - 1) *400 ;
-    if(sDia.fYMin-MIN_ALTITUDE < 0)
-      sDia.fYMin = 0;
+    if(sDia.fYMin-MIN_ALTITUDE < 0) sDia.fYMin = 0;
   }
 
 #ifdef VERTICAL_ZOOM_50
@@ -347,8 +323,7 @@ if(bValid)
   {
     sDia.fYMax =  ((int)((GPSalt+abs(iAS_VertDistance))/100) + 2) *100 ;
     sDia.fYMin =  ((int)((GPSalt-abs(iAS_VertDistance))/100) - 1) *100 ;
-    if(sDia.fYMin-MIN_ALTITUDE < 0)
-      sDia.fYMin = 0;
+    if(sDia.fYMin-MIN_ALTITUDE < 0) sDia.fYMin = 0;
   }
 #endif
   sDia.fYMin = max((double)0.0f,(double) sDia.fYMin);
@@ -521,12 +496,10 @@ if(bValid)
    * draw side elements
    ****************************************************************************************************/
   SetTextColor(hdc, Sideview_TextColor);
- // if(!bInvCol)
   SetBkMode(hdc, OPAQUE);
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
 
-
-//  DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right  - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
+  //  DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right  - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
 
   SelectObject(hdc, hfOld2);
   SetBkMode(hdc, TRANSPARENT);
@@ -624,8 +597,6 @@ if(bValid)
   RenderPlaneSideview( hdc, 0.0 , GPSalt,wpt_brg, &sDia );
 
   hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
-  //DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(11),  rct.top  + NIBLSCALE(11));
-
 
   DrawMultimap_SideTopSeparator(hdc,rct);
 
