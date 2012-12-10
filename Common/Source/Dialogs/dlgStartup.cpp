@@ -542,7 +542,13 @@ short dlgStartupShowModal(void){
     wp->RefreshDisplay();
   }
 
-
+  extern bool CheckFilesystemWritable(void);
+  if (!CheckFilesystemWritable()) {
+	MessageBoxX(hWndMainWindow, _T("LK8000 CANNOT WRITE IN MEMORY CARD!\nCARD IS LOCKED, OR DAMAGED, OR FULL."), _T("CRITICAL PROBLEM"), MB_OK|MB_ICONQUESTION);
+	RUN_MODE=RUN_EXIT;
+	Shutdown();
+	goto _exit;
+  }
 
   if  (!CheckRootDir()) {
 	TCHAR mydir[MAX_PATH];

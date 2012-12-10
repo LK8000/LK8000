@@ -361,3 +361,22 @@ bool CheckSystemBitmaps() {
   return true;
 }
 
+bool CheckFilesystemWritable() {
+  TCHAR srcdir[MAX_PATH];
+  TCHAR srcfile[MAX_PATH];
+  LocalPath(srcdir, _T(LKD_SYSTEM));
+  _stprintf(srcfile,TEXT("%s\\EmptyTest.txt"),srcdir);
+
+  FILE *stream;
+  stream=_wfopen(srcfile,_T("a"));
+  if (stream==NULL) return false;
+  if (fprintf(stream,"FILESYSTEM WRITE CHECK, THIS FILE CAN BE REMOVED ANY TIME\n")<0) return false;
+  fclose(stream);
+  return(true);
+}
+
+
+
+
+
+
