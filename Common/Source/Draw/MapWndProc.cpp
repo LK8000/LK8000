@@ -550,7 +550,7 @@ _buttondown:
 	gestY=YstartScreen-lparam_Y;
 	gestX=XstartScreen-lparam_X;
 
-	if (  dontdrawthemap && (lparam_Y <Y_BottomBar) ) { 
+	if ( ( dontdrawthemap && (lparam_Y <Y_BottomBar)) || ((MapSpaceMode==MSM_MAP)) ) { 
 
 		gestDist=isqrt4((long)((gestX*gestX) + (gestY*gestY)));
 
@@ -731,16 +731,8 @@ goto_menu:
 	// they are processed even when virtual keys are disabled, because they concern special lk8000 menus.
 
 	// First case: for mapspacemodes we manage gestures as well
-	if (dontdrawthemap||(NOTANYPAN && IsMultiMapSharedNoMain())) {
+	if (dontdrawthemap||(NOTANYPAN && IsMultiMapShared())) {
 
-		if ( gestDir == LKGESTURE_UP) {
-			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_UP);
-			break;
-		}
-		if ( gestDir == LKGESTURE_DOWN) {
-			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_DOWN);
-			break;
-		}
 		if ( gestDir == LKGESTURE_LEFT) {
 			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_LEFT);
 			break;
@@ -750,6 +742,18 @@ goto_menu:
 			break;
 		}
 
+		// basically we do this only to process left/right gestures in main map as well
+		// In SIM mode, gestDir are not detected because we manage simulation movements
+		if (MapSpaceMode==MSM_MAP) goto _continue;
+
+		if ( gestDir == LKGESTURE_UP) {
+			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_UP);
+			break;
+		}
+		if ( gestDir == LKGESTURE_DOWN) {
+			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_DOWN);
+			break;
+		}
 
 		// We are here when lk8000, and NO moving map displayed: virtual enter, virtual up/down, or 
 		// navbox operations including center key.
@@ -766,6 +770,8 @@ goto_menu:
 		break;
 
 	}
+
+_continue:
       
 	// if clicking on navboxes, process fast virtual keys
 	// maybe check LK8000 active?
