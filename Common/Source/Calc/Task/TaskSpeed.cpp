@@ -133,6 +133,8 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     // through remaining turnpoints.  This will more correctly account
     // for wind.
 
+    LKASSERT(h0!=0);
+    if (h0==0) h0=1;
     dFinal = min(dr, d0*min(1.0,max(0.0,h1/h0)));
 
     if (Calculated->ValidFinish) {
@@ -167,6 +169,9 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     // been earned.
 
     // this will be bogus at fast starts though...
+
+    LKASSERT((t1+dc/v1+dFinal/Vfinal)!=0);
+    LKASSERT((t1+dFinal/Vfinal)!=0);
     if (v1>0) {
       v2 = (d1+dc+dFinal)/(t1+dc/v1+dFinal/Vfinal);
     } else {
@@ -215,6 +220,9 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
 
       double mc_safe = max(0.1,this_maccready);
       double Vstar = max(1.0,Calculated->VMacCready);
+
+      LKASSERT(dt!=0);
+      if (dt==0) dt=1;
       double vthis = (Calculated->LegDistanceCovered-dr_last)/dt;
       vthis /= AirDensityRatio(Calculated->NavAltitude);
       
@@ -234,6 +242,8 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       // circling percentage during cruise/climb
       double rho_cruise = max(0.0,min(1.0,mc_safe/(sr+mc_safe)));
       double rho_climb = 1.0-rho_cruise;
+      LKASSERT(mc_safe!=0);
+      if (mc_safe==0) mc_safe=0.1;
       double time_climb = height_diff/mc_safe;
 
       // calculate amount of time in cruise/climb glide
@@ -252,6 +262,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
 	}
       }
 
+      LKASSERT(mc_safe!=0);
       double w_comp = min(10.0,max(-10.0,Calculated->Vario/mc_safe));
       double vdiff = vthis/Vstar + w_comp*rho_cruise + rho_climb;
 
