@@ -2374,6 +2374,7 @@ CAirspaceList CAirspaceManager::GetAirspacesInWarning() const
 //       they have to be mapped through airspacemanager class because of the mutex
 CAirspace CAirspaceManager::GetAirspaceCopy(const CAirspace* airspace) const
 {
+  LKASSERT(airspace!=NULL);
   CCriticalSection::CGuard guard(_csairspaces);
   return *airspace;
 }
@@ -2381,6 +2382,7 @@ CAirspace CAirspaceManager::GetAirspaceCopy(const CAirspace* airspace) const
 // Calculate distances from a given airspace
 bool CAirspaceManager::AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance)
 {
+  LKASSERT(airspace!=NULL);
   CCriticalSection::CGuard guard(_csairspaces);
   return airspace->CalculateDistance(hDistance, Bearing, vDistance);
 }
