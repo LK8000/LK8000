@@ -181,7 +181,7 @@ void LKSimulator(void) {
 	// Update altitude with the lift or sink, 
 	ALTITUDE+=simlift;
 	// Update the new altitude with the natural sink, but not going lower than 0
-	ALTITUDE-=(sinkias+0.1); // rounding errors require a correction
+	ALTITUDE-=sinkias;
 	if (ALTITUDE<=0) ALTITUDE=0;
 
 	#if SIMLANDING
@@ -238,7 +238,7 @@ void LKSimulator(void) {
 
 
   FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
-                          GPS_INFO.TrackBearing, GPS_INFO.Speed*1.0,
+                          GPS_INFO.TrackBearing, ((int)IASMS)*1.0,
                           &GPS_INFO.Latitude,
                           &GPS_INFO.Longitude);
   GPS_INFO.Time+= 1.0;
