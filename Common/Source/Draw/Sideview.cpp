@@ -839,10 +839,13 @@ _nomoredeclutter:
 	case NORTHUP:
 	default:
 		DrawCompass( hdc,  rct, 0);
-		break;
+	break;
 	case TRACKUP:
-		DrawCompass( hdc,  rct, DrawInfo.TrackBearing-90.0);
-		break;
+		if(getsideviewpage ==  IM_HEADING)
+		  DrawCompass( hdc,  rct, DrawInfo.TrackBearing-90.0);
+		else
+		  DrawCompass( hdc,  rct, DisplayAngle);
+	break;
   }
 
 
