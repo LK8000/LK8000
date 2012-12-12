@@ -12,6 +12,7 @@
 //#include "LKProfiles.h"
 #include "dlgTools.h"
 
+//#define DEBUG_LOGGER	1
 
 #define LOGGER_MANUFACTURER	"XLK"
 
@@ -98,7 +99,7 @@ void StopLogger(void) {
     LoggerActive = false;
     if (LoggerClearFreeSpace()) {
 
-    #if TESTBENCH
+    #if (TESTBENCH && DEBUG_LOGGER)
     if (LoggerGActive())
     #else
     if (!SIMMODE && LoggerGActive())
@@ -348,7 +349,7 @@ void LogPoint(double Latitude, double Longitude, double Altitude,
 bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second, bool bAlways)
 { // bAlways forces write when completing header for restart
   // only writes record if constallation has changed unless bAlways set
-  #if TESTBENCH
+  #if (TESTBENCH && DEBUG_LOGGER)
   #else
   if (SIMMODE) return true;
   #endif
@@ -1157,7 +1158,7 @@ bool IGCWriteRecord(char *szIn)
 bool LoggerGActive()
 {
   #if (WINDOWSPC>0)
-    #if TESTBENCH
+    #if (TESTBENCH && DEBUG_LOGGER)
     return true;	// THIS IS ONLY for checking Grecord new stuff under testbench
     #else
     return false;
