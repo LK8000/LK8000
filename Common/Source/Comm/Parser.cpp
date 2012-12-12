@@ -243,7 +243,6 @@ BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   #if LOGFRECORD
   int iSatelliteCount =0;
 
-  GSAAvailable = TRUE;
   if (!activeGPS) return TRUE;
 
   // satellites are in items 4-15 of GSA string (4-15 is 1-indexed)

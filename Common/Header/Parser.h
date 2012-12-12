@@ -188,7 +188,6 @@ class NMEAParser {
 			       int DesiredFieldNumber);
 
  private:
-  BOOL GSAAvailable;
   BOOL GGAAvailable;
   BOOL RMZAvailable;
   BOOL RMAAvailable;
