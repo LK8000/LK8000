@@ -62,8 +62,11 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   } 
   if(Basic->Time >= LastTime+1.0)
     {
-      double DistanceFlown;
-      DistanceBearing(Basic->Latitude, Basic->Longitude, 
+      double DistanceFlown=0;
+
+      // 121212 do not insert LD with a distance from the north pole..
+      if (LastLat!=0)
+          DistanceBearing(Basic->Latitude, Basic->Longitude, 
                       LastLat, LastLon,
                       &DistanceFlown, NULL);
 
@@ -71,7 +74,7 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                                 DistanceFlown,
                                 LastAlt - Calculated->NavAltitude, 0.1);
 
-      InsertLDRotary(&rotaryLD,(int)DistanceFlown, Basic, Calculated);
+      if (LastLat!=0) InsertLDRotary(&rotaryLD,(int)DistanceFlown, Basic, Calculated);
       InsertWindRotary(&rotaryWind, Basic->Speed, Basic->TrackBearing, Calculated->NavAltitude); // 100103
       if (ISCAR) {
          if (DistanceFlown<300) Calculated->Odometer += DistanceFlown;

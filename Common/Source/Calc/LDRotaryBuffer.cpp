@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "McReady.h"
 
+//#define DEBUG_ROTARY 1
 
 bool InitLDRotary(ldrotary_s *buf) {
 short i, bsize;
@@ -158,8 +159,13 @@ _noautoreset:
                 buf->totalias += (int)Basic->IndicatedAirspeed;
                 buf->ias[buf->start] = (int)Basic->IndicatedAirspeed;
 	} else {
-                buf->totalias += (int)Calculated->IndicatedAirspeedEstimated;
-                buf->ias[buf->start] = (int)Calculated->IndicatedAirspeedEstimated;
+		if (ISCAR) {
+			buf->totalias += (int)Basic->Speed;
+			buf->ias[buf->start] = (int)Basic->Speed;
+		} else {
+			buf->totalias += (int)Calculated->IndicatedAirspeedEstimated;
+			buf->ias[buf->start] = (int)Calculated->IndicatedAirspeedEstimated;
+		}
 	}
 	buf->altitude[buf->start]=(int)Calculated->NavAltitude;
 #ifdef DEBUG_ROTARY
@@ -240,7 +246,8 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 		averias = bc.totalias/bc.size;
 
 		if (ISCAR) {
-			Rotary_Speed=averias*AirDensityRatio(Calculated->NavAltitude);
+			//Rotary_Speed=averias*AirDensityRatio(Calculated->NavAltitude);
+			Rotary_Speed=averias;
 		}
 		// According to Welch & Irving, suggested by Dave..
 		// MC = Vso*[ (V/Vo)^3 - (Vo/V)]
@@ -277,14 +284,14 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 		#endif
 	}
 
+	Rotary_Distance=bc.totaldistance;
 	if (altdiff == 0 ) {
 		return(INVALID_GR); // infinitum
 	}
 	eff= (double)bc.totaldistance / (double)altdiff;
-	Rotary_Distance=bc.totaldistance;
 
 #ifdef DEBUG_ROTARY
-	sprintf(ventabuffer,"bcstart=%d bcold=%d altnew=%d altold=%d altdiff=%d totaldistance=%d eff=%d\r\n",
+	sprintf(ventabuffer,"bcstart=%d bcold=%d altnew=%d altold=%d altdiff=%d totaldistance=%d eff=%f\r\n",
 		bc.start, bcold,
 		bc.altitude[bc.start], bc.altitude[bcold], altdiff, bc.totaldistance, eff);
 	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
