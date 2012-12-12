@@ -12,7 +12,7 @@
 //#include "LKProfiles.h"
 #include "dlgTools.h"
 
-//#define DEBUG_LOGGER	1
+// #define DEBUG_LOGGER	1
 
 #define LOGGER_MANUFACTURER	"XLK"
 
@@ -43,9 +43,12 @@ static TCHAR szLoggerFileName[MAX_PATH+1] = TEXT("\0");	 // LOGGER_TMP.IGC
 static TCHAR szFLoggerFileName[MAX_PATH+1] = TEXT("\0"); // final IGC name
 static TCHAR szSLoggerFileName[MAX_PATH+1] = TEXT("\0"); // LOGGER_SIG.IGC
 static TCHAR szFLoggerFileNameRoot[MAX_PATH+1] = TEXT("\0");
+#if LOGFRECORD
 static double FRecordLastTime = 0;
 static char szLastFRecord[MAX_IGC_BUFF];
+#endif
 
+#if LOGFRECORD
 void SetFRecordLastTime(double dTime)
 { FRecordLastTime=dTime; }
 
@@ -62,6 +65,7 @@ void ResetFRecord(void)
   SetFRecordLastTime(0);
   ResetFRecord_Internal();
 }
+#endif
 
 int EW_count = 0;
 int NumLoggerBuffered = 0;
@@ -79,7 +83,9 @@ typedef struct LoggerBuffer {
   short Hour;
   short Minute;
   short Second;
+  #if LOGFRECORD
   int SatelliteIDs[MAXSATELLITES];
+  #endif
 } LoggerBuffer_T;
 
 LoggerBuffer_T FirstPoint;
@@ -236,11 +242,15 @@ void StopLogger(void) {
 }
 
 // BaroAltitude should NOT be compensated for QNH. It should be a QNE altitude.
-// Untils those people at IGC will not write more clearly their loggers specs, this confusion will persist.
 // In our case, we should save BaroAltitude incoming, referred to 1013.25mb , here, BEFORE we change it to QNH.
+#if LOGFRECORD
 void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
                       double BaroAltitude, short Hour, short Minute, short Second,
                       int SatelliteIDs[]) {
+#else
+void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
+                      double BaroAltitude, short Hour, short Minute, short Second) {
+#endif
 
   if (NumLoggerBuffered== MAX_LOGGER_BUFFER) {
     for (int i= 0; i< NumLoggerBuffered-1; i++) {
@@ -260,8 +270,10 @@ void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
   LoggerBuffer[NumLoggerBuffered-1].Month = GPS_INFO.Month;
   LoggerBuffer[NumLoggerBuffered-1].Day = GPS_INFO.Day;
 
+  #if LOGFRECORD
   for (int iSat=0; iSat < MAXSATELLITES; iSat++)
     LoggerBuffer[NumLoggerBuffered-1].SatelliteIDs[iSat]=SatelliteIDs[iSat];
+  #endif
 
   // This is the first point that will be output to file.
   // Declaration must happen before this, so must save this time.
@@ -317,17 +329,23 @@ void LogPoint(double Latitude, double Longitude, double Altitude,
               double BaroAltitude) {
   if (!LoggerActive) {
     if (!GPS_INFO.NAVWarning) {
+      #if LOGFRECORD
       LogPointToBuffer(Latitude, Longitude, Altitude, BaroAltitude,
                        GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second,
                        GPS_INFO.SatelliteIDs);
+      #else
+      LogPointToBuffer(Latitude, Longitude, Altitude, BaroAltitude, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+      #endif
     }
   } else if (NumLoggerBuffered && !GPS_INFO.NAVWarning) { 
 
+    #if LOGFRECORD
     LogFRecordToFile(LoggerBuffer[0].SatelliteIDs,  // write FRec before cached BRecs
                    LoggerBuffer[0].Hour,
                    LoggerBuffer[0].Minute,
                    LoggerBuffer[0].Second,
                    true);
+    #endif
 
     for (int i=0; i<NumLoggerBuffered; i++) {
       LogPointToFile(LoggerBuffer[i].Latitude,
@@ -346,6 +364,8 @@ void LogPoint(double Latitude, double Longitude, double Altitude,
   }
 }
 
+
+#if LOGFRECORD
 bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second, bool bAlways)
 { // bAlways forces write when completing header for restart
   // only writes record if constallation has changed unless bAlways set
@@ -426,6 +446,7 @@ bool LogFRecord(int SatelliteIDs[], bool bAlways )
   else
     return false;  // track whether we succussfully write it, else we retry
 }
+#endif // LOGFRECORD
 
 bool IsAlphaNum (TCHAR c) {
   if (((c >= _T('A'))&&(c <= _T('Z')))

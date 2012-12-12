@@ -35,7 +35,10 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double dtLog = 5.0;
   double dtSnail = 2.0;
   double dtStats = 60.0;
+
+  #if LOGFRECORD
   double dtFRecord = 270; // 4.5 minutes (required minimum every 5)
+  #endif
 
   if (DoInit[MDI_CALCLOGGING]) {
 	SnailLastTime=0;
@@ -61,9 +64,11 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if(Basic->Time <= StatsLastTime) {
     StatsLastTime = Basic->Time;
   }
+  #if LOGFRECORD
   if(Basic->Time <= GetFRecordLastTime()) {
     SetFRecordLastTime(Basic->Time);
   }
+  #endif
 
   // draw snail points more often in circling mode
   if (Calculated->Circling) {
@@ -150,6 +155,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (FastLogNum) FastLogNum--;
   } // time has advanced enough: >=dtLog
 
+  #if LOGFRECORD
   if (Basic->Time - GetFRecordLastTime() >= dtFRecord) 
   { 
     if (LogFRecord(Basic->SatelliteIDs,false))
@@ -161,6 +167,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         SetFRecordLastTime(Basic->Time-dtFRecord);
     }
   }
+  #endif
 
   // 120812 For car/trekking mode, log snailpoint only if at least 5m were made in the dtSnail time
   if (ISCAR) {

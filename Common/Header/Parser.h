@@ -133,7 +133,9 @@ typedef struct _NMEA_INFO
   bool FLARMTRACE_bBuffFull;
   int  FLARMTRACE_iLastPtr;
 
+  #if LOGFRECORD
   int SatelliteIDs[MAXSATELLITES];
+  #endif
 
   double SupplyBatteryVoltage;
 

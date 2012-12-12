@@ -239,6 +239,8 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
 
 BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+
+  #if LOGFRECORD
   int iSatelliteCount =0;
 
   GSAAvailable = TRUE;
@@ -255,6 +257,9 @@ BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
     }
   }
   return TRUE;
+  #else
+  return TRUE;
+  #endif
 }
 
 // we need to parse GLL as well because it can mark the start of a new quantum data

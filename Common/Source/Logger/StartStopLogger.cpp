@@ -71,7 +71,9 @@ void guiStartLogger(bool noAsk) {
 				}
 				EndDeclaration();
 				LoggerActive = true; // start logger now
+				#if LOGFRECORD
 				ResetFRecord(); // reset timer & lastRecord string so if logger is restarted, FRec appears at top of file
+				#endif
 		} else {
 
 	// LKTOKEN  _@M408_ = "Logger inactive, insufficient storage!" 
