@@ -1197,12 +1197,19 @@ goto_bearing:
 				else
 					if (value > 180.0) value -= 360.0;
 
-				if (value > 1)
-					_stprintf(BufferValue, TEXT("%2.0f°»"), value);
-				else if (value < -1)
-					_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
-					else
-						_tcscpy(BufferValue, TEXT("«»"));
+	              if (value > 30)
+	                _stprintf(BufferValue, TEXT("%2.0f°»"), value);
+	              else
+	                if (value > 2)
+	                  _stprintf(BufferValue, TEXT("%2.0f°›"), value);
+	                else
+	                  if (value < -30)
+	                    _stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+	                  else
+	                    if (value < -2)
+	                      _stprintf(BufferValue, TEXT("‹%2.0f°"),- value);
+	                    else
+	                      _stprintf(BufferValue, TEXT("«»"));
 			}
 			break;
 
@@ -2435,12 +2442,19 @@ lkfin_ete:
 						else
 							if (value > 180.0)
 								value -= 360.0;
-						if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f°»"), value);
-						else if (value < -1)
-						_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
-						else
-							_tcscpy(BufferValue, TEXT("«»"));
+			              if (value > 30)
+			                _stprintf(BufferValue, TEXT("%2.0f°»"), value);
+			              else
+			                if (value > 2)
+			                  _stprintf(BufferValue, TEXT("%2.0f°›"), value);
+			                else
+			                  if (value < -30)
+			                    _stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+			                  else
+			                    if (value < -2)
+			                      _stprintf(BufferValue, TEXT("‹%2.0f°"),- value);
+			                    else
+			                      _stprintf(BufferValue, TEXT("«»"));
 				}
 			}
 			wsprintf(BufferUnit, TEXT(""));
@@ -2794,12 +2808,19 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
 		else
 			if (value > 180.0)
 				value -= 360.0;
-		if (value > 1)
-			_stprintf(BufferValue, TEXT("%2.0f°»"), value);
-		else if (value < -1)
-			_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
-		else
-			_tcscpy(BufferValue, TEXT("«»"));
+        if (value > 30)
+          _stprintf(BufferValue, TEXT("%2.0f°»"), value);
+        else
+          if (value > 2)
+            _stprintf(BufferValue, TEXT("%2.0f°›"), value);
+          else
+            if (value < -30)
+              _stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+            else
+              if (value < -2)
+                _stprintf(BufferValue, TEXT("‹%2.0f°"),- value);
+              else
+                _stprintf(BufferValue, TEXT("«»"));
 	} else {
 		// while circling, print simple bearing
 		value = WayPointCalc[index].Bearing;
