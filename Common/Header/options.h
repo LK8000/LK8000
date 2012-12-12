@@ -121,6 +121,9 @@
 // Fix SETFOCUS problem 
 #define FIXFOCUS	1
 
+// Use F Record in IGC log files- not needed really
+// #define LOGFRECORD	1
+
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
  *
