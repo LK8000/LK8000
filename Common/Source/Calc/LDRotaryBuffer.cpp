@@ -156,15 +156,15 @@ _noautoreset:
 	buf->distance[buf->start]=distance;
 	// insert IAS in the rotary buffer, either real or estimated
 	if (Basic->AirspeedAvailable) {
-                buf->totalias += (int)Basic->IndicatedAirspeed;
-                buf->ias[buf->start] = (int)Basic->IndicatedAirspeed;
+                buf->totalias += (int)(Basic->IndicatedAirspeed*100);
+                buf->ias[buf->start] = (int)(Basic->IndicatedAirspeed*100);
 	} else {
 		if (ISCAR) {
-			buf->totalias += (int)Basic->Speed;
-			buf->ias[buf->start] = (int)Basic->Speed;
+			buf->totalias += (int)(Basic->Speed*100);
+			buf->ias[buf->start] = (int)(Basic->Speed*100);
 		} else {
-			buf->totalias += (int)Calculated->IndicatedAirspeedEstimated;
-			buf->ias[buf->start] = (int)Calculated->IndicatedAirspeedEstimated;
+			buf->totalias += (int)(Calculated->IndicatedAirspeedEstimated*100);
+			buf->ias[buf->start] = (int)(Calculated->IndicatedAirspeedEstimated*100);
 		}
 	}
 	buf->altitude[buf->start]=(int)Calculated->NavAltitude;
@@ -244,9 +244,9 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 	// bcsize<=0  should NOT happen, but we check it for safety
 	if ( (bc.valid == true) && bc.size>0 ) {
 		averias = bc.totalias/bc.size;
+		averias/=100;
 
 		if (ISCAR) {
-			//Rotary_Speed=averias*AirDensityRatio(Calculated->NavAltitude);
 			Rotary_Speed=averias;
 		}
 		// According to Welch & Irving, suggested by Dave..
