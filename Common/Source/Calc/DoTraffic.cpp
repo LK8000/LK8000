@@ -15,6 +15,11 @@
 // Running every n seconds ONLY when the nearest page is active and we are not drawing map.
 // We DONT use FLARM_Traffic after we copy inside LKTraffic!!
 // Returns true if did calculations, false if ok to use old values
+//
+// 121213 I realised that all calculations made in local copy, so we dont need to use LKTraffic at all.
+// However, no time for v4 right now to fix this waste of memory, not too much indeed.
+// But at least we dont need to lock!
+
 bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
    int i,k,l;
@@ -57,9 +62,10 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    #ifdef DEBUG_LKT
    StartupStore(_T("... DoTraffic Copy LKTraffic and reset LKSortedTraffic\n"));
    #endif
-   LockFlightData();
+   // No Need to lock, we are copying the drawinfo..copy of the real Basic.
+   //LockFlightData();
    memcpy(LKTraffic, Basic->FLARM_Traffic, sizeof(LKTraffic));
-   UnlockFlightData();
+   //UnlockFlightData();
 
    memset(LKSortedTraffic, -1, sizeof(LKSortedTraffic));
    memset(sortedValue, -1, sizeof(sortedValue));
