@@ -220,6 +220,66 @@ New Takeoff safety alarm (configuration menu Alarms)
    The takeoff safety sound will be armed again only after landing, and be automatically 
    in use again for the next takeoff.
 
+
+LK8000 VERSION 3.1k 121214
+==========================
+
+NEW THINGS
+
+. New bearing diff indicator
+
+. Draw Map Scale on topview when fullscreen in M1 and M2.
+
+. Blink ACT overlay near to mapscale when ActiveMap is enabled
+
+. Add startup check for SD card locked or full, not writable.
+
+
+
+CHANGES
+
+ Disable ActiveMap button from any page different from M0 M1 M2
+
+ Change in ActiveMap function: after selecting an object, or changing page, it is automatically disabled.
+ Flashing text is alerting pilot that active map is enabled for direct screen selection.
+
+ In fullscreen topview in M1 and M2, make zoom performing at 2x instead of 1.3x speed.
+
+ Logger not saving F record for satellites anymore
+
+
+FIXES
+
+ Fix critical bug leading to crashes during contest optimization calculations.
+
+ Fix critical bug in 3.1 FlarmRadar loading FlarmNet database showing FlarmRadar may crash LK
+
+ Fix 3.1i thermal circle all white, missing thin black borders
+
+ Fix 3.1j bug setting FREEFLIGHT altitude to 0.
+
+ Fix gestures not working correctly for left/right in main map.
+ Only ungestures were detected. Bug found by Bo.
+
+ Fix North arrow for MM2 and MM3
+ The north arrow orientation in MM2 and MM3 was relative to the aircraft wichi was OK for 
+ sideview only and for MM1.
+ But since we have a topview map, we must show the north arrow relative to the map orientation.
+
+ Fix simulator minibug, showing a netto of -1 m/s constantly.
+ LD is now correct for the current polar.
+
+ Fix ISCAR mode averages . eIAS was no more calculated.
+
+ Fix accuracy of average speed. Previously using a rounded integer not considering the too large error.
+ eqMC should be better too.
+
+ Fix bug in Flarm radar, when selecting a plane in sideview, the sideview window was highlighted.
+
+ Fix artifacts appearing on HP31x and other PNAs , showing strange lines on screen while drawing FAI sectors.
+
+
+
 LK8000 VERSION 3.1j 121208
 ==========================
 
