@@ -58,7 +58,7 @@ typedef struct
 	double fAlt;
 	double fFlarmBearing;
 	int iColorIdx;
-	TCHAR szGliderType[20];
+	TCHAR szGliderType[FLARMID_SIZE_NAME+1];
 } sFlarmPositions;
 static sFlarmPositions asFLRAMPos[FLARM_MAX_TRAFFIC+1];
 
@@ -1082,9 +1082,9 @@ RECT rcc = rct;
 		FlarmId* flarmId = file->GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
 
 		if(flarmId!= NULL)
-		  _tcscat(asFLRAMPos[i].szGliderType,flarmId->type);
+		  LK_tcsncpy(asFLRAMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);
 
-	  	int iCnt= 19;
+	  	int iCnt= FLARMID_SIZE_NAME;
 	    while ((asFLRAMPos[i].szGliderType[iCnt] ==_T(' ')) && (iCnt > 0))
 		  asFLRAMPos[i].szGliderType[iCnt--]= 0;
 
