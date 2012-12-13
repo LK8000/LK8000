@@ -195,10 +195,8 @@ BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready){
 TCHAR  szTmp[254];
 if(bValid == false)
   return false;
-if(BUGS <= 0.9)
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%3.1f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,(1.0+BALLAST),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
-else
- _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,0%3.1f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,(1.0+BALLAST),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+
+  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,(1.0+BALLAST),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
   LX16xxNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
@@ -213,12 +211,8 @@ TCHAR  szTmp[254];
 if(bValid == false)
   return false;
 
-//int iBal = (int) (Ballast*10.0);
- //Ballast = (double) iBal;
-if(BUGS <= 0.9)
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%3.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,(1.0+Ballast),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
-else
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,0%3.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,(1.0+Ballast),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+
+  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,(1.0+Ballast),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
  LX16xxNMEAddCheckSumStrg(szTmp);
  d->Com->WriteString(szTmp);
@@ -236,13 +230,11 @@ TCHAR  szTmp[254];
 if(bValid == false)
   return false;
 
+  if(Bugs < 0.7)
+    Bugs = 0.7;
 
-    if(Bugs < 0.7)
-      Bugs	= 0.7;
-    if(BUGS <= 0.9)
-	  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%3.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , (1.0+BALLAST),(1.00-Bugs)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
-    else
-	  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,0%3.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , (1.0+BALLAST),(1.00-Bugs)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , (1.0+BALLAST),(1.00-Bugs)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 
