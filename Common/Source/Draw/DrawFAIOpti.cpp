@@ -11,6 +11,7 @@
 #include "RGB.h"
 #include "ContestMgr.h"
 #include "Defines.h"
+#include "Topology.h"
 
 #ifdef PNA
   #define FAI_SECTOR_STEPS 7
@@ -263,7 +264,11 @@ double dir = -1.0;
 
 
   /********************************************/
-  Polygon(hdc, apSectorPolygon,iPolyPtr);
+ // Polygon(hdc, apSectorPolygon,iPolyPtr);
+  if (ForcedClipping || DeviceNeedClipping)
+    ClipPolygon(hdc,apSectorPolygon,iPolyPtr,rc, true);
+  else
+    Polygon(hdc,apSectorPolygon,iPolyPtr);
   /********************************************/
 
   SelectObject(hdc, (HPEN)hpOldPen);
@@ -305,9 +310,14 @@ double dir = -1.0;
 
 	  MapWindow::LatLon2Screen(lon_d, lat_d,  line[0]);
 
-
       if(i> 0)
-	    Polyline(hdc, line, 2);
+      {
+  		ForcedClipping=true;
+  		MapWindow::_DrawLine(hdc, PS_DASH, NIBLSCALE(1), line[0] , line[1] , RGB_BLACK, rc);
+  		ForcedClipping=false;
+      }
+	  //  Polyline(hdc, line, 2);
+
       line[1] =  line[0];
 	  fDist_a += fDelta_Dist;
 	  fDist_b = fDistTri - fDist_a - fDist_c;
