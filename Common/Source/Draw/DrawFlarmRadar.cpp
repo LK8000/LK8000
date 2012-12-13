@@ -1082,17 +1082,15 @@ RECT rcc = rct;
 		FlarmId* flarmId = file->GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
 
 		if(flarmId!= NULL) {
-		  // THIS LKASSERT IS HERE ONLY TO DEMONSTRATE WE DID HAVE A PROBLEM!
-		  // Now there is a content problem, but overflows are solved. 
-		  // Remove the LKASSERT entirely, Ulli, after checking yourself the effects.
-		  LKASSERT(_tcslen(flarmId->type)<19); // REMOVE before v4
 		  LK_tcsncpy(asFLRAMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);
 		}
 
 	  	int iCnt= FLARMID_SIZE_NAME;
-	    while ((asFLRAMPos[i].szGliderType[iCnt] ==_T(' ')) && (iCnt > 0))
-		  asFLRAMPos[i].szGliderType[iCnt--]= 0;
-
+	    for ( (iCnt = FLARMID_SIZE_NAME);iCnt>0 ; iCnt--)
+	    {
+	      if(asFLRAMPos[i].szGliderType[iCnt] ==_T(' '))
+		    asFLRAMPos[i].szGliderType[iCnt]= 0;
+	    }
 		aiSortArray[nEntrys++] = i;
 	  }
 
