@@ -1081,8 +1081,10 @@ RECT rcc = rct;
 		wsprintf(asFLRAMPos[i].szGliderType,_T(""));
 		FlarmId* flarmId = file->GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
 
-		if(flarmId!= NULL)
+		if(flarmId!= NULL) {
+		  LKASSERT(_tcslen(flarmId->type)<19); // REMOVE before v4
 		  LK_tcsncpy(asFLRAMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);
+		}
 
 	  	int iCnt= FLARMID_SIZE_NAME;
 	    while ((asFLRAMPos[i].szGliderType[iCnt] ==_T(' ')) && (iCnt > 0))
