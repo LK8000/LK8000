@@ -296,21 +296,17 @@ BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* inf
     }
   }
 
+  if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+    return LXWP0(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+    return LXWP1(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+    return LXWP2(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
+    return LXWP3(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
+    return LXWP4(d, sentence + 7, info);
 
-    if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
-      return LXWP0(d, sentence + 7, info);
-    else
-      if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
-        return LXWP1(d, sentence + 7, info);
-      else
-        if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-          return LXWP2(d, sentence + 7, info);
-        else
-          if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
-            return LXWP3(d, sentence + 7, info);
-          else
-            if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
-              return LXWP4(d, sentence + 7, info);
   return(false);
 } // ParseNMEA()
 
