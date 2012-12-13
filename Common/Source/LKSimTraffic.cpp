@@ -35,6 +35,7 @@ double SimNewSpeed(const double speed) {
 // we only need some traffic to display for testing on ground during simulations.
 //
 // >>>>> This is accessing directly the GPS_INFO main struct, writing inside it. <<<<<
+// Called by LKSimulator, already locking FlightData . No worry.
 //
 void SimFlarmTraffic(long ID, double offset)
 {

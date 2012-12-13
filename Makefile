@@ -558,7 +558,6 @@ UTILS	:=\
 
 COMMS	:=\
 	$(CMM)/LKFlarm.cpp\
-	$(CMM)/LKSimTraffic.cpp\
 	$(CMM)/Parser.cpp\
 	$(CMM)/Port.cpp \
 	$(CMM)/UpdateBaroSource.cpp \
@@ -715,6 +714,7 @@ SRC_FILES :=\
 	$(SRC)/LKProfileResetDefault.cpp\
 	$(SRC)/LKProfileSave.cpp\
 	$(SRC)/LKSimulator.cpp\
+	$(SRC)/LKSimTraffic.cpp\
 	$(SRC)/LKUtils.cpp \
 	$(SRC)/LocalPath.cpp\
 	$(SRC)/Locking.cpp\
