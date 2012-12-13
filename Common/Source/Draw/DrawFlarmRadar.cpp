@@ -715,7 +715,7 @@ DiagrammStruct sDia;
   GPSlon = DrawInfo.Longitude;
   GPSalt = DrawInfo.Altitude;
   GPSbrg = DrawInfo.TrackBearing;
-  DoTraffic(&GPS_INFO,&CALCULATED_INFO);
+  DoTraffic(&DrawInfo,&DerivedDrawInfo);
   if (DrawInfo.BaroAltitudeAvailable && EnableNavBaroAltitude) {
    	DerivedDrawInfo.NavAltitude = DrawInfo.BaroAltitude;
   } else {
