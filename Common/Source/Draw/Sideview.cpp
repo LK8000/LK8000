@@ -650,6 +650,7 @@ RECT rct = m_Dia.rc;
 
 unsigned short getsideviewpage=GetSideviewPage();
 LKASSERT(getsideviewpage<3);
+LKASSERT(Current_Multimap_SizeY!=SIZE0);
 
 DisplayOrientation = GetMMNorthUp(getsideviewpage);
 switch(GetMMNorthUp(getsideviewpage))

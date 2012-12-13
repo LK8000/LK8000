@@ -337,7 +337,9 @@ void MapWindow::CloseDrawingThread(void)
 // 
 bool MapWindow::ChangeDrawRect(const RECT rectarea)
 {
- // static RECT oldrect={0,0,0,0};
+  LKASSERT(rectarea.right>0);
+  LKASSERT(rectarea.bottom>0);
+  // Passing an invalid area will be checked also later, and managed.
   DrawRect=rectarea;
   return true;
 }

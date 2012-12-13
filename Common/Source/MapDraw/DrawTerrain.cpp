@@ -26,6 +26,8 @@
 
 unsigned short minalt=9999;
 
+static bool terrain_ready=false;
+
 extern bool FastZoom;
 
 Topology* TopoStore[MAXTOPOLOGY];
@@ -108,13 +110,22 @@ inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
 // 
 // this is for TerrainInfo.StepSize = 0.0025;
 
-
+//
+// Returning from constructor without setting terrain_ready will result in no draw terrain.
+//
 class TerrainRenderer {
 public:
   TerrainRenderer(RECT rc) {
+
     #if (WINDOWSPC>0) && TESTBENCH
     StartupStore(_T(".... Init TerrainRenderer area (%d,%d) (%d,%d)\n"),rc.left,rc.top,rc.right,rc.bottom);
     #endif
+
+    // This will not disable terrain! So we shall get calling here again, but no problem.
+    if (rc.right<1||rc.bottom<1) {
+	LKASSERT(0);
+	return;
+    }
 
     #if USERASTERCACHE
     if (!RasterTerrain::IsDirectAccess()) {
@@ -151,6 +162,7 @@ public:
 	    if (dtquant>3) dtquant=3; // .. but not too much
     #endif
 
+    LKASSERT(ScreenScale!=0);
     int res_x = iround((rc.right-rc.left)*oversampling/dtquant);
     int res_y = iround((rc.bottom-rc.top)*oversampling/dtquant);
 
@@ -165,6 +177,14 @@ public:
     if (hBuf==NULL)  {
 	StartupStore(_T("------ TerrainRenderer: malloc(%d) failed!%s"),sizeof(unsigned short)*ixs*iys, NEWLINE);
 	OutOfMemory(__FILE__,__LINE__);
+	//
+	// We *must* disable terrain at this point.
+	//
+	extern void ToggleMultimapTerrain(void);
+	ToggleMultimapTerrain();
+	delete sbuf;
+	sbuf=NULL;
+	return;
     } 
     #if (WINDOWSPC>0) && TESTBENCH
     else {
@@ -175,10 +195,19 @@ public:
     colorBuf = (BGRColor*)malloc(256*128*sizeof(BGRColor));
     if (colorBuf==NULL)  {
 	OutOfMemory(__FILE__,__LINE__);
+	extern void ToggleMultimapTerrain(void);
+	ToggleMultimapTerrain();
+	delete sbuf;
+	sbuf=NULL;
+	free(hBuf);
+	hBuf=NULL;
+	return;
     }
     // Reset this, so ColorTable will reload colors
     lastColorRamp = NULL;
 
+    // this is validating terrain construction
+    terrain_ready=true;
   }
 
   ~TerrainRenderer() {
@@ -197,6 +226,7 @@ public:
 	delete sbuf;
 	sbuf=NULL;
     }
+    terrain_ready=false;
   }
 
 public:
@@ -733,6 +763,21 @@ void DrawTerrain( const HDC hdc, const RECT rc,
     return;
   }
 
+  #if TESTBENCH
+  if (!trenderer && terrain_ready) {
+	LKASSERT(0);
+	StartupStore(_T("... DRAWTERRAIN trenderer null, but terrain is ready! Recovering.\n"));
+	terrain_ready=false;
+  }
+  #endif
+ 
+  if (trenderer && !terrain_ready) {
+	LKASSERT(0); // REMOVE before v4
+	StartupStore(_T("... DRAWTERRAIN trenderer not null, but terrain not ready! Recovering.\n"));
+	LKSW_ResetTerrainRenderer=true;
+  }
+
+
   static RECT oldrc;
 _redo:
 
@@ -740,7 +785,13 @@ _redo:
     oldrc=rc;
     trenderer = new TerrainRenderer(rc);
     LKASSERT(trenderer);
-    if (!trenderer) return;
+    if (!terrain_ready) {
+	#if TESTBENCH
+	StartupStore(_T("... DrawTerrain: ERROR terrain not ready\n"));
+	#endif
+	CloseTerrainRenderer();
+    }
+    if (!trenderer || !terrain_ready) return;
   }
 
   // Resolution has changed, probably PAN mode on with bottombar full opaque
@@ -755,7 +806,7 @@ _redo:
 			oldrc.left,oldrc.top,oldrc.right,oldrc.bottom, rc.left, rc.top, rc.right,rc.bottom);
 	}
 	#endif
-	LKASSERT(rc.right!=0 && rc.bottom!=0);
+	LKASSERT(rc.right>0 && rc.bottom>0);
 	LKSW_ResetTerrainRenderer=false; // in any case
 	CloseTerrainRenderer();
 	goto _redo;
