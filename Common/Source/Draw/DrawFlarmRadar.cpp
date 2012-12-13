@@ -600,16 +600,12 @@ switch(LKevent)
   case LKEVENT_LONGCLICK:
 	if( PtInRect(XstartScreen,YstartScreen, rct))
 		bHeightScale	= false;
-	if( PtInRect(XstartScreen,YstartScreen, rc))
-		bHeightScale	= !bHeightScale;
-
 	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
 	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
 	{
 	  iTurn = 	(iTurn+1)%2;
 	}
 	else
-
 	    for (i=0; i < nEntrys; i++)
 		{
 		  if( PtInRect(XstartScreen,YstartScreen, PositionTopView[aiSortArray[i]])||
@@ -621,8 +617,11 @@ switch(LKevent)
 			    dlgLKTrafficDetails( j);
 			  }
 			    bFound = true;
-			  }
 		  }
+	    }
+	if(!bFound)
+	  if( PtInRect(XstartScreen,YstartScreen, rc))
+		bHeightScale	= !bHeightScale;
 
   break;
 
