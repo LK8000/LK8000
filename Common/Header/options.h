@@ -48,10 +48,6 @@
  #define TOPOFAST	1
  #define TOPOFASTCACHE	1
 
- #define IBLSCALE(x) (   (ScreenIntScale) ? ((x)*ScreenScale) : ((int)((x)*ScreenDScale)))
- #define NIBLSCALE(x) (LKIBLSCALE[x])
- #define MAXIBLSCALE	100	// CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
-
  //
  // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
  // When expire date is reached, unnecessary old stuff can be removed, even if commented
