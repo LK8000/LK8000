@@ -86,9 +86,12 @@ static bool airspace_bearing_sorter( CAirspace *a, CAirspace *b )
 }
 
 
-//
+// OBSOLETED comment..
 // Running every n seconds ONLY when the nearest airspace page is active and we are not drawing map.
 // Returns true if did calculations, false if ok to use old values
+//
+// This is long since called by LKDrawNearestAsp page, using multicalc
+//
 bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
 

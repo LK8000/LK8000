@@ -351,6 +351,7 @@ LKINTER	:=\
 DRAW	:=\
 	$(DRW)/CalculateScreen.cpp \
 	$(DRW)/CalculateWaypointReachable.cpp \
+	$(DRW)/DoAirspaces.cpp \
 	$(DRW)/DoTarget.cpp \
 	$(DRW)/DoTraffic.cpp \
 	$(DRW)/DrawAircraft.cpp \
@@ -443,7 +444,6 @@ CALC	:=\
 	$(CLC)/ContestMgr.cpp\
 	$(CLC)/DistanceToHome.cpp\
 	$(CLC)/DistanceToNext.cpp\
-	$(CLC)/DoAirspaces.cpp \
 	$(CLC)/DoAlternates.cpp \
 	$(CLC)/DoCalculations.cpp \
 	$(CLC)/DoCalculationsSlow.cpp \
