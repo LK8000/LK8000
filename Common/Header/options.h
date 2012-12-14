@@ -57,13 +57,10 @@
  // When expire date is reached, unnecessary old stuff can be removed, even if commented
  //
 
- #define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS
-					// IN FINAL VERSIONS MAY BE DISABLED.. MAYBE.
 
- #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, AND IT IS GOOD FOR DEVELOPMENT VERSIONS
-				// For example, all dev.vers have CPUSTATS activated by this define, 
-				// automatically.
-				// COMMENT BEFORE PUBLIC RELEASE, NO EXCEPTIONS: INTERNAL USE ONLY!
+ #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD 
+				// FOR DEVELOPMENT VERSIONS. CAN BE USED FOR SPECIAL BETAs,
+				// but normally should not be used for public releases.
 
  #define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
 				// For TESTBENCH and beta versions this should be always ENABLED.
