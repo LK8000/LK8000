@@ -142,8 +142,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       if (api_has_SHHandleWMActivate) {
         SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
       } else {
-        #ifdef ALPHADEBUG
-        StartupStore(TEXT(". SHHandleWMActivate not available%s"),NEWLINE);
+        #ifdef TESTBENCH
+        StartupStore(TEXT("... SHHandleWMActivate not available%s"),NEWLINE);
         #endif
         return DefWindowProc(hWnd, message, wParam, lParam);
       }
@@ -155,8 +155,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       if (api_has_SHHandleWMSettingChange) {
         SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
       } else {
-        #ifdef ALPHADEBUG
-        StartupStore(TEXT(". SHHandleWMSettingChange not available%s"),NEWLINE);
+        #ifdef TESTBENCH
+        StartupStore(TEXT("... SHHandleWMSettingChange not available%s"),NEWLINE);
         #endif
         return DefWindowProc(hWnd, message, wParam, lParam);
       }
@@ -350,9 +350,7 @@ void Shutdown(void) {
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
  
-  #if ALPHADEBUG 
   StartupStore(TEXT(". CloseDrawingThread%s"),NEWLINE);
-  #endif
   // 100526 this is creating problem in SIM mode when quit is called from X button, and we are in waypoint details
   // or probably in other menu related screens. However it cannot happen from real PNA or PDA because we don't have
   // that X button.
@@ -365,9 +363,9 @@ void Shutdown(void) {
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
   CreateProgressDialog(gettext(TEXT("_@M1222_")));
-  #if TESTBENCH
+
   StartupStore(TEXT(".... Save default task%s"),NEWLINE);
-  #endif
+
   SaveDefaultTask();
 
   #if TESTBENCH
@@ -400,9 +398,7 @@ void Shutdown(void) {
   CloseFlightDataRecorder();
   
   // Stop COM devices
-  #if ALPHADEBUG
   StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
-  #endif
   devCloseAll();
 
   CloseFLARMDetails();

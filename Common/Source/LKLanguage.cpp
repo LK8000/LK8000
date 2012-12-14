@@ -98,9 +98,7 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 
   ZZIP_FILE *helpFile = zzip_fopen(sFile, "rb");
 	if (helpFile == NULL) {
-		#if ALPHADEBUG
 		StartupStore(_T("... Missing HELP FILE <%s>%s"),sFile,NEWLINE);
-		#endif
 		// we can only have one Help call at a time, from the user interface. Ok static sHelp.
 		_stprintf(sHelp,_T("ERROR, help file not found:\r\n%s\r\nCheck configuration!"),sFile);
 		return (sHelp);
@@ -207,9 +205,7 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 
   } // end ttype == H
 
-  #if ALPHADEBUG
   StartupStore(_T(".... Unknown Text type <%c> in <%s>%s"),ttype,TextIn,NEWLINE);
-  #endif
   return (TCHAR *)TextIn;
 
 }
@@ -389,7 +385,7 @@ bool LKLoadMessages(bool fillup) {
   static bool doinit=true;
   short mnumber=0;
 
-  #if ALPHADEBUG
+  #if TESTBENCH
   short fillupstart=0;
   #endif
 
@@ -414,12 +410,12 @@ bool LKLoadMessages(bool fillup) {
 			if (LKMessages[i]!=NULL) ++mnumber;
 		}
 		if (mnumber == MAX_MESSAGES) {
-			#if ALPHADEBUG
+			#if TESTBENCH
 			StartupStore(_T("... Fillup language MSG already full\n"));
 			#endif
 			return false;
 		}
-		#if ALPHADEBUG
+		#if TESTBENCH
 		fillupstart=mnumber;
 		StartupStore(_T("... Fillup language MSG starting from pos.%d\n"),mnumber);
 		#endif
@@ -558,7 +554,7 @@ bool LKLoadMessages(bool fillup) {
 
 	if (LKMessagesIndex[inumber]!= -1) {
 		// only for debugging translations
-		#if ALPHADEBUG
+		#if TESTBENCH
 		if (!fillup)
 			StartupStore(_T("... INVALID LANGUAGE MESSAGE INDEX <%d> duplicated!\n"),inumber);
 		#endif
@@ -578,7 +574,7 @@ bool LKLoadMessages(bool fillup) {
 	_tcscpy(LKMessages[mnumber],scapt);
 	mnumber++;
 	if (mnumber>=MAX_MESSAGES) {
-		#if ALPHADEBUG
+		#if TESTBENCH
 		StartupStore(_T("... TOO MANY MESSAGES, MAX %d%s"), MAX_MESSAGES, NEWLINE);
 		#endif
 		break;
@@ -589,7 +585,7 @@ bool LKLoadMessages(bool fillup) {
   #if DEBUG_GETTEXT
   StartupStore(_T("... LOADED %d MESSAGES, max size = %d\n"),mnumber-1,maxsize);
   #endif
-  #if ALPHADEBUG
+  #if TESTBENCH
   if (fillup) {
 	if ((mnumber-fillupstart-1)>0)
 		StartupStore(_T("... Fillup Loaded %d missing messages\n"),mnumber-fillupstart-1);

@@ -55,9 +55,7 @@ static BOOL FlymasterF1LinkTimeout(PDeviceDescriptor_t d){
 
 static BOOL flymasterf1Install(PDeviceDescriptor_t d){
 
-  #if ALPHADEBUG
   StartupStore(_T(". FlymasterF1 device installed%s"),NEWLINE);
-  #endif
 
   _tcscpy(d->Name, TEXT("FlymasterF1"));
   d->ParseNMEA = FlymasterF1ParseNMEA;

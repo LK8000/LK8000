@@ -128,9 +128,7 @@ static BOOL WesterboerLinkTimeout(PDeviceDescriptor_t d){
 
 static BOOL WesterboerInstall(PDeviceDescriptor_t d){
 
-  #if ALPHADEBUG
   StartupStore(_T(". WESTERBOER device installed%s"),NEWLINE);
-  #endif
 
   _tcscpy(d->Name, TEXT("Westerboer"));
   d->ParseNMEA = WesterboerParseNMEA;

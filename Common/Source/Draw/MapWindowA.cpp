@@ -42,9 +42,7 @@ bool MapWindow::AlphaBlendInit() {
   #endif
 
   if (AlphaBlendF == NULL) {
-    #if ALPHADEBUG
     StartupStore(_T(". AlphaBlend Transparency is not available on this device\n"));
-    #endif
     return false;
   }
 

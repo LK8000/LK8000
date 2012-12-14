@@ -67,12 +67,12 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		int i=FindNearestWayPoint(Basic->Longitude, Basic->Latitude, 2000);
 		if ( (i>RESWP_END) && (WayPointList[i].Altitude>0) ) {  // avoid using TAKEOFF wp
 			fixaltitude=WayPointList[i].Altitude;
-			#if ALPHADEBUG
+			#if TESTBENCH
 			StartupStore(_T(". AutoQNH: setting QNH to nearest <%s> waypoint altitude=%.0f m%s"),
 				WayPointList[i].Name,fixaltitude,NEWLINE);
 			#endif
 		} else {
-			#if ALPHADEBUG
+			#if TESTBENCH
 			if (fixaltitude!=0)
 				StartupStore(_T(". AutoQNH: setting QNH to average terrain altitude=%.0f m%s"),fixaltitude,NEWLINE);
 			else

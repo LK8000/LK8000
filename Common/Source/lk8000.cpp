@@ -190,16 +190,14 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 	WarningHomeDir=true;
   }
 
-  #if ALPHADEBUG
   extern TCHAR *gmfcurrentpath();
   #if TESTBENCH
   StartupStore(_T(". Program execution path is <%s>\n"),gmfcurrentpath());
   StartupStore(_T(". Program data directory is <%s>\n"),LKGetLocalPath());
   #endif
-  #endif
 
   #if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(TEXT(". Install/copy system objects in device memory%s"),NEWLINE);
   #endif
   short didsystem;
