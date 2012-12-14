@@ -351,6 +351,7 @@ LKINTER	:=\
 DRAW	:=\
 	$(DRW)/CalculateScreen.cpp \
 	$(DRW)/CalculateWaypointReachable.cpp \
+	$(DRW)/DoTarget.cpp \
 	$(DRW)/DoTraffic.cpp \
 	$(DRW)/DrawAircraft.cpp \
 	$(DRW)/DrawAirSpaces.cpp \
@@ -452,7 +453,6 @@ CALC	:=\
 	$(CLC)/DoNearest.cpp \
 	$(CLC)/DoRangeWaypointList.cpp \
 	$(CLC)/DoRecent.cpp \
-	$(CLC)/DoTarget.cpp \
 	$(CLC)/FarFinalGlideThroughTerrain.cpp\
 	$(CLC)/FinalGlideThroughTerrain.cpp\
 	$(CLC)/Flaps.cpp \
