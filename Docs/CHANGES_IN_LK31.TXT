@@ -234,6 +234,7 @@ NEW THINGS
 
 . Add startup check for SD card locked or full, not writable.
 
+. New polar for ASK-13
 
 
 CHANGES
