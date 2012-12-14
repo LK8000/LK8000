@@ -278,6 +278,7 @@ FIXES
 
  Fix artifacts appearing on HP31x and other PNAs , showing strange lines on screen while drawing FAI sectors.
 
+ Fix bug in 3.1 moving the aircraft on ground with 0 GS when wind was set
 
 
 LK8000 VERSION 3.1j 121208
