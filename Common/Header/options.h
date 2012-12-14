@@ -57,6 +57,9 @@
  // When expire date is reached, unnecessary old stuff can be removed, even if commented
  //
 
+ #define BUGSTOP	1	// STOP by LKASSERT even if the condition was managed, to show
+				// the problem during alpha stages. 
+				// Normally these conditions should not exist
 
  #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD 
 				// FOR DEVELOPMENT VERSIONS. CAN BE USED FOR SPECIAL BETAs,

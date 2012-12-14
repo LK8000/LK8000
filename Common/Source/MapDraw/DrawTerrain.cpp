@@ -772,7 +772,9 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   #endif
  
   if (trenderer && !terrain_ready) {
-	LKASSERT(0); // REMOVE before v4
+	#if BUGSTOP
+	LKASSERT(0);
+	#endif
 	StartupStore(_T("... DRAWTERRAIN trenderer not null, but terrain not ready! Recovering.\n"));
 	LKSW_ResetTerrainRenderer=true;
   }

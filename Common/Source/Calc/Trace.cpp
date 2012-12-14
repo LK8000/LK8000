@@ -141,6 +141,9 @@ void CTrace::Compress(unsigned maxSize /* = 0 */)
     // get the worst point
     CPointCostSet::iterator worstIt = _compressionCostSet.begin();
 	if(worstIt == _compressionCostSet.end()) {
+		#if BUGSTOP
+		LKASSERT(0);
+		#endif
 #ifndef TEST_CONTEST
 		StartupStore(_T("%s:%u - ERROR: _compressionCostSet is empty !!\n"), _T(__FILE__), __LINE__);
 #endif
