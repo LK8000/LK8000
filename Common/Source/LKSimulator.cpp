@@ -237,7 +237,7 @@ void LKSimulator(void) {
   }
 
 
-  if (FLYING)
+  if (GS>0)
   FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
                           GPS_INFO.TrackBearing, ((int)IASMS)*1.0,
                           &GPS_INFO.Latitude,
