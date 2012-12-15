@@ -1963,6 +1963,8 @@ goto_bearing:
 			goto olc_dist;
 		case LK_OLC_3TPS_PREDICTED_DIST:
 			ivalue=CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
+
+
 olc_dist:
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
@@ -2063,6 +2065,46 @@ olc_score:
 			}
 			break;
 
+		case LK_OLC_FAI_CLOSE_PERCENT:
+		//	double fDist = CContestMgr::Instance().FAI();
+            if((CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false).Distance() >0) &&
+               (CContestMgr::Instance().GetClosingPointDist() >0))
+            {
+  			  valid = true;
+              value = CContestMgr::Instance().GetClosingPointDist() / CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false).Distance()*100.0f;
+				sprintf(text,"%.1f",value);
+		    } else {
+		      strcpy(text,NULLLONG);
+		    }
+		    wsprintf(BufferValue, TEXT("%S"),text);
+		    wsprintf(BufferUnit, TEXT("%%"));
+		    if (lktitle)
+			// LKTOKEN  _@M1510_ = "Task Distance", _@M1510_ = "C: %"
+			  _tcscpy(BufferTitle, MsgToken(1510));
+		    else
+			  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+
+		break;
+		case LK_OLC_FAI_CLOSE:
+			value = DISTANCEMODIFY*CContestMgr::Instance().GetClosingPointDist();
+            if(value >0)
+            {
+			  if (value>99)
+				sprintf(text,"%.0f",value);
+			  else
+				sprintf(text,"%.1f",value);
+			  valid = true;
+		    } else {
+		      strcpy(text,NULLLONG);
+		    }
+		    wsprintf(BufferValue, TEXT("%S"),text);
+		    wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+		    if (lktitle)
+			// LKTOKEN  _@M1508_ = "Task Distance", _@M1508_ = "C:"
+			  _tcscpy(BufferTitle, MsgToken(1508));
+		    else
+			  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+	    break;
 
 		// B114
 		case LK_AIRSPACEVDIST:
@@ -2284,8 +2326,8 @@ olc_score:
 			wsprintf(BufferUnit, TEXT(""));
 			break;
 
-		case 126:
-		case 127:
+	//	case 126:
+	//	case 127:
 		case 128:
 		case 129:
 		case 130:

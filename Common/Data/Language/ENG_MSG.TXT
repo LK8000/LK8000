@@ -1530,6 +1530,10 @@ _@M1504_ "PLS scr"
 _@M1505_ "OLC Plus*Predicted Score"
 _@M1506_ "PLS*scr"
 
+_@M1507_ "OLC FAI triangle Distance to close"
+_@M1508_ "C:"
+_@M1509_ "OLC FAI triangle Distance close %"
+_@M1510_ "C: %"
 # #############################
 # NEW 2.4 messages
 # #############################

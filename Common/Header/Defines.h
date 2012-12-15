@@ -630,8 +630,10 @@
 #define LK_MAXHGAINED			123
 #define LK_HEADWINDSPEED		124
 
-#define LK_BANK_ANGLE                   125
 
+#define LK_OLC_FAI_CLOSE			125
+#define LK_OLC_FAI_CLOSE_PERCENT	126
+#define LK_BANK_ANGLE                   127
 
 // The following values are not available for custom configuration
 
