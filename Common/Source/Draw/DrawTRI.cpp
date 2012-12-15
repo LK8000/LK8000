@@ -180,10 +180,7 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   Circle(hDC, Start.x, Start.y, radius, rc, false, true );
 
   if(DrawInfo.AccelerationAvailable)
-  {
     DrawAcceleration(hDC, rc);
-    MapWindow::RequestFastRefresh();
-  }
 
   SelectObject(hDC, hpBorder);
   SelectObject(hDC, hbBorder);
