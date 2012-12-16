@@ -324,8 +324,14 @@ void MapWindow::CloseDrawingThread(void)
   SuspendDrawingThread();
   UnlockTerrainDataGraphics();
   
+  #if TESTBENCH
+  StartupStore(_T("... CloseDrawingThread waitforsingleobject\n"));
+  #endif
   WaitForSingleObject(hDrawThread, INFINITE);
           
+  #if TESTBENCH
+  StartupStore(_T("... CloseDrawingThread wait THREADEXIT\n"));
+  #endif
   while(!THREADEXIT) { Sleep(100); };
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread finished\n"));
