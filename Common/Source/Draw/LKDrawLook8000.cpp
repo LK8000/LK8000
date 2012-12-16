@@ -995,7 +995,7 @@ drawOverlay:
 		SelectObject(hdc, ob);
 	}
 
-	  TCHAR amcmode[2];
+	  TCHAR amcmode[10];
 	  switch(AutoMcMode) {
 		case amcFinalGlide:
 			wcscpy(amcmode,MsgToken(1676));
