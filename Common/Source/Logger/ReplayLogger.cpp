@@ -358,6 +358,7 @@ bool ReplayLogger::UpdateInternal(void) {
     cli.Interpolate(ReplayTime+0.1, &LonX1, &LatX1, &AltX1);
 
     SpeedX = cli.GetSpeed(ReplayTime);
+    DistanceBearing(LatX, LonX, LatX1, LonX1, NULL, &BearingX);
 
     if ((SpeedX>0) && (LatX != LatX1) && (LonX != LonX1)) {
 
@@ -368,10 +369,7 @@ bool ReplayLogger::UpdateInternal(void) {
       GPS_INFO.Latitude = LatX;
       GPS_INFO.Longitude = LonX;
       GPS_INFO.Speed = SpeedX;
-      if(GPS_INFO.TrackBearingAvailable) {
-        DistanceBearing(LatX, LonX, LatX1, LonX1, NULL, &BearingX);
-        GPS_INFO.TrackBearing = BearingX;
-      }
+      GPS_INFO.TrackBearing = BearingX;
       GPS_INFO.Altitude = AltX;
       GPS_INFO.BaroAltitude = AltitudeToQNHAltitude(AltX);
       GPS_INFO.Time = ReplayTime;
