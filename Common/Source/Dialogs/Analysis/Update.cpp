@@ -265,7 +265,7 @@ void UpdateAnalysis(void){
           _stprintf(distStr, _T("%.1f %s\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
 
         if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && bFAI )
-          _stprintf(speedStr, _T("C:%-.1f %s\r\n(%.1f %%)\r\n"),  DISTANCEMODIFY * fCPDist, Units::GetDistanceName(),fCPDist/fDist*100.0);
+          _stprintf(speedStr, _T("%s%-.1f %s\r\n(%.1f %%)\r\n"),gettext(TEXT("_@M1508_")),  DISTANCEMODIFY * fCPDist, Units::GetDistanceName(),fCPDist/fDist*100.0);
         else
           _stprintf(speedStr, TEXT("%.1f %s\r\n"),TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
         TCHAR timeTempStr[50];
@@ -273,7 +273,7 @@ void UpdateAnalysis(void){
         TCHAR timeStr[50];
 
         if( (result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && bFAI && ISPARAGLIDER)
-          _stprintf(timeStr, _T("\r\nB:%-.1f %s\r\n(%.1f %%)\r\n"), DISTANCEMODIFY * fB_CPDist, Units::GetDistanceName(), fB_CPDist/fDist*100.0);
+          _stprintf(timeStr, _T("\r\n%s%-.1f %s\r\n(%.1f %%)\r\n"),gettext(TEXT("_@M1511_")), DISTANCEMODIFY * fB_CPDist, Units::GetDistanceName(), fB_CPDist/fDist*100.0); //_@M1511_ = "B:"
         else
           _stprintf(timeStr, _T("%s\r\n"), timeTempStr);
 

@@ -1533,7 +1533,8 @@ _@M1506_ "PLS*scr"
 _@M1507_ "OLC FAI triangle Distance to close"
 _@M1508_ "C:"
 _@M1509_ "OLC FAI triangle Distance close %"
-_@M1510_ "C: %"
+_@M1510_ "%C:"
+_@M1511_ "B:"
 # #############################
 # NEW 2.4 messages
 # #############################

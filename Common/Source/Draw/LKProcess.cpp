@@ -47,6 +47,9 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
   static char	text[LKSIZETEXT];
   static TCHAR	varformat[10];
 
+   BOOL bFAI ;
+   double fDist ;
+   double fTogo ;
   // By default, invalid return value. Set it to true after assigning value in cases
   bool		valid=false;
 
@@ -2066,12 +2069,14 @@ olc_score:
 			break;
 
 		case LK_OLC_FAI_CLOSE_PERCENT:
-		//	double fDist = CContestMgr::Instance().FAI();
-            if((CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false).Distance() >0) &&
-               (CContestMgr::Instance().GetClosingPointDist() >0))
+			bFAI = CContestMgr::Instance().FAI();
+			fDist =CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false).Distance();
+			fTogo =CContestMgr::Instance().GetClosingPointDist();
+            if((fDist >0) && (fTogo >0))
             {
+              LKASSERT(fDist >0)
   			  valid = true;
-              value = CContestMgr::Instance().GetClosingPointDist() / CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false).Distance()*100.0f;
+              value = fTogo / fDist*100.0f;
 				sprintf(text,"%.1f",value);
 		    } else {
 		      strcpy(text,NULLLONG);
@@ -2079,20 +2084,25 @@ olc_score:
 		    wsprintf(BufferValue, TEXT("%S"),text);
 		    wsprintf(BufferUnit, TEXT("%%"));
 		    if (lktitle)
-			// LKTOKEN  _@M1510_ = "Task Distance", _@M1510_ = "C: %"
-			  _tcscpy(BufferTitle, MsgToken(1510));
+		    {
+		      if(bFAI)
+		        wsprintf(BufferTitle, TEXT("FAI %s"),  gettext(TEXT("_@M1508_"))); // LKTOKEN  _@M1508_ = "C:"
+		      else
+		        wsprintf(BufferTitle, TEXT("%s"),  gettext(TEXT("_@M1508_")));
+		    }
 		    else
 			  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 		break;
 		case LK_OLC_FAI_CLOSE:
-			value = DISTANCEMODIFY*CContestMgr::Instance().GetClosingPointDist();
-            if(value >0)
+			bFAI = CContestMgr::Instance().FAI();
+			fTogo =DISTANCEMODIFY*CContestMgr::Instance().GetClosingPointDist();
+            if(fTogo >0)
             {
 			  if (value>99)
-				sprintf(text,"%.0f",value);
+				sprintf(text,"%.0f",fTogo);
 			  else
-				sprintf(text,"%.1f",value);
+				sprintf(text,"%.1f",fTogo);
 			  valid = true;
 		    } else {
 		      strcpy(text,NULLLONG);
@@ -2100,8 +2110,12 @@ olc_score:
 		    wsprintf(BufferValue, TEXT("%S"),text);
 		    wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 		    if (lktitle)
-			// LKTOKEN  _@M1508_ = "Task Distance", _@M1508_ = "C:"
-			  _tcscpy(BufferTitle, MsgToken(1508));
+		    {
+		      if(bFAI)
+		       wsprintf(BufferTitle, TEXT("FAI %s"),  gettext(TEXT("_@M1508_"))); //   _@M1508_ = "C:"
+		      else
+		        wsprintf(BufferTitle, TEXT("%s"),  gettext(TEXT("_@M1508_")));
+		    }
 		    else
 			  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 	    break;
