@@ -329,7 +329,7 @@
 <WndButton Name="cmdSetCustomMenu" Caption="_@M1788_" X=70 Y=-998 Width=180  Height=22 Font=2 OnClickNotify="OnSetCustomMenuClicked" />
 <WndButton Name="cmdSetInfoPages" Caption="_@M1603_" X=70 Y=-998 Width=180  Height=22 Font=2 OnClickNotify="OnSetInfoPagesClicked" />
 <WndButton Name="cmdSetBottomBar" Caption="_@M1602_" X=70 Y=-998 Width=180  Height=22 Font=2 OnClickNotify="OnSetBottomBarClicked" />
-<WndButton Name="cmdSetMultimaps" Caption="_@M1604_" X=70 Y=-998 Width=180  Height=22 Font=2 OnClickNotify="OnMultimapsClicked" />
+<WndButton Name="cmdSetMultimaps" Caption="_@M1822_" X=70 Y=-998 Width=180  Height=22 Font=2 OnClickNotify="OnMultimapsClicked" />
 </WndFrame>
 <WndFrame Name="frmAppearance" X=0 Y=0 Width=235 Height=222 Font=2>
 <WndProperty Name="prpGliderScreenPosition" Caption="_@M327_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H183_">
