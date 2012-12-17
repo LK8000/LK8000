@@ -1119,8 +1119,11 @@ for (j=0; j<nEntrys; j++)
     if(fx < sTopDia.fXMax )
     if(fy < sTopDia.fYMax )
 	if(fy > sTopDia.fYMin )
+	#if 0
+	// These would cause topview not to show all objects outside vertical scale
 	if(fFlarmAlt < sDia.fYMax )
 	if(fFlarmAlt > sDia.fYMin )
+	#endif
 	{
 	  /***********************************************
 	   * draw center aircraft if first time above
