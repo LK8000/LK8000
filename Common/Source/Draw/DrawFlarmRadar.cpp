@@ -1085,7 +1085,8 @@ RECT rcc = rct;
 
 		wsprintf(asFLRAMPos[i].szGliderType,_T(""));
 #if 1
-_tcscpy(asFLRAMPos[i].szGliderType,_T("XXX"));
+		// This is not the problem, but we must take off all possible derived malfunctions
+		_tcscpy(asFLRAMPos[i].szGliderType,_T("XXX"));
 #else
 		FlarmId* flarmId = file->GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
 
