@@ -248,6 +248,7 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     if (iTextAling != TEXT_NO_TEXT)
     {
 	  TCHAR unit_text[MAX_PATH];
+	  LKASSERT(ticstep!=0);
 	  FormatTicText(unit_text, yval*unit_step/ticstep, unit_step);
 	  if(pUnit != NULL)
 		if(yval+ticstep >y_max)
@@ -608,15 +609,19 @@ switch(LKevent)
 	else
 	    for (i=0; i < nEntrys; i++)
 		{
+		  LKASSERT(i<FLARM_MAX_TRAFFIC);
+		  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 		  if( PtInRect(XstartScreen,YstartScreen, PositionTopView[aiSortArray[i]])||
 		      PtInRect(XstartScreen,YstartScreen, PositionSideView[aiSortArray[i]]) )
 		  {
-		    for (j = 0; j < FLARM_MAX_TRAFFIC; j++ )
+		    for (j = 0; j < FLARM_MAX_TRAFFIC; j++ ) {
+			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 			  if(DrawInfo.FLARM_Traffic[aiSortArray[i]].ID == LKTraffic[j].ID)
 			  {
 			    dlgLKTrafficDetails( j);
 			  }
-			    bFound = true;
+		    }
+		    bFound = true;
 		  }
 	    }
 	if(!bFound)
@@ -868,11 +873,11 @@ DiagrammStruct sDia;
   if (range>250.0*1000.0) xtick = 50.0;
   if (range>500.0*1000.0) xtick = 100.0;
 
+  LKASSERT(range!=0);
   iTraceDotSize = (int)(100000/range)+2;
   if(iTraceDotSize > 5)
 	  iTraceDotSize = 5;
   if(xtick == 0.0) xtick = 1.0;
-  LKASSERT(!xtick == 0.0)
 
   RECT rc34 = rc;
   rc34.top += (rct.top-rct.bottom)/2;
@@ -1079,6 +1084,9 @@ RECT rcc = rct;
 		extern FlarmIdFile *file;
 
 		wsprintf(asFLRAMPos[i].szGliderType,_T(""));
+#if 1
+_tcscpy(asFLRAMPos[i].szGliderType,_T("XXX"));
+#else
 		FlarmId* flarmId = file->GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
 
 		if(flarmId!= NULL) {
@@ -1091,19 +1099,25 @@ RECT rcc = rct;
 	      if(asFLRAMPos[i].szGliderType[iCnt] ==_T(' '))
 		    asFLRAMPos[i].szGliderType[iCnt]= 0;
 	    }
+#endif
+		LKASSERT(nEntrys>=0 && nEntrys<FLARM_MAX_TRAFFIC);
 		aiSortArray[nEntrys++] = i;
 	  }
 
 	}
 
     for (i=0; i < nEntrys; i++)
-      for(j=i+1; j < nEntrys; j++)
+      for(j=i+1; j < nEntrys; j++) {
+		LKASSERT(i<FLARM_MAX_TRAFFIC);
+		LKASSERT(aiSortArray>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 		if(asFLRAMPos[aiSortArray[i]].fAlt  > asFLRAMPos[aiSortArray[j]].fAlt )
 		{
+		  LKASSERT(j<FLARM_MAX_TRAFFIC);
 		  iTmp = aiSortArray[i];
 		  aiSortArray[i] = aiSortArray[j];
 		  aiSortArray[j] = iTmp;
 		}
+      }
 
 /***********************************************
  * draw traces
@@ -1125,6 +1139,7 @@ if(SPLITSCREEN_FACTOR >0)
 for (j=0; j<nEntrys; j++)
 {
   i = aiSortArray[j];
+  LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
   {
 	/*************************************************************************
 	 * calculate positions
@@ -1234,13 +1249,18 @@ if(bCenter == false)
  * sideview
  *************************************************************************/
 for (i=0; i < nEntrys; i++)
-  for(j=i+1; j < nEntrys; j++)
+  for(j=i+1; j < nEntrys; j++) {
+	LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
+	LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 	if(asFLRAMPos[aiSortArray[i]].fy  < asFLRAMPos[aiSortArray[j]].fy )
 	{
 	  iTmp = aiSortArray[i];
+	  LKASSERT(j<FLARM_MAX_TRAFFIC);
 	  aiSortArray[i] = aiSortArray[j];
 	  aiSortArray[j] = iTmp;
 	}
+  }
+
 /***********************************************
  * FLARM object loop
  ***********************************************/
@@ -1250,7 +1270,10 @@ if(bSideview)
   bCenter = false;
   for (j=0; j<nEntrys; j++)
   {
+    LKASSERT(j<FLARM_MAX_TRAFFIC);
     i = aiSortArray[j];
+    LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
+
 	/*************************************************************************
 	 * calculate positions
 	 *************************************************************************/
@@ -1282,6 +1305,7 @@ if(bSideview)
 	  /*************************************************************************
 	   * get the climb color
 	   *************************************************************************/
+	  LKASSERT(asFLRAMPos[i].iColorIdx>=0 && asFLRAMPos[i].iColorIdx<NO_VARIO_COLORS);
 	  SelectObject(hdc, *variobrush[asFLRAMPos[i].iColorIdx]);
 	  SelectObject(hdc, hDrawPen);
 	  /*************************************************************************
@@ -1415,6 +1439,7 @@ unsigned long lStartTime = GetTickCount();
 
 	for(i= 0; i < iTo; i=i+iStep)
 	{
+	  LKASSERT(iIdx>=0 && iIdx<MAX_FLARM_TRACES);
       LL_to_BearRange( GPSlat, GPSlon, DrawInfo.FLARM_RingBuf[iIdx].fLat ,DrawInfo.FLARM_RingBuf[iIdx].fLon, &fDistBearing, &fFlarmDist);
 
 	  fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
@@ -1433,6 +1458,7 @@ unsigned long lStartTime = GetTickCount();
 		    	; // do nothing (skip drawing if neg vario)!!
 		      else
 		      {
+	  		LKASSERT(DrawInfo.FLARM_RingBuf[iIdx].iColorIdx>=0 && DrawInfo.FLARM_RingBuf[iIdx].iColorIdx<NO_VARIO_COLORS);
 		        if(variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx]!= pOldBrush)
 		        {
 			      pOldBrush  = variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx];

@@ -82,6 +82,9 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    }
    if (LKNumTraffic<1) return true;
 
+   //StartupStore(_T("....... SortedMode[MSM_TRAFFIC]=%d\n"),SortedMode[MSM_TRAFFIC]);
+   //if (MapSpaceMode==MSM_MAPRADAR) return true;
+
    // We know there is at least one traffic..
    for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
 
