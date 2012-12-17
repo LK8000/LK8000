@@ -67,8 +67,6 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    memcpy(LKTraffic, Basic->FLARM_Traffic, sizeof(LKTraffic));
    //UnlockFlightData();
 
-   memset(LKSortedTraffic, -1, sizeof(LKSortedTraffic));
-   memset(sortedValue, -1, sizeof(sortedValue));
 
    LKNumTraffic=0;
    for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
@@ -82,8 +80,13 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    }
    if (LKNumTraffic<1) return true;
 
-   //StartupStore(_T("....... SortedMode[MSM_TRAFFIC]=%d\n"),SortedMode[MSM_TRAFFIC]);
-   //if (MapSpaceMode==MSM_MAPRADAR) return true;
+   //
+   // In RADAR multimap there is no traffic sorting
+   //
+   if (MapSpaceMode==MSM_MAPRADAR) return true;
+
+   memset(LKSortedTraffic, -1, sizeof(LKSortedTraffic));
+   memset(sortedValue, -1, sizeof(sortedValue));
 
    // We know there is at least one traffic..
    for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
