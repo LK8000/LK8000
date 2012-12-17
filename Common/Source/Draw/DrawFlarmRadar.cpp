@@ -616,7 +616,7 @@ switch(LKevent)
 		  {
 		    for (j = 0; j < FLARM_MAX_TRAFFIC; j++ ) {
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
-			  if(DrawInfo.FLARM_Traffic[aiSortArray[i]].ID == LKTraffic[j].ID)
+			  if(LKTraffic[aiSortArray[i]].ID == LKTraffic[j].ID)
 			  {
 			    dlgLKTrafficDetails( j);
 			  }
@@ -720,6 +720,8 @@ DiagrammStruct sDia;
   GPSlon = DrawInfo.Longitude;
   GPSalt = DrawInfo.Altitude;
   GPSbrg = DrawInfo.TrackBearing;
+
+  LastDoTraffic=0;
   DoTraffic(&DrawInfo,&DerivedDrawInfo);
   if (DrawInfo.BaroAltitudeAvailable && EnableNavBaroAltitude) {
    	DerivedDrawInfo.NavAltitude = DrawInfo.BaroAltitude;
@@ -798,16 +800,6 @@ DiagrammStruct sDia;
 	Arrow[4].x = scaler[0];
 	Arrow[4].y = scaler[1];
 
-	// Stuff for raw 0 mapspace
-	/*
-	#define HEADRAW       NIBLSCALE(6)
-
-	SIZE MITextSize;
-	SelectObject(hdc, LK8PanelMediumFont);
-	GetTextExtentPoint(hdc, _T("4.4"), 3, &MITextSize);
-	column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
-	SelectObject(hdc, LK8PanelUnitFont);
-*/
 
 	  switch (ScreenSize) {
 		case ss480x640:
@@ -894,10 +886,10 @@ DiagrammStruct sDia;
 	fMaxHeight = GPSalt;
   fMinHeight = GPSalt;
   for (i=0; i<FLARM_MAX_TRAFFIC; i++)
-    if(DrawInfo.FLARM_Traffic[i].Status != LKT_EMPTY)
+    if(LKTraffic[i].Status != LKT_EMPTY)
     {
-  	  fMaxHeight = max (fMaxHeight, DrawInfo.FLARM_Traffic[i].Altitude);
-  	  fMinHeight = min (fMinHeight, DrawInfo.FLARM_Traffic[i].Altitude);
+  	  fMaxHeight = max (fMaxHeight, LKTraffic[i].Altitude);
+  	  fMinHeight = min (fMinHeight, LKTraffic[i].Altitude);
     }
 
 
@@ -1017,16 +1009,15 @@ RECT rcc = rct;
 
 	for (i=0; i<FLARM_MAX_TRAFFIC; i++)
 	{
-	  if (DrawInfo.FLARM_Traffic[i].Status != LKT_EMPTY)
+	  if (LKTraffic[i].Status != LKT_EMPTY)
 	  {
 		/*************************************************************************
 		 * calculate positions
 		 *************************************************************************/
-		//DrawInfo.FLARM_Traffic[i].RelativeAltitude = DrawInfo.FLARM_Traffic[i].Altitude - GPSalt;
-		fLon          =  DrawInfo.FLARM_Traffic[i].Longitude;
-		fLat          =  DrawInfo.FLARM_Traffic[i].Latitude;
-		fFlarmBearing =  DrawInfo.FLARM_Traffic[i].TrackBearing;
-		fFlarmAlt     =  DrawInfo.FLARM_Traffic[i].RelativeAltitude;
+		fLon          =  LKTraffic[i].Longitude;
+		fLat          =  LKTraffic[i].Latitude;
+		fFlarmBearing =  LKTraffic[i].TrackBearing;
+		fFlarmAlt     =  LKTraffic[i].RelativeAltitude;
 		LL_to_BearRange( GPSlat, GPSlon, fLat,  fLon, &fDistBearing, &fFlarmDist);
 
 		fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
@@ -1034,7 +1025,7 @@ RECT rcc = rct;
 		asFLARMPos[i].fx = fFlarmDist * sin(fDistBearing*DEG_TO_RAD);
 		asFLARMPos[i].fy = fFlarmDist * cos(fDistBearing*DEG_TO_RAD);
 		asFLARMPos[i].fAlt = fFlarmAlt;
-		asFLARMPos[i].iColorIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s    -0.5)+NO_VARIO_COLORS/2;
+		asFLARMPos[i].iColorIdx = (int)(2*LKTraffic[i].Average30s    -0.5)+NO_VARIO_COLORS/2;
 		asFLARMPos[i].iColorIdx = max( asFLARMPos[i].iColorIdx, 0);
 		asFLARMPos[i].iColorIdx = min( asFLARMPos[i].iColorIdx, NO_VARIO_COLORS-1);
 
@@ -1045,7 +1036,7 @@ RECT rcc = rct;
 		// This is not the problem, but we must take off all possible derived malfunctions
 		_tcscpy(asFLARMPos[i].szGliderType,_T("XXX"));
 #else
-		FlarmId* flarmId = file->GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
+		FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[i].ID);
 
 		if(flarmId!= NULL) {
 		  LK_tcsncpy(asFLARMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);
@@ -1143,7 +1134,7 @@ for (j=0; j<nEntrys; j++)
 	  /*************************************************************************
 	   * calculate climb color
 	   *************************************************************************/
-	  double fInteg30 = DrawInfo.FLARM_Traffic[i].Average30s;
+	  double fInteg30 = LKTraffic[i].Average30s;
 	  int iVarioIdx = (int)(2*fInteg30-0.5)+NO_VARIO_COLORS/2;
 	  if(iVarioIdx < 0) iVarioIdx =0;
 	  if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
@@ -1153,7 +1144,7 @@ for (j=0; j<nEntrys; j++)
 	  /*************************************************************************
 	   * draw side view
 	   *************************************************************************/
-	  switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
+	  switch (LKTraffic[i].Status) { // 100321
 		case LKT_GHOST:
 			Rectangle(hdc,x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
 			break;
@@ -1169,7 +1160,7 @@ for (j=0; j<nEntrys; j++)
 		     * draw label
 		     *************************************************************************/
 		    wsprintf(lbuffer,_T(""));
-			_stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
+			_stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*LKTraffic[i].Average30s);
 
 		    SIZE tsize;
 		    SetBkMode(hdc, TRANSPARENT);
@@ -1182,7 +1173,7 @@ for (j=0; j<nEntrys; j++)
 	  /*********************************************
 	   * draw lines to target if target selected
 	   */
-	  if(DrawInfo.FLARM_Traffic[i].Locked)
+	  if(LKTraffic[i].Locked)
 	  {
 		DrawDashLine(hdc, 4, (POINT){x_middle, y_middle},(POINT){ x, y} ,rgb_targetlinecol, rct );
 	  }
@@ -1271,7 +1262,7 @@ if(bSideview)
 	  /*************************************************************************
 	   * draw side view
 	   *************************************************************************/
-	  switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
+	  switch (LKTraffic[i].Status) { // 100321
 		case LKT_GHOST:
 			Rectangle(hdc,x-iRectangleSize,hy-iRectangleSize,x+iRectangleSize,hy+iRectangleSize);
 			break;
@@ -1283,10 +1274,10 @@ if(bSideview)
 			break;
 	  }
 	  wsprintf(lbuffer,_T(""));
-	  if (DrawInfo.FLARM_Traffic[i].Cn && DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
+	  if (LKTraffic[i].Cn && LKTraffic[i].Cn[0]!=_T('?')) { // 100322
 	  	_tcscat(lbuffer,  asFLARMPos[i].szGliderType);
 	  	_tcscat(lbuffer,_T(": "));
-	  	_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
+	  	_tcscat(lbuffer,LKTraffic[i].Cn);
 	  }
 
 
@@ -1299,7 +1290,7 @@ if(bSideview)
 	  /*********************************************
 	   * draw lines to target if target selected
 	   */
-	  if(DrawInfo.FLARM_Traffic[i].Locked)
+	  if(LKTraffic[i].Locked)
 	  {
 		int  h0 = HeightToY(0,&sDia);
 		DrawDashLine(hdc, 4, (POINT){x_middle,       h0},(POINT){ x, hy} ,rgb_targetlinecol, rc );
