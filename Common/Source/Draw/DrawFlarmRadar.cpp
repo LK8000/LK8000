@@ -1029,13 +1029,13 @@ RECT rcc = rct;
 		asFLARMPos[i].iColorIdx = max( asFLARMPos[i].iColorIdx, 0);
 		asFLARMPos[i].iColorIdx = min( asFLARMPos[i].iColorIdx, NO_VARIO_COLORS-1);
 
-		extern FlarmIdFile *file;
 
 		wsprintf(asFLARMPos[i].szGliderType,_T(""));
 #if 1
 		// This is not the problem, but we must take off all possible derived malfunctions
 		_tcscpy(asFLARMPos[i].szGliderType,_T("XXX"));
 #else
+		extern FlarmIdFile *file;
 		FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[i].ID);
 
 		if(flarmId!= NULL) {
