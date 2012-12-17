@@ -23,6 +23,12 @@
 extern int XstartScreen, YstartScreen;
 
 
+/*
+#undef LKASSERT
+#define LKASSERT(arg)
+*/
+
+
 #define F_SIZE0 0.0
 #define F_SIZE1 0.5
 #define F_SIZE2 0.75
