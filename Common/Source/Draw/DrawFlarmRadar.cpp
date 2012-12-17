@@ -60,7 +60,7 @@ typedef struct
 	int iColorIdx;
 	TCHAR szGliderType[FLARMID_SIZE_NAME+1];
 } sFlarmPositions;
-static sFlarmPositions asFLRAMPos[FLARM_MAX_TRAFFIC+1];
+static sFlarmPositions asFLARMPos[FLARM_MAX_TRAFFIC+1];
 
 
 HBRUSH * variobrush[NO_VARIO_COLORS] = {
@@ -1073,32 +1073,32 @@ RECT rcc = rct;
 		LL_to_BearRange( GPSlat, GPSlon, fLat,  fLon, &fDistBearing, &fFlarmDist);
 
 		fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
-		asFLRAMPos[i].fFlarmBearing= (fFlarmBearing - GPSbrg + RADAR_TURN);
-		asFLRAMPos[i].fx = fFlarmDist * sin(fDistBearing*DEG_TO_RAD);
-		asFLRAMPos[i].fy = fFlarmDist * cos(fDistBearing*DEG_TO_RAD);
-		asFLRAMPos[i].fAlt = fFlarmAlt;
-		asFLRAMPos[i].iColorIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s    -0.5)+NO_VARIO_COLORS/2;
-		asFLRAMPos[i].iColorIdx = max( asFLRAMPos[i].iColorIdx, 0);
-		asFLRAMPos[i].iColorIdx = min( asFLRAMPos[i].iColorIdx, NO_VARIO_COLORS-1);
+		asFLARMPos[i].fFlarmBearing= (fFlarmBearing - GPSbrg + RADAR_TURN);
+		asFLARMPos[i].fx = fFlarmDist * sin(fDistBearing*DEG_TO_RAD);
+		asFLARMPos[i].fy = fFlarmDist * cos(fDistBearing*DEG_TO_RAD);
+		asFLARMPos[i].fAlt = fFlarmAlt;
+		asFLARMPos[i].iColorIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s    -0.5)+NO_VARIO_COLORS/2;
+		asFLARMPos[i].iColorIdx = max( asFLARMPos[i].iColorIdx, 0);
+		asFLARMPos[i].iColorIdx = min( asFLARMPos[i].iColorIdx, NO_VARIO_COLORS-1);
 
 		extern FlarmIdFile *file;
 
-		wsprintf(asFLRAMPos[i].szGliderType,_T(""));
+		wsprintf(asFLARMPos[i].szGliderType,_T(""));
 #if 1
 		// This is not the problem, but we must take off all possible derived malfunctions
-		_tcscpy(asFLRAMPos[i].szGliderType,_T("XXX"));
+		_tcscpy(asFLARMPos[i].szGliderType,_T("XXX"));
 #else
 		FlarmId* flarmId = file->GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
 
 		if(flarmId!= NULL) {
-		  LK_tcsncpy(asFLRAMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);
+		  LK_tcsncpy(asFLARMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);
 		}
 
 	  	int iCnt= FLARMID_SIZE_NAME;
 	    for ( (iCnt = FLARMID_SIZE_NAME);iCnt>0 ; iCnt--)
 	    {
-	      if(asFLRAMPos[i].szGliderType[iCnt] ==_T(' '))
-		    asFLRAMPos[i].szGliderType[iCnt]= 0;
+	      if(asFLARMPos[i].szGliderType[iCnt] ==_T(' '))
+		    asFLARMPos[i].szGliderType[iCnt]= 0;
 	    }
 #endif
 		LKASSERT(nEntrys>=0 && nEntrys<FLARM_MAX_TRAFFIC);
@@ -1111,7 +1111,7 @@ RECT rcc = rct;
       for(j=i+1; j < nEntrys; j++) {
 		LKASSERT(i<FLARM_MAX_TRAFFIC);
 		LKASSERT(aiSortArray>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
-		if(asFLRAMPos[aiSortArray[i]].fAlt  > asFLRAMPos[aiSortArray[j]].fAlt )
+		if(asFLARMPos[aiSortArray[i]].fAlt  > asFLARMPos[aiSortArray[j]].fAlt )
 		{
 		  LKASSERT(j<FLARM_MAX_TRAFFIC);
 		  iTmp = aiSortArray[i];
@@ -1145,9 +1145,9 @@ for (j=0; j<nEntrys; j++)
 	/*************************************************************************
 	 * calculate positions
 	 *************************************************************************/
-	fx = asFLRAMPos[i].fx;
-	fy = asFLRAMPos[i].fy;
-	fFlarmAlt = asFLRAMPos[i].fAlt;
+	fx = asFLARMPos[i].fx;
+	fy = asFLARMPos[i].fy;
+	fFlarmAlt = asFLARMPos[i].fAlt;
 	int x  = DistanceToX(fx,  &sTopDia);
 	int y  = HeightToY  (fy,  &sTopDia);
 	PositionTopView[i].left   = x - iTouchAreaSize;
@@ -1203,7 +1203,7 @@ for (j=0; j<nEntrys; j++)
 			break;
 		default:
 	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
-			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360( asFLRAMPos[i].fFlarmBearing ));
+			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360( asFLARMPos[i].fFlarmBearing ));
 			Polygon(hdc,Triangle,5);
 
 		    /*************************************************************************
@@ -1253,7 +1253,7 @@ for (i=0; i < nEntrys; i++)
   for(j=i+1; j < nEntrys; j++) {
 	LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
 	LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
-	if(asFLRAMPos[aiSortArray[i]].fy  < asFLRAMPos[aiSortArray[j]].fy )
+	if(asFLARMPos[aiSortArray[i]].fy  < asFLARMPos[aiSortArray[j]].fy )
 	{
 	  iTmp = aiSortArray[i];
 	  LKASSERT(j<FLARM_MAX_TRAFFIC);
@@ -1278,9 +1278,9 @@ if(bSideview)
 	/*************************************************************************
 	 * calculate positions
 	 *************************************************************************/
-	fx = asFLRAMPos[i].fx;
-	fy = asFLRAMPos[i].fy;
-	fFlarmAlt = asFLRAMPos[i].fAlt;
+	fx = asFLARMPos[i].fx;
+	fy = asFLARMPos[i].fy;
+	fFlarmAlt = asFLARMPos[i].fAlt;
 	int x  = DistanceToX(fx, &sTopDia);
 	int hy = HeightToY  (fFlarmAlt, &sDia);
 	PositionSideView[i].left   = x  - iTouchAreaSize;
@@ -1306,8 +1306,8 @@ if(bSideview)
 	  /*************************************************************************
 	   * get the climb color
 	   *************************************************************************/
-	  LKASSERT(asFLRAMPos[i].iColorIdx>=0 && asFLRAMPos[i].iColorIdx<NO_VARIO_COLORS);
-	  SelectObject(hdc, *variobrush[asFLRAMPos[i].iColorIdx]);
+	  LKASSERT(asFLARMPos[i].iColorIdx>=0 && asFLARMPos[i].iColorIdx<NO_VARIO_COLORS);
+	  SelectObject(hdc, *variobrush[asFLARMPos[i].iColorIdx]);
 	  SelectObject(hdc, hDrawPen);
 	  /*************************************************************************
 	   * draw side view
@@ -1320,12 +1320,12 @@ if(bSideview)
 			Circle(hdc, x, hy, iCircleSize, rc, true, true );
 			break;
 		default:
-			RenderFlarmPlaneSideview( hdc,   rc, fx,  fFlarmAlt, asFLRAMPos[i].fFlarmBearing , &sDia , fPlaneSize/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
+			RenderFlarmPlaneSideview( hdc,   rc, fx,  fFlarmAlt, asFLARMPos[i].fFlarmBearing , &sDia , fPlaneSize/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
 			break;
 	  }
 	  wsprintf(lbuffer,_T(""));
 	  if (DrawInfo.FLARM_Traffic[i].Cn && DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
-	  	_tcscat(lbuffer,  asFLRAMPos[i].szGliderType);
+	  	_tcscat(lbuffer,  asFLARMPos[i].szGliderType);
 	  	_tcscat(lbuffer,_T(": "));
 	  	_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
 	  }
