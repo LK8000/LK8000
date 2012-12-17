@@ -106,6 +106,7 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
             if(iTraceSpaceCnt == 0)
             {
 
+		      LKASSERT(pGPS->FLARMTRACE_iLastPtr>0 && pGPS->FLARMTRACE_iLastPtr<MAX_FLARM_TRACES);
 		      pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLat = pGPS->FLARM_Traffic[i].Latitude;
 		      pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLon = pGPS->FLARM_Traffic[i].Longitude;
 
