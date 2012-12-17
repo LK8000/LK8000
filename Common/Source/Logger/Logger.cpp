@@ -252,13 +252,16 @@ void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
                       double BaroAltitude, short Hour, short Minute, short Second) {
 #endif
 
+  LKASSERT(NumLoggerBuffered<=MAX_LOGGER_BUFFER);
   if (NumLoggerBuffered== MAX_LOGGER_BUFFER) {
     for (int i= 0; i< NumLoggerBuffered-1; i++) {
+      LKASSERT((i+1)<MAX_LOGGER_BUFFER);
       LoggerBuffer[i]= LoggerBuffer[i+1];
     }
   } else {
     NumLoggerBuffered++;
   }
+  LKASSERT((NumLoggerBuffered-1)>=0);
   LoggerBuffer[NumLoggerBuffered-1].Latitude = Latitude;
   LoggerBuffer[NumLoggerBuffered-1].Longitude = Longitude;
   LoggerBuffer[NumLoggerBuffered-1].Altitude = Altitude;
@@ -347,6 +350,7 @@ void LogPoint(double Latitude, double Longitude, double Altitude,
                    true);
     #endif
 
+    LKASSERT(NumLoggerBuffered<=MAX_LOGGER_BUFFER); // because we check i<
     for (int i=0; i<NumLoggerBuffered; i++) {
       LogPointToFile(LoggerBuffer[i].Latitude,
                      LoggerBuffer[i].Longitude,
