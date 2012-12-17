@@ -1,7 +1,9 @@
 
 #ifndef	DEVICE_H
 #define	DEVICE_H
- 
+
+#include "MapWindow.h" 
+#include "Port.h"
 
 #define DEVNAMESIZE  32
 #define	NUMDEV		 2

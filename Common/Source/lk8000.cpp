@@ -49,6 +49,7 @@
 #include "devIlec.h"
 #include "devDSX.h"
 #include "devIMI.h"
+#include "devEye.h"
 #include "devWesterboer.h"
 #include "devFlyNet.h"
 #include "InputEvents.h"
@@ -442,6 +443,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   IlecRegister();
   DSXRegister();
   CDevIMI::Register();
+  CDevEye::Register();
   FlytecRegister();
   LK8EX1Register();
   WesterboerRegister();

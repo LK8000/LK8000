@@ -25,7 +25,7 @@ void MapWindow::DrawAcceleration(HDC hDC, const RECT rc)
   POINT Pos;
   Pos.x = (rc.right - rc.left)/2 + (int)(DrawInfo.AccelY * ScaleX);
   Pos.y = (rc.bottom - rc.top)/2 - (int)((DrawInfo.AccelZ - 1) * ScaleY);
-  const double radius = 20 + (int)(DrawInfo.AccelX * ScaleZ);
+  const double radius = NIBLSCALE(15) + (int)(DrawInfo.AccelX * ScaleZ);
   
   const HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
   const HBRUSH  oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
@@ -180,10 +180,7 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   Circle(hDC, Start.x, Start.y, radius, rc, false, true );
 
   if(DrawInfo.AccelerationAvailable)
-  {
     DrawAcceleration(hDC, rc);
-    MapWindow::RequestFastRefresh();
-  }
 
   SelectObject(hDC, hpBorder);
   SelectObject(hDC, hbBorder);
