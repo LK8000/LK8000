@@ -929,7 +929,7 @@ DiagrammStruct sDia;
 
   if(bSideview)
   {
-	_stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
+    _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
     DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,rgbGridColor,  &sDia, text);
   }
 
@@ -1008,44 +1008,8 @@ RECT rcc = rct;
 
 
 
-  // if(DrawInfo.FLARM_Traffic[i].Average30s > -1.5)
-
 	int iTmp;
 
-#if 0 // ULLI FIX PLEASE
-	/***********************************************
-	 * own trace data
-	 **********************************************/
-	static int iCntr = 0;
-	if (iCntr++ > GC_TRACE_TIME_SKIP)
-    {
-	  double Vario;
-	  iCntr = 0;
-	  if (DrawInfo.VarioAvailable)  // coppied from LKDrawTrail
-		Vario = DrawInfo.Vario;
-	  else
-		Vario = DerivedDrawInfo.Vario;
-
-	  int iColorIdx = (int)(2*Vario  -0.5)+NO_VARIO_COLORS/2;
-	  iColorIdx = max( iColorIdx, 0);
-	  iColorIdx = min( iColorIdx, NO_VARIO_COLORS-1);
-
-	  i = DrawInfo.FLARMTRACE_iLastPtr;
-      // THIS CANNOT BE DONE. ORIGINALLY OVERWRITING DATA FROM THE WRONG THREAD.
-      // THIS IS NOW ONLY A COPY OF THE STRUCTURE, AND ANYTHING INSIDE THIS STRUCT IS READ ONLY.
-      // YOU CAN ALSO WRITE IN IT, but it will be overwritten after less than a second.
-      //
-      DrawInfo.FLARM_RingBuf[i].fLat = GPSlat;
-      DrawInfo.FLARM_RingBuf[i].fLon = GPSlon;
-      DrawInfo.FLARM_RingBuf[i].iColorIdx = iColorIdx;
-      DrawInfo.FLARMTRACE_iLastPtr++;
-      if(DrawInfo.FLARMTRACE_iLastPtr >= MAX_FLARM_TRACES)
-      {
-        DrawInfo.FLARMTRACE_iLastPtr=0;
-        DrawInfo.FLARMTRACE_bBuffFull = true;
-      }
-    } // if
-#endif
 
 	/**********************************************
 	 * loop over FLARM objects.
@@ -1053,14 +1017,7 @@ RECT rcc = rct;
 
 	for (i=0; i<FLARM_MAX_TRAFFIC; i++)
 	{
-	  if (DrawInfo.FLARM_Traffic[i].Status == LKT_EMPTY)
-	  {
-	#if 0 // REMOVE, WRONG HERE CANNOT BE DONE IN WRONG THREAD
-	//	DrawInfo.FLARMTRACE_bBuffFull= false;
-	//	DrawInfo->FLARMTRACE_iLastPtr = 0;
-	#endif
-	  }
-	  else
+	  if (DrawInfo.FLARM_Traffic[i].Status != LKT_EMPTY)
 	  {
 		/*************************************************************************
 		 * calculate positions
@@ -1095,11 +1052,12 @@ RECT rcc = rct;
 		}
 
 	  	int iCnt= FLARMID_SIZE_NAME;
-	    for ( (iCnt = FLARMID_SIZE_NAME);iCnt>0 ; iCnt--)
-	    {
-	      if(asFLARMPos[i].szGliderType[iCnt] ==_T(' '))
-		    asFLARMPos[i].szGliderType[iCnt]= 0;
-	    }
+
+	        for ( (iCnt = FLARMID_SIZE_NAME);iCnt>0 ; iCnt--)
+	        {
+	            if(asFLARMPos[i].szGliderType[iCnt] ==_T(' '))
+		          asFLARMPos[i].szGliderType[iCnt]= 0;
+	        }
 #endif
 		LKASSERT(nEntrys>=0 && nEntrys<FLARM_MAX_TRAFFIC);
 		aiSortArray[nEntrys++] = i;
@@ -1107,8 +1065,8 @@ RECT rcc = rct;
 
 	}
 
-    for (i=0; i < nEntrys; i++)
-      for(j=i+1; j < nEntrys; j++) {
+        for (i=0; i < nEntrys; i++) {
+            for(j=i+1; j < nEntrys; j++) {
 		LKASSERT(i<FLARM_MAX_TRAFFIC);
 		LKASSERT(aiSortArray>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 		if(asFLARMPos[aiSortArray[i]].fAlt  > asFLARMPos[aiSortArray[j]].fAlt )
@@ -1118,18 +1076,19 @@ RECT rcc = rct;
 		  aiSortArray[i] = aiSortArray[j];
 		  aiSortArray[j] = iTmp;
 		}
-      }
+            }
+        }
 
-/***********************************************
- * draw traces
- ***********************************************/
-    int iNoDos =0;
-    unsigned long lStartTime = GetTickCount();
-    if(bTrace)
-    //   if((iNoDos < NO_DOT_LIMIT) || (DrawInfo.FLARM_Traffic[i].Locked))
-    if(SPLITSCREEN_FACTOR >0)
-      if(	 ((GetTickCount()- lStartTime ) < 350))
-        iNoDos =  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia);
+        /***********************************************
+         * draw traces
+         ***********************************************/
+         int iNoDos =0;
+         unsigned long lStartTime = GetTickCount();
+
+         if(bTrace)
+           if(SPLITSCREEN_FACTOR >0)
+              if(	 ((GetTickCount()- lStartTime ) < 350))
+                iNoDos =  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia);
 
 /***********************************************
  * FLARM object loop
