@@ -24,9 +24,8 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
   int i;
   double passed;
   if (pGPS->FLARM_Available) {
-	static int iTraceSpaceCnt = 0;
-	if(iTraceSpaceCnt++ > GC_TRACE_TIME_SKIP)
-		iTraceSpaceCnt =0;
+	static unsigned short iTraceSpaceCnt = 0;
+	if(iTraceSpaceCnt++ > GC_TRACE_TIME_SKIP) iTraceSpaceCnt =0;
 	#ifdef DEBUG_LKT
 	StartupStore(_T("... [CALC thread] RefreshSlots\n"));
 	#endif
@@ -103,37 +102,29 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
 
 			// Then it is real traffic
 			pGPS->FLARM_Traffic[i].Status = LKT_REAL; // 100325 BUGFIX missing
-            if(iTraceSpaceCnt == 0)
-            {
 
-		      LKASSERT(pGPS->FLARMTRACE_iLastPtr>=0 && pGPS->FLARMTRACE_iLastPtr<MAX_FLARM_TRACES);
-		      pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLat = pGPS->FLARM_Traffic[i].Latitude;
-		      pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLon = pGPS->FLARM_Traffic[i].Longitude;
+			if(iTraceSpaceCnt == 0) {
 
-		      double Vario = pGPS->FLARM_Traffic[i].Average30s;
-			  int iColorIdx = (int)(2*Vario  -0.5)+NO_VARIO_COLORS/2;
-			  iColorIdx = max( iColorIdx, 0);
-			  iColorIdx = min( iColorIdx, NO_VARIO_COLORS-1);
+				LKASSERT(pGPS->FLARMTRACE_iLastPtr>=0 && pGPS->FLARMTRACE_iLastPtr<MAX_FLARM_TRACES);
+				pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLat = pGPS->FLARM_Traffic[i].Latitude;
+				pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLon = pGPS->FLARM_Traffic[i].Longitude;
 
+				double Vario = pGPS->FLARM_Traffic[i].Average30s;
+				int iColorIdx = (int)(2*Vario  -0.5)+NO_VARIO_COLORS/2;
+				iColorIdx = max( iColorIdx, 0);
+				iColorIdx = min( iColorIdx, NO_VARIO_COLORS-1);
 
-		      pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].iColorIdx = iColorIdx;
-		      pGPS->FLARMTRACE_iLastPtr++;
-		      if(pGPS->FLARMTRACE_iLastPtr >= MAX_FLARM_TRACES)
-		      {
-		        pGPS->FLARMTRACE_iLastPtr=0;
-		        pGPS->FLARMTRACE_bBuffFull = true;
-		      }
-            }
-			/*
-			} else {
-				if (pGPS->FLARM_Traffic[i].AlarmLevel>0) {
-					GaugeFLARM::Suppress = false; // NO USE
+				pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].iColorIdx = iColorIdx;
+				pGPS->FLARMTRACE_iLastPtr++;
+
+				if(pGPS->FLARMTRACE_iLastPtr >= MAX_FLARM_TRACES) {
+					pGPS->FLARMTRACE_iLastPtr=0;
+					pGPS->FLARMTRACE_bBuffFull = true;
 				}
 			}
-			*/
-		}
-	}
-  }
+		} // ID >0
+	} // for all traffic
+  } // if flarm available
 }
 
 
