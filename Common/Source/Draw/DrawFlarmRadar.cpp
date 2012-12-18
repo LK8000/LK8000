@@ -1394,8 +1394,6 @@ int iStep =(int)  (fZoom *3.0 / (double)GC_TRACE_TIME_SKIP);
 if (iStep < 1)
   iStep = 1;
 iStep = 1;
-unsigned long lStartTime = GetTickCount();
-
 
 	for(i= 0; i < iTo; i=i+iStep)
 	{
@@ -1431,8 +1429,6 @@ unsigned long lStartTime = GetTickCount();
 	  iIdx-=iStep ;
 	  if(iIdx < 0)
 		iIdx += MAX_FLARM_TRACES;
-	  if(	 ((GetTickCount()- lStartTime ) > 350))
-		i=0;
 	}
 
 
