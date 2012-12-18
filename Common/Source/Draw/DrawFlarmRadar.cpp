@@ -1037,10 +1037,9 @@ RECT rcc = rct;
 
 
 		wsprintf(asFLARMPos[i].szGliderType,_T(""));
-#if 1
 		// This is not the problem, but we must take off all possible derived malfunctions
 		_tcscpy(asFLARMPos[i].szGliderType,_T("XXX"));
-#else
+
 		extern FlarmIdFile *file;
 		FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[i].ID);
 
@@ -1055,16 +1054,18 @@ RECT rcc = rct;
 	            if(asFLARMPos[i].szGliderType[iCnt] ==_T(' '))
 		          asFLARMPos[i].szGliderType[iCnt]= 0;
 	        }
-#endif
+
 		LKASSERT(nEntrys>=0 && nEntrys<FLARM_MAX_TRAFFIC);
 		aiSortArray[nEntrys++] = i;
 	  }
 
 	}
 
-        for (i=0; i < nEntrys; i++) {
-            for(j=i+1; j < nEntrys; j++) {
-		LKASSERT(i<FLARM_MAX_TRAFFIC);
+    for (i=0; i < nEntrys; i++)
+    {
+      for(j=i+1; j < nEntrys; j++)
+      {
+	    LKASSERT(i<FLARM_MAX_TRAFFIC);
 		LKASSERT(aiSortArray>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 		if(asFLARMPos[aiSortArray[i]].fAlt  > asFLARMPos[aiSortArray[j]].fAlt )
 		{
@@ -1073,94 +1074,92 @@ RECT rcc = rct;
 		  aiSortArray[i] = aiSortArray[j];
 		  aiSortArray[j] = iTmp;
 		}
-            }
-        }
+      }
+    }
 
-        /***********************************************
-         * draw traces
-         ***********************************************/
-         int iNoDos =0;
-         unsigned long lStartTime = GetTickCount();
+    /***********************************************
+     * draw traces
+     ***********************************************/
+int iNoDos =0;
 
-         if(bTrace)
-           if(SPLITSCREEN_FACTOR >0)
-              if(	 ((GetTickCount()- lStartTime ) < 350))
-                iNoDos =  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia);
+     if(bTrace)
+       if(SPLITSCREEN_FACTOR >0)
+         iNoDos =  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia);
 
-/***********************************************
- * FLARM object loop
- ***********************************************/
+    /***********************************************
+     * FLARM object loop
+     ***********************************************/
 bool bCenter = false;
 
 if(SPLITSCREEN_FACTOR >0)
-for (j=0; j<nEntrys; j++)
 {
-  i = aiSortArray[j];
-  LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
+  for (j=0; j<nEntrys; j++)
   {
-	/*************************************************************************
-	 * calculate positions
-	 *************************************************************************/
-	fx = asFLARMPos[i].fx;
-	fy = asFLARMPos[i].fy;
-	fFlarmAlt = asFLARMPos[i].fAlt;
-	int x  = DistanceToX(fx,  &sTopDia);
-	int y  = HeightToY  (fy,  &sTopDia);
-	PositionTopView[i].left   = x - iTouchAreaSize;
-	PositionTopView[i].right  = x + iTouchAreaSize;
-	PositionTopView[i].top    = y - iTouchAreaSize;
-	PositionTopView[i].bottom = y + iTouchAreaSize;
-	TextInBoxMode_t displaymode = {1};
-	displaymode.NoSetFont = 1;
-	displaymode.Border=1;
+    i = aiSortArray[j];
+    LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
+    {
+	  /*************************************************************************
+	   * calculate positions
+	   *************************************************************************/
+	  fx = asFLARMPos[i].fx;
+	  fy = asFLARMPos[i].fy;
+  	  fFlarmAlt = asFLARMPos[i].fAlt;
+	  int x  = DistanceToX(fx,  &sTopDia);
+	  int y  = HeightToY  (fy,  &sTopDia);
+	  PositionTopView[i].left   = x - iTouchAreaSize;
+	  PositionTopView[i].right  = x + iTouchAreaSize;
+	  PositionTopView[i].top    = y - iTouchAreaSize;
+	  PositionTopView[i].bottom = y + iTouchAreaSize;
+	  TextInBoxMode_t displaymode = {1};
+	  displaymode.NoSetFont = 1;
+	  displaymode.Border=1;
 
 
-    if(fx > sTopDia.fXMin )  /* sing sight ? */
-    if(fx < sTopDia.fXMax )
-    if(fy < sTopDia.fYMax )
-	if(fy > sTopDia.fYMin )
+      if(fx > sTopDia.fXMin )  /* sing sight ? */
+      if(fx < sTopDia.fXMax )
+      if(fy < sTopDia.fYMax )
+	  if(fy > sTopDia.fYMin )
 	#if 0
 	// These would cause topview not to show all objects outside vertical scale
-	if(fFlarmAlt < sDia.fYMax )
-	if(fFlarmAlt > sDia.fYMin )
+	  if(fFlarmAlt < sDia.fYMax )
+	  if(fFlarmAlt > sDia.fYMin )
 	#endif
-	{
-	  /***********************************************
-	   * draw center aircraft if first time above
-	   ***********************************************/
-	  if(bCenter == false)
-	    if(fFlarmAlt > 0 )
+	  {
+	    /***********************************************
+	     * draw center aircraft if first time above
+	     ***********************************************/
+	    if(bCenter == false)
 	    {
-	      bCenter = true;
-		  SelectObject(hdc, hDrawBrush);
-		  SelectObject(hdc, hDrawPen);
-		  SelectObject(hdc,GetStockObject(BLACK_PEN));
-		  PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN);
-		  Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
-		  SelectObject(hdc, hDrawPen);
-
+	      if(fFlarmAlt > 0 )
+	      {
+	        bCenter = true;
+		    SelectObject(hdc, hDrawBrush);
+		    SelectObject(hdc, hDrawPen);
+		    PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN);
+		    Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
+	      }
 	    }
-	  /*************************************************************************
-	   * calculate climb color
-	   *************************************************************************/
-	  double fInteg30 = LKTraffic[i].Average30s;
-	  int iVarioIdx = (int)(2*fInteg30-0.5)+NO_VARIO_COLORS/2;
-	  if(iVarioIdx < 0) iVarioIdx =0;
-	  if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
-	  SelectObject(hdc, *variobrush[iVarioIdx]);
+	    /*************************************************************************
+	     * calculate climb color
+	     *************************************************************************/
+	    double fInteg30 = LKTraffic[i].Average30s;
+	    int iVarioIdx = (int)(2*fInteg30-0.5)+NO_VARIO_COLORS/2;
+	    if(iVarioIdx < 0) iVarioIdx =0;
+	    if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
+	    SelectObject(hdc, *variobrush[iVarioIdx]);
 
 
-	  /*************************************************************************
-	   * draw side view
-	   *************************************************************************/
-	  switch (LKTraffic[i].Status) { // 100321
-		case LKT_GHOST:
+	    /*************************************************************************
+	     * draw side view
+	     *************************************************************************/
+	    switch (LKTraffic[i].Status) { // 100321
+		  case LKT_GHOST:
 			Rectangle(hdc,x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
 			break;
-		case LKT_ZOMBIE:
+		  case LKT_ZOMBIE:
 			Circle(hdc, x, y, iCircleSize, rct, true, true );
 			break;
-		default:
+		  default:
 	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
 			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360( asFLARMPos[i].fFlarmBearing ));
 			Polygon(hdc,Triangle,5);
@@ -1178,55 +1177,53 @@ for (j=0; j<nEntrys; j++)
 			  TextInBox(hdc, &rct, lbuffer,x+tscaler, y+tscaler, 0, &displaymode, false);
 
 			break;
-	  }
-	  /*********************************************
-	   * draw lines to target if target selected
-	   */
-	  if(LKTraffic[i].Locked)
-	  {
-		DrawDashLine(hdc, 4, (POINT){x_middle, y_middle},(POINT){ x, y} ,rgb_targetlinecol, rct );
-	  }
-	}
+	      }
+	    /*********************************************
+	     * draw lines to target if target selected
+	     */
+	      if(LKTraffic[i].Locked)
+	      {
+		    DrawDashLine(hdc, 4, (POINT){x_middle, y_middle},(POINT){ x, y} ,rgb_targetlinecol, rct );
+	      }
+	    }
+      }
+    }
   }
-}
-/***********************************************
- * draw center aircraft if highest (was never drawn)
- ***********************************************/
-
-if(SPLITSCREEN_FACTOR >0)
-if(bCenter == false)
-{
-  SelectObject(hdc, hDrawBrush);
-  SelectObject(hdc, hDrawPen);
-  SelectObject(hdc,GetStockObject(BLACK_PEN));
-  PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN);
-  Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
-  SelectObject(hdc, hDrawPen);
-}
-
+  /***********************************************
+   * draw center aircraft if highest (was never drawn)
+   ***********************************************/
+  if(SPLITSCREEN_FACTOR >0)
+  {
+    if(bCenter == false)
+    {
+      SelectObject(hdc, hDrawBrush);
+      SelectObject(hdc, hDrawPen);
+      PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN);
+      Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
+    }
+  }
 
 /*************************************************************************
  * sideview
  *************************************************************************/
-for (i=0; i < nEntrys; i++)
-  for(j=i+1; j < nEntrys; j++) {
-	LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
-	LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
-	if(asFLARMPos[aiSortArray[i]].fy  < asFLARMPos[aiSortArray[j]].fy )
-	{
-	  iTmp = aiSortArray[i];
-	  LKASSERT(j<FLARM_MAX_TRAFFIC);
-	  aiSortArray[i] = aiSortArray[j];
-	  aiSortArray[j] = iTmp;
-	}
+  for (i=0; i < nEntrys; i++){
+    for(j=i+1; j < nEntrys; j++) {
+	  LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
+	  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
+	  if(asFLARMPos[aiSortArray[i]].fy  < asFLARMPos[aiSortArray[j]].fy )
+	  {
+	    iTmp = aiSortArray[i];
+	    LKASSERT(j<FLARM_MAX_TRAFFIC);
+	    aiSortArray[i] = aiSortArray[j];
+	    aiSortArray[j] = iTmp;
+	  }
+    }
   }
-
 /***********************************************
  * FLARM object loop
  ***********************************************/
 if(bSideview)
 {
-
   bCenter = false;
   for (j=0; j<nEntrys; j++)
   {
@@ -1388,14 +1385,11 @@ if( DrawInfo.FLARMTRACE_bBuffFull)
 HBRUSH *pOldBrush =NULL;
 HPEN oldPen =	(HPEN)SelectObject(hDC, GetStockObject(NULL_PEN));
 
-
-
 int iStep =(int)  (fZoom *3.0 / (double)GC_TRACE_TIME_SKIP);
 if (iStep < 1)
   iStep = 1;
 iStep = 1;
-unsigned long lStartTime = GetTickCount();
-
+DWORD lStartTime = GetTickCount();
 
 	for(i= 0; i < iTo; i=i+iStep)
 	{
@@ -1410,15 +1404,18 @@ unsigned long lStartTime = GetTickCount();
 	//	if(PtInRect(Pnt, pDia->rc ))
 
 	  if( Pnt.x  > pDia->rc.left   )
+	  {
 	    if( Pnt.x  < pDia->rc.right  )
+	    {
 		  if( Pnt.y  < pDia->rc.bottom )
+		  {
 		    if( Pnt.y > pDia->rc.top    )
 		    {
 		      if((bTrace == IM_POS_TRACE_ONLY) && (DrawInfo.FLARM_RingBuf[iIdx].iColorIdx <(NO_VARIO_COLORS/2)))
 		    	; // do nothing (skip drawing if neg vario)!!
 		      else
 		      {
-	  		LKASSERT(DrawInfo.FLARM_RingBuf[iIdx].iColorIdx>=0 && DrawInfo.FLARM_RingBuf[iIdx].iColorIdx<NO_VARIO_COLORS);
+	  		    LKASSERT(DrawInfo.FLARM_RingBuf[iIdx].iColorIdx>=0 && DrawInfo.FLARM_RingBuf[iIdx].iColorIdx<NO_VARIO_COLORS);
 		        if(variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx]!= pOldBrush)
 		        {
 			      pOldBrush  = variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx];
@@ -1428,15 +1425,20 @@ unsigned long lStartTime = GetTickCount();
 		        iCnt++;
 		      }
 		    }
-	  iIdx-=iStep ;
-	  if(iIdx < 0)
+		  }
+	    }
+	  }
+	  iIdx-=iStep ;  /* draw backward to cut the oldest trace parts in case the drawing time exceeds */
+	  if(iIdx < 0) {
 		iIdx += MAX_FLARM_TRACES;
-	  if(	 ((GetTickCount()- lStartTime ) > 350))
-		i=0;
+	  };
+      /************************************************************************
+       * check drawing timeout (350m)
+       */
+	  if(((GetTickCount()- lStartTime ) > 350)) /* drawing still took less than 350ms */
+        i = iTo;                                /* fast exit on timeout               */
 	}
 
-
 SelectObject(hDC, (HPEN) oldPen);
-
 return iCnt;
 }
