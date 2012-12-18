@@ -54,6 +54,11 @@ void StartArc(HDC hdc,
                   latitude1, longitude1,
                   &radius,
                   &bearing);
+  #if BUGSTOP
+  LKASSERT(radius!=0);
+  if (radius==0) radius=1;
+  #endif
+
   double angle = 360*min(1.0, arclength/(2.0*PI*radius));
   int i0 = (int)(bearing+angle/2);
   int i1 = (int)(bearing-angle/2);
@@ -117,7 +122,6 @@ int Circle(HDC hdc, long x, long y, int radius, RECT rc, bool clip, bool fill)
   if (msRectOverlap(&rect, &rcrect)!=MS_TRUE) {
     return FALSE;
   }
-  // JMW added faster checking...
 
   unsigned int step = 1;
   if (radius<20) {
