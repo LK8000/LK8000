@@ -1167,8 +1167,7 @@ if(SPLITSCREEN_FACTOR >0)
 		    /*************************************************************************
 		     * draw label
 		     *************************************************************************/
-		    wsprintf(lbuffer,_T(""));
-			_stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*LKTraffic[i].Average30s);
+		   _stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*LKTraffic[i].Average30s);
 
 		    SIZE tsize;
 		    SetBkMode(hdc, TRANSPARENT);
