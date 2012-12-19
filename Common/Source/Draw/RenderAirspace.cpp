@@ -51,7 +51,7 @@ RECT rc  = rci; /* rectangle for sideview */
 bool bInvCol = true; //INVERTCOLORS;
 static double fHeigtScaleFact = MIN_OFFSET;
 double fDist = 55.0*1000; // kmbottom
-double aclat, aclon, ach, acb, speed, calc_average30s;
+double aclat, aclon, acb, speed, calc_average30s;
 double GPSbrg=0;
 double wpt_brg;
 double wpt_dist;
@@ -276,7 +276,6 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     fMC0 = GlidePolar::SafetyMacCready;
     aclat = DrawInfo.Latitude;
     aclon = DrawInfo.Longitude;
-    ach   = DrawInfo.Altitude;
     acb    = DrawInfo.TrackBearing;
     GPSbrg = acb;
 
