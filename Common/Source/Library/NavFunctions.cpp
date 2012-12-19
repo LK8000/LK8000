@@ -537,22 +537,3 @@ void LatLon2Flat(double lon, double lat, int *scx, int *scy) {
   *scx = (int)(lon*fastcosine(lat)*100);
   *scy = (int)(lat*100);
 }
-
-
-
-void CalcIntersection(Coor a1, Coor a2, Coor b1, Coor b2, Coor &Res){
-	Vec A(a1,a2);
-	Vec B(b1,b2);
-
-	LKASSERT(A.norme()!=0);
-	double a=A.vecto(Vec(a1,b1))/A.norme(); 
-	double b=A.vecto(Vec(a1,b2))/A.norme(); 
-
-	LKASSERT(a!=b);
-	double newB=B.norme()+(B.norme()*b)/(a-b);
-
-	LKASSERT(B.norme()!=0);
-	Res.lat=b1.lat+B.lat*newB/B.norme();
-	Res.lon=b1.lon+B.lon*newB/B.norme();
-}
-
