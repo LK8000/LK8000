@@ -25,7 +25,7 @@ void StatusFileInit() {
   StatusMessageData[0].doSound = true; 
   StatusMessageData[0].sound = TEXT("IDR_WAV_DRIP");
   StatusMessageData_Size=1;
-  StatusMessageData[0].delay_ms = 2500; // 2.5 s default timing for a status message
+  StatusMessageData[0].delay_ms = 1500; // 1.5 s default timing for a status message
 
 }
 
