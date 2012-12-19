@@ -576,7 +576,7 @@ void AlertBestAlternate(short soundmode) {
 				DISTANCEMODIFY*WayPointCalc[BestAlternate].Distance,
 				(Units::GetDistanceName()) );
 				Message::Lock(); // 091211
-				Message::AddMessage(5000, 3, mbuf);
+				Message::AddMessage(2000, 3, mbuf);
 				Message::Unlock();
 				break;
 			case 2: 
@@ -587,7 +587,7 @@ void AlertBestAlternate(short soundmode) {
 				// Do NOT disturb the pilot for 5 minutes with useless further messages
 				LastAlertTime += 180.0;
 				Message::Lock(); // 091211
-				Message::AddMessage(10000, 3, mbuf);
+				Message::AddMessage(2000, 3, mbuf);
 				Message::Unlock();
 	
 				break;
