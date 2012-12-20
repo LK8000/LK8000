@@ -27,7 +27,7 @@
 // I have cleaned it up on Nov 29th 2009 - Paolo Ventafridda
 
 #include <math.h>
-
+#include "LKAssert.h"
 
 // Some constants used by these functions.
 
@@ -164,10 +164,12 @@ void LatLonToUtm (double a, double f, int& utmXZone, char& utmYZone,
 
 	double latRad = lat * deg2rad;
 	double lonRad = lon * deg2rad;
+	LKASSERT(f!=0);
 	recf = 1.0 / f;
 	b = a * (recf - 1.0) / recf;
 	eSquared = CalculateESquared (a, b);
 	e2Squared = CalculateE2Squared (a, b);
+	LKASSERT(a!=b);
 	tn = (a - b) / (a + b);
 	ap = a * (1.0 - tn + 5.0 * ((tn * tn) - (tn * tn * tn)) / 4.0 + 81.0 *
 		((tn * tn * tn * tn) - (tn * tn * tn * tn * tn)) / 64.0);
@@ -183,6 +185,7 @@ void LatLonToUtm (double a, double f, int& utmXZone, char& utmYZone,
 	dlam = lonRad - olam;
 	s = sin (latRad);
 	c = cos (latRad);
+	LKASSERT(c!=0);
 	t = s / c;
 	eta = e2Squared * (c * c);
 	sn = sphsn (a, eSquared, latRad);
@@ -294,22 +297,28 @@ void UtmToLatLon (double a, double f, int utmXZone, char utmYZone,
 	} else {
 		nfn = 0;
 	}
+	LKASSERT(ok!=0);
 	tmd = (northing - nfn) / ok;
 	sr = sphsr (a, eSquared, 0.0);
+	LKASSERT(sr!=0);
 	ftphi = tmd / sr;
 	double t10, t11, t14, t15;
 	for (int i = 0; i < 5; i++) {
 		t10 = sphtmd (ap, bp, cp, dp, ep, ftphi);
 		sr = sphsr (a, eSquared, ftphi);
+		LKASSERT(sr!=0);
 		ftphi = ftphi + (tmd - t10) / sr;
 	}
 	sr = sphsr (a, eSquared, ftphi);
 	sn = sphsn (a, eSquared, ftphi);
 	s = sin (ftphi);
 	c = cos (ftphi);
+	LKASSERT(c!=0);
 	t = s / c;
 	eta = e2Squared * (c * c);
 	de = easting - fe;
+	LKASSERT(sn!=0);
+	LKASSERT(sr!=0);
 	t10 = t / (2.0 * sr * sn * (ok * ok));
 	t11 = t * (5.0 + 3.0 * (t * t) + eta - 4.0 * (eta * eta) - 9.0 * (t * t)
 		* eta) / (24.0 * sr * (sn * sn * sn) * (ok * ok * ok * ok));

@@ -56,8 +56,8 @@ void StartArc(HDC hdc,
                   &bearing);
   #if BUGSTOP
   LKASSERT(radius!=0);
-  if (radius==0) radius=1;
   #endif
+  if (radius==0) radius=1;
 
   double angle = 360*min(1.0, arclength/(2.0*PI*radius));
   int i0 = (int)(bearing+angle/2);

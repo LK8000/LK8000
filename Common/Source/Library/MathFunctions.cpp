@@ -327,6 +327,7 @@ void InitSineTable(void)
       if ((cosa<0) && (cosa>-1.0e-8)) {
 	cosa = -1.0e-8;
       }
+      LKASSERT(cosa!=0);
       INVCOSINETABLE[i] = 1.0/cosa;
     }
 }
@@ -373,6 +374,7 @@ unsigned int isqrt4(unsigned long val) {
 
 
 int roundupdivision(int a, int b) {
+   LKASSERT(b!=0);
    int c=a / b;
    if ( (a%b) >0) return ++c;
    else return c;

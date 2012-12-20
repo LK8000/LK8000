@@ -81,6 +81,10 @@ double FindQNH(double alt_raw, double alt_known) {
 
 double AirDensity(double altitude) {
   double rho = pow((44330.8-altitude)/42266.5,1.0/0.234969);
+  #if BUGSTOP
+  LKASSERT(rho>0);
+  #endif
+  if (rho<=0) rho=0.001; // we always give some pressure for the boys
   return rho;
 }
 

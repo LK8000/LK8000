@@ -77,6 +77,7 @@
 #include	<stdlib.h>
 #include	<math.h>
 #include        "magfield.h"
+#include	"LKAssert.h"
 
 #define	max(a,b)	(((a) > (b)) ? (a) : (b))
 
@@ -209,6 +210,8 @@ double SGMagVar( const double lat, const double lon, const double h, const long 
     theta = atan2(coslat * (h*sr + a*a), sinlat * (h*sr + b*b));
 		  
     /* theta is geocentric co-latitude */
+
+    LKASSERT((a*a - (a*a - b*b) * sinlat*sinlat) !=0);
 
     r = h*h + 2.0*h * sr +
 	(a*a*a*a - ( a*a*a*a - b*b*b*b ) * sinlat*sinlat ) / 

@@ -20,7 +20,6 @@
 // Boston, MA  02111-1307, USA.
 //
 
-
 #include "StdAfx.h"
 
 #include <stdio.h>
@@ -28,7 +27,7 @@
 #include "leastsqs.h"
 
 #include "utils/heapcheck.h"
-
+#include "LKAssert.h"
 
 /* 
 Least squares fit:
@@ -113,7 +112,8 @@ void LeastSquares::least_squares_update() {
       denom;
   } else {
     m = 0.0;
-  }
+  }	
+  LKASSERT(sum_weights!=0);
   b = (sum_yi - m*sum_xi) / sum_weights;
   
   y_ave = m*(x_max+x_min)/2.0+b;
@@ -135,6 +135,7 @@ void LeastSquares::least_squares_update(double x, double y, double weight) {
 }
 
 void LeastSquares::least_squares_error_update() {
+  LKASSERT(sum_weights!=0);
   rms_error = sqrt(sum_error/sum_weights);
 }
 
