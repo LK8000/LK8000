@@ -221,6 +221,36 @@ New Takeoff safety alarm (configuration menu Alarms)
    in use again for the next takeoff.
 
 
+
+LK8000 VERSION 3.1L 121221
+==========================
+
+NEW THINGS
+
+. FAI Closing Point distance C:   and relative C:%  added to infoboxes
+. Support for new EYE device
+
+
+CHANGES
+
+. Message timeout reduced from 2.5 seconds to 1.5 seconds
+. BestAlternate messages lasting only 2 seconds, instead of 5 to 10 seconds
+
+
+FIXES
+
+. Fix Safety altitude and safety altitude terrain in Safety configuration not accurate using imperial units.
+  For example, setting 1500ft would have rounded them to 1499. 
+  This fix requires a reconfiguration of those values, that are reset.
+
+. Fix 3.1j simulator bug not moving aircraft if not flying.
+  so it took some seconds to actually see the aircraft moving.
+
+. Fix Flarm Radar critical bug freezing LK after some time, expecially in simulations.
+
+
+
+
 LK8000 VERSION 3.1k 121214
 ==========================
 
