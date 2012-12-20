@@ -414,7 +414,7 @@ void dlgWayPointDetailsShowModal(short mypage){
 				  0)- WayPointList[SelectedWaypoint].Altitude;
 
   if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable) 
-	alt-=SAFETYALTITUDEARRIVAL;
+	alt-=(SAFETYALTITUDEARRIVAL/10);
 
   _stprintf(sTmp, TEXT("%.0f %s"), alt*ALTITUDEMODIFY,
 	    Units::GetAltitudeName());
@@ -436,7 +436,7 @@ void dlgWayPointDetailsShowModal(short mypage){
     WayPointList[SelectedWaypoint].Altitude;
 
   if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable) 
-	alt-=SAFETYALTITUDEARRIVAL;
+	alt-=(SAFETYALTITUDEARRIVAL/10);
 
   _stprintf(sTmp, TEXT("%.0f %s"), alt*ALTITUDEMODIFY,
 	    Units::GetAltitudeName());

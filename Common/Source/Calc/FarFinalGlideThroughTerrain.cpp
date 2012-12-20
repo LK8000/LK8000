@@ -72,7 +72,7 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
   altitude = myaltitude;
   h =  max(0, (int)RasterTerrain::GetTerrainHeight(lat, lon)); 
   if (h==TERRAIN_INVALID) h=0; //@ 101027 FIX
-  dh = altitude - h - SAFETYALTITUDETERRAIN;
+  dh = altitude - h - SAFETYALTITUDETERRAIN/10;
   last_dh = dh;
   if (dh<0) {
     start_under = true;
@@ -126,7 +126,7 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
     h =  max(0,(int)RasterTerrain::GetTerrainHeight(lat, lon)); 
     if (h==TERRAIN_INVALID) h=0;
 
-    dh = altitude - h - SAFETYALTITUDETERRAIN;
+    dh = altitude - h - SAFETYALTITUDETERRAIN/10;
 
     if (TerrainBase && (dh>0) && (h>0)) {
       *TerrainBase = min(*TerrainBase, h);

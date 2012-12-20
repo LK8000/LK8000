@@ -2054,14 +2054,14 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeArrival"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(ALTITUDEMODIFY*SAFETYALTITUDEARRIVAL));
+    wp->GetDataField()->SetAsFloat(iround(ALTITUDEMODIFY*SAFETYALTITUDEARRIVAL/10));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeTerrain"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(ALTITUDEMODIFY*SAFETYALTITUDETERRAIN));
+    wp->GetDataField()->SetAsFloat(iround(ALTITUDEMODIFY*SAFETYALTITUDETERRAIN/10));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -3831,7 +3831,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeArrival"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
+    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
     if (SAFETYALTITUDEARRIVAL != ival) {
       SAFETYALTITUDEARRIVAL = ival;
     }
@@ -3839,7 +3839,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeTerrain"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
+    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
     if (SAFETYALTITUDETERRAIN != ival) {
       SAFETYALTITUDETERRAIN = ival;
     }

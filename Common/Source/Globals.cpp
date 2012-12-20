@@ -141,8 +141,8 @@ void Globals_Init(void) {
   EnableFLARMMap = 0;
 
   // Final Glide Data
-  SAFETYALTITUDEARRIVAL = 300;
-  SAFETYALTITUDETERRAIN = 50;
+  SAFETYALTITUDEARRIVAL = 3000;
+  SAFETYALTITUDETERRAIN = 500;
   SAFTEYSPEED = 50.0;
 
   // Total Energy usage, config and runtime separated

@@ -51,7 +51,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   if (!WayPointList) return;
 
   // We are not considering total energy here, forbidden for safety reasons
-  double searchrange=(Calculated->NavAltitude-SAFETYALTITUDEARRIVAL)* GlidePolar::bestld /1000;
+  double searchrange=(Calculated->NavAltitude-(SAFETYALTITUDEARRIVAL/10))* GlidePolar::bestld /1000;
   if (searchrange <= 0) 
 	searchrange=2; // lock to home airport at once
   if (searchrange > ALTERNATE_MAXRANGE) 
@@ -233,7 +233,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   #endif
 
   bestalternate=-1;  // reset the good choice
-  double safecalc = Calculated->NavAltitude - SAFETYALTITUDEARRIVAL;
+  double safecalc = Calculated->NavAltitude - (SAFETYALTITUDEARRIVAL/10);
   double grpolar = GlidePolar::bestld *SAFELD_FACTOR; // use updated polar bestld for current ballast
   int curwp, curbestairport=-1, curbestoutlanding=-1;
   double curgr=0, curbestgr=INVALID_GR, curbestgr_outlanding=INVALID_GR, curbestgr_preferred=INVALID_GR;;

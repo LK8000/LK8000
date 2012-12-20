@@ -61,7 +61,7 @@ double FinalGlideThroughTerrain(const double this_bearing,
   const double glide_max_range = Calculated->NavAltitude/irange;
 #endif
 
-  safetyterrain=SAFETYALTITUDETERRAIN <= 0 ? 1 : SAFETYALTITUDETERRAIN;
+  safetyterrain=SAFETYALTITUDETERRAIN <= 0 ? 1 : SAFETYALTITUDETERRAIN/10;
 
   // returns distance one would arrive at altitude in straight glide
   // first estimate max range at this altitude

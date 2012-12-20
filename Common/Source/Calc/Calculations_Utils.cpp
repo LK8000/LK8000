@@ -118,7 +118,7 @@ bool CheckSafetyAltitudeApplies(const int wpindex) {
 double GetSafetyAltitude(const int wpindex) {
 
   if (CheckSafetyAltitudeApplies(wpindex))
-	return SAFETYALTITUDEARRIVAL;
+	return SAFETYALTITUDEARRIVAL/10;
   else
 	return 0;
 
@@ -148,7 +148,7 @@ bool IsSafetyAltitudeInUse(const int wpindex) {
 	return false;
   if (!CheckSafetyAltitudeApplies(wpindex))
 	return false;
-  if (SAFETYALTITUDEARRIVAL<50)
+  if (SAFETYALTITUDEARRIVAL<500) // SAFETY is *10, so we are checking <50
 	return false;
 
   return true;

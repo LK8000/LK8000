@@ -327,7 +327,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
                                        DerivedDrawInfo.WindBearing,
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
-      if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv_mc0 -= SAFETYALTITUDEARRIVAL;
+      if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv_mc0 -= (SAFETYALTITUDEARRIVAL/10);
 
       wpt_altarriv =   DerivedDrawInfo.NavAltitude -
         GlidePolar::MacCreadyAltitude( MACCREADY,
@@ -344,7 +344,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       else
 	fLD=999;
 
-      if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv -= SAFETYALTITUDEARRIVAL;
+      if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv -= (SAFETYALTITUDEARRIVAL/10);
 
 
       //UnlockFlightData();
@@ -533,7 +533,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       line[0].x = iWpPos;
       line[0].y = CalcHeightCoordinat( wpt_altitude, &sDia);
       line[1].x = line[0].x;
-      line[1].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude,  &sDia );
+      line[1].y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10)+wpt_altitude,  &sDia );
       _DrawLine   (hdc, PS_SOLID, 5, line[0], line[1], RGB_ORANGE, rc);
 
 
@@ -542,14 +542,14 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       {
         fArrHight = wpt_altarriv;
         line[0].x = iWpPos;
-        line[0].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude,  &sDia );
+        line[0].y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10)+wpt_altitude,  &sDia );
         line[1].x = line[0].x;
-        line[1].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude+fArrHight, &sDia );
+        line[1].y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10)+wpt_altitude+fArrHight, &sDia );
         _DrawLine   (hdc, PS_SOLID, 4, line[0], line[1], RGB_GREEN, rc);
       }
       // Mark wpt with a vertical marker line
       line[0].x = iWpPos;
-      line[0].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude+fArrHight,  &sDia );
+      line[0].y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10)+wpt_altitude+fArrHight,  &sDia );
       line[1].x = line[0].x;
       line[1].y = rc.top;
       DrawDashLine(hdc,4, line[0], line[1],  RGB_DARKGREY, rc);
@@ -573,7 +573,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       if( !ISCAR && show_mc0 )
       {
         altarriv = wpt_altarriv_mc0 + wpt_altitude;
-        if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
+        if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL/10);
         line[0].x = CalcDistanceCoordinat( 0, &sDia);
         line[0].y = CalcHeightCoordinat ( DerivedDrawInfo.NavAltitude, &sDia );
         line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
@@ -581,7 +581,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
         DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
       }
       altarriv = wpt_altarriv + wpt_altitude;
-      if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
+      if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL/10);
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
       line[0].y = CalcHeightCoordinat( DerivedDrawInfo.NavAltitude, &sDia );
 
@@ -652,7 +652,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     double altarriv = wpt_altarriv_mc0; // + wpt_altitude;
-    if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
+    if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL/10);
 
 
 
@@ -703,7 +703,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
     // Print arrival AGL
     altarriv = wpt_altarriv;
-    if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
+    if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL/10);
     if(altarriv  > 0)
     {
   	  Units::FormatUserAltitude(altarriv, buffer, 7);

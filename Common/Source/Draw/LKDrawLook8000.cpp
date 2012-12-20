@@ -793,7 +793,7 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 
 			if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
 				SelectObject(hdc, LK8SmallFont); 
-				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL*ALTITUDEMODIFY,
+				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
 				LKWriteBoxedText(hdc, &DrawRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
 			}
@@ -886,7 +886,7 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 		if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
 			SelectObject(hdc, LK8SmallFont); 
 			// LKWriteBoxedText(hdc, gettext(1694), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
-			_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL*ALTITUDEMODIFY,
+			_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
 			LKWriteBoxedText(hdc, &DrawRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT,RGB_WHITE,RGB_BLACK);
 

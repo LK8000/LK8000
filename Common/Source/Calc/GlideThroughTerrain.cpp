@@ -67,7 +67,7 @@ void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		Calculated->ObstacleAltArriv = Calculated->NavAltitude
 			 - Calculated->ObstacleAltReqd
 			 - Calculated->ObstacleHeight
-			 - SAFETYALTITUDETERRAIN;
+			 - (SAFETYALTITUDETERRAIN/10);
 
 		// Reminder: we already have a glide range on destination.
 		minaltitude=Calculated->NavAltitude;

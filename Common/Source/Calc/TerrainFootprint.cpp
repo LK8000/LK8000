@@ -88,10 +88,10 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     // safety setting.
 
     double alt_arriv_agl = (CheckSafetyAltitudeApplies(wp_index)) ?
-           (alt_arriv + SAFETYALTITUDEARRIVAL) : alt_arriv;
+           (alt_arriv + (SAFETYALTITUDEARRIVAL/10)) : alt_arriv;
 
     // relative to "terrain height":
-    alt_arriv = alt_arriv_agl - SAFETYALTITUDETERRAIN;
+    alt_arriv = alt_arriv_agl - (SAFETYALTITUDETERRAIN/10);
 
     // Only bother calculating the 2nd glide footprint, if its
     // center (the next WP) is reachable above "terrain height".

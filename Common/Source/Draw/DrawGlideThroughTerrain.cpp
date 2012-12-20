@@ -54,8 +54,8 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
     // the "terrain height" safety setting.
 
     if (CheckSafetyAltitudeApplies(wp_index))
-      alt_arriv += SAFETYALTITUDEARRIVAL; // AGL
-    alt_arriv -= SAFETYALTITUDETERRAIN;   // rel. to "terrain height"
+      alt_arriv += SAFETYALTITUDEARRIVAL/10; // AGL
+    alt_arriv -= SAFETYALTITUDETERRAIN/10;   // rel. to "terrain height"
 
     if (alt_arriv <= 0) DrawGTL2 = false;
   }
@@ -134,7 +134,7 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
 			h =  max(0,RasterTerrain::GetTerrainHeight(DerivedDrawInfo.TerrainWarningLatitude, 
 				DerivedDrawInfo.TerrainWarningLongitude)); 
 			if (h==TERRAIN_INVALID) h=0; //@ 101027 FIX but unused
-			dh = CALCULATED_INFO.NavAltitude - h - SAFETYALTITUDETERRAIN;
+			dh = CALCULATED_INFO.NavAltitude - h - (SAFETYALTITUDETERRAIN/10);
 			_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*dh);
 			TextInBox(hDC,&rc,hbuf,sc.x+NIBLSCALE(10), sc.y, 0, tmode,false); 
 #else
