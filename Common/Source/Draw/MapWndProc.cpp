@@ -984,7 +984,7 @@ _continue:
 				return TRUE;
 				break;
 			case 0x25:	// VK_LEFT
-				#if TESTBENCH
+				#if ULLI
 				nn=GetKeyState(VK_SHIFT);
 				if (nn<0) {
 					InputEvents::eventChangeTurn(_T("left"));
@@ -999,7 +999,7 @@ _continue:
 				return TRUE;
 				break;
 			case 0x27:	// VK_RIGHT
-				#if TESTBENCH
+				#if ULLI
 				nn=GetKeyState(VK_SHIFT);
 				if (nn<0) {
 					InputEvents::eventChangeTurn(_T("right"));
