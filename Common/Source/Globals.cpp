@@ -100,8 +100,8 @@ void Globals_Init(void) {
 
   AltitudeMode_Config = ALLON;
   AltitudeMode = AltitudeMode_Config;
-  ClipAltitude = 1000;
-  AltWarningMargin = 100;
+  ClipAltitude = 10000; // m * 10
+  AltWarningMargin = 1000; // m *10
   AutoAdvance = 1;
   AutoAdvance_Config = 1;
   AdvanceArmed = false;
@@ -422,7 +422,7 @@ void Globals_Init(void) {
   WarningTime = 60;
   AcknowledgementTime = 900;                  // keep ack level for this time, [secs]
   AirspaceWarningRepeatTime = 300;            // warning repeat time if not acknowledged after 5 minutes
-  AirspaceWarningVerticalMargin = 100;        // vertical distance used to calculate too close condition
+  AirspaceWarningVerticalMargin = 1000;       // vertical distance used to calculate too close condition , in m*10
   AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
   AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
 

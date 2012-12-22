@@ -67,12 +67,12 @@ void LKProfileResetDefault(void) {
   DisplayTextType=0;
 
   AltitudeMode_Config = ALLON;
-  ClipAltitude = 1000;
-  AltWarningMargin = 100;
+  ClipAltitude = 10000;	 // * 10
+  AltWarningMargin = 1000; // * 10
   AIRSPACEWARNINGS = TRUE;
   WarningTime = 60;
   AirspaceWarningRepeatTime = 300;            // warning repeat time if not acknowledged after 5 minutes
-  AirspaceWarningVerticalMargin = 100;        // vertical distance used to calculate too close condition
+  AirspaceWarningVerticalMargin = 1000;        // vertical distance used to calculate too close condition *10
   AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
   AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
 

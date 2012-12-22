@@ -263,7 +263,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     } else {
       // If outside nofly zone, then nearest distance selected
       // Do not count it, if directly above or below (_hdistance<=0), or give zero horiz distance?
-      if ( (abs(_hdistance) < abs(_nearesthdistance)) && (_hdistance > 0) && IsAltitudeInside(alt,agl,AirspaceWarningVerticalMargin) ) {
+      if ( (abs(_hdistance) < abs(_nearesthdistance)) && (_hdistance > 0) && IsAltitudeInside(alt,agl,AirspaceWarningVerticalMargin/10) ) {
         _nearesthname = _name;
         _nearesthdistance = abs(_hdistance);
       }
@@ -391,7 +391,7 @@ bool CAirspace::FinishWarning()
         // If far away from border, set warnlevel to none
         // If base is sfc, we skip near warnings to base, to not get disturbing messages on landing.
         if ( (abs_hdistance>(_hdistancemargin+hdistance_histeresis)) && 
-             (abs_vdistance>(AirspaceWarningVerticalMargin+vdistance_histeresis)) 
+             (abs_vdistance>((AirspaceWarningVerticalMargin/10)+vdistance_histeresis)) 
            ) {
           // Far away horizontally _and_ vertically
           _warninglevel = awNone;
@@ -416,7 +416,7 @@ bool CAirspace::FinishWarning()
         }
         
         _vwarninglabel_hide = true;
-        if (abs_vdistance<AirspaceWarningVerticalMargin) {
+        if (abs_vdistance<(AirspaceWarningVerticalMargin/10)) {
           // Check what is outside vertically this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           int alt = _lastknownalt;
           int agl = _lastknownagl;
@@ -478,7 +478,7 @@ bool CAirspace::FinishWarning()
         }
         
         _vwarninglabel_hide = true;
-        if (abs_vdistance<AirspaceWarningVerticalMargin) {
+        if (abs_vdistance<(AirspaceWarningVerticalMargin/10)) {
           // Check what is outside vertically this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           int alt = _lastknownalt;
           int agl = _lastknownagl;
@@ -512,13 +512,13 @@ bool CAirspace::FinishWarning()
       case aweMovingOutsideNonfly:
         if (_pred_blindtime) break;         //Do not count predicted events near takeoff, filters not settled yet
         if ( (_hdistance > (_hdistancemargin + hdistance_histeresis)) ||
-             (!IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin + vdistance_histeresis))
+             (!IsAltitudeInside(_lastknownalt, _lastknownagl, (AirspaceWarningVerticalMargin/10) + vdistance_histeresis))
           ) {
             // Far away horizontally _or_ vertically
             _warninglevel = awNone;
         }
         if ( (_hdistance < _hdistancemargin) && (abs_beardiff<=90) ) {
-          if (IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin)) {
+          if (IsAltitudeInside(_lastknownalt, _lastknownagl, (AirspaceWarningVerticalMargin/10))) {
             // Near to inside and moving closer, modify warnevent to inform user
             _warninglevel = awYellow;
             _warnevent = aweNearInsideNonfly;
@@ -609,7 +609,7 @@ bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWar
     hdrawstyle = vdrawstyle;
     
     vDistance = _vdistance;
-    //if (abs(_vdistance) > AirspaceWarningVerticalMargin) vdrawstyle = awsHidden;
+    //if (abs(_vdistance) > (AirspaceWarningVerticalMargin/10)) vdrawstyle = awsHidden;
 
     // Nofly zones
     if (!_flyzone && (_hdistance<0)) hdrawstyle = awsHidden;       // No horizontal warning label if directly below or above
@@ -1161,17 +1161,17 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
     case ALLON : return true;
         
     case CLIP : 
-      if ((basealt < ClipAltitude) || base_is_sfc) return true; else return false;
+      if ((basealt < (ClipAltitude/10)) || base_is_sfc) return true; else return false;
 
     case AUTO:
-      if( (( alt > (basealt - AltWarningMargin)) || base_is_sfc )
-      && ( alt < (topalt + AltWarningMargin) ))
+      if( (( alt > (basealt - (AltWarningMargin/10))) || base_is_sfc )
+      && ( alt < (topalt + (AltWarningMargin/10)) ))
     return true;
       else
     return false;
 
     case ALLBELOW:
-      if(  ((basealt - AltWarningMargin) < alt ) || base_is_sfc )
+      if(  ((basealt - (AltWarningMargin/10)) < alt ) || base_is_sfc )
     return  true;
       else
     return false;

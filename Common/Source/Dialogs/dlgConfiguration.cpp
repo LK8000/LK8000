@@ -1927,14 +1927,14 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(ClipAltitude*ALTITUDEMODIFY));
+    wp->GetDataField()->SetAsFloat(iround(ClipAltitude*ALTITUDEMODIFY/10));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
     
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(AltWarningMargin*ALTITUDEMODIFY));
+    wp->GetDataField()->SetAsFloat(iround(AltWarningMargin*ALTITUDEMODIFY/10));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -3785,7 +3785,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
+    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
     if (ClipAltitude != ival) {
       ClipAltitude = ival;
     }
@@ -3793,7 +3793,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
+    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
     if (AltWarningMargin != ival) {
       AltWarningMargin = ival;
     }
