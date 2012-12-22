@@ -49,6 +49,10 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   int airspace_type;
   bool found = false;
   bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
+  #if ASPOUTLINE
+  #else
+  bool outlined_only=(GetAirSpaceFillType()==asp_fill_border_only);
+  #endif
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
   
@@ -121,7 +125,11 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
             ClearAirSpace(true, rc);
             found = true;
           }
-          if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected()) ) {
+	  #if ASPOUTLINE
+	  if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected()) ) {
+	  #else
+          if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only)  ^ (asp_selected_flash && (*it)->Selected()) ) {
+	  #endif
             SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
           } else {
             SelectObject(hDCTemp, hAirspacePens[airspace_type]);

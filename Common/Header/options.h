@@ -120,6 +120,11 @@
 // Use F Record in IGC log files- not needed really
 // #define LOGFRECORD	1
 
+// Use bAirspaceBlackOutline for drawing asp borders
+// When removed, removed the engineering configuration no more neeeded. Currently 
+// the engineering setting is not used if ASPOUTLINE is not enabled
+// #define ASPOUTLINE	1
+
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
  *
