@@ -210,7 +210,7 @@ BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 	pINFO->RelativeHumidity = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.1;
 
 	pINFO->ExtBatt1_Voltage = int16toDouble(HexStrToInt(wiss.GetNextString()))+1000;
-	
+
 	double delta_press = int16toDouble(HexStrToInt(wiss.GetNextString())) / 10.0 ;
 	double abs_press = int24toDouble(HexStrToInt(wiss.GetNextString())) / 400.0;
 
@@ -228,7 +228,7 @@ BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 
 	if(delta_press>=0){
 		pINFO->AirspeedAvailable = TRUE;
-		pINFO->IndicatedAirspeed = sqrt(2*delta_press);
+		pINFO->IndicatedAirspeed = sqrt(2 * delta_press / 1.225);
 		pINFO->TrueAirspeed = TrueAirSpeed(delta_press,	pINFO->RelativeHumidity, pINFO->OutsideAirTemperature, abs_press>0.0?abs_press*100:101325.0);
 	}
 
