@@ -131,7 +131,7 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     }
 
     DrawDashLine(hdc,1, line[0], line[1], color, rc);
-    
+
 
 
 	if (iTextAling>TEXT_NO_TEXT)
@@ -1037,8 +1037,6 @@ RECT rcc = rct;
 
 
 		wsprintf(asFLARMPos[i].szGliderType,_T(""));
-		// This is not the problem, but we must take off all possible derived malfunctions
-		_tcscpy(asFLARMPos[i].szGliderType,_T("XXX"));
 
 		extern FlarmIdFile *file;
 		FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[i].ID);
