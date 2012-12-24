@@ -602,7 +602,10 @@ void RenderSky(HDC hdc, const RECT rci, COLORREF Col1, COLORREF Col2 , int iStep
 RECT rcd=rc;
 int i;
 
-
+#if BUGSTOP
+LKASSERT(iSteps >=2)
+#endif
+if(iSteps == 1) iSteps++;
 double fdy = (double)(rc.top - rc.bottom)/(double)(iSteps-1);
 HPEN   hpHorizon;
 HBRUSH hbHorizon;
