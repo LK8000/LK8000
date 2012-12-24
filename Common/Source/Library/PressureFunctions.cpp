@@ -104,5 +104,5 @@ double AirDensity( double hr, double temp, double abs_press ) {
 // Air Speed from air density, humidity, temperature and absolute pressure
 double TrueAirSpeed( double delta_press, double hr, double temp, double abs_press ) {
 	double rho = AirDensity(hr,temp,abs_press);
-	return sqrt(2*delta_press)/rho;
+	return sqrt(2 * delta_press / rho);
 }
