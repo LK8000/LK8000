@@ -292,6 +292,11 @@ int DrawArc(HDC hdc, long x, long y, int radius, RECT rc,
   return TRUE;
 }
 
+#if 0 
+//
+// UNUSED, and to be corrected eventually since it is not using rc and
+// we now use DrawRect , also.
+//
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc)
 {
   BOOL Sector[9] = {FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE};
@@ -371,7 +376,7 @@ BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc)
       return FALSE;
     }
 }
-
+#endif // UNUSED PolygonVisible
 
 
 bool CheckRectOverlap(const RECT *rc1, const RECT *rc2) {
