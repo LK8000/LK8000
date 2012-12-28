@@ -76,40 +76,21 @@
 
 // #define LKCOMPETITION	1	// Will disable TRI 
 
- // This stuff will be permanently removed shortly
- // #define JP2000		1	// use JPG2000 terrain files .jp2 and jasper library
- #define LKMTERRAIN		1	// allow DEM terrain inside dat and lkm topology files
+// This stuff will be permanently removed shortly
+// #define JP2000		1	// use JPG2000 terrain files .jp2 and jasper library
+#define LKMTERRAIN		1	// allow DEM terrain inside dat and lkm topology files
 
 
-
- //#define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
-                      // enough to warrant detection of the start of free flight)
-                      // Eric Carden, 6/28/12
-#define GTL2 // Draws a glide terrain line around the next (active) task waypoint.
-             // Includes addition of MSG tokens "Line+NextWP" & "Shade+NextWP"
-             // and change in HELP message 194 (for "Glide Terrain Line" setting).
-             // Eric Carden, September 13, 2012
-
- // Modify best cruise track calculation to assume goal arrival
- // altitude of safety altitude (not current flight altitude).
- // Eric Carden, April 21, 2012
- // #define BCT_ALT_FIX
-
-// PWC Scoring use WGS84 earth model, but LK8000 use FAISphere
-// PG optimise can Work with WGS84 but Wapoint validation not..
-// we need change Waypoint validation before use it
-// #define _WGS84
+// Draws a glide terrain line around the next (active) task waypoint.
+// Includes addition of MSG tokens "Line+NextWP" & "Shade+NextWP"
+// and change in HELP message 194 (for "Glide Terrain Line" setting).
+// Eric Carden, September 13, 2012
+#define GTL2 
 
 // we cn use transparent filling for Turnpoint
 // cpu cost : ~40ms on Vertica V1
 // Set to 1 for Activate
 #define AATALPHABEND 1
-        
-
-
-// Bottombar TRM0 automatically triggered upon entering a thermal.
-// This will be soon removed entirely - 121002
-// #define AUTO_BBTRM		1
 
 // Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
 #define USEBIGZOOM	1	
@@ -117,17 +98,53 @@
 // Fix SETFOCUS problem 
 #define FIXFOCUS	1
 
-// Use F Record in IGC log files- not needed really
-// #define LOGFRECORD	1
-
 // Use bAirspaceBlackOutline for drawing asp borders
 // When removed, removed the engineering configuration no more neeeded. Currently 
 // the engineering setting is not used if ASPOUTLINE is not enabled
 // #define ASPOUTLINE	1
 
-/*
- * Incomplete work, or stuff that never got into production versions but still interesting
- *
+// LKAIRSPACE STUFF
+// Recalculate airspace positions only if the draw area has changed by more than 2 pixels
+#define LKASP_CALC_ON_CHANGE_ONLY		1
+// do not add screen points if closer than 5pix to the previous
+#define LKASP_REMOVE_NEAR_POINTS		1
+
+
+
+// ----------------------------------------------------------------------------------------
+//
+// OPTIONALs not in use within official LK versions, but still available for custom version
+//
+// ----------------------------------------------------------------------------------------
+
+// Use F Record in IGC log files- not needed really
+// #define LOGFRECORD	1
+
+// Bottombar TRM0 automatically triggered upon entering a thermal.
+// This will be soon removed entirely - 121002
+// #define AUTO_BBTRM		1
+
+// Modify best cruise track calculation to assume goal arrival
+// altitude of safety altitude (not current flight altitude).
+// Eric Carden, April 21, 2012
+// #define BCT_ALT_FIX
+
+// PWC Scoring use WGS84 earth model, but LK8000 use FAISphere
+// PG optimise can Work with WGS84 but Wapoint validation not..
+// we need change Waypoint validation before use it
+// #define _WGS84
+
+// #define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
+                      // enough to warrant detection of the start of free flight)
+                      // Eric Carden, 6/28/12
+
+
+
+// ----------------------------------------------------------------------------------------
+//
+// UNCOMPLETED WORK, or stuff that never got into production versions but still interesting
+//
+// ----------------------------------------------------------------------------------------
 
 // #define RASTERCACHE		1	// fallback to cached dem if it does not fit in memory entirely. 
 					// Does not work. 
@@ -145,8 +162,6 @@
 // May be sill used for custom user's topology, so let's keep it for a while.
 // #define USETOPOMARKS	1	
 
- *
- */
 
 #include "Debug.h"	// DEBUG OPTIONS FOR EVERYONE, depending also on TESTBENCH
 

@@ -5,9 +5,6 @@
 
 */
 
-#define CALC_ON_CHANGE_ONLY   /* recalculate airspace positions if the draw area has changed by more than 2pixels only */
-#define REVOME_NEAR_POINTS    /* do not add screen points if closer than 5pix to the previous */
-
 #include "externs.h"
 #include "LKAirspace.h"
 #include "RasterTerrain.h"
@@ -1085,7 +1082,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
  * ULLI remove unneeded points
  ****************************/
     POINTList::iterator itr = _screenpoints.begin();
-#ifndef REVOME_NEAR_POINTS
+#ifndef LKASP_REMOVE_NEAR_POINTS
     for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
       MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), *itr);
     }
@@ -2367,7 +2364,7 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
 void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify)
 {
 CAirspaceList::iterator it;
-#ifndef CALC_ON_CHANGE_ONLY
+#ifndef LKASP_CALC_ON_CHANGE_ONLY
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces_near.begin(); it!= _airspaces_near.end(); ++it) {
     (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, ResMapScaleOverDistanceModify);
