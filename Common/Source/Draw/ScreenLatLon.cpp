@@ -86,6 +86,7 @@ void MapWindow::LatLon2Screen(pointObj *ptin, POINT *ptout, const int n, const i
 }
 
 
+#if TOPO_CLIPPING
 //
 // This one is optimised for long polygons reduces
 //
@@ -125,7 +126,7 @@ int MapWindow::LatLon2ScreenCompr(pointObj *ptin, POINT *ptout, const int n, con
   }
   return icnt;
 }
-
+#endif
 
 
 //

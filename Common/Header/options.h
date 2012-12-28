@@ -103,12 +103,15 @@
 // the engineering setting is not used if ASPOUTLINE is not enabled
 // #define ASPOUTLINE	1
 
-// LKAIRSPACE STUFF
+// LKAIRSPACE OPTIM STUFF 
 // Recalculate airspace positions only if the draw area has changed by more than 2 pixels
 #define LKASP_CALC_ON_CHANGE_ONLY		1
 // do not add screen points if closer than 5pix to the previous
 #define LKASP_REMOVE_NEAR_POINTS		1
 
+// TOPOLOGY OPTIM STUFF
+// Clip Topology shapes
+#define TOPO_CLIPPING	1
 
 
 // ----------------------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 #include "Topology.h"
 #include "Multimap.h"
 
-#define DEBUG_POINTS_REDUCTION	0
+#define DEBUG_POINTS_REDUCTION	1
 
 XShape::XShape() {
   hide=false;
@@ -581,7 +581,9 @@ bool Topology::checkVisible(shapeObj& shape, rectObj &screenRect) {
 void Topology::Paint(HDC hdc, RECT rc) {
 
   if (!shapefileopen) return;
-int iNewSize;
+  #if TOPO_CLIPPING
+  int iNewSize;
+  #endif
   bool nolabels=false;
   if (scaleCategory==10) {
 	// for water areas, use scaleDefault
@@ -612,8 +614,10 @@ int iNewSize;
   hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
 
   // get drawing info
-    int iTotalPts=0;
-    int iReducedPts=0;
+  #if TOPO_CLIPPING
+  int iTotalPts=0;
+  int iReducedPts=0;
+  #endif
   int iskip = 1;
   
   // attempt to bugfix 100615 polyline glitch with zoom over 33Km
@@ -720,19 +724,26 @@ int iNewSize;
           int miny = rc.bottom;
           int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
 
-	iNewSize =  MapWindow::LatLon2ScreenCompr(shape->line[tt].point,
-				   pt, msize, 1);
+	  #if TOPO_CLIPPING
+	  iNewSize =  MapWindow::LatLon2ScreenCompr(shape->line[tt].point, pt, msize, 1);
           for (int jj=0; jj< iNewSize; jj++) {
+          #else
+	  MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize, 1);
+          for (int jj=0; jj< msize; jj++) {
+	  #endif
             if (pt[jj].x<=minx) {
               minx = pt[jj].x;
               miny = pt[jj].y;
             }
 	  }
+	   #if TOPO_CLIPPING
            iTotalPts +=msize;
            iReducedPts+=iNewSize;
-//StartupStore(_T("... topo line area point geo %i screen %i\n"),msize,iNewSize );
-
-          ClipPolygon(hdc, pt, iNewSize, rc, false);
+           //StartupStore(_T("... topo line area point geo %i screen %i\n"),msize,iNewSize );
+           ClipPolygon(hdc, pt, iNewSize, rc, false);
+	   #else
+           ClipPolygon(hdc, pt, msize, rc, false);
+           #endif
           cshape->renderSpecial(hdc,minx,miny,labelprinted);
         }
       break;
@@ -746,16 +757,25 @@ int iNewSize;
 			for (int tt = 0; tt < shape->numlines; tt ++) {
 				int minx = rc.right;
 				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
+				#if TOPO_CLIPPING
 				iNewSize =  MapWindow::LatLon2ScreenCompr(shape->line[tt].point, pt, msize*iskip, iskip);
 				for (int jj=0; jj< iNewSize; jj++) {
+				#else
+				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
+				for (int jj=0; jj< msize; jj++) {
+				#endif
 					if (pt[jj].x<=minx) {
 						minx = pt[jj].x;
 					}
 				}
+				#if TOPO_CLIPPING
 				ClipPolygon(hdc,pt, iNewSize, rc, true);
-		           iTotalPts +=msize;
-		           iReducedPts+=iNewSize;
-//				StartupStore(_T("... topo polygon area point geo %i screen %i\n"),msize,iNewSize );
+		                iTotalPts +=msize;
+		                iReducedPts+=iNewSize;
+				//StartupStore(_T("... topo polygon area point geo %i screen %i\n"),msize,iNewSize );
+				#else
+				ClipPolygon(hdc,pt, msize, rc, true);
+				#endif
 			}
 		}
 	} else 
@@ -764,17 +784,26 @@ int iNewSize;
 			int minx = rc.right;
 			int miny = rc.bottom;
 			int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
+			#if TOPO_CLIPPING
 			iNewSize =  MapWindow::LatLon2ScreenCompr(shape->line[tt].point, pt, msize*iskip, iskip);
 			for (int jj=0; jj< iNewSize; jj++) {
+			#else
+			MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
+			for (int jj=0; jj< msize; jj++) {
+			#endif
 				if (pt[jj].x<=minx) {
 					minx = pt[jj].x;
 					miny = pt[jj].y;
 				}
 			}
+			#if TOPO_CLIPPING
 			ClipPolygon(hdc,pt, iNewSize, rc, true);
-	           iTotalPts +=msize;
-	           iReducedPts+=iNewSize;
-//			StartupStore(_T("... topo clip polygon area point geo %i screen %i\n"),msize,iNewSize );
+	                iTotalPts +=msize;
+	                iReducedPts+=iNewSize;
+			//StartupStore(_T("... topo clip polygon area point geo %i screen %i\n"),msize,iNewSize );
+			#else
+			ClipPolygon(hdc,pt, msize, rc, true);
+			#endif
 			cshape->renderSpecial(hdc,minx,miny,labelprinted);
 		}
 	}
@@ -791,6 +820,7 @@ int iNewSize;
   SelectObject(hdc, (HFONT)hfOld);
 
 #if DEBUG_POINTS_REDUCTION
+	if (iReducedPts)
 	StartupStore(_T("... topo total point (Diff=%i) geo %i screen %i \n"), iTotalPts-iReducedPts,iTotalPts,iReducedPts );
 #endif
 }
@@ -1285,28 +1315,38 @@ static POINT clip_ptin[MAXCLIPPOLYGON];
 void ClipPolygon(HDC hdc, POINT *m_ptin, unsigned int inLength, 
                  RECT rc, bool fill) {
 
+#if TOPO_CLIPPING
+#else
+  unsigned int outLength = 0;
+
+  if (inLength>=MAXCLIPPOLYGON-1) {
+    inLength=MAXCLIPPOLYGON-2;
+  }
+#endif
   if (inLength<2) {
     return;
   }
 
-if(!DeviceNeedClipping)
-{
-  if (fill) {
-    if (inLength>2) {
-      Polygon(hdc, m_ptin, inLength);
-    }
+#if TOPO_CLIPPING
+  if(!DeviceNeedClipping)
+  {
+	if (fill) {
+		if (inLength>2) {
+			Polygon(hdc, m_ptin, inLength);
+		}
+	} else {
+		if (inLength>1) {
+			Polyline(hdc, m_ptin, inLength);
+		}
+	}
   } else {
-    if (inLength>1) {
-      Polyline(hdc, m_ptin, inLength);
-    }
-  }
-}
-else
-{
-unsigned int outLength = 0;
-  if (inLength>=MAXCLIPPOLYGON-1) {
-    inLength=MAXCLIPPOLYGON-2;
-  }
+	unsigned int outLength = 0;
+	if (inLength>=MAXCLIPPOLYGON-1) {
+		inLength=MAXCLIPPOLYGON-2;
+	}
+        // indentation wrong from now on
+#endif
+
   memcpy((void*)clip_ptin, (void*)m_ptin, inLength*sizeof(POINT));
 
   // add extra point for final point if it doesn't equal the first
@@ -1350,8 +1390,7 @@ unsigned int outLength = 0;
   }
 }
 
-}
-
+} // indentation wrong
 
 
 void Topology::SearchNearest(RECT rc) {
