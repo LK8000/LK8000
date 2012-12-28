@@ -80,9 +80,52 @@ void MapWindow::LatLon2Screen(pointObj *ptin, POINT *ptout, const int n, const i
     ptout->x = (xxs-X*cost + Y*sint)/1024;
     ptout->y = (Y*cost + X*sint + yys)/1024;
     ptout++;
+
     p+= skip;
   }
 }
+
+
+//
+// This one is optimised for long polygons reduces
+//
+int MapWindow::LatLon2ScreenCompr(pointObj *ptin, POINT *ptout, const int n, const int skip) {
+  static double lastangle = -1;
+  static int cost=1024, sint=0;
+  const double mDisplayAngle = DisplayAngle;
+
+  if(mDisplayAngle != lastangle) {
+    lastangle = mDisplayAngle;
+    int deg = DEG_TO_INT(AngleLimit360(mDisplayAngle));
+    cost = ICOSTABLE[deg];
+    sint = ISINETABLE[deg];
+  }
+  const int xxs = Orig_Screen.x*1024-512;
+  const int yys = Orig_Screen.y*1024+512;
+  const double mDrawScale = zoom.DrawScale();
+  const double mPanLongitude = PanLongitude;
+  const double mPanLatitude = PanLatitude;
+  pointObj* p = ptin;
+  const pointObj* ptend = ptin+n;
+  pointObj oldpt ={-10,-10};
+  int icnt=0;
+  while (p<ptend) {
+    int Y = Real2Int((mPanLatitude-p->y)*mDrawScale);
+    int X = Real2Int((mPanLongitude-p->x)*fastcosine(p->y)*mDrawScale);
+    ptout->x = (xxs-X*cost + Y*sint)/1024;
+    ptout->y = (Y*cost + X*sint + yys)/1024;
+    if(( abs( ptout->x - oldpt.x) >5) || ( abs( ptout->y - oldpt.y) >5))
+    {
+      oldpt.x = ptout->x;
+      oldpt.y = ptout->y;
+      ptout++;
+      icnt++;
+    }
+    p+= skip;
+  }
+  return icnt;
+}
+
 
 
 //
