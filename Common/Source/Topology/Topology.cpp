@@ -11,7 +11,9 @@
 #include "Topology.h"
 #include "Multimap.h"
 
-#define DEBUG_POINTS_REDUCTION	1
+#if TOPO_CLIPPING
+//#define DEBUG_POINTS_REDUCTION	1
+#endif
 
 XShape::XShape() {
   hide=false;
@@ -614,7 +616,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
   hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
 
   // get drawing info
-  #if TOPO_CLIPPING
+  #if DEBUG_POINTS_REDUCTION
   int iTotalPts=0;
   int iReducedPts=0;
   #endif
@@ -737,8 +739,10 @@ void Topology::Paint(HDC hdc, RECT rc) {
             }
 	  }
 	   #if TOPO_CLIPPING
+	   #if DEBUG_POINTS_REDUCTION
            iTotalPts +=msize;
            iReducedPts+=iNewSize;
+	   #endif
            //StartupStore(_T("... topo line area point geo %i screen %i\n"),msize,iNewSize );
            ClipPolygon(hdc, pt, iNewSize, rc, false);
 	   #else
@@ -770,8 +774,10 @@ void Topology::Paint(HDC hdc, RECT rc) {
 				}
 				#if TOPO_CLIPPING
 				ClipPolygon(hdc,pt, iNewSize, rc, true);
+	   			#if DEBUG_POINTS_REDUCTION
 		                iTotalPts +=msize;
 		                iReducedPts+=iNewSize;
+				#endif
 				//StartupStore(_T("... topo polygon area point geo %i screen %i\n"),msize,iNewSize );
 				#else
 				ClipPolygon(hdc,pt, msize, rc, true);
@@ -798,8 +804,10 @@ void Topology::Paint(HDC hdc, RECT rc) {
 			}
 			#if TOPO_CLIPPING
 			ClipPolygon(hdc,pt, iNewSize, rc, true);
+	   		#if DEBUG_POINTS_REDUCTION
 	                iTotalPts +=msize;
 	                iReducedPts+=iNewSize;
+			#endif
 			//StartupStore(_T("... topo clip polygon area point geo %i screen %i\n"),msize,iNewSize );
 			#else
 			ClipPolygon(hdc,pt, msize, rc, true);
@@ -820,7 +828,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
   SelectObject(hdc, (HFONT)hfOld);
 
 #if DEBUG_POINTS_REDUCTION
-	if (iReducedPts)
+	if ((iTotalPts-iReducedPts)>0)
 	StartupStore(_T("... topo total point (Diff=%i) geo %i screen %i \n"), iTotalPts-iReducedPts,iTotalPts,iReducedPts );
 #endif
 }
