@@ -35,29 +35,4 @@ double ProjectedDistance(double lon1, double lat1,
 
 void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 
-
-
-struct Coor{
-        double lat,lon;
-        Coor(double _lat,double _lon):lat(_lat),lon(_lon){}
-};
-struct Vec{
-        double lat,lon;
-        Coor a,b;
-        Vec(Coor _a,Coor _b):a(_a),b(_b)
-        {
-                lat=b.lat-a.lat;
-                lon=b.lon-a.lon;
-        }
-        double vecto(Vec other){
-                return (lat*other.lon-lon*other.lat);
-        }
-        double norme(){
-                return sqrt(lat*lat+lon*lon);
-        }
-};
-void CalcIntersection(Coor a1, Coor a2, Coor b1, Coor b2, Coor &Res);
-
-
-
 #endif

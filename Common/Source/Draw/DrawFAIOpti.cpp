@@ -55,7 +55,6 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
   UnlockTaskData(); // protect from external task changes
   if((sType ==  CContestMgr::TYPE_FAI_TRIANGLE) && iSize>0)
   {
-	double fPrefAngle =0;
     LKASSERT(iSize<100);
     for(ui=0; ui< iSize-1; ui++)
     {
@@ -71,7 +70,6 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 
       if((fDist > FAI_MIN_DISTANCE_THRESHOLD) && (ui < 3) && !bFlat && (fDist/ fFAIDistance  > 0.05))
   	  {
-    	fPrefAngle = fAngle;
   		COLORREF rgbCol = RGB_BLUE;
   		switch(ui)
   		{

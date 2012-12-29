@@ -47,13 +47,11 @@ int  k;
 static double fHeigtScaleFact = 1.0;
 
 
-  double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
-  bool GPSValid;
+  double GPSlat, GPSlon, GPSalt, GPSbrg;
   double calc_terrainalt;
   double calc_altitudeagl;
 
  // double alt;
-  int calc_circling;
   TCHAR text[TBSIZE+1];
   TCHAR buffer[TBSIZE+1];
 
@@ -74,7 +72,6 @@ static  bool bHeightScale = false;
   POINT TxXPt;
   SIZE tsize;
   COLORREF GREEN_COL     = RGB_GREEN;
-  COLORREF RED_COL       = RGB_LIGHTORANGE;
   COLORREF BLUE_COL      = RGB_BLUE;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
   BOOL bInvCol = true; //INVERTCOLORS
@@ -192,7 +189,6 @@ static  bool bHeightScale = false;
   if(bInvCol)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
-    RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
     BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
     LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
   }
@@ -201,15 +197,10 @@ static  bool bHeightScale = false;
     GPSlon = DrawInfo.Longitude;
     GPSalt = DrawInfo.Altitude;
     GPSbrg = DrawInfo.TrackBearing;
-    GPSspeed = DrawInfo.Speed;
-    GPSValid = !DrawInfo.NAVWarning;
-    calc_circling    = DerivedDrawInfo.Circling;
     calc_terrainalt  = DerivedDrawInfo.TerrainAlt;
     calc_altitudeagl = DerivedDrawInfo.AltitudeAGL;
-    calc_average30s  = DerivedDrawInfo.Average30s;
     GPSalt =  DerivedDrawInfo.NavAltitude;
 
-  calc_circling = false;
   bValid = false;
   iAS_HorDistance = 5000;
   iAS_Bearing     = (int)GPSbrg;
@@ -249,11 +240,6 @@ static  bool bHeightScale = false;
   if(bValid)
   {
 	double fScaleDist = iABS_AS_HorDistance;
-	double fDist;
-	if(  calc_circling  > 0)
-	  fDist = (double)(fScaleDist/1000+1) * 1500.0f;   // zoom fix
-	else
-	  fDist = (double)(fScaleDist) * 1.5;
 
 	sDia.fXMin = min(-2500.0 , fScaleDist * 1.5 );
 	sDia.fXMax = max( 2500.0 , fScaleDist * 1.5 );
