@@ -38,7 +38,8 @@ static double ycoords[64] = {
 void buildCircle(const POINT& center, int radius, std::vector<POINT>& list) {
     list.clear();
     list.push_back( (POINT){ center.x + (long) (radius * xcoords[0]), center.y + (long) (radius * ycoords[0]) });
-    for(register int i=64/((radius<20)?2:1);--i;) {
+    int step = ((radius<20)?2:1);
+    for(register int i=64;i-=step;) {
         list.push_back( (POINT){ center.x + (long) (radius * xcoords[i]), center.y + (long) (radius * ycoords[i]) });
     }
     list.push_back( (POINT){ center.x + (long) (radius * xcoords[0]), center.y + (long) (radius * ycoords[0]) });
