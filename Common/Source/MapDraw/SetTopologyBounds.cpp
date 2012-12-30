@@ -17,7 +17,11 @@
 extern Topology* TopoStore[MAXTOPOLOGY];
 #define MINRANGE 0.2
 
-
+#if TOPOBOUND_OPTIM
+#define NUMRUNS	4 // how many times we loop scanning after a change detected.
+#endif
+//#define DEBUG_STB	1
+//#define DEBUG_STB2	1
 
 bool RectangleIsInside(rectObj r_exterior, rectObj r_interior) {
   if ((r_interior.minx >= r_exterior.minx)&&
@@ -29,13 +33,32 @@ bool RectangleIsInside(rectObj r_exterior, rectObj r_interior) {
     return false;
 }
 
-
+//
+// This is called FORCED when changing multimap
+//
 void SetTopologyBounds(const RECT rcin, const bool force) {
   static rectObj bounds_active;
   static double range_active = 1.0;
+  #if TOPOBOUND_OPTIM
+  bool unchanged=false;
+  static double oldmapscale=0;
+  static short runnext=0;
+  #endif
   rectObj bounds_screen;
   (void)rcin;
   bounds_screen = MapWindow::CalculateScreenBounds(1.0);
+
+  #if TOPOBOUND_OPTIM
+  if (!force) {
+	if (oldmapscale!=MapWindow::zoom.Scale()) {
+		#if DEBUG_STB2
+		StartupStore(_T("... scale changed to %f\n"),MapWindow::zoom.Scale());
+		#endif
+		oldmapscale=MapWindow::zoom.Scale();
+	} else
+		unchanged=true;
+  }
+  #endif
 
   bool recompute = false;
 
@@ -44,6 +67,9 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
 
   // trigger if the border goes outside the stored area
   if (!RectangleIsInside(bounds_active, bounds_screen)) {
+    #if DEBUG_STB
+    StartupStore(_T("(recompute for out of rectangle)\n"));
+    #endif
     recompute = true;
   }
   
@@ -53,11 +79,27 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
   double range = max(MINRANGE,range_real);
 
   double scale = range/range_active;
-  if (max(scale, 1.0/scale)>4) {
-    recompute = true;
+
+  #if TOPOBOUND_OPTIM
+  if (max(scale, 1.0/scale)>2) {  // tighter threshold
+	#if DEBUG_STB
+	StartupStore(_T("(recompute for OUT OF SCALE)\n"),scale);
+	#endif
+	recompute = true;
   }
+  #else
+  if (max(scale, 1.0/scale)>4) {
+	recompute = true;
+  }
+  #endif
 
   if (recompute || force || LKSW_ForceNearestTopologyCalculation) {
+
+    #if TOPOBOUND_OPTIM
+    #if DEBUG_STB
+    StartupStore(_T("..... Run Recompute, Force=%d LKSW=%d unchanged=%d\n"),force,LKSW_ForceNearestTopologyCalculation,unchanged);
+    #endif
+    #endif
 
     #if 0 // 121208
     // make bounds bigger than screen
@@ -88,7 +130,35 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
     // now update visibility of objects in the map window
     MapWindow::ScanVisibility(&bounds_active);
 
+#if TOPOBOUND_OPTIM
+    runnext=NUMRUNS;
+    unchanged=false;
+
+  } else {
+	if (unchanged) { // nothing has changed, can we skip?
+		#if DEBUG_STB2
+		StartupStore(_T("... Nothing has changed\n"));
+		#endif
+		if (runnext<=0) {
+			#if DEBUG_STB2
+			StartupStore(_T("..... no runnext, skip\n"));
+			#endif
+			return;
+		} else {
+			#if DEBUG_STB2
+			StartupStore(_T("..... ONE MORE run\n"));
+			#endif
+			runnext--;
+		}
+	} else
+		runnext=NUMRUNS;
+#endif
   }
+
+  
+  #if DEBUG_STB
+  StartupStore(_T("------ Run full update --- \n"));
+  #endif
 
   // check if things have come into or out of scale limit
   for (int z=0; z<MAXTOPOLOGY; z++) {

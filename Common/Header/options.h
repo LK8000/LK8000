@@ -113,6 +113,10 @@
 // Clip Topology shapes
 #define TOPO_CLIPPING	1
 
+// MapDraw OPTIM , SetTopologyBounds limited to zoom change and map draw out of current rect 
+#define TOPOBOUND_OPTIM	1
+
+
 
 // ----------------------------------------------------------------------------------------
 //
