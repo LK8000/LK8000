@@ -19,6 +19,7 @@ void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		speed = (int)(Calculated->IndicatedAirspeedEstimated);
 	}
 
+	// correcting speed for calculated bank angle
 	speed = speed/sqrt(1/cos(Calculated->BankAngle*DEG_TO_RAD));
 
 	LKASSERT(GlidePolar::FlapsMass!=0);
