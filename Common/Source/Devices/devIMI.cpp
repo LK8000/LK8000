@@ -243,15 +243,15 @@ const CDevIMI::TMsg *CDevIMI::CMsgParser::Parse(const IMIBYTE buffer[], IMIDWORD
   const TMsg *msg = 0;
   
   for(;size; size--) {
-    IMIBYTE byte = *ptr++;
+    IMIBYTE Byte = *ptr++;
     
     if(_state == STATE_NOT_SYNC) {
       // verify synchronization chars
-      if(byte == IMICOMM_SYNC_CHAR1 && _msgBufferPos == 0) {
-        _msgBuffer[_msgBufferPos++] = byte;
+      if(Byte == IMICOMM_SYNC_CHAR1 && _msgBufferPos == 0) {
+        _msgBuffer[_msgBufferPos++] = Byte;
       }
-      else if(byte == IMICOMM_SYNC_CHAR2 && _msgBufferPos == 1) {
-        _msgBuffer[_msgBufferPos++] = byte;
+      else if(Byte == IMICOMM_SYNC_CHAR2 && _msgBufferPos == 1) {
+        _msgBuffer[_msgBufferPos++] = Byte;
         _state = STATE_COMM_MSG;
       }
       else {
@@ -261,7 +261,7 @@ const CDevIMI::TMsg *CDevIMI::CMsgParser::Parse(const IMIBYTE buffer[], IMIDWORD
     else if(_state == STATE_COMM_MSG) {
       if(_msgBufferPos < IMICOMM_MSG_HEADER_SIZE) {
         // copy header
-        _msgBuffer[_msgBufferPos++] = byte;
+        _msgBuffer[_msgBufferPos++] = Byte;
       }
       else {
         if(_msgBufferPos == IMICOMM_MSG_HEADER_SIZE) {
@@ -279,7 +279,7 @@ const CDevIMI::TMsg *CDevIMI::CMsgParser::Parse(const IMIBYTE buffer[], IMIDWORD
         // copy payload
         _msgBytesLeft--;
         if(_msgBufferPos < sizeof(_msgBuffer)) // Just in case
-          _msgBuffer[_msgBufferPos++] = byte;
+          _msgBuffer[_msgBufferPos++] = Byte;
         
         if(_msgBytesLeft == 0) {
           // end of message

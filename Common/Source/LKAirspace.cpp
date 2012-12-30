@@ -1962,7 +1962,7 @@ unsigned int iHIdx,iDIdx;
 	        }
 		    else
 		 	  iHIdx = (unsigned int)airspacetype[iSelAS].psAS->Base()->Altitude;
-		    airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts++] = (POINT){iDIdx,iHIdx};
+		    airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts++] = (POINT){(LONG)iDIdx,(LONG)iHIdx};
 
 	        /************************************************************
 	         *  resort and copy polygon array

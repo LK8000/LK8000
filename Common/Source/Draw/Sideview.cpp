@@ -293,7 +293,6 @@ RECT rc	= psDia->rc;
 void RenderPlaneSideview(HDC hdc, double fDist, double fAltitude,double brg, DiagrammStruct* psDia )
 {
 //BOOL bInvCol = true ; //INVERTCOLORS
-RECT rc =	psDia->rc;
   #define NO_AP_PTS 17
   int deg = DEG_TO_INT(AngleLimit360(brg));
   double fCos = COSTABLE[deg];

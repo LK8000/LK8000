@@ -501,15 +501,9 @@ static RECT PositionTopView[FLARM_MAX_TRAFFIC];
 static RECT PositionSideView[FLARM_MAX_TRAFFIC];
 static RECT OwnPosTopView;
 static RECT OwnPosSideView;
-static RECT UpperLeft;
-UpperLeft.left  = 0;
-UpperLeft.right =(long)  ((double)(rci.right-rci.left)*0.2);
-UpperLeft.top   = 0;
-UpperLeft.bottom=(long) ((double)(rci.bottom-rci.top)*0.1);
 int iTouchAreaSize = 15;
 HPEN   hOrangePen ;
 HPEN   hGreenPen ;
-HPEN   hWhitePen ;
 HPEN   hOldPen;
 HBRUSH hOldBrush;
 HPEN   hDrawPen ;
@@ -543,7 +537,6 @@ if(bInvCol)
   hDrawBrush = (HBRUSH)GetStockObject( WHITE_BRUSH) ;
   hOrangePen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_ORANGE);
   hGreenPen  = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_GREEN);
-  hWhitePen  = LKPen_White_N1;
 }
 else
 {
@@ -554,7 +547,6 @@ else
   hDrawBrush = (HBRUSH)GetStockObject( BLACK_BRUSH) ;
   hOrangePen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_LIGHTORANGE);
   hGreenPen  = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_DARKGREY);
-  hWhitePen  = LKPen_Black_N1;
 }
 
 SetTextColor(hdc, rgbDrawColor);
@@ -1078,11 +1070,9 @@ RECT rcc = rct;
     /***********************************************
      * draw traces
      ***********************************************/
-int iNoDos =0;
-
      if(bTrace)
        if(SPLITSCREEN_FACTOR >0)
-         iNoDos =  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia);
+         DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia);
 
     /***********************************************
      * FLARM object loop
