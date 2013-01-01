@@ -70,13 +70,13 @@ void FlarmIdFile::GetItem(HANDLE hFile, FlarmId *flarmId)
   //SetFilePointer(hFile, 1, NULL, FILE_CURRENT) ;
 
   int i = 0;
-  while(flarmId->reg[i] != 0 && i < FLARMID_SIZE_REG) {
+  while(i < FLARMID_SIZE_REG && flarmId->reg[i] != 0) {
       if (flarmId->reg[i] == _T(' ')) flarmId->reg[i] = 0;
       i++;
   }
 
   i = 0;
-  while(flarmId->cn[i] != 0 && i < MAXFLARMCN) {
+  while(i < MAXFLARMCN && flarmId->cn[i] != 0) {
       if (flarmId->cn[i] == _T(' ')) flarmId->cn[i] = 0;
       i++;
   }
@@ -144,7 +144,7 @@ FlarmId* FlarmIdFile::GetFlarmIdItem(TCHAR *cn)
 	{
 	  return itemTemp;
 	}	
-      iterFind++;
+      ++iterFind;
     }
 	
   return NULL;

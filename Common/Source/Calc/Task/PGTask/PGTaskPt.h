@@ -24,11 +24,11 @@ public:
     }
 
     inline bool operator==(const ProjPt& pt) const {
-        return (pt.m_Y == m_Y) && (pt.m_Y == m_Y);
+        return (pt.m_X == m_X) && (pt.m_Y == m_Y);
     }
 
     inline bool operator!=(const ProjPt& pt) const {
-        return (pt.m_Y != m_Y) && (pt.m_Y != m_Y);
+        return (pt.m_X != m_X) && (pt.m_Y != m_Y);
     }
 
     inline ProjPt operator-(const ProjPt& pt) const {

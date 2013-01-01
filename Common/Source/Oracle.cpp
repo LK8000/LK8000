@@ -66,14 +66,9 @@ TCHAR *OracleFormatDistance(TCHAR *name,TCHAR *ntype,const double dist,const dou
   switch(mode) {
 	case 0:		// big city
 	default:
-		if (ISPARAGLIDER) {
-			dist_over=1500;
-			dist_near=3000;
-		} else {
-			dist_over=1500;
-			dist_near=3000;
-		}
-		break;
+          dist_over=1500;
+          dist_near=3000;
+          break;
   }
 
   // 5km west of  the city <abcd>

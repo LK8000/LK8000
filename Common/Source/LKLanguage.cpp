@@ -74,7 +74,7 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	#if DEBUG_GETTEXT
 	StartupStore(_T(".... Help item snum= <%S> number=%d \n"),snum, inumber);
 	#endif
-	_stprintf(sHelp,_T("ERROR, wrong index number <%d> from XML: <%s>\r\n"),inumber,TextIn);
+	_stprintf(sHelp,_T("ERROR, wrong index number <%u> from XML: <%s>\r\n"),inumber,TextIn);
 	return (sHelp);
   }
 
@@ -94,7 +94,7 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	#endif
 
 	TCHAR sNum[10];
-	_stprintf(sNum,_T("%d"),inumber);
+	_stprintf(sNum,_T("%u"),inumber);
 
   ZZIP_FILE *helpFile = zzip_fopen(sFile, "rb");
 	if (helpFile == NULL) {
@@ -265,7 +265,7 @@ TCHAR *MsgToken(const unsigned int inumber) {
         if (pointer<=MAX_MESSAGES) return (TCHAR *)LKMessages[pointer];
   }
   static TCHAR terr[30];
-  _stprintf(terr,_T("@M%d"),inumber);
+  _stprintf(terr,_T("@M%u"),inumber);
   return(terr);
 }
 

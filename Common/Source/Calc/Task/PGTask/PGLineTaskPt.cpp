@@ -11,7 +11,7 @@
 
 #include "PGLineTaskPt.h"
 
-PGLineTaskPt::PGLineTaskPt() {
+PGLineTaskPt::PGLineTaskPt(): m_dAB() {
 }
 
 PGLineTaskPt::~PGLineTaskPt() {

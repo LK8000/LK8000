@@ -1081,8 +1081,8 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
 /******************************
  * ULLI remove unneeded points
  ****************************/
-    POINTList::iterator itr = _screenpoints.begin();
 #ifndef LKASP_REMOVE_NEAR_POINTS
+    POINTList::iterator itr = _screenpoints.begin();
     for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
       MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), *itr);
     }
@@ -2871,6 +2871,7 @@ void CAirspaceManager::LoadSettings()
     asp_data = (asp_data_struct*)malloc(sizeof(asp_data_struct) * _airspaces.size());
     if (asp_data==NULL) {
       OutOfMemory(__FILE__,__LINE__);
+      fclose(f);
       return;
     }
     i = 0;

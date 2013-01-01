@@ -39,10 +39,9 @@ void buildCircle(const POINT& center, int radius, std::vector<POINT>& list) {
     list.clear();
     list.push_back( (POINT){ center.x + (long) (radius * xcoords[0]), center.y + (long) (radius * ycoords[0]) });
     int step = ((radius<20)?2:1);
-    for(register int i=64;i-=step;) {
-        list.push_back( (POINT){ center.x + (long) (radius * xcoords[i]), center.y + (long) (radius * ycoords[i]) });
-    }
-    list.push_back( (POINT){ center.x + (long) (radius * xcoords[0]), center.y + (long) (radius * ycoords[0]) });
+    for(register int i=64-step; i>=0; i-=step)
+      list.push_back( (POINT){ center.x + (long) (radius * xcoords[i]), center.y + (long) (radius * ycoords[i]) });
+    // closing point i=0 added in the last step
 }
 
 void StartArc(HDC hdc, 

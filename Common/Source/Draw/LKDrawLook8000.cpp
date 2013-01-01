@@ -466,6 +466,7 @@ nextinit:
 			break;
 		case ss480x640:
 			yClockposition=yrightoffset +(ySizeLK8BigFont*4);
+                        break;
 		default:
 			yClockposition=yrightoffset +(ySizeLK8BigFont*3);
 			break;
@@ -622,7 +623,7 @@ nextinit:
 		}
 
 		if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates())) ) {
-			_stprintf(BufferValue,_T("%s %s"),BufferValue,BufferUnit);
+                  _stprintf(BufferValue + _tcslen(BufferValue), _T(" %s"),BufferUnit);
 			SelectObject(hdc, medFont); 
 			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 		} else
