@@ -21,13 +21,21 @@ BIN=Bin/$(TARGET)
 DMALLOC=n
 
 ifeq ($(DEBUG),y)
-OPTIMIZE := -O0
-OPTIMIZE += -g3 -gdwarf-2
+    OPTIMIZE := -O0
+    OPTIMIZE += -g3 -gdwarf-2
+    REMOVE_NS :=
 else
-OPTIMIZE := -O2
+    OPTIMIZE := -O2
+    REMOVE_NS := y
 endif
 
-PROFILE		:=
+ifeq ($(GPROF),y)
+    PROFILE		:= -pg
+    REMOVE_NS :=
+else
+    PROFILE		:=
+    REMOVE_NS := y
+endif
 #OPTIMIZE	:=-O2
 #OPTIMIZE	:=-O3 -funroll-all-loops
 CONFIG_PPC2002	:=n
@@ -886,10 +894,11 @@ LK8000-$(TARGET).exe: LK8000-$(TARGET)-ns.exe
 	@$(NQ)echo "  STRIP   $@"
 	$(Q)$(STRIP) $< -o $@
 	$(Q)$(SIZE) $@
-ifeq ($(DEBUG),y)
-else
+
+ifeq ($(REMOVE_NS),y)
 	$(RM) LK8000-$(TARGET)-ns.exe
 endif
+
 LK8000-$(TARGET)-ns.exe: $(OBJS)
 	@$(NQ)echo "  LINK    $@"
 	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
