@@ -165,7 +165,7 @@ void MapWindow::DoSonar(void) {
 
   static unsigned long lSonarCnt = 0;
 
-  if (!Sonar_IsEnabled || DrawInfo.NAVWarning)return;
+  if (!Sonar_IsEnabled || DrawInfo.NAVWarning || !EnableSoundModes)return;
 
 
   CAirspace *aspfound = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
