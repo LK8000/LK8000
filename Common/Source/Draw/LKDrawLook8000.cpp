@@ -512,16 +512,14 @@ nextinit:
   } else {
 	index = GetOvertargetIndex();
   }
-		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-			rcx=rc.left+leftmargin+NIBLSCALE(1);
-			rcy=rc.top+NIBLSCALE(1);
-		} else {
-			if (ThermalBar) 
-				rcx=rc.left+leftmargin+NIBLSCALE(40);
-			else
-				rcx=rc.left+leftmargin+NIBLSCALE(1);
-			rcy=rc.top+NIBLSCALE(1);
-		}
+  
+  		if ( (ThermalBar>=1 && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) || (ThermalBar==2 && MapWindow::mode.Is(MapWindow::Mode::MODE_CRUISE)) ) {
+      		rcx=rc.left+leftmargin+NIBLSCALE(40);
+  		} else {
+   			rcx=rc.left+leftmargin+NIBLSCALE(1);
+ 	    }
+		rcy=rc.top+NIBLSCALE(1);
+			
 		// Waypoint name and distance
 		SelectObject(hdc, medFont);
 

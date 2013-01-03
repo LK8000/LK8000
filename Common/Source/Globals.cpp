@@ -270,7 +270,7 @@ void Globals_Init(void) {
   // activated by Utils2 in virtual keys, used inside RenderMapWindowBg
   PGZoomTrigger=false;
   BestWarning=false;
-  ThermalBar=false;
+  ThermalBar=0;
   McOverlay=true;
   TrackBar=false;
   PGOptimizeRoute=true;

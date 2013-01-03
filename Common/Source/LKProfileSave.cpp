@@ -30,8 +30,11 @@ void LKWriteToProfile(const TCHAR *varname, bool varvalue) {
 void LKWriteToProfile(const TCHAR *varname, int varvalue) {
   fprintf(pfp,"%S=%d%s", varname, varvalue,PNEWLINE);
 }
+void LKWriteToProfile(const TCHAR *varname, unsigned int varvalue) {
+  fprintf(pfp,"%S=%u%s", varname, varvalue,PNEWLINE);
+}
 void LKWriteToProfile(const TCHAR *varname, DWORD varvalue) {
-  fprintf(pfp,"%S=%d%s", varname, (unsigned int) varvalue,PNEWLINE);
+  fprintf(pfp,"%S=%ul%s", varname, (unsigned int) varvalue,PNEWLINE);
 }
 void LKWriteToProfile(const TCHAR *varname, double varvalue) {
   fprintf(pfp,"%S=%.0f%s", varname, varvalue,PNEWLINE);

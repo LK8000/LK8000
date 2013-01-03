@@ -140,8 +140,9 @@ QuickRedraw:
 		if (IsMultimapOverlaysGauges()) {
 			if (LKVarioBar) LKDrawVario(hdc,rc);
 
-			if ((mode.Is(Mode::MODE_CIRCLING)) )
-				if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc);
+            if ( (ThermalBar>=1 && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) || (ThermalBar==2 && MapWindow::mode.Is(MapWindow::Mode::MODE_CRUISE)) ) {
+				DrawThermalBand(hdcDrawWindow, rc);
+            }
 
 			DrawFinalGlide(hdcDrawWindow,rc);
 		}
@@ -424,10 +425,10 @@ _skip_stuff:
 _skip_2:
 
   if (NOTANYPAN) {
-    // REMINDER TODO let it be configurable for not circling also, as before
-    if ((mode.Is(Mode::MODE_CIRCLING)) )
-      if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
-  
+    if ( (ThermalBar>=1 && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) || (ThermalBar==2 && MapWindow::mode.Is(MapWindow::Mode::MODE_CRUISE)) ) {
+        DrawThermalBand(hdcDrawWindow, rc);
+    }
+
     if (IsMultimapOverlaysText()) DrawLook8000(hdc,rc); 
     DrawBottomBar(hdc,rc);
   }
