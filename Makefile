@@ -20,24 +20,21 @@ BIN=Bin/$(TARGET)
 # enable/disable heap checking (dmalloc.h libdmalloc.a must be in ../dmalloc)
 DMALLOC=n
 
+OPTIMIZE    := -O2
+PROFILE	    :=
+REMOVE_NS   := y
+
 ifeq ($(DEBUG),y)
     OPTIMIZE := -O0
     OPTIMIZE += -g3 -gdwarf-2
     REMOVE_NS :=
-else
-    OPTIMIZE := -O2
-    REMOVE_NS := y
 endif
 
 ifeq ($(GPROF),y)
     PROFILE		:= -pg
     REMOVE_NS :=
-else
-    PROFILE		:=
-    REMOVE_NS := y
 endif
-#OPTIMIZE	:=-O2
-#OPTIMIZE	:=-O3 -funroll-all-loops
+
 CONFIG_PPC2002	:=n
 CONFIG_PPC2003	:=n
 CONFIG_PC	:=n
