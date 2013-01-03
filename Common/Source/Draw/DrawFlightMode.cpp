@@ -23,9 +23,9 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
   //
   // Logger indicator
   //
+  flip = !flip;
 
   if (!DisableAutoLogger || LoggerActive) {
-	flip = !flip;
 	if (LoggerActive || flip) {
 		if (LoggerActive)
 			SelectObject(hDCTemp,hLogger);
@@ -132,31 +132,56 @@ _afternotmultimap:
 
   #if TESTBENCH
   // Battery test in Simmode
-  if (SIMMODE && !(QUICKDRAW)) {; PDABatteryPercent-=5; if (PDABatteryPercent<0) PDABatteryPercent=100; }
+  if (SIMMODE && !(QUICKDRAW)) {; PDABatteryPercent-=1; if (PDABatteryPercent<0) PDABatteryPercent=100; }
   #endif
 
-  if (PDABatteryPercent==0 && PDABatteryStatus==AC_LINE_ONLINE && PDABatteryFlag!=BATTERY_FLAG_CHARGING) {
-	SelectObject(hDCTemp,hBatteryFull);
+  if ((PDABatteryPercent==0 || PDABatteryPercent>100) && PDABatteryStatus==AC_LINE_ONLINE && PDABatteryFlag!=BATTERY_FLAG_CHARGING) {
+	SelectObject(hDCTemp,hBatteryFullC);
 	goto _drawbattery;
   }
 
-  if (PDABatteryPercent<20) {
-	SelectObject(hDCTemp,hBattery15);
+  if (PDABatteryPercent<=6) {
+	if (flip) return;
+	SelectObject(hDCTemp,hBattery12);
 	goto _drawbattery;
   }
-  if (PDABatteryPercent<45) {
-	SelectObject(hDCTemp,hBattery25);
+
+  if (PDABatteryPercent<=12) {
+	SelectObject(hDCTemp,hBattery12);
 	goto _drawbattery;
   }
-  if (PDABatteryPercent<65) {
-	SelectObject(hDCTemp,hBattery50);
+  if (PDABatteryPercent<=24) {
+	SelectObject(hDCTemp,hBattery24);
 	goto _drawbattery;
   }
-  if (PDABatteryPercent<90) {
-	SelectObject(hDCTemp,hBattery70);
+  if (PDABatteryPercent<=36) {
+	SelectObject(hDCTemp,hBattery36);
 	goto _drawbattery;
   }
-  SelectObject(hDCTemp,hBatteryFull);
+  if (PDABatteryPercent<=48) {
+	SelectObject(hDCTemp,hBattery48);
+	goto _drawbattery;
+  }
+  if (PDABatteryPercent<=60) {
+	SelectObject(hDCTemp,hBattery60);
+	goto _drawbattery;
+  }
+  if (PDABatteryPercent<=72) {
+	SelectObject(hDCTemp,hBattery72);
+	goto _drawbattery;
+  }
+  if (PDABatteryPercent<=84) {
+	SelectObject(hDCTemp,hBattery84);
+	goto _drawbattery;
+  }
+  if (PDABatteryPercent<=96) {
+	SelectObject(hDCTemp,hBattery96);
+	goto _drawbattery;
+  }
+  if (PDABatteryStatus==AC_LINE_ONLINE)
+	SelectObject(hDCTemp,hBatteryFullC);
+  else
+	SelectObject(hDCTemp,hBatteryFull);
 
 _drawbattery:
   if (!DisableAutoLogger || LoggerActive) offset-=5;

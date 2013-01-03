@@ -65,15 +65,25 @@ void LKLoadFixedBitmaps(void) {
 
   _stprintf(srcfile,_T("%s\\BATTERY_FULL.BMP"),sDir);
   hBatteryFull=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%s\\BATTERY_70.BMP"),sDir);
-  hBattery70=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%s\\BATTERY_50.BMP"),sDir);
-  hBattery50=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%s\\BATTERY_25.BMP"),sDir);
-  hBattery25=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%s\\BATTERY_15.BMP"),sDir);
-  hBattery15=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BATTERY_FULLC.BMP"),sDir);
+  hBatteryFullC=LKLoadBitmap(srcfile);
 
+  _stprintf(srcfile,_T("%s\\BATTERY_96.BMP"),sDir);
+  hBattery96=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BATTERY_84.BMP"),sDir);
+  hBattery84=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BATTERY_72.BMP"),sDir);
+  hBattery72=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BATTERY_60.BMP"),sDir);
+  hBattery60=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BATTERY_48.BMP"),sDir);
+  hBattery48=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BATTERY_36.BMP"),sDir);
+  hBattery36=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BATTERY_24.BMP"),sDir);
+  hBattery24=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BATTERY_12.BMP"),sDir);
+  hBattery12=LKLoadBitmap(srcfile);
 
   _stprintf(srcfile,_T("%s\\TRACE_NO.BMP"),sDir);
   hNoTrace=LKLoadBitmap(srcfile);
@@ -195,10 +205,15 @@ void LKLoadFixedBitmaps(void) {
   if (hInvSmall==NULL) hInvSmall=NULLBMP;
 
   if (hBatteryFull==NULL) hBatteryFull=NULLBMP;
-  if (hBattery70==NULL) hBattery70=NULLBMP;
-  if (hBattery50==NULL) hBattery50=NULLBMP;
-  if (hBattery25==NULL) hBattery25=NULLBMP;
-  if (hBattery15==NULL) hBattery15=NULLBMP;
+  if (hBatteryFullC==NULL) hBatteryFullC=NULLBMP;
+  if (hBattery96==NULL) hBattery96=NULLBMP;
+  if (hBattery84==NULL) hBattery84=NULLBMP;
+  if (hBattery72==NULL) hBattery72=NULLBMP;
+  if (hBattery60==NULL) hBattery60=NULLBMP;
+  if (hBattery48==NULL) hBattery48=NULLBMP;
+  if (hBattery36==NULL) hBattery36=NULLBMP;
+  if (hBattery24==NULL) hBattery24=NULLBMP;
+  if (hBattery12==NULL) hBattery12=NULLBMP;
 
   if (hBmpLeft32==NULL) hBmpLeft32=NULLBMP;
   if (hBmpRight32==NULL) hBmpRight32=NULLBMP;
@@ -263,10 +278,15 @@ void LKUnloadFixedBitmaps(void) {
   if (hLoggerOff!=NULL) DeleteObject(hLoggerOff);
 
   if (hBatteryFull!=NULL) DeleteObject(hBatteryFull);
-  if (hBattery70!=NULL) DeleteObject(hBattery70);
-  if (hBattery50!=NULL) DeleteObject(hBattery50);
-  if (hBattery25!=NULL) DeleteObject(hBattery25);
-  if (hBattery15!=NULL) DeleteObject(hBattery15);
+  if (hBatteryFullC!=NULL) DeleteObject(hBatteryFull);
+  if (hBattery96!=NULL) DeleteObject(hBattery96);
+  if (hBattery84!=NULL) DeleteObject(hBattery84);
+  if (hBattery72!=NULL) DeleteObject(hBattery72);
+  if (hBattery60!=NULL) DeleteObject(hBattery60);
+  if (hBattery48!=NULL) DeleteObject(hBattery48);
+  if (hBattery36!=NULL) DeleteObject(hBattery36);
+  if (hBattery24!=NULL) DeleteObject(hBattery24);
+  if (hBattery12!=NULL) DeleteObject(hBattery12);
 
 
   if (hNoTrace   !=NULL) DeleteObject(hNoTrace);
