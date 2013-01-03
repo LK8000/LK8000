@@ -41,7 +41,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
 }
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, DWORD *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(int) wcstol(curvalue, NULL, 10);
+  *lookupvalue=(int) wcstoul(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> DWORD=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
@@ -51,6 +51,15 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, int *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   *lookupvalue=(int) wcstol(curvalue, NULL, 10);
+  #if DEBUGPROF
+  StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> int=%d\n"),
+  curname,curvalue,lookupname,*lookupvalue);
+  #endif
+  matchedstring=true;
+}
+void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, unsigned int *lookupvalue) {
+  if (_tcscmp(curname,lookupname)) return;
+  *lookupvalue=(int) wcstoul(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> int=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
@@ -68,7 +77,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
 }
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, unsigned short *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(unsigned short) wcstol(curvalue, NULL, 10);
+  *lookupvalue=(unsigned short) wcstoul(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> unsigned short=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);

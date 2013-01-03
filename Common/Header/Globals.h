@@ -246,7 +246,7 @@ GEXTERN int LKwdlgConfig;
 GEXTERN bool PollingMode;
 
 GEXTERN bool BestWarning;
-GEXTERN bool ThermalBar;
+GEXTERN unsigned int ThermalBar;
 GEXTERN bool McOverlay;
 GEXTERN bool TrackBar;
 GEXTERN double WindCalcSpeed;

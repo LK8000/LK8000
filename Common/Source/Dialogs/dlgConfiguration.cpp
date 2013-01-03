@@ -2818,8 +2818,10 @@ static void setVariables(void) {
     dfe = (DataFieldEnum*)wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
-	// LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
+	// LKTOKEN  +_@M2149_ = "in thermal"
+    dfe->addEnumText(gettext(TEXT("_@M2149_")));
+	// LKTOKEN  +_@M2150_ = "in thermal and cruise"
+    dfe->addEnumText(gettext(TEXT("_@M2150_")));
     dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(ThermalBar);
     wp->RefreshDisplay();

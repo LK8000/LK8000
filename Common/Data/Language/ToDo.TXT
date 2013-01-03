@@ -263,6 +263,10 @@ _@M2237_ "Sonar\nToggle"
 +# Bottom bar configuration button
 +_@M1821_ "AUTO"
 
++# Thermal Bar
++_@M2149_ "in thermal"
++_@M2150_ "in thermal and cruise"
+
 
 
 HELP

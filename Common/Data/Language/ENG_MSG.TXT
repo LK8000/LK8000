@@ -1999,6 +1999,10 @@ _@M2147_ "Exit/Entry"
 
 _@M2148_ "Car,Bike & Trekking"
 
+# Thermal Bar
+_@M2149_ "in thermal"
+_@M2150_ "in thermal and cruise"
+
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
 _@M2201_ "Menu"
