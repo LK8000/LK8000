@@ -92,7 +92,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Accelerator
 //
 
-IDC_XCSOAR ACCELERATORS DISCARDABLE 
+IDC_LK8000 ACCELERATORS DISCARDABLE 
 BEGIN
     "Q",            IDOK,                   VIRTKEY, CONTROL, NOINVERT
 END
@@ -199,7 +199,7 @@ IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_APP_TITLE           "LK8000"
-    IDC_XCSOAR              "XCSOAR"
+    IDC_LK8000              "LK8000"
 END
 
 #endif    // English (U.S.) resources
@@ -238,7 +238,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_AUS
 // Icon
 //
 
-IDI_XCSOARSWIFT         ICON    DISCARDABLE     "../Data/Bitmaps/LKicon.ico"
+IDI_LK8000SWIFT         ICON    DISCARDABLE     "../Data/Bitmaps/LKicon.ico"
 
 // Bitmaps
 

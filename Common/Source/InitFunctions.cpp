@@ -149,7 +149,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
   wc.cbWndExtra                 = dc.cbWndExtra ;
 #endif
   wc.hInstance                  = hInstance;
-  wc.hIcon                      = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_XCSOARSWIFT));
+  wc.hIcon                      = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LK8000SWIFT));
   wc.hCursor                    = 0;
   wc.hbrBackground              = (HBRUSH) GetStockObject(BLACK_BRUSH); 
   wc.lpszMenuName               = 0;
@@ -200,7 +200,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   hInst = hInstance;            // Store instance handle in our global variable
 
 
-  LoadString(hInstance, IDC_XCSOAR, szWindowClass, MAX_LOADSTRING);
+  LoadString(hInstance, IDC_LK8000, szWindowClass, MAX_LOADSTRING);
   LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 
   // If it is already running, then focus on the window

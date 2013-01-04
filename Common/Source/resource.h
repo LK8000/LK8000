@@ -3,9 +3,9 @@
 // Used by lk8000.rc
 //
 #define IDS_APP_TITLE                   1
-#define IDC_XCSOAR                      3
+#define IDC_LK8000                      3
 #define IDS_CONNECTWAIT                 4
-#define IDI_XCSOAR                      101
+#define IDI_LK8000                      101
 #define IDM_MENU                        102
 #define IDD_ABOUTBOX                    103
 #define IDD_PROGRESS                    104
@@ -72,7 +72,7 @@
 #define IDB_MARK                        219
 #define IDB_TERRAINWARNING              220
 #define IDB_AIRSPACEWARNING             221
-#define IDI_XCSOARS                     224
+#define IDI_LK8000S                     224
 #define IDD_LOGGERDETAILS               231
 #define IDB_AIRSPACE                    235
 #define IDD_AUDIO                       236
@@ -83,7 +83,7 @@
 #define IDB_SPLASH                      244
 #define IDD_AIRSPACECOLOUR              247
 #define IDD_AIRSPACECOLOURSEL           248
-#define IDI_XCSOARSWIFT                 250
+#define IDI_LK8000SWIFT                 250
 #define IDB_SWIFT                       251
 #define IDD_GPSSTATUS                   252
 #define IDD_MAPDISPLAY                  255

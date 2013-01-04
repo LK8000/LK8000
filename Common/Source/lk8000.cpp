@@ -246,7 +246,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 	return -1;
     }
 
-  hAccelTable = LoadAccelerators(hInstance, (LPCTSTR)IDC_XCSOAR);
+  hAccelTable = LoadAccelerators(hInstance, (LPCTSTR)IDC_LK8000);
 
   #ifdef HAVE_ACTIVATE_INFO
   SHSetAppKeyWndAssoc(VK_APP1, hWndMainWindow);
