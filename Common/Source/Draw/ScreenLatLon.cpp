@@ -115,7 +115,7 @@ int MapWindow::LatLon2ScreenCompr(pointObj *ptin, POINT *ptout, const int n, con
     int X = Real2Int((mPanLongitude-p->x)*fastcosine(p->y)*mDrawScale);
     ptout->x = (xxs-X*cost + Y*sint)/1024;
     ptout->y = (Y*cost + X*sint + yys)/1024;
-    if(( abs( ptout->x - oldpt.x) >5) || ( abs( ptout->y - oldpt.y) >5))
+    if(( abs((int)(ptout->x - oldpt.x)) >5) || ( abs((int)(ptout->y - oldpt.y)) >5))
     {
       oldpt.x = ptout->x;
       oldpt.y = ptout->y;

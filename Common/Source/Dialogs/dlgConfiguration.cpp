@@ -4241,7 +4241,7 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpThermalBar"));
   if (wp) {
-    if (ThermalBar != (wp->GetDataField()->GetAsInteger())) {
+    if (ThermalBar != (unsigned)(wp->GetDataField()->GetAsInteger())) {
       ThermalBar = (wp->GetDataField()->GetAsInteger());
     }
   }
