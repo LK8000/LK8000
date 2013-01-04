@@ -226,6 +226,9 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
   // We CANNOT check for <= because this check may be done by several GGA RMC GLL etc. sentences
   // among the same quantum time
   if(ThisTime< LastTime) {
+    #if TESTBENCH
+    StartupStore(_T("... TimeHasAdvanced BACK in time: Last=%f This=%f\n"), LastTime, ThisTime);
+    #endif
     LastTime = ThisTime;
     StartDay = -1; // reset search for the first day
     MasterTimeReset();
