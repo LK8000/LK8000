@@ -243,9 +243,5 @@ IDI_XCSOARSWIFT         ICON    DISCARDABLE     "../Data/Bitmaps/LKicon.ico"
 // Bitmaps
 
 IDB_EMPTY               BITMAP  DISCARDABLE     "../Data/Bitmaps/Empty.bmp"
-IDB_TOWN                BITMAP  DISCARDABLE     "../Data/Bitmaps/town.bmp"
-IDB_LKSMALLTOWN         BITMAP  DISCARDABLE     "../Data/Bitmaps/smalltown.bmp"
-IDB_LKVERYSMALLTOWN     BITMAP  DISCARDABLE     "../Data/Bitmaps/verysmalltown.bmp"
-
 
 #endif    // English (Australia) resources
