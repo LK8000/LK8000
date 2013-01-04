@@ -405,8 +405,8 @@ void IntermediatePoint(double lon1, double lat1,
   lon2 *= DEG_TO_RAD;
   */
 
-  ASSERT(lat3 != NULL);
-  ASSERT(lon3 != NULL);
+  LKASSERT(lat3 != NULL);
+  LKASSERT(lon3 != NULL);
 
   if ((lon1 == lon2) && (lat1 == lat2)){
     *lat3 = lat1;

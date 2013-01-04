@@ -175,7 +175,7 @@ int lengthXMLString(LPCTSTR source)
 LPTSTR toXMLString(LPCTSTR source)
 {
     LPTSTR dest=(LPTSTR)malloc((lengthXMLString(source)+1)*sizeof(TCHAR));
-    //ASSERT(dest);
+    LKASSERT(dest);
     return toXMLString(dest,source);
 }
 
@@ -215,7 +215,7 @@ LPTSTR fromXMLString(LPCTSTR s, int lo)
             {
                 ll=0; while (s[ll]&&(s[ll]!=_T(';'))&&(ll<10)) ll++; ll++;
                 d=(LPTSTR)malloc((ll+1)*sizeof(TCHAR));
-                //ASSERT(d);
+                LKASSERT(d);
                 d[ll]=0;
                 while(ll--) d[ll]=s[ll];
 #ifdef DEBUG
@@ -234,7 +234,7 @@ LPTSTR fromXMLString(LPCTSTR s, int lo)
     }
 
     d=(LPTSTR)malloc((ll+1)*sizeof(TCHAR));
-    //ASSERT(d);
+    LKASSERT(d);
     s=d;
     while (ll--)
     {
@@ -304,7 +304,7 @@ static TCHAR FindNonWhiteSpace(XML *pXML)
     TCHAR ch=0; // VENTA3 fix initialize
     int nExit = FALSE;
 
-    //ASSERT(pXML);
+    LKASSERT(pXML);
 
     // Iterate through characters in the string until we find a NULL or a
     // non-white space character
@@ -580,7 +580,7 @@ LPCTSTR XMLNode::getError(XMLError error)
 XMLNode::XMLNode(XMLNode *pParent, LPCTSTR lpszName, int _isDeclaration)
 {
     d=(XMLNodeData*)malloc(sizeof(XMLNodeData));
-    //ASSERT(d);
+    LKASSERT(d);
     d->ref_count=1;
 
     d->lpszName=lpszName;
@@ -607,12 +607,12 @@ static void *myRealloc(void *p, int newsize, int memInc, int sizeofElem)
     int blocks = newsize / memInc+1;
     if (p==NULL) { 
       void* v = malloc(blocks*memInc*sizeofElem);
-      //ASSERT(v);
+      LKASSERT(v);
       return v; 
     }
     if ((newsize % memInc)==0) {
       p=realloc(p,blocks*memInc*sizeofElem);
-      //ASSERT(p);
+      LKASSERT(p);
     }
     return p;
 }
@@ -621,7 +621,7 @@ void XMLNode::addToOrder(int index, int type)
 {
     int n=nElement();
     d->pOrder=(int*)myRealloc(d->pOrder,n+1,memoryIncrease*3,sizeof(int));
-    //ASSERT(d->pOrder);
+    LKASSERT(d->pOrder);
     d->pOrder[n]=(index<<2)+type;
 }
 
@@ -631,7 +631,7 @@ XMLNode XMLNode::AddChild(LPCTSTR lpszName, int _isDeclaration)
     if (!lpszName) return emptyXMLNode;
     int nc=d->nChild;
     d->pChild=(XMLNode*)myRealloc(d->pChild,(nc+1),memoryIncrease,sizeof(XMLNode));
-    //ASSERT(d->pChild);
+    LKASSERT(d->pChild);
     d->pChild[nc].d=NULL;
     d->pChild[nc]=XMLNode(this,lpszName,_isDeclaration);
     addToOrder(nc,eNodeChild);
@@ -685,12 +685,12 @@ static void FindEndOfText(LPCTSTR lpszToken, int *pcbText)
 {
     TCHAR   ch;
     int     cbText;
-    //ASSERT(lpszToken);
-    //ASSERT(pcbText);
+    LKASSERT(lpszToken);
+    LKASSERT(pcbText);
     cbText = (*pcbText)-1;    
     while(TRUE)
     {
-        //ASSERT(cbText >= 0);
+        LKASSERT(cbText >= 0);
         ch = lpszToken[cbText];
         switch(ch)
         {
@@ -711,7 +711,7 @@ LPTSTR stringDup(LPCTSTR lpszData, int cbData)
     LPTSTR lpszNew;
     if (cbData==0) cbData=(int)_tcslen(lpszData);
     lpszNew = (LPTSTR)malloc((cbData+1) * sizeof(TCHAR));
-    //ASSERT(lpszNew);
+    LKASSERT(lpszNew);
     if (lpszNew)
     {
         memcpy(lpszNew, lpszData, (cbData) * sizeof(TCHAR));
@@ -768,7 +768,7 @@ int XMLNode::ParseXMLElement(void *pa)
     enum Status status; // inside or outside a tag
     enum Attrib attrib = eAttribName;
 
-    //ASSERT(pXML);
+    LKASSERT(pXML);
     if (!pXML) { // 100102
 	FailStore(_T("ParseXMLElem null value")); // 100102
 	return FALSE;
@@ -1209,15 +1209,15 @@ static void CountLinesAndColumns(LPCTSTR lpXML, int nUpto, XMLResults *pResults)
     TCHAR ch;
     int n;
 
-    //ASSERT(lpXML);    
-    //ASSERT(pResults);
+    LKASSERT(lpXML);    
+    LKASSERT(pResults);
 
     pResults->nLine = 1;
     pResults->nColumn = 1;
     for(n=0; n<nUpto; n++)
     {
         ch = lpXML[n];
-        //ASSERT(ch);
+        LKASSERT(ch);
         if (ch == _T('\n'))
         {
             pResults->nLine++;
@@ -1325,7 +1325,7 @@ XMLNode XMLNode::parseFile(const TCHAR *filename, LPCTSTR tag, XMLResults *pResu
     int l=ftell(f);
     fseek(f,0,SEEK_SET);
     char *buf=(char*)malloc(l+1);
-    //ASSERT(buf);
+    LKASSERT(buf);
     fread(buf,l,1,f);
     fclose(f);
     buf[l]=0;
@@ -1337,7 +1337,7 @@ XMLNode XMLNode::parseFile(const TCHAR *filename, LPCTSTR tag, XMLResults *pResu
     {
 #endif
         LPTSTR b2=(LPTSTR)malloc(l*2+2);
-        //ASSERT(b2);
+        LKASSERT(b2);
         MultiByteToWideChar(CP_ACP,          // code page
                             MB_PRECOMPOSED,  // character-type options
                             buf,             // string to map
@@ -1354,7 +1354,7 @@ XMLNode XMLNode::parseFile(const TCHAR *filename, LPCTSTR tag, XMLResults *pResu
     {
         l>>=1;
         LPTSTR b2=(LPTSTR)malloc(l+2);
-        //ASSERT(b2);
+        LKASSERT(b2);
         WideCharToMultiByte(CP_ACP,                      // code page
                             0,                           // performance and mapping flags
                             (const WCHAR*)buf,           // wide-character string
@@ -1456,7 +1456,7 @@ int XMLNode::CreateXMLStringR(XMLNodeData *pEntry, LPTSTR lpszMarker, int nForma
     int i;
     XMLAttribute * pAttr;
 
-    //ASSERT(pEntry);
+    LKASSERT(pEntry);
 
 #define LENSTR(lpsz) (lpsz ? _tcslen(lpsz) : 0)
 
@@ -1725,11 +1725,11 @@ LPTSTR XMLNode::createXMLString(int nFormat, int *pnSize)
     // Recursively Calculate the size of the XML string
     nFormat = nFormat ? 0 : -1;
     cbStr = CreateXMLStringR(d, 0, nFormat);
-    //ASSERT(cbStr);
+    LKASSERT(cbStr);
     // Alllocate memory for the XML string + the NULL terminator and
     // create the recursively XML string.
     lpszResult=(LPTSTR)malloc((cbStr+1)*sizeof(TCHAR));
-    //ASSERT(lpszResult);
+    LKASSERT(lpszResult);
     CreateXMLStringR(d, lpszResult, nFormat);
     if (pnSize) *pnSize = cbStr;
     return lpszResult;

@@ -61,9 +61,11 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String)
   String[0] = '\0';
   sTmp[0] = 0;
 
-  ASSERT(Max<sizeof(sTmp));
+  #if BUGSTOP
+  LKASSERT((unsigned)Max<sizeof(sTmp));
+  #endif
 
-  if (Max >= (int)(sizeof(sTmp))) // 100207 fixed signed unsigned (int)
+  if (Max >= (int)(sizeof(sTmp)))
     return(FALSE);
   if (!zFile)
     return(FALSE);
@@ -116,7 +118,9 @@ BOOL ReadString(HANDLE hFile, int Max, TCHAR *String)
   String[0] = '\0';
   sTmp[0] = 0;
 
-  ASSERT(Max<sizeof(sTmp));
+  #if BUGSTOP
+  LKASSERT((unsigned)Max<sizeof(sTmp));
+  #endif
 
   if (Max >= (int)(sizeof(sTmp)))  
     return(FALSE);
