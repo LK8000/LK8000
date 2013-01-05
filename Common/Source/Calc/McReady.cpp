@@ -426,7 +426,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
         // use law of sines to calc other triangle side lengths.
         // We’ll use multiplier twice, so calculate it just once:
 
-	LKASSERT(AngelBrg!=0);
+	LKASSERT(AngleBrg!=0);
 	if (AngleBrg==0) AngleBrg=1;
         Multiplier = Distance / fastsine(AngleBrg);
 
