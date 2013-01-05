@@ -43,16 +43,16 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
   {
     switch(ScreenSize)
     {
-     case ss240x320: rwl = 8.0; rwb = 2.0;cir = 4.0; break;
-     case ss240x400: rwl = 8.0; rwb = 2.0;cir = 4.0; break;
-     case ss272x480: rwl = 8.0; rwb = 2.5;cir = 5.0; break;
-     case ss480x640: rwl = 6.0; rwb = 2.0;cir = 5.0; break;
-     case ss480x800: rwl = 6.0; rwb = 1.2;cir = 5.0; break;
+     case ss240x320: rwl = 9.0; rwb = 2.0;cir = 4.0; break;
+     case ss240x400: rwl = 9.0; rwb = 1.0;cir = 4.0; break;
+     case ss272x480: rwl = 9.0; rwb = 2.5;cir = 4.0; break;
+     case ss480x640: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
+     case ss480x800: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
      case sslandscape: rwl = 6.0; rwb = 1.0;cir = 5.0; break;
-     case ss320x240: rwl = 8.0; rwb = 2.0;cir = 4.0; break;
-     case ss400x240: rwl = 7.0; rwb = 1.0;cir = 4.0; break;
-     case ss480x234: rwl = 7.0; rwb = 1.0;cir = 4.0; break;
-     case ss480x272: rwl = 8.0; rwb = 2.5;cir = 4.0; break;
+     case ss320x240: rwl = 9.0; rwb = 2.0;cir = 4.0; break;
+     case ss400x240: rwl = 9.0; rwb = 1.0;cir = 4.0; break;
+     case ss480x234: rwl = 9.0; rwb = 1.0;cir = 4.0; break;
+     case ss480x272: rwl = 9.0; rwb = 2.5;cir = 4.0; break;
      case ss640x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
      case ss720x408: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
      case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
