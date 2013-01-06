@@ -794,10 +794,19 @@ _nomoredeclutter:
 	}
   }
 
+
   if (IsMultimapAirspace()) {
-	DrawAirSpace( hdc, rct);
-//	DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
+	if ( (GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders) ) {
+		DrawTptAirSpace(hdc, rct);
+	} else {
+		if ( GetAirSpaceFillType() == asp_fill_border_only)
+			DrawAirSpaceBorders(hdc, rct); // full screen, to hide clipping effect on low border
+		else
+			DrawAirSpace(hdc, rct);   // full screen, to hide clipping effect on low border
+	}
+	// DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
   }
+
 
   if (IsMultimapWaypoints()) {
 	DrawWaypointsNew(hdc,DrawRect);
