@@ -145,10 +145,6 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
                                          POINT *Orig_Aircraft)
 {
 
-  //#if USEONEHZLIMITER
-  //ONEHZLIMITER;
-  //#endif
-
   unsigned int i;
 
   Orig_Screen = Orig;
