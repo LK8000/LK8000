@@ -299,8 +299,12 @@ QuickRedraw:
   {
     if ( (GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders) )
       DrawTptAirSpace(hdc, rc);
-    else
-      DrawAirSpace(hdc, rc);	 // full screen, to hide clipping effect on low border
+    else {
+	if ( GetAirSpaceFillType() == asp_fill_border_only)
+		DrawAirSpaceBorders(hdc, rc); // full screen, to hide clipping effect on low border
+	else
+		DrawAirSpace(hdc, rc);	 // full screen, to hide clipping effect on low border
+    }
   }
 
   if (DONTDRAWTHEMAP) {

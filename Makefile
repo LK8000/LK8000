@@ -361,6 +361,7 @@ DRAW	:=\
 	$(DRW)/DoTraffic.cpp \
 	$(DRW)/DrawAircraft.cpp \
 	$(DRW)/DrawAirSpaces.cpp \
+	$(DRW)/DrawAirSpacesBorders.cpp \
 	$(DRW)/DrawAirspaceLabels.cpp \
 	$(DRW)/DrawBearing.cpp \
 	$(DRW)/DrawBestCruiseTrack.cpp \

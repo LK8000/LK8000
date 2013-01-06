@@ -527,6 +527,7 @@ class MapWindow {
   //  static void DrawWindAtAircraft(HDC hdc, POINT Orig, RECT rc);
   static void DrawWindAtAircraft2(HDC hdc, POINT Orig, RECT rc);
   static void DrawAirSpace(HDC hdc, const RECT rc);
+  static void DrawAirSpaceBorders(HDC hdc, const RECT rc);
   static void DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Aircraft);
   static void DrawWaypoints(HDC hdc, const RECT rc);
   static void DrawWaypointsNew(HDC hdc, const RECT rc);
