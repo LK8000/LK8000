@@ -506,7 +506,7 @@ class MapWindow {
   static void CalculateScreenPositionsGroundline();
   static void CalculateScreenPositionsAirspace(const RECT& rcDraw);
   static void CalculateScreenPositionsThermalSources();
-  static void LKCalculateWaypointReachable(short multicalc_slot, short numslots);
+  static void LKCalculateWaypointReachable(const bool forced);
   
   static bool PointVisible(const POINT &P);
   static bool PointVisible(const double &lon, const double &lat);

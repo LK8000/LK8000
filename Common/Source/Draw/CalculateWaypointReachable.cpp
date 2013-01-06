@@ -41,11 +41,38 @@ bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated
 // Use multicalc approach, splitting calculation inside MapWindow
 // thread into multiple instances, 0.5 or 0.33 Hz recommended
 // 
-void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslots)
+//
+// Calculations are taking time and slow down painting of map, beware
+//
+  #define MULTICALC_MINROBIN     5      // minimum split
+  #define MULTICALC_MAXROBIN    20      // max split
+
+void MapWindow::LKCalculateWaypointReachable(const bool forced)
 {
   #if USEONEHZLIMITER
-  ONEHZLIMITER;
+  if (!forced) ONEHZLIMITER;
   #endif
+
+  static short multicalc_slot=0; // -1 (which becomes immediately 0) will force full loading on startup, but this is not good
+                                 // because currently we are not waiting for ProgramStarted=3
+                                 // and the first scan is made while still initializing other things
+
+  short numslots=1; // TODO assign numslots with a function, based also on available CPU time
+
+  if (NumberOfWayPoints>200) {
+	numslots=NumberOfWayPoints/400;
+	// keep numslots optimal
+	if (numslots<MULTICALC_MINROBIN) numslots=MULTICALC_MINROBIN; // seconds for full scan, as this is executed at 1Hz
+	if (numslots>MULTICALC_MAXROBIN) numslots=MULTICALC_MAXROBIN;
+
+	// When waypointnumber has changed, we wont be using an exceeded multicalc_slot, which would crash the sw
+	// In this case, we shall probably continue for the first round to calculate without going from the beginning
+	// but this is not a problem, we are round-robin all the time here.
+	if (++multicalc_slot>numslots) multicalc_slot=1;
+  } else {
+	multicalc_slot=0; // forcing full scan
+  }
+
 
   unsigned int i;
   double waypointDistance, waypointBearing,altitudeRequired,altitudeDifference;
