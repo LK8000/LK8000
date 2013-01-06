@@ -43,6 +43,10 @@ bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated
 // 
 void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslots)
 {
+  #if USEONEHZLIMITER
+  ONEHZLIMITER;
+  #endif
+
   unsigned int i;
   double waypointDistance, waypointBearing,altitudeRequired,altitudeDifference;
 

@@ -116,6 +116,9 @@
 // MapDraw OPTIM , SetTopologyBounds limited to zoom change and map draw out of current rect 
 #define TOPOBOUND_OPTIM	1
 
+// Limit some functions in Draw thread to run only at 1hz max.
+// Otherwise they are called each time the Thread_Draw is looping again.
+#define USEONEHZLIMITER 1
 
 
 // ----------------------------------------------------------------------------------------

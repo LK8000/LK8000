@@ -34,6 +34,7 @@
 #include "Enums.h"
 #include "Units.h"
 #include "lk8000.h"
+#include "Macro.h"
 
 #include "StdAfx.h"
 #include "Parser.h"

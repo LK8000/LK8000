@@ -16,10 +16,7 @@ DWORD MapWindow::timestamp_newdata=0;
 //
 void MapWindow::DrawFunctions1HZ(HDC hDC, const RECT rc) {
 
-  static double nextHB=0;
-
-  if (LKHearthBeats < nextHB) return;
-  nextHB=LKHearthBeats+2;	// 2hz to 1hz
+  ONEHZLIMITER;
 
   DrawLKAlarms(hDC, rc);
   DrawFDRAlarms(hDC, rc);
