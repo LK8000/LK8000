@@ -437,9 +437,9 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
 
         // altitude gained while circling
 
-	LKASSERT(WindSpeed!=0);
-	if (WindSpeed==0) WindSpeed=0.01;
-        AltGain = DistDrift * emcready / WindSpeed;
+        LKASSERT(WindSpeed!=0);
+        double WindSpeedCopy = (WindSpeed == 0) ? 0.01 : WindSpeed;
+        AltGain = DistDrift * emcready / WindSpeedCopy;
 
         // altitude lost while gliding on guessed BCT
 
