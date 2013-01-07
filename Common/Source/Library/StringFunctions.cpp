@@ -804,7 +804,7 @@ TCHAR *WindAngleToText(double angle) {
  // We need 32 slots of 11.25 degrees for a full 360
  static unsigned short angleslot[32]={0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,0};
 
- if (angle<0) return(windrose[32]); // ---
+ if (angle<0) return(windrose[16]); // ---
  if (angle>=360) angle-=360;
 
  unsigned short direction= (unsigned short)(angle/11.25);

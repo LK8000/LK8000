@@ -920,7 +920,6 @@ label_Target:
 	// and will not use them after the first run time anymore...
 	DrawTarget(hdc, rc, qrow[3],qrow[15],qcolumn[3],qcolumn[13]);
 
-     if (ScreenLandscape) {
 	showunit=false; // 091219
 
 	// left
@@ -949,37 +948,6 @@ label_Target:
 
 	showunit=LKFormatValue(LK_TARGET_ALTARRIV, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(hdc, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
-     } else {
-	showunit=false;
-
-	// left
-	
-	showunit=LKFormatValue(LK_TARGET_DIST, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[3],&qrow[4],&qrow[2]);
-
-	showunit=LKFormatValue(LK_TARGET_EIAS, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
-
-	showunit=LKFormatValue(LK_TARGET_AVGVARIO, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[9],&qrow[10],&qrow[8]);
-
-	showunit=LKFormatValue(LK_TARGET_GR, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[12],&qrow[13],&qrow[11]);
-
-	// right
-	showunit=LKFormatValue(LK_TARGET_ALTDIFF, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
-
-	showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
-
-	showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[9],&qrow[10],&qrow[8]);
-
-	showunit=LKFormatValue(LK_TARGET_ALTARRIV, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
-     }
-
 
 
 label_End:

@@ -23,7 +23,7 @@
 /// Initializes file.
 //
 Utf8File::Utf8File()
-: fp(NULL)
+: fp(NULL), convErReported(), writeErReported()
 {
   path[0] = _T('\0');
 } // Utf8File()

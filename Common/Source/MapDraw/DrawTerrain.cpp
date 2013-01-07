@@ -114,6 +114,8 @@ inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
 // Returning from constructor without setting terrain_ready will result in no draw terrain.
 //
 class TerrainRenderer {
+  TerrainRenderer(const TerrainRenderer &);             // disallowed
+  TerrainRenderer &operator=(const TerrainRenderer &);  // disallowed
 public:
   TerrainRenderer(RECT rc) {
 
@@ -228,12 +230,6 @@ public:
     }
     terrain_ready=false;
   }
-
-public:
-  POINT spot_max_pt;
-  POINT spot_min_pt;
-  short spot_max_val;
-  short spot_min_val;
 
 private:
 

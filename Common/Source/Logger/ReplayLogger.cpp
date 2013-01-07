@@ -280,7 +280,6 @@ public:
   }
 private:
   int num;
-  double tzero;
 };
 
 

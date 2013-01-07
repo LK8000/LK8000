@@ -144,10 +144,11 @@ static int	iRectangleSize = 4;
 			_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
 		}
 		if (DrawInfo.FLARM_Traffic[i].Average30s>=0.1) {
-			if (_tcslen(lbuffer) >0)
-				_stprintf(lbuffer,_T("%s:%.1f"),lbuffer,LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
-			else
-				_stprintf(lbuffer,_T("%.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
+                  size_t len = _tcslen(lbuffer);
+                  if (len > 0)
+                    _stprintf(lbuffer + len,_T(":%.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
+                  else
+                    _stprintf(lbuffer,_T("%.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
 		}
 
 		displaymode.Border=1;

@@ -26,7 +26,7 @@ class SunEphemeris {
     // type casting necessary on PC DOS and TClite to avoid overflow
     luku+= (long int)y*367;
     return (double)luku - 730531.5 + h/24.0;
-  };
+  }
 
   //   the function below returns an angle in the range
   //   0 to 2*PI
@@ -36,7 +36,7 @@ class SunEphemeris {
     double a = 2.0*PI * (b - (long)(b));
     if (a < 0) a = 2.0*PI + a;
     return a;
-  };
+  }
 
   // Calculating the hourangle
   //
@@ -49,7 +49,7 @@ class SunEphemeris {
     if (fo>0.99999) fo=1.0; // to avoid overflow //
     fo = asin(fo) + PI/2.0;
     return fo;
-  };
+  }
 
   // Calculating the hourangle for twilight times
   //
@@ -61,7 +61,7 @@ class SunEphemeris {
     if (fi>0.99999) fi=1.0; // to avoid overflow //
     fi = asin(fi) + PI/2.0;
     return fi;
-  };
+  }
 
   //   Find the ecliptic longitude of the Sun
 
@@ -78,16 +78,16 @@ class SunEphemeris {
     //   Ecliptic longitude of the Sun
 
     return FNrange(L + 1.915 * DEG_TO_RAD * sin(g) + .02 * DEG_TO_RAD * sin(2 * g));
-  };
+  }
 
   // Display decimal hours in hours and minutes
-  void showhrmn(double dhr) {
+  // void showhrmn(double dhr) {
     // int hr,mn;
     // hr=(int) dhr;
     // mn =(int) (dhr - (double) hr)*60;
 
     //  printf("%0d:%0d",hr,mn);
-  };
+  // }
 
 
  public:
@@ -205,5 +205,5 @@ double DoSunEphemeris(double lon, double lat) {
   mysun.CalcSunTimes((float)lon, (float)lat);
   return (double)mysun.settm;
 
-};
+}
 

@@ -313,8 +313,6 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   } else {
 	FillRect(hdc,&s_sortBox[cursortbox], sortbrush);
 
-	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240) || (ScreenSize == ss896x672) ) {
-
 		_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
   		SelectObject(hdc, LK8PanelMediumFont); 
 		LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
@@ -350,44 +348,6 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-	} else {
-		_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
-  		SelectObject(hdc, LK8PanelMediumFont); 
-		LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-  		SelectObject(hdc, LK8InfoNormalFont); 
-
-		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1642_")), curpage+1, AspNumpages);  // ASP
-
-		if (cursortbox==0)
-			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
-		else
-			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-
-		_stprintf(Buffer,gettext(TEXT("_@M752_")));  // Type
-		if (cursortbox==1)
-			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
-		else
-			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-
-		_stprintf(Buffer,gettext(TEXT("_@M1300_")));  // Dist
-		if (cursortbox==2)
-			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
-		else
-			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-
-		_stprintf(Buffer,gettext(TEXT("_@M1301_")));  // Dir
-		if (cursortbox==3)
-			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
-		else
-			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-
-		_stprintf(Buffer,TEXT("*")); 
-		if (cursortbox==4)
-			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
-		else
-			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-	}
-	
 
   } // landscape mode
 

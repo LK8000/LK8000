@@ -153,7 +153,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 #ifndef LKCOMPETITION
 		_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
 #else
-		_stprintf(mes,_T("V%S.%S COMPETITION"),LKVERSION,LKRELEASE,__DATE__);
+		_stprintf(mes,_T("V%S.%S (%S) COMPETITION"),LKVERSION,LKRELEASE,__DATE__);
 #endif
 		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
 	}

@@ -472,8 +472,6 @@ bool ChildData::decode(void* childData)//, int childDataSize)
 	}
 
 	// get environment
-	if (size <= 0)
-		return false;
 	p += sizeof(DWORD);	// skip env size
 	resetEnvironment();
 	addEnvironmentList((WCHAR*)p);

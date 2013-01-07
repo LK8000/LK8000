@@ -141,7 +141,7 @@ void InitFlightDataRecorder(void)
   fprintf(FlightDataRecorderFile,"*\r");
   fprintf(FlightDataRecorderFile,"******************************************************************\r\r");
 
-  fprintf(FlightDataRecorderFile,"Recording interval:%ds \r\r",iLogDelay);
+  fprintf(FlightDataRecorderFile,"Recording interval:%us \r\r",iLogDelay);
 
   for( i = 0;  i < NO_ENTRYS; i++)
   {

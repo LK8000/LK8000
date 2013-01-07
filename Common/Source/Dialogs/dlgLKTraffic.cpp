@@ -382,9 +382,10 @@ void dlgLKTrafficDetails(int indexid) {
 		break;
   }
   Units::TimeToTextDown(tpas,(int)(GPS_INFO.Time - LKTraffic[indexid].Time_Fix));
-  _stprintf(status,_T("%s (%s\" old)"),status,tpas);
+  TCHAR caption[80];
+  _stprintf(caption,_T("%s (%s\" old)"),status,tpas);
 
-  wf->SetCaption(status);
+  wf->SetCaption(caption);
   SelectedTraffic=indexid;
 
   wf->ShowModal();

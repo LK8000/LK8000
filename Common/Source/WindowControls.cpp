@@ -2376,23 +2376,6 @@ int WndForm::ShowModal(bool bEnableMap) {
           } */
 
         } else {
-
-          /*
-          if (msg.message == WM_KEYDOWN){
-            if (ActiveControl != NULL){
-              switch(msg.wParam & 0xffff){
-                case VK_UP:
-                  if (ActiveControl->GetOwner() != NULL)
-                    ActiveControl->GetOwner()->FocusPrev(ActiveControl);
-                continue;
-                case VK_DOWN:
-                  if (ActiveControl->GetOwner() != NULL)
-                    ActiveControl->GetOwner()->FocusNext(ActiveControl);
-                continue;
-              }
-            }
-          }
-          */
         } // DispatchMessage
       } // timeMsg
   }
@@ -2902,11 +2885,7 @@ WndProperty::WndProperty(WindowControl *Parent,
   mhValueFont = GetFont();
   mCaptionWidth = CaptionWidth;
 
-  if (mCaptionWidth != 0){
-    mBitmapSize = DLGSCALE(32)/2;
-  } else {
-    mBitmapSize = DLGSCALE(32)/2;
-  }
+  mBitmapSize = DLGSCALE(32)/2;
   if (mDialogStyle)
     mBitmapSize = 0;
 

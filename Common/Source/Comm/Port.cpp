@@ -62,7 +62,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
   }
 #endif
 
-  StartupStore(_T(". ComPort %d Initialize <%s> speed=%d bit=%d %s"),dwPortNumber+1,lkPortName,dwPortSpeed,8-dwPortBit,NEWLINE);
+  StartupStore(_T(". ComPort %u Initialize <%s> speed=%u bit=%u %s"),dwPortNumber+1,lkPortName,dwPortSpeed,8-dwPortBit,NEWLINE);
 
   hPort = CreateFile(sPortName, // Pointer to the name of the port
                       GENERIC_READ | GENERIC_WRITE,
@@ -76,13 +76,13 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
 
   if (hPort == INVALID_HANDLE_VALUE) {
 	dwError = GetLastError();
-	_stprintf(lkbuf,_T("... ComPort %d Init failed, error=%d%s"),dwPortNumber+1,dwError,NEWLINE); // 091117
+	_stprintf(lkbuf,_T("... ComPort %u Init failed, error=%u%s"),dwPortNumber+1,dwError,NEWLINE); // 091117
 	StartupStore(lkbuf);
 	// LKTOKEN  _@M762_ = "Unable to open port" 
 	ComPort_StatusMessage(MB_OK|MB_ICONINFORMATION, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), lkPortName);
 	return FALSE;
   }
-  StartupStore(_T(". ComPort %d  <%s> is now open%s"),dwPortNumber+1,lkPortName,NEWLINE);
+  StartupStore(_T(". ComPort %u  <%s> is now open%s"),dwPortNumber+1,lkPortName,NEWLINE);
 
   PortDCB.DCBlength = sizeof(DCB);     
 
@@ -136,7 +136,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
 	// LKTOKEN  _@M759_ = "Unable to Change Settings on Port" 
 	ComPort_StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M759_")), lkPortName);
 	dwError = GetLastError();
-	_stprintf(lkbuf,_T("... ComPort %d Init <%s> change setting FAILED, error=%d%s"),dwPortNumber+1,lkPortName,dwError,NEWLINE); // 091117
+	_stprintf(lkbuf,_T("... ComPort %u Init <%s> change setting FAILED, error=%u%s"),dwPortNumber+1,lkPortName,dwError,NEWLINE); // 091117
 	StartupStore(lkbuf);
 	return FALSE;
   }
@@ -152,14 +152,14 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
   EscapeCommFunction(hPort, SETRTS);
   sportnumber=dwPortNumber; // 100210
   if (!StartRxThread()){
-	_stprintf(lkbuf,_T("... ComPort %d Init <%s> StartRxThread failed%s"),dwPortNumber+1,lkPortName,NEWLINE);
+	_stprintf(lkbuf,_T("... ComPort %u Init <%s> StartRxThread failed%s"),dwPortNumber+1,lkPortName,NEWLINE);
 	StartupStore(lkbuf);
 	if (!CloseHandle(hPort)) {
 		dwError = GetLastError();
-		_stprintf(lkbuf,_T("... ComPort %d Init <%s> close failed, error=%d%s"),dwPortNumber+1,lkPortName,dwError,NEWLINE);
+		_stprintf(lkbuf,_T("... ComPort %u Init <%s> close failed, error=%u%s"),dwPortNumber+1,lkPortName,dwError,NEWLINE);
 		StartupStore(lkbuf);
 	} else {
-		_stprintf(lkbuf,_T("... ComPort %d Init <%s> closed%s"),dwPortNumber+1,lkPortName,NEWLINE);
+		_stprintf(lkbuf,_T("... ComPort %u Init <%s> closed%s"),dwPortNumber+1,lkPortName,NEWLINE);
 		StartupStore(lkbuf);
 	}
 	hPort = INVALID_HANDLE_VALUE;
@@ -173,7 +173,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
 	return FALSE;
   }
 
-  _stprintf(lkbuf,_T(". ComPort %d Init <%s> end OK%s"),dwPortNumber+1,lkPortName,NEWLINE);
+  _stprintf(lkbuf,_T(". ComPort %u Init <%s> end OK%s"),dwPortNumber+1,lkPortName,NEWLINE);
   StartupStore(lkbuf);
   return TRUE;
 }
@@ -236,7 +236,7 @@ BOOL ComPort::Close()
 	// Close the communication port.
 	if (!CloseHandle(hPort)) {
 		dwError = GetLastError();
-		_stprintf(lkbuf,_T("... ComPort %d close failed, error=%d%s"),sportnumber+1,dwError,NEWLINE);
+		_stprintf(lkbuf,_T("... ComPort %u close failed, error=%u%s"),sportnumber+1,dwError,NEWLINE);
 		StartupStore(lkbuf);
 		return FALSE;
 	} else {
@@ -244,12 +244,12 @@ BOOL ComPort::Close()
 		Sleep(2000); // needed for windows bug
 		#endif
 		hPort = INVALID_HANDLE_VALUE; 
-		_stprintf(lkbuf,_T(". ComPort %d closed Ok.%s"),sportnumber+1,NEWLINE);
+		_stprintf(lkbuf,_T(". ComPort %u closed Ok.%s"),sportnumber+1,NEWLINE);
 		StartupStore(lkbuf); // 100210 BUGFIX missing
 		return TRUE;
 	}
   }
-  StartupStore(_T("... ComPort %d Close failed, invalid handle%s"),sportnumber+1,NEWLINE);
+  StartupStore(_T("... ComPort %u Close failed, invalid handle%s"),sportnumber+1,NEWLINE);
   return FALSE;
 }
 

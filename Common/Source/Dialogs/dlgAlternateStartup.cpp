@@ -97,7 +97,7 @@ static int OnTimerNotify(WindowControl *Sender)
 		#ifndef LKCOMPETITION
 		_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
 		#else
-		_stprintf(mes,_T("V%S.%S COMPETITION"),LKVERSION,LKRELEASE,__DATE__);
+		_stprintf(mes,_T("V%S.%S (%S) COMPETITION"),LKVERSION,LKRELEASE,__DATE__);
 		#endif
 
 		short k=0;

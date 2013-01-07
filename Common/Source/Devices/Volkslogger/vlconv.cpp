@@ -82,31 +82,25 @@ class KOORD {
 public:
   long lat, lon;
   // Funktion zum Ausdrucken der Koordinate
-  KOORD() {
-    lat = 0;
-    lon = 0;
-  }
-  void print(FILE *aus) {
-		int  lat_deg, lon_deg;
-		long lat_tm,lon_tm;
-		long t;
-		char lat_sgn,lon_sgn;
-    lat_sgn = ((lat>=0) ? 'N' : 'S');
-    lon_sgn = ((lon>=0) ? 'E' : 'W');
-
-    t = labs(lat);
+  KOORD(): lat(), lon() {}
+  void print(FILE *aus)
+  {
+    char lat_sgn = ((lat>=0) ? 'N' : 'S');
+    char lon_sgn = ((lon>=0) ? 'E' : 'W');
+    
+    unsigned long t = labs(lat);
     if (t >= 5400000L)
-			t = 5400000L;
-    lat_deg = t / 60000L;
-    lat_tm  = t % 60000L;
+      t = 5400000L;
+    unsigned int lat_deg = t / 60000L;
+    unsigned long lat_tm  = t % 60000L;
 
     t = labs(lon);
     if (t >= 10800000L)
-			t = 10800000L;
-    lon_deg = t / 60000L;
-    lon_tm  = t % 60000L;
+      t = 10800000L;
+    unsigned int lon_deg = t / 60000L;
+    unsigned long lon_tm  = t % 60000L;
     fprintf(aus,"%02u%05lu%c%03u%05lu%c",lat_deg,lat_tm,lat_sgn,lon_deg,lon_tm,lon_sgn);
-	}
+  }
 };
 
 // Struktur eines WPTs für C-Records
@@ -115,14 +109,13 @@ public:
 	char        name[7];
 	int		typ;
 	KOORD	koord;
-	int i;
     C2() {
       typ = 0;
       strcpy(name,"      ");
     }
 	  void packed2unpacked(lpb packed) {
     //_fmemcpy(name,packed,6);
-		  for(i=0; i<6; i++)
+		  for(int i=0; i<6; i++)
 		    name[i] = packed[i];
       name[6] = 0; //6,10-12
       typ = packed[6] &0x7F;
@@ -237,6 +230,7 @@ class C_RECORD {
     memset(&T_FDT,0,sizeof T_FDT);
     zz_min = 0;
     memset(&TDECL,0,sizeof TDECL);
+    hasdeclaration = 0;
     strcpy(sTDECL,"            ");
     memset(FDT,0,sizeof FDT);
     //init();
@@ -278,6 +272,7 @@ struct IGCHEADER {
   //}
 // Konstruktor
   IGCHEADER(void) {
+    A[0] = 0;
     DTE[0] = 0;
     FXA[0] = 0;
     PLT[0] = 0;

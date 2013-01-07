@@ -444,8 +444,6 @@ else
   if (ParToDouble(sentence, 1, &fTmp))
   {
 	fTmp -= 1.0;
-	fTmp  = (fTmp);
-
 	if(  fabs(fTmp -BALLAST) >= 0.05)
     {
       BALLAST = fTmp;

@@ -52,6 +52,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	case (ScreenSize_t)ss400x240:
 		minBar=-45;
 		maxBar=45;
+                break;
 	default:
 		minBar=-50; // was 60
 		maxBar=50;
