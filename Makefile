@@ -940,6 +940,9 @@ endif
 ifneq ($(wildcard $(BIN)/*/.*.d),)
 include $(wildcard $(BIN)/*/.*.d)
 endif
-ifneq ($(wildcard $(BIN)/.*.rsc),)
-include $(wildcard $(BIN)/.*.d)
+ifneq ($(wildcard $(BIN)/*/*/.*.d),)
+include $(wildcard $(BIN)/*/*/.*.d)
+endif
+ifneq ($(wildcard $(BIN)/*/*/*/.*.d),)
+include $(wildcard $(BIN)/*/*/*/.*.d)
 endif
