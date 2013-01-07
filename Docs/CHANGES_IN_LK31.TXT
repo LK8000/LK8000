@@ -221,6 +221,55 @@ New Takeoff safety alarm (configuration menu Alarms)
    in use again for the next takeoff.
 
 
+LK8000 VERSION 3.1M 1301xx
+==========================
+
+
+NEW
+
+ draw thermal bar also in cruise mode (can be configured in config 13 page: disabled,
+  in thermal, in thermal and cruis)
+
+ More accurate battery indicator, flashing when below 6%, and full blue when 100% under power.
+
+ Airspace "borders only" painted 13 times faster than before.
+
+ New startup and shutdown sounds for v4
+
+
+
+CHANGES
+
+ Multimap M1 sideview showing glideline in SIM and not flying using glider best ld.
+
+ Use thin airspace outlines if content is not filled or selected.
+
+ Many optimizations for speed
+
+
+
+FIXES
+
+ Fix rounding problem using feet units in Airspace setup: 
+ clip altitude, Warning vertical margin, Altitude Warning Margin.
+
+ Fixes in CProbe device driver
+
+ Fix Wrong circle airspace drawing if Radius is less than 20 pixel
+
+ Fix no sonar audio played is general audio is disabled
+
+ Fix speed for determining flaps in turn, should be corrected for bank angle.
+ It behaves the same like for example minimum speed rising.
+
+ Fix runway size glitch in portrait mode
+ Fix task rendering with start on a leg
+ Fix sideview using transparent airspaces and bordersonly in topview.
+
+
+
+
+
 
 LK8000 VERSION 3.1L 121221
 ==========================
