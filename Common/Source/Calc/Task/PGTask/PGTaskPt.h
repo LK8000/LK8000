@@ -28,7 +28,7 @@ public:
     }
 
     inline bool operator!=(const ProjPt& pt) const {
-        return (pt.m_X != m_X) && (pt.m_Y != m_Y);
+        return !((*this) == pt);
     }
 
     inline ProjPt operator-(const ProjPt& pt) const {
