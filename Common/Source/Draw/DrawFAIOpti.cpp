@@ -165,10 +165,7 @@ double dir = -1.0;
    ********************************************************************/
   fDelta_Dist =(fDistMax-fDistMin)/ (double)(FAI_SECTOR_STEPS);
   fDistTri = fDistMin;
-  if(fDistTri < FAI_BIG_THRESHOLD)
-  	fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
-  else
-	fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
+  fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
   fDist_a = fDistMin * fFAI_Percentage;
   fDist_b = fDistMin * fFAI_Percentage;
   for(i =0 ;i < FAI_SECTOR_STEPS; i++)
@@ -183,10 +180,7 @@ double dir = -1.0;
     apSectorPolygon[iPolyPtr++] = Pt1;
 
     fDistTri += fDelta_Dist;
-    if(fDistTri < FAI_BIG_THRESHOLD)
-      fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
-    else
-      fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
+    fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
     fDist_a = fFAI_Percentage * fDistTri;
 	fDist_b = fDistTri - fDist_a - fDist_c;
   }
@@ -194,10 +188,7 @@ double dir = -1.0;
   /********************************************************************
    * calc top leg
    ********************************************************************/
-  if(fDistMax < FAI_BIG_THRESHOLD)
-    fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
-  else
-    fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
+  fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
 
   fDelta_Dist =  (fDistMax*(1.0-3.0*fFAI_Percentage)) / (double)(FAI_SECTOR_STEPS);
   fDist_a = fDist_c;
@@ -235,10 +226,7 @@ double dir = -1.0;
     apSectorPolygon[iPolyPtr++] = Pt1;
 
     fDistTri -= fDelta_Dist;
-    if(fDistTri < FAI_BIG_THRESHOLD)
-      fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
-    else
-      fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
+    fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
 
     fDist_b = fFAI_Percentage * fDistTri;
 	fDist_a = fDistTri - fDist_b - fDist_c;

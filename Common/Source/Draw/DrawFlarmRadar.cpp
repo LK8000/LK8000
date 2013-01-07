@@ -257,8 +257,8 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	  LKASSERT(ticstep!=0);
 	  FormatTicText(unit_text, yval*unit_step/ticstep, unit_step);
 	  if(pUnit != NULL)
-		if(yval+ticstep >y_max)
-	    _stprintf (unit_text,TEXT("%s%s"), unit_text,pUnit);
+            if(yval+ticstep >y_max)
+              _stprintf(unit_text + _tcslen(unit_text), TEXT("%s"), pUnit);
 	  GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
 	  switch(iTextAling)
 	  {

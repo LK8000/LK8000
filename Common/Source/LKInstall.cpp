@@ -344,10 +344,11 @@ bool CheckPolarsDir() {
 
 bool CheckRegistryProfile() {
 	TCHAR srcpath[MAX_PATH];
+	TCHAR profilePath[MAX_PATH];
 	if ( GlobalModelType == MODELTYPE_PNA_HP31X ) return false;
 	LocalPath(srcpath,TEXT(LKD_CONF)); // 091101
-	_stprintf(srcpath,_T("%s\\%s"),srcpath,LKPROFILE); // 091101
-	if (  GetFileAttributes(srcpath) == 0xffffffff) return false;
+	_stprintf(profilePath,_T("%s\\%s"),srcpath,LKPROFILE); // 091101
+	if (  GetFileAttributes(profilePath) == 0xffffffff) return false;
 	return true;
 }
 

@@ -224,6 +224,8 @@ static BOOL wildcardFindFirst(const char* arg, HANDLE* findHandle, char** expand
 	if (*findHandle == (HANDLE)0xffffffff)
 		return FALSE;
 	filenameLen = wcslen(findData.cFileName);
+        if(*expandedArg)
+          free(*expandedArg);
 	*expandedArg = (char*)malloc(filenameLen+1);
 	if (*expandedArg == NULL)
 		return FALSE;
@@ -242,6 +244,8 @@ static BOOL wildcardFindNext(HANDLE findHandle, char** expandedArg)
 		return FALSE;
 	}
 	filenameLen = wcslen(findData.cFileName);
+        if(*expandedArg)
+          free(*expandedArg);
 	*expandedArg = (char*)malloc(filenameLen+1);
 	if (*expandedArg == NULL)
 	{
@@ -271,6 +275,7 @@ int processCmdLine(LPTSTR lpCmdLine, char*** pArgv)
 	TCHAR		argW[maxArgChars];
 	char		arg[maxArgChars];
 	ArgType		argType;
+        char*	        expandedArg=0;
 
 	// get program name
 	if (GetModuleFileName(NULL, programName, 1024) <= 0)
@@ -293,13 +298,13 @@ int processCmdLine(LPTSTR lpCmdLine, char*** pArgv)
 		if (argType == TOK_STRING)
 		{
 			HANDLE	findHandle;
-			char*	expandedArg;
 			if ((strchr(arg,'*')==NULL && strchr(arg,'?')==NULL) || !wildcardFindFirst(arg, &findHandle, &expandedArg))
 			{	// not a wildcard, or is but doesn't match anything, so just add arg to argv
 				argc++;
-				argv = (char**)realloc(argv, argc*sizeof(char*));
-				if (argv == NULL)
+                                char** buffer = (char**)realloc(argv, argc*sizeof(char*));
+				if (buffer == NULL)
 					goto cleanup;
+                                argv = buffer;
 				argv[argc-1] = (char*)malloc(strlen(arg)+1);
 				if (argv[argc-1] == NULL)
 					goto cleanup;
@@ -316,12 +321,10 @@ int processCmdLine(LPTSTR lpCmdLine, char*** pArgv)
 				do
 				{
 					argc++;
-					argv = (char**)realloc(argv, argc*sizeof(char*));
-					if (argv == NULL)
-					{
-						free(expandedArg);
+					char** buffer = (char**)realloc(argv, argc*sizeof(char*));
+					if (buffer == NULL)
 						goto cleanup;
-					}
+                                        argv = buffer
 					if (numPathCharsToCopyFromArg == 0)
 						argv[argc-1] = expandedArg;
 					else
@@ -344,6 +347,11 @@ int processCmdLine(LPTSTR lpCmdLine, char*** pArgv)
 
 cleanup:
 
+        if(expandedArg) {
+          free(expandedArg);
+          expandedArg = 0;
+        }
+        
 	if (!success)
 	{
 		if (argv != NULL)

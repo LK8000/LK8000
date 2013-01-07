@@ -244,14 +244,15 @@ namespace {
   {
     // prepare and send command
     TCHAR buffer[128];
-    _stprintf(buffer, TEXT("T,0"));
+    TCHAR *text = buffer;
+    text += _stprintf(text, TEXT("T,0"));
     for(size_t i=0; i<9; i++) {
       if(i < task.size())
-        _stprintf(buffer, TEXT("%s,%d"), buffer, task[i] + 1);
+        text += _stprintf(text, TEXT(",%d"), task[i] + 1);
       else
-        _stprintf(buffer, TEXT("%s,0"));
+        text += _stprintf(text, TEXT(",0"));
     }
-    _stprintf(buffer, TEXT("%s\r"), buffer);
+    text += _stprintf(text, TEXT("\r"));
     d->Com->WriteString(buffer);
     
     // wait for command prompt

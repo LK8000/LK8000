@@ -194,7 +194,7 @@ static void PrepareData(void){
 	OutOfMemory(__FILE__,__LINE__);
 	return;
   }
-  memset(WayPointSelectInfo,0,sizeof(WayPointSelectInfo));
+  memset(WayPointSelectInfo, 0, sizeof(WayPointSelectInfo_t) * NumberOfWayPoints);
 
   StrIndex = (int*)malloc(sizeof(int)*(NumberOfWayPoints+1));
   if (StrIndex==NULL) {
