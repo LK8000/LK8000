@@ -20,6 +20,30 @@ void MapWindow::DrawAirSpaceBorders(HDC hdc, const RECT rc)
   oldBrush=(HBRUSH)SelectObject(hdc,(HBRUSH)NULL);
   
   CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+  //    for (it=airspaces_to_draw.end(); it != airspaces_to_draw.begin(); it--)
+
+      /***********************************************************************
+       * draw underlying aispaces first (reverse order) with bigger pen
+       * *********************************************************************/
+      it=airspaces_to_draw.end();
+	  do
+      {
+		it--;
+        if ((*it)->DrawStyle()) {
+          airspace_type = (*it)->Type();
+          if ( asp_selected_flash && (*it)->Selected() ) {
+            SelectObject(hdc, GetStockObject(BLACK_PEN));
+          } else {
+            SelectObject(hdc, hBigAirspacePens[airspace_type]);
+          }
+          (*it)->Draw(hdc, rc, false);
+        }
+      } while (it !=airspaces_to_draw.begin());
+
+      /***********************************************************************
+       * now draw aispaces on top (normal order) with thin pen
+       ***********************************************************************/
+
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
           airspace_type = (*it)->Type();
@@ -31,6 +55,7 @@ void MapWindow::DrawAirSpaceBorders(HDC hdc, const RECT rc)
           (*it)->Draw(hdc, rc, false);
         }
       }//for
+
 
   SelectObject(hdc,oldBrush);
 }

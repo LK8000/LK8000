@@ -115,8 +115,11 @@ void LKObjects_Create() {
   //
   int i;
 
+//  COLORREF ChangeBrightness(long Color, double fBrightFact)
   for (i=0; i<AIRSPACECLASSCOUNT; i++) {
-	MapWindow::hAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(2), MapWindow::Colours[MapWindow::iAirspaceColour[i]]);
+	MapWindow::hAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(1),ChangeBrightness( MapWindow::Colours[MapWindow::iAirspaceColour[i]], 0.85));
+	MapWindow::hBigAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(3), MapWindow::Colours[MapWindow::iAirspaceColour[i]]);
+
   }
   MapWindow::hAirspaceBorderPen = CreatePen(PS_SOLID, NIBLSCALE(10), RGB_WHITE);
 
@@ -258,6 +261,8 @@ void LKObjects_Delete() {
 
   for (i=0; i<AIRSPACECLASSCOUNT; i++) {
 	if(MapWindow::hAirspacePens[i]) DeleteObject(MapWindow::hAirspacePens[i]);
+	if(MapWindow::hBigAirspacePens[i]) DeleteObject(MapWindow::hBigAirspacePens[i]);
+
   }
   DeleteObject(MapWindow::hAirspaceBorderPen);
 

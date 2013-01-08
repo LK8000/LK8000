@@ -384,6 +384,7 @@ class MapWindow {
   // 12 is number of airspace types
   static COLORREF Colours[NUMAIRSPACECOLORS];
   static HPEN hAirspacePens[AIRSPACECLASSCOUNT];
+  static HPEN hBigAirspacePens[AIRSPACECLASSCOUNT];
   static HPEN hAirspaceBorderPen;
   static HPEN hSnailPens[NUMSNAILCOLORS];
   static COLORREF hSnailColours[NUMSNAILCOLORS];

@@ -90,6 +90,7 @@ int      MapWindow::iAirspaceColour[AIRSPACECLASSCOUNT] = {5,0,0,10,0,0,10,2,0,1
 int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] = {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0};
 
 HPEN MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
+HPEN MapWindow::hBigAirspacePens[AIRSPACECLASSCOUNT];
 HPEN MapWindow::hAirspaceBorderPen;
 bool MapWindow::bAirspaceBlackOutline = false;
 
