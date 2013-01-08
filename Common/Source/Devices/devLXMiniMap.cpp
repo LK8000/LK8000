@@ -524,7 +524,7 @@ bool DevLXMiniMap::LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 double StaticPressureToQNEAltitudeEx(double ps) {
   const double k1=0.190263;
   const double k2=8.417286e-5;
-  return (pow(1013.25,k1) - pow(ps/100.0, k1))/k2;
+  return (pow(PRESSURE_STANDARD,k1) - pow(ps/100.0, k1))/k2;
 
 }
 
@@ -532,7 +532,7 @@ double QNEAltitudeToStaticPressure(double alt) {
   // http://wahiduddin.net/calc/density_altitude.htm
   const double k1=0.190263;
   const double k2=8.417286e-5;
-  return 100.0*pow((pow(1013.25,k1)-k2*alt),1.0/k1);
+  return 100.0*pow((pow(PRESSURE_STANDARD,k1)-k2*alt),1.0/k1);
   // example, alt= 100, QNH=1014
   // ps = 100203 Pa
 }

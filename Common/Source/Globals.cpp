@@ -121,7 +121,7 @@ void Globals_Init(void) {
   TASKSPEEDMODIFY = TOKPH;
 
   MACCREADY = 0; // in m/s
-  QNH = (double)1013.25;
+  QNH = (double)PRESSURE_STANDARD;
   BUGS = 1; // This is the runtime Efficiency that can be changed by basic settings 1=100% 0.5=50%
   BALLAST = 0;
 

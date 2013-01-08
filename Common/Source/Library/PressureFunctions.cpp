@@ -44,7 +44,7 @@ double StaticPressureToQNEAltitude(double ps) {
   // http://wahiduddin.net/calc/density_altitude.htm
   const double k1=0.190263;
   const double k2=8.417286e-5;
-  return (pow(1013.25,k1) - pow(ps/100.0, k1))/k2;
+  return (pow(PRESSURE_STANDARD,k1) - pow(ps/100.0, k1))/k2;
 }
 
 

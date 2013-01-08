@@ -815,6 +815,9 @@ static const double PI = (4*atan(1));
 #define TOFEET          (double)3.281
 #define TOMETER         (double)1.0
 
+// Pressures
+#define PRESSURE_STANDARD	1013.25		// hPa
+
 
 //
 // MAP LABELS ROUND ROBIN CHOICES

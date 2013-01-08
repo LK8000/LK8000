@@ -14,11 +14,13 @@
 **   $Id: vlapihlp.cpp,v 1.1 2007/09/14 17:13:24 jwharington Exp $
 **
 ***********************************************************************/
+#include "externs.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+
 
 #include "Volkslogger/vlapihlp.h"
 #include "Volkslogger/utils.h"
@@ -94,7 +96,7 @@ proportional zum gemessenen Umgebungsdruck am Logger ist.
 long pressure2altitude(word druck) {
 double GMR   = 9.80665*28.9644/8314.32;
 double tgrad = -6.5E-3;
-double p0    = 1013.25;
+double p0    = PRESSURE_STANDARD;
 double p11   = 0.2233611050922 * p0;
 double t0    = 288.15;
 double t11   = 216.65;

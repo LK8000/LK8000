@@ -35,7 +35,9 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // Reject if terrain height is invalid
   if (!Calculated->TerrainValid) return;
 
-  if (QNH != 1013.25) return;
+  // Once set, even at standard pressure, this QNH will be different from 1013.25 which is a rounded up double
+  // So we are saying: for the case we did not set QNH yet, then continue.
+  if (QNH != PRESSURE_STANDARD) return;
 
   if (Basic->Speed<TakeOffSpeedThreshold) {
     done_autoqnh++;
@@ -90,6 +92,9 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH,fixaltitude,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
 		DoStatusMessage(qmes);
+		#if TESTBENCH
+		StartupStore(_T("%s%s"),qmes,NEWLINE);
+		#endif
 		CAirspaceManager::Instance().QnhChangeNotify(QNH);
 	}
   }
