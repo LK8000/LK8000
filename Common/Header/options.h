@@ -105,7 +105,10 @@
 
 // LKAIRSPACE OPTIM STUFF 
 // Recalculate airspace positions only if the draw area has changed by more than 2 pixels
-#define LKASP_CALC_ON_CHANGE_ONLY		1
+// There is a problem: enabling/disabling/ack/etc will not show up until a zoom is performed.
+// So there is no more instant view of what is happening, and for this reason the option is disabled.
+// #define LKASP_CALC_ON_CHANGE_ONLY		1
+
 // do not add screen points if closer than 5pix to the previous
 #define LKASP_REMOVE_NEAR_POINTS		1
 
