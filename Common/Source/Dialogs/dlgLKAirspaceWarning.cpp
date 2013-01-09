@@ -324,10 +324,9 @@ void dlgLKAirspaceFill()
 
 // Called periodically to show new airspace warning messages to user
 // return 1 only for requesting run analysis
+// This is called by WINMAIN thread, every second (1hz)
 short ShowAirspaceWarningsToUser()
 {
-
-  // SHOWTHREAD(_T("ShowAirspaceWarningToUser"));
 
   if (msg.originator != NULL) return 0;        // Dialog already open
 

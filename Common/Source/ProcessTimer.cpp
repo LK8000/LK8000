@@ -31,8 +31,7 @@ void CommonProcessTimer()
   if (ProgramStarted==psNormalOp) {
 	InputEvents::DoQueuedEvents();
 	// only shows the dialog if needed. Previously up to 2.3s at 2Hz.
-	// We should set it to 1 Hz
-	ShowAirspaceWarningsToUser();
+	if (cp_twohzcounter %2 == 0) ShowAirspaceWarningsToUser();
   }
 
   // Automatically exit menu buttons mode
