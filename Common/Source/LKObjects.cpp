@@ -116,11 +116,11 @@ void LKObjects_Create() {
   // MapWindow objects
   //
 
+//  COLORREF ChangeBrightness(long Color, double fBrightFact)
   for (i=0; i<AIRSPACECLASSCOUNT; i++) {
 	LKASSERT( MapWindow::iAirspaceColour[i]< NUMAIRSPACECOLORS);
-	MapWindow::hAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(1),ChangeBrightness( MapWindow::Colours[MapWindow::iAirspaceColour[i]], 0.85));
-	MapWindow::hBigAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(3), MapWindow::Colours[MapWindow::iAirspaceColour[i]]);
-
+	MapWindow::hAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(1), MapWindow::Colours[MapWindow::iAirspaceColour[i]]);
+	MapWindow::hBigAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(3),ChangeBrightness( MapWindow::Colours[MapWindow::iAirspaceColour[i]], 0.75));
   }
   MapWindow::hAirspaceBorderPen = CreatePen(PS_SOLID, NIBLSCALE(10), RGB_WHITE);
 
