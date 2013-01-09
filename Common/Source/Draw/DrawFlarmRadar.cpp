@@ -527,7 +527,6 @@ bool bInvCol =  INVERTCOLORS;
 /*********************************************************************************
  * change colors on inversion
  *********************************************************************************/
-
 if(bInvCol)
 {
   rgbDrawColor = RGB_GREY;
@@ -556,17 +555,6 @@ hOldBrush = (HBRUSH)SelectObject(hdc, hDrawBrush);
 /****************************************************************
  * clear background
  ****************************************************************/
-
-SelectObject(hdc,hGreenPen);
-if(!bInvCol)
-  SelectObject(hdc,LKBrush_White);
-else
-  SelectObject(hdc,LKBrush_Black);
-
-Rectangle(hdc,rci.left , rci.bottom ,rci.right, rci.top);
-
-/****************************************************************/
-
 BOOL bFound = false;
 switch(LKevent)
 {
@@ -875,53 +863,6 @@ DiagrammStruct sDia;
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
   DrawXGrid(hdc, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
 
-  /*********************************************************************************
-   * Draw Y Grid
-   *********************************************************************************/
-  if(GPSalt < HEIGHT_RANGE)
-    fMaxHeight = HEIGHT_RANGE;
-  else
-	fMaxHeight = GPSalt;
-  fMinHeight = GPSalt;
-  for (i=0; i<FLARM_MAX_TRAFFIC; i++)
-    if(LKTraffic[i].Status != LKT_EMPTY)
-    {
-  	  fMaxHeight = max (fMaxHeight, LKTraffic[i].Altitude);
-  	  fMinHeight = min (fMinHeight, LKTraffic[i].Altitude);
-    }
-
-
-
-  if(HEIGHT_RANGE* fHeigtScaleFact > 4000.0 )
-	  fHeigtScaleFact /=ZOOMFACTOR;
-
-  if(HEIGHT_RANGE* fHeigtScaleFact < 100.0 )
-	  fHeigtScaleFact *=ZOOMFACTOR;
-
-
-  sDia.fYMin *= fHeigtScaleFact;
-  sDia.fYMin = max(-GPSalt, -HEIGHT_RANGE*fHeigtScaleFact);
-  sDia.fYMax =HEIGHT_RANGE* fHeigtScaleFact;
-
-
-
-  double  ytick = 10.0;
-  double  fHeight = (sDia.fYMax-sDia.fYMin);
-  if (fHeight >50.0) ytick = 50.0;
-  if (fHeight >100.0) ytick = 100.0;
-  if (fHeight >500.0) ytick = 200.0;
-  if (fHeight >1000.0) ytick = 500.0;
-  if (fHeight >2000.0) ytick = 1000.0;
-  if (fHeight >4000.0) ytick = 2000.0;
-  if (fHeight >8000.0) ytick = 4000.0;
-  if(Units::GetUserAltitudeUnit() == unFeet)
-	 ytick = ytick * 4.0;
-
-  if(bSideview)
-  {
-    _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
-    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,rgbGridColor,  &sDia, text);
-  }
 
   /****************************************************************************************************
    * draw side elements
@@ -959,19 +900,20 @@ sTopDia.fYMax =  (sDia.fXMax-sDia.fXMin)/2 * fRatio;
 double fRing = 0; //sTopDia.fXMax;
 int iCircleRadius = 0;
 RECT rcc = rct;
+double scl = xtick;
     rcc.bottom -=3;
 	SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-	xtick *=1000.0;
+	scl *=1000.0;
 	SelectObject(hdc, hGreenPen);
 	if(sDia.fXMax ==sDia.fXMin)
 	  sDia.fXMax= sDia.fXMin+1.0;
 	LKASSERT( sDia.fXMax !=sDia.fXMin )
 	double fCScale =(double)( rct.right-rct.left)/((sDia.fXMax-sDia.fXMin ));
-	for ( i = 0; i < (sDia.fXMax /xtick); i++)
+	for ( i = 0; i < (sDia.fXMax /scl); i++)
 	{
 	  iCircleRadius =(int) (fRing* fCScale / (DISTANCEMODIFY*1000.0f));
 	  Circle(hdc, x_middle, y_middle, iCircleRadius, rcc, true, false );
-	  fRing = fRing + xtick;
+	  fRing = fRing + scl;
 	}
 
 
@@ -1190,6 +1132,68 @@ if(SPLITSCREEN_FACTOR >0)
     }
   }
 
+  /****************************************************************
+   * clear background
+   ****************************************************************/
+  if(!bInvCol)
+    SelectObject(hdc,LKBrush_White);
+  else
+    SelectObject(hdc,LKBrush_Black);
+  SetTextColor(hdc, rgbDrawColor);
+  Rectangle(hdc,rc.left , rc.bottom+5 ,rc.right, rc.top);
+  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+  RECT rcd = sDia.rc;
+  DrawXGrid(hdc, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
+
+
+  /*********************************************************************************
+   * Draw Y Grid
+   *********************************************************************************/
+  if(GPSalt < HEIGHT_RANGE)
+    fMaxHeight = HEIGHT_RANGE;
+  else
+	fMaxHeight = GPSalt;
+  fMinHeight = GPSalt;
+  for (i=0; i<FLARM_MAX_TRAFFIC; i++)
+    if(LKTraffic[i].Status != LKT_EMPTY)
+    {
+  	  fMaxHeight = max (fMaxHeight, LKTraffic[i].Altitude);
+  	  fMinHeight = min (fMinHeight, LKTraffic[i].Altitude);
+    }
+
+
+
+  if(HEIGHT_RANGE* fHeigtScaleFact > 4000.0 )
+	  fHeigtScaleFact /=ZOOMFACTOR;
+
+  if(HEIGHT_RANGE* fHeigtScaleFact < 100.0 )
+	  fHeigtScaleFact *=ZOOMFACTOR;
+
+
+  sDia.fYMin *= fHeigtScaleFact;
+  sDia.fYMin = max(-GPSalt, -HEIGHT_RANGE*fHeigtScaleFact);
+  sDia.fYMax =HEIGHT_RANGE* fHeigtScaleFact;
+
+
+
+  double  ytick = 10.0;
+  double  fHeight = (sDia.fYMax-sDia.fYMin);
+  if (fHeight >50.0) ytick = 50.0;
+  if (fHeight >100.0) ytick = 100.0;
+  if (fHeight >500.0) ytick = 200.0;
+  if (fHeight >1000.0) ytick = 500.0;
+  if (fHeight >2000.0) ytick = 1000.0;
+  if (fHeight >4000.0) ytick = 2000.0;
+  if (fHeight >8000.0) ytick = 4000.0;
+  if(Units::GetUserAltitudeUnit() == unFeet)
+	 ytick = ytick * 4.0;
+ // sDia.rc = rc34;
+  if(bSideview)
+  {
+    _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
+    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,rgbGridColor,  &sDia, text);
+  }
+
 /*************************************************************************
  * sideview
  *************************************************************************/
@@ -1301,6 +1305,12 @@ if(bSideview)
 
   if(!bCenter)
     RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , fPlaneSize);
+  /*****************************************
+   * draw sideview frame
+   *****************************************/
+  SelectObject(hdc, hGreenPen);
+  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+  Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom+5);
 }
 
 
@@ -1334,6 +1344,7 @@ if(bSideview)
   else
 	DrawSelectionFrame(hdc,  rci);
 #endif
+
 
 //DrawMultimap_Topleft(hdc, rci);
 
