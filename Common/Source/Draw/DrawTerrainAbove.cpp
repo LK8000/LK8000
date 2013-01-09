@@ -14,10 +14,21 @@
 //
 void MapWindow::DrawTerrainAbove(HDC hDC, const RECT rc) {
 
-  if (!DerivedDrawInfo.Flying &&
-	!(SIMMODE && DerivedDrawInfo.AltitudeAGL>100) ) return;
+  // Lets try to make it better understandable with a goto.
+  // If CAR or GA users dont want amoeba, they should disable it in config. 
+  // Otherwise we should paint it, not hide it automatically!
+  // Here are the conditions we print this amoeba, otherwise we return;
 
-  if (!DerivedDrawInfo.FreeFlying) return;
+  // First is we are in SIM mode and we changed the altitude;
+  if (SIMMODE && DerivedDrawInfo.AltitudeAGL>100) goto _doit;
+
+  // Second, if we are flying
+  if (DerivedDrawInfo.Flying) goto _doit;
+
+  return;
+
+
+_doit:
 
   COLORREF whitecolor = RGB(0xff,0xff,0xff);
   COLORREF graycolor = RGB(0xf0,0xf0,0xf0);
