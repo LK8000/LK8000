@@ -85,14 +85,64 @@ void Cpustats(int *accounting, FILETIME *kernel_old, FILETIME *kernel_new, FILET
    *accounting=total;
 
 }
+#if !(WINDOWSPC>0)
+class GetCpuLoad_Singleton {
+public:
+    GetCpuLoad_Singleton() : pfnGetIdleTime() {
+        hCoreDll = LoadLibrary(_T("coredll.dll")); 
+        if(hCoreDll) { // coredll.dll found ?
+            pfnGetIdleTime = (pfnGetIdleTime_t)GetProcAddress(hCoreDll, _T("GetIdleTime"));
+            if(pfnGetIdleTime) {
+                dwStartTick = GetTickCount();
+                dwIdleSt = (*pfnGetIdleTime)();
+                if(dwIdleSt == (MAXDWORD)) { // GetIdleTime is implemented in this platform ?
+                    pfnGetIdleTime = NULL;
+                    FreeLibrary(hCoreDll);
+                    hCoreDll = NULL;
+                }
+            }
+        }
+    }
+
+    ~GetCpuLoad_Singleton() {
+        if(hCoreDll) {
+            FreeLibrary(hCoreDll);
+        }
+    }
+    
+    DWORD operator()() {
+        if(!pfnGetIdleTime){  // GetIdleTime is not implemented in this platform
+            return MAXDWORD;
+        }
+        DWORD dwStopTick = GetTickCount();
+        DWORD dwIdleEd = (*pfnGetIdleTime)();
+        DWORD PercentUsage = 100 - ((100*(dwIdleEd - dwIdleSt)) / (dwStopTick - dwStartTick));
+
+        dwStartTick = dwStopTick;
+        dwIdleSt = dwIdleEd;
+
+        return PercentUsage;
+    }
+    
+private:
+    typedef DWORD (_stdcall *pfnGetIdleTime_t) (void);
+    pfnGetIdleTime_t pfnGetIdleTime;
+    HINSTANCE hCoreDll;
+    DWORD dwStartTick;
+    DWORD dwIdleSt;    
+};
+
+GetCpuLoad_Singleton GetGpuLoad;
+#endif
 
 int CpuSummary() {
-
-  int s;
 #if (WINDOWSPC>0)
-  s=((Cpu_Draw+Cpu_Calc+Cpu_PortA+Cpu_PortB)/10000);
+  int s=((Cpu_Draw+Cpu_Calc+Cpu_PortA+Cpu_PortB)/10000);
 #else
-  s=((Cpu_Draw+Cpu_Calc+Cpu_PortA+Cpu_PortB)/10);
+  int s = GetGpuLoad();
+  if(s == -1) { // TRUE Cpu Load invalide, use Drawing Time Instead...
+        s=((Cpu_Draw+Cpu_Calc+Cpu_PortA+Cpu_PortB)/10);
+  }
 #endif
   if (s>999) s=999;
   return s;
