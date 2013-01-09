@@ -7,7 +7,7 @@
 */
 
 // Comment this line to disable tracing
-#define TRACETHREAD	1
+// #define TRACETHREAD	1
 
 #if TRACETHREAD
 #if !defined(TRACETHREAD_H)
