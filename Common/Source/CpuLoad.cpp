@@ -116,7 +116,12 @@ public:
         }
         DWORD dwStopTick = GetTickCount();
         DWORD dwIdleEd = (*pfnGetIdleTime)();
-        DWORD PercentUsage = 100 - ((100*(dwIdleEd - dwIdleSt)) / (dwStopTick - dwStartTick));
+	
+        DWORD PercentUsage;
+	if ((dwStopTick-dwStartTick)>0)
+        	PercentUsage = 100 - ((100*(dwIdleEd - dwIdleSt)) / (dwStopTick - dwStartTick));
+	else
+        	PercentUsage = 100 - (100*(dwIdleEd - dwIdleSt));
 
         dwStartTick = dwStopTick;
         dwIdleSt = dwIdleEd;
