@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Dialogs.h"
+#include "TraceThread.h"
 
 static WndForm *wf=NULL;
 extern void WhereAmI(void);
@@ -110,6 +111,8 @@ _end:
 
 
 void dlgOracleShowModal(void){
+
+  SHOWTHREAD(_T("dlgOracleShowModal"));
 
   wf=NULL;
  

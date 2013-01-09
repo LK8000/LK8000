@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "TraceThread.h"
 
 extern void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...);
 extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
@@ -29,9 +29,17 @@ DWORD ComPort::ReadThread()
   BYTE inbuf[1024];
   FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime ;
 
-  // JMW added purging of port on open to prevent overflow
   Purge();
+  #if TESTBENCH
   StartupStore(_T(". ReadThread running on port %d%s"),sportnumber+1,NEWLINE);
+  #endif
+  #if TRACETHREAD
+  StartupStore(_T("##############  PORT=%d threadid=%d\n"),sportnumber,GetCurrentThreadId());
+  if (sportnumber=0) _THREADID_PORT1=GetCurrentThreadId();
+  if (sportnumber=1) _THREADID_PORT2=GetCurrentThreadId();
+  if (sportnumber!=1 && sportnumber!=2) _THREADID_UNKNOWNPORT=GetCurrentThreadId();
+  #endif
+
   
   // Specify a set of events to be monitored for the port.
 

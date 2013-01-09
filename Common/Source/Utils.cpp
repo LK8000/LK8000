@@ -11,7 +11,7 @@
 #include "RGB.h"
 #include "Modeltype.h"
 #include "dlgTools.h"
-
+#include "TraceThread.h"
 
 long GetUTCOffset(void) {
   return UTCOffset;
@@ -332,4 +332,35 @@ int Test_NIBLSCALE(short x, const int line, const char *file) {
   }
   return LKIBLSCALE[x];
 }
+#endif
+
+#if TRACETHREAD
+
+int _THREADID_WINMAIN=0;
+int _THREADID_CALC=0;
+int _THREADID_DRAW=0;
+int _THREADID_PORT1=0;
+int _THREADID_PORT2=0;
+int _THREADID_UNKNOWNPORT=0;
+
+void TraceThread(const TCHAR *mes) {
+
+  int id=GetCurrentThreadId();
+  TCHAR tname[20];
+  tname[0]='\0';
+
+  if (id==_THREADID_WINMAIN)	_tcscpy(tname,_T("WINMAIN"));
+  if (id==_THREADID_DRAW)	_tcscpy(tname,_T("DRAW"));
+  if (id==_THREADID_CALC)	_tcscpy(tname,_T("CALC"));
+  if (id==_THREADID_PORT1)	_tcscpy(tname,_T("PORT1"));
+  if (id==_THREADID_PORT2)	_tcscpy(tname,_T("PORT2"));
+  if (id==_THREADID_UNKNOWNPORT)	_tcscpy(tname,_T("UNKNOWN PORT"));
+
+  if (_tcslen(tname)>0)
+	StartupStore(_T("##############  [%s] in thread: %s\n"),mes,tname);
+  else
+	StartupStore(_T("##############  [%s] in unkown thread, id=%d\n"),mes,id);
+
+}
+
 #endif

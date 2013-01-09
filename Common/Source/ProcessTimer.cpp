@@ -62,7 +62,7 @@ void CommonProcessTimer()
   }
 }
 
-
+#include "TraceThread.h"
 
 // Running at 2Hz, set and called by WndProc
 void ProcessTimer(void)

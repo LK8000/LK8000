@@ -40,6 +40,11 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	Sleep(100);
   }
 
+  #if TRACETHREAD
+  StartupStore(_T("##############  DRAW threadid=%d\n"),GetCurrentThreadId());
+  #endif
+
+
   // THREADRUNNING = FALSE;
   THREADEXIT = FALSE;
 

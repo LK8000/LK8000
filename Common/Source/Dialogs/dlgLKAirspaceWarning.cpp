@@ -13,6 +13,7 @@
 #include "InputEvents.h"
 #include "Dialogs.h"
 #include "LKInterface.h"
+#include "TraceThread.h"
 
 #include "RGB.h"
 
@@ -325,6 +326,9 @@ void dlgLKAirspaceFill()
 // return 1 only for requesting run analysis
 short ShowAirspaceWarningsToUser()
 {
+
+  // SHOWTHREAD(_T("ShowAirspaceWarningToUser"));
+
   if (msg.originator != NULL) return 0;        // Dialog already open
 
 

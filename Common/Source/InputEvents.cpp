@@ -31,6 +31,8 @@
 #include "Multimap.h"
 #include "Dialogs.h"
 #include "Sideview.h"
+#include "TraceThread.h"
+
 // Sensible maximums 
 #define MAX_MODE 100
 #define MAX_MODE_STRING 25
@@ -1374,6 +1376,12 @@ void InputEvents::eventStatus(const TCHAR *misc) {
 void InputEvents::eventAnalysis(const TCHAR *misc) {
 	(void)misc;
 
+  #if TRACETHREAD
+  TCHAR myevent[80];
+  _stprintf(myevent,_T("eventAnalysis %s"),misc);
+  SHOWTHREAD(myevent);
+  #endif
+
   dlgAnalysisShowModal(ANALYSYS_PAGE_DEFAULT);
 
 }
@@ -1697,6 +1705,12 @@ extern int CalculateWindRotary(windrotary_s *wbuf, double iaspeed, double *wfrom
 //  if AUTO mode, be quiet and say nothing until successful
 void InputEvents::eventCalcWind(const TCHAR *misc) {
 
+  #if TRACETHREAD
+  TCHAR myevent[80];
+  _stprintf(myevent,_T("eventCalcWind %s"),misc);
+  SHOWTHREAD(myevent);
+  #endif
+
   double wfrom=0, wspeed=0;
   int resw=0;
   static TCHAR mbuf[200];
@@ -1876,6 +1890,12 @@ void InputEvents::eventRestartCommPorts(const TCHAR *misc) { // 100211
 // Simple events with no arguments. 
 // USE SERVICE EVENTS INSTEAD OF CREATING NEW EVENTS!  
 void InputEvents::eventService(const TCHAR *misc) { 
+
+  #if TRACETHREAD
+  TCHAR myevent[80];
+  _stprintf(myevent,_T("eventService %s"),misc);
+  SHOWTHREAD(myevent);
+  #endif
 
   if (_tcscmp(misc, TEXT("TAKEOFF")) == 0) {
 	// No MESSAGE on screen, only a sound

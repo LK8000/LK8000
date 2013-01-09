@@ -11,6 +11,7 @@
 #include "Atmosphere.h"
 #include "InfoBoxLayout.h"
 #include "Dialogs.h"
+#include "TraceThread.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
@@ -301,6 +302,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgBasicSettingsShowModal(void){
 
+  SHOWTHREAD(_T("dlgBasicSettingsShowModal"));
 
   char filename[MAX_PATH];
   if (!ScreenLandscape) {

@@ -13,7 +13,7 @@
 #include "Airspace.h"
 #include "AirspaceWarning.h"
 #include "Dialogs.h"
-
+#include "TraceThread.h"
 
 static CAirspace *airspace = NULL;
 static CAirspace airspace_copy;
@@ -295,6 +295,9 @@ static void SetValues(void) {
 
 
 void dlgAirspaceDetails(CAirspace *airspace_to_show) {
+
+  SHOWTHREAD(_T("dlgAirspaceDetails"))
+
   if (airspace != NULL) {
     return;
   }

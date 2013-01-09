@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Logger.h"
 #include "LiveTracker.h"
+#include "TraceThread.h"
 
 // PulseEvent is unreliable. But it does not matter anymore, since we should
 // change approach for compatibility with unix.
@@ -49,6 +50,11 @@ DWORD CalculationThread (LPVOID lpvoid) {
   while (!MapWindow::IsDisplayRunning()) {
     Sleep(100);
   }
+
+  #if TRACETHREAD
+  _THREADID_CALC=GetCurrentThreadId();
+  StartupStore(_T("##############  CALC threadid=%d\n"),GetCurrentThreadId());
+  #endif
 
   // while (!goCalculating) Sleep(100);
   Sleep(1000); // 091213  BUGFIX need to syncronize !!! TOFIX02 TODO

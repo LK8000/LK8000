@@ -14,6 +14,7 @@
 #include "RGB.h"
 #include "Dialogs.h"
 #include "Modeltype.h"
+#include "TraceThread.h"
 
 #if (WINDOWSPC<1)
 #ifndef __MINGW32__
@@ -2245,6 +2246,8 @@ int WndForm::ShowModal(bool bEnableMap) {
 #define OPENCLOSESUPPRESSTIME 500
   MSG msg;
   HWND oldFocusHwnd;
+
+  SHOWTHREAD(_T("ShowModal"));
 
   enterTime = ::GetTickCount();
 

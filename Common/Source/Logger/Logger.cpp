@@ -11,6 +11,7 @@
 #include "InputEvents.h"
 //#include "LKProfiles.h"
 #include "dlgTools.h"
+#include "TraceThread.h"
 
 // #define DEBUG_LOGGER	1
 
@@ -464,6 +465,9 @@ bool IsAlphaNum (TCHAR c) {
 
 void StartLogger()
 {
+
+  SHOWTHREAD(_T("StartLogger"));
+
   HANDLE hFile;
   int i;
   TCHAR path[MAX_PATH+1];

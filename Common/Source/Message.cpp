@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Message.h"
 #include "InfoBoxLayout.h"
-
+#include "TraceThread.h"
 
 
 /*
@@ -55,6 +55,8 @@ LRESULT CALLBACK MessageWindowProc(HWND hwnd, UINT message,
   POINT pt;
   RECT  rc;
   static bool capturedMouse = false;
+
+  SHOWTHREAD(_T("MessageWindowProc"));
 
   switch (message) {
   case WM_LBUTTONDOWN:

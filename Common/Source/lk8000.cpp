@@ -61,6 +61,8 @@
 #include "Bitmaps.h"
 #include "devCProbe.h"
 
+#include "TraceThread.h"
+
 using std::min;
 using std::max;
 
@@ -137,6 +139,10 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   LKSound(_T("LK_CONNECT.WAV"));
 
+  #if TRACETHREAD
+  _THREADID_WINMAIN=GetCurrentThreadId();
+  StartupStore(_T("##############  WINMAIN threadid=%d\n"),GetCurrentThreadId());
+  #endif
   wsprintf(LK8000_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
   wcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);

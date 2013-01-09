@@ -12,6 +12,7 @@
 #include "InfoBoxLayout.h"
 #include "WindowControls.h"
 #include "DoInits.h"
+#include "TraceThread.h"
 
 
 typedef struct{
@@ -801,6 +802,8 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
+
+  SHOWTHREAD(_T("dlgWayPointSelect"));
 
   UpLimit = 0;
   LowLimit = 0;
