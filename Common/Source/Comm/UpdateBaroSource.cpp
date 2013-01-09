@@ -12,6 +12,7 @@
 
 bool GotFirstBaroAltitude=false;
 
+// #define DEBUGBARO	1
 
 /*
  * We update only if incoming from PrimaryBaroSource, or if it is without a device (parserid>0).
@@ -53,8 +54,9 @@ bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescr
 		DoStatusMessage(_T("INVALID BARO ALTITUDE!"));
 		notifyErr=false;
 	}
-  } else
+  } else  {
 	GotFirstBaroAltitude=true;
+  }
 
   // First we keep memory of what we got so far.
   // RMZ_FLARM must be granted to be real (not a ghost baro), all checks in calling function.

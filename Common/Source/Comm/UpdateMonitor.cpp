@@ -9,14 +9,14 @@
 
 #include "externs.h"
 
-extern bool GotFirstBaroAltitude; // used by Parser
+extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
 extern double LastRMZHB;	 // common to both devA and devB, updated in Parser
 extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;
 
 double trackbearingminspeed=0; // minimal speed to use gps bearing
 
-//#define DEBUGBARO	1	// also in Parser to be updated
+//#define DEBUGBARO	1	// also needed in UpdateBaroSource
 //#define DEBUGNPM	1
 
 //
@@ -215,7 +215,7 @@ void NMEAParser::UpdateMonitor(void)
 		} else {
 			static bool said=false;
 			if (!said) {
-				StartupStore(_T("... GPS BARO SOURCE PROBLEM, port activity but no valid data. Wrong device?%s"),NEWLINE);
+				StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device?%s"),NEWLINE);
 				said=true;
 			}
 		}

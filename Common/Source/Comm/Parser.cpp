@@ -34,6 +34,7 @@ int NMEAParser::StartDay = -1;
 
 
 // #define DEBUGSEQ	1
+// #define DEBUGBARO	1
 
 NMEAParser::NMEAParser() {
   _Reset();
@@ -51,6 +52,7 @@ void NMEAParser::_Reset(void) {
   RMCAvailable = false;
   TASAvailable = false; // 100411
   RMAAltitude = 0;
+  RMZDelayed = 3; // wait for this to be zero before using RMZ.
  
   GGAtime=0;
   RMCtime=0;
@@ -711,12 +713,26 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 {
   (void)pGPS;
 
+  // We want to wait for a couple of run so we are sure we are receiving RMC GGA etc.
+  if (RMZDelayed--) {
+	#if DEBUGBARO
+	StartupStore(_T("...RMZ delayed, not processed (%d)\n"),RMZDelayed);
+	#endif
+	return FALSE;
+  }
+  RMZDelayed=0;
+
   RMZAltitude = ParseAltitude(params[0], params[1]);
   RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
   RMZAvailable = TRUE;
   LastRMZHB=LKHearthBeats; // this is common to both ports!
 
+  // If we have a single RMZ with no gps fix data, we still manage the baro altitude.
+  if (!RMCAvailable && !GGAAvailable) {
+	UpdateBaroSource(pGPS, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
+  }
   return FALSE;
+
 }
 
 

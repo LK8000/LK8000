@@ -196,6 +196,7 @@ class NMEAParser {
   double RMZAltitude;
   double RMAAltitude;
   double LastTime;
+  short RMZDelayed;
 
   double GGAtime;
   double RMCtime;
