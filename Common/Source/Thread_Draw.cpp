@@ -12,6 +12,7 @@
 #include "LKInterface.h"
 #include "Bitmaps.h"
 #include "RGB.h"
+#include "TraceThread.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
