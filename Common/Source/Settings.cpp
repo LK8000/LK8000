@@ -84,7 +84,7 @@ void SettingsLeave() {
 	SaveDefaultTask(); //@ 101020 BUGFIX
 	ClearTask();
 	ReadWayPoints();
-	StartupStore(_T(". Total %d waypoints%s"),NumberOfWayPoints,NEWLINE);
+	StartupStore(_T(". RELOADED %d WAYPOINTS + %d virtuals%s"),NumberOfWayPoints-NUMRESWP,NUMRESWP,NEWLINE);
 	InitWayPointCalc();
 	ReadAirfieldFile();
 	SetHome(true); // force home reload

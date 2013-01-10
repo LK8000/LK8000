@@ -389,7 +389,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   RasterTerrain::OpenTerrain();
 
   ReadWayPoints();
-  StartupStore(_T(". Total %d waypoints%s"),NumberOfWayPoints,NEWLINE);
+  StartupStore(_T(". LOADED %d WAYPOINTS + %d virtuals%s"),NumberOfWayPoints-NUMRESWP,NUMRESWP,NEWLINE);
   InitWayPointCalc(); 
   InitLDRotary(&rotaryLD); 
   InitWindRotary(&rotaryWind); // 100103

@@ -86,7 +86,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   SelectObject(hdc, LK8InfoSmallFont);
 
 #if TESTBENCH
-  _stprintf(Buffer, _T("%d WPs, %0.1fM free"),NumberOfWayPoints,freeram);
+  _stprintf(Buffer, _T("%d WPs, %0.1fM free"),NumberOfWayPoints-NUMRESWP,freeram);
 #else
   _tcscpy(Buffer,_T(""));
 #endif
