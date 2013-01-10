@@ -5,7 +5,6 @@
 <WndProperty Name="prpVDist" Caption="_@M1265_" X=2 Y=-1 Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpTopAlt" Caption="_@M729_" X=2 Y=-1 Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpBaseAlt" Caption="_@M128_" X=2 Y=-1 Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
-<WndButton  name="cmdAnalysis" Caption="_@M93_" X=2 Y=117 width=230 height=38 Font=2 OnClickNotify="OnAnalysisClicked"/>
 <WndButton  name="cmdAckForTime" Caption="_@M46_" X=2 Y=160 width=110 height=38 Font=2 OnClickNotify="OnAckForTimeClicked"/>
 <WndButton name="cmdClose" Caption="_@M186_" X=122 Y=160 width=110 height=38 Font=2 OnClickNotify="OnCloseClicked"/>
 </WndForm>    

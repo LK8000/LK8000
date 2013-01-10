@@ -81,20 +81,10 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
   
 }
 
-static void OnAnalysisClicked(WindowControl * Sender){
-  (void)Sender;
-  SetModeType(LKMODE_MAP,MP_MAPASP);
-  dlg->SetModalResult(mrOK);
-}
-
-
-
-
 
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAckForTimeClicked),
   DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnAnalysisClicked),
   DeclareCallBackEntry(NULL)
 };
 
