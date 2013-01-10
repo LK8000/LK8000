@@ -26,9 +26,10 @@ void MapWindow::DrawAirSpaceBorders(HDC hdc, const RECT rc)
        * draw underlying aispaces first (reverse order) with bigger pen
        * *********************************************************************/
       it=airspaces_to_draw.end();
-	  do
+      if (it!=airspaces_to_draw.begin())
+      do
       {
-		it--;
+	it--;
         if ((*it)->DrawStyle()) {
           airspace_type = (*it)->Type();
           if ( asp_selected_flash && (*it)->Selected() ) {
