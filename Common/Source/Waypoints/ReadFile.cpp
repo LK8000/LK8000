@@ -62,6 +62,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 	slen=_tcslen(nTemp2String);
 	if (slen<1) continue;
 	if ( _tcsncmp(_T("G  WGS 84"),nTemp2String,9) == 0 ||
+	   _tcsncmp(_T("G WGS 84"),nTemp2String,8) == 0 ||
 	   // consider UCS header, 3 bytes in fact. This is a workaround.
 	   _tcsncmp(_T("G  WGS 84"),&nTemp2String[3],9) == 0) {
 		if ( !ReadString(fp,READLINE_LENGTH,nTemp2String) ) {
@@ -73,11 +74,13 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 			StartupStore(_T(". Waypoint file %d format: CompeGPS MISSING second U line, rejected%s"),globalFileNum+1,NEWLINE);
 			return -1;
 		}
-		if ( _tcsncmp(_T("U  0"),nTemp2String,4) == 0) {
+		if ( (_tcsncmp(_T("U  0"),nTemp2String,4) == 0) ||
+		     (_tcsncmp(_T("U 0"),nTemp2String,3) == 0)) {
 			StartupStore(_T(". Waypoint file %d format: CompeGPS with UTM coordinates UNSUPPORTED%s"),globalFileNum+1,NEWLINE);
 			return -1;
 		}
-		if ( _tcsncmp(_T("U  1"),nTemp2String,4) != 0) {
+		if ( _tcsncmp(_T("U  1"),nTemp2String,4) != 0 && 
+		     _tcsncmp(_T("U 1"),nTemp2String,3) != 0 ) {
 			StartupStore(_T(". Waypoint file %d format: CompeGPS unknown U field, rejected%s"),globalFileNum+1,NEWLINE);
 			return -1;
 		}

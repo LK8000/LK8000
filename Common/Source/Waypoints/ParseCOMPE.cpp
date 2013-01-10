@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 
-
+//#define COMPEDEBUG 1
 
 extern int globalFileNum;
 
@@ -22,20 +22,51 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   unsigned int slen;
   //int flags=0;
   bool ok;
+  unsigned int startpoint=3; // default
 
   unsigned int i, j;
 
   #define MAXCOMPENAME	16
 
   slen=_tcslen(String);
-  if (slen<65) return false;
-  _tcscpy(tString, String);  
-
+  if (slen<65) {
+	#ifdef COMPEDEBUG
+	if (slen>0) {
+		StartupStore(_T("TOO SHORT LINE:<%s> slen<65%s"),String,NEWLINE);
+	}
+	#endif
+	return false;
+  }
+  LK_tcsncpy(tString, String,READLINE_LENGTH);  
 
   // only handle W field, format:  W__NAME
-  if (tString[0] != 'W') return false;
-  if ( (tString[1] != ' ') || (tString[2]!= ' ') ) return false;
-  if ( tString[3] == ' ' ) return false;
+  if (tString[0] != 'W') {
+	#ifdef COMPEDEBUG
+	StartupStore(_T("COMPE IN:<%s> missing leading W%s"),tString,NEWLINE);
+	#endif
+	return false;
+  }
+  if (tString[1] != ' ') {
+	#ifdef COMPEDEBUG
+	StartupStore(_T("COMPE IN:<%s> missing space after W%s"),tString,NEWLINE);
+	#endif
+	return false;
+  }
+
+  // W wptname
+  if (tString[2]!=' ') {
+	startpoint=2; // third char
+  }
+  // W  wptname
+  if (tString[2]==' ') {
+	if ( tString[3] == ' ' ) {
+		#ifdef COMPEDEBUG
+		StartupStore(_T("COMPE IN:<%s> missing character after W__%s"),tString,NEWLINE);
+		#endif
+		return false;
+	}
+	startpoint=3; // fourth char
+  } 
 
   Temp->Visible = true; // default all waypoints visible at start
   Temp->FarVisible = true;
@@ -48,8 +79,8 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   StartupStore(_T("COMPE IN:<%s>%s"),tString,NEWLINE);
   #endif
 
-  // Name starts at position 4, index 3 . Search for space at the end of name (<=)
-  for (i=3, j=0, ok=false; i<= 3+MAXCOMPENAME; i++) {
+  // Name starts at position 3 or 4, index 2 or 3 . Search for space at the end of name (<=)
+  for (i=startpoint, j=0, ok=false; i<= startpoint+MAXCOMPENAME; i++) {
 	if (tString[i] != _T(' ')) {; j++; continue; }
 	ok=true; break;
   }
@@ -66,7 +97,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	return false;
   }
   // i now point to first space after name
-  LK_tcsncpy(tName,&tString[3],j);
+  LK_tcsncpy(tName,&tString[startpoint],j);
   #ifdef COMPEDEBUG
   StartupStore(_T("WP NAME size=%d: <%s>%s"),j,tName,NEWLINE);
   #endif
@@ -186,27 +217,62 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   StartupStore(_T("WP LONGITUDE : <%s> E1W0=%d%s"),tLongitude,east,NEWLINE);
   #endif
 
-  // We are now on the space after latitude
+  // We are now on the space after longitude
   if (tString[++i] != _T(' ')) { 
 	#ifdef COMPEDEBUG
 	StartupStore(_T("Missing space after longitude %s"),NEWLINE);
 	#endif
 	return false;
   }
-  i++;  // point to beginning of tDummy..
-  if ( (i+19)>slen ) {
+  i++;  // point to beginning of date of recording
+
+  // we are now on the first digit of DATE
+  // search for space delimiter
+  for (p=i, ok=false; p<slen;p++) {
+	if (tString[p] == _T(' ')) {
+		ok=true;
+		break;
+	}
+  }
+  if (!ok) {
 	#ifdef COMPEDEBUG
-	StartupStore(_T("Line overflow before dummy%s"),NEWLINE);
+	StartupStore(_T("Missing space after DATE%s"),NEWLINE);
 	#endif
 	return false;
   }
-  TCHAR tDummy[]=_T("27-MAR-62 00:00:00 "); // 19 tchars
-  if ( _tcsncmp(&tString[i],tDummy,19 ) != 0 ) {
+  // p points to space after DATE
+  // i points to the presumed first character of TIME
+  i = p+1; 
+  if (i>=slen || tString[i] == _T(' ')) { 
 	#ifdef COMPEDEBUG
-	StartupStore(_T("Missing dummy string and space after longitude %s"),NEWLINE);
+	StartupStore(_T("No TIME found%s"),NEWLINE);
 	#endif
+	return false;
   }
-  i+=20;
+  // we are now on the first digit of DATE
+  // search for space delimiter
+  for (p=i, ok=false; p<slen;p++) {
+	if (tString[p] == _T(' ')) {
+		ok=true;
+		break;
+	}
+  }
+  if (!ok) {
+	#ifdef COMPEDEBUG
+	StartupStore(_T("Missing space after TIME%s"),NEWLINE);
+	#endif
+	return false;
+  }
+  // p points to space after TIME
+  // i points to the presumed first character of ALTITUDE
+  i = p+1; 
+  if (i>=slen || tString[i] == _T(' ')) { 
+	#ifdef COMPEDEBUG
+	StartupStore(_T("No ALTITUDE found%s"),NEWLINE);
+	#endif
+	return false;
+  }
+
   // i now points to first digit of altitude, minim 8 chars
   // this check can be avoided
   if ( slen < (i+8) ) {
