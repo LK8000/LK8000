@@ -221,14 +221,14 @@ New Takeoff safety alarm (configuration menu Alarms)
    in use again for the next takeoff.
 
 
-LK8000 VERSION 3.1M 1301xx
+LK8000 VERSION 3.1M 130111
 ==========================
 
 
 NEW
 
  draw thermal bar also in cruise mode (can be configured in config 13 page: disabled,
-  in thermal, in thermal and cruis)
+  in thermal, in thermal and cruise)
 
  More accurate battery indicator, flashing when below 6%, and full blue when 100% under power.
 
@@ -246,7 +246,15 @@ CHANGES
 
  Many optimizations for speed
 
+ Cpu load more accurate 
 
+ Draw glide amoeba shaded area unconditionally, if:
+ - we are flying
+ or
+ - we are in simmode, at least 100m above ground.
+
+. Airspace warnings have no more Analysis button (useless since we have multimaps)
+ and the alert sound is shorter and with no voice. The old sound is still available.
 
 FIXES
 
@@ -266,8 +274,9 @@ FIXES
  Fix task rendering with start on a leg
  Fix sideview using transparent airspaces and bordersonly in topview.
 
+ Fix bug in comm port not managing correctly lonesome barometric altitudes
 
-
+ Fix loading CompeGPS waypoints
 
 
 
