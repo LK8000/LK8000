@@ -27,17 +27,6 @@ void UpdateAnalysis(void){
   extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
   LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, szPolarName, (WCHAR*) NULL);
 
-  //  WndProperty *wp;
-
-  // Hide airspace heading switch button by default if not on ASP Page
-//  if (analysis_page != ANALYSIS_PAGE_AIRSPACE) {
-//    WndButton *wb = (WndButton *)wfa->FindByName(TEXT("cmdAspBear"));
-//    if(wb) {
-//      wb->SetVisible(false);
- //   }
-//  }
-
-
   switch(analysis_page){
     case ANALYSIS_PAGE_BAROGRAPH:
       _stprintf(sTmp, TEXT("%s: %s"),

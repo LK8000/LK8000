@@ -333,13 +333,49 @@ if (entered == true) /* prevent re entrance */
   wfa->SetKeyDownNotify(FormKeyDown);
 
   waGrid = (WndOwnerDrawFrame*)wfa->FindByName(TEXT("frmGrid"));
+  LKASSERT(waGrid);
+  if (!waGrid) return;
+
   waInfo = (WndOwnerDrawFrame*)wfa->FindByName(TEXT("frmInfo"));
-  
+  LKASSERT(waInfo);
+  if (!waInfo) return;
+
   wCalc = ((WndButton *)wfa->FindByName(TEXT("cmdCalc")));
+  LKASSERT(wCalc);
+  if (!wCalc) return;
 
   WndButton *wClose = (WndButton *)wfa->FindByName(TEXT("cmdClose"));
-  if(wClose) {
-    wClose->SetOnClickNotify(OnCloseClicked);
+  LKASSERT(wClose);
+  if (!wClose) return;
+  wClose->SetOnClickNotify(OnCloseClicked);
+
+  WndButton *wNext = (WndButton *)wfa->FindByName(TEXT("cmdNext"));
+  LKASSERT(wNext);
+  if (!wNext) return;
+
+  WndButton *wPrev = (WndButton *)wfa->FindByName(TEXT("cmdPrev"));
+  LKASSERT(wPrev);
+  if (!wPrev) return;
+
+  // In portrait mode, buttons are disposed like:
+  // CALC
+  // < >
+  // CLOSE
+  if (!ScreenLandscape) {
+	int ytop=wCalc->GetTop();
+	int ysize=ScreenSizeY-ytop-NIBLSCALE(20);
+	int sep=NIBLSCALE(1);
+	int hei=(ysize-sep*2)/3;
+	wCalc->SetHeight(hei);
+	wNext->SetHeight(hei);
+	wPrev->SetHeight(hei);
+	wClose->SetHeight(hei);
+
+	wNext->SetTop(ytop+hei+sep);
+	wPrev->SetTop(ytop+hei+sep);
+
+	wClose->SetTop(ytop+hei+hei+sep+sep);
+
   }
 
   /*
@@ -356,9 +392,7 @@ if (entered == true) /* prevent re entrance */
   }
   */
 
-  if(waGrid) {
-    waGrid->SetWidth( wfa->GetWidth() - waGrid->GetLeft()-6);
-  }
+  waGrid->SetWidth( wfa->GetWidth() - waGrid->GetLeft()-6);
 
   wfa->SetTimerNotify(OnTimerNotify);
 
