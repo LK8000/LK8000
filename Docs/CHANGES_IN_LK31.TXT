@@ -278,6 +278,7 @@ FIXES
 
  Fix loading CompeGPS waypoints
 
+ Resize correctly analysys buttons for portrait mode.
 
 
 LK8000 VERSION 3.1L 121221
