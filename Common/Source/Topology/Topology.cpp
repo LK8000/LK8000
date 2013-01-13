@@ -1336,8 +1336,7 @@ void ClipPolygon(HDC hdc, POINT *m_ptin, unsigned int inLength,
   }
 
 #if TOPO_CLIPPING
-  if(!DeviceNeedClipping)
-  {
+  if(!DeviceNeedClipping) {
 	if (fill) {
 		if (inLength>2) {
 			Polygon(hdc, m_ptin, inLength);
@@ -1396,10 +1395,10 @@ void ClipPolygon(HDC hdc, POINT *m_ptin, unsigned int inLength,
       Polyline(hdc, clip_ptout, outLength);
     }
   }
+#if TOPO_CLIPPING
 }
-
+#endif
 } // indentation wrong
-
 
 void Topology::SearchNearest(RECT rc) {
 
