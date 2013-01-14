@@ -78,7 +78,7 @@ double zoomfactor=1;
 
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 unsigned short getsideviewpage=GetSideviewPage();
-LKASSERT(getsideviewpage<3);
+LKASSERT(getsideviewpage<NO_SIDEVIEW_PAGES);
 
   if ( Current_Multimap_SizeY<SIZE4 )
 	zoomfactor=ZOOMFACTOR;
