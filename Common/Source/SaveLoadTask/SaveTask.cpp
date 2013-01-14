@@ -71,6 +71,17 @@ void SaveTask(TCHAR *szFileName)
 		}
 	}
     
+    // Add TimeGate config /////////////////////////////////////////////////////////////////////
+    WriteFile(hFile, &PGOpenTimeH, sizeof(PGOpenTimeH),&dwBytesWritten,(OVERLAPPED*)NULL);
+    WriteFile(hFile, &PGOpenTimeM, sizeof(PGOpenTimeM),&dwBytesWritten,(OVERLAPPED*)NULL);
+    WriteFile(hFile, &PGOpenTime, sizeof(PGOpenTime),&dwBytesWritten,(OVERLAPPED*)NULL);
+    WriteFile(hFile, &PGCloseTime, sizeof(PGCloseTime),&dwBytesWritten,(OVERLAPPED*)NULL);
+    WriteFile(hFile, &PGGateIntervalTime, sizeof(PGGateIntervalTime),&dwBytesWritten,(OVERLAPPED*)NULL);
+    WriteFile(hFile, &PGNumberOfGates, sizeof(PGNumberOfGates),&dwBytesWritten,(OVERLAPPED*)NULL);
+    WriteFile(hFile, &PGStartOut, sizeof(PGStartOut),&dwBytesWritten,(OVERLAPPED*)NULL);    
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    
+    
 	CloseHandle(hFile);
 	TaskModified = false; // task successfully saved
 	TargetModified = false;
