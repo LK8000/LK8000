@@ -7,7 +7,7 @@
 
 #define DEVNAMESIZE  32
 #define	NUMDEV		 2
-#define	NUMREGDEV	 30 // Max number of registered devices
+#define	NUMREGDEV	 31 // Max number of registered devices
 
 #define	devA()	    (&DeviceList[0])
 #define	devB()	    (&DeviceList[1])

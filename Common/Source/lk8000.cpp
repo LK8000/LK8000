@@ -37,6 +37,7 @@
 #include "devLXMiniMap.h"
 #include "devLX16xx.h"
 #include "devLXV7.h"
+#include "devLXV7_EXP.h"
 #include "devLXNano.h"
 #include "devZander.h"
 #include "devFlymasterF1.h"
@@ -439,6 +440,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   DevLXMiniMap::Register();
   DevLX16xx::Register();
   DevLXV7::Register();
+  DevLXV7_EXP::Register();
   DevLXNano::Register();
   zanderRegister();
   flymasterf1Register();

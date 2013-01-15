@@ -599,6 +599,7 @@ DEVS	:=\
 	$(DEV)/devLXMiniMap.cpp \
 	$(DEV)/devLXNano.cpp \
 	$(DEV)/devLXV7.cpp \
+	$(DEV)/devLXV7_EXP.cpp \
 	$(DEV)/devPosiGraph.cpp \
 	$(DEV)/devVolkslogger.cpp \
 	$(DEV)/devXCOM760.cpp \
