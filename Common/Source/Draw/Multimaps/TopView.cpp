@@ -293,7 +293,12 @@ void MapWindow::DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc, double fMin, double
   rgbCol = RGB_INVDRAW;
 
   ForcedClipping=true;
-  _DrawLine(hdc, PS_DASH, NIBLSCALE(1), p1, p2, rgbCol, rc);
+  // Reduce the rectangle for a better effect
+  rc.top+=NIBLSCALE(5);
+  rc.right-=NIBLSCALE(5);
+  rc.bottom-=NIBLSCALE(5);
+  rc.left+=NIBLSCALE(5);
+  _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p1, p2, rgbCol, rc);
   ForcedClipping=false;
 
 }
