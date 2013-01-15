@@ -386,7 +386,6 @@ DRAW	:=\
 	$(DRW)/DrawTerrainAbove.cpp \
 	$(DRW)/DrawThermalBand.cpp \
 	$(DRW)/DrawThermalEstimate.cpp \
-	$(DRW)/DrawVisualGlide.cpp \
 	$(DRW)/DrawWind.cpp \
 	$(DRW)/Draw_Primitives.cpp \
 	$(DRW)/LKDrawAspNearest.cpp \
@@ -424,8 +423,11 @@ DRAW	:=\
 	$(DRW)/Multimaps/RenderAirspace.cpp\
 	$(DRW)/Multimaps/RenderAirspaceTerrain.cpp\
 	$(DRW)/Multimaps/RenderNearAirspace.cpp\
+	$(DRW)/Multimaps/RenderPlane.cpp\
 	$(DRW)/Multimaps/Sideview.cpp \
+	$(DRW)/Multimaps/Sky.cpp \
 	$(DRW)/Multimaps/TopView.cpp \
+	$(DRW)/Multimaps/DrawVisualGlide.cpp \
 	$(DRW)/OrigAndOrient.cpp \
 	$(DRW)/RenderMapWindow.cpp \
 	$(DRW)/RenderMapWindowBg.cpp \
