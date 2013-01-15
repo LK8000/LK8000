@@ -404,7 +404,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	if(fSplitFact > 0.0) {
   		sDia.rc = rct;
 		sDia.rc.bottom-=1;
-		MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0, bSideView);
+		MapWindow::SharedTopView(hdc, &sDia, GPSbrg, 90.0, bSideView);
 		sDia.rc = rct;
 	}
 
@@ -422,10 +422,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   	sDia.rc = rct;
 	sDia.rc.bottom-=1;
     if (getsideviewpage == IM_HEADING)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0, bSideView);
+  	  MapWindow::SharedTopView(hdc, &sDia, GPSbrg, 90.0, bSideView);
 
     if (getsideviewpage == IM_NEXT_WP)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg, false );
+  	  MapWindow::SharedTopView(hdc, &sDia, acb, wpt_brg, false );
 
     //sDia.rc = rcc;
 

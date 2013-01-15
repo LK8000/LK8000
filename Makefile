@@ -425,6 +425,7 @@ DRAW	:=\
 	$(DRW)/Multimaps/RenderAirspaceTerrain.cpp\
 	$(DRW)/Multimaps/RenderNearAirspace.cpp\
 	$(DRW)/Multimaps/Sideview.cpp \
+	$(DRW)/Multimaps/TopView.cpp \
 	$(DRW)/OrigAndOrient.cpp \
 	$(DRW)/RenderMapWindow.cpp \
 	$(DRW)/RenderMapWindowBg.cpp \
