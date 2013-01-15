@@ -422,7 +422,7 @@ _skip_2:
     DrawAircraft(hdc, Orig_Aircraft);
   }
 
-  if (NOTANYPAN && !QUICKDRAW) {
+  if (NOTANYPAN) {
 	if (TrackBar) DrawHeading(hdc, Orig, DrawRect); 
   }
 
