@@ -22,6 +22,7 @@ void ResetTaskWpt(TASK_POINT& TaskWpt) {
     TaskWpt.AATCircleRadius = SectorRadius;
     TaskWpt.AATStartRadial = 0;
     TaskWpt.AATFinishRadial = 360;
+    TaskWpt.OutCircle = false;    
 }
 
 void ResetTaskStat(TASKSTATS_POINT& StatPt) {
