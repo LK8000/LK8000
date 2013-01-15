@@ -340,7 +340,7 @@ if(bValid)
   {
     sDia.rc = rct;
     sDia.rc.bottom-=1;
-    SharedTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg, false);
+    SharedTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg);
 
   }
 

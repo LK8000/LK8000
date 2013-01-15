@@ -64,7 +64,7 @@ double fMC0 = 0.0f;
 int overindex=-1;
 bool show_mc0= true;
 double fLD;
-bool bSideView = false;
+///bool bSideView = false;
 SIZE tsize;
 TCHAR text[TBSIZE+1];
 TCHAR buffer[TBSIZE+1];
@@ -221,8 +221,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			#endif
 			break;
 	  }
-          if ( (fSplitFact*100)<SIZE4 )
-           bSideView = true;
+          ///if ( (fSplitFact*100)<SIZE4 )
+           ////bSideView = true;
 	  //LKevent=LKEVENT_NONE;
 
 	  // Current_Multimap_SizeY is global, and must be used by all multimaps!
@@ -404,7 +404,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	if(fSplitFact > 0.0) {
   		sDia.rc = rct;
 		sDia.rc.bottom-=1;
-		MapWindow::SharedTopView(hdc, &sDia, GPSbrg, 90.0, bSideView);
+		MapWindow::SharedTopView(hdc, &sDia, GPSbrg, 90.0);
 		sDia.rc = rct;
 	}
 
@@ -422,10 +422,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   	sDia.rc = rct;
 	sDia.rc.bottom-=1;
     if (getsideviewpage == IM_HEADING)
-  	  MapWindow::SharedTopView(hdc, &sDia, GPSbrg, 90.0, bSideView);
+  	  MapWindow::SharedTopView(hdc, &sDia, GPSbrg, 90.0);
 
     if (getsideviewpage == IM_NEXT_WP)
-  	  MapWindow::SharedTopView(hdc, &sDia, acb, wpt_brg, false );
+  	  MapWindow::SharedTopView(hdc, &sDia, acb, wpt_brg );
 
     //sDia.rc = rcc;
 

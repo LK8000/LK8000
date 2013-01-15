@@ -15,7 +15,7 @@
 extern COLORREF  Sideview_TextColor;
 
 
-int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing, bool bShowHeadUp)
+int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing)
 {
 int iOldDisplayOrientation =  DisplayOrientation;
 DiagrammStruct m_Dia =	*psDia;
@@ -244,14 +244,20 @@ _nomoredeclutter:
   switch(GetMMNorthUp(getsideviewpage))
   {
      case TRACKUP:
-       DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
+	// Are we are not topview fullscreen?
+	if (Current_Multimap_SizeY<SIZE4) {
+		DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
+	} else {
+    	 	if (TrackBar) DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
+	}
      break;
 
      case NORTHUP:
      default:
-       if(bShowHeadUp)
-    	 DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
-     break;
+	if (TrackBar) {
+		DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
+	}
+	break;
   }
   DrawAircraft(hdc, Orig_Aircraft);
 
