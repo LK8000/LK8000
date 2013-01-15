@@ -71,7 +71,9 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 
     if (inpanmode) {
 	if (DerivedDrawInfo.TerrainValid) {
-		_stprintf(Scale2, _T(" %.0f%s "),ALTITUDEMODIFY*RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()),
+		double alt= ALTITUDEMODIFY*RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude());
+		if (alt==TERRAIN_INVALID) alt=0.0;
+		_stprintf(Scale2, _T(" %.0f%s "),alt,
 		Units::GetUnitName(Units::GetUserAltitudeUnit()));
 	}
 	double pandistance, panbearing;
