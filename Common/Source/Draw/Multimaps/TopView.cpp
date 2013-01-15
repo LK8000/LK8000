@@ -17,35 +17,36 @@ extern COLORREF  Sideview_TextColor;
 
 int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing)
 {
-int iOldDisplayOrientation =  DisplayOrientation;
-DiagrammStruct m_Dia =	*psDia;
-RECT rct = m_Dia.rc;
+  int iOldDisplayOrientation =  DisplayOrientation;
+  DiagrammStruct m_Dia =	*psDia;
+  RECT rct = m_Dia.rc;
 
-unsigned short getsideviewpage=GetSideviewPage();
-LKASSERT(getsideviewpage<NUMBER_OF_SHARED_MULTIMAPS);
-LKASSERT(Current_Multimap_SizeY!=SIZE0);
+  unsigned short getsideviewpage=GetSideviewPage();
+  LKASSERT(getsideviewpage<NUMBER_OF_SHARED_MULTIMAPS);
+  LKASSERT(Current_Multimap_SizeY!=SIZE0);
 
-DisplayOrientation = GetMMNorthUp(getsideviewpage);
-switch(GetMMNorthUp(getsideviewpage))
-{
-   case TRACKUP:
-   break;
+  DisplayOrientation = GetMMNorthUp(getsideviewpage);
 
-   case NORTHUP:
-   default:
-	 m_Dia.fXMin = -m_Dia.fXMax;
-   break;
+  switch(GetMMNorthUp(getsideviewpage))
+  {
+   	case TRACKUP:
+   		break;
 
-}
+   	case NORTHUP:
+   	default:
+		m_Dia.fXMin = -m_Dia.fXMax;
+		break;
+  }
 
-double fOldScale  =  zoom.Scale();
-HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+  double fOldScale  =  zoom.Scale();
+  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 
-if(zoom.AutoZoom())
-  zoom.AutoZoom(false);
-double fFact = 1.0 ;
+  if(zoom.AutoZoom())
+	zoom.AutoZoom(false);
 
-	switch(ScreenSize) {
+  double fFact = 1.0 ;
+
+  switch(ScreenSize) {
 	//	case ss896x672:	fFact=1.300; break;
 	case ss896x672:	fFact=0.900; break;
 	//	case ss800x480:	fFact=0.975; break;
@@ -57,39 +58,36 @@ double fFact = 1.0 ;
 	//	case ss400x240:	fFact=1.250; break;
 	case ss400x240:	fFact=0.4250; break;
 	//	case ss320x240:	fFact=1.295; break;
-		case ss320x240:	fFact=0.875; break;
-
-		case ss480x800:	fFact=1.20; break;
-		case ss480x640:	fFact=1.20; break;
-		case ss272x480:	fFact=1.20; break;
-		case ss240x400:	fFact=1.20; break;
-		case ss240x320:	fFact=1.20; break;
-
-
-		default:	fFact=1.000; break;
-	}
+	case ss320x240:	fFact=0.875; break;
+	case ss480x800:	fFact=1.20; break;
+	case ss480x640:	fFact=1.20; break;
+	case ss272x480:	fFact=1.20; break;
+	case ss240x400:	fFact=1.20; break;
+	case ss240x320:	fFact=1.20; break;
+	default:	fFact=1.000; break;
+  }
 
 
+  PanLatitude  = DrawInfo.Latitude;
+  PanLongitude = DrawInfo.Longitude;
 
-   PanLatitude  = DrawInfo.Latitude;
-   PanLongitude = DrawInfo.Longitude;
-
-   switch(GetMMNorthUp(getsideviewpage))
-   {
+  switch(GetMMNorthUp(getsideviewpage))
+  {
       case TRACKUP:
-    	DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
-    	DisplayAircraftAngle = AngleLimit360(fWP_Bearing);
-      break;
+	    	DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
+	    	DisplayAircraftAngle = AngleLimit360(fWP_Bearing);
+		break;
 
       case NORTHUP:
       default:
-    	DisplayAngle = 0;
-    	if( getsideviewpage == IM_HEADING || getsideviewpage==IM_VISUALGLIDE)
-    	  DisplayAircraftAngle = AngleLimit360(fAS_Bearing);
-    	else
-    	  DisplayAircraftAngle = AngleLimit360(DrawInfo.TrackBearing);
-      break;
-   }
+		DisplayAngle = 0;
+		if( getsideviewpage == IM_HEADING || getsideviewpage==IM_VISUALGLIDE)
+			DisplayAircraftAngle = AngleLimit360(fAS_Bearing);
+		else
+			DisplayAircraftAngle = AngleLimit360(DrawInfo.TrackBearing);
+		break;
+  }
+
   int iOldLocator = EnableThermalLocator;
   EnableThermalLocator =0;
 
@@ -98,21 +96,21 @@ double fFact = 1.0 ;
   zoom.ModifyMapScale();
   zoom.RequestedScale((m_Dia.fXMax -m_Dia.fXMin)  * fFact *  (DISTANCEMODIFY)/10.0f);
 
-   POINT Orig           =  { CalcDistanceCoordinat(0.0,  (DiagrammStruct*) &m_Dia),(rct.bottom-rct.top)/2};
-   POINT Orig_Aircraft= {0,0};
+  POINT Orig           =  { CalcDistanceCoordinat(0.0,  (DiagrammStruct*) &m_Dia),(rct.bottom-rct.top)/2};
+  POINT Orig_Aircraft= {0,0};
 
-   zoom.ModifyMapScale();
-   zoom.UpdateMapScale();
+  zoom.ModifyMapScale();
+  zoom.UpdateMapScale();
 
-   CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
-   CalculateScreenPositionsAirspace(rct);
+  CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
+  CalculateScreenPositionsAirspace(rct);
 
-   // 
-   // Expose variables in use for topview drawing
-   // 
-   Current_Multimap_TopOrig=Orig_Aircraft;
-   Current_Multimap_TopZoom=GetInvDrawScale();
-   Current_Multimap_TopAngle=DisplayAngle;
+  // 
+  // Expose variables in use for topview drawing
+  // 
+  Current_Multimap_TopOrig=Orig_Aircraft;
+  Current_Multimap_TopZoom=GetInvDrawScale();
+  Current_Multimap_TopAngle=DisplayAngle;
 
   bool terrainpainted=false;
 
@@ -141,13 +139,14 @@ double fFact = 1.0 ;
   // We reduce screen cluttering for some cases..
   short olddecluttermode=DeclutterMode;
   if (Current_Multimap_SizeY==SIZE4) goto _nomoredeclutter;
-  if (Current_Multimap_SizeY<SIZE3)
+  if (Current_Multimap_SizeY<SIZE3) {
 	DeclutterMode+=2;
-  else {
+  } else {
 	if (Current_Multimap_SizeY==SIZE3)
 		DeclutterMode++;
   }
   if (DeclutterMode>dmVeryHigh) DeclutterMode=dmVeryHigh;
+
 _nomoredeclutter:
 
   if (IsMultimapTopology()) {
@@ -266,54 +265,37 @@ _nomoredeclutter:
 	DrawMapScale(hdc,rct,0);
   }
 
-   #if 0
-   HPEN hpGreen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
-   HPEN oldPen  = (HPEN) SelectObject(hdc, hpGreen);
-   SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-   Rectangle(hdc,rct.left-1 , rct.bottom ,rct.right+2, rct.top);
-   SelectObject(hdc, oldPen);
-   DeleteObject(hpGreen);
-   #endif
+  MapWindow::zoom.RequestedScale(fOldScale);
+  EnableThermalLocator = iOldLocator;
+  DisplayOrientation = iOldDisplayOrientation;
+  SelectObject(hdc, hfOld);
+  return 0;
 
-
-   MapWindow::zoom.RequestedScale(fOldScale);
-   EnableThermalLocator = iOldLocator;
-   DisplayOrientation = iOldDisplayOrientation;
-   SelectObject(hdc, hfOld);
- return 0;
 }
+
+
 
 
 void MapWindow::DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc, double fMin, double fMax  ) {
 
-COLORREF rgbCol = RGB_BLACK;
-   POINT p1, p2;
-   double tmp = fMax*zoom.ResScaleOverDistanceModify();
-   {
-	double trackbearing =  DisplayAircraftAngle+  (DerivedDrawInfo.Heading-DrawInfo.TrackBearing);
-	p2.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
-	p2.x= Orig.x + (int)(tmp*fastsine(trackbearing));
+  COLORREF rgbCol = RGB_BLACK;
+  POINT p1, p2;
+  double tmp = fMax*zoom.ResScaleOverDistanceModify();
+  
+  double trackbearing =  DisplayAircraftAngle+  (DerivedDrawInfo.Heading-DrawInfo.TrackBearing);
+  p2.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
+  p2.x= Orig.x + (int)(tmp*fastsine(trackbearing));
 
-/*
-	 tmp = fMin*zoom.ResScaleOverDistanceModify();
-	p1.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
-	p1.x= Orig.x + (int)(tmp*fastsine(trackbearing));
-*/
-	p1.y= Orig.y;
-	p1.x= Orig.x;
+  p1.y= Orig.y;
+  p1.x= Orig.x;
 
-   }
-   if (BlackScreen)
-	rgbCol = RGB_INVDRAW;
-/*
-   if(p2.y > rc.bottom ) rgbCol = RGB_BLUE;
-   if(p2.y < rc.top )    rgbCol = RGB_BLUE;
-   if(p2.x < rc.left)    rgbCol = RGB_BLUE;
-*/
- //  if(p2.x > rc.right)   rgbCol = RGB_GREEN;
-	ForcedClipping=true;
-	_DrawLine(hdc, PS_DASH, NIBLSCALE(1), p1, p2, rgbCol, rc);
-	ForcedClipping=false;
+  if (BlackScreen)
+  rgbCol = RGB_INVDRAW;
+
+  ForcedClipping=true;
+  _DrawLine(hdc, PS_DASH, NIBLSCALE(1), p1, p2, rgbCol, rc);
+  ForcedClipping=false;
+
 }
 
 
