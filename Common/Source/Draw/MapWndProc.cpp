@@ -120,10 +120,6 @@ HPEN MapWindow::hpMapScale2;
 HPEN MapWindow::hpTerrainLine;
 HPEN MapWindow::hpTerrainLineBg;
 HPEN MapWindow::hpStartFinishThick;
-HPEN MapWindow::hpVisualGlideLightBlack; // VENTA3
-HPEN MapWindow::hpVisualGlideHeavyBlack; // VENTA3
-HPEN MapWindow::hpVisualGlideLightRed; // VENTA3
-HPEN MapWindow::hpVisualGlideHeavyRed; // VENTA3
 
 bool MapWindow::MapDirty = true;
 bool PanRefreshed=false;

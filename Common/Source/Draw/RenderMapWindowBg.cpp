@@ -391,11 +391,6 @@ _skip_stuff:
   }
   #endif
 
-  // VisualGlide drawn BEFORE lk8000 overlays
-  if (NOTANYPAN && (VisualGlide > 0)) {
-    DrawGlideCircle(hdc, Orig, rc); 
-  }
-
   if (DONTDRAWTHEMAP) {
 	goto QuickRedraw;
   }

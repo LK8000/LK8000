@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 121209
+# Release 10 , 130115
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -306,27 +306,6 @@ mode=default
 type=key
 data=UP
 event=Zoom in
-
-mode=default
-type=key
-data=RETURN
-event=ScreenModes toggle
-
-mode=default
-type=key
-data=LEFT
-event=MarkLocation
-
-mode=default
-type=key
-data=RIGHT
-event=ScreenModes toggle
-
-mode=default
-type=key
-data=ESCAPE
-event=VisualGlide show
-event=VisualGlide toggle
 
 
 # -------------

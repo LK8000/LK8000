@@ -88,11 +88,6 @@ typedef enum{
 } ActiveMap_t;
 
 typedef enum{
-	evgNormal=0,
-	evgExtended,
-} ExtendedVisualGlide_t;
-
-typedef enum{
 	lxcDisabled=0,
 	lxcNoOverlay,
 	lxcStandard,

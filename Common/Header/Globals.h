@@ -165,7 +165,6 @@ GEXTERN bool EnableAutoBacklight;
 GEXTERN bool EnableAutoSoundVolume;
 GEXTERN DWORD EnableFLARMMap;
 GEXTERN short AircraftCategory;
-GEXTERN bool ExtendedVisualGlide;
 GEXTERN short Look8000;
 GEXTERN bool CheckSum;
 GEXTERN bool HideUnits;
@@ -583,7 +582,6 @@ GEXTERN CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 GEXTERN bool bAirspaceBlackOutline;
 GEXTERN int TrailActive;
 GEXTERN int TrailActive_Config;
-GEXTERN int VisualGlide;
 GEXTERN int FinalGlideTerrain;
 
 // 0: Manual

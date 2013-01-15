@@ -517,7 +517,6 @@ class MapWindow {
 
   static void DrawAircraft(HDC hdc, const POINT Orig);
   static void DrawCrossHairs(HDC hdc, const POINT Orig, const RECT rc);
-  static void DrawGlideCircle(HDC hdc, const POINT Orig, const RECT rc); // VENTA3
   static void DrawHeading(HDC hdc, const POINT Orig, const RECT rc); // VENTA10
   static void DrawBestCruiseTrack(HDC hdc, const POINT Orig);
   static void DrawCompass(HDC hdc, const RECT rc,const double angle);
@@ -677,11 +676,6 @@ class MapWindow {
   static      HPEN hpMapScale2;
   static      HPEN hpTerrainLine;
   static      HPEN hpTerrainLineBg;
-  static      HPEN hpVisualGlideLightRed; // VENTA3
-  static      HPEN hpVisualGlideHeavyRed; // 
-  static      HPEN hpVisualGlideLightBlack; // VENTA3
-  static      HPEN hpVisualGlideHeavyBlack; // 
-  static      HPEN hpVisualGlideExtra; // future use
   static      HPEN hpStartFinishThick;
   
  private:

@@ -215,7 +215,6 @@ void Globals_Init(void) {
   EnableAutoSoundVolume=true;
   AircraftCategory=0;
 
-  ExtendedVisualGlide=false;
   Look8000=lxcAdvanced;
   HideUnits=false;
   CheckSum=true;
@@ -486,7 +485,6 @@ void Globals_Init(void) {
   SelectedWaypoint = -1;
   TrailActive = TRUE;
   TrailActive_Config = TRUE;
-  VisualGlide = 0;
   DisableAutoLogger = false;
   LiveTrackerInterval = 0;
   

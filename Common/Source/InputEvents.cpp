@@ -1054,30 +1054,9 @@ void InputEvents::eventSnailTrail(const TCHAR *misc) {
   }  
 }
 
+
+// The old event for VisualGlide is kept for possible future usages within M4
 void InputEvents::eventVisualGlide(const TCHAR *misc) {
-
-  if (_tcscmp(misc, TEXT("toggle")) == 0) {
-    VisualGlide ++;
-    if (VisualGlide==2 && !ExtendedVisualGlide) VisualGlide=0;
-    if (VisualGlide>2) {
-      VisualGlide=0;
-    }
-  } 
-  else if (_tcscmp(misc, TEXT("off")) == 0)
-    VisualGlide = 0;
-  else if (_tcscmp(misc, TEXT("steady")) == 0)
-    VisualGlide = 1;
-  else if (_tcscmp(misc, TEXT("moving")) == 0)
-    VisualGlide = 2;
-
-  else if (_tcscmp(misc, TEXT("show")) == 0) {
-    if (VisualGlide==0)
-      DoStatusMessage(TEXT("VisualGlide OFF"));
-    if (VisualGlide==1) 
-      DoStatusMessage(TEXT("VisualGlide Steady"));
-    if (VisualGlide==2) 
-      DoStatusMessage(TEXT("VisualGlide Moving"));
-  }  
 }
 
 void InputEvents::eventAirSpace(const TCHAR *misc) {
@@ -1109,7 +1088,7 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
   }
 }
 
-
+// THIS EVENT IS NOT USED ANYMORE
 void InputEvents::eventScreenModes(const TCHAR *misc) {
 
 }

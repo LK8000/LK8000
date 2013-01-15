@@ -189,23 +189,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 				_tcscpy(OutBuffer,_T(""));
 			break;
 
-		case 12: // VisualGlideToggleName
-
-			switch(VisualGlide) {
-				case 0:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2030),MsgToken(894)); // VisualG ON
-					break;
-				case 1:
-					if (ExtendedVisualGlide)
-						_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2030),MsgToken(1205)); // VisualG moving
-					else
-						_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2030),MsgToken(491)); // VisualG OFF
-					break;
-				case 2:
-				default:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2030),MsgToken(491)); // VisualG OFF
-					break;
-			}
+		case 12: // THIS MACRO IS AVAILABLE FOR USE
 			break;
 
 		case 13:

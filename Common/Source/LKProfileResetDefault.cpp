@@ -136,8 +136,6 @@ void LKProfileResetDefault(void) {
 
   AATEnabled=FALSE;
 
-  ExtendedVisualGlide = 0;
-
   if (ScreenLandscape)
 	Look8000 = (Look8000_t)lxcAdvanced;
   else
