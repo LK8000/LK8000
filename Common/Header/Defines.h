@@ -230,7 +230,7 @@
 #define LKMAXBACKGROUNDS        10
 
 // Task format version
-#define LKTASKVERSION	'4'
+#define LKTASKVERSION	'3'
 // How many chars at the beginning of file are reserved
 #define LKPREAMBOLSIZE	50
 
