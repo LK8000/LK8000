@@ -15,7 +15,7 @@
 #include "DoInits.h"
 #include "McReady.h"
 #include "Multimap.h"
-
+#include "Sideview.h"
 
 void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 {
@@ -1147,7 +1147,7 @@ drawOverlay:
 
 Drawbottom:
 
-  if (MapSpaceMode != MSM_MAP) goto TheEnd;
+  if (MapSpaceMode != MSM_MAP && Current_Multimap_SizeY!=SIZE4) goto TheEnd;
 
 
   //
