@@ -377,10 +377,6 @@ DRAW	:=\
 	$(DRW)/DrawHeading.cpp \
 	$(DRW)/DrawLKAlarms.cpp \
 	$(DRW)/DrawMapScale.cpp \
-	$(DRW)/DrawMultimap.cpp \
-	$(DRW)/DrawMultimap_Asp.cpp \
-	$(DRW)/DrawMultimap_Radar.cpp \
-	$(DRW)/DrawMultimap_Test.cpp \
 	$(DRW)/DrawRunway.cpp \
 	$(DRW)/DrawStartSector.cpp \
 	$(DRW)/DrawTRI.cpp \
@@ -421,14 +417,18 @@ DRAW	:=\
 	$(DRW)/MapWindow_Events.cpp \
 	$(DRW)/MapWindow_Utils.cpp \
 	$(DRW)/MapWndProc.cpp \
+	$(DRW)/Multimaps/DrawMultimap.cpp \
+	$(DRW)/Multimaps/DrawMultimap_Asp.cpp \
+	$(DRW)/Multimaps/DrawMultimap_Radar.cpp \
+	$(DRW)/Multimaps/DrawMultimap_Test.cpp \
+	$(DRW)/Multimaps/RenderAirspace.cpp\
+	$(DRW)/Multimaps/RenderAirspaceTerrain.cpp\
+	$(DRW)/Multimaps/RenderNearAirspace.cpp\
+	$(DRW)/Multimaps/Sideview.cpp \
 	$(DRW)/OrigAndOrient.cpp \
-	$(DRW)/RenderAirspace.cpp\
-	$(DRW)/RenderAirspaceTerrain.cpp\
 	$(DRW)/RenderMapWindow.cpp \
 	$(DRW)/RenderMapWindowBg.cpp \
-	$(DRW)/RenderNearAirspace.cpp\
 	$(DRW)/ScreenLatLon.cpp \
-	$(DRW)/Sideview.cpp \
 	$(DRW)/Sonar.cpp \
 	$(DRW)/TextInBox.cpp \
 	$(DRW)/UpdateAndRefresh.cpp \
