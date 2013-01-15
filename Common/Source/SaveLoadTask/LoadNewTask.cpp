@@ -148,6 +148,29 @@ void LoadNewTask(TCHAR *szFileName)
         }
 
       }
+      
+        // TimeGate config
+        if (!TaskInvalid) {
+            TaskInvalid = !ReadFile(hFile, &PGOpenTimeH, sizeof (PGOpenTimeH), &dwBytesRead, (OVERLAPPED*) NULL);
+        }
+        if (!TaskInvalid) {
+            TaskInvalid = !ReadFile(hFile, &PGOpenTimeM, sizeof (PGOpenTimeM), &dwBytesRead, (OVERLAPPED*) NULL);
+        }
+        if (!TaskInvalid) {
+            TaskInvalid = !ReadFile(hFile, &PGOpenTime, sizeof (PGOpenTime), &dwBytesRead, (OVERLAPPED*) NULL);
+        }
+        if (!TaskInvalid) {
+            TaskInvalid = !ReadFile(hFile, &PGCloseTime, sizeof (PGCloseTime), &dwBytesRead, (OVERLAPPED*) NULL);
+        }
+        if (!TaskInvalid) {
+            TaskInvalid = !ReadFile(hFile, &PGGateIntervalTime, sizeof (PGGateIntervalTime), &dwBytesRead, (OVERLAPPED*) NULL);
+        }
+        if (!TaskInvalid) {
+            TaskInvalid = !ReadFile(hFile, &PGNumberOfGates, sizeof (PGNumberOfGates), &dwBytesRead, (OVERLAPPED*) NULL);
+        }
+        if (!TaskInvalid) {
+            TaskInvalid = !ReadFile(hFile, &PGStartOut, sizeof (PGStartOut), &dwBytesRead, (OVERLAPPED*) NULL);
+        }    
 
 goEnd:
 
