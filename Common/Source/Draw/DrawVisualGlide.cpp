@@ -10,7 +10,9 @@
 #include "McReady.h"
 #include "RGB.h"
 
+void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
+}
 
 /*
  * The VisualGlide is a sort of Stocker dynamic chart

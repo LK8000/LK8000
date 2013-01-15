@@ -890,8 +890,9 @@ GEXTERN double Rotary_Distance;
 GEXTERN unsigned short Multimap1;
 GEXTERN unsigned short Multimap2;
 GEXTERN unsigned short Multimap3;
+GEXTERN unsigned short Multimap4;
 
-GEXTERN int MMNorthUp_Runtime[3];
+GEXTERN int MMNorthUp_Runtime[NUMBER_OF_SHARED_MULTIMAPS];
 
 //
 // ---------------------------------------------------------------------------

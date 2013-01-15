@@ -32,16 +32,19 @@ AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 void SetMMNorthUp( int iPage, int  iVal)
 {
-if(	iPage < 0 ) iPage=0;
-if(	iPage > 2 ) iPage=2;
-	MMNorthUp_Runtime[iPage]	= iVal;
+  #if BUGSTOP
+  LKASSERT(iPage<NUMBER_OF_SHARED_MULTIMAPS);
+  #endif
+  if(	iPage < 0 ) iPage=0;
+  if(	iPage >= NUMBER_OF_SHARED_MULTIMAPS ) iPage=NUMBER_OF_SHARED_MULTIMAPS-1;
+  MMNorthUp_Runtime[iPage]	= iVal;
 }
 
 
 int GetMMNorthUp( int iPage)
 {
 	if(	iPage < 0 ) iPage=0;
-	if(	iPage > 2 ) iPage=2;
+	if(	iPage >= NUMBER_OF_SHARED_MULTIMAPS ) iPage=NUMBER_OF_SHARED_MULTIMAPS-1;
 	return MMNorthUp_Runtime[iPage];
 }
 
@@ -651,7 +654,7 @@ DiagrammStruct m_Dia =	*psDia;
 RECT rct = m_Dia.rc;
 
 unsigned short getsideviewpage=GetSideviewPage();
-LKASSERT(getsideviewpage<3);
+LKASSERT(getsideviewpage<NUMBER_OF_SHARED_MULTIMAPS);
 LKASSERT(Current_Multimap_SizeY!=SIZE0);
 
 DisplayOrientation = GetMMNorthUp(getsideviewpage);
@@ -713,7 +716,7 @@ double fFact = 1.0 ;
       case NORTHUP:
       default:
     	DisplayAngle = 0;
-    	if( getsideviewpage == IM_HEADING)
+    	if( getsideviewpage == IM_HEADING || getsideviewpage==IM_VISUALGLIDE)
     	  DisplayAircraftAngle = AngleLimit360(fAS_Bearing);
     	else
     	  DisplayAircraftAngle = AngleLimit360(DrawInfo.TrackBearing);
@@ -853,7 +856,7 @@ _nomoredeclutter:
 		DrawCompass( hdc,  rct, 0);
 	break;
 	case TRACKUP:
-		if(getsideviewpage ==  IM_HEADING)
+		if(getsideviewpage ==  IM_HEADING || getsideviewpage == IM_VISUALGLIDE)
 		  DrawCompass( hdc,  rct, DrawInfo.TrackBearing-90.0);
 		else
 		  DrawCompass( hdc,  rct, DisplayAngle);

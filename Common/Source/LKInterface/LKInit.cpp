@@ -80,16 +80,17 @@ void UpdateConfBB(void) {
 void UpdateConfIP(void) {
 
   // MAP MODE always available
-  ConfIP[0][0]=true; 	// welcome
-  ConfIP[0][1]=true; 	// moving map
-  ConfIP[0][2]=true; 	// multimap trk
-  ConfIP[0][3]=true; 	// multimap wpt
-  ConfIP[0][4]=true; 	// multimap asp
-  ConfIP[0][5]=true; 	// multimap radar
+  ConfIP[0][MP_WELCOME]=true;	// welcome
+  ConfIP[0][MP_MOVING]=true;	// moving map
+  ConfIP[0][MP_MAPTRK]=true; 	// multimap trk
+  ConfIP[0][MP_MAPWPT]=true; 	// multimap wpt
+  ConfIP[0][MP_MAPASP]=true; 	// multimap asp
+  ConfIP[0][MP_VISUALGLIDE]=false; // multimap radar
+  ConfIP[0][MP_RADAR]=true; 	// multimap radar
 #if TESTBENCH
-  ConfIP[0][6]=false; 	// multimap test page
+  ConfIP[0][MP_TEST]=false; 	// multimap test page
 #else
-  ConfIP[0][6]=false; 	// multimap test page
+  ConfIP[0][MP_TEST]=false; 	// multimap test page
 #endif
   ConfMP[0]=true; // map mode
 
@@ -209,6 +210,7 @@ void InitModeTable() {
 	ModeTable[LKMODE_MAP][MP_MAPTRK]	=	MSM_MAPTRK;
 	ModeTable[LKMODE_MAP][MP_MAPWPT]	=	MSM_MAPWPT;
 	ModeTable[LKMODE_MAP][MP_MAPASP]	=	MSM_MAPASP;
+	ModeTable[LKMODE_MAP][MP_VISUALGLIDE]	=	MSM_VISUALGLIDE;
 	ModeTable[LKMODE_MAP][MP_RADAR]		=	MSM_MAPRADAR;
 	ModeTable[LKMODE_MAP][MP_TEST]		=	MSM_MAPTEST;
 
@@ -236,6 +238,10 @@ void InitModeTable() {
 	ModeIndex=LKMODE_MAP;
 	// startup values for each mode. we shall update these defaults using current profile settings
 	// for ConfIP real values. 
+	// 130114 NOTE: THIS DOES NOT WORK, WE ARE NOT UPDATING ModeTable!
+	// ToDo: in case we really want to change initial values for each mode, we must
+	// fix by calling a new UpdateModeTables, setting these ModeTypes.
+	// Otherwise they get used only after a Next or Previous..
 	#if TESTBENCH
 	ModeType[LKMODE_MAP]	=	MP_MOVING;
 	#else
@@ -286,5 +292,6 @@ void UpdateMultimapOrient(void) {
   MMNorthUp_Runtime[0]=(Multimap1==mm_enabled_northup);
   MMNorthUp_Runtime[1]=(Multimap2==mm_enabled_northup);
   MMNorthUp_Runtime[2]=(Multimap3==mm_enabled_northup);
+  MMNorthUp_Runtime[3]=(Multimap4==mm_enabled_northup);
 
 }

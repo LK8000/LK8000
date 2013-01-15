@@ -31,7 +31,9 @@
 #define NEAR_AS_ZOOM_1000FT
 #define NEAR_AS_ZOOM_1000M
 
-
+// There are known as "shared multimaps" and they are sized inside Defines.h
+// See NUMBER_OF_SHARED_MULTIMAPS. 
+#define IM_VISUALGLIDE 3
 #define IM_NEAR_AS 2
 #define IM_NEXT_WP 1
 #define IM_HEADING 0
@@ -69,7 +71,7 @@
 #define MAXALTTODAY   2500.0
 #define MAX_ALTITUDE   5000.0
 
-#define NO_SIDEVIEW_PAGES 3
+#define NO_SIDEVIEW_PAGES 4
 
 
 

@@ -56,6 +56,7 @@ redo:
 	if ( (CURMODE == MSM_MAPTRK) && (Multimap1==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_MAPWPT) && (Multimap2==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_MAPASP) && (Multimap3==mm_disabled) ) goto redo;
+	if ( (CURMODE == MSM_VISUALGLIDE) && (Multimap4==mm_disabled) ) goto redo;
 
 	//if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
 finish:
@@ -102,6 +103,7 @@ redo:
 	if ( (CURMODE == MSM_MAPTRK) && (Multimap1==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_MAPWPT) && (Multimap2==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_MAPASP) && (Multimap3==mm_disabled) ) goto redo;
+	if ( (CURMODE == MSM_VISUALGLIDE) && (Multimap4==mm_disabled) ) goto redo;
 
 	//if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
 finish:
@@ -267,7 +269,8 @@ void SelectMapSpace(short i) {
 	if (IsMultimapConfigShown &&
 		MapSpaceMode!=MSM_MAPTRK && 
 		MapSpaceMode!=MSM_MAPWPT && 
-		MapSpaceMode!=MSM_MAPASP) {
+		MapSpaceMode!=MSM_MAPASP && 
+		MapSpaceMode!=MSM_VISUALGLIDE) {
 		InputEvents::setMode(TEXT("default"));
 	}
 }

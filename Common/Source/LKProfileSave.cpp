@@ -320,44 +320,53 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMultiTerr1,Multimap_Flags_Terrain[MP_MAPTRK]);
   rprintf(szRegistryMultiTerr2,Multimap_Flags_Terrain[MP_MAPWPT]);
   rprintf(szRegistryMultiTerr3,Multimap_Flags_Terrain[MP_MAPASP]);
+  rprintf(szRegistryMultiTerr4,Multimap_Flags_Terrain[MP_VISUALGLIDE]);
 
   rprintf(szRegistryMultiTopo0,Multimap_Flags_Topology[MP_MOVING]);
   rprintf(szRegistryMultiTopo1,Multimap_Flags_Topology[MP_MAPTRK]);
   rprintf(szRegistryMultiTopo2,Multimap_Flags_Topology[MP_MAPWPT]);
   rprintf(szRegistryMultiTopo3,Multimap_Flags_Topology[MP_MAPASP]);
+  rprintf(szRegistryMultiTopo4,Multimap_Flags_Topology[MP_VISUALGLIDE]);
 
   rprintf(szRegistryMultiAsp0,Multimap_Flags_Airspace[MP_MOVING]);
   rprintf(szRegistryMultiAsp1,Multimap_Flags_Airspace[MP_MAPTRK]);
   rprintf(szRegistryMultiAsp2,Multimap_Flags_Airspace[MP_MAPWPT]);
   rprintf(szRegistryMultiAsp3,Multimap_Flags_Airspace[MP_MAPASP]);
+  rprintf(szRegistryMultiAsp4,Multimap_Flags_Airspace[MP_VISUALGLIDE]);
 
   rprintf(szRegistryMultiLab0,Multimap_Labels[MP_MOVING]);
   rprintf(szRegistryMultiLab1,Multimap_Labels[MP_MAPTRK]);
   rprintf(szRegistryMultiLab2,Multimap_Labels[MP_MAPWPT]);
   rprintf(szRegistryMultiLab3,Multimap_Labels[MP_MAPASP]);
+  rprintf(szRegistryMultiLab4,Multimap_Labels[MP_VISUALGLIDE]);
 
   rprintf(szRegistryMultiWpt0,Multimap_Flags_Waypoints[MP_MOVING]);
   rprintf(szRegistryMultiWpt1,Multimap_Flags_Waypoints[MP_MAPTRK]);
   rprintf(szRegistryMultiWpt2,Multimap_Flags_Waypoints[MP_MAPWPT]);
   rprintf(szRegistryMultiWpt3,Multimap_Flags_Waypoints[MP_MAPASP]);
+  rprintf(szRegistryMultiWpt4,Multimap_Flags_Waypoints[MP_VISUALGLIDE]);
 
   rprintf(szRegistryMultiOvrT0,Multimap_Flags_Overlays_Text[MP_MOVING]);
   rprintf(szRegistryMultiOvrT1,Multimap_Flags_Overlays_Text[MP_MAPTRK]);
   rprintf(szRegistryMultiOvrT2,Multimap_Flags_Overlays_Text[MP_MAPWPT]);
   rprintf(szRegistryMultiOvrT3,Multimap_Flags_Overlays_Text[MP_MAPASP]);
+  rprintf(szRegistryMultiOvrT4,Multimap_Flags_Overlays_Text[MP_VISUALGLIDE]);
 
   rprintf(szRegistryMultiOvrG0,Multimap_Flags_Overlays_Gauges[MP_MOVING]);
   rprintf(szRegistryMultiOvrG1,Multimap_Flags_Overlays_Gauges[MP_MAPTRK]);
   rprintf(szRegistryMultiOvrG2,Multimap_Flags_Overlays_Gauges[MP_MAPWPT]);
   rprintf(szRegistryMultiOvrG3,Multimap_Flags_Overlays_Gauges[MP_MAPASP]);
+  rprintf(szRegistryMultiOvrG4,Multimap_Flags_Overlays_Gauges[MP_VISUALGLIDE]);
 
   rprintf(szRegistryMultiSizeY1,Multimap_SizeY[MP_MAPTRK]);
   rprintf(szRegistryMultiSizeY2,Multimap_SizeY[MP_MAPWPT]);
   rprintf(szRegistryMultiSizeY3,Multimap_SizeY[MP_MAPASP]);
+  rprintf(szRegistryMultiSizeY4,Multimap_SizeY[MP_VISUALGLIDE]);
 
   rprintf(szRegistryMultimap1,Multimap1);
   rprintf(szRegistryMultimap2,Multimap2);
   rprintf(szRegistryMultimap3,Multimap3);
+  rprintf(szRegistryMultimap4,Multimap4);
 
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);

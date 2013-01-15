@@ -29,7 +29,7 @@ double fOffset = 0.0;
 using std::min;
 using std::max;
 int k;
-double fZOOMScale[3] = {1.0,1.0,1.0};
+double fZOOMScale[NUMBER_OF_SHARED_MULTIMAPS] = {1.0,1.0,1.0,1.0};
 double fDelta = MIN_OFFSET;
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
@@ -79,6 +79,7 @@ double zoomfactor=1;
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 unsigned short getsideviewpage=GetSideviewPage();
 LKASSERT(getsideviewpage<NO_SIDEVIEW_PAGES);
+LKASSERT((sizeof(fZOOMScale)/sizeof(double))==NUMBER_OF_SHARED_MULTIMAPS);
 
   if ( Current_Multimap_SizeY<SIZE4 )
 	zoomfactor=ZOOMFACTOR;
@@ -118,6 +119,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     Sideview_TextColor = RGB_WHITE;
 
   SetTextColor(hdc, Sideview_TextColor);
+
 
   /****************************************************************/
 	  switch(LKevent) {
@@ -213,7 +215,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			}
 
 		break;
-
+		default:
+			#if TESTBENCH
+			if (LKevent!=0) StartupStore(_T("UNKNWON EVENT: %d\n"),LKevent);
+			#endif
+			break;
 	  }
           if ( (fSplitFact*100)<SIZE4 )
            bSideView = true;
@@ -259,9 +265,6 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	hmin = DerivedDrawInfo.NavAltitude -  2*fHeigtScaleFact;
 	if( hmin <0 )
 	 hmin = 0;
-
-
-
 
 
   if(bInvCol)
@@ -354,7 +357,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	wpt_brg=90.0;
     }
   } // NEXTWP
-  
+ 
   // Else in MAPWPT with no overtarget we paint a track heading
 
   if(fZOOMScale[getsideviewpage] != 1.0)
@@ -388,13 +391,31 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   sDia.fYMax = hmax;
 
 
-  #if 1
-  // TO CHECK, MOVED FROM OTHER FORWARD POSITION
   // What is this text color used for.. apparently there is no difference to take it off.
   SetTextColor(hdc, GROUND_TEXT_COLOUR);
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+
+
+  if (getsideviewpage == IM_VISUALGLIDE) {
+
+	// VisualGlide not full screen?
+	if(fSplitFact > 0.0) {
+  		sDia.rc = rct;
+		sDia.rc.bottom-=1;
+		MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0, bSideView);
+		sDia.rc = rct;
+	}
+
+	if ( (fSplitFact*100)<SIZE4 ) { // TopView not full screen?
+		DrawVisualGlide(hdc,&sDia);
+		DrawMultimap_SideTopSeparator(hdc,rct);
+	}
+	zoom.SetLimitMapScale(true);
+	return;
+  }
+
 
   if(fSplitFact > 0.0)
   {
@@ -409,7 +430,6 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     //sDia.rc = rcc;
 
   }
-  #endif
 
 
   RECT rcc =  rc;
@@ -448,25 +468,6 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     SelectObject(hdc, GetStockObject(WHITE_PEN));
     SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   }
-
-#if 0
-  // THIS HAS BEEN MOVED UP, BEFORE PAINTING SIDEVIEW
-  SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  if(bInvCol)
-    if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
-	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
-
-  if(fSplitFact > 0.0)
-  {
-  	sDia.rc = rct;
-    if (getsideviewpage == IM_HEADING)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
-
-    if (getsideviewpage == IM_NEXT_WP)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
-  	sDia.rc = rcc;
-  }
-#endif
 
   SelectObject(hdc, LK8PanelUnitFont);
   COLORREF txtCol = GROUND_TEXT_COLOUR;

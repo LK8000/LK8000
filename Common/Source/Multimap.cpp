@@ -28,6 +28,7 @@ POINT	Current_Multimap_TopOrig={0,0};
 
 //
 // All multimaps including MSM_MAP main
+// These are badly managed here, since they depend on enumeration in Defines.h, but no problems.
 //
 bool IsMultiMap() {
 
@@ -70,14 +71,15 @@ bool IsMultiMapShared() {
   // static bool shared[]={ false, false, false..} 
   // return shared[MapSpaceMode];  simply...
   //
-  if ( (MapSpaceMode==MSM_MAP) || (MapSpaceMode == MSM_MAPTRK) || (MapSpaceMode == MSM_MAPWPT) || (MapSpaceMode==MSM_MAPASP) )
+  if ( (MapSpaceMode==MSM_MAP) || (MapSpaceMode == MSM_MAPTRK) || (MapSpaceMode == MSM_MAPWPT) || (MapSpaceMode==MSM_MAPASP) 
+	|| (MapSpaceMode==MSM_VISUALGLIDE) )
 	return true;
   else
 	return false;
 }
 
 bool IsMultiMapSharedNoMain() {
-  if ( (MapSpaceMode == MSM_MAPTRK) || (MapSpaceMode == MSM_MAPWPT) || (MapSpaceMode==MSM_MAPASP) )
+  if ( (MapSpaceMode == MSM_MAPTRK) || (MapSpaceMode == MSM_MAPWPT) || (MapSpaceMode==MSM_MAPASP) || (MapSpaceMode==MSM_VISUALGLIDE) )
 	return true;
   else
 	return false;
@@ -107,6 +109,9 @@ short Get_Current_Multimap_Type() {
 		break;
 	case MSM_MAPTEST:
 		ret=MP_TEST;
+		break;
+	case MSM_VISUALGLIDE:
+		ret=MP_VISUALGLIDE;
 		break;
 	default:
 		ret=MP_MOVING;
@@ -366,6 +371,15 @@ void Reset_Multimap_Flags(void) {
   Multimap_SizeY[MP_MAPASP]=SIZE2;
 
 
+  Multimap_Flags_Terrain[MP_VISUALGLIDE]=true;
+  Multimap_Flags_Topology[MP_VISUALGLIDE]=false;
+  Multimap_Flags_Airspace[MP_VISUALGLIDE]=false;
+  Multimap_Flags_Waypoints[MP_VISUALGLIDE]=true;
+  Multimap_Flags_Overlays_Text[MP_VISUALGLIDE]=true;
+  Multimap_Flags_Overlays_Gauges[MP_VISUALGLIDE]=false;
+  Multimap_Labels[MP_VISUALGLIDE]=MAPLABELS_ONLYWPS;
+
+
   // Radar is custom multimap, so no terrain, etc.
   Multimap_Flags_Overlays_Text[MP_RADAR]=false;
   Multimap_Flags_Overlays_Gauges[MP_RADAR]=false;
@@ -405,11 +419,9 @@ void MultiMapSound() {
 		case 6:
 			PlayResource(TEXT("IDR_WAV_MM5"));
 			break;
-#if 0
 		case 7:
 			PlayResource(TEXT("IDR_WAV_MM6"));
 			break;
-#endif
 		default:
 			break;
 	}
@@ -426,6 +438,7 @@ void Reset_Multimap_Mode(void) {
   Multimap1=mm_enabled_normal;
   Multimap2=mm_enabled_normal;
   Multimap3=mm_enabled_normal;
+  Multimap4=mm_enabled_normal;
 
 }
 

@@ -126,7 +126,7 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		DrawWelcome8000(hdc, rc);
 		break;
 	case MSM_MAPTRK:
-		SetSideviewPage(0);
+		SetSideviewPage(IM_HEADING);
 		LKDrawMultimap_Asp(hdc,rc);
 		break;
 	case MSM_MAPWPT:
@@ -138,15 +138,19 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 			break;
 		}
 		#endif
-		SetSideviewPage(1);
+		SetSideviewPage(IM_NEXT_WP);
 		LKDrawMultimap_Asp(hdc,rc);
 		break;
 	case MSM_MAPASP:
-		SetSideviewPage(2);
+		SetSideviewPage(IM_NEAR_AS);
 		LKDrawMultimap_Asp(hdc,rc);
 		break;
 	case MSM_MAPRADAR:
 		LKDrawMultimap_Radar(hdc,rc);
+		break;
+	case MSM_VISUALGLIDE:
+		SetSideviewPage(IM_VISUALGLIDE);
+		LKDrawMultimap_Asp(hdc,rc);
 		break;
 	case MSM_MAPTEST:
 		LKDrawMultimap_Test(hdc,rc);

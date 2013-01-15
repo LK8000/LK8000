@@ -9,8 +9,6 @@
 #ifndef MULTIMAP_H
 #define MULTIMAP_H
 
-#define NUMBER_OF_MULTIMAPS	MP_TOP
-
 extern int	Current_Multimap_SizeY;
 extern RECT	Current_Multimap_TopRect;
 extern double	Current_Multimap_TopAngle;
