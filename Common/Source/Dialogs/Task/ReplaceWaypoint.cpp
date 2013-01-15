@@ -21,7 +21,7 @@ void ReplaceWaypoint(int index) {
   TargetModified = true;
 
   // ARH 26/06/05 Fixed array out-of-bounds bug
-  if (ActiveWayPoint>=0) {	
+  if (ActiveWayPoint>=0 && ActiveWayPoint < MAXTASKPOINTS) {	
     ResetTaskWaypoint(ActiveWayPoint);
     Task[ActiveWayPoint].Index = index;
   } else {

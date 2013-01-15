@@ -7,26 +7,38 @@
 */
 
 #include "externs.h"
-
+#include "utils/stl_utils.h"
 
 bool TaskModified = false;
 bool TargetModified = false;
 TCHAR LastTaskFileName[MAX_PATH]= TEXT("\0");
 
+void ResetTaskWpt(TASK_POINT& TaskWpt) {
+    TaskWpt.Index = -1;
+    TaskWpt.AATTargetOffsetRadius = 0.0;
+    TaskWpt.AATTargetOffsetRadial = 0.0;
+    TaskWpt.AATTargetLocked = false;
+    TaskWpt.AATSectorRadius = SectorRadius;
+    TaskWpt.AATCircleRadius = SectorRadius;
+    TaskWpt.AATStartRadial = 0;
+    TaskWpt.AATFinishRadial = 360;
+}
 
+void ResetTaskStat(TASKSTATS_POINT& StatPt) {
+    std::fill(begin(StatPt.IsoLine_valid), end(StatPt.IsoLine_valid), false);
+}
 
 void ResetTaskWaypoint(int j) {
-  Task[j].Index = -1;
-  if (DoOptimizeRoute())
-  	Task[j].AATTargetOffsetRadius = -100.0;
-  else
-  	Task[j].AATTargetOffsetRadius = 0.0;
-  Task[j].AATTargetOffsetRadial = 0.0;
-  Task[j].AATTargetLocked = false;
-  Task[j].AATSectorRadius = SectorRadius;
-  Task[j].AATCircleRadius = SectorRadius;
-  Task[j].AATStartRadial = 0;
-  Task[j].AATFinishRadial = 360;
+    if(j>=0 && j<MAXSTARTPOINTS) {
+        ResetTaskWpt(Task[j]);
+        ResetTaskStat(TaskStats[j]);
+    } else {
+        LKASSERT(false);
+    }
+}
+
+void ResetStartPoint(START_POINT& StartPt) {
+    StartPt.Index = -1;
 }
 
 

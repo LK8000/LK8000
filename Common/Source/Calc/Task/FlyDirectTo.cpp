@@ -15,18 +15,12 @@ void FlyDirectTo(int index) {
 
   LockTaskData();
 
-  TaskModified = true;
-  TargetModified = true;
-  ActiveWayPoint = -1; 
-
   AATEnabled = FALSE;
 
   InsertRecentList(index);
 
+  ClearTask();
   Task[0].Index = index;
-  for (int i=1; i<=MAXTASKPOINTS; i++) {
-    Task[i].Index = -1;
-  }
   ActiveWayPoint = 0;
   RefreshTask();
   UnlockTaskData();

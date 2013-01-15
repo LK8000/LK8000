@@ -15,6 +15,7 @@
 #include "LKMapWindow.h"
 #include "Dialogs.h"
 
+extern void ResetTaskWaypoint(int j);
 
 static WndForm *wf=NULL;
 static WndFrame *wfAdvanced=NULL;
@@ -258,7 +259,7 @@ static void OnTaskListEnter(WindowControl * Sender,
   ItemIndex = ListInfo->ItemIndex+ListInfo->ScrollIndex;
 
   // If we are clicking on Add Waypoint
-  if ( (ItemIndex == UpLimit) && UpLimit<MAXTASKPOINTS) {
+  if ((ItemIndex>=0) && (ItemIndex == UpLimit) && (UpLimit<MAXTASKPOINTS)) {
 
 	// add new waypoint
 	if (CheckDeclaration()) {
@@ -276,15 +277,8 @@ static void OnTaskListEnter(WindowControl * Sender,
 
 				// Set initial wp as the finish by default, or home if nonex
 				LockTaskData();
-				if (ItemIndex>0) {
-					Task[ItemIndex].Index = Task[0].Index;
-				} else {
-					if (ValidWayPoint(HomeWaypoint)) {
-						Task[ItemIndex].Index = HomeWaypoint;
-					} else {
-						Task[ItemIndex].Index = -1;
-					}
-				}
+                // ItemIndex is already checked for > 0 no need to test twice
+				Task[ItemIndex].Index = Task[0].Index;
 				UnlockTaskData();
 
 			} else {
@@ -298,17 +292,8 @@ static void OnTaskListEnter(WindowControl * Sender,
 		if (ValidWayPoint(res)){
 
 			LockTaskData();
+            ResetTaskWaypoint(ItemIndex);
 			Task[ItemIndex].Index = res;
-
-			if (DoOptimizeRoute())
-				Task[ItemIndex].AATTargetOffsetRadius = -100.0;
-			else
-				Task[ItemIndex].AATTargetOffsetRadius = 0.0;
-
-			Task[ItemIndex].AATTargetOffsetRadial = 0.0;
-			Task[ItemIndex].AATSectorRadius = SectorRadius;
-			Task[ItemIndex].AATCircleRadius = SectorRadius;
-			Task[ItemIndex].AATTargetLocked = false;
 
 			UnlockTaskData();
 

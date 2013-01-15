@@ -481,9 +481,9 @@ WAYPOINT *WayPointList=NULL;
 WPCALC   *WayPointCalc=NULL;
 #undef STATIC_GLOBALS
 #else
-extern START_POINT StartPoints[];
-extern TASK_POINT Task[];
-extern TASKSTATS_POINT TaskStats[];
+extern Start_t StartPoints;
+extern Task_t Task;
+extern TaskStats_t TaskStats;
 extern WAYPOINT *WayPointList;
 extern WPCALC   *WayPointCalc;
 #endif

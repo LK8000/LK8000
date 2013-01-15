@@ -36,10 +36,7 @@ void RefreshTask(void) {
 	TaskStats[i].LengthPercent = Task[i].Leg/lengthtotal;
 	if (!ValidTaskPoint(i+1)) {
           // this is the finish waypoint
-	  if (DoOptimizeRoute())
-	  	Task[i].AATTargetOffsetRadius = -100.0;
-	  else
-	  	Task[i].AATTargetOffsetRadius = 0.0;
+      Task[i].AATTargetOffsetRadius = 0.0;
 	  Task[i].AATTargetOffsetRadial = 0.0;
 	  Task[i].AATTargetLat = WayPointList[Task[i].Index].Latitude;
 	  Task[i].AATTargetLon = WayPointList[Task[i].Index].Longitude;

@@ -7,7 +7,11 @@
 */
 
 #include "externs.h"
+#include "utils/stl_utils.h"
 
+extern void ResetTaskWpt(TASK_POINT& TaskWpt);
+extern void ResetTaskStat(TASKSTATS_POINT& StatPt);
+extern void ResetStartPoint(START_POINT& StartPt);
 
 void ClearTask(void) {
 
@@ -16,24 +20,11 @@ void ClearTask(void) {
   TargetModified = true;
   LastTaskFileName[0] = _T('\0');
   ActiveWayPoint = -1;
-  int i;
-  for(i=0;i<MAXTASKPOINTS;i++) {
-    Task[i].Index = -1;
-    Task[i].AATSectorRadius = SectorRadius; 
-    Task[i].AATCircleRadius = SectorRadius;
-    Task[i].AATTargetOffsetRadial = 0;
-    if (DoOptimizeRoute())
-      Task[i].AATTargetOffsetRadius = -100;
-    else
-      Task[i].AATTargetOffsetRadius = 0;
-    Task[i].AATTargetLocked = false;
-    for (int j=0; j<MAXISOLINES; j++) {
-      TaskStats[i].IsoLine_valid[j] = false;
-    }
-  }
-  for (i=0; i<MAXSTARTPOINTS; i++) {
-    StartPoints[i].Index = -1;
-  }
+
+  std::for_each(begin(Task), end(Task), ResetTaskWpt);
+  std::for_each(begin(TaskStats), end(TaskStats), ResetTaskStat);
+  std::for_each(begin(StartPoints), end(StartPoints), ResetStartPoint);
+
   UnlockTaskData();
 }
 
