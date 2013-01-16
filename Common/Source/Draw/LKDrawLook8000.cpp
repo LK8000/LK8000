@@ -1147,7 +1147,7 @@ drawOverlay:
 
 Drawbottom:
 
-  if (MapSpaceMode != MSM_MAP && Current_Multimap_SizeY!=SIZE4) goto TheEnd;
+  if (MapSpaceMode != MSM_MAP && MapSpaceMode != MSM_VISUALGLIDE && Current_Multimap_SizeY!=SIZE4) goto TheEnd;
 
 
   //

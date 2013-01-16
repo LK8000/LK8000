@@ -85,7 +85,7 @@ void UpdateConfIP(void) {
   ConfIP[0][MP_MAPTRK]=true; 	// multimap trk
   ConfIP[0][MP_MAPWPT]=true; 	// multimap wpt
   ConfIP[0][MP_MAPASP]=true; 	// multimap asp
-  ConfIP[0][MP_VISUALGLIDE]=false; // multimap radar
+  ConfIP[0][MP_VISUALGLIDE]=true; // multimap radar
   ConfIP[0][MP_RADAR]=true; 	// multimap radar
 #if TESTBENCH
   ConfIP[0][MP_TEST]=false; 	// multimap test page
