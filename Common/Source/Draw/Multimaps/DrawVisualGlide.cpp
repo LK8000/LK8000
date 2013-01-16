@@ -34,7 +34,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 	mDia.fXMin,mDia.fXMax,mDia.fYMin,mDia.fYMax,
 	mDia.rc.top, mDia.rc.left, mDia.rc.bottom,mDia.rc.right);
   #endif
-  StartupStore(_T("VG AREA: %d,%d %d,%d\n"),vrc.top,vrc.left,vrc.bottom,vrc.right);
+  //StartupStore(_T("VG AREA LTRB: %d,%d %d,%d\n"),vrc.left,vrc.top,vrc.right,vrc.bottom);
 
   //HBRUSH oldBrush=(HBRUSH) SelectObject(hdc,GetStockObject(WHITE_BRUSH));
   HPEN   oldPen  =(HPEN)   SelectObject(hdc, GetStockObject(BLACK_PEN));
@@ -47,21 +47,40 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   }
 
   //Rectangle(hdc, vrc.left, vrc.top, vrc.right. vrc.bottom);
-  //FillRect(hdc, &vrc, brush_back);
+  FillRect(hdc, &vrc, brush_back);
 
   POINT center, p1, p2;
-  center.x=(vrc.bottom-vrc.top)/2;
-  center.y=(vrc.right-vrc.left)/2;
+  center.y=vrc.top+(vrc.bottom-vrc.top)/2;
+  center.x=vrc.left+(vrc.right-vrc.left)/2;
   unsigned int wScreen=vrc.right-vrc.left;
   unsigned int hScreen=vrc.bottom-vrc.top;
 
   SetBkMode(hdc,TRANSPARENT);
-  p1.x=vrc.left; p1.y=center.y;
-  p2.x=vrc.right; p2.y=center.y;
-  SelectObject(hdc, LKPen_Black_N2);
+
+
+  RECT trc;
+  trc=vrc;
+
+  // Top part of visual rect, target is over us=unreachable=red
+  trc.top=vrc.top;
+  trc.bottom=center.y-1;
+  RenderSky( hdc, trc, RGB_WHITE, RGB(255,190,190) , GC_NO_COLOR_STEPS);
+  // Bottom part, target is below us=reachable=green
+  trc.top=center.y+1;
+  trc.bottom=vrc.bottom;
+  // THIS SHOULD BE WORKING REVERSED, for ULLI
+  RenderSky( hdc, trc, RGB_WHITE, RGB(190,255,190) , GC_NO_COLOR_STEPS);
+
+
+  // Draw center line
+  p1.x=vrc.left+1; p1.y=center.y;
+  p2.x=vrc.right-1; p2.y=center.y;
+  SelectObject(hdc, LKPen_Black_N1);
   DrawSolidLine(hdc, p1, p2, vrc);
 
 
+
+  // Cleanup and return
 //_end:
   //SelectObject(hdc,oldBrush); 
   SelectObject(hdc,oldPen); 
