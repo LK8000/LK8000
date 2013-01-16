@@ -63,7 +63,7 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   // Back in time in IGC replay mode?
   if(Basic->Time <= LastTime) {
     #if TESTBENCH
-    StartupStore(_T("...... Turning check is back in time: reset\n"));
+    StartupStore(_T("...... Turning check is back in time. Now=%d Last=%f: reset %s\n"),Basic->Time, LastTime,WhatTimeIsIt());
     #endif
 _forcereset:
     LastTime = Basic->Time; // 101216 PV not sure of this.. 

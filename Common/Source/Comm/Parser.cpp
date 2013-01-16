@@ -194,7 +194,7 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* pGPS)
   FixTime = secs + (pGPS->Minute*60) + (pGPS->Hour*3600);
 
   if ((StartDay== -1) && (pGPS->Day != 0)) {
-    StartupStore(_T(". First GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
+    StartupStore(_T(". First GPS DATE: %d-%d-%d  %s%s"), pGPS->Year, pGPS->Month, pGPS->Day,WhatTimeIsIt(),NEWLINE);
     StartDay = pGPS->Day;
     day_difference=0;
     previous_months_day_difference=0;
@@ -209,7 +209,7 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* pGPS)
 	pGPS->Year, pGPS->Month, pGPS->Day,previous_months_day_difference,NEWLINE);
     }
     if ( (pGPS->Day-StartDay)!=day_difference) {
-      StartupStore(_T(". Change GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
+      StartupStore(_T(". Change GPS DATE: %d-%d-%d  %s%s"), pGPS->Year, pGPS->Month, pGPS->Day,WhatTimeIsIt(),NEWLINE);
     }
 
     day_difference = pGPS->Day-StartDay;
@@ -229,7 +229,7 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
   // among the same quantum time
   if(ThisTime< LastTime) {
     #if TESTBENCH
-    StartupStore(_T("... TimeHasAdvanced BACK in time: Last=%f This=%f\n"), LastTime, ThisTime);
+    StartupStore(_T("... TimeHasAdvanced BACK in time: Last=%f This=%f   %s\n"), LastTime, ThisTime,WhatTimeIsIt());
     #endif
     LastTime = ThisTime;
     StartDay = -1; // reset search for the first day
@@ -461,7 +461,7 @@ force_advance:
 		if (gpsValid && logbaddate) { // 091115
 			StartupStore(_T("------ NMEAParser:RMC Receiving an invalid or null DATE from GPS%s"),NEWLINE);
 			StartupStore(_T("------ NMEAParser: Date received is y=%d m=%d d=%d%s"),gy,gm,gd,NEWLINE); // 100422
-			StartupStore(_T("------ This message will NOT be repeated.%s"),NEWLINE);
+			StartupStore(_T("------ This message will NOT be repeated. %s%s"),WhatTimeIsIt(),NEWLINE);
 			DoStatusMessage(MsgToken(875));
 			logbaddate=false;
 		}

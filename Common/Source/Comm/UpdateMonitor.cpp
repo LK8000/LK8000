@@ -88,7 +88,7 @@ void NMEAParser::UpdateMonitor(void)
 
 
   if (nmeaParser2.activeGPS==true && active==1) {
-	StartupStore(_T(".... GPS Update error: port 1 and 2 are active!%s"),NEWLINE);
+	StartupStore(_T(".... GPS Update error: port 1 and 2 are active! %s%s"),WhatTimeIsIt(),NEWLINE);
 	nmeaParser2.activeGPS=false; // force it off
 	active=1; 
   }
@@ -102,7 +102,7 @@ void NMEAParser::UpdateMonitor(void)
 	#endif
 	// if this is active and supposed to have a valid fix.., but no HB..
 	if ( (active==1) && (nmeaParser1.gpsValid) ) {
-		StartupStore(_T("... GPS Port 1 no hearthbeats, but still gpsValid: forced invalid%s"),NEWLINE);
+		StartupStore(_T("... GPS Port 1 no hearthbeats, but still gpsValid: forced invalid  %s%s"),WhatTimeIsIt(),NEWLINE);
 	}
 	nmeaParser1.gpsValid=false;
 	invalidGps=1;
@@ -132,7 +132,7 @@ void NMEAParser::UpdateMonitor(void)
 	StartupStore(_T("... GPS Port 2 : no activity LKHB=%.0f CBHB=%.0f %s"),LKHearthBeats, ComPortHB[1],NEWLINE);
 	#endif
 	if ( (active==2) && (nmeaParser2.gpsValid) ) {
-		StartupStore(_T("... GPS port 2 no hearthbeats, but still gpsValid: forced invalid%s"),NEWLINE);
+		StartupStore(_T("... GPS port 2 no hearthbeats, but still gpsValid: forced invalid  %s%s"),WhatTimeIsIt(),NEWLINE);
 	}
 	nmeaParser2.gpsValid=false;
 	invalidGps++;
@@ -171,7 +171,7 @@ void NMEAParser::UpdateMonitor(void)
   //
   if (validBaro==0) {
 	if ( GPS_INFO.BaroAltitudeAvailable ) {
-		StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off%s"),NEWLINE);
+		StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off  %s%s"),WhatTimeIsIt(),NEWLINE);
 		if (EnableNavBaroAltitude && active) {
 			// LKTOKEN  _@M122_ = "BARO ALTITUDE NOT AVAILABLE, USING GPS ALTITUDE" 
 			DoStatusMessage(MsgToken(122));
@@ -210,12 +210,12 @@ void NMEAParser::UpdateMonitor(void)
 			} else {
 				DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
 			}
-			StartupStore(_T("... GPS baro source back available%s"),NEWLINE);
+			StartupStore(_T("... GPS baro source back available %s%s"),WhatTimeIsIt(),NEWLINE);
 			lastvalidBaro=true;
 		} else {
 			static bool said=false;
 			if (!said) {
-				StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device?%s"),NEWLINE);
+				StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s%s"),WhatTimeIsIt(),NEWLINE);
 				said=true;
 			}
 		}
@@ -261,9 +261,9 @@ void NMEAParser::UpdateMonitor(void)
   if (active == lastactive) return;
 
   if (active!=0)
-	StartupStore(_T(". GPS NMEA source changed to port %d%s"),active,NEWLINE);
+	StartupStore(_T(". GPS NMEA source changed to port %d  %s%s"),active,WhatTimeIsIt(),NEWLINE);
   else
-	StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!%s"),NEWLINE);
+	StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!  %s%s"),WhatTimeIsIt(),NEWLINE);
 
 
   if (PortMonitorMessages<15) { // do not overload pilot with messages!
@@ -276,7 +276,7 @@ void NMEAParser::UpdateMonitor(void)
 	} 
   } else {
 	if (PortMonitorMessages==15) { 
-		StartupStore(_T("... GOING SILENT on too many Com reportings.%s"),NEWLINE);
+		StartupStore(_T("... GOING SILENT on too many Com reportings.  %s%s"),WhatTimeIsIt(),NEWLINE);
 		DoStatusMessage(MsgToken(317)); // GOING SILENT ON COM REPORTING
 		PortMonitorMessages++;	// we go to 16, and never be back here
 	}

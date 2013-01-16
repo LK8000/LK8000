@@ -557,7 +557,7 @@ void AlertBestAlternate(short soundmode) {
 
   if (GPS_INFO.Time < (LastAlertTime-60) ) {
 	#if TESTBENCH
-	StartupStore(_T("... AlertBestAlternate back in time, reset last warning time\n"));
+	StartupStore(_T("... AlertBestAlternate back in time: now=%f last=%f, reset  %s\n"),GPS_INFO.Time,LastAlertTime,WhatTimeIsIt());
 	#endif
 	LastAlertTime=GPS_INFO.Time;
   }
