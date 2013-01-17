@@ -40,6 +40,9 @@ void RefreshTaskWaypoint(int i) {
   else
     {
       if (Task[i-1].Index == Task[i].Index) {
+        // Leg is Always 0 !
+        Task[i].Leg = 0;
+        
         // InBound need calculated with previous not same as current.
         int j = i-1;
         while(j>=0 && Task[j].Index == Task[i].Index) {
@@ -50,7 +53,7 @@ void RefreshTaskWaypoint(int i) {
                             WayPointList[Task[j].Index].Longitude,
                             WayPointList[Task[i].Index].Latitude,   
                             WayPointList[Task[i].Index].Longitude,
-                            &Task[i].Leg,
+                            NULL,
                             &Task[i].InBound);
         } else {
             j = i+1;
@@ -62,7 +65,7 @@ void RefreshTaskWaypoint(int i) {
                                 WayPointList[Task[j].Index].Longitude,
                                 WayPointList[Task[i].Index].Latitude,   
                                 WayPointList[Task[i].Index].Longitude,
-                                &Task[i].Leg,
+                                NULL,
                                 &Task[i].InBound);                
             }
         }
