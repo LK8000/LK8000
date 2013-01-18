@@ -9,6 +9,8 @@
 #include "externs.h"
 #include "Logger.h"
 
+extern void ResetTaskWaypoint(int j);
+
 // RemoveTaskpoint removes a single waypoint
 // from the current task.  index specifies an entry
 // in the Task[] array - NOT a waypoint index.
@@ -39,12 +41,8 @@ void RemoveTaskPoint(int index) {
   for (i=index; i<MAXTASKPOINTS-1; ++i) {
     Task[i] = Task[i+1];
   }
-  Task[MAXTASKPOINTS-1].Index = -1;
-  if (DoOptimizeRoute())
-  	Task[MAXTASKPOINTS-1].AATTargetOffsetRadius= -100.0;
-  else
-  	Task[MAXTASKPOINTS-1].AATTargetOffsetRadius= 0.0;
-
+  ResetTaskWaypoint(MAXTASKPOINTS-1);
+  
   RefreshTask();
   UnlockTaskData();
   

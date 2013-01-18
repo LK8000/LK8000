@@ -14,6 +14,7 @@
 #include "LKMapWindow.h"
 #include "Dialogs.h"
 
+extern void ResetTaskWaypoint(int j);
 
 static int twItemIndex= 0;
 static WndForm *wf=NULL;
@@ -418,12 +419,8 @@ static void OnSelectClicked(WindowControl * Sender){
     if (Task[twItemIndex].Index != res) {
       if (CheckDeclaration()) {
         LockTaskData();
-	Task[twItemIndex].Index = res;
-        Task[twItemIndex].AATTargetOffsetRadius = 0.0;
-        Task[twItemIndex].AATTargetOffsetRadial = 0.0;
-        Task[twItemIndex].AATSectorRadius = SectorRadius;
-        Task[twItemIndex].AATCircleRadius = SectorRadius;
-        Task[twItemIndex].AATTargetLocked = false;
+        ResetTaskWaypoint(twItemIndex);
+        Task[twItemIndex].Index = res;
         TaskModified = true;
         UnlockTaskData();
       }
