@@ -29,10 +29,7 @@ void LoadNewTask(TCHAR *szFileName)
 
   LockTaskData();
 
-  ActiveWayPoint = -1;
-  for(i=0;i<MAXTASKPOINTS;i++) {
-	Task[i].Index = -1;
-  }
+  ClearTask();
   
  StartupStore(_T(". LoadNewTask <%s>%s"),szFileName,NEWLINE);
   hFile = CreateFile(szFileName,GENERIC_READ,0,
