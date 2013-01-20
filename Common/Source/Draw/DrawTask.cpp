@@ -67,7 +67,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
             double Radius = SectorRadius;
             if (AATEnabled) {
                 Type = Task[i].AATType;
-                Radius = Task[i].AATCircleRadius;
+                Radius = (Type==CIRCLE) ? Task[i].AATCircleRadius : Task[i].AATSectorRadius;
             }
 
             switch (Type) {
