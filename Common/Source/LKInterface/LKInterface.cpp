@@ -257,6 +257,17 @@ void SelectMapSpace(short i) {
 			SelectedPage[MapSpaceMode]=0;
 			SelectedRaw[MapSpaceMode]=0;
 			break;
+		case MSM_VISUALGLIDE:
+			// direction sorting! It is set by LKInit, also.
+			// It should not be necessary, unless someone changes it after init.
+			SortedMode[MapSpaceMode]=2; 
+			LKForceDoNearest=true;
+			LKevent=LKEVENT_NEWRUN;
+			// These are not necessary, becasue they are used only by NEAR pages
+			// however we reset it for any case.
+			SelectedPage[MapSpaceMode]=0;
+			SelectedRaw[MapSpaceMode]=0;
+			break;
 		default:
 			LKevent=LKEVENT_NEWRUN;
 			break;

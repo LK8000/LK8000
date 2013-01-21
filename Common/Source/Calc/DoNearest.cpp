@@ -32,6 +32,8 @@ void DoNearestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypo
 // CAREFUL> SortedLandablexxx sized MAXNEAREST!!
 // 101218 RangeLandables &C. are UNSORTED, careful
 // This function is called with no map painted, and we have plenty of CPU time to spend!
+//
+// 130120 added VisualGlide support
 // #define DEBUG_DONEAREST	1
 void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
@@ -53,6 +55,9 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    if (  (Basic->Time < (LastRunTime+NEARESTUPDATETIME)) && !LKForceDoNearest) {
 	return;
    }
+
+   // LastDoNearest is used to delay recalculations while we are selecting items on the nearest pages.
+   // It is not used by VisualGlide
    if (  LastDoNearest > Basic->Time ) LastDoNearest=Basic->Time;
    if ( Basic->Time < (LastDoNearest+PAGINGTIMEOUT)) {
 	return;
@@ -86,6 +91,7 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    		p_sortedIndex=SortedAirportIndex;
 		break;
 	case MSM_NEARTPS:
+	case MSM_VISUALGLIDE:
 		p_rangeIndex=RangeTurnpointIndex;
    		p_sortedIndex=SortedTurnpointIndex;
 		break;

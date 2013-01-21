@@ -9,7 +9,8 @@
 #include "externs.h"
 #include "Calculations2.h"
 #include "McReady.h"
-
+#include "Sideview.h"
+#include "Multimap.h"
 
 extern void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -154,7 +155,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   DoAlternates(Basic, Calculated,Alternate2); 
   DoAlternates(Basic, Calculated,BestAlternate); 
 
-  // Calculate nearest landing when needed
+  // Calculate nearest waypoints when needed
   if ( !MapWindow::mode.AnyPan() && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
 	switch(MapSpaceMode) {
 		case MSM_LANDABLE:
@@ -167,6 +168,12 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			break;
 		case MSM_RECENT:
 			DoRecent(Basic,Calculated);
+			break;
+		case MSM_VISUALGLIDE:
+			// Only if visualglide is really painted: topview is not fullscreen.
+			if (Current_Multimap_SizeY<SIZE4) {
+				DoNearest(Basic,Calculated);
+			}
 			break;
 	}
   }

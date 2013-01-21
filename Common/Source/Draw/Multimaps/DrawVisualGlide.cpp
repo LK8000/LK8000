@@ -15,6 +15,7 @@
 #include "LKObjects.h"
 #include "RGB.h"
 
+extern short GetVisualGlidePoints(unsigned short numslots );
 
 // border margins in boxed text
 #define XYMARGIN NIBLSCALE(2) 
@@ -32,6 +33,11 @@
 static unsigned int boxSizeX=0 ,boxSizeY=0;
 static int maxtSizeX=0, maxtSizeY=0;
 static HFONT line1Font, line2Font;
+
+static int slotWpIndex[MAXBSLOT+1];
+
+//#define DEBUG_DVG	1
+//#define DEBUG_GVG	1
 
 void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
@@ -79,7 +85,6 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   maxtSizeY=textSize.cy;
   boxSizeX=textSize.cx+XYMARGIN+XYMARGIN;
   boxSizeY=(textSize.cy*numboxrows)+XYMARGIN+XYMARGIN;
-  //boxSizeY=(textSize.cy*1)+XYMARGIN+XYMARGIN;
 
   //StartupStore(_T("boxX=%d boxY=%d  \n"),  boxSizeX,boxSizeY);
 
@@ -115,8 +120,13 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   center.y=vrc.top+(vrc.bottom-vrc.top)/2;
   center.x=vrc.left+(vrc.right-vrc.left)/2;
 
+  // numSlotX is the number items we can print horizontally.
   unsigned short numSlotX=(vrc.right-vrc.left)/(boxSizeX+BOXINTERVAL);
   if (numSlotX>MAXBSLOT) numSlotX=MAXBSLOT;
+  #if BUGSTOP
+  LKASSERT(numSlotX>0);
+  #endif
+  if (numSlotX==0) return;
 
   unsigned short boxInterval=((vrc.right-vrc.left)-(boxSizeX*numSlotX))/(numSlotX+1);
 
@@ -141,10 +151,10 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   #if 0
   // Reassign dynamically the vertical scale for each subwindow size
-  unsigned int vscale=VSCALE*(100-Current_Multimap_SizeY)/100;
+  int vscale=VSCALE*(100-Current_Multimap_SizeY)/100;
   #else
   // Set the vertical range to 1000 feet, or 300m
-  unsigned int vscale;
+  int vscale;
   if (Units::GetUserAltitudeUnit()==unFeet)
 	vscale=(unsigned int)(1000/TOFEET);
   else
@@ -178,30 +188,103 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   SelectObject(hdc, line1Font);
   SelectObject(hdc,LKPen_Black_N0);
-  //SelectObject(hdc,LKBrush_LightGreen);
 
-  double altdiff=123;
-  int ty,tx;
+  short res=GetVisualGlidePoints(numSlotX);
+
+  if (res==INVALID_VALUE) {
+	#if DEBUG_DVG
+	StartupStore(_T("...... GVGP says not ready, wait..\n"));
+	#endif
+	return;
+  }
+  if (res==0) {
+	#if DEBUG_DVG
+	StartupStore(_T("...... GVGP says no data available!\n"));
+	#endif
+	return;
+  }
+
+  // Print them all!
   int offset=(boxSizeY/2)+CENTERYSPACE;
+  HBRUSH BRED=CreateSolidBrush(COLORREF RGB(255,150,150));
+  HBRUSH BYEL=CreateSolidBrush(COLORREF RGB(255,255,150));
+  HBRUSH BGRE=CreateSolidBrush(COLORREF RGB(150,255,150));
 
-  // Positive arrival altitude for the waypoint, lower (down) window
-  if (altdiff>=0) {
-	if (altdiff==0)altdiff=0.5;
-	ty=downYtop + (downSizeY/(int)(vscale/altdiff));
-	if ((ty-offset)<downYtop) ty=downYtop+offset;
-	if ((ty+offset)>downYbottom) ty=downYbottom-offset;
-  } else {
-	ty=upYbottom + (upSizeY/(int)(vscale/altdiff)); // + because the left part is negative. We are really subtracting
-	if ((ty-offset)<upYtop) ty=upYtop+offset;
-	if ((ty+offset)>upYbottom) ty=upYbottom-offset;
-  }
+  HBRUSH bcolor;
+  for (unsigned short n=0; n<numSlotX; n++) {
+
+	int wp=slotWpIndex[n];
+	if (!ValidWayPoint(wp)) {
+		#if BUGSTOP
+		StartupStore(_T("...... wp=%d is INVALID!\n"),wp);
+		LKASSERT(0);
+		#endif
+		continue;
+	}
+	#if DEBUG_DVG
+	StartupStore(_T("... DVG PRINT [%d]=%d <%s>\n"),n,wp,WayPointList[wp].Name);
+	#endif
 
 
-  for (t=0; t<numSlotX; t++) {
-	tx=slotCenterX[t];
-	VGTextInBox(hdc,numboxrows,_T("Corni di Canzo"), _T("14.3km  +1523m"),_T("E 21 +1723@mc0"), tx , ty,  RGB_BLACK, LKBrush_LightGreen);
-  }
+	int altdiff=(int)WayPointCalc[wp].AltArriv[AltArrivMode];
+	int ty;
 
+	// Positive arrival altitude for the waypoint, lower (down) window
+	if (altdiff>=0) {
+		if (altdiff==0)altdiff=1;
+		int d=vscale/altdiff;
+		if (d==0) d=1;
+		ty=downYtop + (downSizeY/d);
+		if ((ty-offset)<downYtop) ty=downYtop+offset;
+		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
+		bcolor=BGRE;
+	} else {
+		int d=vscale/altdiff;
+		if (d==0) d=1;
+		ty=upYbottom + (upSizeY/d); // + because the left part is negative. We are really subtracting
+		if ((ty-offset)<upYtop) ty=upYtop+offset;
+		if ((ty+offset)>upYbottom) ty=upYbottom-offset;
+		bcolor=BRED;
+	}
+
+	TCHAR line2[80], line3[80];
+	TCHAR value[40], unit[30];
+	switch (numboxrows) {
+		case 0:
+			#if BUGSTOP
+			LKASSERT(0);
+			#endif
+			return;
+
+		case 1:
+			// 1 line: waypoint name
+			VGTextInBox(hdc,1,WayPointList[wp].Name, NULL,NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			break;
+
+		case 2:
+			// 2 lines: waypoint name + altdiff
+			LKFormatAltDiff(wp, false, value, unit);
+			_stprintf(line2,_T("%s%s"),value,unit);
+			VGTextInBox(hdc,2,WayPointList[wp].Name, line2, NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			break;
+
+		case 3:
+			// 3 lines: waypoint name + dist + altdiff
+			LKFormatDist(wp, false, value, unit);
+			_stprintf(line2,_T("%s%s"),value,unit);
+
+			LKFormatAltDiff(wp, false, value, unit);
+			_stprintf(line3,_T("%s%s"),value,unit);
+			VGTextInBox(hdc,3,WayPointList[wp].Name, line2, line3, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			break;
+		default:
+			#if BUGSTOP
+			LKASSERT(0);
+			#endif
+			return;
+	}
+			
+  } // for numSlotX
 
 
 
@@ -209,6 +292,9 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 //_end:
   SelectObject(hdc,oldBrush); 
   SelectObject(hdc,oldPen); 
+  if (BRED) DeleteObject(BRED);
+  if (BYEL) DeleteObject(BYEL);
+  if (BGRE) DeleteObject(BGRE);
   return;
 }
 
@@ -219,10 +305,17 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 void MapWindow::VGTextInBox(HDC hDC, short numlines, const TCHAR* wText1, const TCHAR* wText2, const TCHAR *wText3, int x, int y, COLORREF trgb, HBRUSH bbrush) {
 
+  #if BUGSTOP
+  LKASSERT(wText1!=NULL);
+  #endif
+  if (!wText1) return;
+
   COLORREF oldTextColor=SetTextColor(hDC,trgb);
 
   SIZE tsize;
   int tx, ty, rowsize;
+
+
   SelectObject(hDC, line1Font);
   unsigned int tlen=_tcslen(wText1);
   GetTextExtentPoint(hDC, wText1, tlen, &tsize);
@@ -254,6 +347,10 @@ void MapWindow::VGTextInBox(HDC hDC, short numlines, const TCHAR* wText1, const 
   ExtTextOut(hDC, tx, ty, ETO_OPAQUE, NULL, wText1, tlen, NULL);
 
   if (numlines==1) goto _end;
+  #if BUGSTOP
+  LKASSERT(wText2!=NULL);
+  #endif
+  if (!wText2) goto _end;
 
   SelectObject(hDC, line2Font);
   tlen=_tcslen(wText2);
@@ -263,6 +360,10 @@ void MapWindow::VGTextInBox(HDC hDC, short numlines, const TCHAR* wText1, const 
   ExtTextOut(hDC, tx, ty, ETO_OPAQUE, NULL, wText2, tlen, NULL);
 
   if (numlines==2) goto _end;
+  #if BUGSTOP
+  LKASSERT(wText3!=NULL);
+  #endif
+  if (!wText3) goto _end;
 
   tlen=_tcslen(wText3);
   GetTextExtentPoint(hDC, wText3, tlen, &tsize);
@@ -275,3 +376,110 @@ _end:
   return;
 }
 
+
+
+// This is filling up the slotWpIndex[MAXBSLOT] list.
+// DoNearest is automatically updating its data every 5 seconds.
+// We are returning the number of items filled, or -1. In this case
+// we should not print anything at all because there are no valid
+// wpts, or they were not calculated , etc.
+// The difference between 0 and -1:
+//  0 means no waypoints found!
+// -1 means data not yet ready, wait please.
+//
+// This is also called by DrawMultimap_Asp when a EVENT_NEWRUN is detected for visualglide mode.
+// We are resetting from there.
+//
+
+short GetVisualGlidePoints(unsigned short numslots ) {
+
+  LKASSERT(numslots<MAXBSLOT);
+  static short currentFilledNumber=-1;
+
+  int i;
+
+  // RESET COMMAND by passing 0, normally by EVENT_NEWRUN 
+  if (numslots==0) {
+	#if DEBUG_GVG
+	StartupStore(_T("...... GVGP: RESET\n"));
+	#endif
+	for (i=0; i<MAXBSLOT; i++) {
+		slotWpIndex[i]=INVALID_VALUE;
+	}
+	currentFilledNumber=-1;
+	return INVALID_VALUE;
+  }
+
+  bool ndr=NearestDataReady;
+  NearestDataReady=false;
+
+  // No data ready..
+  // if cfn is -1 we did not ever calculate it yet
+  // otherwise 0 or >0  means use what we have already in the list
+  if (!ndr) {
+	#if DEBUG_GVG
+	StartupStore(_T("...... GVGP: no data ready, currentFN=%d\n"),currentFilledNumber);
+	#endif
+	return currentFilledNumber;
+  }
+
+  if (SortedNumber<=0) {
+	#if DEBUG_GVG
+	StartupStore(_T("...... GVGP: SortedNumber is 0!\n"));
+	#endif
+	return 0;
+  }
+
+  int *pindex;
+  int wpindex=0;
+  pindex=SortedTurnpointIndex;
+  // Reset  content
+  currentFilledNumber=0;
+  for (i=0; i<MAXBSLOT; i++) {
+	slotWpIndex[i]=INVALID_VALUE;
+  }
+
+  for (i=0; i<numslots; i++) {
+	if (i>=SortedNumber) {
+		#if DEBUG_GVG
+		StartupStore(_T("...... GVGP: not enough SortedNumber (%d) for i=%d\n"),SortedNumber,i);
+		#endif
+		break;
+	}
+	// browse results for the best usable items
+	for (int k=0; k<SortedNumber; k++) {
+		wpindex=*(pindex+k);
+		if (!ValidWayPoint(wpindex)) {
+			#if BUGSTOP
+			StartupStore(_T("...... GVGP: invalid wpindex = %d!!\n"),wpindex);
+			LKASSERT(0);
+			#endif
+			continue;
+		}
+
+		// did we already use it?
+		bool alreadyused=false;
+		for (int j=0; j<numslots; j++) {
+			if (slotWpIndex[j]==INVALID_VALUE) break;
+			if (slotWpIndex[j]==wpindex) {
+				alreadyused=true;
+				break;
+			}
+		}
+		if (alreadyused) continue;
+
+		// unused one, decide if good or not
+		// ...
+
+		// ok good, use it
+		slotWpIndex[i]=wpindex;
+		#if DEBUG_GVG
+		StartupStore(_T("PHASE 1  slot [%d] of %d : wp=%d <%s>\n"),i, numslots, wpindex, WayPointList[wpindex].Name);
+		#endif
+		currentFilledNumber++;
+		break;
+	}
+  }
+
+  return currentFilledNumber;
+}

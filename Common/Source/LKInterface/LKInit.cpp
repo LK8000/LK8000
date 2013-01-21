@@ -261,6 +261,7 @@ void InitModeTable() {
 	// set all sorting type to distance (default) even for unconventional modes just to be sure
 	for (i=0; i<=MSM_TOP; i++) SortedMode[i]=1;
 	SortedMode[MSM_AIRSPACES]=2; // Airspaces have a different layout
+	SortedMode[MSM_VISUALGLIDE]=2; // Visualglide sorted by direction, always
 
 	for (i=0; i<MAXNEAREST;i++) {
 		SortedTurnpointIndex[i]=-1;
