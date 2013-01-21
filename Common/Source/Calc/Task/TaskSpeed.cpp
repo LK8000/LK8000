@@ -236,7 +236,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       double height_diff = max(0.0, -Calculated->TaskAltitudeDifference);
       
       if (Calculated->timeCircling>30) {
-	mc_safe = max(this_maccready, 
+	mc_safe = max(mc_safe, 
 		      Calculated->TotalHeightClimb/Calculated->timeCircling);
       }
       // circling percentage during cruise/climb
