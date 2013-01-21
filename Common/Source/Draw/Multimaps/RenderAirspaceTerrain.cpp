@@ -126,7 +126,7 @@ int i,j;
   HPEN mpen = (HPEN)CreatePen(PS_NULL, 0, RGB(0xf0,0xf0,0xb0));
   HPEN oldpen = (HPEN)SelectObject(hdc, (HPEN)NULL);
   _TCHAR text [80];
-  SIZE tsize;
+
 
   for (int m=0 ; m < Sideview_iNoHandeldSpaces; m++)
   {
@@ -184,32 +184,42 @@ int i,j;
   rcd.right  = min(rcd.right  ,rc.right);
   rcd.bottom = min(rcd.bottom ,rc.bottom);
   rcd.top    = max(rcd.top    ,rc.top);
-
+  SIZE textsize;
+  SIZE aispacesize = {rcd.right-rcd.left , rcd.bottom- rcd.top};
 
   LK_tcsncpy(text, Sideview_pHandeled[iSizeIdx].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
-  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+  GetTextExtentPoint(hdc, text, _tcslen(text), &textsize);
 
-  int x ;
-  int y = rcd.bottom  + (rcd.top - rcd.bottom)/2 -tsize.cy;
-  int iTextheight =  tsize.cy;
-
-  if ( (tsize.cx < (rcd.right-rcd.left)) &&  (iTextheight < (rcd.bottom-rcd.top) ) )
+  int x = rcd.left + aispacesize.cx/2;;
+  int y = rcd.top  + aispacesize.cy/2;
+//  int iTextheight =  tsize.cy;
+  int iOffset =0;
+  BOOL  blongtext = false;
+  if(aispacesize.cy > (2*textsize.cy) &&  (textsize.cx < aispacesize.cx))
   {
-	x = rcd.left + (rcd.right - rcd.left - tsize.cx)/2;
-	ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-	y = rcd.bottom  + (rcd.top   - rcd.bottom )/2;
-	iTextheight = 2*tsize.cy;
+    iOffset	=textsize.cy/2;
+  }
+
+
+  if ( (textsize.cx < aispacesize.cx) &&  (textsize.cy < aispacesize.cy ) )
+  {
+	ExtTextOut(hdc, x-textsize.cx/2, y-iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    blongtext = true;
   }
 
   LK_tcsncpy(text, CAirspaceManager::Instance().GetAirspaceTypeShortText( Sideview_pHandeled[iSizeIdx].iType), NAME_SIZE);
-  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-  x = rcd.left + (rcd.right - rcd.left)/2;
-  if ( (tsize.cx < (rcd.right-rcd.left)) &&  (iTextheight < (rcd.bottom-rcd.top)) )
+  GetTextExtentPoint(hdc, text, _tcslen(text), &textsize);
+  if(textsize.cx < aispacesize.cx)
   {
-	x = rcd.left + (rcd.right - rcd.left - tsize.cx)/2; // - NIBLSCALE(5);
-	ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    if (2*textsize.cy < aispacesize.cy )
+    {
+	  ExtTextOut(hdc, x-textsize.cx/2, y+iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    }
+    else
+      if ((textsize.cy < aispacesize.cy ) && (!blongtext))
+          ExtTextOut(hdc, x-textsize.cx/2, y-iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   }
-}
+ }
   /*************************************************************
    * draw ground
    *************************************************************/
