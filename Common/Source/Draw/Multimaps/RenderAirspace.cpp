@@ -180,12 +180,14 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	             }			
 #endif
 
+			if (MapSpaceMode!=MSM_VISUALGLIDE) {
 		     if (LKevent!=LKEVENT_NONE) {
 			 if (PtInRect(XstartScreen, YstartScreen,rc ))
 			   bHeightScale = !bHeightScale;
 			 if (PtInRect(XstartScreen, YstartScreen,rct ))
 			   bHeightScale = false;
 		     }
+			}
 	     break;
 
 		case LKEVENT_PAGEUP:
