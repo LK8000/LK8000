@@ -73,6 +73,15 @@
 
 #define NO_SIDEVIEW_PAGES 4
 
+// VISUALGLIDE STUFF
+// How many boxes on a row, max
+#define MAXBSLOT 10
+extern RECT Sideview_VGBox[];
+extern int  Sideview_VGWpt[];
+extern unsigned short Sideview_VGBox_Number;
+
+// END OF VG STUFF
+
 
 
 int SetSplitScreenSize(int);

@@ -617,7 +617,7 @@ class MapWindow {
 			    const POINT&end ,
 			    const RECT rc);
   static bool TextInBox(HDC hDC, const RECT *area, TCHAR* Value, int x, int y, int size, TextInBoxMode_t *Mode, bool noOverlap=false);
-  static void VGTextInBox(HDC hDC, const short numlines, const TCHAR* wText1, const TCHAR *wText2, const TCHAR *wText3, int x, int y, COLORREF trgb, HBRUSH bbrush);
+  static void VGTextInBox(HDC hDC, const unsigned short nslot, const short numlines, const TCHAR* wText1, const TCHAR *wText2, const TCHAR *wText3, int x, int y, COLORREF trgb, HBRUSH bbrush);
   static void ToggleFullScreenStart();
   //static void TextColor(HDC hDC, short colorcode);
   static bool WaypointInTask(int ind);

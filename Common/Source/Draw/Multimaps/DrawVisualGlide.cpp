@@ -14,6 +14,8 @@
 #include "LKStyle.h"
 
 extern short GetVisualGlidePoints(unsigned short numslots );
+extern void ResetVisualGlideGlobals(void);
+
 
 // Green area is up, red is down. A choice..
 #define GREENUP	1
@@ -27,12 +29,11 @@ extern short GetVisualGlidePoints(unsigned short numslots );
 // space between row0 and center line
 #define CENTERYSPACE NIBLSCALE(1)
 
-// How many boxes on a row, max
-#define MAXBSLOT 10
-
 #define LGREEN RGB(150,255,150)
 #define LYELLOW RGB(255,255,150)
 #define LRED   RGB(255,150,150)
+
+
 
 // Size of the box, fixed for each waypoint at this resolution
 static unsigned int boxSizeX=0 ,boxSizeY=0;
@@ -42,8 +43,18 @@ static HFONT line1Font, line2Font;
 static int slotWpIndex[MAXBSLOT+1];
 static double tmpSlotBrgDiff[MAXBSLOT+1];
 
+// This is used to check for key presses inside boxes, to trigger wp details
+RECT Sideview_VGBox[MAXBSLOT+1];
+int  Sideview_VGWpt[MAXBSLOT+1];
+// This is used to know in advance if we do have painted boxes around
+unsigned short Sideview_VGBox_Number=0;
+
+
 //#define DEBUG_DVG	1
 //#define DEBUG_GVG	1
+#define DEBUG_SCR	1
+//#define DEBUGSORT	1
+
 
 void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
@@ -92,8 +103,9 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   boxSizeX=textSize.cx+XYMARGIN+XYMARGIN;
   boxSizeY=(textSize.cy*numboxrows)+XYMARGIN+XYMARGIN;
 
-  //StartupStore(_T("boxX=%d boxY=%d  \n"),  boxSizeX,boxSizeY);
-
+  #if DEBUG_SCR
+  StartupStore(_T("boxX=%d boxY=%d  \n"),  boxSizeX,boxSizeY);
+  #endif
 
   RECT vrc;
   vrc.left=0;
@@ -103,12 +115,10 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 	vrc.top=0;
   else
 	vrc.top=pDia->rc.bottom;
-  #if 0
-  StartupStore(_T("fxMinMax=%f,%f  fyMinMax=%f,%f rcTLBR=%d,%d %d,%d\n"),
-	pDia->fXMin,pDia->fXMax,pDia->fYMin,pDia->fYMax,
-	pDia->rc.top, pDia->rc.left, pDia->rc.bottom,pDia->rc.right);
+
+  #if DEBUG_SCR
+  StartupStore(_T("VG AREA LTRB: %d,%d %d,%d\n"),vrc.left,vrc.top,vrc.right,vrc.bottom);
   #endif
-  //StartupStore(_T("VG AREA LTRB: %d,%d %d,%d\n"),vrc.left,vrc.top,vrc.right,vrc.bottom);
 
   HBRUSH oldBrush=(HBRUSH) SelectObject(hdc,GetStockObject(WHITE_BRUSH));
   HPEN   oldPen  =(HPEN)   SelectObject(hdc, GetStockObject(BLACK_PEN));
@@ -136,7 +146,9 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   unsigned short boxInterval=((vrc.right-vrc.left)-(boxSizeX*numSlotX))/(numSlotX+1);
 
-  //StartupStore(_T("numSlotX=%d boxInterval=%d\n"),numSlotX,boxInterval);
+  #if DEBUG_SCR
+  StartupStore(_T("numSlotX=%d boxInterval=%d\n"),numSlotX,boxInterval);
+  #endif
 
   unsigned int t;
 
@@ -144,7 +156,9 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   unsigned int slotCenterX[MAXBSLOT+1];
   for (t=0; t<numSlotX; t++) {
 	slotCenterX[t]=(t*boxSizeX) + boxInterval*(t+1)+(boxSizeX/2);
-	//StartupStore(_T("slotCenterX[%d]=%d\n"),t,slotCenterX[t]);
+	#if DEBUG_SCR
+	StartupStore(_T("slotCenterX[%d]=%d\n"),t,slotCenterX[t]);
+	#endif
   }
 
   // Vertical coordinates of each up/down subwindow, excluding center line
@@ -197,10 +211,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   SelectObject(hdc, LKPen_Black_N1);
   DrawSolidLine(hdc, p1, p2, vrc);
 
-
+  #if DEBUG_SCR
+  StartupStore(_T("... Center line: Y=%d\n"),center.y);
+  #endif
 
   SelectObject(hdc, line1Font);
   SelectObject(hdc,LKPen_Black_N0);
+
+  ResetVisualGlideGlobals();
 
   short res=GetVisualGlidePoints(numSlotX);
 
@@ -235,9 +253,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 	StartupStore(_T("... DVG PRINT [%d]=%d <%s>\n"),n,wp,WayPointList[wp].Name);
 	#endif
 
+	Sideview_VGWpt[n]=wp;
 
 	int altdiff=(int)WayPointCalc[wp].AltArriv[AltArrivMode];
+altdiff=170;
 	int ty;
+	#if DEBUG_SCR
+	StartupStore(_T("... wp=<%s>\n"),WayPointList[wp].Name);
+	#endif
 
 	#if GREENUP
 	// Positive arrival altitude for the waypoint, upper window
@@ -246,8 +269,15 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		int d=vscale/altdiff;
 		if (d==0) d=1;
 		ty=upYbottom - (upSizeY/d); 
+		#if DEBUG_SCR
+		StartupStore(_T("... upYbottom=%d upSizeY=%d / (vscale=%d/altdiff=%d = %d) =- %d  ty=%d  offset=%d\n"),
+		upYbottom, upSizeY, vscale, altdiff, d, upSizeY/d, ty, offset);
+		#endif
 		if ((ty-offset)<upYtop) ty=upYtop+offset;
 		if ((ty+offset)>upYbottom) ty=upYbottom-offset;
+		#if DEBUG_SCR
+		StartupStore(_T("... upYtop=%d upYbottom=%d final ty=%d\n"),upYtop, upYbottom,ty);
+		#endif
 		bcolor=BGRE;
 	} else {
 		int d=vscale/altdiff;
@@ -288,14 +318,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 		case 1:
 			// 1 line: waypoint name
-			VGTextInBox(hdc,1,WayPointList[wp].Name, NULL,NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			VGTextInBox(hdc,n,1,WayPointList[wp].Name, NULL,NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
 			break;
 
 		case 2:
 			// 2 lines: waypoint name + altdiff
 			LKFormatAltDiff(wp, false, value, unit);
 			_stprintf(line2,_T("%s%s"),value,unit);
-			VGTextInBox(hdc,2,WayPointList[wp].Name, line2, NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			VGTextInBox(hdc,n,2,WayPointList[wp].Name, line2, NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
 			break;
 
 		case 3:
@@ -305,7 +335,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 			LKFormatAltDiff(wp, false, value, unit);
 			_stprintf(line3,_T("%s%s"),value,unit);
-			VGTextInBox(hdc,3,WayPointList[wp].Name, line2, line3, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			VGTextInBox(hdc,n,3,WayPointList[wp].Name, line2, line3, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
 			break;
 		default:
 			#if BUGSTOP
@@ -333,7 +363,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 
 
-void MapWindow::VGTextInBox(HDC hDC, short numlines, const TCHAR* wText1, const TCHAR* wText2, const TCHAR *wText3, int x, int y, COLORREF trgb, HBRUSH bbrush) {
+void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const TCHAR* wText1, const TCHAR* wText2, const TCHAR *wText3, int x, int y, COLORREF trgb, HBRUSH bbrush) {
 
   #if BUGSTOP
   LKASSERT(wText1!=NULL);
@@ -345,6 +375,8 @@ void MapWindow::VGTextInBox(HDC hDC, short numlines, const TCHAR* wText1, const 
   SIZE tsize;
   int tx, ty, rowsize;
 
+
+  Sideview_VGBox_Number++;
 
   SelectObject(hDC, line1Font);
   unsigned int tlen=_tcslen(wText1);
@@ -370,6 +402,11 @@ void MapWindow::VGTextInBox(HDC hDC, short numlines, const TCHAR* wText1, const 
 	y-(boxSizeY/2),
 	x+(boxSizeX/2),
 	vy);
+
+  Sideview_VGBox[nslot].top= y-(boxSizeY/2);
+  Sideview_VGBox[nslot].left= x-(boxSizeX/2);
+  Sideview_VGBox[nslot].bottom= vy;
+  Sideview_VGBox[nslot].right= x+(boxSizeX/2);
 
   tx = x-(tsize.cx/2);
   ty = y-(vy-y);
@@ -436,7 +473,9 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 	for (i=0; i<MAXBSLOT; i++) {
 		slotWpIndex[i]=INVALID_VALUE;
 	}
-	currentFilledNumber=-1;
+	currentFilledNumber=INVALID_VALUE;
+	ResetVisualGlideGlobals();
+
 	return INVALID_VALUE;
   }
 
@@ -645,8 +684,6 @@ _useit:
   bool invalid=true, valid=false;
   unsigned short g;
 
-  //#define DEBUGSORT 1
-
   for (unsigned short nslot=0; nslot<numslots; nslot++) {
 	g=0;
   	double minim=999;
@@ -706,4 +743,24 @@ _useit:
  
   return currentFilledNumber;
 }
+
+
+
+
+void ResetVisualGlideGlobals() {
+
+  for (unsigned short i=0; i<MAXBSLOT; i++) {
+	Sideview_VGBox[i].top=0;
+	Sideview_VGBox[i].bottom=0;
+	Sideview_VGBox[i].left=0;
+	Sideview_VGBox[i].right=0;
+
+	Sideview_VGWpt[i]=INVALID_VALUE;
+  }
+  // This is not really needed because it is called in another part.
+  // However it is better not to forget it!
+  Sideview_VGBox_Number=0;
+
+}
+
 

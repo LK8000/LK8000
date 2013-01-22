@@ -120,6 +120,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   SetTextColor(hdc, Sideview_TextColor);
 
+  if (MapSpaceMode==MSM_VISUALGLIDE) 
 
   /****************************************************************/
 	  switch(LKevent) {
@@ -152,6 +153,30 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 		case LKEVENT_LONGCLICK:
 	//		ToggleMMNorthUp(getsideviewpage);
+			if (MapSpaceMode==MSM_VISUALGLIDE) {
+				LKevent=LKEVENT_NONE; 
+				if ( (fSplitFact*100)==SIZE4 ) { // TopView full screen?
+					break;
+
+				}
+				if (Sideview_VGBox_Number==0) {
+					break;
+				}
+
+				for (unsigned short i=0; i<MAXBSLOT; i++) {
+					if (Sideview_VGBox[i].bottom==0) continue;
+					if (Sideview_VGBox[i].right==0) continue;
+					if (PtInRect(XstartScreen, YstartScreen,Sideview_VGBox[i])) {
+						if (ValidWayPoint(Sideview_VGWpt[i])) {
+							// trigger details
+							SelectedWaypoint = Sideview_VGWpt[i];;
+							PopupWaypointDetails();
+						} 
+					}
+				}
+				break;
+			} 
+
 		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 	             {
 			   if( Sideview_pHandeled[k].psAS != NULL)
@@ -179,15 +204,12 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			}
 	             }			
 #endif
-
-			if (MapSpaceMode!=MSM_VISUALGLIDE) {
-		     if (LKevent!=LKEVENT_NONE) {
+        	     if (LKevent!=LKEVENT_NONE) {
 			 if (PtInRect(XstartScreen, YstartScreen,rc ))
 			   bHeightScale = !bHeightScale;
 			 if (PtInRect(XstartScreen, YstartScreen,rct ))
 			   bHeightScale = false;
 		     }
-			}
 	     break;
 
 		case LKEVENT_PAGEUP:
@@ -399,6 +421,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
+  // This is tricky and bad, a lot misleading in fact.
+  // We manage the long click belonging to the PREVIOUS drawvisualglide.
+  // It is reset here before a possible recalculation, otherwise we risk to 
+  // check for long clicks on no more drawn areas.
+  Sideview_VGBox_Number=0;
 
   if (getsideviewpage == IM_VISUALGLIDE) {
 
@@ -409,6 +436,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 		MapWindow::SharedTopView(hdc, &sDia, GPSbrg, 90.0);
 		sDia.rc = rct;
 	}
+
 
 	if ( (fSplitFact*100)<SIZE4 ) { // TopView not full screen?
 		DrawVisualGlide(hdc,&sDia);
