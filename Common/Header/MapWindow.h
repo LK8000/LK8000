@@ -488,6 +488,7 @@ class MapWindow {
   static int SharedTopView(HDC hdc,   DiagrammStruct* pDia, double iAS_Bearing, double wpt_brg);
   static void RenderAirspace(HDC hdc, const RECT rc);
   static void DrawVisualGlide (HDC hdc, DiagrammStruct* pDia);
+  static short GetVisualGlidePoints(unsigned short numslots );
   static void LKDrawFlarmRadar(HDC hdc, const RECT rci);
   static void LKDrawMultimap_Example(HDC hdc, const RECT rci);
   static void LKDrawMultimap_Test(HDC hdc, const RECT rci);

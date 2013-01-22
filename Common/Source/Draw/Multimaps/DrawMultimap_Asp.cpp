@@ -44,7 +44,6 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 		// Upon entering a new multimap, Active is forced reset. It should not be necessary
 		ActiveMap=false;
 		if (MapSpaceMode==MSM_VISUALGLIDE) {
-			extern short GetVisualGlidePoints(unsigned short n);
 			GetVisualGlidePoints(0); // reset upon entering!
 		}
 		break;

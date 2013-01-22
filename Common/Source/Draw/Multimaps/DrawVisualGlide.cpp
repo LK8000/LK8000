@@ -1,7 +1,4 @@
 /*
-  // Size of the box, fixed for each waypoint at this resolution
-  unsigned int boxSizeX=0 ,boxSizeY=0;
-  int maxtSizeX=0, maxtSizeY=0;
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
@@ -14,8 +11,12 @@
 #include "Sideview.h"
 #include "LKObjects.h"
 #include "RGB.h"
+#include "LKStyle.h"
 
 extern short GetVisualGlidePoints(unsigned short numslots );
+
+// Green area is up, red is down. A choice..
+#define GREENUP	1
 
 // border margins in boxed text
 #define XYMARGIN NIBLSCALE(2) 
@@ -29,12 +30,17 @@ extern short GetVisualGlidePoints(unsigned short numslots );
 // How many boxes on a row, max
 #define MAXBSLOT 10
 
+#define LGREEN RGB(150,255,150)
+#define LYELLOW RGB(255,255,150)
+#define LRED   RGB(255,150,150)
+
 // Size of the box, fixed for each waypoint at this resolution
 static unsigned int boxSizeX=0 ,boxSizeY=0;
 static int maxtSizeX=0, maxtSizeY=0;
 static HFONT line1Font, line2Font;
 
 static int slotWpIndex[MAXBSLOT+1];
+static double tmpSlotBrgDiff[MAXBSLOT+1];
 
 //#define DEBUG_DVG	1
 //#define DEBUG_GVG	1
@@ -78,7 +84,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   SIZE textSize;
   TCHAR tmpT[30];
-  _tcscpy(tmpT,_T("MMMMMMMMMM"));
+  _tcscpy(tmpT,_T("MMMMMMMM"));
   SelectObject(hdc, line1Font);
   GetTextExtentPoint(hdc, tmpT, _tcslen(tmpT), &textSize);
   maxtSizeX=textSize.cx;
@@ -153,7 +159,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   // Reassign dynamically the vertical scale for each subwindow size
   int vscale=VSCALE*(100-Current_Multimap_SizeY)/100;
   #else
-  // Set the vertical range to 1000 feet, or 300m
+  // Set the vertical range 
   int vscale;
   if (Units::GetUserAltitudeUnit()==unFeet)
 	vscale=(unsigned int)(1000/TOFEET);
@@ -171,12 +177,19 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   // Top part of visual rect, target is over us=unreachable=red
   trc.top=vrc.top;
   trc.bottom=center.y-1;
-  RenderSky( hdc, trc, RGB_WHITE, RGB(255,150,150) , GC_NO_COLOR_STEPS/2);
+  #if GREENUP
+  RenderSky( hdc, trc, RGB_WHITE, LGREEN,GC_NO_COLOR_STEPS/2);
+  #else
+  RenderSky( hdc, trc, RGB_WHITE, LRED , GC_NO_COLOR_STEPS/2);
+  #endif
   // Bottom part, target is below us=reachable=green
   trc.top=center.y+1;
   trc.bottom=vrc.bottom;
-  RenderSky( hdc, trc, RGB(150,255,150) , RGB_WHITE, GC_NO_COLOR_STEPS/2);
-
+  #if GREENUP
+  RenderSky( hdc, trc, LRED, RGB_WHITE, GC_NO_COLOR_STEPS/2);
+  #else
+  RenderSky( hdc, trc, LGREEN , RGB_WHITE, GC_NO_COLOR_STEPS/2);
+  #endif
 
   // Draw center line
   p1.x=vrc.left+1; p1.y=center.y;
@@ -206,19 +219,16 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   // Print them all!
   int offset=(boxSizeY/2)+CENTERYSPACE;
-  HBRUSH BRED=CreateSolidBrush(COLORREF RGB(255,150,150));
-  HBRUSH BYEL=CreateSolidBrush(COLORREF RGB(255,255,150));
-  HBRUSH BGRE=CreateSolidBrush(COLORREF RGB(150,255,150));
+  HBRUSH BRED=CreateSolidBrush(COLORREF LRED);
+  HBRUSH BYEL=CreateSolidBrush(COLORREF LYELLOW);
+  HBRUSH BGRE=CreateSolidBrush(COLORREF LGREEN);
 
   HBRUSH bcolor;
   for (unsigned short n=0; n<numSlotX; n++) {
 
 	int wp=slotWpIndex[n];
 	if (!ValidWayPoint(wp)) {
-		#if BUGSTOP
-		StartupStore(_T("...... wp=%d is INVALID!\n"),wp);
-		LKASSERT(0);
-		#endif
+		// empty slot nothing to print
 		continue;
 	}
 	#if DEBUG_DVG
@@ -229,7 +239,26 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 	int altdiff=(int)WayPointCalc[wp].AltArriv[AltArrivMode];
 	int ty;
 
-	// Positive arrival altitude for the waypoint, lower (down) window
+	#if GREENUP
+	// Positive arrival altitude for the waypoint, upper window
+	if (altdiff>=0) {
+		if (altdiff==0)altdiff=1;
+		int d=vscale/altdiff;
+		if (d==0) d=1;
+		ty=upYbottom - (upSizeY/d); 
+		if ((ty-offset)<upYtop) ty=upYtop+offset;
+		if ((ty+offset)>upYbottom) ty=upYbottom-offset;
+		bcolor=BGRE;
+	} else {
+		int d=vscale/altdiff;
+		if (d==0) d=-1;
+		ty=downYtop - (downSizeY/d); // - because the left part is negative, we are really adding.
+		if ((ty-offset)<downYtop) ty=downYtop+offset;
+		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
+		bcolor=BRED;
+	}
+	#else
+	// Positive arrival altitude for the waypoint, lower window
 	if (altdiff>=0) {
 		if (altdiff==0)altdiff=1;
 		int d=vscale/altdiff;
@@ -240,12 +269,13 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		bcolor=BGRE;
 	} else {
 		int d=vscale/altdiff;
-		if (d==0) d=1;
+		if (d==0) d=-1;
 		ty=upYbottom + (upSizeY/d); // + because the left part is negative. We are really subtracting
 		if ((ty-offset)<upYtop) ty=upYtop+offset;
 		if ((ty+offset)>upYbottom) ty=upYbottom-offset;
 		bcolor=BRED;
 	}
+	#endif
 
 	TCHAR line2[80], line3[80];
 	TCHAR value[40], unit[30];
@@ -391,7 +421,7 @@ _end:
 // We are resetting from there.
 //
 
-short GetVisualGlidePoints(unsigned short numslots ) {
+short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 
   LKASSERT(numslots<MAXBSLOT);
   static short currentFilledNumber=-1;
@@ -425,7 +455,7 @@ short GetVisualGlidePoints(unsigned short numslots ) {
 
   if (SortedNumber<=0) {
 	#if DEBUG_GVG
-	StartupStore(_T("...... GVGP: SortedNumber is 0!\n"));
+	StartupStore(_T("...... GVGP: SortedNumber is 0, no available wpts in this range!\n"));
 	#endif
 	return 0;
   }
@@ -433,29 +463,72 @@ short GetVisualGlidePoints(unsigned short numslots ) {
   int *pindex;
   int wpindex=0;
   pindex=SortedTurnpointIndex;
+  //
   // Reset  content
+  //
   currentFilledNumber=0;
   for (i=0; i<MAXBSLOT; i++) {
 	slotWpIndex[i]=INVALID_VALUE;
+	tmpSlotBrgDiff[i]=-999;
   }
 
+  //
+  // set up fine tuned parameters for this run
+  //
+  int maxgratio=1;
+  double maxdistance=300;
+  if (ISPARAGLIDER) {
+	maxgratio=2;
+	maxdistance=100;
+  }
+  if (ISGLIDER) {
+	maxgratio=10;
+	maxdistance=300;
+  }
+  if (ISCAR) {
+	maxgratio=1;
+	maxdistance=100;
+  }
+
+  //
+  // WE USE THE 2.3 PAGE (Nearest turnpoints) sorted by DIRECTION
+  //
+
+  // We do this in several passes. 
+  #define MAXPHASES	5
+  unsigned short phase=1;
+
+  #if DEBUG_GVG
+  StartupStore(_T("GVGP: USING  %d Sorted Items available\n"),SortedNumber);
+  int count=0;
+  #endif
+  _tryagain:
+
   for (i=0; i<numslots; i++) {
+	LKASSERT(phase<=MAXPHASES);
+	#if DEBUG_GVG
 	if (i>=SortedNumber) {
-		#if DEBUG_GVG
-		StartupStore(_T("...... GVGP: not enough SortedNumber (%d) for i=%d\n"),SortedNumber,i);
-		#endif
-		break;
+		StartupStore(_T("...... GVGP: PHASE %d warning not enough SortedNumber (%d) for i=%d\n"),phase,SortedNumber,i);
 	}
+	#endif
+
+	// look up for an empty slot, needed if running after phase 1
+	if (slotWpIndex[i]!=INVALID_VALUE) continue;
+
 	// browse results for the best usable items
 	for (int k=0; k<SortedNumber; k++) {
 		wpindex=*(pindex+k);
 		if (!ValidWayPoint(wpindex)) {
 			#if BUGSTOP
-			StartupStore(_T("...... GVGP: invalid wpindex = %d!!\n"),wpindex);
+			StartupStore(_T("...... GVGP: PHASE %d invalid wpindex = %d!!\n"),phase,wpindex);
 			LKASSERT(0);
 			#endif
 			continue;
 		}
+
+		#if DEBUG_GVG
+		count++;
+		#endif
 
 		// did we already use it?
 		bool alreadyused=false;
@@ -469,17 +542,168 @@ short GetVisualGlidePoints(unsigned short numslots ) {
 		if (alreadyused) continue;
 
 		// unused one, decide if good or not
-		// ...
+		// We do this in 3 phases..
+		double distance = WayPointCalc[wpindex].Distance;
+		double brgdiff = WayPointCalc[wpindex].Bearing -  DrawInfo.TrackBearing;
+                if (brgdiff < -180.0) {
+			brgdiff += 360.0;
+                } else {
+			if (brgdiff > 180.0) brgdiff -= 360.0;
+		}
+		double abrgdiff=brgdiff;
+		if (abrgdiff<0) abrgdiff*=-1;
+		if (abrgdiff>45) continue;
+
+		// First we insert unconditionally mountain passes and not too close task points
+		if (WayPointList[wpindex].Style==STYLE_MTPASS) goto _useit;
+		if ((WayPointList[wpindex].InTask) && (distance>100)) goto _useit;
+
+
+		// Then we make a selective insertion, in several steps
+		// Normally we use only phase 1
+		if (phase==1) {
+			// if we are practically over the waypoint, skip it 
+			if (distance<maxdistance) continue;
+			// if we are within an obvious glide ratio, no need to use it at all costs
+			if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>50) {
+				if ( WayPointCalc[wpindex].GR<=maxgratio) continue;
+			}
+
+		}
+		if (phase==2) {
+			if (distance<maxdistance) continue;
+			// use mountain tops, if not too close and not too obviously reachable
+			if (WayPointList[wpindex].Style!=STYLE_MTTOP) continue;
+			if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>50) {
+				if ( WayPointCalc[wpindex].GR<=(maxgratio*2)) continue;
+			}
+		}
+		if (phase==3) {
+			if (distance<maxdistance) continue;
+			if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>50) {
+				if ( WayPointCalc[wpindex].GR<=(maxgratio*2)) continue;
+			}
+		}
+		if (phase==4) {
+			if (distance<maxdistance) continue;
+		}
+
+
+		// if (phase==MAXPHASES)  do nothing, simply accept the waypoint!
+
+
+_useit:
 
 		// ok good, use it
 		slotWpIndex[i]=wpindex;
+		tmpSlotBrgDiff[i]=brgdiff;
+
 		#if DEBUG_GVG
-		StartupStore(_T("PHASE 1  slot [%d] of %d : wp=%d <%s>\n"),i, numslots, wpindex, WayPointList[wpindex].Name);
+		StartupStore(_T("PHASE %d  slot [%d] of %d : wp=%d <%s> brg=%f\n"),
+			phase, i, numslots, wpindex, WayPointList[wpindex].Name,brgdiff);
 		#endif
 		currentFilledNumber++;
 		break;
-	}
-  }
+	} // for all sorted wps
 
+	if (currentFilledNumber>=numslots) {
+		#if DEBUG_GVG
+		StartupStore(_T("PHASE %d  stop search, all slots taken\n"),phase);
+		#endif
+		break;
+	}
+  } // for all slots to be filled
+
+  if ((currentFilledNumber<numslots) && (phase<MAXPHASES)) {
+	#if DEBUG_GVG
+	StartupStore(_T("PHASE %d  filled %d of %d slots, going phase %d\n"),phase,currentFilledNumber,numslots,phase+1);
+	#endif
+	phase++;
+	goto _tryagain;
+  }
+  #if DEBUG_GVG
+  else {
+	StartupStore(_T("PHASE %d  filled %d of %d slots\n"),phase,currentFilledNumber,numslots);
+  }
+  StartupStore(_T("TOTAL COUNTS=%d\n"),count);
+  #endif
+
+
+  //
+  // All wpts in the array are shuffled, unsorted by direction.
+  // We must reposition them horizontally, using their bearing
+  //
+  int tmpSlotWpIndex[MAXBSLOT+1];
+  for (i=0; i<MAXBSLOT; i++) tmpSlotWpIndex[i]=INVALID_VALUE;
+
+  #if DEBUG_GVG
+  for (i=0; i<numslots; i++) {
+	StartupStore(_T(">>> [%d] %f  (wp=%d)\n"),i,tmpSlotBrgDiff[i],slotWpIndex[i]);
+  }
+  #endif
+
+  bool invalid=true, valid=false;
+  unsigned short g;
+
+  //#define DEBUGSORT 1
+
+  for (unsigned short nslot=0; nslot<numslots; nslot++) {
+	g=0;
+  	double minim=999;
+	valid=false;
+	#if DEBUGSORT
+	StartupStore(_T(".... Slot [%d]:\n"),  nslot);
+	#endif
+	for (unsigned short k=0; k<numslots; k++) {
+		if (tmpSlotBrgDiff[k]<=minim ) {
+			// is this already used?
+			invalid=false;
+			if ( slotWpIndex[k]==-1 ) {
+				#if DEBUGSORT
+				StartupStore(_T(".... not using g=%d, it is an invalid waypoint\n"),k);
+				#endif
+				continue;
+			}
+			for (unsigned short n=0; n<nslot; n++) {
+				if ( tmpSlotWpIndex[n]==slotWpIndex[k]) {
+					#if DEBUGSORT
+					StartupStore(_T(".... not using g=%d, it is already used in newslot=%d\n"),k,n);
+					#endif
+					invalid=true;
+					continue;
+				}
+			}
+
+			if (invalid || !ValidWayPoint(slotWpIndex[k])) continue;
+
+			// We do have a valid choice 
+			g=k;
+			minim=tmpSlotBrgDiff[k];
+			#if DEBUGSORT
+			StartupStore(_T(".... minim=%f g=%d\n"),minim, g);
+			#endif
+			valid=true;
+		}
+	}
+
+	if (valid) {
+		tmpSlotWpIndex[nslot]=slotWpIndex[g];
+		#if DEBUGSORT
+		StartupStore(_T(".... FINAL for SLOT %d:  minim=%f g=%d\n"),nslot,minim, g);
+		#endif
+	}
+	#if DEBUGSORT
+	else {
+		StartupStore(_T(".... FINAL for SLOT %d:  no valid point\n"),nslot);
+	}
+	#endif
+  }
+			
+
+  for (i=0; i<numslots; i++) {
+	slotWpIndex[i]=tmpSlotWpIndex[i];
+  }
+ 
   return currentFilledNumber;
 }
+
