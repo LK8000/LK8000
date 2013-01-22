@@ -52,7 +52,7 @@ unsigned short Sideview_VGBox_Number=0;
 
 //#define DEBUG_DVG	1
 //#define DEBUG_GVG	1
-#define DEBUG_SCR	1
+//#define DEBUG_SCR	1
 //#define DEBUGSORT	1
 
 
@@ -171,14 +171,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   #if 0
   // Reassign dynamically the vertical scale for each subwindow size
-  int vscale=VSCALE*(100-Current_Multimap_SizeY)/100;
+  double vscale=VSCALE*(100-Current_Multimap_SizeY)/100;
   #else
   // Set the vertical range 
-  int vscale;
+  double vscale;
   if (Units::GetUserAltitudeUnit()==unFeet)
-	vscale=(unsigned int)(1000/TOFEET);
+	vscale=(1000/TOFEET);
   else
-	vscale=300;
+	vscale=300.0;
   #endif
 
 
@@ -255,8 +255,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 	Sideview_VGWpt[n]=wp;
 
-	int altdiff=(int)WayPointCalc[wp].AltArriv[AltArrivMode];
-altdiff=170;
+	double altdiff=WayPointCalc[wp].AltArriv[AltArrivMode];
 	int ty;
 	#if DEBUG_SCR
 	StartupStore(_T("... wp=<%s>\n"),WayPointList[wp].Name);
@@ -266,12 +265,12 @@ altdiff=170;
 	// Positive arrival altitude for the waypoint, upper window
 	if (altdiff>=0) {
 		if (altdiff==0)altdiff=1;
-		int d=vscale/altdiff;
+		double d=vscale/altdiff;
 		if (d==0) d=1;
-		ty=upYbottom - (upSizeY/d); 
+		ty=upYbottom - (int)((double)upSizeY/d); 
 		#if DEBUG_SCR
-		StartupStore(_T("... upYbottom=%d upSizeY=%d / (vscale=%d/altdiff=%d = %d) =- %d  ty=%d  offset=%d\n"),
-		upYbottom, upSizeY, vscale, altdiff, d, upSizeY/d, ty, offset);
+		StartupStore(_T("... upYbottom=%d upSizeY=%d / (vscale=%f/altdiff=%f = %f) =- %d  ty=%d  offset=%d\n"),
+		upYbottom, upSizeY, vscale, altdiff, d, (int)((double)upSizeY/d), ty, offset);
 		#endif
 		if ((ty-offset)<upYtop) ty=upYtop+offset;
 		if ((ty+offset)>upYbottom) ty=upYbottom-offset;
@@ -280,9 +279,9 @@ altdiff=170;
 		#endif
 		bcolor=BGRE;
 	} else {
-		int d=vscale/altdiff;
+		double d=vscale/altdiff;
 		if (d==0) d=-1;
-		ty=downYtop - (downSizeY/d); // - because the left part is negative, we are really adding.
+		ty=downYtop - (int)((double)downSizeY/d); // - because the left part is negative, we are really adding.
 		if ((ty-offset)<downYtop) ty=downYtop+offset;
 		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
 		bcolor=BRED;
@@ -291,16 +290,16 @@ altdiff=170;
 	// Positive arrival altitude for the waypoint, lower window
 	if (altdiff>=0) {
 		if (altdiff==0)altdiff=1;
-		int d=vscale/altdiff;
+		double d=vscale/altdiff;
 		if (d==0) d=1;
-		ty=downYtop + (downSizeY/d);
+		ty=downYtop + (int)((double)downSizeY/d);
 		if ((ty-offset)<downYtop) ty=downYtop+offset;
 		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
 		bcolor=BGRE;
 	} else {
-		int d=vscale/altdiff;
+		double d=vscale/altdiff;
 		if (d==0) d=-1;
-		ty=upYbottom + (upSizeY/d); // + because the left part is negative. We are really subtracting
+		ty=upYbottom + (int)((double)upSizeY/d); // + because the left part is negative. We are really subtracting
 		if ((ty-offset)<upYtop) ty=upYtop+offset;
 		if ((ty+offset)>upYbottom) ty=upYbottom-offset;
 		bcolor=BRED;
