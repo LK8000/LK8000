@@ -19,7 +19,7 @@ extern void ResetVisualGlideGlobals(void);
 
 
 // border margins in boxed text
-#define XYMARGIN NIBLSCALE(2) 
+#define XYMARGIN NIBLSCALE(1) 
 
 // space between two adjacent boxes on the same row
 #define BOXINTERVAL NIBLSCALE(2)
@@ -30,7 +30,7 @@ extern void ResetVisualGlideGlobals(void);
 
 // Size of the box, fixed for each waypoint at this resolution
 static unsigned int boxSizeX=0 ,boxSizeY=0;
-static int maxtSizeX=0, maxtSizeY=0;
+static int maxtSizeX=0;
 static HFONT line1Font, line2Font;
 
 static int slotWpIndex[MAXBSLOT+1];
@@ -74,27 +74,66 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		break;
   }
 
+  if (!ScreenLandscape) {
+	numboxrows++;
+	if (numboxrows>3) numboxrows=3;
+  }
+
+  TCHAR tmpT[30];
+
   switch(ScreenSize) {
 	case ss800x480:
+		_tcscpy(tmpT,_T("MMMMMMMMM"));
 		line1Font=MapLabelFont;
-		line2Font=LK8PanelUnitFont;
+		line2Font=CDIWindowFont;
+		break;
+	case ss480x272:
+	case ss320x240:
+		_tcscpy(tmpT,_T("MMMMMMMM"));
+		line1Font=MapLabelFont;
+		line2Font=LK8InfoSmallFont;
+		break;
+	case ss640x480:
+		_tcscpy(tmpT,_T("MMMMMM"));
+		line1Font=CDIWindowFont;
+		line2Font=CDIWindowFont;
+		break;
+
+	case ss272x480:
+		_tcscpy(tmpT,_T("MMMMMMMM"));
+		line1Font=MapLabelFont;
+		line2Font=LK8PanelSmallFont;
+		break;
+
+	case ss480x800:
+	case ss480x640:
+	case ss240x320:
+	case ss240x400:
+		_tcscpy(tmpT,_T("MMMMMMM"));
+		line1Font=LK8PanelSmallFont;
+		line2Font=LK8PanelSmallFont;
 		break;
 	default:
-		line1Font=MapLabelFont;
-		line2Font=LK8PanelUnitFont;
+		_tcscpy(tmpT,_T("MMMMMMM"));
+		line1Font=LK8PanelSmallFont;
+		line2Font=LK8PanelSmallFont;
 		break;
   }
 
 
   SIZE textSize;
-  TCHAR tmpT[30];
-  _tcscpy(tmpT,_T("MMMMMMMM"));
   SelectObject(hdc, line1Font);
   GetTextExtentPoint(hdc, tmpT, _tcslen(tmpT), &textSize);
   maxtSizeX=textSize.cx;
-  maxtSizeY=textSize.cy;
-  boxSizeX=textSize.cx+XYMARGIN+XYMARGIN;
-  boxSizeY=(textSize.cy*numboxrows)+XYMARGIN+XYMARGIN;
+  boxSizeX=textSize.cx+2; // +2 is for border space
+  boxSizeY=textSize.cy+2; // +2 is for border space
+
+  if (numboxrows>1) {
+	SelectObject(hdc, line2Font);
+	GetTextExtentPoint(hdc, tmpT, _tcslen(tmpT), &textSize);
+	boxSizeY+=(textSize.cy*(numboxrows-1))-NIBLSCALE(2);
+	if (numboxrows>2) boxSizeY-=NIBLSCALE(1);
+  }
 
   #if DEBUG_SCR
   StartupStore(_T("boxX=%d boxY=%d  \n"),  boxSizeX,boxSizeY);
@@ -184,11 +223,11 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   // Top part of visual rect, target is over us=unreachable=red
   trc.top=vrc.top;
   trc.bottom=center.y-1;
-  RenderSky( hdc, trc, RGB_WHITE, RGB_LIGHTGREEN,GC_NO_COLOR_STEPS/2);
+  RenderSky( hdc, trc, RGB_WHITE, RGB(150,255,150),GC_NO_COLOR_STEPS/2);
   // Bottom part, target is below us=reachable=green
   trc.top=center.y+1;
   trc.bottom=vrc.bottom;
-  RenderSky( hdc, trc, RGB_LIGHTRED, RGB_WHITE, GC_NO_COLOR_STEPS/2);
+  RenderSky( hdc, trc, RGB(255,150,150), RGB_WHITE, GC_NO_COLOR_STEPS/2);
 
   // Draw center line
   p1.x=vrc.left+1; p1.y=center.y;
@@ -291,6 +330,9 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 	TCHAR line2[80], line3[80];
 	TCHAR value[40], unit[30];
+	TCHAR name[NAME_SIZE+1];
+	_tcscpy(name,WayPointList[wp].Name);
+	ConvToUpper(name);
 	switch (numboxrows) {
 		case 0:
 			#if BUGSTOP
@@ -300,14 +342,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 		case 1:
 			// 1 line: waypoint name
-			VGTextInBox(hdc,n,1,WayPointList[wp].Name, NULL,NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			VGTextInBox(hdc,n,1,name, NULL,NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
 			break;
 
 		case 2:
 			// 2 lines: waypoint name + altdiff
 			LKFormatAltDiff(wp, false, value, unit);
 			_stprintf(line2,_T("%s%s"),value,unit);
-			VGTextInBox(hdc,n,2,WayPointList[wp].Name, line2, NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			VGTextInBox(hdc,n,2,name, line2, NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
 			break;
 
 		case 3:
@@ -317,7 +359,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 			LKFormatAltDiff(wp, false, value, unit);
 			_stprintf(line3,_T("%s%s"),value,unit);
-			VGTextInBox(hdc,n,3,WayPointList[wp].Name, line2, line3, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			VGTextInBox(hdc,n,3,name, line2, line3, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
 			break;
 		default:
 			#if BUGSTOP
@@ -332,7 +374,6 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 
   // Cleanup and return
-//_end:
   SelectObject(hdc,oldBrush); 
   SelectObject(hdc,oldPen); 
   return;
@@ -353,7 +394,7 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   COLORREF oldTextColor=SetTextColor(hDC,trgb);
 
   SIZE tsize;
-  int tx, ty, rowsize;
+  int tx, ty;
 
 
   Sideview_VGBox_Number++;
@@ -361,7 +402,7 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   SelectObject(hDC, line1Font);
   unsigned int tlen=_tcslen(wText1);
   GetTextExtentPoint(hDC, wText1, tlen, &tsize);
-  rowsize=tsize.cy;
+  int line1fontYsize=tsize.cy;
 
   // Fit as many characters in the available boxed space
   if (tsize.cx>maxtSizeX) {
@@ -388,6 +429,9 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   Sideview_VGBox[nslot].bottom= vy;
   Sideview_VGBox[nslot].right= x+(boxSizeX/2);
 
+  // 
+  // LINE 1
+  // 
   tx = x-(tsize.cx/2);
   ty = y-(vy-y);
 
@@ -399,11 +443,15 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   #endif
   if (!wText2) goto _end;
 
+  //
+  // LINE 2
+  // 
   SelectObject(hDC, line2Font);
   tlen=_tcslen(wText2);
   GetTextExtentPoint(hDC, wText2, tlen, &tsize);
   tx = x-(tsize.cx/2);
-  ty += rowsize;
+  ty += tsize.cy-NIBLSCALE(2);
+  if ( (line1fontYsize-tsize.cy)>0 ) ty -= (line1fontYsize-tsize.cy);
   ExtTextOut(hDC, tx, ty, ETO_OPAQUE, NULL, wText2, tlen, NULL);
 
   if (numlines==2) goto _end;
@@ -412,10 +460,13 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   #endif
   if (!wText3) goto _end;
 
+  //
+  // LINE 3
+  //
   tlen=_tcslen(wText3);
   GetTextExtentPoint(hDC, wText3, tlen, &tsize);
   tx = x-(tsize.cx/2);
-  ty += rowsize;
+  ty += tsize.cy-NIBLSCALE(1);
   ExtTextOut(hDC, tx, ty, ETO_OPAQUE, NULL, wText3, tlen, NULL);
 
 _end:
