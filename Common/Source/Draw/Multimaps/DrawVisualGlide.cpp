@@ -14,6 +14,7 @@
 #include "LKStyle.h"
 
 extern short GetVisualGlidePoints(unsigned short numslots );
+extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
 extern void ResetVisualGlideGlobals(void);
 
 
@@ -28,11 +29,6 @@ extern void ResetVisualGlideGlobals(void);
 
 // space between row0 and center line
 #define CENTERYSPACE NIBLSCALE(1)
-
-#define LGREEN RGB(150,255,150)
-#define LYELLOW RGB(255,255,150)
-#define LRED   RGB(255,150,150)
-
 
 
 // Size of the box, fixed for each waypoint at this resolution
@@ -192,17 +188,17 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   trc.top=vrc.top;
   trc.bottom=center.y-1;
   #if GREENUP
-  RenderSky( hdc, trc, RGB_WHITE, LGREEN,GC_NO_COLOR_STEPS/2);
+  RenderSky( hdc, trc, RGB_WHITE, RGB_LIGHTGREEN,GC_NO_COLOR_STEPS/2);
   #else
-  RenderSky( hdc, trc, RGB_WHITE, LRED , GC_NO_COLOR_STEPS/2);
+  RenderSky( hdc, trc, RGB_WHITE, RGB_LIGHTRED , GC_NO_COLOR_STEPS/2);
   #endif
   // Bottom part, target is below us=reachable=green
   trc.top=center.y+1;
   trc.bottom=vrc.bottom;
   #if GREENUP
-  RenderSky( hdc, trc, LRED, RGB_WHITE, GC_NO_COLOR_STEPS/2);
+  RenderSky( hdc, trc, RGB_LIGHTRED, RGB_WHITE, GC_NO_COLOR_STEPS/2);
   #else
-  RenderSky( hdc, trc, LGREEN , RGB_WHITE, GC_NO_COLOR_STEPS/2);
+  RenderSky( hdc, trc, RGB_LIGHTGREEN , RGB_WHITE, GC_NO_COLOR_STEPS/2);
   #endif
 
   // Draw center line
@@ -283,11 +279,15 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		// rgbcolor = MixColors( RGB(50,255,50), RGB(230,255,230),  altdiff/(vscale-50));
 		//
 
-		if (altdiff<=33) // 100ft
-			rgbcolor = RGB(255,255,128);
-		else
-			rgbcolor = RGB(150,255,150);
-
+		if (!CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo,
+		WayPointCalc[wp].Distance, WayPointCalc[wp].Bearing)) {
+			rgbcolor = RGB_LIGHTRED;
+		} else {
+			if (altdiff<=33) // 100ft
+				rgbcolor = RGB_LIGHTYELLOW;
+			else
+				rgbcolor = RGB_LIGHTGREEN;
+		}
 		bcolor=CreateSolidBrush(rgbcolor);
 
 	} else {
@@ -297,7 +297,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		if ((ty-offset)<downYtop) ty=downYtop+offset;
 		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
 		
-		rgbcolor = RGB(255,150,150);
+		rgbcolor = RGB_LIGHTRED;
 		bcolor=CreateSolidBrush(rgbcolor);
 	}
 	#else
