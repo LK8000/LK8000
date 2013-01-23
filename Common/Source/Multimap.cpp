@@ -378,6 +378,7 @@ void Reset_Multimap_Flags(void) {
   Multimap_Flags_Overlays_Text[MP_VISUALGLIDE]=true;
   Multimap_Flags_Overlays_Gauges[MP_VISUALGLIDE]=false;
   Multimap_Labels[MP_VISUALGLIDE]=MAPLABELS_ONLYWPS;
+  Multimap_SizeY[MP_VISUALGLIDE]=SIZE2;
 
 
   // Radar is custom multimap, so no terrain, etc.
