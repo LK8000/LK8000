@@ -58,6 +58,18 @@ static void setVariables(void) {
 	dfe->Set(Multimap3);
 	wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap4"));
+  if (wp) {
+	DataFieldEnum* dfe;
+	dfe = (DataFieldEnum*)wp->GetDataField();
+
+	dfe->addEnumText(MsgToken(239)); // Disabled
+	dfe->addEnumText(MsgToken(480)); // Normal
+	dfe->addEnumText(MsgToken(483)); // North up
+
+	dfe->Set(Multimap4);
+	wp->RefreshDisplay();
+  }
 }
 
 
@@ -91,6 +103,13 @@ static void OnResetClicked(WindowControl * Sender){
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	dfe->Set(Multimap3);
+	wp->RefreshDisplay();
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap4"));
+  if (wp) {
+	DataFieldEnum* dfe;
+	dfe = (DataFieldEnum*)wp->GetDataField();
+	dfe->Set(Multimap4);
 	wp->RefreshDisplay();
   }
 
@@ -127,6 +146,9 @@ void dlgMultimapsShowModal(void){
  
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap3"));
   if (wp) Multimap3 = (wp->GetDataField()->GetAsInteger());
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap4"));
+  if (wp) Multimap4 = (wp->GetDataField()->GetAsInteger());
 
   UpdateMultimapOrient();
 
