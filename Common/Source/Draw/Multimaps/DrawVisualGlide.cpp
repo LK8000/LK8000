@@ -18,9 +18,6 @@ extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Cal
 extern void ResetVisualGlideGlobals(void);
 
 
-// Green area is up, red is down. A choice..
-#define GREENUP	1
-
 // border margins in boxed text
 #define XYMARGIN NIBLSCALE(2) 
 
@@ -187,19 +184,11 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   // Top part of visual rect, target is over us=unreachable=red
   trc.top=vrc.top;
   trc.bottom=center.y-1;
-  #if GREENUP
   RenderSky( hdc, trc, RGB_WHITE, RGB_LIGHTGREEN,GC_NO_COLOR_STEPS/2);
-  #else
-  RenderSky( hdc, trc, RGB_WHITE, RGB_LIGHTRED , GC_NO_COLOR_STEPS/2);
-  #endif
   // Bottom part, target is below us=reachable=green
   trc.top=center.y+1;
   trc.bottom=vrc.bottom;
-  #if GREENUP
   RenderSky( hdc, trc, RGB_LIGHTRED, RGB_WHITE, GC_NO_COLOR_STEPS/2);
-  #else
-  RenderSky( hdc, trc, RGB_LIGHTGREEN , RGB_WHITE, GC_NO_COLOR_STEPS/2);
-  #endif
 
   // Draw center line
   p1.x=vrc.left+1; p1.y=center.y;
@@ -256,7 +245,6 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 	StartupStore(_T("... wp=<%s>\n"),WayPointList[wp].Name);
 	#endif
 
-	#if GREENUP
 	// Positive arrival altitude for the waypoint, upper window
 	if (altdiff>=0) {
 		if (altdiff==0)altdiff=1;
@@ -300,25 +288,6 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		rgbcolor = RGB_LIGHTRED;
 		bcolor=CreateSolidBrush(rgbcolor);
 	}
-	#else
-	// Positive arrival altitude for the waypoint, lower window
-	if (altdiff>=0) {
-		if (altdiff==0)altdiff=1;
-		double d=vscale/altdiff;
-		if (d==0) d=1;
-		ty=downYtop + (int)((double)downSizeY/d);
-		if ((ty-offset)<downYtop) ty=downYtop+offset;
-		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
-		bcolor=BGRE;
-	} else {
-		double d=vscale/altdiff;
-		if (d==0) d=-1;
-		ty=upYbottom + (int)((double)upSizeY/d); // + because the left part is negative. We are really subtracting
-		if ((ty-offset)<upYtop) ty=upYtop+offset;
-		if ((ty+offset)>upYbottom) ty=upYbottom-offset;
-		bcolor=BRED;
-	}
-	#endif
 
 	TCHAR line2[80], line3[80];
 	TCHAR value[40], unit[30];
