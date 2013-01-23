@@ -171,7 +171,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   #if 0
   // Reassign dynamically the vertical scale for each subwindow size
-  double vscale=VSCALE*(100-Current_Multimap_SizeY)/100;
+  double vscale=1000*(100-Current_Multimap_SizeY)/100;
   #else
   // Set the vertical range 
   double vscale;
@@ -237,11 +237,10 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   // Print them all!
   int offset=(boxSizeY/2)+CENTERYSPACE;
-  HBRUSH BRED=CreateSolidBrush(COLORREF LRED);
-  HBRUSH BYEL=CreateSolidBrush(COLORREF LYELLOW);
-  HBRUSH BGRE=CreateSolidBrush(COLORREF LGREEN);
 
-  HBRUSH bcolor;
+  HBRUSH bcolor=NULL;
+  COLORREF rgbcolor;
+
   for (unsigned short n=0; n<numSlotX; n++) {
 
 	int wp=slotWpIndex[n];
@@ -277,14 +276,29 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		#if DEBUG_SCR
 		StartupStore(_T("... upYtop=%d upYbottom=%d final ty=%d\n"),upYtop, upYbottom,ty);
 		#endif
-		bcolor=BGRE;
+
+
+		//
+		// This is too confusing. We want simple colors, not shaded
+		// rgbcolor = MixColors( RGB(50,255,50), RGB(230,255,230),  altdiff/(vscale-50));
+		//
+
+		if (altdiff<=33) // 100ft
+			rgbcolor = RGB(255,255,128);
+		else
+			rgbcolor = RGB(150,255,150);
+
+		bcolor=CreateSolidBrush(rgbcolor);
+
 	} else {
 		double d=vscale/altdiff;
 		if (d==0) d=-1;
 		ty=downYtop - (int)((double)downSizeY/d); // - because the left part is negative, we are really adding.
 		if ((ty-offset)<downYtop) ty=downYtop+offset;
 		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
-		bcolor=BRED;
+		
+		rgbcolor = RGB(255,150,150);
+		bcolor=CreateSolidBrush(rgbcolor);
 	}
 	#else
 	// Positive arrival altitude for the waypoint, lower window
@@ -342,6 +356,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 			#endif
 			return;
 	}
+	if (bcolor) DeleteObject(bcolor);
 			
   } // for numSlotX
 
@@ -351,9 +366,6 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 //_end:
   SelectObject(hdc,oldBrush); 
   SelectObject(hdc,oldPen); 
-  if (BRED) DeleteObject(BRED);
-  if (BYEL) DeleteObject(BYEL);
-  if (BGRE) DeleteObject(BGRE);
   return;
 }
 
