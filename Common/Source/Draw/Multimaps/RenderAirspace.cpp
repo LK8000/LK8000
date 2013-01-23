@@ -120,8 +120,6 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   SetTextColor(hdc, Sideview_TextColor);
 
-  if (MapSpaceMode==MSM_VISUALGLIDE) 
-
   /****************************************************************/
 	  switch(LKevent) {
 		case LKEVENT_NEWRUN:
