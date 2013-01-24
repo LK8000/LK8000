@@ -21,8 +21,8 @@ extern void ResetVisualGlideGlobals(void);
 // border margins in boxed text
 #define XYMARGIN NIBLSCALE(1) 
 
-// space between two adjacent boxes on the same row
-#define BOXINTERVAL NIBLSCALE(2)
+// minimum space between two adjacent boxes on the same row
+#define BOXINTERVAL NIBLSCALE(1)
 
 // space between row0 and center line
 #define CENTERYSPACE NIBLSCALE(1)
@@ -125,8 +125,12 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   SelectObject(hdc, line1Font);
   GetTextExtentPoint(hdc, tmpT, _tcslen(tmpT), &textSize);
   maxtSizeX=textSize.cx;
-  boxSizeX=textSize.cx+2; // +2 is for border space
-  boxSizeY=textSize.cy+2; // +2 is for border space
+
+  int a=ScreenSizeX/textSize.cx; 
+  int b=ScreenSizeX- a*(textSize.cx)-(BOXINTERVAL*(a+1));
+
+  boxSizeX=textSize.cx+(b/(a+1));
+  boxSizeY=textSize.cy+1;  // distance from bottombar
 
   if (numboxrows>1) {
 	SelectObject(hdc, line2Font);
@@ -177,9 +181,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   if (numSlotX==0) return;
 
   unsigned short boxInterval=((vrc.right-vrc.left)-(boxSizeX*numSlotX))/(numSlotX+1);
+  unsigned short oddoffset= (ScreenSizeX- (boxSizeX*numSlotX) - boxInterval*(numSlotX+1))/2;
+  #if BUGSTOP
+  // not really harmful
+  LKASSERT(oddoffset<=boxInterval);
+  #endif
 
   #if DEBUG_SCR
-  StartupStore(_T("numSlotX=%d boxInterval=%d\n"),numSlotX,boxInterval);
+  StartupStore(_T("numSlotX=%d ScreenSizeX=%d boxSizeX=%d interval=%d offset=%d\n"),numSlotX,ScreenSizeX, boxSizeX, boxInterval, oddoffset);
   #endif
 
   unsigned int t;
@@ -187,7 +196,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   // The horizontal grid
   unsigned int slotCenterX[MAXBSLOT+1];
   for (t=0; t<numSlotX; t++) {
-	slotCenterX[t]=(t*boxSizeX) + boxInterval*(t+1)+(boxSizeX/2);
+	slotCenterX[t]=(t*boxSizeX) + boxInterval*(t+1)+(boxSizeX/2)+oddoffset;
 	#if DEBUG_SCR
 	StartupStore(_T("slotCenterX[%d]=%d\n"),t,slotCenterX[t]);
 	#endif
@@ -357,8 +366,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 			LKFormatDist(wp, false, value, unit);
 			_stprintf(line2,_T("%s%s"),value,unit);
 
+			LKFormatBrgDiff(wp, false, value, unit);
+			_stprintf(tmpT,_T(" %s%s"),value,unit);
+			_tcscat(line2,tmpT);
+
 			LKFormatAltDiff(wp, false, value, unit);
 			_stprintf(line3,_T("%s%s"),value,unit);
+
+
 			VGTextInBox(hdc,n,3,name, line2, line3, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
 			break;
 		default:

@@ -240,8 +240,8 @@ The smaller the window, the lesser the information. In the minimal situation, on
 
 . WAWYPOINT BOX CONTENT
 Line 1: name of waypoint
-Line 2 and Line 3: arrival altitude, waypoint distance.
-If only two lines are in use, waypoint distance is not painted.
+Line 2 and Line 3: arrival altitude, waypoint distance and bearing difference.
+If only two lines are in use, waypoint distance and bearing diff. are not painted.
 
 . WAYPOINT BOX COLORS
 Each box has a coloured background.
