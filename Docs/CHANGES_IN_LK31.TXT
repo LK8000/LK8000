@@ -221,6 +221,110 @@ New Takeoff safety alarm (configuration menu Alarms)
    in use again for the next takeoff.
 
 
+THE MULTIMAP VISUALGLIDE
+------------------------
+
+Multimap page 4 is offering an information feature called "VisualGlide".
+It is replacing the old and obsoleted VisualGlide that appeared in the very early versions
+of LK in the year 2009.
+
+The VG is using the bottom window of the multimap, which you can resize to be full screen, or to disappear.
+In such case, only the topview will remain visible, and the VG feature will be disabled, leaving space only the moving map.
+What you see in the bottom window is a center horizontal line representing the arrival altitude 0.
+This means: any object OVER this line, in the green shaded area, has a positive arrival altitude for your current MC setting. 
+(We are using the common arrival altitude you already know, thus using MC, safety etc. as usual.)
+Any object BELOW this center line, in the red shaded area has a negative arrival altitude.
+
+Objects are boxes of one to three lines of text, depending on the device resolution and on the visualglide window.
+The smaller the window, the lesser the information. In the minimal situation, only small boxes with only the name of the waypoint are painted.
+
+. WAWYPOINT BOX CONTENT
+Line 1: name of waypoint
+Line 2 and Line 3: arrival altitude, waypoint distance.
+If only two lines are in use, waypoint distance is not painted.
+
+. WAYPOINT BOX COLORS
+Each box has a coloured background.
+A green box of course means arrival altitude Ok.
+A yellow box means: arrival altiutude is positive, but with a small margin, less than 100ft (30m).
+So, caution!
+A red box means the waypoint is not reachable. Attention: it the box is in the positive green area, this means:
+the waypoint has a positive arrival altitude, but an OBSTACLE is in between.
+
+Green boxes always grant you both arrival altitude and no obstacles.
+
+. RESIZING THE MULTIMAP PAGE VISUALGLIDE
+All multimaps are splitted in two windows, plus the bottom bar than never disappears.
+You can resize the two windows by doing a gesture up or gesture down (stripe up/down).
+A gesture down will bring down the top window, which normally is the moving map.
+A gesture up will bring up the bottom window.
+it is possible to resize at will either windows full size.
+
+
+. CLICKS ON THE MULTIMAP PAGE VISUALGLIDE
+
+The M4 page is working like all multimap pages: a short click on top will zoom in, a short click on bottom will zoom out on the topview window. If there is no topview window (because you have rescaled the visualglide fullscreen) then you get no zoom, simply.
+The virtualkeys are operative: topleft, topright. No center virtualkey, as in all multimaps.
+
+A LONG CLICK on a waypoint box will trigger waypoint details!
+From the usual wp detail page you can decide an action, or investigate further the waypoint.
+
+
+. WAYPOINTS APPEARING ON THE VISUALGLIDE 
+
+You are now wondering which waypoints are appearing on the visualglide.
+First of all, we can only display a few of them, depending on screen resolution.
+We also want the waypoint box to be large enough to be clickable, and we dont want boxes to overlap.
+So we must carefully choose what to show!
+
+VG is about showing what you actually have in FRONT of you, like in Nearest page 2.3, sorted by direction.
+What do we mean by "in front": 45 degrees left or right of you. If necessary (unfilled space available) we extend the search up to 90 degrees left and right, for a total of 180 degrees in a "frog view".
+Starting from that list, we unconditionally give priority to:
+- Mountain passes
+- Task turnpoints
+
+then we try to be smart enough to not tell you that you are making it over something you can see by yourself.
+We look at the REQUIRED GLIDE RATIO , if it is below 1:10 for a glider (or 1:2 for Paragliders, 1:1 for general aviation and trekking mode) we can assume you are able to judge by yourself you can make it, and dont need the visualglide to tell you!
+
+After that we give priority to MOUNTAIN TOPS, which is possible only if you are using a waypoint file format like CUP , that use styles. Otherwise, skip this.
+
+Waypoints are then printed from left to right, ordered by bearing difference.
+The horizontal disposition is not accurate and will NOT necessarily reflect the position of the waypoint relatively to your horizont.
+
+. VERTICAL DISPOSITION OF WAYPOINTS ON THE VISUALGLIDE
+Obviously, the idea is to paint an object closer to the center "0 arrival altitude" line proportionally to its arrival value.
+However, we rescale the positive and negative vertical space to 1000ft (300m).
+Anything above or below this limit, will be painted at the border.
+Why we do this? Because you are of course more interested to have a better view of the situation for the cases you are in doubt if a waypoint is reachable or not. When you are 500m above arrival altitude, it is a useless information. It is more interesting to be able to see a difference between +67 and +150 , which would not be possible if we wouldnt rescale properly to a smaller range like we do.
+
+
+. REFRESH of WAYPOINTS
+The waypoint calculation and update is happening every 5 seconds.
+Your eyes will not be fatigated by flickering values because we do so.
+
+. OVERLAYS, GAUGES AND TOPVIEW MOVING MAP OPTIONS 
+As in all multimaps, by using Menu - Display 1/3  you can change Labelling, enable/disable topology terrain and OVERLAYS in the visualglide multimap. 
+
+
+. DISABLING MULTIMAP VISUALGLIDE and changing topview main map orientation
+Enter system configuration, go to page 10 "Interface", select Configure Multimaps.
+Choice 4 can be:
+ Disabled: the visualglide page will not appear during multimap rotation.
+ Normal: active, with topview orientation left to right).
+ North up: active, with north-up orientation.
+
+. I DONT SEE LANDING POINTS IN THE VISUALGLIDE!
+That is normal, because by default we are listing only not-landables points, like we do in the Neares Page 2.3.
+If you fly in flat lands, it is unlikely you will look for a mountain pass :-)
+No worry, enter system configuration, page 11 Appearance, 8th field is "Turnpoint filter".
+Change the "No landables" which is the default to All waypoints, or to DAT. See the HELP in that page for explanations if you are in doubt.
+
+. WHERE IS A WAYPOINT?
+Enlarge the topview map, and zoom in a bit, you will most likely see the waypoint.
+If not, because you have a shaming 3000m altitude and you are getting far away waypoints, use waypoint details and figure it out yourself.
+
+
+
 LK8000 VERSION 3.1M 130111
 ==========================
 
