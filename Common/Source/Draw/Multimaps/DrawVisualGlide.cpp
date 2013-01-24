@@ -48,6 +48,7 @@ unsigned short Sideview_VGBox_Number=0;
 //#define DEBUG_SCR	1
 //#define DEBUGSORT	1
 
+//#define MIDCENTER	1
 
 void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
@@ -204,9 +205,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   // Vertical coordinates of each up/down subwindow, excluding center line
   int upYtop=vrc.top;
+  #if MIDCENTER
+  int upYbottom=center.y+(boxSizeY/2);
+  int downYtop=center.y-(boxSizeY/2);
+  #else
   int upYbottom=center.y-CENTERYSPACE;
-  int upSizeY=upYbottom-upYtop;
   int downYtop=center.y+CENTERYSPACE;
+  #endif
+  int upSizeY=upYbottom-upYtop;
   int downYbottom=vrc.bottom;
   int downSizeY=downYbottom-downYtop;
 
