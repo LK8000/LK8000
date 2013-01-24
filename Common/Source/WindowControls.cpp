@@ -1110,7 +1110,7 @@ int DataFieldFloat::CreateKeyboard(void){
 	dlgNumEntryShowModal(szText,20);
 
 	TCHAR*szStop;
-	SetAsFloat(mStep*((int)(StrToDouble(szText, &szStop)/mStep)));
+	SetAsFloat(floor((StrToDouble(szText, &szStop)/mStep)+0.5)*mStep);
 
 	return TRUE;
 }
