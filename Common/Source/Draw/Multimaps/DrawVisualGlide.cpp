@@ -211,9 +211,9 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   int upYbottom=center.y-CENTERYSPACE;
   int downYtop=center.y+CENTERYSPACE;
   #endif
-  int upSizeY=upYbottom-upYtop;
+  int upSizeY=upYbottom-upYtop-(boxSizeY);;
   int downYbottom=vrc.bottom;
-  int downSizeY=downYbottom-downYtop;
+  int downSizeY=downYbottom-downYtop-(boxSizeY);;
 
   #if 0
   // Reassign dynamically the vertical scale for each subwindow size
@@ -308,7 +308,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		if (altdiff==0)altdiff=1;
 		double d=vscale/altdiff;
 		if (d==0) d=1;
-		ty=upYbottom - (int)((double)upSizeY/d); 
+		ty=upYbottom - (int)((double)upSizeY/d)-(boxSizeY/2); 
 		#if DEBUG_SCR
 		StartupStore(_T("... upYbottom=%d upSizeY=%d / (vscale=%f/altdiff=%f = %f) =- %d  ty=%d  offset=%d\n"),
 		upYbottom, upSizeY, vscale, altdiff, d, (int)((double)upSizeY/d), ty, offset);
@@ -340,7 +340,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 	} else {
 		double d=vscale/altdiff;
 		if (d==0) d=-1;
-		ty=downYtop - (int)((double)downSizeY/d); // - because the left part is negative, we are really adding.
+		ty=downYtop - (int)((double)downSizeY/d)+(boxSizeY/2); // - because the left part is negative, we are really adding.
 		if ((ty-offset)<downYtop) ty=downYtop+offset;
 		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
 		
