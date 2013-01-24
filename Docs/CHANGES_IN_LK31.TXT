@@ -246,8 +246,9 @@ If only two lines are in use, waypoint distance and bearing diff. are not painte
 . WAYPOINT BOX COLORS
 Each box has a coloured background.
 A green box of course means arrival altitude Ok.
-A yellow box means: arrival altiutude is positive, but with a small margin, less than 100ft (30m).
-So, caution!
+A yellow box means: arrival altiutude is positive, but with a small margin, less than 150ft (50m).
+So, caution, there may be obstacles as well since the terrain may not be accurate or the waypoint position/altitude could be wrong!
+(WE DO NOT CALCULATE OBSTACLES BELOW 50m arrival altitude, for this reason).
 A red box means the waypoint is not reachable. Attention: it the box is in the positive green area, this means:
 the waypoint has a positive arrival altitude, but an OBSTACLE is in between.
 
@@ -322,6 +323,12 @@ Change the "No landables" which is the default to All waypoints, or to DAT. See 
 . WHERE IS A WAYPOINT?
 Enlarge the topview map, and zoom in a bit, you will most likely see the waypoint.
 If not, because you have a shaming 3000m altitude and you are getting far away waypoints, use waypoint details and figure it out yourself.
+
+. WHY DO I GET AN OBSTACLE THAT LOOK NONEXISTENT?
+The most common cause is very simple: your waypoint coordinates are not coherent with the terrain, in terms of altitude. For example, terrain in that position is supposed to be 1500, and at the same time your waypoint is declared to be at.. 1450. Of course there is a problem: we find an obstacle right OVER your waypoint!
+Another common cause is the actual position (coordinates) of the waypoint. You think it is right over the ridge, while it is 20m beyond it.
+for this reason, we consider "yellow condition" anything below 50m arrival altitude.
+
 
 
 LK8000 VERSION 3.1N 130126

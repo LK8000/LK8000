@@ -27,7 +27,6 @@ extern void ResetVisualGlideGlobals(void);
 // space between row0 and center line
 #define CENTERYSPACE NIBLSCALE(1)
 
-
 // Size of the box, fixed for each waypoint at this resolution
 static unsigned int boxSizeX=0 ,boxSizeY=0;
 static int maxtSizeX=0;
@@ -299,6 +298,11 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 	StartupStore(_T("... wp=<%s>\n"),WayPointList[wp].Name);
 	#endif
 
+	// Since terrain can be approximated due to low precision maps, or waypoint position or altitude error,
+	// we have a common problem: we get an obstacle to get to the waypoint because it is 
+	// positioned "BELOW" the terrain itself. We try to reduce this problem here.
+	#define SAFETERRAIN	50
+
 	// Positive arrival altitude for the waypoint, upper window
 	if (altdiff>=0) {
 		if (altdiff==0)altdiff=1;
@@ -321,14 +325,15 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		// rgbcolor = MixColors( RGB(50,255,50), RGB(230,255,230),  altdiff/(vscale-50));
 		//
 
-		if (!CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo,
-		WayPointCalc[wp].Distance, WayPointCalc[wp].Bearing)) {
-			rgbcolor = RGB_LIGHTRED;
+		if (altdiff<=SAFETERRAIN) {
+			rgbcolor = RGB_LIGHTYELLOW;
 		} else {
-			if (altdiff<=33) // 100ft
-				rgbcolor = RGB_LIGHTYELLOW;
-			else
+			if (!CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo,
+			WayPointCalc[wp].Distance, WayPointCalc[wp].Bearing)) {
+				rgbcolor = RGB_LIGHTRED;
+			} else {
 				rgbcolor = RGB_LIGHTGREEN;
+			}
 		}
 		bcolor=CreateSolidBrush(rgbcolor);
 
