@@ -324,6 +324,41 @@ Enlarge the topview map, and zoom in a bit, you will most likely see the waypoin
 If not, because you have a shaming 3000m altitude and you are getting far away waypoints, use waypoint details and figure it out yourself.
 
 
+LK8000 VERSION 3.1N 130126
+==========================
+
+NEW
+
+. The MULTIMAP 4 : VISUALGLIDE. SEE DOCS ABOVE.
+. Save and Load Time Gate config in Task file
+. New LX V7 driver using RMB output . Still experimental.
+
+
+CHANGES
+
+. 3.1 Show HeadUp line in place of dashed lines in multimaps when there is no visible sideview.
+. Show on main map the track line (if enabled) at all zoom levels, up to 200km scaled long.
+. Draw Wind overlay in multimaps when the topview is fullscreen.
+  When there is a sideview, we dont do that in order not to overcast scale values.
+
+
+FIXES
+
+. Bug in 3.1M making some lines on screen going around.. like the one for track line.
+. Fix : set default Turpoint type when reset Task point
+. FIx bug displaying in pan mode an invalid terrain altitude when the terrain was not available.
+  In this case, pan mode informations now report 0 altitude
+
+. Fix : wrong leg calculation if previous turnpoint is same as current.
+  this cause wrong Task lenght in Task edit dialog ans wrong task covered percent of task in bottom bar
+
+. fix incorrect radius for drawing AAT Task Sector
+
+. Fix Assert in TaskSpeed.cpp
+
+
+
+
 
 LK8000 VERSION 3.1M 130111
 ==========================
