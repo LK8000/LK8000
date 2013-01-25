@@ -363,6 +363,7 @@ FIXES
 
 . Fix Assert in TaskSpeed.cpp
 
+. Prevent a problem with dual flarm feed into LK. If two com ports are in use, and both of them are accessing the same data from flarm, both of them will appear as FLARM unit, and this cannot be tolerated. In such case, one or both ports will be disabled for FLAU messages, and no traffic will be used. The RMZ will be used, though, correctly.
 
 
 
