@@ -184,11 +184,33 @@ void FLARM_DumpSlot(NMEA_INFO *pGPS,int i) {
 double FLARM_NorthingToLatitude = 0.0;
 double FLARM_EastingToLongitude = 0.0;
 
+extern NMEAParser nmeaParser1;
+extern NMEAParser nmeaParser2;
 
 BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   static int old_flarm_rx = 0;
   static bool sayflarmavailable=true; // 100325
+  static bool conflict=false;
+
+  // It can happen that both port auto/exclude themselves, or one will succeed to survive.
+  // In either cases, there is a bad problem going on. Recovery should not be a choice.
+  if (conflict) return FALSE;
+
+  //
+  // We want to be sure that we are not going to elect as Flarm two simultaneous ports.
+  // We let it happen once, and give warning. Then only one of the two will remain.
+  // It is a real borderline situation, due to conflict on comm ports, normally virtual com ports.
+  if (nmeaParser1.gpsValid && nmeaParser2.gpsValid) {
+	if (nmeaParser1.isFlarm && nmeaParser2.isFlarm) {
+		DoStatusMessage(_T("FLARM DETECTED ON TWO COM PORTS! AUTO-EXCLUDING."));
+		StartupStore(_T("......... WARNING! FLARM DETECTED ON TWO COM PORTS! %s\n"), WhatTimeIsIt());
+		pGPS->FLARM_Available = false;
+		isFlarm = false;
+		conflict=true;
+		return FALSE;
+	}
+  }
 
   pGPS->FLARM_Available = true;
   isFlarm = true;
