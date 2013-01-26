@@ -12,7 +12,6 @@
 #include "Dialogs.h"
 
 
-static bool changed = false;
 static WndForm *wf=NULL;
 
 
@@ -134,15 +133,12 @@ void dlgAirspaceWarningParamsShowModal(void){
 
   setVariables();
 
-  changed = false;
-
   wf->ShowModal();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
   if (wp) {
     if (WarningTime != wp->GetDataField()->GetAsInteger()) {
       WarningTime = wp->GetDataField()->GetAsInteger();
-      changed = true;
     }
   }
 
@@ -150,7 +146,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AcknowledgementTime != wp->GetDataField()->GetAsInteger()*60) {
       AcknowledgementTime = wp->GetDataField()->GetAsInteger()*60;
-      changed = true;
     }
   }
 
@@ -160,7 +155,6 @@ void dlgAirspaceWarningParamsShowModal(void){
     ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
     if (AirspaceWarningVerticalMargin != ival) {
       AirspaceWarningVerticalMargin = ival;
-      changed = true;
     }
   }
 
@@ -168,7 +162,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AirspaceWarningDlgTimeout != wp->GetDataField()->GetAsInteger()) {
       AirspaceWarningDlgTimeout = wp->GetDataField()->GetAsInteger();
-      changed = true;
     }
   }
 
@@ -176,7 +169,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsInteger()) {
       AirspaceWarningMapLabels = wp->GetDataField()->GetAsInteger();
-      changed = true;
     }
   }
 
@@ -184,7 +176,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AirspaceAckAllSame != wp->GetDataField()->GetAsInteger()) {
       AirspaceAckAllSame = wp->GetDataField()->GetAsInteger();
-      changed = true;
     }
   }
 
@@ -192,7 +183,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AIRSPACEWARNINGS != wp->GetDataField()->GetAsInteger()) {
       AIRSPACEWARNINGS = wp->GetDataField()->GetAsInteger();
-      changed = true;
     }
   }
 
