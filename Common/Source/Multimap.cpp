@@ -9,6 +9,8 @@
 #include "externs.h"
 #include "Sideview.h"
 
+extern bool HaveGauges(void);
+
 //
 // It is IMPERATIVE that multimaps using a split screen keep these variables updated!
 // Normally all "shared" multimaps should do it!
@@ -159,6 +161,7 @@ bool IsMultimapWaypoints(void) {
 
 // Both Texta and Gauges active! 
 bool IsMultimapOverlaysAll(void) {
+  if (!HaveGauges()) return false;
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
   return (Multimap_Flags_Overlays_Text[i]&&Multimap_Flags_Overlays_Gauges[i]);
@@ -171,6 +174,7 @@ bool IsMultimapOverlaysText(void) {
 }
 
 bool IsMultimapOverlaysGauges(void) {
+  if (!HaveGauges()) return false;
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
   return (Multimap_Flags_Overlays_Gauges[i]);
@@ -203,10 +207,16 @@ void ToggleMultimapWaypoints(void) {
 //
 // Overlays toggle order is:
 // ALL ON, TEXT ONLY, GAUGES ONLY, ALL OFF
+// We rotate through Gauges only if any of them are active!
 //
 void ToggleMultimapOverlays(void) {
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  if (!HaveGauges()) {
+	Multimap_Flags_Overlays_Text[i] = !Multimap_Flags_Overlays_Text[i];
+	return;
+  }
+
   // ALLON-> TEXT ONLY
   if ( Multimap_Flags_Overlays_Text[i] && Multimap_Flags_Overlays_Gauges[i] ) {
 	Multimap_Flags_Overlays_Gauges[i]=false;

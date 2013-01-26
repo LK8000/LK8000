@@ -114,6 +114,9 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
 
 
 // Used by dlgTarget only
+// A note about this function. We are changing map drawing parameters here, but we paint from the winmain thread.
+// We are NOT using this from drawthread! the dialog target pan is sort of an hack, and not a good example.
+// Do not consider emulating the target dialog, because it should be moved to draw thread somehow.
 void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0 */)
 {
   static double old_latitude;
@@ -182,72 +185,17 @@ bool MapWindow::TargetMoved(double &longitude, double &latitude) {
 }
 
 
-// Not used anymore, no mapping, use direct RGB_xxxx color references
-// colorcode is taken from a 5 bit AsInt union
-// void MapWindow::TextColor(HDC hDC, short colorcode) {
-// 
-// 	switch (colorcode) {
-// 	case TEXTBLACK: 
-// 		if (BlackScreen) // 091109
-// 		  SetTextColor(hDC,RGB_WHITE);  // black 
-// 		else
-// 		  SetTextColor(hDC,RGB_BLACK);  // black 
-// 	  break;
-// 	case TEXTWHITE: 
-// 		if (BlackScreen) // 091109
-// 		  SetTextColor(hDC,RGB_LIGHTYELLOW);  // white
-// 		else
-// 		  SetTextColor(hDC,RGB_WHITE);  // white
-// 	  break;
-// 	case TEXTGREEN: 
-// 	  SetTextColor(hDC,RGB_GREEN);  // green
-// 	  break;
-// 	case TEXTRED:
-// 	  SetTextColor(hDC,RGB_RED);  // red
-// 	  break;
-// 	case TEXTBLUE:
-// 	  SetTextColor(hDC,RGB_BLUE);  // blue
-// 	  break;
-// 	case TEXTYELLOW:
-// 	  SetTextColor(hDC,RGB_YELLOW);  // yellow
-// 	  break;
-// 	case TEXTCYAN:
-// 	  SetTextColor(hDC,RGB_CYAN);  // cyan
-// 	  break;
-// 	case TEXTMAGENTA:
-// 	  SetTextColor(hDC,RGB_MAGENTA);  // magenta
-// 	  break;
-// 	case TEXTLIGHTGREY: 
-// 	  SetTextColor(hDC,RGB_LIGHTGREY);  // light grey
-// 	  break;
-// 	case TEXTGREY: 
-// 	  SetTextColor(hDC,RGB_GREY);  // grey
-// 	  break;
-// 	case TEXTLIGHTGREEN:
-// 	  SetTextColor(hDC,RGB_LIGHTGREEN);  //  light green
-// 	  break;
-// 	case TEXTLIGHTRED:
-// 	  SetTextColor(hDC,RGB_LIGHTRED);  // light red
-// 	  break;
-// 	case TEXTLIGHTYELLOW:
-// 	  SetTextColor(hDC,RGB_LIGHTYELLOW);  // light yellow
-// 	  break;
-// 	case TEXTLIGHTCYAN:
-// 	  SetTextColor(hDC,RGB_LIGHTCYAN);  // light cyan
-// 	  break;
-// 	case TEXTORANGE:
-// 	  SetTextColor(hDC,RGB_ORANGE);  // orange
-// 	  break;
-// 	case TEXTLIGHTORANGE:
-// 	  SetTextColor(hDC,RGB_LIGHTORANGE);  // light orange
-// 	  break;
-// 	case TEXTLIGHTBLUE:
-// 	  SetTextColor(hDC,RGB_LIGHTBLUE);  // light blue
-// 	  break;
-// 	default:
-// 	  SetTextColor(hDC,RGB_MAGENTA);  // magenta so we know it's wrong: nobody use magenta..
-// 	  break;
-// 	}
-// 
-// }
+//
+// A simple function telling us if we are currently USING any gauge
+// We need to know it for a coherent rotation of Display 1/3 Overlays button.
+// And also for customkey action.
+//
+bool HaveGauges(void) {
 
+
+  // GA has always the big compass overlay active
+  if (ISGAAIRCRAFT) return true;
+
+  return (GlideBarMode||LKVarioBar||ThermalBar);
+
+}

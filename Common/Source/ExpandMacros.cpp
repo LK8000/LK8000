@@ -11,6 +11,8 @@
 #include "LKInterface.h"
 #include "Multimap.h"
 
+extern bool HaveGauges(void);
+
 static void ReplaceInString(TCHAR *String, TCHAR *ToReplace, 
                             TCHAR *ReplaceWith, size_t Size){
   TCHAR TmpBuf[MAX_PATH];
@@ -230,6 +232,14 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 17:
 			// Order is:  ALL ON, TEXT ONLY, GAUGES ONLY, ALL OFF
+			if (!HaveGauges()) {
+				if (!IsMultimapOverlaysText()) {
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(2234)); // TEXT
+				} else {
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(491)); // OFF
+				}
+				break;
+			}
 			if (!IsMultimapOverlaysText()&&!IsMultimapOverlaysGauges()) {
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(899)); // ALL ON
 			} else {
