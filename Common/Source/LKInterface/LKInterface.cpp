@@ -287,13 +287,6 @@ void SelectMapSpace(short i) {
 }
 
 
-//
-void ToggleOverlays() {
-	ToggleMultimapOverlays();
-
-}
-
-
 // We assume that at least ConfBB[1] will be ON!
 // We cannot have all OFF!
 void BottomBarChange(bool advance) {

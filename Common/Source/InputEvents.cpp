@@ -1961,7 +1961,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
   if (_tcscmp(misc, TEXT("OVERLAYS")) == 0) {
-	ToggleOverlays();
+	ToggleMultimapOverlays();
 	return;
   }
 

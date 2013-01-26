@@ -10,6 +10,7 @@
 #include "InputEvents.h"
 #include "LKInterface.h"
 #include "Calculations2.h"
+#include "Multimap.h"
 #include "dlgTools.h"
 
 extern void ShowMenu();
@@ -140,7 +141,7 @@ passthrough:
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
-		ToggleOverlays();
+		ToggleMultimapOverlays();
 		return true;
 
 	case ckToggleMapLandable:

@@ -32,7 +32,6 @@ extern int GetOvertargetIndex(void);
 extern void GetOvertargetName(TCHAR *overtargetname);
 extern TCHAR * GetOvertargetHeader(void);
 extern void RotateOvertarget(void);
-extern void ToggleOverlays(void);
 
 int ProcessVirtualKey(int x, int y, long keytime, short vkmode);
 
