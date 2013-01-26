@@ -277,6 +277,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 
   PREAD(sname,svalue,szRegistryAirspaceWarningDlgTimeout, &AirspaceWarningDlgTimeout);
   PREAD(sname,svalue,szRegistryAirspaceWarningMapLabels, &AirspaceWarningMapLabels);
+  PREAD(sname,svalue,szRegistryAirspaceAckAllSame, &AirspaceAckAllSame);
   PREAD(sname,svalue,szRegistryAirspaceWarningRepeatTime, &AirspaceWarningRepeatTime);
   PREAD(sname,svalue,szRegistryAirspaceWarningVerticalMargin, &AirspaceWarningVerticalMargin);
   PREAD(sname,svalue,szRegistryAirspaceWarning, &AIRSPACEWARNINGS);

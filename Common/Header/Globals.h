@@ -652,6 +652,7 @@ GEXTERN int AirspaceWarningRepeatTime;		// warning repeat time if not acknowledg
 GEXTERN int AirspaceWarningVerticalMargin;	// vertical distance used to calculate too close condition
 GEXTERN int AirspaceWarningDlgTimeout;          // airspace warning dialog auto closing in x secs
 GEXTERN int AirspaceWarningMapLabels;           // airspace warning labels showed on map
+GEXTERN int AirspaceAckAllSame;        		// acknowledge all airspaces with same name and class
 GEXTERN int AltitudeMode;
 GEXTERN int AltitudeMode_Config;
 GEXTERN int SafetyAltitudeMode;

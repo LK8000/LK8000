@@ -96,6 +96,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity()); 
   rprintf(szRegistryAirspaceWarningDlgTimeout, AirspaceWarningDlgTimeout);
   rprintf(szRegistryAirspaceWarningMapLabels, AirspaceWarningMapLabels);
+  rprintf(szRegistryAirspaceAckAllSame, AirspaceAckAllSame);
   rprintf(szRegistryAirspaceWarningRepeatTime, AirspaceWarningRepeatTime);
   rprintf(szRegistryAirspaceWarningVerticalMargin, AirspaceWarningVerticalMargin);
   rprintf(szRegistryAirspaceWarning, AIRSPACEWARNINGS);

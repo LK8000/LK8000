@@ -424,6 +424,7 @@ void Globals_Init(void) {
   AirspaceWarningVerticalMargin = 1000;       // vertical distance used to calculate too close condition , in m*10
   AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
   AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
+  AirspaceAckAllSame = 0; 
 
   SnailNext = 0;
 

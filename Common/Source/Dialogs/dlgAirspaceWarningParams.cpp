@@ -36,6 +36,8 @@ static void SetReadOnlyItems()
   if (wp) wp->SetReadOnly(!aspw && !aspmaplabels);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
   if (wp) wp->SetReadOnly(!aspw);
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAckAllSame"));
+  if (wp) wp->SetReadOnly(!aspw);
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
   if (wp) wp->SetReadOnly(!aspw);
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
@@ -69,6 +71,12 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(AcknowledgementTime/60);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAckAllSame"));
+  if (wp) {
+    wp->GetDataField()->Set(AirspaceAckAllSame);
     wp->RefreshDisplay();
   }
 
@@ -168,6 +176,14 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsInteger()) {
       AirspaceWarningMapLabels = wp->GetDataField()->GetAsInteger();
+      changed = true;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAckAllSame"));
+  if (wp) {
+    if (AirspaceAckAllSame != wp->GetDataField()->GetAsInteger()) {
+      AirspaceAckAllSame = wp->GetDataField()->GetAsInteger();
       changed = true;
     }
   }

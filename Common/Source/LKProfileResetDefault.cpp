@@ -75,6 +75,7 @@ void LKProfileResetDefault(void) {
   AirspaceWarningVerticalMargin = 1000;        // vertical distance used to calculate too close condition *10
   AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
   AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
+  AirspaceAckAllSame = 0;
 
   SafetyAltitudeMode = 0;
 

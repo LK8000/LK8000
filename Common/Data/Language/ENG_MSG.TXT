@@ -1837,6 +1837,8 @@ _@M1820_ "Device configuration"
 # Bottom bar configuration button
 _@M1821_ "AUTO"
 _@M1822_ "Configure Multimaps"
+// leave a space after Ack
+_@M1823_ "Group Ack "
 
 ############################################################
 #                  - MENU MESSAGES - 

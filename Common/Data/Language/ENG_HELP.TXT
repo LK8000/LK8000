@@ -1701,5 +1701,9 @@ This alarm will be armed again only after landing.
 If enabled, TRM0 bottom bar will be automatically activated while thermalling,
 and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
 
+@1264
+[Group Ack]
+Acknowledgement of one airspace is valid for all airspaces with the same name and the same class.
+
 @9999
 No help available on this item!
