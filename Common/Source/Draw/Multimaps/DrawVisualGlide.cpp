@@ -615,10 +615,11 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 	for (int k=0; k<SortedNumber; k++) {
 		wpindex=*(pindex+k);
 		if (!ValidWayPoint(wpindex)) {
-			#if BUGSTOP
-			StartupStore(_T("...... GVGP: PHASE %d invalid wpindex = %d!!\n"),phase,wpindex);
-			LKASSERT(0);
-			#endif
+			// since we are not synced with DoNearest update cycle, we might fall here while it
+			// has reset the sorted list. No worry, in the worst case we miss a waypoint printed
+			// for a second, and the list might be inaccurate for the current second.
+			// But in the next run it will be ok, because at the end of its run, the DoNearest
+			// will be setting DataReady flag on and we shall update correctly.
 			continue;
 		}
 
