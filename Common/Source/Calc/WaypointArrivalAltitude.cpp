@@ -13,6 +13,10 @@
 // This is also called by DoNearest and it is overwriting AltitudeRequired 
 double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
 
+  if (ISCAR) {
+	return (Basic->Altitude-WayPointList[i].Altitude);
+  }
+
   double altReqd;
   double wDistance, wBearing;
   double wStartDistance=0, wStartBearing=0;
