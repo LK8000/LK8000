@@ -246,6 +246,13 @@ static void PrepareData(void){
 
 static void UpdateList(void){
 
+  // no waypoints, no party
+  if (numvalidwp<1) {
+	LowLimit=0;
+	UpLimit=0;
+	return;
+  }
+
 //  TCHAR sTmp[128];
   int i;
   bool distancemode = false;
