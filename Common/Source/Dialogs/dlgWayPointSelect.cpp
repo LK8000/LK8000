@@ -266,44 +266,38 @@ static void UpdateList(void){
   FullFlag=false; // 100502
 
   if (TypeFilterIdx == 1){
-    qsort(WayPointSelectInfo, numvalidwp-1,
+    qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointAirportCompare);
-    for (i=0; i<(int)numvalidwp; i++){
+    for (i=0; i<UpLimit; i++){
       if (!(WayPointSelectInfo[i].Type & (AIRPORT))){
         UpLimit = i;
         break;
       }
     }
-  }
-
-  if (TypeFilterIdx == 2){
-    qsort(WayPointSelectInfo, numvalidwp-1,
+  } else if (TypeFilterIdx == 2){
+    qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointLandableCompare);
-    for (i=0; i<(int)numvalidwp; i++){
+    for (i=0; i<UpLimit; i++){
       if (!(WayPointSelectInfo[i].Type & (AIRPORT | LANDPOINT))){
         UpLimit = i;
         break;
       }
     }
-  }
-
-  if (TypeFilterIdx == 3){
-    qsort(WayPointSelectInfo, numvalidwp-1,
+  } else if (TypeFilterIdx == 3){
+    qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointWayPointCompare);
-    for (i=0; i<(int)numvalidwp; i++){
+    for (i=0; i<UpLimit; i++){
       if (!(WayPointSelectInfo[i].Type & (TURNPOINT))){
         UpLimit = i;
         break;
       }
     }
-  }
-
-  if (TypeFilterIdx == 4 || TypeFilterIdx == 5){
+  } else if (TypeFilterIdx == 4 || TypeFilterIdx == 5){
     // distancemode = true;
     SelectedWayPointFileIdx = TypeFilterIdx-4;
-    qsort(WayPointSelectInfo, numvalidwp-1,
+    qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointFileIdxCompare);
-    for (i=0; i<(int)numvalidwp; i++){
+    for (i=0; i<UpLimit; i++){
       if (WayPointSelectInfo[i].FileIdx != SelectedWayPointFileIdx){
         UpLimit = i;
         break;
@@ -315,7 +309,7 @@ static void UpdateList(void){
     distancemode = true;
     qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointDistanceCompare);
-    for (i=0; i<(int)UpLimit; i++){
+    for (i=0; i<UpLimit; i++){
       if (WayPointSelectInfo[i].Distance > DistanceFilter[DistanceFilterIdx]){
         UpLimit = i;
         break;
