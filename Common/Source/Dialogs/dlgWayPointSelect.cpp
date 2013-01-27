@@ -253,8 +253,7 @@ static void UpdateList(void){
   ItemIndex = 0;
 
   UpLimit=numvalidwp;
-  LKASSERT(UpLimit>=0);
-
+  LKASSERT(UpLimit>0);
   LowLimit =0;
 
   FullFlag=false; // 100502
