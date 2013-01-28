@@ -20,6 +20,7 @@
 
 #if TESTBENCH
 //#define DEBUG_NEAR_POINTS	1
+ #define DEBUG_AIRSPACE
 #endif
 
 static const int k_nAreaCount = 14;
@@ -2164,7 +2165,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
    // We need a valid GPS fix in FLY mode
    if (Basic->NAVWarning && !SIMMODE) return;
   
-  #ifdef DEBUG_AIRSPACE
+  #ifdef DEBUG_AIRSPACE_2
   int starttick = GetTickCount();
   StartupStore(TEXT("---AirspaceWarning start%s"),NEWLINE);
   #endif
@@ -2318,7 +2319,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         
   } // sw step
 
-  #ifdef DEBUG_AIRSPACE
+  #ifdef DEBUG_AIRSPACE_2
   StartupStore(TEXT("   step %d takes %dms, processed %d airspaces from %d%s"), step, GetTickCount()-starttick, _airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
   #endif
 }
@@ -2516,64 +2517,170 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg)
   return true;
 }
 
+
+
+bool CAirspace::IsSame( CAirspace &as2 )
+{
+bool ret = false;
+	if(_type  == as2.Type())
+	  if( _tcscmp((_name),  (as2.Name()) ) == 0 )
+        ret = true;
+return ret;
+}
+
+
 // Ack an airspace for a given ack level and acknowledgement time
 void CAirspaceManager::AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningLevel_t ackstate)
 {
-    CCriticalSection::CGuard guard(_csairspaces);
+CCriticalSection::CGuard guard(_csairspaces);
+CAirspaceList::const_iterator it;
+
+  if(!AirspaceAckAllSame)
+  {
     airspace.WarningAckLevel(ackstate);
     airspace.SetAckTimeout();
-    #ifdef DEBUG_AIRSPACE
-    StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAckForTime()%s"),airspace.Name(),NEWLINE );
-    #endif
+  }
+  else
+  {
+    for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
+    {
+      if( (*it)->IsSame(airspace))
+	  {
+    	(*it)->WarningAckLevel(ackstate);
+    	(*it)->SetAckTimeout();
+#ifdef DEBUG_AIRSPACE
+StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAckForTime()%s"),(*it)->Name(),NEWLINE );
+#endif
+	  }
+    }
+  }
 }
 
 // Ack an airspace for a current level
 void CAirspaceManager::AirspaceAckWarn(CAirspace &airspace)
 {
-    CCriticalSection::CGuard guard(_csairspaces);
-    airspace.WarningAckLevel(airspace.WarningLevel());
-    airspace.SetAckTimeout();
-    #ifdef DEBUG_AIRSPACE
-    StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAck()%s"),airspace.Name(),NEWLINE );
-    #endif
+CCriticalSection::CGuard guard(_csairspaces);
+CAirspaceList::const_iterator it;
+
+  if(!AirspaceAckAllSame)
+  {
+	airspace.WarningAckLevel(airspace.WarningLevel());
+	airspace.SetAckTimeout();
+  }
+  else
+  {
+    for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
+    {
+      if( (*it)->IsSame(airspace))
+	  {
+    	(*it)->WarningAckLevel(airspace.WarningLevel());
+    	(*it)->SetAckTimeout();
+#ifdef DEBUG_AIRSPACE
+StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAck()%s"),(*it)->Name(),NEWLINE );
+#endif
+	  }
+    }
+  }
 }
 
 // Ack an airspace for all future warnings
 void CAirspaceManager::AirspaceAckSpace(CAirspace &airspace)
 {
-    CCriticalSection::CGuard guard(_csairspaces);
-    airspace.WarningAckLevel(awRed);
-    airspace.SetAckTimeout();
-    #ifdef DEBUG_AIRSPACE
-    StartupStore(TEXT("LKAIRSP: %s AirspaceAckSpace()%s"),airspace.Name(),NEWLINE );
-    #endif
+CCriticalSection::CGuard guard(_csairspaces);
+CAirspaceList::const_iterator it;
+
+  if(!AirspaceAckAllSame)
+  {
+	airspace.WarningAckLevel(awRed);
+  }
+  else
+  {
+    for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
+    {
+      if( (*it)->IsSame(airspace))
+	  {
+    	(*it)->WarningAckLevel(awRed);
+#ifdef DEBUG_AIRSPACE
+StartupStore(TEXT("LKAIRSP: %s AirspaceAckSpace()%s"),(*it)->Name(),NEWLINE );
+#endif
+	  }
+    }
+  }
 }
 
 // Disable an airspace 
 void CAirspaceManager::AirspaceDisable(CAirspace &airspace)
 {
-    CCriticalSection::CGuard guard(_csairspaces);
-    airspace.Enabled(false);
-    #ifdef DEBUG_AIRSPACE
-    StartupStore(TEXT("LKAIRSP: %s AirspaceDisable()%s"),airspace.Name(),NEWLINE );
-    #endif
+CCriticalSection::CGuard guard(_csairspaces);
+CAirspaceList::const_iterator it;
+
+  if(!AirspaceAckAllSame)
+  {
+	airspace.Enabled(false);
+  }
+  else
+  {
+    for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
+    {
+      if( (*it)->IsSame(airspace))
+	  {
+    	(*it)->Enabled(false);
+#ifdef DEBUG_AIRSPACE
+          StartupStore(TEXT("LKAIRSP: %s AirspaceDisable()%s"),(*it)->Name(),NEWLINE );
+#endif
+	  }
+    }
+  }
 }
 
 // Enable an airspace
 void CAirspaceManager::AirspaceEnable(CAirspace &airspace)
 {
-    CCriticalSection::CGuard guard(_csairspaces);
-    airspace.Enabled(true);
-    #ifdef DEBUG_AIRSPACE
-    StartupStore(TEXT("LKAIRSP: %s AirspaceEnable()%s"),airspace.Name(),NEWLINE );
-    #endif
+CCriticalSection::CGuard guard(_csairspaces);
+CAirspaceList::const_iterator it;
+
+  if(!AirspaceAckAllSame)
+  {
+	airspace.Enabled(true);
+  }
+  else
+  {
+    for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
+    {
+      if( (*it)->IsSame(airspace))
+	  {
+    	(*it)->Enabled(true);
+#ifdef DEBUG_AIRSPACE
+          StartupStore(TEXT("LKAIRSP: %s AirspaceEnable()%s"),(*it)->Name(),NEWLINE );
+#endif
+	  }
+    }
+  }
 }
 
 // Toggle flyzone on an airspace
 void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace)
 {
-    CCriticalSection::CGuard guard(_csairspaces);
-    airspace.FlyzoneToggle();
+CCriticalSection::CGuard guard(_csairspaces);
+CAirspaceList::const_iterator it;
+
+  if(!AirspaceAckAllSame)
+  {
+	 airspace.FlyzoneToggle();
+  }
+  else
+  {
+    for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
+    {
+      if( (*it)->IsSame(airspace))
+	  {
+    	(*it)->FlyzoneToggle();
+#ifdef DEBUG_AIRSPACE
+          StartupStore(TEXT("LKAIRSP: %s FlyzoneToggle()%s"),(*it)->Name(),NEWLINE );
+#endif
+	  }
+    }
+  }
 }
 
 // Centralized function to get airspace type texts
