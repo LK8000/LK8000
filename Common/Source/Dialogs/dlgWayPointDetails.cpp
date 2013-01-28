@@ -467,7 +467,17 @@ void dlgWayPointDetailsShowModal(short mypage){
 				 LineOffsets,
 				 MAXLINES);
 
+  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
+  if ( wDetails->ScrollbarWidth == -1) {
+   #if defined (PNA)
+   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
+   #else
+   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
+   #endif
+   wDetails->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
 
+  }
+  wDetailsEntry->SetWidth(wDetails->GetWidth() - wDetails->ScrollbarWidth - 5);
 
   WndButton *wb;
 
