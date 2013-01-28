@@ -23,7 +23,7 @@ static WndListFrame *wDetails=NULL;
 static WndOwnerDrawFrame *wDetailsEntry = NULL;
 static WndFrame *wInfo=NULL;
 static WndFrame *wCommand=NULL;
-static WndFrame *wSpecial=NULL; // VENTA3
+static WndFrame *wSpecial=NULL;
 
 #define MAXLINES 100
 static int LineOffsets[MAXLINES];
@@ -285,13 +285,10 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   // Resize Frames up to real screen size on the right.
   wInfo->SetBorderKind(BORDERLEFT);
-  wInfo->SetWidth(wf->GetWidth() - wInfo->GetLeft()-2);
+
   wCommand->SetBorderKind(BORDERLEFT);
-  wCommand->SetWidth(wf->GetWidth() - wCommand->GetLeft()-2);
   wSpecial->SetBorderKind(BORDERLEFT);
-  wSpecial->SetWidth(wf->GetWidth() - wSpecial->GetLeft()-2);
   wDetails->SetBorderKind(BORDERLEFT);
-  wDetails->SetWidth(wf->GetWidth() - wDetails->GetLeft()-2);
 
   wCommand->SetVisible(false);
   wSpecial->SetVisible(false);
@@ -350,8 +347,8 @@ void dlgWayPointDetailsShowModal(short mypage){
 	wp->SetText(_T(""));
   else
 	wp->SetText(WayPointList[SelectedWaypoint].Comment);
-  wp->SetButtonSize(16);
 
+  wp->SetButtonSize(16);
 
   //
   // Lat and Lon
@@ -361,13 +358,17 @@ void dlgWayPointDetailsShowModal(short mypage){
 		  WayPointList[SelectedWaypoint].Latitude,
 		  sTmp, sizeof(sTmp)-1);
 
-  ((WndProperty *)wf->FindByName(TEXT("prpCoordinate")))->SetText(sTmp);
+  wp = ((WndProperty *)wf->FindByName(TEXT("prpCoordinate")));
+  LKASSERT(wp);
+  wp->SetText(sTmp);
 	
   //
   // Waypoint Altitude 
   //
   Units::FormatUserAltitude(WayPointList[SelectedWaypoint].Altitude, sTmp, sizeof(sTmp)-1);
-  ((WndProperty *)wf->FindByName(TEXT("prpAltitude")))->SetText(sTmp);
+  wp = ((WndProperty *)wf->FindByName(TEXT("prpAltitude")));
+  LKASSERT(wp);
+  wp->SetText(sTmp);
 
   //
   // SUNSET at waypoint

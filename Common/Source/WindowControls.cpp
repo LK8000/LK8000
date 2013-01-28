@@ -1461,11 +1461,7 @@ void WindowControl::AddClient(WindowControl *Client){
   // -998 to advance one line with more space
   // -997 to advance one line with twice more space
   
-  #if 100927
   if (Client->mY <0){
-  	#if !101112
-	if (Client->mY == -888) Client->mY=ScreenSizeY;
-	#endif
 	if (mClientCount > 1){
 		if (Client->mY==-999) //@ 101008 
 			Client->mY=mClients[mClientCount-2]->mY;
@@ -1477,11 +1473,6 @@ void WindowControl::AddClient(WindowControl *Client){
 					Client->mY = mClients[mClientCount-2]->mY + mClients[mClientCount-2]->mHeight +NIBLSCALE(6);
 				else
 					Client->mY = mClients[mClientCount-2]->mY - ((mClients[mClientCount-2]->mHeight)*Client->mY);
-  #else
-  if (Client->mY == -1){
-	if (mClientCount > 1){
-		Client->mY = mClients[mClientCount-2]->mY + mClients[mClientCount-2]->mHeight;
-  #endif
 		SetWindowPos(Client->GetHandle(), 0,
 			Client->mX, Client->mY,
 			0, 0,
@@ -1490,12 +1481,23 @@ void WindowControl::AddClient(WindowControl *Client){
 	}
   }
 
-  #if !101112
-  if (Client->mX == -888) Client->mX=ScreenSizeX;
-  if (Client->mWidth == -888) Client->mWidth=ScreenSizeX;
-  if (Client->mHeight == -888) Client->mHeight=ScreenSizeY;
-  #endif
-  // Rescale mWidth
+  // Rescale to full horizontal width, good only for most-right windows
+  if (Client->mWidth<-1) {
+	// the magic rescaling to full width
+	if (ScreenLandscape)
+		Client->mWidth=ScreenSizeX-(int)((320*ScreenDScale)+Client->mWidth);
+	else
+		Client->mWidth=ScreenSizeX-(int)((240*ScreenDScale)+Client->mWidth);
+	// This is needed to update the geometry, otherwise we neet to issue a SetWidth()!
+	SetWindowPos(Client->GetHandle(), 0,
+		Client->mX, Client->mY,
+		Client->mWidth, Client->mHeight,
+		SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+
+  }
+
+#if 0
+  // THIS WAS WRONG
   if (Client->mWidth<-1) {
 	int i=RescaleWidth(Client->mWidth);
 	Client->mWidth=i;
@@ -1504,6 +1506,7 @@ void WindowControl::AddClient(WindowControl *Client){
 		Client->mWidth, Client->mHeight,
 		SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
   }
+#endif
 	
 }
 
