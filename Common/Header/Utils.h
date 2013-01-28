@@ -238,7 +238,6 @@ int  GetWaypointFileFormatType(const wchar_t* wextension);
 // LK Utils
 void LKBatteryManager();
 void LKSound(const TCHAR *lpName);
-int  RescaleWidth(const int rWidth);
 void ChangeWindCalcSpeed(const int newspeed);
 bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime);
 void GotoWaypoint(const int wpnum);

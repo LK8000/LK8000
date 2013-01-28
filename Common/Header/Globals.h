@@ -239,9 +239,6 @@ GEXTERN double LastDoNearest;
 GEXTERN double LastDoCommon;
 GEXTERN double LastDoThermalH;
 
-// xml dlgconfiguration value replacing 246 which became 278
-GEXTERN int LKwdlgConfig;
-
 GEXTERN bool PollingMode;
 
 GEXTERN bool BestWarning;

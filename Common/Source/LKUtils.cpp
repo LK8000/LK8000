@@ -29,32 +29,6 @@ void ResetNearestTopology(void) {
 }
 
 
-// Rescale automatically dialogs, using negative values to force rescaling
-// Notice: SHOULD BE CALLED ONLY IF rWidth is negative, in order to avoid useless SetWindowPos
-int RescaleWidth(const int rWidth) {
-
-  // Always rescale negative widths
-  if (rWidth <-1) {
-	// Special case is when width is also the scale unit, which demonstrate we have a bug to fix here!
-	if (rWidth == (int)(-246*ScreenDScale)){
-		return LKwdlgConfig;
-	}
-	double i=(246.0 / abs(rWidth));
-	if (i==0) {
-		FailStore(_T("INTERNAL ERROR RESCALEWIDTH rWidth=%d"),rWidth);
-		DoStatusMessage(_T("RESCALE ERR-001"));
-		return rWidth;
-	}
-	int ri=(int)( (LKwdlgConfig/i) *ScreenDScale );
-	// StartupStore(_T("... RescaleWidth(): rescale %d to %d\n"),rWidth, ri);
-	if (ri>ScreenSizeX) return(ScreenSizeX);
-	return (ri);
-  }
-  // else use the incoming rWidth but it is clearly an error
-  DoStatusMessage(_T("RESCALE WARN-001"));
-  return rWidth;
-}
-
 void ChangeWindCalcSpeed(const int newspeed) {
 
   WindCalcSpeed += (double)newspeed/SPEEDMODIFY;

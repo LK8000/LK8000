@@ -249,8 +249,6 @@ void Globals_Init(void) {
 
   // default initialization for gestures. InitLK8000 will fine tune it.
   GestureSize=60;
-  // xml dlgconfiguration value replacing 246 which became 278
-  LKwdlgConfig=0;
   IphoneGestures=false;
 
   PGClimbZoom=1;
