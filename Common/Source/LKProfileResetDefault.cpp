@@ -157,7 +157,7 @@ void LKProfileResetDefault(void) {
 
   // These values are used on startup, but on reset change also OpenCloseTopology
   LKTopoZoomCat05=9999;		// coast area
-  LKTopoZoomCat10=12;		// water labels threshold, over this realscale, no water labels are printed
+  LKTopoZoomCat10=9999;		// WATER AREA, (not: water labels threshold, over this realscale, no water labels are printed)
   LKTopoZoomCat20=9999;		// water line
   LKTopoZoomCat30=25;		// Big Roads
   LKTopoZoomCat40=6;		// Medium road
