@@ -2592,6 +2592,7 @@ CAirspaceList::const_iterator it;
   if(!AirspaceAckAllSame)
   {
 	airspace.WarningAckLevel(awRed);
+        airspace.SetAckTimeout();
   }
   else
   {
@@ -2600,6 +2601,7 @@ CAirspaceList::const_iterator it;
       if( (*it)->IsSame(airspace))
 	  {
     	(*it)->WarningAckLevel(awRed);
+    	(*it)->SetAckTimeout();
 #ifdef DEBUG_AIRSPACE
 StartupStore(TEXT("LKAIRSP: %s AirspaceAckSpace()%s"),(*it)->Name(),NEWLINE );
 #endif
