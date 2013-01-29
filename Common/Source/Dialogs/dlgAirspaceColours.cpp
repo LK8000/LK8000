@@ -111,23 +111,18 @@ int dlgAirspaceColoursShowModal(void){
 
   if (!wf) return -1;
 
-  //ASSERT(wf!=NULL);
-
   wAirspaceColoursList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceColoursList"));
-  //ASSERT(wAirspaceColoursList!=NULL);
+  LKASSERT(wAirspaceColoursList!=NULL);
   wAirspaceColoursList->SetBorderKind(BORDERLEFT);
   wAirspaceColoursList->SetEnterCallback(OnAirspaceColoursListEnter);
 
-  wAirspaceColoursListEntry = (WndOwnerDrawFrame*)wf->
-    FindByName(TEXT("frmAirspaceColoursListEntry"));
-  //ASSERT(wAirspaceColoursListEntry!=NULL);
+  wAirspaceColoursListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceColoursListEntry"));
+  LKASSERT(wAirspaceColoursListEntry!=NULL);
   wAirspaceColoursListEntry->SetCanFocus(true);
 
   UpdateList();
 
   wf->ShowModal();
-
-  // now retrieve back the properties...
 
   delete wf;
 
