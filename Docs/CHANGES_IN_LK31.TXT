@@ -330,6 +330,37 @@ Another common cause is the actual position (coordinates) of the waypoint. You t
 for this reason, we consider "yellow condition" anything below 50m arrival altitude.
 
 
+New PC SIMULATOR KEYS, working as an optional in addition to SIM buttons.
+------------------------------------------------------------------------
+
+On PC, in SIM mode only, it is possible to trigger changes of altitude, direction and speed very quickly by using the keyboard.
+
+    - Arrow Up/Down changes speed as with SIMULATOR buttons.
+    - Arrow Left/Right changes direction by 5 degrees, WITHOUT setting a turn rate.
+    - SHIFT Arrow UP  will fast forward at 10x speed, many times per second.
+    - Page Up and Page Down will change altitude by 10 meters or 45 feet.
+
+    . By keeping the keys pressed, values will change rapidly.
+    . You cannot go below altitude 0.
+    . At altitude 0, while steady on ground, the simulator will set ground altitude.
+
+
+   WHEN USING REPLAY IGC FILE:
+    Only when in map pages (any multimap page) you can use PC keys to interact with the replay logger.
+    . Arrow Up  : lower replay speed , up to 0X .
+    . Arrow Down : higher replay speed, no limit.
+    . Arrow Right:  advance one minute forward in time
+    . Page Up:  advance 5 minutes forward in time
+
+    Remarks>
+    - you cannot go back in time .
+    - replay speed over 10x will report inaccurate values in calculations
+    - advancing in time will not update correctly calculations, doing interpolations.
+      It will simply skip all intermediate points .
+    - Setting replay speed 0 will let you examine the situation like freezing flight at that moment.
+    - this is working only on PC
+
+
 
 LK8000 VERSION 3.1N 130126
 ==========================
