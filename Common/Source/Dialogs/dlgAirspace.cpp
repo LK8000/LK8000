@@ -193,17 +193,16 @@ bool dlgAirspaceShowModal(bool coloredit){
   }
   if (!wf) return false;
 
-  //ASSERT(wf!=NULL);
-
   wAirspaceList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceList"));
-  //ASSERT(wAirspaceList!=NULL);
+  LKASSERT(wAirspaceList!=NULL);
   wAirspaceList->SetBorderKind(BORDERLEFT);
   wAirspaceList->SetEnterCallback(OnAirspaceListEnter);
 
   wAirspaceListEntry = (WndOwnerDrawFrame*)wf->
-    FindByName(TEXT("frmAirspaceListEntry"));
-  //ASSERT(wAirspaceListEntry!=NULL);
+  FindByName(TEXT("frmAirspaceListEntry"));
+  LKASSERT(wAirspaceListEntry!=NULL);
   wAirspaceListEntry->SetCanFocus(true);
+
   // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
   if ( wAirspaceList->ScrollbarWidth == -1) {
    #if defined (PNA)
