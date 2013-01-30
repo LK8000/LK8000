@@ -587,6 +587,9 @@ void Topology::Paint(HDC hdc, RECT rc) {
   int iNewSize;
   #endif
   bool nolabels=false;
+  // 130130 Note> there is a bug.
+  // For some reason the water disappears and does not follow scaleDefault.
+  // It looks like it is disappearing from the cache. There is no time to try and fix it for v4.
   if (scaleCategory==10) {
 	// for water areas, use scaleDefault
 	if ( MapWindow::zoom.RealScale()>scaleDefaultThreshold) {
