@@ -277,10 +277,62 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   HBRUSH bcolor=NULL;
   COLORREF rgbcolor;
+  int wp;
+
+  unsigned short zeroslot=0;
+  double minbrgdiff=999.0;
+  double minabrgdiff=999.0; // absolute never negative
+  for (unsigned short n=0; n<numSlotX; n++) {
+	wp=slotWpIndex[n];
+	if (!ValidWayPoint(wp)) {
+		// empty slot nothing to print
+		continue;
+	}
+	double brgdiff = WayPointCalc[wp].Bearing -  DrawInfo.TrackBearing;
+	// this check is worthless
+	if (brgdiff < -180.0) {
+		brgdiff += 360.0;
+	} else {
+		if (brgdiff > 180.0) brgdiff -= 360.0;
+	}
+	double abrgdiff=brgdiff;
+	if (abrgdiff<0) abrgdiff*=-1;
+
+	if (abrgdiff<minabrgdiff) {
+		zeroslot=n;
+		minabrgdiff=abrgdiff;
+		minbrgdiff=brgdiff;
+	}
+  }
+
+  // Draw vertical line
+  #define DEGRANGE 10	// degrees left and right to perfect target
+  if (minabrgdiff<1) {
+	p1.x=slotCenterX[zeroslot];
+  } else {
+	// set fullscale range
+	if (minabrgdiff>DEGRANGE) {
+		minabrgdiff=DEGRANGE;
+		if (minbrgdiff<0)
+			minbrgdiff=-1*DEGRANGE;
+		else
+			minbrgdiff=DEGRANGE;
+	}
+	// we shift of course in the opposite direction
+	p1.x=slotCenterX[zeroslot]-(int)((boxSizeX/(DEGRANGE*2))*minbrgdiff);
+  }
+  p2.x=p1.x;
+
+  p1.y=vrc.top+1;
+  p2.y=vrc.bottom-1;
+  SelectObject(hdc, LKPen_Black_N1);
+  DrawSolidLine(hdc, p1, p2, vrc);
+
+
 
   for (unsigned short n=0; n<numSlotX; n++) {
 
-	int wp=slotWpIndex[n];
+	wp=slotWpIndex[n];
 	if (!ValidWayPoint(wp)) {
 		// empty slot nothing to print
 		continue;

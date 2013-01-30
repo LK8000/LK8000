@@ -234,6 +234,9 @@ What you see in the bottom window is a center horizontal line representing the a
 This means: any object OVER this line, in the green shaded area, has a positive arrival altitude for your current MC setting. 
 (We are using the common arrival altitude you already know, thus using MC, safety etc. as usual.)
 Any object BELOW this center line, in the red shaded area has a negative arrival altitude.
+Then you see a vertical line, representing an approximated bearing of 0 degrees in front of you.
+Objects left and right of this line are of course left and right on the horizont, relatively to your current bearing.
+
 
 Objects are boxes of one to three lines of text, depending on the device resolution and on the visualglide window.
 The smaller the window, the lesser the information. In the minimal situation, only small boxes with only the name of the waypoint are painted.
