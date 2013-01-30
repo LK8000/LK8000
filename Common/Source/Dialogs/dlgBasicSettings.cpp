@@ -329,6 +329,7 @@ void dlgBasicSettingsShowModal(void){
       wp->GetDataField()->SetAsFloat(
 	       Units::ToUserAltitude(GPS_INFO.BaroAltitude));
       wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+      if (!GPS_INFO.BaroAltitudeAvailable) wp->SetReadOnly(1);
       wp->RefreshDisplay();
     }
 
