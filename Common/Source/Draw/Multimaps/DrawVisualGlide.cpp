@@ -399,9 +399,10 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		bcolor=CreateSolidBrush(rgbcolor);
 	}
 
-	TCHAR line2[80], line3[80];
+	TCHAR line2[40], line3[40];
 	TCHAR value[40], unit[30];
 	TCHAR name[NAME_SIZE+1];
+	double ar=(WayPointCalc[wp].AltArriv[AltArrivMode]*ALTITUDEMODIFY);
 	_tcscpy(name,WayPointList[wp].Name);
 	ConvToUpper(name);
 	switch (numboxrows) {
@@ -419,7 +420,18 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		case 2:
 			// 2 lines: waypoint name + altdiff
 			LKFormatAltDiff(wp, false, value, unit);
-			_stprintf(line2,_T("%s%s"),value,unit);
+			// Should we print also the GR?
+			if ( (ar>=-9999 && ar<=9999) && (WayPointCalc[wp].GR < MAXEFFICIENCYSHOW) ) {
+				if ( ar>=-999 && ar<=999)
+					_stprintf(line2,_T("%s   "),value);
+				else
+					_stprintf(line2,_T("%s  "),value);
+				LKFormatGR(wp, false, value, unit);
+				_tcscat(line2,value);
+			} else {
+				_stprintf(line2,_T("%s"),value);
+			}
+
 			VGTextInBox(hdc,n,2,name, line2, NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
 			break;
 
@@ -433,8 +445,17 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 			_tcscat(line2,tmpT);
 
 			LKFormatAltDiff(wp, false, value, unit);
-			_stprintf(line3,_T("%s%s"),value,unit);
-
+			// Should we print also the GR?
+			if ( (ar>=-9999 && ar<=9999) && (WayPointCalc[wp].GR < MAXEFFICIENCYSHOW) ) {
+				if ( ar>=-999 && ar<=999)
+					_stprintf(line3,_T("%s   "),value);
+				else
+					_stprintf(line3,_T("%s  "),value);
+				LKFormatGR(wp, false, value, unit);
+				_tcscat(line3,value);
+			} else {
+				_stprintf(line3,_T("%s"),value);
+			}
 
 			VGTextInBox(hdc,n,3,name, line2, line3, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
 			break;

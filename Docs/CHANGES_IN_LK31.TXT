@@ -234,6 +234,7 @@ What you see in the bottom window is a center horizontal line representing the a
 This means: any object OVER this line, in the green shaded area, has a positive arrival altitude for your current MC setting. 
 (We are using the common arrival altitude you already know, thus using MC, safety etc. as usual.)
 Any object BELOW this center line, in the red shaded area has a negative arrival altitude.
+
 Then you see a vertical line, representing an approximated bearing of 0 degrees in front of you.
 Objects left and right of this line are of course left and right on the horizont, relatively to your current bearing.
 
@@ -243,8 +244,9 @@ The smaller the window, the lesser the information. In the minimal situation, on
 
 . WAWYPOINT BOX CONTENT
 Line 1: name of waypoint
-Line 2 and Line 3: arrival altitude, waypoint distance and bearing difference.
+Line 2 and Line 3: arrival altitude, required glide ratio (aka efficiency), waypoint distance and bearing difference.
 If only two lines are in use, waypoint distance and bearing diff. are not painted.
+The required efficiency is printed if it is below 200. Over 199, it not printed.
 
 . WAYPOINT BOX COLORS
 Each box has a coloured background.
