@@ -429,7 +429,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 				LKFormatGR(wp, false, value, unit);
 				_tcscat(line2,value);
 			} else {
-				_stprintf(line2,_T("%s"),value);
+				_stprintf(line2,_T("%s   ---"),value);
 			}
 
 			VGTextInBox(hdc,n,2,name, line2, NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
@@ -454,7 +454,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 				LKFormatGR(wp, false, value, unit);
 				_tcscat(line3,value);
 			} else {
-				_stprintf(line3,_T("%s"),value);
+				_stprintf(line3,_T("%s   ---"),value);
 			}
 
 			VGTextInBox(hdc,n,3,name, line2, line3, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
