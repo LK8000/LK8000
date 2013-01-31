@@ -243,7 +243,7 @@ Objects are boxes of one to three lines of text, depending on the device resolut
 The smaller the window, the lesser the information. In the minimal situation, only small boxes with only the name of the waypoint are painted.
 
 . WAWYPOINT BOX CONTENT
-Line 1: name of waypoint
+Line 1: name of waypoint. This name is painted in BLUE when the safety altitude applies to calculations, otherwise is it painted BLACK.
 Line 2 and Line 3: arrival altitude, required glide ratio (aka efficiency), waypoint distance and bearing difference.
 If only two lines are in use, waypoint distance and bearing diff. are not painted.
 The required efficiency is printed if it is below 200. Over 199, it not printed.
@@ -364,6 +364,71 @@ On PC, in SIM mode only, it is possible to trigger changes of altitude, directio
       It will simply skip all intermediate points .
     - Setting replay speed 0 will let you examine the situation like freezing flight at that moment.
     - this is working only on PC
+
+
+GROUPED AIRSPACES
+-----------------
+
+Complex airspaces are often a combination of different parts (blocks). Due to the airspace file structure each of this part is handled as a separate airspace.
+This can be annoying if you want to acknowledge or en/disable such complex structure.
+The airspace grouping will combine all airspace parts as one airspace, as long the parts have identical names and types.
+
+The name must be identical in length and upper-/lowercase characters.
+
+Grouping the airspaces can be turned on/off in Setup page 2 "Airspaces".
+But in case you need separate acknowledgment of parts of the same airspace it is a better way to give it different names (e.g. Dresden EAST, Dresden WEST).  
+
+
+
+
+LK8000 VERSION 3.1O 130201
+==========================
+
+NEW
+
+. Add new configuration in Airspace Warnings for Group Ack.
+  Acknowledging one airspace will then extend this confirmation to all of the airspaces having the same name and the same class.
+  This is particularly useful if flying in populated airspace areas where a single zone is splitted into several airspaces all logically connected.
+
+
+.  VisualGlide vertical line for bearing diff.
+   This bearing diff line is positioned in the approximated 0 degrees bearing diff, which means: your bearing.
+.  VisualGlide printing on second line also the required glideratio (aka Efficiency Requested).
+.  VG If the Safety Altitude applies for the boxed waypoint, paint its name in BLUE, instead of BLACK.
+
+
+
+
+CHANGES
+
+. Overlay button is skipping GAUGES if no gauges are configured to be available.
+  The same happens for overlay customkeys.
+  Note that GA mode always has an overlay available, the compass.
+
+. For CAR TREKKING mode the arrival altitude is always the difference between our altitude and waypoint altitude.  No gliding there!
+
+. Do not let people change altitude in basic settings if there is no baroaltitude available.
+
+
+
+FIXES
+
+. Fix waypoint details comment window no more displaying scrollbar.
+  Resize automatically buttons and text to fit correctly horizontal space.
+  Also fix portrait button disposition in the same page.
+
+. Fix Waypoint details scrollbar in WAYNOTES window not sized correctly vertically
+  It was starting one line below the first.
+
+. Fix airspace configuration dialog, scroll bar overlapping text, resized to full screen in all resolutions.
+
+. Fix water area disappearing when zooming out over 12km, bug introduced in 3.1i.
+
+. Fix all configuration dialogs to be rescaled full screen.
+. Fix HELP dialogs rescaled fullscreen
+
+
+
 
 
 
