@@ -276,7 +276,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   int offset=(boxSizeY/2)+CENTERYSPACE;
 
   HBRUSH bcolor=NULL;
-  COLORREF rgbcolor;
+  COLORREF rgbcolor, textcolor;
   int wp;
 
   unsigned short zeroslot=0;
@@ -405,6 +405,12 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 	double ar=(WayPointCalc[wp].AltArriv[AltArrivMode]*ALTITUDEMODIFY);
 	_tcscpy(name,WayPointList[wp].Name);
 	ConvToUpper(name);
+
+	if (IsSafetyAltitudeInUse(wp))
+		textcolor=RGB_DARKBLUE;
+	else
+		textcolor=RGB_BLACK;
+
 	switch (numboxrows) {
 		case 0:
 			#if BUGSTOP
@@ -414,7 +420,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 		case 1:
 			// 1 line: waypoint name
-			VGTextInBox(hdc,n,1,name, NULL,NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			VGTextInBox(hdc,n,1,name, NULL,NULL, slotCenterX[n] , ty,  textcolor, bcolor);
 			break;
 
 		case 2:
@@ -432,7 +438,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 				_stprintf(line2,_T("%s   ---"),value);
 			}
 
-			VGTextInBox(hdc,n,2,name, line2, NULL, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			VGTextInBox(hdc,n,2,name, line2, NULL, slotCenterX[n] , ty,  textcolor, bcolor);
 			break;
 
 		case 3:
@@ -457,7 +463,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 				_stprintf(line3,_T("%s   ---"),value);
 			}
 
-			VGTextInBox(hdc,n,3,name, line2, line3, slotCenterX[n] , ty,  RGB_BLACK, bcolor);
+			VGTextInBox(hdc,n,3,name, line2, line3, slotCenterX[n] , ty,  textcolor, bcolor);
 			break;
 		default:
 			#if BUGSTOP
@@ -480,8 +486,8 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 
 
-
-
+// trgb color is used only for line1, because using any other color than black  on thin characters on line 2 and 3 would
+// make it quite less visible.
 void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const TCHAR* wText1, const TCHAR* wText2, const TCHAR *wText3, int x, int y, COLORREF trgb, HBRUSH bbrush) {
 
   #if BUGSTOP
@@ -544,6 +550,7 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   //
   // LINE 2
   // 
+  SetTextColor(hDC,RGB_BLACK);
   SelectObject(hDC, line2Font);
   tlen=_tcslen(wText2);
   GetTextExtentPoint(hDC, wText2, tlen, &tsize);
@@ -561,6 +568,7 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   //
   // LINE 3
   //
+  SetTextColor(hDC,RGB_BLACK);
   tlen=_tcslen(wText3);
   GetTextExtentPoint(hDC, wText3, tlen, &tsize);
   tx = x-(tsize.cx/2);
