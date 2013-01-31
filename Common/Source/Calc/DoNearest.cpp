@@ -108,12 +108,21 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    #if DEBUG_DONEAREST
    StartupStore(_T(".. SORTING nearest\n"));
    #endif
+
+   // If we are sorting by direction, we must pick initially only wp ahead of us, += 90 degrees max!
+   // Otherwise we are going to miss valid waypoints ahead, skipped because there are closer wps
+   // at our back..
+   bool directsort=(SortedMode[curmapspace]==2);
+
+   // This can be a problem, careful: we use MAXRANGELANDABLE but we may be using MAXRANGETURNPOINT
+   // if in the future we want to make them different (currently both 500, so ok).
    for (i=0, inserted=0; i<MAXRANGELANDABLE; i++) { 
 
 	wp_index=*(p_rangeIndex+i);
 	if (wp_index <0) {
 		continue;
 	}
+
    	#if DEBUG_DONEAREST
 	StartupStore(_T("wp_index=%d  <%s>\n"),wp_index, WayPointList[wp_index].Name);
 	#endif
@@ -124,6 +133,16 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	// since we have them calculated, lets save these values 
 	WayPointCalc[wp_index].Distance = wp_distance;
 	WayPointCalc[wp_index].Bearing  = wp_bearing;
+
+	if (directsort) {
+		double brgdiff = WayPointCalc[wp_index].Bearing -  Basic->TrackBearing;
+		if (brgdiff < -180.0) {
+			brgdiff += 360.0;
+		} else {
+			if (brgdiff > 180.0) brgdiff -= 360.0;
+		}
+		if ((brgdiff<-60)|| (brgdiff>60)) continue;
+	}
 
 	wp_value=wp_distance;
 
