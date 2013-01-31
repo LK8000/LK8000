@@ -13,6 +13,9 @@
 // Assumes that waypoint IS VALID
 // Currently called by DoNearest
 
+// This is the windows in degrees, +-60, where we accept waypoints when sorting by current direction
+#define DIRECTIONRANGE	60
+
 void DoNearestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) { 
 
   double *altwp_gr	= &WayPointCalc[AltWaypoint].GR;
@@ -141,7 +144,7 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		} else {
 			if (brgdiff > 180.0) brgdiff -= 360.0;
 		}
-		if ((brgdiff<-60)|| (brgdiff>60)) continue;
+		if ((brgdiff<-DIRECTIONRANGE)|| (brgdiff>DIRECTIONRANGE)) continue;
 	}
 
 	wp_value=wp_distance;
@@ -208,23 +211,23 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			if (wp_value<0) wp_value*=-1;
 
 			// Sort by distance with better bearing accuracy
-			if (wp_value>=90)
+			// We should not consider anything above 60, but never mind.
+			if (wp_value>=60) {
 				wp_value=WayPointCalc[wp_index].Distance+4000000;
-			else
-				if (wp_value>=60)
+			} else {
+				if (wp_value>=45)
 					wp_value=WayPointCalc[wp_index].Distance+3000000;
-				else
-					if (wp_value>=45)
+				else {
+					if (wp_value>=30) {
 						wp_value=WayPointCalc[wp_index].Distance+2000000;
-					else {
-
-						if (wp_value>=20)
+					} else {
+						if (wp_value>=15)
 							wp_value=WayPointCalc[wp_index].Distance+1000000;
 						else
 							wp_value=WayPointCalc[wp_index].Distance;
 					}
-
-
+				}
+			}
 			break;
 		case 3:
 			wp_value=WayPointCalc[wp_index].GR;

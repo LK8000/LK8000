@@ -171,6 +171,8 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 		}
 		double abrgdiff=brgdiff;
 		if (abrgdiff<0) abrgdiff*=-1;
+		// Careful: we are selecting max 45 from a list that is tuned to max 60, so ok.
+		// DIRECTIONRANGE definition in DoNearest
 		if (abrgdiff>45) continue;
 
 		// First we insert unconditionally mountain passes and not too close task points
