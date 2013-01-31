@@ -18,7 +18,7 @@ extern void ResetVisualGlideGlobals(void);
 int slotWpIndex[MAXBSLOT+1];
 
 
-#define DEBUG_GVG	1
+//#define DEBUG_GVG	1
 //#define DEBUGSORT	1
 
 
