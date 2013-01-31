@@ -409,6 +409,10 @@ CHANGES
 
 . Do not let people change altitude in basic settings if there is no baroaltitude available.
 
+. At startup, drawing FAI sectors is disabled. We dont print at the same time FAI and Task sectors.
+  Reason: either you fly cross country or you fly a real task. You can change display any time, but not
+  keep both things at the same time.
+
 
 
 FIXES
