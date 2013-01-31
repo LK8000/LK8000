@@ -18,7 +18,7 @@ extern void ResetVisualGlideGlobals(void);
 int slotWpIndex[MAXBSLOT+1];
 
 
-//#define DEBUG_GVG	1
+#define DEBUG_GVG	1
 //#define DEBUGSORT	1
 
 
@@ -94,7 +94,7 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
   // set up fine tuned parameters for this run
   //
   int maxgratio=1;
-  double maxdistance=300;
+  double maxdistance=300; // in METERS, not in KM!
   if (ISPARAGLIDER) {
 	maxgratio=2;
 	maxdistance=100;
@@ -189,9 +189,8 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 			if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>50) {
 				if ( WayPointCalc[wpindex].GR<=maxgratio) continue;
 			}
-
 		}
-		if (phase==2) {
+		if (phase<=2) {
 			if (distance<maxdistance) continue;
 			// use mountain tops, if not too close and not too obviously reachable
 			if (WayPointList[wpindex].Style!=STYLE_MTTOP) continue;
@@ -199,13 +198,13 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 				if ( WayPointCalc[wpindex].GR<=(maxgratio*2)) continue;
 			}
 		}
-		if (phase==3) {
+		if (phase<=3) {
 			if (distance<maxdistance) continue;
 			if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>50) {
 				if ( WayPointCalc[wpindex].GR<=(maxgratio*2)) continue;
 			}
 		}
-		if (phase==4) {
+		if (phase<=4) {
 			if (distance<maxdistance) continue;
 		}
 
