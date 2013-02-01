@@ -227,7 +227,7 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 			continue;
 		}
 
-		// Second we take anything not obviously unreachable or reachable
+		// Second we take anything not obviously reachable
 		if (phase==2) {
 			if (abrgdiff>45) continue;
 			if (distance<maxdistance) continue;

@@ -276,23 +276,28 @@ A LONG CLICK on a waypoint box will trigger waypoint details!
 From the usual wp detail page you can decide an action, or investigate further the waypoint.
 
 
-. WAYPOINTS APPEARING ON THE VISUALGLIDE 
+. WAYPOINTS APPEARING ON THE VISUALGLIDE  (the VGE: Visual Glide Engine)
 
 You are now wondering which waypoints are appearing on the visualglide.
 First of all, we can only display a few of them, depending on screen resolution.
 We also want the waypoint box to be large enough to be clickable, and we dont want boxes to overlap.
-So we must carefully choose what to show!
+So we must carefully choose what to show! 
+The VGE (Visual Glide Engine) is doing exactly this for you, automatically.
 
 VG is about showing what you actually have in FRONT of you, like in Nearest page 2.3, sorted by direction.
-What do we mean by "in front": 45 degrees left or right of you. If necessary (unfilled space available) we extend the search up to 90 degrees left and right, for a total of 180 degrees in a "frog view".
-Starting from that list, we unconditionally give priority to:
-- Mountain passes
+What do we mean by "in front": 45 degrees left or right of you. If necessary (unfilled space available) we extend the search up to 60 degrees left and right, for a total of 120 degrees in a "frog view".
+Starting from that list, we give priority to:
+- Mountain passes (if using CUP turnpoints)
 - Task turnpoints
+Mountain passes and turnpoints are shown with priority over anything else only if they are not so obviously reachable that you can see them by yourself OR if they are absolutely unreachable.
+The VGE considers your current best glide ratio and the current arrival altitude predicted for such waypoint, to take this decision.
 
-then we try to be smart enough to not tell you that you are making it over something you can see by yourself.
-We look at the REQUIRED GLIDE RATIO , if it is below 1:10 for a glider (or 1:2 for Paragliders, 1:1 for general aviation and trekking mode) we can assume you are able to judge by yourself you can make it, and dont need the visualglide to tell you!
 
-After that we give priority to MOUNTAIN TOPS, which is possible only if you are using a waypoint file format like CUP , that use styles. Otherwise, skip this.
+Then the VGE try to be smart enough to not tell you that you are making it over something you can see by yourself. 
+There is no reason to tell you that 4 miles away there is a mountain that you can reach with a GR of 12 and an arrival altitude of +375m for example: your eyes already can see it with no need of a computer.
+But you wouldn't be able to guess that, far beyond that mountain, you can make it over the very next ridge, and you can thus skip the first thermal and go straight to the next ridge!
+The VGE discards useless informations, and goes beyond your eyes.
+
 
 Waypoints are then printed from left to right, ordered by bearing difference.
 The horizontal disposition is not accurate and will NOT necessarily reflect the position of the waypoint relatively to your horizont.
@@ -381,7 +386,7 @@ But in case you need separate acknowledgment of parts of the same airspace it is
 
 
 
-LK8000 VERSION 3.1O 130201
+LK8000 VERSION 3.1o 130201
 ==========================
 
 NEW
@@ -412,6 +417,15 @@ CHANGES
 . At startup, drawing FAI sectors is disabled. We dont print at the same time FAI and Task sectors.
   Reason: either you fly cross country or you fly a real task. You can change display any time, but not
   keep both things at the same time.
+
+. Better sorting of nearest waypoints for direction.
+  Restrict selection of waypoints in DoNearest sorted by direction to those in the -60  +60 degrees range.
+  Previously selecting also those at out back, which made the 50 nearest list sorted by direction very limitated.
+
+.  Visualglide is finally using correctly waypoints ahead.
+   The real VG engine is working only now.. giving us more useful informations.
+   See manual.
+
 
 
 
