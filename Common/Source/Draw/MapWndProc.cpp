@@ -950,7 +950,7 @@ _continue:
 		switch(wParam) {
 			case 0x21:	// VK_PRIOR PAGE UP
 				if (Units::GetUserAltitudeUnit() == unFeet)
-					GPS_INFO.Altitude += 45.71999999;
+					GPS_INFO.Altitude += 15.239999976;
 				else
 					GPS_INFO.Altitude += 10;
 				TriggerGPSUpdate();
@@ -958,7 +958,7 @@ _continue:
 				break;
 			case 0x22:	// VK_NEXT PAGE DOWN
 				if (Units::GetUserAltitudeUnit() == unFeet)
-					GPS_INFO.Altitude -= 45.71999999;
+					GPS_INFO.Altitude -= 15.239999976;
 				else
 					GPS_INFO.Altitude -= 10;
 				if (GPS_INFO.Altitude<=0) GPS_INFO.Altitude=0;

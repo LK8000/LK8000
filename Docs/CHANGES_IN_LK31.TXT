@@ -346,9 +346,12 @@ New PC SIMULATOR KEYS, working as an optional in addition to SIM buttons.
 On PC, in SIM mode only, it is possible to trigger changes of altitude, direction and speed very quickly by using the keyboard.
 
     - Arrow Up/Down changes speed as with SIMULATOR buttons.
-    - Arrow Left/Right changes direction by 5 degrees, WITHOUT setting a turn rate.
+    - Arrow Left/Right and also Shift arrow Left/Right change direction by 5 degrees, WITHOUT setting a turn rate.
     - SHIFT Arrow UP  will fast forward at 10x speed, many times per second.
-    - Page Up and Page Down will change altitude by 10 meters or 45 feet.
+      If ground speed is zero, a minimum speed is granted to make the aircraft move nevertheless.
+      Set higher ground speed to proceed faster.
+
+    - Page Up and Page Down will change altitude by 10 meters or 50 feet.
 
     . By keeping the keys pressed, values will change rapidly.
     . You cannot go below altitude 0.
@@ -426,6 +429,7 @@ CHANGES
    The real VG engine is working only now.. giving us more useful informations.
    See manual.
 
+. PC simulator fast forward key will move the aircraft even if no ground speed is set.
 
 
 
@@ -445,9 +449,9 @@ FIXES
 . Fix all configuration dialogs to be rescaled full screen.
 . Fix HELP dialogs rescaled fullscreen
 
+. Fix simulator keys using FEET altitude, now is correctly changing altitude by 50 feet, not by 45m.
 
-
-
+. Fix 3.1n missing bearing line in visualglide topview
 
 
 LK8000 VERSION 3.1N 130126

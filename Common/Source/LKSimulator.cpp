@@ -253,12 +253,12 @@ void LKSimulator(void) {
 
 
 #if (WINDOWSPC>0)
-//
-// This is called 
 void SimFastForward() {
 
+  double gs=GPS_INFO.Speed*10.0;
+  if (gs<100) gs=100;
   FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
-                          GPS_INFO.TrackBearing, GPS_INFO.Speed*10.0,
+                          GPS_INFO.TrackBearing, gs,
                           &GPS_INFO.Latitude,
                           &GPS_INFO.Longitude);
 
