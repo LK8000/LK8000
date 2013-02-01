@@ -130,7 +130,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   }
 #endif
   static bool checksafetyaltitude=true; // 100709
-  if (!ISPARAGLIDER) // 100925
+  if (!ISPARAGLIDER && !ISCAR) // 100925
   if (checksafetyaltitude) {
 	if (SAFETYALTITUDEARRIVAL<500) { // SAFETY is *10, so we check <50 really
 	// LKTOKEN  _@M155_ = "CHECK safety arrival altitude\n" 
