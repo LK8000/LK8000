@@ -12,13 +12,14 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "LKStyle.h"
+#include "McReady.h"
 
 extern void ResetVisualGlideGlobals(void);
 
 int slotWpIndex[MAXBSLOT+1];
 
 
-//#define DEBUG_GVG	1
+#define DEBUG_GVG	1
 //#define DEBUGSORT	1
 
 
@@ -93,18 +94,27 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
   //
   // set up fine tuned parameters for this run
   //
-  int maxgratio=1;
+
+  int maxgratio=1, mingratio=1;
   double maxdistance=300; // in METERS, not in KM!
   if (ISPARAGLIDER) {
-	maxgratio=2;
+	maxgratio=(int)(GlidePolar::bestld/2);
+	mingratio=(int)(GlidePolar::bestld*1.5);
 	maxdistance=100;
   }
   if (ISGLIDER) {
-	maxgratio=10;
+	maxgratio=(int)(GlidePolar::bestld/2);
+	mingratio=(int)(GlidePolar::bestld*1.5);
+	maxdistance=300;
+  }
+  if (ISGAAIRCRAFT) {
+	maxgratio=(int)(GlidePolar::bestld/2);
+	mingratio=(int)(GlidePolar::bestld*2);
 	maxdistance=300;
   }
   if (ISCAR) {
 	maxgratio=1;
+	mingratio=999;
 	maxdistance=100;
   }
 
@@ -113,7 +123,7 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
   //
 
   // We do this in several passes. 
-  #define MAXPHASES	5
+  #define MAXPHASES	4
   unsigned short phase=1;
 
   #if DEBUG_GVG
@@ -129,6 +139,10 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 		StartupStore(_T("...... GVGP: PHASE %d warning not enough SortedNumber (%d) for i=%d\n"),phase,SortedNumber,i);
 	}
 	#endif
+
+	// Did we found at least one valid in current phase? Otherwise we skip the rest of numslots.
+	// And we pass directly to the next phase.
+	bool found=false; 
 
 	// look up for an empty slot, needed if running after phase 1
 	if (slotWpIndex[i]!=INVALID_VALUE) continue;
@@ -171,52 +185,73 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 		}
 		double abrgdiff=brgdiff;
 		if (abrgdiff<0) abrgdiff*=-1;
-		// Careful: we are selecting max 45 from a list that is tuned to max 60, so ok.
+
+		#if 0
+		// do we already have a wp with same bearing? 
+		for (int j=0; j<numslots; j++) {
+			if ((int)tmpSlotBrgDiff[j]==(int)brgdiff) {
+				//StartupStore(_T("%s with bdiff=%d already used\n"),WayPointList[wpindex].Name,(int)brgdiff);
+				alreadyused=true;
+				break;
+			}
+		}
+		if (alreadyused) continue;
+		#endif
+
+		// Careful: we are selecting abrgdiff from a list that is tuned to max 60, so ok.
 		// DIRECTIONRANGE definition in DoNearest
-		if (abrgdiff>45) continue;
-
-		// First we insert unconditionally mountain passes and not too close task points
-		if (WayPointList[wpindex].Style==STYLE_MTPASS) goto _useit;
-		if ((WayPointList[wpindex].InTask) && (distance>100)) goto _useit;
-
 
 		// Then we make a selective insertion, in several steps
-		// Normally we use only phase 1
+
+		// First, we pick mountain passes and task points, generally priority #1 points
+		// accepted from +-45 deg, but only if they are not absolutely unreachable
 		if (phase==1) {
+			if (abrgdiff>45) continue;
 			// if we are practically over the waypoint, skip it 
 			if (distance<maxdistance) continue;
-			// if we are within an obvious glide ratio, no need to use it at all costs
-			if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>50) {
-				if ( WayPointCalc[wpindex].GR<=maxgratio) continue;
+
+			// Consider only Mt.Passes and task points not below us...
+			if ( (WayPointList[wpindex].Style==STYLE_MTPASS) ||
+			     (WayPointList[wpindex].InTask) && (distance>100) ) {
+
+				// ... that are not within an obvious glide ratio
+				// (considering even strong headwind, we want a very positive arrival)
+				if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>150) {
+					if ( WayPointCalc[wpindex].GR<=(maxgratio/1.5)) continue;
+				}
+				if (WayPointCalc[wpindex].AltArriv[AltArrivMode]<-100) {
+					if ( WayPointCalc[wpindex].GR>=mingratio) continue;
+				}
+				goto _takeit;
 			}
+			continue;
 		}
-		if (phase<=2) {
+
+		// Second we take anything not obviously unreachable or reachable
+		if (phase==2) {
+			if (abrgdiff>45) continue;
 			if (distance<maxdistance) continue;
-			// use mountain tops, if not too close and not too obviously reachable
-			if (WayPointList[wpindex].Style!=STYLE_MTTOP) continue;
-			if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>50) {
-				if ( WayPointCalc[wpindex].GR<=(maxgratio*2)) continue;
+			if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>150) {
+				if ( WayPointCalc[wpindex].GR<=(maxgratio)) continue;
 			}
+			goto _takeit;
 		}
-		if (phase<=3) {
+
+		if (phase==3) {
+			if (abrgdiff>45) continue;
 			if (distance<maxdistance) continue;
-			if (WayPointCalc[wpindex].AltArriv[AltArrivMode]>50) {
-				if ( WayPointCalc[wpindex].GR<=(maxgratio*2)) continue;
-			}
-		}
-		if (phase<=4) {
-			if (distance<maxdistance) continue;
+			goto _takeit;
 		}
 
+		// else we accept anything, in the original sort order
 
-		// if (phase==MAXPHASES)  do nothing, simply accept the waypoint!
 
-
-_useit:
+_takeit:
 
 		// ok good, use it
 		slotWpIndex[i]=wpindex;
 		tmpSlotBrgDiff[i]=brgdiff;
+		found=true;
 
 		#if DEBUG_GVG
 		StartupStore(_T("PHASE %d  slot [%d] of %d : wp=%d <%s> brg=%f\n"),
@@ -226,6 +261,12 @@ _useit:
 		break;
 	} // for all sorted wps
 
+	if (!found) {
+		#if DEBUG_GVG
+		StartupStore(_T("PHASE %d  nothing found during search (stop at slot %d), advance to next phase\n"),phase,i>=numslots?numslots-1:i);
+		#endif
+		break;
+	}
 	if (currentFilledNumber>=numslots) {
 		#if DEBUG_GVG
 		StartupStore(_T("PHASE %d  stop search, all slots taken\n"),phase);

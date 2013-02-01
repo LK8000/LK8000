@@ -213,18 +213,15 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			// Sort by distance with better bearing accuracy
 			// We should not consider anything above 60, but never mind.
 			if (wp_value>=60) {
-				wp_value=WayPointCalc[wp_index].Distance+4000000;
+				wp_value=WayPointCalc[wp_index].Distance+3000000;
 			} else {
 				if (wp_value>=45)
-					wp_value=WayPointCalc[wp_index].Distance+3000000;
+					wp_value=WayPointCalc[wp_index].Distance+2000000;
 				else {
-					if (wp_value>=30) {
-						wp_value=WayPointCalc[wp_index].Distance+2000000;
+					if (wp_value>=22.5) {
+						wp_value=WayPointCalc[wp_index].Distance+1000000;
 					} else {
-						if (wp_value>=15)
-							wp_value=WayPointCalc[wp_index].Distance+1000000;
-						else
-							wp_value=WayPointCalc[wp_index].Distance;
+						wp_value=WayPointCalc[wp_index].Distance;
 					}
 				}
 			}
