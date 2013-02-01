@@ -453,6 +453,9 @@ FIXES
 
 . Fix 3.1n missing bearing line in visualglide topview
 
+. Do not alert for missing safety altitude if using CAR TREK MODE
+
+
 
 LK8000 VERSION 3.1N 130126
 ==========================
