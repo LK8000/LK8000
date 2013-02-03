@@ -91,8 +91,8 @@ void guiStartLogger(bool noAsk = false);
 void guiStopLogger(bool noAsk = false);
 void guiToggleLogger(bool noAsk = false);
 
-void LoadNewTask(TCHAR *FileName);
-void LoadTask(TCHAR *FileName,HWND hDlg);
+void LoadNewTask(LPCTSTR FileName);
+bool LoadCupTask(LPCTSTR FileName);
 void SaveTask(TCHAR *FileName);
 void DefaultTask(void);
 void ClearTask(void);
