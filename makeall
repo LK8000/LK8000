@@ -1,5 +1,6 @@
 #!/bin/sh
 start=`date`
+make clean
 make TARGET=PPC2002
 make TARGET=PPC2003
 make TARGET=PNA
