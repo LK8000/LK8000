@@ -73,7 +73,11 @@ void MapWindow::DrawLKAlarms(HDC hDC, const RECT rc) {
 	}
 
 	HFONT oldfont=NULL;
-	oldfont=(HFONT)SelectObject(hDC,LK8TargetFont);
+	if (ScreenLandscape)
+		oldfont=(HFONT)SelectObject(hDC,LK8TargetFont);
+	else
+		oldfont=(HFONT)SelectObject(hDC,LK8MediumFont);
+
 	TextInBoxMode_t TextInBoxMode = {0};
 	TextInBoxMode.Color = RGB_WHITE;
 	TextInBoxMode.NoSetFont=1;
