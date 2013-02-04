@@ -76,11 +76,10 @@ double LookupGeoidSeparation(double lat, double lon) {
   int ilon=(int)x;
   if(ilat>EGM96_H || ilon>EGM96_W || ilat<0 || ilon<0) return 0.0;
   if(ilat==EGM96_H || ilat==EGM96_H-1) return getEGM96data(ilon,EGM96_H-1); //to prevent to go over -90
-	int ilonp1;
-	if(ilon!=EGM96_W-1) ilonp1=ilon+1;
-	else ilonp1=0; //in this case interpolate through the Greenwich meridian
-	x-=(double)ilon;
-	y-=(double)ilat;
-	return interpolation2d(x,y,getEGM96data(ilon,ilat),getEGM96data(ilonp1,ilat),getEGM96data(ilon,ilat+1),getEGM96data(ilonp1,ilat+1));
+  int ilonp1;
+  if(ilon!=EGM96_W-1) ilonp1=ilon+1;
+  else ilonp1=0; //in this case interpolate through the Greenwich meridian
+  x-=(double)ilon;
+  y-=(double)ilat;
+  return interpolation2d(x,y,getEGM96data(ilon,ilat),getEGM96data(ilonp1,ilat),getEGM96data(ilon,ilat+1),getEGM96data(ilonp1,ilat+1));
 }
-
