@@ -68,9 +68,9 @@ double interpolation2d(double x, double y, double z11, double z12, double z21, d
 }
 
 double LookupGeoidSeparation(double lat, double lon) {
-	if (!egm96data) return 0.0;
-	double y=(90.0-lat)/2.0;
-	int ilat=(int)y;
+  if (!egm96data) return 0.0;
+  double y=(90.0-lat)/2.0;
+  int ilat=(int)y;
   if(lon<0) lon+= 360.0;
   double x=lon/2.0;
   int ilon=(int)x;
