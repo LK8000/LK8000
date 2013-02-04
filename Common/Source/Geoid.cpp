@@ -60,11 +60,11 @@ void CloseGeoid(void) {
 }
 
 double getEGM96data(int x, int y) {
-	return (double)(egm96data[x+y*EGM96_W])-127;
+  return (double)(egm96data[x+y*EGM96_W])-127;
 }
 
 double interpolation2d(double x, double y, double z11, double z12, double z21, double z22) {
-	return (z22*y*x+z12*(1-y)*x+z21*y*(1-x)+z11*(1-y)*(1-x)); //x and y must be between 0 and 1
+  return (z22*y*x+z12*(1-y)*x+z21*y*(1-x)+z11*(1-y)*(1-x)); //x and y must be between 0 and 1
 }
 
 double LookupGeoidSeparation(double lat, double lon) {
