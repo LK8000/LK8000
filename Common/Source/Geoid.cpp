@@ -58,6 +58,7 @@ void CloseGeoid(void) {
   }
 }
 
+//Changes will be added here by alus-
 
 double LookupGeoidSeparation(double lat, double lon) {
   if (!egm96data) return 0.0;
