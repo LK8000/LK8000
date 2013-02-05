@@ -11,7 +11,7 @@
 
 
 // this is called only from Task LoadTaskWaypoints
-static int FindOrAddWaypoint(WAYPOINT *read_waypoint) {
+int FindOrAddWaypoint(WAYPOINT *read_waypoint) {
   // this is an invalid pointer!
   read_waypoint->Details = 0;
   read_waypoint->Comment = 0;

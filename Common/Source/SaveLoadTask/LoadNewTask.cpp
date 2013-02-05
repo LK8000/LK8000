@@ -14,7 +14,7 @@ bool LoadTaskWaypoints(HANDLE hFile);
 
 
 // loads a new task from scratch.
-void LoadNewTask(TCHAR *szFileName)
+void LoadNewTask(LPCTSTR szFileName)
 {
   HANDLE hFile;
   TASK_POINT Temp;

@@ -14,6 +14,27 @@
 extern int globalFileNum;
 static double ReadLength(TCHAR *temp);
 
+void CleanCupCode(TCHAR* TpCode) {
+    TCHAR Tname[NAME_SIZE + 1];
+    // remove trailing spaces
+    for (size_t i = _tcslen(TpCode) - 1; i > 1; i--) {
+        if (TpCode[i] == ' ') {
+            TpCode[i] = 0;
+        } else {
+            break;
+        }
+    }
+
+    // now remove " " (if there)
+    _tcscpy(Tname, TpCode);
+    size_t j = 0;
+    for (size_t i = 0; i < _tcslen(Tname) - 1; i++) {
+        if (Tname[i] != '\"') {
+            TpCode[j++] = Tname[i];
+        }
+    }
+    TpCode[j] = _T('\0');
+}
 
 //#define CUPDEBUG
 bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
@@ -75,15 +96,8 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 	pToken[NAME_SIZE-1]= _T('\0');
   }
 
-  // remove trailing spaces
   _tcscpy(Temp->Name, pToken); 
-  for (i=_tcslen(Temp->Name)-1; i>1; i--) if (Temp->Name[i]==' ') Temp->Name[i]=0; else break;
-
-  // now remove " " (if there)
-  _tcscpy(Tname,Temp->Name);
-  for (j=0, i=0; i<_tcslen(Tname)-1; i++) 
-	if (Tname[i]!='\"') Temp->Name[j++]=Tname[i];
-  Temp->Name[j]= _T('\0');
+  CleanCupCode(Temp->Name);
 
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP NAME=<%s>%s"),Temp->Name,NEWLINE);

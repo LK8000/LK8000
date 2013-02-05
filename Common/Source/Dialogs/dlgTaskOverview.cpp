@@ -512,10 +512,23 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
   }
 
   if (file_index>0) {
-    LoadNewTask(dfe->GetPathFile());
-    OverviewRefreshTask();
-    UpdateFilePointer();
-    UpdateCaption();
+      LPCTSTR szFileName = dfe->GetPathFile();
+      LPCTSTR wextension = _tcsrchr(szFileName, _T('.'));
+      if(wextension) {
+          bool bOK = true;
+          if(wcscmp(wextension,_T(LKS_TSK))==0) {
+              LoadNewTask(szFileName);
+          } else if (wcscmp(wextension,_T(LKS_WP_CUP))==0) {
+              bOK = LoadCupTask(szFileName);
+          }
+          if(!bOK) {
+              MessageBoxX(hWndMapWindow, gettext(TEXT("_@M467_")),_T(" "), MB_OK|MB_ICONEXCLAMATION);
+              return;
+          }
+          OverviewRefreshTask();
+          UpdateFilePointer();
+          UpdateCaption();
+      }
   }
 }
 
@@ -658,6 +671,8 @@ void dlgTaskOverviewShowModal(void){
 
 	TCHAR suff[10];
 	_stprintf(suff,_T("*%S"),LKS_TSK);
+	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
+	_stprintf(suff,_T("*%S"),LKS_WP_CUP);
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
 	wp->RefreshDisplay();
   }
