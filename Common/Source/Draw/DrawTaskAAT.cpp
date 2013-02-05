@@ -30,11 +30,16 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
     RECT rcDraw = (RECT){rc.right, rc.bottom, rc.left, rc.top};
 
     for (maxTp = std::max(1, ActiveWayPoint); ValidTaskPoint(maxTp + 1); ++maxTp) {
-        double tmp2 = Task[maxTp].AATCircleRadius * zoom.ResScaleOverDistanceModify();
+
+        if (Task[maxTp].AATType == SECTOR) {
+            tmp1 = Task[maxTp].AATSectorRadius * zoom.ResScaleOverDistanceModify();
+        } else {
+            tmp1 = Task[maxTp].AATCircleRadius * zoom.ResScaleOverDistanceModify();
+        }
 
         LONG x = WayPointList[Task[maxTp].Index].Screen.x;
         LONG y = WayPointList[Task[maxTp].Index].Screen.y;
-        rectObj rect = (rectObj){x - tmp2, y - tmp2, x + tmp2, y + tmp2};
+        rectObj rect = (rectObj){x - tmp1, y - tmp1, x + tmp1, y + tmp1};
 
         if (msRectOverlap(&rect, &rcrect) == MS_TRUE) {
             rcDraw.top = std::min((LONG) rect.miny, rcDraw.top);
@@ -78,15 +83,16 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
 
         for (i = maxTp - 1; i > std::max(0, ActiveWayPoint - 1); i--) {
             if (ValidTaskPoint(i)) {
-            tmp1 = Task[i].AATCircleRadius * zoom.ResScaleOverDistanceModify();
             switch (Task[i].AATType) {
                 case CIRCLE:
+                    tmp1 = Task[i].AATCircleRadius * zoom.ResScaleOverDistanceModify();
                     Circle(hDCTemp,
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y,
                             (int) tmp1, rc, true, true);
                     break;
                 case SECTOR:
+                    tmp1 = Task[i].AATSectorRadius * zoom.ResScaleOverDistanceModify();
                     Segment(hDCTemp,
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y, (int) tmp1, rc,
