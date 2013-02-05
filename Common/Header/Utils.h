@@ -227,6 +227,12 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop);
 // Fast convert from Hex string To integer
 int HexStrToInt(TCHAR *Source);
 
+///////////////////////////////////////////////////////////////////////
+// Extract H, M, S from string like "HH:MM:SS"
+//   Sec output parameter is optional
+void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec = NULL);
+
+
 unsigned long CheckFreeRam(void);
 // check maximum allocatable heap block
 unsigned long CheckMaxHeapBlock(void);

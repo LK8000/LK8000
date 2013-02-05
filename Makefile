@@ -757,6 +757,7 @@ SRC_FILES :=\
 	$(SRC)/SaveLoadTask/ClearTask.cpp\
 	$(SRC)/SaveLoadTask/DefaultTask.cpp\
 	$(SRC)/SaveLoadTask/LoadNewTask.cpp\
+	$(SRC)/SaveLoadTask/CTaskFileHelper.cpp\
 	$(SRC)/SaveLoadTask/SaveDefaultTask.cpp\
 	$(SRC)/SaveLoadTask/SaveTask.cpp\
 	$(SRC)/SaveLoadTask/LoadCupTask.cpp\
@@ -826,7 +827,7 @@ JASPER	:=\
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
 	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
-	$(COMPATSRC)/ts_string.cpp 	$(COMPATSRC)/wtoi.c
+	$(COMPATSRC)/ts_string.cpp 	        $(COMPATSRC)/wtoi.c
 
 #ifneq ($(CONFIG_PC),y)
 #COMPAT	:=$(COMPAT) \

@@ -63,6 +63,7 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
   switch (ioMode) {
     case io_read:   fmode = _T("rb"); break;
     case io_append: fmode = _T("a+t"); break;
+    case io_create: fmode = _T("w+t"); break; 
     default:
       return(false);
   }

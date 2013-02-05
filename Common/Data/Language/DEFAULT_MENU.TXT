@@ -68,12 +68,12 @@ event=Service GPSRESTART
 mode=default
 type=gce
 data=STARTUP_SIMULATOR
-event=TaskLoad Default.tsk
+event=TaskLoad Default.lkt
 
 mode=default
 type=gce
 data=STARTUP_REAL
-event=TaskLoad Default.tsk
+event=TaskLoad Default.lkt
 
 mode=default
 type=gce

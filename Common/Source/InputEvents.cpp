@@ -32,6 +32,7 @@
 #include "Dialogs.h"
 #include "Sideview.h"
 #include "TraceThread.h"
+#include "CTaskFileHelper.h"
 
 // Sensible maximums 
 #define MAX_MODE 100
@@ -2423,14 +2424,26 @@ void InputEvents::eventNull(const TCHAR *misc) {
 // TaskLoad
 // Loads the task of the specified filename
 void InputEvents::eventTaskLoad(const TCHAR *misc) {
-  TCHAR buffer[MAX_PATH];
-  if (_tcslen(misc)>0) {
-	LockTaskData();
-	LocalPath(buffer,_T(LKD_TASKS));
-	_tcscat(buffer,_T("\\"));
-	_tcscat(buffer,misc);
-	LoadNewTask(buffer);
-	UnlockTaskData();
+  if (misc && (_tcslen(misc)>0)) {
+	
+    TCHAR szFileName[MAX_PATH];
+	LocalPath(szFileName,_T(LKD_TASKS));
+	_tcscat(szFileName,_T("\\"));
+	_tcscat(szFileName,misc);
+    
+    LPCTSTR wextension = _tcsrchr(szFileName, '.');
+    if(wextension) {
+        if(wcscmp(wextension,_T(LKS_TSK))==0) {
+            CTaskFileHelper helper;
+            if(!helper.Load(szFileName)) {
+               
+            }
+        } else if (wcscmp(wextension,_T(LKS_OLD_TSK))==0) {
+            LockTaskData();
+            LoadNewTask(szFileName);
+            UnlockTaskData();
+        }
+    }
   }
 }
 
