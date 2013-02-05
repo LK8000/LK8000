@@ -38,6 +38,7 @@ void LongitudeToCUPString(double Longitude, TCHAR *Buffer);
 void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
 int dlgWaypointOutOfTerrain(TCHAR *Message);
 double ReadAltitude(TCHAR *temp);
+double ReadLength(TCHAR *temp);
 double CUPToLat(TCHAR *temp);
 double CUPToLon(TCHAR *temp);
 int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName);

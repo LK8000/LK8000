@@ -121,4 +121,5 @@ void CalculateAATIsoLines(void);
 
 void SaveDefaultTask(void);
 
+const WAYPOINT* TaskWayPoint(size_t idx);
 #endif
