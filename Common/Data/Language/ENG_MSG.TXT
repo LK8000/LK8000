@@ -1840,6 +1840,13 @@ _@M1822_ "Configure Multimaps"
 // leave a space after Ack
 _@M1823_ "Group Ack "
 
+// Task buttons (keep SHORT text!)
+_@M1824_ "Insert as START"
+_@M1825_ "Insert before"
+_@M1826_ "Replace"
+_@M1827_ "Append before finish"
+_@M1828_ "Append after finish"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

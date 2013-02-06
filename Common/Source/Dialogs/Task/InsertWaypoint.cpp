@@ -16,7 +16,7 @@ extern void ResetTaskWaypoint(int j);
 // Inserts a waypoint into the task, in the
 // position of the ActiveWaypoint.  If append=true, insert at end of the
 // task.
-void InsertWaypoint(int index, bool append) {
+void InsertWaypoint(int index, unsigned short append) {
   if (!CheckDeclaration())
     return;
 
@@ -49,42 +49,60 @@ void InsertWaypoint(int index, bool append) {
   }
 
   int indexInsert = max(ActiveWayPoint,0);
-  if (append) {
-	for (i=indexInsert; i<MAXTASKPOINTS-2; i++) {
-		#if 100526
-		if (Task[i+2].Index<0 && Task[i+1].Index>=0) {
-			// i+1 is the last one, so we insert before the last one: shift i+1 to i+2, insert in i+1
-			Task[i+2] = Task[i+1];
-			ResetTaskWaypoint(i+1);
-			Task[i+1].Index = index;
-			break;
-		}
-		if (Task[i+1].Index<0) {
-			// i+1 is empty, so the activewaypoint is the last one: we append after finish, because
-			// pilot can use insert waypoint to make it BEFORE finish
-			ResetTaskWaypoint(i+1);
-			Task[i+1].Index = index;
-			break;
-		}
-		#else
-		if (Task[i+1].Index<0) {
-			ResetTaskWaypoint(i+1);
-			Task[i+1].Index = index;
-			break;
-		}
+
+  switch(append) {
+	// append 0 = insert in current position
+	case 0:
+		// Shift ActiveWaypoint and all later task points
+		// to the right by one position
+		for (i=MAXTASKPOINTS-1; i>indexInsert; i--) {
+			Task[i] = Task[i-1];
+		}  
+		// Insert new point and update task details
+		ResetTaskWaypoint(indexInsert);
+		Task[indexInsert].Index = index;
+
+		break;
+
+	// append 1 = add before finish
+	case 1:
+		for (i=indexInsert; i<MAXTASKPOINTS-2; i++) {
+			// Todo Check i+2 is valid array index!!
+			if (Task[i+2].Index<0 && Task[i+1].Index>=0) {
+				// i+1 is the last one, so we insert before the last one: shift i+1 to i+2, insert in i+1
+				Task[i+2] = Task[i+1];
+				ResetTaskWaypoint(i+1);
+				Task[i+1].Index = index;
+				break;
+			}
+			// special case, we started already from the last point. We insert.
+			if (Task[i+1].Index<0) {
+				ResetTaskWaypoint(i+1);
+				Task[i+1]=Task[i];
+				Task[i].Index = index;
+				break;
+			}
+		}  
+		break;
+
+	// append 2 = add after finish
+	case 2:
+		for (i=indexInsert; i<MAXTASKPOINTS-2; i++) {
+			if (Task[i+1].Index<0) {
+				ResetTaskWaypoint(i+1);
+				Task[i+1].Index = index;
+				break;
+			}
+		}  
+		break;
+
+	default:
+		#if BUGSTOP
+		LKASSERT(0);
 		#endif
-	}  
-  } else {
-    // Shuffle ActiveWaypoint and all later task points
-    // to the right by one position
-    for (i=MAXTASKPOINTS-1; i>indexInsert; i--) {
-      Task[i] = Task[i-1];
-    }  
-    // Insert new point and update task details
-    ResetTaskWaypoint(indexInsert);
-    Task[indexInsert].Index = index;
+		break;
   }
-  
+
   RefreshTask();
   UnlockTaskData();
   

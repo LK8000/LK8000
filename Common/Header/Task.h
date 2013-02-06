@@ -76,7 +76,7 @@ extern bool TargetModified;
 extern TCHAR LastTaskFileName[MAX_PATH];
 
 void ReplaceWaypoint(int index);
-void InsertWaypoint(int index, bool append=false);
+void InsertWaypoint(int index, unsigned short append=0);
 void SwapWaypoint(int index);
 void RemoveWaypoint(int index);
 void RemoveTaskPoint(int index);

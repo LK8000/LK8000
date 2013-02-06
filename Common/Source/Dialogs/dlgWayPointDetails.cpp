@@ -214,10 +214,19 @@ static void OnInserInTaskClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnAppendInTaskClicked(WindowControl * Sender){
+static void OnAppendInTask1Clicked(WindowControl * Sender){
 	(void)Sender;
   LockTaskData();
-  InsertWaypoint(SelectedWaypoint, true);
+  InsertWaypoint(SelectedWaypoint, 1); // append before finish
+  RefreshTask();
+  UnlockTaskData();
+  wf->SetModalResult(mrOK);
+}
+
+static void OnAppendInTask2Clicked(WindowControl * Sender){
+	(void)Sender;
+  LockTaskData();
+  InsertWaypoint(SelectedWaypoint, 2); // append after finish
   RefreshTask();
   UnlockTaskData();
   wf->SetModalResult(mrOK);
@@ -481,16 +490,39 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   WndButton *wb;
 
+  TCHAR captmp[200];
+
   // Resize also buttons
   wb = ((WndButton *)wf->FindByName(TEXT("cmdInserInTask")));
   if (wb) {
     wb->SetOnClickNotify(OnInserInTaskClicked);
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
+
+    if ((ActiveWayPoint<0) || !ValidTaskPoint(0)) {
+	// this is going to be the first tp (ActiveWayPoint 0)
+	_stprintf(captmp,_T("%s"),MsgToken(1824)); // insert as START
+    } else {
+	LKASSERT(ActiveWayPoint>=0 && ValidTaskPoint(0));
+	int indexInsert = max(ActiveWayPoint,0); // safe check
+	if (indexInsert==0) {
+		_stprintf(captmp,_T("%s"),MsgToken(1824)); // insert as START
+	} else {
+		LKASSERT(ValidWayPoint(Task[indexInsert].Index));
+		_stprintf(captmp,_T("%s <%s>"),MsgToken(1825),WayPointList[ Task[indexInsert].Index ].Name); // insert before xx
+	}
+    }
+    wb->SetCaption(captmp);
   }
 
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdAppendInTask")));
+  wb = ((WndButton *)wf->FindByName(TEXT("cmdAppendInTask1")));
   if (wb) {
-    wb->SetOnClickNotify(OnAppendInTaskClicked);
+    wb->SetOnClickNotify(OnAppendInTask1Clicked);
+    wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
+  }
+
+  wb = ((WndButton *)wf->FindByName(TEXT("cmdAppendInTask2")));
+  if (wb) {
+    wb->SetOnClickNotify(OnAppendInTask2Clicked);
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
   }
 
@@ -502,8 +534,15 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   wb = ((WndButton *)wf->FindByName(TEXT("cmdReplace")));
   if (wb) {
-    wb->SetOnClickNotify(OnReplaceClicked);
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
+
+    if (ValidTaskPoint(ActiveWayPoint)) {
+    	wb->SetOnClickNotify(OnReplaceClicked);
+	_stprintf(captmp,_T("%s <%s>"),MsgToken(1826),WayPointList[ Task[ActiveWayPoint].Index ].Name); // replace  xx
+    } else {
+	_stprintf(captmp,_T("( %s )"),MsgToken(555));
+    }
+    wb->SetCaption(captmp);
   }
 
 

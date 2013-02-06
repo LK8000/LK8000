@@ -25,6 +25,8 @@ void ReplaceWaypoint(int index) {
     ResetTaskWaypoint(ActiveWayPoint);
     Task[ActiveWayPoint].Index = index;
   } else {
+	// 130206 this is no more called, normally, because we filter out this condition
+	// in dlgWayPointDetails..
     
     // Insert a new waypoint since there's
     // nothing to replace
