@@ -39,6 +39,10 @@ void RemoveTaskPoint(int index) {
   // Shuffle all later taskpoints to the left to
   // fill the gap
   for (i=index; i<MAXTASKPOINTS-1; ++i) {
+    #if BUGSTOP
+    LKASSERT(i<MAXTASKPOINTS);
+    #endif
+    if (i>=MAXTASKPOINTS) break;
     Task[i] = Task[i+1];
   }
   ResetTaskWaypoint(MAXTASKPOINTS-1);
