@@ -217,6 +217,20 @@ int dlgComboPicker(WndProperty* theProperty){
       #if 0
       ComboPopupDataField->GetCombo()->LastModalResult=0; // Cancel Hit.  Used then calling via SendMessage()
       #endif
+      // NOTE 130206 : we are missing currently the Cancel return status .
+      // The list selection does not return the Cancel button status, because so far we have been setting an empty
+      // value on entry, and we check on exit if it is still empty. In such case, a no/action is performed, either
+      // because the user did not select anything with Select (click on empty field at the top) or because he really
+      // clicked on Cancel and we returned again the initial empty value.
+      // BUT, in some cases, like on TaskOverview, we set the initial item of the list to Default.task, 
+      // and in this case a Cancel will return correctly Default.tsk!
+      // This is why we get the confirmation message for loading default task, instead of a quiet return.
+      // Solution: either use a WindowControl variable, or a more simple global for ComboCancel.
+      // This would be an hack, but quick and dirty solution with no disde effects.
+      // Set ComboCancel true if we are here, otherwise false, and check that after 
+      // dfe = (DataFieldFileReader*) wp->GetDataField()
+      // If ever we want to manage this Cancel button correctly, we should use one of these approaches.
+
       LKASSERT(iSavedInitialDataIndex >=0);
       if (iSavedInitialDataIndex >=0) {
         ComboPopupDataField->SetFromCombo(iSavedInitialDataIndex, sSavedInitialValue);
