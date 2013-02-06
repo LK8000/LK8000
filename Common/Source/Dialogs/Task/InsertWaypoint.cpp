@@ -67,10 +67,6 @@ void InsertWaypoint(int index, unsigned short append) {
 	// append 1 = add before finish
 	case 1:
 		for (i=indexInsert; i<MAXTASKPOINTS-2; i++) {
-			#if BUGSTOP
-			LKASSERT(i<MAXTASKPOINTS);
-			#endif
-			if (i>=MAXTASKPOINTS) break;
 			if (Task[i+2].Index<0 && Task[i+1].Index>=0) {
 				// i+1 is the last one, so we insert before the last one: shift i+1 to i+2, insert in i+1
 				Task[i+2] = Task[i+1];
@@ -91,10 +87,6 @@ void InsertWaypoint(int index, unsigned short append) {
 	// append 2 = add after finish
 	case 2:
 		for (i=indexInsert; i<MAXTASKPOINTS-2; i++) {
-			#if BUGSTOP
-			LKASSERT(i<MAXTASKPOINTS);
-			#endif
-			if (i>=MAXTASKPOINTS) break;
 			if (Task[i+1].Index<0) {
 				ResetTaskWaypoint(i+1);
 				Task[i+1].Index = index;
