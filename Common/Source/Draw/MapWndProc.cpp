@@ -92,7 +92,6 @@ int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] = {0,0,0,0,0,0,0,0,0,0,0,1
 HPEN MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
 HPEN MapWindow::hBigAirspacePens[AIRSPACECLASSCOUNT];
 HPEN MapWindow::hAirspaceBorderPen;
-bool MapWindow::bAirspaceBlackOutline = false;
 
 HBRUSH  MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
 

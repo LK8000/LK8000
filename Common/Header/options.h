@@ -98,11 +98,6 @@
 // Fix SETFOCUS problem 
 #define FIXFOCUS	1
 
-// Use bAirspaceBlackOutline for drawing asp borders
-// When removed, removed the engineering configuration no more neeeded. Currently 
-// the engineering setting is not used if ASPOUTLINE is not enabled
-// #define ASPOUTLINE	1
-
 // LKAIRSPACE OPTIM STUFF 
 // Recalculate airspace positions only if the draw area has changed by more than 2 pixels
 // There is a problem: enabling/disabling/ack/etc will not show up until a zoom is performed.

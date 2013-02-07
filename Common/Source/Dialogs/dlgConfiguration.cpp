@@ -1951,12 +1951,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOutline"));
-  if (wp) {
-    wp->GetDataField()->Set(MapWindow::bAirspaceBlackOutline);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpLockSettingsInFlight"));
   if (wp) {
     wp->GetDataField()->Set(LockSettingsInFlight);
@@ -3755,13 +3749,6 @@ double dval;
   if (wp) {
     if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
       AirspaceWarningRepeatTime = wp->GetDataField()->GetAsInteger()*60;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOutline"));
-  if (wp) {
-    if (MapWindow::bAirspaceBlackOutline != wp->GetDataField()->GetAsBoolean()) {
-      MapWindow::bAirspaceBlackOutline = wp->GetDataField()->GetAsBoolean();
     }
   }
 

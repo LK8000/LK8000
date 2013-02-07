@@ -356,7 +356,6 @@ class MapWindow {
   static int iAirspaceMode[AIRSPACECLASSCOUNT];
   static int iAirspaceBrush[AIRSPACECLASSCOUNT]; 
   static int iAirspaceColour[AIRSPACECLASSCOUNT];
-  static bool bAirspaceBlackOutline;
   static BOOL CLOSETHREAD;
 
   static COLORREF GetAirspaceColour(int i) {

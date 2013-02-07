@@ -90,7 +90,6 @@ void LKProfileSave(const TCHAR *szFile)
 //  rprintf(szRegistryAircraftRego, AircraftRego_Config);
 //  rprintf(szRegistryAircraftType, AircraftType_Config);
   rprintf(szRegistryAirfieldFile, szAirfieldFile); 
-  rprintf(szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline);
   rprintf(szRegistryAirspaceFile, szAirspaceFile);
   rprintf(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType()); 
   rprintf(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity()); 

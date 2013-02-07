@@ -256,7 +256,6 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAircraftRego, &*AircraftRego_Config);
   PREAD(sname,svalue,szRegistryAircraftType, &*AircraftType_Config);
   PREAD(sname,svalue,szRegistryAirfieldFile, &*szAirfieldFile); 
-  PREAD(sname,svalue,szRegistryAirspaceBlackOutline, &MapWindow::bAirspaceBlackOutline);
   PREAD(sname,svalue,szRegistryAirspaceFile, &*szAirspaceFile);
   if (matchedstring) return; // every 10 or so PREADs we check for quick return
 
