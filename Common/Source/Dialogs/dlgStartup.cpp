@@ -26,7 +26,9 @@ extern bool CheckLanguageEngMsg(void);
 extern bool CheckSystemBitmaps(void);
 void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode);
 
-bool fullresetasked=false;
+// This global is set true on startup only here, and it is cleared by the LoadNewTask
+// LoadNewTask is called by event manager at start of normal run
+bool FullResetAsked=false;
 
 static int OnTimerNotify(WindowControl *Sender)
 {
@@ -146,7 +148,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 			pos=11;
 			break;
 	}
-	if (fullresetasked) {
+	if (FullResetAsked) {
 		_stprintf(mes,_T("*** %s ***"),gettext(_T("_@M1757_")));
 		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
 	} else {
@@ -181,7 +183,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	if ( ScreenSize != ss320x240 && ScreenLandscape )
 	RawWrite(hDC,_T("_______________________"),2,2, RGB_LIGHTGREY,WTMODE_NORMAL);
 
-	if (fullresetasked) {
+	if (FullResetAsked) {
 		_stprintf(mes,_T("%s"),gettext(_T("_@M1757_")));	// LK8000 PROFILES RESET
 		RawWrite(hDC,mes,5,2, RGB_ICEWHITE, WTMODE_OUTLINED);
 		_stprintf(mes,_T("%s"),gettext(_T("_@M1759_")));	// SELECTED IN SYSTEM
@@ -666,13 +668,13 @@ short dlgStartupShowModal(void){
 					#endif
 					if (MessageBoxX(NULL, gettext(TEXT("_@M1758_")), 
 						gettext(TEXT("_@M1757_")), MB_OK|MB_ICONQUESTION));
-					fullresetasked=true;
+					FullResetAsked=true;
 				} else {
 					#if TESTBENCH
 					StartupStore(_T("... Selected new profile, preloading..\n"));
 					#endif
 					LKProfileLoad(startProfileFile);
-					fullresetasked=false;
+					FullResetAsked=false;
 				}
 			}
 		}

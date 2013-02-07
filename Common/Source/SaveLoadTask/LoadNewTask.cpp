@@ -11,9 +11,13 @@
 
 
 bool LoadTaskWaypoints(HANDLE hFile);
+extern bool FullResetAsked;
 
-
-// loads a new task from scratch.
+// Loads a new task from scratch.
+// This is called on startup by the even manager because in DEFAULT MENU we have a GCE event
+// configured to load Default.tsk for STARTUP_SIMULATOR and STARTUP_REAL.
+// Until we change this, which would be a good thing because these configuration are unnecessary ,
+// we must use the FullResetAsked trick.
 void LoadNewTask(LPCTSTR szFileName)
 {
   HANDLE hFile;
@@ -26,16 +30,28 @@ void LoadNewTask(LPCTSTR szFileName)
   bool TaskLoaded = false;
   char taskinfo[LKPREAMBOLSIZE+1]; // 100207
   bool oldversion=false; // 100207
+  TCHAR taskFileName[MAX_PATH];
 
   LockTaskData();
 
   ClearTask();
+  if (FullResetAsked) {
+	#if TESTBENCH
+	StartupStore(_T("... LoadNewTask detected FullResetAsked, attempt to load DEMO.TSK\n"));
+	#endif
+	// Clear the flag, forever.
+  	FullResetAsked=false;
+	_tcscpy(taskFileName,_T("%LOCAL_PATH%\\\\_Tasks\\DEMO.TSK"));
+	ExpandLocalPath(taskFileName);
+
+  } else {
+	_tcscpy(taskFileName,szFileName);
+  }
   
- StartupStore(_T(". LoadNewTask <%s>%s"),szFileName,NEWLINE);
-  hFile = CreateFile(szFileName,GENERIC_READ,0,
-                     (LPSECURITY_ATTRIBUTES)NULL,OPEN_EXISTING,
-                     FILE_ATTRIBUTE_NORMAL,NULL);
-  
+  StartupStore(_T(". LoadNewTask <%s>%s"),taskFileName,NEWLINE);
+
+  hFile = CreateFile(taskFileName,GENERIC_READ,0, (LPSECURITY_ATTRIBUTES)NULL,OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL);
+
   if(hFile!= INVALID_HANDLE_VALUE )
     {
 
@@ -192,7 +208,7 @@ goEnd:
       }
 
   } else {
-    StartupStore(_T("... LoadNewTask: file <%s> not found%s"),szFileName,NEWLINE); // 091213
+    StartupStore(_T("... LoadNewTask: file <%s> not found%s"),taskFileName,NEWLINE); // 091213
     TaskInvalid = true;
   }
   
@@ -223,7 +239,7 @@ goEnd:
   } else {
 	TaskModified = false; 
 	TargetModified = false;
-	_tcscpy(LastTaskFileName, szFileName);
+	_tcscpy(LastTaskFileName, taskFileName);
   }
 
 }
