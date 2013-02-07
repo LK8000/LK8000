@@ -93,7 +93,6 @@
 #define LKVERSION	"3"
 #define LKRELEASE	"1p0"
 
-#define REGKEYNAME	"Software\\COOL\\LK8000"
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
 #define LKAIRCRAFT	"DEFAULT_AIRCRAFT.acf"
@@ -116,8 +115,6 @@
 #define LKD_AIRSPACES	"_Airspaces"
 #define LKD_MAPS	"_Maps"
 #define LKD_LANGUAGE	"_Language"
-// #define LKD_TEMP	"_Tmp"
-// #define LKD_DEBUG	"_Debug"
 
 /*
  * LK8000 suffixes - Do not change them, uncompleted work 091001
