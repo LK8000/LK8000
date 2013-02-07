@@ -44,10 +44,6 @@
  #define LK_CACHECALC_MCA 60
  // #define LK_CACHECALC_MCA_STAT 1
 
- // New topology OPTIMIZE options
- #define TOPOFAST	1
- #define TOPOFASTCACHE	1
-
  //
  // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
  // When expire date is reached, unnecessary old stuff can be removed, even if commented

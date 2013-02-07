@@ -159,12 +159,10 @@ Topology::Topology(const TCHAR* shpname) {
   shpCache= NULL;
   hBitmap = NULL;
 
-#ifdef TOPOFASTCACHE
   shpBounds = NULL;
   shps = NULL;
   cache_mode = 0;
   lastBounds.minx = lastBounds.miny = lastBounds.maxx = lastBounds.maxy = 0;
-#endif
 
   in_scale = false;
 
@@ -174,7 +172,6 @@ Topology::Topology(const TCHAR* shpname) {
 }
 
 
-#ifdef TOPOFASTCACHE
 void Topology::initCache()
 {
   //Selecting caching scenarios based on available memory and topo size
@@ -262,7 +259,7 @@ void Topology::initCache()
 		}
   } //sw
 }
-#endif
+
 
 void Topology::Open() {
   shapefileopen = false;
@@ -288,13 +285,7 @@ void Topology::Open() {
   shpCache = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
   if (shpCache) {
     shapefileopen = true;
-#ifdef TOPOFASTCACHE
 	initCache();
-#else
-    for (int i=0; i<shpfile.numshapes; i++) {
-      shpCache[i] = NULL;
-    }
-#endif
   } else {
 	StartupStore(_T("------ ERR Topology,  malloc failed shpCache%s"), NEWLINE);
   }
@@ -307,7 +298,6 @@ void Topology::Close() {
       flushCache();
       free(shpCache); shpCache = NULL;
     }
-#ifdef TOPOFASTCACHE
     if (shpBounds) {
       free(shpBounds); shpBounds = NULL;
     }
@@ -317,7 +307,6 @@ void Topology::Close() {
 	  }
       free(shps); shps = NULL;
     }
-#endif
     msSHPCloseFile(&shpfile);
     shapefileopen = false;  // added sgi
   }
@@ -360,7 +349,6 @@ void Topology::flushCache() {
   StartupStore(TEXT("---flushCache() starts%s"),NEWLINE);
   int starttick = GetTickCount();
 #endif
-#ifdef TOPOFASTCACHE
   switch (cache_mode) {
 	case 0:  // Original
 	case 1:  // Bounds array in memory
@@ -374,11 +362,6 @@ void Topology::flushCache() {
 		}
 		break;
   }//sw		
-#else
-  for (int i=0; i<shpfile.numshapes; i++) {
-    removeShape(i);
-  }
-#endif
   shapes_visible_count = 0;
 #ifdef DEBUG_TFC
   StartupStore(TEXT("   flushCache() ends (%dms)%s"),GetTickCount()-starttick,NEWLINE);
@@ -409,15 +392,10 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
   triggerUpdateCache = false;
 
 #ifdef DEBUG_TFC
-#ifdef TOPOFASTCACHE
   StartupStore(TEXT("---UpdateCache() starts, mode%d%s"),cache_mode,NEWLINE);
-#else
-  StartupStore(TEXT("---UpdateCache() starts, original code%s"),NEWLINE);
-#endif
   int starttick = GetTickCount();
 #endif
 
-#ifdef TOPOFASTCACHE
   if(msRectOverlap(&shpfile.bounds, &thebounds) != MS_TRUE) {
     // this happens if entire shape is out of range
     // so clear buffer.
@@ -518,32 +496,6 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
     }//sw
 
     lastBounds = thebounds;
-#else
-
-  msSHPWhichShapes(&shpfile, thebounds, 0);
-  if (!shpfile.status) {
-    // this happens if entire shape is out of range
-    // so clear buffer.
-    flushCache();
-    return;
-  }
-
-  shapes_visible_count = 0;
-
-  for (int i=0; i<shpfile.numshapes; i++) {
-
-    if (msGetBit(shpfile.status, i)) {
-      
-      if (shpCache[i]==NULL) {
-	// shape is now in range, and wasn't before
-	shpCache[i] = addShape(i);
-      }
-      shapes_visible_count++;
-    } else {
-      removeShape(i);
-    }
-  }
-#endif
 
 #ifdef DEBUG_TFC
   long free_size = CheckFreeRam();
@@ -670,14 +622,12 @@ void Topology::Paint(HDC hdc, RECT rc) {
 
 	#else
 	// -------------------------- PRINTING ICONS ---------------------------------------------
-	#if (TOPOFAST)
 	// no bitmaps for small town over a certain zoom level and no bitmap if no label at all levels
 	bool nobitmap=false, noiconwithnolabel=false;
 	if (scaleCategory==90 || scaleCategory==100) {
 		noiconwithnolabel=true;
 		if (MapWindow::MapScale>4) nobitmap=true;
 	}
-	#endif
 
 	if (checkVisible(*shape, screenRect))
 		for (int tt = 0; tt < shape->numlines; tt++) {
@@ -685,9 +635,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 				POINT sc;
 				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
 	
-				#if (TOPOFAST)
 				if (!nobitmap)
-				#endif
 				#if 101016
 				// only paint icon if label is printed too
 				if (noiconwithnolabel) {
