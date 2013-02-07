@@ -121,7 +121,27 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 			StartupStore(_T("... ChangeZoomTopology all default zindex=%d, categ=%d oldscale=%f default=%f%s"),
 			z,iCategory, TopoStore[z]->scaleThreshold, TopoStore[z]->scaleDefaultThreshold,NEWLINE);
 			#endif
-			TopoStore[z]->scaleThreshold = TopoStore[z]->scaleDefaultThreshold;
+			// 130207 categories 5 and 10 are using DefaultThreshold for polygon paint,
+			// and scaleThreshold for labels only. Upon reset, we should use the original
+			// LKTopoZoom settings, because the Default is always fixed to 100!
+			// Otherwise on reset we get 99.. even if we set LKTopoZoom to something else.
+			// This is needed if we want to have a startup setting different from default
+			// for these 05 and 10 categories only.
+			// Sorry but water areas and labels are not easy to manage because we want to paint
+			// blue all the way, but not also their labels.
+			// Notice that since LKTopoZoom is saved to configuration, we cannot use it for reset!
+			// This is why we have a special define DEFAULT_WATER_LABELS_THRESHOLD
+			switch(TopoStore[z]->scaleCategory) {
+				case 5:
+					TopoStore[z]->scaleThreshold = DEFAULT_WATER_LABELS_THRESHOLD;
+					break;
+				case 10:
+					TopoStore[z]->scaleThreshold = DEFAULT_WATER_LABELS_THRESHOLD;
+					break;
+				default:
+					TopoStore[z]->scaleThreshold = TopoStore[z]->scaleDefaultThreshold;
+					break;
+			}
 		}
 	}
 	UnlockTerrainDataGraphics();
