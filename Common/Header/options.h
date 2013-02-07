@@ -112,11 +112,6 @@
 // do not add screen points if closer than 5pix to the previous
 #define LKASP_REMOVE_NEAR_POINTS		1
 
-// TOPOLOGY OPTIM STUFF
-// Clip Topology shapes.
-// This function does not work correctly: topology is no more clipped at all.
-//define TOPO_CLIPPING	1
-
 // MapDraw OPTIM , SetTopologyBounds limited to zoom change and map draw out of current rect 
 #define TOPOBOUND_OPTIM	1
 
