@@ -412,6 +412,8 @@ Fix Altitude alarm message too big in portrait mode.
 Fix : Draw filling of AAT Task Sector with wrong radius
 Fix waypoint command window buttons fullscreen in landscape mode
 
+Fix water labels topology setting incorrectly affecting also coast areas (seas)
+This parameter is now also reset to 10km by default.
 
 
 
