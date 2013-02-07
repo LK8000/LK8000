@@ -53,9 +53,7 @@ extern void StartupLogFreeRamAndStorage();
 extern void SIMProcessTimer (void);
 extern void ProcessTimer    (void);
 
-#if FIXFOCUS
 HWND hWndWithFocus=NULL;
-#endif
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -163,7 +161,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 #endif
       break;
 
-#if FIXFOCUS
 	#if DEBUG_FOCUS
     case WM_KILLFOCUS:
 	// This is happening when focus is given to another window, either internally inside LK
@@ -194,7 +191,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	#endif
 	if (hWndWithFocus!=NULL) SetFocus(hWndWithFocus);
       break;
-#endif
 
     case WM_KEYUP:
       break;

@@ -64,7 +64,7 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
 
         oldpen = (HPEN) SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
         oldbrush = (HBRUSH) SelectObject(hDCTemp, GetStockObject(WHITE_BRUSH));
-        if(AATALPHABEND && MapWindow::AlphaBlendSupported()) {
+        if(MapWindow::AlphaBlendSupported()) {
             // copy original bitmap into temp (for saving fully transparent areas)
             BitBlt(hDCTemp, rcDraw.left, rcDraw.top, 
                     rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, 
@@ -109,7 +109,7 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
         SelectObject(hDCTemp, oldbrush);
         
         // Use AlphaBlend if supported !
-        if(AATALPHABEND && MapWindow::AlphaBlendSupported()) {
+        if(MapWindow::AlphaBlendSupported()) {
             MapWindow::DoAlphaBlend(hdc,rcDraw, hDCTemp,rcDraw,255*35/100);
         } else {
 #if (WINDOWSPC<1)

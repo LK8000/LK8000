@@ -87,22 +87,9 @@
 // Eric Carden, September 13, 2012
 #define GTL2 
 
-// we cn use transparent filling for Turnpoint
-// cpu cost : ~40ms on Vertica V1
-// Set to 1 for Activate
-#define AATALPHABEND 1
-
 // Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
 #define USEBIGZOOM	1	
 
-// Fix SETFOCUS problem 
-#define FIXFOCUS	1
-
-// LKAIRSPACE OPTIM STUFF 
-// Recalculate airspace positions only if the draw area has changed by more than 2 pixels
-// There is a problem: enabling/disabling/ack/etc will not show up until a zoom is performed.
-// So there is no more instant view of what is happening, and for this reason the option is disabled.
-// #define LKASP_CALC_ON_CHANGE_ONLY		1
 
 // do not add screen points if closer than 5pix to the previous
 #define LKASP_REMOVE_NEAR_POINTS		1
@@ -166,6 +153,11 @@
 // May be sill used for custom user's topology, so let's keep it for a while.
 // #define USETOPOMARKS	1	
 
+// LKAIRSPACE OPTIM STUFF 
+// Recalculate airspace positions only if the draw area has changed by more than 2 pixels
+// There is a problem: enabling/disabling/ack/etc will not show up until a zoom is performed.
+// So there is no more instant view of what is happening, and for this reason the option is disabled.
+// #define LKASP_CALC_ON_CHANGE_ONLY		1
 
 #include "Debug.h"	// DEBUG OPTIONS FOR EVERYONE, depending also on TESTBENCH
 

@@ -227,7 +227,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
     case WM_ERASEBKGND:
 	return TRUE;
 
-#if FIXFOCUS
     case WM_SETFOCUS:
 		#if DEBUG_FOCUS
 		StartupStore(_T("............ MAPWINDOWS HAS FOCUS\n"));
@@ -236,7 +235,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		hWndWithFocus=hWnd;
 		return 0;
 		break;
-#endif
 
     case WM_SIZE:
 	if (!THREADRUNNING) {
