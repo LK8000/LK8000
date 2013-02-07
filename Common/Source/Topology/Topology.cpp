@@ -348,7 +348,7 @@ bool Topology::CheckScale(void) {
 		return false;
   }
 
-  if (scaleCategory==10)
+  if (scaleCategory==10||scaleCategory==5)
 	return (MapWindow::zoom.RealScale() <= scaleDefaultThreshold);
   else
 	return (MapWindow::zoom.RealScale() <= scaleThreshold);
@@ -587,10 +587,8 @@ void Topology::Paint(HDC hdc, RECT rc) {
   int iNewSize;
   #endif
   bool nolabels=false;
-  // 130130 Note> there is a bug.
-  // For some reason the water disappears and does not follow scaleDefault.
-  // It looks like it is disappearing from the cache. There is no time to try and fix it for v4.
-  if (scaleCategory==10) {
+  // 130217 scaleCat 5 and 10 are the same! So careful..
+  if (scaleCategory==10||scaleCategory==5) {
 	// for water areas, use scaleDefault
 	if ( MapWindow::zoom.RealScale()>scaleDefaultThreshold) {
 		return;
@@ -624,7 +622,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
   int iReducedPts=0;
   #endif
   int iskip = 1;
-  
+ 
   // attempt to bugfix 100615 polyline glitch with zoom over 33Km
   // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
   // != 5 and != 10
