@@ -167,3 +167,4 @@ bool LoadCupTask(LPCTSTR szFileName) {
     UnlockTaskData();
     return ValidTaskPoint(0);
 }
+
