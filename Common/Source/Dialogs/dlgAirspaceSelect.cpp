@@ -335,7 +335,7 @@ static void OnFilterName(DataField *Sender, DataField::DataAccessKind_t Mode){
     case DataField::daInc:
       NameFilterIdx++;
 	siz=sizeof(NameFilter[0]);
-	if (siz==0) FailStore(_T("Division by zero onFilterName A"));
+	LKASSERT(siz>0);
       if (siz>0) // 100101
       if (NameFilterIdx > sizeof(NameFilter)/sizeof(NameFilter[0])-2)
         NameFilterIdx = 1;
@@ -345,7 +345,7 @@ static void OnFilterName(DataField *Sender, DataField::DataAccessKind_t Mode){
     case DataField::daDec:
       if (NameFilterIdx == 0) {
 	siz=sizeof(NameFilter[0]);
-	if (siz==0) FailStore(_T("Division by zero onFilterName A"));
+	LKASSERT(siz>0);
         if (siz>0) // 100101
 		NameFilterIdx = sizeof(NameFilter)/sizeof(NameFilter[0])-1;
       }

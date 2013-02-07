@@ -54,7 +54,6 @@
 
 
 void StartupStore(const TCHAR *Str, ...); // 100102
-void FailStore(const TCHAR *Str, ...); // 100102
 
 bool XMLNode::GlobalError = false;
 
@@ -770,7 +769,7 @@ int XMLNode::ParseXMLElement(void *pa)
 
     LKASSERT(pXML);
     if (!pXML) { // 100102
-	FailStore(_T("ParseXMLElem null value")); // 100102
+	StartupStore(_T("...... ParseXMLElem null value\n"));
 	return FALSE;
     }
 

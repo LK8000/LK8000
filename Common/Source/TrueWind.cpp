@@ -478,7 +478,8 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 		if (avertrack >=295.0 || avertrack<=5.0 ) p_heading=330;
 		break;
 	default:
-		FailStore(_T("INVALID WMODE WINDCALC: %d%s"),wmode,NEWLINE);
+		LKASSERT(0);
+		StartupStore(_T("... INVALID WMODE WINDCALC: %d%s"),wmode,NEWLINE);
 		return WCALC_INVALID_DATA;
 		break;
    }

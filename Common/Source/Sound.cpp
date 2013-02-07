@@ -90,7 +90,7 @@ void LKSound(const TCHAR *lpName) {
 	LocalPath(sDir,TEXT(LKD_SOUNDS));
 	_stprintf(srcfile,TEXT("%s\\_SOUNDS"),sDir);
 	if (  GetFileAttributes(srcfile) == 0xffffffff ) {
-	        FailStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
+	        StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
 		StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
         } else
 		working=true;
