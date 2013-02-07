@@ -403,6 +403,9 @@ NEW
    Insert and replace will tell which waypoint are affecting .
    New Append before and after finish.
 
+CHANGES
+
+. Profile reset will also load DEMO.tsk
 
 
 

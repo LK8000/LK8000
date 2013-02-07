@@ -63,7 +63,7 @@
 
 
  #if TESTBENCH
- #define CPUSTATS		1	// Show cpu stats in inverted text mode inside map mode
+ //#define CPUSTATS		1	// Show cpu stats in inverted text mode inside map mode
  #endif
 
  #if (WINDOWSPC>0)
