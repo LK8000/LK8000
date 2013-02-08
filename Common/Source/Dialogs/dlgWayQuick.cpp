@@ -136,15 +136,25 @@ short dlgWayQuickShowModal(void){
   }
   wf->SetCaption(sTmp);
 
-  unsigned int offset=0;
   if (ScreenLandscape) {
-	offset=(ScreenSizeX-IBLSCALE(320))/2;
-	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetLeft(offset);
-	((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetLeft(offset);
-	((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetLeft(offset+IBLSCALE(160));
-	((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetLeft(offset);
-	((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetLeft(offset+IBLSCALE(160));
-	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(offset);
+	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetLeft(NIBLSCALE(3));
+	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetWidth(ScreenSizeX-NIBLSCALE(8));
+
+	((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
+	((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetLeft(NIBLSCALE(3));
+
+	((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
+	((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+
+
+	((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
+	((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetLeft(NIBLSCALE(3));
+
+	((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
+	((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+
+	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(NIBLSCALE(3));
+	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetWidth((ScreenSizeX)-NIBLSCALE(8));
   } 
 
   wf->ShowModal();

@@ -461,7 +461,7 @@ passthrough:
 		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
-		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
+		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"),ckeymode);
 		break;
   }
 

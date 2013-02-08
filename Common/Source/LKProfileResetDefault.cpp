@@ -97,8 +97,6 @@ void LKProfileResetDefault(void) {
   MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_full);
   MapWindow::SetAirSpaceOpacity(30);
 
-  MapWindow::bAirspaceBlackOutline = false;
-
   TrailActive_Config = TRUE;
 
   EnableTrailDrift_Config = false;
@@ -156,9 +154,9 @@ void LKProfileResetDefault(void) {
   PGStartOut=0;
 
   // These values are used on startup, but on reset change also OpenCloseTopology
-  LKTopoZoomCat05=9999;		// coast area
-  LKTopoZoomCat10=9999;		// WATER AREA, (not: water labels threshold, over this realscale, no water labels are printed)
-  LKTopoZoomCat20=9999;		// water line
+  LKTopoZoomCat05=DEFAULT_WATER_LABELS_THRESHOLD;	// coast area share the same label management of cat10
+  LKTopoZoomCat10=DEFAULT_WATER_LABELS_THRESHOLD;	// water labels threshold, over this realscale, no water labels are printed)
+  LKTopoZoomCat20=9999;		// water lines
   LKTopoZoomCat30=25;		// Big Roads
   LKTopoZoomCat40=6;		// Medium road
   LKTopoZoomCat50=3;		// Small road

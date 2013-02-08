@@ -60,7 +60,6 @@ void DebugStore(const char *Str, ...);
 }
 
 void StartupStore(const TCHAR *Str, ...);
-void FailStore(const TCHAR *Str, ...);
 
 typedef struct
 {

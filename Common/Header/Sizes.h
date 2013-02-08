@@ -48,8 +48,6 @@
 // Max number of Infobox groups configurables, should be 8 +1?
 #define MAXINFOWINDOWS 14
 
-#define REGKEYSIZE 64
-
 #define POLARSIZE 3
 
 #define MAXFLAPSNAME 10

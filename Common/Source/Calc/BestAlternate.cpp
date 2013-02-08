@@ -525,7 +525,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 		{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 		#endif
 		DoStatusMessage(_T("ERR-051 invalid bestalternate"));
-		FailStore(_T("------ ERR-051 invalid bestalternate <%d>%s"),bestalternate,NEWLINE); // 091122
+		StartupStore(_T("------ ERR-051 invalid bestalternate <%d>%s"),bestalternate,NEWLINE); // 091122
 		// todo: immediate disable function  
 	} 
   }

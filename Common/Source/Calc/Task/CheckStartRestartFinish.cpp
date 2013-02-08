@@ -31,7 +31,7 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 		// init activegate: assign first valid gate, current or future
 		ActiveGate=InitActiveGate();
 		if (ActiveGate<0||ActiveGate>(PGNumberOfGates-1)) {
-			FailStore(_T("INVALID ActiveGate=%d"),ActiveGate);
+			StartupStore(_T("... INVALID ActiveGate=%d\n"),ActiveGate);
 			DoStatusMessage(_T("ERR-430 INVALID ACTIVEGATE: DISABLED"));
 			PGNumberOfGates=0;
 			return;		

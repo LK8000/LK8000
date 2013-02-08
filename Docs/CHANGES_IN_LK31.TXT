@@ -387,6 +387,37 @@ Grouping the airspaces can be turned on/off in Setup page 2 "Airspaces".
 But in case you need separate acknowledgment of parts of the same airspace it is a better way to give it different names (e.g. Dresden EAST, Dresden WEST).  
 
 
+LK8000 VERSION 3.1p 130207
+==========================
+
+NEW
+
+. Import task from SeeYou CUP files - experimental
+  From load task it is possible to select also CUP files containing a task.
+  The CUP must be located inside the Task folder (not in waypoints!).
+  Only the first task in the file will be loaded. If the CUP file has more than
+  a task, the other task lines after the first will be ignored.
+  Not all parameters are loaded (size of sectors, cylinders etc.) so you better check.
+
+.  New task action buttons in waypoint details, for more clear actions:
+   Insert and replace will tell which waypoint are affecting .
+   New Append before and after finish.
+
+CHANGES
+
+. Profile reset will also load DEMO.tsk
+
+
+
+FIXES
+
+Fix Altitude alarm message too big in portrait mode.
+Fix : Draw filling of AAT Task Sector with wrong radius
+Fix waypoint command window buttons fullscreen in landscape mode
+
+Fix water labels topology setting incorrectly affecting also coast areas (seas)
+This parameter is now also reset to 10km by default.
+
 
 
 LK8000 VERSION 3.1o 130201

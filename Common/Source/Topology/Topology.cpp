@@ -11,9 +11,6 @@
 #include "Topology.h"
 #include "Multimap.h"
 
-#if TOPO_CLIPPING
-//#define DEBUG_POINTS_REDUCTION	1
-#endif
 
 XShape::XShape() {
   hide=false;
@@ -162,12 +159,10 @@ Topology::Topology(const TCHAR* shpname) {
   shpCache= NULL;
   hBitmap = NULL;
 
-#ifdef TOPOFASTCACHE
   shpBounds = NULL;
   shps = NULL;
   cache_mode = 0;
   lastBounds.minx = lastBounds.miny = lastBounds.maxx = lastBounds.maxy = 0;
-#endif
 
   in_scale = false;
 
@@ -177,7 +172,6 @@ Topology::Topology(const TCHAR* shpname) {
 }
 
 
-#ifdef TOPOFASTCACHE
 void Topology::initCache()
 {
   //Selecting caching scenarios based on available memory and topo size
@@ -265,7 +259,7 @@ void Topology::initCache()
 		}
   } //sw
 }
-#endif
+
 
 void Topology::Open() {
   shapefileopen = false;
@@ -291,13 +285,7 @@ void Topology::Open() {
   shpCache = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
   if (shpCache) {
     shapefileopen = true;
-#ifdef TOPOFASTCACHE
 	initCache();
-#else
-    for (int i=0; i<shpfile.numshapes; i++) {
-      shpCache[i] = NULL;
-    }
-#endif
   } else {
 	StartupStore(_T("------ ERR Topology,  malloc failed shpCache%s"), NEWLINE);
   }
@@ -310,7 +298,6 @@ void Topology::Close() {
       flushCache();
       free(shpCache); shpCache = NULL;
     }
-#ifdef TOPOFASTCACHE
     if (shpBounds) {
       free(shpBounds); shpBounds = NULL;
     }
@@ -320,7 +307,6 @@ void Topology::Close() {
 	  }
       free(shps); shps = NULL;
     }
-#endif
     msSHPCloseFile(&shpfile);
     shapefileopen = false;  // added sgi
   }
@@ -348,7 +334,7 @@ bool Topology::CheckScale(void) {
 		return false;
   }
 
-  if (scaleCategory==10)
+  if (scaleCategory==10||scaleCategory==5)
 	return (MapWindow::zoom.RealScale() <= scaleDefaultThreshold);
   else
 	return (MapWindow::zoom.RealScale() <= scaleThreshold);
@@ -363,7 +349,6 @@ void Topology::flushCache() {
   StartupStore(TEXT("---flushCache() starts%s"),NEWLINE);
   int starttick = GetTickCount();
 #endif
-#ifdef TOPOFASTCACHE
   switch (cache_mode) {
 	case 0:  // Original
 	case 1:  // Bounds array in memory
@@ -377,11 +362,6 @@ void Topology::flushCache() {
 		}
 		break;
   }//sw		
-#else
-  for (int i=0; i<shpfile.numshapes; i++) {
-    removeShape(i);
-  }
-#endif
   shapes_visible_count = 0;
 #ifdef DEBUG_TFC
   StartupStore(TEXT("   flushCache() ends (%dms)%s"),GetTickCount()-starttick,NEWLINE);
@@ -412,15 +392,10 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
   triggerUpdateCache = false;
 
 #ifdef DEBUG_TFC
-#ifdef TOPOFASTCACHE
   StartupStore(TEXT("---UpdateCache() starts, mode%d%s"),cache_mode,NEWLINE);
-#else
-  StartupStore(TEXT("---UpdateCache() starts, original code%s"),NEWLINE);
-#endif
   int starttick = GetTickCount();
 #endif
 
-#ifdef TOPOFASTCACHE
   if(msRectOverlap(&shpfile.bounds, &thebounds) != MS_TRUE) {
     // this happens if entire shape is out of range
     // so clear buffer.
@@ -521,32 +496,6 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
     }//sw
 
     lastBounds = thebounds;
-#else
-
-  msSHPWhichShapes(&shpfile, thebounds, 0);
-  if (!shpfile.status) {
-    // this happens if entire shape is out of range
-    // so clear buffer.
-    flushCache();
-    return;
-  }
-
-  shapes_visible_count = 0;
-
-  for (int i=0; i<shpfile.numshapes; i++) {
-
-    if (msGetBit(shpfile.status, i)) {
-      
-      if (shpCache[i]==NULL) {
-	// shape is now in range, and wasn't before
-	shpCache[i] = addShape(i);
-      }
-      shapes_visible_count++;
-    } else {
-      removeShape(i);
-    }
-  }
-#endif
 
 #ifdef DEBUG_TFC
   long free_size = CheckFreeRam();
@@ -583,14 +532,9 @@ bool Topology::checkVisible(shapeObj& shape, rectObj &screenRect) {
 void Topology::Paint(HDC hdc, RECT rc) {
 
   if (!shapefileopen) return;
-  #if TOPO_CLIPPING
-  int iNewSize;
-  #endif
   bool nolabels=false;
-  // 130130 Note> there is a bug.
-  // For some reason the water disappears and does not follow scaleDefault.
-  // It looks like it is disappearing from the cache. There is no time to try and fix it for v4.
-  if (scaleCategory==10) {
+  // 130217 scaleCat 5 and 10 are the same! So careful..
+  if (scaleCategory==10||scaleCategory==5) {
 	// for water areas, use scaleDefault
 	if ( MapWindow::zoom.RealScale()>scaleDefaultThreshold) {
 		return;
@@ -619,12 +563,8 @@ void Topology::Paint(HDC hdc, RECT rc) {
   hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
 
   // get drawing info
-  #if DEBUG_POINTS_REDUCTION
-  int iTotalPts=0;
-  int iReducedPts=0;
-  #endif
   int iskip = 1;
-  
+ 
   // attempt to bugfix 100615 polyline glitch with zoom over 33Km
   // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
   // != 5 and != 10
@@ -682,14 +622,12 @@ void Topology::Paint(HDC hdc, RECT rc) {
 
 	#else
 	// -------------------------- PRINTING ICONS ---------------------------------------------
-	#if (TOPOFAST)
 	// no bitmaps for small town over a certain zoom level and no bitmap if no label at all levels
 	bool nobitmap=false, noiconwithnolabel=false;
 	if (scaleCategory==90 || scaleCategory==100) {
 		noiconwithnolabel=true;
 		if (MapWindow::MapScale>4) nobitmap=true;
 	}
-	#endif
 
 	if (checkVisible(*shape, screenRect))
 		for (int tt = 0; tt < shape->numlines; tt++) {
@@ -697,9 +635,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 				POINT sc;
 				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
 	
-				#if (TOPOFAST)
 				if (!nobitmap)
-				#endif
 				#if 101016
 				// only paint icon if label is printed too
 				if (noiconwithnolabel) {
@@ -729,28 +665,14 @@ void Topology::Paint(HDC hdc, RECT rc) {
           int miny = rc.bottom;
           int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
 
-	  #if TOPO_CLIPPING
-	  iNewSize =  MapWindow::LatLon2ScreenCompr(shape->line[tt].point, pt, msize, 1);
-          for (int jj=0; jj< iNewSize; jj++) {
-          #else
 	  MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize, 1);
           for (int jj=0; jj< msize; jj++) {
-	  #endif
             if (pt[jj].x<=minx) {
               minx = pt[jj].x;
               miny = pt[jj].y;
             }
 	  }
-	   #if TOPO_CLIPPING
-	   #if DEBUG_POINTS_REDUCTION
-           iTotalPts +=msize;
-           iReducedPts+=iNewSize;
-	   #endif
-           //StartupStore(_T("... topo line area point geo %i screen %i\n"),msize,iNewSize );
-           ClipPolygon(hdc, pt, iNewSize, rc, false);
-	   #else
            ClipPolygon(hdc, pt, msize, rc, false);
-           #endif
           cshape->renderSpecial(hdc,minx,miny,labelprinted);
         }
       break;
@@ -764,27 +686,13 @@ void Topology::Paint(HDC hdc, RECT rc) {
 			for (int tt = 0; tt < shape->numlines; tt ++) {
 				int minx = rc.right;
 				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
-				#if TOPO_CLIPPING
-				iNewSize =  MapWindow::LatLon2ScreenCompr(shape->line[tt].point, pt, msize*iskip, iskip);
-				for (int jj=0; jj< iNewSize; jj++) {
-				#else
 				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
 				for (int jj=0; jj< msize; jj++) {
-				#endif
 					if (pt[jj].x<=minx) {
 						minx = pt[jj].x;
 					}
 				}
-				#if TOPO_CLIPPING
-				ClipPolygon(hdc,pt, iNewSize, rc, true);
-	   			#if DEBUG_POINTS_REDUCTION
-		                iTotalPts +=msize;
-		                iReducedPts+=iNewSize;
-				#endif
-				//StartupStore(_T("... topo polygon area point geo %i screen %i\n"),msize,iNewSize );
-				#else
 				ClipPolygon(hdc,pt, msize, rc, true);
-				#endif
 			}
 		}
 	} else 
@@ -793,28 +701,14 @@ void Topology::Paint(HDC hdc, RECT rc) {
 			int minx = rc.right;
 			int miny = rc.bottom;
 			int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
-			#if TOPO_CLIPPING
-			iNewSize =  MapWindow::LatLon2ScreenCompr(shape->line[tt].point, pt, msize*iskip, iskip);
-			for (int jj=0; jj< iNewSize; jj++) {
-			#else
 			MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
 			for (int jj=0; jj< msize; jj++) {
-			#endif
 				if (pt[jj].x<=minx) {
 					minx = pt[jj].x;
 					miny = pt[jj].y;
 				}
 			}
-			#if TOPO_CLIPPING
-			ClipPolygon(hdc,pt, iNewSize, rc, true);
-	   		#if DEBUG_POINTS_REDUCTION
-	                iTotalPts +=msize;
-	                iReducedPts+=iNewSize;
-			#endif
-			//StartupStore(_T("... topo clip polygon area point geo %i screen %i\n"),msize,iNewSize );
-			#else
 			ClipPolygon(hdc,pt, msize, rc, true);
-			#endif
 			cshape->renderSpecial(hdc,minx,miny,labelprinted);
 		}
 	}
@@ -830,10 +724,6 @@ void Topology::Paint(HDC hdc, RECT rc) {
   }
   SelectObject(hdc, (HFONT)hfOld);
 
-#if DEBUG_POINTS_REDUCTION
-	if ((iTotalPts-iReducedPts)>0)
-	StartupStore(_T("... topo total point (Diff=%i) geo %i screen %i \n"), iTotalPts-iReducedPts,iTotalPts,iReducedPts );
-#endif
 }
 
 
@@ -1326,36 +1216,14 @@ static POINT clip_ptin[MAXCLIPPOLYGON];
 void ClipPolygon(HDC hdc, POINT *m_ptin, unsigned int inLength, 
                  RECT rc, bool fill) {
 
-#if TOPO_CLIPPING
-#else
   unsigned int outLength = 0;
 
   if (inLength>=MAXCLIPPOLYGON-1) {
     inLength=MAXCLIPPOLYGON-2;
   }
-#endif
   if (inLength<2) {
     return;
   }
-
-#if TOPO_CLIPPING
-  if(!DeviceNeedClipping) {
-	if (fill) {
-		if (inLength>2) {
-			Polygon(hdc, m_ptin, inLength);
-		}
-	} else {
-		if (inLength>1) {
-			Polyline(hdc, m_ptin, inLength);
-		}
-	}
-  } else {
-	unsigned int outLength = 0;
-	if (inLength>=MAXCLIPPOLYGON-1) {
-		inLength=MAXCLIPPOLYGON-2;
-	}
-        // indentation wrong from now on
-#endif
 
   memcpy((void*)clip_ptin, (void*)m_ptin, inLength*sizeof(POINT));
 
@@ -1398,9 +1266,6 @@ void ClipPolygon(HDC hdc, POINT *m_ptin, unsigned int inLength,
       Polyline(hdc, clip_ptout, outLength);
     }
   }
-#if TOPO_CLIPPING
-}
-#endif
 } // indentation wrong
 
 void Topology::SearchNearest(RECT rc) {

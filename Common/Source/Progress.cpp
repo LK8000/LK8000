@@ -92,12 +92,10 @@ HWND CreateProgressDialog(TCHAR* text) {
 	hStartupWindow=CreateWindow(TEXT("STATIC"), TEXT("\0"), Style, 0, 0, ScreenSizeX, ScreenSizeY, hWndMainWindow, NULL, hInst, NULL);
 	if (hStartupWindow==NULL) {
 		StartupStore(_T("***** CRITIC, no startup window!%s"),NEWLINE);
-		FailStore(_T("CRITIC, no startup window!"));
 		return NULL;
 	}
 	if (!(hStartupDC = GetDC(hStartupWindow))) {
 		StartupStore(_T("------ Cannot state startup window%s"),NEWLINE);
-		FailStore(_T("Cannot state startup window"));
 		return(NULL);
 	}
 /*

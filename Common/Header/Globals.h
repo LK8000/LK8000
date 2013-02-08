@@ -576,7 +576,6 @@ GEXTERN bool AutoForceFinalGlide;
 GEXTERN CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 
 // user interface options
-GEXTERN bool bAirspaceBlackOutline;
 GEXTERN int TrailActive;
 GEXTERN int TrailActive_Config;
 GEXTERN int FinalGlideTerrain;

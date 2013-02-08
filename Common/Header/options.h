@@ -44,10 +44,6 @@
  #define LK_CACHECALC_MCA 60
  // #define LK_CACHECALC_MCA_STAT 1
 
- // New topology OPTIMIZE options
- #define TOPOFAST	1
- #define TOPOFASTCACHE	1
-
  //
  // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
  // When expire date is reached, unnecessary old stuff can be removed, even if commented
@@ -87,35 +83,12 @@
 // Eric Carden, September 13, 2012
 #define GTL2 
 
-// we cn use transparent filling for Turnpoint
-// cpu cost : ~40ms on Vertica V1
-// Set to 1 for Activate
-#define AATALPHABEND 1
-
 // Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
 #define USEBIGZOOM	1	
 
-// Fix SETFOCUS problem 
-#define FIXFOCUS	1
-
-// Use bAirspaceBlackOutline for drawing asp borders
-// When removed, removed the engineering configuration no more neeeded. Currently 
-// the engineering setting is not used if ASPOUTLINE is not enabled
-// #define ASPOUTLINE	1
-
-// LKAIRSPACE OPTIM STUFF 
-// Recalculate airspace positions only if the draw area has changed by more than 2 pixels
-// There is a problem: enabling/disabling/ack/etc will not show up until a zoom is performed.
-// So there is no more instant view of what is happening, and for this reason the option is disabled.
-// #define LKASP_CALC_ON_CHANGE_ONLY		1
 
 // do not add screen points if closer than 5pix to the previous
 #define LKASP_REMOVE_NEAR_POINTS		1
-
-// TOPOLOGY OPTIM STUFF
-// Clip Topology shapes.
-// This function does not work correctly: topology is no more clipped at all.
-//define TOPO_CLIPPING	1
 
 // MapDraw OPTIM , SetTopologyBounds limited to zoom change and map draw out of current rect 
 #define TOPOBOUND_OPTIM	1
@@ -176,6 +149,11 @@
 // May be sill used for custom user's topology, so let's keep it for a while.
 // #define USETOPOMARKS	1	
 
+// LKAIRSPACE OPTIM STUFF 
+// Recalculate airspace positions only if the draw area has changed by more than 2 pixels
+// There is a problem: enabling/disabling/ack/etc will not show up until a zoom is performed.
+// So there is no more instant view of what is happening, and for this reason the option is disabled.
+// #define LKASP_CALC_ON_CHANGE_ONLY		1
 
 #include "Debug.h"	// DEBUG OPTIONS FOR EVERYONE, depending also on TESTBENCH
 

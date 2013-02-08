@@ -53,6 +53,13 @@
 #define ALTERNATE_MAXRANGE    100 // km - bestalternate search is within this maximum limit
 #define DYNABOXTIME 3.0  // seconds between infobox dynamic flipping
 
+/* 
+ * This is required because water labels (category 05 and 10 in topology) are special.
+ * They are reset differently. This is the default in km zoom.
+ */
+#define DEFAULT_WATER_LABELS_THRESHOLD	10
+
+
 /*
  * DOUBLECLICKINTERVAL is a general purpouse timing, used by both VK and synthetic double click
  *
@@ -84,9 +91,8 @@
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"3"
-#define LKRELEASE	"1p0"
+#define LKRELEASE	"1q0"
 
-#define REGKEYNAME	"Software\\COOL\\LK8000"
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
 #define LKAIRCRAFT	"DEFAULT_AIRCRAFT.acf"
@@ -109,8 +115,6 @@
 #define LKD_AIRSPACES	"_Airspaces"
 #define LKD_MAPS	"_Maps"
 #define LKD_LANGUAGE	"_Language"
-// #define LKD_TEMP	"_Tmp"
-// #define LKD_DEBUG	"_Debug"
 
 /*
  * LK8000 suffixes - Do not change them, uncompleted work 091001

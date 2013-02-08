@@ -47,6 +47,8 @@ void DebugStore(const char *Str, ...)
 #endif
 }
 
+
+#if 0 // 130207 no more unsed in V4
 void FailStore(const TCHAR *Str, ...)
 {
   TCHAR buf[MAX_PATH];
@@ -95,6 +97,7 @@ CheckFreeRam(),SNEWLINE);
   fclose(stream);
   StartupStore(_T("------ %s%s"),buf,NEWLINE);
 }
+#endif
 
 
 

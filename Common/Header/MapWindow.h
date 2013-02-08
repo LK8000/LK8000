@@ -356,7 +356,6 @@ class MapWindow {
   static int iAirspaceMode[AIRSPACECLASSCOUNT];
   static int iAirspaceBrush[AIRSPACECLASSCOUNT]; 
   static int iAirspaceColour[AIRSPACECLASSCOUNT];
-  static bool bAirspaceBlackOutline;
   static BOOL CLOSETHREAD;
 
   static COLORREF GetAirspaceColour(int i) {
@@ -451,9 +450,6 @@ class MapWindow {
   static void LatLon2Screen(const double &lon, const double &lat, POINT &sc);
   static void LatLon2Screen(pointObj *ptin, POINT *ptout, const int n,
 			    const int skip);
-  #if TOPO_CLIPPING
-  static int LatLon2ScreenCompr(pointObj *ptin, POINT *ptout, const int n, const int skip);
-  #endif
   static void LatLon2ScreenMultimap(pointObj *ptin, POINT *ptout, const int n, const int skip);
 
   static void CloseDrawingThread(void);
