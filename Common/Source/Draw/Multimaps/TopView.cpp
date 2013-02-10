@@ -88,9 +88,6 @@ int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing
 		break;
   }
 
-  int iOldLocator = EnableThermalLocator;
-  EnableThermalLocator =0;
-
   MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
 
   zoom.ModifyMapScale();
@@ -266,7 +263,6 @@ _nomoredeclutter:
   }
 
   MapWindow::zoom.RequestedScale(fOldScale);
-  EnableThermalLocator = iOldLocator;
   DisplayOrientation = iOldDisplayOrientation;
   SelectObject(hdc, hfOld);
   return 0;
