@@ -301,10 +301,15 @@ _forcereset:
 		// during next cycle, but we need it here immediately
 		AverageThermal(Basic,Calculated);
 
-		InsertThermalHistory(Calculated->ClimbStartTime, 
-			// Calculated->ClimbStartLat, Calculated->ClimbStartLong, 
-			Calculated->ThermalEstimate_Latitude, Calculated->ThermalEstimate_Longitude,
-			Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
+		if (EnableThermalLocator) {
+			InsertThermalHistory(Calculated->ClimbStartTime, 
+				Calculated->ThermalEstimate_Latitude, Calculated->ThermalEstimate_Longitude,
+				Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
+		} else {
+			InsertThermalHistory(Calculated->ClimbStartTime, 
+				Calculated->ClimbStartLat, Calculated->ClimbStartLong, 
+				Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
+		}
 
 	}
 
