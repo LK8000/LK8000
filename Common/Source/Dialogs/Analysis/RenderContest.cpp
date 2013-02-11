@@ -191,7 +191,7 @@ double lat_c, lon_c;
 double  lat_p = GPS_INFO.Latitude;
 double  lon_p = GPS_INFO.Longitude;
 BOOL bFlat = false;
-//#define DRAWPERCENT
+#define DRAWPERCENT
 #ifdef DRAWPERCENT
 double fTotalPercent = 1.0;
 #endif

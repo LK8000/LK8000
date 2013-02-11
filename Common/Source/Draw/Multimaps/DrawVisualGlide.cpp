@@ -181,10 +181,13 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   unsigned short boxInterval=((vrc.right-vrc.left)-(boxSizeX*numSlotX))/(numSlotX+1);
   unsigned short oddoffset= (ScreenSizeX- (boxSizeX*numSlotX) - boxInterval*(numSlotX+1))/2;
+
+  /*
   #if BUGSTOP
   // not really harmful
   LKASSERT(oddoffset<=boxInterval);
   #endif
+  */
 
   #if DEBUG_SCR
   StartupStore(_T("numSlotX=%d ScreenSizeX=%d boxSizeX=%d interval=%d offset=%d\n"),numSlotX,ScreenSizeX, boxSizeX, boxInterval, oddoffset);
