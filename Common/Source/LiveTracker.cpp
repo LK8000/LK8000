@@ -133,7 +133,9 @@ void LiveTrackerInit()
   if (LiveTrackerInterval == 0) {
     // If livetracker is not enabled at startup, we do nothing, 
     // but in this case LK must be restarted, if user enables it!
+    #if TESTBENCH
     StartupStore(TEXT(". LiveTracker disabled.%s"), NEWLINE);
+    #endif
     return;
   }
   //Init winsock if available

@@ -204,7 +204,9 @@ void RasterTerrain::ServiceFullReload(double lat, double lon) {
   Lock();
   if (TerrainMap) {
     CreateProgressDialog(gettext(TEXT("_@M901_"))); // Loading terrain tiles...
-	StartupStore(_T(". Loading terrain tiles...%s"),NEWLINE);
+    #if TESTBENCH
+    StartupStore(_T(". Loading terrain tiles...%s"),NEWLINE);
+    #endif
     TerrainMap->ServiceFullReload(lat, lon);
   }
   Unlock();

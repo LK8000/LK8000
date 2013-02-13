@@ -237,7 +237,9 @@ goEnd:
 			gettext(TEXT("_@M396_")), MB_OK|MB_ICONEXCLAMATION);
 	}
   } else {
-    StartupStore(_T("------ Task is Loaded%s"),NEWLINE);
+	#if TESTBENCH
+	StartupStore(_T("------ Task is Loaded%s"),NEWLINE);
+	#endif
 	TaskModified = false; 
 	TargetModified = false;
 	_tcscpy(LastTaskFileName, taskFileName);

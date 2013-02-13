@@ -26,8 +26,9 @@ bool RasterTerrain::terrain_initialised = false;
 void RasterTerrain::OpenTerrain(void)
 {
   terrain_initialised = false;
-
+  #if TESTBENCH
   StartupStore(TEXT(". Loading Terrain... %s"),NEWLINE);
+  #endif
   CreateProgressDialog(gettext(TEXT("_@M900_"))); // Loading Terrain File...
 
   TCHAR szFile[MAX_PATH] = _T("\0");
@@ -149,7 +150,9 @@ bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
 
 void RasterTerrain::CloseTerrain(void)
 {
+  #if TESTBENCH
   StartupStore(TEXT(". CloseTerrain%s"),NEWLINE);
+  #endif
 
   // TODO code: lock it first?
 
