@@ -387,6 +387,25 @@ Grouping the airspaces can be turned on/off in Setup page 2 "Airspaces".
 But in case you need separate acknowledgment of parts of the same airspace it is a better way to give it different names (e.g. Dresden EAST, Dresden WEST).  
 
 
+
+LK8000 VERSION 3.1q 130214
+==========================
+
+. If Thermal Locator is disabled by configuration, mark the thermals using climb start lat and lon.
+  Notice that disabling Thermal Locator will create many side effects.
+
+. Fix possible problem in multimaps disabling thermal locator during runtime
+
+. Enable the DRAWPERCENT option in FAI Analysis, printing percentages
+
+. Fix task files not loaded with lowercase suffix
+
+. New multimap icons
+
+. Fix a possible assertion error in CAR mode
+
+
+
 LK8000 VERSION 3.1p 130207
 ==========================
 
