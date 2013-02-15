@@ -257,11 +257,9 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 
 		avertas=averias*AirDensityRatio(Calculated->NavAltitude);
 		// This is just to be sure we are not using an impossible part of the polar
-		if (avertas>(GlidePolar::Vminsink-8.3)) { // minsink - 30km/h 
-
-			LKASSERT(GlidePolar::Vbestld!=0);
+		if (avertas>(GlidePolar::Vminsink-8.3) && (avertas>0)) { // minsink - 30km/h 
+			LKASSERT(GlidePolar::Vbestld>0);
 			double dtmp= avertas/GlidePolar::Vbestld;
-			LKASSERT(avertas!=0);
 			Calculated->EqMc = -1*GlidePolar::sinkratecache[GlidePolar::Vbestld] * ( (dtmp*dtmp*dtmp) - ( GlidePolar::Vbestld/avertas));
 			// Do not consider impossible MC values as Equivalent
 			if (Calculated->EqMc>10) Calculated->EqMc=-1;

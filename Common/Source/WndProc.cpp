@@ -313,7 +313,9 @@ void Shutdown(void) {
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
 
   StartupStore(_T(". Entering shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
+  #if TESTBENCH
   StartupLogFreeRamAndStorage();
+  #endif
 
   // turn off all displays
   GlobalRunning = false;
@@ -360,7 +362,9 @@ void Shutdown(void) {
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
   CreateProgressDialog(gettext(TEXT("_@M1222_")));
 
+  #if TESTBENCH
   StartupStore(TEXT(".... Save default task%s"),NEWLINE);
+  #endif
 
   SaveDefaultTask();
 
@@ -458,7 +462,9 @@ void Shutdown(void) {
   CloseHandle(drawTriggerEvent);
   CloseHandle(dataTriggerEvent);
 
+  #if TESTBENCH
   StartupLogFreeRamAndStorage();
+  #endif
   for (i=0;i<NUMDEV;i++) {
 	if (ComPortStatus[i]!=0) {
 		StartupStore(_T(". ComPort %d: status=%d Rx=%d Tx=%d ErrRx=%d + ErrTx=%d (==%d)%s"), i,

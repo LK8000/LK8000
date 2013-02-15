@@ -237,9 +237,13 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			}
 
 		break;
+		case LKEVENT_SHORTCLICK:
+			// normally we are clicking in the center map, so it is not a zoom
+			// and we ignore it.
+			break;
 		default:
 			#if TESTBENCH
-			if (LKevent!=0) StartupStore(_T("UNKNWON EVENT: %d\n"),LKevent);
+			if (LKevent!=0) StartupStore(_T("... RenderAirspace, UNKNOWN EVENT: %d\n"),LKevent);
 			#endif
 			break;
 	  }

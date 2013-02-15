@@ -515,10 +515,11 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
       LPCTSTR szFileName = dfe->GetPathFile();
       LPCTSTR wextension = _tcsrchr(szFileName, _T('.'));
       if(wextension) {
-          bool bOK = true;
-          if(wcscmp(wextension,_T(LKS_TSK))==0) {
+          bool bOK = false;
+          if(_wcsicmp(wextension,_T(LKS_TSK))==0) {
               LoadNewTask(szFileName);
-          } else if (wcscmp(wextension,_T(LKS_WP_CUP))==0) {
+              bOK = true;
+          } else if (_wcsicmp(wextension,_T(LKS_WP_CUP))==0) {
               bOK = LoadCupTask(szFileName);
           }
           if(!bOK) {

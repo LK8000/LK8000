@@ -1548,8 +1548,10 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
   double CenterY = 0;
   double lat=0,lon=0;
   bool flyzone = false;
-  
+ 
+  #if TESTBENCH 
   StartupStore(TEXT(". Reading airspace file%s"),NEWLINE);
+  #endif
 
   while (ReadString(fp, READLINE_LENGTH, Text)){
     ++linecount;
@@ -1862,7 +1864,9 @@ void CAirspaceManager::CloseAirspaces()
   _airspaces_page24.clear();
   for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) delete *it;
   _airspaces.clear();
+  #if TESTBENCH
   StartupStore(TEXT(". CloseLKAirspace%s"),NEWLINE);
+  #endif
 }
 
 void CAirspaceManager::QnhChangeNotify(const double &newQNH)
@@ -2951,7 +2955,9 @@ void CAirspaceManager::SaveSettings() const
       //Newline
       fprintf(f,"\n");
     }
+    #if TESTBENCH
     StartupStore(TEXT(". Settings for %d airspaces saved to file <%s>%s"), _airspaces.size(), szFileName, NEWLINE);
+    #endif
     fclose(f);
   } else StartupStore(TEXT("Failed to save airspace settings to file <%s>%s"),szFileName,NEWLINE);
 }

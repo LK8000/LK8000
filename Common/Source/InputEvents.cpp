@@ -182,7 +182,6 @@ void InputEvents::readFile() {
 	}
 	fp=zzip_fopen(xcifile, "rb");
 	if (fp == NULL) {
-		// StartupStore(_T(".. No menu <%s>, using DEFAULT\n"),xcifile);
 		_stprintf(xcifile,_T("%s\\DEFAULT_MENU.TXT"), xcipath);
 		fp=zzip_fopen(xcifile, "rb");
 		if (fp == NULL) {
@@ -190,8 +189,9 @@ void InputEvents::readFile() {
 			StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!\n"),xcifile);
 			return;
 		} 
+	} else {
+		StartupStore(_T(". Loaded menu <%s>\n"),xcifile);
 	}
-	StartupStore(_T(". Loaded menu <%s>\n"),xcifile);
   }
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)

@@ -15,7 +15,9 @@ int globalFileNum = 0;
 
 void ReadWayPoints(void)
 {
+  #if TESTBENCH
   StartupStore(TEXT(". ReadWayPoints%s"),NEWLINE);
+  #endif
 
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
   TCHAR szFile2[MAX_PATH] = TEXT("\0");

@@ -21,7 +21,9 @@ extern Topology* TopoStore[MAXTOPOLOGY];
 
 
 void OpenTopology() {
+  #if TESTBENCH
   StartupStore(TEXT(". OpenTopology%s"),NEWLINE);
+  #endif
   CreateProgressDialog(gettext(TEXT("_@M902_"))); // Loading Topology File...
 
   // Start off by getting the names and paths
@@ -290,7 +292,9 @@ void OpenTopology() {
 
 
 void CloseTopology() {
+  #if TESTBENCH
   StartupStore(TEXT(". CloseTopology%s"),NEWLINE);
+  #endif
 
   LockTerrainDataGraphics();
   for (int z=0; z<MAXTOPOLOGY; z++) {

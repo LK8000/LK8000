@@ -20,7 +20,9 @@ void CloseWayPoints() {
   #endif
   unsigned int i;
   if (NumberOfWayPoints>0) { // we must free also RESWps comments!
+	#if TESTBENCH
 	StartupStore(TEXT(". Waypoint list was not empty, closing.%s"),NEWLINE);
+	#endif
 	for (i=0; i<NumberOfWayPoints; i++) {
 		if (WayPointList[i].Details) {
 			free(WayPointList[i].Details);
