@@ -1,4 +1,4 @@
-﻿# LK8000 ENG_HLP.TXT 110405
+# LK8000 ENG_HLP.TXT 110405
 #
 # Jeden textový rádek muže obsahovat max. 500 znaku
 # Celý help muže obsahovat celkem max. 1024 znaku
@@ -123,7 +123,7 @@ V tomto módu není možný manuální pohyb ikonou kluzáku.
 @126
 Jestliže úroveň zoomu je větší nebo rovna této hodnotě, orientace mapy se automaticky přepne do módu Sever nahoru. 
 Jestliže je pod touto hodnotou, orientace mapy bude dle aktuálního nastavení. 
-Zadáním velmi vysoké hodnoty se automatické přepnutí mapového módu vypne. Původní hodnota je 7.
+Zadáním velmi vysoké hodnoty se automatické přepnutí mapového módu vypne.
 
 @127
 Automatický zoom mění měřítko mapy během letu tak, že při přibližování se k otočnému bodu měřítko mapy automaticky zmenšuje.  
@@ -177,6 +177,7 @@ Vypnutí nebo zapnutí automatického výpočtu větru. Jestliže je výpočet v
 [Točení] Vyžaduje pouze zdroj GPS dat.
 [ZigZag] Vyžaduje elektronické vario s výstupem IAS.
 [Obojí] Použití obou metod.
+[Externí] Použít údaje o větru získané z externího zařízení (jakým je např. CAI, LX, ZANDER atd.)
 
 @140
 Toto je IAS, kterou je nutno v rovném letu udržovat před kliknuntím na kalkulaci směru a síly větru. 
@@ -346,7 +347,8 @@ Tato volba stanoví, jak se budou na obrazovce zobrazovat dlouhá menu pokud už
 Definuje umístění symbolu kluzáku na obrazovce v procentech od spodního okraje.
 
 @184
-Jsou k dispozici dva styly: WinPilot styl (zelené a purpurové kruhy) nebo vysoce viditelný styl.
+Jsou dostupné dva styly: Vektorový a Alternativní
+Vektorové otočáky ukáží směr dráhy, frekvenci a další informace.
 
 @185
 Zvolte jak zobrazit hodnoty pro body vhodné k přistání. S nebo bez rámečku okolo, s nebo bez jednotek (metry, stopy).
@@ -382,17 +384,14 @@ Poloviční mód zobrazí cílový otočný bod a vzdálenost k němu v levém h
 Kompletní mód navíc zobrazí hodiny. Více v manuálu.
 
 @194
-Určuje, jaký se vypočítá rozsah terénu pro plachtění a je koncipován jako čára na mapě oblasti:
-[VYPNUTO] Zakáže zobrazení
-[Čára] Kreslí čárkovanou čáru letěné vzdálenosti.
-[Stín] Stíny terénu mimo rozsah letěné vzdálenosti.
-Když je letová oblast zapnuta, ČERVENÝ KŘÍŽ se zobrazí, jestliže je současný
-cíl dosažitelný, pokud jde o klouzavost, ale nedosažitelný z důvodu překážky.
-Překážka je indikována spolu s krabicovou hodnotou, kterou je nadmořská výška potřebná k překonání překážky.
-Tato výška bere v úvahu terénní bezpečnostní rezervu, kterou máte
-nastavenu v menu bezpečnosti.
-UPOZORNĚNÍ: STÍN letové oblasti je zobrazen POUZE během letu. Pokud jste na
-zemi, NENÍ zobrazen.
+Určuje, jestli je na mapě zobrazen dokluz větoně:
+[VYPNUTO] Nezobrazeno
+[Čára] Vyreslí přerušovanou čáru na hranici doletu.
+[Stín] Terén mimo dolet větroně je zobrazen ve stínu (platí pouze za letu, ne na zemi).
+[...+NextWP] Zobrazí i dolet větroně od aktivního waypointu (WP), který je vypočítán s použitím předpokládané výšky příletu k WP.
+Pokud je vybrána jakákoli jiná možnost než "VYPNUTO", dojde k zobrazení červeného "X" pokud je současný cíl dosažitelný s ohledem na výšku, ale na trase k cíli je překážka která zabrání v jeho dosažení.
+U červeného "X" je zobrazena výška, kterou musíte získat pro přeletění překážky.
+Tato výška bere v potaz bezpečnostní výšku nastavitelnou v menu bezpečnosti.
 
 # 195 UNUSED SINCE 2.4
 @195
@@ -420,6 +419,7 @@ Určuje jak budou přepínány otočné body v úloze.
 [Auto] Automatická změna ramene na další otočný bod jakmile kluzák dosáhne otočného bodu (cylindr, sektor, páska) včetně Startu.
 [Odjistit] Uživatel musí odjistit každý otočný bod před jeho dosažením (včetně Startu). Tato volba je DOPORUČENA pro AAT úlohy!
 [Odjistit i start] Uživatel musí odjistit výchozí bod trati - Start před začátkem úlohy. Všechny ostatní otočné body budou měněny automaticky.
+[Odjistit otočáky] Uživatel musí manuálně odjistit každý otočný bod, ale bod Start je automaticky odjištěn.
 
 @201
 Způsob zahájení úlohy.
@@ -564,7 +564,7 @@ Určuje jak je uživatel vyzván k zadání textového vstupu (název souboru, t
 Tato volba určuje jak bude nakládáno s otočnými body mimo teréní podklad: uživatel může být dotázán pokud se tak stane, nebo může být vždy zahrnut nebo vyloučen.
 
 @237
-Zobrazí hodiny v režimu všech vrste
+Funguje pouze v režimu všech vrstev - je zobrazen místní čas.
 
 @238
 Velikost překrývajícího písma.
@@ -806,7 +806,8 @@ Nastavuje jak budou postupně měněny otočné body v úloze.
 [Ručně] Ruční změna na další otočný bod
 [Auto] Zcela automatická změna ramene na další otočný bod
 [Odjištění] Automatická změna ramene na další otočný bod po odjištění tlačítka před otočným bodem.
-[Odjištění startu] Automatický start úlohy po odjištění startu.
+[Odjištění i startu] Automatické přepínání otočných bodů musí být odjištěno i pro bod startu.
+[Odjistit otočáky] Uživatel musí manuálně odjistit každý otočný bod, ale bod Start je automaticky odjištěn.
 
 @508
 Typ AAT pozorovacích sektorů:
@@ -885,12 +886,10 @@ Ruční nastavení směru větru.
 @612
 Umožňuje vypnout nebo zapnout automatický algoritmus větru.
 Pokud je algoritmus vypnut, je pilot zodpovědný za správné nastavení větru.
-
 [Kroužení] Vyžaduje pouze zdroj GPS dat.
-
 [Cik-Cak] Vyžaduje inteligentní vario s výstupem rychlosti.
-
 [Obě] Využívá obě metody, cik-cak i kroužení.
+[Externí] Používá údaje o větru získané z externího zařízení (jakým je např. CAI, LX, ZANDER atd.)
 
 @613
 Stanovuje zda je stopa snášena větrem v režimu kroužení.
@@ -1640,9 +1639,7 @@ Po dosažení otočného bodu dojde k nastavení původního přeletového zoomu
 
 @1220
 [Nastavení spodního pruhu]
-Povolí nebo zakáže každý spodní pruh při rotaci navigačních štítků.
-Pokud jsou všechny pruhy zakázané, NAV1 je zobrazen vždy.
-Během kroužení je také zobrazen informační štítek THR 0.
+Vypne/zapne každou spodní lištu při rotaci navboxů. Alespoň jeden (TRM0 se nepočítá) musí být zapnutý.
 
 @1221
 [Nastavení rotace Info stránek]
@@ -1699,6 +1696,41 @@ Tato rychlostní výška bude přidána do všech příletových výšek. Ve vý
 [Klouzavost]
 Jak je větroň čistý. Nastavte na 100% pro čistý větroň, nižší čísla pokud jsou křídla mokrá nebo špinavá od mušek.  50% znamená, že opadání větroně se zdvojnásobilo. 
 Toto je původní hodnota používaná klouzavostí v menu Základního nastavení, nahraného při zapnutí. Normálně byste tu měli nechat hodnotu 100%.
+
+@1258
+[Záznamový interval Live tracker v sekundách]
+Nastavte (>0) pokud chcete povolit posílání dat o pozici na Leonardo live tracker servicer přes internet. (http://www.livetrack24.com)
+Toto vyžaduje GPRS/HSDPA datový tok a aktivní TCP/IP připojení k tracking serveru.LK použije daný server, jméno a heslo k připojení na server. 
+Typ letadla je také převzat. Pokud si nejste jistí, nastavte výchozí hodnotu 0, což znamená vypnuto.
+
+@1259
+[Vlastní Menu]
+
+@1260
+[Rychlá gesta]
+pouze pro režim paraglide a rogal: povolit/zakázat rychlá gesta.
+Standardně jsou rychlá gesta povolena. Rychlá gesta umožňují pilotovi kliknout
+vpravo nebo vlevo na nejbližší/info stránkách pro přepnutí na příští/předchozí jako s gesty.
+Při použítí rukavic za letu je doporučeno mít tuto funkci vypnutou.
+
+@1261
+[Bezpečnost při vzletu]
+Toto varování zazní během fáze vzletu ve chvíli, kdy je dosažena bezpečnostní výška nad zemí (QFE).
+Pro větroně to vetšinou znamená výšku, ve které je možné udělat zatáčku o 180 stupňů a přistát zpátky na letišti, v případě přerušení vleku.
+Pro vypnutí varování nastavte tuto hodnotu na 0. 
+Toto varování se znovu odjistí až po přistání.
+
+@1262
+[Nastavení Multimapy]
+
+@1263
+[Spodní lišta AUTO]
+Při povolení dojde k automatické aktivaci spodní lišty TRM0 při točení a k její
+deaktivaci po opuštění stoupáku, a to i tehdy, pokud je TRM0 vyřazen z rotace lišt.
+
+@1264
+[Potvrzení skupiny]
+Potvrzení jednoho prostoru se vztahuje na všechny prostory se stejnám jménem a třídou.
 
 @9999
 Pro tuto položku není dostupná nápověda!
