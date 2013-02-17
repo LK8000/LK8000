@@ -1,5 +1,5 @@
 ﻿# LK8000 POLISH MESSAGES - POL_MSG.TXT
-# MASTER UPDATED:  120119
+# MASTER UPDATED:  130216
 #
 # Ten plik jest załadowany w czasie startu i wszystkie wiadomości są przechowywane w pamięci urządzenia.
 # Jeśli tłumaczysz ten plik to postaraj się przestrzegać długości wiadomości.
@@ -176,6 +176,7 @@ _@M159_ "ZATWIERDZIĆ PZ i PRZERWAĆ zadanie?"
 _@M160_ "Oblicz"
 _@M161_ "Anuluj"
 _@M162_ "Nie można nadpisać!"
+#M163 unused, changed to CarTrek
 _@M163_ "Samochód"
 _@M164_ "Kategoria "
 _@M165_ "Trend puł."
@@ -212,7 +213,7 @@ _@M194_ "PZ CompeGPS"
 _@M195_ "Konfiguracja"
 _@M196_ "Klawisze Użytkownika"
 _@M197_ "Konfiguruj Topologię"
-_@M198_ "Czy na pewno wyjść?"
+_@M198_ "Czy na pewno zakończyć nawigację?"
 _@M199_ "Połączony"
 _@M200_ "Kopiuj"
 _@M201_ "Otwarcie pliku IGC się nie udało!"
@@ -500,6 +501,7 @@ _@M471_ "Brak fixu"
 _@M472_ "Bez szybowców"
 _@M473_ "Brak lądowisk"
 _@M474_ "Loger nie jest podłączony"
+#475 unused since 3.1i
 _@M475_ "Bez nakładki"
 _@M476_ "Brak zadania"
 _@M477_ "Brak trasy"
@@ -706,7 +708,7 @@ _@M674_ "CEL ZNOWU WIDOCZNY"
 _@M675_ "CEL NAMIERZONY"
 _@M676_ "ZADANIE ZRESTARTOWANE"
 _@M677_ "TAK"
-_@M678_ "ZAKRĘT"
+_@M678_ "PZ"
 _@M679_ "Zakładka"
 _@M680_ "Godz. startu z."
 _@M681_ "Prędkość"
@@ -855,8 +857,8 @@ _@M818_ "Ustawienia Wiatru"
 _@M819_ "Wskaźnik wiatru"
 _@M820_ "Wiatr na wysokości"
 _@M821_ "Obc. skrzyd. "
-# 822 REMOVED after 3.0, was Winpilot
-_@M822_ "Wector"
+# 822 REMOVED after 3.0
+_@M822_ "Winpilot"
 _@M823_ "Pasmo rob."
 _@M824_ "PZ poza terenem "
 _@M825_ "Żółty"
@@ -1048,6 +1050,7 @@ _@M1025_ "Next Alt.Arrival"
 _@M1026_ "NxtArr"
 _@M1027_ "Next Alt.Required"
 _@M1028_ "NxtAltR"
+# 1029 UNUSED REMOVED
 _@M1029_ "_Reserved 2"
 _@M1030_ "Next"
 _@M1031_ "Task Alt.Arrival"
@@ -1336,12 +1339,15 @@ _@M1286_ "ArSpcV"
 
 # airspace analysis dialog page
 _@M1287_ "Kierunek"
+# 1288 UNUSED REMOVED
 _@M1288_ "Następny PZ"
 _@M1289_ "Nast. PZ"
+# M1290 UNUSED REMOVED
 _@M1290_ "Aktualny kierunek"
 _@M1291_ "Strefa"
 _@M1292_ "Najbliższa strefa"
-_@M1293_ "Sonar WŁ"
+_@M1293_ "Sonar"
+#1294 REMOVED UNUSED
 _@M1294_ "Sonar WYŁ"
 _@M1295_ "(widok z boku)"
 
@@ -1518,6 +1524,11 @@ _@M1504_ "PLS scr"
 _@M1505_ "OLC Plus*Predicted Score"
 _@M1506_ "PLS*scr"
 
+_@M1507_ "OLC FAI triangle Distance to close"
+_@M1508_ "C:"
+_@M1509_ "OLC FAI triangle Distance close %"
+_@M1510_ "%C:"
+_@M1511_ "B:"
 
 # #############################
 # NEW 2.4 messages
@@ -1707,7 +1718,7 @@ _@M1743_ "ELV:"
 # this was the old V rough air. Leave a trailing space!
 _@M1744_ "Prędkość maksymalna "
 # new startup profile buttons
-_@M1745_ "STATEK POW."
+_@M1745_ "ST. POW."
 _@M1746_ "SYSTEM"
 # new button caption on task overview dialog, appears only in PG/HG mode
 _@M1747_ "Okna Czasowe"
@@ -1786,6 +1797,53 @@ _@M1796_ "UŻYWAM WYSOKOŚCI BARO"
 # Replacing 822
 _@M1797_ "Wektor"
 
+_@M1798_ "Uzbrój PZty"
+_@M1799_ "Zatrzymaj się!"
+
+_@M1800_ "brak śladu"
+_@M1801_ "ślad noszeń"
+_@M1802_ "ślad noszeń i duszeń"
+_@M1803_ "Do przodu"
+_@M1804_ "W prawo"
+_@M1805_ "Linia+NastPZ"
+_@M1806_ "Cień+NastPZ"
+_@M1807_ "_Reserved 2"
+_@M1808_ "Wczytywanie bazy FLARMNET"
+
+# Trip computer, Infobox title, max 6-7 chars
+_@M1809_ "W ruchu"
+_@M1810_ "Bezruch."
+_@M1811_ "Całkow."
+_@M1812_ "Chrono"
+
+# New virtual waypoints
+_@M1813_ "ZAMKNIĘCIE FAI"
+_@M1814_ "LOT SWOBODNY"
+# 1815 can be changed anytime, do not reuse!
+_@M1815_ "NIE UŻYWANY"
+_@M1816_ "Punkt zamykający FAI"
+_@M1817_ "Punkt zamykający docel i powrót"
+
+# profile button, keep short!
+_@M1818_ "URZĄDZ."
+# configuration SETUP save 
+_@M1819_ "Profile Urządzeń"
+# page name
+_@M1820_ "Konfiguracja urządzeń"
+# Bottom bar configuration button
+_@M1821_ "AUTO"
+_@M1822_ "Konfiguruj Multimapy"
+// leave a space after Ack
+_@M1823_ "Grupowe Zatw. "
+
+// Task buttons (keep SHORT text!)
+_@M1824_ "Wstaw jako START"
+_@M1825_ "Wstaw przed"
+_@M1826_ "Zamień"
+_@M1827_ "Dodaj przed metą"
+_@M1828_ "Dodaj po mecie"
+
+
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1817,7 +1875,7 @@ _@M2019_ "Restart\nZadania"
 _@M2020_ "Cel"
 _@M2021_ "Kody\nZespoł."
 _@M2022_ "Naw\n3/3"
-_@M2023_ "Reserw"
+_@M2023_ "Rezerw."
 _@M2024_ "Okna\nCzasowe"
 _@M2025_ "Wybierz\nCel"
 _@M2026_ "Etykiety"
@@ -1867,15 +1925,15 @@ _@M2068_ "Konfig"
 _@M2069_ "Ekran"
 _@M2070_ "Oznacz\nMiejsce"
 _@M2071_ "Oblicz\nTrueWind"
-_@M2072_ "Ustaw.\nEkranu"
-_@M2073_ "Wyjście"
-_@M2074_ "SIM\nMENU"
+_@M2072_ "Mapa"
+_@M2073_ "Zakończ"
+_@M2074_ "Menu\nSymulat."
 _@M2075_ "Komin"
 _@M2076_ "Odpow."
 _@M2077_ "Ręczny"
 _@M2078_ "OK"
 _@M2079_ "Nakładki"
-_@M2080_ "Cienio."
+_@M2080_ "Cieniow."
 _@M2081_ "Ustaw\nMapę"
 _@M2082_ "Przesuw."
 _@M2083_ "North\nUp"
@@ -1909,7 +1967,7 @@ _@M2110_ "2>\nAltern. 2"
 _@M2111_ "D>\nDom"
 _@M2112_ "Prędk."
 _@M2113_ "Wys."
-_@M2114_ "PZ"
+_@M2114_ "Zakręt"
 # better not to translate this TE button!
 _@M2115_ "TEnergy"
 _@M2116_ "Zmień\nTeren"
@@ -1932,6 +1990,25 @@ _@M2131_ "Menu\nUżytk."
 _@M2132_ "Usuń\nAltern."
 
 _@M2133_ "Pozycja"
+
+_@M2134_ "Urz A"
+_@M2135_ "Urz B"
+_@M2136_ "Obróć C-Probe o 360° wokół każdej z osi\nKolejność i kierunek nie ma znaczenia"
+
+_@M2143_ "Konfiguracja Urządzenia A"
+_@M2144_ "Konfiguracja Urządzenia B"
+
+
+# Paraglider Waypoint Type
+_@M2145_ "Wlot"
+_@M2146_ "Opuszenie"
+_@M2147_ "Opuszenie/Wlot"
+
+_@M2148_ "Samochód, Rower i Trekking"
+
+# Thermal Bar
+_@M2149_ "W kominie"
+_@M2150_ "W kominie i na przeskoku"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
@@ -1961,8 +2038,27 @@ _@M2223_ "Kolor+\nterenu"
 _@M2224_ "Kolor-\nterenu"
 _@M2225_ "Lot\nSwobod."
 _@M2226_ "Przeł.\nUzbroj."
-_@M2227_ "Przeł.\nWsWiatr"
+_@M2227_ "Przeł.\nWsk.Wiat."
 _@M2228_ "FLARM\nRadar"
-# Reserved for custom menus up to 2300!
+_@M2229_ "Reset\nOdomet"
+_@M2230_ "Wymuś\nLądow."
+_@M2231_ "AKTYWNY"
+# 2232 unused but reserved for mmaps
+_@M2232_ "abcd"
+_@M2233_ "Nakładka"
+_@M2234_ "TEKST"
+_@M2235_ "KONTROLKI"
+_@M2236_ "Kasuj\nWyciecz."
+_@M2237_ "Przeł.\nSonar"
+_@M2238_ "Rysuj\nZadanie"
+_@M2239_ "Rysuj\nFAI"
+_@M2240_ "NieRysuj\nZad.FAI"
+_@M2241_ "Rysuj\nZad.FAI"
+_@M2242_ "Sonar\nWŁĄCZ"
+_@M2243_ "Sonar\nWYŁĄCZ"
+_@M2244_ "Ustaw.\nUrządz."
+_@M2245_ "Zapisz\nUrządz."
 
+# MAX 2250! 
+# (Reserved for custom menus up to 2300!)
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)
