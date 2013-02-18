@@ -21,7 +21,7 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
 
   ResetScale();
 
-  ScaleXFromData(rc, &flightstats.Altitude);
+ // ScaleXFromData(rc, &flightstats.Altitude);
   ScaleYFromData(rc, &flightstats.Altitude);
   ScaleYFromValue(rc, 0);
   ScaleXFromValue(rc, 1.2f*(flightstats.Altitude.x_min+1.0)); // in case no data
@@ -67,11 +67,13 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
             0.5, flightstats.Altitude.x_min,
             STYLE_THINDASHPAPER, 0.5, true);
 
+  RECT rci = rc;
+  rci.top += BORDER_Y;
 
   if(Units::GetUserInvAltitudeUnit() == unFeet) {
-    DrawYGrid(hdc, rc, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
+    DrawYGrid(hdc, rci, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
   } else {
-    DrawYGrid(hdc, rc, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
+    DrawYGrid(hdc, rci, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
   }
   DrawLineGraph(hdc, rc, &flightstats.Altitude,
                 STYLE_MEDIUMBLACK);
