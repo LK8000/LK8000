@@ -632,6 +632,7 @@ switch(LKevent)
   default:
   break;
 }
+Current_Multimap_SizeY = (int)(SPLITSCREEN_FACTOR*100);
 LKevent=LKEVENT_NONE; /* remove event from list */
 if(SPLITSCREEN_FACTOR >0.95)
 	bSideview = false;
@@ -946,7 +947,7 @@ double scl = xtick;
 	/**********************************************
 	 * loop over FLARM objects.
 	 */
-
+	SelectObject(hdc, hDrawPen);
 	for (i=0; i<FLARM_MAX_TRAFFIC; i++)
 	{
 	  if (LKTraffic[i].Status != LKT_EMPTY)
@@ -1020,7 +1021,7 @@ double scl = xtick;
      * FLARM object loop
      ***********************************************/
 bool bCenter = false;
-
+SelectObject(hdc, hDrawPen);
 if(SPLITSCREEN_FACTOR >0)
 {
   for (j=0; j<nEntrys; j++)
@@ -1077,7 +1078,7 @@ if(SPLITSCREEN_FACTOR >0)
 	    if(iVarioIdx < 0) iVarioIdx =0;
 	    if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
 	    SelectObject(hdc, *variobrush[iVarioIdx]);
-
+		SelectObject(hdc, hDrawPen);
 
 	    /*************************************************************************
 	     * draw side view

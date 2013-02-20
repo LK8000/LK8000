@@ -1,4 +1,4 @@
-﻿# LK8000 POL_HELP.TXT 120119
+﻿# LK8000 POL_HELP.TXT 130216
 #
 # Pojedyncza linia tekstu może mieć maksymalną długość 500 znaków.
 # Cały tekst pomocy może mieć maksymalnie 1024 znaki
@@ -124,7 +124,7 @@ Określa jak obracany jest ekran wraz z ruchem statku powietrznego:
 
 @126
 Gdy powiększenie mapy jest większe od ustawionej tu wartości, orientacja mapy przestawi się na "North up".
-Ustawienie bardzo dużej wartości spowoduje, że ta opcja nigdy nie będzie użyta. Wartość domyślna to 7.
+Ustawienie bardzo dużej wartości spowoduje, że ta opcja nigdy nie będzie użyta.
 
 @127
 Automatyczny zoom zmienia powiększenie mapy podczas zbliżania się do następnego PZ zadania.
@@ -424,6 +424,7 @@ Określa czy i jak rysowany na mapie jest zasięg lotu:
 [Wyłączony] Zasięg lotu nie jest rysowany.
 [Linia] Zasięg lotu prezentowany jest za pomocą linii.
 [Cień] Nieosiągalny teren jest zacieniowany. Cień jest rysowany tylko w czasie lotu. Gdy statek powietrzny jest na ziemi cień NIE JEST rysowany.
+[...+NastPZ] Dodatkowo pokazuje zasięg lotu od następnego PZ na podstawie aktualnie przewidywanej wysokości dolotu do tego PZ.
 Linia zasięgu lotu uwzględnia margines wysokości określony przez parametr "Wysokość terenu".
 Włączenie rysowania zasięgu lotu włącza także rysowanie przeszkód terenowych wewnątrz tego zasięgu. Gdy cel jest osiągalny pod względem wysokości i doskonałości, ale po drodze występują przeszkody terenowe, to w miejscu przeszkody pojawi się CZERWONY KRZYŻ. Dodatkowo przeszkoda oznaczona jest przez ramkę z wysokością brakującą do ominięcia przeszkody plus "Wysokość terenu".
 
@@ -457,6 +458,7 @@ Określa jak PZ są zaliczane podczas wykonywania zadania:
 [Auto] W pełni automatyczne przełączanie PZ po ich osiągnięciu.
 [Uzbrój] Pilot musi ręcznie uzbroić każdy z PZ, aby umożliwić automatyczne jego zaliczenie. Zalecane dla zadań AAT!
 [Uzbrój start] Pilot musi ręcznie uzbroić Start, aby umożliwić automatyczne jego zaliczenie.  Pozostałe PZ zaliczane są automatycznie.
+[Uzbrój PZty] Użytkownik musi ręcznie uzbroić każdy PZ, ale Start zostanie zaliczony automatycznie.
 
 @201
 Typ startu:
@@ -814,6 +816,7 @@ Określa jak PZ są zaliczane podczas wykonywania zadania:
 [Auto] W pełni automatyczne przełączanie PZ po ich osiągnięciu.
 [Uzbrój] Pilot musi ręcznie uzbroić każdy z PZ, aby umożliwić automatyczne jego zaliczenie. Zalecane dla zadań AAT!
 [Uzbrój start] Pilot musi ręcznie uzbroić Start, aby umożliwić automatyczne jego zaliczenie.  Pozostałe PZ zaliczane są automatycznie.
+[Uzbrój PZty] Użytkownik musi ręcznie uzbroić każdy PZ, ale Start zostanie zaliczony automatycznie.
 
 @508
 Typ strefy obserwacyjnej AAT:
@@ -1597,7 +1600,6 @@ Po osiągnięciu PZ, poprzedni zoom dla trybu lotu zostanie przywrócony. Autozo
 @1220
 [Konfiguracja Dolnego Paska]
 Włącza lub wyłącza poszczególne dolne paski tak, że nie będą one prezentowane podczas przewijania pasków. Co najmniej jeden z nich (nie licząc KOM0) musi być włączony.
-Podczas krążenia w kominie zawsze będzie się pokazywał pasek KOM0.
 
 @1221
 [Konfiguracja Stron Informacyjnych]
@@ -1682,6 +1684,17 @@ Podczas fazy startu LK uruchomi sygnał, gdy ustawiona wysokość nad gruntem (Q
 Dla szybowców jest to normalnie wysokość z której, w przypadku przerwanego ciągu, możliwy będzie zwrot o 180 stopni i powrót na lotnisko.
 Ustawić na 0 w celu wyłączenia alarmu.
 Alarm uzbroi się ponownie tylko po lądowaniu.
+
+@1262
+[Opcje Multimap]
+
+@1263
+[Dolny Paserk AUTO]
+Gdy opcja jest włączona, dolny pasek KOM0 będzie automatycznie aktywowany podczas krążenia i deaktywowany po jego zakończeniu, nawet jeśli KOM0 jest wyłączony z normalnej rotacji pasków.
+
+@1264
+[Grupowe Zatwierdzanie]
+Zatwierdzenie jednej strefy będzie ważne dla wszystkich stref o tej samej nazwie i klasie.
 
 @9999
 Pomoc dla tego elementu nie jest dostępna!

@@ -269,7 +269,7 @@ static  bool bHeightScale = false;
    if( ( sDia.fXMax  *fZOOMScale[getsideviewpage]) > 100000)
 	  fZOOMScale[getsideviewpage] /= ZOOMFACTOR;
 
-   if(( sDia.fXMax *fZOOMScale[getsideviewpage]) < 2000)
+   if(( sDia.fXMax *fZOOMScale[getsideviewpage]) < 500)
    {
 	  fZOOMScale[getsideviewpage] *= ZOOMFACTOR;
    }

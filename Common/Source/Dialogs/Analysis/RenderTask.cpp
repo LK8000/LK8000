@@ -176,7 +176,8 @@ double fXY_Scale = 1.5;
       }
     }
 
-
+  if (!AATEnabled)
+  {
 	for (i=MAXTASKPOINTS-1; i>0; i--)
 	{
 	  if (ValidTaskPoint(i) && ValidTaskPoint(i-1))
@@ -217,6 +218,7 @@ double fXY_Scale = 1.5;
 	  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
 	  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
 	}
+  }
 	// draw task lines and label
 	for (i=MAXTASKPOINTS-1; i>0; i--)
 	{

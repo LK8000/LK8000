@@ -170,8 +170,11 @@ bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
     case cfDDdddd:
       _stprintf(Buffer, TEXT("%c%08.4f")TEXT(DEG), EW[sign], Longitude);
     break;
+    case cfUTM:
+	_tcscpy(Buffer,_T(""));
+	break;
     default:
-//      assert(false /* undefined coordinateformat */);
+	LKASSERT(0);
     break;
   }
 
@@ -220,8 +223,11 @@ bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
     case cfDDdddd:
       _stprintf(Buffer, TEXT("%c%07.4f")TEXT(DEG), EW[sign], Latitude);
     break;
+    case cfUTM:
+	_tcscpy(Buffer,_T(""));
+	break;
     default:
-//      assert(false /* undefined coordinateformat */);
+	LKASSERT(0);
     break;
   }
 

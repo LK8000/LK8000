@@ -25,10 +25,12 @@ void Statistics::RenderClimb(HDC hdc, const RECT rc)
   ScaleXFromValue(rc, -1);
   ScaleXFromValue(rc, flightstats.ThermalAverage.sum_n);
 
+  RECT rci = rc;
+  rci.top += BORDER_Y;
   if(Units::GetUserInvAltitudeUnit() == unFeet) {
-    DrawYGrid(hdc, rc, 0.5/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 0.5, true);
+    DrawYGrid(hdc, rci, 0.5/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 0.5, true);
   } else {
-    DrawYGrid(hdc, rc, 1.0/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 1.0, true);
+    DrawYGrid(hdc, rci, 1.0/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 1.0, true);
   }
 
   DrawBarChart(hdc, rc,
