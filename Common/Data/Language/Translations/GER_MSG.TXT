@@ -1,5 +1,5 @@
-﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  101216
+﻿# LK8000 GERMAN MESSAGES - GER_MSG.TXT
+# UPDATED:  121115
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -11,7 +11,18 @@
 # ATTENTION> Max number of tokens is defined in LKLanguage as MAX_MESSAGES
 #
 # All lines that are empty, or starting with a # , are ignored.
-# DEVELOPERS ADDING MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT ON GITHUB
+
+#
+# Noch zu übersetzen: 1779-1812, 2123-2143
+
+
+# Die englischen originalen Inhalte sind der deutschen Übersetzung stets jedoch auskommentiert vorangestellt.
+#
+# Sollte jemand englische Bezeichnungen an bestimmten Stellen bevorzugen
+# so kann er die deutsche Übersetzung einfach mit # auskommentieren,
+# "fehlende" Übersetzungen werden AUTOMATISCH englisch aufgefüllt.
+#
+
 
 #_@M1_ " Diff"
 _@M1_ " Diff"
@@ -275,10 +286,10 @@ _@M86_ "Alternative Abflugpunkte"
 _@M87_ "Alternativ"
 
 #_@M88_ "Altitude "
-_@M88_ "Höhe "
+_@M88_ "Baro-Höhe "
 
 #_@M89_ "Altitude"
-_@M89_ "Höhe "
+_@M89_ "Höhe"
 
 #_@M90_ "Always use MC=0"
 _@M90_ "Nutze immer MC=0"
@@ -318,7 +329,7 @@ _@M99_ "Pfeilspitze"
 _@M100_ "Frage"
 
 #_@M101_ "Assigned task time"
-_@M101_ "Zeitvorgabe der Aufgabe
+_@M101_ "Zeitvorgabe der Aufgabe"
 
 #_@M102_ "Auto Advance: ARMED"
 _@M102_ "Autom Fortschritt: GELADEN"
@@ -559,7 +570,7 @@ _@M178_ "Lösche Aufgabe"
 _@M179_ "Aufgabe löschen?"
 
 #_@M180_ "Clear"
-_@M180_ "Lösch"
+_@M180_ "Lösche"
 
 #_@M181_ "Climb trend"
 _@M181_ "Steigen Tendenz"
@@ -4183,7 +4194,7 @@ _@M1457_ "OLC FAI Dreieck Distanz"
 _@M1458_ "FAI Dis"
 
 #_@M1459_ "OLC League Distance"
-_@M1459_ "OLC League Distanz"
+_@M1459_ "OLC Liga Distanz"
 
 #???
 #_@M1460_ "LEA dis"
@@ -4208,11 +4219,11 @@ _@M1465_ "OLC FAI Dreieck*vorherges Distanz"
 _@M1466_ "FAI*Dis"
 
 #_@M1467_ "OLC League*Predicted Distance"
-_@M1467_ "OLC League*vorherges Distanz"
+_@M1467_ "OLC Liga*vorherges Distanz"
 
 #???
 #_@M1468_ "LEA*dis"
-#_@M1468_ "LEA*Dis"
+_@M1468_ "LIG*Dis"
 
 #_@M1469_ "OLC FAI 3 TPs*Predicted Distance"
 _@M1469_ "OLC FAI 3 WDPe*vorherges Distanz"
@@ -4221,25 +4232,25 @@ _@M1469_ "OLC FAI 3 WDPe*vorherges Distanz"
 _@M1470_ "3WDP*Dis"
 
 #_@M1471_ "OLC Classic Speed"
-_@M1471_ "OLC Classic Speed"
+_@M1471_ "OLC Classic Geschw"
 
 #_@M1472_ "OLC spd"
-_@M1472_ "OLC Spd"
+_@M1472_ "OLC V"
 
 #_@M1473_ "OLC FAI Triangle Speed"
-_@M1473_ "OLC FAI Dreieck Speed"
+_@M1473_ "OLC FAI Dreieck Geschw"
 
 #_@M1474_ "FAI spd"
 _@M1474_ "FAI Spd"
 
 #_@M1475_ "OLC League Speed"
-_@M1475_ "OLC League Speed"
+_@M1475_ "OLC Liga Geschw"
 
 #_@M1476_ "LEA spd"
-_@M1476_ "LEA Spd"
+_@M1476_ "LIG Geschw"
 
 #_@M1477_ "OLC FAI 3 TPs Speed"
-_@M1477_ "OLC FAI 3 WDPe Speed"
+_@M1477_ "OLC FAI 3 WDPe V"
 
 #_@M1478_ "3TP spd"
 _@M1478_ "3WDP Spd"
@@ -4248,25 +4259,25 @@ _@M1478_ "3WDP Spd"
 _@M1479_ "OLC Classic*vorherges Geschw"
 
 #_@M1480_ "OLC*spd"
-_@M1480_ "OLC*Spd"
+_@M1480_ "OLC*V"
 
 #_@M1481_ "OLC FAI Triangle*Predicted Speed"
 _@M1481_ "OLC FAI Dreieck*vorherges Geschw"
 
 #_@M1482_ "FAI*spd"
-_@M1482_ "FAI*Spd"
+_@M1482_ "FAI*V"
 
 #_@M1483_ "OLC League*Predicted Speed"
 _@M1483_ "OLC League*vorherges Geschw"
 
 #_@M1484_ "LEA*spd"
-_@M1484_ "LEA*Spd"
+_@M1484_ "LIG*V"
 
 #_@M1485_ "OLC FAI 3 TPs*Predicted Speed"
 _@M1485_ "OLC FAI 3 WDPe*vorherges Geschw"
 
 #_@M1486_ "3TP*spd"
-_@M1486_ "3WDP*Spd"
+_@M1486_ "3WDP*V"
 
 #_@M1487_ "OLC Classic Score"
 _@M1487_ "OLC Classic Punkte"
@@ -4284,7 +4295,7 @@ _@M1490_ "FAI Pkt"
 _@M1491_ "OLC League Punkte"
 
 #_@M1492_ "LEA scr"
-_@M1492_ "LEA Pkt"
+_@M1492_ "LIG Pkt"
 
 #_@M1493_ "OLC FAI 3 TPs Score"
 _@M1493_ "OLC FAI 3 WDPe Punkte"
@@ -4305,10 +4316,10 @@ _@M1497_ "OLC FAI Dreieck*vorherges Punkte"
 _@M1498_ "FAI*Pkt"
 
 #_@M1499_ "OLC League*Predicted Score"
-_@M1499_ "OLC League*vorherges Punkte"
+_@M1499_ "OLC Liga*vorherges Punkte"
 
 #_@M1500_ "LEA*scr"
-_@M1500_ "LEA*Pkt"
+_@M1500_ "LIG*Pkt"
 
 #_@M1501_ "OLC FAI 3 TPs*Predicted Score"
 _@M1501_ "OLC FAI 3 TPs*Predicted Score"
@@ -4327,7 +4338,22 @@ _@M1505_ "OLC Plus*vorherges Punkte"
 
 # OLC-Plus Punkte
 #_@M1506_ "PLS*scr"
-#_@M1506_ "PLS*Pkt"
+_@M1506_ "PLS*Pkt"
+
+#_@M1507_ "OLC FAI triangle Distance to close"
+_@M1507_ "OLC FAI Dreieck Distanz um zu schließen"
+
+#_@M1508_ "C:"
+_@M1508_ "C:"
+
+#_@M1509_ "OLC FAI triangle Distance close %"
+_@M1509_ "OLC FAI Dreieck Distanz schließen %"
+
+#_@M1510_ "%C:"
+_@M1510_ "%C:"
+
+#_@M1511_ "B:"
+_@M1511_ "B:"
 
 
 # #############################
@@ -4650,7 +4676,7 @@ _@M1710_ "nordwestlich"
 
 # 3km south-west of ..
 #_@M1711_ "of"
-_@M1711_ ""
+_@M1711_ "von"
 #_@M1712_ "Near"
 _@M1712_ "Nahe"
 #_@M1713_ "Over"
@@ -4741,6 +4767,23 @@ _@M1752_ "FLUGBUCH RÜCKSETZEN"
 #_@M1753_ "List of flights"
 _@M1753_ "Flugliste"
 
+#_@M1754_ "Free Flight start"
+_@M1754_ "Start Freiflug"
+
+#_@M1755_ "Towing"
+_@M1755_ "F-Schlepp"
+
+#_@M1756_ "PILOT"
+_@M1756_ "PILOT"
+
+#_@M1757_ "LK8000 PROFILES RESET"
+_@M1757_ "LK8000 PROFILE RÜCKSETZEN"
+
+#_@M1758_ "THIS WOULD RESET ALL PROFILES TO FACTORY DEFAULTS"
+_@M1758_ "SETZT ALLE PROFILE VOLLSTÄNDIG(!) ZURÜCK"
+
+#_@M1759_ "SELECTED IN SYSTEM"
+_@M1759_ "IM SYSTEM GEWÄHLT"
 
 # These are new infoboxes:
 #_@M1761_ "Alternate1 bearing"
@@ -4797,6 +4840,186 @@ _@M1777_ "10 Sekunden"
 
 #_@M1778_ "45 seconds"
 _@M1778_ "45 Sekuden"
+
+# New livetracker configuration
+#_@M1779_ "Live tracker log interval "
+_@M1779_ "Live Tracker Log Interval "
+
+#_@M1780_ "User"
+_@M1780_ "Nutzer"
+
+#_@M1781_ "Password"
+_@M1781_ "Passwort"
+
+#_@M1782_ "LT Server"
+_@M1782_ "LT Server"
+
+
+# configuration SETUP save 
+#_@M1783_ "Aircraft Profiles"
+_@M1783_ "Flugzeug Profile"
+
+#_@M1784_ "Pilot Profiles"
+_@M1784_ "Piloten Profile"
+
+# page names
+#_@M1785_ "Pilot configuration"
+_@M1785_ "Konfiguration Pilot"
+
+#_@M1786_ "Aircraft configuration"
+_@M1786_ "Konfiguration Flugzeug"
+
+# Page names in configuration
+#_@M1787_ "Custom Menu"
+_@M1787_ "Nutzer Menü"
+
+#_@M1788_ "Configure Custom Menu"
+_@M1788_ "Konfiguriere Nutzer Menü"
+
+#_@M1789_ "Delete task file"
+_@M1789_ "Lösche Aufgaben-Datei"
+
+#_@M1790_ "No task file to delete"
+_@M1790_ "Keine Aufgaben-Datei zum Löschen"
+
+# Customkey configuration item
+#_@M1791_ "Arm toggle advance"
+_@M1791_ "Lade Weiterschalten"
+
+# configuration PG/Hg specials
+#_@M1792_ "Quick gestures "
+_@M1792_ "Schnelle Gesten "
+
+
+# Wind mode configuration, "External" (from external instrument)
+#_@M1793_ "External"
+_@M1793_ "Extern"
+
+
+# Safety takeoff alarm
+#_@M1794_ "Takeoff safety "
+_@M1794_ "Sicherheitshöhe "
+
+
+# Replacing 120, 755 and 756
+#_@M1795_ "BARO ALTITUDE IS AVAILABLE"
+_@M1795_ "BARO-HÖHE VERFÜGBAR"
+
+#_@M1796_ "USING BARO ALTITUDE"
+_@M1796_ "NUTZE BARO-HÖHE"
+
+
+# Replacing 822
+#_@M1797_ "Vector"
+_@M1797_ "Richtung"
+
+
+#_@M1798_ "Arm TPs"
+_@M1798_ "Lade WPTe"
+
+#_@M1799_ "Stop moving!"
+_@M1799_ "Nicht bewegen!"
+
+
+#_@M1800_ "no trace"
+_@M1800_ "keine Spur"
+
+#_@M1801_ "climb trace"
+_@M1801_ "Spur Steigen"
+
+#_@M1802_ "climb/sink trace"
+_@M1802_ "Spur Steigen/Sinken"
+
+#_@M1803_ "Head Up"
+_@M1803_ "Nase hoch"
+
+#_@M1804_ "Head Right"
+_@M1804_ "Nase rechts"
+
+#_@M1805_ "Line+NextWP"
+_@M1805_ "Linie+NächstWPT"
+
+#_@M1806_ "Shade+NextWP"
+_@M1806_ "Schattiert+NächstWPT"
+
+#_@M1807_ "_Reserved 2"
+_@M1807_ "_Reserviert 2"
+
+#_@M1808_ "Loading FLARMNET database"
+_@M1808_ "Ladeng FLARMNET Datenbank"
+
+# Trip computer, Infobox title, max 6-7 chars
+#_@M1809_ "Moving"
+_@M1809_ "In Bewegung"
+
+#_@M1810_ "Steady"
+_@M1810_ "In Ruhe"
+
+#_@M1811_ "Total"
+_@M1811_ "Gesamt"
+
+#_@M1812_ "Chrono"
+_@M1812_ "Zeit"
+
+# New virtual waypoints
+#_@M1813_ "FAI CLOSE"
+_@M1813_ "FAI SchlUSS"
+
+#_@M1814_ "FREEFLY"
+_@M1814_ "FREIFLUG"
+
+# 1815 can be changed anytime, do not reuse!
+#_@M1815_ "UNUSED"
+_@M1815_ "UNBENUTZT"
+
+#_@M1816_ "FAI closing point"
+_@M1816_ "FAI Endpunkt"
+
+#_@M1817_ "out and return closing point"
+_@M1817_ "Ziel Rückkehr Endpunkt"
+
+
+# profile button, keep short!
+#_@M1818_ "DEVICE"
+_@M1818_ "GERÄT"
+
+
+# configuration SETUP save 
+#_@M1819_ "Device Profiles"
+_@M1819_ "Konfigurationen Gerät"
+
+
+# page name
+#_@M1820_ "Device configuration"
+_@M1820_ "Konfiguration Gerät"
+
+# Bottom bar configuration button
+#_@M1821_ "AUTO"
+_@M1821_ "AUTO"
+
+#_@M1822_ "Configure Multimaps"
+_@M1822_ "Konfiguriere Multimaps"
+
+// leave a space after Ack
+#_@M1823_ "Group Ack "
+_@M1823_ "Bestä LR-Gr "
+
+// Task buttons (keep SHORT text!)
+#_@M1824_ "Insert as START"
+_@M1824_ "Als START einfügen"
+
+#_@M1825_ "Insert before"
+_@M1825_ "Davor einfügen"
+
+#_@M1826_ "Replace"
+_@M1826_ "Ersetze"
+
+#_@M1827_ "Append before finish"
+_@M1827_ "Vor ZIEL einfügen"
+
+#_@M1828_ "Append after finish"
+_@M1828_ "Nach ZIEL einfügen"
+
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -5023,7 +5246,7 @@ _@M2071_ "TrueWind\nberechnen"
 _@M2072_ "Darstellung"
 
 #_@M2073_ "Exit"
-_@M2073_ "Ende"
+_@M2073_ "ENDE\nLK8000"
 
 #_@M2074_ "SIM\nMENU"
 _@M2074_ "Simulations-\nMenü"
@@ -5041,7 +5264,7 @@ _@M2077_ "Manuell"
 _@M2078_ "OK"
 
 #_@M2079_ "Overlays"
-_@M2079_ "Overlays"
+_@M2079_ "Einblendg"
 
 #_@M2080_ "Shading"
 _@M2080_ "Schattierung"
@@ -5172,7 +5395,220 @@ _@M2120_ "Lösche\nLogbuch"
 _@M2121_ "Logbuch\nListe"
 
 #_@M2122_ "Save\nSystem"
-_@M2122_ "SystEinst\nspeichern"
+_@M2122_ "Speichere\nSystem"
 
+#_@M2123_ "Turn\nScreen"
+_@M2123_ "Drehe Anzeige"
+
+#_@M2124_ "Screen\nModes"
+_@M2124_ "Anzeige\nModi"
+
+#_@M2125_ "Aircraft\nSetup"
+_@M2125_ "Konfigur\n Flugzeug"
+
+#_@M2126_ "Aircraft\nSave"
+_@M2126_ "Speichere\nFlugzeug"
+
+#_@M2127_ "Pilot\nSetup"
+_@M2127_ "Konfigur\nPilot"
+
+#_@M2128_ "Pilot\nSave"
+_@M2128_ "Speichere\nPilot"
+
+#_@M2129_ "LK8000\nSetup"
+_@M2129_ "Konfigur\nLK8000"
+
+#_@M2130_ "System\nSetup"
+_@M2130_ "Konfigur\nSystem"
+
+#_@M2131_ "Custom\nMenu"
+_@M2131_ "Nutzer-\nMenü"
+
+#_@M2132_ "Clear\nAltern"
+_@M2132_ "Lösche\nAltern"
+
+#_@M2133_ "Position"
+_@M2133_ "Position"
+
+#_@M2134_ "Dev A"
+_@M2134_ "Gerät A"
+
+#_@M2135_ "Dev B"
+_@M2135_ "Gerät B"
+
+#_@M2136_ "Rotate C-Probe 360° around it's 3 axis\nthe order and direction is not important"
+_@M2136_ "Drehe C-Probe um 360° um seine 3 Achsen\nReihenfolge und Richtung sind nicht wichtig"
+
+#_@M2143_ "Device A Config"
+_@M2143_ "Konfigur Gerät A"
+
+#_@M2144_ "Device B Config"
+_@M2144_ "Konfigur Gerät B"
+
+# Paraglider Waypoint Type
+#_@M2145_ "Entry"
+_@M2145_ "Einflug"
+
+#_@M2146_ "Exit"
+_@M2146_ "Ausflug"
+
+#_@M2147_ "Exit/Entry"
+_@M2147_ "Einflug/Ausflug"
+
+#_@M2148_ "Car,Bike & Trekking"
+_@M2148_ "Auto,Rad & Wandern"
+
+
+# Thermal Bar
+#_@M2149_ "in thermal"
+_@M2149_ "beim Kreisen"
+
+#_@M2150_ "in thermal and cruise"
+_@M2150_ "beim Kreisen und im Vorflug"
+
+
+
+# New CustomKey labels for Custom Menu
+#_@M2200_ "----"
+_@M2200_ "----"
+
+#_@M2201_ "Menu"
+_@M2201_ "Menü"
+
+#_@M2202_ "Page\nBack"
+_@M2202_ "Seite\nzurück"
+
+#_@M2203_ "Toggle\nMap"
+_@M2203_ "Wechsele\nKarte"
+
+#_@M2204_ "Toggle\nLandb"
+_@M2204_ "Wechsele\nLandefeld"
+
+#_@M2205_ "Landab\nles"
+_@M2205_ "Lande-\nfelder"
+
+#_@M2206_ "Toggle\nCommon"
+_@M2206_ "Wechsele\nHäufige"
+
+#_@M2207_ "Commons"
+_@M2207_ "Häufige"
+
+#_@M2208_ "Toggle\nTraffic"
+_@M2208_ "Wechsele\nVerkehr"
+
+#_@M2209_ "Traffic"
+_@M2209_ "Verkehr"
+
+#_@M2210_ "Auto\nZoom"
+_@M2210_ "Auto\nZoom"
+
+#_@M2211_ "Therm\nSound"
+_@M2211_ "Therm\nKlang"
+
+#_@M2212_ "Goto\nHome"
+_@M2212_ "Goto\nHeim"
+
+#_@M2213_ "Zoom\nOut20"
+_@M2213_ "Zoom\naus 20"
+
+#_@M2214_ "Multi\nTarg+"
+_@M2214_ "Multi\nTarg+"
+
+#_@M2215_ "Use\nHBAR"
+_@M2215_ "Nutze\nBAROHöhe"
+
+#_@M2216_ "SIM\nMENU"
+_@M2216_ "SIMU\nMENÜ"
+
+#_@M2217_ "Airsp\nAnalys"
+_@M2217_ "Luftraum\nAnalyse"
+
+#_@M2218_ "Toggle\nAirsp"
+_@M2218_ "Wechsele\nLuftraum"
+
+#_@M2219_ "Zoom\nin++"
+_@M2219_ "Zoom\nhinein++"
+
+#_@M2220_ "Zoom\nout++"
+_@M2220_ "Zoom\nheraus++"
+
+#_@M2221_ "Route\nOptim"
+_@M2221_ "Optimiere\nRoute"
+
+#_@M2222_ "OLC\nAnalys"
+_@M2222_ "OLC\nAnalyse"
+
+#_@M2223_ "Color+\nterrain"
+_@M2223_ "Farbe\nTerrain+"
+
+#_@M2224_ "Color-\nterrain"
+_@M2224_ "Farbe\nTerrain-"
+
+#_@M2225_ "Free\nFlight"
+_@M2225_ "Freier\nFlug"
+
+#_@M2226_ "Arm\nToggle"
+_@M2226_ "Wechsele\nladen"
+
+#_@M2227_ "Toggle\nWndRose"
+_@M2227_ "Wechsele\nWndRose"
+
+#_@M2228_ "FLARM\nRadar"
+_@M2228_ "FLARM\nRadar"
+
+#_@M2229_ "Reset\nOdomet"
+_@M2229_ "Odometer\nrücksetzen"
+
+#_@M2230_ "Force\nLanded"
+_@M2230_ "Landung\nerzwingen"
+
+#_@M2231_ "ACTIVE"
+_@M2231_ "AKTIV"
+
+# 2232 unused but reserved for mmaps
+#_@M2232_ "abcd"
+_@M2232_ "abcd"
+
+#_@M2233_ "Overlay"
+_@M2233_ "Einblendg"
+
+#_@M2234_ "TEXT"
+_@M2234_ "TEXT"
+
+#_@M2235_ "GAUGES"
+_@M2235_ "Instrum"
+
+#_@M2236_ "Reset\nTrip"
+_@M2236_ "Tour\nrücksetzen"
+
+#_@M2237_ "Sonar\nToggle"
+_@M2237_ "Wechsele\nSonar"
+
+#_@M2238_ "Draw\nTask"
+_@M2238_ "Zeichne\nAufgabe"
+
+#_@M2239_ "Draw\nFAI"
+_@M2239_ "Zeichne\nFAI"
+
+#_@M2240_ "NoDraw\nTaskFAI"
+_@M2240_ "Verberge\nAufgabeFAI"
+
+#_@M2241_ "Draw\nTaskFAI"
+_@M2241_ "Zeichne\nAufgFAI"
+
+#_@M2242_ "Sonar\nON"
+_@M2242_ "Sonar\nEIN"
+
+#_@M2243_ "Sonar\nOFF"
+_@M2243_ "Sonar\nAUS"
+
+#_@M2244_ "Device\nSetup"
+_@M2244_ "Konfigur\nGerät"
+
+#_@M2245_ "Device\nSave"
+_@M2245_ "Speichere\nGerät"
+
+# MAX 2250! 
+# (Reserved for custom menus up to 2300!)
 # Note for developers: remember LKLanguage MAX_MESSAGE limit
 

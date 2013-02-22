@@ -191,10 +191,10 @@ Bestimmt wie die Karte orientiert wird:
 @126
 #When zoom level is greater or equal to this value, map orientation will change to NorthUp. 
 #If below this value, the Orientation setting will be used normally. 
-#Setting an high value will result in never using this option. Default is 7.
+#Setting an high value will result in never using this option.
 Wenn das Zoom-Niveau größer oder gleich diesem Wert ist, ändert sich die Kartenorientierung auf Nord.
 Unterhalb dieses Wertes wird die eingestellte Orientierung benutzt.
-Setzt man einen hohen Wert, wird dieses Verhalten praktisch nicht aktiv. Der Standardwert ist 7. 
+Setzt man einen hohen Wert, wird dieses Verhalten praktisch nicht aktiv.
 
 @127
 #Auto-zoom changes the zoom level during flight so that the map zooms in as the active waypoint is approached.  
@@ -274,11 +274,15 @@ Hiermit bestimmt man ob die LK8000-Konfiguration während des Fluges zugänglich
 #[Circling] Requires only a GPS source
 #[ZigZag] requires an intelligent vario with airspeed output.
 #[Both] Use ZigZag and circling.
+#[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
+
 Hiermit wird der automatische Windbestimmungsalgoritmus ein- bzw. ausgeschaltet. Ist er ausgeschaltet ist der Pilot für
 das Setzen des geschätzten Windes verantwortlich.
+[Manuell] Windwerte werden von Hand gesetzt
 [Kreisen] Erfordert nur eine GPS-Quelle.
 [ZickZack] Erfordert ein intelligentes Vario mit Fahrtausgabe.
-[Beide] Nutzt ZickZack-Methode bzw. Kreisabddrift zur Windbestimmung.
+[ZickZack+Kreisen] Nutzt ZickZack-Methode bzw. Kreisabddrift zur Windbestimmung.
+[Extern] Nutzt nur den Windwert, der durch ein angeschlossenes Instrument bereitgestellt wird (wie CAI, LX, Zander etc.) 
 
 @140
 #This is the INDICATED AIR SPEED to hold in straight flight before asking for TrueWind calculation. 
@@ -326,9 +330,9 @@ Diese Option bestimmt, welcher automatische MacCready-Berechnungsalgoritmus benu
 #while higher values will look like LD Cruise. Other commercial instruments and software use 2 minutes. 
 Die mittlere Gleitzahl wird immer in ECHTZEIT berechnet. Hier kann man einstellen mit welcher Zeitdifferenz diese Berechnung durchgeführt wird. 
 Die in der Zeitdifferenz zurückgelegte Strecke  wird durch die Höhendifferenz geteilt.
-Fliegt man z.B. vo einer bestimmten Position vor und kehrt nach 2 Minuten an die Ausgansposition zurück 
-und hat 2 Minuten als Zeitdifferenz eingestellt wird für die mittlere Gleitzahl 
-die in dieser Zeit zurückgelegte Strecke betrachtet und NICHT der Abstand zwischen der jetzigen Position und der Position vor 2 Minuten, 
+Fliegt man z.B. von einer bestimmten Position vor und kehrt nach zwei Minuten an die Ausgansposition zurück 
+und hat zwei Minuten als Zeitdifferenz eingestellt wird für die mittlere Gleitzahl 
+die in dieser Zeit zurückgelegte Strecke betrachtet und NICHT der Abstand zwischen der jetzigen Position und der Position vor zwei Minuten, 
 denn der ist ja in diesem Fall nahe Null!  
 Für Segelflugzeuge sind 90-120 Sekunden ein guter Wert, für Gleitschirm- und Drachenflieger 15 Sekunden.
 Geringere Werte führen zu momentanen Gleitzahlen, während größere Werte zu Streckengleitzahlen führen. 
@@ -580,8 +584,10 @@ Bestimmt die Dauer mit der das Menü in der Anzeige ohne Nutzung dargestellt wir
 Bestimmt den Darstellungsort des Flugzeugs auf der Karte in Prozent vom unteren Rand
 
 @184
-#Two styles are available: WinPilot style (green and purple circles) or a high visibility style.
-Zwei Stile sind verfügbar: der WinPilot Stil (grüne und purpurne Kreise) und ein Hochsichtbarkeitsstil.
+#Two styles are available: Vector or Alternate. 
+#Vector waypoints will show runway orientation, radio, and other informations.
+Zwei Stile sind verfügbar: Vektor oder Alternativ.
+Wegpunkte im Vektor-Format zeigen die Bahnorientierung, die Frequenz und weitere Informationen.
 
 @185
 #Choose how to display values for landable waypoints. With or without a box around, with or without units (meters, feet).
@@ -639,20 +645,23 @@ Der Halb-Modus stellt den Ziel-Wegpunkt und -abstand oben links und weitere Info
 Der Voll-Modus zeigt auch die Uhr und Werte auf der linken Aneigenseite, vgl. Handbuch.
 
 @194
-#This determines whether the the glide terrain range is calculated and drawn as a line on the map area:
-#[OFF] Disables display
+#This determines whether the glide range is shown on the map:
+#[OFF] Not shown
 #[Line] Draws a dashed line at the glide range
-#[Shade] Shades terrain outside glide range
-#When glide terrain is shown, a RED CROSS will appear if the current destination is reachable in terms of glide ratio, but unreachable because of an obstacle. 
-#The obstacle is indicated together with a boxed value, which is the altitude you need to gain to pass the obstacle. 
-#This altitude takes into account the terrain safety margin you have configured in safety menu.
-#NOTICE: Glide terrain SHADE is shown ONLY during flight. When on ground, it is NOT displayed.
-Bestimmt ob der Gleitbereich berechnet und als Linie in der Karte dargestellt wird:
-[AUS] keine Anzeige
-[Linie] Zeichnet die Grenze des Gleitbereichs als Linie
-[Unschattiert] Schattiert das Gelände AUSSERHALB des Gleitbereichs
+#[Shade] Shades terrain outside glide range (only during flight, not when on ground)
+#[...+NextWP] Also shows glide range from active waypoint (WP) given current predicted arrival altitude at WP
+#With any choice but "OFF", a red "X" will appear if the current destination is reachable in terms of glide ratio, but unreachable because of an obstacle.
+#
+#By the red "X" is shown the altitude you must gain to clear the obstacle.
+#This altitude takes into account the terrain safety margin configured in safety menu.
+Bestimmt wie der Gleitbereich in der Karte dargestellt wird:
+[AUS] keine Darstellung
+[Linie] Zeichnet die Grenze des Gleitbereichs als gestrichelte Linie
+[Schattiert] Schattiert das Gelände AUSSERHALB des Gleitbereichs
+[Schattiert+NächstWPT] zeigt auch den Gleitbereich der sich BEIM Passieren des nächsten Wegpunktes bei aktueller Höhe ergeben würde.
+
 Wird der Gleitbereich angezeigt und liegt das Ziel im Gleitbereich erscheint bei einem Hindernis das auf dem direkten Gleitpfad zum Ziel ein ROTES KREUZ am Ort des Hindernisses.
-Das Hindernis wird mit einem eingerahmten Höhenwert angezeigt, die die Höhe angibt, die man noch Steigen müsste, um das Hindernis zu überfliegen.
+Das Hindernis wird mit einem eingerahmten Höhenwert angezeigt, der die Höhe angibt, die man noch Steigen müsste, um das Hindernis zu überfliegen.
 MAN BEACHTE: Die Gleitbereichsaussenschattierung wird NUR während des Fluges vorgenommen und NICHT am Boden.
 
 # 195 UNUSED SINCE 2.4
@@ -692,12 +701,13 @@ Aktiviert die Darstellung von FLARM-Verkehr in der Karte
 #[Auto] Waypoint automatically advances as soon as glider intercepts waypoint (cylinder,sector or line) including Start.
 #[Arm] User must manually Arm every waypoint before it will advance (including the Start). This option is RECOMMENDED for AAT tasks!
 #[Arm start] User must manually Arm the Start waypoint before the task will start. All other waypoints automatically advance.
+#[Arm TPs] User must manually Arm each turnpoint, but Start waypoint will be advanced automatically.
 Bestimmt, wie Wegpunkte während einer Aufgabe weitergeschaltet werden.
 [Manuell] Man muss jeden Wegpunkt von Hand weiterschalten
 [Auto] Der Wegpunkt wird automatisch weitergeschaltet sobald das Flugzeug ihn passiert (Zylinder, Sektor oder Linie), einschließlich des Abflugs.
 [Lade] Man muss jeden Wegpunkt vorladen (einschließlich Abflug), bevor er weitergeschaltet wird. Diese Einstellung wird für AAT-Aufgaben empfohlen!
 [Lade Abflug] Man muss den Abflug manuell vorladen, alle anderen Wegpunkte werden automatisch weitergeschaltet.
-
+[Lade WPTe] Bis auf den Start sind alle Wendepunkte von Hand weiterzuschalten.
 @201
 #Type of the start.
 #[Line]: The task is started when the line is crossed.  The line length is set via the 'Start radius' property.
@@ -913,8 +923,8 @@ Bestimmt wie man zur Texteingabe aufgefordert wird (Dateinamen, Team-Kode u.s.w.
 Diese Option bestimmt wie Wegpunkte außerhalb von verfügbarem Terrain dargestellt werden: Man kann gefragt werden wenn das passiert oder sie können immer aus- oder eingeschlossen werden.
 
 @237
-#Show clock in full overlay mode
-Zeigt die Uhr bei Volleinblendung aller Daten
+#Working only in Full Overlay mode: localtime clock is shown.
+Zeigt die Uhr mit Lokalzeit NUR bei Volleinblendung aller Daten
 
 @238
 #Size of overlay fonts.
@@ -964,7 +974,7 @@ Der Standarddruck für die QNE-Höhe ist 1013,2. Falls man nicht versteht worum 
 #Change the baro altitude here. You need of course a baro altitude being fed to LK, otherwise this value will constantly be ZERO.
 #Changing baro altitude will set QNH accordingly, automatically.
 #If you want to set the QNE altitude, regulate the QNH to 1013.2 
-Man ändert die Baro-Höhe hier. Man braucht natürlich eine Baro-Höhe, die an LK weitergegeben wird, andernfalls ist dieser Wert konstatnt NULL.
+Hier ändert man die Baro-Höhe manuell. Dazu braucht man natürlich eine instrumentelle Baro-Höhe, die an LK weitergegeben wird (z.B. vom FLARM), andernfalls wird dieser Wert konstant NULL gesetzt.
 Ändert man die Baro-Höhe wird das QNH automatisch entsprechend gesetzt.
 Wenn man die QNE-Höhe setzen will stellt man das QNH auf 1013.2.
 
@@ -1220,11 +1230,13 @@ Radius des Wendepunkt-Beobachtungsbereichs für nicht-AA-Aufgaben
 #[Auto] Fully automatic task waypoint advancing
 #[Arm] Automatic task waypoint advancing needs to be armed each waypoint
 #[Arm start] Automatic task waypoint advancing needs to be armed for the start
+#[Arm TPs] User must manually Arm each turnpoint, but Start waypoint will be advanced automatically.
 Bestimmt, wie Wegpunkte während einer Aufgabe weitergeschaltet werden.
 [Manuell] Man muss jeden Wegpunkt von Hand weiterschalten
 [Auto] Der Wegpunkt wird automatisch weitergeschaltet sobald das Flugzeug ihn passiert, einschließlich des Starts.
 [Laden] Man muss jeden Wegpunkt vorladen (einschließlich Start), bevor er weitergeschaltet wird.
 [Laden Start] Man muss den Start manuell vorladen, alle anderen Wegpunkte werden automatisch weitergeschaltet.
+[aden WPTe] Bis auf den Start müssen alle Wendepunkte weitergeschaltet werden
 
 @508
 #Type of the AAT observation area:
@@ -1326,11 +1338,13 @@ Manuelle Einstellung der Windrichtung
 #[Circling] Requires only a GPS source
 #[ZigZag] requires an intelligent vario with airspeed output.
 #[Both] Use ZigZag and circling.
+#[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
 Hiermit wird der automatische Windbestimmungsalgoritmus ein- oder ausgeschaltet. 
 Ist er ausgeschaltet ist der Pilot für das Setzen des geschätzten Windes verantwortlich.
 [Kreisen] Erfordert nur eine GPS-Quelle.
 [ZickZack] Erfordert ein intelligentes Vario mit Fahrtausgabe.
 [Beide] Nutzt ZickZack-Methode und Kreisabdrift während des Kreisens.
+[Extern] Nutzt Windwerte eines extern angeschlossenen Gerätes (CAI, LX, Zander etc.)
 
 @613
 #Determines whether the snail trail is drifted with the wind when displayed in circling mode.
@@ -1959,7 +1973,7 @@ Ankunftshöhendifferenz über der Besten Alternative. Drücke ENTER oder RETURN 
 @878
 [HeimRad]
 #Radial to home waypoint, if available.
-Radial zum Heimatplatz, wenn verfügbar.
+Radial vom (!) Heimatplatz, wenn verfügbar.
 
 @879
 [Horizontale Distanz Luftraum]
@@ -2410,12 +2424,9 @@ zum Erreichen des Wegpunktes beibehalten.
 
 @1220
 [Konfiguration Fußzeile]
-#[Bottom Bar configuration]
-#Enable or disable each bottom bar stripe while rotating navboxes.
-#If all bars are disabled, NAV1 is always shown automatically.
-#During thermal mode the THR 0 infobar is always shown, also.
-Aktiviert oder deaktiviert die Darstellung der Infostreifen in der rotierenden Darstellung der Fußzeile. Sind alle Streifen deaktiviert, so 
-wird stets der NAV1-Infostreifen im Vorflug und der KRS0-Infostreifen während des Kreisens angezeigt.
+#[Bottom Bar Configuration]
+#Turn on/off each bottom bar stripe while rotating navboxes.  At least one (not counting TRM0) must be on. 
+Aktiviert oder deaktiviert die Darstellung der Infostreifen in der rotierenden Darstellung der Fußzeile. Mindestens ein Streifen muss außer KRS0 aktiviert sein.
 
 @1221
 [Konfiguration Infoseiten]
@@ -2521,6 +2532,60 @@ Im Zweifel lässt man die Einstellung auf AUS.
 [Gleitzahl%]
 Maß für die Sauberkeit des Flugzeugs. 100% entsprechen einem sauberen Flugzeug, kleine Werte bedeuten Mückenbelag oder Feuchtigkeit auf den Flügeln. 50% bedeuten, dass sich die Sinkrate des Flugzeugs verdoppelt hat.
 Dieser Wert wird auch als Standardwert für die Gleitzahl in den Grundeinstellungen benutzt, die beim Start geladen werden. Normalerweise sollte man diesen Wert auf 100% setzen.
+
+@1258
+[Log-Intervall des live trackers (in s)]
+#[Live tracker log interval in seconds]
+#Set this on (>0), if you want to enable sending position data to Leonardo live tracker services over the internet. (http://www.livetrack24.com)
+#This requires a GPRS/HSDPA data plan, and an active TCP/IP internet connection to the tracking server. LK uses the given server, user name and
+#password to login to the server. Aircraft type submitted as well. If unsure, set the default value of 0 which means off.
+Will man Positionsdaten über das Internet zum Leonardo-live-Tracker (http://www.livetrack24.com) senden so ist dieser Wert größer 0 zu setzen. Dazu braucht es eine aktive 
+TCP/IP Internet-Verbindung zum Server und einen GPRS/HSDPA Datenplan. LK8000 nutzt den angegebenen Server, Anmeldename und Passwort zur Verbindung. Der Flugzeug-Typ wird auch mit übermittelt.
+Will man die Positionsdaten nicht übermitteln bzw. ist sich darüber unsicher, setzt man diesen Wert auf 0, d.h. keine Datenübermittlung.  
+
+@1259
+[Nutzer-Menü]
+#[Custom Menu]
+
+@1260
+[Schnelle Gesten]
+#[Quick gestures]
+#Only for paragliders and hanggliders mode: enable/disable quick gestures.
+#By default, quick gestures are enabled. Quick gestures allow the pilot to click
+#on right or left nearest/info pages to switch to next/previous like with gestures.
+#Using gloves during the flight will require this option be disabled.
+Nur für den Gleitschirm- und Drachenflieger-Modus: Erlaube/Sperre schnelle Gesten.
+Standardmäßig sind schnelle Gesten zum Blättern in den Info-Seiten erlaubt. Beim Flug mit Handschuhen sollte man sie sperren.
+
+@1261
+[Sicherheithöhe]
+#[Takeoff safety]
+#During the takeoff phase, this alarm will sound when the chosen safety altitude over ground (QFE) is reached once.
+#For gliders this is normally the altitude above which it is possible to turn 180 and go back to the airfield, in case towing is aborted.
+#Set this value to 0 to disable the alarm. 
+#This alarm will be armed again only after landing.
+In der Startphase wird bei Erreichen der eingestellten Sicherheitshöhe über Grund (QFE) ein Klang ausgegeben. Für Segelflieger ist das 
+normalerweise die Schlepphöhe ab der es möglich ist zuwenden und zum Platz zurückzukehren.
+Mit dem Wert 0 wird dieser Alarm unterdrückt ansonsten wird er nach Landung wieder aktiviert.
+
+
+@1262
+[Optionen Multimap]
+#[Multimap options]
+
+@1263
+[Fußzeile Auto]
+#[Bottom Bar AUTO]
+#If enabled, TRM0 bottom bar will be automatically activated while thermalling,
+#and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
+Falls aktiviert wird beim Kreisen automatisch die TRM0-Fußzele angezeigt.
+
+@1264
+[Bestät LR-Gr]
+#[Group Ack]
+#Acknowledgement of one airspace is valid for all airspaces with the same name and the same class.
+Bestätigung für eine Gruppe von Lufträumen der gleichen Klasse mit gleichem Namen.
+
 
 @9999
 #No help available on this item!

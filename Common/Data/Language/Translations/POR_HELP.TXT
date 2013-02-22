@@ -1,4 +1,4 @@
-﻿# LK8000 ENG_HLP.TXT 110405
+﻿# LK8000 ENG_HLP.TXT 120410
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -18,9 +18,6 @@ Map files are located inside the _Maps subfolder.
 
 @102
 The name of the file containing digital elevation terrain data, normally a .DEM file. 
-Also .DAT and .JP2 files are valid. 
-Remember that terrain could also be loaded internally from LKM map files. 
-In this case terrain chosen here ovverrides the one preconfigured in LKM.
 This file is inside _Maps subfolder. 
 
 @103
@@ -126,7 +123,7 @@ to reposition the glider manually from menu buttons.
 @126
 When zoom level is greater or equal to this value, map orientation will change to NorthUp. 
 If below this value, the Orientation setting will be used normally. 
-Setting an high value will result in never using this option. Default is 7.
+Setting an high value will result in never using this option. 
 
 @127
 Auto-zoom changes the zoom level during flight so that the map zooms in as the active waypoint is approached.  
@@ -183,6 +180,7 @@ the pilot is responsible for setting the wind estimate.
 [Circling] Requires only a GPS source
 [ZigZag] requires an intelligent vario with airspeed output.
 [Both] Use ZigZag and circling.
+[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
 
 @140
 This is the INDICATED AIR SPEED to hold in straight flight before asking for TrueWind calculation. 
@@ -309,7 +307,8 @@ Reference used for start max height rule
 Minimum height above ground while finishing the task.  Set to 0 for no limit.
 
 @168
-If enabled, this option requires the minimum height above ground for finish to be greater than 1000m below the start height.
+If enabled, this option requires maximum loss of height between the start and finish of a task to be not bigger than 1000m for tasks longer than 100km or 1% of the task distance otherwise.
+Larger height loss may invalidate your soaring performance!
 
 @169
 Rules used for calculating optimal points for OnLine Contest.
@@ -378,7 +377,8 @@ This determines how long menus will appear on screen if the user does not make a
 Defines the location of the glider drawn on the screen in percent from the bottom.
 
 @184
-Two styles are available: WinPilot style (green and purple circles) or a high visibility style.
+Two styles are available: Vector or Alternate. 
+Vector waypoints will show runway orientation, radio, and other informations.
 
 @185
 Choose how to display values for landable waypoints. With or without a box around, with or without units (meters, feet).
@@ -416,14 +416,14 @@ Draw overlay values on moving map.
 [Full mode] will add also left overlays values and the clock, if enabled. See the manual.
 
 @194
-This determines whether the the glide terrain range is calculated and drawn as a line on the map area:
-[OFF] Disables display
+This determines whether the glide range is shown on the map:
+[OFF] Not shown
 [Line] Draws a dashed line at the glide range
-[Shade] Shades terrain outside glide range
-When glide terrain is shown, a RED CROSS will appear if the current destination is reachable in terms of glide ratio, but unreachable because of an obstacle. 
-The obstacle is indicated together with a boxed value, which is the altitude you need to gain to pass the obstacle. 
-This altitude takes into account the terrain safety margin you have configured in safety menu.
-NOTICE: Glide terrain SHADE is shown ONLY during flight. When on ground, it is NOT displayed.
+[Shade] Shades terrain outside glide range (only during flight, not when on ground)
+[...+NextWP] Also shows glide range from active waypoint (WP) given current predicted arrival altitude at WP
+With any choice but "OFF", a red "X" will appear if the current destination is reachable in terms of glide ratio, but unreachable because of an obstacle.
+By the red "X" is shown the altitude you must gain to clear the obstacle.
+This altitude takes into account the terrain safety margin configured in safety menu.
 
 # 195 UNUSED SINCE 2.4
 @195
@@ -442,8 +442,8 @@ Track line does not appear on low zoom levels.
 
 @199
 This enables the display of FLARM traffic on the map window
-[Enabled] No Flarm objects will be shown on map
-[Disabled] Flarm object will appear on the map in their real position
+[Disabled] No Flarm objects will be shown on map
+[Enabled] Flarm object will appear on the map in their real position
 
 @200
 Determines how waypoints are advanced when flying the task.
@@ -451,6 +451,7 @@ Determines how waypoints are advanced when flying the task.
 [Auto] Waypoint automatically advances as soon as glider intercepts waypoint (cylinder,sector or line) including Start.
 [Arm] User must manually Arm every waypoint before it will advance (including the Start). This option is RECOMMENDED for AAT tasks!
 [Arm start] User must manually Arm the Start waypoint before the task will start. All other waypoints automatically advance.
+[Arm TPs] User must manually Arm each turnpoint, but Start waypoint will be advanced automatically.
 
 @201
 Type of the start.
@@ -599,8 +600,7 @@ This option defines how waypoints outside the terrain range are handled: the use
 or they can be always included or excluded.
 
 @237
-Working only in Landscape and Full Overlay mode: localtime clock is shown.
-In portrait mode or Half overlay mode, no clock is displayed.
+Working only in Full Overlay mode: localtime clock is shown.
 
 @238
 Size of overlay fonts.
@@ -622,7 +622,7 @@ This value is NOT saved, and it is reset at each startup to the wing loading cal
 Normally, but not always, your polar has considered a 70kg weight pilot. If you are not sure, leave the default wing loading. 
 
 @302
-How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled.
+How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
 
 @303
 ONLY for BARO ALTITUDE when available! IF no baro altitude, this config will do nothing!
@@ -660,8 +660,6 @@ See the manual for all combinations.  Default is Multitarget.
 
 @402
 Custom TOP RIGHT key is obtained by clicking on the top right corner of the screen.
-This key is NOT AVAILABLE FOR PARAGLIDERS or HANG GLIDERS, because it is reserved for task reset during time gates
-and for UTM position reporting upon emergencies (read manual for paragliders).
 See the manual for all combinations.  Default is no action. 
 
 @403
@@ -757,7 +755,8 @@ Reference used for start max height rule
 Minimum height above ground while finishing the task.  Set to 0 for no limit.
 
 @494
-If enabled, this option requires the minimum height above ground for finish to be greater than 1000m below the start height.
+If enabled, this option requires that the maximum loss of height meassured on the finish line is not bigger than 1000m for tasks longer than 100km or 1% of the task distance otherwise.
+Larger height loss may invalidate your soaring performance!
 
 @495
 Enables OLC tasks.  When enabled, OLC style task start is detected automatically (lowest point of flight after initial climb). 
@@ -812,6 +811,7 @@ Determines how waypoints are advanced through the task.
 [Auto] Fully automatic task waypoint advancing
 [Arm] Automatic task waypoint advancing needs to be armed each waypoint
 [Arm start] Automatic task waypoint advancing needs to be armed for the start
+[Arm TPs] User must manually Arm each turnpoint, but Start waypoint will be advanced automatically.
 
 @508
 Type of the AAT observation area:
@@ -888,6 +888,7 @@ When the algorithm is switched off, the pilot is responsible for setting the win
 [Circling] Requires only a GPS source
 [ZigZag] requires an intelligent vario with airspeed output.
 [Both] Use ZigZag and circling.
+[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
 
 @613
 Determines whether the snail trail is drifted with the wind when displayed in circling mode.
@@ -1479,11 +1480,11 @@ Distance to the selected alternate
 @922
 [Max Altitude Reached]
 Max altitude reached during the current flight.
-It is reset at takeoff and at task restart.
+It is reset at takeoff.
 
 @923
 [Max Height Gained]
-This height is calculated using the min and max heights detected AFTER the start of free flight.
+This height is calculated using the min height detected AFTER the start of free flight.
 This value is normally used for badges.
 
 @924
@@ -1607,10 +1608,8 @@ It's zoom out to 5km zoom range, and it will keep zoom in as you're approaching 
 After you reach the waypoint the previous Cruise zoom restored. And as soon you reach 5km to the next waypoint the autozoom start working again.
 
 @1220
-[Bottom Bar configuration]
-Enable or disable each bottom bar stripe while rotating navboxes.
-If all bars are disabled, NAV1 is always shown automatically.
-During thermal mode the THR 0 infobar is always shown, also.
+[Bottom Bar Configuration]
+Turn on/off each bottom bar stripe while rotating navboxes.  At least one (not counting TRM0) must be on. 
 
 @1221
 [InfoPages rotation configuration]
@@ -1666,5 +1665,46 @@ For example if you are flying at 200kmh with a discus with no ballast, the speed
 This speed height will be added to all arrival altitudes. By default this feature is DISABLED, for safety reasons.
 If you are in doubt, leave this setting OFF.
 
+@1257
+[Efficiency]
+How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
+This is the default value used by Efficiency in Basic Settings menu, loaded on startup. You should normally leave this value to 100% here.
+
+@1258
+[Live tracker log interval in seconds]
+Set this on (>0), if you want to enable sending position data to Leonardo live tracker services over the internet. (http://www.livetrack24.com)
+This requires a GPRS/HSDPA data plan, and an active TCP/IP internet connection to the tracking server. LK uses the given server, user name and
+password to login to the server. Aircraft type submitted as well. If unsure, set the default value of 0 which means off.
+
+@1259
+[Custom Menu]
+
+@1260
+[Quick gestures]
+Only for paragliders and hangdliers mode: enable/disable quick gestures.
+By default, quick gestures are enabled. Quick gestures allow the pilot to click
+on right or left nearest/info pages to switch to next/previous like with gestures.
+Using gloves during the flight will require this option be disabled.
+
+@1261
+[Takeoff safety]
+During the takeoff phase, this alarm will sound when the chosen safety altitude over ground (QFE) is reached once.
+For gliders this is normally the altitude above which it is possible to turn 180 and go back to the airfield, in case towing is aborted.
+Set this value to 0 to disable the alarm. 
+This alarm will be armed again only after landing.
+
+@1262
+[Multimap options]
+
+@1263
+[Bottom Bar AUTO]
+If enabled, TRM0 bottom bar will be automatically activated while thermalling,
+and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
+
+@1264
+[Group Ack]
+Acknowledgement of one airspace is valid for all airspaces with the same name and the same class.
+
 @9999
 No help available on this item!
+=
