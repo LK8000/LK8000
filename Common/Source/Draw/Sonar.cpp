@@ -187,11 +187,7 @@ void MapWindow::DoSonar(void) {
 
   if ( near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance) ) {
 	int iSonarLevel=0;
-	#if TESTBENCH
-	if(1)
-	#else
-	if(DerivedDrawInfo.FreeFlying)
-	#endif
+	if(ISCAR||ISGAAIRCRAFT||SIMMODE||DerivedDrawInfo.FreeFlying)
 	{
 		AirSpaceSideViewSTRUCT tmpasp;
 		tmpasp.psAS =  &near_airspace;
