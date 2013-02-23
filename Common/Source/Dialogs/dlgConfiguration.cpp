@@ -1920,7 +1920,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUTCOffset"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(UTCOffset/1800.0)/2.0);
+    wp->GetDataField()->SetAsFloat(UTCOffset/3600.0);
     wp->RefreshDisplay();
   }
   SetLocalTime();
