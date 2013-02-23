@@ -453,7 +453,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			// We have no control on those requests issued for example by Calc thread.
 			// However we force full map refresh after some time in ms
 			#if (WINDOWSPC>0) && !TESTBENCH
-			if ( (GetTickCount()-dwDownTime)>300) {
+			if ( (GetTickCount()-dwDownTime)>50) {
 			#else
 			// If time has passed  then force a MapDirty and redraw the whole screen.
 			// This was previously not working in v3 because ThreadCalculations was forcing MapDirty 
