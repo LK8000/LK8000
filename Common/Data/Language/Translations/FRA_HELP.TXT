@@ -1,4 +1,4 @@
-﻿# LK8000 ENG_HLP.TXT 101210
+﻿# LK8000 ENG_HLP.TXT 120410
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -60,7 +60,7 @@ Pour le mode Airspace Auto. C'est la différence d'altitude qu'il faut prendre e
 Active/Désactive les alertes pour les espaces aériens.
 
 @112
-Temps avant la pénétration d'un espace aérien où le système va prévenir le pilote.
+Temps où le système va prévenir le pilote avant la pénétration d'un espace aérien .
 
 @113
 Temps entre deux demandes de confirmation pour une alerte d'espace aérien.
@@ -181,7 +181,7 @@ Active ou désactive le calcul automatique du vent.
 [Thermique] Nécessite seulement une source GPS.
 [ZigZag] Nécessite un calculateur qui transmet une indication du vent.
 [Les 2] Utilise les deux modes.
-
+[Externe] Utilise seulement le vent calculé par un instrument externe ( CAI, LX, ZANDER etc.)
 @140
 C'est la Vitesse Air à tenir en ligne droite avant de demander un nouveau calcul TrueWind pour le vent. 
 Tenez un cap d'un multiple de 30° et tenez cette vitesse pendant quelques secondes, puis pressez la touche TrueWind du menu
@@ -307,8 +307,8 @@ Référentiel pour l'altitude de départ.
 Hauteur sol mini d'arrivée du circuit. 0= pas de limite.
 
 @168
-Si activé, votre altitude d'arrivée ne doit pas être inférieure de plus de 1000 mètres de votre altitude de départ.
-
+Si activé, votre altitude d'arrivée ne doit pas être inférieure de plus de 1000 mètres de votre altitude de départ pour des circuits de plus de 100km ou de 1% de la longueur du circuit dans les autres cas.
+Une perte d'altitude plus grande peut invalider votre performance!
 @169
 Règles utilisées pour le calcul des points OLC.
 [Sprint]: Conforme aux règles ligue FAI IGC. Jusqu'à cinq point en incluant le départ et l'arrivée, durée max de 2H30. 
@@ -376,8 +376,8 @@ Définit au bout de combien de temps sans action le menu va disparaitre.
 Définit la position de planeur sur l'écran, en pour-cent en partant du bas.
 
 @184
-Deux styles disponibles: Winpilot (des cercles vert et violet) ou le style haute visibilité.
-
+Deux styles disponibles: Vectoriel ou Alternatif.
+Vectoriel montrera l'orientation de la piste, la fréquence radio et d'autres informations.
 @185
 Définit comment afficher les étiquettes des zones posables: avec ou sans cadre et avec ou sans valeur.
 
@@ -600,8 +600,7 @@ Ce paramètre définit comment les points  en dehors de la carte sont considér�
 
 
 @237
-L'heure locale est affichée. Fonctionne uniquement en mode paysage et  avec toutes les Infoscartes affichées.
-L'heure ne peut pas être affichée dans les autres mode d'infoscarte ou en mode portrait.
+L'heure locale est affichée. Fonctionne uniquement  avec toutes les Infoscartes affichées.
 
 @238
 Taille de la police des Infoscartes.
@@ -661,8 +660,7 @@ Voir le manuel pour les différents choix. Défilement Multicible par défaut.
 
 @402
 La touche personnalisable en HAUT à droite est activé en cliquant sur le coin supérieur droit de l'écran.
-Cette touche n'est pas disponible pour les parapentes, voir le manuel.
-Voir le manuel pour les différents choix. Menu Multicible par défaut.
+Voir le manuel pour les différents choix. Pas d'action par défaut.
  
 
 @403
@@ -763,7 +761,8 @@ Référentiel pour l'altitude de départ.
 Hauteur sol mini d'arrivée du circuit. 0= pas de limite.
 
 @494
-Si activé, votre altitude d'arrivée ne doit pas être inférieure de plus de 1000 mètre de votre altitude de départ.
+Si activé, votre altitude d'arrivée ne doit pas être inférieure de plus de 1000 mètres de votre altitude de départ pour des circuits de plus de 100km ou de 1% de la longueur du circuit dans les autres cas.
+Une perte d'altitude plus grande peut invalider votre performance!
 
 @495
 Active les circuits OLC. Si activé, le départ de circuit OLC est détecté automatiquement (point le plus bas après la première ascendance).
@@ -896,7 +895,7 @@ Quand la détection est OFF , le pilote doit régler lui même le vent estimé.
 [Thermique] Nécessite seulement une source GPS
 [ZigZag] Nécessite un vario intelligent qui transmet la vitesse .
 [Les 2] Utilise les deux méthodes.
-
+[Externe] Utilise seulement le vent calculé par un instrument externe ( CAI, LX, ZANDER etc.)
 @613
 Détermine si la trace est déviée avec le vent quand on est en mode spirale.
 
@@ -1067,7 +1066,7 @@ Altitude nécessaire pour atteindre le prochain waypoint en volant au MC actuel.
 Altitude required to reach the next turn point, with current MC.
 
 @814
-[Pt de vir Suivant]
+[Pt Virage Suivant]
 Nom du waypoint actuellement sélectionné.
 
 The name of the currently selected turn point.  When this infobox is active, using the up/down cursor keys selects the next/previous waypoint in the task.  
@@ -1120,7 +1119,7 @@ Altitude gained/lost in the current thermal, divided by time spent thermaling.
 
 @822
 [Thermique Gain]
-C'est l'atitude gagnée (ou perdue!) dans l'ascendance actuelle.
+C'est l'altitude gagnée (ou perdue!) dans l'ascendance actuelle.
 
 The altitude gained/lost in the current thermal.
 
@@ -1149,32 +1148,32 @@ Cap estimé du vent via "TrueWind" ou la dérive en ascendance).
 Wind bearing estimated by LK8000, either with TrueWind or while circling. 
 
 @827
-[AA Temps restant]
+[AAT Temps restant]
 Temps restant lors d'une AAT, la valeur devient ROUGE si le temps est dépassé.
 
 Assigned Area Task time remaining.  Goes red when time remaining has expired.
 
 @828
-[AA Distance Max]
+[AAT Distance Max]
 Distance maxiumun restant à parcourir lors d'une AAT.
 
 Assigned Area Task maximum distance possible for remainder of task.
 
 @829
-[AA Distance Min]
+[AAT Distance Min]
 Distance minimum restant à parcourir lors d'une AAT.
 
 Assigned Area Task minimum
  distance possible for remainder of task.
 
 @830
-[AA Vitesse Max]
+[AAT Vitesse Max]
 Vitesse  moyenne maximum possible lors d'une AAT si on parcourt la distance maximum restante avec le temps minimum.
 
 Assigned Area Task average speed achievable if flying maximum possible distance remaining in minimum AAT time.
 
 @831
-[AA Vitesse Mini]
+[AAT Vitesse Mini]
 Vitesse moyenne mini possible lors d'une AAT si on parcourt la distance minimum restante avec le temps minimum.
 
 Assigned Area Task average speed achievable if flying minimum possible distance remaining in minimum AAT time.
@@ -1314,13 +1313,13 @@ Forecast temperature of the ground at the home airfield, used in estimating conv
 (Touchscreen/PC only) Pressing the up/down cursor keys adjusts this forecast temperature.
 
 @851
-[AA Distance prévue]
+[AAT Distance prévue]
 Distance restante lors d'un AAT en tenant compte des points de virages "cibles" selectionnés.
 
 Assigned Area Task distance around target points for remainder of task.
 
 @852
-[AA Vitesse prévue]
+[AAT Vitesse prévue]
 Vitesse moyenne atteignable en AAT en virant les points de virage "cibles" des secteur avec le temps minimum restant disponible.
 
 Assigned Area Task average speed achievable around target points remaining in minimum AAT time.
@@ -1383,7 +1382,7 @@ Vitesse réalisée sur le circuit actuel. Compensée pour l'altitude. C'est souv
 Achieved cross country speed while on current task, compensated for altitude.Normally this is used as first choice.
 
 @862
-[AA Différence de temps]
+[AAT Différence de temps]
 Différence entre le temps d'arrivée estimé et le temps mini restant. sera affiché en ROUGE si négatif: arrivée trop tôt, et en BLEU supérieure à 5 minutes.
 
 Difference between estimated task time and AAT minimum time.  Colored red if negative (expected arrival too early), or blue if in sector and can turn now with estimated arrival time greater than AAT time plus 5 minutes.
@@ -1844,12 +1843,12 @@ Si vous volez dans une zone interdite sans acquitter le message d'alerte, ce par
  
 @1210
 [Marge verticale]
-Si la distance verticale à la limite haute ou basse d'une zone aérienne est inférieur à cette limite, alors le message d'avertissement jaune apparaît. Dans le même temps sur la carte, une icône d'avertissement apparaît au dessus du planeur pour vous avertir.
+Si la distance verticale à la limite haute ou basse d'une zone aérienne est inférieure à cette limite, alors le message d'avertissement jaune apparaît. Dans le même temps sur la carte, une icône d'avertissement apparaît au dessus du planeur pour vous avertir.
 
 @1211
-[Délai attente des message]
+[Délai attente des messages]
 Délai après lequel les messages d'alertes de zones aériennes seront fermés automatiquement.
-Dans le message un compte a rebours apparaît sur le bouton fermer, il affiche le temps restant avant sa fermeture.
+Dans le message un compte à rebours apparaît sur le bouton fermer, il affiche le temps restant avant sa fermeture.
 
 @1212
 [Étiquettes de zone aérienne]
@@ -1862,8 +1861,8 @@ Lorsque vous utilisez le zoom automatique en mode "Parapente", quand la distance
 @1220
 [bandeau inférieur]
 Active ou désactive chacun des bandeaux inférieurs.
-Si tous les bandeaux sont désactivés, NAV1 sera toujours automatiquement affiché en transition et THR0 sera toujours automatiquement affiché en spirale.
-
+Au moins un (Sans compter TRM0) doit être sur On.  
+TRM0 ne peut être vu qu'en mode thermique .
 @1221
 [InfoPages rotation configuration]
 Active ou désactive chacune des pages d'information.
@@ -1877,7 +1876,7 @@ Si vous utilisez le mode planeur, même si la page 1.5 est désactivée, les cal
 Contrôle le filtrage des zones aériennes pour l'affichage et les alertes. Le bouton filtre des zones aériennes permet également le filtrage de l'affichage et des alertes de façon indépendante pour chaque classe de zones.
 [Tous] Toutes les zones aériennes sont affichées.
 [Plafonné] Seulement les zones aériennes en dessous d'un plafond.
-[Auto] Toutes dans la marge verticale par apport à votre position.
+[Auto] Toutes dans la marge verticale par rapport à votre position.
 [Tous dessous] Toutes les zones en dessous de vous et au dessus de la marge verticale.
 
 @1251
@@ -1919,10 +1918,56 @@ Le gain d'altitude ainsi calculé sera automatiquement ajouté à toutes les alt
 Si vous avez un doute, laissez ce paramètre désactivée.
 
 @1257
-[Efficiency]
+[Propreté]
 La valeur de ce paramètre dépend de l’état de surface de votre planeur. Lorsque celui-ci est propre, réglez cette valeur à 100%, réduisez cette valeur lorsque les ailes sont piquées d'insectes ou mouillées. Une valeur de 50% indique que le taux de chute de votre planeur est doublé.
 Ce paramètre est utilisé comme valeur par défaut dans les paramètres de base qui sont chargés au démarrage.
 Vous devriez normalement laisser cette valeur à 100%.
 
+@1258
+[Live tracker interval d'envoi en secondes]
+Réglez l'interval >0 si vous voulez envoyer les données de votre position au service Leonardo Live tracker sur internet.
+(http://www.livetrack24.com)
+Nécessite une connection GPRS /HSDPA et une connection internet TCP/IP active sur le serveur de tracking.
+LK utilise le serveur , le nom d'utilisateur et le mot de passe de connection renseigné
+Pour se connecter au serveur. Le type d'aéronef est également envoyé.
+Si vous n'êtes pas sûr, réglez la valeur par défaut à 0 , ce qui signifie que rien n'est envoyé.
+
+@1259
+[Menu Personalisé ]
+
+@1260
+[Gestes rapides]
+Seulement pour les modes Parapente et Deltaplane. Active ou désactive les gestes rapides.
+Par défaut , les gestes rapides sont activés. Les gestes rapides permettent au pilote de cliquer à droite ou à gauche 
+sur les pages Nearest/info  pour basculer vers la précédente ou la suivante avec des gestes rapides
+si vous utilisez des gants pendant le vol, il faudra désactiver cette option.
+
+
+
+@1261
+[Sécurité décollage]
+Pendant la phase de décollage, cette alarme se déclenchera 
+quand l'altitude choisie au dessus de sol (QFE) sera atteinte.
+Pour les planeurs, c'est normalement l'altitude à laquelle il est possible de faire un 180° 
+pour se reposer à contre QFU dans le cas d'un problème de remorquage .
+Réglez cette valeur à 0 pour désactiver l'alarme.
+Cette alarme sera réarmée seulement après l'attérissage .
+
+@1262
+[Options Multimap ]
+
+@1263
+[Bandeau inf AUTO]
+Si activé,le bandeau inférieur TRM0 va être activée automatiquement quand vous spiralerez 
+et se désactivera quand vous sortirez de la pompe, même si TRMO est désactivé 
+dans les options de défilement du bandeau.
+If enabled, TRM0 bottom bar will be automatically activated while thermalling,
+and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
+
+@1264
+[Acquittemment de Groupe]
+L'acquittement d'une zone aéro est valide pour toutes les zones ayant le même nom et la même classe.
+Acknowledgement of one airspace is valid for all airspaces with the same name and the same class.
+
 @9999
-Aucune aide disponible pour ce paramètre !
+No help available on this item!

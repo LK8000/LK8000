@@ -1,5 +1,4 @@
 ﻿# LK8000 ITALIAN MESSAGES - ITA_MSG.TXT
-# Version 3.x
 # MASTER UPDATED:  120216
 #
 # This file is loaded on startup and all messages are stored internally.
@@ -10,6 +9,10 @@
 # and it should always exist. Do not change ENG_MSG.TXT!
 #
 # ATTENTION> Max number of tokens is defined in LKLanguage as MAX_MESSAGES
+#
+# If you add messages, as a developer, do not recycle numbers, because translations assume
+# that a nonexisting token should be replaced by the english original.
+# But if a old token was translated, it will still appear like that, wrong!
 #
 # All lines that are empty, or starting with a # , are ignored.
 # DEVELOPERS ADDING NEW MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT ON GITHUB
@@ -29,8 +32,7 @@ _@M12_ "11 Vista Mappa"
 _@M13_ "12 Stile testo"
 _@M14_ "13 Overlay Mappa "
 _@M15_ "14 Tema"
-# UNUSED M16
-_@M16_ "15 Regole tema"
+_@M16_ "Almeno uno (senza considerare TRM0) deve essere attivo. Attivazione di NAV1."
 _@M17_ "15 secondi"
 _@M18_ "16 InfoBox Planata"
 _@M19_ "17 InfoBox Termica"
@@ -180,6 +182,7 @@ _@M159_ "CONFERMA goto, ABORTIRE il tema?"
 _@M160_ "Calcola"
 _@M161_ "Annulla"
 _@M162_ "Impossibile sovrascrivere!"
+#M163 unused, changed to CarTrek
 _@M163_ "Automobile"
 _@M164_ "Categoria "
 _@M165_ "Ceiling trend"
@@ -504,6 +507,7 @@ _@M471_ "Nessun fix"
 _@M472_ "Nessun aliante"
 _@M473_ "Rimuovi atterrabili"
 _@M474_ "Nessun logger connesso"
+#475 unused since 3.1i
 _@M475_ "Nessun overlay"
 _@M476_ "Nessun tema"
 _@M477_ "Nessun percorso valido"
@@ -789,6 +793,7 @@ _@M751_ "Modello (polare) "
 _@M752_ "Tipo"
 _@M753_ "SCONOSCIUTO! "
 _@M754_ "SGANCIA"
+# Unused 755 and 756 since  v3.2 
 _@M755_ "USO QUOTA BAROMETRICA DISPONIBILE DA:"
 _@M756_ "USO QUOTA BAROMETRICA DA:"
 _@M757_ "USO QUOTA GPS"
@@ -858,6 +863,7 @@ _@M818_ "Imposta Vento"
 _@M819_ "Wind arrow"
 _@M820_ "Vento in Quota"
 _@M821_ "Carico alare "
+# 822 REMOVED after 3.0
 _@M822_ "Winpilot"
 _@M823_ "Fascia di lavoro"
 _@M824_ "Pil. fuori mappa "
@@ -1050,7 +1056,8 @@ _@M1025_ "Quota arrivo pilone"
 _@M1026_ "AltPil"
 _@M1027_ "Quota richiesta pilone"
 _@M1028_ "AltRPil"
-_@M1029_ "Prossimo pilone"
+# 1029 UNUSED REMOVED
+_@M1029_ "Riservato 2"
 _@M1030_ "Pilone"
 _@M1031_ "Quota arrivo tema"
 _@M1032_ "AltArrT"
@@ -1338,12 +1345,15 @@ _@M1286_ "SpAerV"
 
 # airspace analysis dialog page
 _@M1287_ "Prua"
+# 1288 UNUSED REMOVED
 _@M1288_ "Mostra verso il prossimo pilone"
 _@M1289_ "Pil. Succ."
+# M1290 UNUSED REMOVED
 _@M1290_ "Mostra a prua"
 _@M1291_ "S.A. Vicino"
 _@M1292_ "Spazio Aereo vicino"
 _@M1293_ "SI Sonar"
+#1294 REMOVED UNUSED
 _@M1294_ "NO Sonar"
 _@M1295_ "- Sezione"
 
@@ -1520,6 +1530,11 @@ _@M1504_ "PLS pun"
 _@M1505_ "OLC Plus Dich.*Punteggio"
 _@M1506_ "PLS*pun"
 
+_@M1507_ "OLC FAI triangle Distance to close"
+_@M1508_ "C:"
+_@M1509_ "OLC FAI triangle Distance close %"
+_@M1510_ "%C:"
+_@M1511_ "B:"
 # #############################
 # NEW 2.4 messages
 # #############################
@@ -1747,6 +1762,90 @@ _@M1776_ "5 secondi"
 _@M1777_ "10 secondi"
 _@M1778_ "45 secondi"
 
+# New livetracker configuration
+_@M1779_ "Intervallo rec live tracker"
+_@M1780_ "Utente"
+_@M1781_ "Password"
+_@M1782_ "LT Server"
+
+# configuration SETUP save 
+_@M1783_ "Profilo Aeromobile"
+_@M1784_ "Profilo Pilota"
+# page names
+_@M1785_ "Configuraz. Pilota"
+_@M1786_ "Configuraz. Aeromobile"
+
+# Page names in configuration
+_@M1787_ "Menu Custom"
+_@M1788_ "Configura Menu Custom"
+
+_@M1789_ "Elimina file task"
+_@M1790_ "Nessun file task da eliminare"
+
+# Customkey configuration item
+_@M1791_ "Arm toggle advance"
+
+# configuration PG/Hg specials
+_@M1792_ "Quick gestures "
+
+# Wind mode configuration, "External" (from external instrument)
+_@M1793_ "Esterno"
+
+# Safety takeoff alarm
+_@M1794_ "Takeoff safety "
+
+# Replacing 120, 755 and 756
+_@M1795_ "QUOTA BAROMETRICA DISPONIBILE"
+_@M1796_ "QUOTA BAROMETRICA IN USO"
+
+# Replacing 822
+_@M1797_ "Vettore"
+
+_@M1798_ "Arm TPs"
+_@M1799_ "Stop moving!"
+
+_@M1800_ "no trace"
+_@M1801_ "climb trace"
+_@M1802_ "climb/sink trace"
+_@M1803_ "Head Up"
+_@M1804_ "Head Right"
+_@M1805_ "Line+NextWP"
+_@M1806_ "Shade+NextWP"
+_@M1807_ "_Reserved 2"
+_@M1808_ "Loading FLARMNET database"
+
+# Trip computer, Infobox title, max 6-7 chars
+_@M1809_ "Moving"
+_@M1810_ "Steady"
+_@M1811_ "Total"
+_@M1812_ "Chrono"
+
+# New virtual waypoints
+_@M1813_ "CHIUSURA FAI"
+_@M1814_ "VOLO LIBERO"
+# 1815 can be changed anytime, do not reuse!
+_@M1815_ "INUTILIZZATO"
+_@M1816_ "FAI closing point"
+_@M1817_ "punto chiusura andata e ritorno"
+
+# profile button, keep short!
+_@M1818_ "DEVICE"
+# configuration SETUP save 
+_@M1819_ "Profili Dispositivo"
+# page name
+_@M1820_ "Config. dispositivo"
+# Bottom bar configuration button
+_@M1821_ "AUTO"
+_@M1822_ "Configura Multimaps"
+// leave a space after Ack
+_@M1823_ "Group Ack "
+
+// Task buttons (keep SHORT text!)
+_@M1824_ "Ins. come START"
+_@M1825_ "Ins. prima"
+_@M1826_ "Sostituisci"
+_@M1827_ "Agg. prima dell'arrivo"
+_@M1828_ "Agg. dopo l'arrivo"
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1880,5 +1979,84 @@ _@M2119_ "Dettagli\nVoli"
 _@M2120_ "Elimina\nVoli"
 _@M2121_ "Lista\nVoli"
 _@M2122_ "SALVA\nSistema"
+_@M2123_ "Ruota\nSchermo"
+_@M2124_ "Screen\nModes"
+_@M2125_ "Setup\nAerom."
+_@M2126_ "Salva\nAerom."
+_@M2127_ "Setup\nPilota"
+_@M2128_ "Salva\nPilota"
+_@M2129_ "LK8000\nSetup"
+_@M2130_ "Setup\nSistema"
+_@M2131_ "Menu\nCustom"
+_@M2132_ "Elimina\nAltern"
 
+_@M2133_ "Posizione"
+
+_@M2134_ "Dev A"
+_@M2135_ "Dev B"
+_@M2136_ "Rotate C-Probe 360° around it's 3 axis\nthe order and direction is not important"
+
+_@M2143_ "Config Device A"
+_@M2144_ "Config Device B"
+
+
+# Paraglider Waypoint Type
+_@M2145_ "Entry"
+_@M2146_ "Exit"
+_@M2147_ "Exit/Entry"
+
+_@M2148_ "Auto,Bici & Trekking"
+
+# Thermal Bar
+_@M2149_ "in termica"
+_@M2150_ "in termica e planata"
+
+# New CustomKey labels for Custom Menu
+_@M2200_ "----"
+_@M2201_ "Menu"
+_@M2202_ "Pag.\nInd"
+_@M2203_ "Commuta\nMappa"
+_@M2204_ "Commuta\nAtter"
+_@M2205_ "Atter\abili"
+_@M2206_ "Commuta\nComuni"
+_@M2207_ "Comuni"
+_@M2208_ "Commuta\nTraffico"
+_@M2209_ "Traffico"
+_@M2210_ "Auto\nZoom"
+_@M2211_ "Suono\nTermica"
+_@M2212_ "Dest.\nCasa"
+_@M2213_ "Zoom\n-20"
+_@M2214_ "Multi\nTarg+"
+_@M2215_ "Usa\nHBAR"
+_@M2216_ "MENU\nSIM"
+_@M2217_ "Analisi\nSp.Aer"
+_@M2218_ "Commuta\nSp.Aer"
+_@M2219_ "Zoom\n++"
+_@M2220_ "Zoom\n--"
+_@M2221_ "Percorso\nOttim"
+_@M2222_ "Analisi\nOLC"
+_@M2223_ "Color+\nterreno"
+_@M2224_ "Color-\nterreno"
+_@M2225_ "Volo\nLibero"
+_@M2226_ "Arm\nToggle"
+_@M2227_ "Commuta\nRosaVenti"
+_@M2228_ "FLARM\nRadar"
+_@M2229_ "Reset\nOdomet"
+_@M2230_ "Forza\nAtterr."
+_@M2231_ "ATTIVO"
+# 2232 unused but reserved for mmaps
+_@M2232_ "Piloni"
+_@M2233_ "Overlay"
+_@M2234_ "TESTI"
+_@M2235_ "GAUGES"
+_@M2236_ "Reset\nTrip"
+_@M2237_ "Commuta\nSonar"
+_@M2238_ "Draw\nTask"
+_@M2239_ "Draw\nFAI"
+_@M2240_ "NoDraw\nTaskFAI"
+_@M2241_ "Draw\nTaskFAI"
+_@M2242_ "Sonar\nON"
+_@M2243_ "Sonar\nOFF"
+_@M2244_ "Device\nSetup"
+_@M2245_ "Device\nSave"
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2130)
