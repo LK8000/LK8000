@@ -13,15 +13,14 @@
 
 void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
 {
-  int i;
-
+  int minSpeed = iround(GlidePolar::Vminsink*0.8);
+  int maxSpeed = iround(SAFTEYSPEED*1.1);
+  
   ResetScale();
   ScaleYFromValue(rc, 0);
-  ScaleYFromValue(rc, GlidePolar::SinkRateFast(0,(int)(SAFTEYSPEED-1))*1.1);
-  ScaleXFromValue(rc, GlidePolar::Vminsink*0.8);
-  ScaleXFromValue(rc, SAFTEYSPEED+2);
-
-
+  ScaleYFromValue(rc, GlidePolar::SinkRate(maxSpeed));
+  ScaleXFromValue(rc, minSpeed);
+  ScaleXFromValue(rc, maxSpeed);
 
   DrawXGrid(hdc, rc, 
             10.0/SPEEDMODIFY, 0,
@@ -35,11 +34,10 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   bool v0valid = false;
   int i0=0;
 
-  for (i= GlidePolar::Vminsink; i< SAFTEYSPEED-1;
-       i++) {
+  for (int i=minSpeed; i<maxSpeed; ++i) {
     
-    sinkrate0 = GlidePolar::SinkRateFast(0,i);
-    sinkrate1 = GlidePolar::SinkRateFast(0,i+1);
+    sinkrate0 = GlidePolar::SinkRate(i);
+    sinkrate1 = GlidePolar::SinkRate(i+1);
 
     DrawLine(hdc, rc,
              i, sinkrate0 , 
@@ -64,17 +62,16 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
       v0 = v1; i0 = i;
       v0valid = true;
     } 
-
   }
 
-  double ff = SAFTEYSPEED/max(1.0, CALCULATED_INFO.VMacCready);
+  double ff = maxSpeed / max(1.0, CALCULATED_INFO.VMacCready);
   double sb = GlidePolar::SinkRate(CALCULATED_INFO.VMacCready);
   ff= (sb-MACCREADY)/max(1.0, CALCULATED_INFO.VMacCready);
 
   DrawLine(hdc, rc,
            0, MACCREADY, 
-           SAFTEYSPEED,
-           MACCREADY+ff*SAFTEYSPEED,
+           maxSpeed,
+           MACCREADY+ff*maxSpeed,
            STYLE_REDTHICK);
 
   DrawXLabel(hdc, rc, TEXT("V"));
