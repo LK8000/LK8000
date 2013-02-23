@@ -1,4 +1,4 @@
-<PMML>
+﻿<PMML>
 <WndForm Name="frmConfiguration" Type="Dialog" X=0 Y=0 Width=240 Height=320 Caption="_@M195_" Font=2 >
 <WndButton Name="cmdNext"  Caption="_@M460_" X=115 Y=238 Width=105  Height=30 Font=2 OnClickNotify="OnNextClicked" Tag=1 />
 <WndButton Name="cmdPrev"  Caption="_@M6_" X=5 Y=238 Width=105  Height=30 Font=2 OnClickNotify="OnPrevClicked" Tag=0/>
@@ -314,7 +314,7 @@
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpUTCOffset" Caption="_@M758_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1177_">
-<DataField name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.1f" Min=-13 Max=13 Step=0.5 OnDataAccess="OnUTCData"/>
+<DataField name="" DataType="double" DisplayFormat="%.2f" EditFormat="%.2f" Min=-13 Max=13 Step=0.25 OnDataAccess="OnUTCData"/>
 </WndProperty>
 <WndProperty Name="prpLocalTime" Caption="_@M402_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 ReadOnly=1/>
 </WndFrame>
