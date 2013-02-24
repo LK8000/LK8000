@@ -1,5 +1,5 @@
 ﻿# LK8000 NED_HLP.TXT 101210
-# Version: January 2012
+# Version: February 2013
 # Translation by: Rick Boerma
 # Aan deze vertaling kunnen geen rechten worden ontleend.
 # A single text line can be max 500 characters long
@@ -18,7 +18,7 @@ Stelt de mate van gedetailleerdheid van de configuratie-instellingen.
 #[Expert]: Basic and advanced settings are shown.
 
 @101
-De naam van het bestand met topologie, en optioneel ook terrein, waypoints, luchtruim.
+Het bestand met topologie, en optioneel ook terrein, waypoints en luchtruim.
 Het .LKM bestand is een hernoemd ZIP-bestand. Als u het achtervoegsel .LKM veranderd naar .ZIP kunt u het bestand openen en de inhoud veranderen. De kaart bestanden bevinden zich in de _Maps submap.
 
 #The name of the file containing TOPOLOGY, and only optionally also terrain, waypoints, airspaces. 
@@ -26,14 +26,14 @@ Het .LKM bestand is een hernoemd ZIP-bestand. Als u het achtervoegsel .LKM veran
 #Map files are located inside the _Maps subfolder.
 
 @102
-De naam van het bestand dat de gegevens van de digitale hoogteverschillen  in het terrein bevat, normaliter een .DEM-bestand. Dit bestand bevindt zich in de _Maps submap.
+Het bestand dat de gegevens van de digitale hoogteverschillen in het terrein bevat, normaliter een .DEM-bestand. Dit bestand bevindt zich in de _Maps submap.
 
 #The name of the file containing digital elevation terrain data, normally a .DEM file. 
 #This file is inside _Maps subfolder. 
 
 @103
 Primair keerpunten bestand. Keerpunt-bestanden bevinden zich in de _Waypoints submap.
-U kunt gebruik maken van Winpilot .DAT-bestanden, seeyou .CUP bestanden en COMPEgps .WPT-bestanden.
+U kunt gebruik maken van Winpilot .DAT bestanden, seeyou .CUP bestanden en COMPEgps .WPT bestanden.
 LET OP: Wanneer u een nieuw keerpunt wilt creëren, dan wordt deze opgeslagen in bestand 1, met de bijbehorende indeling.
 
 #Primary waypoints file.  Waypoint files are located inside _Waypoints subfolder.
@@ -42,26 +42,26 @@ LET OP: Wanneer u een nieuw keerpunt wilt creëren, dan wordt deze opgeslagen in
 
 @104
 Secundair keerpunten bestand. Keerpunt-bestanden bevinden zich in _Waypoints submap.
-U kunt gebruik maken van Winpilot .DAT-bestanden, seeyou .CUP bestanden of COMPEgps .WPT bestanden.
+U kunt gebruik maken van Winpilot .DAT bestanden, seeyou .CUP bestanden of COMPEgps .WPT bestanden.
 
 #Secondary waypoints file.  Waypoint files are located inside _Waypoints subfolder.
 #You can use Winpilot .DAT files, SeeYou .CUP files, or COMPEgps .wpt files.
 
 @105
-De bestandsnaam van het primaire luchtruim bestand.
+Het primaire luchtruim bestand.
 Luchtruim bestanden bevinden zich in de _Airspaces submap.
 
 #The file name of the primary airspace file.
 #Airspace files are located inside _Airspaces subfolder.
 
 @106
-De bestandsnaam van het secundaire luchtruim bestand.
+Het secundaire luchtruim bestand.
 
 #The file name of the secondary airspace file.
 
 @107
 Bij elk vliegveld, kunt u aanvullende informatie in dit bestand in de _Waypoints submap toevoegen.
-Hier kunt u deze standaard bestandsnaam veranderen.
+Hier kunt u een ander standaard bestand kiezen.
 
 #For each airfield, you can add additional informations inside this file located in _Waypoints subdirectory.
 #Here you can change this default file name to something else.
@@ -81,7 +81,7 @@ Controle filtering van het luchtruim voor weergave en waarschuwingen. Met de luc
 #[All below] All airspace below the glider.
 
 @109
-Voor de luchtruim modus: doorsnede , dit is de hoogte waaronder het luchtruim wordt weergegeven.
+Voor de luchtruim modus: doorsnede , onder deze hoogte wordt het luchtruim weergegeven.
 
 #For clip airspace mode, this is the altitude below which airspace is displayed.
 
@@ -92,7 +92,7 @@ Voor auto luchtruim modus, dit is de hoogte boven en onder u waarin het luchtrui
 #For auto airspace mode, this is the altitude above/below which airspace is included.
 
 @111
-Schakel alle luchtruimwaarschuwingen in/uit.
+Schakelt alle luchtruimwaarschuwingen in/uit.
 
 #Enable/disable all airspace warnings.
 
@@ -141,9 +141,12 @@ Bepaalt het kleurenschema dat gebruikt wordt in de terrein rendering.
 #Defines the color ramp used in terrain rendering.
 
 @120
-Schakel het schaduw effect op de moving map in/uit.
+Schakel het schaduw effect op de kaart in/uit. U kunt ook de schaduw in/uit schakelen via de Scherm Weergave menu knoppen.
+Alhoewel, wanneer u de schaduw hiermee uitschakeld, dan blijft dit altijd uitgeschakeld, en is het niet meer mogelijk om het weer in te schakelen via de Scherm Weergave knoppen. 
 
-#Enable or disable moving map shade effect.
+#Enable or disable moving map shade/slope effect. You can also enable/disable shading from the Screen View menu buttons.
+#However, if you disable shading here it will be disabled forever, and you will not be able to enable it from Screen View.
+
 
 @121
 Wanneer er geen terrein wordt gebruikt, dan is dit de kleur die als achtergrond word gebruikt. 
@@ -165,11 +168,11 @@ Normaal gesproken kan je de standaardwaarde op 70 laten staan.
 @123
 Bepaalt hoe labels worden weergegeven bij elk keerpunt:
 [Namen] De volledige naam van elk keerpunt wordt weergegeven.
-[Numers] Het keerpunt nummer van elk keerpunt wordt weergegeven.
+[Nummers] Het keerpunt nummer van elk keerpunt wordt weergegeven.
 [Geen] Geen namen worden weergegeven bij de keerpunten.
 [Namen in opdracht] Namen zijn alleen weergegeven voor keerpunten die in de actieve opdracht zitten, net als de thuishaven.
-[Eerste Drie] De eerste 3 letters van de naam van het keerpunt wordt weergegeven.
-[Eerste Vijf] De eerste 5 letters van de naam van het keerpunt wordt weergegeven.
+[Eerste 3] De eerste 3 letters van de naam van het keerpunt wordt weergegeven.
+[Eerste 5] De eerste 5 letters van de naam van het keerpunt wordt weergegeven.
 
 #Determines how labels are displayed with each waypoint:
 #[Names] The full name of each waypoint is displayed.
@@ -180,20 +183,20 @@ Bepaalt hoe labels worden weergegeven bij elk keerpunt:
 #[First Five] The first 5 letters of the waypoint name are displayed.
 
 @124
-Bepaalt hoelang het slakkenspoor achter het zweefvliegtuig is.
+Bepaalt hoelang het spoor achter het zweefvliegtuig is.
 
 #Determines whether and how long a snail trail is drawn behind the glider
 
 @125
 Bepaalt hoe het scherm gedraaid word met het zweefvliegtuig:
-[Noord boven] De bewegende kaartweergave zal altijd naar het noorden worden gericht naar het zuiden en de glider icoon zal gedraaid zijn beloop laten worden.
-[Noord slim] Is hetzelfde als Noord boven, maar het zweefvliegtuig-icoon wordt automatisch geherpositieoneert, om meer voorwaarts meer ruimte weer te geven.
+[Noord Boven] De bewegende kaartweergave zal altijd naar het noorden worden gericht naar het zuiden en de glider icoon zal gedraaid zijn beloop laten worden.
+[Noord Slim] Is hetzelfde als Noord boven, maar het zweefvliegtuig-icoon wordt automatisch geherpositieoneert, om meer voorwaarts meer ruimte weer te geven.
 Deze modus werkt alleen in landschap-modus. Voor portret-modus, identiek aan Noord boven. In Noord slim is het niet mogelijk
 aan de glider handmatig verplaatsen van de menuknoppen.
-[Track omhoog] De bewegende kaart zal zo worden gedraaid, zodat de koers van het zweefvliegtuig naar boven is gericht.
-[Noord-up bij cirkelen] Baan boven in kruisvlucht, en noord boven tijdens thermieken.
-[Doel boven wanneer thermieken] Baan boven in kruisvlucht, de peiling naar het volgende keerpunt tijdens thermieken boven.
-[Noord Baan] Noord boven in kruisvlucht, en tijdens thermieken wordt de koers boven gekozen.
+[Koers boven] De bewegende kaart zal zo worden gedraaid, zodat de koers van het zweefvliegtuig naar boven is gericht.
+[Noord Thermiek] Koers boven in kruisvlucht, en noord boven tijdens thermieken.
+[Doel Thermiek] Koers boven in kruisvlucht, en de koers naar het volgende keerpunt tijdens het thermieken boven.
+[Noord/Koers] Noord boven in kruisvlucht, en tijdens thermieken wordt de koers boven gekozen.
 
 #Determines how the screen is rotated with the glider:
 #[North up] The moving map display will always be orientated north to south and the glider icon will be rotated to show its course.
@@ -206,7 +209,7 @@ aan de glider handmatig verplaatsen van de menuknoppen.
 #[North/track] North-up in cruise, glider track-track up in circling
 
 @126
-Als zoomniveau groter is dan of gelijk aan deze waarde, dan zal de kaartoriëntatie veranderen naar Noord boven.
+Als zoomniveau groter dan of gelijk aan deze waarde is, dan zal de kaartoriëntatie veranderen naar Noord boven.
 Als zoomniveau onder deze waarde ligt, dan zal de kaart normaal worden weergegeven.
 Het instellen van een te hoge waarde zal resulteren in het nooit gebruiken van deze optie. 7 is standaard.
 
@@ -224,12 +227,12 @@ Handmatig de zoom wijzigen schakelt deze functie uit.
 #Manually changing the zoom will disable Auto zoom.
 
 @128
-Bepaalt of het slakkenspoor met de wind afdrijft wanneer de thermiek modus wordt weergegeven.
+Bepaalt of het gevlogen spoor met de wind afdrijft wanneer de thermiek modus wordt weergegeven.
 
 #Determines whether the snail trail is drifted with the wind when displayed in circling mode.
 
 @129
-Bepaalt de breedte van het weergegeven slakkenspoor.
+Bepaalt de weergave breedte van het spoor.
 
 #Sets the width of the snail trail display.
 
@@ -270,8 +273,8 @@ STEL DE WAARDE NOOIT OP NUL IN!!! Een goede waarde is 300m.
 
 @134
 Pas de veiligheidshoogte alleen toe op landbare keerpunten, of ook bij normale keerpunten. Bij alleen landbare keerpunten, dan word er geen extra marge over de aankomstoogte bij keerpunten overwogen.
-[Alleen landbaar] Voeg alleen extra hoogte toe voor landbare velden. Dit is de standaardinstelling.
-[Landbaar en keerpunten] Pas extra hoogte toe voor alle keerpunten. ">
+[Alleen Landables] Voeg alleen extra hoogte toe voor landbare velden. Dit is de standaardinstelling.
+[Landables en keerpunten] Pas extra hoogte toe voor alle keerpunten. ">
 
 #Apply safety altitude to landing points only, or also to turnpoints. If only to landables, then arrival altitude over turnpoints will NOT consider any extra margin.
 #[Landables only] add extra altitude to landables only. This is the default.
@@ -283,35 +286,36 @@ De hoogte boven de grond dat het zweefvliegtuig moet hebben tijdens de final gli
 #The height above terrain that the glider must clear during final glide, and to pass obstacles. A good value is 50m
 
 @136
-De MacCready instelling die wordt gebruikt voor de bepaling van aankomst hoogte op vliegvelden. Een goede waarde is 0,5 ms.
+De MacCready instelling die wordt gebruikt voor de bepaling van aankomst hoogte op vliegvelden. Een goede waarde is 0.5 ms.
 
 #The MacCready setting used for determining arrival altitude at airfields. A good value is 0.5ms
 
 @137
 Als landbare keerpunten beschikbaar zijn, dan zal Beste Alternatief u waarschuwen wanneer u te laag komt te zitten om een veld te halen,
-en wanneer je beste alternatieve optie is het veranderd. Waarschuwingen zullen nooit onder de kritische gebeuren, om niet te storen.
+en wanneer je beste alternatieve optie is het veranderd. Waarschuwingen zullen nooit onder de kritische gebeuren, om u niet te storen.
 
 #If landable waypoints are available, BestAlternate will warn you when you are loosing any reachable landing place, 
 #and when your best alternate option is changing. Warnings will not happen below a critical altitude, in order not to disturb you.
 
 @138
-Dit bepaald of u het instellingen menu kan openen tijden de vlucht.
+Dit bepaald of u het instellingen menu kan openen tijdens de vlucht.
 
 #This determines whether the configuration settings dialog is accessible during flight. 
 
 @139
-Aan-of uitschakelen van het automatische wind-algoritme. Als het algoritme is uitgeschakeld, 
+Aan- of uitschakelen van het automatische wind-algoritme. Als het algoritme is uitgeschakeld, 
 dan is de piloot verantwoordelijk voor het vaststellen/schatten van de wind.
-[Cirkelen] Vereist slechts een GPS-bron.
-[ZigZag] vereist een intelligente vario met luchtsnelheid uitgang.
-[Beide] Gebruikt ZigZag en cirkelen.
-
+[Thermieken] Vereist slechts een GPS-bron.
+[ZigZag] Vereist een intelligente vario met luchtsnelheid uitgang.
+[Beide] Gebruikt ZigZag en Thermieken.
+[Extern] Gebruikt alleen berekende wind bij een extern instrument (zoals CAI, LX, ZANDER etc.)
 
 #This allows switching on or off the automatic wind algorithm.  When the algorithm is switched off, 
 #the pilot is responsible for setting the wind estimate.
 #[Circling] Requires only a GPS source
 #[ZigZag] requires an intelligent vario with airspeed output.
 #[Both] Use ZigZag and circling.
+#[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
 
 @140
 Dit is de GEMETEN LUCHTSNELHEID (IAS) in rechtlijnige vlucht die gevlogen dient te worden voordat er naar de Truewind berekening word gevraagd.
@@ -375,7 +379,7 @@ Het geschatte centrum van de lift wordt weergegeven in de thermiek modus.
 [Uit] Thermiek centrum locator uitgeschakeld.
 [Markeer centrum] Een thermiek markeerder wordt in het centrum van lift weergegeven.
 [Pan naar centrum] Een markeerder wordt weergegeven in het centrum van lift,
-  en wanneer er wordt gethermiekt, het centrum van het scherm wordt gefixeerd op het centrum van de lift.
+  en wanneer er wordt gethermiekt, dan zal het centrum van het scherm worden gefixeerd op het centrum van de lift.
 
 #The estimate of the center of lift is displayed when in circling mode.
 #[OFF] Thermal center locator disabled.
@@ -384,13 +388,13 @@ Het geschatte centrum van de lift wordt weergegeven in de thermiek modus.
 # and when circling, the display is panned to this lift center.
 
 @145
-Wanneer gelijktijdig met Thermal locator geactiveerd, zal een toon klinken tijdens het therieken en het tijd is om minder steil te draaien en een stukje rechtuit te vliegen om de thermiekbel te centreren.
+Wanneer deze functie gelijktijdig met de Thermal locator geactiveerd is, zal een toon klinken tijdens het thermieken en het tijd is om minder steil te draaien en een stukje rechtuit te vliegen om de thermiekbel te centreren.
 
 #When enabled and the Thermal Locator is also active, a sound tone will be played while circling when 
 #it is time to reduce the turn rate and go straight a bit.
 
 @146
-Deze optie zal automatisch de final glide modus activeren, als het vliegtuig boven final glide is voor het voorlaatste keerpunt te bereiken.
+Deze optie zal automatisch de final glide modus activeren, wanneer het vliegtuig boven final glide is voor het voorlaatste keerpunt te bereiken.
 Eerder de final glide modus activeren kan handmatig in het opdracht menu.
 
 #This option enables automatic forcing of final glide mode if the aircraft is above final glide prior to reaching the penultimate 
@@ -482,7 +486,7 @@ Deze waarde wordt opgeslagen in de registry!
 
 @160
 Als u een langzame verbinding met uw GPS apparaat  ervaart, of periodieke onderbrekingen, probeer dan de Polling modus.
-Standaard is Normal, voor de PC versie heeft deze instelling geen effect.
+Standaard is normaal, voor de PC versie heeft deze instelling geen effect.
  
 #If you experience connection slowdown with your GPS device, or intermittent breaks, try setting Polling mode.
 #Default is Normal, and for PC this choice has no effect. 
@@ -527,10 +531,10 @@ Minimum finish hoogte boven de grond. Selecteer 0 voor geen limiet.
 #Minimum height above ground while finishing the task.  Set to 0 for no limit.
 
 @168
-Wanneer ingeschakeld, dan zal de minimum finish hoogte groter moeten zijn dan 1000 M onder de start hoogte.
-
-#If enabled, this option requires the minimum height above ground for finish to be greater than 1000m below the start height.
-
+Wanneer ingeschakeld, dan zal het maximale hoogte verlies tussen de start en de finish van de opdracht niet meer dan 1000 meter bedragen voor opdrachten die groter dan 100 km zijn. Of 1% van de opdracht lengte als de opdracht kleiner dan 100 km is.
+Groter hoogte verlies kan lijden tot een ongeldige prestatie.
+#If enabled, this option requires maximum loss of height between the start and finish of a task to be not bigger than 1000m for tasks longer than 100km or 1% of the task distance otherwise.
+#Larger height loss may invalidate your soaring performance!
 @169
 Regels die gebruikt worden voor het optimaal berekenen van de OnLine Contest punten.
 [Sprint]: Conform de FAI IGC League regels. Tot 5 keerpunten inclusief start en finish, maximale tijdsduur 2,5 uur,
@@ -591,11 +595,10 @@ Het UTC offset veld stelt men instaat om de locale UTC tijd afwijking in te vull
 @178
 Wanneer aan, dan zal een korte klik op de map de details van het dichtsbijzijnde keerpunt weergeven.
 Wanneer uit, dan zal een korte klik in de bovenste helft van de map resulteren in het inzoomen, en in de onderste helft voor het uitzoomen.
-Standaard is uit in combinatie met de Virtual Keys UIT, om zo een snellere klik respons te krijgen.
-
+Standaard it uit.
 #If ON, short clicking on the map will show the nearest waypoint's details.
 #If OFF, short clicking in the upper half area of the map will zoom in, in the lower part will zoom out.
-#Default is OFF  with Virtual Keys OFF as well, to get a faster click response..
+#Default is off.
 
 # 179 REMOVED after v2.3
 @179
@@ -617,7 +620,7 @@ Als je GEEN actieve kaart gebruikt, dan is het beter niet de virtuele toetsen te
 #If you are NOT using active map, it is better not to enable virtual keys because zoom in in and out will require very short clicks.
 
 @180
-Bewegingen zijn in LK8000 altijd in geschakeld, u kan echter kiezen of u ze zoals de Iphone of omgekeerd  wilt hebben.
+Bewegingen zijn in LK8000 altijd ingeschakeld, u kan echter kiezen of u ze zoals de Iphone of omgekeerd  wilt hebben.
 Voorbeeld, een beweging van links naar rechts is een pagina naar links bij de Iphones en vele gelijke apparaten.
 Dezelfde beweging zal anders resulteren in een pagina naar rechts.
 De standaard instelling is omgekeerd, het omgekeerde van de Iphone. 
@@ -637,7 +640,7 @@ Deze functie kan erg handig zijn voor PG en delta piloten, standaard instelling 
 #This feature can be useful to PG and delta pilots, and by default it is OFF. 
 
 @182
-Dit bepaalt hoelang de menus op het scherm zullen verschijnen als de gebruiker op geen enkele knop drukt of interactie uitvoerd met de computer.
+Dit bepaalt hoelang de menu's op het scherm zullen verschijnen als de gebruiker op geen enkele knop drukt of interactie uitvoerd met de computer.
 
 #This determines how long menus will appear on screen if the user does not make any button presses or interacts with the computer.
 
@@ -647,12 +650,13 @@ Bepaald de locatie van het vliegtuig op het scherm in procenten vanaf de onderka
 #Defines the location of the glider drawn on the screen in percent from the bottom.
 
 @184
-Er zijn twee stijlen beschikbaar: WinPilot stijl (groen en paarse cirkels) of een zeer goed zichtbare stijl.
-
-#Two styles are available: WinPilot style (green and purple circles) or a high visibility style.
+Er zijn twee stijlen beschikbaar: vector of alternatief.
+Vector keerpunten laten altijd de baan richting, radio frequentie en andere informatie zien.
+#Two styles are available: Vector or Alternate. 
+#Vector waypoints will show runway orientation, radio, and other informations.
 
 @185
-Kies hoe de waardes voor de landbare keerpunten worden weergegeven. Met of zonder rand, met of zonder eenheden(meter, voet).
+Kies hoe de waardes voor de landbare keerpunten worden weergegeven. Met of zonder rand, met of zonder eenheden (meter, voet).
 
 #Choose how to display values for landable waypoints. With or without a box around, with or without units (meters, feet).
  
@@ -662,7 +666,7 @@ Laat de aankomsthoogte boven de veiligheidshoogte zien, of de benodigde efficië
 #Can show arrival altitude over safety, or required efficiency to arrive over safety.
 
 @187
-Wanneer ingeschakeld, dan zullen de onderste balk en de LK pagina's wit met zwarte letters zijn. De 'overlay' text kleur zal omgekeerd zij, dus als u zwart heeft geselecteerd dan zullen ze wit zijn. U kunt de kleruren omkeren met een aangepaste knop. Standaard instelling is uit.
+Wanneer ingeschakeld, dan zullen de onderste balk en de LK pagina's wit met zwarte letters zijn. De 'overlay' text kleur zal omgekeerd zijn, dus als u zwart heeft geselecteerd dan zullen ze wit zijn. U kunt de kleuren omkeren met een Custom Key. Standaard instelling is uit.
 
 #If ON, bottom bar and LK pages are white with black text. The overlay text color will be reversed, so if you have set black they will be white. You can reverse these colors with a custom key. DEFAULT IS OFF.
 
@@ -678,9 +682,9 @@ Kies de kleur van de kaart 'overlays'. Standaard is wit, welke automatisch zwart
 
 @190
 LK Pagina 2.3 laat alle dichtzijnde keerpunten zien. Hier kan je bepaalen wat wordt weergegeven.
-GEEN LANDABLES zal geen keerpunten die als vliegveld worden beschouwd niet weergeven, deze keerupunten zijn al onderdeel van pagina's 2.1 of 2.2. Dit is de standaardinstellingl
+GEEN LANDABLES zal geen keerpunten die als vliegveld worden beschouwd niet weergeven, deze keerupunten zijn al onderdeel van pagina's 2.1 of 2.2. Dit is de standaardinstelling
 ALLE KEERPUNTEN zal alle keerpunten inclusief landables laten zien die ook worden weergegeven in 2.1 en 2.2.
-DAT KEERPUNTEN zal alleen keerpunten laten zien die een T vlag hebbn. Dit is alleen nuttig voor mensen die DAT keerpunt bestanden gebruiken, omdat SeeYou CUP keerpunten allemaal zijn gemarkeerd met een T vlag.
+DAT KEERPUNTEN zal alleen keerpunten laten zien die een T vlag hebben. Dit is alleen nuttig voor mensen die DAT keerpunt bestanden gebruiken, omdat SeeYou CUP keerpunten allemaal zijn gemarkeerd met een T vlag.
 Dit filter heeft geen invloed op andere functies.
 
 #LK Page 2.3 is listing nearest Turnpoints. Here you define what to list.
@@ -690,8 +694,8 @@ Dit filter heeft geen invloed op andere functies.
 #This filter does not affect any other functionality. 
 
 @191
-Verberg eenheden zoals Km,  Ft etc. in de infoboxen en is LK8000 modus.
-Sommige lage resolutie schermen kunnen deze functie nodig zijn om wat ruimte te besparen, vooral 320x240 schermen!
+Verberg eenheden zoals Km,  Ft etc. in de infoboxen en in LK8000 modus.
+Sommige lage resolutie schermen kunnen deze functie nodig hebben om wat ruimte te besparen, vooral 320x240 schermen!
 
 #Do not display units like Km, Ft, etc. in the infoboxes and in LK8000 mode.
 #Some low-resolution screens may require this setting to save some space, expecially 320x240 ones!
@@ -704,32 +708,32 @@ LK speciafieke lettertypen kunnen niet aangepast worden.
 #LK specific fonts cannot be customized.
 
 @193
-Tekent 'overlay' waardes op de bewegende kaart.
-[Half overlay] laat bestemmings keerpunt, afstand en andere waardes aan de rechterkant (MC, vereiste efficiency en aankomst hoogte verschil voor zweefvliegtuigen)zien.
-[volledige overlay] laat ook de linker overlays(waardes en de klok) zien, wanneer ingeschakeld. Zie de handleiding.
+Tekent de 'overlay' waardes op de bewegende kaart.
+[Halve overlay] laat bestemmings keerpunt, afstand en andere waardes aan de rechterkant (MC, vereiste efficiency en aankomst hoogte verschil voor zweefvliegtuigen) zien.
+[Volledige overlay] laat ook de linker overlays(waardes en de klok) zien, wanneer ingeschakeld. Zie de handleiding.
 
 #Draw overlay values on moving map.
 #[Half mode] show destination waypoint and distance, and other values on the right (MC, requested efficiency and arrival altitude difference for gliders).
 #[Full mode] will add also left overlays values and the clock, if enabled. See the manual.
 
 @194
-Dit bepaalt of Glide terrein bereik wordt berekend en getekend als een lijn op de kaart:
-[UIT] Schakelt weergave uit.
+Dit bepaalt of gleibereik terrein wordt berekend en getekend als een lijn op de kaart:
+[UIT] Niet weer gegeven
 [Lijn] Tekent een stippellijn op het glijbereik.
-[Schaduw] Verduisterd het terrein buiten glijbereik.
-Wanneer glijbereik wordt weergegeven, dan zal er een ROOD KRUIS verschijnen als de huidige bestemming is bereikbaar in achtnemend het glijgetal, maar onbereikbaar is vanwege een obstakel.
-Dit obstakel is aangegeven met een boxed waarde, welke de benodigde hoogte weergeeft die nodig is om het opstakel te kunnen passeren.
+[Schaduw] Verduisterd het terrein buiten glijbereik (alleen gedurende de vlucht, niet op de grond).
+[...+VlgndKP] Laat ook het actieve bereik zien voor actieve keerpunten (KP), met de huigige verwachte aankomst hoogte bij dat keerpunt.
+Bij all keuzens behalve "UIT" zal er een rode "X" verschijnen wanneer de huidige bestemming bereikbaar is rekenend met het glijgetal, maar ombereikbaar is vanwege een obstakel.
+Het rode kruis is weergegeven op de hoogte die u nodig heeft om over het obstakel te kunnen vliegen.
 Deze hoogte heemt de  veiligheids marge die u heeft geconfigureerd in het veiligheids menu in acht.
-MERK OP: dat glijbereik SCHADUW alleen wordt weergegeven tijdens de vlucht. Opde grond wordt deze niet weergegeven.
 
 #This determines whether the the glide terrain range is calculated and drawn as a line on the map area:
-#[OFF] Disables display
+#[OFF] Not shown
 #[Line] Draws a dashed line at the glide range
-#[Shade] Shades terrain outside glide range
-#When glide terrain is shown, a RED CROSS will appear if the current destination is reachable in terms of glide ratio, but unreachable because of an obstacle. 
-#The obstacle is indicated together with a boxed value, which is the altitude you need to gain to pass the obstacle. 
+#[Shade] Shades terrain outside glide range (only during flight, not when on ground)
+#[...+NextWP] Also shows glide range from active waypoint (WP) given current predicted arrival altitude at WP
+#With any choice but "OFF", a red "X" will appear if the current destination is reachable in terms of glide ratio, but unreachable because of an obstacle.
+#By the red "X" is shown the altitude you must gain to clear the obstacle.
 #This altitude takes into account the terrain safety margin you have configured in safety menu.
-#NOTICE: Glide terrain SHADE is shown ONLY during flight. When on ground, it is NOT displayed.
 
 # 195 UNUSED SINCE 2.4
 @195
@@ -742,23 +746,23 @@ dan kan deze waarde verschillen met de weergegeven aankomsthoogte op de kaart, o
 #then this value may be different from overlay waypoint arrival, because this value is always calculated for current MC even below safetyMC. Landables will consider safety altitude as usual.
 
 @196
-De variometer balk verschijnt aan de linker kant van het scherm. Het is alleen nuttig als u een echte variometer heeft aangesloten of een snelle barometrische hoogte meting.
+De variometer balk verschijnt aan de linker kant van het scherm. Deze functie is alleen nuttig als u een echte variometer heeft aangesloten of een snelle barometrische hoogte meting.
 
 #The vario bar appears on the left of the screen. It is useful ONLY if you have a real vario connected, or a fast barometric altitude reading.
 
 @197
-Een blauw profiel van bellen zal verschijnen tijdens het draaien in de linker bovenhoek van het scherm.
+Een blauw profiel met de sterkte van thermiekbellen zal tijdens het thermieken verschijnen in de linker bovenhoek van het scherm.
 
 #A blue profile of thermals will appear during circling on the left upper part of the map. 
 
 @198
-Richtingslijn verschijnd niet op lage zoom niveau's.
+Richtingslijn verschijnt niet op lage zoom niveau's.
 
 #Track line does not appear on low zoom levels. 
 
 @199
-Deze functie kan het FLARM verkeer op de kaart weergeven.
-[Ingeschakeld] Geen Flarm objecten zullen worden weergegeven op het scherm
+Deze functie geeft het FLARM verkeer op de kaart weer.
+[Ingeschakeld] Er worden geen Flarm objecten weergegeven op het scherm
 [Uitgeschakeld] Flam objecten zullen op hun werkelijke positie op het schderm worden weergegeven.
 
 #This enables the display of FLARM traffic on the map window
@@ -766,22 +770,23 @@ Deze functie kan het FLARM verkeer op de kaart weergeven.
 #[Disabled] Flarm object will appear on the map in their real position
 
 @200
-Bepaalt hoe keerpunten worden gerond in de opdracht.
+Bepaalt hoe er naar het volgende keerpunt wordt geschakeld.
 [Handmatig] Gebruiker moet handmatig elk keerpunt accorderen.
-[Auto] Volgende keerpunt wordt automatisch geselecteerd als het vliegtuig het keerpunt heeft gerond(cylinder, sector of lijn) inclusief start.
+[Autom] Volgende keerpunt wordt automatisch geselecteerd als het vliegtuig het keerpunt heeft gerond(cylinder, sector of lijn) inclusief start.
 [Activeer] Gebruiker moet handmatig elk keerpunt voordat deze gerond wordt activeren(inclusief de start). Deze optie wordt AANGERADEN voor AAT opdrachten!
 [Activeer start] Gebruiker moet handmatig het start keerpunt activeren alvorens de opdracht begonnen kan worden. Alle andere keerpunten zullen automatisch worden gelecteerd.
-
+[Activeer KPs] De gebruiken moet handmatig elk keerpunt activeren, het start keerpunt wordt automatisch geactiveerd.
 #Determines how waypoints are advanced when flying the task.
 #[Manual] User must manually advance each waypoint.
 #[Auto] Waypoint automatically advances as soon as glider intercepts waypoint (cylinder,sector or line) including Start.
 #[Arm] User must manually Arm every waypoint before it will advance (including the Start). This option is RECOMMENDED for AAT tasks!
 #[Arm start] User must manually Arm the Start waypoint before the task will start. All other waypoints automatically advance.
+#[Arm TPs] User must manually Arm each turnpoint, but Start waypoint will be advanced automatically.
 
 @201
-Start typen:
-[Lijn]: De opdracht wordt gestart wanneer de startlijn word gepasseerd. De lengte van de lijn is in te stellin via de 'Start radius' functie.
-[Cilinder]: De opdracht wordt gesetart wanneer het vliegtuig de cilinder verlaat. De radius van de cilinder is in te stellen via de 'start radius' functie.
+Start types:
+[Lijn]: De opdracht wordt gestart wanneer de startlijn word gepasseerd. De lengte van de lijn is in te stellen via de 'Start radius' functie.
+[Cilinder]: De opdracht wordt gestart wanneer het vliegtuig de cilinder verlaat. De radius van de cilinder is in te stellen via de 'start radius' functie.
 [FAI Sector]: Definieert een 90 graden sector. De taak wordt gestart wanneer het zweefvliegtuig de sector doorkruist.
 De straal van de sector wordt ingesteld via de 'Start radius' functie.
 
@@ -814,8 +819,8 @@ Radius van het keerpunt observatie gebied voor non-AAT opdrachten.
 
 @205
 Type finish.
-[Lijn]: De opdracht wordt gefinished als de lijn word over gevlogen. De lengte van de lijn wordt ingesteld bij de 'Finish radius' functie.
-[Cilinder]: De opracht wordt gefinished als het vliegtuig de cilinder binnnvliegt. De radius van de cilinder wordt ingesteld bij de 'Funcite radius' functie.
+[Lijn]: De opdracht wordt gefinished als de lijn over word gevlogen. De lengte van de lijn wordt ingesteld bij de 'Finish radius' functie.
+[Cilinder]: De opracht wordt gefinished als het vliegtuig de cilinder binnenvliegt. De radius van de cilinder wordt ingesteld bij de 'Finish radius' functie.
 [FAI sector]: Definieert een 90 graden sector. De taak wordt gefinished wanneer het vliegtuig de sector doorkruist.
 De straal van de sector wordt ingesteld via de 'Finish radius' functie.
 
@@ -848,26 +853,26 @@ Selecteer uw PDA/PNA model om zo volledig mogelijk gebruikt te maken van de hard
 #Select your PDA/PNA model to make full use of its hardware capabilities, if available in the list.
 
 @210
-Deze optie, wanneer ingeschakeld stelt de klok van de computer gelijk aan de tijd van de GPS tijd wanneer deze gefixeerd is.
-Dit is alleen noodzakelijk als uw computer geen real-time klok met batterij backup of wanneer uw batterij van de computer frequent leeg is of een andere manier waardoor de tijd niet meer klopt.
+Deze optie, wanneer ingeschakeld stelt de klok van de computer gelijk aan de tijd van de GPS wanneer deze gefixeerd is.
+Dit is alleen noodzakelijk als uw computer geen real-time klok met batterij backup heeft of wanneer uw batterij van de computer frequent leeg is of een andere manier waardoor de tijd niet meer klopt.
 
 #This option, if enabled sets the clock of the computer to the GPS time once a fix is set.  
 #This is only necessary if your computer does not have a real-time clock with battery backup or your computer frequently runs out of battery power or otherwise loses time.
 
 @211
-Deze functie bepaald automatisch de achtergrond verlichting. Maximale helderheid en er geen timeout wanneer men het apparaat op een externe spanningsbron heeft aangesloten. Als men alleen voeding van de interne batterij krijgt, dan zal de achtergrond vijf minuten op maximaal blijfen en daarna zal het scherm op zwart gaan om energie te besparen. Dit werkt alleen voor HP31x, Funtrek en Royaltek apparaten.
+Automatische achtergrond verlichting. Maximale helderheid en er geen timeout wanneer men het apparaat op een externe voeding is aangesloten. Als men alleen voeding van de interne batterij krijgt, dan zal de achtergrond vijf minuten op de maximale helderheid blijfen en daarna zal het scherm op zwart gaan om energie te besparen. Dit werkt alleen voor HP31x, Funtrek en Royaltek apparaten.
 
 #Set automatic backlight for this device. Max brightness and no timeout if on external power, otherwise max brightneess #and a 5 minutes timeout on batteries. After timeout screen blanks to save energy. This is working for HP31x, Funtrek #and Royaltek devices.
 
 @212
-Werkt op enkele apparaten, zet het geluidsvolume automatisch op maximaal.
+Werkt op enkele apparaten. Het geluidsvolume wordt automatisch op maximaal gezet.
 
 #On some devices only, Set maximum sound volume automatically.
 
 @213
-Zorgt ervoor dat er meer pagina's zijn met meer technische opties die worden gebruikt door meer ervaren gebruikers. 
+Zorgt ervoor dat er meer pagina's zijn met meer technische opties die worden gebruikt door de meer ervaren gebruikers. 
 WAARSCHUWING: het veranderen van sommige opties kan resulteren in problemen met de software, omdat sommige niet compatibel zijn met de LK-interface.
-Na het inschakelen, her start het instelling menu om de nieuwe pagina's te zien.
+Na het inschakelen, herstart het instelling menu om de nieuwe pagina's te zien.
 
 #Enables more configuration pages with engineering options to be used by expert users only.
 #WARNING: changing some of these options will result in software problems, since some of them are NOT compatible with LK interface!
@@ -881,7 +886,7 @@ dit zoom niveau zal voor de rest van de vlucht gehandhaafd worden. Dit is de sta
 #and for the rest of the flight that setting will be kept. This is the default if you don't change it.
 
 @215
-Standaard kruis zoom niveua. Lagere waardes zullen resulteren in meer inzoomen, hogere waardes in uitzoomen.
+Standaard kruis zoom. Lagere waardes zullen resulteren in meer inzoomen, hogere waardes in uitzoomen.
 
 #Default cruise zoom. Lower values bring more zoom, higher values bring less zoom.
 
@@ -905,8 +910,8 @@ Voor race opdrachten met tenminste 1 tijd poort, stel de locale start tijd in. A
 #For task races with at least 1 time gate, set the start local time. If gate number is 0, this value will be ignored.
 
 @219
-Als u meer dan 1 tijdpoort, stel dan het tijdsinterval in minuten voor de anderen.
-Als u maar 1 tijdpoort heeft, die sluit op een zeker tijdsstip, stel het tijdsinterval dan in op dat verschil.
+Als u meer dan 1 tijdpoort wil, stel dan het tijdsinterval in minuten voor de anderen in.
+Als u maar 1 tijdpoort heeft, die op een bepaalde sluit, stel het tijdsinterval dan in op dat verschil.
 Als u maar 1 tijdpoort heeft, die geen sluitingstijd heeft, zet het tijdsinterval dan op op een grote waarde zoals 480 minuten.
 
 #If you have more than 1 time gate, set the interval time IN MINUTES for the others.
@@ -921,9 +926,9 @@ Start UIT (Binnenkomen): Wanneer de piloot de start sector of cilinder van buite
 #Start OUT (Enter): when the pilot is entering the start sector or cylinder from outside to inside.
  
 @221
-Dit is het minimale interval tussen twee toetsaanslagen die het systeem herkent.
-Stel deze waarde zo laag mogelijk in voor een zo snel mogelijk reagerende interface; als deze waarde te laag is, dan kan per ongeluk meerdere toetsaanslagen worden geregistreed.
-Het veranderen van deze waarde kan de aangepaste toesten beïnvloeden. PAS OP. 250ms wordt aanbevolen.
+Dit is het minimale interval tussen twee toetsaanslagen dat het systeem herkent.
+Stel deze waarde zo laag mogelijk in voor een zo snel mogelijk reagerende interface; als deze waarde te laag is, dan kunnen er perongeluk meerdere toetsaanslagen worden geregistreed.
+Het veranderen van deze waarde kan de virtuele toesten beïnvloeden. PAS OP. 250ms wordt aanbevolen.
 
 #This is the minimum interval between the system recognising key presses. 
 #Set this to a low value for a more responsive user interface; if it is too low, then accidental multiple key presses can occur. 
@@ -935,7 +940,7 @@ Het 'Input Events' bestand bepaald hoe het menu systeem en hoe LK8000 reageren o
 #The Input Events file defines the menu system and how LK8000 responds to button presses and events from external devices.
 
 @223
-Het taal bestand bepaald welke vertalingen LK8000 gebruikt.
+Selecteer een vertaling.
 Wanneer dit veld leeg gelaten word, dan gebruikt LK8000 Engels.
 
 #The language file defines translations for LK8000 text in English to
@@ -947,7 +952,7 @@ Het status bestand kan gebruikt worden om geluiden te difiniëren als bepaalde g
 #The status file can be used to define sounds to be played when certain events occur, and how long various status messages will appear on screen.
 
 @225
-wanneer ingeschakeld, dan zal de MacCready waarde rechts boven in de map onder het kompas worden weergegeven.
+Wanneer ingeschakeld, dan zal de MacCready waarde rechts boven in de map onder het kompas worden weergegeven.
 
 #If enabled, the MacCready value currently set is shown on the right top of the map, under the compass.
 
@@ -1028,8 +1033,8 @@ altijd moeten worden opgenomen of worden weggelaten.
 #or they can be always included or excluded.
 
 @237
-Werkt alleen in landschap en Volledige Overlay modus: localetijdsklok word weergegeven.
-In portret modus of Halve Overlay modus, wordt geen klok weergegeven.
+Werkt alleen in landschap en Volledige Overlay modus:  de locale tijd word weergegeven.
+In portret modus of Halve Overlay modus, wordt er geen klok weergegeven.
 
 #Working only in Landscape and Full Overlay mode: localtime clock is shown.
 #In portrait mode or Half overlay mode, no clock is displayed.
@@ -1046,16 +1051,16 @@ De grootte van de overlay-letters.
 @300
 Stel hier in hoeveel water ballast in het zweefvliegtuig wordt meegenomen.
 De totale volume van het ballast water wordt bepaald door middel van data in het polaire bestand van het vliegtuig.
-Druk op dump ballast om de funtie in te schakelen die bij houd hoeveel water er gedumpt wordt volgens de in het configuratie systeem bepaalde dump snelheid.
+Druk op dump ballast om de funtie in te schakelen die bijhoud hoeveel water er gedumpt wordt volgens de in het configuratie systeem bepaalde dump snelheid.
 
 #Specifies how much of the water ballast is loaded in the glider.
 #The total volume of the water ballast is defined in a glider polar data.
 #Press DUMP BALLAST button to toggle countdown of the ballast volume according to the dump rate specified in system configuration.
 
 @301
-De vleugelbelasting voor dit zweefvliegtuig, dit hangt af van uw gewicht, extra meegenomen apperatuur, etc. 
-U moet eerst de vleugelbelasting zonder de extra meegenomen water ballast invoeren.Deze waarde wordt niet opgeslagen, en wordt bij het opstarten gereset naar de vleugelbelasting die berekend word bij uw polaire.
-Normaliter, maar niet altijd, uw polaire neemt een gewicht van 70 kg voor de piloot in acht. Als u niet zeker bent, laat de standaard vleugelbelasting staan.
+Hiermee selecteerd u de vleugelbelasting van dit zweefvliegtuig, dit hangt af van uw gewicht, extra meegenomen apperatuur, etc. 
+U moet de vleugelbelasting zonder de extra meegenomen water ballast invoeren. Deze waarde wordt niet opgeslagen, en wordt bij het opstarten gereset naar de vleugelbelasting die berekend word bij uw polaire.
+Normaalgesproken, maar niet altijd, heeft de polaire al een gewicht van 70 kg voor de piloot in acht genomen. Als u niet zeker bent, laat de standaard vleugelbelasting staan.
 
 #Wing loading for this glider. It depends on your weight, on additional equipments installed, etc.
 #You should set Wing Loading with no ballast first.
@@ -1068,12 +1073,12 @@ Hoe schoon het zweefvliegtuig is. Selecteer 100% wanneer de vleugels schoon zijn
 #How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled.
 
 @303
-Alleen wanneer BAROMETRISCHE HOOGTE beschikbaar is! Wanneer geen barometrische hoogte beschikbaar is, dan zal deze instelling niks doen!
-Dit is de locale barometrische druk benodigdt voor de hoogtemeter calibratie. Sommige externe vario's selecteeren dit automatisch,
+Deze functie werkt alleen wanneer er barometrische hoogte beschikbaar is. Wanneer geen er barometrische hoogte beschikbaar is, dan zal deze instelling niks doen.
+Dit is de locale barometrische druk die benodigd is voor de calibratie van de hoogtemeter. Sommige externe vario's selecteren dit automatisch,
 bij andere vario's dient u dit zelft te doen. Het veranderen van de QNH instelling zal de barometrische hoogte veranderen. Als u de hoogte veranderd in het naast gelegen hokje, dan veranderd de QNH mee.
 Normaliter stelt u op de grond uw correcte hoogte in, en selecteert u een nieuwe QNH wanneer een AFIS radio u uw nieuwe QNH vertelt.
 Nogmaals, deze instelling geld alleen voor de barometrsche hoogte, als u geen barometrische hoogte heeft, dan zal de LK hier niks mee doen.
-De standaard druk voor de QNH is 1013,2 mB. Dit is de standaardlucht druk. Als u niet snapt waar dit over gaat, verander deze instelling dan niet.
+De standaard druk voor de QNH is 1013,2 mb. Dit is de standaardlucht druk. Als u niet helemaal begrijpt, verander deze instelling dan niet.
 
 #ONLY for BARO ALTITUDE when available! IF no baro altitude, this config will do nothing!
 #this is the Area pressure for barometric altimeter calibration.  Some external vario will set it automatically, 
@@ -1092,7 +1097,7 @@ Als u de QNE hoogte wilt selecteren, stel dan de QNH hoogte in op 1013,2 mB in.
 #If you want to set the QNE altitude, regulate the QNH to 1013.2 
 
 @305
-Selecteer de voorspelde grond temperatuur. Dit wordt gebruikt door de convectie schatter(temparatuur spoor pagina van het analyse venster)
+Selecteer de voorspelde grond temperatuur. Dit wordt gebruikt door de convectie schatting (de temperatuur verloop pagina van het analyse venster)
 
 #Set to forecast ground temperature.  Used by convection estimator (temperature trace page of Analysis dialog)
 
@@ -1102,13 +1107,13 @@ Selecteer de voorspelde grond temperatuur. Dit wordt gebruikt door de convectie 
 
 @400
 ############
-Custom knoppen worden verkregen door een bepaalde tijd op de onderste balk te klikken.
+Custom Keys worden verkregen door een bepaalde tijd op de onderste balk te klikken.
 Als u te kort klikt, dan zal er van LK8000 pagina worden veranderd.
-Bepaal hier hoe lang je tenminste moet klikken om de Custom knoppen te activeren in plaats van de normale wisseling van de pagina's.
+Bepaal hier hoe lang je tenminste moet klikken om de Custom Keys te activeren in plaats van de normale wisseling van de pagina's.
 Deze tijd wordt uitgedrukt in millisecondes, het varieert van apparaat tot apparaat dus je kan er zelf mee experimenteren wat de beste instelling is voor jouw apparaat.
 Standaard is 700ms, wat goed is voor de HP314 en andere apparaten.
-Als er geen functie is ingesteld voor de custom knoppen, dan wordt deze parameter niet gebruikt.
-De custom knoppen boven in het scherm gebruiken deze waarde niet omdat deze direct worden geselecteerd.
+Als er geen functie is ingesteld voor de Custom Keys, dan wordt deze parameter niet gebruikt.
+De Custom Keys boven in het scherm gebruiken deze waarde niet omdat deze direct worden geselecteerd.
 De knop in het midden van het scherm vereist ook een lange klik in het midden van het scherm.
 
 #Custom keys are obtained by clicking on the bottom bar for at least some time.
@@ -1128,7 +1133,7 @@ Lees de handleiding voor alle combinaties/functies. Standaard is multitarget.
 #See the manual for all combinations.  Default is Multitarget. 
 
 @402
-De custom knop rechts boven wordt verkregen door in de rechter bovenhoek van het scherm te klikken.
+De Custom Key rechts boven wordt verkregen door in de rechter bovenhoek van het scherm te klikken.
 Deze knop is NIET BESCHIKBAAR VOOR PARAGLIDERS of HANGGLIDERS, omdat dit gereserveerd is voor het resetten van de opdracht gedurende de tijp poorten 
 en voor UTM positie reportage in geval van een noodgeval (lees de handleiding voor paragliders).
 Zie de handleiding voor alle combinaties. Standaard staat niks ingesteld.
@@ -1140,7 +1145,7 @@ Zie de handleiding voor alle combinaties. Standaard staat niks ingesteld.
 
 
 @403
-De custom knop links wordt verkregen door in de hoek linksonder enige tijd te klikken.
+De Custom Key links wordt verkregen door in de hoek linksonder enige tijd te klikken.
 Als u korter klikt, dan wordt de LK8000 pagina gewisseld.
 Zie de handleiding voor alle combinaties/functies. Standaard staat niks ingesteld.
 
@@ -1149,7 +1154,7 @@ Zie de handleiding voor alle combinaties/functies. Standaard staat niks ingestel
 #See the manual for all combinations.  Default is no action.
 
 @404
-De custom knop in het middenonder wordt verkregen door gedurende enige tijd in het middenonderin te klikken.
+De Custom Key in het middenonder wordt verkregen door gedurende enige tijd in het middenonderin te klikken.
 Als u korter klikt, dan wordt de LK8000 pagina gewisseld.
 Hier bepaalt u welke actie moet worden uitgevoerd als u deze knop gebruikt.
 Lees de handleiding voor alle combinaties/functies. Standaard staat niks ingesteld.
@@ -1160,7 +1165,7 @@ Lees de handleiding voor alle combinaties/functies. Standaard staat niks ingeste
 #See the manual for all combinations.  Default is no action.
 
 @405
-De custom knop rechts wordt verkregen door rechts onderin het scherm te klikken.
+De Custom Key rechts wordt verkregen door rechts onderin het scherm te klikken.
 Als u korter klikt, dan wordt van sub-LK8000 pagina gewisseld.
 Lees de handleiding voor alle combinatie/functies. Standaard staat niks ingesteld.
 
@@ -1236,7 +1241,7 @@ Wanneer ingeschakeld, doelen binnen het AAT gebied zullen niet automatisch aange
 #
 
 @480
-Past de MC-waarde aan die gebruikt wordt in de calculator. Gebruik dit om het effect op de geschatte taak tijd als gevolg van veranderingen in de omstandigheden te bepalen. 
+Pas de MC-waarde aan die gebruikt wordt in de calculator. Gebruik dit om het effect op de geschatte taak tijd als gevolg van veranderingen in de omstandigheden te bepalen. 
 Deze waarde heeft geen effect op de instellingen van de vluchtcomputer wanneer het scherm gesloten wordt door middel van de annuleer knop.
 
 #Adjusts Mc value used in the calculator.  Use this to determine the effect on estimated task time due to changes in conditions.
@@ -1253,8 +1258,8 @@ Kleinere waardes verplaatsen het keerpunt om een kleinere afstand te creëren.
 
 @482
 Rendement van de kruisvlucht. 100 betekend een perfecte MacCready uitvoering, groter dan 100 betekend een betere uitvoering dan de perfecte MacCready.
-Dit kan komen door het vliegen onder wolkenstraatjes.
-Minder dan 100 is van toepassing als je behoorlijk van de koers afwijkt.
+Dit kan komen door het vliegen onder wolkenstraten.
+Minder dan 100 is van toepassing als u behoorlijk van koers afwijkt.
 Als u op de enter knop van dit scherm drukt, dan zal de kruisvlucht efficiency worden geschat aan de hand van de huidige vlucht geschiedenis met de geselecteerde MC waarde.
 
 #Efficiency of cruise.  100 indicates perfect MacCready performance, greater than 100 indicates better than MacCready performance is
@@ -1291,9 +1296,11 @@ Minimum hoogte boven grond niveau voor het finischen van de opdracht. Selecteer 
 #Minimum height above ground while finishing the task.  Set to 0 for no limit.
 
 @494
-Wanneer ingeschakeld geld de regel dat de mimimum hoogte boven grondniveau voor de finish groter moet zijn dan 1000m onder de start hoogte.
+Wanneer ingeschakeld geld de regel dat de maximaal verloren hoogte gemetend op de finishlijn ten opzichte van van het start punt niet meer dan 1000m bedraagd voor vluchten langer dan 100km, voor kortere vluchten geld 1% van de opdracht afstand.
+Als uw verloren hoogte meer bedraagd dan deze waarde, dan kan uw prestatie ongeldig zijn.
 
-#If enabled, this option requires the minimum height above ground for finish to be greater than 1000m below the start height.
+#If enabled, this option requires that the maximum loss of height meassured on the finish line is not bigger than 1000m for tasks longer than 100km or 1% of the task distance otherwise.
+#Larger height loss may invalidate your soaring performance!
 
 @495
 Activeer OLC opdrachten. Wanneer ingeschakeld, OLC stijl opdract start wordt automatisch gedetecteerd (laagste punt van de vlucht na de initiële stijgvlucht).
@@ -1380,14 +1387,15 @@ Bepaald hoe er naar het volgende keerpunt word geschakeld.
 [Handmatig] Volledig handmatig schakelen naar het volgende keerpunten.
 [Auto] Volledig automatisch schakelen naar het volgende keerpunt.
 [Vergrendel] Automatisch naar het volgende keerpunt gaan moet bij elk keerpunt worden bevestigd.
-[Vergrendel start] Automatisch naar het volgende keerpunt gaan moet bij de start worden bevestigd.
+[Activeer start] Automatisch naar het volgende keerpunt gaan moet bij de start worden bevestigd.
+[Activeer KPs] De gebruiken moet handmatig elk keerpunt activeren, het start keerpunt wordt automatisch geactiveerd.
 
 #Determines how waypoints are advanced through the task.
 #[Manual] Fully manual task waypoint advancing
 #[Auto] Fully automatic task waypoint advancing
 #[Arm] Automatic task waypoint advancing needs to be armed each waypoint
 #[Arm start] Automatic task waypoint advancing needs to be armed for the start
-
+[Arm TPs] User must manually Arm each turnpoint, but Start waypoint will be advanced automatically.
 @508
 Type van het AAT observatie gebied:
 [Cilinder]: Een cilinder vormig AAT gebied, de radius wordt bepaald door de 'Cirkel radius' eigenschappen.
@@ -1418,10 +1426,11 @@ Finish radius van het AAt observatie gebied voor het sector type.
 #Finish radial of the AAT observation area for sector type.
 
 @513
-Finishtype:
+Finish type:
 [Lijn]: De opdracht wordt gefinished als de lijn word gepasseerd. De lengte van de lijn is in te stellen via de 'Finish radius' functie.
 [Cilinder]: De opdracht wordt gefinished als de cilinder wordt binnen gevlogen. De radius van de cilinder is in te stellen via de 'Finish radius' functie.
-[FAI Sector]: Een 90 graden sector. De opdracht wordt gefinished als de sector lijnen worden gepasseerd. De radius van de sector is in te stellen via de 'Finish radius' functie.
+[FAI Sector]: Een 90 graden sector. De opdracht wordt gefinished als de sector lijnen worden gepasseerd. 
+De radius van de sector is in te stellen via de 'Finish radius' functie.
 
 #Type of the finish.
 #[Line]: The task is finished when the line is crossed.  The line length is set via the 'Finish radius' property.
@@ -1437,19 +1446,6 @@ Radius van de finish; cilinder,sector of de halve lengte van de finishlijn.
 #
 # TIME GATES
 #
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
 
 @530
 Een tijd poort is een gefixeerde locale tijd die opend wanneer de opdracht start, zoals voor boten.
@@ -1478,7 +1474,7 @@ Als u maar 1 poort heeft, en geen eind tijd, selecteer dan een interval naar een
 
 @533
 Start in (Uitgaand): wanneer de piloot de sector verlaat of in een cilinder van binnen naar buiten gaat.
-Start uit (ingaand): wanneer de piloot de sector binnen komt, of in een cilinder van buiten naar binnen gaat.
+Start uit (Ingaand): wanneer de piloot de sector binnen komt, of in een cilinder van buiten naar binnen gaat.
 
 #Start IN (Exit): when the pilot leaves the sector or cylinder from inside to outside.
 #Start OUT (Enter): when the pilot is entering the start sector or cylinder from outside to inside.
@@ -1517,20 +1513,21 @@ Handmatige aanpassing van de windrichting.
 #Manual adjustment of wind direction.
 
 @612
-Deze functie staat u in staat om het automatisch algoritme voor de wind aan of uit te zetten.
+Deze functie stelt u in staat om het automatisch algoritme voor het berekenen van de wind aan of uit te zetten.
 Wanneer het algoritme is uitgeschakeld, dan is de piloot verantwoordelijk voor het schatten van de wind.
 [Cirkelen] Er is voor dit algoritme alleen een GPS bron nodig.
 [ZigZag] Heeft ook een intelligente vario met snelheid uitgang nodig.
 [Beide] Gebruikt Cirkelen en ZigZag
-
+[Extern] Gebruik alleen de wind zoals berekend door een extern instrument (zoals CAI, LX, ZANDER etc.)
 #This allows switching on or off the automatic wind algorithm.  
 #When the algorithm is switched off, the pilot is responsible for setting the wind estimate.
 #[Circling] Requires only a GPS source
 #[ZigZag] requires an intelligent vario with airspeed output.
 #[Both] Use ZigZag and circling.
+[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
 
 @613
-Bepaald of het door u gevlogen 'slakken'spoor met de wind mee beweegd wanneer in cirkelen modus.
+Bepaald of het door u gevlogen spoor met de wind mee beweegt wanneer in cirkelen modus.
 
 #Determines whether the snail trail is drifted with the wind when displayed in circling mode.
 
@@ -1802,14 +1799,14 @@ Huidige verticale snelheid, verkregen van de GPS of een intelligente vario total
 #Instantaneous vertical speed, as reported by the GPS, or the intelligent vario total energy vario value if connected to one.
 
 @825
-[Wind speed]
+[Wind snelheid]
 De windschelheid door LK8000 geschat met Truewind of tijdens het draaien. 
 
 #[Wind Speed]
 #Wind speed estimated by LK8000 with TrueWind or while circling . 
 
 @826
-[Wind Bearing]
+[Wind richting]
 De windrichting zoals geschat door LK8000, met Truewind of tijdens het draaien.
 
 #[Wind Bearing]
@@ -2129,7 +2126,7 @@ De benodigde efficientie om op de aankomst hoogte boven het keerpunt aan te kome
 
 @867
 @868
-[Alternate efficiency]
+[Alternate efficienctie]
 Het glijgetal die nodig is om op de aankomsthoogte boven het keerpunt aan te komen. Deze is niet gecompenseerd voor de totale energy.
 Boven de 200 word niks weer gegeven, tussen de 100 en 200 wordt een geheel getal weer gegeven en tussen de 1 en 99 een decimaal getal.
 
@@ -2156,9 +2153,9 @@ Het veranderen van de QFE heeft geen effect op de QNH hoogtes. QFE word niet voo
 #Changing QFE does not affect QNH altitudes. QFE is NOT used for calculations, it is only as a reference for the pilot.
 
 @871
-[Average efficienty]
+[Gemiddelde efficientie]
 
-(Gemidelde efficientie) De afstand die wordt gevlogen in een vooraf geconfigureerde tijd, gedeeld door het hoogte verlies sinds dat moment.
+De afstand die wordt gevlogen in een vooraf geconfigureerde tijd, gedeeld door het hoogte verlies sinds dat moment.
 Negatieve waardes worden weer gegeven als oo (oneindig) en betekenen een klimmend stijgvlucht (hoogtewinst). Boven een glijgetal van 200 word deze waarde ook weergegeven als oo.
 U kunt deze tijd instellen in het speciale configuratie menu.
 Geadviseerde waardes voor deze configuratie zijn 60, 90 of 120: lagere waardes zullen te dicht bij de huidige effcientie liggen, en hogere waardes zullen al worden weergegeven door de effcientie sinds de laatste thermiekbel.
@@ -2192,7 +2189,7 @@ Wanneer er geen barometrische hoogte beschikbaar is, dan zal de GPS hoogte worde
 In dit geval, moet het voor QNH worden aangepast, door de correcte QNH in de basis instellingen in te voeren.
 
 Er is geen temperatuurs correctie, dus mogelijk kan de FL inaccuraat zijn.
-Gebruik dit als een benaderde indicatie.
+Gebruik dit als een benadering.
 
 #[Flight Level]
 #Altitude Flight Level indicator. FL is expressed in hundreds of feets. 
@@ -2513,7 +2510,7 @@ Deze waarde wordt gereset wanneer de vlucht start.
 @923
 [Max gewonnen hoogte]
 Deze hoogte wordt berekend met de minimale hoogte NA de start van de vrije vlucht.
-Deze waarde wordt normaliter gebruikt voor badges.
+Deze waarde wordt normaliter gebruikt voor brevetten.
 
 #[Max Height Gained]
 #This height is calculated using the min height detected AFTER the start of free flight.
@@ -2540,13 +2537,13 @@ In dit geval is de waarde alleen geschat tegen de huidige wind instelling.
 #
 
 @1200
-[Airspace area filling]
+[Luchtruim oppervlakte vulling]
 Het luchtruim kan worden omlijnd, opgevuld met een bepaald patroon of met een semi-transparante kleur worden opgevuld.
-[Outlines only] Er zullen alleen lijnen worden getekend bij de grenzen van het luchtruim.
-[Pattern] het luchtruim zal worden opgevuld met een geselecteerd patroon en een geselecteerde kleur.
-[Pattern, borders only] De grens van het luchtruim oppervlak wordt opgevuld met een geselecteerd patroon van een geselecteerde kleur. (Waarschuwing, zie beneden)
-[Semi-Transperent] Het luchtruim oppervlak wordt opgevuld met een geselecteerde kleur (de transparantheid kan worden aangepast in de functie 'Opacity')
-[Semi-Transparent, borders only] De grens van het luchtruim oppervlak wordt opgevuld met een bepaalde semi-transparante kleur (De doorzichtigheid van de kleur kan worden aangepast in de functie 'Opacity') (Waarschuwing, zie beneden)
+[Alleen omtrek] Er zullen alleen lijnen worden getekend bij de grenzen van het luchtruim.
+[Patroon] het luchtruim zal worden opgevuld met een geselecteerd patroon en een geselecteerde kleur.
+[Patroon, alleen omtrek] De grens van het luchtruim oppervlak wordt opgevuld met een geselecteerd patroon van een geselecteerde kleur. (Waarschuwing, zie beneden)
+[Semi-Transperant] Het luchtruim oppervlak wordt opgevuld met een geselecteerde kleur (de transparantheid kan worden aangepast in de functie 'Opacity')
+[Semi-Transparant, alleen omtrek] De grens van het luchtruim oppervlak wordt opgevuld met een bepaalde semi-transparante kleur (De doorzichtigheid van de kleur kan worden aangepast in de functie 'Opacity') (Waarschuwing, zie beneden)
 Een transparante opvulling kan op sommige apparaten mogelijk niet beschikbaar zijn.
 Het tekenen van alleen luchtruim grenzen kan het apparaat vertragen wanneer er wordt gewerkt met een hoge resolutie of een langzame processor. Wees voorzichtig bij gebruik!
 
@@ -2561,17 +2558,17 @@ Het tekenen van alleen luchtruim grenzen kan het apparaat vertragen wanneer er w
 #Drawing airspace borders only can slow down devices with high screen resolution or slow processor. Use with caution!
 
 @1201
-[Opacity of semi-transparent airspace]
+[Opaciteit van semi-transparant luchtruim]
 Bepaalt hoe transparant (0%) / ondoorzichtig (100%) het luchtruim oppervlak is met een bepaalde kleur.
 
 #[Opacity of semi-transparent airspace]
 #Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
 
 @1202
-[Bottom Bar Opacity]
+[Doorzichtigheid informatie balk]
 Bepaalt hoe transparant (0%) / ondoorzichtig (100%) de informatiebalk aan de onderkant van de kaart is.
 Normaal is de informatiebalk zwart en de tekst wit. Dit kan omgedraait worden zodat de informatiebalk wit is en de tekst zwart.
-Wanneer de transparantie lager dan 30% is, dan is de informatiebalk zeer transparant, de kleuren worden dan automatisch omgedraait.(Witte balk, zwarte letters) 
+Wanneer de transparantie lager dan 30% is, dan is de informatiebalk zeer transparant, de kleuren worden dan automatisch omgedraait. (Witte balk, zwarte letters) 
 Sommigge combinaties van transparantie en omgedraaide kleuren kunnen mogelijk niet passend zijn voor navigatie, maar er zijn
 genoeg combinaties om uit te kiezen.
 Wanneer u 0% of 100% gebruikt, (transparant of ondoorzichtig), dan zal de software sneller zijn.
@@ -2593,10 +2590,9 @@ en zal de informatiebalk altijd volledig zwart of wit zijn.
 #and the bottom bar will be always full black or full white.
 
 @1203
-[Font Smoothing]
-Font smoothing maakt karakters duidelijker.
-[None] Font smoothing wordt uitgeschakeld
-[Normal] gebruikt de standaard kwaliteit
+[Font Smoothing] Font smoothing maakt karakters duidelijker.
+[Geen] Font smoothing wordt uitgeschakeld
+[Normaal] gebruikt de standaard kwaliteit
 [Anti Aliasing] normale kwaliteit
 [ClaerType] geadvanceerde kwaliteit
 Let er op dat op sommige apparaten zoals de oude 3850 Anti Aliasing niet zal werken.
@@ -2677,7 +2673,7 @@ Deze lijst bevat een selectie vliegtuigen en vleugels van verschillende prestati
 #This contains a selection of aircrafts and wings of different performance classes.
 
 @1209
-[Airspace warning message repeat time]
+[Bericht herhaal tijd]
 Dit is de tijd wanneer een luchtruim waarschuwingsbericht wordt herhaald wanneer deze niet erkend word.
 Als u in een verboden luchtruim vliegt zonder het erkennen van dit waarschuwingsbericht, dan zal na deze verstreken tijd de waarschuwing opnieuw verschijnen.
 
@@ -2686,7 +2682,7 @@ Als u in een verboden luchtruim vliegt zonder het erkennen van dit waarschuwings
 #If you flying in a forbidden airspace without acknowledging the warning message, then after this time elapses warning message pops up again.
 
 @1210
-[Airspace vertical distance margin]
+[Verticale luchtruim afstandsmarge]
 Als uw verticale afstand tot de onderkant of bovenkant van een luchtruim onder deze limiet komt, dan verschijnt er een geel waarschuwings bericht.
 Dit heeft ook effect of de luchtruim waarschuwings icoontjes op de kaart.
 Als uw verticale hoogte (hoogte verschil) tot de onderkant of bovenkant van een luchtruimt onder deze limiet komt,
@@ -2699,17 +2695,17 @@ dan zal een waarschuwingsicoon direct boven het vliegtuig icoontje verschijnen o
 #then the warning icon is displayed directly above the glider symbol to warn you. 
 
 @1211
-[Airspace warnig dialog timeout]
-Als deze tijd vertreken is, dan sluit het luchtruim waarschuwings scherm automatisch zonder dat u op een knop heeft gedrukt.
-In het luchtruim waarschuwingsscherm, kunt u de aftellende teller op de sluit knop zien, deze geeft de tijd aan hoe lang het duurt voordat dit scherm sluit.
+[Luchtruim waarschuwingsvenster timeout]
+Als deze tijd vertreken is, dan sluit het luchtruim waarschuwings venster automatisch zonder dat u op een knop heeft gedrukt.
+In het luchtruim waarschuwingsvenster, kunt u de aftellende teller op de sluit knop zien, deze geeft de tijd aan hoe lang het duurt voordat dit scherm sluit.
 
 #[Airspace warning dialog timeout]
 #If this time elapses, airspace warning dialog closes automatically, without pressing the close button.
 #In airspace warning dialog, you can see a decrementing counter on the close button caption showing the remaining time to close.
 
 @1212
-[Airspace warning map labels]
-Wanneer deze functie is ingeschakeld, dan zullen er luchtruim waarschuwingslabels op de kaart worden weergegeven om de naam en de verticale afstand weer te geven.
+[Luchtruim waarschuwing labels op de kaart]
+Wanneer deze functie is ingeschakeld, dan zullen er luchtruim waarschuwingslabels op de kaart worden weergegeven. Deze labels geven de naam en de verticale afstand tot het luchtruim weer.
 
 #[Airspace warning map labels]
 #If this is on, airspace warning labels shows on the map indicating airspace name and vertical distance.
@@ -2729,7 +2725,7 @@ Nadat u uw keerpunt heeft bereikt zal de vorige kruis zoom worden hersteld. Wann
 
 
 @1220
-[Bottom Bar configuration]
+[Bottom Bar configuratie]
 Schakel elke verschillende informatiebalk in of uit tijdens het wisselen van navboxes.
 Als alle informatiebalken zijn uitgeschakeld, dan zal NAV1 altijd automaisch worden weergegeven.
 Gedurende de thermiek modus zal de THR 0 informatiebalk altijd zichtbaarzijn.
@@ -2759,9 +2755,9 @@ Als u de zweefvlieg modus gebruikt, dan kunt u 1.5 uitschakelen omdat de bereken
 @1250
 Bepaald de filtering van het luchtruim voor weergave en waarschuwingen. De luchtruimfilterknop stelt men in staat om de weergave en waarschuwingen onafhankelijk van elk luchtruim klasse aan te passen.
 [Alles aan] Alles wordt weergegeven.
-[Clip] Alleen het luchtruim beneden de cliphoogte worden weergegeven.
+[Doorsnede] Alleen het luchtruim beneden de cliphoogte worden weergegeven.
 [Auto] Alle luchtruim binnen een bepaalde hoogtemarge rond het zweefvliegtuig worden weergegeven.
-[Alles beneden] Alle luchtruim onder het zweefvliegtuig en met een marge boven het toestel worden weergegeven.
+[Alles onder] Alle luchtruim onder het zweefvliegtuig en met een marge boven het toestel worden weergegeven.
 
 #Controls filtering of airspace for display and warnings.  The airspace filter button also allows filtering of #display and warnings independently for each airspace class.
 #[All on] All is displayed.
@@ -2786,14 +2782,14 @@ Standaard zal een luchtruim na 15 minuten weer actief worden voor waarschuwingen
 #By default, after 15 minutes airspaces will be back "armed" for warnings.
 
 @1253
-[Alarm Max Altitude] Elke keer gaat een alarm af als u deze hoogte bereikt.
+[Alarm Maximum Hoogte] Elke keer gaat een alarm af als u deze hoogte bereikt.
 Het alarm zal niet worden herhaald binnende komende zestig seconden.
 Na 1 minuut, als de hoogte lager is dan de maximum hoogte en daarna word deze hoogte weer bereikt, dan gaat het alarm opnieuw af.
 Als u het alarm niet wil gebruiken, selecteer dan nul.
-De hoogte voor het alarm is deze die gekozn is in configuratie menu 5 'gebruikt baro hoogte'.
+De hoogte voor het alarm is deze die gekozen is in configuratie menu 5 'gebruikt baro hoogte'.
 Als u twee keer voor dezelfde hoogte een alarm heeft ingesteld, dan heeft dat geen extra effect.
-Zweefvliegers moeten opletten dat deze hoogte niet onder de veiligheidshoogte light. Omdat dit meestal een cruciale fase van de vlucht is.
-Een visueel alarm bericht verdwijnt automatisch na twaalf seconden..
+Zweefvliegers moeten opletten dat deze hoogte niet onder de veiligheidshoogte ligt. Omdat dit meestal een cruciale fase van de vlucht is.
+Een visueel alarm bericht verdwijnt automatisch na twaalf seconden.
 Elk alarm heeft een aan te passen geluid dat kan in de _System _Sounds map kan worden aangepast.
 Genaamd: LK_ALARM_ALTx.WAV
 Standaard is 0 (geen alarm).
@@ -2813,7 +2809,7 @@ Standaard is 0 (geen alarm).
 
 # ex 195
 @1254
-Glide bar can relatief zijn tot de opdracht finish, tot het volgende keerpunt, of worden uitgeschakeld. Deze balk wordt aan de linker kant van het scherm getekend.
+Glide bar kan relatief zijn tot de opdracht finish, tot het volgende keerpunt, of worden uitgeschakeld. Deze balk wordt aan de linker kant van het scherm getekend.
 Wanneer het volgende keerpunt wordt gebruikt of een opdracht keerpunt met alleen een finishpunt, dan is deze waarde gelijk aan degene die op de overlays word weergegeven.
 
 #Glide bar can be relative to Task Finish or to the next turnpoint, or it can be disabled. This bar is drawn on the left side of the screen.
@@ -2821,22 +2817,93 @@ Wanneer het volgende keerpunt wordt gebruikt of een opdracht keerpunt met alleen
 
 @1255
 Automatische MacCready instelling, kan in of uitgeschakeld worden. Dit kan tevens tijdens de vlucht gebeuren.
-Dit is de standaard instelling
+Aan is de standaard instelling
 
 #Automatic Mac Cready setting, can be on or off. It can also be enabled and disabled during flight.
 #This is the default value. 
 
 
 @1256
-[Total Energy] When TotalEnergy is in use, LK will calculate the height you would gain by pulling up the aircraft at the current speed, up until the speed becomes the optimal for best glide. 
-For example if you are flying at 200kmh with a discus with no ballast, the speed energy would be calculated as if you would pull up and slow down to 100kmh: you would certainly climb to a better altitude of course.
-This speed height will be added to all arrival altitudes. By default this feature is DISABLED, for safety reasons.
-If you are in doubt, leave this setting OFF.
+[Totale Energie] Wanneer TotaleEnergy wordt gebruikt, dan zal LK8000 de hoogte berekenen die men zou verkrijgen wanneer alle snelheid boven de snelheid van het optimale glijgetal wordt omgezet in hoogte.
+Bijvoorbeeld, wanneer men 200 km/h vliegt met een discus zonder ballast, dan zal de kinetische energie worden berekend alsof u zou optrekken en zou vertragen tot 100 km/h: u zou zeker naar een betere hoogte klimmen natuurlijk.
+Dit is de snelheid hoogte die toegevoegd wordt bij alle aankomst hoogtes. Standaard staat deze functie UITGESCHAKELD, in verband met veiligheids redenen.
+Als u niet zeker weet wat voor gevolgen deze functie heeft, laat deze dan uit staan.
+
+#[Total Energy] When TotalEnergy is in use, LK will calculate the height you would gain by pulling up the aircraft at the current speed, up until the speed becomes the optimal for best glide. 
+#For example if you are flying at 200kmh with a discus with no ballast, the speed energy would be calculated as if you would pull up and slow down to 100kmh: you would certainly climb to a better altitude of course.
+#This speed height will be added to all arrival altitudes. By default this feature is DISABLED, for safety reasons.
+#If you are in doubt, leave this setting OFF.
 
 @1257
-[Efficiency]
-How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
-This is the default value used by Efficiency in Basic Settings menu, loaded on startup. You should normally leave this value to 100% here.
+[Efficientie]
+Hiermee selecteerd u hoe schoon het vliegtuig is. Selecteer 100% voor schoon, selecteer lagere nummers wanneer de vleugels nat of vies zijn. 50% betekend dat de daalsnelheid verdubbeld is.
+Dit is de standaar waarde gebruikt door de Efficientie in het basis instellings menu, dat tijdens het opstarten word geladen. Normaal gesproken moet u deze waarde op 100% laten staan.
+
+#[Efficiency]
+#How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
+#This is the default value used by Efficiency in Basic Settings menu, loaded on startup. You should normally leave this value to 100% here.
+
+@1258
+[Live tracker log interval in seconden]
+Selecteer deze waarde als (>0),  wanneer u uw positie data naar de Leonardo live tracker service via het internet wil versturen. (http://www.livetrack24.com)
+Dit vereist een GPRS/HSDPA data-abbonement, en een actieve TCP/IP internet connectie naar de tracking server. LK gebruikt de gegeven server, gebruikersnaam en
+wachtwoord om in te loggen op de server. Het vliegtuig type wordt automatisch mee verstuurd. Als u dit niet wilt gebruiken, zet dan de standaard waarde van 0 in, wat betekend dat deze functie uit staat.
+
+#[Live tracker log interval in seconds]
+#Set this on (>0), if you want to enable sending position data to Leonardo live tracker services over the internet. (http://www.livetrack24.com)
+#This requires a GPRS/HSDPA data plan, and an active TCP/IP internet connection to the tracking server. LK uses the given server, user name and
+#password to login to the server. Aircraft type submitted as well. If unsure, set the default value of 0 which means off.
+
+@1259
+[Aangepast Menu]
+#[Custom Menu]
+
+@1260
+[Snelle bewegingen]
+Alleen voor de paraglider en hangglider modus: schakelt de snelle beweging functie in/uit.
+Standaard zal de functie aan staan. Snelle beweging stelt de piloot in staat om 
+op de rechter of linker dichtsbijzijnde/info pagina te klikken om te schakelen naar de volgende dan wel vorige pagina.
+Wanneer tijdens de vlucht handschoenen worden gebruikt, dan zal het nodig zijn om deze optie uit te schakelen.
+
+#[Quick gestures]
+#Only for paragliders and hangdliers mode: enable/disable quick gestures.
+#By default, quick gestures are enabled. Quick gestures allow the pilot to click
+#on right or left nearest/info pages to switch to next/previous like with gestures.
+#Using gloves during the flight will require this option be disabled.
+
+@1261
+[Takeoff veiligheid]
+Gedurende de takeoff fase zal dit alarm afgaan wanneer de gekozen veiligheids hoogte boven de grond (QFE) is bereikt.
+Voor zweefvliegtuigen is dit normaal gesproken de hoogte wanneer het mogelijk is een 180 graden bocht te maken en terug te keren naar het vliegveld, wanneer de sleep wordt afgebroken.
+Selecteer 0 voor deze waarde om het alarm uit te schakelen. 
+Dit alarm zal alleen opnieuw geactiveerd worden na de landing.
+
+#[Takeoff safety]
+#During the takeoff phase, this alarm will sound when the chosen safety altitude over ground (QFE) is reached once.
+#For gliders this is normally the altitude above which it is possible to turn 180 and go back to the airfield, in case towing is aborted.
+#Set this value to 0 to disable the alarm. 
+#This alarm will be armed again only after landing.
+
+@1262
+[Multimap opties]
+#[Multimap options]
+
+@1263
+[Bottom Bar AUTO]
+Wanneer ingeschakeld, dan wordt de TRM0 informatie balk automatisch geactiveerd gedurende het thermieken,
+en gedeactiveerd wanneer de thermiekbel wordt verlaten, ook als de TRM0 balk is uitgeschakeld van rotatie.
+
+#[Bottom Bar AUTO]
+#If enabled, TRM0 bottom bar will be automatically activated while thermalling,
+#and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
+
+@1264
+[Groep Erkenning]
+Erkenning van een luchtruim is geldig voor alle  luchtruimen me dezelfde naam en dezelfde klasse.
+
+#[Group Ack]
+#Acknowledgement of one airspace is valid for all airspaces with the same name and the same class.
+
 
 @9999
 Geen help beschikbaar
