@@ -20,10 +20,6 @@ int FindNearestWayPoint(double X, double Y, double MaxRange,
   int NearestIndex = -1;
   double NearestDistance, Dist;
 
-  if(NumberOfWayPoints <= NUMRESWP ) // BUGFIX 100227
-    {
-      return -1;
-    }
   NearestDistance = MaxRange;
 
     for(i=RESWP_FIRST_MARKER;i<NumberOfWayPoints;i++) {
@@ -39,6 +35,10 @@ int FindNearestWayPoint(double X, double Y, double MaxRange,
         NearestDistance = Dist;
       }
     }
+   if(NearestIndex == -1) {
+       return -1;
+   }
+   
 	// now look at TAKEOFF... TODO check all virtuals too
 	// Takeoff can be normally very closed to actual airport, but not the same point!
 	DistanceBearing(Y,X, WayPointList[RESWP_TAKEOFF].Latitude, WayPointList[RESWP_TAKEOFF].Longitude, &Dist, NULL);
