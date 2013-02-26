@@ -1,0 +1,11 @@
+
+LK8000 version 4.0B  FIXES
+
+
+GLITCHES
+
+Nearest Waypoint search did not work if we had only markers, and no waypoint files
+
+TRI page not resetted correctly after change of screen resolution.
+
+
