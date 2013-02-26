@@ -68,6 +68,8 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   if (DoInit[MDI_DRAWTRI]) {
 
   top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
+  Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
+  Start.x = (rc.right - rc.left)/2;
   radius = NIBLSCALE(65);
   planesize = radius-NIBLSCALE(10);
   planeradius = NIBLSCALE(6);
