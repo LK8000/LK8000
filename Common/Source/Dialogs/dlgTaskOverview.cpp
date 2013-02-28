@@ -77,6 +77,10 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
   int n = UpLimit - LowLimit;
   TCHAR sTmp[120];
+  TCHAR wpName[120];
+  TCHAR landableStr[5] = TEXT(" [X]");
+  // LKTOKEN _@M1238_ "L"
+  landableStr[2] = gettext(TEXT("_@M1238_"))[0];
   LockTaskData();
 
   int w0 = Sender->GetWidth()-1;
@@ -90,19 +94,20 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
     int i = LowLimit + DrawListIndex;
 
     if (Task[i].Index>=0) {
+      _stprintf(wpName, TEXT("%s%s"),
+                WayPointList[Task[i].Index].Name,
+                (WayPointList[Task[i].Index].Flags & LANDPOINT) ? landableStr : TEXT(""));
+      
       if (AATEnabled && ValidTaskPoint(i+1) && (i>0)) {
         if (Task[i].AATType==0) {
           _stprintf(sTmp, TEXT("%s %.1f"), 
-                    WayPointList[Task[i].Index].Name,
-                    Task[i].AATCircleRadius*DISTANCEMODIFY);
+                    wpName, Task[i].AATCircleRadius*DISTANCEMODIFY);
         } else {
           _stprintf(sTmp, TEXT("%s %.1f"), 
-                    WayPointList[Task[i].Index].Name,
-                    Task[i].AATSectorRadius*DISTANCEMODIFY);
+                    wpName, Task[i].AATSectorRadius*DISTANCEMODIFY);
         }
       } else {
-        _stprintf(sTmp, TEXT("%s"), 
-                  WayPointList[Task[i].Index].Name);
+        _stprintf(sTmp, TEXT("%s"), wpName);
       }
 
       ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale,
