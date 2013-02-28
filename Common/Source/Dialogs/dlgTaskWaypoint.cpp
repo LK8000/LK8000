@@ -43,8 +43,14 @@ static void UpdateCaption(void) {
       _stprintf(title, gettext(TEXT("_@M299_")));
       break;
     };
-    _stprintf(sTmp, TEXT("%s: %s"), title,
-              WayPointList[Task[twItemIndex].Index].Name);
+
+    TCHAR landableStr[5] = TEXT(" [X]");
+    // LKTOKEN _@M1238_ "L"
+    landableStr[2] = gettext(TEXT("_@M1238_"))[0];
+    
+    _stprintf(sTmp, TEXT("%s: %s%s"), title,
+              WayPointList[Task[twItemIndex].Index].Name,
+              (WayPointList[Task[twItemIndex].Index].Flags & LANDPOINT) ? landableStr : TEXT(""));
     wf->SetCaption(sTmp);
   } else {
 	// LKTOKEN  _@M9_ = "(invalid)" 
