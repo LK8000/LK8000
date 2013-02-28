@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "RGB.h"
+#include "NavFunctions.h"
 
 
 
@@ -148,7 +149,31 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0
         TargetZoomDistance = max(2e3, (double)FinishRadius*2);
       } else if (AATEnabled) {
         if (Task[target_point].AATType == SECTOR) {
-          TargetZoomDistance = max(2e3, Task[target_point].AATSectorRadius*2);
+          const double start = Task[target_point].AATStartRadial;
+          const double finish = Task[target_point].AATFinishRadial;
+          const double xs = fastsine(start);
+          const double ys = fastcosine(start);
+          const double xf = fastsine(finish);
+          const double yf = fastcosine(finish);
+          
+          // calculate rectangle area taken by the sector
+          const double top    = AngleInRange(start, finish, 0,   true) ?  1 : max(max(ys, yf), 0.0);
+          const double right  = AngleInRange(start, finish, 90,  true) ?  1 : max(max(xs, xf), 0.0);
+          const double bottom = AngleInRange(start, finish, 180, true) ? -1 : min(min(ys, yf), 0.0);
+          const double left   = AngleInRange(start, finish, 270, true) ? -1 : min(min(xs, xf), 0.0);
+          
+          // get area center
+          const double radius = Task[target_point].AATSectorRadius;
+          const double x = (left + right) / 2;
+          const double y = (top + bottom) / 2;
+          double bearing, range;
+          xXY_Brg_Rng(0, 0, x, y, &bearing, &range);
+          
+          // find area center geographic data
+          FindLatitudeLongitude(WayPointList[Task[target_point].Index].Latitude,
+                                WayPointList[Task[target_point].Index].Longitude,
+                                bearing, range * radius, &PanLatitude, &PanLongitude);
+          TargetZoomDistance = max(2e3, max(right - left, top - bottom) * radius);
         } else {
           TargetZoomDistance = max(2e3, Task[target_point].AATCircleRadius*2);
         }
