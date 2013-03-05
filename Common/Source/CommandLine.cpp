@@ -149,6 +149,11 @@ void LK8000GetOpts(LPWSTR CommandLine)
       SCREENWIDTH=272;
       SCREENHEIGHT=480;
     }
+    pC = _tcsstr(MyCommandLine, TEXT("-testmode"));
+    if (pC != NULL){
+      SCREENWIDTH=1018;
+      SCREENHEIGHT=564;
+    }
 
   }
 #else

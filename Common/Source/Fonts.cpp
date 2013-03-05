@@ -31,6 +31,16 @@ int GetFontRenderer() {
   }
 }
 
+//
+// We rescale the font size assuming if it was marked as rescalable
+//
+void ApplyFontSize(LOGFONT *logfont) {
+
+  if (logfont->lfOrientation == 0) return;
+  logfont->lfOrientation = 0;
+  logfont->lfHeight = (int)((double)logfont->lfHeight * Screen0Ratio);
+
+}
 
 void ApplyClearType(LOGFONT *logfont) {
 
@@ -78,6 +88,7 @@ void InitializeOneFont (HFONT * theFont,
   if (GetObjectType(*theFont) != OBJ_FONT) {
     if (!IsNullLogFont(autoLogFont)) {
       ApplyClearType(&autoLogFont);
+      ApplyFontSize(&autoLogFont);
       *theFont = CreateFontIndirect (&autoLogFont);
       if (GetObjectType(*theFont) == OBJ_FONT) {
         if (LogFontUsed != NULL) *LogFontUsed = autoLogFont; // RLD save for custom font GUI
@@ -142,7 +153,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
   }
-
   else if (ScreenSize==(ScreenSize_t)ss800x480) {// e.g. ipaq 31x {
 
     propGetFontSettingsFromString(TEXT("20,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -221,6 +231,25 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("30,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
+  }
+  // ELSE WE SET THE 480x272 settings, and mark Orientation 1 as a flag to ask for dynamic resize
+  // We use this flag to autogenerate fonts for unknown resolutions.
+  else { 
+    if (ScreenLandscape) {
+	    propGetFontSettingsFromString(TEXT("14,0,0,1,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardTitleWindowLogFont);
+	    propGetFontSettingsFromString(TEXT("15,0,0,1,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardCDIWindowLogFont);
+	    propGetFontSettingsFromString(TEXT("16,0,0,1,600,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapLabelLogFont);
+	    propGetFontSettingsFromString(TEXT("20,0,0,1,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardStatisticsLogFont);
+	    propGetFontSettingsFromString(TEXT("22,0,0,1,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont);
+	    propGetFontSettingsFromString(TEXT("19,0,0,1,500,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
+    } else {
+	    propGetFontSettingsFromString(TEXT("12,0,0,1,300,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
+	    propGetFontSettingsFromString(TEXT("12,0,0,1,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCDIWindowLogFont);
+	    propGetFontSettingsFromString(TEXT("15,0,0,1,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); 
+	    propGetFontSettingsFromString(TEXT("10,0,0,1,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);
+	    propGetFontSettingsFromString(TEXT("18,0,0,1,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+	    propGetFontSettingsFromString(TEXT("18,0,0,1,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
+    }
   }
 
 

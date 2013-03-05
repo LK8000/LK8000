@@ -327,6 +327,7 @@ void Globals_Init(void) {
   ScreenDScale=1;
   ScreenScale=1;
   ScreenIntScale=false;
+  Screen0Ratio=1;
 
   // Default arrival mode calculation type
   // 091016 currently not changed anymore

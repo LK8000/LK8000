@@ -98,17 +98,28 @@ void InitLKScreen() {
 
   TCHAR tbuf[80];
   if (ScreenSize==0) {
-        wsprintf(tbuf,_T(". InitLKScreen: ++++++ ERROR UNKNOWN RESOLUTION %dx%d !%s"),iWidth,iHeight,NEWLINE); // 091119
+        wsprintf(tbuf,_T(". InitLKScreen: AUTORES %dx%d%s"),iWidth,iHeight,NEWLINE);
         StartupStore(tbuf);
-  } else {
-        wsprintf(tbuf,_T(". InitLKScreen: %dx%d%s"),iWidth,iHeight,NEWLINE); // 091213
-        StartupStore(tbuf);
-  }
 
-  if (ScreenSize > (ScreenSize_t)sslandscape) 
-	ScreenLandscape=true;
-  else
-	ScreenLandscape=false;
+	if (ScreenSizeX>=ScreenSizeY) {
+		ScreenLandscape=true;
+		Screen0Ratio=ScreenSizeY/272.0;
+	} else {
+		Screen0Ratio=ScreenSizeY/480.0;
+		ScreenLandscape=false;
+	}
+	#if TESTBENCH
+	StartupStore(_T("..... Screen0Ratio=%f\n"),Screen0Ratio);
+	#endif
+  } else {
+        wsprintf(tbuf,_T(". InitLKScreen: %dx%d%s"),iWidth,iHeight,NEWLINE);
+        StartupStore(tbuf);
+
+	if (ScreenSize > (ScreenSize_t)sslandscape) 
+		ScreenLandscape=true;
+	else
+		ScreenLandscape=false;
+  }
 
   // By default, h=v=size/6 and here we set it better
   switch (ScreenSize) { 
@@ -174,9 +185,24 @@ void InitLKScreen() {
 		BottomSize=80; // Title+Value-4  a bit bigger here
 		break;
 	default:
+		#if 0
 		GestureSize=50;
 		LKVarioSize=30;
 		BottomSize=38; // Title+Value-4
+		#endif
+		//double xyratio;
+		// we are using rescaled 480x272 or 272x480 fonts
+		if (ScreenLandscape) {
+			//xyratio=ScreenSizeY/272.0;
+			GestureSize=50;
+			LKVarioSize=(int)(30*Screen0Ratio);
+			BottomSize=(int)(48*Screen0Ratio); // Title+Value-4 plus something more
+		} else {
+			//xyratio=ScreenSizeY/480.0;
+			GestureSize=50;
+			LKVarioSize=(int)(30*Screen0Ratio);
+			BottomSize=(int)(80*Screen0Ratio); // Title+Value-4  a bit bigger here
+		}
 		break;
   }
 

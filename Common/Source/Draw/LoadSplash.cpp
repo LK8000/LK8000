@@ -85,9 +85,17 @@ void LoadSplash(HDC hDC, TCHAR *splashfile){
 			hTempDC, 0, 0,
 			bm.bmWidth,bm.bmHeight,
 			SRCCOPY);
-	  } else {
-		BitBlt(hDC,(ScreenSizeX-bm.bmWidth)/2,0,bm.bmWidth,IBLSCALE(260),hTempDC, 0, 0, SRCCOPY);
-	  }
+	} else {
+  		if ( (bm.bmWidth <ScreenSizeX)||(bm.bmHeight<ScreenSizeY)) {
+			StretchBlt(hDC,NIBLSCALE(20),0,
+				ScreenSizeX-NIBLSCALE(40), ScreenSizeY-BottomSize-NIBLSCALE(20),
+				hTempDC, 0, 0,
+				bm.bmWidth,bm.bmHeight,
+				SRCCOPY);
+		} else {
+			BitBlt(hDC,(ScreenSizeX-bm.bmWidth)/2,0,bm.bmWidth,IBLSCALE(260),hTempDC, 0, 0, SRCCOPY);
+		}
+	}
   }
 
   SelectObject(hTempDC, oldBitmap);

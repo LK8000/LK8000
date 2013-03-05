@@ -328,11 +328,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   GlidePolar::SetBallast();
 
 
-if (ScreenSize==0) {
-// LKTOKENS _@M1207_ "ERROR UNKNOWN RESOLUTION!"
-CreateProgressDialog(gettext(TEXT("_@M1207_")));
- Sleep(3000);
-}
 #ifdef PNA // VENTA-ADDON 
 
 	TCHAR sTmp[MAX_PATH];

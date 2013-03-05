@@ -57,6 +57,13 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
      case ss720x408: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
      case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
      case ss896x672: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
+     case ssnone: 
+	if (ScreenLandscape) {
+		rwl = 6.0; rwb = 2.5;cir = 4.0;
+	} else {
+		rwl = 9.0; rwb = 2.5;cir = 4.0;
+	}
+	break;
     }
 
     // All values <=
@@ -84,6 +91,7 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 		scale_bigfont=1.5;
 		scale_fullinfos=1.5;
 		break;
+
 	default:
 		scale_drawradio=2.6;
 		scale_bigfont=1.5;

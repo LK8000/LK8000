@@ -68,12 +68,10 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 
   SelectObject(hdc, LK8UnitFont);
   if (ScreenSize==0) {
-	_stprintf(Buffer,TEXT("**SCREEN %dx%d NOT SUPPORTED**"),rc.right,rc.bottom );
+	_stprintf(Buffer,TEXT("Screen %dx%d experimental"),rc.right,rc.bottom );
 	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
 	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
-	_stprintf(Buffer,TEXT("FONTS WILL NOT BE GOOD OR UNUSABLE"));
-	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
   } else {
 	_stprintf(Buffer,TEXT("%s"), LK8000_Version);
 	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
