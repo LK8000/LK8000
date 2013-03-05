@@ -49,6 +49,52 @@ void LK8000GetOpts(LPWSTR CommandLine)
       }
     }
 
+	//
+	// custom resolution setup
+	//
+	pC = _tcsstr(MyCommandLine, TEXT("-x="));
+	if (pC != NULL) {
+		TCHAR stx[10];
+		_tcscpy(stx,_T(""));
+		pC += strlen("-x=");
+		if (*pC == '"'){
+			pC++;
+			pCe = pC;
+			while (*pCe != '"' && *pCe != '\0') pCe++;
+		} else{
+			pCe = pC;
+			while (*pCe != ' ' && *pCe != '\0') pCe++;
+		}
+		if (pCe != NULL && pCe-1 > pC) {
+			LK_tcsncpy(stx, pC, pCe-pC);
+		}
+
+		pC = _tcsstr(MyCommandLine, TEXT("-y="));
+		if (pC != NULL) {
+			TCHAR sty[10];
+			_tcscpy(sty,_T(""));
+			pC += strlen("-y=");
+			if (*pC == '"') {
+				pC++;
+				pCe = pC;
+				while (*pCe != '"' && *pCe != '\0') pCe++;
+			} else {
+				pCe = pC;
+				while (*pCe != ' ' && *pCe != '\0') pCe++;
+			}
+			if (pCe != NULL && pCe-1 > pC) {
+				LK_tcsncpy(sty, pC, pCe-pC);
+			}
+
+			int x=_ttoi(stx);
+			int y=_ttoi(sty);
+			if (x>100 && x<3000 && y>100 && y<3000) {
+				SCREENWIDTH=x;
+				SCREENHEIGHT=y;
+			}
+		}
+	}
+
     pC = _tcsstr(MyCommandLine, TEXT("-640x480"));
     if (pC != NULL){
       SCREENWIDTH=640;
