@@ -81,7 +81,7 @@ inline void FromString(LPCTSTR szVal, unsigned long& ulong) {
     }
 }
 
-inline  void FromString(LPCTSTR szVal, LPCTSTR& szString) {
+inline void FromString(LPCTSTR szVal, LPCTSTR& szString) {
     szString = szVal;
 }
 
@@ -137,26 +137,28 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
         long nRead = fread(buff, sizeof (char), size, stream);
         if (nRead != size) {
             fclose(stream);
-            delete[] buff;
+            free(buff);
             return false;
         }
         fclose(stream);
         TCHAR * szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
         utf2unicode(buff, szXML, size + 1);
-
+        free(buff);
         XMLNode rootNode = XMLNode::parseString(szXML, _T("lk-task"));
 
         if (rootNode) {
             LoadWayPointList(rootNode.getChildNode(_T("waypoints"), 0));
             if (!LoadTaskPointList(rootNode.getChildNode(_T("taskpoints"), 0))) {
+                free(szXML);
                 return false;
             }
             if (!LoadStartPoint(rootNode.getChildNode(_T("startpoints"), 0))) {
+                free(szXML);
                 return false;
             }
             LoadOptions(rootNode);
         }
-        free(buff);
+
         free(szXML);
     }
 
