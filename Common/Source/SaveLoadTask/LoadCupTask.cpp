@@ -231,7 +231,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
     ClearTask();
     size_t idxTP = 0;
     bool bTakeOff = true;
-
+    bool bLoadComplet = true;
 
     TCHAR szString[READLINE_LENGTH + 1];
     TCHAR TpCode[NAME_SIZE + 1];
@@ -279,18 +279,22 @@ bool LoadCupTask(LPCTSTR szFileName) {
                     // 2. and all successive columns, separated by commas
                     //       Each column represents one waypoint name double quoted. The waypoint name must be exactly the
                     //       same as the Long name of a waypoint listed above the Related tasks.
-                    while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
-                        _tcsncpy(TpCode, pToken, NAME_SIZE);
-                        CleanCupCode(TpCode);
-                        mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
-                        if (It != mapWaypoint.end()) {
-                            if (bTakeOff) {
-                                // skip TakeOff Set At Home Waypoint
-                                HomeWaypoint = FindOrAddWaypoint(&(It->second));
-                                bTakeOff = false;
-                            } else {
-                                Task[idxTP++].Index = FindOrAddWaypoint(&(It->second));
+                    while (bLoadComplet && (pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
+                        if (idxTP < MAXTASKPOINTS) {
+                            _tcsncpy(TpCode, pToken, NAME_SIZE);
+                            CleanCupCode(TpCode);
+                            mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
+                            if (It != mapWaypoint.end()) {
+                                if (bTakeOff) {
+                                    // skip TakeOff Set At Home Waypoint
+                                    HomeWaypoint = FindOrAddWaypoint(&(It->second));
+                                    bTakeOff = false;
+                                } else {
+                                    Task[idxTP++].Index = FindOrAddWaypoint(&(It->second));
+                                }
                             }
+                        } else {
+                            bLoadComplet = false;
                         }
                     }
                     FileSection = Option;
@@ -383,7 +387,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
     }
 
     // Landing don't exist in LK Task Systems Remove It if is same as previous;
-    if (TaskWayPoint(0) == TaskWayPoint(getFinalWaypoint())) {
+    if ( bLoadComplet && (TaskWayPoint(0) == TaskWayPoint(getFinalWaypoint())) ) {
         RemoveTaskPoint(getFinalWaypoint());
     }
     UnlockTaskData();
