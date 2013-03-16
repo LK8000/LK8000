@@ -12,6 +12,7 @@
 
 
 static WndForm *wf=NULL;
+static WndProperty * wKeyboardPopupWndProperty;
 
 #define MAX_TEXTENTRY 40
 static unsigned int cursor = 0;
@@ -128,6 +129,12 @@ static void OnClear(WindowControl * Sender)
   ClearText();
 }
 
+static void OnHelpClicked(WindowControl * Sender){
+  (void)Sender;
+
+  wKeyboardPopupWndProperty->OnHelp();
+}
+
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnKey),
   DeclareCallBackEntry(OnClear),
@@ -135,6 +142,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnDel),
   DeclareCallBackEntry(OnDate),
   DeclareCallBackEntry(OnTime),
+  DeclareCallBackEntry(OnHelpClicked),
   DeclareCallBackEntry(NULL)
 };
 
@@ -190,6 +198,8 @@ void dlgNumEntryShowModal(TCHAR *text, int width)
 }
 
 BOOL dlgKeyboard(WndProperty* theProperty){
+    wKeyboardPopupWndProperty = theProperty;
+            
 	DataField* pField = theProperty->GetDataField();
 	if(pField) {
 		if(pField->CreateKeyboard()){
