@@ -136,6 +136,7 @@ class DataField{
   virtual int SetMax(int Value){(void)Value; return(0);};
   virtual double SetMax(double Value){(void)Value; return(0);};
   void SetUnits(const TCHAR *text) { _tcscpy(mUnits, text); }
+  const TCHAR* GetUnits() const { return mUnits; }
 
   void Use(void){
     mUsageCounter++;

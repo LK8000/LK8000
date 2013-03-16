@@ -1,6 +1,7 @@
 <PMML>
 <WndForm Name="frmTextEntry_Keyboard" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M251_" Font="2" >
-<WndProperty Name="prpText"  Caption="_@M711_"   X="2" Y="2" Width="218" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+<WndProperty Name="prpText"  Caption="_@M711_"   X="2" Y="2" Width="178" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+<WndProperty Name="prpUnit"  Caption=""   X="164" Y="-999" Width="40" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
 <WndButton   Caption="_@M228_"    X="200" Y="2" Width="40"  Height="22" Font="2" OnClickNotify="OnDel"/>
 
 <WndButton   Caption="1"    X="2" Y="25" Width="78"  Height="55" Font="2" OnClickNotify="OnKey"/>

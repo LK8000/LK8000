@@ -27,6 +27,15 @@ static void UpdateTextboxProp(void)
   if (wp) {
     wp->SetText(edittext);
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpUnit"));
+  if(wp && wKeyboardPopupWndProperty) {
+      DataField* pField = wKeyboardPopupWndProperty->GetDataField();
+      if(pField) {
+        wp->SetCaption(pField->GetUnits());
+        wp->RefreshDisplay();
+        wp->Redraw();
+      }
+  }
 }
 
 static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam) {
