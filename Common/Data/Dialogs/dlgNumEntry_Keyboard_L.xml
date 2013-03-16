@@ -18,8 +18,6 @@
 <WndButton   Caption="0"    X=159 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
 <WndButton   Caption="."    X=238 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
 
-<WndButton   Caption="_@M219_" X=1 Y=-1 Width="60"  Height="34" Font="2" OnClickNotify="OnDate"/>
-<WndButton   Caption="_@M720_" X="60" Y=-999 Width="60"  Height="34" Font="2" OnClickNotify="OnTime"/>
 <WndButton   Caption="_@M180_" X="120" Y=-999 Width="98"  Height="34" Font="2" OnClickNotify="OnClear"/>
 <WndButton   Caption="OK"   X="218" Y=-999 Width="98"  Height="34" Font="2" OnClickNotify="OnOk"/>
 
