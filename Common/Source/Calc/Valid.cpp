@@ -55,6 +55,16 @@ bool ValidTaskPoint(int i) {
   return retval;
 }
 
+bool ValidStartPoint(size_t i) {
+    bool retVal=false;
+    LockTaskData();
+    if(i<MAXSTARTPOINTS) {
+        retVal = ValidWayPoint(StartPoints[i].Index);
+    } 
+    UnlockTaskData();
+    return retVal;
+}
+
 
 
 bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, DWORD Margin) {

@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "utils/stl_utils.h"
 
 #ifdef __MINGW32__
 #ifndef max
@@ -811,5 +812,22 @@ TCHAR *WindAngleToText(double angle) {
  LKASSERT(direction<32);
  return (windrose[angleslot[direction]]);
 
+}
+
+///////////////////////////////////////////////////////////////////////
+// Extract H, M, S from string like "HH:MM:SS"
+//   Sec output parameter is optional
+void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec) {
+    LKASSERT(szString && Hour && Min);
+    TCHAR* sz = NULL;
+    if (szString) {
+        *Hour = clamp((int)_tcstol(szString, &sz, 10), 0, 23);
+        if (*sz == _T(':')) {
+            *Min = clamp((int)_tcstol(sz + 1, &sz, 10), 0, 59);
+        }
+        if (Sec && (*sz == _T(':'))) {
+            *Sec = clamp((int)_tcstol(sz + 1, &sz, 10), 0, 59);
+        }
+    }
 }
 

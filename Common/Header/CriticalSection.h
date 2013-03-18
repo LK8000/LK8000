@@ -30,4 +30,20 @@ public:
   ~CGuard() { _criticalSection.UnLock(); }
 };
 
+class CScopeLock {
+
+    typedef void (*_Unlock)();
+    typedef void (*_Lock)();
+    
+    _Unlock m_fUnlock;
+public:
+    
+    explicit CScopeLock(_Lock fLock, _Unlock fUnlock) : m_fUnlock(fUnlock){
+        fLock();
+    }
+    ~CScopeLock(){
+        m_fUnlock();
+    }
+ };
+
 #endif
