@@ -17,8 +17,8 @@
 <DataField name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min=0 Max=10000000 Step=1/>
 </WndProperty>
 
-<WndProperty Name="prpAltitude" Caption="_@M89_" X=2 Y=-1 Width=180 Height=28 CaptionWidth=90 Font=2 >
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=5/>
+<WndProperty Name="prpAltitude" Caption="_@M89_" X=2 Y=-1 Width=180 Height=28 CaptionWidth=90 Font=2 keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=1/>
 </WndProperty>
 <WndProperty Name="prpFlags" Caption="_@M752_"      X=2 Y=-1   Width=180 Height=28 CaptionWidth=90 Font=2 >
 <DataField name="" DataType="enum" Min=0 Max=10 Step=1 />
