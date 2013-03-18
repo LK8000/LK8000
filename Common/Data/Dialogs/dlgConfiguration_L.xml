@@ -1,4 +1,4 @@
-﻿<PMML>
+<PMML>
 <WndForm Name="frmConfiguration" Type="Dialog" X=0 Y=0 Width=240 Height=320 Caption="_@M195_" Font=2 >
 <WndButton Name="cmdNext"  Caption="_@M460_" X=115 Y=238 Width=105  Height=30 Font=2 OnClickNotify="OnNextClicked" Tag=1 />
 <WndButton Name="cmdPrev"  Caption="_@M6_" X=5 Y=238 Width=105  Height=30 Font=2 OnClickNotify="OnPrevClicked" Tag=0/>
@@ -42,11 +42,11 @@
 <WndProperty Name="prpAirspaceDisplay" Caption="_@M67_" X=2 Y=-1  Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1250_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1 OnDataAccess="OnAirspaceDisplay"/>
 </WndProperty>
-<WndProperty Name="prpClipAltitude" Caption="_@M183_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H109_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=10/>
+<WndProperty Name="prpClipAltitude" Caption="_@M183_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H109_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=1/>
 </WndProperty>
-<WndProperty Name="prpAltWarningMargin" Caption="_@M1630_" X=2 Y=-999 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1251_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=10/>
+<WndProperty Name="prpAltWarningMargin" Caption="_@M1630_" X=2 Y=-999 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1251_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=1/>
 </WndProperty>
 <WndProperty Name="prpAirspaceFillType" Caption="_@M940_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1200_">
 <DataField name="" DataType="enum" OnDataAccess="OnAirspaceFillType"/>
@@ -217,19 +217,19 @@
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmSafety" X=0 Y=0 Width=235 Height=222 Font=2>
-<WndProperty Name="prpSafetyAltitudeArrival" Caption="_@M576_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H133_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=10000 Step=50/>
+<WndProperty Name="prpSafetyAltitudeArrival" Caption="_@M576_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H133_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=10000 Step=1/>
 </WndProperty>
 <WndProperty Name="prpSafetyAltitudeMode" Caption="_@M575_" X=2 Y=-1  Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H134_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
-<WndProperty Name="prpSafetyAltitudeTerrain" Caption="_@M707_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H135_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=10000 Step=50/>
+<WndProperty Name="prpSafetyAltitudeTerrain" Caption="_@M707_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H135_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=10000 Step=1/>
 </WndProperty>
-<WndProperty Name="prpSafetyMacCready" Caption="_@M574_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H136_">
+<WndProperty Name="prpSafetyMacCready" Caption="_@M574_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H136_" keyboard=1>
 <DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=10 Step=0.1/>
 </WndProperty>
-<WndProperty  Name="prpBugs" Caption="_@M253_"  X=2 Y=-1  Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1257_">
+<WndProperty  Name="prpBugs" Caption="_@M253_"  X=2 Y=-1  Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1257_" keyboard=1>
 <DataField name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min=50 Max=100 Step=1 />
 </WndProperty>
 <WndProperty Name="prpUseTotalEnergy" Caption="_@M1669_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1256_">
@@ -247,7 +247,7 @@
 <WndProperty Name="prpAutoWind" Caption="_@M114_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H139_">
 <DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
 </WndProperty>
-<WndProperty Name="prpWindCalcSpeed" Caption="_@M744_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H140_">
+<WndProperty Name="prpWindCalcSpeed" Caption="_@M744_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H140_" keyboard=1>
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=5 Max=200 Step=1/>
 </WndProperty>
 <WndProperty Name="prpWindCalcTime" Caption="_@M745_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H141_">
@@ -278,17 +278,17 @@
 <WndFrame Name="frmEmpty" X=0 Y=0 Width=235 Height=222 Font=2>
 </WndFrame>
 <WndFrame Name="frmAlarms" X=0 Y=0 Width=235 Height=222 Font=2>
-<WndProperty Name="prpAlarmMaxAltitude1" Caption="_@M1647_" X=2 Y=-1 Width=233 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=50/>
+<WndProperty Name="prpAlarmMaxAltitude1" Caption="_@M1647_" X=2 Y=-1 Width=233 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=1/>
 </WndProperty>
-<WndProperty Name="prpAlarmMaxAltitude2" Caption="_@M1648_" X=2 Y=-1 Width=233 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=50/>
+<WndProperty Name="prpAlarmMaxAltitude2" Caption="_@M1648_" X=2 Y=-1 Width=233 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=1/>
 </WndProperty>
-<WndProperty Name="prpAlarmMaxAltitude3" Caption="_@M1649_" X=2 Y=-1 Width=233 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=50/>
+<WndProperty Name="prpAlarmMaxAltitude3" Caption="_@M1649_" X=2 Y=-1 Width=233 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=1/>
 </WndProperty>
-<WndProperty Name="prpAlarmTakeoffSafety" Caption="_@M1794_" X=2 Y=-1 Width=233 Height=22 CaptionWidth=150 Font=2 Help="_@H1261_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=500 Step=10/>
+<WndProperty Name="prpAlarmTakeoffSafety" Caption="_@M1794_" X=2 Y=-1 Width=233 Height=22 CaptionWidth=150 Font=2 Help="_@H1261_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=500 Step=1/>
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmUnits" X=0 Y=0 Width=235 Height=222 Font=2>
@@ -415,20 +415,20 @@
 <WndProperty Name="prpTaskStartLine" Caption="_@M655_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H201_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
-<WndProperty Name="prpTaskStartRadius" Caption="_@M649_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H202_">
-<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05" />
+<WndProperty Name="prpTaskStartRadius" Caption="_@M649_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H202_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.01" />
 </WndProperty>
 <WndProperty Name="prpTaskFAISector" Caption="_@M588_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H203_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
-<WndProperty Name="prpTaskSectorRadius" Caption="_@M586_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H204_">
-<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05" />
+<WndProperty Name="prpTaskSectorRadius" Caption="_@M586_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H204_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.01" />
 </WndProperty>
-<WndProperty Name="prpTaskFinishLine" Caption="_@M297_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H205_">
+<WndProperty Name="prpTaskFinishLine" Caption="_@M297_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H205_" keyboard=1>
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
-<WndProperty Name="prpTaskFinishRadius" Caption="_@M295_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H206_">
-<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05" />
+<WndProperty Name="prpTaskFinishRadius" Caption="_@M295_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H206_" keyboard=1>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.01" />
 </WndProperty>
 <WndButton Name="cmdTaskRules" Caption="_@M690_" X=70 Y=-997 Width=180  Height=30 Font=2 OnClickNotify="OnTaskRulesClicked" />
 </WndFrame>
@@ -493,7 +493,7 @@
 <WndProperty Name="prpPGOpenTimeM" Caption=":"  X=189 Y=-999  Width=53 Height=22 CaptionWidth=5 Font=2 Help="_@H218_">
 <DataField name="" DataType="double" DisplayFormat="%02.0f" EditFormat="%.0f" Min=0 Max=59 Step=1/>
 </WndProperty>
-<WndProperty Name="prpPGGateIntervalTime" Caption="_@M320_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H219_">
+<WndProperty Name="prpPGGateIntervalTime" Caption="_@M320_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H219_" keyboard=1>
 <DataField name="" DataType="double" DisplayFormat="%.0f m" EditFormat="%.0f" Min=1 Max=480 Step=1/>
 </WndProperty>
 <WndProperty Name="prpPGStartOut" Caption="_@M635_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H220_">

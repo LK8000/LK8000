@@ -12,6 +12,7 @@
 
 
 static WndForm *wf=NULL;
+static WndProperty * wKeyboardPopupWndProperty;
 
 #define MAX_TEXTENTRY 40
 static unsigned int cursor = 0;
@@ -25,6 +26,15 @@ static void UpdateTextboxProp(void)
   wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
   if (wp) {
     wp->SetText(edittext);
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpUnit"));
+  if(wp && wKeyboardPopupWndProperty) {
+      DataField* pField = wKeyboardPopupWndProperty->GetDataField();
+      if(pField) {
+        wp->SetCaption(pField->GetUnits());
+        wp->RefreshDisplay();
+        wp->Redraw();
+      }
   }
 }
 
@@ -128,6 +138,12 @@ static void OnClear(WindowControl * Sender)
   ClearText();
 }
 
+static void OnHelpClicked(WindowControl * Sender){
+  (void)Sender;
+
+  wKeyboardPopupWndProperty->OnHelp();
+}
+
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnKey),
   DeclareCallBackEntry(OnClear),
@@ -135,6 +151,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnDel),
   DeclareCallBackEntry(OnDate),
   DeclareCallBackEntry(OnTime),
+  DeclareCallBackEntry(OnHelpClicked),
   DeclareCallBackEntry(NULL)
 };
 
@@ -190,6 +207,8 @@ void dlgNumEntryShowModal(TCHAR *text, int width)
 }
 
 BOOL dlgKeyboard(WndProperty* theProperty){
+    wKeyboardPopupWndProperty = theProperty;
+            
 	DataField* pField = theProperty->GetDataField();
 	if(pField) {
 		if(pField->CreateKeyboard()){

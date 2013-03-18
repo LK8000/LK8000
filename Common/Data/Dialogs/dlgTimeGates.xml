@@ -13,7 +13,7 @@
 <WndProperty Name="prpPGOpenTimeM" Caption=":"  X=200 Y=84  Width=38 Height=22 CaptionWidth=5 Font=2 Help="_@H531_">
 <DataField name="" DataType="double" DisplayFormat="%02.0f" EditFormat="%.0f" Min=0 Max=59 Step=1/>
 </WndProperty>
-<WndProperty Name="prpPGGateIntervalTime" Caption="_@M320_" X=2 Y=106 Width=236 Height=22 CaptionWidth=150 Font=2 Help="_@H532_">
+<WndProperty Name="prpPGGateIntervalTime" Caption="_@M320_" X=2 Y=106 Width=236 Height=22 CaptionWidth=150 Font=2 Help="_@H532_" keyboard=1>
 <DataField name="" DataType="double" DisplayFormat="%.0f m" EditFormat="%.0f" Min=1 Max=480 Step=1/>
 </WndProperty>
 <WndProperty Name="prpPGStartOut" Caption="_@M635_" X=2 Y=128 Width=236 Height=22 CaptionWidth=150 Font=2 Help="_@H533_">

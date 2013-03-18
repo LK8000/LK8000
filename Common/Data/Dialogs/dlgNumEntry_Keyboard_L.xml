@@ -1,27 +1,28 @@
 <PMML>
-<WndForm Name="frmTextEntry_Keyboard" Type="Dialog" X=0 Y=0 Width=320 Height=240 Caption="_@M251_" Font=2 >
-<WndProperty Name="prpText" Caption="_@M711_" X=2 Y=1 Width=264 Height=30 CaptionWidth=65 Font=2 ReadOnly=1 />
-<WndButton   Caption="_@M228_" X=250 Y=-999 Width=66  Height=30 Font="2" OnClickNotify="OnDel"/>
+<WndForm Name="frmTextEntry_Keyboard" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M251_" Font="2" >
+<WndProperty Name="prpText" Caption="_@M711_" X="2" Y="1" Width="224" Height="30" CaptionWidth="65" Font="2" ReadOnly="1" />
+<WndProperty Name="prpUnit" Caption=""   X="210" Y="-999" Width="40" Height="30" CaptionWidth="40" Font="2" ReadOnly="1" />
+<WndButton   Caption="_@M228_" X="250" Y="-999" Width="66"  Height="30" Font="2" OnClickNotify="OnDel"/>
 
-<WndButton   Caption="1"    X=1 Y=-1 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
-<WndButton   Caption="2"    X=80 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
-<WndButton   Caption="3"    X=159 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
-<WndButton   Caption="4"    X=238 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="1"    X="1"   Y="-1"   Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="2"    X="80"  Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="3"    X="159" Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="4"    X="238" Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
 
-<WndButton   Caption="5"    X=1 Y=-1 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
-<WndButton   Caption="6"    X="80" Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
-<WndButton   Caption="7"    X=159 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
-<WndButton   Caption="8"    X=238 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="5"    X="1"   Y="-1"   Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="6"    X="80"  Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="7"    X="159" Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="8"    X="238" Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
 
-<WndButton   Caption="-"    X=1 Y=-1 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
-<WndButton   Caption="9"    X=80 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
-<WndButton   Caption="0"    X=159 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
-<WndButton   Caption="."    X=238 Y=-999 Width=78  Height=52 Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="-"    X="1"   Y="-1"   Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="9"    X="80"  Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="0"    X="159" Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
+<WndButton   Caption="."    X="238" Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
 
-<WndButton   Caption="_@M219_" X=1 Y=-1 Width="60"  Height="34" Font="2" OnClickNotify="OnDate"/>
-<WndButton   Caption="_@M720_" X="60" Y=-999 Width="60"  Height="34" Font="2" OnClickNotify="OnTime"/>
-<WndButton   Caption="_@M180_" X="120" Y=-999 Width="98"  Height="34" Font="2" OnClickNotify="OnClear"/>
-<WndButton   Caption="OK"   X="218" Y=-999 Width="98"  Height="34" Font="2" OnClickNotify="OnOk"/>
+<WndButton  Name="cmdHelp"  Caption="_@M336_" X="1" Y="-1" Width="70"  Height="34" Font="2" OnClickNotify="OnHelpClicked"/>
+
+<WndButton   Caption="_@M180_" X="120" Y="-999" Width="98"  Height="34" Font="2" OnClickNotify="OnClear"/>
+<WndButton   Caption="OK"   X="218" Y="-999" Width="98"  Height="34" Font="2" OnClickNotify="OnOk"/>
 
 </WndForm>
 </PMML>
