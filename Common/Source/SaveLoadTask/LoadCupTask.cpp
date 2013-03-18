@@ -16,6 +16,213 @@
 
 typedef std::map<std::wstring, WAYPOINT> mapCode2Waypoint_t;
 
+class CupObsZoneUpdater {
+public:
+
+    CupObsZoneUpdater() : mIdx(), mType(), mR1(), mA1(), mR2(), mA2(), mA12(), mLine() {
+    }
+
+    size_t mIdx;
+    int mType;
+    double mR1;
+    double mA1;
+    double mR2;
+    double mA2;
+    double mA12;
+    bool mLine;
+
+    void UpdateTask() {
+        if (mA1 == 180.0) {
+            if (mIdx == 0) {
+                StartLine = 0;
+                StartRadius = mR1;
+            } else if (mIdx == (size_t) getFinalWaypoint()) {
+                FinishLine = 0;
+                FinishRadius = mR1;
+            } else {
+                Task[mIdx].AATType = CIRCLE;
+                Task[mIdx].AATCircleRadius = mR1;
+            }
+        } else {
+
+            switch (mType) {
+                case 0: // - Fixed value,
+                    if (mLine) {
+                        StartupStore(_T("..Cup Task : \"Fixed\" LINE Turnpoint is not supported%s"), NEWLINE);
+                        UpdateFixedLine();
+                    } else {
+                        UpdateFixedSector();
+                    }
+                    break;
+                case 1: // - Symmetrical, 
+                    if (mLine) {
+                        StartupStore(_T("..Cup Task : \"Symmetrical\" LINE Turnpoint is not supported%s"), NEWLINE);
+                        UpdateSymLine();
+                    } else {
+                        UpdateSymSector();
+                    }
+                    break;
+                case 2: // - To next point, 
+                    if (mLine) {
+                        if (mIdx > 0) {
+                            StartupStore(_T("..Cup Task : \"To next point\" LINE Turnpoint is not supported%s"), NEWLINE);
+                        }
+                        UpdateToNextLine();
+                    } else {
+                        UpdateToNextSector();
+                    }
+                    break;
+                case 3: // - To previous point, 
+                    if (mLine) {
+                        if (mIdx < (size_t) getFinalWaypoint()) {
+                            StartupStore(_T("..Cup Task : \"To previous point\" LINE Turnpoint is not supported%s"), NEWLINE);
+                        }
+                        UpdateToPrevLine();
+                    } else {
+                        UpdateToPrevSector();
+                    }
+                    break;
+                case 4: // - To start point
+                    if (mLine) {
+                        StartupStore(_T("..Cup Task : \"To start point\" LINE Turnpoint is not supported%s"), NEWLINE);
+                        UpdateToStartLine();
+                    } else {
+                        UpdateToStartSector();
+                    }
+                    break;
+            }
+        }
+    }
+
+    void UpdateFixedLine() {
+        if ((mIdx == 0) || (mIdx == (size_t) getFinalWaypoint())) {
+            UpdateSymLine();
+        } else {
+            StartupStore(_T("..Cup Task : LINE Turnpoint is only supported for Start or Finish%s"), NEWLINE);
+            mA1 = 90.0;
+            UpdateFixedSector();
+        }
+    }
+
+    void UpdateFixedSector() {
+        if (mIdx == 0) {
+            StartLine = 2;
+            StartRadius = mR1;
+        } else if (mIdx == (size_t) getFinalWaypoint()) {
+            FinishLine = 2;
+            FinishRadius = mR1;
+        } else {
+            Task[mIdx].AATType = SECTOR;
+            Task[mIdx].AATSectorRadius = mR1;
+            Task[mIdx].AATStartRadial = mA12 - 180.0 - (mA1);
+            Task[mIdx].AATFinishRadial = mA12 - 180.0 + (mA1);
+        }
+    }
+
+    void UpdateSymLine() {
+        if (mIdx == 0) {
+            StartLine = 1;
+            StartRadius = mR1;
+        } else if (mIdx == (size_t) getFinalWaypoint()) {
+            FinishLine = 1;
+            FinishRadius = mR1;
+        } else {
+            StartupStore(_T("..Cup Task : LINE Turnpoint is only supported for Start or Finish%s"), NEWLINE);
+            mA1 = 90.0;
+            UpdateSymSector();
+        }
+    }
+
+    void UpdateSymSector() {
+        if (mIdx == 0) {
+            UpdateToNextSector();
+        } else if (mIdx == ((size_t) getFinalWaypoint())) {
+            UpdateToPrevSector();
+        } else {
+            const WAYPOINT *CurrPt = TaskWayPoint(mIdx);
+            const WAYPOINT *PrevPt = TaskWayPoint(mIdx - 1);
+            const WAYPOINT *NextPt = TaskWayPoint(mIdx + 1);
+            double InB = 0;
+            double OutB = 0;
+            // bearing to prev
+            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                    PrevPt->Latitude, PrevPt->Longitude, NULL, &InB);
+            // bearing to next
+            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                    NextPt->Latitude, NextPt->Longitude, NULL, &OutB);
+            mA12 = BiSector(InB, OutB);
+
+            UpdateFixedSector();
+        }
+    }
+
+    void UpdateToNextLine() {
+        if ((mIdx == 0) || (mIdx == (size_t) getFinalWaypoint())) {
+            UpdateSymLine();
+        } else {
+            StartupStore(_T("..Cup Task : LINE Turnpoint is only supported for Start or Finish%s"), NEWLINE);
+            mA1 = 90.0;
+            UpdateToNextSector();
+        }
+    }
+
+    void UpdateToNextSector() {
+        if (ValidTaskPoint(mIdx + 1)) {
+            const WAYPOINT *CurrPt = TaskWayPoint(mIdx);
+            const WAYPOINT *NextPt = TaskWayPoint(mIdx + 1);
+            // bearing to next
+            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                    NextPt->Latitude, NextPt->Longitude, NULL, &mA12);
+
+            UpdateFixedSector();
+        }
+    }
+
+    void UpdateToPrevLine() {
+        if ((mIdx == 0) || (mIdx == (size_t) getFinalWaypoint())) {
+            UpdateSymLine();
+        } else {
+            StartupStore(_T("..Cup Task : LINE Turnpoint is only supported for Start or Finish%s"), NEWLINE);
+            mA1 = 90.0;
+            UpdateToPrevSector();
+        }
+    }
+
+    void UpdateToPrevSector() {
+        if (ValidTaskPoint(mIdx - 1)) {
+            const WAYPOINT *CurrPt = TaskWayPoint(mIdx);
+            const WAYPOINT *PrevPt = TaskWayPoint(mIdx - 1);
+            // bearing to prev
+            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                    PrevPt->Latitude, PrevPt->Longitude, NULL, &mA12);
+
+            UpdateFixedSector();
+        }
+    }
+
+    void UpdateToStartLine() {
+        if ((mIdx == 0) || (mIdx == (size_t) getFinalWaypoint())) {
+            UpdateSymLine();
+        } else {
+            StartupStore(_T("..Cup Task : LINE Turnpoint is only supported for Start or Finish%s"), NEWLINE);
+            mA1 = 90.0;
+            UpdateToStartSector();
+        }
+    }
+
+    void UpdateToStartSector() {
+        if (mIdx > 0) {
+            const WAYPOINT *CurrPt = TaskWayPoint(mIdx);
+            const WAYPOINT *StartPt = TaskWayPoint(0);
+            // bearing to prev
+            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                    StartPt->Latitude, StartPt->Longitude, NULL, &mA12);
+
+            UpdateFixedSector();
+        }
+    }
+};
+
 bool LoadCupTask(LPCTSTR szFileName) {
     LockTaskData();
 
@@ -23,6 +230,8 @@ bool LoadCupTask(LPCTSTR szFileName) {
 
     ClearTask();
     size_t idxTP = 0;
+    bool bTakeOff = true;
+    bool bLoadComplet = true;
 
     TCHAR szString[READLINE_LENGTH + 1];
     TCHAR TpCode[NAME_SIZE + 1];
@@ -41,7 +250,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
         while (ReadStringX(stream, READLINE_LENGTH, szString)) {
 
             if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
-                                          (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
+                    (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
                 FileSection = Waypoint;
                 continue;
             } else if ((FileSection == Waypoint) && (_tcscmp(szString, _T("-----Related Tasks-----")) == 0)) {
@@ -70,92 +279,104 @@ bool LoadCupTask(LPCTSTR szFileName) {
                     // 2. and all successive columns, separated by commas
                     //       Each column represents one waypoint name double quoted. The waypoint name must be exactly the
                     //       same as the Long name of a waypoint listed above the Related tasks.
-                    while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
-                        _tcsncpy(TpCode, pToken, NAME_SIZE);
-                        CleanCupCode(TpCode);
-                        mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
-                        if (It != mapWaypoint.end()) {
-                            Task[idxTP++].Index = FindOrAddWaypoint(&(It->second));
+                    while (bLoadComplet && (pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
+                        if (idxTP < MAXTASKPOINTS) {
+                            _tcsncpy(TpCode, pToken, NAME_SIZE);
+                            CleanCupCode(TpCode);
+                            mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
+                            if (It != mapWaypoint.end()) {
+                                if (bTakeOff) {
+                                    // skip TakeOff Set At Home Waypoint
+                                    HomeWaypoint = FindOrAddWaypoint(&(It->second));
+                                    bTakeOff = false;
+                                } else {
+                                    Task[idxTP++].Index = FindOrAddWaypoint(&(It->second));
+                                }
+                            }
+                        } else {
+                            bLoadComplet = false;
                         }
                     }
                     FileSection = Option;
                     break;
                 case Option:
-#if 0 // Unused
                     if ((pToken = strsep_r(szString, TEXT(","), &pWClast)) != NULL) {
                         if (_tcscmp(pToken, _T("Options")) == 0) {
                             while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
-                                if (_tcscmp(pToken, _T("NoStart=")) == 0) {
+                                if (_tcsstr(pToken, _T("NoStart=")) == pToken) {
                                     // Opening of start line
-                                    // TODO :
-                                } else if (_tcscmp(pToken, _T("TaskTime=")) == 0) {
+                                    PGNumberOfGates = 1;
+                                    StrToTime(pToken + 8, &PGOpenTimeH, &PGOpenTimeM);
+                                } else if (_tcsstr(pToken, _T("TaskTime=")) == pToken) {
                                     // Designated Time for the task
                                     // TODO :
-                                } else if (_tcscmp(pToken, _T("WpDis=")) == 0) {
+                                } else if (_tcsstr(pToken, _T("WpDis=")) == pToken) {
                                     // Task distance calculation. False = use fixes, True = use waypoints
                                     // TODO :
-                                } else if (_tcscmp(pToken, _T("NearDis=")) == 0) {
+                                } else if (_tcsstr(pToken, _T("NearDis=")) == pToken) {
                                     // Distance tolerance
                                     // TODO :
-                                } else if (_tcscmp(pToken, _T("NearAlt=")) == 0) {
+                                } else if (_tcsstr(pToken, _T("NearAlt=")) == pToken) {
                                     // Altitude tolerance
                                     // TODO :
-                                } else if (_tcscmp(pToken, _T("MinDis=")) == 0) {
+                                } else if (_tcsstr(pToken, _T("MinDis=")) == pToken) {
                                     // Uncompleted leg. 
                                     // False = calculate maximum distance from last observation zone.
                                     // TODO :
-                                } else if (_tcscmp(pToken, _T("RandomOrder=")) == 0) {
+                                } else if (_tcsstr(pToken, _T("RandomOrder=")) == pToken) {
                                     // if true, then Random order of waypoints is checked
                                     // TODO :
-                                } else if (_tcscmp(pToken, _T("MaxPts=")) == 0) {
+                                } else if (_tcsstr(pToken, _T("MaxPts=")) == pToken) {
                                     // Maximum number of points
                                     // TODO :
-                                } else if (_tcscmp(pToken, _T("BeforePts=")) == 0) {
+                                } else if (_tcsstr(pToken, _T("BeforePts=")) == pToken) {
                                     // Number of mandatory waypoints at the beginning. 1 means start line only, two means
                                     //      start line plus first point in task sequence (Task line).
                                     // TODO :
-                                } else if (_tcscmp(pToken, _T("AfterPts=")) == 0) {
+                                } else if (_tcsstr(pToken, _T("AfterPts=")) == pToken) {
                                     // Number of mandatory waypoints at the end. 1 means finish line only, two means finish line
                                     //      and one point before finish in task sequence (Task line).
                                     // TODO :
-                                } else if (_tcscmp(pToken, _T("Bonus=")) == 0) {
+                                } else if (_tcsstr(pToken, _T("Bonus=")) == pToken) {
                                     // Bonus for crossing the finish line         
                                     // TODO :
                                 }
                             }
-                        } else if (_tcscmp(pToken, _T("ObsZone=")) == 0) {
+                        } else if (_tcsstr(pToken, _T("ObsZone=")) == pToken) {
                             TCHAR *sz = NULL;
-                            size_t idx = _tcstol(pToken + 8, &sz, 10);
-
-                            while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
-                                if (_tcscmp(pToken, _T("Style=")) == 0) {
-                                    // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point
-                                    // TODO :
-                                } else if (_tcscmp(pToken, _T("R1=")) == 0) {
-                                    // Radius 1
-                                    // TODO :
-                                } else if (_tcscmp(pToken, _T("A1=")) == 0) {
-                                    // Angle 1 in degrees
-                                    // TODO :
-                                } else if (_tcscmp(pToken, _T("R2=")) == 0) {
-                                    // Radius 2
-                                    // TODO :
-                                } else if (_tcscmp(pToken, _T("A2=")) == 0) {
-                                    // Angle 2 in degrees
-                                    // TODO :
-                                } else if (_tcscmp(pToken, _T("A12=")) == 0) {
-                                    // Angle 12
-                                    // TODO :
-                                } else if (_tcscmp(pToken, _T("Line=")) == 0) {
-                                    // ???
-                                    // TODO :
+                            CupObsZoneUpdater TmpZone;
+                            TmpZone.mIdx = _tcstol(pToken + 8, &sz, 10);
+                            if (TmpZone.mIdx < MAXSTARTPOINTS) {
+                                while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
+                                    if (_tcsstr(pToken, _T("Style=")) == pToken) {
+                                        // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point
+                                        TmpZone.mType = _tcstol(pToken + 6, &sz, 10);
+                                    } else if (_tcsstr(pToken, _T("R1=")) == pToken) {
+                                        // Radius 1
+                                        TmpZone.mR1 = ReadLength(pToken + 3);
+                                    } else if (_tcsstr(pToken, _T("A1=")) == pToken) {
+                                        // Angle 1 in degrees
+                                        TmpZone.mA1 = _tcstod(pToken + 3, &sz);
+                                    } else if (_tcsstr(pToken, _T("R2=")) == pToken) {
+                                        // Radius 2
+                                        TmpZone.mR2 = ReadLength(pToken + 3);
+                                    } else if (_tcsstr(pToken, _T("A2=")) == pToken) {
+                                        // Angle 2 in degrees
+                                        TmpZone.mA2 = _tcstod(pToken + 3, &sz);
+                                    } else if (_tcsstr(pToken, _T("A12=")) == pToken) {
+                                        // Angle 12
+                                        TmpZone.mA12 = _tcstod(pToken + 4, &sz);
+                                    } else if (_tcsstr(pToken, _T("Line=")) == pToken) {
+                                        // true For Line Turmpoint type 
+                                        // Exist only for start an Goalin LK
+                                        TmpZone.mLine = (_tcstol(pToken + 5, &sz, 10) == 1);
+                                    }
                                 }
+                                TmpZone.UpdateTask();
                             }
                         }
-
                     }
                     break;
-#endif
                 case none:
                 default:
                     break;
@@ -163,6 +384,11 @@ bool LoadCupTask(LPCTSTR szFileName) {
             memset(szString, 0, sizeof (szString)); // clear Temp Buffer
         }
         fclose(stream);
+    }
+
+    // Landing don't exist in LK Task Systems Remove It if is same as previous;
+    if ( bLoadComplet && (TaskWayPoint(0) == TaskWayPoint(getFinalWaypoint())) ) {
+        RemoveTaskPoint(getFinalWaypoint());
     }
     UnlockTaskData();
     return ValidTaskPoint(0);

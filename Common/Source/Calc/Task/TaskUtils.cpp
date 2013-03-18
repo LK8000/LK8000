@@ -234,3 +234,9 @@ double DoubleLegDistance(int taskwaypoint,
 }
 
 
+const WAYPOINT* TaskWayPoint(size_t idx) {
+    if (ValidTaskPoint(idx)) {
+        return &WayPointList[Task[idx].Index];
+    }
+    return NULL;
+}
