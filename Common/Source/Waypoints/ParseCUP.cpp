@@ -12,7 +12,6 @@
 
 
 extern int globalFileNum;
-static double ReadLength(TCHAR *temp);
 
 void CleanCupCode(TCHAR* TpCode) {
     TCHAR Tname[NAME_SIZE + 1];
@@ -293,7 +292,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 
 
 
-static double ReadLength(TCHAR *temp)
+double ReadLength(TCHAR *temp)
 {
   TCHAR *stop=temp;
   double len;
