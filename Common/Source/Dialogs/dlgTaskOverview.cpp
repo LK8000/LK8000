@@ -14,6 +14,7 @@
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #include "Dialogs.h"
+#include "CTaskFileHelper.h"
 
 extern void ResetTaskWaypoint(int j);
 
@@ -522,6 +523,9 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
       if(wextension) {
           bool bOK = false;
           if(_wcsicmp(wextension,_T(LKS_TSK))==0) {
+              CTaskFileHelper helper;
+              bOK = helper.Load(szFileName);
+          } else if (_wcsicmp(wextension,_T(LKS_OLD_TSK))==0) {
               LoadNewTask(szFileName);
               bOK = true;
           } else if (_wcsicmp(wextension,_T(LKS_WP_CUP))==0) {
@@ -677,6 +681,8 @@ void dlgTaskOverviewShowModal(void){
 
 	TCHAR suff[10];
 	_stprintf(suff,_T("*%S"),LKS_TSK);
+	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
+	_stprintf(suff,_T("*%S"),LKS_OLD_TSK);
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
 	_stprintf(suff,_T("*%S"),LKS_WP_CUP);
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);

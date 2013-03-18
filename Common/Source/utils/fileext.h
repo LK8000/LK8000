@@ -30,6 +30,7 @@ class Utf8File
     {
       io_read,    ///< open for reading only
       io_append,  ///< open for appending to file end
+      io_create // orverride existing file if exist
     };
     
     Utf8File();

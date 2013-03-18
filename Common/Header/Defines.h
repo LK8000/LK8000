@@ -119,7 +119,8 @@
 /*
  * LK8000 suffixes - Do not change them, uncompleted work 091001
  */
-#define LKS_TSK		".tsk"
+#define LKS_TSK		".lkt"
+#define LKS_OLD_TSK		".tsk"
 #define LKS_LOG		".log"
 #define LKS_TXT		".txt"
 #define LKS_PRF		".prf"
@@ -148,7 +149,7 @@
  * LK8000 files (keep original suffixes)
  */
 #define LKF_RECENTS	"History.txt"
-#define LKF_DEFAULTASK	"Default.tsk"
+#define LKF_DEFAULTASK	"Default.lkt"
 #if USETOPOMARKS
  #define LKF_MARKS	"Markers.txt"
  #define LKF_SMARKS	"Markers"
@@ -856,7 +857,7 @@ static const double PI = (4*atan(1));
 //
 
 #ifndef __MINGW32__
-#define DEG "°"
+#define DEG "\xB0"
 #else
 #define DEG "Â°"
 #endif

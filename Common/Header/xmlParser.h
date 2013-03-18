@@ -47,16 +47,14 @@
         #define TCHAR TCHAR
     #endif /* TCHAR */
 #else
-
-#rwrwr
     #ifndef LPCTSTR
-        #define LPCTSTR co nst char *
+        #define LPCTSTR const char *
     #endif /* LPCTSTR */
     #ifndef LPTSTR
-        #define LPTSTR c har *
+        #define LPTSTR char *
     #endif /* LPTSTR */
     #ifndef TCHAR
-        #define TCHAR ch ar
+        #define TCHAR char
     #endif /* TCHAR */
 #endif
 #ifndef FALSE
@@ -112,6 +110,7 @@ typedef struct {
 // Structure for XML attribute.
 typedef struct {
     LPCTSTR lpszName; LPCTSTR lpszValue;
+    operator bool () { return (lpszName != NULL && lpszValue != NULL); }
 } XMLAttribute;
 
 struct XMLNodeContents;
@@ -145,7 +144,7 @@ typedef struct XMLNode
 
     // You must create your first instance of XMLNode with these 3 parse functions:
     // (see complete explanation of parameters below)
-   
+    static XMLNode createXMLTopNode()  { return XMLNode(NULL,NULL,FALSE); }
     static XMLNode parseString   (LPCTSTR     lpszXML, LPCTSTR tag=NULL, XMLResults *pResults=NULL);
     static XMLNode parseFile     (const TCHAR *lpszXML, LPCTSTR tag=NULL, XMLResults *pResults=NULL);
     static XMLNode openFileHelper(const TCHAR *lpszXML, LPCTSTR tag);
@@ -206,6 +205,9 @@ typedef struct XMLNode
     XMLAttribute *AddAttribute(LPCTSTR lpszName, LPCTSTR lpszValuev);
     LPCTSTR AddText(LPCTSTR lpszValue);
     XMLClear *AddClear(LPCTSTR lpszValue, LPCTSTR lpszOpen, LPCTSTR lpszClose);
+    
+    
+    operator bool () { return d != NULL; }
 
 private:
 

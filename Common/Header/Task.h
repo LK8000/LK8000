@@ -8,6 +8,8 @@
 
 #define CIRCLE 0
 #define SECTOR 1
+#define DAe    2 // only Exist for not AAT and Not PGTask.
+#define LINE   3 // only Used for Save Start and Finish Type in xml file.
 
 typedef struct _START_POINT
 {
@@ -101,6 +103,7 @@ bool ValidTaskPoint(int i);
 bool ValidWayPoint(int i);
 bool ValidNotResWayPoint(int i);
 bool ValidResWayPoint(int i);
+bool ValidStartPoint(size_t i);
 
 double FindInsideAATSectorRange(double latitude,
                                 double longitude,
