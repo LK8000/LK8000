@@ -43,31 +43,37 @@ int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing
 
   if(zoom.AutoZoom())
 	zoom.AutoZoom(false);
+  double fFact = 1.25 ;
+#ifdef INIT_CASE
 
-  double fFact = 1.0 ;
 
   switch(ScreenSize) {
-	//	case ss896x672:	fFact=1.300; break;
-	case ss896x672:	fFact=0.900; break;
-	//	case ss800x480:	fFact=0.975; break;
-	case ss800x480:	fFact=0.735; break;
-	//	case ss640x480:	fFact=1.3; break;
-	case ss640x480:	fFact=0.90; break;
-	//	case ss480x272:	fFact=1.900; break;
-	case ss480x272:	fFact=0.680; break;
-	//	case ss400x240:	fFact=1.250; break;
-	case ss400x240:	fFact=0.4250; break;
-	//	case ss320x240:	fFact=1.295; break;
-	case ss320x240:	fFact=0.875; break;
-	case ss480x800:	fFact=1.20; break;
-	case ss480x640:	fFact=1.20; break;
-	case ss272x480:	fFact=1.20; break;
-	case ss240x400:	fFact=1.20; break;
-	case ss240x320:	fFact=1.20; break;
+
+	case ss896x672:	fFact=0.938; break;
+
+	case ss800x480:	fFact=0.750; break;
+
+	case ss640x480:	fFact=0.938; break;
+	case ss480x272:	fFact=0.708; break;
+	case ss400x240:	fFact=0.750; break;
+	case ss320x240:	fFact=0.938; break;
+
+	case ss480x800:	fFact=1.250; break;
+	case ss480x640:	fFact=1.250; break;
+	case ss272x480:	fFact=1.250; break;
+	case ss240x400:	fFact=1.250; break;
+	case ss240x320:	fFact=1.250; break;
 	default:	fFact=1.000; break;
   }
+#endif
 
 
+  if((ScreenSizeX > 0) && (ScreenSizeY > 0))
+  {
+    if(ScreenSizeX > ScreenSizeY)
+      fFact = (double)ScreenSizeY/(double)ScreenSizeX * 1.250;
+
+  }
   PanLatitude  = DrawInfo.Latitude;
   PanLongitude = DrawInfo.Longitude;
 
@@ -87,6 +93,9 @@ int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing
 			DisplayAircraftAngle = AngleLimit360(DrawInfo.TrackBearing);
 		break;
   }
+
+  int iOldLocator = EnableThermalLocator;
+  EnableThermalLocator =0;
 
   MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
 
@@ -197,7 +206,7 @@ _nomoredeclutter:
 
   // 
   // Stuff for MAPTRK only (M1)
-  if (MapSpaceMode==MSM_MAPTRK||MapSpaceMode==MSM_VISUALGLIDE) {
+  if (MapSpaceMode==MSM_MAPTRK) {
 	if(IsMultimapTerrain() || IsMultimapTopology() ) {
 		if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
 			DrawGlideThroughTerrain(hdc, DrawRect); 
@@ -263,6 +272,7 @@ _nomoredeclutter:
   }
 
   MapWindow::zoom.RequestedScale(fOldScale);
+  EnableThermalLocator = iOldLocator;
   DisplayOrientation = iOldDisplayOrientation;
   SelectObject(hdc, hfOld);
   return 0;

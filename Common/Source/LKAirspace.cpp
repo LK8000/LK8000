@@ -23,6 +23,7 @@
  #define DEBUG_AIRSPACE
 #endif
 
+
 static const int k_nAreaCount = 14;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
                     _T("R"),  
@@ -627,6 +628,18 @@ bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWar
     return true;
   }
   return false;
+}
+
+/******************************************************
+ * compare name and type for gruping airspaces
+ ******************************************************/
+bool CAirspace::IsSame( CAirspace &as2 )
+{
+bool ret = false;
+	if(_type  == as2.Type())
+	  if( _tcscmp((_name),  (as2.Name()) ) == 0 )
+        ret = true;
+return ret;
 }
 
 // Calculates nearest horizontal, vertical and 3d distance to airspace based on last known position
@@ -1548,10 +1561,8 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
   double CenterY = 0;
   double lat=0,lon=0;
   bool flyzone = false;
- 
-  #if TESTBENCH 
+  
   StartupStore(TEXT(". Reading airspace file%s"),NEWLINE);
-  #endif
 
   while (ReadString(fp, READLINE_LENGTH, Text)){
     ++linecount;
@@ -1864,9 +1875,7 @@ void CAirspaceManager::CloseAirspaces()
   _airspaces_page24.clear();
   for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) delete *it;
   _airspaces.clear();
-  #if TESTBENCH
   StartupStore(TEXT(". CloseLKAirspace%s"),NEWLINE);
-  #endif
 }
 
 void CAirspaceManager::QnhChangeNotify(const double &newQNH)
@@ -1892,20 +1901,16 @@ int CAirspaceManager::ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], dou
                                         double terrain_heights[AIRSPACE_SCANSIZE_X],
                                         AirSpaceSideViewSTRUCT airspacetype[MAX_NO_SIDE_AS],int iMaxNoAs) const
 {
-int iNoFoundAS=0;
-unsigned int iSelAS =0;
-unsigned int i;
-unsigned int iHIdx,iDIdx;
+int iNoFoundAS=0;            // number of found airspaces in scan line
+unsigned int iSelAS =0;      // current selected airspace for processing
+unsigned int i;              // loop variable
+CAirspaceList::const_iterator it;
+CCriticalSection::CGuard guard(_csairspaces);
 
-  CAirspaceList::const_iterator it;
-  CCriticalSection::CGuard guard(_csairspaces);
   airspacetype[0].psAS= NULL;
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
   {
-// CAirspaceManager::Instance().
-//	if( CAirspaceManager::Instance().CheckAirspaceAltitude( (AIRSPACE_ALT)&(*it)->Base(), (AIRSPACE_ALT)&(*it)->Top() ) )
-	if( CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top())==TRUE)
-    if(iNoFoundAS < iMaxNoAs-1)
+	if(( CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top())==TRUE)&& (iNoFoundAS < iMaxNoAs-1))
     {
       for (i=0; i<AIRSPACE_SCANSIZE_X; i++)
       {
@@ -1916,11 +1921,10 @@ unsigned int iHIdx,iDIdx;
         	if((*it)->IsHorizontalInside(lons[i-1], lats[i-1]))
         	  bPrevIn = true;
 
-		  iDIdx = i;
 		  if( !bPrevIn)/* new AS section in this view*/
 		  {
 		   /*********************************************************************
-		    * switch to next airspace
+		    * switch to next airspace section
 		    *********************************************************************/
 		    iSelAS = iNoFoundAS;
 		    iNoFoundAS++;
@@ -1933,68 +1937,61 @@ unsigned int iHIdx,iDIdx;
 		      LK_tcsncpy((wchar_t*)  airspacetype[iSelAS].szAS_Name,  (wchar_t*)(*it)->Name(), NAME_SIZE-1);
 		    }
 		    airspacetype[iSelAS].iIdx = iSelAS;
-		    airspacetype[iSelAS].bRectAllowed = true ;
+		    airspacetype[iSelAS].bRectAllowed =  true ;
 		    airspacetype[iSelAS].bEnabled = (*it)->Enabled();
-
-			if ( ((*it)->Top()->Base == abAGL) ||
-				 (((*it)->Base()->Base == abAGL) /* && ((*it)->Base()->AGL > 0)*/)
-				   ) airspacetype[iSelAS].bRectAllowed = false ;
-
-		    airspacetype[iSelAS].rc.left   = iDIdx;
-		    airspacetype[iSelAS].rc.right  = iDIdx;
+            /**********************************************************************
+             * allow rectangular shape if no AGL reference
+             **********************************************************************/
+			if ( ((*it)->Top()->Base == abAGL) || (((*it)->Base()->Base == abAGL)))
+			  airspacetype[iSelAS].bRectAllowed = false ;
+            /**********************************************************************
+             * init with minium rectangle right side may be extended
+             **********************************************************************/
+		    airspacetype[iSelAS].rc.left   = i;
+		    airspacetype[iSelAS].rc.right  = i+1;
 		    airspacetype[iSelAS].rc.bottom = (unsigned int) (*it)->Base()->Altitude;
 		    airspacetype[iSelAS].rc.top    = (unsigned int) (*it)->Top()->Altitude;
 		    airspacetype[iSelAS].iNoPolyPts=0;
 
-		//    if((*it)->Base()->Base == abAGL)
-		 //     if ((*it)->Base()->AGL < 10)
-		 //       airspacetype[iSelAS].rc.bottom = 0;
-         //   if( airspacetype[iSelAS].bRectAllowed == false)
-              if((*it)->Top()->Base == abAGL)
-    		    airspacetype[iSelAS].rc.top    = (unsigned int) ((*it)->Top()->AGL  + terrain_heights[iDIdx]);
-              if((*it)->Base()->Base == abAGL)
-    		    airspacetype[iSelAS].rc.bottom = (unsigned int) ((*it)->Base()->AGL + terrain_heights[iDIdx]);
-
 		  }
-
-		  airspacetype[iSelAS].rc.right  = iDIdx;
+		  int iHeight;
+		  airspacetype[iSelAS].rc.right  = i+1;
+          if(i==AIRSPACE_SCANSIZE_X-1)
+            airspacetype[iSelAS].rc.right= i+3;
 
 		  if(airspacetype[iSelAS].bRectAllowed == false)
 		  {
 	        if( airspacetype[iSelAS].psAS->Base()->Base == abAGL )
-	        {
-		      iHIdx = (unsigned int)(airspacetype[iSelAS].psAS->Base()->AGL + terrain_heights[iDIdx]);
-	        }
+	          iHeight = (unsigned int)(airspacetype[iSelAS].psAS->Base()->AGL + terrain_heights[i]);
 		    else
-		 	  iHIdx = (unsigned int)airspacetype[iSelAS].psAS->Base()->Altitude;
-		    airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts++] = (POINT){(LONG)iDIdx,(LONG)iHIdx};
+		      iHeight = (unsigned int)airspacetype[iSelAS].psAS->Base()->Altitude;
+		    airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts++] = (POINT){(LONG)i,(LONG)iHeight};
 
 	        /************************************************************
 	         *  resort and copy polygon array
 			 **************************************************************/
 		    bool bLast= false;
-             if(i==AIRSPACE_SCANSIZE_X-1)
-               bLast= true;
-             else
+            if(i==AIRSPACE_SCANSIZE_X-1)
+              bLast= true;
+            else
+            {
                if (airspacetype[iSelAS].psAS->IsHorizontalInside(lons[i+1], lats[i+1]))
                  bLast= false;
                else
                  bLast= true;
+             }
+
              if (bLast)
 			 {
+       		   airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts].x = i+1;
+               if(i==AIRSPACE_SCANSIZE_X-1)
+           		 airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts].x = i+3;
+       		   airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts].y = airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts-1].y;
+       		   airspacetype[iSelAS].iNoPolyPts++;
+
 			   int iN = airspacetype[iSelAS].iNoPolyPts;
 			   int iCnt=airspacetype[iSelAS].iNoPolyPts;
-#if BASE_REDUCE
-			   if ((*it)->Base()->AGL < 10)
-			   {
-				  airspacetype[iSelAS].apPolygon[iCnt] = airspacetype[iSelAS].apPolygon[iN-1];
-				  airspacetype[iSelAS].apPolygon[iCnt++].y = 0;
-				  airspacetype[iSelAS].apPolygon[iCnt] = airspacetype[iSelAS].apPolygon[0];
-				  airspacetype[iSelAS].apPolygon[iCnt++].y = 0;
-				  airspacetype[iSelAS].rc.bottom = 0;
-			   }
-			   else
-#endif
+
 			   for (int iPt = 0 ;iPt < iN; iPt++)
 			   {
 				  airspacetype[iSelAS].apPolygon[iCnt] = airspacetype[iSelAS].apPolygon[iN-iPt-1];
@@ -2006,7 +2003,7 @@ unsigned int iHIdx,iDIdx;
 				  airspacetype[iSelAS].rc.bottom = min(airspacetype[iSelAS].rc.bottom ,airspacetype[iSelAS].apPolygon[iPt].y);
 				  airspacetype[iSelAS].rc.top    = max( airspacetype[iSelAS].rc.top   ,airspacetype[iSelAS].apPolygon[iPt].y);
 
-				  if(iCnt < GC_MAX_POLYGON_PTS-2)
+				  if(iCnt < GC_MAX_POLYGON_PTS-1)
 					iCnt++;
 				}
 				airspacetype[iSelAS].apPolygon[iCnt++] = airspacetype[iSelAS].apPolygon[0];
@@ -2014,10 +2011,7 @@ unsigned int iHIdx,iDIdx;
 			}
 		  }
 		  RECT rcs =  airspacetype[iSelAS].rc;
-
 		  airspacetype[iSelAS].iAreaSize = abs(rcs.right - rcs.left) *	abs(rcs.top - rcs.bottom);
-		 // if(!airspacetype[iSelAS].bEnabled)
-		//	airspacetype[iSelAS].iAreaSize  = 0;
         } // inside
       } // finished scanning range
     } // if overlaps bounds
@@ -2523,16 +2517,6 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg)
 
 
 
-bool CAirspace::IsSame( CAirspace &as2 )
-{
-bool ret = false;
-	if(_type  == as2.Type())
-	  if( _tcscmp((_name),  (as2.Name()) ) == 0 )
-        ret = true;
-return ret;
-}
-
-
 // Ack an airspace for a given ack level and acknowledgement time
 void CAirspaceManager::AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningLevel_t ackstate)
 {
@@ -2596,7 +2580,6 @@ CAirspaceList::const_iterator it;
   if(!AirspaceAckAllSame)
   {
 	airspace.WarningAckLevel(awRed);
-        airspace.SetAckTimeout();
   }
   else
   {
@@ -2605,7 +2588,6 @@ CAirspaceList::const_iterator it;
       if( (*it)->IsSame(airspace))
 	  {
     	(*it)->WarningAckLevel(awRed);
-    	(*it)->SetAckTimeout();
 #ifdef DEBUG_AIRSPACE
 StartupStore(TEXT("LKAIRSP: %s AirspaceAckSpace()%s"),(*it)->Name(),NEWLINE );
 #endif
@@ -2955,9 +2937,7 @@ void CAirspaceManager::SaveSettings() const
       //Newline
       fprintf(f,"\n");
     }
-    #if TESTBENCH
     StartupStore(TEXT(". Settings for %d airspaces saved to file <%s>%s"), _airspaces.size(), szFileName, NEWLINE);
-    #endif
     fclose(f);
   } else StartupStore(TEXT("Failed to save airspace settings to file <%s>%s"),szFileName,NEWLINE);
 }

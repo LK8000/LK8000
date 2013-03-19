@@ -21,7 +21,7 @@
 // the resolution turns to be too inaccurate
 // so tha small (<5km airspaced) (e.g. dangerous areas) will not be shown
 // with AIRSPACE_SCANSIZE_X 64 I tried to make a compromise between resolution and speed on slow devices
-#define AIRSPACE_SCANSIZE_X 140
+#define AIRSPACE_SCANSIZE_X 160
 #define GC_MAX_POLYGON_PTS (2*AIRSPACE_SCANSIZE_X+4)
 #define MAX_NO_SIDE_AS 40
 // Define this, if airspace nearest distance infoboxes will use selected airpsace only
@@ -125,7 +125,8 @@ public:
   virtual void Hash(char *hashout, int maxbufsize) const;
   // QNH change nofitier, called when global qhn changed
   void QnhChangeNotify();
-
+  // compare airspce name and type for grouping
+  bool IsSame( CAirspace &as2 );
   // Warning system
   // Step1: At the start of warning calculation, set class attributes to init values
   static void StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -148,7 +149,7 @@ public:
   // Initialize instance attributes
   void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone);
 
-  bool IsSame( CAirspace &as2 );
+
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }
   const AIRSPACE_ALT* Base() const { return &_base; }
@@ -412,7 +413,6 @@ public:
              double *nearestdistance, double *nearestbearing, double *height = NULL) const;
   void SortAirspaces(void);
   bool ValidAirspaces(void) const;
-  
   //Warning system
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool AirspaceWarningIsGoodPosition(float longitude, float latitude, int alt, int agl) const;

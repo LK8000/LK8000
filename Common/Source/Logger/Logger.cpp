@@ -1217,7 +1217,7 @@ int RunSignature() {
 
   // CAREFUL!!! PNA is ALSO PPC2003!!
   #ifdef PNA
-  _tcscat(path,_T("\\LKRECORD_PNA.LK8"));
+  _tcscat(path,_T("\\LKRECORD_PNA.EXE"));
   #else
     #ifdef PPC2002
     _tcscat(path,_T("\\LKRECORD_2002.LK8"));
@@ -1260,7 +1260,7 @@ int RunSignature() {
 
 	#if TESTBENCH
 	else 
-		StartupStore(_T(".... no executable found, proceeding with DoSignature\n"));
+		StartupStore(_T(".... no executable <%s> found, proceeding with DoSignature\n"),path);
 	#endif
 
 	extern int DoSignature(TCHAR *hpath);
@@ -1273,7 +1273,7 @@ int RunSignature() {
   // STILL_ACTIVE = 259, this retval should be checked for
 
   #if TESTBENCH
-  StartupStore(_T(".... RunSignature exec terminated, retval=%d%s"),retval,NEWLINE);
+  StartupStore(_T(".... RunSignature exec <%s> terminated, retval=%d%s"),path,retval,NEWLINE);
   #endif
 
 

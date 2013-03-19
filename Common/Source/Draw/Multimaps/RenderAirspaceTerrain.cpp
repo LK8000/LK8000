@@ -43,10 +43,6 @@ int i,j;
   double d_lat[AIRSPACE_SCANSIZE_X];
   double d_lon[AIRSPACE_SCANSIZE_X];
   double d_h[AIRSPACE_SCANSIZE_X];
-  double dfj = 1.0/(AIRSPACE_SCANSIZE_X-1);
-
-
-
 
 #define   FRAMEWIDTH 2
   RasterTerrain::Lock(); // want most accurate rounding here
@@ -54,7 +50,7 @@ int i,j;
   double fj;
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++)
   { // scan range
-    fj = j*1.0/(AIRSPACE_SCANSIZE_X-1);
+    fj = (double)j*1.0/(double)(AIRSPACE_SCANSIZE_X);
     FindLatitudeLongitude(lat, lon, brg, range*fj, &d_lat[j], &d_lon[j]);
     d_h[j] = RasterTerrain::GetTerrainHeight(d_lat[j], d_lon[j]);
     if (d_h[j] == TERRAIN_INVALID) d_h[j]=0; //@ 101027 BUGFIX
@@ -90,16 +86,15 @@ int i,j;
   /**********************************************************************************
    * transform into diagram coordinates
    **********************************************************************************/
-  double dx1 = dfj*(rc.right-rc.left);
-  int x0 = rc.left; //+BORDER_X;
-
+  double dx1 = (double)(rc.right-rc.left)/(double)(AIRSPACE_SCANSIZE_X+1);
+  int x0 = rc.left;
 
   for( i = 0 ; i < Sideview_iNoHandeldSpaces ;i++)
   {
-	Sideview_pHandeled[i].rc.left   = iround((Sideview_pHandeled[i].rc.left  )*dx1)+x0 -FRAMEWIDTH/2;
-	Sideview_pHandeled[i].rc.right  = iround((Sideview_pHandeled[i].rc.right+1)*dx1)+x0+ FRAMEWIDTH/2;
+	Sideview_pHandeled[i].rc.left   = ((Sideview_pHandeled[i].rc.left  )*dx1)+x0 -FRAMEWIDTH/2;
+	Sideview_pHandeled[i].rc.right  = ((Sideview_pHandeled[i].rc.right )*dx1)+x0 +FRAMEWIDTH/2;
 
-	Sideview_pHandeled[i].rc.bottom  = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.bottom,  psDiag);//+FRAMEWIDTH/2;
+	Sideview_pHandeled[i].rc.bottom  = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.bottom,  psDiag)+FRAMEWIDTH/2;
 	Sideview_pHandeled[i].rc.top     = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.top,     psDiag)-FRAMEWIDTH/2;
 
 	Sideview_pHandeled[i].iMaxBase  = Sideview_pHandeled[i].rc.bottom ;
@@ -107,18 +102,22 @@ int i,j;
 
 	int iN = Sideview_pHandeled[i].iNoPolyPts;
 	if(Sideview_pHandeled[i].bRectAllowed == false)
-      for(j =0 ; j < iN  ; j++)
+    for(j =0 ; j < iN  ; j++)
+    {
+      Sideview_pHandeled[i].apPolygon[j].x = (((Sideview_pHandeled[i].apPolygon[j].x)*dx1)+x0);
+      Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double)   Sideview_pHandeled[i].apPolygon[j].y, psDiag);
+      if(j != iN-1)
       {
-        Sideview_pHandeled[i].apPolygon[j].x = iround(Sideview_pHandeled[i].apPolygon[j].x * dx1)+x0;
-        Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double)   Sideview_pHandeled[i].apPolygon[j].y, psDiag);
-        if(j != iN-1)
+        if(( j < iN /2) )
         {
-          if(( j < iN /2) )
-            Sideview_pHandeled[i].iMaxBase = min ((long)Sideview_pHandeled[i].iMaxBase ,(long)Sideview_pHandeled[i].apPolygon[j].y);
-          else
-            Sideview_pHandeled[i].iMinTop  = max ((long)Sideview_pHandeled[i].iMinTop , (long)Sideview_pHandeled[i].apPolygon[j].y);
+          Sideview_pHandeled[i].iMaxBase = min ((long)Sideview_pHandeled[i].iMaxBase ,(long)Sideview_pHandeled[i].apPolygon[j].y);
+        }
+        else
+        {
+          Sideview_pHandeled[i].iMinTop  = max ((long)Sideview_pHandeled[i].iMinTop , (long)Sideview_pHandeled[i].apPolygon[j].y);
         }
       }
+    }
   }
   /**********************************************************************************
    * draw airspaces
@@ -127,99 +126,93 @@ int i,j;
   HPEN oldpen = (HPEN)SelectObject(hdc, (HPEN)NULL);
   _TCHAR text [80];
 
-
   for (int m=0 ; m < Sideview_iNoHandeldSpaces; m++)
   {
 	int iSizeIdx =  iSizeLookupTable[m];
+	int  type = Sideview_pHandeled[iSizeIdx].iType;
+	RECT rcd  = Sideview_pHandeled[iSizeIdx].rc;
+	double fFrameColFact;
+	if(Sideview_pHandeled[iSizeIdx].bEnabled)
+	{
+	  SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
+	  SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
+	  fFrameColFact = 0.8;
+	}
+	else
+	{
+	  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+	  SetTextColor(hdc, RGB_GGREY);
+	  fFrameColFact = 1.2;
+	}
+	if(INVERTCOLORS)
+	  fFrameColFact *= 0.8;
+	else
+	  fFrameColFact *= 1.2;
+	long lColor = ChangeBrightness( MapWindow::GetAirspaceColourByClass(type), fFrameColFact);
+	HPEN mpen2 =(HPEN)CreatePen(PS_SOLID,FRAMEWIDTH,lColor);
+	HPEN oldpen2 = (HPEN)SelectObject(hdc, (HPEN)mpen2);
 
-	  int  type = Sideview_pHandeled[iSizeIdx].iType;
-	  RECT rcd  = Sideview_pHandeled[iSizeIdx].rc;
-	  double fFrameColFact;
-	  if(Sideview_pHandeled[iSizeIdx].bEnabled)
-	  {
-		SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
-		SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
+	if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
+	  Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
+	else
+	  Polygon(hdc,Sideview_pHandeled[iSizeIdx].apPolygon ,Sideview_pHandeled[iSizeIdx].iNoPolyPts );
 
-		fFrameColFact = 0.8;
-	  }
-	  else
-	  {
-		SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-		SetTextColor(hdc, RGB_GGREY);
-		fFrameColFact = 1.2;
-	  }
-	  if(INVERTCOLORS)
-		fFrameColFact *= 0.8;
-	  else
-		fFrameColFact *= 1.2;
-	  long lColor = ChangeBrightness( MapWindow::GetAirspaceColourByClass(type), fFrameColFact);
-	  HPEN mpen2 =(HPEN)CreatePen(PS_SOLID,FRAMEWIDTH,lColor);
-	  HPEN oldpen2 = (HPEN)SelectObject(hdc, (HPEN)mpen2);
+	SelectObject(hdc, (HPEN)oldpen2);
+	DeleteObject (mpen2);
 
-	  if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
-		Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
-	  else
-	    Polygon(hdc,Sideview_pHandeled[iSizeIdx].apPolygon ,Sideview_pHandeled[iSizeIdx].iNoPolyPts );
-
-	  SelectObject(hdc, (HPEN)oldpen2);
-	  DeleteObject (mpen2);
-
-#define LINE_DIFF 2
-
-  /************************************/
-//  SetBkMode(hdc, OPAQUE);  /* OPAQUE may be better readable but verry ugly
-  /************************************/
-  if(Sideview_pHandeled[iSizeIdx].bEnabled)
-	SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
-  else
-	SetTextColor(hdc, RGB_GGREY);
-
-  /***********************************************
-   * build view overlap for centering text
-   ***********************************************/
-  rcd.bottom = min(  rcd.bottom, (long)Sideview_pHandeled[iSizeIdx].iMaxBase  );
-  rcd.top    = max(  rcd.top   , (long)Sideview_pHandeled[iSizeIdx].iMinTop );
-
-  rcd.left   = max(rcd.left   ,rc.left);
-  rcd.right  = min(rcd.right  ,rc.right);
-  rcd.bottom = min(rcd.bottom ,rc.bottom);
-  rcd.top    = max(rcd.top    ,rc.top);
-  SIZE textsize;
-  SIZE aispacesize = {rcd.right-rcd.left , rcd.bottom- rcd.top};
-
-  LK_tcsncpy(text, Sideview_pHandeled[iSizeIdx].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
-  GetTextExtentPoint(hdc, text, _tcslen(text), &textsize);
-
-  int x = rcd.left + aispacesize.cx/2;;
-  int y = rcd.top  + aispacesize.cy/2;
-//  int iTextheight =  tsize.cy;
-  int iOffset =0;
-  BOOL  blongtext = false;
-  if(aispacesize.cy > (2*textsize.cy) &&  (textsize.cx < aispacesize.cx))
-  {
-    iOffset	=textsize.cy/2;
-  }
-
-
-  if ( (textsize.cx < aispacesize.cx) &&  (textsize.cy < aispacesize.cy ) )
-  {
-	ExtTextOut(hdc, x-textsize.cx/2, y-iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-    blongtext = true;
-  }
-
-  LK_tcsncpy(text, CAirspaceManager::Instance().GetAirspaceTypeShortText( Sideview_pHandeled[iSizeIdx].iType), NAME_SIZE);
-  GetTextExtentPoint(hdc, text, _tcslen(text), &textsize);
-  if(textsize.cx < aispacesize.cx)
-  {
-    if (2*textsize.cy < aispacesize.cy )
-    {
-	  ExtTextOut(hdc, x-textsize.cx/2, y+iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-    }
+    if(Sideview_pHandeled[iSizeIdx].bEnabled)
+	  SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
     else
-      if ((textsize.cy < aispacesize.cy ) && (!blongtext))
-          ExtTextOut(hdc, x-textsize.cx/2, y-iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	  SetTextColor(hdc, RGB_GGREY);
+
+    /***********************************************
+     * build view overlap for centering text
+     ***********************************************/
+    rcd.bottom = min(  rcd.bottom, (long)Sideview_pHandeled[iSizeIdx].iMaxBase  );
+    rcd.top    = max(  rcd.top   , (long)Sideview_pHandeled[iSizeIdx].iMinTop );
+
+    rcd.left   = max(rcd.left   ,rc.left);
+    rcd.right  = min(rcd.right  ,rc.right);
+    rcd.bottom = min(rcd.bottom ,rc.bottom);
+    rcd.top    = max(rcd.top    ,rc.top);
+    SIZE textsize;
+    SIZE aispacesize = {rcd.right-rcd.left , rcd.bottom- rcd.top};
+
+    LK_tcsncpy(text, Sideview_pHandeled[iSizeIdx].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
+    GetTextExtentPoint(hdc, text, _tcslen(text), &textsize);
+
+    int x = rcd.left + aispacesize.cx/2;;
+    int y = rcd.top  + aispacesize.cy/2;
+//  int iTextheight =  tsize.cy;
+    int iOffset =0;
+    BOOL  blongtext = false;
+    if(aispacesize.cy > (2*textsize.cy) &&  (textsize.cx < aispacesize.cx))
+    {
+      iOffset	=textsize.cy/2;
+    }
+
+
+    if ( (textsize.cx < aispacesize.cx) &&  (textsize.cy < aispacesize.cy ) )
+    {
+  	  ExtTextOut(hdc, x-textsize.cx/2, y-iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      blongtext = true;
+    }
+
+    LK_tcsncpy(text, CAirspaceManager::Instance().GetAirspaceTypeShortText( Sideview_pHandeled[iSizeIdx].iType), NAME_SIZE);
+    GetTextExtentPoint(hdc, text, _tcslen(text), &textsize);
+    if(textsize.cx < aispacesize.cx)
+    {
+      if (2*textsize.cy < aispacesize.cy )
+      {
+	    ExtTextOut(hdc, x-textsize.cx/2, y+iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      }
+      else
+      {
+        if ((textsize.cy < aispacesize.cy ) && (!blongtext))
+            ExtTextOut(hdc, x-textsize.cx/2, y-iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      }
+    }
   }
- }
   /*************************************************************
    * draw ground
    *************************************************************/
