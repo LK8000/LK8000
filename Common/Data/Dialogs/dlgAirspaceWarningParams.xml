@@ -15,6 +15,7 @@
 </WndProperty>
 <WndProperty Name="prpAckAllSame" Caption="_@M1823_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1264_">
 <DataField name="" DataType="boolean"/>
+</WndProperty>
 <WndProperty Name="prpWarningVerticalMargin" Caption="_@M1278_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1210_" keyboard=1>
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=10 Max=1000 Step=1/>
 </WndProperty>
