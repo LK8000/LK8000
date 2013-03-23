@@ -1927,7 +1927,9 @@ CCriticalSection::CGuard guard(_csairspaces);
 		    * switch to next airspace section
 		    *********************************************************************/
 		    iSelAS = iNoFoundAS;
-		    iNoFoundAS++;
+		    if(iNoFoundAS < MAX_NO_SIDE_AS-1)
+		      iNoFoundAS++;
+		    LKASSERT(iNoFoundAS < MAX_NO_SIDE_AS);
 		    airspacetype[iNoFoundAS].psAS= NULL; // increment and reset head
            /*********************************************************************/
 		    airspacetype[iSelAS].psAS  = (*it) ;
@@ -1961,10 +1963,12 @@ CCriticalSection::CGuard guard(_csairspaces);
 
 		  if(airspacetype[iSelAS].bRectAllowed == false)
 		  {
+
 	        if( airspacetype[iSelAS].psAS->Base()->Base == abAGL )
 	          iHeight = (unsigned int)(airspacetype[iSelAS].psAS->Base()->AGL + terrain_heights[i]);
 		    else
 		      iHeight = (unsigned int)airspacetype[iSelAS].psAS->Base()->Altitude;
+			LKASSERT((airspacetype[iSelAS].iNoPolyPts) < GC_MAX_POLYGON_PTS);
 		    airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts++] = (POINT){(LONG)i,(LONG)iHeight};
 
 	        /************************************************************
@@ -1986,26 +1990,35 @@ CCriticalSection::CGuard guard(_csairspaces);
        		   airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts].x = i+1;
                if(i==AIRSPACE_SCANSIZE_X-1)
            		 airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts].x = i+3;
+
+   		  	   LKASSERT((airspacetype[iSelAS].iNoPolyPts)   < GC_MAX_POLYGON_PTS);
        		   airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts].y = airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts-1].y;
        		   airspacetype[iSelAS].iNoPolyPts++;
-
+   			   LKASSERT((airspacetype[iSelAS].iNoPolyPts) < GC_MAX_POLYGON_PTS);
 			   int iN = airspacetype[iSelAS].iNoPolyPts;
 			   int iCnt=airspacetype[iSelAS].iNoPolyPts;
 
 			   for (int iPt = 0 ;iPt < iN; iPt++)
 			   {
+				  LKASSERT(iCnt >= 0);
+			      LKASSERT(iCnt < GC_MAX_POLYGON_PTS);
+
 				  airspacetype[iSelAS].apPolygon[iCnt] = airspacetype[iSelAS].apPolygon[iN-iPt-1];
 				  if( airspacetype[iSelAS].psAS->Top()->Base == abAGL )
 					airspacetype[iSelAS].apPolygon[iCnt].y = (unsigned int)(airspacetype[iSelAS].psAS->Top()->AGL + terrain_heights[airspacetype[iSelAS].apPolygon[iCnt].x]);
 				  else
 					airspacetype[iSelAS].apPolygon[iCnt].y = (unsigned int) airspacetype[iSelAS].psAS->Top()->Altitude;
+			      LKASSERT(iCnt >=iPt);
 
+				  LKASSERT(iPt >= 0);
+			      LKASSERT(iPt < GC_MAX_POLYGON_PTS);
 				  airspacetype[iSelAS].rc.bottom = min(airspacetype[iSelAS].rc.bottom ,airspacetype[iSelAS].apPolygon[iPt].y);
 				  airspacetype[iSelAS].rc.top    = max( airspacetype[iSelAS].rc.top   ,airspacetype[iSelAS].apPolygon[iPt].y);
 
 				  if(iCnt < GC_MAX_POLYGON_PTS-1)
 					iCnt++;
 				}
+			    LKASSERT(iCnt < GC_MAX_POLYGON_PTS);
 				airspacetype[iSelAS].apPolygon[iCnt++] = airspacetype[iSelAS].apPolygon[0];
 				airspacetype[iSelAS].iNoPolyPts = iCnt;
 			}

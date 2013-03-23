@@ -50,7 +50,7 @@ int i,j;
   double fj;
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++)
   { // scan range
-    fj = (double)j*1.0/(double)(AIRSPACE_SCANSIZE_X);
+    fj = (double)j*1.0/(double)(AIRSPACE_SCANSIZE_X-1);
     FindLatitudeLongitude(lat, lon, brg, range*fj, &d_lat[j], &d_lon[j]);
     d_h[j] = RasterTerrain::GetTerrainHeight(d_lat[j], d_lon[j]);
     if (d_h[j] == TERRAIN_INVALID) d_h[j]=0; //@ 101027 BUGFIX
@@ -67,6 +67,7 @@ int i,j;
     Sideview_iNoHandeldSpaces =  CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h, Sideview_pHandeled,MAX_NO_SIDE_AS); //  Sideview_pHandeled[GC_MAX_NO];
   else
 	Sideview_iNoHandeldSpaces =0;
+  LKASSERT(Sideview_iNoHandeldSpaces  < MAX_NO_SIDE_AS);
   /********************************************************************************
    * bubble sort to start with biggest airspaces
    ********************************************************************************/
@@ -75,24 +76,29 @@ int i,j;
 	iSizeLookupTable[i] = i;
 
   for( i = 0 ; i < Sideview_iNoHandeldSpaces ;i++)
+  {
+	LKASSERT(iSizeLookupTable[i]  < MAX_NO_SIDE_AS);
 	for( j = i ; j < Sideview_iNoHandeldSpaces ;j++)
+	{
+	  LKASSERT(iSizeLookupTable[j]  < MAX_NO_SIDE_AS);
       if(Sideview_pHandeled[iSizeLookupTable[i]].iAreaSize < Sideview_pHandeled[iSizeLookupTable[j]].iAreaSize )
       {
     	int iTmp = iSizeLookupTable[i];
     	iSizeLookupTable[i] = iSizeLookupTable[j];
     	iSizeLookupTable[j] = iTmp;
       }
-
+	}
+  }
   /**********************************************************************************
    * transform into diagram coordinates
    **********************************************************************************/
-  double dx1 = (double)(rc.right-rc.left)/(double)(AIRSPACE_SCANSIZE_X+1);
+  double dx1 = (double)(rc.right-rc.left)/(double)(AIRSPACE_SCANSIZE_X-1);
   int x0 = rc.left;
-
+  LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
   for( i = 0 ; i < Sideview_iNoHandeldSpaces ;i++)
   {
-	Sideview_pHandeled[i].rc.left   = ((Sideview_pHandeled[i].rc.left  )*dx1)+x0 -FRAMEWIDTH/2;
-	Sideview_pHandeled[i].rc.right  = ((Sideview_pHandeled[i].rc.right )*dx1)+x0 +FRAMEWIDTH/2;
+	Sideview_pHandeled[i].rc.left   = (long)((Sideview_pHandeled[i].rc.left  )*dx1)+x0 -FRAMEWIDTH/2;
+	Sideview_pHandeled[i].rc.right  = (long)((Sideview_pHandeled[i].rc.right )*dx1)+x0 +FRAMEWIDTH/2;
 
 	Sideview_pHandeled[i].rc.bottom  = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.bottom,  psDiag)+FRAMEWIDTH/2;
 	Sideview_pHandeled[i].rc.top     = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.top,     psDiag)-FRAMEWIDTH/2;
@@ -101,23 +107,26 @@ int i,j;
 	Sideview_pHandeled[i].iMinTop   = Sideview_pHandeled[i].rc.top ;
 
 	int iN = Sideview_pHandeled[i].iNoPolyPts;
+    LKASSERT(iN < GC_MAX_POLYGON_PTS);
 	if(Sideview_pHandeled[i].bRectAllowed == false)
-    for(j =0 ; j < iN  ; j++)
-    {
-      Sideview_pHandeled[i].apPolygon[j].x = (((Sideview_pHandeled[i].apPolygon[j].x)*dx1)+x0);
-      Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double)   Sideview_pHandeled[i].apPolygon[j].y, psDiag);
-      if(j != iN-1)
+	{
+      for(j =0 ; j < iN  ; j++)
       {
-        if(( j < iN /2) )
+        Sideview_pHandeled[i].apPolygon[j].x = (long)(((Sideview_pHandeled[i].apPolygon[j].x)*dx1)+x0);
+        Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double)   Sideview_pHandeled[i].apPolygon[j].y, psDiag);
+        if(j != iN-1)
         {
-          Sideview_pHandeled[i].iMaxBase = min ((long)Sideview_pHandeled[i].iMaxBase ,(long)Sideview_pHandeled[i].apPolygon[j].y);
-        }
-        else
-        {
-          Sideview_pHandeled[i].iMinTop  = max ((long)Sideview_pHandeled[i].iMinTop , (long)Sideview_pHandeled[i].apPolygon[j].y);
+          if(( j < iN /2) )
+          {
+            Sideview_pHandeled[i].iMaxBase = min ((long)Sideview_pHandeled[i].iMaxBase ,(long)Sideview_pHandeled[i].apPolygon[j].y);
+          }
+          else
+          {
+            Sideview_pHandeled[i].iMinTop  = max ((long)Sideview_pHandeled[i].iMinTop , (long)Sideview_pHandeled[i].apPolygon[j].y);
+          }
         }
       }
-    }
+	}
   }
   /**********************************************************************************
    * draw airspaces
@@ -125,10 +134,11 @@ int i,j;
   HPEN mpen = (HPEN)CreatePen(PS_NULL, 0, RGB(0xf0,0xf0,0xb0));
   HPEN oldpen = (HPEN)SelectObject(hdc, (HPEN)NULL);
   _TCHAR text [80];
-
+  LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
   for (int m=0 ; m < Sideview_iNoHandeldSpaces; m++)
   {
 	int iSizeIdx =  iSizeLookupTable[m];
+	LKASSERT(iSizeIdx < MAX_NO_SIDE_AS);
 	int  type = Sideview_pHandeled[iSizeIdx].iType;
 	RECT rcd  = Sideview_pHandeled[iSizeIdx].rc;
 	double fFrameColFact;

@@ -21,9 +21,13 @@
 // the resolution turns to be too inaccurate
 // so tha small (<5km airspaced) (e.g. dangerous areas) will not be shown
 // with AIRSPACE_SCANSIZE_X 64 I tried to make a compromise between resolution and speed on slow devices
+#ifdef WINDOWSPC
+#define AIRSPACE_SCANSIZE_X 800
+#else
 #define AIRSPACE_SCANSIZE_X 160
+#endif
 #define GC_MAX_POLYGON_PTS (2*AIRSPACE_SCANSIZE_X+4)
-#define MAX_NO_SIDE_AS 40
+#define MAX_NO_SIDE_AS 60
 // Define this, if airspace nearest distance infoboxes will use selected airpsace only
 // In this case infoboxes show distance to selected airspace only.
 // I use this define, because lot of variables and calculations not needed, if we use
