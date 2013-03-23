@@ -354,5 +354,10 @@ void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numof
 #define LK_tcsncpy(dest, src, numofchars) LK_tcsncpy_internal(dest, src, numofchars)
 #endif
 
+#ifndef MulDiv
+    #define MulDiv _MulDiv
+#endif
+
+int _MulDiv(int nNumber, int nNumerator, int nDenominator);
 
 #endif
