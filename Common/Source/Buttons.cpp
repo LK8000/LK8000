@@ -133,7 +133,7 @@ void ButtonLabel::GetButtonPosition(int i, RECT rc,
 					default:
 						*sizex = NIBLSCALE(77);
 						*sizey = NIBLSCALE(40);
-						voffset= 26*Screen0Ratio;
+						voffset= (int)(26*Screen0Ratio);
 						hoffset=*sizex+5;
 						break;
 				}
