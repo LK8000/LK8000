@@ -333,28 +333,28 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
         if (ValidTaskPoint(mFinishIndex)) {
             switch (Task[mFinishIndex].AATType) {
                 case CIRCLE:
-                    FinishRadius = Task[mFinishIndex].AATCircleRadius;
+                    FinishRadius = (DWORD)Task[mFinishIndex].AATCircleRadius;
                     FinishLine = 0;
                     break;
                 case LINE:
-                    FinishRadius = Task[mFinishIndex].AATCircleRadius;
+                    FinishRadius = (DWORD)Task[mFinishIndex].AATCircleRadius;
                     FinishLine = 1;
                 case SECTOR:
-                    FinishRadius = Task[mFinishIndex].AATSectorRadius;
+                    FinishRadius = (DWORD)Task[mFinishIndex].AATSectorRadius;
                     FinishLine = 2;
             }
         }
         if (ValidTaskPoint(0)) {
             switch (Task[0].AATType) {
                 case CIRCLE:
-                    StartRadius = Task[0].AATCircleRadius;
+                    StartRadius = (DWORD)Task[0].AATCircleRadius;
                     StartLine = 0;
                     break;
                 case LINE:
-                    StartRadius = Task[0].AATCircleRadius;
+                    StartRadius = (DWORD)Task[0].AATCircleRadius;
                     StartLine = 1;
                 case SECTOR:
-                    StartRadius = Task[0].AATSectorRadius;
+                    StartRadius = (DWORD)Task[0].AATSectorRadius;
                     StartLine = 2;
             }
         }
