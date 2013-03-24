@@ -173,8 +173,8 @@ void FindLatitudeLongitude(double Lat, double Lon,
     if(cosLat==0)
       result = Lon;
     else {
-      result = Lon+(double)asin(sin(Bearing)*sinDistance/cosLat);
-      result = (double)fmod((result+M_PI),(M_2PI));
+      result = (double)atan2(sin(Bearing)*sinDistance*cosLat,cos(Distance)-sin(Lat)*sin(*lat_out));
+      result = (double)fmod((Lon-result+M_PI),(M_2PI));
       result = result - M_PI;
     }
     result *= RAD_TO_DEG;
