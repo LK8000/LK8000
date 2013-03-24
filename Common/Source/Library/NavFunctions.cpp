@@ -153,32 +153,32 @@ void FindLatitudeLongitude(double Lat, double Lon,
                            double Bearing, double Distance,
                            double *lat_out, double *lon_out)
 {
-  double result;
+  double ResultLat;
+  double ResultLon;
 
   Lat *= DEG_TO_RAD;
   Lon *= DEG_TO_RAD;
   Bearing *= DEG_TO_RAD;
   Distance = Distance/6371000;
 
-  double sinDistance = sin(Distance);
-  double cosLat = cos(Lat);
+  const double sinDistance = sin(Distance);
+  const double cosDistance = cos(Distance);
 
+  const double cosLat = cos(Lat);
+  const double sinLat = sin(Lat);
+
+  ResultLat = asin(sinLat*cosDistance+cosLat*sinDistance*cos(Bearing)); 
   if (lat_out) {
-    result = (double)asin(sin(Lat)*cos(Distance)
-                          +cosLat*sinDistance*cos(Bearing));
-    result *= RAD_TO_DEG;
-    *lat_out = result;
+    *lat_out = ResultLat*RAD_TO_DEG;
   }
   if (lon_out) {
     if(cosLat==0)
-      result = Lon;
+      ResultLon = Lon;
     else {
-      result = Lon+(double)asin(sin(Bearing)*sinDistance/cosLat);
-      result = (double)fmod((result+M_PI),(M_2PI));
-      result = result - M_PI;
+      ResultLon = atan2(sin(Bearing)*sinDistance*cosLat,cosDistance-sinLat*sin(ResultLat));
+      ResultLon = fmod((Lon+ResultLon+M_PI),(M_2PI)) - M_PI;
     }
-    result *= RAD_TO_DEG;
-    *lon_out = result;
+    *lon_out = ResultLon*RAD_TO_DEG;
   }
 }
 
