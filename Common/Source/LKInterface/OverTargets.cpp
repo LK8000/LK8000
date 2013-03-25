@@ -144,6 +144,21 @@ _tryagain:
 	if (!ValidWayPoint(BestAlternate)) goto _tryagain;
   }
 
+  // Skip Alternate 1 if Not defined
+  if(OvertargetMode==OVT_ALT1 && (!ValidWayPoint(Alternate1))) {
+	goto _tryagain;
+  }
+  
+  // Skip Alternate 2 if Not defined
+  if(OvertargetMode==OVT_ALT2 && (!ValidWayPoint(Alternate2))) {
+	goto _tryagain;
+  }
+
+  // Skip Last Thermal if no thermal is detected ...
+  if(OvertargetMode==OVT_THER && (!ValidWayPoint(RESWP_LASTTHERMAL))) {
+	goto _tryagain;
+  }
+
   // Skip F rotation if no flarm or no valid flarm target
   if (OvertargetMode==OVT_FLARM) {
 	if ( (!GPS_INFO.FLARM_Available)|| (!ValidResWayPoint(RESWP_FLARMTARGET)) )
