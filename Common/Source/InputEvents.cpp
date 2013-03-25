@@ -1527,6 +1527,8 @@ void InputEvents::eventChangeWindCalcSpeed(const TCHAR *misc) {
 void InputEvents::eventChangeMultitarget(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("TASK")) == 0) {
 	OvertargetMode=OVT_TASK;
+  } else if (_tcscmp(misc, TEXT("TASKCENTER")) == 0) {
+	OvertargetMode=OVT_TASK;
   } else if (_tcscmp(misc, TEXT("BALT")) == 0) {
 	OvertargetMode=OVT_BALT;
   } else if (_tcscmp(misc, TEXT("ALT1")) == 0) {

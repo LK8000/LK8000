@@ -25,6 +25,12 @@ int GetOvertargetIndex(void) {
 		}
 		return -1;
 		break;
+	case OVT_TASKCENTER: // task Center
+		if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+            return Task[ActiveWayPoint].Index;
+        }
+		return -1;
+		break;
 	case OVT_ALT1: // alternate 1
 		if ( ValidWayPoint(Alternate1) != false ) {
 			index = Alternate1;
@@ -110,6 +116,8 @@ TCHAR *GetOvertargetHeader(void) {
   if (DoInit[MDI_GETOVERTARGETHEADER]) {
 	// LKTOKEN _@M1323_ "T>"
 	LK_tcsncpy(targetheader[OVT_TASK], gettext(TEXT("_@M1323_")), OVERTARGETHEADER_MAX);
+	// LKTOKEN _@M1323_ "T>"
+	LK_tcsncpy(targetheader[OVT_TASKCENTER], gettext(TEXT("_@M1323_")), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1324_ "B>"
 	LK_tcsncpy(targetheader[OVT_BALT], gettext(TEXT("_@M1324_")), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1325_ "1>"
@@ -136,6 +144,12 @@ void RotateOvertarget(void) {
 
 _tryagain:
   OvertargetMode++;
+
+  // OVT_TASKCENTER multitarget only exist if PG optimized task is defined
+  // Skip it in all other case
+  if (OvertargetMode == OVT_TASKCENTER && !DoOptimizeRoute()) {
+    goto _tryagain;
+  }
 
   // For PG/HG, skip BALT overtarget if nothing valid. 
   // We assume that this means no landables ever seen around, because
