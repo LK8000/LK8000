@@ -51,6 +51,7 @@ RECT rc  = rci; /* rectangle for sideview */
 bool bInvCol = true; //INVERTCOLORS;
 static double fHeigtScaleFact = MIN_OFFSET;
 double fDist = 55.0*1000; // kmbottom
+if (ISPARAGLIDER) fDist=20.0*1000.0;
 double aclat, aclon, acb, speed, calc_average30s;
 double GPSbrg=0;
 double wpt_brg;
