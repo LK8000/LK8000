@@ -946,18 +946,38 @@ _continue:
 		short nn;
 		switch(wParam) {
 			case 0x21:	// VK_PRIOR PAGE UP
-				if (Units::GetUserAltitudeUnit() == unFeet)
-					GPS_INFO.Altitude += 15.239999976;
+				nn=GetKeyState(VK_SHIFT);
+				if (nn<0) {
+				  if (Units::GetUserAltitudeUnit() == unFeet)
+					GPS_INFO.Altitude += 45.71999999*10;
+				  else
+					GPS_INFO.Altitude += 10*10;
+				}
 				else
+				{
+				  if (Units::GetUserAltitudeUnit() == unFeet)
+					GPS_INFO.Altitude += 45.71999999;
+				  else
 					GPS_INFO.Altitude += 10;
+				}
 				TriggerGPSUpdate();
 				return TRUE;
 				break;
 			case 0x22:	// VK_NEXT PAGE DOWN
-				if (Units::GetUserAltitudeUnit() == unFeet)
-					GPS_INFO.Altitude -= 15.239999976;
+				nn=GetKeyState(VK_SHIFT);
+				if (nn<0) {
+				  if (Units::GetUserAltitudeUnit() == unFeet)
+					GPS_INFO.Altitude -= 45.71999999*10;
+				  else
+					GPS_INFO.Altitude -= 10*10;
+				}
 				else
+				{
+				  if (Units::GetUserAltitudeUnit() == unFeet)
+					GPS_INFO.Altitude -= 45.71999999;
+				  else
 					GPS_INFO.Altitude -= 10;
+				}
 				if (GPS_INFO.Altitude<=0) GPS_INFO.Altitude=0;
 				TriggerGPSUpdate();
 				return TRUE;
@@ -978,32 +998,32 @@ _continue:
 				return TRUE;
 				break;
 			case 0x25:	// VK_LEFT
-				#if ULLI
 				nn=GetKeyState(VK_SHIFT);
 				if (nn<0) {
-					InputEvents::eventChangeTurn(_T("left"));
+						GPS_INFO.TrackBearing -= 0.1;
+
 				} else 
-				#endif
 				{
 					GPS_INFO.TrackBearing -= 5;
-					if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
-					else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
 				}
+				if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
+				else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
+
 				TriggerGPSUpdate();
 				return TRUE;
 				break;
 			case 0x27:	// VK_RIGHT
-				#if ULLI
+
 				nn=GetKeyState(VK_SHIFT);
 				if (nn<0) {
-					InputEvents::eventChangeTurn(_T("right"));
+					GPS_INFO.TrackBearing += 0.1;
 				} else 
-				#endif
 				{
 					GPS_INFO.TrackBearing += 5;
-					if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
-					else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
 				}
+				if (GPS_INFO.TrackBearing<0) GPS_INFO.TrackBearing+=360;
+				else if (GPS_INFO.TrackBearing>359) GPS_INFO.TrackBearing-=360;
+
 				TriggerGPSUpdate();
 				return TRUE;
 				break;
