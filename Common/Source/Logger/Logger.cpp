@@ -1216,8 +1216,10 @@ int RunSignature() {
   #endif
 
   // CAREFUL!!! PNA is ALSO PPC2003!!
+  // 
+  // ATTENTION: on PNA we are executing LKRECORD_PNA.LK8.EXE really
   #ifdef PNA
-  _tcscat(path,_T("\\LKRECORD_PNA.EXE"));
+  _tcscat(path,_T("\\LKRECORD_PNA.LK8"));
   #else
     #ifdef PPC2002
     _tcscat(path,_T("\\LKRECORD_2002.LK8"));
