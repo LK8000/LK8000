@@ -313,12 +313,13 @@ QuickRedraw:
 
   // In QUICKDRAW dont draw trail, thermals, glide terrain
   if (QUICKDRAW) goto _skip_stuff;
- 
+#define  TRAIL_OVER_AIRFIELD
+#ifndef TRAIL_OVER_AIRFIELD
   if(TrailActive) {
 	// NEED REWRITING
 	LKDrawTrail(hdc, Orig_Aircraft, DrawRect);
   }
-
+#endif
   if (DONTDRAWTHEMAP) {
 	goto QuickRedraw;
   }
@@ -348,7 +349,12 @@ _skip_stuff:
   if (IsMultimapWaypoints()) {
 	DrawWaypointsNew(hdc,DrawRect);
   }
-
+#ifdef TRAIL_OVER_AIRFIELD
+  if(TrailActive) {
+	// NEED REWRITING
+	LKDrawTrail(hdc, Orig_Aircraft, DrawRect);
+  }
+#endif
   if (DONTDRAWTHEMAP) {
 	goto QuickRedraw;
   }
