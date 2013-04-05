@@ -385,3 +385,10 @@ double LowPassFilter(double y_last, double x_in, double fact) {
   return (1.0-fact)*y_last+(fact)*x_in;
 }
 
+int _MulDiv(int nNumber, int nNumerator, int nDenominator) {
+    long long res = nNumber;
+    res *= nNumerator;
+    res /= nDenominator;
+    return res;
+}
+
