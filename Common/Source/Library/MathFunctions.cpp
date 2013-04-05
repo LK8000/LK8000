@@ -388,6 +388,7 @@ double LowPassFilter(double y_last, double x_in, double fact) {
 int _MulDiv(int nNumber, int nNumerator, int nDenominator) {
     long long res = nNumber;
     res *= nNumerator;
+    LKASSERT(nDenominator!=0);
     res /= nDenominator;
     return res;
 }
