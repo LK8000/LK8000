@@ -180,7 +180,7 @@ void NMEAParser::UpdateMonitor(void)
 			// LKTOKEN  _@M121_ = "BARO ALTITUDE NOT AVAILABLE" 
 			DoStatusMessage(MsgToken(121));
 		}
-		GPS_INFO.BaroAltitudeAvailable=false;
+		GPS_INFO.BaroAltitudeAvailable=FALSE;
 		// We alse reset these values, just in case we are through a mux
 		GPS_INFO.AirspeedAvailable=false;
 		GPS_INFO.VarioAvailable=false;
@@ -245,6 +245,65 @@ void NMEAParser::UpdateMonitor(void)
 	nmeaParser1.RMZAvailable = FALSE;
 	nmeaParser2.RMZAvailable = FALSE;
   }
+
+  // Check baro altitude problems. This can happen for several reasons: mixed input on baro on same port,
+  // faulty device, etc. The important thing is that we shall not be using baro altitude for navigation in such cases.
+  // So we do this check only for the case we are actually using baro altitude.
+  // A typical case is: mixed devices on same port, baro altitude disappearing because of mechanical switch,
+  // but other traffic still incoming, so hearthbeats are ok. 
+  static double	lastBaroAltitude=-1, lastGPSAltitude=-1;
+  static unsigned int	counterSameBaro=0, counterSameHGPS=0;
+  static unsigned short firstrecovery=0;
+  if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude && !GPS_INFO.NAVWarning) {
+	if (GPS_INFO.BaroAltitude==lastBaroAltitude) {
+		counterSameBaro++;
+	} else {
+		lastBaroAltitude=GPS_INFO.BaroAltitude;
+		counterSameBaro=0;
+	}
+	if (GPS_INFO.Altitude==lastGPSAltitude) {
+		counterSameHGPS++;
+	} else {
+		lastGPSAltitude=GPS_INFO.Altitude;
+		counterSameHGPS=0;
+	}
+
+	// This is suspicious enough, because the baro altitude is a floating value, should not be the same..
+	// but ok, lets assume it is filtered.
+	// if HBAR is steady for some time ... and HGPS is not steady 
+	unsigned short timethreshold=15; // first three times,  timeout at about 1 minute
+	if (firstrecovery>=3) timethreshold=40; // then about every 3 minutes
+		
+	if ( (counterSameBaro > timethreshold) && (counterSameHGPS<2) ) {
+			DoStatusMessage(MsgToken(122)); // Baro not available, Using GPS ALTITUDE
+			EnableNavBaroAltitude=false;
+			StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f%s"),
+			GPS_INFO.BaroAltitude, GPS_INFO.Altitude,NEWLINE);
+			lastBaroAltitude=-1;
+			lastGPSAltitude=-1;
+			counterSameBaro=0;
+			counterSameHGPS=0;
+			// We do only ONE attempt to recover a faulty device, to avoid flipflopping.
+			// In case of big problems, we shall have disabled the use of the faulty baro altitude, and keep it
+			// incoming sporadically.
+			if (firstrecovery<3) {
+				GPS_INFO.BaroAltitudeAvailable=FALSE;
+				// We alse reset these values, just in case we are through a mux
+				GPS_INFO.AirspeedAvailable=false;
+				GPS_INFO.VarioAvailable=false;
+				GPS_INFO.NettoVarioAvailable=false;
+				GPS_INFO.AccelerationAvailable = false;
+				EnableExternalTriggerCruise = false;
+				nmeaParser1._Reset();
+				nmeaParser2._Reset();
+				// 120824 Check this situation better> Reset is setting activeGPS true for both devices!
+				lastvalidBaro=false;
+				GotFirstBaroAltitude=false;
+				firstrecovery++;
+			}
+	}
+  }
+
 
   // Set some fine tuning parameters here, depending on device/situation/mode
   if (ISCAR)
