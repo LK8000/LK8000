@@ -1104,7 +1104,7 @@ if(SPLITSCREEN_FACTOR >0)
 		    SetBkMode(hdc, TRANSPARENT);
 		    GetTextExtentPoint(hdc, lbuffer, _tcslen(lbuffer), &tsize);
 		    if (_tcslen(lbuffer)>0)
-			  TextInBox(hdc, &rct, lbuffer,x+tscaler, y+tscaler, 0, &displaymode, false);
+			  TextInBox(hdc, &rct, lbuffer,x+tscaler, y+tsize.cy/4, 0, &displaymode, false);
 
 			break;
 	      }
@@ -1273,9 +1273,7 @@ if(bSideview)
 	  }
 	  wsprintf(lbuffer,_T(""));
 	  if (LKTraffic[i].Cn && LKTraffic[i].Cn[0]!=_T('?')) { // 100322
-	  	_tcscat(lbuffer,  asFLARMPos[i].szGliderType);
-	  	_tcscat(lbuffer,_T(": "));
-	  	_tcscat(lbuffer,LKTraffic[i].Cn);
+	    wsprintf(lbuffer,_T("%s: %s"),asFLARMPos[i].szGliderType,LKTraffic[i].Cn);
 	  }
 
 
@@ -1283,8 +1281,7 @@ if(bSideview)
 	  SetBkMode(hdc, TRANSPARENT);
 	  GetTextExtentPoint(hdc, lbuffer,  _tcslen(lbuffer), &tsize);
 	  if (_tcslen(lbuffer)>0)
-		TextInBox(hdc, &rc, lbuffer, x+tscaler,  hy+tscaler, 0, &displaymode, false);
-
+		TextInBox(hdc, &rc, lbuffer, x+tscaler,  hy+tsize.cy/4, 0, &displaymode, false);	
 	  /*********************************************
 	   * draw lines to target if target selected
 	   */
