@@ -1927,9 +1927,10 @@ CCriticalSection::CGuard guard(_csairspaces);
 		    * switch to next airspace section
 		    *********************************************************************/
 		    iSelAS = iNoFoundAS;
-		    if(iNoFoundAS < MAX_NO_SIDE_AS-1)
-		      iNoFoundAS++;
+		    #if BUGSTOP
 		    LKASSERT(iNoFoundAS < MAX_NO_SIDE_AS);
+		    #endif
+		    if(iNoFoundAS < MAX_NO_SIDE_AS-1) iNoFoundAS++;
 		    airspacetype[iNoFoundAS].psAS= NULL; // increment and reset head
            /*********************************************************************/
 		    airspacetype[iSelAS].psAS  = (*it) ;

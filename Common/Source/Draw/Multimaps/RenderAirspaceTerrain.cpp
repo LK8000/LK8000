@@ -67,7 +67,11 @@ int i,j;
     Sideview_iNoHandeldSpaces =  CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h, Sideview_pHandeled,MAX_NO_SIDE_AS); //  Sideview_pHandeled[GC_MAX_NO];
   else
 	Sideview_iNoHandeldSpaces =0;
+  #if BUGSTOP
   LKASSERT(Sideview_iNoHandeldSpaces  < MAX_NO_SIDE_AS);
+  #endif
+  if (Sideview_iNoHandeldSpaces >= MAX_NO_SIDE_AS) Sideview_iNoHandeldSpaces = MAX_NO_SIDE_AS-1;
+
   /********************************************************************************
    * bubble sort to start with biggest airspaces
    ********************************************************************************/
@@ -77,10 +81,17 @@ int i,j;
 
   for( i = 0 ; i < Sideview_iNoHandeldSpaces ;i++)
   {
+	#if BUGSTOP
 	LKASSERT(iSizeLookupTable[i]  < MAX_NO_SIDE_AS);
+	#endif
 	for( j = i ; j < Sideview_iNoHandeldSpaces ;j++)
 	{
+	  #if BUGSTOP
 	  LKASSERT(iSizeLookupTable[j]  < MAX_NO_SIDE_AS);
+	  #endif
+	  if ( iSizeLookupTable[i] >= MAX_NO_SIDE_AS) continue;
+	  if ( iSizeLookupTable[j] >= MAX_NO_SIDE_AS) continue;
+
       if(Sideview_pHandeled[iSizeLookupTable[i]].iAreaSize < Sideview_pHandeled[iSizeLookupTable[j]].iAreaSize )
       {
     	int iTmp = iSizeLookupTable[i];
@@ -107,7 +118,11 @@ int i,j;
 	Sideview_pHandeled[i].iMinTop   = Sideview_pHandeled[i].rc.top ;
 
 	int iN = Sideview_pHandeled[i].iNoPolyPts;
+	#if BUGSTOP
     LKASSERT(iN < GC_MAX_POLYGON_PTS);
+	#endif
+	if (iN >= GC_MAX_POLYGON_PTS) iN=GC_MAX_POLYGON_PTS-1;
+	
 	if(Sideview_pHandeled[i].bRectAllowed == false)
 	{
       for(j =0 ; j < iN  ; j++)
@@ -138,7 +153,11 @@ int i,j;
   for (int m=0 ; m < Sideview_iNoHandeldSpaces; m++)
   {
 	int iSizeIdx =  iSizeLookupTable[m];
+	#if BUGSTOP
 	LKASSERT(iSizeIdx < MAX_NO_SIDE_AS);
+	#endif
+	if (iSizeIdx >= MAX_NO_SIDE_AS) iSizeIdx=MAX_NO_SIDE_AS-1;
+	
 	int  type = Sideview_pHandeled[iSizeIdx].iType;
 	RECT rcd  = Sideview_pHandeled[iSizeIdx].rc;
 	double fFrameColFact;
