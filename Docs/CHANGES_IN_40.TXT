@@ -21,6 +21,8 @@ After 3 times of this problem appearing, we only disable EnableBaroAltitude and 
 
 Screen flickering on PC greatly reduced when using pan scroll mode.
 
+Possible critical problem drawing multimap airspaces
+
 
 SMALL FIXES
 -----------
