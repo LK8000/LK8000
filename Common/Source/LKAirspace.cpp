@@ -1923,7 +1923,7 @@ unsigned int iHIdx,iDIdx;
 		    * switch to next airspace
 		    *********************************************************************/
 		    iSelAS = iNoFoundAS;
-		    iNoFoundAS++;
+                    if (iNoFoundAS < (MAX_NO_SIDE_AS -1) ) iNoFoundAS++;
 		    airspacetype[iNoFoundAS].psAS= NULL; // increment and reset head
            /*********************************************************************/
 		    airspacetype[iSelAS].psAS  = (*it) ;
