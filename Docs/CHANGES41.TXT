@@ -3,18 +3,70 @@ MANUAL ADDENDUM for 4.1
 
 
 
-
-
-
-
 Version 4.1A 
 
 NEW
 
+. New fine controls for PC simulator keys:
+SHIFT + (left/right) changes the Track bearing by +- 0.1 degree
+SHIFT + (PgUp/PgDn) changes the altitude by +- 100m
+
+
+. Numeric keyboard as alternate to scroll list:
+
+System Config
+ Waypoint Edit
+ Truewind IAS
+ Safety Altitude
+ Terrain Height
+ Safety Mc
+ Efficiency
+ Menu Timeout
+ Waypoints
+ All the Task Radius (Start Radius/Sector Radius/Finish Radius)
+ Max Altitude 1, 2, 3
+ Task Start time
+ Gates Interval
+
+Basic Settings
+ QNH
+ Altitude
+
+Wind Settings
+ Speed
+ Direction
+
+
+. Support any PC resolution by startup parameters, passed to command line.
+Example:  -x=500 -y=300
+An alternate method to obtain -480x272  is -x=480 -y=272
+x and y must be in the range of 100 to 3000 pixels.
+
+
+. New human readable tsk file format
+All task option is saved with task ( rule, time gate, aat target .... )
+
+. Added information about landable waypoint on Task Edit screen
 
 
 
 CHANGES
+
+Default zoom level for multimap MM1 in paragliding mode changed to 20km.
+
+NavFunctions: Use precise formula in FindLatitudeLongitude()
+
+Target dialog for AAT sector fixed
+Before the change a Target dialog for narrow AAT sector (like 90o - 180o) was
+centered at the center of the circle used to draw the sector and zoomed
+to view 2x its radius. Because of that sector was really hard to manage in
+AAT tasks. Now the same sector is centered on the screen and stretched on full
+screen.
+
+
+
+
+
 
 
 
