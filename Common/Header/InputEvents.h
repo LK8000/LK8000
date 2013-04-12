@@ -110,6 +110,7 @@ class InputEvents {
   
   static void eventInfoStripe(const TCHAR *misc);
   static void eventInfoPage(const TCHAR *misc);
+  static void eventModeType(const TCHAR *misc);
   // -------
 
   static void showErrors();
