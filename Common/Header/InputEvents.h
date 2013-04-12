@@ -109,6 +109,7 @@ class InputEvents {
   static void eventService(const TCHAR *misc);
   
   static void eventInfoStripe(const TCHAR *misc);
+  static void eventInfoPage(const TCHAR *misc);
   // -------
 
   static void showErrors();

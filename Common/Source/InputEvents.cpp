@@ -3540,3 +3540,13 @@ void InputEvents::eventInfoStripe(const TCHAR *misc) {
     BottomSounds();
     MapWindow::RefreshMap();
 }
+
+void InputEvents::eventInfoPage(const TCHAR *misc) {
+    if (_tcscmp(misc, TEXT("NEXT")) == 0) {
+        NextModeIndex();
+    } else if (_tcscmp(misc, TEXT("PREVIOUS")) == 0) {
+        PreviousModeIndex();
+    }
+    MapWindow::RefreshMap();
+    SoundModeIndex();
+}
