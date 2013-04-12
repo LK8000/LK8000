@@ -3530,3 +3530,13 @@ void InputEvents::eventMinimapKey(const TCHAR *misc) {
 };
 
 #endif // no LXMINIMAP
+
+void InputEvents::eventInfoStripe(const TCHAR *misc) {
+    if (_tcscmp(misc, TEXT("NEXT")) == 0) {
+        BottomBarChange(true);
+    } else if (_tcscmp(misc, TEXT("PREVIOUS")) == 0) {
+        BottomBarChange(false);
+    }
+    BottomSounds();
+    MapWindow::RefreshMap();
+}
