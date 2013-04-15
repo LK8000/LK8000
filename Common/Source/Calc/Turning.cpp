@@ -32,7 +32,7 @@ extern void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern WindAnalyser *windanalyser;
 extern ThermalLocator thermallocator;
 
-
+// #define DEBUGTURN 1
 
 void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
@@ -87,9 +87,17 @@ _forcereset:
   dT = Basic->Time - LastTime;
   LastTime = Basic->Time;
 
+  #if BUGSTOP
   LKASSERT(dT!=0);
+  #else
   if (dT==0) dT=1;
+  #endif
+
   Rate = AngleLimit180(Basic->TrackBearing-LastTrack)/dT;
+
+  #if DEBUGTURN
+  StartupStore(_T("... Rate=%f  in time=%f\n"),Rate,dT);
+  #endif
 
   if (dT<2.0 && dT!=0) {
     // time step ok
@@ -131,7 +139,8 @@ _forcereset:
   }
   rate_history[0] = Rate;
   rate_ave /= 60;
-  
+ 
+  // THIS IS UNUSED in 4.0 
   Calculated->Essing = fabs(rate_ave)*100/MinTurnRate;
 
   if (MODE==CLIMB||MODE==WAITCRUISE)
@@ -177,7 +186,14 @@ _forcereset:
 
   switch(MODE) {
   case CRUISE:
-    if((Rate >= MinTurnRate)||(forcecircling)) {
+
+    double cruise_turnthreshold;
+    if (ISPARAGLIDER)
+	cruise_turnthreshold=5;
+    else
+	cruise_turnthreshold=4;
+
+    if((Rate >= cruise_turnthreshold)||(forcecircling)) {
       // This is initialising the potential thermalling start
       // We still dont know if we are really circling for thermal
       StartTime = Basic->Time;
@@ -185,6 +201,9 @@ _forcereset:
       StartLat  = Basic->Latitude;
       StartAlt  = Calculated->NavAltitude;
       StartEnergyHeight  = Calculated->EnergyHeight;
+      #if DEBUGTURN
+      StartupStore(_T("... CRUISE -> WAITCLIMB\n"));
+      #endif
       MODE = WAITCLIMB;
     }
     if (forcecircling) {
@@ -197,7 +216,14 @@ _forcereset:
       MODE = CRUISE;
       break;
     }
-    if((Rate >= MinTurnRate)||(forcecircling)) {
+
+    double waitclimb_turnthreshold;
+    if (ISPARAGLIDER)
+	waitclimb_turnthreshold=5;
+    else
+	waitclimb_turnthreshold=4;
+
+    if((Rate >= waitclimb_turnthreshold)||(forcecircling)) {
       // WE CANNOT do this, because we also may need Circling mode to detect FF!!
       // if( (Calculated->FreeFlying && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) {
        if( (!ISCAR && !ISGAAIRCRAFT && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { 
@@ -211,6 +237,9 @@ _forcereset:
            break;
          #endif
 
+         #if DEBUGTURN
+         StartupStore(_T("... WAITCLIMB -> CLIMB\n"));
+         #endif
        Calculated->Circling = true;
         // JMW Transition to climb
         MODE = CLIMB;
@@ -242,6 +271,9 @@ _forcereset:
       }
     } else {
       // nope, not turning, so go back to cruise
+      #if DEBUGTURN
+      StartupStore(_T("... WAITCLIMB -> CRUISE\n"));
+      #endif
       MODE = CRUISE;
     }
     break;
@@ -251,8 +283,14 @@ _forcereset:
       windanalyser->slot_newSample(Basic, Calculated);
       UnlockFlightData();
     }
+
+    double climb_turnthreshold;
+    if (ISPARAGLIDER)
+	climb_turnthreshold=10;
+    else
+	climb_turnthreshold=4;
     
-    if((Rate < MinTurnRate)||(forcecruise)) {
+    if((Rate < climb_turnthreshold)||(forcecruise)) {
       StartTime = Basic->Time;
       StartLong = Basic->Longitude;
       StartLat  = Basic->Latitude;
@@ -260,6 +298,9 @@ _forcereset:
       StartEnergyHeight  = Calculated->EnergyHeight;
       // JMW Transition to cruise, due to not properly turning
       MODE = WAITCRUISE;
+      #if DEBUGTURN
+      StartupStore(_T("... CLIMB -> WAITCRUISE\n"));
+      #endif
     }
     if (forcecruise) {
       MODE = WAITCRUISE;
@@ -273,10 +314,15 @@ _forcereset:
       break;
     }
 
+    double waitcruise_turnthreshold;
+    if (ISPARAGLIDER)
+	waitcruise_turnthreshold=10;
+    else
+	waitcruise_turnthreshold=4;
     //
     // Exiting climb mode?
     //
-    if((Rate < MinTurnRate) || forcecruise) {
+    if((Rate < waitcruise_turnthreshold) || forcecruise) {
 
       if( ((Basic->Time  - StartTime) > ClimbCruiseSwitch) || forcecruise) {
 
@@ -324,12 +370,18 @@ _forcereset:
         // Finally do the transition to cruise
         Calculated->Circling = false;
         MODE = CRUISE;
+        #if DEBUGTURN
+        StartupStore(_T("... WAITCRUISE -> CRUISE\n"));
+        #endif
         SwitchZoomClimb(Basic, Calculated, false, LEFT);
         InputEvents::processGlideComputer(GCE_FLIGHTMODE_CRUISE);
 
       } // climbcruiseswitch time in range
 
     } else { // Rate>Minturnrate, back to climb, turning again
+      #if DEBUGTURN
+      StartupStore(_T("... WAITCRUISE -> CLIMB\n"));
+      #endif
       MODE = CLIMB;
     }
     break;
