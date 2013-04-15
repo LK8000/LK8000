@@ -18,6 +18,8 @@ After 1 minute of possible problem, if we are using baro altitude for navigation
 If the baro altitude is back available, the pilot must then re-enable its usage with the button.
 After 3 times of this problem appearing, we only disable EnableBaroAltitude and we dont reset the baroaltitude anymore, assuming there is a flip/flop condition and a faulty hardware line. Checks after 3 times are delayed to 3 minutes.
 
+Fix thermal exit detection for paragliders.
+Also improve detection of thermal entering, filtering a bit more false initial turning.
 
 Screen flickering on PC greatly reduced when using pan scroll mode.
 
