@@ -35,6 +35,8 @@ extern void RotateOvertarget(void);
 
 int ProcessVirtualKey(int x, int y, long keytime, short vkmode);
 
+void BottomSounds();
+
 
 typedef enum{
 	ckDisabled=0,
