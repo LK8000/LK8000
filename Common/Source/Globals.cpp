@@ -349,7 +349,7 @@ void Globals_Init(void) {
   PGOpenTimeH=0;
   PGOpenTimeM=0;
   PGOpenTime=0;
-  PGCloseTime=0;
+  PGCloseTime=86399;
   // Interval, in minutes
   PGGateIntervalTime=0;
   // How many gates, 1-x

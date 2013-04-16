@@ -185,6 +185,10 @@ void LoadNewTask(LPCTSTR szFileName)
             TaskInvalid = !ReadFile(hFile, &PGStartOut, sizeof (PGStartOut), &dwBytesRead, (OVERLAPPED*) NULL);
         }    
 
+		PGOpenTime=((PGOpenTimeH*60)+PGOpenTimeM)*60;
+		PGCloseTime = 86399; // 23:59:59
+
+	  
 goEnd:
 
       CloseHandle(hFile);
