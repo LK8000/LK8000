@@ -107,6 +107,10 @@ class InputEvents {
   static void eventChangeGS(const TCHAR *misc);
   static void eventChangeTurn(const TCHAR *misc);
   static void eventService(const TCHAR *misc);
+  
+  static void eventInfoStripe(const TCHAR *misc);
+  static void eventInfoPage(const TCHAR *misc);
+  static void eventModeType(const TCHAR *misc);
   // -------
 
   static void showErrors();
