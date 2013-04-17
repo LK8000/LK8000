@@ -28,7 +28,7 @@ void CleanCupCode(TCHAR* TpCode) {
     // now remove " " (if there)
     _tcscpy(Tname, TpCode);
     size_t j = 0;
-    for (size_t i = 0; i < _tcslen(Tname) - 1; i++) {
+    for (size_t i = 0; i < _tcslen(Tname); i++) {
         if (Tname[i] != '\"') {
             TpCode[j++] = Tname[i];
         }
