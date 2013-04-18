@@ -2012,6 +2012,9 @@ _@M2148_ "Car,Bike & Trekking"
 _@M2149_ "in thermal"
 _@M2150_ "in thermal and cruise"
 
+_@M2151_ "T>\nTP Center"
+
+
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
 _@M2201_ "Menu"
