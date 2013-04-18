@@ -204,7 +204,7 @@ goto_bearing:
 			} else
 			if (value==0) sprintf(text,NULLMEDIUM);
 			else {
-				sprintf(text,"%.0f",value);
+				sprintf(text,"%.1f",value);
 				valid=true;
 			}
 			wsprintf(BufferValue, TEXT("%S"),text);
