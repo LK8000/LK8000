@@ -204,6 +204,17 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
             _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[1], p_p, taskcolor, rc);
         }
     }
+    
+    // Draw DashLine From current position to Active TurnPoint center
+    if(ValidTaskPoint(ActiveWayPoint)) {
+        POINT ptStart;
+        LatLon2Screen(DrawInfo.Longitude, DrawInfo.Latitude, ptStart);
+        DrawDashLine(hdc, NIBLSCALE(1),
+                    ptStart,
+                    WayPointList[Task[ActiveWayPoint].Index].Screen,
+                    taskcolor, rc);        
+
+    }
 
     {
         UnlockTaskData();
