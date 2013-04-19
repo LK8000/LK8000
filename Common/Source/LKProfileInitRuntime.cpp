@@ -121,7 +121,7 @@ void LKProfileInitRuntime(void) {
 
 
   PGOpenTime=((PGOpenTimeH*60)+PGOpenTimeM)*60;
-  PGCloseTime=PGOpenTime+(PGGateIntervalTime*PGNumberOfGates*60);
+  PGCloseTime=86399;
   if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
 
   if ( ISPARAGLIDER ) {

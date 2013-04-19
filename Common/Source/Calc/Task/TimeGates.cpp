@@ -89,7 +89,7 @@ int RunningGate() {
 
   // search up to gates+1 ex. 12.40 > 13:00 is end time
   // we are checking the END of the gate, so it is like having a gate+1
-  for (gate=1; gate<=PGNumberOfGates; gate++) {
+  for (gate=1; gate<PGNumberOfGates; gate++) {
 	gatetime=PGOpenTime + (gate * PGGateIntervalTime *60);
 	// timenow cannot be lower than gate 0, because gate0 is PGOpenTime
 	if (timenow < gatetime) {
@@ -99,6 +99,10 @@ int RunningGate() {
 		return(gate-1);
 	}
   }
+  if(gate == PGNumberOfGates && timenow < PGCloseTime) {
+      return PGNumberOfGates-1;
+  }
+  
   StartupStore(_T("--- RunningGate invalid: timenow=%d Open=%d Close=%d NumGates=%d Interval=%d%s"),
 	timenow,PGOpenTime,PGCloseTime,PGNumberOfGates,PGGateIntervalTime,NEWLINE);
   return(-1);
