@@ -1,6 +1,10 @@
 
 LK8000 VERSION 4.0B  
 
+CHANGES
+-------
+
+Paraglider's Time gates: last gate is always lasting up to 3 hours. In practice, it never close.
 
 FIXES
 -----
@@ -24,6 +28,16 @@ Also improve detection of thermal entering, filtering a bit more false initial t
 Screen flickering on PC greatly reduced when using pan scroll mode.
 
 Possible critical problem drawing multimap airspaces
+
+Fix bug loading CUP waypoints, incorrect removing trailing quotes.
+    Bug found by Berthold Bredenbeck after..4 years it was there.
+    If the waypoint was
+    "fullname",codename,....
+    all was correct, name=fullname
+    if the line is
+    fullname,codename,..   without quotes "", then name=fullnam  without trailing letter "e".
+
+
 
 
 SMALL FIXES
