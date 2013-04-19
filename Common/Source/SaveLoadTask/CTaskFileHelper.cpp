@@ -18,7 +18,7 @@
 
 extern void RenameIfVirtual(const unsigned int i);
 
-LPCTSTR AllocFormat(LPCTSTR fmt, ...) {
+LPTSTR AllocFormat(LPCTSTR fmt, ...) {
     int n;
     int size = 50; /* Guess we need no more than 100 bytes. */
     LPTSTR p;
@@ -233,6 +233,8 @@ void CTaskFileHelper::LoadTimeGate(XMLNode node) {
         GetAttribute(node, _T("open-time"), szTime);
         StrToTime(szTime, &PGOpenTimeH, &PGOpenTimeM);
         GetAttribute(node, _T("interval-time"), PGGateIntervalTime);
+    } else {
+        PGNumberOfGates = 0;
     }
 }
 
@@ -718,11 +720,10 @@ bool CTaskFileHelper::SaveTimeGate(XMLNode node) {
 
     SetAttribute(node, _T("number"), PGNumberOfGates);
 
-    size_t nCount = (_sntprintf(NULL, 0, _T("%02d:%02d"), PGOpenTimeH, PGOpenTimeM) + 1);
-    LPTSTR szTime = (LPTSTR) calloc(nCount, sizeof (TCHAR));
-    _stprintf(szTime, _T("%02d:%02d"), PGOpenTimeH, PGOpenTimeM);
-
-    SetAttribute(node, _T("open-time"), szTime);
+    if(!node.AddAttribute(ToString(_T("open-time")), AllocFormat(_T("%02d:%02d"), PGOpenTimeH, PGOpenTimeM))) { 
+        return false; 
+    }
+    
     SetAttribute(node, _T("interval-time"), PGGateIntervalTime);
 
     return true;
