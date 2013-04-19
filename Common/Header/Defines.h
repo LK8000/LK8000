@@ -683,6 +683,10 @@
 // #define LK_LASTTHERMAL_DIST	154		//
 // #define LK_LASTTHERMAL_BRGDIFF	155		//
 
+#define LK_NEXT_CENTER_ALTDIFF 156  // Same As  LK_NEXT_ALTDIFF but always with Waypoint center
+#define LK_NEXT_CENTER_GR	157	// Same as LK_NEXT_GR but always with Waypoint center
+
+
 // Service values
 #define LK_DUMMY		253		//
 #define LK_EMPTY		254		//
@@ -748,16 +752,17 @@
 #define CPS_EFRAME	4	// frame errors
 
 // Overtargets Modes
-#define OVT_TASK	0
-#define OVT_BALT	1
-#define OVT_ALT1	2
-#define OVT_ALT2	3
-#define OVT_HOME	4
-#define OVT_THER	5	// last thermal
-#define OVT_MATE	6	// team mate
-#define OVT_FLARM	7	// target flarm in LK mode
-#define OVT_MARK	8	// marked location
-#define OVT_PASS	9	// closer mountain pass
+#define OVT_TASK        0
+#define OVT_TASKCENTER  1   // Active Waypoint Center for PG optimized Task 
+#define OVT_BALT        2
+#define OVT_ALT1        3
+#define OVT_ALT2        4
+#define OVT_HOME        5
+#define OVT_THER        6	// last thermal
+#define OVT_MATE        7	// team mate
+#define OVT_FLARM       8	// target flarm in LK mode
+#define OVT_MARK        9	// marked location
+#define OVT_PASS        10	// closer mountain pass
 // this is not the number of modes, because 0 is not accounted, remember
 // Also, this is used for dimensioning array. 
 #define OVT_MAXMODE	OVT_PASS

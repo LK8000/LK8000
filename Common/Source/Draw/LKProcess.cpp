@@ -378,6 +378,27 @@ goto_bearing:
 			}
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
+		case LK_NEXT_CENTER_ALTDIFF:
+			wsprintf(BufferValue,_T(NULLLONG));
+			if (lktitle)
+				// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
+				_stprintf(BufferTitle, MsgToken(1026));
+			else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_NEXT_ALTDIFF].Title );
+            
+			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+				index = Task[ActiveWayPoint].Index;
+				if (index>=0) {
+					// don't use current MC...
+					value=ALTITUDEMODIFY*WayPointCalc[index].AltArriv[AltArrivMode];
+					if ( value > ALTDIFFLIMIT ) {
+						valid=true;
+						_stprintf(BufferValue,TEXT("%+1.0f"), value);
+					}
+				}
+			}
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			break;
 
 		// B13
 		// Using MC! 
@@ -1574,6 +1595,29 @@ goto_bearing:
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
+				if (index>=0) {
+					value=WayPointCalc[index].GR;
+					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
+						strcpy(text,NULLMEDIUM);
+					else {
+						if (value >= 100) sprintf(text,"%.0lf",value);
+							else sprintf(text,"%.1lf",value);
+						valid=true;
+					}
+					wsprintf(BufferValue, TEXT("%S"),text);
+				}
+			}
+			break;
+		case LK_NEXT_CENTER_GR:
+			wsprintf(BufferValue,_T(NULLLONG));
+			if (lktitle)
+				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
+				_stprintf(BufferTitle, MsgToken(1146));
+			else
+				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
+				_stprintf(BufferTitle, MsgToken(1146));
+			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=WayPointCalc[index].GR;
 					if (value <1 || value >=ALTERNATE_MAXVALIDGR )

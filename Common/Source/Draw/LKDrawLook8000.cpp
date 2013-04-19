@@ -593,6 +593,9 @@ nextinit:
 					else 
 		 				LKFormatDist(index, false, BufferValue, BufferUnit);
 					break;
+                case OVT_TASKCENTER:
+		 			LKFormatDist(index, false, BufferValue, BufferUnit);
+                    break;
 				case OVT_BALT:
 		 			LKFormatDist(BestAlternate, false, BufferValue, BufferUnit);
 					break;
@@ -643,6 +646,9 @@ nextinit:
 				case OVT_TASK:
 					// Do not use FormatBrgDiff for TASK, could be AAT!
 		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
+					break;
+				case OVT_TASKCENTER:
+		 			LKFormatBrgDiff(index, false, BufferValue, BufferUnit);
 					break;
 				case OVT_BALT:
 		 			LKFormatBrgDiff(BestAlternate, false, BufferValue, BufferUnit);
@@ -718,6 +724,9 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
+				case OVT_TASKCENTER:
+		 			LKFormatValue(LK_NEXT_CENTER_GR, false, BufferValue, BufferUnit, BufferTitle);
+					break;
 				case OVT_BALT:
 		 			LKFormatValue(LK_BESTALTERN_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
@@ -757,6 +766,9 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 			switch (OvertargetMode) {
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
+					break;
+				case OVT_TASKCENTER:
+		 			LKFormatValue(LK_NEXT_CENTER_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_BALT:
 		 			LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
@@ -851,6 +863,9 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 		switch (OvertargetMode) {
 			case OVT_TASK:
 	 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
+				break;
+			case OVT_TASKCENTER:
+	 			LKFormatValue(LK_NEXT_CENTER_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 				break;
 			case OVT_BALT:
 	 			LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);

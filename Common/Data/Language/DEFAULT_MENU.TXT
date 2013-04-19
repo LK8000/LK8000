@@ -2321,7 +2321,9 @@ location=11
 mode=MTarget
 type=key
 data=APP1
-label=
+event=ChangeMultitarget TASKCENTER
+event=Mode default
+label=_@M2151_
 location=1
 
 mode=MTarget
