@@ -48,6 +48,11 @@ All task option is saved with task ( rule, time gate, aat target .... )
 
 . Added information about landable waypoint on Task Edit screen
 
+. Draw thin green dash line from Current position to Active TurnPoint center
+
+. New MultiTarget Task Center, for rotation of multitarget and as a button in standard menu
+  Only for paragliders, and only when Optimized Route is enabled
+
 
 
 CHANGES
@@ -63,6 +68,7 @@ to view 2x its radius. Because of that sector was really hard to manage in
 AAT tasks. Now the same sector is centered on the screen and stretched on full
 screen.
 
+Skip Alternate 1, Alternate 2 and Last Thermal in multitarget rotate if is not defined.
 
 
 
