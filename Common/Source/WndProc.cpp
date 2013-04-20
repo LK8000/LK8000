@@ -298,9 +298,7 @@ void Shutdown(void) {
 
   LKSound(_T("LK_DISCONNECT.WAV")); Sleep(500); // real WAV length is 410+ms
   if (!GlobalRunning) { // shutdown on startup (before sim/fly or clicking on the window X)
-	#if TESTBENCH
 	StartupStore(_T(". Quick shutdown requested before terminating startup%s"),NEWLINE);
-	#endif
 	// force exit mode for the case of being in welcome screen: OnTimerNotify will catch it
 	RUN_MODE=RUN_SHUTDOWN;
 	CloseCalculations();
