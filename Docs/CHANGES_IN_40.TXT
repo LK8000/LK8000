@@ -4,7 +4,7 @@ LK8000 VERSION 4.0B
 CHANGES
 -------
 
-Paraglider's Time gates: last gate is always lasting up to 3 hours. In practice, it never close.
+Paraglider's Time gates: last gate is always lasting up to 3 hours. In practice, it never closes.
 
 FIXES
 -----
@@ -38,6 +38,7 @@ Fix bug loading CUP waypoints, incorrect removing trailing quotes.
     fullname,codename,..   without quotes "", then name=fullnam  without trailing letter "e".
 
 
+Fix critical bug in EYE device driver
 
 
 SMALL FIXES
