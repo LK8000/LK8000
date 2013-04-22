@@ -1,6 +1,11 @@
 
 LK8000 VERSION 4.0B  
 
+ADDITIONS
+---------
+
+SUPPORT FOR PNADUMP SOFTWARE: automatic loading of PILOT NAME, ID etc. from file
+
 CHANGES
 -------
 
