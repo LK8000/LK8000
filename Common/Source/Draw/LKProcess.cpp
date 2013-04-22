@@ -307,7 +307,7 @@ goto_bearing:
 		// B11
 		case LK_NEXT_DIST:
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-			   if (DoOptimizeRoute()) {
+			   if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) {
 				value=WayPointCalc[RESWP_OPTIMIZED].Distance*DISTANCEMODIFY;
 				valid=true;
 				if (value>99)
@@ -365,7 +365,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					// don't use current MC...
@@ -389,7 +389,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*WayPointCalc[index].AltReqd[AltArrivMode];
@@ -416,7 +416,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
-				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference;
@@ -876,7 +876,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			index = DoOptimizeRoute()?RESWP_OPTIMIZED:Task[ActiveWayPoint].Index;
+			index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())?RESWP_OPTIMIZED:Task[ActiveWayPoint].Index;
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
 
 				if (WayPointCalc[index].NextETE > 0) {
@@ -972,7 +972,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					// THIS WOULD SET BEARING while circling
@@ -1572,7 +1572,7 @@ goto_bearing:
 				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
 				_stprintf(BufferTitle, MsgToken(1146));
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=WayPointCalc[index].GR;
@@ -2438,7 +2438,7 @@ lkfin_ete:
 			_stprintf(BufferTitle, MsgToken(1190));
 
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.NextAltitudeDifference0;
@@ -2719,7 +2719,7 @@ lkfin_ete:
 		// B147 Distance from the start sector, always available also after start
 		case LK_START_DIST:
 			if ( ValidTaskPoint(0) && ValidTaskPoint(1) ) { // if real task
-				if(DoOptimizeRoute()&& ActiveWayPoint == 0) {
+				if((ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())&& ActiveWayPoint == 0) {
 					value=WayPointCalc[RESWP_OPTIMIZED].Distance*DISTANCEMODIFY;
 					if (value>99 || value==0)
 						sprintf(text,"%.0f",value);
