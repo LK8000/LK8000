@@ -695,6 +695,9 @@ void LoggerHeader(void)
 
   IGCWriteRecord(datum);
 
+  extern void AdditionalHeaders(void);
+  AdditionalHeaders();
+
 }
 
 
@@ -1282,4 +1285,89 @@ int RunSignature() {
   return retval;
 
 }
+
+
+//
+// Paolo+Durval: feed external headers to LK for PNAdump software
+//
+#define EXTHFILE	"COMPE.CNF"
+//#define DEBUGHFILE	1
+
+void AdditionalHeaders(void) {
+
+  TCHAR pathfilename[MAX_PATH+1];
+  wsprintf(pathfilename, TEXT("%s\\%s\\%S"), LKGetLocalPath(), TEXT(LKD_LOGS), EXTHFILE);
+
+  if (GetFileAttributes(pathfilename) == 0xffffffff) {
+	#if DEBUGHFILE
+	StartupStore(_T("... No additional headers file <%s>\n"),pathfilename);
+	#endif
+	return;
+  }
+
+  #if DEBUGHFILE
+  StartupStore(_T("... HFILE <%s> FOUND\n"),pathfilename);
+  #endif
+
+  HANDLE hfile = CreateFile(pathfilename, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+  if( hfile == INVALID_HANDLE_VALUE) {
+	StartupStore(_T("... ERROR, extHFILE <%s> not found!%s"),pathfilename,NEWLINE);
+	return;
+  }
+
+  #define MAXHLINE 100
+  TCHAR tmpString[MAXHLINE+1];
+  char tmps[MAXHLINE+1];
+  //char line[MAXHLINE+12];
+  tmpString[0]=0;
+
+
+  while (ReadString(hfile, MAXHLINE, tmpString)) {
+	size_t len = _tcslen(tmpString);
+
+	if (len < 2) continue;
+	if (tmpString[0]!='$' ) {
+		#if DEBUGHFILE
+		StartupStore(_T("Line skipped: <%s>\n"),tmpString);
+		#endif
+		continue;
+	}
+
+	// Remove trailing cr lf, three times to be sure
+	if ( (tmpString[len - 1] == '\r') || (tmpString[len-1]== '\n')) {
+		tmpString[len - 1]= 0;
+		len--;
+	}
+	if (len > 0) {
+		if ( (tmpString[len - 1] == '\r') || (tmpString[len-1]== '\n')) {
+			tmpString[len - 1]= 0;
+			len--;
+		}
+	}
+	if (len > 0) {
+		if ( (tmpString[len - 1] == '\r') || (tmpString[len-1]== '\n')) {
+			tmpString[len - 1]= 0;
+		}
+	}
+
+	#if DEBUGHFILE
+	StartupStore(_T("ADDING HEADER <%s>\n"),tmpString);
+	#endif
+
+	/*
+	unicode2ascii(&tmpString[1],tmps,MAXHLINE);
+	strcpy(line,"HFREMARK:");
+	strcat(line,tmps);
+	strcat(line,"\r\n");
+	*/
+	sprintf(tmps,"HFREMARK:%S\r\n",&tmpString[1]);
+	
+	IGCWriteRecord(tmps);
+  }
+
+  CloseHandle(hfile);
+
+}
+
 
