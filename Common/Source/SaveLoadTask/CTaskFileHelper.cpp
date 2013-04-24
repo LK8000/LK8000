@@ -18,7 +18,7 @@
 
 extern void RenameIfVirtual(const unsigned int i);
 
-LPCTSTR AllocFormat(LPCTSTR fmt, ...) {
+LPTSTR AllocFormat(LPCTSTR fmt, ...) {
     int n;
     int size = 50; /* Guess we need no more than 100 bytes. */
     LPTSTR p;
@@ -233,6 +233,8 @@ void CTaskFileHelper::LoadTimeGate(XMLNode node) {
         GetAttribute(node, _T("open-time"), szTime);
         StrToTime(szTime, &PGOpenTimeH, &PGOpenTimeM);
         GetAttribute(node, _T("interval-time"), PGGateIntervalTime);
+    } else {
+        PGNumberOfGates = 0;
     }
 }
 
@@ -395,12 +397,12 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
     if (node) {
         unsigned long idx = MAXTASKPOINTS;
         GetAttribute(node, _T("idx"), idx);
-        LPCTSTR szCode = NULL;
-        GetAttribute(node, _T("code"), szCode);
-        if (idx >= MAXTASKPOINTS || szCode == NULL) {
+        LPCTSTR szName = NULL;
+        GetAttribute(node, _T("name"), szName);
+        if (idx >= MAXTASKPOINTS || szName == NULL) {
             return false; // invalide TaskPoint index
         }
-        std::map<std::wstring, size_t>::const_iterator it = mWayPointLoaded.find(szCode);
+        std::map<std::wstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
         if (it == mWayPointLoaded.end()) {
             return false; // non existing Waypoint
         }
@@ -440,13 +442,13 @@ bool CTaskFileHelper::LoadStartPoint(XMLNode node) {
     if (node) {
         unsigned long idx = MAXSTARTPOINTS;
         GetAttribute(node, _T("idx"), idx);
-        LPCTSTR szCode = NULL;
-        GetAttribute(node, _T("code"), szCode);
+        LPCTSTR szName = NULL;
+        GetAttribute(node, _T("name"), szName);
 
-        if (idx >= MAXSTARTPOINTS || szCode == NULL) {
+        if (idx >= MAXSTARTPOINTS || szName == NULL) {
             return false; // invalide TaskPoint index
         }
-        std::map<std::wstring, size_t>::const_iterator it = mWayPointLoaded.find(szCode);
+        std::map<std::wstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
         if (it == mWayPointLoaded.end()) {
             return false; // non existing Waypoint
         }
@@ -467,12 +469,6 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node) {
     GetAttribute(node, _T("name"), szAttr);
     if (szAttr) {
         _tcscpy(newPoint.Name, szAttr);
-    }
-    if (_tcslen(newPoint.Name) == 0 && _tcslen(newPoint.Code) > 0) {
-        _tcscpy(newPoint.Name, newPoint.Code);
-    }
-    if (_tcslen(newPoint.Name) > 0 && _tcslen(newPoint.Code) == 0) {
-        _tcscpy(newPoint.Code, newPoint.Name);
     }
 
     GetAttribute(node, _T("latitude"), newPoint.Latitude);
@@ -506,7 +502,7 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node) {
     }
     GetAttribute(node, _T("style"), newPoint.Style);
 
-    mWayPointLoaded[newPoint.Code] = FindOrAddWaypoint(&newPoint);
+    mWayPointLoaded[newPoint.Name] = FindOrAddWaypoint(&newPoint);
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
@@ -724,11 +720,10 @@ bool CTaskFileHelper::SaveTimeGate(XMLNode node) {
 
     SetAttribute(node, _T("number"), PGNumberOfGates);
 
-    size_t nCount = (_sntprintf(NULL, 0, _T("%02d:%02d"), PGOpenTimeH, PGOpenTimeM) + 1);
-    LPTSTR szTime = (LPTSTR) calloc(nCount, sizeof (TCHAR));
-    _stprintf(szTime, _T("%02d:%02d"), PGOpenTimeH, PGOpenTimeM);
-
-    SetAttribute(node, _T("open-time"), szTime);
+    if(!node.AddAttribute(ToString(_T("open-time")), AllocFormat(_T("%02d:%02d"), PGOpenTimeH, PGOpenTimeM))) { 
+        return false; 
+    }
+    
     SetAttribute(node, _T("interval-time"), PGGateIntervalTime);
 
     return true;
@@ -818,7 +813,7 @@ bool CTaskFileHelper::SaveWayPointList(XMLNode node) {
 }
 
 bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const TASK_POINT& TaskPt) {
-    SetAttribute(node, _T("code"), WayPointList[TaskPt.Index].Code);
+    SetAttribute(node, _T("name"), WayPointList[TaskPt.Index].Name);
 
     if (AATEnabled || DoOptimizeRoute()) {
 
@@ -861,21 +856,21 @@ bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const TASK_POINT& TaskPt) {
 }
 
 bool CTaskFileHelper::SaveStartPoint(XMLNode node, const START_POINT& StartPt) {
-    SetAttribute(node, _T("code"), WayPointList[StartPt.Index].Code);
+    SetAttribute(node, _T("name"), (LPCTSTR)(WayPointList[StartPt.Index].Name));
 
     mWayPointToSave.insert(StartPt.Index);
     return true;
 }
 
 bool CTaskFileHelper::SaveWayPoint(XMLNode node, const WAYPOINT& WayPoint) {
-    SetAttribute(node, _T("code"), WayPoint.Code)
-    if (_tcslen(WayPoint.Name) > 0) {
-        SetAttribute(node, _T("name"), WayPoint.Name);
-    }
+    SetAttribute(node, _T("name"), WayPoint.Name);
     SetAttribute(node, _T("latitude"), WayPoint.Latitude);
     SetAttribute(node, _T("longitude"), WayPoint.Longitude);
     SetAttribute(node, _T("altitude"), WayPoint.Altitude);
     SetAttribute(node, _T("flags"), WayPoint.Flags);
+    if (_tcslen(WayPoint.Code) > 0) {
+        SetAttribute(node, _T("code"), (LPCTSTR)(WayPoint.Code));
+    }
     if (WayPoint.Comment && _tcslen(WayPoint.Comment) > 0) {
         SetAttribute(node, _T("comment"), WayPoint.Comment);
     }
