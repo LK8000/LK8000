@@ -2428,7 +2428,12 @@ void InputEvents::eventTaskLoad(const TCHAR *misc) {
 	LockTaskData();
 	LocalPath(buffer,_T(LKD_TASKS));
 	_tcscat(buffer,_T("\\"));
-	_tcscat(buffer,misc);
+	// This is only to prevent 4.0b invalid task on startup after using a 4.1a beta
+	// because the XCI is wrong, belonging to 4.1a..
+	if (_tcscmp(misc,_T("Default.lkt"))==0)
+		_tcscat(buffer,_T("Default.tsk"));
+	else
+		_tcscat(buffer,misc);
 	LoadNewTask(buffer);
 	UnlockTaskData();
   }
