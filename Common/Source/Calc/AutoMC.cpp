@@ -120,7 +120,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     }
   }
 
-  MACCREADY = LowPassFilter(MACCREADY,mc_new,0.15);
+  MACCREADY = LowPassFilter(MACCREADY,mc_new,0.6);
 
   UnlockTaskData();
   //  UnlockFlightData();
