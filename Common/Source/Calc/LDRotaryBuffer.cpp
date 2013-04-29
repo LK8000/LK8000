@@ -262,7 +262,7 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 			double dtmp= avertas/GlidePolar::Vbestld;
 			Calculated->EqMc = -1*GlidePolar::sinkratecache[GlidePolar::Vbestld] * ( (dtmp*dtmp*dtmp) - ( GlidePolar::Vbestld/avertas));
 			// Do not consider impossible MC values as Equivalent
-			if (Calculated->EqMc>10) Calculated->EqMc=-1;
+			if (Calculated->EqMc>20) Calculated->EqMc=-1;
 		} else  {
 			Calculated->EqMc=-1;
 			#if DEBUG_EQMC
