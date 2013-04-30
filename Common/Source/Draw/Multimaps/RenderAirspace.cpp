@@ -38,6 +38,8 @@ extern COLORREF  Sideview_TextColor;
 #define TBSIZE 80
 #define ADDITIONAL_INFO_THRESHOLD 0.5
 
+//#define USE_TCOLORS 1
+
 void MapWindow::RenderAirspace(HDC hdc, const RECT rci) {
   zoom.SetLimitMapScale(false);
   /****************************************************************/
@@ -713,14 +715,20 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
     y += tsize.cy;
 
+    #if USE_TCOLORS
     if((wpt_altarriv_mc0 > 0) && (  WayPointList[overindex].Reachable)) {
   	  SetTextColor(hdc, GREEN_COL);
     } else {
   	  SetTextColor(hdc, RED_COL);
     }
+    #else
+    SetTextColor(hdc, RGB_BLACK);
+    #endif
     if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     
+    if (wpt_altarriv==wpt_altarriv_mc0) goto _skip_mc;
+
     // Print arrival altitude
     if (wpt_altarriv > ALTDIFFLIMIT) {
       _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY*MACCREADY));
@@ -732,17 +740,23 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
         _tcscpy(text, TEXT("---"));
     }
 
+    #if USE_TCOLORS
     if(  WayPointList[overindex].Reachable) {
   	  SetTextColor(hdc, GREEN_COL);
     } else {
   	  SetTextColor(hdc, RED_COL);
     }
+    #else
+    SetTextColor(hdc, RGB_BLACK);
+    #endif
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = line[0].x - tsize.cx - NIBLSCALE(5);
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
     y += tsize.cy;
     if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
+_skip_mc:
 
     // Print arrival AGL
     altarriv = wpt_altarriv;
@@ -757,11 +771,15 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       x = line[0].x - tsize.cx - NIBLSCALE(5);
       if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
       y = CalcHeightCoordinat(  altarriv + wpt_altitude , &sDia );
+      #if USE_TCOLORS
       if(  WayPointList[overindex].Reachable) { // CAREFUL, overindex<0 was making sw crash here.
         SetTextColor(hdc, GREEN_COL);
       } else {
         SetTextColor(hdc, RED_COL);
       }
+      #else
+      SetTextColor(hdc, RGB_BLACK);
+      #endif
       if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
         ExtTextOut(hdc, x, y-tsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
