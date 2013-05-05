@@ -3070,9 +3070,7 @@ void	MacCreadyProcessing(int UpDown)
 	CALCULATED_INFO.AutoMacCready=false;  // 091214 disable AutoMacCready when changing MC values
     MACCREADY += (double)0.1/LIFTMODIFY; // BUGFIX 100102
     
-    if (MACCREADY>5.0) { // JMW added sensible limit
-      MACCREADY=5.0;
-    }
+    if (MACCREADY>12.0) MACCREADY=12.0;
   }
   else if(UpDown==-1)
     {
@@ -3102,7 +3100,7 @@ void	MacCreadyProcessing(int UpDown)
     {
 	CALCULATED_INFO.AutoMacCready=false;  // 091214 disable AutoMacCready when changing MC values
 	MACCREADY += (double)0.5/LIFTMODIFY; // 100102
-	if (MACCREADY>5.0) MACCREADY=5.0; 
+	if (MACCREADY>12.0) MACCREADY=12.0; 
       
     }
   else if (UpDown==-3)
