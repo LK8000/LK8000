@@ -632,15 +632,15 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     } else {
     //  double t = fDist/(speed!=0?speed:1);
       if (SIMMODE && !DerivedDrawInfo.Flying) {
-	      calc_average30s= -GlidePolar::bestld;
-	      if (calc_average30s<1) calc_average30s=1;
+	      calc_average30s= -GlidePolar::SinkRate((double)GlidePolar::Vbestld);
+	      if (calc_average30s==0) calc_average30s=0.01; // should be impossible, but we must check
 	      double t = fabs(DerivedDrawInfo.NavAltitude / calc_average30s);
 	      line[0].x = CalcDistanceCoordinat( 0, &sDia);
 	      line[0].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude, &sDia);
 	      line[1].x = CalcDistanceCoordinat( GlidePolar::Vbestld * t, &sDia);
 	      line[1].y = CalcHeightCoordinat  ( 0, &sDia);
       }  else {
-	      if (calc_average30s<1) calc_average30s=1;
+	      if (calc_average30s==0) calc_average30s=0.01; // limit the horizontal infinite
 	      double t = fabs(DerivedDrawInfo.NavAltitude / calc_average30s);
 	      line[0].x = CalcDistanceCoordinat( 0, &sDia);
 	      line[0].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude, &sDia);
