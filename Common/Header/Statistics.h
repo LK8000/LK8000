@@ -16,7 +16,7 @@
 #include "leastsqs.h"
 
 #define BORDER_X 15
-#define BORDER_Y 19
+#define BORDER_Y  19
 
 
 class Statistics {
@@ -100,7 +100,11 @@ class Statistics {
 			const double zero,
                         const int Style, 
 			const double unit_step, bool draw_units=false);
-
+  static void DrawYGrid_cor(HDC hdc, const RECT rc,
+			const double tic_step,
+			const double zero,
+                        const int Style,
+			const double unit_step, bool draw_units=false);
   static void DrawXLabel(HDC hdc, const RECT rc, const TCHAR *text);
   static void DrawYLabel(HDC hdc, const RECT rc, const TCHAR *text);
   static void DrawLabel(HDC hdc, const RECT rc, const TCHAR *text, 

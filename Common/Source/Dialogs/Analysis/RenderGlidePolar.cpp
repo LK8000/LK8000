@@ -25,9 +25,9 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   DrawXGrid(hdc, rc, 
             10.0/SPEEDMODIFY, 0,
             STYLE_THINDASHPAPER, 10.0, true);
-  DrawYGrid(hdc, rc, 
-            1.0/LIFTMODIFY, 0,
-            STYLE_THINDASHPAPER, 1.0, true);
+  DrawYGrid_cor(hdc, rc,
+            0.5/LIFTMODIFY, 0,
+            STYLE_THINDASHPAPER, 0.5, true);
   
   double sinkrate0, sinkrate1;
   double v0=0, v1;
