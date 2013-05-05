@@ -30,7 +30,14 @@ double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
  
   (void)Basic;
 
-  while (pirker_mc<10.0) {
+  short retry=1;
+  double max_mc=10.0;
+  if (ISPARAGLIDER) {
+	retry=20;
+	max_mc=20.0;
+  }
+
+  while (pirker_mc<max_mc) {
 
     h = GlidePolar::MacCreadyAltitude(pirker_mc, 
                                       1.0, // unit distance
@@ -44,13 +51,21 @@ double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     // how much we need at that speed.
     //   dh>0, we can afford to speed up
 
-    if (dh==last_dh) {
+    // Paraglider's polar is problematic, since everything happens at very close speeds.
+    // So we iterate more times.
+    // Because ArrivalAltitude at MC 5 can be the same at MC 5.5, at MC6.0.. but different at MC 7.0.
+    if ((--retry<1) && (dh==last_dh)) {
       // same height, must have hit max speed.
       if (dh>0) {
         return last_pirker_mc;
       } else {
         return 0.0;
       }
+    }
+
+    // dicotomy wouldnt work for PGs polar, it would not find a 0 value.
+    if (ISPARAGLIDER) {
+	if (dh<0) return last_pirker_mc;
     }
 
     if ((dh<=0)&&(last_dh>0)) {
@@ -65,7 +80,10 @@ double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     last_dh = dh;
     last_pirker_mc = pirker_mc;
 
-    pirker_mc += 0.5;
+    if (ISPARAGLIDER)
+      pirker_mc += 1.0;
+    else
+      pirker_mc += 0.5;
   }
   if (dh>=0) {
     return pirker_mc;
