@@ -56,8 +56,21 @@ void Statistics::RenderSpeed(HDC hdc, const RECT rc)
 
   DrawTrend(hdc, rc, &flightstats.Task_Speed, STYLE_BLUETHIN);
 
-  DrawXLabel(hdc, rc, TEXT("t"));
-  DrawYLabel(hdc, rc, TEXT("V"));
+
+  if(INVERTCOLORS)
+    SetTextColor(hdc,RGB_DARKGREEN);
+  else
+    SetTextColor(hdc,RGB_GREEN);
+  SetBkMode(hdc, OPAQUE);
+  TCHAR text[80];
+  DrawXLabel(hdc, rc, TEXT(" t/h "));
+  _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
+  DrawYLabel(hdc, rc, text);
+
+
+//  DrawXLabel(hdc, rc, TEXT("t"));
+//  DrawYLabel(hdc, rc, TEXT("V"));
 
 }
+
 

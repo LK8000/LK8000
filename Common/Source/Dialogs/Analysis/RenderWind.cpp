@@ -111,9 +111,21 @@ void Statistics::RenderWind(HDC hdc, const RECT rc)
 
   }
 
-  DrawXLabel(hdc, rc, TEXT("w"));
-  DrawYLabel(hdc, rc, TEXT("h"));
+  if(INVERTCOLORS)
+    SetTextColor(hdc,RGB_DARKGREEN);
+  else
+    SetTextColor(hdc,RGB_GREEN);
+  SetBkMode(hdc, OPAQUE);
+  TCHAR text[80];
+  _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
+  DrawXLabel(hdc, rc, text);
+  _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
+  DrawYLabel(hdc, rc, text);
+
+ // DrawXLabel(hdc, rc, TEXT("w"));
+ // DrawYLabel(hdc, rc, TEXT("h"));
 
 }
+
 
 

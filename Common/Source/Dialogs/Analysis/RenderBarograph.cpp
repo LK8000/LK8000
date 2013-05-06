@@ -82,7 +82,18 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
 
   DrawTrend(hdc, rc, &flightstats.Altitude_Ceiling, STYLE_BLUETHIN);
 
-  DrawXLabel(hdc, rc, TEXT("t"));
-  DrawYLabel(hdc, rc, TEXT("h"));
+  if(INVERTCOLORS)
+    SetTextColor(hdc,RGB_DARKGREEN);
+  else
+    SetTextColor(hdc,RGB_GREEN);
+
+  TCHAR text[80];
+  DrawXLabel(hdc, rc, TEXT(" t/h "));
+  _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
+  DrawYLabel(hdc, rc, text);
+
+
+//  DrawYLabel(hdc, rc, TEXT("h"));
 
 }
+

@@ -49,9 +49,18 @@ void Statistics::RenderClimb(HDC hdc, const RECT rc)
              &flightstats.ThermalAverage,
              STYLE_BLUETHIN);
   SelectObject(hdc, hfOld);
+  if(INVERTCOLORS)
+    SetTextColor(hdc,RGB_DARKGREEN);
+  else
+    SetTextColor(hdc,RGB_GREEN);
+  SetBkMode(hdc, OPAQUE);
+  TCHAR text[80];
+
   DrawXLabel(hdc, rc, TEXT("n"));
-  DrawYLabel(hdc, rc, TEXT("w"));
+  _stprintf(text,TEXT(" v/%s "),Units::GetVerticalSpeedName());
+  DrawYLabel(hdc, rc, text);
 
 }
+
 
 

@@ -86,9 +86,9 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
     SetTextColor(hdc,RGB_GREEN);
   SetBkMode(hdc, OPAQUE);
   TCHAR text[80];
-  _stprintf(text,TEXT("v/%s"),Units::GetHorizontalSpeedName());
+  _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
   DrawXLabel(hdc, rc, text);
-  _stprintf(text,TEXT("w/%s"),Units::GetVerticalSpeedName());
+  _stprintf(text,TEXT(" w/%s "),Units::GetVerticalSpeedName());
   DrawYLabel(hdc, rc, text);
 
 
@@ -143,4 +143,5 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   SelectObject(hdc, hfOldU);
   SetBkMode(hdc, TRANSPARENT);
 }
+
 

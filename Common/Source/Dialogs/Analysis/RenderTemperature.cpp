@@ -33,6 +33,7 @@ void Statistics::RenderTemperature(HDC hdc, const RECT rc)
 			       (double)CuSonde::cslevels[i].dewpoint)));
     }
   }
+
   if (hmin>= hmax) {
     DrawNoData(hdc, rc);
     return;
@@ -93,7 +94,20 @@ void Statistics::RenderTemperature(HDC hdc, const RECT rc)
     }
   }
 
-  DrawXLabel(hdc, rc, TEXT("T")TEXT(DEG));
-  DrawYLabel(hdc, rc, TEXT("h"));
+  if(INVERTCOLORS)
+    SetTextColor(hdc,RGB_DARKGREEN);
+  else
+    SetTextColor(hdc,RGB_GREEN);
+  SetBkMode(hdc, OPAQUE);
+  TCHAR text[80];
+  _stprintf(text,TEXT(" T/°C "));
+  DrawXLabel(hdc, rc, text);
+  _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
+  DrawYLabel(hdc, rc, text);
+
+
+//  DrawXLabel(hdc, rc, TEXT("T")TEXT(DEG));
+//  DrawYLabel(hdc, rc, TEXT("h"));
 }
+
 
