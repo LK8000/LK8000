@@ -249,7 +249,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	  }
           ///if ( (fSplitFact*100)<SIZE4 )
            ////bSideView = true;
-	  //LKevent=LKEVENT_NONE;
+	  LKevent=LKEVENT_NONE;
 
 	  // Current_Multimap_SizeY is global, and must be used by all multimaps!
 	  // It is defined in Multimap.cpp and as an external in Multimap.h
