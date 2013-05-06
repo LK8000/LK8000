@@ -115,7 +115,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 #endif
 
 
-  LKevent=LKEVENT_NONE;
+ // LKevent=LKEVENT_NONE;
 
 }
 
