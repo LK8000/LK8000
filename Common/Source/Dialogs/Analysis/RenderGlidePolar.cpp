@@ -21,14 +21,20 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   ScaleYFromValue(rc, GlidePolar::SinkRate(maxSpeed));
   ScaleXFromValue(rc, minSpeed);
   ScaleXFromValue(rc, maxSpeed);
+  double gridtick;
+  gridtick = 20;
+  if( (maxSpeed-minSpeed)*SPEEDMODIFY < 150)  {
+	gridtick = 10;  }
 
-  DrawXGrid(hdc, rc, 
-            10.0/SPEEDMODIFY, 0,
-            STYLE_THINDASHPAPER, 10.0, true);
-  DrawYGrid_cor(hdc, rc,
-            0.5/LIFTMODIFY, 0,
-            STYLE_THINDASHPAPER, 0.5, true);
-  
+  DrawXGrid(hdc, rc,  gridtick/SPEEDMODIFY, 0, STYLE_THINDASHPAPER, gridtick, true);
+
+  gridtick = 0.5;
+  if((GlidePolar::SinkRate(minSpeed)-GlidePolar::SinkRate(maxSpeed))*LIFTMODIFY > 5)  {
+	  gridtick = 1.0;  }
+  if((GlidePolar::SinkRate(minSpeed)-GlidePolar::SinkRate(maxSpeed))*LIFTMODIFY > 20)  {
+  	  gridtick = 5.0;  }
+  DrawYGrid_cor(hdc, rc,  gridtick/LIFTMODIFY, 0, STYLE_THINDASHPAPER, gridtick, true);
+
   double sinkrate0, sinkrate1;
   double v0=0, v1;
   bool v0valid = false;
@@ -74,11 +80,19 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
            MACCREADY+ff*maxSpeed,
            STYLE_REDTHICK);
 
-  DrawXLabel(hdc, rc, TEXT("V"));
-  DrawYLabel(hdc, rc, TEXT("w"));
-
-  TCHAR text[80];
+  if(INVERTCOLORS)
+    SetTextColor(hdc,RGB_DARKGREEN);
+  else
+    SetTextColor(hdc,RGB_GREEN);
   SetBkMode(hdc, OPAQUE);
+  TCHAR text[80];
+  _stprintf(text,TEXT("v/%s"),Units::GetHorizontalSpeedName());
+  DrawXLabel(hdc, rc, text);
+  _stprintf(text,TEXT("w/%s"),Units::GetVerticalSpeedName());
+  DrawYLabel(hdc, rc, text);
+
+
+
 
   if(INVERTCOLORS)
     SetTextColor(hdc,RGB_BLACK);
