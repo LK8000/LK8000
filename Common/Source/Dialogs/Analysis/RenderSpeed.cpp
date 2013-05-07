@@ -64,7 +64,7 @@ void Statistics::RenderSpeed(HDC hdc, const RECT rc)
   SetBkMode(hdc, OPAQUE);
   TCHAR text[80];
   DrawXLabel(hdc, rc, TEXT(" t/h "));
-  _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
+  _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
   DrawYLabel(hdc, rc, text);
 
 
