@@ -292,13 +292,6 @@ void FillDataOptions()
 	SetDataOption(122, ugAltitude, TEXT("_@M1767_"), TEXT("_@M1768_"));  // Max Altitude reached
 	SetDataOption(123, ugAltitude, TEXT("_@M1769_"), TEXT("_@M1770_"));  // Max Height gained
 	SetDataOption(124, ugWindSpeed, TEXT("_@M1771_"), TEXT("_@M1772_")); // Head wind speed
-
-/*
-	_@M1507_ "OLC FAI triangle Distance to close"
-	_@M1508_ "FAI*close"
-	_@M1509_ "OLC FAI triangle Distance close %"
-	_@M1510_ "FAI*close %"
-	*/
 	SetDataOption(125, ugDistance, TEXT("_@M1507_"), TEXT("_@M1508_")); //OLC FAI triangle Distance to close
 	SetDataOption(126, ugNone, TEXT("_@M1509_"), TEXT("_@M1510_")); // OLC FAI triangle Distance close %
 

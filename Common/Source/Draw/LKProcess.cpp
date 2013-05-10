@@ -378,27 +378,6 @@ goto_bearing:
 			}
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
-		case LK_NEXT_CENTER_ALTDIFF:
-			wsprintf(BufferValue,_T(NULLLONG));
-			if (lktitle)
-				// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
-				_stprintf(BufferTitle, MsgToken(1026));
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_NEXT_ALTDIFF].Title );
-            
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
-				if (index>=0) {
-					// don't use current MC...
-					value=ALTITUDEMODIFY*WayPointCalc[index].AltArriv[AltArrivMode];
-					if ( value > ALTDIFFLIMIT ) {
-						valid=true;
-						_stprintf(BufferValue,TEXT("%+1.0f"), value);
-					}
-				}
-			}
-			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
-			break;
 
 		// B13
 		// Using MC! 
@@ -1608,30 +1587,6 @@ goto_bearing:
 				}
 			}
 			break;
-		case LK_NEXT_CENTER_GR:
-			wsprintf(BufferValue,_T(NULLLONG));
-			if (lktitle)
-				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
-				_stprintf(BufferTitle, MsgToken(1146));
-			else
-				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
-				_stprintf(BufferTitle, MsgToken(1146));
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
-				if (index>=0) {
-					value=WayPointCalc[index].GR;
-					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
-						strcpy(text,NULLMEDIUM);
-					else {
-						if (value >= 100) sprintf(text,"%.0lf",value);
-							else sprintf(text,"%.1lf",value);
-						valid=true;
-					}
-					wsprintf(BufferValue, TEXT("%S"),text);
-				}
-			}
-			break;
-
 
 		// B73
 		case LK_FL:
@@ -2112,58 +2067,6 @@ olc_score:
 			}
 			break;
 
-		case LK_OLC_FAI_CLOSE_PERCENT:
-			bFAI = CContestMgr::Instance().FAI();
-			fDist =CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false).Distance();
-			fTogo =CContestMgr::Instance().GetClosingPointDist();
-            if((fDist >0) && (fTogo >0))
-            {
-              LKASSERT(fDist >0)
-  			  valid = true;
-              value = fTogo / fDist*100.0f;
-				sprintf(text,"%.1f",value);
-		    } else {
-		      strcpy(text,NULLLONG);
-		    }
-		    wsprintf(BufferValue, TEXT("%S"),text);
-		    wsprintf(BufferUnit, TEXT("%%"));
-		    if (lktitle)
-		    {
-		      if(bFAI)
-		        wsprintf(BufferTitle, TEXT("FAI %s"),  gettext(TEXT("_@M1508_"))); // LKTOKEN  _@M1508_ = "C:"
-		      else
-		        wsprintf(BufferTitle, TEXT("%s"),  gettext(TEXT("_@M1508_")));
-		    }
-		    else
-			  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-
-		break;
-		case LK_OLC_FAI_CLOSE:
-			bFAI = CContestMgr::Instance().FAI();
-			fTogo =DISTANCEMODIFY*CContestMgr::Instance().GetClosingPointDist();
-            if(fTogo >0)
-            {
-			  if (value>99)
-				sprintf(text,"%.0f",fTogo);
-			  else
-				sprintf(text,"%.1f",fTogo);
-			  valid = true;
-		    } else {
-		      strcpy(text,NULLLONG);
-		    }
-		    wsprintf(BufferValue, TEXT("%S"),text);
-		    wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-		    if (lktitle)
-		    {
-		      if(bFAI)
-		       wsprintf(BufferTitle, TEXT("FAI %s"),  gettext(TEXT("_@M1508_"))); //   _@M1508_ = "C:"
-		      else
-		        wsprintf(BufferTitle, TEXT("%s"),  gettext(TEXT("_@M1508_")));
-		    }
-		    else
-			  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-	    break;
-
 		// B114
 		case LK_AIRSPACEVDIST:
 			if (lktitle)
@@ -2369,7 +2272,64 @@ olc_score:
 			  }
 			break;
 
-                // B125
+		// B125
+		case LK_OLC_FAI_CLOSE:
+			bFAI = CContestMgr::Instance().FAI();
+			fTogo =DISTANCEMODIFY*CContestMgr::Instance().GetClosingPointDist();
+			if(fTogo >0)
+			{
+				if (value>99)
+					sprintf(text,"%.0f",fTogo);
+				else
+					sprintf(text,"%.1f",fTogo);
+				valid = true;
+			} else {
+				strcpy(text,NULLLONG);
+			}
+			wsprintf(BufferValue, TEXT("%S"),text);
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+			if (lktitle)
+			{
+				if(bFAI)
+		    			wsprintf(BufferTitle, TEXT("FAI %s"),  gettext(TEXT("_@M1508_"))); //   _@M1508_ = "C:"
+		      		else
+		        		wsprintf(BufferTitle, TEXT("%s"),  gettext(TEXT("_@M1508_")));
+		    	}
+		        else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+
+	    		break;
+
+		// B126
+		case LK_OLC_FAI_CLOSE_PERCENT:
+			bFAI = CContestMgr::Instance().FAI();
+			fDist =CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false).Distance();
+			fTogo =CContestMgr::Instance().GetClosingPointDist();
+        		if((fDist >0) && (fTogo >0))
+            		{
+              			LKASSERT(fDist >0)
+  				valid = true;
+             			 value = fTogo / fDist*100.0f;
+				sprintf(text,"%.1f",value);
+		    	} else {
+		    		strcpy(text,NULLLONG);
+		    	}
+		    	wsprintf(BufferValue, TEXT("%S"),text);
+		    	wsprintf(BufferUnit, TEXT("%%"));
+		    	if (lktitle)
+		    	{
+		    		if(bFAI)
+		        		wsprintf(BufferTitle, TEXT("FAI %s"),  gettext(TEXT("_@M1508_"))); // LKTOKEN  _@M1508_ = "C:"
+		      		else
+		        		wsprintf(BufferTitle, TEXT("%s"),  gettext(TEXT("_@M1508_")));
+		    	}
+		    	else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+
+			break;
+
+
+                // B127
 		case LK_BANK_ANGLE:
                         valid=true;
 			if(DrawInfo.GyroscopeAvailable) { 
@@ -2384,8 +2344,6 @@ olc_score:
 			wsprintf(BufferUnit, TEXT(""));
 			break;
 
-	//	case 126:
-	//	case 127:
 		case 128:
 		case 129:
 		case 130:
@@ -2797,6 +2755,54 @@ lkfin_ete:
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			// LKTOKEN  _@M1192_ = "StDis"
 			_tcscpy(BufferTitle, MsgToken(1192));
+			break;
+
+		// B156
+		case LK_NEXT_CENTER_ALTDIFF:
+			wsprintf(BufferValue,_T(NULLLONG));
+			if (lktitle)
+				// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
+				_stprintf(BufferTitle, MsgToken(1026));
+			else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_NEXT_ALTDIFF].Title );
+            
+			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+				index = Task[ActiveWayPoint].Index;
+				if (index>=0) {
+					// don't use current MC...
+					value=ALTITUDEMODIFY*WayPointCalc[index].AltArriv[AltArrivMode];
+					if ( value > ALTDIFFLIMIT ) {
+						valid=true;
+						_stprintf(BufferValue,TEXT("%+1.0f"), value);
+					}
+				}
+			}
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			break;
+
+		// B157
+		case LK_NEXT_CENTER_GR:
+			wsprintf(BufferValue,_T(NULLLONG));
+			if (lktitle)
+				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
+				_stprintf(BufferTitle, MsgToken(1146));
+			else
+				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
+				_stprintf(BufferTitle, MsgToken(1146));
+			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+				index = Task[ActiveWayPoint].Index;
+				if (index>=0) {
+					value=WayPointCalc[index].GR;
+					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
+						strcpy(text,NULLMEDIUM);
+					else {
+						if (value >= 100) sprintf(text,"%.0lf",value);
+							else sprintf(text,"%.1lf",value);
+						valid=true;
+					}
+					wsprintf(BufferValue, TEXT("%S"),text);
+				}
+			}
 			break;
 
 		// B253
