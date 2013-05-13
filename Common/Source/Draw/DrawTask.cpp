@@ -11,6 +11,7 @@
 #include "AATDistance.h"
 #include "DoInits.h"
 #include "RGB.h"
+#include "utils/2dpclip.h"
 
 
 extern COLORREF taskcolor;
@@ -147,7 +148,6 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
     }    
     
     for (i = 0; ValidTaskPoint(i + 1); i++) {
-        bool is_first = (Task[i].Index < Task[i + 1].Index);
         int imin = min(Task[i].Index, Task[i + 1].Index);
         int imax = max(Task[i].Index, Task[i + 1].Index);
         // JMW AAT!
@@ -172,36 +172,32 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
                     WayPointList[imax].Screen,
                     taskcolor, rc);
         } else {
-            sct1 = WayPointList[Task[i].Index].Screen;
-            sct2 = WayPointList[Task[i + 1].Index].Screen;
+            sct1 = WayPointList[imin].Screen;
+            sct2 = WayPointList[imax].Screen;
         }
 
         if ((i >= ActiveWayPoint && DoOptimizeRoute()) || !DoOptimizeRoute()) {
-            if (is_first) {
+            POINT ClipPt1 = sct1, ClipPt2 = sct2;
+            if(LKGeom::ClipLine((POINT) {rc.left, rc.top}, (POINT) {rc.right, rc.bottom}, ClipPt1, ClipPt2)) {
                 DrawMulticolorDashLine(hdc, size_tasklines,
                         sct1,
                         sct2,
                         taskcolor, RGB_BLACK,rc);
-            } else {
-                DrawMulticolorDashLine(hdc, size_tasklines,
-                        sct2,
-                        sct1,
-                        taskcolor, RGB_BLACK,rc);
+                
+                // draw small arrow along task direction
+                POINT p_p;
+                POINT Arrow[2] = {
+                    {6, 6},
+                    {-6, 6}
+                };
+                ScreenClosestPoint(sct1, sct2,
+                        Orig_Aircraft, &p_p, NIBLSCALE(25));
+                PolygonRotateShift(Arrow, 2, p_p.x, p_p.y,
+                        bearing - DisplayAngle);
+
+                _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[0], p_p, taskcolor, rc);
+                _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[1], p_p, taskcolor, rc);
             }
-
-            // draw small arrow along task direction
-            POINT p_p;
-            POINT Arrow[2] = {
-                {6, 6},
-                {-6, 6}
-            };
-            ScreenClosestPoint(sct1, sct2,
-                    Orig_Aircraft, &p_p, NIBLSCALE(25));
-            PolygonRotateShift(Arrow, 2, p_p.x, p_p.y,
-                    bearing - DisplayAngle);
-
-            _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[0], p_p, taskcolor, rc);
-            _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[1], p_p, taskcolor, rc);
         }
     }
     

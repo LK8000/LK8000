@@ -237,7 +237,10 @@ ifeq ($(DMALLOC),y)
   CPPFLAGS += -DHC_DMALLOC
 endif
 
-#CXXFLAGS	:=$(OPTIMIZE) -fno-exceptions -ftrapv $(PROFILE)
+ifeq ($(INT_OVERFLOW), y)
+	CPPFLAGS	+=-ftrapv -DINT_OVERFLOW
+endif
+
 CXXFLAGS	:=$(OPTIMIZE) -fno-exceptions $(PROFILE)
 CFLAGS		:=$(OPTIMIZE) $(PROFILE)
 
