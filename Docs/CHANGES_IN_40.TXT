@@ -1,25 +1,57 @@
 
 LK8000 VERSION 4.0B  
 
+
 ADDITIONS
 ---------
 
 SUPPORT FOR PNADUMP SOFTWARE: automatic loading of PILOT NAME, ID etc. from file
+
+
 
 CHANGES
 -------
 
 Paraglider's Time gates: last gate is always lasting up to 3 hours. In practice, it never closes.
 
+Faster (4x) response on autoMC changes, for better understanding on how the final glide is going.
+
+Let manual MC settings go over 5.0 (metric value), up to 12.
+
+Screen flickering on PC greatly reduced when using pan scroll mode.
+
+
+
+
 FIXES
 -----
 
-CAI302 bug in wind indication, offset by 180 degrees.
 
-Labels not correctly painted in Flarm Radar
+Allow high MC values to be displayed near to VNE limits.
+Previously only MC below 9.9 (using metrics, higher for imperials) were shown, otherwise ---.
+This was leading to misunderstandings, because --- is also used for "not calculated".
+
+Fix glide line in sideviews when in SIM not flying. Fix partially also when flying.
 
 
-Baro altitude frozen.
+Fix final glide AUTO-MC  for paragliders, not working (always indicating 0.0).
+Problem related to the very steep polar of a paragliding wing.
+The new version can command up to MC=20 and will stop just before the arrival altitude goes negative.
+This means that we are no more searching for the "0 arrival altitude" for such polars.
+
+Fix unresponsive zoom and swipes on multimap 1-3
+
+Fix timefix problem with logger, seconds logged being 60 rejected by GPSdump
+
+Fix old bug crashing LK while loading CUP file with huge comment fields.
+
+
+Fix CAI302 bug in wind indication, offset by 180 degrees.
+
+Fix Labels not correctly painted in Flarm Radar
+
+
+Fix Baro altitude frozen.
 This was happening when the same port was shared with different devices using a mechanical switch, or a mix
 er.
 We now check that the baro altitude is changing if the gps altitude is changing too.
@@ -30,9 +62,8 @@ After 3 times of this problem appearing, we only disable EnableBaroAltitude and 
 Fix thermal exit detection for paragliders.
 Also improve detection of thermal entering, filtering a bit more false initial turning.
 
-Screen flickering on PC greatly reduced when using pan scroll mode.
 
-Possible critical problem drawing multimap airspaces
+Fix Possible critical problem drawing multimap airspaces
 
 Fix bug loading CUP waypoints, incorrect removing trailing quotes.
     Bug found by Berthold Bredenbeck after..4 years it was there.
@@ -44,6 +75,8 @@ Fix bug loading CUP waypoints, incorrect removing trailing quotes.
 
 
 Fix critical bug in EYE device driver
+
+
 
 
 SMALL FIXES
