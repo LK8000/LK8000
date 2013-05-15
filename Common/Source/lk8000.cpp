@@ -64,6 +64,10 @@
 
 #include "TraceThread.h"
 
+#ifdef INT_OVERFLOW
+	#include <signal.h>
+#endif
+
 using std::min;
 using std::max;
 
@@ -97,6 +101,12 @@ bool api_has_SHHandleWMSettingChange = false;
 void CleanupForShutdown(void);
 HANDLE hMutex=NULL;
 
+#ifdef INT_OVERFLOW
+void handler(int /*signal*/) {
+    LKASSERT(FALSE);
+}
+#endif
+
 //
 // WINMAIN RETURNS CODE ARE:
 //
@@ -120,6 +130,11 @@ int WINAPI WinMain(     HINSTANCE hInstance,
                         int       nCmdShow)
 #endif
 {
+#ifdef INT_OVERFLOW
+  SetErrorMode(SEM_NOGPFAULTERRORBOX|SEM_NOOPENFILEERRORBOX);
+  // when we get a SIGABRT, call handler
+  signal(SIGABRT, &handler);
+#endif
 #if (WINDOWSPC>0)
 #if _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CRTDBG_ALLOC_MEM_DF);

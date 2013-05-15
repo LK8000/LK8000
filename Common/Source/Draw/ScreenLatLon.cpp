@@ -75,8 +75,8 @@ void MapWindow::LatLon2Screen(pointObj *ptin, POINT *ptout, const int n, const i
   const pointObj* ptend = ptin+n;
 
   while (p<ptend) {
-    int Y = Real2Int((mPanLatitude-p->y)*mDrawScale);
-    int X = Real2Int((mPanLongitude-p->x)*fastcosine(p->y)*mDrawScale);
+    long long Y = Real2Int((mPanLatitude-p->y)*mDrawScale);
+    long long X = Real2Int((mPanLongitude-p->x)*fastcosine(p->y)*mDrawScale);
     ptout->x = (xxs-X*cost + Y*sint)/1024;
     ptout->y = (Y*cost + X*sint + yys)/1024;
     ptout++;

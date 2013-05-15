@@ -139,8 +139,8 @@ void irotatescale(int &xin, int &yin, const double &angle,
 
 void irotate(int &xin, int &yin, const double &angle)
 {
-  int x= xin;
-  int y= yin;
+  long long x= xin;
+  long long y= yin;
   static double lastangle = 0;
   static int cost=1024,sint=0;
 

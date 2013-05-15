@@ -171,7 +171,22 @@ namespace LKGeom {
 
 
     public:
-
+        
+        bool ClipLine(Upoint& From, Upoint& To) {
+            Cp_start = From;
+            Cp_end = To; 
+            
+            M_code = CP_space_code(&Cp_start);
+            D_code = CP_space_code(&Cp_end);
+            if(Cp_end_clip() != _NOSEGM) {
+                From = Cp_start;
+                To = Cp_end; 
+                
+                return true;
+            }
+            return false;
+        }
+ 
         void CP_2D_polygon_clip(const polygon& inPoly, polygon& outPoly) {
             register int j;
             register Upoint *pt_Cp_start = &Cp_start;
@@ -319,6 +334,11 @@ namespace LKGeom {
     template<typename polygon, typename Upoint>
     inline void ClipPolygon(const Upoint& TopLeft, const Upoint& BottomRight, const polygon& inPoly, polygon& outPoly) {
         LKGeom::clipper<polygon > (TopLeft, BottomRight).CP_2D_polygon_clip(inPoly, outPoly);
+    }
+       
+    template<typename Upoint>
+    inline bool ClipLine(const Upoint& TopLeft, const Upoint& BottomRight, Upoint& From, Upoint& To) {
+        return LKGeom::clipper<std::vector<Upoint> > (TopLeft, BottomRight).ClipLine(From, To);
     }
 };
 #endif // _2dpclip_h__
