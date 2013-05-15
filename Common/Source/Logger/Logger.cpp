@@ -294,6 +294,14 @@ void LogPointToFile(double Latitude, double Longitude, double Altitude,
   double MinLat, MinLon;
   char NoS, EoW;
 
+  // pending rounding error from millisecond timefix in RMC sentence?
+  if (Second>=60||Second<0) {
+	#if TESTBENCH
+	StartupStore(_T("... WRONG TIMEFIX FOR LOGGER, seconds=%d, fix skipped\n"),Second);
+	#endif
+	return;
+  }
+
   if ((Altitude<0) && (BaroAltitude<0)) return;
   Altitude = max(0.0,Altitude);
   BaroAltitude = max(0.0,BaroAltitude);
