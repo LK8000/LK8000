@@ -59,7 +59,11 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 
   Temp->FileNum = globalFileNum;
 
-  _tcscpy(OrigString, String);  
+  #if BUGSTOP
+  // This should never happen
+  LKASSERT(_tcslen(String) < sizeof(OrigString));
+  #endif
+  LK_tcsncpy(OrigString, String,READLINE_LENGTH);  
   // if string is too short do nothing
   if (_tcslen(OrigString)<11) return false;
 
@@ -130,7 +134,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   // ---------------- COUNTRY ------------------
   pToken = _tcstok(NULL, TEXT(","));
   if (pToken == NULL) return false;
-  _tcscpy(Temp->Country,pToken);
+  LK_tcsncpy(Temp->Country,pToken,CUPSIZE_COUNTRY);
   if (_tcslen(Temp->Country)>3) {
 	Temp->Country[3]= _T('\0');
   }
