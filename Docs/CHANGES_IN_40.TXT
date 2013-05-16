@@ -76,7 +76,7 @@ Fix bug loading CUP waypoints, incorrect removing trailing quotes.
 
 Fix critical bug in EYE device driver
 
-
+Fix baro analysis not showing entire flight anymore
 
 
 SMALL FIXES
