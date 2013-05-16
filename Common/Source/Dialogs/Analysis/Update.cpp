@@ -238,7 +238,7 @@ void UpdateAnalysis(void){
       if(result.Type() == contestType) {
         BOOL bFAI = CContestMgr::Instance().FAI();
         double  fDist     = result.Distance();
-        if(!bFAI)
+        if(!bFAI && (result.Type() == CContestMgr::TYPE_FAI_TRIANGLE))  // was only !bFAI
         	fDist /=2.0;
         double  fCPDist   = CContestMgr::Instance().GetClosingPointDist();
         double  fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
