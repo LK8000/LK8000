@@ -78,6 +78,8 @@ Fix critical bug in EYE device driver
 
 Fix baro analysis not showing entire flight anymore
 
+Fix analysis page not displaying correcting 3TPs distance
+
 
 SMALL FIXES
 -----------
