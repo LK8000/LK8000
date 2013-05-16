@@ -21,7 +21,7 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
 
   ResetScale();
 
- // ScaleXFromData(rc, &flightstats.Altitude);
+  ScaleXFromData(rc, &flightstats.Altitude);
   ScaleYFromData(rc, &flightstats.Altitude);
   ScaleYFromValue(rc, 0);
   ScaleXFromValue(rc, 1.2f*(flightstats.Altitude.x_min+1.0)); // in case no data
