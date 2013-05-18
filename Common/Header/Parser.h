@@ -157,6 +157,7 @@ typedef struct _NMEA_INFO
 
 } NMEA_INFO;
 
+double TimeModify(const TCHAR* FixTime, NMEA_INFO* info, int& StartDay);
 
 class NMEAParser {
  public:
@@ -206,7 +207,6 @@ class NMEAParser {
   double GLLtime;
 
   bool TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO);
-  static double TimeModify(double FixTime, NMEA_INFO* info);
 
   BOOL GLL(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL GGA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
