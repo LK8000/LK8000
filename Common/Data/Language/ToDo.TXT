@@ -283,6 +283,9 @@ Changed 1220.
 
 
 -----------
-After 4.0a changes...
+CHANGES After 4.0a
 -----------
+
 _@M2151_ "T>\nTP Center"
+_@M947_ "FLARM SIGNAL LOST"
+

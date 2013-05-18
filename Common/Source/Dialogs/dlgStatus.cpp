@@ -12,7 +12,7 @@
 #include "Logger.h"
 #include "Process.h"
 #include "Dialogs.h"
-
+#include "device.h"
 
 extern BOOL extGPSCONNECT;
 extern NMEAParser nmeaParser1;
@@ -51,6 +51,14 @@ static void NextPage(int Step){
     } else {
 	// LKTOKEN  _@M664_ = "Status: System" 
     	wf->SetCaption(gettext(TEXT("_@M664_")));
+    	if( GPS_INFO.FLARM_SW_Version  < 0.01)
+    	{
+    	  if(nmeaParser1.isFlarm)
+            devRequestFlarmVersion(devA());
+    	  else
+    	    if(nmeaParser2.isFlarm)
+              devRequestFlarmVersion(devB());
+    	}
     }
     break;
   case 2:
@@ -76,6 +84,7 @@ static void NextPage(int Step){
   wStatus3->SetVisible(status_page == 3); 
   wStatus4->SetVisible(status_page == 4); 
   wStatus5->SetVisible(status_page == 5); 
+
 }
 
 
@@ -167,6 +176,7 @@ static CallBackTableEntry_t CallBackTable[]={
 static bool first = true;
 
 static void UpdateValuesSystem() {
+
   static int extGPSCONNECT_last = extGPSCONNECT;
   static bool NAVWarning_last = GPS_INFO.NAVWarning;
   static int SatellitesUsed_last = GPS_INFO.SatellitesUsed;
@@ -180,6 +190,10 @@ static void UpdateValuesSystem() {
   static double extbatt1_voltage = GPS_INFO.ExtBatt1_Voltage;
   static double extbatt2_voltage = GPS_INFO.ExtBatt2_Voltage;
 
+  static double FLARM_HW_Version = GPS_INFO.FLARM_HW_Version;
+  static double FLARM_SW_Version = GPS_INFO.FLARM_SW_Version;
+
+
   if (first ||
       (extGPSCONNECT_last != extGPSCONNECT) ||
       (NAVWarning_last != GPS_INFO.NAVWarning) ||
@@ -192,6 +206,8 @@ static void UpdateValuesSystem() {
       (batterybank_last != GPS_INFO.ExtBatt_Bank) ||
       (extbatt1_voltage != GPS_INFO.ExtBatt1_Voltage) ||
       (extbatt2_voltage != GPS_INFO.ExtBatt2_Voltage) ||
+      (FLARM_HW_Version != GPS_INFO.FLARM_HW_Version) ||
+      (FLARM_SW_Version != GPS_INFO.FLARM_SW_Version) ||
       (PDABatteryPercent_last != PDABatteryPercent)) {
     first = false;
 
@@ -207,7 +223,8 @@ static void UpdateValuesSystem() {
     batterybank_last = GPS_INFO.ExtBatt_Bank;
     extbatt1_voltage = GPS_INFO.ExtBatt1_Voltage;
     extbatt2_voltage = GPS_INFO.ExtBatt2_Voltage;
-
+    FLARM_HW_Version = GPS_INFO.FLARM_HW_Version;
+    FLARM_SW_Version = GPS_INFO.FLARM_SW_Version;
   } else {
     return;
   }
@@ -270,7 +287,15 @@ static void UpdateValuesSystem() {
     wp = (WndProperty*)wf->FindByName(TEXT("prpFLARM"));
     if (GPS_INFO.FLARM_Available) {
 	// LKTOKEN  _@M199_ = "Connected" 
-      wp->SetText(gettext(TEXT("_@M199_")));
+
+      if(FLARM_SW_Version > 0.0)
+      {
+    //	StartupStore(_T("STATUS: Flarm Version: %4.2f/%4.2f\n"),FLARM_SW_Version, FLARM_HW_Version);
+		_stprintf(Temp,TEXT("OK (%4.2f/%4.2f) "),FLARM_SW_Version, FLARM_HW_Version);
+    	wp->SetText(Temp);
+      }
+      else
+        wp->SetText(gettext(TEXT("_@M199_")));
     } else {
 	// LKTOKEN  _@M240_ = "Disconnected" 
       wp->SetText(gettext(TEXT("_@M240_")));
@@ -437,6 +462,7 @@ static void UpdateValuesFlight(void) {
   double bearing;
   double distance;
   TCHAR sCoordinate[32]={0};
+  TCHAR sBaroDevice[32]={0};
 
   Units::CoordinateToString(GPS_INFO.Longitude, GPS_INFO.Latitude, sCoordinate, sizeof(sCoordinate)-1);
 
@@ -447,9 +473,37 @@ static void UpdateValuesFlight(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
   if (wp) {
-    _stprintf(Temp, TEXT("%.0f %s"), 
-              CALCULATED_INFO.NavAltitude*ALTITUDEMODIFY, 
-              Units::GetAltitudeName());
+
+    _stprintf(sBaroDevice, TEXT("GPS"));
+    if(EnableNavBaroAltitude)
+    {
+	  if(GPS_INFO.BaroAltitudeAvailable)
+	  {
+		_stprintf(sBaroDevice, TEXT("BARO"));
+
+		if((pDevSecondaryBaroSource != NULL))
+          if((! pDevSecondaryBaroSource->Disabled) &&
+             (pDevSecondaryBaroSource->IsBaroSource)&&
+             pDevSecondaryBaroSource->Name != NULL)
+          {
+            _stprintf(sBaroDevice, TEXT("%s"), pDevSecondaryBaroSource->Name );
+          }
+
+		if((pDevPrimaryBaroSource != NULL))
+          if((! pDevPrimaryBaroSource->Disabled) &&
+             (pDevPrimaryBaroSource->IsBaroSource)&&
+             pDevPrimaryBaroSource->Name != NULL)
+          {
+            _stprintf(sBaroDevice, TEXT("%s"), pDevPrimaryBaroSource->Name );
+          }
+		if(GPS_INFO.haveRMZfromFlarm)
+		 _stprintf(sBaroDevice, TEXT("FLARM"));
+	  }
+    }
+	_stprintf(Temp, TEXT("%.0f%s (%s)"),
+	                    CALCULATED_INFO.NavAltitude*ALTITUDEMODIFY,
+	                    Units::GetAltitudeName(),
+	                    sBaroDevice);
     wp->SetText(Temp);
   }
 
@@ -679,6 +733,7 @@ static int OnTimerNotify(WindowControl * Sender) {
   if(i++ % 2 == 0) return 0;
 
   UpdateValuesSystem();
+  UpdateValuesFlight();
 
   return 0;
 }

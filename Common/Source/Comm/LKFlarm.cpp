@@ -187,6 +187,25 @@ double FLARM_EastingToLongitude = 0.0;
 extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;
 
+
+BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+{
+TCHAR Temp[80];
+
+//$PFLAV,A,3.00,5.04,alps20110919_*5C
+//StartupStore(_T("FLARM PFLAV received: %s"), String);
+//ParToDouble(String, 1, &pGPS->FLARM_HW_Version);
+//ParToDouble(String, 2, &pGPS->FLARM_SW_Version);
+
+ExtractParameter(String, Temp,1); swscanf(Temp,TEXT("%lf"), &pGPS->FLARM_HW_Version);
+ExtractParameter(String, Temp,2); swscanf(Temp,TEXT("%lf"), &pGPS->FLARM_SW_Version);
+ExtractParameter(String, Temp,3);
+StartupStore(_T("FLARM  found SW:%4.2f  HW:%4.2f  OBS:%s%s"),pGPS->FLARM_SW_Version,pGPS->FLARM_HW_Version,Temp, NEWLINE);
+
+return true;
+}
+
+
 BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   static int old_flarm_rx = 0;
@@ -212,12 +231,29 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	}
   }
 
+if(!pGPS->FLARM_Available)
+	sayflarmavailable = true;
   pGPS->FLARM_Available = true;
-  isFlarm = true;
+
+
   if ( sayflarmavailable ) {
 	// LKTOKEN  _@M279_ = "FLARM DETECTED" 
-	DoStatusMessage(gettext(TEXT("_@M279_")));
+	pGPS->FLARM_SW_Version =0.0;
+	pGPS->FLARM_HW_Version =0.0;
+	static int MessageCnt =0;
+	if(MessageCnt < 10)
+	{
+	  MessageCnt++;
+	  DoStatusMessage(gettext(TEXT("_@M279_")));
+	}
 	sayflarmavailable=false;
+	if(nmeaParser1.isFlarm)
+      devRequestFlarmVersion(devA());
+	else
+	  if(nmeaParser2.isFlarm)
+        devRequestFlarmVersion(devB());
+	isFlarm = true;
+	pGPS->FLARM_Available = true;
   }
 
   // calculate relative east and north projection to lat/lon

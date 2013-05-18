@@ -128,6 +128,9 @@ typedef struct _NMEA_INFO
   unsigned short FLARM_GPS;
   unsigned short FLARM_AlarmLevel;
   bool FLARM_Available;
+  bool haveRMZfromFlarm;
+  double FLARM_SW_Version;
+  double FLARM_HW_Version;
   FLARM_TRAFFIC FLARM_Traffic[FLARM_MAX_TRAFFIC];
   FLARM_TRACE	FLARM_RingBuf[MAX_FLARM_TRACES];
   bool FLARMTRACE_bBuffFull;
@@ -224,6 +227,7 @@ class NMEAParser {
   // LK8000 custom special sentences, always active
   BOOL PLKAS(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   // FLARM sentances
+  BOOL PFLAV(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAU(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 #ifdef DSX

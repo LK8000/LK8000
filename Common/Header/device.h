@@ -95,6 +95,7 @@ bool devIsDisabled(int devindex);
 BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLink);
 BOOL devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
 BOOL devPutMacCready(PDeviceDescriptor_t d,	double MacCready);
+BOOL devRequestFlarmVersion(PDeviceDescriptor_t d);
 BOOL devPutBugs(PDeviceDescriptor_t	d, double	Bugs);
 BOOL devPutBallast(PDeviceDescriptor_t d,	double Ballast);
 BOOL devPutVolume(PDeviceDescriptor_t	d, int Volume);

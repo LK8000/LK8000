@@ -434,6 +434,28 @@ BOOL devPutMacCready(PDeviceDescriptor_t d, double MacCready)
   return result;
 }
 
+
+BOOL devRequestFlarmVersion(PDeviceDescriptor_t d)
+{
+
+  if (SIMMODE)
+    return TRUE;
+
+  if(GPS_INFO.FLARM_Available)
+  {
+    if (d != NULL)
+    {
+      if(!d->Disabled)
+      {
+  	    devWriteNMEAString(d,_T("PFLAV,R"));
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
+}
+
+
 BOOL devPutBugs(PDeviceDescriptor_t d, double Bugs)
 {
   BOOL result = TRUE;
@@ -693,7 +715,9 @@ BOOL devOnSysTicker(DeviceDescriptor_t *d)
   } else {
     if (d->OnSysTicker != NULL)
       result = d->OnSysTicker(d);
+
   }
+
   UnlockComm();
 
   return result;
@@ -712,16 +736,21 @@ static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
 
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 {
-  TCHAR tmp[512];
+  if(d != NULL)
+  {
+    if(!d->Disabled)
+    {
+	  TCHAR tmp[512];
+      devFormatNMEAString(tmp, 512, text);
 
-  devFormatNMEAString(tmp, 512, text);
-
-  devDirectLink(d,true);
-  LockComm();
-  if (d->Com)
-    d->Com->WriteString(tmp);
-  UnlockComm();
-  devDirectLink(d,false);
+      devDirectLink(d,true);
+      LockComm();
+      if (d->Com)
+        d->Com->WriteString(tmp);
+      UnlockComm();
+      devDirectLink(d,false);
+    }
+  }
 }
 
 

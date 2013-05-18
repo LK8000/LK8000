@@ -32,7 +32,7 @@ bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescr
 
   //static double	lastBaroHB=0;		// updated only when baro is assigned as valid
   static bool notifyErr=true;
-  static bool	haveRMZfromFlarm=false;
+
   static double lastRMZfromFlarmHB=0;
   static bool	havePrimaryBaroSource=false;
   static double lastPrimaryBaroSourceHB=0;
@@ -64,8 +64,9 @@ bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescr
 	#if DEBUGBARO
 	StartupStore(_T("... we have RMZ from Flarm\n"));
 	#endif
-	haveRMZfromFlarm=true;
+	pGPS->haveRMZfromFlarm=true;
 	lastRMZfromFlarmHB=LKHearthBeats;
+
   }
   if ( (d!=NULL) && (d == pDevPrimaryBaroSource)) {
 	#if DEBUGBARO
@@ -76,10 +77,10 @@ bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescr
   }
 
   // Then we update for missing sentences from broken comms
-  if (haveRMZfromFlarm && (LKHearthBeats > (lastRMZfromFlarmHB+9))) { // 9 is 9 HBs = 4.5s
+  if (pGPS->haveRMZfromFlarm && (LKHearthBeats > (lastRMZfromFlarmHB+9))) { // 9 is 9 HBs = 4.5s
 	// For some reason the RMZ is not coming anymore. So we want to use any other baro available.
 	StartupStore(_T("... Flarm baro altitude missing since 5 seconds, fallback required\n"));
-	haveRMZfromFlarm=false;
+	pGPS->haveRMZfromFlarm=false;
   }
   if (havePrimaryBaroSource && (LKHearthBeats > (lastPrimaryBaroSourceHB+9))) {
 	StartupStore(_T("... Primary baro altitude missing since 5 seconds, fallback required\n"));
@@ -88,7 +89,7 @@ bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescr
 
   // If RMZ from flarm, we ony want that!
   // A multiplexer can filter flarm RMZ, this is why we ensure that we have one available.
-  if (haveRMZfromFlarm) {
+  if (pGPS->haveRMZfromFlarm) {
 	if ( parserid == BARO__RMZ_FLARM) {
 		#if DEBUGBARO
 		StartupStore(_T("....> Using RMZ from Flarm:  %.1f\n"),fAlt);
