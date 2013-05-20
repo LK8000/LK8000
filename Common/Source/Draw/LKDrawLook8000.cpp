@@ -794,7 +794,7 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 				SelectObject(hdc, LK8SmallFont); 
 				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
-				LKWriteBoxedText(hdc, &DrawRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+				LKWriteBoxedText(hdc, &MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
 			}
 		}
 
@@ -887,7 +887,7 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 			// LKWriteBoxedText(hdc, gettext(1694), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
 			_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
-			LKWriteBoxedText(hdc, &DrawRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT,RGB_WHITE,RGB_BLACK);
+			LKWriteBoxedText(hdc, &MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT,RGB_WHITE,RGB_BLACK);
 
 		}
 	} // end no UseGates()
@@ -974,7 +974,7 @@ drawOverlay:
 		SelectObject(hdc, LK8SmallFont); 
 		_stprintf(BufferValue,_T(" %.1f %s "),GlidePolar::SafetyMacCready*LIFTMODIFY,
 		Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
-		LKWriteBoxedText(hdc, &DrawRect,BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+		LKWriteBoxedText(hdc, &MapRect,BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
 	}
 
 	if (DerivedDrawInfo.AutoMacCready == true) {
