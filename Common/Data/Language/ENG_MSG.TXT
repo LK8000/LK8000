@@ -2063,6 +2063,7 @@ _@M2242_ "Sonar\nON"
 _@M2243_ "Sonar\nOFF"
 _@M2244_ "Device\nSetup"
 _@M2245_ "Device\nSave"
+_@M2246_ "Reset\nView"
 
 # MAX 2250! 
 # (Reserved for custom menus up to 2300!)

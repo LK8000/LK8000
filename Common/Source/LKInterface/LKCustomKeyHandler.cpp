@@ -459,6 +459,18 @@ passthrough:
 				LKSound(TEXT("LK_TONEDOWN.WAV"));
 		}
 		return true;
+	case ckResetView:
+		ModeType[LKMODE_MAP]    =       MP_MOVING;
+		ModeType[LKMODE_INFOMODE]=      IM_CRUISE;
+		ModeType[LKMODE_WP]     =       WP_AIRPORTS;
+		ModeType[LKMODE_NAV]    =       NV_COMMONS;
+		ModeType[LKMODE_TRF]    =       TF_LIST;
+
+		SetModeType(LKMODE_MAP,MP_MOVING);
+		MapWindow::RefreshMap();
+		SoundModeIndex();
+
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"),ckeymode);
@@ -534,6 +546,7 @@ CustomKeyLabel[53]=2229;	// Reset Odometer
 CustomKeyLabel[54]=2230;	// Force landing
 CustomKeyLabel[55]=2236;	// ResetTripComputer
 CustomKeyLabel[56]=2237;	// Sonar toggle
+CustomKeyLabel[57]=2246;	// Reset view
 }
 
 
