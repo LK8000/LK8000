@@ -34,6 +34,8 @@ double fDelta = MIN_OFFSET;
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
 
+double  PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_bearing, const double GlideSlope);
+
 
 #define TBSIZE 80
 #define ADDITIONAL_INFO_THRESHOLD 0.5
@@ -67,9 +69,9 @@ double fMC0 = 0.0f;
 int overindex=-1;
 bool show_mc0= true;
 double fLD;
-///bool bSideView = false;
 SIZE tsize;
 TCHAR text[TBSIZE+1];
+TCHAR text2[TBSIZE+1];
 TCHAR buffer[TBSIZE+1];
 BOOL bDrawRightSide =false;
 COLORREF GREEN_COL     = RGB_GREEN;
@@ -250,8 +252,6 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			#endif
 			break;
 	  }
-          ///if ( (fSplitFact*100)<SIZE4 )
-           ////bSideView = true;
 	  LKevent=LKEVENT_NONE;
 
 	  // Current_Multimap_SizeY is global, and must be used by all multimaps!
@@ -342,8 +342,6 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
       wpt_brg = AngleLimit360(wpt_brg - acb +90.0);
       fDist = max(5.0*1000.0, wpt_dist*1.15);   // 20% more distance to show, minimum 5km
-      wpt_altarriv     = WayPointCalc[overindex].AltArriv[ALTA_MC ];
-      wpt_altarriv_mc0 = WayPointCalc[overindex].AltArriv[ALTA_MC0];
       wpt_altitude     = WayPointList[overindex].Altitude;
        // calculate the MC=0 arrival altitude
 
@@ -369,7 +367,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
 
-     
+
       if ( (DerivedDrawInfo.NavAltitude-wpt_altarriv+wpt_altitude)!=0)
       	fLD = (int) wpt_dist / (DerivedDrawInfo.NavAltitude-wpt_altarriv+wpt_altitude);
       else
@@ -661,128 +659,155 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
 
 
-  //Draw wpt info texts
+  //
+  // M2:  NEXT WAYPOINT PAGE, print textual overlays
+  //
   if ( (getsideviewpage == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4) && (overindex>=0)) {
+
 //HFONT hfOld = (HFONT)SelectObject(hdc, LK8MapFont);
     line[0].x = CalcDistanceCoordinat( wpt_dist,  &sDia);
-    // Print wpt name next to marker line
+
+    //
+    // Overtarget next to marker line, with distance
+    //
 
     GetOvertargetName(text);
+    text[10]='\0'; // truncate to T>xxxxxxxx
+    _tcscat(text,_T("  "));
+    Units::FormatUserDistance(wpt_dist, text2, 7);
+    _tcscat(text,text2);
 
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     int x = line[0].x - tsize.cx - NIBLSCALE(5);
 
     if (x<x0) bDrawRightSide = true;
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
-    int y = rc.top + 3*tsize.cy;
+    int y = rc.top + 2*tsize.cy;
 
-    SetTextColor(hdc, Sideview_TextColor);
+    if (INVERTCOLORS)
+	SelectObject(hdc,LKBrush_Petrol);
+    else
+	SelectObject(hdc,LKBrush_LightCyan);
 
-    /**************************************************
-     * draw waypoint target
-     **************************************************/
-	if (INVERTCOLORS)
-	  SelectObject(hdc,LKBrush_Petrol);
-	else
-	  SelectObject(hdc,LKBrush_LightCyan);
-	MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  line[0].x, y-3, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
+    MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  line[0].x, y-3, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
 
+    double altarriv = 0;
+    if (fSplitFact >= ADDITIONAL_INFO_THRESHOLD) goto _after_additionals;
+    if (wpt_altarriv==wpt_altarriv_mc0) goto _skip_mc0;
 
-	// Print wpt distance
-    Units::FormatUserDistance(wpt_dist, text, 7);
+    //
+    // ALTITUDE ARRIVAL AT MACCREADY 0
+    //
+
+    altarriv = wpt_altarriv_mc0; // + wpt_altitude;
+
+    // size a template
+    _stprintf(text, TEXT("Mc 99.9: +12345"));
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-    x = line[0].x - tsize.cx - NIBLSCALE(5);
-    if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
-    y += tsize.cy;
-    if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
-      ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-    double altarriv = wpt_altarriv_mc0; // + wpt_altitude;
+
     if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL/10);
 
-
-
-    SetTextColor(hdc, Sideview_TextColor);
+    _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY*fMC0));
     if (wpt_altarriv_mc0 > ALTDIFFLIMIT)
     {
-      _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY*fMC0));
       Units::FormatUserArrival(wpt_altarriv_mc0, buffer, 7);
       _tcscat(text,buffer);
     } else {
-      _tcscpy(text, TEXT("---"));
+      _tcscat(text, TEXT("---"));
     }
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = line[0].x - tsize.cx - NIBLSCALE(5);
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
-    y += tsize.cy;
+    y += tsize.cy+NIBLSCALE(3);
 
-    #if USE_TCOLORS
-    if((wpt_altarriv_mc0 > 0) && (  WayPointList[overindex].Reachable)) {
-  	  SetTextColor(hdc, GREEN_COL);
-    } else {
-  	  SetTextColor(hdc, RED_COL);
-    }
-    #else
-    SetTextColor(hdc, RGB_BLACK);
-    #endif
-    if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
-      ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    // We don't know if there are obstacles for mc0
+    SelectObject(hdc,LKBrush_Nlight);
+    MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
     
-    if (wpt_altarriv==wpt_altarriv_mc0) goto _skip_mc;
+_skip_mc0:
 
-    // Print arrival altitude
+    //
+    // ALTITUDE ARRIVAL AT CURRENT MACCREADY
+    //
+
+    _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY*MACCREADY));
     if (wpt_altarriv > ALTDIFFLIMIT) {
-      _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY*MACCREADY));
-//      iround(LIFTMODIFY*MACCREADY*10)/10.0
       Units::FormatUserArrival(wpt_altarriv, buffer, 7);
       _tcscat(text,buffer);
     } else {
-      if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
-        _tcscpy(text, TEXT("---"));
+      _tcscat(text, TEXT("---"));
     }
 
-    #if USE_TCOLORS
     if(  WayPointList[overindex].Reachable) {
-  	  SetTextColor(hdc, GREEN_COL);
+	SelectObject(hdc,LKBrush_LightGreen);
     } else {
-  	  SetTextColor(hdc, RED_COL);
+	SelectObject(hdc,LKBrush_Orange);
     }
-    #else
-    SetTextColor(hdc, RGB_BLACK);
-    #endif
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = line[0].x - tsize.cx - NIBLSCALE(5);
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
-    y += tsize.cy;
-    if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
-      ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    y += tsize.cy+NIBLSCALE(3);
+    MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
 
-_skip_mc:
 
+#if 0 // REMOVABLE
     // Print arrival AGL
     altarriv = wpt_altarriv;
     if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL/10);
     if(altarriv  > 0)
     {
-  	  Units::FormatUserAltitude(altarriv, buffer, 7);
+      Units::FormatUserAltitude(altarriv, buffer, 7);
       LK_tcsncpy(text, MsgToken(1742), TBSIZE-_tcslen(buffer));
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-   //   x = CalcDistanceCoordinat(wpt_dist,  rc) - tsize.cx - NIBLSCALE(5);;
       x = line[0].x - tsize.cx - NIBLSCALE(5);
       if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
       y = CalcHeightCoordinat(  altarriv + wpt_altitude , &sDia );
-      #if USE_TCOLORS
-      if(  WayPointList[overindex].Reachable) { // CAREFUL, overindex<0 was making sw crash here.
-        SetTextColor(hdc, GREEN_COL);
-      } else {
-        SetTextColor(hdc, RED_COL);
-      }
-      #else
-      SetTextColor(hdc, RGB_BLACK);
-      #endif
-      if(fSplitFact < ADDITIONAL_INFO_THRESHOLD)
-        ExtTextOut(hdc, x, y-tsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      ExtTextOut(hdc, x, y-tsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
+#endif
+
+    //
+    // FINAL GLIDE MACCREADY
+    //
+    if (wpt_altarriv_mc0>0) {
+
+	LKASSERT((DerivedDrawInfo.WaypointDistance+1) != 0);
+
+	double slope =
+        (DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight
+         - FAIFinishHeight(&DrawInfo, &DerivedDrawInfo, ActiveWayPoint))/
+        (DerivedDrawInfo.WaypointDistance+1);
+
+        double mc_pirker = PirkerAnalysis(&DrawInfo, &DerivedDrawInfo,
+                                        DerivedDrawInfo.WaypointBearing,
+                                        slope);
+        mc_pirker = max(0.0, mc_pirker);
+
+        double mcspeed=0;
+
+        GlidePolar::MacCreadyAltitude(mc_pirker,
+                                    100.0, // dummy value
+                                    DrawInfo.TrackBearing,
+                                    DerivedDrawInfo.WindSpeed,
+                                    DerivedDrawInfo.WindBearing,
+                                    0,
+                                    &mcspeed,
+                                    true,
+                                    NULL, 1.0e6, 1.0);
+
+
+        _stprintf(text, TEXT("FinMc:  %3.1f @ %.0f%s"), (LIFTMODIFY*mc_pirker), SPEEDMODIFY*mcspeed,
+		(Units::GetHorizontalSpeedName()));
+
+	x = line[0].x - tsize.cx - NIBLSCALE(5);
+	if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
+	y += tsize.cy+NIBLSCALE(3);
+	SelectObject(hdc,LKBrush_Nlight);
+	MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
+
+    }
+
+
+_after_additionals:
 
     // Print current Elevation
     SetTextColor(hdc, RGB_BLACK);
@@ -823,13 +848,17 @@ _skip_mc:
 
     if(altarriv  > 0)
     {
-    // Print L/D
+    // Print GR
       _stprintf(text, TEXT("1/%i"), (int)fLD);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-      SetTextColor(hdc, RGB_BLACK);
       x = CalcDistanceCoordinat(wpt_dist/2, &sDia)- tsize.cx/2;
       y = CalcHeightCoordinat( (DerivedDrawInfo.NavAltitude + altarriv)/2 + wpt_altitude , &sDia ) + tsize.cy;
-      ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      if(  WayPointList[overindex].Reachable) {
+	SelectObject(hdc,LKBrush_LightGreen);
+      } else {
+	SelectObject(hdc,LKBrush_Orange);
+      }
+      MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  x, y, 0, WTALIGN_CENTER, RGB_BLACK, RGB_BLACK);
     }
 
     // Print current AGL
@@ -842,14 +871,12 @@ _skip_mc:
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       x = CalcDistanceCoordinat( 0, &sDia) - tsize.cx/2;
       y = CalcHeightCoordinat(  (calc_terrainalt +  calc_altitudeagl)*0.8,   &sDia );
-    //    if(x0 > tsize.cx)
           if((tsize.cy) < ( CalcHeightCoordinat(  calc_terrainalt, &sDia )-y)) {
             ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
           }
     }
     SetBkMode(hdc, TRANSPARENT);
     SelectObject(hdc, hfOld);
-//SelectObject(hdc, hfOld);
   } // IM_NEXT_WP with valid overindex
 
 
