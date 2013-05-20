@@ -80,6 +80,8 @@ Fix baro analysis not showing entire flight anymore
 
 Fix analysis page not displaying correcting 3TPs distance
 
+Fix safety altitude overlay indicator not appearing when using multimaps.
+
 
 SMALL FIXES
 -----------
