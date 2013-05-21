@@ -1754,6 +1754,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
         else if(StartsWith(p,TEXT("W")))
           {
             // ToDo width of an airway
+
             break;
           }
         else if(StartsWith(p,TEXT("T")))
@@ -1856,7 +1857,7 @@ void CAirspaceManager::ReadAirspaces()
   } else {
     StartupStore(TEXT("... No airspace file 1%s"),NEWLINE);
   }
-  
+  AirspaceDisableWaveSectors();
   LoadSettings();
 }
 
@@ -3026,5 +3027,23 @@ void CAirspaceManager::LoadSettings()
 
 
 
+void CAirspaceManager::AirspaceDisableWaveSectors(void)
+{
+CCriticalSection::CGuard guard(_csairspaces);
+CAirspaceList::const_iterator it;
 
+
+    for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
+    {
+      if( (*it)->Type()  == WAVE )
+	  {
+    	(*it)->Enabled(false);
+    	(*it)->Flyzone(true);
+#ifdef DEBUG_AIRSPACE
+          StartupStore(TEXT("LKAIRSP: %s AirspaceDisable()%s"),(*it)->Name(),NEWLINE );
+#endif
+	  }
+    }
+
+}
 

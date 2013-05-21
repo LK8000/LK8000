@@ -160,6 +160,7 @@ public:
   const rectObj& Bounds() const { return _bounds; }
   bool Flyzone() const { return _flyzone; }
   void FlyzoneToggle() { _flyzone = !_flyzone; }
+  void Flyzone(bool active) { _flyzone = active; }
   int LabelPriority() const { return _labelpriority; }
   // Label priority sequencing
   void LabelPriorityInc() { if (_labelpriority<10) ++_labelpriority; }        // Increase priority
@@ -404,6 +405,7 @@ public:
   // Upper level interfaces
   void ReadAirspaces();
   void CloseAirspaces();
+  void AirspaceDisableWaveSectors();
   void QnhChangeNotify(const double &newQNH);
   /*
   void ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X], double heights[AIRSPACE_SCANSIZE_H], double terrain_heights[AIRSPACE_SCANSIZE_X],
