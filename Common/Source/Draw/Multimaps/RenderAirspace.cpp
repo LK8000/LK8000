@@ -673,7 +673,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
     GetOvertargetName(text);
     text[10]='\0'; // truncate to T>xxxxxxxx
-    _tcscat(text,_T("  "));
+    if (text[_tcslen(text)-1]==' ')
+      _tcscat(text,_T(" "));
+    else
+      _tcscat(text,_T("  "));
     Units::FormatUserDistance(wpt_dist, text2, 7);
     _tcscat(text,text2);
 
@@ -847,6 +850,8 @@ _after_additionals:
     }
 
 
+    #if 0
+    // Working, but useless
     if(altarriv  > 0)
     {
     // Print GR
@@ -861,6 +866,7 @@ _after_additionals:
       }
       MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  x, y, 0, WTALIGN_CENTER, RGB_BLACK, RGB_BLACK);
     }
+    #endif
 
     // Print current AGL
     if(calc_altitudeagl - hmin > 0)
