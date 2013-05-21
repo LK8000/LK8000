@@ -770,15 +770,16 @@ _skip_mc0:
     //
     if (wpt_altarriv_mc0>0) {
 
-	LKASSERT((DerivedDrawInfo.WaypointDistance+1) != 0);
+	LKASSERT((wpt_dist+1) != 0);
 
 	double slope =
         (DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight
-         - FAIFinishHeight(&DrawInfo, &DerivedDrawInfo, ActiveWayPoint))/
-        (DerivedDrawInfo.WaypointDistance+1);
+	 - WayPointList[overindex].Altitude
+         - (IsSafetyAltitudeInUse(overindex) ? (SAFETYALTITUDEARRIVAL/10) : 0))
+        / (wpt_dist+1);
 
         double mc_pirker = PirkerAnalysis(&DrawInfo, &DerivedDrawInfo,
-                                        DerivedDrawInfo.WaypointBearing,
+					wpt_brg,
                                         slope);
         mc_pirker = max(0.0, mc_pirker);
 
@@ -786,7 +787,7 @@ _skip_mc0:
 
         GlidePolar::MacCreadyAltitude(mc_pirker,
                                     100.0, // dummy value
-                                    DrawInfo.TrackBearing,
+                                    wpt_brg,
                                     DerivedDrawInfo.WindSpeed,
                                     DerivedDrawInfo.WindBearing,
                                     0,
@@ -795,7 +796,7 @@ _skip_mc0:
                                     NULL, 1.0e6, 1.0);
 
 
-        _stprintf(text, TEXT("FinMc:  %3.1f @ %.0f%s"), (LIFTMODIFY*mc_pirker), SPEEDMODIFY*mcspeed,
+        _stprintf(text, TEXT("Mc %3.1f @%.0f%s"), (LIFTMODIFY*mc_pirker), SPEEDMODIFY*mcspeed,
 		(Units::GetHorizontalSpeedName()));
 
 	x = line[0].x - tsize.cx - NIBLSCALE(5);
