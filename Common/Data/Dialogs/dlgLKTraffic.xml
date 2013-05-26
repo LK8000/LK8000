@@ -1,19 +1,19 @@
 <PMML>
-<WndForm Type="Dialog" X=5 Y=5 Width=240 Height=200 Caption="_@M376_" Font=2 >
-<WndButton Name="cmdClose" Caption="_@M186_" X=2 Y=2 Width=75  Height=32 Font=2 Tag=0 OnClickNotify="OnCloseClicked" />
-<WndButton Name="cmdTarget" Caption="_@M684_" X=82 Y=2 Width=75  Height=32 Font=2 Tag=0 OnClickNotify="OnTargetClicked" />
-<WndButton Name="cmdRename" Caption="_@M554_" X=162 Y=2 Width=75  Height=32 Font=2 Tag=0 OnClickNotify="OnRenameClicked" />
-<WndProperty Name="prpCn" Caption="_@M188_" X=2 Y=40  Width=120 Height=22 CaptionWidth=40 Font=2 ReadOnly=1 />
-<WndProperty Name="prpRegName" Caption="_@M4_" X=110 Y=40  Width=142 Height=22 CaptionWidth=40 Font=2 ReadOnly=1 />
-<WndProperty Name="prpBearing" Caption="_@M154_" X=2 Y=62  Width=120 Height=22 CaptionWidth=40 Font=2 ReadOnly=1 />
-<WndProperty Name="prpDistance" Caption="_@M2_" X=110 Y=62  Width=142 Height=22 CaptionWidth=40 Font=2 ReadOnly=1 />
-<WndProperty Name="prpAltitude" Caption="Alt" X=2 Y=84  Width=120 Height=22 CaptionWidth=40 Font=2 ReadOnly=1 />
-<WndProperty Name="prpAltDiff" Caption="_@M1_" X=110 Y=84  Width=142 Height=22 CaptionWidth=40 Font=2 ReadOnly=1 />
-<WndProperty Name="prpSpeed" Caption="_@M3_" X=2 Y=106  Width=120 Height=22 CaptionWidth=40 Font=2 ReadOnly=1 />
-<WndProperty Name="prpVario" Caption="_@M5_" X=110 Y=106  Width=142 Height=22 CaptionWidth=40 Font=2 ReadOnly=1 />
-<WndProperty Name="prpName" Caption="_@M451_" X=2 Y=-1  Width=250 Height=22 CaptionWidth=55 Font=2 ReadOnly=1 />
-<WndProperty Name="prpAirfield" Caption="_@M62_" X=2 Y=-1  Width=250 Height=22 CaptionWidth=55 Font=2 ReadOnly=1 />
-<WndProperty Name="prpType" Caption="_@M752_" X=2 Y=-1  Width=250 Height=22 CaptionWidth=55 Font=2 ReadOnly=1 />
-<WndProperty Name="prpFreq" Caption="_@M308_" X=2 Y=-1  Width=250 Height=22 CaptionWidth=55 Font=2 ReadOnly=1 />
-</WndForm>    
+  <WndForm Type="Dialog" X="5" Y="5" Width="240" Height="200" Caption="_@M376_" Font="2" >
+    <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="2" Width="75"  Height="32" Font="2" Tag="0" OnClickNotify="OnCloseClicked" />
+    <WndButton Name="cmdTarget" Caption="_@M684_" X="82" Y="2" Width="75"  Height="32" Font="2" Tag="0" OnClickNotify="OnTargetClicked" />
+    <WndButton Name="cmdRename" Caption="_@M554_" X="162" Y="2" Width="75"  Height="32" Font="2" Tag="0" OnClickNotify="OnRenameClicked" />
+    <WndProperty Name="prpCn" Caption="_@M188_" X="2" Y="40"  Width="120" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpRegName" Caption="_@M4_" X="110" Y="40"  Width="142" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpBearing" Caption="_@M154_" X="2" Y="62"  Width="120" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpDistance" Caption="_@M2_" X="110" Y="62"  Width="142" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpAltitude" Caption="Alt" X="2" Y="84"  Width="120" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpAltDiff" Caption="_@M1_" X="110" Y="84"  Width="142" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpSpeed" Caption="_@M3_" X="2" Y="106"  Width="120" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpVario" Caption="_@M5_" X="110" Y="106"  Width="142" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpName" Caption="_@M451_" X="2" Y="-1"  Width="250" Height="22" CaptionWidth="55" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpAirfield" Caption="_@M62_" X="2" Y="-1"  Width="250" Height="22" CaptionWidth="55" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpType" Caption="_@M752_" X="2" Y="-1"  Width="250" Height="22" CaptionWidth="55" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpFreq" Caption="_@M308_" X="2" Y="-1"  Width="250" Height="22" CaptionWidth="55" Font="2" ReadOnly="1" />
+  </WndForm>
 </PMML>
