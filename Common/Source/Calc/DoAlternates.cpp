@@ -24,9 +24,11 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
 
   if ((AltWaypoint == RESWP_OPTIMIZED) && 
     (!ISPARAGLIDER || (AATEnabled && !DoOptimizeRoute()))) {
-    WayPointList[AltWaypoint].Latitude  = Task[ActiveWayPoint].AATTargetLat;
-    WayPointList[AltWaypoint].Longitude = Task[ActiveWayPoint].AATTargetLon;
-    WaypointAltitudeFromTerrain(&WayPointList[AltWaypoint]);
+    WayPointList[RESWP_OPTIMIZED].Latitude  = Task[ActiveWayPoint].AATTargetLat;
+    WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveWayPoint].AATTargetLon;
+    WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[ActiveWayPoint].Altitude;
+	WaypointAltitudeFromTerrain(&WayPointList[RESWP_OPTIMIZED]);
+	wsprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[ActiveWayPoint].Name);
   }
   #endif
 
