@@ -588,7 +588,7 @@ nextinit:
 					// Using FormatDist will give PGs 3 decimal units on overlay only
 					// because changing FormatValue to 3 digits would bring them also
 					// on bottom bar, and there is no space for 1.234km on the bottom bar.
-					if (DoOptimizeRoute() )
+					if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute() )
 		 				LKFormatDist(RESWP_OPTIMIZED, true, BufferValue, BufferUnit);
 					else 
 		 				LKFormatDist(index, false, BufferValue, BufferUnit);
@@ -645,7 +645,8 @@ nextinit:
 			switch (OvertargetMode) {
 				case OVT_TASK:
 					// Do not use FormatBrgDiff for TASK, could be AAT!
-		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
+//		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
+		 			LKFormatBrgDiff(index, false, BufferValue, BufferUnit);
 					break;
 				case OVT_TASKCENTER:
 		 			LKFormatBrgDiff(index, false, BufferValue, BufferUnit);
