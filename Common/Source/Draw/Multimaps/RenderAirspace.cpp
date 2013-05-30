@@ -684,6 +684,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     int x = line[0].x - tsize.cx - NIBLSCALE(5);
 
     if (x<x0) bDrawRightSide = true;
+    bDrawRightSide = true;
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
     int y = rc.top + 2*tsize.cy;
 
