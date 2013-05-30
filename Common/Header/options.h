@@ -125,6 +125,7 @@
                       // enough to warrant detection of the start of free flight)
                       // Eric Carden, 6/28/12
 
+// #define ASPWAVEOFF	1 // Airspace wave areas disabled by default on startup, and set to Fly-In
 
 
 // ----------------------------------------------------------------------------------------

@@ -1857,7 +1857,9 @@ void CAirspaceManager::ReadAirspaces()
   } else {
     StartupStore(TEXT("... No airspace file 1%s"),NEWLINE);
   }
+  #if ASPWAVEOFF
   AirspaceDisableWaveSectors();
+  #endif
   LoadSettings();
 }
 
@@ -3026,7 +3028,7 @@ void CAirspaceManager::LoadSettings()
 }
 
 
-
+#if ASPWAVEOFF
 void CAirspaceManager::AirspaceDisableWaveSectors(void)
 {
 CCriticalSection::CGuard guard(_csairspaces);
@@ -3046,4 +3048,5 @@ CAirspaceList::const_iterator it;
     }
 
 }
+#endif
 
