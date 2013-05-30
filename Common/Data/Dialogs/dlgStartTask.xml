@@ -1,9 +1,9 @@
 <PMML>
-<WndForm Name="frmStartTaskRegular" Type="Dialog" X=5 Y=5 Width=143 Height=133 Caption="_@M692_" Font=2 PopUp=1 >
-<WndProperty Name="prpTime" Caption="_@M717_"      X=2 Y=-1   Width=145 Height=22 CaptionWidth=68 Font=2 ReadOnly=1 Help="" />
-<WndProperty Name="prpSpeed" Caption="_@M627_"      X=2 Y=-1   Width=145 Height=22 CaptionWidth=68 Font=2 ReadOnly=1 Help="" />
-<WndProperty Name="prpAltitude" Caption="_@M88_" X=2 Y=-1  Width=145 Height=22 CaptionWidth=68 Font=2 ReadOnly=1 Help="" />
-<WndButton   Caption="_@M566_"    X=2 Y=-1 Width=130  Height=22 Font=2 OnClickNotify="OnCloseClicked"/>
-<WndButton   Caption="_@M636_"    X=2 Y=-1 Width=130  Height=22 Font=2 OnClickNotify="OnStartTaskAnywayClicked"/>
-</WndForm>    
+  <WndForm Name="frmStartTaskRegular" Type="Dialog" X="5" Y="5" Width="143" Height="133" Caption="_@M692_" Font="2" PopUp="1" >
+    <WndProperty Name="prpTime" Caption="_@M717_"      X="2" Y="-1"   Width="145" Height="22" CaptionWidth="68" Font="2" ReadOnly="1" Help="" />
+    <WndProperty Name="prpSpeed" Caption="_@M627_"      X="2" Y="-1"   Width="145" Height="22" CaptionWidth="68" Font="2" ReadOnly="1" Help="" />
+    <WndProperty Name="prpAltitude" Caption="_@M88_" X="2" Y="-1"  Width="145" Height="22" CaptionWidth="68" Font="2" ReadOnly="1" Help="" />
+    <WndButton   Caption="_@M566_"    X="2" Y="-1" Width="130"  Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
+    <WndButton   Caption="_@M636_"    X="2" Y="-1" Width="130"  Height="22" Font="2" OnClickNotify="OnStartTaskAnywayClicked"/>
+  </WndForm>
 </PMML>
