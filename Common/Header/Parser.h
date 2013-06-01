@@ -240,6 +240,6 @@ void FLARM_EmptySlot(NMEA_INFO *GPS_INFO,int i);
 void FLARM_DumpSlot(NMEA_INFO *GPS_INFO, int i);
 
 extern bool EnableLogNMEA;
-void LogNMEA(TCHAR* text);
+void LogNMEA(TCHAR* text, int);
 
 #endif

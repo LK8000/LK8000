@@ -374,7 +374,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
     
   }
 
-  LogNMEA(String); // We must manage EnableLogNMEA internally from LogNMEA
+  LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
   if (portNum>=0 && portNum<=1) {
 	ComPortHB[portNum]=LKHearthBeats;

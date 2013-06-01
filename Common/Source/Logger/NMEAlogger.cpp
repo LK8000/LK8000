@@ -16,43 +16,70 @@ bool	EnableLogNMEA = false;
 
 
 // New LogNMEA
-void LogNMEA(TCHAR* text) {
+void LogNMEA(TCHAR* text, int PortNum) {
 
+TCHAR fpname[LKSIZEBUFFERPATH];
+static FILE *logfp = NULL;
+static FILE *logfp0= NULL;
+static FILE *logfp1= NULL;
+static int iLastPort =-1;
 
-  static TCHAR fpname[LKSIZEBUFFERPATH];
-  static bool	doinit=true;
-  static bool	wasWriting=false;
-  static FILE *logfp;
+  TCHAR	buffer[LKSIZEBUFFERPATH];
 
-  if (!EnableLogNMEA) {
-	if (wasWriting) {
-		fclose(logfp);
-		wasWriting=false;
-		doinit=true;
-	}
+  if (!EnableLogNMEA)
+  {
+	if(logfp != NULL)
+	  {fclose(logfp) ;logfp = NULL; }
+    if(logfp0 != NULL)
+      {fclose(logfp0);logfp0 = NULL;}
+	if(logfp1 != NULL)
+	  {fclose(logfp1);logfp1 = NULL;}
+	iLastPort =-1;
 	return;
   }
 
-  TCHAR	buffer[LKSIZEBUFFERPATH];
-  char snmea[LKSIZENMEA];
-
-  if (doinit) {
+  if(logfp == NULL)
+  {
 	LocalPath(buffer,TEXT(LKD_LOGS));
 	_stprintf(fpname, _T("%s\\NMEA_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day,
-		GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-	doinit=false;
-  }
-
-  if (!wasWriting) {
+	GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 	logfp = _tfopen(fpname, _T("a"));
 	if (logfp == NULL) {
 		DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE"));
 		EnableLogNMEA=false;
 		return;
 	}
-	wasWriting=true;
   }
 
+  if(iLastPort != -1)  /* already a port info ? */
+  {
+    if( iLastPort != PortNum) /* more than one port active (another than the previous) */
+	{
+	  if(logfp0 == NULL)
+	  {
+		LocalPath(buffer,TEXT(LKD_LOGS));
+	    _stprintf(fpname, _T("%s\\NMEA_A_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+		logfp0 = _tfopen(fpname, _T("a"));
+		if (logfp0 == NULL) {
+		  DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE PORT A:"));
+		  return; }
+	  }
+
+	  if(logfp1 == NULL)
+	  {
+        LocalPath(buffer,TEXT(LKD_LOGS));
+		_stprintf(fpname, _T("%s\\NMEA_B_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+		logfp1 = _tfopen(fpname, _T("a"));
+		if (logfp1 == NULL) {
+		  DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE PORT B:"));
+		  return; }
+	  }
+	}
+  }
+  iLastPort = PortNum;
+
+
+  char snmea[LKSIZENMEA];
   LKASSERT(_tcslen(text)<sizeof(snmea));
   if (_tcslen(text)>=sizeof(snmea)) return;
 
@@ -69,7 +96,19 @@ void LogNMEA(TCHAR* text) {
 	snmea[l-1]=0;
   }
 
-  fprintf(logfp,"%s",snmea);
-  
+  if( logfp != NULL)
+    fprintf(logfp,"%s",snmea);
+
+   if(PortNum ==0)
+   {
+     if(logfp0 != NULL)
+       fprintf(logfp0,"%s",snmea);
+   }
+   else
+   {
+     if(PortNum ==1)
+       if(logfp1 != NULL)
+         fprintf(logfp1,"%s",snmea);
+   }
 }
 
