@@ -435,7 +435,13 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
   #endif // PNA
 
-  if (!activeGPS) return TRUE;
+  if (!activeGPS) {
+	// Before ignoring anything else, commit RMZ altitude otherwise it will be ignored!
+	if(RMZAvailable) {
+		UpdateBaroSource(pGPS, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
+	}
+	return TRUE;
+  }
 
   // if no valid fix, we dont get speed either!
   if (gpsValid)
@@ -598,7 +604,13 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	gpsValid=true;
   }
 
-  if (!activeGPS) return TRUE;
+  if (!activeGPS) {
+	if(RMZAvailable && !RMCAvailable)
+	{
+		UpdateBaroSource(pGPS, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
+	}
+	return TRUE;
+  }
 
   pGPS->SatellitesUsed = nSatellites; // 091208
   pGPS->NAVWarning = !gpsValid; // 091208
