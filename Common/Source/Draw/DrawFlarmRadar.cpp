@@ -40,7 +40,7 @@ extern int XstartScreen, YstartScreen;
 
 int  iTraceDotSize = 5;
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
-#define HEIGHT_RANGE (1000.0  )    /* max hight ifference above and below in meters */
+#define HEIGHT_RANGE (300.0  )    /* max hight ifference above and below in meters */
 double ASYMETRIC_FACTOR = 0.7 ;     /* X center displacement               */
 double SPLITSCREEN_FACTOR = F_SIZE2 ;   /* % of top view window                */
 int bTrace = 1;
@@ -561,6 +561,7 @@ switch(LKevent)
   case LKEVENT_NEWRUN:
 	// CALLED ON ENTRY: when we select this page coming from another mapspace
 //	fHeigtScaleFact = 1.0;
+		bHeightScale	= false;
   break;
   case LKEVENT_UP:
 	if(bHeightScale)
