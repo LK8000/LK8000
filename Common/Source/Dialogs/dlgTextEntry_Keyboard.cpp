@@ -10,7 +10,7 @@
 #include "InfoBoxLayout.h"
 #include "Dialogs.h"
 
-
+static bool first= true;
 static WndForm *wf=NULL;
 static WndProperty * wKeyboardPopupWndProperty;
 
@@ -51,8 +51,21 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam) {
   return(1);
 }
 
+
+static void ClearText(void)
+{
+  cursor = 0;
+  memset(edittext, 0, sizeof(TCHAR)*MAX_TEXTENTRY);
+  UpdateTextboxProp();
+}
+
 static void OnKey(WindowControl * Sender)
 {
+if(first)
+{
+    ClearText();
+    first = false;
+}
   TCHAR *Caption = Sender->GetCaption();
   #ifndef DISABLEAUDIO
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -66,6 +79,7 @@ static void OnKey(WindowControl * Sender)
 
 static void OnDel(WindowControl * Sender)
 {
+  first = false;
   #ifndef DISABLEAUDIO
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
   #endif
@@ -122,12 +136,6 @@ static void OnOk(WindowControl * Sender)
   wf->SetModalResult(mrOK);
 }
 
-static void ClearText(void)
-{
-  cursor = 0;
-  memset(edittext, 0, sizeof(TCHAR)*MAX_TEXTENTRY); 
-  UpdateTextboxProp();
-}
 
 
 static void OnClear(WindowControl * Sender)
@@ -157,6 +165,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, const TCHAR* szResource)
 {
+	first = true;
   wf = NULL;
   if (width==0) {
     width = MAX_TEXTENTRY;
