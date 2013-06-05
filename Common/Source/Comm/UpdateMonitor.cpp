@@ -95,6 +95,22 @@ void NMEAParser::UpdateMonitor(void)
 
   // wait for some seconds before monitoring, after startup
   if (LKHearthBeats<20) return;
+
+  /* check if Flarm disappeared after 30 seconds no activity */
+  if (GPS_INFO.FLARM_Available && ((GPS_INFO.Time -LastFlarmCommandTime)> 30) )
+  {
+	static unsigned short MessageCnt =0;
+	if(MessageCnt <10)
+	{
+		MessageCnt++;
+		StartupStore(_T(". FLARM lost! Disable FLARM functions !%s"),NEWLINE);
+		DoStatusMessage(gettext(TEXT("_@M947_"))); // _@M947_ "FLARM SIGNAL LOST"
+	}
+	GPS_INFO.FLARM_Available = false;
+	GPS_INFO.FLARM_HW_Version =0.0;
+	GPS_INFO.FLARM_SW_Version =0.0;
+  }
+
   // Check Port 1 with no serial activity in last seconds
   if ( (LKHearthBeats-ComPortHB[0])>10 ) {
 	#ifdef DEBUGNPM

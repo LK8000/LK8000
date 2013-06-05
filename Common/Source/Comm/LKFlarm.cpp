@@ -231,29 +231,29 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	}
   }
 
-if(!pGPS->FLARM_Available)
+  if(!pGPS->FLARM_Available)
 	sayflarmavailable = true;
-  pGPS->FLARM_Available = true;
 
+  pGPS->FLARM_Available = true;
+  LastFlarmCommandTime = pGPS->Time;
+  isFlarm = true;
 
   if ( sayflarmavailable ) {
-	// LKTOKEN  _@M279_ = "FLARM DETECTED" 
 	pGPS->FLARM_SW_Version =0.0;
 	pGPS->FLARM_HW_Version =0.0;
 	static int MessageCnt =0;
 	if(MessageCnt < 10)
 	{
 	  MessageCnt++;
-	  DoStatusMessage(gettext(TEXT("_@M279_")));
+	  DoStatusMessage(gettext(TEXT("_@M279_"))); // FLARM DETECTED
 	}
 	sayflarmavailable=false;
-	if(nmeaParser1.isFlarm)
-      devRequestFlarmVersion(devA());
-	else
-	  if(nmeaParser2.isFlarm)
-        devRequestFlarmVersion(devB());
-	isFlarm = true;
-	pGPS->FLARM_Available = true;
+	if(nmeaParser1.isFlarm) {
+		devRequestFlarmVersion(devA());
+	} else {
+		if(nmeaParser2.isFlarm)
+			devRequestFlarmVersion(devB());
+	}
   }
 
   // calculate relative east and north projection to lat/lon

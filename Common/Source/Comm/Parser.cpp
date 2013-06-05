@@ -95,7 +95,6 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
   TCHAR *params[MAX_NMEA_PARAMS];
   size_t n_params;
 
-static double lastFlarmCommand = pGPS->Time;
 
   n_params = ValidateAndExtract(String, ctemp, MAX_NMEA_LEN, params, MAX_NMEA_PARAMS);
   if (n_params < 1 || params[0][0] != '$')
@@ -134,10 +133,7 @@ static double lastFlarmCommand = pGPS->Time;
 
       if(_tcscmp(params[0] + 1,TEXT("PFLAU"))==0)
         {
-    	  /* store last FLARM heartbeat time */
-    	  lastFlarmCommand = pGPS->Time;
           return PFLAU(&String[7], params + 1, n_params, pGPS);
-
         }
 
       if(_tcscmp(params[0] + 1,TEXT("PGRMZ"))==0)
@@ -178,23 +174,6 @@ static double lastFlarmCommand = pGPS->Time;
       return VTG(&String[7], params + 1, n_params, pGPS);
     }
 
-
-
-  /* check if Flarm disappeared after 30 seconds no activity */
-  if ((pGPS->Time -lastFlarmCommand)> 30)
-  {
-   static unsigned short MessageCnt =0;
-   if(pGPS->FLARM_Available &&(MessageCnt <10))
-   {
-      MessageCnt++;
-      StartupStore(_T(". FLARM lost! Disable FLARM functions !%s"),NEWLINE);
-      DoStatusMessage(gettext(TEXT("_@M947_"))); // _@M947_ "FLARM SIGNAL LOST"
-   }
-    pGPS->FLARM_Available = false;
-    pGPS->FLARM_HW_Version =0.0;
-    pGPS->FLARM_SW_Version =0.0;
-
-  }
   return FALSE;
 }
 

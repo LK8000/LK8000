@@ -565,6 +565,7 @@ void Globals_Init(void) {
   dwPortIndex2 = 0;
   dwSpeedIndex2 = 2;
   dwBit2Index = (BitIndex_t)bit8N1;
+  LastFlarmCommandTime=0; // last time we got a PFLAU
 
   // Units
   SpeedUnit_Config = 2;		// default is kmh

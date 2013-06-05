@@ -824,6 +824,7 @@ GEXTERN DWORD dwSpeedIndex2;
 GEXTERN DWORD dwBit2Index;
 GEXTERN TCHAR dwDeviceName1[DEVNAMESIZE+1];
 GEXTERN TCHAR dwDeviceName2[DEVNAMESIZE+1];
+GEXTERN double LastFlarmCommandTime;
 
 // Units , configurable only in system config
 

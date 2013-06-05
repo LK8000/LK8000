@@ -43,6 +43,8 @@ void SimFlarmTraffic(long ID, double offset)
   bool newtraffic=false;
 
   GPS_INFO.FLARM_Available=true;
+  LastFlarmCommandTime=GPS_INFO.Time; // useless really, we dont call UpdateMonitor from SIM
+  
 
   flarm_slot = FLARM_FindSlot(&GPS_INFO, ID);
 
