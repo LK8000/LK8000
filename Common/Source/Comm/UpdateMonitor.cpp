@@ -28,6 +28,7 @@ void NMEAParser::UpdateMonitor(void)
   short active=0; // active port number for gps
   static short lastactive=0;
   static bool  lastvalidBaro=false;
+  static bool wasSilent[2]={false,false};
   short invalidGps=0;
   short invalidBaro=0;
   short validBaro=0; 
@@ -130,19 +131,19 @@ void NMEAParser::UpdateMonitor(void)
 			invalidBaro=1;
 		}
 	}
-	if (devIsDisabled(0)) {
-		nmeaParser1._Reset();
-		nmeaParser1.activeGPS=false; // because Reset is setting it to true
-	} else {
+	nmeaParser1._Reset();
+	nmeaParser1.activeGPS=false; // because Reset is setting it to true
+	// We reset some flags globally only once in case of device gone silent 
+	if (!devIsDisabled(0) && !wasSilent[0]) {
 		GPS_INFO.AirspeedAvailable=false;
 		GPS_INFO.VarioAvailable=false;
 		GPS_INFO.NettoVarioAvailable=false;
 		GPS_INFO.AccelerationAvailable = false;
 		EnableExternalTriggerCruise = false;
-		nmeaParser1._Reset();
-		nmeaParser1.activeGPS=false;
+		wasSilent[0]=true;
 	}
   } else {
+	wasSilent[0]=false;
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devA()) || nmeaParser1.RMZAvailable || nmeaParser1.RMAAvailable || nmeaParser1.TASAvailable ) // 100411
 		validBaro++;
@@ -163,19 +164,18 @@ void NMEAParser::UpdateMonitor(void)
 			invalidBaro++;
 		}
 	}
-	if (devIsDisabled(1)) {
-		nmeaParser2._Reset();
-		nmeaParser2.activeGPS=false; // because Reset is setting it to true
-	} else {
+	nmeaParser2._Reset();
+	nmeaParser2.activeGPS=false; // because Reset is setting it to true
+	if (!devIsDisabled(1) && !wasSilent[1]) {
 		GPS_INFO.AirspeedAvailable=false;
 		GPS_INFO.VarioAvailable=false;
 		GPS_INFO.NettoVarioAvailable=false;
 		GPS_INFO.AccelerationAvailable = false;
 		EnableExternalTriggerCruise = false;
-		nmeaParser2._Reset();
-		nmeaParser2.activeGPS=false;
+		wasSilent[1]=true;
 	}
   } else {
+	wasSilent[1]=false;
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devB()) || nmeaParser2.RMZAvailable || nmeaParser2.RMAAvailable || nmeaParser2.TASAvailable   )  // 100411
 		validBaro++;
