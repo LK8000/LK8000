@@ -180,13 +180,13 @@ static double lastFlarmCommand = pGPS->Time;
 
 
 
-  /* check if Flarm disappeared (no heartbeat since Zombie timeout) */
-  if ((pGPS->Time -lastFlarmCommand)> LKTime_Ghost)
+  /* check if Flarm disappeared after 30 seconds no activity */
+  if ((pGPS->Time -lastFlarmCommand)> 30)
   {
-   static int MessageCnt =0;
+   static unsigned short MessageCnt =0;
    if(pGPS->FLARM_Available &&(MessageCnt <10))
    {
-	  MessageCnt++;
+      MessageCnt++;
       StartupStore(_T(". FLARM lost! Disable FLARM functions !%s"),NEWLINE);
       DoStatusMessage(gettext(TEXT("_@M947_"))); // _@M947_ "FLARM SIGNAL LOST"
    }
