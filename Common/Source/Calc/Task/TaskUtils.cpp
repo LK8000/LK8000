@@ -30,7 +30,7 @@ void ResetTaskStat(TASKSTATS_POINT& StatPt) {
 }
 
 void ResetTaskWaypoint(int j) {
-    if(j>=0 && j<MAXSTARTPOINTS) {
+    if(j>=0 && j<MAXTASKPOINTS) {
         ResetTaskWpt(Task[j]);
         ResetTaskStat(TaskStats[j]);
     } else {
