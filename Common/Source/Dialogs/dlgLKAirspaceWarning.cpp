@@ -259,6 +259,7 @@ void dlgLKAirspaceFill()
     wp = (WndProperty*)dlg->FindByName(TEXT("prpType"));
     if (wp) {
   	if (airspace_copy.Flyzone()) {
+	  LKASSERT(_tcslen(airspace_copy.TypeName())<70);
   	  wsprintf(buffer,TEXT("%s %s"), airspace_copy.TypeName(), gettext(TEXT("FLY")));
   	} else {
   	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("NOFLY")));
@@ -386,12 +387,14 @@ short ShowAirspaceWarningsToUser()
       
     case aweEnteringFly:
       // LKTOKEN _@M1240_ "Entering"
+      LKASSERT(_tcslen(airspace_copy.TypeName())+_tcslen(airspace_copy.Name()) <100);
       wsprintf(msgbuf, TEXT("%s %s %s "), gettext(TEXT("_@M1240_")),airspace_copy.TypeName(), airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
 
     case aweLeavingNonFly:
       // LKTOKEN _@M1241_ "Leaving"
+      LKASSERT(_tcslen(airspace_copy.TypeName())+_tcslen(airspace_copy.Name()) <100);
       wsprintf(msgbuf, TEXT("%s %s %s"), gettext(TEXT("_@M1241_")),airspace_copy.TypeName(), airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
@@ -428,6 +431,7 @@ short ShowAirspaceWarningsToUser()
     if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
     #endif
 
+    LKASSERT( _tcslen(gettext(_T("_@M68_")))+_tcslen(airspace_copy.TypeName())+_tcslen(airspace_copy.Name())<120);
     _stprintf(msgbuf,_T("%s: %s %s"),gettext(_T("_@M68_")),airspace_copy.TypeName(),airspace_copy.Name());
     dlg->SetCaption(msgbuf);
 

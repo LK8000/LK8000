@@ -143,7 +143,12 @@ static void SetValues(void) {
 
   if (wf!=NULL) {
 	TCHAR capbuffer[250];
-	wsprintf(capbuffer,_T("%s %s ("),airspace_copy.TypeName(),airspace_copy.Name());
+	// reserving 30 chars for ENABLED or DISABLED, plus () and spaces, just to be sure.
+	if (_tcslen(airspace_copy.TypeName()) + _tcslen(airspace_copy.Name()) <220)
+		wsprintf(capbuffer,_T("%s %s ("),airspace_copy.TypeName(),airspace_copy.Name());
+	else
+		wsprintf(capbuffer,_T("%s ("),airspace_copy.Name());
+
         if (airspace_copy.Enabled()) {
         	_tcscat(capbuffer,gettext(TEXT("_@M1643_"))); // ENABLED
         } else {
@@ -156,6 +161,7 @@ static void SetValues(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
 	if (airspace_copy.Flyzone()) {
+	  LKASSERT(_tcslen(airspace_copy.TypeName()) >0 && _tcslen(airspace_copy.TypeName())<70);
 	  wsprintf(buffer,TEXT("%s %s"), airspace_copy.TypeName(), gettext(TEXT("FLY")));
 	} else {
 	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("NOFLY")));
