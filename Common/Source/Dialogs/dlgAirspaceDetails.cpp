@@ -18,7 +18,7 @@
 static CAirspace *airspace = NULL;
 static CAirspace airspace_copy;
 static WndForm *wf=NULL;
-
+COLORREF ContrastTextColor(COLORREF Col);
 static void SetValues(void);
 
 static void OnFlyClicked(WindowControl * Sender){
@@ -143,7 +143,7 @@ static void SetValues(void) {
 
   if (wf!=NULL) {
 	TCHAR capbuffer[250];
-	wsprintf(capbuffer,_T("%s ("),airspace_copy.Name());
+	wsprintf(capbuffer,_T("%s %s ("),airspace_copy.TypeName(),airspace_copy.Name());
         if (airspace_copy.Enabled()) {
         	_tcscat(capbuffer,gettext(TEXT("_@M1643_"))); // ENABLED
         } else {
@@ -156,11 +156,14 @@ static void SetValues(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
 	if (airspace_copy.Flyzone()) {
-	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("FLY")));
+	  wsprintf(buffer,TEXT("%s %s"), airspace_copy.TypeName(), gettext(TEXT("FLY")));
 	} else {
 	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("NOFLY")));
 	}
+
 	wp->SetText( buffer );
+    wp->SetBackColor( airspace_copy.TypeColor());
+	wp->SetForeColor( ContrastTextColor(airspace_copy.TypeColor()));
     wp->RefreshDisplay();
   }
   

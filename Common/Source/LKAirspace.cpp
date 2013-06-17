@@ -105,6 +105,17 @@ void CAirspace::Dump() const
    
 }
 
+const TCHAR* CAirspace::TypeName(void) const
+{
+	return ((TCHAR*) (CAirspaceManager::Instance().GetAirspaceTypeText(_type)));
+
+};
+
+const COLORREF CAirspace::TypeColor(void) const
+{
+	return MapWindow::GetAirspaceColourByClass(_type);
+}
+
 // Calculate unique hash code for this airspace - prototype, normally never called
 void CAirspace::Hash(char *hashout, int maxbufsize) const
 {

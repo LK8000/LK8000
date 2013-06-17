@@ -27,6 +27,18 @@ WndForm *dlg=NULL;
 
 void dlgLKAirspaceFill();
 
+COLORREF ContrastTextColor(COLORREF Col)
+{
+//  human eye brightness color factors
+//	Y=0.30 R + 0.59 G + 0.11 B.
+	double  Brightness = 0.30 *(double)((Col & 0xFF0000) >> 16);
+	Brightness   +=      0.59 *(double)((Col & 0x00FF00) >> 8 );
+	Brightness   +=      0.11 *(double)((Col & 0x0000FF)      );
+	if(  Brightness > 127.0)
+	  return( RGB_BLACK);
+	else
+	  return( RGB_WHITE);
+}
 
 static void OnAckForTimeClicked(WindowControl * Sender)
 {
@@ -233,12 +245,31 @@ void dlgLKAirspaceFill()
     }    
 #endif
 
+
+
     int hdist;
     int vdist;
     int bearing;
     bool inside;
     TCHAR stmp[21];
     
+
+
+    TCHAR buffer[80];
+    wp = (WndProperty*)dlg->FindByName(TEXT("prpType"));
+    if (wp) {
+  	if (airspace_copy.Flyzone()) {
+  	  wsprintf(buffer,TEXT("%s %s"), airspace_copy.TypeName(), gettext(TEXT("FLY")));
+  	} else {
+  	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("NOFLY")));
+  	}
+
+  	  wp->SetText( buffer );
+      wp->SetBackColor( airspace_copy.TypeColor());
+	  wp->SetForeColor( ContrastTextColor(airspace_copy.TypeColor()));
+      wp->RefreshDisplay();
+    }
+
     // Unfortunatelly virtual methods don't work on copied instances
     // we have to ask airspacemanager to perform the required calculations
     //inside = airspace_copy.CalculateDistance(&hdist, &bearing, &vdist);
@@ -355,17 +386,18 @@ short ShowAirspaceWarningsToUser()
       
     case aweEnteringFly:
       // LKTOKEN _@M1240_ "Entering"
-      wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1240_")), airspace_copy.Name());
+      wsprintf(msgbuf, TEXT("%s %s %s "), gettext(TEXT("_@M1240_")),airspace_copy.TypeName(), airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
 
     case aweLeavingNonFly:
       // LKTOKEN _@M1241_ "Leaving"
-      wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1241_")), airspace_copy.Name());
+      wsprintf(msgbuf, TEXT("%s %s %s"), gettext(TEXT("_@M1241_")),airspace_copy.TypeName(), airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
       
   }
+
 
   // show dialog to user if needed
   if (ackdialog_required && (airspace_copy.WarningLevel() == msg.warnlevel)) {
@@ -396,7 +428,7 @@ short ShowAirspaceWarningsToUser()
     if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
     #endif
 
-    _stprintf(msgbuf,_T("%s: %s"),gettext(_T("_@M68_")),airspace_copy.Name());
+    _stprintf(msgbuf,_T("%s: %s %s"),gettext(_T("_@M68_")),airspace_copy.TypeName(),airspace_copy.Name());
     dlg->SetCaption(msgbuf);
 
     dlg->ShowModal();

@@ -154,6 +154,8 @@ public:
   void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone);
 
 
+  const TCHAR* TypeName(void) const;
+  const COLORREF TypeColor(void) const;
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }
   const AIRSPACE_ALT* Base() const { return &_base; }
