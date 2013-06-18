@@ -142,12 +142,10 @@ static void SetValues(void) {
   bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance( airspace, &hdist, &bearing, &vdist);
 
   if (wf!=NULL) {
+
 	TCHAR capbuffer[250];
 	// reserving 30 chars for ENABLED or DISABLED, plus () and spaces, just to be sure.
-	if (_tcslen(airspace_copy.TypeName()) + _tcslen(airspace_copy.Name()) <220)
-		wsprintf(capbuffer,_T("%s %s ("),airspace_copy.TypeName(),airspace_copy.Name());
-	else
-		wsprintf(capbuffer,_T("%s ("),airspace_copy.Name());
+	wsprintf(capbuffer,_T("%s ("),airspace_copy.Name());
 
         if (airspace_copy.Enabled()) {
         	_tcscat(capbuffer,gettext(TEXT("_@M1643_"))); // ENABLED

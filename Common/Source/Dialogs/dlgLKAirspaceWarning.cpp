@@ -387,15 +387,13 @@ short ShowAirspaceWarningsToUser()
       
     case aweEnteringFly:
       // LKTOKEN _@M1240_ "Entering"
-      LKASSERT(_tcslen(airspace_copy.TypeName())+_tcslen(airspace_copy.Name()) <100);
-      wsprintf(msgbuf, TEXT("%s %s %s "), gettext(TEXT("_@M1240_")),airspace_copy.TypeName(), airspace_copy.Name());
+      wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1240_")), airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
 
     case aweLeavingNonFly:
       // LKTOKEN _@M1241_ "Leaving"
-      LKASSERT(_tcslen(airspace_copy.TypeName())+_tcslen(airspace_copy.Name()) <100);
-      wsprintf(msgbuf, TEXT("%s %s %s"), gettext(TEXT("_@M1241_")),airspace_copy.TypeName(), airspace_copy.Name());
+      wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1241_")),airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
       
@@ -431,8 +429,7 @@ short ShowAirspaceWarningsToUser()
     if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
     #endif
 
-    LKASSERT( _tcslen(gettext(_T("_@M68_")))+_tcslen(airspace_copy.TypeName())+_tcslen(airspace_copy.Name())<120);
-    _stprintf(msgbuf,_T("%s: %s %s"),gettext(_T("_@M68_")),airspace_copy.TypeName(),airspace_copy.Name());
+    _stprintf(msgbuf,_T("%s: %s"),gettext(_T("_@M68_")),airspace_copy.Name());
     dlg->SetCaption(msgbuf);
 
     dlg->ShowModal();
