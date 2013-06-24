@@ -10,7 +10,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "Logger.h"
-#include "Process.h"
+#include "LKProcess.h"
 #include "Dialogs.h"
 #include "device.h"
 

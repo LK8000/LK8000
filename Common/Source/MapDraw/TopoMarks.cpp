@@ -20,7 +20,7 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 #include "STScreenBuffer.h"
-#include "Process.h"
+#include "LKProcess.h"
 #include "Waypointparser.h"
 #include "RGB.h"
 

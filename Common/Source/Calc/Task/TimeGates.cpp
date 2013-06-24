@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "Process.h"
+#include "LKProcess.h"
 
 bool DontCloseGates=true; // temporary global, for 4.0. Configurable in 4.1
 

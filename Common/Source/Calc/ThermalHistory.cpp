@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "Process.h"
+#include "LKProcess.h"
 #include "McReady.h"
 #include "Waypointparser.h"
 #include "DoInits.h"
