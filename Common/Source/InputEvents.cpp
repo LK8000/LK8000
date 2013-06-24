@@ -16,7 +16,7 @@
 #include <aygshell.h>
 
 #include "InfoBoxLayout.h"
-#include "Process.h"
+#include "LKProcess.h"
 #include "Atmosphere.h"
 #include "Waypointparser.h"
 #include "Message.h"

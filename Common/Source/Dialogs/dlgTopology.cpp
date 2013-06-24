@@ -10,7 +10,7 @@
 #include <aygshell.h>
 #include "Dialogs.h"
 
-#include "Process.h"
+#include "LKProcess.h"
 
 #include "Terrain.h"
 #include "LKProfiles.h"

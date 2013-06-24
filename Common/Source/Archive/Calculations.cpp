@@ -13,11 +13,7 @@
 #include "Dialogs.h"
 #include "Parser.h"
 #include "compatibility.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
-#include "Process.h"
-#endif
+#include "LKProcess.h"
 #include "Utils.h"
 #include "McReady.h"
 #include "Airspace.h"
