@@ -8,7 +8,7 @@
 
 
 #include "externs.h"
-#include "Process.h"
+#include "LKProcess.h"
 #include "Dialogs.h"
 
 
