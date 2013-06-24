@@ -10,6 +10,7 @@
 #include <cctype>
 #include "externs.h"
 #include "LiveTracker.h"
+#include "utils/stringext.h"
 
 //Use to log transactions to the startupstore
 //#define LT_DEBUG  1

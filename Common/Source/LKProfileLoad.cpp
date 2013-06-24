@@ -10,7 +10,7 @@
 #include "McReady.h"
 #include "Modeltype.h"
 #include "LKProfiles.h"
-
+#include "utils/stringext.h"
 
 // #define DEBUGPROF	1
 extern void LKParseProfileString(TCHAR *sname, TCHAR *svalue);

@@ -13,6 +13,7 @@
 
 #include "CTaskFileHelper.h"
 #include "utils/fileext.h"
+#include "utils/stringext.h"
 #include "Waypointparser.h"
 
 

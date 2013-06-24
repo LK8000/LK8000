@@ -16,6 +16,7 @@
 #include "Message.h"
 #include "LKObjects.h"
 #include "RGB.h"
+#include <shellapi.h>
 
 //
 // The SPLASH screen for startup, shutdown and intermediate reloads

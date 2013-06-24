@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "utils/stringext.h"
 
 void StartupLogFreeRamAndStorage() {
   unsigned long freeram = CheckFreeRam()/1024;

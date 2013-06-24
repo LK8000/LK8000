@@ -9,23 +9,7 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
-
-#ifndef __MINGW32__
- #if defined(CECORE)
- #include "winbase.h"
- #endif
- #if (WINDOWSPC<1)
- #include "projects.h"
- #endif
-#else
- #include "wcecompat/ts_string.h"
- #include "mingw32compat/StdAfx.h"
-#endif
-
-#include <malloc.h>
-#include <tchar.h>
-#include <windows.h>
-
+#include "StdAfx.h"
 
 // options first, then all dependencies
 #include "options.h"
@@ -36,7 +20,6 @@
 #include "lk8000.h"
 #include "Macro.h"
 
-#include "StdAfx.h"
 #include "Parser.h"
 #include "Calculations.h"
 #include "Statistics.h"

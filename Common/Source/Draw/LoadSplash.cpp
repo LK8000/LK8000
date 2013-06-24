@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "resource.h"
+#include <shellapi.h>
 
 void LoadSplash(HDC hDC, TCHAR *splashfile){
 

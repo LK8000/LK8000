@@ -33,6 +33,7 @@
 #include "Sideview.h"
 #include "TraceThread.h"
 #include "CTaskFileHelper.h"
+#include "utils/stringext.h"
 
 // Sensible maximums 
 #define MAX_MODE 100
