@@ -55,6 +55,28 @@ All task option is saved with task ( rule, time gate, aat target .... )
 
 . Support for PnaDump tool (also in 4.0b)
 
+.  FLARM version in status, and managed flarm device disconnection.
+   Specify baro altitude from flarm if available.
+
+. Multimap 2 empowered: better printed values on screen as boxed overlays, and final glide MC overlay.
+
+. New customkey Reset View . It will instantly bring screen to moving map , and reset all infopages to the first.
+
+. AAT task : Use AAT optimized turn point for overlay data
+
+. NMEA logger creating separated logs for each port, plus a common mixed log.
+
+. Unselect sideview zoom after MM change in Flarm Radar (same as other multimaps).
+  300m default zoom for sideview
+
+.     Fix text keyboard not resetting content on startup. We show old content, before deleting it upon any key activity, except DEL.
+    With DEL , we only cancel last character keeping the old content.
+
+. Add airspace type in dialogs, colored accordingly , to be intuitive.
+
+
+
+
 
 CHANGES
 
