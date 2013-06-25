@@ -77,6 +77,16 @@ static void setVariables(void) {
     wp->GetDataField()->SetAsInteger(PGOpenTimeM);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGCloseTimeH"));
+  if (wp) {
+    wp->GetDataField()->SetAsInteger(PGCloseTimeH);
+    wp->RefreshDisplay();
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGCloseTimeM"));
+  if (wp) {
+    wp->GetDataField()->SetAsInteger(PGCloseTimeM);
+    wp->RefreshDisplay();
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGGateIntervalTime"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(PGGateIntervalTime);
@@ -152,6 +162,20 @@ void dlgTimeGatesShowModal(void){
       changed = true;
     }
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGCloseTimeH"));
+  if (wp) {
+    if ( PGCloseTimeH != wp->GetDataField()->GetAsInteger()) {
+      PGCloseTimeH = wp->GetDataField()->GetAsInteger();
+      changed = true;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGCloseTimeM"));
+  if (wp) {
+    if ( PGCloseTimeM != wp->GetDataField()->GetAsInteger()) {
+      PGCloseTimeM = wp->GetDataField()->GetAsInteger();
+      changed = true;
+    }
+  }  
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGGateIntervalTime"));
   if (wp) {
     if ( PGGateIntervalTime != wp->GetDataField()->GetAsInteger()) {
@@ -170,7 +194,7 @@ void dlgTimeGatesShowModal(void){
   if (changed) {
 
      PGOpenTime=((PGOpenTimeH*60)+PGOpenTimeM)*60;
-     PGCloseTime=PGOpenTime+(PGGateIntervalTime*PGNumberOfGates*60);
+     PGCloseTime=((PGCloseTimeH*60)+PGCloseTimeM)*60;;
      if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
      ActiveGate=-1;
 

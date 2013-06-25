@@ -170,10 +170,18 @@ void LoadNewTask(LPCTSTR szFileName)
             TaskInvalid = !ReadFile(hFile, &PGOpenTimeM, sizeof (PGOpenTimeM), &dwBytesRead, (OVERLAPPED*) NULL);
         }
         if (!TaskInvalid) {
-            TaskInvalid = !ReadFile(hFile, &PGOpenTime, sizeof (PGOpenTime), &dwBytesRead, (OVERLAPPED*) NULL);
+			PGOpenTime=((PGOpenTimeH*60)+PGOpenTimeM)*60;
+
+			// PGOpenTime is Calculated !
+			int tmp;
+            TaskInvalid = !ReadFile(hFile, &tmp, sizeof (tmp), &dwBytesRead, (OVERLAPPED*) NULL);
         }
         if (!TaskInvalid) {
-            TaskInvalid = !ReadFile(hFile, &PGCloseTime, sizeof (PGCloseTime), &dwBytesRead, (OVERLAPPED*) NULL);
+			PGCloseTime=86399;
+			
+			// PGCloseTime is Calculated !
+			int tmp;
+            TaskInvalid = !ReadFile(hFile, &tmp, sizeof (tmp), &dwBytesRead, (OVERLAPPED*) NULL);
         }
         if (!TaskInvalid) {
             TaskInvalid = !ReadFile(hFile, &PGGateIntervalTime, sizeof (PGGateIntervalTime), &dwBytesRead, (OVERLAPPED*) NULL);

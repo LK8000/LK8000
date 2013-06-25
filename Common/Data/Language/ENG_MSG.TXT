@@ -2015,6 +2015,7 @@ _@M2149_ "in thermal"
 _@M2150_ "in thermal and cruise"
 
 _@M2151_ "T>\nTP Center"
+_@M2153_ "Start Close Time "
 
 
 # New CustomKey labels for Custom Menu

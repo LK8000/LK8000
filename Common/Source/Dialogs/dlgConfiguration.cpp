@@ -2240,39 +2240,6 @@ static void setVariables(void) {
     wp->GetDataField()->SetAsFloat(AutoOrientScale);
     wp->RefreshDisplay();
   }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGNumberOfGates"));
-  if (wp) {
-    wp->GetDataField()->SetAsInteger(PGNumberOfGates);
-    wp->RefreshDisplay();
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGOpenTimeH"));
-  if (wp) {
-    wp->GetDataField()->SetAsInteger(PGOpenTimeH);
-    wp->RefreshDisplay();
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGOpenTimeM"));
-  if (wp) {
-    wp->GetDataField()->SetAsInteger(PGOpenTimeM);
-    // if (PGNumberOfGates==0) wp->SetReadOnly(true);
-    wp->RefreshDisplay();
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGGateIntervalTime"));
-  if (wp) {
-    wp->GetDataField()->SetAsInteger(PGGateIntervalTime);
-    wp->RefreshDisplay();
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGStartOut"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M343_ = "IN (Exit)" 
-    dfe->addEnumText(gettext(TEXT("_@M343_")));
-	// LKTOKEN  _@M498_ = "OUT (Enter)" 
-    dfe->addEnumText(gettext(TEXT("_@M498_")));
-    dfe->Set(PGStartOut);
-    wp->RefreshDisplay();
-  }
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsSpeed"));
   if (wp) {
@@ -3679,37 +3646,6 @@ double dval;
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGNumberOfGates"));
-  if (wp) {
-    if ( PGNumberOfGates != wp->GetDataField()->GetAsInteger()) {
-      PGNumberOfGates = wp->GetDataField()->GetAsInteger();
-    }
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGOpenTimeH"));
-  if (wp) {
-    if ( PGOpenTimeH != wp->GetDataField()->GetAsInteger()) {
-      PGOpenTimeH = wp->GetDataField()->GetAsInteger();
-    }
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGOpenTimeM"));
-  if (wp) {
-    if ( PGOpenTimeM != wp->GetDataField()->GetAsInteger()) {
-      PGOpenTimeM = wp->GetDataField()->GetAsInteger();
-    }
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGGateIntervalTime"));
-  if (wp) {
-    if ( PGGateIntervalTime != wp->GetDataField()->GetAsInteger()) {
-      PGGateIntervalTime = wp->GetDataField()->GetAsInteger();
-    }
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGStartOut"));
-  if (wp) {
-    if ( PGStartOut != wp->GetDataField()->GetAsInteger()) {
-      PGStartOut = wp->GetDataField()->GetAsInteger();
-    }
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceDisplay"));
   if (wp) {
     if (AltitudeMode_Config != wp->GetDataField()->GetAsInteger()) {
@@ -4733,7 +4669,7 @@ int ival;
 
 
 	PGOpenTime=((PGOpenTimeH*60)+PGOpenTimeM)*60;
-	PGCloseTime=PGOpenTime+(PGGateIntervalTime*PGNumberOfGates*60);
+	PGCloseTime=((PGCloseTimeH*60)+PGCloseTimeM)*60;
 	if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
 	ActiveGate=-1;
 

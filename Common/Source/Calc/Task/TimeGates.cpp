@@ -9,11 +9,6 @@
 #include "externs.h"
 #include "LKProcess.h"
 
-bool DontCloseGates=true; // temporary global, for 4.0. Configurable in 4.1
-
-// Additional time in seconds after last gate is closed. Normally enough to start in any case.
-// In this case, 3 hours! We check against LocalTime, careful!
-#define MORETIME	(60*60*3)
 
 // ALL TIME VALUES ARE IN SECONDS! 
 bool UseGates() {
@@ -32,10 +27,11 @@ bool IsGateOpen() {
    int timenow;
    timenow=LocalTime();
 
-   if ( (timenow>=PGOpenTime) && (timenow<=PGCloseTime+(DontCloseGates?MORETIME:0)))
+   if ( (timenow>=PGOpenTime) && (timenow<=PGCloseTime))
 	return true;
    else
 	return false;
+
 }
 
 
@@ -43,7 +39,7 @@ bool IsGateOpen() {
 int NextGate() {
   int timenow, gate, gatetime;
   timenow=LocalTime();
-  if (timenow>PGCloseTime+(DontCloseGates?MORETIME:0)) {
+  if (timenow>PGCloseTime) {
 	#if DEBUGATE
 	StartupStore(_T("... Timenow: %d over, gate closed at %d\n"),timenow, PGCloseTime);
 	#endif
@@ -85,11 +81,11 @@ int GateTimeDiff(int gate) {
 int RunningGate() {
   int timenow, gate, gatetime;
   timenow=LocalTime();
-  if (timenow<PGOpenTime || timenow>(PGCloseTime+(DontCloseGates?MORETIME:0))) return(-1);
+  if (timenow<PGOpenTime || timenow>PGCloseTime) return(-1);
 
   // search up to gates+1 ex. 12.40 > 13:00 is end time
   // we are checking the END of the gate, so it is like having a gate+1
-  for (gate=1; gate<=PGNumberOfGates; gate++) {
+  for (gate=1; gate<PGNumberOfGates; gate++) {
 	gatetime=PGOpenTime + (gate * PGGateIntervalTime *60);
 	// timenow cannot be lower than gate 0, because gate0 is PGOpenTime
 	if (timenow < gatetime) {
@@ -99,6 +95,10 @@ int RunningGate() {
 		return(gate-1);
 	}
   }
+  if(gate == PGNumberOfGates && timenow < PGCloseTime) {
+      return PGNumberOfGates-1;
+  }
+  
   StartupStore(_T("--- RunningGate invalid: timenow=%d Open=%d Close=%d NumGates=%d Interval=%d%s"),
 	timenow,PGOpenTime,PGCloseTime,PGNumberOfGates,PGGateIntervalTime,NEWLINE);
   return(-1);
@@ -109,7 +109,7 @@ int RunningGate() {
 bool HaveGates() {
   int timenow;
   timenow=LocalTime();
-  if (timenow>PGCloseTime+(DontCloseGates?MORETIME:0))
+  if (timenow>PGCloseTime)
 	return(false);
   else
 	return(true);
@@ -183,7 +183,7 @@ bool ValidGate() {
   }
   int timenow;
   timenow=LocalTime();
-  if (timenow>PGCloseTime+(DontCloseGates?MORETIME:0)) {
+  if (timenow>PGCloseTime) {
 	#if DEBUGTGATES
 	StartupStore(_T("... ValidGate false, timenow>PGCloseTime\n"));
 	#endif

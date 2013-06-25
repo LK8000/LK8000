@@ -1711,5 +1711,9 @@ Acknowledgement of one airspace is valid for all airspaces with the same name an
 "for this time only" all airspaces will be re-enabled after next programm start
 
 
+@1266
+For task races with at least 1 time gate, set the end local time of last gate. 
+If gate number is 0, this value will be ignored.
+
 @9999
 No help available on this item!

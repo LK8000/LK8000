@@ -149,6 +149,9 @@ void LKProfileResetDefault(void) {
 
   PGOpenTimeH=12;
   PGOpenTimeM=0;
+  PGCloseTimeH=23;
+  PGCloseTimeM=59;
+  
   PGNumberOfGates=0;
   PGGateIntervalTime=30;
   PGStartOut=0;

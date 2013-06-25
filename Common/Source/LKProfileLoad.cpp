@@ -493,13 +493,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryPGAutoZoomThreshold,&PGAutoZoomThreshold);
   PREAD(sname,svalue,szRegistryPGClimbZoom,&PGClimbZoom);
   PREAD(sname,svalue,szRegistryPGCruiseZoom,&PGCruiseZoom);
-  PREAD(sname,svalue,szRegistryPGGateIntervalTime,&PGGateIntervalTime);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryPGNumberOfGates,&PGNumberOfGates);
-  PREAD(sname,svalue,szRegistryPGOpenTimeH,&PGOpenTimeH);
-  PREAD(sname,svalue,szRegistryPGOpenTimeM,&PGOpenTimeM);
   PREAD(sname,svalue,szRegistryPGOptimizeRoute,&PGOptimizeRoute);
-  PREAD(sname,svalue,szRegistryPGStartOut,&PGStartOut);
   PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config);
   PREAD(sname,svalue,szRegistryLiveTrackersrv,&*LiveTrackersrv_Config);
   PREAD(sname,svalue,szRegistryLiveTrackerusr,&*LiveTrackerusr_Config);
