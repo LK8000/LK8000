@@ -105,6 +105,8 @@ END
 
 IDR_XML_AIRSPACE        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspace.xml"
 IDR_XML_AIRSPACECOLOURS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceColours.xml"
+IDR_XML_MULTISELECTLIST XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgMultiSelectList.xml"
+IDR_XML_MULTISELECTLIST_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgMultiSelectList_L.xml"
 IDR_XML_AIRSPACEPATTERNS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspacePatterns.xml"
 IDR_XML_ANALYSIS        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAnalysis.xml"
 IDR_XML_BASICSETTINGS   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBasicSettings.xml"

@@ -16,33 +16,115 @@
 bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, 
                                              double range,
                                              bool pan) {
-  int i;
-  if(pan && (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN)))
-    // nearest to center of screen if in pan mode
-    i=FindNearestWayPoint(PanLongitude, PanLatitude, range);
-  else
-    i=FindNearestWayPoint(lon, lat, range);
-  if(i != -1)
-    {
-      SelectedWaypoint = i;
-      PopupWaypointDetails();
-      return true;
-    }
+double Dist;
+unsigned int i;
+double dyn_range = range*2;
+bool  found = false;
+bool  landablefound = false;
+//bool airspace_found =false;
+if(dyn_range < 1000)
+	dyn_range = 1000;
+if(dyn_range > 12000)
+	dyn_range = 12000;
 
-  return false;
+if (EnableSoundModes)
+	PlayResource(TEXT("IDR_WAV_MM0"));
+
+//StartupStore(TEXT("Ulli: Find Objects near lon:%f lat:%f\n"), lon, lat);
+  for(i=/*RESWP_FIRST_MARKER*/ NUMRESWP;i<NumberOfWayPoints;i++)
+  {    // Consider only valid markers
+    if (   (WayPointCalc[i].WpType==WPT_AIRPORT)||
+    		 (WayPointCalc[i].WpType==WPT_OUTLANDING)
+    	)
+
+    {
+      DistanceBearing(lat,lon,
+                    WayPointList[i].Latitude,
+                    WayPointList[i].Longitude, &Dist, NULL);
+      if(Dist < dyn_range)
+      {
+    	dlgAddMultiSelectListItem(NULL,i, IM_WAYPOINT, Dist);
+    	found = true;
+    	landablefound = true;
+      }
+     }
+   }
+
+  if(!pan) /* do not look for FLARM objects in PAN mode  */
+  {
+    LastDoTraffic=0;
+    DoTraffic(&DrawInfo,&DerivedDrawInfo);
+    for (i=0; i<FLARM_MAX_TRAFFIC; i++)
+    {
+	  if (LKTraffic[i].Status != LKT_EMPTY)
+      {
+        DistanceBearing(lat,lon,
+    		  LKTraffic[i].Latitude,
+    		  LKTraffic[i].Longitude, &Dist, NULL);
+        if(Dist < range)
+        {
+    	  dlgAddMultiSelectListItem((long*)&LKTraffic[i],i, IM_FLARM, Dist);
+    	  found = true;
+    	  landablefound = true;
+        }
+      }
+    }
+  }
+
+  int hDist = 99999;
+
+  {
+	CAirspaceList reslist = CAirspaceManager::Instance().GetVisibleAirspacesAtPoint(lon, lat);
+	CAirspaceList::iterator it;
+	for (it = reslist.begin(); it != reslist.end(); ++it)
+	{
+	  LKASSERT((*it));
+	  dlgAddMultiSelectListItem((long*) (*it),0, IM_AIRSPACE, (double)hDist);
+	  found = true;
+	}
+  }
+
+  if(!landablefound)
+  {
+    for(i= RESWP_FIRST_MARKER ;i<NumberOfWayPoints;i++)
+    {    // Consider only valid markers
+      if (   (WayPointCalc[i].WpType != WPT_AIRPORT)||
+    		 (WayPointCalc[i].WpType != WPT_OUTLANDING)
+    	  )
+      {
+        DistanceBearing(lat,lon,
+                      WayPointList[i].Latitude,
+                      WayPointList[i].Longitude, &Dist, NULL);
+        if(Dist < dyn_range/2)
+        {
+    	  dlgAddMultiSelectListItem(NULL,i, IM_WAYPOINT, Dist);
+    	  found = true;
+        }
+      }
+    }
+  }
+
+  if((!found) && pan )
+  {
+    DoStatusMessage(_T("No Near Point found!"));
+  }
+
+	if(dlgMultiSelectListShowModal() != NULL)
+      return true; // nothing found..
+	else
+	  return false;
 }
 
 
 
 bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
-  bool found=false;
-  CAirspaceList reslist = CAirspaceManager::Instance().GetVisibleAirspacesAtPoint(lon, lat);
-  CAirspaceList::iterator it;
-  for (it = reslist.begin(); it != reslist.end(); ++it) {
-	dlgAirspaceDetails(*it);
-	found = true;
-  }
-  return found; // nothing found..
+
+
+#if TESTBENCH
+//StartupStore(_T("... Airspace Map Select!\n"));
+#endif
+
+return Event_NearestWaypointDetails( lon,  lat,  500*zoom.RealScale(),false);
 }
 
 

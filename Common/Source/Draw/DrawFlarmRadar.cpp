@@ -501,7 +501,7 @@ static RECT PositionTopView[FLARM_MAX_TRAFFIC];
 static RECT PositionSideView[FLARM_MAX_TRAFFIC];
 static RECT OwnPosTopView;
 static RECT OwnPosSideView;
-int iTouchAreaSize = 15;
+int iTouchAreaSize = 25;
 HPEN   hOrangePen ;
 HPEN   hGreenPen ;
 HPEN   hOldPen;
@@ -588,12 +588,13 @@ switch(LKevent)
   case LKEVENT_LONGCLICK:
 	if( PtInRect(XstartScreen,YstartScreen, rct))
 		bHeightScale	= false;
+/*
 	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
 	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
 	{
 	  iTurn = 	(iTurn+1)%2;
 	}
-	else
+	else*/
 	    for (i=0; i < nEntrys; i++)
 		{
 		  LKASSERT(i<FLARM_MAX_TRAFFIC);
@@ -605,12 +606,17 @@ switch(LKevent)
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 			  if(LKTraffic[aiSortArray[i]].ID == LKTraffic[j].ID)
 			  {
-			    dlgLKTrafficDetails( j);
+			 //   dlgLKTrafficDetails( j);
+			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
+			    bFound = true;
 			  }
 		    }
-		    bFound = true;
 		  }
 	    }
+
+	dlgMultiSelectListShowModal();
+
+
 	if(!bFound)
 	  if( PtInRect(XstartScreen,YstartScreen, rc))
 		bHeightScale	= !bHeightScale;
@@ -1439,3 +1445,51 @@ DWORD lStartTime = GetTickCount();
 SelectObject(hDC, (HPEN) oldPen);
 return iCnt;
 }
+
+
+
+void MapWindow::DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC* pTraf)
+{
+	static POINT Arrow[5];
+int cx = rc.right-rc.left;
+int cy = rc.bottom-rc.top;
+int x = rc.left + cx/2;
+int y = rc.top + cy/2;
+double fInteg30 =  pTraf->Average30s;
+int iRectangleSize = cy/5;
+int iCircleSize    = cy/5;
+static double zoomfact = (double)cy/NIBLSCALE(18);
+//if (DoInit[MDI_DRAWFLARMTRAFFIC])
+{
+	Arrow[0].x = (long)(-4.0*zoomfact);
+	Arrow[0].y = (long) (5.0*zoomfact);
+	Arrow[1].x = (long) (0.0*zoomfact);
+	Arrow[1].y = (long) (-6.0*zoomfact);
+	Arrow[2].x = (long) (4.0*zoomfact);
+	Arrow[2].y = (long) (5.0*zoomfact);
+	Arrow[3].x = (long) (0.0*zoomfact);
+	Arrow[3].y = (long) (2.0*zoomfact);
+	Arrow[4].x = (long) (-4.0*zoomfact);
+	Arrow[4].y = (long) (5.0*zoomfact);
+}
+
+    int iVarioIdx = (int)(2*fInteg30-0.5)+NO_VARIO_COLORS/2;
+    if(iVarioIdx < 0) iVarioIdx =0;
+    if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
+	HBRUSH oldb = (HBRUSH)   SelectObject(hDC, *variobrush[iVarioIdx]);
+
+	    switch (pTraf->Status) { // 100321
+		  case LKT_GHOST:
+			Rectangle(hDC,x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
+			break;
+		  case LKT_ZOMBIE:
+			Circle(hDC, x, y, iCircleSize, rc, true, true );
+			break;
+		  default:
+	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
+			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360(  pTraf->TrackBearing ));
+			Polygon(hDC,Triangle,5);
+	    }
+		SelectObject(hDC, oldb);
+}
+// This is painting traffic icons on the screen.

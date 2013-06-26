@@ -19,6 +19,29 @@ static WndForm *wf=NULL;
 
 static short retStatus;
 
+static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
+	  (void)Sender;
+	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
+
+RECT *prc;
+prc = wPicto->GetBoundRect();
+
+
+//  StartupStore(_T("..Entered OnPaintWaypointPicto \n"));
+
+  SetBkColor  (hDC, RGB_LIGHTGREY);
+
+  if (WayPointCalc[SelectedWaypoint].IsLandable )
+  {
+	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 4000, true);
+  }
+  else
+  {
+	MapWindow::DrawWaypointPicto(hDC,  *prc, &WayPointList[SelectedWaypoint]);
+  }
+}
+
+
 static void OnCancelClicked(WindowControl * Sender){
 (void)Sender;
         wf->SetModalResult(mrOK);
@@ -73,6 +96,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnSetAlt2Clicked),
   DeclareCallBackEntry(OnTaskClicked),
   DeclareCallBackEntry(OnCancelClicked),
+  DeclareCallBackEntry(OnPaintWaypointPicto),
   DeclareCallBackEntry(NULL)
 };
 
@@ -137,8 +161,9 @@ short dlgWayQuickShowModal(void){
   wf->SetCaption(sTmp);
 
   if (ScreenLandscape) {
-	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetLeft(NIBLSCALE(3));
-	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetWidth(ScreenSizeX-NIBLSCALE(8));
+//	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetLeft(NIBLSCALE(3));
+	  int left = ((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->GetLeft();
+	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetWidth(ScreenSizeX-NIBLSCALE(5)-left);
 
 	((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
 	((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetLeft(NIBLSCALE(3));

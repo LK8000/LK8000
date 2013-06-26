@@ -27,7 +27,23 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 				  const POINT &Orig,
 				  const POINT &Orig_Aircraft)
 {
+bool bMainMap = false;
+	  switch(MapSpaceMode)
+	  {
+		case MSM_MAPTRK:
+		case MSM_MAPWPT:
+		case MSM_MAPASP:
+		case MSM_VISUALGLIDE:
+		case MSM_MAPRADAR:
+			bMainMap = false;
+            break;
 
+		default:
+			bMainMap = true;
+			break;
+	  }
+	  if((mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN)))
+			bMainMap = true;
   #if NEWSMARTZOOM
   static double quickdrawscale=0.0;
   static double delta_drawscale=1.0;
@@ -57,6 +73,12 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   LKCalculateWaypointReachable(false);
 
 _skip_calcs:
+if(bMainMap)
+{
+// Ulli: removed main map calculations when in other Multimap
+//       no need to recalc because we do not draw the Multimap
+//       was rising CPU load and interfering the Multimap calculations
+//       have not found a drawback so far
   CalculateScreenPositionsAirspace(rc);
 
   CalculateScreenPositionsThermalSources();
@@ -93,7 +115,7 @@ _skip_calcs:
 		}
 	}
   }
-
+}
   // 
   // "Checkpoint Charlie"
   // This is were we process stuff for anything else but main map.

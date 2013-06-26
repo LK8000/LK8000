@@ -20,13 +20,26 @@ void CloseProgressDialog();
 void StartHourglassCursor();
 void StopHourglassCursor();
 
+#define IM_AIRSPACE 1
+#define IM_WAYPOINT 2
+#define IM_FLARM    3
 
+typedef	struct{
+  char type;
+  long* ptr;
+
+  int iIdx;
+  double Dist;
+
+} ListElement;
 
 
 bool dlgAirspaceWarningShowDlg(bool force);
 // int dlgWayPointSelect(void);
 int dlgWayPointSelect(double lon=0.0, double lat=90.0, int type=-1, int FilterNear=0);
 int dlgAirspaceColoursShowModal(void);
+ListElement* dlgMultiSelectListShowModal(void);
+void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance);
 int dlgAirspacePatternsShowModal(void);
 bool dlgAirspaceShowModal(bool colored);
 void dlgBasicSettingsShowModal(void);
@@ -49,7 +62,7 @@ void dlgTaskOverviewShowModal(void);
 void dlgVoiceShowModal(void);
 void dlgWayPointDetailsShowModal(short mypage);
 short dlgWayQuickShowModal(void);
-void dlgTextEntryShowModal(TCHAR *text, int width=0);
+void dlgTextEntryShowModal(TCHAR *text, int width=0, bool WPKeyRed= false);
 void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
 void dlgWaypointEditShowModal(WAYPOINT *wpt);

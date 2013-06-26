@@ -143,9 +143,12 @@ int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 
+
+    static LPARAM  lOld = 0;
   //
   // Values to be remembered
   //
+  static bool  pressed = false;
   static double Xstart, Ystart;
   static DWORD dwDownTime= 0L, dwUpTime= 0L, dwInterval= 0L;
   static double Xlat, Ylat;
@@ -482,11 +485,18 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	} // mouse moved with Lbutton (dragging)
 	break;
 
-    case WM_LBUTTONDOWN:
 
+#define WM_USER_LONGTIME_CLICK_TIMER  50
+    case WM_LBUTTONDOWN:
 _buttondown:
+
+//StartupStore(_T("... Ulli: WM_LBUTTONDOWN: %i %i\n"),wParam,  lParam);
+      lOld = lParam;
       if (LockModeStatus) break;
+      pressed = true;
       dwDownTime = GetTickCount();
+  	  SetTimer(	hWnd,WM_USER_LONGTIME_CLICK_TIMER , AIRSPACECLICK , NULL);
+
       // When we have buttondown these flags should be set off.
       MouseWasPanMoving=false;
       OnFastPanning=false;
@@ -506,8 +516,28 @@ _buttondown:
 
       break;
 
+    case WM_TIMER:
+      if(wParam==WM_USER_LONGTIME_CLICK_TIMER)
+	  {
+	  	if (EnableSoundModes)
+	 	  PlayResource(TEXT("IDR_WAV_MM1"));
+	    KillTimer(hWnd,WM_USER_LONGTIME_CLICK_TIMER);
+	//    StartupStore(_T("... Ulli: WM_TIMER: %i %i\n"),0,  lOld);
+	//      PostMessage(hWnd,WM_LBUTTONUP,0,  lOld);
+	    lparam_X = (int) LOWORD(lOld);
+	    lparam_Y = (int) HIWORD(lOld);
+	  //    dwDownTime = GetTickCount();
+	//    LKevent=LKEVENT_NONE;
+	  }
+    //  else
+	    break;
+
     case WM_LBUTTONUP:
+  //  	StartupStore(_T("... Ulli: WM_LBUTTONUP! %i %i\n"),wParam,  lParam);
+	   KillTimer(hWnd, WM_USER_LONGTIME_CLICK_TIMER );
 	if (LockModeStatus) break;
+	if(!pressed) break;
+	  pressed = false;
 	// Mouse released DURING panning, full redraw requested.
 	// Otherwise process virtual keys etc. as usual
 	if (MouseWasPanMoving) {
@@ -638,6 +668,9 @@ goto_menu:
       } 
 
 	// MultiMap custom specials, we use same geometry of MSM_MAP
+
+if(dwInterval < AIRSPACECLICK)
+{
 	if (NOTANYPAN && IsMultiMapCustom() ) {
 		if ( (lparam_X <= P_UngestureLeft.x) && (lparam_Y <= P_UngestureLeft.y) ) {
 			#ifndef DISABLEAUDIO
@@ -673,7 +706,7 @@ goto_menu:
 		MapWindow::RefreshMap();
 		break;
 	}
-
+}
       if (ISPARAGLIDER) {
 	// Use the compass to pullup UTM informations to paragliders
 	if ( (lparam_X > P_UngestureRight.x) && (lparam_Y <= P_UngestureRight.y) ) {
@@ -861,7 +894,7 @@ _continue:
 		// Finally process normally a click on the moving map.
 		//
 			if(dwInterval < AIRSPACECLICK) { // original and untouched interval
-				if (ActiveMap) {
+				if (0) {
                                   if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.RealScale(), false)) {
 						ActiveMap=false;
 						break;
@@ -902,13 +935,14 @@ _continue:
 					// no sound for zoom clicks
 					InputEvents::processKey(wParam);
 					dwDownTime= 0L;
+
 					return TRUE; 
 				}
 			} else {
 
 				// Select airspace on moving map only if they are visible
 				// 120526 moved out of anypan, buggy because we want airspace selection with priority
-				if (IsMultimapAirspace() && Event_InteriorAirspaceDetails(Xstart, Ystart))
+				if (/*IsMultimapAirspace() &&*/ Event_InteriorAirspaceDetails(Xstart, Ystart))
 					break;
 
 				if (!mode.AnyPan()) {

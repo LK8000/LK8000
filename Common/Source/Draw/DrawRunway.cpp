@@ -20,7 +20,7 @@
 
 
 
-void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
+void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL picto)
 {
   int solid= false;
   HPEN    oldPen  ;
@@ -34,7 +34,13 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
   static double scale_drawradio=0;
   static double scale_bigfont=0;
   static double scale_fullinfos=0;
-
+  int Center_x = wp->Screen.x;
+  int Center_y = wp->Screen.y;
+  if(picto)
+  {
+	  Center_x = rc.left+ (rc.right- rc.left)/2;
+	  Center_y = rc.bottom +(rc.top-rc.bottom)/2;
+  }
   int l,p,b;
 
   fScaleFact /=1600;
@@ -128,12 +134,12 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
   oldBrush = (HBRUSH)SelectObject(hdc, LKBrush_Red);
 
   if( wp->Reachable == TRUE)
-  oldBrush = (HBRUSH)SelectObject(hdc, LKBrush_Green);
+    SelectObject(hdc, LKBrush_Green);
 
 
   if(!bOutland)
   {
-	Circle( hdc, wp->Screen.x, wp->Screen.y, p,  rc,true, true);
+	Circle( hdc,Center_x, Center_y, p,  rc,true, true);
   }
 
   if(bRunway)
@@ -152,7 +158,7 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 	    else
 		  SelectObject(hdc, LKBrush_White);
 	}
-	PolygonRotateShift(Runway, 5,  wp->Screen.x, wp->Screen.y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
+	PolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
 	Polygon(hdc,Runway ,5 );
 
   } // bRunway
@@ -180,7 +186,7 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 		  {-1 * iScale,-1 * iScale },   // 14
 		  { 0 * iScale, 0 * iScale }    // 15
 	    };
-	    PolygonRotateShift(WhiteWing, 15,  wp->Screen.x, wp->Screen.y,  0/*+ wp->RunwayDir-Brg*/);
+	    PolygonRotateShift(WhiteWing, 15,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
 	    Polygon(hdc,WhiteWing ,15 );
     }
   }
@@ -204,27 +210,28 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 		SelectObject(hdc,LKBrush_LightCyan);
 
 	unsigned int offset = p + NIBLSCALE(1) ;
-
-	if ( _tcslen(wp->Freq)>0 ) {
-		MapWindow::LKWriteBoxedText(hdc,&DrawRect,wp->Freq, wp->Screen.x - offset, wp->Screen.y -offset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
-	}
-
-	//
-	// Full infos! 1.5km scale
-	//
-	if (MapWindow::zoom.RealScale() <=scale_fullinfos) { 
-		if ( _tcslen(wp->Code)==4 ) {
-			MapWindow::LKWriteBoxedText(hdc,&DrawRect,wp->Code, wp->Screen.x + offset, wp->Screen.y - offset, 0, WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
+	if( !picto)
+	{
+		if ( _tcslen(wp->Freq)>0 ) {
+			MapWindow::LKWriteBoxedText(hdc,&DrawRect,wp->Freq, Center_x- offset, Center_y -offset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
 		}
 
-		if (wp->Altitude >0) {
-			TCHAR tAlt[20];
-			_stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
-			MapWindow::LKWriteBoxedText(hdc,&DrawRect,tAlt, wp->Screen.x + offset, wp->Screen.y + offset, 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+		//
+		// Full infos! 1.5km scale
+		//
+		if (MapWindow::zoom.RealScale() <=scale_fullinfos) {
+			if ( _tcslen(wp->Code)==4 ) {
+				MapWindow::LKWriteBoxedText(hdc,&DrawRect,wp->Code,Center_x + offset, Center_y - offset, 0, WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
+			}
+
+			if (wp->Altitude >0) {
+				TCHAR tAlt[20];
+				_stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
+				MapWindow::LKWriteBoxedText(hdc,&DrawRect,tAlt, Center_x + offset, Center_y + offset, 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+			}
+
 		}
-
 	}
-
 	SelectObject(hdc, hfOld);
 
   }

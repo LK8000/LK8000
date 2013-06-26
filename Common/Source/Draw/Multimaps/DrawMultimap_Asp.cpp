@@ -82,20 +82,25 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   //
   // If the map is active in the proper mapspace, we shall manage here the action
   //
-  if (LKevent==LKEVENT_SHORTCLICK && ActiveMap && (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT)) {
+  if (LKevent==LKEVENT_LONGCLICK /*&& ActiveMap && (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT)*/) {
 		//
 		// It would be a GOOD IDEA to keep this as a global, updated of course.
 		// We need to know very often how is the screen splitted, and where!
 		// It should be made global somewhere else, not here.
 		//
-		if ( YstartScreen < Current_Multimap_TopRect.bottom) {
-			double Xstart, Ystart;
-			SideviewScreen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
-			MapWindow::Event_NearestWaypointDetails(Xstart, Ystart, 1.0e5, false);
-			LKevent=LKEVENT_NONE;
-			ActiveMap=false;
-			return;
-		}
+	if ( YstartScreen < Current_Multimap_TopRect.bottom)
+	{
+	  POINT Pos={XstartScreen, YstartScreen};
+	  if( PtInRect(&rc, Pos))
+	  {
+
+		double Xstart, Ystart;
+		SideviewScreen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
+//		StartupStore(_T("...... LKDrawMultimap_Asp lon:%f  lat:%f  \n"),Xstart,Ystart);
+		MapWindow::Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.RealScale(), false);
+		LKevent=LKEVENT_NONE;
+	  }
+	}
   }
 
   //

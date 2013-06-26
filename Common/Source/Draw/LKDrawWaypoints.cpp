@@ -714,4 +714,107 @@ turnpoint:
 } // end DrawWaypoint
 
 
+void MapWindow::DrawWaypointPicto(HDC hdc, const RECT rc, WAYPOINT* wp)
+{
+switch(wp->Style) {
+	case STYLE_NORMAL:
+		goto turnpoint;
+		break;
 
+	// These are not used here in fact
+	case STYLE_AIRFIELDGRASS:
+	case STYLE_OUTLANDING:
+	case STYLE_GLIDERSITE:
+	case STYLE_AIRFIELDSOLID:
+		goto turnpoint;
+		break;
+
+	case STYLE_MTPASS:
+		SelectObject(hDCTemp,hMountpass);
+		break;
+
+	case STYLE_MTTOP:
+		SelectObject(hDCTemp,hMountop);
+		break;
+
+	case STYLE_SENDER:
+		SelectObject(hDCTemp,hSender);
+		break;
+
+	case STYLE_VOR:
+		goto turnpoint;
+		break;
+
+	case STYLE_NDB:
+		SelectObject(hDCTemp,hNdb);
+		break;
+
+	case STYLE_COOLTOWER:
+		goto turnpoint;
+		break;
+
+	case STYLE_DAM:
+		SelectObject(hDCTemp,hDam);
+		break;
+
+	case STYLE_TUNNEL:
+		goto turnpoint;
+		break;
+
+	case STYLE_BRIDGE:
+		SelectObject(hDCTemp,hBridge);
+		break;
+
+	case STYLE_POWERPLANT:
+	case STYLE_CASTLE:
+		goto turnpoint;
+		break;
+
+	case STYLE_INTERSECTION:
+		SelectObject(hDCTemp,hIntersect);
+		break;
+
+	case STYLE_TRAFFIC:
+		goto turnpoint;
+		break;
+	case STYLE_THERMAL:
+		SelectObject(hDCTemp,hLKThermal);
+		break;
+
+	case STYLE_MARKER:
+		SelectObject(hDCTemp,hBmpMarker);
+		break;
+
+	default:
+turnpoint:
+		if (BlackScreen)
+			SelectObject(hDCTemp,hInvTurnPoint);
+		else
+			SelectObject(hDCTemp,hTurnPoint);
+		break;
+
+} // switch estyle
+
+int cx = rc.right - rc.left;
+int cy = rc.bottom - rc.top;
+int x = rc.left + (cx)/2-10;
+//int y = rc.bottom - (cy)/2;
+
+// We dont do stretching here. We are using different bitmaps for hi res.
+// The 20x20 size is large enough to make much bigger icons than the old ones.
+
+
+DrawBitmapX(hdc,
+		x,
+		cy/4,
+    20,20,
+    hDCTemp,0,0,SRCPAINT,false);
+
+DrawBitmapX(hdc,
+		x,
+		cy/4,
+    20,20,
+    hDCTemp,20,0,SRCAND,false);
+
+
+}

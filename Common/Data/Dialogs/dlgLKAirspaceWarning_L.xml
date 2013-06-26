@@ -1,12 +1,14 @@
 <PMML>
   <WndForm Name="frmAirspaceWarning" Type="Dialog" X="1" Y="1" Width="238" Height="242" Caption="_@M66_" Popup="1" Font="2" >
-    <WndProperty Name="prpReason" Caption="_@M1262_" X="2" Y="2" Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
-    <WndProperty Name="prpType" Caption="_@M752_" X="2" Y="-1"  Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />		
-    <WndProperty Name="prpHDist" Caption="_@M1264_" X="2" Y="-1" Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
-    <WndProperty Name="prpVDist" Caption="_@M1265_" X="2" Y="-1" Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
-    <WndProperty Name="prpTopAlt" Caption="_@M729_" X="2" Y="-1" Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
-    <WndProperty Name="prpBaseAlt" Caption="_@M128_" X="2" Y="-1" Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
+	<WndOwnerDrawFrame Name="frmAirspacePicto"     X="4" Y="50" Width="62" Height="80" Font="2"  OnPaint="OnPaintAirspacePicto"/>    
+    <WndProperty Name="prpReason" Caption="_@M1262_" X="4" Y="2" Width="238" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpType" Caption="_@M752_" X="64" Y="-1"  Width="178" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />		
+    <WndProperty Name="prpHDist" Caption="_@M1264_" X="64" Y="-1" Width="178" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpVDist" Caption="_@M1265_" X="64" Y="-1" Width="178" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpTopAlt" Caption="_@M729_" X="64" Y="-1" Width="178" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpBaseAlt" Caption="_@M128_" X="64" Y="-1" Width="178" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />
     <WndButton  name="cmdAckForTime" Caption="_@M46_" X="2" Y="182" width="110" height="38" Font="2" OnClickNotify="OnAckForTimeClicked"/>
     <WndButton name="cmdClose" Caption="_@M186_" X="122" Y="182" width="110" height="38" Font="2" OnClickNotify="OnCloseClicked"/>
+
   </WndForm>
 </PMML>

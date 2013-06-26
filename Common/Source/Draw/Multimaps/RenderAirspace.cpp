@@ -86,7 +86,7 @@ COLORREF BLUE_COL      = RGB_BLUE;
 COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 COLORREF col           =  RGB_BLACK;
 double zoomfactor=1;
-
+CAirspace* psAS = NULL;
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 unsigned short getsideviewpage=GetSideviewPage();
 LKASSERT(getsideviewpage<NO_SIDEVIEW_PAGES);
@@ -184,23 +184,23 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 					}
 				}
 				break;
-			} 
+			}
 
 		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
-	             {
+	         {
 			   if( Sideview_pHandeled[k].psAS != NULL)
 			   {
 				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
 				 {
-				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
-				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-				   //bFound = true;
+				   psAS = (CAirspace*) Sideview_pHandeled[k].psAS;
+				   dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
 				   LKevent=LKEVENT_NONE; 
-				   // return; // NO. We must finish painting the background instead.
-				   // otherwise upon exiting we have no map underneath.
 				 }
 			   }
 		     }
+
+			 dlgMultiSelectListShowModal();
+
 #if 0
 		     // This is not working correctly because InteriorAirspaceDetails is finding
 		     // only the first airspace in the list, only one.
@@ -213,11 +213,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			}
 	             }			
 #endif
-        	     if (LKevent!=LKEVENT_NONE) {
-			 if (PtInRect(XstartScreen, YstartScreen,rc ))
-			   bHeightScale = !bHeightScale;
-			 if (PtInRect(XstartScreen, YstartScreen,rct ))
-			   bHeightScale = false;
+        	 if (LKevent!=LKEVENT_NONE) {
+			   if (PtInRect(XstartScreen, YstartScreen,rc ))
+			     bHeightScale = !bHeightScale;
+			   if (PtInRect(XstartScreen, YstartScreen,rct ))
+			     bHeightScale = false;
 		     }
 	     break;
 

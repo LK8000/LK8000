@@ -112,21 +112,20 @@ static  bool bHeightScale = false;
 			break;
 
 		case LKEVENT_LONGCLICK:
-
-		//	ToggleMMNorthUp(getsideviewpage);
-
 		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 			 {
 			   if( Sideview_pHandeled[k].psAS != NULL)
 			   {
 				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
-				 {
-				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
-				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
+				 {			
+				   dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
 				   LKevent=LKEVENT_NONE;
+
 				 }
 			   }
 			 }
+			 dlgMultiSelectListShowModal();
+
 		     if ( LKevent != LKEVENT_NONE ) {
 			 if (PtInRect(XstartScreen, YstartScreen,rc ))
 			   bHeightScale = !bHeightScale;

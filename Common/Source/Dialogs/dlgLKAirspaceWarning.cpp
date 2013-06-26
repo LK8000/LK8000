@@ -27,6 +27,28 @@ WndForm *dlg=NULL;
 
 void dlgLKAirspaceFill();
 
+static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
+	  (void)Sender;
+	  RECT *prc;
+
+	  WndFrame  *wPicto = ((WndFrame *)dlg->FindByName(TEXT("frmAirspacePicto")));
+	  prc = wPicto->GetBoundRect();
+
+
+	  SetBkColor  (hDC, RGB_LIGHTGREY);
+	//  airspace_copy.DrawPicto(hDC, *prc, true);
+      /*************************************************************
+       * @Paolo
+       * for drawing the airspace pictorial, we need the original data.
+       * seems that the copy does not contain geo data
+       * Do we really need to work with the copy?
+       * works fine with the origin airspace
+       ************************************************************/
+	  msg.originator->DrawPicto(hDC, *prc, true);
+
+
+}
+
 COLORREF ContrastTextColor(COLORREF Col)
 {
 //  human eye brightness color factors
@@ -97,6 +119,7 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAckForTimeClicked),
   DeclareCallBackEntry(OnCloseClicked),
+  DeclareCallBackEntry(OnPaintAirspacePicto),
   DeclareCallBackEntry(NULL)
 };
 
@@ -259,15 +282,14 @@ void dlgLKAirspaceFill()
     wp = (WndProperty*)dlg->FindByName(TEXT("prpType"));
     if (wp) {
   	if (airspace_copy.Flyzone()) {
-	  LKASSERT(_tcslen(airspace_copy.TypeName())<70);
-  	  wsprintf(buffer,TEXT("%s %s"), airspace_copy.TypeName(), gettext(TEXT("FLY")));
+  	  wsprintf(buffer,TEXT("%s %s"), gettext(TEXT("FLY")), airspace_copy.TypeName());
   	} else {
-  	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("NOFLY")));
+  	  wsprintf(buffer,TEXT("%s %s"), gettext(TEXT("NOFLY")), airspace_copy.TypeName());
   	}
 
   	  wp->SetText( buffer );
-      wp->SetBackColor( airspace_copy.TypeColor());
-	  wp->SetForeColor( ContrastTextColor(airspace_copy.TypeColor()));
+   //   wp->SetBackColor( airspace_copy.TypeColor());
+   //  wp->SetForeColor( ContrastTextColor(airspace_copy.TypeColor()));
       wp->RefreshDisplay();
     }
 
@@ -354,6 +376,7 @@ short ShowAirspaceWarningsToUser()
 
 
   bool there_is_message = CAirspaceManager::Instance().PopWarningMessage(&msg);
+
   if (!there_is_message) return 0;        // no message to display
 
   airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
@@ -387,13 +410,21 @@ short ShowAirspaceWarningsToUser()
       
     case aweEnteringFly:
       // LKTOKEN _@M1240_ "Entering"
-      wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1240_")), airspace_copy.Name());
+	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
+		_stprintf(msgbuf,TEXT("%s %s"),gettext(TEXT("_@M1240_")),airspace_copy.Name());
+	  else
+		_stprintf(msgbuf,TEXT("%s %s %s"),gettext(TEXT("_@M1240_")),airspace_copy.TypeName(),airspace_copy.Name());
+//    wsprintf(msgbuf, TEXT("%s %s %s "), gettext(TEXT("_@M1240_")),airspace_copy.TypeName(), airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
 
     case aweLeavingNonFly:
       // LKTOKEN _@M1241_ "Leaving"
-      wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1241_")),airspace_copy.Name());
+  	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
+  		_stprintf(msgbuf,TEXT("%s %s"),gettext(TEXT("_@M1241_")),airspace_copy.Name());
+  	  else
+  		_stprintf(msgbuf,TEXT("%s %s %s"),gettext(TEXT("_@M1241_")),airspace_copy.TypeName(),airspace_copy.Name());
+//      wsprintf(msgbuf, TEXT("%s %s %s"), gettext(TEXT("_@M1241_")),airspace_copy.TypeName(), airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
       
@@ -428,8 +459,11 @@ short ShowAirspaceWarningsToUser()
     #ifndef DISABLEAUDIO
     if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
     #endif
-
-    _stprintf(msgbuf,_T("%s: %s"),gettext(_T("_@M68_")),airspace_copy.Name());
+		  if( _tcsnicmp( airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
+			_stprintf(msgbuf,TEXT("%s"),airspace_copy.Name());
+		  else
+		    _stprintf(msgbuf,TEXT("%s %s"),airspace_copy.TypeName(),airspace_copy.Name());
+//    _stprintf(msgbuf,_T("%s: %s %s"),gettext(_T("_@M68_")),airspace_copy.TypeName(),airspace_copy.Name());
     dlg->SetCaption(msgbuf);
 
     dlg->ShowModal();

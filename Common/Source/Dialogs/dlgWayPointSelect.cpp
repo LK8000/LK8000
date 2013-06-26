@@ -13,7 +13,7 @@
 #include "WindowControls.h"
 #include "DoInits.h"
 #include "TraceThread.h"
-
+#include <ctype.h>
 
 typedef struct{
   int Index;
@@ -60,6 +60,7 @@ static int ItemIndex = -1;
 
 static int SelectedWayPointFileIdx = 0;
 
+extern char ToUpper(char in);
 
 static void OnWaypointListEnter(WindowControl * Sender, 
 				WndListFrame::ListInfo_t *ListInfo){
@@ -331,18 +332,25 @@ static void UpdateList(void){
 
 #if 100502
     TCHAR sTmp[NAMEFILTERLEN+1];
+    TCHAR TmpCmpr[NAME_SIZE+1];
+    unsigned int k;
     LowLimit = UpLimit;
     qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointNameCompare);
 
-    LK_tcsncpy(sTmp, sNameFilter, NAMEFILTERLEN);
-    _tcsupr(sTmp);
+	for(k =0; k < NAMEFILTERLEN; k++)
+		sTmp[k] = ToUpper(sNameFilter[k]);
     int iFilterLen = _tcslen(sNameFilter);
 
     if (iFilterLen<4) {
     for (i=0; i<UpLimit; i++){
       // compare entire name which may be more than 4 chars
-      if (_tcsnicmp(WayPointList[WayPointSelectInfo[i].Index].Name,sNameFilter,iFilterLen) >= 0) {
+
+    	for(k =0; k < NAME_SIZE; k++)
+    		TmpCmpr[k] = ToUpper(WayPointList[WayPointSelectInfo[i].Index].Name[k]);
+
+
+      if (_tcsnicmp(TmpCmpr,sTmp,iFilterLen) >= 0) {
         LowLimit = i;
         break;
       }
@@ -350,7 +358,10 @@ static void UpdateList(void){
 
     if (_tcscmp(sTmp, TEXT("")) != 0) { // if it's blanks, then leave UpLimit at end of list
       for (; i<UpLimit; i++){
-        if (_tcsnicmp(WayPointList[WayPointSelectInfo[i].Index].Name,sNameFilter,iFilterLen) != 0) {
+
+      	for(k =0; k < NAME_SIZE; k++)
+      		TmpCmpr[k] = ToUpper(WayPointList[WayPointSelectInfo[i].Index].Name[k]);
+        if (_tcsnicmp(TmpCmpr,sTmp,iFilterLen) != 0) {
           UpLimit = i;
           break;
         }
@@ -359,13 +370,14 @@ static void UpdateList(void){
     } else { // iFilterLen>3, fulltext search 100502
 	FullFlag=true;
 	int matches=0;
-	TCHAR wname[NAME_SIZE+1];
 	// the WayPointSelectInfo list has been sorted by filters, and then sorted by name. 0-UpLimit is the size.
 	// now we create a secondary index pointing to this list
 	for (i=0, matches=0; i<UpLimit; i++) {
-		LK_tcsncpy(wname, WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
-    		_tcsupr(wname);
-		if ( _tcsstr(  wname,sTmp ) ) {
+
+    	for( k =0; k < NAME_SIZE; k++)
+    		TmpCmpr[k] = ToUpper(WayPointList[WayPointSelectInfo[i].Index].Name[k]);
+ 
+		if ( _tcsstr(  TmpCmpr,sTmp ) ) {
 			StrIndex[matches++]=i;
 		}
 	}
@@ -460,7 +472,7 @@ static void OnFilterNameButton(WindowControl *Sender) {
   TCHAR newNameFilter[NAMEFILTERLEN+1];
 
   LK_tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
-  dlgTextEntryShowModal(newNameFilter, NAMEFILTERLEN);
+  dlgTextEntryShowModal(newNameFilter, NAMEFILTERLEN, true);
 
   int i= _tcslen(newNameFilter)-1;
   while (i>=0) {

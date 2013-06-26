@@ -123,6 +123,9 @@ public:
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) {}
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const {}
+  virtual void DrawPicto(HDC hDCTemp, const RECT &rc, bool param1 )   {}
+
+
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const { return 0.0; }
   // Calculate unique hash code for this airspace
@@ -156,6 +159,8 @@ public:
 
   const TCHAR* TypeName(void) const;
   const COLORREF TypeColor(void) const;
+  const HBRUSH TypeBrush(void) const;
+
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }
   const AIRSPACE_ALT* Base() const { return &_base; }
@@ -321,8 +326,10 @@ public:
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
+  virtual void CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom) ;
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
+  virtual void DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)  ;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
   // Calculate unique hash code for this airspace
@@ -354,8 +361,11 @@ public:
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
+  // Calculate drawing coordinates on screen
+  virtual void CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom)  ;
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
+  virtual void DrawPicto(HDC hDCTemp, const RECT &rc, bool param1) ;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
   // Calculate unique hash code for this airspace
@@ -405,6 +415,8 @@ public:
   TCHAR* GetAirspaceTypeText(int type) const;
   TCHAR* GetAirspaceTypeShortText(int type) const;
   void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
+  void GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
+
 
   // Upper level interfaces
   void ReadAirspaces();

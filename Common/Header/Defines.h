@@ -80,7 +80,7 @@
 #define DOUBLECLICKINTERVAL 350 
 #define VKSHORTCLICK 120 // must be < than DCI/2 to have a chance to make airspace click recon!!!
 #define VKLONGCLICK 1500  // triggers circling/cruis switch on aircraft icon
-#define AIRSPACECLICK 1000 // interval to look only for airspace and not WP (IF NOT USING VK)
+#define AIRSPACECLICK 500 // interval to look only for airspace and not WP (IF NOT USING VK)
 
 
 #define BESTALTERNATEINTERVAL 60.0 // interval in seconds between BA search (slow)
