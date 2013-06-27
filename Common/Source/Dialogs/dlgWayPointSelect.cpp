@@ -13,7 +13,7 @@
 #include "WindowControls.h"
 #include "DoInits.h"
 #include "TraceThread.h"
-#include <ctype.h>
+
 
 typedef struct{
   int Index;
@@ -60,7 +60,6 @@ static int ItemIndex = -1;
 
 static int SelectedWayPointFileIdx = 0;
 
-extern char ToUpper(char in);
 
 static void OnWaypointListEnter(WindowControl * Sender, 
 				WndListFrame::ListInfo_t *ListInfo){
@@ -247,13 +246,6 @@ static void PrepareData(void){
 
 static void UpdateList(void){
 
-  // no waypoints, no party
-  if (numvalidwp<1) {
-	LowLimit=0;
-	UpLimit=0;
-	return;
-  }
-
 //  TCHAR sTmp[128];
   int i;
   bool distancemode = false;
@@ -267,38 +259,44 @@ static void UpdateList(void){
   FullFlag=false; // 100502
 
   if (TypeFilterIdx == 1){
-    qsort(WayPointSelectInfo, UpLimit,
+    qsort(WayPointSelectInfo, numvalidwp-1,
         sizeof(WayPointSelectInfo_t), WaypointAirportCompare);
-    for (i=0; i<UpLimit; i++){
+    for (i=0; i<(int)numvalidwp; i++){
       if (!(WayPointSelectInfo[i].Type & (AIRPORT))){
         UpLimit = i;
         break;
       }
     }
-  } else if (TypeFilterIdx == 2){
-    qsort(WayPointSelectInfo, UpLimit,
+  }
+
+  if (TypeFilterIdx == 2){
+    qsort(WayPointSelectInfo, numvalidwp-1,
         sizeof(WayPointSelectInfo_t), WaypointLandableCompare);
-    for (i=0; i<UpLimit; i++){
+    for (i=0; i<(int)numvalidwp; i++){
       if (!(WayPointSelectInfo[i].Type & (AIRPORT | LANDPOINT))){
         UpLimit = i;
         break;
       }
     }
-  } else if (TypeFilterIdx == 3){
-    qsort(WayPointSelectInfo, UpLimit,
+  }
+
+  if (TypeFilterIdx == 3){
+    qsort(WayPointSelectInfo, numvalidwp-1,
         sizeof(WayPointSelectInfo_t), WaypointWayPointCompare);
-    for (i=0; i<UpLimit; i++){
+    for (i=0; i<(int)numvalidwp; i++){
       if (!(WayPointSelectInfo[i].Type & (TURNPOINT))){
         UpLimit = i;
         break;
       }
     }
-  } else if (TypeFilterIdx == 4 || TypeFilterIdx == 5){
+  }
+
+  if (TypeFilterIdx == 4 || TypeFilterIdx == 5){
     // distancemode = true;
     SelectedWayPointFileIdx = TypeFilterIdx-4;
-    qsort(WayPointSelectInfo, UpLimit,
+    qsort(WayPointSelectInfo, numvalidwp-1,
         sizeof(WayPointSelectInfo_t), WaypointFileIdxCompare);
-    for (i=0; i<UpLimit; i++){
+    for (i=0; i<(int)numvalidwp; i++){
       if (WayPointSelectInfo[i].FileIdx != SelectedWayPointFileIdx){
         UpLimit = i;
         break;
@@ -310,7 +308,7 @@ static void UpdateList(void){
     distancemode = true;
     qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointDistanceCompare);
-    for (i=0; i<UpLimit; i++){
+    for (i=0; i<(int)UpLimit; i++){
       if (WayPointSelectInfo[i].Distance > DistanceFilter[DistanceFilterIdx]){
         UpLimit = i;
         break;
@@ -332,25 +330,18 @@ static void UpdateList(void){
 
 #if 100502
     TCHAR sTmp[NAMEFILTERLEN+1];
-    TCHAR TmpCmpr[NAME_SIZE+1];
-    unsigned int k;
     LowLimit = UpLimit;
     qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointNameCompare);
 
-	for(k =0; k < NAMEFILTERLEN; k++)
-		sTmp[k] = ToUpper(sNameFilter[k]);
+    LK_tcsncpy(sTmp, sNameFilter, NAMEFILTERLEN);
+    _tcsupr(sTmp);
     int iFilterLen = _tcslen(sNameFilter);
 
     if (iFilterLen<4) {
     for (i=0; i<UpLimit; i++){
       // compare entire name which may be more than 4 chars
-
-    	for(k =0; k < NAME_SIZE; k++)
-    		TmpCmpr[k] = ToUpper(WayPointList[WayPointSelectInfo[i].Index].Name[k]);
-
-
-      if (_tcsnicmp(TmpCmpr,sTmp,iFilterLen) >= 0) {
+      if (_tcsnicmp(WayPointList[WayPointSelectInfo[i].Index].Name,sNameFilter,iFilterLen) >= 0) {
         LowLimit = i;
         break;
       }
@@ -358,10 +349,7 @@ static void UpdateList(void){
 
     if (_tcscmp(sTmp, TEXT("")) != 0) { // if it's blanks, then leave UpLimit at end of list
       for (; i<UpLimit; i++){
-
-      	for(k =0; k < NAME_SIZE; k++)
-      		TmpCmpr[k] = ToUpper(WayPointList[WayPointSelectInfo[i].Index].Name[k]);
-        if (_tcsnicmp(TmpCmpr,sTmp,iFilterLen) != 0) {
+        if (_tcsnicmp(WayPointList[WayPointSelectInfo[i].Index].Name,sNameFilter,iFilterLen) != 0) {
           UpLimit = i;
           break;
         }
@@ -370,14 +358,13 @@ static void UpdateList(void){
     } else { // iFilterLen>3, fulltext search 100502
 	FullFlag=true;
 	int matches=0;
+	TCHAR wname[NAME_SIZE+1];
 	// the WayPointSelectInfo list has been sorted by filters, and then sorted by name. 0-UpLimit is the size.
 	// now we create a secondary index pointing to this list
 	for (i=0, matches=0; i<UpLimit; i++) {
-
-    	for( k =0; k < NAME_SIZE; k++)
-    		TmpCmpr[k] = ToUpper(WayPointList[WayPointSelectInfo[i].Index].Name[k]);
- 
-		if ( _tcsstr(  TmpCmpr,sTmp ) ) {
+		LK_tcsncpy(wname, WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
+    		_tcsupr(wname);
+		if ( _tcsstr(  wname,sTmp ) ) {
 			StrIndex[matches++]=i;
 		}
 	}
@@ -472,7 +459,7 @@ static void OnFilterNameButton(WindowControl *Sender) {
   TCHAR newNameFilter[NAMEFILTERLEN+1];
 
   LK_tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
-  dlgTextEntryShowModal(newNameFilter, NAMEFILTERLEN, true);
+  dlgTextEntryShowModal(newNameFilter, NAMEFILTERLEN);
 
   int i= _tcslen(newNameFilter)-1;
   while (i>=0) {

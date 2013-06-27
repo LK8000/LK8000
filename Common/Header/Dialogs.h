@@ -62,7 +62,7 @@ void dlgTaskOverviewShowModal(void);
 void dlgVoiceShowModal(void);
 void dlgWayPointDetailsShowModal(short mypage);
 short dlgWayQuickShowModal(void);
-void dlgTextEntryShowModal(TCHAR *text, int width=0, bool WPKeyRed= false);
+void dlgTextEntryShowModal(TCHAR *text, int width=0);
 void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
 void dlgWaypointEditShowModal(WAYPOINT *wpt);
