@@ -13,9 +13,11 @@
 #include "MapWindow.h"
 #include "Dialogs.h"
 #include "FlarmIdFile.h"
+#define LINE_HEIGT 50
+
 
 extern FlarmIdFile *file;
-#define  LEAVE_AFTER_ENTER
+//#define  LEAVE_AFTER_ENTER
 #define MAX_LIST_ITEMS 30
 ListElement* pResult= NULL;
 
@@ -58,8 +60,14 @@ static void OnUpClicked(WindowControl * Sender)
   if(ItemIndex > 0)
   {
 	ItemIndex--;
-	wMultiSelectListList->SetItemIndex(ItemIndex);
   }
+  else
+  {
+	ItemIndex = (iNO_ELEMENTS-1);
+  }
+  wMultiSelectListList->SetItemIndexPos(ItemIndex);
+  wMultiSelectListList->Redraw();
+  wMultiSelectListListEntry->SetFocused(true,NULL);
 }
 
 static void OnDownClicked(WindowControl * Sender)
@@ -69,8 +77,14 @@ static void OnDownClicked(WindowControl * Sender)
   if(ItemIndex < (iNO_ELEMENTS-1))
   {
 	ItemIndex++;
-    wMultiSelectListList->SetItemIndex(ItemIndex);
   }
+  else
+  {
+	ItemIndex =0;
+  }
+  wMultiSelectListList->SetItemIndexPos(ItemIndex);
+  wMultiSelectListList->Redraw();
+  wMultiSelectListListEntry->SetFocused(true,NULL);
 }
 
 void dlgAddMultiSelectListDetailsDialog(int Index)
@@ -155,9 +169,10 @@ void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance){
 	}
 }
 
+
 static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
-#define PICTO_WIDTH 60
+#define PICTO_WIDTH 50
 
 	if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex>=0))
 	{
@@ -165,7 +180,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 	  static CAirspace airspace_copy;
 	  int i = DrawListIndex;
 	  LKASSERT(i < MAX_LIST_ITEMS);
-	  RECT rc = {2*ScreenScale,  2*ScreenScale, PICTO_WIDTH*ScreenScale,   34*ScreenScale};
+	  RECT rc = {0*ScreenScale,  0*ScreenScale, PICTO_WIDTH*ScreenScale,   34*ScreenScale};
 
 	  CAirspace* pAS = NULL;
 	  FLARM_TRAFFIC* pFlarm=NULL;
@@ -395,6 +410,8 @@ static void OnMultiSelectListListInfo(WindowControl * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
 
 //StartupStore(_T("OnMultiSelectListListInfo ListInfo %i\n"),(long) ListInfo);
+
+
   (void)Sender;
   if (ListInfo->DrawIndex == -1){
     ListInfo->ItemCount = iNO_ELEMENTS;
@@ -402,6 +419,20 @@ static void OnMultiSelectListListInfo(WindowControl * Sender,
     DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
     ItemIndex     = ListInfo->ItemIndex+ListInfo->ScrollIndex;
   }
+  StartupStore(_T(". =============================\n"));
+  StartupStore(_T(".                 ItemIndex: %i\n"),ItemIndex);
+  StartupStore(_T(".             DrawListIndex: %i\n"),DrawListIndex);
+  StartupStore(_T(". =============================\n"));
+ // StartupStore(_T(".                    iValue: %i\n"),iValue);
+  StartupStore(_T(".       mListInfo.ItemIndex: %i\n"), ListInfo->ItemIndex);
+  StartupStore(_T(".     mListInfo.ScrollIndex: %i\n"), ListInfo->ScrollIndex );
+  StartupStore(_T(".       mListInfo.DrawIndex: %i\n"), ListInfo->DrawIndex );
+  StartupStore(_T(".        mListInfo.TopIndex: %i\n"), ListInfo->TopIndex );
+  StartupStore(_T(".     mListInfo.BottomIndex: %i\n"), ListInfo->BottomIndex );
+  StartupStore(_T(". mListInfo.ItemInViewCount: %i\n"), ListInfo->ItemInViewCount );
+  StartupStore(_T(". mListInfo.ItemInPageCount: %i\n"), ListInfo->ItemInPageCount );
+  StartupStore(_T(".       mListInfo.ItemCount: %i\n"), ListInfo->ItemCount );
+
 }
 
 static void OnCloseClicked(WindowControl * Sender){

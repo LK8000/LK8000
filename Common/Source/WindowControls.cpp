@@ -4104,12 +4104,34 @@ int WndFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {
   return(1);
 }
 
+void WndListFrame::SetItemIndexPos(int iValue)
+{
+int Total = mListInfo.ItemCount;
+	mListInfo.ScrollIndex = 0;
+	mListInfo.ItemIndex=iValue;
+
+  if(Total > mListInfo.ItemInPageCount)
+  {
+	if(iValue >  (mListInfo.ItemInPageCount -1))
+	{
+	  mListInfo.ScrollIndex = iValue - mListInfo.ItemInPageCount ;
+	  mListInfo.ItemIndex   = iValue - mListInfo.ScrollIndex;
+	}
+
+    if((Total -  iValue) < (mListInfo.ItemInPageCount))
+	{
+	  mListInfo.ScrollIndex = Total  - mListInfo.ItemInPageCount ;
+  	  mListInfo.ItemIndex   = iValue - mListInfo.ScrollIndex;
+	}
+  }
+	RecalculateIndices(false);
+}
 
 void WndListFrame::SetItemIndex(int iValue){
   
 
   mListInfo.ItemIndex=0;  // usually leaves selected item as first in screen
-  mListInfo.ScrollIndex=iValue; 
+//  mListInfo.ScrollIndex=iValue;
 
   int iTail = mListInfo.ItemCount - iValue; // if within 1 page of end
   if ( iTail < mListInfo.ItemInPageCount)  
