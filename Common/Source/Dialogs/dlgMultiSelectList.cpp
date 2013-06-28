@@ -17,7 +17,7 @@
 
 
 extern FlarmIdFile *file;
-//#define  LEAVE_AFTER_ENTER
+#define  LEAVE_AFTER_ENTER
 #define MAX_LIST_ITEMS 30
 ListElement* pResult= NULL;
 
@@ -67,7 +67,7 @@ static void OnUpClicked(WindowControl * Sender)
   }
   wMultiSelectListList->SetItemIndexPos(ItemIndex);
   wMultiSelectListList->Redraw();
-  wMultiSelectListListEntry->SetFocused(true,NULL);
+wMultiSelectListListEntry->SetFocused(true,NULL);
 }
 
 static void OnDownClicked(WindowControl * Sender)
