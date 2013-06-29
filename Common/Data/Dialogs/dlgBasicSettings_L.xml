@@ -24,7 +24,7 @@
       <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" OnDataAccess="OnAltitudeData" />
     </WndProperty>
     <WndProperty Caption="_@M428_"     X="2" Y="-997"  Width="230" Height="22" CaptionWidth="78" Font="2" Help="_@H305_">
-      <DataField name="" DataType="double" DisplayFormat="%.0fï¿½" EditFormat="%.0f" Min="0" Max="50" Step="1"  OnDataAccess="OnTempData"/>
+      <DataField name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min="0" Max="50" Step="1"  OnDataAccess="OnTempData"/>
     </WndProperty>
   </WndForm>
 </PMML>
