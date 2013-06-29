@@ -13,7 +13,7 @@
 #define	CTASKFILEHELPER_H
 
 #include "externs.h"
-#include "Library/boost/noncopyable.hpp"
+#include "boost/noncopyable.hpp"
 #include "xmlParser.h"
 #include <string>
 

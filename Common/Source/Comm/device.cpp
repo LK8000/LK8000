@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Dialogs.h"
+#include "utils/stl_utils.h"
 
 // A note about locking.
 //  The ComPort RX threads lock using FlightData critical section.
@@ -194,8 +195,11 @@ BOOL devInit(LPTSTR CommandLine){
   StartupStore(_T(".......... ReadDeviceSetting 0, DeviceName=<%s>\n"),DeviceName);
   #endif
 	
+  const DWORD  maxPortIndex = std::distance(begin(COMMPort), end(COMMPort)) - 1;
+  
   PortIndex1 = 0; SpeedIndex1 = 2; Bit1Index=(BitIndex_t)bit8N1;
   ReadPort1Settings(&PortIndex1,&SpeedIndex1,&Bit1Index);
+  PortIndex1 = std::min(maxPortIndex, PortIndex1);
 
   //if (_tcslen(DeviceName)>0) // removed 110530
   if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {
@@ -253,6 +257,7 @@ BOOL devInit(LPTSTR CommandLine){
 
   PortIndex2 = 0; SpeedIndex2 = 2, Bit2Index=(BitIndex_t)bit8N1;
   ReadPort2Settings(&PortIndex2,&SpeedIndex2, &Bit2Index);
+  PortIndex2 = std::min(maxPortIndex, PortIndex2);
 
   //if (_tcslen(DeviceName)>0) // removed 110530
   if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {

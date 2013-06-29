@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "McReady.h"
 #include "Modeltype.h"
-
+#include "utils/stringext.h"
 
 
 #include "LKProfiles.h"

@@ -16,7 +16,7 @@
 #include <aygshell.h>
 
 #include "InfoBoxLayout.h"
-#include "Process.h"
+#include "LKProcess.h"
 #include "Atmosphere.h"
 #include "Waypointparser.h"
 #include "Message.h"
@@ -33,6 +33,7 @@
 #include "Sideview.h"
 #include "TraceThread.h"
 #include "CTaskFileHelper.h"
+#include "utils/stringext.h"
 
 // Sensible maximums 
 #define MAX_MODE 100

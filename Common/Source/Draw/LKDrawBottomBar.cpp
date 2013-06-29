@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "LKInterface.h"
 #include "Logger.h"
-#include "Process.h"
+#include "LKProcess.h"
 #include "LKObjects.h"
 #include "RGB.h"
 #include "DoInits.h"
