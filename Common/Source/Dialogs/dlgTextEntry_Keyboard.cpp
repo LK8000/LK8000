@@ -437,12 +437,12 @@ unsigned int i=0;
 	  case 'x': case 'X': bX = true; break;
 	  case 'y': case 'Y': bY = true; break;
 	  case 'z': case 'Z': bZ = true; break;
-
+/*
 	  case 'ü': case 'Ü': bUe = true; break;    // ü Ü
 	  case 'ö': case 'Ö': bOe = true; break;  //ö Ö
 	  case 'ä': case 'Ä': bAe = true; break;  // ä Ä
 
-/*
+
 	  case 'Ã¼': case 'Ãœ': bUe = true; break;    // ü Ü
 	  case 'Ã¶': case 'Ã–': bOe = true; break;  //ö Ö
 	  case 'Ã¤': case 'Ã„': bAe = true; break;  // ä Ä
