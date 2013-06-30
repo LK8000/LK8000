@@ -419,6 +419,7 @@ static void OnMultiSelectListListInfo(WindowControl * Sender,
     DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
     ItemIndex     = ListInfo->ItemIndex+ListInfo->ScrollIndex;
   }
+/*
   StartupStore(_T(". =============================\n"));
   StartupStore(_T(".                 ItemIndex: %i\n"),ItemIndex);
   StartupStore(_T(".             DrawListIndex: %i\n"),DrawListIndex);
@@ -432,7 +433,7 @@ static void OnMultiSelectListListInfo(WindowControl * Sender,
   StartupStore(_T(". mListInfo.ItemInViewCount: %i\n"), ListInfo->ItemInViewCount );
   StartupStore(_T(". mListInfo.ItemInPageCount: %i\n"), ListInfo->ItemInPageCount );
   StartupStore(_T(".       mListInfo.ItemCount: %i\n"), ListInfo->ItemCount );
-
+*/
 }
 
 static void OnCloseClicked(WindowControl * Sender){
