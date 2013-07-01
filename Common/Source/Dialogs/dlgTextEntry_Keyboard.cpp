@@ -302,13 +302,15 @@ bool CharEqual = true;
 char Charlist[MAX_SEL_LIST_SIZE]={"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_ ÜÖÄ"};
 
 unsigned int i,j,EqCnt=NumberOfWayPoints;
-int IdenticalIndex=-1;
-NumChar =0;
+unsigned int IdenticalIndex=-1;
+unsigned int IdenticalOffset = 0;
+
 WndProperty *wp;
 TCHAR Found[NAME_SIZE + 1];
 SelList[0] = '\0';
-
-
+unsigned int NameLen=0;
+unsigned int Offset=0;
+unsigned int k =0;
 
   if(cursor < 1)   /* enable all keys if no char entered */
   {
@@ -317,48 +319,63 @@ SelList[0] = '\0';
   else
   {
     EqCnt=0; /* reset number of found waypoints */
+    NumChar =0;
     for (i=0; i< NumberOfWayPoints; i++)
     {
-   	  unsigned int k =0;
-      CharEqual = true;
-
-      while((k < cursor) && CharEqual)
+      NameLen =  _tcslen(WayPointList[i].Name);
+      Offset = 0;
+      if(cursor > NameLen)
+     	CharEqual = false;
+      else
       {
-        LKASSERT(k < MAX_TEXTENTRY);
-        LKASSERT(k < NAME_SIZE);
-
-        char ac = (char)WayPointList[i].Name[k];
-        char bc = (char)edittext[k];
-
-        if(  ToUpper(ac) !=   ToUpper(bc) ) /* waypoint has string ?*/
+        do
         {
-          CharEqual = false;
+          k=0;
+          CharEqual = true;
+          while((k < (cursor)) && ((k+Offset) < NameLen) && CharEqual)
+          {
+            LKASSERT(k < MAX_TEXTENTRY);
+            LKASSERT((k+Offset) < NameLen);
+            char ac = (char)WayPointList[i].Name[k+Offset];
+            char bc = (char)edittext[k];
+            if(  ToUpper(ac) !=   ToUpper(bc) ) /* waypoint has string ?*/
+            {
+              CharEqual = false;
+            }
+            k++;
+          }
+          Offset++;
         }
-        k++;
+        while(((Offset-1+cursor) < NameLen) && !CharEqual );
+        Offset--;
       }
+
 
       if(CharEqual)
       {
         EqCnt++;
         if(IdenticalIndex -1)
+        {
           IdenticalIndex = i; /* remember first found equal name */
-
-        TCHAR newChar = ToUpper(WayPointList[i].Name[cursor]);
+          IdenticalOffset = Offset; /* remember first found equal name */
+        }
+        TCHAR newChar = ToUpper(WayPointList[i].Name[cursor+Offset]);
         bool existing = false;
         j=0;
         while(( j < NumChar) && (!existing))  /* new character already in list? */
         {
+     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
           LKASSERT(j<MAX_SEL_LIST_SIZE);
           if(SelList[j] == newChar)
         	existing = true;
           j++;
         }
 
-        if(!existing)  /* add new character to key enable list */
+        if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
         {
+          StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
           LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
           SelList[NumChar++] = newChar;
-
         }
       }
     }
@@ -380,7 +397,7 @@ SelList[0] = '\0';
           LKASSERT(cursor < NAME_SIZE);
           _stprintf(Found,_T("%s"),WayPointList[IdenticalIndex].Name);
     	  for( i = 0; i < cursor; i++)
-    	     Found[i] = toupper(WayPointList[IdenticalIndex].Name[i]);
+    	     Found[i+IdenticalOffset] = toupper(WayPointList[IdenticalIndex].Name[i+IdenticalOffset]);
           wp->SetText(Found);
         }
       }
