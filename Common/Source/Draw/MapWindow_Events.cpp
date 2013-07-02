@@ -21,7 +21,14 @@ unsigned int i;
 double dyn_range = range*2;
 bool  found = false;
 bool  landablefound = false;
-//bool airspace_found =false;
+
+
+  if(pan && (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN)))
+  {
+	lon = PanLongitude;
+	lat = PanLatitude;
+  }
+
 if(dyn_range < 1000)
 	dyn_range = 1000;
 if(dyn_range > 12000)
@@ -84,9 +91,9 @@ if (EnableSoundModes)
 	}
   }
 
-  if(!landablefound)
+ // if(!landablefound)
   {
-    for(i= RESWP_FIRST_MARKER ;i<NumberOfWayPoints;i++)
+    for(i=NUMRESMARKERS/* RESWP_FIRST_MARKER*/ ;i<NumberOfWayPoints;i++)
     {    // Consider only valid markers
       if (   (WayPointCalc[i].WpType != WPT_AIRPORT)||
     		 (WayPointCalc[i].WpType != WPT_OUTLANDING)
@@ -95,7 +102,7 @@ if (EnableSoundModes)
         DistanceBearing(lat,lon,
                       WayPointList[i].Latitude,
                       WayPointList[i].Longitude, &Dist, NULL);
-        if(Dist < dyn_range/2)
+        if(Dist < dyn_range/3)
         {
     	  dlgAddMultiSelectListItem(NULL,i, IM_WAYPOINT, Dist);
     	  found = true;
