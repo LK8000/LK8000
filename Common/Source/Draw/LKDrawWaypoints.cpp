@@ -808,13 +808,13 @@ DrawBitmapX(hdc,
 		x,
 		cy/4,
     20,20,
-    hDCTemp,0,0,SRCPAINT,false);
+    hDCTemp,0,0,SRCPAINT,true /*false*/);
 
 DrawBitmapX(hdc,
 		x,
 		cy/4,
     20,20,
-    hDCTemp,20,0,SRCAND,false);
+    hDCTemp,20,0,SRCAND,true);
 
 
 }
