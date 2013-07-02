@@ -161,9 +161,9 @@ static void SetWPNameCaption(TCHAR* tFilter) {
   if ( _tcscmp(tFilter,_T("*")) == 0) 
 	_tcscpy(namfilter,_T("*"));
   else {
-//	if (_tcslen(tFilter) <4)
-//		_stprintf(namfilter,_T("%s*"),tFilter);
-//	else
+	if (_tcslen(tFilter) <GC_SUB_STRING_THRESHOLD)
+		_stprintf(namfilter,_T("%s*"),tFilter);
+	else
 	  {
 		if (_tcslen(tFilter) <6)
 			_stprintf(namfilter,_T("*%s*"),tFilter);
@@ -343,7 +343,7 @@ static void UpdateList(void){
 		sTmp[k] = ToUpper(sNameFilter[k]);
     int iFilterLen = _tcslen(sNameFilter);
 
-    if (iFilterLen<0)
+    if (iFilterLen<GC_SUB_STRING_THRESHOLD)
     {
     for (i=0; i<UpLimit; i++){
       // compare entire name which may be more than 4 chars

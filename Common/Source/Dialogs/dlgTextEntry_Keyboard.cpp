@@ -312,7 +312,7 @@ unsigned int NameLen=0;
 unsigned int Offset=0;
 unsigned int k =0;
 
-  if(cursor < 1)   /* enable all keys if no char entered */
+  if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
     RemoveKeys((char*)Charlist, sizeof(Charlist));
   }
