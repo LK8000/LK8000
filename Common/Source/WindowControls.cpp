@@ -472,7 +472,12 @@ DataField::DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat,
 }
 
 void DataField::SetDisplayFormat(TCHAR *Value){
+  LKASSERT(_tcslen(Value)<=FORMATSIZE);
   _tcscpy(mDisplayFormat, Value);
+}
+void DataField::SetEditFormat(TCHAR *Value){
+  LKASSERT(_tcslen(Value)<=FORMATSIZE);
+  _tcscpy(mEditFormat, Value);
 }
 
 void DataField::CopyString(TCHAR * szbuffOut, bool bFormatted) {
@@ -1007,6 +1012,11 @@ double DataFieldFloat::SetMin(double Value){
 double DataFieldFloat::SetMax(double Value){
   double res = mMax;
   mMax = Value;
+  return(res);
+};
+double DataFieldFloat::SetStep(double Value){
+  double res = mStep;
+  mStep = Value;
   return(res);
 };
 

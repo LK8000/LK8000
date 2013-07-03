@@ -351,6 +351,18 @@ void dlgBasicSettingsShowModal(void){
     wp = (WndProperty*)wf->FindByName(TEXT("prpWingLoading"));
     if (wp) {
       if (GlidePolar::WingLoading>0.1) {
+	if (ISPARAGLIDER) {
+		wp->GetDataField()->SetDisplayFormat(_T("%.1f kg/m2"));
+		wp->GetDataField()->SetEditFormat(_T("%1.1f"));
+		wp->GetDataField()->SetMin(1.0);
+		wp->GetDataField()->SetStep(0.1);
+	} 
+	if (ISGLIDER) {
+		wp->GetDataField()->SetDisplayFormat(_T("%.1f kg/m2"));
+		wp->GetDataField()->SetEditFormat(_T("%1.1f"));
+		wp->GetDataField()->SetMin(5.0);
+		wp->GetDataField()->SetStep(0.5);
+	}
 	wp->GetDataField()-> SetAsFloat(GlidePolar::WingLoading);
       } else {
 	wp->SetVisible(false);

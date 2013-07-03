@@ -132,7 +132,8 @@ class DataField{
 
   virtual int SetMin(int Value){(void)Value; return(0);};
   virtual double SetMin(double Value){(void)Value; return(false);};
-
+  virtual int SetStep(int Value){(void)Value; return(0);};
+  virtual double SetStep(double Value){(void)Value; return(false);};
   virtual int SetMax(int Value){(void)Value; return(0);};
   virtual double SetMax(double Value){(void)Value; return(0);};
   void SetUnits(const TCHAR *text) { _tcscpy(mUnits, text); }
@@ -148,6 +149,7 @@ class DataField{
   }
 
   void SetDisplayFormat(TCHAR *Value);
+  void SetEditFormat(TCHAR *Value);
   void SetDisableSpeedUp(bool bDisable) {mDisableSpeedup=bDisable;}  // allows combolist to iterate all values
   bool GetDisableSpeedUp(void) {return mDisableSpeedup;}
   void SetDetachGUI(bool bDetachGUI) {mDetachGUI=bDetachGUI;}  // allows combolist to iterate all values w/out triggering external events
@@ -468,6 +470,7 @@ class DataFieldFloat:public DataField{
   void Set(double Value);
   double SetMin(double Value);
   double SetMax(double Value);
+  double SetStep(double Value);
   #if defined(__BORLANDC__)
   #pragma warn +hid
   #endif
