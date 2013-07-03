@@ -14,6 +14,7 @@
 #include "AirspaceWarning.h"
 #include "Dialogs.h"
 #include "TraceThread.h"
+#include "LKObjects.h"
 
 static CAirspace *airspace = NULL;
 static CAirspace airspace_copy;
@@ -26,6 +27,10 @@ static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
 	  RECT *prc;
 	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
 	  prc = wPicto->GetBoundRect();
+	  SelectObject(hDC,LKPen_Petrol_C2);
+
+	  SelectObject(hDC,LKBrush_Petrol);
+	  Rectangle(hDC,prc->left,prc->top,prc->right,prc->bottom);
 
 
 	  SetBkColor  (hDC, RGB_LIGHTGREY);
@@ -108,9 +113,19 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
   #endif
 
   if (airspace_copy.Enabled()) 
-      CAirspaceManager::Instance().AirspaceDisable(*airspace);
-  else 
-      CAirspaceManager::Instance().AirspaceEnable(*airspace);
+  {
+    CAirspaceManager::Instance().AirspaceDisable(*airspace);
+  }
+  else
+  {
+    CAirspaceManager::Instance().AirspaceEnable(*airspace);
+  }
+
+
+  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
+  HDC hDC =  wPicto->GetDeviceContext();
+  OnPaintAirspacePicto(Sender, hDC);
+
 
   SetValues();
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -346,6 +361,7 @@ void dlgAirspaceDetails(CAirspace *airspace_to_show) {
   SetValues();
 
   wf->ShowModal();
+
   airspace = NULL;
   delete wf;
   wf = NULL;

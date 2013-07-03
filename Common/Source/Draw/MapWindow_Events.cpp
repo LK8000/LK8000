@@ -81,7 +81,7 @@ if (EnableSoundModes)
   int hDist = 99999;
 
   {
-	CAirspaceList reslist = CAirspaceManager::Instance().GetVisibleAirspacesAtPoint(lon, lat);
+	CAirspaceList reslist = CAirspaceManager::Instance().GetAirspacesAtPoint(lon, lat);
 	CAirspaceList::iterator it;
 	for (it = reslist.begin(); it != reslist.end(); ++it)
 	{

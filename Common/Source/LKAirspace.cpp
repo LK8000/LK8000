@@ -852,7 +852,10 @@ void CAirspace_Circle::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)  {
 
 	double fact = 1.0;
 	CalculatePictPosition(_bounds, rc, fact);
-    SelectObject(hDCTemp,TypeBrush());
+	if(Enabled())
+      SelectObject(hDCTemp,TypeBrush());
+	else
+	  SelectObject(hDCTemp,GetStockObject(HOLLOW_BRUSH));
     SetTextColor(hDCTemp,TypeColor());
     HPEN FramePen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), TypeColor());
     HPEN oldPen   = (HPEN) SelectObject(hDCTemp, FramePen);
@@ -870,7 +873,10 @@ void CAirspace_Area::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)   {
 
 	double fact = 1.0;
 	CalculatePictPosition(_bounds, rc, fact);
-    SelectObject(hDCTemp,TypeBrush());
+	if(Enabled())
+      SelectObject(hDCTemp,TypeBrush());
+	else
+	  SelectObject(hDCTemp,GetStockObject(HOLLOW_BRUSH));
     SetTextColor(hDCTemp,TypeColor());
     HPEN FramePen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), TypeColor());
     HPEN oldPen   = (HPEN) SelectObject(hDCTemp, FramePen);
@@ -2543,7 +2549,22 @@ CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, co
   CAirspaceList::const_iterator it;
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-    if ((*it)->DrawStyle()) {
+    if ((*it)->DrawStyle())
+    {
+      if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
+    }
+  }
+  return res;
+}
+
+CAirspaceList CAirspaceManager::GetAirspacesAtPoint(const double &lon, const double &lat) const
+{
+  CAirspaceList res;
+  CAirspaceList::const_iterator it;
+  CCriticalSection::CGuard guard(_csairspaces);
+  for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+ //   if ((*it)->DrawStyle())
+    {
       if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
     }
   }
