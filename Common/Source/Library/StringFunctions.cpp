@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "utils/stl_utils.h"
+#include "utils/stringext.h"
 
 #ifdef __MINGW32__
 #ifndef max

@@ -11,7 +11,7 @@
 #include <aygshell.h>
 
 #include "Terrain.h"
-#include "Process.h"
+#include "LKProcess.h"
 
 #include "WindowControls.h"
 #include "McReady.h"

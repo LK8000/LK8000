@@ -9,7 +9,7 @@
 #include "externs.h"
 #include <aygshell.h>
 
-#include "Process.h"
+#include "LKProcess.h"
 #include "LKProfiles.h"
 #include "Calculations2.h"
 #include "Dialogs.h"

@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
-#include "Process.h"
+#include "LKProcess.h"
 #include "DoInits.h"
 
 /* 

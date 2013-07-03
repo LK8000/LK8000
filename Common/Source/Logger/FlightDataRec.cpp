@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "FlightDataRec.h"
+#include "utils/stringext.h"
 
 #define NO_ENTRYS 26
 

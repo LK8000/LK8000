@@ -831,7 +831,7 @@ JASPER	:=\
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
 	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
-	$(COMPATSRC)/ts_string.cpp 	        $(COMPATSRC)/wtoi.c
+	$(COMPATSRC)/wtoi.c
 
 #ifneq ($(CONFIG_PC),y)
 #COMPAT	:=$(COMPAT) \

@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "Process.h"
+#include "LKProcess.h"
 #include "McReady.h"
 #include "RasterTerrain.h"
 #include "Calculations2.h"

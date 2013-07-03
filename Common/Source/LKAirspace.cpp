@@ -17,6 +17,7 @@
 #include "md5.h"
 
 #include "utils/2dpclip.h"
+#include "utils/stringext.h"
 
 #if TESTBENCH
 //#define DEBUG_NEAR_POINTS	1
