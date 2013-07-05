@@ -70,7 +70,7 @@ typedef enum { aweNone,
                 aweNearInsideNonfly
 } AirspaceWarningEvent;
 //Airspace drawstyles
-typedef enum {adsHidden, adsOutline, adsFilled } AirspaceDrawStyle_t;
+typedef enum {adsHidden, adsOutline, adsFilled ,adsDisabled} AirspaceDrawStyle_t;
 //Airspace warning drawstyles
 typedef enum {awsHidden, awsBlack, awsAmber, awsRed } AirspaceWarningDrawStyle_t;
 

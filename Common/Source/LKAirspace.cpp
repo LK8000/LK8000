@@ -1023,7 +1023,7 @@ double scale;
 void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) 
 {
   _drawstyle = adsHidden;
-  if (!_enabled) return;
+//  if (!_enabled) return;
   
   if (iAirspaceMode[_type]%2 == 1) {
     if(CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
@@ -1036,6 +1036,8 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
     } else {
       _drawstyle = adsOutline;
     }
+    if (!_enabled)
+      _drawstyle = adsDisabled;
 
         MapWindow::LatLon2Screen(_loncenter, _latcenter, _screencenter);
         _screenradius = iround(_radius * ResMapScaleOverDistanceModify);
@@ -1273,7 +1275,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
 
 
   _drawstyle = adsHidden;
-  if (!_enabled) return;
+//  if (!_enabled) return;
   
   if (iAirspaceMode[_type]%2 == 1) {
     if(CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
@@ -1286,6 +1288,9 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
     } else {
       _drawstyle = adsOutline;
     }
+    if (!_enabled)
+      _drawstyle = adsDisabled;
+
     CPoint2DArray::iterator it;
 /******************************
  * ULLI remove unneeded points
@@ -2563,7 +2568,8 @@ CAirspaceList CAirspaceManager::GetAirspacesAtPoint(const double &lon, const dou
   CAirspaceList::const_iterator it;
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
- //   if ((*it)->DrawStyle())
+
+    if(CAirspaceManager::Instance().CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top()))
     {
       if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
     }
