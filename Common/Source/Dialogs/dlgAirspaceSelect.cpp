@@ -68,30 +68,7 @@ static void OnAirspaceListEnter(WindowControl * Sender,
 
       CAirspace *airspace = AirspaceSelectInfo[LowLimit+ItemIndex].airspace;
       if (airspace) {
-        const TCHAR *Name = airspace->Name();
-        if (Name) {
-		  UINT answer;
-          if (airspace->Enabled()) {
-            answer = MessageBoxX(hWndMapWindow,
-                    Name,
-                      // LKTOKEN  _@M1284_ "Disable this airspace?" 
-                    gettext(TEXT("_@M1284_")),
-                    MB_YESNOCANCEL|MB_ICONQUESTION);
-            if (answer == IDYES) {
-              CAirspaceManager::Instance().AirspaceDisable(*airspace);
-            }
-          } else {
-            answer = MessageBoxX(hWndMapWindow,
-                    Name,
-                    // LKTOKEN  _@M1280_ "Enable this airspace?"
-                    gettext(TEXT("_@M1280_")),
-                    MB_YESNOCANCEL|MB_ICONQUESTION);
-            if (answer == IDYES) {
-              // this will cancel a daily ack
-              CAirspaceManager::Instance().AirspaceEnable(*airspace);
-            }
-          }
-        }
+          dlgAirspaceDetails(airspace);
       }
     }
   } else {
@@ -104,7 +81,10 @@ static int _cdecl AirspaceNameCompare(const void *elem1, const void *elem2 ){
     return (-1);
   if (((AirspaceSelectInfo_t *)elem1)->FourChars > ((AirspaceSelectInfo_t *)elem2)->FourChars)
     return (+1);
-  return (0);
+  // if the first four characters are the same let's do the full comparison
+  const TCHAR *name1 = ((AirspaceSelectInfo_t *)elem1)->airspace->Name();
+  const TCHAR *name2 = ((AirspaceSelectInfo_t *)elem2)->airspace->Name();
+  return _tcscmp(name1, name2);
 }
 
 static int _cdecl AirspaceDistanceCompare(const void *elem1, const void *elem2 ){
