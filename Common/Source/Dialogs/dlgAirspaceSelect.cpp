@@ -81,7 +81,10 @@ static int _cdecl AirspaceNameCompare(const void *elem1, const void *elem2 ){
     return (-1);
   if (((AirspaceSelectInfo_t *)elem1)->FourChars > ((AirspaceSelectInfo_t *)elem2)->FourChars)
     return (+1);
-  return (0);
+  // if the first four characters are the same let's do the full comparison
+  const TCHAR *name1 = ((AirspaceSelectInfo_t *)elem1)->airspace->Name();
+  const TCHAR *name2 = ((AirspaceSelectInfo_t *)elem2)->airspace->Name();
+  return _tcscmp(name1, name2);
 }
 
 static int _cdecl AirspaceDistanceCompare(const void *elem1, const void *elem2 ){
