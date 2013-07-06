@@ -68,30 +68,7 @@ static void OnAirspaceListEnter(WindowControl * Sender,
 
       CAirspace *airspace = AirspaceSelectInfo[LowLimit+ItemIndex].airspace;
       if (airspace) {
-        const TCHAR *Name = airspace->Name();
-        if (Name) {
-		  UINT answer;
-          if (airspace->Enabled()) {
-            answer = MessageBoxX(hWndMapWindow,
-                    Name,
-                      // LKTOKEN  _@M1284_ "Disable this airspace?" 
-                    gettext(TEXT("_@M1284_")),
-                    MB_YESNOCANCEL|MB_ICONQUESTION);
-            if (answer == IDYES) {
-              CAirspaceManager::Instance().AirspaceDisable(*airspace);
-            }
-          } else {
-            answer = MessageBoxX(hWndMapWindow,
-                    Name,
-                    // LKTOKEN  _@M1280_ "Enable this airspace?"
-                    gettext(TEXT("_@M1280_")),
-                    MB_YESNOCANCEL|MB_ICONQUESTION);
-            if (answer == IDYES) {
-              // this will cancel a daily ack
-              CAirspaceManager::Instance().AirspaceEnable(*airspace);
-            }
-          }
-        }
+          dlgAirspaceDetails(airspace);
       }
     }
   } else {
