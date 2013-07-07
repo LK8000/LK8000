@@ -1107,7 +1107,7 @@ extern void dlgNumEntryShowModal(TCHAR *text, int width, bool );
 int DataFieldFloat::CreateKeyboard(void){
 	TCHAR szText[20];
 	_tcscpy(szText, GetAsString());
-	dlgNumEntryShowModal(szText,20, true);
+	dlgNumEntryShowModal(szText,20, false);
 
 	TCHAR*szStop;
 	SetAsFloat(floor((StrToDouble(szText, &szStop)/mStep)+0.5)*mStep);
