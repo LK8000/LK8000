@@ -373,7 +373,7 @@ unsigned int k =0;
 
         if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
         {
-          StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
+     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
           LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
           SelList[NumChar++] = newChar;
         }
