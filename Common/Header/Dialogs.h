@@ -21,7 +21,7 @@ void StartHourglassCursor();
 void StopHourglassCursor();
 
 
-#define GC_SUB_STRING_THRESHOLD 3
+#define GC_SUB_STRING_THRESHOLD 1
 
 #define IM_AIRSPACE 1
 #define IM_WAYPOINT 2
