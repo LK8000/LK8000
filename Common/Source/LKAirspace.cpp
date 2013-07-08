@@ -2569,7 +2569,7 @@ CAirspaceList CAirspaceManager::GetAirspacesAtPoint(const double &lon, const dou
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
 
-    if(CAirspaceManager::Instance().CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top()))
+ //   if(CAirspaceManager::Instance().CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top()))
     {
       if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
     }

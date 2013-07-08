@@ -36,11 +36,11 @@ static int NoWaypoints =0;
 static int NoFarm      =0;
 static int NoAirspace  =0;
 
-#define MAX_AIRFILEDS 50
-#define MAX_OUTLAND   50
-#define MAX_WAYPOINTS 50
-#define MAX_FLARM     50
-#define MAX_AIRSPACES 50
+#define MAX_AIRFILEDS 4
+#define MAX_OUTLAND   4
+#define MAX_WAYPOINTS 3
+#define MAX_FLARM     8
+#define MAX_AIRSPACES 10
 
 
 
@@ -143,6 +143,7 @@ void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance){
 				}
 			  } else {
 				if(NoWaypoints     < MAX_WAYPOINTS    )	NoWaypoints++;       else  skip=true;
+				if(iNO_ELEMENTS     < 5    )    	NoWaypoints++;       else  skip=true;
 			  }
 		  break;
 		}
