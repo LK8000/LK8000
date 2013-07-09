@@ -248,6 +248,7 @@ int i,j;
   /**********************************************************************************
    * draw airspace frames in reversed order
    **********************************************************************************/
+#ifdef OUTLINE_2ND
   for (int m=0 ; m < Sideview_iNoHandeldSpaces; m++)
   {
 	int iSizeIdx =  iSizeLookupTable[Sideview_iNoHandeldSpaces-m-1];
@@ -294,7 +295,7 @@ int i,j;
 	  DeleteObject (mpen2);
 	}
   }
-
+#endif
 
   /*************************************************************
    * draw ground
