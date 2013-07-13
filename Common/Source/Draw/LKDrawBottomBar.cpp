@@ -159,15 +159,9 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 	if (BarOpacity==0) {
 		barTextColor=RGB_BLACK;
 	} else {
-		BLENDFUNCTION bs;
-		bs.BlendOp=AC_SRC_OVER;
-		bs.BlendFlags=0;
-		// A good value is 195
-		bs.SourceConstantAlpha=BarOpacity*255/100;
-		bs.AlphaFormat=0;
 		bitmapold=(HBITMAP)SelectObject(hdc2,bitmapnew); 
-		FillRect(hdc2,&nrc, brush_bar); 
-		MapWindow::AlphaBlendF(hdc,0,rc.bottom-BottomSize,rc.right,BottomSize,hdc2,0,rc.bottom-BottomSize,rc.right,BottomSize,bs);
+		FillRect(hdc2,&nrc, brush_bar);
+		MapWindow::DoAlphaBlend(hdc,nrc,hdc2,nrc,BarOpacity*255/100);
 		if (BarOpacity>25)
 			barTextColor=RGB_WHITE;
 		else
