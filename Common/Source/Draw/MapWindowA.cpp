@@ -74,9 +74,18 @@ void MapWindow::DoAlphaBlend(HDC dstHdc, const RECT dstRect, HDC srcHdc, const R
   // we are not using per-pixel alpha, so do not use AC_SRC_ALPHA flag
   BLENDFUNCTION bf = { AC_SRC_OVER, 0, globalOpacity, 0 };
   
-  AlphaBlendF(
+  bool bOK = AlphaBlendF(
     dstHdc, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
     srcHdc, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, bf);
+  
+  if(!bOK && dstRect.right - dstRect.left > 0 && 
+             dstRect.bottom - dstRect.top > 0 &&
+             srcRect.right - srcRect.left > 0 && 
+             srcRect.bottom - srcRect.top > 0) {
+          
+    // if AlphaBlend failed, AlphaBlend is not supported, don't use it anymore
+    AlphaBlendF = NULL;
+  }
 } // DoAlphaBlend()
 
 
