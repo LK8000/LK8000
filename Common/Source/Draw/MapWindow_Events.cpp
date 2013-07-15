@@ -78,15 +78,17 @@ if (EnableSoundModes)
     }
   }
 
-  int hDist = 99999;
-
+  int  HorDist=99999, Bearing, VertDist;
   {
-	CAirspaceList reslist = CAirspaceManager::Instance().GetAirspacesAtPoint(lon, lat);
+	CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, dyn_range/2);
+
 	CAirspaceList::iterator it;
 	for (it = reslist.begin(); it != reslist.end(); ++it)
 	{
+
 	  LKASSERT((*it));
-	  dlgAddMultiSelectListItem((long*) (*it),0, IM_AIRSPACE, (double)hDist);
+	  (*it)->CalculateDistance(&HorDist, &Bearing, &VertDist,lon, lat);
+	  dlgAddMultiSelectListItem((long*) (*it),0, IM_AIRSPACE, HorDist);
 	  found = true;
 	}
   }

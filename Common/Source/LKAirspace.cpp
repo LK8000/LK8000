@@ -661,7 +661,7 @@ return ret;
 
 // Calculates nearest horizontal, vertical and 3d distance to airspace based on last known position
 // Returns true if inside, false if outside
-bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
+bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude, double Latitude, int Altitude )
 {
   bool inside = true;
   int vDistanceBase;
@@ -669,19 +669,19 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
   double fbearing;
   double distance;
 
-  distance = Range(_lastknownpos.Longitude(), _lastknownpos.Latitude(), fbearing);
+  distance = Range(Longitude, Latitude, fbearing);
   if (distance > 0) {
     inside = false;
     // if outside we need the terrain height at the intersection point
     double intersect_lat, intersect_lon;
-    FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), fbearing, distance, &intersect_lat, &intersect_lon);
+    FindLatitudeLongitude(Latitude, Longitude, fbearing, distance, &intersect_lat, &intersect_lon);
     AirspaceAGLLookup(intersect_lat, intersect_lon, &_base.Altitude, &_top.Altitude);
   } else {
     // if inside we need the terrain height at the current position
-    AirspaceAGLLookup(_lastknownpos.Latitude(), _lastknownpos.Longitude(), &_base.Altitude, &_top.Altitude);
+    AirspaceAGLLookup(Latitude, Longitude, &_base.Altitude, &_top.Altitude);
   }
-  vDistanceBase = _lastknownalt - (int)(_base.Altitude);
-  vDistanceTop  = _lastknownalt - (int)(_top.Altitude);
+  vDistanceBase = Altitude - (int)(_base.Altitude);
+  vDistanceTop  = Altitude - (int)(_top.Altitude);
 
   if (vDistanceBase < 0 || vDistanceTop > 0) inside = false;
 
@@ -1035,6 +1035,7 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
       _drawstyle = adsFilled;
     } else {
       _drawstyle = adsOutline;
+  //    _drawstyle = adsFilled;
     }
     if (!_enabled)
       _drawstyle = adsDisabled;
@@ -1287,6 +1288,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
       _drawstyle = adsFilled;
     } else {
       _drawstyle = adsOutline;
+  //    _drawstyle = adsFilled;
     }
     if (!_enabled)
       _drawstyle = adsDisabled;
@@ -2562,16 +2564,18 @@ CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, co
   return res;
 }
 
-CAirspaceList CAirspaceManager::GetAirspacesAtPoint(const double &lon, const double &lat) const
+CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const double &lat, long searchrange) const
 {
+  int HorDist, Bearing, VertDist;
   CAirspaceList res;
   CAirspaceList::const_iterator it;
   CCriticalSection::CGuard guard(_csairspaces);
-  for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-
- //   if(CAirspaceManager::Instance().CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top()))
+  for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
+  {
+	(*it)->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
+	if(HorDist < searchrange)
     {
-      if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
+      res.push_back(*it);
     }
   }
   return res;

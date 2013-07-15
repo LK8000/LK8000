@@ -142,7 +142,7 @@ public:
   // Step3: Second pass warning level calculation on airspace
   bool FinishWarning();
   // Calculate airspace distance from last known position (used by warning system and dialog boxes)
-  bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance);
+  bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude = _lastknownpos.Longitude(), double Latitude  = _lastknownpos.Latitude(), int Altitude = _lastknownalt );
   // Set ack validity timeout according to config prameter
   void SetAckTimeout();
   // get nearest distance info to this airspace, returns true if distances calculated by warning system
@@ -453,7 +453,7 @@ public:
   
   //Get/Set airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
-  CAirspaceList GetAirspacesAtPoint(const double &lon, const double &lat) const;
+  CAirspaceList GetNearAirspacesAtPoint(const double &lon, const double &lat, long range) const;
 
   const CAirspaceList GetAllAirspaces() const;
   const CAirspaceList& GetAirspacesForWarningLabels();
