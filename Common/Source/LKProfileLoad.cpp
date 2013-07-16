@@ -697,6 +697,10 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultimap4,&Multimap4);
 
+  PREAD(sname,svalue, szAspPermanent , &AspPermanentChanged);
+  if (matchedstring) return;
+
+
   return;
 
 }

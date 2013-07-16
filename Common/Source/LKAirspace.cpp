@@ -1871,7 +1871,8 @@ void CAirspaceManager::ReadAirspaces()
   #if ASPWAVEOFF
   AirspaceDisableWaveSectors();
   #endif
-  LoadSettings();
+  if(AspPermanentChanged >0)
+    LoadSettings();
 }
 
 
