@@ -28,8 +28,8 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
 
 	dfe->addEnumText(MsgToken(239)); // Disabled
-	dfe->addEnumText(MsgToken(480)); // Normal
-	dfe->addEnumText(MsgToken(483)); // North up
+	dfe->addEnumText(MsgToken(259)); // Enabled
+
 
 	dfe->Set(Multimap1);
 	wp->RefreshDisplay();
@@ -40,8 +40,8 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
 
 	dfe->addEnumText(MsgToken(239)); // Disabled
-	dfe->addEnumText(MsgToken(480)); // Normal
-	dfe->addEnumText(MsgToken(483)); // North up
+	dfe->addEnumText(MsgToken(259)); // Enabled
+
 
 	dfe->Set(Multimap2);
 	wp->RefreshDisplay();
@@ -52,8 +52,8 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
 
 	dfe->addEnumText(MsgToken(239)); // Disabled
-	dfe->addEnumText(MsgToken(480)); // Normal
-	dfe->addEnumText(MsgToken(483)); // North up
+	dfe->addEnumText(MsgToken(259)); // Enabled
+
 
 	dfe->Set(Multimap3);
 	wp->RefreshDisplay();
@@ -64,8 +64,8 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
 
 	dfe->addEnumText(MsgToken(239)); // Disabled
-	dfe->addEnumText(MsgToken(480)); // Normal
-	dfe->addEnumText(MsgToken(483)); // North up
+	dfe->addEnumText(MsgToken(259)); // Enabled
+
 
 	dfe->Set(Multimap4);
 	wp->RefreshDisplay();
