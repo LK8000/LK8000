@@ -509,7 +509,7 @@ HBRUSH hOldBrush;
 HPEN   hDrawPen ;
 HBRUSH hDrawBrush;
 bool bSideview = true;
-static int iTurn =0;
+
 
 HFONT hfOldFont = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 COLORREF rgbGridColor = RGB_DARKGREEN;
@@ -582,18 +582,19 @@ switch(LKevent)
   }
   break;
   case LKEVENT_TOPRIGHT:
-	  iTurn = 	(iTurn+1)%2;
+	  iFlarmDirection = 	(iFlarmDirection+1)%2;
 
   break;
   case LKEVENT_LONGCLICK:
 	if( PtInRect(XstartScreen,YstartScreen, rct))
 		bHeightScale	= false;
+	/*
 	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
 	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
 	{
-	  iTurn = 	(iTurn+1)%2;
+	  iFlarmDirection = 	(iFlarmDirection+1)%2;
 	}
-	else
+	else*/
 	    for (i=0; i < nEntrys; i++)
 		{
 		  LKASSERT(i<FLARM_MAX_TRAFFIC);
@@ -638,7 +639,7 @@ LKevent=LKEVENT_NONE; /* remove event from list */
 if(SPLITSCREEN_FACTOR >0.95)
 	bSideview = false;
 
-switch(iTurn)
+switch(iFlarmDirection)
 {
 	case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
  	case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
@@ -1328,7 +1329,7 @@ if(bSideview)
   /********************************************************
    * draw head up/right icon
    ********************************************************/
-  switch(iTurn)
+  switch(iFlarmDirection)
   {
     default:
     case 0:  SelectObject(hDCTemp,hHeadUp) ; break; //     "Head Up"

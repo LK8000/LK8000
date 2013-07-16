@@ -92,6 +92,9 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
     dfe->addEnumTextNoLF(MsgToken(2237)); // Sonar Toggle
     dfe->addEnumTextNoLF(MsgToken(2246)); // Reset view
 
+  //  dfe->addEnumText(TEXT("Orientation"));
+    dfe->addEnumTextNoLF(MsgToken(2038)); // Map Orient
+
     dfe->Sort(0);
 
 }

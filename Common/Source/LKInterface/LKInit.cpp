@@ -289,10 +289,10 @@ void InitModeTable() {
 // This is called by InitRuntime
 //
 void UpdateMultimapOrient(void) {
-
+/*
   MMNorthUp_Runtime[0]=(Multimap1==mm_enabled_northup);
   MMNorthUp_Runtime[1]=(Multimap2==mm_enabled_northup);
   MMNorthUp_Runtime[2]=(Multimap3==mm_enabled_northup);
   MMNorthUp_Runtime[3]=(Multimap4==mm_enabled_northup);
-
+*/
 }

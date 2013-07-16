@@ -2068,11 +2068,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	}
 	return;
   }
-//  if (_tcscmp(misc, TEXT("ASPNEAR")) == 0) {
-	// should be fixed by Ulli
-//	dlgAnalysisShowModal(ANALYSIS_PAGE_NEAR_AIRSPACE);
-//	return;
-//  }
+
 #if (WINDOWSPC>0)
   if (_tcscmp(misc, TEXT("SS320x240")) == 0) {
 	SCREENWIDTH=320;
@@ -2191,6 +2187,7 @@ extern bool RotateScreen(short angle);
 	CustomKeyHandler(ckSonarToggle+1000); // passthrough mode
 	return;
   }
+
 
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
