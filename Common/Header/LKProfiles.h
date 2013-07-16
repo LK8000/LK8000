@@ -352,6 +352,8 @@ TCHAR szRegistryMultimap1[]= _T("Multimap1a");
 TCHAR szRegistryMultimap2[]= _T("Multimap2a");
 TCHAR szRegistryMultimap3[]= _T("Multimap3a");
 TCHAR szRegistryMultimap4[]= _T("Multimap4a");
+TCHAR szRegistryDrawTask[] = _T("DrawTask");;
+TCHAR szRegistryDrawFAI[]  = _T("DrawFAI"); ;
 //
 //
 //
@@ -623,6 +625,8 @@ extern TCHAR szRegistryMultimap1[];
 extern TCHAR szRegistryMultimap2[];
 extern TCHAR szRegistryMultimap3[];
 extern TCHAR szRegistryMultimap4[];
+extern TCHAR szRegistryDrawTask[];
+extern TCHAR szRegistryDrawFAI[] ;
 //
 //
 #endif
