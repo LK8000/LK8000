@@ -368,6 +368,9 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMultimap3,Multimap3);
   rprintf(szRegistryMultimap4,Multimap4);
 
+  rprintf(szAspPermanent,AspPermanentChanged);
+
+
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);
   fclose(pfp);

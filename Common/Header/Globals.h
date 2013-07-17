@@ -891,6 +891,8 @@ GEXTERN unsigned short Multimap4;
 
 GEXTERN int MMNorthUp_Runtime[NUMBER_OF_SHARED_MULTIMAPS];
 
+//  reload airspace changes
+GEXTERN int AspPermanentChanged;
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.
