@@ -1705,5 +1705,11 @@ and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
 [Group Ack]
 Acknowledgement of one airspace is valid for all airspaces with the same name and the same class.
 
+@1265
+[Airspace changes]
+"persistent" disabled airspaces stay disabled on next programm start
+"for this time only" all airspaces will be re-enabled after next programm start
+
+
 @9999
 No help available on this item!

@@ -54,7 +54,7 @@
       <WndProperty Name="prpAirspaceOpacity" Caption="_@M944_" X="2" Y="-1" Width="-246" Height="22" CaptionWidth="150" Font="2" Help="_@H1201_">
         <DataField name="" DataType="enum"/>
       </WndProperty>
-      <WndProperty Name="prpAspPermDisable" Caption="_@M967_" X="2" Y="-1" Width="-246" Height="22" CaptionWidth="150" Font="2" Help="_@H1201_">
+      <WndProperty Name="prpAspPermDisable" Caption="_@M967_" X="2" Y="-1" Width="-246" Height="22" CaptionWidth="150" Font="2" Help="_@H1265_">
        <DataField name="" DataType="enum" OnDataAccess="OnAspPermModified"/>
       </WndProperty>	  
     </WndFrame>
