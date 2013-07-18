@@ -117,6 +117,12 @@ const COLORREF CAirspace::TypeColor(void) const
 	return MapWindow::GetAirspaceColourByClass(_type);
 }
 
+const HBRUSH CAirspace::TypeBrush(void) const
+{
+	return MapWindow::GetAirspaceBrushByClass(_type);
+}
+
+
 // Calculate unique hash code for this airspace - prototype, normally never called
 void CAirspace::Hash(char *hashout, int maxbufsize) const
 {
@@ -656,7 +662,7 @@ return ret;
 
 // Calculates nearest horizontal, vertical and 3d distance to airspace based on last known position
 // Returns true if inside, false if outside
-bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
+bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude, double Latitude, int Altitude )
 {
   bool inside = true;
   int vDistanceBase;
@@ -664,19 +670,19 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
   double fbearing;
   double distance;
 
-  distance = Range(_lastknownpos.Longitude(), _lastknownpos.Latitude(), fbearing);
+  distance = Range(Longitude, Latitude, fbearing);
   if (distance > 0) {
     inside = false;
     // if outside we need the terrain height at the intersection point
     double intersect_lat, intersect_lon;
-    FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), fbearing, distance, &intersect_lat, &intersect_lon);
+    FindLatitudeLongitude(Latitude, Longitude, fbearing, distance, &intersect_lat, &intersect_lon);
     AirspaceAGLLookup(intersect_lat, intersect_lon, &_base.Altitude, &_top.Altitude);
   } else {
     // if inside we need the terrain height at the current position
-    AirspaceAGLLookup(_lastknownpos.Latitude(), _lastknownpos.Longitude(), &_base.Altitude, &_top.Altitude);
+    AirspaceAGLLookup(Latitude, Longitude, &_base.Altitude, &_top.Altitude);
   }
-  vDistanceBase = _lastknownalt - (int)(_base.Altitude);
-  vDistanceTop  = _lastknownalt - (int)(_top.Altitude);
+  vDistanceBase = Altitude - (int)(_base.Altitude);
+  vDistanceTop  = Altitude - (int)(_top.Altitude);
 
   if (vDistanceBase < 0 || vDistanceTop > 0) inside = false;
 
@@ -838,11 +844,187 @@ void CAirspace_Circle::CalcBounds()
     }
 }
 
+
+
+
+
+
+void CAirspace_Circle::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)  {
+
+	double fact = 1.0;
+	CalculatePictPosition(_bounds, rc, fact);
+	if(Enabled())
+      SelectObject(hDCTemp,TypeBrush());
+	else
+	  SelectObject(hDCTemp,GetStockObject(HOLLOW_BRUSH));
+    SetTextColor(hDCTemp,TypeColor());
+    HPEN FramePen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), TypeColor());
+    HPEN oldPen   = (HPEN) SelectObject(hDCTemp, FramePen);
+
+
+	Draw(hDCTemp,  rc ,  param1);
+
+    SelectObject(hDCTemp, oldPen);
+    DeleteObject(FramePen);
+}
+
+
+void CAirspace_Area::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)   {
+
+
+	double fact = 1.0;
+	CalculatePictPosition(_bounds, rc, fact);
+	if(Enabled())
+      SelectObject(hDCTemp,TypeBrush());
+	else
+	  SelectObject(hDCTemp,GetStockObject(HOLLOW_BRUSH));
+    SetTextColor(hDCTemp,TypeColor());
+    HPEN FramePen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), TypeColor());
+    HPEN oldPen   = (HPEN) SelectObject(hDCTemp, FramePen);
+
+	Draw(hDCTemp,  rc ,  param1);
+
+    SelectObject(hDCTemp, oldPen);
+    DeleteObject(FramePen);
+
+}
+
+void CAirspace_Circle::CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom)
+{
+//  _drawstyle = adsHidden;
+	zoom*= 0.9;
+	/*
+  if (!_enabled)
+	_drawstyle = adsOutline;
+  else
+	_drawstyle = adsFilled;*/
+int cx = rcDraw.right-rcDraw.left;
+int cy = rcDraw.bottom-rcDraw.top;
+double scale = (double) cx;
+  if (cy < cx)
+	scale = (double) cy;
+  scale = scale/(_radius*2.0)*zoom;
+
+  _screenradius = iround(_radius*scale );
+  _screencenter.x = rcDraw.left + cx/2;
+  _screencenter.y = rcDraw.top + cy/2;
+
+  buildCircle(_screencenter, _screenradius, _screenpoints);
+  _screenpoints_clipped.clear();
+  LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
+
+}
+
+void CAirspace_Area::CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom)
+{
+int cx = (rcDraw.right-rcDraw.left);
+int cy = (rcDraw.bottom-rcDraw.top);
+int xoff = rcDraw.left + cx/2;
+int yoff = rcDraw.top  + cy/2;
+POINT tmpPnt,lastPt={0,0};
+double dlon = _bounds.maxx  -   _bounds.minx;
+double dlat = _bounds.maxy  -   _bounds.miny;
+double PanLongitudeCenter = _bounds.minx + dlon/2;
+double PanLatitudeCenter  = _bounds.miny + dlat/2;
+zoom *= 0.9;
+
+double	scaleX = (double)(cx)/dlon*zoom/fastcosine(PanLatitudeCenter);
+double	scaleY = (double)(cy)/dlat*zoom;
+double scale;
+  if(scaleX < scaleY)
+	scale = scaleX;
+  else
+	scale = scaleY;
+
+  if (!_enabled)
+	_drawstyle = adsOutline;
+  else
+	_drawstyle = adsFilled;
+
+
+/*
+  StartupStore(_T("Definitions: %s"), NEWLINE);
+  StartupStore(_T("%f %f %f %f %s"),_bounds.minx, _bounds.maxx, _bounds.miny,_bounds.maxy, NEWLINE);
+  StartupStore(_T("%i %i %i %i %s"),rcDraw.left, rcDraw.right, rcDraw.bottom, rcDraw.top, NEWLINE);
+
+  StartupStore(_T("Range: %s"), NEWLINE);
+  StartupStore(_T("%f %f %s"),dlon, dlat, NEWLINE);
+  StartupStore(_T("%i %i %s"),cx, cy, NEWLINE);
+  StartupStore(_T("Scale: %s"), NEWLINE);
+  StartupStore(_T("%f  %s"),scale, NEWLINE);
+
+  StartupStore(_T("Center: %s"), NEWLINE);
+  StartupStore(_T("%f %f %s"),PanLongitudeCenter, PanLatitudeCenter, NEWLINE);
+  StartupStore(_T("%i %i %s"),xoff, yoff, NEWLINE);
+*/
+
+
+/**************************************************************
+ * if PICTO_CLIPPING is defined the polygon will be clipped
+ * normally this is not needed since we scale the airspace into
+ * the given rectange, this may speedup drawing
+ *************************************************************/
+#define PICTO_CLIPPING
+#ifndef PICTO_CLIPPING
+  _screenpoints_clipped.clear();
+  CPoint2DArray::iterator it;
+  for (it = _geopoints.begin();  it != _geopoints.end(); ++it)
+  {
+   	tmpPnt.x =xoff + Real2Int((it->Longitude()- PanLongitudeCenter)*fastcosine(it->Latitude()) *scale);
+   	tmpPnt.y =yoff - Real2Int((it->Latitude() - PanLatitudeCenter)*scale);
+    StartupStore(_T("%i %i %s"),	tmpPnt.x, tmpPnt.y, NEWLINE);
+    if (_screenpoints_clipped.size() ==0)
+    {
+      _screenpoints_clipped.push_back(tmpPnt);
+      lastPt = tmpPnt;
+    }
+    else
+    {
+      if((abs(lastPt.x - tmpPnt.x) > 3 ) || (abs(lastPt.y - tmpPnt.y) > 3 ))
+      {
+    	_screenpoints_clipped.push_back(tmpPnt);
+        lastPt = tmpPnt;
+      }
+    }
+  }
+#else
+  _screenpoints.clear();
+  CPoint2DArray::iterator it;
+  for (it = _geopoints.begin();  it != _geopoints.end(); ++it)
+  {
+   	tmpPnt.x =xoff - Real2Int((PanLongitudeCenter- it->Longitude())*fastcosine(it->Latitude())*scale);
+   	tmpPnt.y =yoff + Real2Int((PanLatitudeCenter - it->Latitude())*scale);
+
+    if (_screenpoints.size() ==0)
+    {
+    	_screenpoints.push_back(tmpPnt);
+      lastPt = tmpPnt;
+    }
+    else
+    {
+//      if((abs(lastPt.x - tmpPnt.x) > 2 ) || (abs(lastPt.y - tmpPnt.y) > 2 ))
+      {
+    	_screenpoints.push_back(tmpPnt);
+        lastPt = tmpPnt;
+      }
+    }
+  }
+  _screenpoints_clipped.clear();
+  _screenpoints_clipped.reserve(_screenpoints.size());
+
+  LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
+#endif
+
+
+}
+
+
+
 // Calculate screen coordinates for drawing
 void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) 
 {
   _drawstyle = adsHidden;
-  if (!_enabled) return;
+//  if (!_enabled) return;
   
   if (iAirspaceMode[_type]%2 == 1) {
     if(CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
@@ -854,7 +1036,10 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
       _drawstyle = adsFilled;
     } else {
       _drawstyle = adsOutline;
+  //    _drawstyle = adsFilled;
     }
+    if (!_enabled)
+      _drawstyle = adsDisabled;
 
         MapWindow::LatLon2Screen(_loncenter, _latcenter, _screencenter);
         _screenradius = iround(_radius * ResMapScaleOverDistanceModify);
@@ -1089,8 +1274,10 @@ void CAirspace_Area::CalcBounds()
 // Calculate screen coordinates for drawing
 void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) 
 {
+
+
   _drawstyle = adsHidden;
-  if (!_enabled) return;
+//  if (!_enabled) return;
   
   if (iAirspaceMode[_type]%2 == 1) {
     if(CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
@@ -1102,7 +1289,11 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
       _drawstyle = adsFilled;
     } else {
       _drawstyle = adsOutline;
+  //    _drawstyle = adsFilled;
     }
+    if (!_enabled)
+      _drawstyle = adsDisabled;
+
     CPoint2DArray::iterator it;
 /******************************
  * ULLI remove unneeded points
@@ -2014,6 +2205,7 @@ CCriticalSection::CGuard guard(_csairspaces);
 			   int iN = airspacetype[iSelAS].iNoPolyPts;
 			   int iCnt=airspacetype[iSelAS].iNoPolyPts;
 
+
 			   for (int iPt = 0 ;iPt < iN; iPt++)
 			   {
 				  LKASSERT(iCnt >= 0);
@@ -2028,9 +2220,16 @@ CCriticalSection::CGuard guard(_csairspaces);
 
 				  LKASSERT(iPt >= 0);
 			      LKASSERT(iPt < GC_MAX_POLYGON_PTS);
-				  airspacetype[iSelAS].rc.bottom = min(airspacetype[iSelAS].rc.bottom ,airspacetype[iSelAS].apPolygon[iPt].y);
-				  airspacetype[iSelAS].rc.top    = max( airspacetype[iSelAS].rc.top   ,airspacetype[iSelAS].apPolygon[iPt].y);
-
+                  if(iCnt == 0)
+                  {
+			        airspacetype[iSelAS].rc.bottom =airspacetype[iSelAS].apPolygon[0].y;
+			        airspacetype[iSelAS].rc.top    =airspacetype[iSelAS].apPolygon[0].y;
+                  }
+                  else
+                  {
+				    airspacetype[iSelAS].rc.bottom = min(airspacetype[iSelAS].rc.bottom ,airspacetype[iSelAS].apPolygon[iCnt].y);
+				    airspacetype[iSelAS].rc.top    = max( airspacetype[iSelAS].rc.top   ,airspacetype[iSelAS].apPolygon[iCnt].y);
+                  }
 				  if(iCnt < GC_MAX_POLYGON_PTS-1)
 					iCnt++;
 				}
@@ -2358,8 +2557,26 @@ CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, co
   CAirspaceList::const_iterator it;
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-    if ((*it)->DrawStyle()) {
+    if ((*it)->DrawStyle())
+    {
       if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
+    }
+  }
+  return res;
+}
+
+CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const double &lat, long searchrange) const
+{
+  int HorDist, Bearing, VertDist;
+  CAirspaceList res;
+  CAirspaceList::const_iterator it;
+  CCriticalSection::CGuard guard(_csairspaces);
+  for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
+  {
+	(*it)->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
+	if(HorDist < searchrange)
+    {
+      res.push_back(*it);
     }
   }
   return res;
@@ -2392,12 +2609,15 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
 void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify)
 {
 CAirspaceList::iterator it;
+//#define LKASP_CALC_ON_CHANGE_ONLY
 #ifndef LKASP_CALC_ON_CHANGE_ONLY
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces_near.begin(); it!= _airspaces_near.end(); ++it) {
     (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, ResMapScaleOverDistanceModify);
   }
+
 #else
+
   BOOL bChange = false;
   static double oldDistMod = -1;
   static rectObj old_screenbounds_latlon;
@@ -2432,11 +2652,15 @@ CAirspaceList::iterator it;
 	if(!bChange)
 	{
 	  #if DEBUG_NEAR_POINTS
-	  StartupStore(_T("... skip CalculateScreenPositionsAirspace\n"));
+//	  StartupStore(_T("... skip CalculateScreenPositionsAirspace\n"));
 	  #endif
 	}
 	else
 	{
+
+//#if DEBUG_NEAR_POINTS
+//StartupStore(_T("... CalculateScreenPositionsAirspace\n"));
+//#endif
 	  oldrcDraw = rcDraw;
 	  oldPt1 = Pt1;
 	  oldPt2 = Pt2;
@@ -2446,6 +2670,7 @@ CAirspaceList::iterator it;
 	  for (it = _airspaces_near.begin(); it!= _airspaces_near.end(); ++it) {
 		(*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, ResMapScaleOverDistanceModify);
 	  }
+//StartupStore(_T("... Ready CalculateScreenPositionsAirspace\n"));
 	}
 #endif
 }
@@ -2826,6 +3051,41 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
         _stprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt->FL, alt->Altitude, alt->Altitude*TOFEET);
       } else {
         _stprintf(intbuf, TEXT("FL%.0f %.0fft"), alt->FL, alt->Altitude*TOFEET);
+      }
+      break;
+  }
+  LK_tcsncpy(buffer, intbuf, bufferlen-1);
+}
+
+
+void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const
+{
+  TCHAR sUnitBuffer[24];
+  TCHAR intbuf[128];
+
+  Units::FormatUserAltitude(alt->Altitude, sUnitBuffer, sizeof(sUnitBuffer)/sizeof(sUnitBuffer[0]));
+
+  switch (alt->Base) {
+    case abUndef:
+        _stprintf(intbuf, TEXT("%s"), sUnitBuffer);
+      break;
+    case abMSL:
+//       _stprintf(intbuf, TEXT("%s MSL"), sUnitBuffer);
+        _stprintf(intbuf, TEXT("%s"), sUnitBuffer);
+      break;
+    case abAGL:
+      if (alt->AGL <= 0)
+        _stprintf(intbuf, TEXT("SFC"));
+      else {
+        Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof(sUnitBuffer)/sizeof(sUnitBuffer[0]));
+        _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
+      }
+      break;
+    case abFL:
+      if (Units::GetUserAltitudeUnit() == unMeter) {
+        _stprintf(intbuf, TEXT("%.0fm"), alt->Altitude);
+      } else {
+        _stprintf(intbuf, TEXT("%.0fft"), alt->Altitude*TOFEET);
       }
       break;
   }

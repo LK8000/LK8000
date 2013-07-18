@@ -32,6 +32,29 @@ static int nTextLines=0;
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
+static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
+	  (void)Sender;
+	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
+
+RECT *prc;
+prc = wPicto->GetBoundRect();
+
+
+//  StartupStore(_T("..Entered OnPaintWaypointPicto \n"));
+
+  SetBkColor  (hDC, RGB_LIGHTGREY);
+
+  if (WayPointCalc[SelectedWaypoint].IsLandable )
+  {
+	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 5000, true);
+  }
+  else
+  {
+	MapWindow::DrawWaypointPicto(hDC,  *prc, &WayPointList[SelectedWaypoint]);
+  }
+}
+
+
 static void NextPage(int Step){
   bool page_ok=false;
   page += Step;
@@ -248,6 +271,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnPrevClicked),
   DeclareCallBackEntry(OnPaintDetailsListItem),
   DeclareCallBackEntry(OnDetailsListInfo),
+  DeclareCallBackEntry(OnPaintWaypointPicto),
   DeclareCallBackEntry(NULL)
 };
 
@@ -569,3 +593,5 @@ void dlgWayPointDetailsShowModal(short mypage){
   wf = NULL;
 
 }
+
+

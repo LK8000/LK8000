@@ -499,6 +499,10 @@ class MapWindow {
 
 
   static int DrawFlarmObjectTrace(HDC hDC,double fZoom, DiagrammStruct* Dia);
+
+  static void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL Picto = false);
+  static void DrawWaypointPicto(HDC hdc, const RECT rc, WAYPOINT* wp);
+  static void DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC*);
  private:
   static void CalculateScreenPositions(POINT Orig, RECT rc, 
                                        POINT *Orig_Aircraft);
@@ -604,7 +608,8 @@ class MapWindow {
   static void DrawTerrainAbove(HDC hDC, const RECT rc);
   static void LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
   static void LKDrawVario(HDC hDC, RECT rc);
-  static void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact);
+
+
   static void DoSonar(void);
 
     

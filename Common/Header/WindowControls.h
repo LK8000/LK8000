@@ -791,6 +791,7 @@ class WndListFrame:public WndFrame{
     int RecalculateIndices(bool bigscroll);
     void Redraw(void);
     int GetItemIndex(void){return(mListInfo.ItemIndex);}
+    void SetItemIndexPos(int iValue);
     void SetItemIndex(int iValue);
     void SelectItemFromScreen(int xPos, int yPos, RECT *rect);
     int GetScrollBarHeight (void);

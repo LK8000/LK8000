@@ -4,7 +4,8 @@
     <WndButton Name="cmdAcknowledge" Caption="_@M1283_" X="91" Y="-999" Width="134"  Height="38" Font="2" Tag="0" OnClickNotify="OnAcknowledgeClicked" />
     <WndProperty Name="prpType" Caption="_@M752_" X="2" Y="-1"  Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndProperty Name="prpRange" Caption="_@M543_" X="2" Y="-1"  Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
-    <WndButton Name="cmdSelect" Caption="_@M1654_" X="3" Y="-1" Width="222"  Height="38" Font="2" Tag="0" OnClickNotify="OnSelectClicked" />
+ 	<WndOwnerDrawFrame Name="frmAirspacePicto"     X="2" Y="-1" Width="80" Height="38" Font="2"  OnPaint="OnPaintAirspacePicto"/>  
+    <WndButton Name="cmdSelect" Caption="_@M1654_" X="91" Y="-999" Width="134" Height="38" Font="2" Tag="0" OnClickNotify="OnSelectClicked" />	
     <WndProperty Name="prpTop" Caption="_@M729_" X="2" Y="-998"  Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndProperty Name="prpBase" Caption="_@M128_" X="2" Y="-1"  Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndButton Name="cmdClose" Caption="_@M156_" X="3" Y="-998" Width="222"  Height="38" Font="2" Tag="0" OnClickNotify="OnCloseClicked" />

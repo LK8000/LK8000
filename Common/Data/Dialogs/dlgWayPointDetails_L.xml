@@ -13,6 +13,7 @@
       <WndProperty Name="prpBearing"   Caption="_@M138_"       X="2" Y="-1" Width="248" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc0"       Caption="_@M83_" X="2" Y="-1" Width="248" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc2"       Caption="_@M84_" X="2" Y="-1" Width="248" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+	  <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="125" Width="60" Height="60" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
     </WndFrame>
     <WndListFrame Name="frmDetails" X="0" Y="0" Width="240" Height="220" Font="3" OnListInfo="OnDetailsListInfo">
       <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="235" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
@@ -29,6 +30,7 @@
 
       <WndButton Name="cmdNewHome"         Caption="_@M605_"  X="4" Y="2" Width="9999"  Height="44" Font="2" />
       <WndButton Name="cmdTeamCode"        Caption="_@M604_"  X="4" Y="-998" Width="9999"  Height="44" Font="2" />
+
     </WndFrame>
   </WndForm>
 </PMML>

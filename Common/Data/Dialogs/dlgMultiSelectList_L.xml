@@ -1,0 +1,13 @@
+<PMML>
+  <WndForm Name="frmMultiSelectList" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M595_" Font="2" >
+    <WndFrame X="0" Y="0" Width="100" Height="20" Font="2" />
+	<WndButton   Name="cmdUp" Caption="_@M2100_"    X="2" Y="2" Width="236"  Height="40" Font="2" OnClickNotify="OnUpClicked"/>      
+	<WndButton   Name="cmdDown" Caption="_@M2102_"    X="2" Y="292" Width="236"  Height="40" Font="2" OnClickNotify="OnDownClicked"/> 	
+
+	<WndButton   Name="cmdEnter" Caption="_@M1654_"    X="2" Y="335" Width="110"  Height="40" Font="2" OnClickNotify="OnEnterClicked"/> 	
+    <WndButton   Name="cmdClose" Caption="_@M186_"    X="120" Y="335" Width="110"  Height="40" Font="2" OnClickNotify="OnCloseClicked"/>	
+    <WndListFrame Name="frmMultiSelectListList" X="0" Y="42" Width="240" Height="250" Font="2" OnListInfo="OnMultiSelectListListInfo">
+      <WndOwnerDrawFrame Name="frmMultiSelectListListEntry" X="2" Y="2" Width="-218" Height="36" Font="2"  OnPaint="OnMultiSelectListPaintListItem"/>
+    </WndListFrame>
+  </WndForm>
+</PMML>

@@ -1,6 +1,7 @@
 <PMML>
   <WndForm Name="frmWayQuick" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="" Font="2" >
-    <WndButton Name="cmdGoto" Caption="_@M330_" X="3" Y="3" Width="312"  Height="52" Font="2" Tag="3" />
+  	<WndOwnerDrawFrame Name="frmWaypointPicto"     X="3" Y="3" Width="48" Height="48" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
+    <WndButton Name="cmdGoto" Caption="_@M330_" X="54" Y="3" Width="258"  Height="48" Font="2" Tag="3" />
     <WndButton Name="cmdSetAlt1" Caption="_@M597_" X="3" Y="-998" Width="155"  Height="52" Font="2" Tag="3" />
     <WndButton Name="cmdSetAlt2" Caption="_@M598_" X="160" Y="-999" Width="155"  Height="52" Font="2" Tag="3" />
     <WndButton Name="cmdDetails" Caption="_@M231_" X="3" Y="-998" Width="155"  Height="52" Font="2" Tag="3" />
