@@ -588,7 +588,31 @@ static void OnAirspaceDisplay(DataField *Sender, DataField::DataAccessKind_t Mod
 		break;
   }
 }
+
  
+static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mode){
+  WndProperty* wp;
+
+
+  switch(Mode){
+    case DataField::daGet:
+    break;
+    case DataField::daPut:
+    case DataField::daChange:
+      wp = (WndProperty*)wf->FindByName(TEXT("prpAspPermDisable"));
+      if (wp)
+    	  AspPermanentChanged=(wp->GetDataField()->GetAsInteger());
+		StartupStore(_T(".......AspPermanentChanged %i %s"),AspPermanentChanged,NEWLINE);
+
+    break;
+	default:
+		StartupStore(_T("........... DBG-908%s"),NEWLINE);
+		break;
+  }
+
+}
+
+
 static void OnLk8000ModeChange(DataField *Sender, DataField::DataAccessKind_t Mode){
   WndProperty* wp;
 
@@ -1512,7 +1536,9 @@ static CallBackTableEntry_t CallBackTable[]={
   
   DeclareCallBackEntry(OnAirspaceFillType),
   DeclareCallBackEntry(OnAirspaceDisplay),
+  DeclareCallBackEntry(OnAspPermModified),
   DeclareCallBackEntry(OnLk8000ModeChange),
+
   DeclareCallBackEntry(NULL)
 };
 
@@ -1906,6 +1932,21 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
   
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAspPermDisable"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+ //   _@M967_ "Airspace changes"
+ //   _@M968_ "for this time only"
+ //   _@M969_ "permanent"
+    dfe->addEnumText(gettext(TEXT("_@M968_"))); // _@M968_ "for this time only"
+    dfe->addEnumText(gettext(TEXT("_@M969_"))); // _@M969_ "permanent"
+
+ //   dfe->Set(FontRenderer);
+    wp->RefreshDisplay();
+  }
+
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeMode"));
   if (wp) {
     DataFieldEnum* dfe;
