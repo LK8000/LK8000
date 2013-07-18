@@ -12,6 +12,7 @@
 #include "Calculations2.h"
 #include "Multimap.h"
 #include "dlgTools.h"
+#include "Sideview.h"
 
 extern void ShowMenu();
 extern bool Sonar_IsEnabled;
@@ -471,6 +472,37 @@ passthrough:
 		SoundModeIndex();
 
 		return true;
+
+	case  ckMapOrient:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+
+		TCHAR MapOrientMsg[60];
+
+	    if  (MapSpaceMode==MSM_MAP)
+	    {
+	      DisplayOrientation++;
+	      if(DisplayOrientation > NORTHSMART)
+	    	DisplayOrientation = 0;
+	      MapWindow::SetAutoOrientation(true); // 101008 reset it
+	      switch(DisplayOrientation)
+	      {
+            case TRACKUP     : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M737_"))) ; break;  // _@M737_ "Track up"
+            case NORTHUP     : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M483_"))) ; break;  // _@M483_ "North up"
+            case NORTHCIRCLE : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M482_"))) ; break;  // _@M482_ "North circling"
+            case TRACKCIRCLE : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M682_"))) ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
+            case NORTHTRACK  : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M484_"))) ; break;  // _@M484_ "North/track"
+            case NORTHSMART  : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M481_"))) ; break;  // _@M481_ "North Smart"
+	      }
+	      DoStatusMessage(MapOrientMsg,NULL,false);
+	    }
+	    else
+	    {
+		  SetMMNorthUp(GetSideviewPage(), (GetMMNorthUp(GetSideviewPage())+1)%2);
+	    }
+
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"),ckeymode);
@@ -547,6 +579,7 @@ CustomKeyLabel[54]=2230;	// Force landing
 CustomKeyLabel[55]=2236;	// ResetTripComputer
 CustomKeyLabel[56]=2237;	// Sonar toggle
 CustomKeyLabel[57]=2246;	// Reset view
+CustomKeyLabel[58]=2038;	// Map Orientation
 }
 
 

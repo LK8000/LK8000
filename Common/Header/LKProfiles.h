@@ -353,6 +353,14 @@ TCHAR szRegistryMultimap2[]= _T("Multimap2a");
 TCHAR szRegistryMultimap3[]= _T("Multimap3a");
 TCHAR szRegistryMultimap4[]= _T("Multimap4a");
 TCHAR szAspPermanent[]      = _T("AirspacePermMod");
+
+TCHAR szRegistryMMNorthUp1[]= _T("MultimapNorthUp1");
+TCHAR szRegistryMMNorthUp2[]= _T("MultimapNorthUp2");
+TCHAR szRegistryMMNorthUp3[]= _T("MultimapNorthUp3");
+TCHAR szRegistryMMNorthUp4[]= _T("MultimapNorthUp4");
+
+TCHAR szFlarmDirection[]= _T("FlarmDirection");
+
 //
 //
 //
@@ -625,6 +633,15 @@ extern TCHAR szRegistryMultimap2[];
 extern TCHAR szRegistryMultimap3[];
 extern TCHAR szRegistryMultimap4[];
 extern TCHAR szAspPermanent[];
+
+extern TCHAR szRegistryMMNorthUp1[];
+extern TCHAR szRegistryMMNorthUp2[];
+extern TCHAR szRegistryMMNorthUp3[];
+extern TCHAR szRegistryMMNorthUp4[];
+
+extern TCHAR szFlarmDirection[];
+
+
 //
 //
 #endif

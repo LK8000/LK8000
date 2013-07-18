@@ -700,6 +700,17 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue, szAspPermanent , &AspPermanentChanged);
   if (matchedstring) return;
 
+  PREAD(sname,svalue,szRegistryMMNorthUp1 ,&MMNorthUp_Runtime[0]);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryMMNorthUp2 ,&MMNorthUp_Runtime[1]);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryMMNorthUp3 ,&MMNorthUp_Runtime[2]);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryMMNorthUp4 ,&MMNorthUp_Runtime[3]);
+  if (matchedstring) return;
+
+  PREAD(sname,svalue, szFlarmDirection , &iFlarmDirection);
+  if (matchedstring) return;
 
   return;
 
