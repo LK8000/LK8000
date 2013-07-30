@@ -947,11 +947,13 @@ _continue:
 
 				if (!mode.AnyPan()) {
 					// match only center screen
+#ifdef CENTER_CUSTOMKEY
 					if (  (abs(lparam_X-P_HalfScreen.x) <NIBLSCALE(100)) && 
 					      (abs(lparam_Y-P_HalfScreen.y) <NIBLSCALE(100)) ) {
 
 						if (CustomKeyHandler(CKI_CENTERSCREEN)) break;
 					}
+#endif
 				}
 				break;
 			}
