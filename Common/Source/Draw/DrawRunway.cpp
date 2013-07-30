@@ -92,12 +92,9 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
     rwb = l ;
   }
 
-  l = (int)(l * fScaleFact); if(l==0) l=1;
+  l = (int)(l * fScaleFact*1.1); if(l==0) l=1;
   b = (int)(rwb * fScaleFact); if(b==0) b=1;
   p = (int)(cir * (double)ScreenScale * fScaleFact); if(p==0) p=1;
-//p=(int)(((2.0*l)/1000.0)* (double)ScreenSizeX);
-//p=(int)(l*ScreenScale);
-StartupStore(_T(".......l=%i b=%i p=%i ScreenSizeX=%i  ScreenSizeY=%i RealScale=%f \n"), l, b,p,  ScreenSizeX, ScreenSizeY, MapWindow::zoom.RealScale());
 
   switch(wp->Style) {
 	case STYLE_AIRFIELDSOLID: solid = true;  bRunway  = true;  bOutland = false;  bGlider  = false;	break;
