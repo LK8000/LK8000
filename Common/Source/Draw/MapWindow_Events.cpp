@@ -18,7 +18,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat,
                                              bool pan) {
 double Dist;
 unsigned int i;
-double dyn_range = range*2;
+double dyn_range = range*2.5;
 bool  found = false;
 bool  landablefound = false;
 
@@ -31,9 +31,10 @@ bool  landablefound = false;
 
 if(dyn_range < 1000)
 	dyn_range = 1000;
+/*
 if(dyn_range > 12000)
 	dyn_range = 12000;
-
+*/
 if (EnableSoundModes)
 	PlayResource(TEXT("IDR_WAV_MM0"));
 
@@ -80,7 +81,7 @@ if (EnableSoundModes)
 
   int  HorDist=99999, Bearing, VertDist;
   {
-	CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, dyn_range/2);
+	CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, (int)(dyn_range/2));
 
 	CAirspaceList::iterator it;
 	for (it = reslist.begin(); it != reslist.end(); ++it)
@@ -104,7 +105,7 @@ if (EnableSoundModes)
         DistanceBearing(lat,lon,
                       WayPointList[i].Latitude,
                       WayPointList[i].Longitude, &Dist, NULL);
-        if(Dist < dyn_range/3)
+        if(Dist < (dyn_range/2))
         {
     	  dlgAddMultiSelectListItem(NULL,i, IM_WAYPOINT, Dist);
     	  found = true;
@@ -117,10 +118,11 @@ if (EnableSoundModes)
   {
     DoStatusMessage(_T("No Near Point found!"));
   }
-
+  else
+  {
 	if(dlgMultiSelectListShowModal() != NULL)
       return true; // nothing found..
-	else
+  }
 	  return false;
 }
 
