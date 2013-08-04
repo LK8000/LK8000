@@ -102,6 +102,20 @@ BOOL IsDots(const TCHAR* str) {
   return TRUE;
 }
 
+void DataFieldFileReader::Clear() {
+    for (unsigned int i=1; i<nFiles; i++) {
+      if (fields[i].mTextFile) {
+        free(fields[i].mTextFile);
+        fields[i].mTextFile= NULL;
+      }
+      if (fields[i].mTextPathFile) {
+        free(fields[i].mTextPathFile);
+        fields[i].mTextPathFile= NULL;
+      }
+    }
+    nFiles = 1;
+    mValue = 0;
+}
 
 int DataFieldFileReader::GetAsInteger(void){
   return mValue;
@@ -278,15 +292,17 @@ BOOL DataFieldFileReader::ScanFiles(const TCHAR* sPath,
   return TRUE;
 }
 
-void DataFieldFileReader::Lookup(const TCHAR *Text) {
+bool DataFieldFileReader::Lookup(const TCHAR *Text) {
   int i=0;
   mValue = 0;
   for (i=1; i<(int)nFiles; i++) {    
     // if (_tcscmp(Text,fields[i].mTextPathFile)==0) { 091126
     if (_tcsicmp(Text,fields[i].mTextPathFile)==0) {
       mValue = i;
+      return true;
     }
   }
+  return false;
 }
 
 int DataFieldFileReader::GetNumFiles(void) {
@@ -471,6 +487,11 @@ DataField::DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat,
   mUnits[0]= 0;
 }
 
+void DataField::Clear() { 
+    // need to implement in derived class ...
+    LKASSERT(false); 
+};
+
 void DataField::SetDisplayFormat(const TCHAR *Value){
   LKASSERT(_tcslen(Value)<=FORMATSIZE);
   _tcscpy(mDisplayFormat, Value);
@@ -600,13 +621,18 @@ void DataFieldBoolean::Dec(void){
 
 DataFieldEnum::~DataFieldEnum()
 {
+    Clear();
+}
+
+void DataFieldEnum::Clear() {
   for (unsigned int i=0; i<nEnums; i++) {
     if (mEntries[i].mText) {
       free(mEntries[i].mText);
       mEntries[i].mText= NULL;
     }
   }
-  nEnums = 0;      
+  nEnums = 0;
+  mValue = 0;
 }
 
 int DataFieldEnum::GetAsInteger(void){
@@ -4141,7 +4167,7 @@ void WndListFrame::SetItemIndex(int iValue){
   
 
   mListInfo.ItemIndex=0;  // usually leaves selected item as first in screen
-  mListInfo.ScrollIndex=iValue;
+  mListInfo.ScrollIndex=iValue; 
 
   int iTail = mListInfo.ItemCount - iValue; // if within 1 page of end
   if ( iTail < mListInfo.ItemInPageCount)  
