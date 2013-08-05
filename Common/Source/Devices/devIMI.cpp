@@ -423,7 +423,7 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
   }
   else {
     // TPs
-    if(AATEnabled) {
+    if(UseAATTarget()) {
       imiWp.oz.style = 1;
       switch(Task[idx].AATType) {
       case CIRCLE:

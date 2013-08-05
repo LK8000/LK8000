@@ -392,7 +392,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                 TaskValid = true;
                 TaskFound = true;
                 SectorType=SECTOR;  // normal sector by default if no other ObsZone parameter
-                AATEnabled = false; // racing task by default, if AAT will overwrite this
+                gTaskType = TSK_DEFAULT; // racing task by default, if AAT will overwrite this
 
                 if(Entries[0].size() == 0)
                 {
@@ -499,7 +499,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                                 TmpZone.mA12 = _tcstod(pToken + 4, &sz);
                             } else if (_tcsstr(pToken, _T("AAT=")) == pToken) {
                                 // AAT
-                        	AATEnabled = true;
+                        	      gTaskType = TSK_AAT;
                                 if( _tcstod(pToken + 4, &sz) > 0) // AAT = 1?
                                   SectorType=CIRCLE;
                             } else if (_tcsstr(pToken, _T("Line=")) == pToken) {
@@ -589,7 +589,7 @@ TCHAR szString[READLINE_LENGTH + 1];
     {
       if(bClosedTask)
       {
-          if (AATEnabled)
+          if (gTaskType == TSK_AAT)
               _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[AAT %.1f%s] %s"), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M699_ "Task"
           else if (CALCULATED_INFO.TaskFAI)
               _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken(2432), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"

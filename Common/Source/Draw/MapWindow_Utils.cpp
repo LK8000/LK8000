@@ -217,7 +217,7 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
         TargetZoomDistance = max(2e3, (double)StartRadius*2);
       } else if (!ValidTaskPoint(target_point+1)) {
         TargetZoomDistance = max(2e3, (double)FinishRadius*2);
-      } else if (AATEnabled) {
+      } else if (UseAATTarget()) {
         if (Task[target_point].AATType == SECTOR) {
           const double start = Task[target_point].AATStartRadial;
           const double finish = Task[target_point].AATFinishRadial;

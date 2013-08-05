@@ -2568,5 +2568,13 @@
     "_@M002476_": "Multitarget Bearing Diff ",
     "_@M002477_": "DiffMtg",
     "_@M002478_": "Alternate1 QNH arrival",
-    "_@M002479_": "Atn1QNH"
+    "_@M002479_": "Atn1QNH",
+
+    "_@H001361_": "[Task Type]\n[Default]\n[AAT]\nEnables AAT tasks. When enabled, the AAT observation parameters can be set for each turnpoint.\n[Grand Prix / Race To Goal]\nCommon Task Type for Paraglider or Grand Prix Task Type for Glider.",
+
+    "_@M001914_": "Grand Prix",
+    "_@M001915_": "Race To Goal / Min Time",
+    "_@M001916_": "Default",
+    "_@M001917_": "Task Type",
+    "_@M001918_": "AAT"
 }

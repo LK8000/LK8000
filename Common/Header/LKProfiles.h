@@ -196,7 +196,7 @@ extern const char szRegistryAutoZoomThreshold[];
 extern const char szRegistryClimbZoom[];
 extern const char szRegistryCruiseZoom[];
 extern const char szRegistryMaxAutoZoom[];
-extern const char szRegistryPGOptimizeRoute[];
+extern const char szRegistryTskOptimizeRoute[];
 extern const char szRegistryGliderSymbol[];
 extern const char szRegistryPilotName[];
 extern const char szRegistryLiveTrackersrv[];

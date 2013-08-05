@@ -15,7 +15,7 @@ void FlyDirectTo(int index) {
 
   LockTaskData();
 
-  AATEnabled = FALSE;
+  gTaskType = TSK_DEFAULT;
 
   InsertRecentList(index);
 

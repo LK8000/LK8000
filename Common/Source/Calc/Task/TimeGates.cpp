@@ -13,7 +13,7 @@
 
 // ALL TIME VALUES ARE IN SECONDS! 
 bool UseGates() {
-  if (!ISPARAGLIDER ) return(false);
+  if (!(gTaskType==TSK_GP) ) return(false);
   if (PGNumberOfGates>0) {
 	if (ValidTaskPoint(0) && ValidTaskPoint(1)) {
 		return(true);

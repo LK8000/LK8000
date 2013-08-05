@@ -20,12 +20,12 @@
       <WndProperty Name="prpTaskStartRadius" Caption="_@M650_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H501_" keyboard="1">
         <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="100" Step="0.01"/>
       </WndProperty>
-      <WndProperty Name="prpEnableMultipleStartPoints" Caption="_@M86_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" ReadOnly="0" Help="_@H502_">
-        <DataField name="" DataType="boolean" ReadOnly="0" OnDataAccess="OnAATEnabled"/>
+      <WndProperty Name="prpEnableMultipleStartPoints" Caption="_@M86_" X="2" Y="-1"  Width="240" Height="22" CaptionWidth="150" Font="2" ReadOnly="0" Help="_@H502_">
+        <DataField name="" DataType="boolean" ReadOnly="0" OnDataAccess="OnTaskType"/>
       </WndProperty>
-      <WndButton Name="EditStartPoints" Caption="_@M250_" X="20" Y="-1" Width="200" Height="22" Font="2" OnClickNotify="OnStartPointClicked"/>
-      <WndProperty Name="prpAATEnabled" Caption="_@M43_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" ReadOnly="0" Help="_@H503_">
-        <DataField name="" DataType="boolean" ReadOnly="0" OnDataAccess="OnAATEnabled"/>
+      <WndButton  Name="EditStartPoints" Caption="_@M250_"    X="20" Y="-1" Width="200"  Height="22" Font="2" OnClickNotify="OnStartPointClicked"/>
+      <WndProperty Name="prpTaskType" Caption="_@M1917_" X="2" Y="-1"  Width="240" Height="22" CaptionWidth="150" Font="2" ReadOnly="0" Help="_@H1361_">
+        <DataField name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnTaskType"/>
       </WndProperty>
       <WndProperty Name="prpMinTime" Caption="_@M41_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" ReadOnly="0" Help="_@H504_" keyboard="1">
         <DataField name="" DataType="double" DisplayFormat="%.0f min" Min="0" Max="600" Step="1" EditFormat="%.0f"/>
@@ -45,7 +45,7 @@
     </WndFrame>
     <WndFrame Name="frmAATTurnpoint" X="0" Y="85" Width="240" Height="220" Font="2">
       <WndProperty Name="prpAATType" Caption="_@M752_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H508_">
-        <DataField name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnAATEnabled"/>
+        <DataField name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnTaskType"/>
       </WndProperty>
       <WndFrame Name="frmCircle" X="0" Y="24" Width="240" Height="198">
         <WndProperty Name="prpAATCircleRadius" Caption="_@M171_" X="2" Y="2" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H509_" keyboard="1">

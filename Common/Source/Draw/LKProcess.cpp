@@ -189,7 +189,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				if (index>=0) {
 goto_bearing:
 					// we could use only waypointbearing, but lets keep them separated anyway
-					if (AATEnabled)
+					if (UseAATTarget())
 						value=DerivedDrawInfo.WaypointBearing;
 					else
 						value = WayPointCalc[index].Bearing;
@@ -699,7 +699,7 @@ goto_bearing:
 				status = 0; // black
 			}
 #endif
-			if (ValidTaskPoint(ActiveTaskPoint) && AATEnabled && (DerivedDrawInfo.AATTimeToGo< 0.9*ERROR_TIME)) {
+			if (ValidTaskPoint(ActiveTaskPoint) && UseAATTarget() && (DerivedDrawInfo.AATTimeToGo< 0.9*ERROR_TIME)) {
 
 				Units::TimeToText(BufferValue, (int)DerivedDrawInfo.AATTimeToGo);
 				valid=true;
@@ -712,7 +712,7 @@ goto_bearing:
 		case LK_AA_DISTMAX:
 		// B29
 		case LK_AA_DISTMIN:
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_DISTMAX )
@@ -739,7 +739,7 @@ goto_bearing:
 		case LK_AA_SPEEDMAX:
 		// B31
 		case LK_AA_SPEEDMIN:
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() && DerivedDrawInfo.AATTimeToGo>=1 ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_SPEEDMAX )
@@ -1029,8 +1029,8 @@ goto_bearing:
                   // LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
                     _tcscpy(BufferTitle, MsgToken(1096));
 
-                  if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-                  else index = Task[ActiveTaskPoint].Index;
+					if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+					else index = Task[ActiveTaskPoint].Index;
               } 
 
             if (index>=0) {
@@ -1038,7 +1038,7 @@ goto_bearing:
                 // if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
                 if (true)
                 {
-                    if (AATEnabled && !DoOptimizeRoute())
+					if (gTaskType==TSK_AAT)
                         value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
                     else
                         value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
@@ -1099,7 +1099,7 @@ goto_bearing:
 
 		// B51
 		case LK_AA_TARG_DIST:
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value = DISTANCEMODIFY*DerivedDrawInfo.AATTargetDistance ;
@@ -1121,7 +1121,7 @@ goto_bearing:
 
 		// B52
 		case LK_AA_TARG_SPEED:
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() && DerivedDrawInfo.AATTimeToGo>=1 ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value = TASKSPEEDMODIFY*DerivedDrawInfo.AATTargetSpeed;
@@ -1352,7 +1352,7 @@ goto_bearing:
 			_stprintf(BufferUnit,_T("h"));
 			// TODO This is in the wrong place, should be moved to calc thread! 090916
 			double dd;
-			if (AATEnabled && ValidTaskPoint(ActiveTaskPoint)) {
+			if (UseAATTarget() && ValidTaskPoint(ActiveTaskPoint)) {
 				dd = DerivedDrawInfo.TaskTimeToGo;
 				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveTaskPoint>0)) {
 					dd += DrawInfo.Time-DerivedDrawInfo.TaskStartTime;
@@ -2535,7 +2535,7 @@ olc_score:
 			valid=true;
           }
         } else if (ValidTaskPoint(ActiveTaskPoint + 1)) {
-          if (!AATEnabled && !DoOptimizeRoute()) {
+          if (!UseAATTarget()) {
             if(SectorType == CIRCLE) {
               value = Distance - SectorRadius;
               valid=true;

@@ -165,7 +165,7 @@ void dlgAddMultiSelectListDetailsDialog(int Index) {
                 if (Elements[Index].iIdx == iLastTaskPoint)
                     dlgTaskWaypointShowModal(Elements[Index].iIdx, 2, false, true);
                 else {
-                    if ((AATEnabled) && (CALCULATED_INFO.Flying) && (!IsMultiMapNoMain())) {
+                    if ((UseAATTarget()) && (CALCULATED_INFO.Flying) && (!IsMultiMapNoMain())) {
                         wf->SetModalResult(mrOK);
                         wf->SetVisible(false);
                         dlgTarget(Elements[Index].iIdx);
@@ -440,7 +440,7 @@ if (iTaskIdx == 0) {
          double SecRadius = 0;
 
          SecRadius = SectorRadius;
-         if (AATEnabled) {
+         if (UseAATTarget()) {
              if (Task[iTaskIdx].AATType == SECTOR)
                  SecRadius = Task[iTaskIdx].AATSectorRadius;
              else

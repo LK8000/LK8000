@@ -575,6 +575,10 @@ int DataFieldEnum::Find(const TCHAR *Text) {
   return -1;
 }
 
+void DataFieldEnum::removeLastEnum() {
+  mEntries.pop_back();
+}
+
 const TCHAR *DataFieldEnum::GetAsString(void) {
   if (mValue<mEntries.size()) {
     return(mEntries[mValue].mText.c_str());

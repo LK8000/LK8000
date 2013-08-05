@@ -616,7 +616,7 @@ static void UpdateValuesTask(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskTime"));
   Units::TimeToText(Temp, (int)AATTaskLength*60);
   if (wp) {
-    if (!AATEnabled) {
+    if (!UseAATTarget()) {
       wp->SetVisible(false);
     } else {
       wp->SetText(Temp);
@@ -651,7 +651,7 @@ static void UpdateValuesTask(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpRemainingDistance"));
   if (wp) {
-    if (AATEnabled) {
+    if (UseAATTarget()) {
       _stprintf(Temp, TEXT("%.0f %s"),
                 DISTANCEMODIFY*CALCULATED_INFO.AATTargetDistance,
                 Units::GetDistanceName());

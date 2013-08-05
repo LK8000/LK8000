@@ -137,8 +137,8 @@ bool LoadGpxTask(LPCTSTR szFileName) {
         FinishRadius=3000;
     }
     AutoAdvance=1; //Auto
-    AATEnabled=false;
-    PGOptimizeRoute=false;
+    gTaskType=TSK_DEFAULT;
+    TskOptimizeRoute=false;
     StartHeightRef=1; //ASL
     RefreshTask();
     TaskModified = false;

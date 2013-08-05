@@ -101,7 +101,7 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
       ScaleXFromValue(rc, x1*fXY_Scale);
       ScaleYFromValue(rc, y1*fXY_Scale);
 
-      if (AATEnabled)
+      if (UseAATTarget())
       {
 	    double aatlat;
 	    double aatlon;
@@ -151,7 +151,7 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
   ScaleMakeSquare(rc);
 
   // draw aat areas
-    if (AATEnabled)
+    if (UseAATTarget())
     {
       for (i=MAXTASKPOINTS-1; i>0; i--)
       {
@@ -187,7 +187,7 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 #ifdef FAI_GRID_DEBUG
     StartupStore(_T("RenderContest yscale:%f  fZoom:%f  fTic:%f DISTANCEMODIFY:%f %s"), yscale,fZoom, fTic, DISTANCEMODIFY, NEWLINE);
 #endif
-  if (!AATEnabled)
+  if (!UseAATTarget())
   {
 	for (i=MAXTASKPOINTS-1; i>0; i--)
 	{
@@ -311,7 +311,7 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 		  DrawLabel(Surface, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
 		}
 
-		if ((i==ActiveTaskPoint)&&(!AATEnabled))
+		if ((i==ActiveTaskPoint)&&(!UseAATTarget()))
 		{
 		  lat1 = GPS_INFO.Latitude;
 		  lon1 = GPS_INFO.Longitude;
@@ -324,7 +324,7 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 
 	// draw aat task line
 
-	if (AATEnabled)
+	if (UseAATTarget())
 	{
 	  for (i=MAXTASKPOINTS-1; i>0; i--)
 	  {

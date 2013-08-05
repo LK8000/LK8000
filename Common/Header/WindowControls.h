@@ -150,6 +150,9 @@ class DataField{
   virtual void addEnumText(const TCHAR *Text, const TCHAR *Label = nullptr ) { assert(false); }
   virtual void addEnumTextNoLF(const TCHAR *Text) { assert(false); }
   virtual void Sort(int startindex=0) { assert(false); }
+	
+	virtual size_t getCount() const { assert(false); return 0; }
+	virtual void removeLastEnum() { assert(false); }
 
   virtual int Find(const TCHAR *Text) { assert(false); return -1; }
 
@@ -274,6 +277,9 @@ class DataFieldEnum: public DataField {
 
   void addEnumTextNoLF(const TCHAR *Text) override;
   void addEnumText(const TCHAR *Text, const TCHAR *Label) override ;
+	
+	size_t getCount() const override { return mEntries.size(); }
+	void removeLastEnum() override;
 
   int Find(const TCHAR *Text) override ;
 

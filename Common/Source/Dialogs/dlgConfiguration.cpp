@@ -2858,7 +2858,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if(dfe) {
-        dfe->Set(PGOptimizeRoute_Config);
+        dfe->Set(TskOptimizeRoute_Config);
     }
     wp->RefreshDisplay();
   }
@@ -4354,14 +4354,10 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
-    if (PGOptimizeRoute_Config != (wp->GetDataField()->GetAsBoolean())) {
-      PGOptimizeRoute_Config = (wp->GetDataField()->GetAsBoolean());
-      PGOptimizeRoute = PGOptimizeRoute_Config;
+    if (TskOptimizeRoute != (wp->GetDataField()->GetAsBoolean())) {
+      TskOptimizeRoute = (wp->GetDataField()->GetAsBoolean());
 
-      if (ISPARAGLIDER) {
-	    if(PGOptimizeRoute) {
-		  AATEnabled = true;
-	    }
+      if (gTaskType==TSK_GP) {
         ClearOptimizedTargetPos();
 	  }
 	}
@@ -4769,8 +4765,6 @@ void UpdateAircraftConfig(void){
         (wp->GetDataField()->GetAsInteger());
       requirerestart = true;
       AIRCRAFTTYPECHANGED=true;
-
-        if (ISPARAGLIDER) AATEnabled=TRUE; // NOT SURE THIS IS NEEDED ANYMORE. 
     }
   }
 

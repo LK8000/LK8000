@@ -298,10 +298,14 @@ void MasterTimeReset(void) {
 #endif // MasterTimeReset
 }
 
+bool UseAATTarget() {
+    return (gTaskType == TSK_AAT) || (gTaskType == TSK_GP);
+}
+
 bool DoOptimizeRoute() {
 
-  if (AircraftCategory != (AircraftCategory_t)umParaglider) return false;
-  if (!PGOptimizeRoute) return false;
+  if (gTaskType!=TSK_GP) return false;
+  if (!TskOptimizeRoute) return false;
 
   if (!ValidTaskPoint(0) || !ValidTaskPoint(1)) return false;
   if (!ValidTaskPoint(ActiveTaskPoint)) return false;

@@ -49,7 +49,7 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
     }
     else
     {
-      if(AATEnabled || DoOptimizeRoute())
+      if(UseAATTarget())
       {
         LKASSERT(ValidTaskPoint(TskIdx)); // could be -1
 	*SecType = Task[TskIdx].AATType;

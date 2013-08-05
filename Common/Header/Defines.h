@@ -276,7 +276,7 @@
 #define NUMRAMPS        18
 
 // Task format version
-#define LKTASKVERSION	'3'
+#define LKTASKVERSION	'4'
 // How many chars at the beginning of file are reserved
 #define LKPREAMBOLSIZE	50
 
@@ -968,7 +968,7 @@ static const double PI = (4*atan(1));
 #define INVERTCOLORS  (Appearance.InverseInfoBox)
 #define TASKINDEX       Task[ActiveTaskPoint].Index
 
-#define ACTIVE_WP_IS_AAT_AREA (AATEnabled && (ActiveTaskPoint > 0) \
+#define ACTIVE_WP_IS_AAT_AREA (UseAATTarget() && (ActiveTaskPoint > 0) \
                               && ValidTaskPoint(ActiveTaskPoint + 1))
 
 #define DONTDRAWTHEMAP  (!MapWindow::mode.AnyPan()&&MapSpaceMode!=MSM_MAP)

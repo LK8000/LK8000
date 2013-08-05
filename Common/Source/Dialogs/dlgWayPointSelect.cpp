@@ -88,7 +88,7 @@ int GetTaskBearing() {
 	if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 		int index = Task[ActiveTaskPoint].Index;
 		if (index>=0) {
-			if (AATEnabled)
+			if (UseAATTarget())
 				value=CALCULATED_INFO.WaypointBearing;
 			else
 				value = WayPointCalc[index].Bearing;
