@@ -607,12 +607,12 @@ bool CTaskFileHelper::SaveOption(XMLNode node) {
             break;
     }
 
-    if (AATEnabled && !DoOptimizeRoute()) { // AAT Task
+    if (AATEnabled && !PGOptimizeRoute) { // AAT Task
         SetAttribute(node, _T("type"), _T("AAT"));
         if (!SaveOptionAAT(OptNode)) {
             return false;
         }
-    } else if (DoOptimizeRoute()) { // Paraglider optimized Task
+    } else if (AATEnabled && PGOptimizeRoute) { // Paraglider optimized Task
         SetAttribute(node, _T("type"), _T("Race"));
         if (!SaveOptionRace(OptNode)) {
             return false;
