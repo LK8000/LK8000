@@ -233,6 +233,8 @@ void CTaskFileHelper::LoadTimeGate(XMLNode node) {
         LPCTSTR szTime = NULL;
         GetAttribute(node, _T("open-time"), szTime);
         StrToTime(szTime, &PGOpenTimeH, &PGOpenTimeM);
+        GetAttribute(node, _T("close-time"), szTime);
+        StrToTime(szTime, &PGCloseTimeH, &PGCloseTimeM);
         GetAttribute(node, _T("interval-time"), PGGateIntervalTime);
     } else {
         PGNumberOfGates = 0;
@@ -605,12 +607,12 @@ bool CTaskFileHelper::SaveOption(XMLNode node) {
             break;
     }
 
-    if (AATEnabled && !DoOptimizeRoute()) { // AAT Task
+    if (AATEnabled && !PGOptimizeRoute) { // AAT Task
         SetAttribute(node, _T("type"), _T("AAT"));
         if (!SaveOptionAAT(OptNode)) {
             return false;
         }
-    } else if (DoOptimizeRoute()) { // Paraglider optimized Task
+    } else if (AATEnabled && PGOptimizeRoute) { // Paraglider optimized Task
         SetAttribute(node, _T("type"), _T("Race"));
         if (!SaveOptionRace(OptNode)) {
             return false;
@@ -722,6 +724,10 @@ bool CTaskFileHelper::SaveTimeGate(XMLNode node) {
     SetAttribute(node, _T("number"), PGNumberOfGates);
 
     if(!node.AddAttribute(ToString(_T("open-time")), AllocFormat(_T("%02d:%02d"), PGOpenTimeH, PGOpenTimeM))) { 
+        return false; 
+    }
+
+	if(!node.AddAttribute(ToString(_T("close-time")), AllocFormat(_T("%02d:%02d"), PGCloseTimeH, PGCloseTimeM))) { 
         return false; 
     }
     
