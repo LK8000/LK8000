@@ -2644,7 +2644,7 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("Nokia500")); // VENTA3
     dfe->addEnumText(TEXT("PN6000"));
     dfe->addEnumText(TEXT("Navigon"));
-    dfe->addEnumText(TEXT("Holux FunTrek GM-130"));
+    dfe->addEnumText(TEXT("Holux FunTrek GM-130 / GM-132"));
     dfe->addEnumText(TEXT("Medion S3747 / Royaltek BV-3200"));
     dfe->addEnumText(TEXT("LX MiniMap"));
 

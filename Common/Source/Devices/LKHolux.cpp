@@ -1,6 +1,7 @@
 #ifdef PNA
 
 #include "externs.h"
+#include "../utils/stl_utils.h"
 
 /*  **********************************************************
  *
@@ -84,7 +85,7 @@ pGM130_tempGetValue GM130_tempGetValue;
 bool DeviceIsGM130=false;
 HMODULE hapiHandle=NULL;
 
-#define HOLIB	"GM130API.DLL"
+const LPCTSTR HOLIB[] = {_T("GM130API.DLL"), _T("GM132API.DLL")};
 //#define HODEBUG	1
 
 bool Init_GM130(void) {
@@ -96,7 +97,11 @@ bool Init_GM130(void) {
 	return true;
   }
 
-  hapiHandle=LoadLibrary(TEXT(HOLIB));
+  hapiHandle = NULL;
+  for(const LPCTSTR* szLib = begin(HOLIB); hapiHandle==(HMODULE)NULL && szLib != end(HOLIB); ++szLib) {
+      hapiHandle=LoadLibrary(*szLib);
+  }
+  
   if (hapiHandle==(HMODULE)NULL) {
 	#if HODEBUG
 	DoStatusMessage(_T("INIT GM130 ERR"));
