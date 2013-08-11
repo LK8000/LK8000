@@ -493,7 +493,7 @@ int i,j;
 static double fScaleFact = 5.0;
 static int iCircleSize    = 9;
 static int iRectangleSize = 5;
-static short scaler[5];
+
 static short tscaler=0;
 static POINT Arrow[5];
 TCHAR text[80];
@@ -517,7 +517,7 @@ COLORREF rgbDrawColor = RGB_GREEN;
 COLORREF rgb_targetlinecol = RGB_RED;
 double fPlaneSize = 1.0;
 double fOwnTopPlaneSize = 1.0;
-double fTopViewPlaneSize = 1.0;
+
 static int aiSortArray[FLARM_MAX_TRAFFIC];
 
 static bool bHeightScale = false;
@@ -721,8 +721,23 @@ DiagrammStruct sDia;
   fMaxHeight = GPSalt;
   fMinHeight = GPSalt;
 
-
-  if (DoInit[MDI_FLARMRADAR]) {
+	Arrow[0].x = -4;
+	Arrow[0].y = 5;
+	Arrow[1].x = 0;
+	Arrow[1].y = -6;
+	Arrow[2].x = 4;
+	Arrow[2].y = 5;
+	Arrow[3].x = 0;
+	Arrow[3].y = 2;
+	Arrow[4].x = -4;
+	Arrow[4].y = 5;
+		for (int q=0; q < 5; q++)
+		{
+			Arrow[q].x  = (long) ((double)Arrow[q].x * 1.7);
+			Arrow[q].y  = (long) ((double)Arrow[q].y * 1.7);
+		}
+  if (DoInit[MDI_FLARMRADAR])
+  {
 
 	  fScaleFact =5.0;
 
@@ -737,11 +752,6 @@ DiagrammStruct sDia;
 			iCircleSize = 9;
 			iTraceDotSize = 5;
 			iRectangleSize = 7;
-			scaler[0]=(short)(-1*(NIBLSCALE(4)-2) * fTopViewPlaneSize);
-			scaler[1]=(short)((NIBLSCALE(5)-2)    * fTopViewPlaneSize);
-			scaler[2]=(short)(-1*(NIBLSCALE(6)-2) * fTopViewPlaneSize);
-			scaler[3]=(short)((NIBLSCALE(4)-2)    * fTopViewPlaneSize);
-			scaler[4]=(short)((NIBLSCALE(2)-2)    * fTopViewPlaneSize);
 			tscaler=(NIBLSCALE(7)-2)    ;
 			break;
 		case ss240x320:
@@ -754,11 +764,6 @@ DiagrammStruct sDia;
 			iCircleSize = 7;
 			iTraceDotSize = 3;
 			iRectangleSize = 5;
-			scaler[0]=(short)(-1*(NIBLSCALE(8)-2)  * fTopViewPlaneSize);
-			scaler[1]=(short)((NIBLSCALE(10)-2)    * fTopViewPlaneSize);
-			scaler[2]=(short)(-1*(NIBLSCALE(12)-2) * fTopViewPlaneSize);
-			scaler[3]=(short)((NIBLSCALE(8)-2)     * fTopViewPlaneSize);
-			scaler[4]=(short)((NIBLSCALE(4)-2)     * fTopViewPlaneSize);
 			tscaler=(NIBLSCALE(13)-2)      ;
 			bLandscape = false;
 
@@ -769,24 +774,10 @@ DiagrammStruct sDia;
 			iCircleSize = 7;
 			iTraceDotSize = 3;
 			iRectangleSize = 5;
-			scaler[0]=(short)(-1*NIBLSCALE(4) * fTopViewPlaneSize);
-			scaler[1]=(short)(NIBLSCALE(5)    * fTopViewPlaneSize);
-			scaler[2]=(short)(-1*NIBLSCALE(6) * fTopViewPlaneSize);
-			scaler[3]=(short)(NIBLSCALE(4)    * fTopViewPlaneSize);
-			scaler[4]=(short)(NIBLSCALE(2)    * fTopViewPlaneSize);
 			tscaler=NIBLSCALE(7)      ;
 			break;
 	}
-	Arrow[0].x = scaler[0];
-	Arrow[0].y = scaler[1];
-	Arrow[1].x = 0;
-	Arrow[1].y = scaler[2];
-	Arrow[2].x = scaler[3];
-	Arrow[2].y = scaler[1];
-	Arrow[3].x = 0;
-	Arrow[3].y = scaler[4];
-	Arrow[4].x = scaler[0];
-	Arrow[4].y = scaler[1];
+
 
 
 	  switch (ScreenSize) {

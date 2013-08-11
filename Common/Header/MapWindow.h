@@ -604,7 +604,7 @@ class MapWindow {
   static void DrawTerrainAbove(HDC hDC, const RECT rc);
   static void LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
   static void LKDrawVario(HDC hDC, RECT rc);
-  static void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact);
+  static void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL picto= false);
   static void DoSonar(void);
 
     
