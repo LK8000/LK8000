@@ -160,7 +160,7 @@ static int	iRectangleSize = 4;
 		if ((DrawInfo.FLARM_Traffic[i].AlarmLevel>0) && (DrawInfo.FLARM_Traffic[i].AlarmLevel<4)) {
 			DrawBitmapIn(hDC, sc, hFLARMTraffic,true);
 		}
-#if 0
+#if 1 // 1
 		Arrow[0].x = -4;
 		Arrow[0].y = 5;
 		Arrow[1].x = 0;
@@ -171,7 +171,13 @@ static int	iRectangleSize = 4;
 		Arrow[3].y = 2;
 		Arrow[4].x = -4;
 		Arrow[4].y = 5;
-#endif
+
+		for (int q=0; q < 5; q++)
+		{
+			Arrow[q].x  = (LONG) ((double)Arrow[q].x * 1.7);
+			Arrow[q].y  = (LONG) ((double)Arrow[q].y * 1.7);
+		}
+#else
 
 		Arrow[0].x = scaler[0];
 		Arrow[0].y = scaler[1];
@@ -183,6 +189,9 @@ static int	iRectangleSize = 4;
 		Arrow[3].y = scaler[4];
 		Arrow[4].x = scaler[0];
 		Arrow[4].y = scaler[1];
+#endif
+
+
 /*
 		switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
 			case LKT_GHOST:
