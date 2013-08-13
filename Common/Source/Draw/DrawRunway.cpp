@@ -28,9 +28,9 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
   bool bGlider = false;
   bool bOutland = false;
   bool bRunway = false;
-   double rwl = 8.0;
-   double rwb = 1.6;
-   double cir = 6.0;
+   double rwl = 5.33;
+   double rwb = 1.0;
+   double cir = 4.0;
   static double scale_drawradio=0;
   static double scale_bigfont=0;
   static double scale_fullinfos=0;
@@ -82,7 +82,8 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
     DoInit[MDI_MAPWPVECTORS]=false;
   }
 
-
+  if(ScreenSizeX < 640 )
+    fScaleFact *= 1.6;
   if( wp->RunwayLen > 100) /* square if no runway defined */
   {
     l = (int) (rwl * (1.0+ ((double)wp->RunwayLen/800.0-1.0)/4.0));
@@ -138,10 +139,10 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
   } // bRunway
 
 
-  if(fScaleFact >= 0.9) { 
+  if(fScaleFact >= 1.2) {
     if(bGlider)
     {
-	    double fFact = 0.04*fScaleFact;
+	    double fFact = 0.04*fScaleFact/1.5;
 	    POINT WhiteWing [17]  = {
 		  { (long)(-228  * fFact ) , (long)(13  * fFact)}, //1
 		  { (long) (-221 * fFact ) , (long)(-5  * fFact)}, //2
