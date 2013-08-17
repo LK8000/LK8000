@@ -219,10 +219,10 @@ BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 	}
 	else {
 		if(pINFO->BaroAltitudeAvailable) {
-			abs_press = QNHAltitudeToStaticPressure(pINFO->BaroAltitude);
+			abs_press = QNHAltitudeToStaticPressure(pINFO->BaroAltitude)/100;
 		}
 		else {
-			abs_press = QNHAltitudeToStaticPressure(pINFO->Altitude);
+			abs_press = QNHAltitudeToStaticPressure(pINFO->Altitude)/100;
 		}
 	}
 
