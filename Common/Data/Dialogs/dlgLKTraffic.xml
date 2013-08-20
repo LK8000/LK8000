@@ -1,4 +1,5 @@
-<PMML>
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Type="Dialog" X="5" Y="5" Width="240" Height="200" Caption="_@M376_" Font="2" >
     <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="2" Width="75"  Height="32" Font="2" Tag="0" OnClickNotify="OnCloseClicked" />
     <WndButton Name="cmdTarget" Caption="_@M684_" X="82" Y="2" Width="75"  Height="32" Font="2" Tag="0" OnClickNotify="OnTargetClicked" />

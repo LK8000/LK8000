@@ -1,4 +1,5 @@
-<PMML>
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmOracle" Type="Dialog" Caption="_@M1690_" X="0" Y="0" Width="320" Height="240" BackColor="0" Font="2"  >
     <WndProperty Name="a" Caption="_@M1691_" X="50" Y="50" Width="235" Height="22" CaptionWidth="235" Font="3" ReadOnly="1" >
     </WndProperty>
