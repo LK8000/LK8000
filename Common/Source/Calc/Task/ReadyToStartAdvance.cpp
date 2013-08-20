@@ -21,6 +21,10 @@ bool ReadyToStart(DERIVED_INFO *Calculated) {
   if (!Calculated->Flying) {
     return false;
   }
+  if (!Calculated->FreeFlying && (ISGLIDER||ISPARAGLIDER)) {
+    return false;
+  }
+  
   if (!ValidGate()) return false; // 100509
   if (AutoAdvance== AUTOADVANCE_AUTO || AutoAdvance== AUTOADVANCE_ARMTPS) {  
     return true;
@@ -45,6 +49,11 @@ bool ReadyToAdvance(DERIVED_INFO *Calculated, bool reset=true, bool restart=fals
   // 3: Arm start
 
   if (!Calculated->Flying) {
+    lastReady = -1;
+    lastActive = -1;
+    return false;
+  }
+  if (!Calculated->FreeFlying && (ISGLIDER||ISPARAGLIDER)) {
     lastReady = -1;
     lastActive = -1;
     return false;
