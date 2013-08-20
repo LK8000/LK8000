@@ -21,6 +21,11 @@ bool ReadyToStart(DERIVED_INFO *Calculated) {
   if (!Calculated->Flying) {
     return false;
   }
+  
+  if (!Calculated->FreeFlying && (ISGLIDER||ISPARAGLIDER)) {
+      return false;
+  }
+  
   if (!ValidGate()) return false; // 100509
   if (AutoAdvance== AUTOADVANCE_AUTO || AutoAdvance== AUTOADVANCE_ARMTPS) {  
     return true;
