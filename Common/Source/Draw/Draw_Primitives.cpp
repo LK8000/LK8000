@@ -31,6 +31,7 @@ void MapWindow::DrawBitmapX(const HDC hdc, const int x, const int y,
 
 
 void MapWindow::DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h, const bool autostretch) {
+  if(!h) return; // don't draw Bitmap if no bitmap
   if (!PointVisible(sc)) return;
 
   SelectObject(hDCTemp, h);
