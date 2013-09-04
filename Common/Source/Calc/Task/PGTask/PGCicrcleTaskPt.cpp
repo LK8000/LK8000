@@ -67,6 +67,10 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
 bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized) {
     ProjPt A = prev - m_Center;
     ProjPt B = next - m_Center;
+    if(A == B) {
+        // Next and prev is same point -> ignore next...
+        B = ProjPt::null;
+    }
     ProjPt A2(A.m_X * A.m_X, A.m_Y * A.m_Y);
     ProjPt B2(B.m_X * B.m_X, B.m_Y * B.m_Y);
     double R2 = (m_Radius * m_Radius);
