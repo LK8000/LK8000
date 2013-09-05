@@ -278,11 +278,11 @@ void CTaskFileHelper::LoadOptionDefault(XMLNode node) {
             LPCTSTR szType = NULL;
             GetAttribute(nodeSector, _T("type"), szType);
             if (_tcscmp(szType, _T("circle")) == 0) {
-                FinishLine = 0;
+                SectorType = 0;
             } else if (_tcscmp(szType, _T("sector")) == 0) {
-                FinishLine = 1;
+                SectorType = 1;
             } else if (_tcscmp(szType, _T("DAe")) == 0) {
-                FinishLine = 2;
+                SectorType = 2;
             }
             GetAttribute(nodeSector, _T("radius"), SectorRadius);
         }
