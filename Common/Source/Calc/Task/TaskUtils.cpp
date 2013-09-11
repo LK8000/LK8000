@@ -18,6 +18,7 @@ void ResetTaskWpt(TASK_POINT& TaskWpt) {
     TaskWpt.AATTargetOffsetRadius = 0.0;
     TaskWpt.AATTargetOffsetRadial = 0.0;
     TaskWpt.AATTargetLocked = false;
+    TaskWpt.AATType = SectorType;
     TaskWpt.AATSectorRadius = SectorRadius;
     TaskWpt.AATCircleRadius = SectorRadius;
     TaskWpt.AATStartRadial = 0;
