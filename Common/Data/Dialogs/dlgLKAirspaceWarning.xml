@@ -1,4 +1,5 @@
-<PMML>
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmAirspaceWarning" Type="Dialog" X="1" Y="1" Width="318" Height="214" Caption="_@M66_" Popup="1" Font="2" >
     <WndProperty Name="prpReason" Caption="_@M1262_" X="2" Y="2" Width="310" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndProperty Name="prpType" Caption="_@M752_" X="2" Y="-1"  Width="310" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />	
@@ -6,7 +7,7 @@
     <WndProperty Name="prpVDist" Caption="_@M1265_" X="2" Y="-1" Width="310" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndProperty Name="prpTopAlt" Caption="_@M729_" X="2" Y="-1" Width="310" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndProperty Name="prpBaseAlt" Caption="_@M128_" X="2" Y="-1" Width="310" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
-    <WndButton  name="cmdAckForTime" Caption="_@M46_" X="1" Y="138" width="148" height="56" Font="2" OnClickNotify="OnAckForTimeClicked"/>
-    <WndButton  name="cmdClose" Caption="_@M186_" X="152" Y="138" width="148" height="56" Font="2" OnClickNotify="OnCloseClicked"/>
+    <WndButton  Name="cmdAckForTime" Caption="_@M46_" X="1" Y="138" Width="148" Height="56" Font="2" OnClickNotify="OnAckForTimeClicked"/>
+    <WndButton  Name="cmdClose" Caption="_@M186_" X="152" Y="138" Width="148" Height="56" Font="2" OnClickNotify="OnCloseClicked"/>
   </WndForm>
 </PMML>

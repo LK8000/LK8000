@@ -1,5 +1,6 @@
-<PMML>
-  <WndForm Name="frmStartTaskRegular" Type="Dialog" X="5" Y="5" Width="143" Height="133" Caption="_@M692_" Font="2" PopUp="1" >
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Name="frmStartTaskRegular" Type="Dialog" X="5" Y="5" Width="143" Height="133" Caption="_@M692_" Font="2" Popup="1" >
     <WndProperty Name="prpTime" Caption="_@M717_"      X="2" Y="-1"   Width="145" Height="22" CaptionWidth="68" Font="2" ReadOnly="1" Help="" />
     <WndProperty Name="prpSpeed" Caption="_@M627_"      X="2" Y="-1"   Width="145" Height="22" CaptionWidth="68" Font="2" ReadOnly="1" Help="" />
     <WndProperty Name="prpAltitude" Caption="_@M88_" X="2" Y="-1"  Width="145" Height="22" CaptionWidth="68" Font="2" ReadOnly="1" Help="" />

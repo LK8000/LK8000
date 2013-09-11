@@ -1,4 +1,5 @@
-<PMML>
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmChecklist" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M796_" Font="2" >
     <WndButton Name="cmdNext"  Caption="_@M460_" X="2" Y="80" Width="66"  Height="38" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
     <WndButton Name="cmdPrev"  Caption="_@M6_" X="2" Y="120" Width="66"  Height="38" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>

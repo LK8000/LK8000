@@ -1,5 +1,6 @@
-<PMML>
-  <WndForm Type="Dialog" X="1" Y="1" Width="238" Height="238" Caption="_@M1672_" PopUp="1" Font="2" >
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Type="Dialog" X="1" Y="1" Width="238" Height="238" Caption="_@M1672_" Popup="1" Font="2" >
 
     <WndProperty Name="prpName" Caption="_@M720_" X="2" Y="2"  Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndProperty Name="prpHTop" Caption="_@M729_" X="2" Y="-1"  Width="238" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
