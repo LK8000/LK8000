@@ -691,6 +691,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMultimap3,&Multimap3);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultimap4,&Multimap4);
+  if (matchedstring) return;
 
   PREAD(sname,svalue, szAspPermanent , &AspPermanentChanged);
   if (matchedstring) return;
@@ -707,6 +708,9 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue, szFlarmDirection , &iFlarmDirection);
   if (matchedstring) return;
 
+  PREAD(sname,svalue,szRegistryDrawTask,&Flags_DrawTask);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryDrawFAI ,&Flags_DrawFAI);
   return;
 
 }

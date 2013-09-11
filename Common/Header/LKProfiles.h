@@ -356,6 +356,8 @@ TCHAR szRegistryMMNorthUp4[]= _T("MultimapNorthUp4");
 
 TCHAR szFlarmDirection[]= _T("FlarmDirection");
 
+TCHAR szRegistryDrawTask[] = _T("DrawTask");;
+TCHAR szRegistryDrawFAI[]  = _T("DrawFAI"); ;
 //
 //
 //
@@ -631,7 +633,8 @@ extern TCHAR szRegistryMMNorthUp4[];
 
 extern TCHAR szFlarmDirection[];
 
-
+extern TCHAR szRegistryDrawTask[];
+extern TCHAR szRegistryDrawFAI[] ;
 //
 //
 #endif

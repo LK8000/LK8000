@@ -420,14 +420,18 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 36: // 
-			// Order is:  TASK ONLY, FAI ONLY, ALL OFF
-			if (Flags_DrawTask&&!Flags_DrawFAI) {
-				_stprintf(OutBuffer,MsgToken(2239)); // Draw FAI
+			// Order is:  ALL ON, TASK ONLY, FAI ONLY, ALL OFF
+			if (Flags_DrawTask&&Flags_DrawFAI) {
+				_stprintf(OutBuffer,MsgToken(2238)); // Draw Task
 			} else {
-				if (!Flags_DrawTask&&Flags_DrawFAI) {
-					_stprintf(OutBuffer,MsgToken(2240)); // NoDraw TaskFAI
+				if (Flags_DrawTask&&!Flags_DrawFAI) {
+					_stprintf(OutBuffer,MsgToken(2239)); // Draw FAI
 				} else {
-					_stprintf(OutBuffer,MsgToken(2238)); // Draw Task
+					if (!Flags_DrawTask&&Flags_DrawFAI) {
+						_stprintf(OutBuffer,MsgToken(2240)); // NoDraw TaskFAI
+					} else {
+						_stprintf(OutBuffer,MsgToken(2241)); // Draw TaskFAI
+					}
 				}
 			}
 			break;

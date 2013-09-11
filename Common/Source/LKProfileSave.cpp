@@ -371,6 +371,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMMNorthUp4,MMNorthUp_Runtime[3]);
 
   rprintf(szFlarmDirection,iFlarmDirection);
+  rprintf(szRegistryDrawTask,Flags_DrawTask);
+  rprintf(szRegistryDrawFAI ,Flags_DrawFAI);
 
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);
