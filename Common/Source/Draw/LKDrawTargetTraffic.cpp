@@ -265,26 +265,27 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
   // Target wing size, half of it
   #define TWINGSIZE	NIBLSCALE(53)
   POINT tcenter;
+  
+	int tailsize= (TWINGSIZE/4) +NIBLSCALE(2);
+    tcenter.x= (int)(ncenterx+(((ncenterx-nleft)/80)*tangle));
+
+    if ( LKTraffic[LKTargetIndex].AltArriv >300 ) {
+        tcenter.y=nbottom;
+    } else {
+        if ( LKTraffic[LKTargetIndex].AltArriv <-300 ) {
+            tcenter.y=ntop+IBLSCALE(5);
+            tailsize=IBLSCALE(5);
+        } else {
+            tcenter.y=ncentery+ (int) (((ncentery-ntop)/300.0)*LKTraffic[LKTargetIndex].AltArriv);
+        }
+    }
+  
   // Paint the airplane only if within 160 deg sight angle
   if (!disabled) {
 
 	// Position of the glider on the sight screen
 	int leftwingsize=0, rightwingsize=0;
 	COLORREF planecolor;
-	int tailsize= (TWINGSIZE/4) +NIBLSCALE(2);
-
-	tcenter.x= (int)(ncenterx+(((ncenterx-nleft)/80)*tangle));
-
-	if ( LKTraffic[LKTargetIndex].AltArriv >300 ) {
-		tcenter.y=nbottom;
-	} else {
-		if ( LKTraffic[LKTargetIndex].AltArriv <-300 ) {
-			tcenter.y=ntop+IBLSCALE(5);
-			tailsize=IBLSCALE(5);
-		} else {
-			tcenter.y=ncentery+ (int) (((ncentery-ntop)/300.0)*LKTraffic[LKTargetIndex].AltArriv);
-		}
-	}
 
 	if (Appearance.InverseInfoBox) {
 		switch(LKTraffic[LKTargetIndex].Status) {
@@ -363,7 +364,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 	DeleteObject((HPEN)hp);
 	DeleteObject((HBRUSH)hb);
   }
-
+  
   // always paint the bearing difference, cleverly
   if (!disabled && !notraffic) {
 	if (tangle > 1) {

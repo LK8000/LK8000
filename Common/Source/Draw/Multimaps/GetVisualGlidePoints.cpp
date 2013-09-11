@@ -212,7 +212,7 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
 
 			// Consider only Mt.Passes and task points not below us...
 			if ( (WayPointList[wpindex].Style==STYLE_MTPASS) ||
-			     (WayPointList[wpindex].InTask) && (distance>100) ) {
+			     ((WayPointList[wpindex].InTask) && (distance>100)) ) {
 
 				// ... that are not within an obvious glide ratio
 				// (considering even strong headwind, we want a very positive arrival)
