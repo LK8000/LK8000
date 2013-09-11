@@ -573,6 +573,7 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
         return false;
     }
 
+    file.WriteLn(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     file.WriteLn(szContent);
     file.Close();
 

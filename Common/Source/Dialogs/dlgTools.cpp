@@ -14,6 +14,7 @@
 #include "InfoBoxLayout.h"
 #include "RGB.h"
 #include "Dialogs.h"
+#include "utils/stringext.h"
 
 
 int DLGSCALE(int x) {
@@ -267,6 +268,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
   HRSRC hResInfo;
   HGLOBAL hRes; 
   int l;
+  TCHAR * szXML;
 
   // Find the xml resource.
   hResInfo = FindResource (hInst, lpName, TEXT("XMLDialog")); 
@@ -302,72 +304,33 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
     if (l>0) {
       char *buf= (char*)malloc(l+2);
       if (!buf) {
-	//StartupStore(_T("------ LoadFromRes malloc error%s"),NEWLINE); // 100101
-_errmem:
-        MessageBoxX(hWndMainWindow,
-                    TEXT("Can't allocate memory"),
-                    TEXT("Dialog error"),
-                    MB_OK|MB_ICONEXCLAMATION);
-        // unable to allocate memory
-        return XMLNode::emptyXMLNode;
+        //StartupStore(_T("------ LoadFromRes malloc error%s"),NEWLINE); // 100101
+          goto _errmem;
       }
       strncpy(buf,(char*)lpRes,l);
       buf[l]=0; // need to explicitly null-terminate.
       buf[l+1]=0;
-      
-#if defined(WIN32) || defined(UNDER_CE)
-#ifdef _UNICODE
-#if !defined(UNDER_CE) && (WINDOWSPC<1)
-      if (!IsTextUnicode(buf,mmin(l,10000),NULL))
-        {
-#endif
-          LPTSTR b2=(LPTSTR)malloc(l*2+2);
-	  if (b2==NULL) {
-		StartupStore(_T(".... LoadFromRes Malloc1 failed\n"));
-		free(buf);
-		goto _errmem;
-	  }
-          MultiByteToWideChar(CP_ACP,          // code page
-                              MB_PRECOMPOSED,  // character-type options
-                              buf,             // string to map
-                              l,               // number of bytes in string
-                              b2,              // wide-character buffer
-                              l*2+2);          // size of buffer
-          free(buf);
-          buf=(char*)b2;
-          buf[l*2]= 0;
-          buf[l*2+1]= 0;
-#if !defined(UNDER_CE) && (WINDOWSPC<1)
-        }
-#endif
-#else
-      if (IsTextUnicode(buf,mmin(l,10000),NULL))
-        {
-          l>>=1;
-          LPTSTR b2=(LPTSTR)malloc(l+2);
-	  if (b2==NULL){
-		StartupStore(_T(".... LoadFromRes Malloc2 failed\n")); // 100101
-		free(buf);
-		goto _errmem;
-	  }
-          WideCharToMultiByte(CP_ACP,                      // code page
-                              0,                           // performance and mapping flags
-                              (const WCHAR*)buf,           // wide-character string
-                              l,                           // number of chars in string
-                              b2,                          // buffer for new string
-                              l+2,                         // size of buffer
-                              NULL,                        // default for unmappable chars
-                              NULL                         // set when default char used
-                              );
-          free(buf);
-          buf=(char*)b2;
-        }
-#endif
-#endif
-      
-      XMLNode x=XMLNode::parseString((LPTSTR)buf,tag,pResults);
-
+     
+      szXML = (TCHAR*) calloc(l+2, sizeof (TCHAR));
+      if (!szXML) {
+        //StartupStore(_T("------ LoadFromRes malloc2 error%s"),NEWLINE); // 100101
+          goto _errmem;
+      }
+      int nSize = utf2unicode(buf, szXML, l+1);
       free(buf);
+      if(nSize <=0) {
+          free(szXML);
+          
+          MessageBoxX(hWndMainWindow,
+                        TEXT("Invalid dialog template"),
+                        TEXT("Dialog error"),
+                        MB_OK|MB_ICONEXCLAMATION);
+          
+          return XMLNode::emptyXMLNode;
+      }
+      XMLNode x=XMLNode::parseString(szXML,tag,pResults);
+
+      free(szXML);
       return x;
     }
   }
@@ -376,6 +339,14 @@ _errmem:
               TEXT("Dialog error"),
               MB_OK|MB_ICONEXCLAMATION);
   return XMLNode::emptyXMLNode;
+  
+_errmem:
+    MessageBoxX(hWndMainWindow,
+                TEXT("Can't allocate memory"),
+                TEXT("Dialog error"),
+                MB_OK|MB_ICONEXCLAMATION);
+    // unable to allocate memory
+    return XMLNode::emptyXMLNode;
 }
 
 
