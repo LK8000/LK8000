@@ -158,8 +158,8 @@ public:
 
 
   const TCHAR* TypeName(void) const;
-  const COLORREF TypeColor(void) const;
-  const HBRUSH TypeBrush(void) const;
+  COLORREF TypeColor(void) const;
+  HBRUSH TypeBrush(void) const;
 
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }
