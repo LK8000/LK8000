@@ -49,9 +49,9 @@
     <WndButton   Name="prpDot" Caption="."   X="256" Y="124" Width="32"  Height="33" Font="2" OnClickNotify="OnKey"/>
     <WndButton   Name="prpMin" Caption="-"   X="288" Y="124" Width="32"  Height="33" Font="2" OnClickNotify="OnKey"/>
 	
-    <WndButton   Name="prpUe" Caption="Ü"    X="10" Y="157" Width="32"  Height="33" Font="2" OnClickNotify="OnKey"/>	
-	<WndButton   Name="prpOe" Caption="Ö"    X="42" Y="157" Width="32"  Height="33" Font="2" OnClickNotify="OnKey"/>   
-    <WndButton   Name="prpAe" Caption="Ä"    X="74" Y="157" Width="32"  Height="33" Font="2" OnClickNotify="OnKey"/>	
+    <WndButton   Name="prpUe" Caption="Ãœ"    X="10" Y="157" Width="32"  Height="33" Font="2" OnClickNotify="OnKey"/>	
+	<WndButton   Name="prpOe" Caption="Ã–"    X="42" Y="157" Width="32"  Height="33" Font="2" OnClickNotify="OnKey"/>   
+    <WndButton   Name="prpAe" Caption="Ã„"    X="74" Y="157" Width="32"  Height="33" Font="2" OnClickNotify="OnKey"/>	
     <!--  <WndButton   Name="prpUn" Caption="_"    X="300" Y="124" Width="30"  Height="33" Font="2" OnClickNotify="OnKey"/>	-->
 		
 		
