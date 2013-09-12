@@ -499,7 +499,14 @@ class MapWindow {
 
 
   static int DrawFlarmObjectTrace(HDC hDC,double fZoom, DiagrammStruct* Dia);
+
+  static void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL Picto = false);
+  static void DrawTaskPicto(HDC hdc, int TaskIdx, RECT rc, double fScaleFact);
+  static void DrawWaypointPicto(HDC hdc, const RECT rc, WAYPOINT* wp);
+  static void DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC*);
  private:
+  static void DrawAHRS(HDC hdc, const RECT rc);
+  static void DrawCompassRose(HDC hDC, const RECT rc, double direction);
   static void CalculateScreenPositions(POINT Orig, RECT rc, 
                                        POINT *Orig_Aircraft);
   static void CalculateScreenPositionsGroundline();
@@ -584,6 +591,7 @@ class MapWindow {
                                     const POINT &Start, const POINT &End, int Index, 
                                     int Type, double Radius);
   static void DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft);
+  static void DrawTaskSectors(HDC hdc, RECT rc ) ;
   static void DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft) ;
   static void DrawThermalEstimate(HDC hdc, const RECT rc);
   static void DrawThermalEstimateMultitarget(HDC hdc, const RECT rc);
@@ -604,7 +612,8 @@ class MapWindow {
   static void DrawTerrainAbove(HDC hDC, const RECT rc);
   static void LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
   static void LKDrawVario(HDC hDC, RECT rc);
-  static void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL picto= false);
+
+
   static void DoSonar(void);
 
     

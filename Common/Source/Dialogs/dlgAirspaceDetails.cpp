@@ -14,12 +14,36 @@
 #include "AirspaceWarning.h"
 #include "Dialogs.h"
 #include "TraceThread.h"
+#include "LKObjects.h"
 
 static CAirspace *airspace = NULL;
 static CAirspace airspace_copy;
 static WndForm *wf=NULL;
 COLORREF ContrastTextColor(COLORREF Col);
 static void SetValues(void);
+
+static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
+	  (void)Sender;
+	  RECT *prc;
+	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
+	  prc = wPicto->GetBoundRect();
+	  SelectObject(hDC,LKPen_Petrol_C2);
+
+	  SelectObject(hDC,LKBrush_Petrol);
+	  Rectangle(hDC,prc->left,prc->top,prc->right,prc->bottom);
+
+
+	  SetBkColor  (hDC, RGB_LIGHTGREY);
+      /*************************************************************
+       * @Paolo
+       * for drawing the airspace pictorial, we need the original data.
+       * seems that the copy does not contain geo data
+       * Do we really need to work with the copy?
+       * works fine with the origin airspace
+       ************************************************************/
+	  airspace->DrawPicto(hDC, *prc, true);
+
+}
 
 static void OnFlyClicked(WindowControl * Sender){
   (void)Sender;
@@ -89,9 +113,19 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
   #endif
 
   if (airspace_copy.Enabled()) 
-      CAirspaceManager::Instance().AirspaceDisable(*airspace);
-  else 
-      CAirspaceManager::Instance().AirspaceEnable(*airspace);
+  {
+    CAirspaceManager::Instance().AirspaceDisable(*airspace);
+  }
+  else
+  {
+    CAirspaceManager::Instance().AirspaceEnable(*airspace);
+  }
+
+
+  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
+  HDC hDC =  wPicto->GetDeviceContext();
+  OnPaintAirspacePicto(Sender, hDC);
+
 
   SetValues();
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -121,6 +155,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnFlyClicked),
   DeclareCallBackEntry(OnCloseClicked),
   DeclareCallBackEntry(OnSelectClicked),
+  DeclareCallBackEntry(OnPaintAirspacePicto),
   DeclareCallBackEntry(NULL)
 };
 
@@ -142,11 +177,8 @@ static void SetValues(void) {
   bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance( airspace, &hdist, &bearing, &vdist);
 
   if (wf!=NULL) {
-
 	TCHAR capbuffer[250];
-	// reserving 30 chars for ENABLED or DISABLED, plus () and spaces, just to be sure.
 	wsprintf(capbuffer,_T("%s ("),airspace_copy.Name());
-
         if (airspace_copy.Enabled()) {
         	_tcscat(capbuffer,gettext(TEXT("_@M1643_"))); // ENABLED
         } else {
@@ -159,15 +191,21 @@ static void SetValues(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
 	if (airspace_copy.Flyzone()) {
-	  LKASSERT(_tcslen(airspace_copy.TypeName()) >0 && _tcslen(airspace_copy.TypeName())<70);
-	  wsprintf(buffer,TEXT("%s %s"), airspace_copy.TypeName(), gettext(TEXT("FLY")));
+	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("FLY")));
+/*
+	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
+		_stprintf(buffer,TEXT("%s"),airspace_copy.Name());
+	  else
+	    _stprintf(buffer,TEXT("%s %s"),airspace_copy.TypeName()   // fixed strings max. 20
+			                          ,airspace_copy.Name());     // NAME_SIZE          30   => max. 30 char
+*/
 	} else {
-	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("NOFLY")));
+	  wsprintf(buffer,TEXT("%s %s"), gettext(TEXT("NOFLY")), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()));
 	}
 
 	wp->SetText( buffer );
-    wp->SetBackColor( airspace_copy.TypeColor());
-	wp->SetForeColor( ContrastTextColor(airspace_copy.TypeColor()));
+//    wp->SetBackColor( airspace_copy.TypeColor());
+//	wp->SetForeColor( ContrastTextColor(airspace_copy.TypeColor()));
     wp->RefreshDisplay();
   }
   
@@ -323,9 +361,11 @@ void dlgAirspaceDetails(CAirspace *airspace_to_show) {
   SetValues();
 
   wf->ShowModal();
+
   airspace = NULL;
   delete wf;
   wf = NULL;
+
   return;
 }
 

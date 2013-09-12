@@ -612,6 +612,49 @@ static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mod
 
 }
 
+static void OnGearWarningModeChange(DataField *Sender, DataField::DataAccessKind_t Mode){
+WndProperty* wp;
+
+#ifdef GEAR_WARNING
+int ival;
+    switch(Mode){
+      case DataField::daGet:
+	  break;
+      case DataField::daPut:
+      case DataField::daChange:
+    	wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearWarning"));
+    	if (wp) {
+    	  ival = iround( wp->GetDataField()->GetAsInteger() );
+    	  if ((int)GearWarningMode != ival) {
+    	  	GearWarningMode = ival;
+    	  }
+    	}
+        wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));
+        if(wp)
+        {
+          if(GearWarningMode == 0)
+          {
+            wp->SetVisible(false);
+            wp->SetReadOnly(true);
+            wp->RefreshDisplay();
+          }
+          else
+          {
+            wp->GetDataField()->SetAsFloat(iround(GearWarningAltitude*ALTITUDEMODIFY/1000));
+            wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+            wp->SetVisible(true);
+            wp->SetReadOnly(false);
+            wp->RefreshDisplay();
+          }
+        }
+      break;
+      default:
+//     	StartupStore(_T("........... DBG-908%s"),NEWLINE);
+      break;
+    }
+#endif
+}
+
 
 static void OnLk8000ModeChange(DataField *Sender, DataField::DataAccessKind_t Mode){
   WndProperty* wp;
@@ -1538,7 +1581,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAirspaceDisplay),
   DeclareCallBackEntry(OnAspPermModified),
   DeclareCallBackEntry(OnLk8000ModeChange),
-
+  DeclareCallBackEntry(OnGearWarningModeChange),
   DeclareCallBackEntry(NULL)
 };
 
@@ -1936,13 +1979,9 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
- //   _@M967_ "Airspace changes"
- //   _@M968_ "for this time only"
- //   _@M969_ "permanent"
     dfe->addEnumText(gettext(TEXT("_@M968_"))); // _@M968_ "for this time only"
     dfe->addEnumText(gettext(TEXT("_@M969_"))); // _@M969_ "permanent"
-
- //   dfe->Set(FontRenderer);
+    dfe->Set(AspPermanentChanged);
     wp->RefreshDisplay();
   }
 
@@ -3313,7 +3352,46 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearWarning"));
+  if (wp)
+  {
+	DataFieldEnum* dfe;
+	dfe = (DataFieldEnum*)wp->GetDataField();
+	dfe->addEnumText(gettext(TEXT("_@M1831_")));	// LKTOKEN  _@M1831_ "Off"
+	dfe->addEnumText(gettext(TEXT("_@M1832_")));	// LKTOKEN  _@M1832_ "Near landables"
+	dfe->addEnumText(gettext(TEXT("_@M1833_")));	// LKTOKEN   _@M1833_ "Allways"
+    dfe->Set(GearWarningMode);
+    wp->RefreshDisplay();
+  }
 
+#ifndef GEAR_WARNING
+{
+GearWarningMode =0;
+GearWarningAltitude=0;
+wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearWarning"));
+wp->SetVisible(false);
+wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));
+wp->SetVisible(false);
+wp->RefreshDisplay();
+}
+#else
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));
+
+  if (wp) {
+	if(GearWarningMode == 0)
+	{
+	  wp->SetVisible(false);
+	}
+	else
+	{
+      wp->GetDataField()->SetAsFloat(iround(GearWarningAltitude*ALTITUDEMODIFY/1000));
+      wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+	  wp->SetVisible(true);
+      wp->RefreshDisplay();
+    }
+    wp->RefreshDisplay();
+  }
+#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseGeoidSeparation"));
   if (wp) {
@@ -4528,6 +4606,24 @@ int ival;
     ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
     if ((int)AlarmTakeoffSafety != ival) {
       AlarmTakeoffSafety = ival;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearWarning"));
+  if (wp) {
+    ival = iround( wp->GetDataField()->GetAsInteger() );
+    if ((int)GearWarningMode != ival) {
+    	GearWarningMode = ival;
+    }
+
+  }
+  DWORD tmp;
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));
+  if (wp) {
+	  tmp = lround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+    if (GearWarningAltitude != tmp)
+    {
+    	GearWarningAltitude = tmp;
     }
   }
 

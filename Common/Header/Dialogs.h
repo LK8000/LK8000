@@ -23,9 +23,14 @@ void StopHourglassCursor();
 
 #define GC_SUB_STRING_THRESHOLD 1
 
-#define IM_AIRSPACE 1
-#define IM_WAYPOINT 2
-#define IM_FLARM    3
+#define IM_AIRSPACE   1
+#define IM_WAYPOINT   2
+#define IM_FLARM      3
+#define IM_THERMAL_PT 4
+#define IM_TOPO_PT    5
+#define IM_TASK_PT    6
+#define IM_AIRFLIELD  7
+#define IM_OUTLAND    8
 
 typedef	struct{
   char type;
@@ -33,6 +38,7 @@ typedef	struct{
 
   int iIdx;
   double Dist;
+  char Subtype;
 
 } ListElement;
 
@@ -43,6 +49,7 @@ int dlgWayPointSelect(double lon=0.0, double lat=90.0, int type=-1, int FilterNe
 int dlgAirspaceColoursShowModal(void);
 ListElement* dlgMultiSelectListShowModal(void);
 void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance);
+int dlgGetNoElements(void);
 int dlgAirspacePatternsShowModal(void);
 bool dlgAirspaceShowModal(bool colored);
 void dlgBasicSettingsShowModal(void);
@@ -60,8 +67,8 @@ void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double A
 void dlgAnalysisShowModal(int inpage);
 void dlgStatusShowModal(int page);
 void dlgSwitchesShowModal(void);
-void dlgTaskWaypointShowModal(int itemindex, int type, bool addonly=false);
-void dlgTaskOverviewShowModal(void);
+void dlgTaskWaypointShowModal(int itemindex, int type, bool addonly=false, bool Moveallowed=false);
+void dlgTaskOverviewShowModal(int Idx=-1);
 void dlgVoiceShowModal(void);
 void dlgWayPointDetailsShowModal(short mypage);
 short dlgWayQuickShowModal(void);
@@ -70,7 +77,7 @@ void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
 void dlgWaypointEditShowModal(WAYPOINT *wpt);
 void dlgAirspaceSelect(void);
-void dlgTarget(void);
+void dlgTarget(int TaskPoint = -1);
 bool dlgTaskRules(void);
 void dlgAirspaceDetails(CAirspace *airspace);
 bool dlgAirspaceWarningVisible(void);

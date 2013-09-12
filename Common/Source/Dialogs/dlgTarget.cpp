@@ -545,12 +545,14 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-void dlgTarget(void) {
+void dlgTarget(int TaskPoint) {
 
-  if (!ValidTaskPoint(ActiveWayPoint)) {
+  if(TaskPoint == -1)
+	  TaskPoint =  ActiveWayPoint;
+  if (!ValidTaskPoint(TaskPoint)) {
     return;
   }
-  ActiveWayPointOnEntry = ActiveWayPoint;
+  ActiveWayPointOnEntry = TaskPoint;
 
   if (!ScreenLandscape) {
     char filename[MAX_PATH];

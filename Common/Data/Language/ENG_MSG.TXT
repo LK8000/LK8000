@@ -984,6 +984,8 @@ _@M944_ "Opacity "
 _@M945_ "Pattern, borders only"
 _@M946_ "Semi-Transparent, borders only"
 _@M947_ "FLARM SIGNAL LOST"
+_@M948_ "Found"
+_@M949_ "TP"
 _@M950_ "BottomBar Opacity "
 _@M951_ "Cannot stop RX thread!"
 _@M952_ "Cannot write data to Port!"
@@ -1849,6 +1851,14 @@ _@M1826_ "Replace"
 _@M1827_ "Append before finish"
 _@M1828_ "Append after finish"
 
+# Gear warning alarm
+_@M1829_ "Gear Warning"
+_@M1830_ "Gear Warning Altitude"
+_@M1831_ "Off"
+_@M1832_ "Near landables"
+_@M1833_ "Always"
+_@M1834_ "Check gear !"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
@@ -1859,7 +1869,7 @@ _@M1828_ "Append after finish"
 
 _@M2001_ "Zoom\nin"
 _@M2002_ "Zoom\nout"
-_@M2003_ "Nearest\nWaypoint"
+_@M2003_ "Whats\nhere?"
 _@M2004_ "Pan\n"
 _@M2005_ "Full\nScreen"
 _@M2006_ "Display\n1/3"
@@ -2051,7 +2061,6 @@ _@M2228_ "FLARM\nRadar"
 _@M2229_ "Reset\nOdomet"
 _@M2230_ "Force\nLanded"
 _@M2231_ "ACTIVE"
-# 2232 unused but reserved for mmaps
 _@M2232_ "abcd"
 _@M2233_ "Overlay"
 _@M2234_ "TEXT"
@@ -2067,7 +2076,16 @@ _@M2243_ "Sonar\nOFF"
 _@M2244_ "Device\nSetup"
 _@M2245_ "Device\nSave"
 _@M2246_ "Reset\nView"
+_@M2247_ "28/45 FAI threshold "
+_@M2248_  "No Near Object found!"
 
 # MAX 2250! 
 # (Reserved for custom menus up to 2300!)
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)
+
+# S = Start Task point
+_@M2301  "S" 
+# T = Task Point
+_@M2302_  "T"  
+# F = Finish point
+_@M2303_  "F" 

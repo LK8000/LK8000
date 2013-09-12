@@ -160,6 +160,7 @@ int i,j;
 	
 	int  type = Sideview_pHandeled[iSizeIdx].iType;
 	RECT rcd  = Sideview_pHandeled[iSizeIdx].rc;
+	COLORREF FrameColor =  MapWindow::GetAirspaceColourByClass(type);
 	double fFrameColFact;
 	if(Sideview_pHandeled[iSizeIdx].bEnabled)
 	{
@@ -171,13 +172,14 @@ int i,j;
 	{
 	  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
 	  SetTextColor(hdc, RGB_GGREY);
+	  FrameColor = RGB_GGREY;
 	  fFrameColFact = 1.2;
 	}
 	if(INVERTCOLORS)
 	  fFrameColFact *= 0.8;
 	else
 	  fFrameColFact *= 1.2;
-	long lColor = ChangeBrightness( MapWindow::GetAirspaceColourByClass(type), fFrameColFact);
+	long lColor = ChangeBrightness(FrameColor, fFrameColFact);
 	HPEN mpen2 =(HPEN)CreatePen(PS_SOLID,FRAMEWIDTH,lColor);
 	HPEN oldpen2 = (HPEN)SelectObject(hdc, (HPEN)mpen2);
 
@@ -242,6 +244,59 @@ int i,j;
       }
     }
   }
+
+  /**********************************************************************************
+   * draw airspace frames in reversed order
+   **********************************************************************************/
+#ifdef OUTLINE_2ND
+  for (int m=0 ; m < Sideview_iNoHandeldSpaces; m++)
+  {
+	int iSizeIdx =  iSizeLookupTable[Sideview_iNoHandeldSpaces-m-1];
+	if(Sideview_pHandeled[iSizeIdx].bEnabled)
+	{
+	  #if BUGSTOP
+	  LKASSERT(iSizeIdx < MAX_NO_SIDE_AS);
+	  #endif
+	  if (iSizeIdx >= MAX_NO_SIDE_AS) iSizeIdx=MAX_NO_SIDE_AS-1;
+
+	  int  type = Sideview_pHandeled[iSizeIdx].iType;
+	  RECT rcd  = Sideview_pHandeled[iSizeIdx].rc;
+	  COLORREF FrameColor =  MapWindow::GetAirspaceColourByClass(type);
+	  double fFrameColFact;
+	  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+	  if(Sideview_pHandeled[iSizeIdx].bEnabled)
+	  {
+//		SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
+		SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
+		fFrameColFact = 0.8;
+	  }
+	  else
+	  {
+		SetTextColor(hdc, RGB_GGREY);
+		FrameColor = RGB_GGREY;
+		fFrameColFact = 1.2;
+	  }
+
+	  if(INVERTCOLORS)
+		fFrameColFact *= 0.8;
+	  else
+		fFrameColFact *= 1.2;
+	  long lColor = ChangeBrightness(FrameColor, fFrameColFact);
+	  HPEN mpen2 =(HPEN)CreatePen(PS_SOLID,FRAMEWIDTH,lColor);
+	  HPEN oldpen2 = (HPEN)SelectObject(hdc, (HPEN)mpen2);
+
+	  if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
+	    Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
+	  else
+	    Polygon(hdc,Sideview_pHandeled[iSizeIdx].apPolygon ,Sideview_pHandeled[iSizeIdx].iNoPolyPts );
+
+
+	  SelectObject(hdc, (HPEN)oldpen2);
+	  DeleteObject (mpen2);
+	}
+  }
+#endif
+
   /*************************************************************
    * draw ground
    *************************************************************/

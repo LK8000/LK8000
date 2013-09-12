@@ -125,10 +125,13 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 
 	short ii;
 	// set correct initial bottombar stripe, excluding TRM
-	for (ii=BM_CRU; ii<=BM_LAST;ii++) {
+	if(!ConfBB[BottomMode])
+	{
+	  for (ii=BM_CRU; ii<=BM_LAST;ii++) {
 		if (ConfBB[ii]) break;
+	  }
+      BottomMode=ii;
 	}
-	BottomMode=ii;
 
 	DoInit[MDI_DRAWBOTTOMBAR]=false; 
 

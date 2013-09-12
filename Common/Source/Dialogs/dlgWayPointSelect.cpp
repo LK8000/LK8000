@@ -15,6 +15,14 @@
 #include "TraceThread.h"
 #include <ctype.h>
 
+#ifdef WAYPOINT_ICONS
+  #define PICTO_OFFSET 28
+#else
+  #define PICTO_OFFSET 0
+#endif
+
+
+
 typedef struct{
   int Index;
   double Distance;
@@ -595,6 +603,8 @@ static void OnFilterDirection(DataField *Sender, DataField::DataAccessKind_t Mod
 
 }
 
+
+
 static void OnFilterType(DataField *Sender, DataField::DataAccessKind_t Mode){
 
   TCHAR sTmp[12];
@@ -645,6 +655,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
   }
 #endif
 
+
   if (DrawListIndex < n){
 
     int i;
@@ -673,14 +684,25 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
 
     x1 = w0-w1-w2-w3;
 
-    ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale,
+    ExtTextOutClip(hDC, (int)(PICTO_OFFSET+2)*ScreenScale, 2*ScreenScale,
                    WayPointList[WayPointSelectInfo[i].Index].Name,
-                   x1-ScreenScale*5);
+                   x1-ScreenScale*10);
 
     sTmp[0] = '\0';
     sTmp[1] = '\0';
     sTmp[2] = '\0';
-
+#ifdef WAYPOINT_ICONS
+    RECT rc = {0,  0, (int)(PICTO_OFFSET*1)*ScreenScale,   20*ScreenScale};
+    int idx = WayPointSelectInfo[i].Index;
+     if (WayPointCalc[idx].IsLandable )
+  	  MapWindow::DrawRunway(hDC,&WayPointList[idx],  rc, 1500*ScreenScale, true);
+     else
+     {   rc.right = rc.right/2;
+   //  rc.top += (rc.bottom)/2;
+     rc.bottom = 5;
+       MapWindow::DrawWaypointPicto(hDC,  rc, &WayPointList[idx]);
+     }
+#else
     if (WayPointList[WayPointSelectInfo[i].Index].Flags & HOME){
 		// LKTOKEN _@M1236_ "H"
       sTmp[0] = gettext(TEXT("_@M1236_"))[0];
@@ -702,7 +724,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
 		// LKTOKEN _@M1239_ "T"
         sTmp[1] = gettext(TEXT("_@M1239_"))[0];
     }
-
+#endif
     // left justified
     ExtTextOut(hDC, x1, 2*ScreenScale,
                ETO_OPAQUE, NULL,
@@ -724,7 +746,6 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     ExtTextOut(hDC, x3, 2*ScreenScale,
                ETO_OPAQUE, NULL,
                sTmp, _tcslen(sTmp), NULL);
-
   } else {
     if (DrawListIndex == 0){
 	// LKTOKEN  _@M466_ = "No Match!" 
@@ -733,7 +754,12 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
         ETO_OPAQUE, NULL,
         sTmp, _tcslen(sTmp), NULL);
     }
+
+
+
   }
+
+
 
 }
 
@@ -760,6 +786,7 @@ static void OnWPSCloseClicked(WindowControl * Sender){
 
 static int OnTimerNotify(WindowControl * Sender) {
   (void)Sender;
+
   static short i=0;
   if(i++ % 2 == 0) return 0;
 
@@ -772,6 +799,7 @@ static int OnTimerNotify(WindowControl * Sender) {
       wpDirection->RefreshDisplay();
     }
   }
+
   return 0;
 }
 
@@ -813,8 +841,11 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnFilterType),
   DeclareCallBackEntry(OnPaintListItem),
   DeclareCallBackEntry(OnWpListInfo),
+
+
   DeclareCallBackEntry(NULL)
 };
+
 
 int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
 
@@ -884,6 +915,10 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
 
   wWayPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWayPointListEntry"));
   LKASSERT(wWayPointListEntry!=NULL);
+
+  wWayPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWayPointListEntry"));
+  LKASSERT(wWayPointListEntry!=NULL);
+
   wWayPointListEntry->SetCanFocus(true);
    // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
    if ( wWayPointList->ScrollbarWidth == -1) {  

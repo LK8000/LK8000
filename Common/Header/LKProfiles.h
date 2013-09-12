@@ -126,6 +126,7 @@ TCHAR szRegistryArrivalValue[]= TEXT("ArrivalValue");
 TCHAR szRegistryAutoAdvance[] = TEXT("AutoAdvance");
 TCHAR szRegistryAutoBacklight[]= TEXT("AutoBacklight");
 TCHAR szRegistryAutoForceFinalGlide[] = TEXT("AutoForceFinalGlide");
+TCHAR szRegistryMacCready[] = TEXT("MacCready");
 TCHAR szRegistryAutoMcMode[] = TEXT("AutoMcMode");
 TCHAR szRegistryAutoMcStatus[] = TEXT("AutoMcStatus");
 TCHAR szRegistryAutoOrientScale[]= TEXT("AutoOrientScale3");
@@ -347,17 +348,21 @@ TCHAR szRegistryMultimap1[]= _T("Multimap1a");
 TCHAR szRegistryMultimap2[]= _T("Multimap2a");
 TCHAR szRegistryMultimap3[]= _T("Multimap3a");
 TCHAR szRegistryMultimap4[]= _T("Multimap4a");
-TCHAR szAspPermanent[]      = _T("AirspacePermMod");
 
 TCHAR szRegistryMMNorthUp1[]= _T("MultimapNorthUp1");
 TCHAR szRegistryMMNorthUp2[]= _T("MultimapNorthUp2");
 TCHAR szRegistryMMNorthUp3[]= _T("MultimapNorthUp3");
 TCHAR szRegistryMMNorthUp4[]= _T("MultimapNorthUp4");
 
-TCHAR szFlarmDirection[]= _T("FlarmDirection");
-
-TCHAR szRegistryDrawTask[] = _T("DrawTask");;
-TCHAR szRegistryDrawFAI[]  = _T("DrawFAI"); ;
+TCHAR szRegistryAspPermanent[]     = _T("AirspacePermMod");
+TCHAR szRegistryFlarmDirection[]   = _T("FlarmDirection");
+TCHAR szRegistryDrawTask[]         = _T("DrawTask");
+TCHAR szRegistryDrawFAI[]          = _T("DrawFAI");
+TCHAR szRegistryGearMode[]         = _T("GearMode");
+TCHAR szRegistryGearAltitude[]     = _T("GearAltitude");
+TCHAR szRegistryUserForceMode[]    = _T("UserDisplayMode");
+TCHAR szRegistryBottomMode[]       = _T("ActiveBottomBar");
+TCHAR szRegistryBigFAIThreshold[]  = _T("FAI_28_45_Threshold");
 //
 //
 //
@@ -403,6 +408,7 @@ extern TCHAR szRegistryAutoAdvance[];
 extern TCHAR szRegistryAutoBacklight[];
 extern TCHAR szRegistryAutoForceFinalGlide[];
 extern TCHAR szRegistryAutoMcMode[];
+extern TCHAR szRegistryMacCready[];
 extern TCHAR szRegistryAutoMcStatus[];
 extern TCHAR szRegistryAutoOrientScale[];
 extern TCHAR szRegistryAutoSoundVolume[];
@@ -624,17 +630,21 @@ extern TCHAR szRegistryMultimap1[];
 extern TCHAR szRegistryMultimap2[];
 extern TCHAR szRegistryMultimap3[];
 extern TCHAR szRegistryMultimap4[];
-extern TCHAR szAspPermanent[];
 
 extern TCHAR szRegistryMMNorthUp1[];
 extern TCHAR szRegistryMMNorthUp2[];
 extern TCHAR szRegistryMMNorthUp3[];
 extern TCHAR szRegistryMMNorthUp4[];
 
-extern TCHAR szFlarmDirection[];
-
+extern TCHAR szRegistryAspPermanent[];
+extern TCHAR szRegistryFlarmDirection[];
 extern TCHAR szRegistryDrawTask[];
 extern TCHAR szRegistryDrawFAI[] ;
+extern TCHAR szRegistryGearMode[];
+extern TCHAR szRegistryGearAltitude[];
+extern TCHAR szRegistryUserForceMode[];
+extern TCHAR szRegistryBottomMode[];
+extern TCHAR szRegistryBigFAIThreshold[];
 //
 //
 #endif

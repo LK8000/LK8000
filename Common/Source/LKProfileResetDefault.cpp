@@ -315,6 +315,10 @@ void LKProfileResetDefault(void) {
 
   AlarmTakeoffSafety = 0;
 
+  GearWarningMode=0;
+
+  GearWarningAltitude=200;
+
   FinishMinHeight = 0;
 
   StartHeightRef = 0;

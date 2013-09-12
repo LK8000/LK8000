@@ -488,6 +488,8 @@ extern WAYPOINT *WayPointList;
 extern WPCALC   *WayPointCalc;
 #endif
 
+GEXTERN int PanTaskEdit;
+GEXTERN int RealActiceWaypoint;
 GEXTERN int ActiveWayPoint;
 GEXTERN bool TaskAborted;
 GEXTERN int SelectedWaypoint;
@@ -508,11 +510,14 @@ GEXTERN DWORD StartMaxHeightMargin;
 GEXTERN DWORD StartMaxSpeed;
 GEXTERN DWORD StartMaxSpeedMargin;
 GEXTERN int StartHeightRef;
+GEXTERN DWORD FAI28_45Threshold;
 
 GEXTERN DWORD AlarmMaxAltitude1;
 GEXTERN DWORD AlarmMaxAltitude2;
 GEXTERN DWORD AlarmMaxAltitude3;
 GEXTERN DWORD AlarmTakeoffSafety;
+GEXTERN DWORD GearWarningAltitude;
+GEXTERN int GearWarningMode;
 
 // master flight data
 GEXTERN NMEA_INFO GPS_INFO;

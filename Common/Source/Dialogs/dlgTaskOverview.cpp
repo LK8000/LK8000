@@ -71,9 +71,13 @@ static void UpdateCaption (void) {
 
   wf->SetCaption(title);
 }
-
-
-
+#ifdef PICTORIALS
+#define PICTO_OFF (36 * ScreenScale)
+#define PICTO_HIGHT (25 * ScreenScale)
+#else
+#define PICTO_OFF (0)
+#define PICTO_HIGHT (0)
+#endif
 static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
   int n = UpLimit - LowLimit;
@@ -90,10 +94,12 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 
   int p1 = w0-w1-w2; // 125*ScreenScale;
   int p2 = w0-w2;    // 175*ScreenScale;
-
+  RECT rc = {0*ScreenScale,  0*ScreenScale, PICTO_HIGHT,   PICTO_HIGHT};
   if (DrawListIndex < n){
     int i = LowLimit + DrawListIndex;
-
+//    if ((WayPointList[Task[i].Index].Flags & LANDPOINT) >0)
+//      MapWindow::DrawRunway(hDC,  &WayPointList[Task[i].Index],  rc, 3000,true);
+    MapWindow::DrawTaskPicto(hDC, DrawListIndex,  rc, 2500);
     if (Task[i].Index>=0) {
       _stprintf(wpName, TEXT("%s%s"),
                 WayPointList[Task[i].Index].Name,
@@ -111,19 +117,19 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
         _stprintf(sTmp, TEXT("%s"), wpName);
       }
 
-      ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale,
+      ExtTextOutClip(hDC, PICTO_OFF+2*ScreenScale, 2*ScreenScale,
 		     sTmp, p1-4*ScreenScale);
 
       _stprintf(sTmp, TEXT("%.0f %s"), 
 		Task[i].Leg*DISTANCEMODIFY,
 		Units::GetDistanceName());
-      ExtTextOut(hDC, p1+w1-GetTextWidth(hDC, sTmp), 
+      ExtTextOut(hDC, PICTO_OFF+p1+w1-GetTextWidth(hDC, sTmp),
                  2*ScreenScale,
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
 
       _stprintf(sTmp, TEXT("%d")TEXT(DEG),  iround(Task[i].InBound));
-      ExtTextOut(hDC, p2+w2-GetTextWidth(hDC, sTmp), 
+      ExtTextOut(hDC, PICTO_OFF+p2+w2-GetTextWidth(hDC, sTmp),
                  2*ScreenScale,
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
@@ -136,7 +142,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 
 	// LKTOKEN  _@M832_ = "add waypoint" 
       _stprintf(sTmp, TEXT("  (%s)"), gettext(TEXT("_@M832_")));
-      ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
+      ExtTextOut(hDC, PICTO_OFF+2*ScreenScale, 2*ScreenScale,
 		 ETO_OPAQUE, NULL,
 		 sTmp, _tcslen(sTmp), NULL);
     } else if ((DrawListIndex==n+1) && ValidTaskPoint(0)) {
@@ -144,7 +150,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
       if (!AATEnabled || ISPARAGLIDER) {
 	// LKTOKEN  _@M735_ = "Total:" 
 	_stprintf(sTmp, gettext(TEXT("_@M735_")));
-	ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
+	ExtTextOut(hDC, PICTO_OFF+2*ScreenScale, 2*ScreenScale,
 		   ETO_OPAQUE, NULL,
 		   sTmp, _tcslen(sTmp), NULL);
       
@@ -155,7 +161,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 	  _stprintf(sTmp, TEXT("%.0f %s"), lengthtotal*DISTANCEMODIFY,
 		    Units::GetDistanceName());
 	}
-	ExtTextOut(hDC, p1+w1-GetTextWidth(hDC, sTmp), 
+	ExtTextOut(hDC, PICTO_OFF+p1+w1-GetTextWidth(hDC, sTmp),
                    2*ScreenScale,
 		   ETO_OPAQUE, NULL,
 		   sTmp, _tcslen(sTmp), NULL);
@@ -178,7 +184,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 		  DISTANCEMODIFY*lengthtotal,
 		  DISTANCEMODIFY*d1,
 		  Units::GetDistanceName());
-	ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
+	ExtTextOut(hDC, PICTO_OFF+2*ScreenScale, 2*ScreenScale,
 		   ETO_OPAQUE, NULL,
 		   sTmp, _tcslen(sTmp), NULL);
       } 
@@ -271,13 +277,17 @@ static void OnTaskListEnter(WindowControl * Sender,
 	if (CheckDeclaration()) {
 
 		if (ItemIndex>0) {
-
+#ifdef LAST_TASKPOINT_QUESTION
 			if (MessageBoxX(hWndMapWindow,
 			// LKTOKEN  _@M817_ = "Will this be the finish?" 
 			gettext(TEXT("_@M817_")),
 			// LKTOKEN  _@M54_ = "Add Waypoint" 
 			gettext(TEXT("_@M54_")),
-			MB_YESNO|MB_ICONQUESTION) == IDYES) {
+			MB_YESNO|MB_ICONQUESTION) == IDYES)
+#else
+		    if(0)
+#endif
+			{
 
 				isfinish = true;
 
@@ -302,7 +312,7 @@ static void OnTaskListEnter(WindowControl * Sender,
 			Task[ItemIndex].Index = res;
 
 			UnlockTaskData();
-
+//			wf->SetModalResult(mrOK);
 			if (ItemIndex==0) {
 				dlgTaskWaypointShowModal(ItemIndex, 0, true); // start waypoint
 			} else if (isfinish) {
@@ -324,6 +334,8 @@ static void OnTaskListEnter(WindowControl * Sender,
   } // Index==UpLimit, clicking on Add Waypoint
 
   if (ItemIndex<UpLimit) {
+
+//		wf->SetModalResult(mrOK);
 	if (ItemIndex==0) {
 		dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
 	} else {
@@ -605,11 +617,11 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 
-void dlgTaskOverviewShowModal(void){
+void dlgTaskOverviewShowModal(int Idx){
 
   UpLimit = 0;
   LowLimit = 0;
-  ItemIndex = -1;
+  ItemIndex = Idx; //-1;
 
   showAdvanced = false;
 
@@ -694,6 +706,12 @@ void dlgTaskOverviewShowModal(void){
   OverviewRefreshTask();
 
   UpdateAdvanced(); 
+
+
+
+  wTaskList->SetItemIndexPos(Idx);
+  wTaskList->Redraw();
+  wTaskListEntry->SetFocused(true,NULL);
 
   wf->ShowModal();
 

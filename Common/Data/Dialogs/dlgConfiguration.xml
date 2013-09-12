@@ -293,6 +293,12 @@
       <WndProperty Name="prpAlarmTakeoffSafety" Caption="_@M1794_" X="2" Y="-1" Width="-246" Height="22" CaptionWidth="150" Font="2" Help="_@H1261_" Keyboard="1">
         <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="500" Step="1"/>
       </WndProperty>
+      <WndProperty Name="prpAlarmGearWarning" Caption="_@M1829_" X="2" Y="-1" Width="-246" Height="22" CaptionWidth="150" Font="2" Help="_@H1266_" keyboard="1">
+        <DataField name="" DataType="enum"  Min="0" Max="3" Step="1" OnDataAccess="OnGearWarningModeChange"/>
+      </WndProperty>   
+      <WndProperty Name="prpAlarmGearAltitude" Caption="_@M1830_" X="2" Y="-1" Width="-246" Height="22" CaptionWidth="150" Font="2" Help="_@H1267_" keyboard="1">
+        <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="5000" Step="1"/>
+      </WndProperty>       
     </WndFrame>
     <WndFrame Name="frmUnits" X="70" Y="0" Width="-246" Height="222" Font="2">
       <WndProperty Name="prpUnitsSpeed" Caption="_@M61_" X="2" Y="-1"  Width="-246" Height="22" CaptionWidth="150" Font="2" Help="_@H170_">

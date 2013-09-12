@@ -120,6 +120,7 @@ M1779-1782 new Live tracker config options
 H1258 new livetracker help
 M2123 M2124  (menu buttons)
 H168 H494 FAI Finish Height
+
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
 _@M2201_ "Menu"
@@ -290,3 +291,27 @@ _@M2151_ "T>\nTP Center"
 _@M947_ "FLARM SIGNAL LOST"
 _@M2246_ "Reset\nView"
 
+
+-----------
+CHANGES After 4.0b
+-----------
++_@M948_ "Found"
++_@M949_ "TP"   # TurnPoint
++_@M1829_ "Gear Warning"
++_@M1830_ "Gear Warning Altitude"
++_@M1831_ "Off"
++_@M1832_ "Near landables"
++_@M1833_ "Always"
++_@M1834_ "Check gear !"
+_@M2003_ "Whats\nhere?"  
++_@M2247_ "FAI threshold"
++_@M2248_ "No Near Object found!"
++_@M2301_  "S"    # S = Start Task point
++_@M2302_  "T"    # T = Task Point
++_@M2303_  "F"    # F = Finish point
+
+HELP
++@1266  [Time Gate]
++@1268 [FAI 28/45 Threfhold]
++@1269 [Gear Warning]
++@1270 [Gear Warning Altitude]

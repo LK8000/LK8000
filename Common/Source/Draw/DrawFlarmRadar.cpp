@@ -499,7 +499,9 @@ static POINT Arrow[5];
 TCHAR text[80];
 static RECT PositionTopView[FLARM_MAX_TRAFFIC];
 static RECT PositionSideView[FLARM_MAX_TRAFFIC];
-int iTouchAreaSize = 15;
+static RECT OwnPosTopView;
+static RECT OwnPosSideView;
+int iTouchAreaSize = 45;
 HPEN   hOrangePen ;
 HPEN   hGreenPen ;
 HPEN   hOldPen;
@@ -586,7 +588,7 @@ switch(LKevent)
   case LKEVENT_LONGCLICK:
 	if( PtInRect(XstartScreen,YstartScreen, rct))
 		bHeightScale	= false;
-	/*
+/*
 	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
 	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
 	{
@@ -604,12 +606,20 @@ switch(LKevent)
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 			  if(LKTraffic[aiSortArray[i]].ID == LKTraffic[j].ID)
 			  {
+#ifdef MULTISELECT
+			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
+#else
 			    dlgLKTrafficDetails( j);
+#endif
+			    bFound = true;
 			  }
 		    }
-		    bFound = true;
 		  }
 	    }
+#ifdef MULTISELECT
+	dlgMultiSelectListShowModal();
+#endif
+
 	if(!bFound)
 	  if( PtInRect(XstartScreen,YstartScreen, rc))
 		bHeightScale	= !bHeightScale;
@@ -879,6 +889,10 @@ sTopDia.fYMax =  (sDia.fXMax-sDia.fXMin)/2 * fRatio;
 
  int x_middle = DistanceToX  (0, &sTopDia); // (rct.right-rct.left)/2;
  int y_middle = HeightToY    (0, &sTopDia);//(rct.bottom-rct.top)/2;
+ OwnPosTopView.left   = x_middle-iTouchAreaSize;
+ OwnPosTopView.right  = x_middle+iTouchAreaSize;
+ OwnPosTopView.top    = y_middle-iTouchAreaSize;
+ OwnPosTopView.bottom = y_middle+iTouchAreaSize;
 
 
 /*******************************************************
@@ -1130,6 +1144,7 @@ if(SPLITSCREEN_FACTOR >0)
   SetTextColor(hdc, rgbDrawColor);
   Rectangle(hdc,rc.left , rc.bottom+5 ,rc.right, rc.top);
   SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+  RECT rcd = sDia.rc;
   DrawXGrid(hdc, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
 
 
@@ -1282,6 +1297,10 @@ if(bSideview)
    * draw own plane position
    *************************************************************************/
   SelectObject(hdc, hDrawBrush);
+  OwnPosSideView.left   = x_middle-iTouchAreaSize;
+  OwnPosSideView.right  = x_middle+iTouchAreaSize;
+  OwnPosSideView.top    = HeightToY(0,&sDia)-iTouchAreaSize;
+  OwnPosSideView.bottom = HeightToY(0,&sDia)+iTouchAreaSize;
 
   if(!bCenter)
     RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , fPlaneSize);
@@ -1420,3 +1439,53 @@ DWORD lStartTime = GetTickCount();
 SelectObject(hDC, (HPEN) oldPen);
 return iCnt;
 }
+
+
+
+void MapWindow::DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC* pTraf)
+{
+#ifdef PICTORIALS
+	static POINT Arrow[5];
+int cx = rc.right-rc.left;
+int cy = rc.bottom-rc.top;
+int x = rc.left + cx/2;
+int y = rc.top + cy/2;
+double fInteg30 =  pTraf->Average30s;
+int iRectangleSize = cy/5;
+int iCircleSize    = cy/5;
+static double zoomfact = (double)cy/NIBLSCALE(18);
+//if (DoInit[MDI_DRAWFLARMTRAFFIC])
+{
+	Arrow[0].x = (long)(-4.0*zoomfact);
+	Arrow[0].y = (long) (5.0*zoomfact);
+	Arrow[1].x = (long) (0.0*zoomfact);
+	Arrow[1].y = (long) (-6.0*zoomfact);
+	Arrow[2].x = (long) (4.0*zoomfact);
+	Arrow[2].y = (long) (5.0*zoomfact);
+	Arrow[3].x = (long) (0.0*zoomfact);
+	Arrow[3].y = (long) (2.0*zoomfact);
+	Arrow[4].x = (long) (-4.0*zoomfact);
+	Arrow[4].y = (long) (5.0*zoomfact);
+}
+
+    int iVarioIdx = (int)(2*fInteg30-0.5)+NO_VARIO_COLORS/2;
+    if(iVarioIdx < 0) iVarioIdx =0;
+    if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
+	HBRUSH oldb = (HBRUSH)   SelectObject(hDC, *variobrush[iVarioIdx]);
+
+	    switch (pTraf->Status) { // 100321
+		  case LKT_GHOST:
+			Rectangle(hDC,x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
+			break;
+		  case LKT_ZOMBIE:
+			Circle(hDC, x, y, iCircleSize, rc, true, true );
+			break;
+		  default:
+	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
+			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360(  pTraf->TrackBearing ));
+			Polygon(hDC,Triangle,5);
+	    }
+		SelectObject(hDC, oldb);
+#endif
+}
+// This is painting traffic icons on the screen.

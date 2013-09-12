@@ -311,6 +311,7 @@ void Shutdown(void) {
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
 
   StartupStore(_T(". Entering shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
+  MapWindow::Event_Pan(0);  // return from PAN restores the Task in case of Turnpoint moving
   #if TESTBENCH
   StartupLogFreeRamAndStorage();
   #endif

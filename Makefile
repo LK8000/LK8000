@@ -630,6 +630,7 @@ DLGS	:=\
 	$(DLG)/dlgAirspace.cpp \
 	$(DLG)/dlgAirspaceWarningParams.cpp \
 	$(DLG)/dlgAirspaceColours.cpp \
+	$(DLG)/dlgMultiSelectList.cpp \
 	$(DLG)/dlgAirspaceDetails.cpp \
 	$(DLG)/dlgAirspacePatterns.cpp \
 	$(DLG)/dlgAirspaceSelect.cpp \

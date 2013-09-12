@@ -17,13 +17,17 @@ void ReplaceWaypoint(int index) {
     return;
 
   LockTaskData();
+  int waypoint = ActiveWayPoint;
+  if(  ValidTaskPoint(PanTaskEdit))
+	  waypoint = PanTaskEdit;
+
   TaskModified = true;
   TargetModified = true;
 
   // ARH 26/06/05 Fixed array out-of-bounds bug
-  if (ActiveWayPoint>=0 && ActiveWayPoint < MAXTASKPOINTS) {	
-    ResetTaskWaypoint(ActiveWayPoint);
-    Task[ActiveWayPoint].Index = index;
+  if (waypoint>=0 && waypoint < MAXTASKPOINTS) {
+//   ResetTaskWaypoint(ActiveWayPoint);
+    Task[waypoint].Index = index;
   } else {
 	// 130206 this is no more called, normally, because we filter out this condition
 	// in dlgWayPointDetails..
@@ -31,8 +35,8 @@ void ReplaceWaypoint(int index) {
     // Insert a new waypoint since there's
     // nothing to replace
     ActiveWayPoint=0;
-    ResetTaskWaypoint(ActiveWayPoint);
-    Task[ActiveWayPoint].Index = index;
+    ResetTaskWaypoint(waypoint);
+    Task[waypoint].Index = index;
   }
   RefreshTask();
   UnlockTaskData();

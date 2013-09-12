@@ -457,7 +457,8 @@ void Globals_Init(void) {
   INPUTFILECHANGED = FALSE;
 
   ActiveWayPoint = -1;
-
+  PanTaskEdit    = -1;
+  RealActiceWaypoint = -1;
   // Assigned Area Task
   AATTaskLength = 120;
   AATEnabled = FALSE;
@@ -471,14 +472,15 @@ void Globals_Init(void) {
   AlarmMaxAltitude2=0;
   AlarmMaxAltitude3=0;
   AlarmTakeoffSafety=0;
-
+  GearWarningMode=0;
+  GearWarningAltitude=0;
   WaypointsOutOfRange = 1; // include by default
 
   UTCOffset = 0;
   EnableThermalLocator = 1;
   EnableMultipleStartPoints = false;
   StartHeightRef = 0; // MSL
-
+  FAI28_45Threshold = FAI_BIG_THRESHOLD;
   #if (!defined(WINDOWSPC) || (WINDOWSPC==0))
   SetSystemTimeFromGPS = true;
   #else
