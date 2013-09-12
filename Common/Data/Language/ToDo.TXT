@@ -295,6 +295,8 @@ _@M2246_ "Reset\nView"
 -----------
 CHANGES After 4.0b
 -----------
++_@M948_ "Found"
++_@M949_ "TP"   # TurnPoint
 +_@M1829_ "Gear Warning"
 +_@M1830_ "Gear Warning Altitude"
 +_@M1831_ "Off"
