@@ -104,7 +104,7 @@ bool TextInBoxMoveInView(const RECT *clipRect, POINT *offset, RECT *brect){
 
 
 
-bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  TCHAR* Value, int x, int y, 
+bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  const TCHAR* Value, int x, int y, 
                           int size, TextInBoxMode_t *Mode, bool noOverlap) {
 
   SIZE tsize;

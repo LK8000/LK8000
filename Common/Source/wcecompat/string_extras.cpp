@@ -76,5 +76,5 @@ char* strerror(int errnum)
 {
 	if (errnum < NUM_MESSAGES)
 	  return (char*)(messages[errnum]);
-	return "Unknown error";
+	return (char*)"Unknown error";
 }

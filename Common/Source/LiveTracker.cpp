@@ -103,7 +103,7 @@ static unsigned long int mkgmtime(const struct tm *ptmbuf)
 }
 
 // Encode URLs in a standard form
-static char* UrlEncode(char *szText, char* szDst, int bufsize) {
+static char* UrlEncode(const char *szText, char* szDst, int bufsize) {
   char ch; 
   char szHex[5];
   int iMax,i,j; 

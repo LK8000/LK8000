@@ -29,7 +29,7 @@ void ExtractDirectory(TCHAR *Dest, TCHAR *Source) {
 }
 
 
-void CreateDirectoryIfAbsent(TCHAR *filename) {
+void CreateDirectoryIfAbsent(const TCHAR *filename) {
   TCHAR fullname[MAX_PATH];
 
   LocalPath(fullname, filename);

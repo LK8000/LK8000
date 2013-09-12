@@ -13,7 +13,7 @@
 // LK Infobox list
 // Included by lk temporarily, only with CUTIBOX
 //
-bool SetDataOption( int index, UnitGroup_t UnitGroup, TCHAR *Description, TCHAR *Title)
+bool SetDataOption( int index, UnitGroup_t UnitGroup, const TCHAR *Description, const TCHAR *Title)
 {
 	DATAOPTIONS tag;
 	if (index>=NUMDATAOPTIONS_MAX) return false;

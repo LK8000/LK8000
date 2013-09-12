@@ -358,7 +358,7 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
 
 
 
-TCHAR *strtok_r(TCHAR *s, TCHAR *delim, TCHAR **lasts){
+TCHAR *strtok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
 // "s" MUST be a pointer to an array, not to a string!!! 
 // (ARM92, Win emulator cause access violation if not)
 
@@ -409,11 +409,11 @@ cont:
 }
 
 // Same As strtok_r but not skeep leading delimiter ...
-TCHAR *strsep_r(TCHAR *s, TCHAR *delim, TCHAR **lasts){
+TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
 // "s" MUST be a pointer to an array, not to a string!!!
 // (ARM92, Win emulator cause access violation if not)
 
-	TCHAR *spanp;
+	const TCHAR *spanp;
 	int   c, sc;
 	TCHAR *tok = NULL;
 
@@ -443,7 +443,7 @@ TCHAR *strsep_r(TCHAR *s, TCHAR *delim, TCHAR **lasts){
 	 */
 	for (;;) {
 		c = *s++;
-		spanp = (TCHAR *)delim;
+		spanp = delim;
 		do {
 			if ((sc = *spanp++) == c) {
 				if (c == 0)
@@ -796,10 +796,10 @@ void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numof
 
 
 
-TCHAR *WindAngleToText(double angle) {
+const TCHAR *WindAngleToText(double angle) {
 
  // Valid index values: 0 - 16,  17 is for Err
- static TCHAR *windrose[17]= {TEXT("N"),TEXT("NNE"),TEXT("NE"),TEXT("ENE"),TEXT("E"),TEXT("ESE"),
+ static const TCHAR *const windrose[17]= {TEXT("N"),TEXT("NNE"),TEXT("NE"),TEXT("ENE"),TEXT("E"),TEXT("ESE"),
 			TEXT("SE"),TEXT("SSE"),TEXT("S"),TEXT("SSW"),TEXT("SW"),TEXT("WSW"),
 			TEXT("W"),TEXT("WNW"),TEXT("NW"),TEXT("NNW"),TEXT("---")};
 

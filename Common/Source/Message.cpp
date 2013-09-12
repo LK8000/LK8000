@@ -358,7 +358,7 @@ int Message::GetEmptySlot() {
 }
 
 
-void Message::AddMessage(DWORD tshow, int type, TCHAR* Text) {
+void Message::AddMessage(DWORD tshow, int type, const TCHAR* Text) {
 
   Lock();
 

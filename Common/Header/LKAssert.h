@@ -11,7 +11,7 @@
 
 #if USELKASSERT
 
-  extern void MSG_ASSERTION(int line, char *filename);
+  extern void MSG_ASSERTION(int line, const char *filename);
   #define LKASSERT(arg) {;if (!(arg)) {; StartupStore(_T("[ASSERT FAILURE] in %S line %d\n"),__FILE__,__LINE__); MSG_ASSERTION(__LINE__,__FILE__); exit(0);}}
 
 #else

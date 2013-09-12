@@ -23,7 +23,7 @@ static int user_size = 0;
 static TCHAR user_data[MAX_USER_SIZE];
 
 
-BOOL ExpectStringWait(PDeviceDescriptor_t d, TCHAR *token) {
+BOOL ExpectStringWait(PDeviceDescriptor_t d, const TCHAR *token) {
 
   int i=0, ch;
   int j=0;
@@ -116,7 +116,7 @@ BOOL EWMicroRecorderTryConnect(PDeviceDescriptor_t d) {
 
 static void EWMicroRecorderWriteWayPoint(PDeviceDescriptor_t d, 
                                          const WAYPOINT *wp,
-                                         TCHAR* EWType) {
+                                         const TCHAR* EWType) {
   TCHAR EWRecord[128];
   int DegLat, DegLon;
   double MinLat, MinLon;

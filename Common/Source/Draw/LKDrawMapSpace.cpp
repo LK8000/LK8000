@@ -15,7 +15,7 @@
 #include "Sideview.h"
 #include "Multimap.h"
 
-extern void LoadSplash(HDC hDC, TCHAR *splashfile);
+extern void LoadSplash(HDC hDC, const TCHAR *splashfile);
 extern void LKDrawMultimap_Asp(HDC hdc,RECT rc);
 
 //

@@ -12,16 +12,15 @@
 #include "dlgTools.h"
 
 
-TCHAR *DegreesToText(double brg) {
-  static TCHAR sDeg[30];
-  if (brg<23||brg>=338) {; _tcscpy(sDeg,gettext(_T("_@M1703_"))); return(sDeg); } // North
-  if (brg<68)  {; _tcscpy(sDeg,gettext(_T("_@M1704_"))); return(sDeg); }	// North-East
-  if (brg<113) {; _tcscpy(sDeg,gettext(_T("_@M1705_"))); return(sDeg); }	// East
-  if (brg<158) {; _tcscpy(sDeg,gettext(_T("_@M1706_"))); return(sDeg); }	// South-East
-  if (brg<203) {; _tcscpy(sDeg,gettext(_T("_@M1707_"))); return(sDeg); }	// South
-  if (brg<248) {; _tcscpy(sDeg,gettext(_T("_@M1708_"))); return(sDeg); }	// South-West
-  if (brg<293) {; _tcscpy(sDeg,gettext(_T("_@M1709_"))); return(sDeg); }	// West
-  if (brg<338) {; _tcscpy(sDeg,gettext(_T("_@M1710_"))); return(sDeg); }	// North-West
+const TCHAR *DegreesToText(double brg) {
+  if (brg<23||brg>=338) { return gettext(_T("_@M1703_")); } // North
+  if (brg<68)  { return gettext(_T("_@M1704_")); }	// North-East
+  if (brg<113) { return gettext(_T("_@M1705_")); }	// East
+  if (brg<158) { return gettext(_T("_@M1706_")); }	// South-East
+  if (brg<203) { return gettext(_T("_@M1707_")); }	// South
+  if (brg<248) { return gettext(_T("_@M1708_")); }	// South-West
+  if (brg<293) { return gettext(_T("_@M1709_")); }	// West
+  if (brg<338) { return gettext(_T("_@M1710_")); }	// North-West
 
   return(_T("??"));
 
@@ -58,7 +57,7 @@ TCHAR *WhatTimeIsIt(void) {
 // Modes
 // 0 big city
 //
-TCHAR *OracleFormatDistance(TCHAR *name,TCHAR *ntype,const double dist,const double brg,const short mode) {
+TCHAR *OracleFormatDistance(const TCHAR *name,const TCHAR *ntype,const double dist,const double brg,const short mode) {
 
   static TCHAR ttmp[150];
   double dist_over=0, dist_near=0;

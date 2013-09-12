@@ -65,7 +65,7 @@ class ComboList{
 #define ComboPopupReopenLESSDataIndex -800002
 #define ComboPopupNULL -800003
 
-    ComboListEntry_t * CreateItem(  int ItemIndex, int DataFieldIndex,TCHAR *StringValue,TCHAR *StringValueFormatted);
+    ComboListEntry_t * CreateItem(  int ItemIndex, int DataFieldIndex,const TCHAR *StringValue,const TCHAR *StringValueFormatted);
     void FreeComboPopupItemList(void);
 
     int ComboPopupDrawListIndex;
@@ -148,8 +148,8 @@ class DataField{
     return(mUsageCounter);
   }
 
-  void SetDisplayFormat(TCHAR *Value);
-  void SetEditFormat(TCHAR *Value);
+  void SetDisplayFormat(const TCHAR *Value);
+  void SetEditFormat(const TCHAR *Value);
   void SetDisableSpeedUp(bool bDisable) {mDisableSpeedup=bDisable;}  // allows combolist to iterate all values
   bool GetDisableSpeedUp(void) {return mDisableSpeedup;}
   void SetDetachGUI(bool bDetachGUI) {mDetachGUI=bDetachGUI;}  // allows combolist to iterate all values w/out triggering external events
@@ -185,7 +185,7 @@ class DataFieldBoolean:public DataField{
     TCHAR mTextFalse[FORMATSIZE+1];
 
   public:
-    DataFieldBoolean(const TCHAR *EditFormat, const TCHAR *DisplayFormat, int Default, TCHAR *TextTrue, TCHAR *TextFalse, void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)):
+    DataFieldBoolean(const TCHAR *EditFormat, const TCHAR *DisplayFormat, int Default, const TCHAR *TextTrue, const TCHAR *TextFalse, void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
 		  if (Default) {mValue=true;} else {mValue=false;}
       _tcscpy(mTextTrue, TextTrue);
@@ -489,7 +489,7 @@ class DataFieldString:public DataField{
     TCHAR mValue[EDITSTRINGSIZE];
 
   public:
-    DataFieldString(TCHAR *EditFormat, TCHAR *DisplayFormat, TCHAR *Default, void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)):
+    DataFieldString(const TCHAR *EditFormat, const TCHAR *DisplayFormat, const TCHAR *Default, void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       _tcscpy(mValue, Default);
       SupportCombo=false;
