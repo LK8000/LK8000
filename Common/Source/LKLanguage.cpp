@@ -27,7 +27,7 @@
 #define MAX_HELP	1500	// complete help including several lines, and also for each single line
 				// Remember there is a limit in ReadULine, always careful with large strings
 
-#define MAX_MESSAGES		2250 // Max number of MSG items
+#define MAX_MESSAGES		2500 //2250 // Max number of MSG items
 #define MAX_MESSAGE_SIZE	150 // just for setting a limit
 
 bool LKLoadMessages(bool fillup);

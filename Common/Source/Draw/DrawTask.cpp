@@ -11,10 +11,113 @@
 #include "AATDistance.h"
 #include "DoInits.h"
 #include "RGB.h"
+#include "LKObjects.h"
 #include "utils/2dpclip.h"
 
-
+extern int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius);
+extern int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor);
 extern COLORREF taskcolor;
+
+void  MapWindow::DrawTaskPicto(HDC hdc,int TaskIdx, RECT rc, double fScaleFact)
+{
+#ifdef PICTORIALS
+int center_x = (rc.right-rc.left)/2;
+int center_y = (rc.bottom-rc.top)/2;
+int SecType = 	SectorType;
+int width = center_x-2;
+HPEN oldpen = 0;
+HBRUSH oldbrush = 0;
+if(AATEnabled)
+  oldbrush = (HBRUSH) SelectObject(hdc, LKBrush_LightGrey);
+else
+  oldbrush = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+
+oldpen = (HPEN) SelectObject(hdc, hpStartFinishThick);
+int finish=0;
+
+while( ValidTaskPoint(finish))
+ finish++;
+finish--;
+
+if(center_y < width)
+  width = center_y-2;
+
+fScaleFact /= (2500.0);
+
+width = (int)((double)width*(fScaleFact));
+
+
+POINT startfinishline[2] = {{0,-width/2},
+                            {0,+width/2}};
+
+POINT track[3] = {{0,-width/10},
+		          {width/4,0},
+                  {0,width/10}};
+if(TaskIdx == finish)
+{
+	track[0].x = -width/4 ; track[0].y= -width/10;
+	track[1].x = 0        ; track[1].y= 0;
+	track[2].x = -width/4 ; track[2].y= width/10;
+}
+
+LockTaskData(); // protect from external task changes
+double StartRadial = Task[TaskIdx].AATStartRadial;
+double FinishRadial = Task[TaskIdx].AATFinishRadial;
+
+
+double SecRadius;
+GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
+
+    switch (SecType)
+    {
+        case CIRCLE:
+            Circle(hdc,
+            		center_x,
+            		center_y,
+            		width-2, rc, true, true);
+            break;
+        case SECTOR:
+            Segment(hdc,
+            		center_x,
+            		center_y, width, rc,
+            		StartRadial,
+            		FinishRadial);
+            break;
+        case DAe:
+            if (!AATEnabled) { // this Type exist only if not AAT task
+                // JMW added german rules
+                Circle(hdc,
+                		center_x,
+                		center_y,
+                		width/8, rc, false, true);
+
+                Segment(hdc,
+                		center_x,
+                		center_y, width, rc,
+                		StartRadial,
+                		FinishRadial);
+            }
+            break;
+       case LINE:
+       default:
+   	     PolygonRotateShift(startfinishline, 2,  center_x, center_y,  Task[TaskIdx].AATStartRadial);
+   	   	 Polygon(hdc,startfinishline ,2 );
+    	 if((TaskIdx == 0) || (TaskIdx == finish))
+    	 {
+    	   PolygonRotateShift(track, 3,  center_x, center_y,  Task[TaskIdx].AATStartRadial);
+    	   Polygon(hdc,track ,3 );
+    	 }
+       break;
+    }
+UnlockTaskData();
+
+SelectObject(hdc, oldpen);
+SelectObject(hdc, oldbrush);
+#endif
+}
+
+
+
 
 void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
     int i;
@@ -60,8 +163,8 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
             if (AATEnabled != TRUE) {
                 //_DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
                 //_DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
-                DrawDashLine(hdc,  size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
-                DrawDashLine(hdc,  size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
+         //       DrawDashLine(hdc,  size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
+         //       DrawDashLine(hdc,  size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
             }
 
             int Type = SectorType;
@@ -220,4 +323,73 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
     SetTextColor(hDCTemp, origcolor);
     SelectObject(hdc, oldpen);
     SelectObject(hdc, oldbrush);
+}
+
+
+
+
+void MapWindow::DrawTaskSectors(HDC hdc, RECT rc) {
+int Active =  ActiveWayPoint;
+	if(ValidTaskPoint(PanTaskEdit))
+		Active = PanTaskEdit;
+LockTaskData();
+    /*******************************************************************************************************/
+int TaskPoints =0;
+while(ValidTaskPoint(TaskPoints))
+	TaskPoints++;
+if(TaskPoints < 2)
+	return;
+if(TaskPoints > 5)
+	return;
+int a=0, b=1;
+
+if(TaskPoints ==3)
+{
+  switch (Active)
+  {
+    case 0: a = 0; b = 1; break;
+    case 1: a = 0; b = 1; break;
+    case 2: a = 1; b = 2; break;
+  }
+}
+
+if(TaskPoints ==4)
+{
+  switch (Active)
+  {
+    case 0: a = 1; b = 2; break;
+    case 1: a = 2; b = 0; break;
+    case 2: a = 0; b = 1; break;
+    case 3: a = 1; b = 2; break;
+  }
+}
+
+if(TaskPoints ==5)
+{
+  switch (Active)
+  {
+    case 0: a = 3; b = 1; break;
+    case 1: a = 2; b = 3; break;
+    case 2: a = 3; b = 1; break;
+    case 3: a = 1; b = 2; break;
+    case 4: a = 3; b = 1; break;
+  }
+}
+
+
+
+double	lat1 = WayPointList[Task[a].Index].Latitude;
+double	lon1 = WayPointList[Task[a].Index].Longitude;
+double	lat2 = WayPointList[Task[b].Index].Latitude;
+double	lon2 = WayPointList[Task[b].Index].Longitude;
+
+RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 1, RGB_YELLOW );
+RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 0, RGB_CYAN );
+
+
+
+ UnlockTaskData();
+/*******************************************************************************************************/
+
+
 }

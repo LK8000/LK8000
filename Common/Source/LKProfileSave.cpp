@@ -117,7 +117,12 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAutoBacklight,EnableAutoBacklight);
   rprintf(szRegistryAutoForceFinalGlide,AutoForceFinalGlide);
   rprintf(szRegistryAutoMcMode,AutoMcMode_Config);
+/*
+  rprintf(szRegistryAutoMcMode,AutoMcMode);
+  int tmp = (int)(MACCREADY*100.0);
+  rprintf(szRegistryMacCready,tmp);*/
   rprintf(szRegistryAutoMcStatus,AutoMacCready_Config);
+ // rprintf(szRegistryAutoMcStatus,AutoMacCready);
   rprintf(szRegistryAutoOrientScale,AutoOrientScale*10);
   rprintf(szRegistryAutoSoundVolume,EnableAutoSoundVolume);
   rprintf(szRegistryAutoWind,AutoWindMode_Config);
@@ -363,16 +368,21 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMultimap3,Multimap3);
   rprintf(szRegistryMultimap4,Multimap4);
 
-  rprintf(szAspPermanent,AspPermanentChanged);
-
   rprintf(szRegistryMMNorthUp1,MMNorthUp_Runtime[0]);
   rprintf(szRegistryMMNorthUp2,MMNorthUp_Runtime[1]);
   rprintf(szRegistryMMNorthUp3,MMNorthUp_Runtime[2]);
   rprintf(szRegistryMMNorthUp4,MMNorthUp_Runtime[3]);
 
-  rprintf(szFlarmDirection,iFlarmDirection);
-  rprintf(szRegistryDrawTask,Flags_DrawTask);
-  rprintf(szRegistryDrawFAI ,Flags_DrawFAI);
+  rprintf(szRegistryAspPermanent  ,AspPermanentChanged);
+  rprintf(szRegistryFlarmDirection,iFlarmDirection);
+  rprintf(szRegistryDrawTask      ,Flags_DrawTask);
+  rprintf(szRegistryDrawFAI       ,Flags_DrawFAI);
+  rprintf(szRegistryGearMode      ,GearWarningMode);
+  rprintf(szRegistryGearAltitude  ,GearWarningAltitude);
+  rprintf(szRegistryUserForceMode ,(int) MapWindow::mode.UserForcedMode());
+  rprintf(szRegistryBigFAIThreshold,FAI28_45Threshold);
+  rprintf(szRegistryBottomMode    ,BottomMode);
+
 
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);

@@ -74,13 +74,14 @@ double calc_altitudeagl;
 double fMC0 = 0.0f;
 int overindex=-1;
 bool show_mc0= true;
+double fLD;
 SIZE tsize;
 TCHAR text[TBSIZE+1];
 TCHAR text2[TBSIZE+1];
 TCHAR buffer[TBSIZE+1];
 BOOL bDrawRightSide =false;
 COLORREF GREEN_COL     = RGB_GREEN;
-COLORREF RED_COL       = RGB_RED;
+COLORREF RED_COL       = RGB_LIGHTORANGE;
 COLORREF BLUE_COL      = RGB_BLUE;
 COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 COLORREF col           =  RGB_BLACK;
@@ -191,15 +192,20 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			   {
 				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
 				 {
+#ifdef MULTISELECT
+				   dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
+#else				   
 				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-				   //bFound = true;
+#endif				   
 				   LKevent=LKEVENT_NONE; 
-				   // return; // NO. We must finish painting the background instead.
-				   // otherwise upon exiting we have no map underneath.
+
 				 }
 			   }
 		     }
+#ifdef MULTISELECT
+			 dlgMultiSelectListShowModal();
+#endif
 #if 0
 		     // This is not working correctly because InteriorAirspaceDetails is finding
 		     // only the first airspace in the list, only one.
@@ -212,11 +218,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			}
 	             }			
 #endif
-        	     if (LKevent!=LKEVENT_NONE) {
-			 if (PtInRect(XstartScreen, YstartScreen,rc ))
-			   bHeightScale = !bHeightScale;
-			 if (PtInRect(XstartScreen, YstartScreen,rct ))
-			   bHeightScale = false;
+        	 if (LKevent!=LKEVENT_NONE) {
+			   if (PtInRect(XstartScreen, YstartScreen,rc ))
+			     bHeightScale = !bHeightScale;
+			   if (PtInRect(XstartScreen, YstartScreen,rct ))
+			     bHeightScale = false;
 		     }
 	     break;
 
@@ -304,7 +310,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if(bInvCol)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
-    RED_COL       = ChangeBrightness(RED_COL       , 0.6);;
+    RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
     BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
     LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
   }
@@ -334,6 +340,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   wpt_altarriv_mc0 = 0.0;
   wpt_altitude     = 0.0;
   fMC0 = 0.0;
+  fLD  = 0.0;
 
   if (getsideviewpage==IM_NEXT_WP )
   {
@@ -371,6 +378,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
 
+
+      if ( (DerivedDrawInfo.NavAltitude-wpt_altarriv+wpt_altitude)!=0)
+      	fLD = (int) wpt_dist / (DerivedDrawInfo.NavAltitude-wpt_altarriv+wpt_altitude);
+      else
+	fLD=999;
 
       if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv -= (SAFETYALTITUDEARRIVAL/10);
 

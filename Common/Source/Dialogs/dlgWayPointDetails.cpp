@@ -32,6 +32,29 @@ static int nTextLines=0;
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
+static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
+	  (void)Sender;
+	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
+
+RECT *prc;
+prc = wPicto->GetBoundRect();
+
+
+//  StartupStore(_T("..Entered OnPaintWaypointPicto \n"));
+
+  SetBkColor  (hDC, RGB_LIGHTGREY);
+
+  if (WayPointCalc[SelectedWaypoint].IsLandable )
+  {
+	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 3500*ScreenScale, true);
+  }
+  else
+  {
+	MapWindow::DrawWaypointPicto(hDC,  *prc, &WayPointList[SelectedWaypoint]);
+  }
+}
+
+
 static void NextPage(int Step){
   bool page_ok=false;
   page += Step;
@@ -164,9 +187,13 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
 static void OnReplaceClicked(WindowControl * Sender){
 	(void)Sender;
   LockTaskData();
+
   ReplaceWaypoint(SelectedWaypoint);
+  RealActiceWaypoint = SelectedWaypoint;
+
   RefreshTask();
   UnlockTaskData();
+  MapWindow::RefreshMap();
   wf->SetModalResult(mrOK);
 }
 
@@ -248,6 +275,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnPrevClicked),
   DeclareCallBackEntry(OnPaintDetailsListItem),
   DeclareCallBackEntry(OnDetailsListInfo),
+  DeclareCallBackEntry(OnPaintWaypointPicto),
   DeclareCallBackEntry(NULL)
 };
 
@@ -536,9 +564,15 @@ void dlgWayPointDetailsShowModal(short mypage){
   if (wb) {
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
 
-    if (ValidTaskPoint(ActiveWayPoint)) {
+    int tmpIdx =  -1;
+    if (ValidTaskPoint(ActiveWayPoint))
+      tmpIdx = Task[ActiveWayPoint].Index;
+    if(  ValidTaskPoint(PanTaskEdit))
+     tmpIdx = RealActiceWaypoint;
+    if(tmpIdx != -1)
+    {
     	wb->SetOnClickNotify(OnReplaceClicked);
-	_stprintf(captmp,_T("%s <%s>"),MsgToken(1826),WayPointList[ Task[ActiveWayPoint].Index ].Name); // replace  xx
+	_stprintf(captmp,_T("%s <%s>"),MsgToken(1826),WayPointList[tmpIdx ].Name); // replace  xx
     } else {
 	_stprintf(captmp,_T("( %s )"),MsgToken(555));
     }
@@ -569,3 +603,5 @@ void dlgWayPointDetailsShowModal(short mypage){
   wf = NULL;
 
 }
+
+

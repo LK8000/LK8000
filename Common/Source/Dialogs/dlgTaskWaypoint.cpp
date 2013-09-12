@@ -13,6 +13,7 @@
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #include "Dialogs.h"
+#include "InputEvents.h"
 
 extern void ResetTaskWaypoint(int j);
 
@@ -20,11 +21,15 @@ static int twItemIndex= 0;
 static WndForm *wf=NULL;
 static int twType = 0; // start, turnpoint, finish
 
+
+static WndFrame *wMove=NULL;
 static WndFrame *wStart=NULL;
 static WndFrame *wTurnpoint=NULL;
 static WndFrame *wAATTurnpoint=NULL;
 static WndFrame *wFinish=NULL;
 
+
+//frmTaskPointPicto
 static void UpdateCaption(void) {
   TCHAR sTmp[128];
   TCHAR title[128];
@@ -113,7 +118,7 @@ static void SetValues(bool first=false) {
   if (wp) {
     // 110223 CAN ANYONE PLEASE CHECK WHAT THE HACK IS A BOOL FOR BILL GATES? BECAUSE IF FALSE IS -1 THEN
     // WE HAVE MANY PROBLEMS! I THINK IT IS TIME TO GO BACK TO bool AND GET RID OF MS BOOLS!!
-    wp->SetVisible(AATEnabled==0);
+  //  wp->SetVisible((AATEnabled==0) || (twItemIndex >0) );
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
     if (first) {
@@ -406,6 +411,7 @@ static void OnAATEnabled(DataField *Sender, DataField::DataAccessKind_t Mode) {
       SetValues();
       GetWaypointValues();
       SetWaypointValues();
+      RefreshTask();
     break;
   case DataField::daInc:
   case DataField::daDec:
@@ -438,6 +444,20 @@ static void OnSelectClicked(WindowControl * Sender){
 static void OnCloseClicked(WindowControl * Sender){
 	(void)Sender;
   wf->SetModalResult(mrOK);
+}
+
+static void OnMoveClicked(WindowControl * Sender){
+	(void)Sender;
+
+	 wf->SetModalResult(mrOK);
+#ifdef MOVE_WP_PAN
+	MapWindow::Event_Pan(1);
+	PanTaskEdit = twItemIndex;
+#endif
+
+
+
+
 }
 
 static void OnStartPointClicked(WindowControl * Sender){
@@ -496,7 +516,37 @@ static void OnTaskRulesClicked(WindowControl * Sender){
 }
 
 
+
+static void OnTaskPointPicto(WindowControl * Sender, HDC hDC){
+#ifdef PICTORIALS
+	  (void)Sender;
+	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmTaskPointPicto")));
+/********************/
+	    ReadValues();
+	    GetWaypointValues();
+	  //  CalculateTaskSectors();
+	  //  if (AATEnabled)
+	  //    CalculateAATTaskSectors();
+	    RefreshTask();
+/*******************/
+RECT *prc;
+prc = wPicto->GetBoundRect();
+
+
+
+  SetBkColor  (hDC, RGB_LIGHTGREY);
+
+  MapWindow::DrawTaskPicto(hDC, twItemIndex, *prc, 2000);
+#endif
+}
+
+
+
+
+
 static CallBackTableEntry_t CallBackTable[]={
+
+  DeclareCallBackEntry(OnMoveClicked),
   DeclareCallBackEntry(OnSelectClicked),
   DeclareCallBackEntry(OnDetailsClicked),
   DeclareCallBackEntry(OnRemoveClicked),
@@ -506,11 +556,12 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnMoveBeforeClicked),
   DeclareCallBackEntry(OnAATEnabled),
   DeclareCallBackEntry(OnTaskRulesClicked),
+  DeclareCallBackEntry(OnTaskPointPicto),
   DeclareCallBackEntry(NULL)
 };
 
 
-void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
+void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Moveallowed){
   wf = NULL;
  
   if (!ScreenLandscape) {
@@ -543,7 +594,13 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
 
   //ASSERT(wf!=NULL);
   //  wf->SetKeyDownNotify(FormKeyDown);
-
+#ifdef  MOVE_WP_PAN
+  if(!Moveallowed)
+#endif
+  {
+	wMove    = ((WndFrame *)wf->FindByName(TEXT("frmMoveTurnpoint")));
+    wMove->SetVisible(FALSE);
+  }
   wStart     = ((WndFrame *)wf->FindByName(TEXT("frmStart")));
   wTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmTurnpoint")));
   wAATTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmAATTurnpoint")));
@@ -609,6 +666,7 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
 	wTurnpoint->SetVisible(1);
 	wAATTurnpoint->SetVisible(0);
       }
+      wTurnpoint->SetVisible(1);
       wFinish->SetVisible(0);
     break;
     case 2:
@@ -618,7 +676,6 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
       wFinish->SetVisible(1);
     break;
   }
-
   // set properties...
 
   SetValues(true);
@@ -638,3 +695,6 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
   wf = NULL;
 
 }
+
+
+

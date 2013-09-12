@@ -17,7 +17,7 @@
     <WndButton  Name="cmdLoad" Caption="_@M398_"    X="119" Y="46" Width="60"  Height="22" Font="2" OnClickNotify="OnLoadClicked"/>
     <WndButton  Name="cmdSave" Caption="_@M583_"    X="179" Y="46" Width="60"  Height="22" Font="2" OnClickNotify="OnSaveClicked"/>
     <WndListFrame Name="frmTaskList" X="1" Y="-1" Width="239" Height="250" Font="2" OnListInfo="OnTaskListInfo">
-      <WndOwnerDrawFrame Name="frmTaskListEntry" X="2" Y="2" Width="220" Height="18" Font="2"  OnPaint="OnTaskPaintListItem"/>
+      <WndOwnerDrawFrame Name="frmTaskListEntry" X="2" Y="2" Width="220" Height="36" Font="2"  OnPaint="OnTaskPaintListItem"/>
     </WndListFrame>
   </WndForm>
 </PMML>

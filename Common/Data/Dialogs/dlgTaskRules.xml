@@ -22,6 +22,9 @@
     </WndProperty>
     <WndProperty Name="prpFAIFinishHeight" Caption="_@M275_" X="2" Y="-1"  Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H494_">
       <DataField Name="" DataType="boolean"/>
-    </WndProperty>
+    </WndProperty> 
+    <WndProperty Name="prpFAI28_45Threshold" Caption="_@M2247_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H1268_">
+      <DataField name="" DataType="enum"  Min="0" Max="50" Step="1"/>
+    </WndProperty>     
   </WndForm>
 </PMML>

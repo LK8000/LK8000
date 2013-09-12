@@ -106,7 +106,18 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFAI28_45Threshold"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(gettext(TEXT("500km (DMSt/OLC)")));
+    dfe->addEnumText(gettext(TEXT("750km (FAI)")));
+    if(FAI28_45Threshold > FAI_BIG_THRESHOLD)
+      dfe->Set(1);
+    else
+      dfe->Set(0);
+    wp->RefreshDisplay();
+  }
 }
 
 
@@ -140,6 +151,33 @@ bool dlgTaskRules(void){
       changed = true;
     }
   }
+
+
+  int Tmp;
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFAI28_45Threshold"));
+  if (wp) {
+     Tmp= wp->GetDataField()->GetAsInteger();
+
+     if(Tmp==0)
+     {
+       if(FAI28_45Threshold >FAI_BIG_THRESHOLD)
+       {
+      	  FAI28_45Threshold =FAI_BIG_THRESHOLD;
+          changed = true;
+       }
+     }
+     else
+     {
+       if(FAI28_45Threshold <750000)
+       {
+         FAI28_45Threshold =750000;
+         changed = true;
+       }
+     }
+   }
+
+
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeightRef"));
   if (wp) {

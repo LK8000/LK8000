@@ -46,6 +46,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static short  wlaunch=0;
   static int    altLoss=0;
   static bool   safeTakeoffDetected=false;
+  static bool   nowGearWarning = false;
 
   bool forcereset=LKSW_ForceFreeFlightRestart;
 
@@ -98,6 +99,49 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		}
 	}
   }
+
+#ifdef  GEAR_WARNING
+  if ( (GearWarningMode>0) && ffDetected) {
+	// Only if not in SIMMODE, or in SIM but replaying a flight
+//	if ( !(SIMMODE && !ReplayLogger::IsEnabled()) )
+	  {
+
+		LockFlightData();
+		double AltitudeAGL = CALCULATED_INFO.AltitudeAGL;
+		UnlockFlightData();
+
+	    double dist = 0;
+	    if(GearWarningMode ==1){
+	      if( ValidWayPoint(BestAlternate))
+	      {
+	         AltitudeAGL = Basic->Altitude - WayPointList[BestAlternate].Altitude; // AGL = height above landable
+	         if( AltitudeAGL <= (GearWarningAltitude/1000))
+	            DistanceBearing(Basic->Latitude, Basic->Longitude, WayPointList[BestAlternate].Latitude, WayPointList[BestAlternate].Longitude, &dist, NULL);
+	      }else{
+	    	dist = 9999; // set to far away if best alternate  not valid
+	      }
+	    }
+
+		if ( AltitudeAGL  <=(GearWarningAltitude/1000))
+		{
+		  if(!nowGearWarning)
+		  {
+		    if(dist < 3700) // show gear warning if 2,5km close to landable
+		    {
+			  LKSound(_T("LK_GEARWARNING.WAV"));
+			  DoStatusMessage(gettext(TEXT("_@M1834_")),NULL,false);  // LKTOKEN _@M1834_ "Prepare for landing !"
+			  nowGearWarning=true;
+		    }
+		  }
+		}
+		else
+		{
+		  if(( AltitudeAGL)> ((GearWarningAltitude/1000)+100))  // re-enable warning if higher that 100m above Gear altitude
+		    nowGearWarning = false;
+		}
+	}
+  }
+#endif
 
   if (ISPARAGLIDER) {
     Calculated->FreeFlying=true;

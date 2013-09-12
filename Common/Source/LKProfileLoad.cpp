@@ -309,7 +309,17 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAutoBacklight,&EnableAutoBacklight);
   PREAD(sname,svalue,szRegistryAutoForceFinalGlide,&AutoForceFinalGlide);
   PREAD(sname,svalue,szRegistryAutoMcMode,&AutoMcMode_Config);
+/*
+  PREAD(sname,svalue,szRegistryAutoMcMode,&AutoMcMode);
+  DWORD McTmp=0;
+  PREAD(sname,svalue,szRegistryMacCready,&McTmp);
+  if (matchedstring)
+  {
+    MACCREADY = (double) McTmp;  MACCREADY /= 100.0;
+
+  }*/
   PREAD(sname,svalue,szRegistryAutoMcStatus,&AutoMacCready_Config);
+//  PREAD(sname,svalue,szRegistryAutoMcStatus,&AutoMacCready);
 
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryAutoOrientScale,&AutoOrientScale);
@@ -493,8 +503,13 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryPGAutoZoomThreshold,&PGAutoZoomThreshold);
   PREAD(sname,svalue,szRegistryPGClimbZoom,&PGClimbZoom);
   PREAD(sname,svalue,szRegistryPGCruiseZoom,&PGCruiseZoom);
+ // PREAD(sname,svalue,szRegistryPGGateIntervalTime,&PGGateIntervalTime);
   if (matchedstring) return;
+ // PREAD(sname,svalue,szRegistryPGNumberOfGates,&PGNumberOfGates);
+ // PREAD(sname,svalue,szRegistryPGOpenTimeH,&PGOpenTimeH);
+ // PREAD(sname,svalue,szRegistryPGOpenTimeM,&PGOpenTimeM);
   PREAD(sname,svalue,szRegistryPGOptimizeRoute,&PGOptimizeRoute);
+ // PREAD(sname,svalue,szRegistryPGStartOut,&PGStartOut);
   PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config);
   PREAD(sname,svalue,szRegistryLiveTrackersrv,&*LiveTrackersrv_Config);
   PREAD(sname,svalue,szRegistryLiveTrackerusr,&*LiveTrackerusr_Config);
@@ -693,11 +708,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMultimap4,&Multimap4);
   if (matchedstring) return;
 
-  PREAD(sname,svalue, szAspPermanent , &AspPermanentChanged);
-  if (matchedstring) return;
-
   PREAD(sname,svalue,szRegistryMMNorthUp1 ,&MMNorthUp_Runtime[0]);
-  if (matchedstring) return;
+  if (matchedstring) return;  
   PREAD(sname,svalue,szRegistryMMNorthUp2 ,&MMNorthUp_Runtime[1]);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMMNorthUp3 ,&MMNorthUp_Runtime[2]);
@@ -705,12 +717,44 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMMNorthUp4 ,&MMNorthUp_Runtime[3]);
   if (matchedstring) return;
 
-  PREAD(sname,svalue, szFlarmDirection , &iFlarmDirection);
+  PREAD(sname,svalue,szRegistryAspPermanent   , &AspPermanentChanged);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryFlarmDirection , &iFlarmDirection    );
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryDrawTask       , &Flags_DrawTask     );
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryDrawFAI        , &Flags_DrawFAI      );
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryGearMode       , &GearWarningMode    );
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryGearAltitude   , &GearWarningAltitude);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryBottomMode     , &BottomMode);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryBigFAIThreshold, &FAI28_45Threshold);
   if (matchedstring) return;
 
-  PREAD(sname,svalue,szRegistryDrawTask,&Flags_DrawTask);
-  if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryDrawFAI ,&Flags_DrawFAI);
+int tmp;
+  PREAD(sname,svalue,szRegistryUserForceMode   , &tmp);
+  switch(tmp)
+  {
+    case 0: MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE); break;
+    case 1: MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE); break;
+    case 2: MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING); break;
+    case 3: MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_FINAL_GLIDE); break;
+/*
+      MODE_FLY_NONE        = 0x0000,
+      MODE_FLY_CRUISE      = 0x0001,
+      MODE_FLY_CIRCLING    = 0x0002,
+      MODE_FLY_FINAL_GLIDE = 0x0004
+ */
+  }
+
+
+
+
+
+
   return;
 
 }

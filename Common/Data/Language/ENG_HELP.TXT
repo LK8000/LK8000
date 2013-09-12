@@ -1712,8 +1712,42 @@ Acknowledgement of one airspace is valid for all airspaces with the same name an
 
 
 @1266
+[Time Gate]
 For task races with at least 1 time gate, set the end local time of last gate. 
 If gate number is 0, this value will be ignored.
+
+
+
+@1268
+[FAI Triangle Threshold]
+adjust the big FAI 28%/45% triangle threshold
+500km for DMAt and OLC regulations
+750km for FAI regulations
+
+
+
+@1269
+[Gear Warning]
+Off:         
+no Gear warning
+For task races with at least 1 time gate, set the end local time of last gate. 
+If gate number is 0, this value will be ignored.
+
+
+Landables:  (recommended in mountains)
+Gear warning if altitude lower than set height above best alternate field elevation. Warning only if position is 2 nautical miles (3,7km) or closer to the best alternate.
+
+Always:  (recommended  in flat lands)
+Gear warning always if altitude above ground level (AGL) lower than set height
+
+The warning will be shown only once if below gear warning set height, and will only be re-enabled after climbing 100m (300ft) above set  height.”
+
+
+@1270
+[Gear Warning Altitude]
+altitude threshold for gear warning
+
+
 
 @9999
 No help available on this item!

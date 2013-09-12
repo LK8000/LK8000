@@ -361,10 +361,19 @@ _skip_stuff:
 
   if (Flags_DrawTask && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
 	DrawTask(hdc, DrawRect, Orig_Aircraft);
+
+  }
+  if(Flags_DrawFAI)
+  {
+    if(MapWindow::DerivedDrawInfo.Flying)   {  	// FAI optimizer does not depend on tasks, being based on trace
+	  DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);  }
+    else
+    { // not flying => show FAI sectors for the task
+      if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+	    DrawTaskSectors(hdc, DrawRect);}
+    }
   }
 
-  // FAI optimizer does not depend on tasks, being based on trace
-  if (Flags_DrawFAI)  DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);
 
   // In QUICKDRAW do not paint other useless stuff
   if (QUICKDRAW) {

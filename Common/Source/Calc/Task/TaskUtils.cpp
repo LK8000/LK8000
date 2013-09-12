@@ -13,6 +13,59 @@ bool TaskModified = false;
 bool TargetModified = false;
 TCHAR LastTaskFileName[MAX_PATH]= TEXT("\0");
 
+
+
+int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
+{
+*SecType = LINE;
+  if(TskIdx ==0 )
+  {
+	*SecType = StartLine;
+	if(StartLine ==0)
+	  *SecType = CIRCLE;
+	if(StartLine ==1)
+	  *SecType = LINE;
+	if(StartLine ==2)
+	  *SecType = SECTOR;
+	*SecRadius = (double)StartRadius;
+  }
+  else
+  {
+    if(!ValidTaskPoint(TskIdx+1) )
+    {
+      *SecType = FinishLine;
+      if(FinishLine ==0)
+    	*SecType = CIRCLE;
+  	  if(FinishLine ==1)
+  		*SecType = LINE;
+  	  if(FinishLine ==2)
+     	*SecType = SECTOR;
+  	  *SecRadius  = (double)FinishRadius;
+    }
+    else
+    {
+      if(AATEnabled)
+      {
+    	*SecType = Task[TskIdx].AATType;
+    	*SecRadius  = Task[TskIdx].AATCircleRadius;
+      }
+      else
+      {
+    	*SecType = SectorType;
+    	if(SectorType ==0)
+    	  *SecType = CIRCLE;
+    	if(SectorType ==1)
+    	  *SecType = SECTOR;
+    	if(SectorType ==2)
+    	  *SecType = DAe;
+    	*SecRadius = SectorRadius;
+      }
+    }
+  }
+  return 0;
+}
+
+
 void ResetTaskWpt(TASK_POINT& TaskWpt) {
     TaskWpt.Index = -1;
     TaskWpt.AATTargetOffsetRadius = 0.0;

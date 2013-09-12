@@ -46,7 +46,7 @@ void LKProfileInitRuntime(void) {
 
   Appearance.InverseInfoBox	= InverseInfoBox_Config;
   AutoAdvance			= AutoAdvance_Config;
-  AutoMcMode			= AutoMcMode_Config;
+//  AutoMcMode			= AutoMcMode_Config;
   BgMapColor			= BgMapColor_Config;
   EnableNavBaroAltitude		= EnableNavBaroAltitude_Config;
   Orbiter			= Orbiter_Config;

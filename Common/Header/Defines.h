@@ -80,7 +80,7 @@
 #define DOUBLECLICKINTERVAL 350 
 #define VKSHORTCLICK 120 // must be < than DCI/2 to have a chance to make airspace click recon!!!
 #define VKLONGCLICK 1500  // triggers circling/cruis switch on aircraft icon
-#define AIRSPACECLICK 1000 // interval to look only for airspace and not WP (IF NOT USING VK)
+#define AIRSPACECLICK 500 // interval to look only for airspace and not WP (IF NOT USING VK)
 
 
 #define BESTALTERNATEINTERVAL 60.0 // interval in seconds between BA search (slow)
@@ -279,9 +279,10 @@
 #define MAXPAGE                    ANALYSIS_PAGE_CONTEST /* 8 */
 
 #define FAI_MIN_DISTANCE_THRESHOLD 5000
-#define FAI_BIG_THRESHOLD	       750000  /* FAI distance threshold                   */
+#define FAI_BIG_THRESHOLD	       500000  /* FAI distance threshold                   */
 #define FAI_NORMAL_PERCENTAGE	   0.28    /* min % of FAI triangle if distance < 750km */
 #define FAI_BIG_PERCENTAGE         0.25    /* min % of FAI triangle if distance >= 750km */
+#define FAI_BIG_MAX_PERCENTAGE     0.45    /* min % of FAI triangle if distance >= 750km */
 #define FAI_SECTOR_COLOR           0x8B0A50
 
 #define D_AUTOWIND_MANUAL	0	// totally manual
@@ -311,27 +312,29 @@
 // Position 0 is takeoff, etc
 // moving waypoints will have assigned fixed slots and positions
 #define NUMRESMARKERS		10
-#define NUMRESWP		8+NUMRESMARKERS
+#define NUMRESWP		9+NUMRESMARKERS
 
 // Reserved Waypoints positions. Adjust also NUMRESWP!
 #define RESWP_INVALIDNUMBER	1.23	// an invalid number for latitude, longitude, altitude etc.
-#define RESWP_TAKEOFF		0
+#define RESWP_PANPOS		0
+#define RESWP_PANPOS_NAME	"temporary"	// panning center position
+#define RESWP_TAKEOFF		1
 #define RESWP_TAKEOFF_NAME		"_@M1316_"			// LKTOKEN _@M1316_ "TAKEOFF"
-#define RESWP_LASTTHERMAL	1
+#define RESWP_LASTTHERMAL	2
 #define RESWP_LASTTHERMAL_NAME	"_@M1317_"			// LKTOKEN _@M1317_ "THERMAL"
-#define RESWP_TEAMMATE		2
+#define RESWP_TEAMMATE		3
 #define RESWP_TEAMMATE_NAME		"_@M1318_"			// LKTOKEN _@M1318_ "TEAMMATE"
-#define RESWP_FLARMTARGET	3
+#define RESWP_FLARMTARGET	4
 #define RESWP_FLARMTARGET_NAME	"_@M1319_"			// LKTOKEN _@M1319_ "TARGET"
-#define RESWP_OPTIMIZED		4	// optimized virtual waypoint as target turnpoint for overlays
-#define RESWP_FAIOPTIMIZED	5
+#define RESWP_OPTIMIZED		5	// optimized virtual waypoint as target turnpoint for overlays
+#define RESWP_FAIOPTIMIZED	6
 #define RESWP_FAIOPTIMIZED_NAME "_@M1813_"	// FAI OPTIMIZED
-#define RESWP_FREEFLY		6
+#define RESWP_FREEFLY		7
 #define RESWP_FREEFLY_NAME	"_@M1814_"	// FREEFLY
-#define RESWP_UNUSED		7
-#define RESWP_UNUSED_NAME	"_@M1815_"	// UNUSED
+#define RESWP_UNUSED		8
+#define RESWP_UNUSED_NAME	"_@M1815_"	// unused
 
-#define RESWP_FIRST_MARKER	8
+#define RESWP_FIRST_MARKER	9
 #define RESWP_LAST_MARKER	RESWP_FIRST_MARKER+NUMRESMARKERS-1	// 17
 #define RESWP_END		RESWP_LAST_MARKER
 // WayPointList .Number int identifier 

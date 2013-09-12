@@ -70,7 +70,7 @@ typedef enum { aweNone,
                 aweNearInsideNonfly
 } AirspaceWarningEvent;
 //Airspace drawstyles
-typedef enum {adsHidden, adsOutline, adsFilled } AirspaceDrawStyle_t;
+typedef enum {adsHidden, adsOutline, adsFilled ,adsDisabled} AirspaceDrawStyle_t;
 //Airspace warning drawstyles
 typedef enum {awsHidden, awsBlack, awsAmber, awsRed } AirspaceWarningDrawStyle_t;
 
@@ -123,6 +123,9 @@ public:
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) {}
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const {}
+  virtual void DrawPicto(HDC hDCTemp, const RECT &rc, bool param1 )   {}
+
+
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const { return 0.0; }
   // Calculate unique hash code for this airspace
@@ -139,7 +142,7 @@ public:
   // Step3: Second pass warning level calculation on airspace
   bool FinishWarning();
   // Calculate airspace distance from last known position (used by warning system and dialog boxes)
-  bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance);
+  bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude = _lastknownpos.Longitude(), double Latitude  = _lastknownpos.Latitude(), int Altitude = _lastknownalt );
   // Set ack validity timeout according to config prameter
   void SetAckTimeout();
   // get nearest distance info to this airspace, returns true if distances calculated by warning system
@@ -156,6 +159,8 @@ public:
 
   const TCHAR* TypeName(void) const;
   const COLORREF TypeColor(void) const;
+  const HBRUSH TypeBrush(void) const;
+
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }
   const AIRSPACE_ALT* Base() const { return &_base; }
@@ -321,8 +326,10 @@ public:
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
+  virtual void CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom) ;
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
+  virtual void DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)  ;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
   // Calculate unique hash code for this airspace
@@ -354,8 +361,11 @@ public:
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
+  // Calculate drawing coordinates on screen
+  virtual void CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom)  ;
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
+  virtual void DrawPicto(HDC hDCTemp, const RECT &rc, bool param1) ;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
   // Calculate unique hash code for this airspace
@@ -405,6 +415,8 @@ public:
   TCHAR* GetAirspaceTypeText(int type) const;
   TCHAR* GetAirspaceTypeShortText(int type) const;
   void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
+  void GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
+
 
   // Upper level interfaces
   void ReadAirspaces();
@@ -441,6 +453,8 @@ public:
   
   //Get/Set airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
+  CAirspaceList GetNearAirspacesAtPoint(const double &lon, const double &lat, long range) const;
+
   const CAirspaceList GetAllAirspaces() const;
   const CAirspaceList& GetAirspacesForWarningLabels();
   CAirspaceList GetAirspacesInWarning() const;
