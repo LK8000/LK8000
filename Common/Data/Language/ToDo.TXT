@@ -295,6 +295,12 @@ _@M2246_ "Reset\nView"
 -----------
 CHANGES After 4.0b
 -----------
++_@M1829_ "Gear Warning"
++_@M1830_ "Gear Warning Altitude"
++_@M1831_ "Off"
++_@M1832_ "Near landables"
++_@M1833_ "Always"
++_@M1834_ "Check gear !"
 _@M2003_ "Whats\nhere?"  
 +_@M2247_ "FAI threshold"
 +_@M2248_ "No Near Object found!"
