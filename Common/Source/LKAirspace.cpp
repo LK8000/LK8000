@@ -112,12 +112,12 @@ const TCHAR* CAirspace::TypeName(void) const
 
 };
 
-const COLORREF CAirspace::TypeColor(void) const
+COLORREF CAirspace::TypeColor(void) const
 {
 	return MapWindow::GetAirspaceColourByClass(_type);
 }
 
-const HBRUSH CAirspace::TypeBrush(void) const
+HBRUSH CAirspace::TypeBrush(void) const
 {
 	return MapWindow::GetAirspaceBrushByClass(_type);
 }
