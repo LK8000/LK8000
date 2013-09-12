@@ -163,7 +163,7 @@ static int _cdecl WaypointDirectionCompare(const void *elem1, const void *elem2 
   return (0);
 }
 
-static void SetWPNameCaption(TCHAR* tFilter) {
+static void SetWPNameCaption(const TCHAR* tFilter) {
 
   TCHAR namfilter[50]; 
   if ( _tcscmp(tFilter,_T("*")) == 0) 

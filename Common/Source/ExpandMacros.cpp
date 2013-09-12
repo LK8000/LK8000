@@ -13,8 +13,8 @@
 
 extern bool HaveGauges(void);
 
-static void ReplaceInString(TCHAR *String, TCHAR *ToReplace, 
-                            TCHAR *ReplaceWith, size_t Size){
+static void ReplaceInString(TCHAR *String, const TCHAR *ToReplace, 
+                            const TCHAR *ReplaceWith, size_t Size){
   TCHAR TmpBuf[MAX_PATH];
   int   iR;
   TCHAR *pC;
@@ -29,8 +29,8 @@ static void ReplaceInString(TCHAR *String, TCHAR *ToReplace,
 }
 
 static void CondReplaceInString(bool Condition, TCHAR *Buffer, 
-                                TCHAR *Macro, TCHAR *TrueText, 
-                                TCHAR *FalseText, size_t Size){
+                                const TCHAR *Macro, const TCHAR *TrueText, 
+                                const TCHAR *FalseText, size_t Size){
   if (Condition)
     ReplaceInString(Buffer, Macro, TrueText, Size);
   else

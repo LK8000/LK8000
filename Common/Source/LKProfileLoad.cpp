@@ -13,14 +13,14 @@
 #include "utils/stringext.h"
 
 // #define DEBUGPROF	1
-extern void LKParseProfileString(TCHAR *sname, TCHAR *svalue);
+extern void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue);
 
 static bool matchedstring=false;		// simple accelerator
 
 //
 // Overload read functions
 //
-void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, bool *lookupvalue) {
+void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, bool *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   int ival= wcstol(curvalue, NULL, 10);
   *lookupvalue= (bool)(ival==1?true:false);
@@ -30,7 +30,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, double *lookupvalue) {
+void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, double *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   *lookupvalue=(double) wcstol(curvalue, NULL, 10);
   #if DEBUGPROF
@@ -39,7 +39,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, DWORD *lookupvalue) {
+void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, DWORD *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   *lookupvalue=(int) wcstoul(curvalue, NULL, 10);
   #if DEBUGPROF
@@ -48,7 +48,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, int *lookupvalue) {
+void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, int *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   *lookupvalue=(int) wcstol(curvalue, NULL, 10);
   #if DEBUGPROF
@@ -57,7 +57,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, unsigned int *lookupvalue) {
+void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, unsigned int *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   *lookupvalue=(int) wcstoul(curvalue, NULL, 10);
   #if DEBUGPROF
@@ -66,7 +66,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, short *lookupvalue) {
+void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, short *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   *lookupvalue=(short) wcstol(curvalue, NULL, 10);
   #if DEBUGPROF
@@ -75,7 +75,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, unsigned short *lookupvalue) {
+void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, unsigned short *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   *lookupvalue=(unsigned short) wcstoul(curvalue, NULL, 10);
   #if DEBUGPROF
@@ -84,7 +84,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, TCHAR *lookupvalue) {
+void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, TCHAR *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   _tcscpy(lookupvalue,curvalue);
   // REMEMBER TO CONVERT FROM UTF8 to UNICODE!!
@@ -105,7 +105,7 @@ int nMaxValueValueSize = MAX_PATH*2 + 6;	// max regkey name is 256 chars + " = "
 // Returns true if at least one value was found,
 // excluded comments and empty lines
 //
-bool LKProfileLoad(TCHAR *szFile)
+bool LKProfileLoad(const TCHAR *szFile)
 {
   #if TESTBENCH
   StartupStore(_T("... LoadProfile <%s>%s"),szFile,NEWLINE);
@@ -228,7 +228,7 @@ using std::max;
 // Another approach is to use for example  if (!_tcscmp(szRegistryCircleZoom,sname)) {
 // We shall make PREAD return a bool to tell us, next time, and get rid of this terrible stuff.
 // 
-void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
+void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
 
   //#if DEBUGPROF
   //StartupStore(_T("... Parse: <%s> = <%s>\n"),sname,svalue);

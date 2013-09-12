@@ -16,7 +16,7 @@
 
 
 extern void Shutdown(void);
-extern void LoadSplash(HDC hDC,TCHAR *splashfile);
+extern void LoadSplash(HDC hDC, const TCHAR *splashfile);
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
@@ -24,7 +24,7 @@ static WndOwnerDrawFrame *wSplash=NULL;
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
 extern bool CheckSystemBitmaps(void);
-void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode);
+void RawWrite(HDC hDC, const TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode);
 
 bool fullresetasked=false;
 

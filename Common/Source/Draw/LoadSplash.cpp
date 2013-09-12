@@ -10,7 +10,7 @@
 #include "resource.h"
 #include <shellapi.h>
 
-void LoadSplash(HDC hDC, TCHAR *splashfile){
+void LoadSplash(HDC hDC, const TCHAR *splashfile){
 
  HBITMAP hWelcomeBitmap=NULL;
  TCHAR sDir[MAX_PATH];

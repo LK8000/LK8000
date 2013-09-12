@@ -2934,7 +2934,7 @@ CAirspaceList::const_iterator it;
 }
 
 // Centralized function to get airspace type texts
-TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
+const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
 {
     switch (type) {
       case RESTRICT:
@@ -2981,7 +2981,7 @@ TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
 }
 
 // Centralized function to get airspace type texts in short form
-TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const
+const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const
 {
   switch (type) {
     case RESTRICT:

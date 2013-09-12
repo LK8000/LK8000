@@ -20,7 +20,7 @@ void MSG_NotEnoughMemory(void) {
 }
 
 #if USELKASSERT
-void MSG_ASSERTION(int line, char *filename) {
+void MSG_ASSERTION(int line, const char *filename) {
 
   TCHAR ames[256];
 

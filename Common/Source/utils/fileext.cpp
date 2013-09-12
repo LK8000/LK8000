@@ -58,7 +58,7 @@ void Utf8File::Close()
 ///
 bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
 {
-  TCHAR* fmode;
+  const TCHAR* fmode;
 
   switch (ioMode) {
     case io_read:   fmode = _T("rb"); break;

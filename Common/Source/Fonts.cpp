@@ -361,7 +361,7 @@ void InitialiseFonts(RECT rc)
 }
 
 
-void propGetFontSettingsFromString(TCHAR *Buffer1, LOGFONT* lplf)
+void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
 {
 #define propGetFontSettingsMAX_SIZE 128
   TCHAR Buffer[propGetFontSettingsMAX_SIZE+1]; // RLD need a buffer (not sz) for strtok_r w/ gcc optimized ARM920
