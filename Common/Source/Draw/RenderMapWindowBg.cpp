@@ -366,11 +366,11 @@ _skip_stuff:
   if(Flags_DrawFAI)
   {
     if(MapWindow::DerivedDrawInfo.Flying)   {  	// FAI optimizer does not depend on tasks, being based on trace
-	  DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);  }
-    else
-    { // not flying => show FAI sectors for the task
+	  DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);  
+    } else { // not flying => show FAI sectors for the task
       if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-	    DrawTaskSectors(hdc, DrawRect);}
+	    DrawTaskSectors(hdc, DrawRect);
+      }
     }
   }
 

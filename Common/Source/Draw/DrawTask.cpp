@@ -332,7 +332,9 @@ void MapWindow::DrawTaskSectors(HDC hdc, RECT rc) {
 int Active =  ActiveWayPoint;
 	if(ValidTaskPoint(PanTaskEdit))
 		Active = PanTaskEdit;
-LockTaskData();
+
+CScopeLock LockTask(LockTaskData, UnlockTaskData);
+
     /*******************************************************************************************************/
 int TaskPoints =0;
 while(ValidTaskPoint(TaskPoints))
@@ -388,7 +390,6 @@ RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 0, RGB_CYAN );
 
 
 
- UnlockTaskData();
 /*******************************************************************************************************/
 
 
