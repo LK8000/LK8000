@@ -69,7 +69,7 @@
  #if (WINDOWSPC>0)
  #define WINE
  #endif
-#define PICTORIALS       // enables pictorials in dialogs
+// #define PICTORIALS       // enables pictorials in dialogs
 #define MULTISELECT      // multiselection dialog
 #define TASK_MULTISELECT // select a Task Point via multi select
 #define MOVE_WP_PAN      // moving a task waypoint in PAN mode
