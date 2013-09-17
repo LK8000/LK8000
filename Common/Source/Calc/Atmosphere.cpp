@@ -60,7 +60,7 @@ void CuSonde::setForecastTemperature(double val) {
     }
     if ((cslevels[level].nmeasurements==0)&&(zlevel)) break;
   }
-  for (level=0; level<=zlevel; level++) {
+  for (level=0; level<=zlevel && level<CUSONDE_NUMLEVELS; level++) {
     findThermalHeight((unsigned short)level);
     findCloudBase((unsigned short)level);
   }
