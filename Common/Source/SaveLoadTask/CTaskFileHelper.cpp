@@ -420,7 +420,7 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
                 Task[idx].AATType = CIRCLE;
                 GetAttribute(node, _T("radius"), Task[idx].AATCircleRadius);
                 GetAttribute(node, _T("Exit"), Task[idx].OutCircle);
-            } else if (_tcscmp(szType, _T("circle")) == 0) {
+            } else if (_tcscmp(szType, _T("sector")) == 0) {
                 Task[idx].AATType = SECTOR;
                 GetAttribute(node, _T("radius"), Task[idx].AATSectorRadius);
                 GetAttribute(node, _T("start-radial"), Task[idx].AATStartRadial);
