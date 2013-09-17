@@ -394,7 +394,7 @@ public:
         il = min(NUM_V_POINTS-1,max(0,ib-3));
         ih = min(NUM_V_POINTS-1,max(0,ib+3));
       } 
-      for (i=il; i<=ih; i++) {
+      for (i=il; i<=ih && i<NUM_V_POINTS; i++) {
 	if (scanned[i]) {
           continue; 
         } else {
