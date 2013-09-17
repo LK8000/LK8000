@@ -20,8 +20,6 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat,
 double Dist;
 unsigned int i;
 double dyn_range = range*3.5;
-bool  landablefound = false;
-
 
   if(pan && (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN)))
   {
@@ -71,7 +69,6 @@ start_search:
       if(Dist < dyn_range)
       {
     	dlgAddMultiSelectListItem(NULL,i, IM_WAYPOINT, Dist);
-    	landablefound = true;
       }
      }
    }
@@ -90,7 +87,6 @@ start_search:
         if(Dist < range)
         {
     	  dlgAddMultiSelectListItem((long*)&LKTraffic[i],i, IM_FLARM, Dist);
-    	  landablefound = true;
         }
       }
     }

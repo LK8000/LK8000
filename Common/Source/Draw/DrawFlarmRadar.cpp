@@ -499,8 +499,6 @@ static POINT Arrow[5];
 TCHAR text[80];
 static RECT PositionTopView[FLARM_MAX_TRAFFIC];
 static RECT PositionSideView[FLARM_MAX_TRAFFIC];
-static RECT OwnPosTopView;
-static RECT OwnPosSideView;
 int iTouchAreaSize = 45;
 HPEN   hOrangePen ;
 HPEN   hGreenPen ;
@@ -888,10 +886,6 @@ sTopDia.fYMax =  (sDia.fXMax-sDia.fXMin)/2 * fRatio;
 
  int x_middle = DistanceToX  (0, &sTopDia); // (rct.right-rct.left)/2;
  int y_middle = HeightToY    (0, &sTopDia);//(rct.bottom-rct.top)/2;
- OwnPosTopView.left   = x_middle-iTouchAreaSize;
- OwnPosTopView.right  = x_middle+iTouchAreaSize;
- OwnPosTopView.top    = y_middle-iTouchAreaSize;
- OwnPosTopView.bottom = y_middle+iTouchAreaSize;
 
 
 /*******************************************************
@@ -1143,7 +1137,6 @@ if(SPLITSCREEN_FACTOR >0)
   SetTextColor(hdc, rgbDrawColor);
   Rectangle(hdc,rc.left , rc.bottom+5 ,rc.right, rc.top);
   SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-  RECT rcd = sDia.rc;
   DrawXGrid(hdc, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
 
 
@@ -1296,10 +1289,6 @@ if(bSideview)
    * draw own plane position
    *************************************************************************/
   SelectObject(hdc, hDrawBrush);
-  OwnPosSideView.left   = x_middle-iTouchAreaSize;
-  OwnPosSideView.right  = x_middle+iTouchAreaSize;
-  OwnPosSideView.top    = HeightToY(0,&sDia)-iTouchAreaSize;
-  OwnPosSideView.bottom = HeightToY(0,&sDia)+iTouchAreaSize;
 
   if(!bCenter)
     RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , fPlaneSize);
