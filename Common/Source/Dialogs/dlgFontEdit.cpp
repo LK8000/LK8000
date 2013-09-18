@@ -13,7 +13,7 @@
 #include "dlgTools.h"
 
 extern void InitializeOneFont (LKFont& theFont, 
-                               const TCHAR FontRegKey[] , 
+                               const char FontRegKey[] , 
                                LOGFONT autoLogFont, 
                                LOGFONT * LogFontUsed);
 extern void ApplyClearType(LOGFONT *logfont);
@@ -23,7 +23,7 @@ static LOGFONT OriginalLogFont;
 static LOGFONT NewLogFont;
 static LOGFONT resetLogFont;
 static LKFont NewFont;
-const static TCHAR * OriginalFontRegKey;
+const static char * OriginalFontRegKey;
 static bool IsInitialized=false;
 
 void LoadGUI();
@@ -235,7 +235,7 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-void SaveValues(const TCHAR * FontRegKey )
+void SaveValues(const char * FontRegKey )
 {
   // update reg key for font
   TCHAR sValue [256];
@@ -247,8 +247,8 @@ void SaveValues(const TCHAR * FontRegKey )
                         NewLogFont.lfQuality,
                         NewLogFont.lfPitchAndFamily,
                         NewLogFont.lfFaceName);
-  if (_tcscmp(FontRegKey,szRegistryFontMapWindowFont)==0) _tcscpy(FontDesc_MapWindow,sValue);
-  if (_tcscmp(FontRegKey,szRegistryFontMapLabelFont)==0) _tcscpy(FontDesc_MapLabel,sValue);
+  if (strcmp(FontRegKey,szRegistryFontMapWindowFont)==0) _tcscpy(FontDesc_MapWindow,sValue);
+  if (strcmp(FontRegKey,szRegistryFontMapLabelFont)==0) _tcscpy(FontDesc_MapLabel,sValue);
 }
 
 void InitGUI(const TCHAR * FontDescription)
@@ -381,7 +381,7 @@ void LoadGUI()
 
 
 bool dlgFontEditShowModal(const TCHAR * FontDescription, 
-                          const TCHAR * FontRegKey, 
+                          const char * FontRegKey, 
                           LOGFONT autoLogFont){
 
   bool bRetVal=false;

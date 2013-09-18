@@ -13,16 +13,16 @@
 #include "utils/stringext.h"
 
 // #define DEBUGPROF	1
-extern void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue);
+void LKParseProfileString(const char *sname, const char *svalue);
 
 static bool matchedstring=false;		// simple accelerator
 
 //
 // Overload read functions
 //
-void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, bool *lookupvalue) {
-  if (_tcscmp(curname,lookupname)) return;
-  int ival= _tcstol(curvalue, NULL, 10);
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, bool *lookupvalue) {
+  if (strcmp(curname,lookupname)) return;
+  int ival= strtol(curvalue, NULL, 10);
   *lookupvalue= (bool)(ival==1?true:false);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> bool=%d\n"),
@@ -30,63 +30,63 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, double *lookupvalue) {
-  if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(double) _tcstol(curvalue, NULL, 10);
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, double *lookupvalue) {
+  if (strcmp(curname,lookupname)) return;
+  *lookupvalue=(double) strtol(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> double=%.0f\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, DWORD *lookupvalue) {
-  if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(int) _tcstoul(curvalue, NULL, 10);
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, DWORD *lookupvalue) {
+  if (strcmp(curname,lookupname)) return;
+  *lookupvalue=(int) strtoul(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> DWORD=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, int *lookupvalue) {
-  if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(int) _tcstol(curvalue, NULL, 10);
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, int *lookupvalue) {
+  if (strcmp(curname,lookupname)) return;
+  *lookupvalue=(int)strtol(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> int=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, unsigned int *lookupvalue) {
-  if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(int) _tcstoul(curvalue, NULL, 10);
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, unsigned int *lookupvalue) {
+  if (strcmp(curname,lookupname)) return;
+  *lookupvalue=(int) strtoul(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> int=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, short *lookupvalue) {
-  if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(short) _tcstol(curvalue, NULL, 10);
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, short *lookupvalue) {
+  if (strcmp(curname,lookupname)) return;
+  *lookupvalue=(short) strtol(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> short=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, unsigned short *lookupvalue) {
-  if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(unsigned short) _tcstoul(curvalue, NULL, 10);
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, unsigned short *lookupvalue) {
+  if (strcmp(curname,lookupname)) return;
+  *lookupvalue=(unsigned short) strtoul(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> unsigned short=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, TCHAR *lookupvalue) {
-  if (_tcscmp(curname,lookupname)) return;
-  _tcscpy(lookupvalue,curvalue);
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, TCHAR *lookupvalue) {
+  if (strcmp(curname,lookupname)) return;
+  utf2unicode(curvalue, lookupvalue, MAX_PATH);
   // REMEMBER TO CONVERT FROM UTF8 to UNICODE!!
   // char stmp[MAX_PATH];
   // unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
@@ -98,9 +98,9 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
   matchedstring=true;
 }
 
-void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, Poco::Timespan* lookupvalue) {
-  if (_tcscmp(curname,lookupname)) return;
-  int ival= _tcstol(curvalue, NULL, 10);
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, Poco::Timespan* lookupvalue) {
+  if (strcmp(curname,lookupname)) return;
+  int ival= strtol(curvalue, NULL, 10);
  
   (*lookupvalue).assign(0, 1000*ival);
   matchedstring=true;
@@ -142,88 +142,33 @@ bool LKProfileLoad(const TCHAR *szFile)
 	return false;
   }
 
-  TCHAR winval[nMaxValueValueSize];
-  TCHAR wname[nMaxValueValueSize];
-  TCHAR wvalue[nMaxValueValueSize];
-
   char inval[nMaxValueValueSize];
   char name [nMaxValueValueSize];
   char value [nMaxValueValueSize];
-
-  // if using mingw, parse utf8 first
-  #ifdef __MINGW32__
-  goto parse_utf8;
-  #endif
- 
-parse_wide:
- 
-  // Wide Chars file
-  while (_fgetts(winval, nMaxValueValueSize, fp)) {
-	if (winval[0] > 255) { // not reading corectly, probably narrow file.
-		break;
-	}
-	matchedstring=false;
-	if (_stscanf(winval, TEXT("%[^#=\r\n ]=\"%[^\r\n\"]\"[\r\n]"), wname, wvalue) == 2) {
-		if (_tcslen(wname)>0) {
-			LKParseProfileString(wname, wvalue);
-			found = true;
-		}
-	} else if (_stscanf(winval, TEXT("%[^#=\r\n ]=%d[\r\n]"), wname, &j) == 2) {
-		if (_tcslen(wname)>0) {
-			_stprintf(wvalue,_T("%d"),j);
-			LKParseProfileString(wname, wvalue);
-			found = true;
-		}
-	} else if (_stscanf(winval, TEXT("%[^#=\r\n ]=\"\"[\r\n]"), wname) == 1) {
-		if (_tcslen(wname)>0) {
-			LKParseProfileString(wname, TEXT(""));
-			found = true;
-		}
-	}
-	// else crlf, or comment, or invalid line
-  }
-
-  // if using mingw, this is a second attempt already so return
-  #ifdef __MINGW32__
-  goto go_return;
-  #endif
-
-parse_utf8:
 
   // UTF8 file
   while (fgets(inval, nMaxValueValueSize, fp)) {
 	matchedstring=false;
 	if (sscanf(inval, "%[^#=\r\n ]=\"%[^\r\n\"]\"[\r\n]", name, value) == 2) {
 		if (strlen(name)>0) {
-			utf2TCHAR(name, wname, nMaxValueValueSize);
-			utf2TCHAR(value, wvalue, nMaxValueValueSize);
-			LKParseProfileString(wname, wvalue);
+			LKParseProfileString(name, value);
 			found = true;
 		}
 	} else if (sscanf(inval, "%[^#=\r\n ]=%d[\r\n]", name, &j) == 2) {
 		if (strlen(name)>0) {
-			utf2TCHAR(name, wname, nMaxValueValueSize);
-			_stprintf(wvalue,_T("%d"),j);
-			LKParseProfileString(wname, wvalue);
+			sprintf(value,"%d",j);
+			LKParseProfileString(name, value);
 			found = true;
 		}
 	} else if (sscanf(inval, "%[^#=\r\n ]=\"\"[\r\n]", name) == 1) {
 		if (strlen(name)>0) {
-			utf2TCHAR(name, wname, nMaxValueValueSize);
-			LKParseProfileString(wname, TEXT(""));
+			LKParseProfileString(name, "");
 			found = true;
 		}
 	} 
 	// else crlf, or comment, or invalid line
 	// else StartupStore(_T("...... PARSE INVALID: <%S>\n"),inval);
   }
-
-  // if using mingw and nothing found in utf8 file, try with wide chars
-  #ifdef __MINGW32__
-  if (!found) goto parse_wide;
-  #endif
-
-go_return:
 
   fclose(fp);
   if (found) {
@@ -247,7 +192,7 @@ using std::max;
 // Another approach is to use for example  if (!_tcscmp(szRegistryCircleZoom,sname)) {
 // We shall make PREAD return a bool to tell us, next time, and get rid of this terrible stuff.
 // 
-void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
+void LKParseProfileString(const char *sname, const char *svalue) {
 
   //#if DEBUGPROF
   //StartupStore(_T("... Parse: <%s> = <%s>\n"),sname,svalue);
@@ -282,13 +227,13 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   // This is bad. We want a common global variable approach for the future.
   // We want a memory area with values, not with function calls.
 
-  if (!_tcscmp(szRegistryAirspaceFillType,sname)) {
-	ival=_tcstol(svalue, NULL, 10);
+  if (!strcmp(szRegistryAirspaceFillType,sname)) {
+	ival=strtol(svalue, NULL, 10);
 	MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)ival);
 	return;
   }
-  if (!_tcscmp(szRegistryAirspaceOpacity,sname)) {
-	ival=_tcstol(svalue, NULL, 10);
+  if (!strcmp(szRegistryAirspaceOpacity,sname)) {
+	ival=strtol(svalue, NULL, 10);
 	MapWindow::SetAirSpaceOpacity(ival);
 	return;
   }
@@ -311,13 +256,13 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAltitudeUnitsValue,&AltitudeUnit_Config);
   PREAD(sname,svalue,szRegistryAppDefaultMapWidth,&Appearance.DefaultMapWidth);
 
-  if (!_tcscmp(szRegistryAppIndLandable,sname)) {
-	ival=_tcstol(svalue, NULL, 10);
+  if (!strcmp(szRegistryAppIndLandable,sname)) {
+	ival=strtol(svalue, NULL, 10);
 	Appearance.IndLandable = (IndLandable_t)ival;
 	return;
   }
-  if (!_tcscmp(szRegistryAppInfoBoxModel,sname)) {
-	ival=_tcstol(svalue, NULL, 10);
+  if (!strcmp(szRegistryAppInfoBoxModel,sname)) {
+	ival=strtol(svalue, NULL, 10);
 	Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)ival;
 	return;
   }
@@ -371,8 +316,8 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
 
   PREAD(sname,svalue,szRegistryCheckSum,&CheckSum);
 
-  if (!_tcscmp(szRegistryCircleZoom,sname)) {
-	ival=_tcstol(svalue, NULL, 10);
+  if (!strcmp(szRegistryCircleZoom,sname)) {
+	ival=strtol(svalue, NULL, 10);
 	MapWindow::zoom.CircleZoom(ival == 1);
 	return;
   }
@@ -497,8 +442,8 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryLKVarioVal,&LKVarioVal);
   PREAD(sname,svalue,szRegistryLanguageFile,&*szLanguageFile);
 
-  if (!_tcscmp(szRegistryLatLonUnits,sname)) {
-	ival=_tcstol(svalue, NULL, 10);
+  if (!strcmp(szRegistryLatLonUnits,sname)) {
+	ival=strtol(svalue, NULL, 10);
 	Units::CoordinateFormat = (CoordinateFormats_t)ival;
 	return;
   }
@@ -811,7 +756,7 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
 #endif
 
   #if TESTBENCH
-  if (!_tcscmp(sname,_T("LKVERSION")) && !_tcscmp(sname,_T("PROFILEVERSION"))) {
+  if (!strcmp(sname,"LKVERSION") && !strcmp(sname,"PROFILEVERSION")) {
       StartupStore(_T("... UNMANAGED PARAMETER inside profile: <%s>=<%s>\n"),sname,svalue);
   }
   #endif

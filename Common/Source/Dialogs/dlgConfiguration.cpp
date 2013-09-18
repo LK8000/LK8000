@@ -44,12 +44,12 @@ static LKFont TempMapLabelFont;
 static LKFont TempUseCustomFontsFont;
 
 extern void InitializeOneFont (LKFont& theFont, 
-                               const TCHAR FontRegKey[] , 
+                               const char FontRegKey[] , 
                                LOGFONT autoLogFont, 
                                LOGFONT * LogFontUsed);
 
 extern bool dlgFontEditShowModal(const TCHAR * FontDescription, 
-                          const TCHAR * FontRegKey, 
+                          const char * FontRegKey, 
                           LOGFONT autoLogFont);
 
 static bool taskchanged = false;
@@ -710,7 +710,7 @@ static void ResetFonts(bool bUseCustom) {
 
 
   InitializeOneFont (TempUseCustomFontsFont, 
-                        TEXT("THIS FONT IS NOT CUSTOMIZABLE"), 
+                        "THIS FONT IS NOT CUSTOMIZABLE", 
                         autoMapWindowLogFont,
                         NULL);
 

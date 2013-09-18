@@ -63,7 +63,7 @@ bool IsNullLogFont(LOGFONT logfont) {
 
 
 void InitializeOneFont (LKFont& theFont, 
-                               const TCHAR FontRegKey[] , 
+                               const char FontRegKey[] , 
                                LOGFONT autoLogFont, 
                                LOGFONT * LogFontUsed)
 {
@@ -422,16 +422,16 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
 }
 
 
-void propGetFontSettings(const TCHAR *Name, LOGFONT* lplf) {
+void propGetFontSettings(const char *Name, LOGFONT* lplf) {
 
  // Load custom font settings from profile only if relative to
  // configurable fonts, of course.
  if (Name==NULL || lplf==NULL) return;
- if ( !_tcscmp(Name,_T("MapLabelFont")) ) {
+ if ( !strcmp(Name,"MapLabelFont") ) {
 	if (_tcslen(FontDesc_MapLabel)>0)
 		propGetFontSettingsFromString(FontDesc_MapLabel, lplf);
  }
- if ( !_tcscmp(Name,_T("MapWindowFont")) ) {
+ if ( !strcmp(Name,"MapWindowFont") ) {
 	if (_tcslen(FontDesc_MapWindow)>0)
 		propGetFontSettingsFromString(FontDesc_MapWindow, lplf);
  }

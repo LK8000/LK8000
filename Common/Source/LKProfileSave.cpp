@@ -23,57 +23,32 @@ static FILE *pfp=NULL;
 //
 // Overload write functions
 //
-void LKWriteToProfile(const TCHAR *varname, bool varvalue) {
-#ifdef UNICODE
-  // pfprintf(pfp,"%S=%d (bool)%s", varname, varvalue==1?1:0,PNEWLINE); correct
-  fprintf(pfp,"%S=%d%s", varname, varvalue,PNEWLINE); // check we dont have fake bools
-#else
+void LKWriteToProfile(const char *varname, bool varvalue) {
   fprintf(pfp,"%s=%d%s", varname, varvalue,PNEWLINE); // check we dont have fake bools
-#endif
 }
-void LKWriteToProfile(const TCHAR *varname, int varvalue) {
-#ifdef UNICODE
-  fprintf(pfp,"%S=%d%s", varname, varvalue,PNEWLINE);
-#else
+void LKWriteToProfile(const char *varname, int varvalue) {
   fprintf(pfp,"%s=%d%s", varname, varvalue,PNEWLINE);
-#endif
 }
-void LKWriteToProfile(const TCHAR *varname, unsigned int varvalue) {
-#ifdef UNICODE
-  fprintf(pfp,"%S=%u%s", varname, varvalue,PNEWLINE);
-#else
+void LKWriteToProfile(const char *varname, unsigned int varvalue) {
   fprintf(pfp,"%s=%u%s", varname, varvalue,PNEWLINE);
-#endif
 }
-void LKWriteToProfile(const TCHAR *varname, DWORD varvalue) {
-#ifdef UNICODE
-  fprintf(pfp,"%S=%ul%s", varname, (unsigned int) varvalue,PNEWLINE);
-#else
-  fprintf(pfp,"%s=%ul%s", varname, (unsigned int) varvalue,PNEWLINE);
-#endif
+void LKWriteToProfile(const char *varname, DWORD varvalue) {
+  fprintf(pfp,"%s=%u%s", varname, (unsigned int) varvalue,PNEWLINE);
 }
-void LKWriteToProfile(const TCHAR *varname, double varvalue) {
-#ifdef UNICODE
-  fprintf(pfp,"%S=%.0f%s", varname, varvalue,PNEWLINE);
-#else
+void LKWriteToProfile(const char *varname, double varvalue) {
   fprintf(pfp,"%s=%.0f%s", varname, varvalue,PNEWLINE);
-#endif
 }
-void LKWriteToProfile(const TCHAR *varname, TCHAR *varvalue) {
+void LKWriteToProfile(const char *varname, TCHAR *varvalue) {
 #ifdef UNICODE
   char stmp[MAX_PATH];
-  TCHAR2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
-  fprintf(pfp,"%S=\"%s\"%s", varname, stmp ,PNEWLINE);
+  unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
+  fprintf(pfp,"%s=\"%s\"%s", varname, stmp ,PNEWLINE);
 #else
   fprintf(pfp,"%s=\"%s\"%s", varname, varvalue ,PNEWLINE);
 #endif
 }
-void LKWriteToProfile(const TCHAR *varname, const Poco::Timespan& varvalue) {
-#ifdef UNICODE
-  fprintf(pfp,"%S=%d%s", varname, (int)varvalue.totalMilliseconds(),PNEWLINE);
-#else
-  fprintf(pfp,"%s=%d%s", varname, varvalue,PNEWLINE);
-#endif
+void LKWriteToProfile(const char *varname, const Poco::Timespan& varvalue) {
+  fprintf(pfp,"%s=%d%s", varname, (int)varvalue.totalMilliseconds(),PNEWLINE);
 }
 
 
