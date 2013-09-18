@@ -534,11 +534,12 @@ _buttondown:
       if (LockModeStatus) break;
       pressed = true;
       dwDownTime = GetTickCount();
+#ifdef LONGCLICK_FEEDBACK
       if(!mode.Is(Mode::MODE_PAN))
       {
   	    SetTimer(	hWnd,WM_USER_LONGTIME_CLICK_TIMER , AIRSPACECLICK , NULL);
       }
-
+#endif
       // When we have buttondown these flags should be set off.
       MouseWasPanMoving=false;
       OnFastPanning=false;
@@ -559,6 +560,7 @@ _buttondown:
       break;
 
     case WM_TIMER:
+#ifdef LONGCLICK_FEEDBACK
       if(wParam==WM_USER_LONGTIME_CLICK_TIMER)
 	  {
 	  	if (EnableSoundModes)
@@ -570,12 +572,14 @@ _buttondown:
 	    lparam_Y = (int) HIWORD(lOld);
 
 	  }
-
+#endif
 	    break;
 
     case WM_LBUTTONUP:
   //  	StartupStore(_T("... Ulli: WM_LBUTTONUP! %i %i\n"),wParam,  lParam);
+#ifdef LONGCLICK_FEEDBACK
 	   KillTimer(hWnd, WM_USER_LONGTIME_CLICK_TIMER );
+#endif
 	if (LockModeStatus) break;
 	if(!pressed) break;
 	  pressed = false;

@@ -33,6 +33,7 @@ static int nTextLines=0;
 #define WPLSEL WayPointList[SelectedWaypoint]
 
 static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
+#ifdef PICTORIALS
 	  (void)Sender;
 	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
 
@@ -50,8 +51,10 @@ prc = wPicto->GetBoundRect();
   }
   else
   {
+	MapWindow::DrawWaypointPictoBg(hDC,  *prc);
 	MapWindow::DrawWaypointPicto(hDC,  *prc, &WayPointList[SelectedWaypoint]);
   }
+#endif
 }
 
 

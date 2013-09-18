@@ -1444,7 +1444,7 @@ return iCnt;
 
 void MapWindow::DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC* pTraf)
 {
-#ifdef PICTORIALS
+//#ifdef PICTORIALS
 	static POINT Arrow[5];
 int cx = rc.right-rc.left;
 int cy = rc.bottom-rc.top;
@@ -1486,6 +1486,6 @@ static double zoomfact = (double)cy/NIBLSCALE(18);
 			Polygon(hDC,Triangle,5);
 	    }
 		SelectObject(hDC, oldb);
-#endif
+//#endif
 }
 // This is painting traffic icons on the screen.

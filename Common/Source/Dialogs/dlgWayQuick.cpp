@@ -11,7 +11,8 @@
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-
+#include "LKOBjects.h"
+#include "Bitmaps.h"
 
 static WndForm *wf=NULL;
 #define WPLSEL WayPointList[SelectedWaypoint]
@@ -21,16 +22,20 @@ static short retStatus;
 
 static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
 	  (void)Sender;
-	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
 
+
+
+#ifdef WAYPOINT_QUICK_PICTO
 RECT *prc;
+WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
 prc = wPicto->GetBoundRect();
-
 
 //  StartupStore(_T("..Entered OnPaintWaypointPicto \n"));
 
-  SetBkColor  (hDC, RGB_LIGHTGREY);
 
+
+
+  MapWindow::DrawWaypointPictoBg(hDC,  *prc);
   if (WayPointCalc[SelectedWaypoint].IsLandable )
   {
 	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 2000*ScreenScale, true);
@@ -39,6 +44,15 @@ prc = wPicto->GetBoundRect();
   {
 	MapWindow::DrawWaypointPicto(hDC,  *prc, &WayPointList[SelectedWaypoint]);
   }
+#else
+
+ // WndFrame  *wGoto = ((WndFrame *)wf->FindByName(TEXT("cmdGoto")));
+//  WndButton *wBut  = (WndButton *)wf->FindByName(TEXT("cmdGoto"));
+  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
+  wPicto->SetVisible(false);
+
+
+#endif
 }
 
 

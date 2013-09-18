@@ -502,6 +502,7 @@ class MapWindow {
 
   static void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL Picto = false);
   static void DrawTaskPicto(HDC hdc, int TaskIdx, RECT rc, double fScaleFact);
+  static void DrawWaypointPictoBg(HDC hdc, const RECT rc);
   static void DrawWaypointPicto(HDC hdc, const RECT rc, WAYPOINT* wp);
   static void DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC*);
  private:

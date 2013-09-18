@@ -83,7 +83,7 @@ if (EnableSoundModes)
   int  HorDist=99999, Bearing, VertDist;
   {
 	CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, (int)(dyn_range/2));
-
+//	CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const
 
 	CAirspaceList::iterator it;
 	for (it = reslist.begin(); it != reslist.end(); ++it)
@@ -141,7 +141,7 @@ LockTaskData();
 UnlockTaskData();
 
 #endif
-  if((dlgGetNoElements() ==0) && pan )
+  if((dlgGetNoElements() ==0)/* && pan */)
   {
     DoStatusMessage(gettext(TEXT("_@M2248_")));  // _@M2248_  "No Near Object found!"
   }

@@ -691,6 +691,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     sTmp[0] = '\0';
     sTmp[1] = '\0';
     sTmp[2] = '\0';
+
 #ifdef WAYPOINT_ICONS
     RECT rc = {0,  0, (int)(PICTO_OFFSET*1)*ScreenScale,   20*ScreenScale};
     int idx = WayPointSelectInfo[i].Index;

@@ -533,9 +533,7 @@ RECT *prc;
 prc = wPicto->GetBoundRect();
 
 
-
-  SetBkColor  (hDC, RGB_LIGHTGREY);
-
+  MapWindow::DrawWaypointPictoBg(hDC,  *prc);
   MapWindow::DrawTaskPicto(hDC, twItemIndex, *prc, 2000);
 #endif
 }
