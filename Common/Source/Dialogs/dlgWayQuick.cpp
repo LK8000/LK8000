@@ -11,7 +11,7 @@
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-#include "LKOBjects.h"
+#include "LKObjects.h"
 #include "Bitmaps.h"
 
 static WndForm *wf=NULL;
