@@ -22,7 +22,7 @@
 
 void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL picto)
 {
-#ifdef PICTORIALS
+//#ifdef PICTORIALS
   int solid= false;
   HPEN    oldPen  ;
   HBRUSH  oldBrush ;
@@ -224,7 +224,7 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
   SelectObject(hdc, oldPen);
   SelectObject(hdc, oldBrush);
 
-#endif
+//#endif
 }
 
 

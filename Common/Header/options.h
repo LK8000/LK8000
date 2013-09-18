@@ -69,14 +69,24 @@
  #if (WINDOWSPC>0)
  #define WINE
  #endif
-// #define PICTORIALS       // enables pictorials in dialogs
-#define MULTISELECT      // multiselection dialog
-#define TASK_MULTISELECT // select a Task Point via multi select
-#define MOVE_WP_PAN      // moving a task waypoint in PAN mode
-#define GEAR_WARNING     // Gear warning switch
+#define PICTORIALS            // enables pictorials in dialogs
+#define MULTISELECT           // multiselection dialog
+#define TASK_MULTISELECT      // select a Task Point via multi select
+#define MOVE_WP_PAN           // moving a task waypoint in PAN mode
+#define GEAR_WARNING          // Gear warning switch
+#define MAX_NO_GEAR_WARN 10   // max. numbers of Gerwarnings before disabled
+//#define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
 #ifdef PICTORIALS
-#define WAYPOINT_ICONS   // waypoint ICONS in waypoint select dialog
+  #define WAYPOINT_ICONS   // waypoint ICONS in waypoint select dialog
+  #define WAYPOINT_QUICK_PICTO
+  #define MULTISEL_PICTORIALS
+  #define BACKGROUND_PICTORIAL
 #endif
+
+
+// #define LONGCLICK_FEEDBACK
+
+
 //#define OUTLINE_2ND    // double outline for airspaces
 
 // #define LKCOMPETITION	1	// Will disable TRI 
@@ -97,7 +107,7 @@
 
 
 // do not add screen points if closer than 5pix to the previous
-#define LKASP_REMOVE_NEAR_POINTS		1
+//#define LKASP_REMOVE_NEAR_POINTS		0
 
 // MapDraw OPTIM , SetTopologyBounds limited to zoom change and map draw out of current rect 
 #define TOPOBOUND_OPTIM	1

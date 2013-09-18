@@ -244,7 +244,7 @@ void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance){
 
 static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
-#ifdef PICTORIALS
+#ifdef MULTISEL_PICTORIALS
   #define PICTO_WIDTH 50
 #else
   #define PICTO_WIDTH 0

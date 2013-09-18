@@ -713,10 +713,46 @@ turnpoint:
 
 } // end DrawWaypoint
 
+void MapWindow::DrawWaypointPictoBg(HDC hdc, const RECT rc)
+{
+#ifdef	BACKGROUND_PICTORIAL
+	int cx = rc.right - rc.left;
+	int cy = rc.bottom - rc.top;
+int x =cx/2;
+int y =cy/2;
+	SelectObject(hDCTemp,hLKPictori);
+/*
+	  if (ScreenScale>1)
+		UseHiresBitmap=true;
+	  else
+		UseHiresBitmap=false;
+	 */
+if(UseHiresBitmap)
+{
+	x -= 100/2;
+	y -= 100/2;
+	DrawBitmapX(hdc,
+			x,
+			y,
+			100,100,
+	    hDCTemp,0,0,SRCCOPY,false);
+}
+else
+{
+	x -= 45/2;
+	y -= 45/2;
+	DrawBitmapX(hdc,
+			x,
+			y,
+			45,45,
+	    hDCTemp,0,0,SRCCOPY,true);
+}
 
+#endif
+}
 void MapWindow::DrawWaypointPicto(HDC hdc, const RECT rc, WAYPOINT* wp)
 {
-#ifdef PICTORIALS
+//#ifdef PICTORIALS
 switch(wp->Style) {
 	case STYLE_NORMAL:
 		goto turnpoint;
@@ -788,7 +824,9 @@ switch(wp->Style) {
 
 	default:
 turnpoint:
-		if (BlackScreen)
+bool inv = BlackScreen;
+	inv = true;
+		if (inv)
 			SelectObject(hDCTemp,hInvTurnPoint);
 		else
 			SelectObject(hDCTemp,hTurnPoint);
@@ -796,26 +834,26 @@ turnpoint:
 
 } // switch estyle
 
-int cx = rc.right - rc.left; cx /=2;
-int cy = rc.bottom - rc.top; cy /=2;
-int x = rc.left + (cx)/2/*-10*/;
-//int y = rc.bottom - (cy)/2;
+int cx = rc.right - rc.left;
+int cy = rc.bottom - rc.top;
 
-// We dont do stretching here. We are using different bitmaps for hi res.
-// The 20x20 size is large enough to make much bigger icons than the old ones.
-
+int d=1;
+if(!UseHiresBitmap)
+  d=2;
+int x = (cx/2)-20/d;
+int y = (cy/2)-20/d;
 
 DrawBitmapX(hdc,
 		x,
-		cy/2,
+		y,
     20,20,
-    hDCTemp,0,0,SRCPAINT,true /*false*/);
+    hDCTemp,0,0,SRCPAINT,true);
 
 DrawBitmapX(hdc,
 		x,
-		cy/2,
+		y,
     20,20,
     hDCTemp,20,0,SRCAND,true);
-
-#endif
+//StartupStore(_T("Bitmap left:%i right:%i  top:%i bottom:%i x:%i y:%i\n"),rc.left,rc.right, rc.top,rc.bottom,x,y);
+//#endif
 }

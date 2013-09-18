@@ -20,7 +20,7 @@ extern COLORREF taskcolor;
 
 void  MapWindow::DrawTaskPicto(HDC hdc,int TaskIdx, RECT rc, double fScaleFact)
 {
-#ifdef PICTORIALS
+//#ifdef PICTORIALS
 int center_x = (rc.right-rc.left)/2;
 int center_y = (rc.bottom-rc.top)/2;
 int SecType = 	SectorType;
@@ -63,8 +63,11 @@ if(TaskIdx == finish)
 LockTaskData(); // protect from external task changes
 double StartRadial = Task[TaskIdx].AATStartRadial;
 double FinishRadial = Task[TaskIdx].AATFinishRadial;
-
-
+if(TaskIdx == 0)
+{
+  FinishRadial = Task[TaskIdx].AATStartRadial;
+  StartRadial = Task[TaskIdx].AATFinishRadial;
+}
 double SecRadius;
 GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
 
@@ -113,7 +116,7 @@ UnlockTaskData();
 
 SelectObject(hdc, oldpen);
 SelectObject(hdc, oldbrush);
-#endif
+//#endif
 }
 
 
