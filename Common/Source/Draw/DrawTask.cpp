@@ -1,10 +1,10 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
-   See CREDITS.TXT file for authors and copyrights
+LK8000 Tactical Flight Computer - WWW.LK8000.IT
+Released under GNU/GPL License v.2
+See CREDITS.TXT file for authors and copyrights
 
-   $Id$
- */
+$Id$
+*/
 
 #include "externs.h"
 #include "LKInterface.h"
@@ -18,12 +18,12 @@ extern int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius);
 extern int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor);
 extern COLORREF taskcolor;
 
-void  MapWindow::DrawTaskPicto(HDC hdc,int TaskIdx, RECT rc, double fScaleFact)
+void MapWindow::DrawTaskPicto(HDC hdc,int TaskIdx, RECT rc, double fScaleFact)
 {
-//#ifdef PICTORIALS
+#ifdef PICTORIALS
 int center_x = (rc.right-rc.left)/2;
 int center_y = (rc.bottom-rc.top)/2;
-int SecType = 	SectorType;
+int SecType = SectorType;
 int width = center_x-2;
 HPEN oldpen = 0;
 HBRUSH oldbrush = 0;
@@ -51,23 +51,20 @@ POINT startfinishline[2] = {{0,-width/2},
                             {0,+width/2}};
 
 POINT track[3] = {{0,-width/10},
-		          {width/4,0},
+{width/4,0},
                   {0,width/10}};
 if(TaskIdx == finish)
 {
-	track[0].x = -width/4 ; track[0].y= -width/10;
-	track[1].x = 0        ; track[1].y= 0;
-	track[2].x = -width/4 ; track[2].y= width/10;
+track[0].x = -width/4 ; track[0].y= -width/10;
+track[1].x = 0 ; track[1].y= 0;
+track[2].x = -width/4 ; track[2].y= width/10;
 }
 
 LockTaskData(); // protect from external task changes
 double StartRadial = Task[TaskIdx].AATStartRadial;
 double FinishRadial = Task[TaskIdx].AATFinishRadial;
-if(TaskIdx == 0)
-{
-  FinishRadial = Task[TaskIdx].AATStartRadial;
-  StartRadial = Task[TaskIdx].AATFinishRadial;
-}
+
+
 double SecRadius;
 GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
 
@@ -75,48 +72,48 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
     {
         case CIRCLE:
             Circle(hdc,
-            		center_x,
-            		center_y,
-            		width-2, rc, true, true);
+             center_x,
+             center_y,
+             width-2, rc, true, true);
             break;
         case SECTOR:
             Segment(hdc,
-            		center_x,
-            		center_y, width, rc,
-            		StartRadial,
-            		FinishRadial);
+             center_x,
+             center_y, width, rc,
+             StartRadial,
+             FinishRadial);
             break;
         case DAe:
             if (!AATEnabled) { // this Type exist only if not AAT task
                 // JMW added german rules
                 Circle(hdc,
-                		center_x,
-                		center_y,
-                		width/8, rc, false, true);
+                 center_x,
+                 center_y,
+                 width/8, rc, false, true);
 
                 Segment(hdc,
-                		center_x,
-                		center_y, width, rc,
-                		StartRadial,
-                		FinishRadial);
+                 center_x,
+                 center_y, width, rc,
+                 StartRadial,
+                 FinishRadial);
             }
             break;
        case LINE:
        default:
-   	     PolygonRotateShift(startfinishline, 2,  center_x, center_y,  Task[TaskIdx].AATStartRadial);
-   	   	 Polygon(hdc,startfinishline ,2 );
-    	 if((TaskIdx == 0) || (TaskIdx == finish))
-    	 {
-    	   PolygonRotateShift(track, 3,  center_x, center_y,  Task[TaskIdx].AATStartRadial);
-    	   Polygon(hdc,track ,3 );
-    	 }
+    PolygonRotateShift(startfinishline, 2, center_x, center_y, Task[TaskIdx].AATStartRadial);
+    Polygon(hdc,startfinishline ,2 );
+     if((TaskIdx == 0) || (TaskIdx == finish))
+     {
+     PolygonRotateShift(track, 3, center_x, center_y, Task[TaskIdx].AATStartRadial);
+     Polygon(hdc,track ,3 );
+     }
        break;
     }
 UnlockTaskData();
 
 SelectObject(hdc, oldpen);
 SelectObject(hdc, oldbrush);
-//#endif
+#endif
 }
 
 
@@ -134,18 +131,18 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
     static short size_tasklines=0;
 
     if (DoInit[MDI_DRAWTASK]) {
-	switch (ScreenSize) {
-		case ss480x272:
-		case ss272x480:
-		case ss320x240:
-		case ss240x320:
-			size_tasklines=NIBLSCALE(4);
-			break;
-		default:
-			size_tasklines=NIBLSCALE(3);
-			break;
-	}
-	DoInit[MDI_DRAWTASK]=false;
+switch (ScreenSize) {
+case ss480x272:
+case ss272x480:
+case ss320x240:
+case ss240x320:
+size_tasklines=NIBLSCALE(4);
+break;
+default:
+size_tasklines=NIBLSCALE(3);
+break;
+}
+DoInit[MDI_DRAWTASK]=false;
     }
 
     if (!WayPointList) return;
@@ -166,8 +163,8 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
             if (AATEnabled != TRUE) {
                 //_DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
                 //_DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
-         //       DrawDashLine(hdc,  size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
-         //       DrawDashLine(hdc,  size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
+         // DrawDashLine(hdc, size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
+         // DrawDashLine(hdc, size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
             }
 
             int Type = SectorType;
@@ -214,7 +211,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
             }
 
             if (AATEnabled && !DoOptimizeRoute()) {
-                // ELSE HERE IS   *** AAT ***
+                // ELSE HERE IS *** AAT ***
                 // JMW added iso lines
                 if ((i == ActiveWayPoint) || (mode.Is(Mode::MODE_TARGET_PAN) && (i == TargetPanIndex))) {
                     // JMW 20080616 flash arc line if very close to target
@@ -251,7 +248,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
                 }
             }
         }
-    }    
+    }
     
     for (i = 0; ValidTaskPoint(i + 1); i++) {
         int imin = min(Task[i].Index, Task[i + 1].Index);
@@ -314,7 +311,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
         DrawDashLine(hdc, NIBLSCALE(1),
                     ptStart,
                     WayPointList[Task[ActiveWayPoint].Index].Screen,
-                    taskcolor, rc);        
+                    taskcolor, rc);
 
     }
 
@@ -332,18 +329,20 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
 
 
 void MapWindow::DrawTaskSectors(HDC hdc, RECT rc) {
-int Active =  ActiveWayPoint;
-	if(ValidTaskPoint(PanTaskEdit))
-		Active = PanTaskEdit;
-LockTaskData();
+int Active = ActiveWayPoint;
+if(ValidTaskPoint(PanTaskEdit))
+Active = PanTaskEdit;
+
+CScopeLock LockTask(LockTaskData, UnlockTaskData);
+
     /*******************************************************************************************************/
 int TaskPoints =0;
 while(ValidTaskPoint(TaskPoints))
-	TaskPoints++;
+TaskPoints++;
 if(TaskPoints < 2)
-	return;
+return;
 if(TaskPoints > 5)
-	return;
+return;
 int a=0, b=1;
 
 if(TaskPoints ==3)
@@ -391,7 +390,6 @@ RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 0, RGB_CYAN );
 
 
 
- UnlockTaskData();
 /*******************************************************************************************************/
 
 
