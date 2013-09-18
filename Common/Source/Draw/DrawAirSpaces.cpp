@@ -10,7 +10,7 @@
 
 #include "Bitmaps.h"
 #include "RGB.h"
-
+#include "LKObjects.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -127,6 +127,8 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
           } else {
             SelectObject(hDCTemp, hAirspacePens[airspace_type]);
           }
+		  if(((*it)->DrawStyle()==adsDisabled))
+		    SelectObject(hDCTemp, LKPen_Grey_N1);
           (*it)->Draw(hDCTemp, rc, false);
         }
       }//for
