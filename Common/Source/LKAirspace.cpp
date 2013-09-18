@@ -1809,7 +1809,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
                     // Last one was an area
                     CorrectGeoPoints(points);
                     // Skip it if we dont have minimum 3 points
-                    if (points.size()>3) {
+                    if (points.size()>0) {
                       newairspace = new CAirspace_Area;
                       newairspace->SetPoints(points);
                     }
@@ -2576,7 +2576,7 @@ CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
   {
-	if ((*it)->DrawStyle())
+//	if ((*it)->DrawStyle())
 	{
 	  (*it)->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
 	  if(HorDist < searchrange)
