@@ -81,6 +81,7 @@
   #define WAYPOINT_QUICK_PICTO
   #define MULTISEL_PICTORIALS
   #define BACKGROUND_PICTORIAL
+  #define ASP_WARNING_PICTO
 #endif
 
 
@@ -107,7 +108,7 @@
 
 
 // do not add screen points if closer than 5pix to the previous
-//#define LKASP_REMOVE_NEAR_POINTS		0
+//#define LKASP_REMOVE_NEAR_POINTS		1
 
 // MapDraw OPTIM , SetTopologyBounds limited to zoom change and map draw out of current rect 
 #define TOPOBOUND_OPTIM	1

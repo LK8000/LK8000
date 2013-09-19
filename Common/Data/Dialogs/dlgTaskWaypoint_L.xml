@@ -3,7 +3,7 @@
   <WndForm Name="frmTaskWaypoint" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M800_" Font="2" >
     <WndFrame X="0" Y="0" Width="75" Height="20" Font="2" />
     <WndButton   Caption="_@M186_"    X="2" Y="0" Width="70"  Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
-	<WndButton Name="frmMoveTurnpoint"  Caption="_@M444_"    X="2" Y="-1" Width="70"  Height="22" Font="2" OnClickNotify="OnMoveClicked"/>
+
 
     <WndButton  Name="butSelect"   Caption="_@M595_"    X="2" Y="25" Width="70"  Height="22" Font="2" OnClickNotify="OnSelectClicked"/>
     <WndButton  Name="butRemove" Caption="_@M553_"    X="2" Y="50" Width="70"  Height="22" Font="2" OnClickNotify="OnRemoveClicked"/>
@@ -68,7 +68,8 @@
         <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01"/>
       </WndProperty>
     </WndFrame>
-	<WndOwnerDrawFrame Name="frmTaskPointPicto"     X="185" Y="3" Width="50" Height="50" Font="2"  OnPaint="OnTaskPointPicto"/>  
+	<WndOwnerDrawFrame Name="frmTaskPointPicto"     X="185" Y="3" Width="45" Height="45" Font="2"  OnPaint="OnTaskPointPicto"/>  
+	<WndButton Name="frmMoveTurnpoint"  Caption="_@M444_"    X="175" Y="-1" Width="60"  Height="22" Font="2" OnClickNotify="OnMoveClicked"/>
 	
   </WndForm>
 </PMML>

@@ -64,6 +64,11 @@ LockTaskData(); // protect from external task changes
 double StartRadial = Task[TaskIdx].AATStartRadial;
 double FinishRadial = Task[TaskIdx].AATFinishRadial;
 
+if(TaskIdx==0)
+{
+  FinishRadial = Task[TaskIdx].AATStartRadial;
+  StartRadial = Task[TaskIdx].AATFinishRadial;
+}
 
 double SecRadius;
 GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);

@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "LKObjects.h"
 
 void MapWindow::DrawAirSpaceBorders(HDC hdc, const RECT rc)
 {
@@ -37,6 +37,9 @@ void MapWindow::DrawAirSpaceBorders(HDC hdc, const RECT rc)
           } else {
             SelectObject(hdc, hBigAirspacePens[airspace_type]);
           }
+          if((*it)->DrawStyle()==adsDisabled)
+            SelectObject(hdc,LKPen_Grey_N2 );
+
           (*it)->Draw(hdc, rc, false);
         }
       } while (it !=airspaces_to_draw.begin());
@@ -53,6 +56,8 @@ void MapWindow::DrawAirSpaceBorders(HDC hdc, const RECT rc)
           } else {
             SelectObject(hdc, hAirspacePens[airspace_type]);
           }
+          if((*it)->DrawStyle()==adsDisabled)
+            SelectObject(hdc,LKPen_Black_N0 );
           (*it)->Draw(hdc, rc, false);
         }
       }//for

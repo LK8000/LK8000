@@ -714,7 +714,7 @@ goto_menu:
 
 	// MultiMap custom specials, we use same geometry of MSM_MAP
 
-if((dwInterval <  AIRSPACECLICK) || ISPARAGLIDER)
+if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 {
 	if (NOTANYPAN && IsMultiMapCustom() ) {
 		if ( (lparam_X <= P_UngestureLeft.x) && (lparam_Y <= P_UngestureLeft.y) ) {
@@ -938,7 +938,7 @@ _continue:
 		//
 		// Finally process normally a click on the moving map.
 		//
-			if(dwInterval < AIRSPACECLICK) { // original and untouched interval
+			if(dwInterval < (DWORD) AIRSPACECLICK) { // original and untouched interval
 				if (0) {
                                   if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.RealScale(), false)) {
 						ActiveMap=false;

@@ -10,6 +10,7 @@
 
 #include "Terrain.h"
 #include "RGB.h"
+#include "LKObjects.h"
 
 
 
@@ -213,9 +214,12 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
-		  if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only)  ^ (asp_selected_flash && (*it)->Selected()) ) {
+		/*  if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only)  ^ (asp_selected_flash && (*it)->Selected()) ) {
 			SelectObject(hdc, GetStockObject(BLACK_PEN));
-		  } else {
+		  } else*/
+		   if(  (*it)->DrawStyle()==adsDisabled)   {
+			SelectObject(hdc, LKPen_Grey_N2);
+		   } else {
 			SelectObject(hdc, hAirspacePens[airspace_type]);
 		  }
 		  (*it)->Draw(hdc, rc, false);
