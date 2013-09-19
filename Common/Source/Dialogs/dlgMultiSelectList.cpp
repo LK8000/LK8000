@@ -126,6 +126,7 @@ iLastTaskPoint--;
 	      if(Elements[Index].iIdx == iLastTaskPoint)
 		     dlgTaskWaypointShowModal(Elements[Index].iIdx,2, false, true);
 	      else
+#ifdef MS_TARGET_DIALOG
 	    	if ((AATEnabled ) && (CALCULATED_INFO.Flying ))
 	    	{
 	    		wf->SetModalResult(mrOK);
@@ -133,6 +134,7 @@ iLastTaskPoint--;
 	    		dlgTarget(Elements[Index].iIdx);
 	    	}
 	    	else
+#endif
 	    	{
 			  dlgTaskWaypointShowModal(Elements[Index].iIdx,1, false, true);
 	    	}
