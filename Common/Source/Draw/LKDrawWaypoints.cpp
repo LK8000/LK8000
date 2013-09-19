@@ -716,6 +716,8 @@ turnpoint:
 void MapWindow::DrawWaypointPictoBg(HDC hdc, const RECT rc)
 {
 #ifdef	BACKGROUND_PICTORIAL
+if(hLKPictori == NULL)
+  return;
 	int cx = rc.right - rc.left;
 	int cy = rc.bottom - rc.top;
 int x =cx/2;

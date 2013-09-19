@@ -22,7 +22,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat,
 #else
 double Dist;
 unsigned int i;
-double dyn_range = range*2.5;
+double dyn_range = range*3.5;
 bool  landablefound = false;
 
 
@@ -35,8 +35,8 @@ bool  landablefound = false;
 if(dyn_range < 5000)
 	dyn_range = 5000;
 
-if(dyn_range > 12000)
-	dyn_range = 12000;
+//if(dyn_range > 12000)
+//	dyn_range = 12000;
 
 if (EnableSoundModes)
 	PlayResource(TEXT("IDR_WAV_MM0"));
