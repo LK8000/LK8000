@@ -1030,9 +1030,10 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
   
   if (iAirspaceMode[_type]%2 == 1) {
     if(CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
-      if (msRectOverlap(&_bounds, &screenbounds_latlon) 
+   /*   if (msRectOverlap(&_bounds, &screenbounds_latlon)   // Ulli: this caused problems with Multiselect for Multimaps, no drawback by removing found
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
-         ) {
+         ) */
+    	{
 
     if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
       _drawstyle = adsFilled;
@@ -1279,13 +1280,14 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
 
 
   _drawstyle = adsHidden;
+
 //  if (!_enabled) return;
   
   if (iAirspaceMode[_type]%2 == 1) {
     if(CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
-      if (msRectOverlap(&_bounds, &screenbounds_latlon) 
+ /*     if (msRectOverlap(&_bounds, &screenbounds_latlon)  // Ulli: this caused problems with Multiselect for Multimaps, no drawback by removing found
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
-         ) {
+         )*/ {
 
     if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
       _drawstyle = adsFilled;
@@ -2576,7 +2578,7 @@ CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
   {
-//	if ((*it)->DrawStyle())
+	if ((*it)->DrawStyle())
 	{
 	  (*it)->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
 	  if(HorDist < searchrange)
