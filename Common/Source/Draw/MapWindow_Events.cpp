@@ -83,7 +83,6 @@ if (EnableSoundModes)
   int  HorDist=99999, Bearing, VertDist;
   {
 	CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, (int)(dyn_range/2));
-//	CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const
 
 	CAirspaceList::iterator it;
 	for (it = reslist.begin(); it != reslist.end(); ++it)
@@ -148,6 +147,11 @@ UnlockTaskData();
   else
   {
 	dlgMultiSelectListShowModal();
+	if(ValidTaskPoint(PanTaskEdit))
+	{
+    	MapWindow::Event_Pan(1);
+	}
+
 
     return true; // nothing found..
   }
