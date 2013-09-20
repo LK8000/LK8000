@@ -370,7 +370,7 @@ unsigned int k =0;
         {
      //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
           LKASSERT(j<MAX_SEL_LIST_SIZE);
-          if(SelList[j] == newChar)
+          if(SelList[j] == (unsigned char)newChar)
         	existing = true;
           j++;
         }
