@@ -1811,7 +1811,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
                     // Last one was an area
                     CorrectGeoPoints(points);
                     // Skip it if we dont have minimum 3 points
-                    if (points.size()>0) {
+                    if (points.size()>3) {
                       newairspace = new CAirspace_Area;
                       newairspace->SetPoints(points);
                     }
