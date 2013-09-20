@@ -74,7 +74,16 @@ static void UpdateTextboxProp(void)
 	  wb =  (WndButton*) wf->FindByName(TEXT("prpTime")); if(wb != NULL) wb->SetVisible(false);
     }
     wp = (WndProperty*)wf->FindByName(TEXT("prpMatch"));; if(wp != NULL) wp->SetVisible(WaypointKeyRed);
+/*
+    _tcsupr(szLanguageFile);
+    BOOL bGerChar = false;
+    if( _tcscmp(szLanguageFile,_T("GERMAN.LNG"))==0)
+	  bGerChar = true;
 
+    wb = (WndButton*) wf->FindByName(TEXT("prpAe")); if(wb != NULL) wb->SetVisible(bGerChar);
+    wb = (WndButton*) wf->FindByName(TEXT("prpOe")); if(wb != NULL) wb->SetVisible(bGerChar);
+    wb = (WndButton*) wf->FindByName(TEXT("prpUe")); if(wb != NULL) wb->SetVisible(bGerChar);
+*/
   }
 }
 
@@ -293,7 +302,7 @@ bool CharEqual = true;
 char Charlist[MAX_SEL_LIST_SIZE]={"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_ ÜÖÄ"};
 
 unsigned int i,j,EqCnt=NumberOfWayPoints;
-unsigned int IdenticalIndex=-1;
+unsigned int IdenticalIndex=0;
 unsigned int IdenticalOffset = 0;
 
 WndProperty *wp;
@@ -344,12 +353,16 @@ unsigned int k =0;
 
       if(CharEqual)
       {
-        EqCnt++;
-        if(IdenticalIndex -1)
+
+     //   if(IdenticalIndex -1)
+        if(EqCnt ==0)
         {
           IdenticalIndex = i; /* remember first found equal name */
           IdenticalOffset = Offset; /* remember first found equal name */
         }
+        EqCnt++;
+        LKASSERT((cursor+Offset)<=NAME_SIZE);
+        LKASSERT(i<=NumberOfWayPoints);
         TCHAR newChar = ToUpper(WayPointList[i].Name[cursor+Offset]);
         bool existing = false;
         j=0;
@@ -379,6 +392,7 @@ unsigned int k =0;
     {
       if(EqCnt ==1)
       {
+    	LKASSERT(IdenticalIndex<=NumberOfWayPoints);
 	    wp->SetText(WayPointList[IdenticalIndex].Name);
       }
       else
@@ -386,6 +400,7 @@ unsigned int k =0;
         if((cursor >0) &&  (EqCnt >0))
         {
           LKASSERT(cursor < NAME_SIZE);
+          LKASSERT(IdenticalIndex<=NumberOfWayPoints);
           _stprintf(Found,_T("%s"),WayPointList[IdenticalIndex].Name);
     	  for( i = 0; i < cursor; i++)
     	     Found[i+IdenticalOffset] = toupper(WayPointList[IdenticalIndex].Name[i+IdenticalOffset]);
@@ -411,7 +426,7 @@ bool bA=false, bB=false, bC=false, bD=false, bE=false, bF=false, bG=false, bH=fa
 	 bJ=false, bK=false, bL=false, bM=false, bN=false, bO=false, bP=false, bQ=false, bR=false,
 	 bS=false, bT=false, bU=false, bV=false, bW=false, bX=false, bY=false, bZ=false, b0=false,
 	 b1=false, b2=false, b3=false, b4=false, b5=false, b6=false, b7=false, b8=false, b9=false,
-	 bDot=false, bMin=false, bAt=false,  bUn=false ;
+	 bUe=false, bOe=false, bAe=false, bDot=false, bMin=false, bAt=false,  bUn=false ;
 
 unsigned int i=0;
 
@@ -515,11 +530,11 @@ unsigned int i=0;
 	wb =  (WndButton*) wf->FindByName(TEXT("prp7")); if(wb != NULL) wb->SetVisible(b7);
 	wb =  (WndButton*) wf->FindByName(TEXT("prp8")); if(wb != NULL) wb->SetVisible(b8);
 	wb =  (WndButton*) wf->FindByName(TEXT("prp9")); if(wb != NULL) wb->SetVisible(b9);
-/*
+
 	wb =  (WndButton*) wf->FindByName(TEXT("prpUe")); if(wb != NULL) wb->SetVisible(bUe);
 	wb =  (WndButton*) wf->FindByName(TEXT("prpOe")); if(wb != NULL) wb->SetVisible(bOe);
 	wb =  (WndButton*) wf->FindByName(TEXT("prpAe")); if(wb != NULL) wb->SetVisible(bAe);
-*/
+
 	wb =  (WndButton*) wf->FindByName(TEXT("prpDot"))   ; if(wb != NULL) wb->SetVisible(bDot);
 	wb =  (WndButton*) wf->FindByName(TEXT("prpUn"))    ; if(wb != NULL) wb->SetVisible(bUn);
 	wb =  (WndButton*) wf->FindByName(TEXT("prpSpace")) ; if(wb != NULL) wb->SetVisible(bUn);
