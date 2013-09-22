@@ -14,7 +14,7 @@
       <WndProperty Name="prpBearing"   Caption="_@M138_"       X="2" Y="-1" Width="248" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc0"       Caption="_@M83_" X="2" Y="-1" Width="248" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc2"       Caption="_@M84_" X="2" Y="-1" Width="248" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-	  <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="125" Width="45" Height="45" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
+	  <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="125" Width="50" Height="50" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
     </WndFrame>
     <WndListFrame Name="frmDetails" X="0" Y="0" Width="240" Height="220" Font="3" OnListInfo="OnDetailsListInfo">
       <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="235" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
