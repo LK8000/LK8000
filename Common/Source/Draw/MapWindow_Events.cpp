@@ -80,17 +80,15 @@ if (EnableSoundModes)
     }
   }
 
-  int  HorDist=99999, Bearing, VertDist;
+  int  HorDist=0, Bearing=0, VertDist=0;
   {
 	CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, (int)(dyn_range/2));
 
 	CAirspaceList::iterator it;
 	for (it = reslist.begin(); it != reslist.end(); ++it)
 	{
-
 	  LKASSERT((*it));
 	  (*it)->CalculateDistance(&HorDist, &Bearing, &VertDist,lon, lat);
-	  HorDist = 99999;
 	  dlgAddMultiSelectListItem((long*) (*it),0, IM_AIRSPACE, HorDist);
 	}
   }
