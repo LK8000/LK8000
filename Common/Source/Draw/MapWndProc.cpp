@@ -16,6 +16,7 @@
 #include "DoInits.h"
 #include "Multimap.h"
 #include "Logger.h"
+#include "Dialogs.h"
 
 // #define DEBUG_VIRTUALKEYS
 // #define DEBUG_MAPINPUT
@@ -429,27 +430,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
     case WM_MOUSEMOVE:
 	// Mouse moving!
 
-#ifdef MOVE_WP_PAN
-	    if(ValidTaskPoint(PanTaskEdit))
-    	{
-	      LockTaskData();
-          if( (mode.Is(Mode::MODE_PAN)) || (mode.Is(Mode::MODE_TARGET_PAN)) )
-		  {
-		    if(Task[PanTaskEdit].Index != RESWP_PANPOS)
-		    {
-			  PanLongitude =  WayPointList[ Task[PanTaskEdit].Index].Longitude ;
-			  PanLatitude  =  WayPointList[ Task[PanTaskEdit].Index].Latitude ;
-		 	  RealActiceWaypoint = Task[PanTaskEdit].Index;
-		 	  memcpy( &WayPointList[RESWP_PANPOS], &WayPointList[ Task[PanTaskEdit].Index], sizeof(WAYPOINT) );
-		 	 _stprintf( WayPointList[RESWP_PANPOS].Name,TEXT("") );
-		 	 _stprintf( WayPointList[RESWP_PANPOS].Comment,TEXT("temporary Task point moved form %"),WayPointList[ Task[PanTaskEdit].Index]);
 
-		      Task[PanTaskEdit].Index =RESWP_PANPOS;
-		    }
-		  }
-          UnlockTaskData();
-    	}
-#endif
 	if (wParam==MK_LBUTTON) {
 		// Consider only pure PAN mode, ignore the rest of cases here
 		if (!mode.Is(Mode::MODE_PAN)) break;
@@ -470,8 +451,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
 			PanLongitude += (Xstart-Xlat);
 			PanLatitude  += (Ystart-Ylat);
-#ifdef MOVE_WP_PAN
 
+#ifdef MOVE_WP_PAN
 			if(ValidTaskPoint(PanTaskEdit))
 			{
 			  LockTaskData(); // protect from external task changes
@@ -485,6 +466,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			  }
 			  UnlockTaskData(); // protect from external task changes
 			}
+
 
 #endif
 			ignorenext=true;
@@ -522,6 +504,39 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			}
 		} // minimal movement detected
 	} // mouse moved with Lbutton (dragging)
+
+
+#ifdef MOVE_WP_PAN
+	      if(ValidTaskPoint(PanTaskEdit))
+    	  {
+	        LockTaskData();
+		    PanLongitude =  WayPointList[ Task[PanTaskEdit].Index].Longitude ;
+		    PanLatitude  =  WayPointList[ Task[PanTaskEdit].Index].Latitude ;
+
+            if( (mode.Is(Mode::MODE_PAN)) || (mode.Is(Mode::MODE_TARGET_PAN)) )
+		    {
+		   /* 	if ((AATEnabled ) && (CALCULATED_INFO.Flying ))
+		    	{
+		    		dlgTarget(PanTaskEdit);
+		    		PanTaskEdit = -1;
+		    	}
+		    	else*/
+		      {
+		        if(Task[PanTaskEdit].Index != RESWP_PANPOS)
+		        {
+		 	      RealActiceWaypoint = Task[PanTaskEdit].Index;
+		 	      memcpy( &WayPointList[RESWP_PANPOS], &WayPointList[ Task[PanTaskEdit].Index], sizeof(WAYPOINT) );
+		 	      _stprintf( WayPointList[RESWP_PANPOS].Name,TEXT("") );
+		 	      _stprintf( WayPointList[RESWP_PANPOS].Comment,TEXT("temporary Task point moved form %"),WayPointList[ Task[PanTaskEdit].Index]);
+
+		          Task[PanTaskEdit].Index =RESWP_PANPOS;
+				  RefreshMap();
+		        }
+		      }
+		    }
+            UnlockTaskData();
+    	  }
+#endif
 	break;
 
 

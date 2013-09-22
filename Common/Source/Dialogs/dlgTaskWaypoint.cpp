@@ -451,7 +451,7 @@ static void OnMoveClicked(WindowControl * Sender){
 
 	 wf->SetModalResult(mrOK);
 #ifdef MOVE_WP_PAN
-	MapWindow::Event_Pan(1);
+//	MapWindow::Event_Pan(1);
 	PanTaskEdit = twItemIndex;
 #endif
 

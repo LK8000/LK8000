@@ -123,6 +123,7 @@ iLastTaskPoint--;
 	    if(Elements[Index].iIdx == 0)
 	      dlgTaskWaypointShowModal(Elements[Index].iIdx,0, false, true);
 	    else
+	    {
 	      if(Elements[Index].iIdx == iLastTaskPoint)
 		     dlgTaskWaypointShowModal(Elements[Index].iIdx,2, false, true);
 	      else
@@ -138,6 +139,8 @@ iLastTaskPoint--;
 	    	{
 			  dlgTaskWaypointShowModal(Elements[Index].iIdx,1, false, true);
 	    	}
+	      
+	    }
       break;
       case IM_FLARM:
 	    LKASSERT(Elements[Index].iIdx<FLARM_MAX_TRAFFIC);
@@ -178,10 +181,6 @@ void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance){
 		      return;
 
 	}
-
-	if(type == IM_AIRSPACE )
-	  Distance = 999999.0;
-
 
     bool full = false;
 	if(iNO_ELEMENTS < MAX_LIST_ITEMS-1)

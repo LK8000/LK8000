@@ -35,7 +35,7 @@ static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
 	  prc = wPicto->GetBoundRect();
 
 
-	//  SetBkColor  (hDC, RGB_LIGHTGREY);
+	  SetBkColor  (hDC, RGB_LIGHTGREY);
 	//  airspace_copy.DrawPicto(hDC, *prc, true);
       /*************************************************************
        * @Paolo
