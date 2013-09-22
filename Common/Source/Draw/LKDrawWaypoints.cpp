@@ -842,20 +842,28 @@ int cy = rc.bottom - rc.top;
 int d=1;
 if(!UseHiresBitmap)
   d=2;
+
+bool scale = true;
+
 int x = (cx/2)-20/d;
 int y = (cy/2)-20/d;
+if(cx < 40)
+{
+  scale = false;
+  if(UseHiresBitmap)
+  {
+	x = (cx/2)+5;
+	y = (cy/2)+10;
+  }
+  else
+  {
+     x = (cx/2)-3;
+     y = (cy/2);
+  }
+}
+  DrawBitmapX(hdc,x,y, 20,20, hDCTemp, 0,0,SRCPAINT,scale);
+  DrawBitmapX(hdc,x,y, 20,20, hDCTemp,20,0,SRCAND,scale);
 
-DrawBitmapX(hdc,
-		x,
-		y,
-    20,20,
-    hDCTemp,0,0,SRCPAINT,true);
-
-DrawBitmapX(hdc,
-		x,
-		y,
-    20,20,
-    hDCTemp,20,0,SRCAND,true);
 //StartupStore(_T("Bitmap left:%i right:%i  top:%i bottom:%i x:%i y:%i\n"),rc.left,rc.right, rc.top,rc.bottom,x,y);
 //#endif
 }
