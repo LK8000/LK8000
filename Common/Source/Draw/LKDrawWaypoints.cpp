@@ -827,7 +827,7 @@ switch(wp->Style) {
 	default:
 turnpoint:
 bool inv = BlackScreen;
-	inv = true;
+
 		if (inv)
 			SelectObject(hDCTemp,hInvTurnPoint);
 		else
