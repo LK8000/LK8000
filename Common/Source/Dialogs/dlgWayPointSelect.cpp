@@ -215,7 +215,7 @@ static void PrepareData(void){
 	return;
   }
 
-  for (int i=0; i<(int)NumberOfWayPoints; i++){
+  for (int i=1; i<(int)NumberOfWayPoints; i++){
 
     LKASSERT(numvalidwp<=NumberOfWayPoints);
 
