@@ -515,19 +515,16 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
             if( (mode.Is(Mode::MODE_PAN)) || (mode.Is(Mode::MODE_TARGET_PAN)) )
 		    {
-		   /* 	if ((AATEnabled ) && (CALCULATED_INFO.Flying ))
-		    	{
-		    		dlgTarget(PanTaskEdit);
-		    		PanTaskEdit = -1;
-		    	}
-		    	else*/
 		      {
 		        if(Task[PanTaskEdit].Index != RESWP_PANPOS)
 		        {
 		 	      RealActiceWaypoint = Task[PanTaskEdit].Index;
-		 	      memcpy( &WayPointList[RESWP_PANPOS], &WayPointList[ Task[PanTaskEdit].Index], sizeof(WAYPOINT) );
-		 	      _stprintf( WayPointList[RESWP_PANPOS].Name,TEXT("") );
-		 	      _stprintf( WayPointList[RESWP_PANPOS].Comment,TEXT("temporary Task point moved form %"),WayPointList[ Task[PanTaskEdit].Index]);
+			      LKASSERT(ValidWayPoint(Task[PanTaskEdit].Index));
+		 	      WayPointList[RESWP_PANPOS].Latitude = WayPointList[RealActiceWaypoint].Latitude;
+		 	      WayPointList[RESWP_PANPOS].Longitude = WayPointList[RealActiceWaypoint].Longitude;
+		 	      WayPointList[RESWP_PANPOS].Altitude = WayPointList[RealActiceWaypoint].Altitude;
+		 	      _tcscpy( WayPointList[RESWP_PANPOS].Name,_T(" ") );
+		 	      _tcscpy( WayPointList[RESWP_PANPOS].Comment,_T(" "));
 
 		          Task[PanTaskEdit].Index =RESWP_PANPOS;
 				  RefreshMap();
