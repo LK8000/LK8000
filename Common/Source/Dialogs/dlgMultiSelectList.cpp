@@ -158,6 +158,13 @@ void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance){
 
 	if(type == IM_TASK_PT )
 	{
+#ifndef GOTO_AS_SIMPLETASK
+	  int iLastTaskPoint=0;
+	  while( ValidTaskPoint(iLastTaskPoint))
+	    iLastTaskPoint++;
+	  if (iLastTaskPoint < 2)
+		return;
+#endif
 	  if(ValidTaskPoint(PanTaskEdit))
 	    return;
 	  if( Task[Idx].Index	== RESWP_PANPOS)

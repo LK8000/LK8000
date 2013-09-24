@@ -77,8 +77,19 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 		Units::GetUnitName(Units::GetUserAltitudeUnit()));
 	}
 	double pandistance, panbearing;
-	DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
-	_stprintf(Scale, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,_T(DEG) );
+
+    if(ValidTaskPoint(PanTaskEdit))
+    {
+    	  _stprintf(Scale, _T("Task %.1f%s"), CALCULATED_INFO.TaskDistanceToGo*DISTANCEMODIFY, Units::GetDistanceName()/*, panbearing,_T(DEG)*/ );
+
+    }
+    else
+    {
+	  DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
+	  _stprintf(Scale, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,_T(DEG) );
+    }
+
+
 	_tcscat(Scale2,Scale);
 	goto _skip1;
     }
