@@ -13,6 +13,26 @@
 
 void AddReservedWaypoints()
 {
+	WayPointList[RESWP_PANPOS].Number=RESWP_TAKEOFF+1;
+	WayPointList[RESWP_PANPOS].Latitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_PANPOS].Longitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_PANPOS].Altitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_PANPOS].Flags=TURNPOINT;
+	_tcscpy(WayPointList[RESWP_PANPOS].Name, gettext(TEXT(RESWP_TAKEOFF_NAME)) ); // 100227
+	if ( WayPointList[RESWP_PANPOS].Comment == NULL)
+	  WayPointList[RESWP_PANPOS].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+	if (WayPointList[RESWP_TAKEOFF].Comment!=NULL)
+		_tcscpy(WayPointList[RESWP_PANPOS].Comment,_T("temporary"));
+	WayPointList[RESWP_PANPOS].Reachable=FALSE;
+	WayPointList[RESWP_PANPOS].AltArivalAGL=0.0;
+	WayPointList[RESWP_PANPOS].Visible=FALSE;
+	WayPointList[RESWP_PANPOS].InTask=true;
+	WayPointList[RESWP_PANPOS].Details=(TCHAR *)NULL;
+
+	WayPointList[RESWP_PANPOS].FarVisible=true;
+	WayPointList[RESWP_PANPOS].FileNum=-1;  // 100219  so it cannot be saved
+	WayPointList[RESWP_PANPOS].Format= LKW_VIRTUAL;  //@ bugfix 101110
+
 	WayPointList[RESWP_TAKEOFF].Number=RESWP_TAKEOFF+1;
 	WayPointList[RESWP_TAKEOFF].Latitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_TAKEOFF].Longitude=RESWP_INVALIDNUMBER;
