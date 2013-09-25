@@ -60,7 +60,6 @@ static int NoAirspace  =0;
 #define MAX_AIRSPACES 10
 
 
-
 static void UpdateList(void){
 	wMultiSelectListList->ResetList();
 	wMultiSelectListList->Redraw();
@@ -69,6 +68,20 @@ static void UpdateList(void){
 }
 
 static int DrawListIndex=0;
+
+
+
+static int OnTimer(WindowControl * Sender){
+  (void)Sender;
+
+  // Timer events comes at 500ms, we need every second
+  static bool timer_divider = false;
+  timer_divider = !timer_divider;
+  if (timer_divider) return 0;
+
+	wMultiSelectListList->Redraw();
+  return 0;
+}
 
 
 static void OnUpClicked(WindowControl * Sender)
@@ -740,6 +753,7 @@ ListElement* dlgMultiSelectListShowModal(void){
                         filename, 
                         hWndMainWindow,
                         TEXT("IDR_XML_MULTISELECTLIST"));
+    wf->SetTimerNotify(OnTimer);
   }
 
   if (!wf) return NULL;
