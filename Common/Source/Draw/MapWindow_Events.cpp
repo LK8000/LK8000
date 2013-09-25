@@ -41,6 +41,19 @@ if(dyn_range < 5000)
 if (EnableSoundModes)
 	PlayResource(TEXT("IDR_WAV_MM0"));
 
+
+  LockFlightData();
+    DistanceBearing(lat,lon, GPS_INFO.Latitude,GPS_INFO.Longitude, &Dist, NULL);
+  UnlockFlightData();
+  if(Dist < dyn_range)
+  {
+  	dlgAddMultiSelectListItem(NULL,0, IM_OWN_POS, Dist);
+  	dlgAddMultiSelectListItem(NULL,0, IM_ORACLE, Dist);
+  	dlgAddMultiSelectListItem(NULL,0, IM_TEAM, Dist);
+  }
+
+
+
 //StartupStore(TEXT("Ulli: Find Objects near lon:%f lat:%f\n"), lon, lat);
   for(i=/*RESWP_FIRST_MARKER*/ NUMRESWP;i<NumberOfWayPoints;i++)
   {    // Consider only valid markers

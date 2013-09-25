@@ -14,9 +14,14 @@
 #include "Dialogs.h"
 #include "FlarmIdFile.h"
 #include "InputEvents.h"
+#include "Units.h"
 #define LINE_HEIGT 50
 
-
+extern  int FindNearestWayPoint(double X, double Y, double MaxRange,               bool exhaustive);
+extern void dlgOracleShowModal(void);
+extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
+extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
+extern void dlgTeamCodeShowModal(void);
 extern FlarmIdFile *file;
 #define  LEAVE_AFTER_ENTER
 #define MAX_LIST_ITEMS 50
@@ -47,8 +52,8 @@ static int NoAirspace  =0;
 */
 
 
-#define MAX_AIRFILEDS 4
-#define MAX_OUTLAND   3
+#define MAX_AIRFILEDS 3
+#define MAX_OUTLAND   2
 #define MAX_WAYPOINTS 3
 #define MAX_FLARM     5
 #define MAX_TASK      3
@@ -108,6 +113,15 @@ iLastTaskPoint--;
   {
     switch(Elements[Index].type)
     {
+      case  IM_TEAM:
+        dlgTeamCodeShowModal();
+      break;
+      case  IM_ORACLE:
+    	dlgOracleShowModal();
+      break;
+      case IM_OWN_POS:
+    	dlgBasicSettingsShowModal();
+      break;
       case IM_AIRSPACE:
     	LKASSERT(Elements[Index].ptr);
 	    dlgAirspaceDetails((CAirspace*)Elements[Index].ptr);
@@ -156,6 +170,32 @@ int dlgGetNoElements(void)
 
 void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance){
 
+	if(type == IM_TEAM )
+	{
+#ifndef TEAM_CODE_MS
+	  return;
+#endif
+	  if (TeamCodeRefWaypoint  < -1)
+		 return;
+
+	  if(  _tcslen(CALCULATED_INFO.OwnTeamCode) < 3)
+		return;
+	}
+
+	if(type == IM_OWN_POS )
+	{
+#ifndef OWN_POS_MS
+	  return;
+#endif
+	  Idx = FindNearestWayPoint(GPS_INFO.Longitude,  GPS_INFO.Latitude,  100000.0, true); // big range limit
+	}
+	if(type == IM_ORACLE )
+	{
+#ifndef ORACLE_MS
+	  return;
+#endif
+	  Idx = FindNearestWayPoint(GPS_INFO.Longitude,  GPS_INFO.Latitude,  100000.0, true); // big range limit
+	}
 	if(type == IM_TASK_PT )
 	{
 #ifndef GOTO_AS_SIMPLETASK
@@ -270,14 +310,84 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 	  int HorDist,Bearing, VertDist;
 	  double Distance;
 	  unsigned int idx=0;
+      SIZE tsize;
+      HFONT oldFont;
 	  TCHAR text1[180] ={TEXT("empty")};
 	  TCHAR text2[180] ={TEXT("empty")};
 	  TCHAR Comment[80]={TEXT("")};
 	  TCHAR Comment1[80]={TEXT("")};
+	  int nearest_waypoint = 0;
 	  SetBkColor  (hDC, RGB(0xFF, 0xFF, 0xFF));
 	  LKASSERT(i < MAX_LIST_ITEMS);
+
+
 	  switch(Elements[i].type )
 	  {
+	    case IM_TEAM:
+	    	_stprintf(text1,_T("%s:"),gettext(_T("_@M700_"))); //_@M700_ "Team code"
+		    _stprintf(text2,_T("%s"), CALCULATED_INFO.OwnTeamCode );
+	    //	MapWindow::DrawAircraft(hDC, (POINT) { (rc.right-rc.left)/2,(rc.bottom-rc.top)/2} );
+
+	        SetBkMode(hDC,TRANSPARENT);
+	        _stprintf(Comment,_T("T"));
+	        oldFont = (HFONT)SelectObject(hDC, LK8PanelBigFont);
+	        SetTextColor(hDC, RGB_DARKGREEN);
+	        GetTextExtentPoint(hDC, Comment, _tcslen(Comment), &tsize);
+	  	    ExtTextOut(hDC,  (rc.right-rc.left-tsize.cx)/2,(rc.bottom-rc.top-tsize.cy)/2, ETO_OPAQUE, NULL, Comment, 1, NULL);
+	  	    SelectObject(hDC, oldFont);
+		break;
+	    /************************************************************************************************
+	     * IM_ORACLE
+	     ************************************************************************************************/
+	    case IM_ORACLE:
+	    	_stprintf(text1,_T("%s"),gettext(_T("_@M2058_"))); //_@M2058_ "Oracle"
+	    	if(nearest_waypoint >= 0)
+	    	  _stprintf(text2,_T("%s: %s"),    gettext(_T("_@M456_")), WayPointList[Elements[i].iIdx].Name);// _@M456_ "Near"
+	    	else
+		       _stprintf(text2,_T("%s"),   gettext(_T("_@M1690_"))); //_@M1690_ "THE LK8000 ORACLE"
+	    //	MapWindow::DrawAircraft(hDC, (POINT) { (rc.right-rc.left)/2,(rc.bottom-rc.top)/2} );
+
+	        SetBkMode(hDC,TRANSPARENT);
+	        _stprintf(Comment,_T("?"));
+	        oldFont = (HFONT)SelectObject(hDC, LK8PanelBigFont);
+	        SetTextColor(hDC, RGB_DARKBLUE);
+	        GetTextExtentPoint(hDC, Comment, _tcslen(Comment), &tsize);
+	  	    ExtTextOut(hDC,  (rc.right-rc.left-tsize.cx)/2,(rc.bottom-rc.top-tsize.cy)/2, ETO_OPAQUE, NULL, Comment, 1, NULL);
+	  	    SelectObject(hDC, oldFont);
+		break;
+	    /************************************************************************************************
+	     * IM_OWN_POS
+	     ************************************************************************************************/
+	    case IM_OWN_POS:
+
+			LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, Comment, (WCHAR*) NULL);
+			_stprintf(text1,_T("%s [%s]"), AircraftRego_Config,Comment);
+		   if (ISPARAGLIDER || ISCAR)
+		   {
+			 int utmzone; char utmchar;
+			 double easting, northing;
+			 LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
+			 _stprintf(text2,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
+		   }
+		   else
+		   {
+			   /*
+			 _stprintf(text2,_T("%s:%2.1f %s:%3.1f%% %s:%3.1f"),gettext(_T("_@M1022_")),GPS_INFO.MacReady, // _@M1022_ "MCready"
+					                                            gettext(_T("_@M125_")) ,GPS_INFO.Ballast,  // _@M125_ "Ballast "
+					                                            gettext(_T("_@M253_")) ,GPS_INFO.Bugs);    // _@M253_ "Efficiency "
+
+			 _stprintf(text2,_T("%s:%4.1f%s %4.1f%s"),gettext(_T("Alt")),GPS_INFO.Altitude*ALTITUDEMODIFY, // _@M1022_ "MCready"
+				                                                  GPS_INFO.Altitude,  // _@M125_ "Ballast "
+					                                            gettext(_T("_@M253_")) ,GPS_INFO.Bugs);    // _@M253_ "Efficiency "*/
+
+			 LockFlightData();
+			 Units::CoordinateToString( GPS_INFO.Latitude,GPS_INFO.Longitude, Comment, sizeof(text2)-1);
+			 UnlockFlightData();
+			 _stprintf(text2,TEXT("%s %6.0f%s"),Comment, GPS_INFO.Altitude*TOFEET,Units::GetUnitName(unFeet));
+		   }
+
+		   MapWindow::DrawAircraft(hDC, (POINT) { (rc.right-rc.left)/2,(rc.bottom-rc.top)/2} );
+	    break;
 	    /************************************************************************************************
 	     * IM_AIRSPACE
 	     ************************************************************************************************/

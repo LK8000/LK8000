@@ -84,6 +84,9 @@
   #define ASP_WARNING_PICTO
 #endif
 
+#define TEAM_CODE_MS
+#define OWN_POS_MS
+#define ORACLE_MS
 
 // #define LONGCLICK_FEEDBACK
 
