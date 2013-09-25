@@ -523,8 +523,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		 	      WayPointList[RESWP_PANPOS].Latitude = WayPointList[RealActiceWaypoint].Latitude;
 		 	      WayPointList[RESWP_PANPOS].Longitude = WayPointList[RealActiceWaypoint].Longitude;
 		 	      WayPointList[RESWP_PANPOS].Altitude = WayPointList[RealActiceWaypoint].Altitude;
-		 	      _tcscpy( WayPointList[RESWP_PANPOS].Name,_T(" ") );
-		 	      _tcscpy( WayPointList[RESWP_PANPOS].Comment,_T(" "));
 
 		          Task[PanTaskEdit].Index =RESWP_PANPOS;
 				  RefreshMap();

@@ -179,17 +179,18 @@ void AddReservedWaypoints()
 
 	//
 	// VIRTUAL PANPOS
+	// This is used as a temporary position while moving a task point
 	//
 	WayPointList[RESWP_PANPOS].Number=RESWP_PANPOS+1;
 	WayPointList[RESWP_PANPOS].Latitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_PANPOS].Longitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_PANPOS].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_PANPOS].Flags=TURNPOINT;
-	_tcscpy(WayPointList[RESWP_PANPOS].Name, gettext(TEXT(RESWP_PANPOS_NAME)) );
+	_tcscpy(WayPointList[RESWP_PANPOS].Name, _T("")); 
 	if ( WayPointList[RESWP_PANPOS].Comment == NULL)
 		WayPointList[RESWP_PANPOS].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	if (WayPointList[RESWP_PANPOS].Comment!=NULL)
-		_tcscpy(WayPointList[RESWP_PANPOS].Comment,_T("UNUSED VIRTUAL TURNPOINT"));
+		_tcscpy(WayPointList[RESWP_PANPOS].Comment,_T("PANPOS VIRTUAL TURNPOINT"));
 	WayPointList[RESWP_PANPOS].Reachable=FALSE;
 	WayPointList[RESWP_PANPOS].AltArivalAGL=0.0;
 	WayPointList[RESWP_PANPOS].Visible=FALSE;

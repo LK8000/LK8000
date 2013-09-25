@@ -316,21 +316,21 @@
 
 // Reserved Waypoints positions. Adjust also NUMRESWP!
 #define RESWP_INVALIDNUMBER	1.23	// an invalid number for latitude, longitude, altitude etc.
-#define RESWP_PANPOS		0
-#define RESWP_PANPOS_NAME	"temporary"	// panning center position
-#define RESWP_TAKEOFF		1
+#define RESWP_TAKEOFF		0
 #define RESWP_TAKEOFF_NAME		"_@M1316_"			// LKTOKEN _@M1316_ "TAKEOFF"
-#define RESWP_LASTTHERMAL	2
+#define RESWP_LASTTHERMAL	1
 #define RESWP_LASTTHERMAL_NAME	"_@M1317_"			// LKTOKEN _@M1317_ "THERMAL"
-#define RESWP_TEAMMATE		3
+#define RESWP_TEAMMATE		2
 #define RESWP_TEAMMATE_NAME		"_@M1318_"			// LKTOKEN _@M1318_ "TEAMMATE"
-#define RESWP_FLARMTARGET	4
+#define RESWP_FLARMTARGET	3
 #define RESWP_FLARMTARGET_NAME	"_@M1319_"			// LKTOKEN _@M1319_ "TARGET"
-#define RESWP_OPTIMIZED		5	// optimized virtual waypoint as target turnpoint for overlays
-#define RESWP_FAIOPTIMIZED	6
+#define RESWP_OPTIMIZED		4	// optimized virtual waypoint as target turnpoint for overlays
+#define RESWP_FAIOPTIMIZED	5
 #define RESWP_FAIOPTIMIZED_NAME "_@M1813_"	// FAI OPTIMIZED
-#define RESWP_FREEFLY		7
+#define RESWP_FREEFLY		6
 #define RESWP_FREEFLY_NAME	"_@M1814_"	// FREEFLY
+#define RESWP_PANPOS		7
+#define RESWP_PANPOS_NAME	"temporary"	// panning center position
 #define RESWP_UNUSED		8
 #define RESWP_UNUSED_NAME	"_@M1815_"	// unused
 
