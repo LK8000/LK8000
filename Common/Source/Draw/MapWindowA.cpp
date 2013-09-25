@@ -145,7 +145,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   int airspace_type;
   bool found = false;
   bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
-  bool outlined_only=(GetAirSpaceFillType()==asp_fill_border_only);
+  ///bool outlined_only=(GetAirSpaceFillType()==asp_fill_border_only);
 
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
