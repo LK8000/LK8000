@@ -119,7 +119,7 @@ iLastTaskPoint--;
 	  break;
       case IM_TASK_PT:
 	    LKASSERT(Elements[Index].iIdx<=MAXTASKPOINTS);
-	    RealActiceWaypoint =-1;
+	    RealActiveWaypoint =-1;
 	    if(Elements[Index].iIdx == 0)
 	      dlgTaskWaypointShowModal(Elements[Index].iIdx,0, false, true);
 	    else

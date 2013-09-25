@@ -192,7 +192,7 @@ static void OnReplaceClicked(WindowControl * Sender){
   LockTaskData();
 
   ReplaceWaypoint(SelectedWaypoint);
-  RealActiceWaypoint = SelectedWaypoint;
+  RealActiveWaypoint = SelectedWaypoint;
 
   RefreshTask();
   UnlockTaskData();
@@ -571,7 +571,7 @@ void dlgWayPointDetailsShowModal(short mypage){
     if (ValidTaskPoint(ActiveWayPoint))
       tmpIdx = Task[ActiveWayPoint].Index;
     if(  ValidTaskPoint(PanTaskEdit))
-     tmpIdx = RealActiceWaypoint;
+     tmpIdx = RealActiveWaypoint;
     if(tmpIdx != -1)
     {
     	wb->SetOnClickNotify(OnReplaceClicked);

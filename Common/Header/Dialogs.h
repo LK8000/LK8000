@@ -29,7 +29,7 @@ void StopHourglassCursor();
 #define IM_THERMAL_PT 4
 #define IM_TOPO_PT    5
 #define IM_TASK_PT    6
-#define IM_AIRFLIELD  7
+#define IM_AIRFIELD   7
 #define IM_OUTLAND    8
 
 typedef	struct{

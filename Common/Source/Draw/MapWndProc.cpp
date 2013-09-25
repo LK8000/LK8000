@@ -518,11 +518,11 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		      {
 		        if(Task[PanTaskEdit].Index != RESWP_PANPOS)
 		        {
-		 	      RealActiceWaypoint = Task[PanTaskEdit].Index;
+		 	      RealActiveWaypoint = Task[PanTaskEdit].Index;
 			      LKASSERT(ValidWayPoint(Task[PanTaskEdit].Index));
-		 	      WayPointList[RESWP_PANPOS].Latitude = WayPointList[RealActiceWaypoint].Latitude;
-		 	      WayPointList[RESWP_PANPOS].Longitude = WayPointList[RealActiceWaypoint].Longitude;
-		 	      WayPointList[RESWP_PANPOS].Altitude = WayPointList[RealActiceWaypoint].Altitude;
+		 	      WayPointList[RESWP_PANPOS].Latitude = WayPointList[RealActiveWaypoint].Latitude;
+		 	      WayPointList[RESWP_PANPOS].Longitude = WayPointList[RealActiveWaypoint].Longitude;
+		 	      WayPointList[RESWP_PANPOS].Altitude = WayPointList[RealActiveWaypoint].Altitude;
 
 		          Task[PanTaskEdit].Index =RESWP_PANPOS;
 				  RefreshMap();

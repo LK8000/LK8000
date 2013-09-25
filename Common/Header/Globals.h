@@ -489,7 +489,7 @@ extern WPCALC   *WayPointCalc;
 #endif
 
 GEXTERN int PanTaskEdit;
-GEXTERN int RealActiceWaypoint;
+GEXTERN int RealActiveWaypoint;
 GEXTERN int ActiveWayPoint;
 GEXTERN bool TaskAborted;
 GEXTERN int SelectedWaypoint;

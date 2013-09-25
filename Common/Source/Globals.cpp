@@ -458,7 +458,7 @@ void Globals_Init(void) {
 
   ActiveWayPoint = -1;
   PanTaskEdit    = -1;
-  RealActiceWaypoint = -1;
+  RealActiveWaypoint = -1;
   // Assigned Area Task
   AATTaskLength = 120;
   AATEnabled = FALSE;

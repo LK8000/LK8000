@@ -199,10 +199,10 @@ void MapWindow::Event_Pan(int vswitch) {
   {
 	if(ValidTaskPoint(PanTaskEdit))
 	{
-	  Task[PanTaskEdit].Index = RealActiceWaypoint;
+	  Task[PanTaskEdit].Index = RealActiveWaypoint;
 	  RefreshTask();
 	  PanTaskEdit = -1;
-	  RealActiceWaypoint = -1;
+	  RealActiveWaypoint = -1;
 	  WayPointList[RESWP_PANPOS].Longitude = RESWP_INVALIDNUMBER;
 	  WayPointList[RESWP_PANPOS].Latitude  = RESWP_INVALIDNUMBER;
 	}
