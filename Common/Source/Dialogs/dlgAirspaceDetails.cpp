@@ -27,6 +27,7 @@ static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
 	  (void)Sender;
 	  RECT *prc;
 	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
+	  LKASSERT(wPicto!=NULL);
 	  prc = wPicto->GetBoundRect();
 	  SelectObject(hDC,LKPen_Petrol_C2);
 
@@ -124,6 +125,7 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
 
 
   WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
+  LKASSERT(wPicto!=NULL);
   HDC hDC =  wPicto->GetDeviceContext();
   OnPaintAirspacePicto(Sender, hDC);
 

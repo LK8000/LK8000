@@ -24,7 +24,7 @@ float fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
 double fDist_a, fDist_b, fDist_c, fAngle;
 int i;
 
-int iPolyPtr=0;
+unsigned int iPolyPtr=0;
 double lat_d,lon_d;
 double alpha, fDistTri, cos_alpha=0;
 POINT apSectorPolygon[MAX_FAI_SECTOR_PTS+1];

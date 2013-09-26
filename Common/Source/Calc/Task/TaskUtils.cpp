@@ -46,6 +46,7 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
     {
       if(AATEnabled)
       {
+	LKASSERT(ValidTaskPoint(TskIdx)); // could be -1
     	*SecType = Task[TskIdx].AATType;
     	*SecRadius  = Task[TskIdx].AATCircleRadius;
       }
