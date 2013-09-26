@@ -509,18 +509,21 @@ static void OnFilterNameButton(WindowControl *Sender) {
   UpdateList();
 #define SELECT_FOUND
 #ifdef SELECT_FOUND
+  if((SelectedWp>=0) && (SelectedWp < (int)NumberOfWayPoints))
+  {
 	for (i=0; i<UpLimit; i++)
 	{
-	  if(SelectedWp>=0)
+
   	    if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
   	    {
   	  	  CursorPos = i;
   	    }
 	}
 
-  wWayPointListEntry->SetFocused(true,NULL);
-  wWayPointList->SetItemIndexPos(CursorPos);
-  wWayPointList->Redraw();
+    wWayPointListEntry->SetFocused(true,NULL);
+    wWayPointList->SetItemIndexPos(CursorPos);
+    wWayPointList->Redraw();
+  }
 #endif
 
 }

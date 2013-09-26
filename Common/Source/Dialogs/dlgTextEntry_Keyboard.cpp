@@ -25,7 +25,7 @@ void ReduceKeysByWaypointList(void);
 void RemoveKeys(char *EnabledKeyString, unsigned char size);
 bool WaypointKeyRed = false;
 
- int IdenticalIndex=0;
+ int IdenticalIndex=-1;
  int IdenticalOffset = 0;
 
 char ToUpper(char in)
@@ -315,6 +315,7 @@ unsigned int NameLen=0;
  int Offset=0;
 unsigned int k =0;
 IdenticalOffset =999;
+IdenticalIndex = -1;
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
     RemoveKeys((char*)Charlist, sizeof(Charlist));
