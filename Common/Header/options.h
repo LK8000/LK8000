@@ -76,6 +76,8 @@
 #define GEAR_WARNING          // Gear warning switch
 #define MAX_NO_GEAR_WARN 10   // max. numbers of Gerwarnings before disabled
 //#define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
+#define BEARING_INDICATOR             // show QDM arrow in pictorials
+
 #ifdef PICTORIALS
   #define WAYPOINT_ICONS   // waypoint ICONS in waypoint select dialog
   #define WAYPOINT_QUICK_PICTO
@@ -84,6 +86,10 @@
   #define ASP_WARNING_PICTO
 #endif
 
+#define TEAM_CODE_MS
+#define OWN_POS_MS
+#define ORACLE_MS
+#define AUTOUPDATE_MS
 
 // #define LONGCLICK_FEEDBACK
 
