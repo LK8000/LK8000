@@ -25,6 +25,9 @@ void ReduceKeysByWaypointList(void);
 void RemoveKeys(char *EnabledKeyString, unsigned char size);
 bool WaypointKeyRed = false;
 
+ int IdenticalIndex=-1;
+ int IdenticalOffset = 0;
+
 char ToUpper(char in)
 {
 	if(in == 'Ö') return 'Ö';
@@ -258,7 +261,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
   wf=NULL;
 }
 
-void dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
+ int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 {
 	WaypointKeyRed = WPKeyRed;
 	if (ScreenLandscape)  {
@@ -266,6 +269,7 @@ void dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 	} else {
 		dlgTextEntryKeyboardShowModal(text, width, TEXT("frmTextEntry_Keyboard.xml"), TEXT("IDR_XML_TEXTENTRY_KEYBOARD"));
 	}
+	return IdenticalIndex;
 }
 
 void dlgNumEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
@@ -302,16 +306,16 @@ bool CharEqual = true;
 char Charlist[MAX_SEL_LIST_SIZE]={"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_ ÜÖÄ"};
 
 unsigned int i,j,EqCnt=NumberOfWayPoints;
-unsigned int IdenticalIndex=0;
-unsigned int IdenticalOffset = 0;
+
 
 WndProperty *wp;
 TCHAR Found[NAME_SIZE + 1];
 SelList[0] = '\0';
 unsigned int NameLen=0;
-unsigned int Offset=0;
+ int Offset=0;
 unsigned int k =0;
-
+IdenticalOffset =999;
+IdenticalIndex = -1;
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
     RemoveKeys((char*)Charlist, sizeof(Charlist));
@@ -320,7 +324,7 @@ unsigned int k =0;
   {
     EqCnt=0; /* reset number of found waypoints */
     NumChar =0;
-    for (i=0; i< NumberOfWayPoints; i++)
+    for (i=NUMRESWP; i< NumberOfWayPoints; i++)
     {
       NameLen =  _tcslen(WayPointList[i].Name);
       Offset = 0;
@@ -354,11 +358,11 @@ unsigned int k =0;
       if(CharEqual)
       {
 
-     //   if(IdenticalIndex -1)
-        if(EqCnt ==0)
+    	if(Offset < IdenticalOffset)
         {
           IdenticalIndex = i; /* remember first found equal name */
           IdenticalOffset = Offset; /* remember first found equal name */
+		   StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
         }
         EqCnt++;
         LKASSERT((cursor+Offset)<=NAME_SIZE);
@@ -386,13 +390,15 @@ unsigned int k =0;
 
     SelList[NumChar++] = '\0';
     RemoveKeys((char*)SelList, NumChar);
-
+#define   SHOW_FOUND_WAYPOINT
+#ifdef SHOW_FOUND_WAYPOINT
     wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
+
     if (wp)
     {
       if(EqCnt ==1)
       {
-    	LKASSERT(IdenticalIndex<=NumberOfWayPoints);
+    	LKASSERT(IdenticalIndex<= (int)NumberOfWayPoints);
 	    wp->SetText(WayPointList[IdenticalIndex].Name);
       }
       else
@@ -400,7 +406,7 @@ unsigned int k =0;
         if((cursor >0) &&  (EqCnt >0))
         {
           LKASSERT(cursor < NAME_SIZE);
-          LKASSERT(IdenticalIndex<=NumberOfWayPoints);
+          LKASSERT(IdenticalIndex<=(int)NumberOfWayPoints);
           _stprintf(Found,_T("%s"),WayPointList[IdenticalIndex].Name);
     	  for( i = 0; i < cursor; i++)
     	     Found[i+IdenticalOffset] = toupper(WayPointList[IdenticalIndex].Name[i+IdenticalOffset]);
@@ -408,6 +414,7 @@ unsigned int k =0;
         }
       }
     }
+#endif
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMatch"));

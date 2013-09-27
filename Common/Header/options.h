@@ -84,6 +84,8 @@
   #define ASP_WARNING_PICTO
 #endif
 
+#define SHOW_FOUND_WAYPOINT    // show best found waypoint on active keyboard
+#define SELECT_FOUND           // preselect best fit waypoint in waypoint list.
 
 // #define LONGCLICK_FEEDBACK
 

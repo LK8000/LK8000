@@ -478,11 +478,14 @@ static void FilterMode(bool direction) {
 
 
 static void OnFilterNameButton(WindowControl *Sender) {
-
+	 int SelectedWp=-1;
+	 int CursorPos=0;
   TCHAR newNameFilter[NAMEFILTERLEN+1];
 
   LK_tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
-  dlgTextEntryShowModal(newNameFilter, NAMEFILTERLEN, true);
+  SelectedWp =  dlgTextEntryShowModal(newNameFilter, NAMEFILTERLEN, true);
+
+
 
   int i= _tcslen(newNameFilter)-1;
   while (i>=0) {
@@ -504,6 +507,25 @@ static void OnFilterNameButton(WindowControl *Sender) {
   }
   FilterMode(true);
   UpdateList();
+#define SELECT_FOUND
+#ifdef SELECT_FOUND
+  if((SelectedWp>=0) && (SelectedWp < (int)NumberOfWayPoints))
+  {
+	for (i=0; i<UpLimit; i++)
+	{
+
+  	    if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
+  	    {
+  	  	  CursorPos = i;
+  	    }
+	}
+
+    wWayPointListEntry->SetFocused(true,NULL);
+    wWayPointList->SetItemIndexPos(CursorPos);
+    wWayPointList->Redraw();
+  }
+#endif
+
 }
 
 static void OnFilterDistance(DataField *Sender, DataField::DataAccessKind_t Mode){
