@@ -22,7 +22,6 @@
 
 void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL picto)
 {
-//#ifdef PICTORIALS
   int solid= false;
   HPEN    oldPen  ;
   HBRUSH  oldBrush ;
@@ -44,7 +43,16 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
   }
   int l,p,b;
 
-  fScaleFact /=1600;
+  switch(ScreenSize) {
+	case ss240x320:
+	case ss320x240:
+	case ss480x272:
+ 	  	fScaleFact /= 1000; // (*=1.6 after /= 1600 is equale to /1000)
+		break;
+	default:
+		fScaleFact /=1600;
+		break;
+  }
 
   if (DoInit[MDI_MAPWPVECTORS])
   {
@@ -52,12 +60,7 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
     switch(ScreenSize)
     {
 
-    case ss240x320:
-    case ss320x240:
-    		fScaleFact *= 1.6;
-    break;
 	case ss480x272:
-		fScaleFact *= 1.6;
 		if (ScreenSizeX==854) {
 			scale_drawradio=3.6;
 			scale_bigfont=1.5;
@@ -86,11 +89,9 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 		scale_fullinfos=1.5;
 		break;
     }
- //   DoInit[MDI_MAPWPVECTORS]=false;
+    DoInit[MDI_MAPWPVECTORS]=false;
   }
 
-//  if(ScreenSizeX < 640 )
-//    fScaleFact *= 1.6;
   if( wp->RunwayLen > 100) /* square if no runway defined */
   {
     l = (int) (rwl * (1.0+ ((double)wp->RunwayLen/800.0-1.0)/4.0));
@@ -224,7 +225,6 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
   SelectObject(hdc, oldPen);
   SelectObject(hdc, oldBrush);
 
-//#endif
 }
 
 
