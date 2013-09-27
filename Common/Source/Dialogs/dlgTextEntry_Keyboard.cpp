@@ -362,7 +362,7 @@ IdenticalIndex = -1;
         {
           IdenticalIndex = i; /* remember first found equal name */
           IdenticalOffset = Offset; /* remember first found equal name */
-		   StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
+		   // StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
         }
         EqCnt++;
         LKASSERT((cursor+Offset)<=NAME_SIZE);
