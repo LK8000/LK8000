@@ -154,7 +154,7 @@ int i,j;
   {
 	int iSizeIdx =  iSizeLookupTable[m];
 	#if BUGSTOP
-	LKASSERT(iSizeIdx < MAX_NO_SIDE_AS);
+	LKASSERT(iSizeIdx < MAX_NO_SIDE_AS && iSizeIdx>0);
 	#endif
 	if (iSizeIdx >= MAX_NO_SIDE_AS) iSizeIdx=MAX_NO_SIDE_AS-1;
 	

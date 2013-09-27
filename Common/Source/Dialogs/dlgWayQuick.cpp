@@ -28,6 +28,7 @@ static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
 #ifdef WAYPOINT_QUICK_PICTO
 RECT *prc;
 WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
+LKASSERT(wPicto!=NULL);
 prc = wPicto->GetBoundRect();
 
 //  StartupStore(_T("..Entered OnPaintWaypointPicto \n"));
@@ -36,6 +37,7 @@ prc = wPicto->GetBoundRect();
 
 
   MapWindow::DrawWaypointPictoBg(hDC,  *prc);
+  LKASSERT(ValidWayPoint(SelectedWaypoint));
   if (WayPointCalc[SelectedWaypoint].IsLandable )
   {
 	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 2000*ScreenScale, true);
@@ -49,6 +51,7 @@ prc = wPicto->GetBoundRect();
  // WndFrame  *wGoto = ((WndFrame *)wf->FindByName(TEXT("cmdGoto")));
 //  WndButton *wBut  = (WndButton *)wf->FindByName(TEXT("cmdGoto"));
   WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
+  LKASSERT(wPicto!=NULL);
   wPicto->SetVisible(false);
 
 

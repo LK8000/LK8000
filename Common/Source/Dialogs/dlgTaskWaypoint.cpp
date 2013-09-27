@@ -428,6 +428,7 @@ static void OnSelectClicked(WindowControl * Sender){
   res = dlgWayPointSelect();
   if (res != -1){
     SelectedWaypoint = res;    
+    LKASSERT(twItemIndex>=0);
     if (Task[twItemIndex].Index != res) {
       if (CheckDeclaration()) {
         LockTaskData();
@@ -486,6 +487,7 @@ static void OnMoveBeforeClicked(WindowControl * Sender){
 
 static void OnDetailsClicked(WindowControl * Sender){
 	(void)Sender;
+  LKASSERT(twItemIndex>=0);
   SelectedWaypoint = Task[twItemIndex].Index;
   PopupWaypointDetails();
 }
@@ -597,6 +599,7 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
 #endif
   {
 	wMove    = ((WndFrame *)wf->FindByName(TEXT("frmMoveTurnpoint")));
+        LKASSERT(wMove!=NULL);
     wMove->SetVisible(FALSE);
   }
   wStart     = ((WndFrame *)wf->FindByName(TEXT("frmStart")));
@@ -604,10 +607,10 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
   wAATTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmAATTurnpoint")));
   wFinish    = ((WndFrame *)wf->FindByName(TEXT("frmFinish")));
 
-  //ASSERT(wStart!=NULL);
-  //ASSERT(wTurnpoint!=NULL);
-  //ASSERT(wAATTurnpoint!=NULL);
-  //ASSERT(wFinish!=NULL);
+  LKASSERT(wStart!=NULL);
+  LKASSERT(wTurnpoint!=NULL);
+  LKASSERT(wAATTurnpoint!=NULL);
+  LKASSERT(wFinish!=NULL);
 
   WndButton* wb;
   if (addonly) {

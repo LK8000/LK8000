@@ -36,6 +36,7 @@ static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
 #ifdef PICTORIALS
 	  (void)Sender;
 	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
+	  LKASSERT(wPicto!=NULL);
 
 RECT *prc;
 prc = wPicto->GetBoundRect();
