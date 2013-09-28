@@ -35,6 +35,7 @@ bool  landablefound = false;
 if(dyn_range < 5000)
 	dyn_range = 5000;
 
+start_search:
 //if(dyn_range > 12000)
 //	dyn_range = 12000;
 
@@ -48,8 +49,6 @@ if (EnableSoundModes)
   if(Dist < dyn_range)
   {
   	dlgAddMultiSelectListItem(NULL,0, IM_OWN_POS, Dist);
-  	dlgAddMultiSelectListItem(NULL,0, IM_ORACLE, Dist);
-  	dlgAddMultiSelectListItem(NULL,0, IM_TEAM, Dist);
   }
 
 
@@ -153,6 +152,12 @@ UnlockTaskData();
 #endif
   if((dlgGetNoElements() ==0)/* && pan */)
   {
+	  if(dyn_range < 120000)
+	  {
+	    dyn_range *=2;
+	    goto start_search;
+	  }
+	  else
     DoStatusMessage(gettext(TEXT("_@M2248_")));  // _@M2248_  "No Near Object found!"
   }
   else
