@@ -35,11 +35,23 @@ bool  landablefound = false;
 if(dyn_range < 5000)
 	dyn_range = 5000;
 
+start_search:
 //if(dyn_range > 12000)
 //	dyn_range = 12000;
 
 if (EnableSoundModes)
 	PlayResource(TEXT("IDR_WAV_MM0"));
+
+
+  LockFlightData();
+    DistanceBearing(lat,lon, GPS_INFO.Latitude,GPS_INFO.Longitude, &Dist, NULL);
+  UnlockFlightData();
+  if(Dist < dyn_range)
+  {
+  	dlgAddMultiSelectListItem(NULL,0, IM_OWN_POS, Dist);
+  }
+
+
 
 //StartupStore(TEXT("Ulli: Find Objects near lon:%f lat:%f\n"), lon, lat);
   for(i=/*RESWP_FIRST_MARKER*/ NUMRESWP;i<NumberOfWayPoints;i++)
@@ -140,6 +152,12 @@ UnlockTaskData();
 #endif
   if((dlgGetNoElements() ==0)/* && pan */)
   {
+	  if(dyn_range < 120000)
+	  {
+	    dyn_range *=2;
+	    goto start_search;
+	  }
+	  else
     DoStatusMessage(gettext(TEXT("_@M2248_")));  // _@M2248_  "No Near Object found!"
   }
   else
@@ -229,6 +247,14 @@ void MapWindow::Event_Pan(int vswitch) {
       MapWindow::ForceVisibilityScan=true;
     }
 	
+  }
+  if(ValidTaskPoint(PanTaskEdit))
+  {
+    LockTaskData();
+    MapWindow::GliderCenter=false;
+    PanLongitude =  WayPointList[ Task[PanTaskEdit].Index].Longitude ;
+    PanLatitude  =  WayPointList[ Task[PanTaskEdit].Index].Latitude ;
+    UnlockTaskData();
   }
   RefreshMap();
 }

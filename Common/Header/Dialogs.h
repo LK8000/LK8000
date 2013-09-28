@@ -31,6 +31,10 @@ void StopHourglassCursor();
 #define IM_TASK_PT    6
 #define IM_AIRFIELD   7
 #define IM_OUTLAND    8
+#define IM_OWN_POS    9
+#define IM_ORACLE     10
+#define IM_TEAM       11
+
 
 typedef	struct{
   char type;

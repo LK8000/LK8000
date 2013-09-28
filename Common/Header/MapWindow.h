@@ -505,6 +505,7 @@ class MapWindow {
   static void DrawWaypointPictoBg(HDC hdc, const RECT rc);
   static void DrawWaypointPicto(HDC hdc, const RECT rc, WAYPOINT* wp);
   static void DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC*);
+  static void DrawAircraft(HDC hdc, const POINT Orig);
  private:
   static void DrawAHRS(HDC hdc, const RECT rc);
   static void DrawCompassRose(HDC hDC, const RECT rc, double direction);
@@ -520,7 +521,7 @@ class MapWindow {
   static bool PointInRect(const double &lon, const double &lat,
 			  const rectObj &bounds);
 
-  static void DrawAircraft(HDC hdc, const POINT Orig);
+
   static void DrawCrossHairs(HDC hdc, const POINT Orig, const RECT rc);
   static void DrawHeading(HDC hdc, const POINT Orig, const RECT rc); // VENTA10
   static void DrawBestCruiseTrack(HDC hdc, const POINT Orig);
