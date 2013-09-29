@@ -43,14 +43,24 @@ if (EnableSoundModes)
 	PlayResource(TEXT("IDR_WAV_MM0"));
 
 
+#ifdef BUTTONS_MS
   LockFlightData();
     DistanceBearing(lat,lon, GPS_INFO.Latitude,GPS_INFO.Longitude, &Dist, NULL);
   UnlockFlightData();
+
   if(Dist < dyn_range)
   {
+	#ifdef OWN_POS_MS
   	dlgAddMultiSelectListItem(NULL,0, IM_OWN_POS, Dist);
+	#endif
+	#ifdef ORACLE_MS
+  	dlgAddMultiSelectListItem(NULL,0, IM_ORACLE, Dist);
+	#endif
+	#ifdef TEAM_CODE_MS
+  	dlgAddMultiSelectListItem(NULL,0, IM_TEAM, Dist);
+	#endif
   }
-
+#endif	// BUTTONS_MS
 
 
 //StartupStore(TEXT("Ulli: Find Objects near lon:%f lat:%f\n"), lon, lat);

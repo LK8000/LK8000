@@ -89,12 +89,26 @@
 #define SHOW_FOUND_WAYPOINT    // show best found waypoint on active keyboard
 #define SELECT_FOUND           // preselect best fit waypoint in waypoint list.
 
-#define TEAM_CODE_MS
-#define OWN_POS_MS
-#define ORACLE_MS
+/*
+ * MULTISELECT OPTIONS 
+ */
+//
+// Team, Own and Oracle are introducing buttons for actions inside dialog.
+// They must be first enabled with BUTTONS_MS
+//
+#define BUTTONS_MS		// this is REQUIRED to enable one of the following:
+//#define TEAM_CODE_MS		// button to trigger team code
+#define OWN_POS_MS		// button to trigger basic settings
+//#define ORACLE_MS		// button to trigger oracle
+
+//Keep the dialog list updated every second
 #define AUTOUPDATE_MS
 
-// #define LONGCLICK_FEEDBACK
+// Feedback is giving acoustic sound when long click has triggered the multiselection.
+// It is introducing a TIMER in even processed inside MapWndProc.
+//#define LONGCLICK_FEEDBACK
+
+/* END OF MULTISELECT OPTIONS */
 
 
 //#define OUTLINE_2ND    // double outline for airspaces

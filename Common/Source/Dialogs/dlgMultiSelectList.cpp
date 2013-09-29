@@ -126,6 +126,8 @@ iLastTaskPoint--;
   {
     switch(Elements[Index].type)
     {
+
+#ifdef BUTTONS_MS
       case  IM_TEAM:
         dlgTeamCodeShowModal();
       break;
@@ -135,6 +137,8 @@ iLastTaskPoint--;
       case IM_OWN_POS:
     	dlgBasicSettingsShowModal();
       break;
+#endif // BUTTONS_MS
+
       case IM_AIRSPACE:
     	LKASSERT(Elements[Index].ptr);
 	    dlgAirspaceDetails((CAirspace*)Elements[Index].ptr);
@@ -183,6 +187,7 @@ int dlgGetNoElements(void)
 
 void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance){
 
+#ifdef BUTTONS_MS
 	if(type == IM_TEAM )
 	{
 #ifndef TEAM_CODE_MS
@@ -209,6 +214,8 @@ void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance){
 #endif
 	  Idx = FindNearestWayPoint(GPS_INFO.Longitude,  GPS_INFO.Latitude,  100000.0, true); // big range limit
 	}
+#endif	// BUTTONS_MS
+
 	if(type == IM_TASK_PT )
 	{
 #ifndef GOTO_AS_SIMPLETASK
@@ -336,6 +343,8 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 
 	  switch(Elements[i].type )
 	  {
+
+#ifdef BUTTONS_MS
 	    case IM_TEAM:
 	    	_stprintf(text1,_T("%s:"),gettext(_T("_@M700_"))); //_@M700_ "Team code"
 		    _stprintf(text2,_T("%s"), CALCULATED_INFO.OwnTeamCode );
@@ -401,6 +410,8 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 
 		   MapWindow::DrawAircraft(hDC, (POINT) { (rc.right-rc.left)/2,(rc.bottom-rc.top)/2} );
 	    break;
+#endif // BUTTONS_MS enabled
+
 	    /************************************************************************************************
 	     * IM_AIRSPACE
 	     ************************************************************************************************/
