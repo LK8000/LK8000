@@ -495,11 +495,14 @@ gesture_left:
 		}
 	}
 
-	if (!MapWindow::mode.AnyPan() && IsMultiMapNoMain() && ActiveMap) {
-		LKevent=LKEVENT_SHORTCLICK;
-		MapWindow::RefreshMap();
-		return 0;
-	}
+	///
+	/// REMOVE. ActiveMap always false
+	///
+	///if (!MapWindow::mode.AnyPan() && IsMultiMapNoMain() && ActiveMap) {
+	///	LKevent=LKEVENT_SHORTCLICK;
+	///	MapWindow::RefreshMap();
+	///	return 0;
+	///}
 
 	if (Y<yup) {
 		// we are processing up/down in mapspacemode i.e. browsing waypoints on the page

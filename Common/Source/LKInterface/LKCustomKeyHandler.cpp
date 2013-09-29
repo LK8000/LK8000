@@ -207,8 +207,7 @@ passthrough:
 		InputEvents::eventZoom(_T("auto show"));
 		return true;
 	case ckActiveMap:
-		InputEvents::eventActiveMap(_T("toggle"));
-		InputEvents::eventActiveMap(_T("show"));
+		// NO MORE USED BUT KEPT FOR OPTIMIZING COMPILER
 		return true;
 	case ckBooster:
 		DoStatusMessage(_T("FEEL THE THERMAL"));
@@ -535,7 +534,7 @@ CustomKeyLabel[10]=2036;	// invert text
 CustomKeyLabel[11]=2071;	// truewind calc
 CustomKeyLabel[12]=2079;	// overlays (on/off missing)
 CustomKeyLabel[13]=2210;	// auto zoom
-CustomKeyLabel[14]=2044;	// ActiveMap On/Off
+CustomKeyLabel[14]=2044;	// ActiveMap On/Off (UNUSED)
 CustomKeyLabel[15]=2070;	// Location marker
 CustomKeyLabel[16]=2024;	// Time gates
 CustomKeyLabel[17]=2211;	// Thermal booster

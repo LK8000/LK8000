@@ -178,7 +178,6 @@ GEXTERN short GlideBarMode;
 GEXTERN short ArrivalValue;
 GEXTERN short NewMapDeclutter;
 GEXTERN short AverEffTime;
-GEXTERN bool ActiveMap;
 GEXTERN bool DrawBottom;
 GEXTERN short BottomMode; // Stripe number
 GEXTERN short BottomSize; // Height of bottom stripe

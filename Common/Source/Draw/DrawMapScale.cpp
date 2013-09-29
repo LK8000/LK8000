@@ -111,9 +111,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 	}
     } else terrainwarning=0;
 
-    if (ActiveMap) {
-      _tcscat(Scale2, MsgToken(1661)); // ACT
-    }
     if (UseTotalEnergy) {
       _tcscat(Scale2, TEXT("[TE]")); // Total Energy indicator
     }
@@ -231,15 +228,6 @@ _skip2:
 	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
     }
 
-    if (mapscalecolor!=RGB_RED) {
-	if (ActiveMap) {
-		if (flipflop)
-			mapscalecolor=RGB_YELLOW;
-		else
-			mapscalecolor=RGB_RED;
-	}
-    }
-		
     LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3)+tsize.cy, 
 	0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true); 
 

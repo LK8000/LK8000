@@ -423,8 +423,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		break;
       }
 
-	// only when activemap (which means newmap is on) is off
-      if (ActiveMap) ignorenext=true;
       break;
 
     case WM_MOUSEMOVE:
@@ -949,12 +947,7 @@ _continue:
 		// Finally process normally a click on the moving map.
 		//
 			if(dwInterval < (DWORD) AIRSPACECLICK) { // original and untouched interval
-				if (0) {
-                                  if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.RealScale(), false)) {
-						ActiveMap=false;
-						break;
-					}
-				} else {
+				{
 					if (!mode.AnyPan() && (UseUngestures || !ISPARAGLIDER)) {
 						if (lparam_X<=X_Left) {
 							PreviousModeType();

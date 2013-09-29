@@ -109,8 +109,7 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
 		_tcscpy(ttext,_T("Event = DOWN"));
 		break;
 	case LKEVENT_LONGCLICK:
-		ActiveMap=!ActiveMap;
-		_stprintf(ttext,_T("Event = LONG CLICK, ActiveMap switch"));
+		_stprintf(ttext,_T("Event = LONG CLICK"));
 		break;
 	case LKEVENT_PAGEUP:
 		_tcscpy(ttext,_T("Event = PAGE UP"));

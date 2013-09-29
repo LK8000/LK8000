@@ -220,14 +220,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2055),MsgToken(894)); // ON
 			break;
 
-		case 16:
-			if (ActiveMap)
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(491)); // OFF
-			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(894)); // ON
-
-			if (MapSpaceMode!=MSM_MAP && MapSpaceMode!=MSM_MAPTRK && MapSpaceMode!=MSM_MAPWPT)
-				invalid=true;
+		case 16: // ActiveMap no more used
+			invalid=true;
 			break;
 
 		case 17:

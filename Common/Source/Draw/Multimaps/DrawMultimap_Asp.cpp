@@ -42,7 +42,6 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 	// 
 	case LKEVENT_NEWRUN:
 		// Upon entering a new multimap, Active is forced reset. It should not be necessary
-		ActiveMap=false;
 		if (MapSpaceMode==MSM_VISUALGLIDE) {
 			GetVisualGlidePoints(0); // reset upon entering!
 		}
@@ -65,11 +64,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 		}
 		// ACTIVE is available only when there is a topview shown!
 		if ( (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT) && (Current_Multimap_TopRect.bottom>0)) {
-			ActiveMap = !ActiveMap;
 			if (EnableSoundModes) {
-				if (ActiveMap)
-					LKSound(TEXT("LK_TONEUP.WAV"));
-				else
 					LKSound(TEXT("LK_TONEDOWN.WAV"));
 			}
 		}
