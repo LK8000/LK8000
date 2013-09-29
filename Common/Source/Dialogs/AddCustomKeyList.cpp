@@ -11,7 +11,7 @@
 
 void AddCustomKeyList( DataFieldEnum* dfe) {
 
-	// Careful, order must respect the enum list in lk8000.h CustomKeyMode_t
+	// Careful, order must respect the enum list in LKInterface.h CustomKeyMode_t
 
 	// TOKEN 239 = "Disabled" 
     dfe->addEnumText(MsgToken(239));
@@ -39,7 +39,12 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
 	// TOKEN 726 = "Toggle overlays" 
     dfe->addEnumText(MsgToken(726));
     dfe->addEnumText(TEXT("AutoZoom On/Off"));
-    dfe->addEnumText(TEXT("ActiveMap On/Off"));
+
+    // We no longer use ActiveMap but we must preserve position in the enum in order to keep backward compatibility
+    // with saved existing profiles..
+    // dfe->addEnumText(TEXT("ActiveMap On/Off"));
+    dfe->addEnumText(MsgToken(239));	// Disabled
+
 	// TOKEN 426 = "Mark Location" 
     dfe->addEnumText(MsgToken(426));
     dfe->addEnumText(TEXT("PG/HG Time Gates"));

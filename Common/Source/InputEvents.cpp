@@ -1068,7 +1068,9 @@ void InputEvents::eventAirSpace(const TCHAR *misc) {
   }
 }
 
+// THIS IS NOT USED ANYMORE
 void InputEvents::eventActiveMap(const TCHAR *misc) {
+#if 0
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
 	ActiveMap=!ActiveMap;
 	if (ActiveMap)
@@ -1088,6 +1090,7 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
 	else
 		DoStatusMessage(gettext(TEXT("_@M855_")),NULL,false); // ActiveMap OFF
   }
+#endif
 }
 
 // THIS EVENT IS NOT USED ANYMORE
