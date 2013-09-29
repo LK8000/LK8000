@@ -10,7 +10,7 @@
 #include "McReady.h"
 #include "devWesterboer.h"
 #include "InputEvents.h"
-
+#define VW_BIDIRECTIONAL
 static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc);
@@ -27,7 +27,7 @@ int iWEST_TxUpdateTime=0;
 int NMEAddCheckSumStrg( TCHAR szStrg[] )
 {
 int i,iCheckSum=0;
-TCHAR  szCheck[254];
+TCHAR szCheck[254];
 
  if(szStrg[0] != '$')
    return -1;
@@ -35,7 +35,7 @@ TCHAR  szCheck[254];
  iCheckSum = szStrg[1];
   for (i=2; i < (int)_tcslen(szStrg); i++)
   {
-	    iCheckSum ^= szStrg[i];
+iCheckSum ^= szStrg[i];
   }
   _stprintf(szCheck,TEXT("*%X\r\n"),iCheckSum);
   _tcscat(szStrg,szCheck);
@@ -44,14 +44,18 @@ TCHAR  szCheck[254];
 
 bool RequestInfos(PDeviceDescriptor_t d)
 {
+#ifdef VW_BIDIRECTIONAL
+TCHAR szTmp[254];
 static int i =0;
-if (i++ > 10)
-	i=0;
-TCHAR  szTmp[254];
+if (i++ > 5)
+{
+i=0;
+
   _stprintf(szTmp, TEXT("$PWES4,1,,,,,,,,"));
   NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-
+}
+#endif
   return true;
 }
 
@@ -66,24 +70,24 @@ static BOOL WesterboerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO 
 
 
 /* this is for auto MC calculation, because we do not get a notification on changed
- * MC while changed by auto calac                                                     */
+* MC while changed by auto calac */
 
 if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
 {
   if(iWEST_RxUpdateTime > 0)
   {
-	iWEST_RxUpdateTime--;
+iWEST_RxUpdateTime--;
   }
   else
   {
-	static  double oldMC =0;
+static double oldMC =0;
     if(fabs(oldMC - MACCREADY)> 0.01f)
     {
-      oldMC =  MACCREADY;
-	  devWesterboerPutMacCready( d, MACCREADY);
+      oldMC = MACCREADY;
+devWesterboerPutMacCready( d, MACCREADY);
     }
 
-    static  double fOldWingLoad= -1.0;
+    static double fOldWingLoad= -1.0;
     if( fabs(fOldWingLoad - GlidePolar::WingLoading)> 0.05f)
     {
       fOldWingLoad = GlidePolar::WingLoading;
@@ -96,18 +100,17 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
 
   if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
     {
-	   RequestInfos(d);
+RequestInfos(d);
       return PWES0(d, &String[7], pGPS);
-
-    } 
+    }
   else
     if(_tcsncmp(TEXT("$PWES1"), String, 6)==0)
     {
-	  if( iReceiveSuppress > 0)
-	  {
-		iReceiveSuppress--;
-		return false;
-	  }
+if( iReceiveSuppress > 0)
+{
+iReceiveSuppress--;
+return false;
+}
       return PWES1(d, &String[7], pGPS);
     }
   return FALSE;
@@ -115,7 +118,7 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
 }
 
 static BOOL WesterboerIsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
+(void)d;
   return(TRUE);
 }
 
@@ -161,25 +164,25 @@ BOOL WesterboerRegister(void){
 static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
-	Sent by Westerboer VW1150  combining data stream from Flarm and VW1020.
-	RMZ is being sent too, which is a problem.
+Sent by Westerboer VW1150 combining data stream from Flarm and VW1020.
+RMZ is being sent too, which is a problem.
 
-	$PWES0,22,10,8,18,17,6,1767,1804,1073,1073,116,106
-               A  B  C  D  E F  G    H    I    J   K    L
+$PWES0,22,10,8,18,17,6,1767,1804,1073,1073,116,106
+A B C D E F G H I J K L
 
 
-	A	Device              21 = VW1000, 21 = VW 1010, 22 = VW1020, 23 = VW1030
-	B	vario *10			= 2.2 m/s
-	C	average vario *10		= 1.0 m/s
-	D	netto vario *10			= 1.8 m/s
-	E	average netto vario *10		= 1.7 m/s
-	F	 stf 		           = -999.. 999 (neg faster.. slower)
-	G	baro altitude 			= 1767 m
-	H	baro altitude calibrated by user?
-	I	IAS kmh *10 			= 107.3 kmh
-	J	TAS kmh *10  ?
-	K	battery V *10			= 11.6 V
-	L	OAT * 10			= 10.6 C
+A Device 21 = VW1000, 21 = VW 1010, 22 = VW1020, 23 = VW1030
+B vario *10 = 2.2 m/s
+C average vario *10 = 1.0 m/s
+D netto vario *10 = 1.8 m/s
+E average netto vario *10 = 1.7 m/s
+F stf = -999.. 999 (neg faster.. slower)
+G baro altitude = 1767 m
+H baro altitude calibrated by user?
+I IAS kmh *10 = 107.3 kmh
+J TAS kmh *10 ?
+K battery V *10 = 11.6 V
+L OAT * 10 = 10.6 C
 
 */
 
@@ -197,10 +200,10 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   // netto vario
   NMEAParser::ExtractParameter(String,ctemp,3);
   if (ctemp[0] != '\0') {
-	pGPS->NettoVario = StrToDouble(ctemp,NULL)/10;
-	pGPS->NettoVarioAvailable = TRUE;
+pGPS->NettoVario = StrToDouble(ctemp,NULL)/10;
+pGPS->NettoVarioAvailable = TRUE;
   } else
-	pGPS->NettoVarioAvailable = FALSE;
+pGPS->NettoVarioAvailable = FALSE;
 
 
   // Baro altitudes. To be verified, because I have no docs from Westerboer of any kind.
@@ -211,20 +214,20 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
   // AutoQNH will take care of setting an average QNH if nobody does it for a while
   if (initqnh) {
-	// if wester has qnh set by user qne and qnh are of course different
-	if (altqne != altqnh) {
-		QNH=FindQNH(altqne,altqnh);
+// if wester has qnh set by user qne and qnh are of course different
+if (altqne != altqnh) {
+QNH=FindQNH(altqne,altqnh);
         CAirspaceManager::Instance().QnhChangeNotify(QNH);
-		StartupStore(_T(". Using WESTERBOER QNH %f%s"),QNH,NEWLINE);
-		initqnh=false;
-	} else {
-		// if locally QNH was set, either by user of by AutoQNH, stop processing QNH from Wester
-		if ( (QNH <= 1012) || (QNH>=1014)) initqnh=false;
-		// else continue entering initqnh until somebody changes qnh in either Wester or lk8000
-	}
+StartupStore(_T(". Using WESTERBOER QNH %f%s"),QNH,NEWLINE);
+initqnh=false;
+} else {
+// if locally QNH was set, either by user of by AutoQNH, stop processing QNH from Wester
+if ( (QNH <= 1012) || (QNH>=1014)) initqnh=false;
+// else continue entering initqnh until somebody changes qnh in either Wester or lk8000
+}
   }
 
-  UpdateBaroSource( pGPS, 0,d,  AltitudeToQNHAltitude(altqne));
+  UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude(altqne));
 
 
   // IAS and TAS
@@ -234,11 +237,11 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   vtas = StrToDouble(ctemp,NULL)/36;
 
   if (vias >1) {
-	pGPS->TrueAirspeed = vtas;
-	pGPS->IndicatedAirspeed = vias;
-	pGPS->AirspeedAvailable = TRUE;
+pGPS->TrueAirspeed = vtas;
+pGPS->IndicatedAirspeed = vias;
+pGPS->AirspeedAvailable = TRUE;
   } else
-	pGPS->AirspeedAvailable = FALSE;
+pGPS->AirspeedAvailable = FALSE;
 
   // external battery voltage
   NMEAParser::ExtractParameter(String,ctemp,10);
@@ -268,21 +271,21 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
-	Sent by Westerboer VW1150  combining data stream from Flarm and VW1020.
-	RMZ is being sent too, which is a problem.
+Sent by Westerboer VW1150 combining data stream from Flarm and VW1020.
+RMZ is being sent too, which is a problem.
 
-	$PWES1,22,25,1,18,1,6,385,5
-           A  B  C  D E F  G    H    I
+$PWES1,22,25,1,18,1,6,385,5
+A B C D E F G H I
 
 
-0	A	Device              21 = VW1000, 21 = VW 1010, 22 = VW1020, 23 = VW1030
-1	B	Mc *10			    25 = 2.5 m/s
-2	C	Vario /STF switch 	0= Vario , 1 = STF
-3	D	integration time	18	= 18 s
-4	E	damping             1,2,3   ???
-5	F	volume    		    0..8
-6	G	Wing load 			200..999, 385 = 38,5kg/m2
-7	H	Bugs                0..20%
+0 A Device 21 = VW1000, 21 = VW 1010, 22 = VW1020, 23 = VW1030
+1 B Mc *10 25 = 2.5 m/s
+2 C Vario /STF switch 0= Vario , 1 = STF
+3 D integration time 18 = 18 s
+4 E damping 1,2,3 ???
+5 F volume 0..8
+6 G Wing load 200..999, 385 = 38,5kg/m2
+7 H Bugs 0..20%
 
 
 */
@@ -306,14 +309,14 @@ static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   iTmp = (int)StrToDouble(ctemp,NULL);
 #ifdef STF_SWITCH
   EnableExternalTriggerCruise = true;
-static int  iOldVarioSwitch=0;
+static int iOldVarioSwitch=0;
   if(iTmp != iOldVarioSwitch)
   {
-	iOldVarioSwitch = iTmp;
+iOldVarioSwitch = iTmp;
     if(iTmp)
     {
-	  ExternalTriggerCruise = true;
-	  ExternalTriggerCircling = false;
+ExternalTriggerCruise = true;
+ExternalTriggerCircling = false;
     }
     else
     {
@@ -351,13 +354,13 @@ static int  iOldVarioSwitch=0;
 
 BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc){
 	  (void)d;
-
-
+#ifdef VW_BIDIRECTIONAL
+iReceiveSuppress = 1;
 TCHAR  szTmp[254];
   _stprintf(szTmp, TEXT("$PWES4,,%d,,,,,,,"),(int)(Mc*10.0f+0.49f));
   NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-
+#endif
   return(TRUE);
 
 }
@@ -365,32 +368,34 @@ TCHAR  szTmp[254];
 
 BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload){
 	  (void)d;
-
+#ifdef VW_BIDIRECTIONAL
   TCHAR  szTmp[254];
+  iReceiveSuppress = 1;
     _stprintf(szTmp, TEXT("$PWES4,,,,%d,,,,,"),(int)(fWingload *10.0f+0.5f));
     NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
-
+#endif
   return(TRUE);
 
 }
 
 
 BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast){
-	  (void)d;
+(void)d;
 
   return(TRUE);
 
 }
 
 BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bug){
-	  (void)d;
-
-iReceiveSuppress = 2;
-  TCHAR  szTmp[254];
+(void)d;
+#ifdef VW_BIDIRECTIONAL
+iReceiveSuppress = 1;
+  TCHAR szTmp[254];
     _stprintf(szTmp, TEXT("$PWES4,,,,,%d,,,,"),(int)((1.0-Bug)*100.0+0.5));
     NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
+#endif
   return(TRUE);
 
 }
