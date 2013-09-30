@@ -77,25 +77,26 @@ BOOL devGetBaroAltitude(double *Value){
 #endif
 
 BOOL ExpectString(PDeviceDescriptor_t d, const  TCHAR *token){
-bool Result = false;
+  bool Result = false;
   int i=0,j=0,ch=0;
-TCHAR TMP[180] = _T("");
+  TCHAR TMP[180] = _T("");
   if (!d->Com)
     return FALSE;
 //  while ((ch = d->Com->GetChar()) != EOF) ====> EOF (End Of File) is plain wrong and did not work!!!
   while ((ch = d->Com->GetChar()) > 31){
-	if(ch > 31) /* ignore control characters */
+        if(ch > 31) /* ignore control characters */
 	{
-	   TMP[j++] = (unsigned)ch;
-       if (token[i] == (unsigned)ch)
-         i++;
+           TMP[j++] = (unsigned)ch;
+           if (token[i] == (unsigned)ch)
+              i++;
 
-      if ((unsigned)i ==( _tcslen(token)-2))
-      {
-        Result =TRUE;
-      }
-	}
+           if ((unsigned)i ==( _tcslen(token)-2))
+           {
+              Result =TRUE;
+           }
+        }
   }
+#if TESTBENCH
   if(Result)
 	 StartupStore(_T("... expected string found :%s OK!\n"),TMP);
   else
@@ -105,6 +106,7 @@ TCHAR TMP[180] = _T("");
 	else
        StartupStore(_T("... sentence ignored:%s\n"),TMP);
   }
+#endif
   return(Result);
 
 }
