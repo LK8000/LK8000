@@ -250,6 +250,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
       break;
 
+#if TESTBENCH
+    case WM_DEVICECHANGE:
+	 TCHAR serr[50];
+	 static WPARAM oldwparam=0;
+	 StartupStore(_T("DEVICE CHANGE DETECTED, CODE=0x%x%s"),wParam,NEWLINE);
+
+	 if (wParam!=oldwparam) {
+		 oldwparam=wParam;
+	 	wsprintf(serr,_T("DEVICE CHANGE DETECTED\nCODE=0x%x"),wParam);
+        	 MessageBoxX(hWndMainWindow, serr, TEXT("LK8000"), MB_OK|MB_ICONQUESTION, true);
+		 oldwparam=0;
+	 }
+	 return TRUE; // acknowledge
+	 break;
+#endif
+
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);
     }
