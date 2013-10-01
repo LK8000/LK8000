@@ -259,6 +259,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
                                              w1lon, w1lat,
                                              Basic->Longitude,
                                              Basic->Latitude);
+      LKASSERT(i>=0);
       LegDistances[i] = leg_covered;
     }
     if ((StartLine==0) && (i==0)) {
@@ -303,6 +304,8 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
     // start
     
     for(int i=ActiveWayPoint-1;i>=0; i--) {
+
+      LKASSERT(i>=0);
 
       double time_this;
 

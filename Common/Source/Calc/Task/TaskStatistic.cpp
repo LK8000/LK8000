@@ -110,10 +110,13 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     }
    } else {
     if (AATEnabled) {
+      LKASSERT((ActiveWayPoint-1)>=0);
       // TODO accuracy: Get best range point to here...
       w0lat = Task[ActiveWayPoint-1].AATTargetLat;
       w0lon = Task[ActiveWayPoint-1].AATTargetLon;
     } else {
+      LKASSERT((ActiveWayPoint-1)>=0);
+      LKASSERT(ValidTaskPoint(ActiveWayPoint-1));
       w0lat = WayPointList[Task[ActiveWayPoint-1].Index].Latitude;
       w0lon = WayPointList[Task[ActiveWayPoint-1].Index].Longitude;
     }
