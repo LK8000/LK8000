@@ -22,13 +22,12 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
   // If flying an AAT and working on the RESWP_OPTIMIZED waypoint, then use
   // this "optimized" waypoint to store data for the AAT virtual waypoint.
 
-  if ((AltWaypoint == RESWP_OPTIMIZED) && 
-    (!ISPARAGLIDER || (AATEnabled && !DoOptimizeRoute()))) {
+  if ((AltWaypoint == RESWP_OPTIMIZED) && (!ISPARAGLIDER || (AATEnabled && !DoOptimizeRoute()))) {
     WayPointList[RESWP_OPTIMIZED].Latitude  = Task[ActiveWayPoint].AATTargetLat;
     WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveWayPoint].AATTargetLon;
-    WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[ActiveWayPoint].Altitude;
+    WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[Task[ActiveWayPoint].Index].Altitude;
 	WaypointAltitudeFromTerrain(&WayPointList[RESWP_OPTIMIZED]);
-	wsprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[ActiveWayPoint].Name);
+	wsprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[Task[ActiveWayPoint].Index].Name);
   }
   #endif
 
