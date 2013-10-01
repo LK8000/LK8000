@@ -258,14 +258,6 @@ void MapWindow::Event_Pan(int vswitch) {
     }
 	
   }
-  if(ValidTaskPoint(PanTaskEdit))
-  {
-    LockTaskData();
-    MapWindow::GliderCenter=false;
-    PanLongitude =  WayPointList[ Task[PanTaskEdit].Index].Longitude ;
-    PanLatitude  =  WayPointList[ Task[PanTaskEdit].Index].Latitude ;
-    UnlockTaskData();
-  }
   RefreshMap();
 }
 
