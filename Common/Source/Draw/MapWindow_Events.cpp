@@ -36,9 +36,6 @@ start_search:
 //if(dyn_range > 12000)
 //	dyn_range = 12000;
 
-if (EnableSoundModes)
-	PlayResource(TEXT("IDR_WAV_MM0"));
-
 
 #ifdef BUTTONS_MS
   LockFlightData();
