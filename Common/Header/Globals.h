@@ -99,6 +99,8 @@ GEXTERN int AirfieldsHomeWaypoint;
 GEXTERN int Alternate1;
 GEXTERN int Alternate2;
 GEXTERN int BestAlternate;
+GEXTERN bool DisableBestAlternate;
+
 GEXTERN int ActiveAlternate;
 
 GEXTERN unsigned int NumberOfWayPoints;
