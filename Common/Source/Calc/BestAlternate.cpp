@@ -50,6 +50,13 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 
   if (!WayPointList) return;
 
+  CScopeLock Lock(LockTaskData, UnlockTaskData);
+  
+  if( DisableBestAlternate ) {
+      BestAlternate = -1;
+      return;
+  }
+
   // We are not considering total energy here, forbidden for safety reasons
   double searchrange=(Calculated->NavAltitude-(SAFETYALTITUDEARRIVAL/10))* GlidePolar::bestld /1000;
   if (searchrange <= 0) 
@@ -57,7 +64,6 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   if (searchrange > ALTERNATE_MAXRANGE) 
 	searchrange=ALTERNATE_MAXRANGE;
 
-  LockTaskData();
   active_bestalternate_on_entry = BestAlternate;
 
   // Do preliminary fast search
@@ -535,8 +541,6 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 	if ( bestalternate >0 && ((safecalc-WayPointList[bestalternate].Altitude) >ALTERNATE_QUIETMARGIN))
 		AlertBestAlternate(1);
   }
-
-  UnlockTaskData();
 } // end of search for the holy grail
 
 
