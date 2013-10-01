@@ -606,19 +606,18 @@ switch(LKevent)
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 			  if(LKTraffic[aiSortArray[i]].ID == LKTraffic[j].ID)
 			  {
-#ifdef MULTISELECT
+#if 1
 			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
 #else
-			    dlgLKTrafficDetails( j);
+			    dlgLKTrafficDetails( j); // With no Multiselect
 #endif
 			    bFound = true;
 			  }
 		    }
 		  }
 	    }
-#ifdef MULTISELECT
+
 	dlgMultiSelectListShowModal();
-#endif
 
 	if(!bFound)
 	  if( PtInRect(XstartScreen,YstartScreen, rc))

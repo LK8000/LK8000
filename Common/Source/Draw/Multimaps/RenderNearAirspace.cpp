@@ -118,7 +118,7 @@ static  bool bHeightScale = false;
 			   {
 				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
 				 {	
-				   #ifdef MULTISELECT	
+				   #if 1 // MULTISELECT
 				     dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
 				     if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));				   
 				   #else 	
@@ -129,9 +129,8 @@ static  bool bHeightScale = false;
 				 }
 			   }
 			 }
-			 #ifdef MULTISELECT	
 			 dlgMultiSelectListShowModal();
-             #endif
+
 		     if ( LKevent != LKEVENT_NONE ) {
 			 if (PtInRect(XstartScreen, YstartScreen,rc ))
 			   bHeightScale = !bHeightScale;

@@ -69,9 +69,9 @@
  #if (WINDOWSPC>0)
  #define WINE
  #endif
+
 #define PICTORIALS            // enables pictorials in dialogs
-#define MULTISELECT           // multiselection dialog
-#define TASK_MULTISELECT      // select a Task Point via multi select
+
 #define MOVE_WP_PAN           // moving a task waypoint in PAN mode
 #define GEAR_WARNING          // Gear warning switch
 #define MAX_NO_GEAR_WARN 10   // max. numbers of Gerwarnings before disabled
@@ -96,9 +96,9 @@
 // Team, Own and Oracle are introducing buttons for actions inside dialog.
 // They must be first enabled with BUTTONS_MS
 //
-#define BUTTONS_MS		// this is REQUIRED to enable one of the following:
+//#define BUTTONS_MS		// this is REQUIRED to enable one of the following:
 //#define TEAM_CODE_MS		// button to trigger team code
-#define OWN_POS_MS		// button to trigger basic settings
+//#define OWN_POS_MS		// button to trigger basic settings
 //#define ORACLE_MS		// button to trigger oracle
 
 //Keep the dialog list updated every second

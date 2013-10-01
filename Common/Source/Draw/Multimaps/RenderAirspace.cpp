@@ -192,7 +192,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			   {
 				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
 				 {
-#ifdef MULTISELECT
+#if 1	// MULTISELECT
 				   dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
 #else				   
 				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
@@ -203,9 +203,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 				 }
 			   }
 		     }
-#ifdef MULTISELECT
 			 dlgMultiSelectListShowModal();
-#endif
+
 #if 0
 		     // This is not working correctly because InteriorAirspaceDetails is finding
 		     // only the first airspace in the list, only one.

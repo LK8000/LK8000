@@ -17,9 +17,6 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat,
                                              double range,
                                              bool pan) {
 
-#ifndef	MULTISELECT
-
-#else
 double Dist;
 unsigned int i;
 double dyn_range = range*3.5;
@@ -133,7 +130,7 @@ if (EnableSoundModes)
     }
 
 
-#ifdef TASK_MULTISELECT
+// TASK MULTISELECT
 int SecType= DAe;
 double SecRadius =0;
 double Bear=0;
@@ -159,7 +156,7 @@ LockTaskData();
   }
 UnlockTaskData();
 
-#endif
+
   if((dlgGetNoElements() ==0)/* && pan */)
   {
 	  if(dyn_range < 120000)
@@ -181,7 +178,6 @@ UnlockTaskData();
 
     return true; // nothing found..
   }
-#endif
   return false;
 }
 
