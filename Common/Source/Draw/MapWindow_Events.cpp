@@ -190,9 +190,6 @@ UnlockTaskData();
 bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
 
 
-#if TESTBENCH
-//StartupStore(_T("... Airspace Map Select!\n"));
-#endif
 if(mode.Is(Mode::MODE_PAN))
 	return false;
 return Event_NearestWaypointDetails( lon,  lat,  500*zoom.RealScale(),false);

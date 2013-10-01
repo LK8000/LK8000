@@ -2405,13 +2405,13 @@ void InputEvents::eventNearestWaypointDetails(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("aircraft")) == 0) {
     MapWindow::Event_NearestWaypointDetails(GPS_INFO.Longitude,
 					    GPS_INFO.Latitude,
-					    1.0e5, // big range..
+					    500*MapWindow::zoom.RealScale(),
 					    false); 
   }
   if (_tcscmp(misc, TEXT("pan")) == 0) {
     MapWindow::Event_NearestWaypointDetails(GPS_INFO.Longitude,
 					    GPS_INFO.Latitude,
-					    1.0e5, // big range..
+					    500*MapWindow::zoom.RealScale(),
 					    true); 
   }
 }
