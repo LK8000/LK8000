@@ -87,7 +87,14 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
   PortDCB.DCBlength = sizeof(DCB);     
 
   // Get the default port setting information.
-  GetCommState(hPort, &PortDCB);
+  if (GetCommState(hPort, &PortDCB)==0) {
+	dwError = GetLastError();
+	_stprintf(lkbuf,_T("... ComPort %u GetCommState failed, error=%u%s"),dwPortNumber+1,dwError,NEWLINE);
+	StartupStore(lkbuf);
+	// cannot set serial port timers. good anyway
+	ComPort_StatusMessage(MB_OK|MB_ICONINFORMATION, NULL, TEXT("%s %s"), gettext(TEXT("_@M760_")), lkPortName);
+	return FALSE;
+  }
 
   // Change the DCB structure settings.
   PortDCB.BaudRate = dwPortSpeed;       // Current baud 
