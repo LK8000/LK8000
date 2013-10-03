@@ -28,7 +28,7 @@
 // base-64 functions
 //
 char *byte_bas64(byte *b) {
- char        *base64tab = "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ`abcdefghijklmnopqrstuvwxyz";
+ const char *const base64tab = "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ`abcdefghijklmnopqrstuvwxyz";
  static char bas64ar[5];
   bas64ar[0] = base64tab[   b[0] >> 2                           ];
   bas64ar[1] = base64tab[ ((b[0] & 0x03) << 4) | (b[1] >> 4)    ];
@@ -98,44 +98,44 @@ void GRECORD::final (void) {
 
 /*
 DATA-GCS:
-  - Binärblock beim Logger anfordern und im Speicher ablegen
-* - Binärblock ins IGC-Format konvertieren
+  - Binï¿½rblock beim Logger anfordern und im Speicher ablegen
+* - Binï¿½rblock ins IGC-Format konvertieren
 * - IGC-Datei abspeichern
-  - Binärblock im radix-64-Format als G-Records an IGC-Datei anhängen
+  - Binï¿½rblock im radix-64-Format als G-Records an IGC-Datei anhï¿½ngen
 
 VALI-GCS:
-  - IGC-Datei laden und ohne die nicht vom Logger stammenden Datensätze
+  - IGC-Datei laden und ohne die nicht vom Logger stammenden Datensï¿½tze
     und Whitespaces in temp1.igc abspeichern
-  - G-Records aus IGC-Datei laden von radix-64 in Binärblock umwandeln
-* - Binärblock ins IGC-Format konvertieren
+  - G-Records aus IGC-Datei laden von radix-64 in Binï¿½rblock umwandeln
+* - Binï¿½rblock ins IGC-Format konvertieren
 *   und speichern in Datei temp2.igc
   - Sicherheitscheck:
     Dateien temp1 und temp2 vergleichen
-    Signatur überprüfen
+    Signatur ï¿½berprï¿½fen
 
-* kann für DATA- und VALI-Programm genutzt werden
+* kann fï¿½r DATA- und VALI-Programm genutzt werden
 
 
 
-Benötigte Funktionen: (D=für DATA, V=für VALI, P=schon programmiert)
+Benï¿½tigte Funktionen: (D=fï¿½r DATA, V=fï¿½r VALI, P=schon programmiert)
 DV P
-x  x - Verzeichnis der Flüge auslesen
-x  x - Binärblock(Flug) vom Logger lesen
-xx   - Binärblock ins IGC-Format konvertieren dabei IGC-Datei abspeichern
+x  x - Verzeichnis der Flï¿½ge auslesen
+x  x - Binï¿½rblock(Flug) vom Logger lesen
+xx   - Binï¿½rblock ins IGC-Format konvertieren dabei IGC-Datei abspeichern
 x    - Dateiname nach IGC-Vorschrift generieren
 xx   - Datei kopieren
- x   - Signatur in Binärblock überprüfen
-x  x - Binärblock in GR64 konvertieren und anhängen
- x   - GR64 laden, in Binärblock umwandeln und im Speicher ablegen
-     - IGC-Datei laden und alle nicht vom Logger stammenden Datensätze
+ x   - Signatur in Binï¿½rblock ï¿½berprï¿½fen
+x  x - Binï¿½rblock in GR64 konvertieren und anhï¿½ngen
+ x   - GR64 laden, in Binï¿½rblock umwandeln und im Speicher ablegen
+     - IGC-Datei laden und alle nicht vom Logger stammenden Datensï¿½tze
        ausfiltern, die Datei dann wieder als temp-Datei abspeichern
 
 */
 
 
 /*
-Den String *st mit dem Zeichen f auf Länge l erweitern, sofern er nicht
-schon die gewünschte Länge hat
+Den String *st mit dem Zeichen f auf Lï¿½nge l erweitern, sofern er nicht
+schon die gewï¿½nschte Lï¿½nge hat
 */
 static char *strexpnd(char *st, char f, unsigned int l) {
  unsigned int i,ll;
@@ -151,8 +151,8 @@ static char *strexpnd(char *st, char f, unsigned int l) {
 Filtern einer Zeile:
   - IGC-Zeichenfilter
   - Falls Datensatzkennzeichen nicht zu den vom Logger stammenden
-    Datensätzen (A,B,C,D,E,F,HF,I,J,K,LGCS-Datensatz) gehört,
-    Leerzeile zurückliefern, sonst den gefilterten String
+    Datensï¿½tzen (A,B,C,D,E,F,HF,I,J,K,LGCS-Datensatz) gehï¿½rt,
+    Leerzeile zurï¿½ckliefern, sonst den gefilterten String
 */
 char *filterline(char *st) {
   strtrim(st);
@@ -175,7 +175,7 @@ char *filterline(char *st) {
 
 
 /*
-Zeile aus *datei lesen und über IGC-linefilter laufen lassen
+Zeile aus *datei lesen und ï¿½ber IGC-linefilter laufen lassen
 */
 char *fgetline(char *st, size_t si, FILE *datei) {
  char *stat;
@@ -198,10 +198,10 @@ void print_g_record(FILE *datei, lpb puffer, int32 puflen) {
 
 
 /*
-Aus Datei *dateiname die G-Records extrahieren (nur als zusammenhängender
-Block), von radix-64 in Binär umwandeln und in *puffer speichern.
-Pufferlänge puflen ist angegeben, um ein Überschreiben nicht zum Puffer
-gehörender Bereiche zu verhindern
+Aus Datei *dateiname die G-Records extrahieren (nur als zusammenhï¿½ngender
+Block), von radix-64 in Binï¿½r umwandeln und in *puffer speichern.
+Pufferlï¿½nge puflen ist angegeben, um ein ï¿½berschreiben nicht zum Puffer
+gehï¿½render Bereiche zu verhindern
 */
 int get_g_record(TCHAR *dateiname, lpb puffer, unsigned long puflen) {
  unsigned long i = 0;
@@ -237,7 +237,7 @@ int get_g_record(TCHAR *dateiname, lpb puffer, unsigned long puflen) {
 
 
 // Eine IGC-Datei von allen Zeilen befreien, die vom Pilot oder OO legal zur
-// Datei hinzugefügt worden sein könnten
+// Datei hinzugefï¿½gt worden sein kï¿½nnten
 // Speichern der "cleanen" Datei
 void clean_igcfile(TCHAR *quelldateiname, TCHAR *zieldateiname) {
  FILE *quelle;

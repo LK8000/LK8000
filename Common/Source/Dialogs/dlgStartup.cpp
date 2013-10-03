@@ -16,7 +16,7 @@
 
 
 extern void Shutdown(void);
-extern void LoadSplash(HDC hDC,TCHAR *splashfile);
+extern void LoadSplash(HDC hDC,const TCHAR *splashfile);
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
@@ -24,7 +24,7 @@ static WndOwnerDrawFrame *wSplash=NULL;
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
 extern bool CheckSystemBitmaps(void);
-void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode);
+void RawWrite(HDC hDC, const TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode);
 
 // This global is set true on startup only here, and it is cleared by the LoadNewTask
 // LoadNewTask is called by event manager at start of normal run
@@ -62,7 +62,7 @@ static int OnTimerNotify(WindowControl *Sender)
 // Syntax  hdc _Text linenumber fontsize 
 // lines are: 0 - 9
 // fsize 0 small 1 normal 2 big
-void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode) { 
+void RawWrite(HDC hDC, const TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode) { 
    HFONT oldfont=(HFONT)SelectObject(hDC,MapWindowFont);
    switch(fsize) {
 	case 0:

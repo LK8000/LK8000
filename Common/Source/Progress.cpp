@@ -77,7 +77,7 @@ void CloseProgressDialog() {
 
 
 
-HWND CreateProgressDialog(TCHAR* text) {
+HWND CreateProgressDialog(const TCHAR* text) {
 
   static int yFontSize, xFontSize;
   HDC	hTempDC = NULL;

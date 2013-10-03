@@ -785,7 +785,7 @@ static void OnUseCustomFontData(DataField *Sender, DataField::DataAccessKind_t M
   }
 }
 
-static void GetFontDescription(TCHAR Description[], TCHAR * prpName, int iMaxLen)
+static void GetFontDescription(TCHAR Description[], const TCHAR * prpName, int iMaxLen)
 {
   WndProperty * wp;
   wp = (WndProperty*)wf->FindByName(prpName);

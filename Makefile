@@ -211,7 +211,7 @@ CPPFLAGS	+= -DNDEBUG
 #CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type
 #CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
 
-CPPFLAGS	+= -Wall -Wno-write-strings -Wno-char-subscripts
+CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 

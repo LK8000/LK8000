@@ -34,7 +34,7 @@ RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed)
 
 
 
-int GetTextWidth(HDC hDC, TCHAR *text) {
+int GetTextWidth(HDC hDC, const TCHAR *text) {
   SIZE tsize;
   GetTextExtentPoint(hDC, text, _tcslen(text), &tsize);
   return tsize.cx;

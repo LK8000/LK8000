@@ -137,7 +137,7 @@ static int devIsFalseReturn(PDeviceDescriptor_t d){
 }
 
 
-BOOL devInit(LPTSTR CommandLine){
+BOOL devInit(LPCTSTR CommandLine){
   int i;
   TCHAR DeviceName[DEVNAMESIZE+1];
   PDeviceDescriptor_t pDevNmeaOut = NULL;

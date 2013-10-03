@@ -471,11 +471,11 @@ DataField::DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat,
   mUnits[0]= 0;
 }
 
-void DataField::SetDisplayFormat(TCHAR *Value){
+void DataField::SetDisplayFormat(const TCHAR *Value){
   LKASSERT(_tcslen(Value)<=FORMATSIZE);
   _tcscpy(mDisplayFormat, Value);
 }
-void DataField::SetEditFormat(TCHAR *Value){
+void DataField::SetEditFormat(const TCHAR *Value){
   LKASSERT(_tcslen(Value)<=FORMATSIZE);
   _tcscpy(mEditFormat, Value);
 }
@@ -1159,8 +1159,8 @@ TCHAR *DataFieldString::GetAsDisplayString(void){
 //----------------------------------------------------------
 ComboListEntry_t * ComboList::CreateItem(int ItemIndex, 
                                         int DataFieldIndex,
-                                        TCHAR *StringValue,
-                                        TCHAR *StringValueFormatted)
+                                        const TCHAR *StringValue,
+                                        const TCHAR *StringValueFormatted)
 {
   int iLen = -1;
   ComboListEntry_t * theItem;

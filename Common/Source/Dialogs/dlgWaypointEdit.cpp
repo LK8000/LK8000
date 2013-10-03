@@ -173,7 +173,7 @@ static const TCHAR* cYZone[] = {
 		TEXT("U"),TEXT("V"),TEXT("W"),TEXT("X")
 };
 
-const char enumToYZone(int i){
+char enumToYZone(int i){
 	static const char cArray[] = "CDEFGHJKLMNPQRSTUVWX";
 	return cArray[i];
 }

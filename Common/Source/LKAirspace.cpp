@@ -112,12 +112,12 @@ const TCHAR* CAirspace::TypeName(void) const
 
 };
 
-const COLORREF CAirspace::TypeColor(void) const
+COLORREF CAirspace::TypeColor(void) const
 {
 	return MapWindow::GetAirspaceColourByClass(_type);
 }
 
-const HBRUSH CAirspace::TypeBrush(void) const
+HBRUSH CAirspace::TypeBrush(void) const
 {
 	return MapWindow::GetAirspaceBrushByClass(_type);
 }
@@ -2934,7 +2934,7 @@ CAirspaceList::const_iterator it;
 }
 
 // Centralized function to get airspace type texts
-TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
+const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
 {
     switch (type) {
       case RESTRICT:
@@ -2981,7 +2981,7 @@ TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
 }
 
 // Centralized function to get airspace type texts in short form
-TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const
+const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const
 {
   switch (type) {
     case RESTRICT:

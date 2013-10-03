@@ -124,8 +124,8 @@ double DoSunEphemeris(double lon, double lat);
 
 void *bsearch(void *key, void *base0, size_t nmemb, size_t size, int (*compar)(const void *elem1, const void *elem2));
 
-TCHAR *strtok_r(TCHAR *s, TCHAR *delim, TCHAR **lasts);
-TCHAR *strsep_r(TCHAR *s, TCHAR *delim, TCHAR **lasts);
+TCHAR *strtok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
+TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 
 void SaveRegistryToFile(const TCHAR* szFile); 
 void LoadRegistryFromFile(const TCHAR* szFile); 
@@ -137,8 +137,8 @@ void LoadRegistryFromFile(const TCHAR* szFile);
 void StatusFileInit(void);
 
 typedef struct {
-	TCHAR *key;		/* English key */
-	TCHAR *sound;		/* What sound entry to play */
+	const TCHAR *key;		/* English key */
+	const TCHAR *sound;		/* What sound entry to play */
 	TCHAR *nmea_gps;		/* NMEA Sentence - to GPS serial */
 	TCHAR *nmea_vario;		/* NMEA Sentence - to Vario serial */
 	bool doStatus;
@@ -171,7 +171,7 @@ void ConvertTToC(CHAR* pszDest, const TCHAR* pszSrc);
 void ConvertCToT(TCHAR* pszDest, const CHAR* pszSrc);
 
 void propGetFontSettings(TCHAR *Name, LOGFONT* lplf);
-void propGetFontSettingsFromString(TCHAR *Buffer, LOGFONT* lplf);
+void propGetFontSettingsFromString(const TCHAR *Buffer, LOGFONT* lplf);
 #if 0
 int propGetScaleList(double *List, size_t Size);
 #endif
@@ -194,7 +194,7 @@ void WeightOffset(double wload);
 
 TCHAR *LKgethelptext(const TCHAR *TextIn);
 bool LKloadtext(void);
-TCHAR *LKGetText(const TCHAR *TextIn);
+const TCHAR *LKGetText(const TCHAR *TextIn);
 TCHAR *MsgToken(const unsigned int tindex);
 
 void InitCustomHardware(void);
@@ -256,7 +256,7 @@ bool CheckAlarms(unsigned short al);
 void MasterTimeReset(void);
 bool DoOptimizeRoute(void);
 TCHAR * WhatTimeIsIt(void);
-void OutOfMemory(char *where, int line);
+void OutOfMemory(const char *where, int line);
 
 void MemCheckPoint();
 void MemLeakCheck();
@@ -264,7 +264,7 @@ void MyCompactHeaps();
 unsigned long FindFreeSpace(const TCHAR *path);
 bool MatchesExtension(const TCHAR *filename, const TCHAR* extension);
 BOOL PlayResource (const TCHAR* lpName);
-void CreateDirectoryIfAbsent(TCHAR *filename);
+void CreateDirectoryIfAbsent(const TCHAR *filename);
 
 #ifdef __cplusplus
 extern "C"{
@@ -325,7 +325,7 @@ inline unsigned int CombinedDivAndMod(unsigned int &lx) {
 
 bool RotateScreen(short angle);
 
-int GetTextWidth(HDC hDC, TCHAR *text);
+int GetTextWidth(HDC hDC, const TCHAR *text);
 void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width);
 void UpdateConfBB(void);
 void UpdateConfIP(void);

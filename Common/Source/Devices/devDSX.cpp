@@ -18,7 +18,7 @@ static bool DSXSwitchDeclareMode(PDeviceDescriptor_t d, bool enable, unsigned er
 static bool DSXHSend(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBufferLen, TCHAR errBuffer[]);
 static bool DSXT1Send(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBufferLen, TCHAR errBuffer[]);
 static inline unsigned long DSXCoord(float gpsCoord);
-static bool DSXWaypoint(const WAYPOINT &wp, TCHAR aatBuffer[], TCHAR limiter, TCHAR buffer[]);
+static bool DSXWaypoint(const WAYPOINT &wp, const TCHAR aatBuffer[], const TCHAR limiter, TCHAR buffer[]);
 static bool DSXT2Send(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBufferLen, TCHAR errBuffer[]);
 static bool DSXT3Send(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned tpIdx, unsigned errBufferLen, TCHAR errBuffer[]);
 static BOOL DSXDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
@@ -225,7 +225,7 @@ unsigned long DSXCoord(float gpsCoord)
  * 
  * @return @c true if limiter was set
  */
-bool DSXWaypoint(const WAYPOINT &wp, TCHAR aatBuffer[], TCHAR limiter, TCHAR buffer[])
+bool DSXWaypoint(const WAYPOINT &wp, const TCHAR aatBuffer[], const TCHAR limiter, TCHAR buffer[])
 {
   // prepare description
   const unsigned DESC_LEN = 30;
@@ -364,7 +364,7 @@ End of the sentence:      ASCII CR (0x0d)
 bool DSXT3Send(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned tpIdx, unsigned errBufferLen, TCHAR errBuffer[])
 {
   // prepare dummy AAT data - DSX does not support AAT for now
-  TCHAR *aatData = _T("000000000000000000");
+  const TCHAR *aatData = _T("000000000000000000");
   
   // translate turnpoint
   TCHAR tp[128];

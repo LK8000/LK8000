@@ -25,7 +25,6 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   // init scaled coords for traffic icon
 static int	iCircleSize = 7;
 static int	iRectangleSize = 4;
-  static short scaler[5];
   static short tscaler=0;
   if (DoInit[MDI_DRAWFLARMTRAFFIC]) {
 
@@ -37,11 +36,6 @@ static int	iRectangleSize = 4;
 		case ss640x480:
 			iCircleSize = 9;
 			iRectangleSize = 5;
-			scaler[0]=-1*(NIBLSCALE(4)-2);
-			scaler[1]=NIBLSCALE(5)-2;
-			scaler[2]=-1*(NIBLSCALE(6)-2);
-			scaler[3]=NIBLSCALE(4)-2;
-			scaler[4]=NIBLSCALE(2)-2;
 			tscaler=NIBLSCALE(7)-2;
 			break;
 		case ss240x320:
@@ -53,21 +47,11 @@ static int	iRectangleSize = 4;
 		case ss400x240:
 			iCircleSize = 7;
 			iRectangleSize = 4;
-			scaler[0]=-1*(NIBLSCALE(8)-2);
-			scaler[1]=NIBLSCALE(10)-2;
-			scaler[2]=-1*(NIBLSCALE(12)-2);
-			scaler[3]=NIBLSCALE(8)-2;
-			scaler[4]=NIBLSCALE(4)-2;
 			tscaler=NIBLSCALE(13)-2;
 			break;
 		default:
 			iCircleSize = 7;
 			iRectangleSize = 4;
-			scaler[0]=-1*NIBLSCALE(4);
-			scaler[1]=NIBLSCALE(5);
-			scaler[2]=-1*NIBLSCALE(6);
-			scaler[3]=NIBLSCALE(4);
-			scaler[4]=NIBLSCALE(2);
 			tscaler=NIBLSCALE(7);
 			break;
 	}

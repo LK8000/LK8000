@@ -218,7 +218,7 @@ static short LKMessagesIndex[MAX_MESSAGES+1];
 //  Tokenized Language support for LK8000
 //  gettext is now a definition for LKGetText
 //  101208 
-TCHAR *LKGetText(const TCHAR *TextIn) {
+const TCHAR *LKGetText(const TCHAR *TextIn) {
 
   // quick preliminar checks
   if (TextIn == NULL) return (TCHAR *)TextIn;

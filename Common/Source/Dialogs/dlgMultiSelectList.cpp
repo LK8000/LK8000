@@ -330,13 +330,10 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 	  int HorDist,Bearing, VertDist;
 	  double Distance;
 	  unsigned int idx=0;
-      SIZE tsize;
-      HFONT oldFont;
 	  TCHAR text1[180] ={TEXT("empty")};
 	  TCHAR text2[180] ={TEXT("empty")};
 	  TCHAR Comment[80]={TEXT("")};
 	  TCHAR Comment1[80]={TEXT("")};
-	  int nearest_waypoint = 0;
 	  SetBkColor  (hDC, RGB(0xFF, 0xFF, 0xFF));
 	  LKASSERT(i < MAX_LIST_ITEMS);
 

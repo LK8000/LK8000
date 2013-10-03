@@ -85,7 +85,7 @@ extern DeviceDescriptor_t *pDevSecondaryBaroSource;
 BOOL devRegister(const TCHAR *Name,	int	Flags, BOOL (*Installer)(PDeviceDescriptor_t d));
 BOOL devRegisterGetName(int Index, TCHAR *Name);
 
-BOOL devInit(LPTSTR CommandLine);
+BOOL devInit(LPCTSTR CommandLine);
 BOOL devCloseAll(void);
 PDeviceDescriptor_t devGetDeviceOnPort(int Port);
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);

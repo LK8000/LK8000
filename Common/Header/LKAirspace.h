@@ -158,8 +158,8 @@ public:
 
 
   const TCHAR* TypeName(void) const;
-  const COLORREF TypeColor(void) const;
-  const HBRUSH TypeBrush(void) const;
+  COLORREF TypeColor(void) const;
+  HBRUSH TypeBrush(void) const;
 
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }
@@ -412,8 +412,8 @@ public:
 
   //HELPER FUNCTIONS
   bool CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const;
-  TCHAR* GetAirspaceTypeText(int type) const;
-  TCHAR* GetAirspaceTypeShortText(int type) const;
+  const TCHAR* GetAirspaceTypeText(int type) const;
+  const TCHAR* GetAirspaceTypeShortText(int type) const;
   void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
   void GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
 

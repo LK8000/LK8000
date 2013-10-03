@@ -54,7 +54,7 @@ bool CheckAlarms(unsigned short al) {
   // However, maybe we can have LK set automatically alarms in the future.
   // Duplicates filter is working giving priority to the lowest element in the list
   // We don't want more than 1 alarm for the same trigger value
-  for (i=0; i<=al; i++) {
+  for (i=0; i<=al && i<MAXLKALARMS ; i++) {
 	if (i==al) continue; // do not check against ourselves
 	// if a previous alarm has the same value, we are a duplicate
 	if (LKalarms[al].triggervalue == LKalarms[i].triggervalue) {

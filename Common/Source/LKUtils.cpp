@@ -64,7 +64,13 @@ bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
 	si.wShowWindow= SW_SHOWNORMAL;
 	si.dwFlags = STARTF_USESHOWWINDOW;
 	// if (!::CreateProcess(_T("C:\\WINDOWS\\notepad.exe"),_T(""), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) 
-	if (!::CreateProcess(path,_T(""), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
+
+    /*cf. http://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
+     * The Unicode version of this function, CreateProcessW, can modify the contents of this string. Therefore, this 
+     * parameter cannot be a pointer to read-only memory (such as a const variable or a literal string). If this parameter 
+     * is a constant string, the function may cause an access violation.
+     * */
+	if (!::CreateProcess(path,NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
 		if (runmode==0) StartupStore(_T("... LKRun exec FAILED%s"),NEWLINE);
 		return false;
 	}
@@ -382,7 +388,7 @@ void TaskFinishMessage(void) {
 }
 
 extern void MSG_NotEnoughMemory(void);
-void OutOfMemory(char *where, int line) {
+void OutOfMemory(const char *where, int line) {
 
   StartupStore(_T(">>> OUT OF MEMORY in <%S> line %d%s"),where,line,NEWLINE);
   MSG_NotEnoughMemory();
