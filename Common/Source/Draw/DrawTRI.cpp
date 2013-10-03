@@ -334,8 +334,8 @@ void MapWindow::DrawAHRS(HDC hDC, const RECT rc)
   static int radius = NIBLSCALE(75);
   static int planesize = radius-NIBLSCALE(10);
   // planebody
-  static int planeradius = NIBLSCALE(6);
-  static int tailsize = planesize/4+NIBLSCALE(2);
+  //static int planeradius = NIBLSCALE(6);
+  //static int tailsize = planesize/4+NIBLSCALE(2);
   static int innerradius = radius - NIBLSCALE(8);
 #define GC_NO_CIRCLE_PTS 90
   static POINT d00[2][2],d15[2][4],d30[2][4], d45[2][4], d60[2][4], circle[GC_NO_CIRCLE_PTS];
@@ -348,8 +348,8 @@ void MapWindow::DrawAHRS(HDC hDC, const RECT rc)
 
   top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
   planesize = radius-NIBLSCALE(10);
-  planeradius = NIBLSCALE(6);
-  tailsize = planesize/4+NIBLSCALE(2);
+  //planeradius = NIBLSCALE(6);
+  //tailsize = planesize/4+NIBLSCALE(2);
   innerradius = radius - NIBLSCALE(8);
 
   double alpha =0;

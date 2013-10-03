@@ -41,6 +41,7 @@ double  PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double 
 #define ADDITIONAL_INFO_THRESHOLD 0.7
 
 //#define USE_TCOLORS 1
+//#define SHOWLD	// optional 
 
 void MapWindow::RenderAirspace(HDC hdc, const RECT rc_input) {
 
@@ -74,7 +75,9 @@ double calc_altitudeagl;
 double fMC0 = 0.0f;
 int overindex=-1;
 bool show_mc0= true;
+#ifdef SHOWLD
 double fLD;
+#endif
 SIZE tsize;
 TCHAR text[TBSIZE+1];
 TCHAR text2[TBSIZE+1];
@@ -339,7 +342,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   wpt_altarriv_mc0 = 0.0;
   wpt_altitude     = 0.0;
   fMC0 = 0.0;
+#ifdef SHOWLD 
   fLD  = 0.0;
+#endif
 
   if (getsideviewpage==IM_NEXT_WP )
   {
@@ -377,11 +382,12 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
 
-
+#ifdef SHOWLD
       if ( (DerivedDrawInfo.NavAltitude-wpt_altarriv+wpt_altitude)!=0)
       	fLD = (int) wpt_dist / (DerivedDrawInfo.NavAltitude-wpt_altarriv+wpt_altitude);
       else
 	fLD=999;
+#endif
 
       if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv -= (SAFETYALTITUDEARRIVAL/10);
 
@@ -887,7 +893,7 @@ _after_additionals:
 
 
 
-    #if 0
+    #ifdef SHOWLD
     // Working, but useless
     if(altarriv  > 0)
     {

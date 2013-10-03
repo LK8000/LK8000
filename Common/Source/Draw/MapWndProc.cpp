@@ -145,7 +145,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 {
 
 
+#ifdef LONGCLICK_FEEDBACK
     static LPARAM  lOld = 0;
+#endif
   //
   // Values to be remembered
   //
@@ -167,7 +169,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
   // Candidates to be simplified, or to be made globals
   //
   static short Y_BottomBar;		  // this is different from BottomBarY
+#ifdef CENTER_CUSTOMKEY
   static POINT P_HalfScreen;
+#endif
   static POINT P_Doubleclick_bottomright; // squared area for screen lock doubleclick, normally on right bottombar
   static POINT P_MenuIcon_DrawBottom; 	  // Menu icon area (topleft coord)
   static POINT P_MenuIcon_noDrawBottom;   // same, without bottombar drawn, forgot why it is different
@@ -189,8 +193,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
   if (DoInit[MDI_MAPWNDPROC]) {
 
 	Y_BottomBar=ScreenSizeY-BottomSize;
+#ifdef CENTER_CUSTOMKEY
 	P_HalfScreen.y=ScreenSizeY/2;
 	P_HalfScreen.x=ScreenSizeX/2;
+#endif
 	P_Doubleclick_bottomright.x=ScreenSizeX-BottomSize-NIBLSCALE(15);
 	P_Doubleclick_bottomright.y=ScreenSizeY-BottomSize-NIBLSCALE(15);
 
@@ -538,7 +544,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 _buttondown:
 
 //StartupStore(_T("... Ulli: WM_LBUTTONDOWN: %i %i\n"),wParam,  lParam);
+#ifdef LONGCLICK_FEEDBACK
       lOld = lParam;
+#endif
       if (LockModeStatus) break;
       pressed = true;
       dwDownTime = GetTickCount();
