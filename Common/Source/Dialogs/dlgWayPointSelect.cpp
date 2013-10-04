@@ -525,6 +525,7 @@ static void OnFilterNameButton(WindowControl *Sender) {
     wWayPointList->Redraw();
   }
 #endif
+  wWayPointList->Redraw();
 
 }
 
@@ -822,7 +823,7 @@ static int OnTimerNotify(WindowControl * Sender) {
       wpDirection->RefreshDisplay();
     }
   }
-
+  wWayPointList->Redraw();
   return 0;
 }
 
