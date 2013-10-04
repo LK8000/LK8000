@@ -1014,7 +1014,7 @@ _@M964_ "SCREEN IS UNLOCKED"
 # Menu buttons, MAX 8 character per line! Keep \n !
 _@M965_ "UNLOCK\nSCREEN"
 _@M966_ "LOCK\nSCREEN"
-_@M967_ "Airspace changes"
+_@M967_ "Airspace changes "
 _@M968_ "for this time only"
 _@M969_ "persistent"
 #
