@@ -12,6 +12,7 @@
 #include "RGB.h"
 #include "Sideview.h"
 #include "Multimap.h"
+#include "LKObjects.h"
 
 using std::min;
 using std::max;
@@ -46,6 +47,7 @@ int i,j;
      RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
    else
    {
+	SelectObject(hdc, LKPen_Black_N1);
 	HBRUSH OldBrush =  (HBRUSH) SelectObject(hdc, MapWindow::hInvBackgroundBrush[BgMapColor]);
 	Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
 	SelectObject(hdc, OldBrush);
