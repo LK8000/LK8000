@@ -15,6 +15,7 @@
 #include "FlarmIdFile.h"
 #include "InputEvents.h"
 #include "Units.h"
+#include "Multimap.h"
 #define LINE_HEIGT 50
 
 extern  int FindNearestWayPoint(double X, double Y, double MaxRange,               bool exhaustive);
@@ -158,15 +159,15 @@ iLastTaskPoint--;
 	      if(Elements[Index].iIdx == iLastTaskPoint)
 		     dlgTaskWaypointShowModal(Elements[Index].iIdx,2, false, true);
 	      else
-#ifdef MS_TARGET_DIALOG
-	    	if ((AATEnabled ) && (CALCULATED_INFO.Flying ))
+//#ifdef MS_TARGET_DIALOG
+	    	if ((AATEnabled ) && (CALCULATED_INFO.Flying ) && (!IsMultiMapNoMain()))
 	    	{
 	    		wf->SetModalResult(mrOK);
 	    		wf->Close();
 	    		dlgTarget(Elements[Index].iIdx);
 	    	}
 	    	else
-#endif
+//#endif
 	    	{
 			  dlgTaskWaypointShowModal(Elements[Index].iIdx,1, false, true);
 	    	}
