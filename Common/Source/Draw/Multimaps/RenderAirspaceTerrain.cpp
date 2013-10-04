@@ -35,9 +35,21 @@ double hmax = psDiag->fYMax;
 double lat, lon;
 int i,j;
 
-//if (EnableTerrain )
-    RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
 
+
+
+
+
+
+
+   if(IsMultimapTerrain())
+     RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
+   else
+   {
+	HBRUSH OldBrush =  (HBRUSH) SelectObject(hdc, MapWindow::hInvBackgroundBrush[BgMapColor]);
+	Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
+	SelectObject(hdc, OldBrush);
+  }
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
   POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X+4];
   double d_lat[AIRSPACE_SCANSIZE_X];
