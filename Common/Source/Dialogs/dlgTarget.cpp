@@ -362,8 +362,9 @@ static int OnTimerNotify(WindowControl * Sender) {
   (void)Sender;
   double lon, lat;
 
-  static short i=0;
-  if(i++ % 2 == 0) return 0;
+//  static short i=0;
+//  if(i++ % 2 == 0) return 0;
+// this update was too slow for adjusting the turnpoint
 
   if (MapWindow::TargetMoved(lon, lat)) {
     MoveTarget(lon, lat);
@@ -552,7 +553,7 @@ void dlgTarget(int TaskPoint) {
   if (!ValidTaskPoint(TaskPoint)) {
     return;
   }
-  ActiveWayPointOnEntry = TaskPoint;
+  target_point = TaskPoint;
 
   if (!ScreenLandscape) {
     char filename[MAX_PATH];
