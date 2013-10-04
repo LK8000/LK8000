@@ -2,22 +2,22 @@
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmTaskRules" Type="Dialog" X="0" Y="0" Width="240" Height="240" Caption="_@M690_" Font="2" >
     <WndButton   Caption="_@M186_"    X="2" Y="2" Width="50"  Height="22" Font="2" OnClickNotify="OnCloseClicked" Tag="1"/>
-    <WndProperty Name="prpStartMaxSpeed" Caption="_@M643_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H490_" Keyboard="1">
+    <WndProperty Name="prpStartMaxSpeed" Caption="_@M643_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H490_" >
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="300" Step="1"/>
     </WndProperty>
-    <WndProperty Name="prpStartMaxSpeedMargin" Caption="_@M646_"  X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H163_" Keyboard="1">
+    <WndProperty Name="prpStartMaxSpeedMargin" Caption="_@M646_"  X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H163_" >
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="300" Step="1"/>
     </WndProperty>
-    <WndProperty Name="prpStartMaxHeight" Caption="_@M641_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H491_" Keyboard="1">
+    <WndProperty Name="prpStartMaxHeight" Caption="_@M641_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H491_" >
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="20000" Step="1"/>
     </WndProperty>
-    <WndProperty Name="prpStartMaxHeightMargin" Caption="_@M645_" X="2" Y="-1"  Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H165_" Keyboard="1">
+    <WndProperty Name="prpStartMaxHeightMargin" Caption="_@M645_" X="2" Y="-1"  Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H165_" >
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="20000" Step="1"/>
     </WndProperty>
     <WndProperty Name="prpStartHeightRef" Caption="_@M639_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H492_">
       <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1"/>
     </WndProperty>
-    <WndProperty Name="prpFinishMinHeight" Caption="_@M292_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H493_" Keyboard="1">
+    <WndProperty Name="prpFinishMinHeight" Caption="_@M292_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H493_" >
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="20000" Step="1"/>
     </WndProperty>
     <WndProperty Name="prpFAIFinishHeight" Caption="_@M275_" X="2" Y="-1"  Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H494_">
