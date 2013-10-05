@@ -145,7 +145,10 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   int airspace_type;
   bool found = false;
   bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
-  ///bool outlined_only=(GetAirSpaceFillType()==asp_fill_border_only);
+  #if ASPOUTLINE
+  #else
+  bool outlined_only=(GetAirSpaceFillType()==asp_fill_border_only);
+  #endif
 
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
@@ -153,7 +156,9 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   int nDC1 = SaveDC(mhdcbuffer);
   int nDC2 = SaveDC(hDCMask);
   int nDC3 = SaveDC(hDCTemp);
-  
+#ifdef AIRSPACE_BORDER
+DrawAirSpaceBorders(hdc, rc);
+#endif
   // Draw airspace area
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
@@ -208,25 +213,33 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   
   // we will be drawing directly into given hdc, so store original PEN object
   HPEN hOrigPen = (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
-
+#ifdef AIRSPACE_BORDER
+  if(0)
+#endif
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
-		/*  if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only)  ^ (asp_selected_flash && (*it)->Selected()) ) {
+#if ASPOUTLINE
+if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected()) ) {
+#else
+if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_selected_flash && (*it)->Selected()) ) {
+#endif
 			SelectObject(hdc, GetStockObject(BLACK_PEN));
-		  } else*/
+		  } else
 		   if(  (*it)->DrawStyle()==adsDisabled)   {
 			SelectObject(hdc, LKPen_Grey_N2);
 		   } else {
 			SelectObject(hdc, hAirspacePens[airspace_type]);
 		  }
-		  (*it)->Draw(hdc, rc, false);
+#ifndef AIRSPACE_BORDER
+   (*it)->Draw(hdc, rc, false);
+#endif
         }
 	}//for
     }
-  
+
   // restore original PEN
   SelectObject(hdc, hOrigPen);
   
