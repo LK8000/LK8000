@@ -298,11 +298,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   OpenGeoid();
 
-  // Load special libraries and init hardware. Anything custom should happen after here.
-  // Note that this is subjected to GlobalModelType.
-  // To initialise low level devices such as screen, we should do it much earlier.
-  InitCustomHardware();
-
   PreloadInitialisation(false); // calls dlgStartup
   if(RUN_MODE == RUN_EXIT || RUN_MODE == RUN_SHUTDOWN) {
 	realexitforced=true;
