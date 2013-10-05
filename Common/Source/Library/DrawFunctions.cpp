@@ -388,7 +388,7 @@ bool CheckRectOverlap(const RECT *rc1, const RECT *rc2) {
 }
 
 
-void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width) {
+void ExtTextOutClip(HDC hDC, int x, int y, const TCHAR *text, int width) {
   int len = _tcslen(text);
   if (len <=0 ) {
     return;
