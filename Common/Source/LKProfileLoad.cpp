@@ -517,8 +517,35 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile);
   PREAD(sname,svalue,szRegistryPollingMode,&PollingMode);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryPort1Index,&dwPortIndex1);
-  PREAD(sname,svalue,szRegistryPort2Index,&dwPortIndex2);
+  
+  /***************************************************/
+  /* for compatibilty with old file                  */
+  DWORD dwIdxPort;
+  PREAD(sname,svalue,szRegistryPort1Index,&dwIdxPort);
+    if(matchedstring) {
+        if(COMMPort.size() == 0) {
+            RefreshComPortList();
+        }
+        if(dwIdxPort < COMMPort.size()) {
+          _tcscpy(szPort1, COMMPort[dwIdxPort].GetName());
+        }
+        return;
+    }
+  
+  PREAD(sname,svalue,szRegistryPort2Index,&dwIdxPort);
+    if(matchedstring) {
+        if(COMMPort.size() == 0) {
+            RefreshComPortList();
+        }
+        if(dwIdxPort < COMMPort.size()) {
+          _tcscpy(szPort2, COMMPort[dwIdxPort].GetName());
+        }
+        return;
+    }
+  /***************************************************/
+  PREAD(sname,svalue,szRegistryPort1Name,szPort1);
+  PREAD(sname,svalue,szRegistryPort2Name,szPort2);
+    
   PREAD(sname,svalue,szRegistryPressureHg,&PressureHg);
   PREAD(sname,svalue,szRegistrySafetyAltitudeArrival,&SAFETYALTITUDEARRIVAL);
   PREAD(sname,svalue,szRegistrySafetyAltitudeMode,&SafetyAltitudeMode);
@@ -766,15 +793,29 @@ void ReadDeviceSettings(const int devIdx, TCHAR *Name){
   if (devIdx == 1) _tcscpy(Name,dwDeviceName2);
   if (_tcslen(Name)==0) _tcscpy(Name,_T(DEV_DISABLED_NAME));
 }
-void ReadPort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {
-  *PortIndex	=dwPortIndex1;
-  *SpeedIndex	=dwSpeedIndex1;
-  *Bit1Index	=dwBit1Index;
+
+void ReadPort1Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index) {
+    if (szPort) {
+        _tcscpy(szPort, szPort1);
+    }
+    if (SpeedIndex) {
+        *SpeedIndex = dwSpeedIndex1;
+    }
+    if (Bit1Index) {
+        *Bit1Index = dwBit1Index;
+    }
 }
-void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {
-  *PortIndex	=dwPortIndex2;
-  *SpeedIndex	=dwSpeedIndex2;
-  *Bit1Index	=dwBit2Index;
+
+void ReadPort2Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index) {
+    if (szPort) {
+        _tcscpy(szPort, szPort2);
+    }
+    if (SpeedIndex) {
+        *SpeedIndex = dwSpeedIndex2;
+    }
+    if (Bit1Index) {
+        *Bit1Index = dwBit2Index;
+    }
 }
 
 

@@ -315,3 +315,9 @@ HELP
 +@1268 [FAI 28/45 Threfhold]
 +@1269 [Gear Warning]
 +@1270 [Gear Warning Altitude]
+
+# oudie 2 bluetooth
+_@M1835_ "Pairing device failed"
+_@M1836_ "Lookup"
+_@M1837_ "Pair"
+_@M1838_ "Unpair"

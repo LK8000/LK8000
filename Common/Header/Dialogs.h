@@ -104,5 +104,10 @@ void dlgMultimapsShowModal(void);
 
 void WriteMissingTranslations(void);
 void dlgTextEntryKeyboardShowModal(TCHAR *text, int width=0);
+void dlgNumEntryShowModal(TCHAR *text, int width,bool WPKeyRed);
+
+namespace DlgBluetooth {
+    void Show();
+};
 
 #endif

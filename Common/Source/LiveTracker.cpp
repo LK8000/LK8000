@@ -4,7 +4,7 @@
    See CREDITS.TXT file for authors and copyrights
 */
 
-#include <winsock.h>
+#include <winsock2.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cctype>

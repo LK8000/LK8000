@@ -395,13 +395,13 @@ void WriteDeviceSettings(const int devIdx, const TCHAR *Name){
   if (devIdx == 0) _tcscpy(dwDeviceName1,Name);
   if (devIdx == 1) _tcscpy(dwDeviceName2,Name);
 }
-void WritePort1Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index) {
-  dwPortIndex1	= PortIndex;
+void WritePort1Settings(LPCTSTR szPort, DWORD SpeedIndex, DWORD Bit1Index) {
+  _tcscpy(szPort1, szPort);
   dwSpeedIndex1 = SpeedIndex;
   dwBit1Index	= Bit1Index;
 }
-void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index) {
-  dwPortIndex2	= PortIndex;
+void WritePort2Settings(LPCTSTR szPort, DWORD SpeedIndex, DWORD Bit1Index) {
+  _tcscpy(szPort2, szPort);
   dwSpeedIndex2 = SpeedIndex;
   dwBit2Index	= Bit1Index;
 }
@@ -517,8 +517,8 @@ void LKDeviceSave(const TCHAR *szFile)
   rprintf(szRegistryDeviceA,dwDeviceName1);
   rprintf(szRegistryDeviceB,dwDeviceName2);
 
-  rprintf(szRegistryPort1Index,dwPortIndex1);
-  rprintf(szRegistryPort2Index,dwPortIndex2);
+  rprintf(szRegistryPort1Name,szPort1);
+  rprintf(szRegistryPort2Name,szPort2);
 
   rprintf(szRegistrySpeed1Index,dwSpeedIndex1);
   rprintf(szRegistrySpeed2Index,dwSpeedIndex2);

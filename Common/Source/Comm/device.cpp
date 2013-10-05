@@ -9,6 +9,12 @@
 #include "externs.h"
 #include "Dialogs.h"
 #include "utils/stl_utils.h"
+#include "BtHandler.h"
+#include "SerialPort.h"
+#include "Bluetooth/BthPort.h"
+#include <tr1/functional>
+
+using namespace std::tr1::placeholders;
 
 // A note about locking.
 //  The ComPort RX threads lock using FlightData critical section.
@@ -22,26 +28,9 @@
 //  Thankfully WinCE "critical sections" are recursive locks.
 
 
-//  remember that so still COMM port definitions have to be duplicated also inside dlgConfiguration... 
-//  change COMn: to \\.\COMn  without :  so that we can use COM10-COM99 devices
+COMMPort_t COMMPort;
 
-#if (WINDOWSPC>0)
-static  const TCHAR *COMMPort[] = {TEXT("COM1"),TEXT("COM2"),TEXT("COM3"),TEXT("COM4"),TEXT("COM5"),TEXT("COM6"),TEXT("COM7"),TEXT("COM8"),TEXT("COM9"),TEXT("COM10"),
-TEXT("COM11"),TEXT("COM12"),TEXT("COM13"),TEXT("COM14"),TEXT("COM15"),TEXT("COM16"),TEXT("COM17"),TEXT("COM18"),TEXT("COM19"),
-TEXT("COM20"),TEXT("COM21"),TEXT("COM22"),TEXT("COM23"),TEXT("COM24"),TEXT("COM25"),TEXT("COM26"),TEXT("COM27"),TEXT("COM28"),
-TEXT("COM29"),TEXT("COM30"),TEXT("COM31"),TEXT("COM32"),
-TEXT("COM33"),TEXT("COM34"),TEXT("COM35"),TEXT("COM36"),TEXT("COM37"),TEXT("COM38"),TEXT("COM39"),TEXT("COM40"),TEXT("COM0")};
-#else
-static  const TCHAR *COMMPort[] = {TEXT("COM1:"),TEXT("COM2:"),TEXT("COM3:"),TEXT("COM4:"),TEXT("COM5:"),TEXT("COM6:"),TEXT("COM7:"),TEXT("COM8:"),TEXT("COM9:"),TEXT("COM10:"),TEXT("COM0:"),TEXT("VSP0:"),TEXT("VSP1:")};
-#endif
 static  const DWORD   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200};
-static  DWORD PortIndex1 = 0;
-static  DWORD SpeedIndex1 = 2;
-static  DWORD PortIndex2 = 0;
-static  DWORD SpeedIndex2 = 2;
-static  DWORD Bit1Index = (BitIndex_t)bit8N1;
-static  DWORD Bit2Index = (BitIndex_t)bit8N1;
-// static  DWORD Bit3Index = (BitIndex_t)bit8N1;
 
 DeviceRegister_t   DeviceRegister[NUMREGDEV];
 DeviceDescriptor_t DeviceList[NUMDEV];
@@ -148,188 +137,191 @@ static int devIsFalseReturn(PDeviceDescriptor_t d){
 
 }
 
-
-BOOL devInit(LPCTSTR CommandLine){
-  int i;
-  TCHAR DeviceName[DEVNAMESIZE+1];
-  PDeviceDescriptor_t pDevNmeaOut = NULL;
-  static bool doinit=true;
-
-  for (i=0; i<NUMDEV; i++){
-    DeviceList[i].Port = -1;
-    DeviceList[i].fhLogFile = NULL;
-    DeviceList[i].Name[0] = '\0';
-    DeviceList[i].ParseNMEA = NULL;
-    DeviceList[i].PutMacCready = NULL;
-    DeviceList[i].DirectLink = NULL;
-    DeviceList[i].PutBugs = NULL;
-    DeviceList[i].PutBallast = NULL;
-    DeviceList[i].Open = NULL;
-    DeviceList[i].Close = NULL;
-    DeviceList[i].Init = NULL;
-    DeviceList[i].LinkTimeout = NULL;
-    DeviceList[i].Declare = NULL;
-    DeviceList[i].IsLogger = devIsFalseReturn;
-    DeviceList[i].IsGPSSource = devIsFalseReturn;
-    DeviceList[i].IsBaroSource = devIsFalseReturn;
-    DeviceList[i].IsRadio = devIsFalseReturn;
-
-    DeviceList[i].PutVoice = (int (*)(struct DeviceDescriptor_t *,TCHAR *))devIsFalseReturn;
-    DeviceList[i].PortNumber = i;
-    DeviceList[i].PutQNH = NULL;
-    DeviceList[i].OnSysTicker = NULL;
-
-    DeviceList[i].pDevPipeTo = NULL;
-    DeviceList[i].PutVolume = NULL;
-    DeviceList[i].PutFreqActive = NULL;
-    DeviceList[i].PutFreqStandby = NULL;
-    DeviceList[i].IsCondor = devIsFalseReturn;
-    DeviceList[i].Disabled = true;
-
-    ComPortStatus[i]=CPS_UNUSED; // 100210
-    ComPortHB[i]=0; // counter
-    if (doinit) {
-	ComPortRx[i]=0;
-	ComPortTx[i]=0;
-	ComPortErrTx[i]=0;
-	ComPortErrRx[i]=0;
-	ComPortErrors[i]=0;
-
-	doinit=false;
+void RefreshComPortList() {
+    COMMPort.clear();
+    
+    TCHAR szPort[10];
+    for (unsigned i = 1; i < 10; ++i) {
+        _stprintf(szPort, _T("COM%u"), i);
+        COMMPort.push_back(szPort);
     }
-  }
 
-  pDevPrimaryBaroSource = NULL;
-  pDevSecondaryBaroSource=NULL;
+#if (WINDOWSPC>0)
+    for (unsigned i = 10; i < 41; ++i) {
+        _stprintf(szPort, _T("COM%u"), i);
+        COMMPort.push_back(szPort);
+    }
+#endif
 
-  ReadDeviceSettings(0, DeviceName);
-  #ifdef DEBUG_DEVSETTING
-  StartupStore(_T(".......... ReadDeviceSetting 0, DeviceName=<%s>\n"),DeviceName);
-  #endif
-	
-  const DWORD  maxPortIndex = std::distance(begin(COMMPort), end(COMMPort)) - 1;
-  
-  PortIndex1 = 0; SpeedIndex1 = 2; Bit1Index=(BitIndex_t)bit8N1;
-  ReadPort1Settings(&PortIndex1,&SpeedIndex1,&Bit1Index);
-  PortIndex1 = std::min(maxPortIndex, PortIndex1);
+    COMMPort.push_back(_T("COM0"));
 
-  //if (_tcslen(DeviceName)>0) // removed 110530
-  if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {
-	DeviceList[0].Disabled=false;
-	StartupStore(_T(". Device A is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex1],NEWLINE);
-  } else {
-	DeviceList[0].Disabled=true;
-	StartupStore(_T(". Device A is DISABLED.%s"),NEWLINE);
-  }
+#ifdef PNA
+    COMMPort.push_back(_T("VSP0"));
+    COMMPort.push_back(_T("VSP1"));
+#endif
 
-  for (i=DeviceRegisterCount-1; i>=0; i--) {
-    if (DeviceList[0].Disabled) break;
+    CBtHandler* pBtHandler = CBtHandler::Get();
+    if (pBtHandler) {
+        std::copy(
+        	pBtHandler->m_devices.begin(),
+        	pBtHandler->m_devices.end(),
+        	std::back_insert_iterator<COMMPort_t>(COMMPort)
+        );
+    }
+}
 
-    if ((_tcscmp(DeviceRegister[i].Name, DeviceName) == 0)) {
+void DeviceDescriptor_t::InitStruct(int i) {
+    Port = -1;
+    fhLogFile = NULL;
+    Name[0] = '\0';
+    ParseNMEA = NULL;
+    PutMacCready = NULL;
+    DirectLink = NULL;
+    PutBugs = NULL;
+    PutBallast = NULL;
+    Open = NULL;
+    Close = NULL;
+    Init = NULL;
+    LinkTimeout = NULL;
+    Declare = NULL;
+    IsLogger = devIsFalseReturn;
+    IsGPSSource = devIsFalseReturn;
+    IsBaroSource = devIsFalseReturn;
+    IsRadio = devIsFalseReturn;
 
-      ComPort *Com = new ComPort(0);
+    PutVoice = (int (*)(struct DeviceDescriptor_t *,TCHAR *))devIsFalseReturn;
+    PortNumber = i;
+    PutQNH = NULL;
+    OnSysTicker = NULL;
 
-      // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
-	// this is port 1, so index 0 for us. 
-      if (!Com->Initialize(COMMPort[PortIndex1], dwSpeed[SpeedIndex1],Bit1Index,0)) {
-	   	delete Com;
-		ComPortStatus[0]=CPS_OPENKO;
-        break;
-      }
-      ComPortStatus[0]=CPS_OPENOK;
+    pDevPipeTo = NULL;
+    PutVolume = NULL;
+    PutFreqActive = NULL;
+    PutFreqStandby = NULL;
+    IsCondor = devIsFalseReturn;
+    Disabled = true;
+}
 
-      DeviceRegister[i].Installer(devA());
+bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
+    return (_tcscmp(dev.Name, DeviceName) == 0);
+}
 
-      if ((pDevNmeaOut == NULL) && 
-	  (DeviceRegister[i].Flags & (1l << dfNmeaOut))){
-        pDevNmeaOut = devA();
-      }
+bool ReadPortSettings(int idx, LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index) {
+    switch (idx) {
+        case 0:
+            ReadPort1Settings(szPort, SpeedIndex, Bit1Index);
+            return true;
+        case 1:
+            ReadPort2Settings(szPort, SpeedIndex, Bit1Index);
+            return true;
+        default:
+            return false;
+    }
+}
 
-      devA()->Com = Com;
+BOOL devInit(LPCTSTR CommandLine) {
+    TCHAR DeviceName[DEVNAMESIZE + 1];
+    PDeviceDescriptor_t pDevNmeaOut = NULL;
 
-      devInit(devA());
-      devOpen(devA(), 0);
+    TCHAR Port[MAX_PATH] = {_T('\0')};
+    DWORD SpeedIndex = 2;
+    DWORD BitIndex = (BitIndex_t) bit8N1;
 
-      if (devIsBaroSource(devA())) {
-        if (pDevPrimaryBaroSource == NULL){
-          pDevPrimaryBaroSource = devA();
-        } else 
-        if (pDevSecondaryBaroSource == NULL){
-          pDevSecondaryBaroSource = devA();
+    static bool doinit = true;
+
+    pDevPrimaryBaroSource = NULL;
+    pDevSecondaryBaroSource = NULL;
+
+    for (unsigned i = 0; i < NUMDEV; i++) {
+        DeviceList[i].InitStruct(i);
+
+        ComPortStatus[i] = CPS_UNUSED; // 100210
+        ComPortHB[i] = 0; // counter
+        if (doinit) {
+            ComPortRx[i] = 0;
+            ComPortTx[i] = 0;
+            ComPortErrTx[i] = 0;
+            ComPortErrRx[i] = 0;
+            ComPortErrors[i] = 0;
+
+            doinit = false;
         }
-      }
-      break;
-    }
-  }
-
-  ReadDeviceSettings(1, DeviceName);
-  #ifdef DEBUG_DEVSETTING
-  StartupStore(_T(".......... ReadDeviceSetting 1, DeviceName=<%s>\n"),DeviceName);
-  #endif
-
-  PortIndex2 = 0; SpeedIndex2 = 2, Bit2Index=(BitIndex_t)bit8N1;
-  ReadPort2Settings(&PortIndex2,&SpeedIndex2, &Bit2Index);
-  PortIndex2 = std::min(maxPortIndex, PortIndex2);
-
-  //if (_tcslen(DeviceName)>0) // removed 110530
-  if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {
-	DeviceList[1].Disabled=false;
-	StartupStore(_T(". Device B is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex2],NEWLINE);
-  } else {
-	DeviceList[1].Disabled=true;
-	StartupStore(_T(". Device B is DISABLED.%s"),NEWLINE);
-  }
-
-  for (i=DeviceRegisterCount-1; i>=0; i--) {
-    if (PortIndex1 == PortIndex2) break;
-    if (DeviceList[1].Disabled) break;
-
-    if ((_tcscmp(DeviceRegister[i].Name, DeviceName) == 0)) {
-      ComPort *Com = new ComPort(1);
-
-	// this is port 2, so index 1 for us
-      if (!Com->Initialize(COMMPort[PortIndex2], dwSpeed[SpeedIndex2],Bit2Index,1)) { // 100210
-	delete Com;
-	ComPortStatus[1]=CPS_OPENKO;
-        break;
-      }
-      ComPortStatus[1]=CPS_OPENOK;
-
-      DeviceRegister[i].Installer(devB());
-
-      if ((pDevNmeaOut == NULL) && 
-          (DeviceRegister[i].Flags & (1l << dfNmeaOut))){
-        pDevNmeaOut = devB();
-      }
-
-      devB()->Com = Com;
-
-      devInit(devB());
-      devOpen(devB(), 1);
-
-      if (devIsBaroSource(devB())) {
-        if (pDevPrimaryBaroSource == NULL){
-          pDevPrimaryBaroSource = devB();
-        } else 
-        if (pDevSecondaryBaroSource == NULL){
-          pDevSecondaryBaroSource = devB();
+        
+        if (SIMMODE){
+            continue;
         }
-      }
+        
+        ReadDeviceSettings(i, DeviceName);
+        DeviceList[i].Disabled = (wcscmp(DeviceName, _T(DEV_DISABLED_NAME)) == 0);
+        if (DeviceList[i].Disabled) {
+            StartupStore(_T(". Device %c is DISABLED.%s"), (_T('A') + i), NEWLINE);
+            continue;
+        }
 
-      break;
-    }
-  }
+        DeviceRegister_t* pDev = std::find_if(&DeviceRegister[0], &DeviceRegister[DeviceRegisterCount], std::tr1::bind(&devNameCompare, _1, DeviceName));
+        if (pDev == &DeviceRegister[DeviceRegisterCount]) {
+            DeviceList[i].Disabled = true;
+            StartupStore(_T(". Device %c : invalide drivers name <%s>%s"), (_T('A') + i), DeviceName, NEWLINE);
+            continue;
+        }
 
-  if (pDevNmeaOut != NULL){
-    if (pDevNmeaOut == devA()){
-      devB()->pDevPipeTo = devA();
-    }
-    if (pDevNmeaOut == devB()){
-      devA()->pDevPipeTo = devB();
-    }
-  }
+        Port[0] = _T('\0');
+        SpeedIndex = 2;
+        BitIndex = (BitIndex_t) bit8N1;
+        ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
+        // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
 
-  return(TRUE);
+        StartupStore(_T(". Device %c is <%s> Port=%s%s"), (_T('A') + i), DeviceName, Port, NEWLINE);
+        
+        ComPort *Com = NULL;
+        if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
+            CBtHandler* pBtHandler = CBtHandler::Get();
+            StartupStore(_T(".. Initialise Bluetooth Device %s%s"), Port, NEWLINE);
+            if (pBtHandler && pBtHandler->IsOk()) {
+                if (pBtHandler->StartHW()) {
+                    Com = new BthPort(i, &Port[3]);
+                }
+            }
+        } else {
+            Com = new SerialPort(i, Port, SpeedIndex, (BitIndex_t)BitIndex, PollingMode);
+        }
+
+        if (Com && Com->Initialize()) {
+            ComPortStatus[i] = CPS_OPENOK;
+            pDev->Installer(&DeviceList[i]);
+
+            if ((pDevNmeaOut == NULL) && (pDev->Flags & (1l << dfNmeaOut))) {
+                pDevNmeaOut = &DeviceList[i];
+            }
+
+            DeviceList[i].Com = Com;
+
+            devInit(&DeviceList[i]);
+            devOpen(&DeviceList[i], i);
+
+            if (devIsBaroSource(&DeviceList[i])) {
+                if (pDevPrimaryBaroSource == NULL) {
+                    pDevPrimaryBaroSource = &DeviceList[i];
+                } else if (pDevSecondaryBaroSource == NULL) {
+                    pDevSecondaryBaroSource = &DeviceList[i];
+                }
+            }
+        } else {
+            delete Com;
+            ComPortStatus[i] = CPS_OPENKO;
+        }
+    }
+
+    if (pDevNmeaOut != NULL) {
+        if (pDevNmeaOut == devA()) {
+            devB()->pDevPipeTo = devA();
+        }
+        if (pDevNmeaOut == devB()) {
+            devA()->pDevPipeTo = devB();
+        }
+    }
+
+    return (TRUE);
 }
 
 

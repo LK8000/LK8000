@@ -13,6 +13,7 @@
 #include "Modeltype.h"
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
+#include "Comm/Bluetooth/BtHandlerWince.h"
 #endif
 
 
@@ -34,6 +35,8 @@ void InitCustomHardware(void) {
   if (GlobalModelType == MODELTYPE_PNA_ROYALTEK3200) {
 	Init_Royaltek3200();
   }
+  
+  CBthDevice::Instance();
   #endif
 
   return;
@@ -47,6 +50,8 @@ void DeInitCustomHardware(void) {
   #ifdef PNA
   if (DeviceIsGM130) DeInit_GM130();
   if (DeviceIsRoyaltek3200) DeInit_Royaltek3200();
+
+  CBthDevice::Release();
   #endif
 
   return;
