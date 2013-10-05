@@ -47,10 +47,11 @@ int i,j;
      RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
    else
    {
-	SelectObject(hdc, LKPen_Black_N1);
+	HPEN OldPen = (HPEN) SelectObject(hdc, LKPen_Black_N1);
 	HBRUSH OldBrush =  (HBRUSH) SelectObject(hdc, MapWindow::hInvBackgroundBrush[BgMapColor]);
 	Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
 	SelectObject(hdc, OldBrush);
+	SelectObject(hdc, OldPen);
   }
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
   POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X+4];
