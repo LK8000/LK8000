@@ -1852,8 +1852,8 @@ _@M1827_ "Append before finish"
 _@M1828_ "Append after finish"
 
 # Gear warning alarm
-_@M1829_ "Gear Warning"
-_@M1830_ "Gear Warning Altitude"
+_@M1829_ "Gear Warning "
+_@M1830_ "Gear Warning Altitude "
 _@M1831_ "Off"
 _@M1832_ "Near landables"
 _@M1833_ "Always"
