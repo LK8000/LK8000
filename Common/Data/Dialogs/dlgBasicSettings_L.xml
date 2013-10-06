@@ -16,10 +16,10 @@
     <WndProperty Name="prpBugs" Caption="_@M253_"     X="2" Y="-1"  Width="230" Height="38" CaptionWidth="78" Font="1" Help="_@H302_">
       <DataField Name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min="50" Max="100" Step="1"  OnDataAccess="OnBugsData"/>
     </WndProperty>
-    <WndProperty Name="prpQNH" Caption="QNH "  X="2" Y="-997"   Width="230" Height="38" CaptionWidth="78" Font="1" Help="_@H303_" >
+    <WndProperty Name="prpQNH" Caption="QNH "  X="2" Y="-997"   Width="230" Height="38" CaptionWidth="78" Font="1" Help="_@H303_" Keyboard="1">
       <DataField Name="" DataType="double" DisplayFormat="%.2f" EditFormat="%.2f" Min="1" Max="1300" Step="0.01" OnDataAccess="OnQnhData"/>
     </WndProperty>
-    <WndProperty Name="prpAltitude" Caption="_@M88_" X="2" Y="-1"  Width="230" Height="38" CaptionWidth="78" Font="1" Help="_@H304_" >
+    <WndProperty Name="prpAltitude" Caption="_@M88_" X="2" Y="-1"  Width="230" Height="38" CaptionWidth="78" Font="1" Help="_@H304_" Keyboard="1">
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" OnDataAccess="OnAltitudeData" />
     </WndProperty>
     <WndProperty Caption="_@M428_"     X="2" Y="-997"  Width="230" Height="22" CaptionWidth="78" Font="2" Help="_@H305_">

@@ -8,16 +8,16 @@
     <WndProperty Name="prpWarningMapLabels" Caption="_@M1281_" X="2" Y="-997" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1212_">
       <DataField Name="" DataType="boolean"/>
     </WndProperty>
-    <WndProperty Name="prpWarningTime" Caption="_@M790_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H112_" >
+    <WndProperty Name="prpWarningTime" Caption="_@M790_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H112_" Keyboard="1">
       <DataField Name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min="10" Max="1000" Step="1"/>
     </WndProperty>
-    <WndProperty Name="prpAcknowledgementTime" Caption="_@M52_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1252_" >
+    <WndProperty Name="prpAcknowledgementTime" Caption="_@M52_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1252_" Keyboard="1">
       <DataField Name="" DataType="double" DisplayFormat="%.0f min" EditFormat="%.0f" Min="1" Max="720" Step="1"/>
     </WndProperty>
     <WndProperty Name="prpAckAllSame" Caption="_@M1823_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1264_">
       <DataField Name="" DataType="boolean"/>
     </WndProperty>
-    <WndProperty Name="prpWarningVerticalMargin" Caption="_@M1278_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1210_" >
+    <WndProperty Name="prpWarningVerticalMargin" Caption="_@M1278_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1210_" Keyboard="1">
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="10" Max="1000" Step="1"/>
     </WndProperty>
     <WndProperty Name="prpWarningDlgTimeout" Caption="_@M1279_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1211_">
