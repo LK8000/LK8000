@@ -47,7 +47,8 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 	case ss240x320:
 	case ss320x240:
 	case ss480x272:
- 	  	fScaleFact /= 1000; // (*=1.6 after /= 1600 is equale to /1000)
+	case ss272x480:
+ 	  	fScaleFact /= 800; // (*=1.6 after /= 1600 is equale to /1000)
 		break;
 	default:
 		fScaleFact /=1600;

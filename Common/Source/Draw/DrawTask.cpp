@@ -44,7 +44,7 @@ if(center_y < width)
 
 fScaleFact /= (2500.0);
 
-width = (int)((double)width*(fScaleFact));
+//width = (int)((double)width*(fScaleFact));
 
 
 POINT startfinishline[2] = {{0,-width/2},

@@ -698,7 +698,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     int w1, w2, w3, x1, x2, x3;
     WndListFrame *wlf = (WndListFrame *)wf->FindByName(TEXT("frmWayPointList"));
     if (wlf) {
-   	 w0=wlf->GetWidth() - wlf->ScrollbarWidth - 4;
+   	 w0=wlf->GetWidth() - wlf->ScrollbarWidth - 20;
     }
 
     w1 = GetTextWidth(hDC, TEXT("XXX"));
@@ -707,7 +707,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
 
     x1 = w0-w1-w2-w3;
 
-    ExtTextOutClip(hDC, (int)(PICTO_OFFSET+2)*ScreenScale, 2*ScreenScale,
+    ExtTextOutClip(hDC, (int)(PICTO_OFFSET+4)*ScreenScale, 2*ScreenScale,
                    WayPointList[WayPointSelectInfo[i].Index].Name,
                    x1-ScreenScale*10);
 
