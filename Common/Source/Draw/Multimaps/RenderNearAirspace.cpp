@@ -120,12 +120,11 @@ static  bool bHeightScale = false;
 				 {	
 				   #if 1 // MULTISELECT
 				     dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
-				     if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));				   
 				   #else 	
+				     if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 				     dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-				     LKevent=LKEVENT_NONE;
-                                   #endif
-
+                   #endif
+				   LKevent=LKEVENT_NONE;
 				 }
 			   }
 			 }
