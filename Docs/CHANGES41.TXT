@@ -101,3 +101,39 @@ FIXES
 Fix wrong lines drawing in task and topology at high zoom levels, due to overflow in distance calculations
 
 
+
+Version 4.1B
+
+New features:
+-After a long click a “Multiselect dialog” opens with a list of the interesting objects in this area (Airspaces, Waypoints, Flarm objects, Taskpoints)
+-Icons for waypoints, airfields, outlanding, airspaces, Flarmobjects and Taskpoints in the dialogs
+-Gear warning (with two different modes for mountain and flat lands, setup in Config page 15.
+-New draw mode “Task and FAI”, the selected mode will remain on next startup.
+-New custom key “map orientation”
+-FAI Sectors with 25/45% FAI rule for big triangles (500km/750km threshold can be set in Config page 14 “Task rules”)
+-Show FAI Sectors for active Task point before takeoff, instead of FAI optimizer
+-Active keyboard removes keys not leading to a valid waypoint and searches for substrings in the waypoint name.
+-Don’t auto advance Task Start before freefly detection
+-Disabled airspaces can automatically be re-enabled on next startup (Setup Page2 “Airspaces”)
+-graphical Task editor. By selecting a Task turnpoint in Multiselect, PAN mode opens with moving the task turnpoint.
+
+
+videos:
+http://www.youtube.com/watch?v=bIz9s6HYMJE
+http://www.youtube.com/watch?v=Iyk-r6MDpCI
+http://www.youtube.com/watch?v=r_VeQFbUSlg
+
+
+Changes:
+-New “white wing” symbol for glider sites
+-Automatically remember the selected button bar for next startup
+-Removed center custom key (was needed multiselect)
+-Show disabled airspaces as grey outlined.
+-Disable sky background in sideview if terrain is disabled.
+
+Fixes:
+-Improved FLARM-Task declaration for more than five waypoints and with checksum.
+-Fixed Westerboer STF-switch problem.
+ 
+
+
