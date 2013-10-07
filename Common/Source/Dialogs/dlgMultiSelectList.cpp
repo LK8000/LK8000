@@ -505,7 +505,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 				                                                   , (int)(WayPointList[idx].Altitude * ALTITUDEMODIFY)
 														           , Units::GetAltitudeName()
 														           , (int)(WayPointList[idx].RunwayDir/10.0)
-														           , (int)(AngleLimit360(((WayPointList[idx].RunwayDir+181)/10.0)))
+														           , (int)(AngleLimit360(WayPointList[idx].RunwayDir+181.0)/10.0)
 														           , (int)((double)WayPointList[idx].RunwayLen* ALTITUDEMODIFY)
 														           , Units::GetAltitudeName());
             }
