@@ -498,15 +498,23 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 			  else
 				_stprintf(text1,TEXT("%s"),WayPointList[idx].Name );         // NAME_SIZE        30
 			}
-
+            if((WayPointList[idx].RunwayLen >= 10) || (WayPointList[idx].RunwayDir > 0))
+            {
 			_stprintf(text2,TEXT("%3.1f%s (%i%s  %02i/%02i  %i%s)"), Distance*DISTANCEMODIFY
 					                                               , Units::GetDistanceName()
 				                                                   , (int)(WayPointList[idx].Altitude * ALTITUDEMODIFY)
 														           , Units::GetAltitudeName()
 														           , (int)(WayPointList[idx].RunwayDir/10.0)
-														           , (int)(AngleLimit360(((WayPointList[idx].RunwayDir+180)/10.0)))
+														           , (int)(AngleLimit360(((WayPointList[idx].RunwayDir+181)/10.0)))
 														           , (int)((double)WayPointList[idx].RunwayLen* ALTITUDEMODIFY)
 														           , Units::GetAltitudeName());
+            }
+            else
+            {
+    			_stprintf(text2,TEXT("%3.1f%s (%i%s) "), Distance*DISTANCEMODIFY  ,Units::GetDistanceName()
+                                                       , (int)(WayPointList[idx].Altitude * ALTITUDEMODIFY)
+		                                               , Units::GetAltitudeName());
+            }
 		    }
 		  else
 		  {
