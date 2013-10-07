@@ -142,7 +142,11 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 	    else
 		  SelectObject(hdc, LKBrush_White);
 	}
-	PolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
+	if(picto) {
+	  PolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir);
+	} else {
+	  PolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
+	}
 	Polygon(hdc,Runway ,5 );
 
   } // bRunway
