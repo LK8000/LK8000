@@ -1500,12 +1500,18 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
       }
     }
 
-    else if (_tcscmp(pToken, TEXT("SFC")) == 0) {
+    else if ((_tcscmp(pToken, TEXT("SFC")) == 0) 
+             || (_tcscmp(pToken, TEXT("ASFC")) == 0)) {
       Alt->Base = abAGL;
-      Alt->FL = 0;
-      Alt->Altitude = 0;
-      Alt->AGL = -1;
-      fHasUnit = true;
+      if (Alt->Altitude>0) {
+        Alt->AGL = Alt->Altitude;
+        Alt->Altitude = 0;
+      } else {      
+        Alt->FL = 0;
+        Alt->Altitude = 0;
+        Alt->AGL = -1;
+        fHasUnit = true;
+      }
     }
 
     else if (_tcsstr(pToken, TEXT("FL")) == pToken){ 
@@ -1524,7 +1530,8 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
       fHasUnit = true;
     }
 
-    else if (_tcscmp(pToken, TEXT("MSL")) == 0){
+    else if ((_tcscmp(pToken, TEXT("MSL")) == 0)
+             || (_tcscmp(pToken, TEXT("AMSL")) == 0)){
       Alt->Base = abMSL;
     }
 
