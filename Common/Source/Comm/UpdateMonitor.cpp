@@ -22,6 +22,7 @@ double trackbearingminspeed=0; // minimal speed to use gps bearing
 //
 // Run every 5 seconds, approx.
 // This is the hearth of LK. Questions? Ask Paolo..
+// THIS IS RUNNING WITH LockComm  from ConnectionProcessTimer .
 //
 void NMEAParser::UpdateMonitor(void) 
 {

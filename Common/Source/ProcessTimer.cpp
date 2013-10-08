@@ -7,16 +7,79 @@
 */
 #include "externs.h"
 #include "Logger.h"
-
 #include "Message.h"
 #include "InputEvents.h"
-
 #include "winbase.h"
+#include "TraceThread.h"
 
 extern int ConnectionProcessTimer(int itimeout);
 extern bool BOOL2bool(BOOL a);
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);
+extern void CommonProcessTimer(void);
+
+//
+// This is called at 2Hz from WndProc TIMER, which is set to 500ms by WndProc CREATE
+// This is only for FLY mode. 
+//
+void ProcessTimer(void)
+{
+  static int itimeout = -1;
+  itimeout++;
+  static int p_twohzcounter = 0;
+  p_twohzcounter++;
+
+  if (!GPSCONNECT) {
+	// Update screen when no GPS every second
+	if (p_twohzcounter % 2 == 0) TriggerGPSUpdate();
+  }
+
+  // The ordinary timed stuff..
+  CommonProcessTimer();
+
+  // .. and the communication timed stuff.
+  // Check connection status every 5 seconds
+  // This is quite delicate because it is running a Lock condition on comm port
+  if (itimeout % 10 == 0) {
+	itimeout = ConnectionProcessTimer(itimeout);
+  }
+}
+
+//
+// This is the equivalent for SIM mode only.
+// Running at 2Hz, set and called by WndProc, as above.
+// Note, there is no ConnectionProcessTimer of course.
+// Note 2: careful that the 1hz LKSimulator call is only roughly approximated, because it is 
+// accumulating a delay due each execution. This is explaining some inaccurate calculations 
+// while using SIM mode: the "1 second has passed" is not accurate because it is not based on an
+// absolute time. It is in fact based on the time incrementer after each run. Since in the program
+// we use a local time, this means that 1 minute passed in real (local) time does not normally
+// mean we really had 60 calls of LKSimulator, more likely we had 59, or 58..
+//
+void SIMProcessTimer(void)
+{
+  static int i=0;
+  i++;
+
+  CommonProcessTimer();
+
+  GPSCONNECT = TRUE;
+  extGPSCONNECT = TRUE;
+
+  if (!ReplayLogger::Update()) {
+	if (i%2==0) return;
+	// Process timer is run at 2hz, so this is bringing it back to 1hz
+	extern void LKSimulator(void);
+	LKSimulator();
+  }
+
+  if (i%2==0) return;
+
+  TriggerGPSUpdate();
+
+}
+
+
 
 //
 // This is common to both real and SIM modes, and thus it is running at 2Hz
@@ -61,54 +124,6 @@ void CommonProcessTimer()
   }
 }
 
-#include "TraceThread.h"
-
-// Running at 2Hz, set and called by WndProc
-void ProcessTimer(void)
-{
-  static int itimeout = -1;
-  itimeout++;
-  static int p_twohzcounter = 0;
-  p_twohzcounter++;
-
-  if (!GPSCONNECT) {
-	// Update screen when no GPS every second
-	if (p_twohzcounter % 2 == 0) TriggerGPSUpdate();
-  }
-
-  CommonProcessTimer();
-
-  // Check connection status every 5 seconds
-  if (itimeout % 10 == 0) {
-	itimeout = ConnectionProcessTimer(itimeout);
-  }
-}
-
-
-
-// Running at 2Hz, set and called by WndProc
-void SIMProcessTimer(void)
-{
-  static int i=0;
-  i++;
-
-  CommonProcessTimer();
-
-  GPSCONNECT = TRUE;
-  extGPSCONNECT = TRUE;
-
-  if (!ReplayLogger::Update()) {
-	if (i%2==0) return;
-	// Process timer is run at 2hz, so this is bringing it back to 1hz
-	extern void LKSimulator(void);
-	LKSimulator();
-  }
-
-  if (i%2==0) return;
-
-  TriggerGPSUpdate();
-
-}
 
 
 
