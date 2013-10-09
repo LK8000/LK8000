@@ -820,7 +820,7 @@ DiagrammStruct sDia;
 
 
 	iCircleSize    = 4 * ScreenScale;
-	iTraceDotSize  = (int)(1.5 * (double)ScreenScale);
+	iTraceDotSize  = 2 * ScreenScale;
 	iRectangleSize = 4 * ScreenScale;
 	DoInit[MDI_FLARMRADAR]=false;
   }
