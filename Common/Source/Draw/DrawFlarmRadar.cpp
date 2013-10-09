@@ -492,8 +492,8 @@ rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview
 rc.top     = rct.bottom;
 int i,j;
 static double fScaleFact = 5.0;
-static int iCircleSize    = 9;
-static int iRectangleSize = 5;
+static int iCircleSize    = 4  * ScreenScale ;
+static int iRectangleSize = 4  * ScreenScale ;
 
 static short tscaler=0;
 static POINT Arrow[5];
@@ -819,11 +819,11 @@ DiagrammStruct sDia;
 	  {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; };
 
 
-
+	iCircleSize    = 4 * ScreenScale;
+	iTraceDotSize  = (int)(1.5 * (double)ScreenScale);
+	iRectangleSize = 4 * ScreenScale;
 	DoInit[MDI_FLARMRADAR]=false;
   }
-
-
 
 
   /****************************************************************************************************
@@ -857,9 +857,7 @@ DiagrammStruct sDia;
   if (range>500.0*1000.0) xtick = 100.0;
 
   LKASSERT(range!=0);
-  iTraceDotSize = (int)(100000/range)+2;
-  if(iTraceDotSize > 5)
-	  iTraceDotSize = 5;
+
   if(xtick == 0.0) xtick = 1.0;
 
   RECT rc34 = rc;

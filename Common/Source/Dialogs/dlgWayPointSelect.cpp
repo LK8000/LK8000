@@ -719,7 +719,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     RECT rc = {0,  0, (int)(PICTO_OFFSET*1)*ScreenScale,   20*ScreenScale};
     int idx = WayPointSelectInfo[i].Index;
      if (WayPointCalc[idx].IsLandable )
-  	  MapWindow::DrawRunway(hDC,&WayPointList[idx],  rc, 1500*ScreenScale, true);
+  	  MapWindow::DrawRunway(hDC,&WayPointList[idx],  rc, 3000, true);
      else
      {   rc.right = rc.right/2;
    //  rc.top += (rc.bottom)/2;
