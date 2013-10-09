@@ -40,7 +40,7 @@ prc = wPicto->GetBoundRect();
   LKASSERT(ValidWayPoint(SelectedWaypoint));
   if (WayPointCalc[SelectedWaypoint].IsLandable )
   {
-	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 2000*ScreenScale, true);
+	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 4000 , true);
   }
   else
   {

@@ -48,7 +48,7 @@ prc = wPicto->GetBoundRect();
 
   if (WayPointCalc[SelectedWaypoint].IsLandable )
   {
-	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 3500*ScreenScale, true);
+	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 7000 , true);
   }
   else
   {
