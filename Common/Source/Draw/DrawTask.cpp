@@ -42,22 +42,17 @@ finish--;
 if(center_y < width)
   width = center_y-2;
 
-width = width * 2 / ScreenScale;
+POINT startfinishline[2] = {{0,-width/ScreenScale},
+                            {0,width/ScreenScale}};
 
-//width = (int)((double)width*(fScaleFact));
-
-
-POINT startfinishline[2] = {{0,-width/2},
-                            {0,+width/2}};
-
-POINT track[3] = {{0,-width/10},
-{width/4,0},
-                  {0,width/10}};
+POINT track[3] = {{0,-width/5/ScreenScale},
+                  {width/2/ScreenScale,0},
+                  {0,width/5/ScreenScale}};
 if(TaskIdx == finish)
 {
-track[0].x = -width/4 ; track[0].y= -width/10;
-track[1].x = 0 ; track[1].y= 0;
-track[2].x = -width/4 ; track[2].y= width/10;
+  track[0].x = -width/2/ScreenScale; track[0].y= -width/5/ScreenScale;
+  track[1].x = 0 ; track[1].y= 0;
+  track[2].x = -width/2/ScreenScale ; track[2].y= width/5/ScreenScale;
 }
 
 LockTaskData(); // protect from external task changes
