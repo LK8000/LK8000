@@ -143,7 +143,7 @@ int dlgComboPicker(WndProperty* theProperty){
 
     if (!wf) return -1;
 
-    LKASSERT(wf->GetWidth() <1200);  // sometimes we have a bogus window, setfocus goes nuts
+    LKASSERT(wf->GetWidth() <=ScreenSizeX);  // sometimes we have a bogus window, setfocus goes nuts
 
     wf->SetCaption(theProperty->GetCaption());
 
