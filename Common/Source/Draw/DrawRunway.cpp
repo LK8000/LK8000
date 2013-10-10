@@ -42,18 +42,24 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 	  Center_y = rc.bottom +(rc.top-rc.bottom)/2;
   }
   int l,p,b;
-
-  switch(ScreenSize) {
-	case ss240x320:
-	case ss320x240:
-	case ss480x272:
-	case ss272x480:
- 	  	fScaleFact /= 800; // (*=1.6 after /= 1600 is equale to /1000)
+  if(picto)
+	fScaleFact /=1600;
+  else
+  {
+    switch(ScreenSize) {
+	  case ss240x320:
+	  case ss320x240:
+	  case ss480x272:
+	  case ss272x480:
+ 	  	fScaleFact /= 1000; // (*=1.6 after /= 1600 is equale to /1000)
 		break;
-	default:
+
+	  default:
 		fScaleFact /=1600;
 		break;
+    }
   }
+
 
   if (DoInit[MDI_MAPWPVECTORS])
   {

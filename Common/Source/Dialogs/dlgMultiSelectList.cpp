@@ -476,7 +476,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 		    if (WayPointCalc[idx].IsLandable )
 		    {
 
-			MapWindow::DrawRunway(hDC,&WayPointList[idx],  rc, 2000*ScreenScale, true);
+			MapWindow::DrawRunway(hDC,&WayPointList[idx],  rc, 4000 , true);
 
 			if( WayPointCalc[idx].IsAirport)
 			{
@@ -532,7 +532,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
           {
 			LockTaskData(); // protect from external task changes
         	int iTaskIdx = Elements[i].iIdx;
-  			MapWindow::DrawTaskPicto(hDC, iTaskIdx,  rc, 2500);
+  			MapWindow::DrawTaskPicto(hDC, iTaskIdx,  rc, 3000);
         	int iLastTaskPoint=0;
 
         	while( ValidTaskPoint(iLastTaskPoint))

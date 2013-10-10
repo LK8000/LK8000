@@ -42,7 +42,7 @@ finish--;
 if(center_y < width)
   width = center_y-2;
 
-fScaleFact /= (2500.0);
+width = width * 2 / ScreenScale;
 
 //width = (int)((double)width*(fScaleFact));
 
