@@ -9,6 +9,7 @@
 #include "externs.h"
 
 #include "devFlytec.h"
+#include "Parser.h"
 
 extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
@@ -179,6 +180,14 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   // TIME
   // ignoring 00:00.00
   // We need to manage UTC time
+#ifndef OLD_TIME_MODIFY
+  static int StartDay=-1;
+  if (pGPS->SatellitesUsed>0) {
+      NMEAParser::ExtractParameter(String,ctemp,0+offset);
+      pGPS->Time = TimeModify(ctemp, pGPS, StartDay);
+  }
+  // TODO : check if TimeHasAdvanced check is needed (cf. Parser.cpp) 
+#else
   NMEAParser::ExtractParameter(String,ctemp,0+offset);
   double fixTime = StrToDouble(ctemp,NULL);
 
@@ -226,7 +235,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
         }
 	pGPS->Time = fixTime;
   }
-
+#endif  
 
   // HPA from the pressure sensor
   //   NMEAParser::ExtractParameter(String,ctemp,10+offset);
