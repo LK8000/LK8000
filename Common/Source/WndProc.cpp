@@ -250,6 +250,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
       break;
 
+#ifdef PNA
 #if TESTBENCH
     case WM_DEVICECHANGE:
 	 TCHAR serr[50];
@@ -264,6 +265,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	 }
 	 return TRUE; // acknowledge
 	 break;
+#endif
 #endif
 
     default:
