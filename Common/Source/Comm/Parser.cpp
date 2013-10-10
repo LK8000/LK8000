@@ -182,6 +182,7 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
 // Make time absolute, over 86400seconds when day is changing
 // We need a valid date to use it. We are relying on StartDay.
 //
+#ifdef OLD_TIME_MODIFY
 double NMEAParser::TimeModify(double FixTime, NMEA_INFO* pGPS)
 {
   static  int day_difference=0, previous_months_day_difference=0;
@@ -198,7 +199,35 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* pGPS)
   pGPS->Second = (int)secs;
 
   FixTime = secs + (pGPS->Minute*60) + (pGPS->Hour*3600);
+#else
+double TimeModify(const TCHAR* StrTime, NMEA_INFO* pGPS, int& StartDay) {
+    static int day_difference = 0, previous_months_day_difference = 0;
+    double secs = 0.0;
 
+    if (iswdigit(StrTime[0]) && iswdigit(StrTime[1])) {
+        pGPS->Hour = (StrTime[0] - '0')*10 + (StrTime[1] - '0');
+    }
+    if (iswdigit(StrTime[2]) && iswdigit(StrTime[3])) {
+        pGPS->Minute = (StrTime[2] - '0')*10 + (StrTime[3] - '0');
+    }
+    if (iswdigit(StrTime[4]) && iswdigit(StrTime[5])) {
+        pGPS->Second = (StrTime[4] - '0')*10 + (StrTime[5] - '0');
+    }
+
+    if (StrTime[6] == '.') {
+        int i = 7;
+        while (iswdigit(StrTime[i])) {
+            double tmp = (StrTime[i] - '0')*0.1;
+            for (int j = 7; j < i; ++j) {
+                tmp *= 0.1;
+            }
+            secs += tmp;
+            ++i;
+        }
+    }
+
+    double FixTime = secs + (double) (pGPS->Second + (pGPS->Minute * 60) + (pGPS->Hour * 3600));
+#endif
   if ((StartDay== -1) && (pGPS->Day != 0)) {
     StartupStore(_T(". First GPS DATE: %d-%d-%d  %s%s"), pGPS->Year, pGPS->Month, pGPS->Day,WhatTimeIsIt(),NEWLINE);
     StartDay = pGPS->Day;
@@ -287,7 +316,11 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   // use valid time with invalid fix
   GLLtime = StrToDouble(params[4],NULL);
   if (!RMCAvailable &&  !GGAAvailable && (GLLtime>0)) {
+#ifndef OLD_TIME_MODIFY
+	double ThisTime = TimeModify(params[4], pGPS, StartDay);
+#else
 	double ThisTime = TimeModify(GLLtime, pGPS);
+#endif 
 	if (!TimeHasAdvanced(ThisTime, pGPS)) return FALSE; 
   }
   if (!gpsValid) return FALSE;
@@ -451,8 +484,11 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 force_advance:
 		RMCtime = StrToDouble(params[0],NULL);
+#ifndef OLD_TIME_MODIFY
+		double ThisTime = TimeModify(params[0], pGPS, StartDay);
+#else
 		double ThisTime = TimeModify(RMCtime, pGPS);
-
+#endif
 		// RMC time has priority on GGA and GLL etc. so if we have it we use it at once
 		if (!TimeHasAdvanced(ThisTime, pGPS)) {
 			#if DEBUGSEQ
@@ -620,8 +656,11 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	#if DEBUGSEQ
 	StartupStore(_T("... GGA update time = %f RMCtime=%f\n"),GGAtime,RMCtime); // 31C
 	#endif
+#ifndef OLD_TIME_MODIFY
+	double ThisTime = TimeModify(params[0], pGPS, StartDay);
+#else
 	double ThisTime = TimeModify(GGAtime, pGPS);
-
+#endif
 	if (!TimeHasAdvanced(ThisTime, pGPS)) {
 		#if DEBUGSEQ
 		StartupStore(_T(".... GGA time not advanced, skip\n")); // 31C

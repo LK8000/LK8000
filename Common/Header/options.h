@@ -90,6 +90,7 @@
 #define SHOW_FOUND_WAYPOINT    // show best found waypoint on active keyboard
 #define SELECT_FOUND           // preselect best fit waypoint in waypoint list.
 
+//#define OLD_TIME_MODIFY // retore old TimeModify(...) Funtion
 /*
  * MULTISELECT OPTIONS 
  */
