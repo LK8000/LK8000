@@ -16,6 +16,7 @@
 #include "InputEvents.h"
 #include "Units.h"
 #include "Multimap.h"
+#include "Sideview.h"
 #define LINE_HEIGT 50
 
 extern  int FindNearestWayPoint(double X, double Y, double MaxRange,               bool exhaustive);
@@ -583,8 +584,54 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 	     * IM_FLARM
 	     ************************************************************************************************/
 		case IM_FLARM:
-		  LKASSERT(Elements[i].ptr);
+#define	MS_INFO_FLARM_UPDATE
+#ifdef MS_INFO_FLARM_UPDATE
+		  LKASSERT(Elements[i].iIdx	 < FLARM_MAX_TRAFFIC);
+		  LKASSERT(Elements[i].iIdx	 >= 0);
+
+		  FLARM_TRAFFIC Target;
+		  LockFlightData();
+			memcpy( &Target, &GPS_INFO.FLARM_Traffic[Elements[i].iIdx], sizeof(	FLARM_TRAFFIC));
+		  UnlockFlightData();
+
+		  pFlarm= ( FLARM_TRAFFIC* )  &Target;
+#else
 		  pFlarm= ( FLARM_TRAFFIC* )Elements[i].ptr;
+#endif
+		  LKASSERT(pFlarm);
+		  double Bear;
+
+          DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pFlarm->Latitude,  pFlarm->Longitude, &Distance, &Bear);
+#ifdef RELATIVE_POSITION
+          bool northup = true;
+  	      if  (MapSpaceMode==MSM_MAP)
+  	      {
+
+  	        MapWindow::SetAutoOrientation(true); // 101008 reset it
+  	        switch(DisplayOrientation)
+  	        {
+              case TRACKUP     : northup = false ; break;  // _@M737_ "Track up"
+              case NORTHUP     : northup = true  ; break;  // _@M483_ "North up"
+              case NORTHCIRCLE : northup = false ; break;  // _@M482_ "North circling"
+              case TRACKCIRCLE : northup = false ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
+              case NORTHTRACK  : northup = false ; break;  // _@M484_ "North/track"
+              case NORTHSMART  : northup = true  ; break;  // _@M481_ "North Smart"
+  	        }
+  	      }
+  	      else
+  	      {
+  		    if(!GetMMNorthUp(GetSideviewPage()))
+  		      northup = false;
+  	      }
+
+     //     if(!northup)
+          {
+            pFlarm->TrackBearing =  AngleLimit360( pFlarm->TrackBearing -GPS_INFO.TrackBearing);
+
+            Bear =  AngleLimit360(GPS_INFO.TrackBearing-Bear);
+            if(Bear > 180.0) Bear -=360.0;
+          }
+#endif
 		  MapWindow::DrawFlarmPicto(hDC, rc, pFlarm);
 
           if(_tcscmp(pFlarm->Name,_T("?")) ==0)
@@ -612,12 +659,13 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
           }
 		  if(flarmId != NULL)
 			_stprintf(Comment,TEXT("%s"), flarmId->airfield);
-		  _stprintf(text2,TEXT("(%3.1f%s  %i%s  %3.1f%s) %s"), pFlarm->Average30s *  LIFTMODIFY                  //        5
+		  _stprintf(text2,TEXT("(%3.1f%s  %i%s | %3.1f%s %i°) %s"), pFlarm->Average30s *  LIFTMODIFY                  //        5
 					                                         , Units::GetVerticalSpeedName()                     // 3+2=   5
 			                                                 , (int)(pFlarm->RelativeAltitude * ALTITUDEMODIFY)  //        5
                                                              , Units::GetAltitudeName()                          // 3+2=   5
-			                                                 , pFlarm->Distance*DISTANCEMODIFY                   //        6
+			                                                 , Distance*DISTANCEMODIFY                   //        6
 			                                                 , Units::GetDistanceName()                          // 2+3=   5
+		                                                     , (int) Bear
 			                                                 , Comment );         //FLARMID_SIZE_AIRFIELD                  22  =>  53 char
 
 
