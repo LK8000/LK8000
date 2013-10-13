@@ -17,7 +17,7 @@
     <WndProperty Name="prpPGGateIntervalTime" Caption="_@M320_" X="2" Y="106" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H532_" Keyboard="1">
       <DataField Name="" DataType="double" DisplayFormat="%.0f m" EditFormat="%.0f" Min="1" Max="480" Step="1"/>
     </WndProperty>
-    <WndProperty Name="prpPGCloseTimeH" Caption="_@M2153_" X="2" Y="128"   Width="200" Height="22" CaptionWidth="150" Font="2" Help="_@H1265_">
+    <WndProperty Name="prpPGCloseTimeH" Caption="_@M2153_" X="2" Y="128"   Width="200" Height="22" CaptionWidth="150" Font="2" Help="_@H1266_">
       <DataField name="" DataType="double" DisplayFormat="h %.0f" EditFormat="%.0f" Min="0" Max="23" Step="1"/>
     </WndProperty>
     <WndProperty Name="prpPGCloseTimeM" Caption=":"  X="200" Y="128"  Width="38" Height="22" CaptionWidth="5" Font="2" Help="_@H1266_">

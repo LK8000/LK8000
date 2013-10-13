@@ -854,8 +854,6 @@ For task races with at least 1 time gate, set the start local time. If gate numb
 
 @532
 If you have more than 1 time gate, set the interval time IN MINUTES for the others.
-If you have only 1 gate, closing at a certain time, set the time interval to that time difference.
-If you have only 1 gate, and no closing time, set interval to a large value such as 480 minutes.
 
 @533
 Start IN (Exit): when the pilot leaves the sector or cylinder from inside to outside.
