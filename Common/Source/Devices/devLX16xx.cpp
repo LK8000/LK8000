@@ -373,7 +373,7 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP1(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+bool DevLX16xx::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -383,9 +383,43 @@ bool DevLX16xx::LXWP1(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
   // software version float sw version
   // hardware version float hw version
   // license string (option to store a license of PDA SW into LX1600)
+ // ParToDouble(sentence, 1, &MACCREADY);
+//	$LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
+#ifdef DEVICE_SERIAL
+  TCHAR ctemp[80];
+  static int NoMsg;
+  static int oldSerial;
+  if((( pGPS->SerialNumber == 0) && (NoMsg <10)) || ( pGPS->SerialNumber != oldSerial))
+  {
+	NoMsg++ ;
+    NMEAParser::ExtractParameter(String,d->Name,0);
 
+    StartupStore(_T(". %s\n"),ctemp);
+
+	NMEAParser::ExtractParameter(String,ctemp,1);
+	pGPS->SerialNumber= (int)StrToDouble(ctemp,NULL);
+	oldSerial = pGPS->SerialNumber;
+	_stprintf(ctemp, _T("%s Serial Number %i"), d->Name, pGPS->SerialNumber);
+	StartupStore(_T(". %s\n"),ctemp);
+
+	NMEAParser::ExtractParameter(String,ctemp,2);
+	pGPS->SoftwareVer= StrToDouble(ctemp,NULL);
+	_stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, pGPS->SoftwareVer);
+	StartupStore(_T(". %s\n"),ctemp);
+
+	NMEAParser::ExtractParameter(String,ctemp,3);
+    pGPS->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
+	_stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(pGPS->HardwareId)/10.0);
+	StartupStore(_T(". %s\n"),ctemp);
+    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, pGPS->SerialNumber);
+    DoStatusMessage(ctemp);
+    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  pGPS->SoftwareVer, (double)(pGPS->HardwareId)/10.0);
+    DoStatusMessage(ctemp);
+  }
   // nothing to do
+#endif
   return(true);
+
 } // LXWP1()
 
 

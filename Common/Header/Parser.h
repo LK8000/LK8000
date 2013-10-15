@@ -135,7 +135,11 @@ typedef struct _NMEA_INFO
   FLARM_TRACE	FLARM_RingBuf[MAX_FLARM_TRACES];
   bool FLARMTRACE_bBuffFull;
   int  FLARMTRACE_iLastPtr;
-
+#ifdef DEVICE_SERIAL
+  int HardwareId;
+  int SerialNumber;
+  double SoftwareVer;
+#endif  
   #if LOGFRECORD
   int SatelliteIDs[MAXSATELLITES];
   #endif
