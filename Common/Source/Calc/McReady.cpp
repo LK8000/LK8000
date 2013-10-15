@@ -50,10 +50,14 @@ void GlidePolar::SetBallast() {
     WingLoading = 0;
   }
   BallastWeight = (double)sqrt(BallastWeight);
+  #if BUGSTOP
   LKASSERT(BUGS!=0);
+  #endif
   if (BUGS==0) BUGS=1;
   double bugfactor = 1.0/BUGS;
+  #if BUGSTOP
   LKASSERT(BallastWeight!=0);
+  #endif
   if (BallastWeight==0) BallastWeight=1;
   polar_a = POLAR[0] / BallastWeight*bugfactor;
   polar_b = POLAR[1] * bugfactor;
@@ -84,7 +88,9 @@ void GlidePolar::SetBallast() {
       double thesinkrate 
         =  -SinkRate(polar_a,polar_b,polar_c,0,0,vtrack);
 
+      #if BUGSTOP
       LKASSERT(thesinkrate!=0);
+      #endif
       if (thesinkrate==0) thesinkrate=0.001;
       double ld = vtrack/thesinkrate;
       if (ld>=bestld) {
@@ -226,7 +232,9 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
 	// WE ARE REWRITING EMCREADY!
       emcready = max(MIN_MACCREADY,emcready);
       sinkrate = -_SinkRateFast(0.0, i);
+      #if BUGSTOP
       LKASSERT((sinkrate+emcready)!=0);
+      #endif
       if ( (sinkrate+emcready)==0 ) sinkrate+=0.1; // to check
       tc = max(0.0,min(1.0,emcready/(sinkrate+emcready)));
     }
@@ -263,7 +271,9 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
     } else {
       // time spent in cruise
       double Time_cruise = (tc/vtot)*Distance;
+      #if BUGSTOP
       LKASSERT(emcready!=0);
+      #endif
       if (emcready==0) emcready=0.1;
       double Time_climb = sinkrate*(Time_cruise/emcready);
 
@@ -426,7 +436,9 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
         // use law of sines to calc other triangle side lengths.
         // We’ll use multiplier twice, so calculate it just once:
 
+        #if BUGSTOP
 	LKASSERT(AngleBrg!=0);
+        #endif
 	if (AngleBrg==0) AngleBrg=1;
         Multiplier = Distance / fastsine(AngleBrg);
 
@@ -437,7 +449,9 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
 
         // altitude gained while circling
 
+        #if BUGSTOP
         LKASSERT(WindSpeed!=0);
+        #endif
         double WindSpeedCopy = (WindSpeed == 0) ? 0.01 : WindSpeed;
         AltGain = DistDrift * emcready / WindSpeedCopy;
 
