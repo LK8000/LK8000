@@ -275,7 +275,30 @@ static void UpdateValuesSystem() {
   if (wp) {
     if (GPS_INFO.VarioAvailable) {
 	// LKTOKEN  _@M199_ = "Connected" 
-      wp->SetText(gettext(TEXT("_@M199_")));
+#ifdef DEVICE_SERIAL	
+     if(GPS_INFO.HardwareId >0)
+     {
+    	  TCHAR sDevice[32]={0};
+ 		if((pDevSecondaryBaroSource != NULL))
+           if(!(pDevSecondaryBaroSource->Disabled) &&
+              (pDevSecondaryBaroSource->Name != NULL))
+           {
+             _stprintf(sDevice, TEXT("%s"), pDevSecondaryBaroSource->Name  );
+           }
+
+ 		if((pDevPrimaryBaroSource != NULL))
+           if(!(pDevPrimaryBaroSource->Disabled) &&
+              (pDevPrimaryBaroSource->Name != NULL))
+           {
+             _stprintf(sDevice, TEXT("%s"), pDevPrimaryBaroSource->Name );
+           }
+
+	  _stprintf(Temp,TEXT("%s (%i)"),sDevice, GPS_INFO.HardwareId);
+		wp->SetText(Temp);
+     }
+     else
+#endif     
+	   wp->SetText(gettext(TEXT("_@M199_")));
     } else {
 	// LKTOKEN  _@M240_ = "Disconnected" 
       wp->SetText(gettext(TEXT("_@M240_")));
