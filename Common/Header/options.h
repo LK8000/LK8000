@@ -86,6 +86,7 @@
   #define ASP_WARNING_PICTO
 #endif
 
+#define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
 #define AIRSPACE_BORDER        // switch for new airspace orders
 #define SHOW_FOUND_WAYPOINT    // show best found waypoint on active keyboard
 #define SELECT_FOUND           // preselect best fit waypoint in waypoint list.

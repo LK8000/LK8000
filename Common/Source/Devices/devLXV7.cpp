@@ -197,7 +197,7 @@ bool DevLXV7::SetupLX_Sentence(PDeviceDescriptor_t d)
 TCHAR  szTmp[254];
 
 
-_stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,2,5,0,0,1,0,0"));
+_stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,2,5,0,10,1,0,0"));
   LXV7NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
@@ -331,7 +331,7 @@ BOOL DevLXV7::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
   /* configure LX after 10 GPS positions */
   if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
   {
-    if(i++ > 4)
+    if(i++ > 30)
     {
       SetupLX_Sentence(d);
 	  i=0;
@@ -377,8 +377,11 @@ else
 	if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
 	  return PLXV0(d, sentence + 7, info);
 	else
-      if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-        return LXWP2(d, sentence + 7, info);
+      if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+        return LXWP1(d, sentence + 7, info);
+      else
+        if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+          return LXWP2(d, sentence + 7, info);
 
 
 #ifdef OLD_LX_SENTENCES
@@ -427,6 +430,7 @@ bool DevLXV7::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
 
 
 
+
  /*
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
@@ -449,7 +453,7 @@ bool DevLXV7::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7::LXWP1(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+bool DevLXV7::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -459,9 +463,42 @@ bool DevLXV7::LXWP1(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
   // software version float sw version
   // hardware version float hw version
   // license string (option to store a license of PDA SW into LX1600)
+ // ParToDouble(sentence, 1, &MACCREADY);
+//	$LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
+#ifdef DEVICE_SERIAL
+  TCHAR ctemp[80];
+  static int NoMsg;
+  static int oldSerial;
+  if((( pGPS->SerialNumber == 0) && (NoMsg <10)) || ( pGPS->SerialNumber != oldSerial))
+  {
+	NoMsg++ ;
+    NMEAParser::ExtractParameter(String,d->Name,0);
 
+    StartupStore(_T(". %s\n"),ctemp);
+
+	NMEAParser::ExtractParameter(String,ctemp,1);
+	pGPS->SerialNumber= (int)StrToDouble(ctemp,NULL);
+	oldSerial = pGPS->SerialNumber;
+	_stprintf(ctemp, _T("%s Serial Number %i"), d->Name, pGPS->SerialNumber);
+	StartupStore(_T(". %s\n"),ctemp);
+
+	NMEAParser::ExtractParameter(String,ctemp,2);
+	pGPS->SoftwareVer= StrToDouble(ctemp,NULL);
+	_stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, pGPS->SoftwareVer);
+	StartupStore(_T(". %s\n"),ctemp);
+
+	NMEAParser::ExtractParameter(String,ctemp,3);
+    pGPS->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
+	_stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(pGPS->HardwareId)/10.0);
+	StartupStore(_T(". %s\n"),ctemp);
+    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, pGPS->SerialNumber);
+    DoStatusMessage(ctemp);
+    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  pGPS->SoftwareVer, (double)(pGPS->HardwareId)/10.0);
+    DoStatusMessage(ctemp);
+  }
   // nothing to do
-  return(true);
+  #endif
+  return(true);  
 } // LXWP1()
 
 
