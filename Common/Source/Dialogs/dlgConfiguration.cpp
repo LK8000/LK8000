@@ -30,16 +30,13 @@
 
 #include "utils/stl_utils.h"
 #include "BtHandler.h"
-#include <tr1/functional>
+#include <functional>
 
-using namespace std::tr1::placeholders;
 
 extern void UpdateAircraftConfig(void);
 extern void dlgCustomMenuShowModal(void);
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName);
-void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
-
 
 static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
@@ -172,6 +169,20 @@ int GlobalToBoxType(int i) {
 	}
 	return iTmp;
 }
+
+struct ShowWindowControl {
+    ShowWindowControl(WndForm* pOwner, bool bShow) : _pOwner(pOwner), _bShow(bShow) { }
+    
+    void operator()(const TCHAR* WndName) {
+        WindowControl* pWnd = _pOwner->FindByName(WndName);
+        if(pWnd) {
+            pWnd->SetVisible(_bShow);
+        }
+    }
+private:
+    WndForm* _pOwner;
+    bool _bShow;
+};
 
 static void UpdateButtons(void) {
   TCHAR text[120];
@@ -499,8 +510,8 @@ static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
     if (begin(DeviceList) + idx < end(DeviceList)) {
         DeviceList[idx].Disabled = (_tcslen(Name) == 0) || (_tcscmp(Name, _T(DEV_DISABLED_NAME)) == 0);
 
-        ShowWindowControl(wf, DevicePropName[idx], !(DeviceList[idx].Disabled));
-        ShowWindowControl(wf, SetupButtonName[idx], false/*DeviceList[idx].DoSetup*/);  
+        ShowWindowControl(wf, !(DeviceList[idx].Disabled))(DevicePropName[idx]);
+        ShowWindowControl(wf, false/*DeviceList[idx].DoSetup*/)(SetupButtonName[idx]);  
         
         WndProperty* wp = (WndProperty*) wf->FindByName(DevicePropName[idx]);
         if (wp) {
@@ -1541,13 +1552,6 @@ static void OnBthDevice(WindowControl * Sender) {
 
 }
 
-void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
-    WindowControl* pWnd = wf->FindByName(WndName);
-    if(pWnd) {
-        pWnd->SetVisible(bShow);
-    }
-}
-
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
     const TCHAR* PortPropName[][2] = { 
         { _T("prpComSpeed1"), _T("prpComBit1") }, 
@@ -1565,7 +1569,7 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
         std::for_each(
             begin(PortPropName[idx]), 
             end(PortPropName[idx]), 
-            std::tr1::bind(ShowWindowControl, wf, _1, !bHide)
+            ShowWindowControl(wf, !bHide)
         );
     }
 }
@@ -1756,13 +1760,12 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
             std::for_each(
             	COMMPort.begin(),
             	COMMPort.end(),
-            	std::tr1::bind(&DataFieldEnum::addEnumText, dfe, bind(&COMMPortItem_t::GetLabel, _1))
+            	std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe)
             );
             COMMPort_t::iterator It = std::find_if(
-                COMMPort.begin(), 
-                COMMPort.end(), 
-                std::tr1::bind(&COMMPortItem_t::IsSamePort, _1, szPort)
-            );
+                COMMPort.begin(), COMMPort.end(), 
+                std::bind2nd(std::mem_fun_ref(&COMMPortItem_t::IsSamePort), szPort));
+            
             if(It != COMMPort.end()) {
                 dfe->Set(std::distance(COMMPort.begin(), It));
             } else {
@@ -1835,7 +1838,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    std::for_each(begin(tSpeed), end(tSpeed), std::tr1::bind(&DataFieldEnum::addEnumText, dfe, _1));
+    std::for_each(begin(tSpeed), end(tSpeed), std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe));
     
     dfe->Set(dwSpeedIndex1);
     wp->SetReadOnly(false);
@@ -1885,7 +1888,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    std::for_each(begin(tSpeed), end(tSpeed), std::tr1::bind(&DataFieldEnum::addEnumText, dfe, _1));
+    std::for_each(begin(tSpeed), end(tSpeed), std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe));
 
     dfe->Set(dwSpeedIndex2);
     wp->RefreshDisplay();

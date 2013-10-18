@@ -14,9 +14,7 @@
 #include "BtHandler.h"
 #include "utils/stl_utils.h"
 #include <algorithm>
-#include <tr1/functional>
-
-using namespace std::tr1::placeholders;
+#include <functional>
 
 BthPort::BthPort(int idx, const std::wstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET) {
 
@@ -157,7 +155,7 @@ DWORD BthPort::RxThread() {
 
         int nRecv = ReadData(szString);
         if (nRecv > 0) {
-            std::for_each(begin(szString), begin(szString) + nRecv, std::tr1::bind(&BthPort::ProcessChar, this, _1));
+            std::for_each(begin(szString), begin(szString) + nRecv, std::bind1st(std::mem_fun(&BthPort::ProcessChar), this));
             dwWaitTime = 5; // avoid cpu overhead;
         } else {
             dwWaitTime = 50; // if no more data wait 100ms ( max data rate 10Hz )

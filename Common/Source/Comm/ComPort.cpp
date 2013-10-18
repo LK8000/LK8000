@@ -13,9 +13,7 @@
 #include "utils/stl_utils.h"
 #include <algorithm>
 #include "dlgTools.h"
-#include <tr1/functional>
-
-using namespace std::tr1::placeholders;
+#include <functional>
 
 ComPort::ComPort(int idx, const std::wstring& sName) : devIdx(idx), sPortName(sName) {
     pLastNmea = begin(_NmeaString);
