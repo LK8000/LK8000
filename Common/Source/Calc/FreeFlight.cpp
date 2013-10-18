@@ -106,9 +106,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 //	if ( !(SIMMODE && !ReplayLogger::IsEnabled()) )
 	  {
 
-		LockFlightData();
-		double AltitudeAGL = CALCULATED_INFO.AltitudeAGL;
-		UnlockFlightData();
+		double AltitudeAGL = Calculated->AltitudeAGL;
 
 	    double dist = 0;
 	    if(GearWarningMode ==1){
