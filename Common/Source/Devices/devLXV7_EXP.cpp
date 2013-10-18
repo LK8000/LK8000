@@ -367,6 +367,7 @@ MinLon *=60;
 #ifdef SET_VALUES_BY_RMB
   if(bTaskpresent)
   {
+#ifdef NO_RMB_BUT_PLXVTARG
 	                     //  $GPRMB,A,0.66,L,003,004 ,4917.24   ,N ,12309.57  ,W ,01.3,52.5,00.5,V*20
     _stprintf( szTmp,  TEXT("$GPRMB,A,0.00,R,XXX,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%.1f,%.1f,%.1f,V"),
                gettext(TEXT("_@M1323_")), // LKTOKEN _@M1323_ "T>"
@@ -381,16 +382,16 @@ MinLon *=60;
 #if TESTBENCH
     StartupStore(TEXT("V7: %s"),szTmp);
 #endif
-
-    _stprintf( szTmp,  TEXT("$PLXVTARG,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%.0f"),
+#else
+    _stprintf( szTmp,  TEXT("$PLXVTARG,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%i "),
                gettext(TEXT("_@M1323_")), // LKTOKEN _@M1323_ "T>"
 	           WayPointList[overindex].Name,
                DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-               WayPointList[overindex].Altitude
+               (int) (WayPointList[overindex].Altitude +0.5)
              );
     LXV7_EXPNMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
-
+#endif
 #if TESTBENCH
     StartupStore(TEXT("V7: %s"),szTmp);
 #endif
@@ -398,6 +399,7 @@ MinLon *=60;
   }
   else
   {                          //  $GPRMB,A,0.66,L,003,004 ,4917.24   ,N ,12309.57  ,W ,01.3,52.5,00.5,V*20
+#ifdef NO_RMB_BUT_PLXVTARG
     _stprintf( szTmp,  TEXT("$GPRMB,A,0.00,R,XXX,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%.1f,%.1f,%.1f,V"),
 	           GetOvertargetHeader(),
 		       WayPointList[overindex].Name,
@@ -411,16 +413,16 @@ MinLon *=60;
 #if TESTBENCH
 	StartupStore(TEXT("V7: %s"),szTmp);
 #endif
-
-	_stprintf( szTmp,  TEXT("$PLXVTARG,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%.0f"),
+#else
+	_stprintf( szTmp,  TEXT("$PLXVTARG,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%i "),
 	           GetOvertargetHeader(),
 		       WayPointList[overindex].Name,
 	           DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-	           WayPointList[overindex].Altitude
+	           (int)(WayPointList[overindex].Altitude +0.5)
 	         );
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-
+#endif
 #if TESTBENCH
 	StartupStore(TEXT("V7: %s"),szTmp);
 #endif
@@ -945,12 +947,22 @@ TCHAR  szTmp1[80], szTmp2[80];
 	return true;
   }
 
+
   if (_tcscmp(szTmp1,_T("BRPDA"))==0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	LXV7_EXP_iPDABaudrate = LXV7_EXPBaudrate( (int) StrToDouble(szTmp2,NULL));
 	return true;
   }
+
+  NMEAParser::ExtractParameter(sentence,szTmp1,0);
+  if  (_tcscmp(szTmp1,_T("QNH"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	QNH =  (StrToDouble(szTmp2,NULL))/100.0;
+	return true;
+  }
+
 #ifdef DEBUG_PARAMETERS
   if (_tcscmp(szTmp1,_T("MC"))==0)
   {

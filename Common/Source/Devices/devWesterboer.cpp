@@ -223,7 +223,7 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   {
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
-    pGPS->HardwareId= StrToDouble(ctemp,NULL);
+    pGPS->HardwareId= (int)StrToDouble(ctemp,NULL);
     switch (pGPS->HardwareId)
     {
       case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
@@ -468,7 +468,7 @@ static BOOL PWES2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   {
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
-    pGPS->HardwareId= StrToDouble(ctemp,NULL);
+    pGPS->HardwareId= (int)StrToDouble(ctemp,NULL);
     switch (pGPS->HardwareId)
     {
       case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
