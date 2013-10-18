@@ -410,6 +410,7 @@ void LKProfileResetDefault(void) {
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
   _tcscpy(LiveTrackersrv_Config,_T("www.livetrack24.com"));
+  LiveTrackerport_Config = 80;
   _tcscpy(LiveTrackerusr_Config,_T("LK8000"));
   _tcscpy(LiveTrackerpwd_Config,_T(""));
 

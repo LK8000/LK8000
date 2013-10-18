@@ -512,6 +512,7 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
  // PREAD(sname,svalue,szRegistryPGStartOut,&PGStartOut);
   PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config);
   PREAD(sname,svalue,szRegistryLiveTrackersrv,&*LiveTrackersrv_Config);
+  PREAD(sname,svalue,szRegistryLiveTrackerport,&LiveTrackerport_Config);
   PREAD(sname,svalue,szRegistryLiveTrackerusr,&*LiveTrackerusr_Config);
   PREAD(sname,svalue,szRegistryLiveTrackerpwd,&*LiveTrackerpwd_Config);
   PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile);

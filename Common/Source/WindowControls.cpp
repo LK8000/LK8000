@@ -1113,7 +1113,6 @@ int DataFieldFloat::SetFromCombo(int iDataFieldIndex, TCHAR *sValue) {
   return 0;
 }
 
-extern void dlgNumEntryShowModal(TCHAR *text, int width, bool );
 int DataFieldFloat::CreateKeyboard(void){
 	TCHAR szText[20];
 	_tcscpy(szText, GetAsString());
