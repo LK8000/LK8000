@@ -85,6 +85,7 @@ static WndFrame *wConfig25=NULL;
 
 static WndButton *buttonPilotName=NULL;
 static WndButton *buttonLiveTrackersrv=NULL;
+static WndButton *buttonLiveTrackerport=NULL;
 static WndButton *buttonLiveTrackerusr=NULL;
 static WndButton *buttonLiveTrackerpwd=NULL;
 static WndButton *buttonAircraftType=NULL;
@@ -857,6 +858,18 @@ static void OnLiveTrackersrvClicked(WindowControl *Sender) {
     _tcscpy(Temp,LiveTrackersrv_Config);
     dlgTextEntryShowModal(Temp,100);
     _tcscpy(LiveTrackersrv_Config,Temp);
+  }
+  UpdateButtons();
+}
+
+static void OnLiveTrackerportClicked(WindowControl *Sender) {
+  (void)Sender;
+  TCHAR Temp[100];
+  if (buttonLiveTrackerport) {
+    _stprintf(Temp,_T("%d"), LiveTrackerport_Config);
+    dlgNumEntryShowModal(Temp,100,false);
+    TCHAR *sz=NULL;
+    LiveTrackerport_Config=_tcstol(Temp, &sz, 10);
   }
   UpdateButtons();
 }
@@ -1694,6 +1707,10 @@ static void setVariables(void) {
   buttonLiveTrackersrv = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackersrv")));
   if (buttonLiveTrackersrv) {
     buttonLiveTrackersrv->SetOnClickNotify(OnLiveTrackersrvClicked);
+  }
+  buttonLiveTrackerport = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerport")));
+  if (buttonLiveTrackerport) {
+    buttonLiveTrackerport->SetOnClickNotify(OnLiveTrackerportClicked);
   }
   buttonLiveTrackerusr = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerusr")));
   if (buttonLiveTrackerusr) {
