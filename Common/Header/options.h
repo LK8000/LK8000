@@ -74,7 +74,6 @@
 
 #define MOVE_WP_PAN           // moving a task waypoint in PAN mode
 #define GEAR_WARNING          // Gear warning switch
-#define MAX_NO_GEAR_WARN 10   // max. numbers of Gerwarnings before disabled
 //#define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
 #define BEARING_INDICATOR             // show QDM arrow in pictorials
 

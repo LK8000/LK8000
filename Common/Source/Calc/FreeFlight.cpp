@@ -33,6 +33,7 @@
 #define FF_TOWING_ALTLOSS	25		// meters loss for towing
 #define FF_WINCHIN_ALTLOSS	10		// meters loss for winching, careful about GPS H errors.
 #define FF_MAXTOWTIME	1200			// 20 minutes
+#define MAX_NO_GEAR_WARN 10   			// max. numbers of Gerwarnings before disabled
 
 
 
@@ -47,6 +48,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static int    altLoss=0;
   static bool   safeTakeoffDetected=false;
   static bool   nowGearWarning = true; // init with true to prevent gear warning just after free flight detect
+  static unsigned short noMessages =0;
 
   bool forcereset=LKSW_ForceFreeFlightRestart;
 
@@ -59,6 +61,8 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     ffDetected=false;
     lastMaxAltitude=-1000;
     safeTakeoffDetected=false;
+    nowGearWarning=true; // we are here before freeflight!
+    noMessages=0;	// after a new takeoff we can give warnings again!
     DoInit[MDI_DETECTFREEFLYING]=false;
   }
 
@@ -120,8 +124,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	      }
 	    }
 
-static int NoMessages =0;
-		if (( AltitudeAGL  <=(GearWarningAltitude/1000)) && (NoMessages < MAX_NO_GEAR_WARN))
+		if (( AltitudeAGL  <=(GearWarningAltitude/1000)) && (noMessages < MAX_NO_GEAR_WARN))
 		{
 		  if(!nowGearWarning)
 		  {
@@ -130,21 +133,21 @@ static int NoMessages =0;
 			  LKSound(_T("LK_GEARWARNING.WAV"));
 			  DoStatusMessage(gettext(TEXT("_@M1834_")),NULL,false);  // LKTOKEN _@M1834_ "Prepare for landing !"
 			  nowGearWarning=true;
-			  NoMessages++;
+			  noMessages++;
 
 #if TESTBENCH
 			  if(GearWarningMode ==2)
-			    StartupStore(_T("... %i. Gear warning at %im = %im [%im] AGL%s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,NEWLINE);
+			    StartupStore(_T("... %i. Gear warning at %im = %im [%im] AGL%s"),noMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,NEWLINE);
 			  else
-				 StartupStore(_T("...%i. Gear warning at %im = %im [%im] over landable %s (%im)%s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
+				 StartupStore(_T("...%i. Gear warning at %im = %im [%im] over landable %s (%im)%s"),noMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
 #endif
 
 		    }
-			if (NoMessages==MAX_NO_GEAR_WARN) {
+			if (noMessages==MAX_NO_GEAR_WARN) {
 				StartupStore(_T("... GOING SILENT on too many Gear warnings.  %s%s"),WhatTimeIsIt(),NEWLINE);
 
 				DoStatusMessage(MsgToken(2304)); // GOING SILENT ON GEAR REPORTING
-				NoMessages++;	// we go to 11, and never be back here		  }
+				noMessages++;	// we go to 11, and never be back here		  }
 			}
 		  }
 		}
@@ -156,9 +159,9 @@ static int NoMessages =0;
             {
 #if TESTBENCH
 			  if(GearWarningMode ==2)
-			    StartupStore(_T("...rearmed %i. Gear warning at %im = %im AGL %s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,NEWLINE);
+			    StartupStore(_T("...rearmed %i. Gear warning at %im = %im AGL %s"),noMessages,(int)Basic->Altitude,(int)AltitudeAGL,NEWLINE);
 			  else
-				 StartupStore(_T("..rearmed %i. Gear warning at %im = %im over landable %s (%im)%s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
+				 StartupStore(_T("..rearmed %i. Gear warning at %im = %im over landable %s (%im)%s"),noMessages,(int)Basic->Altitude,(int)AltitudeAGL,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
 #endif
 	  		  nowGearWarning = false;
             }
