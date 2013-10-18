@@ -46,7 +46,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static short  wlaunch=0;
   static int    altLoss=0;
   static bool   safeTakeoffDetected=false;
-  static bool   nowGearWarning = false;
+  static bool   nowGearWarning = true; // init with true to prevent gear warning just after free flight detect
 
   bool forcereset=LKSW_ForceFreeFlightRestart;
 
@@ -133,6 +133,12 @@ static int NoMessages =0;
 			  DoStatusMessage(gettext(TEXT("_@M1834_")),NULL,false);  // LKTOKEN _@M1834_ "Prepare for landing !"
 			  nowGearWarning=true;
 			  NoMessages++;
+
+			  if(GearWarningMode ==2)
+			    StartupStore(_T("... %i. Gear warning at %im = %im [%im] AGL%s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,NEWLINE);
+			  else
+				 StartupStore(_T("...%i. Gear warning at %im = %im [%im] over landable %s (%im)%s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
+
 		    }
 			if (NoMessages==MAX_NO_GEAR_WARN) {
 				StartupStore(_T("... GOING SILENT on too many Gear warnings.  %s%s"),WhatTimeIsIt(),NEWLINE);
@@ -145,7 +151,16 @@ static int NoMessages =0;
 		else
 		{
 		  if(( AltitudeAGL)> ((GearWarningAltitude/1000)+100))  // re-enable warning if higher that 100m above Gear altitude
-		    nowGearWarning = false;
+		  {
+            if( nowGearWarning )
+            {
+			  if(GearWarningMode ==2)
+			    StartupStore(_T("...rearmed %i. Gear warning at %im = %im AGL %s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,NEWLINE);
+			  else
+				 StartupStore(_T("..rearmed %i. Gear warning at %im = %im over landable %s (%im)%s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
+	  		  nowGearWarning = false;
+            }
+		  }
 		}
 	}
   }
