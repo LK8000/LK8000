@@ -76,7 +76,8 @@ void dlgTaskOverviewShowModal(int Idx=-1);
 void dlgVoiceShowModal(void);
 void dlgWayPointDetailsShowModal(short mypage);
 short dlgWayQuickShowModal(void);
- int  dlgTextEntryShowModal(TCHAR *text, int width=0, bool WPKeyRed= false);
+int  dlgTextEntryShowModal(TCHAR *text, int width=0, bool WPKeyRed= false);
+void dlgNumEntryShowModal(TCHAR *text, int width, bool );
 void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
 void dlgWaypointEditShowModal(WAYPOINT *wpt);
@@ -103,6 +104,5 @@ void dlgMultimapsShowModal(void);
 #endif
 
 void WriteMissingTranslations(void);
-void dlgTextEntryKeyboardShowModal(TCHAR *text, int width=0);
 
 #endif

@@ -265,7 +265,7 @@ static bool InterruptibleSleep(int msecs)
 
 // Establish a connection with the data server
 // Returns a valid SOCKET if ok, INVALID_SOCKET if failed 
-static SOCKET EstablishConnection(char *servername)
+static SOCKET EstablishConnection(const char *servername, int serverport)
 {
   SOCKET s;
   struct hostent *server;
@@ -280,7 +280,7 @@ static SOCKET EstablishConnection(char *servername)
   memset( &sin, 0, sizeof sin );
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = ((struct in_addr *)(server->h_addr))->s_addr;
-  sin.sin_port = htons(80);
+  sin.sin_port = htons(serverport);
   if ( connect( s, (sockaddr*)&sin, sizeof(sockaddr_in) ) == SOCKET_ERROR ) {
     //could not connect to server
     closesocket(s);
@@ -307,7 +307,7 @@ static int DoTransactionToServer(char *txbuf, unsigned int txbuflen, char *rxbuf
   StartupStore(TEXT("Livetracker send: %s%s"), utxbuf, NEWLINE);
   #endif
   
-  s = EstablishConnection(_server_name);
+  s = EstablishConnection(_server_name, LiveTrackerport_Config);
   if ( s==INVALID_SOCKET ) return -1;
 
   //Send the query to the server
