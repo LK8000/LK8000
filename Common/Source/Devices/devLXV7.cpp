@@ -791,6 +791,14 @@ TCHAR  szTmp1[80], szTmp2[80];
 	LXV7_iPDABaudrate = Baudrate( (int) StrToDouble(szTmp2,NULL));
 	return true;
   }
+
+  NMEAParser::ExtractParameter(sentence,szTmp1,0);
+  if  (_tcscmp(szTmp1,_T("QNH"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	QNH =  (StrToDouble(szTmp2,NULL))/100.0;
+	return true;
+  }
 #ifdef DEBUG_PARAMETERS
   if (_tcscmp(szTmp1,_T("MC"))==0)
   {
