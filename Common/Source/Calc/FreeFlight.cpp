@@ -132,10 +132,12 @@ static int NoMessages =0;
 			  nowGearWarning=true;
 			  NoMessages++;
 
+#if TESTBENCH
 			  if(GearWarningMode ==2)
 			    StartupStore(_T("... %i. Gear warning at %im = %im [%im] AGL%s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,NEWLINE);
 			  else
 				 StartupStore(_T("...%i. Gear warning at %im = %im [%im] over landable %s (%im)%s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
+#endif
 
 		    }
 			if (NoMessages==MAX_NO_GEAR_WARN) {
@@ -152,10 +154,12 @@ static int NoMessages =0;
 		  {
             if( nowGearWarning )
             {
+#if TESTBENCH
 			  if(GearWarningMode ==2)
 			    StartupStore(_T("...rearmed %i. Gear warning at %im = %im AGL %s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,NEWLINE);
 			  else
 				 StartupStore(_T("..rearmed %i. Gear warning at %im = %im over landable %s (%im)%s"),NoMessages,(int)Basic->Altitude,(int)AltitudeAGL,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
+#endif
 	  		  nowGearWarning = false;
             }
 		  }
