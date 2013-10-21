@@ -1,4 +1,5 @@
-﻿<PMML>
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmBluetooth" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="Bluetooth" Font="2" >
     <WndListFrame Name="frmBthList" X="2" Y="2" Width="220" Height="220" Font="2" OnListInfo="OnListInfo">
       <WndOwnerDrawFrame Name="frmBthListEntry" X="2" Y="2" Width="203" Height="24" Font="2"  OnPaint="OnPaintListItem"/>
