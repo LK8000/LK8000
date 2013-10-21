@@ -28,9 +28,15 @@
 #include "Multimap.h"
 #include "Dialogs.h"
 
+#include "utils/stl_utils.h"
+#include "BtHandler.h"
+#include <functional>
+
 
 extern void UpdateAircraftConfig(void);
 extern void dlgCustomMenuShowModal(void);
+void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
+void UpdateComPortSetting(size_t idx, const TCHAR* szPortName);
 
 static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
@@ -165,6 +171,20 @@ int GlobalToBoxType(int i) {
 	return iTmp;
 }
 
+struct ShowWindowControl {
+    ShowWindowControl(WndForm* pOwner, bool bShow) : _pOwner(pOwner), _bShow(bShow) { }
+    
+    void operator()(const TCHAR* WndName) {
+        WindowControl* pWnd = _pOwner->FindByName(WndName);
+        if(pWnd) {
+            pWnd->SetVisible(_bShow);
+        }
+    }
+private:
+    WndForm* _pOwner;
+    bool _bShow;
+};
+
 static void UpdateButtons(void) {
   TCHAR text[120];
   TCHAR val[100];
@@ -218,6 +238,12 @@ static void UpdateButtons(void) {
 	// LKTOKEN  _@M938_ = "Competition ID" 
     _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M938_")), val);
     buttonCompetitionID->SetCaption(text);
+  }
+
+  WndButton* wCmdBth = ((WndButton *)wf->FindByName(TEXT("cmdBth")));
+  if(wCmdBth) {
+      CBtHandler* pHandler = CBtHandler::Get();
+      wCmdBth->SetVisible(pHandler && pHandler->IsOk());
   }
 }
 
@@ -471,52 +497,29 @@ static void OnSetupDeviceBClicked(WindowControl * Sender){
     wf->FocusNext(NULL);
 }
 
-static void UpdateDeviceSetupButton(int DeviceIdx, TCHAR *Name){ 
+static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
+    const TCHAR * DevicePropName[] = {_T("prpComPort1"), _T("prpComPort2")};
+    const TCHAR * SetupButtonName[] = {_T("cmdSetupDeviceA"), _T("cmdSetupDeviceB")};
 
-  WndButton *wb;
-  WndProperty *wp;
-  if (DeviceIdx<0||DeviceIdx>1) return;
+#if BUGSTOP
+    // check if all array have same size;
+    int DevCount = std::distance(begin(DeviceList), end(DeviceList));
+    LKASSERT(DevCount == std::distance(begin(DevicePropName), end(DevicePropName)));
+    LKASSERT(DevCount == std::distance(begin(SetupButtonName), end(SetupButtonName)));
+#endif
 
-  #ifdef DEBUG_DEVSETTING
-  StartupStore(_T("...... dev=%d, name=<%s> disabled=%d\n"),DeviceIdx, Name, DeviceList[DeviceIdx].Disabled);
-  #endif
-  if (_tcslen(Name)>0) {
-    if (_tcscmp(Name,_T(DEV_DISABLED_NAME))==0) { // Do NOT use tokens here!
-	DeviceList[DeviceIdx].Disabled=true;
-    } else {
-	DeviceList[DeviceIdx].Disabled=false;
+    if (begin(DeviceList) + idx < end(DeviceList)) {
+        DeviceList[idx].Disabled = (_tcslen(Name) == 0) || (_tcscmp(Name, _T(DEV_DISABLED_NAME)) == 0);
+
+        ShowWindowControl(wf, !(DeviceList[idx].Disabled))(DevicePropName[idx]);
+        ShowWindowControl(wf, false/*DeviceList[idx].DoSetup*/)(SetupButtonName[idx]);  
+        
+        WndProperty* wp = (WndProperty*) wf->FindByName(DevicePropName[idx]);
+        if (wp) {
+            UpdateComPortSetting(idx, wp->GetDataField()->GetAsString());
+        }
     }
-  }
-
-  if (DeviceIdx == 0){
-    wp = (WndProperty*)wf->FindByName(TEXT("prpComPort1"));
-    if (wp != NULL) wp->SetReadOnly(DeviceList[0].Disabled);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
-    if (wp != NULL) wp->SetReadOnly(DeviceList[0].Disabled);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
-    if (wp != NULL) wp->SetReadOnly(DeviceList[0].Disabled);
-
-    wb = ((WndButton *)wf->FindByName(TEXT("cmdSetupDeviceA")));
-    if (wb != NULL) wb->SetVisible(false);
-
-  }
-
-
-  if (DeviceIdx == 1){
-    wp = (WndProperty*)wf->FindByName(TEXT("prpComPort2"));
-    if (wp != NULL) wp->SetReadOnly(DeviceList[1].Disabled);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed2"));
-    if (wp != NULL) wp->SetReadOnly(DeviceList[1].Disabled);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpComBit2"));
-    if (wp != NULL) wp->SetReadOnly(DeviceList[1].Disabled);
-
-    wb = ((WndButton *)wf->FindByName(TEXT("cmdSetupDeviceB")));
-    if (wb != NULL) wb->SetVisible(false);
-
-  }
-
 }
-
 
 static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
@@ -1548,6 +1551,68 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
   }
 }
 
+static void OnBthDevice(WindowControl * Sender) {
+    (void) Sender;
+    DlgBluetooth::Show();
+
+    
+    TCHAR szPort[MAX_PATH];
+    ReadPort1Settings(szPort, NULL, NULL);
+    UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort1")), szPort);
+
+    ReadPort2Settings(szPort, NULL, NULL);
+    UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
+
+}
+
+void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
+    const TCHAR* PortPropName[][2] = { 
+        { _T("prpComSpeed1"), _T("prpComBit1") }, 
+        { _T("prpComSpeed2"), _T("prpComBit2") }
+    };
+    
+#if defined(BUGSTOP) && BUGSTOP
+    // check if all array have same size;
+    int DevCount = std::distance(begin(DeviceList), end(DeviceList));
+    LKASSERT(DevCount == std::distance(begin(PortPropName), end(PortPropName)));
+#endif
+    
+    if(begin(PortPropName)+idx < end(PortPropName)) {
+        bool bHide = ((_tcsncmp(szPortName, _T("BT:"), 3) == 0) || DeviceList[idx].Disabled);
+        std::for_each(
+            begin(PortPropName[idx]), 
+            end(PortPropName[idx]), 
+            ShowWindowControl(wf, !bHide)
+        );
+    }
+}
+
+static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
+  switch(Mode){
+    case DataField::daGet:
+    break;
+    case DataField::daPut:
+    case DataField::daChange:
+        UpdateComPortSetting(0, Sender->GetAsString());
+    break;
+	default: 
+		break;
+  }
+}
+
+static void OnComPort2Data(DataField *Sender, DataField::DataAccessKind_t Mode){
+  switch(Mode){
+    case DataField::daGet:
+    break;
+    case DataField::daPut:
+    case DataField::daChange:
+        UpdateComPortSetting(1, Sender->GetAsString());
+    break;
+	default: 
+		break;
+  }
+}
+
 
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAirspaceColoursClicked),
@@ -1566,6 +1631,10 @@ static CallBackTableEntry_t CallBackTable[]={
 
   DeclareCallBackEntry(OnDeviceAData),
   DeclareCallBackEntry(OnDeviceBData),
+  
+  DeclareCallBackEntry(OnComPort1Data),
+  DeclareCallBackEntry(OnComPort2Data),
+  
 
 #if OLDSAVEPROFILE
   DeclareCallBackEntry(OnPilotSaveAsClicked),
@@ -1595,6 +1664,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAspPermModified),
   DeclareCallBackEntry(OnLk8000ModeChange),
   DeclareCallBackEntry(OnGearWarningModeChange),
+  DeclareCallBackEntry(OnBthDevice),
   DeclareCallBackEntry(NULL)
 };
 
@@ -1692,7 +1762,32 @@ static  int dwDeviceIndex2=0;
 static  TCHAR DeviceName[DEVNAMESIZE+1];
 static  TCHAR temptext[MAX_PATH];
 
-
+void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
+    if(COMMPort.empty()) {
+        RefreshComPortList();
+    }
+    if (wp) {
+        DataFieldEnum* dfe = (DataFieldEnum*) wp->GetDataField();
+        if(dfe) {
+            dfe->Clear();
+            std::for_each(
+            	COMMPort.begin(),
+            	COMMPort.end(),
+            	std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe)
+            );
+            COMMPort_t::iterator It = std::find_if(
+                COMMPort.begin(), COMMPort.end(), 
+                std::bind2nd(std::mem_fun_ref(&COMMPortItem_t::IsSamePort), szPort));
+            
+            if(It != COMMPort.end()) {
+                dfe->Set(std::distance(COMMPort.begin(), It));
+            } else {
+                dfe->Set(0);
+            }
+        }
+        wp->RefreshDisplay();
+    }
+}
 
 static void setVariables(void) {
   WndProperty *wp;
@@ -1748,52 +1843,20 @@ static void setVariables(void) {
   UpdateButtons();
 
 
-// extended COM ports for PC
-// Changing items requires also changing the i<13 loop later on for port1 and port2
-#if (WINDOWSPC>0)
-    const TCHAR *COMMPort[] = {TEXT("COM1"),TEXT("COM2"),TEXT("COM3"),TEXT("COM4"),
-			       TEXT("COM5"),TEXT("COM6"),TEXT("COM7"),TEXT("COM8"),
-			       TEXT("COM9"),TEXT("COM10"),TEXT("COM11"),TEXT("COM12"),TEXT("COM13"),TEXT("COM14"),
-			       TEXT("COM15"),TEXT("COM16"),TEXT("COM17"),TEXT("COM18"),TEXT("COM19"),TEXT("COM20"),
-			       TEXT("COM21"),TEXT("COM22"),TEXT("COM23"),TEXT("COM24"),TEXT("COM25"),TEXT("COM26"),
-			       TEXT("COM27"),TEXT("COM28"),TEXT("COM29"),TEXT("COM30"),TEXT("COM31"),TEXT("COM32"),
-			       TEXT("COM33"),TEXT("COM34"),TEXT("COM35"),TEXT("COM36"),TEXT("COM37"),TEXT("COM38"),
-			       TEXT("COM39"),TEXT("COM40"), TEXT("COM0")};
-#else
-    const TCHAR *COMMPort[] = {TEXT("COM1"),TEXT("COM2"),TEXT("COM3"),TEXT("COM4"),
-			       TEXT("COM5"),TEXT("COM6"),TEXT("COM7"),TEXT("COM8"),
-			       TEXT("COM9"),TEXT("COM10"),TEXT("COM0"),TEXT("VSP0"),TEXT("VSP1")};
-#endif
-    const TCHAR *tSpeed[] = {TEXT("1200"),TEXT("2400"),TEXT("4800"),TEXT("9600"),
+  const TCHAR *tSpeed[] = {TEXT("1200"),TEXT("2400"),TEXT("4800"),TEXT("9600"),
 			     TEXT("19200"),TEXT("38400"),TEXT("57600"),TEXT("115200")};
-//  DWORD dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200};
 
-  int i;
-
-  ReadPort1Settings(&dwPortIndex1,&dwSpeedIndex1, &dwBit1Index);
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComPort1"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-#if (WINDOWSPC>0)
-    for (i=0; i<41; i++) { // 120511
-#else
-    for (i=0; i<13; i++) {
-#endif
-      dfe->addEnumText((COMMPort[i]));
-    }
-    dfe->Set(dwPortIndex1);
-    wp->RefreshDisplay();
-  }
+  TCHAR szPort[MAX_PATH];
+  
+  ReadPort1Settings(szPort,NULL, NULL);
+  UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), szPort);
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (i=0; i<8; i++) {
-      dfe->addEnumText((tSpeed[i]));
-    }
+    std::for_each(begin(tSpeed), end(tSpeed), std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe));
+    
     dfe->Set(dwSpeedIndex1);
     wp->SetReadOnly(false);
     wp->RefreshDisplay();
@@ -1820,7 +1883,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (i=0; i<DeviceRegisterCount; i++) {
+    for (int i=0; i<DeviceRegisterCount; i++) {
       devRegisterGetName(i, DeviceName);
       dfe->addEnumText((DeviceName));
 
@@ -1833,30 +1896,17 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  ReadPort2Settings(&dwPortIndex2,&dwSpeedIndex2, &dwBit2Index);
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComPort2"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-#if (WINDOWSPC>0)
-    for (i=0; i<41; i++) { // 120511
-#else
-    for (i=0; i<13; i++) {
-#endif
-      dfe->addEnumText((COMMPort[i]));
-    }
-    dfe->Set(dwPortIndex2);
-    wp->RefreshDisplay();
-  }
+  ReadPort2Settings(szPort,NULL, NULL);
+
+  UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort2")), szPort);
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed2"));
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (i=0; i<8; i++) {
-      dfe->addEnumText((tSpeed[i]));
-    }
+    std::for_each(begin(tSpeed), end(tSpeed), std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe));
+
     dfe->Set(dwSpeedIndex2);
     wp->RefreshDisplay();
   }
@@ -1875,7 +1925,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (i=0; i<DeviceRegisterCount; i++) {
+    for (int i=0; i<DeviceRegisterCount; i++) {
       devRegisterGetName(i, DeviceName);
       dfe->addEnumText((DeviceName));
       if (_tcscmp(DeviceName, deviceName2) == 0)
@@ -2259,7 +2309,7 @@ static void setVariables(void) {
     TCHAR buf1[32];
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (i=0; i<=5; ++i) {
+    for (int i=0; i<=5; ++i) {
       MapWindow::zoom.GetPgClimbInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]));
       dfe->addEnumText(buf1);
     }
@@ -2272,7 +2322,7 @@ static void setVariables(void) {
     TCHAR buf1[32];
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (i=0; i<=9; ++i) {
+    for (int i=0; i<=9; ++i) {
       if (MapWindow::zoom.GetPgCruiseInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
 	dfe->addEnumText(buf1);
       } else {
@@ -3432,7 +3482,7 @@ wp->RefreshDisplay();
     wp->RefreshDisplay();
   }
 
-  for (i=0; i<4; i++) {
+  for (int i=0; i<4; i++) {
     for (int j=0; j<8; j++) {
       SetInfoBoxSelector(j, i);
     }
@@ -4670,10 +4720,12 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComPort1"));
   if (wp) {
-    if ((int)dwPortIndex1 != wp->GetDataField()->GetAsInteger()) {
-      dwPortIndex1 = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-    }
+      COMMPort_t::const_iterator It = COMMPort.begin();
+      std::advance(It, wp->GetDataField()->GetAsInteger());
+      if(It != COMMPort.end() && !It->IsSamePort(szPort1)) {
+          _tcscpy(szPort1, It->GetName());
+          COMPORTCHANGED = true;
+      }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
@@ -4704,10 +4756,12 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComPort2"));
   if (wp) {
-    if ((int)dwPortIndex2 != wp->GetDataField()->GetAsInteger()) {
-      dwPortIndex2 = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-    }
+      COMMPort_t::const_iterator It = COMMPort.begin();
+      std::advance(It, wp->GetDataField()->GetAsInteger());
+      if(It != COMMPort.end() && !It->IsSamePort(szPort2)) {
+          _tcscpy(szPort2, It->GetName());
+          COMPORTCHANGED = true;
+      }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed2"));

@@ -118,7 +118,8 @@ void PreloadInitialisation(bool ask) {
     LKReadLanguageFile();
     InputEvents::readFile();
   }
-
+  
+  InitCustomHardware();
 }
 
 //

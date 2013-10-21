@@ -211,8 +211,9 @@ CPPFLAGS	+= -DNDEBUG
 #CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type
 #CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
 
-CPPFLAGS	+= -Wall -Wno-char-subscripts
+#CPPFLAGS	+= -Wall -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations
+CPPFLAGS	+= -Wall -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
@@ -257,7 +258,7 @@ LDFLAGS		+=$(PROFILE)
 ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32
 else
-  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl -lwinsock
+  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl -lws2
   ifeq ($(MINIMAL),n)
     LDLIBS		+= -laygshell 
     ifneq ($(TARGET),PNA)
@@ -574,11 +575,16 @@ UTILS	:=\
 COMMS	:=\
 	$(CMM)/LKFlarm.cpp\
 	$(CMM)/Parser.cpp\
-	$(CMM)/Port.cpp \
+	$(CMM)/ComPort.cpp\
+	$(CMM)/SerialPort.cpp\
 	$(CMM)/UpdateBaroSource.cpp \
 	$(CMM)/UpdateMonitor.cpp \
 	$(CMM)/UtilsParser.cpp \
-	$(CMM)/device.cpp
+	$(CMM)/device.cpp \
+	$(CMM)/Bluetooth/BtHandler.cpp \
+	$(CMM)/Bluetooth/BtHandlerWince.cpp \
+	$(CMM)/Bluetooth/BthPort.cpp
+
 
 DEVS	:=\
 	$(DEV)/devBase.cpp \
@@ -614,7 +620,7 @@ DEVS	:=\
 	$(DEV)/LKHolux.cpp \
 	$(DEV)/LKRoyaltek3200.cpp	\
 	$(DEV)/devFlyNet.cpp \
-	$(DEV)/devCProbe.cpp 
+	$(DEV)/devCProbe.cpp
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
@@ -696,6 +702,7 @@ DLGS	:=\
 	$(DLG)/Task/ReplaceWaypoint.cpp\
 	$(DLG)/Task/RotateStartPoints.cpp\
 	$(DLG)/Task/SwapWaypoint.cpp\
+	$(DLG)/dlgBluetooth.cpp\
 
 SRC_FILES :=\
 	$(SRC)/AirfieldDetails.cpp \
@@ -772,7 +779,6 @@ SRC_FILES :=\
 	$(SRC)/StatusFile.cpp \
 	$(SRC)/Thread_Calculation.cpp\
 	$(SRC)/Thread_Draw.cpp	\
-	$(SRC)/Thread_Port.cpp\
 	$(SRC)/TrueWind.cpp		\
 	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\

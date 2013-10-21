@@ -397,11 +397,11 @@ void LKProfileResetDefault(void) {
 
   // Ports and device settings
   dwDeviceName1[0]=_T('\0');
-  dwPortIndex1 = 0;
+  szPort1[0] = _T('\0');
   dwSpeedIndex1 = 2;
   dwBit1Index = (BitIndex_t)bit8N1;
   dwDeviceName2[0]=_T('\0');
-  dwPortIndex2 = 1;
+  szPort2[0] = _T('\0');
   dwSpeedIndex2 = 2;
   dwBit2Index = (BitIndex_t)bit8N1;
 

@@ -173,6 +173,15 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   #endif
 
   #if TESTBENCH
+    #ifdef _MSC_VER
+      StartupStore(TEXT("Build with MSVC ver : %d %s"), _MSC_VER, NEWLINE);
+    #endif
+    #ifdef __MINGW32__
+      StartupStore(TEXT("Build with mingw32 %d.%d (GCC %d.%d.%d) %s"), 
+              __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION, 
+              __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, 
+              NEWLINE);
+    #endif
   StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
   Globals_Init();
@@ -297,11 +306,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
   OpenGeoid();
-
-  // Load special libraries and init hardware. Anything custom should happen after here.
-  // Note that this is subjected to GlobalModelType.
-  // To initialise low level devices such as screen, we should do it much earlier.
-  InitCustomHardware();
 
   PreloadInitialisation(false); // calls dlgStartup
   if(RUN_MODE == RUN_EXIT || RUN_MODE == RUN_SHUTDOWN) {

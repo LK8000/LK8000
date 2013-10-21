@@ -56,8 +56,8 @@ void FindLatitudeLongitude(double Lat, double Lon,
                            double *lat_out, double *lon_out);
 void ConvertFlightLevels(void);
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc);
-void ReadPort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index);
-void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit2Index);
+void ReadPort1Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index);
+void ReadPort2Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit2Index);
 //void ReadPort3Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit3Index);
 void WritePort1Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index);
 void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit2Index);
@@ -326,7 +326,7 @@ inline unsigned int CombinedDivAndMod(unsigned int &lx) {
 bool RotateScreen(short angle);
 
 int GetTextWidth(HDC hDC, const TCHAR *text);
-void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width);
+void ExtTextOutClip(HDC hDC, int x, int y, const TCHAR *text, int width);
 void UpdateConfBB(void);
 void UpdateConfIP(void);
 void UpdateMultimapOrient(void);

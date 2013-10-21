@@ -3,7 +3,10 @@
 #define	DEVICE_H
 
 #include "MapWindow.h" 
-#include "Port.h"
+#include "ComPort.h"
+#include "BtHandler.h"
+#include <vector>
+#include <string>
 
 #define DEVNAMESIZE  32
 #define	NUMDEV		 2
@@ -12,6 +15,32 @@
 #define	devA()	    (&DeviceList[0])
 #define	devB()	    (&DeviceList[1])
 #define devAll()    (NULL)
+
+class COMMPortItem_t {
+public:
+    inline COMMPortItem_t(const TCHAR* szName, const TCHAR* szLabel =_T("")) : _sName(szName), _sLabel(szLabel) { }
+    inline COMMPortItem_t(const CBtDevice* pDev) : _sName(pDev->BTPortName()), _sLabel() { 
+        _sLabel = _T("BT:") + pDev->GetName();
+    }
+    
+    inline COMMPortItem_t& operator=(const CBtDevice* pDev) { 
+        _sName = pDev->BTPortName();
+        _sLabel = _T("BT:") + pDev->GetName();
+        return (*this);
+    }
+    inline bool IsSamePort(const TCHAR* szName) const { return _sName == szName; } 
+    
+    inline const TCHAR* GetName() const { return _sName.c_str(); }
+    inline const TCHAR* GetLabel() const { return _sLabel.empty()?_sName.c_str():_sLabel.c_str(); }
+    
+    inline operator const TCHAR*() const { return GetLabel(); }
+    
+protected:
+    std::wstring _sName;
+    std::wstring _sLabel;
+};
+
+typedef std::vector<COMMPortItem_t> COMMPort_t;
 
 typedef	enum {dfGPS, dfLogger, dfSpeed,	dfVario, dfBaroAlt,	dfWind, dfVoice, dfNmeaOut, dfRadio} DeviceFlags_t;
 
@@ -57,6 +86,8 @@ typedef	struct DeviceDescriptor_t{
 
   int PortNumber;
   bool Disabled;
+  
+  void InitStruct(int i);
 }DeviceDescriptor_t;
 
 typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
@@ -75,12 +106,15 @@ typedef	struct{
 } DeviceRegister_t;
 
 
+extern COMMPort_t COMMPort;
 
 extern DeviceDescriptor_t	DeviceList[NUMDEV];
 extern DeviceRegister_t   DeviceRegister[NUMREGDEV];
 extern int DeviceRegisterCount;
 extern DeviceDescriptor_t *pDevPrimaryBaroSource;
 extern DeviceDescriptor_t *pDevSecondaryBaroSource;
+
+void RefreshComPortList();
 
 BOOL devRegister(const TCHAR *Name,	int	Flags, BOOL (*Installer)(PDeviceDescriptor_t d));
 BOOL devRegisterGetName(int Index, TCHAR *Name);

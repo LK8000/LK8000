@@ -103,7 +103,8 @@ class DataField{
 	      void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)=NULL);
     virtual ~DataField(void){};
 
-
+	virtual void Clear();
+        
   virtual void Special(void);
   virtual void Inc(void);
   virtual void Dec(void);
@@ -265,6 +266,7 @@ class DataFieldEnum: public DataField {
     };
       ~DataFieldEnum();
 
+  void Clear();
   void Inc(void);
   void Dec(void);
   int CreateComboList(void);
@@ -318,19 +320,11 @@ class DataFieldFileReader: public DataField {
       
     };
     ~DataFieldFileReader() {
-	for (unsigned int i=1; i<nFiles; i++) {
-	  if (fields[i].mTextFile) {
-	    free(fields[i].mTextFile);
-	    fields[i].mTextFile= NULL;
-	  }
-	  if (fields[i].mTextPathFile) {
-	    free(fields[i].mTextPathFile);
-	    fields[i].mTextPathFile= NULL;
-	  }
+		Clear();
 	}
-	nFiles = 1;
-    }
-
+	
+	void Clear();
+    
   void Inc(void);
   void Dec(void);
   int CreateComboList(void);
@@ -342,7 +336,7 @@ class DataFieldFileReader: public DataField {
   int GetAsInteger(void);
   TCHAR *GetAsString(void);
   TCHAR *GetAsDisplayString(void);
-  void Lookup(const TCHAR* text);
+  bool Lookup(const TCHAR* text);
   TCHAR* GetPathFile(void);
 
   #if defined(__BORLANDC__)

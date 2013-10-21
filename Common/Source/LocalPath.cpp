@@ -136,6 +136,9 @@ void ExpandLocalPath(TCHAR* filein) {
   if (!ptr) return;
 
   ptr += _tcslen(code);
+  if(*ptr != _T('\\')) {
+      _tcscat(lpath, _T("\\"));
+  }
   if (_tcslen(ptr)>0) {
     _stprintf(output,TEXT("%s%s"),lpath, ptr);
     _tcscpy(filein, output);

@@ -11,7 +11,7 @@
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 #include "Dialogs.h"
-
+#include "../utils/stl_utils.h"
 
 
 extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
@@ -177,9 +177,6 @@ char enumToYZone(int i){
 	static const char cArray[] = "CDEFGHJKLMNPQRSTUVWX";
 	return cArray[i];
 }
-
-template <class T, size_t N> T* begin(T (&array)[N]) { return array; }
-template <class T, size_t N> T* end(T (&array)[N]) { return array + N; }
 
 int YZoneToenum(char c){
 	static const char cArray[] = "CDEFGHJKLMNPQRSTUVWX";

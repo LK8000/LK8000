@@ -1859,6 +1859,12 @@ _@M1832_ "Near landables"
 _@M1833_ "Always"
 _@M1834_ "Check gear !"
 
+# oudie 2 bluetooth
+_@M1835_ "Failed to pair device"
+_@M1836_ "Lookup"
+_@M1837_ "Pair"
+_@M1838_ "Unpair"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

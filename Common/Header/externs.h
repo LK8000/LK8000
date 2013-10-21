@@ -28,7 +28,7 @@
 #include "MapWindow.h"
 #include "Utils.h"
 #include "ContestMgr.h"
-#include "Port.h"
+#include "ComPort.h"
 #include "device.h"
 #include "Task.h"
 #include "Globals.h"
