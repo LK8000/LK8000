@@ -450,10 +450,12 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
   Start.x =  MapWindow::DistanceToX(fDist,  psDia);
   Start.y =  MapWindow::HeightToY(fAltitude,  psDia);
 
+  HPEN oldPen ;
 
-
-
-  //SelectObject(hdc, GetStockObject(BLACK_PEN));
+  if(INVERTCOLORS)
+    oldPen = (HPEN) SelectObject(hdc, LKPen_Grey_N0);
+  else
+	oldPen = (HPEN) SelectObject(hdc, LKPen_Grey_N0);
   PolygonRotateShift(AircraftWing, 13,  Start.x, Start.y,  0);
   PolygonRotateShift(AircraftSide, 8,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftTail, 5,   Start.x, Start.y,  0);
@@ -478,6 +480,7 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
   if((brg < 90)|| (brg > 270)) {
     Polygon(hdc,AircraftTail  ,5 );
   }
+  SelectObject(hdc,oldPen);
 } //else !asp_heading_task
 
 
@@ -535,7 +538,7 @@ if(bInvCol)
   rgbDrawColor = RGB_GREY;
   rgbGridColor = RGB_GREY;
   rgb_targetlinecol = RGB_LIGHTBLUE;
-  hDrawPen   = (HPEN)  GetStockObject( WHITE_PEN );
+  hDrawPen   = (HPEN)  LKPen_Grey_N0 ; //GetStockObject( BLACK_PEN);
   hDrawBrush = (HBRUSH)GetStockObject( WHITE_BRUSH) ;
   hOrangePen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_ORANGE);
   hGreenPen  = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_GREEN);
@@ -545,7 +548,7 @@ else
   rgbDrawColor = RGB_DARKGREY;
   rgbGridColor = RGB_DARKGREY;
   rgb_targetlinecol = RGB_BLUE;
-  hDrawPen   = (HPEN)  GetStockObject( BLACK_PEN );
+  hDrawPen   = (HPEN) LKPen_Grey_N0 ; // GetStockObject( WHITE_PEN );
   hDrawBrush = (HBRUSH)GetStockObject( BLACK_BRUSH) ;
   hOrangePen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_LIGHTORANGE);
   hGreenPen  = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_DARKGREY);
@@ -585,7 +588,7 @@ switch(LKevent)
   }
   break;
   case LKEVENT_TOPRIGHT:
-	  iFlarmDirection = 	(iFlarmDirection+1)%2;
+	  iFlarmDirection = 	(iFlarmDirection+1)%3;
 
   break;
   case LKEVENT_LONGCLICK:
@@ -595,7 +598,7 @@ switch(LKevent)
 	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
 	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
 	{
-	  iFlarmDirection = 	(iFlarmDirection+1)%2;
+	  iFlarmDirection = 	(iFlarmDirection+1)%3;
 	}
 	else
 	#endif // OWNPOS
@@ -654,6 +657,7 @@ switch(iFlarmDirection)
 {
 	case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
  	case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
+ 	case 2: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
 }
 
 static double oldSplit = 0;
@@ -707,19 +711,19 @@ fScaleFact = min (fScaleFact, MAX_DIST_SCALE);/* check ranges */
 BOOL bLandscape = true;
 
 double range = 1000; // km
-double GPSlat, GPSlon, GPSalt, GPSbrg  ;
+double GPSlat, GPSlon, GPSalt, GPSbrg ;
+double Planebrg =0.0 ;
 double fMaxHeight  ;
 double fMinHeight  ;
 double fx,fy;
 DiagrammStruct sDia;
 
 
-
-
   GPSlat = DrawInfo.Latitude;
   GPSlon = DrawInfo.Longitude;
   GPSalt = DrawInfo.Altitude;
   GPSbrg = DrawInfo.TrackBearing;
+
 
   LastDoTraffic=0;
   DoTraffic(&DrawInfo,&DerivedDrawInfo);
@@ -951,6 +955,11 @@ double scl = xtick;
 	 * loop over FLARM objects.
 	 */
 	SelectObject(hdc, hDrawPen);
+	if(iFlarmDirection == 2)
+	{
+		Planebrg = GPSbrg;
+		GPSbrg =0.0;
+	}
 	for (i=0; i<FLARM_MAX_TRAFFIC; i++)
 	{
 	  if (LKTraffic[i].Status != LKT_EMPTY)
@@ -1069,7 +1078,7 @@ if(SPLITSCREEN_FACTOR >0)
 	        bCenter = true;
 		    SelectObject(hdc, hDrawBrush);
 		    SelectObject(hdc, hDrawPen);
-		    PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN);
+			PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN+Planebrg);
 		    Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
 	      }
 	    }
@@ -1131,7 +1140,7 @@ if(SPLITSCREEN_FACTOR >0)
     {
       SelectObject(hdc, hDrawBrush);
       SelectObject(hdc, hDrawPen);
-      PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN);
+      PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN+Planebrg);
       Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
     }
   }
@@ -1251,7 +1260,7 @@ if(bSideview)
 		  bCenter = true;
 		  SelectObject(hdc, hDrawBrush);
 		  SelectObject(hdc, hDrawPen);
-		  RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , fPlaneSize);
+		  RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN+Planebrg, &sDia , fPlaneSize);
 		}
 	  /*************************************************************************
 	   * get the climb color
@@ -1306,7 +1315,8 @@ if(bSideview)
   #endif
 
   if(!bCenter)
-    RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , fPlaneSize);
+    RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN+Planebrg, &sDia , fPlaneSize);
+
   /*****************************************
    * draw sideview frame
    *****************************************/
@@ -1335,7 +1345,8 @@ if(bSideview)
   {
     default:
     case 0:  SelectObject(hDCTemp,hHeadUp) ; break; //     "Head Up"
-    case 1:  SelectObject(hDCTemp,hHeadRight); break; //      Head Right"
+    case 1:  SelectObject(hDCTemp,hNorthUp); break; //      Head Right"
+    case 2:  SelectObject(hDCTemp,hHeadRight) ; break; //     "Head Up"
   }
   DrawBitmapX(hdc,	rci.right-NIBLSCALE(27),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
   DrawBitmapX(hdc,	rci.right-NIBLSCALE(27),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
@@ -1366,6 +1377,7 @@ double GPSlat = DrawInfo.Latitude;
 double GPSlon = DrawInfo.Longitude;
 //double GPSalt = DrawInfo.Altitude;
 double GPSbrg = DrawInfo.TrackBearing;
+double Planebrg = 0.0;
 double fDistBearing;
 double fFlarmDist;
 
@@ -1381,6 +1393,11 @@ if(fZoom  < 0.05)
 if( DrawInfo.FLARMTRACE_bBuffFull)
 {
   iTo  = MAX_FLARM_TRACES;
+}
+if(iFlarmDirection == 2)
+{
+	Planebrg = GPSbrg;
+	GPSbrg =0.0;
 }
 HBRUSH *pOldBrush =NULL;
 HPEN oldPen =	(HPEN)SelectObject(hDC, GetStockObject(NULL_PEN));
