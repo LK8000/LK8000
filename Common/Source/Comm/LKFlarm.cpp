@@ -23,7 +23,8 @@ void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
 void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
   int i;
   double passed;
-  if (pGPS->FLARM_Available) {
+//  if (pGPS->FLARM_Available)
+  {
 	static unsigned short iTraceSpaceCnt = 0;
 	if(iTraceSpaceCnt++ > GC_TRACE_TIME_SKIP) iTraceSpaceCnt =0;
 	#ifdef DEBUG_LKT
@@ -124,6 +125,40 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
 			}
 		} // ID >0
 	} // for all traffic
+	double Vario=0 ;
+#ifdef OWN_FLARM_TRACES
+
+
+	if(iTraceSpaceCnt == 0) {
+
+		LKASSERT(pGPS->FLARMTRACE_iLastPtr>=0 && pGPS->FLARMTRACE_iLastPtr<MAX_FLARM_TRACES);
+		pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLat = pGPS->Latitude;
+		pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLon = pGPS->Longitude;
+
+        if(pGPS->NettoVarioAvailable)
+		  Vario = pGPS->NettoVario;
+        else
+        {
+          if(pGPS->VarioAvailable)
+    		Vario = pGPS->Vario;
+          else
+          {
+        	Vario =  CALCULATED_INFO.Vario;
+          }
+        }
+		int iColorIdx = (int)(2*Vario  -0.5)+NO_VARIO_COLORS/2;
+		iColorIdx = max( iColorIdx, 0);
+		iColorIdx = min( iColorIdx, NO_VARIO_COLORS-1);
+
+		pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].iColorIdx = iColorIdx;
+		pGPS->FLARMTRACE_iLastPtr++;
+
+		if(pGPS->FLARMTRACE_iLastPtr >= MAX_FLARM_TRACES) {
+			pGPS->FLARMTRACE_iLastPtr=0;
+			pGPS->FLARMTRACE_bBuffFull = true;
+		}
+	}
+#endif
   } // if flarm available
 }
 
