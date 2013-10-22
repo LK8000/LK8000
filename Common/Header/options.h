@@ -89,7 +89,9 @@
 #define AIRSPACE_BORDER        // switch for new airspace orders
 #define SHOW_FOUND_WAYPOINT    // show best found waypoint on active keyboard
 #define SELECT_FOUND           // preselect best fit waypoint in waypoint list.
-
+#if (WINDOWSPC>0)
+#define STORE_SCREENSETTINGS   // store/load screen size for better debuging on PC
+#endif
 //#define OLD_TIME_MODIFY // retore old TimeModify(...) Funtion
 /*
  * MULTISELECT OPTIONS 
