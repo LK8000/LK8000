@@ -751,11 +751,24 @@ int tmp;
  */
   }
 
+#ifdef STORE_SCREENSETTINGS
+#if (WINDOWSPC>0)
+  PREAD(sname,svalue,szRegistryScreenSize, &ScreenSize);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryScreenSizeX, &ScreenSizeX);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryScreenSizeY, &ScreenSizeY);
+  if (matchedstring) return;
+//  PREAD(sname,svalue,szRegistryScreenLandscape, &ScreenLandscape);
+  if (matchedstring) return;
 
+  SCREENWIDTH = ScreenSizeX;
+  SCREENHEIGHT = ScreenSizeY;
+  extern bool InitLKScreen(void);
+  InitLKScreen();
 
-
-
-
+#endif
+#endif
   return;
 
 }

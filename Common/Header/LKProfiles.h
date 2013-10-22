@@ -364,6 +364,13 @@ TCHAR szRegistryGearAltitude[]     = _T("GearAltitude");
 TCHAR szRegistryUserForceMode[]    = _T("UserDisplayMode");
 TCHAR szRegistryBottomMode[]       = _T("ActiveBottomBar");
 TCHAR szRegistryBigFAIThreshold[]  = _T("FAI_28_45_Threshold");
+
+
+TCHAR szRegistryScreenSize[]       = _T("ScreenSize");
+TCHAR szRegistryScreenSizeX[]      = _T("ScreenSizeX");
+TCHAR szRegistryScreenSizeY[]      = _T("ScreenSizeY");
+TCHAR szRegistryScreenLandscape[]  = _T("ScreenLandscape");
+
 //
 //
 //
@@ -647,6 +654,13 @@ extern const TCHAR szRegistryGearAltitude[];
 extern const TCHAR szRegistryUserForceMode[];
 extern const TCHAR szRegistryBottomMode[];
 extern const TCHAR szRegistryBigFAIThreshold[];
+
+
+extern const TCHAR szRegistryScreenSize[];
+extern const TCHAR szRegistryScreenSizeX[];
+extern const TCHAR szRegistryScreenSizeY[];
+extern const TCHAR szRegistryScreenLandscape[];
+
 //
 //
 #endif
