@@ -37,7 +37,7 @@ public:
     std::wstring GetName() const;
 	std::wstring BTPortName() const;
 
-    inline bool Equal_to(const BT_ADDR& ba) const {
+    inline bool Equal_to(const BT_ADDR ba) const {
         return m_ba == ba;
     }
 protected:
