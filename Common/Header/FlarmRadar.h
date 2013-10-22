@@ -3,7 +3,7 @@
 
 
 #define NO_VARIO_COLORS 9 
-#define GC_TRACE_TIME_SKIP 2
+#define GC_TRACE_TIME_SKIP 1
 
 
 

@@ -95,6 +95,8 @@ void LKLoadFixedBitmaps(void) {
 
   _stprintf(srcfile,_T("%s\\HEAD_UP.BMP"),sDir);
   hHeadUp=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\NORTH_UP.BMP"),sDir);
+  hNorthUp=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%s\\HEAD_RIGHT.BMP"),sDir);
   hHeadRight=LKLoadBitmap(srcfile);
 
@@ -299,6 +301,7 @@ void LKUnloadFixedBitmaps(void) {
   if (hFullTrace !=NULL) DeleteObject(hFullTrace);
   if (hClimbTrace!=NULL) DeleteObject(hClimbTrace);
   if (hHeadRight !=NULL) DeleteObject(hHeadRight);
+  if (hNorthUp   !=NULL) DeleteObject(hNorthUp);
   if (hHeadUp    !=NULL) DeleteObject(hHeadUp);
 
   if (hMM0	 !=NULL) DeleteObject(hMM0);

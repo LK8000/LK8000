@@ -386,15 +386,15 @@ else*/
 	 _bFAI = false;
 	if(points.size() > 3)
 	{
-	  double fRelMin = 0.28;
+	  double fRelMin = FAI_NORMAL_PERCENTAGE; //   0.28    /*  % of FAI triangle if distance < 750km/500km */
 	  _bFAI = true;
 	  double fLeg1 = points[1].Distance(points[2]);
 	  double fLeg2 = points[2].Distance(points[3]);
 	  double fLeg3 = points[3].Distance(points[1]);
 	  double fFAIDist = fLeg1 + fLeg2 + fLeg3;
 	  if(fFAIDist <=0.0) fFAIDist = 1.0;
-	  if(fFAIDist > 500000)
-		  fRelMin = 0.25;
+	  if(fFAIDist > FAI28_45Threshold)
+		  fRelMin = FAI_BIG_PERCENTAGE; //   0.25    /*  % of FAI triangle if distance > 750km/500km */
 	  if ((fLeg1 / fFAIDist) < fRelMin) _bFAI = false;
 	  if ((fLeg2 / fFAIDist) < fRelMin) _bFAI = false;
 	  if ((fLeg3 / fFAIDist) < fRelMin) _bFAI = false;

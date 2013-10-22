@@ -334,6 +334,10 @@ _dowp:
 
 
 _end:
+#ifdef ULLIS_PRIVATE_FEATURES
+	_stprintf(ttmp,_T("\n\nin %i ft (MSL)"),  (int)( GPS_INFO.Altitude*TOFEET)); // in height
+	_tcscat(toracle,ttmp);
+#endif
   // VERY SORRY - YOUR POSITION IS UNKNOWN!
   if (!found) wsprintf(toracle,_T("\n\n%s\n\n%s"), gettext(_T("_@M1725_")),gettext(_T("_@M1726_")));
 

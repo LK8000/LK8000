@@ -384,6 +384,8 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 	    /************************************************************************************************
 	     * IM_OWN_POS
 	     ************************************************************************************************/
+#endif
+#ifdef OWN_POS_MS
 	    case IM_OWN_POS:
 
 			LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, Comment, (WCHAR*) NULL);
@@ -414,7 +416,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 
 		   MapWindow::DrawAircraft(hDC, (POINT) { (rc.right-rc.left)/2,(rc.bottom-rc.top)/2} );
 	    break;
-#endif // BUTTONS_MS enabled
+#endif // OWN_POS_MS
 
 	    /************************************************************************************************
 	     * IM_AIRSPACE
