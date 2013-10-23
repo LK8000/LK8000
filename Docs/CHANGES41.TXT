@@ -178,3 +178,23 @@ http://www.youtube.com/watch?v=Iyk-r6MDpCI
 http://www.youtube.com/watch?v=r_VeQFbUSlg
 
 
+============
+Version 4.1C
+============
+NEW
+-restart with last active screen settings/resolution (only on PC)
+-additional device info and serial number in info dialog for external devices (LX and Westerboer)
+-new bluetooth dialog
+
+
+ULLIS (private changes)
+-trace of own flight in flarm radar
+-Own position in multiselect
+-height (in feet) in Oracle for ATC communication
+
+CHANGES
+-North up view for FLARM radar added 
+
+FIXES
+-AAT Target dialog has all elements also in portrait mode 
+-Better NMEA time string parsing
