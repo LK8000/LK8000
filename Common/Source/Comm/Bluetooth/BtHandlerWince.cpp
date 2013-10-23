@@ -29,11 +29,15 @@ CBtHandlerWince::CBtHandlerWince() {
     if (m_hLibBtDrv) {
         m_StartBlueTooth = (BTOnOffProc) GetProcAddress(m_hLibBtDrv, L"StartBlueTooth");
         m_StopBlueTooth = (BTOnOffProc) GetProcAddress(m_hLibBtDrv, L"StopBlueTooth");
+    } else {
+        StartupStore(_T("Unable to Load <BTDrv.dll>%s"),NEWLINE);
     }
 
     m_hLibBthUtil = LoadLibrary(L"bthutil.dll");
     if (m_hLibBthUtil) {
         m_BthSetMode = (BthSetModeProc) GetProcAddress(m_hLibBthUtil, L"BthSetMode");
+    } else {
+        StartupStore(_T("Unable to Load <bthutil.dll>%s"),NEWLINE);
     }
 
     m_hLibBt = LoadLibrary(L"BTDrt.dll");
@@ -47,6 +51,8 @@ CBtHandlerWince::CBtHandlerWince() {
         m_BthAuthenticate = (BTAuthenticateProc) GetProcAddress(m_hLibBt, L"BthAuthenticate");
         m_BthCreateACLConnection = (BTCreateACLConnectionProc) GetProcAddress(m_hLibBt, L"BthCreateACLConnection");
         m_BthCloseConnection = (BTCloseConnectionProc) GetProcAddress(m_hLibBt, L"BthCloseConnection");
+    } else {
+        StartupStore(_T("Unable to Load <BTDrt.dll>%s"),NEWLINE);
     }
 
     WSAStartup(MAKEWORD(1, 0), &wsd);
