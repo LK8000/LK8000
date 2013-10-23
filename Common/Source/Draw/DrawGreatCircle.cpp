@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Terrain.h"
 #include "LKObjects.h"
+#include "utils/2dpclip.h"
 
 //
 // Draw bearing line to target
@@ -16,18 +17,18 @@
 void MapWindow::DrawGreatCircle(HDC hdc, double startLon, double startLat, double targetLon, double targetLat,
 				const RECT rc) {
 
-  HPEN hpOld = (HPEN)SelectObject(hdc, LKPen_GABRG);
   POINT pt[2];
 
   LatLon2Screen(startLon, startLat, pt[0]);
   LatLon2Screen(targetLon, targetLat, pt[1]);
 
-  ClipPolygon(hdc, pt, 2, rc, false);
-
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
-  ClipPolygon(hdc, pt, 2, rc, false);
-
-  SelectObject(hdc, hpOld);
+    if(LKGeom::ClipLine((POINT) {rc.left, rc.top}, (POINT) {rc.right, rc.bottom}, pt[0], pt[1])) {
+        HPEN hpOld = (HPEN)SelectObject(hdc, LKPen_GABRG);
+        Polyline(hdc, pt, 2);
+        SelectObject(hdc, GetStockObject(BLACK_PEN));
+        Polyline(hdc, pt, 2);
+        SelectObject(hdc, hpOld);
+    }
 }
 
 

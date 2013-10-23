@@ -36,10 +36,11 @@ class XShapeLabel: public XShape {
   }
   virtual ~XShapeLabel();
   virtual void clear();
-  char *label;
   void setlabel(const char* src);
   virtual bool renderSpecial(HDC hdc, int x, int y, bool RetVal);
   virtual bool nearestItem(int category, double lon, double lat);
+protected:
+  TCHAR *label;
 };
 
 

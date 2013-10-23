@@ -754,9 +754,9 @@ XShape* TopologyLabel::addShape(const int i) {
 bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 
   NearestTopoItem *item;
-  TCHAR Temp[100];
-  int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;
-  if (size <= 0) return false;	
+  if(!label || _tcslen(label) == 0) {
+      return false;
+  }
 
   switch(category) {
 	case 10:
@@ -774,13 +774,11 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 		break;
 	default:
 		#if TESTBENCH
-		StartupStore(_T("...... Cannot use nearestItem cat=%d <%s>%s"),category,Temp,NEWLINE);
+		StartupStore(_T("...... Cannot use nearestItem cat=%d <%s>%s"),category,label,NEWLINE);
 		#endif
 		return false;
 		break;
   }
-
-  Temp[MAXNEARESTTOPONAME-1]=_T('\0');
 
   double distance, bearing;
   DistanceBearing(lat,lon,GPS_INFO.Latitude, GPS_INFO.Longitude,
@@ -795,13 +793,14 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
   if (!item->Valid || (item->Distance > distance)) {
 	item->Latitude=lat;
 	item->Longitude=lon;
-	_tcscpy(item->Name,Temp);
+	_tcsncpy(item->Name,label,MAXNEARESTTOPONAME-1);
+    item->Name[MAXNEARESTTOPONAME-1] = '\0';
 	item->Distance=distance;
 	item->Bearing=bearing;
 	item->Valid=true;
 
 	#if DEBUG_NEARESTTOPO
-	StartupStore(_T(".... cat=%d, <%s> dist=%f nearer\n"),category, Temp,distance);
+	StartupStore(_T(".... cat=%d, <%s> dist=%f nearer\n"),category, item->Name,distance);
 	#endif
 	return true;
   }
@@ -814,16 +813,16 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
   if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
 
-	TCHAR Temp[100];
-	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;
-	//Do not waste time with null labels
-	if (size <= 0) return false;						
+      int size = _tcslen(label);
+    if(size <= 0) {
+        return false;
+    }
 
 	SetBkMode(hDC,TRANSPARENT);
 
 	SIZE tsize;
 	RECT brect;
-	GetTextExtentPoint(hDC, Temp, size, &tsize);
+	GetTextExtentPoint(hDC, label, size, &tsize);
 
 	// shift label from center point of shape
 	x+= NIBLSCALE(2); 
@@ -845,7 +844,7 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 
 	SetTextColor(hDC, RGB(0,50,50)); // PETROL too light at 66
     
-	ExtTextOut(hDC, x, y, 0, NULL, Temp, size, NULL);
+	ExtTextOut(hDC, x, y, 0, NULL, label, size, NULL);
 	return true; // 101016
   }
   return false; // 101016
@@ -879,12 +878,19 @@ void XShapeLabel::setlabel(const char* src) {
 	hide=true;
 	return;
   }
-
   // Any other case : we display shape and its label as well
-  if (label) free(label);
-  label = (char*)malloc(strlen(src)+1);
+
   if (label) {
-	strcpy(label,src);
+      free(label);
+      label= NULL;
+  }
+  
+  int nChars = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
+  if(nChars) {
+    label = (TCHAR*)malloc(nChars*sizeof(TCHAR));
+    if(label) {
+        MultiByteToWideChar(CP_ACP, 0, src, -1, label, nChars);
+    }
   }
   hide=false;
 }
