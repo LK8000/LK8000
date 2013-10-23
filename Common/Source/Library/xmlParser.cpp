@@ -1493,21 +1493,19 @@ int XMLNode::CreateXMLStringR(XMLNodeData *pEntry, LPTSTR lpszMarker, int nForma
             {
                 if (lpszMarker) _tcscpy(&lpszMarker[nResult], pAttr->lpszName);
                 nResult += cb;
-                // "Attrib=Value "
+                // "Attrib=\"Value\" "
                 cb = (int)lengthXMLString(pAttr->lpszValue);
-                if (cb)
-                {
-                    if (lpszMarker)
-                    {
-                        lpszMarker[nResult]=_T('=');
-                        lpszMarker[nResult+1]=_T('"');
+                if (lpszMarker) {
+                    lpszMarker[nResult]=_T('=');
+                    lpszMarker[nResult+1]=_T('"');
+                    if (cb) {
                         toXMLString(&lpszMarker[nResult+2],pAttr->lpszValue);
-                        lpszMarker[nResult+cb+2]=_T('"');
                     }
-                    nResult+=cb+3;
+                    lpszMarker[nResult+2+cb]=_T('"');
                 }
+                nResult += cb + 3;
                 if (lpszMarker) lpszMarker[nResult] = _T(' ');
-                nResult++;              
+                ++nResult;
             }
             pAttr++;
         }
