@@ -288,7 +288,7 @@ BOOL devInit(LPCTSTR CommandLine) {
                 }
             }
         } else {
-            Com = new SerialPort(i, Port, SpeedIndex, (BitIndex_t)BitIndex, PollingMode);
+            Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], (BitIndex_t)BitIndex, PollingMode);
         }
 
         if (Com && Com->Initialize()) {
