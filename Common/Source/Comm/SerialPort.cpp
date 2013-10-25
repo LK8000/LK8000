@@ -41,6 +41,7 @@ bool SerialPort::Initialize() {
     // Do not use COMn , use COMn:  on WinCE version
     _stprintf(sysPortName, _T("%s:"), GetPortName());
 #endif
+    StartupStore(_T(". ComPort %u Initialize <%s> speed=%u bit=%u %s"),GetPortIndex()+1,GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
 
     hPort = CreateFile(sysPortName, // Pointer to the name of the port
             GENERIC_READ | GENERIC_WRITE, // Access (read-write) mode
@@ -78,14 +79,14 @@ bool SerialPort::Initialize() {
     PortDCB.fParity = TRUE; // Enable parity checking  
     PortDCB.fOutxCtsFlow = FALSE; // CTS output flow control: when TRUE, and CTS off, output suspended
     PortDCB.fOutxDsrFlow = FALSE; // DSR output flow control 
+    PortDCB.fDtrControl = DTR_CONTROL_ENABLE; 
+    
     PortDCB.fDsrSensitivity = FALSE; // DSR sensitivity 
     PortDCB.fTXContinueOnXoff = TRUE; // XOFF continues Tx 
     PortDCB.fOutX = FALSE; // No XON/XOFF out flow control 
     PortDCB.fInX = FALSE; // No XON/XOFF in flow control 
     PortDCB.fErrorChar = FALSE; // Disable error replacement 
     PortDCB.fNull = FALSE; // Disable null removal
-
-    PortDCB.fDtrControl = DTR_CONTROL_ENABLE; // DTR flow control type 
     PortDCB.fRtsControl = RTS_CONTROL_ENABLE; // RTS flow control 
 
     PortDCB.fAbortOnError = TRUE; // FALSE need something else to work
@@ -108,7 +109,12 @@ bool SerialPort::Initialize() {
         // Could not create the read thread.
         CloseHandle(hPort);
         hPort = INVALID_HANDLE_VALUE;
+#if (WINDOWSPC>0) || NEWCOMM // 091206
         Sleep(2000); // needed for windows bug 101116 not verified
+#endif
+#if !(WINDOWSPC>0)
+        if (PollingMode) Sleep(2000);
+#endif
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change setting FAILED, error=%u%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
     	StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
@@ -268,11 +274,17 @@ void SerialPort::Purge() {
 }
 
 void SerialPort::CancelWaitEvent() {
+#if (WINDOWSPC>0) || NEWCOMM  // 091206
+
+#else    
+    Flush();
+
     // setting the comm event mask with the same value
     SetCommMask(hPort, _dwMask); // will cancel any
-    // WaitCommEvent!  this is a
-    // documented CE trick to
-    // cancel the WaitCommEvent
+                                 // WaitCommEvent!  this is a
+                                 // documented CE trick to
+                                 // cancel the WaitCommEvent
+#endif
 }
 
 void SerialPort::UpdateStatus() {

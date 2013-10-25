@@ -72,8 +72,9 @@ BOOL ComPort::StopRxThread() {
         SetEvent(hStop);
         CancelWaitEvent();
         
-        if (::WaitForSingleObject(hReadThread, 40000) == WAIT_TIMEOUT) {
+        if (::WaitForSingleObject(hReadThread, 20000) == WAIT_TIMEOUT) {
             TerminateThread(hReadThread, 0);
+            StartupStore(_T("... ComPort %d StopRxThread: RX Thread forced to terminate!%s"), GetPortIndex() + 1, NEWLINE);
         }
         CloseHandle(hReadThread);
         hReadThread = INVALID_HANDLE_VALUE;
