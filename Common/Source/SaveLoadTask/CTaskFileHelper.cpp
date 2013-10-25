@@ -344,9 +344,11 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
                 case LINE:
                     FinishRadius = (DWORD)Task[mFinishIndex].AATCircleRadius;
                     FinishLine = 1;
+                    break;
                 case SECTOR:
                     FinishRadius = (DWORD)Task[mFinishIndex].AATSectorRadius;
                     FinishLine = 2;
+                    break;
             }
         }
         if (ValidTaskPoint(0)) {
@@ -358,9 +360,11 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
                 case LINE:
                     StartRadius = (DWORD)Task[0].AATCircleRadius;
                     StartLine = 1;
+                    break;
                 case SECTOR:
                     StartRadius = (DWORD)Task[0].AATSectorRadius;
                     StartLine = 2;
+                    break;
             }
         }
     }
