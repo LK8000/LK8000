@@ -138,9 +138,22 @@ bool SerialPort::Initialize() {
     EscapeCommFunction(hPort, SETDTR);
     EscapeCommFunction(hPort, SETRTS);
 
-    StartupStore(_T(". ComPort %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+    bool retstat=ComPort::Initialize();
+    if (retstat) {
+    	StartupStore(_T(". ComPort %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+    } else {
+    	StartupStore(_T(". ComPort %u Init <%s> FAILED%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+	// FOR BRUNO: hPort is now still used! We should close the descriptor and set it INVALID?
+	// Otherwise next time the device is busy.
+    }
+    #if (WINDOWSPC>0)
+	Sleep(2000);
+    #endif
+    #if !(WINDOWSPC>0)
+	if (PollingMode) Sleep(2000);
+    #endif
 
-    return ComPort::Initialize();
+    return retstat;
 }
 
 int SerialPort::SetRxTimeout(int Timeout) {
