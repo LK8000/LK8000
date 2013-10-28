@@ -518,16 +518,16 @@ BOOL devOpen(PDeviceDescriptor_t d, int Port){
 BOOL devClose(PDeviceDescriptor_t d)
 {
   if (d != NULL) {
-    if (d->Close != NULL)
+    if (d->Close != NULL) {
       d->Close(d);
-
+    }
+    
     ComPort *Com = d->Com;
-    d->Com = NULL;
-
     if (Com) {
       Com->Close();
+      d->Com = NULL; // if we do that before Stop RXThread , Crash ....
       delete Com;
-    }
+    }    
   }
 
   return TRUE;
