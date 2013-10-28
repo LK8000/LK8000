@@ -23,7 +23,7 @@ ComPort::ComPort(int idx, const std::wstring& sName) : devIdx(idx), sPortName(sN
 }
 
 ComPort::~ComPort() {
-    Close();
+    // Close(); never call virtual in base class dtor !!!
 }
 
 bool ComPort::Initialize() {
@@ -73,8 +73,8 @@ BOOL ComPort::StopRxThread() {
         CancelWaitEvent();
         
         if (::WaitForSingleObject(hReadThread, 20000) == WAIT_TIMEOUT) {
-            TerminateThread(hReadThread, 0);
             StartupStore(_T("... ComPort %d StopRxThread: RX Thread forced to terminate!%s"), GetPortIndex() + 1, NEWLINE);
+            TerminateThread(hReadThread, 0);
         }
         CloseHandle(hReadThread);
         hReadThread = INVALID_HANDLE_VALUE;

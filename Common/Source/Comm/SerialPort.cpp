@@ -27,7 +27,7 @@ SerialPort::SerialPort(int idx, const std::wstring& sName, DWORD dwSpeed, BitInd
 }
 
 SerialPort::~SerialPort() {
-
+    Close();
 }
 
 bool SerialPort::Initialize() {
@@ -267,12 +267,12 @@ bool SerialPort::Close() {
         if (!CloseHandle(hPort)) {
             DWORD dwError = GetLastError();
             StartupStore(_T("... ComPort %u close failed, error=%u%s"), GetPortIndex() + 1, dwError, NEWLINE);
-            Ret = true;
+            Ret = false;
         } else {
             Sleep(2000); // needed for windows bug
             hPort = INVALID_HANDLE_VALUE;
             StartupStore(_T(". ComPort %u closed Ok.%s"), GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
-            Ret = false;
+            Ret = true;
         }
     }
     return Ret;

@@ -21,7 +21,7 @@ BthPort::BthPort(int idx, const std::wstring& sName) : ComPort(idx, sName), mSoc
 }
 
 BthPort::~BthPort() {
-
+    Close();
 }
 
 bool BthPort::Initialize() {
