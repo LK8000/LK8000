@@ -39,12 +39,14 @@ bool ComPort::Close() {
     return true;
 }
 
+// this is used by all functions to send data out
+// it is called internally from thread for each device
 void ComPort::WriteString(const TCHAR * Text) {
     int len = _tcslen(Text);
 #ifdef  _UNICODE
-    int size_needed = WideCharToMultiByte(CP_ACP, 0, Text, len, NULL, 0, NULL, NULL);
+    int size_needed = WideCharToMultiByte(CP_ACP, 0, Text, len+1, NULL, 0, NULL, NULL);
     char* szTmp = new char[size_needed];
-    len = WideCharToMultiByte(CP_ACP, 0, Text, len, szTmp, size_needed, NULL, NULL);
+    len = WideCharToMultiByte(CP_ACP, 0, Text, len+1, szTmp, size_needed, NULL, NULL);
 #else
     const char* szTmp = Text;
 #endif
