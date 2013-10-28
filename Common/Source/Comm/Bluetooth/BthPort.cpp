@@ -68,13 +68,18 @@ bool BthPort::Initialize() {
         iResult = ioctlsocket(mSocket, FIONBIO, &iMode);
         if (iResult != NO_ERROR) {
             StartupStore(_T(".... ioctlsocket failed with error: %ld%s"), iResult, NEWLINE);
+            // if failed, socket still in blocking mode, it's big problem
+	        goto failed;
         }
     }
     
-    StartupStore(_T(". Bluetooth Port %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+    if(!ComPort::Initialize()) {
+        // no need to log failed of StartRxThread it's already made in ComPort::Initialize();
+        goto failed;
+    }
 
-    return ComPort::Initialize();
-    
+    StartupStore(_T(". Bluetooth Port %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+    return true;
 failed:
     StatusMessage(MB_OK, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
 
@@ -122,6 +127,7 @@ bool BthPort::Close() {
         mSocket = INVALID_SOCKET;
     }
     WSACleanup();
+    StartupStore(_T(". ComPort %u closed Ok.%s"), GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
     return true;
 }
 
@@ -158,18 +164,9 @@ DWORD BthPort::RxThread() {
             std::for_each(begin(szString), begin(szString) + nRecv, std::bind1st(std::mem_fun(&BthPort::ProcessChar), this));
             dwWaitTime = 5; // avoid cpu overhead;
         } else {
-            dwWaitTime = 50; // if no more data wait 100ms ( max data rate 10Hz )
+            dwWaitTime = 50; // if no more data wait 50ms ( max data rate 20Hz )
         }
     
-        if ((GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &EndKernelTime, &EndUserTime)) == 0) {
-            if (GetPortIndex() == 0)
-                Cpu_PortA = 9999;
-            else
-                Cpu_PortB = 9999;
-        } else {
-            Cpustats((GetPortIndex() == 0) ? &Cpu_PortA : &Cpu_PortB, &StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
-        }
-
         if ((GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &EndKernelTime, &EndUserTime)) == 0) {
             if (GetPortIndex() == 0)
                 Cpu_PortA = 9999;

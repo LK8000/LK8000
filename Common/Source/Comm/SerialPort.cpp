@@ -57,7 +57,7 @@ bool SerialPort::Initialize() {
         StartupStore(_T("... ComPort %u Init failed, error=%u%s"), GetPortIndex() + 1, dwError, NEWLINE); // 091117
         StatusMessage(MB_OK, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
 
-        return false;
+        goto failed;
     }
     StartupStore(_T(". ComPort %u  <%s> is now open%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
 
@@ -65,13 +65,10 @@ bool SerialPort::Initialize() {
     PortDCB.DCBlength = sizeof (DCB);
     // Get the default port setting information.
     if (GetCommState(hPort, &PortDCB)==0) {
-        CloseHandle(hPort);
-        hPort = INVALID_HANDLE_VALUE;
-
     	StartupStore(_T("... ComPort %u GetCommState failed, error=%u%s"),GetPortIndex()+1,GetLastError(),NEWLINE);
-        // cannot set serial port timers. good anyway
-        StatusMessage(MB_OK|MB_ICONINFORMATION, NULL, TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());
-        return false;
+        // @M759 = Unable to Change Settings on Port
+        StatusMessage(MB_OK|MB_ICONINFORMATION, NULL, TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
+        goto failed;
     }
     // Change the DCB structure settings.
     PortDCB.BaudRate = _dwPortSpeed; // Current baud 
@@ -106,28 +103,21 @@ bool SerialPort::Initialize() {
     PortDCB.EvtChar = '\n'; // wait for end of line, RXFLAG should detect it
 
     if (!SetCommState(hPort, &PortDCB)) {
-        // Could not create the read thread.
-        CloseHandle(hPort);
-        hPort = INVALID_HANDLE_VALUE;
-#if (WINDOWSPC>0) || NEWCOMM // 091206
-        Sleep(2000); // needed for windows bug 101116 not verified
-#endif
-#if !(WINDOWSPC>0)
-        if (PollingMode) Sleep(2000);
-#endif
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change setting FAILED, error=%u%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
+		// @M759 = Unable to Change Settings on Port
     	StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
 
-        return false;
+        goto failed;
     }
 
     if (SetRxTimeout(RXTIMEOUT) == -1) {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%u%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
-        StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
+        // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
+        StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());        
 
-        return false;
+        goto failed;
     }
 
     SetupComm(hPort, 1024, 1024);
@@ -138,22 +128,31 @@ bool SerialPort::Initialize() {
     EscapeCommFunction(hPort, SETDTR);
     EscapeCommFunction(hPort, SETRTS);
 
-    bool retstat=ComPort::Initialize();
-    if (retstat) {
-    	StartupStore(_T(". ComPort %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
-    } else {
-    	StartupStore(_T(". ComPort %u Init <%s> FAILED%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
-	// FOR BRUNO: hPort is now still used! We should close the descriptor and set it INVALID?
-	// Otherwise next time the device is busy.
+    if(!ComPort::Initialize()) {
+        // no need to log failed of StartRxThread it's already made in ComPort::Initialize();
+        goto failed;
     }
-    #if (WINDOWSPC>0)
-	Sleep(2000);
-    #endif
-    #if !(WINDOWSPC>0)
-	if (PollingMode) Sleep(2000);
-    #endif
 
-    return retstat;
+    StartupStore(_T(". ComPort %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+    return true;
+        
+failed:
+    if(hPort != INVALID_HANDLE_VALUE) {
+        if (!CloseHandle(hPort)) {
+            StartupStore(_T("... ComPort %u Init <%s> close failed, error=%u%s"),GetPortIndex() + 1, GetPortName(),NEWLINE);
+        } else {
+            StartupStore(_T("... ComPort %u Init <%s> closed%s"),GetPortIndex() + 1, GetPortName(),NEWLINE);
+        }
+        hPort = INVALID_HANDLE_VALUE;
+
+#if (WINDOWSPC>0) || NEWCOMM // 091206
+        Sleep(2000); // needed for windows bug
+#endif
+#if !(WINDOWSPC>0)
+        if (_PollingMode) Sleep(2000);
+#endif
+    }
+    return false;
 }
 
 int SerialPort::SetRxTimeout(int Timeout) {
@@ -188,13 +187,6 @@ int SerialPort::SetRxTimeout(int Timeout) {
     // for all read and write
     // operations on the port.
     if (!SetCommTimeouts(hPort, &CommTimeouts)) {
-        // Could not create the read thread.
-        CloseHandle(hPort);
-        hPort = INVALID_HANDLE_VALUE;
-        Sleep(2000); // needed for windows bug
-
-        // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
-        StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());
         return -1;
     }
 
@@ -269,7 +261,12 @@ bool SerialPort::Close() {
             StartupStore(_T("... ComPort %u close failed, error=%u%s"), GetPortIndex() + 1, dwError, NEWLINE);
             Ret = false;
         } else {
+#if (WINDOWSPC>0) || NEWCOMM // 091206
             Sleep(2000); // needed for windows bug
+#endif
+#if !(WINDOWSPC>0)
+            if (_PollingMode) Sleep(2000);
+#endif            
             hPort = INVALID_HANDLE_VALUE;
             StartupStore(_T(". ComPort %u closed Ok.%s"), GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
             Ret = true;
