@@ -74,7 +74,14 @@ void ComPort::PutChar(BYTE b) {
 
 BOOL ComPort::StopRxThread() {
     if ((hStop != INVALID_HANDLE_VALUE) && (hReadThread != INVALID_HANDLE_VALUE)) {
-        SetEvent(hStop);
+
+#ifdef UNDER_CE
+        //Never use SetEvent(x) or ResetEvent(x), mingw 3.15.2 inline implementation is bugge
+        EventModify(hStop, EVENT_SET);
+#else
+        SetEvent(hStop); 
+#endif
+        
         CancelWaitEvent();
         
         if (::WaitForSingleObject(hReadThread, 20000) == WAIT_TIMEOUT) {
