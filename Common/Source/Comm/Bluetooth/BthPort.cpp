@@ -155,7 +155,7 @@ DWORD BthPort::RxThread() {
     FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime;
     Purge();
 
-    while ((mSocket != INVALID_SOCKET) && !bStopThread) {
+    while (mSocket != INVALID_SOCKET && ::WaitForSingleObject(hStop, dwWaitTime) == WAIT_TIMEOUT) {
         GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &StartKernelTime, &StartUserTime);
         UpdateStatus();
 
@@ -174,10 +174,6 @@ DWORD BthPort::RxThread() {
                 Cpu_PortB = 9999;
         } else {
             Cpustats((GetPortIndex() == 0) ? &Cpu_PortA : &Cpu_PortB, &StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
-        }
-
-        if(!bStopThread) {
-            Sleep(dwWaitTime);
         }
     }
 

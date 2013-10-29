@@ -73,7 +73,7 @@ protected:
 
     void ProcessChar(char c);
 
-    bool bStopThread;
+    HANDLE hStop;
     HANDLE hReadThread;
     
 private:

@@ -19,7 +19,7 @@ ComPort::ComPort(int idx, const std::wstring& sName) : devIdx(idx), sPortName(sN
     pLastNmea = begin(_NmeaString);
 
     hReadThread = INVALID_HANDLE_VALUE;
-    bStopThread = false;
+    hStop = INVALID_HANDLE_VALUE;
 }
 
 ComPort::~ComPort() {
@@ -73,8 +73,8 @@ void ComPort::PutChar(BYTE b) {
 }
 
 BOOL ComPort::StopRxThread() {
-    if (hReadThread != INVALID_HANDLE_VALUE) {
-        bStopThread = true;
+    if ((hStop != INVALID_HANDLE_VALUE) && (hReadThread != INVALID_HANDLE_VALUE)) {
+        SetEvent(hStop);
         CancelWaitEvent();
         
         if (::WaitForSingleObject(hReadThread, 20000) == WAIT_TIMEOUT) {
@@ -83,12 +83,16 @@ BOOL ComPort::StopRxThread() {
         }
         CloseHandle(hReadThread);
         hReadThread = INVALID_HANDLE_VALUE;
+        CloseHandle(hStop);
+        hStop = INVALID_HANDLE_VALUE;
     }
     return TRUE;
 }
 
 BOOL ComPort::StartRxThread() {
-    bStopThread = false;
+    if ((hStop = CreateEvent(NULL, TRUE, FALSE, NULL)) == NULL) {
+        goto failed;
+    }
 
     DWORD dwThreadID;
     // Create a read thread for reading data from the communication port.
