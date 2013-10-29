@@ -17,18 +17,19 @@
 #include <functional>
 
 BthPort::BthPort(int idx, const std::wstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET) {
-
+    WSADATA wsd;
+    WSAStartup(MAKEWORD(2, 0), &wsd);
 }
 
 BthPort::~BthPort() {
-    Close();
+    if (mSocket != INVALID_SOCKET) {
+        Close();
+    }
+    WSACleanup();
 }
 
 bool BthPort::Initialize() {
     int iResult;
-
-    WSADATA wsd;
-    WSAStartup(MAKEWORD(2, 0), &wsd);
 
     mSocket = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM);
     if (mSocket == INVALID_SOCKET) {
@@ -126,7 +127,6 @@ bool BthPort::Close() {
         closesocket(mSocket);
         mSocket = INVALID_SOCKET;
     }
-    WSACleanup();
     StartupStore(_T(". ComPort %u closed Ok.%s"), GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
     return true;
 }

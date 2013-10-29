@@ -27,7 +27,9 @@ SerialPort::SerialPort(int idx, const std::wstring& sName, DWORD dwSpeed, BitInd
 }
 
 SerialPort::~SerialPort() {
-    Close();
+    if(hPort != INVALID_HANDLE_VALUE) {
+        Close();
+    }
 }
 
 bool SerialPort::Initialize() {

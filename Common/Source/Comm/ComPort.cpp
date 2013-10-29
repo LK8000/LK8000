@@ -24,6 +24,9 @@ ComPort::ComPort(int idx, const std::wstring& sName) : devIdx(idx), sPortName(sN
 
 ComPort::~ComPort() {
     // Close(); never call virtual in base class dtor !!!
+    if(hReadThread != INVALID_HANDLE_VALUE) {
+        CloseHandle(hReadThread);
+    }
 }
 
 bool ComPort::Initialize() {
