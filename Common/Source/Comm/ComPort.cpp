@@ -23,7 +23,10 @@ ComPort::ComPort(int idx, const std::wstring& sName) : devIdx(idx), sPortName(sN
 }
 
 ComPort::~ComPort() {
-    Close();
+    // Close(); never call virtual in base class dtor !!!
+    if(hReadThread != INVALID_HANDLE_VALUE) {
+        CloseHandle(hReadThread);
+    }
 }
 
 bool ComPort::Initialize() {
@@ -39,12 +42,14 @@ bool ComPort::Close() {
     return true;
 }
 
+// this is used by all functions to send data out
+// it is called internally from thread for each device
 void ComPort::WriteString(const TCHAR * Text) {
     int len = _tcslen(Text);
 #ifdef  _UNICODE
-    int size_needed = WideCharToMultiByte(CP_ACP, 0, Text, len, NULL, 0, NULL, NULL);
+    int size_needed = WideCharToMultiByte(CP_ACP, 0, Text, len+1, NULL, 0, NULL, NULL);
     char* szTmp = new char[size_needed];
-    len = WideCharToMultiByte(CP_ACP, 0, Text, len, szTmp, size_needed, NULL, NULL);
+    len = WideCharToMultiByte(CP_ACP, 0, Text, len+1, szTmp, size_needed, NULL, NULL);
 #else
     const char* szTmp = Text;
 #endif
@@ -69,12 +74,19 @@ void ComPort::PutChar(BYTE b) {
 
 BOOL ComPort::StopRxThread() {
     if ((hStop != INVALID_HANDLE_VALUE) && (hReadThread != INVALID_HANDLE_VALUE)) {
-        SetEvent(hStop);
+
+#ifdef UNDER_CE
+        //Never use SetEvent(x) or ResetEvent(x), mingw 3.15.2 inline implementation is bugge
+        EventModify(hStop, EVENT_SET);
+#else
+        SetEvent(hStop); 
+#endif
+        
         CancelWaitEvent();
         
         if (::WaitForSingleObject(hReadThread, 20000) == WAIT_TIMEOUT) {
-            TerminateThread(hReadThread, 0);
             StartupStore(_T("... ComPort %d StopRxThread: RX Thread forced to terminate!%s"), GetPortIndex() + 1, NEWLINE);
+            TerminateThread(hReadThread, 0);
         }
         CloseHandle(hReadThread);
         hReadThread = INVALID_HANDLE_VALUE;

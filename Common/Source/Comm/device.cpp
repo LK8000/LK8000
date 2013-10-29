@@ -237,6 +237,8 @@ BOOL devInit(LPCTSTR CommandLine) {
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
+    std::set<std::wstring> UsedPort; // list of already used port
+    
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);
 
@@ -276,6 +278,12 @@ BOOL devInit(LPCTSTR CommandLine) {
         ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
 
+        if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
+            StartupStore(_T(". Port <%s> Already used, Device %c Disabled ! %s"), Port, (_T('A') + i), NEWLINE);
+            continue;
+        }
+        UsedPort.insert(Port);
+        
         StartupStore(_T(". Device %c is <%s> Port=%s%s"), (_T('A') + i), DeviceName, Port, NEWLINE);
         
         ComPort *Com = NULL;
@@ -518,16 +526,16 @@ BOOL devOpen(PDeviceDescriptor_t d, int Port){
 BOOL devClose(PDeviceDescriptor_t d)
 {
   if (d != NULL) {
-    if (d->Close != NULL)
+    if (d->Close != NULL) {
       d->Close(d);
-
+    }
+    
     ComPort *Com = d->Com;
-    d->Com = NULL;
-
     if (Com) {
       Com->Close();
+      d->Com = NULL; // if we do that before Stop RXThread , Crash ....
       delete Com;
-    }
+    }    
   }
 
   return TRUE;
