@@ -363,7 +363,7 @@ DWORD SerialPort::RxThread() {
     if (!_PollingMode) SetCommMask(hPort, _dwMask);
 #endif
 
-    while ((hPort != INVALID_HANDLE_VALUE) && (::WaitForSingleObject(hStop, 0) == WAIT_TIMEOUT)) {
+    while ((hPort != INVALID_HANDLE_VALUE) && !bStopThread) {
         GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &StartKernelTime, &StartUserTime);
 
         UpdateStatus();
@@ -414,7 +414,7 @@ DWORD SerialPort::RxThread() {
                     Cpustats((GetPortIndex() == 0) ? &Cpu_PortA : &Cpu_PortB, &StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
                 }
 
-                if (::WaitForSingleObject(hStop, 0) != WAIT_TIMEOUT) {
+                if (bStopThread) {
                     dwBytesTransferred = 0;
                 }
             } while (dwBytesTransferred != 0);
