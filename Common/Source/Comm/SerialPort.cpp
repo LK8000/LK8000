@@ -278,42 +278,49 @@ bool SerialPort::Close() {
 }
 
 void SerialPort::Flush() {
-    FlushFileBuffers(hPort);
+    if(hPort != INVALID_HANDLE_VALUE) {
+        FlushFileBuffers(hPort);
+    }
 }
 
 void SerialPort::Purge() {
-    PurgeComm(hPort, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);
+    if(hPort != INVALID_HANDLE_VALUE) {
+        PurgeComm(hPort, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);
+    }
 }
 
 void SerialPort::CancelWaitEvent() {
 #if (WINDOWSPC>0) || NEWCOMM  // 091206
 
 #else    
-    Flush();
+    if(hPort != INVALID_HANDLE_VALUE) {
+        Flush();
 
-    // setting the comm event mask with the same value
-    SetCommMask(hPort, _dwMask); // will cancel any
-                                 // WaitCommEvent!  this is a
-                                 // documented CE trick to
-                                 // cancel the WaitCommEvent
+        // setting the comm event mask with the same value
+        SetCommMask(hPort, _dwMask); // will cancel any
+                                     // WaitCommEvent!  this is a
+                                     // documented CE trick to
+                                     // cancel the WaitCommEvent
+    }
 #endif
 }
 
 void SerialPort::UpdateStatus() {
     DWORD dwErrors = 0;
     COMSTAT comStat = {0};
-
-    ClearCommError(hPort, &dwErrors, &comStat);
-    if (dwErrors & CE_FRAME) {
-        //StartupStore(_T("... Com port %d, dwErrors=%ld FRAME (old status=%d)\n"),
-        //	GetPortIndex(),dwErrors,ComPortStatus[GetPortIndex()]);
-        SetPortStatus(CPS_EFRAME);
-        AddStatErrRx(1);
-        valid_frames = 0;
-    } else {
-        if (++valid_frames > 10) {
-            valid_frames = 20;
-            SetPortStatus(CPS_OPENOK);
+    if(hPort != INVALID_HANDLE_VALUE) {
+        ClearCommError(hPort, &dwErrors, &comStat);
+        if (dwErrors & CE_FRAME) {
+            //StartupStore(_T("... Com port %d, dwErrors=%ld FRAME (old status=%d)\n"),
+            //	GetPortIndex(),dwErrors,ComPortStatus[GetPortIndex()]);
+            SetPortStatus(CPS_EFRAME);
+            AddStatErrRx(1);
+            valid_frames = 0;
+        } else {
+            if (++valid_frames > 10) {
+                valid_frames = 20;
+                SetPortStatus(CPS_OPENOK);
+            }
         }
     }
 }
