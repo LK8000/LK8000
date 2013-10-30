@@ -258,6 +258,9 @@ bool SerialPort::Close() {
     bool Ret = ComPort::Close();
     if (hPort != INVALID_HANDLE_VALUE) {
         // Close the communication port.
+#ifdef _DEBUG_STOP_RXTHREAD
+        StartupStore(_T("... ComPort %d StopRxThread: Close Serial Port file handle !%s"), GetPortIndex() + 1, NEWLINE);
+#endif
         if (!CloseHandle(hPort)) {
             DWORD dwError = GetLastError();
             StartupStore(_T("... ComPort %u close failed, error=%u%s"), GetPortIndex() + 1, dwError, NEWLINE);

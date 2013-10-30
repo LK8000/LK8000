@@ -8,6 +8,8 @@
  */
 
 #if TESTBENCH
+#define _DEBUG_STOP_RXTHREAD // log close rx thread step for debug hang ....
+
 /*
 #define DEBUG_FOCUS 1	  // show SETFOCUS and KILLFOCUS traces in LK
 #define DEBUG_DEVSETTING  // startupstore messages to understand sequence of device and com port init
