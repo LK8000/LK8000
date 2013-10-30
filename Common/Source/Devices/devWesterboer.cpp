@@ -209,7 +209,7 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
 */
 
-  TCHAR ctemp[80];
+  TCHAR ctemp[180];
   double vtas, vias;
   double altqne, altqnh;
   static bool initqnh=true;
@@ -219,7 +219,8 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
 
 
-  if( (NoMsg <10) && ( pGPS->SerialNumber != oldSerial))
+if(_tcslen(String) < 180)
+  if(((pGPS->SerialNumber == 0) || (oldSerial != SerialNumber)) && (NoMsg < 5))
   {
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
@@ -462,9 +463,11 @@ static BOOL PWES2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 //	FFFF Firmware * 100 100 .. 9999 101 = 1.01
 //	$PWES2,60,1234,12,3210*22
 #ifdef DEVICE_SERIAL
-  TCHAR ctemp[80];
-  static int NoMsg;
-  if((pGPS->SerialNumber == 0) && (NoMsg <10))
+TCHAR ctemp[180];
+static int NoMsg=0;
+
+if(_tcslen(String) < 180)
+  if(((pGPS->SerialNumber == 0) || (oldSerial	!= SerialNumber)) && (NoMsg < 5))
   {
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
@@ -497,7 +500,7 @@ static BOOL PWES2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
     _stprintf(ctemp, _T("SW Ver:%3.2f  HW Ver:%i "),  pGPS->SoftwareVer, Year);
     DoStatusMessage(ctemp);
 	StartupStore(_T(". %s\n"),ctemp);
-
+	oldSerial	=SerialNumber;
   }
   // nothing to do
 #endif
