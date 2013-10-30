@@ -12,6 +12,7 @@
 #include "BtHandler.h"
 #include "SerialPort.h"
 #include "Bluetooth/BthPort.h"
+#include "GpsIdPort.h"
 #include <functional>
 
 
@@ -271,11 +272,14 @@ BOOL devInit(LPCTSTR CommandLine) {
             StartupStore(_T(". Device %c : invalide drivers name <%s>%s"), (_T('A') + i), DeviceName, NEWLINE);
             continue;
         }
-
-        Port[0] = _T('\0');
-        SpeedIndex = 2;
-        BitIndex = (BitIndex_t) bit8N1;
-        ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
+        if(_tcscmp(pDev->Name,TEXT("Internal")) == 0) {
+            _tcscpy(Port, _T("GPSID"));
+        } else { 
+            Port[0] = _T('\0');
+            SpeedIndex = 2;
+            BitIndex = (BitIndex_t) bit8N1;
+            ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
+        }
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
 
         if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
@@ -284,6 +288,7 @@ BOOL devInit(LPCTSTR CommandLine) {
         }
         UsedPort.insert(Port);
         
+        // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
         StartupStore(_T(". Device %c is <%s> Port=%s%s"), (_T('A') + i), DeviceName, Port, NEWLINE);
         
         ComPort *Com = NULL;
@@ -295,6 +300,8 @@ BOOL devInit(LPCTSTR CommandLine) {
                     Com = new BthPort(i, &Port[3]);
                 }
             }
+        } else if (_tcscmp(Port, _T("GPSID")) == 0) {
+            Com = new GpsIdPort(i, Port);
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], (BitIndex_t)BitIndex, PollingMode);
         }

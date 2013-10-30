@@ -5,5 +5,6 @@
 
 BOOL genInstall(PDeviceDescriptor_t d);
 BOOL genRegister(void);
+BOOL InternalRegister(void);
 
 #endif

@@ -509,10 +509,11 @@ static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
 #endif
 
     if (begin(DeviceList) + idx < end(DeviceList)) {
-        DeviceList[idx].Disabled = (_tcslen(Name) == 0) || (_tcscmp(Name, _T(DEV_DISABLED_NAME)) == 0);
-
-        ShowWindowControl(wf, !(DeviceList[idx].Disabled))(DevicePropName[idx]);
-        ShowWindowControl(wf, false/*DeviceList[idx].DoSetup*/)(SetupButtonName[idx]);  
+        bool bHidePort = DeviceList[idx].Disabled = (_tcslen(Name) == 0) || (_tcscmp(Name, _T(DEV_DISABLED_NAME)) == 0);
+        bHidePort |= (_tcscmp(Name, _T("Internal")) == 0);
+        
+        ShowWindowControl(wf, !bHidePort)(DevicePropName[idx]);
+        ShowWindowControl(wf, !bHidePort && false/*DeviceList[idx].DoSetup*/)(SetupButtonName[idx]);  
         
         WndProperty* wp = (WndProperty*) wf->FindByName(DevicePropName[idx]);
         if (wp) {
@@ -1562,7 +1563,6 @@ static void OnBthDevice(WindowControl * Sender) {
 
     ReadPort2Settings(szPort, NULL, NULL);
     UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
-
 }
 
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
@@ -1579,6 +1579,7 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
     
     if(begin(PortPropName)+idx < end(PortPropName)) {
         bool bHide = ((_tcsncmp(szPortName, _T("BT:"), 3) == 0) || DeviceList[idx].Disabled);
+        bHide = bHide || (_tcscmp(DeviceList[idx].Name, _T("Internal")) == 0);
         std::for_each(
             begin(PortPropName[idx]), 
             end(PortPropName[idx]), 
@@ -1891,7 +1892,7 @@ static void setVariables(void) {
         dwDeviceIndex1 = i;
 
     }
-    dfe->Sort(2);
+    dfe->Sort(3);
     dfe->Set(dwDeviceIndex1);
     wp->RefreshDisplay();
   }
