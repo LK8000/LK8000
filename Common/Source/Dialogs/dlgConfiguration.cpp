@@ -510,6 +510,7 @@ static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
 
     if (begin(DeviceList) + idx < end(DeviceList)) {
         bool bHidePort = DeviceList[idx].Disabled = (_tcslen(Name) == 0) || (_tcscmp(Name, _T(DEV_DISABLED_NAME)) == 0);
+        _tcscpy(DeviceList[idx].Name, Name);
         bHidePort |= (_tcscmp(Name, _T("Internal")) == 0);
         
         ShowWindowControl(wf, !bHidePort)(DevicePropName[idx]);
