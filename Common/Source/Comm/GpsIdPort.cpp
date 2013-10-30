@@ -34,7 +34,7 @@ bool GpsIdPort::Initialize() {
     _hState = ::CreateEvent(NULL, FALSE, FALSE, NULL);
     _hGPS = ::GPSOpenDevice(_hLoc, _hState, NULL, 0);
     if (0 == _hGPS) {
-        StartupStore(_T("GPSID : failed to initialise%s"), NEWLINE);    
+        StartupStore(_T("Unable to Open GPS Intermediate driver %s"), NEWLINE);    
         return false;
     }
     SetPortStatus(CPS_OPENOK);
@@ -58,9 +58,10 @@ bool GpsIdPort::Initialize() {
 bool GpsIdPort::Close() {
     ComPort::Close();
 
-    ::GPSCloseDevice(_hGPS);
-    ::CloseHandle(_hLoc);
-    ::CloseHandle(_hState);
+    
+    if(_hGPS) ::GPSCloseDevice(_hGPS);
+    if(_hLoc) ::CloseHandle(_hLoc);
+    if(_hState) ::CloseHandle(_hState);
 
     return true;
 }

@@ -149,13 +149,27 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
     if (loc.dwValidFields & GPS_VALID_MAGNETIC_VARIATION) {
 
     }
-
-    if (loc.dwValidFields & GPS_VALID_ALTITUDE_WRT_ELLIPSOID) {
-        GPSData.Altitude = loc.flAltitudeWRTEllipsoid;
-    } else if (loc.dwValidFields & GPS_VALID_ALTITUDE_WRT_SEA_LEVEL) {
+    
+    if (loc.dwValidFields & GPS_VALID_ALTITUDE_WRT_SEA_LEVEL) {
         GPSData.Altitude = loc.flAltitudeWRTSeaLevel;
+        GPSData.Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
     }
-
+    
+#if 0    
+    if (loc.dwValidFields & GPS_VALID_ALTITUDE_WRT_ELLIPSOID) {
+ 
+        /* MSDN says..
+         * "flAltitudeWRTEllipsoid : Altitude, in meters, with respect to the WGS84 ellipsoid. "
+         * "flAltitudeWRTSeaLevel : Altitude, in meters, with respect to sea level. "
+         * 
+         * But when I get this structure, flAltitudeWRTSeaLevel field has proper value. But,
+         * flAltitudeWRTEllipsoid field has different meaning value.
+         * 
+         * But flAltitudeWRTEllipsoid field contains just geodial separation.
+         */
+    } 
+#endif
+    
     if (loc.dwValidFields & GPS_VALID_POSITION_DILUTION_OF_PRECISION) {
 
     }
