@@ -88,7 +88,7 @@ bool SerialPort::Initialize() {
     PortDCB.fNull = FALSE; // Disable null removal
     PortDCB.fRtsControl = RTS_CONTROL_ENABLE; // RTS flow control 
 
-    PortDCB.fAbortOnError = TRUE; // FALSE need something else to work
+    PortDCB.fAbortOnError = FALSE;
     switch (_dwPortBit) {
         case bit7E1:
             PortDCB.ByteSize = 7;
