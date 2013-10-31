@@ -94,7 +94,7 @@ void CalculateTaskSectors(void)
                                 &Task[i].SectorEndLat,
                                 &Task[i].SectorEndLon);
 
-      //    if (!AATEnabled)
+          if (!AATEnabled)
           {
             Task[i].AATStartRadial  = 
               AngleLimit360(SectorBearing - SectorAngle);
