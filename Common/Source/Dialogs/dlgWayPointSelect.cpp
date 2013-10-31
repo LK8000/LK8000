@@ -662,12 +662,12 @@ static void OnFilterType(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 }
 
-static int DrawListIndex=0;
+static unsigned int DrawListIndex=0;
 
 // Painting elements after init
 static void OnPaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
-  int n = UpLimit - LowLimit;
+  unsigned int n = UpLimit - LowLimit;
   TCHAR sTmp[12];
 #if 100124
   static int w0;
@@ -681,7 +681,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
 
   if (DrawListIndex < n){
 
-    int i;
+    unsigned int i;
     if (FullFlag) {
 	i = StrIndex[DrawListIndex];	// 100502
 /*
@@ -694,6 +694,8 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
 
 // Sleep(100);
 
+    LKASSERT(i < NumberOfWayPoints);
+    
 
     int w1, w2, w3, x1, x2, x3;
     WndListFrame *wlf = (WndListFrame *)wf->FindByName(TEXT("frmWayPointList"));
