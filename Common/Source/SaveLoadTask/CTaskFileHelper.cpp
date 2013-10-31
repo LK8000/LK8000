@@ -153,7 +153,7 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
                 free(szXML);
                 return false;
             }
-            if (!LoadStartPoint(rootNode.getChildNode(_T("startpoints"), 0))) {
+            if (!LoadStartPointList(rootNode.getChildNode(_T("startpoints"), 0))) {
                 free(szXML);
                 return false;
             }
