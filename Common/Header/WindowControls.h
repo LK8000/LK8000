@@ -1048,6 +1048,7 @@ class WndProperty:public WindowControl{
 
 };
 
+int dlgComboPicker(WndProperty* theProperty);
 
 typedef void (*webpt2Event)(const TCHAR *);
 
