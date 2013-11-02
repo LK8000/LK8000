@@ -182,7 +182,11 @@ int dlgComboPicker(WndProperty* theProperty){
       iSavedInitialDataIndex=ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemSavedIndex]->DataFieldIndex;
       ComboPopupDataField->CopyString(sSavedInitialValue,false);
     }
-
+    
+    WindowControl* pBtHelp = wf->FindByName(TEXT("cmdHelp"));
+    if(pBtHelp) {
+        pBtHelp->SetVisible(wComboPopupWndProperty->GetHelpText() != NULL);
+    }
 
     wf->ShowModal();
 
