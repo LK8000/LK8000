@@ -676,7 +676,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				goto turnpoint;
 				break;
 			case STYLE_THERMAL:
-				SelectObject(hDCTemp,hLKThermal);
+                if(E->AltArivalAGL>0) {
+                    SelectObject(hDCTemp,hLKThermal);
+                } else {
+                    SelectObject(hDCTemp,hLKThermalRed);
+                }
 				break;
 
 			case STYLE_MARKER:
