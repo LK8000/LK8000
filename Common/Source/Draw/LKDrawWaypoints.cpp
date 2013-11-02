@@ -22,20 +22,17 @@
 #include <string.h>
 
 MapWaypointLabel_t MapWaypointLabelList[200]; 
+MapWaypointLabel_t* SortedWaypointLabelList[200]; 
 
 int MapWaypointLabelListCount=0;
 
 
 void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact);
 
-int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 
+inline bool MapWaypointLabelListCompare(const MapWaypointLabel_t* elem1, const MapWaypointLabel_t* elem2 ){
   // Now sorts elements in task preferentially.
-  if (((MapWaypointLabel_t *)elem1)->AltArivalAGL > ((MapWaypointLabel_t *)elem2)->AltArivalAGL)
-    return (-1);
-  if (((MapWaypointLabel_t *)elem1)->AltArivalAGL < ((MapWaypointLabel_t *)elem2)->AltArivalAGL)
-    return (+1);
-  return (0);
+  return (elem1->AltArivalAGL < elem2->AltArivalAGL);
 }
 
 
@@ -76,6 +73,7 @@ void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y,
   E->index = index;
   E->style = style;
 
+  SortedWaypointLabelList[MapWaypointLabelListCount] = E;
   MapWaypointLabelListCount++;
 
 }
@@ -549,7 +547,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	} // if visible
     } // for all waypoints
  
-  qsort(&MapWaypointLabelList, MapWaypointLabelListCount, sizeof(MapWaypointLabel_t), MapWaypointLabelListCompare);
+  std::sort( &SortedWaypointLabelList[0], &SortedWaypointLabelList[MapWaypointLabelListCount], MapWaypointLabelListCompare );
 
   int j;
 
@@ -558,7 +556,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
   for (j=MapWaypointLabelListCount-1; j>=0; j--){
 
-    MapWaypointLabel_t *E = &MapWaypointLabelList[j];
+    MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     // draws if they are in task unconditionally,
     // otherwise, does comparison
@@ -600,7 +598,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   // without writing over each other (or the task ones)
   for (j=0; j<MapWaypointLabelListCount; j++) {
 
-    MapWaypointLabel_t *E = &MapWaypointLabelList[j];
+    MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
       if ( TextInBox(hdc, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), true) == true) {
