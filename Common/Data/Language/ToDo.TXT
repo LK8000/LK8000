@@ -321,3 +321,9 @@ _@M1835_ "Pairing device failed"
 _@M1836_ "Lookup"
 _@M1837_ "Pair"
 _@M1838_ "Unpair"
+
+# Send IGC track file
+_@M2154_ "IGC\nTrack File"
+_@M2155_ "Send"
+_@M2156_ "IGC Track File"
+_@M2157_ "Choose device"
