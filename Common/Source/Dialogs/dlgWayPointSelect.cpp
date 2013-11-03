@@ -68,8 +68,6 @@ static int ItemIndex = -1;
 
 static int SelectedWayPointFileIdx = 0;
 
-extern char ToUpper(char in);
-
 static void OnWaypointListEnter(WindowControl * Sender, 
 				WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender; (void)ListInfo;
@@ -341,14 +339,13 @@ static void UpdateList(void){
 
 #if 100502
     TCHAR sTmp[NAMEFILTERLEN+1];
-    TCHAR TmpCmpr[NAME_SIZE+1];
-    unsigned int k;
+    TCHAR wname[NAME_SIZE+1];
     LowLimit = UpLimit;
     qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointNameCompare);
 
-	for(k =0; k < NAMEFILTERLEN; k++)
-		sTmp[k] = ToUpper(sNameFilter[k]);
+    LK_tcsncpy(sTmp,sNameFilter, NAMEFILTERLEN);
+    _tcsupr(sTmp);
     int iFilterLen = _tcslen(sNameFilter);
 
     if (iFilterLen<GC_SUB_STRING_THRESHOLD)
@@ -356,11 +353,11 @@ static void UpdateList(void){
     for (i=0; i<UpLimit; i++){
       // compare entire name which may be more than 4 chars
 
-    	for(k =0; k < NAME_SIZE; k++)
-    		TmpCmpr[k] = ToUpper(WayPointList[WayPointSelectInfo[i].Index].Name[k]);
+	LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)NumberOfWayPoints);
+	LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
+	_tcsupr(wname);
 
-
-      if (_tcsnicmp(TmpCmpr,sTmp,iFilterLen) >= 0) {
+      if (_tcsnicmp(wname,sTmp,iFilterLen) >= 0) {
         LowLimit = i;
         break;
       }
@@ -369,9 +366,11 @@ static void UpdateList(void){
     if (_tcscmp(sTmp, TEXT("")) != 0) { // if it's blanks, then leave UpLimit at end of list
       for (; i<UpLimit; i++){
 
-      	for(k =0; k < NAME_SIZE; k++)
-      		TmpCmpr[k] = ToUpper(WayPointList[WayPointSelectInfo[i].Index].Name[k]);
-        if (_tcsnicmp(TmpCmpr,sTmp,iFilterLen) != 0) {
+	LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)NumberOfWayPoints);
+	LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
+	_tcsupr(wname);
+
+        if (_tcsnicmp(wname,sTmp,iFilterLen) != 0) {
           UpLimit = i;
           break;
         }
@@ -384,10 +383,11 @@ static void UpdateList(void){
 	// now we create a secondary index pointing to this list
 	for (i=0, matches=0; i<UpLimit; i++) {
 
-    	for( k =0; k < NAME_SIZE; k++)
-    		TmpCmpr[k] = ToUpper(WayPointList[WayPointSelectInfo[i].Index].Name[k]);
- 
-		if ( _tcsstr(  TmpCmpr,sTmp ) ) {
+		LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)NumberOfWayPoints);
+		LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
+		_tcsupr(wname);
+
+		if ( _tcsstr(  wname,sTmp ) ) {
 			StrIndex[matches++]=i;
 		}
 	}
