@@ -403,8 +403,10 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   }
 
   // intercept device specific parser routines 
-  if (d != NULL){
-
+  if (d != NULL) {
+	  if (!NMEAParser::NMEAChecksum(String)){
+	    return FALSE;
+	  }
     if (d->pDevPipeTo && d->pDevPipeTo->Com) {
 	// stream pipe, pass nmea to other device (NmeaOut)
 	// TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
