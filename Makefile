@@ -509,6 +509,9 @@ CALC	:=\
 	$(CLC)/windmeasurementlist.cpp \
 	$(CLC)/windstore.cpp 	\
 	$(CLC)/WindZigZag.cpp 	\
+	$(CLC)/WindEKF.cpp 	\
+	$(CLC)/WindKalman.cpp 	\
+
 
 TASK	:=\
 	$(TSK)/AATCalculateIsoLines.cpp \
