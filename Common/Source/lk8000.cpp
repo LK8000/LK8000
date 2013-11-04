@@ -437,7 +437,8 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   StartupStore(TEXT(". Register serial devices%s"),NEWLINE);
   #endif
   disRegister(); // must be first
-  genRegister(); // must be second, since we Sort(2) in dlgConfiguration
+  InternalRegister(); // must be second
+  genRegister(); // must be three, since we Sort(3) in dlgConfiguration
   cai302Register();
   ewRegister();
   #if !110101
