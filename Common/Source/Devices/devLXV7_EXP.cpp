@@ -629,14 +629,16 @@ bool DevLXV7_EXP::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* p
  // ParToDouble(sentence, 1, &MACCREADY);
 //	$LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
 #ifdef DEVICE_SERIAL
-  TCHAR ctemp[80];
-  static int NoMsg;
-  static int oldSerial;
-  if((( pGPS->SerialNumber == 0) && (NoMsg <10)) || ( pGPS->SerialNumber != oldSerial))
+TCHAR ctemp[180];
+static int NoMsg=0;
+static int oldSerial=0;
+if(_tcslen(String) < 180)
+  if((( pGPS->SerialNumber == 0)  || ( pGPS->SerialNumber != oldSerial)) && (NoMsg < 5))
   {
 	NoMsg++ ;
-    NMEAParser::ExtractParameter(String,d->Name,0);
-
+    NMEAParser::ExtractParameter(String,ctemp,0);
+    if(_tcslen(ctemp) < DEVNAMESIZE)
+	  _stprintf(d->Name, _T("%s"),ctemp);
     StartupStore(_T(". %s\n"),ctemp);
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
