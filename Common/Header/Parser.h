@@ -6,6 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Flarm.h"
+#include "lkgpsapi.h"
 
 typedef struct _FLARM_TRAFFIC
 {
@@ -161,6 +162,7 @@ typedef struct _NMEA_INFO
 
 } NMEA_INFO;
 #ifndef OLD_TIME_MODIFY
+double TimeModify(NMEA_INFO* pGPS, int& StartDay);
 double TimeModify(const TCHAR* FixTime, NMEA_INFO* info, int& StartDay);
 #endif
 
@@ -175,6 +177,10 @@ class NMEAParser {
   void _Reset(void);
 
   BOOL ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO);
+  
+  static BOOL ParseGPS_POSITION(int portnum,
+			      const GPS_POSITION& loc, NMEA_INFO& GPSData);  
+  BOOL ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData);
   bool gpsValid;
   int nSatellites;
 
