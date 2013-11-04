@@ -8,8 +8,8 @@
 
 
 #include "Externs.h"
-#include "WindEKFGlue.h"
-
+#include "WindKalman.h"
+#include "WindEKF.h"
 #define KALMAN_DEBUG
 
 #define BLACKOUT_TIME  3
