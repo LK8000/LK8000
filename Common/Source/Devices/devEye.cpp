@@ -166,6 +166,11 @@ bool CDevEye::PEYI(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
 
 BOOL CDevEye::ParseNMEA(PDeviceDescriptor_t d, TCHAR *sentence, NMEA_INFO *info)
 {
+
+  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
+    return FALSE;
+  }
+
   if(_tcsncmp(_T("$PEYA"), sentence, 5) == 0)
     return PEYA(d, sentence + 6, info);
   else if(_tcsncmp(_T("$PEYI"), sentence, 5) == 0)

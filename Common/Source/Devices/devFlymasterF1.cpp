@@ -19,6 +19,11 @@ static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO
 
   (void)d;
 
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+    return FALSE;
+  }
+
+
   if(_tcsncmp(TEXT("$VARIO"), String, 6)==0)
     {
       return VARIO(d, &String[7], pGPS);

@@ -83,7 +83,9 @@ static BOOL WesterboerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO 
 
   (void)d;
 
-
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+    return FALSE;
+  }
 
 
 

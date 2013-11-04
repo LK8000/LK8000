@@ -28,6 +28,11 @@ BOOL PGParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)String;
   (void)pGPS;
 
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+    return FALSE;
+  }
+
+
   // $GPWIN ... Winpilot proprietary sentance includinh baro altitude
   // $GPWIN ,01900 , 0 , 5159 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 * 6 B , 0 7 * 6 0 E
   if(_tcsncmp(TEXT("$GPWIN"), String, 6)==0)

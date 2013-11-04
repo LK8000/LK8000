@@ -20,6 +20,11 @@ static BOOL PZAN4(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS);
 static BOOL ZanderParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS){
   (void)d;
 
+  if (!NMEAParser::NMEAChecksum(String) || (apGPS == NULL)){
+    return FALSE;
+  }
+
+
   if(_tcsncmp(TEXT("$PZAN1"), String, 6)==0)
     {
       return PZAN1(d, &String[7], apGPS);

@@ -20,6 +20,12 @@ extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDevic
 
 static BOOL CondorParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
+
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+    return FALSE;
+  }
+
+
   if(_tcsncmp(TEXT("$LXWP0"), String, 6)==0)
     {
       return cLXWP0(d, &String[7], pGPS);

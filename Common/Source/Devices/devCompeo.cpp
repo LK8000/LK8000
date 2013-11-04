@@ -19,6 +19,11 @@ static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 
   (void)d;
 
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+    return FALSE;
+  }
+
+
   if(_tcsncmp(TEXT("$VMVABD"), String, 7)==0)
     {
       return VMVABD(d, &String[8], pGPS);

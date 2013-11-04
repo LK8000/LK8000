@@ -18,6 +18,11 @@ static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
   (void)d;
 
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+    return FALSE;
+  }
+
+
   if(_tcsncmp(TEXT("$PILC"), String, 5)==0)
     {
       return PILC(d, &String[6], pGPS);

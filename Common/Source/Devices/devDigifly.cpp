@@ -21,6 +21,11 @@ static BOOL DigiflyParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pG
 
   (void)d;
 
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+    return FALSE;
+  }
+
+
   if(_tcsncmp(TEXT("$PDGFTL1"), String, 8)==0)
     {
       return PDGFTL1(d, &String[9], pGPS);

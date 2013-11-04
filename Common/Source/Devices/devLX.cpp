@@ -80,6 +80,10 @@ const TCHAR* DevLX::GetName()
 //static
 BOOL DevLX::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
+  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
+    return FALSE;
+  }
+
   if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
       return LXWP0(d, sentence + 7, info);
   else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)

@@ -23,6 +23,11 @@ static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 
   (void)d;
 
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+    return FALSE;
+  }
+
+
   if(_tcsncmp(TEXT("$FLYSEN"), String, 7)==0)
     {
       return FLYSEN(d, &String[8], pGPS);

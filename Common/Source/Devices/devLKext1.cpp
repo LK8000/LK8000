@@ -18,6 +18,11 @@ static BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 
   (void)d;
 
+  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+    return FALSE;
+  }
+
+
   if(_tcsncmp(TEXT("$LK8EX1"), String, 7)==0)
     {
       return LK8EX1(d, &String[8], pGPS);

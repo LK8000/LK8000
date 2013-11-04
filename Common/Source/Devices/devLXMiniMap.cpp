@@ -249,6 +249,10 @@ const TCHAR* DevLXMiniMap::GetName()
 BOOL DevLXMiniMap::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
 
+  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
+    return FALSE;
+  }
+
   if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
 	   LXMiniMapOnSysTicker(d);
   else if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)

@@ -261,6 +261,11 @@ BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* inf
 {
   static int i=40;
 
+  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
+    return FALSE;
+  }
+
+
   if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
   {
 	if(iLX16xx_RxUpdateTime > 0)
