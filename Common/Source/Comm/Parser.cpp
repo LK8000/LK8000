@@ -87,6 +87,127 @@ BOOL NMEAParser::ParseNMEAString(int device,
   return FALSE;
 }
 
+BOOL NMEAParser::ParseGPS_POSITION(int Idx, const GPS_POSITION& loc, NMEA_INFO& GPSData) {
+    LKASSERT(!ReplayLogger::IsEnabled());
+
+    switch (Idx) {
+        case 0:
+            ComPortHB[0]=LKHearthBeats;
+            return nmeaParser1.ParseGPS_POSITION_internal(loc, GPSData);
+        case 1:
+            ComPortHB[1]=LKHearthBeats;
+            return nmeaParser2.ParseGPS_POSITION_internal(loc, GPSData);
+    };
+    return FALSE;
+}
+
+BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData) {
+
+    gpsValid = !(loc.dwFlags & GPS_DATA_FLAGS_HARDWARE_OFF);
+    if (!gpsValid) {
+        return TRUE;
+    }
+    GPSCONNECT=TRUE;
+
+    switch (loc.FixType) {
+        case GPS_FIX_UNKNOWN:
+            GPSData.NAVWarning = true;
+            break;
+        case GPS_FIX_2D:
+        case GPS_FIX_3D:
+            GPSData.NAVWarning = false;
+            break;
+        default:
+            break;
+    }
+
+    if (loc.dwValidFields & GPS_VALID_UTC_TIME) {
+        GPSData.Hour = loc.stUTCTime.wHour;
+        GPSData.Minute = loc.stUTCTime.wMinute;
+        GPSData.Second = loc.stUTCTime.wSecond;
+        GPSData.Month = loc.stUTCTime.wMonth;
+        GPSData.Day = loc.stUTCTime.wDay;
+        GPSData.Year = loc.stUTCTime.wYear;
+        if(!TimeHasAdvanced(TimeModify(&GPSData, StartDay), &GPSData)) {
+            return FALSE;
+        }
+    }
+    if (loc.dwValidFields & GPS_VALID_LATITUDE) {
+        GPSData.Latitude = loc.dblLatitude;
+    }
+    if (loc.dwValidFields & GPS_VALID_LONGITUDE) {
+        GPSData.Longitude = loc.dblLongitude;
+    }
+    if (loc.dwValidFields & GPS_VALID_SPEED) {
+        GPSData.Speed = KNOTSTOMETRESSECONDS * loc.flSpeed;
+    }
+    if (loc.dwValidFields & GPS_VALID_HEADING) {
+      	if (GPSData.Speed>trackbearingminspeed) {
+            GPSData.TrackBearing = AngleLimit360(loc.flHeading);
+        }
+    }
+    if (loc.dwValidFields & GPS_VALID_MAGNETIC_VARIATION) {
+
+    }
+    
+    if (loc.dwValidFields & GPS_VALID_ALTITUDE_WRT_SEA_LEVEL) {
+        GPSData.Altitude = loc.flAltitudeWRTSeaLevel;
+        GPSData.Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
+    }
+    
+#if 0    
+    if (loc.dwValidFields & GPS_VALID_ALTITUDE_WRT_ELLIPSOID) {
+ 
+        /* MSDN says..
+         * "flAltitudeWRTEllipsoid : Altitude, in meters, with respect to the WGS84 ellipsoid. "
+         * "flAltitudeWRTSeaLevel : Altitude, in meters, with respect to sea level. "
+         * 
+         * But when I get this structure, flAltitudeWRTSeaLevel field has proper value. But,
+         * flAltitudeWRTEllipsoid field has different meaning value.
+         * 
+         * But flAltitudeWRTEllipsoid field contains just geodial separation.
+         */
+    } 
+#endif
+    
+    if (loc.dwValidFields & GPS_VALID_POSITION_DILUTION_OF_PRECISION) {
+
+    }
+    if (loc.dwValidFields & GPS_VALID_HORIZONTAL_DILUTION_OF_PRECISION) {
+
+    }
+    if (loc.dwValidFields & GPS_VALID_VERTICAL_DILUTION_OF_PRECISION) {
+
+    }
+    if (loc.dwValidFields & GPS_VALID_SATELLITE_COUNT) {
+       GPSData.SatellitesUsed = loc.dwSatelliteCount;
+     }
+    if (loc.dwValidFields & GPS_VALID_SATELLITES_USED_PRNS) {
+
+    }
+    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW) {
+ 
+    }
+    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW_PRNS) {
+
+    }
+    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW_ELEVATION) {
+
+    }
+    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW_AZIMUTH) {
+
+    }
+    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW_SIGNAL_TO_NOISE_RATIO) {
+
+    }
+    if(gpsValid && !GPSData.NAVWarning && GPSData.SatellitesUsed == 0) {
+        GPSData.SatellitesUsed = -1;
+    }
+    
+    TriggerGPSUpdate();
+    
+    return TRUE;
+}
 
 
 BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
@@ -201,7 +322,6 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* pGPS)
   FixTime = secs + (pGPS->Minute*60) + (pGPS->Hour*3600);
 #else
 double TimeModify(const TCHAR* StrTime, NMEA_INFO* pGPS, int& StartDay) {
-    static int day_difference = 0, previous_months_day_difference = 0;
     double secs = 0.0;
 
     if (iswdigit(StrTime[0]) && iswdigit(StrTime[1])) {
@@ -225,8 +345,13 @@ double TimeModify(const TCHAR* StrTime, NMEA_INFO* pGPS, int& StartDay) {
             ++i;
         }
     }
+    return secs + TimeModify(pGPS, StartDay);
+}
 
-    double FixTime = secs + (double) (pGPS->Second + (pGPS->Minute * 60) + (pGPS->Hour * 3600));
+double TimeModify(NMEA_INFO* pGPS, int& StartDay) {
+  static int day_difference = 0, previous_months_day_difference = 0;
+
+  double FixTime = (double) (pGPS->Second + (pGPS->Minute * 60) + (pGPS->Hour * 3600));
 #endif
   if ((StartDay== -1) && (pGPS->Day != 0)) {
     StartupStore(_T(". First GPS DATE: %d-%d-%d  %s%s"), pGPS->Year, pGPS->Month, pGPS->Day,WhatTimeIsIt(),NEWLINE);
