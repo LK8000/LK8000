@@ -2033,6 +2033,11 @@ _@M2150_ "in thermal and cruise"
 _@M2151_ "T>\nTP Center"
 _@M2153_ "Start Close Time "
 
+_@M2154_ "IGC\nTrack File"
+_@M2155_ "Send"
+_@M2156_ "IGC Track File"
+_@M2157_ "Choose device"
+
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"

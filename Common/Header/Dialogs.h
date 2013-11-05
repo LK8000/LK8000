@@ -96,6 +96,7 @@ void dlgInfoPagesShowModal(void);
 void dlgProfilesShowModal(short mode);
 void dlgAirspaceWarningParamsShowModal(void);
 void dlgMultimapsShowModal(void);
+void dlgIgcFileShowModal(void);
 
 #if (WINDOWSPC>0)
 #ifdef DEBUG

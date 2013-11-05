@@ -2063,6 +2063,10 @@ void InputEvents::eventService(const TCHAR *misc) {
 	dlgChecklistShowModal(2); // 2 for logbook LST
 	return;
   }
+  if (_tcscmp(misc, TEXT("IGCFILE")) == 0) {
+	dlgIgcFileShowModal();
+	return;
+  }
 
   if (_tcscmp(misc, TEXT("LOGBRESET")) == 0) {
 	if (MessageBoxX(hWndMapWindow, gettext(_T("_@M1751_")), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
