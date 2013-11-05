@@ -14,6 +14,9 @@
 
 #include <ocidl.h>
 
+#ifndef _COM_interface
+#define _COM_interface struct
+#endif
 
 #define OBFTP_MAX_STRING 256
 #define OBEX_TYPE_UNICODE 0x00
