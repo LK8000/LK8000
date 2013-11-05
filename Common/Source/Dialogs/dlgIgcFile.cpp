@@ -119,7 +119,7 @@ namespace DlgIgcFile {
                         StartHourglassCursor();
                     } else {
                         StopHourglassCursor();
-                        MessageBoxX(NULL, _T("File Send"), _T("Success"), MB_OK);
+                        MessageBoxX(NULL, _T("File sent!"), _T("Success"), MB_OK);
                         StartHourglassCursor();
                     }
                 }
