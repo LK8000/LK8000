@@ -1,9 +1,132 @@
 MANUAL ADDENDUM for 4.1 
 
 
+BLUETOOTH IGC LOGFILE TRANSFER to SMARTPHONES
+
+Some PNA with BlueTooth support such as the Vertica V2 and similar devices, can transfer a log file to another device, like an android smartphone. 
+
+Call MENU, INFO, INFO, LOGBOOK  >  new button "IGC Send File".
+You are now looking at the list of files inside the Logger folder.
+Choose one file and then press SEND button.
+
+In order to work, the smartphone must:
+1) Have BlueTooth switched ON and in VISIBLE state
+2) accept OBEX file transfers through BlueTooth.
+
+Normally Android phones do not have OBEX support, so you need to install a small APP you can find on Google Play, such as "BlueTooth File Transfer" by Medieval Software, which is free of charge or less than 2 euro without advertising.  
+This APP offers in configuration also the capability to be VISIBLE : remember to do it.
+Your phone BT must be set VISIBLE in order to let LK discover it!
+
+After you click on SEND button, LK8000 will search for BT devices in range, and offer you the list of discovered devices offering OBEX support: choose yours and the file transfer will begin.
+In a few seconds, you will normally find the IGC file inside the root folder of your SD card (on an android phone running the Medieval Software app).
 
 
+
+
+============
+Version 4.1C
+============
+NEW
+-restart with last active screen settings/resolution (only on PC)
+-additional device info and serial number in info dialog for external devices (LX and Westerboer)
+-new bluetooth dialog
+- BlueTooth Obex file transfer
+
+ULLIS (private changes)
+-trace of own flight in flarm radar
+-Own position in multiselect
+-height (in feet) in Oracle for ATC communication
+
+CHANGES
+-North up view for FLARM radar added 
+
+FIXES
+-AAT Target dialog has all elements also in portrait mode 
+-Better NMEA time string parsing
+
+
+============
+Version 4.1B
+============
+
+NEW
+
+Multiselect
+-----------
+After a long click on any multimap the new Multiselect dialog opens with a list of the interesting objects in this area (Airspaces, Waypoints, Flarm objects, Taskpoints)
+(the center customkey is no more available for this reason)
+
+
+
+Icons for waypoints, airfields, outlanding, airspaces, Flarmobjects and Taskpoints in the dialogs
+
+Gear warning (with two different modes for mountain and flat lands, setup in Config page 15.
+
+New draw mode Task and FAI, the selected mode will remain on next startup.
+
+New custom key map orientation
+
+FAI Sectors with 25/45% FAI rule for big triangles (500km/750km threshold can be set in Config page 14 Task rules)
+
+Show FAI Sectors for active Task point before takeoff, instead of FAI optimizer
+
+Active keyboard removes keys not leading to a valid waypoint and searches for substrings in the waypoint name.
+Dont auto advance Task Start before freefly detection
+
+Disabled airspaces can automatically be re-enabled on next startup (Setup Page2 Airspaces)
+
+graphical Task editor. By selecting a Task turnpoint in Multiselect, PAN mode opens with moving the task turnpoint.
+
+Add Funtrek GM-132 (same as Funtrek GM-130)
+
+
+CHANGES
+
+New white wing symbol for glider sites
+Automatically remember the selected button bar for next startup
+Removed center custom key (was needed multiselect)
+Show disabled airspaces as grey outlined.
+Disable sky background in sideview if terrain is disabled.
+
+Store selected Map Orientation for main and multimaps (removed from Config, only En-/Disabled now)
+Store Flarm Radar Orientation
+
+
+Wingloading basic settings step changed to 0.5 for gliders, and to 0.1 for paragliders.
+Minimum wingloading for paragliders set to 1 .
+
+Time Gates Changes :
+   - Make end time of last target configurable ( default value is 23:59 )
+   - Remove time gates parameter from system configuration ( is saved with task )
+
+
+
+FIXES
+
+Improved FLARM-Task declaration for more than five waypoints and with checksum.
+Fixed Westerboer STF-switch problem.
+
+C-Probe Device, wrong absolute pressure calculated from GPS Altitude if baro alt is not provided by CProbe
+
+fix OpenAir Altitude parsing error :
+         2000M ASFC -> 2000M MSL
+         2000FT SFC -> SFC
+         2000M SFC -> SFC
+
+
+ 
+VIDEOS 
+
+http://www.youtube.com/watch?v=bIz9s6HYMJE
+http://www.youtube.com/watch?v=Iyk-r6MDpCI
+http://www.youtube.com/watch?v=r_VeQFbUSlg
+
+
+
+
+---------------
 Version 4.1A 
+---------------
 
 NEW
 
@@ -100,101 +223,3 @@ FIXES
 
 Fix wrong lines drawing in task and topology at high zoom levels, due to overflow in distance calculations
 
-
-============
-Version 4.1B
-============
-
-NEW
-
-Multiselect
------------
-After a long click on any multimap the new Multiselect dialog opens with a list of the interesting objects in this area (Airspaces, Waypoints, Flarm objects, Taskpoints)
-(the center customkey is no more available for this reason)
-
-
-
-Icons for waypoints, airfields, outlanding, airspaces, Flarmobjects and Taskpoints in the dialogs
-
-Gear warning (with two different modes for mountain and flat lands, setup in Config page 15.
-
-New draw mode Task and FAI, the selected mode will remain on next startup.
-
-New custom key map orientation
-
-FAI Sectors with 25/45% FAI rule for big triangles (500km/750km threshold can be set in Config page 14 Task rules)
-
-Show FAI Sectors for active Task point before takeoff, instead of FAI optimizer
-
-Active keyboard removes keys not leading to a valid waypoint and searches for substrings in the waypoint name.
-Dont auto advance Task Start before freefly detection
-
-Disabled airspaces can automatically be re-enabled on next startup (Setup Page2 Airspaces)
-
-graphical Task editor. By selecting a Task turnpoint in Multiselect, PAN mode opens with moving the task turnpoint.
-
-Add Funtrek GM-132 (same as Funtrek GM-130)
-
-
-CHANGES
-
-New white wing symbol for glider sites
-Automatically remember the selected button bar for next startup
-Removed center custom key (was needed multiselect)
-Show disabled airspaces as grey outlined.
-Disable sky background in sideview if terrain is disabled.
-
-Store selected Map Orientation for main and multimaps (removed from Config, only En-/Disabled now)
-Store Flarm Radar Orientation
-
-
-Wingloading basic settings step changed to 0.5 for gliders, and to 0.1 for paragliders.
-Minimum wingloading for paragliders set to 1 .
-
-Time Gates Changes :
-   - Make end time of last target configurable ( default value is 23:59 )
-   - Remove time gates parameter from system configuration ( is saved with task )
-
-
-
-FIXES
-
-Improved FLARM-Task declaration for more than five waypoints and with checksum.
-Fixed Westerboer STF-switch problem.
-
-C-Probe Device, wrong absolute pressure calculated from GPS Altitude if baro alt is not provided by CProbe
-
-fix OpenAir Altitude parsing error :
-         2000M ASFC -> 2000M MSL
-         2000FT SFC -> SFC
-         2000M SFC -> SFC
-
-
- 
-VIDEOS 
-
-http://www.youtube.com/watch?v=bIz9s6HYMJE
-http://www.youtube.com/watch?v=Iyk-r6MDpCI
-http://www.youtube.com/watch?v=r_VeQFbUSlg
-
-
-============
-Version 4.1C
-============
-NEW
--restart with last active screen settings/resolution (only on PC)
--additional device info and serial number in info dialog for external devices (LX and Westerboer)
--new bluetooth dialog
-
-
-ULLIS (private changes)
--trace of own flight in flarm radar
--Own position in multiselect
--height (in feet) in Oracle for ATC communication
-
-CHANGES
--North up view for FLARM radar added 
-
-FIXES
--AAT Target dialog has all elements also in portrait mode 
--Better NMEA time string parsing
