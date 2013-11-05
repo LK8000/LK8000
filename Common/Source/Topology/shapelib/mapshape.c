@@ -1302,7 +1302,7 @@ int msSHPReadBounds( SHPHandle psSHP, int hEntity, rectObj *padBounds)
   return(0);
 }
 
-int msSHPOpenFile(shapefileObj *shpfile, char *mode, const TCHAR *filename)
+int msSHPOpenFile(shapefileObj *shpfile, const char *mode, const TCHAR *filename)
 {
   int i;
   TCHAR *dbfFilename;

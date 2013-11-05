@@ -71,7 +71,7 @@ void CObexPush::ClearDeviceList() {
     _LstDevice.clear();
 }
 
-const size_t CObexPush::LookupDevice() {
+size_t CObexPush::LookupDevice() {
     ClearDeviceList();
 
     IDeviceEnum *pDeviceEnum = NULL;

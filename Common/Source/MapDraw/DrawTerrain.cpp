@@ -36,7 +36,7 @@ BYTE tshadow_r, tshadow_g, tshadow_b, tshadow_h;
 BYTE thighlight_r, thighlight_g, thighlight_b, thighlight_h;
 
 
-static COLORRAMP* lastColorRamp = NULL;
+static const COLORRAMP* lastColorRamp = NULL;
 
 void ColorRampLookup(const short h, 
                      BYTE &r, BYTE &g, BYTE &b,
@@ -252,7 +252,7 @@ private:
   RasterMap *DisplayMap;
   bool is_terrain;
   int interp_levels;
-  COLORRAMP* color_ramp;
+  const COLORRAMP* color_ramp;
   unsigned int height_scale;
 
 public:
@@ -262,7 +262,7 @@ public:
       is_terrain = true;
       height_scale = 4;
       DisplayMap = RasterTerrain::TerrainMap;
-      color_ramp = (COLORRAMP*)&terrain_colors[TerrainRamp][0];
+      color_ramp = &terrain_colors[TerrainRamp][0];
 
     if (is_terrain) {
 	do_shading = true;

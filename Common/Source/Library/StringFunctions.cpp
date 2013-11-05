@@ -362,7 +362,7 @@ TCHAR *strtok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
 // "s" MUST be a pointer to an array, not to a string!!! 
 // (ARM92, Win emulator cause access violation if not)
 
-  TCHAR *spanp;
+  const TCHAR *spanp;
 	int   c, sc;
 	TCHAR *tok;
 
@@ -376,7 +376,7 @@ TCHAR *strtok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
 
 cont:
 	c = *s++;
-	for (spanp = (TCHAR *)delim; (sc = *spanp++) != 0;) {
+	for (spanp = delim; (sc = *spanp++) != 0;) {
 		if (c == sc)
 			goto cont;
 	}
@@ -393,7 +393,7 @@ cont:
 	 */
 	for (;;) {
 		c = *s++;
-		spanp = (TCHAR *)delim;
+		spanp = delim;
 		do {
 			if ((sc = *spanp++) == c) {
 				if (c == 0)
@@ -580,7 +580,7 @@ int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines) {
 
 bool MatchesExtension(const TCHAR *filename, const TCHAR* extension) {
   TCHAR *ptr;
-  ptr = _tcsstr((TCHAR*)filename, extension);
+  ptr = _tcsstr(filename, extension);
   if (ptr != filename+_tcslen(filename)-_tcslen(extension)) {
     return false;
   } else {

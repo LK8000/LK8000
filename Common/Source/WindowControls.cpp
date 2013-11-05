@@ -309,11 +309,11 @@ int DataFieldFileReader::GetNumFiles(void) {
   return nFiles;
 }
 
-TCHAR* DataFieldFileReader::GetPathFile(void) {
+const TCHAR* DataFieldFileReader::GetPathFile(void) const {
   if ((mValue<=nFiles)&&(mValue)) {
     return fields[mValue].mTextPathFile;
   }
-  return (TCHAR*)TEXT("\0");
+  return TEXT("\0");
 }
 
 
@@ -331,7 +331,7 @@ bool DataFieldFileReader::checkFilter(const TCHAR *filename,
   _tcscpy(upfilter,filter+1);
 
   // check if trailing part of filter (*.exe => .exe) matches end
-  ptr = _tcsstr((TCHAR*)filename, upfilter);
+  ptr = _tcsstr(filename, upfilter);
   if (ptr) {
     if (_tcslen(ptr)==_tcslen(upfilter)) {
       return true;
@@ -339,7 +339,7 @@ bool DataFieldFileReader::checkFilter(const TCHAR *filename,
   }
 
   _tcsupr(upfilter);
-  ptr = _tcsstr((TCHAR*)filename, upfilter);
+  ptr = _tcsstr(filename, upfilter);
   if (ptr) {
     if (_tcslen(ptr)==_tcslen(upfilter)) {
       return true;
@@ -413,8 +413,8 @@ void DataFieldFileReader::Dec(void){
 
 static int _cdecl DataFieldFileReaderCompare(const void *elem1, 
                                              const void *elem2 ){
-  return _tcscmp(((DataFieldFileReaderEntry*)elem1)->mTextFile,
-                 ((DataFieldFileReaderEntry*)elem2)->mTextFile);
+  return _tcscmp(((const DataFieldFileReaderEntry*)elem1)->mTextFile,
+                 ((const DataFieldFileReaderEntry*)elem2)->mTextFile);
 }
 
 
@@ -717,8 +717,8 @@ void DataFieldEnum::Dec(void){
 
 static int _cdecl DataFieldEnumCompare(const void *elem1, 
                                              const void *elem2 ){
-  return _tcscmp(((DataFieldEnumEntry*)elem1)->mText,
-                 ((DataFieldEnumEntry*)elem2)->mText);
+  return _tcscmp(((const DataFieldEnumEntry*)elem1)->mText,
+                 ((const DataFieldEnumEntry*)elem2)->mText);
 }
 
 void DataFieldEnum::Sort(int startindex){
