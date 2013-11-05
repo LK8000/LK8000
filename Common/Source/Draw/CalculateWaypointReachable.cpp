@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "McReady.h"
 #include "LKInterface.h"
+#include "LKStyle.h"
 
 // #define DEBUGCW 1
 
@@ -120,7 +121,7 @@ void MapWindow::LKCalculateWaypointReachable(const bool forced)
 
   for(i=scanstart;i<scanend;i++) {
     // signed Overtgarget -1 becomes a very high number, casted unsigned
-    if ( ( ((WayPointCalc[i].AltArriv[AltArrivMode] >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) 
+    if ( ( ((WayPointCalc[i].AltArriv[AltArrivMode] >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable || (WayPointList[i].Style==STYLE_THERMAL))) 
 	|| WaypointInTask(i) || (i==(unsigned int)overtarg) ) {
 
 	DistanceBearing(DrawInfo.Latitude, DrawInfo.Longitude, WayPointList[i].Latitude, WayPointList[i].Longitude, 
