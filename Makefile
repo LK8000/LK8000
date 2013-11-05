@@ -576,6 +576,8 @@ COMMS	:=\
 	$(CMM)/LKFlarm.cpp\
 	$(CMM)/Parser.cpp\
 	$(CMM)/ComPort.cpp\
+	$(CMM)/GpsIdPort.cpp\
+	$(CMM)/lkgpsapi.cpp\
 	$(CMM)/SerialPort.cpp\
 	$(CMM)/UpdateBaroSource.cpp \
 	$(CMM)/UpdateMonitor.cpp \
