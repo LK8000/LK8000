@@ -192,6 +192,8 @@ void LKLoadFixedBitmaps(void) {
   hNdb=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%s\\LKTHERMAL%s.BMP"),sDir,hires_suffix);
   hLKThermal=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\LKTHERMAL_RED%s.BMP"),sDir,hires_suffix);
+  hLKThermalRed=LKLoadBitmap(srcfile);
 
   _stprintf(srcfile,_T("%s\\PICTORI%s.BMP"),sDir,hires_suffix);
   hLKPictori=LKLoadBitmap(srcfile);
@@ -260,8 +262,8 @@ void LKLoadFixedBitmaps(void) {
   if (hSender==NULL) hSender=NULLBMP;
   if (hNdb==NULL) hNdb=NULLBMP;
   if (hLKThermal==NULL) hLKThermal=NULLBMP;
-  if (hLKPictori==NULL) hLKPictori=NULLBMP;
-
+  if (hLKThermalRed==NULL) hLKThermalRed=NULLBMP;
+  
 }
 
 
@@ -340,6 +342,7 @@ void LKUnloadFixedBitmaps(void) {
   if (hSender!=NULL) DeleteObject(hSender);
   if (hNdb!=NULL) DeleteObject(hNdb);
   if (hLKThermal!=NULL) DeleteObject(hLKThermal);
+  if (hLKThermalRed!=NULL) DeleteObject(hLKThermalRed);
   if (hLKPictori!=NULL) DeleteObject(hLKPictori);
 
 }
