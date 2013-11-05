@@ -657,6 +657,7 @@ class WindowControl {
 
     virtual void SetCaption(const TCHAR *Value);
     void SetHelpText(const TCHAR *Value);
+	const TCHAR* GetHelpText() const { return mHelpText; }
 
     HWND GetHandle(void){return(mHWnd);};
     virtual HWND GetClientAreaHandle(void){return(mHWnd);};
@@ -1048,6 +1049,7 @@ class WndProperty:public WindowControl{
 
 };
 
+int dlgComboPicker(WndProperty* theProperty);
 
 typedef void (*webpt2Event)(const TCHAR *);
 

@@ -66,7 +66,7 @@ void DrawLine2(const HDC&hdc, int x1, int y1, int x2, int y2, int x3, int y3) {
 #endif
 }
 
-extern int dlgComboPicker(WndProperty* theProperty);
+
 #define ENABLECOMBO true // master on/off for combo popup
 // Must be off if no touchscreen
 

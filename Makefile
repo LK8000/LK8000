@@ -256,9 +256,9 @@ endif
 LDFLAGS		+=$(PROFILE)
 
 ifeq ($(CONFIG_PC),y)
-  LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32
+  LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lOle32 -loleaut32 -luuid
 else
-  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl -lws2
+  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl -lws2 -lOle32 -loleaut32 -luuid
   ifeq ($(MINIMAL),n)
     LDLIBS		+= -laygshell 
     ifneq ($(TARGET),PNA)
@@ -585,7 +585,8 @@ COMMS	:=\
 	$(CMM)/device.cpp \
 	$(CMM)/Bluetooth/BtHandler.cpp \
 	$(CMM)/Bluetooth/BtHandlerWince.cpp \
-	$(CMM)/Bluetooth/BthPort.cpp
+	$(CMM)/Bluetooth/BthPort.cpp \
+	$(CMM)/Obex/CObexPush.cpp \
 
 
 DEVS	:=\
@@ -705,6 +706,8 @@ DLGS	:=\
 	$(DLG)/Task/RotateStartPoints.cpp\
 	$(DLG)/Task/SwapWaypoint.cpp\
 	$(DLG)/dlgBluetooth.cpp\
+	$(DLG)/dlgIgcFile.cpp\
+	
 
 SRC_FILES :=\
 	$(SRC)/AirfieldDetails.cpp \
