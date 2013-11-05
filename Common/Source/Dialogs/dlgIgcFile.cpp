@@ -18,8 +18,8 @@ namespace DlgIgcFile {
     WndForm *wfDlg = NULL;
     typedef std::vector<std::wstring> FileList_t;
     FileList_t FileList;
-    size_t DrawListIndex = -1;
-    size_t ItemIndex = -1;
+    size_t DrawListIndex = (~0);
+    size_t ItemIndex = (~0);
 
     void ScanFile() {
         FileList.clear();
