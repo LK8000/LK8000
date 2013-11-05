@@ -258,11 +258,13 @@ double TimeModify(const TCHAR* StrTime, NMEA_INFO* pGPS, int& StartDay) {
 }
 
 bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
+  // Ulli: changed to check if difference > 1s, if not we have two GPS sources at the same time
+  //       which can happen with an old NMEA logs of PORT A and B active
 
   // If simulating, we might be in the future already.
   // We CANNOT check for <= because this check may be done by several GGA RMC GLL etc. sentences
   // among the same quantum time
-  if(ThisTime< LastTime) {
+  if(abs(ThisTime - LastTime) > 3){
     #if TESTBENCH
     StartupStore(_T("... TimeHasAdvanced BACK in time: Last=%f This=%f   %s\n"), LastTime, ThisTime,WhatTimeIsIt());
     #endif

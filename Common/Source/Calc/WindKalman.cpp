@@ -71,7 +71,7 @@ static unsigned int holdoff_time;
   oldspeed =  newspeed;
 */
 
-  if ((fabs(derived->TurnRate) > 15.0))
+  if ((fabs(derived->TurnRate) > 20.0))
   {
 	StartupStore(_T(".... Turning%s"),NEWLINE);
 	holdoff_time = basic->Time + BLACKOUT_TIME;
@@ -85,7 +85,7 @@ static unsigned int holdoff_time;
     return (0);
   }
 
-
+  holdoff_time =0;
 
 
 
@@ -120,11 +120,6 @@ static unsigned int holdoff_time;
   double speed   = sqrt((x[0]*x[0])+(x[1]*x[1]));
   double bearing = atan2(-x[0], -x[1])*RAD_TO_DEG;
   /************************************************************/
-  if(speed <0)
-  {
-	bearing -= 180;
- 	speed   =-speed;
-  }
   bearing =AngleLimit360(bearing);
   /************************************************************/
 #ifdef KALMAN_DEBUG
@@ -135,5 +130,5 @@ static unsigned int holdoff_time;
   derived->WindBearing = bearing;
   derived->WindSpeed   = speed;
 
-  return CalcQualityLevel(count);
+  return 0; //CalcQualityLevel(count);
 }
