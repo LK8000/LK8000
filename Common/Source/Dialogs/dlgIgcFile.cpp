@@ -125,7 +125,7 @@ namespace DlgIgcFile {
                 }
                 Obex.Shutdown();
             } else {
-                MessageBoxX(NULL, _T("Unsuported on this device"), _T("Error"), MB_OK);
+                MessageBoxX(NULL, _T("Unsupported on this device"), _T("Error"), MB_OK);
             }
 
             StopHourglassCursor();

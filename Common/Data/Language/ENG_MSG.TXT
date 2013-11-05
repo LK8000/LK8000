@@ -2033,9 +2033,9 @@ _@M2150_ "in thermal and cruise"
 _@M2151_ "T>\nTP Center"
 _@M2153_ "Start Close Time "
 
-_@M2154_ "IGC\nTrack File"
+_@M2154_ "IGC\nSend File"
 _@M2155_ "Send"
-_@M2156_ "IGC Track File"
+_@M2156_ "IGC Send File"
 _@M2157_ "Choose device"
 
 
