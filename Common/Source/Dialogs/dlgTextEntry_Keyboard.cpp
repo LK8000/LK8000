@@ -30,12 +30,12 @@ bool WaypointKeyRed = false;
 
 char ToUpper(char in)
 {
-	if(in == 'Ö') return 'Ö';
-	if(in == 'Ü') return 'Ü';
-	if(in == 'Ä') return 'Ä';
-	if(in == 'ö') return 'Ö';
-	if(in == 'ü') return 'Ü';
-	if(in == 'ä') return 'Ä';
+	if(in == '\xD6') return '\xD6'; // Ã– -> Ã–
+	if(in == '\xDC') return '\xDC'; // Ãœ -> Ãœ
+	if(in == '\xC4') return '\xC4'; // Ã„ -> Ã„
+	if(in == '\xF6') return '\xD6'; // Ã¶ -> Ã–
+	if(in == '\xFC') return '\xDC'; // Ã¼ -> Ãœ
+	if(in == '\xE4') return '\xC4'; // Ã¤ -> Ã„
 	if(in == ' ') return '_';
 	if(in == '_') return '_';
 	return toupper(in);
@@ -249,8 +249,9 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
   if (_tcslen(text)>0) {
     _tcsupr(text);
     LK_tcsncpy(edittext, text, max_width-1);
-    // position cursor at the end of imported text
-    cursor=_tcslen(text);
+    // show previous test.
+    // this text is replaced by first key down
+    // but used if "OK" is clicked first for don't reset current value.
   }
 
   UpdateTextboxProp();
@@ -303,7 +304,7 @@ void ReduceKeysByWaypointList(void)
 char SelList[MAX_SEL_LIST_SIZE]={""};
 unsigned int NumChar=0;
 bool CharEqual = true;
-char Charlist[MAX_SEL_LIST_SIZE]={"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_ ÜÖÄ"};
+char Charlist[MAX_SEL_LIST_SIZE]={"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_ \xD6\xDC\xC4"};
 
 unsigned int i,j,EqCnt=NumberOfWayPoints;
 
@@ -468,14 +469,9 @@ unsigned int i=0;
 	  case 'y': case 'Y': bY = true; break;
 	  case 'z': case 'Z': bZ = true; break;
 /*
-	  case 'ü': case 'Ü': bUe = true; break;    // ü Ü
-	  case 'ö': case 'Ö': bOe = true; break;  //ö Ö
-	  case 'ä': case 'Ä': bAe = true; break;  // ä Ä
-
-
-	  case 'Ã¼': case 'Ãœ': bUe = true; break;    // ü Ü
-	  case 'Ã¶': case 'Ã–': bOe = true; break;  //ö Ö
-	  case 'Ã¤': case 'Ã„': bAe = true; break;  // ä Ä
+	  case '\xF6': case '\xD6': bUe = true; break;    // Ã¼ Ãœ
+	  case '\xFC': case '\xDC': bOe = true; break;  //Ã¶ Ã–
+	  case '\xE4': case '\xC4': bAe = true; break;  // Ã¤ Ã„
 */
 	  case '0':  b0 = true; break;
 	  case '1':  b1 = true; break;
