@@ -12,7 +12,7 @@
 #include "WindEKF.h"
 #define KALMAN_DEBUG
 
-#define BLACKOUT_TIME  3
+#define BLACKOUT_TIME  3.0
 WindEKF ekf;
 
 
@@ -27,7 +27,7 @@ return 1;
 unsigned WindKalmanUpdate(NMEA_INFO *basic, DERIVED_INFO *derived,  double *windspeed, double *windbearing )
 {
 static unsigned int count=0;
-static unsigned int holdoff_time;
+double holdoff_time =0.0;
 
   if (! derived->Flying) {
 #ifdef KALMAN_DEBUG
