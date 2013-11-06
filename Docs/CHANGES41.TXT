@@ -48,6 +48,21 @@ After you click on SEND button, LK8000 will search for BT devices in range, and 
 In a few seconds, you will normally find the IGC file inside the root folder of your SD card (on an android phone running the Medieval Software app).
 
 
+INTERNAL GPS DRIVER 
+
+On some PNAs it is possible to by-pass the selection of the COM port, and "talk" directly to the GPS through the use of a library called "Intermediate driver". We call this device "Internal".
+If for any reason you dont want or you cannot access the internal GPS on a COM port, you can try to use this approach.
+
+Config > Config > Device Setup > Name
+you normally had "Generic" here, if you were using the internal gps. Go to beginning of the list and select
+> Internal
+
+You will not see the COM port anymore, because it is no longer used by the intenal driver.
+
+
+
+
+
 
 
 ============
