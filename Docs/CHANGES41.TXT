@@ -1,6 +1,33 @@
 MANUAL ADDENDUM for 4.1 
 
 
+BLUETOOTH EASY SERIAL PORT SETUP
+
+If your device has Bluetooth radio and it is compatible with LK:
+
+MENU > CONFIG > CONFIG > LK8000 Setup > Device Setup
+
+You will find a new button on the left:  Bluetooth.
+
+1 Switch on the external device you want to connect to LK, switch on its BT radio, and make it a discoverable *VISIBLE) device.
+  NOTE: LK is AUTOMATICALLY SWITCHING ON AND OFF BLUETOOTH ON THE PNA
+
+2 Then click on the Bluetooth button , and you will see a new page with a list of known devices, if existing.
+3 Click on the left button "Lookup" to search for new devices in range.
+4 Select the device you want to use, and then click on the button "Pair".
+5 Enter the pin code to pair device, normally 0000 or 1234 , but some devices have a different number so please check, then press OK.
+6 The new device is now listed as "Paired".
+7 Close and return to Device configuration. Click on Port selection.
+8 Scroll at the bottom of devices, you will find your new device! Select it.
+
+you are done! The device is now connected.
+
+Remeber to switch on the device before running LK next time. If you dont do that, you will get an error on startup, but no problems. Switch on device, and then config config config  Reset comms.
+
+
+
+
+
 BLUETOOTH IGC LOGFILE TRANSFER to SMARTPHONES
 
 Some PNA with BlueTooth support such as the Vertica V2 and similar devices, can transfer a log file to another device, like an android smartphone. 
@@ -26,23 +53,46 @@ In a few seconds, you will normally find the IGC file inside the root folder of 
 ============
 Version 4.1C
 ============
-NEW
--restart with last active screen settings/resolution (only on PC)
--additional device info and serial number in info dialog for external devices (LX and Westerboer)
--new bluetooth dialog
-- BlueTooth Obex file transfer
 
-ULLIS (private changes)
--trace of own flight in flarm radar
--Own position in multiselect
--height (in feet) in Oracle for ATC communication
+NEW
+
+. EASY BLUETOOTH SERIAL PORT
+  Totally automatic setup for BT serial connections: automatic switch on/off of BT radio, discovery of devices, pairing.
+  No need to choose a serial port, because it is automatically used, with no possible mistakes.
+  (Tested on Oudie II, Vertica V2, HTC P3600).
+
+. BLUETOOTH IGC LOGFILE TRANSFER TO SMARTPHONE
+  Send Igc log files using BlueTooth OBEX Push Protocol.
+  "Info 2/2" -> "LogBook" -> "IGC Send File"  button
+
+. GPS Intermediate Driver
+  choose "internal" device in "device config" to use the internal gps with no need to specify the COM port.
+  Working on some PNAs, not all . Suggested to be used on V2.
+
+. additional device info and serial number in info dialog for external devices (LX and Westerboer)
+
+. On PC only> remember screen view mode (orientation and resolution)
+
 
 CHANGES
--North up view for FLARM radar added 
+
+. Add "Port" parameter in live Tracker config (default : 80)
+
+. North up view for FLARM radar added 
+
+. LK now receives the also the QNH form the V7, so it is also bidirectional now
+
 
 FIXES
--AAT Target dialog has all elements also in portrait mode 
--Better NMEA time string parsing
+
+. AAT Target dialog has all elements also in portrait mode 
+. corrected AutoQNH Altitude display in  feet (number was in meter but unit was feet)
+
+. Fix task loading error : http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=7338
+. fix task loading error with multiple start point.
+. Fix crash with LX V7_EXP driver
+. Fix AAT task : turnpoint Type sector, Start radial and finish radial items values not remembered.
+
 
 
 ============
