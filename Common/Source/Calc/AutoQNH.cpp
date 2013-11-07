@@ -57,7 +57,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 		if (hdist <2000) {
 			fixaltitude=WayPointList[HomeWaypoint].Altitude;
-			StartupStore(_T(". AutoQNH: setting QNH to HOME waypoint altitude=%.0f m%s"),fixaltitude,NEWLINE);
+			StartupStore(_T(". AutoQNH: setting QNH to HOME waypoint <%s> altitude=%.0f m%s"),WayPointList[HomeWaypoint].Name, fixaltitude,NEWLINE);
 		} else {
 			if (fixaltitude!=0)
 				StartupStore(_T(". AutoQNH: setting QNH to average terrain altitude=%.0f m%s"),fixaltitude,NEWLINE);
