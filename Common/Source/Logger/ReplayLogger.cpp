@@ -428,7 +428,7 @@ TCHAR* ReplayLogger::GetFilename(void) {
 }
 
 
-void ReplayLogger::SetFilename(TCHAR *name) {
+void ReplayLogger::SetFilename(const TCHAR *name) {
   if (!name) {
     return;
   }

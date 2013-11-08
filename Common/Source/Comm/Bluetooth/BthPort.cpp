@@ -132,7 +132,7 @@ bool BthPort::Close() {
 }
 
 bool BthPort::Write(const void *data, size_t length) {
-    int iResult = send(mSocket, (char*) data, length, 0);
+    int iResult = send(mSocket, (const char*) data, length, 0);
     if (iResult == SOCKET_ERROR) {
         AddStatErrTx(1);
         AddStatErrors(1);

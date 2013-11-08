@@ -35,7 +35,7 @@ bool LKLoadMessages(bool fillup);
 // _@Hnnnn@
 // minimal: _@H1_  maximal: _@H1234_
 
-TCHAR *LKgethelptext(const TCHAR *TextIn) {
+const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 
   static TCHAR sFile[MAX_PATH];
   static TCHAR sPath[MAX_PATH];
@@ -44,10 +44,10 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 
   bool foundnotfound=false;
 
-  if (TextIn == NULL) return (TCHAR *)TextIn;
+  if (TextIn == NULL) return TextIn;
   short tlen=_tcslen(TextIn);
-  if (tlen<5 || tlen>8) return (TCHAR *)TextIn;
-  if ( (TextIn[0]!='_') || (TextIn[1]!='@') || (TextIn[tlen-1]!='_') ) return (TCHAR *)TextIn;
+  if (tlen<5 || tlen>8) return TextIn;
+  if ( (TextIn[0]!='_') || (TextIn[1]!='@') || (TextIn[tlen-1]!='_') ) return TextIn;
 
 
   // get the item index number, quick conversion from unicode
@@ -206,7 +206,7 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
   } // end ttype == H
 
   StartupStore(_T(".... Unknown Text type <%c> in <%s>%s"),ttype,TextIn,NEWLINE);
-  return (TCHAR *)TextIn;
+  return TextIn;
 
 }
 
@@ -221,10 +221,10 @@ static short LKMessagesIndex[MAX_MESSAGES+1];
 const TCHAR *LKGetText(const TCHAR *TextIn) {
 
   // quick preliminar checks
-  if (TextIn == NULL) return (TCHAR *)TextIn;
+  if (TextIn == NULL) return TextIn;
   short tlen=_tcslen(TextIn);
-  if (tlen<5 || tlen>8) return (TCHAR *)TextIn;
-  if ( (TextIn[0]!='_') || (TextIn[1]!='@') || (TextIn[tlen-1]!='_') ) return (TCHAR *)TextIn;
+  if (tlen<5 || tlen>8) return TextIn;
+  if ( (TextIn[0]!='_') || (TextIn[1]!='@') || (TextIn[tlen-1]!='_') ) return TextIn;
 
   // get the item index number, quick conversion from unicode
   char snum[6];
@@ -245,12 +245,12 @@ const TCHAR *LKGetText(const TCHAR *TextIn) {
 
   // Text messages inside C code
   if (ttype=='M') { // Message
-	if (inumber> MAX_MESSAGES) return (TCHAR *)TextIn; // safe check
+	if (inumber> MAX_MESSAGES) return TextIn; // safe check
 	int pointer= LKMessagesIndex[inumber];
-        if (pointer<0 || pointer>MAX_MESSAGES) return (TCHAR *)TextIn;
-	return (TCHAR *)LKMessages[pointer];
+        if (pointer<0 || pointer>MAX_MESSAGES) return TextIn;
+	return LKMessages[pointer];
   }
-  return (TCHAR *)TextIn;
+  return TextIn;
 
 
 }

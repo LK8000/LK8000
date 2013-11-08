@@ -12,7 +12,7 @@
 
 void RenameIfVirtual(const unsigned int i);
 
-void SaveTask(TCHAR *szFileName) {
+void SaveTask(const TCHAR *szFileName) {
     CTaskFileHelper helper;
     if (helper.Save(szFileName)) {
         TaskModified = false; // task successfully saved

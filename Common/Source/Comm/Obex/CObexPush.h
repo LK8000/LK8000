@@ -25,7 +25,7 @@ public:
 	bool Startup();
 	void Shutdown();
 	
-	const size_t LookupDevice();
+	size_t LookupDevice();
 	
 	bool GetDeviceName(size_t DeviceIdx, TCHAR* szFileName, size_t cb);
 	bool SendFile(size_t DeviceIdx, const TCHAR* szFileName);

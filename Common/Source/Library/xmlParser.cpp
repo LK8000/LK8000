@@ -98,7 +98,7 @@ typedef struct ClearTag
 // Main structure used for parsing XML
 typedef struct XML
 {
-    LPCTSTR                lpXML;
+    LPTSTR                 lpXML;
     int                    nIndex;
     enum XMLError          error;
     LPCTSTR                lpEndTag;
@@ -112,7 +112,7 @@ typedef struct XML
 typedef struct 
 {
     ClearTag    *pClr;
-    LPCTSTR     pStr;
+    LPTSTR     pStr;
 } NextToken;
 
 // Enumeration used when parsing attributes
@@ -186,7 +186,7 @@ LPTSTR toXMLStringFast(LPTSTR *dest,int *destSz, LPCTSTR source)
 }
 
 // private:
-LPTSTR fromXMLString(LPCTSTR s, int lo)
+LPTSTR fromXMLString(LPTSTR s, int lo)
 {
     // This function is the opposite of the function "toXMLString". It decodes the escape 
     // sequences &amp;, &quot;, &apos;, &lt;, &gt; and replace them by the characters 
@@ -199,7 +199,7 @@ LPTSTR fromXMLString(LPCTSTR s, int lo)
 
     int ll=0;
     LPTSTR d;
-    LPCTSTR ss=s;
+    LPTSTR ss=s;
     while (((lo--)>0)&&(*s))
     {
         if (*s==_T('&'))
@@ -249,7 +249,7 @@ LPTSTR fromXMLString(LPCTSTR s, int lo)
         } else { *(d++)=*ss; ss++; }
     }
     *d=0;
-    return (LPTSTR)s;
+    return s;
 }
 
 // private:
@@ -327,7 +327,7 @@ static TCHAR FindNonWhiteSpace(XML *pXML)
 static NextToken GetNextToken(XML *pXML, int *pcbToken, enum TokenTypeTag *pType)
 {
     NextToken        result = { 0 };
-    LPCTSTR          lpXML;
+    LPTSTR           lpXML;
     TCHAR            ch;
     TCHAR            chTemp;
     int              nSize;
@@ -576,7 +576,7 @@ LPCTSTR XMLNode::getError(XMLError error)
 }
 
 // private:
-XMLNode::XMLNode(XMLNode *pParent, LPCTSTR lpszName, int _isDeclaration)
+XMLNode::XMLNode(XMLNode *pParent, LPTSTR lpszName, int _isDeclaration)
 {
     d=(XMLNodeData*)malloc(sizeof(XMLNodeData));
     LKASSERT(d);
@@ -625,7 +625,7 @@ void XMLNode::addToOrder(int index, int type)
 }
 
 // Add a child node to the given element.
-XMLNode XMLNode::AddChild(LPCTSTR lpszName, int _isDeclaration)
+XMLNode XMLNode::AddChild(LPTSTR lpszName, int _isDeclaration)
 {
     if (!lpszName) return emptyXMLNode;
     int nc=d->nChild;
@@ -639,7 +639,7 @@ XMLNode XMLNode::AddChild(LPCTSTR lpszName, int _isDeclaration)
 }
 
 // Add an attribute to an element. 
-XMLAttribute *XMLNode::AddAttribute(LPCTSTR lpszName, LPCTSTR lpszValuev)
+XMLAttribute *XMLNode::AddAttribute(LPTSTR lpszName, LPTSTR lpszValuev)
 {
     if (!lpszName) return &emptyXMLAttribute;
     int na=d->nAttribute;
@@ -653,11 +653,11 @@ XMLAttribute *XMLNode::AddAttribute(LPCTSTR lpszName, LPCTSTR lpszValuev)
 }
 
 // Add text to the element.  
-LPCTSTR XMLNode::AddText(LPCTSTR lpszValue)
+LPCTSTR XMLNode::AddText(LPTSTR lpszValue)
 {
     if (!lpszValue) return NULL;
     int nt=d->nText;
-    d->pText=(LPCTSTR*)myRealloc(d->pText,(nt+1),memoryIncrease,sizeof(LPTSTR));
+    d->pText=(LPTSTR*)myRealloc(d->pText,(nt+1),memoryIncrease,sizeof(LPTSTR));
     d->pText[nt]=lpszValue;
     addToOrder(nt,eNodeText);
     d->nText++;
@@ -665,7 +665,7 @@ LPCTSTR XMLNode::AddText(LPCTSTR lpszValue)
 }
 
 // Add clear (unformatted) text to the element.
-XMLClear *XMLNode::AddClear(LPCTSTR lpszValue, LPCTSTR lpszOpen, LPCTSTR lpszClose)
+XMLClear *XMLNode::AddClear(LPTSTR lpszValue, LPCTSTR lpszOpen, LPCTSTR lpszClose)
 {
     if (!lpszValue) return &emptyXMLClear;
     int nc=d->nClear;
@@ -730,7 +730,7 @@ int XMLNode::ParseClearTag(void *px, void *pa)
     LPCTSTR lpszXML = &pXML->lpXML[pXML->nIndex];
 
     // Find the closing tag
-    lpszTemp = _tcsstr((wchar_t*)lpszXML, pClear->lpszClose);
+    lpszTemp = _tcsstr(lpszXML, pClear->lpszClose);
 
     // Iterate through the tokens until we find the closing tag.
     if (lpszTemp)
@@ -762,7 +762,7 @@ int XMLNode::ParseXMLElement(void *pa)
     LPCTSTR lpszTemp = NULL;
     int cbTemp;
     int nDeclaration;
-    LPCTSTR lpszText = NULL;
+    LPTSTR lpszText = NULL;
     XMLNode pNew;
     enum Status status; // inside or outside a tag
     enum Attrib attrib = eAttribName;
@@ -889,7 +889,7 @@ int XMLNode::ParseXMLElement(void *pa)
 
                                 if (d->nText > 0) {
 
-                                  d->pText=(LPCTSTR*)myRealloc(d->pText,
+                                  d->pText=(LPTSTR*)myRealloc(d->pText,
                                                                d->nText,
                                                                memoryIncrease,
                                                                sizeof(LPTSTR));
@@ -1227,7 +1227,7 @@ static void CountLinesAndColumns(LPCTSTR lpXML, int nUpto, XMLResults *pResults)
 }
 
 // Parse XML and return the root element.
-XMLNode XMLNode::parseString(LPCTSTR lpszXML, LPCTSTR tag, 
+XMLNode XMLNode::parseString(LPTSTR lpszXML, LPCTSTR tag, 
 			     XMLResults *pResults)
 {
     if (!lpszXML) 
@@ -1415,7 +1415,7 @@ XMLNodeContents XMLNode::enumContents(int i)
 }
 
 // private:
-void *XMLNode::enumContent(XMLNodeData *pEntry, int i, XMLElementType *nodeType)
+const void *XMLNode::enumContent(const XMLNodeData *pEntry, int i, XMLElementType *nodeType)
 {
     XMLElementType j=(XMLElementType)(pEntry->pOrder[i]&3);
     *nodeType=j;
@@ -1424,7 +1424,7 @@ void *XMLNode::enumContent(XMLNodeData *pEntry, int i, XMLElementType *nodeType)
     {
     case eNodeChild:      return pEntry->pChild[i].d;
     case eNodeAttribute:  return pEntry->pAttribute+i;
-    case eNodeText:       return (void*)(pEntry->pText[i]);
+    case eNodeText:       return pEntry->pText[i];
     case eNodeClear:      return pEntry->pClear+i;
     default: break;
     }
@@ -1432,7 +1432,7 @@ void *XMLNode::enumContent(XMLNodeData *pEntry, int i, XMLElementType *nodeType)
 }
 
 // private:
-int XMLNode::nElement(XMLNodeData *pEntry)
+int XMLNode::nElement(const XMLNodeData *pEntry)
 {
     return pEntry->nChild+pEntry->nText+pEntry->nClear+pEntry->nAttribute;
 }
@@ -1444,7 +1444,7 @@ static inline void charmemset(LPTSTR dest,TCHAR c,int l) { while (l--) *(dest++)
 //
 // This recurses through all subnodes then adds contents of the nodes to the
 // string.
-int XMLNode::CreateXMLStringR(XMLNodeData *pEntry, LPTSTR lpszMarker, int nFormat)
+int XMLNode::CreateXMLStringR(const XMLNodeData *pEntry, LPTSTR lpszMarker, int nFormat)
 {
     int nResult = 0;
     int cb;
@@ -1548,7 +1548,7 @@ int XMLNode::CreateXMLStringR(XMLNodeData *pEntry, LPTSTR lpszMarker, int nForma
     // Enumerate through remaining children
     nIndex = nElement(pEntry);
     XMLElementType nodeType;
-    void *pChild;
+    const void *pChild;
     for (i=0; i<nIndex; i++)
     {
         pChild=enumContent(pEntry, i, &nodeType);
@@ -1557,7 +1557,7 @@ int XMLNode::CreateXMLStringR(XMLNodeData *pEntry, LPTSTR lpszMarker, int nForma
         // Text nodes
         case eNodeText:
             // "Text"
-            cb = (int)lengthXMLString((LPTSTR)pChild);
+            cb = (int)lengthXMLString((LPCTSTR)pChild);
             if (cb)
             {
                 if (nFormat!=-1)
@@ -1565,13 +1565,13 @@ int XMLNode::CreateXMLStringR(XMLNodeData *pEntry, LPTSTR lpszMarker, int nForma
                     if (lpszMarker)
                     {
                         charmemset(&lpszMarker[nResult],INDENTCHAR,sizeof(TCHAR)*(nFormat + 1));                       
-                        toXMLString(&lpszMarker[nResult+nFormat+1],(LPTSTR)pChild);
+                        toXMLString(&lpszMarker[nResult+nFormat+1],(LPCTSTR)pChild);
                         lpszMarker[nResult+nFormat+1+cb]=_T('\n');
                     }
                     nResult+=cb+nFormat+2;
                 } else
                 {
-                    if (lpszMarker) toXMLString(&lpszMarker[nResult], (LPTSTR)pChild);
+                    if (lpszMarker) toXMLString(&lpszMarker[nResult], (LPCTSTR)pChild);
                     nResult += cb;
                 }
             }
@@ -1581,7 +1581,7 @@ int XMLNode::CreateXMLStringR(XMLNodeData *pEntry, LPTSTR lpszMarker, int nForma
         // Clear type nodes
         case eNodeClear:
             // "OpenTag"
-            cb = (int)LENSTR(((XMLClear*)pChild)->lpszOpenTag);
+            cb = (int)LENSTR(((const XMLClear*)pChild)->lpszOpenTag);
             if (cb)
             {
                 if (nFormat!=-1)
@@ -1589,30 +1589,30 @@ int XMLNode::CreateXMLStringR(XMLNodeData *pEntry, LPTSTR lpszMarker, int nForma
                     if (lpszMarker)
                     {
                         charmemset(&lpszMarker[nResult], INDENTCHAR, sizeof(TCHAR)*(nFormat + 1));
-                        _tcscpy(&lpszMarker[nResult+nFormat+1], ((XMLClear*)pChild)->lpszOpenTag);
+                        _tcscpy(&lpszMarker[nResult+nFormat+1], ((const XMLClear*)pChild)->lpszOpenTag);
                     }
                     nResult+=cb+nFormat+1;
                 }
                 else
                 {
-                    if (lpszMarker)_tcscpy(&lpszMarker[nResult], ((XMLClear*)pChild)->lpszOpenTag);
+                    if (lpszMarker)_tcscpy(&lpszMarker[nResult], ((const XMLClear*)pChild)->lpszOpenTag);
                     nResult += cb;
                 }               
             }
 
             // "OpenTag Value"
-            cb = (int)LENSTR(((XMLClear*)pChild)->lpszValue);
+            cb = (int)LENSTR(((const XMLClear*)pChild)->lpszValue);
             if (cb)
             {
-                if (lpszMarker) _tcscpy(&lpszMarker[nResult], ((XMLClear*)pChild)->lpszValue);
+                if (lpszMarker) _tcscpy(&lpszMarker[nResult], ((const XMLClear*)pChild)->lpszValue);
                 nResult += cb;
             }
 
             // "OpenTag Value CloseTag"
-            cb = (int)LENSTR(((XMLClear*)pChild)->lpszCloseTag);
+            cb = (int)LENSTR(((const XMLClear*)pChild)->lpszCloseTag);
             if (cb)
             {
-                if (lpszMarker) _tcscpy(&lpszMarker[nResult], ((XMLClear*)pChild)->lpszCloseTag);
+                if (lpszMarker) _tcscpy(&lpszMarker[nResult], ((const XMLClear*)pChild)->lpszCloseTag);
                 nResult += cb;
             }
 
@@ -1627,7 +1627,7 @@ int XMLNode::CreateXMLStringR(XMLNodeData *pEntry, LPTSTR lpszMarker, int nForma
         case eNodeChild:
 
             // Recursively add child nodes
-            nResult += CreateXMLStringR((XMLNodeData*)pChild, 
+            nResult += CreateXMLStringR((const XMLNodeData*)pChild, 
                 lpszMarker ? lpszMarker + nResult : 0, nChildFormat);
             break;
         default: break;

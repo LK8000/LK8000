@@ -170,7 +170,7 @@ void ContractLocalPath(TCHAR* filein);
 void ConvertTToC(CHAR* pszDest, const TCHAR* pszSrc);
 void ConvertCToT(TCHAR* pszDest, const CHAR* pszSrc);
 
-void propGetFontSettings(TCHAR *Name, LOGFONT* lplf);
+void propGetFontSettings(const TCHAR *Name, LOGFONT* lplf);
 void propGetFontSettingsFromString(const TCHAR *Buffer, LOGFONT* lplf);
 #if 0
 int propGetScaleList(double *List, size_t Size);
@@ -192,7 +192,7 @@ int MeasureCPULoad();
 TCHAR* GetWinPilotPolarInternalName(int i);
 void WeightOffset(double wload);
 
-TCHAR *LKgethelptext(const TCHAR *TextIn);
+const TCHAR *LKgethelptext(const TCHAR *TextIn);
 bool LKloadtext(void);
 const TCHAR *LKGetText(const TCHAR *TextIn);
 TCHAR *MsgToken(const unsigned int tindex);

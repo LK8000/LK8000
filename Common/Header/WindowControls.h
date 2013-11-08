@@ -337,7 +337,7 @@ class DataFieldFileReader: public DataField {
   TCHAR *GetAsString(void);
   TCHAR *GetAsDisplayString(void);
   bool Lookup(const TCHAR* text);
-  TCHAR* GetPathFile(void);
+  const TCHAR* GetPathFile(void) const;
 
   #if defined(__BORLANDC__)
   #pragma warn -hid

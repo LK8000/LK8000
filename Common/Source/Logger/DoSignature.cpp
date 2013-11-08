@@ -55,10 +55,10 @@ void GenerateMD5(LineList &lines, md5generators_t *md5s)
             c != 0x5E &&
             c != 0x7E) ; else continue;
       }
-      md5s->a.Update((unsigned char*)it->c_str()+i, 1);
-      md5s->b.Update((unsigned char*)it->c_str()+i, 1);
-      md5s->c.Update((unsigned char*)it->c_str()+i, 1);
-      md5s->d.Update((unsigned char*)it->c_str()+i, 1);
+      md5s->a.Update((const unsigned char*)it->c_str()+i, 1);
+      md5s->b.Update((const unsigned char*)it->c_str()+i, 1);
+      md5s->c.Update((const unsigned char*)it->c_str()+i, 1);
+      md5s->d.Update((const unsigned char*)it->c_str()+i, 1);
     }
   }
   md5s->a.Final();
