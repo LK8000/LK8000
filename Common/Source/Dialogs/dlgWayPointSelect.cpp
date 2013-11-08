@@ -27,7 +27,7 @@ typedef struct{
   int Index;
   double Distance;
   double Direction;
-  int    DirectionErr;
+  mutable int    DirectionErr;
   int    Type;
   int    FileIdx;
   unsigned int FourChars;
@@ -83,41 +83,41 @@ static WayPointSelectInfo_t *WayPointSelectInfo=NULL;
 static int *StrIndex=NULL;
 
 static int _cdecl WaypointNameCompare(const void *elem1, const void *elem2 ){
-  if (((WayPointSelectInfo_t *)elem1)->FourChars < ((WayPointSelectInfo_t *)elem2)->FourChars)
+  if (((const WayPointSelectInfo_t *)elem1)->FourChars < ((const WayPointSelectInfo_t *)elem2)->FourChars)
     return (-1);
-  if (((WayPointSelectInfo_t *)elem1)->FourChars > ((WayPointSelectInfo_t *)elem2)->FourChars)
+  if (((const WayPointSelectInfo_t *)elem1)->FourChars > ((const WayPointSelectInfo_t *)elem2)->FourChars)
     return (+1);
   return (0);
 }
 
 static int _cdecl WaypointDistanceCompare(const void *elem1, const void *elem2 ){
-  if (((WayPointSelectInfo_t *)elem1)->Distance < ((WayPointSelectInfo_t *)elem2)->Distance)
+  if (((const WayPointSelectInfo_t *)elem1)->Distance < ((const WayPointSelectInfo_t *)elem2)->Distance)
     return (-1);
-  if (((WayPointSelectInfo_t *)elem1)->Distance > ((WayPointSelectInfo_t *)elem2)->Distance)
+  if (((const WayPointSelectInfo_t *)elem1)->Distance > ((const WayPointSelectInfo_t *)elem2)->Distance)
     return (+1);
   return (0);
 }
 
 static int _cdecl WaypointAirportCompare(const void *elem1, const void *elem2 ){
-  if (((WayPointSelectInfo_t *)elem1)->Type & (AIRPORT))
+  if (((const WayPointSelectInfo_t *)elem1)->Type & (AIRPORT))
     return (-1);
   return (+1);
 }
 
 static int _cdecl WaypointLandableCompare(const void *elem1, const void *elem2 ){
-  if (((WayPointSelectInfo_t *)elem1)->Type & (AIRPORT | LANDPOINT))
+  if (((const WayPointSelectInfo_t *)elem1)->Type & (AIRPORT | LANDPOINT))
     return (-1);
   return (+1);
 }
 
 static int _cdecl WaypointWayPointCompare(const void *elem1, const void *elem2 ){
-  if (((WayPointSelectInfo_t *)elem1)->Type & (TURNPOINT))
+  if (((const WayPointSelectInfo_t *)elem1)->Type & (TURNPOINT))
     return (-1);
   return (+1);
 }
 
 static int _cdecl WaypointFileIdxCompare(const void *elem1, const void *elem2 ){
-  if (((WayPointSelectInfo_t *)elem1)->FileIdx != SelectedWayPointFileIdx)
+  if (((const WayPointSelectInfo_t *)elem1)->FileIdx != SelectedWayPointFileIdx)
     return (+1);
   return (-1);
 }
@@ -132,8 +132,8 @@ static int _cdecl WaypointDirectionCompare(const void *elem1, const void *elem2 
     lastHeading = a;
   }
 
-  a1 = (int)(((WayPointSelectInfo_t *)elem1)->Direction - a);
-  a2 = (int)(((WayPointSelectInfo_t *)elem2)->Direction - a);
+  a1 = (int)(((const WayPointSelectInfo_t *)elem1)->Direction - a);
+  a2 = (int)(((const WayPointSelectInfo_t *)elem2)->Direction - a);
 
   if (a1 > 180)
     a1 -=360;
@@ -150,8 +150,8 @@ static int _cdecl WaypointDirectionCompare(const void *elem1, const void *elem2 
   a1 = abs(a1);
   a2 = abs(a2);
 
-  ((WayPointSelectInfo_t *)elem1)->DirectionErr = a1;
-  ((WayPointSelectInfo_t *)elem2)->DirectionErr = a2;
+  ((const WayPointSelectInfo_t *)elem1)->DirectionErr = a1;
+  ((const WayPointSelectInfo_t *)elem2)->DirectionErr = a2;
 
   if (a1 < a2)
     return (-1);

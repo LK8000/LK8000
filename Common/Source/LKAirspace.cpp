@@ -108,7 +108,7 @@ void CAirspace::Dump() const
 
 const TCHAR* CAirspace::TypeName(void) const
 {
-	return ((TCHAR*) (CAirspaceManager::Instance().GetAirspaceTypeText(_type)));
+	return (CAirspaceManager::Instance().GetAirspaceTypeText(_type));
 
 };
 
@@ -766,17 +766,17 @@ void CAirspace_Circle::Dump() const
 void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const
 {
   MD5 md5;
-  md5.Update((unsigned char*)&_type, sizeof(_type));
-  md5.Update((unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
-  if (_base.Base == abFL) md5.Update((unsigned char*)&_base.FL, sizeof(_base.FL));
-  if (_base.Base == abAGL) md5.Update((unsigned char*)&_base.AGL, sizeof(_base.AGL));
-  if (_base.Base == abMSL) md5.Update((unsigned char*)&_base.Altitude, sizeof(_base.Altitude));
-  if (_top.Base == abFL) md5.Update((unsigned char*)&_top.FL, sizeof(_top.FL));
-  if (_top.Base == abAGL) md5.Update((unsigned char*)&_top.AGL, sizeof(_top.AGL));
-  if (_top.Base == abMSL) md5.Update((unsigned char*)&_top.Altitude, sizeof(_top.Altitude));
-  md5.Update((unsigned char*)&_latcenter, sizeof(_latcenter));
-  md5.Update((unsigned char*)&_loncenter, sizeof(_loncenter));
-  md5.Update((unsigned char*)&_radius, sizeof(_radius));
+  md5.Update((const unsigned char*)&_type, sizeof(_type));
+  md5.Update((const unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
+  if (_base.Base == abFL) md5.Update((const unsigned char*)&_base.FL, sizeof(_base.FL));
+  if (_base.Base == abAGL) md5.Update((const unsigned char*)&_base.AGL, sizeof(_base.AGL));
+  if (_base.Base == abMSL) md5.Update((const unsigned char*)&_base.Altitude, sizeof(_base.Altitude));
+  if (_top.Base == abFL) md5.Update((const unsigned char*)&_top.FL, sizeof(_top.FL));
+  if (_top.Base == abAGL) md5.Update((const unsigned char*)&_top.AGL, sizeof(_top.AGL));
+  if (_top.Base == abMSL) md5.Update((const unsigned char*)&_top.Altitude, sizeof(_top.Altitude));
+  md5.Update((const unsigned char*)&_latcenter, sizeof(_latcenter));
+  md5.Update((const unsigned char*)&_loncenter, sizeof(_loncenter));
+  md5.Update((const unsigned char*)&_radius, sizeof(_radius));
   md5.Final();
   memcpy(hashout,md5.digestChars,min(maxbufsize,33));
 }
@@ -1094,14 +1094,14 @@ void CAirspace_Area::Hash(char *hashout, int maxbufsize) const
   MD5 md5;
   double dtemp;
   
-  md5.Update((unsigned char*)&_type, sizeof(_type));
-  md5.Update((unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
-  if (_base.Base == abFL) md5.Update((unsigned char*)&_base.FL, sizeof(_base.FL));
-  if (_base.Base == abAGL) md5.Update((unsigned char*)&_base.AGL, sizeof(_base.AGL));
-  if (_base.Base == abMSL) md5.Update((unsigned char*)&_base.Altitude, sizeof(_base.Altitude));
-  if (_top.Base == abFL) md5.Update((unsigned char*)&_top.FL, sizeof(_top.FL));
-  if (_top.Base == abAGL) md5.Update((unsigned char*)&_top.AGL, sizeof(_top.AGL));
-  if (_top.Base == abMSL) md5.Update((unsigned char*)&_top.Altitude, sizeof(_top.Altitude));
+  md5.Update((const unsigned char*)&_type, sizeof(_type));
+  md5.Update((const unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
+  if (_base.Base == abFL) md5.Update((const unsigned char*)&_base.FL, sizeof(_base.FL));
+  if (_base.Base == abAGL) md5.Update((const unsigned char*)&_base.AGL, sizeof(_base.AGL));
+  if (_base.Base == abMSL) md5.Update((const unsigned char*)&_base.Altitude, sizeof(_base.Altitude));
+  if (_top.Base == abFL) md5.Update((const unsigned char*)&_top.FL, sizeof(_top.FL));
+  if (_top.Base == abAGL) md5.Update((const unsigned char*)&_top.AGL, sizeof(_top.AGL));
+  if (_top.Base == abMSL) md5.Update((const unsigned char*)&_top.Altitude, sizeof(_top.Altitude));
   for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
     dtemp = it->Latitude();
     md5.Update((unsigned char*)&dtemp, sizeof(dtemp));
@@ -1455,7 +1455,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
 
   _tcsupr(sTmp);
 
-  pToken = strtok_r(sTmp, (TCHAR*)TEXT(" "), &pWClast);
+  pToken = strtok_r(sTmp, TEXT(" "), &pWClast);
 
   Alt->Altitude = 0;
   Alt->FL = 0;
@@ -1563,7 +1563,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
       Alt->Altitude = 50000;
     }
 
-    pToken = strtok_r(NULL, (TCHAR*)TEXT(" \t"), &pWClast);
+    pToken = strtok_r(NULL, TEXT(" \t"), &pWClast);
 
   }
 
@@ -2155,7 +2155,7 @@ CCriticalSection::CGuard guard(_csairspaces);
 		    airspacetype[iSelAS].iType = (*it)->Type();
 		    if(airspacetype[iSelAS].szAS_Name != NULL)
 		    {
-		      LK_tcsncpy((wchar_t*)  airspacetype[iSelAS].szAS_Name,  (wchar_t*)(*it)->Name(), NAME_SIZE-1);
+		      LK_tcsncpy(airspacetype[iSelAS].szAS_Name,  (*it)->Name(), NAME_SIZE-1);
 		    }
 		    airspacetype[iSelAS].iIdx = iSelAS;
 		    airspacetype[iSelAS].bRectAllowed =  true ;

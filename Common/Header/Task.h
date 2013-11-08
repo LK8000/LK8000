@@ -95,7 +95,7 @@ void guiToggleLogger(bool noAsk = false);
 
 void LoadNewTask(LPCTSTR FileName);
 bool LoadCupTask(LPCTSTR FileName);
-void SaveTask(TCHAR *FileName);
+void SaveTask(const TCHAR *FileName);
 void DefaultTask(void);
 void ClearTask(void);
 void RotateStartPoints(void);

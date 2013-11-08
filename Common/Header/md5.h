@@ -29,7 +29,7 @@ public:
   // MD5 block update operation. Continues an MD5 message-digest
   // operation, processing another message block, and updating the
   // context.
-  void Update( unsigned char *input, unsigned int inputLen);
+  void Update( const unsigned char *input, unsigned int inputLen);
 
   // MD5 finalization. Ends an MD5 message-digest operation, writing the
   // the message digest and zeroizing the context.

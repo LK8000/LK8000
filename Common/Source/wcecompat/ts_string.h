@@ -100,13 +100,13 @@ inline char* ts_strcpy(char* dest, const char* src)
 
 inline char* ts_strcpy(char* dest, const unsigned short* src)
 {
-	unicode2ascii((WCHAR*)src, dest);
+	unicode2ascii((const wchar_t*)src, dest);
 	return dest;
 }
 
 inline unsigned short* ts_strcpy(unsigned short* dest, const char* src)
 {
-	ascii2unicode(src, (WCHAR*)dest);
+	ascii2unicode(src, (wchar_t*)dest);
 	return dest;
 }
 

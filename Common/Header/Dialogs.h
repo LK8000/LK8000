@@ -38,7 +38,7 @@ void StopHourglassCursor();
 
 typedef	struct{
   char type;
-  long* ptr;
+  void* ptr;
 
   int iIdx;
   double Dist;

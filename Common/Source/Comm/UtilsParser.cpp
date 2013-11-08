@@ -72,7 +72,7 @@ void NMEAParser::ExtractParameter(const TCHAR *Source,
   int dest_index = 0;
   int CurrentFieldNumber = 0;
   int StringLength = _tcslen(Source);
-  TCHAR *sptr = (TCHAR*)Source;
+  const TCHAR *sptr = Source;
   const TCHAR *eptr = Source+StringLength;
 
   if (!Destination) return;
@@ -173,7 +173,7 @@ BOOL NMEAParser::NMEAChecksum(const TCHAR *String)
   unsigned char v1 = 0,v2 = 0;
   TCHAR *pEnd;
 
-  pEnd = _tcschr((TCHAR*)String,'*');
+  pEnd = _tcschr(String,_T('*'));
   if(pEnd == NULL)
     return FALSE;
 

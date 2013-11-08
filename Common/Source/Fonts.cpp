@@ -76,7 +76,7 @@ void InitializeOneFont (HFONT * theFont,
   memset ((char *)&logfont, 0, sizeof (LOGFONT));
 
   if (UseCustomFonts) {
-    propGetFontSettings((TCHAR * )FontRegKey, &logfont);
+    propGetFontSettings(FontRegKey, &logfont);
     if (!IsNullLogFont(logfont)) {
       *theFont = CreateFontIndirect (&logfont);
       if (GetObjectType(*theFont) == OBJ_FONT) {
@@ -429,7 +429,7 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
 }
 
 
-void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
+void propGetFontSettings(const TCHAR *Name, LOGFONT* lplf) {
 
  // Load custom font settings from profile only if relative to
  // configurable fonts, of course.

@@ -34,7 +34,7 @@ void MD5::Init(unsigned int key1, unsigned int key2, unsigned int key3, unsigned
 // MD5 block update operation. Continues an MD5 message-digest
 // operation, processing another message block, and updating the
 // context.
-void MD5::Update( unsigned char *input, unsigned int inputLen)
+void MD5::Update( const unsigned char *input, unsigned int inputLen)
 {
  md5_process_bytes(input, inputLen, &context);
 }

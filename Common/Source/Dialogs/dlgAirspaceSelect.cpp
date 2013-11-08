@@ -19,7 +19,7 @@ typedef struct{
   CAirspace *airspace;
   double Distance;
   double Direction;
-  int    DirectionErr;
+  mutable int    DirectionErr; // modified by sort ...
   unsigned int Type;
   unsigned int FourChars;
 } AirspaceSelectInfo_t;
@@ -31,16 +31,16 @@ static WndForm *wf=NULL;
 static WndListFrame *wAirspaceList=NULL;
 static WndOwnerDrawFrame *wAirspaceListEntry = NULL;
 
-static TCHAR NameFilter[] = TEXT("*ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
+static const TCHAR NameFilter[] = TEXT("*ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
 static unsigned NameFilterIdx=0;
 
-static double DistanceFilter[] = {0.0, 25.0, 50.0, 75.0, 100.0, 150.0, 
+static const double DistanceFilter[] = {0.0, 25.0, 50.0, 75.0, 100.0, 150.0, 
                                   250.0, 500.0, 1000.0};
 static unsigned DistanceFilterIdx=0;
 
 #define DirHDG -1
 
-static int DirectionFilter[] = {0, DirHDG, 360, 30, 60, 90, 120, 150, 
+static const int DirectionFilter[] = {0, DirHDG, 360, 30, 60, 90, 120, 150, 
                                 180, 210, 240, 270, 300, 330};
 static unsigned DirectionFilterIdx=0;
 static int lastHeading=0;
@@ -77,26 +77,26 @@ static void OnAirspaceListEnter(WindowControl * Sender,
 }
 
 static int _cdecl AirspaceNameCompare(const void *elem1, const void *elem2 ){
-  if (((AirspaceSelectInfo_t *)elem1)->FourChars < ((AirspaceSelectInfo_t *)elem2)->FourChars)
+  if (((const AirspaceSelectInfo_t *)elem1)->FourChars < ((const AirspaceSelectInfo_t *)elem2)->FourChars)
     return (-1);
-  if (((AirspaceSelectInfo_t *)elem1)->FourChars > ((AirspaceSelectInfo_t *)elem2)->FourChars)
+  if (((const AirspaceSelectInfo_t *)elem1)->FourChars > ((const AirspaceSelectInfo_t *)elem2)->FourChars)
     return (+1);
   // if the first four characters are the same let's do the full comparison
-  const TCHAR *name1 = ((AirspaceSelectInfo_t *)elem1)->airspace->Name();
-  const TCHAR *name2 = ((AirspaceSelectInfo_t *)elem2)->airspace->Name();
+  const TCHAR *name1 = ((const AirspaceSelectInfo_t *)elem1)->airspace->Name();
+  const TCHAR *name2 = ((const AirspaceSelectInfo_t *)elem2)->airspace->Name();
   return _tcscmp(name1, name2);
 }
 
 static int _cdecl AirspaceDistanceCompare(const void *elem1, const void *elem2 ){
-  if (((AirspaceSelectInfo_t *)elem1)->Distance < ((AirspaceSelectInfo_t *)elem2)->Distance)
+  if (((const AirspaceSelectInfo_t *)elem1)->Distance < ((const AirspaceSelectInfo_t *)elem2)->Distance)
     return (-1);
-  if (((AirspaceSelectInfo_t *)elem1)->Distance > ((AirspaceSelectInfo_t *)elem2)->Distance)
+  if (((const AirspaceSelectInfo_t *)elem1)->Distance > ((const AirspaceSelectInfo_t *)elem2)->Distance)
     return (+1);
   return (0);
 }
 
 static int _cdecl AirspaceTypeCompare(const void *elem1, const void *elem2 ){
-  if (((AirspaceSelectInfo_t *)elem1)->Type == TypeFilterIdx-1)
+  if (((const AirspaceSelectInfo_t *)elem1)->Type == TypeFilterIdx-1)
     return (-1);
   return (+1);
 }
@@ -112,8 +112,8 @@ static int _cdecl AirspaceDirectionCompare(const void *elem1, const void *elem2 
     lastHeading = a;
   }
 
-  a1 = (int)(((AirspaceSelectInfo_t *)elem1)->Direction - a);
-  a2 = (int)(((AirspaceSelectInfo_t *)elem2)->Direction - a);
+  a1 = (int)(((const AirspaceSelectInfo_t *)elem1)->Direction - a);
+  a2 = (int)(((const AirspaceSelectInfo_t *)elem2)->Direction - a);
 
   if (a1 > 180)
     a1 -=360;
@@ -130,8 +130,8 @@ static int _cdecl AirspaceDirectionCompare(const void *elem1, const void *elem2 
   a1 = abs(a1);
   a2 = abs(a2);
 
-  ((AirspaceSelectInfo_t *)elem1)->DirectionErr = a1;
-  ((AirspaceSelectInfo_t *)elem2)->DirectionErr = a2;
+  ((const AirspaceSelectInfo_t *)elem1)->DirectionErr = a1;
+  ((const AirspaceSelectInfo_t *)elem2)->DirectionErr = a2;
 
   if (a1 < a2)
     return (-1);
@@ -495,8 +495,8 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     int i = LowLimit + DrawListIndex;
 
 // Sleep(100);
-	TCHAR *Name = NULL;
-	if (AirspaceSelectInfo[i].airspace) Name = (TCHAR*)AirspaceSelectInfo[i].airspace->Name();
+	const TCHAR *Name = NULL;
+	if (AirspaceSelectInfo[i].airspace) Name = AirspaceSelectInfo[i].airspace->Name();
     if (Name) {
 
       int w0, w1, w2, w3, x1, x2, x3;
@@ -511,8 +511,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       
       x1 = w0-w1-w2-w3;
 
-      ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale,
-                     (TCHAR*)Name, x1-ScreenScale*5); 
+      ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale, Name, x1-ScreenScale*5); 
       
       sTmp[0] = '\0';
       sTmp[1] = '\0';

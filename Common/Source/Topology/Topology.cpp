@@ -272,7 +272,7 @@ void Topology::Open() {
     }
   } else {
   #endif
-    if (msSHPOpenFile(&shpfile, (char*)"rb", filename) == -1) {
+    if (msSHPOpenFile(&shpfile, "rb", filename) == -1) {
       StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),filename,NEWLINE);
       return;
     }

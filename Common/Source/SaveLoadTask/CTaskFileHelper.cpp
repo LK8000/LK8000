@@ -55,23 +55,23 @@ LPTSTR AllocFormat(LPCTSTR fmt, ...) {
     }
 }
 
-inline LPCTSTR ToString(unsigned long ulong) {
+inline LPTSTR ToString(unsigned long ulong) {
     return AllocFormat(_T("%u"), ulong);
 }
 
-inline LPCTSTR ToString(LPCTSTR szString) {
+inline LPTSTR ToString(LPCTSTR szString) {
     return AllocFormat(_T("%s"), szString);
 }
 
-inline LPCTSTR ToString(double dVal) {
+inline LPTSTR ToString(double dVal) {
     return AllocFormat(_T("%f"), dVal);
 }
 
-inline LPCTSTR ToString(int iVal) {
+inline LPTSTR ToString(int iVal) {
     return AllocFormat(_T("%d"), iVal);
 }
 
-inline LPCTSTR ToString(bool bVal) {
+inline LPTSTR ToString(bool bVal) {
     return AllocFormat(_T("%s"), bVal ? _T("true") : _T("false"));
 }
 
