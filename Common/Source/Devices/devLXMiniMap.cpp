@@ -434,12 +434,7 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
 
 		if(fabs(newBallast- BALLAST) > 0.01 )
 		{
-			if(newBallast > 1)
-				BALLAST=1;
-			else if(newBallast < 0)
-				BALLAST = 0;
-			else
-			BALLAST =newBallast;
+			CheckSetBallast(newBallast);
 		}
 
 	}
@@ -459,7 +454,7 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
 
 		if(fabs(tempBugs -BUGS) > 0.01)
 		{
-			BUGS = tempBugs;
+			CheckSetBugs(tempBugs);
 		}
 
 	}

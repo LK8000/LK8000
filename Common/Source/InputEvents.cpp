@@ -2230,16 +2230,16 @@ void InputEvents::eventBugs(const TCHAR *misc) {
   LockFlightData();
 
   if (_tcscmp(misc, TEXT("up")) == 0) {
-    BUGS = iround(BUGS*100+10) / 100.0;
+    CheckSetBugs(iround(BUGS*100+10) / 100.0);
   } 
   if (_tcscmp(misc, TEXT("down")) == 0) {
-    BUGS = iround(BUGS*100-10) / 100.0;
+    CheckSetBugs(iround(BUGS*100-10) / 100.0);
   }
   if (_tcscmp(misc, TEXT("max")) == 0) {
-    BUGS= 1.0;
+    CheckSetBugs(1.0);
   }
   if (_tcscmp(misc, TEXT("min")) == 0) {
-    BUGS= 0.0;
+    CheckSetBugs(0.5);
   }
   if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
@@ -2247,7 +2247,7 @@ void InputEvents::eventBugs(const TCHAR *misc) {
     DoStatusMessage(TEXT("Bugs Performance"), Temp);    
   } 
   if (BUGS != oldBugs) {
-    BUGS= min(1.0,max(0.5,BUGS));
+    CheckSetBugs(min(1.0,max(0.5,BUGS)));
     
     devPutBugs(devA(), BUGS);
     devPutBugs(devB(), BUGS);
@@ -2269,16 +2269,16 @@ void InputEvents::eventBallast(const TCHAR *misc) {
   LockComm(); // Must LockComm to prevent deadlock
   LockFlightData();
   if (_tcscmp(misc, TEXT("up")) == 0) {
-    BALLAST = iround(BALLAST*100.0+10) / 100.0;
+    CheckSetBallast(iround(BALLAST*100.0+10) / 100.0);
   } 
   if (_tcscmp(misc, TEXT("down")) == 0) {
-    BALLAST = iround(BALLAST*100.0-10) / 100.0;
+    CheckSetBallast(iround(BALLAST*100.0-10) / 100.0);
   } 
   if (_tcscmp(misc, TEXT("max")) == 0) {
-    BALLAST= 1.0;
+    CheckSetBallast(1.0);
   } 
   if (_tcscmp(misc, TEXT("min")) == 0) {
-    BALLAST= 0.0;
+    CheckSetBallast(0.0);
   } 
   if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
@@ -2286,7 +2286,7 @@ void InputEvents::eventBallast(const TCHAR *misc) {
     DoStatusMessage(TEXT("Ballast %"), Temp);
   } 
   if (BALLAST != oldBallast) {
-    BALLAST=min(1.0,max(0.0,BALLAST));
+    CheckSetBallast(min(1.0,max(0.0,BALLAST)));
     devPutBallast(devA(), BALLAST);
     devPutBallast(devB(), BALLAST);
     GlidePolar::SetBallast();

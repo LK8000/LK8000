@@ -342,6 +342,9 @@ void	LKRunStartEnd(bool);
 bool	LockMode(short lmode);
 double	GetMacCready(int wpindex, short wpmode);
 
+double CheckSetBugs(double val);
+double CheckSetBallast(double val);
+
 extern bool CheckClubVersion(void);
 extern void ClubForbiddenMsg(void);
 

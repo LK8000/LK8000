@@ -3753,7 +3753,7 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if (BUGS_Config != wp->GetDataField()->GetAsFloat()/100.0) {
       BUGS_Config = wp->GetDataField()->GetAsFloat()/100.0;
-      BUGS=BUGS_Config;
+      CheckSetBugs(BUGS_Config);
       requirerestart=true;
     }
   }

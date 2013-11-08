@@ -205,7 +205,7 @@ static void OnBallastData(DataField *Sender, DataField::DataAccessKind_t Mode){
   case DataField::daChange:
   case DataField::daPut:
     if (fabs(lastRead-Sender->GetAsFloat()/100.0) >= 0.005){
-      lastRead = BALLAST = Sender->GetAsFloat()/100.0;
+      lastRead = CheckSetBallast(Sender->GetAsFloat()/100.0);
       SetBallast(true);
     }
     break;
@@ -228,7 +228,7 @@ static void OnBugsData(DataField *Sender, DataField::DataAccessKind_t Mode){
     case DataField::daPut:
       if (fabs(lastRead-Sender->GetAsFloat()/100.0) >= 0.005)
       {
-        lastRead = BUGS = Sender->GetAsFloat()/100.0;
+        lastRead = CheckSetBugs(Sender->GetAsFloat()/100.0);
         GlidePolar::SetBallast();
         devPutBugs(devA(), BUGS);
         devPutBugs(devB(), BUGS);

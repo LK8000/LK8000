@@ -53,7 +53,7 @@ void GlidePolar::SetBallast() {
   #if BUGSTOP
   LKASSERT(BUGS!=0);
   #endif
-  if (BUGS==0) BUGS=1;
+  CheckSetBugs(BUGS);
   double bugfactor = 1.0/BUGS;
   #if BUGSTOP
   LKASSERT(BallastWeight!=0);

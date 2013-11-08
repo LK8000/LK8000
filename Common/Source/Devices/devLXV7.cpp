@@ -562,7 +562,7 @@ else
 	fTmp -= 1.0;
 	if(  fabs(fTmp -BALLAST) >= 0.05)
     {
-      BALLAST = fTmp;
+      CheckSetBallast(fTmp);
       iLXV7_RxUpdateTime = 5;
     }
   }
@@ -578,7 +578,7 @@ else
 	fTmp =  (double)iTmp2/100.0;
 	if(  fabs(fTmp -BUGS) >= 0.03)
     {
-      BUGS = fTmp;
+      CheckSetBugs(fTmp);
       iLXV7_RxUpdateTime = 5;
     }
   }

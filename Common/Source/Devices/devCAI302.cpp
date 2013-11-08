@@ -605,7 +605,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   NMEAParser::ExtractParameter(String,ctemp,11);
   pGPS->Ballast = StrToDouble(ctemp,NULL) / 100.0;
   if (BallastUpdateTimeout <= 0)
-    BALLAST = pGPS->Ballast;
+    CheckSetBallast(pGPS->Ballast);
   else 
     BallastUpdateTimeout--;
 
@@ -613,11 +613,10 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   NMEAParser::ExtractParameter(String,ctemp,12);
   pGPS->Bugs = StrToDouble(ctemp,NULL) / 100.0;
   if (BugsUpdateTimeout <= 0)
-    BUGS = pGPS->Bugs;
+    CheckSetBugs(pGPS->Bugs);
   else 
     BugsUpdateTimeout--;
 
-  // JMW update audio functions etc.
   TriggerVarioUpdate();
 
   return TRUE;

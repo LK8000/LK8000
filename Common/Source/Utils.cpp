@@ -370,3 +370,45 @@ void TraceThread(const TCHAR *mes) {
 }
 
 #endif
+
+
+// All values in the range 100% (1) to 0% (0);
+double CheckSetBallast(double val) {
+  if ((val>=0) && (val<=1)) {
+	  BALLAST=val;
+	  return val;
+  }
+
+  if (val<0) BALLAST=0.0; else if (val>1) BALLAST=1.0;
+
+  #if TESTBENCH
+  static short counter=0;
+  if (counter<10) {
+	StartupStore(_T(". CHECKSETBALLAST ERROR, input=%f output=%f\n"),val,BALLAST);
+	counter++;
+  }
+  #endif
+  return BALLAST;
+}
+
+// BUGS is really EFFICIENCY. In the range 100% to 50%, i.e. 1 to 0.5 .
+// It cannot be 0.
+#define MINBUGS 0.5
+double CheckSetBugs(double val) {
+  if ((val>=MINBUGS) && (val<=1)) {
+	  BUGS=val;
+	  return val;
+  }
+
+  if (val<MINBUGS) BUGS=MINBUGS; else if (val>1) BUGS=1.0;
+
+  #if TESTBENCH
+  static short counter=0;
+  if (counter<10) {
+	StartupStore(_T(". CHECKSETBUGS ERROR, input=%f output=%f\n"),val,BUGS);
+	counter++;
+  }
+  #endif
+  return BUGS;
+}
+

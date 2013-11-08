@@ -391,7 +391,7 @@ static int  iOldVarioSwitch=0;
   fTemp = (double)(100-iTmp)/100.0f;
   if(fabs(fTemp-BUGS)> 0.005)
   {
-    BUGS = fTemp;
+    CheckSetBugs(fTemp);
     iWEST_RxUpdateTime = 5;
   }
 
