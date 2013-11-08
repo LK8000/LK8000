@@ -90,9 +90,12 @@ bool CBtHandlerWince::StartHW() {
     }
 
     if (m_hLibBtDrv && m_StartBlueTooth) {
+        StartupStore(_T("swith on Bluetooth%s"),NEWLINE);
         m_StartBlueTooth();
     } else if (m_hLibBthUtil && m_BthSetMode) {
+        StartupStore(_T("swith on Bluetooth%s"),NEWLINE);
         m_BthSetMode(BTH_CONNECTABLE);
+        Sleep(10000); // connecting failed with error WSAECONNREFUSED (10061) without that...
     } else {
         return false;
     }
@@ -102,17 +105,16 @@ bool CBtHandlerWince::StartHW() {
 }
 
 bool CBtHandlerWince::StopHW() {
-    if (!m_hLibBtDrv || !m_StopBlueTooth)
-        return false;
-
     int iStatus = GetHWState();
     if (iStatus == HCI_HARDWARE_UNKNOWN || iStatus == HCI_HARDWARE_SHUTDOWN) {
         return true;
     }
 
     if (m_hLibBtDrv && m_StopBlueTooth) {
+        StartupStore(_T("swith off Bluetooth%s"), NEWLINE);
         m_StopBlueTooth();
     } else if (m_hLibBthUtil && m_BthSetMode) {
+        StartupStore(_T("swith off Bluetooth%s"), NEWLINE);
         m_BthSetMode(BTH_POWER_OFF);
     } else {
         return false;
