@@ -239,6 +239,8 @@ void CTaskFileHelper::LoadTimeGate(XMLNode node) {
     } else {
         PGNumberOfGates = 0;
     }
+    InitActiveGate();
+    
 }
 
 void CTaskFileHelper::LoadOptionDefault(XMLNode node) {
