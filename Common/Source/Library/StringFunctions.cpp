@@ -236,69 +236,89 @@ int HexStrToInt(TCHAR *Source){
 	return nOut;
 }
 
-
 /*
  * WARNING: if you are using Stop pointer, remember that you MUST set it equal to *Source before
    calling this function, because in case of null result, it will not be set!!
  */
-double StrToDouble(TCHAR *Source, TCHAR **Stop)
-{
-  int index = 0;
-  int StringLength        = 0;
-  double Sum = 0;
-  double Divisor = 10;
-  int neg = 0;
+double StrToDouble(TCHAR *Source, TCHAR **Stop) {
+	TCHAR letter;
+    int index = 0;
+    int StringLength = 0;
+    double Sum = 0;
+    double Divisor = 10;
+    int neg = 0;
+    LKASSERT(Source != NULL)
+    StringLength = _tcslen(Source);
 
-  StringLength = _tcslen(Source);
+    if(StringLength == 0)
+    	return 0.0;
 
-  while(((Source[index] == ' ')||(Source[index]=='+')||(Source[index]==9)) 
-        && (index<StringLength))
-    // JMW added skip for tab stop
-    // JMW added skip for "+"
+    letter = Source[0];
+    while ((index < StringLength) && ((letter == ' ') || (letter == '+') || (letter == 9)))
     {
-      index ++;
+      index++;
+      if(index < StringLength)
+        letter = Source[index];
     }
-  if (index>= StringLength) {
-	// WARNING> we are not setting Stop here!!
-    return 0.0; // Set 0.0 as error, probably not the best thing to do. TOFIX 110307
-  }
-  if (Source[index]=='-') {
-    neg=1;
-    index++;
-  }
 
-  while( (index < StringLength)
-	 &&
-	 (
-	  (Source[index]>= '0') && (Source [index] <= '9')
-          )
-	 )
-    {
-      Sum = (Sum*10) + (Source[ index ] - '0');
-      index ++;
-    }
-  if(Source[index] == '.')
-    {
-      index ++;
-      while( (index < StringLength)
-	     &&
-	     (
-	      (Source[index]>= '0') && (Source [index] <= '9')
-	      )
-	     )
-	{
-	  Sum = (Sum) + (double)(Source[ index ] - '0')/Divisor;
-	  index ++;Divisor = Divisor * 10;
-	}
-    }
-  if(Stop != NULL)
-    *Stop = &Source[index];
 
-  if (neg) {
-    return -Sum;
-  } else {
-    return Sum;
-  }
+
+    if (index >= StringLength) {
+        // WARNING> we are not setting Stop here!!
+      return 0.0; // Set 0.0 as error, probably not the best thing to do. TOFIX 110307
+    }
+
+
+   if (index < StringLength)
+    if (Source[index] == '-') {
+        neg = 1;
+        index++;
+    }
+
+   if (index < StringLength)
+	 letter = Source[index];
+
+   while ((index < StringLength) && ((letter >= '0') && (letter <= '9')))
+   {
+     Sum = (Sum * 10) + (letter - '0');
+  	 index++;
+     if(index < StringLength)
+     {
+       letter = Source[index];
+     }
+   }
+
+
+    if (index < StringLength)
+    {
+      letter = Source[index];
+      if (letter == '.')
+      {
+        index++;
+        if (index < StringLength)
+          letter = Source[index];
+        while ((index < StringLength) && ((letter >= '0') && (letter <= '9')))
+        {
+          Sum = (Sum) + (double) (letter - '0') / Divisor;
+          Divisor = Divisor * 10;
+          index++;
+          if(index < StringLength)
+            letter = Source[index];
+        }
+      }
+    }
+
+    if(index > StringLength)
+      index = StringLength;
+
+      if (Stop != NULL)
+        *Stop = &Source[index];
+
+    if (neg) {
+        return -Sum;
+    } else {
+        return Sum;
+    }
 }
 
 
@@ -310,41 +330,58 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
   int StringLength        = 0;
   double Sum = 0;
   int neg = 0;
-
+  TCHAR  letter;
+  LKASSERT(Source != NULL)
   StringLength = _tcslen(Source);
-
-  while((Source[index] == ' ')||(Source[index]==9))
+  if (StringLength ==0)
+	  return 0.0;
+  letter = Source[index];
+  while(((letter == ' ')||(letter==9)) && (index < StringLength))
     // JMW added skip for tab stop
     {
       index ++;
+      if(index < StringLength)
+        letter = Source[index];
     }
-  if (Source[index]=='-') {
+  if (letter=='-')
+  {
     neg=1;
     index++;
+    if(index < StringLength)
+      letter = Source[index];
   }
 
   while( 
   (index < StringLength)	 &&	 
-	(	( (Source[index]>= '0') && (Source [index] <= '9')  ) || 
-		( (Source[index]>= 'A') && (Source [index] <= 'F')  ) || 
-		( (Source[index]>= 'a') && (Source [index] <= 'f')  )
+	(	( (letter >= '0') && (letter <= '9')  ) ||
+		( (letter >= 'A') && (letter <= 'F')  ) ||
+		( (letter >= 'a') && (letter <= 'f')  )
 		)	 
 	)
     {
-      if((Source[index]>= '0') && (Source [index] <= '9'))	  {
-		Sum = (Sum*16) + (Source[ index ] - '0');
+      if((letter >= '0') && (letter <= '9'))	  {
+		Sum = (Sum*16) + (letter - '0');
 		index ++;
+	    if(index < StringLength)
+	      letter = Source[index];
 	  }
-	  if((Source[index]>= 'A') && (Source [index] <= 'F'))	  {
-		Sum = (Sum*16) + (Source[ index ] - 'A' + 10);
+	  if((letter >= 'A') && (letter <= 'F'))	  {
+		Sum = (Sum*16) + (letter - 'A' + 10);
 		index ++;
+	    if(index < StringLength)
+	      letter = Source[index];
 	  }
-	  if((Source[index]>= 'a') && (Source [index] <= 'f'))	  {
-		Sum = (Sum*16) + (Source[ index ] - 'a' + 10);
+	  if((letter >= 'a') && (letter <= 'f'))	  {
+		Sum = (Sum*16) + (letter - 'a' + 10);
 		index ++;
+	    if(index < StringLength)
+	      letter = Source[index];
 	  }
     }
-  
+
+  if(index > StringLength)
+  	index = StringLength;
+
   if(Stop != NULL)
     *Stop = &Source[index];
 
@@ -362,7 +399,7 @@ TCHAR *strtok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
 // "s" MUST be a pointer to an array, not to a string!!! 
 // (ARM92, Win emulator cause access violation if not)
 
-  TCHAR *spanp;
+  const TCHAR *spanp;
 	int   c, sc;
 	TCHAR *tok;
 
@@ -376,7 +413,7 @@ TCHAR *strtok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
 
 cont:
 	c = *s++;
-	for (spanp = (TCHAR *)delim; (sc = *spanp++) != 0;) {
+	for (spanp = delim; (sc = *spanp++) != 0;) {
 		if (c == sc)
 			goto cont;
 	}
@@ -393,7 +430,7 @@ cont:
 	 */
 	for (;;) {
 		c = *s++;
-		spanp = (TCHAR *)delim;
+		spanp = delim;
 		do {
 			if ((sc = *spanp++) == c) {
 				if (c == 0)
@@ -580,7 +617,7 @@ int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines) {
 
 bool MatchesExtension(const TCHAR *filename, const TCHAR* extension) {
   TCHAR *ptr;
-  ptr = _tcsstr((TCHAR*)filename, extension);
+  ptr = _tcsstr(filename, extension);
   if (ptr != filename+_tcslen(filename)-_tcslen(extension)) {
     return false;
   } else {
