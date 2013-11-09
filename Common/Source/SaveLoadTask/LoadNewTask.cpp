@@ -170,7 +170,7 @@ void LoadNewTask(LPCTSTR szFileName)
             TaskInvalid = !ReadFile(hFile, &PGOpenTimeM, sizeof (PGOpenTimeM), &dwBytesRead, (OVERLAPPED*) NULL);
         }
         if (!TaskInvalid) {
-			PGOpenTime=((PGOpenTimeH*60)+PGOpenTimeM)*60;
+            InitActiveGate();
 
 			// PGOpenTime is Calculated !
 			int tmp;

@@ -119,6 +119,10 @@ bool HaveGates() {
 // It does not matter if it is still valid (it is expired).
 // There is ALWAYS an activegate, it cannot be negative!
 int InitActiveGate() {
+  PGOpenTime=((PGOpenTimeH*60)+PGOpenTimeM)*60;
+  PGCloseTime=((PGCloseTimeH*60)+PGCloseTimeM)*60;;
+  if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59    
+    
   int timenow;
   timenow=LocalTime();
   if (timenow<PGOpenTime) return(0);

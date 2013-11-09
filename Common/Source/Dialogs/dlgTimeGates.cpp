@@ -192,12 +192,7 @@ void dlgTimeGatesShowModal(void){
   }
 
   if (changed) {
-
-     PGOpenTime=((PGOpenTimeH*60)+PGOpenTimeM)*60;
-     PGCloseTime=((PGCloseTimeH*60)+PGCloseTimeM)*60;;
-     if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
-     ActiveGate=-1;
-
+      InitActiveGate();
   }
 
 
