@@ -249,6 +249,7 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop)
   double Divisor = 10;
   int neg = 0;
 
+  if (Source==NULL) return 0.0;
   StringLength = _tcslen(Source);
 
   while(((Source[index] == ' ')||(Source[index]=='+')||(Source[index]==9)) 
@@ -277,6 +278,8 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop)
       Sum = (Sum*10) + (Source[ index ] - '0');
       index ++;
     }
+
+  if (index >= StringLength) goto _strtodouble_return;
   if(Source[index] == '.')
     {
       index ++;
@@ -291,9 +294,11 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop)
 	  index ++;Divisor = Divisor * 10;
 	}
     }
+  if (index >= StringLength) goto _strtodouble_return;
   if(Stop != NULL)
     *Stop = &Source[index];
 
+_strtodouble_return:
   if (neg) {
     return -Sum;
   } else {
@@ -311,6 +316,7 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
   double Sum = 0;
   int neg = 0;
 
+  if (Source==NULL) return 0.0;
   StringLength = _tcslen(Source);
 
   while((Source[index] == ' ')||(Source[index]==9))
@@ -335,19 +341,23 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
 		Sum = (Sum*16) + (Source[ index ] - '0');
 		index ++;
 	  }
+   	  if (index >= StringLength) goto _hexstrtodouble_return;
 	  if((Source[index]>= 'A') && (Source [index] <= 'F'))	  {
 		Sum = (Sum*16) + (Source[ index ] - 'A' + 10);
 		index ++;
 	  }
+   	  if (index >= StringLength) goto _hexstrtodouble_return;
 	  if((Source[index]>= 'a') && (Source [index] <= 'f'))	  {
 		Sum = (Sum*16) + (Source[ index ] - 'a' + 10);
 		index ++;
 	  }
     }
   
+  if (index >= StringLength) goto _hexstrtodouble_return;
   if(Stop != NULL)
     *Stop = &Source[index];
 
+_hexstrtodouble_return:
   if (neg) {
     return -Sum;
   } else {
