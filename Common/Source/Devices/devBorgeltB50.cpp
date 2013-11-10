@@ -170,9 +170,7 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
   NMEAParser::ExtractParameter(String,ctemp,4);
  double bugs = StrToDouble(ctemp,NULL);
  bugs = (100.0-bugs)/100.0;
- if(bugs > 1.0) bugs = 1.0;
- if(bugs < 0.1) bugs = 0.1;
- BUGS = bugs;
+ CheckSetBugs(bugs);
  pGPS->Bugs = BUGS;
 		 // pGPS->Bugs;
 //  StartupStore(TEXT(">>>>>BUGS<<<< %s %f "),ctemp, BUGS);
@@ -182,7 +180,9 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   double bal = StrToDouble(ctemp,NULL);
-  BALLAST =  (bal-1.0)/0.6;
+  bal =  (bal-1.0)/0.6;
+  CheckSetBallast(bal);
+  pGPS->Ballast = BALLAST;
   /*************************************************/
  // StartupStore(TEXT(">NMEA:$PBB50,%s                                    BUG:%d %4.2f:BAL %s%s"),String, (int)BUGS,BALLAST, NEWLINE, NEWLINE);
   /*************************************************/
