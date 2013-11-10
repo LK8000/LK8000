@@ -66,61 +66,62 @@ namespace DlgIgcFile {
                     StopHourglassCursor();
                     MessageBoxX(NULL, _T("No Device"), _T("Error"), MB_OK);
                     StartHourglassCursor();
-                }
-                WndProperty* wp = (WndProperty*)wfDlg->FindByName(TEXT("prpDeviceList"));
-                DataFieldEnum* dfe = NULL;
-                if (wp) {
-                    dfe = (DataFieldEnum*)wp->GetDataField();
-                }
-                if(dfe) {
-                    dfe->Clear();
-                    dfe->addEnumText(_T("none"));
-                }
-                for(size_t i = 0; i < nDevice; ++i) {
-                    TCHAR szDeviceName[100] = {0};
-                    if(!Obex.GetDeviceName(i, szDeviceName, std::distance(begin(szDeviceName), end(szDeviceName)))) {
-                        _stprintf(szDeviceName, _T("Unknown device <%d>"), i);
+                } else {
+                    WndProperty* wp = (WndProperty*)wfDlg->FindByName(TEXT("prpDeviceList"));
+                    DataFieldEnum* dfe = NULL;
+                    if (wp) {
+                        dfe = (DataFieldEnum*)wp->GetDataField();
                     }
-                    StartupStore(_T("GetDeviceName <%d><%s> \n"), i, szDeviceName);
                     if(dfe) {
-                        dfe->addEnumText(szDeviceName);
+                        dfe->Clear();
+                        dfe->addEnumText(_T("none"));
                     }
-                }
-                if(wp) {
-                    if(dfe) {
-                        dfe->SetAsInteger(0);
+                    for(size_t i = 0; i < nDevice; ++i) {
+                        TCHAR szDeviceName[100] = {0};
+                        if(!Obex.GetDeviceName(i, szDeviceName, std::distance(begin(szDeviceName), end(szDeviceName)))) {
+                            _stprintf(szDeviceName, _T("Unknown device <%d>"), i);
+                        }
+                        StartupStore(_T("GetDeviceName <%d><%s> \n"), i, szDeviceName);
+                        if(dfe) {
+                            dfe->addEnumText(szDeviceName);
+                        }
                     }
-                    wp->SetReadOnly(false);
-                    wp->RefreshDisplay();
-                }
-                StopHourglassCursor();
-                size_t DeviceIndex = 0;
-                if(dfe && wp) {
-                    dlgComboPicker(wp);
-                    DeviceIndex = dfe->GetAsInteger();
-                }
-                StartHourglassCursor();
-                if(DeviceIndex != 0) {
-                    DeviceIndex--;
-                 
-                    TCHAR szFileFullPath[MAX_PATH] = _T("\0");
-                    LocalPath(szFileFullPath, _T(LKD_LOGS));
-                    size_t nLen = _tcslen(szFileFullPath);
-                    if (szFileFullPath[nLen - 1] != _T('\\')) {
-                        _tcscat(szFileFullPath, _T("\\"));
+                    if(wp) {
+                        if(dfe) {
+                            dfe->SetAsInteger(0);
+                        }
+                        wp->SetReadOnly(false);
+                        wp->RefreshDisplay();
                     }
-                    FileList_t::const_iterator ItFileName = FileList.begin();
-                    std::advance(ItFileName, ItemIndex);
-                    _tcscat(szFileFullPath, ItFileName->c_str());
+                    StopHourglassCursor();
+                    size_t DeviceIndex = 0;
+                    if(dfe && wp) {
+                        dlgComboPicker(wp);
+                        DeviceIndex = dfe->GetAsInteger();
+                    }
+                    StartHourglassCursor();
+                    if(DeviceIndex != 0) {
+                        DeviceIndex--;
 
-                    if(!Obex.SendFile(DeviceIndex, szFileFullPath)) {
-                        StopHourglassCursor();
-                        MessageBoxX(NULL, _T("Send Failed"), _T("Error"), MB_OK);
-                        StartHourglassCursor();
-                    } else {
-                        StopHourglassCursor();
-                        MessageBoxX(NULL, _T("File sent!"), _T("Success"), MB_OK);
-                        StartHourglassCursor();
+                        TCHAR szFileFullPath[MAX_PATH] = _T("\0");
+                        LocalPath(szFileFullPath, _T(LKD_LOGS));
+                        size_t nLen = _tcslen(szFileFullPath);
+                        if (szFileFullPath[nLen - 1] != _T('\\')) {
+                            _tcscat(szFileFullPath, _T("\\"));
+                        }
+                        FileList_t::const_iterator ItFileName = FileList.begin();
+                        std::advance(ItFileName, ItemIndex);
+                        _tcscat(szFileFullPath, ItFileName->c_str());
+
+                        if(!Obex.SendFile(DeviceIndex, szFileFullPath)) {
+                            StopHourglassCursor();
+                            MessageBoxX(NULL, _T("Send Failed"), _T("Error"), MB_OK);
+                            StartHourglassCursor();
+                        } else {
+                            StopHourglassCursor();
+                            MessageBoxX(NULL, _T("File sent!"), _T("Success"), MB_OK);
+                            StartHourglassCursor();
+                        }
                     }
                 }
                 Obex.Shutdown();

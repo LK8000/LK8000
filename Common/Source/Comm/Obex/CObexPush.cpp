@@ -132,6 +132,55 @@ bool CObexPush::GetDeviceName(size_t DeviceIdx, TCHAR* szFileName, size_t cb) {
     return false;
 }
 
+void CObexPush::DumpsDeviceProperty(size_t DeviceIdx){
+    ObexDeviceList_t::iterator ItDevice = _LstDevice.begin();
+    std::advance(ItDevice, DeviceIdx);
+
+    IPropertyBag *pDeviceBag = NULL;
+    if (SUCCEEDED((*ItDevice)->EnumProperties(IID_IPropertyBag, (LPVOID *) & pDeviceBag))) {    
+        VARIANT var;
+        VariantInit (&var);
+
+        if (SUCCEEDED(pDeviceBag->Read(_T("Name"), &var, NULL))) {
+            StartupStore(_T("..Obex Device <%d> Name : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+        }
+        VariantClear(&var);
+
+        if (SUCCEEDED(pDeviceBag->Read(_T("Address"), &var, NULL))) {
+            if (var.vt == VT_BSTR) 
+                StartupStore(_T("..Obex Device <%d> Adress : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+            else if (var.vt == VT_I4)
+                StartupStore(_T("..Obex Device <%d> Adress : %08x%s"), DeviceIdx, var.ulVal, NEWLINE);
+        }
+        VariantClear(&var);
+
+        if (SUCCEEDED(pDeviceBag->Read(_T("Port"), &var, NULL))) {
+            if (var.vt == VT_BSTR) 
+                StartupStore(_T("..Obex Device <%d> Port : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+            else if (var.vt == VT_I4)
+                StartupStore(_T("..Obex Device <%d> Port : %08x%s"), DeviceIdx, var.ulVal, NEWLINE);
+        }
+        VariantClear(&var);
+
+        if (SUCCEEDED(pDeviceBag->Read(_T("Transport"), &var, NULL))) {
+            if (var.vt == VT_BSTR) {
+                StartupStore(_T("..Obex Device <%d> Transport : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+            }
+        }
+        VariantClear(&var);
+
+        if (SUCCEEDED(pDeviceBag->Read (TEXT("ServiceUUID"), &var, NULL))) {
+            if (var.vt == VT_BSTR) {
+                // OBEXObjectPushServiceClass_UUID: TGUID = '{00001105-0000-1000-8000-00805F9B34FB}';
+                // OBEXFileTransferServiceClass_UUID: TGUID = '{00001106-0000-1000-8000-00805F9B34FB}';
+                StartupStore(_T("..Obex Device <%d> ServiceUUID : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+            }
+        }
+        VariantClear(&var);
+        pDeviceBag->Release();
+    }
+}
+
 bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
     ObexDeviceList_t::iterator ItDevice = _LstDevice.begin();
     std::advance(ItDevice, DeviceIdx);
@@ -159,6 +208,10 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
         StartupStore(_T("Obex <%d> failed to connect <%s>%s"), DeviceIdx, szDeviceName, NEWLINE);
         return false;
     }
+    
+#if TESTBENCH       
+    DumpsDeviceProperty(DeviceIdx);
+#endif
 
     // send the file content
     const WCHAR *name = wcsrchr(szFileName, '\\');
