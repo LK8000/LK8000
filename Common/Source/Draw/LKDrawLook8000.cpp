@@ -544,8 +544,10 @@ nextinit:
 		}
 
 		int gateinuse=-2;
-		if (UseGates() && ActiveWayPoint==0) {
-			gateinuse=ActiveGate;
+        if(UseGates() && ActiveWayPoint==0) {
+            gateinuse=ActiveGate;
+        }
+		if (flipflop && (gateinuse != -2) ) {
 			if (!HaveGates()) {
 				gateinuse=-1;
 			} else {
@@ -833,6 +835,8 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 		SelectObject(hdc, bigFont); // use this font for big values
 
 		if (HaveGates()) {
+            gatechrono=GateTime(ActiveGate)-LocalTime(); // not always already set, update it ... 
+
 			Units::TimeToTextDown(BufferValue,gatechrono ); 
 			rcx=rc.right-NIBLSCALE(10);
 			GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
@@ -929,45 +933,51 @@ drawOverlay:
 	// USE THIS SPACE FOR MESSAGES TO THE PILOT
 	rcy+=ySizeLK8MediumFont;
 	if (HaveGates()) {
-		if (gatechrono>0) {
-			// IsInSector works reversed!
-			if (PGStartOut && DerivedDrawInfo.IsInSector) {
-				// LKTOKEN  _@M923_ = "WRONG inSIDE"
-				_tcscpy(BufferValue,MsgToken(923));
+         if(!DerivedDrawInfo.Flying) {
+            // LKTOKEN  _@M922_ = "NOT FLYING"
+            _tcscpy(BufferValue,MsgToken(922));
+         } else {
+            if (gatechrono>0) {
+                // IsInSector works reversed!
+                if (PGStartOut && DerivedDrawInfo.IsInSector) {
+                    // LKTOKEN  _@M923_ = "WRONG inSIDE"
+                    _tcscpy(BufferValue,MsgToken(923));
+                } else if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
+                    // LKTOKEN  _@M924_ = "WRONG outSIDE"
+                    _tcscpy(BufferValue,MsgToken(924));
+                } else {
+                    // LKTOKEN  _@M921_ = "countdown"
+                    _tcscpy(BufferValue,MsgToken(921));
+                }
 			} else {
-				if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
-					// LKTOKEN  _@M924_ = "WRONG outSIDE"
-					_tcscpy(BufferValue,MsgToken(924));
-				} else {
-					// LKTOKEN  _@M921_ = "countdown"
-					_tcscpy(BufferValue,MsgToken(921));
-				}
-			}
-			if (!DerivedDrawInfo.Flying) {
-				// LKTOKEN  _@M922_ = "NOT FLYING"
-				_tcscpy(BufferValue,MsgToken(922));
-			}
-		} else {
-			// gate is open
-			if ( (ActiveGate<(PGNumberOfGates-1)) && (gatechrono<-300)) {
-				// LKTOKEN  _@M314_ = "GATE OPEN" 
-				_tcscpy(BufferValue,MsgToken(314));
-			} else {
-				if ( ActiveGate>=(PGNumberOfGates-1) )  {
-					Units::TimeToText(BufferTitle,GateTime(ActiveGate+1)); 
-					_stprintf(BufferValue,_T("CLOSE %s"),BufferTitle);
-				} else {
-					if (flipflop) {
-						Units::TimeToText(BufferTitle,GateTime(ActiveGate+1)); 
-						_stprintf(BufferValue,_T("NEXT %s"),BufferTitle);
-					} else {
-						// LKTOKEN  _@M314_ = "GATE OPEN" 
-						_tcscpy(BufferValue,MsgToken(314));
-					}
-				}
-				// LKTOKEN  _@M314_ = "GATE OPEN" 
-				_tcscpy(BufferValue,MsgToken(314));
-			}
+                BufferValue[0] = _T('\0');
+                // gate is open
+                int CloseTime = GateCloseTime();
+                if ( flipflopcount > 0) {
+                    if( (ActiveGate<(PGNumberOfGates-1) || CloseTime < 86340) && flipflopcount == 1) {
+                        if (CloseTime < 86340)  {
+                            Units::TimeToText(BufferTitle,CloseTime); 
+                            _stprintf(BufferValue,_T("CLOSE %s"),BufferTitle);
+                        } else {
+                            Units::TimeToText(BufferTitle,GateTime(ActiveGate+1)); 
+                            _stprintf(BufferValue,_T("NEXT %s"),BufferTitle);
+                        } 
+                    } else {
+                        // IsInSector works reversed!
+                        if (PGStartOut && DerivedDrawInfo.IsInSector) {
+                            // LKTOKEN  _@M923_ = "WRONG inSIDE"
+                            _tcscpy(BufferValue,MsgToken(923));
+                        } else if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
+                            // LKTOKEN  _@M924_ = "WRONG outSIDE"
+                            _tcscpy(BufferValue,MsgToken(924));
+                        }
+                    }
+                } 
+                if(BufferValue[0] == _T('\0')) {
+                    // LKTOKEN  _@M314_ = "GATE OPEN" 
+                    _tcscpy(BufferValue,MsgToken(314));
+                }
+            }
 		}
 	} else {
 		// LKTOKEN  _@M925_ = "NO TSK START"
