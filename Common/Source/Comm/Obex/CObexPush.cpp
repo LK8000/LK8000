@@ -49,6 +49,9 @@ bool CObexPush::Startup() {
 void CObexPush::Shutdown() {
     ClearDeviceList();
     if (_pObex) {
+#if TESTBENCH             
+        StartupStore(_T("Obex : Shutdown Obex%s"), NEWLINE);
+#endif        
         _pObex->Shutdown();
     }
     CoUninitialize();
@@ -62,6 +65,9 @@ void CObexPush::Shutdown() {
 
 void ReleaseInterface(IUnknown* pUnk) {
     if (pUnk) {
+#if TESTBENCH             
+        StartupStore(_T("Obex : Release IUnknown%s"), NEWLINE);
+#endif        
         pUnk->Release();
     }
 }
@@ -195,14 +201,25 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
                 StartupStore(_T("Obex <%d> Failed to read File shunck%s"), DeviceIdx, NEWLINE);
                 break;
             }
+#if TESTBENCH             
             StartupStore(_T("Obex <%d> Write File shunck%s"), DeviceIdx, NEWLINE);
+#endif
             hr = myStream->Write(inBuf, cbJustRead, &written);
+            if(!SUCCEEDED(hr)) {
+                StartupStore(_T("Obex <%d> Failed to send File Chunk <0x%x> %s"), DeviceIdx, hr, NEWLINE);
+            }
             dwBytesSent += written;
         } while (SUCCEEDED(hr) && (cbJustRead == sizeof (inBuf)));
-        hr = S_OK;
+        if(SUCCEEDED(hr)) {
+            hr = S_OK;
+        }
     } else {
         StartupStore(_T("Obex <%d> Failed to put File Name header%s"), DeviceIdx, NEWLINE);
     }
+#if TESTBENCH    
+    StartupStore(_T("Obex <%d> Close File%s"), DeviceIdx, NEWLINE);
+#endif
+    CloseHandle(hFile);
     
     bool bSendOK = false;
     if(hr == S_OK) {
@@ -211,21 +228,32 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
     }
 
     if (myStream) {
+#if TESTBENCH
+        StartupStore(_T("Obex <%d> Release obex stream%s"), DeviceIdx, NEWLINE);
+#endif
         myStream->Release();
+        myStream = NULL;
     }
-    CloseHandle(hFile);
 
-    if (pHeaderCollection) {
-        pHeaderCollection->Release();
-        pHeaderCollection = NULL;
-    }
-    
+#if TESTBENCH
+    StartupStore(_T("Obex <%d> Disconnect Device%s"), DeviceIdx, NEWLINE);
+#endif
+
     hr = pObexDevice->Disconnect(pHeaderCollection);
     if(SUCCEEDED(hr)) {
+#if TESTBENCH
+        StartupStore(_T("Obex <%d> Diconnect device success%s"), DeviceIdx, NEWLINE);
+#endif
+    } else {
+        StartupStore(_T("Obex <%d> Diconnect device Failed <%x> %s"), DeviceIdx, NEWLINE);
+    }
+    if (pHeaderCollection) {
+#if TESTBENCH
+        StartupStore(_T("Obex <%d> Release Header Collection%s"), DeviceIdx, NEWLINE);
+#endif        
         pHeaderCollection->Release();
         pHeaderCollection = NULL;
     }
-
     return bSendOK;
 }
 
