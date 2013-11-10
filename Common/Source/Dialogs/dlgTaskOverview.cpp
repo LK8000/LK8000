@@ -92,8 +92,8 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   int w1 = GetTextWidth(hDC, TEXT(" 000km"));
   int w2 = GetTextWidth(hDC, TEXT("  000")TEXT(DEG));
 
-  int p1 = w0-w1-w2; // 125*ScreenScale;
-  int p2 = w0-w2;    // 175*ScreenScale;
+  int p1 = w0-w1-w2- 40*ScreenScale;
+  int p2 = w0-w2- 40*ScreenScale;
   RECT rc = {0*ScreenScale,  0*ScreenScale, PICTO_HIGHT,   PICTO_HIGHT};
   if (DrawListIndex < n){
     int i = LowLimit + DrawListIndex;
