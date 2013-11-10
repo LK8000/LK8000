@@ -294,11 +294,17 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop)
 	  index ++;Divisor = Divisor * 10;
 	}
     }
-  if (index >= StringLength) goto _strtodouble_return;
-  if(Stop != NULL)
-    *Stop = &Source[index];
+  
+_strtodouble_return:  
+  if(Stop != NULL) {
+    if (index < StringLength) {
+        *Stop = &Source[index];
+    } else {
+        *Stop = &Source[StringLength];
+    }
+  }
 
-_strtodouble_return:
+
   if (neg) {
     return -Sum;
   } else {
