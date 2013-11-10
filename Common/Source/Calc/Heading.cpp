@@ -11,6 +11,8 @@
 #include "Logger.h"
 #include "WindZigZag.h"
 #include "LKAssert.h"
+#include "WindKalman.h"
+
 
 void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
@@ -98,12 +100,17 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       double zz_wind_speed;
       double zz_wind_bearing;
       int quality;
-      quality = WindZigZagUpdate(Basic, Calculated, 
-                                 &zz_wind_speed, 
-				 &zz_wind_bearing);
+#ifdef KALMAN_FILTER_WIND
+      if (Basic->AirspeedAvailable)
+        quality = WindKalmanUpdate(Basic, Calculated, &zz_wind_speed, &zz_wind_bearing);
+      else
+#endif
+    	quality = WindZigZagUpdate (Basic, Calculated, &zz_wind_speed, &zz_wind_bearing);
+
+
       if (quality>0) {
         SetWindEstimate(zz_wind_speed, zz_wind_bearing, quality);
-/* 100118 redundant!! removed. TOCHECK
+/* 100118 redundant!! removed. TOCHECK *
         Vector v_wind;
         v_wind.x = zz_wind_speed*cos(zz_wind_bearing*3.1415926/180.0);
         v_wind.y = zz_wind_speed*sin(zz_wind_bearing*3.1415926/180.0);
