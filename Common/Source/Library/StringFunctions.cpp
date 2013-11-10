@@ -325,11 +325,14 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
   if (Source==NULL) return 0.0;
   StringLength = _tcslen(Source);
 
-  while((Source[index] == ' ')||(Source[index]==9))
+  while((index < StringLength) && ((Source[index] == ' ')||(Source[index]==9)))
     // JMW added skip for tab stop
     {
       index ++;
     }
+  if (index >= StringLength) {
+      goto _hexstrtodouble_return;
+  }
   if (Source[index]=='-') {
     neg=1;
     index++;
@@ -359,11 +362,15 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
 	  }
     }
   
-  if (index >= StringLength) goto _hexstrtodouble_return;
-  if(Stop != NULL)
-    *Stop = &Source[index];
-
 _hexstrtodouble_return:
+  if(Stop != NULL) {
+      if (index < StringLength) {
+          *Stop = &Source[index];
+      } else {
+          *Stop = &Source[StringLength];
+      }
+  }
+
   if (neg) {
     return -Sum;
   } else {
