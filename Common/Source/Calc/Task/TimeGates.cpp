@@ -68,6 +68,12 @@ int GateTime(int gate) {
   return(gatetime);
 }
 
+
+int GateCloseTime() {
+  return PGCloseTime;
+}
+
+
 // Returns the gatetime difference to current local time. Positive if gate is in the future.
 int GateTimeDiff(int gate) {
   int timenow, gatetime;
@@ -119,6 +125,8 @@ bool HaveGates() {
 // It does not matter if it is still valid (it is expired).
 // There is ALWAYS an activegate, it cannot be negative!
 int InitActiveGate() {
+  ActiveGate = -1;
+
   PGOpenTime=((PGOpenTimeH*60)+PGOpenTimeM)*60;
   PGCloseTime=((PGCloseTimeH*60)+PGCloseTimeM)*60;;
   if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59    
