@@ -291,6 +291,8 @@ bool IsGateOpen(void);
 int NextGate(void);		
 	// Returns the specified gate time (hours), negative -1 if invalid
 int GateTime(int gate);		
+	// return the CloseTime of Last Gate
+int GateCloseTime();
 	// Returns the gatetime difference to current local time. 
 	// Positive if gate is in the future.
 int GateTimeDiff(int gate);
