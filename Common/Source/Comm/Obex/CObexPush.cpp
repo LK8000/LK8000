@@ -49,6 +49,9 @@ bool CObexPush::Startup() {
 void CObexPush::Shutdown() {
     ClearDeviceList();
     if (_pObex) {
+#if TESTBENCH             
+        StartupStore(_T("Obex : Shutdown Obex%s"), NEWLINE);
+#endif        
         _pObex->Shutdown();
     }
     CoUninitialize();
@@ -62,6 +65,9 @@ void CObexPush::Shutdown() {
 
 void ReleaseInterface(IUnknown* pUnk) {
     if (pUnk) {
+#if TESTBENCH             
+        StartupStore(_T("Obex : Release IUnknown%s"), NEWLINE);
+#endif        
         pUnk->Release();
     }
 }
@@ -126,6 +132,55 @@ bool CObexPush::GetDeviceName(size_t DeviceIdx, TCHAR* szFileName, size_t cb) {
     return false;
 }
 
+void CObexPush::DumpsDeviceProperty(size_t DeviceIdx){
+    ObexDeviceList_t::iterator ItDevice = _LstDevice.begin();
+    std::advance(ItDevice, DeviceIdx);
+
+    IPropertyBag *pDeviceBag = NULL;
+    if (SUCCEEDED((*ItDevice)->EnumProperties(IID_IPropertyBag, (LPVOID *) & pDeviceBag))) {    
+        VARIANT var;
+        VariantInit (&var);
+
+        if (SUCCEEDED(pDeviceBag->Read(_T("Name"), &var, NULL))) {
+            StartupStore(_T("..Obex Device <%d> Name : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+        }
+        VariantClear(&var);
+
+        if (SUCCEEDED(pDeviceBag->Read(_T("Address"), &var, NULL))) {
+            if (var.vt == VT_BSTR) 
+                StartupStore(_T("..Obex Device <%d> Adress : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+            else if (var.vt == VT_I4)
+                StartupStore(_T("..Obex Device <%d> Adress : %08x%s"), DeviceIdx, var.ulVal, NEWLINE);
+        }
+        VariantClear(&var);
+
+        if (SUCCEEDED(pDeviceBag->Read(_T("Port"), &var, NULL))) {
+            if (var.vt == VT_BSTR) 
+                StartupStore(_T("..Obex Device <%d> Port : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+            else if (var.vt == VT_I4)
+                StartupStore(_T("..Obex Device <%d> Port : %08x%s"), DeviceIdx, var.ulVal, NEWLINE);
+        }
+        VariantClear(&var);
+
+        if (SUCCEEDED(pDeviceBag->Read(_T("Transport"), &var, NULL))) {
+            if (var.vt == VT_BSTR) {
+                StartupStore(_T("..Obex Device <%d> Transport : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+            }
+        }
+        VariantClear(&var);
+
+        if (SUCCEEDED(pDeviceBag->Read (TEXT("ServiceUUID"), &var, NULL))) {
+            if (var.vt == VT_BSTR) {
+                // OBEXObjectPushServiceClass_UUID: TGUID = '{00001105-0000-1000-8000-00805F9B34FB}';
+                // OBEXFileTransferServiceClass_UUID: TGUID = '{00001106-0000-1000-8000-00805F9B34FB}';
+                StartupStore(_T("..Obex Device <%d> ServiceUUID : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
+            }
+        }
+        VariantClear(&var);
+        pDeviceBag->Release();
+    }
+}
+
 bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
     ObexDeviceList_t::iterator ItDevice = _LstDevice.begin();
     std::advance(ItDevice, DeviceIdx);
@@ -153,6 +208,10 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
         StartupStore(_T("Obex <%d> failed to connect <%s>%s"), DeviceIdx, szDeviceName, NEWLINE);
         return false;
     }
+    
+#if TESTBENCH       
+    DumpsDeviceProperty(DeviceIdx);
+#endif
 
     // send the file content
     const WCHAR *name = wcsrchr(szFileName, '\\');
@@ -195,14 +254,25 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
                 StartupStore(_T("Obex <%d> Failed to read File shunck%s"), DeviceIdx, NEWLINE);
                 break;
             }
+#if TESTBENCH             
             StartupStore(_T("Obex <%d> Write File shunck%s"), DeviceIdx, NEWLINE);
+#endif
             hr = myStream->Write(inBuf, cbJustRead, &written);
+            if(!SUCCEEDED(hr)) {
+                StartupStore(_T("Obex <%d> Failed to send File Chunk <0x%x> %s"), DeviceIdx, hr, NEWLINE);
+            }
             dwBytesSent += written;
         } while (SUCCEEDED(hr) && (cbJustRead == sizeof (inBuf)));
-        hr = S_OK;
+        if(SUCCEEDED(hr)) {
+            hr = S_OK;
+        }
     } else {
         StartupStore(_T("Obex <%d> Failed to put File Name header%s"), DeviceIdx, NEWLINE);
     }
+#if TESTBENCH    
+    StartupStore(_T("Obex <%d> Close File%s"), DeviceIdx, NEWLINE);
+#endif
+    CloseHandle(hFile);
     
     bool bSendOK = false;
     if(hr == S_OK) {
@@ -211,21 +281,32 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
     }
 
     if (myStream) {
+#if TESTBENCH
+        StartupStore(_T("Obex <%d> Release obex stream%s"), DeviceIdx, NEWLINE);
+#endif
         myStream->Release();
+        myStream = NULL;
     }
-    CloseHandle(hFile);
 
-    if (pHeaderCollection) {
-        pHeaderCollection->Release();
-        pHeaderCollection = NULL;
-    }
-    
+#if TESTBENCH
+    StartupStore(_T("Obex <%d> Disconnect Device%s"), DeviceIdx, NEWLINE);
+#endif
+
     hr = pObexDevice->Disconnect(pHeaderCollection);
     if(SUCCEEDED(hr)) {
+#if TESTBENCH
+        StartupStore(_T("Obex <%d> Diconnect device success%s"), DeviceIdx, NEWLINE);
+#endif
+    } else {
+        StartupStore(_T("Obex <%d> Diconnect device Failed <%x> %s"), DeviceIdx, NEWLINE);
+    }
+    if (pHeaderCollection) {
+#if TESTBENCH
+        StartupStore(_T("Obex <%d> Release Header Collection%s"), DeviceIdx, NEWLINE);
+#endif        
         pHeaderCollection->Release();
         pHeaderCollection = NULL;
     }
-
     return bSendOK;
 }
 
