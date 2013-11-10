@@ -10,6 +10,9 @@
 
 #include "devBorgeltB50.h"
 
+#include "devCAI302.h"
+
+
 BOOL bBaroAvailable = FALSE;
 
 BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS);
@@ -78,9 +81,9 @@ BOOL b50Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Borgelt B50"));
   d->ParseNMEA = B50ParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
+  d->PutMacCready = cai302PutMacCready;
+  d->PutBugs = cai302PutBugs;
+  d->PutBallast = cai302PutBallast;
   d->Open = NULL;
   d->Close = NULL;
   d->Init = NULL;
@@ -165,16 +168,21 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
   JMW disabled bugs/ballast due to problems with test b50
 */
   NMEAParser::ExtractParameter(String,ctemp,4);
- // pGPS->Bugs = StrToDouble(ctemp,NULL);
- // BUGS = pGPS->Bugs;
+ double bugs = StrToDouble(ctemp,NULL);
+ bugs = (100.0-bugs)/100.0;
+ CheckSetBugs(bugs);
+ pGPS->Bugs = BUGS;
+		 // pGPS->Bugs;
 //  StartupStore(TEXT(">>>>>BUGS<<<< %s %f "),ctemp, BUGS);
   // for Borgelt it's % of empty weight,
   // for us, it's % of ballast capacity
   // RMN: Borgelt ballast->XCSoar ballast
 
   NMEAParser::ExtractParameter(String,ctemp,5);
-  //double bal = StrToDouble(ctemp,NULL); UNUSED!
-//  BALLAST = pGPS->Ballast = bal;
+  double bal = StrToDouble(ctemp,NULL);
+  bal =  (bal-1.0)/0.6;
+  CheckSetBallast(bal);
+  pGPS->Ballast = BALLAST;
   /*************************************************/
  // StartupStore(TEXT(">NMEA:$PBB50,%s                                    BUG:%d %4.2f:BAL %s%s"),String, (int)BUGS,BALLAST, NEWLINE, NEWLINE);
   /*************************************************/
