@@ -84,13 +84,14 @@
   #define BACKGROUND_PICTORIAL
   #define ASP_WARNING_PICTO
 #endif
-
+//#define DOUBLE_GPS_SORTOUT
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
 #define AIRSPACE_BORDER        // switch for new airspace orders
 #define SHOW_FOUND_WAYPOINT    // show best found waypoint on active keyboard
 #define SELECT_FOUND           // preselect best fit waypoint in waypoint list.
 
-//#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
+#define KALMAN_FILTER_WIND
+#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
   #define BUTTONS_MS
   #define OWN_POS_MS

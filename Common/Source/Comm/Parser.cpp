@@ -169,11 +169,12 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
     {
       return GGA(&String[7], params + 1, n_params, pGPS);
     }
+#ifdef  DOUBLE_GPS_SORTOUT
   if(_tcscmp(params[0] + 3,TEXT("VTG"))==0)
     {
       return VTG(&String[7], params + 1, n_params, pGPS);
     }
-
+#endif
   return FALSE;
 }
 
@@ -258,11 +259,13 @@ double TimeModify(const TCHAR* StrTime, NMEA_INFO* pGPS, int& StartDay) {
 }
 
 bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
+  // Ulli: changed to check if difference > 1s, if not we have two GPS sources at the same time
+  //       which can happen with an old NMEA logs of PORT A and B active
 
   // If simulating, we might be in the future already.
   // We CANNOT check for <= because this check may be done by several GGA RMC GLL etc. sentences
   // among the same quantum time
-  if(ThisTime< LastTime) {
+  if((LastTime - ThisTime ) > 1){
     #if TESTBENCH
     StartupStore(_T("... TimeHasAdvanced BACK in time: Last=%f This=%f   %s\n"), LastTime, ThisTime,WhatTimeIsIt());
     #endif
@@ -409,6 +412,10 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+#ifdef DOUBLE_GPS_SORTOUT
+	if	(_tcslen(params[10])>0)
+		 return false;
+#endif
   TCHAR *Stop;
   static bool logbaddate=true;
   double speed=0;
@@ -599,6 +606,10 @@ force_advance:
 
 BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+#ifdef DOUBLE_GPS_SORTOUT
+if	(_tcslen(params[12])>0)
+	 return false;
+#endif
 
   GGAAvailable = TRUE;
   GPSCONNECT = TRUE;     // 091208
@@ -712,9 +723,11 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
 
   // "Altitude" should always be GPS Altitude.
+  StartupStore(_T("... ParseAltitude params[8] = %s  params[9] = %s\n"),params[8], params[9]);
   pGPS->Altitude = ParseAltitude(params[8], params[9]);
   pGPS->Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
-  
+
+
   double GeoidSeparation;
 
   if (_tcslen(params[10])>0) {

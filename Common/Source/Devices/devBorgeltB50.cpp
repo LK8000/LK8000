@@ -18,7 +18,7 @@ extern BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
 BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
-
+return false;
   if(_tcsncmp(TEXT("$PBB50"), String, 6)==0)
     return PBB50(&String[7], pGPS);
   else
@@ -27,8 +27,8 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
       bBaroAvailable = true;
       return vl_PGCS1( d, &String[6], pGPS);
     }
-//  if(_tcsstr(String,TEXT("$PGCS,")) == String){
-//    return vl_PGCS1(d, &String[6], pGPS);
+  if(_tcsstr(String,TEXT("$PGCS,")) == String){
+    return vl_PGCS1(d, &String[6], pGPS);
 #ifdef GPRMZ__
     else
       if(_tcsncmp(TEXT("$GPRMZ"), String, 6)==0)
@@ -45,7 +45,7 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
       }
 #endif
 
-
+  }
   return FALSE;
 
 }

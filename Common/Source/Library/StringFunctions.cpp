@@ -308,8 +308,8 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop) {
       }
     }
 
-    if(index > StringLength)
-      index = StringLength;
+    if(index >= StringLength)
+      index = StringLength-1;
 
       if (Stop != NULL)
         *Stop = &Source[index];
@@ -379,8 +379,8 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
 	  }
     }
 
-  if(index > StringLength)
-  	index = StringLength;
+  if(index >= StringLength)
+  	index = StringLength-1;
 
   if(Stop != NULL)
     *Stop = &Source[index];
