@@ -90,6 +90,7 @@
 #define SHOW_FOUND_WAYPOINT    // show best found waypoint on active keyboard
 #define SELECT_FOUND           // preselect best fit waypoint in waypoint list.
 
+#define KALMAN_FILTER_WIND
 //#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
   #define BUTTONS_MS
