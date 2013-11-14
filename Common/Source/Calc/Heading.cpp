@@ -103,10 +103,9 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 #ifdef KALMAN_FILTER_WIND
       if (Basic->AirspeedAvailable)
         quality = WindKalmanUpdate(Basic, Calculated, &zz_wind_speed, &zz_wind_bearing);
-      else
-#endif
+#else
     	quality = WindZigZagUpdate (Basic, Calculated, &zz_wind_speed, &zz_wind_bearing);
-
+#endif
 
       if (quality>0) {
         SetWindEstimate(zz_wind_speed, zz_wind_bearing, quality);
