@@ -125,9 +125,9 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
 			}
 		} // ID >0
 	} // for all traffic
-	double Vario=0 ;
-#ifdef OWN_FLARM_TRACES
 
+#ifdef OWN_FLARM_TRACES
+	double Vario=0 ;
 
 	if(iTraceSpaceCnt == 0) {
 
