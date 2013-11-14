@@ -7,8 +7,10 @@
 
   LK8000 Project Copyrights (c) by:
 
+	Tobias Bieniek
 	Eric Carden
 	Oren Cohen
+	Jozef Hartinger
 	Ulli Heynen
 	Bruno de Lacheisserie
 	Kuba Kubrynski
@@ -17,6 +19,7 @@
 	Kalman Rozsahegyi
 	Karim Trojette
 	Paolo Ventafridda
+	John Wharington
 
   Graphics by Jiri Bergman
   Complete copyrights and contributors list is available on the main website.
