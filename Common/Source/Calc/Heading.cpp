@@ -96,12 +96,11 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
     // update zigzag wind
     if (  ((AutoWindMode==D_AUTOWIND_ZIGZAG) || (AutoWindMode==D_AUTOWIND_BOTHCIRCZAG))
-        && (!ReplayLogger::IsEnabled())) {
+        && (!ReplayLogger::IsEnabled()) && (Basic->AirspeedAvailable)) {
       double zz_wind_speed;
       double zz_wind_bearing;
-      int quality;
+      int quality=0;
 #ifdef KALMAN_FILTER_WIND
-      if (Basic->AirspeedAvailable)
         quality = WindKalmanUpdate(Basic, Calculated, &zz_wind_speed, &zz_wind_bearing);
 #else
     	quality = WindZigZagUpdate (Basic, Calculated, &zz_wind_speed, &zz_wind_bearing);
