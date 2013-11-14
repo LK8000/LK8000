@@ -30,6 +30,8 @@ public:
 	bool GetDeviceName(size_t DeviceIdx, TCHAR* szFileName, size_t cb);
 	bool SendFile(size_t DeviceIdx, const TCHAR* szFileName);
 	
+	void DumpsDeviceProperty(size_t DeviceIdx);
+	
 private:
 	void ClearDeviceList();
 	
