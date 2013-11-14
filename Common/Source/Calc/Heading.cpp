@@ -107,7 +107,11 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 #endif
 
       if (quality>0) {
-        SetWindEstimate(zz_wind_speed, zz_wind_bearing, quality);
+
+        SetWindEstimate(zz_wind_speed, zz_wind_bearing);
+	Calculated->WindSpeed   = zz_wind_speed;
+	Calculated->WindBearing = zz_wind_bearing;
+
 /* 100118 redundant!! removed. TOCHECK *
         Vector v_wind;
         v_wind.x = zz_wind_speed*cos(zz_wind_bearing*3.1415926/180.0);

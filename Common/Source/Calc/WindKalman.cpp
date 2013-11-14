@@ -127,12 +127,10 @@ double holdoff_time =0.0;
   bearing =AngleLimit360(bearing);
   /************************************************************/
 #ifdef KALMAN_DEBUG
-  StartupStore(_T(".... Kalman Filter Wind %4.1fkm/h %4.1fgrad%s"),speed*3.6,bearing,NEWLINE);
+  StartupStore(_T(".... Kalman Filter Wind %4.1fkm/h %4.1fgrad  count-%d%s"),speed*3.6,bearing,count,NEWLINE);
 #endif
   (*windbearing) = bearing;
   (*windspeed)   = speed;
-  derived->WindBearing = bearing;
-  derived->WindSpeed   = speed;
 
-  return 0; //CalcQualityLevel(count);
+  return 1; 
 }
