@@ -127,6 +127,8 @@ static void SetValues(bool first=false) {
 	// LKTOKEN  _@M274_ = "FAI Sector" 
       dfe->addEnumText(gettext(TEXT("_@M274_")));
       dfe->addEnumText(gettext(TEXT("DAe 0.5/10")));
+      	// LKTOKEN  _@M393_ = "Line" 
+      dfe->addEnumText(gettext(TEXT("_@M393_")));
     }
     dfe->SetDetachGUI(true); // disable call to OnAATEnabled
     dfe->Set(SectorType);

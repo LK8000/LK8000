@@ -282,11 +282,13 @@ void CTaskFileHelper::LoadOptionDefault(XMLNode node) {
             LPCTSTR szType = NULL;
             GetAttribute(nodeSector, _T("type"), szType);
             if (_tcscmp(szType, _T("circle")) == 0) {
-                SectorType = 0;
+                SectorType = CIRCLE;
             } else if (_tcscmp(szType, _T("sector")) == 0) {
-                SectorType = 1;
+                SectorType = SECTOR;
             } else if (_tcscmp(szType, _T("DAe")) == 0) {
-                SectorType = 2;
+                SectorType = DAe;
+            } else if (_tcscmp(szType, _T("line")) == 0) {
+                SectorType = LINE;
             }
             GetAttribute(nodeSector, _T("radius"), SectorRadius);
         }
@@ -704,17 +706,22 @@ bool CTaskFileHelper::SaveOptionDefault(XMLNode node) {
     XMLNode nodeSector = node.AddChild(ToString(_T("sector")), false);
     if (nodeSector) {
         switch (SectorType) {
-            case 0: //circle
+            case CIRCLE: //circle
                 SetAttribute(nodeSector, _T("type"), _T("circle"));
                 SetAttribute(nodeSector, _T("Radius"), SectorRadius);
                 break;
-            case 1: //sector
+            case SECTOR: //sector
                 SetAttribute(nodeSector, _T("type"), _T("sector"));
                 SetAttribute(nodeSector, _T("Radius"), SectorRadius);
                 break;
-            case 2: //DAe
+            case DAe: //DAe
                 SetAttribute(nodeSector, _T("type"), _T("DAe"));
                 break;
+            case LINE: //line
+                SetAttribute(nodeSector, _T("type"), _T("line"));
+                SetAttribute(nodeSector, _T("Radius"), SectorRadius);
+                break;
+                
         }
     } else {
         return false;

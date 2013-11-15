@@ -801,6 +801,7 @@ Type of sectors used for non-AAT tasks.
 [Cylinder]  Barrel cylinder of specified radius.
 [FAI sector]  90 degree sector centered at bisector, at specified range
 [DAe 0.5/10] German national sector type, equivalent to 0.5 km radius barrel and 10 km FAI sector.
+[Line] Bisector line between route legs. Radius is used only to draw it on the moving map.
 
 @506
 Radius of the turnpoint observation area for non-AAT tasks.
