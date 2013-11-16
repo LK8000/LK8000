@@ -53,12 +53,16 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
       else
       {
     	*SecType = SectorType;
+/*        
     	if(SectorType ==0)
     	  *SecType = CIRCLE;
     	if(SectorType ==1)
     	  *SecType = SECTOR;
     	if(SectorType ==2)
     	  *SecType = DAe;
+    	if(SectorType ==3)
+    	  *SecType = LINE;
+*/        
     	*SecRadius = SectorRadius;
       }
     }

@@ -3349,6 +3349,8 @@ static void setVariables(void) {
 	// LKTOKEN  _@M274_ = "FAI Sector" 
     dfe->addEnumText(gettext(TEXT("_@M274_")));
     dfe->addEnumText(gettext(TEXT("DAe 0.5/10")));
+    dfe->addEnumText(gettext(TEXT("_@M393_")));
+    
     dfe->Set(SectorType);
     wp->RefreshDisplay();
   }

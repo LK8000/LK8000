@@ -62,13 +62,20 @@ void CalculateTaskSectors(void)
 	    else
 	      {
 		// normal turnpoint sector
-		SectorAngle = 45;
-		if (SectorType == 2) {
+                if(SectorType==LINE) {
+                   SectorAngle = 90;
+                } else {
+                   SectorAngle = 45;
+                }
+		if (SectorType == DAe) {
 		  SectorSize = 10000; // German DAe 0.5/10
 		} else {
 		  SectorSize = SectorRadius;  // FAI sector
 		}
 		SectorBearing = Task[i].Bisector;
+                if(SectorType==LINE) {
+                    SectorBearing += 90;
+                }
 	      }
 	  } else {
 	    // finish line

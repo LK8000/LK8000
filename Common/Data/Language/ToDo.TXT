@@ -33,6 +33,7 @@ Things to be fixed in LK languages files/tokens:
 - Changed HELP 199 FLarm on Map
 - New H1213 pg autozoom threshold
 - New help 916 -> 924
+- New help 505 field "Line" 
 
   NEW MSG TOKENS
   --------------

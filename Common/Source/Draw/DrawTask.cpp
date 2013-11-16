@@ -190,7 +190,7 @@ DoInit[MDI_DRAWTASK]=false;
                             Task[i].AATStartRadial - DisplayAngle,
                             Task[i].AATFinishRadial - DisplayAngle);
                     break;
-                case 2:
+                case DAe:
                     if (!AATEnabled) { // this Type exist only if not AAT task
                         // JMW added german rules
                         tmp = 500 * zoom.ResScaleOverDistanceModify();
@@ -208,6 +208,10 @@ DoInit[MDI_DRAWTASK]=false;
                                 Task[i].AATFinishRadial - DisplayAngle);
                     }
                     break;
+                case LINE:
+                    if (!AATEnabled) { // this Type exist only if not AAT task
+                        _DrawLine(hdc, PS_SOLID, NIBLSCALE(3), Task[i].Start, Task[i].End, taskcolor, rc);
+                    }
             }
 
             if (AATEnabled && !DoOptimizeRoute()) {
