@@ -497,7 +497,7 @@ static bool WindZigZagCheckAirData(NMEA_INFO* Basic, DERIVED_INFO* Calculated)
   static double bearingLast=0;
 
   bool airdata_invalid = false;
-  if (!Calculated->Flying) {
+  if (!Calculated->Flying || (!Calculated->FreeFlying && !ISGAAIRCRAFT) ) {
     airdata_invalid = true;
   } else if (fabs(Calculated->TurnRate)>20.0) {
     airdata_invalid = true;
