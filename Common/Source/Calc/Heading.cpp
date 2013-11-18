@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "DoInits.h"
 #include "Logger.h"
-#include "WindZigZag.h"
 #include "LKAssert.h"
 #include "WindEKF.h"
 
@@ -100,11 +99,7 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       double zz_wind_speed;
       double zz_wind_bearing;
       int quality=0;
-#ifdef KALMAN_FILTER_WIND
-        quality = WindKalmanUpdate(Basic, Calculated, &zz_wind_speed, &zz_wind_bearing);
-#else
-    	quality = WindZigZagUpdate (Basic, Calculated, &zz_wind_speed, &zz_wind_bearing);
-#endif
+      quality = WindKalmanUpdate(Basic, Calculated, &zz_wind_speed, &zz_wind_bearing);
 
       if (quality>0) {
 
