@@ -522,7 +522,6 @@ static void OnTaskRulesClicked(WindowControl * Sender){
 
 
 static void OnTaskPointPicto(WindowControl * Sender, HDC hDC){
-#ifdef PICTORIALS
 	  (void)Sender;
 	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmTaskPointPicto")));
 /********************/
@@ -539,7 +538,6 @@ prc = wPicto->GetBoundRect();
 
   MapWindow::DrawWaypointPictoBg(hDC,  *prc);
   MapWindow::DrawTaskPicto(hDC, twItemIndex, *prc, 2000);
-#endif
 }
 
 

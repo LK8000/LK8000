@@ -15,11 +15,7 @@
 #include "TraceThread.h"
 #include <ctype.h>
 
-#ifdef WAYPOINT_ICONS
   #define PICTO_OFFSET 28
-#else
-  #define PICTO_OFFSET 0
-#endif
 
 
 
@@ -717,7 +713,6 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     sTmp[1] = '\0';
     sTmp[2] = '\0';
 
-#ifdef WAYPOINT_ICONS
     RECT rc = {0,  0, (int)(PICTO_OFFSET*1)*ScreenScale,   20*ScreenScale};
     int idx = WayPointSelectInfo[i].Index;
      if (WayPointCalc[idx].IsLandable )
@@ -728,29 +723,6 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
      rc.bottom = 5;
        MapWindow::DrawWaypointPicto(hDC,  rc, &WayPointList[idx]);
      }
-#else
-    if (WayPointList[WayPointSelectInfo[i].Index].Flags & HOME){
-		// LKTOKEN _@M1236_ "H"
-      sTmp[0] = gettext(TEXT("_@M1236_"))[0];
-    }else
-    if (WayPointList[WayPointSelectInfo[i].Index].Flags & AIRPORT){
-		// LKTOKEN _@M1237_ "A"
-      sTmp[0] = gettext(TEXT("_@M1237_"))[0];
-    }else
-    if (WayPointList[WayPointSelectInfo[i].Index].Flags & LANDPOINT){
-		// LKTOKEN _@M1238_ "L"
-      sTmp[0] = gettext(TEXT("_@M1238_"))[0];
-    }
-
-    if (WayPointList[WayPointSelectInfo[i].Index].Flags & TURNPOINT){
-      if (sTmp[0] == '\0')
-		// LKTOKEN _@M1239_ "T"
-        sTmp[0] = gettext(TEXT("_@M1239_"))[0];
-      else
-		// LKTOKEN _@M1239_ "T"
-        sTmp[1] = gettext(TEXT("_@M1239_"))[0];
-    }
-#endif
     // left justified
     ExtTextOut(hDC, x1, 2*ScreenScale,
                ETO_OPAQUE, NULL,

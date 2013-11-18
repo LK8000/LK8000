@@ -30,7 +30,6 @@ void dlgLKAirspaceFill();
 static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
 	  (void)Sender;
 	  RECT *prc;
-#ifdef ASP_WARNING_PICTO
 	  WndFrame  *wPicto = ((WndFrame *)dlg->FindByName(TEXT("frmAirspacePicto")));
 	  prc = wPicto->GetBoundRect();
 
@@ -45,7 +44,6 @@ static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
        * works fine with the origin airspace
        ************************************************************/
 	  msg.originator->DrawPicto(hDC, *prc, true);
-#endif
 
 }
 

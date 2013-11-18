@@ -23,7 +23,6 @@ COLORREF ContrastTextColor(COLORREF Col);
 static void SetValues(void);
 
 static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
-#ifdef PICTORIALS
 	  (void)Sender;
 	  RECT *prc;
 	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
@@ -44,7 +43,6 @@ static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
        * works fine with the origin airspace
        ************************************************************/
 	  airspace->DrawPicto(hDC, *prc, true);
-#endif
 }
 
 static void OnFlyClicked(WindowControl * Sender){

@@ -20,7 +20,6 @@ extern COLORREF taskcolor;
 
 void MapWindow::DrawTaskPicto(HDC hdc,int TaskIdx, RECT rc, double fScaleFact)
 {
-#ifdef PICTORIALS
 int center_x = (rc.right-rc.left)/2;
 int center_y = (rc.bottom-rc.top)/2;
 int SecType = SectorType;
@@ -113,7 +112,6 @@ UnlockTaskData();
 
 SelectObject(hdc, oldpen);
 SelectObject(hdc, oldbrush);
-#endif
 }
 
 

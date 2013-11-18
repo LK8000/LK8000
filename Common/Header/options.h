@@ -70,20 +70,10 @@
  #define WINE
  #endif
 
-#define PICTORIALS            // enables pictorials in dialogs
-
 #define MOVE_WP_PAN           // moving a task waypoint in PAN mode
 #define GEAR_WARNING          // Gear warning switch
 //#define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
 #define BEARING_INDICATOR             // show QDM arrow in pictorials
-
-#ifdef PICTORIALS
-  #define WAYPOINT_ICONS   // waypoint ICONS in waypoint select dialog
-  #define WAYPOINT_QUICK_PICTO
-  #define MULTISEL_PICTORIALS
-  #define BACKGROUND_PICTORIAL
-  #define ASP_WARNING_PICTO
-#endif
 
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
 #define AIRSPACE_BORDER        // switch for new airspace orders

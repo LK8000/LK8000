@@ -71,13 +71,8 @@ static void UpdateCaption (void) {
 
   wf->SetCaption(title);
 }
-#ifdef PICTORIALS
 #define PICTO_OFF (36 * ScreenScale)
 #define PICTO_HIGHT (25 * ScreenScale)
-#else
-#define PICTO_OFF (0)
-#define PICTO_HIGHT (0)
-#endif
 static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
   int n = UpLimit - LowLimit;

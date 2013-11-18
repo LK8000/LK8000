@@ -717,7 +717,6 @@ turnpoint:
 
 void MapWindow::DrawWaypointPictoBg(HDC hdc, const RECT rc)
 {
-#ifdef	BACKGROUND_PICTORIAL
 if(hLKPictori == NULL)
   return;
 	int cx = rc.right - rc.left;
@@ -752,11 +751,9 @@ else
 	    hDCTemp,0,0,SRCCOPY,true);
 }
 
-#endif
 }
 void MapWindow::DrawWaypointPicto(HDC hdc, const RECT rc, WAYPOINT* wp)
 {
-//#ifdef PICTORIALS
 switch(wp->Style) {
 	case STYLE_NORMAL:
 		goto turnpoint;
@@ -867,5 +864,4 @@ if(cx < 40)
   DrawBitmapX(hdc,x,y, 20,20, hDCTemp,20,0,SRCAND,scale);
 
 //StartupStore(_T("Bitmap left:%i right:%i  top:%i bottom:%i x:%i y:%i\n"),rc.left,rc.right, rc.top,rc.bottom,x,y);
-//#endif
 }

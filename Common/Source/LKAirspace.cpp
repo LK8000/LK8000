@@ -850,7 +850,6 @@ void CAirspace_Circle::CalcBounds()
 
 
 void CAirspace_Circle::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)  {
-//#ifdef PICTORIALS
 	double fact = 1.0;
 	CalculatePictPosition(_bounds, rc, fact);
 	if(Enabled())
@@ -866,12 +865,10 @@ void CAirspace_Circle::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)  {
 
     SelectObject(hDCTemp, oldPen);
     DeleteObject(FramePen);
-//#endif
 }
 
 
 void CAirspace_Area::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)   {
-//#ifdef PICTORIALS
 
 	double fact = 1.0;
 	CalculatePictPosition(_bounds, rc, fact);
@@ -887,7 +884,6 @@ void CAirspace_Area::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)   {
 
     SelectObject(hDCTemp, oldPen);
     DeleteObject(FramePen);
-//#endif
 }
 
 void CAirspace_Circle::CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom)
@@ -918,7 +914,6 @@ double scale = (double) cx;
 
 void CAirspace_Area::CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom)
 {
-//#ifdef PICTORIALS
 int cx = (rcDraw.right-rcDraw.left);
 int cy = (rcDraw.bottom-rcDraw.top);
 int xoff = rcDraw.left + cx/2;
@@ -1016,7 +1011,6 @@ double scale;
 
   LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
 #endif
-//#endif
 
 }
 

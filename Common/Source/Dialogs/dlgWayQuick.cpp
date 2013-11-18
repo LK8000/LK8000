@@ -25,7 +25,6 @@ static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
 
 
 
-#ifdef WAYPOINT_QUICK_PICTO
 RECT *prc;
 WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
 LKASSERT(wPicto!=NULL);
@@ -46,16 +45,6 @@ prc = wPicto->GetBoundRect();
   {
 	MapWindow::DrawWaypointPicto(hDC,  *prc, &WayPointList[SelectedWaypoint]);
   }
-#else
-
- // WndFrame  *wGoto = ((WndFrame *)wf->FindByName(TEXT("cmdGoto")));
-//  WndButton *wBut  = (WndButton *)wf->FindByName(TEXT("cmdGoto"));
-  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
-  LKASSERT(wPicto!=NULL);
-  wPicto->SetVisible(false);
-
-
-#endif
 }
 
 
