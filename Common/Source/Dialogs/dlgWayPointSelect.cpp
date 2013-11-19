@@ -503,8 +503,6 @@ static void OnFilterNameButton(WindowControl *Sender) {
   }
   FilterMode(true);
   UpdateList();
-#define SELECT_FOUND
-#ifdef SELECT_FOUND
   if((SelectedWp>=0) && (SelectedWp < (int)NumberOfWayPoints))
   {
 	for (i=0; i<UpLimit; i++)
@@ -520,7 +518,6 @@ static void OnFilterNameButton(WindowControl *Sender) {
     wWayPointList->SetItemIndexPos(CursorPos);
     wWayPointList->Redraw();
   }
-#endif
   wWayPointList->Redraw();
 
 }

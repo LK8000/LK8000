@@ -76,7 +76,6 @@
 
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
 #define AIRSPACE_BORDER        // switch for new airspace orders
-#define SELECT_FOUND           // preselect best fit waypoint in waypoint list.
 
 //#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
