@@ -1338,9 +1338,6 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
     _screenpoints_clipped.reserve(_screenpoints.size());
 
     LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
-    if(_geopoints.size() < _screenpoints.size() || _geopoints.size() < _screenpoints_clipped.size()) {
-        StartupStore(_T("... area point geo %i screen %i clipped %i\n"),_geopoints.size(),_screenpoints.size(),_screenpoints_clipped.size());
-    }
     #if DEBUG_NEAR_POINTS
     StartupStore(_T("... area point geo %i screen %i\n"),_geopoints.size(),_screenpoints.size() );
     #endif
