@@ -391,8 +391,6 @@ IdenticalIndex = -1;
 
     SelList[NumChar++] = '\0';
     RemoveKeys((char*)SelList, NumChar);
-#define   SHOW_FOUND_WAYPOINT
-#ifdef SHOW_FOUND_WAYPOINT
     wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
 
     if (wp)
@@ -415,7 +413,6 @@ IdenticalIndex = -1;
         }
       }
     }
-#endif
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMatch"));
