@@ -10,12 +10,23 @@
 #include "externs.h"
 #include "WindEKF.h"
 
+#define PAOLO 1  // stuff to be tested
+
 #if TESTBENCH
 // #define KALMAN_DEBUG
 #endif
 
 #define BLACKOUT_TIME  3.0
 WindEKF EKWIND;
+
+static unsigned int kalman_samples=0;
+
+#if PAOLO
+static double ring_trackbearing[4]={0,0,0,0};
+static double ring_groundspeed[4]={0,0,0,0};
+static double ring_trueairspeed[4]={0,0,0,0};
+static double ring_brg=0, ring_gs=0, ring_tas=0;
+#endif
 
 unsigned CalcQualityLevel(unsigned i)
 {
@@ -25,8 +36,80 @@ unsigned CalcQualityLevel(unsigned i)
 return 1;
 }
 
+#if PAOLO
+static void InsertRing(double brg, double gs, double tas) {
 
-void WindKalmanReset(const bool reset) {
+  ring_trackbearing[3]=ring_trackbearing[2];
+  ring_trackbearing[2]=ring_trackbearing[1];
+  ring_trackbearing[1]=ring_trackbearing[0];
+  ring_trackbearing[0]=brg;
+
+  ring_groundspeed[3]=ring_groundspeed[2];
+  ring_groundspeed[2]=ring_groundspeed[1];
+  ring_groundspeed[1]=ring_groundspeed[0];
+  ring_groundspeed[0]=gs;
+
+  ring_trueairspeed[3]=ring_trueairspeed[2];
+  ring_trueairspeed[2]=ring_trueairspeed[1];
+  ring_trueairspeed[1]=ring_trueairspeed[0];
+  ring_groundspeed[0]=tas;
+
+
+}
+
+static bool GetRing(void) {
+
+
+  // old tas is invalid (we dont insert 0 tas)
+  if (ring_trueairspeed[1]==0) return false;
+
+  // old gs is invalid (we dont insert 0 gs)
+  // we assume that if gs is valid, also brg is valid
+  if (ring_groundspeed[1]==0) return false;
+
+  // todo: average vector airspeed of [1] and [2], using average brg[0] and [1]
+  ring_tas=ring_trueairspeed[1];
+  ring_gs=ring_groundspeed[0];
+  ring_brg=ring_trackbearing[0];
+
+
+  return true;
+
+}
+
+
+static void ResetRing(const bool reset) {
+  static bool alreadydone=false;
+  if (reset==false) {
+	alreadydone=false;
+	return;
+  }
+
+  if (!alreadydone) {
+    #ifdef KALMAN_DEBUG
+    StartupStore(_T(".... RESET RING%s"),NEWLINE);
+    #endif
+    ring_trackbearing[3]=0;
+    ring_trackbearing[2]=0;
+    ring_trackbearing[1]=0;
+    ring_trackbearing[0]=0;
+  
+    ring_groundspeed[3]=0;
+    ring_groundspeed[2]=0;
+    ring_groundspeed[1]=0;
+    ring_groundspeed[0]=0;
+
+    ring_trueairspeed[3]=0;
+    ring_trueairspeed[2]=0;
+    ring_trueairspeed[1]=0;
+    ring_groundspeed[0]=0;
+
+    ring_brg=0, ring_gs=0, ring_tas=0;
+  }
+}
+#endif
+
+static void WindKalmanReset(const bool reset) {
   static bool alreadydone=false;
 
   // we are using the filter, so in case of "true" reset, we should really do it.
@@ -42,22 +125,30 @@ void WindKalmanReset(const bool reset) {
 	#endif
 	EKWIND.Init();
 	alreadydone=true;
-	return;
+  	kalman_samples=0;
   }
+  return;
 }
 
 
 unsigned WindKalmanUpdate(NMEA_INFO *basic, DERIVED_INFO *derived,  double *windspeed, double *windbearing )
 {
-static unsigned int count=0;
-double holdoff_time =0.0;
+static double kalman_holdoff_time =0.0;
 
+  //
+  // CASES where we reset the matrix and we are not willing to fill it up 
+  //
+
+  // Normally we shall not select ZIGZAG if we dont have airspeed!!
   if (! basic->AirspeedAvailable) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... No Airspeed available%s"),NEWLINE);
 	#endif
 	WindKalmanReset(true);
-	holdoff_time=0;
+	#if PAOLO
+	ResetRing(true);
+	#endif
+  	kalman_holdoff_time=0;
 	return 0;
   }
 
@@ -65,9 +156,11 @@ double holdoff_time =0.0;
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Reset Kalman Wind (not flying)%s"),NEWLINE);
 	#endif
-	count =0;
 	WindKalmanReset(true);
-	holdoff_time=0;
+	#if PAOLO
+	ResetRing(true);
+	#endif
+  	kalman_holdoff_time=0;
 	return 0;
   }
 
@@ -75,12 +168,28 @@ double holdoff_time =0.0;
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Reset Kalman by NavWarning %s"),NEWLINE);
 	#endif
-	count =0;
 	WindKalmanReset(true);
-	holdoff_time=0;
+	#if PAOLO
+	ResetRing(true);
+	#endif
+  	kalman_holdoff_time=0;
 	return 0;
   }
 
+#if PAOLO
+  // while circling we reset the matrix, because the wind is different at a different altitude
+  // and previous samples can be just bad. We wont mix oranges and apples.
+  // TODO> apply this only if we gained significant altitude 
+  if (derived->Circling) {
+	#ifdef KALMAN_DEBUG
+	StartupStore(_T(".... Reset Kalman by circling %s"),NEWLINE);
+	#endif
+	WindKalmanReset(true);
+	ResetRing(true);
+  	kalman_holdoff_time=0;
+	return 0;
+  }
+#endif
 
 /*
   static int oldspeed=0;
@@ -95,55 +204,126 @@ double holdoff_time =0.0;
   oldspeed =  newspeed;
 */
 
+  //
+  // CASES where we do not reset the matrix, but we dont fill it up either
+  //
 
-  // In tight turning do not sample wind
+  // In tight turning do not sample wind, set it on hold
   if ((fabs(derived->TurnRate) > 20.0))
   {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Turning%s"),NEWLINE);
 	#endif
-	holdoff_time = basic->Time + BLACKOUT_TIME;
-	return (0);
-  }
-
-
-  // After a tight turn skip sampling and wait some 3 more seconds to settle
-  if (basic->Time <  holdoff_time)
-  {
-	#ifdef KALMAN_DEBUG
-	StartupStore(_T(".... Holdoff%s"),NEWLINE);
+	kalman_holdoff_time = basic->Time + BLACKOUT_TIME;
+	#if PAOLO
+	ResetRing(true);
 	#endif
 	return (0);
   }
 
+  // After a tight turn skip sampling and wait some 3 more seconds to settle
+  if (basic->Time <  kalman_holdoff_time)
+  {
+	#ifdef KALMAN_DEBUG
+	StartupStore(_T(".... Holdoff%s"),NEWLINE);
+	#endif
+	#if PAOLO
+	ResetRing(true);
+	#endif
+	return (0);
+  }
 
-  // Matrix becomes dirty
+  #if PAOLO
+  // If nothing has changed in the last second, we assume we are dealing with a frozen instrument..
+  // We dont reset ring buffer.
+  if (ring_trackbearing[0]==basic->TrackBearing 
+	&& ring_trueairspeed[0]==basic->TrueAirspeed 
+	&& ring_groundspeed[0]==basic->Speed ) {
+
+	#ifdef KALMAN_DEBUG
+	StartupStore(_T(".... NOTHING HAS CHANGED!%s"),NEWLINE);
+	#endif
+	return (0);
+  }
+  // below 10kmh we will not assume the gps bearing is still correct!
+  // do not reset ring, simply discard data
+  if (basic->Speed < 3 || basic->TrueAirspeed < 1) {
+	#ifdef KALMAN_DEBUG
+	StartupStore(_T(".... speed too low!%s"),NEWLINE);
+	#endif
+	return (0);
+  }
+
+  ResetRing(false);
+  InsertRing(basic->TrackBearing, basic->Speed, basic->TrueAirspeed);
+
+  if (!GetRing()) {
+	#ifdef KALMAN_DEBUG
+	StartupStore(_T(".... Ring buffer not yet ready%s"),NEWLINE);
+	#endif
+	return (0);
+  }
+
+  #endif
+
+  //
+  // OK PROCEED > Matrix becomes dirty
+  // 
+
   WindKalmanReset(false);
-  holdoff_time =0;
+  kalman_holdoff_time =0;
 
-
-  double V = basic->TrueAirspeed;;
+  #if PAOLO
+  double V = ring_tas;
+  #else
+  double V = basic->TrueAirspeed;
+  #endif
   double dynamic_pressure = (V*V);
   float gps_vel[2];
 
+  #if PAOLO
+  double VG = ring_gs;
+  gps_vel[0] = (float)(  fastsine( ring_brg ) * VG);
+  gps_vel[1] = (float)(fastcosine( ring_brg ) * VG);
+  #else
   double VG = basic->Speed;;
   gps_vel[0] = (float)(  fastsine( basic->TrackBearing ) * VG);
   gps_vel[1] = (float)(fastcosine( basic->TrackBearing ) * VG);
+  #endif
 
   float dT = 1.0;
 
   EKWIND.StatePrediction(gps_vel, dT);
   EKWIND.Correction(dynamic_pressure, gps_vel);
 
-
+#ifndef PAOLO
   /* prevent value update while circling */
   if (derived->Circling)
-	  count = 0;
+         kalman_samples = 0;
+#endif
 
-  ++count;
+  ++kalman_samples;
 
-  /* update values every 10 vales only */
-  if (count%10!=0)
+  #if PAOLO
+  // Wait to have at least 60 valid samples in order to use the new wind
+  // (must be a %10 value so that next will be used at once)
+  // and this means that after exiting a thermal we shall wait at least 60 seconds to 
+  // make use of the kwind.
+  // (if not using circling wind, lower to 30 seconds)
+  if (kalman_samples< (60/(AutoWindMode==D_AUTOWIND_BOTHCIRCZAG?1:2)) ) {
+	#ifdef KALMAN_DEBUG
+  	const float* x = EKWIND.get_state();
+  	double speed   = sqrt((x[0]*x[0])+(x[1]*x[1]));
+  	double bearing = atan2(-x[0], -x[1])*RAD_TO_DEG;
+  	bearing =AngleLimit360(bearing);
+  	StartupStore(_T(".... (WAITING, NOT USING) Kalman Filter Wind %4.1fkm/h %4.1fgrad  kalman_samples-%d%s"),speed*3.6,bearing,kalman_samples,NEWLINE);
+	#endif
+	return 0; 
+  }
+  #endif
+
+  /* update values every 10 values only */
+  if (kalman_samples%10!=0)
     return 0;
 
   /*************************************************************/
@@ -154,7 +334,7 @@ double holdoff_time =0.0;
   bearing =AngleLimit360(bearing);
   /************************************************************/
 #ifdef KALMAN_DEBUG
-  StartupStore(_T(".... Kalman Filter Wind %4.1fkm/h %4.1fgrad  count-%d%s"),speed*3.6,bearing,count,NEWLINE);
+  StartupStore(_T(".... Kalman Filter Wind %4.1fkm/h %4.1fgrad  kalman_samples-%d%s"),speed*3.6,bearing,kalman_samples,NEWLINE);
 #endif
   (*windbearing) = bearing;
   (*windspeed)   = speed;
