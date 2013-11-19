@@ -72,13 +72,13 @@
 
 #define MOVE_WP_PAN           // moving a task waypoint in PAN mode
 #define GEAR_WARNING          // Gear warning switch
-//#define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
 
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
 #define AIRSPACE_BORDER        // switch for new airspace orders
 
 //#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
+//#define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
   #define BUTTONS_MS
   #define OWN_POS_MS
   #define OWN_FLARM_TRACES
