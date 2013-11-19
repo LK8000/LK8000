@@ -25,38 +25,62 @@ unsigned CalcQualityLevel(unsigned i)
 return 1;
 }
 
+
+void WindKalmanReset(const bool reset) {
+  static bool alreadydone=false;
+
+  // we are using the filter, so in case of "true" reset, we should really do it.
+  // This is called just to say the matrix is dirty being in use.
+  if (reset==false) {
+	alreadydone=false;
+	return;
+  }
+  // Else we are asking for a reset with "true", but we do it only if data is dirty
+  if (!alreadydone) {
+	#ifdef KALMAN_DEBUG
+	StartupStore(_T(".... WindKalman RESET DONE%s"),NEWLINE);
+	#endif
+	EKWIND.Init();
+	alreadydone=true;
+	return;
+  }
+}
+
+
 unsigned WindKalmanUpdate(NMEA_INFO *basic, DERIVED_INFO *derived,  double *windspeed, double *windbearing )
 {
 static unsigned int count=0;
 double holdoff_time =0.0;
 
-  // This is redundant because we call this function from Heading already performing airspeed existance check
   if (! basic->AirspeedAvailable) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... No Airspeed available%s"),NEWLINE);
 	#endif
-	return (0);
+	WindKalmanReset(true);
+	holdoff_time=0;
+	return 0;
   }
 
-  if (! derived->Flying) {
-#ifdef KALMAN_DEBUG
-		StartupStore(_T(".... Reset Kalman Wind (not flying)%s"),NEWLINE);
-#endif
+  if (!derived->Flying || (!ISGAAIRCRAFT && !derived->FreeFlying) ) {
+	#ifdef KALMAN_DEBUG
+	StartupStore(_T(".... Reset Kalman Wind (not flying)%s"),NEWLINE);
+	#endif
 	count =0;
-    EKWIND.Init();
-    holdoff_time=0;
-    return 0;
+	WindKalmanReset(true);
+	holdoff_time=0;
+	return 0;
   }
 
   if (basic->NAVWarning) {
-#ifdef KALMAN_DEBUG
+	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Reset Kalman by NavWarning %s"),NEWLINE);
-#endif
+	#endif
 	count =0;
-	EKWIND.Init();
+	WindKalmanReset(true);
 	holdoff_time=0;
-    return 0;
+	return 0;
   }
+
 
 /*
   static int oldspeed=0;
@@ -71,26 +95,31 @@ double holdoff_time =0.0;
   oldspeed =  newspeed;
 */
 
+
+  // In tight turning do not sample wind
   if ((fabs(derived->TurnRate) > 20.0))
   {
-#ifdef KALMAN_DEBUG
+	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Turning%s"),NEWLINE);
-#endif
+	#endif
 	holdoff_time = basic->Time + BLACKOUT_TIME;
-    return (0);
+	return (0);
   }
 
 
+  // After a tight turn skip sampling and wait some 3 more seconds to settle
   if (basic->Time <  holdoff_time)
   {
-#ifdef KALMAN_DEBUG
+	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Holdoff%s"),NEWLINE);
-#endif
-    return (0);
+	#endif
+	return (0);
   }
 
-  holdoff_time =0;
 
+  // Matrix becomes dirty
+  WindKalmanReset(false);
+  holdoff_time =0;
 
 
   double V = basic->TrueAirspeed;;
@@ -107,11 +136,9 @@ double holdoff_time =0.0;
   EKWIND.Correction(dynamic_pressure, gps_vel);
 
 
-
   /* prevent value update while circling */
   if (derived->Circling)
 	  count = 0;
-
 
   ++count;
 
