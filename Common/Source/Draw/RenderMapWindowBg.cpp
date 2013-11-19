@@ -132,9 +132,6 @@ QuickRedraw:
 
 	// 
 	DrawBottomBar(hdc,rc);
-#ifdef CPUSTATS
-	DrawCpuStats(hdc,rc);
-#endif
 #ifdef DRAWDEBUG
 	DrawDebug(hdc,rc);
 #endif
@@ -456,9 +453,6 @@ _skip_2:
   if (IsMultimapOverlaysGauges() && NOTANYPAN) DrawFinalGlide(hdcDrawWindow,rc);
 
 
-#ifdef CPUSTATS
-  DrawCpuStats(hdc,rc);
-#endif
 #ifdef DRAWDEBUG
   DrawDebug(hdc,rc);
 #endif

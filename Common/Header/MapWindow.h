@@ -563,9 +563,6 @@ class MapWindow {
   static void LKUpdateOlc(void);
 //  static void LKWriteText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, COLORREF rgb_tex, bool invertable);
 
-#ifdef CPUSTATS
-  static void DrawCpuStats(HDC hdc, const RECT rc);
-#endif
 #ifdef DRAWDEBUG
   static void DrawDebug(HDC hdc, const RECT rc);
 #endif

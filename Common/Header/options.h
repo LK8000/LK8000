@@ -62,10 +62,6 @@
 				// Only in official stable versions it should be disabled.
 
 
- #if TESTBENCH
- #define CPUSTATS		1	// Show cpu stats in inverted text mode inside map mode
- #endif
-
  #if (WINDOWSPC>0)
  #define WINE
  #endif

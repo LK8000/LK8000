@@ -92,9 +92,6 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 #ifndef NDEBUG
   _tcscat(Buffer,_T(" (+debug)"));
 #endif
-#ifdef CPUSTATS
-  _tcscat(Buffer,_T(" (+cpustats)"));
-#endif
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
   LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
