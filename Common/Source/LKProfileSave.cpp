@@ -383,7 +383,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryBigFAIThreshold,FAI28_45Threshold);
   rprintf(szRegistryBottomMode    ,BottomMode);
 
-#ifdef STORE_SCREENSETTINGS
+#if (WINDOWSPC>0)
   rprintf(szRegistryScreenSize   ,ScreenSize);
   rprintf(szRegistryScreenSizeX  ,ScreenSizeX);
   rprintf(szRegistryScreenSizeY  ,ScreenSizeY);

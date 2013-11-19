@@ -86,10 +86,6 @@
   #define OWN_FLARM_TRACES
 #endif
 
-#if (WINDOWSPC>0)
-#define STORE_SCREENSETTINGS   // store/load screen size for better debuging on PC
-#endif
-
 //#define OLD_TIME_MODIFY // retore old TimeModify(...) Funtion
 /*
  * MULTISELECT OPTIONS 

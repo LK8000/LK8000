@@ -778,7 +778,6 @@ int tmp;
  */
   }
 
-#ifdef STORE_SCREENSETTINGS
 #if (WINDOWSPC>0)
   PREAD(sname,svalue,szRegistryScreenSize, &ScreenSize);
   if (matchedstring) return;
@@ -794,7 +793,6 @@ int tmp;
   extern bool InitLKScreen(void);
   InitLKScreen();
 
-#endif
 #endif
   return;
 
