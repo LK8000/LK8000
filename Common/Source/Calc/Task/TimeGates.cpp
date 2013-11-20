@@ -85,6 +85,10 @@ int GateTimeDiff(int gate) {
 // Returns the current open gate number, 0-x, or -1 (negative) if out of time.
 // This is NOT the next start! It tells you if a gate is open right now, within time limits.
 int RunningGate() {
+  if(!UseGates()) {
+    return (-1);
+  }
+    
   int timenow, gate, gatetime;
   timenow=LocalTime();
   if (timenow<PGOpenTime || timenow>PGCloseTime) return(-1);
