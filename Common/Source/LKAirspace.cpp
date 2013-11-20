@@ -1297,6 +1297,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
  * ULLI remove unneeded points
  ****************************/
 #ifndef LKASP_REMOVE_NEAR_POINTS
+    _screenpoints.resize(_geopoints.size());
     POINTList::iterator itr = _screenpoints.begin();
     for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
       MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), *itr);
@@ -1338,7 +1339,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
 
     LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
     #if DEBUG_NEAR_POINTS
-    //StartupStore(_T("... area point geo %i screen %i\n"),_geopoints.size(),_screenpoints.size() );
+    StartupStore(_T("... area point geo %i screen %i\n"),_geopoints.size(),_screenpoints.size() );
     #endif
       }
     }
