@@ -40,7 +40,7 @@ return 1;
 static void InsertRing(double brg, double gs, double tas) {
 
   #ifdef KALMAN_DEBUG
-  StartupStore(_T(".... InsertRing brg=%f gs=%f tas=%f%s"),brg,gs,tas,NEWLINE);
+  StartupStore(_T(".... InsertRing [sample=%d] brg=%f gs=%f tas=%f%s"),kalman_samples,brg,gs,tas,NEWLINE);
   #endif
 
   ring_trackbearing[3]=ring_trackbearing[2];
@@ -63,7 +63,7 @@ static void InsertRing(double brg, double gs, double tas) {
 
 static bool GetRing(void) {
 
-
+#if 0
   // old tas is invalid (we dont insert 0 tas)
   if (ring_trueairspeed[1]==0) {
     	#ifdef KALMAN_DEBUG
@@ -80,8 +80,10 @@ static bool GetRing(void) {
     	#endif
 	return false;
   }
+#endif
 
-  if (ring_trueairspeed[1]==ring_trueairspeed[2]) {
+  #if 1
+  if (ring_trueairspeed[0]==ring_trueairspeed[1]) {
     	#ifdef KALMAN_DEBUG
     	StartupStore(_T(".... GetRing:  tas has not changed%s"),NEWLINE);
     	#endif
@@ -99,9 +101,10 @@ static bool GetRing(void) {
     	#endif
 	return false;
   }
+  #endif
 
-  // todo: average vector airspeed of [1] and [2], using average brg[0] and [1]
-  ring_tas=ring_trueairspeed[1];
+  // TODO: average vector airspeed of [1] and [2], using average brg[0] and [1]
+  ring_tas=ring_trueairspeed[0];
   ring_gs=ring_groundspeed[0];
   ring_brg=ring_trackbearing[0];
 
@@ -120,7 +123,7 @@ static void ResetRing(const bool reset) {
 
   if (!alreadydone) {
     #ifdef KALMAN_DEBUG
-    StartupStore(_T(".... RESET RING%s"),NEWLINE);
+    StartupStore(_T(".... Reset RING%s"),NEWLINE);
     #endif
     ring_trackbearing[3]=0;
     ring_trackbearing[2]=0;
@@ -155,7 +158,7 @@ static void WindKalmanReset(const bool reset) {
   // Else we are asking for a reset with "true", but we do it only if data is dirty
   if (!alreadydone) {
 	#ifdef KALMAN_DEBUG
-	StartupStore(_T(".... WindKalman RESET DONE%s"),NEWLINE);
+	StartupStore(_T(".... *** WindKalman RESET DONE ***%s"),NEWLINE);
 	#endif
 	EKWIND.Init();
 	alreadydone=true;
@@ -199,6 +202,8 @@ static double kalman_holdoff_time =0.0;
 	return 0;
   }
 
+  #if 0 // TODO
+  // TODO  use timewarp check, and do navwarning reset only if we have a very long blackout.
   if (basic->NAVWarning) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Reset Kalman by NavWarning %s"),NEWLINE);
@@ -210,11 +215,11 @@ static double kalman_holdoff_time =0.0;
   	kalman_holdoff_time=0;
 	return 0;
   }
+  #endif
 
-#if PAOLO
-  // while circling we reset the matrix, because the wind is different at a different altitude
-  // and previous samples can be just bad. We wont mix oranges and apples.
+  #if 0 // TODO
   // TODO> apply this only if we gained significant altitude 
+  // while circling we reset the matrix, because the wind is different at a different altitude
   if (derived->Circling) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Reset Kalman by circling %s"),NEWLINE);
@@ -224,7 +229,7 @@ static double kalman_holdoff_time =0.0;
   	kalman_holdoff_time=0;
 	return 0;
   }
-#endif
+  #endif
 
 
   //
@@ -319,21 +324,28 @@ static double kalman_holdoff_time =0.0;
   EKWIND.StatePrediction(gps_vel, dT);
   EKWIND.Correction(dynamic_pressure, gps_vel);
 
-#ifndef PAOLO
+  #if PAOLO
+  static double validHBtime=0;
+  // we are using the internal beats counter, not the gps time
+  if (derived->Circling) {
+	validHBtime=LKHearthBeats+20; // 2hz,  means 10 seconds
+  }
+  #else
   /* prevent value update while circling */
+  // this is simply delaying 10 seconds the usage of ekf wind after a thermal 
+  // but we are loosing the real counter! this is not good
   if (derived->Circling)
          kalman_samples = 0;
-#endif
+  #endif
 
   ++kalman_samples;
 
   #if PAOLO
-  // Wait to have at least 30 valid samples in order to use the new wind
+  #define REQUIRED_SAMPLES 30
+  // Wait to have at least REQUIRED_SAMPLES valid samples in order to use the new wind
   // (must be a %10 value so that next will be used at once)
-  // and this means that after exiting a thermal we shall wait at least 30 seconds to 
-  // make use of the kwind.
-  // (if not using circling wind, lower to 15 seconds)
-  if (kalman_samples< (30/(AutoWindMode==D_AUTOWIND_BOTHCIRCZAG?1:2)) ) {
+  // (if not using circling wind, halved time)
+  if (kalman_samples< (REQUIRED_SAMPLES/(AutoWindMode==D_AUTOWIND_BOTHCIRCZAG?1:2)) ) {
 	#ifdef KALMAN_DEBUG
   	const float* x = EKWIND.get_state();
   	double speed   = sqrt((x[0]*x[0])+(x[1]*x[1]));
@@ -343,6 +355,17 @@ static double kalman_holdoff_time =0.0;
   	StartupStore(_T("%s"),NEWLINE);
 	#endif
 	return 0; 
+  }
+
+  if (LKHearthBeats<validHBtime) {
+	#ifdef KALMAN_DEBUG
+	if (derived->Circling)
+		StartupStore(_T(".... (WAITING while circling, not updating the wind\n"));
+	else
+		StartupStore(_T(".... (WAITING thermal timeout time, %.0f seconds to go\n"),(validHBtime-LKHearthBeats)/2);
+  	StartupStore(_T("%s"),NEWLINE);
+	#endif
+	return 0;
   }
   #endif
 
