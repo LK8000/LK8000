@@ -311,14 +311,8 @@ bool CBtHandlerWince::LookupDevices() {
         return false;
     }
     
-     union {
-        char buf[5000];         // returned struct can be quite large 
-        SOCKADDR_BTH __unused;  // properly align buffer to BT_ADDR requirements
-    };
-
-    LPWSAQUERYSET pwsaResults = (LPWSAQUERYSET) buf;
-    DWORD dwSize = sizeof (buf);
-    ZeroMemory(pwsaResults, sizeof (WSAQUERYSET));
+    DWORD dwSize = 5000;
+    LPWSAQUERYSET pwsaResults = (LPWSAQUERYSET)calloc(1, dwSize);
     pwsaResults->dwSize = sizeof (WSAQUERYSET);
     pwsaResults->dwNameSpace = NS_BTH;
     pwsaResults->lpBlob = NULL;
@@ -336,6 +330,7 @@ bool CBtHandlerWince::LookupDevices() {
             AddDevice(bt, BDSRC_LOOKUP);
         }
     }
+    free(pwsaResults);
     WSALookupServiceEnd(hLookup);
     return true;
 }
