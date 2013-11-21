@@ -13,7 +13,7 @@
 #define PAOLO 1  // stuff to be tested
 
 #if TESTBENCH
- #define KALMAN_DEBUG
+// #define KALMAN_DEBUG
 #endif
 
 #define BLACKOUT_TIME  3.0
@@ -63,26 +63,6 @@ static void InsertRing(double brg, double gs, double tas) {
 
 static bool GetRing(void) {
 
-#if 0
-  // old tas is invalid (we dont insert 0 tas)
-  if (ring_trueairspeed[1]==0) {
-    	#ifdef KALMAN_DEBUG
-    	StartupStore(_T(".... GetRing invalid tas[1]%s"),NEWLINE);
-    	#endif
-	return false;
-  }
-
-  // old gs is invalid (we dont insert 0 gs)
-  // we assume that if gs is valid, also brg is valid
-  if (ring_groundspeed[1]==0) {
-    	#ifdef KALMAN_DEBUG
-    	StartupStore(_T(".... GetRing invalid gs[1]%s"),NEWLINE);
-    	#endif
-	return false;
-  }
-#endif
-
-  #if 1
   if (ring_trueairspeed[0]==ring_trueairspeed[1]) {
     	#ifdef KALMAN_DEBUG
     	StartupStore(_T(".... GetRing:  tas has not changed%s"),NEWLINE);
@@ -101,9 +81,7 @@ static bool GetRing(void) {
     	#endif
 	return false;
   }
-  #endif
 
-  // TODO: average vector airspeed of [1] and [2], using average brg[0] and [1]
   ring_tas=ring_trueairspeed[0];
   ring_gs=ring_groundspeed[0];
   ring_brg=ring_trackbearing[0];
