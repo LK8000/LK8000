@@ -213,8 +213,7 @@ CPPFLAGS	+= -DNDEBUG
 
 CPPFLAGS	+= -Wall -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations 
-CPPFLAGS	+= -Winit-self -Wswitch -Wcast-qual -Wcast-align
-CPPFLAGS	+= -Wall -Wno-char-subscripts
+#CPPFLAGS	+= -Winit-self -Wswitch -Wcast-qual -Wcast-align
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
