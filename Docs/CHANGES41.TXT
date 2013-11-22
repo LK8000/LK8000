@@ -62,6 +62,41 @@ You will not see the COM port anymore, because it is no longer used by the inten
 
 
 
+============
+Version 4.1D
+============
+
+NEW
+
+added BUGS and BALLST to Borgelt driver
+Sending BUGS, BALLAST and MC using the CAI302 funtions according to the Borgelt documentation
+
+Calculate wind using Enhanced Kalman Filter when IAS is available.
+(Original code from John Wharington in xcsoar)
+To use the EKF wind select  ZigZag or Both  in wind setup window, and/or in configuration system setup menu 5, Auto Wind > ZigZag or Both.
+Wind is updated every 10 seconds, during non-circling flight mode.
+
+Added "Line" sector type that allows to switch to the next waypoint when
+crossing the bisector line between route legs. This is expecially for GA mode.
+
+
+
+CHANGES
+
+. improve "time gates" map overlays,
+- Alternate "Start x/y" and waypoint name each 2sec ( upperleft corner )
+- Alternate Gate status "Gate Open" -> "Next hh:mm" -> "Wrong side" ( right side )
+
+
+FIXES
+
+
+Fix bluetooth problem in 4.1C not switching off correctly
+fix missed time gates initialize after task loading.
+fixed showing the bearing in Taskoverview
+fix drawing artefact if airspace polygon is not closed.
+
+
 
 
 
