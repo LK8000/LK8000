@@ -9,7 +9,11 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
+#ifdef LINUX
+#include "StdLinux.h"
+#else
 #include "StdAfx.h"
+#endif
 
 // options first, then all dependencies
 #include "options.h"

@@ -40,6 +40,8 @@ CONFIG_PPC2003	:=n
 CONFIG_PC	:=n
 CONFIG_WINE	:=n
 CONFIG_PNA	:=n
+CONFIG_LINUX	:=n
+CONFIG_ANDROID	:=n
 MINIMAL		:=n
 XSCALE		:=n
 GTARGET		:=$(TARGET)
@@ -64,7 +66,12 @@ else
 	  ifeq ($(TARGET),PNA)
 	    CONFIG_PNA := y
 	    CONFIG_PPC2003 := y
-	    MINIMAL       :=n
+	  else
+	    ifeq ($(TARGET),LINUX)
+	      CONFIG_LINUX := y
+	      CONFIG_ANDROID := n
+	      MINIMAL       :=n
+            endif
 	  endif
 	endif
       endif
@@ -84,7 +91,11 @@ TCPATH		:=wine
 CPU		:=i586
 MCPU		:= -mcpu=$(CPU)
 else
+ifeq ($(CONFIG_LINUX),y)
+TCPATH		:= 
+else
 TCPATH		:=arm-mingw32ce-
+endif
 
 ifeq ($(XSCALE),y)
 CPU		:=xscale
@@ -123,13 +134,6 @@ CE_MINOR	:=00
 CE_PLATFORM	:=400
 PCPU		:=ARMV4
 endif
-
-# JMW this shouldn't be required VENTA FIX
-#ifeq ($(CONFIG_PNA),y)
-#CE_MAJOR	:=5
-#CE_MINOR	:=00
-#CE_PLATFORM	:=500
-#endif
 
 ifeq ($(CONFIG_PC),y)
 # armv4i
@@ -171,12 +175,16 @@ EBROWSE         :=ebrowse
 
 ######## windows definitions
 
+ifeq ($(CONFIG_LINUX),y)
+CE_DEFS		:=-DLINUX
+else
 ifeq ($(CONFIG_PC),y)
 CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
 CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1
 else
 CE_DEFS		:=-D_WIN32_WCE=$(CE_VERSION) -D_WIN32_IE=$(CE_VERSION)
 CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM)
+endif
 endif
 
 ifeq ($(CONFIG_PPC2002),y)
@@ -191,10 +199,14 @@ UNICODE		:= -DUNICODE -D_UNICODE
 
 ######## paths
 
+ifeq ($(CONFIG_LINUX),y)
+INCLUDES	:= -I$(HDR)/linuxcompat -I/usr/include/linux -I$(HDR) -I$(SRC)
+else
 ifeq ($(CONFIG_WINE),y)
 INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
 else
 INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
+endif
 endif
 
 ######## compiler flags
@@ -223,6 +235,9 @@ ifeq ($(CONFIG_PNA),y)
 CPPFLAGS	+= -DCECORE -DPNA
 endif
 
+ifeq ($(CONFIG_LINUX),y)
+CPPFLAGS	+= $(UNICODE)
+else
 ifeq ($(CONFIG_PC),y)
 CPPFLAGS	+= -D_WINDOWS -D_MBCS -DWIN32 -DCECORE $(UNICODE)
   ifeq ($(CONFIG_WINE),y)
@@ -233,6 +248,7 @@ CPPFLAGS	+= $(UNICODE)
   endif
 else
 CPPFLAGS	+= -D_ARM_ $(UNICODE)
+endif
 endif
 
 ifeq ($(DMALLOC),y)
@@ -280,6 +296,9 @@ else
 TARGET_ARCH	:=-mwin32 $(MCPU)
 ifeq ($(TARGET),PNA)
 TARGET_ARCH	:=-mwin32
+endif
+ifeq ($(TARGET),LINUX)
+TARGET_ARCH	:=
 endif
 
 endif
