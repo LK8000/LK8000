@@ -9,11 +9,12 @@
 #ifndef	_TYPES_H_
 #define _TYPES_H_
 
-#include <cstddef>
-//#include <types.h>
-
 #define	BYTE	int8_t
+#define BOOL	bool
 
+typedef unsigned long DWORD;
+typedef unsigned short WORD;
+typedef unsigned int UNINT32;
 
 #endif	
 
