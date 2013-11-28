@@ -299,3 +299,14 @@ const WAYPOINT* TaskWayPoint(size_t idx) {
     }
     return NULL;
 }
+
+void ReverseTask() {
+	int lower=0;
+	int upper = getFinalWaypoint();
+	while(lower<upper) { //Swap in pairs starting from the sides of task array
+		std::swap(Task[lower++],Task[upper--]);
+	}
+	ResetTask(false); // Reset the task without showing the message about task reset
+	RefreshTask(); //Recalculate the task
+	DoStatusMessage(gettext(TEXT("_@M1853_"))); // LKTOKEN  _@M1853_ "TASK REVERSED"
+}
