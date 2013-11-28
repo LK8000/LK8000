@@ -265,7 +265,7 @@ unsigned int GetWpChecksum(unsigned int);
 bool SaveRecentList();
 bool LoadRecentList();
 void ResetRecentList();
-void ResetTask();
+void ResetTask(bool showConfirmMsg);
 void InsertRecentList(int newwp);
 void RemoveRecentList(int newwp);
 double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int thepoint); // VENTA3
