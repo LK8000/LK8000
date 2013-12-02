@@ -1834,7 +1834,7 @@ void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 		gettext(TEXT("_@M562_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 		LockTaskData();
-		ResetTask();
+		ResetTask(true);
 		UnlockTaskData();
 	}
   } else {
@@ -1875,8 +1875,7 @@ void InputEvents::eventRestartCommPorts(const TCHAR *misc) { // 100211
 
 // Simple events with no arguments. 
 // USE SERVICE EVENTS INSTEAD OF CREATING NEW EVENTS!  
-void InputEvents::eventService(const TCHAR *misc) { 
-
+void InputEvents::eventService(const TCHAR *misc) {
   #if TRACETHREAD
   TCHAR myevent[80];
   _stprintf(myevent,_T("eventService %s"),misc);
@@ -2195,6 +2194,24 @@ extern bool RotateScreen(short angle);
 	return;
   }
 
+  if(_tcscmp(misc, TEXT("TASKREVERSE")) == 0) {
+	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+		if (MessageBoxX(hWndMapWindow,
+			gettext(TEXT("_@M1852_")), // LKTOKEN  _@M1852_ = "Reverse task?"
+			gettext(TEXT("_@M1851_")), // LKTOKEN  _@M1851_ = "Reverse task"
+			MB_YESNO|MB_ICONQUESTION) == IDYES) {
+			LockTaskData();
+			ReverseTask();
+			UnlockTaskData();
+		}
+	  } else {
+		MessageBoxX(hWndMapWindow,
+			gettext(TEXT("_@M468_")),  // LKTOKEN  _@M468_ = "No Task"
+			gettext(TEXT("_@M1851_")), // LKTOKEN  _@M1851_ = "Reverse task"
+			MB_OK|MB_ICONEXCLAMATION);
+	  }
+	return;
+  }
 
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);

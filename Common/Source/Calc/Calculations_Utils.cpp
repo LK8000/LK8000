@@ -30,7 +30,7 @@ double GetCurrentEfficiency(DERIVED_INFO *Calculated, short effmode) {
 
 
 
-void ResetTask() {
+void ResetTask(bool showConfirmMsg) {
 
   CALCULATED_INFO.ValidFinish = false;
   CALCULATED_INFO.ValidStart = false;
@@ -52,7 +52,7 @@ void ResetTask() {
   }
 
 	// LKTOKEN  _@M676_ = "TASK RESTART RESET" 
-  DoStatusMessage(gettext(TEXT("_@M676_")));
+  if(showConfirmMsg) DoStatusMessage(gettext(TEXT("_@M676_")));
 
 }
 
