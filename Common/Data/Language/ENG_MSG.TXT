@@ -1865,6 +1865,12 @@ _@M1836_ "Lookup"
 _@M1837_ "Pair"
 _@M1838_ "Unpair"
 
+# Reverse task
+_@M1850_ "Reverse\nTask"
+_@M1851_ "Reverse task"
+_@M1852_ "Reverse task?"
+_@M1853_ "TASK REVERSED"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

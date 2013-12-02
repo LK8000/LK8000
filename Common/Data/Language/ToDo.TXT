@@ -328,3 +328,9 @@ _@M2154_ "IGC\nTrack File"
 _@M2155_ "Send"
 _@M2156_ "IGC Track File"
 _@M2157_ "Choose device"
+
+# Reverse task
+_@M1850_ "Reverse\nTask"
+_@M1851_ "Reverse task"
+_@M1852_ "Reverse task?"
+_@M1853_ "TASK REVERSED"
