@@ -440,6 +440,13 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			_stprintf(OutBuffer,MsgToken(2081)); // Set Map
 			break;
+		case 39:
+			if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))) {
+				invalid=true;
+			}
+
+			_tcscpy(OutBuffer,MsgToken(1850)); // Task reverse
+			break;
 
 		default:
 			_stprintf(OutBuffer, _T("INVALID\n%d"),i);
