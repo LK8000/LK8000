@@ -334,3 +334,26 @@ _@M1850_ "Reverse\nTask"
 _@M1851_ "Reverse task"
 _@M1852_ "Reverse task?"
 _@M1853_ "TASK REVERSED"
+
+#BlueFlyVario
+#message
+_@2158_ "Output QNH"
+_@2159_ "Lift Threshold"
+_@2160_ "Lift Off Threshold"
+_@2161_ "Sink Threshold"
+_@2162_ "Sink Off Threshold"
+_@2163_ "Position Noise"
+_@2164_ "Lift Freq. Base"
+_@2165_ "Lift Freq. Increment"
+_@2166_ "Sink Freq. Base"
+_@2167_ "Sink Freq. Increment"
+_@2168_ "Volume"
+_@2169_ "Rate Multiplier"
+_@2170_ "Audio Connected"
+_@2171_ "Audio Disconnected"
+_@2172_ "Bluetooth Wait"
+_@2173_ "Output Mode"
+_@2174_ "Output Frequency"
+
+#help
+@1271 to @1287 

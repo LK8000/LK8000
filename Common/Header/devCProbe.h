@@ -68,7 +68,7 @@ private:
 	static void UnlockDeviceData();
 
 // Config
-	static BOOL Config();
+	static BOOL Config(PDeviceDescriptor_t d);
 	static void OnCloseClicked(WindowControl * Sender);
 	static void OnCompassCalClicked(WindowControl * Sender);
 	static void OnCalGyroClicked(WindowControl * Sender);
