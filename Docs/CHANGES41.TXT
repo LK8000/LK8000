@@ -60,6 +60,17 @@ you normally had "Generic" here, if you were using the internal gps. Go to begin
 You will not see the COM port anymore, because it is no longer used by the intenal driver.
 
 
+============
+Version 4.1E
+============
+
+NEW
+
+Reverse order of task waypoints (task revert).
+Expecially useful for GA people but also good for many pilots that are doing an out-and-return through several waypoints.
+This function is available in MENU > NAV 3/3 > Reverse Task .
+The button is not selectable if a real task is not running.
+
 
 
 ============
