@@ -23,6 +23,7 @@ public:
 
     virtual void Flush();
     virtual void Purge();
+    virtual void DirtyPurge();
     virtual void CancelWaitEvent();
 
     virtual int SetRxTimeout(int);

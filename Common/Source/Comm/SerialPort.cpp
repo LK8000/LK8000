@@ -255,7 +255,7 @@ size_t SerialPort::Read(void *szString, size_t size) {
 }
 
 bool SerialPort::Close() {
-    bool Ret = ComPort::Close();
+    bool Ret = ComPort::Close(); // NOTICE: Ret is unused here, because Close is always returning true
     if (hPort != INVALID_HANDLE_VALUE) {
         // Close the communication port.
 #ifdef _DEBUG_STOP_RXTHREAD
@@ -286,9 +286,17 @@ void SerialPort::Flush() {
     }
 }
 
+// This is called on open, to discard anything existing in the buffer
 void SerialPort::Purge() {
     if(hPort != INVALID_HANDLE_VALUE) {
         PurgeComm(hPort, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);
+    }
+}
+
+// This is not accessing I/O buffers at all. We do this on close.
+void SerialPort::DirtyPurge() {
+    if(hPort != INVALID_HANDLE_VALUE) {
+        PurgeComm(hPort, PURGE_TXABORT | PURGE_RXABORT);
     }
 }
 
@@ -297,6 +305,7 @@ void SerialPort::CancelWaitEvent() {
 
 #else    
     if(hPort != INVALID_HANDLE_VALUE) {
+	#if 0
         Flush();
 
         // setting the comm event mask with the same value
@@ -304,6 +313,12 @@ void SerialPort::CancelWaitEvent() {
                                      // WaitCommEvent!  this is a
                                      // documented CE trick to
                                      // cancel the WaitCommEvent
+	#else
+	DirtyPurge();
+	if (!_PollingMode) {
+		SetCommMask(hPort, _dwMask); // will cancel any WaitCommEvent
+	}
+	#endif
     }
 #endif
 }
@@ -444,7 +459,7 @@ DWORD SerialPort::RxThread() {
 #endif
     }
 
-    Purge();
+    DirtyPurge();
 
     return 0;
 }
