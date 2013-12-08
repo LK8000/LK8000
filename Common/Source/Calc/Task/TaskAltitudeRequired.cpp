@@ -28,14 +28,15 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   bool isfinal=true;
   LegAltitude = 0;
-  double TotalAltitude = 0;
   *TotalTime = 0; *TotalDistance = 0;
   *ifinal = 0;
 
   LockTaskData();
 
-  double height_above_finish = FAIFinishHeight(Basic, Calculated, 0)-
-    FAIFinishHeight(Basic, Calculated, -1);
+  double heightFinal = FAIFinishHeight(Basic, Calculated, -1);
+  double height_above_finish = FAIFinishHeight(Basic, Calculated, 0) - heightFinal;
+  
+  double TotalAltitude = heightFinal;
 
   for(i=MAXTASKPOINTS-2;i>=0;i--) {
 
@@ -50,7 +51,9 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     if (AATEnabled) {
       w1lat = Task[i].AATTargetLat;
       w1lon = Task[i].AATTargetLon;
-      if (!isfinal) {
+      
+      // also use optimized finish point for PG optimized task.
+      if (!isfinal || DoOptimizeRoute()) {
         w0lat = Task[i+1].AATTargetLat;
         w0lon = Task[i+1].AATTargetLon;
       }
@@ -81,6 +84,13 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
     TotalAltitude += LegAltitude;
 
+    // if required altitude is less than previous turpoint altitude,
+    //   use previous turn point altitude
+    double w1Alt = FAIFinishHeight(Basic, Calculated, i);
+    if(TotalAltitude < w1Alt) {
+        TotalAltitude = w1Alt;
+    }
+
     if (LegTime<0) {
 		retval = false;
 		goto OnExit;
@@ -100,8 +110,6 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     retval = false;
     goto OnExit;
   }
-
-  TotalAltitude += FAIFinishHeight(Basic, Calculated, -1);
 
   if (!ValidTaskPoint(*ifinal)) {
     Calculated->TaskAltitudeRequiredFromStart = TotalAltitude;

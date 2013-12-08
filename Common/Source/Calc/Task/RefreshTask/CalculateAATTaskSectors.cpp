@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "Waypointparser.h"
 
 
 extern bool TargetDialogOpen;
@@ -148,6 +149,8 @@ void CalculateAATTaskSectors()
                                &Task[i].AATTargetLat,
                                &Task[i].AATTargetLon);
 
+        UpdateTargetAltitude(i);
+
         TargetModified = true;
 
         // }
@@ -160,6 +163,8 @@ void CalculateAATTaskSectors()
                                targetrange,
                                &Task[i].AATTargetLat,
                                &Task[i].AATTargetLon);
+        
+        UpdateTargetAltitude(i);
         TargetModified = true;
         
       }

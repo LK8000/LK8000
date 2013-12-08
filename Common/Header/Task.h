@@ -54,6 +54,7 @@ typedef struct _TASK_POINT
   double AATTargetOffsetRadial;
   double AATTargetLat;
   double AATTargetLon;
+  double AATTargetAltitude;
   POINT	 Target;
   bool   AATTargetLocked;
   bool	 OutCircle;
