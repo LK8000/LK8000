@@ -198,6 +198,9 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   double final_height = FAIFinishHeight(Basic, Calculated, -1);
   double total_energy_height = Calculated->NavAltitude + Calculated->EnergyHeight;
   double height_above_finish = total_energy_height - final_height;
+
+  TaskAltitudeRequired  = final_height;
+  TaskAltitudeRequired0 = final_height;
   
   // Now add it for remaining waypoints
   int task_index= FinalWayPoint;
@@ -258,6 +261,16 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
       TaskAltitudeRequired += LegAltitude;
       TaskAltitudeRequired0 += LegAltitude0;
+
+      // if required altitude is less than previous turpoint altitude,
+      //   use previous turn point altitude
+      double w0Alt = FAIFinishHeight(Basic, Calculated, task_index-1);
+      if(TaskAltitudeRequired < w0Alt) {
+          TaskAltitudeRequired = w0Alt;
+      }
+      if(TaskAltitudeRequired0 < w0Alt) {
+          TaskAltitudeRequired0 = w0Alt;
+      }
       
       Calculated->TaskDistanceToGo += NextLegDistance;
       Calculated->TaskTimeToGo += this_LegTimeToGo;      
@@ -379,9 +392,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
 
   
-  Calculated->TaskAltitudeRequired = TaskAltitudeRequired + final_height;
-  
-  TaskAltitudeRequired0 += final_height;
+  Calculated->TaskAltitudeRequired = TaskAltitudeRequired;
   
   Calculated->TaskAltitudeDifference = total_energy_height - Calculated->TaskAltitudeRequired; 
   Calculated->TaskAltitudeDifference0 = total_energy_height - TaskAltitudeRequired0;

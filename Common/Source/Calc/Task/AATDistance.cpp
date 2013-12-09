@@ -10,6 +10,7 @@
 #include "AATDistance.h"
 #include "CalcTask.h"
 #include "Airspace.h"
+#include "Waypointparser.h"
 
 
 #define DISTANCETHRESHOLD 500
@@ -166,6 +167,8 @@ void AATDistance::ShiftTargetOutside(double longitude, double latitude,
                           bearing, 100.0,
                           &Task[taskwaypoint].AATTargetLat,
                           &Task[taskwaypoint].AATTargetLon);
+    
+    UpdateTargetAltitude(taskwaypoint);
     TargetModified = true;
 
   }
@@ -211,6 +214,8 @@ void AATDistance::ShiftTargetFromInFront(double longitude, double latitude,
                         &Task[taskwaypoint].AATTargetLat,
                         &Task[taskwaypoint].AATTargetLon);
   // JMW, distance here was 100m, now changed to speed * 2
+
+  UpdateTargetAltitude(taskwaypoint);
 
   TargetModified = true;
   CalculateAATIsoLines();
@@ -357,6 +362,8 @@ void AATDistance::ShiftTargetFromBehind(double longitude, double latitude,
                           &Task[taskwaypoint].AATTargetLat,
                           &Task[taskwaypoint].AATTargetLon);
 
+    UpdateTargetAltitude(taskwaypoint);
+    
     Task[taskwaypoint].AATTargetOffsetRadius =
       FindInsideAATSectorRange(latitude,
                                longitude,

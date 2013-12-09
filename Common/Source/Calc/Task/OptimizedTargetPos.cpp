@@ -25,14 +25,15 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	for(size_t i=0; i<gPGTask.Count(); ++i) {
 		gPGTask.getOptimized(i, Task[i].AATTargetLat, Task[i].AATTargetLon);
+    
+        UpdateTargetAltitude(i);
 	}
 		
 	int stdwp=Task[ActiveWayPoint].Index;
 
 	WayPointList[RESWP_OPTIMIZED].Latitude = Task[ActiveWayPoint].AATTargetLat;
 	WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveWayPoint].AATTargetLon;
-	WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[stdwp].Altitude;
-	WaypointAltitudeFromTerrain(&WayPointList[RESWP_OPTIMIZED]);
+	WayPointList[RESWP_OPTIMIZED].Altitude = Task[ActiveWayPoint].AATTargetAltitude;
 
 	wsprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[stdwp].Name);
 
@@ -56,6 +57,7 @@ void ClearOptimizedTargetPos() {
 	for(int i = 0; ValidWayPoint(Task[i].Index); ++i) {
 		Task[i].AATTargetLat = WayPointList[Task[i].Index].Latitude;
 		Task[i].AATTargetLon = WayPointList[Task[i].Index].Longitude;
+        Task[i].AATTargetAltitude = WayPointList[Task[i].Index].Altitude;
 		Task[i].AATTargetLocked = false;
 	}
 

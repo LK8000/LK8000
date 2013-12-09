@@ -206,7 +206,14 @@ double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int twp) {
   double wp_alt;
 
   if(ValidTaskPoint(twp)) {
-    wp_alt = WayPointList[Task[twp].Index].Altitude;
+      // for AAT Task, use AATTarget target point Altitude for Turnpoint and TP center for finish.
+      // for PG Optimized task, always use optimized point altitude.
+      if( (AATEnable && twp!=FinalWayPoint) || DoOptimizeRoute() ) {
+          wp_alt = Task[twp].AATTargetAltitude;
+      } else {
+        wp_alt = WayPointList[Task[twp].Index].Altitude;
+      }
+    
     if (!CheckSafetyAltitudeApplies(Task[twp].Index)) safetyaltitudearrival=0;
   } else {
     #if TESTBENCH
