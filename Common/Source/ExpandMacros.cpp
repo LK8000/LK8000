@@ -729,8 +729,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
         	        ckeymode=0;
         	        break;
 	}
-	LKASSERT(ckeymode<ckTOP);
-	if (ckeymode==0) {
+	if (ckeymode==0 || ckeymode>=ckTOP) {
 		invalid=true;			// non selectable
 		
 		// _stprintf(OutBuffer,_T("Key\n%d"),i);
