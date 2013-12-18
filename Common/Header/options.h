@@ -137,9 +137,6 @@
 // Use F Record in IGC log files- not needed really
 // #define LOGFRECORD	1
 
-// Bottombar TRM0 automatically triggered upon entering a thermal.
-// This will be soon removed entirely - 121002
-// #define AUTO_BBTRM		1
 
 // Modify best cruise track calculation to assume goal arrival
 // altitude of safety altitude (not current flight altitude).
