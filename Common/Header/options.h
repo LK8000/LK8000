@@ -9,23 +9,13 @@
 #define OPTIONS_H
 
 
-// define this to be true for windows PC port
 #if !defined(WINDOWSPC)
 #define   WINDOWSPC             0
+#else
+#define   WINDOWSPC             1
+#define   WINE	1
 #endif
 
-/////////////////////////////////////////////////////////
-// This stuff need checking. At 110614 unknown if working
-#if (WINDOWSPC>0)
-#if _DEBUG
-// leak checking
-#define CRTDBG_MAP_ALLOC
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#endif
-#endif
-/////////////////////////////////////////////////////////
 
 #include "compatibility.h"
 
@@ -62,23 +52,18 @@
 				// Only in official stable versions it should be disabled.
 
 
- #if (WINDOWSPC>0)
- #define WINE
- #endif
 
 #define MOVE_WP_PAN           // moving a task waypoint in PAN mode
 #define GEAR_WARNING          // Gear warning switch
 
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
-#define AIRSPACE_BORDER        // switch for new airspace orders
 
 //#define OLD_TIME_MODIFY // retore old TimeModify(...) Funtion
 
 // Feedback is giving acoustic sound when long click has triggered the multiselection.
-// It is introducing a TIMER in even processed inside MapWndProc.
+// It is introducing a TIMER in event processed inside MapWndProc.
 //#define LONGCLICK_FEEDBACK
 
-/* END OF MULTISELECT OPTIONS */
 
 
 //#define OUTLINE_2ND    // double outline for airspaces
@@ -102,6 +87,7 @@
 
 // do not add screen points if closer than 5pix to the previous
 //#define LKASP_REMOVE_NEAR_POINTS		1
+
 
 
 

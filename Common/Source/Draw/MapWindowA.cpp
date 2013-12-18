@@ -12,6 +12,7 @@
 #include "RGB.h"
 #include "LKObjects.h"
 
+#define AIRSPACE_BORDER        // switch for new airspace orders
 
 
 // pointer to AlphaBlend() function (initialized in AlphaBlendInit())
