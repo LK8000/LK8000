@@ -72,7 +72,6 @@ static void UpdateList(void){
 static int DrawListIndex=0;
 
 
-// #ifdef AUTOUPDATE_MS
 // Keep the dialog list updated every second
 static int OnTimer(WindowControl * Sender){
   (void)Sender;
@@ -85,7 +84,6 @@ static int OnTimer(WindowControl * Sender){
 	wMultiSelectListList->Redraw();
   return 0;
 }
-// #endif
 
 static void OnUpClicked(WindowControl * Sender)
 {
@@ -827,9 +825,7 @@ ListElement* dlgMultiSelectListShowModal(void){
 
   if (!wf) return NULL;
 
-#ifdef AUTOUPDATE_MS
   wf->SetTimerNotify(OnTimer);
-#endif
   wMultiSelectListList = (WndListFrame*)wf->FindByName(TEXT("frmMultiSelectListList"));
   LKASSERT(wMultiSelectListList!=NULL);
   wMultiSelectListList->SetBorderKind(BORDERLEFT);
