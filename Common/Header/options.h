@@ -66,7 +66,6 @@
 
 
 
-//#define OUTLINE_2ND    // double outline for airspaces
 
 // #define LKCOMPETITION	1	// Will disable TRI 
 
@@ -103,6 +102,7 @@
   #define BUTTONS_MS
   #define OWN_POS_MS
   #define OWN_FLARM_TRACES
+//#define OUTLINE_2ND		// double outline airspaces
 #endif
 
 /*

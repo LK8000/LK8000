@@ -24,7 +24,7 @@ extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern COLORREF Sideview_TextColor;
 extern int Sideview_iNoHandeldSpaces;
 
-
+//#define OUTLINE_2ND    // double outline for airspaces
 
 
 void RenderAirspaceTerrain(HDC hdc, double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
