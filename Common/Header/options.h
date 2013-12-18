@@ -70,7 +70,6 @@
 // #define LKCOMPETITION	1	// Will disable TRI 
 
 // This stuff will be permanently removed shortly
-// #define JP2000		1	// use JPG2000 terrain files .jp2 and jasper library
 #define LKMTERRAIN		1	// allow DEM terrain inside dat and lkm topology files
 
 
@@ -84,8 +83,6 @@
 #define USEBIGZOOM	1	
 
 
-// do not add screen points if closer than 5pix to the previous
-//#define LKASP_REMOVE_NEAR_POINTS		1
 
 
 
@@ -121,6 +118,8 @@
 // Use F Record in IGC log files- not needed really
 // #define LOGFRECORD	1
 
+// do not add screen points if closer than 5pix to the previous
+//#define LKASP_REMOVE_NEAR_POINTS		1
 
 // Modify best cruise track calculation to assume goal arrival
 // altitude of safety altitude (not current flight altitude).

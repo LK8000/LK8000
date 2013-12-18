@@ -16,7 +16,6 @@
 #endif
 
 // Set the followings inside options:
-// #define JP2000	1	// use old JPG2000 terrain, not in LKMAPS
 // #define LKMTERRAIN	1	// load terrain DEM also from topology maps, NOT in LKMAPS
 
 
@@ -52,25 +51,9 @@ void RasterTerrain::OpenTerrain(void)
     ExpandLocalPath(szMFile);
     _tcscpy(szFile,szMFile);
 
-    #ifdef JP2000
-    _tcscat(szFile, _T("/terrain.jp2")); 
-    StartupStore(_T(". Attempting to use JP2 <%s> inside mapfile%s"),szFile,NEWLINE);
-
-	// support terrain.dat inside xcm files
-	if (CreateTerrainMap(szFile)) {
-		SetRegistryString(szRegistryTerrainFile, szOrigFile);
-		terrain_initialised = true;
-		return;
-	} else {
-   		 _tcscpy(szFile,szMFile);
-		_tcscat(szFile, _T("/terrain.dem")); 
-		StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
-	}
-     #else
      _tcscpy(szFile,szMFile);
      _tcscat(szFile, _T("/terrain.dem")); 
      StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
-     #endif
   }
 
   if (CreateTerrainMap(szFile)) {
@@ -113,14 +96,6 @@ void RasterTerrain::OpenTerrain(void)
 
 
 bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
-#ifdef JP2000
-  if (_tcsstr(zfilename, _T(".jp2"))) {
-    TerrainMap = new RasterMapJPG2000();
-    if (!TerrainMap) 
-      return false;
-    return TerrainMap->Open(zfilename);
-  }
-#endif
 
   TerrainMap = new RasterMapRaw();
   if (!TerrainMap) {

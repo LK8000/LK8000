@@ -164,34 +164,6 @@ class RasterMapRaw: public RasterMap {
   CRITICAL_SECTION  CritSec_TerrainFile;
 };
 
-#ifdef JP2000
-class RasterMapJPG2000: public RasterMap {
- public:
-  RasterMapJPG2000();
-  ~RasterMapJPG2000();
-
-  void ReloadJPG2000(void);
-  void ReloadJPG2000Full(double latitude, double longitude);
-
-  void SetViewCenter(const double &Latitude, 
-                     const double &Longitude);
-  virtual void SetFieldRounding(double xr, double yr);
-  virtual bool Open(const TCHAR* filename);
-  virtual void Close();
-  void Lock();
-  void Unlock();
-  void ServiceFullReload(double lat, double lon);
-
- protected:
-  TCHAR jp2_filename[MAX_PATH*2];
-  virtual short _GetFieldAtXY(unsigned int lx,
-                              unsigned int ly);
-  bool TriggerJPGReload;
-  static CRITICAL_SECTION  CritSec_TerrainFile;
-  static int ref_count;
-  RasterTileCache raster_tile_cache;
-};
-#endif
 
 class RasterTerrain {
 public:

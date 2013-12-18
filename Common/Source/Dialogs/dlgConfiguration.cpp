@@ -2662,10 +2662,6 @@ static void setVariables(void) {
     _stprintf(tsuf,_T("*%S"),LKS_TERRAINDAT);
     dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
 #endif
-#if JP2000
-    _stprintf(tsuf,_T("*%S"),LKS_TERRAINJP2);
-    dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
-#endif
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
   }
