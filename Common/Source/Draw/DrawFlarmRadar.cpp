@@ -1377,7 +1377,7 @@ double GPSlat = DrawInfo.Latitude;
 double GPSlon = DrawInfo.Longitude;
 //double GPSalt = DrawInfo.Altitude;
 double GPSbrg = DrawInfo.TrackBearing;
-double Planebrg = 0.0;
+//double Planebrg = 0.0;
 double fDistBearing;
 double fFlarmDist;
 
@@ -1396,7 +1396,7 @@ if( DrawInfo.FLARMTRACE_bBuffFull)
 }
 if(iFlarmDirection == 2)
 {
-	Planebrg = GPSbrg;
+	//Planebrg = GPSbrg;
 	GPSbrg =0.0;
 }
 HBRUSH *pOldBrush =NULL;
