@@ -104,7 +104,6 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	}
   }
 
-#ifdef  GEAR_WARNING
   if ( (GearWarningMode>0) && ffDetected) {
 	// Only if not in SIMMODE, or in SIM but replaying a flight
 //	if ( !(SIMMODE && !ReplayLogger::IsEnabled()) )
@@ -169,7 +168,6 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		}
 	}
   }
-#endif
 
   if (ISPARAGLIDER) {
     Calculated->FreeFlying=true;

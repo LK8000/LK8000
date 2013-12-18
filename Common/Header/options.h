@@ -53,8 +53,6 @@
 
 
 
-#define GEAR_WARNING          // Gear warning switch
-
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
 
 //#define OLD_TIME_MODIFY // retore old TimeModify(...) Funtion

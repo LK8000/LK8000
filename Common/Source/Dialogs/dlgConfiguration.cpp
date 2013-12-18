@@ -621,7 +621,6 @@ static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mod
 static void OnGearWarningModeChange(DataField *Sender, DataField::DataAccessKind_t Mode){
 WndProperty* wp;
 
-#ifdef GEAR_WARNING
 int ival;
     switch(Mode){
       case DataField::daGet:
@@ -658,7 +657,6 @@ int ival;
 //     	StartupStore(_T("........... DBG-908%s"),NEWLINE);
       break;
     }
-#endif
 }
 
 
@@ -3432,7 +3430,7 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-#ifndef GEAR_WARNING
+#if 0  // no gear warning, just in case
 {
 GearWarningMode =0;
 GearWarningAltitude=0;
