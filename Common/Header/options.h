@@ -72,27 +72,7 @@
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
 #define AIRSPACE_BORDER        // switch for new airspace orders
 
-//#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
-#ifdef ULLIS_PRIVATE_FEATURES
-//#define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
-  #define BUTTONS_MS
-  #define OWN_POS_MS
-  #define OWN_FLARM_TRACES
-#endif
-
 //#define OLD_TIME_MODIFY // retore old TimeModify(...) Funtion
-/*
- * MULTISELECT OPTIONS 
- */
-//
-// Team, Own and Oracle are introducing buttons for actions inside dialog.
-// They must be first enabled with BUTTONS_MS
-//
-//#define BUTTONS_MS		// this is REQUIRED to enable one of the following:
-//#define TEAM_CODE_MS		// button to trigger team code
-//#define OWN_POS_MS		// button to trigger basic settings
-//#define ORACLE_MS		// button to trigger oracle
-
 
 // Feedback is giving acoustic sound when long click has triggered the multiselection.
 // It is introducing a TIMER in even processed inside MapWndProc.
@@ -130,6 +110,27 @@
 // OPTIONALs not in use within official LK versions, but still available for custom version
 //
 // ----------------------------------------------------------------------------------------
+
+//#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
+#ifdef ULLIS_PRIVATE_FEATURES
+//#define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
+  #define BUTTONS_MS
+  #define OWN_POS_MS
+  #define OWN_FLARM_TRACES
+#endif
+
+/*
+ * MULTISELECT OPTIONS 
+ */
+//
+// Team, Own and Oracle are introducing buttons for actions inside dialog.
+// They must be first enabled with BUTTONS_MS
+//
+//#define BUTTONS_MS		// this is REQUIRED to enable one of the following:
+//#define TEAM_CODE_MS		// button to trigger team code
+//#define OWN_POS_MS		// button to trigger basic settings
+//#define ORACLE_MS		// button to trigger oracle
+
 
 // Use F Record in IGC log files- not needed really
 // #define LOGFRECORD	1
