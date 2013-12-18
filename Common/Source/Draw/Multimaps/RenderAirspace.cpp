@@ -84,7 +84,7 @@ TCHAR text2[TBSIZE+1];
 TCHAR buffer[TBSIZE+1];
 BOOL bDrawRightSide =false;
 COLORREF GREEN_COL     = RGB_GREEN;
-COLORREF RED_COL       = RGB_LIGHTORANGE;
+//COLORREF RED_COL       = RGB_LIGHTORANGE;
 COLORREF BLUE_COL      = RGB_BLUE;
 COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 COLORREF col           =  RGB_BLACK;
@@ -312,7 +312,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if(bInvCol)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
-    RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
+    //RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
     BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
     LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
   }
