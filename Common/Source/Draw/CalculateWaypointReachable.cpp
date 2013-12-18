@@ -50,9 +50,7 @@ bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated
 
 void MapWindow::LKCalculateWaypointReachable(const bool forced)
 {
-  #if USEONEHZLIMITER
   if (!forced) ONEHZLIMITER;
-  #endif
 
   static short multicalc_slot=0; // -1 (which becomes immediately 0) will force full loading on startup, but this is not good
                                  // because currently we are not waiting for ProgramStarted=3
