@@ -453,10 +453,7 @@ static void OnMoveClicked(WindowControl * Sender){
 	(void)Sender;
 
 	 wf->SetModalResult(mrOK);
-#ifdef MOVE_WP_PAN
-//	MapWindow::Event_Pan(1);
 	PanTaskEdit = twItemIndex;
-#endif
 
 
 
@@ -594,9 +591,7 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
 
   //ASSERT(wf!=NULL);
   //  wf->SetKeyDownNotify(FormKeyDown);
-#ifdef  MOVE_WP_PAN
   if(!Moveallowed)
-#endif
   {
 	wMove    = ((WndFrame *)wf->FindByName(TEXT("frmMoveTurnpoint")));
         LKASSERT(wMove!=NULL);

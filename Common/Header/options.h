@@ -53,7 +53,6 @@
 
 
 
-#define MOVE_WP_PAN           // moving a task waypoint in PAN mode
 #define GEAR_WARNING          // Gear warning switch
 
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations

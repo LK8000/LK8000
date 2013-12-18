@@ -456,7 +456,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			PanLongitude += (Xstart-Xlat);
 			PanLatitude  += (Ystart-Ylat);
 
-#ifdef MOVE_WP_PAN
 			if(ValidTaskPoint(PanTaskEdit))
 			{
 			  LockTaskData(); // protect from external task changes
@@ -472,7 +471,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			}
 
 
-#endif
 			ignorenext=true;
 			MouseWasPanMoving=true;
 
@@ -510,7 +508,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	} // mouse moved with Lbutton (dragging)
 
 
-#ifdef MOVE_WP_PAN
 	      if(ValidTaskPoint(PanTaskEdit))
     	  {
 	        LockTaskData();
@@ -535,7 +532,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		    }
             UnlockTaskData();
     	  }
-#endif
 	break;
 
 
