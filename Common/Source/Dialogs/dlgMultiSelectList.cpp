@@ -72,7 +72,8 @@ static void UpdateList(void){
 static int DrawListIndex=0;
 
 
-#ifdef AUTOUPDATE_MS
+// #ifdef AUTOUPDATE_MS
+// Keep the dialog list updated every second
 static int OnTimer(WindowControl * Sender){
   (void)Sender;
 
@@ -84,7 +85,7 @@ static int OnTimer(WindowControl * Sender){
 	wMultiSelectListList->Redraw();
   return 0;
 }
-#endif
+// #endif
 
 static void OnUpClicked(WindowControl * Sender)
 {

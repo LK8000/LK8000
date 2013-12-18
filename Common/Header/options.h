@@ -93,8 +93,6 @@
 //#define OWN_POS_MS		// button to trigger basic settings
 //#define ORACLE_MS		// button to trigger oracle
 
-//Keep the dialog list updated every second
-#define AUTOUPDATE_MS
 
 // Feedback is giving acoustic sound when long click has triggered the multiselection.
 // It is introducing a TIMER in even processed inside MapWndProc.
