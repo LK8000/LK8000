@@ -25,9 +25,6 @@ you are done! The device is now connected.
 Remeber to switch on the device before running LK next time. If you dont do that, you will get an error on startup, but no problems. Switch on device, and then config config config  Reset comms.
 
 
-
-
-
 BLUETOOTH IGC LOGFILE TRANSFER to SMARTPHONES
 
 Some PNA with BlueTooth support such as the Vertica V2 and similar devices, can transfer a log file to another device, like an android smartphone. 
@@ -60,6 +57,36 @@ you normally had "Generic" here, if you were using the internal gps. Go to begin
 You will not see the COM port anymore, because it is no longer used by the intenal driver.
 
 
+PC SCREEN RESOLUTION SETTINGS
+
+Support any PC resolution by startup parameters, passed to command line.
+Example:  -x=500 -y=300
+An alternate method to obtain -480x272  is -x=480 -y=272
+x and y must be in the range of 100 to 3000 pixels.
+
+
+NEW CUSTOMKEYS
+
+Reset View . It will instantly bring screen to moving map , and reset all infopages to the first.
+
+
+
+OTHER IMPORTANT CHANGES IN 5.0
+
+TASK FILE FORMAT is now XML, text-based, and can be edited.
+Old task files can still be loaded.
+
+Multimap page 2, final glide page, empowered with new informations.
+Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
+
+
+
+
+
+
+
+DETAILS BY BETA VERSIONS:
+
 ============
 Version 4.1E
 ============
@@ -67,9 +94,9 @@ Version 4.1E
 NEW
 
 Reverse order of task waypoints (task revert).
-Expecially useful for GA people but also good for many pilots that are doing an out-and-return through several waypoints.
-This function is available in MENU > NAV 3/3 > Reverse Task .
-The button is not selectable if a real task is not running.
+ Expecially useful for GA people but also good for many pilots that are doing an out-and-return through several waypoints.
+ This function is available in MENU > NAV 3/3 > Reverse Task .
+ The button is not selectable if a real task is not running.
 
 
 CHANGES
@@ -83,6 +110,9 @@ Change task Requiered Altitude Calculation :
 
 FIX
 Attempt not to freeze while dealing with system level GPS PNA malfunction 
+
+Allow alphanumeric pass key for bluetooth pairing
+
 
 
 ============
