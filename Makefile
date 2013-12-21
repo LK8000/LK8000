@@ -643,7 +643,9 @@ DEVS	:=\
 	$(DEV)/LKHolux.cpp \
 	$(DEV)/LKRoyaltek3200.cpp	\
 	$(DEV)/devFlyNet.cpp \
-	$(DEV)/devCProbe.cpp
+	$(DEV)/devCProbe.cpp \
+	$(DEV)/devBlueFlyVario.cpp
+		
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \

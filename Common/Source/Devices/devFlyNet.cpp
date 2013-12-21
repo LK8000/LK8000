@@ -25,7 +25,7 @@ static BOOL _BAT(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
 	return TRUE;
 }
 
-static BOOL FlyNetParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
+BOOL FlyNetParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
   if(_tcsncmp(TEXT("_PRS "), String, 5)==0){
 	  return _PRS(d, &String[5], _INFO);
   }

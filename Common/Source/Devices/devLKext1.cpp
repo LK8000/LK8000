@@ -14,7 +14,7 @@ extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDevic
 
 static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -32,13 +32,13 @@ static BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 
 }
 
-static BOOL LK8EX1IsBaroSource(PDeviceDescriptor_t d){
+BOOL LK8EX1IsBaroSource(PDeviceDescriptor_t d){
 	(void)d;
   return(TRUE);
 }
 
 
-static BOOL LK8EX1LinkTimeout(PDeviceDescriptor_t d){
+BOOL LK8EX1LinkTimeout(PDeviceDescriptor_t d){
   (void)d;
   return(TRUE);
 }

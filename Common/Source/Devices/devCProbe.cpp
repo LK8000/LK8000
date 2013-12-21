@@ -340,7 +340,12 @@ CallBackTableEntry_t CDevCProbe::CallBackTable[]={
   DeclareCallBackEntry(NULL)
 };
 
-BOOL CDevCProbe::Config(){
+BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
+	if(m_pDevice != d) {
+		StartupStore(_T("C-Probe Config : Invalide device descriptor%s"), NEWLINE);
+		return FALSE;
+	}
+
 	char filename[MAX_PATH];
 	LocalPathS(filename, TEXT("dlgDevCProbe.xml"));
 	m_wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DEVCPROBE"));

@@ -403,12 +403,12 @@ passthrough:
 		return true;
 	case ckDeviceA:
 		if(devA() && devA()->Config) {
-			devA()->Config();
+			devA()->Config(devA());
 		}
 		return true;
 	case ckDeviceB:
 		if(devB() && devB()->Config) {
-			devB()->Config();
+			devB()->Config(devB());
 		}
 		return true;
 	case ckResetOdometer:
