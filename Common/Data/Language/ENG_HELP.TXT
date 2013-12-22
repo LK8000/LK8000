@@ -1746,7 +1746,76 @@ The warning will be shown only once if below gear warning set height, and will o
 [Gear Warning Altitude]
 altitude threshold for gear warning
 
+@1271 
+[Output QNH]
+QNH (in Pa), used for output alt for some output modes - (default 101325)
 
+@1272 
+[Lift Threshold]
+The value in m/s of lift when the audio beeping will start.
+
+@1273 
+[Lift Off Threshold]
+The value in m/s of lift when the audio beeping will stop.
+
+@1274 
+[Sink Threshold]
+The value in -m/s of sink when the sink tone will start.
+
+@1275 
+[Sink Off Threshold]
+The value in -m/s of sink when the sink tone will stop.
+
+@1276 
+[Position Noise]
+Kalman filter position noise.
+
+@1277 
+[Lift Freq. Base]
+The audio frequency for lift beeps in Hz of 0 m/s.
+
+@1278 
+[Lift Freq. Increment]
+The increase in audio frequency for lift beeps in Hz for each 1 m/s.
+
+@1279 
+[Sink Freq. Base]
+The audio frequency for the sink tone in Hz of 0 m/s.
+
+@1280 
+[Sink Freq. Increment]
+The decrease in audio frequency for sink tone in Hz for each -1 m/s.
+
+@1281 
+[Volume]
+The volume of beeps ->  0.1 is only about 1/2 as loud as 1.0.
+
+@1282 
+[Rate Multiplier]
+The lift beep cadence -> 0.5 = beeping twice as fast as normal.
+
+@1283 
+[Audio Connected]
+Check to enable hardware audio when connected.
+
+@1284 
+[Audio Disconnected]
+Check to enable hardware audio when disconnected.
+
+@1285 
+[Bluetooth Wait]
+The time that the hardware will be allow establishment of a bluetooth connection for when turned on.
+
+@1286 
+[Output Mode]
+0-BlueFlyVario (default) "Not Supported" 
+1-LK8EX1  
+2-LX "Not Supported"
+3-FlyNet
+
+@1287 
+[Output Frequency]
+The output frequency -> 1-every 20ms ... 50-every 20msx50=1000ms
 
 @9999
 No help available on this item!

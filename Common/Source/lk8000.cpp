@@ -61,6 +61,7 @@
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "devCProbe.h"
+#include "devBlueFlyVario.h"
 
 #include "TraceThread.h"
 
@@ -472,6 +473,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   WesterboerRegister();
   FlyNetRegister();
   CDevCProbe::Register();
+  BlueFlyRegister();
 
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
