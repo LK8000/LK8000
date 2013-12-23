@@ -17,7 +17,7 @@ PGLineTaskPt::PGLineTaskPt(): m_dAB() {
 PGLineTaskPt::~PGLineTaskPt() {
 }
 
-void PGLineTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
+void PGLineTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
     //  Fail if either line segment is zero-length.
     if (m_LineBegin == m_LineEnd || prev == next) {
         return;

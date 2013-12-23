@@ -168,7 +168,7 @@ void AATDistance::ShiftTargetOutside(double longitude, double latitude,
                           &Task[taskwaypoint].AATTargetLat,
                           &Task[taskwaypoint].AATTargetLon);
     
-    UpdateTargetAltitude(taskwaypoint);
+    UpdateTargetAltitude(Task[taskwaypoint]);
     TargetModified = true;
 
   }
@@ -215,7 +215,7 @@ void AATDistance::ShiftTargetFromInFront(double longitude, double latitude,
                         &Task[taskwaypoint].AATTargetLon);
   // JMW, distance here was 100m, now changed to speed * 2
 
-  UpdateTargetAltitude(taskwaypoint);
+  UpdateTargetAltitude(Task[taskwaypoint]);
 
   TargetModified = true;
   CalculateAATIsoLines();
@@ -338,7 +338,7 @@ void AATDistance::ShiftTargetFromBehind(double longitude, double latitude,
                           &t_lat,
                           &t_lon);
     
-    if (InAATTurnSector(t_lon, t_lat, taskwaypoint)) {
+    if (InAATTurnSector(t_lon, t_lat, taskwaypoint, 0)) {
       d_total_this = DoubleLegDistance(taskwaypoint, 
                                        t_lon,
                                        t_lat);
@@ -362,7 +362,7 @@ void AATDistance::ShiftTargetFromBehind(double longitude, double latitude,
                           &Task[taskwaypoint].AATTargetLat,
                           &Task[taskwaypoint].AATTargetLon);
 
-    UpdateTargetAltitude(taskwaypoint);
+    UpdateTargetAltitude(Task[taskwaypoint]);
     
     Task[taskwaypoint].AATTargetOffsetRadius =
       FindInsideAATSectorRange(latitude,

@@ -371,6 +371,20 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
                     break;
             }
         }
+        for(unsigned i = 1; ValidTaskPoint(i+1); ++i) {
+            switch (Task[i].AATType) {
+                case CIRCLE:
+                case SECTOR:
+                    break;
+                case DAe:
+                case LINE:
+                    LKASSERT(FALSE);
+                    break;
+                case CONE:
+                    Task[i].AATType = 2;
+                    break;
+            }
+        }
     }
     ///////////////////////////////////////////////////////////////
 
@@ -438,6 +452,10 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
                 GetAttribute(node, _T("radius"), Task[idx].AATCircleRadius);
             } else if (_tcscmp(szType, _T("DAe")) == 0) {
                 Task[idx].AATType = DAe; // not Used in AAT and PGTask
+            } else if (_tcscmp(szType, _T("cone")) == 0) {
+                Task[idx].AATType = CONE; // Only Used in PGTask
+                GetAttribute(node, _T("base"), Task[idx].PGConeBase);
+                GetAttribute(node, _T("slope"), Task[idx].PGConeSlope);
             }
         }
         GetAttribute(node, _T("lock"), Task[idx].AATTargetLocked);
@@ -521,40 +539,7 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
 
     CScopeLock LockTask(LockTaskData, UnlockTaskData);
     StartupStore(_T(". SaveTask : saving <%s>%s"), szFileName, NEWLINE);
-
-    ///////////////////////////////////////////////////////////////
-    // TODO : this code is temporary before rewriting task system
-    if (AATEnabled || DoOptimizeRoute()) {
-        for (unsigned i = 0; ValidTaskPoint(i); ++i) {
-            int type = -1;
-            if (i == 0) { // Start
-                Task[0].AATCircleRadius = StartRadius;
-                Task[0].AATSectorRadius = StartRadius;
-                Task[0].OutCircle = !PGStartOut;
-                type = StartLine;
-            } else if (!ValidTaskPoint(i + 1)) { //Finish
-                Task[i].AATCircleRadius = FinishRadius;
-                Task[i].AATSectorRadius = FinishRadius;
-                type = FinishLine;
-            }
-            if (type != -1) {
-                switch (type) {
-                    case 0: //circle
-                        Task[i].AATType = CIRCLE;
-                        break;
-                    case 1: //line
-                        Task[i].AATType = LINE;
-                        break;
-                    case 2: //sector
-                        Task[i].AATType = SECTOR;
-                        break;
-                }
-            }
-        }
-    }
-    ///////////////////////////////////////////////////////////////
-
-
+    
     XMLNode topNode = XMLNode::createXMLTopNode();
     XMLNode rootNode = topNode.AddChild(ToString(_T("lk-task")), false);
 
@@ -796,7 +781,7 @@ bool CTaskFileHelper::SaveTaskPointList(XMLNode node) {
 
         RenameIfVirtual(i); // TODO: check code is unique ?
 
-        if (!SaveTaskPoint(PointNode, Task[i])) {
+        if (!SaveTaskPoint(PointNode, i, Task[i])) {
             return false;
         }
     }
@@ -833,30 +818,38 @@ bool CTaskFileHelper::SaveWayPointList(XMLNode node) {
     return true;
 }
 
-bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const TASK_POINT& TaskPt) {
+bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const TASK_POINT& TaskPt) {
     SetAttribute(node, _T("name"), WayPointList[TaskPt.Index].Name);
 
     if (AATEnabled || DoOptimizeRoute()) {
-
-        switch (TaskPt.AATType) {
+        int Type; double Radius;
+        GetTaskSectorParameter(idx, &Type, &Radius);
+        switch (Type) {
             case CIRCLE:
                 SetAttribute(node, _T("type"), _T("circle"));
-                SetAttribute(node, _T("radius"), TaskPt.AATCircleRadius);
+                SetAttribute(node, _T("radius"), Radius);
                 if (DoOptimizeRoute() && TaskPt.OutCircle) {
                     SetAttribute(node, _T("Exit"), _T("true"));
                 }
                 break;
             case SECTOR:
                 SetAttribute(node, _T("type"), _T("sector"));
-                SetAttribute(node, _T("radius"), TaskPt.AATSectorRadius);
+                SetAttribute(node, _T("radius"), Radius);
                 SetAttribute(node, _T("start-radial"), TaskPt.AATStartRadial);
                 SetAttribute(node, _T("end-radial"), TaskPt.AATFinishRadial);
                 break;
             case LINE:
                 SetAttribute(node, _T("type"), _T("line"));
-                SetAttribute(node, _T("radius"), TaskPt.AATCircleRadius);
+                SetAttribute(node, _T("radius"), Radius);
                 break;
             case DAe: // not Used in AAT and PGTask
+                LKASSERT(false);
+                break;
+            case CONE:
+                SetAttribute(node, _T("type"), _T("cone"));
+                SetAttribute(node, _T("base"), TaskPt.PGConeBase);
+                SetAttribute(node, _T("slope"), TaskPt.PGConeSlope);
+                break;
             default:
                 LKASSERT(false);
                 break;

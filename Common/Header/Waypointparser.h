@@ -24,7 +24,7 @@ int dlgWaypointOutOfTerrain(TCHAR *Message);
 void WaypointWriteFiles(void);
 void WaypointAltitudeFromTerrain(WAYPOINT* wpt);
 double AltitudeFromTerrain(double Lat, double Lon);
-void UpdateTargetAltitude(int i);
+void UpdateTargetAltitude(TASK_POINT& TskPt);
 WAYPOINT* GrowWaypointList();
 int FindMatchingWaypoint(WAYPOINT *waypoint);
 void InitWayPointCalc(void); 

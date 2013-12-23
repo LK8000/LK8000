@@ -44,11 +44,24 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
     }
     else
     {
-      if(AATEnabled)
+      if(AATEnabled || DoOptimizeRoute())
       {
-	LKASSERT(ValidTaskPoint(TskIdx)); // could be -1
+        LKASSERT(ValidTaskPoint(TskIdx)); // could be -1
     	*SecType = Task[TskIdx].AATType;
     	*SecRadius  = Task[TskIdx].AATCircleRadius;
+
+        switch(Task[TskIdx].AATType) {
+            case 0:
+                *SecType = CIRCLE;
+                break;
+            case 1:
+                *SecType = SECTOR;
+                *SecRadius  = Task[TskIdx].AATSectorRadius;
+                break;
+            case 2:
+                *SecType = CONE;
+                break;
+        }
       }
       else
       {
@@ -81,7 +94,9 @@ void ResetTaskWpt(TASK_POINT& TaskWpt) {
     TaskWpt.AATCircleRadius = SectorRadius;
     TaskWpt.AATStartRadial = 0;
     TaskWpt.AATFinishRadial = 360;
-    TaskWpt.OutCircle = false;    
+    TaskWpt.OutCircle = false;
+    TaskWpt.PGConeBase = 0;
+    TaskWpt.PGConeSlope = 2.5;
 }
 
 void ResetTaskStat(TASKSTATS_POINT& StatPt) {
@@ -208,7 +223,7 @@ double FindInsideAATSectorDistance_old(double latitude,
     
     t_in_sector = InAATTurnSector(t_lon,
                                   t_lat,
-                                  taskwaypoint);
+                                  taskwaypoint, 0);
 
   } while (t_in_sector);
 
@@ -242,7 +257,7 @@ double FindInsideAATSectorDistance(double latitude,
                           course_bearing, t_distance,
                           &t_lat, &t_lon);
 
-    if (InAATTurnSector(t_lon, t_lat, taskwaypoint)) {
+    if (InAATTurnSector(t_lon, t_lat, taskwaypoint, 0)) {
       t_distance_lower = t_distance;
       // ok, can go further
       t_distance += delta;

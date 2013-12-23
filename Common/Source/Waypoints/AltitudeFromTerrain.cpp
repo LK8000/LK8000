@@ -31,13 +31,13 @@ void WaypointAltitudeFromTerrain(WAYPOINT* Temp) {
   }
 }
 
-void UpdateTargetAltitude(int i) {
-    Task[i].AATTargetAltitude = AltitudeFromTerrain(Task[i].AATTargetLat, Task[i].AATTargetLon);
+void UpdateTargetAltitude(TASK_POINT& TskPt) {
+    TskPt.AATTargetAltitude = AltitudeFromTerrain(TskPt.AATTargetLat, TskPt.AATTargetLon);
     if(!DoOptimizeRoute() && AATEnabled) {
         // for AAT task, use center Alt if target point alt is less than center...
-        Task[i].AATTargetAltitude = std::max(WayPointList[Task[i].Index].Altitude, Task[i].AATTargetAltitude);
+        TskPt.AATTargetAltitude = std::max(WayPointList[TskPt.Index].Altitude, TskPt.AATTargetAltitude);
     }
-    if(Task[i].AATTargetAltitude <= 0) {
-        Task[i].AATTargetAltitude = WayPointList[Task[i].Index].Altitude;
+    if(TskPt.AATTargetAltitude <= 0) {
+        TskPt.AATTargetAltitude = WayPointList[TskPt.Index].Altitude;
     } 
 }

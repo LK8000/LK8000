@@ -21,9 +21,10 @@ public:
     virtual ~PGTaskMgr();
 
     void Initialize();
-    void Optimize(NMEA_INFO *Basic);
+    void Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
     void getOptimized(const int i, double& lat, double& lon) const;
+    void UpdateTaskPoint(const int i, TASK_POINT& TskPt ) const;
 
     inline size_t Count() const {
         return m_Task.size();
@@ -33,6 +34,7 @@ protected:
     void AddCircle(int TpIndex);
     void AddLine(int TpIndex);
     void AddSector(int TpIndex);
+    void AddCone(int TpIndex);
 
     void Grid2LatLon(double N, double E, double& lat, double& lon) const;
     void LatLon2Grid(double lat, double lon, double& N, double& E) const;

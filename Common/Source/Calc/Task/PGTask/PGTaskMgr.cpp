@@ -13,6 +13,7 @@
 #include "externs.h"
 #include "AATDistance.h"
 #include "Waypointparser.h"
+#include "McReady.h"
 
 #include "algorithm"
 #include "utils/stl_utils.h"
@@ -20,6 +21,7 @@
 #include "PGCicrcleTaskPt.h"
 #include "PGLineTaskPt.h"
 #include "PGSectorTaskPt.h"
+#include "PGConeTaskPt.h"
 
 inline double rad2deg(double rad) {
     return (rad * 180 / PI);
@@ -86,27 +88,22 @@ void PGTaskMgr::Initialize() {
 
     // build task point list
     for (int curwp = 0; ValidTaskPoint(curwp); ++curwp) {
-
         int TpType = 0;
-        if (curwp == 0) {
-            // Start
-            TpType = StartLine;
-        } else if (ValidTaskPoint(curwp + 1)) {
-            // All Other
-            TpType = Task[curwp].AATType ? 2 : 0;
-        } else {
-            // Finnish
-            TpType = FinishLine;
-        }
+        double Radius;
+        GetTaskSectorParameter(curwp, &TpType, &Radius);
         switch (TpType) {
-            case 0: // circle
+            case CIRCLE:
                 AddCircle(curwp);
                 break;
-            case 1: // line
+            case SECTOR:
+            case DAe:
+                AddSector(curwp);
+                break;
+            case LINE:
                 AddLine(curwp);
                 break;
-            case 2: // sector
-                AddSector(curwp);
+            case CONE:
+                AddCone(curwp);
                 break;
         }
     }
@@ -230,21 +227,62 @@ void PGTaskMgr::AddSector(int TskIdx) {
     m_Task.push_back(pTskPt);
 }
 
-void PGTaskMgr::Optimize(NMEA_INFO *Basic) {
+void PGTaskMgr::AddCone(int TskIdx) {
+    PGConeTaskPt *pTskPt = new PGConeTaskPt;
+
+    LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
+            deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
+            pTskPt->m_Center.m_Y,
+            pTskPt->m_Center.m_X);
+
+    pTskPt->m_Slope = Task[TskIdx].PGConeSlope;
+    pTskPt->m_AltBase = Task[TskIdx].PGConeBase;
+    pTskPt->m_AltRef = 0.0;
+//    pTskPt->m_AltRef = WayPointList[Task[TskIdx].Index].Altitude;
+
+    pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
+
+    m_Task.push_back(pTskPt);
+}
+
+void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (((size_t) ActiveWayPoint) >= m_Task.size()) {
         return;
     }
-
+    
+    double w0lat = Basic->Latitude;
+    double w0lon = Basic->Longitude;
+    
     ProjPt PrevPos;
-    LatLon2Grid(deg2rad(Basic->Latitude), deg2rad(Basic->Longitude), PrevPos.m_Y, PrevPos.m_X);
-
+    LatLon2Grid(deg2rad(w0lat), deg2rad(w0lon), PrevPos.m_Y, PrevPos.m_X);
+    
+    double NextAltitude = Basic->Altitude;
     for (size_t i = ActiveWayPoint; i < m_Task.size(); ++i) {
-        if ((i + 1) < m_Task.size()) {
-            m_Task[i]->Optimize(PrevPos, m_Task[i + 1]->getOptimized());
-        } else {
-            m_Task[i]->Optimize(PrevPos, ProjPt::null);
+        
+        // Calc Arrival Altitude
+        double w1lat, w1lon;
+        getOptimized(i, w1lat, w1lon);
+        double Distance, Bearing;
+        DistanceBearing(w0lat, w0lon, w1lat, w1lon, &Distance, &Bearing);
+        double GrndAlt = AltitudeFromTerrain(w1lat, w1lon);
+        if(NextAltitude > GrndAlt) {
+            NextAltitude  -= GlidePolar::MacCreadyAltitude( MACCREADY, Distance, Bearing, Calculated->WindSpeed, Calculated->WindBearing, 0, 0, true, 0);
         }
+
+        if(NextAltitude < GrndAlt) {
+            NextAltitude = GrndAlt;
+        }
+        
+        // Optimize
+        if ((i + 1) < m_Task.size()) {
+            m_Task[i]->Optimize(PrevPos, m_Task[i + 1]->getOptimized(), NextAltitude);
+        } else {
+            m_Task[i]->Optimize(PrevPos, ProjPt::null, NextAltitude);
+        }
+
+        // Update previous Position for Next Loop
         PrevPos = m_Task[i]->getOptimized();
+        getOptimized(i, w0lat, w0lon);
     }
 }
 
@@ -253,6 +291,12 @@ void PGTaskMgr::getOptimized(const int i, double& lat, double& lon) const {
     Grid2LatLon(m_Task[i]->getOptimized().m_Y, m_Task[i]->getOptimized().m_X, lat, lon);
     lat = rad2deg(lat);
     lon = rad2deg(lon);
+}
+
+void PGTaskMgr::UpdateTaskPoint(const int i, TASK_POINT& TskPt ) const {
+    getOptimized(i, TskPt.AATTargetLat, TskPt.AATTargetLon);
+    UpdateTargetAltitude(TskPt);
+    m_Task[i]->UpdateTaskPoint(TskPt);
 }
 
 //====================================

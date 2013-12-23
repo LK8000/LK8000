@@ -20,7 +20,7 @@ public:
     PGLineTaskPt();
     virtual ~PGLineTaskPt();
 
-    virtual void Optimize(const ProjPt& prev, const ProjPt& next);
+    virtual void Optimize(const ProjPt& prev, const ProjPt& next, double Alt);
 
 protected:
     void OptimizeGoal(const ProjPt& prev);

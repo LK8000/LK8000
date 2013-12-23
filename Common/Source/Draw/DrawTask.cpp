@@ -14,7 +14,6 @@ $Id$
 #include "LKObjects.h"
 #include "utils/2dpclip.h"
 
-extern int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius);
 extern int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor);
 extern COLORREF taskcolor;
 
@@ -97,8 +96,8 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
                  FinishRadial);
             }
             break;
-       case LINE:
        default:
+       case LINE:
     PolygonRotateShift(startfinishline, 2, center_x, center_y, Task[TaskIdx].AATStartRadial);
     Polygon(hdc,startfinishline ,2 );
      if((TaskIdx == 0) || (TaskIdx == finish))
@@ -107,6 +106,18 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
      Polygon(hdc,track ,3 );
      }
        break;
+        case CONE:
+            if (DoOptimizeRoute()) {
+
+                int radius = width-2;
+                Circle(hdc, center_x, center_y, radius, rc, true, true);
+                HPEN prevPen = (HPEN)::SelectObject(hdc, hpTerrainLine);
+                for( int i = 1; i < 4; ++i) {
+                    Circle(hdc, center_x, center_y, radius -= width/5, rc, true, true);
+                }
+                ::SelectObject(hdc, prevPen);
+            }
+            break;
     }
 UnlockTaskData();
 
@@ -165,13 +176,9 @@ DoInit[MDI_DRAWTASK]=false;
          // DrawDashLine(hdc, size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
             }
 
-            int Type = SectorType;
-            double Radius = SectorRadius;
-            if (AATEnabled) {
-                Type = Task[i].AATType;
-                Radius = (Type==CIRCLE) ? Task[i].AATCircleRadius : Task[i].AATSectorRadius;
-            }
-
+            int Type = 0;
+            double Radius = 0.;
+            GetTaskSectorParameter(i, &Type, &Radius);
             switch (Type) {
                 case CIRCLE:
                     tmp = Radius * zoom.ResScaleOverDistanceModify();
@@ -210,6 +217,23 @@ DoInit[MDI_DRAWTASK]=false;
                     if (!AATEnabled) { // this Type exist only if not AAT task
                         _DrawLine(hdc, PS_SOLID, NIBLSCALE(3), Task[i].Start, Task[i].End, taskcolor, rc);
                     }
+                    break;
+                case CONE:
+                    DistanceBearing(
+                            WayPointList[Task[i].Index].Latitude, WayPointList[Task[i].Index].Longitude,
+                            Task[i].AATTargetLat, Task[i].AATTargetLon,
+                            &Radius, NULL );
+
+                    tmp = Radius * zoom.ResScaleOverDistanceModify();
+                    int center_x = WayPointList[Task[i].Index].Screen.x;
+                    int center_y = WayPointList[Task[i].Index].Screen.y;
+                    Circle(hdc, center_x, center_y, (int) tmp, rc, false, false);
+                    HPEN prevPen = (HPEN)::SelectObject(hdc, hpTerrainLine);
+                    for( int j = 1; j < 5 && tmp > 0; ++j) {
+                        Circle(hdc, center_x, center_y, tmp -= NIBLSCALE(5), rc, true, true);
+                    }
+                    ::SelectObject(hdc, prevPen);
+                    break;
             }
 
             if (AATEnabled && !DoOptimizeRoute()) {
