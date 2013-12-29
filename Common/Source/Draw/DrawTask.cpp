@@ -112,7 +112,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
                 int radius = width-2;
                 Circle(hdc, center_x, center_y, radius, rc, true, true);
                 HPEN prevPen = (HPEN)::SelectObject(hdc, hpTerrainLine);
-                for( int i = 1; i < 4; ++i) {
+                for( int i = 1; i < 4 && radius > (width/5); ++i) {
                     Circle(hdc, center_x, center_y, radius -= width/5, rc, true, true);
                 }
                 ::SelectObject(hdc, prevPen);
@@ -219,11 +219,6 @@ DoInit[MDI_DRAWTASK]=false;
                     }
                     break;
                 case CONE:
-                    DistanceBearing(
-                            WayPointList[Task[i].Index].Latitude, WayPointList[Task[i].Index].Longitude,
-                            Task[i].AATTargetLat, Task[i].AATTargetLon,
-                            &Radius, NULL );
-
                     tmp = Radius * zoom.ResScaleOverDistanceModify();
                     int center_x = WayPointList[Task[i].Index].Screen.x;
                     int center_y = WayPointList[Task[i].Index].Screen.y;
