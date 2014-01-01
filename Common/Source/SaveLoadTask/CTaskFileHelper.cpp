@@ -456,6 +456,7 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
                 Task[idx].AATType = CONE; // Only Used in PGTask
                 GetAttribute(node, _T("base"), Task[idx].PGConeBase);
                 GetAttribute(node, _T("slope"), Task[idx].PGConeSlope);
+                Task[idx].OutCircle = false;
             }
         }
         GetAttribute(node, _T("lock"), Task[idx].AATTargetLocked);
