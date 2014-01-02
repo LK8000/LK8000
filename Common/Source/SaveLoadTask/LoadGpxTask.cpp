@@ -36,7 +36,7 @@ bool LoadGpxTask(LPCTSTR szFileName) {
 		TCHAR * szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
 		utf2unicode(buff, szXML, size + 1);
 		free(buff);
-		XMLNode rootNode = XMLNode::parseString(szXML, _T("lk-task"));
+		XMLNode rootNode = XMLNode::parseString(szXML, _T("gpx"));
 		if(rootNode) {
 			if(rootNode.isEmpty()) {
 				free(szXML);
