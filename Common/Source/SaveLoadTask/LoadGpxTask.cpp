@@ -12,7 +12,10 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "xmlParser.h"
+#include "utils/stringext.h"
 #include <string>
+
+
 
 typedef std::map<std::wstring,WAYPOINT> mapCode2Waypoint_t;
 
@@ -219,284 +222,143 @@ public:
 	}
 };
 
+
+
+//#define GetAttribute(node, name, val) FromString(node.getAttribute(name, 0), val)
+
+
+
 bool LoadGpxTask(LPCTSTR szFileName) {
 	LockTaskData();
-
-	//TODO: this is copied from load CUP task: it must be done for GPX
-
-	mapCode2Waypoint_t mapWaypoint;
-
+	StartupStore(_T(". LoadTask : <%s>%s"), szFileName, NEWLINE);
 	ClearTask();
-	size_t idxTP = 0;
-	bool bTakeOff = true;
-	bool bLoadComplet = true;
-
-	TCHAR szString[READLINE_LENGTH + 1];
-	TCHAR TpCode[NAME_SIZE + 1];
-
-	szString[READLINE_LENGTH] = _T('\0');
-	TpCode[NAME_SIZE] = _T('\0');
-
-	memset(szString, 0, sizeof (szString)); // clear Temp Buffer
-	WAYPOINT newPoint = {0};
-
-	enum {
-		none, Waypoint, TaskTp, Option
-	}FileSection = none;
-	FILE * stream = _tfopen(szFileName, _T("rt"));
-	if (stream) {
-		while (ReadStringX(stream, READLINE_LENGTH, szString)) {
-
-			if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
-					(_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
-				FileSection = Waypoint;
-				continue;
-			} else if ((FileSection == Waypoint) && (_tcscmp(szString, _T("-----Related Tasks-----")) == 0)) {
-				FileSection = TaskTp;
-				continue;
-			}
-
-			TCHAR *pToken = NULL;
-			TCHAR *pWClast = NULL;
-
-			switch (FileSection) {
-				case Waypoint:
-				if (ParseCUPWayPointString(szString, &newPoint)) {
-					mapWaypoint[newPoint.Name] = newPoint;
-				}
-				break;
-				case TaskTp:
-				// 1. Description
-				//       First column is the description of the task. If filled it should be double quoted.
-				//       If left empty, then SeeYou will determine the task type on runtime.
-				if ((pToken = strsep_r(szString, TEXT(","), &pWClast)) == NULL) {
-					UnlockTaskData();
-					return false;
-				}
-
-				// 2. and all successive columns, separated by commas
-				//       Each column represents one waypoint name double quoted. The waypoint name must be exactly the
-				//       same as the Long name of a waypoint listed above the Related tasks.
-				while (bLoadComplet && (pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
-					if (idxTP < MAXTASKPOINTS) {
-						_tcsncpy(TpCode, pToken, NAME_SIZE);
-						CleanCupCode(TpCode);
-						mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
-						if (It != mapWaypoint.end()) {
-							if (bTakeOff) {
-								// skip TakeOff Set At Home Waypoint
-								HomeWaypoint = FindOrAddWaypoint(&(It->second));
-								bTakeOff = false;
-							} else {
-								Task[idxTP++].Index = FindOrAddWaypoint(&(It->second));
-							}
-						}
-					} else {
-						bLoadComplet = false;
-					}
-				}
-				FileSection = Option;
-				break;
-				case Option:
-				if ((pToken = strsep_r(szString, TEXT(","), &pWClast)) != NULL) {
-					if (_tcscmp(pToken, _T("Options")) == 0) {
-						while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
-							if (_tcsstr(pToken, _T("NoStart=")) == pToken) {
-								// Opening of start line
-								PGNumberOfGates = 1;
-								StrToTime(pToken + 8, &PGOpenTimeH, &PGOpenTimeM);
-							} else if (_tcsstr(pToken, _T("TaskTime=")) == pToken) {
-								// Designated Time for the task
-								// TODO :
-							} else if (_tcsstr(pToken, _T("WpDis=")) == pToken) {
-								// Task distance calculation. False = use fixes, True = use waypoints
-								// TODO :
-							} else if (_tcsstr(pToken, _T("NearDis=")) == pToken) {
-								// Distance tolerance
-								// TODO :
-							} else if (_tcsstr(pToken, _T("NearAlt=")) == pToken) {
-								// Altitude tolerance
-								// TODO :
-							} else if (_tcsstr(pToken, _T("MinDis=")) == pToken) {
-								// Uncompleted leg.
-								// False = calculate maximum distance from last observation zone.
-								// TODO :
-							} else if (_tcsstr(pToken, _T("RandomOrder=")) == pToken) {
-								// if true, then Random order of waypoints is checked
-								// TODO :
-							} else if (_tcsstr(pToken, _T("MaxPts=")) == pToken) {
-								// Maximum number of points
-								// TODO :
-							} else if (_tcsstr(pToken, _T("BeforePts=")) == pToken) {
-								// Number of mandatory waypoints at the beginning. 1 means start line only, two means
-								//      start line plus first point in task sequence (Task line).
-								// TODO :
-							} else if (_tcsstr(pToken, _T("AfterPts=")) == pToken) {
-								// Number of mandatory waypoints at the end. 1 means finish line only, two means finish line
-								//      and one point before finish in task sequence (Task line).
-								// TODO :
-							} else if (_tcsstr(pToken, _T("Bonus=")) == pToken) {
-								// Bonus for crossing the finish line
-								// TODO :
-							}
-						}
-					} else if (_tcsstr(pToken, _T("ObsZone=")) == pToken) {
-						TCHAR *sz = NULL;
-						GpxObsZoneUpdater TmpZone;
-						TmpZone.mIdx = _tcstol(pToken + 8, &sz, 10);
-						if (TmpZone.mIdx < MAXSTARTPOINTS) {
-							while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
-								if (_tcsstr(pToken, _T("Style=")) == pToken) {
-									// Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point
-									TmpZone.mType = _tcstol(pToken + 6, &sz, 10);
-								} else if (_tcsstr(pToken, _T("R1=")) == pToken) {
-									// Radius 1
-									TmpZone.mR1 = ReadLength(pToken + 3);
-								} else if (_tcsstr(pToken, _T("A1=")) == pToken) {
-									// Angle 1 in degrees
-									TmpZone.mA1 = _tcstod(pToken + 3, &sz);
-								} else if (_tcsstr(pToken, _T("R2=")) == pToken) {
-									// Radius 2
-									TmpZone.mR2 = ReadLength(pToken + 3);
-								} else if (_tcsstr(pToken, _T("A2=")) == pToken) {
-									// Angle 2 in degrees
-									TmpZone.mA2 = _tcstod(pToken + 3, &sz);
-								} else if (_tcsstr(pToken, _T("A12=")) == pToken) {
-									// Angle 12
-									TmpZone.mA12 = _tcstod(pToken + 4, &sz);
-								} else if (_tcsstr(pToken, _T("Line=")) == pToken) {
-									// true For Line Turmpoint type
-									// Exist only for start an Goalin LK
-									TmpZone.mLine = (_tcstol(pToken + 5, &sz, 10) == 1);
-								}
-							}
-							TmpZone.UpdateTask();
-						}
-					}
-				}
-				break;
-				case none:
-				default:
-				break;
-			}
-			memset(szString, 0, sizeof (szString)); // clear Temp Buffer
+	FILE* stream = _tfopen(szFileName, TEXT("rb"));
+	if(stream) {
+		fseek(stream, 0, SEEK_END); // seek to end of file
+		long size = ftell(stream); // get current file pointer
+		fseek(stream, 0, SEEK_SET); // seek back to beginning of file
+		char * buff = (char*) calloc(size + 1, sizeof (char));
+		long nRead = fread(buff, sizeof (char), size, stream);
+		if(nRead != size) {
+			fclose(stream);
+			free(buff);
+			return false;
 		}
 		fclose(stream);
-	}
+		TCHAR * szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
+		utf2unicode(buff, szXML, size + 1);
+		free(buff);
+		XMLNode rootNode = XMLNode::parseString(szXML, _T("lk-task"));
+		if(rootNode) {
+			if(rootNode.isEmpty()) {
+				free(szXML);
+				return false;
+			}
+			//LoadWayPointList(rootNode.getChildNode(_T("waypoints"), 0));
+			//if (!LoadTaskPointList(rootNode.getChildNode(_T("taskpoints"), 0))) {
+			//	free(szXML);
+			//	return false;
+			//}
+			//if(!LoadStartPointList(rootNode.getChildNode(_T("startpoints"), 0))) {
+			//	free(szXML);
+			//	return false;
+			//}
 
-	// Landing don't exist in LK Task Systems Remove It if is same as previous;
-	if ( bLoadComplet && (TaskWayPoint(0) == TaskWayPoint(getFinalWaypoint())) ) {
-		RemoveTaskPoint(getFinalWaypoint());
-	}
+			//TODO: here we load just the first route may be there are others routes in the GPX file...
+			XMLNode routeNode=rootNode.getChildNode(TEXT("rte"));
+			if(routeNode.isEmpty()) { //ERROR no route found in GPX file
+				free(szXML);
+				return false;
+			}
+			int numWPnodes=routeNode.nChildNode();
+			if(numWPnodes<1) { //ERROR no waypoints found in route in GPX file
+				free(szXML);
+				return false;
+			}
+
+			const TCHAR* text=NULL;
+			//LPCTSTR szAttr = NULL;
+
+
+			XMLNode WPnode;
+			WAYPOINT newPoint;
+			for(int i=0,idx=0;i<numWPnodes;i++) {
+				memset(&newPoint, 0, sizeof (newPoint));
+
+				/*
+				GetAttribute(node, _T("code"), szAttr);
+				if(szAttr) {
+					_tcscpy(newPoint.Code, szAttr);
+				}
+				GetAttribute(node, _T("flags"), newPoint.Flags);
+				GetAttribute(node, _T("comment"), szAttr);
+				if(szAttr) {
+					newPoint.Comment = (TCHAR*) malloc((_tcslen(szAttr) + 1) * sizeof (TCHAR));
+					if (newPoint.Comment) {
+						_tcscpy(newPoint.Comment, szAttr);
+					}
+				}
+				GetAttribute(node, _T("details"), szAttr);
+				if(szAttr) {
+					newPoint.Details = (TCHAR*) malloc((_tcslen(szAttr) + 1) * sizeof (TCHAR));
+					if(newPoint.Details) {
+						_tcscpy(newPoint.Details, szAttr);
+					}
+				}
+				GetAttribute(node, _T("format"), newPoint.Format);
+				GetAttribute(node, _T("freq"), szAttr);
+				if(szAttr) {
+					_tcscpy(newPoint.Freq, szAttr);
+				}
+				GetAttribute(node, _T("runwayLen"), newPoint.RunwayLen);
+				GetAttribute(node, _T("runwayDir"), newPoint.RunwayDir);
+				GetAttribute(node, _T("country"), szAttr);
+				if(szAttr) {
+					_tcscpy(newPoint.Country, szAttr);
+				}
+				GetAttribute(node, _T("style"), newPoint.Style);
+				*/
+
+
+
+
+
+				/////////////////////
+
+
+				WPnode=routeNode.getChildNode(i);
+				if(_tcscmp(WPnode.getName(),TEXT("rtept"))==0) {
+					text=WPnode.getAttribute(TEXT("lat"));
+					if(text==NULL) break; //WP without latitude skip it
+					newPoint.Latitude=_tcstod(text,NULL);
+
+
+
+					text=WPnode.getAttribute(TEXT("lon"));
+					if(text==NULL) break; //WP without longitude skip it
+					newPoint.Longitude=_tcstod(text,NULL);
+					idx++;
+					text=WPnode.getAttribute(TEXT("ele"));
+					if(text!=NULL) newPoint.Altitude=_tcstod(text,NULL);
+					else newPoint.Altitude=0; //WP altitude missing we put it to 0
+					text=WPnode.getAttribute(TEXT("name"));
+					if(text!=NULL) {
+						_tcscpy(newPoint.Name, text);
+						//East longitudes are positive according to the GPX standard
+					} else {
+						//wp with no name
+						//newPoint.Name=_tcscpy(newPoint.Name,_T("Unnamed WayPoint"));
+					}
+					Task[idx].Index = FindOrAddWaypoint(&newPoint);
+				}
+			}
+		} //if(rootNode)
+		free(szXML);
+	} //if(stream)
+	RefreshTask();
+	TaskModified = false;
+	TargetModified = false;
+	_tcscpy(LastTaskFileName, szFileName);
 	UnlockTaskData();
-	return ValidTaskPoint(0);
+	return true;
 }
-
-//extern int globalFileNum;
-
-/*
- typedef struct wp {
- int seqNo;            //sequence number
- char *name;           //name of the WP
- double latitude;      //rad
- double longitude;     //rad
- double altitude;      //meters
- double dist;          //distance to to this WP in rad
- double initialCourse; //initial true course to to this WP in rad
- double finalCourse;   //final true course to this WP in rad
- double bisector1;     //bisector in rad between this leg and the next
- double bisector2;     //opposite bisector to bisector1 in rad
- double arrTimestamp;  //arrival to this WP timestamp in seconds (from h 0:00)
- struct wp *prev;      //Pointer to the previous waypoint in the list
- struct wp *next;      //Pointer to the next waypoint in the list
- } *wayPoint;
- */
-
-//long StringToIntDflt(const TCHAR *String, long Default);
-
-//double StringToFloatDflt(const TCHAR *String, double Default);
-
-int ParseGPXfile(TCHAR *gpxFileName) {
-	WAYPOINT *currWP;
-
-	if(!FileExists(gpxFileName)) return -2;
-
-	XMLNode rootNode=XMLNode::openFileHelper(gpxFileName,TEXT("PMML"));
-	if(rootNode.isEmpty()) return -1;
-
-	//TODO: here we load just the first route may be there are others routes in the GPX file...
-	XMLNode routeNode=rootNode.getChildNode(TEXT("rte"));
-	if(routeNode.isEmpty()) {
-		printf("ERROR no route found in GPX file.\n");
-		return -3;
-	}
-	int numWPnodes=routeNode.nChildNode();
-	if(numWPnodes<1) {
-		printf("ERROR no waypoints found in route in GPX file\n");
-		return 0;
-	}
-	int wpcounter=0,i;
-	const TCHAR* text=NULL;
-	XMLNode WPnode;
-	double latX,lonX,altX;
-	for(i=0;i<numWPnodes;i++) {
-		WPnode=routeNode.getChildNode(i);
-		if(_tcscmp(WPnode.getName(),TEXT("rtept"))==0) {
-			text=WPnode.getAttribute(TEXT("lat"));
-			if(text==NULL) break; //WP without latitude skip it
-			latX= _tcstod(text,NULL);
-			text=WPnode.getAttribute(TEXT("lon"));
-			if(text==NULL) break; //WP without longitude skip it
-			lonX= _tcstod(text,NULL);
-			wpcounter++;
-			text=WPnode.getAttribute(TEXT("ele"));
-			if(text!=NULL) altX= _tcstod(text,NULL);
-			else altX=0; //WP altitude missing we put it to 0
-
-			/*
-			 node=roxml_get_chld(wp,"name",0);
-			 if(node!=NULL) {
-			 text=roxml_get_content(node,NULL,0,NULL);
-			 if(text==NULL) asprintf(&text,"Unamed WP %d",wpcounter);
-			 } else asprintf(&text,"Unamed WP %d",wpcounter);
-			 NavAddWayPoint(Deg2Rad(latX),Deg2Rad(-lonX),altX,text); //East longitudes are positive according to the GPX standard
-			 */
-		}
-
-	}
-	return wpcounter;
-}
-
-/*
- int NavLoadFlightPlan(char* GPXfile) {
- if(GPXfile==NULL) return -1;
- if(Navigator.status==NAV_STATUS_NOT_INIT) NavConfigure();
- if(Navigator.status==NAV_STATUS_NOT_INIT) return -2;
- NavClearRoute();
- Navigator.routeLogPath=strdup(GPXfile);
- int len=strlen(Navigator.routeLogPath);
- Navigator.routeLogPath[len-3]='t';
- Navigator.routeLogPath[len-2]='x';
- Navigator.routeLogPath[len-1]='t';
- Navigator.routeLog=fopen(Navigator.routeLogPath,"w"); //Create the route log file: NavCalculateRoute() will write in it
- if(Navigator.routeLog==NULL) {
- printLog("ERROR not possible to write the route log file.\n");
- Navigator.status=NAV_STATUS_NO_ROUTE_SET;
- return -3;
- }
- node_t* root=roxml_load_doc(GPXfile);
- if(root==NULL) {
- printLog("ERROR no such file '%s'\n",GPXfile);
- return -4;
- }
-
- }
- */
-
-/*
- long StringToIntDflt(const TCHAR *String) {
- if (String == NULL || String[0] == '\0')
- return(Default);
- return(_tcstol(String, NULL, 0));
- }*/
-
