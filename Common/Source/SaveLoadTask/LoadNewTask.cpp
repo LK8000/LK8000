@@ -8,10 +8,78 @@
 
 #include "externs.h"
 #include "dlgTools.h"
+#include "Waypointparser.h"
 
 
-bool LoadTaskWaypoints(HANDLE hFile);
 extern bool FullResetAsked;
+
+
+/*******************************************************/
+/* this exist only for compatibility with OLD tsk file */
+
+typedef struct _OLD_TASK_POINT
+{
+  int Index;
+  double InBound;
+  double OutBound;
+  double Bisector;
+  double Leg;
+  double SectorStartLat;
+  double SectorStartLon;
+  double SectorEndLat;
+  double SectorEndLon;
+  POINT	 Start;
+  POINT	 End;		
+  int	 AATType;
+  double AATCircleRadius;
+  double AATSectorRadius;
+  double AATStartRadial;
+  double AATFinishRadial;
+  double AATStartLat;
+  double AATStartLon;
+  double AATFinishLat;
+  double AATFinishLon;
+  POINT	 AATStart;
+  POINT	 AATFinish;
+  double AATTargetOffsetRadius;
+  double AATTargetOffsetRadial;
+  double AATTargetLat;
+  double AATTargetLon;
+  POINT	 Target;
+  bool   AATTargetLocked;
+}OLD_TASK_POINT;
+
+#define OLD_MAXTASKPOINTS 20
+
+/*******************************************************/
+
+bool LoadTaskWaypoints(HANDLE hFile) {
+  WAYPOINT read_waypoint;
+  DWORD dwBytesRead;
+
+  int i;
+  for(i=0;i<OLD_MAXTASKPOINTS;i++) {
+    if(!ReadFile(hFile,&read_waypoint,sizeof(read_waypoint),&dwBytesRead, (OVERLAPPED *)NULL)
+       || (dwBytesRead<sizeof(read_waypoint))) {
+      return false;
+    }
+    if (Task[i].Index != -1) { //  091213 CHECK do not load reserved WP
+      Task[i].Index = FindOrAddWaypoint(&read_waypoint);
+    }
+  }
+  for(i=0;i<MAXSTARTPOINTS;i++) {
+    if(!ReadFile(hFile,&read_waypoint,sizeof(read_waypoint),&dwBytesRead, (OVERLAPPED *)NULL)
+       || (dwBytesRead<sizeof(read_waypoint))) {
+      return false;
+    }
+    if (StartPoints[i].Index != -1) {
+      StartPoints[i].Index = FindOrAddWaypoint(&read_waypoint);
+    }
+  }
+  // managed to load everything
+  return true;
+}
+
 
 // Loads a new task from scratch.
 // This is called on startup by the even manager because in DEFAULT MENU we have a GCE event
@@ -81,21 +149,23 @@ void LoadNewTask(LPCTSTR szFileName)
 		goto goEnd;
 	}
 
-      for(i=0;i<MAXTASKPOINTS;i++)
+      for(i=0;i<OLD_MAXTASKPOINTS;i++)
         {
-          if(!ReadFile(hFile,&Temp,sizeof(TASK_POINT),&dwBytesRead, (OVERLAPPED *)NULL))
+          if(!ReadFile(hFile,&Temp,sizeof(OLD_TASK_POINT),&dwBytesRead, (OVERLAPPED *)NULL))
             {
               TaskInvalid = true;
               break;
             }
-	  memcpy(&Task[i],&Temp, sizeof(TASK_POINT));
+          if(i < MAXTASKPOINTS) {
+            memcpy(&Task[i],&Temp, sizeof(OLD_TASK_POINT));
 
-          if( !ValidNotResWayPoint(Temp.Index) && (Temp.Index != -1) ) { // 091213
-            // Task is only invalid here if the index is out of range
-            // of the waypoints and not equal to -1.
-            // (Because -1 indicates a null task item)
-	        WaypointInvalid = true; 
-	  }
+            if( !ValidNotResWayPoint(Temp.Index) && (Temp.Index != -1) ) { // 091213
+                // Task is only invalid here if the index is out of range
+                // of the waypoints and not equal to -1.
+                // (Because -1 indicates a null task item)
+                WaypointInvalid = true; 
+        	}
+          }
         }
 
       if (!TaskInvalid) {

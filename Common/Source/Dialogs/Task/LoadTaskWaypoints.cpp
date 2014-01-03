@@ -36,31 +36,3 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint) {
   return waypoint_index;
 }
 
-
-bool LoadTaskWaypoints(HANDLE hFile) {
-  WAYPOINT read_waypoint;
-  DWORD dwBytesRead;
-
-  int i;
-  for(i=0;i<MAXTASKPOINTS;i++) {
-    if(!ReadFile(hFile,&read_waypoint,sizeof(read_waypoint),&dwBytesRead, (OVERLAPPED *)NULL)
-       || (dwBytesRead<sizeof(read_waypoint))) {
-      return false;
-    }
-    if (Task[i].Index != -1) { //  091213 CHECK do not load reserved WP
-      Task[i].Index = FindOrAddWaypoint(&read_waypoint);
-    }
-  }
-  for(i=0;i<MAXSTARTPOINTS;i++) {
-    if(!ReadFile(hFile,&read_waypoint,sizeof(read_waypoint),&dwBytesRead, (OVERLAPPED *)NULL)
-       || (dwBytesRead<sizeof(read_waypoint))) {
-      return false;
-    }
-    if (StartPoints[i].Index != -1) {
-      StartPoints[i].Index = FindOrAddWaypoint(&read_waypoint);
-    }
-  }
-  // managed to load everything
-  return true;
-}
-
