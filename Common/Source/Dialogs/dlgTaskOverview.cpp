@@ -537,6 +537,8 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
               bOK = true;
           } else if (_wcsicmp(wextension,_T(LKS_WP_CUP))==0) {
               bOK = LoadCupTask(szFileName);
+          } else if (_wcsicmp(wextension,_T(LKS_WP_GPX))==0) {
+              bOK = LoadGpxTask(szFileName);
           }
           if(!bOK) {
               MessageBoxX(hWndMapWindow, gettext(TEXT("_@M467_")),_T(" "), MB_OK|MB_ICONEXCLAMATION);
@@ -692,6 +694,8 @@ void dlgTaskOverviewShowModal(int Idx){
 	_stprintf(suff,_T("*%S"),LKS_OLD_TSK);
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
 	_stprintf(suff,_T("*%S"),LKS_WP_CUP);
+	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
+	_stprintf(suff,_T("*%S"),LKS_WP_GPX);
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
 	wp->RefreshDisplay();
   }

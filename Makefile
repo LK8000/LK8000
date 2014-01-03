@@ -801,6 +801,7 @@ SRC_FILES :=\
 	$(SRC)/SaveLoadTask/SaveDefaultTask.cpp\
 	$(SRC)/SaveLoadTask/SaveTask.cpp\
 	$(SRC)/SaveLoadTask/LoadCupTask.cpp\
+	$(SRC)/SaveLoadTask/LoadGpxTask.cpp\
 	$(SRC)/Settings.cpp\
 	$(SRC)/Sound.cpp \
 	$(SRC)/StatusFile.cpp \

@@ -133,6 +133,7 @@
 #define LKS_WP_XCSOAR	".xcw"
 #define LKS_WP_CUP	".cup"
 #define LKS_WP_COMPE	".wpt"
+#define LKS_WP_GPX	".gpx"
 #define XCS_MAPS	".xcm"
 #define LKS_MAPS	".lkm"
 #define LKS_TERRAINDAT	".dat"
