@@ -50,6 +50,7 @@
 #include "Poco/UnWindows.h"
 #if defined(_WIN32_WCE)
 #include <cmath>
+#include <cstring>
 #endif
 #endif
 
