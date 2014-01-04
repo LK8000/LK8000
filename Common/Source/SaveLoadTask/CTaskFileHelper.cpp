@@ -148,6 +148,7 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
         XMLNode rootNode = XMLNode::parseString(szXML, _T("lk-task"));
 
         if (rootNode) {
+            LoadOptions(rootNode);
             LoadWayPointList(rootNode.getChildNode(_T("waypoints"), 0));
             if (!LoadTaskPointList(rootNode.getChildNode(_T("taskpoints"), 0))) {
                 free(szXML);
@@ -157,7 +158,6 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
                 free(szXML);
                 return false;
             }
-            LoadOptions(rootNode);
         }
 
         free(szXML);
