@@ -259,7 +259,7 @@ ifeq ($(INT_OVERFLOW), y)
 	CPPFLAGS	+=-ftrapv -DINT_OVERFLOW
 endif
 
-CXXFLAGS	:=$(OPTIMIZE) -fno-exceptions $(PROFILE)
+CXXFLAGS	:=$(OPTIMIZE) $(PROFILE)
 CFLAGS		:=$(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration
@@ -878,6 +878,21 @@ COMPAT	:=\
 	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
 	$(COMPATSRC)/wtoi.c
 
+POCOSRC:=$(LIB)/poco
+POCO :=\
+     $(POCOSRC)/Debugger.cpp \
+     $(POCOSRC)/Bugcheck.cpp \
+     $(POCOSRC)/ErrorHandler.cpp \
+     $(POCOSRC)/Event.cpp \
+     $(POCOSRC)/Exception.cpp \
+     $(POCOSRC)/Mutex.cpp \
+     $(POCOSRC)/Runnable.cpp \
+     $(POCOSRC)/RWLock.cpp \
+     $(POCOSRC)/Thread.cpp \
+     $(POCOSRC)/ThreadLocal.cpp \
+     $(POCOSRC)/Timestamp.cpp \
+
+
 #ifneq ($(CONFIG_PC),y)
 #COMPAT	:=$(COMPAT) \
 #   $(COMPATSRC)/redir.cpp
@@ -894,6 +909,7 @@ OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
 	$(BIN)/zzip.a \
 	$(BIN)/compat.a \
+	$(BIN)/poco.a \
 	$(BIN)/lk8000.rsc
 
 IGNORE	:= \( -name .git \) -prune -o
@@ -971,6 +987,10 @@ $(BIN)/jasper.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(JASPER)) $(patsubst $(SRC)%.
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
 $(BIN)/compat.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(COMPAT)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(COMPAT))
+	@$(NQ)echo "  AR      $@"
+	$(Q)$(AR) $(ARFLAGS) $@ $^
+
+$(BIN)/poco.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(POCO)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(POCO))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
