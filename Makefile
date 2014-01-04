@@ -194,6 +194,7 @@ ifeq ($(CONFIG_PPC2003),y)
 CE_DEFS		+=-DPPC2003=1
 endif
 
+CE_DEFS		+= -DPOCO_NO_UNWINDOWS
 
 UNICODE		:= -DUNICODE -D_UNICODE
 
@@ -229,7 +230,7 @@ CPPFLAGS	+= -Wall -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
-CPPFLAGS	+= -Wshadow
+#CPPFLAGS	+= -Wshadow
 #CPPFLAGS	+= -Wsign-compare -Wsign-conversion
 ifeq ($(CONFIG_PNA),y)
 CPPFLAGS	+= -DCECORE -DPNA

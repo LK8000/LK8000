@@ -15,7 +15,7 @@ extern bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDevi
 PDeviceDescriptor_t CDevCProbe::m_pDevice=NULL;
 BOOL CDevCProbe::m_bCompassCalOn=FALSE;
 WndForm *CDevCProbe::m_wf=NULL;
-CRITICAL_SECTION* CDevCProbe::m_pCritSec_DeviceData=NULL;
+Poco::Mutex* CDevCProbe::m_pCritSec_DeviceData=NULL;
 double CDevCProbe::m_abs_press=0.0;
 double CDevCProbe::m_delta_press=0.0;
 
@@ -47,8 +47,7 @@ BOOL CDevCProbe::Install( PDeviceDescriptor_t d ) {
 BOOL CDevCProbe::Open( PDeviceDescriptor_t d, int Port ) {
 	m_pDevice = d;
 
-	m_pCritSec_DeviceData = new CRITICAL_SECTION;
-	InitializeCriticalSection(m_pCritSec_DeviceData);
+	m_pCritSec_DeviceData = new Poco::Mutex;
 
 	return TRUE;
 }
@@ -56,7 +55,6 @@ BOOL CDevCProbe::Open( PDeviceDescriptor_t d, int Port ) {
 BOOL CDevCProbe::Close (PDeviceDescriptor_t d) {
 	m_pDevice = NULL;
 
-	DeleteCriticalSection(m_pCritSec_DeviceData);
 	delete m_pCritSec_DeviceData;
 	m_pCritSec_DeviceData = NULL;
 
@@ -77,13 +75,13 @@ inline double int24toDouble(int v) {
 
 void CDevCProbe::LockDeviceData(){
 	if(m_pCritSec_DeviceData) {
-		EnterCriticalSection(m_pCritSec_DeviceData);
+		m_pCritSec_DeviceData->lock();
 	}
 }
 
 void CDevCProbe::UnlockDeviceData(){
 	if(m_pCritSec_DeviceData) {
-		LeaveCriticalSection(m_pCritSec_DeviceData);
+		m_pCritSec_DeviceData->unlock();
 	}
 }
 

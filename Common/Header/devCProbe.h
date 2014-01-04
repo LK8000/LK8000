@@ -62,7 +62,7 @@ private:
 
 	static TCHAR m_szVersion[15];
 
-	static CRITICAL_SECTION* m_pCritSec_DeviceData;
+	static Poco::Mutex* m_pCritSec_DeviceData;
 
 	static void LockDeviceData();
 	static void UnlockDeviceData();

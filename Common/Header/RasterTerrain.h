@@ -127,7 +127,7 @@ class RasterMapCache: public RasterMap {
   void Lock();
   void Unlock();
  protected:
-  static CRITICAL_SECTION CritSec_TerrainFile;
+  static Poco::Mutex CritSec_TerrainFile;
   TERRAIN_CACHE TerrainCache[MAXTERRAINCACHE]; 
 
   int terraincacheefficiency;
@@ -147,10 +147,8 @@ class RasterMapRaw: public RasterMap {
   RasterMapRaw() {
     TerrainMem = NULL;
     DirectAccess = true;
-    InitializeCriticalSection(&CritSec_TerrainFile);
   }
   ~RasterMapRaw() {
-    DeleteCriticalSection(&CritSec_TerrainFile);
   }
   short *TerrainMem;
   virtual void SetFieldRounding(double xr, double yr);
@@ -161,7 +159,7 @@ class RasterMapRaw: public RasterMap {
  protected:
   virtual short _GetFieldAtXY(unsigned int lx,
                               unsigned int ly);
-  CRITICAL_SECTION  CritSec_TerrainFile;
+  Poco::Mutex  CritSec_TerrainFile;
 };
 
 

@@ -75,11 +75,11 @@ short RasterMapRaw::_GetFieldAtXY(unsigned int lx,
 
 
 void RasterMapRaw::Lock(void) {
-  EnterCriticalSection(&CritSec_TerrainFile);
+  CritSec_TerrainFile.lock();
 }
 
 void RasterMapRaw::Unlock(void) {
-  LeaveCriticalSection(&CritSec_TerrainFile);
+  CritSec_TerrainFile.unlock();
 }
 
 

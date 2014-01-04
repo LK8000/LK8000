@@ -293,9 +293,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   SHSetAppKeyWndAssoc(VK_APP6, hWndMainWindow);
   #endif
 
-  extern void InitCriticalSections(void);
-  InitCriticalSections();
-
   drawTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("drawTriggerEvent"));
   dataTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("dataTriggerEvent"));
 
@@ -596,8 +593,6 @@ _Shutdown:
   else return 111;
 }
 
-extern void DeInitCriticalSections(void);
-
 void CleanupForShutdown(void) {
 
   LKObjects_Delete();
@@ -608,8 +603,6 @@ void CleanupForShutdown(void) {
   InputEvents::UnloadString();
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
-
-  DeInitCriticalSections(); 
   
   ReleaseMutex(hMutex);
   CloseHandle(hMutex);
