@@ -18,3 +18,7 @@ PGTaskPt::PGTaskPt() {
 PGTaskPt::~PGTaskPt() {
 
 }
+
+void PGTaskPt::UpdateTaskPoint(TASK_POINT& TskPt ) const {
+
+}

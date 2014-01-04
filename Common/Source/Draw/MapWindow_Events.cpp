@@ -11,7 +11,6 @@
 #include "Waypointparser.h"
 #include "InputEvents.h"
 #include "Dialogs.h"
-extern int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius);
 
 bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, 
                                              double range,

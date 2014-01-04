@@ -21,12 +21,10 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	LockTaskData();
 
-	gPGTask.Optimize(Basic);
+	gPGTask.Optimize(Basic, Calculated);
 
 	for(size_t i=0; i<gPGTask.Count(); ++i) {
-		gPGTask.getOptimized(i, Task[i].AATTargetLat, Task[i].AATTargetLon);
-    
-        UpdateTargetAltitude(i);
+        gPGTask.UpdateTaskPoint(i, Task[i]);
 	}
 		
 	int stdwp=Task[ActiveWayPoint].Index;

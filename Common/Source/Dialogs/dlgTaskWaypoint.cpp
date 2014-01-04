@@ -247,6 +247,19 @@ static void GetWaypointValues(void) {
 			wp->GetDataField()->GetAsInteger());
 	}
 
+   	wp = (WndProperty*)wf->FindByName(TEXT("prpConeSlope"));
+	if (wp) {
+		CHECK_CHANGED(Task[twItemIndex].PGConeSlope,
+			wp->GetDataField()->GetAsFloat());
+	}
+
+  	wp = (WndProperty*)wf->FindByName(TEXT("prpConeBase"));
+	if (wp) {
+		CHECK_CHANGED(Task[twItemIndex].PGConeBase,
+			wp->GetDataField()->GetAsFloat()/ALTITUDEMODIFY);
+	}
+
+
     if (changed) {
       TaskModified = true;
     }
@@ -268,6 +281,10 @@ static void SetWaypointValues(bool first=false) {
       dfe->addEnumText(gettext(TEXT("_@M210_")));
 	// LKTOKEN  _@M590_ = "Sector" 
       dfe->addEnumText(gettext(TEXT("_@M590_")));
+      if(DoOptimizeRoute()) {
+        // Conical ESS
+        dfe->addEnumText(gettext(TEXT("_@M2175_")));
+      }
     }
     dfe->SetDetachGUI(true); // disable call to OnAATEnabled
     dfe->Set(Task[twItemIndex].AATType);
@@ -275,12 +292,24 @@ static void SetWaypointValues(bool first=false) {
     wp->RefreshDisplay();
   }
 
+  WindowControl* pFrm = wf->FindByName(_T("frmCircle"));
+  if(pFrm) {
+    pFrm->SetVisible(Task[twItemIndex].AATType==0);
+  }
+  pFrm = wf->FindByName(_T("frmSector"));
+  if(pFrm) {
+    pFrm->SetVisible(Task[twItemIndex].AATType==1);
+  }
+  pFrm = wf->FindByName(_T("frmCone"));
+  if(pFrm) {
+    pFrm->SetVisible(Task[twItemIndex].AATType==2);
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(lround(Task[twItemIndex].AATCircleRadius
                                           *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
-    wp->SetVisible(Task[twItemIndex].AATType==0);
     wp->RefreshDisplay();
   }
 
@@ -289,21 +318,18 @@ static void SetWaypointValues(bool first=false) {
     wp->GetDataField()->SetAsFloat(lround(Task[twItemIndex].AATSectorRadius
                                           *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
-    wp->SetVisible(Task[twItemIndex].AATType>0);
     wp->RefreshDisplay();    
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATStartRadial"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Task[twItemIndex].AATStartRadial);
-    wp->SetVisible(Task[twItemIndex].AATType>0);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATFinishRadial"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Task[twItemIndex].AATFinishRadial);
-    wp->SetVisible(Task[twItemIndex].AATType>0);
     wp->RefreshDisplay();
   }
 
@@ -320,8 +346,21 @@ static void SetWaypointValues(bool first=false) {
 		  }
 		  dfe->Set(Task[twItemIndex].OutCircle);
 	  }
-	  wp->SetVisible(Task[twItemIndex].AATType==0 && DoOptimizeRoute());
+	  wp->SetVisible(DoOptimizeRoute());
 	  wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConeSlope"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(Task[twItemIndex].PGConeSlope);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConeBase"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(Task[twItemIndex].PGConeBase*ALTITUDEMODIFY);
+    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+    wp->RefreshDisplay();
   }
 }
 

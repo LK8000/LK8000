@@ -60,7 +60,7 @@ static void MoveTarget(double adjust_angle) {
                          &target_latitude,
                          &target_longitude);
 
-  if (InAATTurnSector(target_longitude, target_latitude, target_point)) {
+  if (InAATTurnSector(target_longitude, target_latitude, target_point, 0)) {
     if (CALCULATED_INFO.IsInSector && (target_point == ActiveWayPoint)) {
       // set range/radial for inside sector
       double course_bearing, target_bearing;
@@ -135,7 +135,7 @@ static void MoveTarget(double target_longitude, double target_latitude) {
 
   double distance, bearing;
 
-  if (InAATTurnSector(target_longitude, target_latitude, target_point)) {
+  if (InAATTurnSector(target_longitude, target_latitude, target_point, 0)) {
     if (CALCULATED_INFO.IsInSector && (target_point == ActiveWayPoint)) {
       // set range/radial for inside sector
       double course_bearing, target_bearing;

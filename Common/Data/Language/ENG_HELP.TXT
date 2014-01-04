@@ -1817,5 +1817,11 @@ The time that the hardware will be allow establishment of a bluetooth connection
 [Output Frequency]
 The output frequency -> 1-every 20ms ... 50-every 20msx50=1000ms
 
+@1288
+[Conical ESS Slope]
+
+@1289
+[Conical ESS Base]
+
 @9999
 No help available on this item!

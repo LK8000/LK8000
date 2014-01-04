@@ -11,7 +11,7 @@
 
 
 bool InAATTurnSector(const double longitude, const double latitude,
-                    const int the_turnpoint)
+                    const int the_turnpoint, const double Altitude)
 {
   double AircraftBearing;
   bool retval = false;
@@ -27,18 +27,22 @@ bool InAATTurnSector(const double longitude, const double latitude,
                   latitude,
                   longitude,
                   &distance, &AircraftBearing);
-
-  if(Task[the_turnpoint].AATType ==  CIRCLE) {
-    if(distance < Task[the_turnpoint].AATCircleRadius) {
-      retval = true;
-    }
-  } else if(distance < Task[the_turnpoint].AATSectorRadius) {
-    if (AngleInRange(Task[the_turnpoint].AATStartRadial,
-                     Task[the_turnpoint].AATFinishRadial,
-                     AngleLimit360(AircraftBearing), true)) {
-      retval = true;
-    }
+  int Type; double Radius;
+  GetTaskSectorParameter(the_turnpoint, &Type, &Radius);
+  switch(Type) {
+      case CIRCLE:
+          retval = (distance < Radius);
+          break;
+      case SECTOR:
+          retval = (AngleInRange(Task[the_turnpoint].AATStartRadial,
+                                    Task[the_turnpoint].AATFinishRadial,
+                                    AngleLimit360(AircraftBearing), true));
+          break;
+      case CONE:
+          retval = (distance < ( Altitude - Task[the_turnpoint].PGConeBase ) * Task[the_turnpoint].PGConeSlope);
+          break;
   }
+
 
   UnlockTaskData();
   return retval;

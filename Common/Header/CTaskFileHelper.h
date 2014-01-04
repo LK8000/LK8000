@@ -38,7 +38,7 @@ protected:
     bool SaveStartPointList(XMLNode node);
     bool SaveWayPointList(XMLNode node);
 
-    bool SaveTaskPoint(XMLNode node, const TASK_POINT& TaskPt);
+    bool SaveTaskPoint(XMLNode node, const unsigned long idx, const TASK_POINT& TaskPt);
     bool SaveStartPoint(XMLNode node, const START_POINT& StartPt);
     bool SaveWayPoint(XMLNode node, const WAYPOINT& WayPoint);
 

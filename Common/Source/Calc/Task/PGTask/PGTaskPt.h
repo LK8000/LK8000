@@ -97,8 +97,15 @@ public:
     inline const ProjPt& getCenter() const {
         return m_Center;
     }
-
-    virtual void Optimize(const ProjPt& prev, const ProjPt& next) = 0;
+    
+    /*
+     * @prev : previous optimized Target point
+     * @next : next optimized target point
+     * @Alt : estimated Arrival Altitude
+     */
+    virtual void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) = 0;
+    
+    virtual void UpdateTaskPoint(TASK_POINT& TskPt ) const;
 
 protected:
     ProjPt m_Center;

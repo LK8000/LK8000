@@ -94,7 +94,7 @@ void CalculateAATIsoLines(void) {
                               &latitude,
                               &longitude);
         
-        in_sector = InAATTurnSector(longitude, latitude, i);
+        in_sector = InAATTurnSector(longitude, latitude, i, 0);
         /*
         if (dist_0 < distance_glider) {
           in_sector = false;
