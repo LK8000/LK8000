@@ -54,10 +54,12 @@ typedef struct _TASK_POINT
   double AATTargetOffsetRadial;
   double AATTargetLat;
   double AATTargetLon;
-  double AATTargetAltitude;
   POINT	 Target;
   bool   AATTargetLocked;
   bool	 OutCircle;
+  double AATTargetAltitude;
+  // always add new members at the End of this struct
+  //   needed for compatibility with old task file.
 }TASK_POINT;
 
 typedef TASK_POINT Task_t[MAXTASKPOINTS +1];
