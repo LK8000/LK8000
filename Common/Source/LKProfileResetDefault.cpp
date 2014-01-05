@@ -356,6 +356,7 @@ void LKProfileResetDefault(void) {
   ConfIP14 = 1;
   ConfIP15 = 1;
   ConfIP16 = 1;
+  ConfIP17 = 1;
   ConfIP21 = 1;
   ConfIP22 = 1;
   ConfIP23 = 1;
