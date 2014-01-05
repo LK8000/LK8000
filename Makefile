@@ -885,13 +885,27 @@ POCO :=\
      $(POCOSRC)/Bugcheck.cpp \
      $(POCOSRC)/ErrorHandler.cpp \
      $(POCOSRC)/Event.cpp \
+     $(POCOSRC)/NamedEvent.cpp \
      $(POCOSRC)/Exception.cpp \
      $(POCOSRC)/Mutex.cpp \
+     $(POCOSRC)/NamedMutex.cpp \
      $(POCOSRC)/Runnable.cpp \
      $(POCOSRC)/RWLock.cpp \
      $(POCOSRC)/Thread.cpp \
      $(POCOSRC)/ThreadLocal.cpp \
      $(POCOSRC)/Timestamp.cpp \
+     $(POCOSRC)/UnicodeConverter.cpp \
+     $(POCOSRC)/UTF8Encoding.cpp \
+     $(POCOSRC)/UTF16Encoding.cpp \
+     $(POCOSRC)/TextEncoding.cpp \
+     $(POCOSRC)/ASCIIEncoding.cpp \
+     $(POCOSRC)/Latin1Encoding.cpp \
+     $(POCOSRC)/Latin9Encoding.cpp \
+     $(POCOSRC)/Windows1252Encoding.cpp \
+     $(POCOSRC)/TextIterator.cpp \
+     $(POCOSRC)/TextConverter.cpp \
+     $(POCOSRC)/Ascii.cpp \
+     $(POCOSRC)/AtomicCounter.cpp \
 
 
 #ifneq ($(CONFIG_PC),y)
