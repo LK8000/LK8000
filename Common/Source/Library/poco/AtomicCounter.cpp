@@ -40,7 +40,7 @@
 namespace Poco {
 
 
-#if POCO_OS == POCO_OS_WINDOWS_NT
+#if POCO_OS == POCO_OS_WINDOWS_NT || POCO_OS == POCO_OS_WINDOWS_CE
 //
 // Windows
 //
@@ -79,7 +79,6 @@ AtomicCounter& AtomicCounter::operator = (AtomicCounter::ValueType value)
 	InterlockedExchange(&_counter, value);
 	return *this;
 }
-
 
 #elif POCO_OS == POCO_OS_MAC_OS_X
 //

@@ -124,14 +124,14 @@ public:
 		/// Returns true if the counter is zero, false otherwise.
 
 private:
-#if POCO_OS == POCO_OS_WINDOWS_NT
+#if POCO_OS == POCO_OS_WINDOWS_NT || POCO_OS == POCO_OS_WINDOWS_CE
 	typedef volatile LONG ImplType;
 #elif POCO_OS == POCO_OS_MAC_OS_X
 	typedef int32_t ImplType;
 #elif defined(POCO_HAVE_GCC_ATOMICS)
 	typedef int ImplType;
 #else // generic implementation based on FastMutex
-	struct ImplType
+	struct ImplType 
 	{
 		mutable FastMutex mutex;
 		volatile int      value;
@@ -147,7 +147,7 @@ private:
 //
 
 
-#if POCO_OS == POCO_OS_WINDOWS_NT
+#if POCO_OS == POCO_OS_WINDOWS_NT || POCO_OS == POCO_OS_WINDOWS_CE
 //
 // Windows
 //
