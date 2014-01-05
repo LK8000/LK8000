@@ -174,6 +174,7 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 	case MSM_INFO_TASK:
 	case MSM_INFO_AUX:
 	case MSM_INFO_TRI:
+	case MSM_INFO_HSI:
 	case MSM_INFO_TRF:
 	case MSM_INFO_TARGET:
 	case MSM_INFO_CONTEST:

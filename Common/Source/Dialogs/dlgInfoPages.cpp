@@ -64,6 +64,12 @@ static void setVariables(void) {
     dfb->Set(ConfIP16);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpIP17"));
+  if (wp) {
+    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    dfb->Set(ConfIP17);
+    wp->RefreshDisplay();
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP21"));
   if (wp) {
     DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();

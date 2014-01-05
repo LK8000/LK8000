@@ -548,10 +548,14 @@ class MapWindow {
   static void DrawTraffic(HDC hdc, const RECT rc);
   static void DrawThermalHistory(HDC hdc, const RECT rc);
   static int DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc, double bearing);
-  static void DrawHSI(HDC hdc, POINT Orig, RECT rc );
+  static void DrawHSIarc(HDC hdc, POINT Orig, RECT rc );
   static void DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc , double, double);
 
-
+  //Here the staff for the new HSI info screen: remove after what is not needed
+  static void DrawHSI(HDC hDC, const RECT rc);
+  static void DrawHSIAHRS(HDC hDC, const RECT rc);
+  static void DrawHSICompassRose(HDC hDC, const RECT rc, double direction);
+  static void DrawHSIAcceleration(HDC hDC, const RECT rc);
 
   static void WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
                                 short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);

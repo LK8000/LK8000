@@ -400,6 +400,7 @@ DRAW	:=\
 	$(DRW)/DrawGPSStatus.cpp \
 	$(DRW)/DrawGreatCircle.cpp \
 	$(DRW)/DrawHeading.cpp \
+	$(DRW)/DrawHSI.cpp \
 	$(DRW)/DrawLKAlarms.cpp \
 	$(DRW)/DrawMapScale.cpp \
 	$(DRW)/DrawRunway.cpp \
