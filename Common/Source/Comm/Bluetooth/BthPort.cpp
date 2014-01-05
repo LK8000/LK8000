@@ -195,7 +195,7 @@ DWORD BthPort::RxThread() {
     FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime;
     Purge();
 
-    while (mSocket != INVALID_SOCKET && ::WaitForSingleObject(hStop, dwWaitTime) == WAIT_TIMEOUT) {
+    while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(dwWaitTime)) {
         GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &StartKernelTime, &StartUserTime);
         UpdateStatus();
 

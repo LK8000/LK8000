@@ -14,6 +14,7 @@
 #include "AirfieldDetails.h"
 #include "InfoBoxLayout.h"
 #include "Dialogs.h"
+#include "Poco/NamedMutex.h"
 
 #include <commctrl.h>
 #include <aygshell.h>
@@ -66,6 +67,7 @@
 
 
 #include "TraceThread.h"
+#include "Poco/NamedEvent.h"
 
 #ifdef INT_OVERFLOW
 	#include <signal.h>
@@ -102,7 +104,7 @@ bool api_has_SHHandleWMSettingChange = false;
 #endif
 
 void CleanupForShutdown(void);
-HANDLE hMutex=NULL;
+Poco::NamedMutex Mutex("LOCK8000");
 
 #ifdef INT_OVERFLOW
 void handler(int /*signal*/) {
@@ -148,11 +150,8 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   HACCEL hAccelTable;
   (void)hPrevInstance;
   // use mutex to avoid multiple instances of lk8000 be running
-  hMutex = CreateMutex(NULL,FALSE,_T("LOCK8000"));
   #if (!((WINDOWSPC>0) && TESTBENCH))
-  if (GetLastError() == ERROR_ALREADY_EXISTS) {
-	  ReleaseMutex(hMutex);
-	  CloseHandle(hMutex);
+   if (!Mutex.tryLock()) {
 	  return(-2);
   }
   #endif
@@ -292,9 +291,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   SHSetAppKeyWndAssoc(VK_APP5, hWndMainWindow);
   SHSetAppKeyWndAssoc(VK_APP6, hWndMainWindow);
   #endif
-
-  drawTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("drawTriggerEvent"));
-  dataTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("dataTriggerEvent"));
 
   // Initialise main blackboard data
 
@@ -604,8 +600,6 @@ void CleanupForShutdown(void) {
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
   
-  ReleaseMutex(hMutex);
-  CloseHandle(hMutex);
-
+  Mutex.unlock();
 }
 

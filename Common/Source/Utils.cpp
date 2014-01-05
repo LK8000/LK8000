@@ -79,7 +79,7 @@ void RestartCommPorts() {
 
 void TriggerGPSUpdate()
 {
-  SetEvent(dataTriggerEvent);
+  dataTriggerEvent.set();
 }
 
 // This is currently doing nothing.

@@ -90,8 +90,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
   while (!CLOSETHREAD) 
   {
-	WaitForSingleObject(drawTriggerEvent, 5000);
-	ResetEvent(drawTriggerEvent);
+	if(drawTriggerEvent.tryWait(5000)) drawTriggerEvent.reset();
 	if (CLOSETHREAD) break; // drop out without drawing
 
 	if ((!THREADRUNNING) || (!GlobalRunning)) {
@@ -325,7 +324,7 @@ void MapWindow::CloseDrawingThread(void)
   StartupStore(_T("... CloseDrawingThread started\n"));
   #endif
   CLOSETHREAD = TRUE;
-  SetEvent(drawTriggerEvent); // wake self up
+  drawTriggerEvent.set(); // wake self up
   LockTerrainDataGraphics();
   SuspendDrawingThread();
   UnlockTerrainDataGraphics();

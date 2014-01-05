@@ -307,7 +307,7 @@ void AfterStartup() {
   MapWindow::MapDirty = true;
   MapWindow::zoom.Reset(); 
   FullScreen();
-  SetEvent(drawTriggerEvent);
+  drawTriggerEvent.set();
 }
 
 
@@ -373,8 +373,8 @@ void Shutdown(void) {
   MapWindow::CloseDrawingThread();
 
   // Stop calculating too (wake up)
-  SetEvent(dataTriggerEvent);
-  SetEvent(drawTriggerEvent);
+  dataTriggerEvent.set();
+  drawTriggerEvent.set();
 
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
@@ -474,11 +474,6 @@ void Shutdown(void) {
   #endif
   DestroyWindow(hWndMapWindow);
   DestroyWindow(hWndMainWindow);
-  #if TESTBENCH
-  StartupStore(TEXT(".... Close Event Handles%s"),NEWLINE);
-  #endif
-  CloseHandle(drawTriggerEvent);
-  CloseHandle(dataTriggerEvent);
 
   #if TESTBENCH
   StartupLogFreeRamAndStorage();

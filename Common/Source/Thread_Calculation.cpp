@@ -26,7 +26,7 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
 	#endif
 		MapWindow::MapDirty = true;
 
-	PulseEvent(drawTriggerEvent);
+	drawTriggerEvent.set();
   }
 }
 
@@ -61,8 +61,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
 
   while (!MapWindow::CLOSETHREAD) {
 
-    WaitForSingleObject(dataTriggerEvent, 5000);
-    ResetEvent(dataTriggerEvent);
+    if(dataTriggerEvent.tryWait(5000)) dataTriggerEvent.reset();
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
     GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);

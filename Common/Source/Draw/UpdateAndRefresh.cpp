@@ -16,13 +16,13 @@
 // an old bitmap image of the screen.
 void MapWindow::RequestFastRefresh() {
   MapDirty = false;
-  SetEvent(drawTriggerEvent);
+  drawTriggerEvent.set();
 }
 
 
 void MapWindow::RefreshMap() {
   MapDirty = true;
-  SetEvent(drawTriggerEvent);
+  drawTriggerEvent.set();
 }
 
 

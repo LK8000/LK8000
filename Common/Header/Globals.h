@@ -14,6 +14,9 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include "Poco/Event.h"
+
+
   #undef  GEXTERN
   #undef  GEXTTRUE
   #undef  GEXTFALSE
@@ -46,7 +49,7 @@ GEXTERN pointObj GlideFootPrint2[NUMTERRAINSWEEPS+1];
 #endif
 
 GEXTERN bool MenuActive GEXTFALSE;
-GEXTERN HANDLE dataTriggerEvent;
+GEXTERN Poco::Event dataTriggerEvent;
 
 // System boot specific flags
 // Give me a go/no-go
@@ -740,7 +743,7 @@ GEXTERN DWORD dwCalcThreadID;
 GEXTERN BOOL extGPSCONNECT;
 GEXTERN bool DialogActive;
 
-GEXTERN HANDLE drawTriggerEvent;
+GEXTERN Poco::Event drawTriggerEvent;
 
 
 #if  (LK_CACHECALC && LK_CACHECALC_MCA_STAT)

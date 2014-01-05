@@ -19,7 +19,6 @@ ComPort::ComPort(int idx, const std::wstring& sName) : devIdx(idx), sPortName(sN
     pLastNmea = begin(_NmeaString);
 
     hReadThread = INVALID_HANDLE_VALUE;
-    hStop = INVALID_HANDLE_VALUE;
 }
 
 ComPort::~ComPort() {
@@ -78,14 +77,9 @@ void ComPort::PutChar(BYTE b) {
 }
 
 BOOL ComPort::StopRxThread() {
-    if ((hStop != INVALID_HANDLE_VALUE) && (hReadThread != INVALID_HANDLE_VALUE)) {
+    if ((hReadThread != INVALID_HANDLE_VALUE)) {
+        StopEvt.set();
 
-#ifdef UNDER_CE
-        //Never use SetEvent(x) or ResetEvent(x), mingw 3.15.2 inline implementation is bugge
-        EventModify(hStop, EVENT_SET);
-#else
-        SetEvent(hStop); 
-#endif
 #ifdef _DEBUG_STOP_RXTHREAD
         StartupStore(_T("... ComPort %d StopRxThread: Cancel Wait Event !%s"), GetPortIndex() + 1, NEWLINE);
 #endif
@@ -100,17 +94,13 @@ BOOL ComPort::StopRxThread() {
         }
         CloseHandle(hReadThread);
         hReadThread = INVALID_HANDLE_VALUE;
-        CloseHandle(hStop);
-        hStop = INVALID_HANDLE_VALUE;
+        StopEvt.reset();
     }
     return TRUE;
 }
 
 BOOL ComPort::StartRxThread() {
-    if ((hStop = CreateEvent(NULL, TRUE, FALSE, NULL)) == NULL) {
-        goto failed;
-    }
-
+    StopEvt.reset();
     DWORD dwThreadID;
     // Create a read thread for reading data from the communication port.
     if ((hReadThread = CreateThread(NULL, 0, RxThreadProc, this, 0, &dwThreadID)) == NULL) {

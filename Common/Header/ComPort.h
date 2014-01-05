@@ -15,6 +15,7 @@
 #include "Sizes.h"
 #include "boost/noncopyable.hpp"
 #include "string"
+#include "Poco/Event.h"
 
 class ComPort : public boost::noncopyable {
 public:
@@ -73,7 +74,7 @@ protected:
 
     void ProcessChar(char c);
 
-    HANDLE hStop;
+    Poco::Event StopEvt;
     HANDLE hReadThread;
     
 private:

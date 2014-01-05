@@ -16,6 +16,7 @@
 #include "externs.h"
 #include "LiveTracker.h"
 #include "utils/stringext.h"
+#include "Poco/Event.h"
 
 //Use to log transactions to the startupstore
 //#define LT_DEBUG  1
@@ -24,7 +25,7 @@ static bool _ws_inited = false;     //Winsock inited
 static bool _inited = false;        //Winsock + thread inited
 static HANDLE _hThread = NULL;             //worker thread handle
 static DWORD _dwThreadID;           //worker thread ID
-static HANDLE _hNewDataEvent;       //new data event trigger
+static Poco::Event NewDataEvent;       //new data event trigger
 #define SERVERNAME_MAX  100
 static char _server_name[SERVERNAME_MAX];      // server name, or ip
 static int _server_port;
@@ -148,7 +149,7 @@ void LiveTrackerInit()
   //Init winsock if available
   if (InitWinsock()) {
     _ws_inited = true;
-    _hNewDataEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("livetrknewdata"));
+
     // Create a thread for sending data to the server
     if ((_hThread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)&LiveTrackerThread, 0, 0, &_dwThreadID)) != NULL)
     {
@@ -169,13 +170,12 @@ void LiveTrackerShutdown()
   if (_hThread != NULL) {
     _t_end = false;
     _t_run = false;
-    SetEvent(_hNewDataEvent);
+    NewDataEvent.set();
     WaitForSingleObject(_hThread, INFINITE);
     CloseHandle(_hThread);
     StartupStore(TEXT(". LiveTracker closed.%s"),NEWLINE);
   }
   if (_ws_inited) {
-    CloseHandle(_hNewDataEvent);
     WSACleanup();
   }
 }
@@ -224,7 +224,7 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   newpoint.course_over_ground = Calculated->Heading;
   
   _t_points.push_back(newpoint);
-  SetEvent(_hNewDataEvent);
+  NewDataEvent.set();
 }  
 
 
@@ -618,7 +618,7 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
   srand(GetTickCount());
 
   do {
-    if (WaitForSingleObject(_hNewDataEvent, 5000) == WAIT_OBJECT_0) ResetEvent(_hNewDataEvent);
+    if (NewDataEvent.tryWait(5000)) NewDataEvent.reset();
     if (!_t_run) break;
     do {
       if (1) {
