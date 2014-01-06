@@ -2093,12 +2093,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(AirspaceWarningRepeatTime/60);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpLockSettingsInFlight"));
   if (wp) {
     wp->GetDataField()->Set(LockSettingsInFlight);
@@ -3866,13 +3860,6 @@ double dval;
     }
   }
   
- wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
-  if (wp) {
-    if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
-      AirspaceWarningRepeatTime = wp->GetDataField()->GetAsInteger()*60;
-    }
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoom"));
   if (wp) {
     if (AutoZoom_Config != 

@@ -506,9 +506,6 @@
       <WndProperty Name="prpLoggerTimeStepCircling" Caption="_@M718_" X="2" Y="-1" Width="-246" Height="22" CaptionWidth="150" Font="2" Help="_@H227_">
         <DataField Name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min="1" Max="30" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpWarningMessageRepeatTime" Caption="_@M1277_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1209_">
-        <DataField Name="" DataType="double" DisplayFormat="%.0f min" EditFormat="%.0f" Min="2" Max="60" Step="1"/>
-      </WndProperty>
     </WndFrame>
     <WndFrame Name="frmEngineering2" X="70" Y="0" Width="-246" Height="222" Font="1">
       <WndProperty Name="prpAppDefaultMapWidth" Caption="_@M226_" X="2" Y="-1" Width="-246" Height="22" CaptionWidth="150" Font="2">

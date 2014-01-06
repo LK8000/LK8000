@@ -105,6 +105,13 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(AirspaceWarningRepeatTime/60);
+    wp->RefreshDisplay();
+  }
+
+
   SetReadOnlyItems();
 }
 
@@ -185,6 +192,14 @@ void dlgAirspaceWarningParamsShowModal(void){
       AIRSPACEWARNINGS = wp->GetDataField()->GetAsInteger();
     }
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
+  if (wp) {
+    if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
+      AirspaceWarningRepeatTime = wp->GetDataField()->GetAsInteger()*60;
+    }
+  }
+
 
 
   delete wf;

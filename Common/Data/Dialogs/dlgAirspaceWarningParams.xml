@@ -14,6 +14,9 @@
     <WndProperty Name="prpAcknowledgementTime" Caption="_@M52_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1252_" Keyboard="1">
       <DataField Name="" DataType="double" DisplayFormat="%.0f min" EditFormat="%.0f" Min="1" Max="720" Step="1"/>
     </WndProperty>
+    <WndProperty Name="prpWarningMessageRepeatTime" Caption="_@M1277_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1209_">
+        <DataField Name="" DataType="double" DisplayFormat="%.0f min" EditFormat="%.0f" Min="2" Max="60" Step="1"/>
+      </WndProperty>
     <WndProperty Name="prpAckAllSame" Caption="_@M1823_" X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" Help="_@H1264_">
       <DataField Name="" DataType="boolean"/>
     </WndProperty>
