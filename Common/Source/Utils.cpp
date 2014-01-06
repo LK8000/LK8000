@@ -40,6 +40,12 @@ int GetTextWidth(HDC hDC, const TCHAR *text) {
   return tsize.cx;
 }
 
+int GetTextHeight(HDC hDC, const TCHAR *text) {
+  SIZE tsize;
+  GetTextExtentPoint(hDC, text, _tcslen(text), &tsize);
+  return tsize.cy;
+}
+
 
 void RestartCommPorts() {
 
