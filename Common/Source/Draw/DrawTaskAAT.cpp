@@ -12,7 +12,7 @@
 
 void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
     int i;
-    double tmp1;
+    double tmp1 = 0.0;
 
     if (!WayPointList) return;
     if (!AATEnabled) return;
@@ -30,11 +30,22 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
     RECT rcDraw = (RECT){rc.right, rc.bottom, rc.left, rc.top};
 
     for (maxTp = std::max(1, ActiveWayPoint); ValidTaskPoint(maxTp + 1); ++maxTp) {
-
-        if (Task[maxTp].AATType == SECTOR) {
-            tmp1 = Task[maxTp].AATSectorRadius * zoom.ResScaleOverDistanceModify();
-        } else {
-            tmp1 = Task[maxTp].AATCircleRadius * zoom.ResScaleOverDistanceModify();
+        if (ValidTaskPoint(maxTp)) {
+            int Type = 0;
+            double Radius = 0.;
+            GetTaskSectorParameter(maxTp, &Type, &Radius);
+            switch (Type) {
+                case CONE:
+                case CIRCLE:
+                    tmp1 = Task[maxTp].AATCircleRadius * zoom.ResScaleOverDistanceModify();
+                    break;
+                case SECTOR:
+                    tmp1 = Task[maxTp].AATSectorRadius * zoom.ResScaleOverDistanceModify();
+                    break;
+                default:
+                    tmp1 = 0.0;
+                    break;
+            }
         }
 
         LONG x = WayPointList[Task[maxTp].Index].Screen.x;
@@ -82,17 +93,22 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
         SetBkColor(hDCTemp, whitecolor);
 
         for (i = maxTp - 1; i > std::max(0, ActiveWayPoint - 1); i--) {
-            if (ValidTaskPoint(i)) {
-            switch (Task[i].AATType) {
+        if (ValidTaskPoint(i)) {
+            int Type = 0;
+            double Radius = 0.;
+            GetTaskSectorParameter(i, &Type, &Radius);
+
+            switch (Type) {
+                case CONE:
                 case CIRCLE:
-                    tmp1 = Task[i].AATCircleRadius * zoom.ResScaleOverDistanceModify();
+                    tmp1 = Radius * zoom.ResScaleOverDistanceModify();
                     Circle(hDCTemp,
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y,
                             (int) tmp1, rc, true, true);
                     break;
                 case SECTOR:
-                    tmp1 = Task[i].AATSectorRadius * zoom.ResScaleOverDistanceModify();
+                    tmp1 = Radius * zoom.ResScaleOverDistanceModify();
                     Segment(hDCTemp,
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y, (int) tmp1, rc,

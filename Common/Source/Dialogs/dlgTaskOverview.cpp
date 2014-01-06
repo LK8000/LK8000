@@ -105,8 +105,13 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
           _stprintf(sTmp, TEXT("%s %.1f"), 
                     wpName, Task[i].AATCircleRadius*DISTANCEMODIFY);
         } else {
-          _stprintf(sTmp, TEXT("%s %.1f"), 
+          if(Task[i].AATType==2 && DoOptimizeRoute()) {
+             _stprintf(sTmp, TEXT("%s %.1f/1"), 
+                    wpName, Task[i].PGConeSlope);
+          } else {
+             _stprintf(sTmp, TEXT("%s %.1f"), 
                     wpName, Task[i].AATSectorRadius*DISTANCEMODIFY);
+          }
         }
       } else {
         _stprintf(sTmp, TEXT("%s"), wpName);

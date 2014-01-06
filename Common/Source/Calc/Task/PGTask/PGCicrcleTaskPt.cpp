@@ -40,7 +40,7 @@ private:
     const double m_radius;
 };
 
-void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
+void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
     if(m_Radius == 0.0){
         return;
     }

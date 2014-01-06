@@ -10,6 +10,7 @@
 #define SECTOR 1
 #define DAe    2 // only Exist for not AAT and Not PGTask.
 #define LINE   3 // only Used for Save Start and Finish Type in xml file.
+#define CONE   4 // Only Used In PG Optimized Task
 
 typedef struct _START_POINT
 {
@@ -58,6 +59,8 @@ typedef struct _TASK_POINT
   bool   AATTargetLocked;
   bool	 OutCircle;
   double AATTargetAltitude;
+  double PGConeSlope; // Ratio for PG Cone Turn point
+  double PGConeBase; // Base Height of Cone Turn Point 
   // always add new members at the End of this struct
   //   needed for compatibility with old task file.
 }TASK_POINT;
@@ -108,6 +111,8 @@ bool ValidWayPoint(int i);
 bool ValidNotResWayPoint(int i);
 bool ValidResWayPoint(int i);
 bool ValidStartPoint(size_t i);
+
+int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius);
 
 double FindInsideAATSectorRange(double latitude,
                                 double longitude,

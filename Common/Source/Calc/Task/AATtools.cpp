@@ -18,7 +18,7 @@ void AddAATPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int taskwaypoint) {
   if (taskwaypoint>0) {
     if (AATEnabled) {
       insector = InAATTurnSector(Basic->Longitude,
-                                 Basic->Latitude, taskwaypoint);
+                                 Basic->Latitude, taskwaypoint, Basic->Altitude);
     } else {
       insector = InTurnSector(Basic, Calculated, taskwaypoint);
     }

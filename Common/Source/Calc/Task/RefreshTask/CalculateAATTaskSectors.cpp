@@ -24,6 +24,7 @@ void CalculateAATTaskSectors()
 
   double latitude = GPS_INFO.Latitude;
   double longitude = GPS_INFO.Longitude;
+  double altitude = GPS_INFO.Altitude;
 
   LockTaskData();
 
@@ -117,7 +118,7 @@ void CalculateAATTaskSectors()
       // go from current aircraft position to projection of target
       // out to the edge of the sector
       
-      if (InAATTurnSector(longitude, latitude, i) && (awp==i) &&
+      if (InAATTurnSector(longitude, latitude, i, altitude) && (awp==i) &&
           !Task[i].AATTargetLocked) {
 
         // special case, currently in AAT sector/cylinder
@@ -149,7 +150,7 @@ void CalculateAATTaskSectors()
                                &Task[i].AATTargetLat,
                                &Task[i].AATTargetLon);
 
-        UpdateTargetAltitude(i);
+        UpdateTargetAltitude(Task[i]);
 
         TargetModified = true;
 
@@ -164,7 +165,7 @@ void CalculateAATTaskSectors()
                                &Task[i].AATTargetLat,
                                &Task[i].AATTargetLon);
         
-        UpdateTargetAltitude(i);
+        UpdateTargetAltitude(Task[i]);
         TargetModified = true;
         
       }
