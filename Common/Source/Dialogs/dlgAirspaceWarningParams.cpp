@@ -35,6 +35,8 @@ static void SetReadOnlyItems()
   if (wp) wp->SetReadOnly(!aspw && !aspmaplabels);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
   if (wp) wp->SetReadOnly(!aspw);
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
+  if (wp) wp->SetReadOnly(!aspw);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAckAllSame"));
   if (wp) wp->SetReadOnly(!aspw);
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
