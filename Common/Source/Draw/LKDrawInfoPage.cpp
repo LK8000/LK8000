@@ -926,66 +926,32 @@ label_TRI:
 label_HSI:
 	VDrawLine(hdc,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
 	DrawHSI(hdc, rc);
-
-	if (ScreenLandscape) {
-	showunit=true; // 091219
-	// right
-	LKFormatValue(LK_TRACK, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[3],&qrow[4],&qrow[2]);
-	LKFormatValue(LK_GNDSPEED, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[6],&qrow[7],&qrow[5]);
-	LKFormatValue(LK_HNAV, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[9],&qrow[10],&qrow[8]);
-	LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[12],&qrow[13],&qrow[11]);
-
-	// left
-	LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
-
-	LKFormatValue(LK_BANK_ANGLE, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
-
-	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[9],&qrow[10],&qrow[8]);
-
-	LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
-	} else {
 	showunit=true;
-	// right
 	LKFormatValue(LK_TRACK, true, BufferValue, BufferUnit, BufferTitle);
-	_stprintf(BufferUnit,_T(""));
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[3],&qrow[4],&qrow[2]);
-	LKFormatValue(LK_GNDSPEED, true, BufferValue, BufferUnit, BufferTitle);
-	_stprintf(BufferUnit,_T(""));
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
-	LKFormatValue(LK_HNAV, true, BufferValue, BufferUnit, BufferTitle);
-	_stprintf(BufferUnit,_T(""));
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[9],&qrow[10],&qrow[8]);
-	LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
-	_stprintf(BufferUnit,_T(""));
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
-
-	// left
-	LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
-	_stprintf(BufferUnit,_T(""));
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
-
-	LKFormatValue(LK_BANK_ANGLE, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
-
-	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[9],&qrow[10],&qrow[8]);
-
-	LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
+	if(ScreenLandscape) {
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[3],&qrow[4],&qrow[2]);
+		LKFormatValue(LK_GNDSPEED, true, BufferValue, BufferUnit, BufferTitle);
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[6],&qrow[7],&qrow[5]);
+		LKFormatValue(LK_HNAV, true, BufferValue, BufferUnit, BufferTitle);
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[9],&qrow[10],&qrow[8]);
+		LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[12],&qrow[13],&qrow[11]);
+	} else {
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[3],&qrow[4],&qrow[2]);
+		LKFormatValue(LK_GNDSPEED, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
+		LKFormatValue(LK_HNAV, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[9],&qrow[10],&qrow[8]);
+		LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
 	}
-
-	wsprintf(BufferTitle, TEXT("UNDER CONSTRUCTION"));
-	SelectObject(hdc, LK8PanelSmallFont);
-	LKWriteText(hdc, BufferTitle, qcolumn[8],qrow[12], 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
-
+	//wsprintf(BufferTitle, TEXT("UNDER CONSTRUCTION"));
+	//SelectObject(hdc, LK8PanelSmallFont);
+	//LKWriteText(hdc, BufferTitle, qcolumn[8],qrow[12], 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
 	goto label_End;
 	// End of HSI
 

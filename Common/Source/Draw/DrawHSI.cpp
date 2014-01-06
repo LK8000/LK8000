@@ -9,674 +9,122 @@
  * Created on 5 January 2014, 10:43
  */
 
+//INFO: This is how to print the degree symbol:
+//#ifndef __MINGW32__
+//	//_stprintf(Buffer, TEXT("%2.0f\xB0"), beta);
+//#else
+//	//_stprintf(Buffer, TEXT("%2.0f°"), beta);
+//#endif
+
+
 #include "externs.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "RGB.h"
 #include "DoInits.h"
 
-//
-// Horizontal Situation Indicator
-//
+struct compassMark {
+	short extX, extY; //coordinates external point
+	short intX, intY; //coordinates internal point
+};
 
-//TODO: all this is copied from DrawTRI (just to have a new page to start with): must be rewritten all for the new HSI
+void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
+	static short top = (((rc.bottom - BottomSize - (rc.top + TOPLIMITER)
+			- BOTTOMLIMITER) / PANELROWS) + rc.top + TOPLIMITER)
+			- (rc.top + TOPLIMITER);
 
-void MapWindow::DrawHSIAcceleration(HDC hDC, const RECT rc)
-{
-  const double ScaleX = (rc.right - rc.left)/10;
-  const double ScaleY = (rc.top - rc.bottom)/10;
-  const double ScaleZ = (rc.top - rc.bottom)/20;
-  POINT Pos;
-  Pos.x = (rc.right - rc.left)/2 + (int)(DrawInfo.AccelY * ScaleX);
-  Pos.y = (rc.bottom - rc.top)/2 - (int)((DrawInfo.AccelZ - 1) * ScaleY);
-  const double radius = NIBLSCALE(15) + (int)(DrawInfo.AccelX * ScaleZ);
+	HPEN hpBlack;
+	HBRUSH hbBlack;
+	//HPEN hpWhite;
+	//HBRUSH hbWhite;
+	//HPEN hpBorder;
+	//HBRUSH hbBorder;
+	HPEN hpOld;
+	HBRUSH hbOld;
 
-  const HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
-  const HBRUSH  oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
-  Circle(hDC, Pos.x, Pos.y - (int)(radius/2), (int)radius, rc, true, true);
+	static const int radius = NIBLSCALE(80); // gauge size radius
+	static const int innerradius = radius - NIBLSCALE(10);
+	static const int labelsRadius = radius -NIBLSCALE(20);
+	static const int smallMarkRadius = radius - NIBLSCALE(6);
+	//TCHAR Buffer[LKSIZEBUFFERVALUE];
+	static struct compassMark compassMarks[72][10];
+	static const TCHAR* label[]= { //labels of the compass rose
+			TEXT("N"),
+			TEXT("03"),
+			TEXT("06"),
+			TEXT("E"),
+			TEXT("12"),
+			TEXT("15"),
+			TEXT("S"),
+			TEXT("21"),
+			TEXT("24"),
+			TEXT("W"),
+			TEXT("30"),
+			TEXT("33")
+	};
 
-  SelectObject(hDC, oldBrush);
-  SelectObject(hDC, oldPen);
-}
+	static const short centerX=(rc.right-rc.left)/2;
+	static const short centerY=((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
 
-void MapWindow::DrawHSI(HDC hDC, const RECT rc)
-{
-	if (DrawInfo.GyroscopeAvailable)
-	  return DrawHSIAHRS( hDC,   rc);
-  POINT Start;
+	static int angle;
 
-  static short top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
+	if(DoInit[MDI_DRAWHSI]) { //for the init there are 10 possible cases that must be precomputed
+		for(int alpha=0;alpha<10;alpha++) for(int i=0, deg=0, isBig=1; i<72; i++, deg=deg+5, isBig=!isBig) {
+			compassMarks[i][alpha].extX=centerX+(short)(radius*fastsine(deg+alpha));
+			compassMarks[i][alpha].extY=centerY-(short)(radius*fastcosine(deg+alpha));
+			compassMarks[i][alpha].intX=centerX+(short)((isBig?innerradius:smallMarkRadius)*fastsine(deg+alpha));
+			compassMarks[i][alpha].intY=centerY-(short)((isBig?innerradius:smallMarkRadius)*fastcosine(deg+alpha));
+		}
+		DoInit[MDI_DRAWHSI] = false;
+	}
 
-  Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
-  Start.x = (rc.right - rc.left)/2;
+	//hpBlack = LKPen_Grey_N1;
+	//hbBlack = LKBrush_Grey;
 
-  HPEN		hpBlack;
-  HBRUSH	hbBlack;
-  HPEN		hpWhite;
-  HBRUSH	hbWhite;
-  HPEN		hpBorder;
-  HBRUSH	hbBorder;
-  HPEN   hpOld;
-  HBRUSH hbOld;
-
-  // gauge size radius
-  static int radius = NIBLSCALE(65);
-  static int planesize = radius-NIBLSCALE(10);
-  // planebody
-  static int planeradius = NIBLSCALE(6);
-  static int tailsize = planesize/4+NIBLSCALE(2);
-  static int innerradius = radius - NIBLSCALE(8);
-  static POINT d00[2][2],d15[2][4],d30[2][4], d45[2][4], d60[2][4];
-  TCHAR Buffer[LKSIZEBUFFERVALUE];
-  double beta=0.0;
-  bool disabled=false;
-
-  if (DoInit[MDI_DRAWHSI]) {
-
-  top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
-  Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
-  Start.x = (rc.right - rc.left)/2;
-  radius = NIBLSCALE(65);
-  planesize = radius-NIBLSCALE(10);
-  planeradius = NIBLSCALE(6);
-  tailsize = planesize/4+NIBLSCALE(2);
-  innerradius = radius - NIBLSCALE(8);
-
-  // [a][b]  a=0 external circle a=1 inner circle  b=1-4
-
-  d00[0][0].x= Start.x - radius;
-  d00[0][0].y= Start.y;
-  d00[1][0].x= Start.x - innerradius;
-  d00[1][0].y= Start.y;
-  d00[0][1].x= Start.x + radius;
-  d00[0][1].y= Start.y;
-  d00[1][1].x= Start.x + innerradius;
-  d00[1][1].y= Start.y;
-
-  d15[0][0].x= Start.x - (long) (radius*fastcosine(15.0));
-  d15[0][0].y= Start.y + (long) (radius*fastsine(15.0));
-  d15[1][0].x= Start.x - (long) (innerradius*fastcosine(15.0));
-  d15[1][0].y= Start.y + (long) (innerradius*fastsine(15.0));
-  d15[0][1].x= Start.x - (long) (radius*fastcosine(15.0));
-  d15[0][1].y= Start.y - (long) (radius*fastsine(15.0));
-  d15[1][1].x= Start.x - (long) (innerradius*fastcosine(15.0));
-  d15[1][1].y= Start.y - (long) (innerradius*fastsine(15.0));
-  d15[0][2].x= Start.x + (long) (radius*fastcosine(15.0));
-  d15[0][2].y= Start.y + (long) (radius*fastsine(15.0));
-  d15[1][2].x= Start.x + (long) (innerradius*fastcosine(15.0));
-  d15[1][2].y= Start.y + (long) (innerradius*fastsine(15.0));
-  d15[0][3].x= Start.x + (long) (radius*fastcosine(15.0));
-  d15[0][3].y= Start.y - (long) (radius*fastsine(15.0));
-  d15[1][3].x= Start.x + (long) (innerradius*fastcosine(15.0));
-  d15[1][3].y= Start.y - (long) (innerradius*fastsine(15.0));
-
-  d30[0][0].x= Start.x - (long) (radius*fastcosine(30.0));
-  d30[0][0].y= Start.y + (long) (radius*fastsine(30.0));
-  d30[1][0].x= Start.x - (long) (innerradius*fastcosine(30.0));
-  d30[1][0].y= Start.y + (long) (innerradius*fastsine(30.0));
-  d30[0][1].x= Start.x - (long) (radius*fastcosine(30.0));
-  d30[0][1].y= Start.y - (long) (radius*fastsine(30.0));
-  d30[1][1].x= Start.x - (long) (innerradius*fastcosine(30.0));
-  d30[1][1].y= Start.y - (long) (innerradius*fastsine(30.0));
-  d30[0][2].x= Start.x + (long) (radius*fastcosine(30.0));
-  d30[0][2].y= Start.y + (long) (radius*fastsine(30.0));
-  d30[1][2].x= Start.x + (long) (innerradius*fastcosine(30.0));
-  d30[1][2].y= Start.y + (long) (innerradius*fastsine(30.0));
-  d30[0][3].x= Start.x + (long) (radius*fastcosine(30.0));
-  d30[0][3].y= Start.y - (long) (radius*fastsine(30.0));
-  d30[1][3].x= Start.x + (long) (innerradius*fastcosine(30.0));
-  d30[1][3].y= Start.y - (long) (innerradius*fastsine(30.0));
-
-  d45[0][0].x= Start.x - (long) (radius*fastcosine(45.0));
-  d45[0][0].y= Start.y + (long) (radius*fastsine(45.0));
-  d45[1][0].x= Start.x - (long) (innerradius*fastcosine(45.0));
-  d45[1][0].y= Start.y + (long) (innerradius*fastsine(45.0));
-  d45[0][1].x= Start.x - (long) (radius*fastcosine(45.0));
-  d45[0][1].y= Start.y - (long) (radius*fastsine(45.0));
-  d45[1][1].x= Start.x - (long) (innerradius*fastcosine(45.0));
-  d45[1][1].y= Start.y - (long) (innerradius*fastsine(45.0));
-  d45[0][2].x= Start.x + (long) (radius*fastcosine(45.0));
-  d45[0][2].y= Start.y + (long) (radius*fastsine(45.0));
-  d45[1][2].x= Start.x + (long) (innerradius*fastcosine(45.0));
-  d45[1][2].y= Start.y + (long) (innerradius*fastsine(45.0));
-  d45[0][3].x= Start.x + (long) (radius*fastcosine(45.0));
-  d45[0][3].y= Start.y - (long) (radius*fastsine(45.0));
-  d45[1][3].x= Start.x + (long) (innerradius*fastcosine(45.0));
-  d45[1][3].y= Start.y - (long) (innerradius*fastsine(45.0));
-
-  d60[0][0].x= Start.x - (long) (radius*fastcosine(60.0));
-  d60[0][0].y= Start.y + (long) (radius*fastsine(60.0));
-  d60[1][0].x= Start.x - (long) (innerradius*fastcosine(60.0));
-  d60[1][0].y= Start.y + (long) (innerradius*fastsine(60.0));
-  d60[0][1].x= Start.x - (long) (radius*fastcosine(60.0));
-  d60[0][1].y= Start.y - (long) (radius*fastsine(60.0));
-  d60[1][1].x= Start.x - (long) (innerradius*fastcosine(60.0));
-  d60[1][1].y= Start.y - (long) (innerradius*fastsine(60.0));
-  d60[0][2].x= Start.x + (long) (radius*fastcosine(60.0));
-  d60[0][2].y= Start.y + (long) (radius*fastsine(60.0));
-  d60[1][2].x= Start.x + (long) (innerradius*fastcosine(60.0));
-  d60[1][2].y= Start.y + (long) (innerradius*fastsine(60.0));
-  d60[0][3].x= Start.x + (long) (radius*fastcosine(60.0));
-  d60[0][3].y= Start.y - (long) (radius*fastsine(60.0));
-  d60[1][3].x= Start.x + (long) (innerradius*fastcosine(60.0));
-  d60[1][3].y= Start.y - (long) (innerradius*fastsine(60.0));
-
-  DoInit[MDI_DRAWHSI]=false;
-  } // end dirty hack doinit
-
-  //if (!CALCULATED_INFO.Flying) {
-  // speed is in m/s
-  if(DrawInfo.Speed <5.5 && !DrawInfo.GyroscopeAvailable)
-    disabled=true;
-
-  if (disabled) {
-	hpBlack = LKPen_Grey_N1;
-	hbBlack = LKBrush_Grey;
-  } else {
 	hpBlack = LKPen_Black_N1;
 	hbBlack = LKBrush_Black;
-        beta = DrawInfo.GyroscopeAvailable ? DrawInfo.Roll : DerivedDrawInfo.BankAngle;
-  }
-
-  hpWhite = LKPen_White_N1;
-  //hbWhite = LKBrush_White; //test this was the original
-  hbWhite = LKBrush_LightGreen; //test make it green
-  hpBorder = LKPen_Grey_N2;
-  hbBorder = LKBrush_Grey;
-
-  hpOld = (HPEN)SelectObject(hDC, hpWhite);
-  hbOld = (HBRUSH)SelectObject(hDC, hbWhite);
-  Circle(hDC, Start.x, Start.y, radius, rc, false, true );
-
-  if(DrawInfo.AccelerationAvailable)
-    DrawHSIAcceleration(hDC, rc);
-
-  SelectObject(hDC, hpBorder);
-  SelectObject(hDC, hbBorder);
-  Circle(hDC, Start.x, Start.y, radius+NIBLSCALE(2), rc, false, false );
-
-  SelectObject(hDC, hpBlack);
-  SelectObject(hDC, hbBlack);
-  Circle(hDC, Start.x, Start.y, planeradius, rc, false, true );
-
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d00[0][0], d00[1][0], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d00[0][1], d00[1][1], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d15[0][0], d15[1][0], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d15[0][1], d15[1][1], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d15[0][2], d15[1][2], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d15[0][3], d15[1][3], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d30[0][0], d30[1][0], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d30[0][1], d30[1][1], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d30[0][2], d30[1][2], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d30[0][3], d30[1][3], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d45[0][0], d45[1][0], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d45[0][1], d45[1][1], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d45[0][2], d45[1][2], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d45[0][3], d45[1][3], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][0], d60[1][0], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][1], d60[1][1], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][2], d60[1][2], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][3], d60[1][3], RGB_BLUE,rc);
-
-  POINT a1, a2;
-  const double beta_sine = fastsine(beta);
-  const double beta_cosine = fastcosine(beta);
-  a1.x = Start.x - (long)(planesize * beta_cosine);
-  a1.y = Start.y - (long)(planesize * beta_sine);
-  a2.x = Start.x + (long)(planesize * beta_cosine);
-  a2.y = Start.y + (long)(planesize * beta_sine);
-    if (disabled)
-	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
-    else
-	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_BLACK,rc);
-
-  a1.x = Start.x;
-  a1.y = Start.y;
-  a2.x = Start.x + (long)(tailsize * beta_sine);
-  a2.y = Start.y - (long)(tailsize * beta_cosine);
-  if (disabled)
-	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
-  else
-	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_BLACK,rc);
-
-  SelectObject(hDC, LK8TitleFont);
-  int bankindy=Start.y-radius/2;
-#ifndef __MINGW32__
-  if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f\xB0"), beta);
-  else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f\xB0"), -beta);
-  else
-	_tcscpy(Buffer, TEXT("--"));
-#else
-  if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f°"), beta);
-  else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f°"), -beta);
-  else
-	_tcscpy(Buffer, TEXT("--"));
-#endif
-
-  LKWriteText(hDC, Buffer, Start.x , bankindy, 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
-
-//  MapDirty = true;
-//  if (!disabled) MapWindow::RefreshMap();
-
-
-  SelectObject(hDC, hbOld);
-  SelectObject(hDC, hpOld);
-}
-
-
-void MapWindow::DrawHSICompassRose(HDC hDC, const RECT rc, double direction)
-{
-	POINT Needle[4];
-	SIZE sz = {rc.right-rc.left, rc.bottom-rc.top};
-	POINT Center = {rc.left + sz.cx/2,rc.top + sz.cy/2};
-int cx = ((rc.right-rc.left))/5/10; ///10/NIBLSCALE(1);
-int cy = (int)((double)(rc.bottom-rc.top)*0.9/5.0);///NIBLSCALE(1);
-/*
-    if(hCompassPic != NULL)
-    {
-      BITMAP bmp;
-      GetObject(hCompassPic, sizeof(BITMAP), (LPSTR)&bmp);
-
-      SelectObject(hDCTemp,hCompassPic);
-  	  StretchBlt(hDC,    rc.left, rc.top, sz.cx , sz.cy  , hDCTemp,0, 0, bmp.bmWidth, bmp.bmHeight,  SRCCOPY); //SRCPAINT
-    }
-*/
-	Needle[0].x = 0 ;
-	Needle[0].y = cy;
-	Needle[1].x = -cx;
-	Needle[1].y = 0;
-	Needle[2].x = cx;
-	Needle[2].y = 0;
-	Needle[3] = Needle[0];
-
-	PolygonRotateShift(Needle, 4,  Center.x-1, Center.y, (direction));
-	const HPEN   oldPen   = (HPEN) SelectObject(hDC, LKPen_Red_N1);
-	const HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
-	Polygon(hDC,Needle  ,4 );
-
-
-	Needle[0].x = 0 ;
-	Needle[0].y = -cy;
-	Needle[1].x = -cx;
-	Needle[1].y = 0;
-	Needle[2].x = cx;
-	Needle[2].y = 0;
-	Needle[3] = Needle[0];
-
-	SelectObject(hDC, LKBrush_Blue);
-	SelectObject(hDC, LKPen_Blue_N1);
-	PolygonRotateShift(Needle, 4, Center.x, Center.y,  (direction));
-	Polygon(hDC,Needle  ,4 );
-
-    SelectObject(hDC, oldPen);
-	SelectObject(hDC, oldBrush);
-}
-
-void MapWindow::DrawHSIAHRS(HDC hDC, const RECT rc)
-{
-  POINT Start;
-
-  static short top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
-
-  Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
-  Start.x = (rc.right - rc.left)/2;
-
-  HPEN		hpBlack;
-  HBRUSH	hbBlack;
-  HPEN		hpWhite;
-  HBRUSH	hbWhite;
-  HPEN		hpBorder;
-  HBRUSH	hbBorder;
-  HPEN   hpOld;
-  HBRUSH hbOld;
-
-  // gauge size radius
-  static int radius = NIBLSCALE(75);
-  static int planesize = radius-NIBLSCALE(10);
-  // planebody
-  //static int planeradius = NIBLSCALE(6);
-  //static int tailsize = planesize/4+NIBLSCALE(2);
-  static int innerradius = radius - NIBLSCALE(8);
-#define GC_NO_CIRCLE_PTS 90
-  static POINT d00[2][2],d15[2][4],d30[2][4], d45[2][4], d60[2][4], circle[GC_NO_CIRCLE_PTS];
-  TCHAR Buffer[LKSIZEBUFFERVALUE];
-  double beta=0.0;
-  bool disabled=false;
-
-  if (DoInit[MDI_DRAWHSI])
-  {
-
-  top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
-  planesize = radius-NIBLSCALE(10);
-  //planeradius = NIBLSCALE(6);
-  //tailsize = planesize/4+NIBLSCALE(2);
-  innerradius = radius - NIBLSCALE(8);
-
-  double alpha =0;
-  int alphastep = 360/GC_NO_CIRCLE_PTS;
-  for(int i =0; i < GC_NO_CIRCLE_PTS; i++)
-  {
-	circle[i].x =  Start.x + (LONG)(fastsine(alpha) * (radius+1));
-	circle[i].y =  Start.y - (LONG)(fastcosine(alpha) * (radius+1));
-	alpha += alphastep;
-  }
-  // [a][b]  a=0 external circle a=1 inner circle  b=1-4
-
-  d00[0][0].x= Start.x ;
-  d00[0][0].y= Start.y - radius;
-  d00[1][0].x= Start.x ;
-  d00[1][0].y= Start.y- innerradius;
-  d00[0][1].x= Start.x ;
-  d00[0][1].y= Start.y+ radius;
-  d00[1][1].x= Start.x ;
-  d00[1][1].y= Start.y+ innerradius;
-
-  d15[0][0].y= Start.y - (long) (radius*fastcosine(15.0));
-  d15[0][0].x= Start.x + (long) (radius*fastsine(15.0));
-  d15[1][0].y= Start.y - (long) (innerradius*fastcosine(15.0));
-  d15[1][0].x= Start.x + (long) (innerradius*fastsine(15.0));
-  d15[0][1].y= Start.y - (long) (radius*fastcosine(15.0));
-  d15[0][1].x= Start.x - (long) (radius*fastsine(15.0));
-  d15[1][1].y= Start.y - (long) (innerradius*fastcosine(15.0));
-  d15[1][1].x= Start.x - (long) (innerradius*fastsine(15.0));
-  d15[0][2].y= Start.y + (long) (radius*fastcosine(15.0));
-  d15[0][2].x= Start.x + (long) (radius*fastsine(15.0));
-  d15[1][2].y= Start.y + (long) (innerradius*fastcosine(15.0));
-  d15[1][2].x= Start.x + (long) (innerradius*fastsine(15.0));
-  d15[0][3].y= Start.y + (long) (radius*fastcosine(15.0));
-  d15[0][3].x= Start.x - (long) (radius*fastsine(15.0));
-  d15[1][3].y= Start.y + (long) (innerradius*fastcosine(15.0));
-  d15[1][3].x= Start.x - (long) (innerradius*fastsine(15.0));
-
-  d30[0][0].x= Start.x - (long) (radius*fastcosine(30.0));
-  d30[0][0].y= Start.y + (long) (radius*fastsine(30.0));
-  d30[1][0].x= Start.x - (long) (innerradius*fastcosine(30.0));
-  d30[1][0].y= Start.y + (long) (innerradius*fastsine(30.0));
-  d30[0][1].x= Start.x - (long) (radius*fastcosine(30.0));
-  d30[0][1].y= Start.y - (long) (radius*fastsine(30.0));
-  d30[1][1].x= Start.x - (long) (innerradius*fastcosine(30.0));
-  d30[1][1].y= Start.y - (long) (innerradius*fastsine(30.0));
-  d30[0][2].x= Start.x + (long) (radius*fastcosine(30.0));
-  d30[0][2].y= Start.y + (long) (radius*fastsine(30.0));
-  d30[1][2].x= Start.x + (long) (innerradius*fastcosine(30.0));
-  d30[1][2].y= Start.y + (long) (innerradius*fastsine(30.0));
-  d30[0][3].x= Start.x + (long) (radius*fastcosine(30.0));
-  d30[0][3].y= Start.y - (long) (radius*fastsine(30.0));
-  d30[1][3].x= Start.x + (long) (innerradius*fastcosine(30.0));
-  d30[1][3].y= Start.y - (long) (innerradius*fastsine(30.0));
-
-  d45[0][0].x= Start.x - (long) (radius*fastcosine(45.0));
-  d45[0][0].y= Start.y + (long) (radius*fastsine(45.0));
-  d45[1][0].x= Start.x - (long) (innerradius*fastcosine(45.0));
-  d45[1][0].y= Start.y + (long) (innerradius*fastsine(45.0));
-  d45[0][1].x= Start.x - (long) (radius*fastcosine(45.0));
-  d45[0][1].y= Start.y - (long) (radius*fastsine(45.0));
-  d45[1][1].x= Start.x - (long) (innerradius*fastcosine(45.0));
-  d45[1][1].y= Start.y - (long) (innerradius*fastsine(45.0));
-  d45[0][2].x= Start.x + (long) (radius*fastcosine(45.0));
-  d45[0][2].y= Start.y + (long) (radius*fastsine(45.0));
-  d45[1][2].x= Start.x + (long) (innerradius*fastcosine(45.0));
-  d45[1][2].y= Start.y + (long) (innerradius*fastsine(45.0));
-  d45[0][3].x= Start.x + (long) (radius*fastcosine(45.0));
-  d45[0][3].y= Start.y - (long) (radius*fastsine(45.0));
-  d45[1][3].x= Start.x + (long) (innerradius*fastcosine(45.0));
-  d45[1][3].y= Start.y - (long) (innerradius*fastsine(45.0));
-
-  d60[0][0].x= Start.x - (long) (radius*fastcosine(60.0));
-  d60[0][0].y= Start.y + (long) (radius*fastsine(60.0));
-  d60[1][0].x= Start.x - (long) (innerradius*fastcosine(60.0));
-  d60[1][0].y= Start.y + (long) (innerradius*fastsine(60.0));
-  d60[0][1].x= Start.x - (long) (radius*fastcosine(60.0));
-  d60[0][1].y= Start.y - (long) (radius*fastsine(60.0));
-  d60[1][1].x= Start.x - (long) (innerradius*fastcosine(60.0));
-  d60[1][1].y= Start.y - (long) (innerradius*fastsine(60.0));
-  d60[0][2].x= Start.x + (long) (radius*fastcosine(60.0));
-  d60[0][2].y= Start.y + (long) (radius*fastsine(60.0));
-  d60[1][2].x= Start.x + (long) (innerradius*fastcosine(60.0));
-  d60[1][2].y= Start.y + (long) (innerradius*fastsine(60.0));
-  d60[0][3].x= Start.x + (long) (radius*fastcosine(60.0));
-  d60[0][3].y= Start.y - (long) (radius*fastsine(60.0));
-  d60[1][3].x= Start.x + (long) (innerradius*fastcosine(60.0));
-  d60[1][3].y= Start.y - (long) (innerradius*fastsine(60.0));
-
-  DoInit[MDI_DRAWHSI]=false;
-  } // end dirty hack doinit
-
-  //if (!CALCULATED_INFO.Flying) {
-  // speed is in m/s
-  if(DrawInfo.Speed <5.5 && !DrawInfo.GyroscopeAvailable)
-    disabled=true;
-
-  if (disabled) {
-	hpBlack = LKPen_Grey_N1;
-	hbBlack = LKBrush_Grey;
-  } else {
-	hpBlack = LKPen_Black_N1;
-	hbBlack = LKBrush_Black;
-        beta = DrawInfo.GyroscopeAvailable ? DrawInfo.Roll : DerivedDrawInfo.BankAngle;
-  }
-
-  double gamma =  -DrawInfo.Pitch;
-
-  beta  = -beta;
-  double beta_sine = fastsine(beta);
-  double beta_cosine = fastcosine(beta);
-
-  hpWhite = LKPen_White_N1;
-  hbWhite =LKBrush_Lake;// LKBrush_White;
-  hpBorder = LKPen_Grey_N2;
-  hbBorder = LKBrush_Grey;
-
-  hpOld = (HPEN)SelectObject(hDC, hpWhite);
-  hbOld = (HBRUSH)SelectObject(hDC, hbWhite);
-
-  Circle(hDC, Start.x, Start.y, radius, rc, false, true );
-/***************************************************************************************/
-
-  POINT earth[GC_NO_CIRCLE_PTS+2];
-  POINT left, right;
-  int alphastep = 360/GC_NO_CIRCLE_PTS;
-  right.x  = Start.x + (LONG) ( radius*fastcosine( beta + gamma));
-  right.y  = Start.y + (LONG) ( radius*fastsine  ( beta + gamma));
-  left.x   = Start.x - (LONG) ( radius*fastcosine( beta - gamma));
-  left.y   = Start.y + (LONG) ( radius*fastsine  (-beta + gamma));
-
-  int betacircle =  (int)beta%360;
-  if (betacircle < 0)
-	betacircle +=360;
-  int angleleft   = (int)(betacircle - gamma) + 270;angleleft %= 360;
-  int angleright  = (int)(betacircle + gamma) + 90;angleright %= 360;
-  int iCnt =0;
-
-  earth[iCnt++] = right;
-  int steps = (angleleft - angleright )/alphastep;
-  if(steps <0)
-   steps += GC_NO_CIRCLE_PTS;
-  int alpha = angleright/alphastep+1;
-  for(int i=0;  i < steps; i++)
-  {
-	if(alpha < 0)
-	  alpha = GC_NO_CIRCLE_PTS-1;
-	if((alpha) > (GC_NO_CIRCLE_PTS-1))
-	  alpha = 0;
-
-	if(iCnt < (GC_NO_CIRCLE_PTS))
-	  earth[iCnt++] =  circle[alpha];
-    alpha++;
-  }
-  if(iCnt <= GC_NO_CIRCLE_PTS)
-	earth[iCnt++] =  left;
-
-
-
-
-
-  /*********************************************************************************************/
-    HPEN   hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1),RGB_BLACK);
-    HBRUSH hbHorizonGround = (HBRUSH)CreateSolidBrush(RGB( 	255,140,0));
-    HPEN   oldpen = (HPEN)  SelectObject(hDC, hpHorizonGround);
-    HBRUSH oldbrush = (HBRUSH) SelectObject(hDC, hbHorizonGround);
-
-    SelectObject(hDC, hpHorizonGround);
-    SelectObject(hDC, hbHorizonGround);
-    Polygon(hDC, earth, iCnt);
-    SelectObject(hDC, oldpen);
-    SelectObject(hDC, oldbrush);
-    DeleteObject(hpHorizonGround);
-    DeleteObject(hbHorizonGround);
-
-  /***************************************************************************************/
-
-
-  if(DrawInfo.AccelerationAvailable)
-    DrawHSIAcceleration(hDC, rc);
-
-  SelectObject(hDC, hpBorder);
-  SelectObject(hDC, hbBorder);
-  Circle(hDC, Start.x, Start.y, radius+NIBLSCALE(2), rc, false, false );
-
-
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d00[0][0], d00[1][0], RGB_BLUE,rc);
-//  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d00[0][1], d00[1][1], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d15[0][0], d15[1][0], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d15[0][1], d15[1][1], RGB_BLUE,rc);
-//  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d15[0][2], d15[1][2], RGB_BLUE,rc);
-//  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d15[0][3], d15[1][3], RGB_BLUE,rc);
-//  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d30[0][0], d30[1][0], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d30[0][1], d30[1][1], RGB_BLUE,rc);
-//  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d30[0][2], d30[1][2], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d30[0][3], d30[1][3], RGB_BLUE,rc);
-//  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d45[0][0], d45[1][0], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d45[0][1], d45[1][1], RGB_BLUE,rc);
-//  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d45[0][2], d45[1][2], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d45[0][3], d45[1][3], RGB_BLUE,rc);
-//  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][0], d60[1][0], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][1], d60[1][1], RGB_BLUE,rc);
-//  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][2], d60[1][2], RGB_BLUE,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), d60[0][3], d60[1][3], RGB_BLUE,rc);
-
-  POINT a1, a2;
-
-
-
-int lenght =0;
-
-for (int i = -30; i <= 30 ; i+=5)
-{
-  if (abs(i%10) > 0)
-    lenght = radius/10;
-  else
-    lenght = radius/5;
-  int offaxis;
-  POINT newcenter;
-  offaxis = (int)(radius * fastsine(i));
-  newcenter.x = (long)(offaxis * beta_sine);
-  newcenter.y = (long)(-offaxis * beta_cosine);
-
-  a1.x =  Start.x + (long)(lenght * beta_cosine ) + newcenter.x;
-  a1.y =  Start.y + (long)(lenght * beta_sine   ) + newcenter.y;
-  a2.x =  Start.x - (long)(lenght * beta_cosine ) + newcenter.x;
-  a2.y =  Start.y - (long)(lenght * beta_sine   ) + newcenter.y ;
-   _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), a1, a2, RGB_WHITE,rc);
-}
-
-a1.x =  Start.x + (long)(radius * beta_sine                 );
-a1.y =  Start.y - (long)(radius * beta_cosine               );
-a2.x =  Start.x + (long)((radius-NIBLSCALE(8)) * beta_sine  );
-a2.y =  Start.y - (long)((radius-NIBLSCALE(8)) * beta_cosine);
- _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), a1, a2, RGB_WHITE,rc);
-
-
-    SelectObject(hDC, hpBlack);
-    SelectObject(hDC, hbBlack);
-//    Circle(hDC, Start.x, Start.y , planeradius, rc, false, true );
-#define V_COLOR RGB_RED
-double vscale = 0.25;
-   a1.x = Start.x - (long)(planesize );
-   a1.y = Start.y ;
-   a2.x = Start.x - (long)(planesize*vscale );
-   a2.y = Start.y ;
-    if (disabled)
-	  _DrawLine(hDC, PS_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
-    else
-	  _DrawLine(hDC, PS_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
-
-    a1.x = Start.x + (long)(planesize );
-    a1.y = Start.y ;
-    a2.x = Start.x + (long)(planesize*vscale );
-    a2.y = Start.y ;
-    if (disabled)
- 	  _DrawLine(hDC, PS_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
-    else
- 	  _DrawLine(hDC, PS_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
-
-     a1.x = Start.x ;
-     a1.y = Start.y + (long)(planesize*vscale );
-     a2.x = Start.x + (long)(planesize*vscale );
-     a2.y = Start.y ;
-     if (disabled)
-  	   _DrawLine(hDC, PS_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
-     else
-  	   _DrawLine(hDC, PS_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
-
-     a1.x = Start.x ;
-     a1.y = Start.y + (long)(planesize*vscale );
-     a2.x = Start.x - (long)(planesize*vscale );
-     a2.y = Start.y ;
-     if (disabled)
-       _DrawLine(hDC, PS_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
-     else
-       _DrawLine(hDC, PS_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
-
-
-     Circle(hDC, Start.x, Start.y, NIBLSCALE(2), rc, false, true );
-/*
-  a1.x = Start.x;
-  a1.y = Start.y;
-  a2.x = Start.x + (long)(tailsize * 0);
-  a2.y = Start.y - (long)(tailsize * 1);
-  if (disabled)
-	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
-  else
-	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_BLACK,rc);
-*/
-  SelectObject(hDC, LK8TitleFont);
-  int bankindy=Start.y-radius/2;
-#ifndef __MINGW32__
-  if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f\xB0"), beta);
-  else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f\xB0"), -beta);
-  else
-	_tcscpy(Buffer, TEXT("--"));
-#else
-  if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f°"), beta);
-  else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f°"), -beta);
-  else
-	_tcscpy(Buffer, TEXT("--"));
-#endif
-
-  LKWriteText(hDC, Buffer, Start.x , bankindy, 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
-
-//  MapDirty = true;
-//  if (!disabled) MapWindow::RefreshMap();
-  RECT rcCompass;
-  rcCompass.left = (int)((double)Start.x*1.70);
-  rcCompass.top  = (int)((double)Start.y*0.35);
-  rcCompass.right = (int)((double)Start.x*1.95);
-  rcCompass.bottom = rcCompass.top+  (rcCompass.right - rcCompass.left);
-
- // if(DrawInfo.MagneticHeadingAvailable)
-    DrawHSICompassRose( hDC, rcCompass,DrawInfo.MagneticHeading);
-//  DrawCompass(HDC hdc, const RECT rc);
-  SelectObject(hDC, hbOld);
-  SelectObject(hDC, hpOld);
-
+	//hpWhite = LKPen_White_N1;
+	//hbWhite = LKBrush_White; //test this was the original
+	//hpBorder = LKPen_Grey_N2;
+	//hbBorder = LKBrush_Grey;
+
+	//SelectObject(hDC, hpBorder);
+	//SelectObject(hDC, hbBorder);
+	//Circle(hDC, Start.x, Start.y, radius + NIBLSCALE(2), rc, false, false);
+
+	//SelectObject(hDC, hpBlack);
+	//SelectObject(hDC, hbBlack);
+
+	hpOld = (HPEN) SelectObject(hDC, hpBlack);
+	hbOld = (HBRUSH) SelectObject(hDC, hbBlack);
+	//Circle(hDC, centerX, centerY, radius, rc, false, true);
+
+	//get the track bearing
+	angle = 360-round(DrawInfo.TrackBearing);
+
+
+	//Draw the markers
+	int alpha=angle%10;
+	POINT external,internal;
+	for(int i=0;i<72;i++) {
+		external.x=compassMarks[i][alpha].extX;
+		external.y=compassMarks[i][alpha].extY;
+		internal.x=compassMarks[i][alpha].intX;
+		internal.y=compassMarks[i][alpha].intY;
+		_DrawLine(hDC, PS_SOLID, NIBLSCALE(1),external,internal,RGB_WHITE,rc);
+	}
+
+	//Put the labels
+	SelectObject(hDC, LK8TitleFont);
+	for(int i=0;i<12;i++) {
+		int deg=i*30+angle;
+		int x=centerX+(int)(labelsRadius*fastsine(deg));
+		int y=centerY-(int)(labelsRadius*fastcosine(deg));
+		LKWriteText(hDC,label[i],x,y,0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
+	}
+
+
+	SelectObject(hDC, hbOld);
+	SelectObject(hDC, hpOld);
 }
