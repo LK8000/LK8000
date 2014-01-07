@@ -314,9 +314,21 @@ void SerialPort::CancelWaitEvent() {
                                      // documented CE trick to
                                      // cancel the WaitCommEvent
 	#else
+	#ifdef _DEBUG_STOP_RXTHREAD
+	StartupStore(_T("... SerialPort CancelWaitEvent: doing DirtyPurge\n"));
+	#endif
 	DirtyPurge();
+	#ifdef _DEBUG_STOP_RXTHREAD
+	StartupStore(_T("... SerialPort CancelWaitEvent: DirtyPurge OK\n"));
+	#endif
 	if (!_PollingMode) {
+		#ifdef _DEBUG_STOP_RXTHREAD
+		StartupStore(_T("... SerialPort CancelWaitEvent: doing SetCommMask\n"));
+		#endif
 		SetCommMask(hPort, _dwMask); // will cancel any WaitCommEvent
+		#ifdef _DEBUG_STOP_RXTHREAD
+		StartupStore(_T("... SerialPort CancelWaitEvent: SetCommMask OK\n"));
+		#endif
 	}
 	#endif
     }
