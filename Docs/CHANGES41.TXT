@@ -88,6 +88,27 @@ Automatically providing the minimal, current and max MC possible for the final g
 DETAILS BY BETA VERSIONS:
 
 ============
+Version 4.1F
+============
+
+NEW
+
+BlueFlyVario support (add to custom menu "DEVICE A/B" for special configuration options)
+
+Conical ESS for paraglider's optimized task system
+
+GPX file format support to load task files
+
+
+CHANGES
+
+Airspace warning configuration is now offering the choice to change the timeout for non-ack asp warnings
+
+
+
+
+
+============
 Version 4.1E
 ============
 
