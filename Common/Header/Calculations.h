@@ -100,6 +100,8 @@ typedef struct _DERIVED_INFO
   double TaskAltitudeRequiredFromStart;
   double LegDistanceToGo;
   double LegDistanceCovered;
+  double LegCrossTrackError;
+  double LegActualTrueCourse;
   double LegTimeToGo;
   double LegStartTime;
   double LegSpeed;

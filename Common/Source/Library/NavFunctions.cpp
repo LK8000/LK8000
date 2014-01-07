@@ -10,7 +10,6 @@
 #include "NavFunctions.h"
 
 
-
 void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
                      double *Distance, double *Bearing) {
 
@@ -517,17 +516,21 @@ void ScreenClosestPoint(const POINT &p1, const POINT &p2,
 
 
 // Calculates projected distance from P3 along line P1-P2
+// The cross track error (xtd) is also available (for TaskStatistics.cpp),
+// since xtd is calculated anyway in this function calling CrossTrackError()
+// crs is the true course to P2 from the intermediate point P4 on the great circle route
 double ProjectedDistance(double lon1, double lat1,
                          double lon2, double lat2,
-                         double lon3, double lat3) {
+                         double lon3, double lat3,
+                         double *xtd, double *crs) {
   double lon4, lat4;
 
-  CrossTrackError(lon1, lat1,
+  *xtd=CrossTrackError(lon1, lat1,
                   lon2, lat2,
                   lon3, lat3,
                    &lon4, &lat4);
   double tmpd;
-  DistanceBearing(lat1, lon1, lat4, lon4, &tmpd, NULL);
+  DistanceBearing(lat1, lon1, lat4, lon4, &tmpd, &*crs);
   return tmpd;
 }
 

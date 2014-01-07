@@ -70,10 +70,11 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   //  LockFlightData();
   LockTaskData();
 
+
   // Calculate Task Distances
   // First calculate distances for this waypoint
 
-  double LegCovered, LegToGo=0;
+  double LegCovered, LegToGo=0, LegXTD=0, LegCurrentCourse;
   double LegDistance, LegBearing=0;
   bool calc_turning_now;
 
@@ -105,6 +106,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   if (ActiveWayPoint<1) {
     LegCovered = 0;
+    LegCurrentCourse=LegBearing;
     if (ValidTaskPoint(ActiveWayPoint+1)) {  // BUGFIX 091221
       LegToGo=0;
     }
@@ -130,7 +132,8 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     LegCovered = ProjectedDistance(w0lon, w0lat,
                                    w1lon, w1lat,
                                    Basic->Longitude,
-                                   Basic->Latitude);
+                                   Basic->Latitude,
+                                   &LegXTD, &LegCurrentCourse);
 
     if ((StartLine==0) && (ActiveWayPoint==1)) {
       // Correct speed calculations for radius
@@ -142,6 +145,8 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   
   Calculated->LegDistanceToGo = LegToGo;
   Calculated->LegDistanceCovered = LegCovered;
+  Calculated->LegCrossTrackError = LegXTD;
+  Calculated->LegActualTrueCourse = LegCurrentCourse;
   Calculated->TaskDistanceCovered = LegCovered;
   
   if (Basic->Time > Calculated->LegStartTime) {

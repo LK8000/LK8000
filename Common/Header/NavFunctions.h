@@ -31,7 +31,8 @@ void ScreenClosestPoint(const POINT &p1, const POINT &p2,
 
 double ProjectedDistance(double lon1, double lat1,
                          double lon2, double lat2,
-                         double lon3, double lat3);
+                         double lon3, double lat3,
+                         double *xtd, double *crs);
 
 void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 
