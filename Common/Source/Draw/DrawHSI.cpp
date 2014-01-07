@@ -47,8 +47,9 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	static const int innerradius = radius - NIBLSCALE(10);
 	static const int labelsRadius = radius -NIBLSCALE(20);
 	static const int smallMarkRadius = radius - NIBLSCALE(6);
+	static const int cdiRadius = radius - NIBLSCALE(30);
 	//TCHAR Buffer[LKSIZEBUFFERVALUE];
-	static struct compassMark compassMarks[72][10];
+	static compassMark compassMarks[72][10];
 	static const TCHAR* label[]= { //labels of the compass rose
 			TEXT("N"),
 			TEXT("03"),
@@ -67,10 +68,8 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	static const short centerX=(rc.right-rc.left)/2;
 	static const short centerY=((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
 
-	static int angle;
-
 	if(DoInit[MDI_DRAWHSI]) { //for the init there are 10 possible cases that must be precomputed
-		for(int alpha=0;alpha<10;alpha++) for(int i=0, deg=0, isBig=1; i<72; i++, deg=deg+5, isBig=!isBig) {
+		for(int alpha=0;alpha<10;alpha++) for(int i=0, deg=0, isBig=1; i<72; i++, deg+=5, isBig=!isBig) {
 			compassMarks[i][alpha].extX=centerX+(short)(radius*fastsine(deg+alpha));
 			compassMarks[i][alpha].extY=centerY-(short)(radius*fastcosine(deg+alpha));
 			compassMarks[i][alpha].intX=centerX+(short)((isBig?innerradius:smallMarkRadius)*fastsine(deg+alpha));
@@ -101,7 +100,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	//Circle(hDC, centerX, centerY, radius, rc, false, true);
 
 	//get the track bearing
-	angle = 360-round(DrawInfo.TrackBearing);
+	int angle = 360-round(DrawInfo.TrackBearing);
 
 
 	//Draw the markers
@@ -123,6 +122,33 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		int y=centerY-(int)(labelsRadius*fastcosine(deg));
 		LKWriteText(hDC,label[i],x,y,0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
 	}
+
+	if(ValidTaskPoint(ActiveWayPoint)) {
+		if(Task[ActiveWayPoint].Index>=0) {
+			printf("XTD: %f m\n",CALCULATED_INFO.LegCrossTrackError);
+			printf("CRS: %f deg\n\n",CALCULATED_INFO.LegActualTrueCourse);
+
+
+			double rotation=CALCULATED_INFO.LegActualTrueCourse-DrawInfo.TrackBearing;
+
+			POINT up, down;
+
+			//This is the upper side of the direction arrow
+			up.x=centerX+(long)(innerradius*fastsine(rotation));
+			up.y=centerY-(long)(innerradius*fastcosine(rotation));
+			down.x=centerX+(long)(cdiRadius*fastsine(rotation));
+			down.y=centerY-(long)(cdiRadius*fastcosine(rotation));
+			_DrawLine(hDC, PS_SOLID, NIBLSCALE(1),up,down,RGB_GREEN,rc);
+
+
+
+
+
+		}
+	}
+
+
+
 
 
 	SelectObject(hDC, hbOld);

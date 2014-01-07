@@ -450,7 +450,7 @@ double AATDistance::distance_achieved(int taskwaypoint, int jbest,
                         lat_points[taskwaypoint][jbest],
                         Task[taskwaypoint+1].AATTargetLon, 
                         Task[taskwaypoint+1].AATTargetLat, 
-                        longitude, latitude);
+                        longitude, latitude, NULL, NULL);
     achieved += legdistance_achieved[taskwaypoint];
   }
 
