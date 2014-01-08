@@ -115,6 +115,7 @@ int MapWindow::DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
 						break;
 					default:
 						wsprintf( textBuffer, _T("%d"), displayHeading/10 );
+						break;
 					}
 
 					SIZE textSize;
