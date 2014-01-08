@@ -8,8 +8,6 @@
 
 
 #include "externs.h"
-#include <aygshell.h>
-
 #include "Terrain.h"
 #include "LKProcess.h"
 

@@ -13,8 +13,6 @@
 #include "LKProfiles.h"
 
 #include <commctrl.h>
-#include <aygshell.h>
-
 #include "InfoBoxLayout.h"
 #include "LKProcess.h"
 #include "Atmosphere.h"

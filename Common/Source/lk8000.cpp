@@ -15,13 +15,6 @@
 #include "InfoBoxLayout.h"
 #include "Dialogs.h"
 #include "Poco/NamedMutex.h"
-
-#include <commctrl.h>
-#include <aygshell.h>
-#if (WINDOWSPC<1)
-#include <sipapi.h>
-#endif
-
 #include "Terrain.h"
 
 #include "devCAI302.h"

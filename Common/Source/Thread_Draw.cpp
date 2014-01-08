@@ -333,7 +333,7 @@ void MapWindow::CloseDrawingThread(void)
   StartupStore(_T("... CloseDrawingThread waitforsingleobject\n"));
   #endif
   WaitForSingleObject(hDrawThread, 15000);
-  ResetEvent(drawTriggerEvent);
+  drawTriggerEvent.reset();
           
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread wait THREADEXIT\n"));

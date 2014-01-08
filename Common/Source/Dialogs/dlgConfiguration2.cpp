@@ -7,8 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
-
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 #include "Dialogs.h"

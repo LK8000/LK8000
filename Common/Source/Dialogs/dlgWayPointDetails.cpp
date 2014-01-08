@@ -8,8 +8,6 @@
 
 
 #include "externs.h"
-#include <aygshell.h>
-
 #include "McReady.h"
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"

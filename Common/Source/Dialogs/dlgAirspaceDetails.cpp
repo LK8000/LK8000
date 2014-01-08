@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"
 #include "Airspace.h"

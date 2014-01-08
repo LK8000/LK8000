@@ -7,8 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
-
 #include "LKProcess.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"

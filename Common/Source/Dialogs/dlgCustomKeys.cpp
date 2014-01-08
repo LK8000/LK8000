@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
 #include "Terrain.h"
 #include "LKMapWindow.h"
 #include "LKProfiles.h"

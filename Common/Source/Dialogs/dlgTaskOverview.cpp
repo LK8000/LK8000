@@ -7,8 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
-
 #include "Logger.h"
 #include "McReady.h"
 #include "InfoBoxLayout.h"

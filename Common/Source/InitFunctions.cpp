@@ -12,16 +12,8 @@
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-
-#include <commctrl.h>
-#include <aygshell.h>
-#if (WINDOWSPC<1)
-#include <sipapi.h>
-#endif
-
 #include "InputEvents.h"
 #include "Message.h"
-
 #include "Bitmaps.h"
 #include "LKObjects.h"
 #include "DoInits.h"
