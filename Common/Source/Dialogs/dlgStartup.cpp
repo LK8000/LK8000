@@ -544,14 +544,6 @@ short dlgStartupShowModal(void){
     wp->RefreshDisplay();
   }
 
-  extern bool CheckFilesystemWritable(void);
-  if (!CheckFilesystemWritable()) {
-	MessageBoxX(hWndMainWindow, _T("LK8000 CANNOT WRITE IN MEMORY CARD!\nCARD IS LOCKED, OR DAMAGED, OR FULL."), _T("CRITICAL PROBLEM"), MB_OK|MB_ICONQUESTION);
-	RUN_MODE=RUN_EXIT;
-	Shutdown();
-	goto _exit;
-  }
-
   if  (!CheckRootDir()) {
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
@@ -642,6 +634,15 @@ short dlgStartupShowModal(void){
 	Shutdown();
 	goto _exit;
   }
+
+  extern bool CheckFilesystemWritable(void);
+  if (!CheckFilesystemWritable()) {
+	MessageBoxX(hWndMainWindow, _T("LK8000 CANNOT WRITE IN MEMORY CARD!\nCARD IS LOCKED, OR DAMAGED, OR FULL."), _T("CRITICAL PROBLEM"), MB_OK|MB_ICONQUESTION);
+	RUN_MODE=RUN_EXIT;
+	Shutdown();
+	goto _exit;
+  }
+
 
 
   // Standby for a system request to close the application during this phase.
