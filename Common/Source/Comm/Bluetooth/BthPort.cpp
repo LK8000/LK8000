@@ -192,11 +192,10 @@ extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *
 DWORD BthPort::RxThread() {
     DWORD dwWaitTime = 0;
     _Buff_t szString;
-    FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime;
     Purge();
 
     while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(dwWaitTime)) {
-        GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &StartKernelTime, &StartUserTime);
+
         UpdateStatus();
 
         int nRecv = ReadData(szString);
@@ -205,15 +204,6 @@ DWORD BthPort::RxThread() {
             dwWaitTime = 5; // avoid cpu overhead;
         } else {
             dwWaitTime = 50; // if no more data wait 50ms ( max data rate 20Hz )
-        }
-    
-        if ((GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &EndKernelTime, &EndUserTime)) == 0) {
-            if (GetPortIndex() == 0)
-                Cpu_PortA = 9999;
-            else
-                Cpu_PortB = 9999;
-        } else {
-            Cpustats((GetPortIndex() == 0) ? &Cpu_PortA : &Cpu_PortB, &StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
         }
     }
 

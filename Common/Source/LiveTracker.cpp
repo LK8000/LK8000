@@ -23,8 +23,6 @@
 
 static bool _ws_inited = false;     //Winsock inited
 static bool _inited = false;        //Winsock + thread inited
-static HANDLE _hThread = NULL;             //worker thread handle
-static DWORD _dwThreadID;           //worker thread ID
 static Poco::Event NewDataEvent;       //new data event trigger
 #define SERVERNAME_MAX  100
 static char _server_name[SERVERNAME_MAX];      // server name, or ip
@@ -52,7 +50,7 @@ static PointQueue _t_points;            // Point FIFO
 
 // Prototypes
 static bool InitWinsock();
-static DWORD WINAPI LiveTrackerThread(LPVOID lpvoid);
+static void LiveTrackerThread(void);
 
 // Unix timestamp calculation helpers
 #define isleap(y) ( !((y) % 400) || (!((y) % 4) && ((y) % 100)) )
@@ -135,6 +133,9 @@ static char* UrlEncode(const char *szText, char* szDst, int bufsize) {
   return szDst;
 }
 
+Poco::ThreadTarget _ThreadTarget(LiveTrackerThread);
+Poco::Thread _Thread;             //worker thread handle
+
 // Init Live Tracker services, if available
 void LiveTrackerInit()
 {
@@ -151,15 +152,13 @@ void LiveTrackerInit()
     _ws_inited = true;
 
     // Create a thread for sending data to the server
-    if ((_hThread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)&LiveTrackerThread, 0, 0, &_dwThreadID)) != NULL)
-    {
-      SetThreadPriority(_hThread, THREAD_PRIORITY_NORMAL);
-      unicode2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
-      _server_name[SERVERNAME_MAX-1]=0;
+    _Thread.start(_ThreadTarget);
+    _Thread.setPriority(Poco::Thread::PRIO_NORMAL);
+    unicode2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
+    _server_name[SERVERNAME_MAX-1]=0;
       _server_port=LiveTrackerport_Config;
-      StartupStore(TEXT(". LiveTracker will use server %s:%u if available.%s"), LiveTrackersrv_Config, LiveTrackerport_Config, NEWLINE);
-      _inited = true;
-    }
+    StartupStore(TEXT(". LiveTracker will use server %s if available.%s"), LiveTrackersrv_Config, NEWLINE);
+    _inited = true;
   }
   if (!_inited) StartupStore(TEXT(". LiveTracker init failed.%s"),NEWLINE);
 }
@@ -167,12 +166,11 @@ void LiveTrackerInit()
 // Shutdown Live Tracker
 void LiveTrackerShutdown()
 {
-  if (_hThread != NULL) {
+  if (_Thread.isRunning()) {
     _t_end = false;
     _t_run = false;
     NewDataEvent.set();
-    WaitForSingleObject(_hThread, INFINITE);
-    CloseHandle(_hThread);
+    _Thread.join();
     StartupStore(TEXT(". LiveTracker closed.%s"),NEWLINE);
   }
   if (_ws_inited) {
@@ -600,7 +598,7 @@ static bool SendGPSPointPacket(unsigned int *packet_id, unsigned int *session_id
 
 
 // Leonardo Live Tracker (www.livetrack24.com) data exchange thread
-static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
+static void LiveTrackerThread()
 {
   int tracker_fsm = 0;
   livetracker_point_t sendpoint = {0};
@@ -701,5 +699,4 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
   } while (_t_run);
   
   _t_end = true;
-  return 0;
 }

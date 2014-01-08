@@ -311,6 +311,7 @@ void AfterStartup() {
 }
 
 
+extern void WaitThreadCalculation();
 
 void Shutdown(void) {
   int i;
@@ -454,8 +455,7 @@ void Shutdown(void) {
   #endif
 
   // Wait end of Calculation thread before deinit critical section.
-  WaitForSingleObject(hCalculationThread, INFINITE);
-  CloseHandle(hCalculationThread);
+  WaitThreadCalculation();
 
   #if TESTBENCH
   StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);

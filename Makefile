@@ -893,6 +893,7 @@ POCO :=\
      $(POCOSRC)/RWLock.cpp \
      $(POCOSRC)/Thread.cpp \
      $(POCOSRC)/ThreadLocal.cpp \
+     $(POCOSRC)/ThreadTarget.cpp \
      $(POCOSRC)/Timestamp.cpp \
      $(POCOSRC)/UnicodeConverter.cpp \
      $(POCOSRC)/UTF8Encoding.cpp \

@@ -385,7 +385,6 @@ DWORD SerialPort::RxThread() {
 #endif
     DWORD dwBytesTransferred = 0; // 091117 initialized variables
     _Buff_t szString;
-    FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime;
 
     Purge();
 #if TRACETHREAD
@@ -405,7 +404,7 @@ DWORD SerialPort::RxThread() {
 #endif
 
     while ((hPort != INVALID_HANDLE_VALUE) && !StopEvt.tryWait(0)) {
-        GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &StartKernelTime, &StartUserTime);
+//        GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &StartKernelTime, &StartUserTime);
 
         UpdateStatus();
 
@@ -446,14 +445,6 @@ DWORD SerialPort::RxThread() {
                 Sleep(50); // JMW20070515: give port some time to
                 // fill... prevents ReadFile from causing the
                 // thread to take up too much CPU
-                if ((GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &EndKernelTime, &EndUserTime)) == 0) {
-                    if (GetPortIndex() == 0)
-                        Cpu_PortA = 9999;
-                    else
-                        Cpu_PortB = 9999;
-                } else {
-                    Cpustats((GetPortIndex() == 0) ? &Cpu_PortA : &Cpu_PortB, &StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
-                }
 
                 if (StopEvt.tryWait(0)) {
                     dwBytesTransferred = 0;

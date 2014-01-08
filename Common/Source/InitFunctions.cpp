@@ -43,8 +43,6 @@ LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
 
 extern void FillDataOptions(void);
 extern void StartupLogFreeRamAndStorage();
-extern void CreateCalculationThread();
-
 
 void PreloadInitialisation(bool ask) {
   LKLanguageReady=false;

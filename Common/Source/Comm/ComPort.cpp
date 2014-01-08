@@ -14,18 +14,14 @@
 #include <algorithm>
 #include "dlgTools.h"
 #include <functional>
+#include "Poco/RunnableAdapter.h"
 
 ComPort::ComPort(int idx, const std::wstring& sName) : devIdx(idx), sPortName(sName) {
     pLastNmea = begin(_NmeaString);
-
-    hReadThread = INVALID_HANDLE_VALUE;
 }
 
 ComPort::~ComPort() {
-    // Close(); never call virtual in base class dtor !!!
-    if(hReadThread != INVALID_HANDLE_VALUE) {
-        CloseHandle(hReadThread);
-    }
+
 }
 
 bool ComPort::Initialize() {
@@ -77,58 +73,49 @@ void ComPort::PutChar(BYTE b) {
 }
 
 BOOL ComPort::StopRxThread() {
-    if ((hReadThread != INVALID_HANDLE_VALUE)) {
-        StopEvt.set();
+    StopEvt.set();
 
 #ifdef _DEBUG_STOP_RXTHREAD
-        StartupStore(_T("... ComPort %d StopRxThread: Cancel Wait Event !%s"), GetPortIndex() + 1, NEWLINE);
+    StartupStore(_T("... ComPort %d StopRxThread: Cancel Wait Event !%s"), GetPortIndex() + 1, NEWLINE);
 #endif
-        CancelWaitEvent();
-        
+    CancelWaitEvent();
+
 #ifdef _DEBUG_STOP_RXTHREAD
-        StartupStore(_T("... ComPort %d StopRxThread: Wait End of thread !%s"), GetPortIndex() + 1, NEWLINE);
+    StartupStore(_T("... ComPort %d StopRxThread: Wait End of thread !%s"), GetPortIndex() + 1, NEWLINE);
 #endif
-        if (::WaitForSingleObject(hReadThread, 20000) == WAIT_TIMEOUT) {
-            StartupStore(_T("... ComPort %d StopRxThread: RX Thread forced to terminate!%s"), GetPortIndex() + 1, NEWLINE);
-            TerminateThread(hReadThread, 0);
-        }
-        CloseHandle(hReadThread);
-        hReadThread = INVALID_HANDLE_VALUE;
-        StopEvt.reset();
+    if (!ReadThread.tryJoin(20000)) {
+        StartupStore(_T("... ComPort %d StopRxThread: RX Thread forced to terminate!%s"), GetPortIndex() + 1, NEWLINE);
+        // TODO : Kill Thread ??
     }
+    StopEvt.reset();
+
     return TRUE;
 }
 
 BOOL ComPort::StartRxThread() {
     StopEvt.reset();
-    DWORD dwThreadID;
+
+    
     // Create a read thread for reading data from the communication port.
-    if ((hReadThread = CreateThread(NULL, 0, RxThreadProc, this, 0, &dwThreadID)) == NULL) {
-        goto failed;
+    ReadThread.start(*this);
+    ReadThread.setPriority(Poco::Thread::PRIO_NORMAL); //THREAD_PRIORITY_ABOVE_NORMAL
+
+    if(ReadThread.isRunning()) {
+        // Could not create the read thread.
+        StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+
+        // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
+        StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M761_")), GetPortName());
+        //DWORD dwError = GetLastError();
+        return FALSE;
     }
-    SetThreadPriority(hReadThread, THREAD_PRIORITY_NORMAL); //THREAD_PRIORITY_ABOVE_NORMAL
-
-    return TRUE;
-
-failed:
-    // Could not create the read thread.
-    StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
-
-    // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port" 
-    StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M761_")), GetPortName());
-    //DWORD dwError = GetLastError();
     return FALSE;
 }
 
-DWORD ComPort::RxThreadProc(LPVOID prt) {
-    DWORD ret = 0U; 
-    ComPort* pCom = static_cast<ComPort*>(prt);
-    if(pCom) {
-        StartupStore(_T(". ComPort %d ReadThread : started%s"), pCom->GetPortIndex() + 1, NEWLINE);
-        ret = pCom->RxThread();
-        StartupStore(_T(". ComPort %d ReadThread : terminated%s"), pCom->GetPortIndex() + 1, NEWLINE);
-    }
-    return ret; 
+void ComPort::run() {
+    StartupStore(_T(". ComPort %d ReadThread : started%s"), GetPortIndex() + 1, NEWLINE);
+    RxThread();
+    StartupStore(_T(". ComPort %d ReadThread : terminated%s"), GetPortIndex() + 1, NEWLINE);
 }
 
 void ComPort::ProcessChar(char c) {
