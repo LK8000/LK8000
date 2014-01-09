@@ -79,7 +79,7 @@ void GlidePolar::SetBallast() {
   if ((SAFTEYSPEED<1)||(SAFTEYSPEED>=MAXSAFETYSPEED)) {
     SAFTEYSPEED=MAXSAFETYSPEED-1;
   }
-  iSAFETYSPEED=(int)SAFTEYSPEED;
+  iSAFETYSPEED=iround(SAFTEYSPEED);
 
   // sinkratecache is an array for m/s values!! i is the speed in m/s
   for(i=4;i<=MAXSPEED;i++)
@@ -213,7 +213,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
   bool SpeedFound = false;
   #endif
 
-  for(i=Vminsink;i<iSAFETYSPEED;i++) {
+  for(i=Vminsink;i<=iSAFETYSPEED;i++) {
     double vtrack_real = ((double)i); // actual airspeed
     double vtrack = vtrack_real*cruise_efficiency; 
     // TAS along bearing in cruise
@@ -509,7 +509,7 @@ double GlidePolar::FindSpeedForSinkRate(double w) {
   // find the highest speed that provides a sink rate less than
   // the specified sink rate
   double vbest= Vminsink;
-  for (int v=Vminsink; v<iSAFETYSPEED; v++) {
+  for (int v=Vminsink; v<=iSAFETYSPEED; v++) {
     double wthis = _SinkRateFast(0, v);
     if (wthis>w) {
       vbest = v;
