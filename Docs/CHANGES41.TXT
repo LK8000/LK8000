@@ -106,6 +106,13 @@ Airspace warning configuration is now offering the choice to change the timeout 
 
 
 
+FIXES
+
+Fix logger problem when lat or long minutes are exactly 0 sharp in W or S .
+fix wrong error message claiming the filesystem is not writable while the system folder is just missing.
+fix McCready Speed calculation 
+
+
 
 
 ============
