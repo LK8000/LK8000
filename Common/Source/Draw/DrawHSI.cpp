@@ -63,14 +63,16 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			TEXT("33")
 	};
 
-	HPEN hpBlack;
-	HBRUSH hbBlack;
-	HPEN hpWhite;
-	HBRUSH hbWhite;
-	//HPEN hpBorder;
-	//HBRUSH hbBorder;
-	HPEN hpOld;
-	HBRUSH hbOld;
+	static HPEN hpMarks = LKPen_White_N1;
+	static HBRUSH hbMarks = LKBrush_White;
+	static HPEN hpDir = LKPen_Green_N1;
+	static HBRUSH hbDir = LKBrush_Green;
+	static COLORREF cdiColor=RGB_YELLOW;
+	static COLORREF cdiOutOfScaleColor=RGB_RED;
+	static COLORREF markColor=RGB_WHITE;
+	static COLORREF dirColor=RGB_GREEN;
+	static COLORREF airplaneSymbolColor=RGB_ORANGE;
+	static bool prevScreenModeNormal=true;
 
 	if(DoInit[MDI_DRAWHSI]) {
 		//all the sizes must be recalculated in case of screen resolution change:
@@ -91,37 +93,41 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			compassMarks[i][alpha].intX=centerX+(short)((isBig?innerradius:smallMarkRadius)*fastsine(deg+alpha));
 			compassMarks[i][alpha].intY=centerY-(short)((isBig?innerradius:smallMarkRadius)*fastcosine(deg+alpha));
 		}
-
-		//TODO: if(BlackScreen) if the screen is inverted adjust the colors properly!
 		DoInit[MDI_DRAWHSI]=false;
 	}
 
-	//hpBlack = LKPen_Grey_N1;
-	//hbBlack = LKBrush_Grey;
-	hpBlack = LKPen_Black_N1;
-	hpBlack = LKPen_Black_N1;
-	hbBlack = LKBrush_Black;
-	hpWhite = LKPen_White_N1;
-	hbWhite = LKBrush_White; //test this was the original
-	//hpBorder = LKPen_Grey_N2;
-	//hbBorder = LKBrush_Grey;
+	if(INVERTCOLORS!=prevScreenModeNormal) {//if screen mode changed
+		prevScreenModeNormal=!prevScreenModeNormal;
+		if(prevScreenModeNormal) { //if true set normal colors
+			cdiColor=RGB_YELLOW;
+			cdiOutOfScaleColor=RGB_RED;
+			markColor=RGB_WHITE;
+			dirColor=RGB_GREEN;
+			airplaneSymbolColor=RGB_ORANGE;
+			hpMarks = LKPen_White_N1;
+			hbMarks = LKBrush_White;
+			hpDir = LKPen_Green_N1;
+			hbDir = LKBrush_Green;
+		} else { //otherwise the text colors are inverted so adjust the colors properly!
+			cdiColor=RGB_BLACK;
+			cdiOutOfScaleColor=RGB_GREY;
+			markColor=RGB_BLACK;
+			dirColor=RGB_BLACK;
+			airplaneSymbolColor=RGB_GREY;
+			hpMarks = LKPen_Grey_N1;
+			hbMarks = LKBrush_Grey;
+			hpDir = LKPen_Black_N1;
+			hbDir = LKBrush_Black;
+		}
+	}
 
-	//SelectObject(hDC, hpBorder);
-	//SelectObject(hDC, hbBorder);
-	//Circle(hDC, Start.x, Start.y, radius + NIBLSCALE(2), rc, false, false);
-
-	//SelectObject(hDC, hpBlack);
-	//SelectObject(hDC, hbBlack);
-
-	hpOld = (HPEN) SelectObject(hDC, hpBlack);
-	hbOld = (HBRUSH) SelectObject(hDC, hbBlack);
-	//Circle(hDC, centerX, centerY, radius, rc, false, true);
+	HPEN hpOld = (HPEN) SelectObject(hDC, LKPen_Black_N1);
+	HBRUSH hbOld = (HBRUSH) SelectObject(hDC, LKBrush_Black);
 
 	//get the track bearing
 	int angle = 360-round(DrawInfo.TrackBearing);
 
-
-	//Draw the markers
+	//Draw the compass rose markers
 	int alpha=angle%10;
 	POINT external,internal;
 	for(int i=0,isBig=1;i<72;i++,isBig=!isBig) {
@@ -129,10 +135,10 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		external.y=compassMarks[i][alpha].extY;
 		internal.x=compassMarks[i][alpha].intX;
 		internal.y=compassMarks[i][alpha].intY;
-		_DrawLine(hDC, PS_SOLID, isBig?NIBLSCALE(1):1,external,internal,RGB_WHITE,rc);
+		_DrawLine(hDC, PS_ENDCAP_SQUARE, isBig?NIBLSCALE(1):1,external,internal,markColor,rc);
 	}
 
-	//Put the labels
+	//Put the labels on compass rose
 	SelectObject(hDC, LK8TitleFont);
 	for(int i=0;i<12;i++) {
 		int deg=i*30+angle;
@@ -157,15 +163,15 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			up.y=centerY-(long)(labelsRadius*fastcosine(rotation));
 			down.x=centerX+(long)(cdiRadius*fastsine(rotation));
 			down.y=centerY-(long)(cdiRadius*fastcosine(rotation));
-			_DrawLine(hDC, PS_SOLID, NIBLSCALE(2),up,down,RGB_GREEN,rc);
+			_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,dirColor,rc);
 			long topX=centerX+(long)(innerradius*fastsine(rotation));
 			long topY=centerY-(long)(innerradius*fastcosine(rotation));
 			long rightX=centerX+(long)(labelsRadius*fastsine(rotation))+(long)(NIBLSCALE(4)*fastcosine(rotation));
 			long rightY=centerY-(long)(labelsRadius*fastcosine(rotation))+(long)(NIBLSCALE(4)*fastsine(rotation));
 			long leftX=centerX+(long)(labelsRadius*fastsine(rotation))-(long)(NIBLSCALE(4)*fastcosine(rotation));
 			long leftY=centerY-(long)(labelsRadius*fastcosine(rotation))-(long)(NIBLSCALE(4)*fastsine(rotation));
-			SelectObject(hDC, LKPen_Green_N1);
-			SelectObject(hDC, LKBrush_Green);
+			SelectObject(hDC, hpDir);
+			SelectObject(hDC, hbDir);
 			POINT triangle[4] = {{topX,topY},{rightX,rightY},{leftX,leftY},{topX,topY}};
 			Polygon(hDC,triangle,4);
 
@@ -174,15 +180,14 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			up.y=centerY+(long)(innerradius*fastcosine(-rotation));
 			down.x=centerX+(long)(cdiRadius*fastsine(-rotation));
 			down.y=centerY+(long)(cdiRadius*fastcosine(-rotation));
-			_DrawLine(hDC, PS_SOLID, NIBLSCALE(2),up,down,RGB_GREEN,rc);
+			_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,dirColor,rc);
 
 			//CDI
 			double xtd=DerivedDrawInfo.LegCrossTrackError;
 			int dev; //deviation in pixel
-			COLORREF cdiColor=RGB_YELLOW;
-			SelectObject(hDC, hpWhite);
-			SelectObject(hDC, hbWhite);
-			Circle(hDC,centerX,centerY,NIBLSCALE(1),rc,false,false); //draw the central CDI mark
+			COLORREF color=cdiColor;
+			SelectObject(hDC, hpMarks);
+			SelectObject(hDC, hbMarks);
 			if(abs(xtd)<smallCDIscale) { //use small scale of 0.3 NM
 				long tick=cdiFullScale/3; //every mark represents 0.1 NM
 				for(int i=1;i<3;i++) {
@@ -206,19 +211,37 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 				}
 				if(xtd>bigCDIscale) {
 					dev=-cdiFullScale;
-					cdiColor=RGB_RED;
+					color=cdiOutOfScaleColor;
 				} else if(xtd<-bigCDIscale) {
 					dev=cdiFullScale;
-					cdiColor=RGB_RED;
+					color=cdiOutOfScaleColor;
 				} else dev=-(int)(round((cdiFullScale*xtd)/bigCDIscale));
 			}
 			up.x=centerX+(long)(cdiRadius*fastsine(rotation))+(long)(dev*fastcosine(rotation));
 			up.y=centerY-(long)(cdiRadius*fastcosine(rotation))+(long)(dev*fastsine(rotation));
 			down.x=centerX+(long)(cdiRadius*fastsine(-rotation))+(long)(dev*fastcosine(-rotation));
 			down.y=centerY+(long)(cdiRadius*fastcosine(-rotation))-(long)(dev*fastsine(-rotation));;
-			_DrawLine(hDC, PS_SOLID, NIBLSCALE(2),up,down,cdiColor,rc);
+			_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,color,rc);
 		}
 	}
+
+	//Draw airplane symbol
+	POINT a,b;
+	a.x=centerX;
+	a.y=centerY-NIBLSCALE(7);
+	b.x=centerX;
+	b.y=centerY+NIBLSCALE(7);
+	_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),a,b,airplaneSymbolColor,rc);
+	a.x=centerX-NIBLSCALE(8);
+	a.y=centerY-NIBLSCALE(3);
+	b.x=centerX+NIBLSCALE(8);
+	b.y=centerY-NIBLSCALE(3);
+	_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),a,b,airplaneSymbolColor,rc);
+	a.x=centerX-NIBLSCALE(3);
+	a.y=centerY+NIBLSCALE(4);
+	b.x=centerX+NIBLSCALE(3);
+	b.y=centerY+NIBLSCALE(4);
+	_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),a,b,airplaneSymbolColor,rc);
 
 	SelectObject(hDC, hbOld);
 	SelectObject(hDC, hpOld);
