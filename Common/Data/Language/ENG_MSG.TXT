@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  121005
+# MASTER UPDATED:  140109
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -2118,9 +2118,9 @@ _@M2246_ "Reset\nView"
 _@M2247_ "28/45 FAI threshold "
 _@M2248_  "No Near Object found!"
 
-# MAX 2250! 
+# MAX 2500! 
 # (Reserved for custom menus up to 2300!)
-# Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)
+# Note for developers: remember LKLanguage MAX_MESSAGE limit (2500)
 
 # S = Start Task point
 _@M2301  "S" 
