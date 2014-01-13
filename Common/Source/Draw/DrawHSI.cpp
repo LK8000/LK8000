@@ -24,15 +24,17 @@
 #include "DoInits.h"
 
 void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
-	static short centerX;
-	static short centerY;
+	static short centerX; //center X of HSI gauge
+	static short centerY; //center Y of HSI gauge
 	static short radius; //HSI gauge size radius
-	static short innerradius;
-	static short labelsRadius;
-	static short smallMarkRadius;
-	static short cdiRadius;
-	static short cdiFullScale;
-	static POINT fusA,fusB,winA,winB,taiA,taiB; //coordinates airplane symbol
+	static short innerradius; //internal radius of big marks on the compass rose
+	static short labelsRadius; //radius where the directions labels are drawn
+	static short smallMarkRadius; //internal radius of small marks on the compass rose
+	static short cdiRadius; //radius of Course Deviation Indicator line
+	static short cdiFullScale; //size in pixel for all one side CDI scale
+	static short smallScaleTick; //interval between marks on small CDI scale
+	static short bigScaleTick; //interval between marks on big CDI scale
+	static POINT fusA,fusB,winA,winB,taiA,taiB; //coordinates for airplane symbol
 	//TCHAR Buffer[LKSIZEBUFFERVALUE];
 
 	static struct { //Compass rose marks coordinates matrix: using short's to use less memory
@@ -59,19 +61,16 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			TEXT("33")
 	};
 
-	static bool screenModeNormal=true;
-
-	if(DoInit[MDI_DRAWHSI]) {
-		//all the sizes must be recalculated in case of screen resolution change:
+	if(DoInit[MDI_DRAWHSI]) { //All the dimensions must be recalculated in case of screen resolution change
+		radius=NIBLSCALE(80);
 		short top=(((rc.bottom-BottomSize-(rc.top + TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)-(rc.top + TOPLIMITER);
-		centerX=(rc.right-rc.left)/2;
 		centerY=((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(12);
-		radius = NIBLSCALE(80);
-		innerradius = radius - NIBLSCALE(10);
-		labelsRadius = radius -NIBLSCALE(20);
-		smallMarkRadius = radius - NIBLSCALE(6);
-		cdiRadius = radius - NIBLSCALE(35);
-		cdiFullScale = radius -NIBLSCALE(30);
+		centerX=rc.left+radius+NIBLSCALE(10); //align HSI on the right
+		innerradius=radius-NIBLSCALE(10);
+		labelsRadius=radius-NIBLSCALE(20);
+		smallMarkRadius=radius-NIBLSCALE(6);
+		cdiRadius=radius-NIBLSCALE(35);
+		cdiFullScale=radius-NIBLSCALE(30);
 
 		//For the positions of all 72 compass rose marks there are 10 possible cases to be pre-calculated:
 		for(int alpha=0;alpha<10;alpha++) for(int i=0, deg=0, isBig=1; i<72; i++, deg+=5, isBig=!isBig) {
@@ -91,6 +90,10 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		hdgMark[3].x=hdgMark[0].x;
 		hdgMark[3].y=hdgMark[0].y;
 
+		//Initialize the sizes of the marks on the two CDI scales
+		smallScaleTick=round(cdiFullScale/3); //every mark represents 0.1 NM
+		bigScaleTick=round(cdiFullScale/5); //every mark represents 1 NM
+
 		//Initialize coordinates for airplane symbol
 		fusA.x=centerX;
 		fusA.y=centerY-NIBLSCALE(7);
@@ -108,8 +111,6 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		DoInit[MDI_DRAWHSI]=false;
 	}
 
-	screenModeNormal=INVERTCOLORS; //to check if colors are inverted
-
 	HPEN hpOld = (HPEN) SelectObject(hDC, LKPen_Black_N1);
 	HBRUSH hbOld = (HBRUSH) SelectObject(hDC, LKBrush_Black);
 
@@ -124,7 +125,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		external.y=compassMarks[i][alpha].extY;
 		internal.x=compassMarks[i][alpha].intX;
 		internal.y=compassMarks[i][alpha].intY;
-		_DrawLine(hDC, PS_ENDCAP_SQUARE, isBig?NIBLSCALE(1):1,external,internal,screenModeNormal?RGB_WHITE:RGB_BLACK,rc);
+		_DrawLine(hDC, PS_ENDCAP_SQUARE, isBig?NIBLSCALE(1):1,external,internal,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
 	}
 
 	//Put the labels on compass rose
@@ -142,7 +143,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	Polygon(hDC,hdgMark,4);
 
 	if(ValidTaskPoint(ActiveWayPoint)) {
-		if(Task[ActiveWayPoint].Index>=0) { //Draw CDI only if there is a task/route active
+		if(Task[ActiveWayPoint].Index>=0) { //Draw course direction and CDI only if there is a task/route active
 			//TODO: show them on HSI screen:
 			//DerivedDrawInfo.LegCrossTrackError
 			//DerivedDrawInfo.LegActualTrueCourse
@@ -185,43 +186,49 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,RGB_GREEN,rc);
 
 			//Course Deviation Indicator
-			double xtd=DerivedDrawInfo.LegCrossTrackError;
-			int dev; //deviation in pixel
-			COLORREF cdiColor=screenModeNormal?RGB_YELLOW:RGB_DARKYELLOW;
-			SelectObject(hDC, screenModeNormal?LKPen_White_N1:LKPen_Black_N1);
-			SelectObject(hDC, screenModeNormal?LKBrush_White:LKBrush_Black);
-			if(abs(xtd)<smallCDIscale) { //use small scale of 0.3 NM
-				long tick=cdiFullScale/3; //every mark represents 0.1 NM
-				for(int i=1;i<3;i++) {
-					long tickXiXsin=tick*i*sin;
-					long tickXiXcos=tick*i*cos;
-					Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
-					Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
+			if(ActiveWayPoint>0) { //we are flying from WP to WP on a predefined routeline: draw CDI
+				double xtd=DerivedDrawInfo.LegCrossTrackError; //get the cross track error
+				int dev; //deviation in pixel
+				COLORREF cdiColor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW; //color of CDI
+				SelectObject(hDC,INVERTCOLORS?LKPen_White_N1:LKPen_Black_N1); //color of CDI scale
+				SelectObject(hDC,INVERTCOLORS?LKBrush_White:LKBrush_Black);
+				if(abs(xtd)<smallCDIscale) { //use small scale of 0.3 NM
+					for(int i=1;i<3;i++) {
+						long tickXiXsin=smallScaleTick*i*sin;
+						long tickXiXcos=smallScaleTick*i*cos;
+						Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
+						Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
+					}
+					dev=-(int)(round((cdiFullScale*xtd)/smallCDIscale));
+				} else { // use big scale of 5 NM
+					for(int i=1;i<5;i++) {
+						long tickXiXsin=bigScaleTick*i*sin;
+						long tickXiXcos=bigScaleTick*i*cos;
+						Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
+						Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
+					}
+					if(xtd>bigCDIscale) {
+						dev=-cdiFullScale;
+						cdiColor=RGB_RED;
+					} else if(xtd<-bigCDIscale) {
+						dev=cdiFullScale;
+						cdiColor=RGB_RED;
+					} else dev=-round((cdiFullScale*xtd)/bigCDIscale);
 				}
-				dev=-(int)(round((cdiFullScale*xtd)/smallCDIscale));
-			} else { // use big scale of 5 NM
-				long tick=cdiFullScale/5; //every mark represents 1 NM
-				for(int i=1;i<5;i++) {
-					long tickXiXsin=tick*i*sin;
-					long tickXiXcos=tick*i*cos;
-					Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
-					Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
-				}
-				if(xtd>bigCDIscale) {
-					dev=-cdiFullScale;
-					cdiColor=RGB_RED;
-				} else if(xtd<-bigCDIscale) {
-					dev=cdiFullScale;
-					cdiColor=RGB_RED;
-				} else dev=-round((cdiFullScale*xtd)/bigCDIscale);
+				long devXsin=dev*sin;
+				long devXcos=dev*cos;
+				up.x=centerX+cdiRadiusXsin+devXcos;
+				up.y=centerY-cdiRadiusXcos+devXsin;
+				down.x=centerX-cdiRadiusXsin+devXcos;
+				down.y=centerY+cdiRadiusXcos+devXsin;
+				_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,cdiColor,rc);
+			} else { //we are flying to the departure point: there isn't a predefined routeline: don't draw CDI
+				up.x=centerX+cdiRadiusXsin; //draw CDI in the center as part of the course direction arrow (same color)
+				up.y=centerY-cdiRadiusXcos;
+				down.x=centerX-cdiRadiusXsin;
+				down.y=centerY+cdiRadiusXcos;
+				_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,RGB_GREEN,rc);
 			}
-			long devXsin=dev*sin;
-			long devXcos=dev*cos;
-			up.x=centerX+cdiRadiusXsin+devXcos;
-			up.y=centerY-cdiRadiusXcos+devXsin;
-			down.x=centerX-cdiRadiusXsin+devXcos;
-			down.y=centerY+cdiRadiusXcos+devXsin;
-			_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,cdiColor,rc);
 		}
 	}
 
