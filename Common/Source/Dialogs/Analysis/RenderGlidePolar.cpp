@@ -13,7 +13,7 @@
 
 void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
 {
-  int minSpeed = iround(GlidePolar::Vminsink*0.8);
+  int minSpeed = iround(GlidePolar::Vminsink()*0.6);
   int maxSpeed = iround(SAFTEYSPEED*1.1);
   
   ResetScale();
@@ -129,7 +129,7 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   _stprintf(text, TEXT("%s: %3.0f  @ %3.0f %s"),
 		MsgToken(140), // Best LD
                   GlidePolar::bestld,
-                  GlidePolar::Vbestld*SPEEDMODIFY,
+                  GlidePolar::Vbestld()*SPEEDMODIFY,
                   Units::GetHorizontalSpeedName());
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
 	              rc.bottom-IBLSCALE(70),
@@ -139,7 +139,7 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
 		MsgToken(437), // Min sink
                   GlidePolar::minsink*LIFTMODIFY,
                   Units::GetVerticalSpeedName(),
-                  GlidePolar::Vminsink*SPEEDMODIFY,
+                  GlidePolar::Vminsink()*SPEEDMODIFY,
                   Units::GetHorizontalSpeedName());
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
 	              rc.bottom-IBLSCALE(50),

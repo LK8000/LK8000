@@ -62,17 +62,17 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     // too much
     if (Calculated->Vario <= current_mc) {
       Calculated->VOpt = max(Calculated->VOpt,
-			     GlidePolar::Vminsink*sqrt(n));
+			     GlidePolar::Vminsink()*sqrt(n));
     } else {
       Calculated->VOpt = max(Calculated->VOpt,
-			     (double)GlidePolar::Vminsink);
+			     (double)GlidePolar::Vminsink());
     }
     Calculated->VOpt = LowPassFilter(Calculated->VOpt,VOptnew, 0.6);
     
   } else {
     // this air mass is better than maccready, so fly at minimum sink speed
     // calculate speed of min sink adjusted for load factor 
-    Calculated->VOpt = GlidePolar::Vminsink*sqrt(n);
+    Calculated->VOpt = GlidePolar::Vminsink()*sqrt(n);
   }
 
 }

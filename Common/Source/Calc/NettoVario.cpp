@@ -27,9 +27,9 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   double glider_sink_rate;    
   if (Basic->AirspeedAvailable && replay_disabled) {
-    glider_sink_rate= AirDensitySinkRate(max((double)GlidePolar::Vminsink, Basic->IndicatedAirspeed), Basic->Altitude, n);
+    glider_sink_rate= AirDensitySinkRate(max((double)GlidePolar::Vminsink(), Basic->IndicatedAirspeed), Basic->Altitude, n);
   } else {
-    glider_sink_rate= AirDensitySinkRate(max((double)GlidePolar::Vminsink, Calculated->IndicatedAirspeedEstimated), Basic->Altitude,  n);
+    glider_sink_rate= AirDensitySinkRate(max((double)GlidePolar::Vminsink(), Calculated->IndicatedAirspeedEstimated), Basic->Altitude,  n);
   }
   Calculated->GliderSinkRate = glider_sink_rate;
 

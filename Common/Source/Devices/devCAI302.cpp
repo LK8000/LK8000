@@ -357,7 +357,7 @@ BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffe
             GliderType,
             GliderID,
             (int)GlidePolar::bestld,
-            (int)(GlidePolar::Vbestld * TOKPH),
+            (int)(GlidePolar::Vbestld() * TOKPH),
             (int)(GlidePolar::FindSpeedForSinkRateAccurate(-2.0) * TOKPH),
             (int)(WEIGHTS[0] + WEIGHTS[1]),
             (int)WEIGHTS[2],
@@ -535,7 +535,7 @@ $PCAID,<1>,<2>,<3>,<4>*hh<CR><LF>
 <2> Barometer Altitude in meters (Leading zeros will be transmitted)
 <3> Engine Noise Level
 <4> Log Flags
-*hh Checksum, XOR of all bytes of the sentence after the ‘$’ and before the ‘*’
+*hh Checksum, XOR of all bytes of the sentence after the ï¿½$ï¿½ and before the ï¿½*ï¿½
 */
 
 static bool have_Qnhaltitude=false;
