@@ -21,7 +21,6 @@
 #include "dlgTools.h"
 #include "utils/stl_utils.h"
 #include <tr1/functional>
-#include <sstream>
 
 using std::tr1::placeholders::_1;
 
@@ -102,19 +101,19 @@ public:
     }
 
     void operator=(double v) {
-        std::wostringstream oss;
-        oss << (int)(v/_Factor);
-        _Value = oss.str();
+        TCHAR szTmp[30] = {0};
+        _stprintf(szTmp, _T("%d"), (int)(v/_Factor));
+        _Value = szTmp;
     }
 
     void operator=(int v) {
-        std::wostringstream oss;
+        TCHAR szTmp[30] = {0};
         if(Type() == TYPE_INTOFFSET) {
-            oss << (int)(v - _Factor);
+            _stprintf(szTmp, _T("%d"), (int)(v - _Factor));
         } else {
-            oss << (int)(v / _Factor);
+            _stprintf(szTmp, _T("%d"), (int)(v / _Factor));
         }
-        _Value = oss.str();
+        _Value = szTmp;
     }
     
     void operator=(bool v) {
@@ -170,20 +169,23 @@ public:
     void updateHardwareSettingsValues(TCHAR* line) {
         _Values = line;
         if (!_Keys.empty() && !_Values.empty()) {
-            std::wistringstream issKeys(_Keys);
-            std::wistringstream issValues(_Values);
-            std::wstring Key;
-            std::wstring Value;
-
-            issValues >> Value; //skip first Value
-            while (!issKeys.eof() && !issValues.eof()) {
-                issKeys >> Key;
-                issValues >> Value;
-                if (!Key.empty()) {
-                    ParameterList_t::iterator It = _ParameterList.find(Key);
-                    if (It != _ParameterList.end()) {
-                        (*It).second.Value(Value);
-                    }
+            
+            std::string::size_type PrevPosKey = 0, PosKey = 0;
+            std::string::size_type PrevPosVal = 0, PosVal = 0;
+            if(((PosVal = _Values.find_first_of(L" \n", PosVal)) != std::string::npos)) { //skip first Value
+                PrevPosVal = ++PosVal;
+                while ( ((PosKey = _Keys.find_first_of(L" \n", PosKey)) != std::string::npos)
+                        && ((PosVal = _Values.find_first_of(L" \n", PosVal)) != std::string::npos) )
+                {
+                    
+                    if (PosKey > PrevPosKey) {
+                        ParameterList_t::iterator It = _ParameterList.find(_Keys.substr(PrevPosKey, PosKey-PrevPosKey));
+                        if (It != _ParameterList.end()) {
+                            (*It).second.Value(_Values.substr(PrevPosVal, PosVal-PrevPosVal));
+                        }
+                    }                    
+                    PrevPosKey = ++PosKey;
+                    PrevPosVal = ++PosVal;
                 }
             }
         }
@@ -195,9 +197,9 @@ public:
 
      void UpdateDevice(const CHardwareParameter& Param, ComPort* Com) const {
         if(Param.MinHwVersion() <= _HwVersion) {
-            std::wostringstream oss;
-            oss << L"$" << Param.Code() << L" " << Param.Value() << L"* ";
-            Com->WriteString(oss.str().c_str());
+            TCHAR szTmp[35] = {0};
+            _stprintf(szTmp, _T("$%s %s*"), Param.Code().c_str(), Param.Value().c_str());
+            Com->WriteString(szTmp);
         }
     }
 
@@ -242,9 +244,9 @@ namespace dlgBlueFlyConfig {
                 pWnd->SetVisible(CurrentPage>0);
             }
 
-            std::wostringstream oss;
-            oss << "BlueFlyVario " << (CurrentPage+1) << "/" << lstPageWnd.size();
-            wfDlg->SetCaption(oss.str().c_str());
+            TCHAR szTmp[50] = {0};
+            _stprintf(szTmp, _T("BlueFlyVario %d/%d"), CurrentPage+1, lstPageWnd.size());
+            wfDlg->SetCaption(szTmp);
         }
     }
 
