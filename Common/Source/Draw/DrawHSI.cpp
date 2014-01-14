@@ -9,13 +9,6 @@
  * Created on 5 January 2014, 10:43
  */
 
-//INFO: This is how to print the degree symbol:
-//#ifndef __MINGW32__
-//	//_stprintf(Buffer, TEXT("%2.0f\xB0"), beta);
-//#else
-//	//_stprintf(Buffer, TEXT("%2.0f°"), beta);
-//#endif
-
 
 #include "externs.h"
 #include "LKMapWindow.h"
@@ -24,8 +17,7 @@
 #include "DoInits.h"
 
 void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
-	static short centerX; //center X of HSI gauge
-	static short centerY; //center Y of HSI gauge
+	static short centerX, centerY; //center coordinates of HSI gauge
 	static short radius; //HSI gauge size radius
 	static short innerradius; //internal radius of big marks on the compass rose
 	static short labelsRadius; //radius where the directions labels are drawn
@@ -35,7 +27,9 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	static short smallScaleTick; //interval between marks on small CDI scale
 	static short bigScaleTick; //interval between marks on big CDI scale
 	static POINT fusA,fusB,winA,winB,taiA,taiB; //coordinates for airplane symbol
-	//TCHAR Buffer[LKSIZEBUFFERVALUE];
+	static short posTRKx, posTRKy; //coordinates of current track textual information
+	static short posDTKy; //Y coordinate of desired track textual information
+	static short posXTKx, posXTKy; //coordinates of cross track error textual information
 
 	static struct { //Compass rose marks coordinates matrix: using short's to use less memory
 		short extX, extY; //coordinates external mark point
@@ -65,7 +59,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		radius=NIBLSCALE(80);
 		short top=(((rc.bottom-BottomSize-(rc.top + TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)-(rc.top + TOPLIMITER);
 		centerY=((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(12);
-		centerX=rc.left+radius+NIBLSCALE(10); //align HSI on the right
+		centerX=rc.left+radius+NIBLSCALE(20); //align HSI on the right
 		innerradius=radius-NIBLSCALE(10);
 		labelsRadius=radius-NIBLSCALE(20);
 		smallMarkRadius=radius-NIBLSCALE(6);
@@ -108,6 +102,13 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		taiB.x=centerX+NIBLSCALE(3);
 		taiB.y=centerY+NIBLSCALE(4);
 
+		//Initialize coordinates of HSI textual informations
+		posTRKx=centerX-radius+NIBLSCALE(10);
+		posTRKy=centerY-radius;
+		posDTKy=centerY-radius+NIBLSCALE(14);
+		posXTKx=posTRKx+NIBLSCALE(10);
+		posXTKy=centerY+radius-NIBLSCALE(5);
+
 		DoInit[MDI_DRAWHSI]=false;
 	}
 
@@ -142,12 +143,28 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	SelectObject(hDC, LKBrush_Red);
 	Polygon(hDC,hdgMark,4);
 
+	//Print the current track indication
+	TCHAR Buffer[LKSIZEBUFFERVALUE];
+	SelectObject(hDC, LK8InfoSmallFont);
+	#ifndef __MINGW32__
+		_stprintf(Buffer, TEXT("%03d\xB0"),(int)round(DrawInfo.TrackBearing));
+	#else
+		_stprintf(Buffer, TEXT("%03d°"),(int)round(DrawInfo.TrackBearing));
+	#endif
+	LKWriteText(hDC,Buffer,posTRKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
+
 	if(ValidTaskPoint(ActiveWayPoint)) {
 		if(Task[ActiveWayPoint].Index>=0) { //Draw course direction and CDI only if there is a task/route active
-			//TODO: show them on HSI screen:
-			//DerivedDrawInfo.LegCrossTrackError
-			//DerivedDrawInfo.LegActualTrueCourse
+			//Print the desired course
+			SelectObject(hDC, LK8InfoSmallFont);
+			#ifndef __MINGW32__
+				_stprintf(Buffer, TEXT("%03d\xB0"),(int)round(DerivedDrawInfo.LegActualTrueCourse));
+			#else
+				_stprintf(Buffer, TEXT("%03d°"),(int)round(DerivedDrawInfo.LegActualTrueCourse));
+			#endif
+			LKWriteText(hDC,Buffer,posTRKx,posDTKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
 
+			//Calculate rotation angle
 			double rotation=DerivedDrawInfo.LegActualTrueCourse-DrawInfo.TrackBearing;
 			double sin=fastsine(rotation);
 			double cos=fastcosine(rotation);
@@ -187,19 +204,18 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
 			//Course Deviation Indicator
 			if(ActiveWayPoint>0) { //we are flying from WP to WP on a predefined routeline: draw CDI
-				double xtd=DerivedDrawInfo.LegCrossTrackError; //get the cross track error
 				int dev; //deviation in pixel
 				COLORREF cdiColor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW; //color of CDI
 				SelectObject(hDC,INVERTCOLORS?LKPen_White_N1:LKPen_Black_N1); //color of CDI scale
 				SelectObject(hDC,INVERTCOLORS?LKBrush_White:LKBrush_Black);
-				if(abs(xtd)<smallCDIscale) { //use small scale of 0.3 NM
+				if(abs(DerivedDrawInfo.LegCrossTrackError)<smallCDIscale) { //use small scale of 0.3 NM
 					for(int i=1;i<3;i++) {
 						long tickXiXsin=smallScaleTick*i*sin;
 						long tickXiXcos=smallScaleTick*i*cos;
 						Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
 						Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
 					}
-					dev=-(int)(round((cdiFullScale*xtd)/smallCDIscale));
+					dev=-(int)(round((cdiFullScale*DerivedDrawInfo.LegCrossTrackError)/smallCDIscale));
 				} else { // use big scale of 5 NM
 					for(int i=1;i<5;i++) {
 						long tickXiXsin=bigScaleTick*i*sin;
@@ -207,13 +223,13 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 						Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
 						Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
 					}
-					if(xtd>bigCDIscale) {
+					if(DerivedDrawInfo.LegCrossTrackError>bigCDIscale) {
 						dev=-cdiFullScale;
 						cdiColor=RGB_RED;
-					} else if(xtd<-bigCDIscale) {
+					} else if(DerivedDrawInfo.LegCrossTrackError<-bigCDIscale) {
 						dev=cdiFullScale;
 						cdiColor=RGB_RED;
-					} else dev=-round((cdiFullScale*xtd)/bigCDIscale);
+					} else dev=-round((cdiFullScale*DerivedDrawInfo.LegCrossTrackError)/bigCDIscale);
 				}
 				long devXsin=dev*sin;
 				long devXcos=dev*cos;
@@ -222,6 +238,16 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 				down.x=centerX-cdiRadiusXsin+devXcos;
 				down.y=centerY+cdiRadiusXcos+devXsin;
 				_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,cdiColor,rc);
+
+				//Print the actual cross track error
+				SelectObject(hDC, LK8InfoSmallFont);
+				double xtk=abs(DerivedDrawInfo.LegCrossTrackError);
+				if(xtk>1000) {
+					xtk/=1000;
+					if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f Km"),xtk);
+					else _stprintf(Buffer, TEXT("%d Km"),(int)round(xtk));
+				} else _stprintf(Buffer, TEXT("%d m"),(int)round(xtk));
+				LKWriteText(hDC,Buffer,posXTKx,posXTKy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,cdiColor,false);
 			} else { //we are flying to the departure point: there isn't a predefined routeline: don't draw CDI
 				up.x=centerX+cdiRadiusXsin; //draw CDI in the center as part of the course direction arrow (same color)
 				up.y=centerY-cdiRadiusXcos;
