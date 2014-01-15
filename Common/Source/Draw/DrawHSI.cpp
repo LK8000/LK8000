@@ -56,10 +56,11 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	};
 
 	if(DoInit[MDI_DRAWHSI]) { //All the dimensions must be recalculated in case of screen resolution change
-		radius=NIBLSCALE(80);
+		if(ScreenLandscape) radius=NIBLSCALE(80);
+		else radius=NIBLSCALE(70);
 		short top=(((rc.bottom-BottomSize-(rc.top + TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)-(rc.top + TOPLIMITER);
+		centerX=(rc.right-rc.left)/2;
 		centerY=((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(12);
-		centerX=rc.left+radius+NIBLSCALE(20); //align HSI on the right
 		innerradius=radius-NIBLSCALE(10);
 		labelsRadius=radius-NIBLSCALE(20);
 		smallMarkRadius=radius-NIBLSCALE(6);
@@ -103,10 +104,10 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		taiB.y=centerY+NIBLSCALE(4);
 
 		//Initialize coordinates of HSI textual informations
-		posTRKx=centerX-radius+NIBLSCALE(10);
+		posTRKx=centerX+radius-NIBLSCALE(15);
 		posTRKy=centerY-radius;
 		posDTKy=centerY-radius+NIBLSCALE(14);
-		posXTKx=posTRKx+NIBLSCALE(10);
+		posXTKx=centerX+radius-NIBLSCALE(25);
 		posXTKy=centerY+radius-NIBLSCALE(5);
 
 		DoInit[MDI_DRAWHSI]=false;

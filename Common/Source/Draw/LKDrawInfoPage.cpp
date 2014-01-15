@@ -908,19 +908,53 @@ label_HSI:
 	VDrawLine(hdc,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
 	DrawHSI(hdc, rc);
 	showunit=true;
-	LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[3],&qrow[4],&qrow[2]);
-	LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
-	_stprintf(BufferUnit,_T(""));
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
-	LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[6],&qrow[7],&qrow[5]);
-	LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
-	_stprintf(BufferUnit,_T(""));
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
-	LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
-	_stprintf(BufferUnit,_T(""));
-	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[10],&qrow[11],&qrow[9]);
+	if (ScreenLandscape) {
+		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
+
+		LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[7],&qrow[8],&qrow[6]);
+
+		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
+
+		LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
+
+		LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[7],&qrow[8],&qrow[6]);
+
+		LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+	} else {
+		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
+
+		LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
+
+		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
+
+		LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
+
+		LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
+
+		LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(BufferUnit,_T(""));
+		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+	}
 	goto label_End; // End of HSI
 
 	// Traffic Target page
