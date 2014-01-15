@@ -525,12 +525,13 @@ double ProjectedDistance(double lon1, double lat1,
                          double *xtd, double *crs) {
   double lon4, lat4;
 
+  if (xtd)
   *xtd=CrossTrackError(lon1, lat1,
                   lon2, lat2,
                   lon3, lat3,
                    &lon4, &lat4);
   double tmpd;
-  DistanceBearing(lat1, lon1, lat4, lon4, &tmpd, &*crs);
+  DistanceBearing(lat1, lon1, lat4, lon4, &tmpd, &*crs); // null crs managed by distancebearing
   return tmpd;
 }
 
