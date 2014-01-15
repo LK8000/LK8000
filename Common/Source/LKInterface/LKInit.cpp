@@ -106,6 +106,7 @@ void UpdateConfIP(void) {
   ConfIP[1][3]=ConfIP14;
   ConfIP[1][4]=ConfIP15;
   ConfIP[1][5]=ConfIP16;
+  ConfIP[1][6]=ConfIP17;
 
   // WPMODE
   ConfIP[2][0]=ConfIP21;
@@ -161,6 +162,7 @@ void SetInitialModeTypes(void) {
   // Update the initial values for each mapspace, keeping the first valid value. We search backwards.
   // INFOMODE 1  
   if (ConfIP[LKMODE_INFOMODE][IM_TRI]) ModeType[LKMODE_INFOMODE]=IM_TRI;
+  if (ConfIP[LKMODE_INFOMODE][IM_HSI]) ModeType[LKMODE_INFOMODE]=IM_HSI;
   if (ConfIP[LKMODE_INFOMODE][IM_CONTEST]) ModeType[LKMODE_INFOMODE]=IM_CONTEST;
   if (ConfIP[LKMODE_INFOMODE][IM_AUX]) ModeType[LKMODE_INFOMODE]=IM_AUX;
   if (ConfIP[LKMODE_INFOMODE][IM_TASK]) ModeType[LKMODE_INFOMODE]=IM_TASK;
@@ -230,6 +232,7 @@ void InitModeTable() {
 	ModeTable[LKMODE_INFOMODE][IM_AUX]	=	MSM_INFO_AUX;
 	ModeTable[LKMODE_INFOMODE][IM_CONTEST]	=	MSM_INFO_CONTEST;
 	ModeTable[LKMODE_INFOMODE][IM_TRI]	=	MSM_INFO_TRI;
+	ModeTable[LKMODE_INFOMODE][IM_HSI]	=	MSM_INFO_HSI;
 
 	ModeTable[LKMODE_NAV][NV_COMMONS]	=	MSM_COMMON;
 	ModeTable[LKMODE_NAV][NV_HISTORY]	=	MSM_RECENT;

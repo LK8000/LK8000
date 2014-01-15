@@ -391,24 +391,25 @@
 #define MSM_INFO_TASK		8
 #define MSM_INFO_AUX		9
 #define MSM_INFO_TRI		10
-#define MSM_NEARTPS		11
-#define MSM_TRAFFIC		12
+#define MSM_INFO_HSI		11
+#define MSM_NEARTPS		12
+#define MSM_TRAFFIC		13
 // infopage for traffic
-#define MSM_INFO_TRF		13
+#define MSM_INFO_TRF		14
 // target page for traffic with graphics
-#define MSM_INFO_TARGET		14
-#define MSM_INFO_CONTEST	15
-#define MSM_AIRSPACES		16
-#define MSM_THERMALS		17
-#define MSM_MAPRADAR		18	// this is multimapped
-#define MSM_MAPTRK		19	// this is multimapped
-#define MSM_MAPWPT		20	// this is multimapped
-#define MSM_MAPASP		21	// this is multimapped
-#define MSM_VISUALGLIDE		22	// multimapped, work in progress
-#define MSM_MAPTEST		23	// multimapped, for testing purposes
+#define MSM_INFO_TARGET		15
+#define MSM_INFO_CONTEST	16
+#define MSM_AIRSPACES		17
+#define MSM_THERMALS		18
+#define MSM_MAPRADAR		19	// this is multimapped
+#define MSM_MAPTRK		20	// this is multimapped
+#define MSM_MAPWPT		21	// this is multimapped
+#define MSM_MAPASP		22	// this is multimapped
+#define MSM_VISUALGLIDE		23	// multimapped, work in progress
+#define MSM_MAPTEST		24	// multimapped, for testing purposes
 // turnaround point is TOP 
 // remember that arrays must count from zero, so MSM_TOP+1
-#define MSM_TOP			23
+#define MSM_TOP			24
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
@@ -458,7 +459,8 @@
 #define IM_AUX			3
 #define IM_CONTEST		4
 #define IM_TRI			5
-#define IM_TOP			5	// THIS IS THE ABSOLUTE MAX NUMBER OF PAGES IN ALL MODES, ALSO!
+#define IM_HSI			6
+#define IM_TOP			6	// THIS IS THE ABSOLUTE MAX NUMBER OF PAGES IN ALL MODES, ALSO!
 //
 // Navigation mode
 //

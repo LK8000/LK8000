@@ -159,6 +159,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryConfIP14,ConfIP14);
   rprintf(szRegistryConfIP15,ConfIP15);
   rprintf(szRegistryConfIP16,ConfIP16);
+  rprintf(szRegistryConfIP17,ConfIP17);
   rprintf(szRegistryConfIP21,ConfIP21);
   rprintf(szRegistryConfIP22,ConfIP22);
   rprintf(szRegistryConfIP23,ConfIP23);
