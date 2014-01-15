@@ -35,7 +35,6 @@
 	MDI_GETLOCALPATH,		// system path change!
 	MDI_LKSOUND,			// localpath changed
 	MDI_DRAWTRI,			// screen change
-	MDI_DRAWHSI,			// screen change
 	MDI_DRAWASPNEAREST,		// screen change, font change
 	MDI_DRAWCOMMON,			// screen change, font change
 	MDI_DRAWFLARMTRAFFIC,		// screen change
@@ -67,6 +66,7 @@
 	MDI_DRAWBOTTOMBAR,		// screen change
 	MDI_DRAWTASK,			// screen change
 	MDI_CALCLOGGING,		// generic reset
+	MDI_DRAWHSI,			// screen change
 	MDI_LAST_DOINIT,		
  } MDI_t;
 
