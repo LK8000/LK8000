@@ -61,7 +61,7 @@ CBtHandlerWince::CBtHandlerWince() {
 #endif
     }
 
-    WSAStartup(MAKEWORD(1, 0), &wsd);
+    WSAStartup(MAKEWORD(1, 1), &wsd);
 }
 
 CBtHandlerWince::~CBtHandlerWince() {
