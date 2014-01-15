@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "AATDistance.h"
 #include "CalcTask.h"
-#include "Airspace.h"
+#include "NavFunctions.h"
 #include "Waypointparser.h"
 
 

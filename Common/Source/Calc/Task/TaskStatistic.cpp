@@ -10,6 +10,7 @@
 #include "CalcTask.h"
 #include "AATDistance.h"
 #include "McReady.h"
+#include "NavFunctions.h"
 
 
 extern double CRUISE_EFFICIENCY;
