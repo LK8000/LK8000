@@ -188,6 +188,14 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpIP17"));
+  if (wp) {
+	if (ConfIP17 != (wp->GetDataField()->GetAsBoolean())) {
+		ConfIP17 = (wp->GetDataField()->GetAsBoolean());
+		changed=true;
+	}
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP21"));
   if (wp) {
 	if (ConfIP21 != (wp->GetDataField()->GetAsBoolean())) {
