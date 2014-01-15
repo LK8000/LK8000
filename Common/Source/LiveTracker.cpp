@@ -22,6 +22,7 @@ static DWORD _dwThreadID;           //worker thread ID
 static HANDLE _hNewDataEvent;       //new data event trigger
 #define SERVERNAME_MAX  100
 static char _server_name[SERVERNAME_MAX];      // server name, or ip
+static int _server_port;
 
 // Data point definition to send to the server
 typedef struct {
@@ -149,7 +150,8 @@ void LiveTrackerInit()
       SetThreadPriority(_hThread, THREAD_PRIORITY_NORMAL);
       unicode2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
       _server_name[SERVERNAME_MAX-1]=0;
-      StartupStore(TEXT(". LiveTracker will use server %s if available.%s"), LiveTrackersrv_Config, NEWLINE);
+      _server_port=LiveTrackerport_Config;
+      StartupStore(TEXT(". LiveTracker will use server %s:%u if available.%s"), LiveTrackersrv_Config, LiveTrackerport_Config, NEWLINE);
       _inited = true;
     }
   }
@@ -224,18 +226,9 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 bool InitWinsock()
 {
   WSADATA wsaData;
-  WORD version;
-  int error;
-
-  // Check that system has winsock dlls
-  #if WINDOWSPC>0
-  if (GetProcAddress(GetModuleHandle(TEXT("WSOCK32.DLL")), "WSAStartup") == NULL) return false;
-  #else
-  if (GetProcAddress(GetModuleHandle(TEXT("WINSOCK")), TEXT("WSAStartup")) == NULL) return false;
-  #endif
   
-  version = MAKEWORD( 1, 1 );
-  error = WSAStartup( version, &wsaData );
+  WORD version = MAKEWORD( 1, 1 );
+  int error = WSAStartup( version, &wsaData );
   if ( error != 0 ) return false;
 
   /* check for correct version */
@@ -307,13 +300,16 @@ static int DoTransactionToServer(char *txbuf, unsigned int txbuflen, char *rxbuf
   StartupStore(TEXT("Livetracker send: %s%s"), utxbuf, NEWLINE);
   #endif
   
-  s = EstablishConnection(_server_name, LiveTrackerport_Config);
+  s = EstablishConnection(_server_name, _server_port);
   if ( s==INVALID_SOCKET ) return -1;
 
   //Send the query to the server
   while(sent < txbuflen) {
     tmpres = send(s, txbuf+sent, txbuflen-sent, 0);
-    if( tmpres == -1 ) return -1;
+    if( tmpres == SOCKET_ERROR ) {
+      rxlen = -1;
+      goto cleanup;
+    }
     sent += tmpres;
   }
 
@@ -346,13 +342,20 @@ static int DoTransactionToServer(char *txbuf, unsigned int txbuflen, char *rxbuf
       }//sw
     } //for
   } //wh
-  closesocket(s);
+
+  if(tmpres == SOCKET_ERROR) {
+    rxlen = -1;
+    goto cleanup;
+  }  
+
   rxbuf[rxlen]=0;
   #ifdef LT_DEBUG
   TCHAR urxbuf[500];
   ascii2unicode(rxbuf,urxbuf,400);
   StartupStore(TEXT("Livetracker recv len=%d: %s%s"), rxlen, urxbuf, NEWLINE);
   #endif
+cleanup:
+  closesocket(s);
   return rxlen;
 }
 

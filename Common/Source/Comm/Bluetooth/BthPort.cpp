@@ -18,7 +18,7 @@
 
 BthPort::BthPort(int idx, const std::wstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET) {
     WSADATA wsd;
-    WSAStartup(MAKEWORD(2, 0), &wsd);
+    WSAStartup(MAKEWORD(1, 1), &wsd);
 }
 
 BthPort::~BthPort() {
