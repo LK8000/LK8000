@@ -625,6 +625,7 @@ GEXTERN bool ConfIP13;
 GEXTERN bool ConfIP14;
 GEXTERN bool ConfIP15;
 GEXTERN bool ConfIP16;
+GEXTERN bool ConfIP17;
 GEXTERN bool ConfIP21;
 GEXTERN bool ConfIP22;
 GEXTERN bool ConfIP23;

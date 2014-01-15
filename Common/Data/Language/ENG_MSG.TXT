@@ -1871,6 +1871,9 @@ _@M1851_ "Reverse task"
 _@M1852_ "Reverse task?"
 _@M1853_ "TASK REVERSED"
 
+# HSI
+_@M1860_ "HSI"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

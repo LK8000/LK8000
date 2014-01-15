@@ -379,6 +379,7 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryConfIP14,&ConfIP14);
   PREAD(sname,svalue,szRegistryConfIP15,&ConfIP15);
   PREAD(sname,svalue,szRegistryConfIP16,&ConfIP16);
+  PREAD(sname,svalue,szRegistryConfIP17,&ConfIP17);
   PREAD(sname,svalue,szRegistryConfIP21,&ConfIP21);
   PREAD(sname,svalue,szRegistryConfIP22,&ConfIP22);
   if (matchedstring) return;

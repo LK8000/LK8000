@@ -258,7 +258,8 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
       double leg_covered = ProjectedDistance(w0lon, w0lat,
                                              w1lon, w1lat,
                                              Basic->Longitude,
-                                             Basic->Latitude);
+                                             Basic->Latitude,
+                                             NULL,NULL);
       LKASSERT(i>=0);
       LegDistances[i] = leg_covered;
     }

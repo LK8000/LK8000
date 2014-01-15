@@ -443,7 +443,7 @@ _skip_2:
   DrawMarks(hdc, rc);
   #endif
 
-  if (ISGAAIRCRAFT && IsMultimapOverlaysGauges() && NOTANYPAN) DrawHSI(hdc,Orig,DrawRect); 
+  if (ISGAAIRCRAFT && IsMultimapOverlaysGauges() && NOTANYPAN) DrawHSIarc(hdc,Orig,DrawRect);
 
   if (!INPAN) {
 	DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom
