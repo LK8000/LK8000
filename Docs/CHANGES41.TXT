@@ -88,6 +88,24 @@ Automatically providing the minimal, current and max MC possible for the final g
 DETAILS BY BETA VERSIONS:
 
 ============
+Version 4.1G
+============
+
+NEW
+
+Infopage 1.7 HSI indicator, optionally can be disabled in configuration of infopages
+
+CHANGES
+
+Reduced size of executable
+
+FIX
+
+LiveTracker back working
+
+
+
+============
 Version 4.1F
 ============
 
