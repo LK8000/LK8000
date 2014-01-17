@@ -876,6 +876,7 @@ COMPAT	:=\
 #   $(COMPATSRC)/redir.cpp
 #endif
 
+DIALOG_XML = $(wildcard Common/Data/Dialogs/*.xml)
 
 ####### compilation outputs
 
@@ -901,15 +902,19 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 
 
 ####### targets
-
-.PHONY: FORCE all clean cleani tags
+.PHONY: FORCE all clean cleani tags rebuild
 
 all:	$(OUTPUTS)
 
+rebuild:
+	@$(MAKE) clean
+	@$(MAKE) all
+
 clean: cleani
 	@$(NQ)echo "  CLEAN   $(BIN)"
-	$(Q)$(FIND) $(BIN) $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' \) -type f -print | xargs -r $(RM)
+	$(Q)$(FIND) $(BIN) $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' -o -name '*.min.*' \) -type f -print | xargs -r $(RM)
 	$(Q)$(RM) LK8000-$(TARGET)-ns.exe
+	$(Q)$(RM) LK8000-$(TARGET).exe
 
 cleani:
 	@$(NQ)echo "  CLEANI"
@@ -974,12 +979,20 @@ $(BIN)/%.o: $(SRC)/%.cpp
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
 	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
-$(BIN)/%.rsc: $(SRC)/%.rc
-	@echo "$@: $< " `sed -nr 's|^.*"\.\./(Data[^"]+)".*$$|Common/\1|gp' $<` > $(DEPFILE)
+$(BIN)/%.rsc: $(BIN)/%.min.rc 
 	@$(NQ)echo "  WINDRES $@"
 	$(Q)$(WINDRES) $(WINDRESFLAGS) $< $@
 
+$(BIN)/%.min.rc: $(SRC)/%.rc $(patsubst Common/Data/Dialogs/%.xml,$(BIN)/Data/Dialogs/%.min.xml,$(DIALOG_XML))
+	@echo "$@: $< " `sed -nr 's|^.*"\.\./(Data[^"]+)".*$$|Common/\1|gp' $<` > $(DEPFILE)
+	@$(NQ)echo "  build $@"
+	@sed -r 's|(^.*")\.\./(Data/Dialogs[^"]+)(.xml".*)$$|\1$(BIN)/\2.min\3|g' $< > $@
 
+$(BIN)/Data/Dialogs/%.min.xml: Common/Data/Dialogs/%.xml
+	@$(NQ)echo "  minimize $@"
+	$(Q)xsltproc --output $@ build/dialogtemplate.xsl $<
+
+.PRECIOUS: $(BIN)/Data/Dialogs/%.min.xml
 
 ####### include depends files
 
