@@ -69,10 +69,10 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
 		//For the positions of all 72 compass rose marks there are 10 possible cases to be pre-calculated:
 		for(int alpha=0;alpha<10;alpha++) for(int i=0, deg=0, isBig=1; i<72; i++, deg+=5, isBig=!isBig) {
-			compassMarks[i][alpha].extX=centerX+radius*fastsine(deg+alpha);
-			compassMarks[i][alpha].extY=centerY-radius*fastcosine(deg+alpha);
-			compassMarks[i][alpha].intX=centerX+(isBig?innerradius:smallMarkRadius)*fastsine(deg+alpha);
-			compassMarks[i][alpha].intY=centerY-(isBig?innerradius:smallMarkRadius)*fastcosine(deg+alpha);
+			compassMarks[i][alpha].extX=centerX+(short)(radius*fastsine(deg+alpha));
+			compassMarks[i][alpha].extY=centerY-(short)(radius*fastcosine(deg+alpha));
+			compassMarks[i][alpha].intX=centerX+(short)((isBig?innerradius:smallMarkRadius)*fastsine(deg+alpha));
+			compassMarks[i][alpha].intY=centerY-(short)((isBig?innerradius:smallMarkRadius)*fastcosine(deg+alpha));
 		}
 
 		//Initialize the true heading direction marker (triangle)
@@ -86,8 +86,8 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		hdgMark[3].y=hdgMark[0].y;
 
 		//Initialize the sizes of the marks on the two CDI scales
-		smallScaleTick=round(cdiFullScale/3); //every mark represents 0.1 NM
-		bigScaleTick=round(cdiFullScale/5); //every mark represents 1 NM
+		smallScaleTick=(short)round(cdiFullScale/3); //every mark represents 0.1 NM
+		bigScaleTick=(short)round(cdiFullScale/5); //every mark represents 1 NM
 
 		//Initialize coordinates for airplane symbol
 		fusA.x=centerX;
@@ -117,7 +117,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	HBRUSH hbOld = (HBRUSH) SelectObject(hDC, LKBrush_Black);
 
 	//get the track bearing
-	int angle = 360-round(DrawInfo.TrackBearing);
+	int angle = 360-(int)round(DrawInfo.TrackBearing);
 
 	//Draw the compass rose markers
 	int alpha=angle%10;
@@ -138,9 +138,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	SelectObject(hDC, LK8TitleFont);
 	for(int i=0;i<12;i++) {
 		int deg=i*30+angle;
-		int x=centerX+labelsRadius*fastsine(deg);
-		int y=centerY-labelsRadius*fastcosine(deg);
-		LKWriteText(hDC,label[i],x,y,0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
+		LKWriteText(hDC,label[i],centerX+(int)(labelsRadius*fastsine(deg)),centerY-(int)(labelsRadius*fastcosine(deg)),0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
 	}
 
 	//Draw true heading mark on the top of the compass rose
@@ -175,20 +173,20 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			double cos=fastcosine(rotation);
 
 			//This is the upper side of the course direction arrow
-			long labelsRadiusXsin=labelsRadius*sin;
-			long labelsRadiusXcos=labelsRadius*cos;
-			long cdiRadiusXsin=cdiRadius*sin;
-			long cdiRadiusXcos=cdiRadius*cos;
+			long labelsRadiusXsin=(long)(labelsRadius*sin);
+			long labelsRadiusXcos=(long)(labelsRadius*cos);
+			long cdiRadiusXsin=(long)(cdiRadius*sin);
+			long cdiRadiusXcos=(long)(cdiRadius*cos);
 			POINT up, down;
 			up.x=centerX+labelsRadiusXsin;
 			up.y=centerY-labelsRadiusXcos;
 			down.x=centerX+cdiRadiusXsin;
 			down.y=centerY-cdiRadiusXcos;
 			_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),up,down,RGB_GREEN,rc);
-			long innerradiusXsin=innerradius*sin;
-			long innerradiusXcos=innerradius*cos;
-			long arrowXsin=NIBLSCALE(4)*sin;
-			long arrowXcos=NIBLSCALE(4)*cos;
+			long innerradiusXsin=(long)(innerradius*sin);
+			long innerradiusXcos=(long)(innerradius*cos);
+			long arrowXsin=(long)(NIBLSCALE(4)*sin);
+			long arrowXcos=(long)(NIBLSCALE(4)*cos);
 			long topX=centerX+innerradiusXsin;
 			long topY=centerY-innerradiusXcos;
 			POINT triangle[4] = {
@@ -213,18 +211,18 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 				COLORREF cdiColor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW; //color of CDI
 				SelectObject(hDC,INVERTCOLORS?LKPen_White_N1:LKPen_Black_N1); //color of CDI scale
 				SelectObject(hDC,INVERTCOLORS?LKBrush_White:LKBrush_Black);
-				if(abs(DerivedDrawInfo.LegCrossTrackError)<smallCDIscale) { //use small scale of 0.3 NM
+				if(abs((int)DerivedDrawInfo.LegCrossTrackError)<smallCDIscale) { //use small scale of 0.3 NM
 					for(int i=1;i<3;i++) {
-						long tickXiXsin=smallScaleTick*i*sin;
-						long tickXiXcos=smallScaleTick*i*cos;
+						long tickXiXsin=(long)(smallScaleTick*i*sin);
+						long tickXiXcos=(long)(smallScaleTick*i*cos);
 						Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
 						Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
 					}
 					dev=-(int)(round((cdiFullScale*DerivedDrawInfo.LegCrossTrackError)/smallCDIscale));
 				} else { // use big scale of 5 NM
 					for(int i=1;i<5;i++) {
-						long tickXiXsin=bigScaleTick*i*sin;
-						long tickXiXcos=bigScaleTick*i*cos;
+						long tickXiXsin=(long)(bigScaleTick*i*sin);
+						long tickXiXcos=(long)(bigScaleTick*i*cos);
 						Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
 						Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
 					}
@@ -234,10 +232,10 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 					} else if(DerivedDrawInfo.LegCrossTrackError<-bigCDIscale) {
 						dev=cdiFullScale;
 						cdiColor=RGB_RED;
-					} else dev=-round((cdiFullScale*DerivedDrawInfo.LegCrossTrackError)/bigCDIscale);
+					} else dev=-(int)round((cdiFullScale*DerivedDrawInfo.LegCrossTrackError)/bigCDIscale);
 				}
-				long devXsin=dev*sin;
-				long devXcos=dev*cos;
+				long devXsin=(long)(dev*sin);
+				long devXcos=(long)(dev*cos);
 				up.x=centerX+cdiRadiusXsin+devXcos;
 				up.y=centerY-cdiRadiusXcos+devXsin;
 				down.x=centerX-cdiRadiusXsin+devXcos;
@@ -246,7 +244,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
 				//Print the actual cross track error
 				SelectObject(hDC, LK8InfoSmallFont);
-				double xtk=abs(DerivedDrawInfo.LegCrossTrackError);
+				double xtk=fabs(DerivedDrawInfo.LegCrossTrackError);
 				if(xtk>1000) {
 					xtk/=1000;
 					if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f Km"),xtk);
