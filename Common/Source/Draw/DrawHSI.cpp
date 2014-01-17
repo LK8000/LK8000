@@ -131,7 +131,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		external.y=compassMarks[i][alpha].extY;
 		internal.x=compassMarks[i][alpha].intX;
 		internal.y=compassMarks[i][alpha].intY;
-		_DrawLine(hDC, PS_ENDCAP_SQUARE, isBig?NIBLSCALE(1):1,external,internal,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
+		_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,external,internal,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
 	}
 
 	//Put the labels on compass rose
@@ -184,7 +184,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			up.y=centerY-labelsRadiusXcos;
 			down.x=centerX+cdiRadiusXsin;
 			down.y=centerY-cdiRadiusXcos;
-			_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,RGB_GREEN,rc);
+			_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),up,down,RGB_GREEN,rc);
 			long innerradiusXsin=innerradius*sin;
 			long innerradiusXcos=innerradius*cos;
 			long arrowXsin=NIBLSCALE(4)*sin;
@@ -205,7 +205,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			up.y=centerY+innerradiusXcos;
 			down.x=centerX-cdiRadiusXsin;
 			down.y=centerY+cdiRadiusXcos;
-			_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,RGB_GREEN,rc);
+			_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),up,down,RGB_GREEN,rc);
 
 			//Course Deviation Indicator
 			if(ActiveWayPoint>0) { //we are flying from WP to WP on a predefined routeline: draw CDI
@@ -242,7 +242,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 				up.y=centerY-cdiRadiusXcos+devXsin;
 				down.x=centerX-cdiRadiusXsin+devXcos;
 				down.y=centerY+cdiRadiusXcos+devXsin;
-				_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,cdiColor,rc);
+				_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),up,down,cdiColor,rc);
 
 				//Print the actual cross track error
 				SelectObject(hDC, LK8InfoSmallFont);
@@ -250,23 +250,23 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 				if(xtk>1000) {
 					xtk/=1000;
 					if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f Km"),xtk);
-					else _stprintf(Buffer, TEXT("%d Km"),(int)round(xtk));
-				} else _stprintf(Buffer, TEXT("%d m"),(int)round(xtk));
+					else _stprintf(Buffer,TEXT("%d Km"),(int)round(xtk));
+				} else _stprintf(Buffer,TEXT("%d m"),(int)round(xtk));
 				LKWriteText(hDC,Buffer,posXTKx,posXTKy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,cdiColor,false);
 			} else { //we are flying to the departure point: there isn't a predefined routeline: don't draw CDI
 				up.x=centerX+cdiRadiusXsin; //draw CDI in the center as part of the course direction arrow (same color)
 				up.y=centerY-cdiRadiusXcos;
 				down.x=centerX-cdiRadiusXsin;
 				down.y=centerY+cdiRadiusXcos;
-				_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),up,down,RGB_GREEN,rc);
+				_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),up,down,RGB_GREEN,rc);
 			}
 		}
 	}
 
 	//Draw airplane symbol
-	_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),fusA,fusB,RGB_ORANGE,rc);
-	_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),winA,winB,RGB_ORANGE,rc);
-	_DrawLine(hDC, PS_ENDCAP_SQUARE, NIBLSCALE(2),taiA,taiB,RGB_ORANGE,rc);
+	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),fusA,fusB,RGB_ORANGE,rc);
+	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),winA,winB,RGB_ORANGE,rc);
+	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),taiA,taiB,RGB_ORANGE,rc);
 
 	SelectObject(hDC, hbOld);
 	SelectObject(hDC, hpOld);
