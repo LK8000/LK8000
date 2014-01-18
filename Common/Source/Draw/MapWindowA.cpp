@@ -69,6 +69,8 @@ void MapWindow::AlphaBlendDestroy() {
 // performs AlphaBlend
 //static 
 void MapWindow::DoAlphaBlend(HDC dstHdc, const RECT dstRect, HDC srcHdc, const RECT srcRect, BYTE globalOpacity) {
+  static unsigned failedCount = 0;
+  static bool Success = false;
   if (AlphaBlendF == NULL)
     return;
   
@@ -80,13 +82,20 @@ void MapWindow::DoAlphaBlend(HDC dstHdc, const RECT dstRect, HDC srcHdc, const R
     dstHdc, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
     srcHdc, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, bf);
   
-  if(!bOK && dstRect.right - dstRect.left > 0 && 
-             dstRect.bottom - dstRect.top > 0 &&
-             srcRect.right - srcRect.left > 0 && 
-             srcRect.bottom - srcRect.top > 0) {
-          
-    // if AlphaBlend failed, AlphaBlend is not supported, don't use it anymore
-    AlphaBlendF = NULL;
+  if(!Success) {
+      if(!bOK && dstRect.right - dstRect.left > 0 &&
+                 dstRect.bottom - dstRect.top > 0 &&
+                 srcRect.right - srcRect.left > 0 &&
+                 srcRect.bottom - srcRect.top > 0) {
+
+          // after more 10 consecutive failed, we assume AlphaBlend is not supported, don't use it anymore
+          ++failedCount;
+          if(failedCount>10) {
+              StartupStore(_T("AlphaBlend : too much failed, we assume is not supported, don't use it anymore%s"), NEWLINE);
+              AlphaBlendF = NULL;
+          }
+       }
+       Success = bOK;
   }
 } // DoAlphaBlend()
 
