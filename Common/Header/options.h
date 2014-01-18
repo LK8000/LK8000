@@ -163,6 +163,11 @@
 // So there is no more instant view of what is happening, and for this reason the option is disabled.
 // #define LKASP_CALC_ON_CHANGE_ONLY		1
 
+// LAST_TASKPOINT_QUESTION
+#define LAST_TASKPOINT_QUESTION
+// remove question for last turnpoint is good idea, but don't work
+// Usability of task definition needed to be refactoring before remove that.
+
 #include "Debug.h"	// DEBUG OPTIONS FOR EVERYONE, depending also on TESTBENCH
 
 

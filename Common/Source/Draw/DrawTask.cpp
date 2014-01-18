@@ -63,6 +63,7 @@ if(TaskIdx==0)
   StartRadial = Task[TaskIdx].AATFinishRadial;
 }
 
+double LineBrg;
 double SecRadius;
 GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
 
@@ -98,13 +99,19 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
             break;
        default:
        case LINE:
-    PolygonRotateShift(startfinishline, 2, center_x, center_y, Task[TaskIdx].AATStartRadial);
-    Polygon(hdc,startfinishline ,2 );
-     if((TaskIdx == 0) || (TaskIdx == finish))
-     {
-     PolygonRotateShift(track, 3, center_x, center_y, Task[TaskIdx].AATStartRadial);
-     Polygon(hdc,track ,3 );
-     }
+            if (TaskIdx == 0) {
+                LineBrg = Task[TaskIdx].OutBound-90;
+            } else if (TaskIdx == finish) {
+                LineBrg = Task[TaskIdx].InBound-90;
+            } else {
+                LineBrg = Task[TaskIdx].Bisector;
+            }
+            PolygonRotateShift(startfinishline, 2, center_x, center_y, LineBrg);
+            Polygon(hdc, startfinishline, 2);
+            if ((TaskIdx == 0) || (TaskIdx == finish)) {
+                PolygonRotateShift(track, 3, center_x, center_y, LineBrg);
+                Polygon(hdc, track, 3);
+            }
        break;
         case CONE:
             if (DoOptimizeRoute()) {
