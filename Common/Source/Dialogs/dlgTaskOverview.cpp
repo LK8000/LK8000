@@ -115,7 +115,8 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
           }
         }
       } else {
-        _stprintf(sTmp, TEXT("%s"), wpName);
+        _stprintf(sTmp, TEXT("%s %.1f"),
+                wpName, ((i==0)?StartRadius*DISTANCEMODIFY:FinishRadius*DISTANCEMODIFY));
       }
 
       ExtTextOutClip(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
