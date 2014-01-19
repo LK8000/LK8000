@@ -266,6 +266,7 @@ static void OnCalcClicked(WindowControl * Sender,
 
     default:
       contestType = CContestMgr::TYPE_OLC_CLASSIC;
+      break;
     }
   }
 

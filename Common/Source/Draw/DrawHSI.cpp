@@ -260,8 +260,8 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 				cos=fastcosine(rotation);
 				arrowXsin=(long)(NIBLSCALE(2)*sin);
 				arrowXcos=(long)(NIBLSCALE(2)*cos);
-				topX=centerX+(radius-NIBLSCALE(2))*sin;
-				topY=centerY-(radius-NIBLSCALE(2))*cos;
+				topX=centerX+(long)((radius-NIBLSCALE(2))*sin);
+				topY=centerY-(long)((radius-NIBLSCALE(2))*cos);
 				innerradiusXsin=(long)(innerradius*sin);
 				innerradiusXcos=(long)(innerradius*cos);
 				triangle[0].x=topX;
