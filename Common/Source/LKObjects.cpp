@@ -59,6 +59,7 @@ void LKObjects_Create() {
   LKBrush_DarkSlate = CreateSolidBrush(COLORREF RGB_DARKSLATE);
   LKBrush_LightCyan = CreateSolidBrush(COLORREF RGB_LIGHTCYAN);
   LKBrush_RifleGrey = CreateSolidBrush(COLORREF RGB_RIFLEGREY);
+  LKBrush_Viola = CreateSolidBrush(COLORREF RGB_MAGENTA);
 
   LKBrush_Vario_neg4 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 0.4));
   LKBrush_Vario_neg3 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 0.6));
@@ -93,6 +94,8 @@ void LKObjects_Create() {
   LKPen_Grey_N0 = (HPEN) CreatePen(PS_SOLID,1,RGB_GREY);
   LKPen_Grey_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_GREY);
   LKPen_Grey_N2 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(2),RGB_GREY);
+
+  LKPen_Viola_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_MAGENTA);
 
 
   switch(ScreenSize) {

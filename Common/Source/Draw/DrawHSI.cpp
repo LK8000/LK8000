@@ -28,7 +28,8 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	static short bigScaleTick; //interval between marks on big CDI scale
 	static POINT fusA,fusB,winA,winB,taiA,taiB; //coordinates for airplane symbol
 	static short posTRKx, posTRKy; //coordinates of current track textual information
-	static short posDTKy; //Y coordinate of desired track textual information
+	static short posDTKx; //X coordinate of desired track textual information
+	static short posBRGy; //Y coordinate of current bearing to next waypoint
 	static short posXTKx, posXTKy; //coordinates of cross track error textual information
 
 	static struct { //Compass rose marks coordinates matrix: using short's to use less memory
@@ -104,9 +105,10 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		taiB.y=centerY+NIBLSCALE(4);
 
 		//Initialize coordinates of HSI textual informations
-		posTRKx=centerX+radius-NIBLSCALE(15);
+		posTRKx=centerX-radius+NIBLSCALE(20);
 		posTRKy=centerY-radius;
-		posDTKy=centerY-radius+NIBLSCALE(14);
+		posDTKx=centerX+radius-NIBLSCALE(15);
+		posBRGy=centerY-radius+NIBLSCALE(11);
 		posXTKx=centerX+radius-NIBLSCALE(25);
 		posXTKy=centerY+radius-NIBLSCALE(5);
 
@@ -165,7 +167,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			#else
 				_stprintf(Buffer, TEXT("%03d°"),(int)round(DerivedDrawInfo.LegActualTrueCourse));
 			#endif
-			LKWriteText(hDC,Buffer,posTRKx,posDTKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
+			LKWriteText(hDC,Buffer,posDTKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
 
 			//Calculate rotation angle
 			double rotation=DerivedDrawInfo.LegActualTrueCourse-DrawInfo.TrackBearing;
@@ -251,6 +253,37 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 					else _stprintf(Buffer,TEXT("%d Km"),(int)round(xtk));
 				} else _stprintf(Buffer,TEXT("%d m"),(int)round(xtk));
 				LKWriteText(hDC,Buffer,posXTKx,posXTKy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,cdiColor,false);
+
+				//Draw bearing pointer to next waypoint
+				rotation=DerivedDrawInfo.WaypointBearing-DrawInfo.TrackBearing;
+				sin=fastsine(rotation);
+				cos=fastcosine(rotation);
+				arrowXsin=(long)(NIBLSCALE(2)*sin);
+				arrowXcos=(long)(NIBLSCALE(2)*cos);
+				topX=centerX+(long)((radius-NIBLSCALE(2))*sin);
+				topY=centerY-(long)((radius-NIBLSCALE(2))*cos);
+				innerradiusXsin=(long)(innerradius*sin);
+				innerradiusXcos=(long)(innerradius*cos);
+				triangle[0].x=topX;
+				triangle[0].y=topY; //top
+				triangle[1].x=centerX+innerradiusXsin+arrowXcos;
+				triangle[1].y=centerY-innerradiusXcos+arrowXsin; //right
+				triangle[2].x=centerX+innerradiusXsin-arrowXcos;
+				triangle[2].y=centerY-innerradiusXcos-arrowXsin; //left
+				triangle[3].x=topX;
+				triangle[3].y=topY;
+				SelectObject(hDC, LKPen_Viola_N1);
+				SelectObject(hDC, LKBrush_Viola);
+				Polygon(hDC,triangle,4);
+
+				//Print the actual bearing to next WayPoint
+				SelectObject(hDC, LK8InfoSmallFont);
+				#ifndef __MINGW32__
+					_stprintf(Buffer, TEXT("%03d\xB0"),(int)round(DerivedDrawInfo.WaypointBearing));
+				#else
+					_stprintf(Buffer, TEXT("%03d°"),(int)round(DerivedDrawInfo.WaypointBearing));
+				#endif
+				LKWriteText(hDC,Buffer,posDTKx,posBRGy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_MAGENTA,false);
 			} else { //we are flying to the departure point: there isn't a predefined routeline: don't draw CDI
 				up.x=centerX+cdiRadiusXsin; //draw CDI in the center as part of the course direction arrow (same color)
 				up.y=centerY-cdiRadiusXcos;
