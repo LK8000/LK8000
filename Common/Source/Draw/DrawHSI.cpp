@@ -288,8 +288,19 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 					_stprintf(Buffer, TEXT("%03d°"),(int)round(DerivedDrawInfo.WaypointBearing));
 				#endif
 				LKWriteText(hDC,Buffer,posDTKx,posBRGy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_MAGENTA,false);
-			} else { //we are flying to the departure point: there isn't a predefined routeline: don't draw CDI
-				up.x=centerX+cdiRadiusXsin; //draw CDI in the center as part of the course direction arrow (same color)
+			} else { //flying to the departure or a direct GOTO: there isn't a predefined routeline: don't draw CDI
+				//Draw anyway the CDI scale in grey (disabled)
+				SelectObject(hDC,LKPen_Grey_N1); //color of CDI scale
+				SelectObject(hDC,LKBrush_Grey);
+				for(int i=1;i<3;i++) {
+					long tickXiXsin=(long)(smallScaleTick*i*sin);
+					long tickXiXcos=(long)(smallScaleTick*i*cos);
+					Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
+					Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
+				}
+
+				//draw CDI in the center as part of the course direction arrow (same color)
+				up.x=centerX+cdiRadiusXsin;
 				up.y=centerY-cdiRadiusXcos;
 				down.x=centerX-cdiRadiusXsin;
 				down.y=centerY+cdiRadiusXcos;
