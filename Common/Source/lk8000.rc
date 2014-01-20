@@ -40,12 +40,12 @@ IDR_WAV_OVERTONE4	WAVE	DISCARDABLE	"../Data/Sounds/LK_S4d.WAV"
 IDR_WAV_OVERTONE5	WAVE	DISCARDABLE	"../Data/Sounds/LK_S5.WAV"
 IDR_WAV_OVERTONE6	WAVE	DISCARDABLE	"../Data/Sounds/LK_S6.WAV"
 IDR_WAV_OVERTONE7	WAVE	DISCARDABLE	"../Data/Sounds/LK_S6b.WAV"
-IDR_WAV_OVERTONE8	WAVE	DISCARDABLE	"../Data/Sounds/LK_S7.WAV"
+//IDR_WAV_OVERTONE8	WAVE	DISCARDABLE	"../Data/Sounds/LK_S7.WAV"
 IDR_WAV_TONE1		WAVE	DISCARDABLE	"../Data/Sounds/LK_T1.WAV"
 IDR_WAV_TONE2		WAVE	DISCARDABLE	"../Data/Sounds/LK_T2.WAV"
 IDR_WAV_TONE3		WAVE	DISCARDABLE	"../Data/Sounds/LK_T3.WAV"
 IDR_WAV_TONE4		WAVE	DISCARDABLE	"../Data/Sounds/LK_T4.WAV"
-IDR_WAV_TONE5		WAVE	DISCARDABLE	"../Data/Sounds/LK_T5.WAV"
+//IDR_WAV_TONE5		WAVE	DISCARDABLE	"../Data/Sounds/LK_T5.WAV"
 IDR_WAV_TONE7		WAVE	DISCARDABLE	"../Data/Sounds/LK_T8.WAV"
 IDR_WAV_BTONE2		WAVE	DISCARDABLE	"../Data/Sounds/LK_B2b.wav"
 IDR_WAV_BTONE4		WAVE	DISCARDABLE	"../Data/Sounds/LK_B4.wav"
@@ -252,9 +252,9 @@ IDI_LK8000SWIFT         ICON    DISCARDABLE     "../Data/Bitmaps/LKicon.ico"
 // Bitmaps
 
 IDB_EMPTY               BITMAP  DISCARDABLE     "../Data/Bitmaps/Empty.bmp"
-IDB_TOWN                BITMAP  DISCARDABLE     "../Data/Bitmaps/town.bmp"
-IDB_LKSMALLTOWN         BITMAP  DISCARDABLE     "../Data/Bitmaps/smalltown.bmp"
-IDB_LKVERYSMALLTOWN     BITMAP  DISCARDABLE     "../Data/Bitmaps/verysmalltown.bmp"
+//IDB_TOWN                BITMAP  DISCARDABLE     "../Data/Bitmaps/town.bmp"
+//IDB_LKSMALLTOWN         BITMAP  DISCARDABLE     "../Data/Bitmaps/smalltown.bmp"
+//IDB_LKVERYSMALLTOWN     BITMAP  DISCARDABLE     "../Data/Bitmaps/verysmalltown.bmp"
 
 
 #endif    // English (Australia) resources
