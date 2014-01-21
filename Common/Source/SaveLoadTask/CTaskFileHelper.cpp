@@ -360,6 +360,7 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
                 case CIRCLE:
                     StartRadius = (DWORD)Task[0].AATCircleRadius;
                     StartLine = 0;
+                    PGStartOut = !Task[0].OutCircle;
                     break;
                 case LINE:
                     StartRadius = (DWORD)Task[0].AATCircleRadius;
@@ -829,8 +830,12 @@ bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const
             case CIRCLE:
                 SetAttribute(node, _T("type"), _T("circle"));
                 SetAttribute(node, _T("radius"), Radius);
-                if (DoOptimizeRoute() && TaskPt.OutCircle) {
-                    SetAttribute(node, _T("Exit"), _T("true"));
+                if (DoOptimizeRoute()) {
+                    if(idx==0) {
+                        SetAttribute(node, _T("Exit"), PGStartOut?_T("false"):_T("true"));
+                    } else {
+                        SetAttribute(node, _T("Exit"), TaskPt.OutCircle?_T("true"):_T("false"));
+                    }
                 }
                 break;
             case SECTOR:
