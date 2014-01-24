@@ -418,3 +418,30 @@ double CheckSetBugs(double val) {
   return BUGS;
 }
 
+// is thermal bar visible or not ?
+bool IsThermalBarVisible(void) {
+
+  switch (ThermalBar) {
+
+	case 0:
+		break;
+	case 1:
+		return MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
+		break;
+	case 2:
+		return ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || 
+			MapWindow::mode.Is(MapWindow::Mode::MODE_CRUISE));
+		break;
+
+	case 3: 
+		return true;
+		break;
+	default:
+		break;
+		
+  }
+  return false;
+
+}
+
+

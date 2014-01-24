@@ -513,8 +513,8 @@ nextinit:
   } else {
 	index = GetOvertargetIndex();
   }
-  
-  		if ( (ThermalBar>=1 && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) || (ThermalBar==2 && MapWindow::mode.Is(MapWindow::Mode::MODE_CRUISE)) ) {
+ 
+		if (IsThermalBarVisible()) { 
       		rcx=rc.left+leftmargin+NIBLSCALE(40);
   		} else {
    			rcx=rc.left+leftmargin+NIBLSCALE(1);

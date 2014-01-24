@@ -118,9 +118,9 @@ QuickRedraw:
 		if (IsMultimapOverlaysGauges()) {
 			if (LKVarioBar) LKDrawVario(hdc,rc);
 
-            if ( (ThermalBar>=1 && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) || (ThermalBar==2 && MapWindow::mode.Is(MapWindow::Mode::MODE_CRUISE)) ) {
+			if (IsThermalBarVisible()) {
 				DrawThermalBand(hdcDrawWindow, rc);
-            }
+			}
 
 			DrawFinalGlide(hdcDrawWindow,rc);
 		}
@@ -414,7 +414,7 @@ _skip_stuff:
 _skip_2:
 
   if (NOTANYPAN) {
-    if ( (ThermalBar>=1 && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) || (ThermalBar==2 && MapWindow::mode.Is(MapWindow::Mode::MODE_CRUISE)) ) {
+    if ( IsThermalBarVisible() ) {
         DrawThermalBand(hdcDrawWindow, rc);
     }
 

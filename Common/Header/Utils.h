@@ -345,6 +345,7 @@ double	GetMacCready(int wpindex, short wpmode);
 
 double CheckSetBugs(double val);
 double CheckSetBallast(double val);
+bool   IsThermalBarVisible(void);
 
 extern bool CheckClubVersion(void);
 extern void ClubForbiddenMsg(void);

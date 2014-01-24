@@ -2921,6 +2921,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M2149_")));
 	// LKTOKEN  +_@M2150_ = "in thermal and cruise"
     dfe->addEnumText(gettext(TEXT("_@M2150_")));
+    dfe->addEnumText(gettext(TEXT("_@M1833_"))); // Always
     dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(ThermalBar);
     wp->RefreshDisplay();
