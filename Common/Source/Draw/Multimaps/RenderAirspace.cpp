@@ -47,7 +47,7 @@ void MapWindow::RenderAirspace(HDC hdc, const RECT rc_input) {
 
   RECT rci = rc_input;
 
-  if (LKVarioBar)
+  if (LKVarioBar<=vBarVarioGR)
     if ( IsMultimapOverlaysGauges())
 	 rci.left = LKVarioSize;
   zoom.SetLimitMapScale(false);
