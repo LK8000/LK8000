@@ -223,7 +223,7 @@ unsigned long SerialPort::SetBaudrate(unsigned long BaudRate) {
     return result;
 }
 
-unsigned long SerialPort::GetBaudrate() {
+unsigned long SerialPort::GetBaudrate() const {
     COMSTAT ComStat;
     DCB PortDCB;
     DWORD dwErrors;

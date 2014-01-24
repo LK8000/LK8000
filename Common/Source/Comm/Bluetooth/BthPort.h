@@ -30,7 +30,7 @@ public:
         return 0UL;
     }
 
-    virtual unsigned long GetBaudrate() {
+    virtual unsigned long GetBaudrate() const {
         return 0UL;
     }
 
@@ -54,6 +54,7 @@ protected:
 
 private:
     SOCKET mSocket;
+    DWORD mTimeout;
 };
 
 #endif	/* BTHPORT_H */

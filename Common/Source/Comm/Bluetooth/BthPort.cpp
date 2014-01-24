@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <functional>
 
-BthPort::BthPort(int idx, const std::wstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET) {
+BthPort::BthPort(int idx, const std::wstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET), mTimeout(40) {
     WSADATA wsd;
     WSAStartup(MAKEWORD(1, 1), &wsd);
 }
@@ -53,25 +53,13 @@ bool BthPort::Initialize() {
         goto failed;
     }
 
-    // max string receive rate is less to 20Hz
-    if( !SetRxTimeout(10) ) {
-        // if SetRxTimeout failed, use non-blocking socket
-        StartupStore(_T("... use non-blocking socket%s"), NEWLINE);                
+    if (SetRxTimeout(RXTIMEOUT) == -1) {
+        DWORD dwError = GetLastError();
+        StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%u%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
+        // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
+        StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());        
 
-        //-------------------------
-        // Set the socket I/O mode: In this case FIONBIO
-        // enables or disables the blocking mode for the 
-        // socket based on the numerical value of iMode.
-        // If iMode = 0, blocking is enabled; 
-        // If iMode != 0, non-blocking mode is enabled.
-
-        u_long iMode = 1;
-        iResult = ioctlsocket(mSocket, FIONBIO, &iMode);
-        if (iResult != NO_ERROR) {
-            StartupStore(_T(".... ioctlsocket failed with error: %ld%s"), iResult, NEWLINE);
-            // if failed, socket still in blocking mode, it's big problem
-	        goto failed;
-        }
+        goto failed;
     }
     
     if(!ComPort::Initialize()) {
@@ -94,26 +82,55 @@ failed:
 
 int BthPort::SetRxTimeout(int TimeOut) {
 
-    DWORD dwTimeOut = (DWORD) TimeOut;
-    int iResult = setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, (char*) &dwTimeOut, sizeof (DWORD));
-    if (iResult == SOCKET_ERROR) {
-        StartupStore(_T(". ComPort %d : setsockopt failed <0x%X>.%s"), GetPortIndex() + 1, WSAGetLastError(), NEWLINE);                
-        return 0;
+    DWORD dwTimeout = mTimeout;
+    mTimeout = (DWORD)TimeOut;
+
+    //-------------------------
+    // Set the socket I/O mode: In this case FIONBIO
+    // enables or disables the blocking mode for the 
+    // socket based on the numerical value of iMode.
+    // If iMode = 0, blocking is enabled; 
+    // If iMode != 0, non-blocking mode is enabled.
+
+    u_long iMode = 1;
+    int iResult = ioctlsocket(mSocket, FIONBIO, &iMode);
+    if (iResult != NO_ERROR) {
+        StartupStore(_T(".... ioctlsocket failed with error: %ld%s"), iResult, NEWLINE);
+        // if failed, socket still in blocking mode, it's big problem
+        dwTimeout = -1;
     }
-    return 1;
+
+    return dwTimeout;
 }
 
 size_t BthPort::Read(void *szString, size_t size) {
-    int iResult = recv(mSocket, (char*) szString, size, 0);
-    if (iResult > 0) {
-        AddStatRx(iResult);
-        return iResult;
-    } if(iResult == SOCKET_ERROR) {
-        DWORD dwError = WSAGetLastError();
-        if(WSAEWOULDBLOCK != dwError) {
-            StartupStore(_T("ComPort %d : recv failed <0x%X>.%s"), GetPortIndex() + 1, dwError, NEWLINE);
+
+    struct timeval timeout;
+    struct fd_set readfs;
+    timeout.tv_sec = mTimeout / 1000;
+    timeout.tv_usec = mTimeout % 1000;
+
+    int iResult = 0;
+    FD_ZERO(&readfs);
+    FD_SET(mSocket, &readfs);
+    
+    // wait for received data
+    iResult = select(mSocket + 1, &readfs, NULL, NULL, &timeout); 
+    if (iResult == 0) {
+        return 0U; // timeout
+    }
+    
+    if ((iResult != SOCKET_ERROR) && FD_ISSET(mSocket, &readfs)) {
+        // Data ready to read 
+        iResult = recv(mSocket, (char*) szString, size, 0);
+        if (iResult > 0) {
+            AddStatRx(iResult);
+            return iResult;
         }
-    } else {
+    }
+
+    if(iResult == SOCKET_ERROR) {
+        AddStatErrRx(1);
         StartupStore(_T("ComPort %d : socket was forcefully disconnected <0x%X>.%s"), GetPortIndex() + 1, WSAGetLastError(), NEWLINE);
         closesocket(mSocket);
         mSocket = INVALID_SOCKET;
@@ -132,7 +149,31 @@ bool BthPort::Close() {
 }
 
 bool BthPort::Write(const void *data, size_t length) {
-    int iResult = send(mSocket, (const char*) data, length, 0);
+    struct timeval timeout;
+    struct fd_set writefs;
+    timeout.tv_sec = mTimeout / 1000;
+    timeout.tv_usec = mTimeout % 1000;
+
+    int iResult = 0;
+    FD_ZERO(&writefs);
+    FD_SET(mSocket, &writefs);
+    
+    // wait for socket ready to write
+    iResult = select(mSocket + 1, NULL, &writefs, NULL, &timeout); 
+    if (iResult == 0) {
+        StartupStore(_T("ComPort %d : write to socket timeout.%s"), GetPortIndex() + 1, NEWLINE);
+        return false; // timeout
+    }
+    
+    if ((iResult != SOCKET_ERROR) && FD_ISSET(mSocket, &writefs)) {
+        // socket ready, Write data.
+        iResult = send(mSocket, (const char*) data, length, 0);
+        if (iResult > 0) {
+            AddStatTx(iResult);
+            return true;
+        }
+    }
+    
     if (iResult == SOCKET_ERROR) {
         AddStatErrTx(1);
         AddStatErrors(1);
@@ -142,7 +183,6 @@ bool BthPort::Write(const void *data, size_t length) {
 
         return false;
     }
-    AddStatTx(iResult);
 
     return true;
 }

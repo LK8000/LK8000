@@ -41,7 +41,7 @@ public:
 
     virtual int SetRxTimeout(int TimeOut) = 0;
     virtual unsigned long SetBaudrate(unsigned long) = 0;
-    virtual unsigned long GetBaudrate() = 0;
+    virtual unsigned long GetBaudrate() const = 0;
 
     virtual void UpdateStatus() = 0;
 
