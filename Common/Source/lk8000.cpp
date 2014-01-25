@@ -147,11 +147,13 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   (void)hPrevInstance;
   // use mutex to avoid multiple instances of lk8000 be running
   hMutex = CreateMutex(NULL,FALSE,_T("LOCK8000"));
+  #if (!((WINDOWSPC>0) && TESTBENCH))
   if (GetLastError() == ERROR_ALREADY_EXISTS) {
 	  ReleaseMutex(hMutex);
 	  CloseHandle(hMutex);
 	  return(-2);
   }
+  #endif
   bool realexitforced=false;
 
   LKSound(_T("LK_CONNECT.WAV"));
