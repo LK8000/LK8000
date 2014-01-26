@@ -667,6 +667,7 @@ double GlidePolar::MacCreadyAltitude(double emcready,
 				     const double cruise_efficiency) {
                                    #endif
 
+ 
 #if (LK_CACHECALC && LK_CACHECALC_MCA)
 
   #define CASIZE  LK_CACHECALC_MCA
@@ -898,7 +899,6 @@ double GlidePolar::MacCreadyAltitude(double emcready,
                                             #else
 					      cruise_efficiency);
                                             #endif
-
 #if (LK_CACHECALC && LK_CACHECALC_MCA)
 
   #ifndef BCT_ALT_FIX

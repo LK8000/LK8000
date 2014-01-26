@@ -346,6 +346,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   fLD  = 0.0;
 #endif
 
+  double overindex_brg=0;
   if (getsideviewpage==IM_NEXT_WP )
   {
     // Show towards target
@@ -354,6 +355,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       double wptlon = WayPointList[overindex].Longitude;
       double wptlat = WayPointList[overindex].Latitude;
       DistanceBearing(aclat, aclon, wptlat, wptlon, &wpt_dist, &acb);
+      overindex_brg=AngleLimit360(acb);
 
       wpt_brg = AngleLimit360(wpt_brg - acb +90.0);
       fDist = max(5.0*1000.0, wpt_dist*1.31);   // 30% more distance to show, minimum 5km
@@ -853,7 +855,7 @@ if(SAFETYALTITUDEARRIVAL > 0)
         / (wpt_dist+1);
 
         double mc_pirker = PirkerAnalysis(&DrawInfo, &DerivedDrawInfo,
-					wpt_brg,
+					overindex_brg,
                                         slope);
         mc_pirker = max(0.0, mc_pirker);
 
@@ -861,7 +863,7 @@ if(SAFETYALTITUDEARRIVAL > 0)
 
         GlidePolar::MacCreadyAltitude(mc_pirker,
                                     100.0, // dummy value
-                                    wpt_brg,
+                                    overindex_brg,
                                     DerivedDrawInfo.WindSpeed,
                                     DerivedDrawInfo.WindBearing,
                                     0,
