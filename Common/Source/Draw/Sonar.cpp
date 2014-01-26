@@ -18,11 +18,9 @@
 extern AirSpaceSonarLevelStruct sSonarLevel[];
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern int Sideview_iNoHandeldSpaces;
-extern bool Sonar_IsEnabled;
 
 //#define DEBUG_SONAR	1
 
-bool Sonar_IsEnabled = true; // must be made Global.cpp
 
 
 AirSpaceSonarLevelStruct sSonarLevel[10] = {
@@ -165,7 +163,7 @@ void MapWindow::DoSonar(void) {
 
   static unsigned long lSonarCnt = 0;
 
-  if (!Sonar_IsEnabled || DrawInfo.NAVWarning || !EnableSoundModes)return;
+  if (!SonarWarning || DrawInfo.NAVWarning || !EnableSoundModes)return;
 
 
   CAirspace *aspfound = CAirspaceManager::Instance().GetNearestAirspaceForSideview();

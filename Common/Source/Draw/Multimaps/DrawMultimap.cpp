@@ -15,7 +15,6 @@
 #include "LKInterface.h"
 #include "McReady.h"
 
-extern bool Sonar_IsEnabled;
 extern TCHAR Sideview_szNearAS[];
 
 
@@ -119,7 +118,7 @@ void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
 
 	case MSM_MAPASP:
 		_stprintf(topright_txt, MsgToken(1293));
-		if(Sonar_IsEnabled) {
+		if(SonarWarning) {
 			if (flip)
 				wcolor=MMCOLOR_ENABLED_FLIP;
 			else

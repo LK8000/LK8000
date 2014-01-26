@@ -903,6 +903,9 @@ GEXTERN unsigned short Multimap4;
 GEXTERN int MMNorthUp_Runtime[NUMBER_OF_SHARED_MULTIMAPS];
 GEXTERN int AspPermanentChanged;
 GEXTERN int iFlarmDirection;
+
+GEXTERN bool SonarWarning;
+GEXTERN bool SonarWarning_Config;
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.

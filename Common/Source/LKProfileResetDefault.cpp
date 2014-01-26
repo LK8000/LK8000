@@ -336,6 +336,7 @@ void LKProfileResetDefault(void) {
   Orbiter_Config = 1;
   Shading_Config = 1;
   OverlayClock = 0;
+  SonarWarning_Config = 1; // sonar enabled by default on reset
 
   // default BB and IP is all ON
   ConfBB0 = 0; // TRM is off by default on v4

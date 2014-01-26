@@ -383,6 +383,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryUserForceMode ,(int) MapWindow::mode.UserForcedMode());
   rprintf(szRegistryBigFAIThreshold,FAI28_45Threshold);
   rprintf(szRegistryBottomMode    ,BottomMode);
+  rprintf(szRegistrySonarWarning    ,SonarWarning_Config);
 
 #if (WINDOWSPC>0)
   rprintf(szRegistryScreenSize   ,ScreenSize);

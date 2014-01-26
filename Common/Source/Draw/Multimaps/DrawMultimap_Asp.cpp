@@ -20,7 +20,6 @@
 extern int XstartScreen, YstartScreen;
 extern bool IsMultimapConfigShown;
 
-extern bool Sonar_IsEnabled;
 
 
 void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
@@ -54,9 +53,9 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 
 	case LKEVENT_TOPRIGHT:
 		if (MapSpaceMode==MSM_MAPASP) {
-			Sonar_IsEnabled = !Sonar_IsEnabled;
+			SonarWarning = !SonarWarning;
 			if (EnableSoundModes) {
-				if (Sonar_IsEnabled)
+				if (SonarWarning)
 					LKSound(TEXT("LK_TONEUP.WAV"));
 				else
 					LKSound(TEXT("LK_TONEDOWN.WAV"));

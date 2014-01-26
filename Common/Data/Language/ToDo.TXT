@@ -362,6 +362,7 @@ _@2174_ "Output Frequency"
 _@M2175_ "Conical ESS"
 _@M2176_ "Slope"
 _@M2177_ "Base"
+_@M1870_ "Airspace Sonar "
 
 #Help
-@1288 and @1289
+@1288 and @1289 and @1290

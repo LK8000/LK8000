@@ -430,8 +430,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			}
 			break;
 		case 37: //
-			extern bool Sonar_IsEnabled;
-			if (Sonar_IsEnabled)
+			if (SonarWarning)
 				_stprintf(OutBuffer,MsgToken(2243)); // Sonar OFF
 			else
 				_stprintf(OutBuffer,MsgToken(2242)); // Sonar ON

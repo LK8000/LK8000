@@ -2242,6 +2242,11 @@ static void setVariables(void) {
     wp->GetDataField()->Set(Shading_Config);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpSonarWarning"));
+  if (wp) {
+    wp->GetDataField()->Set(SonarWarning_Config);
+    wp->RefreshDisplay();
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoWind"));
   if (wp) {
@@ -4001,6 +4006,13 @@ int ival;
     if (Shading_Config != wp->GetDataField()->GetAsBoolean()) {
       Shading_Config = wp->GetDataField()->GetAsBoolean();
       Shading=Shading_Config;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpSonarWarning"));
+  if (wp) {
+    if (SonarWarning_Config != wp->GetDataField()->GetAsBoolean()) {
+      SonarWarning_Config = wp->GetDataField()->GetAsBoolean();
+      SonarWarning=SonarWarning_Config;
     }
   }
 

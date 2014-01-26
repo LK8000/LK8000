@@ -231,6 +231,8 @@ void Globals_Init(void) {
   LockModeStatus=false;
   ArrivalValue=0;
   NewMapDeclutter=0;
+  SonarWarning=1;
+  SonarWarning_Config=1;
   Shading=1;
   Shading_Config=1;
 

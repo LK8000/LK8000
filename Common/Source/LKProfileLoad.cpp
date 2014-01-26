@@ -762,6 +762,8 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryBigFAIThreshold, &FAI28_45Threshold);
   if (matchedstring) return;
+  PREAD(sname,svalue,szRegistrySonarWarning,&SonarWarning_Config);
+  if (matchedstring) return;
 
 int tmp;
   PREAD(sname,svalue,szRegistryUserForceMode   , &tmp);

@@ -15,7 +15,6 @@
 #include "Sideview.h"
 
 extern void ShowMenu();
-extern bool Sonar_IsEnabled;
 
 unsigned int CustomKeyLabel[(CustomKeyMode_t)ckTOP];
 
@@ -444,16 +443,16 @@ passthrough:
 		}
 		return true;
 	case ckSonarToggle:
-		Sonar_IsEnabled = !Sonar_IsEnabled;
+		SonarWarning = !SonarWarning;
 		TCHAR sonarmsg[60];
 		_stprintf(sonarmsg,_T("%s "),MsgToken(1293)); // SONAR
-		if (Sonar_IsEnabled)
+		if (SonarWarning)
 			_tcscat(sonarmsg,MsgToken(1643)); // ENABLED
 		else
 			_tcscat(sonarmsg,MsgToken(1600)); // DISABLED
 		DoStatusMessage(sonarmsg,NULL,false);
 		if (EnableSoundModes) {
-			if (Sonar_IsEnabled)
+			if (SonarWarning)
 				LKSound(TEXT("LK_TONEUP.WAV"));
 			else
 				LKSound(TEXT("LK_TONEDOWN.WAV"));

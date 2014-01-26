@@ -59,6 +59,7 @@ void LKProfileInitRuntime(void) {
   AltitudeMode			= AltitudeMode_Config;
   OutlinedTp			= OutlinedTp_Config;
   BUGS				= BUGS_Config;
+  SonarWarning			= SonarWarning_Config;
 
   MapWindow::zoom.AutoZoom(AutoZoom_Config);
 
