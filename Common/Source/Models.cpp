@@ -22,6 +22,8 @@
 //  a model type to be used, just in case. The model types may not follow strictly those in
 //  config menu, nor be updated. Does'nt hurt though.
 //
+//  NOTE LK v5: this is going to be removed in V6, this is OBSOLETED and not used nor updated
+//
 void SmartGlobalModelType() {
 
 	GlobalModelType=MODELTYPE_PNA;	// default for ifdef PNA by now!
@@ -103,6 +105,15 @@ bool SetModelName(DWORD Temp) {
     return true;
   case MODELTYPE_PNA_MINIMAP:
      _tcscpy(GlobalModelName,_T("MINIMAP"));
+     return true;
+  case MODELTYPE_PNA_GENERIC_BTK1:
+     _tcscpy(GlobalModelName,_T("Keyboard 1"));
+     return true;
+  case MODELTYPE_PNA_GENERIC_BTK2:
+     _tcscpy(GlobalModelName,_T("Keyboard 2"));
+     return true;
+  case MODELTYPE_PNA_GENERIC_BTK3:
+     _tcscpy(GlobalModelName,_T("Keyboard 3"));
      return true;
   default:
     _tcscpy(GlobalModelName,_T("UNKNOWN"));

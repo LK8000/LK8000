@@ -1025,6 +1025,14 @@ _continue:
 	#endif
     #endif
 
+	#if 0	// Show keypressed for testing only
+	#ifdef PNA
+	TCHAR keypressed[30];
+	wsprintf(keypressed,_T("Key=0x%x =d %d"),wParam,wParam);
+	DoStatusMessage(keypressed);
+	#endif
+	#endif
+
 	//
 	// Special SIM mode keys for PC
 	//

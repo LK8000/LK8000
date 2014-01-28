@@ -164,6 +164,15 @@ int GlobalToBoxType(int i) {
 		case MODELTYPE_PNA_MINIMAP:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaMinimap;
 				break;
+		case MODELTYPE_PNA_GENERIC_BTK1:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTK1;
+				break;
+		case MODELTYPE_PNA_GENERIC_BTK2:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTK2;
+				break;
+		case MODELTYPE_PNA_GENERIC_BTK3:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTK3;
+				break;
 
 		default:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
@@ -2716,6 +2725,7 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("Holux FunTrek GM-130 / GM-132"));
     dfe->addEnumText(TEXT("Medion S3747 / Royaltek BV-3200"));
     dfe->addEnumText(TEXT("LX MiniMap"));
+    dfe->addEnumText(TEXT("KeyBoard 1"));
 
     dfe->Set(GlobalToBoxType(GlobalModelType));
     wp->RefreshDisplay();
@@ -4535,6 +4545,15 @@ int ival;
 	break;
       case apImPnaMinimap:
 	GlobalModelType = MODELTYPE_PNA_MINIMAP;
+	break;
+      case apImPnaGenericBTK1:
+	GlobalModelType = MODELTYPE_PNA_GENERIC_BTK1;
+	break;
+      case apImPnaGenericBTK2:
+	GlobalModelType = MODELTYPE_PNA_GENERIC_BTK2;
+	break;
+      case apImPnaGenericBTK3:
+	GlobalModelType = MODELTYPE_PNA_GENERIC_BTK3;
 	break;
       default:
 	GlobalModelType = MODELTYPE_UNKNOWN; // Can't happen, troubles ..

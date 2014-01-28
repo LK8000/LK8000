@@ -187,6 +187,27 @@ void LKProfileInitRuntime(void) {
 	#endif
 		
   }
+  else
+  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1 ) {
+  	#if TESTBENCH
+	StartupStore(TEXT(". USING KEYBOARD MODE 1%s"),NEWLINE);
+	#endif
+		
+  }
+  else
+  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK2 ) {
+  	#if TESTBENCH
+	StartupStore(TEXT(". USING KEYBOARD MODE 2%s"),NEWLINE);
+	#endif
+		
+  }
+  else
+  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK3 ) {
+  	#if TESTBENCH
+	StartupStore(TEXT(". USING KEYBOARD MODE 3%s"),NEWLINE);
+	#endif
+		
+  }
   #if TESTBENCH
   else
 	StartupStore(TEXT(". No special regsets for this device%s"),NEWLINE);
