@@ -546,7 +546,11 @@ const CDevIMI::TMsg *CDevIMI::Receive(PDeviceDescriptor_t d, unsigned errBufSize
     expectedPayloadSize = COMM_MAX_PAYLOAD_SIZE;
   
   // set timeout
-  unsigned timeout = extraTimeout + 10000 * (expectedPayloadSize + sizeof(IMICOMM_MSG_HEADER_SIZE) + 10) / d->Com->GetBaudrate();
+  unsigned baudRate = d->Com->GetBaudrate();
+  if(baudRate == 0U) {
+     baudRate = 4800U;
+  }
+  unsigned timeout = extraTimeout + 10000 * (expectedPayloadSize + sizeof(IMICOMM_MSG_HEADER_SIZE) + 10) / baudRate;
   int orgTimeout;
   if(!SetRxTimeout(d, timeout, orgTimeout, errBufSize, errBuf))
     return 0;
@@ -609,6 +613,9 @@ const CDevIMI::TMsg *CDevIMI::SendRet(PDeviceDescriptor_t d, unsigned errBufSize
                                       unsigned extraTimeout /* =300 */, int retry /* =4 */)
 {
   unsigned baudRate = d->Com->GetBaudrate();
+  if(baudRate == 0) {
+     baudRate = 4800U;
+  }
   extraTimeout += 10000 * (payloadSize + sizeof(IMICOMM_MSG_HEADER_SIZE) + 10) / baudRate;
   while(retry--) {
     if(Send(d, errBufSize, errBuf, msgID, payload, payloadSize, parameter1, parameter2, parameter3)) {
@@ -667,6 +674,9 @@ bool CDevIMI::Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]
   
   // configure baudrate
   unsigned long baudRate = d->Com->GetBaudrate();
+  if(baudRate == 0U) {
+      baudRate = 4800U;
+  }
   if(!Send(d, errBufSize, errBuf, MSG_CFG_STARTCONFIG, 0, 0, IMICOMM_BIGPARAM1(baudRate), IMICOMM_BIGPARAM2(baudRate)))
     return false;
   

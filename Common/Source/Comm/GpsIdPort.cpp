@@ -138,7 +138,7 @@ unsigned long GpsIdPort::SetBaudrate(unsigned long) {
     return 0U;
 }
 
-unsigned long GpsIdPort::GetBaudrate() {
+unsigned long GpsIdPort::GetBaudrate() const {
     LKASSERT(FALSE);
     return 0U;
 }
