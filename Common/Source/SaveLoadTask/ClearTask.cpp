@@ -21,7 +21,6 @@ void ClearTask(void) {
   LastTaskFileName[0] = _T('\0');
   ActiveWayPoint = -1;
 
-  PGNumberOfGates = 0;
   EnableMultipleStartPoints = false;
 
   std::for_each(begin(Task), end(Task), ResetTaskWpt);
