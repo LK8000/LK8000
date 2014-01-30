@@ -154,9 +154,9 @@ void LiveTrackerInit()
     // Create a thread for sending data to the server
     _Thread.start(_ThreadTarget);
     _Thread.setPriority(Poco::Thread::PRIO_NORMAL);
-    unicode2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
+    TCHAR2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
     _server_name[SERVERNAME_MAX-1]=0;
-      _server_port=LiveTrackerport_Config;
+    _server_port=LiveTrackerport_Config;
     StartupStore(TEXT(". LiveTracker will use server %s if available.%s"), LiveTrackersrv_Config, NEWLINE);
     _inited = true;
   }
@@ -373,9 +373,9 @@ static int GetUserIDFromServer()
   char password[128];
   char rxcontent[32];
   
-  unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
+  TCHAR2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
   UrlEncode(txbuf, username, sizeof(username));
-  unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
+  TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
   UrlEncode(txbuf, password, sizeof(username));
   sprintf(txbuf,"GET /client.php?op=login&user=%s&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
         username, password,
@@ -459,19 +459,19 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
     // 64=>"Powered flight"
     // 17100=>"Car"
     if (_tcslen(LiveTrackerusr_Config)>0 ) {
-      unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(txbuf));
+      TCHAR2ascii(LiveTrackerusr_Config, txbuf, sizeof(txbuf));
     } else {
       strncpy(txbuf, "guest", sizeof(txbuf));
     }
     UrlEncode(txbuf, username, sizeof(username));
     if (_tcslen(LiveTrackerpwd_Config)>0 ) {
-      unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
+      TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
     } else {
       strncpy(txbuf, "guest", sizeof(txbuf));
     }
     UrlEncode(txbuf, password, sizeof(password));
     #ifdef PNA
-      unicode2ascii(GlobalModelName, txbuf, sizeof(txbuf));
+      TCHAR2ascii(GlobalModelName, txbuf, sizeof(txbuf));
       UrlEncode(txbuf, phone, sizeof(phone));
     #else
     #if (WINDOWSPC>0)
@@ -493,7 +493,7 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
       }
 */
     
-    unicode2ascii(AircraftType_Config, txbuf, sizeof(txbuf));
+    TCHAR2ascii(AircraftType_Config, txbuf, sizeof(txbuf));
     UrlEncode(txbuf, vehicle_name, sizeof(vehicle_name));
     vehicle_type = 8;
     if (AircraftCategory == umParaglider) vehicle_type = 1;

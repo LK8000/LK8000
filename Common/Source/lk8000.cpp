@@ -156,8 +156,8 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   _THREADID_WINMAIN=GetCurrentThreadId();
   StartupStore(_T("##############  WINMAIN threadid=%d\n"),GetCurrentThreadId());
   #endif
-  wsprintf(LK8000_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
-  wcscat(LK8000_Version, TEXT(__DATE__));
+  _stprintf(LK8000_Version,_T("%s v%s.%s "), _T(LKFORK), _T(LKVERSION),_T(LKRELEASE));
+  _tcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
   #ifdef PNA
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PNA"),NEWLINE);
@@ -203,7 +203,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   // it is too early here. So no ModelType .
   //
   // if we found no embedded name, try from registry
-  if (  !wcscmp(GlobalModelName, _T("UNKNOWN")) ) {
+  if (  !_tcscmp(GlobalModelName, _T("UNKNOWN")) ) {
 	if (  !SetModelType() ) {
 		// last chance: try from default profile
 		LoadModelFromProfile();
@@ -344,10 +344,10 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #ifdef PNA // VENTA-ADDON 
 
 	TCHAR sTmp[MAX_PATH];
-	wsprintf(sTmp,TEXT("Conf=%s%S"), gmfpathname(),LKDATADIR ); // VENTA2 FIX double backslash
+	_stprintf(sTmp,TEXT("Conf=%s%s"), gmfpathname(),_T(LKDATADIR) ); // VENTA2 FIX double backslash
 	CreateProgressDialog(sTmp); 
 
-	wsprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);
+	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);
 	CreateProgressDialog(sTmp); 
 #else
   TCHAR sTmpA[MAX_PATH], sTmpB[MAX_PATH];
@@ -359,7 +359,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     Sleep(3000);
   }
 #endif
-  wsprintf(sTmpB, TEXT("Conf=%s"),sTmpA);
+  _stprintf(sTmpB, TEXT("Conf=%s"),sTmpA);
   CreateProgressDialog(sTmpB); 
 #if ( WINDOWSPC==0 )
   if ( !datadir ) {

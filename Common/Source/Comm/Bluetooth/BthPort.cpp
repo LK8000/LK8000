@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <functional>
 
-BthPort::BthPort(int idx, const std::wstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET), mTimeout(40) {
+BthPort::BthPort(int idx, const std::tstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET), mTimeout(40) {
     WSADATA wsd;
     WSAStartup(MAKEWORD(1, 1), &wsd);
 }

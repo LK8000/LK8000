@@ -184,38 +184,38 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 	SelectObject(hdc, LK8PanelMediumFont);
 	switch(curtype) {
 		case IM_THERMAL:
-			wsprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M905_"))); // Thermal
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M905_"))); // Thermal
 			break;
 		case IM_CRUISE:
-			wsprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M906_"))); // Cruise
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M906_"))); // Cruise
 			break;
 		case IM_TASK:
-			wsprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M907_"))); // Task
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M907_"))); // Task
 			break;
 		case IM_AUX:
-			wsprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M908_"))); // Custom
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M908_"))); // Custom
 			break;
 		case IM_TRI:
 #ifndef LKCOMPETITION
-			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M909_"))); // Turn
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M909_"))); // Turn
 #else
-			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M1600_"))); // DISABLED
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M1600_"))); // DISABLED
 #endif
 			break;
 		case IM_HSI:
 			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M1860_"))); // HSI
 			break;
 		case IM_CONTEST:
-			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M957_"))); // Contest
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M957_"))); // Contest
 			break;
 		case IM_TRF+IM_TOP:
-			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, gettext(TEXT("_@M910_"))); // Target
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, gettext(TEXT("_@M910_"))); // Target
 			break;
 		case IM_TARGET+IM_TOP:
-			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TARGET+1, gettext(TEXT("_@M911_"))); // Sight
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TARGET+1, gettext(TEXT("_@M911_"))); // Sight
 			break;
 		default:
-			wsprintf(Buffer,_T("error"));
+			_stprintf(Buffer,_T("error"));
 			break;
 	}
         LKWriteText(hdc, Buffer, qcolumn[0],qrow[0], 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
@@ -232,24 +232,24 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 				if ( index >=0 ) {
 					_tcscpy(Buffer, WayPointList[index].Name);
 				} else {
-					wsprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+					_stprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 					icolor=RGB_AMBER;
 				}
 			} else {
-				wsprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+				_stprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 				icolor=RGB_AMBER;
 			}
 			break;
 		case IM_TRI:
 #ifndef LKCOMPETITION
-			wsprintf(Buffer,gettext(TEXT("_@M913_"))); // Experimental
+			_stprintf(Buffer,gettext(TEXT("_@M913_"))); // Experimental
 #else
-			wsprintf(Buffer,_T("---"));
+			_stprintf(Buffer,_T("---"));
 #endif
 			break;
 		case IM_CONTEST:
 		case IM_HSI: //for the HSI the title text is computed in his section down
-			wsprintf(Buffer,gettext(TEXT("")));
+			_stprintf(Buffer,gettext(TEXT("")));
 			break;
 		case IM_TRF+IM_TOP:
 		case IM_TARGET+IM_TOP:
@@ -267,7 +267,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 				}
 				//TCHAR status[80];
 				if (_tcslen(pTarget->Name) == 1) {
-					_stprintf(Buffer,_T("%0x"),pTarget->ID);
+					_stprintf(Buffer,_T("%0x"),(unsigned)pTarget->ID);
 				} else {
 					_stprintf(Buffer,_T("%s"),pTarget->Name);
 				}
@@ -279,7 +279,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 
 			break;
 		default:
-			wsprintf(Buffer,_T("error"));
+			_stprintf(Buffer,_T("error"));
 			icolor=RGB_AMBER;
 			break;
 	}
@@ -432,14 +432,14 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			break;
 		case IM_CONTEST:
 			showunit=LKFormatValue(LK_OLC_3TPS_DIST, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16],&qcolumn[16], 
 											&qrow[3],&qrow[4],&qrow[2]);
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(4);
 			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16],&qcolumn[16], 
 											&qrow[3],&qrow[4],&qrow[2]);
 			break;
@@ -451,7 +451,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			break;
 		default:
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16],&qcolumn[16], 
 											&qrow[3],&qrow[4],&qrow[2]);
 			break;
@@ -525,7 +525,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			showunit=LKFormatValue(LK_LD_CRUISE, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-			wcscpy(BufferValue,_T("")); wcscpy(BufferTitle,_T(""));
+			_tcscpy(BufferValue,_T("")); 
+            _tcscpy(BufferTitle,_T(""));
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(7);
@@ -552,19 +553,19 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			break;
 		case IM_CONTEST:
 			showunit=LKFormatValue(LK_OLC_3TPS_PREDICTED_DIST, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(8);
 			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_EMPTY, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		default:
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 	}
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
@@ -668,7 +669,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_TC_ALL, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_CRUISE:
 			showunit=LKFormatValue(LK_FL, false, BufferValue, BufferUnit, BufferTitle);
@@ -678,20 +679,20 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			break;
 		case IM_CONTEST:
 			showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(12);
 			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_AVGVARIO, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 		default:
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 	}
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[9],&qrow[10],&qrow[8]);
@@ -813,20 +814,21 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			showunit=LKFormatValue(LK_MC, true, BufferValue, BufferUnit, BufferTitle); 
 			break;
 		case IM_CONTEST:
-			wcscpy(BufferValue,_T("")); wcscpy(BufferTitle,_T(""));
+			_tcscpy(BufferValue,_T("")); 
+            _tcscpy(BufferTitle,_T(""));
 			//showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(16);
 			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); 
 			break;
 		default:
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
-			_stprintf(BufferUnit,_T(""));
+			_tcscpy(BufferUnit,_T(""));
 			break;
 	}
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
@@ -866,21 +868,21 @@ label_TRI:
 	} else {
 		// right
 		LKFormatValue(LK_TRACK, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
+		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[3],&qrow[4],&qrow[2]);
 		LKFormatValue(LK_GNDSPEED, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
+		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
 		LKFormatValue(LK_HNAV, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
+		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[9],&qrow[10],&qrow[8]);
 		LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
+		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
 
 		// left
 		LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
+		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
 		LKFormatValue(LK_BANK_ANGLE, true, BufferValue, BufferUnit, BufferTitle);
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
@@ -987,13 +989,13 @@ label_HSI:
 		}
 	} else {
 		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
+		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
 		LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
+		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
 		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
+		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 		if(!HSI.approach) { //if not landing print also dist, ETE and ETA respect task end
 			LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);

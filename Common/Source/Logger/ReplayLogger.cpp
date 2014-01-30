@@ -33,7 +33,7 @@ bool ReplayLogger::ReadLine(TCHAR *buffer) {
     return false;
   }
 
-  if (fgetws(buffer, 200, fp)==NULL) {
+  if (_fgetts(buffer, 200, fp)==NULL) {
     _tcscat(buffer,TEXT("\0"));
     return false;
   }
@@ -57,7 +57,7 @@ bool ReplayLogger::ScanBuffer(TCHAR *buffer, double *Time, double *Latitude,
   int found=0;
 
   if ((lfound =
-       swscanf(buffer,
+       _stscanf(buffer,
 	       TEXT("B%02d%02d%02d%02d%05d%c%03d%05d%cA%05d%05d"),
 	       &Hour, &Minute, &Second,
 	       &DegLat, &MinLat, &NoS, &DegLon, &MinLon,

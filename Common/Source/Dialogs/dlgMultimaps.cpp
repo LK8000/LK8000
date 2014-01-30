@@ -125,7 +125,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgMultimapsShowModal(void){
   WndProperty *wp;
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgMultimaps.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 

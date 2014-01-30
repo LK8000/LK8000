@@ -49,7 +49,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	#ifdef DEBUG_PROCVK
 	TCHAR buf[100];
-	wsprintf(buf,_T("R=%d,%d,%d,%d, X=%d Y=%d kt=%ld"),0, 0, 
+	_stprintf(buf,_T("R=%d,%d,%d,%d, X=%d Y=%d kt=%ld"),0, 0, 
 	ScreenSizeX, ScreenSizeY,X,Y,keytime);
 	DoStatusMessage(buf);
 	#endif
@@ -124,7 +124,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 					if (CustomKeyHandler(CKI_BOTTOMRIGHT)) return 0;
 				}
 				#ifdef DEBUG_PROCVK
-				wsprintf(buf,_T("RIGHT in limit=%d"),Y_BottomBar-NIBLSCALE(20));
+				_stprintf(buf,_T("RIGHT in limit=%d"),Y_BottomBar-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(true); // advance
@@ -139,7 +139,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				}
 
 				#ifdef DEBUG_PROCVK
-				wsprintf(buf,_T("LEFT in limit=%d"),Y_BottomBar-NIBLSCALE(20));
+				_stprintf(buf,_T("LEFT in limit=%d"),Y_BottomBar-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(false); // backwards
@@ -148,7 +148,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				return 0;
 			}
 			#ifdef DEBUG_PROCVK
-			wsprintf(buf,_T("CENTER in limit=%d"),Y_BottomBar-NIBLSCALE(20));
+			_stprintf(buf,_T("CENTER in limit=%d"),Y_BottomBar-NIBLSCALE(20));
 			DoStatusMessage(buf);
 			#endif
 
@@ -172,7 +172,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			// Simulate incoming NMEA string
 			if (keytime>1000) {
 				static TCHAR mbuf[200];
-				wsprintf(mbuf,_T("$VARIO,1010.18,0.0,0.00,2.34,2,000.0,000.0*51\n"));
+				_stprintf(mbuf,_T("$VARIO,1010.18,0.0,0.00,2.34,2,000.0,000.0*51\n"));
 				NMEAParser::ParseNMEAString(0, (TCHAR *) mbuf, &GPS_INFO);
 				return 0;
 			}

@@ -107,7 +107,7 @@ static void setVariables(void) {
 void dlgTimeGatesShowModal(void){
 
   WndProperty *wp;
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgTimeGates.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 

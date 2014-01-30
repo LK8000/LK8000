@@ -71,7 +71,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgLoggerReplayShowModal(void){
 
   TCHAR tsuf[10];
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgLoggerReplay.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
                       filename, 
@@ -93,7 +93,7 @@ void dlgLoggerReplayShowModal(void){
       DataFieldFileReader* dfe;
       dfe = (DataFieldFileReader*)wp->GetDataField();
       // dfe->ScanDirectoryTop(_T(""),TEXT("*.igc")); 
-      _stprintf(tsuf,_T("*%S"),LKS_IGC);
+      _stprintf(tsuf,_T("*%s"),_T(LKS_IGC));
       dfe->ScanDirectoryTop(_T(LKD_LOGS),tsuf);
       dfe->Lookup(ReplayLogger::GetFilename());
       wp->RefreshDisplay();

@@ -302,6 +302,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
   if (lpRes) {
     l = SizeofResource(hInst,hResInfo);
     if (l>0) {
+#ifdef _UNICODE
       char *buf= (char*)malloc(l+2);
       if (!buf) {
         //StartupStore(_T("------ LoadFromRes malloc error%s"),NEWLINE); // 100101
@@ -318,6 +319,16 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
       }
       int nSize = utf2unicode(buf, szXML, l+1);
       free(buf);
+#else
+      int nSize = l;
+      szXML= (char*)malloc(l+2);
+      if (!szXML) {
+        //StartupStore(_T("------ LoadFromRes malloc2 error%s"),NEWLINE); // 100101
+          goto _errmem;
+      }      
+      strncpy(szXML,(char*)lpRes,l);
+      szXML[l]=0; // need to explicitly null-terminate.
+#endif
       if(nSize <=0) {
           free(szXML);
           
@@ -377,14 +388,12 @@ static XMLNode xmlOpenResourceHelper(const TCHAR *lpszXML, LPCTSTR tag)
 
 
 
-WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const char *filename, HWND Parent,
+WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilename, HWND Parent,
                         const TCHAR* raw_resource) {
 
   WndForm *theForm = NULL;
   XMLNode xMainNode;
 
-  TCHAR tfilename[MAX_PATH];
-  _stprintf(tfilename,_T("%S"),filename);
 
   // StartupStore(_T("... xmlOpen <%s>\n"),tfilename);
 

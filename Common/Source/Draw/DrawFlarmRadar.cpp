@@ -983,7 +983,7 @@ double scl = xtick;
 		asFLARMPos[i].iColorIdx = min( asFLARMPos[i].iColorIdx, NO_VARIO_COLORS-1);
 
 
-		wsprintf(asFLARMPos[i].szGliderType,_T(""));
+		_tcscpy(asFLARMPos[i].szGliderType,_T(""));
 
 		extern FlarmIdFile *file;
 		FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[i].ID);
@@ -1282,9 +1282,9 @@ if(bSideview)
 			RenderFlarmPlaneSideview( hdc,   rc, fx,  fFlarmAlt, asFLARMPos[i].fFlarmBearing , &sDia , fPlaneSize/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
 			break;
 	  }
-	  wsprintf(lbuffer,_T(""));
+	  _tcscpy(lbuffer,_T(""));
 	  if (LKTraffic[i].Cn && LKTraffic[i].Cn[0]!=_T('?')) { // 100322
-	    wsprintf(lbuffer,_T("%s: %s"),asFLARMPos[i].szGliderType,LKTraffic[i].Cn);
+	    _stprintf(lbuffer,_T("%s: %s"),asFLARMPos[i].szGliderType,LKTraffic[i].Cn);
 	  }
 
 

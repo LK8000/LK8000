@@ -100,8 +100,8 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
     SetTextColor(hdc,RGB_WHITE);
 
   HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-  extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
-  LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, text, (WCHAR*) NULL);
+  extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
+  LK_tsplitpath(szPolarFile, (TCHAR*) NULL, (TCHAR*) NULL, text, (TCHAR*) NULL);
 
    ExtTextOut(hdc, rc.left+IBLSCALE(30),
  	               rc.bottom-IBLSCALE(130),

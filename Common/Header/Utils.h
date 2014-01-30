@@ -164,7 +164,7 @@ typedef struct {
 TCHAR* StringMallocParse(TCHAR* old_string);
 
 void LocalPath(TCHAR* buf, const TCHAR* file = TEXT(""));
-void LocalPathS(char* buf, const TCHAR* file = TEXT(""));
+void LocalPathS(TCHAR* buf, const TCHAR* file = TEXT(""));
 TCHAR *LKGetLocalPath(void);
 
 void ExpandLocalPath(TCHAR* filein);
@@ -244,7 +244,7 @@ unsigned long CheckMaxHeapBlock(void);
 
 const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[]);
 bool UseContestEngine(void);
-int  GetWaypointFileFormatType(const wchar_t* wextension);
+int  GetWaypointFileFormatType(const TCHAR* wextension);
 
 // LK Utils
 void LKBatteryManager();
@@ -275,7 +275,7 @@ void CreateDirectoryIfAbsent(const TCHAR *filename);
 extern "C"{
 #endif
 
-bool FileExists(TCHAR *FileName);
+bool FileExists(const TCHAR *FileName);
 
 #ifdef __cplusplus
 }

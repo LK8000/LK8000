@@ -9,7 +9,7 @@
 #ifndef devCProbe_h__
 #define devCProbe_h__
 #include "devBase.h"
-#include "string"
+#include "utils/tstring.h"
 #include "nmeaistream.h"
 #include "dlgTools.h"
 
@@ -39,14 +39,14 @@ private:
 private:
 	static BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO);
 
-	static BOOL ParseData(wnmeastring& wiss, NMEA_INFO *pINFO );
-	static BOOL ParseGyro(wnmeastring& wiss, NMEA_INFO *pINFO );
-	static BOOL ParseFW(wnmeastring& wiss, NMEA_INFO *pINFO );
-	static BOOL ParseName(wnmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseData(tnmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseGyro(tnmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseFW(tnmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseName(tnmeastring& wiss, NMEA_INFO *pINFO );
 
 // Send Command
 	static BOOL GetDeviceName( PDeviceDescriptor_t d );
-	static BOOL SetDeviceName( PDeviceDescriptor_t d, const std::wstring& strName );
+	static BOOL SetDeviceName( PDeviceDescriptor_t d, const std::tstring& strName );
 	static BOOL GetFirmwareVersion( PDeviceDescriptor_t d );
 	static BOOL SetBaroOn( PDeviceDescriptor_t d );
 	static BOOL SetBaroOff( PDeviceDescriptor_t d );

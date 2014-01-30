@@ -306,7 +306,7 @@ if (entered == true) /* prevent re entrance */
   wCalc=NULL;
  entered = true;
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAnalysis_L.xml"));
     wfa = dlgLoadFromXML(CallBackTable, 
                         
@@ -314,7 +314,7 @@ if (entered == true) /* prevent re entrance */
                         hWndMainWindow,
                         TEXT("IDR_XML_ANALYSIS_L"));
   } else  {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAnalysis.xml"));
     wfa = dlgLoadFromXML(CallBackTable, 
                         filename, 

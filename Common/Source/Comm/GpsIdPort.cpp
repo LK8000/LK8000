@@ -18,7 +18,7 @@ void GPSResetData(T& data) {
     data.dwVersion = 1;
 }
 
-GpsIdPort::GpsIdPort(int idx, const std::wstring& sName) : ComPort(idx, sName),
+GpsIdPort::GpsIdPort(int idx, const std::tstring& sName) : ComPort(idx, sName),
 _hGPS(NULL),
 _hLoc(NULL),
 _hState(NULL) {

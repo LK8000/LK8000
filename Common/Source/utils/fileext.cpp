@@ -114,7 +114,7 @@ bool Utf8File::ReadLn(TCHAR* unicode, int maxChars)
       break;
   }
 
-  if (utf2unicode(cstr, unicode, maxChars) < 0 && !convErReported) {
+  if (utf2TCHAR(cstr, unicode, maxChars) < 0 && !convErReported) {
     StartupStore(_T("Invalid UTF8-WC conversion for '%s'%s"), path, NEWLINE);
     convErReported = true;
   }
@@ -141,7 +141,7 @@ void Utf8File::WriteLn(const TCHAR* unicode)
 
     // (conversion and file error is ignored now, maybe in future it should
     // throw exception)
-    if (unicode2utf(unicode, cstr, sizeof(cstr)) < 0 && !convErReported) {
+    if (TCHAR2utf(unicode, cstr, sizeof(cstr)) < 0 && !convErReported) {
       StartupStore(_T("Invalid WC-UTF8 conversion for '%s'%s"), path, NEWLINE);
       convErReported = true;
     }

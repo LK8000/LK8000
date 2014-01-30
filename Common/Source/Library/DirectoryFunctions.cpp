@@ -45,9 +45,9 @@ void CreateDirectoryIfAbsent(const TCHAR *filename) {
 
 }
 
-bool FileExists(TCHAR *FileName){
+bool FileExists(const TCHAR *FileName){
 
-  HANDLE hFile = CreateFileW(FileName, GENERIC_READ, 0, NULL,
+  HANDLE hFile = CreateFile(FileName, GENERIC_READ, 0, NULL,
                  OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
 
   if( hFile == INVALID_HANDLE_VALUE)

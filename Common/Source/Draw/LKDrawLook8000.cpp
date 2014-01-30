@@ -565,7 +565,7 @@ nextinit:
 		} else {
 			TCHAR buffername[LKSIZEBUFFERLARGE];
 			GetOvertargetName(buffername);
-			wlen=wcslen(buffername);
+			wlen=_tcslen(buffername);
  			if (wlen>tlen) {
  			 	LK_tcsncpy(Buffer, buffername, tlen);
 			} else {
@@ -818,7 +818,7 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 	else {
 		TCHAR buffername[LKSIZEBUFFERLARGE];
 		GetOvertargetName(buffername);
-		wlen=wcslen(buffername);
+		wlen=_tcslen(buffername);
 	 	if (wlen>tlen) {
 	 	 	LK_tcsncpy(Buffer, buffername, tlen);
 		} else {
@@ -1023,22 +1023,22 @@ drawOverlay:
 	  TCHAR amcmode[10];
 	  switch(AutoMcMode) {
 		case amcFinalGlide:
-			wcscpy(amcmode,MsgToken(1676));
+			_tcscpy(amcmode,MsgToken(1676));
 			break;
 		case amcAverageClimb:
-			wcscpy(amcmode,MsgToken(1678));
+			_tcscpy(amcmode,MsgToken(1678));
 			break;
 		case amcFinalAndClimb:
 			if (DerivedDrawInfo.FinalGlide)
-				wcscpy(amcmode,MsgToken(1676));
+				_tcscpy(amcmode,MsgToken(1676));
 			else
-				wcscpy(amcmode,MsgToken(1678));
+				_tcscpy(amcmode,MsgToken(1678));
 			break;
 		case amcEquivalent:
-			wcscpy(amcmode,MsgToken(1680));
+			_tcscpy(amcmode,MsgToken(1680));
 			break;
 		default:
-			wcscpy(amcmode,_T("?"));
+			_tcscpy(amcmode,_T("?"));
 			break;
 	 }
 
@@ -1116,12 +1116,12 @@ drawOverlay:
 			switch(LKVarioVal) {
 				case vValVarioNetto:
 					LKFormatValue(LK_NETTO, false, BufferValue, BufferUnit, BufferTitle);
-					wcscpy(BufferUnit,_T("NT"));
+					_tcscpy(BufferUnit,_T("NT"));
 					break;
 				case vValVarioSoll:
 				default:
 					LKFormatValue(LK_SPEED_DOLPHIN, false, BufferValue, BufferUnit, BufferTitle);
-					wcscpy(BufferUnit,_T("SF"));
+					_tcscpy(BufferUnit,_T("SF"));
 					break;
 			}
 		}

@@ -18,12 +18,12 @@ FlarmIdFile::FlarmIdFile(void)
 
   LocalPath(path);
 
-  wsprintf(flarmIdFileName, TEXT("%s\\%s\\%s"), path, TEXT(LKD_CONF), TEXT(LKF_FLARMNET));
+  _stprintf(flarmIdFileName, TEXT("%s\\%s\\%s"), path, TEXT(LKD_CONF), TEXT(LKF_FLARMNET));
 
-  FILE*	hFile = _wfopen(flarmIdFileName, TEXT("rt"));
+  FILE*	hFile = _tfopen(flarmIdFileName, TEXT("rt"));
   if (hFile == NULL) {
-	wsprintf(flarmIdFileName, TEXT("%s\\%s\\data.fln"), path, TEXT(LKD_CONF));
-	hFile = _wfopen(flarmIdFileName, TEXT("rt"));
+	_stprintf(flarmIdFileName, TEXT("%s\\%s\\data.fln"), path, TEXT(LKD_CONF));
+	hFile = _tfopen(flarmIdFileName, TEXT("rt"));
 	if (hFile == NULL) return;
   }
 
@@ -140,7 +140,7 @@ FlarmId* FlarmIdFile::GetFlarmIdItem(TCHAR *cn)
   while( iterFind != flarmIds.end() )
     {
       itemTemp = (FlarmId*)(iterFind->second );
-      if(wcscmp(itemTemp->cn, cn) == 0)
+      if(_tcscmp(itemTemp->cn, cn) == 0)
 	{
 	  return itemTemp;
 	}	
@@ -152,9 +152,9 @@ FlarmId* FlarmIdFile::GetFlarmIdItem(TCHAR *cn)
 
 long FlarmId::GetId() 
 { 
-  long res;
+  unsigned int res;
 
-  swscanf(id, TEXT("%6x"), &res);
+  _stscanf(id, TEXT("%6x"), &res);
 
   return res;
 };

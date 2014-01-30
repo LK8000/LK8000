@@ -50,8 +50,8 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
               
               Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
               _tcscpy(hbuf, (*it)->Name());
-              wcscat(hbuf, TEXT(" "));
-              wcscat(hbuf, vDistanceText);
+              _tcscat(hbuf, TEXT(" "));
+              _tcscat(hbuf, vDistanceText);
               
               switch (hlabeldrawstyle) {
                 default:
@@ -87,8 +87,8 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
               
               Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
               _tcscpy(hbuf, (*it)->Name());
-              wcscat(hbuf, TEXT(" "));
-              wcscat(hbuf, vDistanceText);
+              _tcscat(hbuf, TEXT(" "));
+              _tcscat(hbuf, vDistanceText);
               
               switch (vlabeldrawstyle) {
                 default:

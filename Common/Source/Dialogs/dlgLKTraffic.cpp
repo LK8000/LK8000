@@ -85,7 +85,7 @@ static void OnTargetClicked(WindowControl * Sender) {
 	WayPointList[RESWP_FLARMTARGET].Longitude  = GPS_INFO.FLARM_Traffic[LKTargetIndex].Longitude;
 	WayPointList[RESWP_FLARMTARGET].Altitude   = GPS_INFO.FLARM_Traffic[LKTargetIndex].Altitude;
 	if (_tcslen(GPS_INFO.FLARM_Traffic[LKTargetIndex].Name) == 1) {
-		_stprintf(WayPointList[RESWP_FLARMTARGET].Name,_T("%0x"),GPS_INFO.FLARM_Traffic[LKTargetIndex].ID);
+		_stprintf(WayPointList[RESWP_FLARMTARGET].Name,_T("%0lx"),GPS_INFO.FLARM_Traffic[LKTargetIndex].ID);
 	} else {
 		_stprintf(WayPointList[RESWP_FLARMTARGET].Name,_T("%s"),GPS_INFO.FLARM_Traffic[LKTargetIndex].Name);
 	}
@@ -206,10 +206,10 @@ static void SetValues(int indexid) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRegName"));
   if (wp) {
 
-	wlen=wcslen(LKTraffic[indexid].Name);
+	wlen=_tcslen(LKTraffic[indexid].Name);
 	// a ? probably
 	if (wlen==1) {
-		_stprintf(buffer,_T("%06x"),LKTraffic[indexid].ID);
+		_stprintf(buffer,_T("%06lx"),LKTraffic[indexid].ID);
 		buffer[MAXFLARMNAME]='\0';
 	} else {
 		LK_tcsncpy(buffer,LKTraffic[indexid].Name,MAXFLARMNAME);
@@ -336,7 +336,7 @@ static void SetValues(int indexid) {
 void dlgLKTrafficDetails(int indexid) {
 
   TCHAR status[80], tpas[30];
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgLKTraffic.xml"));
   wf = dlgLoadFromXML(CallBackTable,
 		      filename, 

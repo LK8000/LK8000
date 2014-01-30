@@ -381,11 +381,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-		  		wsprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+		  		_stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
-		  		wsprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
+		  		_stprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
 		  } else 
-			wsprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)WayPointCalc[i].GR);
+			_stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)WayPointCalc[i].GR);
 
 
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
@@ -395,7 +395,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		  	TextDisplayMode.WhiteBold = 1; // outlined 
 		  	TextDisplayMode.Color=RGB_WHITE; 
 		} else {
-			//wsprintf(Buffer, TEXT("%s"),Buffer2);
+			//_stprintf(Buffer, TEXT("%s"),Buffer2);
 			_tcscpy(Buffer,Buffer2);
 			if (islandable && isairport) {
 				TextDisplayMode.WhiteBold = 1; // outlined 
@@ -411,11 +411,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-		  		wsprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+		  		_stprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
-		  		wsprintf(Buffer, TEXT("%d:%d%s"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
+		  		_stprintf(Buffer, TEXT("%d:%d%s"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
 		  } else
-		  	wsprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
+		  	_stprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
@@ -423,7 +423,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		  	TextDisplayMode.WhiteBold = 1; // outlined 
 	      		TextDisplayMode.Color=RGB_WHITE; 
 		} else {
-		  wsprintf(Buffer, TEXT("%d"),WayPointList[i].Number);
+		  _stprintf(Buffer, TEXT("%d"),WayPointList[i].Number);
 		  if (islandable && isairport) {
 		    TextDisplayMode.WhiteBold = 1; // outlined 
 	      		TextDisplayMode.Color=RGB_WHITE; 
@@ -439,18 +439,18 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		  if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-			    wsprintf(Buffer, TEXT("%s:%d"),
+			    _stprintf(Buffer, TEXT("%s:%d"),
 				     WayPointList[i].Name, 
 				     (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
-			    wsprintf(Buffer, TEXT("%s:%d%s"),
+			    _stprintf(Buffer, TEXT("%s:%d%s"),
 				     WayPointList[i].Name, 
 				     (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
 				     sAltUnit);
 
 
 		  } else
-			    wsprintf(Buffer, TEXT("%s:%d"),
+			    _stprintf(Buffer, TEXT("%s:%d"),
 				     WayPointList[i].Name, 
 				     (int)(WayPointCalc[i].GR)); 
 
@@ -463,7 +463,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 		  }
 		  else {
-		    wsprintf(Buffer, TEXT("%s"),WayPointList[i].Name);
+		    _stprintf(Buffer, TEXT("%s"),WayPointList[i].Name);
 		    // TODO CHECK THIS, UNTESTED..
                     if (islandable && isairport) {
 		       TextDisplayMode.WhiteBold = 1; // outlined 
@@ -472,7 +472,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		  }
 		}
 			else {
-		  		wsprintf(Buffer, TEXT(" "));
+		  		_stprintf(Buffer, TEXT(" "));
 				dowrite=true;
 			}
 		break;
@@ -481,14 +481,14 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-			  wsprintf(Buffer, TEXT("%d"), 
+			  _stprintf(Buffer, TEXT("%d"), 
 				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
-			  wsprintf(Buffer, TEXT("%d%s"), 
+			  _stprintf(Buffer, TEXT("%d%s"), 
 				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
 				   sAltUnit);
 		  } else
-			  wsprintf(Buffer, TEXT("%d"), 
+			  _stprintf(Buffer, TEXT("%d"), 
 				   (int)(WayPointCalc[i].GR) );
 
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
@@ -499,7 +499,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	      	    TextDisplayMode.Color=RGB_WHITE; 
 		}
 		else {
-		  	wsprintf(Buffer, TEXT(" "));
+		  	_stprintf(Buffer, TEXT(" "));
 		}
 		break;
 

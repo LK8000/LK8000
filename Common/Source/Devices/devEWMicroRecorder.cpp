@@ -37,7 +37,7 @@ BOOL ExpectStringWait(PDeviceDescriptor_t d, const TCHAR *token) {
 
     if (ch != EOF) {
 
-      if (token[i] == (unsigned)ch) 
+      if (token[i] == (TCHAR)ch) 
         i++;
       else
         i=0;

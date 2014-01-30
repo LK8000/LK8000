@@ -6,7 +6,7 @@
 #include "ComPort.h"
 #include "BtHandler.h"
 #include <vector>
-#include <string>
+#include "utils/tstring.h"
 
 #define DEVNAMESIZE  32
 #define	NUMDEV		 2
@@ -40,8 +40,8 @@ public:
     inline operator const TCHAR*() const { return GetLabel(); }
     
 protected:
-    std::wstring _sName;
-    std::wstring _sLabel;
+    std::tstring _sName;
+    std::tstring _sLabel;
 };
 
 typedef std::vector<COMMPortItem_t> COMMPort_t;
@@ -49,11 +49,11 @@ typedef std::vector<COMMPortItem_t> COMMPort_t;
 typedef	enum {dfGPS, dfLogger, dfSpeed,	dfVario, dfBaroAlt,	dfWind, dfVoice, dfNmeaOut, dfRadio} DeviceFlags_t;
 
 typedef struct Declaration {
-  WCHAR PilotName[64];
-  WCHAR AircraftType[32];
-  WCHAR AircraftRego[32];
-  WCHAR CompetitionClass[32];
-  WCHAR CompetitionID[32];
+  TCHAR PilotName[64];
+  TCHAR AircraftType[32];
+  TCHAR AircraftRego[32];
+  TCHAR CompetitionClass[32];
+  TCHAR CompetitionID[32];
   int num_waypoints;
   const WAYPOINT *waypoint[MAXTASKPOINTS];
 } Declaration_t;

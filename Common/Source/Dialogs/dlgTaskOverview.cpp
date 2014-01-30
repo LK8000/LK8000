@@ -533,15 +533,15 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
       LPCTSTR wextension = _tcsrchr(szFileName, _T('.'));
       if(wextension) {
           bool bOK = false;
-          if(_wcsicmp(wextension,_T(LKS_TSK))==0) {
+          if(_tcsicmp(wextension,_T(LKS_TSK))==0) {
               CTaskFileHelper helper;
               bOK = helper.Load(szFileName);
-          } else if (_wcsicmp(wextension,_T(LKS_OLD_TSK))==0) {
+          } else if (_tcsicmp(wextension,_T(LKS_OLD_TSK))==0) {
               LoadNewTask(szFileName);
               bOK = true;
-          } else if (_wcsicmp(wextension,_T(LKS_WP_CUP))==0) {
+          } else if (_tcsicmp(wextension,_T(LKS_WP_CUP))==0) {
               bOK = LoadCupTask(szFileName);
-          } else if (_wcsicmp(wextension,_T(LKS_WP_GPX))==0) {
+          } else if (_tcsicmp(wextension,_T(LKS_WP_GPX))==0) {
               bOK = LoadGpxTask(szFileName);
           }
           if(!bOK) {
@@ -629,15 +629,14 @@ void dlgTaskOverviewShowModal(int Idx){
   wf = NULL;
 
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTaskOverview_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        
                         filename, 
                         hWndMainWindow,
                         TEXT("IDR_XML_TASKOVERVIEW_L"));
   } else {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTaskOverview.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
@@ -693,13 +692,13 @@ void dlgTaskOverviewShowModal(int Idx){
 	dfe = (DataFieldFileReader*)wp->GetDataField();
 
 	TCHAR suff[10];
-	_stprintf(suff,_T("*%S"),LKS_TSK);
+	_stprintf(suff,_T("*%s"),_T(LKS_TSK));
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
-	_stprintf(suff,_T("*%S"),LKS_OLD_TSK);
+	_stprintf(suff,_T("*%s"),_T(LKS_OLD_TSK));
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
-	_stprintf(suff,_T("*%S"),LKS_WP_CUP);
+	_stprintf(suff,_T("*%s"),_T(LKS_WP_CUP));
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
-	_stprintf(suff,_T("*%S"),LKS_WP_GPX);
+	_stprintf(suff,_T("*%s"),_T(LKS_WP_GPX));
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
 	wp->RefreshDisplay();
   }

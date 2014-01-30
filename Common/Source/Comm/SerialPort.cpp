@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <functional>
 
-SerialPort::SerialPort(int idx, const std::wstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) : 
+SerialPort::SerialPort(int idx, const std::tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) : 
         ComPort(idx, sName),
         hPort(INVALID_HANDLE_VALUE),
         _dwPortSpeed(dwSpeed),

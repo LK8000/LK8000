@@ -12,6 +12,7 @@
 #include <string>
 
 #include "CTaskFileHelper.h"
+#include "../utils/tstring.h"
 #include "utils/fileext.h"
 #include "utils/stringext.h"
 #include "Waypointparser.h"
@@ -188,7 +189,7 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
         }
         fclose(stream);
         TCHAR * szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
-        utf2unicode(buff, szXML, size + 1);
+        utf2TCHAR(buff, szXML, size + 1);
         free(buff);
         XMLNode rootNode = XMLNode::parseString(szXML, _T("lk-task"));
 
@@ -483,7 +484,7 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
         if (idx >= MAXTASKPOINTS || szName == NULL) {
             return false; // invalide TaskPoint index
         }
-        std::map<std::wstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
+        std::map<std::tstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
         if (it == mWayPointLoaded.end()) {
             return false; // non existing Waypoint
         }
@@ -535,7 +536,7 @@ bool CTaskFileHelper::LoadStartPoint(XMLNode node) {
         if (idx >= MAXSTARTPOINTS || szName == NULL) {
             return false; // invalide TaskPoint index
         }
-        std::map<std::wstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
+        std::map<std::tstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
         if (it == mWayPointLoaded.end()) {
             return false; // non existing Waypoint
         }
@@ -633,7 +634,7 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
         return false;
     }
 
-    file.WriteLn(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    file.WriteLn(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
     file.WriteLn(szContent);
     file.Close();
 

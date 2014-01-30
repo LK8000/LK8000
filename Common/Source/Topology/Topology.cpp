@@ -793,14 +793,13 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
   if (!item->Valid || (item->Distance > distance)) {
 	item->Latitude=lat;
 	item->Longitude=lon;
-	_tcsncpy(item->Name,label,MAXNEARESTTOPONAME-1);
-    item->Name[MAXNEARESTTOPONAME-1] = '\0';
+	_tcscpy(item->Name,label);
 	item->Distance=distance;
 	item->Bearing=bearing;
 	item->Valid=true;
 
 	#if DEBUG_NEARESTTOPO
-	StartupStore(_T(".... cat=%d, <%s> dist=%f nearer\n"),category, item->Name,distance);
+	StartupStore(_T(".... cat=%d, <%s> dist=%f nearer\n"),category, Temp,distance);
 	#endif
 	return true;
   }
@@ -813,7 +812,8 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
   if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
 
-      int size = _tcslen(label);
+    //Do not waste time with null labels
+    int size = _tcslen(label);
     if(size <= 0) {
         return false;
     }
@@ -885,6 +885,7 @@ void XShapeLabel::setlabel(const char* src) {
       label= NULL;
   }
   
+#ifdef UNICODE
   int nChars = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
   if(nChars) {
     label = (TCHAR*)malloc(nChars*sizeof(TCHAR));
@@ -892,6 +893,12 @@ void XShapeLabel::setlabel(const char* src) {
         MultiByteToWideChar(CP_ACP, 0, src, -1, label, nChars);
     }
   }
+#else
+    int size = strlen(src);
+    label = (char*)malloc(size*sizeof(char)+1);
+    strcpy(label, src);
+#endif
+  
   hide=false;
 }
 
@@ -913,7 +920,7 @@ void XShapeLabel::clear() {
   }
 }
 
-//       wsprintf(Scale,TEXT("%1.2f%c"),MapScale, autozoomstring);
+//       _stprintf(Scale,TEXT("%1.2f%c"),MapScale, autozoomstring);
 
 // //////////////////////////////////////////////////////////////
 // TOPOLOGY WRITER USED ONLY BY OLD MARKERS, not by LK anymore

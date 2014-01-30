@@ -364,7 +364,7 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
   const WAYPOINT &wp = *decl.waypoint[idx];
   
   // set name
-  unicode2usascii(wp.Name, imiWp.name, sizeof(imiWp.name));
+  TCHAR2usascii(wp.Name, imiWp.name, sizeof(imiWp.name));
   
   // set latitude
   TAngle a;
@@ -732,19 +732,19 @@ bool CDevIMI::DeclarationWrite(PDeviceDescriptor_t d, const Declaration_t &decl,
   memset(&imiDecl, 0, sizeof(imiDecl));
   
   // idecl.date ignored - will be set by FR
-  unicode2usascii(decl.PilotName,        imiDecl.header.plt, sizeof(imiDecl.header.plt));
+  TCHAR2usascii(decl.PilotName,        imiDecl.header.plt, sizeof(imiDecl.header.plt));
   // decl.header.db1Year = year; decl.header.db1Month = month; decl.header.db1Day = day;
-  unicode2usascii(decl.AircraftType,     imiDecl.header.gty, sizeof(imiDecl.header.gty));
-  unicode2usascii(decl.AircraftRego,     imiDecl.header.gid, sizeof(imiDecl.header.gid));
-  unicode2usascii(decl.CompetitionID,    imiDecl.header.cid, sizeof(imiDecl.header.cid));
-  unicode2usascii(decl.CompetitionClass, imiDecl.header.ccl, sizeof(imiDecl.header.ccl));
+  TCHAR2usascii(decl.AircraftType,     imiDecl.header.gty, sizeof(imiDecl.header.gty));
+  TCHAR2usascii(decl.AircraftRego,     imiDecl.header.gid, sizeof(imiDecl.header.gid));
+  TCHAR2usascii(decl.CompetitionID,    imiDecl.header.cid, sizeof(imiDecl.header.cid));
+  TCHAR2usascii(decl.CompetitionClass, imiDecl.header.ccl, sizeof(imiDecl.header.ccl));
   // strncpy(decl.header.clb, idecl.clb, sizeof(decl.header.clb));
   // strncpy(decl.header.sit, idecl.sit, sizeof(decl.header.sit));
   // strncpy(decl.header.cm2, idecl.cm2, sizeof(decl.header.cm2));
   // decl.header.db2Year = year; decl.header.db2Month = month; decl.header.db2Day = day;
   TCHAR tskName[IMIDECL_TASK_NAME_LENGTH];
   TaskFileName(IMIDECL_TASK_NAME_LENGTH, tskName);
-  unicode2usascii(tskName, imiDecl.header.tskName, sizeof(imiDecl.header.tskName));
+  TCHAR2usascii(tskName, imiDecl.header.tskName, sizeof(imiDecl.header.tskName));
   // decl.header.tskYear = year; decl.header.tskMonth = month; decl.header.tskDay = day;
   // decl.header.tskNumber = MIN(9999, idecl.tskNumber);
   

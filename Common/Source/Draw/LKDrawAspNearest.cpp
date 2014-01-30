@@ -134,7 +134,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   	if (AspNumraws>MAXNEARAIRSPACES) AspNumraws=MAXNEARAIRSPACES;
   	s_rawspace=(ASPTextSize.cy+INTERRAW);
 	Column5=rc.right-NIBLSCALE(1)-1;
-	_tcscpy(s_trailspace,L"");
+	_tcscpy(s_trailspace,_T(""));
   } else {
   	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
@@ -142,7 +142,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   	AspNumraws=(bottom - TopSize) / (ASPTextSize.cy+INTERRAW);
   	if (AspNumraws>MAXNEARAIRSPACES) AspNumraws=MAXNEARAIRSPACES;
   	s_rawspace=(ASPTextSize.cy+INTERRAW);
-	_tcscpy(s_trailspace,L" ");
+	_tcscpy(s_trailspace,_T(" "));
   }
 
 #define INTERBOX intercolumn/2
@@ -373,7 +373,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		//
 		// AIRSPACE NAME
 		//
-		wlen=wcslen(LKAirspaces[rli].Name);
+		wlen=_tcslen(LKAirspaces[rli].Name);
 		if (wlen>s_maxnlname) {
 			LK_tcsncpy(Buffer, LKAirspaces[rli].Name, s_maxnlname);
 		}
@@ -387,7 +387,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		//
 		// AIRSPACE TYPE
 		//
-		wlen=wcslen(LKAirspaces[rli].Type);
+		wlen=_tcslen(LKAirspaces[rli].Type);
 		if (wlen>LKASP_TYPE_LEN) {
 			LK_tcsncpy(Buffer, LKAirspaces[rli].Type, LKASP_TYPE_LEN);
 		}
@@ -428,21 +428,21 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 					value -= 360.0;
 
 			if (value > 1)
-				_stprintf(Buffer4[i][curpage], TEXT("%2.0f°»"), value);
+				_stprintf(Buffer4[i][curpage], TEXT("%2.0f\xB0»"), value);
 			else
 				if (value < -1)
-					_stprintf(Buffer4[i][curpage], TEXT("«%2.0f°"), -value);
+					_stprintf(Buffer4[i][curpage], TEXT("«%2.0f\xB0"), -value);
 				else
 					_tcscpy(Buffer4[i][curpage], TEXT("«»"));
 		} else
-			_stprintf(Buffer4[i][curpage], TEXT("%2.0f°"), LKAirspaces[rli].Bearing);
+			_stprintf(Buffer4[i][curpage], TEXT("%2.0f\xB0"), LKAirspaces[rli].Bearing);
 
 
 		//
 		// AIRSPACE FLAGS
 		//
 		TCHAR aspflags[5];
-		wsprintf(aspflags,_T("%s%s%s%s"),
+		_stprintf(aspflags,_T("%s%s%s%s"),
 			LKAirspaces[rli].Selected ? _T("S") : _T(""),
 			LKAirspaces[rli].Flyzone  ? _T("F") : _T("  "),
 			LKAirspaces[rli].Enabled  ? _T("E") : _T("D"), s_trailspace);

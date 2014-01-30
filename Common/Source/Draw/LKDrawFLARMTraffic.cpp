@@ -123,7 +123,7 @@ static int	iRectangleSize = 4;
 		sc_name.y -= NIBLSCALE(16);
 		sc_av = sc_name;
 
-		wsprintf(lbuffer,_T(""));
+		_tcscpy(lbuffer,_T(""));
 		if (DrawInfo.FLARM_Traffic[i].Cn && DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
 			_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
 		}

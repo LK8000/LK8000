@@ -22,21 +22,21 @@ void MapWindow::DrawCpuStats(HDC hdc, RECT rc) {
   TextDisplayMode.Border = 1;      // add a black border to the circle
 
 #if (WINDOWSPC>0)
-  wsprintf(Buffer,_T("CPU Draw=%d Calc=%d us"), Cpu_Draw, Cpu_Calc);
+  _stprintf(Buffer,_T("CPU Draw=%d Calc=%d us"), Cpu_Draw, Cpu_Calc);
 #else
-  wsprintf(Buffer,_T("CPU Draw=%d Calc=%d ms"), Cpu_Draw, Cpu_Calc);
+  _stprintf(Buffer,_T("CPU Draw=%d Calc=%d ms"), Cpu_Draw, Cpu_Calc);
 #endif
   TextInBox(hdc, &rc, Buffer, 000, 200 , 0, &TextDisplayMode, false);
 #if (WINDOWSPC>0)
-  wsprintf(Buffer,_T("CPU Inst=%d PortA=%d PortB=%d us"), Cpu_Instrument, Cpu_PortA, Cpu_PortB);
+  _stprintf(Buffer,_T("CPU Inst=%d PortA=%d PortB=%d us"), Cpu_Instrument, Cpu_PortA, Cpu_PortB);
 #else
-  wsprintf(Buffer,_T("CPU Inst=%d PortA=%d PortB=%d ms"), Cpu_Instrument, Cpu_PortA, Cpu_PortB);
+  _stprintf(Buffer,_T("CPU Inst=%d PortA=%d PortB=%d ms"), Cpu_Instrument, Cpu_PortA, Cpu_PortB);
 #endif
   TextInBox(hdc, &rc, Buffer, 000, 240 , 0, &TextDisplayMode, false);
 
-  //wsprintf(Buffer,_T("Landsc=%d Geom=%d"), InfoBoxLayout::landscape, InfoBoxLayout::InfoBoxGeometry);
+  //_stprintf(Buffer,_T("Landsc=%d Geom=%d"), InfoBoxLayout::landscape, InfoBoxLayout::InfoBoxGeometry);
   //TextInBox(hdc, Buffer, 000, 280 , 0, TextDisplayMode, false);
-  //wsprintf(Buffer,_T("Recents=%d"), RecentNumber);
+  //_stprintf(Buffer,_T("Recents=%d"), RecentNumber);
   //TextInBox(hdc, Buffer, 000, 280 , 0, TextDisplayMode, false);
 
 }
@@ -51,9 +51,9 @@ void MapWindow::DrawDebug(HDC hdc, RECT rc) {
   TextDisplayMode.WhiteBorder = 1; // inside a white circle
   TextDisplayMode.Border = 1;      // add a black border to the circle
 
-  wsprintf(Buffer,_T("ModeIndex=%d CURTYPE=%d MSM=%d"), ModeIndex, ModeType[ModeIndex],MapSpaceMode );
+  _stprintf(Buffer,_T("ModeIndex=%d CURTYPE=%d MSM=%d"), ModeIndex, ModeType[ModeIndex],MapSpaceMode );
   TextInBox(hdc, &rc, Buffer, 000, 200 , 0, &TextDisplayMode, false);
-  wsprintf(Buffer,_T("MTableTop=%d ModeTable=%d=MSM"), ModeTableTop[ModeIndex], ModeTable[ModeIndex][ModeType[ModeIndex]] );
+  _stprintf(Buffer,_T("MTableTop=%d ModeTable=%d=MSM"), ModeTableTop[ModeIndex], ModeTable[ModeIndex][ModeType[ModeIndex]] );
   TextInBox(hdc, &rc, Buffer, 000, 240 , 0, &TextDisplayMode, false);
 
 }
@@ -83,7 +83,7 @@ void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
 
   switch(ModeIndex) {
 	case LKMODE_MAP:
-		wsprintf(Buffer,TEXT("MAP mode, 1 of 1"));
+		_stprintf(Buffer,TEXT("MAP mode, 1 of 1"));
 		break;
 	case LKMODE_INFOMODE:
 		_stprintf(Buffer,TEXT("%d-%d"), ModeIndex,CURTYPE+1);
@@ -95,7 +95,7 @@ void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
 		_stprintf(Buffer,TEXT("%d-%d"), ModeIndex,CURTYPE+1);
 		break;
 	default:
-		wsprintf(Buffer,TEXT("UNKOWN mode"));
+		_stprintf(Buffer,TEXT("UNKOWN mode"));
 		break;
   }
   TextInBox(hdc, &rc, Buffer, middlex, 200 , 0, &TextDisplayMode, false);

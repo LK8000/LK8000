@@ -20,11 +20,11 @@ void MSG_NotEnoughMemory(void) {
 }
 
 #if USELKASSERT
-void MSG_ASSERTION(int line, const char *filename) {
+void MSG_ASSERTION(int line, const TCHAR *filename) {
 
   TCHAR ames[256];
 
-  _stprintf(ames,_T("Execution failure in file\n%S\nat line %d\n\nLK8000 terminated!"),filename,line);
+  _stprintf(ames,_T("Execution failure in file\n%s\nat line %d\n\nLK8000 terminated!"),filename,line);
   MessageBoxX(hWndMapWindow, ames,
     _T("CRITICAL ASSERTION FAILURE !"),
     MB_OK|MB_ICONEXCLAMATION,true);

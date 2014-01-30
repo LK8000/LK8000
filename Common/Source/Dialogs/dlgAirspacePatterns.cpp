@@ -90,7 +90,7 @@ int dlgAirspacePatternsShowModal(void){
   ItemIndex = -1;
 
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspacePatterns_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         
@@ -98,7 +98,7 @@ int dlgAirspacePatternsShowModal(void){
                         hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACEPATTERNS_L"));
   } else {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspacePatterns.xml"));
     wf = dlgLoadFromXML(CallBackTable,                      
                         filename, 

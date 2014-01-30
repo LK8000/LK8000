@@ -13,26 +13,26 @@
 #include "utils/stl_utils.h"
 #include <functional>
 
-const std::wstring BTPortPrefix(L"BT:");
+const std::tstring BTPortPrefix(_T("BT:"));
 
-std::wstring BTAddrToStr(BT_ADDR ba) {
-    wchar_t szAddress[25] = {0};
-    wsprintf(szAddress, L"%04x%08x", GET_NAP(ba), GET_SAP(ba));
+std::tstring BTAddrToStr(BT_ADDR ba) {
+    TCHAR szAddress[25] = {0};
+    _stprintf(szAddress, _T("%04x%08x"), GET_NAP(ba), (unsigned int)GET_SAP(ba));
     return szAddress;
 }
 
-BT_ADDR StrToBTAddr(const wchar_t* szAddr) {
+BT_ADDR StrToBTAddr(const TCHAR* szAddr) {
     DWORD nap = 0, sap = 0;
-    std::wstring csS, csTmp(szAddr);
+    std::tstring csS, csTmp(szAddr);
     int iLen = csTmp.length();
     BT_ADDR ba = 0;
     
     if(iLen>=12) {
         csS = csTmp.substr(0, 4);
-        if (swscanf(csS.c_str(), L"%x", &nap) != 1)
+        if (_tscanf(csS.c_str(), _T("%x"), &nap) != 1)
             nap = 0;
         csS = csTmp.substr(4, std::string::npos);
-        if (swscanf(csS.c_str(), L"%X", &sap) != 1)
+        if (_tscanf(csS.c_str(), _T("%X"), &sap) != 1)
             sap = 0;
 
         ba = SET_NAP_SAP(nap, sap);
@@ -40,26 +40,26 @@ BT_ADDR StrToBTAddr(const wchar_t* szAddr) {
     return ba;
 }
 
-std::wstring GetHandleFile(const wchar_t* szPort) {
-    wchar_t szFile[25] = {0};
-    wsprintf(szFile, L"\\N%s.VPH", szPort);
+std::tstring GetHandleFile(const TCHAR* szPort) {
+    TCHAR szFile[25] = {0};
+    _stprintf(szFile, _T("\\N%s.VPH"), szPort);
     return szFile;
 }
 
 //-------------
 
-CBtDevice::CBtDevice(const BT_ADDR& ba, const std::wstring& csName) : m_ba(ba), m_csName(csName) {
+CBtDevice::CBtDevice(const BT_ADDR& ba, const std::tstring& csName) : m_ba(ba), m_csName(csName) {
 
 }
 
-std::wstring CBtDevice::GetName() const {
-    std::wstring csTmp(m_csName);
+std::tstring CBtDevice::GetName() const {
+    std::tstring csTmp(m_csName);
     if (csTmp.empty())
         csTmp = BTAddrToStr(m_ba);
     return csTmp;
 }
 
-std::wstring CBtDevice::BTPortName() const {
+std::tstring CBtDevice::BTPortName() const {
     return BTPortPrefix + BTAddrToStr(m_ba);
 }
 
@@ -111,7 +111,7 @@ bool CBtHandler::LookupDevices() {
     return false;
 }
 
-bool CBtHandler::Pair(BT_ADDR ba, const wchar_t* szDeviceName, const wchar_t* szPin) {
+bool CBtHandler::Pair(BT_ADDR ba, const TCHAR* szDeviceName, const TCHAR* szPin) {
     return false;
 }
 
@@ -135,18 +135,18 @@ void CBtHandler::IntRestorePowerState() {
     RestorePowerState(m_iSavedHWState, m_bSavedScanMask);
 }
 
-std::wstring CBtHandler::CleanPort(const wchar_t* szPort) const {
-    std::wstring csPort(szPort);
+std::tstring CBtHandler::CleanPort(const TCHAR* szPort) const {
+    std::tstring csPort(szPort);
     int i;
 
-    i = csPort.find(L':');
+    i = csPort.find(_T(':'));
     if (i >= 0)
         csPort = csPort.substr(0, i);
     return csPort;
 }
 
-std::wstring CBtHandler::GetPortSection(const wchar_t* szPort) const {
-    return L"VCP_" + CleanPort(szPort);
+std::tstring CBtHandler::GetPortSection(const TCHAR* szPort) const {
+    return _T("VCP_") + CleanPort(szPort);
 }
 
 CBtDevice* CBtHandler::FindDevice(const BT_ADDR& ba) const {

@@ -196,13 +196,13 @@ endif
 
 CE_DEFS		+= -DPOCO_NO_UNWINDOWS
 
-UNICODE		:= -DUNICODE -D_UNICODE
 
 ######## paths
 
 ifeq ($(CONFIG_LINUX),y)
 INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
 else
+UNICODE		:= -DUNICODE -D_UNICODE
 ifeq ($(CONFIG_WINE),y)
 INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
 else

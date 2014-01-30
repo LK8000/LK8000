@@ -160,14 +160,14 @@ void dlgStartPointShowModal(void) {
   ItemIndex = -1;
 
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgStartPoint_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename,
                         hWndMainWindow,
                         TEXT("IDR_XML_STARTPOINT_L"));
   } else {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgStartPoint.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 

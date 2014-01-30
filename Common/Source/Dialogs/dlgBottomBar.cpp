@@ -108,7 +108,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgBottomBarShowModal(void){
 
   WndProperty *wp;
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgBottomBar.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 

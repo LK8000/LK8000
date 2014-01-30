@@ -707,7 +707,7 @@ bool InputEvents::processKey(int dWord) {
 // VENTA- DEBUG HARDWARE KEY PRESSED   
 #ifdef VENTA_DEBUG_KEY
 	TCHAR ventabuffer[80];
-	wsprintf(ventabuffer,TEXT("PRCKEY %d MODE %d EVENT %d"), dWord, mode,event_id);
+	_stprintf(ventabuffer,TEXT("PRCKEY %d MODE %d EVENT %d"), dWord, mode,event_id);
 	DoStatusMessage(ventabuffer);
 #endif
   if (event_id == 0) {
@@ -1419,7 +1419,7 @@ void InputEvents::eventTimeGates(const TCHAR *misc) {
 void InputEvents::eventMyMenu(const TCHAR *misc) {
 
   unsigned int i, ckeymode;
-  i=_wtoi(misc);
+  i=_ttoi(misc);
   LKASSERT(i>0 && i<11);
 
   // test mode only!
@@ -2468,12 +2468,12 @@ void InputEvents::eventTaskLoad(const TCHAR *misc) {
     
     LPCTSTR wextension = _tcsrchr(szFileName, '.');
     if(wextension) {
-        if(wcscmp(wextension,_T(LKS_TSK))==0) {
+        if(_tcscmp(wextension,_T(LKS_TSK))==0) {
             CTaskFileHelper helper;
             if(!helper.Load(szFileName)) {
                
             }
-        } else if (wcscmp(wextension,_T(LKS_OLD_TSK))==0) {
+        } else if (_tcscmp(wextension,_T(LKS_OLD_TSK))==0) {
             LockTaskData();
             LoadNewTask(szFileName);
             UnlockTaskData();
@@ -2949,7 +2949,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   if (new_waypoint) {
     tmpWaypointNum++;
     memcpy(new_waypoint,&edit_waypoint,sizeof(WAYPOINT));
-    wsprintf(new_waypoint->Name,TEXT("_%d"), tmpWaypointNum);
+    _stprintf(new_waypoint->Name,TEXT("_%d"), tmpWaypointNum);
     new_waypoint->Details= 0;
   }
   UnlockTaskData();

@@ -27,7 +27,6 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   static TCHAR Buffer3[MAXTRAFFIC][MAXTRAFFICNUMPAGES][10];
   static TCHAR Buffer4[MAXTRAFFIC][MAXTRAFFICNUMPAGES][12], Buffer5[MAXTRAFFIC][MAXTRAFFICNUMPAGES][12];
   static short s_maxnlname;
-  char text[30];
   short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
   COLORREF rcolor;
@@ -390,7 +389,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   #ifdef DEBUG_LKT_DRAWTRAFFIC
   TCHAR v2buf[100]; 
-  wsprintf(v2buf,_T("MAXTRAFFIC=%d LKNumTraff=%d / TrafficNumraws=%d TrafficNumpages=%d calc=%d\n"),MAXTRAFFIC, LKNumTraffic,TrafficNumraws, TrafficNumpages, (short)(ceil(MAXTRAFFIC/TrafficNumraws)));
+  _stprintf(v2buf,_T("MAXTRAFFIC=%d LKNumTraff=%d / TrafficNumraws=%d TrafficNumpages=%d calc=%d\n"),MAXTRAFFIC, LKNumTraffic,TrafficNumraws, TrafficNumpages, (short)(ceil(MAXTRAFFIC/TrafficNumraws)));
   StartupStore(v2buf);
   #endif
 
@@ -408,11 +407,11 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 	if ( (rli>=0) && (LKTraffic[rli].ID>0) ) {
 
 		// Traffic name
-		wlen=wcslen(LKTraffic[rli].Name);
+		wlen=_tcslen(LKTraffic[rli].Name);
 
 		// if name is unknown then it is a '?'
 		if (wlen==1) { 
-			_stprintf(Buffer,_T("%06x"),LKTraffic[rli].ID);
+			_stprintf(Buffer,_T("%06x"),(unsigned)LKTraffic[rli].ID);
 			Buffer[s_maxnlname]='\0';
 		} else {
 			// if XY I-ABCD  doesnt fit..
@@ -462,7 +461,6 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 				if (value > 180.0)
 					value -= 360.0;
 
-#ifndef __MINGW32__
 			if (value > 1)
 				_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0\xBB"), value);
 			else
@@ -470,44 +468,33 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 					_stprintf(Buffer3[i][curpage], TEXT("\xAB%2.0f\xB0"), -value);
 				else
 					_tcscpy(Buffer3[i][curpage], TEXT("\xAB\xBB"));
-#else
-			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), value);
-			else
-				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -value);
-				else
-					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
-#endif
 		} else {
-			_stprintf(Buffer3[i][curpage], _T("%2.0f°"), LKTraffic[rli].Bearing);
+			_stprintf(Buffer3[i][curpage], _T("%2.0fxB0"), LKTraffic[rli].Bearing);
 		}
 			
 
 		// Vario
 		value=LIFTMODIFY*LKTraffic[rli].Average30s;
 		if (value<-6 || value>6) 
-			_stprintf(Buffer4[i][curpage],_T("---"));
+			_tcscpy(Buffer4[i][curpage],_T("---"));
 		else {
-			sprintf(text,"%+.1f",value);
-			_stprintf(Buffer4[i][curpage],_T("%S"),text);
+			_stprintf(Buffer4[i][curpage],_T("%+.1f"),value);
 		}
 
 		// Altitude
 		value=ALTITUDEMODIFY*LKTraffic[rli].Altitude;
 		if (value<-1000 || value >45000 )
-			strcpy(text,"---");
+			_tcscpy(Buffer5[i][curpage],_T("---"));
 		else
-			sprintf(text,"%.0f",value);
-		wsprintf(Buffer5[i][curpage], TEXT("%S"),text);
+			_stprintf(Buffer5[i][curpage],_T("%.0f"),value);
 
 	} else {
 		// Empty traffic, fill in all empty data and maybe break loop
-		_stprintf(Buffer1[i][curpage],_T("------------"));
-		_stprintf(Buffer2[i][curpage],_T("---"));
-		_stprintf(Buffer3[i][curpage],_T("---"));
-		_stprintf(Buffer4[i][curpage],_T("---"));
-		_stprintf(Buffer5[i][curpage],_T("---"));
+		_tcscpy(Buffer1[i][curpage],_T("------------"));
+		_tcscpy(Buffer2[i][curpage],_T("---"));
+		_tcscpy(Buffer3[i][curpage],_T("---"));
+		_tcscpy(Buffer4[i][curpage],_T("---"));
+		_tcscpy(Buffer5[i][curpage],_T("---"));
 	}
 
 

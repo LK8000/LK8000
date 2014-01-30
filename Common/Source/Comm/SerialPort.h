@@ -15,7 +15,7 @@
 
 class SerialPort : public ComPort {
 public:
-    SerialPort(int idx, const std::wstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling);
+    SerialPort(int idx, const std::tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling);
     virtual ~SerialPort();
 
     virtual bool Initialize();

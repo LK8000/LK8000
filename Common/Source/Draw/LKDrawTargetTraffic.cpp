@@ -228,12 +228,12 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
   TCHAR tbear[10];
   if (disabled && !notraffic) {
 	if (tangle > 1) {
-		_stprintf(tbear, TEXT("%2.0f°»"), tangle);
+		_stprintf(tbear, TEXT("%2.0f\xB0\xBB"), tangle);
 	} else {
 		if (tangle < -1) {
-			_stprintf(tbear, TEXT("«%2.0f°"), -tangle);
+			_stprintf(tbear, TEXT("\xAB%2.0f\xB0"), -tangle);
 		} else {
-			_tcscpy(tbear, TEXT("«»"));
+			_tcscpy(tbear, TEXT("\xAB\xBB"));
 		}
 	}
 	SelectObject(hDC, LK8PanelBigFont);
@@ -253,9 +253,9 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 	#if 0
 	double tbearing = LKTraffic[LKTargetIndex].Bearing;
 	if (tbearing != 360) {
-		_stprintf(tbear, TEXT("%2.0f°"), tbearing);
+		_stprintf(tbear, TEXT("%2.0f\xB0"), tbearing);
 	} else {
-		_stprintf(tbear, TEXT("0°"));
+		_stprintf(tbear, TEXT("0\xB0"));
 	}
 	LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 	#endif
@@ -368,12 +368,12 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
   // always paint the bearing difference, cleverly
   if (!disabled && !notraffic) {
 	if (tangle > 1) {
-		_stprintf(tbear, TEXT("%2.0f°»"), tangle);
+		_stprintf(tbear, TEXT("%2.0f\xB0\xBB"), tangle);
 	} else {
 		if (tangle < -1) {
-			_stprintf(tbear, TEXT("«%2.0f°"), -tangle);
+			_stprintf(tbear, TEXT("\xAB%2.0f\xB0"), -tangle);
 		} else {
-			_tcscpy(tbear, TEXT("«»"));
+			_tcscpy(tbear, TEXT("\xAB\xBB"));
 		}
 	}
 	SelectObject(hDC, LK8PanelBigFont);

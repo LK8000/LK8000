@@ -675,7 +675,7 @@ template <class ItemType> class array_back_insert_iterator
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts ASCII string encoded in system code page into Unicode string.
 /// \return Unicode string length, -1 on conversion error
-int ascii2unicode(const char* ascii, TCHAR* unicode, int maxChars)
+int ascii2unicode(const char* ascii, wchar_t* unicode, int maxChars)
 {
   int res = MultiByteToWideChar(CP_ACP, 0, ascii, -1, unicode, maxChars);
 
@@ -691,7 +691,7 @@ int ascii2unicode(const char* ascii, TCHAR* unicode, int maxChars)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts Unicode string into ASCII encoded in system code page.
 /// \return ASCII string length, -1 on conversion error (insufficient buffer e.g.)
-int unicode2ascii(const TCHAR* unicode, char* ascii, int maxChars)
+int unicode2ascii(const wchar_t* unicode, char* ascii, int maxChars)
 {
   int res = WideCharToMultiByte(CP_ACP, 0, unicode, -1, ascii, maxChars, NULL, NULL);
 
@@ -707,13 +707,13 @@ int unicode2ascii(const TCHAR* unicode, char* ascii, int maxChars)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts Unicode string into UTF-8 encoded string.
 /// \return UTF8 string size [octets], -1 on conversion error (insufficient buffer e.g.)
-int unicode2utf(const TCHAR* unicode, char* utf, int maxChars)
+int unicode2utf(const wchar_t* unicode, char* utf, int maxChars)
 {
   #ifndef SYS_UTF8_CONV
 
   // we will use our own UTF16->UTF8 conversion (WideCharToMultiByte(CP_UTF8)
   // is not working on some Win CE systems)
-  size_t len = _tcslen(unicode);
+  size_t len = wcslen(unicode);
 
   array_back_insert_iterator<char> iter = array_back_insert_iterator<char>(utf, maxChars - 1);
 
@@ -747,7 +747,7 @@ int unicode2utf(const TCHAR* unicode, char* utf, int maxChars)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts UTF-8 encoded string into Unicode encoded string.
 /// \return Unicode string size [TCHARs], -1 on conversion error (insufficient buffer e.g.)
-int utf2unicode(const char* utf, TCHAR* unicode, int maxChars)
+int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
 {
   #ifndef SYS_UTF8_CONV
 
@@ -757,7 +757,7 @@ int utf2unicode(const char* utf, TCHAR* unicode, int maxChars)
 
   // first check if UTF8 is correct (utf8to16() may not be called on invalid string)
   if (utf8::find_invalid(utf, utf + len) == (utf + len)) {
-    array_back_insert_iterator<TCHAR> iter = array_back_insert_iterator<TCHAR>(unicode, maxChars - 1);
+    array_back_insert_iterator<wchar_t> iter = array_back_insert_iterator<wchar_t>(unicode, maxChars - 1);
 
     iter = utf8::unchecked::utf8to16(utf, utf + len, iter);
 
@@ -804,9 +804,9 @@ int utf2unicode(const char* utf, TCHAR* unicode, int maxChars)
 /// @retval  1  all characters copied
 /// @retval -1  some characters could not be copied due to buffer size
 ///
-int unicode2usascii(const TCHAR* unicode, char* ascii, int outSize)
+int unicode2usascii(const wchar_t* unicode, char* ascii, int outSize)
 {
-  TCHAR uc;
+  wchar_t uc;
 
   if (outSize == 0)
     return(false);
@@ -828,3 +828,72 @@ int unicode2usascii(const TCHAR* unicode, char* ascii, int outSize)
 
   return((uc == 0) ? 1 : -1);
 } // Wide2Ascii()
+
+
+int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars) {
+#if defined(_UNICODE)
+    return  ascii2unicode(ascii, unicode, maxChars);
+#else
+    size_t len = std::min(_tcslen(ascii), (size_t)maxChars);
+    _tcsncpy(unicode, ascii, len);
+    return len;
+#endif 
+}
+
+int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars) {
+#if defined(_UNICODE)
+    return  unicode2ascii(unicode, ascii, maxChars);
+#else
+    size_t len = std::min(_tcslen(ascii), (size_t)maxChars);
+    _tcsncpy(ascii, unicode, len);
+    return len;
+#endif 
+}
+
+int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
+#if defined(_UNICODE)
+    return  unicode2utf(unicode, utf, maxChars);
+#elif defined(_MBCS)
+    wchar_t temp[maxChars];
+    size_t len = mbstowcs(temp, unicode, maxChars);
+    if(len!=(size_t)-1) {
+        return unicode2utf(temp, utf, maxChars);
+    } 
+    // if error, return simple copy
+    len = std::min(_tcslen(unicode), (size_t)maxChars);
+    _tcsncpy(utf, unicode, len);
+    return len;
+#else
+#error    
+#endif 
+}
+
+int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars){
+#if defined(_UNICODE)
+    return  utf2unicode(utf, unicode, maxChars);
+#elif defined(_MBCS)
+    wchar_t temp[maxChars];
+    utf2unicode(utf, temp, maxChars);
+    return wcstombs(unicode, temp, maxChars);
+#else
+#error    
+#endif 
+}
+  
+int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize) {
+#if defined(_UNICODE)
+    return  unicode2usascii(unicode, ascii, outSize);
+#elif defined(_MBCS)
+    wchar_t temp[outSize];
+    size_t len = mbstowcs(temp, unicode, outSize);
+    if(len!=(size_t)-1) {
+        return unicode2usascii(temp, ascii, outSize);
+    } 
+    // if error, return simple copy
+    len = std::min(_tcslen(unicode), (size_t)outSize);
+    _tcsncpy(ascii, unicode, len);
+    return len;
+#else
+#error    
+#endif 
+}

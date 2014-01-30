@@ -67,23 +67,26 @@ BOOL devGetBaroAltitude(double *Value){
 
 BOOL ExpectString(PDeviceDescriptor_t d, const  TCHAR *token){
   bool Result = false;
-  int i=0,j=0,ch=0;
+  unsigned i=0;
+  TCHAR ch=0;
+#if TESTBENCH
+  int j=0;
   TCHAR TMP[180] = _T("");
+#endif
   if (!d->Com)
     return FALSE;
 //  while ((ch = d->Com->GetChar()) != EOF) ====> EOF (End Of File) is plain wrong and did not work!!!
   while ((ch = d->Com->GetChar()) > 31){
-        if(ch > 31) /* ignore control characters */
-	{
-           TMP[j++] = (unsigned)ch;
-           if (token[i] == (unsigned)ch)
-              i++;
+#if TESTBENCH
+    TMP[j++] = ch;
+#endif
+    if (token[i] == ch)
+       i++;
 
-           if ((unsigned)i ==( _tcslen(token)-2))
-           {
-              Result =TRUE;
-           }
-        }
+    if (i ==( _tcslen(token)-2))
+    {
+       Result =TRUE;
+    }
   }
 #if TESTBENCH
   if(Result)
@@ -97,7 +100,6 @@ BOOL ExpectString(PDeviceDescriptor_t d, const  TCHAR *token){
   }
 #endif
   return(Result);
-
 }
 
 
@@ -236,7 +238,7 @@ BOOL devInit(LPCTSTR CommandLine) {
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
-    std::set<std::wstring> UsedPort; // list of already used port
+    std::set<std::tstring> UsedPort; // list of already used port
     
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);
@@ -258,7 +260,7 @@ BOOL devInit(LPCTSTR CommandLine) {
         }
         
         ReadDeviceSettings(i, DeviceName);
-        DeviceList[i].Disabled = (wcscmp(DeviceName, _T(DEV_DISABLED_NAME)) == 0);
+        DeviceList[i].Disabled = (_tcscmp(DeviceName, _T(DEV_DISABLED_NAME)) == 0);
         if (DeviceList[i].Disabled) {
             StartupStore(_T(". Device %c is DISABLED.%s"), (_T('A') + i), NEWLINE);
             continue;

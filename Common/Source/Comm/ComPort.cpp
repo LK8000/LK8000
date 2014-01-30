@@ -16,7 +16,7 @@
 #include <functional>
 #include "Poco/RunnableAdapter.h"
 
-ComPort::ComPort(int idx, const std::wstring& sName) : devIdx(idx), sPortName(sName) {
+ComPort::ComPort(int idx, const std::tstring& sName) : devIdx(idx), sPortName(sName) {
     pLastNmea = begin(_NmeaString);
 }
 

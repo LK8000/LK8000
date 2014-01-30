@@ -186,7 +186,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgCustomMenuShowModal(void){
 
   WndProperty *wp;
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgCustomMenu.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 

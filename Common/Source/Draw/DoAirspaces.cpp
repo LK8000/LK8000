@@ -22,7 +22,7 @@ static bool airspace_distance_sorter( CAirspace *a, CAirspace *b )
 // Comparer to sort airspaces based on name
 static bool airspace_name_sorter( CAirspace *a, CAirspace *b )
 {
-  int res = wcscmp(a->Name(), b->Name());
+  int res = _tcscmp(a->Name(), b->Name());
   if (res) return res < 0;
   
   // if name is the same, get closer first

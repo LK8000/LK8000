@@ -1,4 +1,4 @@
-/*
+﻿/*
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
@@ -235,7 +235,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
     width = MAX_TEXTENTRY;
   }
   max_width = min(MAX_TEXTENTRY, width);
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
     LocalPathS(filename, szFile);
     wf = dlgLoadFromXML(CallBackTable,
 			filename,

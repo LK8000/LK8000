@@ -9,23 +9,23 @@
 #ifndef NMEAISTREAM_H_
 #define NMEAISTREAM_H_
 
-class wnmeastring
+class tnmeastring
 {
 public:
-	inline wnmeastring(wchar_t* szString) : m_szString(szString), m_Char() {
+	inline tnmeastring(TCHAR* szString) : m_szString(szString) {
 	}
 
-	~wnmeastring(void) {
+	~tnmeastring(void) {
         if(m_Char) {
             *(m_szString-1) = m_Char;
         }
 	}
 
-	inline wchar_t* GetNextString(){
+	inline TCHAR* GetNextString(){
         if(m_Char) {
             *(m_szString-1) = m_Char;
         }
-		wchar_t* szOut = m_szString;
+		TCHAR* szOut = m_szString;
 		if(*(m_szString)) {
 			for( ;(*m_szString != 0) && (*m_szString != 10) && (*m_szString != L','); ++m_szString);
             m_Char = *(m_szString);
@@ -35,8 +35,8 @@ public:
 	}
 
 protected:
-	wchar_t *m_szString;
-    wchar_t m_Char;
+	TCHAR *m_szString;
+    TCHAR m_Char;
 };
 
 

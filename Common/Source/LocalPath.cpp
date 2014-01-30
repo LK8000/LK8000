@@ -32,7 +32,7 @@ TCHAR * LKGetLocalPath(void) {
 	// Windows PC environment
 	//
 	// Do we have a valid _System/_SYSTEM locally?
-	_stprintf(localpath,_T("%s\\%S\\_SYSTEM"),gmfcurrentpath(),LKD_SYSTEM);
+	_stprintf(localpath,_T("%s\\%s\\_SYSTEM"),gmfcurrentpath(),LKD_SYSTEM);
 	if (  GetFileAttributes(localpath) != 0xffffffff )  {
 		// Yes, so we use the current path folder
 		_tcscpy(localpath,gmfcurrentpath());
@@ -90,32 +90,28 @@ void LocalPath(TCHAR* buffer, const TCHAR* file) {
 }
 
 // This is used by LoadFromXML function only
-void LocalPathS(char *buffer, const TCHAR* file) {
-  TCHAR wbuffer[MAX_PATH];
+void LocalPathS(TCHAR *buffer, const TCHAR* file) {
 
-  LocalPath(wbuffer, TEXT(LKD_DIALOGS));
-  _tcscat(wbuffer,_T("\\"));
+  LocalPath(buffer, TEXT(LKD_DIALOGS));
+  _tcscat(buffer,_T("\\"));
 
   switch(AircraftCategory) {
 	case umGlider:
-		_tcscat(wbuffer,L"GLIDER\\");
+		_tcscat(buffer,_T("GLIDER\\"));
 		break;
 	case umParaglider:
-		_tcscat(wbuffer,L"PARAGLIDER\\");
+		_tcscat(buffer,_T("PARAGLIDER\\"));
 		break;
 	case umCar:
-		_tcscat(wbuffer,L"CAR\\");
+		_tcscat(buffer,_T("CAR\\"));
 		break;
 	case umGAaircraft:
-		_tcscat(wbuffer,L"GA\\");
+		_tcscat(buffer,_T("GA\\"));
 		break;
 	default:
 		break;
   }
-  _tcscat(wbuffer,file);
-
-  sprintf(buffer,"%S",wbuffer);
-
+  _tcscat(buffer,file);
 }
 
 

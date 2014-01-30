@@ -27,7 +27,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   static TCHAR Buffer1[MAXNEAREST][MAXNUMPAGES][24], Buffer2[MAXNEAREST][MAXNUMPAGES][10], Buffer3[MAXNEAREST][MAXNUMPAGES][10];
   static TCHAR Buffer4[MAXNEAREST][MAXNUMPAGES][12], Buffer5[MAXNEAREST][MAXNUMPAGES][12];
   static short s_maxnlname;
-  char text[30];
+  TCHAR text[30];
   short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
   COLORREF rcolor;
@@ -483,7 +483,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 	}
 	if ( ValidWayPoint(rli) ) {
 
-		wlen=wcslen(WayPointList[rli].Name);
+		wlen=_tcslen(WayPointList[rli].Name);
 		if (wlen>s_maxnlname) {
 			LK_tcsncpy(Buffer, WayPointList[rli].Name, s_maxnlname);
 		}
@@ -506,41 +506,31 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 				if (value > 180.0)
 					value -= 360.0;
 
-#ifndef __MINGW32__
 			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f��"), value);
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0\xBB"), value);
 			else
 				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("�%2.0f�"), -value);
+					_stprintf(Buffer3[i][curpage], TEXT("\xAB%2.0f\xB0"), -value);
 				else
-					_tcscpy(Buffer3[i][curpage], TEXT("��"));
-#else
-			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), value);
-			else
-				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -value);
-				else
-					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
-#endif
+					_tcscpy(Buffer3[i][curpage], TEXT("\xAB\xBB"));
 		} else
-			_stprintf(Buffer3[i][curpage], TEXT("%2.0f°"), WayPointCalc[rli].Bearing); // 101219
+			_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0"), WayPointCalc[rli].Bearing); // 101219
 
 		value=WayPointCalc[rli].GR;
 		if (value<1 || value>=MAXEFFICIENCYSHOW) 
 			_stprintf(Buffer4[i][curpage],_T("---"));
 		else {
-			if (value>99) sprintf(text,"%.0f",value);
-			else sprintf(text,"%.1f",value);
-			_stprintf(Buffer4[i][curpage],_T("%S"),text);
+			if (value>99) _stprintf(text,_T("%.0f"),value);
+			else _stprintf(text,_T("%.1f"),value);
+			_stprintf(Buffer4[i][curpage],_T("%s"),text);
 		}
 
 		value=ALTITUDEMODIFY*WayPointCalc[rli].AltArriv[AltArrivMode];
 		if (value <-9999 ||  value >9999 )
-			strcpy(text,"---");
+			_tcscpy(text,_T("---"));
 		else
-			sprintf(text,"%+.0f",value);
-		wsprintf(Buffer5[i][curpage], TEXT("%S"),text);
+			_stprintf(text,_T("%+.0f"),value);
+		_stprintf(Buffer5[i][curpage], TEXT("%s"),text);
 
 	} else {
 		_stprintf(Buffer1[i][curpage],_T("------------"));

@@ -102,19 +102,19 @@ int MapWindow::DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
 					switch ( drawHdg )
 					{
 					case 0:
-						wsprintf( textBuffer, _T("N"));
+						_stprintf( textBuffer, _T("N"));
 						break;
 					case 9:
-						wsprintf( textBuffer, _T("E"));
+						_stprintf( textBuffer, _T("E"));
 						break;
 					case 18:
-						wsprintf( textBuffer, _T("S"));
+						_stprintf( textBuffer, _T("S"));
 						break;
 					case 27:
-						wsprintf( textBuffer, _T("W"));
+						_stprintf( textBuffer, _T("W"));
 						break;
 					default:
-						wsprintf( textBuffer, _T("%d"), displayHeading/10 );
+						_stprintf( textBuffer, _T("%d"), displayHeading/10 );
 						break;
 					}
 
@@ -180,7 +180,7 @@ void MapWindow::DrawHSIarc(HDC hdc, POINT Orig, RECT rc )
 
 	TCHAR brgText[LKSIZEBUFFERLARGE];
 	int bearing= (int) (DrawInfo.TrackBearing+0.5);
-	wsprintf(brgText,_T("%03d"),bearing);
+	_stprintf(brgText,_T("%03d"),bearing);
 
 	SIZE brgSize;
 	GetTextExtentPoint(hdc, brgText, _tcslen(brgText), &brgSize);

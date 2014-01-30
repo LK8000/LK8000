@@ -24,7 +24,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   static TCHAR Buffer1[MAXCOMMON][MAXCOMMONNUMPAGES][24], Buffer2[MAXCOMMON][MAXCOMMONNUMPAGES][10], Buffer3[MAXCOMMON][MAXCOMMONNUMPAGES][10];
   static TCHAR Buffer4[MAXCOMMON][MAXCOMMONNUMPAGES][12], Buffer5[MAXCOMMON][MAXCOMMONNUMPAGES][12];
   static short maxnlname;
-  char text[LKSIZETEXT];
+  TCHAR text[LKSIZETEXT];
   short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double Value;
   COLORREF rcolor;
@@ -401,7 +401,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 	if (!ndr) goto KeepOldValues;
 	if ( ValidWayPoint(rli) ) {
 
-		wlen=wcslen(WayPointList[rli].Name);
+		wlen=_tcslen(WayPointList[rli].Name);
 		if (wlen>maxnlname) {
 			LK_tcsncpy(Buffer, WayPointList[rli].Name, maxnlname);
 		}
@@ -426,7 +426,6 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 				if (Value > 180.0)
 					Value -= 360.0;
 
-#ifndef __MINGW32__
 			if (Value > 1)
 				_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0\xBB"), Value);
 			else
@@ -434,35 +433,26 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 					_stprintf(Buffer3[i][curpage], TEXT("\xAB%2.0f\xB0"), -Value);
 				else
 					_tcscpy(Buffer3[i][curpage], TEXT("\xAB\xBB"));
-#else
-			if (Value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), Value);
-			else
-				if (Value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -Value);
-				else
-					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
-#endif
 		} else
-			_stprintf(Buffer3[i][curpage], TEXT("%2.0f°"), WayPointCalc[rli].Bearing);
+			_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0"), WayPointCalc[rli].Bearing);
 
 		// Requested GR
 		Value=WayPointCalc[rli].GR;
 		if (Value<1 || Value>=MAXEFFICIENCYSHOW) 
 			_stprintf(Buffer4[i][curpage],_T("---"));
 		else {
-			if (Value>99) sprintf(text,"%.0f",Value);
-			else sprintf(text,"%.1f",Value);
-			_stprintf(Buffer4[i][curpage],_T("%S"),text);
+			if (Value>99) _stprintf(text,_T("%.0f"),Value);
+			else _stprintf(text,_T("%.1f"),Value);
+			_stprintf(Buffer4[i][curpage],_T("%s"),text);
 		}
 
 		// arrival altitude
 		Value=ALTITUDEMODIFY*WayPointCalc[rli].AltArriv[AltArrivMode];
 		if (Value <-9999 ||  Value >9999 )
-			strcpy(text,"---");
+			_tcscpy(text,_T("---"));
 		else
-			sprintf(text,"%+.0f",Value);
-		wsprintf(Buffer5[i][curpage], TEXT("%S"),text);
+			_stprintf(text,_T("%+.0f"),Value);
+		_stprintf(Buffer5[i][curpage], TEXT("%s"),text);
 
 	} else {
 		// Invalid waypoint, fill in all empty data and maybe break loop

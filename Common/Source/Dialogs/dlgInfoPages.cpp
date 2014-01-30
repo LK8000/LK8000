@@ -123,7 +123,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgInfoPagesShowModal(void){
 
   WndProperty *wp;
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgInfoPages.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
