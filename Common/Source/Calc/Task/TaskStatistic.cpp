@@ -46,6 +46,8 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     Calculated->TaskAltitudeDifference = 0;
     Calculated->TaskAltitudeDifference0 = 0;
 
+    Calculated->TaskAltitudeArrival = 0;
+
     Calculated->TerrainWarningLatitude = 0.0;
     Calculated->TerrainWarningLongitude = 0.0;
 
@@ -194,6 +196,8 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   Calculated->TaskTimeToGo = 0;
   Calculated->LKTaskETE = 0;
   Calculated->TaskTimeToGoTurningNow = 0;
+  Calculated->TaskAltitudeArrival = 0;
+
 
   double LegTime0;
 
@@ -204,7 +208,11 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   double final_height = FAIFinishHeight(Basic, Calculated, -1);
   double total_energy_height = Calculated->NavAltitude + Calculated->EnergyHeight;
   double height_above_finish = total_energy_height - final_height;
-  
+
+
+  TaskAltitudeRequired = final_height;
+  TaskAltitudeRequired0 = final_height;
+
   // Now add it for remaining waypoints
   int task_index= FinalWayPoint;
 
@@ -264,6 +272,20 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
       TaskAltitudeRequired += LegAltitude;
       TaskAltitudeRequired0 += LegAltitude0;
+
+      if(ISPARAGLIDER) {
+      	// if required altitude is less than previous turpoint altitude,
+      	//   use previous turn point altitude
+      	double w0Alt = FAIFinishHeight(Basic, Calculated, task_index-1);
+      	if(TaskAltitudeRequired < w0Alt) {
+            Calculated->TaskAltitudeArrival += w0Alt - TaskAltitudeRequired;
+
+            TaskAltitudeRequired = w0Alt;
+      	}
+      	if(TaskAltitudeRequired0 < w0Alt) {
+        	  TaskAltitudeRequired0 = w0Alt;
+      	}
+      }
       
       Calculated->TaskDistanceToGo += NextLegDistance;
       Calculated->TaskTimeToGo += this_LegTimeToGo;      
@@ -385,13 +407,13 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
 
   
-  Calculated->TaskAltitudeRequired = TaskAltitudeRequired + final_height;
-  
-  TaskAltitudeRequired0 += final_height;
+  Calculated->TaskAltitudeRequired = TaskAltitudeRequired;
   
   Calculated->TaskAltitudeDifference = total_energy_height - Calculated->TaskAltitudeRequired; 
   Calculated->TaskAltitudeDifference0 = total_energy_height - TaskAltitudeRequired0;
   Calculated->NextAltitudeDifference0 = total_energy_height - Calculated->NextAltitudeRequired0;
+
+  Calculated->TaskAltitudeArrival += Calculated->TaskAltitudeDifference;
 
   Calculated->GRFinish= CalculateGlideRatio(Calculated->TaskDistanceToGo, Calculated->NavAltitude - final_height);
 
