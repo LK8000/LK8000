@@ -209,9 +209,10 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   double total_energy_height = Calculated->NavAltitude + Calculated->EnergyHeight;
   double height_above_finish = total_energy_height - final_height;
 
-
+  if (ISPARAGLIDER) {
   TaskAltitudeRequired = final_height;
   TaskAltitudeRequired0 = final_height;
+  }
 
   // Now add it for remaining waypoints
   int task_index= FinalWayPoint;
@@ -406,8 +407,13 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   }
 
 
-  
+  if (ISPARAGLIDER) {
   Calculated->TaskAltitudeRequired = TaskAltitudeRequired;
+  } else {
+  Calculated->TaskAltitudeRequired = TaskAltitudeRequired + final_height;
+ 
+  TaskAltitudeRequired0 += final_height;
+  }
   
   Calculated->TaskAltitudeDifference = total_energy_height - Calculated->TaskAltitudeRequired; 
   Calculated->TaskAltitudeDifference0 = total_energy_height - TaskAltitudeRequired0;
