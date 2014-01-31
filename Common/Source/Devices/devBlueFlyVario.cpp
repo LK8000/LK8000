@@ -88,11 +88,8 @@ public:
 
     const int ValueInt() const {
         int val = wcstol(_Value.c_str(),NULL,10);
-        if(Type() == TYPE_INTOFFSET) {
-            val += _Factor;
-        } else {
-            val *= _Factor;
-        }
+        if(Type() == TYPE_INTOFFSET) val += (int)_Factor;
+        else val = (int)(val * _Factor);
         return val;
     }
 

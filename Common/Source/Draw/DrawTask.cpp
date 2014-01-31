@@ -232,7 +232,7 @@ DoInit[MDI_DRAWTASK]=false;
                     Circle(hdc, center_x, center_y, (int) tmp, rc, false, false);
                     HPEN prevPen = (HPEN)::SelectObject(hdc, hpTerrainLine);
                     for( int j = 1; j < 5 && tmp > 0; ++j) {
-                        Circle(hdc, center_x, center_y, tmp -= NIBLSCALE(5), rc, true, true);
+                        Circle(hdc, center_x, center_y,(int)(tmp -= NIBLSCALE(5)), rc, true, true);
                     }
                     ::SelectObject(hdc, prevPen);
                     break;
