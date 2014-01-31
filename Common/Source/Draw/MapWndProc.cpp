@@ -21,6 +21,8 @@
 // #define DEBUG_VIRTUALKEYS
 // #define DEBUG_MAPINPUT
 
+static bool isListPage(void);
+
 COLORREF taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
 static bool MouseWasPanMoving=false;
@@ -1221,31 +1223,12 @@ _continue:
 	// 
 	// THIS IS AN ALTERNATE LXMINIMAP USAGE, will not work for official release
 	#ifndef LXMINIMAP
-	// if (1) {
 	if ( GlobalModelType == MODELTYPE_PNA_MINIMAP ) {
 		switch(wParam) {
 
 			// Button A is generating a C
 			case 67:
-				if ( !MapWindow::mode.AnyPan()&&MapSpaceMode!=1) { // dontdrawthemap
-					if (MapSpaceMode<=MSM_MAP) {
-						return TRUE;
-					}
-					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-					#endif
-					LKevent=LKEVENT_ENTER;
-					MapWindow::RefreshMap();
-					return TRUE;
-				} else {
-					if (CustomKeyHandler(CKI_CENTERSCREEN)) {
-						#ifndef DISABLEAUDIO
-						if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-						#endif
-					}
-					// MapWindow::RefreshMap();
-					return TRUE;
-				}
+				goto _key_enter;
 				break;
 			// Button B is generating alternate codes 68 and 27
 			// we use both as a single one
@@ -1284,6 +1267,7 @@ _continue:
 				break;
 
 			// Rotary knob A is generating a 38 (turn left) and 40 (turn right)
+			// v5> careful not the same as _key gotos.
 			case 38:
 				if ( !MapWindow::mode.AnyPan()&&MapSpaceMode!=1) { // dontdrawthemap
 					if (MapSpaceMode<=MSM_MAP) {
@@ -1318,21 +1302,337 @@ _continue:
 
 			// Rotary knob E is generating a 37 (turn left) and 39 (turn right)
 			case 37:
-				PreviousModeIndex();
-				MapWindow::RefreshMap();
-				SoundModeIndex();
-				return TRUE;
+				goto _key_previous_mode;
+				break;
 			case 39:
-				NextModeIndex();
-				MapWindow::RefreshMap();
-				SoundModeIndex();
-				return TRUE;
+				goto _key_next_mode;
+				break;
 
 			default:
 				break;
                 }
 	}
 	#endif // not LXMINIMAP
+	
+	//
+	// This is the handler for bluetooth keyboards
+	//
+	// BTK1 is representing the screen in portrait mode. Space is on the right.
+	//
+	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1 ) {
+		#ifndef WINDOWSPC
+		if (!Debounce()) return FALSE;
+		#endif
+		switch(wParam) {
+			//
+			// THE BOTTOM BAR
+			//
+			case '1':
+			case '2':
+				goto _key_bottombar_previous;
+				break;
+				
+			case 'a':
+			case 'A':
+			case 's':
+			case 'S':
+			case 'q':
+			case 'Q':
+			case 'W':
+			case 'w':
+				goto _key_next_mode;
+				break;
+
+			case 'z':
+			case 'Z':
+			case 'x':
+			case 'X':
+				goto _key_bottombar_next;
+				break;
+
+			//
+			// THE LEFT SCREEN
+			//
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+				goto _key_previous_page;
+				break;
+
+			//
+			// THE RIGHT SCREEN
+			//
+			case 0x20: // space
+			case 172:
+			case 191:
+				goto _key_next_page;
+				break;
+
+
+			//
+			// THE CENTER-UP
+			//
+			case 'I':
+			case 'i':
+			case 'K':
+			case 'k':
+			case 188:
+
+			case 'M':
+			case 'm':
+			case 'J':
+			case 'j':
+			case 'U':
+			case 'u':
+			case 'N':
+			case 'n':
+			case 'H':
+			case 'h':
+			case 'Y':
+			case 'y':
+				goto _key_up;
+				break;
+
+			//
+			// THE CENTER-DOWN
+			//
+			case 'T':
+			case 't':
+			case 'G':
+			case 'g':
+			case 'B':
+			case 'b':
+			case 'R':
+			case 'r':
+			case 'F':
+			case 'f':
+			case 'V':
+			case 'v':
+			case 'E':
+			case 'e':
+			case 'D':
+			case 'd':
+			case 'C':
+			case 'c':
+				goto _key_down;
+				break;
+
+			//
+			// THE TOP-LEFT
+			//
+			case '0':
+			case '9':
+			case 'P':
+			case 'p':
+			case 'O':
+			case 'o':
+				goto _key_topleft;
+				goto _key_topleft;
+				break;
+
+			//
+			// THE TOP-RIGHT
+			//
+			case 13: // enter
+			case 190:
+			case 186:
+				goto _key_topright;
+				break;
+
+			//
+			// the special Shift corner keys
+			//
+			case 16:
+				goto _key_enter;
+				break;
+
+			//
+			// the special top center keys
+			//
+			case 8:
+			case 'L':
+			case 'l':
+				goto _key_topcenter;
+				break;
+
+			default:
+				break;
+		}
+	}
+
+// this goto line after the end of transcoding code!
+goto _skipout;
+	
+	// -------------------------------------------------------------------------
+	// Key functions, called from a case switch, must all end with a return or a break.
+	// They are all accessed with an ugly goto. 
+	// -------------------------------------------------------------------------
+
+_key_next_mode:
+	NextModeIndex();
+	MapWindow::RefreshMap();
+	SoundModeIndex();
+	return TRUE;
+
+_key_previous_mode:
+	PreviousModeIndex();
+	MapWindow::RefreshMap();
+	SoundModeIndex();
+	return TRUE;
+
+_key_up:
+	//
+	// UP
+	//
+	if ( !MapWindow::mode.AnyPan()&&MapSpaceMode!=1) { // dontdrawthemap
+		if (MapSpaceMode<=MSM_MAP) {
+			return TRUE;
+		}
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		LKevent=LKEVENT_UP;
+		MapWindow::RefreshMap();
+	} else {
+		// careful! zoom works inverted!!
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		MapWindow::zoom.EventScaleZoom(1);
+	}
+	return TRUE;
+
+_key_down:
+	//
+	// DOWN
+	//
+	if ( !MapWindow::mode.AnyPan()&&MapSpaceMode!=1) { // dontdrawthemap
+		if (MapSpaceMode<=MSM_MAP) {
+			return TRUE;
+		}
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		LKevent=LKEVENT_DOWN;
+		MapWindow::RefreshMap();
+	} else {
+		// careful! zoom works inverted!!
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		MapWindow::zoom.EventScaleZoom(-1);
+	}
+	return TRUE;
+
+
+_key_next_page:
+	// next page
+	NextModeType();
+	MapWindow::RefreshMap();
+	if (ModeIndex!=LKMODE_MAP)
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+	return TRUE;
+
+_key_previous_page:
+	// previous page
+	PreviousModeType();
+	MapWindow::RefreshMap();
+	if (ModeIndex!=LKMODE_MAP)
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+	return TRUE;
+
+#if 0 // unused
+_key_gesture_up:
+	ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_UP);
+	MapWindow::RefreshMap();
+	return TRUE;
+#endif
+
+_key_gesture_down:
+	ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_DOWN);
+	MapWindow::RefreshMap();
+	return TRUE;
+
+
+_key_enter:
+	if ( !MapWindow::mode.AnyPan()&&MapSpaceMode!=1) { // dontdrawthemap
+		if (MapSpaceMode<=MSM_MAP) {
+			return TRUE;
+		}
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		LKevent=LKEVENT_ENTER;
+		MapWindow::RefreshMap();
+		return TRUE;
+	} 
+	#if 0 // no center screen ck anymore
+	else {
+		if (CustomKeyHandler(CKI_CENTERSCREEN)) {
+			#ifndef DISABLEAUDIO
+			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+			#endif
+		}
+		// MapWindow::RefreshMap();
+		return TRUE;
+	}
+	#endif
+	break;
+
+_key_topright:
+	if (NOTANYPAN && IsMultiMapCustom() ) {
+		LKevent=LKEVENT_TOPRIGHT;
+		MapWindow::RefreshMap();
+		return TRUE;
+	}
+	if (NOTANYPAN && IsMultiMapShared()) {
+		CustomKeyHandler(CKI_TOPRIGHT);
+	}
+	if ( isListPage() ) goto _key_gesture_down;
+	break;
+
+_key_topleft:
+	if (NOTANYPAN && IsMultiMapCustom() ) {
+		LKevent=LKEVENT_TOPLEFT;
+		MapWindow::RefreshMap();
+		return TRUE;
+	}
+	if (NOTANYPAN && IsMultiMapShared()) {
+		CustomKeyHandler(CKI_TOPLEFT);
+	}
+	if ( isListPage() ) goto _key_gesture_down;
+
+	break;
+
+_key_topcenter:
+	if ( isListPage() )
+		goto _key_gesture_down;
+	else
+		goto _key_topright;
+	break;
+
+#if 0
+_key_overtarget_rotate:
+	RotateOvertarget();
+	MapWindow::RefreshMap();
+	return TRUE;
+#endif
+
+_key_bottombar_next:
+	BottomBarChange(true);  // next bb
+	BottomSounds();
+	MapWindow::RefreshMap();
+	return TRUE;
+
+_key_bottombar_previous:
+	BottomBarChange(false); // prev bb
+	BottomSounds();
+	MapWindow::RefreshMap();
+	return TRUE;
+
+
+
+
+	// End of key manager
+
+_skipout:
 	dwDownTime= 0L; // removable? check
 	InputEvents::processKey(wParam);
 	dwDownTime= 0L;
@@ -1340,6 +1640,19 @@ _continue:
     }
 
   return (DefWindowProc (hWnd, uMsg, wParam, lParam));
+}
+
+
+static bool isListPage(void) {
+  if ( 
+	MapSpaceMode==MSM_COMMON || MapSpaceMode==MSM_RECENT ||
+	MapSpaceMode==MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS ||
+	MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_AIRSPACES ||
+	MapSpaceMode==MSM_THERMALS || MapSpaceMode==MSM_TRAFFIC 
+     )
+	return true;
+  else
+	return false;
 }
 
 

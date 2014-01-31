@@ -260,7 +260,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	 if (wParam!=oldwparam) {
 		 oldwparam=wParam;
 	 	wsprintf(serr,_T("DEVICE CHANGE DETECTED\nCODE=0x%x"),wParam);
-        	 MessageBoxX(hWndMainWindow, serr, TEXT("LK8000"), MB_OK|MB_ICONQUESTION, true);
+		DoStatusMessage(serr);
+        	 // MessageBoxX(hWndMainWindow, serr, TEXT("LK8000"), MB_OK|MB_ICONQUESTION, true);
 		 oldwparam=0;
 	 }
 	 return TRUE; // acknowledge
