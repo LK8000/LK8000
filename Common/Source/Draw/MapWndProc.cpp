@@ -1321,8 +1321,9 @@ _continue:
 	//
 	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1 ) {
 		#ifndef WINDOWSPC
-		if (!Debounce()) return FALSE;
+		if (!Debounce(250)) return FALSE;
 		#endif
+		dwDownTime= 0L;
 		switch(wParam) {
 			//
 			// THE BOTTOM BAR
