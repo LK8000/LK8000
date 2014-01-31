@@ -541,7 +541,7 @@ static void OnDetailsClicked(WindowControl * Sender){
 	(void)Sender;
   LKASSERT(twItemIndex>=0);
   SelectedWaypoint = Task[twItemIndex].Index;
-  PopupWaypointDetails();
+  dlgWayPointDetailsShowModal(0);
 }
 
 static void OnRemoveClicked(WindowControl * Sender) {
