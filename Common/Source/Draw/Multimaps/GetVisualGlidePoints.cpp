@@ -42,7 +42,7 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots ) {
   #if BUGSTOP
   LKASSERT(numslots<=MAXBSLOT);
   #else
-  if (numslot>MAXBSLOT) numslot=MAXBSLOT;
+  if (numslots>MAXBSLOT) numslots=MAXBSLOT;
   #endif
 
   static short currentFilledNumber=-1;

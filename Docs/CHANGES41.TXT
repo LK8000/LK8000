@@ -80,7 +80,58 @@ Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
 
+===========
+Version 4.H
+===========
 
+NEW
+
+ThermalBar configuration option for "always", aside Thermal only and thermal+cruise
+
+ Add support for the chinese bluetooth keyboards.
+    This is the first layout manager, BTK1.
+    The keyboard should be kept vertically with the space key on the right.
+    There is no need to look at it for using LK: simply think to be clicking on a screen:
+    think of the keyboard like it was a touchscreen.
+    The only special key is the corner SHIFT which is used as <enter> to confirm a goto.
+    To advance to next pages such as in landables, turnpoints etc, use the top screen keys.
+to use the keyboard, configure device type in device page, Keyboard 1.
+
+Added bearing to next waypoint indication to HSI
+Draw CDI scale anyway in grey also during direct GOTO.
+
+Add Sonar Warning configuration in config Alarm page.
+    By default Sonar is enabled. The configuration choice is set on startup.
+    It is still possible to change sonar on and off with button and custom keys, but
+    on startup the configuration choice will always be loaded.
+
+Add PNA_GENERIC_BTK1 2 and 3  new devices.
+    Only Keyboard 1 is available in device config.
+
+
+
+CHANGES
+
+PGs:
+Change task Requiered Altitude Calculation :
+    if next Tp Requiered Altitude is less than current tp altitude, use current tp altitude for requiered altitude...
+     - AAT Task : altitude of AAT Target point is used if upper center altitude, otherwise, center altitude is used.
+All task turmpoint altitude need to be accounting for task requiered calculation.
+
+
+
+FIXES
+
+Add turnpoint radius for first & last tunrpoint in Task Overview dialog
+"Will this be the finish?" question before add Waypoint can't be removed before refactoring usability of task edition
+fix broken Start Turnpoint in/out Type.
+
+Fix bug in 4.0 vario bar in multimaps black screen
+
+IMI Erixx : use hardcoded baudrate (4800) when the port doesn't support it
+
+Fix Glide Bar should not be visible when there is no valid start, if it is configured to show task arrival altitude.
+    Beside, the value shown without a valid start was wrong.
 
 
 
