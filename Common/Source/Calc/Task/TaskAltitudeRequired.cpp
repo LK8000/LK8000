@@ -36,7 +36,8 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   double heightFinal = FAIFinishHeight(Basic, Calculated, -1);
   double height_above_finish = FAIFinishHeight(Basic, Calculated, 0) - heightFinal;
-  
+
+  TotalAltitude = heightFinal; // start from final height
 
   for(i=MAXTASKPOINTS-2;i>=0;i--) {
 
@@ -82,13 +83,13 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     // JMW CHECK FGAMT
     height_above_finish-= LegAltitude;
 
-    TotalAltitude += LegAltitude;
+    TotalAltitude += LegAltitude; // Add leg requiered height
 
     if( ISPARAGLIDER ) {
-        // if required altitude is less than previous turpoint altitude,
-    	//   use previous turn point altitude
     	double w1Alt = FAIFinishHeight(Basic, Calculated, i);
-    	if( (TotalAltitude+heightFinal) < w1Alt ) {
+    	if( TotalAltitude < w1Alt ) {
+            // if required altitude is less this turpoint altitude,
+	    	//   use previous this point altitude ( takes safety arrival alt into account )
 	        TotalAltitude = w1Alt;
     	}
     }
@@ -112,8 +113,6 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     retval = false;
     goto OnExit;
   }
-
-  TotalAltitude += FAIFinishHeight(Basic, Calculated, -1);
 
   if (!ValidTaskPoint(*ifinal)) {
     Calculated->TaskAltitudeRequiredFromStart = TotalAltitude;
