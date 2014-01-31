@@ -419,7 +419,11 @@ goto_bearing:
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference;
+                    if(ISPARAGLIDER && DerivedDrawInfo.TaskAltitudeDifference > 0.0) {
+                        value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeArrival;
+                    } else {
+    					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference;
+                    }
 					if ( value > ALTDIFFLIMIT ) {
 						valid=true;
 						_stprintf(BufferValue,TEXT("%+1.0f"), value);

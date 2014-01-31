@@ -217,10 +217,17 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		if (OvertargetMode == OVT_TASK ) { //@ 101004
 			// A task is made of at least 2 tps, otherwise its a goto
 			if (( (GlideBarMode == (GlideBarMode_t)gbFinish) && ValidTaskPoint(1)) ) {
-				if ( (ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference) <ALTDIFFLIMIT) //@ 091114
-					_stprintf(Value,TEXT(" --- "));
-				else
-					_stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference);
+                if(ISPARAGLIDER && DerivedDrawInfo.TaskAltitudeDifference > 0.0) {
+                    if ( (ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeArrival) <ALTDIFFLIMIT) //@ 091114
+                        _stprintf(Value,TEXT(" --- "));
+                    else
+                        _stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeArrival);
+                } else {
+                    if ( (ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference) <ALTDIFFLIMIT) //@ 091114
+                        _stprintf(Value,TEXT(" --- "));
+                    else
+                        _stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference);
+                }
 			} else {
 				if ( (ALTITUDEMODIFY*WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
 					_stprintf(Value,TEXT(" --- "));

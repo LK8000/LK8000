@@ -34,8 +34,9 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   LockTaskData();
 
-  double height_above_finish = FAIFinishHeight(Basic, Calculated, 0)-
-    FAIFinishHeight(Basic, Calculated, -1);
+  double heightFinal = FAIFinishHeight(Basic, Calculated, -1);
+  double height_above_finish = FAIFinishHeight(Basic, Calculated, 0) - heightFinal;
+  
 
   for(i=MAXTASKPOINTS-2;i>=0;i--) {
 
@@ -50,7 +51,9 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     if (AATEnabled) {
       w1lat = Task[i].AATTargetLat;
       w1lon = Task[i].AATTargetLon;
-      if (!isfinal) {
+      
+      // also use optimized finish point for PG optimized task.
+      if (!isfinal || DoOptimizeRoute()) {
         w0lat = Task[i+1].AATTargetLat;
         w0lon = Task[i+1].AATTargetLon;
       }
@@ -80,6 +83,15 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     height_above_finish-= LegAltitude;
 
     TotalAltitude += LegAltitude;
+
+    if( ISPARAGLIDER ) {
+        // if required altitude is less than previous turpoint altitude,
+    	//   use previous turn point altitude
+    	double w1Alt = FAIFinishHeight(Basic, Calculated, i);
+    	if( (TotalAltitude+heightFinal) < w1Alt ) {
+	        TotalAltitude = w1Alt;
+    	}
+    }
 
     if (LegTime<0) {
 		retval = false;
