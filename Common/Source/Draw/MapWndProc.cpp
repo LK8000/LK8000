@@ -765,7 +765,9 @@ if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 		MapWindow::RefreshMap();
 		break;
 	}
+	}
 }
+      if (NOTANYPAN && IsMultiMapShared()) {
       if (ISPARAGLIDER) {
 	// Use the compass to pullup UTM informations to paragliders
 	if ( (lparam_X > P_UngestureRight.x) && (lparam_Y <= P_UngestureRight.y) ) {
