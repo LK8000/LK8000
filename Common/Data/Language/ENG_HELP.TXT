@@ -1828,6 +1828,8 @@ The output frequency -> 1-every 20ms ... 50-every 20msx50=1000ms
 Sonar sound while approaching an airspace, the fastest the closest.
 This configuration is used to set sonar mode on startup. Changing the sonar mode with button will not affect this setting. 
 
+@1291
+[Conical ESS Base Radius]
 
 @9999
 No help available on this item!

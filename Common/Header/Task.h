@@ -59,8 +59,9 @@ typedef struct _TASK_POINT
   bool   AATTargetLocked;
   bool	 OutCircle;
   double AATTargetAltitude;
-  double PGConeSlope; // Ratio for PG Cone Turn point
-  double PGConeBase; // Base Height of Cone Turn Point 
+  double PGConeSlope; // Slope Ratio for PG Cone Turn point
+  double PGConeBase; // Base Altitude of Cone Turn Point 
+  double PGConeBaseRadius; // radius At Base Altitude of Cone Turn Point 
   // always add new members at the End of this struct
   //   needed for compatibility with old task file.
 }TASK_POINT;
