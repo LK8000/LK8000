@@ -71,6 +71,8 @@ bool MapWindow::PointVisible(const POINT &P)
     return FALSE;
 }
 
+//#define DEBUG_SCANVIS 1
+#define DEBOUNCE_SCANVISIBILITY 1
 
 void MapWindow::ScanVisibility(rectObj *bounds_active) {
   // received when the SetTopoBounds determines the visibility
@@ -78,6 +80,70 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
   // This happens rarely, so it is good pre-filtering of what is visible.
   // (saves from having to do it every screen redraw)
   const rectObj bounds = *bounds_active;
+#if DEBOUNCE_SCANVISIBILITY
+  static rectObj oldbounds={0,0,0,0};
+  static float oldzoomscale=0;
+  static double lasthere=0;
+
+  if (oldbounds.minx==0) goto _normal_run; // careful, bounds can be negative
+
+  #if DEBUG_SCANVIS
+  StartupStore(_T("OLD BOUNDS: %f %f %f %f  scale=%f\n"),oldbounds.minx, oldbounds.maxx, oldbounds.miny, oldbounds.maxy,oldzoomscale);
+  StartupStore(_T("NEW BOUNDS: %f %f %f %f  scale=%f\n"),bounds.minx, bounds.maxx, bounds.miny, bounds.maxy,MapWindow::zoom.Scale());
+  #endif
+
+  // If boundaries are inside old boundaries we dont immediately recalculate everything.
+  // The drawback is that after many zoom in, we still have "Visible" all waypoints calculated for a low zoom.
+  // This is expecially true while swapping multimaps that can have different zoom level saved individually.
+  // 
+
+  // first we check that some time has passed and we are not debouncing calculations
+  if ( (LKHearthBeats-30) >lasthere ) {
+	#if DEBUG_SCANVIS
+	StartupStore(_T("... too much time has passed, normal run\n\n"));
+	#endif
+	goto _normal_run;
+  }
+  // then we look at scale change
+  float diffscale;
+  diffscale=oldzoomscale-MapWindow::zoom.Scale();
+  if (diffscale>3) {
+	// scale has lowered by more than 3, so it is a significant zoom
+	// notice that while zoomin out we dont have the problem, because 
+	// boundaries are going to expand.
+	#if DEBUG_SCANVIS
+	StartupStore(_T("... scale diff=%f  >3, normal run\n\n"),diffscale);
+	#endif
+	goto _normal_run;
+  }
+  #if 0
+  if (diffscale >= (MapWindow::zoom.Scale()/2)) {
+	// .. and also when the zoom has halved,
+	#if DEBUG_SCANVIS
+	StartupStore(_T("... scale diff=%f  halved, normal run\n\n"),diffscale);
+	#endif
+	goto _normal_run;
+  }
+  #endif
+
+
+  // else check if it is really needed
+
+  if ( (oldbounds.minx <= bounds.minx) &&
+     (oldbounds.maxx >= bounds.maxx) &&
+     (oldbounds.miny <= bounds.miny) &&
+     (oldbounds.maxy >= bounds.maxy) ) {
+	#if DEBUG_SCANVIS
+	StartupStore(_T("... BOUNDS OVERLOADED, skipping scan\n\n"));
+	#endif
+	return;
+  }
+
+_normal_run:
+  lasthere=LKHearthBeats;
+  oldbounds=bounds;
+  oldzoomscale=MapWindow::zoom.Scale();
+#endif // DEBOUNCE_SCANVISIBILITY
 
   // far visibility for snail trail
 
