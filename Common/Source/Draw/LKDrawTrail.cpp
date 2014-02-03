@@ -132,10 +132,15 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   const double mPanLongitude = PanLongitude;
   const double mPanLatitude = PanLatitude;
 
-  if (usecolors)
-	nearby=NIBLSCALE(2);
-  else
-	nearby=NIBLSCALE(4);
+  // pixel manhattan distance
+  // It is the sum of x and y differences between previous and next point on screen, in pixels.
+  // below this distance, no painting
+  if (usecolors) {
+	nearby=8;
+  } else {
+	nearby=14;
+  }
+
 
   unsigned short pointcolour=0;
   // 
@@ -330,7 +335,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   }
 
   #if DEBUG_DRAWTRAIL
-  StartupStore(_T("....zoom=%.3f trail max=%d  processed=%d empty=%d painted=%d skipped=%d toonear=%d toofar=%d notvisible=%d \n"), MapWindow::zoom.Scale(), num_trail_max,processed, empty, painted,skipped, toonear, toofar,notvisible);
+  StartupStore(_T("....zoom=%.3f trail max=%d nearby=%d  processed=%d empty=%d painted=%d skipped=%d toonear=%d toofar=%d notvisible=%d \n"), MapWindow::zoom.Scale(), num_trail_max, nearby, processed, empty, painted,skipped, toonear, toofar,notvisible);
   #endif
 
   return trailFirstTime;
