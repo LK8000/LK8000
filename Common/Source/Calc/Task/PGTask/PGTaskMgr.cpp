@@ -237,8 +237,7 @@ void PGTaskMgr::AddCone(int TskIdx) {
 
     pTskPt->m_Slope = Task[TskIdx].PGConeSlope;
     pTskPt->m_AltBase = Task[TskIdx].PGConeBase;
-    pTskPt->m_AltRef = 0.0;
-//    pTskPt->m_AltRef = WayPointList[Task[TskIdx].Index].Altitude;
+    pTskPt->m_RadiusBase = Task[TskIdx].PGConeBaseRadius;
 
     pTskPt->m_bExit = false;
 //    pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);

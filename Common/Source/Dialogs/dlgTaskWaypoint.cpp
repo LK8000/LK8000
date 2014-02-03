@@ -258,6 +258,12 @@ static void GetWaypointValues(void) {
 		CHECK_CHANGED(Task[twItemIndex].PGConeBase,
 			wp->GetDataField()->GetAsFloat()/ALTITUDEMODIFY);
 	}
+  	
+    wp = (WndProperty*)wf->FindByName(TEXT("prpConeRadius"));
+	if (wp) {
+		CHECK_CHANGED(Task[twItemIndex].PGConeBaseRadius,
+			wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY);
+	}
 
 
     if (changed) {
@@ -362,6 +368,14 @@ static void SetWaypointValues(bool first=false) {
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConeRadius"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(lround(Task[twItemIndex].PGConeBaseRadius
+                                          *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetUnits(Units::GetDistanceName());
+    wp->RefreshDisplay();
+  }
+  
 }
 
 

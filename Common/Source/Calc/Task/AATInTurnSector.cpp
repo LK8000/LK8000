@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "PGTask/PGConeTaskPt.h"
 
 
 
@@ -39,7 +40,7 @@ bool InAATTurnSector(const double longitude, const double latitude,
                                     AngleLimit360(AircraftBearing), true));
           break;
       case CONE:
-          retval = (distance < ( Altitude - Task[the_turnpoint].PGConeBase ) * Task[the_turnpoint].PGConeSlope);
+          retval = (distance < PGConeTaskPt::ConeRadius(Altitude, Task[the_turnpoint].PGConeBase, Task[the_turnpoint].PGConeSlope, Task[the_turnpoint].PGConeBaseRadius));
           break;
   }
 
