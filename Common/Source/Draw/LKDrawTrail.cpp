@@ -10,13 +10,13 @@
 #include "externs.h"
 
 
-// #define SKIPPOINTS 1		// skip closer points for drawing, causing flashing
-
 #define TRAIL_DRIFT_FIX 1
 //      Attempts to fix bug that caused trail points to disappear
 //      (more so in stronger winds and when more zoomed in) while
 //      in circling zoom with “trail drift” on.
 //      by Eric Carden, March 4, 2012
+
+//#define DEBUG_DRAWTRAIL 1
 
 // try not to use colors when over a useless mapscale
 double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
@@ -26,6 +26,10 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   int i, snail_index;
   SNAIL_POINT P1;
   int  nearby;
+
+#if DEBUG_DRAWTRAIL
+  int toonear=0, painted=0, skipped=0, processed=0, notvisible=0, toofar=0;
+#endif
 
   bool usecolors=false;
   bool trail_is_drifted=false;
@@ -99,11 +103,6 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   point_lastdrawn.x = 0;
   point_lastdrawn.y = 0;
 
-  #if SKIPPOINTS
-  // Average colour display for skipped points
-  float vario_av = 0;
-  int vario_av_num = 0;
-  #endif
 
   // Constants for speedups
 
@@ -138,14 +137,16 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   else
 	nearby=NIBLSCALE(4);
 
-  // int skipped=0, painted=0; // test mode
-
+  unsigned short pointcolour=0;
   // 
   // Main loop
   //
   for(i=1;i< num_trail_max; ++i) 
   {
     ///// Handle skipping
+    #if DEBUG_DRAWTRAIL
+    processed++;
+    #endif
 
     if (i>=skip_border) {
       skip_level= max(1,skip_level-1);
@@ -155,6 +156,9 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
     index_skip++;
     if ((i<num_trail_max-10) && (index_skip < skip_level)) {
+      #if DEBUG_DRAWTRAIL
+      skipped++;
+      #endif
       continue;
     } else {
       index_skip=0;
@@ -181,6 +185,9 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
       if ((!P1.Circling)&&( i<num_trail_max-60 )) {
         // ignore cruise mode lines unless very recent
 	last_visible = false;
+        #if DEBUG_DRAWTRAIL
+        skipped++;
+        #endif
         continue;
       }
     }
@@ -189,6 +196,9 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
     if (!P1.FarVisible) {
       last_visible = false;
+      #if DEBUG_DRAWTRAIL
+      toofar++;
+      #endif
       continue;
     }
 
@@ -218,6 +228,9 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
     if (!this_visible && !last_visible) {
       last_visible = false;
+      #if DEBUG_DRAWTRAIL
+      notvisible++;
+      #endif
       continue;
     }
 
@@ -257,67 +270,34 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
     if (last_visible && this_visible ) {
 	// only average what's visible
 	if ( (abs(P1.Screen.y-point_lastdrawn.y) + abs(P1.Screen.x-point_lastdrawn.x))<=nearby ) {
-		#if SKIPPOINTS
-		if (usecolors) {
-			vario_av += P1.Vario;
-			vario_av_num ++;
-		}
+		#if DEBUG_DRAWTRAIL
+		toonear++;
 		#endif
-		// skipped++;
-		continue;
 		// don't draw if very short line
+		continue;
 	}
     }
-    // painted++;
+
+    #if DEBUG_DRAWTRAIL
+    painted++;
+    #endif
 
     if (usecolors) {
-	float offval=1.0;
-	int usecol;
-
-	#if SKIPPOINTS
-	float useval;
-	if ( vario_av_num ) useval=vario_av/(vario_av_num+1); else useval=P1.Vario; // 091202 avnum
-	if (useval<0) offval=-1;
-	useval=fabs(useval);
+	#if BUGSTOP
+	LKASSERT(P1.Colour>=0 && P1.Colour <NUMSNAILCOLORS);
+	pointcolour=P1.Colour;
 	#else
-	if (P1.Vario<0) offval=-1;
-	const float useval=fabs(P1.Vario);
+	if (pointcolour<NUMSNAILCOLORS)
+		pointcolour=P1.Colour;
+	else
+		pointcolour=3; // and this is an impossible error
 	#endif
-
-
-	if (ISCAR) {
-		// vario values for CAR mode are 5 times more sensibles
-		if (useval <=0.1 ) {; usecol=1; goto go_setcolor; }
-		if (useval <=0.2 ) {; usecol=2; goto go_setcolor; }
-		if (useval <=0.3 ) {; usecol=3; goto go_setcolor; }
-		if (useval <=0.4 ) {; usecol=4; goto go_setcolor; }
-		if (useval <=0.6 ) {; usecol=5; goto go_setcolor; }
-		if (useval <=0.8 ) {; usecol=6; goto go_setcolor; }
-		usecol=7; // 7th : 1ms and up
-		goto go_setcolor;
-	}
-
-	// Normal NON-CAR mode
-	if ( useval <0.1 ) {
-		P1.Colour=7;
-		goto go_selcolor;
-	}
-	if (useval <=0.5 ) {; usecol=1; goto go_setcolor; }
-	if (useval <=1.0 ) {; usecol=2; goto go_setcolor; }
-	if (useval <=1.5 ) {; usecol=3; goto go_setcolor; }
-	if (useval <=2.0 ) {; usecol=4; goto go_setcolor; }
-	if (useval <=3.0 ) {; usecol=5; goto go_setcolor; }
-	if (useval <=4.0 ) {; usecol=6; goto go_setcolor; }
-	usecol=7; // 7th : 4ms and up
-
-go_setcolor:
-	P1.Colour = 7+(short int)(usecol*offval);
     } else {
-	P1.Colour = 3; // blue
+	// predefined color, we are in low zoom.
+	pointcolour = 3; // blue
     }
+    SelectObject(hdc, hSnailPens[pointcolour]);
 
-go_selcolor:
-    SelectObject(hdc, hSnailPens[P1.Colour]);
 
     if (!last_visible) { // draw set cursor at P1
 	#ifndef NOLINETO
@@ -343,7 +323,9 @@ go_selcolor:
 #endif
   }
 
-  // StartupStore(_T("....zoom=%.3f trail max=%d  painted=%d   skipped=%d\n"), MapWindow::zoom.Scale(), num_trail_max,painted,skipped);
+  #if DEBUG_DRAWTRAIL
+  StartupStore(_T("....zoom=%.3f trail max=%d  processed=%d painted=%d skipped=%d toonear=%d toofar=%d notvisible=%d \n"), MapWindow::zoom.Scale(), num_trail_max,processed, painted,skipped, toonear, toofar,notvisible);
+  #endif
 
   return trailFirstTime;
 }

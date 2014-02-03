@@ -15,6 +15,9 @@
 //
 // Note that Visibility is updated by DrawThread in ScanVisibility, inside MapWindow_Utils
 //
+// Update v5: we calculate here the Colour of the trail, and not in LKDrawTrail.
+// We also do not need any more to save the float Vario for each point.
+//
 void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   // In CAR mode, we call this function when at least 5m were made in 5 seconds
@@ -33,25 +36,49 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	SnailTrail[SnailNext].DriftFactor = 1.0;
   }
 
-#if 0
-  if (Calculated->Circling) {
-	SnailTrail[SnailNext].Vario = (float)(Calculated->NettoVario) ;
-  } else {
-	SnailTrail[SnailNext].Vario = (float)(Calculated->NettoVario) ;
-  }
-#else
   // paragliders and car/trekking use Vario and not NettoVario
+  float tvario;
   if (ISPARAGLIDER || ISCAR)
-	SnailTrail[SnailNext].Vario = (float)(Calculated->Vario) ;
+	tvario = (float)(Calculated->Vario) ;
   else
-	SnailTrail[SnailNext].Vario = (float)(Calculated->NettoVario) ;
-#endif
+	tvario = (float)(Calculated->NettoVario) ;
 
-  SnailTrail[SnailNext].Colour = -1; // need to have colour calculated
-  SnailTrail[SnailNext].Circling = Calculated->Circling;
+  float offval=1.0;
+  int usecol;
 
-  SnailNext ++;
-  SnailNext %= TRAILSIZE;
+  if (tvario<0) offval=-1;
+  const float useval=fabs(tvario);
 
-}
+  if (ISCAR) {
+	// vario values for CAR mode are 5 times more sensibles
+	if (useval <=0.1 ) {; usecol=1; goto go_setcolor; }
+	if (useval <=0.2 ) {; usecol=2; goto go_setcolor; }
+	if (useval <=0.3 ) {; usecol=3; goto go_setcolor; }
+	if (useval <=0.4 ) {; usecol=4; goto go_setcolor; }
+	if (useval <=0.6 ) {; usecol=5; goto go_setcolor; }
+	if (useval <=0.8 ) {; usecol=6; goto go_setcolor; }
+	usecol=7; // 7th : 1ms and up
+	goto go_setcolor;
+  }
 
+  // Normal NON-CAR mode
+  if ( useval <0.1 ) {
+	usecol=7;
+	goto go_setcolor;
+  }
+  if (useval <=0.5 ) {; usecol=1; goto go_setcolor; }
+  if (useval <=1.0 ) {; usecol=2; goto go_setcolor; }
+  if (useval <=1.5 ) {; usecol=3; goto go_setcolor; }
+  if (useval <=2.0 ) {; usecol=4; goto go_setcolor; }
+  if (useval <=3.0 ) {; usecol=5; goto go_setcolor; }
+  if (useval <=4.0 ) {; usecol=6; goto go_setcolor; }
+  usecol=7; // 7th : 4ms and up
+
+go_setcolor:
+    SnailTrail[SnailNext].Colour = 7+(short int)(usecol*offval);
+    SnailTrail[SnailNext].Circling = Calculated->Circling;
+
+    SnailNext ++;
+    SnailNext %= TRAILSIZE;
+
+  }

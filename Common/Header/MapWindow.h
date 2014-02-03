@@ -139,7 +139,6 @@ typedef struct _SNAIL_POINT
 {
   float Latitude;
   float Longitude;
-  float Vario;
   double Time;
   POINT Screen;
   short Colour;
