@@ -456,6 +456,7 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
             } else if (_tcscmp(szType, _T("cone")) == 0) {
                 Task[idx].AATType = CONE; // Only Used in PGTask
                 GetAttribute(node, _T("base"), Task[idx].PGConeBase);
+                GetAttribute(node, _T("radius"), Task[idx].PGConeBaseRadius);
                 GetAttribute(node, _T("slope"), Task[idx].PGConeSlope);
                 Task[idx].OutCircle = false;
             }
@@ -854,6 +855,7 @@ bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const
             case CONE:
                 SetAttribute(node, _T("type"), _T("cone"));
                 SetAttribute(node, _T("base"), TaskPt.PGConeBase);
+                SetAttribute(node, _T("radius"), TaskPt.PGConeBaseRadius);
                 SetAttribute(node, _T("slope"), TaskPt.PGConeSlope);
                 break;
             default:

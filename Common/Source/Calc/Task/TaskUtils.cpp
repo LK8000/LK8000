@@ -97,6 +97,7 @@ void ResetTaskWpt(TASK_POINT& TaskWpt) {
     TaskWpt.OutCircle = false;
     TaskWpt.PGConeBase = 0;
     TaskWpt.PGConeSlope = 2.5;
+    TaskWpt.PGConeBaseRadius = 0.;
 }
 
 void ResetTaskStat(TASKSTATS_POINT& StatPt) {

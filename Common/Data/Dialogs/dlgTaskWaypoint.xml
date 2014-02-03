@@ -69,6 +69,9 @@
         <WndProperty Name="prpConeBase" Caption="_@M2177_" X="2" Y="-1" Width="240" Height="22" CaptionWidth="150" Font="2" Help="_@H1289_" keyboard="1">
           <DataField name="" DataType="double" DisplayFormat="%.0f %s AMSL" EditFormat="%.0f" Min="-10000" Max="10000" Step="1" />
         </WndProperty>
+        <WndProperty Name="prpConeRadius" Caption="_@M2178_" X="2" Y="-1" Width="240" Height="22" CaptionWidth="150" Font="2" Help="_@H1291_" keyboard="1">
+          <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01" />
+        </WndProperty>
       </WndFrame>
     </WndFrame>
     <WndFrame Name="frmFinish" X="80" Y="0" Width="240" Height="222" Font="2">

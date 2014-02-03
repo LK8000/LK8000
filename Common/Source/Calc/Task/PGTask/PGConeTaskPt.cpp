@@ -21,7 +21,7 @@ PGConeTaskPt::~PGConeTaskPt() {
 
 void PGConeTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
     
-    m_Radius = std::max(0.0, ( Alt - (m_AltRef + m_AltBase) ) * m_Slope);
+    m_Radius = ConeRadius(Alt, m_AltBase, m_Slope, m_RadiusBase);
     if(m_Radius > 0.0) {
         PGCicrcleTaskPt::Optimize(prev, next, Alt);
     }
@@ -30,6 +30,14 @@ void PGConeTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) 
     }
 }
 
+double PGConeTaskPt::ConeRadius(double Alt, double AltBase, double Slope, double RadiusBase) {
+    return std::max(0.0, ( Alt - AltBase ) * Slope) + RadiusBase;
+}
+
 void PGConeTaskPt::UpdateTaskPoint(TASK_POINT& TskPt ) const {
     TskPt.AATCircleRadius = m_Radius;
+   
+    if(TskPt.AATTargetAltitude < m_AltBase) {
+        TskPt.AATTargetAltitude = m_AltBase;
+    }
 }
