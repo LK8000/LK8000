@@ -28,7 +28,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   int  nearby;
 
 #if DEBUG_DRAWTRAIL
-  int toonear=0, painted=0, skipped=0, processed=0, notvisible=0, toofar=0;
+  int toonear=0, painted=0, skipped=0, processed=0, notvisible=0, toofar=0, empty=0;
 #endif
 
   bool usecolors=false;
@@ -173,6 +173,12 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
     P1 = SnailTrail[snail_index];
 
+    if (P1.Time==0) {
+	#if DEBUG_DRAWTRAIL
+	empty++;
+	#endif
+	continue;
+    }
     /////// Mark first time of display point
 
     if (((trailFirstTime<0) || (P1.Time<trailFirstTime)) && (P1.Time>=0)) {
@@ -324,7 +330,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   }
 
   #if DEBUG_DRAWTRAIL
-  StartupStore(_T("....zoom=%.3f trail max=%d  processed=%d painted=%d skipped=%d toonear=%d toofar=%d notvisible=%d \n"), MapWindow::zoom.Scale(), num_trail_max,processed, painted,skipped, toonear, toofar,notvisible);
+  StartupStore(_T("....zoom=%.3f trail max=%d  processed=%d empty=%d painted=%d skipped=%d toonear=%d toofar=%d notvisible=%d \n"), MapWindow::zoom.Scale(), num_trail_max,processed, empty, painted,skipped, toonear, toofar,notvisible);
   #endif
 
   return trailFirstTime;
