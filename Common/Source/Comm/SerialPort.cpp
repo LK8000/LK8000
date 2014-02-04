@@ -295,9 +295,11 @@ void SerialPort::Purge() {
 
 // This is not accessing I/O buffers at all. We do this on close.
 void SerialPort::DirtyPurge() {
+#if 0
     if(hPort != INVALID_HANDLE_VALUE) {
         PurgeComm(hPort, PURGE_TXABORT | PURGE_RXABORT);
     }
+#endif
 }
 
 void SerialPort::CancelWaitEvent() {
