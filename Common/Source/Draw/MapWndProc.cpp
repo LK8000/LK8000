@@ -754,6 +754,7 @@ if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 	if ( (lparam_X <= P_UngestureLeft.x) && (lparam_Y <= P_UngestureLeft.y) ) {
 		
 		if (!CustomKeyHandler(CKI_TOPLEFT)) {
+			#if OLDZOOM
 			// Well we better NOT play a click while zoomin in and out, because on slow
 			// devices it will slow down the entire process.
 			// Instead, we make a click from InputEvents, debounced.
@@ -761,6 +762,12 @@ if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 			// zoom in
 			InputEvents::processKey(wParam);
 			return TRUE;
+			#else
+			// we click in any case to let the user have a response feeling
+			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+			MapWindow::zoom.EventScaleZoom(1);
+			return TRUE;
+			#endif
 		}
 		MapWindow::RefreshMap();
 		break;
@@ -801,9 +808,16 @@ if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 	{ 
 		if ( (lparam_X > P_UngestureRight.x) && (lparam_Y <= P_UngestureRight.y) ) {
 			if (!CustomKeyHandler(CKI_TOPRIGHT)) {
+				#if OLDZOOM
 				wParam = 0x26; 
 				InputEvents::processKey(wParam);
 				return TRUE;
+				#else
+				// we click in any case to let the user have a response feeling
+				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+				MapWindow::zoom.EventScaleZoom(1);
+				return TRUE;
+				#endif
 			}
 			MapWindow::RefreshMap();
 			break;
@@ -969,6 +983,7 @@ _continue:
 						}
 					}
 
+					#if OLDZOOM
 					if (lparam_Y<Y_Up) {
 						// pg UP = zoom in
 						wParam = 0x26;
@@ -991,6 +1006,22 @@ _continue:
 					// no sound for zoom clicks
 					InputEvents::processKey(wParam);
 					dwDownTime= 0L;
+					#else // NEW ZOOM
+					if (lparam_Y<Y_Up) {
+						MapWindow::zoom.EventScaleZoom(1);
+						if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+					} else {
+						if (lparam_Y>Y_Down) {
+							MapWindow::zoom.EventScaleZoom(-1);
+							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+						} else {
+							// process center key, do nothing 
+							// v5 obsoleted, should not happen
+							break;
+						}
+					}
+					dwDownTime= 0L;
+					#endif // new zoom
 
 					return TRUE; 
 				}

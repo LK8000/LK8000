@@ -652,7 +652,10 @@ bool InputEvents::processButton(int bindex) {
 		int lastMode = thismode;
 
 		// JMW need a debounce method here..
+		#if (WINDOWSPC>0)
+		#else
 		if (!Debounce()) return true;
+		#endif
 
 		// 101212 moved here so that an internal resource played will not stop LKsound running
 		#ifndef DISABLEAUDIO
@@ -720,6 +723,12 @@ bool InputEvents::processKey(int dWord) {
     int lastMode = mode;
     const TCHAR *pLabelText = NULL;
 
+    //
+    // A note for LK v5:  this stuff is obsoleted and 38 and 40 codes are no more getting here.
+    // This is just a reminder TODO: remove this stuff and get rid of BigZoom.
+    // The Debounce here was needed for touch buttons on old PNAs that were very responsive.
+    // We do Debounce also in MapWndProc in any case now. --paolo
+    //
     // Accelerate zoom in/out shortening the debounce time
     // We do this only for the case of zoom in/out virtual key pressed.
     // The fastzoom process is triggered by BigZoom set.
@@ -744,7 +753,10 @@ bool InputEvents::processKey(int dWord) {
 	#endif
 	MapWindow::RefreshMap();
     } else {
+	#if (WINDOWSPC>0)
+	#else
 	if (!Debounce()) return true;
+	#endif
     }
 
     int i;
@@ -1175,6 +1187,7 @@ void InputEvents::eventZoom(const TCHAR* misc) {
   #if USEBIGZOOM
   MapWindow::zoom.BigZoom(true);
   #endif
+  MapWindow::RefreshMap();
 
 }
 
