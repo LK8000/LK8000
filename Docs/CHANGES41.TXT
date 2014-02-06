@@ -80,6 +80,31 @@ Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
 
+
+
+===========
+Version 4.1I
+===========
+
+CHANGES
+
+. Faster drawing of snail trail
+
+. Update conical ESS tunpoint :
+  add parameters for radius of base
+
+. Faster ZOOM response
+
+. Automatic COM port reset timeout after 45 seconds. Previously 3 minutes, too much.
+
+
+
+FIXES
+
+. Fixed bug in 4.1 top right screen customkey called also when not in multimap, and resulting in reqA sort box not working in the landables pages.
+
+
+
 ===========
 Version 4.H
 ===========
