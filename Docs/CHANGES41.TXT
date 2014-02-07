@@ -86,6 +86,11 @@ Automatically providing the minimal, current and max MC possible for the final g
 Version 4.1I
 ===========
 
+NEW
+
+Add "restart Com Port" to customKeys or Custom Menu
+Add support for another bluetooth keyboard and mode 1 and mode 2 usage
+
 CHANGES
 
 . Faster drawing of snail trail
