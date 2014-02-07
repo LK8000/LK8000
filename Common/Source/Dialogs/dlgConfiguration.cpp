@@ -164,6 +164,15 @@ int GlobalToBoxType(int i) {
 		case MODELTYPE_PNA_MINIMAP:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaMinimap;
 				break;
+		case MODELTYPE_PNA_GENERIC_BTKA:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTKA;
+				break;
+		case MODELTYPE_PNA_GENERIC_BTKB:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTKB;
+				break;
+		case MODELTYPE_PNA_GENERIC_BTKC:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTKC;
+				break;
 		case MODELTYPE_PNA_GENERIC_BTK1:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTK1;
 				break;
@@ -2725,7 +2734,11 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("Holux FunTrek GM-130 / GM-132"));
     dfe->addEnumText(TEXT("Medion S3747 / Royaltek BV-3200"));
     dfe->addEnumText(TEXT("LX MiniMap"));
+    dfe->addEnumText(TEXT("Keyboard mode A"));
+    dfe->addEnumText(TEXT("KeyBoard mode B"));
+    dfe->addEnumText(TEXT("KeyBoard mode C"));
     dfe->addEnumText(TEXT("KeyBoard 1"));
+    dfe->addEnumText(TEXT("KeyBoard 2"));
 
     dfe->Set(GlobalToBoxType(GlobalModelType));
     wp->RefreshDisplay();
@@ -4545,6 +4558,15 @@ int ival;
 	break;
       case apImPnaMinimap:
 	GlobalModelType = MODELTYPE_PNA_MINIMAP;
+	break;
+      case apImPnaGenericBTKA:
+	GlobalModelType = MODELTYPE_PNA_GENERIC_BTKA;
+	break;
+      case apImPnaGenericBTKB:
+	GlobalModelType = MODELTYPE_PNA_GENERIC_BTKB;
+	break;
+      case apImPnaGenericBTKC:
+	GlobalModelType = MODELTYPE_PNA_GENERIC_BTKC;
 	break;
       case apImPnaGenericBTK1:
 	GlobalModelType = MODELTYPE_PNA_GENERIC_BTK1;

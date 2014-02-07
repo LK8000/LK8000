@@ -106,6 +106,15 @@ bool SetModelName(DWORD Temp) {
   case MODELTYPE_PNA_MINIMAP:
      _tcscpy(GlobalModelName,_T("MINIMAP"));
      return true;
+  case MODELTYPE_PNA_GENERIC_BTKA:
+     _tcscpy(GlobalModelName,_T("Keyboard A"));
+     return true;
+  case MODELTYPE_PNA_GENERIC_BTKB:
+     _tcscpy(GlobalModelName,_T("Keyboard B"));
+     return true;
+  case MODELTYPE_PNA_GENERIC_BTKC:
+     _tcscpy(GlobalModelName,_T("Keyboard C"));
+     return true;
   case MODELTYPE_PNA_GENERIC_BTK1:
      _tcscpy(GlobalModelName,_T("Keyboard 1"));
      return true;

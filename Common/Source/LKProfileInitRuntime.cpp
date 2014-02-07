@@ -187,24 +187,42 @@ void LKProfileInitRuntime(void) {
 	#endif
 		
   }
+  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKA ) {
+  	#if TESTBENCH
+	StartupStore(TEXT(". USING KEYBOARD MODE A%s"),NEWLINE);
+	#endif
+		
+  }
   else
+  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKB ) {
+  	#if TESTBENCH
+	StartupStore(TEXT(". USING KEYBOARD MODE B%s"),NEWLINE);
+	#endif
+		
+  }
+  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKC ) {
+  	#if TESTBENCH
+	StartupStore(TEXT(". USING KEYBOARD MODE C%s"),NEWLINE);
+	#endif
+		
+  }
   if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1 ) {
   	#if TESTBENCH
-	StartupStore(TEXT(". USING KEYBOARD MODE 1%s"),NEWLINE);
+	StartupStore(TEXT(". USING KEYBOARD TYPE 1%s"),NEWLINE);
 	#endif
 		
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK2 ) {
   	#if TESTBENCH
-	StartupStore(TEXT(". USING KEYBOARD MODE 2%s"),NEWLINE);
+	StartupStore(TEXT(". USING KEYBOARD TYPE 2%s"),NEWLINE);
 	#endif
 		
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK3 ) {
   	#if TESTBENCH
-	StartupStore(TEXT(". USING KEYBOARD MODE 3%s"),NEWLINE);
+	StartupStore(TEXT(". USING KEYBOARD TYPE 3%s"),NEWLINE);
 	#endif
 		
   }

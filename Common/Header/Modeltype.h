@@ -36,9 +36,12 @@
 
 #define MODELTYPE_PNA_PNA		10000	// generic PNA
 #define MODELTYPE_PNA			10000
-#define MODELTYPE_PNA_GENERIC_BTK1	10010 // generic bt keyboard mode 1
-#define MODELTYPE_PNA_GENERIC_BTK2	10011 // generic bt keyboard mode 2
-#define MODELTYPE_PNA_GENERIC_BTK3	10012 // generic bt keyboard mode 3
+#define MODELTYPE_PNA_GENERIC_BTKA	10011 // generic bt keyboard mode A
+#define MODELTYPE_PNA_GENERIC_BTKB	10012 // generic bt keyboard mode B
+#define MODELTYPE_PNA_GENERIC_BTKC	10013 // generic bt keyboard mode C
+#define MODELTYPE_PNA_GENERIC_BTK1	10021 // generic bt keyboard type 1
+#define MODELTYPE_PNA_GENERIC_BTK2	10022 // generic bt keyboard type 2
+#define MODELTYPE_PNA_GENERIC_BTK3	10023 // generic bt keyboard type 3
 #define MODELTYPE_PNA_HP		10200	// Generic HP
 #define MODELTYPE_PNA_HP31X		10201	// HP310, 312, 314, 316
 

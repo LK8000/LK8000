@@ -74,9 +74,12 @@ typedef enum{
 	apImPnaFuntrek,
 	apImPnaRoyaltek3200,
         apImPnaMinimap,
+	apImPnaGenericBTKA,
+	apImPnaGenericBTKB,
+	apImPnaGenericBTKC,
 	apImPnaGenericBTK1,
 	apImPnaGenericBTK2,
-	apImPnaGenericBTK3
+	apImPnaGenericBTK3 
 }InfoBoxModelAppearance_t;
 
 typedef enum{
