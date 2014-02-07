@@ -1351,6 +1351,7 @@ _continue:
 	// This is the handler for bluetooth keyboards
 	//
 	// BTK1 is representing the screen in portrait mode. Space is on the right.
+	// Keyboard type 1.
 	//
 	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1 ) {
 		#ifndef WINDOWSPC
@@ -1471,6 +1472,9 @@ _continue:
 			// THE TOP-RIGHT
 			//
 			case 13: // enter
+			case  8: // BS! not the number
+			case 'L':
+			case 'l':
 			case 190:
 			case 186:
 				goto _key_topright;
@@ -1483,19 +1487,299 @@ _continue:
 				goto _key_enter;
 				break;
 
+			default:
+				break;
+		}
+	}
+
+	//
+	// BTK2 is representing the screen in portrait mode. Space is on the right.
+	// Keyboard type 2.
+	//
+	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTK2 ) {
+		#ifndef WINDOWSPC
+		if (!Debounce(250)) return FALSE;
+		#endif
+		dwDownTime= 0L;
+		switch(wParam) {
 			//
-			// the special top center keys
+			// THE BOTTOM BAR
 			//
-			case 8:
+			case '1':
+			case '2':
+				goto _key_bottombar_previous;
+				break;
+				
+			case 'a':
+			case 'A':
+			case 's':
+			case 'S':
+			case 'q':
+			case 'Q':
+			case 'W':
+			case 'w':
+				goto _key_next_mode;
+				break;
+
+			case 'z':
+			case 'Z':
+			case 'x':
+			case 'X':
+				goto _key_bottombar_next;
+				break;
+
+			//
+			// THE LEFT SCREEN
+			//
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+				goto _key_previous_page;
+				break;
+
+			//
+			// THE RIGHT SCREEN
+			//
+			case 0x20: // space
+				goto _key_next_page;
+				break;
+
+
+			//
+			// THE CENTER-UP
+			//
+			case 'I':
+			case 'i':
+			case 'K':
+			case 'k':
+			case 188:
+
+			case 'M':
+			case 'm':
+			case 'J':
+			case 'j':
+			case 'U':
+			case 'u':
+			case 'N':
+			case 'n':
+			case 'H':
+			case 'h':
+			case 'Y':
+			case 'y':
+				goto _key_up;
+				break;
+
+			//
+			// THE CENTER-DOWN
+			//
+			case 'T':
+			case 't':
+			case 'G':
+			case 'g':
+			case 'B':
+			case 'b':
+			case 'R':
+			case 'r':
+			case 'F':
+			case 'f':
+			case 'V':
+			case 'v':
+			case 'E':
+			case 'e':
+			case 'D':
+			case 'd':
+			case 'C':
+			case 'c':
+				goto _key_down;
+				break;
+
+			//
+			// THE TOP-LEFT
+			//
+			case '0':
+			case '9':
+			case 'P':
+			case 'p':
+			case 'O':
+			case 'o':
+				goto _key_topleft;
+				goto _key_topleft;
+				break;
+
+			//
+			// THE TOP-RIGHT
+			//
+			case 13: // enter
+			case 8: // Del
 			case 'L':
 			case 'l':
-				goto _key_topcenter;
+			case 190:
+			case 186:
+				goto _key_topright;
+				break;
+
+			//
+			// the special Shift and Ctrol
+			//
+			case 10:
+			case 11:
+				goto _key_enter;
 				break;
 
 			default:
 				break;
 		}
 	}
+
+	//
+	// BTKA is for using 1 2 3 4 5 6 7 8 9 0  assigned to customkeys of customenu.
+	// universal Keyboard type
+	//
+	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTKA ) {
+		#ifndef WINDOWSPC
+		if (!Debounce(250)) return FALSE;
+		#endif
+		dwDownTime= 0L;
+		switch(wParam) {
+			case '1':
+				CustomKeyHandler(CustomMenu1+1000);
+				break;
+			case '2':
+				CustomKeyHandler(CustomMenu2+1000);
+				break;
+			case '3':
+				CustomKeyHandler(CustomMenu3+1000);
+				break;
+			case '4':
+				CustomKeyHandler(CustomMenu4+1000);
+				break;
+			case '5':
+				CustomKeyHandler(CustomMenu5+1000);
+				break;
+			case '6':
+				CustomKeyHandler(CustomMenu6+1000);
+				break;
+			case '7':
+				CustomKeyHandler(CustomMenu7+1000);
+				break;
+			case '8':
+				CustomKeyHandler(CustomMenu8+1000);
+				break;
+			case '9':
+				CustomKeyHandler(CustomMenu9+1000);
+				break;
+			case '0':
+				CustomKeyHandler(CustomMenu10+1000);
+				break;
+			default:
+				break;
+		}
+	}
+
+	//
+	// BTKB is for using 1 2 3 4 5 6 7 8 9 0  assigned to customkeys of customenu.
+	// universal Keyboard type
+	//
+	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTKB ) {
+		#ifndef WINDOWSPC
+		if (!Debounce(250)) return FALSE;
+		#endif
+		dwDownTime= 0L;
+		switch(wParam) {
+			case '1':
+			case '2':
+			case 'Q':
+			case 'W':
+			case 'q':
+			case 'w':
+				CustomKeyHandler(CustomMenu1+1000);
+				break;
+			case '3':
+			case '4':
+			case 'e':
+			case 'E':
+			case 'r':
+			case 'R':
+				CustomKeyHandler(CustomMenu2+1000);
+				break;
+			case '5':
+			case '6':
+			case 't':
+			case 'T':
+			case 'Y':
+			case 'y':
+				CustomKeyHandler(CustomMenu3+1000);
+				break;
+			case '7':
+			case '8':
+			case 'u':
+			case 'i':
+			case 'U':
+			case 'I':
+				CustomKeyHandler(CustomMenu4+1000);
+				break;
+			case '9':
+			case '0':
+			case 'O':
+			case 'o':
+			case 'P':
+			case 'p':
+				CustomKeyHandler(CustomMenu5+1000);
+				break;
+			case 'A':
+			case 'Z':
+			case 'S':
+			case 'X':
+			case 'a':
+			case 'z':
+			case 's':
+			case 'x':
+				CustomKeyHandler(CustomMenu6+1000);
+				break;
+			case 'D':
+			case 'F':
+			case 'C':
+			case 'V':
+			case 'd':
+			case 'f':
+			case 'c':
+			case 'v':
+				CustomKeyHandler(CustomMenu7+1000);
+				break;
+			case 'G':
+			case 'H':
+			case 'B':
+			case 'N':
+			case 'g':
+			case 'h':
+			case 'b':
+			case 'n':
+				CustomKeyHandler(CustomMenu8+1000);
+				break;
+			case 'J':
+			case 'j':
+			case 'K':
+			case 'k':
+			case 'M':
+			case 'm':
+			case 188:
+				CustomKeyHandler(CustomMenu9+1000);
+				break;
+			case 13: // enter
+			case 8: // Del
+			case 'L':
+			case 'l':
+			case 190:
+				CustomKeyHandler(CustomMenu10+1000);
+				break;
+			default:
+				break;
+		}
+	}
+
 
 // this goto line after the end of transcoding code!
 goto _skipout;
@@ -1635,12 +1919,14 @@ _key_topleft:
 
 	break;
 
+#if 0
 _key_topcenter:
 	if ( isListPage() )
 		goto _key_gesture_down;
 	else
 		goto _key_topright;
 	break;
+#endif
 
 #if 0
 _key_overtarget_rotate:
