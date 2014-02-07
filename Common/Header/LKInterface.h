@@ -98,6 +98,7 @@ typedef enum{
 	ckSonarToggle,
 	ckResetView,
 	ckMapOrient,
+    ckResetComm,
 	ckTOP,
 } CustomKeyMode_t;
 
