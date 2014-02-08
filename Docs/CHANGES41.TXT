@@ -108,7 +108,7 @@ FIXES
 
 . Fixed bug in 4.1 top right screen customkey called also when not in multimap, and resulting in reqA sort box not working in the landables pages.
 
-
+. Fixed a possible lockup problem on program exit
 
 ===========
 Version 4.H
