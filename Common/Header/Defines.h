@@ -15,7 +15,7 @@
 #define NEWLINE         _T(SNEWLINE)
 
 /* 
- * General defines for LK8000
+ * General defines for LK8000 
  */
 
 #define INVALID_GR	999
