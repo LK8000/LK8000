@@ -193,6 +193,7 @@ void LKBatteryManager() {
 			if (GiveBatteryWarnings())
 	// LKTOKEN  _@M124_ = "BATTERY IS RECHARGING" 
 			DoStatusMessage(gettext(TEXT("_@M124_")));
+  			last_time=GPS_INFO.Time;
 		}
 	}
 	return;
@@ -205,6 +206,7 @@ void LKBatteryManager() {
 	// LKTOKEN  _@M123_ = "BATTERY 100% CHARGED" 
 		DoStatusMessage(gettext(TEXT("_@M123_")));
 		warn100=false;
+  		last_time=GPS_INFO.Time;
 	}
 	return;
   }
