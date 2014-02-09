@@ -11,6 +11,11 @@
 #include <cstddef>
 
 template<typename T, size_t N>
+inline size_t array_size(T (&array)[N])  {
+	return N;
+}
+
+template<typename T, size_t N>
 T* begin(T (&array)[N]) {
 	return &array[0];
 }
