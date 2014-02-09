@@ -1624,8 +1624,8 @@ _continue:
 			//
 			// the special Shift and Ctrol
 			//
-			case 10:
-			case 11:
+			case 0x10:
+			case 0x11:
 				goto _key_enter;
 				break;
 
