@@ -1633,6 +1633,148 @@ _continue:
 				break;
 		}
 	}
+	//
+	// BTK3 is representing the screen in portrait mode. Space is on the right.
+	// Keyboard type 3.
+	//
+	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTK3 ) {
+		#ifndef WINDOWSPC
+		if (!Debounce(250)) return FALSE;
+		#endif
+		dwDownTime= 0L;
+		switch(wParam) {
+			//
+			// THE BOTTOM BAR
+			//
+			case '1':
+			case '2':
+				goto _key_bottombar_previous;
+				break;
+				
+			case 'a':
+			case 'A':
+			case 's':
+			case 'S':
+			case 'q':
+			case 'Q':
+			case 'W':
+			case 'w':
+				goto _key_next_mode;
+				break;
+
+			case 'z':
+			case 'Z':
+			case 'x':
+			case 'X':
+				goto _key_bottombar_next;
+				break;
+
+			//
+			// THE LEFT SCREEN
+			//
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+				goto _key_previous_page;
+				break;
+
+			//
+			// THE RIGHT SCREEN
+			//
+			case 0x20: // space
+			case 0xbc: // 188
+			case 0xbe: // 190
+				goto _key_next_page;
+				break;
+
+
+			//
+			// THE CENTER-UP
+			//
+			case 'I':
+			case 'i':
+			case 'K':
+			case 'k':
+			case  0xba: // 186
+
+			case 'M':
+			case 'm':
+			case 'J':
+			case 'j':
+			case 'U':
+			case 'u':
+			case 'N':
+			case 'n':
+			case 'H':
+			case 'h':
+			case 'Y':
+			case 'y':
+				goto _key_up;
+				break;
+
+			//
+			// THE CENTER-DOWN
+			//
+			case 'T':
+			case 't':
+			case 'G':
+			case 'g':
+			case 'B':
+			case 'b':
+			case 'R':
+			case 'r':
+			case 'F':
+			case 'f':
+			case 'V':
+			case 'v':
+			case 'E':
+			case 'e':
+			case 'D':
+			case 'd':
+			case 'C':
+			case 'c':
+				goto _key_down;
+				break;
+
+			//
+			// THE TOP-LEFT
+			//
+			case '0':
+			case '9':
+			case 'P':
+			case 'p':
+			case 'O':
+			case 'o':
+				goto _key_topleft;
+				goto _key_topleft;
+				break;
+
+			//
+			// THE TOP-RIGHT
+			//
+			case 13: // enter
+			case 8: // Del
+			case 'L':
+			case 'l':
+			case 0xde: // 222
+				goto _key_topright;
+				break;
+
+			//
+			// the special Shift and Ctrol
+			//
+			case 0x10:
+			case 0x11:
+				goto _key_enter;
+				break;
+
+			default:
+				break;
+		}
+	}
 
 	//
 	// BTKA is for using 1 2 3 4 5 6 7 8 9 0  assigned to customkeys of customenu.

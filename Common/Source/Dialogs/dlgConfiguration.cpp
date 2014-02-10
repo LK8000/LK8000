@@ -2734,11 +2734,12 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("Holux FunTrek GM-130 / GM-132"));
     dfe->addEnumText(TEXT("Medion S3747 / Royaltek BV-3200"));
     dfe->addEnumText(TEXT("LX MiniMap"));
-    dfe->addEnumText(TEXT("Keyboard mode A"));
-    dfe->addEnumText(TEXT("KeyBoard mode B"));
-    dfe->addEnumText(TEXT("KeyBoard mode C"));
+    dfe->addEnumText(TEXT("Keyboard A"));
+    dfe->addEnumText(TEXT("KeyBoard B"));
+    dfe->addEnumText(TEXT("KeyBoard C"));
     dfe->addEnumText(TEXT("KeyBoard 1"));
     dfe->addEnumText(TEXT("KeyBoard 2"));
+    dfe->addEnumText(TEXT("KeyBoard 3"));
 
     dfe->Set(GlobalToBoxType(GlobalModelType));
     wp->RefreshDisplay();
