@@ -128,7 +128,7 @@ void UpdateConfIP(void) {
   // Check if we have INFOMODE
   if (ConfIP[1][0]==false && ConfIP[1][1]==false 
 	&& ConfIP[1][2]==false && ConfIP[1][3]==false 
-	&& ConfIP[1][4]==false && ConfIP[1][5]==false) {
+	&& ConfIP[1][4]==false && ConfIP[1][5]==false && ConfIP[1][6]==false) {
 	ConfMP[1]=false;
   } else
 	ConfMP[1]=true;
