@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "LKProcess.h"
+#include "utils/stl_utils.h"
 
 
 // ALL TIME VALUES ARE IN SECONDS! 
@@ -143,12 +144,12 @@ int InitActiveGate() {
 }
 
 void AlertGateOpen(int gate) {
-  TCHAR tag[30];
+  TCHAR tag[100] ={0};
   if (gate == (PGNumberOfGates-1)) {
-	// LKTOKEN  _@M372_ = "LAST GATE IS OPEN" 
-	_tcscpy(tag,gettext(TEXT("_@M372_")));
+	// LKTOKEN  _@M372_ = "LAST GATE IS OPEN"
+	_tcsncpy(tag,gettext(TEXT("_@M372_")), array_size(tag)-1);
   } else {
-	_stprintf(tag,_T("%s %d of %d %s"),
+	_sntprintf(tag, array_size(tag)-1, _T("%s %d of %d %s"),
 	// LKTOKEN  _@M315_ = "GATE" 
 		gettext(TEXT("_@M315_")),
 		gate+1, PGNumberOfGates,
