@@ -14,12 +14,11 @@ bool CommandResolution=false;
 #endif
 
 #ifndef UNDER_CE
-void LK8000GetOpts(LPSTR CommandLine)
+void LK8000GetOpts()
 #else
-void LK8000GetOpts(LPWSTR CommandLine)
+void LK8000GetOpts()
 #endif
 {
-  (void)CommandLine;
 
 #if (WINDOWSPC>0) 
   SCREENWIDTH=800;
