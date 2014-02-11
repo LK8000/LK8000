@@ -325,9 +325,9 @@ bool CheckFilesystemWritable() {
   FILE *stream;
   stream=_tfopen(srcfile,_T("a"));
   if (stream==NULL) return false;
-  if (fprintf(stream,"FILESYSTEM WRITE CHECK, THIS FILE CAN BE REMOVED ANY TIME\n")<0) return false;
-  fclose(stream);
-  return(true);
+  bool success = fprintf(stream,"FILESYSTEM WRITE CHECK, THIS FILE CAN BE REMOVED ANY TIME\n") >= 0;
+  success &= fclose(stream) == 0;
+  return(success);
 }
 
 
