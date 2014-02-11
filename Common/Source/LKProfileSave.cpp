@@ -253,7 +253,11 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryPGAutoZoomThreshold,PGAutoZoomThreshold);
   rprintf(szRegistryPGClimbZoom,PGClimbZoom);
   rprintf(szRegistryPGCruiseZoom,PGCruiseZoom);
+  #ifdef PGOPT_FIX
+  rprintf(szRegistryPGOptimizeRoute,PGOptimizeRoute_Config);
+  #else
   rprintf(szRegistryPGOptimizeRoute,PGOptimizeRoute);
+  #endif
 // >> Moved to PilotFile <<
 //  rprintf(szRegistryPilotName,PilotName_Config);
 //  >> Moved to AircraftFile <<

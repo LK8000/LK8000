@@ -2997,7 +2997,11 @@ static void setVariables(void) {
 	// LKTOKEN  _@M259_ = "Enabled" 
     dfe->addEnumText(gettext(TEXT("_@M259_")));
     dfe = (DataFieldEnum*)wp->GetDataField();
+    #ifdef PGOPT_FIX
+    dfe->Set(PGOptimizeRoute_Config);
+    #else
     dfe->Set(PGOptimizeRoute);
+    #endif
     wp->RefreshDisplay();
   }
 
@@ -4397,8 +4401,17 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
+    #ifdef PGOPT_FIX
+    if (PGOptimizeRoute_Config != (wp->GetDataField()->GetAsInteger())) {
+    #else
     if (PGOptimizeRoute != (wp->GetDataField()->GetAsInteger())) {
+    #endif
+      #ifdef PGOPT_FIX
+      PGOptimizeRoute_Config = (wp->GetDataField()->GetAsInteger());
+      PGOptimizeRoute = PGOptimizeRoute_Config;
+      #else
       PGOptimizeRoute = (wp->GetDataField()->GetAsInteger());
+      #endif
 
       if (ISPARAGLIDER) {
 	    if(PGOptimizeRoute) {

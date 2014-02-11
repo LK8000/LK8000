@@ -79,7 +79,13 @@
 // Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
 #define USEBIGZOOM	1	
 
-
+// Fix "Optimized Route" config setting.  There WAS only one variable that was being
+// use for both saved config and runtime use.  This fix adds a second (PGOptimizeRoute_Config)
+// and changes the code where needed to use the appropriate one of the two.  For example,
+// this fix makes it so that toggling this setting with a custom key only changes the runtime
+// variable, not the saved config setting.
+// Eric Carden, February 11, 2014
+#define PGOPT_FIX
 
 
 
