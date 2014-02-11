@@ -137,10 +137,10 @@ void RefreshTaskWaypoint(int i) {
             --j;
         }
         if(j>=0) {
-            DistanceBearing(WayPointList[Task[j].Index].Latitude, 
-                            WayPointList[Task[j].Index].Longitude,
-                            WayPointList[Task[i].Index].Latitude,   
+            DistanceBearing(WayPointList[Task[i].Index].Latitude, 
                             WayPointList[Task[i].Index].Longitude,
+                            WayPointList[Task[j].Index].Latitude,   
+                            WayPointList[Task[j].Index].Longitude,
                             NULL,
                             &Task[i].InBound);
         } else {
@@ -158,14 +158,17 @@ void RefreshTaskWaypoint(int i) {
             }
         }
       } else {
-            DistanceBearing(WayPointList[Task[i-1].Index].Latitude, 
-                      WayPointList[Task[i-1].Index].Longitude,
-                      WayPointList[Task[i].Index].Latitude,   
+            DistanceBearing(WayPointList[Task[i].Index].Latitude,   
                       WayPointList[Task[i].Index].Longitude,
+                      WayPointList[Task[i-1].Index].Latitude,
+                      WayPointList[Task[i-1].Index].Longitude,
                       &Task[i].Leg,
                       &Task[i].InBound);          
       }
            
+      Task[i].InBound += 180;
+      if (Task[i].InBound >= 360)
+        Task[i].InBound -= 360;
 
       Task[i-1].OutBound = Task[i].InBound;
       Task[i-1].Bisector = BiSector(Task[i-1].InBound,Task[i-1].OutBound);
