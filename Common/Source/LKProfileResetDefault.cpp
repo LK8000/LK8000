@@ -236,6 +236,9 @@ void LKProfileResetDefault(void) {
   TrackBar=1;
 
   PGOptimizeRoute=true;
+  #ifdef PGOPT_FIX
+  PGOptimizeRoute_Config = true;
+  #endif
 
   GlideBarMode = (GlideBarMode_t)gbDisabled;
 

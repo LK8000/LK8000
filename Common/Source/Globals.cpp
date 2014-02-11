@@ -272,7 +272,9 @@ void Globals_Init(void) {
   McOverlay=true;
   TrackBar=false;
   PGOptimizeRoute=true;
-
+  #ifdef PGOPT_FIX
+  PGOptimizeRoute_Config=true;
+  #endif
   WindCalcSpeed=0;
   WindCalcTime=WCALC_TIMEBACK;
   RepeatWindCalc=false;
