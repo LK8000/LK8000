@@ -18,7 +18,7 @@ TCHAR * LKGetLocalPath(void) {
   static TCHAR localpath[MAX_PATH+1];
 
   if (DoInit[MDI_GETLOCALPATH]) {
-	#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
+	#if ((WINDOWSPC <=0) )
 	//
 	// For PNAs the localpath is taken from the application exec path
 	// example> \sdmmc\bin\Program.exe  results in localpath=\sdmmc\LK8000

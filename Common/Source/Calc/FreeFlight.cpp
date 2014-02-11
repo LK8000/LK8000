@@ -320,7 +320,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   backtrue:
   // In real flight on a fly device (assuming a windowsPC is NOT a fly device)
   // give no messages during critical phases of flight
-  #if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+  #if ( WINDOWSPC==0 )
   if (SIMMODE)
   #endif
   DoStatusMessage(gettext(TEXT("_@M1452_")),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"

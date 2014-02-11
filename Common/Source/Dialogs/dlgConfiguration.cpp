@@ -3309,7 +3309,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoSoundVolume")); // VENTA4
   if (wp) {
     wp->SetVisible(true); // 091115 changed to true
-#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+#if ( WINDOWSPC==0 )
     	wp->SetVisible(true);
 #endif
     wp->GetDataField()->Set(EnableAutoSoundVolume);

@@ -297,7 +297,7 @@ void LKProfileResetDefault(void) {
 
   BallastSecsToEmpty =  120;
 
-  #if (!defined(WINDOWSPC) || (WINDOWSPC==0))
+  #if ((WINDOWSPC==0))
   SetSystemTimeFromGPS = true;
   #else
   SetSystemTimeFromGPS = false;

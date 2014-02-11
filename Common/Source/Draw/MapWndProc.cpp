@@ -18,6 +18,8 @@
 #include "Logger.h"
 #include "Dialogs.h"
 
+#define KEYDEBOUNCE 100
+
 // #define DEBUG_VIRTUALKEYS
 // #define DEBUG_MAPINPUT
 
@@ -1354,8 +1356,8 @@ _continue:
 	// Keyboard type 1.
 	//
 	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1 ) {
-		#ifndef WINDOWSPC
-		if (!Debounce(250)) return FALSE;
+		#if (WINDOWSPC<1)
+		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
 		dwDownTime= 0L;
 		switch(wParam) {
@@ -1497,8 +1499,8 @@ _continue:
 	// Keyboard type 2.
 	//
 	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTK2 ) {
-		#ifndef WINDOWSPC
-		if (!Debounce(250)) return FALSE;
+		#if (WINDOWSPC<1)
+		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
 		dwDownTime= 0L;
 		switch(wParam) {
@@ -1638,8 +1640,8 @@ _continue:
 	// Keyboard type 3.
 	//
 	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTK3 ) {
-		#ifndef WINDOWSPC
-		if (!Debounce(250)) return FALSE;
+		#if (WINDOWSPC<1)
+		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
 		dwDownTime= 0L;
 		switch(wParam) {
@@ -1781,8 +1783,8 @@ _continue:
 	// universal Keyboard type
 	//
 	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTKA ) {
-		#ifndef WINDOWSPC
-		if (!Debounce(250)) return FALSE;
+		#if (WINDOWSPC<1)
+		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
 		dwDownTime= 0L;
 		switch(wParam) {
@@ -1826,8 +1828,8 @@ _continue:
 	// universal Keyboard type
 	//
 	if ( GlobalModelType == MODELTYPE_PNA_GENERIC_BTKB ) {
-		#ifndef WINDOWSPC
-		if (!Debounce(250)) return FALSE;
+		#if (WINDOWSPC<1)
+		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
 		dwDownTime= 0L;
 		switch(wParam) {

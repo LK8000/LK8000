@@ -482,7 +482,7 @@ void Globals_Init(void) {
   EnableMultipleStartPoints = false;
   StartHeightRef = 0; // MSL
   FAI28_45Threshold = FAI_BIG_THRESHOLD;
-  #if (!defined(WINDOWSPC) || (WINDOWSPC==0))
+  #if ( (WINDOWSPC==0))
   SetSystemTimeFromGPS = true;
   #else
   SetSystemTimeFromGPS = false;

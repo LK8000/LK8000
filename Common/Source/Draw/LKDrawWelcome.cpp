@@ -111,7 +111,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 	MessageBoxX(hWndMapWindow, nopath, gettext(TEXT("_@M1209_")), MB_OK|MB_ICONEXCLAMATION);
 	WarningHomeDir=false;
   }
-#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+#if ( WINDOWSPC==0 )
   static bool checktickcountbug=true; // 100510
   if (checktickcountbug) {
 	DWORD counts=GetTickCount();

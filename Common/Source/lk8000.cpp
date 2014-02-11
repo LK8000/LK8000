@@ -231,7 +231,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   StartupStore(_T(". Program data directory is <%s>\n"),LKGetLocalPath());
   #endif
 
-  #if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+  #if ( WINDOWSPC==0 )
   #if TESTBENCH
   StartupStore(TEXT(". Install/copy system objects in device memory%s"),NEWLINE);
   #endif
@@ -361,7 +361,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #else
   TCHAR sTmpA[MAX_PATH], sTmpB[MAX_PATH];
   LocalPath(sTmpA,_T(""));
-#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+#if ( WINDOWSPC==0 )
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
     CreateProgressDialog(gettext(TEXT("_@M1208_")));
@@ -370,7 +370,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #endif
   wsprintf(sTmpB, TEXT("Conf=%s"),sTmpA);
   CreateProgressDialog(sTmpB); 
-#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+#if ( WINDOWSPC==0 )
   if ( !datadir ) {
     Sleep(3000);
     // LKTOKEN _@M1209_ "CHECK INSTALLATION!"

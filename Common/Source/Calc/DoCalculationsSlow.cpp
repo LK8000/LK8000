@@ -103,7 +103,7 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	// watchout for replay files 
 	if (LastSearchBestTime > Basic->Time ) LastSearchBestTime=Basic->Time-(BESTALTERNATEINTERVAL+10);
 
-#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+#if ( WINDOWSPC==0 )
 	if ( Basic->Time > LastSearchBestTime+BESTALTERNATEINTERVAL ) {
 		LastSearchBestTime = Basic->Time;
 		SearchBestAlternate(Basic, Calculated);

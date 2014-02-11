@@ -379,7 +379,7 @@ bool SerialPort::Write(const void *data, size_t length) {
 extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 
 DWORD SerialPort::RxThread() {
-#if (!defined(WINDOWSPC) || (WINDOWSPC == 0)) && !NEWCOMM	// 100222
+#if ( (WINDOWSPC == 0)) && !NEWCOMM	// 100222
     DWORD dwCommModemStatus = 0;
     // Specify a set of events to be monitored for the port.
 #endif
@@ -397,7 +397,7 @@ DWORD SerialPort::RxThread() {
     // Specify a set of events to be monitored for the port.
     _dwMask = EV_RXFLAG | EV_CTS | EV_DSR | EV_RING | EV_RXCHAR;
 
-#if (!defined(WINDOWSPC) || (WINDOWSPC == 0)) && !NEWCOMM
+#if ( (WINDOWSPC == 0)) && !NEWCOMM
     SetCommMask(hPort, _dwMask);
 #endif
 #if (WINDOWSPC<1)
@@ -426,8 +426,8 @@ DWORD SerialPort::RxThread() {
         // Re-specify the set of events to be monitored for the port.
         //    SetCommMask(hPort, dwMask1);
 
-        // #if !defined(WINDOWSPC) || (WINDOWSPC == 0) 091206
-#if (!defined(WINDOWSPC) || (WINDOWSPC == 0)) && !NEWCOMM
+        // #if (WINDOWSPC == 0) 091206
+#if ( (WINDOWSPC == 0)) && !NEWCOMM
         if (_PollingMode || (dwCommModemStatus & EV_RXFLAG) || (dwCommModemStatus & EV_RXCHAR)) // Do this only for non-PC
 #endif
         {
@@ -465,7 +465,7 @@ DWORD SerialPort::RxThread() {
         Sleep(5);
 
         // Retrieve modem control-register values.
-#if (!defined(WINDOWSPC) || (WINDOWSPC == 0)) 
+#if ((WINDOWSPC == 0)) 
         if (!_PollingMode) {
             // this is causing problems on PC BT, apparently. Setting Polling will not call this, but it is a bug
             GetCommModemStatus(hPort, &dwCommModemStatus);
