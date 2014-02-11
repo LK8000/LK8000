@@ -14,6 +14,7 @@
 
 #define AIRSPACE_BORDER        // switch for new airspace orders
 
+extern BOOL DoAlphaBlend_internal(HDC,int,int,int,int,HDC,int,int,int,int, DWORD);
 
 // pointer to AlphaBlend() function (initialized in AlphaBlendInit())
 //static 
@@ -71,8 +72,12 @@ void MapWindow::AlphaBlendDestroy() {
 void MapWindow::DoAlphaBlend(HDC dstHdc, const RECT dstRect, HDC srcHdc, const RECT srcRect, BYTE globalOpacity) {
   static unsigned failedCount = 0;
   static bool Success = false;
-  if (AlphaBlendF == NULL)
+  if (AlphaBlendF == NULL) {
+    DoAlphaBlend_internal(  dstHdc, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
+                            srcHdc, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, globalOpacity);
+
     return;
+  }
   
   //BLENDFUNCTION bf = { AC_SRC_OVER, 0, globalOpacity, AC_SRC_ALPHA };
   // we are not using per-pixel alpha, so do not use AC_SRC_ALPHA flag
@@ -90,7 +95,7 @@ void MapWindow::DoAlphaBlend(HDC dstHdc, const RECT dstRect, HDC srcHdc, const R
 
           // after more 10 consecutive failed, we assume AlphaBlend is not supported, don't use it anymore
           ++failedCount;
-          if(failedCount>10) {
+          if(failedCount>5) {
               StartupStore(_T("AlphaBlend : too much failed, we assume is not supported, don't use it anymore%s"), NEWLINE);
               AlphaBlendF = NULL;
           }
