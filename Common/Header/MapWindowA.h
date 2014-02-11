@@ -5,7 +5,7 @@
    
   // check if alpha blending is supported (valid after calling AlphaBlendInit())
   static bool AlphaBlendSupported() {
-    return AlphaBlendF != NULL;
+    return TRUE;
   }    
  
  private:

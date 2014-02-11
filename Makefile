@@ -469,6 +469,8 @@ DRAW	:=\
 	$(DRW)/Sonar.cpp \
 	$(DRW)/TextInBox.cpp \
 	$(DRW)/UpdateAndRefresh.cpp \
+	$(DRW)/AlphaBlend.cpp \
+
 
 CALC	:=\
 	$(CLC)/AddSnailPoint.cpp 		\
