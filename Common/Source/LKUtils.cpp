@@ -75,6 +75,8 @@ bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
 		return false;
 	}
 	::WaitForSingleObject(pi.hProcess, dwaitime);
+	::CloseHandle(pi.hProcess);
+	::CloseHandle(pi.hThread);
 	StartupStore(_T(". LKRun exec terminated%s"),NEWLINE);
 	return true;
   }
