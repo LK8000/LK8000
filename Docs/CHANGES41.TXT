@@ -80,6 +80,24 @@ Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
 
+============
+Version 4.1j
+============
+
+NEW
+
+Keyboard driver 3
+
+
+FIX
+
+Fix debouncing of keys in bluetooth keyboard not working
+Fix keyboard 2 enter key not working
+Fix battery warning CHARGING issued without waiting for 5 minutes interval.
+Fix possible crash or problems using time gates in german language
+Fix 1.7 page problem not appearing when all other infopages are disabled
+
+
 
 
 ===========
