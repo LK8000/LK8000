@@ -139,7 +139,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #endif
 
 	MSG msg = {0};
-  HACCEL hAccelTable;
   (void)hPrevInstance;
   // use mutex to avoid multiple instances of lk8000 be running
   #if (!((WINDOWSPC>0) && TESTBENCH))
@@ -263,8 +262,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 	StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
 	return -1;
     }
-
-  hAccelTable = LoadAccelerators(hInstance, (LPCTSTR)IDC_LK8000);
 
   #ifdef HAVE_ACTIVATE_INFO
   SHSetAppKeyWndAssoc(VK_APP1, hWndMainWindow);
@@ -530,20 +527,16 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   BOOL bRet;
   while ( (bRet = GetMessage(&msg, NULL, 0, 0)) != 0) {
 	LKASSERT(bRet!=-1);
-	if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
+	TranslateMessage(&msg);
+	DispatchMessage(&msg);
   }
   #else
   // This is an alternate approach.
   bool bQuit=false;
   do {
 	while ( PeekMessage(&msg, NULL, 0, 0,PM_REMOVE)) {
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 		if (msg.message == WM_QUIT) bQuit=true;
 	}
 	if (bQuit) break;
