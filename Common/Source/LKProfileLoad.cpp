@@ -509,11 +509,7 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
  // PREAD(sname,svalue,szRegistryPGNumberOfGates,&PGNumberOfGates);
  // PREAD(sname,svalue,szRegistryPGOpenTimeH,&PGOpenTimeH);
  // PREAD(sname,svalue,szRegistryPGOpenTimeM,&PGOpenTimeM);
-  #ifdef PGOPT_FIX
   PREAD(sname,svalue,szRegistryPGOptimizeRoute,&PGOptimizeRoute_Config);
-  #else
-  PREAD(sname,svalue,szRegistryPGOptimizeRoute,&PGOptimizeRoute);
-  #endif
  // PREAD(sname,svalue,szRegistryPGStartOut,&PGStartOut);
   PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config);
   PREAD(sname,svalue,szRegistryLiveTrackersrv,&*LiveTrackersrv_Config);
