@@ -18,6 +18,9 @@ void ClearTask(void) {
   LockTaskData();
   TaskModified = true; 
   TargetModified = true;
+  #ifdef PGOPT_FIX
+  if (ISPARAGLIDER) PGOptimizeRoute = PGOptimizeRoute_Config;
+  #endif
   LastTaskFileName[0] = _T('\0');
   ActiveWayPoint = -1;
 

@@ -204,6 +204,9 @@ GEXTERN int LKVarioBar;
 GEXTERN int LKVarioVal;
 
 GEXTERN bool PGOptimizeRoute;
+#ifdef PGOPT_FIX
+GEXTERN bool PGOptimizeRoute_Config;
+#endif
 
 GEXTERN short OverlaySize;
 GEXTERN short BarOpacity;
