@@ -2155,7 +2155,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 #endif
-extern bool RotateScreen(short angle);
+
   if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
 	#if (WINDOWSPC>0)
 	if (SCREENWIDTH==896) return;
