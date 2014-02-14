@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT updated 140126
+# LK8000 ENG_HLP.TXT updated 140214
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -1720,7 +1720,7 @@ If gate number is 0, this value will be ignored.
 @1268
 [FAI Triangle Threshold]
 adjust the big FAI 28%/45% triangle threshold
-500km for DMAt and OLC regulations
+500km for DMSt and OLC regulations
 750km for FAI regulations
 
 
@@ -1729,9 +1729,6 @@ adjust the big FAI 28%/45% triangle threshold
 [Gear Warning]
 Off:         
 no Gear warning
-For task races with at least 1 time gate, set the end local time of last gate. 
-If gate number is 0, this value will be ignored.
-
 
 Landables:  (recommended in mountains)
 Gear warning if altitude lower than set height above best alternate field elevation. Warning only if position is 2 nautical miles (3,7km) or closer to the best alternate.
