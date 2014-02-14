@@ -251,20 +251,24 @@ int GetWaypointFileFormatType(const wchar_t* wfilename) {
 
 
 //
-// Master Time Reset
+// Master Time Reset -- only for diagnostics in TESTBENCH mode
 //
 // This function is called when a valid GPS time (or a time taken from an IGC replay log)
 // is verified to be gone back in time.
 // This was normally happening when the device was switched off and back on some time later, until 3.1f.
-// Now the time in LK is advancing also considering the date through a full year, so it is unlikely to happen after a valid fix.
+// Now the time in LK is advancing also considering the date through a full year, 
+// so it is unlikely to happen after a valid fix.
 //
 // But this can also happen  after switching ON a PNA with no time battery, and thus a full reset.
 // Time is appearing as 1/1/2000 12:00am , some times. So we only log the event.
 //
+// It can also happen when two gps feed are mixed through a multiplexer providing two gps fix at the same time,
+// one of them 1 second late. Very bad indeed.
+//
 // What we might do, is disable logging, resetting some functions etc.
 //
 void MasterTimeReset(void) {
-
+#if TESTBENCH
   static bool silent=false;
 
   //
@@ -276,33 +280,33 @@ void MasterTimeReset(void) {
 
   // No fix, and silent = no warning.
   if (GPS_INFO.NAVWarning && silent) {
-	#if TESTBENCH
 	StartupStore(_T("... (silent!) Master Time Reset %s%s"), WhatTimeIsIt(),NEWLINE);
-	#endif
 	return;
   }
 
   if (GPS_INFO.NAVWarning && !silent) {
-	#if TESTBENCH
 	StartupStore(_T("... Master Time Reset going silent, no fix! %s%s"), WhatTimeIsIt(),NEWLINE);
-	#endif
 	silent=true;
   } else
 	silent=false; // arm it 
 
   StartupStore(_T("... Master Time Reset %s%s"), WhatTimeIsIt(),NEWLINE);
-  #if TESTBENCH
   DoStatusMessage(_T("MASTER TIME RESET")); // no translation please
-  #endif
 
   // Future possible handlings of this exception:
   // . Battery manager
   // . Trip computer
 
   // Remember to lock anything needed to be locked
-
+#else
+  static unsigned short count=0;
+  if (count>9) return;
+  if (GPS_INFO.NAVWarning) return;
+  count++;
+  StartupStore(_T("... Master Time Reset %s%s"), WhatTimeIsIt(),NEWLINE);
+  DoStatusMessage(_T("MASTER TIME RESET")); // no translation please
+#endif // MasterTimeReset
 }
-
 
 bool DoOptimizeRoute() {
 
