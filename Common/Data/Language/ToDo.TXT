@@ -374,3 +374,6 @@ _@M1841_ "Alternate1 radial"
 _@M1842_ "Alternate2 radial"
 
 
+#Glide Polar (Need PG optimized task with Conical ESS Turnpoint)
+_@M2179_ "Speed Opt."
+_@M2180_ "Thermal Min"

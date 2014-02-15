@@ -53,6 +53,7 @@ class GlidePolar {
                          double MC, double HW, double V);
   static double FindSpeedForSinkRate(double w);
   static double FindSpeedForSinkRateAccurate(double w);
+  static double FindSpeedForSlope(double s);
   static double SinkRateFast(const double &MC, const double &v);
 
   static double EquMC(double ias);

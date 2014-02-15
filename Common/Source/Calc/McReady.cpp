@@ -546,6 +546,10 @@ double GlidePolar::FindSpeedForSinkRateAccurate(double w) {
   return vbest;
 }
 
+double GlidePolar::FindSpeedForSlope(double s) {
+    return - ((polar_b * s + 1) / s / polar_a) * 1.0/2.0;
+}
+
 double GlidePolar::EquMC(double ias) {
     if (ias<1||ias>70) return -1;
     return polar_c-polar_a*ias*ias;
