@@ -161,8 +161,9 @@ void SetInitialModeTypes(void) {
 
   // Update the initial values for each mapspace, keeping the first valid value. We search backwards.
   // INFOMODE 1  
-  if (ConfIP[LKMODE_INFOMODE][IM_TRI]) ModeType[LKMODE_INFOMODE]=IM_TRI;
+  // Attention> Respect inverted order!
   if (ConfIP[LKMODE_INFOMODE][IM_HSI]) ModeType[LKMODE_INFOMODE]=IM_HSI;
+  if (ConfIP[LKMODE_INFOMODE][IM_TRI]) ModeType[LKMODE_INFOMODE]=IM_TRI;
   if (ConfIP[LKMODE_INFOMODE][IM_CONTEST]) ModeType[LKMODE_INFOMODE]=IM_CONTEST;
   if (ConfIP[LKMODE_INFOMODE][IM_AUX]) ModeType[LKMODE_INFOMODE]=IM_AUX;
   if (ConfIP[LKMODE_INFOMODE][IM_TASK]) ModeType[LKMODE_INFOMODE]=IM_TASK;
