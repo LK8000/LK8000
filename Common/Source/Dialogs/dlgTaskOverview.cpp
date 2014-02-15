@@ -15,7 +15,7 @@
 #include "LKMapWindow.h"
 #include "Dialogs.h"
 #include "CTaskFileHelper.h"
-#include "InputEvents.h"
+
 
 extern void ResetTaskWaypoint(int j);
 
@@ -194,28 +194,18 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 		   sTmp, _tcslen(sTmp), NULL);
       } 
     } else
- 	   if (DrawListIndex==(n+2) && UpLimit < MAXTASKPOINTS)
+ 	  if (DrawListIndex==(n+2) && UpLimit < MAXTASKPOINTS)
  	  {
  		    double dd = CALCULATED_INFO.TaskTimeToGo;
- 		//    if ((CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying)) { patchout 091126
  		    if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) { // patch 091126
-
-
-
  		      dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
  		    }
  		    dd= min(24.0*60.0,dd/60.0);
- 		   int idd = (int) dd;
- 			_stprintf(sTmp, TEXT("%s %.0f min = %i:%02ih"),gettext(TEXT("_@M267_")), dd, idd/60, idd%60);  // Estimated task time
+ 		    int idd = (int) (dd+0.5);
+ 			_stprintf(sTmp, TEXT("%s %.0fmin (%i:%02ih)"),gettext(TEXT("_@M267_")), dd, idd/60, idd%60);  // Estimated task time
  			ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
  				   ETO_OPAQUE, NULL,
  				   sTmp, _tcslen(sTmp), NULL);
-
- 	//  	_stprintf(sTmp, TEXT("%.0f min = %ih%02i"), dd, idd/60, idd%60);
- 	//	ExtTextOut(hDC, Sender->GetHeight()+p1+w1-GetTextWidth(hDC, sTmp),
- 	  //                TextMargin,
- 		//	   ETO_OPAQUE, NULL,
- 			//   sTmp, _tcslen(sTmp), NULL);
  	  }
   }
   UnlockTaskData();
@@ -421,9 +411,17 @@ static void OnClearClicked(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
 
 static void OnReverseClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
 	(void)ListInfo; (void)Sender;
-	InputEvents::eventService(_T("TASKREVERSE"));
+
+//	if (MessageBoxX(hWndMapWindow,
+//		gettext(TEXT("_@M1852_")), // LKTOKEN  _@M1852_ = "Reverse task?"
+//		gettext(TEXT("_@M1851_")), // LKTOKEN  _@M1851_ = "Reverse task"
+//		MB_YESNO|MB_ICONQUESTION) == IDYES)
+	{
+	  ReverseTask(false);
+      OverviewRefreshTask();
+	}
 }
-//OnReverseClicked
+
 
 static void OnCalcClicked(WindowControl * Sender, 
 			  WndListFrame::ListInfo_t *ListInfo){
