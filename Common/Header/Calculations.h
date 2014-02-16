@@ -240,6 +240,7 @@ typedef struct _DERIVED_INFO
   double TaskAltitudeArrival; // this is estimated task arrival height above ground
 
   double Experimental;
+  BOOL   TaskFAI;
   // JMW note, new items should go at the bottom of this struct before experimental!
 } DERIVED_INFO;
 

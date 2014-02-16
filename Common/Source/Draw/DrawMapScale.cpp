@@ -14,37 +14,6 @@
 #include "LKObjects.h"
 
 
-
-
-BOOL IsFAI_Task(void)
-{
-BOOL fai = true;
-int i;
-
-if (CALCULATED_INFO.TaskDistanceToGo>0) {
-  for (i=1; i<MAXTASKPOINTS; i++) {
-    if (Task[i].Index != -1) {
-	double lrat = Task[i].Leg/CALCULATED_INFO.TaskDistanceToGo;
-	if(ValidWayPoint(i))
-	{
-	  if(CALCULATED_INFO.TaskDistanceToGo < FAI28_45Threshold)
-	  {
-	    if (lrat<FAI_NORMAL_PERCENTAGE)  fai = false;
-	  }
-	  else
-	  {
-	    if (lrat<FAI_BIG_PERCENTAGE)    fai = false;
-	  }
-	  if(lrat>FAI_BIG_MAX_PERCENTAGE)   fai = false;
-	}
-    }
-  }
-} else {
-  fai = false;
-}
-return fai;
-}
-
 void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/, 
                              const bool ScaleChangeFeedback)
 {
@@ -112,13 +81,12 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 
     if(ValidTaskPoint(PanTaskEdit))
     {
-    	if( IsFAI_Task())
+    	if( DerivedDrawInfo.TaskFAI)
     	  _tcscpy(Scale1,TEXT("FAI"));
     	else
     	   _tcscpy(Scale1,TEXT(""));
 
-    	_stprintf(Scale, _T("%s Task %.1f%s"), Scale1, CALCULATED_INFO.TaskDistanceToGo*DISTANCEMODIFY, Units::GetDistanceName()/*, panbearing,_T(DEG)*/ );
-
+    	_stprintf(Scale, _T("%s Task %.1f%s"), Scale1, DerivedDrawInfo.TaskDistanceToGo*DISTANCEMODIFY, Units::GetDistanceName()/*, panbearing,_T(DEG)*/ );
     }
     else
     {
