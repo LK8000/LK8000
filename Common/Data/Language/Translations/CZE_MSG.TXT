@@ -1,5 +1,5 @@
-# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  121005
+# LK8000 CZECH MESSAGES - CZE_MSG.TXT
+# MASTER UPDATED:  140126
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -983,7 +983,9 @@ _@M943_ "Průsvitné"
 _@M944_ "Průsvitnost "
 _@M945_ "Vzor, pouze ohraničení"
 _@M946_ "Průsvitné, pouze ohraničení"
-
+_@M947_ "FLARM SIGNÁL ZTRACEN"
+_@M948_ "Nalezen"
+_@M949_ "TP"
 _@M950_ "Průsvitnost spodní lišty "
 _@M951_ "Nelze zastavit vlákno RX!"
 _@M952_ "Nelze zapsat data na port!"
@@ -1012,6 +1014,9 @@ _@M964_ "OBRAZOVKA ODEMČENA"
 # Menu buttons, MAX 8 character per line! Keep \n !
 _@M965_ "ODEMČENÍ\nOBRAZ."
 _@M966_ "ZAMKNOUT\nOBRAZ."
+_@M967_ "Změny prostorů "
+_@M968_ "pouze nyní"
+_@M969_ "trvalé"
 
 #
 # GPS and COM port warnings
@@ -1567,6 +1572,7 @@ _@M1619_ "2.4 PRO "
 _@M1620_ "3.1 CAST "
 _@M1621_ "3.2 HIST "
 _@M1622_ "3.3 STOU "
+_@M1623_ "1.7 HSI "
 
 # New airspace messages
 _@M1630_ "Výšková mez "
@@ -1848,6 +1854,31 @@ _@M1826_ "Nahradit"
 _@M1827_ "Připojit před cíl"
 _@M1828_ "Připojit za cíl"
 
+# Varování o podvozku
+_@M1829_ "Varování o podvozku "
+_@M1830_ "Výška varování o podvozku "
+_@M1831_ "Vyp"
+_@M1832_ "U ploch"
+_@M1833_ "Vždy"
+_@M1834_ "Zkontroluj podvozek !"
+
+# oudie 2 bluetooth
+_@M1835_ "Chyba ve spojení"
+_@M1836_ "Vyhledat"
+_@M1837_ "Spárovat"
+_@M1838_ "Odpojit"
+
+# Obrácení tratě
+_@M1850_ "Obrácení\nTratě"
+_@M1851_ "Obrácení tratě"
+_@M1852_ "Obrátit trať?"
+_@M1853_ "TRAŤ OBRÁCENA"
+
+# HSI
+_@M1860_ "HSI"
+
+_@M1870_ "Sonar "
+
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -2015,6 +2046,38 @@ _@M2148_ "Auto,Kolo & Turistika"
 _@M2149_ "Ve stoupání"
 _@M2150_ "Ve stoupání a na trati"
 
+_@M2151_ "T>\nTP Střed"
+_@M2153_ "Start Close Time "
+
+_@M2154_ "IGC\nPoslat soubor"
+_@M2155_ "Poslat"
+_@M2156_ "IGC Poslat soubor"
+_@M2157_ "Vybrat zařízení"
+
+#BlueFlyVario
+_@M2158_ "Výstup QNH"
+_@M2159_ "Práh stoupání"
+_@M2160_ "Práh konce stoupání"
+_@M2161_ "Práh klesání"
+_@M2162_ "Práh konce klesání"
+_@M2163_ "Šum pozice"
+_@M2164_ "Zákl. frek. stoupání"
+_@M2165_ "Přír. frek. stoupání"
+_@M2166_ "Zákl. frek. klesání"
+_@M2167_ "Přír. frek. klesání"
+_@M2168_ "Hlasitost"
+_@M2169_ "Rychlost pípání"
+_@M2170_ "Audio připojeno"
+_@M2171_ "Audio odpojeno"
+_@M2172_ "Čekání Bluetoothu"
+_@M2173_ "Režim výstupu"
+_@M2174_ "Frekvence výstupu"
+
+_@M2175_ "Conical ESS"
+_@M2176_ "Cone Slope"
+_@M2177_ "Zákl. výška"
+_@M2178_ "Zákl. poloměr"
+
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
 _@M2201_ "Menu"
@@ -2048,7 +2111,6 @@ _@M2228_ "FLARM\nRadar"
 _@M2229_ "Reset\nOdomet"
 _@M2230_ "Vynutit\nPřistání"
 _@M2231_ "AKTIVNÍ"
-# 2232 unused but reserved for mmaps
 _@M2232_ "abcd"
 _@M2233_ "Vrstva"
 _@M2234_ "TEXT"
@@ -2063,7 +2125,18 @@ _@M2242_ "Sonar\nZAP"
 _@M2243_ "Sonar\nVYP"
 _@M2244_ "Nastavení\nZařízení"
 _@M2245_ "Ulož\nZařízení"
+_@M2246_ "Reset\nPohledu"
+_@M2247_ "28/45 FAI práh "
+_@M2248_  "Poblíž nic nenalezeno!"
 
-# MAX 2250! 
+# MAX 2500! 
 # (Reserved for custom menus up to 2300!)
-# Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)
+# Note for developers: remember LKLanguage MAX_MESSAGE limit (2500)
+
+# S = Start Task point
+_@M2301  "S" 
+# T = Task Point
+_@M2302_  "T"  
+# F = Finish point
+_@M2303_  "F" 
+_@M2304_  "VAROVÁNÍ O PODVOZKU VYPNUTO!"

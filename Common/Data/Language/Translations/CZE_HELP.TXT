@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT 110405
+# LK8000 CZE_HLP.TXT updated 140214
 #
 # Jeden textový rádek muže obsahovat max. 500 znaku
 # Celý help muže obsahovat celkem max. 1024 znaku
@@ -797,6 +797,8 @@ Druhy sektorů pro standardní, ne-AAT, úlohy.
 [Cylindr]  Válec o definovaném poloměru.
 [FAI Sektor]  90ti stupňový sektor o definovaném poloměru, osově souměrný k ramenům
 [DAe 0.5/10] Německý typ sektorů, stejný jako válec o poloměru 0.5 km a FAI sektor s poloměrem 10 km.
+[Páska] Dvousektorová páska mezi rameny tratě. Poloměr je použit pouze pro zobrazení na pohyblivé mapě.
+
 
 @506
 Poloměr pozorovací oblasti ve standardní úloze. Ne AAT.
@@ -851,10 +853,6 @@ Pro závod s alespoň jednou časovou brankou nastav čas startu. Pokud je poče
 
 @532
 Pokud je vícero časových bran, nastav interval v MINUTÁCH pro ostatní brány.
-
-Pokud je pouze jedna časová brána uzavírající se ve stanovený čas, nastav čas intervalu k tomuto času odlišný.
-
-Pokud je pouze jedna časová brána bez stanoveného času uzavření, nastav čas intervalu na velkou hodnotu jako třeba 480 minut.
 
 @533
 Start DO (Opuštění): když pilot opouští sektor, nebo cylindr z venčí dovnitř.
@@ -1731,6 +1729,130 @@ deaktivaci po opuštění stoupáku, a to i tehdy, pokud je TRM0 vyřazen z rota
 @1264
 [Potvrzení skupiny]
 Potvrzení jednoho prostoru se vztahuje na všechny prostory se stejnám jménem a třídou.
+
+@1265
+[Změny prostorů]
+"trvalé" vypnuté prostory zůstanou vypnuté i při dalším spuštění programu
+"pouze nyní" všechny prostory budou při dalším spuštění znovu povoleny
+
+
+@1266
+[Časová brána]
+Nastavení finálního času (v místním čase) poslední brány u závodní trasy s alespoň jednou bránou. 
+Pokud je počet bran 0, tato hodnota bude ignorována.
+
+
+
+@1268
+[Práh FAI trojúhelníku]
+nastavení prahu velkého FAI 28%/45% trojúhelníku
+500km pro pravidla dle DMSt a OLC
+750km pro pravidla dle FAI
+
+
+
+@1269
+[Varování o podvozku]
+Vyp:         
+bez varování o podvozku
+
+Plochy:  (doporučeno v horách)
+Varování o podvozku pokud je výška nižší než nastavená výška nad nejlepší alternativní plochou. Varování se zobrazí pouze pokud jste blíže jak 2 námořní míle (3,7km) od této plochy.
+
+Vždy:  (doporučeno v nížinách)
+Varování o podvozku vždy když klesnete pod stanovenou výšku nad zemí (AGL).
+
+Varování se zobrazí pouze jednou při poklesu pod stanoveou výšku, k opětovnému zobrazení může dojít pouze pokud nastoupete alespoň 100 metrů nad stanovenou výšku. 
+
+
+@1270
+[Výška varování o podvozku]
+Výška ve které se zobrazí varování o podvozku
+
+@1271 
+[Výstupní QNH]
+QNH (v Pa) použité pro výstupní výšku pro některé režimy - standardně 101325
+
+@1272 
+[Práh stoupání]
+Hodnota stoupání v m/s od kterého dojde k zahájení pípání.
+
+@1273 
+[Práh konce stoupání]
+Hodnota stoupání v m/s od kterého dojde ke konci pípání.
+
+@1274 
+[Práh klesání]
+Hodnota klesání v -m/s od kterého dojde k zahájení klesavého tónu.
+
+@1275 
+[Práh konce klesání]
+Hodnota klesání v -m/s od kterého dojde ke konci klesavého tónu.
+
+@1276 
+[Šum polohy]
+Kalman filter position noise.
+
+@1277 
+[Zákl. frek. stoupání]
+Frenkvence zvuku při stoupání 0 m/s v Hz.
+
+@1278 
+[Přír. frek. stoupání]
+Přírůstek zvukové frekvence stoupání při zesílení stoupání o 1 m/s v Hz.
+
+@1279 
+[Zákl. frek. klesání]
+Frenkvence zvuku při klesání 0 m/s v Hz.
+
+@1280 
+[Přír. frek. klesání]
+Přírůstek zvukové frekvence klesání při zesílení klesání o -1 m/s v Hz.
+
+@1281 
+[Hlasitost]
+Hlasitost pípání ->  0.1 je asi jen o polovinu tišší než 1.0.   
+
+@1282 
+[Rychlost pípání]
+Kadence pípání ve stoupání -> 0.5 = pípá dvakrát rychleji než normálně.
+
+@1283 
+[Audio připojeno]
+Zaškrtněte pro povolení reproduktorů když jsou připojeny.
+
+@1284 
+[Audio odpojeno]
+Zaškrtněte pro povolení reproduktorů když jsou odpojeny.
+
+@1285 
+[Čekání Bluetoothu]
+Doba po kterou bude hardwaru umožněno navázání spojení přes bluetooh pokud je zapnut.
+
+@1286 
+[Režim výstupu]
+0-BlueFlyVario (standard) "Nepodporováno" 
+1-LK8EX1  
+2-LX "Nepodporováno"
+3-FlyNet
+
+@1287 
+[Frekvence výstupu]
+Frekvence výstupu -> 1-každých 20ms ... 50-každých 20msx50=1000ms
+
+@1288
+[Conical ESS Slope]
+
+@1289
+[Conical ESS Base]
+
+@1290
+[Sonar]
+Zvuk sonaru při přiblížení se ke vzdušnému prostoru.
+Zde se nastavuje stav sonaru při zapnutí. Zapnutí/vypnutí sonaru tlačítkem v menu neovlivní toto nastavení.
+
+@1291
+[Conical ESS Base Radius]
 
 @9999
 Pro tuto položku není dostupná nápověda!
