@@ -125,6 +125,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   case ANALYSIS_PAGE_TASK:
     SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
     LockTaskData();
+	RefreshTask();
     Statistics::RenderTask(hDC, rcgfx, false);
     UnlockTaskData();
     break;
@@ -132,6 +133,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   case ANALYSIS_PAGE_CONTEST:
     SetCalcCaption(gettext(TEXT("_@M1451_"))); // Change
     LockTaskData();
+	RefreshTask();
     Statistics::RenderContest(hDC, rcgfx);
     UnlockTaskData();
     break;
@@ -140,6 +142,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   case ANALYSIS_PAGE_TASK_SPEED:
     SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
     LockTaskData();
+	RefreshTask();
     Statistics::RenderSpeed(hDC, rcgfx);
     UnlockTaskData();
     break;

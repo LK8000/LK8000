@@ -169,13 +169,18 @@ void UpdateAnalysis(void){
     } else {
       TCHAR timetext1[100];
       TCHAR timetext2[100];
+      TCHAR FAI[10];
+      if(CALCULATED_INFO.TaskFAI)
+    	_stprintf(FAI, TEXT("FAI"));
+      else
+    	_stprintf(FAI, TEXT(""));
       if (AATEnabled) {
         Units::TimeToText(timetext1, (int)CALCULATED_INFO.TaskTimeToGo);
         Units::TimeToText(timetext2, (int)CALCULATED_INFO.AATTimeToGo);
        
         if (ScreenLandscape) {
           _stprintf(sTmp, 
-                    TEXT("%s:\r\n  %s\r\n%s:\r\n  %s\r\n%s:\r\n  %5.0f %s\r\n%s%.0f %s\r\n"), // 100429
+                    TEXT("%s:\r\n  %s\r\n%s:\r\n  %s\r\n%s:\r\n  %5.0f %s\r\n%s%.0f %s %s\r\n"), // 100429
 	// LKTOKEN  _@M698_ = "Task to go" 
                     gettext(TEXT("_@M698_")),
                     timetext1,
@@ -189,11 +194,12 @@ void UpdateAnalysis(void){
 	// LKTOKEN  _@M626_ = "Sp " 
                     gettext(TEXT("_@M626_")),
                     TASKSPEEDMODIFY*CALCULATED_INFO.AATTargetSpeed,
-                    Units::GetTaskSpeedName()		
+                    Units::GetTaskSpeedName(),
+                    FAI
                     );
         } else {
           _stprintf(sTmp, 
-                    TEXT("%s: %s\r\n%s: %s\r\n%s: %5.0f %s\r\n%s: %5.0f %s\r\n"),
+                    TEXT("%s: %s\r\n%s: %s\r\n%s: %5.0f %s\r\n%s: %5.0f %s %s\r\n"),
 	// LKTOKEN  _@M698_ = "Task to go" 
                     gettext(TEXT("_@M698_")),
                     timetext1,
@@ -207,19 +213,21 @@ void UpdateAnalysis(void){
 	// LKTOKEN  _@M681_ = "Targ.speed" 
                     gettext(TEXT("_@M681_")),
                     TASKSPEEDMODIFY*CALCULATED_INFO.AATTargetSpeed,
-                    Units::GetTaskSpeedName()		
+                    Units::GetTaskSpeedName(),
+                    FAI
                     );
         }
       } else {
         Units::TimeToText(timetext1, (int)CALCULATED_INFO.TaskTimeToGo);
-        _stprintf(sTmp, TEXT("%s: %s\r\n%s: %5.0f %s\r\n"),
+        _stprintf(sTmp, TEXT("%s: %s\r\n%s: %5.0f %s %s\r\n"),
 	// LKTOKEN  _@M698_ = "Task to go" 
                   gettext(TEXT("_@M698_")),
                   timetext1,
 	// LKTOKEN  _@M242_ = "Dist to go" 
                   gettext(TEXT("_@M242_")),
                   DISTANCEMODIFY*CALCULATED_INFO.TaskDistanceToGo,
-                  Units::GetDistanceName());
+                  Units::GetDistanceName(),
+                  FAI);
       }
     } 
     waInfo->SetCaption(sTmp);
