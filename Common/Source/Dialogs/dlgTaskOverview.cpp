@@ -33,7 +33,9 @@ static int ItemIndex = -1;
 static int DrawListIndex=0;
 
 static double lengthtotal = 0.0;
-static bool fai_ok = false;
+
+
+
 
 static void UpdateFilePointer(void) {
   WndProperty *wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
@@ -123,7 +125,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
       ExtTextOutClip(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
 		     sTmp, p1-4*ScreenScale);
 
-      _stprintf(sTmp, TEXT("%2.0f%% %.0f %s"), Task[i].Leg/lengthtotal*100.0f,
+      _stprintf(sTmp, TEXT("%.0f %s"),
 		Task[i].Leg*DISTANCEMODIFY,
 		Units::GetDistanceName());
       ExtTextOut(hDC, Sender->GetHeight()+p1+w1-GetTextWidth(hDC, sTmp),
@@ -159,7 +161,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 		   ETO_OPAQUE, NULL,
 		   sTmp, _tcslen(sTmp), NULL);
       
-	if (fai_ok) {
+	if (CALCULATED_INFO.TaskFAI	) {
 	  _stprintf(sTmp, TEXT("%.0f %s FAI"), lengthtotal*DISTANCEMODIFY,
 		    Units::GetDistanceName());
 	} else {
@@ -192,55 +194,25 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 	ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
 		   ETO_OPAQUE, NULL,
 		   sTmp, _tcslen(sTmp), NULL);
-
-      } 
+      }
     }
- 	  if (DrawListIndex==(n+1) && UpLimit < MAXTASKPOINTS)
- 	  {
- 		    double dd = CALCULATED_INFO.TaskTimeToGo;
- 		    if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) { // patch 091126
- 		      dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
- 		    }
- 		    dd= min(24.0*60.0,dd/60.0);
- 		    int idd = (int) (dd+0.5);
- 			_stprintf(sTmp, TEXT("%s(%s=%3.1f): %.0fmin (%i:%02ih) "),gettext(TEXT("_@M247_")),  gettext(TEXT("_@M1022_"))  ,  MACCREADY, dd, idd/60, idd%60 );  //_@M247_ ETE
- 			ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
- 				   ETO_OPAQUE, NULL,
- 				   sTmp, _tcslen(sTmp), NULL);
- 	  }
+    if(n >1)
+	  if (DrawListIndex==(n+1) && UpLimit < MAXTASKPOINTS)
+	  {
+		    double dd = CALCULATED_INFO.TaskTimeToGo;
+		    if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) { // patch 091126
+		      dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
+		    }
+		    dd= min(24.0*60.0,dd/60.0);
+		    int idd = (int) (dd+0.5);
+			_stprintf(sTmp, TEXT("%s(%s=%3.1f): %.0fmin (%i:%02ih) "),gettext(TEXT("_@M247_")),  gettext(TEXT("_@M1022_"))  ,  MACCREADY, dd, idd/60, idd%60 );  //_@M247_ ETE
+			ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
+				   ETO_OPAQUE, NULL,
+				   sTmp, _tcslen(sTmp), NULL);
+	  }
   }
   UnlockTaskData();
 
-}
-
-
-BOOL IsFAITask(void)
-{
-BOOL fai = true;
-int i;
-
-if (CALCULATED_INFO.TaskDistanceToGo>0) {
-  for (i=1; i<MAXTASKPOINTS; i++) {
-    if (Task[i].Index != -1) {
-	double lrat = Task[i].Leg/CALCULATED_INFO.TaskDistanceToGo;
-	if(ValidWayPoint(i))
-	{
-	  if(CALCULATED_INFO.TaskDistanceToGo < FAI28_45Threshold)
-	  {
-	    if (lrat<FAI_NORMAL_PERCENTAGE)  fai = false;
-	  }
-	  else
-	  {
-	    if (lrat<FAI_BIG_PERCENTAGE)    fai = false;
-	  }
-	  if(lrat>FAI_BIG_MAX_PERCENTAGE)   fai = false;
-	}
-    }
-  }
-} else {
-  fai = false;
-}
-return fai;
 }
 
 static void OverviewRefreshTask(void) {
@@ -259,8 +231,7 @@ static void OverviewRefreshTask(void) {
     }
   }
 
-  // check FAI triangle rules
-  fai_ok = IsFAITask();
+
   RefreshTaskStatistics();
 
 #ifdef OLD_TIME_ESTIMATE
@@ -283,7 +254,6 @@ static void OverviewRefreshTask(void) {
   LowLimit =0;
   wTaskList->ResetList();
   wTaskList->Redraw();
-
   UpdateCaption();
   UnlockTaskData();
 
@@ -296,7 +266,6 @@ static void UpdateAdvanced(void) {
     wfAdvanced->SetVisible(showAdvanced);
   }
 }
-
 
 static void OnTaskListEnter(WindowControl * Sender, 
 		     WndListFrame::ListInfo_t *ListInfo) {
@@ -613,6 +582,7 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
           UpdateCaption();
       }
   }
+  OverviewRefreshTask();
 }
 
 
