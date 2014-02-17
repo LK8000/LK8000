@@ -31,13 +31,9 @@ void PGConeTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) 
 }
 
 double PGConeTaskPt::ConeRadius(double Alt, double AltBase, double Slope, double RadiusBase) {
-    return std::max(0.0, ( Alt - AltBase ) * Slope) + RadiusBase;
+    return std::max(0.0, (( Alt - AltBase ) * Slope) + RadiusBase);
 }
 
 void PGConeTaskPt::UpdateTaskPoint(TASK_POINT& TskPt ) const {
     TskPt.AATCircleRadius = m_Radius;
-   
-    if(TskPt.AATTargetAltitude < m_AltBase) {
-        TskPt.AATTargetAltitude = m_AltBase;
-    }
 }
