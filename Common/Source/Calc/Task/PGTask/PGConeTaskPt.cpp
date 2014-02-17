@@ -23,7 +23,7 @@ void PGConeTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) 
     
     m_Radius = ConeRadius(Alt, m_AltBase, m_Slope, m_RadiusBase);
     if(m_Radius > 0.0) {
-        PGCicrcleTaskPt::Optimize(prev, next, Alt);
+        PGCicrcleTaskPt::Optimize(prev, ProjPt::null, Alt);
     }
     else {
         m_Optimized = m_Center;
