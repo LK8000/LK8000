@@ -2871,6 +2871,15 @@ _@M945_ "Muster, nur Rand"
 #_@M946_ "Semi-Transparent, borders only"
 _@M946_ "Semi-transparent, nur Rand"
 
+#_@M947_ "FLARM SIGNAL LOST"
+_@M947_ "FLARM SIGNAL FEHLT"
+
+#_@M948_ "Found"
+_@M948_ "Gefunden"
+
+#_@M949_ "TP"
+_@M949_ "WP"
+
 #_@M950_ "BottomBar Opacity "
 _@M950_ "Deckkraft Fußzeile "
 
@@ -2928,6 +2937,15 @@ _@M965_ "ENTSPERRE\nANZEIGE"
 
 #_@M966_ "LOCK\nSCREEN"
 _@M966_ "SPERRE\nANZEIGE"
+
+#_@M967_ "Airspace changes "
+_@M967_ "Luftraumveränderung "
+
+#_@M968_ "for this time only"
+_@M968_ "nur für heute"
+
+#_@M969_ "persistent"
+_@M969_ "beständig"
 
 #
 # GPS and COM port warnings
@@ -4430,6 +4448,8 @@ _@M1621_ "3.2 HIST "
 #_@M1622_ "3.3 THERM "
 _@M1622_ "3.3 AUFW "
 
+_@M1623_ "1.7 HSI "
+
 # New airspace messages
 #_@M1630_ "Height margin "
 _@M1630_ "Obere Begrenzung "
@@ -4946,7 +4966,7 @@ _@M1806_ "Schattiert+NächstWPT"
 _@M1807_ "_Reserviert 2"
 
 #_@M1808_ "Loading FLARMNET database"
-_@M1808_ "Ladeng FLARMNET Datenbank"
+_@M1808_ "Lade FLARMNET Datenbank"
 
 # Trip computer, Infobox title, max 6-7 chars
 #_@M1809_ "Moving"
@@ -5020,6 +5040,58 @@ _@M1827_ "Vor ZIEL einfügen"
 #_@M1828_ "Append after finish"
 _@M1828_ "Nach ZIEL einfügen"
 
+# Gear warning alarm ----------------------------------
+#_@M1829_ "Gear Warning "
+_@M1829_ "Fahrwerkswarnung "
+
+#_@M1830_ "Gear Warning Altitude "
+_@M1830_ "Fahrwerkswarnung Höhe "
+
+#_@M1831_ "Off"
+_@M1831_ "AUS"
+
+#_@M1832_ "Near landables"
+_@M1832_ "Nahe Landefeld"
+
+#_@M1833_ "Always"
+_@M1833_ "Immer"
+
+#_@M1834_ "Check gear !"
+_@M1834_ "Fahrwerk ausgefahren?"
+
+# oudie 2 bluetooth -------------------------------------------
+#_@M1835_ "Failed to pair device"
+_@M1835_ "Kann Gerät nicht verbinden"
+
+#_@M1836_ "Lookup"
+_@M1836_ "Suche"
+
+#_@M1837_ "Pair"
+_@M1837_ "Verbinden"
+
+#_@M1838_ "Unpair"
+_@M1838_ "Lösen"
+
+# Reverse task
+#_@M1850_ "Reverse\nTask"
+_@M1850_ "Aufgabe\numdrehen"
+
+#_@M1851_ "Reverse task"
+_@M1851_ "Umgedrehte Aufgabe"
+
+#_@M1852_ "Reverse task?"
+_@M1852_ "Aufgabe umdrehen?"
+
+#_@M1853_ "TASK REVERSED"
+_@M1853_ "UMUGEDREHTE AUFGABE"
+
+# HSI
+#_@M1860_ "HSI"
+_@M1860_ "HSI"
+
+#_@M1870_ "Airspace Sonar "
+_@M1870_ "Luftraum Sonar "
+
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -5035,8 +5107,8 @@ _@M2001_ "Zoom\nhinein"
 #_@M2002_ "Zoom\nout"
 _@M2002_ "Zoom\nheraus"
 
-#_@M2003_ "Nearest\nWaypoint"
-_@M2003_ "Nächster\nWegpunkt"
+#_@M2003_ "Whats\nhere?"
+_@M2003_ "Was ist\nhier?"
 
 #_@M2004_ "Pan\n"
 _@M2004_ "Pan\n"
@@ -5045,13 +5117,13 @@ _@M2004_ "Pan\n"
 _@M2005_ "Voll-\nBild"
 
 #_@M2006_ "Display\n1/3"
-_@M2006_ "Anzeige\n1/3"
+_@M2006_ "Inhalt\nAnzeige 1/3"
 
 #_@M2007_ "Display\n2/3"
-_@M2007_ "Anzeige\n2/3"
+_@M2007_ "Inhalt\nAnzeige 2/3"
 
 #_@M2008_ "Display\n3/3"
-_@M2008_ "Anzeige\n3/3"
+_@M2008_ "Inhalt\nAnzeige 3/3"
 
 #_@M2009_ "Zoom"
 _@M2009_ "Zoom"
@@ -5234,7 +5306,7 @@ _@M2067_ "Informat"
 _@M2068_ "Konfigur"
 
 #_@M2069_ "Display"
-_@M2069_ "Anzeige"
+_@M2069_ "Inhalt\nAnzeige"
 
 #_@M2070_ "Location\nMarker"
 _@M2070_ "Setze\nMarker"
@@ -5246,7 +5318,7 @@ _@M2071_ "TrueWind\nberechnen"
 _@M2072_ "Darstellung"
 
 #_@M2073_ "Exit"
-_@M2073_ "ENDE\nLK8000"
+_@M2073_ "LK8000\nBEENDEN"
 
 #_@M2074_ "SIM\nMENU"
 _@M2074_ "Simulations-\nMenü"
@@ -5267,7 +5339,7 @@ _@M2078_ "OK"
 _@M2079_ "Einblendg"
 
 #_@M2080_ "Shading"
-_@M2080_ "Schattierung"
+_@M2080_ "Schatten"
 
 #_@M2081_ "Set\nMap"
 _@M2081_ "Karte\ndrehen"
@@ -5466,6 +5538,87 @@ _@M2149_ "beim Kreisen"
 #_@M2150_ "in thermal and cruise"
 _@M2150_ "beim Kreisen und im Vorflug"
 
+#_@M2151_ "T>\nTP Center"
+_@M2151_ "T>\nWP Zenrum"
+
+#_@M2153_ "Start Close Time "
+_@M2153_ "Start Schließzeit "
+
+#_@M2154_ "IGC\nSend File"
+_@M2154_ "IGC\nSende Datei"
+
+#_@M2155_ "Send"
+_@M2155_ "Sende"
+
+#_@M2156_ "IGC Send File"
+_@M2156_ "Sende IGC Datei"
+
+#_@M2157_ "Choose device"
+_@M2157_ "Wähle Gerät"
+
+
+#BlueFlyVario
+#_@M2158_ "Output QNH"
+_@M2158_ "Ausgabe QNH"
+
+#_@M2159_ "Lift Threshold"
+_@M2159_ "Schwelle Steigen"
+
+#_@M2160_ "Lift Off Threshold"
+_@M2160_ "Schwelle Steigen AUS"
+
+#_@M2161_ "Sink Threshold"
+_@M2161_ "Schwelle Sinken"
+
+#_@M2162_ "Sink Off Threshold"
+_@M2162_ "Schwelle Sinken AUS"
+
+#_@M2163_ "Position Noise"
+_@M2163_ "Positionsgeräusch"
+
+#_@M2164_ "Lift Freq. Base"
+_@M2164_ "Steigen Grundfrequenz"
+
+#_@M2165_ "Lift Freq. Increment"
+_@M2165_ "Steigen Freq. Inkrement"
+
+#_@M2166_ "Sink Freq. Base"
+_@M2166_ "Sinken Grundfrequenz"
+
+#_@M2167_ "Sink Freq. Increment"
+_@M2167_ "Sinken Freq. Inkrement"
+
+#_@M2168_ "Volume"
+_@M2168_ "Lautstärke"
+
+#_@M2169_ "Rate Multiplier"
+_@M2169_ "Verstärkung"
+
+#_@M2170_ "Audio Connected"
+_@M2170_ "Ton verbunden"
+
+#_@M2171_ "Audio Disconnected"
+_@M2171_ "Ton getrennt"
+
+#_@M2172_ "Bluetooth Wait"
+_@M2172_ "Bluetooth Warten"
+
+#_@M2173_ "Output Mode"
+_@M2173_ "Ausgabeart"
+
+#_@M2174_ "Output Frequency"
+_@M2174_ "Ausgabe Frequenz"
+
+
+#_@M2175_ "Conical ESS"
+_@M2175_ "Konischer WDP"
+
+#_@M2176_ "Slope"
+_@M2176_ "Neigung"
+
+#_@M2177_ "Base"
+_@M2177_ "Basis"
+
 
 
 # New CustomKey labels for Custom Menu
@@ -5608,7 +5761,30 @@ _@M2244_ "Konfigur\nGerät"
 #_@M2245_ "Device\nSave"
 _@M2245_ "Speichere\nGerät"
 
+#_@M2246_ "Reset\nView"
+_@M2246_ "Ansicht\nrücksetzen"
+
+#_@M2247_ "28/45 FAI threshold "
+_@M2247_ "28/45 FAI Schwelle "
+
+#_@M2248_  "No Near Object found!"
+_@M2248_  "Kein nahes Objekt gefunden!"
+
 # MAX 2250! 
 # (Reserved for custom menus up to 2300!)
 # Note for developers: remember LKLanguage MAX_MESSAGE limit
 
+# S = Start Task point
+#_@M2301  "S" 
+_@M2301  "S"
+
+# T = Task Point
+#_@M2302_  "T"  
+_@M2302_  "T" 
+
+# F = Finish point
+#_@M2303_  "F" 
+_@M2303_  "F"
+
+#_@M2304_  "GEAR WARNING DISABLED NOW!" 
+_@M2304_  "Jetzt KEINE Fahrwerkswarnung!"

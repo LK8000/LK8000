@@ -1298,8 +1298,8 @@ Setzt die lokale Startzeit für die zu fliegende Aufgabe mit wenigstens einem Ze
 #If you have only 1 gate, closing at a certain time, set the time interval to that time difference.
 #If you have only 1 gate, and no closing time, set interval to a large value such as 480 minutes.
 Gibt es mehr als ein Startfenster, setzt man das Öffnungszeitintervall IN MINUTEN für die anderen.
-Gibt es nur ein Zeitfenster, das sich zu einer bestimmten Zeit schließt, setzt man das Öffnungzeitintervall als Differenzzeit.
-Gibt es nur ein Zeitfenster und keine Maximalzeit, setzt man das Öffnungszeitintervall auf einen sehr großen Wert, z.B 480 Minuten.
+#Gibt es nur ein Zeitfenster, das sich zu einer bestimmten Zeit schließt, setzt man das Öffnungzeitintervall als Differenzzeit.
+#Gibt es nur ein Zeitfenster und keine Maximalzeit, setzt man das Öffnungszeitintervall auf einen sehr großen Wert, z.B 480 Minuten.
 
 @533
 #Start IN (Exit): when the pilot leaves the sector or cylinder from inside to outside.
@@ -2585,6 +2585,188 @@ Falls aktiviert wird beim Kreisen automatisch die TRM0-Fußzele angezeigt.
 #[Group Ack]
 #Acknowledgement of one airspace is valid for all airspaces with the same name and the same class.
 Bestätigung für eine Gruppe von Lufträumen der gleichen Klasse mit gleichem Namen.
+
+
+@1265
+[Luftraum Änderungen]
+#[Airspace changes]
+#"persistent" disabled airspaces stay disabled on next programm start
+#"for this time only" all airspaces will be re-enabled after next programm start
+"permanent" inaktive Lufträume bleiben bis zum nächsten Programmstart inaktiv.
+
+@1266
+[Startfenster]
+#[Time Gate]
+#For task races with at least 1 time gate, set the end local time of last gate. 
+#If gate number is 0, this value will be ignored.
+Setzt für Rennaufgaben mit mindestens einem Startfenster die lokale Endzeit des Fensters.
+Ist die Anzahl der Startfenster = 0 wird die Zeit ignoriert.
+
+
+@1268
+[FAI Dreiecksgrößenregel]
+#[FAI Triangle Threshold]
+#adjust the big FAI 28%/45% triangle threshold
+#500km for DMSt and OLC regulations
+#750km for FAI regulations
+Passt die Schwelle 28%/45% für große FAI-Dreiecke an.
+500km nach DMST- und OLC-Regel
+750km nach FAI Regel 
+
+
+@1269
+[Fahrwerkswarnung]
+#[Gear Warning]
+#Off:         
+#no Gear warning
+
+#Landables:  (recommended in mountains)
+#Gear warning if altitude lower than set height above best alternate field elevation. Warning only if position is 2 nautical miles (3,7km) or closer to the best alternate.
+
+#Always:  (recommended  in flat lands)
+#Gear warning always if altitude above ground level (AGL) lower than set height
+
+#The warning will be shown only once if below gear warning set height, and will only be re-enabled after climbing 100m (300ft) above set  height.”
+
+AUS: 
+Keine Fahrwerkswarnung
+
+Landefelder: (in den Bergen empfohlen)
+Fahrwerkswarnung bei Höhe geringer als gesetzte Höhe über dem besten alternativen Landefeld. Die Warnung erfolgt nur wenn man sich näher als 2 nautische Meilen (3,7km) an der besten Alternative befindet. 
+
+@1270
+[Höhe Fahrwerkswarnung]
+#[Gear Warning Altitude]
+#altitude threshold for gear warning
+Höhe für Fahrwerkswarnung
+
+@1271 
+[Ausgabe QNH]
+#[Output QNH]
+#QNH (in Pa), used for output alt for some output modes - (default 101325)
+QNH (in Pa), genutzt für Ausgabe in einigen Ausgabemodi
+
+@1272 
+[Audioschwelle EIN Steigen]
+#[Lift Threshold]
+#The value in m/s of lift when the audio beeping will start.
+Der Steigwert in m/s bei dem die akustische Variosteigenausgabe startet 
+
+@1273 
+[Audioschwelle AUS Steigen]
+#[Lift Off Threshold]
+#The value in m/s of lift when the audio beeping will stop.
+Der Steigwert in m/s bei dem die akustische Variosteigenausgabe stoppt.
+
+@1274 
+[Audioschwelle EIN Sinken]
+#[Sink Threshold]
+#The value in -m/s of sink when the sink tone will start.
+Wert Sinken in m/s, bei dem der akustische E-Variosinkenausgabe startet.
+
+@1275 
+[Audioschwelle AUS Sinken]
+#[Sink Off Threshold]
+#The value in -m/s of sink when the sink tone will stop.
+Wert Sinken in m/s, bei dem der akustische E-Variosinkenausgabe stoppt.
+
+@1276 
+[Rauschschwelle]
+#[Position Noise]
+#Kalman filter position noise.
+Rauschschwelle Kalman Filter
+
+@1277 
+[Basisfrequenz Steigen]
+#[Lift Freq. Base]
+#The audio frequency for lift beeps in Hz of 0 m/s.
+Variofrequenz Steigen in Hz für Nullschieber
+
+@1278 
+[Frequenzerhöhung Steigen]
+#[Lift Freq. Increment]
+#The increase in audio frequency for lift beeps in Hz for each 1 m/s.
+Frequenzerhöhung in Hz je 1 m/s Steigen für E-Varioausgabe. 
+
+@1279 
+[Basisfrequenz Saufen]
+#[Sink Freq. Base]
+#The audio frequency for the sink tone in Hz of 0 m/s.
+Variofrequenz Sinken in Hz für Nullschieber
+
+@1280 
+[Frequenzerhöhung Saufen]
+#[Sink Freq. Increment]
+#The decrease in audio frequency for sink tone in Hz for each -1 m/s.
+Frequenerniedrigung in Hz je 1 m/s Sinken für E-Varioausgabe.
+
+@1281 
+[Lautstärke]
+#[Volume]
+#The volume of beeps ->  0.1 is only about 1/2 as loud as 1.0.
+Lautstärke E-Vario, 0.1 ist halb so laut wie 1.0.
+
+@1282 
+[Piep-Folgefaktor]
+#[Rate Multiplier]
+#The lift beep cadence -> 0.5 = beeping twice as fast as normal.
+Piep-Folge bei 0,5 doppelt so schnell wie normal
+
+@1283 
+[Audio verbunden]
+#[Audio Connected]
+#Check to enable hardware audio when connected.
+Aktiviere verbundene Audiogeräte
+
+@1284 
+[Audio getrennt]
+#[Audio Disconnected]
+#Check to enable hardware audio when disconnected.
+Deaktiviere Audio für nicht mehr verbundene Audiogeräte
+
+@1285 
+[Bluetooth Wartezeit]
+#[Bluetooth Wait]
+#The time that the hardware will be allow establishment of a bluetooth connection for when turned on.
+Wartezeit bei Herstellung von Bluetooth-Verbindungen
+
+@1286 
+[Ausgabe Modus]
+#[Output Mode]
+#0-BlueFlyVario (default) "Not Supported" 
+#1-LK8EX1  
+#2-LX "Not Supported"
+#3-FlyNet
+0-BlueFlyVario (default) "Nicht unterstützt" 
+1-LK8EX1  
+2-LX "Nicht unterstützt"
+3-FlyNet
+
+
+
+@1287 
+[Ausgabefrequenz]
+#[Output Frequency]
+#The output frequency -> 1-every 20ms ... 50-every 20msx50=1000ms
+Ausgabefrequenz: 1- alle 20ms ... 50- alle (50x20ms) 1000ms
+
+@1288
+[ESS Konus]
+#[Conical ESS Slope]
+ESS-Konus
+
+@1289
+[Basis ESS Konus]
+#[Conical ESS Base]
+Basis ESS-Konus
+
+@1290
+[Luftraum Sonar]
+#[Airspace Sonar]
+#Sonar sound while approaching an airspace, the fastest the closest.
+#This configuration is used to set sonar mode on startup. Changing the sonar mode with button will not affect this setting. 
+Sonar-Ton bei Annäherung an einen Luftraum, schnellste Abfolge = größte Nähe.
+Diese Einstellung gilt für das Sonar bei Programmstart. Die Änderung des Sonar-Modus über das Menü ändert diese Einstellung nicht. 
 
 
 @9999
