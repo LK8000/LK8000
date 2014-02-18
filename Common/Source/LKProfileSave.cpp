@@ -380,7 +380,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryDrawFAI       ,Flags_DrawFAI);
   rprintf(szRegistryGearMode      ,GearWarningMode);
   rprintf(szRegistryGearAltitude  ,GearWarningAltitude);
-  rprintf(szRegistryUserForceMode ,(int) MapWindow::mode.UserForcedMode());
   rprintf(szRegistryBigFAIThreshold,FAI28_45Threshold);
   rprintf(szRegistryBottomMode    ,BottomMode);
   rprintf(szRegistrySonarWarning    ,SonarWarning_Config);

@@ -365,7 +365,6 @@ TCHAR szRegistryDrawTask[]         = _T("DrawTask");
 TCHAR szRegistryDrawFAI[]          = _T("DrawFAI");
 TCHAR szRegistryGearMode[]         = _T("GearMode");
 TCHAR szRegistryGearAltitude[]     = _T("GearAltitude");
-TCHAR szRegistryUserForceMode[]    = _T("UserDisplayMode");
 TCHAR szRegistryBottomMode[]       = _T("ActiveBottomBar");
 TCHAR szRegistryBigFAIThreshold[]  = _T("FAI_28_45_Threshold");
 
@@ -659,7 +658,6 @@ extern const TCHAR szRegistryDrawTask[];
 extern const TCHAR szRegistryDrawFAI[] ;
 extern const TCHAR szRegistryGearMode[];
 extern const TCHAR szRegistryGearAltitude[];
-extern const TCHAR szRegistryUserForceMode[];
 extern const TCHAR szRegistryBottomMode[];
 extern const TCHAR szRegistryBigFAIThreshold[];
 

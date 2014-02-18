@@ -765,21 +765,6 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistrySonarWarning,&SonarWarning_Config);
   if (matchedstring) return;
 
-int tmp;
-  PREAD(sname,svalue,szRegistryUserForceMode   , &tmp);
-  switch(tmp)
-  {
-    case 0: MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE); break;
-    case 1: MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE); break;
-    case 2: MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING); break;
-    case 3: MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_FINAL_GLIDE); break;
-/*
-      MODE_FLY_NONE        = 0x0000,
-      MODE_FLY_CRUISE      = 0x0001,
-      MODE_FLY_CIRCLING    = 0x0002,
-      MODE_FLY_FINAL_GLIDE = 0x0004
- */
-  }
 
 #if (WINDOWSPC>0)
   PREAD(sname,svalue,szRegistryScreenSize, &ScreenSize);
