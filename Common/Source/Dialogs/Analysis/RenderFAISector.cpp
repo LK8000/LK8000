@@ -17,10 +17,10 @@
 #endif
 #define MAX_FAI_SECTOR_PTS (8*FAI_SECTOR_STEPS)
 
+extern BOOL CheckFAILeg(double leg, double total);
 
 int Statistics::RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , COLORREF fillcolor)
 {
-float fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
 double fDist_a, fDist_b, fDist_c, fAngle;
 int i;
 
@@ -34,24 +34,24 @@ if(fabs(fDist_c) < 1000.0)  /* distance too short for a FAI sector */
 	return -1;
 
 double x1=0,y1=0;
+
 double fDistMax = fDist_c/FAI_NORMAL_PERCENTAGE;
-double fDistMin = fDist_c/(1.0-2.0*FAI28_45Threshold);
-double fDelta_Dist = 2.0* fDist_c*fFAI_Percentage / (double)(FAI_SECTOR_STEPS-1);
+double fDistMin = fDist_c/(1.0-2.0*FAI_NORMAL_PERCENTAGE );
+double fDelta_Dist = 2.0* fDist_c*FAI_NORMAL_PERCENTAGE / (double)(FAI_SECTOR_STEPS-1);
 double fA, fB;
 double fMinLeg, fMaxLeg,fDiff=0;
-
 double dir = -1.0;
 BOOL bBigFAISector = false;
 
-if(fDistMax > FAI28_45Threshold)
+if(fDistMax >= FAI28_45Threshold)
 {
   bBigFAISector = true;
   fDistMax = fDist_c/FAI_BIG_PERCENTAGE;
 }
 
-if(fDistMin < FAI28_45Threshold)
+if(fDistMin >= FAI28_45Threshold)
 {
-  fDistMin = fDist_c/(1.0-2.0*FAI_NORMAL_PERCENTAGE);
+  fDistMin = fDist_c/FAI_BIG_MAX_PERCENTAGE;
 }
 
 
@@ -76,10 +76,10 @@ if(fDistMin < FAI28_45Threshold)
    * right below threshold 1
    ********************************************************************/
   fA = 	fDistMin;
-  if(fDistMax > FAI28_45Threshold)
+  if(fDistMax >= FAI28_45Threshold)
     fB = FAI28_45Threshold;
   else
-	fB = fDistMax ;
+	fB = fDistMax;
 
 
   if(fA<fB)
@@ -90,7 +90,9 @@ if(fDistMin < FAI28_45Threshold)
     {
 	  fDist_a = FAI_NORMAL_PERCENTAGE * fDistTri;
 	  fDist_b = fDistTri - fDist_a - fDist_c;
-
+	  if(bBigFAISector)
+	    if( fDist_b > fDistTri*FAI_BIG_MAX_PERCENTAGE)
+		  fDist_b = fDistTri*FAI_BIG_MAX_PERCENTAGE;
 	  LKASSERT(fDist_c*fDist_b!=0);
 	  cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
 	  alpha = acos(cos_alpha)*180/PI * dir;
@@ -109,6 +111,7 @@ if(fDistMin < FAI28_45Threshold)
   /********************************************************************
    * right  threshold extender 2
    ********************************************************************/
+if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   if(bBigFAISector && (fDistMin < FAI28_45Threshold))
   {
 	fMaxLeg = FAI28_45Threshold*FAI_BIG_MAX_PERCENTAGE;
@@ -181,7 +184,6 @@ if(fDistMin < FAI28_45Threshold)
 /********************************************************************
  * TOP limited round 4
  ********************************************************************/
-//  if(fDistMax <= FAI28_45Threshold)
  if(!bBigFAISector)
 	fDist_b = fDistMax*(1.0-2*FAI_NORMAL_PERCENTAGE);
   else
@@ -256,7 +258,8 @@ if(fDistMin < FAI28_45Threshold)
   /********************************************************************
    * LEFT threshold extender
    ********************************************************************/
-  if((fDistMin < FAI28_45Threshold) && (FAI28_45Threshold < fDistMax) && (bBigFAISector))
+if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
+  if((fDistMin < FAI28_45Threshold) && (FAI28_45Threshold <= fDistMax) && (bBigFAISector))
   {
 	fMaxLeg = FAI28_45Threshold*FAI_BIG_MAX_PERCENTAGE;
 	fMinLeg = FAI28_45Threshold*FAI_BIG_PERCENTAGE;
@@ -289,10 +292,10 @@ if(fDistMin < FAI28_45Threshold)
    * LEFT below threshold 7
    ********************************************************************/
   fA = 	fDistMin;
-  if(fDistMax > FAI28_45Threshold)
+  if(fDistMax >= FAI28_45Threshold)
     fB = FAI28_45Threshold;
   else
-	fB = fDistMax ;
+	fB = fDistMax;
 
   if(fA<fB)
   {
@@ -365,14 +368,67 @@ if(fDistMin < FAI28_45Threshold)
   Polygon(hdc, apSectorPolygon,iPolyPtr);
   /********************************************/
 
+
+  /********************************************************************
+   * calc 2nd sectors if needed
+   ********************************************************************/
+  if((fDistMax < FAI28_45Threshold) && (fDist_c/FAI_BIG_PERCENTAGE > FAI28_45Threshold))
+  {
+	  iPolyPtr = 0;
+	  /********************************************************************
+	   * TOP limited round 9
+	   ********************************************************************/
+	    fDistMax = fDist_c/FAI_BIG_PERCENTAGE;
+	  	fDist_b = fDistMax*FAI_BIG_MAX_PERCENTAGE;
+	    fDist_a = fDistMax-fDist_b-fDist_c;
+	    fDelta_Dist =  (fDist_a-fDist_b) / (double)(FAI_SECTOR_STEPS-1);
+	    for(i =0 ;i < FAI_SECTOR_STEPS; i++)
+	    {
+	  	  LKASSERT(fDist_c*fDist_b!=0);
+	  	  cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
+	  	  alpha = acos(cos_alpha)*180/PI * dir;
+	  	  FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
+	      x1 = (lon_d - lon_c)*fastcosine(lat_d);
+	      y1 = (lat_d - lat_c);
+	      LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
+	      apSectorPolygon[iPolyPtr].x   = ScaleX(rc, x1);
+	      apSectorPolygon[iPolyPtr++].y = ScaleY(rc, y1);
+
+	      fDist_a -= fDelta_Dist;
+	      fDist_b += fDelta_Dist;
+	    }
+		  /********************************************************************
+		   * LOW limited round 10
+		   ********************************************************************/
+
+		  	fDist_a = FAI28_45Threshold*FAI_BIG_MAX_PERCENTAGE;
+		    fDist_b = FAI28_45Threshold-fDist_a-fDist_c;
+		    fDelta_Dist =  (fDist_a-fDist_b) / (double)(FAI_SECTOR_STEPS-1);
+		    for(i =0 ;i < FAI_SECTOR_STEPS; i++)
+		    {
+		  	  LKASSERT(fDist_c*fDist_b!=0);
+		  	  cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
+		  	  alpha = acos(cos_alpha)*180/PI * dir;
+		  	  FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
+		      x1 = (lon_d - lon_c)*fastcosine(lat_d);
+		      y1 = (lat_d - lat_c);
+		      LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
+		      apSectorPolygon[iPolyPtr].x   = ScaleX(rc, x1);
+		      apSectorPolygon[iPolyPtr++].y = ScaleY(rc, y1);
+
+		      fDist_a -= fDelta_Dist;
+		      fDist_b += fDelta_Dist;
+		    }
+		    /********************************************/
+		    Polygon(hdc, apSectorPolygon,iPolyPtr);
+		    /********************************************/
+  }
+
   SelectObject(hdc, (HPEN)hpOldPen);
   SelectObject(hdc, (HBRUSH)hpOldBrush);
   DeleteObject(hpSectorPen);
   if(hpSectorFill != NULL)
     DeleteObject(hpSectorFill);
-
-
-
   /********************************************************************
    * calc round leg grid
    ********************************************************************/
@@ -395,6 +451,8 @@ int iCnt = 0;
 
   while(fDistTri <= fDistMax)
   {
+	if(CheckFAILeg(fDist_c,fDistTri))
+	{
     TCHAR text[180]; SIZE tsize;
 	if(bFirstUnit)
 	  _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
@@ -433,7 +491,6 @@ int iCnt = 0;
 		  fDist_b-=fDiff;
 		  fDist_a+=fDiff;
 	  }
-	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
 	  fDelta_Dist =  (fA-fB) / (double)(FAI_SECTOR_STEPS-1);
 	}
 
@@ -468,6 +525,7 @@ int iCnt = 0;
 	  fDist_a -= fDelta_Dist;
 	  fDist_b += fDelta_Dist;
     }
+	}
     fDistTri+=fTic;iCnt++;
  //   if((iCnt %2) ==0)
   //    ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
