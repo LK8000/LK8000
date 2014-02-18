@@ -703,6 +703,7 @@ goto_menu:
 		// Long click on aircraft icon, toggle thermal mode
 		//
 		if ( dwInterval >=VKLONGCLICK) { // in Defines.h
+			#if 0
 			if (mode.Is(Mode::MODE_CIRCLING)) {
 				mode.UserForcedMode(Mode::MODE_FLY_CRUISE);
 				#ifndef DISABLEAUDIO
@@ -717,6 +718,7 @@ goto_menu:
 				#endif
 				break;
 			}
+			#endif
 		} else {
 			// We are here in any case only when dwInterval is <VKLONGCLICK
 			if (dwInterval >=(unsigned)CustomKeyTime) {
