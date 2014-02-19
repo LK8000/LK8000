@@ -80,8 +80,12 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 
     if(ValidTaskPoint(PanTaskEdit))
     {
-    	  _stprintf(Scale, _T("Task %.1f%s"), CALCULATED_INFO.TaskDistanceToGo*DISTANCEMODIFY, Units::GetDistanceName()/*, panbearing,_T(DEG)*/ );
+    	if( DerivedDrawInfo.TaskFAI)
+    	  _tcscpy(Scale1,TEXT("FAI"));
+    	else
+    	   _tcscpy(Scale1,TEXT(""));
 
+    	_stprintf(Scale, _T("%s Task %.1f%s"), Scale1, DerivedDrawInfo.TaskDistanceToGo*DISTANCEMODIFY, Units::GetDistanceName()/*, panbearing,_T(DEG)*/ );
     }
     else
     {
