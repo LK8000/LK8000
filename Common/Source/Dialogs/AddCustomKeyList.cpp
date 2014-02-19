@@ -100,6 +100,7 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
   //  dfe->addEnumText(TEXT("Orientation"));
     dfe->addEnumTextNoLF(MsgToken(2038)); // Map Orient
     dfe->addEnumTextNoLF(MsgToken(928)); //Restarting Comm Ports
+    dfe->addEnumTextNoLF(MsgToken(2249)); // DspMode , not to be translated
 
     dfe->Sort(0);
 

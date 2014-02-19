@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  140126
+# MASTER UPDATED:  140221
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -2124,6 +2124,9 @@ _@M2245_ "Device\nSave"
 _@M2246_ "Reset\nView"
 _@M2247_ "28/45 FAI threshold "
 _@M2248_  "No Near Object found!"
+
+# DO NOT TRANSLATE 2249
+_@M2249_  "DspMode"
 
 # MAX 2500! 
 # (Reserved for custom menus up to 2300!)

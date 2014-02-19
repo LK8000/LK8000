@@ -507,6 +507,12 @@ passthrough:
 		#endif
         InputEvents::eventRestartCommPorts(NULL);
         return true;
+
+    case ckDspMode:
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		InputEvents::setMode(_T("Display3"));
+		return true;
+
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"),ckeymode);
@@ -584,7 +590,8 @@ CustomKeyLabel[55]=2236;	// ResetTripComputer
 CustomKeyLabel[56]=2237;	// Sonar toggle
 CustomKeyLabel[57]=2246;	// Reset view
 CustomKeyLabel[58]=2038;	// Map Orientation
-CustomKeyLabel[59]=928;     // Restarting Comm Ports
+CustomKeyLabel[59]=928;		// Restarting Comm Ports
+CustomKeyLabel[60]=2249;	// DspMode
 }
 
 

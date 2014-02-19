@@ -2839,21 +2839,31 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
 
 void InputEvents::eventUserDisplayModeForce(const TCHAR *misc){
 
+  TCHAR tmode[50];
+  wsprintf(tmode,_T("%s: "), MsgToken(2249));
+
   if (_tcscmp(misc, TEXT("unforce")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE);
+    _tcscat(tmode,MsgToken(2034));
   }
   else if (_tcscmp(misc, TEXT("forceclimb")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING);
+    _tcscat(tmode,MsgToken(2031));
   }
   else if (_tcscmp(misc, TEXT("forcecruise")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE);
+    _tcscat(tmode,MsgToken(2032));
   }
   else if (_tcscmp(misc, TEXT("forcefinal")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
+    _tcscat(tmode,MsgToken(2033));
   }
-  else if (_tcscmp(misc, TEXT("show")) == 0){
-    // DoStatusMessage(TEXT("Map labels ON")); 091211 ?????
+  #if 0
+  else if (_tcscmp(misc, TEXT("show")) == 0){ // UNUSED
+    // DoStatusMessage(TEXT("")); 
   }
+  #endif
+  DoStatusMessage(tmode);
 
 }
 
