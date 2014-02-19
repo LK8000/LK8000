@@ -21,7 +21,7 @@
 #define MAX_FAI_SECTOR_PTS (8*FAI_SECTOR_STEPS)
 extern COLORREF taskcolor;
 int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor);
-
+extern BOOL CheckFAILeg(double leg, double total);
 
 void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 {
@@ -127,7 +127,7 @@ int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double l
 {
 
 POINT Pt1;
-float fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
+
 double fDist_a, fDist_b, fDist_c, fAngle;
 int i;
 
@@ -142,23 +142,25 @@ if(fabs(fDist_c) < 1000.0)  /* distance too short for a FAI sector */
 
 
 double fDistMax = fDist_c/FAI_NORMAL_PERCENTAGE;
-double fDistMin = fDist_c/(1.0-2.0*FAI28_45Threshold);
-double fDelta_Dist = 2.0* fDist_c*fFAI_Percentage / (double)(FAI_SECTOR_STEPS-1);
+double fDistMin = fDist_c/(1.0-2.0*FAI_NORMAL_PERCENTAGE );
+double fDelta_Dist = 2.0* fDist_c*FAI_NORMAL_PERCENTAGE / (double)(FAI_SECTOR_STEPS-1);
 double fA, fB;
 double fMinLeg, fMaxLeg,fDiff=0;
 double dir = -1.0;
 BOOL bBigFAISector = false;
 
-if(fDistMax > FAI28_45Threshold)
+if(fDistMax >= FAI28_45Threshold)
 {
   bBigFAISector = true;
   fDistMax = fDist_c/FAI_BIG_PERCENTAGE;
 }
 
-if(fDistMin < FAI28_45Threshold)
+if(fDistMin >= FAI28_45Threshold)
 {
-  fDistMin = fDist_c/(1.0-2.0*FAI_NORMAL_PERCENTAGE);
+  fDistMin = fDist_c/FAI_BIG_MAX_PERCENTAGE;
 }
+
+
 
 
 if (iOpposite >0)
@@ -182,10 +184,10 @@ if (iOpposite >0)
    * right below threshold 1
    ********************************************************************/
   fA = 	fDistMin;
-  if(fDistMax > FAI28_45Threshold)
+  if(fDistMax >= FAI28_45Threshold)
     fB = FAI28_45Threshold;
   else
-	fB = fDistMax ;
+	fB = fDistMax;
 
 
   if(fA<fB)
@@ -214,7 +216,6 @@ if (iOpposite >0)
   /********************************************************************
    * right  threshold extender 2
    ********************************************************************/
-if(fDistMin < FAI28_45Threshold)
   if(bBigFAISector && (fDistMin < FAI28_45Threshold))
   {
 	fMaxLeg = FAI28_45Threshold*FAI_BIG_MAX_PERCENTAGE;
@@ -224,6 +225,8 @@ if(fDistMin < FAI28_45Threshold)
 
 	if(fB < fMinLeg)
 	  fB = fMinLeg;
+
+
 
 	fDist_a = fA;
 	fDelta_Dist =  (fB-fA) / (double)(FAI_SECTOR_STEPS-1);
@@ -251,6 +254,7 @@ if(fDistMin < FAI28_45Threshold)
 	  fA= fDistMin;
     fB =fDist_c/(1- FAI_BIG_PERCENTAGE-FAI_BIG_MAX_PERCENTAGE);
 
+
     if(fA < fB)
     {
       fDelta_Dist =(fB-fA)/ (double)(FAI_SECTOR_STEPS-1);
@@ -259,7 +263,7 @@ if(fDistMin < FAI28_45Threshold)
       {
   	    fMaxLeg = fDistTri*FAI_BIG_MAX_PERCENTAGE;
 	    fMinLeg = fDistTri*FAI_BIG_PERCENTAGE;
-	    fDist_a = fDistTri-fMinLeg-fDist_c;;
+	    fDist_a = fDistTri-fMinLeg-fDist_c;
 	    fDist_b = fMinLeg;
 
 	    if(fDist_a > fMaxLeg)
@@ -358,8 +362,7 @@ if(fDistMin < FAI28_45Threshold)
   /********************************************************************
    * LEFT threshold extender 6
    ********************************************************************/
-if(fDistMin < FAI28_45Threshold)
-  if((fDistMin < FAI28_45Threshold) && (FAI28_45Threshold < fDistMax))
+  if((fDistMin < FAI28_45Threshold) && (FAI28_45Threshold <= fDistMax))
   {
 	fMaxLeg = FAI28_45Threshold*FAI_BIG_MAX_PERCENTAGE;
 	fMinLeg = FAI28_45Threshold*FAI_BIG_PERCENTAGE;
@@ -391,11 +394,12 @@ if(fDistMin < FAI28_45Threshold)
   /********************************************************************
    * LEFT below threshold 7
    ********************************************************************/
-  fA = 	fDistMin;
-  if(fDistMax > FAI28_45Threshold)
+   fA = 	fDistMin;
+   if(fDistMax >= FAI28_45Threshold)
     fB = FAI28_45Threshold;
-  else
-	fB = fDistMax ;
+   else
+	fB = fDistMax;
+
 
   if(fA<fB)
   {
@@ -460,6 +464,62 @@ if(fDistMin < FAI28_45Threshold)
     Polygon(hdc,apSectorPolygon,iPolyPtr);
   /********************************************/
 
+  /********************************************************************
+   * calc 2nd sectors if needed
+   ********************************************************************/
+  if((fDistMax < FAI28_45Threshold) && (fDist_c/FAI_BIG_PERCENTAGE > FAI28_45Threshold))
+  {
+	  iPolyPtr = 0;
+	  /********************************************************************
+	   * TOP limited round 9
+	   ********************************************************************/
+	    fDistMax = fDist_c/FAI_BIG_PERCENTAGE;
+	  	fDist_b = fDistMax*FAI_BIG_MAX_PERCENTAGE;
+	    fDist_a = fDistMax-fDist_b-fDist_c;
+	    fDelta_Dist =  (fDist_a-fDist_b) / (double)(FAI_SECTOR_STEPS-1);
+	    for(i =0 ;i < FAI_SECTOR_STEPS; i++)
+	    {
+	  	  LKASSERT(fDist_c*fDist_b!=0);
+	  	  cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
+	  	  alpha = acos(cos_alpha)*180/PI * dir;
+	  	  FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
+		  MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
+		  LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
+		  apSectorPolygon[iPolyPtr++] = Pt1;
+
+	      fDist_a -= fDelta_Dist;
+	      fDist_b += fDelta_Dist;
+	    }
+		  /********************************************************************
+		   * LOW limited round 10
+		   ********************************************************************/
+
+		  	fDist_a = FAI28_45Threshold*FAI_BIG_MAX_PERCENTAGE;
+		    fDist_b = FAI28_45Threshold-fDist_a-fDist_c;
+		    fDelta_Dist =  -(fDist_a-fDist_b) / (double)(FAI_SECTOR_STEPS-1);
+
+		    for(i =0 ;i < FAI_SECTOR_STEPS; i++)
+		    {
+		  	  LKASSERT(fDist_c*fDist_b!=0);
+		  	  cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
+		  	  alpha = acos(cos_alpha)*180/PI * dir;
+		  	  FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
+			  MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
+			  LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
+			  apSectorPolygon[iPolyPtr++] = Pt1;
+		      fDist_a += fDelta_Dist;
+		      fDist_b -= fDelta_Dist;
+		    }
+		    /********************************************/
+		    /********************************************/
+		    if (ForcedClipping || DeviceNeedClipping)
+		      ClipPolygon(hdc,apSectorPolygon,iPolyPtr,rc, true);
+		    else
+		      Polygon(hdc,apSectorPolygon,iPolyPtr);
+		    /********************************************/
+		    /********************************************/
+  }
+
   SelectObject(hdc, (HPEN)hpOldPen);
   SelectObject(hdc, (HBRUSH)hpOldBrush);
   DeleteObject(hpSectorPen);
@@ -490,6 +550,8 @@ int iCnt = 0;
 
   while(fDistTri <= fDistMax)
   {
+	if(CheckFAILeg(fDist_c,fDistTri))
+	{
     TCHAR text[180]; SIZE tsize;
 	if(bFirstUnit)
 	  _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
@@ -528,7 +590,7 @@ int iCnt = 0;
 		  fDist_b-=fDiff;
 		  fDist_a+=fDiff;
 	  }
-	  fFAI_Percentage =  FAI_BIG_PERCENTAGE;
+
 	  fDelta_Dist =  (fA-fB) / (double)(FAI_SECTOR_STEPS-1);
 	}
 
@@ -580,6 +642,7 @@ int iCnt = 0;
 	  fDist_a -= fDelta_Dist;
 	  fDist_b += fDelta_Dist;
     }
+	}
     fDistTri+=fTic;iCnt++;
  //   if((iCnt %2) ==0)
   //    ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
