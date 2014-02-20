@@ -24,6 +24,7 @@ static WndListFrame *wTaskList=NULL;
 static WndOwnerDrawFrame *wTaskListEntry = NULL;
 static bool showAdvanced= false;
 
+static int NoEntries=0;
 static int UpLimit=0;
 static int LowLimit=0;
 
@@ -76,7 +77,8 @@ static void UpdateCaption (void) {
 
 static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
-  int n = UpLimit - LowLimit;
+
+
   TCHAR sTmp[120];
   TCHAR wpName[120];
   TCHAR landableStr[5] = TEXT(" [X]");
@@ -93,7 +95,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   int p1 = w0-w1-w2- Sender->GetHeight()-2;
   int p2 = w0-w2- Sender->GetHeight()-2;
   RECT rc = {0*ScreenScale,  0*ScreenScale, Sender->GetHeight(), Sender->GetHeight()};
-  if (DrawListIndex < (n-1)){
+  if (DrawListIndex < (UpLimit)){
     int i = LowLimit + DrawListIndex;
 //    if ((WayPointList[Task[i].Index].Flags & LANDPOINT) >0)
 //      MapWindow::DrawRunway(hDC,  &WayPointList[Task[i].Index],  rc, 3000,true);
@@ -144,17 +146,18 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 	  RefreshTaskStatistics();
 
      // if (DrawListIndex==n) { // patchout 091126
-     if (DrawListIndex==(n-1) && UpLimit < MAXTASKPOINTS) { // patch 091126
-
+     if (DrawListIndex==(UpLimit) ) { // patch 091126
+    	 NoEntries++;
 	// LKTOKEN  _@M832_ = "add waypoint" 
       _stprintf(sTmp, TEXT("  (%s)"), gettext(TEXT("_@M832_")));
       ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
 		 ETO_OPAQUE, NULL,
 		 sTmp, _tcslen(sTmp), NULL);
-    } else if ((DrawListIndex==n) && ValidTaskPoint(0)) {
+    } else if ((DrawListIndex==UpLimit+1) && ValidTaskPoint(0)) {
 
       if (!AATEnabled || ISPARAGLIDER) {
 	// LKTOKEN  _@M735_ = "Total:" 
+    	  NoEntries++;
 	_stprintf(sTmp, gettext(TEXT("_@M735_")));
 	ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
 		   ETO_OPAQUE, NULL,
@@ -195,16 +198,16 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 		   sTmp, _tcslen(sTmp), NULL);
       } 
     }
-    if(n >1)
-	  if (DrawListIndex==(n+1) && UpLimit < MAXTASKPOINTS)
-	  {
+
+	  if (DrawListIndex==(UpLimit+2) && UpLimit >1 )
+	  {  NoEntries++;
 		    double dd = CALCULATED_INFO.TaskTimeToGo;
 		    if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) { // patch 091126
 		      dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
 		    }
 		    dd= min(24.0*60.0,dd/60.0);
 		    int idd = (int) (dd+0.5);
-			_stprintf(sTmp, TEXT("%s(%s=%3.1f): %.0fmin (%i:%02ih) "),gettext(TEXT("_@M247_")),  gettext(TEXT("_@M1022_"))  ,  MACCREADY, dd, idd/60, idd%60 );  //_@M247_ ETE
+			_stprintf(sTmp, TEXT("%s(Mc=%3.1f): %.0fmin (%i:%02ih) "),gettext(TEXT("_@M247_")), MACCREADY, dd, idd/60, idd%60 );  //_@M247_ ETE
 			ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
 				   ETO_OPAQUE, NULL,
 				   sTmp, _tcslen(sTmp), NULL);
@@ -227,10 +230,11 @@ static void OverviewRefreshTask(void) {
   for (i=0; i<MAXTASKPOINTS; i++) {
   if (Task[i].Index != -1) {
       lengthtotal += Task[i].Leg;
-      UpLimit = i+2;
+      UpLimit = (i+1);
     }
-  }
 
+  }
+  NoEntries = UpLimit+1;
 
   RefreshTaskStatistics();
 
@@ -278,7 +282,7 @@ static void OnTaskListEnter(WindowControl * Sender,
   ItemIndex = ListInfo->ItemIndex+ListInfo->ScrollIndex;
 
   // If we are clicking on Add Waypoint
-  if ((ItemIndex>=0) && (ItemIndex == (UpLimit-1)) && ((UpLimit-1)<MAXTASKPOINTS)) {
+  if ((ItemIndex>=0) && (ItemIndex == (UpLimit)) && ((UpLimit)<MAXTASKPOINTS)) {
 
 	// add new waypoint
 	if (CheckDeclaration()) {
@@ -340,13 +344,13 @@ static void OnTaskListEnter(WindowControl * Sender,
 
   } // Index==UpLimit, clicking on Add Waypoint
 
-  if (ItemIndex<UpLimit-1) {
+  if (ItemIndex<=UpLimit) {
 
 //		wf->SetModalResult(mrOK);
 	if (ItemIndex==0) {
 		dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
 	} else {
-		if (ItemIndex==UpLimit-1) {
+		if (ItemIndex==UpLimit) {
 			dlgTaskWaypointShowModal(ItemIndex, 2); // finish waypoint
 		} else {
 			dlgTaskWaypointShowModal(ItemIndex, 1); // turnpoint
@@ -355,13 +359,19 @@ static void OnTaskListEnter(WindowControl * Sender,
 	  OverviewRefreshTask();
   }
 
-	if (ItemIndex==(UpLimit+1))
-	{
-		  wf->SetVisible(false);
-		  dlgTaskCalculatorShowModal();
-		  OverviewRefreshTask();
-		  wf->SetVisible(true);
-	}
+  if (ItemIndex==(UpLimit+1))
+  {
+    wf->SetVisible(false);
+    dlgAnalysisShowModal(ANALYSIS_PAGE_TASK);
+    wf->SetVisible(true);
+  }
+  if (ItemIndex==(UpLimit+2))
+  {
+//	wf->SetVisible(false);
+	dlgTaskCalculatorShowModal();
+	OverviewRefreshTask();
+//	wf->SetVisible(true);
+  }
 
 } // OnTaskListEnter
 
@@ -372,7 +382,16 @@ static void OnTaskListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
 	(void)Sender;
 
   if (ListInfo->DrawIndex == -1) {
-	ListInfo->ItemCount = UpLimit-LowLimit+2;
+
+	 if(UpLimit == 0 )
+	 {
+	   NoEntries = 1;
+	 }
+	 if(UpLimit >1 )
+	 {
+	   NoEntries =  UpLimit+3;
+	 }
+	 ListInfo->ItemCount =  NoEntries;
   } else {
 	DrawListIndex = ListInfo->DrawIndex +ListInfo->ScrollIndex; 
 	ItemIndex = ListInfo->ItemIndex +ListInfo->ScrollIndex;
@@ -391,6 +410,7 @@ static void OnCloseClicked(WindowControl * Sender){
 
 static void OnClearClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
 	(void)ListInfo; (void)Sender;
+
   if (MessageBoxX(hWndMapWindow,
 	// LKTOKEN  _@M179_ = "Clear the task?" 
                   gettext(TEXT("_@M179_")),
@@ -401,6 +421,7 @@ static void OnClearClicked(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
       ClearTask();
       UpdateFilePointer();
       OverviewRefreshTask();
+//      ListInfo->ItemCount =2;
       UpdateCaption();
     }
   }
@@ -408,7 +429,7 @@ static void OnClearClicked(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
 
 static void OnReverseClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
 	(void)ListInfo; (void)Sender;
-
+  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))
 	if (MessageBoxX(hWndMapWindow,
 		gettext(TEXT("_@M1852_")), // LKTOKEN  _@M1852_ = "Reverse task?"
 		gettext(TEXT("_@M1851_")), // LKTOKEN  _@M1851_ = "Reverse task"
@@ -656,6 +677,7 @@ void dlgTaskOverviewShowModal(int Idx){
 
   UpLimit = 0;
   LowLimit = 0;
+  NoEntries = 1;
   ItemIndex = Idx; //-1;
 
   showAdvanced = false;
