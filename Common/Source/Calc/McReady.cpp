@@ -533,6 +533,9 @@ double GlidePolar::FindSpeedForSinkRateAccurate(double w) {
   return vbest;
 }
 
+double GlidePolar::EquMC(double ias) {
+    return polar_c-polar_a*ias*ias;
+}
 
 double GlidePolar::MacCreadyAltitude_heightadjust(double emcready, 
 						  double Distance, 
