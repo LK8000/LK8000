@@ -367,10 +367,10 @@ static void OnTaskListEnter(WindowControl * Sender,
   }
   if (ItemIndex==(UpLimit+2))
   {
-//	wf->SetVisible(false);
+	wf->SetVisible(false);
 	dlgTaskCalculatorShowModal();
 	OverviewRefreshTask();
-//	wf->SetVisible(true);
+	wf->SetVisible(true);
   }
 
 } // OnTaskListEnter
