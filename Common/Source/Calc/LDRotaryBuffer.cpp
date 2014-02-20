@@ -249,18 +249,13 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 		if (ISCAR) {
 			Rotary_Speed=averias;
 		}
-		// According to Welch & Irving, suggested by Dave..
-		// MC = Vso*[ (V/Vo)^3 - (Vo/V)]
-		// Vso: sink at best L/D
-		// Vo : speed at best L/D
-		// V  : TAS
 
 		avertas=averias*AirDensityRatio(Calculated->NavAltitude);
 		// This is just to be sure we are not using an impossible part of the polar
 		if (avertas>(GlidePolar::Vminsink-8.3) && (avertas>0)) { // minsink - 30km/h 
-			LKASSERT(GlidePolar::Vbestld>0);
-			double dtmp= avertas/GlidePolar::Vbestld;
-			Calculated->EqMc = -1*GlidePolar::sinkratecache[GlidePolar::Vbestld] * ( (dtmp*dtmp*dtmp) - ( GlidePolar::Vbestld/avertas));
+
+            Calculated->EqMc = GlidePolar::EquMC(averias);
+
 			// Do not consider impossible MC values as Equivalent
 			if (Calculated->EqMc>20) Calculated->EqMc=-1;
 		} else  {
