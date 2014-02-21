@@ -169,15 +169,15 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 			if(finalWaypoint==ActiveWayPoint) { //if we are flying to the final destination
 				*glideSlopeBarEnabled=true;
 
-				//Calculate actual and required glide slope inclination to reach the destination runaway
+				//Calculate glide slope inclination to reach the destination runaway
 				double halfRunaway=WayPointList[Task[ActiveWayPoint].Index].RunwayLen/2;
 				double distanceToRunaway=0;
 				if(DerivedDrawInfo.WaypointDistance>halfRunaway) distanceToRunaway=DerivedDrawInfo.WaypointDistance-halfRunaway;
 				double heightOnRunaway=DrawInfo.Altitude-WayPointList[Task[ActiveWayPoint].Index].Altitude;
 				if(heightOnRunaway<0) heightOnRunaway=0;
-				double requiredInclination=RAD_TO_DEG*atan2(heightOnRunaway,distanceToRunaway);
-				double glideSlope=0;
-				if(DerivedDrawInfo.Vario<0) glideSlope=RAD_TO_DEG*atan2(-DerivedDrawInfo.Vario,DrawInfo.Speed);
+				double glideSlope=RAD_TO_DEG*atan2(heightOnRunaway,distanceToRunaway);
+				//double actualDescentAngle=0;
+				//if(DerivedDrawInfo.Vario<0) actualDescentAngle=RAD_TO_DEG*atan2(-DerivedDrawInfo.Vario,DrawInfo.Speed);
 
 				//Draw glide slope scale
 				int gssStart=centerY-NIBLSCALE(72);
@@ -198,16 +198,16 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 				}
 
 				//Draw the blue marker representing the required glide slope inclination to reach the destination
-				if(requiredInclination<=0) {
-					internal.y=external.y=gssStart-NIBLSCALE(5);
-					_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREY,rc);
-				} else if(requiredInclination>6) {
-					internal.y=external.y=gssStart+NIBLSCALE(72)*2+NIBLSCALE(5);
-					_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREY,rc);
-				} else { // 0 < reqiredInclination <= 6
-					internal.y=external.y=gssStart+(int)round((requiredInclination*NIBLSCALE(72)*2)/6);
-					_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREEN,rc);
-				}
+				//if(requiredInclination<=0) {
+				//	internal.y=external.y=gssStart-NIBLSCALE(5);
+				//	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREY,rc);
+				//} else if(requiredInclination>6) {
+				//	internal.y=external.y=gssStart+NIBLSCALE(72)*2+NIBLSCALE(5);
+				//	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREY,rc);
+				//} else { // 0 < reqiredInclination <= 6
+				//	internal.y=external.y=gssStart+(int)round((requiredInclination*NIBLSCALE(72)*2)/6);
+				//	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREEN,rc);
+				//}
 
 				//Draw glide slope marker
 				POINT triangle[4];
@@ -229,8 +229,8 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 					isOutOfScale=false;
 				}
 				if(isOutOfScale) {
-					SelectObject(hDC, LKPen_Grey_N1);
-					SelectObject(hDC, LKBrush_Grey);
+					SelectObject(hDC, LKPen_Red_N1);
+					SelectObject(hDC, LKBrush_Red);
 				} else if(INVERTCOLORS) {
 					SelectObject(hDC, LKPen_White_N1);
 					SelectObject(hDC, LKBrush_White);
@@ -241,15 +241,15 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 				Polygon(hDC,triangle,4);
 
 				//Print glide slope value
-				if(!isOutOfScale) {
-					SelectObject(hDC,LK8PanelSmallFont);
-					#ifndef __MINGW32__
-					_stprintf(Buffer, TEXT("%.1f\xB0"),glideSlope);
-					#else
-					_stprintf(Buffer, TEXT("%.1f°"),glideSlope);
-					#endif
-					LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(38),triangle[0].y,0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
-				}
+				//if(!isOutOfScale) {
+				//	SelectObject(hDC,LK8PanelSmallFont);
+				//	#ifndef __MINGW32__
+				//	_stprintf(Buffer, TEXT("%.1f\xB0"),glideSlope);
+				//	#else
+				//	_stprintf(Buffer, TEXT("%.1f°"),glideSlope);
+				//	#endif
+				//	LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(38),triangle[0].y,0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
+				//}
 
 				//Determine if to give HSI indication respect destination runaway (QFU)
 				if(finalWaypoint==0 || DerivedDrawInfo.WaypointDistance<fiveNauticalMiles) {//if direct GOTO or below 5 NM
