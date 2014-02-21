@@ -189,14 +189,6 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 					_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_LIGHTGREY:RGB_BLACK,rc);
 				}
 
-				//Put the labels on glide slope scale
-				SelectObject(hDC, LK8PanelSmallFont);
-				gssIncrement*=2;
-				for(int i=0;i<=6;i++) {
-					_stprintf(Buffer, TEXT("%d"),i);
-					LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(8),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
-				}
-
 				//Draw the blue marker representing the required glide slope inclination to reach the destination
 				//if(requiredInclination<=0) {
 				//	internal.y=external.y=gssStart-NIBLSCALE(5);
@@ -239,6 +231,14 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 					SelectObject(hDC, LKBrush_Black);
 				}
 				Polygon(hDC,triangle,4);
+
+				//Put the labels on glide slope scale
+				SelectObject(hDC, LK8PanelSmallFont);
+				gssIncrement*=2;
+				for(int i=0;i<=6;i++) {
+					_stprintf(Buffer, TEXT("%d"),i);
+					LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(8),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+				}
 
 				//Print glide slope value
 				//if(!isOutOfScale) {
