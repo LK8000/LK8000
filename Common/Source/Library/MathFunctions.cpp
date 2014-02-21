@@ -224,6 +224,11 @@ double Reciprocal(double InBound)
   return AngleLimit360(InBound+180);
 }
 
+double AngleDifference(double angle1, double angle0) {
+	angle0 = AngleLimit360(angle0);
+	angle1 = AngleLimit360(angle1);
+	return fmod(angle1-angle0+180,360)-180;
+}
 
 bool AngleInRange(double Angle0, double Angle1, double x, bool is_signed) {
   Angle0 = AngleLimit360(Angle0);
