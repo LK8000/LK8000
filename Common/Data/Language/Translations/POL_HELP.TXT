@@ -1,4 +1,4 @@
-﻿# LK8000 POL_HELP.TXT 130216
+﻿# LK8000 POL_HELP.TXT updated 140221
 #
 # Pojedyncza linia tekstu może mieć maksymalną długość 500 znaków.
 # Cały tekst pomocy może mieć maksymalnie 1024 znaki
@@ -534,7 +534,7 @@ Gdy "Ilość okien czasow." ma wartość 0 to ta opcja jest ignorowana.
 @219
 W przypadku, gdy zadanie ma więcej niż 1 okno czasowe, to należy tu ustawić okres czasu W MINUTACH pomiędzy oknami.
 W przypadku, gdy zadanie ma tylko 1 okno czasowe zamykane o określonym czasie, to należy tu ustawić długość tego okna.
-W przypadku, gdy zadanie ma tylko 1 okno czasowe, które nie jest zamykane, to należy ustawić tutaj bardzo dużą wartość (np 480 minut).
+W przypadku, gdy zadanie ma tylko 1 okno czasowe, które nie jest zamykane, to należy ustawić tutaj bardzo dużą wartość (np. 480 minut).
 
 @220
 Typ startu zadania:
@@ -806,6 +806,7 @@ Typ sektorów użytych do zadań innych niż AAT:
 [Cylinder] Cylinder o promieniu określonym przez "Promień sekt.".
 [Sektor FAI] 90 stopniowy sektor wycentrowany do bisektora o promieniu określonym przez "Promień sekt.".
 [DAe 0.5/10] Złożenie 0.5km cylindra i sektora FAI o promieniu 10km.
+[Linia] Linia bisektora pomiędzy odcinkami zadania. Promień jest wyłącznie używany do jej rysowania na mapie.
 
 @506
 Promień strefy obserwacyjnej PZ dla zadań innych niż AAT.
@@ -861,8 +862,6 @@ Gdy "Ilość okien czasow." ma wartość 0 to ta opcja jest ignorowana.
 
 @532
 W przypadku, gdy zadanie ma więcej niż 1 okno czasowe, to należy tu ustawić okres czasu W MINUTACH pomiędzy oknami.
-W przypadku, gdy zadanie ma tylko 1 okno czasowe zamykane o określonym czasie, to należy tu ustawić długość tego okna.
-W przypadku, gdy zadanie ma tylko 1 okno czasowe, które nie jest zamykane, to należy ustawić tutaj bardzo dużą wartość (np 480 minut).
 
 @533
 Typ startu zadania:
@@ -1695,6 +1694,119 @@ Gdy opcja jest włączona, dolny pasek KOM0 będzie automatycznie aktywowany pod
 @1264
 [Grupowe Zatwierdzanie]
 Zatwierdzenie jednej strefy będzie ważne dla wszystkich stref o tej samej nazwie i klasie.
+
+@1265
+[Wyłączone strefy]
+[Na stałe] Wyłączone strefy pozostają wyłączonymi przy kolejnym uruchomieniu programu.
+[Tylko tym razem] Wszystkie wyłączone strefy będą włączone przy kolejnym uruchomieniu programu.
+
+@1266
+[Bramka czasowa]
+Dla zadań z przynajmniej 1 bramką czasową ustaw końcowy czas lokalny ostatniej bramki.
+Ta opcja będzie ignorowana gdy liczba bramek wynosi 0.
+
+@1268
+[Próg Trójkąta FAI]
+Dopasuj próg 28%/45% dla dużych trójkątów FAI
+500km dla regulacji DMSt i OLC
+750km dla regulacji FAI
+
+@1269
+[Ostrzeżenia o podwoziu]
+[Wyłączone] Brak ostrzeżeń
+[W pobliżu lądowisk] (zalecane w górach) Ostrzeżenie o podwoziu, gdy wysokość nad elewacją najlepszego lądowiska alternatywnego jest niższa niż zadana. Ostrzeżenie tylko gdy odległość od najlepszego lądowiska alternatywnego wynosi 2nm (3,7km) lub mniej.
+[Zawsze] (zalecane na nizinach) Ostrzeżenie o podwoziu zawsze, gdy wysokość nad poziomem gruntu jest niższa niż zadana.
+
+Ostrzeżenie pojawi się tylko raz poniżej zadanej wysokości i zacznie działać znowu po wzroście wysokości o 100m (300ft) nad zadaną.
+
+@1270
+[Wysokość ostrzeżeń o podwoziu]
+Zadana wysokość dla ostrzeżeń o podwoziu.
+
+@1271
+[Wyjście QNH]
+QNH (w Pa) używane dla wysokości wyjściowej dla niektórych trybów (domyślnie 101325)
+
+@1272
+[Próg Noszeń]
+Wartość noszenia w m/s dla którego odgłosy noszeń zaczną być wydawane.
+
+@1273
+[Próg Wyłączania Noszeń]
+Wartość noszenia w m/s dla którego odgłosy noszeń przestaną być wydawane.
+
+@1274
+[Próg Duszeń]
+Wartość duszenia w -m/s dla którego odgłosy duszeń zaczną być wydawane.
+
+@1275
+[Próg Wyłączania Duszeń]
+Wartość duszenia w -m/s dla którego odgłosy duszeń przestaną być wydawane.
+
+@1276
+[Szum Pozycji]
+Szum pozycji filtru Kalmana.
+
+@1277
+[Podstawa Częst. Noszeń]
+Częstotliwość odgłosu noszeń w Hz dla 0 m/s.
+
+@1278
+[Wzrost Częst. Noszeń]
+Wzrost częstotliwości odgłosu noszeń w Hz dla każdego 1 m/s.
+
+@1279
+[Podstawa Częst. Dusz.]
+Częstotliwość odgłosu duszeń w Hz dla 0 m/s.
+
+@1280
+[Wzrost Częst. Dusz.]
+Spadek częstotliwości odgłosu duszeń w Hz dla każdego -1 m/s.
+
+@1281
+[Głośność]
+Głośność odgłosów (0.1 jest tylko około 1/2 tak głośne jak 1.0).
+
+@1282
+[Okres]
+Okres wydawania odgłosów (0.5 = odgłosy 2 razy częściej).
+
+@1283
+[Głos Podłączony]
+Sprawdź podłączenie sprzętu dźwiękowego gdy podłączony.
+
+@1284
+[Głos Rozłączony]
+Sprawdź podłączenie sprzętu dźwiękowego gdy rozłączony.
+
+@1285
+[Oczekiwanie na Bluetooth]
+Czas oczekiwania przez sprzęt na ustanowienie połącznia bluetooth po włączeniu urządzenia.
+
+@1286
+[Tryb Wyjścia]
+0-BlueFlyVario (domyślnie) "Brak Wsparcia"
+1-LK8EX1
+2-LX "Brak Wsparcia"
+3-FlyNet
+
+@1287
+[Częstotliwość Wyjścia]
+Częstotliwość wyjścia (1 - co 20ms ... 50 - co 20msx50=1000ms)
+
+@1288
+[Conical ESS Slope]
+
+@1289
+[Conical ESS Base]
+
+@1290
+[Sonar Stref]
+Odgłos sonaru podczas zbliżania się do stref. Im szybszy tym bliżej.
+Ta opcja wykorzystywana jest do ustawienia trybu sonaru podczas uruchomienia. Zmiana trybu sonaru za pomocą przycisku nie zmieni wartości tej opcji.
+
+@1291
+[Conical ESS Base Radius]
 
 @9999
 Pomoc dla tego elementu nie jest dostępna!
