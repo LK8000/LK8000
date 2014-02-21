@@ -1,5 +1,5 @@
 ﻿# LK8000 ITALIAN MESSAGES - ITA_MSG.TXT
-# MASTER UPDATED:  120216
+# MASTER UPDATED:  140220
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -120,10 +120,10 @@ _@M98_ "Quota di arrivo"
 _@M99_ "Punta freccia"
 _@M100_ "Chiedi"
 _@M101_ "Tempo assegnato"
-_@M102_ "Avanzamento Automatico: ARMATO"
-_@M103_ "Avanzamento Automatico: Automatico"
-_@M104_ "Avanzamento Automatico: DISARMATO"
-_@M105_ "Avanzamento Automatico: Manuale"
+_@M102_ "Avanzam.Automatico: ARMATO"
+_@M103_ "Avanzame.Automatico: Automatico"
+_@M104_ "Avanzam.Automatico: DISARMATO"
+_@M105_ "Avanzam.Automatico: Manuale"
 _@M106_ "Retroilluminaz. autom. "
 _@M107_ "Planata Finale autom. "
 _@M108_ "Forza Final Glide Aut. "
@@ -298,7 +298,7 @@ _@M273_ "Esteso"
 _@M274_ "Settore FAI"
 _@M275_ "Quota finale FAI "
 _@M276_ "Quota finale FAI"
-_@M277_ "GPS AUSILIARIO SULLA PORTA"
+_@M277_ "USO GPS AUSILIARIO SU"
 _@M278_ "NO"
 _@M279_ "FLARM RILEVATO"
 _@M280_ "FLARM su mappa "
@@ -339,7 +339,7 @@ _@M313_ "Aeromobile"
 _@M314_ "GATE APERTO"
 _@M315_ "GATE"
 _@M316_ "GATES CHIUSI"
-_@M317_ "GOING SILENT ON COM REPORTING"
+_@M317_ "FINE SEGNALAZIONE ERRORI COM"
 _@M318_ "Offset Quota GPS "
 _@M319_ "GPS agganciato"
 _@M320_ "Intervallo Gates "
@@ -952,7 +952,7 @@ _@M912_ "[ness dest]"
 _@M913_ "Sperimantale"
 _@M914_ "[ness target]"
 _@M915_ "NON PER VOLO IFR"
-_@M916_ "ATTENZIONE, NESSUNA ATTERRABILITÀ"
+_@M916_ "ALLARME ATTERRABILITÀ"
 _@M917_ "Coordinate "
 _@M918_ "Lat/Lon"
 _@M919_ "LatLon"
@@ -983,7 +983,9 @@ _@M943_ "Semi Transparente"
 _@M944_ "Opacità "
 _@M945_ "Reticolo, solo perimetro"
 _@M946_ "Semi Transparente, solo perim"
-
+_@M947_ "SEGNALE FLARM PERSO"
+_@M948_ "Trovato"
+_@M949_ "TP"
 _@M950_ "Opacità Barra Inf."
 _@M951_ "Impossibile interrompere processo RX!"
 _@M952_ "Impossibile scrivere dati sulla porta!"
@@ -1012,6 +1014,9 @@ _@M964_ "SCHERMO SBLOCCATO"
 # Menu buttons, MAX 8 character per line! Keep \n !
 _@M965_ "SBLOCCA\nSCERMO"
 _@M966_ "BLOCCA\nSCHERMO"
+_@M967_ "Modifiche airspace "
+_@M968_ "solo per questa volta"
+_@M969_ "permanenti"
 
 #
 # GPS and COM port warnings
@@ -1237,7 +1242,7 @@ _@M1200_ "Partenz"
 _@M1201_ "Man"
 _@M1202_ "Auto"
 # Map label modes $(MapLabelsToggleActionName) in menu macros
-_@M1203_ "PIL0NI"
+_@M1203_ "PILONI"
 _@M1204_ "TOPOG."
 # $(VisualGlideToggleName) if extended VisualGlide is enabled
 _@M1205_ "Moving"
@@ -1323,8 +1328,8 @@ _@M1268_ "Red acknowledged"
 _@M1269_ "Disabilitato"
 _@M1270_ "FLY-IN"
 _@M1271_ "FLY-OUT"
-_@M1272_ "Identifica come zona CONSENTITA?"
-_@M1273_ "Identifica come zona VIETATA?"
+_@M1272_ "Imposta zona CONSENTITA?"
+_@M1273_ "Imposta zona VIETATA?"
 
 # dlgConfig - Airspace warnings
 _@M1274_ "Allarmi"
@@ -1567,6 +1572,7 @@ _@M1619_ "2.4 SAER "
 _@M1620_ "3.1 COMN "
 _@M1621_ "3.2 RECE "
 _@M1622_ "3.3 TERM "
+_@M1623_ "1.7 HSI "
 
 # New airspace messages
 _@M1630_ "Margine di quota "
@@ -1722,7 +1728,7 @@ _@M1743_ "ELV:"
 # this was the old V rough air. Leave a trailing space!
 _@M1744_ "Vel. Max "
 # new startup profile buttons
-_@M1745_ "AEROMOBILE"
+_@M1745_ "AEROMOB"
 _@M1746_ "SISTEMA"
 # new button caption on task overview dialog, appears only in PG/HG mode
 _@M1747_ "Time Gates"
@@ -1792,7 +1798,7 @@ _@M1792_ "Quick gestures "
 _@M1793_ "Esterno"
 
 # Safety takeoff alarm
-_@M1794_ "Takeoff safety "
+_@M1794_ "Quota sicura decollo "
 
 # Replacing 120, 755 and 756
 _@M1795_ "QUOTA BAROMETRICA DISPONIBILE"
@@ -1847,6 +1853,31 @@ _@M1826_ "Sostituisci"
 _@M1827_ "Agg. prima dell'arrivo"
 _@M1828_ "Agg. dopo l'arrivo"
 
+# Gear warning alarm
+_@M1829_ "Allarme carrello "
+_@M1830_ "Quota allarme carr. "
+_@M1831_ "Spento"
+_@M1832_ "Vicino atterrabilità"
+_@M1833_ "Sempre"
+_@M1834_ "Controlla il carrello !"
+
+# oudie 2 bluetooth
+_@M1835_ "Pairing dispositivo fallito"
+_@M1836_ "Ricerca"
+_@M1837_ "Associa"
+_@M1838_ "Scollega"
+
+# Reverse task
+_@M1850_ "Inverti\nTask"
+_@M1851_ "Inverti task"
+_@M1852_ "Inverti task?"
+_@M1853_ "TASK INVERTITO"
+
+# HSI
+_@M1860_ "HSI"
+
+_@M1870_ "Airspace Sonar "
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
@@ -1857,7 +1888,7 @@ _@M1828_ "Agg. dopo l'arrivo"
 
 _@M2001_ "Zoom\n+"
 _@M2002_ "Zoom\n-"
-_@M2003_ "Pilone\nVicino"
+_@M2003_ "CheC'è\nvicino?"
 _@M2004_ "Pan\n"
 _@M2005_ "Pieno\nSchermo"
 _@M2006_ "Display\n1/3"
@@ -2011,6 +2042,40 @@ _@M2148_ "Auto,Bici & Trekking"
 _@M2149_ "in termica"
 _@M2150_ "in termica e planata"
 
+_@M2151_ "T>\nCentro TP"
+_@M2153_ "Ora Start Fine "
+
+_@M2154_ "IGC\nInvia File"
+_@M2155_ "Invia"
+_@M2156_ "IGC Invia File"
+_@M2157_ "Scegli device"
+
+#BlueFlyVario
+_@M2158_ "Output QNH"
+_@M2159_ "Soglia salita"
+_@M2160_ "Soglia fine salita"
+_@M2161_ "Soglia discendenza"
+_@M2162_ "Soglia fine discendenza"
+_@M2163_ "Position Noise"
+_@M2164_ "Freq. Base ascend"
+_@M2165_ "Aumento Freq.ascend"
+_@M2166_ "Freq. Base discend"
+_@M2167_ "Aumento Freq.discend"
+_@M2168_ "Volume"
+_@M2169_ "Rate Multiplier"
+_@M2170_ "Audio attivato"
+_@M2171_ "Audio disattivato"
+_@M2172_ "Attesa Bluetooth"
+_@M2173_ "Output Mode"
+_@M2174_ "Output Frequency"
+
+_@M2175_ "Conical ESS"
+_@M2176_ "Cone Slope"
+_@M2177_ "Base Altitude"
+_@M2178_ "Base Radius"
+
+
+
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
 _@M2201_ "Menu"
@@ -2051,12 +2116,22 @@ _@M2234_ "TESTI"
 _@M2235_ "GAUGES"
 _@M2236_ "Reset\nTrip"
 _@M2237_ "Commuta\nSonar"
-_@M2238_ "Draw\nTask"
-_@M2239_ "Draw\nFAI"
-_@M2240_ "NoDraw\nTaskFAI"
-_@M2241_ "Draw\nTaskFAI"
+_@M2238_ "Mostra\nTask"
+_@M2239_ "Mostra\nFAI"
+_@M2240_ "NO\nTskFAI"
+_@M2241_ "Mostra\nTaskFAI"
 _@M2242_ "Sonar\nON"
 _@M2243_ "Sonar\nOFF"
-_@M2244_ "Device\nSetup"
-_@M2245_ "Device\nSave"
-# Note for developers: remember LKLanguage MAX_MESSAGE limit (2130)
+_@M2244_ "Config\nDevice"
+_@M2245_ "Salva\nDevice"
+_@M2246_ "Reset\nView"
+_@M2247_ "28/45 FAI threshold "
+_@M2248_  "Nessun elemento vicino!"
+# S = Start Task point
+_@M2301  "S" 
+# T = Task Point
+_@M2302_  "T"  
+# F = Finish point
+_@M2303_  "F" 
+_@M2304_  "ALLARME CARRELLO DISABILITATO!" 
+

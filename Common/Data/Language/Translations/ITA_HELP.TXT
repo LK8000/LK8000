@@ -1,4 +1,4 @@
-﻿# LK8000 ITA_HLP.TXT 090411
+﻿# LK8000 ITA_HLP.TXT 140220
 # 
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -1456,6 +1456,53 @@ Nessun aiuto e' disponibile per questa sezione.
 @912
 [OLC PLUS] punteggio previsto
 
+@913
+[FLAP SETTINGS]
+Show current optimum flap setting based on extended polar file and current wing loading.
+See the example polar file inside _Polars folder, for help on how to create an extended polar.
+
+@914
+[Airspace Vertical Distance]
+Vertical distance to the SELECTED airspace. To SELECT an airspace go inside 2.4 airspace page and pull details,
+there is a button for selection. Once selected the airspace will be monitored for distance in this infobox.
+Negative values means that airspace altitude is below, positive means that is above you. (Like arrival altitudes)
+If no airspace is selected, OR if you are already INSIDE the airspace for this distance, --- is shown.
+In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
+
+@915
+[Home Altitude Arrival]
+Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt and safetyMC.
+
+@916
+@917
+@918
+[Alternate bearing]
+Bearing to the selected alternate
+
+@919
+@920
+@921
+[Alternate distance]
+Distance to the selected alternate
+
+@922
+[Max Altitude Reached]
+Max altitude reached during the current flight.
+It is reset at takeoff.
+
+@923
+[Max Height Gained]
+This height is calculated using the min height detected AFTER the start of free flight.
+This value is normally used for badges.
+
+@924
+[Head Wind Speed]
+This is the wind component relative to your current track.
+It is the difference between the TAS true airspeed and GS ground speed.
+A positive value indicates a HEAD WIND, and a negative value indicates a TAIL WIND.
+If true airspeed is not available, estimated TAS is used. 
+In this case the value is only guessed against the current wind set.
+
 
 #
 # END INFOBOXES 800 - 1199
@@ -1523,6 +1570,240 @@ File di Polare Personalizzata e' il nome del file che contiene i dati della curv
 Il file deve essere messo nella sottodirectory _Polars
 Creare un file di polare non e' semplice: devi inserire i ratei precisi di discesa relativi al peso (con pilota) del velivolo.
 Leggi il manuale per approfondimenti.
+
+@1208
+[Aircraft type]
+This contains a selection of aircrafts and wings of different performance classes.
+
+@1209
+[Airspace warning message repeat time]
+This is the time when airspace warning messages are repeated if not acknowledged.
+If you flying in a forbidden airspace without acknowledging the warning message, then after this time elapses warning message pops up again.
+
+@1210
+[Airspace vertical distance margin]
+If your vertical distance to an airspace base or top drops below this limit, then the yellow warning message dialog pops up.
+This also affects how airspace warning icons draws on the map. 
+If vertical distance (altitude difference) to airspace base or top is below this limit,
+then the warning icon is displayed directly above the glider symbol to warn you. 
+
+@1211
+[Airspace warning dialog timeout]
+If this time elapses, airspace warning dialog closes automatically, without pressing the close button.
+In airspace warning dialog, you can see a decrementing counter on the close button caption showing the remaining time to close.
+
+@1212
+[Airspace warning map labels]
+If this is on, airspace warning labels shows on the map indicating airspace name and vertical distance.
+
+@1213
+[PG autozoom threshold]
+When using autozoom in PG mode, autozoom gets working only if the next waypoint gets closer than this limit.
+For example if you choose 5km, it means when you're 5km to the next waypoint the autozoom will start working.
+It's zoom out to 5km zoom range, and it will keep zoom in as you're approaching the waypoint.
+After you reach the waypoint the previous Cruise zoom restored. And as soon you reach 5km to the next waypoint the autozoom start working again.
+
+@1220
+[Bottom Bar Configuration]
+Turn on/off each bottom bar stripe while rotating navboxes.  At least one (not counting TRM0) must be on. 
+
+@1221
+[InfoPages rotation configuration]
+Enable or disable each page in the rotating sequence.
+If all items in a page are disabled, then this page will be skipped.
+A page will be still reachable with a custom keys, eventually.
+Attention: non-gliders aircrafts such as PG/HG and GA that are disabling the 1.5 Contest infopage 
+will also disable all contest calculations.  If you want contest calculations, you NEED to activate 1.5.
+If you are using Glider aircraft mode, then you can also disable 1.5 because calculations are made in any case.
+
+@1250
+Controls filtering of airspace for display and warnings.  The airspace filter button also allows filtering of display and warnings independently for each airspace class.
+[All on] All is displayed.
+[Clip] Only airspace below the clip altitude.
+[Auto] All within a height margin of the glider.
+[All below] All airspace below the glider and within height margin above.
+
+@1251
+Height margin used to control airspace display filtering on the moving map used only in AUTO and ALL BELOW modes. For AUTO it determines the height above and below the glider for which airspaces should be shown. 
+ALL BELLOW mode will show airspaces up to specified height above the glider and all airspaces below it.
+
+@1252
+Even if you have acknowledged an airspace, after this time it will be back "active" for warnings.
+You may want to be warned again while flying back home and crossing an airspace you have crossed in the morning, for example!
+By default, after 15 minutes airspaces will be back "armed" for warnings.
+
+@1253
+[Alarm Max Altitude] An alarm will be triggered everytime this altitude is reached and crossed.
+The alarm will not be repeated within the next 60 seconds.
+After 1 minute, if altitude has been lower than Max Altitude and then becomes higher again, alarm will sound again.
+To disable this alarm, set it to 0. 
+The altitude used for alarm is the one chosen in Config menu 5 "Use baro altitude".
+Multiple alarms set at the same altitude will have no effect.
+Glider pilots should be careful not to set alarms below a safety altitude, during critical phases of flight.
+Each alarm can be repeated max 30 times. After 30 times, an alarm will automatically self disable for the current flight.
+The visual alarm message automatically disappears after 12 seconds.
+Each alarm has a custom sound that can be changed inside _System _Sounds folder.
+They are named LK_ALARM_ALTx.WAV
+Default is 0 (no alarm).
+
+# ex 195
+@1254
+Glide bar can be relative to Task Finish or to the next turnpoint, or it can be disabled. This bar is drawn on the left side of the screen.
+When using next waypoint, or task waypoint with only final waypoint to go, then this value will be equal to the one shown on overlays.
+
+@1255
+Automatic Mac Cready setting, can be on or off. It can also be enabled and disabled during flight.
+This is the default value. 
+
+@1256
+[Total Energy] When TotalEnergy is in use, LK will calculate the height you would gain by pulling up the aircraft at the current speed, up until the speed becomes the optimal for best glide. 
+For example if you are flying at 200kmh with a discus with no ballast, the speed energy would be calculated as if you would pull up and slow down to 100kmh: you would certainly climb to a better altitude of course.
+This speed height will be added to all arrival altitudes. By default this feature is DISABLED, for safety reasons.
+If you are in doubt, leave this setting OFF.
+
+@1257
+[Efficiency]
+How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
+This is the default value used by Efficiency in Basic Settings menu, loaded on startup. You should normally leave this value to 100% here.
+
+@1258
+[Live tracker log interval in seconds]
+Set this on (>0), if you want to enable sending position data to Leonardo live tracker services over the internet. (http://www.livetrack24.com)
+This requires a GPRS/HSDPA data plan, and an active TCP/IP internet connection to the tracking server. LK uses the given server, user name and
+password to login to the server. Aircraft type submitted as well. If unsure, set the default value of 0 which means off.
+
+@1259
+[Custom Menu]
+
+@1260
+[Quick gestures]
+Only for paragliders and hangdliers mode: enable/disable quick gestures.
+By default, quick gestures are enabled. Quick gestures allow the pilot to click
+on right or left nearest/info pages to switch to next/previous like with gestures.
+Using gloves during the flight will require this option be disabled.
+
+@1261
+[Takeoff safety]
+During the takeoff phase, this alarm will sound when the chosen safety altitude over ground (QFE) is reached once.
+For gliders this is normally the altitude above which it is possible to turn 180 and go back to the airfield, in case towing is aborted.
+Set this value to 0 to disable the alarm. 
+This alarm will be armed again only after landing.
+
+@1262
+[Multimap options]
+
+@1263
+[Bottom Bar AUTO]
+Se abilitata, la barra inferiore di termica (TRM0) sarà automaticamente attivata mentre ci si trova in termica, e disattivata in uscita, anche se questa barra è stata disabilitata nella rotazione delle informazioni.
+
+@1264
+[Conferma gruppo]
+La conferma di uno spazio aereo è valida per tutti gli spazi aerei con lo stesso nome e la stessa classe.
+
+@1265
+[Modifica spazi aerei]
+Persistente: gli spazi aerei disabilitati saranno ancora disibilitati alla successiva esecuzione di LK.
+Per questa volta: gli spazi aerei disabilitati saranno riabilitati alla successiva esecuzione di LK. (consigliato)
+
+
+@1266
+[Tempo dei cancelli]
+Per i task con almeno 1 cancello di partenza, si sceglie l'ora locale di chiusura dell'ultimo cancello.
+Se non ci sono cancelli, questo valore è ignorato.
+
+
+
+@1268
+[Soglia triangolo FAI]
+configura la soglia per triangoli FAI grandi (28% / 45%)
+500km per regole DMSt e OLC 
+750km per regole FAI
+
+
+
+@1269
+[Avviso carrello]
+Off:         
+nessun avviso carrello
+
+Atterrabile:  (da usare se ci sono montagne dove si vola)
+Avviso carrello se l'altezza è inferiore a quella selezionata, sopra la quota del campo atterrabile vicino. L'avviso avviene solo se ci si trova a 2 miglia (3.7km) dal campo, o piu vicini.
+
+Sempre: (da usare solo in pianura)
+Always:  (recommended  in flat lands)
+Avviso carrello se la quota sul terreno scende sotto quella selezionata.
+
+L'avviso avverrà solo una volta, appena raggiunta la soglia di allarme, e sarà ripetuta solo se si risale sopra questa soglia superandola di 100m .
+
+
+@1270
+[Quota avviso carrello]
+soglia di quota per avviso carrello
+
+@1271 
+[Output QNH]
+QNH (in Pa), usato per alcuni strumenti - (default 101325)
+
+@1272 
+[Soglia di salita]
+Valore in m/s della salita quando inizierà a suonare l'audio
+
+@1273 
+[Soglia di fine salita]
+Valore in m/s della salita quando l'audio smetterà di suonare
+
+@1274 
+[Soglia di discendenza]
+Valore in m/s della discendenza quando il suono inizierà
+
+@1275 
+[Soglia di fine discendenza]
+Valore in m/s della discendenza quando il suono finirà
+
+@1276 
+[Position Noise]
+Kalman filter position noise.
+
+@1277 
+[Frequenza base di ascendenza]
+Frequenza audio per i toni di ascendenza, in Hz di 0 m/s
+
+@1278 
+[Incremento frequenza in ascendenza]
+Incremento della frequenza audio per i toni di ascendenza, in Hz , per ogni m/s.
+
+@1279 
+[Frequenza base di discendenza]
+Frequenza audio per i toni di discendenza, in Hz di 0 m/s
+
+@1280 
+[Sink Freq. Increment]
+The decrease in audio frequency for sink tone in Hz for each -1 m/s.
+
+@1281 
+[Volume]
+The volume of beeps ->  0.1 is only about 1/2 as loud as 1.0.
+
+@1282 
+[Rate Multiplier]
+The lift beep cadence -> 0.5 = beeping twice as fast as normal.
+
+@1283 
+[Audio connessione]
+Abilita audio quando si connette
+
+@1284 
+[Audio disconnessione]
+Abilita audio quando si disconnette.
+
+@1285 
+[Attesa Bluetooth]
+Tempo di attesa massimo perchè si attivi la connessione bluetooth
+
+@1290
+[Sonar spazi aerei]
+Il suono del sonar si sente quandi ci si avvicina ad uno spazio aereo. Piu è veloce, più si è vicini. Questa configurazione è usata quando si lancia il programma, ed è poi possibile cambiarla in volo con l'apposito bottone.
+
 
 @9999
 Nessun aiuto disponibile per questo argomento!
