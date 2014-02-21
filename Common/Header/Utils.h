@@ -90,6 +90,7 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars);
 // Fast trig functions
 void InitSineTable(void);
 
+double AngleDifference(double angle1, double angle0);
 bool AngleInRange(double Angle0, double Angle1, double x, bool is_signed=false);
 double AngleLimit180(double theta);
 double AngleLimit360(double theta);

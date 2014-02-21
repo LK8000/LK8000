@@ -227,7 +227,6 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 		case IM_CRUISE:
 		case IM_TASK:
 		case IM_AUX:
-		case IM_HSI:
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if ( index >=0 ) {
@@ -249,6 +248,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 #endif
 			break;
 		case IM_CONTEST:
+		case IM_HSI: //for the HSI the title text is computed in his section down
 			wsprintf(Buffer,gettext(TEXT("")));
 			break;
 		case IM_TRF+IM_TOP:
@@ -906,54 +906,73 @@ label_TRI:
 	// This is the HSI page
 label_HSI:
 	VDrawLine(hdc,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
-	DrawHSI(hdc, rc);
+	static bool showQFU=false;
+	bool glideSlopeBarVisible;
+	if(DrawHSI(hdc,rc,&glideSlopeBarVisible)) showQFU=!showQFU; //make it blinking
+	else showQFU=false;
+	if(showQFU) {
+		#ifndef __MINGW32__
+		wsprintf(Buffer, TEXT("QFU: %d\xB0"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
+		#else
+		wsprintf(Buffer, TEXT("QFU: %d°"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
+		#endif
+		icolor=RGB_GREEN;
+	} else { //show next waypoint name
+		icolor=RGB_WHITE;
+		if(ValidTaskPoint(ActiveWayPoint)) {
+			if(Task[ActiveWayPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveWayPoint].Index].Name);
+			else {
+				wsprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+				icolor=RGB_AMBER;
+			}
+		} else {
+			wsprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+			icolor=RGB_AMBER;
+		}
+	}
+	SelectObject(hdc, LK8PanelMediumFont);
+	LKWriteText(hdc, Buffer, qcolumn[8],qrow[1], 0, WTMODE_NORMAL, WTALIGN_CENTER, icolor, false);
 	showunit=true;
 	if (ScreenLandscape) {
 		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
 		_stprintf(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
-
 		LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[7],&qrow[8],&qrow[6]);
-
 		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
 		_stprintf(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
-
-		LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
-		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
-
-		LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
-		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[7],&qrow[8],&qrow[6]);
-
-		LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
-		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+		if(!glideSlopeBarVisible) { //if not landing print also dist, ETE and ETA respect task end
+			LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
+			_stprintf(BufferUnit,_T(""));
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
+			LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[7],&qrow[8],&qrow[6]);
+			LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
+			_stprintf(BufferUnit,_T(""));
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+		}
 	} else {
 		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
 		_stprintf(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
-
 		LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
 		_stprintf(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
-
 		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
 		_stprintf(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
-
-		LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
-		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
-
-		LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
-		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
-
-		LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
-		_stprintf(BufferUnit,_T(""));
-		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+		if(!glideSlopeBarVisible) { //if not landing print also dist, ETE and ETA respect task end
+			LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
+			_stprintf(BufferUnit,_T(""));
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
+			LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
+			_stprintf(BufferUnit,_T(""));
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
+			LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
+			_stprintf(BufferUnit,_T(""));
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+		}
 	}
 	goto label_End; // End of HSI
 

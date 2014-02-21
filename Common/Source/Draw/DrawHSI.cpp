@@ -16,7 +16,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 
-void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
+bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 	static short centerX, centerY; //center coordinates of HSI gauge
 	static short radius; //HSI gauge size radius
 	static short innerradius; //internal radius of big marks on the compass rose
@@ -38,7 +38,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	} compassMarks[72][10]; //72 compass marks (one every 5 degrees), 10 possible cases
 	static POINT hdgMark[4]; //Coordinates of heading marker (red triangle on the top of compass rose)
 
-	static const int bigCDIscale=9260; //Large Course Deviation Indicator scale: 5 nautical miles (9260 m)
+	static const int fiveNauticalMiles=9260; //Large Course Deviation Indicator scale: 5 nautical miles (9260 m)
 	static const int smallCDIscale=557; //Narrow (zoomed) CDI scale: 0.3 nautical miles (557 m)
 
 	static const TCHAR* label[]= { //labels of the compass rose
@@ -115,6 +115,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		DoInit[MDI_DRAWHSI]=false;
 	}
 
+	*glideSlopeBarEnabled=false;
 	HPEN hpOld = (HPEN) SelectObject(hDC, LKPen_Black_N1);
 	HBRUSH hbOld = (HBRUSH) SelectObject(hDC, LKBrush_Black);
 
@@ -158,19 +159,120 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	#endif
 	LKWriteText(hDC,Buffer,posTRKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
 
+	bool emulatedILS=false;
 	if(ValidTaskPoint(ActiveWayPoint)) {
 		if(Task[ActiveWayPoint].Index>=0) { //Draw course direction and CDI only if there is a task/route active
+			double course = DerivedDrawInfo.LegActualTrueCourse;
+			double deviation = DerivedDrawInfo.LegCrossTrackError;
+			int finalWaypoint=getFinalWaypoint();
+
+			if(finalWaypoint==ActiveWayPoint) { //if we are flying to the final destination
+				*glideSlopeBarEnabled=true;
+
+				//Calculate glide slope inclination to reach the destination runaway
+				double halfRunaway=WayPointList[Task[ActiveWayPoint].Index].RunwayLen/2;
+				double distanceToRunaway=0;
+				if(DerivedDrawInfo.WaypointDistance>halfRunaway) distanceToRunaway=DerivedDrawInfo.WaypointDistance-halfRunaway;
+				double heightOnRunaway=DrawInfo.Altitude-WayPointList[Task[ActiveWayPoint].Index].Altitude;
+				if(heightOnRunaway<0) heightOnRunaway=0;
+				double glideSlope=RAD_TO_DEG*atan2(heightOnRunaway,distanceToRunaway);
+				//double actualDescentAngle=0;
+				//if(DerivedDrawInfo.Vario<0) actualDescentAngle=RAD_TO_DEG*atan2(-DerivedDrawInfo.Vario,DrawInfo.Speed);
+
+				//Draw glide slope scale
+				int gssStart=centerY-NIBLSCALE(72);
+				int gssIncrement=NIBLSCALE(12);
+				external.x=centerX+radius+NIBLSCALE(21);
+				for(int i=0,isBig=1;i<=12;i++,isBig=!isBig) {
+					internal.y=external.y=gssStart+gssIncrement*i;
+					internal.x=centerX+radius+(isBig?NIBLSCALE(14):NIBLSCALE(16));
+					_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_LIGHTGREY:RGB_BLACK,rc);
+				}
+
+				//Draw the blue marker representing the required glide slope inclination to reach the destination
+				//if(requiredInclination<=0) {
+				//	internal.y=external.y=gssStart-NIBLSCALE(5);
+				//	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREY,rc);
+				//} else if(requiredInclination>6) {
+				//	internal.y=external.y=gssStart+NIBLSCALE(72)*2+NIBLSCALE(5);
+				//	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREY,rc);
+				//} else { // 0 < reqiredInclination <= 6
+				//	internal.y=external.y=gssStart+(int)round((requiredInclination*NIBLSCALE(72)*2)/6);
+				//	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREEN,rc);
+				//}
+
+				//Draw glide slope marker
+				POINT triangle[4];
+				triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(18);
+				triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(24);
+				bool isOutOfScale=true;
+				if(glideSlope<=0) {
+					triangle[1].y=gssStart-NIBLSCALE(7);
+					triangle[0].y=triangle[3].y=gssStart-NIBLSCALE(2);
+					triangle[2].y=gssStart+NIBLSCALE(3);
+				} else if(glideSlope>6) {
+					triangle[1].y=gssStart+NIBLSCALE(72)*2-NIBLSCALE(3);
+					triangle[0].y=triangle[3].y=triangle[1].y+NIBLSCALE(5);
+					triangle[2].y=triangle[0].y+NIBLSCALE(5);
+				} else { // 0 < glideSlope <= 6
+					triangle[0].y=triangle[3].y=gssStart+(int)round((glideSlope*NIBLSCALE(72)*2)/6);
+					triangle[1].y=triangle[0].y-NIBLSCALE(5);
+					triangle[2].y=triangle[0].y+NIBLSCALE(5);
+					isOutOfScale=false;
+				}
+				if(isOutOfScale) {
+					SelectObject(hDC, LKPen_Red_N1);
+					SelectObject(hDC, LKBrush_Red);
+				} else if(INVERTCOLORS) {
+					SelectObject(hDC, LKPen_White_N1);
+					SelectObject(hDC, LKBrush_White);
+				} else {
+					SelectObject(hDC, LKPen_Black_N1);
+					SelectObject(hDC, LKBrush_Black);
+				}
+				Polygon(hDC,triangle,4);
+
+				//Put the labels on glide slope scale
+				SelectObject(hDC, LK8PanelSmallFont);
+				gssIncrement*=2;
+				for(int i=0;i<=6;i++) {
+					_stprintf(Buffer, TEXT("%d"),i);
+					LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(8),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+				}
+
+				//Print glide slope value
+				//if(!isOutOfScale) {
+				//	SelectObject(hDC,LK8PanelSmallFont);
+				//	#ifndef __MINGW32__
+				//	_stprintf(Buffer, TEXT("%.1f\xB0"),glideSlope);
+				//	#else
+				//	_stprintf(Buffer, TEXT("%.1f°"),glideSlope);
+				//	#endif
+				//	LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(38),triangle[0].y,0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
+				//}
+
+				//Determine if to give HSI indication respect destination runaway (QFU)
+				if(finalWaypoint==0 || DerivedDrawInfo.WaypointDistance<fiveNauticalMiles) {//if direct GOTO or below 5 NM
+					int QFU=WayPointList[Task[ActiveWayPoint].Index].RunwayDir; //get runaway orientation
+					if(QFU>0 && QFU<=360) { //valid QFU
+						emulatedILS=true;
+						course=QFU;
+						deviation=DerivedDrawInfo.WaypointDistance*fastsine(AngleDifference(course,DerivedDrawInfo.WaypointBearing)); //flat cross track error
+					}
+				}
+			}
+
 			//Print the desired course
 			SelectObject(hDC, LK8InfoSmallFont);
 			#ifndef __MINGW32__
-				_stprintf(Buffer, TEXT("%03d\xB0"),(int)round(DerivedDrawInfo.LegActualTrueCourse));
+				_stprintf(Buffer, TEXT("%03d\xB0"),(int)round(course));
 			#else
-				_stprintf(Buffer, TEXT("%03d°"),(int)round(DerivedDrawInfo.LegActualTrueCourse));
+				_stprintf(Buffer, TEXT("%03d°"),(int)round(course));
 			#endif
 			LKWriteText(hDC,Buffer,posDTKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
 
 			//Calculate rotation angle
-			double rotation=DerivedDrawInfo.LegActualTrueCourse-DrawInfo.TrackBearing;
+			double rotation=course-DrawInfo.TrackBearing;
 			double sin=fastsine(rotation);
 			double cos=fastcosine(rotation);
 
@@ -208,33 +310,33 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),up,down,RGB_GREEN,rc);
 
 			//Course Deviation Indicator
-			if(ActiveWayPoint>0) { //we are flying from WP to WP on a predefined routeline: draw CDI
+			if(ActiveWayPoint>0 || emulatedILS) { //we are flying on a predefined routeline or we have the info for landing: draw CDI
 				int dev; //deviation in pixel
 				COLORREF cdiColor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW; //color of CDI
 				SelectObject(hDC,INVERTCOLORS?LKPen_White_N1:LKPen_Black_N1); //color of CDI scale
 				SelectObject(hDC,INVERTCOLORS?LKBrush_White:LKBrush_Black);
-				if(abs((int)DerivedDrawInfo.LegCrossTrackError)<smallCDIscale) { //use small scale of 0.3 NM
-					for(int i=1;i<3;i++) {
+				if(abs((int)deviation)<smallCDIscale) { //use small scale of 0.3 NM
+					for(int i=1;i<=3;i++) {
 						long tickXiXsin=(long)(smallScaleTick*i*sin);
 						long tickXiXcos=(long)(smallScaleTick*i*cos);
 						Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
 						Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
 					}
-					dev=-(int)(round((cdiFullScale*DerivedDrawInfo.LegCrossTrackError)/smallCDIscale));
+					dev=-(int)(round((cdiFullScale*deviation)/smallCDIscale));
 				} else { // use big scale of 5 NM
-					for(int i=1;i<5;i++) {
+					for(int i=1;i<=5;i++) {
 						long tickXiXsin=(long)(bigScaleTick*i*sin);
 						long tickXiXcos=(long)(bigScaleTick*i*cos);
 						Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
 						Circle(hDC,centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
 					}
-					if(DerivedDrawInfo.LegCrossTrackError>bigCDIscale) {
+					if(deviation>fiveNauticalMiles) { //The larger CDI scale is of 5 nautical miles
 						dev=-cdiFullScale;
 						cdiColor=RGB_RED;
-					} else if(DerivedDrawInfo.LegCrossTrackError<-bigCDIscale) {
+					} else if(deviation<-fiveNauticalMiles) {
 						dev=cdiFullScale;
 						cdiColor=RGB_RED;
-					} else dev=-(int)round((cdiFullScale*DerivedDrawInfo.LegCrossTrackError)/bigCDIscale);
+					} else dev=-(int)round((cdiFullScale*deviation)/fiveNauticalMiles);
 				}
 				long devXsin=(long)(dev*sin);
 				long devXcos=(long)(dev*cos);
@@ -246,7 +348,7 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
 				//Print the actual cross track error
 				SelectObject(hDC, LK8InfoSmallFont);
-				double xtk=fabs(DerivedDrawInfo.LegCrossTrackError);
+				double xtk=fabs(deviation);
 				if(xtk>1000) {
 					xtk/=1000;
 					if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f Km"),xtk);
@@ -288,11 +390,11 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 					_stprintf(Buffer, TEXT("%03d°"),(int)round(DerivedDrawInfo.WaypointBearing));
 				#endif
 				LKWriteText(hDC,Buffer,posDTKx,posBRGy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_MAGENTA,false);
-			} else { //flying to the departure or a direct GOTO: there isn't a predefined routeline: don't draw CDI
+			} else { //flying to the departure or a direct GOTO without information for landing: don't draw CDI
 				//Draw anyway the CDI scale in grey (disabled)
 				SelectObject(hDC,LKPen_Grey_N1); //color of CDI scale
 				SelectObject(hDC,LKBrush_Grey);
-				for(int i=1;i<3;i++) {
+				for(int i=1;i<=3;i++) {
 					long tickXiXsin=(long)(smallScaleTick*i*sin);
 					long tickXiXcos=(long)(smallScaleTick*i*cos);
 					Circle(hDC,centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
@@ -316,4 +418,5 @@ void MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
 	SelectObject(hDC, hbOld);
 	SelectObject(hDC, hpOld);
+	return emulatedILS;
 }
