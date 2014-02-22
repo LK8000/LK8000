@@ -4,7 +4,7 @@
     <WndFrame X="0" Y="0" Width="100" Height="20" Font="2" />
     <WndButton   Name="cmdClose" Caption="_@M186_"    X="2" Y="2" Width="98"  Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
     <WndButton  Name="cmdClear" Caption="_@M180_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnClearClicked"/>
-	<WndButton  Name="cmdClear" Caption="_@M1851_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnReverseClicked"/>
+	<WndButton  Name="cmdRevert" Caption="_@M1851_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnReverseClicked"/>
     <WndButton  Name="cmdCalc"  Caption="_@M160_" X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnCalcClicked" Tag="4" />
     <WndProperty Name="prpFile" Caption=""   X="2" Y="-1"  Width="0" Height="0" CaptionWidth="0" Font="2" Help="">
       <DataField name="" DataType="filereader" Min="0" Max="200" Step="1"/>
