@@ -147,7 +147,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 
      // if (DrawListIndex==n) { // patchout 091126
      if (DrawListIndex==(UpLimit) ) { // patch 091126
-    	 NoEntries++;
+    	 ;
 	// LKTOKEN  _@M832_ = "add waypoint" 
       _stprintf(sTmp, TEXT("  (%s)"), gettext(TEXT("_@M832_")));
       ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
@@ -157,7 +157,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 
       if (!AATEnabled || ISPARAGLIDER) {
 	// LKTOKEN  _@M735_ = "Total:" 
-    	  NoEntries++;
+
 	_stprintf(sTmp, gettext(TEXT("_@M735_")));
 	ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
 		   ETO_OPAQUE, NULL,
@@ -200,7 +200,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
     }
 
 	  if (DrawListIndex==(UpLimit+2) && UpLimit >1 )
-	  {  NoEntries++;
+	  {
 		    double dd = CALCULATED_INFO.TaskTimeToGo;
 		    if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) { // patch 091126
 		      dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
@@ -350,7 +350,7 @@ static void OnTaskListEnter(WindowControl * Sender,
 	if (ItemIndex==0) {
 		dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
 	} else {
-		if (ItemIndex==UpLimit) {
+		if (ItemIndex==UpLimit-1) {
 			dlgTaskWaypointShowModal(ItemIndex, 2); // finish waypoint
 		} else {
 			dlgTaskWaypointShowModal(ItemIndex, 1); // turnpoint
