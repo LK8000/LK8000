@@ -95,6 +95,8 @@ Add customkey DspMode , accessing Display 3/3 page.
     Changed DspMode buttons to automatically close menu after press.
     Display a status message with current mode selected.
 
+HSI page with glide slope indicator showing angle of descent to destination
+
 
 
 CHANGES
