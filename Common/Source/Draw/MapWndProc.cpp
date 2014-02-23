@@ -1122,13 +1122,13 @@ _continue:
 				if (nn<0) {
 					SimFastForward();
 				} else {
-					InputEvents::eventChangeGS(_T("up"));
+					InputEvents::eventChangeGS(_T("kup"));
 				}
 				TriggerGPSUpdate();
 				return TRUE;
 				break;
 			case 0x28:	// VK_DOWN
-				InputEvents::eventChangeGS(_T("down"));
+				InputEvents::eventChangeGS(_T("kdown"));
 				TriggerGPSUpdate();
 				return TRUE;
 				break;
