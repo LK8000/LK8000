@@ -325,7 +325,11 @@ void WindAnalyser::_calcWind(NMEA_INFO *nmeaInfo,
     rthis += cmag*cmag;
   }
   rthis/= numwindsamples;
+  #if BUGSTOP
   LKASSERT(rthis>=0);
+  #else
+  if (rthis<=0) return; // unmanaged
+  #endif
   rthis = sqrt(rthis);
 
   int quality;
@@ -344,8 +348,12 @@ void WindAnalyser::_calcWind(NMEA_INFO *nmeaInfo,
 
   Vector a;
 
+  #if BUGSTOP
   LKASSERT(windsamples[jmax].mag!=0);
-  if (windsamples[jmax].mag==0) windsamples[jmax].mag=0.01;
+  #else
+  //if (windsamples[jmax].mag==0) windsamples[jmax].mag=0.01;
+  return; // unmanaged value, skip measurment
+  #endif
 
   a.x = -mag*maxVector.x/windsamples[jmax].mag;
   a.y = -mag*maxVector.y/windsamples[jmax].mag;
