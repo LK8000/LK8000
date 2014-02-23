@@ -59,7 +59,10 @@ double ClimbAverageCalculator::GetAverage(double curTime, double curAltitude, in
   // calculate the average !
   if (bestHistory != newestValIndex)
     {
+      #if BUGSTOP
       LKASSERT((curTime - history[bestHistory].time)!=0);
+      #endif
+      if ((curTime - history[bestHistory].time)==0) return 0;
       result = (curAltitude - history[bestHistory].altitude) / (curTime - history[bestHistory].time);
     }
   

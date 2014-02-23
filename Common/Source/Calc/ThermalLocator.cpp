@@ -188,6 +188,7 @@ void ThermalLocator::Update_Internal(double t_0,
     }
   }
   LKASSERT(slogw!=0);
+  if (slogw==0) return; // UNMANAGED
   xav/= slogw;
   yav/= slogw;
 
@@ -223,6 +224,7 @@ void ThermalLocator::Update_Internal(double t_0,
     est_t =  t_0;
     est_latitude = est_y+latitude_0;
     LKASSERT(fastcosine(latitude_0)!=0);
+    if (fastcosine(latitude_0)==0) goto _skipout;
     est_longitude = est_x/fastcosine(latitude_0)+longitude_0;
     
     *Thermal_Longitude = est_longitude;
@@ -230,6 +232,7 @@ void ThermalLocator::Update_Internal(double t_0,
     *Thermal_R = 1;
     *Thermal_W = 1;    
   } else {
+_skipout:
     *Thermal_R = -1;
     *Thermal_W = 0;    
   }

@@ -68,6 +68,7 @@ void NumberToTeamCode(double value, TCHAR *code, int minCiffers)
 	{
 		int cifVal = (int)pow(36.0, curCif);
 		LKASSERT(cifVal!=0);
+                if (cifVal==0) return; // UNMANAGED
 		int partSize = (int)(rest / cifVal);
 		int partVal = partSize * cifVal;
 		int txtPos = maxCif - curCif;

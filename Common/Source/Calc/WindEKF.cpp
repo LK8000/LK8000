@@ -100,7 +100,9 @@ void WindEKF::SerialUpdate(float Z[NUMV], float Y[NUMV])
       HPHR += HP[k] * H[m][k];
 
 //    assert(HPHR>0.0); // JMW prevent potential crash
+    #if BUGSTOP
     LKASSERT(HPHR>0.0);
+    #endif
     if (HPHR <= 0.0) continue;
 
     for (k = 0; k < NUMX; k++)

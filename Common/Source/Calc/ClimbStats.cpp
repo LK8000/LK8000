@@ -126,6 +126,7 @@ void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
           Calculated->NavAltitude+Calculated->EnergyHeight 
             - Calculated->ClimbStartAlt;
         LKASSERT((Basic->Time - Calculated->ClimbStartTime)!=0);
+        if ((Basic->Time - Calculated->ClimbStartTime)!=0)
         Calculated->AverageThermal  = 
           Gain / (Basic->Time - Calculated->ClimbStartTime);
       }

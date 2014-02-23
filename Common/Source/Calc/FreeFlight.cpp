@@ -350,7 +350,10 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   TCHAR Temp[30];
   Units::TimeToTextS(Temp, (int)TimeLocal((long)Calculated->FreeFlightStartTime));
 
+  #if BUGSTOP
   LKASSERT(WayPointList[RESWP_FREEFLY].Comment!=NULL);
+  #endif
+  if (WayPointList[RESWP_FREEFLY].Comment==NULL) goto _skipout;
 
   WayPointList[RESWP_FREEFLY].Comment[99]='\0'; // for safety
   _stprintf(WayPointList[RESWP_FREEFLY].Comment,_T("%s: %s  @%.0f%s QNH"),
@@ -359,6 +362,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	ALTITUDEMODIFY*Calculated->FreeFlightStartQNH,
 	Units::GetAltitudeName());
 
+_skipout:
   ResetFreeFlightStats(Calculated);
   return true;
 

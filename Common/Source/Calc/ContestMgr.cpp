@@ -267,6 +267,7 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
   if(distance > _resultArray[type].Distance()) {
     float score;
     LKASSERT(_handicap>0);
+    if (_handicap==0) return; // UNMANAGED
     switch(type) {
     case TYPE_OLC_CLASSIC:
     case TYPE_OLC_CLASSIC_PREDICTED:
@@ -334,6 +335,7 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
     if(speed) {
       time += static_cast<unsigned>(end.DistanceXYZ(start) / speed);
       LKASSERT(CPointGPS::DAY_SECONDS!=0);
+      if (CPointGPS::DAY_SECONDS!=0) // UNMANAGED
       time %= CPointGPS::DAY_SECONDS;
     }
     
@@ -566,6 +568,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
             if(FAITriangleEdgeCheck(dist1st, dist2nd, dist3rd)) {
               // store new result
               LKASSERT(_handicap>0);
+              if (_handicap==0) return; // UNMANAGED
               float score = distance / 1000.0 * 0.3 * 100 / _handicap;
               CPointGPSArray pointArray;
               pointArray.push_back(trace.Front()->GPS());

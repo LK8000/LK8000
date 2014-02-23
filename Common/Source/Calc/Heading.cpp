@@ -45,6 +45,7 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       double dT = Basic->Time - LastTime;
 
       LKASSERT(dT!=0);
+      if (dT!=0)
       Calculated->TurnRateWind = AngleLimit180(Calculated->Heading
                                                - lastHeading)/dT;
 
@@ -55,12 +56,14 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	// On ground, TAS is GS. Wind gradient irrilevant, normally.
 	Calculated->TrueAirspeedEstimated = Basic->Speed;
 	LKASSERT(AirDensityRatio(Calculated->NavAltitude)!=0);
+	if (AirDensityRatio(Calculated->NavAltitude)!=0)
 	Calculated->IndicatedAirspeedEstimated = Basic->Speed/AirDensityRatio(Calculated->NavAltitude);
     } else {
 	// calculate estimated true airspeed
 	mag = isqrt4((unsigned long)(x0*x0*100+y0*y0*100))/10.0;
 	Calculated->TrueAirspeedEstimated = mag;
 	LKASSERT(AirDensityRatio(Calculated->NavAltitude)!=0);
+	if (AirDensityRatio(Calculated->NavAltitude)!=0)
 	Calculated->IndicatedAirspeedEstimated = mag/AirDensityRatio(Calculated->NavAltitude);
     }
     // estimate bank angle (assuming balanced turn)
