@@ -438,6 +438,8 @@ if(bValid)
 	 ytick = ytick * FEET_FACTOR;
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
+  if(sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
+	  rc.bottom -= SV_BORDER_Y; /* scale witout sea  */
   DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
 
 
