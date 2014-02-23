@@ -178,7 +178,6 @@ void UpdateAnalysis(void){
     } else {
       TCHAR timetext1[100];
       TCHAR timetext2[100];
-
       if (AATEnabled) {
         Units::TimeToText(timetext1, (int)CALCULATED_INFO.TaskTimeToGo);
         Units::TimeToText(timetext2, (int)CALCULATED_INFO.AATTimeToGo);
@@ -199,7 +198,7 @@ void UpdateAnalysis(void){
 	// LKTOKEN  _@M626_ = "Sp " 
                     gettext(TEXT("_@M626_")),
                     TASKSPEEDMODIFY*CALCULATED_INFO.AATTargetSpeed,
-                    Units::GetTaskSpeedName()
+                    Units::GetTaskSpeedName()		
                     );
         } else {
           _stprintf(sTmp, 
@@ -217,8 +216,7 @@ void UpdateAnalysis(void){
 	// LKTOKEN  _@M681_ = "Targ.speed" 
                     gettext(TEXT("_@M681_")),
                     TASKSPEEDMODIFY*CALCULATED_INFO.AATTargetSpeed,
-                    Units::GetTaskSpeedName()
-
+                    Units::GetTaskSpeedName()		
                     );
         }
       } else {

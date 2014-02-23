@@ -3,7 +3,9 @@
   <WndForm Name="frmTaskOverview" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M688_" Font="2" >
     <WndButton   Name="cmdClose" Caption="_@M186_" X="1" Y="2" Width="60"  Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
     <WndButton  Name="cmdClear" Caption="_@M180_" X="60" Y="2" Width="60"  Height="22" Font="2" OnClickNotify="OnClearClicked"/>
-	<WndButton  Name="cmdClear" Caption="_@M1851_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnReverseClicked"/>
+    <WndProperty Name="prpAATEst" Caption="_@M247_" X="2" Y="-1"  Width="120" Height="22" CaptionWidth="45" Font="2" ReadOnly="1" >
+      <DataField Name="" DataType="double" DisplayFormat="%.0fmin" EditFormat="%.0f" ReadOnly="1"/>
+    </WndProperty>
     <WndButton   Name="cmdAnalysis" Caption="_@M93_"    X="1" Y="-1" Width="119"  Height="22" Font="2" OnClickNotify="OnAnalysisClicked"/>
     <WndButton  Name="cmdCalc"  Caption="_@M160_" X="119" Y="2" Width="60"  Height="22" Font="2" OnClickNotify="OnCalcClicked" Tag="4" />
     <WndButton  Name="cmdDeclare" Caption="_@M222_"    X="179" Y="2" Width="60"  Height="22" Font="2" OnClickNotify="OnDeclareClicked"/>

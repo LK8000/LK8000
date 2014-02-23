@@ -136,5 +136,5 @@ void SaveDefaultTask(void);
 
 const WAYPOINT* TaskWayPoint(size_t idx);
 
-void ReverseTask(BOOL Msg = false);
+void ReverseTask();
 #endif
