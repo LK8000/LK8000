@@ -32,6 +32,10 @@
 #include "BtHandler.h"
 #include <functional>
 
+#define SIM_MANUAL_WIND // In sim mode, only allow Auto Wind to be "Manual"
+// There's an identical #define in dlgWindSettings.cpp, where there are
+// related changes.
+
 
 extern void UpdateAircraftConfig(void);
 extern void dlgCustomMenuShowModal(void);
@@ -3976,7 +3980,13 @@ int ival;
   if (wp) {
     if (AutoWindMode_Config != wp->GetDataField()->GetAsInteger()) {
       AutoWindMode_Config = wp->GetDataField()->GetAsInteger();
+      #ifdef SIM_MANUAL_WIND
+      
+      // In sim mode, auto wind is always "Manual".
+      if (!SIMMODE) AutoWindMode = AutoWindMode_Config;
+      #else
       AutoWindMode = AutoWindMode_Config;
+      #endif
     }
   }
 
