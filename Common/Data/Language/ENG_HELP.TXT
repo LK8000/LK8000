@@ -175,12 +175,13 @@ and when your best alternate option is changing. Warnings will not happen below 
 This determines whether the configuration settings dialog is accessible during flight. 
 
 @139
-This allows switching on or off the automatic wind algorithm.  When the algorithm is switched off, 
-the pilot is responsible for setting the wind estimate.
-[Circling] Requires only a GPS source
-[ZigZag] requires an intelligent vario with airspeed output.
-[Both] Use ZigZag and circling.
-[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
+This controls if and how the wind speed and direction are automatically calculated.
+[Manual] Pilot manually enters wind info.
+[Circling] Requires only a GPS source.
+[ZigZag] Requires an intelligent vario with airspeed output.
+[Both] ZigZag and Circling.
+[External] Wind is calculated by an external instrument (like CAI, LX, Zander, etc.) or Condor.
+In simulator mode, Manual is the only option.
 
 @140
 This is the INDICATED AIR SPEED to hold in straight flight before asking for TrueWind calculation. 
@@ -880,14 +881,6 @@ Manual adjustment of wind speed.
 
 @611
 Manual adjustment of wind direction.
-
-@612
-This allows switching on or off the automatic wind algorithm.  
-When the algorithm is switched off, the pilot is responsible for setting the wind estimate.
-[Circling] Requires only a GPS source
-[ZigZag] requires an intelligent vario with airspeed output.
-[Both] Use ZigZag and circling.
-[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
 
 @613
 Determines whether the snail trail is drifted with the wind when displayed in circling mode.

@@ -10,6 +10,10 @@
 #include "LKProfiles.h"
 #include "Dialogs.h"
 
+#define SIM_MANUAL_WIND // In sim mode, only allow Auto Wind to be "Manual"
+// There's an identical #define in dlgConfiguration.cpp, where there are
+// related changes.
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
@@ -121,12 +125,23 @@ void dlgWindSettingsShowModal(void){
       dfe = (DataFieldEnum*)wp->GetDataField();
 	// LKTOKEN  _@M418_ = "Manual" 
       dfe->addEnumText(gettext(TEXT("_@M418_")));
+      
+      #ifdef SIM_MANUAL_WIND
+      // In sim mode, Manual is the only option.
+      if (!SIMMODE) {
+        dfe->addEnumText(MsgToken(175)); // "Circling"
+        dfe->addEnumText(gettext(TEXT("ZigZag")));
+        dfe->addEnumText(MsgToken(149)); // "Both"
+        dfe->addEnumText(MsgToken(1793)); // "External"
+      }
+      #else
 	// LKTOKEN  _@M175_ = "Circling" 
       dfe->addEnumText(gettext(TEXT("_@M175_")));
       dfe->addEnumText(gettext(TEXT("ZigZag")));
 	// LKTOKEN  _@M149_ = "Both" 
       dfe->addEnumText(gettext(TEXT("_@M149_")));
       dfe->addEnumText(MsgToken(1793)); // External
+      #endif
 
       wp->GetDataField()->Set(AutoWindMode);
       wp->RefreshDisplay();

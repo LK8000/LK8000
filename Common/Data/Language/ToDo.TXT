@@ -34,6 +34,8 @@ Things to be fixed in LK languages files/tokens:
 - New H1213 pg autozoom threshold
 - New help 916 -> 924
 - New help 505 field "Line" 
+- Removed H612.  It was a duplicate of H139.
+- Changed H139.
 
   NEW MSG TOKENS
   --------------

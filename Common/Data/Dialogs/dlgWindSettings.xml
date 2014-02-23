@@ -9,7 +9,7 @@
     <WndProperty Name="prpDirection" Caption="_@M237_" X="10" Y="-997"  Width="210" Height="40" CaptionWidth="74" Font="1" Help="_@H611_" Keyboard="1">
       <DataField Name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min="0" Max="355" Step="1" OnDataAccess="OnWindDirectionData"/>
     </WndProperty>
-    <WndProperty Name="prpAutoWind" Caption="_@M114_" X="10" Y="-997" Width="210" Height="25" CaptionWidth="74" Font="2" Help="_@H612_">
+    <WndProperty Name="prpAutoWind" Caption="_@M114_" X="10" Y="-997" Width="210" Height="25" CaptionWidth="74" Font="2" Help="_@H139_">
       <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
     </WndProperty>
     <WndProperty Name="prpTrailDrift" Caption="_@M739_" X="10" Y="-1"  Width="210" Height="25" CaptionWidth="74" Font="2" Help="_@H613_">
