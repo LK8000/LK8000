@@ -17,6 +17,9 @@ $Id$
 extern int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor);
 extern COLORREF taskcolor;
 
+//
+// THIS FUNCTION IS THREAD SAFE, but not using optimized clipping
+//
 void MapWindow::DrawTaskPicto(HDC hdc,int TaskIdx, RECT rc, double fScaleFact)
 {
 int center_x = (rc.right-rc.left)/2;
