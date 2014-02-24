@@ -92,6 +92,7 @@ void protateshift(POINT &pin, const double &angle, const int &xs, const int &ys)
 
 //
 // This function must be reinitialised on resolution change
+// THIS FUNCTION IS NOT THREAD SAFE AND CANNOT BE USED OUTSIDE DRAW THREAD
 //
 void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, const double angle) {
   static double lastangle = -1;

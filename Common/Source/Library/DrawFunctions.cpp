@@ -103,7 +103,9 @@ void StartArc(HDC hdc,
 
 }
 
-
+//
+// Warning, do not use this out of draw thread!
+//
 int Circle(HDC hdc, long x, long y, int radius, RECT rc, bool clip, bool fill)
 {
   POINT pt[65];
@@ -154,6 +156,9 @@ int Circle(HDC hdc, long x, long y, int radius, RECT rc, bool clip, bool fill)
   return TRUE;
 }
 
+//
+// v5 > the Circle function is not threadsafe and cannot be used outside Draw thread.
+//
 int CircleNoCliping(HDC hdc, long x, long y, int radius, RECT rc, bool fill)
 {
   POINT pt[65];
