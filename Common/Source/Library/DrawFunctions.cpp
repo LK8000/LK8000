@@ -154,6 +154,31 @@ int Circle(HDC hdc, long x, long y, int radius, RECT rc, bool clip, bool fill)
   return TRUE;
 }
 
+int CircleNoCliping(HDC hdc, long x, long y, int radius, RECT rc, bool fill)
+{
+  POINT pt[65];
+  unsigned int i;
+
+  unsigned int step = 1;
+  if (radius<20) {
+    step = 2;
+  }
+  for(i=64/step;i--;) {
+    pt[i].x = x + (long) (radius * xcoords[i*step]);
+    pt[i].y = y + (long) (radius * ycoords[i*step]);
+  }
+  step = 64/step;
+  pt[step].x = x + (long) (radius * xcoords[0]);
+  pt[step].y = y + (long) (radius * ycoords[0]);
+
+  if(fill) {
+    Polygon(hdc,pt,step+1);
+  } else {
+    Polyline(hdc,pt,step+1);
+  }
+
+  return TRUE;
+}
 
 int Segment(HDC hdc, long x, long y, int radius, RECT rc, 
 	    double start,

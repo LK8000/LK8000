@@ -66,6 +66,8 @@ void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit2Index);
 void buildCircle(const POINT& center, int radius, std::vector<POINT>& list);
 int  Circle(HDC hdc, long x, long y, int radius, RECT rc, bool clip=false,
             bool fill=true);
+int CircleNoCliping(HDC hdc, long x, long y, int radius, RECT rc, bool fill);
+
 int Segment(HDC hdc, long x, long y, int radius, RECT rc, 
 	    double start,
 	    double end,

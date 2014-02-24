@@ -117,6 +117,25 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
   }
 }
 
+void threadsafePolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, const double angle) {
+
+  int deg = DEG_TO_INT(AngleLimit360(angle));
+  int cost = ICOSTABLE[deg]*ScreenScale;
+  int sint = ISINETABLE[deg]*ScreenScale;
+
+  const int xxs = xs*1024+512;
+  const int yys = ys*1024+512;
+  POINT *p = poly;
+  const POINT *pe = poly+n;
+
+  while (p<pe) {
+    int x= p->x;
+    int y= p->y;
+    p->x = (x*cost - y*sint + xxs)/1024;
+    p->y = (y*cost + x*sint + yys)/1024;
+    p++;
+  }
+}
 
 
 void irotatescale(int &xin, int &yin, const double &angle,
