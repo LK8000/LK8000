@@ -69,7 +69,8 @@ static void OnStartPointListEnter(WindowControl * Sender,
   (void)Sender;
   ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
   if (ItemIndex>=MAXSTARTPOINTS) {
-    ItemIndex = MAXSTARTPOINTS-1;
+    ItemIndex = -1;
+    while(ValidStartPoint(ItemIndex++)) { }
   }
   if (ItemIndex>=0) {
     int res;
@@ -81,6 +82,7 @@ static void OnStartPointListEnter(WindowControl * Sender,
       StartPoints[ItemIndex].Active = true;
       UnlockTaskData();
       changed = true;
+      UpdateList();
     }
   }
 }
@@ -90,7 +92,8 @@ static void OnStartPointListInfo(WindowControl * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender;
   if (ListInfo->DrawIndex == -1){
-    ListInfo->ItemCount = MAXSTARTPOINTS;
+      ListInfo->ItemCount = 0;
+      while(ValidStartPoint(ListInfo->ItemCount++)) { }
   } else {
     DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
     ItemIndex = ListInfo->ItemIndex+ListInfo->ScrollIndex;
@@ -182,11 +185,23 @@ void dlgStartPointShowModal(void) {
   //ASSERT(wStartPointList!=NULL);
   wStartPointList->SetBorderKind(BORDERLEFT);
   wStartPointList->SetEnterCallback(OnStartPointListEnter);
+  wStartPointList->SetWidth(wf->GetWidth() - wStartPointList->GetLeft()-2);
 
-  wStartPointListEntry = (WndOwnerDrawFrame*)wf->
-    FindByName(TEXT("frmStartPointListEntry"));
+  wStartPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStartPointListEntry"));
+  if ( wStartPointList->ScrollbarWidth == -1) {
+   #if defined (PNA)
+   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
+   #else
+   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
+   #endif
+   wStartPointList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
+  }
+  wStartPointListEntry->SetWidth(wStartPointList->GetWidth() - wStartPointList->ScrollbarWidth - 5);
+
   //ASSERT(wStartPointListEntry!=NULL);
   wStartPointListEntry->SetCanFocus(true);
+
+
 
   UpdateList();
 

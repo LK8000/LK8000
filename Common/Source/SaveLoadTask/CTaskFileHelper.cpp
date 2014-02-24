@@ -485,6 +485,7 @@ bool CTaskFileHelper::LoadStartPoint(XMLNode node) {
             return false; // non existing Waypoint
         }
         StartPoints[idx].Index = it->second;
+        StartPoints[idx].Active = true;
     }
     return true;
 }
