@@ -86,6 +86,7 @@ bool CDevEye::PEYA(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
   
   if(status) {
     info->BaroAltitudeAvailable = true;
+// TODO FIX BUG: mandatory to use UpdateBaroSource() and not changing the value here
     info->BaroAltitude = data.pAlt;
     if(QNH != data.qnh) {
       QNH = data.qnh;
