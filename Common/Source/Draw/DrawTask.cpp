@@ -70,10 +70,10 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
     switch (SecType)
     {
         case CIRCLE:
-            Circle(hdc,
+            CircleNoCliping(hdc,
              center_x,
              center_y,
-             width-2, rc, true, true);
+             width-2, rc, true);
             break;
         case SECTOR:
             Segment(hdc,
@@ -85,10 +85,10 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
         case DAe:
             if (!AATEnabled) { // this Type exist only if not AAT task
                 // JMW added german rules
-                Circle(hdc,
+                CircleNoCliping(hdc,
                  center_x,
                  center_y,
-                 width/8, rc, false, true);
+                 width/8, rc, false);
 
                 Segment(hdc,
                  center_x,
@@ -106,10 +106,10 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
             } else {
                 LineBrg = Task[TaskIdx].Bisector;
             }
-            PolygonRotateShift(startfinishline, 2, center_x, center_y, LineBrg);
+            threadsafePolygonRotateShift(startfinishline, 2, center_x, center_y, LineBrg);
             Polygon(hdc, startfinishline, 2);
             if ((TaskIdx == 0) || (TaskIdx == finish)) {
-                PolygonRotateShift(track, 3, center_x, center_y, LineBrg);
+                threadsafePolygonRotateShift(track, 3, center_x, center_y, LineBrg);
                 Polygon(hdc, track, 3);
             }
        break;
@@ -117,10 +117,10 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
             if (DoOptimizeRoute()) {
 
                 int radius = width-2;
-                Circle(hdc, center_x, center_y, radius, rc, true, true);
+                CircleNoCliping(hdc, center_x, center_y, radius, rc, true);
                 HPEN prevPen = (HPEN)::SelectObject(hdc, hpTerrainLine);
                 for( int i = 1; i < 4 && radius > (width/5); ++i) {
-                    Circle(hdc, center_x, center_y, radius -= width/5, rc, true, true);
+                    CircleNoCliping(hdc, center_x, center_y, radius -= width/5, rc, true);
                 }
                 ::SelectObject(hdc, prevPen);
             }
@@ -323,8 +323,7 @@ DoInit[MDI_DRAWTASK]=false;
                 };
                 ScreenClosestPoint(sct1, sct2,
                         Orig_Aircraft, &p_p, NIBLSCALE(25));
-                PolygonRotateShift(Arrow, 2, p_p.x, p_p.y,
-                        bearing - DisplayAngle);
+                threadsafePolygonRotateShift(Arrow, 2, p_p.x, p_p.y, bearing - DisplayAngle);
 
                 _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[0], p_p, taskcolor, rc);
                 _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[1], p_p, taskcolor, rc);

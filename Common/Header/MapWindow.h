@@ -773,6 +773,7 @@ private:
 void PolygonRotateShift(POINT* poly, int n, int x, int y, 
                         double angle);
 
+void threadsafePolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, const double angle);
 
 #endif
 
