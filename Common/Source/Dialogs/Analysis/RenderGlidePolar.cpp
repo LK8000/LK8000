@@ -181,27 +181,14 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
     SetTextColor(hdc,RGB_WHITE);
 
   HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-  extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
-  LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, text, (WCHAR*) NULL);
-
-   ExtTextOut(hdc, rc.left+IBLSCALE(30),
- 	               rc.bottom-IBLSCALE(130),
- 	               ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-
-  _stprintf(text,TEXT("%s %.0f kg"),  
-            gettext(TEXT("_@M814_")), // Weight
-	        GlidePolar::GetAUW());
-  ExtTextOut(hdc, rc.left+IBLSCALE(30), 
-	              rc.bottom-IBLSCALE(110),
-	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-
-  _stprintf(text,TEXT("%s %.1f kg/m2"),  
+  if( GlidePolar::WingArea>0.1 ) {
+    _stprintf(text,TEXT("%s %.1f kg/m2"),
 	             gettext(TEXT("_@M821_")), // Wing load
 	             GlidePolar::WingLoading);
-  ExtTextOut(hdc, rc.left+IBLSCALE(30), 
+    ExtTextOut(hdc, rc.left+IBLSCALE(30),
 	              rc.bottom-IBLSCALE(90),
 	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-
+  }
   _stprintf(text, TEXT("%s: %3.1f  @ %3.0f %s"),
 		MsgToken(140), // Best LD
                   GlidePolar::bestld,
