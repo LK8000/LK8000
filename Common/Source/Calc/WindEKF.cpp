@@ -47,6 +47,9 @@ void WindEKF::CovariancePrediction(float dT)
   float Dummy[NUMX][NUMX], dTsq;
   uint8_t i, j, k;
 
+  LKASSERT(dT!=0);
+  if (dT==0) return; // UNMANAGED
+
   //  Pnew = (I+F*T)*P*(I+F*T)' + T^2*G*Q*G' = T^2[(P/T + F*P)*(I/T + F') + G*Q*G')]
 
   dTsq = dT * dT;
@@ -99,7 +102,6 @@ void WindEKF::SerialUpdate(float Z[NUMV], float Y[NUMV])
     for (k = 0; k < NUMX; k++)
       HPHR += HP[k] * H[m][k];
 
-//    assert(HPHR>0.0); // JMW prevent potential crash
     #if BUGSTOP
     LKASSERT(HPHR>0.0);
     #endif
