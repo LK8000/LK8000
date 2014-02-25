@@ -3195,6 +3195,8 @@ void CAirspace::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList
 }
 
 void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
+    LKASSERT(zoom!=0);
+    if (zoom==0) zoom=1; // UNMANAGED
     int cx = rcDraw.right - rcDraw.left;
     int cy = rcDraw.bottom - rcDraw.top;
     double radius = iround((double) ((cy < cx) ? cy : cx) / (2.0) * zoom);
@@ -3214,8 +3216,13 @@ void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POIN
     double PanLongitudeCenter = _bounds.minx + dlon / 2;
     double PanLatitudeCenter = _bounds.miny + dlat / 2;
 
-    double scaleX = (double) (cx) / dlon * zoom / fastcosine(PanLatitudeCenter);
-    double scaleY = (double) (cy) / dlat * zoom;
+    double scaleX = (double) (cx) / dlon * zoom;
+    // UNMANAGED assertions
+    LKASSERT(fastcosine(PanLatitudeCenter) != 0);
+    if (fastcosine(PanLatitudeCenter)!=0) scaleX /= (double) fastcosine(PanLatitudeCenter);
+    LKASSERT( (dlat*zoom) != 0);
+    double scaleY = (double) (cy);
+    if (dlat*zoom!=0) scaleY /= (double) (dlat * zoom);
     double scale = (scaleX < scaleY) ? scaleX : scaleY;
 
     POINT tmpPnt;
