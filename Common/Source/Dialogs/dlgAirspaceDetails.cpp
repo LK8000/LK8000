@@ -35,14 +35,13 @@ static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
 
 
 	  SetBkColor  (hDC, RGB_LIGHTGREY);
-      /*************************************************************
-       * @Paolo
+      /****************************************************************
        * for drawing the airspace pictorial, we need the original data.
-       * seems that the copy does not contain geo data
-       * Do we really need to work with the copy?
-       * works fine with the origin airspace
-       ************************************************************/
-	  airspace->DrawPicto(hDC, *prc, true);
+       * copy contain only base class property, not geo data, 
+       * original data are shared ressources ! 
+       * for that we need to grant all called methods are thread safe
+       ****************************************************************/
+	  airspace->DrawPicto(hDC, *prc);
 }
 
 static void OnFlyClicked(WindowControl * Sender){

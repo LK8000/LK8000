@@ -844,178 +844,6 @@ void CAirspace_Circle::CalcBounds()
     }
 }
 
-
-
-
-
-
-void CAirspace_Circle::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)  {
-	double fact = 1.0;
-	CalculatePictPosition(_bounds, rc, fact);
-	if(Enabled())
-      SelectObject(hDCTemp,TypeBrush());
-	else
-	  SelectObject(hDCTemp,GetStockObject(HOLLOW_BRUSH));
-    SetTextColor(hDCTemp,TypeColor());
-    HPEN FramePen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), TypeColor());
-    HPEN oldPen   = (HPEN) SelectObject(hDCTemp, FramePen);
-
-
-	Draw(hDCTemp,  rc ,  param1);
-
-    SelectObject(hDCTemp, oldPen);
-    DeleteObject(FramePen);
-}
-
-
-void CAirspace_Area::DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)   {
-
-	double fact = 1.0;
-	CalculatePictPosition(_bounds, rc, fact);
-	if(Enabled())
-      SelectObject(hDCTemp,TypeBrush());
-	else
-	  SelectObject(hDCTemp,GetStockObject(HOLLOW_BRUSH));
-    SetTextColor(hDCTemp,TypeColor());
-    HPEN FramePen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), TypeColor());
-    HPEN oldPen   = (HPEN) SelectObject(hDCTemp, FramePen);
-
-	Draw(hDCTemp,  rc ,  param1);
-
-    SelectObject(hDCTemp, oldPen);
-    DeleteObject(FramePen);
-}
-
-void CAirspace_Circle::CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom)
-{
-//  _drawstyle = adsHidden;
-	zoom*= 0.9;
-	/*
-  if (!_enabled)
-	_drawstyle = adsOutline;
-  else
-	_drawstyle = adsFilled;*/
-int cx = rcDraw.right-rcDraw.left;
-int cy = rcDraw.bottom-rcDraw.top;
-double scale = (double) cx;
-  if (cy < cx)
-	scale = (double) cy;
-  scale = scale/(_radius*2.0)*zoom;
-
-  _screenradius = iround(_radius*scale );
-  _screencenter.x = rcDraw.left + cx/2;
-  _screencenter.y = rcDraw.top + cy/2;
-
-  buildCircle(_screencenter, _screenradius, _screenpoints);
-  _screenpoints_clipped.clear();
-  LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
-
-}
-
-void CAirspace_Area::CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom)
-{
-int cx = (rcDraw.right-rcDraw.left);
-int cy = (rcDraw.bottom-rcDraw.top);
-int xoff = rcDraw.left + cx/2;
-int yoff = rcDraw.top  + cy/2;
-POINT tmpPnt,lastPt={0,0};
-double dlon = _bounds.maxx  -   _bounds.minx;
-double dlat = _bounds.maxy  -   _bounds.miny;
-double PanLongitudeCenter = _bounds.minx + dlon/2;
-double PanLatitudeCenter  = _bounds.miny + dlat/2;
-zoom *= 0.9;
-
-double	scaleX = (double)(cx)/dlon*zoom/fastcosine(PanLatitudeCenter);
-double	scaleY = (double)(cy)/dlat*zoom;
-double scale;
-  if(scaleX < scaleY)
-	scale = scaleX;
-  else
-	scale = scaleY;
-
-  if (!_enabled)
-	_drawstyle = adsOutline;
-  else
-	_drawstyle = adsFilled;
-
-
-/*
-  StartupStore(_T("Definitions: %s"), NEWLINE);
-  StartupStore(_T("%f %f %f %f %s"),_bounds.minx, _bounds.maxx, _bounds.miny,_bounds.maxy, NEWLINE);
-  StartupStore(_T("%i %i %i %i %s"),rcDraw.left, rcDraw.right, rcDraw.bottom, rcDraw.top, NEWLINE);
-
-  StartupStore(_T("Range: %s"), NEWLINE);
-  StartupStore(_T("%f %f %s"),dlon, dlat, NEWLINE);
-  StartupStore(_T("%i %i %s"),cx, cy, NEWLINE);
-  StartupStore(_T("Scale: %s"), NEWLINE);
-  StartupStore(_T("%f  %s"),scale, NEWLINE);
-
-  StartupStore(_T("Center: %s"), NEWLINE);
-  StartupStore(_T("%f %f %s"),PanLongitudeCenter, PanLatitudeCenter, NEWLINE);
-  StartupStore(_T("%i %i %s"),xoff, yoff, NEWLINE);
-*/
-
-
-/**************************************************************
- * if PICTO_CLIPPING is defined the polygon will be clipped
- * normally this is not needed since we scale the airspace into
- * the given rectange, this may speedup drawing
- *************************************************************/
-#define PICTO_CLIPPING
-#ifndef PICTO_CLIPPING
-  _screenpoints_clipped.clear();
-  CPoint2DArray::iterator it;
-  for (it = _geopoints.begin();  it != _geopoints.end(); ++it)
-  {
-   	tmpPnt.x =xoff + Real2Int((it->Longitude()- PanLongitudeCenter)*fastcosine(it->Latitude()) *scale);
-   	tmpPnt.y =yoff - Real2Int((it->Latitude() - PanLatitudeCenter)*scale);
-    StartupStore(_T("%i %i %s"),	tmpPnt.x, tmpPnt.y, NEWLINE);
-    if (_screenpoints_clipped.size() ==0)
-    {
-      _screenpoints_clipped.push_back(tmpPnt);
-      lastPt = tmpPnt;
-    }
-    else
-    {
-      if((abs(lastPt.x - tmpPnt.x) > 3 ) || (abs(lastPt.y - tmpPnt.y) > 3 ))
-      {
-    	_screenpoints_clipped.push_back(tmpPnt);
-        lastPt = tmpPnt;
-      }
-    }
-  }
-#else
-  _screenpoints.clear();
-  CPoint2DArray::iterator it;
-  for (it = _geopoints.begin();  it != _geopoints.end(); ++it)
-  {
-   	tmpPnt.x =xoff - Real2Int((PanLongitudeCenter- it->Longitude())*fastcosine(it->Latitude())*scale);
-   	tmpPnt.y =yoff + Real2Int((PanLatitudeCenter - it->Latitude())*scale);
-
-    if (_screenpoints.size() ==0)
-    {
-    	_screenpoints.push_back(tmpPnt);
-      lastPt = tmpPnt;
-    }
-    else
-    {
-//      if((abs(lastPt.x - tmpPnt.x) > 2 ) || (abs(lastPt.y - tmpPnt.y) > 2 ))
-      {
-    	_screenpoints.push_back(tmpPnt);
-        lastPt = tmpPnt;
-      }
-    }
-  }
-  _screenpoints_clipped.clear();
-  _screenpoints_clipped.reserve(_screenpoints.size());
-
-  LKGeom::ClipPolygon((POINT) {rcDraw.left, rcDraw.top}, (POINT) {rcDraw.right, rcDraw.bottom}, _screenpoints, _screenpoints_clipped);
-#endif
-
-}
-
-
-
 // Calculate screen coordinates for drawing
 void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) 
 {
@@ -3332,3 +3160,71 @@ CAirspaceList::const_iterator it;
 }
 #endif
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Draw Picto methods
+//  this methods are NEVER used at same time of airspace loading
+//  therefore we can be considered is thread safe.
+
+void CAirspace::DrawPicto(HDC hDCTemp, const RECT &rc) const  {
+    POINTList screenpoints_picto;
+    CalculatePictPosition(rc, 0.9, screenpoints_picto);
+
+    size_t Length = screenpoints_picto.size();
+    if (Length > 2) {
+
+        const POINT * ptOut = &(*screenpoints_picto.begin());
+
+        HPEN FramePen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), TypeColor());
+
+        COLORREF oldColor = SetTextColor(hDCTemp, TypeColor());
+        HPEN oldPen = (HPEN) SelectObject(hDCTemp, FramePen);
+        HBRUSH oldBrush = (HBRUSH) SelectObject(hDCTemp, Enabled() ? TypeBrush() : GetStockObject(HOLLOW_BRUSH));
+
+        Polygon(hDCTemp, ptOut, Length);
+
+        SelectObject(hDCTemp, oldBrush);
+        SelectObject(hDCTemp, oldPen);
+        SetTextColor(hDCTemp, oldColor);
+        DeleteObject(FramePen);
+    }
+}
+
+void CAirspace::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
+    LKASSERT(FALSE); // never call this function on base class instance !
+}
+
+void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
+    int cx = rcDraw.right - rcDraw.left;
+    int cy = rcDraw.bottom - rcDraw.top;
+    double radius = iround((double) ((cy < cx) ? cy : cx) / (2.0) * zoom);
+    POINT center = {rcDraw.left + cx / 2, rcDraw.top + cy / 2};
+
+    buildCircle(center, radius, screenpoints_picto);
+}
+
+void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
+    int cx = (rcDraw.right - rcDraw.left);
+    int cy = (rcDraw.bottom - rcDraw.top);
+    int xoff = rcDraw.left + cx / 2;
+    int yoff = rcDraw.top + cy / 2;
+
+    double dlon = _bounds.maxx - _bounds.minx;
+    double dlat = _bounds.maxy - _bounds.miny;
+    double PanLongitudeCenter = _bounds.minx + dlon / 2;
+    double PanLatitudeCenter = _bounds.miny + dlat / 2;
+
+    double scaleX = (double) (cx) / dlon * zoom / fastcosine(PanLatitudeCenter);
+    double scaleY = (double) (cy) / dlat * zoom;
+    double scale = (scaleX < scaleY) ? scaleX : scaleY;
+
+    POINT tmpPnt;
+    screenpoints_picto.clear();
+    screenpoints_picto.reserve(_geopoints.size());
+    for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
+        tmpPnt.x = xoff - Real2Int((PanLongitudeCenter - it->Longitude()) * fastcosine(it->Latitude()) * scale);
+        tmpPnt.y = yoff + Real2Int((PanLatitudeCenter - it->Latitude()) * scale);
+        screenpoints_picto.push_back(tmpPnt);
+    }
+}
+////////////////////////////////////////////////////////////////////////////////
