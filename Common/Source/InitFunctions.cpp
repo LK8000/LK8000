@@ -204,6 +204,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   LoadString(hInstance, IDC_LK8000, szWindowClass, MAX_LOADSTRING);
   LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 
+  #if (!((WINDOWSPC>0) && TESTBENCH))
   // If it is already running, then focus on the window
   // problem was  that if two instances are started within a few seconds, both will survive!
   // We enforceed this with mutex at the beginning of WinMain
@@ -213,6 +214,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       SetForegroundWindow((HWND)((ULONG) hWndMainWindow | 0x00000001));
       return 0;
     }
+  #endif
+
   InitLKScreen();
   InitLKFonts(); // causing problems with CreateButtonLabels?
   PreloadInitialisation(true);
