@@ -715,6 +715,10 @@ turnpoint:
 
 } // end DrawWaypoint
 
+
+//
+// WARNING THESE FUNCTIONS ARE CALLED BY DIALOG MAIN THREAD, not from DRAW THREAD
+// 
 void MapWindow::DrawWaypointPictoBg(HDC hdc, const RECT rc)
 {
 if(hLKPictori == NULL)

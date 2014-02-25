@@ -1461,7 +1461,13 @@ return iCnt;
 }
 
 
-
+#ifndef FLARM_MS
+void MapWindow::DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC* pTraf) {
+}
+#else
+//
+// THIS FUNCTION IS NOT THREADSAFE
+//
 void MapWindow::DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC* pTraf)
 {
 	static POINT Arrow[5];
@@ -1507,3 +1513,4 @@ static double zoomfact = (double)cy/NIBLSCALE(18);
 		SelectObject(hDC, oldb);
 }
 // This is painting traffic icons on the screen.
+#endif

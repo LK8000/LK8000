@@ -12,7 +12,9 @@
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
 #include "Dialogs.h"
+#ifdef FLARM_MS
 #include "FlarmIdFile.h"
+#endif
 #include "InputEvents.h"
 #include "Units.h"
 #include "Multimap.h"
@@ -24,7 +26,9 @@ extern void dlgOracleShowModal(void);
 extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
 extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
 extern void dlgTeamCodeShowModal(void);
+#ifdef FLARM_MS
 extern FlarmIdFile *file;
+#endif
 #define  LEAVE_AFTER_ENTER
 #define MAX_LIST_ITEMS 50
 ListElement* pResult= NULL;
@@ -174,10 +178,12 @@ iLastTaskPoint--;
 	      
 	    }
       break;
+#ifdef FLARM_MS
       case IM_FLARM:
 	    LKASSERT(Elements[Index].iIdx<FLARM_MAX_TRAFFIC);
 	    dlgLKTrafficDetails(Elements[Index].iIdx);
       break;
+#endif
     }
   }
 }
@@ -256,7 +262,9 @@ void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance){
 		switch(type)
 		{
 		  case IM_AIRSPACE:	if(NoAirspace   < MAX_AIRSPACES) NoAirspace++; 	 else  full=true; break;
+#ifdef FLARM_MS
 		  case IM_FLARM:	if(NoFarm       < MAX_FLARM    ) NoFarm++;       else  full=true; break;
+#endif
 		  case IM_TASK_PT:  if(NoTaskPoints < MAX_TASK     ) NoTaskPoints++; else  full=true; break;
 		  case IM_WAYPOINT:
 			  if (WayPointCalc[Idx].IsLandable ){
@@ -323,7 +331,9 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 	  RECT rc = {0*ScreenScale,  0*ScreenScale, PICTO_WIDTH*ScreenScale,   34*ScreenScale};
 
 	  CAirspace* pAS = NULL;
+#ifdef FLARM_MS
 	  FLARM_TRAFFIC* pFlarm=NULL;
+#endif
 	  int HorDist,Bearing, VertDist;
 	  double Distance;
 	  unsigned int idx=0;
@@ -577,6 +587,9 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 			UnlockTaskData(); // protect from external task changes
 		  }
 		break;
+
+/////////////// THIS CODE IS NOT THREADSAFE USE AT YOUR OWN RISK /////////////////////////
+#ifdef FLARM_MS
 	    /************************************************************************************************
 	     * IM_FLARM
 	     ************************************************************************************************/
@@ -667,7 +680,9 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC){
 
 
 		break;
+#endif // FLARM_MS
 	  }
+
 
 	  /********************
 	   * show text

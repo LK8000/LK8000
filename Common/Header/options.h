@@ -93,6 +93,7 @@
   #define BUTTONS_MS
   #define OWN_POS_MS
   #define OWN_FLARM_TRACES
+  #define FLARM_MS
 //#define OUTLINE_2ND		// double outline airspaces
 #endif
 
@@ -108,7 +109,7 @@
 //#define TEAM_CODE_MS		// button to trigger team code
 //#define OWN_POS_MS		// button to trigger basic settings
 //#define ORACLE_MS		// button to trigger oracle
-
+//#define FLARM_MS
 
 // Use F Record in IGC log files- not needed really
 // #define LOGFRECORD	1
