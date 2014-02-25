@@ -75,6 +75,7 @@ start_search:
      }
    }
 
+  #ifdef FLARM_MS
   if(!pan) /* do not look for FLARM objects in PAN mode  */
   {
     LastDoTraffic=0;
@@ -94,6 +95,7 @@ start_search:
       }
     }
   }
+  #endif
 
   int  HorDist=0, Bearing=0, VertDist=0;
   {
