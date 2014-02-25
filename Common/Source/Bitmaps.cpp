@@ -190,6 +190,16 @@ void LKLoadFixedBitmaps(void) {
   hSender=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%s\\NDB%s.BMP"),sDir,hires_suffix);
   hNdb=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\VOR%s.BMP"),sDir,hires_suffix);
+  hVor=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\COOLTOWER%s.BMP"),sDir,hires_suffix);
+  hCoolTower=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\TUNNEL%s.BMP"),sDir,hires_suffix);
+  hTunnel=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\POWERPLANT%s.BMP"),sDir,hires_suffix);
+  hPowerPlant=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\CASTLE%s.BMP"),sDir,hires_suffix);
+  hCastle=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%s\\LKTHERMAL%s.BMP"),sDir,hires_suffix);
   hLKThermal=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%s\\LKTHERMAL_RED%s.BMP"),sDir,hires_suffix);
@@ -261,6 +271,11 @@ void LKLoadFixedBitmaps(void) {
   if (hDam==NULL) hDam=NULLBMP;
   if (hSender==NULL) hSender=NULLBMP;
   if (hNdb==NULL) hNdb=NULLBMP;
+  if (hVor==NULL) hVor=NULLBMP;
+  if (hCoolTower==NULL) hCoolTower=NULLBMP;
+  if (hTunnel==NULL) hTunnel=NULLBMP;
+  if (hPowerPlant==NULL) hPowerPlant=NULLBMP;
+  if (hCastle==NULL) hCastle=NULLBMP;
   if (hLKThermal==NULL) hLKThermal=NULLBMP;
   if (hLKThermalRed==NULL) hLKThermalRed=NULLBMP;
   
@@ -341,6 +356,11 @@ void LKUnloadFixedBitmaps(void) {
   if (hDam!=NULL) DeleteObject(hDam);
   if (hSender!=NULL) DeleteObject(hSender);
   if (hNdb!=NULL) DeleteObject(hNdb);
+  if (hVor!=NULL) DeleteObject(hVor);
+  if (hCoolTower!=NULL) DeleteObject(hCoolTower);
+  if (hTunnel!=NULL) DeleteObject(hTunnel);
+  if (hPowerPlant!=NULL) DeleteObject(hPowerPlant);
+  if (hCastle!=NULL) DeleteObject(hCastle);
   if (hLKThermal!=NULL) DeleteObject(hLKThermal);
   if (hLKThermalRed!=NULL) DeleteObject(hLKThermalRed);
   if (hLKPictori!=NULL) DeleteObject(hLKPictori);
