@@ -7,24 +7,10 @@
 */
 
 #include "externs.h"
-///#include <aygshell.h>
-///#include "dlgTools.h"
-///#include "InfoBoxLayout.h"
 #include "MapWindow.h"
 #include "Dialogs.h"
-///#include "InputEvents.h"
-///#include "Units.h"
 #include "Multimap.h"
-///#include "Sideview.h"
 
-///#define LINE_HEIGT 50
-
-///extern  int FindNearestWayPoint(double X, double Y, double MaxRange,               bool exhaustive);
-///extern void dlgOracleShowModal(void);
-///extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
-///extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
-///extern void dlgTeamCodeShowModal(void);
-///#define  LEAVE_AFTER_ENTER
 
 #define MAX_LIST_ITEMS 50
 ListElement* pResult= NULL;
@@ -42,7 +28,6 @@ static int NoAirfields =0;
 static int NoOutlands  =0;
 static int NoWaypoints =0;
 static int NoTaskPoints=0;
-///static int NoFarm      =0;
 static int NoAirspace  =0;
 
 
@@ -652,7 +637,6 @@ ListElement* dlgMultiSelectListShowModal(void){
   NoAirfields =0;
   NoOutlands  =0;
   NoWaypoints =0;
-  ///NoFarm      =0;
   NoAirspace  =0;
   NoTaskPoints=0;
 
