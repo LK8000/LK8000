@@ -91,7 +91,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
                 CircleNoCliping(hdc,
                  center_x,
                  center_y,
-                 width/8, rc, false);
+                 width/8, rc, true);
 
                 Segment(hdc,
                  center_x,
