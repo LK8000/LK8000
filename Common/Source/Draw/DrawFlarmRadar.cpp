@@ -613,7 +613,7 @@ switch(LKevent)
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 			  if(LKTraffic[aiSortArray[i]].ID == LKTraffic[j].ID)
 			  {
-#if 1
+#if FLARM_MS
 			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
 #else
 			    dlgLKTrafficDetails( j); // With no Multiselect
@@ -623,9 +623,9 @@ switch(LKevent)
 		    }
 		  }
 	    }
-
+#if FLARM_MS
 	dlgMultiSelectListShowModal();
-
+#endif
 	if(!bFound)
 	  if( PtInRect(XstartScreen,YstartScreen, rc))
 		bHeightScale	= !bHeightScale;
