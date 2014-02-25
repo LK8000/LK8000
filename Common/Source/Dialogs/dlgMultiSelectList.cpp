@@ -284,7 +284,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
      LKASSERT(i < MAX_LIST_ITEMS);
      RECT rc = {0*ScreenScale,  0*ScreenScale, PICTO_WIDTH*ScreenScale,   34*ScreenScale};
 
-     CAirspace* pAS = NULL;
+     const CAirspace* pAS = NULL;
      int HorDist,Bearing, VertDist;
      double Distance;
      unsigned int idx=0;
@@ -297,44 +297,37 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
 
      switch(Elements[i].type )
      {
+     case IM_AIRSPACE:
+        pAS = (CAirspace*) Elements[i].ptr;
+        if(pAS) {
+            /***********************************************************************
+             * here we use a local copy of the airspace, only common property exists
+             ***********************************************************************/
+            airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(pAS);
 
-        // IM_AIRSPACE MUST BE FIXED, NO THREADSAFE
-        // indentation all wrong here
+            // airspace type already in name?
+            if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
+               _stprintf(text1, TEXT("%s"), airspace_copy.Name()); // yes, take name only
+            } else {
+               // fixed strings max. 20 NAME_SIZE 30 => max. 30 char
+               _stprintf(text1, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
+            }
 
-	case IM_AIRSPACE:
-        /*******************************
-        * @Paolo
-        * here I use a local copy of the airspace
-        */
-        airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy((CAirspace*)Elements[i].ptr);
-        pAS = &airspace_copy;
-        LKASSERT(pAS);
+            CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, sizeof (Comment) / sizeof (Comment[0]), airspace_copy.Top());
+            CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, sizeof (Comment1) / sizeof (Comment1[0]), airspace_copy.Base());
 
-        // airspace type already in name?
-	if( _tcsnicmp(  pAS->Name(), pAS->TypeName() ,_tcslen(pAS->TypeName())) == 0) {  
-	   _stprintf(text1,TEXT("%s"),pAS->Name());      // yes, take name only
-        } else {
-           // fixed strings max. 20 NAME_SIZE 30 => max. 30 char
-	   _stprintf(text1,TEXT("%s %s"),pAS->TypeName(),pAS->Name());
+            CAirspaceManager::Instance().AirspaceCalculateDistance( (CAirspace*)pAS, &HorDist, &Bearing, &VertDist);
+            _stprintf(text2, TEXT("%3.1f%s (%s - %s)"), (double) HorDist*DISTANCEMODIFY, Units::GetDistanceName(), Comment1, Comment); //8 + 8+3   21
+        
+            /****************************************************************
+             * for drawing the airspace pictorial, we need the original data.
+             * copy contain only base class property, not geo data, 
+             * original data are shared ressources ! 
+             * for that we need to grant all called methods are thread safe
+             ****************************************************************/
+            pAS->DrawPicto(hDC, rc);
         }
-
-	CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, sizeof(Comment)/sizeof(Comment[0]), airspace_copy.Top());
-	CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, sizeof(Comment1)/sizeof(Comment1[0]), airspace_copy.Base());
-
-	((CAirspace*) Elements[i].ptr)->CalculateDistance(&HorDist, &Bearing, &VertDist);
-	_stprintf(text2,TEXT("%3.1f%s (%s - %s)"), (double)HorDist*DISTANCEMODIFY ,Units::GetDistanceName(), Comment1, Comment);  //8 + 8+3   21
-
-        /*************************************************************
-        * @Paolo
-        * for drawing the airspace pictorial, we need the original data.
-        * seems that the copy does not contain geo data
-        * Do we really need to work with the copy?
-        * works fine with the origin airspace
-        ************************************************************/
-	pAS = (CAirspace*) Elements[i].ptr;
-	LKASSERT(pAS);
-	pAS->DrawPicto(hDC, rc, true);
-	break;
+        break;
 
 
 	case IM_TASK_PT:

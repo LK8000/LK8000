@@ -123,7 +123,6 @@ public:
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) {}
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const {}
-  virtual void DrawPicto(HDC hDCTemp, const RECT &rc, bool param1 )   {}
 
 
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
@@ -264,6 +263,17 @@ protected:
   static int _lastknowntrackbearing;           // last known track bearing saved for calculations
   static bool _pred_blindtime;                 // disable predicted position based warnings near takeoff
   static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
+  
+  
+////////////////////////////////////////////////////////////////////////////////
+// Draw Picto methods
+//  this methods are NEVER used at same time of airspace loading
+//  therefore we can be considered is thread safe
+public:
+  virtual void DrawPicto(HDC hDCTemp, const RECT &rc) const ;
+protected:
+  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, POINTList &screenpoints_picto) const;
+////////////////////////////////////////////////////////////////////////////////  
 };
 
 typedef struct
@@ -326,10 +336,8 @@ public:
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
-  virtual void CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom) ;
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
-  virtual void DrawPicto(HDC hDCTemp, const RECT &rc, bool param1)  ;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
   // Calculate unique hash code for this airspace
@@ -337,13 +345,23 @@ public:
 
 private:
   CPoint2DArray _geopoints;        // polygon points
-  POINTList _screenpoints;        // screen coordinates
+
+  // this 2 array is modified by DrawThread, never use it in another thread !!
+  POINTList _screenpoints;
   POINTList _screenpoints_clipped;        // screen coordinates
-  
+
   // Winding number calculation to check a point is horizontally inside polygon
   int wn_PnPoly( const double &longitude, const double &latitude ) const;
   // Calculate airspace bounds
   void CalcBounds();
+  
+////////////////////////////////////////////////////////////////////////////////
+// Draw Picto methods
+//  this methods are NEVER used at same time of airspace loading
+//  therefore we can be considered is thread safe
+protected:
+  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, POINTList &screenpoints_picto) const;
+////////////////////////////////////////////////////////////////////////////////
 };
 
 // 
@@ -361,11 +379,8 @@ public:
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
-  // Calculate drawing coordinates on screen
-  virtual void CalculatePictPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw,  double zoom)  ;
   // Draw airspace on map
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
-  virtual void DrawPicto(HDC hDCTemp, const RECT &rc, bool param1) ;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
   // Calculate unique hash code for this airspace
@@ -377,14 +392,23 @@ private:
   double _latcenter;        // center point latitude
   double _loncenter;        // center point longitude
   double _radius;            // radius
-  
+
+  // this 2 array is modified by DrawThread, never use it in another thread !!
   POINTList _screenpoints;
   POINTList _screenpoints_clipped;        // screen coordinates
-  
+
   // Bound calculation helper function
   void ScanCircleBounds(double bearing);
   // Calculate airspace bounds
   void CalcBounds();
+
+////////////////////////////////////////////////////////////////////////////////
+// Draw Picto methods
+//  this methods are NEVER used at same time of airspace loading
+//  therefore we can be considered is thread safe
+protected:
+  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, POINTList &screenpoints_picto) const;
+////////////////////////////////////////////////////////////////////////////////
 };
 
 // 
