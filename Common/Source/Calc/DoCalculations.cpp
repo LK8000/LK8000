@@ -70,7 +70,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   TerrainHeight(Basic, Calculated);
   AltitudeRequired(Basic, Calculated, MACCREADY);
   DoAlternates(Basic,Calculated,TASKINDEX); 
-  if (MAPMODE8000) {
+  if (IsMultiMapShared()) {
 	DoAlternates(Basic,Calculated,RESWP_LASTTHERMAL);
 	DoAlternates(Basic,Calculated,RESWP_TEAMMATE);
 	DoAlternates(Basic,Calculated,RESWP_FLARMTARGET);
