@@ -1218,7 +1218,10 @@ static unsigned int SutherlandHodgmanPolygoClip (POINT* inVertexArray,
 static POINT clip_ptout[MAXCLIPPOLYGON];
 static POINT clip_ptin[MAXCLIPPOLYGON];
 
-
+//
+// THIS FUNCTION IS NOT THREAD SAFE
+// AND SHOULD NOT BE USED OUTSIDE DRAW THREAD
+//
 void ClipPolygon(HDC hdc, POINT *m_ptin, unsigned int inLength, 
                  RECT rc, bool fill) {
 
