@@ -19,7 +19,9 @@
 #include <string.h>
 
 
-
+//
+// THIS FUNCTION is threadsafe only if called by dialogs using picto bool true
+//
 void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL picto)
 {
   int solid= false;
@@ -129,7 +131,10 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 
   if(!bOutland)
   {
-	Circle( hdc,Center_x, Center_y, p,  rc,false, true);
+	if (picto)
+		CircleNoCliping( hdc,Center_x, Center_y, p,  rc,true);
+	else
+		Circle( hdc,Center_x, Center_y, p,  rc,false, true);
   }
 
   if(bRunway)
@@ -149,7 +154,7 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 		  SelectObject(hdc, LKBrush_White);
 	}
 	if(picto) {
-	  PolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir);
+	  threadsafePolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir);
 	} else {
 	  PolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
 	}
@@ -181,7 +186,10 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 		  { (long)(-103  * fFact ) , (long)(-26 * fFact)}, //16
 		  { (long)(-228  * fFact ) , (long)( 13 * fFact)}  //17
 	    };
-	    PolygonRotateShift(WhiteWing, 17,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
+	    if (picto)
+	       threadsafePolygonRotateShift(WhiteWing, 17,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
+	    else
+	       PolygonRotateShift(WhiteWing, 17,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
 	    Polygon(hdc,WhiteWing ,17 );
     }
   }
