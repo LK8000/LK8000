@@ -102,6 +102,7 @@
 //
 // Team, Own and Oracle are introducing buttons for actions inside dialog.
 // They must be first enabled with BUTTONS_MS
+// WARNING THESE FUNCTIONS ARE NOT CHECKED FOR THREAD SAFETY AND CAN LEAD TO CRASHES
 //
 //#define BUTTONS_MS		// this is REQUIRED to enable one of the following:
 //#define TEAM_CODE_MS		// button to trigger team code
