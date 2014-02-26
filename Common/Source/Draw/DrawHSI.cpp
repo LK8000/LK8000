@@ -16,6 +16,12 @@
 #include "RGB.h"
 #include "DoInits.h"
 
+#ifndef __MINGW32__
+#define DEG "\xB0"
+#else
+#define DEG "°"
+#endif
+
 bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 	static short centerX, centerY; //center coordinates of HSI gauge
 	static short radius; //HSI gauge size radius
@@ -152,11 +158,7 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 	//Print the current track indication
 	TCHAR Buffer[LKSIZEBUFFERVALUE];
 	SelectObject(hDC, LK8InfoSmallFont);
-	#ifndef __MINGW32__
-		_stprintf(Buffer, TEXT("%03d\xB0"),(int)round(DrawInfo.TrackBearing));
-	#else
-		_stprintf(Buffer, TEXT("%03d°"),(int)round(DrawInfo.TrackBearing));
-	#endif
+	_stprintf(Buffer, TEXT("%03d")TEXT(DEG),(int)round(DrawInfo.TrackBearing));
 	LKWriteText(hDC,Buffer,posTRKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
 
 	bool emulatedILS=false;
@@ -180,31 +182,27 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 				//if(DerivedDrawInfo.Vario<0) actualDescentAngle=RAD_TO_DEG*atan2(-DerivedDrawInfo.Vario,DrawInfo.Speed);
 
 				//Draw glide slope scale
+				int startX=0;
+				if(ScreenLandscape) startX=10;
 				int gssStart=centerY-NIBLSCALE(72);
 				int gssIncrement=NIBLSCALE(12);
-				external.x=centerX+radius+NIBLSCALE(21);
+				if(ScreenLandscape) external.x=centerX+radius+NIBLSCALE(startX+10);
+				else external.x=centerX+radius+NIBLSCALE(startX+8);
 				for(int i=0,isBig=1;i<=12;i++,isBig=!isBig) {
 					internal.y=external.y=gssStart+gssIncrement*i;
-					internal.x=centerX+radius+(isBig?NIBLSCALE(14):NIBLSCALE(16));
+					internal.x=centerX+radius+(isBig?NIBLSCALE(startX+3):NIBLSCALE(startX+5));
 					_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_LIGHTGREY:RGB_BLACK,rc);
 				}
 
-				//Draw the blue marker representing the required glide slope inclination to reach the destination
-				//if(requiredInclination<=0) {
-				//	internal.y=external.y=gssStart-NIBLSCALE(5);
-				//	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREY,rc);
-				//} else if(requiredInclination>6) {
-				//	internal.y=external.y=gssStart+NIBLSCALE(72)*2+NIBLSCALE(5);
-				//	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREY,rc);
-				//} else { // 0 < reqiredInclination <= 6
-				//	internal.y=external.y=gssStart+(int)round((requiredInclination*NIBLSCALE(72)*2)/6);
-				//	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),internal,external,RGB_GREEN,rc);
-				//}
-
 				//Draw glide slope marker
 				POINT triangle[4];
-				triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(18);
-				triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(24);
+				if(ScreenLandscape) {
+					triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+7);
+					triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+13);
+				} else {
+					triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+5);
+					triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+11);
+				}
 				bool isOutOfScale=true;
 				if(glideSlope<=0) {
 					triangle[1].y=gssStart-NIBLSCALE(7);
@@ -235,21 +233,17 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 				//Put the labels on glide slope scale
 				SelectObject(hDC, LK8PanelSmallFont);
 				gssIncrement*=2;
-				for(int i=0;i<=6;i++) {
-					_stprintf(Buffer, TEXT("%d"),i);
-					LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(8),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+				if (ScreenLandscape) {
+					for(int i=0;i<=6;i++) {
+						_stprintf(Buffer, TEXT("%d"),i);
+						LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(8),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+					}
+				} else {
+					_stprintf(Buffer, TEXT("0"));
+					LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+					_stprintf(Buffer, TEXT("6"));
+					LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart+gssIncrement*6,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
 				}
-
-				//Print glide slope value
-				//if(!isOutOfScale) {
-				//	SelectObject(hDC,LK8PanelSmallFont);
-				//	#ifndef __MINGW32__
-				//	_stprintf(Buffer, TEXT("%.1f\xB0"),glideSlope);
-				//	#else
-				//	_stprintf(Buffer, TEXT("%.1f°"),glideSlope);
-				//	#endif
-				//	LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(38),triangle[0].y,0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
-				//}
 
 				//Determine if to give HSI indication respect destination runaway (QFU)
 				if(finalWaypoint==0 || DerivedDrawInfo.WaypointDistance<fiveNauticalMiles) {//if direct GOTO or below 5 NM
@@ -264,11 +258,7 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 
 			//Print the desired course
 			SelectObject(hDC, LK8InfoSmallFont);
-			#ifndef __MINGW32__
-				_stprintf(Buffer, TEXT("%03d\xB0"),(int)round(course));
-			#else
-				_stprintf(Buffer, TEXT("%03d°"),(int)round(course));
-			#endif
+			_stprintf(Buffer, TEXT("%03d")TEXT(DEG),(int)round(course));
 			LKWriteText(hDC,Buffer,posDTKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
 
 			//Calculate rotation angle
@@ -384,11 +374,7 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 
 				//Print the actual bearing to next WayPoint
 				SelectObject(hDC, LK8InfoSmallFont);
-				#ifndef __MINGW32__
-					_stprintf(Buffer, TEXT("%03d\xB0"),(int)round(DerivedDrawInfo.WaypointBearing));
-				#else
-					_stprintf(Buffer, TEXT("%03d°"),(int)round(DerivedDrawInfo.WaypointBearing));
-				#endif
+				_stprintf(Buffer, TEXT("%03d")TEXT(DEG),(int)round(DerivedDrawInfo.WaypointBearing));
 				LKWriteText(hDC,Buffer,posDTKx,posBRGy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_MAGENTA,false);
 			} else { //flying to the departure or a direct GOTO without information for landing: don't draw CDI
 				//Draw anyway the CDI scale in grey (disabled)

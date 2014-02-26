@@ -951,8 +951,25 @@ label_HSI:
 			LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
 			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+		} else { //show other interesting things for landing
+			int col=16;
+			bool unitInvisible=true;
+			if(ScreenSize==ss800x480 || ScreenSize==ss480x272) {
+				col=15;
+				unitInvisible=false;
+			}
+			LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
+			if(unitInvisible) _stprintf(BufferUnit,_T(""));
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[3],&qrow[4],&qrow[2]);
+			//Vertical speed: display it in Ft/min in DrawHSI.cpp
+			//LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
+			//if(unitInvisible) _stprintf(BufferUnit,_T(""));
+			//WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[7],&qrow[8],&qrow[6]);
+			LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
+			if(unitInvisible) _stprintf(BufferUnit,_T(""));
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[12],&qrow[13],&qrow[11]);
 		}
-	} else {
+	} else { //screen portrait
 		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
 		_stprintf(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
@@ -970,6 +987,17 @@ label_HSI:
 			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
 			LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
+			_stprintf(BufferUnit,_T(""));
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+		} else {
+			LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
+			_stprintf(BufferUnit,_T(""));
+			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
+			//Vertical speed: display it in Ft/min in DrawHSI.cpp
+			//LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
+			//_stprintf(BufferUnit,_T(""));
+			//WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
+			LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
 			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
 		}
