@@ -10,10 +10,11 @@
 #include "externs.h"
 #include "WindEKF.h"
 
-#define PAOLO 1  // stuff to be tested
+#define MINIMAL_FILTER 1  // more filtering, 
+//#define USE_RING 1	  // DO NOT USE: ring buffering for historic filtering, todo 
 
 #if TESTBENCH
-// #define KALMAN_DEBUG
+ //#define KALMAN_DEBUG
 #endif
 
 #define BLACKOUT_TIME  3.0
@@ -21,7 +22,7 @@ WindEKF EKWIND;
 
 static unsigned int kalman_samples=0;
 
-#if PAOLO
+#if USE_RING
 static double ring_trackbearing[4]={0,0,0,0};
 static double ring_groundspeed[4]={0,0,0,0};
 static double ring_trueairspeed[4]={0,0,0,0};
@@ -36,7 +37,7 @@ unsigned CalcQualityLevel(unsigned i)
 return 1;
 }
 
-#if PAOLO
+#if USE_RING
 static void InsertRing(double brg, double gs, double tas) {
 
   #ifdef KALMAN_DEBUG
@@ -63,6 +64,16 @@ static void InsertRing(double brg, double gs, double tas) {
 
 static bool GetRing(void) {
 
+// TODO: try to filter inconsistent values from external sensors.
+// typically due to big latencies that will show same bearing, same groundspeed
+// but different TAS, and the second later same TAS (exactly the same) with different
+// bearing and groundspeed. This is not good, but there is little we can do about it
+// if the instrument is working like that. We can expect in such cases a slightly wrong 
+// wind speed and a quite wrong wind direction (error in the range of 30 to 90 degrees).
+
+  // THESE DO NOT WORK because we are going to compare new values with old values
+  // that really never got inside the matrix
+  //
   if (ring_trueairspeed[0]==ring_trueairspeed[1]) {
     	#ifdef KALMAN_DEBUG
     	StartupStore(_T(".... GetRing:  tas has not changed%s"),NEWLINE);
@@ -160,7 +171,7 @@ static double kalman_holdoff_time =0.0;
 	StartupStore(_T(".... No Airspeed available%s"),NEWLINE);
 	#endif
 	WindKalmanReset(true);
-	#if PAOLO
+	#if USE_RING
 	ResetRing(true);
 	#endif
   	kalman_holdoff_time=0;
@@ -173,7 +184,7 @@ static double kalman_holdoff_time =0.0;
 	StartupStore(_T(".... Reset Kalman Wind (not flying)%s"),NEWLINE);
 	#endif
 	WindKalmanReset(true);
-	#if PAOLO
+	#if USE_RING
 	ResetRing(true);
 	#endif
   	kalman_holdoff_time=0;
@@ -187,7 +198,7 @@ static double kalman_holdoff_time =0.0;
 	StartupStore(_T(".... Reset Kalman by NavWarning %s"),NEWLINE);
 	#endif
 	WindKalmanReset(true);
-	#if PAOLO
+	#if USE_RING
 	ResetRing(true);
 	#endif
   	kalman_holdoff_time=0;
@@ -221,7 +232,7 @@ static double kalman_holdoff_time =0.0;
 	StartupStore(_T(".... Turning%s"),NEWLINE);
 	#endif
 	kalman_holdoff_time = basic->Time + BLACKOUT_TIME;
-	#if PAOLO
+	#if USE_RING
 	ResetRing(true);
 	#endif
 	return (0);
@@ -233,13 +244,13 @@ static double kalman_holdoff_time =0.0;
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Holdoff%s"),NEWLINE);
 	#endif
-	#if PAOLO
+	#if USE_RING
 	ResetRing(true);
 	#endif
 	return (0);
   }
 
-  #if PAOLO
+  #if USE_RING
   // If nothing has changed in the last second, we assume we are dealing with a frozen instrument..
   // We dont reset ring buffer.
   if (ring_trackbearing[0]==basic->TrackBearing 
@@ -251,6 +262,9 @@ static double kalman_holdoff_time =0.0;
 	#endif
 	return (0);
   }
+  #endif
+
+  #if MINIMAL_FILTER
   // below 10kmh we will not assume the gps bearing is still correct!
   // do not reset ring, simply discard data
   if (basic->Speed < 3 || basic->TrueAirspeed < 1) {
@@ -259,7 +273,9 @@ static double kalman_holdoff_time =0.0;
 	#endif
 	return (0);
   }
+  #endif
 
+  #if USE_RING
   ResetRing(false);
   InsertRing(basic->TrackBearing, basic->Speed, basic->TrueAirspeed);
 
@@ -269,8 +285,8 @@ static double kalman_holdoff_time =0.0;
 	#endif
 	return (0);
   }
-
   #endif
+
 
   //
   // OK PROCEED > Matrix becomes dirty
@@ -279,7 +295,7 @@ static double kalman_holdoff_time =0.0;
   WindKalmanReset(false);
   kalman_holdoff_time =0;
 
-  #if PAOLO
+  #if USE_RING
   double V = ring_tas;
   #else
   double V = basic->TrueAirspeed;
@@ -287,7 +303,7 @@ static double kalman_holdoff_time =0.0;
   double dynamic_pressure = (V*V);
   float gps_vel[2];
 
-  #if PAOLO
+  #if USE_RING
   double VG = ring_gs;
   gps_vel[0] = (float)(  fastsine( ring_brg ) * VG);
   gps_vel[1] = (float)(fastcosine( ring_brg ) * VG);
@@ -302,7 +318,7 @@ static double kalman_holdoff_time =0.0;
   EKWIND.StatePrediction(gps_vel, dT);
   EKWIND.Correction(dynamic_pressure, gps_vel);
 
-  #if PAOLO
+  #if MINIMAL_FILTER
   static double validHBtime=0;
   // we are using the internal beats counter, not the gps time
   if (derived->Circling) {
@@ -318,7 +334,7 @@ static double kalman_holdoff_time =0.0;
 
   ++kalman_samples;
 
-  #if PAOLO
+  #if MINIMAL_FILTER
   #define REQUIRED_SAMPLES 30
   // Wait to have at least REQUIRED_SAMPLES valid samples in order to use the new wind
   // (must be a %10 value so that next will be used at once)
@@ -351,17 +367,31 @@ static double kalman_holdoff_time =0.0;
   if (kalman_samples%10!=0)
     return 0;
 
-  /*************************************************************/
+
   const float* x = EKWIND.get_state();
   double speed   = sqrt((x[0]*x[0])+(x[1]*x[1]));
   double bearing = atan2(-x[0], -x[1])*RAD_TO_DEG;
-  /************************************************************/
+
   bearing =AngleLimit360(bearing);
-  /************************************************************/
+
 #ifdef KALMAN_DEBUG
-  StartupStore(_T(".... (SETWIND) Kalman Filter Wind %4.1fkm/h %4.1fgrad  kalman_samples=%d%s"),speed*3.6,bearing,kalman_samples,NEWLINE);
-  StartupStore(_T("%s"),NEWLINE);
+  StartupStore(_T(".... (SETWIND) Kalman Filter Wind %4.1fkm/h %4.1f deg  kalman_samples=%d%s"),speed*3.6,bearing,kalman_samples,NEWLINE);
 #endif
+
+#if MINIMAL_FILTER
+  // Anything filtered here will require 10 more samples for next try
+  if (speed>41) { // 150kmh
+	#ifdef KALMAN_DEBUG
+	StartupStore(_T(".... (SETWIND) SPEED TOO HIGH, DISCARDED\n"));
+	#endif
+	return 0;
+  }
+#endif
+
+  #ifdef KALMAN_DEBUG
+  StartupStore(_T("%s"),NEWLINE);
+  #endif
+
   (*windbearing) = bearing;
   (*windspeed)   = speed;
 
