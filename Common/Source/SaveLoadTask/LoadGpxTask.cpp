@@ -119,16 +119,24 @@ bool LoadGpxTask(LPCTSTR szFileName) {
 		free(szXML);
 	} //if(stream)
 
-	//Set options for GA aircraft
+	if(ISGAAIRCRAFT) { //Set options for GA aircraft
+		StartLine=1; //Line
+		StartRadius=1000;
+		SectorType=LINE;
+		SectorRadius=1000;
+		FinishLine=0; //Circle
+		FinishRadius=500;
+	} else {
+		StartLine=2; //Sector
+		StartRadius=1500;
+		SectorType=CIRCLE;
+		SectorRadius=2000;
+		FinishLine=0; //Circle
+		FinishRadius=3000;
+	}
 	AutoAdvance=1; //Auto
 	AATEnabled=false;
 	PGOptimizeRoute=false;
-	StartLine=2; //Sector
-	StartRadius=1500;
-	SectorType=LINE;
-	SectorRadius=2000;
-	FinishLine=0; //Circle
-	FinishRadius=1000;
 	StartHeightRef=1; //ASL
 	RefreshTask();
 	TaskModified = false;

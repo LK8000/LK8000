@@ -142,6 +142,13 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 	StartupStore(_T("... CheckStart: start crossed and valid gate!\n"));
 	#endif
 	
+	if(ISGAAIRCRAFT) {
+		Calculated->ValidStart = true;
+		ActiveWayPoint=0; // enforce this since it may be 1
+		StartTask(Basic,Calculated, true, false);
+		return;
+	}
+
     // ToLo: Check weather speed and height are within the rules or not (zero margin)
     if(!IsFinalWaypoint() && ValidStartSpeed(Basic, Calculated) && InsideStartHeight(Basic, Calculated)) {
 
@@ -226,7 +233,7 @@ void CheckFinish(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
                          ActiveWayPoint);
     if (!Calculated->ValidFinish) {
       Calculated->ValidFinish = true;
-      AnnounceWayPointSwitch(Calculated, false);
+      if(!ISGAAIRCRAFT) AnnounceWayPointSwitch(Calculated, false);
 
       // JMWX save calculated data at finish
       memcpy(&Finish_Derived_Info, Calculated, sizeof(DERIVED_INFO));
