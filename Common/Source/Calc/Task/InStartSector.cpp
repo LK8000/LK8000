@@ -70,10 +70,23 @@ bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int &index, BOOL 
   static bool LastInSector = false;
   static int EntryStartSector = index;
 
+  if(ISGAAIRCRAFT) { //Detect start for GA aircraft
+  	if(!ValidTaskPoint(ActiveWayPoint) || !ValidTaskPoint(0)) return false;
+  	if(ActiveWayPoint==0) { //if the next WP is the departure
+  		LockTaskData();
+  		double departureRadius=1000; //1 Km default departure radius
+  		if(WayPointList[Task[0].Index].RunwayLen>0) departureRadius=WayPointList[Task[0].Index].RunwayLen/2; // if we have runaway length available
+  		if(Calculated->WaypointDistance<=departureRadius) *CrossedStart=true; //consider in departure as reached
+  		else *CrossedStart=false;
+  		UnlockTaskData();
+  		if(*CrossedStart) return true;
+  	} else return false;
+  }
+
   bool isInSector= false;
   bool retval=false;
 
-  if (!Calculated->Flying || !ValidTaskPoint(ActiveWayPoint) || !ValidTaskPoint(0)) 
+  if (!Calculated->Flying || !ValidTaskPoint(ActiveWayPoint) || !ValidTaskPoint(0))
 	return false;
 
   LockTaskData();

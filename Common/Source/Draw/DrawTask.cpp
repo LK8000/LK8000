@@ -225,7 +225,17 @@ DoInit[MDI_DRAWTASK]=false;
                     break;
                 case LINE:
                     if (!AATEnabled) { // this Type exist only if not AAT task
-                        _DrawLine(hdc, PS_SOLID, NIBLSCALE(3), Task[i].Start, Task[i].End, taskcolor, rc);
+                    	if(ISGAAIRCRAFT) {
+                    		POINT start,end;
+                    		double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
+                    		int length=14*ScreenScale; //Make intermediate WP lines always of the same size independent by zoom level
+                    		start.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
+                    		start.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
+                    		rotation=Reciprocal(rotation);
+                    		end.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
+                    		end.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
+                    		_DrawLine(hdc, PS_SOLID, NIBLSCALE(3), start, end, taskcolor, rc);
+                    	} else _DrawLine(hdc, PS_SOLID, NIBLSCALE(3), Task[i].Start, Task[i].End, taskcolor, rc);
                     }
                     break;
                 case CONE:
