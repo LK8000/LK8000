@@ -3195,28 +3195,28 @@ void CAirspace::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList
 }
 
 void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
-    int cx = rcDraw.right - rcDraw.left;
-    int cy = rcDraw.bottom - rcDraw.top;
-    double radius = iround((double) ((cy < cx) ? cy : cx) / (2.0) * zoom);
-    POINT center = {rcDraw.left + cx / 2, rcDraw.top + cy / 2};
+    const int cx = rcDraw.right - rcDraw.left;
+    const int cy = rcDraw.bottom - rcDraw.top;
+    const double radius = iround((double) ((cy < cx) ? cy : cx) / (2.0) * zoom);
+    const POINT center = {rcDraw.left + cx / 2, rcDraw.top + cy / 2};
 
     buildCircle(center, radius, screenpoints_picto);
 }
 
 void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
-    int cx = (rcDraw.right - rcDraw.left);
-    int cy = (rcDraw.bottom - rcDraw.top);
-    int xoff = rcDraw.left + cx / 2;
-    int yoff = rcDraw.top + cy / 2;
+    const int cx = (rcDraw.right - rcDraw.left);
+    const int cy = (rcDraw.bottom - rcDraw.top);
+    const int xoff = rcDraw.left + cx / 2;
+    const int yoff = rcDraw.top + cy / 2;
 
-    double dlon = _bounds.maxx - _bounds.minx;
-    double dlat = _bounds.maxy - _bounds.miny;
-    double PanLongitudeCenter = _bounds.minx + dlon / 2;
-    double PanLatitudeCenter = _bounds.miny + dlat / 2;
+    const double dlon = _bounds.maxx - _bounds.minx;
+    const double dlat = _bounds.maxy - _bounds.miny;
+    const double PanLongitudeCenter = _bounds.minx + dlon / 2;
+    const double PanLatitudeCenter = _bounds.miny + dlat / 2;
 
-    double scaleX = (double) (cx) / dlon * zoom / fastcosine(PanLatitudeCenter);
-    double scaleY = (double) (cy) / dlat * zoom;
-    double scale = (scaleX < scaleY) ? scaleX : scaleY;
+    const double scaleX = (double) (cx) / dlon * zoom / fastcosine(PanLatitudeCenter);
+    const double scaleY = (double) (cy) / dlat * zoom;
+    const double scale = (scaleX < scaleY) ? scaleX : scaleY;
 
     POINT tmpPnt;
     screenpoints_picto.clear();
