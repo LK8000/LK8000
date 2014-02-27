@@ -638,7 +638,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				break;
 
 			case STYLE_VOR:
-				goto turnpoint;
+				SelectObject(hDCTemp,hVor);
 				break;
 
 			case STYLE_NDB:
@@ -646,7 +646,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				break;
 
 			case STYLE_COOLTOWER:
-				goto turnpoint;
+				SelectObject(hDCTemp,hCoolTower);
 				break;
 
 			case STYLE_DAM:
@@ -654,7 +654,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				break;
 
 			case STYLE_TUNNEL:
-				goto turnpoint;
+				SelectObject(hDCTemp,hTunnel);
 				break;
 
 			case STYLE_BRIDGE:
@@ -662,8 +662,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				break;
 
 			case STYLE_POWERPLANT:
+				SelectObject(hDCTemp,hPowerPlant);
+				break;
+
 			case STYLE_CASTLE:
-				goto turnpoint;
+				SelectObject(hDCTemp,hCastle);
 				break;
 
 			case STYLE_INTERSECTION:
@@ -784,7 +787,7 @@ switch(wp->Style) {
 		break;
 
 	case STYLE_VOR:
-		goto turnpoint;
+		SelectObject(hDCTemp,hVor);
 		break;
 
 	case STYLE_NDB:
@@ -792,7 +795,7 @@ switch(wp->Style) {
 		break;
 
 	case STYLE_COOLTOWER:
-		goto turnpoint;
+		SelectObject(hDCTemp,hCoolTower);
 		break;
 
 	case STYLE_DAM:
@@ -800,7 +803,7 @@ switch(wp->Style) {
 		break;
 
 	case STYLE_TUNNEL:
-		goto turnpoint;
+		SelectObject(hDCTemp,hTunnel);
 		break;
 
 	case STYLE_BRIDGE:
@@ -808,8 +811,11 @@ switch(wp->Style) {
 		break;
 
 	case STYLE_POWERPLANT:
+		SelectObject(hDCTemp,hPowerPlant);
+		break;
+
 	case STYLE_CASTLE:
-		goto turnpoint;
+		SelectObject(hDCTemp,hCastle);
 		break;
 
 	case STYLE_INTERSECTION:
