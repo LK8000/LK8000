@@ -3195,41 +3195,50 @@ void CAirspace::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList
 }
 
 void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
-    LKASSERT(zoom!=0);
-    if (zoom==0) zoom=1; // UNMANAGED
-    int cx = rcDraw.right - rcDraw.left;
-    int cy = rcDraw.bottom - rcDraw.top;
-    double radius = iround((double) ((cy < cx) ? cy : cx) / (2.0) * zoom);
-    POINT center = {rcDraw.left + cx / 2, rcDraw.top + cy / 2};
+    const int cx = rcDraw.right - rcDraw.left;
+    const int cy = rcDraw.bottom - rcDraw.top;
+    const int radius = iround(((double) ((cy < cx) ? cy : cx) / 2.0) * zoom);
+    const POINT center = {rcDraw.left + cx / 2, rcDraw.top + cy / 2};
 
     buildCircle(center, radius, screenpoints_picto);
 }
 
 void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
-    int cx = (rcDraw.right - rcDraw.left);
-    int cy = (rcDraw.bottom - rcDraw.top);
-    int xoff = rcDraw.left + cx / 2;
-    int yoff = rcDraw.top + cy / 2;
+    screenpoints_picto.clear();
 
-    double dlon = _bounds.maxx - _bounds.minx;
-    double dlat = _bounds.maxy - _bounds.miny;
-    double PanLongitudeCenter = _bounds.minx + dlon / 2;
-    double PanLatitudeCenter = _bounds.miny + dlat / 2;
+    const double dlon = _bounds.maxx - _bounds.minx;
+    if(dlon == 0.) {
+        LKASSERT(FALSE); // wrong aispaces shape
+        return;
+    }
 
-    double scaleX = (double) (cx) / dlon * zoom;
-    // UNMANAGED assertions
-    LKASSERT(fastcosine(PanLatitudeCenter) != 0);
-    if (fastcosine(PanLatitudeCenter)!=0) scaleX /= (double) fastcosine(PanLatitudeCenter);
-    LKASSERT( (dlat*zoom) != 0);
-    double scaleY = (double) (cy);
-    if (dlat*zoom!=0) scaleY /= (double) (dlat * zoom);
-    double scale = (scaleX < scaleY) ? scaleX : scaleY;
+    const double dlat = _bounds.maxy - _bounds.miny;
+    if(dlat == 0.) {
+        LKASSERT(FALSE); // wrong aispaces shape
+        return;
+    }
+
+    const double PanLatitudeCenter = _bounds.miny + dlat / 2.;
+    if(fastcosine(PanLatitudeCenter) == 0) {
+        LKASSERT(FALSE); // wrong aispaces shape ( center of airspace at the pole ? )
+        return;
+    }
+
+    const double PanLongitudeCenter = _bounds.minx + dlon / 2.;
+
+    const int cx = (rcDraw.right - rcDraw.left);
+    const int cy = (rcDraw.bottom - rcDraw.top);
+    const int xoff = rcDraw.left + cx / 2;
+    const int yoff = rcDraw.top + cy / 2;
+
+    const double scaleX = ((double) cx) / dlon * zoom / (double)fastcosine(PanLatitudeCenter);
+    const double scaleY = ((double) cy) / dlat * zoom;
+    const double scale = (scaleX < scaleY) ? scaleX : scaleY;
 
     POINT tmpPnt;
-    screenpoints_picto.clear();
     screenpoints_picto.reserve(_geopoints.size());
     for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-        tmpPnt.x = xoff - Real2Int((PanLongitudeCenter - it->Longitude()) * fastcosine(it->Latitude()) * scale);
+        tmpPnt.x = xoff - Real2Int((PanLongitudeCenter - it->Longitude()) * ((double)fastcosine(it->Latitude())) * scale);
         tmpPnt.y = yoff + Real2Int((PanLatitudeCenter - it->Latitude()) * scale);
         screenpoints_picto.push_back(tmpPnt);
     }
