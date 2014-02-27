@@ -183,12 +183,14 @@ _nomoredeclutter:
 	// DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
   }
 
+  if (Flags_DrawTask && MapSpaceMode!=MSM_MAPASP && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+    DrawTaskAAT(hdc, DrawRect);
+    DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
+  }
 
   if (IsMultimapWaypoints()) {
 	DrawWaypointsNew(hdc,DrawRect);
   }
-  if (Flags_DrawTask && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)&&MapSpaceMode!=MSM_MAPASP)
-	DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
   if (Flags_DrawFAI)
 	DrawFAIOptimizer(hdc, DrawRect, Current_Multimap_TopOrig);
 
