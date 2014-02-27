@@ -11,9 +11,10 @@
 #include "WindEKF.h"
 
 #define BASIC_FILTER 1  // minimal filtering
+#define SCAN_RANGE   1  // scan track range
 
 #if TESTBENCH
-// #define KALMAN_DEBUG
+// #define KALMAN_DEBUG 1
 #endif
 
 #define BLACKOUT_TIME  3.0
@@ -22,6 +23,14 @@ WindEKF EKWIND;
 static unsigned int kalman_samples=0;
 static double old_gs=0, old_tas=0, old_tb=361, old_time=0;
 
+#if SCAN_RANGE
+static void InitScanRange(void);
+#if KALMAN_DEBUG
+static void PrintScanRange(void);
+#endif
+static void InsertScanRange(double angle);
+static unsigned short QualityScanRange(void);
+#endif
 
 static void WindKalmanReset(const bool reset) {
   static bool alreadydone=false;
@@ -42,6 +51,9 @@ static void WindKalmanReset(const bool reset) {
   	kalman_samples=0;
 	old_gs=0; old_tas=0; old_tb=361;
 	if (old_time==0) old_time=1; // no more first reset needed
+        #if SCAN_RANGE
+        InitScanRange();
+        #endif
   }
   return;
 }
@@ -104,9 +116,9 @@ static double kalman_holdoff_time =0.0;
   // CASES where we reset the matrix and we may still fill it up
   //
   if (old_time>1) {
-	if ((basic->Time-old_time)>180) {
+	if ((basic->Time-old_time)>300) {
 		#ifdef KALMAN_DEBUG
-		StartupStore(_T(".... Reset Kalman Wind (time passed 3 minutes since last insert)%s"),NEWLINE);
+		StartupStore(_T(".... Reset Kalman Wind (time passed 5 minutes since last insert)%s"),NEWLINE);
 		#endif
 		WindKalmanReset(true);
   		kalman_holdoff_time=0;
@@ -135,7 +147,7 @@ static double kalman_holdoff_time =0.0;
   // In tight turning do not sample wind, set it on hold
   // Lets not confuse circling mode and turning state. We can still go straight while 
   // in Circling mode state.
-  if ((fabs(derived->TurnRate) > 15.0))
+  if ((fabs(derived->TurnRate) > 18.0))
   {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... Turning%s"),NEWLINE);
@@ -209,10 +221,18 @@ static double kalman_holdoff_time =0.0;
   old_tb=basic->TrackBearing;
   old_time=basic->Time;
 
+  #if SCAN_RANGE
+  InsertScanRange(old_tb);
+  #endif
+
   #ifdef KALMAN_DEBUG
   StartupStore(_T("... KALMAN insert gps speed=%f m/s (%f kmh) track=%f TAS=%f  (gps_vel[0]=%f gps_vel[1]=%f dyn=%f)\n"),
       basic->Speed, basic->Speed*3.6, basic->TrackBearing, basic->TrueAirspeed,
       gps_vel[0], gps_vel[1], dynamic_pressure);
+  #if SCAN_RANGE
+  PrintScanRange();
+  StartupStore(_T(".... QUALITY=%d\n"),QualityScanRange());
+  #endif
   #endif
 
   EKWIND.StatePrediction(gps_vel, dT);
@@ -235,30 +255,65 @@ static double kalman_holdoff_time =0.0;
   ++kalman_samples;
 
   #if BASIC_FILTER
-  #define REQUIRED_SAMPLES 30
+  #if SCAN_RANGE
+  #define REQUIRED_SAMPLES 400
+  #define REQUIRED_QUALITY 46
   // Wait to have at least REQUIRED_SAMPLES valid samples in order to use the new wind
   // (must be a %10 value so that next will be used at once)
-  // (if not using circling wind, halved time)
-  if (kalman_samples< (REQUIRED_SAMPLES/(AutoWindMode==D_AUTOWIND_BOTHCIRCZAG?1:2)) ) {
+  // OR wait for a minimal quality estimation of wind.
+  if (kalman_samples< REQUIRED_SAMPLES && QualityScanRange() < REQUIRED_QUALITY) {
+  #else
+  #define REQUIRED_SAMPLES 60
+  // Wait to have at least REQUIRED_SAMPLES valid samples in order to use the new wind
+  // (must be a %10 value so that next will be used at once)
+  if (kalman_samples< REQUIRED_SAMPLES) {
+  #endif
+
+	// --- debug ---
 	#ifdef KALMAN_DEBUG
   	const float* x = EKWIND.get_state();
   	double speed   = sqrt((x[0]*x[0])+(x[1]*x[1]));
   	double bearing = atan2(-x[0], -x[1])*RAD_TO_DEG;
   	bearing =AngleLimit360(bearing);
-  	StartupStore(_T(".... (WAITING, NOT USING) Kalman Filter Wind %4.1fkm/h %4.1fgrad  kalman_samples=%d%s"),speed*3.6,bearing,kalman_samples,NEWLINE);
+  	StartupStore(_T(".... (WAITING, NOT USING) Kalman Filter Wind %4.1fkm/h %4.1fdeg  kalman_samples=%d%s"),speed*3.6,bearing,kalman_samples,NEWLINE);
+        #if SCAN_RANGE
+        StartupStore(_T(".... (QUALITY=%d  SAMPLES=%d\n"),QualityScanRange(),kalman_samples);
+        #endif
+	if (basic->ExternalWindAvailable) {
+		StartupStore(_T(".... (EXTERNAL WIND: %4.1fkmh  %4.1fdeg\n"),
+		  basic->ExternalWindSpeed, basic->ExternalWindDirection);
+	}
   	StartupStore(_T("%s"),NEWLINE);
 	#endif
+	// --- debug ---
+
 	return 0; 
   }
 
   if (LKHearthBeats<validHBtime) {
+
+	// --- debug ---
 	#ifdef KALMAN_DEBUG
 	if (derived->Circling)
 		StartupStore(_T(".... (WAITING while circling, not updating the wind\n"));
 	else
 		StartupStore(_T(".... (WAITING thermal timeout time, %.0f seconds to go\n"),(validHBtime-LKHearthBeats)/2);
+  	const float* x = EKWIND.get_state();
+  	double speed   = sqrt((x[0]*x[0])+(x[1]*x[1]));
+  	double bearing = atan2(-x[0], -x[1])*RAD_TO_DEG;
+  	bearing =AngleLimit360(bearing);
+  	StartupStore(_T(".... (NOT USING) Kalman Filter Wind %4.1fkm/h %4.1fgrad  kalman_samples=%d%s"),speed*3.6,bearing,kalman_samples,NEWLINE);
+        #if SCAN_RANGE
+        StartupStore(_T(".... (QUALITY=%d\n"),QualityScanRange());
+        #endif
+	if (basic->ExternalWindAvailable) {
+		StartupStore(_T(".... (EXTERNAL WIND: %4.1fkmh  %4.1fdeg\n"),
+		  basic->ExternalWindSpeed, basic->ExternalWindDirection);
+	}
   	StartupStore(_T("%s"),NEWLINE);
 	#endif
+	// --- debug ---
+
 	return 0;
   }
   #endif
@@ -275,7 +330,14 @@ static double kalman_holdoff_time =0.0;
   bearing =AngleLimit360(bearing);
 
 #ifdef KALMAN_DEBUG
-  StartupStore(_T(".... (SETWIND) Kalman Filter Wind %4.1fkm/h %4.1f deg  kalman_samples=%d%s"),speed*3.6,bearing,kalman_samples,NEWLINE);
+  StartupStore(_T(".... (SETWIND!) Kalman Filter Wind %4.1fkm/h %4.1f deg  kalman_samples=%d%s"),speed*3.6,bearing,kalman_samples,NEWLINE);
+  #if SCAN_RANGE
+  StartupStore(_T(".... (QUALITY=%d SAMPLES=%d\n"),QualityScanRange(),kalman_samples);
+  #endif
+  if (basic->ExternalWindAvailable) {
+	StartupStore(_T(".... (EXTERNAL WIND: %4.1fkmh  %4.1fdeg\n"),
+	  basic->ExternalWindSpeed, basic->ExternalWindDirection);
+  }
 #endif
 
 #if BASIC_FILTER
@@ -297,3 +359,60 @@ static double kalman_holdoff_time =0.0;
 
   return 1; 
 }
+
+#if SCAN_RANGE
+
+static bool scanrange[32];
+
+static void InitScanRange(void) {
+    #ifdef KALMAN_DEBUG
+    StartupStore(_T(".... INIT SCAN RANGE\n"));
+    #endif
+    for (unsigned short i=0; i<32; i++) scanrange[i]=false;
+}
+
+static void InsertScanRange(double angle) {
+
+    unsigned short direction;
+
+    if (angle<0) angle+=360;
+    if (angle>=360) angle-=360;
+    direction= (unsigned short)(angle/11.25);
+    LKASSERT(direction<32);
+
+    scanrange[direction]=true;
+}
+
+#if KALMAN_DEBUG
+static void PrintScanRange(void) {
+    TCHAR dstring[200];
+
+    wcscpy(dstring,_T(""));
+    for (unsigned short i=0; i<16; i++) 
+	_stprintf(dstring,_T("%s %d"),dstring,scanrange[i]);
+    StartupStore(_T("%s\n"),dstring);
+
+    wcscpy(dstring,_T(""));
+    for (unsigned short i=16; i<32; i++) 
+	_stprintf(dstring,_T("%s %d"),dstring,scanrange[i]);
+    StartupStore(_T("%s\n"),dstring);
+}
+#endif
+
+// Return a quality parameter 0 to 48
+static unsigned short QualityScanRange(void) {
+
+    unsigned short qual=0;
+    for (unsigned short i=0; i<32; i++) {
+        qual+= scanrange[i];
+    }
+
+    for (unsigned short i=0; i<16; i++) {
+        if ( scanrange[i] && scanrange[i+16] ) qual++;
+    }
+
+    return qual;
+
+}
+
+#endif
