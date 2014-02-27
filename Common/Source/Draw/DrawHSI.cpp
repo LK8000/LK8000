@@ -22,7 +22,7 @@
 #define DEG "°"
 #endif
 
-bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
+HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	static short centerX, centerY; //center coordinates of HSI gauge
 	static short radius; //HSI gauge size radius
 	static short innerradius; //internal radius of big marks on the compass rose
@@ -61,6 +61,8 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 			TEXT("30"),
 			TEXT("33")
 	};
+
+	HSIreturnStruct returnStruct = {false, false, false};
 
 	if(DoInit[MDI_DRAWHSI]) { //All the dimensions must be recalculated in case of screen resolution change
 		if(ScreenLandscape) radius=NIBLSCALE(80);
@@ -121,7 +123,6 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 		DoInit[MDI_DRAWHSI]=false;
 	}
 
-	*glideSlopeBarEnabled=false;
 	HPEN hpOld = (HPEN) SelectObject(hDC, LKPen_Black_N1);
 	HBRUSH hbOld = (HBRUSH) SelectObject(hDC, LKBrush_Black);
 
@@ -161,95 +162,111 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 	_stprintf(Buffer, TEXT("%03d")TEXT(DEG),(int)round(DrawInfo.TrackBearing));
 	LKWriteText(hDC,Buffer,posTRKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
 
-	bool emulatedILS=false;
 	if(ValidTaskPoint(ActiveWayPoint)) {
 		if(Task[ActiveWayPoint].Index>=0) { //Draw course direction and CDI only if there is a task/route active
 			double course = DerivedDrawInfo.LegActualTrueCourse;
 			double deviation = DerivedDrawInfo.LegCrossTrackError;
 			int finalWaypoint=getFinalWaypoint();
-
 			if(finalWaypoint==ActiveWayPoint) { //if we are flying to the final destination
-				*glideSlopeBarEnabled=true;
+				returnStruct.approach=true;
+				double varioFtMin=DerivedDrawInfo.Vario*196.8503937; //Convert vertical speed in Ft/min
 
-				//Calculate glide slope inclination to reach the destination runaway
-				double halfRunaway=WayPointList[Task[ActiveWayPoint].Index].RunwayLen/2;
-				double distanceToRunaway=0;
-				if(DerivedDrawInfo.WaypointDistance>halfRunaway) distanceToRunaway=DerivedDrawInfo.WaypointDistance-halfRunaway;
-				double heightOnRunaway=DrawInfo.Altitude-WayPointList[Task[ActiveWayPoint].Index].Altitude;
-				if(heightOnRunaway<0) heightOnRunaway=0;
-				double glideSlope=RAD_TO_DEG*atan2(heightOnRunaway,distanceToRunaway);
-				//double actualDescentAngle=0;
-				//if(DerivedDrawInfo.Vario<0) actualDescentAngle=RAD_TO_DEG*atan2(-DerivedDrawInfo.Vario,DrawInfo.Speed);
-
-				//Draw glide slope scale
-				int startX=0;
-				if(ScreenLandscape) startX=10;
-				int gssStart=centerY-NIBLSCALE(72);
-				int gssIncrement=NIBLSCALE(12);
-				if(ScreenLandscape) external.x=centerX+radius+NIBLSCALE(startX+10);
-				else external.x=centerX+radius+NIBLSCALE(startX+8);
-				for(int i=0,isBig=1;i<=12;i++,isBig=!isBig) {
-					internal.y=external.y=gssStart+gssIncrement*i;
-					internal.x=centerX+radius+(isBig?NIBLSCALE(startX+3):NIBLSCALE(startX+5));
-					_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_LIGHTGREY:RGB_BLACK,rc);
-				}
-
-				//Draw glide slope marker
-				POINT triangle[4];
-				if(ScreenLandscape) {
-					triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+7);
-					triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+13);
-				} else {
-					triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+5);
-					triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+11);
-				}
-				bool isOutOfScale=true;
-				if(glideSlope<=0) {
-					triangle[1].y=gssStart-NIBLSCALE(7);
-					triangle[0].y=triangle[3].y=gssStart-NIBLSCALE(2);
-					triangle[2].y=gssStart+NIBLSCALE(3);
-				} else if(glideSlope>6) {
-					triangle[1].y=gssStart+NIBLSCALE(72)*2-NIBLSCALE(3);
-					triangle[0].y=triangle[3].y=triangle[1].y+NIBLSCALE(5);
-					triangle[2].y=triangle[0].y+NIBLSCALE(5);
-				} else { // 0 < glideSlope <= 6
-					triangle[0].y=triangle[3].y=gssStart+(int)round((glideSlope*NIBLSCALE(72)*2)/6);
-					triangle[1].y=triangle[0].y-NIBLSCALE(5);
-					triangle[2].y=triangle[0].y+NIBLSCALE(5);
-					isOutOfScale=false;
-				}
-				if(isOutOfScale) {
-					SelectObject(hDC, LKPen_Red_N1);
-					SelectObject(hDC, LKBrush_Red);
-				} else if(INVERTCOLORS) {
-					SelectObject(hDC, LKPen_White_N1);
-					SelectObject(hDC, LKBrush_White);
-				} else {
-					SelectObject(hDC, LKPen_Black_N1);
-					SelectObject(hDC, LKBrush_Black);
-				}
-				Polygon(hDC,triangle,4);
-
-				//Put the labels on glide slope scale
+				//Print vertical speed in Ft/min
+				int xpos=78;
+				if(ScreenSize==ss800x480 || ScreenSize==ss480x272) xpos=100;
+				_stprintf(Buffer,gettext(TEXT("_@M784_"))); //"Vario"
 				SelectObject(hDC, LK8PanelSmallFont);
-				gssIncrement*=2;
-				if (ScreenLandscape) {
-					for(int i=0;i<=6;i++) {
-						_stprintf(Buffer, TEXT("%d"),i);
-						LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(8),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+				LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY-NIBLSCALE(28),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_LIGHTGREEN,false);
+				_stprintf(Buffer, TEXT("%+.0f"),varioFtMin); //print the value
+				if(!ScreenLandscape || (ScreenSize!=ss800x480 && ScreenSize!=ss480x272)) SelectObject(hDC, LK8PanelMediumFont);
+				else SelectObject(hDC, LK8PanelBigFont);
+				LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY-NIBLSCALE(19),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
+				_stprintf(Buffer,TEXT("Ft/min")); //masure unit
+				SelectObject(hDC, LK8PanelUnitFont);
+				LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY+NIBLSCALE(9),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
+
+				if(DerivedDrawInfo.WaypointDistance<1500) returnStruct.landing=true; //if at less than 1.5 Km don't show glide slope bar
+				else {
+					//Calculate glide slope inclination to reach the destination runaway
+					double halfRunaway=WayPointList[Task[ActiveWayPoint].Index].RunwayLen/2;
+					double distanceToRunaway=0;
+					if(DerivedDrawInfo.WaypointDistance>halfRunaway) distanceToRunaway=DerivedDrawInfo.WaypointDistance-halfRunaway;
+					double heightOnRunaway=DrawInfo.Altitude-WayPointList[Task[ActiveWayPoint].Index].Altitude;
+					if(heightOnRunaway<0) heightOnRunaway=0;
+					double glideSlope=RAD_TO_DEG*atan2(heightOnRunaway,distanceToRunaway);
+					//double actualDescentAngle=0;
+					//if(DerivedDrawInfo.Vario<0) actualDescentAngle=RAD_TO_DEG*atan2(-DerivedDrawInfo.Vario,DrawInfo.Speed);
+
+					//Draw glide slope scale
+					int startX=0;
+					if(ScreenLandscape) startX=8;
+					int gssStart=centerY-NIBLSCALE(72);
+					int gssIncrement=NIBLSCALE(12);
+					if(ScreenLandscape) external.x=centerX+radius+NIBLSCALE(startX+10);
+					else external.x=centerX+radius+NIBLSCALE(startX+8);
+					for(int i=0,isBig=1;i<=12;i++,isBig=!isBig) {
+						internal.y=external.y=gssStart+gssIncrement*i;
+						internal.x=centerX+radius+(isBig?NIBLSCALE(startX+3):NIBLSCALE(startX+5));
+						_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_LIGHTGREY:RGB_BLACK,rc);
 					}
-				} else {
-					_stprintf(Buffer, TEXT("0"));
-					LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
-					_stprintf(Buffer, TEXT("6"));
-					LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart+gssIncrement*6,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
-				}
+
+					//Draw glide slope marker
+					POINT triangle[4];
+					if(ScreenLandscape) {
+						triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+7);
+						triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+13);
+					} else {
+						triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+5);
+						triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+11);
+					}
+					bool isOutOfScale=true;
+					if(glideSlope<=0) {
+						triangle[1].y=gssStart-NIBLSCALE(7);
+						triangle[0].y=triangle[3].y=gssStart-NIBLSCALE(2);
+						triangle[2].y=gssStart+NIBLSCALE(3);
+					} else if(glideSlope>6) {
+						triangle[1].y=gssStart+NIBLSCALE(72)*2-NIBLSCALE(3);
+						triangle[0].y=triangle[3].y=triangle[1].y+NIBLSCALE(5);
+						triangle[2].y=triangle[0].y+NIBLSCALE(5);
+					} else { // 0 < glideSlope <= 6
+						triangle[0].y=triangle[3].y=gssStart+(int)round((glideSlope*NIBLSCALE(72)*2)/6);
+						triangle[1].y=triangle[0].y-NIBLSCALE(5);
+						triangle[2].y=triangle[0].y+NIBLSCALE(5);
+						isOutOfScale=false;
+					}
+					if(isOutOfScale) {
+						SelectObject(hDC, LKPen_Red_N1);
+						SelectObject(hDC, LKBrush_Red);
+					} else if(INVERTCOLORS) {
+						SelectObject(hDC, LKPen_White_N1);
+						SelectObject(hDC, LKBrush_White);
+					} else {
+						SelectObject(hDC, LKPen_Black_N1);
+						SelectObject(hDC, LKBrush_Black);
+					}
+					Polygon(hDC,triangle,4);
+
+					//Put the labels on glide slope scale
+					SelectObject(hDC, LK8PanelSmallFont);
+					gssIncrement*=2;
+					if (ScreenLandscape) {
+						for(int i=0;i<=6;i++) {
+							_stprintf(Buffer, TEXT("%d"),i);
+							LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(6),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+						}
+					} else {
+						_stprintf(Buffer, TEXT("0"));
+						LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+						_stprintf(Buffer, TEXT("6"));
+						LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart+gssIncrement*6,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+					}
+				} //end of glide slope bar
 
 				//Determine if to give HSI indication respect destination runaway (QFU)
 				if(finalWaypoint==0 || DerivedDrawInfo.WaypointDistance<fiveNauticalMiles) {//if direct GOTO or below 5 NM
 					int QFU=WayPointList[Task[ActiveWayPoint].Index].RunwayDir; //get runaway orientation
 					if(QFU>0 && QFU<=360) { //valid QFU
-						emulatedILS=true;
+						returnStruct.usingQFU=true;
 						course=QFU;
 						deviation=DerivedDrawInfo.WaypointDistance*fastsine(AngleDifference(course,DerivedDrawInfo.WaypointBearing)); //flat cross track error
 					}
@@ -300,7 +317,7 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 			_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),up,down,RGB_GREEN,rc);
 
 			//Course Deviation Indicator
-			if(ActiveWayPoint>0 || emulatedILS) { //we are flying on a predefined routeline or we have the info for landing: draw CDI
+			if(ActiveWayPoint>0 || returnStruct.usingQFU) { //we are flying on a predefined routeline or we have the info for landing: draw CDI
 				int dev; //deviation in pixel
 				COLORREF cdiColor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW; //color of CDI
 				SelectObject(hDC,INVERTCOLORS?LKPen_White_N1:LKPen_Black_N1); //color of CDI scale
@@ -404,5 +421,5 @@ bool MapWindow::DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled) {
 
 	SelectObject(hDC, hbOld);
 	SelectObject(hDC, hpOld);
-	return emulatedILS;
+	return returnStruct;
 }

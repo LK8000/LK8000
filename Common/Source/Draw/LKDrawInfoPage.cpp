@@ -907,16 +907,31 @@ label_TRI:
 label_HSI:
 	VDrawLine(hdc,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
 	static bool showQFU=false;
-	bool glideSlopeBarVisible;
-	if(DrawHSI(hdc,rc,&glideSlopeBarVisible)) showQFU=!showQFU; //make it blinking
-	else showQFU=false;
-	if(showQFU) {
-		#ifndef __MINGW32__
-		wsprintf(Buffer, TEXT("QFU: %d\xB0"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
-		#else
-		wsprintf(Buffer, TEXT("QFU: %d°"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
-		#endif
-		icolor=RGB_GREEN;
+	static bool showVFRlanding=false;
+	HSIreturnStruct HSI;
+	HSI=DrawHSI(hdc,rc);
+	if(HSI.landing) {
+		showVFRlanding=!showVFRlanding; //make it blinking
+		if(HSI.usingQFU) showQFU=!showVFRlanding;
+		else showQFU=false;
+	} else {
+		showVFRlanding=false;
+		if(HSI.usingQFU) showQFU=!showQFU; //make it blinking
+		else showQFU=false;
+	}
+	if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
+		if(showVFRlanding) {
+			wsprintf(Buffer,TEXT("VFR %s"),gettext(TEXT("_@M931_"))); //TODO: toupper()
+			icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
+		}
+		if(showQFU) {
+			#ifndef __MINGW32__
+			wsprintf(Buffer, TEXT("QFU: %d\xB0"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
+			#else
+			wsprintf(Buffer, TEXT("QFU: %d°"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
+			#endif
+			icolor=RGB_GREEN;
+		}
 	} else { //show next waypoint name
 		icolor=RGB_WHITE;
 		if(ValidTaskPoint(ActiveWayPoint)) {
@@ -942,7 +957,7 @@ label_HSI:
 		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
 		_stprintf(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
-		if(!glideSlopeBarVisible) { //if not landing print also dist, ETE and ETA respect task end
+		if(!HSI.approach) { //if not landing print also dist, ETE and ETA respect task end
 			LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
 			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
@@ -961,15 +976,11 @@ label_HSI:
 			LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
 			if(unitInvisible) _stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[3],&qrow[4],&qrow[2]);
-			//Vertical speed: display it in Ft/min in DrawHSI.cpp
-			//LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
-			//if(unitInvisible) _stprintf(BufferUnit,_T(""));
-			//WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[7],&qrow[8],&qrow[6]);
 			LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
 			if(unitInvisible) _stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[12],&qrow[13],&qrow[11]);
 		}
-	} else { //screen portrait
+	} else {
 		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
 		_stprintf(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
@@ -979,7 +990,7 @@ label_HSI:
 		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
 		_stprintf(BufferUnit,_T(""));
 		WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
-		if(!glideSlopeBarVisible) { //if not landing print also dist, ETE and ETA respect task end
+		if(!HSI.approach) { //if not landing print also dist, ETE and ETA respect task end
 			LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
 			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
@@ -993,10 +1004,6 @@ label_HSI:
 			LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
 			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
-			//Vertical speed: display it in Ft/min in DrawHSI.cpp
-			//LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
-			//_stprintf(BufferUnit,_T(""));
-			//WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
 			LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
 			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
