@@ -184,6 +184,13 @@ typedef struct
   RECT rc;
 } DiagrammStruct;
 
+typedef struct
+{
+	bool usingQFU;
+	bool approach;
+	bool landing;
+} HSIreturnStruct;
+
 
 
 class MapWindow {
@@ -551,7 +558,7 @@ class MapWindow {
   static void DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc , double, double);
 
   //Here the staff for the new HSI info screen: remove after what is not needed
-  static bool DrawHSI(HDC hDC, const RECT rc, bool *glideSlopeBarEnabled);
+  static HSIreturnStruct DrawHSI(HDC hDC, const RECT);
   static void DrawHSIAHRS(HDC hDC, const RECT rc);
   static void DrawHSICompassRose(HDC hDC, const RECT rc, double direction);
   static void DrawHSIAcceleration(HDC hDC, const RECT rc);
