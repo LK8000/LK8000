@@ -3197,7 +3197,7 @@ void CAirspace::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList
 void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
     const int cx = rcDraw.right - rcDraw.left;
     const int cy = rcDraw.bottom - rcDraw.top;
-    const double radius = iround((double) ((cy < cx) ? cy : cx) / (2.0) * zoom);
+    const int radius = iround(((double) ((cy < cx) ? cy : cx) / 2.0) * zoom);
     const POINT center = {rcDraw.left + cx / 2, rcDraw.top + cy / 2};
 
     buildCircle(center, radius, screenpoints_picto);
@@ -3211,18 +3211,18 @@ void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POIN
 
     const double dlon = _bounds.maxx - _bounds.minx;
     const double dlat = _bounds.maxy - _bounds.miny;
-    const double PanLongitudeCenter = _bounds.minx + dlon / 2;
-    const double PanLatitudeCenter = _bounds.miny + dlat / 2;
+    const double PanLongitudeCenter = _bounds.minx + dlon / 2.;
+    const double PanLatitudeCenter = _bounds.miny + dlat / 2.;
 
-    const double scaleX = (double) (cx) / dlon * zoom / fastcosine(PanLatitudeCenter);
-    const double scaleY = (double) (cy) / dlat * zoom;
+    const double scaleX = ((double) cx) / dlon * zoom / (double)fastcosine(PanLatitudeCenter);
+    const double scaleY = ((double) cy) / dlat * zoom;
     const double scale = (scaleX < scaleY) ? scaleX : scaleY;
 
     POINT tmpPnt;
     screenpoints_picto.clear();
     screenpoints_picto.reserve(_geopoints.size());
     for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-        tmpPnt.x = xoff - Real2Int((PanLongitudeCenter - it->Longitude()) * fastcosine(it->Latitude()) * scale);
+        tmpPnt.x = xoff - Real2Int((PanLongitudeCenter - it->Longitude()) * ((double)fastcosine(it->Latitude())) * scale);
         tmpPnt.y = yoff + Real2Int((PanLatitudeCenter - it->Latitude()) * scale);
         screenpoints_picto.push_back(tmpPnt);
     }
