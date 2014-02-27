@@ -181,7 +181,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 				if(!ScreenLandscape || (ScreenSize!=ss800x480 && ScreenSize!=ss480x272)) SelectObject(hDC, LK8PanelMediumFont);
 				else SelectObject(hDC, LK8PanelBigFont);
 				LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY-NIBLSCALE(19),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
-				_stprintf(Buffer,TEXT("Ft/min")); //masure unit
+				_stprintf(Buffer,TEXT("FPM")); //masure unit
 				SelectObject(hDC, LK8PanelUnitFont);
 				LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY+NIBLSCALE(9),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
 
