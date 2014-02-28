@@ -1,10 +1,10 @@
 #!/bin/sh
 start=`date`
 make clean
-make TARGET=PPC2002
-make TARGET=PPC2003
-make TARGET=PNA
-make TARGET=PC
+make -j 2 TARGET=PPC2002
+make -j 2 TARGET=PPC2003
+make -j 2 TARGET=PNA
+make -j 2 TARGET=PC
 
 echo "DONE -----------"
 echo "started $start"
