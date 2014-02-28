@@ -265,11 +265,11 @@ static double kalman_holdoff_time =0.0;
   // at 800 samples after approx. 15 minutes we give up and accept a weak guess
   // quality 12 is really borderline for a real guess.
   // The error is greater if wind is stronger of course. With weak winds who cares!
-  if ( kalman_samples>1000 && QualityScanRange() ) ok=true; 
+  if ( kalman_samples>1000 ) ok=true; 
   if ( kalman_samples> 800 && QualityScanRange() >= 12) ok=true; 
   if ( kalman_samples> 600 && QualityScanRange() >= 24) ok=true;
-  if ( kalman_samples> 400 && QualityScanRange() >= 36) ok=true;
-  if ( kalman_samples> 300 && QualityScanRange() >= 42) ok=true;
+  if ( kalman_samples> 400 && QualityScanRange() >= 34) ok=true;
+  if ( kalman_samples> 300 && QualityScanRange() >= 40) ok=true;
   if ( kalman_samples> 200 && QualityScanRange() >= 46) ok=true;
   if (!ok) {
   #else

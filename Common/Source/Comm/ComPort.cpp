@@ -45,6 +45,10 @@ bool ComPort::Close() {
 // this is used by all functions to send data out
 // it is called internally from thread for each device
 void ComPort::WriteString(const TCHAR * Text) {
+#if TESTBENCH && (WINDOWSPC>0)
+StartupStore(_T("... ComPort write discarded: <%s>\n"),Text);
+return;
+#else
     int len = _tcslen(Text);
 #ifdef  _UNICODE
     int size_needed = WideCharToMultiByte(CP_ACP, 0, Text, len+1, NULL, 0, NULL, NULL);
@@ -58,6 +62,7 @@ void ComPort::WriteString(const TCHAR * Text) {
         Write(szTmp, len);
     }
     delete szTmp;
+#endif
 }
 
 int ComPort::GetChar() {
