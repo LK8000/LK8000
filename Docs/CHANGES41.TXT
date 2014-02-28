@@ -80,16 +80,69 @@ Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
 
+============
+Version 4.1m
+============
+
+NEW
+
+Add customkey DspMode , accessing Display 3/3 page.
+    Changed DspMode buttons to automatically close menu after press.
+    Display a status message with current mode selected.
+
+HSI page with glide slope indicator showing angle of descent to destination
+    showing also QFU if available
+    working between 5 and 1 miles from destination. Last mile has no glide slope.
+HSI: when landing display vertical speed in Ft/min
+
+New device LXV7 easy
+    simple reception of voltage, IAS and baro altitude from V7, but nothing else.
+    V7 is standalone for configuration, and LK too. What you do on V7 is unrelated to what you do on LK.
+
+
+CHANGES
+
+Conical ESS Turnpoint can be reached less to Cone base Altitude
+PG Optimized Task : always optimize "conical ESS" turnpoint like goal turnpoint.
+
+ Allow PC keys up and down to step in units of 1 (1 kmh, 1 kt) while changing ground speed.
+    This is necessary expecially while checking MC STF using imperial units.
+
+Wind ZigZag more accurate, but requiring also more samples on startup
+
+GA Task: start at departure, remove start-end popups, draw WP lines
+
+
+FIXES
+
+fix eqMC calculation 
+
+Fix 1.7 page appearing before 1.6 when nothing else available on startup
+
+Fix display mode in display page 3/3 should not be saved to profile.
+    We risk thermal mode be disabled, and no indicator is telling us.
+
+fix Y-Grid in MM3 did not exclude SeaLevel indicator
+
+Fix Multiple start point loading
+Fix Multiple Start point dialog layout in portrait mode
+Fix  : overlays value like "Next Arrival Alt Diff" is not updated on multimap
+
+
+
+
+
+
 
 
 ============
-Version 4.1k
+Version 4.1k *not good, not released*
 ============
 
 NEW 
 
-Task Overview with additional statistic line and revert button
-show split FAI sectors when transition between 28% to 25% rule
+XXX Task Overview with additional statistic line and revert button
+XXX show split FAI sectors when transition between 28% to 25% rule
 
 Add customkey DspMode , accessing Display 3/3 page.
     Changed DspMode buttons to automatically close menu after press.
@@ -104,8 +157,8 @@ CHANGES
 Conical ESS Turnpoint can be reached less to Cone base Altitude
 PG Optimized Task : always optimize "conical ESS" turnpoint like goal turnpoint.
 
-show split FAI sectors when transition between 28% to 25% rule
-FAI indicator in Task Analysis and PAN
+XXX show split FAI sectors when transition between 28% to 25% rule
+XXX FAI indicator in Task Analysis and PAN
 
 
 
