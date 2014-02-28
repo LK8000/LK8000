@@ -1,4 +1,4 @@
-﻿# LK8000 NEDERLANDS MESSAGES - NED_MSG.TXT
+# LK8000 NEDERLANDS MESSAGES - NED_MSG.TXT
 # MASTER UPDATED:  121005
 # Version: February 2013
 # This file is loaded on startup and all messages are stored internally.
@@ -32,7 +32,7 @@ _@M12_ "11 Uiterlijk"
 _@M13_ "12 Lettertypen"
 _@M14_ "13 Map Overlays "
 _@M15_ "14 Opdracht"
-_@M16_ "Tenminste een (TRM0 niet mee geteld) moet aan staan.  Zet NAV1 aan."
+_@M16_ "Tenminste een (TRM0 niet mee geteld) moet aan staan. Zet NAV1 aan."
 _@M17_ "15 Seconden"
 _@M18_ "16 InfoBox Kruisen"
 _@M19_ "17 InfoBox Thermiek"
@@ -481,7 +481,7 @@ _@M445_ "Verplaatsend"
 _@M446_ "Berichtenscherm"
 _@M447_ "Multidoel menu"
 _@M448_ "Multidoel roteer"
-_@M449_ "NMEA Checksum "
+_@M449_ "NMEA Check"
 _@M450_ "Naam "
 _@M451_ "Naam"
 _@M452_ "Naam: "
@@ -981,7 +981,9 @@ _@M943_ "Semi-Transparant"
 _@M944_ "Opaciteit "
 _@M945_ "Patroon, alleen omtrek"
 _@M946_ "Semi-Transparant, alleen omtrek"
-
+_@M947_ "FLARM SIGNAAL VERLOREN"
+_@M948_ "Gevonden"
+_@M949_ "KP"
 _@M950_ "InfoBar Doorzichtigheid "
 _@M951_ "Kan RX data niet stoppen!"
 _@M952_ "Kan data niet naar de poort versturen!"
@@ -1010,7 +1012,9 @@ _@M964_ "SCHERM IS ONTGRENDELT"
 # Menu buttons, MAX 8 character per line! Keep \n !
 _@M965_ "ONTGRNDL\nSCHERM"
 _@M966_ "VERGRNDL\nSCHERM"
-
+_@M967_ "Luchtruim veranderd "
+_@M968_ "Alleen voor deze keer"
+_@M969_ "Blijvend"
 #
 # GPS and COM port warnings
 #
@@ -1564,6 +1568,7 @@ _@M1619_ "2.4 ASP "
 _@M1620_ "3.1 COMN "
 _@M1621_ "3.2 HIST "
 _@M1622_ "3.3 THERM "
+_@M1623_ "1.7 HSI "
 
 # New airspace messages
 _@M1630_ "Hoogte Marge "
@@ -1766,7 +1771,7 @@ _@M1782_ "LT Server"
 
 # configuration SETUP save 
 _@M1783_ "Vliegtuig Profielen"
-_@M1784_ "Pil0ot Profielen"
+_@M1784_ "Piloot Profielen"
 # page names
 _@M1785_ "Piloot configuratie"
 _@M1786_ "Vliegtuig configuratie"
@@ -1842,6 +1847,32 @@ _@M1825_ "Voeg in voor"
 _@M1826_ "Vervang"
 _@M1827_ "Voeg toe voor finish"
 _@M1828_ "Voeg toe na finish"
+
+# Gear warning alarm
+_@M1829_ "Landingsgestel Waarschuwing "
+_@M1830_ "Landingsgestel Waarschuwingshoogte "
+_@M1831_ "Uit"
+_@M1832_ "Nabij landbaar veld"
+_@M1833_ "Altijd"
+_@M1834_ "Check landingsgestel !"
+
+# oudie 2 bluetooth
+_@M1835_ "Apparaat koppelen mislukt"
+_@M1836_ "Opzoeken"
+_@M1837_ "Koppel"
+_@M1838_ "Ontkoppel"
+
+# Reverse task
+_@M1850_ "Keer \nOpdracht om?"
+_@M1851_ "Opdracht omgekeerd"
+_@M1852_ "Opdracht omkeren?"
+_@M1853_ "OPDRACHT OMGEKEERD"
+
+# HSI
+_@M1860_ "HSI"
+
+_@M1870_ "Luchtruim Sonar "
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
@@ -1975,7 +2006,7 @@ _@M2119_ "Logboek\nDetails"
 _@M2120_ "Reset\nLogboek"
 _@M2121_ "Logboek\nLijst"
 _@M2122_ "Systeem\nopslaan"
-@M2123_ "Draai\nScherm"
+_@M2123_ "Draai\nScherm"
 _@M2124_ "Scherm\nModes"
 _@M2125_ "Vliegtuig\nSetup"
 _@M2126_ "Vliegtuig\nOpslaan"
@@ -1987,15 +2018,12 @@ _@M2131_ "Aangepast\nMenu"
 _@M2132_ "Verwijder\nAltern"
 
 _@M2133_ "Positie"
-
 _@M2134_ "App. A"
 _@M2135_ "App. B"
 _@M2136_ "Draai C-Probe 360° round zijn 3 assen\nde volgorde en richting zijn niet belangrijk"
 
 _@M2143_ "Apparaat A Config"
 _@M2144_ "Apparaat B Config"
-
-
 
 # Paraglider Waypoint Type
 _@M2145_ "Entry"
@@ -2007,6 +2035,38 @@ _@M2148_ "Car,Bike & Trekking"
 # Thermal Bar
 _@M2149_ "Tijdens thermiek"
 _@M2150_ "Tijdens thermiek en kruis"
+
+_@M2151_ "T>\nKP Centrum"
+_@M2153_ "Start Sluitingstijd "
+
+_@M2154_ "IGC\nVerstuur bestand"
+_@M2155_ "Verstuur"
+_@M2156_ "IGC Verstuur bestand"
+_@M2157_ "Kies apparaat"
+
+#BlueFlyVario
+_@M2158_ "Output QNH"
+_@M2159_ "Lift Drempel"
+_@M2160_ "Lift Uit Drempel"
+_@M2161_ "Daal Drempel"
+_@M2162_ "Daal Uit Drempel"
+_@M2163_ "Positie Geluid"
+_@M2164_ "Lift Freq. Basis"
+_@M2165_ "Lift Freq. Toename"
+_@M2166_ "Daal Freq. Basis"
+_@M2167_ "Daal Freq. Toename"
+_@M2168_ "Volume"
+_@M2169_ "Rate Multiplier"
+_@M2170_ "Audio Aangesloten"
+_@M2171_ "Audio Ontkoppelt"
+_@M2172_ "Bluetooth Wacht"
+_@M2173_ "Output Modus"
+_@M2174_ "Output Frequentie"
+
+_@M2175_ "Conische ESS"
+_@M2176_ "Conische Helling"
+_@M2177_ "Basis hoogte"
+_@M2178_ "Basis Radius"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
@@ -2040,8 +2100,7 @@ _@M2227_ "Schakel\nWndVaan"
 _@M2228_ "FLARM\nRadar"
 _@M2229_ "Herstart\nOdometer"
 _@M2230_ "Activeer\nGeland"
-_@M2231_ "ACTIEF
-# 2232 unused but reserved for mmaps
+_@M2231_ "ACTIEF"
 _@M2232_ "abcd"
 _@M2233_ "Overlay"
 _@M2234_ "TEXT"
@@ -2056,7 +2115,21 @@ _@M2242_ "Sonar\nAAN"
 _@M2243_ "Sonar\nUIT"
 _@M2244_ "Apparaat\nSetup"
 _@M2245_ "Apparaat\nOpslaan"
+_@M2246_ "Reset\nBeeld"
+_@M2247_ "28/45 FAI Drempel "
+_@M2248_  "Geen nabij object gevonden!"
+
+# DO NOT TRANSLATE 2249
+_@M2249_  "DspMode"
 
 # MAX 2250! 
 # (Reserved for custom menus up to 2300!)
 # Note for developers: remember LKLanguage MAX_MESSAGE limit
+
+# S = Start Task point
+_@M2301  "S" 
+# T = Task Point
+_@M2302_  "T"  
+# F = Finish point
+_@M2303_  "F" 
+_@M2304_  "WAARSCHUWING VOOR LANDINGSGESTEL GEDEACTIVEERD!" 
