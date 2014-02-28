@@ -258,10 +258,20 @@ static double kalman_holdoff_time =0.0;
   #if SCAN_RANGE
   #define REQUIRED_SAMPLES 400
   #define REQUIRED_QUALITY 46
-  // Wait to have at least REQUIRED_SAMPLES valid samples in order to use the new wind
-  // (must be a %10 value so that next will be used at once)
-  // OR wait for a minimal quality estimation of wind.
-  if (kalman_samples< REQUIRED_SAMPLES && QualityScanRange() < REQUIRED_QUALITY) {
+  // The ZigZag wind is called like that because a pilot is supposed to collect direction samples.
+  // Quality is about checking if he did so. With no quality, no wind.
+
+  bool ok=false;
+  // at 800 samples after approx. 15 minutes we give up and accept a weak guess
+  // quality 12 is really borderline for a real guess.
+  // The error is greater if wind is stronger of course. With weak winds who cares!
+  if ( kalman_samples>1000 && QualityScanRange() ) ok=true; 
+  if ( kalman_samples> 800 && QualityScanRange() >= 12) ok=true; 
+  if ( kalman_samples> 600 && QualityScanRange() >= 24) ok=true;
+  if ( kalman_samples> 400 && QualityScanRange() >= 36) ok=true;
+  if ( kalman_samples> 300 && QualityScanRange() >= 42) ok=true;
+  if ( kalman_samples> 200 && QualityScanRange() >= 46) ok=true;
+  if (!ok) {
   #else
   #define REQUIRED_SAMPLES 60
   // Wait to have at least REQUIRED_SAMPLES valid samples in order to use the new wind
