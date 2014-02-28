@@ -283,13 +283,16 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	  DoStatusMessage(gettext(TEXT("_@M279_"))); // FLARM DETECTED
 	}
 	sayflarmavailable=false;
+#if 0
 	if(nmeaParser1.isFlarm) {
 		devRequestFlarmVersion(devA());
 	} else {
 		if(nmeaParser2.isFlarm)
 			devRequestFlarmVersion(devB());
 	}
+#endif
   }
+
 
   // calculate relative east and north projection to lat/lon
 
