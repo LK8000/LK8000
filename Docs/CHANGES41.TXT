@@ -79,6 +79,26 @@ Old task files can still be loaded.
 Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
+============
+Version 4.1n
+============
+
+NEW
+
+
+
+CHANGES
+
+
+
+
+FIXES
+
+
+
+
+
+
 
 ============
 Version 4.1m
@@ -99,6 +119,7 @@ New device LXV7 easy
     simple reception of voltage, IAS and baro altitude from V7, but nothing else.
     V7 is standalone for configuration, and LK too. What you do on V7 is unrelated to what you do on LK.
 
+New icons for missing CUP tunrpoints type
 
 CHANGES
 
