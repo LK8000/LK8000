@@ -51,6 +51,7 @@ static void NextPage(int Step){
     } else {
 	// LKTOKEN  _@M664_ = "Status: System" 
     	wf->SetCaption(gettext(TEXT("_@M664_")));
+#if FLARMDEADLOCK
     	if( GPS_INFO.FLARM_SW_Version  < 0.01)
     	{
     	  if(nmeaParser1.isFlarm)
@@ -59,6 +60,7 @@ static void NextPage(int Step){
     	    if(nmeaParser2.isFlarm)
               devRequestFlarmVersion(devB());
     	}
+#endif
     }
     break;
   case 2:
@@ -190,8 +192,8 @@ static void UpdateValuesSystem() {
   static double extbatt1_voltage = GPS_INFO.ExtBatt1_Voltage;
   static double extbatt2_voltage = GPS_INFO.ExtBatt2_Voltage;
 
-  static double FLARM_HW_Version = GPS_INFO.FLARM_HW_Version;
-  static double FLARM_SW_Version = GPS_INFO.FLARM_SW_Version;
+  //static double FLARM_HW_Version = GPS_INFO.FLARM_HW_Version;
+  //static double FLARM_SW_Version = GPS_INFO.FLARM_SW_Version;
 
 
   if (first ||
@@ -206,8 +208,8 @@ static void UpdateValuesSystem() {
       (batterybank_last != GPS_INFO.ExtBatt_Bank) ||
       (extbatt1_voltage != GPS_INFO.ExtBatt1_Voltage) ||
       (extbatt2_voltage != GPS_INFO.ExtBatt2_Voltage) ||
-      (FLARM_HW_Version != GPS_INFO.FLARM_HW_Version) ||
-      (FLARM_SW_Version != GPS_INFO.FLARM_SW_Version) ||
+      // (FLARM_HW_Version != GPS_INFO.FLARM_HW_Version) ||
+      // (FLARM_SW_Version != GPS_INFO.FLARM_SW_Version) ||
       (PDABatteryPercent_last != PDABatteryPercent)) {
     first = false;
 
@@ -223,8 +225,8 @@ static void UpdateValuesSystem() {
     batterybank_last = GPS_INFO.ExtBatt_Bank;
     extbatt1_voltage = GPS_INFO.ExtBatt1_Voltage;
     extbatt2_voltage = GPS_INFO.ExtBatt2_Voltage;
-    FLARM_HW_Version = GPS_INFO.FLARM_HW_Version;
-    FLARM_SW_Version = GPS_INFO.FLARM_SW_Version;
+    // FLARM_HW_Version = GPS_INFO.FLARM_HW_Version;
+    // FLARM_SW_Version = GPS_INFO.FLARM_SW_Version;
   } else {
     return;
   }
@@ -311,6 +313,7 @@ static void UpdateValuesSystem() {
     if (GPS_INFO.FLARM_Available) {
 	// LKTOKEN  _@M199_ = "Connected" 
 
+#if FLARMDEADLOCK
       if(FLARM_SW_Version > 0.0)
       {
     //	StartupStore(_T("STATUS: Flarm Version: %4.2f/%4.2f\n"),FLARM_SW_Version, FLARM_HW_Version);
@@ -318,6 +321,7 @@ static void UpdateValuesSystem() {
     	wp->SetText(Temp);
       }
       else
+#endif
         wp->SetText(gettext(TEXT("_@M199_")));
     } else {
 	// LKTOKEN  _@M240_ = "Disconnected" 

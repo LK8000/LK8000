@@ -283,7 +283,7 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	  DoStatusMessage(gettext(TEXT("_@M279_"))); // FLARM DETECTED
 	}
 	sayflarmavailable=false;
-#if 0
+#if FLARMDEADLOCK
 	if(nmeaParser1.isFlarm) {
 		devRequestFlarmVersion(devA());
 	} else {

@@ -465,7 +465,7 @@ BOOL devPutMacCready(PDeviceDescriptor_t d, double MacCready)
 
 BOOL devRequestFlarmVersion(PDeviceDescriptor_t d)
 {
-
+#if FLARMDEADLOCK
   if (SIMMODE)
     return TRUE;
 
@@ -480,6 +480,7 @@ BOOL devRequestFlarmVersion(PDeviceDescriptor_t d)
       }
     }
   }
+#endif
   return FALSE;
 }
 
