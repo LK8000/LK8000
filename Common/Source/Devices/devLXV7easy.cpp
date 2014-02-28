@@ -1,0 +1,221 @@
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id$
+*/
+
+#include "externs.h"
+#include "devBase.h"
+#include "devLXV7easy.h"
+
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
+static bool LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+static bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+static bool PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+extern BOOL LXV7easyInstall(PDeviceDescriptor_t d);
+extern BOOL LXV7easyParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+
+static BOOL isTrue(PDeviceDescriptor_t) {
+     return TRUE;
+}
+
+static bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
+{
+  TCHAR  temp[80];
+  TCHAR* stop;
+
+  NMEAParser::ExtractParameter(sentence, temp, parIdx);
+
+  stop = NULL;
+  *value = StrToDouble(temp, &stop);
+
+  if (stop == NULL || *stop != '\0')
+    return(false);
+
+  return(true);
+} 
+
+bool LXV7easyRegister(void){
+    return(devRegister(
+        TEXT("LXV7 easy"),
+        (1l << dfGPS)
+        | (1l << dfBaroAlt)
+        | (1l << dfSpeed)
+        | (1l << dfVario),
+        LXV7easyInstall
+    ));
+}
+
+BOOL LXV7easyInstall(PDeviceDescriptor_t d)
+{
+  _tcscpy(d->Name, TEXT("LXV7 easy"));
+  d->ParseNMEA    = LXV7easyParseNMEA;
+  d->PutMacCready = NULL;
+  d->PutBugs      = NULL;
+  d->PutBallast   = NULL;
+  d->Open         = NULL;
+  d->Close        = NULL;
+  d->Init         = NULL;
+  d->LinkTimeout  = isTrue;
+  d->Declare      = NULL;
+  d->IsLogger     = NULL;
+  d->IsGPSSource  = isTrue;
+  d->IsBaroSource = isTrue;
+  d->DirectLink   = NULL;
+
+  return(TRUE);
+} 
+
+
+
+BOOL LXV7easyParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+{
+
+    if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)) {
+        return FALSE;
+    }
+
+    //
+    // We ignore the followings
+    //
+    if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0) {
+	return TRUE;
+    }
+    if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0) {
+	return TRUE;
+    }
+    if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0) {
+	return TRUE;
+    }
+    if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0) {
+	return TRUE;
+    }
+    if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0) {
+	return TRUE;
+    }
+    if (_tcsncmp(_T("$LXWP5"), sentence, 6) == 0) {
+	return TRUE;
+    }
+
+    //
+    // We manage the followings
+    //
+    if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
+        return PLXVF(d, sentence + 7, info);
+
+    if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
+        return PLXVS(d, sentence + 7, info);
+
+    if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+        return LXWP1(d, sentence + 7, info);
+
+
+    return(FALSE);
+}
+
+
+bool LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
+{
+    // $LXWP1,serial number,instrument ID, software version, hardware
+    //   version,license string,NU*SC<CR><LF>
+    //
+    // instrument ID ID of LX1600
+    // serial number unsigned serial number
+    // software version float sw version
+    // hardware version float hw version
+    // license string (option to store a license of PDA SW into LX1600)
+    //	$LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
+
+#ifdef DEVICE_SERIAL
+    TCHAR ctemp[180];
+    static int NoMsg=0;
+    static int oldSerial=0;
+
+    if(_tcslen(String) >= 180) return true;
+
+    if((( pGPS->SerialNumber == 0)  || ( pGPS->SerialNumber != oldSerial)) && (NoMsg < 5)) {
+        NoMsg++ ;
+        NMEAParser::ExtractParameter(String,ctemp,0);
+        if(_tcslen(ctemp) < DEVNAMESIZE)
+	    _stprintf(d->Name, _T("%s"),ctemp);
+
+        StartupStore(_T(". %s\n"),ctemp);
+
+	NMEAParser::ExtractParameter(String,ctemp,1);
+	pGPS->SerialNumber= (int)StrToDouble(ctemp,NULL);
+	oldSerial = pGPS->SerialNumber;
+	_stprintf(ctemp, _T("%s Serial Number %i"), d->Name, pGPS->SerialNumber);
+	StartupStore(_T(". %s\n"),ctemp);
+
+	NMEAParser::ExtractParameter(String,ctemp,2);
+	pGPS->SoftwareVer= StrToDouble(ctemp,NULL);
+	_stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, pGPS->SoftwareVer);
+	StartupStore(_T(". %s\n"),ctemp);
+
+	NMEAParser::ExtractParameter(String,ctemp,3);
+        pGPS->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
+	_stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(pGPS->HardwareId)/10.0);
+	StartupStore(_T(". %s\n"),ctemp);
+        _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, pGPS->SerialNumber);
+
+        DoStatusMessage(ctemp);
+        _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  pGPS->SoftwareVer, (double)(pGPS->HardwareId)/10.0);
+        DoStatusMessage(ctemp);
+    }
+#endif
+    return(true);  
+} 
+
+
+
+bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+
+    double alt, airspeed;
+
+    if (ParToDouble(sentence, 5, &airspeed)) {
+        info->IndicatedAirspeed = airspeed;
+        info->AirspeedAvailable = TRUE;
+        info->TrueAirspeed =  airspeed * AirDensityRatio(info->BaroAltitude);
+    }
+
+    if (ParToDouble(sentence, 6, &alt)) {
+	UpdateBaroSource( info, 0, d, AltitudeToQNHAltitude(alt));
+    }
+
+    if (ParToDouble(sentence, 4, &info->Vario)) {
+	info->VarioAvailable = TRUE;
+	TriggerVarioUpdate();
+    }
+
+    return(true);
+} 
+
+
+
+bool PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
+
+    double Batt;
+    double OAT;
+
+    if (ParToDouble(sentence, 0, &OAT)) {
+	 info->OutsideAirTemperature = OAT;
+	 info->TemperatureAvailable  = TRUE;
+    }
+
+
+    if (ParToDouble(sentence, 2, &Batt)) {
+	 info->ExtBatt1_Voltage = Batt;
+    }
+
+    return(true);
+} // PLXVS()
+
+
+
+

@@ -62,6 +62,8 @@
 #include "Bitmaps.h"
 #include "devCProbe.h"
 #include "devBlueFlyVario.h"
+#include "devLXV7easy.h"
+
 
 #include "TraceThread.h"
 
@@ -476,6 +478,11 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   FlyNetRegister();
   CDevCProbe::Register();
   BlueFlyRegister();
+  LXV7easyRegister();
+  // REPETITION REMINDER ..
+  // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
+  // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<
+  // or you get an assertion error in device.cpp 
 
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
