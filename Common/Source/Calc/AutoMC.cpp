@@ -41,8 +41,14 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	return;
   }
 
-  // otherwise, if AutoMc for finalglide or "both", return if no goto
-  if (!ValidTaskPoint(ActiveWayPoint)) {
+  // if AutoMc is not for finalglide or Average Climb Rate return
+  if( (AutoMcMode!=amcFinalGlide) && (AutoMcMode!=amcFinalAndClimb) && (AutoMcMode==amcAverageClimb) ) {
+	UnlockTaskData();
+	return;
+  }
+
+  // otherwise, if AutoMc for finalglide, return if no goto
+  if ( (AutoMcMode==amcFinalGlide) && !ValidTaskPoint(ActiveWayPoint) ) {
 	UnlockTaskData();
 	return;
   }
@@ -74,11 +80,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     av_thermal = Calculated->AverageThermal;
   }
 
-  if (!ValidTaskPoint(ActiveWayPoint)) {
-    if (av_thermal>0) {
-      mc_new = av_thermal;
-    }
-  } else if ( ((AutoMcMode==amcFinalGlide)||(AutoMcMode==amcFinalAndClimb)) && is_final_glide) {
+  if ( is_final_glide && ((AutoMcMode==amcFinalGlide)||(AutoMcMode==amcFinalAndClimb))) {
 
       if (Calculated->TaskAltitudeDifference0>0) {
 	
@@ -122,7 +124,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	}
       }
     }
-  } else if ( (AutoMcMode==amcAverageClimb) || ((AutoMcMode==amcFinalAndClimb)&& !is_final_glide) ) {
+  } else {
     if (av_thermal>0) {
       mc_new = av_thermal;
     }
