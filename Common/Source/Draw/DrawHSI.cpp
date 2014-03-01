@@ -44,9 +44,8 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	} compassMarks[72][10]; //72 compass marks (one every 5 degrees), 10 possible cases
 	static POINT hdgMark[4]; //Coordinates of heading marker (red triangle on the top of compass rose)
 
-	static const int fiveNauticalMiles=9260; //Large Course Deviation Indicator scale: 5 nautical miles (9260 m)
-	static const int smallCDIscale=557; //Narrow (zoomed) CDI scale: 0.3 nautical miles (557 m)
-	static const double mt2ft=1/0.3048; //1 m in feet
+	static const int fiveNauticalMiles=(5.0*NAUTICALMILESTOMETRES); //Large Course Deviation Indicator scale: 5 nautical miles (9260 m)
+	static const int smallCDIscale=(0.3*NAUTICALMILESTOMETRES); //Narrow (zoomed) CDI scale: 0.3 nautical miles (557 m)
 
 	static const TCHAR* label[]= { //labels of the compass rose
 			TEXT("N"),
@@ -163,6 +162,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 	_stprintf(Buffer, TEXT("%03d")TEXT(DEG),(int)round(DrawInfo.TrackBearing));
 	LKWriteText(hDC,Buffer,posTRKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
 
+    LockTaskData(); // protect Task & WayPointList
 	if(ValidTaskPoint(ActiveWayPoint)) {
 		if(Task[ActiveWayPoint].Index>=0) { //Draw course direction and CDI only if there is a task/route active
 			double course = DerivedDrawInfo.LegActualTrueCourse;
@@ -170,7 +170,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			int finalWaypoint=getFinalWaypoint();
 			if(finalWaypoint==ActiveWayPoint) { //if we are flying to the final destination
 				returnStruct.approach=true;
-				double varioFtMin=DerivedDrawInfo.Vario*196.8503937; //Convert vertical speed to Ft/min
+				const double varioFtMin=DerivedDrawInfo.Vario*TOFEETPERMINUTE; //Convert vertical speed to Ft/min
 
 				//Print vertical speed in Ft/min
 				int xpos=78;
@@ -416,6 +416,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			}
 		}
 	}
+    UnlockTaskData();
 
 	//Draw airplane symbol in the center of HSI
 	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),fusA,fusB,RGB_ORANGE,rc);
@@ -424,17 +425,19 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
 	//Draw VSI: Vertical Situation Indicator
 	if(!returnStruct.usingQFU && !returnStruct.landing) { //if not using glide slope and not lading
+        LockTaskData(); // protect Task & WayPointList
 		if(ValidTaskPoint(ActiveWayPoint)) { //if valid task
 			if(ActiveWayPoint>0) { //if we have a previous WP
 				if(Task[ActiveWayPoint].Index>=0 && Task[ActiveWayPoint-1].Index>=0) { //if valid waypoints
 
 					//Calculate expected altitude in route
 					double expectedAlt=WayPointList[Task[ActiveWayPoint].Index].Altitude;
-					if(Task[ActiveWayPoint].Leg>0 || Task[ActiveWayPoint].Leg!=Task[ActiveWayPoint].Leg)
+					if(Task[ActiveWayPoint].Leg>0 || Task[ActiveWayPoint].Leg!=Task[ActiveWayPoint].Leg) {
 						expectedAlt=(WayPointList[Task[ActiveWayPoint].Index].Altitude-WayPointList[Task[ActiveWayPoint-1].Index].Altitude) / Task[ActiveWayPoint].Leg
-							* DerivedDrawInfo.LegDistanceCovered + WayPointList[Task[ActiveWayPoint-1].Index].Altitude;
-					expectedAlt*=mt2ft;
-					double diff=(DrawInfo.Altitude*mt2ft)-expectedAlt; //difference with current altitude
+								* DerivedDrawInfo.LegDistanceCovered + WayPointList[Task[ActiveWayPoint-1].Index].Altitude;
+					}
+					expectedAlt*=TOFEET;
+					double diff=(DrawInfo.Altitude*TOFEET)-expectedAlt; //difference with current altitude
 
 					//Find out a proper scale to display the difference on the VSI bar
 					double scale=fabs(diff);
@@ -462,7 +465,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 					int topBorder=centerY-scaleInPixel;
 					int bottomBorder=centerY+scaleInPixel;
 					if(DerivedDrawInfo.TerrainValid) {
-						double altAGLft=DerivedDrawInfo.AltitudeAGL*mt2ft;
+						const double altAGLft=DerivedDrawInfo.AltitudeAGL*TOFEET;
 						int groundLevel=scaleInPixel;
 						if(fabs(altAGLft)<scale) groundLevel=(int)round(altAGLft*pixelPerFeet);
 						else if(altAGLft<0) groundLevel=-scaleInPixel;
@@ -552,6 +555,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 				}
 			}
 		}
+        UnlockTaskData();
 	}
 
 	SelectObject(hDC, hbOld);
