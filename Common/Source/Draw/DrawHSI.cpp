@@ -46,6 +46,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
 	static const int fiveNauticalMiles=9260; //Large Course Deviation Indicator scale: 5 nautical miles (9260 m)
 	static const int smallCDIscale=557; //Narrow (zoomed) CDI scale: 0.3 nautical miles (557 m)
+	static const double mt2ft=1/0.3048; //1 m in feet
 
 	static const TCHAR* label[]= { //labels of the compass rose
 			TEXT("N"),
@@ -169,7 +170,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 			int finalWaypoint=getFinalWaypoint();
 			if(finalWaypoint==ActiveWayPoint) { //if we are flying to the final destination
 				returnStruct.approach=true;
-				double varioFtMin=DerivedDrawInfo.Vario*196.8503937; //Convert vertical speed in Ft/min
+				double varioFtMin=DerivedDrawInfo.Vario*196.8503937; //Convert vertical speed to Ft/min
 
 				//Print vertical speed in Ft/min
 				int xpos=78;
@@ -181,86 +182,88 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 				if(!ScreenLandscape || (ScreenSize!=ss800x480 && ScreenSize!=ss480x272)) SelectObject(hDC, LK8PanelMediumFont);
 				else SelectObject(hDC, LK8PanelBigFont);
 				LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY-NIBLSCALE(19),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
-				_stprintf(Buffer,TEXT("FPM")); //masure unit
+				_stprintf(Buffer,TEXT("FPM")); //measure unit
 				SelectObject(hDC, LK8PanelUnitFont);
 				LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY+NIBLSCALE(9),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
 
-				if(DerivedDrawInfo.WaypointDistance<1500) returnStruct.landing=true; //if at less than 1.5 Km don't show glide slope bar
-				else {
-					//Calculate glide slope inclination to reach the destination runaway
-					double halfRunaway=WayPointList[Task[ActiveWayPoint].Index].RunwayLen/2;
-					double distanceToRunaway=0;
-					if(DerivedDrawInfo.WaypointDistance>halfRunaway) distanceToRunaway=DerivedDrawInfo.WaypointDistance-halfRunaway;
-					double heightOnRunaway=DrawInfo.Altitude-WayPointList[Task[ActiveWayPoint].Index].Altitude;
-					if(heightOnRunaway<0) heightOnRunaway=0;
-					double glideSlope=RAD_TO_DEG*atan2(heightOnRunaway,distanceToRunaway);
-					//double actualDescentAngle=0;
-					//if(DerivedDrawInfo.Vario<0) actualDescentAngle=RAD_TO_DEG*atan2(-DerivedDrawInfo.Vario,DrawInfo.Speed);
+				if(DerivedDrawInfo.WaypointDistance<fiveNauticalMiles) { //if we are close to the destination
+					if(DerivedDrawInfo.WaypointDistance<1500) returnStruct.landing=true; //if at less than 1.5 Km don't show glide slope bar
+					else { //Build glide slope bar
+						//Calculate glide slope inclination to reach the destination runaway
+						double halfRunaway=WayPointList[Task[ActiveWayPoint].Index].RunwayLen/2;
+						double distanceToRunaway=0;
+						if(DerivedDrawInfo.WaypointDistance>halfRunaway) distanceToRunaway=DerivedDrawInfo.WaypointDistance-halfRunaway;
+						double heightOnRunaway=DrawInfo.Altitude-WayPointList[Task[ActiveWayPoint].Index].Altitude;
+						if(heightOnRunaway<0) heightOnRunaway=0;
+						double glideSlope=RAD_TO_DEG*atan2(heightOnRunaway,distanceToRunaway);
+						//double actualDescentAngle=0;
+						//if(DerivedDrawInfo.Vario<0) actualDescentAngle=RAD_TO_DEG*atan2(-DerivedDrawInfo.Vario,DrawInfo.Speed);
 
-					//Draw glide slope scale
-					int startX=0;
-					if(ScreenLandscape) startX=8;
-					int gssStart=centerY-NIBLSCALE(72);
-					int gssIncrement=NIBLSCALE(12);
-					if(ScreenLandscape) external.x=centerX+radius+NIBLSCALE(startX+10);
-					else external.x=centerX+radius+NIBLSCALE(startX+8);
-					for(int i=0,isBig=1;i<=12;i++,isBig=!isBig) {
-						internal.y=external.y=gssStart+gssIncrement*i;
-						internal.x=centerX+radius+(isBig?NIBLSCALE(startX+3):NIBLSCALE(startX+5));
-						_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_LIGHTGREY:RGB_BLACK,rc);
-					}
-
-					//Draw glide slope marker
-					POINT triangle[4];
-					if(ScreenLandscape) {
-						triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+7);
-						triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+13);
-					} else {
-						triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+5);
-						triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+11);
-					}
-					bool isOutOfScale=true;
-					if(glideSlope<=0) {
-						triangle[1].y=gssStart-NIBLSCALE(7);
-						triangle[0].y=triangle[3].y=gssStart-NIBLSCALE(2);
-						triangle[2].y=gssStart+NIBLSCALE(3);
-					} else if(glideSlope>6) {
-						triangle[1].y=gssStart+NIBLSCALE(72)*2-NIBLSCALE(3);
-						triangle[0].y=triangle[3].y=triangle[1].y+NIBLSCALE(5);
-						triangle[2].y=triangle[0].y+NIBLSCALE(5);
-					} else { // 0 < glideSlope <= 6
-						triangle[0].y=triangle[3].y=gssStart+(int)round((glideSlope*NIBLSCALE(72)*2)/6);
-						triangle[1].y=triangle[0].y-NIBLSCALE(5);
-						triangle[2].y=triangle[0].y+NIBLSCALE(5);
-						isOutOfScale=false;
-					}
-					if(isOutOfScale) {
-						SelectObject(hDC, LKPen_Red_N1);
-						SelectObject(hDC, LKBrush_Red);
-					} else if(INVERTCOLORS) {
-						SelectObject(hDC, LKPen_White_N1);
-						SelectObject(hDC, LKBrush_White);
-					} else {
-						SelectObject(hDC, LKPen_Black_N1);
-						SelectObject(hDC, LKBrush_Black);
-					}
-					Polygon(hDC,triangle,4);
-
-					//Put the labels on glide slope scale
-					SelectObject(hDC, LK8PanelSmallFont);
-					gssIncrement*=2;
-					if (ScreenLandscape) {
-						for(int i=0;i<=6;i++) {
-							_stprintf(Buffer, TEXT("%d"),i);
-							LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(6),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+						//Draw glide slope scale
+						int startX=0;
+						if(ScreenLandscape) startX=8;
+						int gssStart=centerY-NIBLSCALE(72);
+						int gssIncrement=NIBLSCALE(12);
+						if(ScreenLandscape) external.x=centerX+radius+NIBLSCALE(startX+10);
+						else external.x=centerX+radius+NIBLSCALE(startX+8);
+						for(int i=0,isBig=1;i<=12;i++,isBig=!isBig) {
+							internal.y=external.y=gssStart+gssIncrement*i;
+							internal.x=centerX+radius+(isBig?NIBLSCALE(startX+3):NIBLSCALE(startX+5));
+							_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_LIGHTGREY:RGB_BLACK,rc);
 						}
-					} else {
-						_stprintf(Buffer, TEXT("0"));
-						LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
-						_stprintf(Buffer, TEXT("6"));
-						LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart+gssIncrement*6,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
-					}
-				} //end of glide slope bar
+
+						//Draw glide slope marker
+						POINT triangle[4];
+						if(ScreenLandscape) {
+							triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+7);
+							triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+13);
+						} else {
+							triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+5);
+							triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+11);
+						}
+						bool isOutOfScale=true;
+						if(glideSlope<=0) {
+							triangle[1].y=gssStart-NIBLSCALE(7);
+							triangle[0].y=triangle[3].y=gssStart-NIBLSCALE(2);
+							triangle[2].y=gssStart+NIBLSCALE(3);
+						} else if(glideSlope>6) {
+							triangle[1].y=gssStart+NIBLSCALE(72)*2-NIBLSCALE(3);
+							triangle[0].y=triangle[3].y=triangle[1].y+NIBLSCALE(5);
+							triangle[2].y=triangle[0].y+NIBLSCALE(5);
+						} else { // 0 < glideSlope <= 6
+							triangle[0].y=triangle[3].y=gssStart+(int)round((glideSlope*NIBLSCALE(72)*2)/6);
+							triangle[1].y=triangle[0].y-NIBLSCALE(5);
+							triangle[2].y=triangle[0].y+NIBLSCALE(5);
+							isOutOfScale=false;
+						}
+						if(isOutOfScale) {
+							SelectObject(hDC, LKPen_Red_N1);
+							SelectObject(hDC, LKBrush_Red);
+						} else if(INVERTCOLORS) {
+							SelectObject(hDC, LKPen_White_N1);
+							SelectObject(hDC, LKBrush_White);
+						} else {
+							SelectObject(hDC, LKPen_Black_N1);
+							SelectObject(hDC, LKBrush_Black);
+						}
+						Polygon(hDC,triangle,4);
+
+						//Put the labels on glide slope scale
+						SelectObject(hDC, LK8PanelSmallFont);
+						gssIncrement*=2;
+						if (ScreenLandscape) {
+							for(int i=0;i<=6;i++) {
+								_stprintf(Buffer, TEXT("%d"),i);
+								LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(6),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+							}
+						} else {
+							_stprintf(Buffer, TEXT("0"));
+							LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+							_stprintf(Buffer, TEXT("6"));
+							LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart+gssIncrement*6,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+						}
+					} //end of glide slope bar
+				}
 
 				//Determine if to give HSI indication respect destination runaway (QFU)
 				if(finalWaypoint==0 || DerivedDrawInfo.WaypointDistance<fiveNauticalMiles) {//if direct GOTO or below 5 NM
@@ -414,10 +417,142 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 		}
 	}
 
-	//Draw airplane symbol
+	//Draw airplane symbol in the center of HSI
 	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),fusA,fusB,RGB_ORANGE,rc);
 	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),winA,winB,RGB_ORANGE,rc);
 	_DrawLine(hDC,PS_SOLID,NIBLSCALE(2),taiA,taiB,RGB_ORANGE,rc);
+
+	//Draw VSI: Vertical Situation Indicator
+	if(!returnStruct.usingQFU && !returnStruct.landing) { //if not using glide slope and not lading
+		if(ValidTaskPoint(ActiveWayPoint)) { //if valid task
+			if(ActiveWayPoint>0) { //if we have a previous WP
+				if(Task[ActiveWayPoint].Index>=0 && Task[ActiveWayPoint-1].Index>=0) { //if valid waypoints
+
+					//Calculate expected altitude in route
+					double expectedAlt=WayPointList[Task[ActiveWayPoint].Index].Altitude;
+					if(Task[ActiveWayPoint].Leg>0 || Task[ActiveWayPoint].Leg!=Task[ActiveWayPoint].Leg)
+						expectedAlt=(WayPointList[Task[ActiveWayPoint].Index].Altitude-WayPointList[Task[ActiveWayPoint-1].Index].Altitude) / Task[ActiveWayPoint].Leg
+							* DerivedDrawInfo.LegDistanceCovered + WayPointList[Task[ActiveWayPoint-1].Index].Altitude;
+					expectedAlt*=mt2ft;
+					double diff=(DrawInfo.Altitude*mt2ft)-expectedAlt; //difference with current altitude
+
+					//Find out a proper scale to display the difference on the VSI bar
+					double scale=fabs(diff);
+					bool outOfScale=false;
+					if(scale<100) scale=100;
+					else if(scale<500) scale=500;
+					else if(scale<1000) scale=1000;
+					else if(scale<5000) scale=5000;
+					else if(scale<10000) scale=10000;
+					else {
+						if(scale>=20000) outOfScale=true;
+						scale=20000;
+					}
+					int scaleInPixel=NIBLSCALE(70);
+					if(!ScreenLandscape) scaleInPixel=NIBLSCALE(45);
+					double pixelPerFeet=scaleInPixel/scale;
+
+					//Draw VSI background
+					int leftBorder=centerX+radius+NIBLSCALE(3);
+					int rightBorder=centerX+radius+NIBLSCALE(6);
+					if(ScreenSize==ss800x480 || ScreenSize==ss480x272) {
+						leftBorder+=NIBLSCALE(5);
+						rightBorder+=NIBLSCALE(7);
+					}
+					int topBorder=centerY-scaleInPixel;
+					int bottomBorder=centerY+scaleInPixel;
+					if(DerivedDrawInfo.TerrainValid) {
+						double altAGLft=DerivedDrawInfo.AltitudeAGL*mt2ft;
+						int groundLevel=scaleInPixel;
+						if(fabs(altAGLft)<scale) groundLevel=(int)round(altAGLft*pixelPerFeet);
+						else if(altAGLft<0) groundLevel=-scaleInPixel;
+						if(groundLevel>-scaleInPixel) { //sky part
+							HPEN PenSky=CreatePen(PS_SOLID,NIBLSCALE(1),RGB(0,153,153));
+							HBRUSH BrushSky=CreateSolidBrush(COLORREF RGB(0,153,153));
+							SelectObject(hDC,PenSky);
+							SelectObject(hDC,BrushSky);
+							Rectangle(hDC,leftBorder,centerY+groundLevel,rightBorder,topBorder);
+							if(PenSky) DeleteObject(PenSky);
+							if(BrushSky) DeleteObject(BrushSky);
+						}
+						if(groundLevel<scaleInPixel) { //ground part
+							HPEN PenGround=CreatePen(PS_SOLID,NIBLSCALE(1),RGB(204,102,0));
+							HBRUSH BrushGround=CreateSolidBrush(COLORREF RGB(204,102,0));
+							SelectObject(hDC,PenGround);
+							SelectObject(hDC,BrushGround);
+							Rectangle(hDC,leftBorder,bottomBorder,rightBorder,centerY+groundLevel+1);
+							if(PenGround) DeleteObject(PenGround);
+							if(BrushGround) DeleteObject(BrushGround);
+						}
+					}
+
+					//Draw VSI scale
+					int vsiIncrement=(int)round(scaleInPixel/10);
+					internal.x=leftBorder;
+					external.x=rightBorder-1;
+					for(int i=1,isBig=0;i<=10;i++,isBig=!isBig) {
+						internal.y=external.y=centerY-vsiIncrement*i; //upper part
+						_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
+						internal.y=external.y=centerY+vsiIncrement*i; //lower part
+						_DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
+					}
+
+					//Draw airplane symbol at the center of VSI scale
+					internal.x=leftBorder-3;
+					external.x=rightBorder+2;
+					internal.y=external.y=centerY;
+					_DrawLine(hDC,PS_SOLID,NIBLSCALE(1),internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
+					internal.x=external.x=internal.x+(external.x-internal.x)/2;
+					external.y=centerY-NIBLSCALE(2);
+					_DrawLine(hDC,PS_SOLID,1,internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
+					SelectObject(hDC,INVERTCOLORS?LKPen_White_N1:LKPen_Black_N1);
+					Circle(hDC,internal.x,centerY,NIBLSCALE(1),rc,false,false);
+
+					//Print +scale and -scale at top and bottom of VSI
+					SelectObject(hDC, LK8SmallFont);
+					int xPos=leftBorder+NIBLSCALE(2);
+					if(!ScreenLandscape) xPos=leftBorder-NIBLSCALE(5);
+					if(scale<10000) _stprintf(Buffer, TEXT("+%.0fft"),scale);
+					else _stprintf(Buffer, TEXT("+%.0ff"),scale);
+					LKWriteText(hDC,Buffer,xPos,topBorder-NIBLSCALE(5),0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+					if(scale<10000) _stprintf(Buffer, TEXT("-%.0fft"),scale);
+					else _stprintf(Buffer, TEXT("-%.0ff"),scale);
+					LKWriteText(hDC,Buffer,xPos,bottomBorder+NIBLSCALE(5),0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+
+					//Draw expected in route altitude marker
+					POINT triangle[4];
+					triangle[0].x=triangle[3].x=leftBorder;
+					triangle[1].x=triangle[2].x=rightBorder+NIBLSCALE(1);
+					if(outOfScale) {
+						if(diff>0) { //up
+							triangle[1].y=bottomBorder-NIBLSCALE(1);
+							triangle[0].y=triangle[3].y=bottomBorder+NIBLSCALE(2);
+							triangle[2].y=bottomBorder+NIBLSCALE(5);
+						} else { //down
+							triangle[1].y=bottomBorder-NIBLSCALE(5);
+							triangle[0].y=triangle[3].y=bottomBorder-NIBLSCALE(2);
+							triangle[2].y=bottomBorder+NIBLSCALE(1);
+						}
+					} else {
+						triangle[0].y=triangle[3].y=centerY+(int)round(pixelPerFeet*diff);
+						triangle[1].y=triangle[0].y-NIBLSCALE(3);
+						triangle[2].y=triangle[0].y+NIBLSCALE(3);
+					}
+					if(outOfScale) {
+						SelectObject(hDC, LKPen_Red_N1);
+						SelectObject(hDC, LKBrush_Red);
+					} else if(INVERTCOLORS) {
+						SelectObject(hDC, LKPen_White_N1);
+						SelectObject(hDC, LKBrush_White);
+					} else {
+						SelectObject(hDC, LKPen_Black_N1);
+						SelectObject(hDC, LKBrush_Black);
+					}
+					Polygon(hDC,triangle,4);
+				}
+			}
+		}
+	}
 
 	SelectObject(hDC, hbOld);
 	SelectObject(hDC, hpOld);
