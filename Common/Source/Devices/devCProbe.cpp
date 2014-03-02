@@ -64,11 +64,11 @@ BOOL CDevCProbe::Close (PDeviceDescriptor_t d) {
 }
 
 
-double int16toDouble(int v) {
+inline double int16toDouble(int v) {
 	return (double)(int16_t)v;
 };
 
-double int24toDouble(int v) {
+inline double int24toDouble(int v) {
 	if(v > (1<<23)){
 		v = -(v - (1<<24)+1);
 	}
@@ -211,35 +211,37 @@ BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 
 	pINFO->ExtBatt1_Voltage = int16toDouble(HexStrToInt(wiss.GetNextString()))+1000;
 
-	double delta_press = int16toDouble(HexStrToInt(wiss.GetNextString())) / 10.0 ;
-	double abs_press = int24toDouble(HexStrToInt(wiss.GetNextString())) / 400.0;
+	double delta_press = int16toDouble(HexStrToInt(wiss.GetNextString())) * 1.0/10.0 ;
+	double abs_press = int24toDouble(HexStrToInt(wiss.GetNextString())) * (1.0/4.0);
 
-	if(abs_press > 0.0) {
-		UpdateBaroSource(pINFO, BARO__CPROBE, NULL, StaticPressureToAltitude(abs_press*100));
+    LockDeviceData();
+	m_delta_press = delta_press;
+	m_abs_press = abs_press;
+	UnlockDeviceData();
+    
+    // the highest sea level air pressure ever recorded was 1084 mb (32.01 in.) 
+    //  at Siberia associated with an extremely cold air mass.
+	if(abs_press > 0.0 && abs_press < 115000.0) {
+		UpdateBaroSource(pINFO, BARO__CPROBE, NULL, StaticPressureToAltitude(abs_press));
 	}
 	else {
 		if(pINFO->BaroAltitudeAvailable) {
-			abs_press = QNHAltitudeToStaticPressure(pINFO->BaroAltitude)/100;
+			abs_press = QNHAltitudeToStaticPressure(pINFO->BaroAltitude);
 		}
 		else {
-			abs_press = QNHAltitudeToStaticPressure(pINFO->Altitude)/100;
+			abs_press = QNHAltitudeToStaticPressure(pINFO->Altitude);
 		}
 	}
 
-	if(delta_press>=0){
+	if(delta_press>0.0){
 		pINFO->AirspeedAvailable = TRUE;
 		pINFO->IndicatedAirspeed = sqrt(2 * delta_press / 1.225);
-		pINFO->TrueAirspeed = TrueAirSpeed(delta_press,	pINFO->RelativeHumidity, pINFO->OutsideAirTemperature, abs_press>0.0?abs_press*100:101325.0);
+		pINFO->TrueAirspeed = TrueAirSpeed(delta_press,	pINFO->RelativeHumidity, pINFO->OutsideAirTemperature, abs_press>0.0?abs_press:101325.0);
 	}
 
 	if(*(wiss.GetNextString()) == L'C'){
 		pINFO->ExtBatt1_Voltage *= -1;
 	}
-
-	LockDeviceData();
-	m_delta_press = delta_press;
-	m_abs_press = abs_press;
-	UnlockDeviceData();
 
 	TriggerVarioUpdate();
 	return TRUE;
@@ -267,7 +269,7 @@ BOOL CDevCProbe::ParseFW( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 	unsigned int Version = HexStrToInt(wiss.GetNextString());
 
 	LockDeviceData();
-	_stprintf(m_szVersion, TEXT("%u.%u"), ((Version&0xFF00) >> 8), (Version&0x00FF));
+	_stprintf(m_szVersion, TEXT("%u.%.02u"), ((Version&0xFF00) >> 8), (Version&0x00FF));
 	UnlockDeviceData();
 
 	return TRUE;
@@ -287,22 +289,28 @@ BOOL CDevCProbe::ParseName( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 }
 
 BOOL CDevCProbe::SetBaroOn( PDeviceDescriptor_t d ){
-	d->Com->WriteString(TEXT("$PCPILOT,C,BAROON\r\n"));
+    if (d && d->Com) {
+    	d->Com->WriteString(TEXT("$PCPILOT,C,BAROON\r\n"));
+    }
 	return TRUE;
 }
 
 BOOL CDevCProbe::SetBaroOff( PDeviceDescriptor_t d ){
-	d->Com->WriteString(TEXT("$PCPILOT,C,BAROOFF\r\n"));
+    if (d && d->Com) {
+    	d->Com->WriteString(TEXT("$PCPILOT,C,BAROOFF\r\n"));
+    }
 	return TRUE;
 }
 
 BOOL CDevCProbe::GetDeviceName( PDeviceDescriptor_t d ){
-	d->Com->WriteString(TEXT("$PCPILOT,C,GETNAME\r\n"));
+    if (d && d->Com) {
+    	d->Com->WriteString(TEXT("$PCPILOT,C,GETNAME\r\n"));
+    }
 	return TRUE;
 }
 
 BOOL CDevCProbe::SetDeviceName( PDeviceDescriptor_t d, const std::wstring& strName ){
-	if (strName.size() <= 15) {
+	if (d && d->Com && strName.size() <= 15) {
 		d->Com->WriteString(TEXT("$PCPILOT,C,SET,"));
 		d->Com->WriteString(strName.c_str());
 		d->Com->WriteString(TEXT("\r\n"));
@@ -311,28 +319,38 @@ BOOL CDevCProbe::SetDeviceName( PDeviceDescriptor_t d, const std::wstring& strNa
 	return FALSE;
 }
 
-BOOL CDevCProbe::GetFirmwareVersion( PDeviceDescriptor_t d ){
-	d->Com->WriteString(TEXT("$PCPILOT,C,GETFW\r\n"));
+BOOL CDevCProbe::GetFirmwareVersion(PDeviceDescriptor_t d) {
+    if (d && d->Com) {
+        d->Com->WriteString(TEXT("$PCPILOT,C,GETFW\r\n"));
+    }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetZeroDeltaPressure( PDeviceDescriptor_t d ){
-	d->Com->WriteString(TEXT("$PCPILOT,C,CALZERO\r\n"));
+BOOL CDevCProbe::SetZeroDeltaPressure(PDeviceDescriptor_t d) {
+    if (d && d->Com) {
+        d->Com->WriteString(TEXT("$PCPILOT,C,CALZERO\r\n"));
+    }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetCompassCalOn( PDeviceDescriptor_t d ){
-	d->Com->WriteString(TEXT("$PCPILOT,C,COMPCALON\r\n"));
+BOOL CDevCProbe::SetCompassCalOn(PDeviceDescriptor_t d) {
+    if (d && d->Com) {
+        d->Com->WriteString(TEXT("$PCPILOT,C,COMPCALON\r\n"));
+    }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetCompassCalOff( PDeviceDescriptor_t d ){
-	d->Com->WriteString(TEXT("$PCPILOT,C,COMPCALOFF\r\n"));
+BOOL CDevCProbe::SetCompassCalOff(PDeviceDescriptor_t d) {
+    if (d && d->Com) {
+        d->Com->WriteString(TEXT("$PCPILOT,C,COMPCALOFF\r\n"));
+    }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetCalGyro( PDeviceDescriptor_t d ){
-	d->Com->WriteString(TEXT("$PCPILOT,C,CALGYRO\r\n"));
+BOOL CDevCProbe::SetCalGyro(PDeviceDescriptor_t d) {
+    if (d && d->Com) {
+        d->Com->WriteString(TEXT("$PCPILOT,C,CALGYRO\r\n"));
+    }
 	return TRUE;
 }
 
@@ -350,10 +368,24 @@ BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
 	LocalPathS(filename, TEXT("dlgDevCProbe.xml"));
 	m_wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DEVCPROBE"));
 
-	((WndButton *)m_wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
-	((WndButton *)m_wf->FindByName(TEXT("cmdSetCompassCal")))->SetOnClickNotify(OnCompassCalClicked);
-	((WndButton *)m_wf->FindByName(TEXT("cmdSetCalGyro")))->SetOnClickNotify(OnCalGyroClicked);
-	((WndButton *)m_wf->FindByName(TEXT("cmdZeroDeltaPress")))->SetOnClickNotify(OnZeroDeltaPressClicked);
+    WndButton *wBt = NULL;
+            
+	wBt = (WndButton *)m_wf->FindByName(TEXT("cmdClose"));
+    if(wBt){
+        wBt->SetOnClickNotify(OnCloseClicked);
+    }
+	wBt = (WndButton *)m_wf->FindByName(TEXT("cmdSetCompassCal"));
+    if(wBt){
+        wBt->SetOnClickNotify(OnCompassCalClicked);
+    }
+	wBt = (WndButton *)m_wf->FindByName(TEXT("cmdSetCalGyro"));
+    if(wBt){
+        wBt->SetOnClickNotify(OnCalGyroClicked);
+    }
+	wBt = (WndButton *)m_wf->FindByName(TEXT("cmdZeroDeltaPress"));
+    if(wBt){
+        wBt->SetOnClickNotify(OnZeroDeltaPressClicked);
+    }
 
 	GetFirmwareVersion(m_pDevice);
 
