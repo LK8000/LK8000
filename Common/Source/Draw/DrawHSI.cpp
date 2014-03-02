@@ -41,6 +41,9 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
     static short gssRightMarkX, gssLeftBigMarkX, gssLeftSmallMarkX, gssMarkerApexX, gssMarkerBaseX, gssLabelX; //Glide Slope bar coordinates
     static short gssScaleInPixelX2,gssStart,gssEnd,gssIncrement,gssIncrementX2; //Glide Slope bar pixel dimensions
     static short gssOOSupMarkerUpY,gssOOSupMarkerMidY,gssOOSupMarkerDwY,gssOOSdwMarkerUpY,gssOOSdwMarkerMidY,gssOOSdwMarkerDwY; //GS marker out of scale coordinates
+    static short VSIscaleInPixel,VSIleftBorder,VSIrightBorder,VSItopBorder,VSIbottomBorder,vsiIncrement; //Vertical Situation Indicator bar coordinates
+    static short VSIrightScaleBorder,VSIairplaneSymLeft,VSIairplaneSymRight,VSIairplaneSymTail,VSIlabelX,VSIlabelUpY,VSIlabelDwY;
+    static short VSImarkerBaseX,vsiOOSdwMarkerUp,vsiOOSdwMarkerMid,vsiOOSdwMarkerDw,vsiOOSupMarkerUp,vsiOOSupMarkerMid,vsiOOSupMarkerDw;
 
     static struct { //Compass rose marks coordinates matrix: using short's to use less memory
         short extX, extY; //coordinates external mark point
@@ -130,7 +133,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
         VertSpeedValueY=centerY-NIBLSCALE(19);
         VertSpeedUnitY=centerY+NIBLSCALE(9);
 
-        //Initialize coordinates for glide slope bar
+        //Initialize coordinates for Glide Slope bar
         gssRightMarkX=centerX+radius+NIBLSCALE(ScreenLandscape?18:8);
         gssLeftBigMarkX=centerX+radius+NIBLSCALE(ScreenLandscape?11:3);
         gssLeftSmallMarkX=centerX+radius+NIBLSCALE(ScreenLandscape?13:5);
@@ -148,6 +151,28 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
         gssOOSdwMarkerUpY=gssStart+gssScaleInPixelX2-NIBLSCALE(3);
         gssOOSdwMarkerMidY=gssOOSdwMarkerUpY+NIBLSCALE(5);
         gssOOSdwMarkerDwY=gssOOSdwMarkerMidY+NIBLSCALE(5);
+
+        //Initialize coordinates for Vertical Situation Indicator bar
+        VSIscaleInPixel=ScreenLandscape?NIBLSCALE(70):NIBLSCALE(45);
+        VSIleftBorder=centerX+radius+NIBLSCALE((ScreenSize==ss800x480 || ScreenSize==ss480x272)?8:3);
+        VSIrightBorder=centerX+radius+NIBLSCALE((ScreenSize==ss800x480 || ScreenSize==ss480x272)?13:6);
+        VSItopBorder=centerY-VSIscaleInPixel;
+        VSIbottomBorder=centerY+VSIscaleInPixel;
+        vsiIncrement=(short)round(VSIscaleInPixel/10);
+        VSIrightScaleBorder=VSIrightBorder-1;
+        VSIairplaneSymLeft=VSIleftBorder-3;
+        VSIairplaneSymRight=VSIrightBorder+2;
+        VSIairplaneSymTail=centerY-NIBLSCALE(2);
+        VSIlabelX=VSIleftBorder+(ScreenLandscape?(NIBLSCALE(2)):(-NIBLSCALE(5)));
+        VSIlabelUpY=VSItopBorder-NIBLSCALE(5);
+        VSIlabelDwY=VSIbottomBorder+NIBLSCALE(5);
+        VSImarkerBaseX=VSIrightBorder+NIBLSCALE((ScreenSize==ss800x480 || ScreenSize==ss480x272)?5:3);
+        vsiOOSdwMarkerUp=VSIbottomBorder-NIBLSCALE(1);
+        vsiOOSdwMarkerMid=VSIbottomBorder+NIBLSCALE(2);
+        vsiOOSdwMarkerDw=VSIbottomBorder+NIBLSCALE(5);
+        vsiOOSupMarkerUp=VSIbottomBorder-NIBLSCALE(5);
+        vsiOOSupMarkerMid=VSIbottomBorder-NIBLSCALE(2);
+        vsiOOSupMarkerDw=VSIbottomBorder+NIBLSCALE(1);
 
         DoInit[MDI_DRAWHSI]=false;
     }
@@ -480,48 +505,37 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
             if(scale>=20000) outOfScale=true;
             scale=20000;
         }
-        int scaleInPixel=NIBLSCALE(70);
-        if(!ScreenLandscape) scaleInPixel=NIBLSCALE(45);
-        const double pixelPerFeet=scaleInPixel/scale;
+        const double pixelPerFeet=VSIscaleInPixel/scale;
 
         //Draw VSI background
-        int leftBorder=centerX+radius+NIBLSCALE(3);
-        int rightBorder=centerX+radius+NIBLSCALE(6);
-        if(ScreenSize==ss800x480 || ScreenSize==ss480x272) {
-            leftBorder+=NIBLSCALE(5);
-            rightBorder+=NIBLSCALE(7);
-        }
-        const int topBorder=centerY-scaleInPixel;
-        const int bottomBorder=centerY+scaleInPixel;
         if(DerivedDrawInfo.TerrainValid) {
             const double altAGLft=DerivedDrawInfo.AltitudeAGL*TOFEET;
-            int groundLevel=scaleInPixel;
+            int groundLevel=VSIscaleInPixel;
             if(fabs(altAGLft)<scale) groundLevel=(int)round(altAGLft*pixelPerFeet);
-            else if(altAGLft<0) groundLevel=-scaleInPixel;
-            if(groundLevel>-scaleInPixel) { //sky part
+            else if(altAGLft<0) groundLevel=-VSIscaleInPixel;
+            if(groundLevel>-VSIscaleInPixel) { //sky part
                 HPEN PenSky=CreatePen(PS_SOLID,NIBLSCALE(1),RGB(0,153,153));
                 HBRUSH BrushSky=CreateSolidBrush(COLORREF RGB(0,153,153));
                 SelectObject(hDC,PenSky);
                 SelectObject(hDC,BrushSky);
-                Rectangle(hDC,leftBorder,centerY+groundLevel,rightBorder,topBorder);
+                Rectangle(hDC,VSIleftBorder,centerY+groundLevel,VSIrightBorder,VSItopBorder);
                 if(PenSky) DeleteObject(PenSky);
                 if(BrushSky) DeleteObject(BrushSky);
             }
-            if(groundLevel<scaleInPixel) { //ground part
+            if(groundLevel<VSIscaleInPixel) { //ground part
                 HPEN PenGround=CreatePen(PS_SOLID,NIBLSCALE(1),RGB(204,102,0));
                 HBRUSH BrushGround=CreateSolidBrush(COLORREF RGB(204,102,0));
                 SelectObject(hDC,PenGround);
                 SelectObject(hDC,BrushGround);
-                Rectangle(hDC,leftBorder,bottomBorder,rightBorder,centerY+groundLevel+1);
+                Rectangle(hDC,VSIleftBorder,VSIbottomBorder,VSIrightBorder,centerY+groundLevel+1);
                 if(PenGround) DeleteObject(PenGround);
                 if(BrushGround) DeleteObject(BrushGround);
             }
         }
 
         //Draw VSI scale
-        const int vsiIncrement=(int)round(scaleInPixel/10);
-        internal.x=leftBorder;
-        external.x=rightBorder-1;
+        internal.x=VSIleftBorder;
+        external.x=VSIrightScaleBorder;
         for(int i=1,isBig=0;i<=10;i++,isBig=!isBig) {
             internal.y=external.y=centerY-vsiIncrement*i; //upper part
             _DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
@@ -530,40 +544,38 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
         }
 
         //Draw airplane symbol at the center of VSI scale
-        internal.x=leftBorder-3;
-        external.x=rightBorder+2;
+        internal.x=VSIairplaneSymLeft;
+        external.x=VSIairplaneSymRight;
         internal.y=external.y=centerY;
         _DrawLine(hDC,PS_SOLID,NIBLSCALE(1),internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
         internal.x=external.x=internal.x+(external.x-internal.x)/2;
-        external.y=centerY-NIBLSCALE(2);
+        external.y=VSIairplaneSymTail;
         _DrawLine(hDC,PS_SOLID,1,internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
         SelectObject(hDC,INVERTCOLORS?LKPen_White_N1:LKPen_Black_N1);
         Circle(hDC,internal.x,centerY,NIBLSCALE(1),rc,false,false);
 
         //Print +scale and -scale at top and bottom of VSI
         SelectObject(hDC, LK8SmallFont);
-        int xPos=leftBorder+NIBLSCALE(2);
-        if(!ScreenLandscape) xPos=leftBorder-NIBLSCALE(5);
         if(scale<10000) _stprintf(Buffer, TEXT("+%.0fft"),scale);
         else _stprintf(Buffer, TEXT("+%.0ff"),scale);
-        LKWriteText(hDC,Buffer,xPos,topBorder-NIBLSCALE(5),0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+        LKWriteText(hDC,Buffer,VSIlabelX,VSIlabelUpY,0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
         if(scale<10000) _stprintf(Buffer, TEXT("-%.0fft"),scale);
         else _stprintf(Buffer, TEXT("-%.0ff"),scale);
-        LKWriteText(hDC,Buffer,xPos,bottomBorder+NIBLSCALE(5),0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+        LKWriteText(hDC,Buffer,VSIlabelX,VSIlabelDwY,0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
 
         //Draw expected in route altitude marker
         POINT triangle[4];
-        triangle[0].x=triangle[3].x=leftBorder;
-        triangle[1].x=triangle[2].x=rightBorder+NIBLSCALE(1);
+        triangle[0].x=triangle[3].x=VSIleftBorder;
+        triangle[1].x=triangle[2].x=VSImarkerBaseX;
         if(outOfScale) {
-            if(diff>0) { //up
-                triangle[1].y=bottomBorder-NIBLSCALE(1);
-                triangle[0].y=triangle[3].y=bottomBorder+NIBLSCALE(2);
-                triangle[2].y=bottomBorder+NIBLSCALE(5);
-            } else { //down
-                triangle[1].y=bottomBorder-NIBLSCALE(5);
-                triangle[0].y=triangle[3].y=bottomBorder-NIBLSCALE(2);
-                triangle[2].y=bottomBorder+NIBLSCALE(1);
+            if(diff>0) { //down
+                triangle[1].y=vsiOOSdwMarkerUp;
+                triangle[0].y=triangle[3].y=vsiOOSdwMarkerMid;
+                triangle[2].y=vsiOOSdwMarkerDw;
+            } else { //up
+                triangle[1].y=vsiOOSupMarkerUp;
+                triangle[0].y=triangle[3].y=vsiOOSupMarkerMid;
+                triangle[2].y=vsiOOSupMarkerDw;
             }
         } else {
             triangle[0].y=triangle[3].y=centerY+(int)round(pixelPerFeet*diff);
