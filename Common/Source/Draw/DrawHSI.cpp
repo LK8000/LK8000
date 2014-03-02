@@ -37,6 +37,10 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
     static short posDTKx; //X coordinate of desired track textual information
     static short posBRGy; //Y coordinate of current bearing to next waypoint
     static short posXTKx, posXTKy; //coordinates of cross track error textual information
+    static short VertSpeedX, VertSpeedLabelY, VertSpeedValueY, VertSpeedUnitY; //coordinates of vertical speed indication
+    static short gssRightMarkX, gssLeftBigMarkX, gssLeftSmallMarkX, gssMarkerApexX, gssMarkerBaseX, gssLabelX; //Glide Slope bar coordinates
+    static short gssScaleInPixelX2,gssStart,gssEnd,gssIncrement,gssIncrementX2; //Glide Slope bar pixel dimensions
+    static short gssOOSupMarkerUpY,gssOOSupMarkerMidY,gssOOSupMarkerDwY,gssOOSdwMarkerUpY,gssOOSdwMarkerMidY,gssOOSdwMarkerDwY; //GS marker out of scale coordinates
 
     static struct { //Compass rose marks coordinates matrix: using short's to use less memory
         short extX, extY; //coordinates external mark point
@@ -120,6 +124,31 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
         posXTKx=centerX+radius-NIBLSCALE(25);
         posXTKy=centerY+radius-NIBLSCALE(5);
 
+        //Initialize position of Vertical speed indication
+        VertSpeedX=centerX+radius+NIBLSCALE(ScreenLandscape?((ScreenSize==ss800x480 || ScreenSize==ss480x272)?100:78):47);
+        VertSpeedLabelY=centerY-NIBLSCALE(28);
+        VertSpeedValueY=centerY-NIBLSCALE(19);
+        VertSpeedUnitY=centerY+NIBLSCALE(9);
+
+        //Initialize coordinates for glide slope bar
+        gssRightMarkX=centerX+radius+NIBLSCALE(ScreenLandscape?18:8);
+        gssLeftBigMarkX=centerX+radius+NIBLSCALE(ScreenLandscape?11:3);
+        gssLeftSmallMarkX=centerX+radius+NIBLSCALE(ScreenLandscape?13:5);
+        gssMarkerApexX=centerX+radius+NIBLSCALE(ScreenLandscape?15:5);
+        gssMarkerBaseX=centerX+radius+NIBLSCALE(ScreenLandscape?21:11);
+        gssLabelX=centerX+radius+(ScreenLandscape?(NIBLSCALE(6)):(-NIBLSCALE(1)));
+        gssScaleInPixelX2=NIBLSCALE(72)*2;
+        gssStart=centerY-NIBLSCALE(72);
+        gssEnd=centerY+NIBLSCALE(72);
+        gssIncrement=NIBLSCALE(12);
+        gssIncrementX2=gssIncrement*2;
+        gssOOSupMarkerUpY=gssStart-NIBLSCALE(7);
+        gssOOSupMarkerMidY=gssStart-NIBLSCALE(2);
+        gssOOSupMarkerDwY=gssStart+NIBLSCALE(3);
+        gssOOSdwMarkerUpY=gssStart+gssScaleInPixelX2-NIBLSCALE(3);
+        gssOOSdwMarkerMidY=gssOOSdwMarkerUpY+NIBLSCALE(5);
+        gssOOSdwMarkerDwY=gssOOSdwMarkerMidY+NIBLSCALE(5);
+
         DoInit[MDI_DRAWHSI]=false;
     }
 
@@ -196,18 +225,16 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
             const double varioFtMin=DerivedDrawInfo.Vario*TOFEETPERMINUTE; //Convert vertical speed to Ft/min
 
             //Print vertical speed in Ft/min
-            int xpos=78;
-            if(ScreenSize==ss800x480 || ScreenSize==ss480x272) xpos=100;
             _stprintf(Buffer,gettext(TEXT("_@M784_"))); //"Vario"
             SelectObject(hDC, LK8PanelSmallFont);
-            LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY-NIBLSCALE(28),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_LIGHTGREEN,false);
+            LKWriteText(hDC,Buffer,VertSpeedX,VertSpeedLabelY,0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_LIGHTGREEN,false);
             _stprintf(Buffer, TEXT("%+.0f"),varioFtMin); //print the value
             if(!ScreenLandscape || (ScreenSize!=ss800x480 && ScreenSize!=ss480x272)) SelectObject(hDC, LK8PanelMediumFont);
             else SelectObject(hDC, LK8PanelBigFont);
-            LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY-NIBLSCALE(19),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
+            LKWriteText(hDC,Buffer,VertSpeedX,VertSpeedValueY,0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
             _stprintf(Buffer,TEXT("FPM")); //measure unit
             SelectObject(hDC, LK8PanelUnitFont);
-            LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(ScreenLandscape?xpos:47),centerY+NIBLSCALE(9),0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
+            LKWriteText(hDC,Buffer,VertSpeedX,VertSpeedUnitY,0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
 
             if(DerivedDrawInfo.WaypointDistance<fiveNauticalMiles) { //if we are close to the destination
                 if(DerivedDrawInfo.WaypointDistance<1500) returnStruct.landing=true; //if at less than 1.5 Km don't show glide slope bar
@@ -223,38 +250,28 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
                     //if(DerivedDrawInfo.Vario<0) actualDescentAngle=RAD_TO_DEG*atan2(-DerivedDrawInfo.Vario,DrawInfo.Speed);
 
                     //Draw glide slope scale
-                    int startX=0;
-                    if(ScreenLandscape) startX=8;
-                    const int gssStart=centerY-NIBLSCALE(72);
-                    int gssIncrement=NIBLSCALE(12);
-                    if(ScreenLandscape) external.x=centerX+radius+NIBLSCALE(startX+10);
-                    else external.x=centerX+radius+NIBLSCALE(startX+8);
+                    external.x=gssRightMarkX;
                     for(int i=0,isBig=1;i<=12;i++,isBig=!isBig) {
                         internal.y=external.y=gssStart+gssIncrement*i;
-                        internal.x=centerX+radius+(isBig?NIBLSCALE(startX+3):NIBLSCALE(startX+5));
+                        internal.x=isBig?gssLeftBigMarkX:gssLeftSmallMarkX;
                         _DrawLine(hDC,PS_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_LIGHTGREY:RGB_BLACK,rc);
                     }
 
                     //Draw glide slope marker
                     POINT triangle[4];
-                    if(ScreenLandscape) {
-                        triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+7);
-                        triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+13);
-                    } else {
-                        triangle[0].x=triangle[3].x=centerX+radius+NIBLSCALE(startX+5);
-                        triangle[1].x=triangle[2].x=centerX+radius+NIBLSCALE(startX+11);
-                    }
+                    triangle[0].x=triangle[3].x=gssMarkerApexX;
+                    triangle[1].x=triangle[2].x=gssMarkerBaseX;
                     bool isOutOfScale=true;
                     if(glideSlope<=0) {
-                        triangle[1].y=gssStart-NIBLSCALE(7);
-                        triangle[0].y=triangle[3].y=gssStart-NIBLSCALE(2);
-                        triangle[2].y=gssStart+NIBLSCALE(3);
+                        triangle[1].y=gssOOSupMarkerUpY;
+                        triangle[0].y=triangle[3].y=gssOOSupMarkerMidY;
+                        triangle[2].y=gssOOSupMarkerDwY;
                     } else if(glideSlope>6) {
-                        triangle[1].y=gssStart+NIBLSCALE(72)*2-NIBLSCALE(3);
-                        triangle[0].y=triangle[3].y=triangle[1].y+NIBLSCALE(5);
-                        triangle[2].y=triangle[0].y+NIBLSCALE(5);
+                        triangle[1].y=gssOOSdwMarkerUpY;
+                        triangle[0].y=triangle[3].y=gssOOSdwMarkerMidY;
+                        triangle[2].y=gssOOSdwMarkerDwY;
                     } else { // 0 < glideSlope <= 6
-                        triangle[0].y=triangle[3].y=gssStart+(int)round((glideSlope*NIBLSCALE(72)*2)/6);
+                        triangle[0].y=triangle[3].y=gssStart+(int)round((glideSlope*gssScaleInPixelX2)/6);
                         triangle[1].y=triangle[0].y-NIBLSCALE(5);
                         triangle[2].y=triangle[0].y+NIBLSCALE(5);
                         isOutOfScale=false;
@@ -273,17 +290,16 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
                     //Put the labels on glide slope scale
                     SelectObject(hDC, LK8PanelSmallFont);
-                    gssIncrement*=2;
                     if (ScreenLandscape) {
                         for(int i=0;i<=6;i++) {
                             _stprintf(Buffer, TEXT("%d"),i);
-                            LKWriteText(hDC,Buffer,centerX+radius+NIBLSCALE(6),gssStart+gssIncrement*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+                            LKWriteText(hDC,Buffer,gssLabelX,gssStart+gssIncrementX2*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
                         }
                     } else {
                         _stprintf(Buffer, TEXT("0"));
-                        LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+                        LKWriteText(hDC,Buffer,gssLabelX,gssStart,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
                         _stprintf(Buffer, TEXT("6"));
-                        LKWriteText(hDC,Buffer,centerX+radius-NIBLSCALE(1),gssStart+gssIncrement*6,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+                        LKWriteText(hDC,Buffer,gssLabelX,gssEnd,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
                     }
                 } //end of glide slope bar
             }
