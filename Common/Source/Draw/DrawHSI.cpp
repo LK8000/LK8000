@@ -15,6 +15,7 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "DoInits.h"
+#include "LKStyle.h"
 
 #ifndef __MINGW32__
 #define DEG "\xB0"
@@ -166,7 +167,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
         VSIlabelX=VSIleftBorder+(ScreenLandscape?(NIBLSCALE(2)):(-NIBLSCALE(5)));
         VSIlabelUpY=VSItopBorder-NIBLSCALE(5);
         VSIlabelDwY=VSIbottomBorder+NIBLSCALE(5);
-        VSImarkerBaseX=VSIrightBorder+NIBLSCALE((ScreenSize==ss800x480 || ScreenSize==ss480x272)?5:3);
+        VSImarkerBaseX=VSIrightBorder+NIBLSCALE((ScreenSize==ss800x480 || ScreenSize==ss480x272)?5:2);
         vsiOOSdwMarkerUp=VSIbottomBorder-NIBLSCALE(1);
         vsiOOSdwMarkerMid=VSIbottomBorder+NIBLSCALE(2);
         vsiOOSdwMarkerDw=VSIbottomBorder+NIBLSCALE(5);
@@ -220,6 +221,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
     bool validActiveWP=false, validPreviousWP=false;
     int currentWP=0, finalWP=0, RunwayLen=0, QFU=0;
     double WPaltitude=0, prevWPaltitude=0, WPleg=0;
+    short WPstyle;
 
     //Critical section: copy the needed data from Task and WayPoint list
     LockTaskData(); // protect Task & WayPointList
@@ -228,6 +230,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
             validActiveWP=true;
             currentWP=ActiveWayPoint;
             finalWP=getFinalWaypoint();
+            WPstyle=WayPointList[Task[ActiveWayPoint].Index].Style;
             RunwayLen=WayPointList[Task[ActiveWayPoint].Index].RunwayLen;
             WPaltitude= WayPointList[Task[ActiveWayPoint].Index].Altitude;
             QFU=WayPointList[Task[ActiveWayPoint].Index].RunwayDir; //get runaway orientation
@@ -260,8 +263,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
             _stprintf(Buffer,TEXT("FPM")); //measure unit
             SelectObject(hDC, LK8PanelUnitFont);
             LKWriteText(hDC,Buffer,VertSpeedX,VertSpeedUnitY,0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
-
-            if(DerivedDrawInfo.WaypointDistance<fiveNauticalMiles) { //if we are close to the destination
+            if(DerivedDrawInfo.WaypointDistance<fiveNauticalMiles && WPstyle>=STYLE_AIRFIELDGRASS && WPstyle<=STYLE_AIRFIELDSOLID) { //if we are close to the destination airport
                 if(DerivedDrawInfo.WaypointDistance<1500) returnStruct.landing=true; //if at less than 1.5 Km don't show glide slope bar
                 else { //Build glide slope bar
                     //Calculate glide slope inclination to reach the destination runaway

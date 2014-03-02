@@ -962,7 +962,12 @@ label_HSI:
 			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
 			LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
-			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[7],&qrow[8],&qrow[6]);
+			if(ScreenSize==ss800x480 || ScreenSize==ss480x272)
+				WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[7],&qrow[8],&qrow[6]);
+			else {
+				_stprintf(BufferUnit,_T(""));
+				WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[7],&qrow[8],&qrow[6]);
+			}
 			LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
 			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
