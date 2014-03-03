@@ -237,11 +237,12 @@ void LKSimulator(void) {
   }
 
 
-  if (GS>0)
-  FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
-                          GPS_INFO.TrackBearing, ((int)IASMS)*1.0,
+  if (GS>0) {
+      FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
+                          GPS_INFO.TrackBearing, ((int)GPS_INFO.Speed)*1.0,
                           &GPS_INFO.Latitude,
                           &GPS_INFO.Longitude);
+  }
   GPS_INFO.Time+= 1.0;
   long tsec = (long)GPS_INFO.Time;
   GPS_INFO.Hour = tsec/3600;
