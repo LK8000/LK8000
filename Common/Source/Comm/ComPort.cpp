@@ -150,11 +150,9 @@ void ComPort::ProcessChar(char c) {
             *(pLastNmea) = _T('\0'); // terminate string.
             // process only meaningful sentences, avoid processing a single \n \r etc.
             if (pLastNmea - begin(_NmeaString) > 5) {
-                LockComm(); // Must LockComm to prevent deadlock
                 LockFlightData();
                 devParseNMEA(devIdx, _NmeaString, &GPS_INFO);
                 UnlockFlightData();
-                UnlockComm();
             }
         } else {
             *(pLastNmea++) = c;
