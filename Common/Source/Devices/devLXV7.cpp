@@ -41,10 +41,9 @@ BOOL LXV7PutBugs(PDeviceDescriptor_t d, double Bugs);
 //static
 
 
-bool DevLXV7::Register()
-{
+bool DevLXV7::Register() {
 
-  return(devRegister(GetName(),
+    return(devRegister(GetName(),
     cap_gps | cap_baro_alt | cap_speed | cap_vario, Install));
 } // Register()
 
@@ -83,25 +82,21 @@ BOOL DevLXV7::Install(PDeviceDescriptor_t d)
 
 
 
-BOOL DevLXV7::LXV7DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
-{
-TCHAR  szTmp[254];
-#define CHANGE_DELAY 10
+BOOL DevLXV7::LXV7DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable) {
+    TCHAR  szTmp[254];
+    #define CHANGE_DELAY 10
 
-if(LXV7_iGPSBaudrate ==0)
-{
-  _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
-  LXV7NMEAddCheckSumStrg(szTmp);
-  d->Com->WriteString(szTmp);
-  Sleep(CHANGE_DELAY);
-  d->Com->WriteString(szTmp);
-  Sleep(CHANGE_DELAY);
-}
+    if(LXV7_iGPSBaudrate ==0) {
+        _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
+        LXV7NMEAddCheckSumStrg(szTmp);
+        d->Com->WriteString(szTmp);
+        Sleep(CHANGE_DELAY);
+        d->Com->WriteString(szTmp);
+        Sleep(CHANGE_DELAY);
+    }
 
-
-  if(bLinkEnable)
-  {
-	LockComm();
+    if(bLinkEnable) {
+        LockComm();
 	#if TESTBENCH
 	StartupStore(TEXT("enable LX V7 direct Link %s"), NEWLINE);
 	#endif
@@ -111,28 +106,25 @@ if(LXV7_iGPSBaudrate ==0)
 	LXV7NMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 	Sleep(CHANGE_DELAY);
-    if(LXV7_iPDABaudrate != LXV7_iGPSBaudrate)
-    {
-	  d->Com->SetBaudrate(LXV7_iGPSBaudrate);
-	#if TESTBENCH
-	  StartupStore(TEXT("Set Baudrate %i %s"),LXV7_iGPSBaudrate, NEWLINE);
-	#endif
-	  Sleep(CHANGE_DELAY);
-    }
+
+        if(LXV7_iPDABaudrate != LXV7_iGPSBaudrate) {
+	    d->Com->SetBaudrate(LXV7_iGPSBaudrate);
+	    #if TESTBENCH
+	    StartupStore(TEXT("Set Baudrate %i %s"),LXV7_iGPSBaudrate, NEWLINE);
+	    #endif
+	    Sleep(CHANGE_DELAY);
+        }
 	Sleep(CHANGE_DELAY);
-  }
-  else
-  {
+    } else {
 	Sleep(CHANGE_DELAY);
 
-    if(LXV7_iPDABaudrate != LXV7_iGPSBaudrate)
-    {
-	#if TESTBENCH
-	  StartupStore(TEXT("Set Baudrate %i %s"),LXV7_iPDABaudrate, NEWLINE);
-	#endif
-	  d->Com->SetBaudrate(LXV7_iPDABaudrate);
-	  Sleep(CHANGE_DELAY);
-    }
+        if(LXV7_iPDABaudrate != LXV7_iGPSBaudrate) {
+	    #if TESTBENCH
+	    StartupStore(TEXT("Set Baudrate %i %s"),LXV7_iPDABaudrate, NEWLINE);
+	    #endif
+	    d->Com->SetBaudrate(LXV7_iPDABaudrate);
+	    Sleep(CHANGE_DELAY);
+        }
 
 	#if TESTBENCH
 	StartupStore(TEXT("Return from V7 link %s"), NEWLINE);
@@ -144,9 +136,8 @@ if(LXV7_iGPSBaudrate ==0)
 	UnlockComm();
 	Sleep(CHANGE_DELAY);
 
-  }
-
-  return true;
+    }
+    return true;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -177,114 +168,98 @@ int LXV7NMEAddCheckSumStrg( TCHAR szStrg[] )
 int i,iCheckSum=0;
 TCHAR  szCheck[254];
 
- if(szStrg[0] != '$')
-   return -1;
+    if(szStrg[0] != '$')
+    return -1;
 
- iCheckSum = szStrg[1];
-  for (i=2; i < (int)_tcslen(szStrg); i++)
-  {
+    iCheckSum = szStrg[1];
+    for (i=2; i < (int)_tcslen(szStrg); i++) {
 	//  if(szStrgi0] != ' ')
-	    iCheckSum ^= szStrg[i];
-  }
-  _stprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
-  _tcscat(szStrg,szCheck);
-  return iCheckSum;
+	iCheckSum ^= szStrg[i];
+    }
+    _stprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
+    _tcscat(szStrg,szCheck);
+    return iCheckSum;
 }
 
 
-bool DevLXV7::SetupLX_Sentence(PDeviceDescriptor_t d)
-{
-TCHAR  szTmp[254];
+bool DevLXV7::SetupLX_Sentence(PDeviceDescriptor_t d) {
+    TCHAR  szTmp[254];
 
-
-_stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,2,5,0,10,1,0,0"));
-  LXV7NMEAddCheckSumStrg(szTmp);
-  d->Com->WriteString(szTmp);
-
-
-  return true;
+    _stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,2,5,0,10,1,0,0"));
+    LXV7NMEAddCheckSumStrg(szTmp);
+    d->Com->WriteString(szTmp);
+    return true;
 }
 
-long Baudrate(int iIdx)
-{
+long Baudrate(int iIdx) {
 //	indexes are following:
 //	enum { br4800=0, br9600, br19200, br38400, br57600,
 //	br115200,br230400,br256000,br460800, br500k, br1M};
-long lBaudrate = -1;
-switch (iIdx)
-{
-  case 0:  lBaudrate = 4800   ; break;
-  case 1:  lBaudrate = 9600   ; break;
-  case 2:  lBaudrate = 19200  ; break;
-  case 3:  lBaudrate = 38400  ; break;
-  case 4:  lBaudrate = 56800  ; break;
-  case 5:  lBaudrate = 115200 ; break;
-  case 6:  lBaudrate = 230400 ; break;
-  case 7:  lBaudrate = 256000 ; break;
-  case 8:  lBaudrate = 460800 ; break;
-  case 9:  lBaudrate = 500000 ; break;
-  case 10: lBaudrate = 1000000; break;
-  default: lBaudrate = -1     ; break;
-}
-return lBaudrate;
-}
-
-
-
-BOOL LXV7PutMacCready(PDeviceDescriptor_t d, double MacCready){
-TCHAR  szTmp[254];
-if(LXV7_bValid == false)
-  return false;
-
-  _stprintf(szTmp, TEXT("$PLXV0,MC,W,%3.1f"), MacCready );
-
-  LXV7NMEAddCheckSumStrg(szTmp);
-  d->Com->WriteString(szTmp);
-
-
-  LXV7_MacCreadyUpdateTimeout = 5;
-
-
-  return true;
-
+    long lBaudrate = -1;
+    switch (iIdx) {
+        case 0:  lBaudrate = 4800   ; break;
+        case 1:  lBaudrate = 9600   ; break;
+        case 2:  lBaudrate = 19200  ; break;
+        case 3:  lBaudrate = 38400  ; break;
+        case 4:  lBaudrate = 56800  ; break;
+        case 5:  lBaudrate = 115200 ; break;
+        case 6:  lBaudrate = 230400 ; break;
+        case 7:  lBaudrate = 256000 ; break;
+        case 8:  lBaudrate = 460800 ; break;
+        case 9:  lBaudrate = 500000 ; break;
+        case 10: lBaudrate = 1000000; break;
+        default: lBaudrate = -1     ; break;
+    }
+    return lBaudrate;
 }
 
 
-BOOL LXV7PutBallast(PDeviceDescriptor_t d, double Ballast){
-TCHAR  szTmp[254];
-if(LXV7_bValid == false)
-  return false;
+
+BOOL LXV7PutMacCready(PDeviceDescriptor_t d, double MacCready) {
+    TCHAR  szTmp[254];
+    if(LXV7_bValid == false)
+        return false;
+
+    _stprintf(szTmp, TEXT("$PLXV0,MC,W,%3.1f"), MacCready );
+
+    LXV7NMEAddCheckSumStrg(szTmp);
+    d->Com->WriteString(szTmp);
+
+    LXV7_MacCreadyUpdateTimeout = 5;
+    return true;
+}
 
 
-  _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),(1.0+Ballast));
+BOOL LXV7PutBallast(PDeviceDescriptor_t d, double Ballast) {
+    TCHAR  szTmp[254];
+    if(LXV7_bValid == false)
+        return false;
 
- LXV7NMEAddCheckSumStrg(szTmp);
- d->Com->WriteString(szTmp);
 
+    _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),(1.0+Ballast));
 
- //DevLXV7::PutGPRMB(d);
+    LXV7NMEAddCheckSumStrg(szTmp);
+    d->Com->WriteString(szTmp);
+    //DevLXV7::PutGPRMB(d);
 
- LXV7_BallastUpdateTimeout =10;
- return(TRUE);
-
+    LXV7_BallastUpdateTimeout =10;
+    return(TRUE);
 }
 
 
 BOOL LXV7PutBugs(PDeviceDescriptor_t d, double Bugs){
-TCHAR  szTmp[254];
+    TCHAR  szTmp[254];
 
-if(LXV7_bValid == false)
-  return false;
+    if(LXV7_bValid == false)
+        return false;
 
+    _stprintf(szTmp, TEXT("$PLXV0,BUGS,W,%3.1f"),(1.00-Bugs)*100.0);
 
-	  _stprintf(szTmp, TEXT("$PLXV0,BUGS,W,%3.1f"),(1.00-Bugs)*100.0);
+    LXV7NMEAddCheckSumStrg(szTmp);
+    d->Com->WriteString(szTmp);
 
-	LXV7NMEAddCheckSumStrg(szTmp);
-	d->Com->WriteString(szTmp);
-
-	LXV7_BugsUpdateTimeout = 5;
+    LXV7_BugsUpdateTimeout = 5;
     return(TRUE);
-
 }
 
 
@@ -301,104 +276,90 @@ if(LXV7_bValid == false)
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXV7::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
-{
-  static int i=40;
-  TCHAR  szTmp[256];
+BOOL DevLXV7::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
+    static int i=40;
+    TCHAR  szTmp[256];
 
+    if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
+        return FALSE;
+    }
 
-  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
-    return FALSE;
-  }
-
-  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-  {
-	if(iLXV7_RxUpdateTime > 0)
-	{
-	  iLXV7_RxUpdateTime--;
-	}
-	else
-	{
-	  if(fabs(LXV7_oldMC - MACCREADY)> 0.005f)
-	  {
+    if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0) {
+	if(iLXV7_RxUpdateTime > 0) {
+	    iLXV7_RxUpdateTime--;
+	} else {
+	    if(fabs(LXV7_oldMC - MACCREADY)> 0.005f) {
 		LXV7PutMacCready( d,  MACCREADY);
 		LXV7_oldMC = MACCREADY;
 		LXV7_MacCreadyUpdateTimeout = 2;
-      }
+            }
 	}
-  }
-
-  /* configure LX after 10 GPS positions */
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
-  {
-    if(i++ > 30)
-    {
-      SetupLX_Sentence(d);
-	  i=0;
     }
 
+    /* configure LX after 10 GPS positions */
+    if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0) {
+        if(i++ > 30) {
+            SetupLX_Sentence(d);
+	    i=0;
+        }
 
-    static int oldQFEOff =0;
-    static int iOldQNH   =0;
+        static int oldQFEOff =0;
+        static int iOldQNH   =0;
 
+        int iQNH = (int)(QNH*100.0);
+        if(iQNH != iOldQNH) {
+  	    iOldQNH = iQNH;
+            _stprintf(szTmp, TEXT("$PLXV0,QNH,W,%i"),(int)iQNH);
+            LXV7NMEAddCheckSumStrg(szTmp);
+            d->Com->WriteString(szTmp);
+        }
 
-
-    int iQNH = (int)(QNH*100.0);
-    if(iQNH != iOldQNH)
-    {
-  	  iOldQNH = iQNH;
-      _stprintf(szTmp, TEXT("$PLXV0,QNH,W,%i"),(int)iQNH);
-      LXV7NMEAddCheckSumStrg(szTmp);
-      d->Com->WriteString(szTmp);
+        int QFE = (int)QFEAltitudeOffset;
+        if(QFE != oldQFEOff) {
+  	    oldQFEOff = QFE;
+            _stprintf(szTmp, TEXT("$PLXV0,ELEVATION,W,%i"),(int)(QFEAltitudeOffset));
+            LXV7NMEAddCheckSumStrg(szTmp);
+            // d->Com->WriteString(szTmp);
+        }
     }
 
-    int QFE = (int)QFEAltitudeOffset;
-    if(QFE != oldQFEOff)
-    {
-  	  oldQFEOff = QFE;
-      _stprintf(szTmp, TEXT("$PLXV0,ELEVATION,W,%i"),(int)(QFEAltitudeOffset));
-      LXV7NMEAddCheckSumStrg(szTmp);
-  //    d->Com->WriteString(szTmp);
+    if(LXV7_iGPSBaudrate ==0) {
+        _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
+        LXV7NMEAddCheckSumStrg(szTmp);
+        d->Com->WriteString(szTmp);
     }
-  }
-  if(LXV7_iGPSBaudrate ==0)
-  {
-    _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
-    LXV7NMEAddCheckSumStrg(szTmp);
-    d->Com->WriteString(szTmp);
-  }
 
-if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
-  return PLXVF(d, sentence + 7, info);
-else
-  if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
-    return PLXVS(d, sentence + 7, info);
-  else
-	if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
-	  return PLXV0(d, sentence + 7, info);
-	else
-      if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
-        return LXWP1(d, sentence + 7, info);
-      else
-        if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-          return LXWP2(d, sentence + 7, info);
-
-
-#ifdef OLD_LX_SENTENCES
-	else
-      if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
-        return LXWP0(d, sentence + 7, info);
-      else
-        if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
-          return LXWP1(d, sentence + 7, info);
+    if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
+        return PLXVF(d, sentence + 7, info);
+    else
+        if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
+            return PLXVS(d, sentence + 7, info);
         else
-          if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
-            return LXWP3(d, sentence + 7, info);
-          else
-            if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
-              return LXWP4(d, sentence + 7, info);
-#endif
-  return(false);
+	    if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
+	        return PLXV0(d, sentence + 7, info);
+	    else
+                if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+                    return LXWP1(d, sentence + 7, info);
+                else
+                    if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+                        return LXWP2(d, sentence + 7, info);
+
+
+                    #ifdef OLD_LX_SENTENCES
+	            else
+                        if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+                            return LXWP0(d, sentence + 7, info);
+                        else
+                            if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+                                return LXWP1(d, sentence + 7, info);
+                            else
+                                if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
+                                    return LXWP3(d, sentence + 7, info);
+                                else
+                                    if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
+                                        return LXWP4(d, sentence + 7, info);
+                    #endif
+    return(false);
 } // ParseNMEA()
 
 
