@@ -965,7 +965,7 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	#if USETOPOMARKS
 	reset_marks = true;
 	#endif
-	LockFlightData();
+	LockTaskData();
 	for (short i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
         	WayPointList[i].Latitude=RESWP_INVALIDNUMBER;
         	WayPointList[i].Longitude=RESWP_INVALIDNUMBER;
@@ -974,7 +974,7 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	        WayPointList[i].FarVisible=FALSE;
 	        WayPointCalc[i].WpType = WPT_UNKNOWN;
 	}
-	UnlockFlightData();
+	UnlockTaskData();
 	return;
   } 
 
