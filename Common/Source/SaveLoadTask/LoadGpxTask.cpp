@@ -50,8 +50,9 @@ bool LoadGpxTask(LPCTSTR szFileName) {
 				UnlockTaskData();
 				return false;
 			}
-			int numWPnodes=routeNode.nChildNode();
-			if(numWPnodes<1) { //ERROR no waypoints found in route in GPX file
+			int numWPnodes=routeNode.nChildNode(); //count number of XML nodes inside <rte> </rte>
+			int numOfWPs=routeNode.nChildNode(TEXT("rtept")); //count number of WPs in the route
+			if(numOfWPs<1 || numOfWPs>MAXTASKPOINTS) { //ERROR: no WPs at all or too many WPs found in route in GPX file
 				free(szXML);
 				UnlockTaskData();
 				return false;
@@ -64,11 +65,15 @@ bool LoadGpxTask(LPCTSTR szFileName) {
 				WPnode=routeNode.getChildNode(i);
 				if(_tcscmp(WPnode.getName(),TEXT("rtept"))==0) {
 					dataStr=WPnode.getAttribute(TEXT("lat"));
-					if(!dataStr) break; //WP without latitude skip it
+					if(!dataStr) { //ERROR: WP without latitude
+						free(szXML);
+						ClearTask();
+						UnlockTaskData();
+						return false;
+					}
 					lat=_tcstod(dataStr,NULL);
 					dataStr=WPnode.getAttribute(TEXT("lon"));
-					if(!dataStr) break; //WP without longitude skip it
-					if(idx>=MAXTASKPOINTS) { //ERROR: too many waypoints
+					if(!dataStr) { //ERROR: WP without longitude
 						free(szXML);
 						ClearTask();
 						UnlockTaskData();
@@ -111,22 +116,22 @@ bool LoadGpxTask(LPCTSTR szFileName) {
 					newPoint.RunwayLen
 					newPoint.RunwayDir
 					newPoint.Country
-					newPoint.Style); */
-					Task[idx++].Index=FindOrAddWaypoint(&newPoint);
+					newPoint.Style */
+					if(ISGAAIRCRAFT && (idx==0 || idx==numOfWPs-1)) Task[idx++].Index=FindOrAddWaypoint(&newPoint,true); //if GA check widely if we have already depart and dest airports
+					else Task[idx++].Index=FindOrAddWaypoint(&newPoint,false); //else add WP normally
 				} //if(rtept)
-			} //for(each rtept)
+			} //for(each node in rtept)
 		} //if(rootNode)
 		free(szXML);
 	} //if(stream)
-
-	if(ISGAAIRCRAFT) { //Set options for GA aircraft
+	if(ISGAAIRCRAFT) { //Set task options for GA aircraft
 		StartLine=1; //Line
 		StartRadius=1000;
 		SectorType=LINE;
 		SectorRadius=1000;
 		FinishLine=0; //Circle
 		FinishRadius=500;
-	} else {
+	} else { //otherwise set default task options for other categories
 		StartLine=2; //Sector
 		StartRadius=1500;
 		SectorType=CIRCLE;

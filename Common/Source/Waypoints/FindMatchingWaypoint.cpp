@@ -8,10 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
-
-
-
-
+#include "LKStyle.h"
 
 
 int FindMatchingWaypoint(WAYPOINT *waypoint) {
@@ -38,4 +35,15 @@ int FindMatchingWaypoint(WAYPOINT *waypoint) {
   return -1;
 }
 
+int FindMatchingAirfield(WAYPOINT *waypoint) {
+	if(!WayPointList) return -1;
+	const double limit=0.00899928005; //1 Km expressed in deg
+	for(unsigned int i=NUMRESWP; i<NumberOfWayPoints; i++) { //for all WP in list
+		if(WayPointList[i].Style>=STYLE_AIRFIELDGRASS && //if it is any kind of airport/airfield
+				WayPointList[i].Style<=STYLE_AIRFIELDSOLID &&
+				(fabs(waypoint->Latitude-WayPointList[i].Latitude)<limit) && //and if coordinates within 1 Km range
+				(fabs(waypoint->Longitude-WayPointList[i].Longitude)<limit)) return i; //assume this as the desired WP
+	}
+	return -1;
+}
 
