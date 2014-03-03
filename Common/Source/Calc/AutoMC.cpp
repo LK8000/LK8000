@@ -40,15 +40,12 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
 
     // otherwise, if AutoMc for finalglide or "both", return if no goto
-    if (!ValidTaskPoint(ActiveWayPoint)) {
-        UnlockTaskData();
-        return;
-    }
-
-    if (Calculated->FinalGlide && ActiveIsFinalWaypoint()) {
-        is_final_glide = true;
-    } else {
-        first_mc = true;
+    if (ValidTaskPoint(ActiveWayPoint)) {
+        if (Calculated->FinalGlide && ActiveIsFinalWaypoint()) {
+            is_final_glide = true;
+        } else {
+            first_mc = true;
+        }
     }
 
     double av_thermal = -1;
