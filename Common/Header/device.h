@@ -60,7 +60,6 @@ typedef struct Declaration {
 
 typedef	struct DeviceDescriptor_t{
   int	Port;	 
-  FILE  *fhLogFile;
   ComPort *Com;
   TCHAR	Name[DEVNAMESIZE+1];
 
@@ -149,8 +148,6 @@ BOOL devIsGPSSource(PDeviceDescriptor_t	d);
 BOOL devIsBaroSource(PDeviceDescriptor_t d);
 BOOL devIsRadio(PDeviceDescriptor_t d);
 BOOL devIsCondor(PDeviceDescriptor_t d);
-BOOL devOpenLog(PDeviceDescriptor_t d, TCHAR *FileName);
-BOOL devCloseLog(PDeviceDescriptor_t d);
 
 BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH);
 BOOL devOnSysTicker(DeviceDescriptor_t *d);

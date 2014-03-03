@@ -172,7 +172,6 @@ void RefreshComPortList() {
 
 void DeviceDescriptor_t::InitStruct(int i) {
     Port = -1;
-    fhLogFile = NULL;
     Name[0] = '\0';
     ParseNMEA = NULL;
     PutMacCready = NULL;
@@ -350,7 +349,6 @@ BOOL devCloseAll(void){
 
   for (i=0; i<NUMDEV; i++){
     devClose(&DeviceList[i]);
-    devCloseLog(&DeviceList[i]);
     ComPortStatus[i]=CPS_CLOSED; // 100210
   }
   return(TRUE);
@@ -373,35 +371,6 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port){
 BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   PDeviceDescriptor_t d;
   d = devGetDeviceOnPort(portNum);
-
-  // if -log something was commanded by line execution, perform specific logging assembly
-  if ((d != NULL) && 
-      (d->fhLogFile != NULL) && 
-      (String != NULL) && (_tcslen(String) > 0)) {
-
-    char  sTmp[500];  // temp multibyte buffer
-    TCHAR *pWC = String;
-    char  *pC  = sTmp;
-    //    static DWORD lastFlush = 0;    
-   
-    sprintf(pC, "%9ld <", GetTickCount());
-    pC = sTmp + strlen(sTmp);
-    
-    while (*pWC){
-      if (*pWC != '\r'){
-        *pC = (char)*pWC;
-        pC++; 
-      }
-      pWC++;
-    }
-    *pC++ = '>';
-    *pC++ = '\r';
-    *pC++ = '\n';
-    *pC++ = '\0';
-
-    fputs(sTmp, d->fhLogFile);
-    
-  }
 
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
@@ -690,23 +659,6 @@ BOOL devIsCondor(PDeviceDescriptor_t d)
   return result;
 }
 
-
-
-BOOL devOpenLog(PDeviceDescriptor_t d, TCHAR *FileName){
-  if (d != NULL){
-    d->fhLogFile = _tfopen(FileName, TEXT("a+b"));
-    return(d->fhLogFile != NULL);
-  } else
-    return(FALSE);
-}
-
-BOOL devCloseLog(PDeviceDescriptor_t d){
-  if (d != NULL && d->fhLogFile != NULL){
-    fclose(d->fhLogFile);
-    return(TRUE);
-  } else
-    return(FALSE);
-}
 
 BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH)
 {
