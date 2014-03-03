@@ -996,7 +996,7 @@ drawOverlay:
 	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 	extern bool IsSafetyMacCreadyInUse(int val);
-	if (IsSafetyMacCreadyInUse(GetOvertargetIndex())) {
+	if (IsSafetyMacCreadyInUse(GetOvertargetIndex()) && GlidePolar::SafetyMacCready>0) {
 		SelectObject(hdc, LK8SmallFont); 
 		_stprintf(BufferValue,_T(" %.1f %s "),GlidePolar::SafetyMacCready*LIFTMODIFY,
 		Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
