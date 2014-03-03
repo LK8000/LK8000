@@ -715,6 +715,11 @@ static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
   _sntprintf(dst, sz, TEXT("$%s*%02X\r\n"), text, chk);
 }
 
+//
+// NOTICE V5: this function is used only by LXMiniMap device driver .
+// The problem is that it is locking Comm from RXThread and this is 
+// creating a possible deadlock situation.
+//
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 {
   if(d != NULL)

@@ -5,6 +5,11 @@
 
    $Id$
 */
+
+//
+// LK V5 WARNING - the function devWriteNMEA  is used only by LXMiniMap and it is 
+// creating a possible deadlock situation
+//
 //_____________________________________________________________________includes_
 
 #include "StdAfx.h"
