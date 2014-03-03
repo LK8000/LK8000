@@ -623,7 +623,7 @@ force_advance:
 		}
 			
 	}  else {
-		if (devIsCondor(devA())) {
+		if (DevIsCondor) {
 			#if DEBUGSEQ
 			StartupStore(_T(".. Condor not sending valid date, using 1.1.2012%s"),NEWLINE);
 			#endif

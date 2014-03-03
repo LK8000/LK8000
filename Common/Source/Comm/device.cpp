@@ -197,7 +197,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
     PutVolume = NULL;
     PutFreqActive = NULL;
     PutFreqStandby = NULL;
-    IsCondor = devIsFalseReturn;
     Disabled = true;
 }
 
@@ -641,19 +640,6 @@ BOOL devIsRadio(PDeviceDescriptor_t d)
   LockComm();
   if ((d != NULL) && (d->IsRadio != NULL))
     result = d->IsRadio(d);
-  UnlockComm();
-
-  return result;
-}
-
-
-BOOL devIsCondor(PDeviceDescriptor_t d)
-{
-  BOOL result = FALSE;
-
-  LockComm();
-  if ((d != NULL) && (d->IsCondor != NULL))
-    result = d->IsCondor(d);
   UnlockComm();
 
   return result;

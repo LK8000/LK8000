@@ -83,7 +83,6 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*PutQNH)(DeviceDescriptor_t *d, double NewQNH);
   BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
   BOOL (*PutVoice)(DeviceDescriptor_t *d, TCHAR *Sentence);
-  BOOL (*IsCondor)(DeviceDescriptor_t *d);
   BOOL (*Config)(DeviceDescriptor_t	*d);
   DeviceDescriptor_t *pDevPipeTo;
 
@@ -147,7 +146,6 @@ BOOL devIsLogger(PDeviceDescriptor_t d);
 BOOL devIsGPSSource(PDeviceDescriptor_t	d);
 BOOL devIsBaroSource(PDeviceDescriptor_t d);
 BOOL devIsRadio(PDeviceDescriptor_t d);
-BOOL devIsCondor(PDeviceDescriptor_t d);
 
 BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH);
 BOOL devOnSysTicker(DeviceDescriptor_t *d);

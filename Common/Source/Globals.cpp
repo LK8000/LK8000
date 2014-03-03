@@ -572,6 +572,7 @@ void Globals_Init(void) {
   dwSpeedIndex2 = 2;
   dwBit2Index = (BitIndex_t)bit8N1;
   LastFlarmCommandTime=0; // last time we got a PFLAU
+  DevIsCondor = false; // we are using condor simulator
 
   // Units
   SpeedUnit_Config = 2;		// default is kmh

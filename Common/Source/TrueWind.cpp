@@ -316,7 +316,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   #if TESTIASWITHCONDOR
   if (!GPS_INFO.AirspeedAvailable ) goto goto_NoAirspeed;
   #else
-  if (!GPS_INFO.AirspeedAvailable || devIsCondor(devA()) ) goto goto_NoAirspeed;
+  if (!GPS_INFO.AirspeedAvailable || DevIsCondor ) goto goto_NoAirspeed;
   #endif
   low=2;
   high=60;
@@ -394,7 +394,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 	#if TESTIASWITHCONDOR
 	if (GPS_INFO.AirspeedAvailable ) {
 	#else
-	if (GPS_INFO.AirspeedAvailable && !devIsCondor(devA()) ) {
+	if (GPS_INFO.AirspeedAvailable && !DevIsCondor ) {
 	#endif
 		if (averias>0)
 			sprintf(ventabuffer,"*** Averages found (AIRSPEED AVAILABLE): averIAS=%d speed=%d track=%d altitude=%d\n", 
@@ -414,7 +414,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   #if TESTIASWITHCONDOR
   if (GPS_INFO.AirspeedAvailable && averias>0 )
   #else
-  if (GPS_INFO.AirspeedAvailable && averias>0 && !devIsCondor(devA()) )
+  if (GPS_INFO.AirspeedAvailable && averias>0 && !DevIsCondor )
   #endif
 	StartupStore(_T("... TrueWind: REAL average IAS =%d Average GS=%d Track=%d Altitude=%d%s"),
 		(int)(averias*TOKPH),(int)averspeed,(int)avertrack,(int)averaltitude, NEWLINE);
@@ -516,7 +516,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   #if TESTIASWITHCONDOR
   if (GPS_INFO.AirspeedAvailable && averias>0 ) iaspeed=averias;
   #else
-  if (GPS_INFO.AirspeedAvailable && averias>0 && !devIsCondor(devA()) ) iaspeed=averias;
+  if (GPS_INFO.AirspeedAvailable && averias>0 && !DevIsCondor ) iaspeed=averias;
   #endif
 
   double tas=(iaspeed*TOKPH)*(1+0.02*(averaltitude/0.328/1000));
