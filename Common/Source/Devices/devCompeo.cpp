@@ -114,8 +114,9 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   pGPS->Altitude = StrToDouble(ctemp,NULL);
 
   NMEAParser::ExtractParameter(String,ctemp,2);
+  double palt=StrToDouble(ctemp,NULL);
 
-   UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
+   UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude(palt));
 
   NMEAParser::ExtractParameter(String,ctemp,4);
   pGPS->Vario = StrToDouble(ctemp,NULL);
@@ -127,7 +128,7 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 	vias = StrToDouble(ctemp,NULL)/3.6;
 	pGPS->IndicatedAirspeed = vias;
 	// Check if zero?
-	vtas = vias*AirDensityRatio(pGPS->BaroAltitude);
+	vtas = vias*AirDensityRatio(palt);
 	pGPS->TrueAirspeed = vtas;
 
 	if (pGPS->IndicatedAirspeed >0) 

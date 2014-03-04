@@ -171,7 +171,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 	vias = StrToDouble(ctemp,NULL)/3.6;
 
 	if (vias >1) {
-		vtas = vias*AirDensityRatio(pGPS->BaroAltitude);
+		vtas = vias*AirDensityRatio(altqne);
 		pGPS->TrueAirspeed = vtas;
 		pGPS->IndicatedAirspeed = vias;
 		pGPS->AirspeedAvailable = TRUE;

@@ -249,7 +249,8 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
   // HBAR 1013.25
   NMEAParser::ExtractParameter(String,ctemp,11+offset);
-  UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
+  double palt=StrToDouble(ctemp,NULL);
+  UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude(palt));
 
   // VARIO
   NMEAParser::ExtractParameter(String,ctemp,12+offset);
@@ -258,7 +259,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   // TAS
   NMEAParser::ExtractParameter(String,ctemp,13+offset);
   vtas=StrToDouble(ctemp,NULL)/10;
-  pGPS->IndicatedAirspeed = vtas/AirDensityRatio(pGPS->BaroAltitude);
+  pGPS->IndicatedAirspeed = vtas/AirDensityRatio(palt);
   pGPS->TrueAirspeed = vtas;
   if (pGPS->IndicatedAirspeed >0) 
 	pGPS->AirspeedAvailable = TRUE;

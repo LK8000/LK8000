@@ -581,7 +581,8 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   NMEAParser::ExtractParameter(String,ctemp,4);
 
-  UpdateBaroSource( pGPS , 0, d,   AltitudeToQNHAltitude( StrToDouble(ctemp, NULL) - 1000));
+  double palt=StrToDouble(ctemp,NULL)-1000;
+  UpdateBaroSource( pGPS , 0, d,   AltitudeToQNHAltitude(palt));
 
 //  ExtractParameter(String,ctemp,5);
 //  pGPS->QNH = StrToDouble(ctemp, NULL) - 1000;
@@ -589,7 +590,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   NMEAParser::ExtractParameter(String,ctemp,6);
   pGPS->AirspeedAvailable = TRUE;
   pGPS->TrueAirspeed = (StrToDouble(ctemp,NULL) / 100.0);
-  pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(pGPS->BaroAltitude);
+  pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(palt);
   
   NMEAParser::ExtractParameter(String,ctemp,7);
   pGPS->VarioAvailable = TRUE;

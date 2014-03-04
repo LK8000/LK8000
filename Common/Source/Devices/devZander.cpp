@@ -108,11 +108,14 @@ BOOL zanderRegister(void){
 // *****************************************************************************
 // local stuff
 
+static double palt=0;
+
 static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 {
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
-  UpdateBaroSource( apGPS, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
+  palt=StrToDouble(ctemp,NULL);
+  UpdateBaroSource( apGPS, 0,d, AltitudeToQNHAltitude(palt));
   return TRUE;
 }
 
@@ -124,7 +127,6 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 
   NMEAParser::ExtractParameter(String,ctemp,0);
   vtas = StrToDouble(ctemp,NULL)/3.6;
-  // JMW 20080721 fixed km/h->m/s conversion
   
   NMEAParser::ExtractParameter(String,ctemp,1);
   wnet = (StrToDouble(ctemp,NULL)-10000)/100; // cm/s
@@ -133,7 +135,7 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 
   if (apGPS->BaroAltitudeAvailable)
   {
-    vias = vtas/AirDensityRatio(apGPS->BaroAltitude);
+    vias = vtas/AirDensityRatio(palt);
   } else {
     vias = 0.0;
   }
