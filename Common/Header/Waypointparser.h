@@ -27,11 +27,12 @@ double AltitudeFromTerrain(double Lat, double Lon);
 void UpdateTargetAltitude(TASK_POINT& TskPt);
 WAYPOINT* GrowWaypointList();
 int FindMatchingWaypoint(WAYPOINT *waypoint);
+int FindMatchingAirfield(WAYPOINT *waypoint);
 void InitWayPointCalc(void); 
 void AddReservedWaypoints();
 void InitVirtualWaypoints();
 bool AllocateWaypointList(void);
-int FindOrAddWaypoint(WAYPOINT *read_waypoint);
+int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield);
 
 void WaypointFlagsToString(int FlagsNum, TCHAR *Flags);
 void WaypointLongitudeToString(double Longitude, TCHAR *Buffer);

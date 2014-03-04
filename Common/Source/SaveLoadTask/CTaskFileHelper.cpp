@@ -535,7 +535,7 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node) {
     }
     GetAttribute(node, _T("style"), newPoint.Style);
 
-    mWayPointLoaded[newPoint.Name] = FindOrAddWaypoint(&newPoint);
+    mWayPointLoaded[newPoint.Name] = FindOrAddWaypoint(&newPoint,false);
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
