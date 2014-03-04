@@ -287,10 +287,10 @@ bool LoadCupTask(LPCTSTR szFileName) {
                             if (It != mapWaypoint.end()) {
                                 if (bTakeOff) {
                                     // skip TakeOff Set At Home Waypoint
-                                    HomeWaypoint = FindOrAddWaypoint(&(It->second));
+                                    HomeWaypoint = FindOrAddWaypoint(&(It->second),false);
                                     bTakeOff = false;
                                 } else {
-                                    Task[idxTP++].Index = FindOrAddWaypoint(&(It->second));
+                                    Task[idxTP++].Index = FindOrAddWaypoint(&(It->second),false);
                                 }
                             }
                         } else {

@@ -64,7 +64,7 @@ bool LoadTaskWaypoints(HANDLE hFile) {
       return false;
     }
     if (Task[i].Index != -1) { //  091213 CHECK do not load reserved WP
-      Task[i].Index = FindOrAddWaypoint(&read_waypoint);
+      Task[i].Index = FindOrAddWaypoint(&read_waypoint,false);
     }
   }
   for(i=0;i<MAXSTARTPOINTS;i++) {
@@ -73,7 +73,7 @@ bool LoadTaskWaypoints(HANDLE hFile) {
       return false;
     }
     if (StartPoints[i].Index != -1) {
-      StartPoints[i].Index = FindOrAddWaypoint(&read_waypoint);
+      StartPoints[i].Index = FindOrAddWaypoint(&read_waypoint,false);
     }
   }
   // managed to load everything
