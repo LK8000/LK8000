@@ -20,6 +20,7 @@
 double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int twp) {
 
   int FinalWayPoint = getFinalWaypoint();
+  if (!ValidTaskPoint(FinalWayPoint)) return 0;
 
   double safetyaltitudearrival=SAFETYALTITUDEARRIVAL/10; 
 

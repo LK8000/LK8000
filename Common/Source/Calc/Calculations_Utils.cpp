@@ -172,7 +172,7 @@ bool IsSafetyMacCreadyInUse(const int wpindex) {
 }
 
 
-
+// If no task, it is returning -1. Always to be checked!
 int getFinalWaypoint() {
   int i;
   i=max(-1,min(MAXTASKPOINTS,ActiveWayPoint));
@@ -187,7 +187,7 @@ int getFinalWaypoint() {
   return i-1;
 }
 
-
+// Attention: if no task, this is true!
 bool ActiveIsFinalWaypoint() {
   return (ActiveWayPoint == getFinalWaypoint());
 }

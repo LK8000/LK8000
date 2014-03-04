@@ -13,6 +13,8 @@
 
 void CheckTransitionFinalGlide(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   int FinalWayPoint = getFinalWaypoint();
+  if (!ValidTaskPoint(FinalWayPoint)) return;
+
   // update final glide mode status
   if (((ActiveWayPoint == FinalWayPoint)
        ||(ForceFinalGlide)) 
