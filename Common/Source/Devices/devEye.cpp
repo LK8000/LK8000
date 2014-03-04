@@ -142,9 +142,11 @@ bool CDevEye::PEYI(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
     data.localDeclination = value;
   
   if(status) {
+    #if 0 // NOT WORKING CORRECTLY
     info->GyroscopeAvailable = true;
     info->Pitch = data.eulerPitch;
     info->Roll = data.eulerRoll;
+    #endif
     
     info->MagneticHeadingAvailable = true;
     info->MagneticHeading = data.magneticHeading;

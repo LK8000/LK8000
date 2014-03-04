@@ -12,6 +12,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 
+#define USE_AHRS 1 // still to be tested in v5.0 
 
 #ifndef LKCOMPETITION
 //
@@ -37,8 +38,11 @@ void MapWindow::DrawAcceleration(HDC hDC, const RECT rc)
 
 void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 {
+	#if USE_AHRS
 	if (DrawInfo.GyroscopeAvailable)
 	  return DrawAHRS( hDC,   rc);
+        #endif
+
   POINT Start;
   
   static short top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
@@ -312,6 +316,7 @@ int cy = (int)((double)(rc.bottom-rc.top)*0.9/5.0);///NIBLSCALE(1);
 	SelectObject(hDC, oldBrush);
 }
 
+#if USE_AHRS
 void MapWindow::DrawAHRS(HDC hDC, const RECT rc)
 {
   POINT Start;
@@ -675,6 +680,11 @@ double vscale = 0.25;
   SelectObject(hDC, hpOld);
 
 }
+#else // no AHRS
+void MapWindow::DrawAHRS(HDC hDC, const RECT rc) {
+    return;
+}
+#endif // AHRS
 
 #else
 	// LK COMPETITION VERSION HAS NO TRI 
