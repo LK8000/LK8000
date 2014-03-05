@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "McReady.h"
 
-//#define DEBUG_ROTARY 1
+#define DEBUG_ROTARY 1
 
 bool InitLDRotary(ldrotary_s *buf) {
 short i, bsize;
@@ -201,8 +201,8 @@ _noautoreset:
 double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 
 	double eff;
-	short bcold;
 #ifdef DEBUG_ROTARY
+	short bcold;
 	char ventabuffer[200];
 	FILE *fp;
 #endif
@@ -246,15 +246,7 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 			Calculated->EqMc = -1;
 			return(0); // unavailable
 		}
-		bcold=0;
-	} else {
-
-		if (bc.start < (bc.size-1))
-			bcold=bc.start+1;
-		else
-			bcold=0;
-	}
-
+    }
 	// if ( bc.valid == true ) {
 	// bcsize<=0  should NOT happen, but we check it for safety
 	if ( (bc.valid == true) && bc.size>0 ) {
@@ -299,6 +291,11 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 	eff= ((double)bc.totaldistance) / ((double)bc.totalaltitude);
 
 #ifdef DEBUG_ROTARY
+	if (bc.valid && bc.start < (bc.size-1))
+		bcold=bc.start+1;
+	else
+		bcold=0;
+		
 	sprintf(ventabuffer,"bcstart=%d bcold=%d altnew=%d altold=%d altdiff=%d totaldistance=%d eff=%f\r\n",
 		bc.start, bcold,
 		bc.altitude[bc.start], bc.altitude[bcold], bc.totalaltitude, bc.totaldistance, eff);
