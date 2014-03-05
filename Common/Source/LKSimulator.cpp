@@ -125,7 +125,7 @@ void LKSimulator(void) {
     // ONLY during flight, we will sink in the air
     if (FLYING && (IASMS>3) && (IASMS<MAXSPEED) ) {
 
-	double sinkias=-1*(GlidePolar::sinkratecache[(int)IASMS]);
+	double sinkias=-1*GlidePolar::SinkRate(IASMS);
 	if (sinkias>10) sinkias=10; // set a limiter for sink rate
 	// StartupStore(_T(".... ias=%.0f sinkias=%.3f oldAlt=%.3f newAlt=%.3f\n"), 
 	// CALCULATED_INFO.IndicatedAirspeedEstimated*TOKPH, sinkias, GPS_INFO.Altitude, GPS_INFO.Altitude+sinkias);
@@ -239,7 +239,7 @@ void LKSimulator(void) {
 
   if (GS>0) {
       FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
-                          GPS_INFO.TrackBearing, ((int)GPS_INFO.Speed)*1.0,
+                          GPS_INFO.TrackBearing, GPS_INFO.Speed,
                           &GPS_INFO.Latitude,
                           &GPS_INFO.Longitude);
   }
