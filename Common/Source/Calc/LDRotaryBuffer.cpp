@@ -60,8 +60,9 @@ FILE *fp;
 		buf->ias[i]=0;
 	}
 	buf->totaldistance=0;
+    buf->totalaltitude=0;
 	buf->totalias=0;
-	buf->start=-1;
+	buf->start=-2;
 	buf->size=bsize;
 	buf->valid=false;
 #ifdef DEBUG_ROTARY
@@ -79,7 +80,7 @@ FILE *fp;
 //
 // Called by LD  in Calc thread
 //
-void InsertLDRotary(ldrotary_s *buf, int distance, NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+void InsertLDRotary(ldrotary_s *buf, double distance, NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 static short errs=0;
 #ifdef DEBUG_ROTARY
 char ventabuffer[200];
@@ -128,7 +129,7 @@ FILE *fp;
 		}
 		errs++;
 #ifdef DEBUG_ROTARY
-		sprintf(ventabuffer,"(errs=%d) IGNORE INVALID distance=%d altitude=%d\r\n",errs,distance,(int)Calculated->NavAltitude);
+		sprintf(ventabuffer,"(errs=%d) IGNORE INVALID distance=%d altitude=%d\r\n",errs,(int)(distance),(int)(Calculated->NavAltitude));
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 			    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
@@ -137,6 +138,18 @@ FILE *fp;
 	errs=0;
 
 _noautoreset:
+
+    if((buf->start) < -1) {
+        // this is the first run after reset,
+        // save NavAltitude for calculate in AltDiff next run
+        // and return;
+        ++buf->start;
+        buf->prevaltitude = iround(Calculated->NavAltitude*100);
+        return;
+    }
+    
+    int diffAlt = buf->prevaltitude - iround(Calculated->NavAltitude*100);
+    buf->prevaltitude = iround(Calculated->NavAltitude*100);
 
 	if (++buf->start >=buf->size) { 
 #ifdef DEBUG_ROTARY
@@ -150,10 +163,16 @@ _noautoreset:
 	// need to fill up buffer before starting to empty it
 	if ( buf->valid == true) {
 		buf->totaldistance-=buf->distance[buf->start];
+		buf->totalaltitude-=buf->altitude[buf->start];
+
 		buf->totalias-=buf->ias[buf->start];
 	}
-	buf->totaldistance+=distance;
-	buf->distance[buf->start]=distance;
+	buf->totaldistance+=iround(distance*100);
+	buf->distance[buf->start]=iround(distance*100);
+    
+    buf->totalaltitude+=diffAlt;
+	buf->altitude[buf->start]=diffAlt;
+
 	// insert IAS in the rotary buffer, either real or estimated
 	if (Basic->AirspeedAvailable) {
                 buf->totalias += (int)(Basic->IndicatedAirspeed*100);
@@ -167,10 +186,9 @@ _noautoreset:
 			buf->ias[buf->start] = (int)(Calculated->IndicatedAirspeedEstimated*100);
 		}
 	}
-	buf->altitude[buf->start]=(int)Calculated->NavAltitude;
 #ifdef DEBUG_ROTARY
-	sprintf(ventabuffer,"insert buf[%d/%d], distance=%d totdist=%d\r\n",buf->start, buf->size-1, distance,buf->totaldistance);
-	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
+	sprintf(ventabuffer,"insert buf[%d/%d], distance=%d totdist=%d\r\n",buf->start, buf->size-1, buf->distance[buf->start], buf->totaldistance);
+	if ((fp=fopen("DEBUG.TXT","a"))!= NULL) 
 		    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
 }
@@ -182,7 +200,6 @@ _noautoreset:
  */
 double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 
-	int altdiff;
 	double eff;
 	short bcold;
 #ifdef DEBUG_ROTARY
@@ -238,8 +255,6 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 			bcold=0;
 	}
 
-	altdiff= bc.altitude[bcold] - bc.altitude[bc.start];
-
 	// if ( bc.valid == true ) {
 	// bcsize<=0  should NOT happen, but we check it for safety
 	if ( (bc.valid == true) && bc.size>0 ) {
@@ -278,15 +293,15 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 	}
 
 	Rotary_Distance=bc.totaldistance;
-	if (altdiff == 0 ) {
+	if (bc.totaldistance == 0 ) {
 		return(INVALID_GR); // infinitum
 	}
-	eff= (double)bc.totaldistance / (double)altdiff;
+	eff= ((double)bc.totaldistance) / ((double)bc.totalaltitude);
 
 #ifdef DEBUG_ROTARY
 	sprintf(ventabuffer,"bcstart=%d bcold=%d altnew=%d altold=%d altdiff=%d totaldistance=%d eff=%f\r\n",
 		bc.start, bcold,
-		bc.altitude[bc.start], bc.altitude[bcold], altdiff, bc.totaldistance, eff);
+		bc.altitude[bc.start], bc.altitude[bcold], bc.totalaltitude, bc.totaldistance, eff);
 	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
                     {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
