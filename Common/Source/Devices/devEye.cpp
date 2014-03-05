@@ -91,13 +91,18 @@ bool CDevEye::PEYA(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
     info->ExternalWindSpeed = data.windSpeed / TOKPH;
     info->ExternalWindDirection = data.windDirection;
 
-    // fix possible nmea sentence problem with debug mode in eye
+    // The vario in EYE is not working correctly as of march 2014, sending only 0.5 steps
+    // this is not good, and we should use a decimal capable vario value, so we do it internally.
+    // Furthermore, the debug mode of EYE is changing the PEYA sentence and the vzp is not available,
+    // being replaced by a pressure altitude.
+    #if 0
     if (data.vzp<20) {
         info->Vario = data.vzp;
         info->VarioAvailable = true;
     } else {
         info->VarioAvailable = false;
     }
+    #endif
 
     info->TemperatureAvailable = true;
     info->OutsideAirTemperature = data.oat;
