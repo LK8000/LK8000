@@ -17,10 +17,10 @@ double AirDensitySinkRate(double ias, double qnhaltitude) {
 
     double sinkias=0;
 
-    sinkias=-1*GlidePolar::SinkRate(ias)*AirDensityRatio(AltitudeToQNEAltitude(qnhaltitude));
+    sinkias=GlidePolar::SinkRate(ias)*AirDensityRatio(AltitudeToQNEAltitude(qnhaltitude));
 
-    LKASSERT(sinkias>=0);
-    if (sinkias<0) sinkias=0;
+    LKASSERT(sinkias<=0);
+    if (sinkias>0) sinkias=0;
     return sinkias;
 }
 
