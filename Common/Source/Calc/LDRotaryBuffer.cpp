@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "McReady.h"
 
-#define DEBUG_ROTARY 1
+//#define DEBUG_ROTARY 1
 
 bool InitLDRotary(ldrotary_s *buf) {
 short i, bsize;
