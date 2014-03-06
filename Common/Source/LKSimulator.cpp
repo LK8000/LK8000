@@ -15,6 +15,7 @@
 
 
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
+#define TASMS		CALCULATED_INFO.TrueAirspeedEstimated
 #define IAS		CALCULATED_INFO.IndicatedAirspeedEstimated*TOKPH
 #define BEARING		GPS_INFO.TrackBearing
 #define ALTITUDE	GPS_INFO.Altitude
@@ -125,7 +126,7 @@ void LKSimulator(void) {
     // ONLY during flight, we will sink in the air
     if (FLYING && (IASMS>3) && (IASMS<MAXSPEED) ) {
 
-	double sinkias=-1*GlidePolar::SinkRate(IASMS);
+	double sinkias=-1*GlidePolar::SinkRate(TASMS);
 	if (sinkias>10) sinkias=10; // set a limiter for sink rate
 	// StartupStore(_T(".... ias=%.0f sinkias=%.3f oldAlt=%.3f newAlt=%.3f\n"), 
 	// CALCULATED_INFO.IndicatedAirspeedEstimated*TOKPH, sinkias, GPS_INFO.Altitude, GPS_INFO.Altitude+sinkias);
