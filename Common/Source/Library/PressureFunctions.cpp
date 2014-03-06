@@ -25,6 +25,17 @@ double AirDensitySinkRate(double ias, double qnhaltitude) {
 }
 
 
+double AirDensitySinkRate(double ias, double qnhaltitude, double gload) {
+
+    double w0 = GlidePolar::SinkRate(GlidePolar::polar_a,GlidePolar::polar_b,GlidePolar::polar_c,0.0,0.0,ias);
+    w0 *= AirDensityRatio(AltitudeToQNEAltitude(qnhaltitude));
+    gload = max(0.1,fabs(gload));
+    double v2 = GlidePolar::Vbestld/max((double)GlidePolar::Vbestld/2,ias);
+
+    return w0-(ias/(2*GlidePolar::bestld))* (gload*gload-1)*(v2*v2);
+}
+
+
 
 double QNHAltitudeToStaticPressure(double alt) {
   // http://wahiduddin.net/calc/density_altitude.htm
