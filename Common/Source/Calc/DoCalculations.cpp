@@ -31,7 +31,7 @@ extern void PredictNextPosition(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void AATStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-extern double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated);
+extern double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void ConditionMonitorsUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -119,7 +119,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   // We do assume that GA planes will NOT use extended polars
   if (GlidePolar::FlapsPosCount >0) Flaps(Basic,Calculated);
 
-  Calculated->AverageLD=CalculateLDRotary(&rotaryLD,Calculated); 
+  Calculated->AverageLD=CalculateLDRotary(&rotaryLD,Basic,Calculated); 
   Average30s(Basic,Calculated);
   AverageThermal(Basic,Calculated);
   AverageClimbRate(Basic,Calculated);

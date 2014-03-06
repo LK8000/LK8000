@@ -198,7 +198,7 @@ _noautoreset:
  * returns 0 if invalid, 999 if too high
  * EqMc is negative when no value is available, because recalculated and buffer still not usable
  */
-double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
+double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calculated ) {
 
 	double eff;
 #ifdef DEBUG_ROTARY
@@ -257,7 +257,9 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 			Rotary_Speed=averias;
 		}
 
-		avertas=averias*AirDensityRatio(Calculated->NavAltitude);
+		// We use GPS altitude to be sure that the tas is correct, we dont know in fact
+		// if qnh is correct, while gps is generally accurate for the purpose.
+		avertas=averias*AirDensityRatio(AltitudeToQNEAltitude(Basic->Altitude));
 		// This is just to be sure we are not using an impossible part of the polar
 		if (avertas>(GlidePolar::Vminsink-8.3) && (avertas>0)) { // minsink - 30km/h 
 
