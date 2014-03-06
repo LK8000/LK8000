@@ -7,7 +7,22 @@
 */
 
 #include "externs.h"
+#include "McReady.h"
 
+//
+// 6 march 2014 by Bruno and Paolo
+// This is to correct sinkrate adjusted for air density
+//
+double AirDensitySinkRate(double ias, double qnhaltitude) {
+
+    double sinkias=0;
+
+    sinkias=-1*GlidePolar::SinkRate(ias)*AirDensityRatio(AltitudeToQNEAltitude(qnhaltitude));
+
+    LKASSERT(sinkias>=0);
+    if (sinkias<0) sinkias=0;
+    return sinkias;
+}
 
 
 

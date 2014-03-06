@@ -223,6 +223,7 @@ double StaticPressureToAltitude(double ps);
 double AirDensity(double altitude);
 double AirDensityRatio(double altitude);
 double AirDensity(double hr, double temp, double absp);
+double AirDensitySinkRate(double ias, double qnhaltitude);
 double TrueAirSpeed( double delta_press, double hr, double temp, double abs_press );
 
 double HexStrToDouble(TCHAR *Source, TCHAR **Stop);
