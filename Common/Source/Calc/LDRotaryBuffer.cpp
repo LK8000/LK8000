@@ -285,7 +285,7 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 	}
 
 	Rotary_Distance=bc.totaldistance;
-	if (bc.totaldistance == 0 ) {
+	if (bc.totalaltitude == 0 ) {
 		return(INVALID_GR); // infinitum
 	}
 	eff= ((double)bc.totaldistance) / ((double)bc.totalaltitude);
