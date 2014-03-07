@@ -1866,6 +1866,8 @@ _@M1836_ "Lookup"
 _@M1837_ "Pair"
 _@M1838_ "Unpair"
 
+_@M1840_ "BestAlternate:"
+
 # Reverse task
 _@M1850_ "Reverse\nTask"
 _@M1851_ "Reverse task"

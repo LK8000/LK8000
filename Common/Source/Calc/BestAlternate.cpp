@@ -576,7 +576,7 @@ void AlertBestAlternate(short soundmode) {
 				#ifndef DISABLEAUDIO
 				LKSound(_T("LK_GREEN.WAV"));
 				#endif
-				_stprintf(mbuf,_T("BestAlternate: %s  @%.0f%s"), WayPointList[BestAlternate].Name,
+				_stprintf(mbuf,_T("%s %s  @%.0f%s"), gettext(TEXT("_@M1840_")), WayPointList[BestAlternate].Name,
 				DISTANCEMODIFY*WayPointCalc[BestAlternate].Distance,
 				(Units::GetDistanceName()) );
 				Message::Lock(); // 091211
@@ -587,7 +587,7 @@ void AlertBestAlternate(short soundmode) {
 				#ifndef DISABLEAUDIO
 				LKSound(_T("LK_RED.WAV"));
 				#endif
-				wsprintf(mbuf,_T("BestAlternate: %s"), gettext(TEXT("_@M916_"))); // WARNING, NO LANDINGS
+				wsprintf(mbuf,_T("%s %s"), gettext(TEXT("_@M1840_")), gettext(TEXT("_@M916_"))); // WARNING, NO LANDINGS
 				// Do NOT disturb the pilot for 5 minutes with useless further messages
 				LastAlertTime += 180.0;
 				Message::Lock(); // 091211
