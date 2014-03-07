@@ -120,9 +120,9 @@ static bool airspeedreset=true;
   // CASES where we reset the matrix and we may still fill it up
   //
   if (old_time>1) {
-	if ((basic->Time-old_time)>600) {
+	if ((basic->Time-old_time)>1800) {
 		#ifdef KALMAN_DEBUG
-		StartupStore(_T(".... Reset Kalman Wind (time passed 10 minutes since last insert)%s"),NEWLINE);
+		StartupStore(_T(".... Reset Kalman Wind (time passed 30 minutes since last insert)%s"),NEWLINE);
 		#endif
 		WindKalmanReset(true);
   		kalman_holdoff_time=0;
