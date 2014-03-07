@@ -122,7 +122,16 @@ int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double LastTime = 0;
 
+  // Bad situation: current time appears to be gone back.
+  // If we use two nmea sources, one of them may be stuck or faulty.
+  // We must be very careful NOT to reset fligthstats in a real flight!
+  // Ever.. 
   if ((Basic->Time != 0) && (Basic->Time <= LastTime)) {
+
+	// If in real flight, never reset
+	if (!ReplayLogger::IsEnabled() && Calculated->Flying) goto _noreset;
+
+        // This can be changed in fact:
 	if ( (LastTime - Basic->Time >30 ) && (!Basic->NAVWarning) && 
 	// replay logger does not consider UTC 00 incrementing by 85000 or whatever the basic time.
 	// Meanwhile, we may also skip the 00 utc because of interpolation. So we consider this.
@@ -135,6 +144,7 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		time_on_ground=0;
 	}
 
+_noreset:
 	LastTime = Basic->Time; 
 	return false;      
   }
