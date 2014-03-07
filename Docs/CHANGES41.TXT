@@ -85,14 +85,42 @@ Version 4.1n
 
 NEW
 
+. Add Vertical Situation Bar (VSI) to HSI screen
 
 
 CHANGES
 
+. Disable vario in EYE device driver, not working correctly.
+  It is sending 0.5 m/s steps, which is too much inaccurate for our purposes.
+  In fact we use Vario value for many functions, including free flight detection.
+  Using internally calculated now.
+. Do not use EYE pitch and roll sensor data, not available. 
+  Otherwise page 1.6 not working!!
 
 
 
 FIXES
+
+. NettoVario accuracy
+. Simulator sink rate and polar accuracy
+. Glide ratio of simulator accuracy
+. Estimated Airspeed and TrueAir speed estimated accuracy
+. LD average period of 3 seconds working now
+. Task required altitude from start
+. Allow to set AAT minTime ( AAT ON and PGoptimize OFF ) on Paraglider Mode
+. In Task turpoint edit dialog, Detail button need show waypoint detail dialog intead of quick select dialog
+. Fix TAS>IAS and IAS>TAS conversion using pressure altitude and not qnh altitude in CAI302, compeo, 
+  digifly, Flytec and Zander
+
+. Fix automc not using thermal average if no task is set
+. Fix do not show 0.0 safety Mc, because it is not a safe MC.
+     This is configured in safety parameter, but can also be set to 0. In such case..
+. Fix simulator using IAS for advancing, instead of Ground speed.
+     Resulting with inaccurate arrival altitude simulations
+
+. Fix locks and freezes possible with reset comm ports
+
+
 
 
 
