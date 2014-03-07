@@ -207,6 +207,7 @@ public:
   static int GetNearestVDistance() { return _nearestvdistance; }
 #endif
 
+  static void ResetSideviewNearestInstance() { _sideview_nearest_instance = NULL; }
   static CAirspace* GetSideviewNearestInstance() { return _sideview_nearest_instance; }
 
 protected:
