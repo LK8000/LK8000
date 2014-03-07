@@ -60,7 +60,7 @@ double StaticPressureToAltitude(double ps) {
 // Converts altitude with QNH=1013.25 reference to QNH adjusted altitude
 double AltitudeToQNHAltitude(double alt) {
   // avoid overflow of double
-  if (alt>44330.8){
+  if (alt>44330){
       alt=44330;
   }
   const double k1=0.190263;
@@ -110,6 +110,9 @@ double FindQNH(double alt_raw, double alt_known) {
 
 
 double AirDensity(double altitude) {
+  if (altitude>44330){
+      altitude=44330;
+  }
   double rho = pow((44330.8-altitude)/42266.5,1.0/0.234969);
   #if BUGSTOP
   LKASSERT(rho>0);
