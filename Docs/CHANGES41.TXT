@@ -97,6 +97,7 @@ CHANGES
 . Do not use EYE pitch and roll sensor data, not available. 
   Otherwise page 1.6 not working!!
 
+. ZigZag wind calculation retuned for more tolerance to long thermalling time
 
 
 FIXES
@@ -121,7 +122,7 @@ FIXES
      Resulting with inaccurate arrival altitude simulations
 
 . Fix locks and freezes possible with reset comm ports
-
+. Fix do not reset flight stats if a gps error occurs during flight
 
 
 
