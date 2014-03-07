@@ -101,6 +101,8 @@ CHANGES
 
 FIXES
 
+. Fix version PPC2002 no more working
+
 . NettoVario accuracy
 . Simulator sink rate and polar accuracy
 . Glide ratio of simulator accuracy
