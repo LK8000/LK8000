@@ -116,6 +116,51 @@ inline void FromString(LPCTSTR szVal, bool& bVal) {
 #define SetAttribute(node, name, val) if(!node.AddAttribute(ToString(name), ToString(val))) { return false; } 
 #define GetAttribute(node, name, val) FromString(node.getAttribute(name, 0), val)
 
+bool getFirstTaskWayPointName(XMLNode node, TCHAR *firstWPname) {
+    if(node) {
+        XMLNode WPnode = node.getChildNode(_T("point"),0);
+        if(WPnode) {
+            unsigned long idx = MAXTASKPOINTS;
+            GetAttribute(WPnode, _T("idx"), idx);
+            if(idx==0) {
+                LPCTSTR first=NULL;
+                GetAttribute(WPnode, _T("name"),first);
+                if(first) {
+                    if(_tcslen(first)<=NAME_SIZE) {
+                        _tcscpy(firstWPname,first);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool getLastTaskWayPointName(XMLNode node, TCHAR *lastWPname) {
+    if(node) {
+        int numOfWPs=node.nChildNode(_T("point")); //count number of WPs in the route
+        if(numOfWPs>=2) {
+            XMLNode WPnode = node.getChildNode(_T("point"),numOfWPs-1);
+            if(WPnode) {
+                unsigned long idx = MAXTASKPOINTS;
+                GetAttribute(WPnode, _T("idx"), idx);
+                if(idx==(unsigned long)(numOfWPs-1)) {
+                    LPCTSTR last=NULL;
+                    GetAttribute(WPnode, _T("name"),last);
+                    if(last) {
+                        if(_tcslen(last)<=NAME_SIZE) {
+                            _tcscpy(lastWPname,last);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
 CTaskFileHelper::CTaskFileHelper() : mFinishIndex() {
 }
 
@@ -149,7 +194,17 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
 
         if (rootNode) {
             LoadOptions(rootNode);
-            LoadWayPointList(rootNode.getChildNode(_T("waypoints"), 0));
+
+            if(ISGAAIRCRAFT) {
+                TCHAR firstWPname[NAME_SIZE+1];
+                TCHAR lastWPname[NAME_SIZE+1];
+                XMLNode taskNode=rootNode.getChildNode(_T("taskpoints"),0);
+                bool gotFirstWPname=getFirstTaskWayPointName(taskNode,firstWPname);
+                bool gotLastWPname=getLastTaskWayPointName(taskNode,lastWPname);
+                LoadWayPointList(rootNode.getChildNode(_T("waypoints"), 0),gotFirstWPname?firstWPname:NULL,gotLastWPname?lastWPname:NULL);
+            } else
+                LoadWayPointList(rootNode.getChildNode(_T("waypoints"), 0),NULL,NULL);
+
             if (!LoadTaskPointList(rootNode.getChildNode(_T("taskpoints"), 0))) {
                 free(szXML);
                 return false;
@@ -408,12 +463,12 @@ bool CTaskFileHelper::LoadStartPointList(XMLNode node) {
     return true;
 }
 
-void CTaskFileHelper::LoadWayPointList(XMLNode node) {
+void CTaskFileHelper::LoadWayPointList(XMLNode node, TCHAR *firstWPname, TCHAR *lastWPname) {
     if (node) {
         int i = 0;
         XMLNode nodePoint = node.getChildNode(_T("point"), &i);
         while (nodePoint) {
-            LoadWayPoint(nodePoint);
+            LoadWayPoint(nodePoint,firstWPname,lastWPname);
             nodePoint = node.getChildNode(_T("point"), &i);
         }
     }
@@ -490,7 +545,7 @@ bool CTaskFileHelper::LoadStartPoint(XMLNode node) {
     return true;
 }
 
-void CTaskFileHelper::LoadWayPoint(XMLNode node) {
+void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *lastWPname) {
     LPCTSTR szAttr = NULL;
     WAYPOINT newPoint;
     memset(&newPoint, 0, sizeof (newPoint));
@@ -503,7 +558,15 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node) {
     if (szAttr) {
         _tcscpy(newPoint.Name, szAttr);
     }
-
+    bool lookupAirfield=false;
+    if(ISGAAIRCRAFT) {
+        if(firstWPname) {
+            if(_tcscmp(newPoint.Name,firstWPname)==0) lookupAirfield=true;
+        }
+        if(lastWPname && !lookupAirfield) {
+            if(_tcscmp(newPoint.Name,lastWPname)==0) lookupAirfield=true;
+        }
+    }
     GetAttribute(node, _T("latitude"), newPoint.Latitude);
     GetAttribute(node, _T("longitude"), newPoint.Longitude);
     GetAttribute(node, _T("altitude"), newPoint.Altitude);
@@ -535,7 +598,7 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node) {
     }
     GetAttribute(node, _T("style"), newPoint.Style);
 
-    mWayPointLoaded[newPoint.Name] = FindOrAddWaypoint(&newPoint,false);
+    mWayPointLoaded[newPoint.Name] = FindOrAddWaypoint(&newPoint,lookupAirfield);
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
