@@ -1908,6 +1908,11 @@ void CAirspaceManager::CloseAirspaces()
   CCriticalSection::CGuard guard(_csairspaces);
   if (_airspaces.size()==0) return;
   SaveSettings();
+
+   // this is needed for avoid crash if airspaces configuration is changed
+   // after Step 1 and before step 2 of multicalc inside AirspacesWarning
+  CAirspace::ResetSideviewNearestInstance();
+
   _selected_airspace = NULL;
   _sideview_nearest = NULL;
   _user_warning_queue.clear();
@@ -2221,6 +2226,11 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   static double lat = 0;
  
   CCriticalSection::CGuard guard(_csairspaces);
+  
+  if(_airspaces.empty()) {
+      return; // no airspaces no nothing to do
+  }
+
   CAirspaceList::iterator it;
 
    // We need a valid GPS fix in FLY mode
