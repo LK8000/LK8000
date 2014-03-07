@@ -59,6 +59,10 @@ double StaticPressureToAltitude(double ps) {
 
 // Converts altitude with QNH=1013.25 reference to QNH adjusted altitude
 double AltitudeToQNHAltitude(double alt) {
+  // avoid overflow of double
+  if (alt>44330.8){
+      alt=44330;
+  }
   const double k1=0.190263;
   double ps = pow((44330.8-alt)/4946.54,1.0/k1);
   return StaticPressureToAltitude(ps);

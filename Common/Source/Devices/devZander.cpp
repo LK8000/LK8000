@@ -108,10 +108,10 @@ BOOL zanderRegister(void){
 // *****************************************************************************
 // local stuff
 
-static double palt=0;
 
 static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 {
+  double palt=0;
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
   palt=StrToDouble(ctemp,NULL);
@@ -135,7 +135,8 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 
   if (apGPS->BaroAltitudeAvailable)
   {
-    vias = vtas/AirDensityRatio(palt);
+    vias = vtas/AirDensityRatio(AltitudeToQNEAltitude(apGPS->BaroAltitude));
+
   } else {
     vias = 0.0;
   }

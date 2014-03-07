@@ -44,7 +44,7 @@ bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescr
   if (parserid>0) {
 	StartupStore(_T("... UpdateBaroSource: from internal parser type <%d>, alt=%.1f\n"),parserid,fAlt);
   } else {
-	StartupStore(_T("... UpdateBaroSource: port=%d <%s> primary=%d secondary=%d disabled=%d alt=%.1f\n"),
+	StartupStore(_T("... UpdateBaroSource: port=%d <%s> primary=%d secondary=%d disabled=%d alt=%f\n"),
 	d->PortNumber, d->Name, d==pDevPrimaryBaroSource, d==pDevSecondaryBaroSource, d->Disabled, fAlt);
   }
   #endif
