@@ -241,6 +241,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
 
     memset(szString, 0, sizeof (szString)); // clear Temp Buffer
     WAYPOINT newPoint = {0};
+    WAYPOINT* WPtoAdd=NULL;
 
     enum {
         none, Waypoint, TaskTp, Option
@@ -279,26 +280,43 @@ bool LoadCupTask(LPCTSTR szFileName) {
                     // 2. and all successive columns, separated by commas
                     //       Each column represents one waypoint name double quoted. The waypoint name must be exactly the
                     //       same as the Long name of a waypoint listed above the Related tasks.
+                    WPtoAdd=NULL;
                     while (bLoadComplet && (pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
                         if (idxTP < MAXTASKPOINTS) {
                             _tcsncpy(TpCode, pToken, NAME_SIZE);
                             CleanCupCode(TpCode);
                             mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
-                            if (It != mapWaypoint.end()) {
-                                if (bTakeOff) {
-                                    // skip TakeOff Set At Home Waypoint
-                                    HomeWaypoint = FindOrAddWaypoint(&(It->second),false);
-                                    bTakeOff = false;
-                                } else {
-                                    Task[idxTP++].Index = FindOrAddWaypoint(&(It->second),false);
+                            if(!ISGAAIRCRAFT) {
+                                if (It != mapWaypoint.end()) {
+                                    if (bTakeOff) {
+                                        // skip TakeOff Set At Home Waypoint
+                                        HomeWaypoint = FindOrAddWaypoint(&(It->second),false);
+                                        bTakeOff = false;
+                                    } else {
+                                        Task[idxTP++].Index = FindOrAddWaypoint(&(It->second),false);
+                                    }
+                                }
+                            } else { //ISGAIRRCRAFT
+                                if(It != mapWaypoint.end()) {
+                                    if(WPtoAdd!=NULL) Task[idxTP++].Index = FindOrAddWaypoint(WPtoAdd,false); //add what we found in previous cycle: it was not the last one
+                                    if (bTakeOff) { //it's the first: may be we have a corresponding airfield
+                                        Task[idxTP++].Index = FindOrAddWaypoint(&(It->second),true); //look for departure airfield and add it
+                                        bTakeOff = false;
+                                    } else WPtoAdd=&(It->second); //store it for next cycle (may be it is the last one)
                                 }
                             }
                         } else {
                             bLoadComplet = false;
                         }
                     }
+                    if(ISGAAIRCRAFT) { //For GA: check if we have an airport corresponding to the last WP
+                        if(WPtoAdd!=NULL) { //if we have the last one (probably an airfield) still to add...
+                            if(idxTP<MAXTASKPOINTS) Task[idxTP++].Index=FindOrAddWaypoint(WPtoAdd,true); //look for arrival airport and add it
+                            else bLoadComplet=false;
+                        }
+                    }
                     FileSection = Option;
-                    break;
+                break;
                 case Option:
                     if ((pToken = strsep_r(szString, TEXT(","), &pWClast)) != NULL) {
                         if (_tcscmp(pToken, _T("Options")) == 0) {
@@ -385,10 +403,11 @@ bool LoadCupTask(LPCTSTR szFileName) {
         }
         fclose(stream);
     }
-
-    // Landing don't exist in LK Task Systems Remove It if is same as previous;
-    if ( bLoadComplet && (TaskWayPoint(0) == TaskWayPoint(getFinalWaypoint())) ) {
-        RemoveTaskPoint(getFinalWaypoint());
+    if(!ISGAAIRCRAFT) {
+        // Landing don't exist in LK Task Systems Remove It if is same as previous;
+        if ( bLoadComplet && (TaskWayPoint(0) == TaskWayPoint(getFinalWaypoint())) ) {
+            RemoveTaskPoint(getFinalWaypoint());
+        }
     }
     UnlockTaskData();
     return ValidTaskPoint(0);

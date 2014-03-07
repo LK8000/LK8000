@@ -52,11 +52,11 @@ protected:
 
     bool LoadTaskPointList(XMLNode node);
     bool LoadStartPointList(XMLNode node);
-    void LoadWayPointList(XMLNode node);
+    void LoadWayPointList(XMLNode node, TCHAR *firstWPname, TCHAR *lastWPname);
 
     bool LoadTaskPoint(XMLNode node);
     bool LoadStartPoint(XMLNode node);
-    void LoadWayPoint(XMLNode node);
+    void LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *lastWPname);
 
 private:
     std::set<size_t> mWayPointToSave;
