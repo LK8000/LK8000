@@ -12,6 +12,8 @@
 #ifndef CBTHANDLERWINCE_H
 #define	CBTHANDLERWINCE_H
 
+#ifdef PNA
+
 #include <winsock2.h>
 #include <windows.h>
 #include <string>
@@ -19,7 +21,6 @@
 #include "boost/noncopyable.hpp" 
 #include "BtHandler.h"
 
-#ifdef PNA
 typedef void (APIENTRY* BTOnOffProc)(void);
 typedef int (APIENTRY* BTHWStatusProc)(int *pistatus);
 typedef int (APIENTRY* BTReadScanProc)(unsigned char *pmask);

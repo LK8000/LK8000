@@ -4,7 +4,12 @@
    See CREDITS.TXT file for authors and copyrights
 */
 
+#ifdef PPC2002
+#include <winsock.h>
+#else
 #include <winsock2.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 #include <cctype>
