@@ -62,18 +62,22 @@ static void WindKalmanReset(const bool reset) {
 unsigned WindKalmanUpdate(NMEA_INFO *basic, DERIVED_INFO *derived,  double *windspeed, double *windbearing )
 {
 static double kalman_holdoff_time =0.0;
+static bool airspeedreset=true;
 
   //
   // CASES where we reset the matrix and we are not willing to fill it up 
   //
 
   // Normally we shall not select ZIGZAG if we dont have airspeed!!
+  // We reset only one time, and it should not be necessary also.
   if (! basic->AirspeedAvailable) {
+	if (!airspeedreset) return 0;
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... No Airspeed available%s"),NEWLINE);
 	#endif
 	WindKalmanReset(true);
   	kalman_holdoff_time=0;
+	airspeedreset=false;
 	return 0;
   }
 
@@ -116,9 +120,9 @@ static double kalman_holdoff_time =0.0;
   // CASES where we reset the matrix and we may still fill it up
   //
   if (old_time>1) {
-	if ((basic->Time-old_time)>300) {
+	if ((basic->Time-old_time)>600) {
 		#ifdef KALMAN_DEBUG
-		StartupStore(_T(".... Reset Kalman Wind (time passed 5 minutes since last insert)%s"),NEWLINE);
+		StartupStore(_T(".... Reset Kalman Wind (time passed 10 minutes since last insert)%s"),NEWLINE);
 		#endif
 		WindKalmanReset(true);
   		kalman_holdoff_time=0;
@@ -168,7 +172,7 @@ static double kalman_holdoff_time =0.0;
   #if BASIC_FILTER
   // below 10kmh we will not assume the gps bearing is still correct!
   // do not reset ring, simply discard data
-  if (basic->Speed < 3 || basic->TrueAirspeed < 1) {
+  if (basic->Speed < 3 || basic->TrueAirspeed < 3) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... speed too low!%s"),NEWLINE);
 	#endif
@@ -190,6 +194,9 @@ static double kalman_holdoff_time =0.0;
   }
 
   // If the tas is exactly the same, it is either a repetition or an error.
+  // Notice that we must check the TAS is provided in m/s, because for example Zander is 
+  // providing kmh, and accuracy is not granted. But in this case we would insert the same tas
+  // for a different bearing, which is quite inaccurate too.
   if (old_tas==basic->TrueAirspeed) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... TAS UNCHANGED, discard\n"));
