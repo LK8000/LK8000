@@ -48,7 +48,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
   goCalculationThread=true; // 091119 CHECK
   // wait for proper startup signal
   while (!MapWindow::IsDisplayRunning()) {
-    Sleep(100);
+    Sleep(50);
   }
 
   #if TRACETHREAD

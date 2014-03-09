@@ -359,7 +359,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 	CreateProgressDialog(sTmp); 
 
 	wsprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);
-	CreateProgressDialog(sTmp); Sleep(300);
+	CreateProgressDialog(sTmp); 
 #else
   TCHAR sTmpA[MAX_PATH], sTmpB[MAX_PATH];
   LocalPath(sTmpA,_T(""));

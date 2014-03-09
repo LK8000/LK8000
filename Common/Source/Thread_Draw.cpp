@@ -38,7 +38,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
 
   while ((!ProgramStarted) || (!Initialised)) {
-	Sleep(100);
+	Sleep(50);
   }
 
   #if TRACETHREAD
@@ -95,7 +95,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	if (CLOSETHREAD) break; // drop out without drawing
 
 	if ((!THREADRUNNING) || (!GlobalRunning)) {
-		Sleep(100);
+		Sleep(50);
 		continue;
 	}
 
@@ -339,7 +339,7 @@ void MapWindow::CloseDrawingThread(void)
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread wait THREADEXIT\n"));
   #endif
-  while(!THREADEXIT) { Sleep(100); };
+  while(!THREADEXIT) { Sleep(50); };
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread finished\n"));
   #endif
