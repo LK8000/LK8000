@@ -179,10 +179,10 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   #if TESTBENCH
     #ifdef _MSC_VER
-      StartupStore(TEXT("Build with MSVC ver : %d %s"), _MSC_VER, NEWLINE);
+      StartupStore(TEXT(". Built with MSVC ver : %d %s"), _MSC_VER, NEWLINE);
     #endif
     #ifdef __MINGW32__
-      StartupStore(TEXT("Build with mingw32 %d.%d (GCC %d.%d.%d) %s"), 
+      StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"), 
               __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION, 
               __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, 
               NEWLINE);
@@ -522,7 +522,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   StartupStore(TEXT(".... WinMain CreateDrawingThread%s"),NEWLINE);
   #endif
   MapWindow::CreateDrawingThread();
-  Sleep(100);
+  Sleep(50);
 
   SwitchToMapWindow();
   #if TESTBENCH
