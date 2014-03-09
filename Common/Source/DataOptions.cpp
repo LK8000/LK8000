@@ -16,6 +16,7 @@
 bool SetDataOption( int index, UnitGroup_t UnitGroup, const TCHAR *Description, const TCHAR *Title)
 {
 	DATAOPTIONS tag;
+	LKASSERT(index<NUMDATAOPTIONS_MAX);
 	if (index>=NUMDATAOPTIONS_MAX) return false;
 
 	tag.UnitGroup = UnitGroup;
@@ -294,6 +295,9 @@ void FillDataOptions()
 	SetDataOption(124, ugWindSpeed, TEXT("_@M1771_"), TEXT("_@M1772_")); // Head wind speed
 	SetDataOption(125, ugDistance, TEXT("_@M1507_"), TEXT("_@M1508_")); //OLC FAI triangle Distance to close
 	SetDataOption(126, ugNone, TEXT("_@M1509_"), TEXT("_@M1510_")); // OLC FAI triangle Distance close %
+	SetDataOption(127, ugNone, TEXT("Bank angle"), TEXT("_@M1197_")); // Bank
+	SetDataOption(128, ugNone, TEXT("_@M1841_"), TEXT("Atn1Rad")); // Alternate1 radial
+	SetDataOption(129, ugNone, TEXT("_@M1842_"), TEXT("Atn2Rad")); // Alternate2 radial
 
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
 

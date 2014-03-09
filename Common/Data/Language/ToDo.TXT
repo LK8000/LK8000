@@ -366,3 +366,11 @@ _@M1870_ "Airspace Sonar "
 
 #Help
 @1288 and @1289 and @1290
+
+
+----------- after v5 --------
+1840  Bestalternate
+_@M1841_ "Alternate1 radial"
+_@M1842_ "Alternate2 radial"
+
+

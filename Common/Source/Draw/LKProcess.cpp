@@ -2348,8 +2348,57 @@ olc_score:
 			wsprintf(BufferUnit, TEXT(""));
 			break;
 
-		case 128:
-		case 129:
+		// B128
+		case LK_ALTERN1_RAD:
+		// B129
+		case LK_ALTERN2_RAD:
+			wsprintf(BufferValue,_T(NULLMEDIUM));
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			switch(lkindex) {
+				case LK_ALTERN1_RAD:
+					index=Alternate1;
+					break;
+				case LK_ALTERN2_RAD:
+					index=Alternate2;
+					break;
+				default:
+					index=0;
+					break;
+			}
+
+			if(ValidWayPoint(index))
+			{
+				wsprintf(BufferTitle,_T("<"));
+				if ( DisplayTextType == DISPLAYFIRSTTHREE)
+				{
+					 LK_tcsncpy(BufferTitle+1,WayPointList[index].Name,3);
+				}
+				else if( DisplayTextType == DISPLAYNUMBER) {
+					_stprintf(BufferTitle+1,TEXT("%d"), WayPointList[index].Number );
+				} else {
+					LK_tcsncpy(BufferTitle+1,WayPointList[index].Name, 12);
+					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
+					if (lktitle)
+						BufferTitle[12] = '\0'; // FIX TUNING
+					else
+						BufferTitle[8] = '\0';  // FIX TUNING
+				}
+				value=AngleLimit360(WayPointCalc[index].Bearing+180);;
+				valid=true;
+			}
+
+			if (valid) {
+				if (value > 1)
+					_stprintf(BufferValue, TEXT("%2.0f°"), value);
+				else if (value < -1)
+					_stprintf(BufferValue, TEXT("%2.0f°"), -value);
+					else
+						_tcscpy(BufferValue, TEXT("0°"));
+			} 
+
+			wsprintf(BufferUnit, TEXT(""));
+			break;
+
 		case 130:
 			goto lk_error;
 

@@ -91,7 +91,7 @@
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"4"
-#define LKRELEASE	"1o"
+#define LKRELEASE	"1o0"
 
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
@@ -656,6 +656,8 @@
 #define LK_OLC_FAI_CLOSE			125
 #define LK_OLC_FAI_CLOSE_PERCENT	126
 #define LK_BANK_ANGLE                   127
+#define LK_ALTERN1_RAD                  128
+#define LK_ALTERN2_RAD                  129
 
 // The following values are not available for custom configuration
 
