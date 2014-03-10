@@ -24,11 +24,6 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	return;
   }
 
-  if ((GlideBarMode == (GlideBarMode_t)gbFinish) && !DerivedDrawInfo.ValidStart) {
-	GlideBarOffset=0;
-	return;
-  }
-
   POINT GlideBar[6] = { {0,0},{9,-9},{18,0},{18,0},{9,0},{0,0} };
   POINT GlideBar0[6] = { {0,0},{9,-9},{18,0},{18,0},{9,0},{0,0} };
   
