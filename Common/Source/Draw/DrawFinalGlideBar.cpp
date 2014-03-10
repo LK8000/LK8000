@@ -61,6 +61,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
   
   LockTaskData();  // protect from external task changes
 
+  bool invalidbar=false;
   #if 101004
   int barindex;
   barindex=GetOvertargetIndex();
@@ -73,8 +74,16 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 
 	#if 110609
 	if ( ValidTaskPoint(1) && OvertargetMode == OVT_TASK && GlideBarMode == (GlideBarMode_t)gbFinish ) {
-		Offset = ((int)DerivedDrawInfo.TaskAltitudeDifference)/8; 
-		Offset0 = ((int)DerivedDrawInfo.TaskAltitudeDifference0)/8; 
+		// Before the start, there is no task altitude available!
+		if (DerivedDrawInfo.ValidStart) {
+		    Offset = ((int)DerivedDrawInfo.TaskAltitudeDifference)/8; 
+		    Offset0 = ((int)DerivedDrawInfo.TaskAltitudeDifference0)/8; 
+		} else {
+                    // In this case, print an invalid bar
+		    invalidbar=true;
+		    Offset=0;
+		    Offset0=0;
+		}
 	} else {
 		Offset=(int)WayPointCalc[barindex].AltArriv[AltArrivMode];
 		Offset0=Offset;
@@ -166,6 +175,12 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	}
 	Polygon(hDC,GlideBar,6);
 
+	// in case of invalid bar because finish mode with real task but no valid start, we skip
+	if (invalidbar) {
+	    _tcscpy(Value,_T("---"));
+            goto _skipout;
+        }
+
 	// draw glide bar at mc 0 and X  only for OVT_TASK 101004
 	// we dont have mc0 calc ready for other overtargets, not granted at least
 	if (OvertargetMode == OVT_TASK) {
@@ -242,6 +257,9 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 			else
 				_stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*WayPointCalc[barindex].AltArriv[AltArrivMode]);
 		}
+
+_skipout: 
+		// in case of invalidbar we get here with Offset 0
 
 		if (Offset>=0) {
 			Offset = GlideBar[2].y+Offset+NIBLSCALE(5);
