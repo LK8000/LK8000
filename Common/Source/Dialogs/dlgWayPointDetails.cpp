@@ -433,10 +433,28 @@ void dlgWayPointDetailsShowModal(short mypage){
                   &bearing);
 
   TCHAR DistanceText[MAX_PATH];
-  Units::FormatUserDistance(distance, DistanceText, 10);
+  if (ScreenLandscape) {
+      Units::FormatUserDistance(distance, DistanceText, 10);
+
+      if ( Units::GetUserDistanceUnit() == unNauticalMiles ||
+           Units::GetUserDistanceUnit() == unStatuteMiles ) {
+
+          _stprintf(sTmp,_T("  (%.1fkm)"), distance*TOKILOMETER);
+      } else {
+	  _stprintf(sTmp,_T("  (%.1fnm)"), distance*TONAUTICALMILES);
+      }
+      _tcscat(DistanceText,sTmp);
+  } else {
+      Units::FormatUserDistance(distance, DistanceText, 10);
+  }
   ((WndProperty *)wf->FindByName(TEXT("prpDistance")))->SetText(DistanceText);
 
-  _stprintf(sTmp, TEXT("%d")TEXT(DEG), iround(bearing));
+  if (ScreenLandscape) {
+      _stprintf(sTmp, TEXT("%d%s  (R:%d%s)"),iround(bearing), TEXT(DEG),
+         iround(AngleLimit360(bearing+180)), TEXT(DEG));
+  } else {
+      _stprintf(sTmp, TEXT("%d")TEXT(DEG), iround(bearing));
+  }
   ((WndProperty *)wf->FindByName(TEXT("prpBearing")))->SetText(sTmp);
 
 
