@@ -658,6 +658,7 @@
 #define LK_BANK_ANGLE                   127
 #define LK_ALTERN1_RAD                  128
 #define LK_ALTERN2_RAD                  129
+#define LK_HEADING                      130
 
 // The following values are not available for custom configuration
 

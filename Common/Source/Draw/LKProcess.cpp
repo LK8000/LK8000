@@ -2399,8 +2399,35 @@ olc_score:
 			wsprintf(BufferUnit, TEXT(""));
 			break;
 
-		case 130:
-			goto lk_error;
+		// B130
+		case LK_HEADING:
+			wsprintf(BufferValue,_T(NULLLONG));
+			//_stprintf(BufferUnit,TEXT(""));
+			if (DrawInfo.MagneticHeadingAvailable) {
+			    _stprintf(BufferTitle, _T("HDG"));
+			    value = DrawInfo.MagneticHeading;
+			} else {
+			    _stprintf(BufferTitle, _T("eHDG"));
+			    value = DerivedDrawInfo.Heading;
+			}
+			valid=true;
+#ifndef __MINGW32__
+			if (value > 1)
+				_stprintf(BufferValue, TEXT("%2.0f\xB0"), value);
+			else if (value < -1)
+				_stprintf(BufferValue, TEXT("%2.0f\xB0"), -value);
+				else
+					_tcscpy(BufferValue, TEXT("0\xB0"));
+#else
+			if (value > 1)
+				_stprintf(BufferValue, TEXT("%2.0f°"), value);
+			else if (value < -1)
+				_stprintf(BufferValue, TEXT("%2.0f°"), -value);
+				else
+					_tcscpy(BufferValue, TEXT("0°"));
+#endif
+			break;
+
 
 
 		// B131

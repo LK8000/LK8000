@@ -298,6 +298,7 @@ void FillDataOptions()
 	SetDataOption(127, ugNone, TEXT("Bank angle"), TEXT("_@M1197_")); // Bank
 	SetDataOption(128, ugNone, TEXT("_@M1841_"), TEXT("Atn1Rad")); // Alternate1 radial
 	SetDataOption(129, ugNone, TEXT("_@M1842_"), TEXT("Atn2Rad")); // Alternate2 radial
+	SetDataOption(130, ugNone, TEXT("_@M1287_"), TEXT("HDG")); // Heading, text is changed in lkprocess
 
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
 
