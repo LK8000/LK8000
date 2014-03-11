@@ -1956,7 +1956,11 @@ CCriticalSection::CGuard guard(_csairspaces);
   airspacetype[0].psAS= NULL;
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it)
   {
-	if(( CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top())==TRUE)&& (iNoFoundAS < iMaxNoAs-1))
+        LKASSERT( (*it)->Type() < AIRSPACECLASSCOUNT);
+        LKASSERT( (*it)->Type() > 0);
+
+	if(( CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top())==TRUE)&& (iNoFoundAS < iMaxNoAs-1) &&
+	   ((MapWindow::iAirspaceMode[(*it)->Type()]%2)>0)	)
     {
       for (i=0; i<AIRSPACE_SCANSIZE_X; i++)
       {
