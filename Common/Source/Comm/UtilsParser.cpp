@@ -138,11 +138,19 @@ int NAVWarn(TCHAR c)
 
 double NMEAParser::ParseAltitude(TCHAR *value, const TCHAR *format)
 {
-  double alt = StrToDouble(value, NULL);
+    if (value==NULL || format==NULL) {
+	#if BUGSTOP
+	LKASSERT(0);
+        #endif
+        #if TESTBENCH
+        StartupStore(_T(".... ParseAltitude: null value or null format!\n"));
+        #endif
+        return 0;
+    }
 
+  double alt = StrToDouble(value, NULL);
   if (format[0] == _T('f') || format[0] == _T('F'))
     alt /= TOFEET;
-
   return alt;
 }
 
