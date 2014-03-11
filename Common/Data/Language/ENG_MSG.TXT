@@ -1869,7 +1869,7 @@ _@M1838_ "Unpair"
 _@M1840_ "BestAlternate:"
 #infobox
 _@M1841_ "Alternate1 radial"
-_@M1842_ "Alterante2 radial"
+_@M1842_ "Alternate2 radial"
 
 # Reverse task
 _@M1850_ "Reverse\nTask"
