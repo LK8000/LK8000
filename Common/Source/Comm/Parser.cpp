@@ -592,6 +592,12 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   // say we are updated every time we get this,
   // so infoboxes get refreshed if GPS connected
   // the RMC sentence marks the start of a new fix, so we force the old data to be saved for calculations
+        if (_tcslen(params[8]) <6) {
+		#if TESTBENCH
+		StartupStore(_T(".... RMC date field empty, skip sentence!\n"));
+		#endif
+		return TRUE;
+	}
 
 	// Even with no valid position, we let RMC set the time and date if valid
 	long gy, gm, gd;
@@ -811,7 +817,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 		gpsValid=false;
 	}
   }
- 
+
   // GGA is marking now triggering end of data, so OK to use baro
   // Even with invalid fix we might have valid baro data of course
 
@@ -839,7 +845,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   // "Altitude" should always be GPS Altitude.
   pGPS->Altitude = ParseAltitude(params[8], params[9]);
   pGPS->Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
-  
+ 
   double GeoidSeparation;
 
   if (_tcslen(params[10])>0) {
