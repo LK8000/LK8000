@@ -9,7 +9,6 @@
 #include "externs.h"
 
 
-// HeadWind error will be shown as -999
 // These values are all in m/s
 // We can have a serious problem when the headwind is so strong that the
 // aircraft is actually flying backwards. 
@@ -24,7 +23,7 @@ void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double WindSpeedLast= -1.0;
 
   if (Basic->NAVWarning) {
-	Calculated->HeadWind  = -999;
+	Calculated->HeadWind  = -999; // invalid value for LKProcess
 	return;
   }
 
@@ -32,11 +31,15 @@ void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   CrossBearing = AngleLimit360(Calculated->Heading - Calculated->WindBearing);
 
   #if 1 // vector wind
-  if ((CrossBearing != CrossBearingLast)||(Calculated->WindSpeed != WindSpeedLast)) {
+  if (Basic->AirspeedAvailable) {
+	Calculated->HeadWind = Basic->TrueAirspeed - Basic->Speed;
+  } else {
+      if ((CrossBearing != CrossBearingLast)||(Calculated->WindSpeed != WindSpeedLast)) {
 	Calculated->HeadWind = Calculated->WindSpeed * fastcosine(CrossBearing);
 	// CrossWind = WindSpeed * fastsine(CrossBearing);  UNUSED
 	CrossBearingLast = CrossBearing;
 	WindSpeedLast = Calculated->WindSpeed;
+      }
   }
   #else
   if (Basic->AirspeedAvailable) {
