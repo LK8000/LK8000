@@ -80,7 +80,6 @@ bool CDevEye::PEYA(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
     if(ParToDouble(sentence, fieldIdx++, &value))
         data.groundTemp = value;
   
-    info->BaroAltitudeAvailable = true;
     UpdateBaroSource( info, 0,d, AltitudeToQNHAltitude(data.pAlt));
 
     info->AirspeedAvailable = true;
