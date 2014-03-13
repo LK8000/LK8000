@@ -13,6 +13,8 @@
 #include "InputEvents.h"
 
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateQNH(const double newqnh);
+
 
 int iLXV7_EXP_RxUpdateTime=0;
 double LXV7_EXP_oldMC = MACCREADY;
@@ -961,7 +963,7 @@ TCHAR  szTmp1[80], szTmp2[80];
   if  (_tcscmp(szTmp1,_T("QNH"))==0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
-	QNH =  (StrToDouble(szTmp2,NULL))/100.0;
+	UpdateQNH((StrToDouble(szTmp2,NULL))/100.0);
 	return true;
   }
 
