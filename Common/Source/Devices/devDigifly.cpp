@@ -11,6 +11,7 @@
 #include "devDigifly.h"
 
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateQNH(const double newqnh);
 
 extern double LowPassFilter(double y_last, double x_in, double fact);
 
@@ -129,8 +130,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   if (initqnh) {
 	// if digifly has qnh set by user qne and qnh are of course different
 	if (altqne != altqnh) {
-		QNH=FindQNH(altqne,altqnh);
-        CAirspaceManager::Instance().QnhChangeNotify(QNH);
+		UpdateQNH(FindQNH(altqne,altqnh));
 		StartupStore(_T(". Using Digifly QNH %f%s"),QNH,NEWLINE);
 		initqnh=false;
 	} else {

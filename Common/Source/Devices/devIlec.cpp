@@ -11,6 +11,7 @@
 #include "devIlec.h"
 
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateQNH(const double newqnh);
 
 static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
@@ -142,9 +143,8 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
   if (_tcscmp(ctemp,_T("SET"))==0) {
 	NMEAParser::ExtractParameter(String,ctemp,1);
-	QNH = StrToDouble(ctemp,NULL);
+	UpdateQNH(StrToDouble(ctemp,NULL));
 	// StartupStore(_T("... SET QNH= %.1f\n"),QNH);
-	CAirspaceManager::Instance().QnhChangeNotify(QNH);
 
 	return TRUE;
   }

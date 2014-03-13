@@ -608,6 +608,7 @@ COMMS	:=\
 	$(CMM)/SerialPort.cpp\
 	$(CMM)/UpdateBaroSource.cpp \
 	$(CMM)/UpdateMonitor.cpp \
+	$(CMM)/UpdateQNH.cpp \
 	$(CMM)/UtilsParser.cpp \
 	$(CMM)/device.cpp \
 	$(CMM)/Bluetooth/BtHandler.cpp \

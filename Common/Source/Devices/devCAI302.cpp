@@ -18,6 +18,7 @@
 #include "devCAI302.h"
 
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateQNH(const double newqnh);
 
 
 using std::min;
@@ -582,8 +583,6 @@ BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   TCHAR ctemp[80];
-  static double oldqnh=0;
-
   
   NMEAParser::ExtractParameter(String,ctemp,1);
   pGPS->ExternalWindAvailable = TRUE;
@@ -607,14 +606,8 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   // We DO need to set the QNH altitude as well, if we use the previous baro altitude!
   NMEAParser::ExtractParameter(String,ctemp,5);
-  double newqnh=0;
-  newqnh=StrToDouble(ctemp, NULL);
-  if (newqnh>100 && newqnh<1500 && have_Qnhaltitude) {
-      QNH = newqnh;
-      if (oldqnh!=newqnh) {
-          CAirspaceManager::Instance().QnhChangeNotify(QNH);
-      }
-      oldqnh=newqnh;
+  if (have_Qnhaltitude) {
+      UpdateQNH(StrToDouble(ctemp, NULL));
   }
 
   NMEAParser::ExtractParameter(String,ctemp,6);
