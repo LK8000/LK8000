@@ -19,6 +19,8 @@ BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bus);
 BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload);
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateQNH(const double newqnh);
+
 
 int oldSerial;
 int SerialNumber =0;
@@ -265,8 +267,7 @@ if(_tcslen(String) < 180)
   if (initqnh) {
 	// if wester has qnh set by user qne and qnh are of course different
 	if (altqne != altqnh) {
-		QNH=FindQNH(altqne,altqnh);
-        CAirspaceManager::Instance().QnhChangeNotify(QNH);
+		UpdateQNH(FindQNH(altqne,altqnh));
 		StartupStore(_T(". Using WESTERBOER QNH %f%s"),QNH,NEWLINE);
 		initqnh=false;
 	} else {
