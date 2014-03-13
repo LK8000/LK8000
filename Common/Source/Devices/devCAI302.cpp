@@ -534,17 +534,29 @@ $PCAID,<1>,<2>,<3>,<4>*hh<CR><LF>
 *hh Checksum, XOR of all bytes of the sentence after the ‘$’ and before the ‘*’
 */
 
+static bool have_Qnhaltitude=false;
+
 BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
-/*
-	(void)pGPS;
-	(void)String;
-*/
+
   TCHAR ctemp[80];
+  static short waitinit=3;
+
+  if (waitinit>0) {
+      waitinit--;
+      return TRUE;
+  }
+      
 
   NMEAParser::ExtractParameter(String,ctemp,1);
-  double ps = StrToDouble(ctemp,NULL);
-  UpdateBaroSource( pGPS ,0, d,  AltitudeToQNHAltitude(ps));
-
+  // This is in conflict with !w sentence providing true altitude and the relative QNH.
+  // The idea is to use this value, which would require a manual setup of QNH) only if no baro altitude
+  // is available  from the !w sentence (and in such case we ignore QNH as well).
+  // We use a local flag to make it easier.
+  // We must wait for at least the first run to see if the sequencing pcaid-!w is done, no matter the order.
+  if (!have_Qnhaltitude) {
+      double ps = StrToDouble(ctemp,NULL);
+      UpdateBaroSource( pGPS ,0, d,  AltitudeToQNHAltitude(ps));
+  }
 
   return TRUE;
 }
@@ -570,6 +582,7 @@ BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   TCHAR ctemp[80];
+  static double oldqnh=0;
 
   
   NMEAParser::ExtractParameter(String,ctemp,1);
@@ -581,17 +594,37 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   NMEAParser::ExtractParameter(String,ctemp,4);
 
-  double palt=StrToDouble(ctemp,NULL)-1000;
-  UpdateBaroSource( pGPS , 0, d,   AltitudeToQNHAltitude(palt));
+  // this is true altitude, already corrected for non-standard temp and pressure.
+  // It is the altitude relative to the current (following) QNH
+  // So we dont do any qnh conversion!
+  double qnhalt=StrToDouble(ctemp,NULL)-1000;
 
-//  ExtractParameter(String,ctemp,5);
-//  pGPS->QNH = StrToDouble(ctemp, NULL) - 1000;
-  
+  // minimalistic check, to be sure we are not excluding PCAID without a real qnh
+  if (qnhalt!=0) {
+      have_Qnhaltitude=true;
+      UpdateBaroSource( pGPS , 0, d,   qnhalt);
+  }
+
+  // We DO need to set the QNH altitude as well, if we use the previous baro altitude!
+  NMEAParser::ExtractParameter(String,ctemp,5);
+  double newqnh=0;
+  newqnh=StrToDouble(ctemp, NULL);
+  if (newqnh>100 && newqnh<1500 && have_Qnhaltitude) {
+      QNH = newqnh;
+      if (oldqnh!=newqnh) {
+          CAirspaceManager::Instance().QnhChangeNotify(QNH);
+      }
+      oldqnh=newqnh;
+  }
+
   NMEAParser::ExtractParameter(String,ctemp,6);
   pGPS->AirspeedAvailable = TRUE;
+
   pGPS->TrueAirspeed = (StrToDouble(ctemp,NULL) / 100.0);
-  pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(palt);
-  
+  // if qnhalt is zero, IAS is the TAS, more or less, so no problems
+  pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(AltitudeToQNEAltitude(qnhalt));
+ 
+ 
   NMEAParser::ExtractParameter(String,ctemp,7);
   pGPS->VarioAvailable = TRUE;
   pGPS->Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
