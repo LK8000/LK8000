@@ -79,6 +79,56 @@ Old task files can still be loaded.
 Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
+
+
+============
+Version 4.1o
+============
+
+NEW
+
+ Add new infobox for Heading . Showing magnetic heading if available from an external instrument; otherwise showing
+   the estimated heading calculated internally.
+
+ Add infoboxes  for Alternate1 and Alternate2 radials.
+    The name of alternate waypoint is printed, after a "<" character which
+    is there to indicate the radial value, opposite to bearing angle.
+    
+ Add infobox for Bank Angle
+
+
+
+CHANGES
+
+ Change 5th value of ALT infoboxes from FL to aALT, and viceversa.
+    aALT is the alternate unit altitude, for example if distance unit is km, this is in nm.
+    If it is nm or sm, this is km.
+
+ In landscape mode only, show alternate distance and radial for waypoint details
+
+
+
+
+
+FIXES
+
+ CAI302 fix for many errors relative to inaccurate baro altitude and indicated air speed calculation.
+       QNH sent by the instrument is now received and set inside LK too.
+
+ Fix HeadWind calculation using TAS if available. This value is shown in infoboxes.
+
+ Fix device driver LX not reading the magnetic heading if available
+
+
+ Fix glidebar not available (and showing ---) when showing T multitarget, with a real task, in FINISH mode, but still without a valid start.
+
+
+
+
+
+
+
+
 ============
 Version 4.1n
 ============
