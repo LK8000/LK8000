@@ -19,6 +19,11 @@
 #include "InputEvents.h"
 #include "devLXNano.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+extern bool UpdateQNH(const double newqnh);
+
+
+
 //____________________________________________________________class_definitions_
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -318,10 +323,9 @@ bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
     if (d == pDevPrimaryBaroSource)
     {
-      QNH = CalculateQNH(alt, alt + AltOffset);
+      UpdateQNH(CalculateQNH(alt, alt + AltOffset));
+      UpdateBaroSource(info, 0, d, alt + AltOffset);
 
-      info->BaroAltitude = alt + AltOffset; // 100129
-      info->BaroAltitudeAvailable = TRUE;
 
      /* if(FirstCheckBaroAlt)
       {
