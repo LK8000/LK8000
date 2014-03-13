@@ -10,7 +10,7 @@
 #include "DoInits.h"
 #include "Logger.h"
 #include "Waypointparser.h"
-
+extern bool UpdateQNH(const double newqnh);
 
 void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static int done_autoqnh = 0;
@@ -83,7 +83,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		}
 	}
 	if (fixaltitude!=0) {
-		QNH = FindQNH(Basic->BaroAltitude, fixaltitude);
+		UpdateQNH(FindQNH(Basic->BaroAltitude, fixaltitude));
 		TCHAR qmes[80];
 		if (PressureHg) 
 			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH/TOHPA,fixaltitude*ALTITUDEMODIFY,
@@ -95,7 +95,6 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		#if TESTBENCH
 		StartupStore(_T("%s%s"),qmes,NEWLINE);
 		#endif
-		CAirspaceManager::Instance().QnhChangeNotify(QNH);
 	}
   }
 }
