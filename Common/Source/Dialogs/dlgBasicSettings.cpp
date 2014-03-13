@@ -16,6 +16,7 @@
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
+extern bool UpdateQNH(const double newqnh);
 
 // static bool BallastTimerActive = false;
 
@@ -36,6 +37,7 @@ static double INHg=0;
 static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
   WndProperty* wp;
 
+  double newqnh=0;
   switch(Mode){
 	case DataField::daGet:
 		if (PressureHg) {
@@ -49,13 +51,11 @@ static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
 	case DataField::daChange:
 		if (PressureHg) {
 			INHg = Sender->GetAsFloat();
-			QNH=INHg*TOHPA;
+			newqnh=INHg*TOHPA;
 		} else {
-			QNH = Sender->GetAsFloat();
+			newqnh = Sender->GetAsFloat();
 		}
-		if (CALCULATED_INFO.Flying) QNH=fabs(QNH); 
-		devPutQNH(devAll(), QNH);
-		CAirspaceManager::Instance().QnhChangeNotify(QNH);
+	        if ( UpdateQNH(newqnh) ) devPutQNH(devAll(), newqnh);
 		// VarioWriteSettings();
 
 		wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
