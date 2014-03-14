@@ -77,6 +77,7 @@
 #define GTL2 
 
 // Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
+// In v5 this is practically unused. Should be removed asap.
 #define USEBIGZOOM	1	
 
 
