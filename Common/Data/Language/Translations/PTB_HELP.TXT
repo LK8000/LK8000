@@ -25,7 +25,7 @@ Arquivos de terreno estão localizados na pasta _Maps.
 
 @103
 Nome do arquivo primário de pontos.
-Pode-se usar arquivos em formato DAT do Winpilot, CUP do SeeYou, ou WPT do COMPEgps.
+Pode-se usar arquivos em formato DAT do Winpilot, CUP do SeeYou, ou WPT no formato COMPEgps.
 ATENÇÃO: ao criar um NOVO ponto, ele será salvo dentro do arquivo primário de pontos.
 Arquivos de pontos estão localizado na pasta _Waypoints.
 
@@ -172,6 +172,7 @@ Permite ligar ou desligar o algoritmo do vento automático. Quando desligado, o 
 [Girando] Necessita apenas de um sinal GPS.
 [ZigZag] Necessita de um vario inteligente com sinal de velocidade.
 [Ambos] Usa ZigZag e Girando.
+[Externo] Calclula o vento apenas associado a um instrumento externo (como CAI, LX, ZANDER, etc.)
 
 @140
 Esta é a VELOCIDADE INDICADA a manter em voo reto antes de solicitar o cálculo de VentoVerdadeiro.
@@ -209,7 +210,7 @@ Mostra a localização estimada do centro da térmica.
 Quando habilitado e com o Localizador de Térmicas também ativo, um alerta sonoro será emitido durante o giro da térmica na hora de desfazer a curva e seguir reto por alguns instantes.
 
 @146
-Esta opção habilita o forçamento automático do modo de planeio final se o planador estiver acima do planeio final antes de atingir o penúltimo ponto.
+Esta opção força automáticamente o modo de planeio final se o planador estiver acima do planeio final antes de atingir o penúltimo ponto.
 O forçamento antecipado do planeio final também pode ser feito de forma manual pelo menu de prova.
 
 @147
@@ -652,6 +653,12 @@ Esta tecla é acionada clicando no ícone da aeronave no canto direito inferior 
 Abaixo desse tempo, o clique chamará o menu como de costume.
 Consulte o manual para ver todas as combinações. O padrão é Desabilitado.
 
+@407
+Esta tecla é acionada clicando  no centro do mapa por um tempo mínimo.
+Se o Mapa Ativo estiver habilitado e arquivo de espaços aéreos configurados, abrirá informações de espaço aéreo. Após abrir a informação de espaço aéreo clique denovo para obter esta informação.If ActiveMap is enabled, this customkey can be sometimes overridden by an underlying airspace
+
+
+
 #
 # LOGGER REPLAY
 #
@@ -842,6 +849,7 @@ Permite ligar ou desligar o algoritmo do vento automático. Quando desligado, o 
 [Girando] Necessita apenas de um sinal GPS.
 [ZigZag] Necessita de um vario inteligente com sinal de velocidade.
 [Ambos] Usa ZigZag e Girando.
+[Externo] Quando associado a um equipamento externo.
 
 @613
 Determina se a trilha será deslocada com o vento quando exibida em modo de giro de térmica.
@@ -865,7 +873,7 @@ W* depends upon both the surface heating and the BL depth.
 
 @652
 [BL wind spd]
-The speed and direction of the vector-averaged wind in the BL.  
+The velocidade and direction of the vector-averaged wind in the BL.  
 This prediction can be misleading if there is a large change in wind direction through the BL.
 
 @653
@@ -1260,7 +1268,7 @@ Radial para Casa, se disponível.
 
 @879
 [Distância Espaço Aéreo]
-ATUALMENTE INDISPONÍVEL. Distância ao Espaço Aéreo mais próximo. Mesmo que o espaço aéreo não apareça no mapa, esteja desabilitado ou já reconhecido, a distância continua sendo mostrada. Se o valor for 0, você está dentro de um espaço aéreo, use o menu EspAér Mais Próximo para saber mais sobre ele.
+É a distância horizontal a um espaço aéreo selecionado. Para selecionar vá até a pagina 2.4 EAEr e acione detalhes. No caso de estar voando em uma zona autorizada, mostra a distãncia mais próxima para sair desta.
 
 @880
 [Bco Bats Ext]
@@ -1305,85 +1313,125 @@ Ajuda indisponível para este item!
 
 
 @890
-[OLC CLASSIC] distance
-Current distance calculated around 5 turnpoints. 
+[OLC CLASSIC] distância
+Distância calculada ao longo de 5 pontos. 
 
 @891
-[FAI TRIANGLE] distance
-FAI triangle maximum distance achieved so far.
+[FAI TRIANGLE] distância
+Máxima distância alcançada em Triângulo FAI.
 
 @892
-[OLC LEAGUE] distance
-Max distance calculated around 3 turnpoints, made in 2.5 hours.
+[OLC LEAGUE] distância
+Máxima distância calculada  ao longo de 3 pontos, feita em 2.5 horas.
 
 @893
-[FAI 3TPs] distance
-Current distance calculated around 3 turnpoints. 
+[FAI 3TPs] distância
+Distância calculada ao longo de 3 pontos. 
 
 @894
-[OLC CLASSIC] predicted distance
-Current distance calculated around 5 turnpoints assuming the last one
-will be the starting point.
+[OLC CLASSIC] distância declarada
+Distância atual calculada ao longo 5 pontos assumindo o último ponto antes do ponto de largada.
 
 @895
-[FAI TRIANGLE] predicted distance
-FAI triangle maximum distance achieved so far, assuming the last point
-will be the starting point.
+[FAI TRIANGLE] distância declarada
+Máxima distância em Triângulo FAI assumindo o último ponto antes do ponto de largada.
 
 @896
-[FAI 3TPs] predicted distance
-Current distance calculated around 3 turnpoints assuming the last one
-will be the starting point.
+[FAI 3TPs] distância declarada
+Distância atual calculada ao longo 3 turnpoints assumindo o último ponto antes da largada.
 
 @897
-[OLC CLASSIC] speed
+[OLC CLASSIC] velocidade
 
 @898
-[FAI TRIANGLE] speed
+[FAI TRIANGLE] velocidade
 
 @899
-[OLC LEAGUE] speed
+[OLC LEAGUE] velocidade
 
 @900
-[FAI 3TPs] speed
+[FAI 3TPs] velocidade
 
 @901
-[OLC CLASSIC] predicted speed
+[OLC CLASSIC] velocidade declarada
 
 @902
-[FAI TRIANGLE] predicted speed
+[FAI TRIANGLE] velocidade declarada
 
 @903
-[FAI 3TPs] predicted speed
+[FAI 3TPs] velocidade declarada
 
 @904
-[OLC CLASSIC] score
+[OLC CLASSIC] pontuação
 
 @905
-[FAI TRIANGLE] score
+[FAI TRIANGLE] pontuação
 
 @906
-[OLC LEAGUE] score
+[OLC LEAGUE] pontuação
 
 @907
-[FAI 3TPs] score
+[FAI 3TPs] pontuação
 
 @908
-[OLC CLASSIC] predicted score
+[OLC CLASSIC] pontuação declarada
 
 @909
-[FAI TRIANGLE] predicted score
+[FAI TRIANGLE] pontuação declarada
 
 @910
-[FAI 3TPs] predicted score
+[FAI 3TPs] pontuação declarada
 
 @911
-[OLC PLUS] score
-The sum of OLC Classic score and FAI triangle score.
+[OLC PLUS] pontuação
+Soma da pontuação OLC Classic com a pontuação do Triangulo FAI.
 
 @912
-[OLC PLUS] predicted score
-The sum of OLC Classic predicted score and FAI triangle predicted score.
+[OLC PLUS] pontuação declarada
+Soma da pontuação OLC Classic declarada e da pontuação do Triângulo FAI declarado.
+
+@913
+[FLAP SETTINGS]
+Mostra a configuração otimizada para o flap baseado no arquivo extendido da polar e carga alar.
+Veja o exemplo do arquivo da polar na pasta _Polars, para entender como criar o arquivo de polar extendido.
+
+@914
+[Distância vertical de EAer]
+Distância vertical para o espaço aére selecionado. Para selecionar vá a janela 2.4 seleciona e espaço em questão.
+Se estiver dentro mostrará a distancia mais próxima para sair porcima ou por baixo o mesmo.
+
+@915
+[Altitude de chegada na origem]
+Altitude de chegana da origem. Calculada baseada no MC atual, usa Altitude de Segurança and MC de Segurança.
+
+@916
+@917
+@918
+[Alternate bearing]
+Bearing to the selected alternate
+
+@919
+@920
+@921
+[Alternate distância]
+distância to the selected alternate
+
+@922
+[Max Altitude Alcançada]
+Max altitude alcançada durante o voo.
+É resetada na aterrissagem.
+
+@923
+[Max Ganho de altura]
+Calculado apartir da menor altitude após a decolagem.
+
+@924
+[Velocidade Apoio do Vento]
+É a componente vetorial provocada pelo vento na trajetória atual.
+É a diferença entre a velocidade real e a velocidade ao solo.
+Se positivo indica vendo contra, se negativo indica vento de cauda.
+Na ausência de sensores para velocidade real é utilizada a velocidade ao ar estimada. 
+
 
 
 #
@@ -1391,73 +1439,53 @@ The sum of OLC Classic predicted score and FAI triangle predicted score.
 #
 
 @1200
-[Airspace area filling]
-Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
-[Outlines only] there will be only lines on airspace area borders 
-[Pattern] airspace area will be filled with selected pattern of selected color
-[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
-Transparency may not be available on some hardware devices.
+[Aparência do Espaço Aéreo]
+As áreas de espaços aéreos pobem ser definidas por linhas, hachurras ou por preenchimento colorido tranparente.
+[Somente Borda] Mostra apenas linhas colorinas nas bordas deste. 
+[Hachurra] A área será preenchida por padrões de achurras coloridos.
+[Semi-Transparente] A área será preenchida por cores com transparências. Nem todos hardwares suportam esta função.
 
 @1201
-[Opacity of semi-transparent airspace]
-Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
+[Opacidade de EAer semi-transparentes]
+Transparente (->0%) / opaco (->100%).
 
 @1202
-[Bottom Bar Opacity]
-Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
-Normally the bar is black with white text, and can be reverted to white with black text on it.
-Setting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.
-Some combinations of opacity and reverse colors may not be suitable to navigation, but there are
-infinite combinations to choose from.
-Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
-Another famous 8000 instrument is using 75% opacity.
-Default is 60%.
-ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
-and the bottom bar will be always full black or full white.
+[Transparência da Barra Inferior]
+Transparente (->0%) / opaco (->100%).
+Nem todos hardwares suportam esta função.
 
 @1203
 [Font Smoothing]
-Font smoothing will make characters appearing with better quality.
-[None] will force disabling font smoothing
-[Normal] will use default quality
+Faz com que as letras apareçam com melhor qualidade.
+[None] desabilita a função
+[Normal] qualidade normal
 [Anti Aliasing] normal quality
-[ClearType] advanced quality. 
-Please note that on some devices like old 3850 Anti Aliasing is not working. 
-On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
-Otherwise, by default LK8000 is using ClearType.
-You must exit and restart LK8000 to see the effect of changes.
+[ClearType] qualidade avançada 
 
 @1204
-[VarioBar mode]
-Choose the vario value and relative bar display on the left, if enabled.
-In thermal mode, only vario can be shown.
-In cruise mode, also nettovario or Speed To Fly (Sollfart).
-If STF is selected, the desired IAS is printed, and the bar is indicating
-if you must push or pull the stick to reach that value.
+[Modos da Barra do Variômetro]
+Seleciona quando a barra de vário aparecerá a esquerda do mapa.
+No modo termal somente o vário é mostrado.
+No modo planeio, também mostra nettovario or velocidade STF (Sollfart).
+SE STF estiver selecionada, a velocidade IAS a ser atingida aparecerá.
 
-The value is printed with a suffix letter indicating:
-NT for netto
-SF for STF
+O valor será impresso com um sufixo:
+NT para netto
+SF para STF
 
 @1205
-[Aircraft category]
-Select your aircraft type here, and possibly change the polar file also accordingly.
-Each aircraft mode has unique features, please visit the website or read the latest
-manual to discover differences.
-After changing category, you must restart LK in order to notice all differences.
+[Tipo de Aeronave]
+Selecione seu tipo de aeronave.
 
 @1206
-[Aircraft type]
-This contains a selection of aircrafts and wings of different performance classes.
-If you want to use your own polar file, choose Custom Polar File here 
-and then select it from the next configuration box.
+[Curva Polar]
+Seleciona o arquivo de curva polar da aeronave a ser utilizada.
 
 @1207
-[Custom polar file]
-When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
-Polars must be placed inside _Polars subfolder.
-Creating a polar file is not trivial, because you need actual sink rate values and a precise
-aircraft weight. Read the manual to know more about all of this. 
+[Arquivo Customizado de Curva Polar]
+É o arquivo que contém dados da curva polar, estão postados na pasta _Polars.
+Criar um arquivo de curva polar não é trivial, porque é necessário valores precisos de velocidade e afundamento. 
+Para maiores informações busque-as no manual.
 
 @1208
 [Tipo de Aeronave]
@@ -1469,8 +1497,8 @@ Contém a seleção de aeronaves e das de diferentes classificações de perform
 Se você estiver voando dentro de um espaçõ aéreo condicionado sem a aprovação/reconhecimento o alerta retornará depois deste tempo decorrido.
 
 @1210
-[Distancia vertical da margem do Espaço Aéreo]
-Se sua distancia vertical da base ou topo do espaço aéreo tende a interseção, aparecerá um Alerta Amarelo em uma janela de mensagem.
+[distância vertical da margem do Espaço Aéreo]
+Se sua distância vertical da base ou topo do espaço aéreo tende a interseção, aparecerá um Alerta Amarelo em uma janela de mensagem.
 Isto altera o a forma com que o ícone de alerta de espaço aéreo no mapa.
 Se a distância vertical (diferença de altitude) até a base ou topo deste espaço aéreo for menor que este limite, o ícone de alerta aparecerá acima do simbolo da aeronava alertando você. 
 
@@ -1481,12 +1509,12 @@ Se este tempo for ultrapassado a janela de aviso de Espaço Aéreo é encerrada.
 @1212
 [Nome dos Espaços Aéreos]
 Se estiver ligada, aparecerá um Alerta no mapa indicando o Nome e Distãncia vertical dos limites do mesmo.
+
 @1213
 [PG autozoom threshold]
-When using autozoom in PG mode, autozoom gets working only if the next waypoint gets closer than this limit.
-For example if you choose 5km, it means when you're 5km to the next waypoint the autozoom will start working.
-It's zoom out to 5km zoom range, and it will keep zoom in as you're approaching the waypoint.
-After you reach the waypoint the previous Cruise zoom restored. And as soon you reach 5km to the next waypoint the autozoom start working again.
+É uma ferramenta de zoom automático quando aproximando do objetivo. Quando atingida a distância estabelecida na configuração (é em relação ao centro do objetivo) o zoom passa a aumentar
+automaticamente para que seja sempre mostrado objetivo e aeronave na tela.
+Quando atingido o objetivo retorna automaticamente ao zoom de planeiro (o zoom de térmica continua prevalecendo aos modos anteriores).
 
 @1220
 [Configurações da Barra Inferior]
@@ -1525,7 +1553,6 @@ O alareme não sera repetido nos próximos 60 segundos.
 Após 1 minuto, se a altitude continuar proximo ou acima, volta a tocar o alarme.
 Para desabilitar, selecione 0. 
 A altitude usada para o alarme é a determinada no menu de configuração 5, usando altitude barométrica.
-Multiple alarms set at the same altitude will have no effect.
 Em momentos crítcos do voo não é possível configurar o mesmo.
 Se tocar mais de 30 vezes o mesmo é desligado
 A mensagem visual desaparece depois de 12segundos.
@@ -1542,13 +1569,164 @@ MacCready Automático, pode ser ligado ou desligado inclusive durante o voo.
 Este é o valor padrão. 
 
 @1256
-[Total Energy] Quando TotalEnergy está em uso, o LK calcula a altura estimada que ganhará se voltar a velocidade de melhor planeio da aeronave.
+[Energia Total] Quando Energia Total está em uso, o LK calcula a altura estimada que ganhará se voltar a velocidade de melhor planeio da aeronave.
 O padrão é desabilitado. Se você tiver dúvida mantenha INATIVA esta função.
 
 @1257
 [Efficiência]
 100% se sua taxa de afundamento está dentro os padrões da aeronave. Por exemplo: Se selecionar 50% a taxa de afundamento será dobrada.
-O padrão é usar 100%.Hosw clean the glider is. 
+O padrão é usar 100%.
+
+@1258
+[Intervalo do rastreador]
+Esta função requer o serviço de GPRS/HSDPA de seu hardware e um ativo TCP/IP internet connection para o servidor www.livetrack24.com.
+Configure >que 0 se deseja habilitar o envio de posição ao site Leonardo LiveTracker.
+
+@1259
+[Custom Menu]
+
+@1260
+[Gestos Rápidos]
+Somente habilitado para aeronaves tipo paraglier ou asa delta.
+Por padrão, os gestos rápidos estão ativos. Gestos rápidos permitem  que pilotos apliquem comandos sem a necessidade de deslisar o dedo sobre a tela,apenas tocando nas porções esquerda e direita da mesma.
+
+@1261
+[Segurança na Decolagem]
+Durante a fase da decolagem, este alarme soará quando a alura de seguraça for alcançada (QFE).
+Para planadores normalmente se usa uma altitude suficientes para realizar uma curva de 180 para retornar ao solo no cado de um reboque abortado.
+Para desabilitar deixe o valor em zero.
+Este alarme é armao novamente apenas depois da aterrissagem.
+
+@1262
+[Opções de Multimap]
+Permite selecionar diferentes formas de apresentação dos Multimaps.
+
+@1263
+[Barra Inferior AUTO]
+Se ativo, a barra TRM0 - com informacoes de termicas - aparecera automaticamente. Sera desativada assim que sair da termal ou se comandar a troca de barra.
+
+
+@1264
+[Reconh. Grupo]
+Aviso de um espaço aéreo é válido para todos os espaços aéreos com o mesmo nome e mesma classe.
+
+@1265
+[Mudanças de Espaço Aéreo]
+"persistente" desabilita a função na próxima ativação do programa.
+"apenas para este momento" todos espaços aéreos serão reabilitados na próxima ativação do programa.
+
+@1266
+[Jantela de Tempo]
+Para corridas para o gol 1 para um único Start e serão habilitadas funções de tempo sobrepostas ao mapa. Zero apenas para serviços de navegação.
+
+@1268
+[FAI Triangle Threshold]
+Ajusta para maior Triangulo FAI 28%/45%
+500km para regulamentação DMSt and OLC
+750km para regulamentação FAI
+
+@1269
+[Aviso de Trem de Pouso]
+Desligado=sem aviso
+
+Aeródromos:  (recommendado em montanhas)
+Aviso de trem de pouso. Avisará somente se a posição é 2 nautical miles (3,7km) ou menor para melhor alternativa.
+
+Sempre:  (recomendado em zonas planas)
+O aviso soará sempre que atingida a altura AGL estipulada.
+
+
+@1270
+[Alt de Aviso de Trem]
+É a altura em que o aviso de trem soará.
+
+@1271 
+[Saída QNH]
+QNH (em Pa), saída padrão - (valor padrão 101325)
+
+@1272 
+[Lift Threshold]
+Valor em m/s de ascenção para que o o audio comece a soar.
+
+@1273 
+[Lift Off Threshold]
+Valor em m/s em que o beeper para.
+
+@1274 
+[Sink Threshold]
+Valor negaito em m/s do afundamento quando começa a soar.
+
+@1275 
+[Sink Off Threshold]
+Valor negaito em m/s do afundamento quando para de soar.
+
+@1276 
+[Position Noise]
+Kalman filter position noise.
+
+@1277 
+[Frequencia de Base para Lift]
+Frequencia dos beeps para ascenção em Hz, para 0 m/s.
+
+@1278 
+[Lift Freq. Incremento]
+Incremento de frequencia por cada 1 m/s.
+
+@1279 
+[Sink Freq. Base]
+Frequencia dos beeps para afundamento em Hz, para 0 m/s.
+
+@1280 
+[Sink Freq. Increment]
+Incremento de frequencia por cada -1 m/s.
+
+@1281 
+[Volume]
+Volume sonoro ->  de 0.1 (mais baixo) 1.0 (mais alto).
+
+@1282 
+[Taxa Multiplicadora]
+É a ascenção da cadencia -> 0.5 = bipa duas vezes a mais que o normal.
+
+@1283 
+[Audio Conectado]
+Checa a comunicação por áudio quando habilitado.
+
+
+@1284 
+[Audio Desconectado]
+Checa a comunicação por áudio quando desabilitado.
+
+@1285 
+[Espera do Bluetooth]
+Tempo para que o hardware habilite a conexão por bluetooth.
+
+@1286 
+[Modo de Saída]
+0-BlueFlyVario (padrão) "Não Suportado" 
+1-LK8EX1  
+2-LX "Not Supported"
+3-FlyNet
+
+@1287 
+[Frequencia de Saída]
+Frequencia de Saída -> 1-a cada 20ms ... 50- a cada 20msx50=1000ms
+
+@1288
+[Inclinação do ESS Cônico]
+É o fator de inclinação do Cone do ESS.
+
+@1289
+[Base ESS Cônico]
+Define a Altitude da Base do ESS Cônico
+
+@1290
+[Sonar do Espaço Aéreo]
+Sinal sonoro similar a um sonar soará quando aproximando de um Espaço Aéreo Condicionado, quanto mais próximo mais curto o intervalo.
+
+@1291
+[Raio da Base do ESS Cônico]
+Define o raio da base do cone do End Speed Section.
 
 @9999
 Não existe ajuda para este item!

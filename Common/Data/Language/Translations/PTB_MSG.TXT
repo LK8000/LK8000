@@ -95,7 +95,7 @@ _@M78_ "Tudo PRETO"
 _@M79_ "Todos LIGADOS"
 _@M80_ "Todos PONTOS"
 _@M81_ "Tudo BRANCO"
-_@M82_ "Já indo para origem"
+_@M82_ "Indo para origem"
 _@M83_ "Dif altit Mc 0"
 _@M84_ "Dif altit Mc atual"
 _@M85_ "Dif altit Mc segurança"
@@ -122,7 +122,7 @@ _@M105_ "Avanço Autom: MANUAL"
 _@M106_ "Luz de fundo autom "
 _@M107_ "Planeio Final auto "
 _@M108_ "Auto Forçar Plan Final "
-_@M109_ "Algor. MC autom "
+_@M109_ "Algor. MC auto "
 _@M110_ "Volume automático "
 _@M111_ "Avanço auto "
 _@M112_ "Avanço auto"
@@ -177,7 +177,7 @@ _@M160_ "Calc"
 _@M161_ "Canc"
 _@M162_ "Não pode sobrescrever!"
 _@M163_ "Automóvel"
-_@M164_ "Categoria "
+_@M164_ "Tipo de Aeronave "
 _@M165_ "Tendênc teto"
 _@M166_ "Centro "
 _@M167_ "Centro"
@@ -259,7 +259,7 @@ _@M242_ "Dist rest"
 _@M243_ "Distância  "
 _@M244_ "Distância "
 _@M245_ "Distância"
-_@M246_ "Dump time "
+_@M246_ "Tempo descarga "
 _@M247_ "ETE"
 _@M248_ "SAIR"
 _@M249_ "Editar Fonte"
@@ -342,7 +342,7 @@ _@M325_ "Polar Planeio"
 _@M326_ "Indicador de Alcance "
 _@M327_ "Posição planador "
 _@M328_ "Planador"
-_@M329_ "Vá Para origem"
+_@M329_ "Vá Para Origem"
 _@M330_ "Vá Para"
 _@M331_ "Verde"
 _@M332_ "Cinza"
@@ -456,7 +456,7 @@ _@M439_ "Montanhoso"
 _@M440_ "Descer"
 _@M441_ "Subir"
 _@M442_ "Mover wp baixo"
-_@M443_ "Mover wp cima"
+_@M443_ "Mover wp acima"
 _@M444_ "Mover"
 _@M445_ "Movendo"
 _@M446_ "Janela msg"
@@ -504,7 +504,7 @@ _@M487_ "Número: "
 _@M488_ "Números"
 _@M489_ "DESL (G)"
 _@M490_ "DESL (não G)"
-_@M491_ "DESL"
+_@M491_ "DESLIGAR"
 _@M492_ "OK para invalidar declaração?"
 _@M493_ "Regras OLC"
 _@M494_ "LIG (G)"
@@ -761,10 +761,10 @@ _@M744_ "IAS VentoVerdad "
 _@M745_ "Período VentoVerd "
 _@M746_ "VentoVerdadeiro atualizado!"
 _@M747_ "Hora largada prova "
-_@M748_ "Janel tempo prova "
+_@M748_ "Config START "
 _@M749_ "Ponto de Virada"
 _@M750_ "Filtro Ptos Virada "
-_@M751_ "Tipo "
+_@M751_ "Arquivo da Polar "
 _@M752_ "Tipo"
 _@M753_ "DESCONHECIDO! "
 _@M754_ "DESBLOQ"
@@ -901,7 +901,7 @@ _@M890_ "Não"
 _@M891_ "Limpa prova antiga e carrega"
 _@M892_ "(manual)"
 _@M893_ "(auto)"
-_@M894_ "LIG"
+_@M894_ "LIGAR"
 _@M895_ "Forçar"
 _@M896_ "Liberar"
 _@M897_ "AUTO"
@@ -983,6 +983,9 @@ _@M964_ "A TELA ESTÁ DESBLOQUEADA"
 # Menu buttons, MAX 8 character per line! Keep \n !
 _@M965_ "Desbloq\nTela"
 _@M966_ "Bloq\nTela"
+_@M967_ "Mudanças de Espaço Aéreo"
+_@M968_ "para esse momento apenas"
+_@M969_ "persistir"
 
 #
 # GPS and COM port warnings
@@ -1085,7 +1088,7 @@ _@M1083_ "Prova - Tempo estimado"
 _@M1084_ "TEPrv"
 _@M1085_ "Próximo - Tempo estimado"
 _@M1086_ "TEProx"
-_@M1087_ "Velocidade - Velocidade To Fly"
+_@M1087_ "Velocidade - Velocidade STF"
 _@M1088_ "V.STF"
 _@M1089_ "Netto Vario"
 _@M1090_ "Netto"
@@ -1243,8 +1246,8 @@ _@M1228_ "Arquivo 2"
 _@M1229_ "HDG"
 
 # TeamCode dialog captions
-_@M1230_ "Team Ref.: "
-_@M1231_ "Team code: SET REF!"
+_@M1230_ "Equipe Ref.: "
+_@M1231_ "Código Equipe: SET REF!"
 
 # Waypoint edit dialog (same or less chars!)
 _@M1232_ "Lat"
@@ -1322,7 +1325,7 @@ _@M1291_ "Espaço Aéreo próximo"
 _@M1292_ "Espaço Aéreo mais próximo"
 _@M1293_ "Sonar LIG"
 _@M1294_ "Sonar DESL"
-_@M1295_ "Lateral"
+_@M1295_ "Vista Lateral"
 
 # LK info page headers, try to use the same or less Número of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1639,7 +1642,7 @@ _@M1695_ "Logger"
 _@M1696_ "auto"
 
 # PG autozoom threshold on config page 23
-_@M1697_ "Autozoom threshold "
+_@M1697_ "D.Ativa Autozoom "
 
 #Multitarget Direção infobox
 _@M1698_ "Direções do Multiobjetivo"
@@ -1679,7 +1682,7 @@ _@M1721_ "aeródromo de"
 _@M1722_ "aeroporto de"
 _@M1723_ "Perto de"
 _@M1724_ "SUA POSIÇÃO:"
-_@M1725_ "VERY SORRY"
+_@M1725_ "MIL DESCULPAS"
 _@M1726_ "NÃO SEI INFORMAR SUA POSIÇÃO!"
 # 1727-1739 reserved for The Oracle
 _@M1740_ "Análise OLC"
@@ -1692,7 +1695,7 @@ _@M1744_ "Velocidade Máxima "
 _@M1745_ "AERONAVE"
 _@M1746_ "SISTEMA"
 # Novo button caption on prova overview dialog, appears only in PG/HG mode
-_@M1747_ "Janela/Start"
+_@M1747_ "Config START"
 _@M1748_ "Livro de\nRegistros"
 _@M1749_ "Arquivo não encontrado"
 _@M1750_ "Vazio"
@@ -1750,7 +1753,7 @@ _@M1789_ "Deleta arquivo de prova"
 _@M1790_ "Sem arquivo de prova para deletar"
 
 # Customkey configuration item
-_@M1791_ "Arm Alterna advanco"
+_@M1791_ "Arm Alterna avanco"
 
 # configuration PG/Hg specials
 _@M1792_ "Gestos rapidos "
@@ -1795,7 +1798,7 @@ _@M1816_ "FAI ponto final"
 _@M1817_ "Saida e retorno ponto final"
 
 # profile button, keep short!
-_@M1818_ "Equipa"
+_@M1818_ "EQUIP"
 # configuration SETUP Salvar DESABILITADO
 _@M1819_ "Perfis de Equipamento"
 # page name
@@ -1804,7 +1807,7 @@ _@M1820_ "Configuracao Equipamentos"
 _@M1821_ "AUTO"
 _@M1822_ "Configura Multimaps"
 // leave a space after Ack
-_@M1823_ "Group Ack "
+_@M1823_ "Reconhece Grupo "
 
 // Task buttons (keep SHORT text!)
 _@M1824_ "Insere como START"
@@ -1812,6 +1815,33 @@ _@M1825_ "Insterir Antes"
 _@M1826_ "Recoloque"
 _@M1827_ "Anexa antes do final"
 _@M1828_ "Anexa depois do final"
+
+# Gear warning alarm
+_@M1829_ "Aviso de Trem "
+_@M1830_ "Aviso Alt Trem"
+_@M1831_ "Desligado"
+_@M1832_ "Perto de aeród"
+_@M1833_ "Sempre"
+_@M1834_ "Cheque de trem!"
+
+# oudie 2 bluetooth
+_@M1835_ "Falha no pareamento"
+_@M1836_ "Procurando"
+_@M1837_ "Pareado"
+_@M1838_ "NaoPareado"
+
+_@M1840_ "Melhor Alter:"
+
+# Reverse task
+_@M1850_ "Reverter\nProva"
+_@M1851_ "Reverte Prova"
+_@M1852_ "Reverte Prova?"
+_@M1853_ "PROVA REVERTIDA"
+
+# HSI
+_@M1860_ "HSI"
+
+_@M1870_ "Sonar do Espaço Aéreo "
 
 
 ############################################################
@@ -1824,7 +1854,7 @@ _@M1828_ "Anexa depois do final"
 
 _@M2001_ "Zoom\nIn"
 _@M2002_ "Zoom\nOut"
-_@M2003_ "MProx\nWaypoint"
+_@M2003_ "MProx\nPonto"
 _@M2004_ "Pan\n"
 _@M2005_ "Tela\nCheia"
 _@M2006_ "Display\n1/3"
@@ -1836,16 +1866,16 @@ _@M2011_ "Cancela"
 _@M2012_ "Volta"
 _@M2013_ "Calc\nProva"
 _@M2014_ "Avanca\n"
-_@M2015_ "Procura\nWaypoint"
+_@M2015_ "Procurar\nWaypoint"
 _@M2016_ "Nav\n2/3"
-_@M2017_ "Editor\nProva"
+_@M2017_ "Editor\nde Prova"
 _@M2018_ "Limpar\nProva"
-_@M2019_ "Reinicia\nProva"
-_@M2020_ "Objetivo"
+_@M2019_ "Reiniciar\nProva"
+_@M2020_ "Prox\nObjetivo"
 _@M2021_ "Código\nEquipe"
 _@M2022_ "Nav\n3/3"
 _@M2023_ "Reserv"
-_@M2024_ "Tempo\nJanelas"
+_@M2024_ "Janela\nSTART"
 _@M2025_ "Multi\nObjetivo"
 _@M2026_ "Rotulos"
 _@M2027_ "Topologia"
@@ -1974,6 +2004,36 @@ _@M2148_ "Carro,Bicicleta & Trekking"
 # Thermal Bar
 _@M2149_ "na termal"
 _@M2150_ "na termal e transicao"
+_@M2151_ "T>\nCentroWPT"
+_@M2153_ "START fecha tempo"
+_@M2154_ "IGC\nEnvia"
+_@M2155_ "Enviar"
+_@M2156_ "IGC Envia"
+_@M2157_ "Escolhe Equipamento"
+
+#BlueFlyVario
+_@M2158_ "Saida QNH"
+_@M2159_ "Lift Threshold"
+_@M2160_ "Lift Off Threshold"
+_@M2161_ "Sink Threshold"
+_@M2162_ "Sink Off Threshold"
+_@M2163_ "Position Noise"
+_@M2164_ "Lift Freq. Base"
+_@M2165_ "Lift Freq. Increment"
+_@M2166_ "Sink Freq. Base"
+_@M2167_ "Sink Freq. Increment"
+_@M2168_ "Volume"
+_@M2169_ "Rate Multiplier"
+_@M2170_ "Audio Connected"
+_@M2171_ "Audio Disconnected"
+_@M2172_ "Bluetooth Wait"
+_@M2173_ "Output Mode"
+_@M2174_ "Output Frequency"
+
+_@M2175_ "ESS Cônico"
+_@M2176_ "Inclinação do Cone"
+_@M2177_ "Altitude da Base"
+_@M2178_ "Raio da Base"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
@@ -2023,7 +2083,21 @@ _@M2242_ "Sonar\nLiga"
 _@M2243_ "Sonar\nDesliga"
 _@M2244_ "Setup\nEquip"
 _@M2245_ "Salvar\nEquip"
+_@M2246_ "Reset\nVisual"
+_@M2247_ "28/45 FAI threshold"
+_@M2248_ "Nenhum objeto próximo encontrado"
 
-# MAX 2250! 
+# DO NOT TRANSLATE 2249
+_@M2249_  "DspMode"
+
+# MAX 2500! 
 # (Reserved for custom menus up to 2300!)
-# Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)
+# Note for developers: remember LKLanguage MAX_MESSAGE limit (2500)
+
+# S = Start Task point
+_@M2301  "S" 
+# T = Task Point
+_@M2302_  "T"  
+# F = Finish point
+_@M2303_  "F" 
+_@M2304_  "AVISO DE TREM DESLIGADO!"
