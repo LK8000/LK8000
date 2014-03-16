@@ -14,7 +14,7 @@
 #define LKTH_R			Calculated->ThermalEstimate_R
 #define LKTH_W			Calculated->ThermalEstimate_W
 #define LK_TURNRATE		Calculated->TurnRate
-#define LK_HEADING		Calculated->Heading
+#define LK_CALCHEADING		Calculated->Heading
 #define LK_BANKING		Calculated->BankAngle
 #define LK_MYTRACK		Basic->TrackBearing
 #define LK_MYLAT		Basic->Latitude
@@ -42,7 +42,7 @@ void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (Calculated->ThermalGain<50) return;
 
   // StartupStore(_T("*** Tlat=%f Tlon=%f R=%f W=%f  TurnRate=%f \n"), LKTH_LAT, LKTH_LON, LKTH_R, LKTH_W, LK_TURNRATE);
-  // StartupStore(_T("*** CalcHeading=%f Track=%f TurnRate=%f Bank=%f \n"), LK_HEADING, LK_MYTRACK,  LK_TURNRATE, LK_BANKING);
+  // StartupStore(_T("*** CalcHeading=%f Track=%f TurnRate=%f Bank=%f \n"), LK_CALCHEADING, LK_MYTRACK,  LK_TURNRATE, LK_BANKING);
 
   double th_center_distance, th_center_bearing;	// thermal center
   double orbital_bearing;                 	// orbital tangent 
@@ -109,12 +109,12 @@ void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   //  orbital_distance = th_radius / sin(alpha);
 
   // StartupStore(_T("*** tc_dist=%f th_center_bearing=%f  orbital_distance=%f orbital_bearing=%f  alpha=%f  mydir=%f\n"),
-  // th_center_distance, th_center_bearing, orbital_distance, orbital_bearing, alpha, LK_HEADING );
+  // th_center_distance, th_center_bearing, orbital_distance, orbital_bearing, alpha, LK_CALCHEADING );
 
   if (circlesense==1) 
-	orbital_brgdiff = orbital_bearing-LK_HEADING; // CW
+	orbital_brgdiff = orbital_bearing-LK_CALCHEADING; // CW
   else
-	orbital_brgdiff = LK_HEADING - orbital_bearing; // CCW
+	orbital_brgdiff = LK_CALCHEADING - orbital_bearing; // CCW
 
   if (orbital_brgdiff<0) {
 	#if DEBUG_ORBITER
