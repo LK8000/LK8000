@@ -886,6 +886,7 @@ bool CTaskFileHelper::SaveWayPointList(XMLNode node) {
 }
 
 bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const TASK_POINT& TaskPt) {
+    LKASSERT(ValidWayPoint(TaskPt.Index));
     SetAttribute(node, _T("name"), WayPointList[TaskPt.Index].Name);
 
     if (AATEnabled || DoOptimizeRoute()) {
@@ -942,6 +943,7 @@ bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const
 }
 
 bool CTaskFileHelper::SaveStartPoint(XMLNode node, const START_POINT& StartPt) {
+    LKASSERT(ValidWayPoint(StartPt.Index));
     SetAttribute(node, _T("name"), (LPCTSTR)(WayPointList[StartPt.Index].Name));
 
     mWayPointToSave.insert(StartPt.Index);
