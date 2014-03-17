@@ -599,6 +599,8 @@ extern WPCALC   *WayPointCalc;
 */
 //WayPointCalc->
   int overindex = GetOvertargetIndex();
+  if (!ValidWayPoint(overindex)) return TRUE;
+
   _stprintf(
       szTmp,
       TEXT("$GPRMB,A,0.66,L,EDLG,%6s,%010.5f,N,%010.5f,E,%05.1f,%05.1f,%05.1f,V"),

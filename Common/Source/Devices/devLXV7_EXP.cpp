@@ -344,6 +344,7 @@ int DegLat, DegLon;
 double MinLat, MinLon;
 char NoS, EoW;
 
+if (!ValidWayPoint(overindex)) return TRUE;
 
 DegLat = (int)WayPointList[overindex].Latitude;
 MinLat = WayPointList[overindex].Latitude - DegLat;
