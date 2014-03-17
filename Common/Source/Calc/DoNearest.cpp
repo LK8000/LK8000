@@ -18,6 +18,11 @@
 
 void DoNearestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) { 
 
+  #if BUGSTOP
+  LKASSERT(ValidWayPoint(AltWaypoint));
+  #endif
+  if (!ValidWayPoint(AltWaypoint)) return;
+
   double *altwp_gr	= &WayPointCalc[AltWaypoint].GR;
   double *altwp_arrival	= &WayPointCalc[AltWaypoint].AltArriv[AltArrivMode];
 
