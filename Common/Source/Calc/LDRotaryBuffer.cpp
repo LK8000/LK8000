@@ -140,10 +140,13 @@ FILE *fp;
 _noautoreset:
 
     if((buf->start) < -1) {
+        #if BUGSTOP
+        LKASSERT(buf->start==-2);
+        #endif
         // this is the first run after reset,
         // save NavAltitude for calculate in AltDiff next run
         // and return;
-        ++buf->start;
+        buf->start=-1;
         buf->prevaltitude = iround(Calculated->NavAltitude*100);
         return;
     }
@@ -160,6 +163,8 @@ _noautoreset:
 		buf->start=0;
 		buf->valid=true; // flag for a full usable buffer 
 	}
+        LKASSERT(buf->start>=0 && buf->start<MAXLDROTARYSIZE);
+        if (buf->start<0 ||buf->start>=MAXLDROTARYSIZE) buf->start=0; // UNMANAGED RECOVERY!
 	// need to fill up buffer before starting to empty it
 	if ( buf->valid == true) {
 		buf->totaldistance-=buf->distance[buf->start];
