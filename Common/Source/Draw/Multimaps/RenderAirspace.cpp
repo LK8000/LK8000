@@ -821,7 +821,7 @@ if(SAFETYALTITUDEARRIVAL > 0)
       _tcscat(text, TEXT("---"));
     }
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-    if(  WayPointList[overindex].Reachable) {
+    if(  ValidWayPoint(overindex) && WayPointList[overindex].Reachable) {
 	SelectObject(hdc,LKBrush_LightGreen);
     } else {
 	SelectObject(hdc,LKBrush_Orange);
@@ -848,11 +848,17 @@ if(SAFETYALTITUDEARRIVAL > 0)
 
 	LKASSERT((wpt_dist+1) != 0);
 
-	double slope =
-        (DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight
-	 - WayPointList[overindex].Altitude
-         - (IsSafetyAltitudeInUse(overindex) ? (SAFETYALTITUDEARRIVAL/10) : 0))
-        / (wpt_dist+1);
+	double slope = 1;
+        #if BUGSTOP
+        LKASSERT(ValidWayPoint(overindex));
+        #endif
+        if (ValidWayPoint(overindex)) {
+	    slope =
+                (DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight
+	        - WayPointList[overindex].Altitude
+                - (IsSafetyAltitudeInUse(overindex) ? (SAFETYALTITUDEARRIVAL/10) : 0))
+                / (wpt_dist+1);
+        } 
 
         double mc_pirker = PirkerAnalysis(&DrawInfo, &DerivedDrawInfo,
 					overindex_brg,
@@ -897,6 +903,7 @@ _after_additionals:
 
     #ifdef SHOWLD
     // Working, but useless
+    // FIX overindex check if you want to use it!
     if(altarriv  > 0)
     {
     // Print GR
