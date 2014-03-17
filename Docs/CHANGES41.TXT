@@ -136,7 +136,7 @@ Version 4.1n
 NEW
 
 . Add Vertical Situation Bar (VSI) to HSI screen
-
+. GA mode: find and use departure and destination airfields from WP list (1 Km tolerance) when loading a task (GPX, CUP or LKT).
 
 CHANGES
 
@@ -191,16 +191,22 @@ Add customkey DspMode , accessing Display 3/3 page.
     Changed DspMode buttons to automatically close menu after press.
     Display a status message with current mode selected.
 
-HSI page with glide slope indicator showing angle of descent to destination
-    showing also QFU if available
-    working between 5 and 1 miles from destination. Last mile has no glide slope.
-HSI: when landing display vertical speed in Ft/min
+HSI page:
+    QFU indication blinking (if available) when at less than 5 NM from the destination to remind that the course deviation is now given respect runway axis.
+    The glide slope bar is also shown when we are at less than 5 NM from the destination but it is hided when at less than 1.5 Km.
+    "VFR Landing" reminder is displayed (and glide slope hided) when at less than 1.5 Km from the final desitination.
+    When the next WP is also the final destination on the left are displayed: speed, vertical speed (in Ft/min) and height from the ground.
 
 New device LXV7 easy
     simple reception of voltage, IAS and baro altitude from V7, but nothing else.
     V7 is standalone for configuration, and LK too. What you do on V7 is unrelated to what you do on LK.
 
-New icons for missing CUP tunrpoints type
+GA mode:
+    Consider departure waypoint already reached if we are in a beam of half runway length from the departure airfield.
+    In a task draw intermediate WPs of type line always of the same size independently from zoom level.
+    Don't display popups (and make beep) when starting and ending a task
+
+New icons (made by Massimo Belloni) for missing CUP tunrpoints type
 
 CHANGES
 
@@ -250,7 +256,10 @@ Add customkey DspMode , accessing Display 3/3 page.
     Changed DspMode buttons to automatically close menu after press.
     Display a status message with current mode selected.
 
-HSI page with glide slope indicator showing angle of descent to destination
+HSI: added glide slope indicator showing angle of descent to destination.
+     Course deviation indicator now using also QFU information from CUP
+     waypoints files to show alignement with runway when at less then
+     5 NM from the final destination.
 
 
 
