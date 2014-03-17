@@ -240,7 +240,8 @@ class NMEAParser {
 
   // Additional sentences
   BOOL PTAS1(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
-
+  // Garmin magnetic compass
+  BOOL HCHDG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   // LK8000 custom special sentences, always active
   BOOL PLKAS(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   // FLARM sentances

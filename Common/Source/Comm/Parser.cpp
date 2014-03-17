@@ -294,6 +294,10 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
     {
       return VTG(&String[7], params + 1, n_params, pGPS);
     }
+  if(_tcscmp(params[0] + 1,TEXT("HCHDG"))==0)
+    {
+      return HCHDG(&String[7], params + 1, n_params, pGPS);
+    }
 
   return FALSE;
 }
@@ -958,6 +962,18 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   return FALSE;
 }
 
+
+BOOL NMEAParser::HCHDG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+{
+  (void)pGPS;
+  double mag=0;
+  mag=StrToDouble(params[0],NULL);
+  if (mag>=0 && mag<=360) {
+      pGPS->MagneticHeading=mag;
+      pGPS->MagneticHeadingAvailable=TRUE;
+  }
+  return FALSE;
+}
 
 
 #ifdef DSX
