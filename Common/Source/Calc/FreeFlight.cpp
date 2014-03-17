@@ -159,11 +159,13 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		      StartupStore(_T("...rearmed %i. Gear warning at %im = %im AGL %s"),
                           noMessages,(int)Basic->Altitude,(int)AltitudeAGL,NEWLINE);
                   else
-		      StartupStore(_T("..rearmed %i. Gear warning at %im = %im over landable %s (%im)%s"),
-                          noMessages,(int)Basic->Altitude,(int)AltitudeAGL,WayPointList[BestAlternate].Name,
-                          (int)WayPointList[BestAlternate].Altitude,NEWLINE);
+		      if (ValidWayPoint(BestAlternate)) {
+		          StartupStore(_T("..rearmed %i. Gear warning at %im = %im over landable %s (%im)%s"),
+                            noMessages,(int)Basic->Altitude,(int)AltitudeAGL,WayPointList[BestAlternate].Name,
+                            (int)WayPointList[BestAlternate].Altitude,NEWLINE);
+                      }
 #endif
-	  		  nowGearWarning = false;
+	  	  nowGearWarning = false;
               }
 	  }
       }
