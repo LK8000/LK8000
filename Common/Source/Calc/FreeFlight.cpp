@@ -105,68 +105,68 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
 
   if ( (GearWarningMode>0) && ffDetected) {
-	// Only if not in SIMMODE, or in SIM but replaying a flight
-//	if ( !(SIMMODE && !ReplayLogger::IsEnabled()) )
-	  {
+      double AltitudeAGL = Calculated->AltitudeAGL;
+      double dist = 0;
 
-		double AltitudeAGL = Calculated->AltitudeAGL;
+      if(GearWarningMode ==1) {
+          if (ValidWayPoint(BestAlternate)) {
+	      AltitudeAGL = Basic->Altitude - WayPointList[BestAlternate].Altitude; // AGL = height above landable
 
-	    double dist = 0;
-	    if(GearWarningMode ==1){
-	      if( ValidWayPoint(BestAlternate))
-	      {
-	         AltitudeAGL = Basic->Altitude - WayPointList[BestAlternate].Altitude; // AGL = height above landable
-	         if( AltitudeAGL <= (GearWarningAltitude/1000))
-	            DistanceBearing(Basic->Latitude, Basic->Longitude, WayPointList[BestAlternate].Latitude, WayPointList[BestAlternate].Longitude, &dist, NULL);
-	      }else{
-	    	dist = 9999; // set to far away if best alternate  not valid
-	      }
-	    }
+	      if( AltitudeAGL <= (GearWarningAltitude/1000)) {
+	          DistanceBearing(Basic->Latitude, Basic->Longitude, WayPointList[BestAlternate].Latitude, 
+                     WayPointList[BestAlternate].Longitude, &dist, NULL);
+              }
 
-		if (( AltitudeAGL  <=(GearWarningAltitude/1000)) && (noMessages < MAX_NO_GEAR_WARN))
-		{
-		  if(!nowGearWarning)
-		  {
-		    if(dist < 3700) // show gear warning if 2Nautical Miles close to landable
-		    {
-			  LKSound(_T("LK_GEARWARNING.WAV"));
-			  DoStatusMessage(gettext(TEXT("_@M1834_")),NULL,false);  // LKTOKEN _@M1834_ "Prepare for landing !"
-			  nowGearWarning=true;
-			  noMessages++;
+	  } else {
+	      dist = 9999; // set to far away if best alternate  not valid
+	  }
+
+      }
+
+      if (( AltitudeAGL  <=(GearWarningAltitude/1000)) && (noMessages < MAX_NO_GEAR_WARN)) {
+          if(!nowGearWarning) {
+              if(dist < 3700) { // show gear warning if 2Nautical Miles close to landable
+	          LKSound(_T("LK_GEARWARNING.WAV"));
+		  DoStatusMessage(gettext(TEXT("_@M1834_")),NULL,false);  // LKTOKEN _@M1834_ "Prepare for landing !"
+		  nowGearWarning=true;
+		  noMessages++;
 
 #if TESTBENCH
-			  if(GearWarningMode ==2)
-			    StartupStore(_T("... %i. Gear warning at %im = %im [%im] AGL%s"),noMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,NEWLINE);
-			  else
-				 StartupStore(_T("...%i. Gear warning at %im = %im [%im] over landable %s (%im)%s"),noMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
+		  if(GearWarningMode ==2)
+                      StartupStore(_T("... %i. Gear warning at %im = %im [%im] AGL%s"),
+                         noMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,NEWLINE);
+		  else
+	              StartupStore(_T("...%i. Gear warning at %im = %im [%im] over landable %s (%im)%s"),
+                         noMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,
+                         WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
 #endif
 
-		    }
-			if (noMessages==MAX_NO_GEAR_WARN) {
-				StartupStore(_T("... GOING SILENT on too many Gear warnings.  %s%s"),WhatTimeIsIt(),NEWLINE);
+	      }
 
-				DoStatusMessage(MsgToken(2304)); // GOING SILENT ON GEAR REPORTING
-				noMessages++;	// we go to 11, and never be back here		  }
-			}
-		  }
-		}
-		else
-		{
-		  if(( AltitudeAGL)> ((GearWarningAltitude/1000)+100))  // re-enable warning if higher that 100m above Gear altitude
-		  {
-            if( nowGearWarning )
-            {
+              if (noMessages==MAX_NO_GEAR_WARN) {
+                  StartupStore(_T("... GOING SILENT on too many Gear warnings.  %s%s"),WhatTimeIsIt(),NEWLINE);
+
+	          DoStatusMessage(MsgToken(2304)); // GOING SILENT ON GEAR REPORTING
+	          noMessages++;	// we go to 11, and never be back here
+	      }
+          }
+      } else {
+          // re-enable warning if higher that 100m above Gear altitude
+          if(( AltitudeAGL)> ((GearWarningAltitude/1000)+100)) { 
+              if( nowGearWarning ) {
 #if TESTBENCH
-			  if(GearWarningMode ==2)
-			    StartupStore(_T("...rearmed %i. Gear warning at %im = %im AGL %s"),noMessages,(int)Basic->Altitude,(int)AltitudeAGL,NEWLINE);
-			  else
-				 StartupStore(_T("..rearmed %i. Gear warning at %im = %im over landable %s (%im)%s"),noMessages,(int)Basic->Altitude,(int)AltitudeAGL,WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
+                  if(GearWarningMode ==2)
+		      StartupStore(_T("...rearmed %i. Gear warning at %im = %im AGL %s"),
+                          noMessages,(int)Basic->Altitude,(int)AltitudeAGL,NEWLINE);
+                  else
+		      StartupStore(_T("..rearmed %i. Gear warning at %im = %im over landable %s (%im)%s"),
+                          noMessages,(int)Basic->Altitude,(int)AltitudeAGL,WayPointList[BestAlternate].Name,
+                          (int)WayPointList[BestAlternate].Altitude,NEWLINE);
 #endif
 	  		  nowGearWarning = false;
-            }
-		  }
-		}
-	}
+              }
+	  }
+      }
   }
 
   if (ISPARAGLIDER) {
