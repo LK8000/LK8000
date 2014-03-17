@@ -53,7 +53,10 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   CScopeLock Lock(LockTaskData, UnlockTaskData);
   
   if( DisableBestAlternate ) {
-      BestAlternate = -1;
+      if ( HomeWaypoint >= 0 )
+          BestAlternate=HomeWaypoint;
+      else
+          BestAlternate = 0; // RESWP_TAKEOFF
       return;
   }
 
