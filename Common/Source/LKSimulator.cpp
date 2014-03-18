@@ -127,8 +127,8 @@ void LKSimulator(void) {
 
 	double sinkias=-1*AirDensitySinkRate(IASMS, GPS_INFO.Altitude);
 	if (sinkias>10) sinkias=10; // set a limiter for sink rate
-	// StartupStore(_T(".... ias=%.0f sinkias=%.3f oldAlt=%.3f newAlt=%.3f\n"), 
-	// CALCULATED_INFO.IndicatedAirspeedEstimated*TOKPH, sinkias, GPS_INFO.Altitude, GPS_INFO.Altitude+sinkias);
+	// StartupStore(_T(".... ias=%.1f sinkias=%.3f oldAlt=%.3f newAlt=%.3f\n"), 
+	// CALCULATED_INFO.IndicatedAirspeedEstimated*TOKPH, sinkias, GPS_INFO.Altitude, GPS_INFO.Altitude-sinkias);
 	double simlift=0;
 	if (THERMALLING == TRUE) {
 		// entering the thermal mode right now
