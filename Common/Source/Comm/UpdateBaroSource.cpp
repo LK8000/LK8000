@@ -137,7 +137,7 @@ bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescr
 	return false;
   }
 
-  // .. else we use the baro, probably from RMA, or from SecondaryBaroSource
+  // .. else we use the baro, probably from SecondaryBaroSource
   #if DEBUGBARO
   StartupStore(_T("....> Using fallback baro alt=%.1f\n"),fAlt);
   #endif

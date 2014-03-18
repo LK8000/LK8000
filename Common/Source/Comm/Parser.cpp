@@ -48,10 +48,8 @@ void NMEAParser::_Reset(void) {
   GGAAvailable = FALSE;
   RMZAvailable = FALSE;
   RMZAltitude = 0;
-  RMAAvailable = FALSE;
   RMCAvailable = false;
   TASAvailable = false; // 100411
-  RMAAltitude = 0;
   RMZDelayed = 3; // wait for this to be zero before using RMZ.
  
   GGAtime=0;
@@ -708,9 +706,6 @@ force_advance:
   if(RMZAvailable) {
 	UpdateBaroSource(pGPS, BARO__RMZ, NULL,  RMZAltitude);
   }
-  else if(RMAAvailable) {
-     UpdateBaroSource(pGPS, BARO__RMA, NULL,  RMAAltitude);
-  }
   if (!GGAAvailable) {
 	// update SatInUse, some GPS receiver dont emmit GGA sentance
 	if (!gpsValid) { 
@@ -835,9 +830,6 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   {
 	UpdateBaroSource(pGPS, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
   }
-  else if(RMAAvailable) {
-	UpdateBaroSource(pGPS,  BARO__RMA,NULL, RMAAltitude);
-  }
 
   // If  no gps fix, at this point we trigger refresh and quit
   if (!gpsValid) { 
@@ -927,18 +919,6 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
   return FALSE;
 
-}
-
-
-BOOL NMEAParser::RMA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
-{
-  (void)pGPS;
-
-  RMAAltitude = ParseAltitude(params[0], params[1]);
-  RMAAltitude = AltitudeToQNHAltitude(RMAAltitude); 
-  RMAAvailable = TRUE;
-
-  return FALSE;
 }
 
 

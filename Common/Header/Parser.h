@@ -209,11 +209,9 @@ class NMEAParser {
  private:
   BOOL GGAAvailable;
   BOOL RMZAvailable;
-  BOOL RMAAvailable;
   bool RMCAvailable; 
   bool TASAvailable;
   double RMZAltitude;
-  double RMAAltitude;
   double LastTime;
   short RMZDelayed;
 
@@ -231,7 +229,6 @@ class NMEAParser {
   BOOL RMC(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL VTG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL RMB(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL RMA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL RMZ(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   
   BOOL WP0(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);

@@ -128,7 +128,7 @@ void NMEAParser::UpdateMonitor(void)
 	// now it is set to off.
 	if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
 		if ( devA() == pDevPrimaryBaroSource || nmeaParser1.RMZAvailable 
-		  || nmeaParser1.RMAAvailable || nmeaParser1.TASAvailable ) {
+		  || nmeaParser1.TASAvailable ) {
 			invalidBaro=1;
 		}
 	}
@@ -146,7 +146,7 @@ void NMEAParser::UpdateMonitor(void)
   } else {
 	wasSilent[0]=false;
 	// We have hearth beats, is baro available?
-	if ( devIsBaroSource(devA()) || nmeaParser1.RMZAvailable || nmeaParser1.RMAAvailable || nmeaParser1.TASAvailable ) // 100411
+	if ( devIsBaroSource(devA()) || nmeaParser1.RMZAvailable || nmeaParser1.TASAvailable ) // 100411
 		validBaro++;
   }
   // now check also port 2
@@ -161,7 +161,7 @@ void NMEAParser::UpdateMonitor(void)
 	invalidGps++;
 	if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
 		if ( devB() == pDevPrimaryBaroSource || nmeaParser2.RMZAvailable 
-		  || nmeaParser2.RMAAvailable || nmeaParser2.TASAvailable ) {
+		  || nmeaParser2.TASAvailable ) {
 			invalidBaro++;
 		}
 	}
@@ -178,7 +178,7 @@ void NMEAParser::UpdateMonitor(void)
   } else {
 	wasSilent[1]=false;
 	// We have hearth beats, is baro available?
-	if ( devIsBaroSource(devB()) || nmeaParser2.RMZAvailable || nmeaParser2.RMAAvailable || nmeaParser2.TASAvailable   )  // 100411
+	if ( devIsBaroSource(devB()) || nmeaParser2.RMZAvailable || nmeaParser2.TASAvailable   )  // 100411
 		validBaro++;
   }
 
