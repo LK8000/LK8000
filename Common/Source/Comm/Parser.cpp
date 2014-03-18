@@ -109,16 +109,27 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
 
     switch (loc.FixType) {
         case GPS_FIX_UNKNOWN:
-            GPSData.NAVWarning = true;
+            gpsValid = false;
             break;
         case GPS_FIX_2D:
         case GPS_FIX_3D:
-            GPSData.NAVWarning = false;
+            gpsValid = true;
             break;
         default:
             break;
     }
 
+    if (loc.dwValidFields & GPS_VALID_SATELLITE_COUNT) {
+        nSatellites = loc.dwSatelliteCount;
+    }
+
+    if(!activeGPS) {
+        return TRUE;
+    }
+
+    GPSData.SatellitesUsed = nSatellites;
+    GPSData.NAVWarning = !gpsValid;
+    
     if (loc.dwValidFields & GPS_VALID_UTC_TIME) {
         GPSData.Hour = loc.stUTCTime.wHour;
         GPSData.Minute = loc.stUTCTime.wMinute;
@@ -177,9 +188,6 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
     if (loc.dwValidFields & GPS_VALID_VERTICAL_DILUTION_OF_PRECISION) {
 
     }
-    if (loc.dwValidFields & GPS_VALID_SATELLITE_COUNT) {
-       GPSData.SatellitesUsed = loc.dwSatelliteCount;
-     }
     if (loc.dwValidFields & GPS_VALID_SATELLITES_USED_PRNS) {
 
     }
