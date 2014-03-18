@@ -507,6 +507,8 @@ BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   // GPSCONNECT = TRUE; // 121127  NO! VTG gives no position fix
+  if (!activeGPS) return TRUE;
+
   if (RMCAvailable) return FALSE;
   double speed=0;
 
