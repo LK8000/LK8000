@@ -104,7 +104,7 @@ _skipout:
 
   // Normal NON-CAR mode
   if ( useval <0.1 ) {
-	usecol=7;
+	usecol=0;
 	goto go_setcolor;
   }
   if (useval <=0.5 ) {; usecol=1; goto go_setcolor; }
