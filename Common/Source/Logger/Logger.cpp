@@ -242,8 +242,13 @@ void StopLogger(void) {
   }
 }
 
-// BaroAltitude should NOT be compensated for QNH. It should be a QNE altitude.
-// In our case, we should save BaroAltitude incoming, referred to 1013.25mb , here, BEFORE we change it to QNH.
+// BaroAltitude in this case is a QNE altitude (aka pressure altitude)
+// Some few instruments are sending only a cooked QNH altitude, without the relative QNH.
+// (If we had QNH in that case, we would save real QNE altitude in GPS_INFO.BaroAltitude)
+// There is nothing we can do about it, in these few cases: we shall log a QNH altitude instead
+// of QNE altitude, which is what we have been doing up to v4 in any case. It cant be worst.
+// In all other cases, the pressure altitude will be saved, and out IGC logger replay is converting it
+// to the desired QNH altitude back. 
 #if LOGFRECORD
 void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
                       double BaroAltitude, short Hour, short Minute, short Second,
