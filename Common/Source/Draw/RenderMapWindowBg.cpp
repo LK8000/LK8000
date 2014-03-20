@@ -315,6 +315,9 @@ QuickRedraw:
   if(TrailActive) {
 	// NEED REWRITING
 	LKDrawTrail(hdc, Orig_Aircraft, DrawRect);
+        #if LONGSNAIL
+	LKDrawLongTrail(hdc, Orig_Aircraft, DrawRect);
+        #endif
   }
 #endif
   if (DONTDRAWTHEMAP) {
@@ -350,6 +353,9 @@ _skip_stuff:
   if(TrailActive) {
 	// NEED REWRITING
 	LKDrawTrail(hdc, Orig_Aircraft, DrawRect);
+        #if LONGSNAIL
+	LKDrawLongTrail(hdc, Orig_Aircraft, DrawRect);
+        #endif
   }
 #endif
   if (DONTDRAWTHEMAP) {

@@ -72,10 +72,17 @@
 #define MAX_LOADSTRING 100
 #define MAX_ASSETIDSTRING	10
 
+#if LONGSNAIL
+#define LONGTRAILSIZE 660  // 11h plus snailtrail classic = >12h !
+#define TRAILSIZE 20	   // test mode
+#define TRAILSHRINK 5
+#else
 #define TRAILSIZE 1000
 // 1000 points at 3.6 seconds average = one hour
 #define TRAILSHRINK 5
 // short trail is 10 minutes approx
+#endif
+
 
 #define GLOBALFONT "Tahoma"
 //#define GLOBALFONT "DejaVu Sans Condensed"

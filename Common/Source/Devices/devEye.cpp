@@ -7,8 +7,8 @@
 */
 
 #include "StdAfx.h"
-#include "devEye.h"
 #include "externs.h"
+#include "devEye.h"
 
 #include "utils/heapcheck.h"
 

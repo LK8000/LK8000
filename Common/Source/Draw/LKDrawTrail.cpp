@@ -341,3 +341,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   return trailFirstTime;
 }
 
+#if LONGSNAIL
+#include "LKDrawLongTrail.cpp"
+#endif
+

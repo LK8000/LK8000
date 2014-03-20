@@ -157,6 +157,21 @@ _normal_run:
     sv++;
   }
 
+#if LONGSNAIL
+  // far visibility for long snail trail
+
+  LONG_SNAIL_POINT *lsv= LongSnailTrail;
+  LKASSERT(iLongSnailNext>=0 && iLongSnailNext<=LONGTRAILSIZE);
+  const LONG_SNAIL_POINT *lse = lsv+iLongSnailNext;
+  while (lsv<lse) {
+      lsv->FarVisible = ((lsv->Longitude> bounds.minx) &&
+	    (lsv->Longitude< bounds.maxx) &&
+	    (lsv->Latitude> bounds.miny) &&
+	    (lsv->Latitude< bounds.maxy));
+      lsv++;
+  }
+#endif
+
   // far visibility for waypoints
 
   if (WayPointList) {

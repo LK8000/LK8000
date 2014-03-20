@@ -555,6 +555,10 @@ GEXTERN bool InfoWindowActive;
 // snail trail
 GEXTERN SNAIL_POINT SnailTrail[TRAILSIZE];
 GEXTERN	int SnailNext;
+#if LONGSNAIL
+GEXTERN LONG_SNAIL_POINT LongSnailTrail[LONGTRAILSIZE+1];
+GEXTERN	int LongSnailNext;
+#endif
 GEXTERN int TrailLock;
 
 // Logger

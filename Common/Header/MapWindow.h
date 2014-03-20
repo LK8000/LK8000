@@ -147,7 +147,15 @@ typedef struct _SNAIL_POINT
   double DriftFactor;
 } SNAIL_POINT;
 
-
+#if LONGSNAIL
+typedef struct _LONG_SNAIL_POINT
+{
+  float Latitude;
+  float Longitude;
+  POINT Screen;
+  bool FarVisible;
+} LONG_SNAIL_POINT;
+#endif
 
 typedef struct {
     bool Border;
@@ -593,6 +601,9 @@ class MapWindow {
 
 
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
+  #if LONGSNAIL
+  static double LKDrawLongTrail(HDC hdc, const POINT Orig, const RECT rc);
+  #endif
   static void DrawTeammate(HDC hdc, const RECT rc);
   static void DrawOffTrackIndicator(HDC hdc, const RECT rc);
   static void DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig);
@@ -638,6 +649,9 @@ class MapWindow {
 
  private:
   static int iSnailNext;
+#if LONGSNAIL
+  static int iLongSnailNext;
+#endif
   static HBITMAP hDrawBitMap;
   static HBITMAP hDrawBitMapTmp;
   static HBITMAP hMaskBitMap;

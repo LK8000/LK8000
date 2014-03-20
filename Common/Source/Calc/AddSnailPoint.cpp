@@ -25,6 +25,47 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   // Interval is variable, for gliders is 1s in thermal, 5s in cruise.
   if (!Calculated->Flying) return;
 
+  #if LONGSNAIL
+  static long lastLongSnailTime=0;
+  static bool wascircling=false;
+
+  // Check if we are overwriting an old value with a new one, and add the old one
+  // to the longsnailtrail, only if we still have space inside it. No rollover!
+  if (SnailTrail[SnailNext].Time>0 && LongSnailNext<LONGTRAILSIZE) {
+
+      if (SnailTrail[SnailNext].Time > (lastLongSnailTime+60)) {
+
+          // log only once for each thermal, roughly
+          // The idea is to make the code readable, not for a beauty contest
+          // After 10 minutes in thermal, log anyway.
+          if (SnailTrail[SnailNext].Circling && wascircling) {
+              if (SnailTrail[SnailNext].Time < (lastLongSnailTime+600)) goto _skipout;
+          }
+          if (SnailTrail[SnailNext].Circling && !wascircling) wascircling=true;
+          if (!SnailTrail[SnailNext].Circling) wascircling=false;
+
+          LongSnailTrail[LongSnailNext].Latitude = SnailTrail[SnailNext].Latitude;
+          LongSnailTrail[LongSnailNext].Longitude = SnailTrail[SnailNext].Longitude;
+          LongSnailTrail[LongSnailNext].FarVisible = true; // hasn't been filtered out yet.
+
+          // find the next 
+          int snext = SnailNext+2;
+          snext %= TRAILSIZE;
+          // no mistake: longsnailnext+1 is a valid position
+          LongSnailTrail[LongSnailNext+1].Latitude = SnailTrail[snext].Latitude;
+          LongSnailTrail[LongSnailNext+1].Longitude = SnailTrail[snext].Longitude;
+          LongSnailTrail[LongSnailNext+1].FarVisible = true;
+
+	  lastLongSnailTime=SnailTrail[SnailNext].Time;
+
+          // LongSnailTrail is sized LONGTRAILSIZE+1, we use last position for the closing point
+          // so we have LongSnailNext=LONGTRAILSIZE mean invalid
+          if (++LongSnailNext > LONGTRAILSIZE) LongSnailNext=LONGTRAILSIZE; 
+      }
+  }
+_skipout:
+  #endif
+
   SnailTrail[SnailNext].Latitude = (float)(Basic->Latitude);
   SnailTrail[SnailNext].Longitude = (float)(Basic->Longitude);
   SnailTrail[SnailNext].Time = Basic->Time;

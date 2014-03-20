@@ -10,6 +10,9 @@
 #include "Multimap.h"
 
 int MapWindow::iSnailNext=0;
+#if LONGSNAIL
+int MapWindow::iLongSnailNext=0;
+#endif
 
 rectObj MapWindow::screenbounds_latlon;
 
@@ -250,6 +253,9 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
   if(TrailActive)
   {
     iSnailNext = SnailNext; 
+    #if LONGSNAIL
+    iLongSnailNext = LongSnailNext; 
+    #endif
     // set this so that new data doesn't arrive between calculating
     // this and the screen updates
   }
