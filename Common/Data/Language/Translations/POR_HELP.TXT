@@ -1,4 +1,4 @@
-﻿# LK8000 ENG_HLP.TXT 120410
+# LK8000 ENG_HLP.TXT updated 140214
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -801,6 +801,7 @@ Type of sectors used for non-AAT tasks.
 [Cylinder]  Barrel cylinder of specified radius.
 [FAI sector]  90 degree sector centered at bisector, at specified range
 [DAe 0.5/10] German national sector type, equivalent to 0.5 km radius barrel and 10 km FAI sector.
+[Line] Bisector line between route legs. Radius is used only to draw it on the moving map.
 
 @506
 Radius of the turnpoint observation area for non-AAT tasks.
@@ -854,8 +855,6 @@ For task races with at least 1 time gate, set the start local time. If gate numb
 
 @532
 If you have more than 1 time gate, set the interval time IN MINUTES for the others.
-If you have only 1 gate, closing at a certain time, set the time interval to that time difference.
-If you have only 1 gate, and no closing time, set interval to a large value such as 480 minutes.
 
 @533
 Start IN (Exit): when the pilot leaves the sector or cylinder from inside to outside.
@@ -1705,6 +1704,129 @@ and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
 [Group Ack]
 Acknowledgement of one airspace is valid for all airspaces with the same name and the same class.
 
+@1265
+[Airspace changes]
+"persistent" disabled airspaces stay disabled on next programm start
+"for this time only" all airspaces will be re-enabled after next programm start
+
+
+@1266
+[Time Gate]
+For task races with at least 1 time gate, set the end local time of last gate. 
+If gate number is 0, this value will be ignored.
+
+
+
+@1268
+[FAI Triangle Threshold]
+adjust the big FAI 28%/45% triangle threshold
+500km for DMSt and OLC regulations
+750km for FAI regulations
+
+
+
+@1269
+[Gear Warning]
+Off:         
+no Gear warning
+
+Landables:  (recommended in mountains)
+Gear warning if altitude lower than set height above best alternate field elevation. Warning only if position is 2 nautical miles (3,7km) or closer to the best alternate.
+
+Always:  (recommended  in flat lands)
+Gear warning always if altitude above ground level (AGL) lower than set height
+
+The warning will be shown only once if below gear warning set height, and will only be re-enabled after climbing 100m (300ft) above set  height.”
+
+
+@1270
+[Gear Warning Altitude]
+altitude threshold for gear warning
+
+@1271 
+[Output QNH]
+QNH (in Pa), used for output alt for some output modes - (default 101325)
+
+@1272 
+[Lift Threshold]
+The value in m/s of lift when the audio beeping will start.
+
+@1273 
+[Lift Off Threshold]
+The value in m/s of lift when the audio beeping will stop.
+
+@1274 
+[Sink Threshold]
+The value in -m/s of sink when the sink tone will start.
+
+@1275 
+[Sink Off Threshold]
+The value in -m/s of sink when the sink tone will stop.
+
+@1276 
+[Position Noise]
+Kalman filter position noise.
+
+@1277 
+[Lift Freq. Base]
+The audio frequency for lift beeps in Hz of 0 m/s.
+
+@1278 
+[Lift Freq. Increment]
+The increase in audio frequency for lift beeps in Hz for each 1 m/s.
+
+@1279 
+[Sink Freq. Base]
+The audio frequency for the sink tone in Hz of 0 m/s.
+
+@1280 
+[Sink Freq. Increment]
+The decrease in audio frequency for sink tone in Hz for each -1 m/s.
+
+@1281 
+[Volume]
+The volume of beeps ->  0.1 is only about 1/2 as loud as 1.0.
+
+@1282 
+[Rate Multiplier]
+The lift beep cadence -> 0.5 = beeping twice as fast as normal.
+
+@1283 
+[Audio Connected]
+Check to enable hardware audio when connected.
+
+@1284 
+[Audio Disconnected]
+Check to enable hardware audio when disconnected.
+
+@1285 
+[Bluetooth Wait]
+The time that the hardware will be allow establishment of a bluetooth connection for when turned on.
+
+@1286 
+[Output Mode]
+0-BlueFlyVario (default) "Not Supported" 
+1-LK8EX1  
+2-LX "Not Supported"
+3-FlyNet
+
+@1287 
+[Output Frequency]
+The output frequency -> 1-every 20ms ... 50-every 20msx50=1000ms
+
+@1288
+[Conical ESS Slope]
+
+@1289
+[Conical ESS Base]
+
+@1290
+[Airspace Sonar]
+Sonar sound while approaching an airspace, the fastest the closest.
+This configuration is used to set sonar mode on startup. Changing the sonar mode with button will not affect this setting. 
+
+@1291
+[Conical ESS Base Radius]
+
 @9999
 No help available on this item!
-=

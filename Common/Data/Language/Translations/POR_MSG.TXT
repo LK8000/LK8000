@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  110102
+# MASTER UPDATED:  140221
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -8,8 +8,14 @@
 # Please note that ENG_MSG.TXT is the english master language for LK8000
 # and it should always exist. Do not change ENG_MSG.TXT!
 #
+# ATTENTION> Max number of tokens is defined in LKLanguage as MAX_MESSAGES
+#
+# If you add messages, as a developer, do not recycle numbers, because translations assume
+# that a nonexisting token should be replaced by the english original.
+# But if a old token was translated, it will still appear like that, wrong!
+#
 # All lines that are empty, or starting with a # , are ignored.
-# DEVELOPERS ADDING NEW MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT TO PAOLO
+# DEVELOPERS ADDING NEW MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT ON GITHUB
 
 _@M1_ " Diff"
 _@M2_ " Dist"
@@ -104,11 +110,13 @@ _@M90_ "Usar sempre MC=0"
 _@M91_ "Usar sempre MC segurança"
 _@M92_ "Âmbar"
 _@M93_ "Análise"
-_@M94_ "Animar"
+# 94 REMOVED after v2.3
+_@M94_ "Animação"
 _@M95_ "Juntar à task"
 _@M96_ "Armar start"
 _@M97_ "Armar"
 _@M98_ "Altitude chegada"
+# 99 REMOVED after v2.3
 _@M99_ "Topo da seta"
 _@M100_ "Perguntar"
 _@M101_ "Tempo task atrib."
@@ -116,7 +124,7 @@ _@M102_ "Avanço Auto: ARMADO"
 _@M103_ "Avanço Auto: Automático"
 _@M104_ "Avanço Auto: DESARMADO"
 _@M105_ "Avanço Auto: Manual"
-_@M106_ "Backlight Auto"
+_@M106_ "Contraluz Auto"
 _@M107_ "Final Glide Auto"
 _@M108_ "Forçar Final Glide Auto"
 _@M109_ "Modo Mc auto "
@@ -129,7 +137,7 @@ _@M115_ "Zoom auto "
 _@M116_ "Subida med."
 _@M117_ "Razão subida med."
 _@M118_ "Subida media"
-_@M119_ "ALIMENTAÇÃO DE BACKUP LIGADA ON"
+_@M119_ "ALIMENTAÇÃO DE BACKUP LIGADA-ON"
 _@M120_ "ALTITUDE BARO DISPONÍVEL"
 _@M121_ "ALTITUDE BARO NÃO DISPONÍVEL"
 _@M122_ "ALTITUDE BARO NÃO DISPONÍVEL, A USAR A ALTITUDE GPS"
@@ -156,6 +164,7 @@ _@M142_ "Cidades grandes "
 _@M143_ "Estradas grandes "
 _@M144_ "Negro"
 _@M145_ "Vazio!"
+# 146 REMOVED after v2.3
 _@M146_ "Bloq. speed to fly "
 _@M147_ "Lago azul"
 _@M148_ "Ambos (Fin.+Med.)"
@@ -165,7 +174,7 @@ _@M151_ "Caixa"
 _@M152_ "Em caixa, sem unidad."
 _@M153_ "Em caixa, com unidad."
 _@M154_ "Brg"
-_@M155_ "VERIF altitude chegada segurança\n"
+_@M155_ "VERIF altitude de chegada segura\n"
 _@M156_ "FECHAR"
 _@M157_ "FECHADO"
 _@M158_ "CONFIRME GOTO, ABANDONA TASK?"
@@ -173,6 +182,7 @@ _@M159_ "CONFIRME goto, ABANDONA task?"
 _@M160_ "Calc."
 _@M161_ "Cancelar"
 _@M162_ "Não pode reescrever!"
+#M163 unused, changed to CarTrek
 _@M163_ "Carro"
 _@M164_ "Categoria"
 _@M165_ "Tendência teto"
@@ -186,6 +196,7 @@ _@M172_ "Zoom girando OFF"
 _@M173_ "Zoom girando ON"
 _@M174_ "Zoom girando"
 _@M175_ "Girando"
+# 176 UNUSED after v2.3
 _@M176_ "Classic"
 _@M177_ "Apagar Alternativas"
 _@M178_ "Apagar task"
@@ -206,7 +217,7 @@ _@M192_ "Comuns"
 _@M193_ "COMs com Volkslogger"
 _@M194_ "Waypoint CompeGPS"
 _@M195_ "Configuração"
-_@M196_ "Configure Custom Keys"
+_@M196_ "Configurar Custom Keys"
 _@M197_ "Configurar Topologia"
 _@M198_ "Confirma Exit?"
 _@M199_ "Ligado"
@@ -215,13 +226,13 @@ _@M201_ "Impossível abrir ficheiro IGC!"
 _@M202_ "Zoom cruzeiro "
 _@M203_ "Eficiência cruzeiro"
 _@M204_ "Posição actual actualizada"
-_@M205_ "Custom Keys"
+_@M205_ "Comandos utilizador"
 _@M206_ "Ficheiro Polar utilizador "
-_@M207_ "Custom keys config. guardada"
+_@M207_ "Comandos utilizador config. guardada"
 _@M208_ "Personaliz. Fontes"
 _@M209_ "Ciano"
 _@M210_ "Cilindro"
-_@M211_ "DAT Turnpoints"
+_@M211_ "Turnpoints DAT"
 _@M212_ "VAZE LASTRO"
 _@M213_ "Área perigosa"
 _@M214_ "Áreas Perigosas"
@@ -310,7 +321,7 @@ _@M296_ "Raio Finish"
 _@M297_ "Tipo Finish "
 _@M298_ "Tipo Finish"
 _@M299_ "Finish"
-_@M300_ "Finished"
+_@M300_ "Terminada"
 _@M301_ "Primeiros 3"
 _@M302_ "Primeiros 5"
 _@M303_ "Correc. inválida"
@@ -320,17 +331,18 @@ _@M306_ "Tempo voo"
 _@M307_ "Livre"
 _@M308_ "Freq."
 _@M309_ "Código Friend "
+# 310 REMOVED after v2.3
 _@M310_ "Seta inteira"
 _@M311_ "Overlay total"
 _@M312_ "Total"
 _@M313_ "Aeronave motor."
-_@M314_ "GATE ABERTA"
-_@M315_ "GATE"
-_@M316_ "GATES FECHADAS"
+_@M314_ "PORTA ABERTA"
+_@M315_ "PORTA"
+_@M316_ "PORTAS FECHADAS"
 _@M317_ "GOING SILENT ON COM REPORTING"
 _@M318_ "Desloca. Alt.Offset "
 _@M319_ "Bloqueio GPS"
-_@M320_ "Intervalo Gates "
+_@M320_ "Intervalo Portas "
 _@M321_ "Indicadores"
 _@M322_ "Altitude Geoide "
 _@M323_ "Ghost "
@@ -351,9 +363,11 @@ _@M337_ "Esconder unid. "
 _@M338_ "Altos Alpes"
 _@M339_ "Alto"
 _@M340_ "Alto Contraste"
+# 341 REMOVED after v2.3
 _@M341_ "Estilo High Score"
+# 342 UNUSED after v2.3
 _@M342_ "Mais alto"
-_@M343_ "DENTRO Sair"
+_@M343_ "DENTRO (Sair)"
 _@M344_ "HEADING ERRADO OU VENTO MUITO FORTE"
 _@M345_ "VELOCIDADE INVÁLIDA"
 _@M346_ "Mov. IPhone "
@@ -362,9 +376,11 @@ _@M348_ "Ícone "
 _@M349_ "Ignorar"
 _@M350_ "Incluir"
 _@M351_ "Títulos Info box"
+# 352 REMOVED after v2.3
 _@M352_ "Valores Info box pequen."
 _@M353_ "Valores Info box"
 _@M354_ "Colar InfoBox"
+# 355 REMOVED after v2.3
 _@M355_ "Geometria Infobox"
 _@M356_ "Informação"
 _@M357_ "Inserir Waypoint"
@@ -380,6 +396,7 @@ _@M366_ "MANTENHA A VELOCIDADE CONSTANTE MAIS TEMPO"
 _@M367_ "MANTENHA HEADING MAIS TEMPO"
 _@M368_ "MANTENHA VELOCIDADE E HEADING MAIS TEMPO"
 _@M369_ "MANTENHA VELOCIDADE MAIS TEMPO"
+# 370 REMOVED after v2.3
 _@M370_ "Teclado"
 _@M371_ "Período média L/D "
 _@M372_ "ÚLTIMA GATE ABERTA"
@@ -396,9 +413,10 @@ _@M382_ "Só c. aterráveis"
 _@M383_ "Estilo c. aterráveis "
 _@M384_ "Valor c. aterráveis "
 _@M385_ "C. Aterráveis"
-_@M386_ "Tempo aterragem"
+_@M386_ "Hora aterragem"
 _@M387_ "Linguagem "
 _@M388_ "Esquerda "
+# 389 UNUSED after v2.3
 _@M389_ "Menos"
 _@M390_ "Ascend. "
 _@M391_ "Verde claro"
@@ -425,10 +443,12 @@ _@M411_ "Pesquisar"
 _@M412_ "Baixos Alpes"
 _@M413_ "Low lands"
 _@M414_ "Baixo"
+# 415 UNUSED after v2.3
 _@M415_ "Mais baixo"
 _@M416_ "Valor MacCready "
 _@M417_ "Magenta"
 _@M418_ "Manual"
+# 419 no more used after 2.3
 _@M419_ "Bloqueio Mapa "
 _@M420_ "Ficheiro Mapa "
 _@M421_ "Rótulos Mapa OFF"
@@ -448,6 +468,7 @@ _@M434_ "Menu timeout "
 _@M435_ "Menu"
 _@M436_ "Métrico"
 _@M437_ "Afund. Min."
+# 438 UNUSED after v2.3
 _@M438_ "Mais"
 _@M439_ "Montanhoso"
 _@M440_ "Mover baixo"
@@ -456,6 +477,7 @@ _@M442_ "Mover wp baixo"
 _@M443_ "Mover wp cima"
 _@M444_ "Mover"
 _@M445_ "Movendo"
+# 446 REMOVED after v2.3
 _@M446_ "Janela Msg."
 _@M447_ "Menu Multitarget"
 _@M448_ "Rodar Multitarget"
@@ -485,6 +507,7 @@ _@M471_ "Sem correção"
 _@M472_ "Proib. planadores"
 _@M473_ "Sem c. aterráveis"
 _@M474_ "Sem logger ligado"
+#475 unused since 3.1i
 _@M475_ "Sem overlay"
 _@M476_ "Sem task"
 _@M477_ "Sem caminho válido"
@@ -536,7 +559,7 @@ _@M522_ "Petróleo"
 _@M523_ "Picker"
 _@M524_ "Nome do Piloto"
 _@M525_ "Nome do piloto: "
-_@M526_ "Largura"
+_@M526_ "Tom"
 _@M527_ "Por favor, encerre o LK8000 e reinicie o seu aparelho\n"
 _@M528_ "Ficheiro Polar "
 _@M529_ "Elegendo"
@@ -582,6 +605,7 @@ _@M568_ "Direita "
 _@M569_ "SIM"
 _@M570_ "SIMULAR"
 _@M571_ "INICIAR"
+# 572 REMOVED after v2.3
 _@M572_ "Factor de risco STF"
 _@M573_ "PARE VAZAR LASTRO"
 _@M574_ "Mc de segurança "
@@ -643,7 +667,9 @@ _@M629_ "Veloc. média"
 _@M630_ "Veloc. estimada"
 _@M631_ "Veloc. em falta"
 _@M632_ "Velocidade"
+# 633 UNUSED after v2.3
 _@M633_ "Sprint"
+# 634 UNUSED after v2.3
 _@M634_ "Standard"
 _@M635_ "Start "
 _@M636_ "Forçar Start"
@@ -720,6 +746,7 @@ _@M706_ "Terreno "
 _@M707_ "Altura s/ Terreno "
 _@M708_ "Terreno"
 _@M709_ "Terreno\nOFF"
+# 710 REMOVED in v2.3
 _@M710_ "Estilo entrada Texto "
 _@M711_ "Texto:"
 _@M712_ "Barra Térmica "
@@ -752,19 +779,21 @@ _@M738_ "Tráfico"
 _@M739_ "Rasto-rota "
 _@M740_ "Comprimento rota "
 _@M741_ "Espess. rota "
+# 742 UNUSED after v2.3
 _@M742_ "Triangulo"
 _@M743_ "True Type"
 _@M744_ "TrueWind IAS "
 _@M745_ "Período TrueWind "
 _@M746_ "TrueWind actualizado!"
 _@M747_ "Hora início Tsk "
-_@M748_ "Hora Tsk gates "
+_@M748_ "Hora portas Tsk "
 _@M749_ "Turnpoint"
 _@M750_ "Filtro Turnpoints "
 _@M751_ "Tipo "
 _@M752_ "Tipo"
 _@M753_ "DESCONHECIDO! "
 _@M754_ "DESBLOQUEADO"
+# Unused 755 and 756 since  v3.2 
 _@M755_ "A USAR A ALTITUDE BARO DISPONÍVEL"
 _@M756_ "A USAR A ALTITUDE BARO"
 _@M757_ "A USAR A ALTITUDE GPS"
@@ -797,6 +826,7 @@ _@M783_ "Vario vermelho+azul"
 _@M784_ "Vario"
 _@M785_ "Barra Variometro "
 _@M786_ "Muito Alto"
+# REMOVED after v2.3
 _@M787_ "Virtual Keys "
 _@M788_ "Volume "
 _@M789_ "Avisar"
@@ -829,9 +859,11 @@ _@M815_ "Contorno branco"
 _@M816_ "Branco"
 _@M817_ "Esta será a finish?"
 _@M818_ "Ajustes vento"
+# 819 REMOVED after 2.3
 _@M819_ "Seta vento"
 _@M820_ "Vento em Altitude"
 _@M821_ "Carga alar "
+# 822 REMOVED after 3.0
 _@M822_ "Winpilot"
 _@M823_ "Working band"
 _@M824_ "Wpt fora do terreno "
@@ -950,8 +982,10 @@ _@M942_ "Padrão"
 _@M943_ "Semi transparente"
 _@M944_ "Opacidade "
 _@M945_ "Padrão só no contorno"
-_@M946_ "Semi transparente, só no contorno"
-
+_@M946_ "Semi transparente, só contorno"
+_@M947_ "Sinal FLARM perdido"
+_@M948_ "Encontrado"
+_@M949_ "TP"
 _@M950_ "Opacidade BottomBar "
 _@M951_ "Não pode parar RX thread!"
 _@M952_ "Não pode escrever dados para Porta!"
@@ -960,7 +994,7 @@ _@M954_ "Suavizar Fonte "
 _@M955_ "ClearType"
 _@M956_ "Anti Aliasing"
 # Page 1.5 name, keep short:
-_@M957_ "Compet."
+_@M957_ "Competição"
 
 # ON/OFF in dialog windows (not Menu)
 _@M958_ "ON"
@@ -969,7 +1003,7 @@ _@M959_ "OFF"
 #
 # Paragliding lock/unlock screen feature
 #
-_@M960_ "CONFIRMA DESTRANCAR ÉCRÃ?"
+__@M960_ "CONFIRMA DESTRANCAR ÉCRÃ?"
 _@M961_ "CONFIRMA TRANCAR ÉCRÃ?"
 # 962 max 35 characters!
 _@M962_ "ÉCRÃ TRANCADO ATÉ À DESCOLAGEM"
@@ -980,7 +1014,9 @@ _@M964_ "O ÉCRÃ ESTÁ DESTRANCADO"
 # Menu buttons, MAX 8 character per line! Keep \n !
 _@M965_ "DESTRANC\nÉCRÃ"
 _@M966_ "TRANCAR\nÉCRÃ"
-
+_@M967_ "Modific. Esp. Aéreo "
+_@M968_ "só esta vez"
+_@M969_ "persistente"
 #
 # GPS and COM port warnings
 #
@@ -1024,6 +1060,7 @@ _@M1025_ "Próxima Alt. Chegada"
 _@M1026_ "PrAltCh"
 _@M1027_ "Próxima Alt. Necess."
 _@M1028_ "PrAltNe"
+# 1029 UNUSED REMOVED
 _@M1029_ " _Reservado 2"
 _@M1030_ "Próximo"
 _@M1031_ "Alt. Chegada Task"
@@ -1232,7 +1269,7 @@ _@M1222_ "Desligando, gravando task..."
 _@M1223_ "Topologia reposta nos valores defeito"
 
 # Waypoint filters 1229 no more than 3 chrs!
-_@M1224_ "Airport"
+_@M1224_ "Aeroporto"
 _@M1225_ "C. Aterrável"
 _@M1226_ "Turnpoint"
 _@M1227_ "File 1"
@@ -1240,8 +1277,8 @@ _@M1228_ "File 2"
 _@M1229_ "HDG"
 
 # TeamCode dialog captions
-_@M1230_ "Team Ref.: "
-_@M1231_ "Team code: SET REF!"
+_@M1230_ "Ref. Team: "
+_@M1231_ "Código Team: PÔR REF!"
 
 # Waypoint edit dialog (same or less chars!)
 _@M1232_ "Lat"
@@ -1271,22 +1308,22 @@ _@M1251_ "Próximo entrada NOFLY zone"
 _@M1252_ "Entrando NOFLY zone"
 _@M1253_ "Voando dentro NOFLY zone"
 _@M1254_ "Saindo NOFLY zone"
-_@M1255_ "YELLOW WARNING"
-_@M1256_ "RED WARNING"
+_@M1255_ "AVISO AMARELO"
+_@M1256_ "AVISO VERMELHO"
 _@M1257_ "para sair"
 _@M1258_ "para entrar"
 _@M1259_ "Muito longe, não calculado"
 _@M1260_ "abaixo"
 _@M1261_ "acima"
 _@M1262_ "Mensagem"
-_@M1263_ "WarnLevel"
+_@M1263_ "NivelAviso"
 _@M1264_ "HDist"
 _@M1265_ "VDist"
 
 # dlgAirspaceDetails - Airspace details
 _@M1266_ "RecLevel"
-_@M1267_ "Reconhecimento Yellow"
-_@M1268_ "Reconhecimento Red"
+_@M1267_ "Reconhecimento Amarelo"
+_@M1268_ "Reconhecimento Vermelho"
 _@M1269_ "Desactivado"
 _@M1270_ "FLY-IN"
 _@M1271_ "FLY-OUT"
@@ -1301,7 +1338,7 @@ _@M1277_ "Tempo repetição Airsp.msg"
 _@M1278_ "Margem vertical "
 _@M1279_ "Intervalo Msg "
 _@M1280_ "Validar este airspace?"
-_@M1281_ "Map labels "
+_@M1281_ "Rótulos Mapa "
 _@M1282_ "VALIDAR"
 _@M1283_ "INVALIDAR"
 _@M1284_ "Invalidar este airspace?"
@@ -1312,9 +1349,17 @@ _@M1286_ "ArSpcV"
 
 # airspace analysis dialog page
 _@M1287_ "Heading"
+# 1288 UNUSED REMOVED
 _@M1288_ "Mostrando para próximo waypoint"
 _@M1289_ "Próximo WP"
+# M1290 UNUSED REMOVED
 _@M1290_ "Mostrando para heading"
+_@M1291_ "Prox EA"
+_@M1292_ "Próximo E Aéreo"
+_@M1293_ "SONAR"
+#1294 REMOVED UNUSED
+_@M1294_ "Sonar OFF"
+_@M1295_ "Vista lado"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1362,6 +1407,7 @@ _@M1332_ "Var"
 _@M1333_ "Vario"
 _@M1334_ "Alt"
 
+# Mapwindow texts
 # Mapwindow texts
 _@M1335_ " TERRENO?"
 _@M1336_ " T?"
@@ -1526,6 +1572,7 @@ _@M1619_ "2.4 ASP "
 _@M1620_ "3.1 COMN "
 _@M1621_ "3.2 HIST "
 _@M1622_ "3.3 THERM "
+_@M1623_ "1.7 HSI "
 
 # New airspace messages
 _@M1630_ "Margem Altura "
@@ -1586,7 +1633,7 @@ _@M1670_ "THR"
 # average lift 
 _@M1671_ "ThAvg"
 _@M1672_ "Detalhes Térmica"
-_@M1673_ "Avg"
+_@M1673_ "Med"
 
 # Auto MC configuration
 _@M1674_ "Auto Mc "
@@ -1676,7 +1723,6 @@ _@M1726_ "A SUA POSIÇÃO É DESCONHECIDA!"
 # 1727-1739 reserved for The Oracle
 _@M1740_ "Análise OLC"
 _@M1741_ "REPÔR TODOS OS PERFIS DO LK8000"
-# free space , to be used 1744-1760
 _@M1742_ "AGL:"
 _@M1743_ "ELV:"
 # this was the old V rough air. Leave a trailing space!
@@ -1807,6 +1853,31 @@ _@M1826_ "Substitiur"
 _@M1827_ "Juntar antes chegada"
 _@M1828_ "Juntar depois chegada"
 
+# Gear warning alarm
+_@M1829_ "Aviso-Trem "
+_@M1830_ "Altitude de Aviso-trem "
+_@M1831_ "Off"
+_@M1832_ "Perto Aterráveis"
+_@M1833_ "Sempre"
+_@M1834_ "Verifique o trem!"
+
+# oudie 2 bluetooth
+_@M1835_ "Falha a emparelhar"
+_@M1836_ "Lookup"
+_@M1837_ "Emparelhar"
+_@M1838_ "Desemparelhar"
+
+# Reverse task
+_@M1850_ "Inverter\nTask"
+_@M1851_ "Inverter task"
+_@M1852_ "Inverter task?"
+_@M1853_ "TASK INVERTIDA"
+
+# HSI
+_@M1860_ "HSI"
+
+_@M1870_ "Sonar Esp Aéreo "
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
@@ -1860,6 +1931,7 @@ _@M2042_ "Setup\nBasico"
 _@M2043_ "Setup\nVento"
 _@M2044_ "ActivMapa"
 _@M2045_ "Nav por"
+#2046 UNUSED
 _@M2046_ ""
 _@M2047_ "Limpa\nMarks"
 _@M2048_ "Logger"
@@ -1952,8 +2024,8 @@ _@M2132_ "Apagar\nAltern"
 
 _@M2133_ "Posição"
 
-_@M2134_ "Desv A"
-_@M2135_ "Desv B"
+_@M2134_ "Dev A"
+_@M2135_ "Dev B"
 _@M2136_ "Rodar C-Probe 360° à volta dos 3 eixos\na ordem e direção não é importante"
 
 _@M2143_ "Config. Aparelho A"
@@ -1970,6 +2042,38 @@ _@M2148_ "Carro,Bicicleta & Caminhar"
 # Thermal Bar
 _@M2149_ "Na térmica"
 _@M2150_ "Na térmica e cruzeiro"
+
+_@M2151_ "T>\nTP Centro"
+_@M2153_ "Iniciar Close Time "
+
+_@M2154_ "IGC\nEnviar Ficheiro"
+_@M2155_ "Enviar"
+_@M2156_ "Envio Ficheiro IGC"
+_@M2157_ "Escolher aparelho"
+
+#BlueFlyVario
+_@M2158_ "Output QNH"
+_@M2159_ "Lift Threshold"
+_@M2160_ "Lift Off Threshold"
+_@M2161_ "Sink Threshold"
+_@M2162_ "Sink Off Threshold"
+_@M2163_ "Positição Ruído"
+_@M2164_ "Lift Freq. Base"
+_@M2165_ "Lift Freq. Incremento"
+_@M2166_ "Sink Freq. Base"
+_@M2167_ "Sink Freq. Incremento"
+_@M2168_ "Volume"
+_@M2169_ "Multiplicador incremento"
+_@M2170_ "Audio Ligado"
+_@M2171_ "Audio Desligado"
+_@M2172_ "Bluetooth Espere"
+_@M2173_ "Modo Output"
+_@M2174_ "frequência Output"
+
+_@M2175_ "Conical ESS"
+_@M2176_ "Inclinação Cone"
+_@M2177_ "Altitude Base"
+_@M2178_ "Raio Base"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
@@ -2019,8 +2123,21 @@ _@M2242_ "Sonar\nON"
 _@M2243_ "Sonar\nOFF"
 _@M2244_ "Setup\nAparelho"
 _@M2245_ "Salvar\nAparelho"
+_@M2246_ "Reset\nVista"
+_@M2247_ "28/45 FAI threshold "
+_@M2248_  "Não foi encontrado objeto próximo!"
 
-# MAX 2250! 
+# DO NOT TRANSLATE 2249
+_@M2249_  "DspMode"
+
+# MAX 2500! 
 # (Reserved for custom menus up to 2300!)
-# Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)
-=
+# Note for developers: remember LKLanguage MAX_MESSAGE limit (2500)
+
+# S = Start Task point
+_@M2301  "S" 
+# T = Task Point
+_@M2302_  "T"  
+# F = Finish point
+_@M2303_  "F" 
+_@M2304_  "AVISO DE TREM DESLIGADO!" 
