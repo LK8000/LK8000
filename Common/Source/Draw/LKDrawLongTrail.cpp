@@ -10,6 +10,9 @@ double MapWindow::LKDrawLongTrail( HDC hdc, const POINT Orig, const RECT rc)
   if(TrailActive!=3) return -1; // only when full trail is selected
   if (iLongSnailNext<2) return -1; // no reason to draw a single point
 
+  // Do not draw long trail in thermal view mode, because the snail trail is shrinked and drifted!
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) return -1;
+
   int i;
   LONG_SNAIL_POINT P1;
   int  nearby;
