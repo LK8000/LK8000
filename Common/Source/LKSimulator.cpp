@@ -64,14 +64,15 @@ void LKSimulator(void) {
 	#endif
 
 	// Add a couple of thermals for the boys
-	InsertThermalHistory(GPS_INFO.Time-1887, GPS_INFO.Latitude-0.52, GPS_INFO.Longitude-0.52, 873, 1478,1.5);
-	InsertThermalHistory(GPS_INFO.Time-987, GPS_INFO.Latitude-0.41, GPS_INFO.Longitude-0.41, 762, 1367,1.8);
-	InsertThermalHistory(GPS_INFO.Time-100, GPS_INFO.Latitude-0.02, GPS_INFO.Longitude-0.02, 650, 1542,2.2);
+	InsertThermalHistory(GPS_INFO.Time-1887, GPS_INFO.Latitude-0.21, GPS_INFO.Longitude+0.13, 873, 1478,1.5);
+	InsertThermalHistory(GPS_INFO.Time-1250, GPS_INFO.Latitude+0.15, GPS_INFO.Longitude-0.19, 991, 1622,0.9);
+	InsertThermalHistory(GPS_INFO.Time-987, GPS_INFO.Latitude-0.11, GPS_INFO.Longitude+0.13, 762, 1367,1.8);
+	InsertThermalHistory(GPS_INFO.Time-100, GPS_INFO.Latitude-0.02, GPS_INFO.Longitude-0.03, 650, 1542,2.2);
 	WayPointList[RESWP_LASTTHERMAL].Latitude  = GPS_INFO.Latitude-0.022;
-	WayPointList[RESWP_LASTTHERMAL].Longitude = GPS_INFO.Longitude-0.022;
+	WayPointList[RESWP_LASTTHERMAL].Longitude = GPS_INFO.Longitude-0.033;
 	WayPointList[RESWP_LASTTHERMAL].Altitude  = 650;
 	ThLatitude=GPS_INFO.Latitude-0.022;
-	ThLongitude=GPS_INFO.Longitude-0.022;
+	ThLongitude=GPS_INFO.Longitude-0.033;
 
 	if (EnableFLARMMap) {
 		srand( GetTickCount());
