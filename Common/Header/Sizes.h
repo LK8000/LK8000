@@ -73,8 +73,8 @@
 #define MAX_ASSETIDSTRING	10
 
 #if LONGSNAIL
-#define LONGTRAILSIZE 660  // 11h plus snailtrail classic = >12h !
-#define TRAILSIZE 20	   // test mode
+#define LONGTRAILSIZE 600 
+#define TRAILSIZE 1000
 #define TRAILSHRINK 5
 #else
 #define TRAILSIZE 1000
