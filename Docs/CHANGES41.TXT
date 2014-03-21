@@ -80,6 +80,43 @@ Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
 
+============
+Version 4.1p
+============
+
+NEW
+
+Add support for Garmin HCHDG nmea sentence, showing magnetic heading
+
+Snail trail "full" mode is now painting over 12 hours of flight
+The trail is appearing with NO VARIO information: only blue line.
+It is approximated only, with 1 point per minute, and only 1 point in thermal every 10 minutes.
+By default the "full" trail is not enabled, but it can be changed anytime with button.
+
+
+CHANGES
+
+
+
+
+FIXES
+
+Fix Critical assertion error in LKAirspace due to a false positive error
+
+Fix critical bug in testbench mode only appearing when using dual feed gps with internal GPS driver.
+
+Fix possible critical bugs in device driver of LXV7 
+
+Fix bad problem when using internal GPS driver as a Device B , many possible malfunctions
+
+Fix logger saving pressure altitude and not QNH altitude.
+    The IGC flight replay will use it correctly now.
+
+Fix bug in drawing snail trail with a nettovario close to zero but not zero, appearing as a black line
+  instead of grey
+
+
+
 
 ============
 Version 4.1o
