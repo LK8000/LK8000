@@ -604,7 +604,8 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   // say we are updated every time we get this,
   // so infoboxes get refreshed if GPS connected
   // the RMC sentence marks the start of a new fix, so we force the old data to be saved for calculations
-        if (_tcslen(params[8]) <6) {
+        // note that Condor sends no date..
+        if ((_tcslen(params[8]) <6) && !DevIsCondor) {
 		#if TESTBENCH
 		StartupStore(_T(".... RMC date field empty, skip sentence!\n"));
 		#endif

@@ -136,6 +136,9 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   11 windspeed (kph)
 
   */
+
+  DevIsCondor=true;
+
   double alt, airspeed, wspeed, wfrom;
  
   NMEAParser::ExtractParameter(String,ctemp,1);
