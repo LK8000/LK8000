@@ -2443,10 +2443,10 @@ olc_score:
 				} else {
 					if (value==360) value=0;
 					if (HideUnits)
-						_stprintf(BufferValue,TEXT("%1.0f/%1.0f"), 
+						_stprintf(BufferValue,TEXT("%03.0f/%1.0f"), 
 							value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
 					else
-						_stprintf(BufferValue,TEXT("%1.0f")_T(DEG)_T("/%1.0f"), 
+						_stprintf(BufferValue,TEXT("%03.0f")_T(DEG)_T("/%1.0f"), 
 							value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
 				}
 			} else {
