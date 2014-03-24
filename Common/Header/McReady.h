@@ -57,6 +57,8 @@ class GlidePolar {
   static double SinkRateFast(const double &MC, const double &v);
 
   static double EquMC(double ias);
+  static double STF(double MC, double Vario, double HeadWind);
+
 
  private:
   static double MacCreadyAltitude_internal(double MCREADY,

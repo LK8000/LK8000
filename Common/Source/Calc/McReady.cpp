@@ -547,12 +547,25 @@ double GlidePolar::FindSpeedForSinkRateAccurate(double w) {
 }
 
 double GlidePolar::FindSpeedForSlope(double s) {
-    return - ((polar_b * s + 1) / s / polar_a) * 1.0/2.0;
+    if (polar_a != 0. && s != 0.) {
+        return -((polar_b * s + 1) / s / polar_a) * 1.0 / 2.0;
+    }
+    return Vminsink();
 }
 
 double GlidePolar::EquMC(double ias) {
     if (ias<1||ias>70) return -1;
     return polar_c-polar_a*ias*ias;
+}
+
+double GlidePolar::STF(double MC, double Vario, double HeadWind) {
+    if (polar_a != 0.) {
+        double dTmp = polar_a * (Vario - MC + polar_a * HeadWind * HeadWind + polar_b * HeadWind + polar_c);
+        if (dTmp > 0) {
+            return max(Vminsink(), HeadWind - (sqrt(dTmp) / polar_a)); // STF speed can't be less than min sink Speed.
+        }
+    }
+    return Vminsink();
 }
 
 double GlidePolar::MacCreadyAltitude_heightadjust(double emcready, 
