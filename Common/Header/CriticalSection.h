@@ -9,7 +9,9 @@
 #ifndef __CRITICALSECTION_H__
 #define __CRITICALSECTION_H__
 
+#ifdef MSOFT
 #include <windows.h>
+#endif
 
 class CCriticalSection
 {

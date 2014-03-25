@@ -176,14 +176,14 @@ EBROWSE         :=ebrowse
 ######## windows definitions
 
 ifeq ($(CONFIG_LINUX),y)
-CE_DEFS		:=-DLINUX -D__GNUC__ -D__linux__
+CE_DEFS		:=-DLINUX -D__linux__
 else
 ifeq ($(CONFIG_PC),y)
 CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
-CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1
+CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1 -DMSOFT
 else
 CE_DEFS		:=-D_WIN32_WCE=$(CE_VERSION) -D_WIN32_IE=$(CE_VERSION)
-CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM)
+CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
 endif
 endif
 
@@ -200,7 +200,7 @@ UNICODE		:= -DUNICODE -D_UNICODE
 ######## paths
 
 ifeq ($(CONFIG_LINUX),y)
-INCLUDES	:= -I$(HDR)/linuxcompat -I/usr/include/linux -I$(HDR) -I$(SRC)
+INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
 else
 ifeq ($(CONFIG_WINE),y)
 INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)

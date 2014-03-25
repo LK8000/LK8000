@@ -8,12 +8,17 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-
+#ifdef MSOFT
 #if !defined(WINDOWSPC)
 #define   WINDOWSPC             0
 #else
 #define   WINDOWSPC             1
 #define   WINE	1
+#endif
+#endif
+
+#ifdef LINUX
+//#define __GNUC__	1
 #endif
 
 

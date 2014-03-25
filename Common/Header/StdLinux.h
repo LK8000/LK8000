@@ -1,15 +1,19 @@
-
 #if !defined(_STDLINUX_)
 #define _STDLINUX_
+#endif
 
+#include <cstring>
 #include <cstddef>
-#include <stdint.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <cwchar>
+
 #include "types.h"
 #include "tchar.h"
 #include <assert.h>
 #include <math.h>
 #include <malloc.h>
-
 
 #ifndef ASSERT
 #define ASSERT(x) assert(x)
@@ -31,4 +35,3 @@ extern "C" {
 #endif
 
 
-#endif

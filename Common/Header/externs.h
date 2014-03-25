@@ -71,6 +71,5 @@ extern void DoStatusMessage(const TCHAR* text, const TCHAR* data = NULL, const b
 using std::min;
 using std::max;
 
-
 #endif
 
