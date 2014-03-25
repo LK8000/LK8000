@@ -49,7 +49,7 @@ int GetTextHeight(HDC hDC, const TCHAR *text) {
 
 void RestartCommPorts() {
 
-  StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
+  StartupStore(TEXT(". RestartCommPorts begin @%s%s"),WhatTimeIsIt(),NEWLINE);
 
   LockComm();
   /* 29/10/2013 : 
@@ -70,6 +70,9 @@ void RestartCommPorts() {
   devInit(TEXT(""));
 
   UnlockComm();
+  #if TESTBENCH
+  StartupStore(TEXT(". RestartCommPorts end @%s%s"),WhatTimeIsIt(),NEWLINE);
+  #endif
 
 }
 

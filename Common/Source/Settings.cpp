@@ -151,6 +151,9 @@ void SettingsLeave() {
   UnlockFlightData();
 
   if(!SIMMODE && COMPORTCHANGED) {
+      #if TESTBENCH
+      StartupStore(_T(".... COMPORTCHANGED from configuration.  ForceComPortReset @%s\n"),WhatTimeIsIt());
+      #endif
       LKForceComPortReset=true;
       // RestartCommPorts(); 110605
   }
@@ -168,8 +171,14 @@ void SystemConfiguration(short mode) {
 	}
   }
 
+  #if TESTBENCH
+  StartupStore(_T("... SETTINGS enter @%s\n"),WhatTimeIsIt());
+  #endif
   SettingsEnter();
   dlgConfigurationShowModal(mode);
+  #if TESTBENCH
+  StartupStore(_T("... SETTINGS leave @%s\n"),WhatTimeIsIt());
+  #endif
   SettingsLeave();
 }
 
