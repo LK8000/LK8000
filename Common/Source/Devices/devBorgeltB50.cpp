@@ -10,7 +10,6 @@
 
 #include "devBorgeltB50.h"
 
-#include "devCAI302.h"
 
 
 BOOL bBaroAvailable = FALSE;
@@ -18,6 +17,7 @@ BOOL bBaroAvailable = FALSE;
 BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS);
 
 extern BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+
 
 BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
@@ -30,24 +30,6 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
       bBaroAvailable = true;
       return vl_PGCS1( d, &String[6], pGPS);
     }
-//  if(_tcsstr(String,TEXT("$PGCS,")) == String){
-//    return vl_PGCS1(d, &String[6], pGPS);
-#ifdef GPRMZ__
-    else
-      if(_tcsncmp(TEXT("$GPRMZ"), String, 6)==0)
-      {
-    	TCHAR ctemp[80], *params[5];
-    	int nparams = NMEAParser::ValidateAndExtract(String, ctemp, 80, params, 5);
-    	if (nparams < 1)
-    	  return FALSE;
-
-    	  double altitude = NMEAParser::ParseAltitude(params[1], params[2]);
-    	  UpdateBaroSource( pGPS, BARO__RMZ, d, AltitudeToQNHAltitude(altitude));
-
-    	return TRUE;
-      }
-#endif
-
 
   return FALSE;
 
@@ -81,9 +63,9 @@ BOOL b50Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Borgelt B50"));
   d->ParseNMEA = B50ParseNMEA;
-  d->PutMacCready = cai302PutMacCready;
-  d->PutBugs = cai302PutBugs;
-  d->PutBallast = cai302PutBallast;
+  d->PutMacCready = NULL;
+  d->PutBugs = NULL;
+  d->PutBallast = NULL;
   d->Open = NULL;
   d->Close = NULL;
   d->Init = NULL;
@@ -108,10 +90,12 @@ BOOL b50Register(void){
 }
 
 
-// *****************************************************************************
-// local stuff
 
 /*
+ NOTICE: DO NOT TRUST THE FOLLOWING. BORGELT IS NOT WORKING LIKE THAT.
+ NOBODY KNOWS HOW IT WORKS, THE DOCS ARE WRONG, THE NMEA LOG PROVE INCONSISTENT VALUES.
+ NO HOPE TO EVER FIX IT.
+
 Sentence has following format: 
 
 $PBB50,AAA,BBB.B,C.C,DDDDD,EE,F.FF,G,HH*CHK crlf
@@ -136,7 +120,6 @@ $PBB50,14,-.1,3.3,196,0,1.05,0,1*59
 
 CHK = standard NMEA checksum 
 
-
 */
 
 BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
@@ -160,46 +143,6 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
   NMEAParser::ExtractParameter(String,ctemp,3);
   vias = sqrt(StrToDouble(ctemp,NULL))/TOKNOTS;
 
-  // RMN: Changed bugs-calculation, swapped ballast and bugs to suit
-  // the B50-string for Borgelt, it's % degradation, for us, it is %
-  // of max performance
-  /*
-
-  JMW disabled bugs/ballast due to problems with test b50
-*/
-  NMEAParser::ExtractParameter(String,ctemp,4);
- double bugs = StrToDouble(ctemp,NULL);
- bugs = (100.0-bugs)/100.0;
- CheckSetBugs(bugs);
- pGPS->Bugs = BUGS;
-		 // pGPS->Bugs;
-//  StartupStore(TEXT(">>>>>BUGS<<<< %s %f "),ctemp, BUGS);
-  // for Borgelt it's % of empty weight,
-  // for us, it's % of ballast capacity
-  // RMN: Borgelt ballast->XCSoar ballast
-
-  NMEAParser::ExtractParameter(String,ctemp,5);
-  double bal = StrToDouble(ctemp,NULL);
-  bal =  (bal-1.0)/0.6;
-  CheckSetBallast(bal);
-  pGPS->Ballast = BALLAST;
-  /*************************************************/
- // StartupStore(TEXT(">NMEA:$PBB50,%s                                    BUG:%d %4.2f:BAL %s%s"),String, (int)BUGS,BALLAST, NEWLINE, NEWLINE);
-  /*************************************************/
-  /*
-  if (WEIGHTS[2]>0) {
-    pGPS->Ballast = min(1.0, max(0.0,
-                                     bal*(WEIGHTS[0]+WEIGHTS[1])/WEIGHTS[2]));
-    BALLAST = pGPS->Ballast;
-  } else {
-    pGPS->Ballast = 0;
-    BALLAST = 0;
-  }
-  */
-  /*
-  // w0 pilot weight, w1 glider empty weight, w2 ballast weight
-  */
-
   // inclimb/incruise 1=cruise,0=climb, OAT
   NMEAParser::ExtractParameter(String,ctemp,6);
   
@@ -222,12 +165,10 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
     ExternalTriggerCruise = false;
   }
   #endif
+
   NMEAParser::ExtractParameter(String,ctemp,7);
-//  if()
-  {
-    pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL);
-    pGPS->TemperatureAvailable = true;
-  }
+  pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL);
+  pGPS->TemperatureAvailable = true;
 
   pGPS->AirspeedAvailable = TRUE;
   pGPS->IndicatedAirspeed = vias;
