@@ -17,6 +17,29 @@ extern double CRUISE_EFFICIENCY;
 //
 void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
+
+    if (((AutoMcMode == amcFinalGlide) || (AutoMcMode == amcFinalAndClimb)) 
+            && DoOptimizeRoute() && Calculated->NextAltitude > 0.) {
+
+        // Special case for Conical end of Speed section
+        int Type = -1;
+        double ConeSlope = 0.0;
+        LockTaskData();
+        if (ValidTaskPoint(ActiveWayPoint)) {
+            GetTaskSectorParameter(ActiveWayPoint, &Type, NULL);
+            ConeSlope = Task[ActiveWayPoint].PGConeSlope;
+        }
+        UnlockTaskData();
+        if (Type == CONE && ConeSlope > 0.0) {
+            double VOpt = GlidePolar::FindSpeedForSlope(ConeSlope);
+            double eqMC = GlidePolar::EquMC(VOpt);
+            if(eqMC <= MACCREADY ) {
+                Calculated->VOpt = VOpt;
+                return;
+            }
+        }
+    }
+
     double HeadWind = 0;
     if (Calculated->FinalGlide && ValidTaskPoint(ActiveWayPoint)) {
         // according to MC theory STF take account of wind only if on final Glide

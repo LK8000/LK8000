@@ -7,6 +7,7 @@
  */
 
 #include "externs.h"
+#include "McReady.h"
 
 double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_bearing, const double GlideSlope);
 bool ActiveIsFinalWaypoint();
@@ -16,6 +17,10 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (!Calculated->AutoMacCready) return;
 
     bool is_final_glide = false;
+    bool is_conical_ess = false;
+
+    double ConeSlope = 0.0;
+
     //  LockFlightData();
     LockTaskData();
 
@@ -46,6 +51,17 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         } else {
             first_mc = true;
         }
+
+        if (DoOptimizeRoute() && Calculated->NextAltitude > 0.) {
+            // Special case for Conical end of Speed section
+            int Type = -1;
+            GetTaskSectorParameter(ActiveWayPoint, &Type, NULL);
+            ConeSlope = Task[ActiveWayPoint].PGConeSlope;
+            if (Type == CONE && ConeSlope > 0.0) {
+                is_final_glide = true;
+                is_conical_ess = true;
+            }
+        }
     }
 
     double av_thermal = -1;
@@ -72,6 +88,8 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (!ValidTaskPoint(ActiveWayPoint)) {
         if (av_thermal > 0) {
             mc_new = av_thermal;
+        } else {
+            mc_new = 0;
         }
     } else if (((AutoMcMode == amcFinalGlide) || (AutoMcMode == amcFinalAndClimb)) && is_final_glide) {
 
@@ -109,6 +127,15 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             } else {
                 mc_new = mc_pirker;
             }
+
+            if (is_conical_ess) {
+                const double VOpt = GlidePolar::FindSpeedForSlope(ConeSlope);
+                const double eqMC = GlidePolar::EquMC(VOpt);
+                if(mc_new > eqMC) {
+                    mc_new = eqMC;
+                }
+            }
+
         } else { // below final glide at zero Mc, never achieved final glide
             if (first_mc && (AutoMcMode == amcFinalAndClimb)) {
                 // revert to averager based auto Mc
