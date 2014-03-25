@@ -184,10 +184,10 @@ void NMEAParser::UpdateMonitor(void)
 
   #ifdef DEBUGNPM
   if (invalidGps==2) {
-	StartupStore(_T("... GPS no gpsValid available on port 1 and 2, active=%d%s"),active,NEWLINE);
+	StartupStore(_T("... GPS no gpsValid available on port 1 and 2, active=%d @%s%s"),active,WhatTimeIsIt(),NEWLINE);
   }
   if (invalidBaro>0) {
-	StartupStore(_T("... Baro altitude just lost, current status=%d%s"),GPS_INFO.BaroAltitudeAvailable,NEWLINE);
+	StartupStore(_T("... Baro altitude just lost, current status=%d @%s%s"),GPS_INFO.BaroAltitudeAvailable,WhatTimeIsIt(),NEWLINE);
   }
   #endif
 
@@ -253,7 +253,7 @@ void NMEAParser::UpdateMonitor(void)
 		if (invalidBaro||!GotFirstBaroAltitude) {
 			GPS_INFO.BaroAltitudeAvailable=FALSE;
 			#ifdef DEBUGNPM
-			StartupStore(_T(".... We still have valid baro, resetting BaroAltitude OFF\n"));
+			StartupStore(_T(".... We still have valid baro, resetting BaroAltitude OFF %s\n"),WhatTimeIsIt());
 			#endif
 		}
 	}
@@ -304,8 +304,8 @@ void NMEAParser::UpdateMonitor(void)
 	if ( (counterSameBaro > timethreshold) && (counterSameHGPS<2) ) {
 			DoStatusMessage(MsgToken(122)); // Baro not available, Using GPS ALTITUDE
 			EnableNavBaroAltitude=false;
-			StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f%s"),
-			GPS_INFO.BaroAltitude, GPS_INFO.Altitude,NEWLINE);
+			StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"),
+			GPS_INFO.BaroAltitude, GPS_INFO.Altitude,WhatTimeIsIt(),NEWLINE);
 			lastBaroAltitude=-1;
 			lastGPSAltitude=-1;
 			counterSameBaro=0;

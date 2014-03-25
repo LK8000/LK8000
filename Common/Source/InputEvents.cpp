@@ -2377,10 +2377,14 @@ void InputEvents::eventLogger(const TCHAR *misc) {
   } else if (_tcscmp(misc, TEXT("nmea")) == 0) {
     EnableLogNMEA = !EnableLogNMEA;
     if (EnableLogNMEA) {
-      // DoStatusMessage(TEXT("NMEA Log ON"));
       DoStatusMessage(gettext(TEXT("_@M864_"))); // NMEA Log ON
+      #if TESTBENCH
+      StartupStore(_T("... NMEA LOG IS ON @%s%s"),WhatTimeIsIt(),NEWLINE);
+      #endif
     } else {
-      // DoStatusMessage(TEXT("NMEA Log OFF"));
+      #if TESTBENCH
+      StartupStore(_T("... NMEA LOG IS OFF @%s%s"),WhatTimeIsIt(),NEWLINE);
+      #endif
       DoStatusMessage(gettext(TEXT("_@M865_"))); // NMEA Log OFF
     }
     return;
