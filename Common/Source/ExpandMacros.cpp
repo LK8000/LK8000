@@ -371,17 +371,19 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 33: // SnailTrailToggleName
 			if (MapSpaceMode!=MSM_MAP) invalid=true;
+                        // Since we show the next choice, but the order is not respected in 5.0:
+                        // the new order is artificially off-short-long-full, as in the inputevents button management
 			switch(TrailActive) {
-				case 0:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(410)); // Long
-					break;
-				case 1:
+				case 0: // off to short
 					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(612)); // Short
 					break;
-				case 2:
+				case 1: // long to full
 					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(312)); // Full
 					break;
-				case 3:
+				case 2: // short to long
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(410)); // Long
+					break;
+				case 3: // full to off
 				default:
 					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(491)); // OFF
 					break;
