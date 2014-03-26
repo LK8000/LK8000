@@ -81,6 +81,28 @@ Automatically providing the minimal, current and max MC possible for the final g
 
 
 ============
+Version 4.1q
+============
+
+CHANGES
+
+Simulator thermals repositioned and made closer to takeoff point, added a fourth thermal.
+
+Wind direction in degrees padded with 0 (example: 018 instead of 18).
+
+
+
+FIXES
+
+Fix Borgelt B50 device driver. Not using bugs and ballast because values are wrong 
+    We receive negative values, totally wrong and not compatible with CAI sentences.
+
+Fix order of Trail button, previously OFF-LONG-SHORT-FULL to OFF-SHORT-LONG-FULL
+
+
+
+
+============
 Version 4.1p
 ============
 
