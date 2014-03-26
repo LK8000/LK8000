@@ -492,8 +492,8 @@ void Globals_Init(void) {
   #endif
 
   SelectedWaypoint = -1;
-  TrailActive = TRUE;
-  TrailActive_Config = TRUE;
+  TrailActive = 1; // long
+  TrailActive_Config = 1; // long
   DisableAutoLogger = false;
   LiveTrackerInterval = 0;
   

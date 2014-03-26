@@ -1038,10 +1038,23 @@ void InputEvents::eventBaroAltitude(const TCHAR *misc) {
 void InputEvents::eventSnailTrail(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
-    TrailActive ++;
-    if (TrailActive>3) {
-      TrailActive=0;
-    }
+      // We dont change in 5.0 the order OFF-LONG-SHORT-FULL but we 
+      // want it to become nevertheless OFF-SHORT-LONG-FULL correctly
+      // So this is the trick, for the trail button
+      switch(TrailActive) {
+          case 0: // off
+              TrailActive=2; // short
+              break;
+          case 1: // long
+              TrailActive=3; // full
+              break;
+          case 2: // short
+              TrailActive=1; // long
+              break;
+          case 3: // full
+              TrailActive=0; // off
+              break;
+      }
   } 
   else if (_tcscmp(misc, TEXT("off")) == 0)
     TrailActive = 0;

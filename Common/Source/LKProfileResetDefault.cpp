@@ -97,7 +97,7 @@ void LKProfileResetDefault(void) {
   MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_full);
   MapWindow::SetAirSpaceOpacity(30);
 
-  TrailActive_Config = TRUE;
+  TrailActive_Config = 1; // long
 
   EnableTrailDrift_Config = false;
 
