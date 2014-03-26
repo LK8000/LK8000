@@ -99,7 +99,7 @@ BOOL DevLXMiniMap::LXMiniMapPutBallast(PDeviceDescriptor_t	d, double	Ballast)
 
 		double newBallastFactor = CalculateBalastFactor(Ballast) ;
 
-		wsprintf(mcbuf, TEXT("PFLX2,,%.2f,,,,"), newBallastFactor);
+		_stprintf(mcbuf, TEXT("PFLX2,,%.2f,,,,"), newBallastFactor);
 		devWriteNMEAString(d, mcbuf);
 
 		return (TRUE);
@@ -111,7 +111,7 @@ BOOL DevLXMiniMap::LXMiniMapPutBugs(PDeviceDescriptor_t	d, double	Bugs)
 
 		int TransformedBugsValue = 100 - (int)(Bugs*100.0);
 
-		wsprintf(mcbuf, TEXT("PFLX2,,,%d,,,"), TransformedBugsValue);
+		_stprintf(mcbuf, TEXT("PFLX2,,,%d,,,"), TransformedBugsValue);
 		devWriteNMEAString(d, mcbuf);
 
 		return (TRUE);
@@ -128,7 +128,7 @@ BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t *d, double NewQNH){
 
 
 	TCHAR mcbuf[100];
-	wsprintf(mcbuf, TEXT("PFLX3,%.2f,,,,,,,,,,,,"),AltOffset * M2FT );
+	_stprintf(mcbuf, TEXT("PFLX3,%.2f,,,,,,,,,,,,"),AltOffset * M2FT );
 	devWriteNMEAString(d, mcbuf);
 
   return(TRUE);
@@ -138,7 +138,7 @@ BOOL DevLXMiniMap::LXMiniMapPutMacCready(PDeviceDescriptor_t d, double MacCready
 
 	McReadyTimeout = 2;
 	TCHAR mcbuf[100];
-	wsprintf(mcbuf, TEXT("PFLX2,%.2f,,,,,"), MacCready);
+	_stprintf(mcbuf, TEXT("PFLX2,%.2f,,,,,"), MacCready);
 	devWriteNMEAString(d, mcbuf);
 
 	return (TRUE);
@@ -184,7 +184,7 @@ BOOL DevLXMiniMap::SendPFLX4(DeviceDescriptor_t *d)
 
 			TCHAR mcbuf[100];
 
-		    wsprintf(mcbuf, TEXT("PFLX4,,,,%.2f,%d,,,,,"),
+		    _stprintf(mcbuf, TEXT("PFLX4,,,,%.2f,%d,,,,,"),
 		//	 CALCULATED_INFO.NettoVario,
 			 CALCULATED_INFO.WaypointDistance,
 			 (int)(finalGlide  * M2FT)
@@ -211,7 +211,7 @@ BOOL DevLXMiniMap::LXMiniMapOnSysTicker(DeviceDescriptor_t *d) {
 	    	{
 	    		TICKER = GetTickCount();
 	    		TCHAR mcbuf[100];
-	    		wsprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"),4);
+	    		_stprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"),4);
 	    		devWriteNMEAString(d, mcbuf);
 	    	}
 	   }
@@ -225,7 +225,7 @@ BOOL DevLXMiniMap::Open(PDeviceDescriptor_t d, int Port){
 
 	 TCHAR mcbuf[100];
 
-	 wsprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"),3);
+	 _stprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"),3);
 	 devWriteNMEAString(d, mcbuf);
 
   return(TRUE);

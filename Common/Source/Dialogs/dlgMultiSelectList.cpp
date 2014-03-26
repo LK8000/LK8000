@@ -514,14 +514,14 @@ ListElement* dlgMultiSelectListShowModal(void) {
         PlayResource(TEXT("IDR_WAV_MM4"));
 
     if (!ScreenLandscape) {
-        char filename[MAX_PATH];
+        TCHAR filename[MAX_PATH];
         LocalPathS(filename, TEXT("dlgMultiSelectList_L.xml"));
         wf = dlgLoadFromXML(CallBackTable,
                             filename,
                             hWndMainWindow,
                             TEXT("IDR_XML_MULTISELECTLIST_L"));
     } else {
-        char filename[MAX_PATH];
+        TCHAR filename[MAX_PATH];
         LocalPathS(filename, TEXT("dlgMultiSelectList.xml"));
         wf = dlgLoadFromXML(CallBackTable,
                             filename,

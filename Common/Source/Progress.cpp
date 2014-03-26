@@ -11,7 +11,6 @@
 
 #include <commdlg.h>
 #include <commctrl.h>
-#include "aygshell.h"
 #include "resource.h"
 #include "Message.h"
 #include "LKObjects.h"

@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
@@ -111,7 +110,7 @@ short dlgWayQuickShowModal(void){
 
   wf = NULL;
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   TCHAR sTmp[128];
 
   if (ScreenLandscape) {

@@ -102,14 +102,18 @@ void SaveFLARMDetails(void)
   
   for (int z = 0; z < NumberOfFLARMNames; z++)
     {   
-      wsprintf(wsline, TEXT("%lx=%s\r\n"), FLARM_Names[z].ID,FLARM_Names[z].Name);
-      
+      _stprintf(wsline, TEXT("%lx=%s\r\n"), FLARM_Names[z].ID,FLARM_Names[z].Name);
+#ifdef UNICODE
       WideCharToMultiByte( CP_ACP, 0, wsline,
 			   _tcslen(wsline)+1,
 			   cline,
 			   READLINE_LENGTH, NULL, NULL);
       
       WriteFile(hFile, cline, strlen(cline), &bytesWritten, NULL);
+#else
+      UNUSED(cline);
+      WriteFile(hFile, wsline, strlen(wsline), &bytesWritten, NULL);
+#endif      
     }
   _stprintf(filename,_T("... Saved %d FLARM names%s"),NumberOfFLARMNames,NEWLINE);
   StartupStore(filename);
@@ -133,7 +137,7 @@ int LookupSecondaryFLARMId(TCHAR *cn)
 {
   for (int i=0; i<NumberOfFLARMNames; i++) 
     {
-      if (wcscmp(FLARM_Names[i].Name, cn) == 0) 
+      if (_tcscmp(FLARM_Names[i].Name, cn) == 0) 
 	{
 	  return i;
 	}

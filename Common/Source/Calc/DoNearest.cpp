@@ -295,7 +295,7 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			// if unfilled position or filled with not the same item already
 			if ( (p_sortedIndex[k] < 0 ) || (p_sortedIndex[k] != wp_index) ) {
 				if ( p_sortedIndex[k]>=0 ) 
-					if ( wcscmp( WayPointList[wp_index].Name, WayPointList[p_sortedIndex[k]].Name) >0) continue;
+					if ( _tcscmp( WayPointList[wp_index].Name, WayPointList[p_sortedIndex[k]].Name) >0) continue;
 				for (l=MAXNEAREST-1; l>k; l--) {
 					if (l>0) {
 						p_sortedIndex[l] = p_sortedIndex[l-1];

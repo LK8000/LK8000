@@ -10,10 +10,6 @@
 #include "externs.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-#ifdef MSOFT
-#include <aygshell.h>
-#endif
-
 #include "AirfieldDetails.h"
 #include <zzip/lib.h>
 

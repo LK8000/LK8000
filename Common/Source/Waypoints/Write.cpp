@@ -9,6 +9,15 @@
 #include "externs.h"
 #include "Waypointparser.h"
 
+#ifdef _UNICODE
+#define PF_ASCIISTR    "%S"
+#define PF_UNICODESTR  "%s"
+#else
+#define PF_ASCIISTR    "%s"
+#define PF_UNICODESTR  "%S"
+#endif
+
+
 extern int globalFileNum;
 
 
@@ -47,7 +56,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	else
 		_tcscpy(comment,_T(""));
 
-	fprintf(fp,"%d,%S,%S,%dM,%S,%S,%S\r\n",
+	fprintf(fp,"%d,"PF_ASCIISTR","PF_ASCIISTR",%dM,"PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR"\r\n",
 		wpt->Number,
 		latitude,
 		longitude,
@@ -70,7 +79,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	else
 		_tcscpy(comment,_T(""));
 
-	fprintf(fp,"W  %S A %.10f%c%c %.10f%c%c 27-MAR-62 00:00:00 %.6f %S\r\n",
+	fprintf(fp,"W  "PF_ASCIISTR" A %.10f%c%c %.10f%c%c 27-MAR-62 00:00:00 %.6f "PF_ASCIISTR"\r\n",
 	wpt->Name,
 	fabs(wpt->Latitude),
 	0xba,
@@ -113,7 +122,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 		_tcscpy(comment,wpt->Comment);
 	else
 		_tcscpy(comment,_T(""));
-	fprintf(fp,"\"%S\",%S,%S,%S,%S,%d.0m,%d,%S,%S,%S,%S\r\n",
+	fprintf(fp,"\""PF_ASCIISTR"\","PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR",%d.0m,%d,"PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR"\r\n",
 		wpt->Name,
 		wpt->Code,
 		wpt->Country,
@@ -147,7 +156,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 			nWaypointPos++;
 	}
 
-	fprintf(fp, "%d,%S,%.6f,%.6f,,0,1,3,0,65635,%S,0,0,0,%d,6,0,17\r\n",
+	fprintf(fp, "%d,"PF_ASCIISTR",%.6f,%.6f,,0,1,3,0,65635,"PF_ASCIISTR",0,0,0,%d,6,0,17\r\n",
 			nWaypointPos,// position in file
 			wpt->Name,
 			wpt->Latitude,

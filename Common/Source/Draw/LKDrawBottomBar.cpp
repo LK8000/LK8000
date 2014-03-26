@@ -26,7 +26,6 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
   TCHAR BufferUnit[LKSIZEBUFFERUNIT];
   TCHAR BufferTitle[LKSIZEBUFFERTITLE];
 
-  char text[LKSIZETEXT];
   int index=-1;
   double Value;
   short rcx, rcy;
@@ -225,12 +224,12 @@ _afterautotrm:
 			if (DerivedDrawInfo.Flying) {
                                 showunit=Units::TimeToTextDown(BufferValue, (int)Trip_Moving_Time);
 				if (showunit)
-					_stprintf(BufferUnit, _T("h"));
+					_tcscpy(BufferUnit, _T("h"));
 				else 
-					_stprintf(BufferUnit, _T(""));
+					_tcscpy(BufferUnit, _T(""));
 				showunit=true;
                         } else {
-                                wsprintf(BufferValue, TEXT("--:--"));
+                                _stprintf(BufferValue, TEXT("--:--"));
 				showunit=false;
                         }
 		} else {
@@ -298,12 +297,12 @@ _afterautotrm:
 			if (DerivedDrawInfo.Flying) {
                                 showunit=Units::TimeToTextDown(BufferValue, (int)Trip_Steady_Time);
 				if (showunit)
-					_stprintf(BufferUnit, _T("h"));
+					_tcscpy(BufferUnit, _T("h"));
 				else 
-					_stprintf(BufferUnit, _T(""));
+					_tcscpy(BufferUnit, _T(""));
 				showunit=true;
                         } else {
-                                wsprintf(BufferValue, TEXT("--:--"));
+                                _stprintf(BufferValue, TEXT("--:--"));
 				showunit=false;
                         }
 		} else {
@@ -319,7 +318,7 @@ _afterautotrm:
 	case BM_ALT:
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-			wcscpy(BufferTitle,_T("<<<"));
+			_tcscpy(BufferTitle,_T("<<<"));
 		} else {
 			showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle);
 			BufferTitle[7]='\0';
@@ -382,12 +381,12 @@ _afterautotrm:
 			if (DerivedDrawInfo.Flying) {
                                 showunit=Units::TimeToTextDown(BufferValue, (int)(Trip_Steady_Time+Trip_Moving_Time));
 				if (showunit)
-					_stprintf(BufferUnit, _T("h"));
+					_tcscpy(BufferUnit, _T("h"));
 				else 
-					_stprintf(BufferUnit, _T(""));
+					_tcscpy(BufferUnit, _T(""));
 				showunit=true;
                         } else {
-                                wsprintf(BufferValue, TEXT("--:--"));
+                                _stprintf(BufferValue, TEXT("--:--"));
 				showunit=false;
                         }
 		} else {
@@ -406,30 +405,28 @@ _afterautotrm:
 		break;
 	case BM_SYS:
   		showunit=true;
-  			wsprintf(BufferUnit, TEXT(""));
+  			_tcscpy(BufferUnit, TEXT(""));
 			if (SIMMODE) {
 				// LKTOKEN _@M1199_ "Sat"
-				wsprintf(BufferTitle, MsgToken(1199));
-				wsprintf(BufferValue,TEXT("SIM"));
+				_stprintf(BufferTitle, MsgToken(1199));
+				_stprintf(BufferValue,TEXT("SIM"));
 			} else {
 				Value=DrawInfo.SatellitesUsed;
 				if (Value<1 || Value>30) {
-					wsprintf(BufferValue,TEXT("---"));
+					_stprintf(BufferValue,TEXT("---"));
 				} else {
-					sprintf(text,"%d",(int)Value);
-					wsprintf(BufferValue, TEXT("%S"),text);
-
+					_stprintf(BufferValue,TEXT("%d"),(int)Value);
 				}
 				if (nmeaParser1.activeGPS == true)
 					// LKTOKEN _@M1199_ "Sat"
-					wsprintf(BufferTitle, TEXT("%s:A"), MsgToken(1199));
+					_stprintf(BufferTitle, TEXT("%s:A"), MsgToken(1199));
 				else {
 					if (nmeaParser2.activeGPS == true)
 						// LKTOKEN _@M1199_ "Sat"
-						wsprintf(BufferTitle, TEXT("%s:B"), MsgToken(1199));
+						_stprintf(BufferTitle, TEXT("%s:B"), MsgToken(1199));
 					else
 						// LKTOKEN _@M1199_ "Sat"
-						wsprintf(BufferTitle, TEXT("%s:?"), MsgToken(1199));
+						_stprintf(BufferTitle, TEXT("%s:?"), MsgToken(1199));
 				}
 			}
 		break;
@@ -484,7 +481,7 @@ _afterautotrm:
 		if (ISCAR) {
 			_stprintf(BufferValue,_T("%.1f"),SPEEDMODIFY*Rotary_Speed);
 			_stprintf(BufferTitle,_T("AvgSpd"));
-			wsprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
 			showunit=true;
 		} else {
 			showunit=LKFormatValue(LK_HOME_DIST, true, BufferValue, BufferUnit, BufferTitle);
@@ -496,24 +493,24 @@ _afterautotrm:
 	case BM_ALT:
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_ALTERN1_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
-			wcscpy(BufferTitle,_T("<<<"));
+			_tcscpy(BufferTitle,_T("<<<"));
 		} else {
 			showunit=LKFormatValue(LK_BESTALTERN_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
-			wcscpy(BufferTitle,_T(""));
+			_tcscpy(BufferTitle,_T(""));
 		}
 		break;
 	case BM_SYS:
 		// LKTOKEN _@M1068_ "HBAR"
-  		wsprintf(BufferTitle, MsgToken(1068));
+  		_stprintf(BufferTitle, MsgToken(1068));
 		if (DrawInfo.BaroAltitudeAvailable) {
 			if (EnableNavBaroAltitude)
 				// LKTOKEN _@M894_ "ON"
-				wsprintf(BufferValue,MsgToken(894));
+				_stprintf(BufferValue,MsgToken(894));
 			else
 				// LKTOKEN _@M491_ "OFF"
-				wsprintf(BufferValue,MsgToken(491));
+				_stprintf(BufferValue,MsgToken(491));
 		} else
-			wsprintf(BufferValue,TEXT("---"));
+			_stprintf(BufferValue,TEXT("---"));
   		showunit=false;
 		break;
 	case BM_CUS2:
@@ -564,9 +561,9 @@ _afterautotrm:
 			int totime=(int)(Trip_Steady_Time+Trip_Moving_Time);
 			if (totime>0) {
 				_stprintf(BufferValue,_T("%.1f"),(DerivedDrawInfo.Odometer*SPEEDMODIFY)/totime);
-  				wsprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
+  				_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
 			} else {
-				wsprintf(BufferValue, TEXT("---"));
+				_stprintf(BufferValue, TEXT("---"));
 				showunit=false;
 			}
 		} else
@@ -580,10 +577,10 @@ _afterautotrm:
 			if (Rotary_Distance<100000) {
 				_stprintf(BufferValue,_T("%.2f"),DISTANCEMODIFY*Rotary_Distance);
 			} else {
-				_stprintf(BufferValue,_T("%.2f"),0);
+				_stprintf(BufferValue,_T("%.2f"),0.0);
 			}
 			_stprintf(BufferTitle,_T("AvgDist"));
-			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			showunit=true;
 		} else {
 			showunit=LKFormatValue(LK_MAXALT, true, BufferValue, BufferUnit, BufferTitle);
@@ -593,16 +590,15 @@ _afterautotrm:
 // TODO MAKE IT LKPROCESS
   		Value=ALTITUDEMODIFY*DerivedDrawInfo.TaskStartAltitude;
 		if (Value>0) {
-			sprintf(text,"%d",(int)Value);
-			wsprintf(BufferValue, TEXT("%S"),text);
-  			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			_stprintf(BufferValue,TEXT("%d"),(int)Value);
+  			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 		} else {
-			wsprintf(BufferValue, TEXT("---"));
-			wsprintf(BufferUnit, TEXT(""));
+			_tcscpy(BufferValue, TEXT("---"));
+			_tcscpy(BufferUnit, TEXT(""));
 			showunit=false;
 		}
  		// LKTOKEN _@M1200_ "Start"
-		wsprintf(BufferTitle, MsgToken(1200));
+		_stprintf(BufferTitle, MsgToken(1200));
 		break;
 	case BM_ALT:
 		if (ScreenLandscape) {
@@ -610,7 +606,7 @@ _afterautotrm:
 			BufferTitle[7]='\0';
 		} else {
 			showunit=LKFormatValue(LK_ALTERN1_ARRIV, false, BufferValue, BufferUnit, BufferTitle); // 100221
-			wcscpy(BufferTitle,_T(""));
+			_tcscpy(BufferTitle,_T(""));
 		}
 		break;
 	case BM_SYS:
@@ -618,8 +614,8 @@ _afterautotrm:
 		showunit=true;
 		extern int CpuSummary();
 		_stprintf(BufferValue,_T("%d"),CpuSummary());
-		wcscpy(BufferTitle,_T("CPU"));
-		wcscpy(BufferUnit,_T("%"));
+		_tcscpy(BufferTitle,_T("CPU"));
+		_tcscpy(BufferUnit,_T("%"));
 		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CRUISE);
@@ -685,9 +681,9 @@ _afterautotrm:
 	case BM_ALT:
 		showunit=LKFormatValue(LK_ALTERN2_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		if (ScreenLandscape)
-			wcscpy(BufferTitle,_T("<<<"));
+			_tcscpy(BufferTitle,_T("<<<"));
 		else
-			wcscpy(BufferTitle,_T(""));
+			_tcscpy(BufferTitle,_T(""));
 		break;
 	case BM_SYS:
 		showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);

@@ -46,7 +46,7 @@ static void NextPage(int Step){
   case 1:
     if (SIMMODE) {
 	TCHAR sysmode[100];
-	wsprintf(sysmode,_T("%s (%s)"),gettext(TEXT("_@M664_")),gettext(TEXT("_@M1211_")) );
+	_stprintf(sysmode,_T("%s (%s)"),gettext(TEXT("_@M664_")),gettext(TEXT("_@M1211_")) );
     	wf->SetCaption(sysmode);
     } else {
 	// LKTOKEN  _@M664_ = "Status: System" 
@@ -368,9 +368,9 @@ static void UpdateValuesSystem() {
   if (wp) {
       TCHAR softversion[100];
 #ifndef LKCOMPETITION
-      wsprintf(softversion,_T("%s.%s"),_T(LKVERSION), _T(LKRELEASE));
+      _stprintf(softversion,_T("%s.%s"),_T(LKVERSION), _T(LKRELEASE));
 #else
-      wsprintf(softversion,_T("%s.%s Competition"),_T(LKVERSION), _T(LKRELEASE));
+      _stprintf(softversion,_T("%s.%s Competition"),_T(LKVERSION), _T(LKRELEASE));
 #endif
       wp->SetText(softversion);
       wp->RefreshDisplay();
@@ -403,13 +403,13 @@ static void UpdateValuesSystem() {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBattery"));
   if (wp) {
-    _stprintf(Temp,TEXT("\0"));
+    _tcscpy(Temp,TEXT("\0"));
 #if (WINDOWSPC<1)
     _stprintf(Temp2,TEXT("%d%% "), PDABatteryPercent);
     _tcscat(Temp, Temp2);
 #endif
     if (GPS_INFO.SupplyBatteryVoltage == 0) {
-      _stprintf(Temp2,TEXT("\0"));
+      _tcscpy(Temp2,TEXT("\0"));
     } else {
       _stprintf(Temp2,TEXT("%.1f V"),GPS_INFO.SupplyBatteryVoltage);
     }
@@ -778,7 +778,7 @@ void dlgStatusShowModal(int start_page){
 
   first = true;
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgStatus.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
                       filename, 

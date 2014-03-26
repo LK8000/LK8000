@@ -14,11 +14,13 @@
 
 #include "Sizes.h"
 #include "boost/noncopyable.hpp"
-#include "string"
+#include "utils/tstring.h"
+#include "Poco/Event.h"
+#include "Poco/Thread.h"
 
-class ComPort : public boost::noncopyable {
+class ComPort : public boost::noncopyable, Poco::Runnable {
 public:
-    ComPort(int idx, const std::wstring& sName);
+    ComPort(int idx, const std::tstring& sName);
     virtual ~ComPort();
 
     BOOL StopRxThread();
@@ -73,16 +75,16 @@ protected:
 
     void ProcessChar(char c);
 
-    HANDLE hStop;
-    HANDLE hReadThread;
+    Poco::Event StopEvt;
+    Poco::Thread ReadThread;
     
 private:
     typedef TCHAR _NmeaString_t[MAX_NMEA_LEN];
 
-    static DWORD WINAPI RxThreadProc(LPVOID);
+    void run();
 
     size_t devIdx;
-    std::wstring sPortName;
+    std::tstring sPortName;
 
     _NmeaString_t _NmeaString;
     TCHAR * pLastNmea;

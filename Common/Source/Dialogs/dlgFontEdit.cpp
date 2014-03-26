@@ -239,10 +239,10 @@ void SaveValues(const TCHAR * FontRegKey )
 {
   // update reg key for font
   TCHAR sValue [256];
-  wsprintf(sValue,TEXT("%d,%d,0,0,%d,%d,0,0,0,0,0,%d,%d,%s"),
-                        NewLogFont.lfHeight,
-                        NewLogFont.lfWidth,
-                        NewLogFont.lfWeight,
+  _stprintf(sValue,TEXT("%d,%d,0,0,%d,%d,0,0,0,0,0,%d,%d,%s"),
+                        (int)NewLogFont.lfHeight,
+                        (int)NewLogFont.lfWidth,
+                        (int)NewLogFont.lfWeight,
                         NewLogFont.lfItalic,
                         NewLogFont.lfQuality,
                         NewLogFont.lfPitchAndFamily,
@@ -385,7 +385,7 @@ bool dlgFontEditShowModal(const TCHAR * FontDescription,
                           LOGFONT autoLogFont){
 
   bool bRetVal=false;
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   IsInitialized=false;
 
   LocalPathS(filename, TEXT("dlgFontEdit.xml"));

@@ -8,7 +8,6 @@
 
 
 #include "externs.h"
-#include <aygshell.h>
 #include "Dialogs.h"
 
 #include "InfoBoxLayout.h"
@@ -223,7 +222,7 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
   if ((_tcslen(Details) + len) > (MAXNOTEDETAILS-MAXNOTELIMITER-1)) {
     // unfortunately, yes. So we need to split the note right now.
     // And we keep the same Name also for next splitted note.
-    wcscat(Details, TEXT(NOTECONTINUED));
+    _tcscat(Details, TEXT(NOTECONTINUED));
     
     if (_tcslen(Name)>0 && _tcslen(Details)>0) {
          addChecklist(Name, Details);
@@ -235,7 +234,7 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
   if (TempString[0]=='[') { // Look for start
     // we found the beginning of a new note, so we may save the last one, if not empty
     if (inDetails) {
-      wcscat(Details,TEXT("\r\n"));
+      _tcscat(Details,TEXT("\r\n"));
       addChecklist(Name, Details);
       Details[0]= 0;
       Name[0]= 0;
@@ -256,8 +255,8 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
   } else {
     // append text to details string
     // we already know we have enough space
-    wcsncat(Details,TempString,MAXNOTEDETAILS-2);
-    wcscat(Details,TEXT("\r\n"));
+    _tcsncat(Details,TempString,MAXNOTEDETAILS-2);
+    _tcscat(Details,TEXT("\r\n"));
   } // not a new start line
 } // AddChecklistLine
 
@@ -309,7 +308,7 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
   } // while
   
   if (inDetails) {
-    wcscat(Details,TEXT("\r\n"));
+    _tcscat(Details,TEXT("\r\n"));
     addChecklist(Name, Details);
   }
   
@@ -354,7 +353,7 @@ static bool LoadUtfChecklist(const TCHAR* fileName) {
   } // while
   
   if (inDetails) {
-    wcscat(Details,TEXT("\r\n"));
+    _tcscat(Details,TEXT("\r\n"));
     addChecklist(Name, Details);
   }
  
@@ -402,14 +401,14 @@ void dlgChecklistShowModal(short checklistmode){
   LoadChecklist(checklistmode); // check if loaded really something
 
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgChecklist_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
                         hWndMainWindow,
                         TEXT("IDR_XML_CHECKLIST_L"));
   } else {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgChecklist.xml"));
     wf = dlgLoadFromXML(CallBackTable,                        
                         filename, 

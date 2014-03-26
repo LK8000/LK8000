@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
 #include "Dialogs.h"
 
 #include "LKProcess.h"
@@ -200,7 +199,7 @@ void dlgTopologyShowModal(void){
   }
 
   WndProperty *wp;
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgTopology.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 

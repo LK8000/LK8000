@@ -23,20 +23,12 @@ BOOL MapWindow::THREADRUNNING = TRUE;
 BOOL MapWindow::THREADEXIT = FALSE;
 BOOL MapWindow::Initialised = FALSE;
 
-DWORD  MapWindow::dwDrawThreadID;
-HANDLE MapWindow::hDrawThread;
-
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
 
-extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 
-DWORD MapWindow::DrawThread (LPVOID lpvoid)
+void MapWindow::DrawThread ()
 {
-
-  FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime ;
-
-
   while ((!ProgramStarted) || (!Initialised)) {
 	Sleep(50);
   }
@@ -90,8 +82,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
   while (!CLOSETHREAD) 
   {
-	WaitForSingleObject(drawTriggerEvent, 5000);
-	ResetEvent(drawTriggerEvent);
+	if(drawTriggerEvent.tryWait(5000)) drawTriggerEvent.reset();
 	if (CLOSETHREAD) break; // drop out without drawing
 
 	if ((!THREADRUNNING) || (!GlobalRunning)) {
@@ -127,8 +118,6 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	}
 
 
-
-	GetThreadTimes( hDrawThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
 
 	// Until MapDirty is set true again, we shall only repaint the screen. No Render, no calculations, no updates.
 	// This is intended for very fast immediate screen refresh.
@@ -270,34 +259,25 @@ _dontbitblt:
 		ProgramStarted = psFirstDrawDone;
 	}
 
-	if ( (GetThreadTimes( hDrawThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
-		Cpu_Draw=9999;
-	} else {
-		Cpustats(&Cpu_Draw,&StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
-	}
-    
   } // Big LOOP
 
   #if TESTBENCH
   StartupStore(_T("... Thread_Draw terminated\n"));
   #endif
   THREADEXIT = TRUE;
-  return 0;
+
 }
 
-
+Poco::ThreadTarget MapWindow::MapWindowThreadRun(MapWindow::DrawThread);
+Poco::Thread MapWindowThread;
 
 void MapWindow::CreateDrawingThread(void)
 {
   CLOSETHREAD = FALSE;
   THREADEXIT = FALSE;
-  hDrawThread = CreateThread (NULL, 0,  
-                              (LPTHREAD_START_ROUTINE )MapWindow::DrawThread, 
-                              0, 0, &dwDrawThreadID);
-  SetThreadPriority(hDrawThread,THREAD_PRIORITY_NORMAL);
+  MapWindowThread.start(MapWindowThreadRun);
+  MapWindowThread.setPriority(Poco::Thread::PRIO_NORMAL);
 }
-
-
 
 void MapWindow::SuspendDrawingThread(void)
 {
@@ -325,7 +305,7 @@ void MapWindow::CloseDrawingThread(void)
   StartupStore(_T("... CloseDrawingThread started\n"));
   #endif
   CLOSETHREAD = TRUE;
-  SetEvent(drawTriggerEvent); // wake self up
+  drawTriggerEvent.set(); // wake self up
   LockTerrainDataGraphics();
   SuspendDrawingThread();
   UnlockTerrainDataGraphics();
@@ -333,8 +313,8 @@ void MapWindow::CloseDrawingThread(void)
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread waitforsingleobject\n"));
   #endif
-  WaitForSingleObject(hDrawThread, 15000);
-  ResetEvent(drawTriggerEvent);
+  drawTriggerEvent.reset();
+  MapWindowThread.join();
           
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread wait THREADEXIT\n"));

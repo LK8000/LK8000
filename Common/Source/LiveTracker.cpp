@@ -16,15 +16,14 @@
 #include "externs.h"
 #include "LiveTracker.h"
 #include "utils/stringext.h"
+#include "Poco/Event.h"
 
 //Use to log transactions to the startupstore
 //#define LT_DEBUG  1
 
 static bool _ws_inited = false;     //Winsock inited
 static bool _inited = false;        //Winsock + thread inited
-static HANDLE _hThread = NULL;             //worker thread handle
-static DWORD _dwThreadID;           //worker thread ID
-static HANDLE _hNewDataEvent;       //new data event trigger
+static Poco::Event NewDataEvent;       //new data event trigger
 #define SERVERNAME_MAX  100
 static char _server_name[SERVERNAME_MAX];      // server name, or ip
 static int _server_port;
@@ -51,7 +50,7 @@ static PointQueue _t_points;            // Point FIFO
 
 // Prototypes
 static bool InitWinsock();
-static DWORD WINAPI LiveTrackerThread(LPVOID lpvoid);
+static void LiveTrackerThread(void);
 
 // Unix timestamp calculation helpers
 #define isleap(y) ( !((y) % 400) || (!((y) % 4) && ((y) % 100)) )
@@ -134,6 +133,9 @@ static char* UrlEncode(const char *szText, char* szDst, int bufsize) {
   return szDst;
 }
 
+Poco::ThreadTarget _ThreadTarget(LiveTrackerThread);
+Poco::Thread _Thread;             //worker thread handle
+
 // Init Live Tracker services, if available
 void LiveTrackerInit()
 {
@@ -148,17 +150,15 @@ void LiveTrackerInit()
   //Init winsock if available
   if (InitWinsock()) {
     _ws_inited = true;
-    _hNewDataEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("livetrknewdata"));
+
     // Create a thread for sending data to the server
-    if ((_hThread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)&LiveTrackerThread, 0, 0, &_dwThreadID)) != NULL)
-    {
-      SetThreadPriority(_hThread, THREAD_PRIORITY_NORMAL);
-      unicode2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
-      _server_name[SERVERNAME_MAX-1]=0;
-      _server_port=LiveTrackerport_Config;
-      StartupStore(TEXT(". LiveTracker will use server %s:%u if available.%s"), LiveTrackersrv_Config, LiveTrackerport_Config, NEWLINE);
-      _inited = true;
-    }
+    _Thread.start(_ThreadTarget);
+    _Thread.setPriority(Poco::Thread::PRIO_NORMAL);
+    TCHAR2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
+    _server_name[SERVERNAME_MAX-1]=0;
+    _server_port=LiveTrackerport_Config;
+    StartupStore(TEXT(". LiveTracker will use server %s if available.%s"), LiveTrackersrv_Config, NEWLINE);
+    _inited = true;
   }
   if (!_inited) StartupStore(TEXT(". LiveTracker init failed.%s"),NEWLINE);
 }
@@ -166,16 +166,14 @@ void LiveTrackerInit()
 // Shutdown Live Tracker
 void LiveTrackerShutdown()
 {
-  if (_hThread != NULL) {
+  if (_Thread.isRunning()) {
     _t_end = false;
     _t_run = false;
-    SetEvent(_hNewDataEvent);
-    WaitForSingleObject(_hThread, INFINITE);
-    CloseHandle(_hThread);
+    NewDataEvent.set();
+    _Thread.join();
     StartupStore(TEXT(". LiveTracker closed.%s"),NEWLINE);
   }
   if (_ws_inited) {
-    CloseHandle(_hNewDataEvent);
     WSACleanup();
   }
 }
@@ -224,7 +222,7 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   newpoint.course_over_ground = Calculated->Heading;
   
   _t_points.push_back(newpoint);
-  SetEvent(_hNewDataEvent);
+  NewDataEvent.set();
 }  
 
 
@@ -375,9 +373,9 @@ static int GetUserIDFromServer()
   char password[128];
   char rxcontent[32];
   
-  unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
+  TCHAR2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
   UrlEncode(txbuf, username, sizeof(username));
-  unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
+  TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
   UrlEncode(txbuf, password, sizeof(username));
   sprintf(txbuf,"GET /client.php?op=login&user=%s&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
         username, password,
@@ -461,19 +459,19 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
     // 64=>"Powered flight"
     // 17100=>"Car"
     if (_tcslen(LiveTrackerusr_Config)>0 ) {
-      unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(txbuf));
+      TCHAR2ascii(LiveTrackerusr_Config, txbuf, sizeof(txbuf));
     } else {
       strncpy(txbuf, "guest", sizeof(txbuf));
     }
     UrlEncode(txbuf, username, sizeof(username));
     if (_tcslen(LiveTrackerpwd_Config)>0 ) {
-      unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
+      TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
     } else {
       strncpy(txbuf, "guest", sizeof(txbuf));
     }
     UrlEncode(txbuf, password, sizeof(password));
     #ifdef PNA
-      unicode2ascii(GlobalModelName, txbuf, sizeof(txbuf));
+      TCHAR2ascii(GlobalModelName, txbuf, sizeof(txbuf));
       UrlEncode(txbuf, phone, sizeof(phone));
     #else
     #if (WINDOWSPC>0)
@@ -495,7 +493,7 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
       }
 */
     
-    unicode2ascii(AircraftType_Config, txbuf, sizeof(txbuf));
+    TCHAR2ascii(AircraftType_Config, txbuf, sizeof(txbuf));
     UrlEncode(txbuf, vehicle_name, sizeof(vehicle_name));
     vehicle_type = 8;
     if (AircraftCategory == umParaglider) vehicle_type = 1;
@@ -600,7 +598,7 @@ static bool SendGPSPointPacket(unsigned int *packet_id, unsigned int *session_id
 
 
 // Leonardo Live Tracker (www.livetrack24.com) data exchange thread
-static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
+static void LiveTrackerThread()
 {
   int tracker_fsm = 0;
   livetracker_point_t sendpoint = {0};
@@ -618,7 +616,7 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
   srand(GetTickCount());
 
   do {
-    if (WaitForSingleObject(_hNewDataEvent, 5000) == WAIT_OBJECT_0) ResetEvent(_hNewDataEvent);
+    if (NewDataEvent.tryWait(5000)) NewDataEvent.reset();
     if (!_t_run) break;
     do {
       if (1) {
@@ -701,5 +699,4 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
   } while (_t_run);
   
   _t_end = true;
-  return 0;
 }

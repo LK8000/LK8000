@@ -8,6 +8,7 @@
 */
 
 #include "externs.h"
+#include "utils/stringext.h"
 
 
 
@@ -83,7 +84,7 @@ static int iLastPort =-1;
   LKASSERT(_tcslen(text)<sizeof(snmea));
   if (_tcslen(text)>=sizeof(snmea)) return;
 
-  sprintf(snmea,"%S",text);
+  TCHAR2usascii(text, snmea, LKSIZENMEA);
 
   short l=strlen(snmea);
   if (l<6) return;

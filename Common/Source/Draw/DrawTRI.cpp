@@ -240,21 +240,13 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   SelectObject(hDC, LK8TitleFont);
   int bankindy=Start.y-radius/2;
-#ifndef __MINGW32__
+
   if (beta > 1)
 	_stprintf(Buffer, TEXT("%2.0f\xB0"), beta);
   else if (beta < -1)
 	_stprintf(Buffer, TEXT("%2.0f\xB0"), -beta);
   else
 	_tcscpy(Buffer, TEXT("--"));
-#else
-  if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f°"), beta);
-  else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f°"), -beta);
-  else
-	_tcscpy(Buffer, TEXT("--"));
-#endif
 
   LKWriteText(hDC, Buffer, Start.x , bankindy, 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
 

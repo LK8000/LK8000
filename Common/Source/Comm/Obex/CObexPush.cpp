@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <functional>
 #include <BtHandler.h>
-
+#ifdef UNDER_CE
 CObexPush::CObexPush() : _pObex(NULL), _SavedBtState(HCI_HARDWARE_UNKNOWN) {
 
 }
@@ -310,4 +310,4 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
     return bSendOK;
 }
 
-
+#endif

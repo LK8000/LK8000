@@ -37,7 +37,7 @@ short RasterMapCache::_GetFieldAtXY(unsigned int lx,
 //////////// Cached load on demand ////////////////////////////////
 
 //////////// Cache map ////////////////////////////////////////////////
-CRITICAL_SECTION RasterMapCache::CritSec_TerrainFile;
+Poco::Mutex RasterMapCache::CritSec_TerrainFile;
 
 int RasterMapCache::ref_count = 0;
 

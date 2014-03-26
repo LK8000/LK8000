@@ -16,7 +16,7 @@
 
 class GpsIdPort  : public ComPort {
 public:
-    GpsIdPort(int idx, const std::wstring& sName);
+    GpsIdPort(int idx, const std::tstring& sName);
     virtual ~GpsIdPort();
 
     virtual bool Initialize();

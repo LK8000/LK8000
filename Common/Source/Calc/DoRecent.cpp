@@ -48,9 +48,9 @@ bool LoadRecentList() {
 	if (st[0]=='#') continue; // skip comments
 	nwp=atoi(st);
 	if (!ValidWayPoint(nwp)) {
-		wsprintf(buffer,_T("---- Loading history. Found an invalid wp: <%d>%s"),nwp,NEWLINE); // BUGFIX 091122
+		_stprintf(buffer,_T("---- Loading history. Found an invalid wp: <%d>%s"),nwp,NEWLINE); // BUGFIX 091122
 		StartupStore(buffer);
-		wsprintf(buffer,_T("---- History file could be corrupted or wp file changed abruptly. Discarded!%s"),NEWLINE);
+		_stprintf(buffer,_T("---- History file could be corrupted or wp file changed abruptly. Discarded!%s"),NEWLINE);
 		StartupStore(buffer);
 		break;
 	}
@@ -75,7 +75,7 @@ bool LoadRecentList() {
    }
    fclose(fp);
    RecentNumber=i;
-   wsprintf(buffer,_T(". LoadRecentList: loaded %d recent waypoints%s"),i,NEWLINE);
+   _stprintf(buffer,_T(". LoadRecentList: loaded %d recent waypoints%s"),i,NEWLINE);
    StartupStore(buffer);
 
    return true;
@@ -123,7 +123,7 @@ bool SaveRecentList() {
    }
    fclose(fp);
 
-   wsprintf(buffer,_T(". SaveRecentList: saved %d recent waypoints%s"),RecentNumber,NEWLINE);
+   _stprintf(buffer,_T(". SaveRecentList: saved %d recent waypoints%s"),RecentNumber,NEWLINE);
    StartupStore(buffer);
    return true;
 }
@@ -137,7 +137,7 @@ void InsertRecentList(int newwp) {
     unsigned int TmpChecksum[MAXCOMMON+1];
 
     // TCHAR buffer[100];
-    // wsprintf(buffer,_T(". Insert WP=%d into recent waypoints%s"),newwp,NEWLINE);
+    // _stprintf(buffer,_T(". Insert WP=%d into recent waypoints%s"),newwp,NEWLINE);
     // StartupStore(buffer);
 
     // j holding number of valid recents, excluded the new one to be put in position 0

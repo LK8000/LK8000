@@ -48,7 +48,7 @@ TCHAR *WhatTimeIsIt(void) {
 
   Units::TimeToTextS(tlocal, (int)TimeLocal((int)(GPS_INFO.Time))),
   Units::TimeToText(tutc, (int)GPS_INFO.Time);
-  wsprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
+  _stprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
 
   return (time_temp);
 }
@@ -339,7 +339,7 @@ _end:
 	_tcscat(toracle,ttmp);
 #endif
   // VERY SORRY - YOUR POSITION IS UNKNOWN!
-  if (!found) wsprintf(toracle,_T("\n\n%s\n\n%s"), gettext(_T("_@M1725_")),gettext(_T("_@M1726_")));
+  if (!found) _stprintf(toracle,_T("\n\n%s\n\n%s"), gettext(_T("_@M1725_")),gettext(_T("_@M1726_")));
 
   ConvToUpper(toracle);
   MessageBoxX(hWndMainWindow, toracle, gettext(_T("_@M1690_")), MB_OK|MB_ICONQUESTION, true);

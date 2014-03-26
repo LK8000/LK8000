@@ -20,31 +20,31 @@ void WaypointFlagsToString(int FlagsNum,
                            TCHAR *Flags) {
 
   if ((FlagsNum & AIRPORT) == AIRPORT) {
-    wcscat(Flags,TEXT("A"));
+    _tcscat(Flags,TEXT("A"));
   }
   if ((FlagsNum & TURNPOINT) == TURNPOINT) {
-    wcscat(Flags,TEXT("T"));
+    _tcscat(Flags,TEXT("T"));
   }
   if ((FlagsNum & LANDPOINT) == LANDPOINT) {
-    wcscat(Flags,TEXT("L"));
+    _tcscat(Flags,TEXT("L"));
   }
   if ((FlagsNum & HOME) == HOME) {
-    wcscat(Flags,TEXT("H"));
+    _tcscat(Flags,TEXT("H"));
   }
   if ((FlagsNum & START) == START) {
-    wcscat(Flags,TEXT("S"));
+    _tcscat(Flags,TEXT("S"));
   }
   if ((FlagsNum & FINISH) == FINISH) {
-    wcscat(Flags,TEXT("F"));
+    _tcscat(Flags,TEXT("F"));
   }
   if ((FlagsNum & RESTRICTED) == RESTRICTED) {
-    wcscat(Flags,TEXT("R"));
+    _tcscat(Flags,TEXT("R"));
   }
   if ((FlagsNum & WAYPOINTFLAG) == WAYPOINTFLAG) {
-    wcscat(Flags,TEXT("W"));
+    _tcscat(Flags,TEXT("W"));
   }
   if (_tcslen(Flags)==0) {
-    wcscat(Flags,TEXT("T"));
+    _tcscat(Flags,TEXT("T"));
   }
 }
 

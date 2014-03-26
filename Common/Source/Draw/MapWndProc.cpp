@@ -908,7 +908,7 @@ _continue:
 	#ifdef DEBUG_VIRTUALKEYS
 	TCHAR buf[80]; char sbuf[80];
 	sprintf(sbuf,"%.0f",distance);
-	wsprintf(buf,_T("XY=%d,%d dist=%S Up=%ld Down=%ld Int=%ld"),lparam_X,lparam_Y,sbuf,dwUpTime,dwDownTime,dwInterval);
+	_stprintf(buf,_T("XY=%d,%d dist=%S Up=%ld Down=%ld Int=%ld"),lparam_X,lparam_Y,sbuf,dwUpTime,dwDownTime,dwInterval);
         DoStatusMessage(buf);
 	#endif
 

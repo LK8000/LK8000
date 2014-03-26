@@ -24,7 +24,6 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
   static TCHAR Buffer3[MAXTHISTORY][MAXTHISTORYNUMPAGES][10];
   static TCHAR Buffer4[MAXTHISTORY][MAXTHISTORYNUMPAGES][12], Buffer5[MAXTHISTORY][MAXTHISTORYNUMPAGES][12];
   static short s_maxnlname;
-  char text[30];
   short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
   COLORREF rcolor;
@@ -380,7 +379,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 
   #ifdef DEBUG_LKT_DRAWTHISTORY
   TCHAR v2buf[100]; 
-  wsprintf(v2buf,_T("MAXTHISTORY=%d LKNumTherm=%d / thistoryNumraws=%d THistoryNumpages=%d calc=%d\n"),MAXTHISTORY, LKNumThermals,thistoryNumraws, THistoryNumpages, (short)(ceil(MAXTHISTORY/thistoryNumraws)));
+  _stprintf(v2buf,_T("MAXTHISTORY=%d LKNumTherm=%d / thistoryNumraws=%d THistoryNumpages=%d calc=%d\n"),MAXTHISTORY, LKNumThermals,thistoryNumraws, THistoryNumpages, (short)(ceil(MAXTHISTORY/thistoryNumraws)));
   StartupStore(v2buf);
   #endif
 
@@ -398,7 +397,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 	if ( (rli>=0) && (CopyThermalHistory[rli].Valid==true) ) {
 
 		// Thermal name
-		wlen=wcslen(CopyThermalHistory[rli].Name);
+		wlen=_tcslen(CopyThermalHistory[rli].Name);
 
                 if (wlen>s_maxnlname) {
                         LK_tcsncpy(Buffer, CopyThermalHistory[rli].Name, s_maxnlname);
@@ -409,7 +408,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 		if (IsThermalMultitarget(rli)) {
 			TCHAR buffer2[40];
 			_stprintf(buffer2,_T(">%s"),Buffer);
-			wcscpy(Buffer,buffer2);
+			_tcscpy(Buffer,buffer2);
 		}
                 ConvToUpper(Buffer);
 
@@ -430,7 +429,6 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 				if (value > 180.0)
 					value -= 360.0;
 
-#ifndef __MINGW32__
 			if (value > 1)
 				_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0\xBB"), value);
 			else
@@ -438,17 +436,8 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 					_stprintf(Buffer3[i][curpage], TEXT("\xAB%2.0f\xB0"), -value);
 				else
 					_tcscpy(Buffer3[i][curpage], TEXT("\xAB\xBB"));
-#else
-			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), value);
-			else
-				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -value);
-				else
-					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
-#endif
 		} else {
-			_stprintf(Buffer3[i][curpage], _T("%2.0f°"), CopyThermalHistory[rli].Bearing);
+			_stprintf(Buffer3[i][curpage], _T("%2.0f\xB0"), CopyThermalHistory[rli].Bearing);
 		}
 			
 
@@ -457,17 +446,16 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 		if (value<-99 || value>99) 
 			_stprintf(Buffer4[i][curpage],_T("---"));
 		else {
-			sprintf(text,"%+.1f",value);
-			_stprintf(Buffer4[i][curpage],_T("%S"),text);
+			_stprintf(Buffer4[i][curpage],_T("%+.1f"),value);
 		}
 
 		// Altitude
 		value=ALTITUDEMODIFY*CopyThermalHistory[rli].Arrival;
 		if (value<-1000 || value >45000 )
-			strcpy(text,"---");
+			_stprintf(Buffer5[i][curpage],_T("---"));
 		else
-			sprintf(text,"%.0f",value);
-		wsprintf(Buffer5[i][curpage], TEXT("%S"),text);
+			_stprintf(Buffer5[i][curpage],_T("%.0f"),value);
+		
 
 	} else {
 		// Empty thermals, fill in all empty data and maybe break loop

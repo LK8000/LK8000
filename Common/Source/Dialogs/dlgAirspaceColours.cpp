@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
@@ -92,7 +91,7 @@ int dlgAirspaceColoursShowModal(void){
   ItemIndex = -1;
 
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceColours_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         
@@ -100,7 +99,7 @@ int dlgAirspaceColoursShowModal(void){
                         hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACECOLOURS_L"));
   } else {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceColours.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         

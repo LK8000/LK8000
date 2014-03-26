@@ -556,14 +556,14 @@ void dlgTarget(int TaskPoint) {
   target_point = TaskPoint;
 
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTarget_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
                         hWndMainWindow,
                         TEXT("IDR_XML_TARGET_L"));
   } else {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTarget.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 

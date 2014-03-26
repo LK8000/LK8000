@@ -39,7 +39,7 @@ public:
             : _Code(), _MinHWVersion(), _Type(), _Factor(), _MinHWVal(), _MaxHWVal() {    
     }
     
-    CHardwareParameter(const std::wstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal)
+    CHardwareParameter(const std::tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal)
             : _Code(code), _MinHWVersion(minHWVersion), _Type(type), _Factor(factor), _MinHWVal(minHWVal), _MaxHWVal(maxHWVal) {
     }
 
@@ -47,12 +47,12 @@ public:
 
     }
 
-    inline void Value(const std::wstring& Val) { _Value = Val; }
-    inline const std::wstring& Value() const { return _Value; }
+    inline void Value(const std::tstring& Val) { _Value = Val; }
+    inline const std::tstring& Value() const { return _Value; }
 
     inline operator bool ()  const { return !_Code.empty(); }
 
-    inline const std::wstring& Code() const { return _Code; }
+    inline const std::tstring& Code() const { return _Code; }
     inline ValueType Type() const { return _Type; }
     inline int MinHwVersion() const { return _MinHWVersion; }
     
@@ -83,11 +83,11 @@ public:
     }
 
     const double ValueDouble() const {
-        return wcstod(_Value.c_str(), NULL) * _Factor;
+        return _tcstod(_Value.c_str(), NULL) * _Factor;
     }
 
     const int ValueInt() const {
-        int val = wcstol(_Value.c_str(),NULL,10);
+        int val = _tcstol(_Value.c_str(),NULL,10);
         if(Type() == TYPE_INTOFFSET) {
             val += _Factor;
         } else {
@@ -117,22 +117,22 @@ public:
     }
     
     void operator=(bool v) {
-        _Value = (v?L"1":L"0");
+        _Value = (v?_T("1"):_T("0"));
     }
 
 private:
-    const std::wstring _Code;
+    const std::tstring _Code;
     const int _MinHWVersion;
     const ValueType _Type;
     const double _Factor;
     const int _MinHWVal;
     const int _MaxHWVal;
 
-    std::wstring _Value;
+    std::tstring _Value;
 };
 
 class CHardwareParameters {
-    typedef std::map<std::wstring, CHardwareParameter> ParameterList_t;
+    typedef std::map<std::tstring, CHardwareParameter> ParameterList_t;
 
 public: 
     typedef ParameterList_t::const_iterator const_iterator;
@@ -143,7 +143,7 @@ public:
 
     }
 
-    inline void Add(const std::wstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal) {
+    inline void Add(const std::tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal) {
         _ParameterList.insert(std::make_pair(code, CHardwareParameter(code, minHWVersion, type, factor, minHWVal, maxHWVal)));
     }
 
@@ -153,7 +153,7 @@ public:
     inline iterator begin() { return _ParameterList.begin(); }
     inline iterator end() { return _ParameterList.end(); }
 
-    CHardwareParameter& GetParameter(const std::wstring& Key) {
+    CHardwareParameter& GetParameter(const std::tstring& Key) {
         static CHardwareParameter nullParameter;
         iterator It = _ParameterList.find(Key);
         if(It != _ParameterList.end()) {
@@ -172,10 +172,10 @@ public:
             
             std::string::size_type PrevPosKey = 0, PosKey = 0;
             std::string::size_type PrevPosVal = 0, PosVal = 0;
-            if(((PosVal = _Values.find_first_of(L" \n", PosVal)) != std::string::npos)) { //skip first Value
+            if(((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != std::string::npos)) { //skip first Value
                 PrevPosVal = ++PosVal;
-                while ( ((PosKey = _Keys.find_first_of(L" \n", PosKey)) != std::string::npos)
-                        && ((PosVal = _Values.find_first_of(L" \n", PosVal)) != std::string::npos) )
+                while ( ((PosKey = _Keys.find_first_of(_T(" \n"), PosKey)) != std::string::npos)
+                        && ((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != std::string::npos) )
                 {
                     
                     if (PosKey > PrevPosKey) {
@@ -192,7 +192,7 @@ public:
     }
 
     inline void SetHardwareVersion(const TCHAR* line) {
-        _HwVersion = wcstol(line, NULL, 10);
+        _HwVersion = _tcstol(line, NULL, 10);
     }
 
      void UpdateDevice(const CHardwareParameter& Param, ComPort* Com) const {
@@ -208,8 +208,8 @@ public:
 private:
     ParameterList_t _ParameterList;
 
-    std::wstring _Keys;
-    std::wstring _Values;
+    std::tstring _Keys;
+    std::tstring _Values;
     int _HwVersion;
 };
 
@@ -226,7 +226,7 @@ namespace dlgBlueFlyConfig {
     lstPageWnd_t lstPageWnd;
     unsigned CurrentPage = 0;
 
-    typedef std::map<DataField*, std::wstring> DataField2Parameter_t;
+    typedef std::map<DataField*, std::tstring> DataField2Parameter_t;
     DataField2Parameter_t AssocFieldParam;
 
     void NextPage(int Step) {
@@ -349,7 +349,7 @@ namespace dlgBlueFlyConfig {
 
     int Show(DeviceDescriptor_t *d) {
         int nRet = IDCANCEL;
-        char filename[MAX_PATH];
+        TCHAR filename[MAX_PATH];
         const TCHAR *resName = NULL;
         pDevice = d;
         Init = true;
@@ -445,7 +445,7 @@ BOOL BlueFlyVarioOpen(PDeviceDescriptor_t d, int Port) {
     d->Com->Read(szFirstString, sizeof(szFirstString));
     if(strncmp(szFirstString, "BFV ", 4) == 0) {
         char* pChar = &szFirstString[4];
-        std::wstring sLine;
+        std::tstring sLine;
         for(;pChar && *pChar != '\n' && *pChar !='\0'; ++pChar);
         sLine.assign(&szFirstString[4], pChar);
         HardwareParameters.SetHardwareVersion(sLine.c_str());

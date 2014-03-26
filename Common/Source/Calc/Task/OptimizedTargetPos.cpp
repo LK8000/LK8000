@@ -33,7 +33,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveWayPoint].AATTargetLon;
 	WayPointList[RESWP_OPTIMIZED].Altitude = Task[ActiveWayPoint].AATTargetAltitude;
 
-	wsprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[stdwp].Name);
+	_stprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[stdwp].Name);
 
 	UnlockTaskData();
 }

@@ -16,7 +16,7 @@
 
 namespace DlgIgcFile {
     WndForm *wfDlg = NULL;
-    typedef std::vector<std::wstring> FileList_t;
+    typedef std::vector<std::tstring> FileList_t;
     FileList_t FileList;
     size_t DrawListIndex = (~0);
     size_t ItemIndex = (~0);
@@ -56,7 +56,7 @@ namespace DlgIgcFile {
             StartHourglassCursor();
             
             //Start Bluetooth if needed...
-            
+#ifdef UNDER_CE    
             CObexPush Obex;
             if(Obex.Startup()) {
                 StartupStore(_T("Startup OK \n"));
@@ -128,7 +128,9 @@ namespace DlgIgcFile {
             } else {
                 MessageBoxX(NULL, _T("Unsupported on this device"), _T("Error"), MB_OK);
             }
-
+#else
+            MessageBoxX(NULL, _T("Unsupported on this device"), _T("Error"), MB_OK);
+#endif
             StopHourglassCursor();
         }
     }
@@ -165,7 +167,7 @@ namespace DlgIgcFile {
 using DlgIgcFile::wfDlg;
 
 void dlgIgcFileShowModal() {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     const TCHAR *resName = NULL;
     if (!ScreenLandscape) {
         LocalPathS(filename, TEXT("dlgIgcFile.xml"));

@@ -126,7 +126,7 @@ namespace DlgBluetooth {
     };
 
     void Show() {
-        char filename[MAX_PATH];
+        TCHAR filename[MAX_PATH];
         const TCHAR *resName = NULL;
         if (!ScreenLandscape) {
             LocalPathS(filename, TEXT("dlgBluetooth_L.xml"));

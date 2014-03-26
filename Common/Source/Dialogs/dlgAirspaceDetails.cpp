@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"
 #include "Airspace.h"
@@ -178,7 +177,7 @@ static void SetValues(void) {
 
   if (wf!=NULL) {
 	TCHAR capbuffer[250];
-	wsprintf(capbuffer,_T("%s ("),airspace_copy.Name());
+	_stprintf(capbuffer,_T("%s ("),airspace_copy.Name());
         if (airspace_copy.Enabled()) {
         	_tcscat(capbuffer,gettext(TEXT("_@M1643_"))); // ENABLED
         } else {
@@ -191,7 +190,7 @@ static void SetValues(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
 	if (airspace_copy.Flyzone()) {
-	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("FLY")));
+	  _stprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("FLY")));
 /*
 	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
 		_stprintf(buffer,TEXT("%s"),airspace_copy.Name());
@@ -200,7 +199,7 @@ static void SetValues(void) {
 			                          ,airspace_copy.Name());     // NAME_SIZE          30   => max. 30 char
 */
 	} else {
-	  wsprintf(buffer,TEXT("%s %s"), gettext(TEXT("NOFLY")), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()));
+	  _stprintf(buffer,TEXT("%s %s"), gettext(TEXT("NOFLY")), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()));
 	}
 
 	wp->SetText( buffer );
@@ -232,10 +231,10 @@ static void SetValues(void) {
     }
     if (hdist < 0) {
 	  // LKTOKEN _@M1257_ "to leave"
-	  wsprintf(buffer2, TEXT("%s %d")TEXT(DEG)TEXT(" %s"), buffer, iround(bearing), gettext(TEXT("_@M1257_")));
+	  _stprintf(buffer2, TEXT("%s %d")TEXT(DEG)TEXT(" %s"), buffer, iround(bearing), gettext(TEXT("_@M1257_")));
     } else {
 	  // LKTOKEN _@M1258_ "to enter"
-	  wsprintf(buffer2, TEXT("%s %d")TEXT(DEG)TEXT(" %s"), buffer, iround(bearing), gettext(TEXT("_@M1258_")));
+	  _stprintf(buffer2, TEXT("%s %d")TEXT(DEG)TEXT(" %s"), buffer, iround(bearing), gettext(TEXT("_@M1258_")));
 	}
     wp->SetText(buffer2);
     wp->RefreshDisplay();
@@ -347,7 +346,7 @@ void dlgAirspaceDetails(CAirspace *airspace_to_show) {
     return;
   }
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgAirspaceDetails.xml"));
   wf = dlgLoadFromXML(CallBackTable,
 		      filename, 

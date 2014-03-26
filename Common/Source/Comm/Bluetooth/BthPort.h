@@ -26,7 +26,7 @@
 
 class BthPort : public ComPort {
 public:
-    BthPort(int idx, const std::wstring& sName);
+    BthPort(int idx, const std::tstring& sName);
     virtual ~BthPort();
 
     virtual bool Initialize();

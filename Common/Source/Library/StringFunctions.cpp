@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include <ctype.h>
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
 
@@ -97,7 +98,11 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String)
   sTmp[i] = 0;
   zzip_seek(zFile, dwFilePos+j, SEEK_SET);
   sTmp[Max-1] = '\0';
+#ifdef UNICODE
   mbstowcs(String, sTmp, strlen(sTmp)+1);
+#else
+  strncpy(String, sTmp, strlen(sTmp)+1);
+#endif
   return (dwTotalNumBytesRead>0);
 }
 
@@ -156,7 +161,12 @@ BOOL ReadString(HANDLE hFile, int Max, TCHAR *String)
   sTmp[i] = 0;
   SetFilePointer(hFile, dwFilePos+j, NULL, FILE_BEGIN);
   sTmp[Max-1] = '\0';
+
+#ifdef UNICODE
   mbstowcs(String, sTmp, strlen(sTmp)+1);
+#else
+  strncpy(String, sTmp, strlen(sTmp)+1);
+#endif
   return (dwTotalNumBytesRead>0);
 
 }
@@ -545,7 +555,7 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
   lktoken[i]='\0';
   *pstart='\0';
   TCHAR newbuffer[2048];
-  wsprintf(newbuffer,_T("%s%s%s"), buffer, gettext(lktoken), pend+1);
+  _stprintf(newbuffer,_T("%s%s%s"), buffer, gettext(lktoken), pend+1);
 
   new_string = (TCHAR *)malloc((_tcslen(newbuffer)+1)*sizeof(TCHAR));
   if (new_string==NULL) {
@@ -617,11 +627,11 @@ bool MatchesExtension(const TCHAR *filename, const TCHAR* extension) {
  * Implementation of the _splitpath runtime library function with wide character strings
  * Copyright 2000, 2004 Martin Fuchs -- GPL licensed - WINE project
  */
-void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext)
+void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext)
 {
-	const WCHAR* end; /* end of processed string */
-	const WCHAR* p;	  /* search pointer */
-	const WCHAR* s;	  /* copy pointer */
+	const TCHAR* end; /* end of processed string */
+	const TCHAR* p;	  /* search pointer */
+	const TCHAR* s;	  /* copy pointer */
 
 	/* extract drive name */
 	if (path[0] && path[1]==':') {
@@ -725,7 +735,7 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
   if (buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF)
     begin += 3;
 
-  return(utf2unicode(begin, unicode, maxChars) >= 0);
+  return(utf2TCHAR(begin, unicode, maxChars) >= 0);
 }
 
 
@@ -738,7 +748,7 @@ void ConvToUpper( TCHAR *str )
 	if ( str )
 	{
 		for ( ; *str; ++str )
-		*str = towupper(*str);
+		*str = _totupper(*str);
 
 	}
 

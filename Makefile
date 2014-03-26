@@ -194,14 +194,15 @@ ifeq ($(CONFIG_PPC2003),y)
 CE_DEFS		+=-DPPC2003=1
 endif
 
+CE_DEFS		+= -DPOCO_NO_UNWINDOWS
 
-UNICODE		:= -DUNICODE -D_UNICODE
 
 ######## paths
 
 ifeq ($(CONFIG_LINUX),y)
 INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
 else
+UNICODE		:= -DUNICODE -D_UNICODE
 ifeq ($(CONFIG_WINE),y)
 INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
 else
@@ -229,7 +230,7 @@ CPPFLAGS	+= -Wall -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
-CPPFLAGS	+= -Wshadow
+#CPPFLAGS	+= -Wshadow
 #CPPFLAGS	+= -Wsign-compare -Wsign-conversion
 ifeq ($(CONFIG_PNA),y)
 CPPFLAGS	+= -DCECORE -DPNA
@@ -255,11 +256,13 @@ ifeq ($(DMALLOC),y)
   CPPFLAGS += -DHC_DMALLOC
 endif
 
+CPPFLAGS += -DPOCO_STATIC
+
 ifeq ($(INT_OVERFLOW), y)
 	CPPFLAGS	+=-ftrapv -DINT_OVERFLOW
 endif
 
-CXXFLAGS	:=$(OPTIMIZE) -fno-exceptions $(PROFILE)
+CXXFLAGS	:=$(OPTIMIZE) $(PROFILE)
 CFLAGS		:=$(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration
@@ -269,7 +272,7 @@ LDFLAGS		+=-Wl,--minor-subsystem-version=$(CE_MINOR)
 ifeq ($(CONFIG_PC),y)
 LDFLAGS		+=-Wl,-subsystem,windows
 endif
-LDFLAGS		+=$(PROFILE)
+LDFLAGS		+=$(PROFILE) -Wl,-Map=output.map
 
 ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lole32 -loleaut32 -luuid
@@ -287,6 +290,11 @@ else
     endif
   endif
 endif
+
+ifeq ($(CONFIG_LINUX),y)
+  LDLIBS		+= -lzzip 
+endif
+
 
 ifeq ($(DMALLOC),y)
   LDLIBS += -L../dmalloc -ldmalloc
@@ -878,6 +886,36 @@ COMPAT	:=\
 	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
 	$(COMPATSRC)/wtoi.c
 
+POCOSRC:=$(LIB)/poco
+POCO :=\
+     $(POCOSRC)/Debugger.cpp \
+     $(POCOSRC)/Bugcheck.cpp \
+     $(POCOSRC)/ErrorHandler.cpp \
+     $(POCOSRC)/Event.cpp \
+     $(POCOSRC)/NamedEvent.cpp \
+     $(POCOSRC)/Exception.cpp \
+     $(POCOSRC)/Mutex.cpp \
+     $(POCOSRC)/NamedMutex.cpp \
+     $(POCOSRC)/Runnable.cpp \
+     $(POCOSRC)/RWLock.cpp \
+     $(POCOSRC)/Thread.cpp \
+     $(POCOSRC)/ThreadLocal.cpp \
+     $(POCOSRC)/ThreadTarget.cpp \
+     $(POCOSRC)/Timestamp.cpp \
+     $(POCOSRC)/UnicodeConverter.cpp \
+     $(POCOSRC)/UTF8Encoding.cpp \
+     $(POCOSRC)/UTF16Encoding.cpp \
+     $(POCOSRC)/TextEncoding.cpp \
+     $(POCOSRC)/ASCIIEncoding.cpp \
+     $(POCOSRC)/Latin1Encoding.cpp \
+     $(POCOSRC)/Latin9Encoding.cpp \
+     $(POCOSRC)/Windows1252Encoding.cpp \
+     $(POCOSRC)/TextIterator.cpp \
+     $(POCOSRC)/TextConverter.cpp \
+     $(POCOSRC)/Ascii.cpp \
+     $(POCOSRC)/AtomicCounter.cpp \
+
+
 #ifneq ($(CONFIG_PC),y)
 #COMPAT	:=$(COMPAT) \
 #   $(COMPATSRC)/redir.cpp
@@ -892,9 +930,14 @@ DIALOG_XML = $(wildcard Common/Data/Dialogs/*.xml)
 
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
-	$(BIN)/zzip.a \
-	$(BIN)/compat.a \
-	$(BIN)/lk8000.rsc
+	$(BIN)/poco.a \
+
+
+ifneq ($(CONFIG_LINUX),y)
+OBJS	+= $(BIN)/zzip.a 
+OBJS	+= $(BIN)/compat.a
+OBJS	+= $(BIN)/lk8000.rsc
+endif
 
 IGNORE	:= \( -name .git \) -prune -o
 
@@ -971,6 +1014,10 @@ $(BIN)/jasper.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(JASPER)) $(patsubst $(SRC)%.
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
 $(BIN)/compat.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(COMPAT)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(COMPAT))
+	@$(NQ)echo "  AR      $@"
+	$(Q)$(AR) $(ARFLAGS) $@ $^
+
+$(BIN)/poco.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(POCO)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(POCO))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 

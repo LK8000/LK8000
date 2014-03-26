@@ -240,7 +240,7 @@ bool DSXWaypoint(const WAYPOINT &wp, const TCHAR aatBuffer[], const TCHAR limite
   
   // fill output buffer with translated data
   TCHAR sign = 0x30 | (wp.Latitude < 0 ? 0x01 : 0) | (wp.Longitude < 0 ? 0x02 : 0);
-  _stprintf(buffer, _T("%08X%08X%c%s%s%c"), DSXCoord(wp.Latitude), DSXCoord(wp.Longitude), sign, aatBuffer, descBuffer, limiterChar);
+  _stprintf(buffer, _T("%08lX%08lX%c%s%s%c"), DSXCoord(wp.Latitude), DSXCoord(wp.Longitude), sign, aatBuffer, descBuffer, limiterChar);
   
   return limiterChar == limiter;
 }

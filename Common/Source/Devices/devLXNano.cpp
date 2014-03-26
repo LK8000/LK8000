@@ -421,7 +421,7 @@ bool DevLXNano::Wide2LxAscii(const TCHAR* input, int outSize, char* output)
   if (outSize == 0)
     return(false);
 
-  int res = unicode2usascii(input, output, outSize);
+  int res = TCHAR2usascii(input, output, outSize);
 
   // replace all non-ascii characters with '?' - LX Colibri is very sensitive
   // on non-ascii chars - the electronic seal can be broken

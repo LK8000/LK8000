@@ -2239,7 +2239,7 @@ int WndForm::OnCommand(WPARAM wParam, LPARAM lParam){
    // VENTA- DEBUG HARDWARE KEY PRESSED   
 #ifdef VENTA_DEBUG_KEY
 	TCHAR ventabuffer[80];
-	wsprintf(ventabuffer,TEXT("ONCKEY WPARAM %d"), wParam);
+	_stprintf(ventabuffer,TEXT("ONCKEY WPARAM %d"), wParam);
 	DoStatusMessage(ventabuffer);
 #endif
    if ((wParam & 0xffff) == VK_ESCAPE){
@@ -2743,7 +2743,7 @@ int WndButton::OnKeyDown(WPARAM wParam, LPARAM lParam){
 	(void)lParam;
 #ifdef VENTA_DEBUG_EVENT  
 	TCHAR ventabuffer[80];
-	wsprintf(ventabuffer,TEXT("ONKEYDOWN WPARAM %d"), wParam); // VENTA-
+	_stprintf(ventabuffer,TEXT("ONKEYDOWN WPARAM %d"), wParam); // VENTA-
 	DoStatusMessage(ventabuffer);
 #endif
   switch (wParam){

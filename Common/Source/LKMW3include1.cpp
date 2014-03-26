@@ -3,21 +3,21 @@
 
 	SelectObject(hdc, LK8PanelMediumFont);
 	TextDisplayMode.AsFlag.Color = TEXTLIGHTGREEN;
-	wsprintf(Buffer,_T("1-3 cruise"));
+	_stprintf(Buffer,_T("1-3 cruise"));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 0;
 	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
  	TextInBox(hdc, Buffer, qcolumn[0],qrow[0], 0, TextDisplayMode, false);
 
 	SelectObject(hdc, LK8PanelMediumFont);
-	wsprintf(Buffer,_T("Calcinate"));
+	_stprintf(Buffer,_T("Calcinate"));
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
 	TextDisplayMode.AsFlag.AlligneCenter = 1;
  	TextInBox(hdc, Buffer, qcolumn[8],qrow[1], 0, TextDisplayMode, false);
 
 	SelectObject(hdc, LK8PanelMediumFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	wsprintf(Buffer,_T("15:04:26"));
+	_stprintf(Buffer,_T("15:04:26"));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
@@ -47,8 +47,8 @@
 
 	SelectObject(hdc, LK8PanelBigFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	//_stprintf(Buffer, TEXT("«123°"));
-	_stprintf(Buffer, TEXT("123°»"));
+	//_stprintf(Buffer, TEXT("\xAB123\xB0"));
+	_stprintf(Buffer, TEXT("123\xB0\xBB"));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 0;
@@ -113,8 +113,8 @@
 
 	SelectObject(hdc, LK8PanelBigFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	//_stprintf(Buffer, TEXT("«123°"));
-	_stprintf(Buffer, TEXT("056°"));
+	//_stprintf(Buffer, TEXT("\xAB123\xB0"));
+	_stprintf(Buffer, TEXT("056\xB0"));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 0;
@@ -164,8 +164,8 @@
 
 	SelectObject(hdc, LK8PanelBigFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	//_stprintf(Buffer, TEXT("«123°"));
-	_stprintf(Buffer, TEXT("251°"));
+	//_stprintf(Buffer, TEXT("\xAB123\xB0"));
+	_stprintf(Buffer, TEXT("251\xB0"));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 0;

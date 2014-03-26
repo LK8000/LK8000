@@ -8,8 +8,6 @@
 
 
 #include "externs.h"
-#include <aygshell.h>
-
 #include "Terrain.h"
 #include "LKProcess.h"
 
@@ -2552,7 +2550,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_PILOT);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_PILOT));
     dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
     dfe->Set(0);
     wp->RefreshDisplay();
@@ -2561,7 +2559,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_AIRCRAFT);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_AIRCRAFT));
     dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
     dfe->Set(0);
     wp->RefreshDisplay();
@@ -2570,7 +2568,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_DEVICE);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_DEVICE));
     dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
     dfe->Set(0);
     wp->RefreshDisplay();
@@ -2585,7 +2583,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_POLARS);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_POLARS));
     dfe->ScanDirectoryTop(_T(LKD_POLARS),tsuf); //091101
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
@@ -2597,7 +2595,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_AIRSPACES);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_AIRSPACES));
     dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
@@ -2609,7 +2607,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_AIRSPACES);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_AIRSPACES));
     dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
@@ -2621,13 +2619,13 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_WP_WINPILOT);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_WINPILOT));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%S"),LKS_WP_XCSOAR);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_XCSOAR));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%S"),LKS_WP_CUP);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_CUP));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%S"),LKS_WP_COMPE);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_COMPE));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
@@ -2639,13 +2637,13 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_WP_WINPILOT);
+    _stprintf(tsuf,_T("*%s"),(LKS_WP_WINPILOT));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%S"),LKS_WP_XCSOAR);
+    _stprintf(tsuf,_T("*%s"),(LKS_WP_XCSOAR));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%S"),LKS_WP_CUP);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_CUP));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%S"),LKS_WP_COMPE);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_COMPE));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
@@ -2657,9 +2655,9 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_MAPS);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_MAPS));
     dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
-    _stprintf(tsuf,_T("*%S"),XCS_MAPS);
+    _stprintf(tsuf,_T("*%s"),_T(XCS_MAPS));
     dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
@@ -2671,10 +2669,10 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_TERRAINDEM);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_TERRAINDEM));
     dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
 #if LKMTERRAIN
-    _stprintf(tsuf,_T("*%S"),LKS_TERRAINDAT);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_TERRAINDAT));
     dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
 #endif
     dfe->Lookup(temptext);
@@ -2687,7 +2685,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_AIRFIELDS);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_AIRFIELDS));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
@@ -2702,7 +2700,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_LANGUAGE);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_LANGUAGE));
     dfe->ScanDirectoryTop(_T(LKD_LANGUAGE),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
@@ -2714,7 +2712,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_INPUT);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_INPUT));
     dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
@@ -3524,7 +3522,7 @@ void dlgConfigurationShowModal(short mode){
   StartHourglassCursor(); 
 
   if (!ScreenLandscape) {
-	char filename[MAX_PATH];
+	TCHAR filename[MAX_PATH];
 	switch(configMode) {
 		case 0:
 			LocalPathS(filename, TEXT("dlgConfiguration_L.xml"));
@@ -3558,7 +3556,7 @@ void dlgConfigurationShowModal(short mode){
 			break;
 	}
   } else {
-	char filename[MAX_PATH];
+	TCHAR filename[MAX_PATH];
 	switch(configMode) {
 		case 0:
 			LocalPathS(filename, TEXT("dlgConfiguration.xml"));

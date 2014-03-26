@@ -24,8 +24,8 @@ void UpdateAnalysis(void){
   TCHAR sTmp[1000];
 
   TCHAR szPolarName[80];
-  extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
-  LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, szPolarName, (WCHAR*) NULL);
+  extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
+  LK_tsplitpath(szPolarFile, (TCHAR*) NULL, (TCHAR*) NULL, szPolarName, (TCHAR*) NULL);
 
   switch(analysis_page){
     case ANALYSIS_PAGE_BAROGRAPH:
@@ -36,7 +36,7 @@ void UpdateAnalysis(void){
                 gettext(TEXT("_@M127_")));
       wfa->SetCaption(sTmp);
       if (flightstats.Altitude_Ceiling.sum_n<2) {
-        _stprintf(sTmp, TEXT("\0"));
+        _tcscpy(sTmp, TEXT("\0"));
       } else if (flightstats.Altitude_Ceiling.sum_n<4) {
         _stprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s"),
 	// LKTOKEN  _@M823_ = "Working band" 
@@ -70,7 +70,7 @@ void UpdateAnalysis(void){
       wfa->SetCaption(sTmp);
 
       if (flightstats.ThermalAverage.sum_n==0) {
-        _stprintf(sTmp, TEXT("\0"));
+        _tcscpy(sTmp, TEXT("\0"));
       } else if (flightstats.ThermalAverage.sum_n==1) {
         _stprintf(sTmp, TEXT("%s:\r\n  %3.1f %s"),
 	// LKTOKEN  _@M116_ = "Av climb" 

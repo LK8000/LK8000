@@ -44,7 +44,7 @@ void InitFlightDataRecorder(void)
   int i;
 
   LocalPath(path,TEXT(LKD_CONF));
-  wsprintf(szBatLogFileName, TEXT("%s\\FlightRecorder.CFG"), path);
+  _stprintf(szBatLogFileName, TEXT("%s\\FlightRecorder.CFG"), path);
   fpDataRecConfigFile = _tfopen(szBatLogFileName, TEXT("r"));
 
   if(fpDataRecConfigFile == NULL)
@@ -120,7 +120,7 @@ void InitFlightDataRecorder(void)
 
   // WE TRY TO OPEN THE LOGFILE, AND IF WE CANT WE PERMANENTLY DISABLE LOGGING
   LocalPath(path,TEXT(LKD_LOGS));
-  wsprintf(szBatLogFileName, TEXT("%s\\FlightRecorder.TXT"), path);
+  _stprintf(szBatLogFileName, TEXT("%s\\FlightRecorder.TXT"), path);
   FlightDataRecorderFile = _tfopen(szBatLogFileName, TEXT("w"));
 
   if (FlightDataRecorderFile==NULL) {
@@ -146,7 +146,7 @@ void InitFlightDataRecorder(void)
 
   for( i = 0;  i < NO_ENTRYS; i++)
   {
-	unicode2utf(FDR[i].szName, sbuf, sizeof(sbuf));
+	TCHAR2utf(FDR[i].szName, sbuf, sizeof(sbuf));
 	if(FDR[i].abLog > 0)
 		fprintf(FlightDataRecorderFile,"%30s recording enabled\r",sbuf);
   }
@@ -154,7 +154,7 @@ void InitFlightDataRecorder(void)
 
   for( i = 0;  i < NO_ENTRYS; i++)
   {
-	unicode2utf(FDR[i].szName, sbuf, sizeof(sbuf));
+	TCHAR2utf(FDR[i].szName, sbuf, sizeof(sbuf));
 	if(FDR[i].aiCheckInterval > 0)
 	{
 		if( FDR[i].aiMaxWarnings > 0)

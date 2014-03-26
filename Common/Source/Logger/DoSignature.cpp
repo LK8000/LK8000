@@ -77,7 +77,7 @@ int ReadInputFile(LineList &lines, const TCHAR *filename)
 
   lines.clear();
  
-  f = _wfopen(filename,TEXT("rb"));
+  f = _tfopen(filename,TEXT("rb"));
   if (f==NULL) return 1;
   while (fgets(linebuf,MAXLINELEN,f)!=NULL) lines.push_back(linebuf);
   fclose(f);
@@ -90,7 +90,7 @@ int WriteOutputFile(LineList &lines, const TCHAR *filename)
   FILE *f;
   LineList::const_iterator it;
 
-  f = _wfopen(filename,TEXT("wb+"));
+  f = _tfopen(filename,TEXT("wb+"));
   if (f==NULL) return 1;
   for (it = lines.begin(); it != lines.end(); ++it) fputs(it->c_str(),f);
   fclose(f);
@@ -154,8 +154,8 @@ int DoSignature(TCHAR *homepath) {
   StartupStore(_T(".... DoSignature start, homepath=<%s>\n"),homepath);
   #endif
 
-  wsprintf(fullsrcfile,TEXT("%s/LOGGER_TMP.IGC"),homepath);
-  wsprintf(fulldstfile,TEXT("%s/LOGGER_SIG.IGC"),homepath);
+  _stprintf(fullsrcfile,TEXT("%s/LOGGER_TMP.IGC"),homepath);
+  _stprintf(fulldstfile,TEXT("%s/LOGGER_SIG.IGC"),homepath);
 
   // Force removal of anything existing.
   // We should have checked already that this file does not exist, and rename it eventually.
@@ -163,7 +163,7 @@ int DoSignature(TCHAR *homepath) {
   FILE *ft;
   ft=NULL;
   DeleteFile(fulldstfile);
-  if ( (ft=_wfopen(fulldstfile,TEXT("r")))!=NULL ) {
+  if ( (ft=_tfopen(fulldstfile,TEXT("r")))!=NULL ) {
 	StartupStore(_T("... DoSignature: ERROR existing destination file <%S>!%s"),fulldstfile,NEWLINE);
 	fclose(ft);
 	return 12;

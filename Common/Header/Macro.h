@@ -18,6 +18,6 @@
 #define IMHERE  StartupStore(_T(">>> %s:%u\n"), _T(__FILE__), __LINE__);
 #endif
 
-
+#define UNUSED(expr) do { (void)(expr); } while (0)
 
 #endif

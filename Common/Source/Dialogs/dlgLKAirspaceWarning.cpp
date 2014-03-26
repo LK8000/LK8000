@@ -7,8 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
-
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"
 #include "Dialogs.h"
@@ -278,9 +276,9 @@ void dlgLKAirspaceFill()
     wp = (WndProperty*)dlg->FindByName(TEXT("prpType"));
     if (wp) {
   	if (airspace_copy.Flyzone()) {
-  	  wsprintf(buffer,TEXT("%s %s"), gettext(TEXT("FLY")), airspace_copy.TypeName());
+  	  _stprintf(buffer,TEXT("%s %s"), gettext(TEXT("FLY")), airspace_copy.TypeName());
   	} else {
-  	  wsprintf(buffer,TEXT("%s %s"), gettext(TEXT("NOFLY")), airspace_copy.TypeName());
+  	  _stprintf(buffer,TEXT("%s %s"), gettext(TEXT("NOFLY")), airspace_copy.TypeName());
   	}
 
   	  wp->SetText( buffer );
@@ -302,15 +300,15 @@ void dlgLKAirspaceFill()
         Units::FormatUserDistance((double)abs(hdist),stmp, 10);
         if (hdist<0) {
           // LKTOKEN _@M1257_ "to leave"
-          wsprintf(stmp2, TEXT("%s %s"), stmp, gettext(TEXT("_@M1257_")));
+          _stprintf(stmp2, TEXT("%s %s"), stmp, gettext(TEXT("_@M1257_")));
         } else {
           // LKTOKEN _@M1258_ "to enter"
-          wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1258_")));
+          _stprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1258_")));
         }
       } else {
         // no distance info calculated
         // LKTOKEN _@M1259_ "Too far, not calculated"
-        wsprintf(stmp2,gettext(TEXT("_@M1259_")));
+        _stprintf(stmp2,gettext(TEXT("_@M1259_")));
       }
       wp->SetText(stmp2);
       wp->RefreshDisplay();
@@ -323,15 +321,15 @@ void dlgLKAirspaceFill()
         Units::FormatUserAltitude((double)abs(vdist),stmp, 10);
         if (vdist<0) {
           // LKTOKEN _@M1260_ "below"
-          wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1260_")));
+          _stprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1260_")));
         } else {
           // LKTOKEN _@M1261_ "above"
-          wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1261_")));
+          _stprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1261_")));
         }
       } else {
         // no distance info calculated
         // LKTOKEN _@M1259_ "Too far, not calculated"
-        wsprintf(stmp2,gettext(TEXT("_@M1259_")));
+        _stprintf(stmp2,gettext(TEXT("_@M1259_")));
       }
       wp->SetText(stmp2);
       wp->RefreshDisplay();
@@ -356,7 +354,7 @@ void dlgLKAirspaceFill()
     wb = (WndButton*)dlg->FindByName(TEXT("cmdClose"));
     if (wb) {
       TCHAR stmp2[40];
-      wsprintf(stmp2,TEXT("%s (%d)"), gettext(TEXT("_@M186_")), timer_counter);
+      _stprintf(stmp2,TEXT("%s (%d)"), gettext(TEXT("_@M186_")), timer_counter);
       wb->SetCaption(stmp2);
     }    
 
@@ -410,7 +408,6 @@ short ShowAirspaceWarningsToUser()
 		_stprintf(msgbuf,TEXT("%s %s"),gettext(TEXT("_@M1240_")),airspace_copy.Name());
 	  else
 		_stprintf(msgbuf,TEXT("%s %s %s"),gettext(TEXT("_@M1240_")),airspace_copy.TypeName(),airspace_copy.Name());
-//    wsprintf(msgbuf, TEXT("%s %s %s "), gettext(TEXT("_@M1240_")),airspace_copy.TypeName(), airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
 
@@ -420,7 +417,6 @@ short ShowAirspaceWarningsToUser()
   		_stprintf(msgbuf,TEXT("%s %s"),gettext(TEXT("_@M1241_")),airspace_copy.Name());
   	  else
   		_stprintf(msgbuf,TEXT("%s %s %s"),gettext(TEXT("_@M1241_")),airspace_copy.TypeName(),airspace_copy.Name());
-//      wsprintf(msgbuf, TEXT("%s %s %s"), gettext(TEXT("_@M1241_")),airspace_copy.TypeName(), airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
       
@@ -446,7 +442,7 @@ short ShowAirspaceWarningsToUser()
     WndButton *wb = (WndButton*)dlg->FindByName(TEXT("cmdAckForTime"));
     if (wb) {
       TCHAR stmp2[40];
-      wsprintf(stmp2,TEXT("%s (%dmin)"), gettext(TEXT("_@M46_")), AcknowledgementTime/60);
+      _stprintf(stmp2,TEXT("%s (%dmin)"), gettext(TEXT("_@M46_")), AcknowledgementTime/60);
       wb->SetCaption(stmp2);
     }    
 

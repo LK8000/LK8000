@@ -114,7 +114,7 @@ bool ReadWinPilotPolar(void) {
   _tcscpy(szFile,szPolarFile);
   if (_tcscmp(szFile,_T(""))==0) {
 	StartupStore(_T("... Empty polar file, using Default%s"),NEWLINE);
-	wcscpy(szFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+	_tcscpy(szFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
   }
 
     ExpandLocalPath(szFile);
@@ -152,8 +152,8 @@ bool ReadWinPilotPolar(void) {
               PExtractParameter(TempString, ctemp, 7);
               dPOLARW[2] = StrToDouble(ctemp,NULL);
 
-		_stprintf(ctemp,_T(""));
-              	PExtractParameter(TempString, ctemp, 8);
+              ctemp[0] = _T('\0');
+              PExtractParameter(TempString, ctemp, 8);
 		if ( _tcscmp(ctemp,_T("")) != 0) {
               		GlidePolar::WingArea = StrToDouble(ctemp,NULL);
 			// StartupStore(_T(". Polar file has wing area=%f%s"),GlidePolar::WingArea,NEWLINE);
@@ -180,7 +180,7 @@ bool ReadWinPilotPolar(void) {
 	// Reset flaps values after loading a new polar, and init FlapsPos for the first time
 	for (i=0; i<MAX_FLAPS; i++) {
 		GlidePolar::FlapsPos[i]=0.0;
-		wcscpy(GlidePolar::FlapsName[i],_T("???"));
+		_tcscpy(GlidePolar::FlapsName[i],_T("???"));
 	}
 	GlidePolar::FlapsPosCount=0;
 	GlidePolar::FlapsMass=0.0;
@@ -212,13 +212,13 @@ bool ReadWinPilotPolar(void) {
 		ctemp[MAXFLAPSNAME]='\0';
 		if (ctemp[_tcslen(ctemp)-1]=='\r' || ctemp[_tcslen(ctemp)-1]=='\n')
 			ctemp[_tcslen(ctemp)-1]='\0'; // remove trailing cr
-		wcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
+		_tcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
 		if (currentFlapsPos >= (MAX_FLAPS-1)) break; // safe check
 	        currentFlapsPos++;
        	   }
-	   wcscpy(GlidePolar::FlapsName[0],GlidePolar::FlapsName[1]);
+	   _tcscpy(GlidePolar::FlapsName[0],GlidePolar::FlapsName[1]);
            GlidePolar::FlapsPos[currentFlapsPos] = MAXSPEED;
-           wcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
+           _tcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
            currentFlapsPos++;
            GlidePolar::FlapsPosCount = currentFlapsPos; 
 	   break;
@@ -241,7 +241,7 @@ bool ReadWinPilotPolar(void) {
 		dPOLARW[2]= -4.2;
               	GlidePolar::WingArea = 10.04;
 		PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
-		wcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Std Cirrus.plr"));
+		_tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Std Cirrus.plr"));
 	} // !foundline
       }
     } 

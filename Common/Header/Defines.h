@@ -870,11 +870,7 @@ static const double PI = (4*atan(1));
 // Special chars
 //
 
-#ifndef __MINGW32__
 #define DEG "\xB0"
-#else
-#define DEG "°"
-#endif
 
 //
 // LOGGER
@@ -906,8 +902,8 @@ static const double PI = (4*atan(1));
 #define IBLSCALE(x) (   (ScreenIntScale) ? ((x)*ScreenScale) : ((int)((x)*ScreenDScale)))
 #define MAXIBLSCALE    100     // CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
 #if TESTBENCH
-extern int Test_NIBLSCALE(short x, const int line, const char *file);
-#define NIBLSCALE(x)  Test_NIBLSCALE(x,  __LINE__,  __FILE__)
+extern int Test_NIBLSCALE(short x, const int line, const TCHAR *file);
+#define NIBLSCALE(x)  Test_NIBLSCALE(x,  __LINE__,  _T(__FILE__))
 #else
 #define NIBLSCALE(x) (LKIBLSCALE[x])
 #endif

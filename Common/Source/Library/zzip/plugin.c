@@ -131,9 +131,9 @@ int wince_open (const char *path, int oflag, ...)
 int winpc_open(zzip_char_t* filename, int flags, ...)
 {
   TCHAR wpath[MAX_PATH];
-  utf2unicode(filename, wpath, MAX_PATH);
+  utf2TCHAR(filename, wpath, MAX_PATH);
   
-  return(_wopen(wpath, flags));
+  return(_topen(wpath, flags));
 }
 
 #endif

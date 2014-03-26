@@ -15,7 +15,7 @@ extern bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDevi
 PDeviceDescriptor_t CDevCProbe::m_pDevice=NULL;
 BOOL CDevCProbe::m_bCompassCalOn=FALSE;
 WndForm *CDevCProbe::m_wf=NULL;
-CRITICAL_SECTION* CDevCProbe::m_pCritSec_DeviceData=NULL;
+Poco::Mutex* CDevCProbe::m_pCritSec_DeviceData=NULL;
 double CDevCProbe::m_abs_press=0.0;
 double CDevCProbe::m_delta_press=0.0;
 
@@ -47,8 +47,7 @@ BOOL CDevCProbe::Install( PDeviceDescriptor_t d ) {
 BOOL CDevCProbe::Open( PDeviceDescriptor_t d, int Port ) {
 	m_pDevice = d;
 
-	m_pCritSec_DeviceData = new CRITICAL_SECTION;
-	InitializeCriticalSection(m_pCritSec_DeviceData);
+	m_pCritSec_DeviceData = new Poco::Mutex;
 
 	return TRUE;
 }
@@ -56,7 +55,6 @@ BOOL CDevCProbe::Open( PDeviceDescriptor_t d, int Port ) {
 BOOL CDevCProbe::Close (PDeviceDescriptor_t d) {
 	m_pDevice = NULL;
 
-	DeleteCriticalSection(m_pCritSec_DeviceData);
 	delete m_pCritSec_DeviceData;
 	m_pCritSec_DeviceData = NULL;
 
@@ -77,18 +75,18 @@ inline double int24toDouble(int v) {
 
 void CDevCProbe::LockDeviceData(){
 	if(m_pCritSec_DeviceData) {
-		EnterCriticalSection(m_pCritSec_DeviceData);
+		m_pCritSec_DeviceData->lock();
 	}
 }
 
 void CDevCProbe::UnlockDeviceData(){
 	if(m_pCritSec_DeviceData) {
-		LeaveCriticalSection(m_pCritSec_DeviceData);
+		m_pCritSec_DeviceData->unlock();
 	}
 }
 
 BOOL CDevCProbe::ParseNMEA( DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO ) {
-	wnmeastring wiss(String);
+	tnmeastring wiss(String);
 	TCHAR* strToken = wiss.GetNextString();
 
  	if(_tcscmp(strToken,TEXT("$PCPROBE"))==0) {
@@ -177,7 +175,7 @@ BOOL CDevCProbe::ParseNMEA( DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pIN
 // - C: is transmitted only if the C-Probe is being charged. In this case, heat produced by the charging
 //    process is likely to affect the readings of the temperature and humidity sensors.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
+BOOL CDevCProbe::ParseData( tnmeastring& wiss, NMEA_INFO *pINFO ) {
 
 	double q0 = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
 	double q1 = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
@@ -252,7 +250,7 @@ BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 //  The calibration of the gyroscopes is being performed. "m" is the number of steps required. "n" is the
 //  current step. The percentage of work performed is 100 * n / m.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseGyro( wnmeastring& wiss, NMEA_INFO *pINFO ) {
+BOOL CDevCProbe::ParseGyro( tnmeastring& wiss, NMEA_INFO *pINFO ) {
 	unsigned int n = HexStrToInt(wiss.GetNextString());
 	unsigned int m = HexStrToInt(wiss.GetNextString());
 
@@ -265,7 +263,7 @@ BOOL CDevCProbe::ParseGyro( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 // $PCPROBE, FW,f
 //  Firmware version. f = 0xNNMM, where NN is the major version number and MM the minor number.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseFW( wnmeastring& wiss, NMEA_INFO *pINFO ) {
+BOOL CDevCProbe::ParseFW( tnmeastring& wiss, NMEA_INFO *pINFO ) {
 	unsigned int Version = HexStrToInt(wiss.GetNextString());
 
 	LockDeviceData();
@@ -281,8 +279,8 @@ BOOL CDevCProbe::ParseFW( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 //  For example: $PCPROBE, NAME,Vinc means that the C-Probe will be detected as C-Probe-Vinc.
 //  The name can be set by the user (see below).
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseName( wnmeastring& wiss, NMEA_INFO *pINFO ) {
-	wchar_t* szName = wiss.GetNextString();
+BOOL CDevCProbe::ParseName( tnmeastring& wiss, NMEA_INFO *pINFO ) {
+	TCHAR* szName = wiss.GetNextString();
 
 	StartupStore(TEXT("C-Probe Name : %s"), szName);
 	return TRUE;
@@ -364,7 +362,7 @@ BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
 		return FALSE;
 	}
 
-	char filename[MAX_PATH];
+	TCHAR filename[MAX_PATH];
 	LocalPathS(filename, TEXT("dlgDevCProbe.xml"));
 	m_wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DEVCPROBE"));
 
@@ -456,17 +454,17 @@ void CDevCProbe::Update() {
 	WndProperty* wp;
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpPitch"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f°"), _INFO.Pitch);
+		_stprintf(Temp, TEXT("%.2f\xB0"), _INFO.Pitch);
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpHeading"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f°"), _INFO.MagneticHeading);
+		_stprintf(Temp, TEXT("%.2f\xB0"), _INFO.MagneticHeading);
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpRoll"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f°"), _INFO.Roll);
+		_stprintf(Temp, TEXT("%.2f\xB0"), _INFO.Roll);
 		wp->SetText(Temp);
 	}
 
@@ -488,7 +486,7 @@ void CDevCProbe::Update() {
 
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpTemp"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f °C"), _INFO.OutsideAirTemperature);
+		_stprintf(Temp, TEXT("%.2f \xB0""C"), _INFO.OutsideAirTemperature);
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpRh"));

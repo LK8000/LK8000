@@ -118,12 +118,14 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 
   // we are now on the first digit of latitude
 
+  /*
   // aaaaaaaahhhhh f**k unicode
   TCHAR tdeg[5];
   char  sdeg[5];
   sprintf(sdeg,"%c",0xBA);
-  _stprintf(tdeg,_T("%S"),sdeg);
-  TCHAR cDeg = tdeg[0];
+  _stprintf(tdeg,_T("%s"),sdeg);
+  */
+  TCHAR cDeg = _T('\xBA');
   unsigned int p;
 
   // search for cDeg delimiter

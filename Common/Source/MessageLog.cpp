@@ -125,7 +125,7 @@ void StartupStore(const TCHAR *Str, ...)
   if (startupStoreFile != NULL) {
     char sbuf[(MAX_PATH*2)+1]; // FIX 100205
     
-    int i = unicode2utf(buf, sbuf, sizeof(sbuf));
+    int i = TCHAR2utf(buf, sbuf, sizeof(sbuf));
     
     if (i > 0) {
       if (sbuf[i - 1] == 0x0a && (i == 1 || (i > 1 && sbuf[i-2] != 0x0d)))

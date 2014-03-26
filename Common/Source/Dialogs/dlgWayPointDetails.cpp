@@ -8,8 +8,6 @@
 
 
 #include "externs.h"
-#include <aygshell.h>
-
 #include "McReady.h"
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
@@ -292,7 +290,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   WndProperty *wp;
 
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointDetails_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         
@@ -301,7 +299,7 @@ void dlgWayPointDetailsShowModal(short mypage){
                         TEXT("IDR_XML_WAYPOINTDETAILS_L"));
 
   } else {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointDetails.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 

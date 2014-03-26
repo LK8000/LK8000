@@ -17,12 +17,6 @@
 #include "DoInits.h"
 #include "LKStyle.h"
 
-#ifndef __MINGW32__
-#define DEG "\xB0"
-#else
-#define DEG "°"
-#endif
-
 HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
     static short centerX, centerY; //center coordinates of HSI gauge
     static short radius; //HSI gauge size radius

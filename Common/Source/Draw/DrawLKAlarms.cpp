@@ -64,7 +64,7 @@ void MapWindow::DrawLKAlarms(HDC hDC, const RECT rc) {
 		case 0:
 		case 1:
 		case 2:
-			wsprintf(textalarm,_T("%s %d: %s %d"),
+			_stprintf(textalarm,_T("%s %d: %s %d"),
 			gettext(_T("_@M1650_")), currentalarm+1, gettext(_T("_@M1651_")),  // ALARM ALTITUDE
 			((int)((double)LKalarms[currentalarm].triggervalue*ALTITUDEMODIFY)));
 			break;

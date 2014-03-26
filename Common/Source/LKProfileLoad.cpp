@@ -22,7 +22,7 @@ static bool matchedstring=false;		// simple accelerator
 //
 void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, bool *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
-  int ival= wcstol(curvalue, NULL, 10);
+  int ival= _tcstol(curvalue, NULL, 10);
   *lookupvalue= (bool)(ival==1?true:false);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> bool=%d\n"),
@@ -32,7 +32,7 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
 }
 void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, double *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(double) wcstol(curvalue, NULL, 10);
+  *lookupvalue=(double) _tcstol(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> double=%.0f\n"),
   curname,curvalue,lookupname,*lookupvalue);
@@ -41,7 +41,7 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
 }
 void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, DWORD *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(int) wcstoul(curvalue, NULL, 10);
+  *lookupvalue=(int) _tcstoul(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> DWORD=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
@@ -50,7 +50,7 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
 }
 void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, int *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(int) wcstol(curvalue, NULL, 10);
+  *lookupvalue=(int) _tcstol(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> int=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
@@ -59,7 +59,7 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
 }
 void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, unsigned int *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(int) wcstoul(curvalue, NULL, 10);
+  *lookupvalue=(int) _tcstoul(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> int=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
@@ -68,7 +68,7 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
 }
 void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, short *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(short) wcstol(curvalue, NULL, 10);
+  *lookupvalue=(short) _tcstol(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> short=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
@@ -77,7 +77,7 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
 }
 void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, unsigned short *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
-  *lookupvalue=(unsigned short) wcstoul(curvalue, NULL, 10);
+  *lookupvalue=(unsigned short) _tcstoul(curvalue, NULL, 10);
   #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> unsigned short=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
@@ -176,21 +176,21 @@ parse_utf8:
 	matchedstring=false;
 	if (sscanf(inval, "%[^#=\r\n ]=\"%[^\r\n\"]\"[\r\n]", name, value) == 2) {
 		if (strlen(name)>0) {
-			utf2unicode(name, wname, nMaxValueValueSize);
-			utf2unicode(value, wvalue, nMaxValueValueSize);
+			utf2TCHAR(name, wname, nMaxValueValueSize);
+			utf2TCHAR(value, wvalue, nMaxValueValueSize);
 			LKParseProfileString(wname, wvalue);
 			found = true;
 		}
 	} else if (sscanf(inval, "%[^#=\r\n ]=%d[\r\n]", name, &j) == 2) {
 		if (strlen(name)>0) {
-			utf2unicode(name, wname, nMaxValueValueSize);
+			utf2TCHAR(name, wname, nMaxValueValueSize);
 			_stprintf(wvalue,_T("%d"),j);
 			LKParseProfileString(wname, wvalue);
 			found = true;
 		}
 	} else if (sscanf(inval, "%[^#=\r\n ]=\"\"[\r\n]", name) == 1) {
 		if (strlen(name)>0) {
-			utf2unicode(name, wname, nMaxValueValueSize);
+			utf2TCHAR(name, wname, nMaxValueValueSize);
 			LKParseProfileString(wname, TEXT(""));
 			found = true;
 		}
@@ -264,12 +264,12 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   // We want a memory area with values, not with function calls.
 
   if (!_tcscmp(szRegistryAirspaceFillType,sname)) {
-	ival=wcstol(svalue, NULL, 10);
+	ival=_tcstol(svalue, NULL, 10);
 	MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)ival);
 	return;
   }
   if (!_tcscmp(szRegistryAirspaceOpacity,sname)) {
-	ival=wcstol(svalue, NULL, 10);
+	ival=_tcstol(svalue, NULL, 10);
 	MapWindow::SetAirSpaceOpacity(ival);
 	return;
   }
@@ -293,12 +293,12 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAppDefaultMapWidth,&Appearance.DefaultMapWidth);
 
   if (!_tcscmp(szRegistryAppIndLandable,sname)) {
-	ival=wcstol(svalue, NULL, 10);
+	ival=_tcstol(svalue, NULL, 10);
 	Appearance.IndLandable = (IndLandable_t)ival;
 	return;
   }
   if (!_tcscmp(szRegistryAppInfoBoxModel,sname)) {
-	ival=wcstol(svalue, NULL, 10);
+	ival=_tcstol(svalue, NULL, 10);
 	Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)ival;
 	return;
   }
@@ -353,7 +353,7 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryCheckSum,&CheckSum);
 
   if (!_tcscmp(szRegistryCircleZoom,sname)) {
-	ival=wcstol(svalue, NULL, 10);
+	ival=_tcstol(svalue, NULL, 10);
 	MapWindow::zoom.CircleZoom(ival == 1);
 	return;
   }
@@ -479,7 +479,7 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryLanguageFile,&*szLanguageFile);
 
   if (!_tcscmp(szRegistryLatLonUnits,sname)) {
-	ival=wcstol(svalue, NULL, 10);
+	ival=_tcstol(svalue, NULL, 10);
 	Units::CoordinateFormat = (CoordinateFormats_t)ival;
 	return;
   }

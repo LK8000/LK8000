@@ -304,7 +304,7 @@ void dlgBasicSettingsShowModal(void){
 
   SHOWTHREAD(_T("dlgBasicSettingsShowModal"));
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   if (!ScreenLandscape) {
 	LocalPathS(filename, TEXT("dlgBasicSettings_L.xml"));
 	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_BASICSETTINGS_L"));

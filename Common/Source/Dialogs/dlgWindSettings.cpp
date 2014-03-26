@@ -98,7 +98,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgWindSettingsShowModal(void){
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgWindSettings.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
 		      

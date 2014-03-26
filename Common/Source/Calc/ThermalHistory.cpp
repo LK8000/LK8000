@@ -94,22 +94,22 @@ void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThB
 	StartupStore(_T("..... Thermal is near wp.%d <%s>\n"),j,WayPointList[j].Name);
 	#endif
 	TCHAR wpnear[NAME_SIZE+1];
-	wcscpy(wpnear,WayPointList[j].Name);
+	_tcscpy(wpnear,WayPointList[j].Name);
 	wpnear[19]='\0'; // sized 20 chars
-	wcscpy(ThermalHistory[i].Near,wpnear);
+	_tcscpy(ThermalHistory[i].Near,wpnear);
   } else {
-	wcscpy(ThermalHistory[i].Near,_T(""));
+	_tcscpy(ThermalHistory[i].Near,_T(""));
   }
 
   LockTaskData();
-  wcscpy(WayPointList[RESWP_LASTTHERMAL].Name , ThermalHistory[i].Name);
+  _tcscpy(WayPointList[RESWP_LASTTHERMAL].Name , ThermalHistory[i].Name);
   WayPointList[RESWP_LASTTHERMAL].Latitude  = CALCULATED_INFO.ClimbStartLat;
   WayPointList[RESWP_LASTTHERMAL].Longitude = CALCULATED_INFO.ClimbStartLong;
   WayPointList[RESWP_LASTTHERMAL].Altitude  = CALCULATED_INFO.ClimbStartAlt;
   if (j>0)
-  	wcscpy(WayPointList[RESWP_LASTTHERMAL].Comment,ThermalHistory[i].Name);
+  	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment,ThermalHistory[i].Name);
   else
-	wcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, gettext(TEXT("_@M1320_"))); // last good thermal
+	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, gettext(TEXT("_@M1320_"))); // last good thermal
 
   UnlockTaskData();
 

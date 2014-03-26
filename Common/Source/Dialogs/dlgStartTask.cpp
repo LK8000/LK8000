@@ -42,7 +42,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double Altitude){
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgStartTask.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
 		      

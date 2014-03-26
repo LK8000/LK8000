@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "LKProfiles.h"
-#include <aygshell.h>
 #include "Dialogs.h"
 
 
@@ -129,7 +128,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgAirspaceWarningParamsShowModal(void){
 
   WndProperty *wp;
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   int ival;
   
   LocalPathS(filename, TEXT("dlgAirspaceWarningParams.xml"));

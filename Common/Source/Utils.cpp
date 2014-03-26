@@ -79,7 +79,7 @@ void RestartCommPorts() {
 
 void TriggerGPSUpdate()
 {
-  SetEvent(dataTriggerEvent);
+  dataTriggerEvent.set();
 }
 
 // This is currently doing nothing.
@@ -339,10 +339,10 @@ void ToggleDrawTaskFAI(void) {
 }
 
 #if TESTBENCH
-int Test_NIBLSCALE(short x, const int line, const char *file) {
+int Test_NIBLSCALE(short x, const int line, const TCHAR *file) {
   if (x<0||x>MAXIBLSCALE) {
-	StartupStore(_T("[ASSERT FAILURE] in %S line %d\n"),__FILE__,__LINE__);
-	MSG_ASSERTION(__LINE__,__FILE__); 
+	StartupStore(_T("[ASSERT FAILURE] in %s line %d\n"),_T(__FILE__),__LINE__);
+	MSG_ASSERTION(__LINE__,_T(__FILE__)); 
 	exit(0);
   }
   return LKIBLSCALE[x];

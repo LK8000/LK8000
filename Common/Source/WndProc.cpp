@@ -307,10 +307,11 @@ void AfterStartup() {
   MapWindow::MapDirty = true;
   MapWindow::zoom.Reset(); 
   FullScreen();
-  SetEvent(drawTriggerEvent);
+  drawTriggerEvent.set();
 }
 
 
+extern void WaitThreadCalculation();
 
 void Shutdown(void) {
   int i;
@@ -373,8 +374,8 @@ void Shutdown(void) {
   MapWindow::CloseDrawingThread();
 
   // Stop calculating too (wake up)
-  SetEvent(dataTriggerEvent);
-  SetEvent(drawTriggerEvent);
+  dataTriggerEvent.set();
+  drawTriggerEvent.set();
 
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
@@ -454,8 +455,7 @@ void Shutdown(void) {
   #endif
 
   // Wait end of Calculation thread before deinit critical section.
-  WaitForSingleObject(hCalculationThread, INFINITE);
-  CloseHandle(hCalculationThread);
+  WaitThreadCalculation();
 
   #if TESTBENCH
   StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
@@ -474,11 +474,6 @@ void Shutdown(void) {
   #endif
   DestroyWindow(hWndMapWindow);
   DestroyWindow(hWndMainWindow);
-  #if TESTBENCH
-  StartupStore(TEXT(".... Close Event Handles%s"),NEWLINE);
-  #endif
-  CloseHandle(drawTriggerEvent);
-  CloseHandle(dataTriggerEvent);
 
   #if TESTBENCH
   StartupLogFreeRamAndStorage();

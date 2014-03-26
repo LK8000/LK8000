@@ -7,8 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
-
 #include "LKProcess.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
@@ -125,7 +123,7 @@ bool dlgTaskRules(void){
 
   WndProperty *wp;
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgTaskRules.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 

@@ -68,7 +68,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 
   SelectObject(hdc, LK8UnitFont);
   if (ScreenSize==0) {
-	_stprintf(Buffer,TEXT("Screen %dx%d experimental"),rc.right,rc.bottom );
+	_stprintf(Buffer,TEXT("Screen %ldx%ld experimental"),rc.right,rc.bottom );
 	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
 	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
@@ -95,7 +95,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
   LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
-  _stprintf(Buffer, _T(""));
+  _tcscpy(Buffer, _T(""));
   if (GPSAltitudeOffset != 0) _stprintf(Buffer, _T("(GpsOffset %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); // 100429 /1000
   #if TESTBENCH
   _tcscat(Buffer,_T(" TESTBENCH! "));

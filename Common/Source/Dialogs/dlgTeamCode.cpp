@@ -139,7 +139,7 @@ void dlgTeamCodeShowModal(void)
   WndProperty* wp = NULL;
   WndButton *buttonCode = NULL;
   wf = NULL;
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   if (ScreenLandscape) 
     {
       LocalPathS(filename, TEXT("dlgTeamCode_L.xml"));

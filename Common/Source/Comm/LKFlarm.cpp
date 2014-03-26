@@ -232,8 +232,8 @@ TCHAR Temp[80];
 //ParToDouble(String, 1, &pGPS->FLARM_HW_Version);
 //ParToDouble(String, 2, &pGPS->FLARM_SW_Version);
 
-ExtractParameter(String, Temp,1); swscanf(Temp,TEXT("%lf"), &pGPS->FLARM_HW_Version);
-ExtractParameter(String, Temp,2); swscanf(Temp,TEXT("%lf"), &pGPS->FLARM_SW_Version);
+ExtractParameter(String, Temp,1); _stscanf(Temp,TEXT("%lf"), &pGPS->FLARM_HW_Version);
+ExtractParameter(String, Temp,2); _stscanf(Temp,TEXT("%lf"), &pGPS->FLARM_SW_Version);
 ExtractParameter(String, Temp,3);
 StartupStore(_T("FLARM  found SW:%4.2f  HW:%4.2f  OBS:%s%s"),pGPS->FLARM_SW_Version,pGPS->FLARM_HW_Version,Temp, NEWLINE);
 
@@ -316,7 +316,7 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
     FLARM_EastingToLongitude=0.0;
   }
 
-  swscanf(String,
+  _stscanf(String,
 	  TEXT("%hu,%hu,%hu,%hu"),
 	  &pGPS->FLARM_RX, // number of received FLARM devices
 	  &pGPS->FLARM_TX, // Transmit status
@@ -439,7 +439,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
   // 5 id, 6 digit hex
   long ID;
-  swscanf(params[5],TEXT("%lx"), &ID);
+  _stscanf(params[5],TEXT("%lx"), &ID);
 //  unsigned long uID = ID;
 
   flarm_slot = FLARM_FindSlot(pGPS, ID);

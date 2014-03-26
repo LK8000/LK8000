@@ -11,7 +11,6 @@
 
 #include <commdlg.h>
 #include <commctrl.h>
-#include "aygshell.h"
 #include "resource.h"
 #include "Message.h"
 
@@ -173,7 +172,7 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound)
   int i;
   // Search from end of list (allow overwrites by user)
   for (i=StatusMessageData_Size - 1; i>0; i--) {
-    if (wcscmp(text, StatusMessageData[i].key) == 0) {
+    if (_tcscmp(text, StatusMessageData[i].key) == 0) {
       LocalMessage = StatusMessageData[i];
       break;
     }
@@ -187,10 +186,10 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound)
   TCHAR msgcache[1024];
   if (LocalMessage.doStatus) {
     
-    wcscpy(msgcache, gettext(text));
+    _tcscpy(msgcache, gettext(text));
     if (data != NULL) {
-      wcscat(msgcache, TEXT(" "));
-      wcscat(msgcache, data);
+      _tcscat(msgcache, TEXT(" "));
+      _tcscat(msgcache, data);
     }
     
     Message::AddMessage(LocalMessage.delay_ms, 1, msgcache);

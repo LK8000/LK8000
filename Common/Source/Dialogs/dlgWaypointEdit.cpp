@@ -576,7 +576,7 @@ void dlgWaypointEditShowModal(WAYPOINT *wpt) {
 	  szXmlResName = !ScreenLandscape?TEXT("IDR_XML_WAYPOINTEDITUTM_L"):TEXT("IDR_XML_WAYPOINTEDITUTM");
   }
 
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, szXmlFileName);
     wf = dlgLoadFromXML(CallBackTable, filename,hWndMainWindow,szXmlResName);
 

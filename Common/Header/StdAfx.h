@@ -18,7 +18,8 @@
 #include <assert.h>
 #include <math.h>
 #include <malloc.h>
-
+#include <commctrl.h>
+#include <aygshell.h>
 #ifndef ASSERT
 #define ASSERT(x) assert(x)
 #endif

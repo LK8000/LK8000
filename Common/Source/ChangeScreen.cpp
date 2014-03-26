@@ -13,16 +13,8 @@
 #include "LKProfiles.h"
 #include "RasterTerrain.h"
 #include "Terrain.h"
-
-#include <commctrl.h>
-#include <aygshell.h>
-#if (WINDOWSPC<1)
-#include <sipapi.h>
-#endif
-
 #include "InputEvents.h"
 #include "Message.h"
-
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "DoInits.h"

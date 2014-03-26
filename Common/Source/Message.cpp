@@ -30,7 +30,7 @@
 
 */
 
-CRITICAL_SECTION  CritSec_Messages;
+Poco::Mutex  CritSec_Messages;
 
 extern HWND hWndMainWindow; // Main Windows
 extern HINSTANCE hInst;      // The current instance
@@ -90,8 +90,6 @@ LRESULT CALLBACK MessageWindowProc(HWND hwnd, UINT message,
 int Message::block_ref = 0;
 
 void Message::Initialize(RECT rc) {
-
-  InitializeCriticalSection(&CritSec_Messages);
 
   block_ref = 0;
 
@@ -167,16 +165,15 @@ void Message::Destroy() {
   // destroy window
   ReleaseDC(hWndMessageWindow, hdc);
   DestroyWindow(hWndMessageWindow);
-  DeleteCriticalSection(&CritSec_Messages);
 }
 
 
 void Message::Lock() {
-  EnterCriticalSection(&CritSec_Messages);
+  CritSec_Messages.lock();
 }
 
 void Message::Unlock() {
-  LeaveCriticalSection(&CritSec_Messages);
+  CritSec_Messages.unlock();
 }
 
 

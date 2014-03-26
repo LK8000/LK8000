@@ -8,7 +8,6 @@
 
 
 #include "externs.h"
-#include <aygshell.h>
 #include "InfoBoxLayout.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"
@@ -649,7 +648,7 @@ void dlgAirspaceSelect(void) {
   Longitude = GPS_INFO.Longitude;
 
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceSelect_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         
@@ -657,7 +656,7 @@ void dlgAirspaceSelect(void) {
                         hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACESELECT_L"));
   } else {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceSelect.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 

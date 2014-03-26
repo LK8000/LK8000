@@ -8,6 +8,7 @@
 */
 
 #include "externs.h"
+#include <ctype.h>
 
 
 extern NMEAParser nmeaParser1;

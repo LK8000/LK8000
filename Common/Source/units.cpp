@@ -19,11 +19,7 @@
 
 CoordinateFormats_t Units::CoordinateFormat;
 
-#ifndef __MINGW32__
 #define DEG "\xB0"
-#else
-#define DEG "°"
-#endif
 
 UnitDescriptor_t Units::UnitDescriptors[] ={
   {NULL,         1,          0},

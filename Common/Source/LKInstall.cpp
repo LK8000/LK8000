@@ -38,14 +38,14 @@ short InstallSystem() {
   #endif
   LocalPath(srcdir,TEXT(LKD_SYSTEM));
 
-  _stprintf(dstdir,_T(""));
+  dstdir[0]='\0';
 
   // search for the main system directory on the real device
   // Remember that SHGetSpecialFolder works differently on CE platforms, and you cannot check for result.
   // We need to verify if directory does really exist.
 
 //  SHGetSpecialFolderPath(hWndMainWindow, dstdir, CSIDL_WINDOWS, false);
-  if ( wcslen(dstdir) <6) {
+  if ( _tcslen(dstdir) <6) {
 	_stprintf(tbuf,_T("------ InstallSystem PROBLEM: cannot locate the Windows folder, got string:<%s>%s"),dstdir,NEWLINE);
 	StartupStore(tbuf);
 	StartupStore(_T("------ InstallSystem attempting to use default \"\\Windows\" but no warranty!%s"),NEWLINE);
@@ -191,13 +191,13 @@ short InstallSystem() {
 
   // we are shure that \Windows does exist already.
 
-  _stprintf(fontdir,_T(""));
-  _stprintf(dstdir,_T(""));
+  fontdir[0] = _T('\0');
+  dstdir[0] = _T('\0');
   #ifdef PNA
   if ( GetFontPath(fontdir) == FALSE ) {
 	StartupStore(_T(". Special RegKey for fonts not found on this PNA, using standard folder.%s"), NEWLINE);
 //	SHGetSpecialFolderPath(hWndMainWindow, dstdir, CSIDL_FONTS, false);
-	if ( wcslen(dstdir) <5 ) {
+	if ( _tcslen(dstdir) <5 ) {
 		_stprintf(tbuf,_T("------ PROBLEM: cannot locate the Fonts folder, got string:<%s>%s"),dstdir,NEWLINE);
 		StartupStore(tbuf);
 		_stprintf(tbuf,_T("------ Attempting to use directory <%s> as a fallback%s"),maindir,NEWLINE);
@@ -210,9 +210,10 @@ short InstallSystem() {
 	_tcscpy(dstdir,fontdir); 
   }
   #else
+  UNUSED(fontdir);
   // this is not working correctly on PNA, it is reporting Windows Fonts even with another value in regkey
   SHGetSpecialFolderPath(hWndMainWindow, dstdir, CSIDL_FONTS, false);
-  if ( wcslen(dstdir) <5 ) {
+  if ( _tcslen(dstdir) <5 ) {
 	_stprintf(tbuf,_T("------ PROBLEM: cannot locate the Fonts folder, got string:<%s>%s"),dstdir,NEWLINE);
 	StartupStore(tbuf);
 	_stprintf(tbuf,_T("------ Attempting to use directory <%s> as a fallback%s"),maindir,NEWLINE);
@@ -369,7 +370,7 @@ bool CheckFilesystemWritable() {
   _stprintf(srcfile,TEXT("%s\\EmptyTest.txt"),srcdir);
 
   FILE *stream;
-  stream=_wfopen(srcfile,_T("a"));
+  stream=_tfopen(srcfile,_T("a"));
   if (stream==NULL) return false;
   if (fprintf(stream,"FILESYSTEM WRITE CHECK, THIS FILE CAN BE REMOVED ANY TIME\n")<0) return false;
   fclose(stream);

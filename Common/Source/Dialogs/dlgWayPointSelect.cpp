@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
 #include "Dialogs.h"
 #include "InfoBoxLayout.h"
 #include "WindowControls.h"
@@ -879,14 +878,14 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   }
 
   if (!ScreenLandscape) {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointSelect_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
                         hWndMainWindow,
                         TEXT("IDR_XML_WAYPOINTSELECT_L"));
   } else {
-    char filename[MAX_PATH];
+    TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointSelect.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 

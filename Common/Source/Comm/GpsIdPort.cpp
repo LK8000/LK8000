@@ -18,7 +18,7 @@ void GPSResetData(T& data) {
     data.dwVersion = 1;
 }
 
-GpsIdPort::GpsIdPort(int idx, const std::wstring& sName) : ComPort(idx, sName),
+GpsIdPort::GpsIdPort(int idx, const std::tstring& sName) : ComPort(idx, sName),
 _hGPS(NULL),
 _hLoc(NULL),
 _hState(NULL) {
@@ -72,11 +72,10 @@ void GpsIdPort::UpdateStatus() {
 
 DWORD GpsIdPort::RxThread() {
     DWORD rc = 0;
-    const int nh = 3;
+    const int nh = 2;
     HANDLE handles[nh] = {0};
-    handles[0] = hStop;
-    handles[1] = _hLoc;
-    handles[2] = _hState;
+    handles[0] = _hLoc;
+    handles[1] = _hState;
 
     GPS_POSITION loc = {0};
     GPSResetData(loc);
@@ -85,13 +84,10 @@ DWORD GpsIdPort::RxThread() {
     GPSResetData(dev);
 
     bool listen = true;
-    while (listen) {
-        DWORD dw = ::WaitForMultipleObjects(nh, handles, FALSE, INFINITE);
+    while (listen && !StopEvt.tryWait(0)) {
+        DWORD dw = ::WaitForMultipleObjects(nh, handles, FALSE, 100);
         switch (dw) {
-            case WAIT_OBJECT_0 + 0:
-                listen = false;
-                break;
-            case WAIT_OBJECT_0 + 1:
+            case WAIT_OBJECT_0:
                 rc = GPSGetPosition(_hGPS, &loc, 10000, 0);
                 if(ERROR_SUCCESS == rc) {
                     AddStatRx(1);
@@ -99,7 +95,7 @@ DWORD GpsIdPort::RxThread() {
                 }
                 GPSResetData(loc);
                 break;
-            case WAIT_OBJECT_0 + 2:
+            case WAIT_OBJECT_0 + 1:
                 rc = GPSGetDeviceState(&dev);
                 if(ERROR_SUCCESS == rc) {
                     AddStatRx(1);
@@ -110,6 +106,8 @@ DWORD GpsIdPort::RxThread() {
             case WAIT_FAILED:
                 listen = false;
                 rc = ::GetLastError();
+                break;
+            case WAIT_TIMEOUT:
                 break;
         }
     }

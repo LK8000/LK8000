@@ -15,6 +15,8 @@
 #include "Parser.h"
 #include "Calculations.h"
 #include "mapprimitive.h"
+#include "Poco/ThreadTarget.h"
+#include "Poco/Thread.h"
 
 #define NORTHSMART 5
 #define NORTHTRACK 4
@@ -667,8 +669,7 @@ class MapWindow {
 #endif
   static double PanLatitude;
   static double PanLongitude;
-  static DWORD  dwDrawThreadID;
-  static HANDLE hDrawThread;
+
   static double DisplayAngle;
   static double DisplayAircraftAngle;
   static DWORD targetPanSize;
@@ -715,7 +716,9 @@ class MapWindow {
   static void CalculateOrigin(const RECT rc, POINT *Orig);
 
 
-  static DWORD DrawThread (LPVOID);
+  static void DrawThread ();
+
+  static Poco::ThreadTarget MapWindowThreadRun;
 
   static void RenderMapWindow(  RECT rc);
   static void RenderMapWindowBg(HDC hdc, const RECT rc,

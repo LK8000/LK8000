@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include <aygshell.h>
 #include "LKProfiles.h"
 #include "Dialogs.h"
 
@@ -252,7 +251,7 @@ void dlgProfilesShowModal(short mode){
   wf = NULL;
   profilemode=mode;
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgProfiles.xml"));
   wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_PROFILES"));
 
@@ -272,23 +271,23 @@ void dlgProfilesShowModal(short mode){
 	TCHAR tsuff[10];
 	switch (profilemode) {
 		case 0:
-			_stprintf(profilesuffix,_T("%S"),LKS_PRF);
-			_stprintf(tsuff,_T("*%S"),LKS_PRF);
+			_stprintf(profilesuffix,_T("%s"),_T(LKS_PRF));
+			_stprintf(tsuff,_T("*%s"),_T(LKS_PRF));
 			break;
 		case 1:
-			_stprintf(profilesuffix,_T("%S"),LKS_PILOT);
-			_stprintf(tsuff,_T("*%S"),LKS_PILOT);
+			_stprintf(profilesuffix,_T("%s"),_T(LKS_PILOT));
+			_stprintf(tsuff,_T("*%s"),_T(LKS_PILOT));
 			wf->SetCaption(MsgToken(1784)); // Aircraft profiles
 			break;
 		case 2:
 			wf->SetCaption(MsgToken(1783)); // Pilot profiles
-			_stprintf(profilesuffix,_T("%S"),LKS_AIRCRAFT);
-			_stprintf(tsuff,_T("*%S"),LKS_AIRCRAFT);
+			_stprintf(profilesuffix,_T("%s"),_T(LKS_AIRCRAFT));
+			_stprintf(tsuff,_T("*%s"),_T(LKS_AIRCRAFT));
 			break;
 		case 3:
 			wf->SetCaption(MsgToken(1819)); // Device profiles
-			_stprintf(profilesuffix,_T("%S"),LKS_DEVICE);
-			_stprintf(tsuff,_T("*%S"),LKS_DEVICE);
+			_stprintf(profilesuffix,_T("%s"),_T(LKS_DEVICE));
+			_stprintf(tsuff,_T("*%s"),_T(LKS_DEVICE));
 			break;
 		default:
 			return;

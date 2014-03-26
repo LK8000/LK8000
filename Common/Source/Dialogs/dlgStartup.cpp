@@ -153,9 +153,9 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
 	} else {
 #ifndef LKCOMPETITION
-		_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
+		_stprintf(mes,_T("Version %s.%s (%s)"),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
 #else
-		_stprintf(mes,_T("V%S.%S (%S) COMPETITION"),LKVERSION,LKRELEASE,__DATE__);
+		_stprintf(mes,_T("V%s.%s (%s) COMPETITION"),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
 #endif
 		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
 	}
@@ -167,9 +167,9 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 
 	TCHAR mes[100];
 #ifndef LKCOMPETITION
-	_stprintf(mes,_T("%S v%S.%S - %s"),LKFORK,LKVERSION,LKRELEASE,gettext(_T("_@M2054_")));
+	_stprintf(mes,_T("%s v%s.%s - %s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE),gettext(_T("_@M2054_")));
 #else
-	_stprintf(mes,_T("%SC v%S.%S - %s"),LKFORK,LKVERSION,LKRELEASE,gettext(_T("_@M2054_")));
+	_stprintf(mes,_T("%sC v%s.%s - %s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE),gettext(_T("_@M2054_")));
 #endif
 	RawWrite(hDC,mes,1,1, RGB_LIGHTGREY,WTMODE_NORMAL);
 
@@ -199,14 +199,14 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 		RawWrite(hDC,mes,6,2, RGB_AMBER, WTMODE_OUTLINED);
 
     LKASSERT(szPolarFile[0]);
-		extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
-		LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, srcfile, (WCHAR*) NULL);
+		extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
+		LK_tsplitpath(szPolarFile, (TCHAR*) NULL, (TCHAR*) NULL, srcfile, (TCHAR*) NULL);
 
 		_stprintf(mes,_T("%s %s"),gettext(_T("_@M528_")),srcfile);  // polar file
 		RawWrite(hDC,mes,7,2, RGB_AMBER, WTMODE_OUTLINED);
 
     LKASSERT(startProfileFile[0]);
-		LK_wsplitpath(startProfileFile, (WCHAR*) NULL, (WCHAR*) NULL, srcfile, (WCHAR*) NULL);
+		LK_tsplitpath(startProfileFile, (TCHAR*) NULL, (TCHAR*) NULL, srcfile, (TCHAR*) NULL);
 		_stprintf(mes,_T("%s: %s"),MsgToken(1746),srcfile);  
 		RawWrite(hDC,mes,11,1, RGB_ICEWHITE, WTMODE_NORMAL);
 	}
@@ -297,8 +297,8 @@ short dlgStartupShowModal(void){
   StartupStore(TEXT(". Startup dialog, RUN_MODE=%d %s"),RUN_MODE,NEWLINE);
   #endif
 
-  char filename[MAX_PATH];
-  strcpy(filename,"");
+  TCHAR filename[MAX_PATH];
+  _tcscpy(filename,_T(""));
 
   // FLY SIM PROFILE EXIT
   if (RUN_MODE==RUN_WELCOME) {
@@ -510,23 +510,23 @@ short dlgStartupShowModal(void){
     dfe = (DataFieldFileReader*)wp->GetDataField();
 
     if (RUN_MODE==RUN_PROFILE) {
-	    _stprintf(temp,_T("*%S"),LKS_PRF); 
+	    _stprintf(temp,_T("*%s"),_T(LKS_PRF)); 
 	    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
 	    dfe->addFile(gettext(_T("_@M1741_")),_T("PROFILE_RESET")); 
 	    dfe->Lookup(startProfileFile);
     } 
     if (RUN_MODE==RUN_AIRCRAFT) {
-	    _stprintf(temp,_T("*%S"),LKS_AIRCRAFT); 
+	    _stprintf(temp,_T("*%s"),_T(LKS_AIRCRAFT)); 
 	    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
 	    dfe->Lookup(startAircraftFile);
     }
     if (RUN_MODE==RUN_DEVICE) {
-	    _stprintf(temp,_T("*%S"),LKS_DEVICE); 
+	    _stprintf(temp,_T("*%s"),_T(LKS_DEVICE)); 
 	    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
 	    dfe->Lookup(startDeviceFile);
     }
     if (RUN_MODE==RUN_PILOT) {
-	    _stprintf(temp,_T("*%S"),LKS_PILOT); 
+	    _stprintf(temp,_T("*%s"),_T(LKS_PILOT)); 
 	    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
 	    dfe->Lookup(startPilotFile);
     }

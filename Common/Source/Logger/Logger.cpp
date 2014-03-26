@@ -12,8 +12,25 @@
 //#include "LKProfiles.h"
 #include "dlgTools.h"
 #include "TraceThread.h"
+#include <ctype.h>
 
 // #define DEBUG_LOGGER	1
+
+#ifdef _UNICODE
+    #define HFPLTPILOT              "HFPLTPILOT:%S\r\n"
+    #define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%S\r\n"
+    #define HFGIDGLIDERID           "HFGIDGLIDERID:%S\r\n"
+    #define HFCCLCOMPETITIONCLASS   "HFCCLCOMPETITIONCLASS:%S\r\n"
+    #define HFCIDCOMPETITIONID      "HFCIDCOMPETITIONID:%S\r\n"
+    #define HFREMARK                "HFREMARK:%S\r\n"
+#else
+    #define HFPLTPILOT              "HFPLTPILOT:%s\r\n"
+    #define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%s\r\n"
+    #define HFGIDGLIDERID           "HFGIDGLIDERID:%s\r\n"
+    #define HFCCLCOMPETITIONCLASS   "HFCCLCOMPETITIONCLASS:%s\r\n"
+    #define HFCIDCOMPETITIONID      "HFCIDCOMPETITIONID:%s\r\n"
+    #define HFREMARK                "HFREMARK:%s\r\n"
+#endif
 
 #define LOGGER_MANUFACTURER	"XLK"
 
@@ -499,9 +516,9 @@ void StartLogger()
   } else {
 	strAssetNumber[2]= _T('M');
   }
-  strAssetNumber[0]= towupper(strAssetNumber[0]);
-  strAssetNumber[1]= towupper(strAssetNumber[1]);
-  strAssetNumber[2]= towupper(strAssetNumber[2]);
+  strAssetNumber[0]= _totupper(strAssetNumber[0]);
+  strAssetNumber[1]= _totupper(strAssetNumber[1]);
+  strAssetNumber[2]= _totupper(strAssetNumber[2]);
   strAssetNumber[3]= _T('\0');
 
   for (i=0; i < 3; i++) { // chars must be legal in file names
@@ -513,19 +530,19 @@ void StartLogger()
   if (TaskModified) {
     SaveDefaultTask();
   }
-  wsprintf(szLoggerFileName, TEXT("%s\\LOGGER_TMP.IGC"), path);
+  _stprintf(szLoggerFileName, TEXT("%s\\LOGGER_TMP.IGC"), path);
 
-  wsprintf(szSLoggerFileName, TEXT("%s\\LOGGER_SIG.IGC"), path);
+  _stprintf(szSLoggerFileName, TEXT("%s\\LOGGER_SIG.IGC"), path);
   TCHAR newfile[MAX_PATH+20];
   if (GetFileAttributes(szLoggerFileName) != 0xffffffff) {
 	StartupStore(_T("---- Logger recovery: Existing LOGGER_TMP.IGC found, renamed to LOST%s"),NEWLINE);
-	wsprintf(newfile, TEXT("%s\\LOST_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+	_stprintf(newfile, TEXT("%s\\LOST_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 	CopyFile(szLoggerFileName,newfile,TRUE);
 	DeleteFile(szLoggerFileName);
   }
   if (GetFileAttributes(szSLoggerFileName) != 0xffffffff) {
 	StartupStore(_T("---- Logger recovery (G): Existing LOGGER_SIG.IGC found, renamed to LOSTG%s"),NEWLINE);
-	wsprintf(newfile, TEXT("%s\\LOSTG_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+	_stprintf(newfile, TEXT("%s\\LOSTG_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 	CopyFile(szSLoggerFileName,newfile,TRUE);
 	DeleteFile(szSLoggerFileName);
   }
@@ -539,7 +556,7 @@ void StartLogger()
 
       if (!LoggerShortName) {
         // Long file name
-        wsprintf(szFLoggerFileName,
+        _stprintf(szFLoggerFileName,
                  TEXT("%s\\%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
                  path,
                  GPS_INFO.Year,
@@ -551,7 +568,7 @@ void StartLogger()
                  cAsset[2],
                  i);
  
-        wsprintf(szFLoggerFileNameRoot,
+        _stprintf(szFLoggerFileNameRoot,
                  TEXT("%s\\%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
                  TEXT(""), // this creates it in root if MoveFile() fails
                  GPS_INFO.Year,
@@ -569,7 +586,7 @@ void StartLogger()
         cmonth = NumToIGCChar(GPS_INFO.Month);
         cday = NumToIGCChar(GPS_INFO.Day);
         cflight = NumToIGCChar(i);
-        wsprintf(szFLoggerFileName,
+        _stprintf(szFLoggerFileName,
                  TEXT("%s\\%c%c%cX%c%c%c%c.IGC"),
                  path,
                  cyear,
@@ -580,7 +597,7 @@ void StartLogger()
                  cAsset[2],
                  cflight);
 
-        wsprintf(szFLoggerFileNameRoot,
+        _stprintf(szFLoggerFileNameRoot,
                  TEXT("%s\\%c%c%cX%c%c%c%c.IGC"),
                  TEXT(""), // this creates it in root if MoveFile() fails
                  cyear,
@@ -643,22 +660,22 @@ void LoggerHeader(void)
   IGCWriteRecord(temp);
 
   // Example: Hanna.Reitsch
-  sprintf(temp,"HFPLTPILOT:%S\r\n", PilotName_Config);
+  sprintf(temp,HFPLTPILOT, PilotName_Config);
   IGCWriteRecord(temp);
 
   // Example: DG-300
-  sprintf(temp,"HFGTYGLIDERTYPE:%S\r\n", AircraftType_Config);
+  sprintf(temp,HFGTYGLIDERTYPE, AircraftType_Config);
   IGCWriteRecord(temp);
 
   // Example: D-7176
-  sprintf(temp,"HFGIDGLIDERID:%S\r\n", AircraftRego_Config);
+  sprintf(temp,HFGIDGLIDERID, AircraftRego_Config);
   IGCWriteRecord(temp);
 
   // 110117 TOCHECK: maybe a 8 char limit is needed. 
-  sprintf(temp,"HFCCLCOMPETITIONCLASS:%S\r\n", CompetitionClass_Config);
+  sprintf(temp,HFCCLCOMPETITIONCLASS, CompetitionClass_Config);
   IGCWriteRecord(temp);
 
-  sprintf(temp,"HFCIDCOMPETITIONID:%S\r\n", CompetitionID_Config);
+  sprintf(temp,HFCIDCOMPETITIONID, CompetitionID_Config);
   IGCWriteRecord(temp);
 
     #ifndef LKCOMPETITION
@@ -753,7 +770,7 @@ void StartDeclaration(int ntp)
   // Use homewaypoint as default takeoff and landing position. Better than an empty field!
   if (ValidWayPoint(HomeWaypoint)) {
 	TCHAR wname[NAME_SIZE+1];
-	wsprintf(wname,_T("%s"),WayPointList[HomeWaypoint].Name);
+	_stprintf(wname,_T("%s"),WayPointList[HomeWaypoint].Name);
 	wname[8]='\0';
 	AddDeclaration(WayPointList[HomeWaypoint].Latitude, WayPointList[HomeWaypoint].Longitude, wname);
   } else
@@ -771,7 +788,7 @@ void EndDeclaration(void)
   // Use homewaypoint as default takeoff and landing position. Better than an empty field!
   if (ValidWayPoint(HomeWaypoint)) {
 	TCHAR wname[NAME_SIZE+1];
-	wsprintf(wname,_T("%s"),WayPointList[HomeWaypoint].Name);
+	_stprintf(wname,_T("%s"),WayPointList[HomeWaypoint].Name);
 	wname[8]='\0';
 	AddDeclaration(WayPointList[HomeWaypoint].Latitude, WayPointList[HomeWaypoint].Longitude, wname);
   } else
@@ -965,7 +982,7 @@ FILETIME LogFileDate(TCHAR* filename) {
   unsigned short year, month, day, num;
   int matches;
   // scan for long filename
-  matches = swscanf(filename,
+  matches = _stscanf(filename,
                     TEXT("%hu-%hu-%hu-%7s-%hu.IGC"),
                     &year,
                     &month,
@@ -1309,7 +1326,7 @@ int RunSignature() {
 void AdditionalHeaders(void) {
 
   TCHAR pathfilename[MAX_PATH+1];
-  wsprintf(pathfilename, TEXT("%s\\%s\\%S"), LKGetLocalPath(), TEXT(LKD_LOGS), EXTHFILE);
+  _stprintf(pathfilename, TEXT("%s\\%s\\%s"), LKGetLocalPath(), TEXT(LKD_LOGS), _T(EXTHFILE));
 
   if (GetFileAttributes(pathfilename) == 0xffffffff) {
 	#if DEBUGHFILE
@@ -1374,7 +1391,7 @@ void AdditionalHeaders(void) {
 	strcat(line,tmps);
 	strcat(line,"\r\n");
 	*/
-	sprintf(tmps,"HFREMARK:%S\r\n",&tmpString[1]);
+	sprintf(tmps,HFREMARK,&tmpString[1]);
 	
 	IGCWriteRecord(tmps);
   }

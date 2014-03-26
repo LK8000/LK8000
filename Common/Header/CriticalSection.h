@@ -9,27 +9,11 @@
 #ifndef __CRITICALSECTION_H__
 #define __CRITICALSECTION_H__
 
-#ifdef MSOFT
-#include <windows.h>
-#endif
+#include "Poco/Mutex.h"
 
-class CCriticalSection
-{
-  CRITICAL_SECTION _criticalSection;
-  void Lock()   { EnterCriticalSection(&_criticalSection); }
-  void UnLock() { LeaveCriticalSection(&_criticalSection); }
+class CCriticalSection : public Poco::Mutex {
 public:
-  class CGuard;
-  CCriticalSection()  { InitializeCriticalSection(&_criticalSection); }
-  ~CCriticalSection() { DeleteCriticalSection(&_criticalSection); }
-};
-
-
-class CCriticalSection::CGuard {
-  CCriticalSection &_criticalSection;
-public:
-  explicit CGuard(CCriticalSection &criticalSection): _criticalSection(criticalSection) { _criticalSection.Lock(); }
-  ~CGuard() { _criticalSection.UnLock(); }
+    typedef Poco::ScopedLock<CCriticalSection> CGuard;
 };
 
 class CScopeLock {

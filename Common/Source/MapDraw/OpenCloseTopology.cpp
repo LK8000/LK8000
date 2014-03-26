@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include <ctype.h>
 #include "Terrain.h"
 #include "RasterTerrain.h"
 #include "STScreenBuffer.h"
@@ -203,7 +204,7 @@ void OpenTopology() {
         
         // sjt 02NOV05 - field parameter enabled
         PExtractParameter(TempString, ctemp, 3);
-        if (iswalnum(ctemp[0])) {
+        if (_istalnum(ctemp[0])) {
           ShapeField = _tcstol(ctemp, &Stop, 10);
           ShapeField--;
         } else {

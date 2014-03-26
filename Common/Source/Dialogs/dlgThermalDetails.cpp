@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "LKInterface.h"
-#include <aygshell.h>
 #include "InfoBoxLayout.h"
 #include "NavFunctions.h"
 #include "TeamCodeCalculation.h"
@@ -46,7 +45,7 @@ static void OnSelectClicked(WindowControl * Sender) {
   WayPointList[RESWP_LASTTHERMAL].Longitude = ThermalHistory[s_selected].Longitude;
   WayPointList[RESWP_LASTTHERMAL].Altitude  = ThermalHistory[s_selected].HBase;
   
-  wcscpy(WayPointList[RESWP_LASTTHERMAL].Name, ThermalHistory[s_selected].Name);
+  _tcscpy(WayPointList[RESWP_LASTTHERMAL].Name, ThermalHistory[s_selected].Name);
 
   UnlockTaskData();
 
@@ -86,7 +85,7 @@ static void SetValues(int indexid) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
   if (wp) {
-	wcscpy(buffer,ThermalHistory[indexid].Name);
+	_tcscpy(buffer,ThermalHistory[indexid].Name);
 	ConvToUpper(buffer);
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
@@ -139,7 +138,7 @@ static void SetValues(int indexid) {
 
 void dlgThermalDetails(int indexid) {
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgThermalDetails.xml"));
   wf = dlgLoadFromXML(CallBackTable,
 		      filename, 
@@ -152,9 +151,9 @@ void dlgThermalDetails(int indexid) {
 
   s_selected=indexid;
 
-  if (wcslen(ThermalHistory[indexid].Near) >0) {
+  if (_tcslen(ThermalHistory[indexid].Near) >0) {
 	TCHAR tcap[100];
-	wsprintf(tcap,_T("%s %s: %s"),
+	_stprintf(tcap,_T("%s %s: %s"),
 		gettext(_T("_@M905_")), // Thermal
 		gettext(_T("_@M456_")), // Near
 		ThermalHistory[indexid].Near
