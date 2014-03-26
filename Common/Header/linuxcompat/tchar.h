@@ -381,6 +381,7 @@ typedef char	_TCHAR;
  * UNICODE a constant string when _UNICODE is defined else returns the string
  * unmodified.  Also defined in w32api/winnt.h.
  */
+#define TEXT(x)	__TEXT(x)
 #define _TEXT(x)	__TEXT(x)
 #define	_T(x)		__TEXT(x)
 

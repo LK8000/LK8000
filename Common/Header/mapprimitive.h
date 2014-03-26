@@ -128,9 +128,7 @@ void msFlipBit(char *array, int index);
 void msFree(void *p);
 void msFreeCharArray(char **array, int num_items);
 
-#ifndef LINUX
 #include <zzip/lib.h>
-#endif
 
 ZZIP_FILE *ppc_fopen(const TCHAR *filename, const char *mode);
 #ifdef __cplusplus

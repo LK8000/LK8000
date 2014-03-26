@@ -256,6 +256,8 @@ ifeq ($(DMALLOC),y)
   CPPFLAGS += -DHC_DMALLOC
 endif
 
+CPPFLAGS += -DPOCO_STATIC
+
 ifeq ($(INT_OVERFLOW), y)
 	CPPFLAGS	+=-ftrapv -DINT_OVERFLOW
 endif
@@ -270,7 +272,7 @@ LDFLAGS		+=-Wl,--minor-subsystem-version=$(CE_MINOR)
 ifeq ($(CONFIG_PC),y)
 LDFLAGS		+=-Wl,-subsystem,windows
 endif
-LDFLAGS		+=$(PROFILE)
+LDFLAGS		+=$(PROFILE) -Wl,-Map=output.map
 
 ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lole32 -loleaut32 -luuid
@@ -288,6 +290,11 @@ else
     endif
   endif
 endif
+
+ifeq ($(CONFIG_LINUX),y)
+  LDLIBS		+= -lzzip 
+endif
+
 
 ifeq ($(DMALLOC),y)
   LDLIBS += -L../dmalloc -ldmalloc
@@ -923,10 +930,14 @@ DIALOG_XML = $(wildcard Common/Data/Dialogs/*.xml)
 
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
-	$(BIN)/zzip.a \
-	$(BIN)/compat.a \
 	$(BIN)/poco.a \
-	$(BIN)/lk8000.rsc
+
+
+ifneq ($(CONFIG_LINUX),y)
+OBJS	+= $(BIN)/zzip.a 
+OBJS	+= $(BIN)/compat.a
+OBJS	+= $(BIN)/lk8000.rsc
+endif
 
 IGNORE	:= \( -name .git \) -prune -o
 
