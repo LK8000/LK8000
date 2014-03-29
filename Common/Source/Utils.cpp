@@ -204,9 +204,6 @@ double GetMacCready(int wpindex, short wpmode) {
 // This is not used on startup by profiles
 //
 void CheckSetMACCREADY(const double value) {
-#if BUGSTOP
-    LKASSERT(value>=0);
-#endif
     if (value<0)
         MACCREADY=0;
     else 

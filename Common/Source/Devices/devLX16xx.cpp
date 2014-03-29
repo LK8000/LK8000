@@ -472,7 +472,7 @@ else
 	bValid = true;
 	if(fabs(MACCREADY - fTmp)> 0.001)
 	{
-	  MACCREADY = fTmp;
+	  CheckSetMACCREADY(fTmp);
 	  iLX16xx_RxUpdateTime =5;
 	}
   }

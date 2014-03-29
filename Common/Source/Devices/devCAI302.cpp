@@ -625,7 +625,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   NMEAParser::ExtractParameter(String,ctemp,10);
   pGPS->MacReady = (StrToDouble(ctemp,NULL) / 10.0) * KNOTSTOMETRESSECONDS;
   if (MacCreadyUpdateTimeout <= 0)
-    MACCREADY = pGPS->MacReady;
+    CheckSetMACCREADY(pGPS->MacReady);
   else
     MacCreadyUpdateTimeout--; 
 

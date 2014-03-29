@@ -138,7 +138,7 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
 
   NMEAParser::ExtractParameter(String,ctemp,2);
   pGPS->MacReady = StrToDouble(ctemp,NULL)/TOKNOTS;
-  MACCREADY = pGPS->MacReady;
+  CheckSetMACCREADY(pGPS->MacReady);
 
   NMEAParser::ExtractParameter(String,ctemp,3);
   vias = sqrt(StrToDouble(ctemp,NULL))/TOKNOTS;

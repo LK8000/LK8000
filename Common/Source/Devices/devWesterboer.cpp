@@ -350,7 +350,7 @@ static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   fTemp = (double)iTmp/10.0f;
   if(fabs(fTemp-MACCREADY)> 0.05)
   {
-    MACCREADY = fTemp;
+    CheckSetMACCREADY(fTemp);
     iWEST_RxUpdateTime = 5;
   }
 

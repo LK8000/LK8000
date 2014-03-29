@@ -2908,7 +2908,8 @@ void InputEvents::eventUserDisplayModeForce(const TCHAR *misc) {
     } else if (_tcscmp(misc, TEXT("forcefinal")) == 0) {
         MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
         _tcscat(tmode, MsgToken(2033));
-    }#if 0
+    }
+#if 0
     else if (_tcscmp(misc, TEXT("show")) == 0) { // UNUSED
         // DoStatusMessage(TEXT("")); 
     }
@@ -3141,15 +3142,11 @@ void MacCreadyProcessing(int UpDown) {
 
     if (UpDown == 1) {
         CALCULATED_INFO.AutoMacCready = false; // 091214 disable AutoMacCready when changing MC values
-        MACCREADY += (double) 0.1 / LIFTMODIFY; // BUGFIX 100102
+        CheckSetMACCREADY(MACCREADY + ((double) 0.1 / LIFTMODIFY));
 
-        if (MACCREADY > 12.0) MACCREADY = 12.0;
     } else if (UpDown == -1) {
         CALCULATED_INFO.AutoMacCready = false; // 091214 disable AutoMacCready when changing MC values
-        MACCREADY -= (double) 0.1 / LIFTMODIFY; // 100102
-        if (MACCREADY < 0) {
-            MACCREADY = 0;
-        }
+        CheckSetMACCREADY(MACCREADY - ((double) 0.1 / LIFTMODIFY));
 
     } else if (UpDown == 0) {
         CALCULATED_INFO.AutoMacCready = !CALCULATED_INFO.AutoMacCready;
@@ -3163,13 +3160,11 @@ void MacCreadyProcessing(int UpDown) {
 
     } else if (UpDown == 3) {
         CALCULATED_INFO.AutoMacCready = false; // 091214 disable AutoMacCready when changing MC values
-        MACCREADY += (double) 0.5 / LIFTMODIFY; // 100102
-        if (MACCREADY > 12.0) MACCREADY = 12.0;
+        CheckSetMACCREADY(MACCREADY + ((double) 0.5 / LIFTMODIFY));
 
     } else if (UpDown == -3) {
         CALCULATED_INFO.AutoMacCready = false; // 091214 disable AutoMacCready when changing MC values
-        MACCREADY -= (double) 0.5 / LIFTMODIFY; // 100102
-        if (MACCREADY < 0) MACCREADY = 0;
+        CheckSetMACCREADY(MACCREADY - ((double) 0.5 / LIFTMODIFY));
 
     } else if (UpDown == -5) {
         CALCULATED_INFO.AutoMacCready = true;

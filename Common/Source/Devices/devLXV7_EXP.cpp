@@ -710,7 +710,7 @@ else
 	LXV7_EXP_bValid = true;
 	if(fabs(MACCREADY - fTmp)> 0.001)
 	{
-	  MACCREADY = fTmp;
+	  CheckSetMACCREADY(fTmp);
 	  iLXV7_EXP_RxUpdateTime =5;
 	}
   }

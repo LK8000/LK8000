@@ -26,12 +26,12 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         if ((!Calculated->Circling) && (!Calculated->OnGround)) {
             if (Calculated->EqMc >= 0) {
                 // MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8);
-                MACCREADY = Calculated->EqMc;
+                CheckSetMACCREADY(Calculated->EqMc);
             } else {
                 // -1.0 is used as an invalid flag. Normally flying at -1 MC means almost flying
                 // at stall speed, which is pretty unusual. Maybe in wave conditions?
                 if (Calculated->EqMc >-1) {
-                    MACCREADY = Calculated->EqMc*-1;
+                    CheckSetMACCREADY(Calculated->EqMc*-1);
                 }
             }
         }
@@ -123,7 +123,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
     }
 
-    MACCREADY = LowPassFilter(MACCREADY, mc_new, 0.6);
+    CheckSetMACCREADY(LowPassFilter(MACCREADY, mc_new, 0.6));
 
     UnlockTaskData();
     //  UnlockFlightData();

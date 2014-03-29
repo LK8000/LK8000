@@ -229,7 +229,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
+bool DevLX::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -242,13 +242,9 @@ bool DevLX::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
   // polar_c: float polar_c=c
   // audio volume 0 - 100%
 
-  ParToDouble(sentence, 0, &MACCREADY);
-  //?? why not info->MacReady =
+  ParToDouble(sentence, 0, &info->MacReady);
+  CheckSetMACCREADY(info->MacReady);
 
-  /* from XCSoar:
-  ParToDouble(sentence, 2, &info->Bugs);
-  info->Bugs = 100 - info->Bugs;
-  */
 
   return(true);
 } // LXWP2()
