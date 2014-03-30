@@ -68,6 +68,10 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 
       DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
 
+      #if BUGSTOP
+      LKASSERT(fFAIDistance!=0);
+      #endif
+      if (fFAIDistance==0) fFAIDistance=0.1;
 
       if(((fDist > FAI_MIN_DISTANCE_THRESHOLD) && (ui < 3) && !bFlat && (fDist/ fFAIDistance  > 0.05)) )
   	  {
