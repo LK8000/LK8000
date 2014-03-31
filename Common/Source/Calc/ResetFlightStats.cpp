@@ -86,7 +86,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->Odometer = 0; // 091228
     _tcscpy(Calculated->Flaps,_T("???"));
 
-    for (i=0; i<200; i++) {
+    for (i=0; i<MAXAVERAGECLIMBRATESIZE; i++) {
       Calculated->AverageClimbRate[i]= 0;
       Calculated->AverageClimbRateN[i]= 0;
     }
