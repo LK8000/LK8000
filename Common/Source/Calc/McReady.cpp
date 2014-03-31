@@ -110,6 +110,10 @@ void GlidePolar::SetBallast() {
 
 
 inline double GlidePolar::_SinkRateFast(const double &MC, const int &v) {
+  #if BUGSTOP
+  LKASSERT(v>=0 && v<=MAXSPEED); // sized maxspeed+1 in fact
+  #endif
+  if (v>MAXSPEED || v<=0 ) return sinkratecache[MAXSPEED]-MC; // UNMANAGED REALLY
   return sinkratecache[v]-MC;
 }
 
@@ -133,6 +137,10 @@ double GlidePolar::SinkRate(double V, double n) {
   n = max(0.1,fabs(n));
   //  double v1 = V/max(1,Vbestld);
   double v2 = Vbestld/max((double)Vbestld/2,V);
+  #if BUGSTOP
+  LKASSERT(bestld>0);
+  #endif
+  if (bestld<=0) bestld=1; // UNMANAGED
   return w0-(V/(2*bestld))* (n*n-1)*(v2*v2);
 }
 
