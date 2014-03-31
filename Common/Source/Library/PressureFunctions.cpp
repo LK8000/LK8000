@@ -119,7 +119,7 @@ double AirDensity(double altitude) {
   #if BUGSTOP
   LKASSERT(rho>0);
   #endif
-  if (rho<=0) rho=0.001; // we always give some pressure for the boys
+  if (rho<=0) rho=1; // we always give some pressure for the boys
   return rho;
 }
 
