@@ -372,7 +372,6 @@ TCHAR szRegistryBigFAIThreshold[]  = _T("FAI_28_45_Threshold");
 TCHAR szRegistryScreenSize[]       = _T("ScreenSize");
 TCHAR szRegistryScreenSizeX[]      = _T("ScreenSizeX");
 TCHAR szRegistryScreenSizeY[]      = _T("ScreenSizeY");
-TCHAR szRegistryScreenLandscape[]  = _T("ScreenLandscape");
 
 //
 //
@@ -665,7 +664,6 @@ extern const TCHAR szRegistryBigFAIThreshold[];
 extern const TCHAR szRegistryScreenSize[];
 extern const TCHAR szRegistryScreenSizeX[];
 extern const TCHAR szRegistryScreenSizeY[];
-extern const TCHAR szRegistryScreenLandscape[];
 
 //
 //
