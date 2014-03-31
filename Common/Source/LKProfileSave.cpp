@@ -388,7 +388,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryScreenSize   ,ScreenSize);
   rprintf(szRegistryScreenSizeX  ,ScreenSizeX);
   rprintf(szRegistryScreenSizeY  ,ScreenSizeY);
-  rprintf(szRegistryScreenLandscape     ,ScreenLandscape);
 #endif
 
 

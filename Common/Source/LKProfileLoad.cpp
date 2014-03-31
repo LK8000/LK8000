@@ -772,13 +772,15 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryScreenSize, &ScreenSize);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryScreenSizeX, &ScreenSizeX);
-  if (matchedstring) return;
+  if (matchedstring) {
+      SCREENWIDTH = ScreenSizeX;
+      return;
+  }
   PREAD(sname,svalue,szRegistryScreenSizeY, &ScreenSizeY);
-  if (matchedstring) return;
-
-  SCREENWIDTH = ScreenSizeX;
-  SCREENHEIGHT = ScreenSizeY;
-
+  if (matchedstring) {
+      SCREENHEIGHT = ScreenSizeY;
+      return;
+  }
 #endif
   return;
 
