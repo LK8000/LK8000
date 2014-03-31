@@ -135,10 +135,12 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		  if(GearWarningMode ==2)
                       StartupStore(_T("... %i. Gear warning at %im = %im [%im] AGL%s"),
                          noMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,NEWLINE);
-		  else
+		  else {
+                      if (ValidWayPoint(BestAlternate)) 
 	              StartupStore(_T("...%i. Gear warning at %im = %im [%im] over landable %s (%im)%s"),
                          noMessages,(int)Basic->Altitude,(int)AltitudeAGL,(int)GearWarningAltitude/1000,
                          WayPointList[BestAlternate].Name,(int)WayPointList[BestAlternate].Altitude,NEWLINE);
+                  }
 #endif
 
 	      }
