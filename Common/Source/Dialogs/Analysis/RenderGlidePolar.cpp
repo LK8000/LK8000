@@ -40,6 +40,11 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   bool v0valid = false;
   int i0=0;
 
+  #if BUGSTOP
+  LKASSERT(maxSpeed<MAXAVERAGECLIMBRATESIZE);
+  #endif
+  if (maxSpeed>=MAXAVERAGECLIMBRATESIZE) maxSpeed=MAXAVERAGECLIMBRATESIZE-1; // could be also without -1
+
   for (int i=minSpeed; i<maxSpeed; ++i) {
     
     sinkrate0 = GlidePolar::SinkRate(i);

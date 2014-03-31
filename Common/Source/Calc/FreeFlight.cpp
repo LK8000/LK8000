@@ -403,7 +403,7 @@ void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
   // Calculated->ClimbStartTime = -1;  
   // Calculated->AverageThermal = 0;
 
-  for (i=0; i<200; i++) {
+  for (i=0; i<MAXAVERAGECLIMBRATESIZE; i++) {
      Calculated->AverageClimbRate[i]= 0;
      Calculated->AverageClimbRateN[i]= 0;
   }

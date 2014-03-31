@@ -59,6 +59,9 @@
 #define MAXCLIPPOLYGON 5000
 #endif
 
+// Size of array for ias values AverageClimbRate and AverageClimbRateN calculations
+#define MAXAVERAGECLIMBRATESIZE  200 
+
 // #define FLARM_MAX_TRAFFIC 15
 #define MAXSATELLITES 12
 

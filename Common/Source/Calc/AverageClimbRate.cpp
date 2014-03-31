@@ -32,6 +32,10 @@ void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       double ias_to_tas = Basic->IndicatedAirspeed/Basic->TrueAirspeed;
       double w_tas = Basic->Vario*ias_to_tas;
 
+      #if BUGSTOP
+      LKASSERT(vi<MAXAVERAGECLIMBRATESIZE);
+      #endif
+      if (vi >= MAXAVERAGECLIMBRATESIZE) return; // because SAFTEYSPEED IS USER DEFINED!
       Calculated->AverageClimbRate[vi]+= w_tas;
       Calculated->AverageClimbRateN[vi]++;
     }
