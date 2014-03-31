@@ -534,6 +534,7 @@ double GlidePolar::FindSpeedForSinkRateAccurate(double w) {
 }
 
 double GlidePolar::EquMC(double ias) {
+    if (ias<1||ias>70) return -1;
     return polar_c-polar_a*ias*ias;
 }
 
