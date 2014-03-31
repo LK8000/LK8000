@@ -208,8 +208,6 @@ go_return:
 
   fclose(fp);
   if (found) {
-        extern bool InitLKScreen(void);
-        InitLKScreen();
 	LKProfileInitRuntime();
   }
   return found;
@@ -779,6 +777,9 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryScreenSizeY, &ScreenSizeY);
   if (matchedstring) {
       SCREENHEIGHT = ScreenSizeY;
+      // Do this here, because we save first ScreenSizeX and this is last parameter
+      extern bool InitLKScreen(void);
+      InitLKScreen();
       return;
   }
 #endif
