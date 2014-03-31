@@ -782,7 +782,13 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
       InitLKScreen();
       return;
   }
+  #if TESTBENCH
+  if (!_tcscmp(sname,_T("LKVERSION")) && !_tcscmp(sname,_T("PROFILEVERSION"))) {
+      StartupStore(_T("... UNMANAGED PARAMETER inside profile: <%s>=<%s>\n"),sname,svalue);
+  }
+  #endif
 #endif
+
   return;
 
 }
