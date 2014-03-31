@@ -32,6 +32,8 @@ double AirDensitySinkRate(double ias, double qnhaltitude, double gload) {
     gload = max(0.1,fabs(gload));
     double v2 = GlidePolar::Vbestld/max((double)GlidePolar::Vbestld/2,ias);
 
+    LKASSERT(GlidePolar::bestld!=0);
+    if (GlidePolar::bestld==0) return -1; // UNMANAGED
     return w0-(ias/(2*GlidePolar::bestld))* (gload*gload-1)*(v2*v2);
 }
 
