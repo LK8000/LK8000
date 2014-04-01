@@ -201,8 +201,8 @@ typedef struct _DERIVED_INFO
   double FreeFlightStartQNH;
   double FreeFlightStartQFE;
 
-  double AverageClimbRate[200];
-  long AverageClimbRateN[200];
+  double AverageClimbRate[MAXAVERAGECLIMBRATESIZE];
+  long AverageClimbRateN[MAXAVERAGECLIMBRATESIZE];
 
   double HomeDistance;
   double HomeRadial; 
