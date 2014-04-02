@@ -61,7 +61,7 @@ return;
     if (--len > 0) {
         Write(szTmp, len);
     }
-    delete szTmp;
+    delete[] szTmp;
 #endif
 }
 
@@ -202,8 +202,13 @@ void ComPort::StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, .
     va_list ap;
 
     va_start(ap, fmt);
-    _vsntprintf(tmp, 127, fmt, ap);
+    int n = _vsntprintf(tmp, 127, fmt, ap);
     va_end(ap);
+
+#ifdef TESTBENCH
+    LKASSERT(n>=0); // Message to long for "tmp" buffer
+#endif
+
 
     tmp[126] = _T('\0');
 
