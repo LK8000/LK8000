@@ -283,7 +283,7 @@ bool GiveBatteryWarnings(void)
   if (GPS_INFO.Time>(last_time+3600)) {
 	#if TESTBENCH
 	if (last_time>0 && numwarn>0) 
-		StartupStore(_T("... GiveBatteryWarnings resetting at %s\n"),WhatTimeIsIt(),NEWLINE);
+		StartupStore(_T("... GiveBatteryWarnings resetting at %s%s"),WhatTimeIsIt(),NEWLINE);
 	#endif
 	toomany=false;
 	numwarn=0;
