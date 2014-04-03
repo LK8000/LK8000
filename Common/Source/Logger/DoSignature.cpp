@@ -163,18 +163,30 @@ int DoSignature(TCHAR *homepath) {
   FILE *ft;
   ft=NULL;
   DeleteFile(fulldstfile);
+  #if TESTBENCH
+  StartupStore(_T("... DoSignature: delete ok%s"),NEWLINE);
+  #endif
   if ( (ft=_tfopen(fulldstfile,TEXT("r")))!=NULL ) {
 	StartupStore(_T("... DoSignature: ERROR existing destination file <%s>!%s"),fulldstfile,NEWLINE);
 	fclose(ft);
 	return 12;
   }
+  #if TESTBENCH
+  StartupStore(_T("... DoSignature: tfopen ok%s"),NEWLINE);
+  #endif
 
   if (ReadInputFile(Linelist, fullsrcfile)) {
 	StartupStore(_T("... DoSignature: ERROR source file <%s> disappeared%s"),fullsrcfile,NEWLINE);
 	return 1;
   }
+  #if TESTBENCH
+  StartupStore(_T("... DoSignature: readinputfile ok%s"),NEWLINE);
+  #endif
   GenerateMD5(Linelist, &md5gen);
   AddGRecordToBuffer(Linelist, &md5gen);
+  #if TESTBENCH
+  StartupStore(_T("... DoSignature: addgrecord ok%s"),NEWLINE);
+  #endif
   WriteOutputFile(Linelist, fulldstfile);	
 
   #if TESTBENCH
