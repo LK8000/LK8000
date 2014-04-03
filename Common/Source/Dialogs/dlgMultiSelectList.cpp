@@ -309,7 +309,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
             if (WayPointList[idx].Comment != NULL) {
                 LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
             } else {
-                _stprintf(Comment, TEXT(""));
+                _tcscpy(Comment, TEXT(""));
             }
 
             DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, WayPointList[idx].Latitude,

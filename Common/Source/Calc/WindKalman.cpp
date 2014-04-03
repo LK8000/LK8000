@@ -405,13 +405,17 @@ static void PrintScanRange(void) {
     TCHAR dstring[200];
 
     wcscpy(dstring,_T(""));
-    for (unsigned short i=0; i<16; i++) 
-	_stprintf(dstring,_T("%s %d"),dstring,scanrange[i]);
+    for (unsigned short i=0; i<16; i++)  {
+#error "dstring can't be src and dst "
+        _stprintf(dstring,_T("%s %d"),dstring,scanrange[i]);
+    }
     StartupStore(_T("%s\n"),dstring);
 
     wcscpy(dstring,_T(""));
-    for (unsigned short i=16; i<32; i++) 
-	_stprintf(dstring,_T("%s %d"),dstring,scanrange[i]);
+    for (unsigned short i=16; i<32; i++) {
+#error "dstring can't be src and dst "
+	  _stprintf(dstring,_T("%s %d"),dstring,scanrange[i]);
+    }
     StartupStore(_T("%s\n"),dstring);
 }
 #endif

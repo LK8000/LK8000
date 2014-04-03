@@ -55,7 +55,7 @@ bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
   // mode 1: optional execution, no warnings if nothing found
   if (runmode<2) {
 	LocalPath(path,prog);
-	if (runmode==0) StartupStore(_T(". LKRun: exec <%s> background=%u%s"),path,dwaitime,NEWLINE);
+	if (runmode==0) StartupStore(_T(". LKRun: exec <%s> background=%lu%s"),path,dwaitime,NEWLINE);
 
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si;

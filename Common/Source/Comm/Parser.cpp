@@ -652,7 +652,7 @@ force_advance:
 
 		if (gpsValid && logbaddate) { // 091115
 			StartupStore(_T("------ NMEAParser:RMC Receiving an invalid or null DATE from GPS%s"),NEWLINE);
-			StartupStore(_T("------ NMEAParser: Date received is y=%d m=%d d=%d%s"),gy,gm,gd,NEWLINE); // 100422
+			StartupStore(_T("------ NMEAParser: Date received is y=%ld m=%ld d=%ld%s"),gy,gm,gd,NEWLINE); // 100422
 			StartupStore(_T("------ This message will NOT be repeated. %s%s"),WhatTimeIsIt(),NEWLINE);
 			DoStatusMessage(MsgToken(875));
 			logbaddate=false;

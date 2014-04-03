@@ -106,7 +106,7 @@ BOOL DevLXNano::Install(PDeviceDescriptor_t d)
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
 
-  StartupStore(_T(". %s installed (platform=%s test=%lu)%s"),
+  StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
     GetName(),
     PlatfEndian::IsBE() ? _T("be") : _T("le"),
     PlatfEndian::To32BE(0x01000000), NEWLINE);

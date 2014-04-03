@@ -163,14 +163,14 @@ int DoSignature(TCHAR *homepath) {
   FILE *ft;
   ft=NULL;
   DeleteFile(fulldstfile);
-  if ( (ft=_wfopen(fulldstfile,TEXT("r")))!=NULL ) {
-	StartupStore(_T("... DoSignature: ERROR existing destination file <%S>!%s"),fulldstfile,NEWLINE);
+  if ( (ft=_tfopen(fulldstfile,TEXT("r")))!=NULL ) {
+	StartupStore(_T("... DoSignature: ERROR existing destination file <%s>!%s"),fulldstfile,NEWLINE);
 	fclose(ft);
 	return 12;
   }
 
   if (ReadInputFile(Linelist, fullsrcfile)) {
-	StartupStore(_T("... DoSignature: ERROR source file <%S> disappeared%s"),fullsrcfile,NEWLINE);
+	StartupStore(_T("... DoSignature: ERROR source file <%s> disappeared%s"),fullsrcfile,NEWLINE);
 	return 1;
   }
   GenerateMD5(Linelist, &md5gen);
