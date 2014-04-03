@@ -177,6 +177,7 @@ void ComPort::SetPortStatus(int nStatus) {
 void ComPort::StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...) {
     TCHAR tmp[127];
     va_list ap;
+    LKASSERT(fmt!=NULL);
 
     va_start(ap, fmt);
     int n = _vsntprintf(tmp, 127, fmt, ap);

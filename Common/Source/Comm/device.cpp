@@ -697,6 +697,9 @@ static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
   BYTE chk;
   int i, len = _tcslen(text);
 
+  LKASSERT(text!=NULL);
+  LKASSERT(dst!=NULL);
+
   for (chk = i = 0; i < len; i++)
     chk ^= (BYTE)text[i];
 
@@ -796,6 +799,7 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
 
   TCHAR tmp[512];
 
+  LKASSERT(Buffer!=NULL);
   _sntprintf(tmp, 512, TEXT("$%s"), Buffer);
   DeviceAddCheckSumStrg(tmp);
 //  StartupStore(_T("... FLARM TASK Declaration next sentence:\n"));
