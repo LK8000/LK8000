@@ -119,7 +119,9 @@ void ComPort::run() {
 }
 
 void ComPort::ProcessChar(char c) {
-    if (pLastNmea >= begin(_NmeaString) && pLastNmea < end(_NmeaString)) {
+    // last char need to be reserved for '\0' for avoid buffer overflow
+    // in theory this should never happen because NMEA sentence can't have more than 82 char and _NmeaString size is 160.
+    if (pLastNmea >= begin(_NmeaString) && (pLastNmea+1) < end(_NmeaString)) {
 
         if (c == '\n' || c == '\r') {
             // abcd\n , now closing the line also with \r
