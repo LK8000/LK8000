@@ -34,7 +34,7 @@ bool BthPort::Initialize() {
     mSocket = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM);
     if (mSocket == INVALID_SOCKET) {
         DWORD dwError = WSAGetLastError();
-        StartupStore(_T("... Bluetooth Port %u Unable to create socket, error=%u%s"), GetPortIndex() + 1, dwError, NEWLINE); // 091117
+        StartupStore(_T("... Bluetooth Port %u Unable to create socket, error=%lu%s"), GetPortIndex() + 1, dwError, NEWLINE); // 091117
 
         goto failed;
     }
@@ -48,14 +48,14 @@ bool BthPort::Initialize() {
     iResult = connect(mSocket, (SOCKADDR*) & sa, sizeof (sa));
     if (iResult == SOCKET_ERROR) {
         DWORD dwError = WSAGetLastError();
-        StartupStore(_T("... Bluetooth Port %u <%s> Unable connect, error=%u%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
+        StartupStore(_T("... Bluetooth Port %u <%s> Unable connect, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
 
         goto failed;
     }
 
     if (SetRxTimeout(RXTIMEOUT) == -1) {
         DWORD dwError = GetLastError();
-        StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%u%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
+        StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
         // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
         StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());        
 
@@ -95,7 +95,7 @@ int BthPort::SetRxTimeout(int TimeOut) {
     u_long iMode = 1;
     int iResult = ioctlsocket(mSocket, FIONBIO, &iMode);
     if (iResult != NO_ERROR) {
-        StartupStore(_T(".... ioctlsocket failed with error: %ld%s"), iResult, NEWLINE);
+        StartupStore(_T(".... ioctlsocket failed with error: %d%s"), iResult, NEWLINE);
         // if failed, socket still in blocking mode, it's big problem
         dwTimeout = -1;
     }

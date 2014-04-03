@@ -42,7 +42,7 @@ bool GpsIdPort::Initialize() {
     GPS_DEVICE dev = {0};
     GPSResetData(dev);
     GPSGetDeviceState(&dev);
-    StartupStore(_T("GPSID : DeviceState: %X, ServiceState: %X%s"), dev.dwDeviceState, dev.dwServiceState, NEWLINE);
+    StartupStore(_T("GPSID : DeviceState: %lX, ServiceState: %lX%s"), dev.dwDeviceState, dev.dwServiceState, NEWLINE);
 //    StartupStore(_T("GPSID : LastDataTime: %s%s"), dev.ftLastDataReceived, NEWLINE);
     StartupStore(_T("GPSID : DrvPrefix; %s%s"), dev.szGPSDriverPrefix, NEWLINE);
     StartupStore(_T("GPSID : MxPrefix %s%s"), dev.szGPSMultiplexPrefix, NEWLINE);
@@ -99,7 +99,7 @@ DWORD GpsIdPort::RxThread() {
                 rc = GPSGetDeviceState(&dev);
                 if(ERROR_SUCCESS == rc) {
                     AddStatRx(1);
-                    StartupStore(_T("GPSID : DeviceState: %X, ServiceState: %X%s"), dev.dwDeviceState, dev.dwServiceState, NEWLINE);
+                    StartupStore(_T("GPSID : DeviceState: %lX, ServiceState: %lX%s"), dev.dwDeviceState, dev.dwServiceState, NEWLINE);
                 }
                 GPSResetData(dev);
                 break;

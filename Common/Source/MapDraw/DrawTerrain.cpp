@@ -120,7 +120,7 @@ public:
   TerrainRenderer(RECT rc) {
 
     #if (WINDOWSPC>0) && TESTBENCH
-    StartupStore(_T(".... Init TerrainRenderer area (%d,%d) (%d,%d)\n"),rc.left,rc.top,rc.right,rc.bottom);
+    StartupStore(_T(".... Init TerrainRenderer area (%ld,%ld) (%ld,%ld)\n"),rc.left,rc.top,rc.right,rc.bottom);
     #endif
 
     // This will not disable terrain! So we shall get calling here again, but no problem.
@@ -800,7 +800,7 @@ _redo:
 	if (LKSW_ResetTerrainRenderer) {
 		StartupStore(_T("... SWITCH forced for TerrainRenderer Reset\n"));
 	} else {
-		StartupStore(_T("... Change vertical resolution from %d,%d,%d,%d  to %d,%d,%d,%d\n"),
+		StartupStore(_T("... Change vertical resolution from %ld,%ld,%ld,%ld  to %ld,%ld,%ld,%ld\n"),
 			oldrc.left,oldrc.top,oldrc.right,oldrc.bottom, rc.left, rc.top, rc.right,rc.bottom);
 	}
 	#endif

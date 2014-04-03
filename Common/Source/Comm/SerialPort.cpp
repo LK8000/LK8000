@@ -43,7 +43,7 @@ bool SerialPort::Initialize() {
     // Do not use COMn , use COMn:  on WinCE version
     _stprintf(sysPortName, _T("%s:"), GetPortName());
 #endif
-    StartupStore(_T(". ComPort %u Initialize <%s> speed=%u bit=%u %s"),GetPortIndex()+1,GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
+    StartupStore(_T(". ComPort %u Initialize <%s> speed=%lu bit=%u %s"),GetPortIndex()+1,GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
 
     hPort = CreateFile(sysPortName, // Pointer to the name of the port
             GENERIC_READ | GENERIC_WRITE, // Access (read-write) mode
@@ -56,7 +56,7 @@ bool SerialPort::Initialize() {
 
     if (hPort == INVALID_HANDLE_VALUE) {
         DWORD dwError = GetLastError();
-        StartupStore(_T("... ComPort %u Init failed, error=%u%s"), GetPortIndex() + 1, dwError, NEWLINE); // 091117
+        StartupStore(_T("... ComPort %u Init failed, error=%lu%s"), GetPortIndex() + 1, dwError, NEWLINE); // 091117
         StatusMessage(MB_OK, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
 
         goto failed;
@@ -67,7 +67,7 @@ bool SerialPort::Initialize() {
     PortDCB.DCBlength = sizeof (DCB);
     // Get the default port setting information.
     if (GetCommState(hPort, &PortDCB)==0) {
-    	StartupStore(_T("... ComPort %u GetCommState failed, error=%u%s"),GetPortIndex()+1,GetLastError(),NEWLINE);
+    	StartupStore(_T("... ComPort %u GetCommState failed, error=%lu%s"),GetPortIndex()+1,GetLastError(),NEWLINE);
         // @M759 = Unable to Change Settings on Port
         StatusMessage(MB_OK|MB_ICONINFORMATION, NULL, TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
         goto failed;
@@ -106,7 +106,7 @@ bool SerialPort::Initialize() {
 
     if (!SetCommState(hPort, &PortDCB)) {
         DWORD dwError = GetLastError();
-        StartupStore(_T("... ComPort %u Init <%s> change setting FAILED, error=%u%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
+        StartupStore(_T("... ComPort %u Init <%s> change setting FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
 		// @M759 = Unable to Change Settings on Port
     	StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
 
@@ -115,7 +115,7 @@ bool SerialPort::Initialize() {
 
     if (SetRxTimeout(RXTIMEOUT) == -1) {
         DWORD dwError = GetLastError();
-        StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%u%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
+        StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
         // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
         StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());        
 
@@ -142,7 +142,7 @@ failed:
     if(hPort != INVALID_HANDLE_VALUE) {
         if (!CloseHandle(hPort)) {
             DWORD dwError = GetLastError();
-            StartupStore(_T("... ComPort %u Init <%s> close failed, error=%u%s"),GetPortIndex() + 1, dwError, GetPortName(),NEWLINE);
+            StartupStore(_T("... ComPort %u Init <%s> close failed, error=%u%s"),GetPortIndex() + 1, GetPortName(), dwError, NEWLINE);
         } else {
             StartupStore(_T("... ComPort %u Init <%s> closed%s"),GetPortIndex() + 1, GetPortName(),NEWLINE);
         }
@@ -264,7 +264,7 @@ bool SerialPort::Close() {
 #endif
         if (!CloseHandle(hPort)) {
             DWORD dwError = GetLastError();
-            StartupStore(_T("... ComPort %u close failed, error=%u%s"), GetPortIndex() + 1, dwError, NEWLINE);
+            StartupStore(_T("... ComPort %u close failed, error=%lu%s"), GetPortIndex() + 1, dwError, NEWLINE);
             Ret = false;
         } else {
 #if (WINDOWSPC>0) || NEWCOMM // 091206
