@@ -81,6 +81,27 @@ Automatically providing the minimal, current and max MC possible for the final g
 
 
 ============
+Version 4.1r
+============
+
+
+
+FIXES
+
+Many important fixes, and one critical fix: possible crashes on PNA sending data to
+external devices.
+
+
+
+
+
+
+
+
+
+
+
+============
 Version 4.1q
 ============
 
