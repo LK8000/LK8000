@@ -141,7 +141,8 @@ bool SerialPort::Initialize() {
 failed:
     if(hPort != INVALID_HANDLE_VALUE) {
         if (!CloseHandle(hPort)) {
-            StartupStore(_T("... ComPort %u Init <%s> close failed, error=%u%s"),GetPortIndex() + 1, GetPortName(),NEWLINE);
+            DWORD dwError = GetLastError();
+            StartupStore(_T("... ComPort %u Init <%s> close failed, error=%u%s"),GetPortIndex() + 1, dwError, GetPortName(),NEWLINE);
         } else {
             StartupStore(_T("... ComPort %u Init <%s> closed%s"),GetPortIndex() + 1, GetPortName(),NEWLINE);
         }
