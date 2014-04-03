@@ -168,6 +168,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PDA"),NEWLINE);
   #endif
   #endif
+  //StartupStore(_T("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n"),_T("CRASH"));
 
   #if TESTBENCH
     #ifdef _MSC_VER
