@@ -1270,7 +1270,7 @@ int RunSignature() {
 
 	if (lasterr!=2) {
 		// External executable failure, bad !
-		StartupStore(_T(".... RunSignature exec <%s> FAILED, error code=%d"),path,lasterr,NEWLINE);
+		StartupStore(_T(".... RunSignature exec <%s> FAILED, error code=%lu %s"),path,lasterr,NEWLINE);
 		#if TESTBENCH
 		StartupStore(_T(".... Trying with DoSignature\n"));
 		#endif
@@ -1291,7 +1291,7 @@ int RunSignature() {
   // STILL_ACTIVE = 259, this retval should be checked for
 
   #if TESTBENCH
-  StartupStore(_T(".... RunSignature exec <%s> terminated, retval=%d%s"),path,retval,NEWLINE);
+  StartupStore(_T(".... RunSignature exec <%s> terminated, retval=%lu%s"),path,retval,NEWLINE);
   #endif
 
 
