@@ -38,6 +38,7 @@ bool DevBase::ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* va
 {
   TCHAR  temp[80];
   TCHAR* stop;
+  LKASSERT(value!=NULL);
 
   NMEAParser::ExtractParameter(sentence, temp, parIdx);
 
@@ -100,6 +101,10 @@ void DevBase::ShowProgress(DeclDlg dlgType)
       msgId = _T("_@M1403_"); break;
 
     default:
+      #if BUGSTOP
+      LKASSERT(0);
+      #endif
+      msgId = _T("_@M1402_"); break;
       return;
   }
 
@@ -131,6 +136,10 @@ bool DevBase::CheckWPCount(const Declaration_t& decl,
   // Must have at least two, max 12 waypoints
   if (decl.num_waypoints < minCount)
   {
+    #if BUGSTOP
+    LKASSERT(errBuf!=NULL);
+    #endif
+    if (errBuf==NULL) return(false);
     // LKTOKEN  _@M1412_ = "Not enough waypoints!"
     _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1412_")));
     return(false);
@@ -138,6 +147,10 @@ bool DevBase::CheckWPCount(const Declaration_t& decl,
 
   if (decl.num_waypoints > maxCount)
   {
+    #if BUGSTOP
+    LKASSERT(errBuf!=NULL);
+    #endif
+    if (errBuf==NULL) return(false);
     // LKTOKEN  _@M1413_ = "Too many waypoints!"
     _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1413_")));
     return(false);
@@ -162,6 +175,10 @@ bool DevBase::StopRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR err
 {
   if (!d->Com->StopRxThread())
   {
+    #if BUGSTOP
+    LKASSERT(errBuf!=NULL);
+    #endif
+    if (errBuf==NULL) return(false);
     // LKTOKEN  _@M951_ = "Cannot stop RX thread!"
     _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M951_")));
     return(false);
@@ -186,6 +203,10 @@ bool DevBase::StartRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR er
 {
   if (!d->Com->StartRxThread())
   {
+    #if BUGSTOP
+    LKASSERT(errBuf!=NULL);
+    #endif
+    if (errBuf==NULL) return(false);
     // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
     _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M761_")));
     return(false);
@@ -215,6 +236,10 @@ bool DevBase::SetRxTimeout(PDeviceDescriptor_t d,
 
   if (orgTimeout < 0)
   {
+    #if BUGSTOP
+    LKASSERT(errBuf!=NULL);
+    #endif
+    if (errBuf==NULL) return(false);
     // LKTOKEN  _@M759_ = "Unable to Change Settings on Port"
     _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M759_")));
     return(false);
@@ -243,6 +268,10 @@ bool DevBase::ComWrite(PDeviceDescriptor_t d, const void* data, int length, unsi
 
   if (!d->Com->Write(data, length))
   {
+    #if BUGSTOP
+    LKASSERT(errBuf!=NULL);
+    #endif
+    if (errBuf==NULL) return(false);
     // LKTOKEN  _@M952_ = "Cannot write data to Port!"
     _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M952_")));
     res = false;
