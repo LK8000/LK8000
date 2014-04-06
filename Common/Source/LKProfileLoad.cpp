@@ -767,21 +767,26 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
 
 
 #if (WINDOWSPC>0)
-  PREAD(sname,svalue,szRegistryScreenSize, &ScreenSize);
-  if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryScreenSizeX, &ScreenSizeX);
-  if (matchedstring) {
-      SCREENWIDTH = ScreenSizeX;
-      return;
+  extern bool CommandResolution;
+  // Do NOT load resolution from profile, if we have requested a resolution from command line
+  if (!CommandResolution) {
+      PREAD(sname,svalue,szRegistryScreenSize, &ScreenSize);
+      if (matchedstring) return;
+      PREAD(sname,svalue,szRegistryScreenSizeX, &ScreenSizeX);
+      if (matchedstring) {
+          SCREENWIDTH = ScreenSizeX;
+          return;
+      }
+      PREAD(sname,svalue,szRegistryScreenSizeY, &ScreenSizeY);
+      if (matchedstring) {
+          SCREENHEIGHT = ScreenSizeY;
+          // Do this here, because we save first ScreenSizeX and this is last parameter
+          extern bool InitLKScreen(void);
+          InitLKScreen();
+          return;
+      }
   }
-  PREAD(sname,svalue,szRegistryScreenSizeY, &ScreenSizeY);
-  if (matchedstring) {
-      SCREENHEIGHT = ScreenSizeY;
-      // Do this here, because we save first ScreenSizeX and this is last parameter
-      extern bool InitLKScreen(void);
-      InitLKScreen();
-      return;
-  }
+
   #if TESTBENCH
   if (!_tcscmp(sname,_T("LKVERSION")) && !_tcscmp(sname,_T("PROFILEVERSION"))) {
       StartupStore(_T("... UNMANAGED PARAMETER inside profile: <%s>=<%s>\n"),sname,svalue);
