@@ -36,6 +36,7 @@ void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	old_trip_steady_time=0;
 	if (ISCAR) Calculated->FlightTime = 0; // see later in DetecStartTime also
 	Calculated->Odometer = 0;
+	Calculated->TakeOffTime = Basic->Time;
 	LKSW_ResetLDRotary=true;
 	steady=0;
   }
