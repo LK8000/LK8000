@@ -151,6 +151,7 @@ void LKSimulator(void) {
 		}
 		// ALTITUDE+=simlift+GlidePolar::minsink;
 	} else {
+        sinkias -= SimNettoVario;
 		if (circling) {
 			// we were circling, now leaving the thermal
 			circling=false;

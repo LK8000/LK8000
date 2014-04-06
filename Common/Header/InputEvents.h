@@ -106,6 +106,7 @@ class InputEvents {
   static void eventChangeHGPS(const TCHAR *misc);
   static void eventChangeGS(const TCHAR *misc);
   static void eventChangeTurn(const TCHAR *misc);
+  static void eventChangeNettoVario(const TCHAR *misc);
   static void eventService(const TCHAR *misc);
   
   static void eventInfoStripe(const TCHAR *misc);
