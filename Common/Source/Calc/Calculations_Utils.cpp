@@ -62,9 +62,13 @@ void ResetTask(bool showConfirmMsg) {
 unsigned int GetWpChecksum(unsigned int index) { //@ 101018
 
   int clon, clat, csum;
- 
+
   if (index<NUMRESWP || index > NumberOfWayPoints) {
-	StartupStore(_T("...... Impossible waypoint number=%d for Checksum%s"),index,NEWLINE);
+        // it is ok to insert a reserved wp in the history, but not to save it. 
+        // So we get this error, which is not an error for reswp..
+        if (index>=NUMRESWP)
+	    StartupStore(_T("...... Impossible waypoint number=%d for Checksum%s"),index,NEWLINE);
+
 	return 0;
   }
 

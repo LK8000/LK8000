@@ -63,12 +63,11 @@ bool LoadRecentList() {
 		break;
 	}
 	csum=atoi(st);
-	// takeoff recent is different from others and can be forced on
-	if (nwp!=RESWP_TAKEOFF) {
-		if ( GetWpChecksum(nwp) != csum ) {
-			StartupStore(_T("---- Loading history. Found an invalid checksum, aborting.%s"),NEWLINE);
-			break;
-		}
+	// pre-v5: takeoff recent is different from others and can be forced on
+        // v5: we dont save reswp to history, so we dont load them too
+	if ( GetWpChecksum(nwp) != csum ) {
+		StartupStore(_T("---- Loading history. Found an invalid checksum, aborting.%s"),NEWLINE);
+		break;
 	}
 	RecentIndex[i]=nwp;
 	RecentChecksum[i++]=csum;
@@ -108,7 +107,13 @@ bool SaveRecentList() {
    fprintf(fp,"### LK8000 History of Goto Waypoints - DO NOT MODIFY THIS FILE! ###\r\n");
    fprintf(fp,"### WPRECENT FORMAT 01T \r\n");
    for (i=0; i<RecentNumber; i++)  {
-	if ( !ValidNotResWayPoint(RecentIndex[i])) {
+	if ( RecentIndex[i] <= RESWP_END ) {
+            #if TESTBENCH
+            StartupStore(_T(".... SaveHistory: ignoring reserved waypoint %d.%s"),RecentIndex[i],NEWLINE);
+            #endif
+            continue;
+        }
+	if ( !ValidWayPoint(RecentIndex[i])) {
 		StartupStore(_T("---- SaveHistory: invalid wp, maybe file has changed. Aborting.%s"),NEWLINE);
 		break;
 	}
@@ -148,7 +153,10 @@ void InsertRecentList(int newwp) {
 	TmpChecksum[j]=RecentChecksum[i];
     }
     RecentIndex[0]=newwp;
-    
+    // Notice v5: if a recent wp is reserved, it is inserted in the list with a checksum 0, and in any case
+    // it will not be saved (nor loaded) from history.txt file 
+    // SIDENOTE: if we are doing a go-to to a reswp, it is saved as a task on exit. This is a real waypoint,
+    // even with the same name of -for example- FREEFLIGHT. No problems..
     RecentChecksum[0]= GetWpChecksum(newwp);
     for (i=1; i<=j; i++) {
 	RecentIndex[i]=TmpIndex[i];
