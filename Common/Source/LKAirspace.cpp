@@ -2774,6 +2774,15 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
     TCHAR sUnitBuffer[24];
     TCHAR sAltUnitBuffer[24];
     TCHAR intbuf[128];
+    #if BUGSTOP
+    LKASSERT(buffer!=NULL);
+    LKASSERT(alt!=NULL);
+    #endif
+    if (buffer==NULL) return;
+    if (alt==NULL) {
+        _tcscpy(buffer,_T(""));
+        return;
+    }
 
     Units::FormatUserAltitude(alt->Altitude, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
     Units::FormatAlternateUserAltitude(alt->Altitude, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
