@@ -226,7 +226,16 @@ public:
       return;
     }
     double t=0.98;
+    #if BUGSTOP
     LKASSERT( p[2].t != p[1].t );
+    #endif
+    if ( p[2].t == p[1].t ) {
+      *lat = p[1].lat;
+      *lon = p[1].lon;
+      *alt = p[1].alt;
+      return;
+    }
+
     double u= (time-p[1].t)/(p[2].t-p[1].t);
 
     if (u<0.0) {
