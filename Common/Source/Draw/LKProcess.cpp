@@ -1940,6 +1940,11 @@ goto_bearing:
 
 		// B88 B89
 		case LK_EXP1:
+			_stprintf(BufferTitle, TEXT("RAM"));
+			_stprintf(BufferValue, TEXT("%d"),(int)(CheckFreeRam()/1024));
+                        valid=true;
+                        break;
+
 		case LK_EXP2:
 			_stprintf(BufferTitle, TEXT("hTE"));
 			_stprintf(BufferValue, TEXT("%3.0f"),DerivedDrawInfo.EnergyHeight);
