@@ -422,10 +422,10 @@ void Globals_Init(void) {
   //Airspace Warnings
   AIRSPACEWARNINGS = TRUE;
   WarningTime = 60;
-  AcknowledgementTime = 900;                  // keep ack level for this time, [secs]
-  AirspaceWarningRepeatTime = 300;            // warning repeat time if not acknowledged after 5 minutes
+  AcknowledgementTime = 1800;                  // keep ack level for this time, [secs]
+  AirspaceWarningRepeatTime = 900;            // warning repeat time if not acknowledged after 15 minutes
   AirspaceWarningVerticalMargin = 1000;       // vertical distance used to calculate too close condition , in m*10
-  AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
+  AirspaceWarningDlgTimeout = 10;             // airspace warning dialog auto closing in x secs
   AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
   AirspaceAckAllSame = 0; 
 
