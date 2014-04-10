@@ -192,7 +192,7 @@ void LKProfileResetDefault(void) {
   // full size overlay by default
   OverlaySize = 0;
 
-  BarOpacity = 65;
+  BarOpacity = 75;
 
   #ifdef PPC2002  
   FontRenderer = 1; // AntiAliasing
