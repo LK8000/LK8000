@@ -265,16 +265,34 @@ static bool InterruptibleSleep(int msecs)
 // Returns a valid SOCKET if ok, INVALID_SOCKET if failed 
 static SOCKET EstablishConnection(const char *servername, int serverport)
 {
+  static bool Success = true;
+
   SOCKET s;
   struct hostent *server;
   struct sockaddr_in sin;
   
-  s = socket( AF_INET, SOCK_STREAM, 0 );
-  if ( s == INVALID_SOCKET ) return s;
-
   server = gethostbyname(servername);
-  if (server == NULL) return INVALID_SOCKET;
-  
+  if (server == NULL) {
+      if(Success) {
+          TCHAR szTmpServer[SERVERNAME_MAX] = {0};
+          ascii2unicode(servername, szTmpServer, SERVERNAME_MAX);
+          StartupStore(TEXT("Livetracker : unknown host \"%s\"%s"), szTmpServer, NEWLINE);
+          Success = false;
+      }
+      return INVALID_SOCKET;
+  }
+
+  s = socket( AF_INET, SOCK_STREAM, 0 );
+  if ( s == INVALID_SOCKET ) {
+      if(Success) {
+          StartupStore(TEXT("Livetracker : unable to create socket%s"), NEWLINE);
+          Success = false;
+      }
+      return s;
+  }
+
+  Success = true;
+
   memset( &sin, 0, sizeof sin );
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = ((struct in_addr *)(server->h_addr))->s_addr;
