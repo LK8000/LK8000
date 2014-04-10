@@ -36,7 +36,6 @@ void LKProfileResetDefault(void) {
   StartupStore(TEXT("... ProfileResetDefault%s"),NEWLINE);
   #endif
 
-  AcknowledgementTime = 1800;	// keep ack level for this time, [secs]
 
   Units::CoordinateFormat = (CoordinateFormats_t)cfDDMMSS;
 
@@ -71,9 +70,11 @@ void LKProfileResetDefault(void) {
   AltWarningMargin = 1000; // * 10
   AIRSPACEWARNINGS = TRUE;
   WarningTime = 60;
-  AirspaceWarningRepeatTime = 300;            // warning repeat time if not acknowledged after 5 minutes
+
+  AcknowledgementTime = 1800;	// keep ack level for this time, [secs]
+  AirspaceWarningRepeatTime = 900;            // warning repeat time if not acknowledged after 15 minutes
   AirspaceWarningVerticalMargin = 1000;        // vertical distance used to calculate too close condition *10
-  AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
+  AirspaceWarningDlgTimeout = 10;             // airspace warning dialog auto closing in x secs
   AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
   AirspaceAckAllSame = 0;
 
