@@ -181,12 +181,13 @@ void LiveTrackerShutdown()
 // Update live tracker data, non blocking
 void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
+  if (!_inited) return;               // Do nothing if not inited
+  if (LiveTrackerInterval==0) return; // Disabled
+  if (Basic->NAVWarning) return;      // Do not log if no gps fix
+
   livetracker_point_t newpoint;
   static int logtime = 0;
 
-  if (!_inited) return;               // Do nothing if not inited
-  if (Basic->NAVWarning) return;      // Do not log if no gps fix
-  if (LiveTrackerInterval==0) return; // Disabled
   
   CCriticalSection::CGuard guard(_t_mutex);
 
@@ -267,11 +268,11 @@ static SOCKET EstablishConnection(const char *servername, int serverport)
   struct hostent *server;
   struct sockaddr_in sin;
   
-  s = socket( AF_INET, SOCK_STREAM, 0 );
-  if ( s == INVALID_SOCKET ) return s;
-
   server = gethostbyname(servername);
   if (server == NULL) return INVALID_SOCKET;
+
+  s = socket( AF_INET, SOCK_STREAM, 0 );
+  if ( s == INVALID_SOCKET ) return s;
   
   memset( &sin, 0, sizeof sin );
   sin.sin_family = AF_INET;
