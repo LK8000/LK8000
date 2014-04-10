@@ -79,6 +79,24 @@ Old task files can still be loaded.
 Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
+============
+Version 4.1s
+============
+
+FIXES
+
+Fix critical bug in V2 and other smartphones when LiveTracker was activated by user setting interval to 1 or more seconds, and no internet connection.
+After a period of time between 3 and 4 hours the PNA memory was saturated and the program was crashing.
+This bug was existing also in LK 4.
+
+Fix replay logger interpolator error, workaround
+
+Fix bug not saving history of waypoints goto after selecting a reserved wp like freeflight, faiclose etc
+
+Fix PC version:  Do NOT load resolution from profile, if we have requested a resolution from command line
+
+
+
 
 ============
 Version 4.1r
