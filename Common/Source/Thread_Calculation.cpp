@@ -68,18 +68,16 @@ DWORD CalculationThread (LPVOID lpvoid) {
     GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
 
     #if TESTBENCH
-    #if 1
     static double nextHB=0;
     if (LKHearthBeats>= nextHB) {
         unsigned long freeram = CheckFreeRam()/1024;
         TCHAR buffer[MAX_PATH];
         LocalPath(buffer);
         unsigned long freestorage = FindFreeSpace(buffer);
-        StartupStore(TEXT(". Free ram=%ld K  storage=%ld K%s @%s"), freeram,freestorage,WhatTimeIsIt(),NEWLINE);
+        StartupStore(TEXT(". Free ram=%ld K  storage=%ld K %s @%s"), freeram,freestorage,WhatTimeIsIt(),NEWLINE);
 
-        nextHB=LKHearthBeats+300; // next log in 5 minutes
+        nextHB=LKHearthBeats+600; // next log in 5 minutes
     }
-    #endif
     #endif
     // make local copy before editing...
     LockFlightData();
