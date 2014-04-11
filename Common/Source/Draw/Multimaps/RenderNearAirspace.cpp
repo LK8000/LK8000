@@ -326,8 +326,8 @@ if(bValid)
 	  sDia.fYMin +=  fOffset;
 	  sDia.fYMax +=  fOffset;
 #endif
-  if(fHeigtScaleFact * sDia.fYMax > MAX_ALTITUDE )
-	  fHeigtScaleFact /=ZOOMFACTOR;
+//  if(fHeigtScaleFact * sDia.fYMax > MAX_ALTITUDE )
+//    fHeigtScaleFact /=ZOOMFACTOR;
 
   if(fHeigtScaleFact * sDia.fYMax < MIN_ALTITUDE )
 	  fHeigtScaleFact *=ZOOMFACTOR;
