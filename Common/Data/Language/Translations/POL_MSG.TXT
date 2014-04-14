@@ -1,5 +1,5 @@
 ﻿# LK8000 POLISH MESSAGES - POL_MSG.TXT
-# MASTER UPDATED:  140221
+# MASTER UPDATED:  140414
 #
 # Ten plik jest załadowany w czasie startu i wszystkie wiadomości są przechowywane w pamięci urządzenia.
 # Jeśli tłumaczysz ten plik to postaraj się przestrzegać długości wiadomości.
@@ -1863,6 +1863,11 @@ _@M1835_ "Parowanie urządzenia nieudane"
 _@M1836_ "Wyszukaj"
 _@M1837_ "Paruj"
 _@M1838_ "Rozłącz"
+
+_@M1840_ "Najl. Alternatywa:"
+#infobox
+_@M1841_ "Radial Alternatywy1"
+_@M1842_ "Radial Alternatywy2"
 
 # Reverse task
 _@M1850_ "Odwróć\nZadanie"
