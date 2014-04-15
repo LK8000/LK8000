@@ -1,0 +1,4 @@
+* LK8000 polar for: Discus B from Cumulus Soaring  GN II
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 325, 184, 100, -0.661, 150, -1.439, 200, -3.110, 10.58
+
