@@ -925,17 +925,17 @@ Negative convergence (divergence) produces subsiding vertical motion, creating l
 #
 
 @800
-[Altitude QNH]
+[Altitude - QNH]
 Altura acima do nível do mar reportada pelo GPS ou pelo altímetro barométrico (se a altitude pressão estiver disponível e selecionada para uso). 
 É a altitude usada internamente para todos os cálculos. Caixas de informação da altitude GPS e barométrica também estão disponíveis; um destes dois valores é usado par a altitude QNH. 
 USE ESTA ALTITUDE como referência principal, uma vez que é a usada pelo LK8000.
 
 @801
-[Altitude AGL]
+[Altitude - AGL]
 Altitude de navegação menos a altura do terreno obtida do arquivo de terreno.
 
 @802
-[Térmica últimos 30 seg]
+[Térmica - Últimos 30 seg.]
 Razão de subida durante os últimos 30 segundos, baseada na altitude GPS ou barométrica reportada.
 
 @803
@@ -943,47 +943,47 @@ Razão de subida durante os últimos 30 segundos, baseada na altitude GPS ou bar
 O rumo verdadeiro para o próximo ponto. Para provas AAT, este é o rumo verdadeiro para o objetivo dentro do setor AAT.
 
 @804
-[L/D 20"]
+[Eficiência - Últimos 20 seg.]
 Razão de planeio instantânea, fornecida pela velocidade no solo dividida pela velocidade vertical (velocidade GPS) nos últimos 20 segundos. Valores negativos indicam planeio em subida. Se a velocidade vertical for próxima de zero, '---' será exibido.
 
 @805
-[L/D Térmica]
+[Eficiência - Planeio]
 A distância do topo da útlima térmica, dividida pela altitude perdida a partir do topo da última térmica.  
 Valores negatios indicam planeio em subida (ganho de altura depois de abandonar a última térmica).
 Se a velocidade vertical for próxima de zero, '---' será exibido.
 Atenção: fazer zig-zag ou retornar resultará em valores errados! Nesse caso use o L/D Médio.
 
 @806
-[Velocidade no solo]
+[Velocidade - Ao solo]
 Velocidade no solo medida pelo GPS.
 
 @807
-[Média Última Térmica]
+[Térmica - Média Última]
 Altitude total ganha/perdida na última térmica dividida pelo tempo gasto girando.
 
 @808
 
-[Ganho Última Térmica]
+[Térmica - Ganho Última]
 Altitude total ganha/perdida na última térmica.
 
 @809
-[Tempo Última Térmica]
+[Térmica - Tempo Última]
 Tempo gasto girando na última térmica.
 
 @810
-[Ajuste MacCready]
+[MacCready - Ajuste]
 O ajuste MacCready atual. Esta caixa de informação também mostra se o MC é manual ou automático.
 
 @811
-[Distância Próximo]
+[Próximo - Distância]
 Distância para o ponto autalmente selecionado. Para provas AAT, esta é a distância para o objetivo dentro do setor AAT.
 
 @812
-[Altitude Chegada Próximo]
+[Próximo - Alt.Chegada]
 Altitude de chegada ao próximo ponto, calculada para o MC atual. NÃO USA MC de seguranda e NÃO USA altitude de segurança se não for um ponto pousável, a não ser que a opção de uso da altura de segurança para todos os pontos esteja ativada.
 
 @813
-[Altitude Necessária Próximo]
+[Próximo - Ganho.Necessário]
 Altitude necessária para atingir o próximo ponto de virada, com MC atual.
 
 @814
@@ -991,23 +991,23 @@ Altitude necessária para atingir o próximo ponto de virada, com MC atual.
 O nome do ponto de virada atualmente selecionado.
 
 @815
-[Altitude Chegada Final]
+[Prova - Altitude de Chegada]
 Altitude de chegada no ponto final da prova, relativo à altitude de segurança.
 
 @816
-[Altitude Necessária Final]
+[Prova - Altitude de Necessária]
 Altitude necessária para completar a prova.
 
 @817
-[Velocidade Média Prova]
+[Prova - Média de Velocidade]
 Velocidade média de navegação da prova atual, compensada para a altitude.
 
 @818
-[Distância Chegada]
+[Prova - Distância]
 Distância para contornar os pontos de virada restantes e completar a prova.
 
 @819
-[L/D Para Chegada]
+[Prova - Nao Usar! Final LD]
 NÃO USE este valor, está aqui apenas para fins de compatibilidade com versões antigas do software.
 Ao invés deste, use Eficiência Final.
 
@@ -1016,15 +1016,15 @@ Ao invés deste, use Eficiência Final.
 Esta é a elevação do terreno acima do nível médio do mar, obtida do arquivo do terreno na posição GPS atual.
 
 @821
-[Térmica Média]
+[Térmica - Média]
 Altitude ganha/perdida na térmica atual, dividida pelo tempo gasto girando a térmica.
 
 @822
-[Ganho Térmica]
+[Térmica - Ganho]
 Altitude total ganha/perdida na térmica atual.
 
 @823
-[Rota]
+[Rumo Magnético]
 Rota magnética reportada pelo GPS.
 
 @824
@@ -1032,45 +1032,45 @@ Rota magnética reportada pelo GPS.
 Velocidade vertical instantânea, conforme reportada pelo GPS, ou pelos varios inteligente e/ou de energia total se instalados.
 
 @825
-[Velocidade Vento]
+[Vento - Velocidade]
 Velocidade do vento estimada pelo LK8000, através do Vento Verdadeiro ou enquanto girando térmica.
 
 @826
-[Rumo Vento]
+[Vento - Direção]
 Rumo do vento estimado pelo LK8000, através do Vento Verdadeiro ou enquanto girando térmica.
 
 @827
-[Tempo AA]
+[AA - Tempo]
 Tempo restante de uma prova de área. Torna-se vermelho quando o tempo máximo expirou.
 
 @828
-[Máx Distância AA]
+[AA - Distância Max]
 Distância máxima ainda restante para uma prova de áreas.
 
 @829
-[Mín Distância AA]
+[AA - Distância Min]
 Distância mínima ainda restante para uma prova de áreas.
 
 @830
-[Máx Velocidade AA]
+[AA - Velocidade Max]
 Máxima velocidade média alcançável em uma prova de áreas se voando distância máxima ainda possível no tempo mínimo da prova.
 
 @831
-[Mín Velocidade AA]
+[AA - Velocidade Min]
 Velocidade média alcançável em uma prova de áreas se voando distância mínima ainda possível no tempo mínimo da prova.
 
 @832
-[Velocidade IAS]
+[Velocidade - no ar IAS]
 Velocidade indicada reportada por um vario inteligente externo suportado.
 Se nenhum sensor estiver instalado, ela é estimada usando o vento atual e a densidade do ar na altitude atual. Nesse caso ela será chamada de eIAS.
 
 @833
-[Altitude Barométrica]
+[Altitude - BARO]
 Esta é a altitude barométrica obtida de um GPS equipado com sensor de pressão, ou um vario inteligente externo suportado.
 Se você ativou a opção 'Usar Altitude Baro' no menu 5 da configuração do sistema, então esta altitude é também mostrada como altitude QNH, e usada internamente para todos os cálculos.
 
 @834
-[Velocidade MacReady]
+[Velocidade - MacReady]
 A velocidade equivalente MacCready. Esta NÃO É a Velocidade a Voar.
 
 @835
@@ -1099,31 +1099,31 @@ Hora GPS no fuso horário local.
 Hora GPS UTC.
 
 @841
-[Tempo Restante Prova]
+[Prova - Tempo estimado]
 Tempo estimado necessário para completar a prova, assumindo performance MacCready ideal nos ciclos subida/planeio.
 
 @842
-[Tempo Para Próximo]
+[Próximo - Tempo estimado]
 Tempo estimado necessário para atingir o próximo ponto, assumindo performance MacCready ideal nos ciclos subida/planeio.
 
 @843
-[Velocidade a Voar, ou Velocidade Delfinagem ou Sollfarh]
+[Velocidade - Velocidade STF, ou Velocidade Delfinagem ou Sollfarh]
 A velocidade MacCready instantânea a voar, fazendo uso dos cálculos do vario absoluto para determinar a velocidade de planeio delfinado no rumo atual do planador. 
 Em modo de planeio, esta velocidade a voar é calculada para manutenção da altitude.
 Em modo de planeio final, esta velocidade a voar é calculada para descida.
 Em modo de subida, ela alterna para a velocidade de afundamento mínimo com o fator de carga atual(se um acelerômetro estiver conectado).
 
 @844
-[Vario Absoluto]
+[Netto Vario -Absoluto-]
 Velocidade vertical instantânea da massa de ar, igual ao valor do vario menor a taxa de afundamento estimada do planador.
 Melhor utilizada se sensores de velocidade, acelerômetro e vario estiverem conectados, de outra forma os cálculos serão baseados em medições GPS e ventos estimados.
 
 @845
-[Hora Chegada Prova]
+[Prova - Hora de Chegada]
 Hora local estimada para conclusão da prova, assumindo performance MacCready ideal nos ciclos subida/planeio.
 
 @846
-[Hora Chegada Próximo]
+[Próximo - Hora de Chegada]
 Hora local estimada para chegada ao próximo ponto, assumindo performance MacCready ideal nos ciclos subida/planeio.
 
 @847
@@ -1146,11 +1146,11 @@ Umidade relativa do ar em percentual, medida por um sensor, se suportado por um 
 Temperatura prevista no solo no aeródromo base, usada para estimar a altura de convecção e base de nuvens, em conjunto com as sondas de temperatura externa e umidade.
 
 @851
-[Distância Obj AA]
+[AA Distancia Tg]
 Distância para virar os pontos restantes em uma prova AAT.
 
 @852
-[Velocidade Obj AA]
+[AA Velocidade Tg]
 Velocidade média alcançável virando os pontos restantes no tempo mínimo de uma prova AAT.
 
 @853
@@ -1159,44 +1159,44 @@ Razão de planeio instantânea, dada pela velocidade indicada dividida pela velo
 Valores negativos indicam planeio em subida. Se a velocidade vertical de energia total for próxima de zero, '---' será exibido.
 
 @854
-[Velocidade TAS]
+[Velocidade - TAS]
 Velocidade Verdadeira reportada por um vario inteligente externo suportado.
 Se nenhum sensor estiver disponível, ela é estimada usando vento e densidade do ar na altitude atual. Neste caso ela é chamada de eTAS.
 
 @855
-[Código Próprio Equipe]
+[Equipe - Código]
 O código de equipe atual para esta aeronave. Use para reportar a outros membros da equipe.
 
 @856
-[Rumo Equipe]
+[Equipe - Rumo]
 O rumo para a localização da aeronave da equipe no último reporte do código de equipe.
 
 @857
-[Diferença Rumo Equipe]
+[Equipe - Diferença Rumo]
 O rumo relativo para a localização da aeronave da equipe no último reporte do código de equipe.
 
 @858
-[Distância equipe]
+[Equipe - Afastamento]
 A distância para a localização da aeronave da equipe no último reporte do código de equipe. 
 
 @859
-[Velocidade Prova Instantânea]
+[Prova - Velocidade Instantânea]
 Velocidade instantânea de navegação enquando na prova atual, compensada para altitude.
 
 @860
-[Distância Casa]
+[Origem-Distancia]
 Distância para o ponto Casa, se definido.
 
 @861
-[Velocidade Alcançada Prova]
+[Prova - Velocidade]
 Velocidade de navegação alcançada enquanto na prova atual, compensada para a altitude. Normalmente esta é usada como a primeira escolha.
 
 @862
-[Variação Tempo AA]
+[AA Delta Tempo]
 Diferença entre tempo estimado e tempo mínimo de prova AAT. Aparece em vermelho se negativo (estimada chegada antecipada), ou azul se dentro do setor e pode virá-lo agora com tempo estimado para chegada maior do que o mínimo AAT mais 5 minutos.
 
 @863
-[Térmica Todas]
+[Térmicas - Total]
 Razão de subida média em todas as térmicas.
 
 @865
@@ -1204,12 +1204,12 @@ Razão de subida média em todas as térmicas.
 Em sistemas PDA e PNA, mostra o percentual de bateria disponível. Se for seguido de um C, significa que a bateria está carregando; se for seguido de um D, significa que a bateria está descarregando.
 
 @866
-[Eficiência Chegada]
+[Prova - Eficiência Requerida]
 Eficiência necessária para a altura de chegada sobre o ponto final. Valor clássico a usar!
 
 @867
 @868
-[Eficiência alternativa]
+[Alter.1 - Eficiência Requerida]
 Razão de planeio necessária para a altura de chegada sobre o ponto de alternativa selecionado. Não ajustado para energia total.
 Acima de 200 não é mostrado, entre 100 e 200 mostra um número inteiro, entre 1 e 99 um valor decimal é mostrado.
 
@@ -1218,13 +1218,13 @@ Acima de 200 não é mostrado, entre 100 e 200 mostra um número inteiro, entre 
 Busca automática pela melhor opção de pouso disponível.
 
 @870
-[QFE]
+[Altitude - QFE]
 QFE Automático. É baseado na altitude GPS ou barométrica, se disponível e selecionada, e é zerada no solo ANTES de cada decolagem.
 Após a decolagem, ela não é mais zerada automaticamente mesmo se no solo.
 Alterar o QFE não provocará mudanças na altitude QNH. QFE NÃO é usada para cálculos, serve apenas como referência para o piloto.
 
 @871
-[Eficiência média]
+[Eficiência - média]
 Distância percorrida no período de tempo configurado, dividida pela altitude perdida no mesmo período.
 Valores negativos são mostrados como oo (infinito) e indicam planeio em subida (ganho de altura). Razões de planeio acima de 200 são exibidas como oo .
 É possível configurar o período da média no menu de configurações especiais.
@@ -1233,7 +1233,7 @@ Note que a distância percorrida NÃO É uma linha reta entre a posição antiga
 Este valor não é calculado enquanto girando uma térmica.
 
 @872
-[Eficiência necessária próximo]
+[Próximo - Eficiência Requerida]
 A razão de planeio necessário para atingir o próximo ponto, dada pela distância para o próximo ponto dividida pela altura necessária para chegar ao ponto NA ALTITUDE DE SEGURANÇA.
 Acima de 199 e abaixo de 1, nenhum valor é mostrado.
 Este é um cálculo geométrico puro, igual ao feito por instrumentos Garmin, Naviter e a maioria dos outros.
@@ -1247,39 +1247,39 @@ Dessa forma, use-a como um indicador aproximado.
 Atenção, sem garantia!
 
 @874
-[Distância Prova Percorrida]
+[Prova - Distância Coberta]
 Distância de prova percorrida até o momento. É necessária uma largada válida para iniciar a contagem!
 
 @875
-[Chegada alternativa]
+[Alter.1 - Alt.Chegada]
 Diferença da altitude de chegada sobre a alternativa.
 
 @876
-[Chegada alternativa]
+[Alter.2 - Alt.Chegada]
 Diferença da altitude de chegada sobre a alternativa.
 
 @877
-[Chegada alternativa]
+[Melhor Alternativa - Alt.Chegada]
 Diferença da altitude de chegada sobre a alternativa.
 
 @878
-[Radial Casa]
+[Origem - Radial]
 Radial para Casa, se disponível.
 
 @879
-[Distância Espaço Aéreo]
+[Espaço Aéreo - DistHorizontal]
 É a distância horizontal a um espaço aéreo selecionado. Para selecionar vá até a pagina 2.4 EAEr e acione detalhes. No caso de estar voando em uma zona autorizada, mostra a distãncia mais próxima para sair desta.
 
 @880
-[Bco Bats Ext]
+[Batt.Ext.Banco]
 Banco de baterias externas em uso, se disponível.
 
 @881
-[Tensão Bat Ext 1]
+[Batt.Ext.1 Tensão]
 Tensão do banco 1 de baterias externas, se disponível.
 
 @882
-[Tensão Bat Ext 2]
+[Batt.Ext.2 Tensão]
 Tensão do banco 2 de baterias externas, se disponível.
 
 @883
@@ -1287,15 +1287,15 @@ Tensão do banco 2 de baterias externas, se disponível.
 Distância percorrida desde a DECOLAGEM, calculada a cada segundo, mesmo quando girando. Este valor é zerado na decolagem, e não pode ser zerado de outra maneira. É calculado como se fosse a quilometragem acumulada por um automóvel!
 
 @884
-[QNH Alternativa]
+[Altitude - Altern QNH]
 Altitude QNH alternativa: se a unidade principal selecionada na configuração metros, esta será mostrada em pés, e vice-versa. 
 
 @885
-[AltAGL Alterntiva]
+[Altitude - Altern AGL]
 Altitude sobre o solo alternativa: se a unidade principal selecionada na configuração metros, esta será mostrada em pés, e vice-versa. 
 
 @886
-[Altitude GPS]
+[Altitude - GPS]
 Esta é a altitude repostada pelo GPS. Dependendo do seu GPS ela pode ser bastante precisa ou algumas vezes muito errada.
 Se você estiver usando um navegador veicular, principalmente, a altitude reportada pode estar muito errada durante a subida em térmicas. 
 Se você não tiver altitude barométrica disponível, ou não a selecionou no menu de configuração 5, então esta altitude GPS será usada internamente para todos os cálculos. 
@@ -1303,7 +1303,7 @@ A altitude QNH pode ser tanto GPS quando Barométrica.
 Normalmente deve-se usar como caixa de informação principal a altitude QNH, pois ela sempre mostrará o que está sendo usado internamente.
 
 @887
-[MacCready Equivalente]
+[MC Equivalente]
 Este é o valor McCready real atualmente em uso, baseado na atual velocidade média. Este valor não pode ser modificado, e é calculado com a mesma base de tempo do LD médio. 
 Se não há sensor de velocidade instalado, a Velocidade Estimada será usada. Consulte o manual para mais informações.
 
@@ -1313,53 +1313,53 @@ Ajuda indisponível para este item!
 
 
 @890
-[OLC CLASSIC] distância
+[OLC Classico - Distancia] distância
 Distância calculada ao longo de 5 pontos. 
 
 @891
-[FAI TRIANGLE] distância
+[OLC FAI Triangulo - Distancia] distância
 Máxima distância alcançada em Triângulo FAI.
 
 @892
-[OLC LEAGUE] distância
+[OLC Liga - Distancia] distância
 Máxima distância calculada  ao longo de 3 pontos, feita em 2.5 horas.
 
 @893
-[FAI 3TPs] distância
+[OLC FAI 3 TPs - Distancia] distância
 Distância calculada ao longo de 3 pontos. 
 
 @894
-[OLC CLASSIC] distância declarada
+[OLC Classico* - Declarado Distancia] distância declarada
 Distância atual calculada ao longo 5 pontos assumindo o último ponto antes do ponto de largada.
 
 @895
-[FAI TRIANGLE] distância declarada
+[OLC FAI Triangulo* - Declarado Distancia] distância declarada
 Máxima distância em Triângulo FAI assumindo o último ponto antes do ponto de largada.
 
 @896
-[FAI 3TPs] distância declarada
+[OLC FAI 3 TPs* - Declarado Distancia] distância declarada
 Distância atual calculada ao longo 3 turnpoints assumindo o último ponto antes da largada.
 
 @897
-[OLC CLASSIC] velocidade
+[OLC Classico - Velocidade] Velocidade Alcançada.
 
 @898
-[FAI TRIANGLE] velocidade
+[OLC FAI Triangulo - Velocidade] Velocidade Alcançada.
 
 @899
-[OLC LEAGUE] velocidade
+[OLC Liga - Velocidade] Velocidade Alcançada.
 
 @900
-[FAI 3TPs] velocidade
+[OLC FAI 3 TPs - Velocidade] Velocidade Alcançada.
 
 @901
-[OLC CLASSIC] velocidade declarada
+[OLC Classic*Declarado - Velocidade] velocidade declarada
 
 @902
-[FAI TRIANGLE] velocidade declarada
+[OLC FAI Triangulo*Declarado - Velocidade] velocidade declarada
 
 @903
-[FAI 3TPs] velocidade declarada
+[OLC Liga - Velocidade] velocidade declarada
 
 @904
 [OLC CLASSIC] pontuação
@@ -1408,13 +1408,13 @@ Altitude de chegana da origem. Calculada baseada no MC atual, usa Altitude de Se
 @917
 @918
 [Alternate bearing]
-Bearing to the selected alternate
+Direção da alternativa selecionada.
 
 @919
 @920
 @921
 [Alternate distância]
-distância to the selected alternate
+Distância da alternativa selecionada.
 
 @922
 [Max Altitude Alcançada]
