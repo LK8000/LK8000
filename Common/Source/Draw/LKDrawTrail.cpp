@@ -18,6 +18,9 @@
 
 //#define DEBUG_DRAWTRAIL 1
 
+// approaching fix for the snailtrail "snake" multicolor changing effect 
+// #define FIXSNAIL 1
+
 // try not to use colors when over a useless mapscale
 double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 {
@@ -143,6 +146,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
 
   unsigned short pointcolour=0;
+  #if FIXSNAIL
+  unsigned int colorsum=0;
+  unsigned int numsum=0;
+  #endif
+
   // 
   // Main loop
   //
@@ -284,6 +292,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 		#if DEBUG_DRAWTRAIL
 		toonear++;
 		#endif
+                #if FIXSNAIL
+	        LKASSERT(P1.Colour>=0 && P1.Colour <NUMSNAILCOLORS);
+                colorsum+=P1.Colour;
+                numsum++;
+                #endif
 		// don't draw if very short line
 		continue;
 	}
@@ -294,15 +307,31 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
     #endif
 
     if (usecolors) {
+
+        #if FIXSNAIL
+
+        if (numsum>0) {
+            pointcolour=(unsigned short)(colorsum/numsum);
+        } else {
+	    pointcolour=P1.Colour;
+        }
+	if (pointcolour>=NUMSNAILCOLORS) {
+            pointcolour=3; // recover impossible error
+        }
+
+        #else
+        // ----  Up to V5.. ----
 	#if BUGSTOP
 	LKASSERT(P1.Colour>=0 && P1.Colour <NUMSNAILCOLORS);
 	pointcolour=P1.Colour;
 	#else
-	if (pointcolour<NUMSNAILCOLORS)
+	if (pointcolour<NUMSNAILCOLORS)  // this is useless, pointcolour is always 0 here
 		pointcolour=P1.Colour;
 	else
 		pointcolour=3; // and this is an impossible error
 	#endif
+        // ---- ---- ---- ---- ----
+        #endif // FIXSNAIL
     } else {
 	// predefined color, we are in low zoom.
 	pointcolour = 3; // blue
@@ -321,6 +350,10 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 	DrawSolidLine(hdc, P1.Screen, point_lastdrawn, rc);
 	#endif
     }
+    #if FIXSNAIL
+    numsum=0;
+    colorsum=0;
+    #endif
     point_lastdrawn = P1.Screen;
     last_visible = this_visible;
   } // big loop 
