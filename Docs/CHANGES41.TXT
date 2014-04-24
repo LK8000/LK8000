@@ -80,6 +80,31 @@ Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
 ============
+Version 4.1t
+============
+
+
+FIXES
+
+Fix multimap 3 glitch
+
+fix broken "ProjectedDistance" if optional cross track error output parameter is not provided.
+ - this fix task speed & task coverage calculation
+
+Paragliding thermal exit timing changed from 9 to 15 seconds of straight flight, as a parameter
+
+
+Update ENG_MSG not distributed in latest betas
+Update PTB
+Polish translation updated
+Added polars for Discus B and Arcus M
+
+
+
+
+
+
+============
 Version 4.1s
 ============
 
