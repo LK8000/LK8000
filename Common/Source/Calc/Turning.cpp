@@ -21,8 +21,6 @@ extern void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 
 #define MinTurnRate  4
-#define CruiseClimbSwitch 15
-#define ClimbCruiseSwitch 9
 #define CRUISE 0
 #define WAITCLIMB 1
 #define CLIMB 2
@@ -218,15 +216,19 @@ _forcereset:
     }
 
     double waitclimb_turnthreshold;
-    if (ISPARAGLIDER)
+    double cruiseclimbswitch;
+    if (ISPARAGLIDER) {
 	waitclimb_turnthreshold=5;
-    else
+        cruiseclimbswitch=15; // this should be finetuned for PGs
+    } else {
 	waitclimb_turnthreshold=4;
+        cruiseclimbswitch=15; // this is ok for gliders
+    }
 
     if((Rate >= waitclimb_turnthreshold)||(forcecircling)) {
       // WE CANNOT do this, because we also may need Circling mode to detect FF!!
-      // if( (Calculated->FreeFlying && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) {
-       if( (!ISCAR && !ISGAAIRCRAFT && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { 
+      // if( (Calculated->FreeFlying && ((Basic->Time  - StartTime) > cruiseclimbswitch))|| forcecircling) {
+       if( (!ISCAR && !ISGAAIRCRAFT && ((Basic->Time  - StartTime) > cruiseclimbswitch))|| forcecircling) { 
 
          #ifdef TOW_CRUISE
          // If free flight (FF) hasn’t yet been detected, then we may
@@ -315,16 +317,20 @@ _forcereset:
     }
 
     double waitcruise_turnthreshold;
-    if (ISPARAGLIDER)
+    double climbcruiseswitch;
+    if (ISPARAGLIDER) {
 	waitcruise_turnthreshold=10;
-    else
+        climbcruiseswitch=15;
+    } else {
 	waitcruise_turnthreshold=4;
+        climbcruiseswitch=9; // ok for gliders
+    }
     //
     // Exiting climb mode?
     //
     if((Rate < waitcruise_turnthreshold) || forcecruise) {
 
-      if( ((Basic->Time  - StartTime) > ClimbCruiseSwitch) || forcecruise) {
+      if( ((Basic->Time  - StartTime) > climbcruiseswitch) || forcecruise) {
 
 	// We are no more in climb mode
 
