@@ -166,7 +166,7 @@ static void SetValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMinTime"));
   if (wp) {
-    wp->SetVisible(AATEnabled>0 && !PGOptimizeRoute);
+    wp->SetVisible(AATEnabled>0 && (!PGOptimizeRoute || !ISPARAGLIDER));
     wp->GetDataField()->SetAsFloat(AATTaskLength);
     wp->RefreshDisplay();
   }
