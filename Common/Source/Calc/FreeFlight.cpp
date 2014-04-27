@@ -343,29 +343,32 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   Calculated->FreeFlightStartQNH=Basic->Altitude;
   Calculated->FreeFlightStartQFE=gndAltitude;
 
-  WayPointList[RESWP_FREEFLY].Latitude=Basic->Latitude;
-  WayPointList[RESWP_FREEFLY].Longitude=Basic->Longitude;
-  WayPointList[RESWP_FREEFLY].Altitude=Basic->Altitude;
-  if (WayPointList[RESWP_FREEFLY].Altitude==0) WayPointList[RESWP_FREEFLY].Altitude=0.001;
-  WayPointList[RESWP_FREEFLY].Reachable=TRUE;
-  WayPointList[RESWP_FREEFLY].Visible=TRUE;
-  WayPointList[RESWP_FREEFLY].Format = LKW_VIRTUAL;
+    { // all "WayPointList" change need to be protected by "LockTaskData"
+        CScopeLock Lock(LockTaskData, UnlockTaskData);
 
-  TCHAR Temp[30];
-  Units::TimeToTextS(Temp, (int)TimeLocal((long)Calculated->FreeFlightStartTime));
+        WayPointList[RESWP_FREEFLY].Latitude = Basic->Latitude;
+        WayPointList[RESWP_FREEFLY].Longitude = Basic->Longitude;
+        WayPointList[RESWP_FREEFLY].Altitude = Basic->Altitude;
+        if (WayPointList[RESWP_FREEFLY].Altitude == 0) WayPointList[RESWP_FREEFLY].Altitude = 0.001;
+        WayPointList[RESWP_FREEFLY].Reachable = TRUE;
+        WayPointList[RESWP_FREEFLY].Visible = TRUE;
+        WayPointList[RESWP_FREEFLY].Format = LKW_VIRTUAL;
 
-  #if BUGSTOP
-  LKASSERT(WayPointList[RESWP_FREEFLY].Comment!=NULL);
-  #endif
-  if (WayPointList[RESWP_FREEFLY].Comment==NULL) goto _skipout;
+        TCHAR Temp[30];
+        Units::TimeToTextS(Temp, (int) TimeLocal((long) Calculated->FreeFlightStartTime));
 
-  WayPointList[RESWP_FREEFLY].Comment[99]='\0'; // for safety
-  _stprintf(WayPointList[RESWP_FREEFLY].Comment,_T("%s: %s  @%.0f%s QNH"),
-	gettext(_T("_@M1754_")), 	// Free flight start
-	Temp,
-	ALTITUDEMODIFY*Calculated->FreeFlightStartQNH,
-	Units::GetAltitudeName());
+#if BUGSTOP
+        LKASSERT(WayPointList[RESWP_FREEFLY].Comment != NULL);
+#endif
+        if (WayPointList[RESWP_FREEFLY].Comment == NULL) goto _skipout;
 
+        WayPointList[RESWP_FREEFLY].Comment[99] = '\0'; // for safety
+        _stprintf(WayPointList[RESWP_FREEFLY].Comment, _T("%s: %s  @%.0f%s QNH"),
+                gettext(_T("_@M1754_")), // Free flight start
+                Temp,
+                ALTITUDEMODIFY * Calculated->FreeFlightStartQNH,
+                Units::GetAltitudeName());
+    }
 _skipout:
   ResetFreeFlightStats(Calculated);
   return true;
