@@ -360,16 +360,16 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 #if BUGSTOP
         LKASSERT(WayPointList[RESWP_FREEFLY].Comment != NULL);
 #endif
-        if (WayPointList[RESWP_FREEFLY].Comment == NULL) goto _skipout;
-
-        WayPointList[RESWP_FREEFLY].Comment[99] = '\0'; // for safety
-        _stprintf(WayPointList[RESWP_FREEFLY].Comment, _T("%s: %s  @%.0f%s QNH"),
-                gettext(_T("_@M1754_")), // Free flight start
-                Temp,
-                ALTITUDEMODIFY * Calculated->FreeFlightStartQNH,
-                Units::GetAltitudeName());
+        if (WayPointList[RESWP_FREEFLY].Comment) {
+            _sntprintf(WayPointList[RESWP_FREEFLY].Comment, 99, _T("%s: %s  @%.0f%s QNH"),
+                    gettext(_T("_@M1754_")), // Free flight start
+                    Temp,
+                    ALTITUDEMODIFY * Calculated->FreeFlightStartQNH,
+                    Units::GetAltitudeName());
+            WayPointList[RESWP_FREEFLY].Comment[99] = _T('\0'); // for safety
+        }
     }
-_skipout:
+
   ResetFreeFlightStats(Calculated);
   return true;
 
