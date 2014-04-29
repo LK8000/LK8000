@@ -53,6 +53,9 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   Calculated->Experimental = Calculated->TerrainBase;
   
   #ifdef GTL2
+
+  LockTaskData();
+  
   // Now calculate the 2nd glide footprint, which is the glide range
   // after reaching the next task waypoint.  First, let's make sure
   // we're flying a task.
@@ -130,6 +133,7 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       }
     } // if reachable above "terrain height"
   } // if valid task point
+  UnlockTaskData();
   #endif
 }
 
