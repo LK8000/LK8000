@@ -17,8 +17,6 @@ void MapWindow::DrawBestCruiseTrack(HDC hdc, const POINT Orig)
 
   if (OvertargetMode>OVT_TASK) return;
 
-  if (ActiveWayPoint<0) return; 
-
   if (!ValidTaskPoint(ActiveWayPoint)) return;
 
   if (DerivedDrawInfo.WaypointDistance < 0.010) return;

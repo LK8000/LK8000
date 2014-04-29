@@ -17,7 +17,8 @@
  * Colors VGR are used by DrawNearest &c.
  */
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
-
+   CScopeLock(LockTaskData, UnlockTaskData);
+   
   #ifdef GTL2
   // If flying an AAT and working on the RESWP_OPTIMIZED waypoint, then use
   // this "optimized" waypoint to store data for the AAT virtual waypoint.

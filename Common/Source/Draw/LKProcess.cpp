@@ -354,6 +354,7 @@ goto_bearing:
 				_stprintf(BufferTitle, MsgToken(1026));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+            LockTaskData();
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
@@ -366,6 +367,7 @@ goto_bearing:
 					}
 				}
 			}
+                        UnlockTaskData();
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
@@ -378,6 +380,7 @@ goto_bearing:
 				_stprintf(BufferTitle, MsgToken(1028));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+            LockTaskData();
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
@@ -389,6 +392,7 @@ goto_bearing:
 					} 
 				}
 			}
+            UnlockTaskData();
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
@@ -405,6 +409,7 @@ goto_bearing:
 				_stprintf(BufferTitle, MsgToken(1032));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+            LockTaskData();
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
@@ -420,6 +425,7 @@ goto_bearing:
 					}
 				}
 			}
+            UnlockTaskData();
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
@@ -431,6 +437,7 @@ goto_bearing:
 				_stprintf(BufferTitle, MsgToken(1034));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+            LockTaskData();
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
@@ -441,6 +448,7 @@ goto_bearing:
 					} 
 				}
 			}
+            UnlockTaskData();
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 		// B17
@@ -852,6 +860,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
+            LockTaskData();
 			index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())?RESWP_OPTIMIZED:Task[ActiveWayPoint].Index;
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
 
@@ -864,6 +873,7 @@ goto_bearing:
 				} else
 					_stprintf(BufferValue, TEXT(NULLTIME));
 			}
+            UnlockTaskData();
 			// _stprintf(BufferUnit, TEXT("h")); 091112
 			break;
 
@@ -920,6 +930,7 @@ goto_bearing:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			if(ISPARAGLIDER) {
+                LockTaskData();
 				index = DoOptimizeRoute()?RESWP_OPTIMIZED:Task[ActiveWayPoint].Index;
 				if ( (ValidTaskPoint(ActiveWayPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
 					if (WayPointCalc[index].NextETE > 0) {
@@ -928,6 +939,7 @@ goto_bearing:
 					} else
 						_stprintf(BufferValue, TEXT(NULLTIME));
 				}
+                UnlockTaskData();
 			} else {
 				if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
 					if (DerivedDrawInfo.LegTimeToGo > 0) {
@@ -1520,6 +1532,8 @@ goto_bearing:
 			else
 				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
 				_stprintf(BufferTitle, MsgToken(1146));
+            
+            LockTaskData();
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
@@ -1534,6 +1548,7 @@ goto_bearing:
 					}
 				}
 			}
+            UnlockTaskData();
 			break;
 
 		// B73
@@ -2409,6 +2424,7 @@ lkfin_ete:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_FIN_ETE].Title );
 				// ^^ Notice we use LK_FIN_ETE, NOT LK_LKFIN_ETE which does NOT exist in DataOptions!
 
+            LockTaskData();
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				if (DerivedDrawInfo.TaskTimeToGo > 0) { 
 					valid=true;
@@ -2428,6 +2444,7 @@ lkfin_ete:
 						_stprintf(BufferValue, TEXT(NULLTIME));
 				}
 			}
+            UnlockTaskData();
 			break;
 
 		// B134
@@ -2748,6 +2765,7 @@ lkfin_ete:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_NEXT_ALTDIFF].Title );
             
+            LockTaskData();
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
@@ -2759,6 +2777,7 @@ lkfin_ete:
 					}
 				}
 			}
+            UnlockTaskData();
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
@@ -2771,6 +2790,7 @@ lkfin_ete:
 			else
 				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
 				_stprintf(BufferTitle, MsgToken(1146));
+            LockTaskData();
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
@@ -2784,6 +2804,7 @@ lkfin_ete:
 					}
 				}
 			}
+            UnlockTaskData();
 			break;
 
 		// B253

@@ -99,11 +99,13 @@ void GetOvertargetName(TCHAR *overtargetname) {
 		_stprintf(overtargetname,_T("%s ---"),GetOvertargetHeader());
 	return;
   }
+  LockTaskData();
   index=GetOvertargetIndex();
   if (index<0)
 	_stprintf(overtargetname,_T("%s ---"),GetOvertargetHeader());
   else 
 	_stprintf(overtargetname,_T("%s%s"), GetOvertargetHeader(),WayPointList[index].Name);
+  UnlockTaskData();
 }
 
 #define OVERTARGETHEADER_MAX 3
