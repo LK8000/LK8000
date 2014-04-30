@@ -1088,7 +1088,13 @@ bool DeleteOldIGCFile(TCHAR *pathname) {
 
   // now, delete the file...
   _stprintf(fullname, TEXT("%s%s"),pathname,oldestname);
+  #if TESTBENCH
+  StartupStore(_T("... DeleteOldIGCFile <%s> ...\n"),fullname);
+  #endif
   DeleteFile(fullname);
+  #if TESTBENCH
+  StartupStore(_T("... done DeleteOldIGCFile\n"));
+  #endif
   return true; // did delete one
 }
 
