@@ -120,12 +120,22 @@ unsigned long FindFreeSpace(const TCHAR *path) {
   ULARGE_INTEGER FreeBytesAvailableToCaller;
   ULARGE_INTEGER TotalNumberOfBytes;
   ULARGE_INTEGER TotalNumberOfFreeBytes;
+  #if TESTBENCH
+  StartupStore(_T("... FindFreeSpace <%s> start\n"),path);
+  #endif
   if (GetDiskFreeSpaceEx(path, 
 			 &FreeBytesAvailableToCaller,
 			 &TotalNumberOfBytes,
 			 &TotalNumberOfFreeBytes)) {
+      #if TESTBENCH
+      StartupStore(_T("... FindFreeSpace ok\n"));
+      #endif
+
     return FreeBytesAvailableToCaller.LowPart/1024;
   } else {
+      #if TESTBENCH
+      StartupStore(_T("... FindFreeSpace failed, error=%ld\n"),GetLastError());
+      #endif
     return 0;
   }
 }
