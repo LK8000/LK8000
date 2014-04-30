@@ -764,7 +764,7 @@ double GlidePolar::MacCreadyAltitude(double emcready,
   Cache_Calls_MCA++;
   #endif
   // search with no particular order in the cache
-  for (i=0; i<=CASIZE; i++) {
+  for (i=0; i<CASIZE; i++) {
 	if (cache_checksum[i] != cur_checksum ) continue;
 
 	if (cache_emcready[i] != emcready) {
