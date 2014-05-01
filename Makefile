@@ -952,7 +952,7 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 
 
 ####### targets
-.PHONY: FORCE all clean cleani tags rebuild
+.PHONY: FORCE all clean cleani tags rebuild cppcheck
 
 all:	$(OUTPUTS)
 
@@ -975,6 +975,11 @@ tags:
 	$(Q)$(ETAGS) --declarations --output=TAGS `find . -name *\\\.[ch] -or -name *\\\.cpp`
 	$(Q)$(EBROWSE) -s `find . -name *\\\.[ch] -or -name *\\\.cpp`
 
+cppcheck : 
+	$(Q)cppcheck --force --enable=warning -q -j4 $(SRC_FILES)
+	$(Q)cppcheck --force --enable=warning -q -j4 $(ZZIPSRC)
+	$(Q)cppcheck --force --enable=warning -q -j4 $(COMPAT)
+	
 
 #
 # Useful debugging targets - make preprocessed versions of the source
