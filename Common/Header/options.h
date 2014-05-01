@@ -36,7 +36,7 @@
  #define LK_CACHECALC 1
  // Notice:  These are only used if above is active!
  // MacCreadyAltitude and its statistics
- #define LK_CACHECALC_MCA 60
+ #define LK_CACHECALC_MCA 60U
  // #define LK_CACHECALC_MCA_STAT 1
 
  //
