@@ -22,8 +22,14 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       double w1lat, w1lon;
       double w0lat, w0lon;
 
-      w0lat = WayPointList[TASKINDEX].Latitude; 
-      w0lon = WayPointList[TASKINDEX].Longitude;
+      if(DoOptimizeRoute()) {
+        w0lat = Task[ActiveWayPoint].AATTargetLat;
+        w0lon = Task[ActiveWayPoint].AATTargetLon;
+      } else {
+        w0lat = WayPointList[TASKINDEX].Latitude;
+        w0lon = WayPointList[TASKINDEX].Longitude;
+      }
+
       DistanceBearing(Basic->Latitude, Basic->Longitude,
                       w0lat, w0lon,
                       &Calculated->WaypointDistance,
