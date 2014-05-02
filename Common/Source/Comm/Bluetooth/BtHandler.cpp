@@ -186,8 +186,8 @@ CBtDevice* CBtHandler::GetDevice(size_t idx) const {
 void CBtHandler::RemoveDevice(const BT_ADDR& ba) {
     BtDeviceList_t::iterator It = std::find_if(m_devices.begin(), m_devices.end(), std::bind2nd(std::mem_fun(&CBtDevice::Equal_to), ba));
     if (It != m_devices.end()) {
-        m_devices.erase(It);
         delete (*It);
+        m_devices.erase(It);
     }
 }
 
