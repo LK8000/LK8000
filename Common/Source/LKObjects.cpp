@@ -253,7 +253,7 @@ void LKObjects_Delete() {
   if(LKPen_Green_N1) DeleteObject(LKPen_Green_N1);
   if(LKPen_Red_N1) DeleteObject(LKPen_Red_N1);
   if(LKPen_Blue_N1) DeleteObject(LKPen_Blue_N1);
-  if(LKPen_Grey_N1) DeleteObject(LKPen_Grey_N0);
+  if(LKPen_Grey_N0) DeleteObject(LKPen_Grey_N0);
   if(LKPen_Grey_N1) DeleteObject(LKPen_Grey_N1);
   if(LKPen_Grey_N2) DeleteObject(LKPen_Grey_N2);
   if(LKPen_GABRG) DeleteObject(LKPen_GABRG);
