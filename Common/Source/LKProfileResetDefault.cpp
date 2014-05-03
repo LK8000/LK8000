@@ -445,6 +445,7 @@ void LKProfileResetDefault(void) {
 
   Flags_DrawTask=true;
   Flags_DrawFAI=false;
+  FAI28_45Threshold = FAI_BIG_THRESHOLD;
   BottomMode=BM_CRU;
 
 
