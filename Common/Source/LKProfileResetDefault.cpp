@@ -447,6 +447,7 @@ void LKProfileResetDefault(void) {
   Flags_DrawFAI=false;
   FAI28_45Threshold = FAI_BIG_THRESHOLD;
   BottomMode=BM_CRU;
+  iFlarmDirection=0;
 
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
