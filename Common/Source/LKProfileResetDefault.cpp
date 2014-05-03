@@ -448,6 +448,7 @@ void LKProfileResetDefault(void) {
   FAI28_45Threshold = FAI_BIG_THRESHOLD;
   BottomMode=BM_CRU;
   iFlarmDirection=0;
+  AspPermanentChanged=0;
 
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########

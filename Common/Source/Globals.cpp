@@ -646,6 +646,7 @@ void Globals_Init(void) {
   Flags_DrawTask=true;
   Flags_DrawFAI=false;
   iFlarmDirection=0;
+  AspPermanentChanged=0;
 
 
   // ^ ADD NEW GLOBALS up here ^ 
