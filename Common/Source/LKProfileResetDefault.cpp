@@ -445,6 +445,7 @@ void LKProfileResetDefault(void) {
 
   Flags_DrawTask=true;
   Flags_DrawFAI=false;
+  BottomMode=BM_CRU;
 
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
