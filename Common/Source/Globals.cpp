@@ -643,7 +643,6 @@ void Globals_Init(void) {
   Rotary_Speed=0;
   Rotary_Distance=0;
 
-  // These are not saved to profile
   Flags_DrawTask=true;
   Flags_DrawFAI=false;
 
