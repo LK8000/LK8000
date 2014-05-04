@@ -21,7 +21,7 @@
 #endif
 
 extern bool FastZoom;
-
+extern bool TargetDialogOpen;
 
 void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 				  const POINT &Orig,
@@ -283,7 +283,7 @@ QuickRedraw:
   // Reset for topology labels decluttering engine occurs also in another place here!
   ResetLabelDeclutter();
   
-  if (Flags_DrawTask && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+  if ((Flags_DrawTask||TargetDialogOpen) && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
 	DrawTaskAAT(hdc, DrawRect);
   }
 
@@ -362,7 +362,7 @@ _skip_stuff:
 	goto QuickRedraw;
   }
 
-  if (Flags_DrawTask && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+  if ((Flags_DrawTask||TargetDialogOpen) && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
 	DrawTask(hdc, DrawRect, Orig_Aircraft);
 
   }
