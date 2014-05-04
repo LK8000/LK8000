@@ -553,9 +553,9 @@ CBthDevice::CBthDevice() {
         StartupStore(_T("Bluetooth Is OK%s"), NEWLINE);
         pBtHandler->IntSavePowerState(); // save HW power state
         pBtHandler->FillDevices(); // fill devices list with already paired device
-    }
 
-    StartupStore(_T("Bluetooth : Device Count = %u%s"), pBtHandler->m_devices.size(), NEWLINE);
+        StartupStore(_T("Bluetooth : Device Count = %u%s"), pBtHandler->m_devices.size(), NEWLINE);
+    }
 }
 
 CBthDevice::~CBthDevice() {

@@ -683,10 +683,10 @@ double GlidePolar::MacCreadyAltitude(double emcready,
 #if (LK_CACHECALC && LK_CACHECALC_MCA)
 
   #define CASIZE  LK_CACHECALC_MCA
-  static int cacheIndex;
+  static unsigned cacheIndex = 0;
 
   bool cacheFound=false;
-  int i;
+  unsigned i = 0;
   double cur_checksum;
   double cur_Distance=Distance;
   double cur_emcready=emcready;
@@ -981,7 +981,7 @@ double GlidePolar::MacCreadyAltitude(double emcready,
 #if (LK_CACHECALC && LK_CACHECALC_MCA)
   if (!cacheFound) {
 	// add inside cache
-	if (++cacheIndex==CASIZE) cacheIndex=0;
+	if (++cacheIndex>=CASIZE) cacheIndex=0;
 
 	cache_checksum[cacheIndex] = cur_checksum;
 
