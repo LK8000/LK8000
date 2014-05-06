@@ -465,7 +465,7 @@ nextinit:
 			yClockposition=yrightoffset - ySizeLK8BigFont- (ySizeLK8MediumFont*4);
 			break;
 		case ss480x640:
-			yClockposition=yrightoffset +(ySizeLK8BigFont*4);
+			yClockposition=yrightoffset +(ySizeLK8BigFont*3);
                         break;
 		default:
 			yClockposition=yrightoffset +(ySizeLK8BigFont*3);
