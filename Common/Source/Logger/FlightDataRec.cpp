@@ -121,7 +121,7 @@ void InitFlightDataRecorder(void)
   // WE TRY TO OPEN THE LOGFILE, AND IF WE CANT WE PERMANENTLY DISABLE LOGGING
   LocalPath(path,TEXT(LKD_LOGS));
   _stprintf(szBatLogFileName, TEXT("%s\\FlightRecorder.TXT"), path);
-  FlightDataRecorderFile = _tfopen(szBatLogFileName, TEXT("w"));
+  FlightDataRecorderFile = _tfopen(szBatLogFileName, TEXT("a"));
 
   if (FlightDataRecorderFile==NULL) {
 	StartupStore(_T("... InitFDR failure: cannot open <%s>%s"),szBatLogFileName,NEWLINE);
