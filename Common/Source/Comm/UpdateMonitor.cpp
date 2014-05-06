@@ -301,7 +301,7 @@ void NMEAParser::UpdateMonitor(void)
 	unsigned short timethreshold=15; // first three times,  timeout at about 1 minute
 	if (firstrecovery>=3) timethreshold=40; // then about every 3 minutes
 		
-	if ( (counterSameBaro > timethreshold) && (counterSameHGPS<2) ) {
+	if ( ((counterSameBaro > timethreshold) && (counterSameHGPS<2)) && (fabs(GPS_INFO.Altitude-GPS_INFO.BaroAltitude)>100.0) ) {
 			DoStatusMessage(MsgToken(122)); // Baro not available, Using GPS ALTITUDE
 			EnableNavBaroAltitude=false;
 			StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"),
