@@ -813,7 +813,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   _stprintf(Buffer,TEXT("PFLAC,S,NEWTASK,Task"));
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
-  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,TAKEOFF"));
+  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,TKOF"));
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   if(result == TRUE)
@@ -844,14 +844,16 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
       MinLon *=60;
       MinLon *= 1000;
 
+      TCHAR shortname[5];
+      _stprintf(shortname,_T("P%02d"),j);
       _stprintf(Buffer,
 	      TEXT("PFLAC,S,ADDWP,%02d%05.0f%c,%03d%05.0f%c,%s"),
 	      DegLat, MinLat, NoS, DegLon, MinLon, EoW, 
-	      decl->waypoint[j]->Name);
+	      shortname);
       if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
   }
 
-  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,LANDING"));
+  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,LNDG"));
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   // Reboot flarm to make declaration active, according to specs
