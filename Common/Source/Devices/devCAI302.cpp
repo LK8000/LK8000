@@ -29,6 +29,7 @@ using std::max;
 
 #pragma pack(push, 1)                  // force byte allignement
 
+/* UNUSED
 typedef struct{
   unsigned char result[3];
   unsigned char reserved[15];
@@ -39,6 +40,7 @@ typedef struct{
   unsigned char cai302ID;
   unsigned char reserved3;
 }cai302_Wdata_t;
+*/
 
 typedef struct{
   unsigned char result[3];
@@ -70,6 +72,7 @@ typedef struct{
                                                             // be shure there is space to hold the data
 }cai302_OdataPilot_t;
 
+/* UNUSED
 typedef struct{
   unsigned char result[3];
   unsigned char GliderRecordSize;
@@ -91,7 +94,7 @@ typedef struct{
   unsigned char  Spare[60];                                 // 302 expect more data than the documented filed
                                                             // be shure there is space to hold the data
 }cai302_Gdata_t;
-
+*/
 
 #pragma pack(pop)
 
