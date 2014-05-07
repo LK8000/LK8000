@@ -423,12 +423,19 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
             //Print the actual cross track error
             SelectObject(hDC, LK8InfoSmallFont);
-            double xtk=fabs(deviation);
-            if(xtk>1000) {
-                xtk/=1000;
-                if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f Km"),xtk);
-                else _stprintf(Buffer,TEXT("%d Km"),(int)round(xtk));
-            } else _stprintf(Buffer,TEXT("%d m"),(int)round(xtk));
+            double xtk=fabs(deviation); //here is in meters
+            if(DistanceUnit_Config==2) { //Km
+                if(xtk>1000) {
+                     xtk*=TOKILOMETER;
+                     if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f km"),xtk);
+                     else _stprintf(Buffer,TEXT("%d km"),(int)round(xtk));
+                 } else _stprintf(Buffer,TEXT("%d m"),(int)round(xtk));
+            } else { //Miles or Nautical miles
+                xtk*=DISTANCEMODIFY;
+                if(xtk<1) _stprintf(Buffer, TEXT("%.2f %s"),xtk,Units::GetDistanceName());
+                else if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f %s"),xtk,Units::GetDistanceName());
+                else _stprintf(Buffer,TEXT("%d %s"),(int)round(xtk),Units::GetDistanceName());
+            }
             LKWriteText(hDC,Buffer,posXTKx,posXTKy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,cdiColor,false);
 
             //Draw bearing pointer to next waypoint
