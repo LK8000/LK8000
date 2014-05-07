@@ -248,6 +248,7 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
         } else {
                 _stprintf(BufferValue,_T("   @%.1f"),MACCREADY);
 	}
+// TODO: topcenter never reset here?
 	_tcscat(topcenter_txt,BufferValue);
 
         MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rci.right-rci.right/4, midsplit, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
