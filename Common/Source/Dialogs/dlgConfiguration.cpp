@@ -4499,7 +4499,7 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       AverEffTime = 
 	(wp->GetDataField()->GetAsInteger());
-      InitLDRotary(&rotaryLD);
+        LKSW_ResetLDRotary=true;
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpBgMapcolor"));

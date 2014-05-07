@@ -17,6 +17,9 @@ short i, bsize;
 char ventabuffer[200];
 FILE *fp;
 #endif
+	#if TESTBENCH
+	StartupStore(_T("... Init LDRotary\n"));
+	#endif
 
 	switch (AverEffTime) {
 		case ae3seconds:
@@ -86,6 +89,14 @@ static short errs=0;
 char ventabuffer[200];
 FILE *fp;
 #endif
+	if (LKSW_ResetLDRotary) {
+		#if TESTBENCH
+		StartupStore(_T("... LD ROTARY SWITCH RESET\n"));
+		#endif
+		LKSW_ResetLDRotary=false;
+		InitLDRotary(&rotaryLD);
+	}
+
 	if (Calculated->OnGround) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"OnGround, ignore LDrotary\r\n");
@@ -96,13 +107,6 @@ FILE *fp;
 	}
 
 	if (ISCAR) {
-		if (LKSW_ResetLDRotary) {
-			#if TESTBENCH
-			StartupStore(_T("... LD ROTARY SWITCH RESET\n"));
-			#endif
-			LKSW_ResetLDRotary=false;
-			InitLDRotary(&rotaryLD);
-		}
 		goto _noautoreset;
 	}
 	
