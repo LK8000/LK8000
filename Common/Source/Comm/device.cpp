@@ -72,8 +72,8 @@ BOOL ExpectString(PDeviceDescriptor_t d, const  TCHAR *token){
   if (!d->Com)
     return FALSE;
 //  while ((ch = d->Com->GetChar()) != EOF) ====> EOF (End Of File) is plain wrong and did not work!!!
-  while ((ch = d->Com->GetChar()) > 31){
-        if(ch > 31) /* ignore control characters */
+  while ((ch = d->Com->GetChar()) != '\n'){
+	if(ch > 21) /* ignore contro characters */
 	{
            TMP[j++] = (unsigned)ch;
            if (token[i] == (unsigned)ch)
@@ -87,13 +87,13 @@ BOOL ExpectString(PDeviceDescriptor_t d, const  TCHAR *token){
   }
 #if TESTBENCH
   if(Result)
-	 StartupStore(_T("... expected string found :%s OK!\n"),TMP);
+	 StartupStore(_T("... FLARM TASK waypoint Declaration:%s OK!\n"),TMP);
   else
   {
 	if(i > 6)
-	  StartupStore(_T("... expected string not found!!!!:%s\n"),TMP);
+	  StartupStore(_T("... FLARM TASK waypoint Declaration Eror!!!!:%s\n"),TMP);
 	else
-       StartupStore(_T("... sentence ignored:%s\n"),TMP);
+       StartupStore(_T("... ignored:%s\n"),TMP);
   }
 #endif
   return(Result);
@@ -827,7 +827,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   BOOL result = TRUE;
 #define BUFF_LEN 512
   TCHAR Buffer[BUFF_LEN];
-// for(int i=0; i < 3; i++)
+ for(int i=0; i < 3; i++)
  {
   d->Com->StopRxThread();
   d->Com->SetRxTimeout(100);                     // set RX timeout to 50[ms]
