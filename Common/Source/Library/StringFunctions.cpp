@@ -776,7 +776,11 @@ void unicodetoascii(TCHAR *utext, int utextsize, char *atext) {
 
 }
 
-
+//
+// v5 NOTE about LK_tcsncpy
+// Remember: the destination must ALWAYS be sized numchars+1 at least!!
+// We set a safe 0 in dest[numchars] position. Careful!
+//
 
 #if USELKASSERT
 void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars, const unsigned int sizedest, const int line, const char *filename)
