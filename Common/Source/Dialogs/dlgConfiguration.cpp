@@ -815,7 +815,7 @@ static void GetFontDescription(TCHAR Description[], const TCHAR * prpName, int i
 }
 
 static void OnEditMapWindowFontClicked(WindowControl *Sender) {
-  TCHAR fontDesc[MAX_EDITFONT_DESC_LEN];
+  TCHAR fontDesc[MAX_EDITFONT_DESC_LEN+1];
   GetFontDescription(fontDesc, TEXT("prpMapWindowFont"), MAX_EDITFONT_DESC_LEN);
   if (dlgFontEditShowModal(fontDesc,
                             szRegistryFontMapWindowFont, 
@@ -825,7 +825,7 @@ static void OnEditMapWindowFontClicked(WindowControl *Sender) {
   }
 }
 static void OnEditMapLabelFontClicked(WindowControl *Sender) {
-  TCHAR fontDesc[MAX_EDITFONT_DESC_LEN];
+  TCHAR fontDesc[MAX_EDITFONT_DESC_LEN+1];
   GetFontDescription(fontDesc, TEXT("prpMapLabelFont"), MAX_EDITFONT_DESC_LEN);
   if (dlgFontEditShowModal(fontDesc,
                             szRegistryFontMapLabelFont, 
