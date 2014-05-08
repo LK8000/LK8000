@@ -19,6 +19,8 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
     double dyn_range = range*3.5;
 
     //StartupStore(_T("RANGE=%f\n"),dyn_range);
+    if (EnableSoundModes) LKSound(TEXT("LK_BELL.WAV"));
+
 
     if(pan && (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN))) {
         lon = PanLongitude;
@@ -87,7 +89,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
     for(i=1;i<NumberOfWayPoints;i++) {    // Consider only valid markers
         if ((WayPointCalc[i].WpType != WPT_AIRPORT)|| (WayPointCalc[i].WpType != WPT_OUTLANDING)) {
             DistanceBearing(lat,lon, WayPointList[i].Latitude, WayPointList[i].Longitude, &Dist, NULL);
-            if(Dist < (dyn_range/2)) {
+            if(Dist < (dyn_range)) {
     	        dlgAddMultiSelectListItem(NULL,i, IM_WAYPOINT, Dist);
             }
         }
@@ -118,7 +120,9 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
     }
     UnlockTaskData();
 
-
+    #if (WINDOWSPC>0)
+    if (EnableSoundModes) Sleep(1000); // let the sound be heard in sequence
+    #endif
     if(dlgGetNoElements() ==0) { 
         if(dyn_range < 120000) {
 	    dyn_range *=2;
@@ -127,6 +131,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
             DoStatusMessage(gettext(TEXT("_@M2248_")));  // _@M2248_  "No Near Object found!"
         }
     } else {
+        if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV"));
 	dlgMultiSelectListShowModal();
 	if(ValidTaskPoint(PanTaskEdit)) {
     	    MapWindow::Event_Pan(1);
