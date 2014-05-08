@@ -32,8 +32,8 @@ static int NoAirspace = 0;
 
 
 #define MAX_AIRFILEDS 3
-#define MAX_OUTLAND   2
-#define MAX_WAYPOINTS 3
+#define MAX_OUTLAND   3
+#define MAX_WAYPOINTS 10
 #define MAX_TASK      3
 #define MAX_AIRSPACES 10
 
@@ -504,14 +504,9 @@ ListElement* dlgMultiSelectListShowModal(void) {
     ItemIndex = -1;
 
     if (iNO_ELEMENTS == 0) {
-        if (EnableSoundModes)
-            PlayResource(TEXT("IDR_WAV_MM1"));
 
         return NULL;
     }
-
-    if (EnableSoundModes)
-        PlayResource(TEXT("IDR_WAV_MM4"));
 
     if (!ScreenLandscape) {
         char filename[MAX_PATH];
