@@ -177,6 +177,7 @@ void Topology::initCache()
   //Selecting caching scenarios based on available memory and topo size
   // Unfortunatelly I don't find a suitable algorithm to estimate the loaded
   // shapefile's memory footprint so we never choose mode2. KR
+  // v5 note by Paolo: mode2 had a critical bug in delete, so good we did not use it
   long free_size = CheckFreeRam();
   long bounds_size = sizeof(rectObj)*shpfile.numshapes;
 
@@ -193,6 +194,8 @@ void Topology::initCache()
   in_scale_last = false;
   
   for (int i=0; i<shpfile.numshapes; i++) shpCache[i] = NULL;
+
+  //StartupStore(_T("... Topology InitCache mode: %d  (free_size=%ld  bounds_size=%ld)\n"),cache_mode,free_size,bounds_size);
 
   switch (cache_mode) {
 	default:
@@ -232,6 +235,7 @@ void Topology::initCache()
 		}//for
 		break;
 
+#if 0 // buggy
 	case 2:
 		// Using shape array in memory
 		#ifdef DEBUG_TFC
@@ -250,13 +254,15 @@ void Topology::initCache()
 			if ( (shps[i] = addShape(i)) == NULL ) {
 				StartupStore(_T("------ WARN Topology,  addShape failed for shps[%d], fallback to mode0%s"), i, NEWLINE);
 				// Cleanup
-				for (int j=0; j<i; j++) delete(shps[i]);
+				for (int j=0; j<i; j++) delete(shps[i]); // BUG, should be using j not i
 				free(shps);
 				shps=NULL;
 				cache_mode = 0;
 				break;
 			}
 		}
+#endif
+
   } //sw
 }
 
@@ -499,7 +505,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 #ifdef DEBUG_TFC
   long free_size = CheckFreeRam();
-  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%li (%dms)%s"),shapes_visible_count, free_size, GetTickCount()-starttick,NEWLINE);
+  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%ldM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), GetTickCount()-starttick,NEWLINE);
 #endif
 }
 
