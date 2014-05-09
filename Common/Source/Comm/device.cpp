@@ -813,7 +813,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   _stprintf(Buffer,TEXT("PFLAC,S,NEWTASK,Task"));
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
-  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,TKOF"));
+  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,TAKEOFF"));
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   if(result == TRUE)
@@ -853,7 +853,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
       if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
   }
 
-  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,LNDG"));
+  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,LANDING"));
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   // Reboot flarm to make declaration active, according to specs
