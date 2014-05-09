@@ -179,7 +179,7 @@ int SerialPort::SetRxTimeout(int Timeout) {
         CommTimeouts.ReadTotalTimeoutConstant = 0;
     } else {
         // only total timeout used
-        CommTimeouts.ReadTotalTimeoutMultiplier = 0;
+        CommTimeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
         CommTimeouts.ReadTotalTimeoutConstant = Timeout;
     }
 
