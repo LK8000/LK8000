@@ -844,7 +844,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
       MinLon *=60;
       MinLon *= 1000;
 
-      TCHAR shortname[5];
+      TCHAR shortname[6];
       _stprintf(shortname,_T("P%02d"),j);
       _stprintf(Buffer,
 	      TEXT("PFLAC,S,ADDWP,%02d%05.0f%c,%03d%05.0f%c,%s"),
