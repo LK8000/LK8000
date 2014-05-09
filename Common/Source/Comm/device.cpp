@@ -65,41 +65,27 @@ BOOL devGetBaroAltitude(double *Value){
 }
 #endif
 
-BOOL ExpectString(PDeviceDescriptor_t d, const  TCHAR *token){
-  bool Result = false;
-  unsigned i=0;
-  TCHAR ch=0;
-#if TESTBENCH
-  int j=0;
-  TCHAR TMP[180] = _T("");
-#endif
+BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
+
+  int i=0, ch;
+
   if (!d->Com)
     return FALSE;
-//  while ((ch = d->Com->GetChar()) != EOF) ====> EOF (End Of File) is plain wrong and did not work!!!
-  while ((ch = d->Com->GetChar()) > 31){
-#if TESTBENCH
-    TMP[j++] = ch;
-#endif
-    if (token[i] == ch)
-       i++;
 
-    if (i ==( _tcslen(token)-2))
-    {
-       Result =TRUE;
-    }
+  while ((ch = d->Com->GetChar()) != EOF){
+
+    if (token[i] == (unsigned)ch) 
+      i++;
+    else
+      i=0;
+
+    if ((unsigned)i == _tcslen(token))
+      return(TRUE);
+
   }
-#if TESTBENCH
-  if(Result)
-	 StartupStore(_T("... expected string found :%s OK!\n"),TMP);
-  else
-  {
-	if(i > 6)
-	  StartupStore(_T("... expected string not found!!!!:%s\n"),TMP);
-	else
-       StartupStore(_T("... sentence ignored:%s\n"),TMP);
-  }
-#endif
-  return(Result);
+
+  return(FALSE);
+
 }
 
 
@@ -238,7 +224,7 @@ BOOL devInit(LPCTSTR CommandLine) {
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
-    std::set<std::tstring> UsedPort; // list of already used port
+    std::set<std::wstring> UsedPort; // list of already used port
     
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);
@@ -260,7 +246,7 @@ BOOL devInit(LPCTSTR CommandLine) {
         }
         
         ReadDeviceSettings(i, DeviceName);
-        DeviceList[i].Disabled = (_tcscmp(DeviceName, _T(DEV_DISABLED_NAME)) == 0);
+        DeviceList[i].Disabled = (wcscmp(DeviceName, _T(DEV_DISABLED_NAME)) == 0);
         if (DeviceList[i].Disabled) {
             StartupStore(_T(". Device %c is DISABLED.%s"), (_T('A') + i), NEWLINE);
             continue;
@@ -774,51 +760,25 @@ BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq)
 }
 
 
-int DeviceAddCheckSumStrg( TCHAR szStrg[] )
-{
-int i,iCheckSum=0;
-TCHAR  szCheck[254];
-
- if(szStrg[0] != '$')
-   return -1;
-
- iCheckSum = szStrg[1];
-  for (i=2; i < (int)_tcslen(szStrg); i++)
-  {
-	//  if(szStrgi0] != ' ')
-	    iCheckSum ^= szStrg[i];
-  }
-  _stprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
-  _tcscat(szStrg,szCheck);
-  return iCheckSum;
-}
-
 static BOOL 
 FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
   //devWriteNMEAString(d, Buffer);
 
   TCHAR tmp[512];
 
-  LKASSERT(Buffer!=NULL);
-  _sntprintf(tmp, 512, TEXT("$%s"), Buffer);
-  DeviceAddCheckSumStrg(tmp);
-//  StartupStore(_T("... FLARM TASK Declaration next sentence:\n"));
-//  StartupStore(_T("... FLARM TASK Declaration send    :%s"),tmp);
+  _sntprintf(tmp, 512, TEXT("$%s\r\n"), Buffer);
+
   if (d->Com)
     d->Com->WriteString(tmp);
-  _sntprintf(tmp, 512, TEXT("$%s"), Buffer);
-  tmp[7]= _T('A');
-  DeviceAddCheckSumStrg(tmp);
-//  StartupStore(_T("... FLARM TASK Declaration expect  :%s"),tmp);
 
+  Buffer[6]= _T('A');
   for(int i=0; i < 20; i++) /* try to get expected answer max 20 times*/
   {
-    if (ExpectString(d, tmp))
-    {
+    if (ExpectString(d, Buffer))
 	  return true;
-    }
     Sleep(20);
   }
+
   return false;
 
 };
@@ -829,7 +789,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   BOOL result = TRUE;
 #define BUFF_LEN 512
   TCHAR Buffer[BUFF_LEN];
-// for(int i=0; i < 3; i++)
+ for(int i=0; i < 3; i++)
  {
   d->Com->StopRxThread();
   d->Com->SetRxTimeout(100);                     // set RX timeout to 50[ms]
@@ -849,11 +809,11 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   
   _stprintf(Buffer,TEXT("PFLAC,S,COMPCLASS,%s"),decl->CompetitionClass);
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
-
-  _stprintf(Buffer,TEXT("PFLAC,S,NEWTASK,Tsk"));
+  
+  _stprintf(Buffer,TEXT("PFLAC,S,NEWTASK,Task"));
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
-  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,TKOFF"));
+  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,TAKEOFF"));
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   if(result == TRUE)
@@ -884,19 +844,16 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
       MinLon *=60;
       MinLon *= 1000;
 
+      TCHAR shortname[6];
+      _stprintf(shortname,_T("P%02d"),j);
       _stprintf(Buffer,
 	      TEXT("PFLAC,S,ADDWP,%02d%05.0f%c,%03d%05.0f%c,%s"),
 	      DegLat, MinLat, NoS, DegLon, MinLon, EoW, 
-	      decl->waypoint[j]->Name);
-
-      Buffer[38] = '\0'; // limit the wapointname to 5 char not to limit the no of waypoints
-      for(int k =0; k < (int)_tcslen(Buffer); k++) //remove * not to conflict with checksum indicator
-    	 if(Buffer[k]== (TCHAR)'*')
-    		 Buffer[k] = '_';
+	      shortname);
       if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
   }
 
-  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,LNDG"));
+  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,LANDING"));
   if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   // Reboot flarm to make declaration active, according to specs
