@@ -80,6 +80,45 @@ Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
 ============
+Version 4.1v
+============
+
+NEW
+
+GA mode:  Implemented projection of future positions in 2, 5 and 10 min on heading line
+
+
+
+CHANGES
+
+Flight data recorder open file in append mode, not resetting old one.
+Disable baro altitude only if difference from hgps is over 100m , when the baro altitude is steady while hgps is 
+ changing, and not on ground
+
+HSI: print cross track error also with other distance units
+
+Active map retuned to return more waypoints, and sounding like Oracle
+
+
+
+FIXES
+
+fix draw Task/FAI button not reset with profile reset
+Fix reset bottombar mode to CRUISE after a profile reset
+Fix reset FAI28/45 config after profile reset
+Fix bug iFlarmRadar not initialised and not reset on profile reset
+Fix bug airspace changes (permanent changes or temporary) never init and never reset.
+Fix bug not showing task lines in target dialog is DrawTsk flag was unselected
+Fix clock overlay in 480x640
+
+Many fixes for possible crashes
+
+
+
+
+
+
+============
 Version 4.1t
 ============
 
