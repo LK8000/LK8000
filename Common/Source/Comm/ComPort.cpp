@@ -56,7 +56,9 @@ return;
     if (--len > 0) {
         Write(szTmp, len);
     }
+#ifdef _UNICODE
     delete[] szTmp;
+#endif
 #endif
 }
 
