@@ -401,6 +401,7 @@ DRAW	:=\
 	$(DRW)/DrawFinalGlideBar.cpp \
 	$(DRW)/DrawFlarmRadar.cpp \
 	$(DRW)/DrawFlightMode.cpp \
+	$(DRW)/DrawFuturePos.cpp \
 	$(DRW)/DrawGlideThroughTerrain.cpp \
 	$(DRW)/DrawGPSStatus.cpp \
 	$(DRW)/DrawGreatCircle.cpp \
