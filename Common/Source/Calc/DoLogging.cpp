@@ -120,8 +120,8 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     double balt = -1;
     if (Basic->BaroAltitudeAvailable) {
       balt = AltitudeToQNEAltitude(Basic->BaroAltitude);
-      if (balt<0||balt>13000) balt=Basic->BaroAltitude;
-      // check for balt validity are performed in logpoint functions, also
+      // check for balt validity are NOT performed in logpoint functions anymore
+      if (balt<-1000||balt>15000) balt=Basic->BaroAltitude;
     } else {
       balt = 0;
     }
