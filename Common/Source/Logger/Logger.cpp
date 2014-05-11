@@ -307,9 +307,10 @@ void LogPointToFile(double Latitude, double Longitude, double Altitude,
 	return;
   }
 
-  if ((Altitude<0) && (BaroAltitude<0)) return;
-  Altitude = max(0.0,Altitude);
-  BaroAltitude = max(0.0,BaroAltitude);
+  // v5: very old bug since v2: Netherlands can have negative altitudes!
+  //if ((Altitude<0) && (BaroAltitude<0)) return;
+  //Altitude = max(0.0,Altitude);
+  //BaroAltitude = max(0.0,BaroAltitude);
 
   DegLat = (int)Latitude;
   MinLat = Latitude - DegLat;
