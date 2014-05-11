@@ -173,6 +173,11 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound)
   int i;
   // Search from end of list (allow overwrites by user)
   for (i=StatusMessageData_Size - 1; i>0; i--) {
+    #if BUGSTOP
+    LKASSERT(i>=0);
+    #else
+    if (i<0) break;
+    #endif
     if (wcscmp(text, StatusMessageData[i].key) == 0) {
       LocalMessage = StatusMessageData[i];
       break;
@@ -187,7 +192,8 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound)
   TCHAR msgcache[1024];
   if (LocalMessage.doStatus) {
     
-    wcscpy(msgcache, gettext(text));
+    LK_tcsncpy(msgcache,gettext(text),800);
+    // wcscpy(msgcache, gettext(text));
     if (data != NULL) {
       wcscat(msgcache, TEXT(" "));
       wcscat(msgcache, data);

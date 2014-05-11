@@ -101,6 +101,10 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
 
 int nMaxValueValueSize = MAX_PATH*2 + 6;	// max regkey name is 256 chars + " = "
 
+#if (WINDOWSPC>0)
+static bool isDefaultProfile=false; // needed to avoid screensize changes from custom profiles on PC
+#endif
+
 //
 // Returns true if at least one value was found,
 // excluded comments and empty lines
@@ -109,6 +113,14 @@ bool LKProfileLoad(const TCHAR *szFile)
 {
   #if TESTBENCH
   StartupStore(_T("... LoadProfile <%s>%s"),szFile,NEWLINE);
+  #endif
+
+  #if (WINDOWSPC>0)
+  if (_tcscmp(defaultProfileFile,szFile)==0) {
+     isDefaultProfile=true;
+  } else {
+     isDefaultProfile=false;
+  }
   #endif
 
   bool found = false;
@@ -767,9 +779,12 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
 
 
 #if (WINDOWSPC>0)
+
   extern bool CommandResolution;
   // Do NOT load resolution from profile, if we have requested a resolution from command line
-  if (!CommandResolution) {
+  // And also, we can only load saved screen parameters from the default profile!
+  // It does not work from custom profiles.
+  if (!CommandResolution && isDefaultProfile) {
       PREAD(sname,svalue,szRegistryScreenSize, &ScreenSize);
       if (matchedstring) return;
       PREAD(sname,svalue,szRegistryScreenSizeX, &ScreenSizeX);
@@ -786,13 +801,13 @@ void LKParseProfileString(const TCHAR *sname, const TCHAR *svalue) {
           return;
       }
   }
+#endif
 
   #if TESTBENCH
   if (!_tcscmp(sname,_T("LKVERSION")) && !_tcscmp(sname,_T("PROFILEVERSION"))) {
       StartupStore(_T("... UNMANAGED PARAMETER inside profile: <%s>=<%s>\n"),sname,svalue);
   }
   #endif
-#endif
 
   return;
 
