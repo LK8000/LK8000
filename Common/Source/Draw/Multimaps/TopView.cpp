@@ -255,7 +255,10 @@ _nomoredeclutter:
 	if (Current_Multimap_SizeY<SIZE4 && !MapSpaceMode==MSM_VISUALGLIDE) {
 		DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
 	} else {
-    	 	if (TrackBar) DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
+	    if (TrackBar) {
+    	 	    DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
+    	 	    if (ISGAAIRCRAFT) DrawFuturePos(hdc, Orig, DrawRect, true);
+    	 	}
 	}
      break;
 
@@ -263,6 +266,7 @@ _nomoredeclutter:
      default:
 	if (TrackBar) {
 		DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
+		if (ISGAAIRCRAFT) DrawFuturePos(hdc, Orig, DrawRect, true);
 	}
 	break;
   }

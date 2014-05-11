@@ -441,7 +441,10 @@ _skip_2:
   }
 
   if (NOTANYPAN) {
-	if (TrackBar) DrawHeading(hdc, Orig, DrawRect); 
+	if (TrackBar) {
+	    DrawHeading(hdc, Orig, DrawRect);
+	    if (ISGAAIRCRAFT) DrawFuturePos(hdc, Orig, DrawRect);
+	}
   }
 
   #if USETOPOMARKS

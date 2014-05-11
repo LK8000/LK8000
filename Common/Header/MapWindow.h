@@ -564,6 +564,7 @@ class MapWindow {
   static int DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc, double bearing);
   static void DrawHSIarc(HDC hdc, POINT Orig, RECT rc );
   static void DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc , double, double);
+  static void DrawFuturePos(HDC hdc, const POINT Orig, const RECT rc, const bool headUpLine = false);
 
   //Here the staff for the new HSI info screen: remove after what is not needed
   static HSIreturnStruct DrawHSI(HDC hDC, const RECT);
