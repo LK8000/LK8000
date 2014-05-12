@@ -25,7 +25,9 @@ void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance) {
   }
 
   if (do_advance) {
-    ActiveWayPoint++;
+    LKASSERT(ValidTaskPoint(ActiveWayPoint+1));
+    if (ValidTaskPoint(ActiveWayPoint+1)) ActiveWayPoint++;
+
   }
 
   SelectedWaypoint = TASKINDEX; 

@@ -169,7 +169,7 @@ static void SetValues(void) {
   WndProperty* wp;
   WndButton *wb;
   TCHAR buffer[80];
-  TCHAR buffer2[80];
+  TCHAR buffer2[160]; // must contain buffer
 
   int bearing;
   int hdist;

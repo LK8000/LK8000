@@ -3244,8 +3244,13 @@ void NextUpDown(int UpDown)
 	  }
 	}
 	ActiveWayPoint ++;
-	AdvanceArmed = false;
-	CALCULATED_INFO.LegStartTime = GPS_INFO.Time ;
+        LKASSERT(ValidTaskPoint(ActiveWayPoint));
+        if (ValidTaskPoint(ActiveWayPoint)) {
+	    AdvanceArmed = false;
+	    CALCULATED_INFO.LegStartTime = GPS_INFO.Time ;
+        } else {
+	    ActiveWayPoint--;
+        }
       }
       // No more, try first
       else 
@@ -3289,8 +3294,13 @@ void NextUpDown(int UpDown)
     aatdistance.ResetEnterTrigger(ActiveWayPoint);    
   } 
   else if (UpDown==0) {
-    SelectedWaypoint = Task[ActiveWayPoint].Index;
-    PopupWaypointDetails();
+    #if BUGSTOP
+    LKASSERT(ActiveWayPoint>=0);
+    #endif
+    if (ActiveWayPoint>=0) {
+        SelectedWaypoint = Task[ActiveWayPoint].Index;
+        PopupWaypointDetails();
+    }
   }
   if (ActiveWayPoint>=0) {
     SelectedWaypoint = Task[ActiveWayPoint].Index;
