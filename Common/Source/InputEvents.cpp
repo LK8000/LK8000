@@ -3187,44 +3187,51 @@ void MacCreadyProcessing(int UpDown) {
 }
 
 /*
-        1	Next waypoint
-        0	Show waypoint details
-        -1	Previous waypoint
-        2	Next waypoint with wrap around
-        -2	Previous waypoint with wrap around
- */
-void NextUpDown(int UpDown) {
+	1	Next waypoint
+	0	Show waypoint details
+	-1	Previous waypoint
+	2	Next waypoint with wrap around
+	-2	Previous waypoint with wrap around
+*/
+void NextUpDown(int UpDown)
+{
 
-    if (!ValidTaskPoint(ActiveWayPoint)) { // BUGFIX 091116
-        StartupStore(_T(". DBG-801 activewaypoint%s"), NEWLINE);
-        return;
-    }
+  if (!ValidTaskPoint(ActiveWayPoint)) {	// BUGFIX 091116
+	StartupStore(_T(". DBG-801 activewaypoint%s"),NEWLINE);
+	return;
+  }
 
-    LockTaskData();
+  LockTaskData();
 
-    if (UpDown > 0) {
-        // this was a bug. checking if AWP was < 0 assuming AWP if inactive was -1; actually it can also be 0, a bug is around
-        if (ActiveWayPoint < MAXTASKPOINTS) {
-            // Increment Waypoint
-            if (Task[ActiveWayPoint + 1].Index >= 0) {
-                if (ActiveWayPoint == 0) {
-                    // manual start
-                    // TODO bug: allow restart
-                    // TODO bug: make this work only for manual
-                    if (CALCULATED_INFO.TaskStartTime == 0) {
-                        CALCULATED_INFO.TaskStartTime = GPS_INFO.Time;
-                    }
-                }
-                ActiveWayPoint++;
-                AdvanceArmed = false;
-                CALCULATED_INFO.LegStartTime = GPS_INFO.Time;
-            }                // No more, try first
-            else
-                if ((UpDown == 2) && (Task[0].Index >= 0)) {
-                /* ****DISABLED****
-                if(ActiveWayPoint == 0)	{
-                  // TODO bug: allow restart
-                  // TODO bug: make this work only for manual
+  if(UpDown>0) {
+    // this was a bug. checking if AWP was < 0 assuming AWP if inactive was -1; actually it can also be 0, a bug is around
+    if(ActiveWayPoint < MAXTASKPOINTS) {
+      // Increment Waypoint
+      if(Task[ActiveWayPoint+1].Index >= 0) {
+	if(ActiveWayPoint == 0)	{
+	  // manual start
+	  // TODO bug: allow restart
+	  // TODO bug: make this work only for manual
+	  if (CALCULATED_INFO.TaskStartTime==0) {
+	    CALCULATED_INFO.TaskStartTime = GPS_INFO.Time;
+	  }
+	}
+	ActiveWayPoint ++;
+        LKASSERT(ValidTaskPoint(ActiveWayPoint));
+        if (ValidTaskPoint(ActiveWayPoint)) {
+	    AdvanceArmed = false;
+	    CALCULATED_INFO.LegStartTime = GPS_INFO.Time ;
+        } else {
+	    ActiveWayPoint--;
+        }
+      }
+      // No more, try first
+      else 
+        if((UpDown == 2) && (Task[0].Index >= 0)) {
+          /* ****DISABLED****
+          if(ActiveWayPoint == 0)	{
+            // TODO bug: allow restart
+            // TODO bug: make this work only for manual
             
                   // TODO bug: This should trigger reset of flight stats, but 
                   // should ask first...
@@ -3258,14 +3265,20 @@ void NextUpDown(int UpDown) {
         }
         aatdistance.ResetEnterTrigger(ActiveWayPoint);
     }
-    else if (UpDown == 0) {
+  } 
+  else if (UpDown==0) {
+    #if BUGSTOP
+    LKASSERT(ActiveWayPoint>=0);
+    #endif
+    if (ActiveWayPoint>=0) {
         SelectedWaypoint = Task[ActiveWayPoint].Index;
         PopupWaypointDetails();
     }
-    if (ActiveWayPoint >= 0) {
-        SelectedWaypoint = Task[ActiveWayPoint].Index;
-    }
-    UnlockTaskData();
+  }
+  if (ActiveWayPoint>=0) {
+    SelectedWaypoint = Task[ActiveWayPoint].Index;
+  }
+  UnlockTaskData();
 }
 
 
