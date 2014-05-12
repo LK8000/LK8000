@@ -256,7 +256,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		StartupStore(_T("... MapWndProc WM_SIZE detected, DrawThread not running\n"));
 		LKASSERT(hdcScreen);
 		#endif
-		ReleaseDC(hWnd, hdcScreen);
+		if (hdcScreen) ReleaseDC(hWnd, hdcScreen);
 
 		LKASSERT(hdcDrawWindow);
 		DeleteDC(hdcDrawWindow);
