@@ -90,6 +90,10 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     w1lat = Task[ActiveWayPoint].AATTargetLat;
     w1lon = Task[ActiveWayPoint].AATTargetLon;
   } else {
+    LKASSERT(ValidTaskPoint(ActiveWayPoint));
+    if (!ValidTaskPoint(ActiveWayPoint)) {
+        UnlockTaskData(); return;
+    }
     w1lat = WayPointList[TASKINDEX].Latitude;
     w1lon = WayPointList[TASKINDEX].Longitude;
   }
