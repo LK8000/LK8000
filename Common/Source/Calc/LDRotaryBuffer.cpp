@@ -84,7 +84,7 @@ FILE *fp;
 // Called by LD  in Calc thread
 //
 void InsertLDRotary(ldrotary_s *buf, double distance, NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-static short errs=0;
+static unsigned short errs=0;
 #ifdef DEBUG_ROTARY
 char ventabuffer[200];
 FILE *fp;
@@ -120,14 +120,16 @@ FILE *fp;
 	}
 
 	if (distance<3 || distance>150) { // just ignore, no need to reset rotary
-		if (errs>2) {
+		if (errs>9) {
 #ifdef DEBUG_ROTARY
 			sprintf(ventabuffer,"Rotary reset after exceeding errors\r\n");
 			if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 				    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
+			#if TESTBENCH
+			StartupStore(_T("... LDROTARY RESET, distance errors\n"));
+			#endif
 			InitLDRotary(&rotaryLD);
-			errs=0;
 			return;
 
 		}
