@@ -581,7 +581,6 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *last
     GetAttribute(node, _T("longitude"), newPoint.Longitude);
     GetAttribute(node, _T("altitude"), newPoint.Altitude);
     GetAttribute(node, _T("flags"), newPoint.Flags);
-#if 0
     GetAttribute(node, _T("comment"), szAttr);
     if (szAttr) {
         newPoint.Comment = (TCHAR*) malloc((_tcslen(szAttr) + 1) * sizeof (TCHAR));
@@ -596,7 +595,6 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *last
             _tcscpy(newPoint.Details, szAttr);
         }
     }
-#endif
     GetAttribute(node, _T("format"), newPoint.Format);
     GetAttribute(node, _T("freq"), szAttr);
     if (szAttr) {
@@ -617,6 +615,13 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *last
         return;
     }
     mWayPointLoaded[newPoint.Name] = ix;
+
+    if(newPoint.Details) {
+        free(newPoint.Details);
+    }
+    if(newPoint.Comment) {
+        free(newPoint.Comment);
+    }
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
@@ -979,14 +984,12 @@ bool CTaskFileHelper::SaveWayPoint(XMLNode node, const WAYPOINT& WayPoint) {
     if (_tcslen(WayPoint.Code) > 0) {
         SetAttribute(node, _T("code"), (LPCTSTR)(WayPoint.Code));
     }
-#if 0 // NO THIS IS VERY BAD, DETAILS CAN BE HUGE
     if (WayPoint.Comment && _tcslen(WayPoint.Comment) > 0) {
         SetAttribute(node, _T("comment"), WayPoint.Comment);
     }
     if (WayPoint.Details && _tcslen(WayPoint.Details) > 0) {
         SetAttribute(node, _T("details"), WayPoint.Details);
     }
-#endif
     SetAttribute(node, _T("format"), WayPoint.Format);
     if (_tcslen(WayPoint.Freq) > 0) {
         SetAttribute(node, _T("freq"), WayPoint.Freq);

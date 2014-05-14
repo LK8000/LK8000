@@ -64,6 +64,13 @@ bool LoadTaskWaypoints(HANDLE hFile) {
       return false;
     }
     if (Task[i].Index != -1) { //  091213 CHECK do not load reserved WP
+        
+ // WE SHOULD NOT HAVE ANY VALID Details or Comment here.
+ // In case of old tsk, we shall have still non-null data, but it is a mistake 
+ // and this is why we set it to NULL here, the pointer is fake, saved from old session.
+         
+      read_waypoint.Comment = NULL;        
+      read_waypoint.Details = NULL;
       Task[i].Index = FindOrAddWaypoint(&read_waypoint,false);
     }
   }
@@ -73,6 +80,11 @@ bool LoadTaskWaypoints(HANDLE hFile) {
       return false;
     }
     if (StartPoints[i].Index != -1) {
+// WE SHOULD NOT HAVE ANY VALID Details or Comment here.
+ // In case of old tsk, we shall have still non-null data, but it is a mistake 
+ // and this is why we set it to NULL here, the pointer is fake, saved from old session.
+      read_waypoint.Comment = NULL;        
+      read_waypoint.Details = NULL;
       StartPoints[i].Index = FindOrAddWaypoint(&read_waypoint,false);
     }
   }
