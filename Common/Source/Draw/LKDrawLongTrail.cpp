@@ -40,6 +40,8 @@ double MapWindow::LKDrawLongTrail( HDC hdc, const POINT Orig, const RECT rc)
   // below this distance, no painting
   nearby=14;
 
+    HPEN oldPen = (HPEN)SelectObject(hdc, hSnailPens[3]); // blue color
+
     // draw from oldest to newest point
     // the "+1" is the latest point in the snail trail, to connect the two trails
     for(i=0; i<iLongSnailNext+1; i++) {
@@ -77,9 +79,6 @@ double MapWindow::LKDrawLongTrail( HDC hdc, const POINT Orig, const RECT rc)
 	    }
         }
 
-        SelectObject(hdc, hSnailPens[3]); // blue color
-
-
         if (!last_visible) { // draw set cursor at P1
 	    #ifndef NOLINETO
             MoveToEx(hdc, P1.Screen.x, P1.Screen.y, NULL);
@@ -94,7 +93,8 @@ double MapWindow::LKDrawLongTrail( HDC hdc, const POINT Orig, const RECT rc)
         point_lastdrawn = P1.Screen;
         last_visible = this_visible;
 
-    } // big for loop 
+    } // big for loop
+    SelectObject(hdc, oldPen);
 
 #if 0
   // TODO we may draw to oldest point in the snailtrail, instead.. if really we want to do it

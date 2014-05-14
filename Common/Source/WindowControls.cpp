@@ -1994,7 +1994,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
    	  	DeleteObject(Membitmap);
    	 	DeleteDC    (Memhdc);
 
-		DeleteDC(hDC);
 		EndPaint(hWnd, &ps);
     return(0);
 
