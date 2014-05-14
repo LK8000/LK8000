@@ -64,6 +64,8 @@ bool LoadTaskWaypoints(HANDLE hFile) {
       return false;
     }
     if (Task[i].Index != -1) { //  091213 CHECK do not load reserved WP
+      read_waypoint.Comment = NULL;        
+      read_waypoint.Details = NULL;
       Task[i].Index = FindOrAddWaypoint(&read_waypoint,false);
     }
   }
@@ -73,6 +75,8 @@ bool LoadTaskWaypoints(HANDLE hFile) {
       return false;
     }
     if (StartPoints[i].Index != -1) {
+      read_waypoint.Comment = NULL;        
+      read_waypoint.Details = NULL;
       StartPoints[i].Index = FindOrAddWaypoint(&read_waypoint,false);
     }
   }

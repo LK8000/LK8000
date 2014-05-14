@@ -13,8 +13,6 @@
 // this is called only from Task LoadTaskWaypoints
 int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
     // this is an invalid pointer!
-    read_waypoint->Details = 0;
-    read_waypoint->Comment = 0;
     read_waypoint->Name[NAME_SIZE-1] = 0; // prevent overrun if data is bogus
 
     int waypoint_index=-1;
@@ -28,6 +26,10 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
             return false;
         }
         memcpy(new_waypoint, read_waypoint, sizeof(WAYPOINT));
+        // this is  needed for avoid freeing twice ...
+        read_waypoint->Details = NULL;
+        read_waypoint->Comment = NULL;
+
         // 100229 set no-save flag on
         new_waypoint->FileNum=-1;
         waypoint_index = NumberOfWayPoints-1;

@@ -62,6 +62,7 @@ bool LoadGpxTask(LPCTSTR szFileName) {
             XMLNode WPnode,detailNode;
             WAYPOINT newPoint;
             for(int i=0,idx=0;i<numWPnodes;i++) {
+                memset(newPoint, 0, sizeof(newPoint));
                 WPnode=routeNode.getChildNode(i);
                 if(_tcscmp(WPnode.getName(),TEXT("rtept"))==0) {
                     dataStr=WPnode.getAttribute(TEXT("lat"));
@@ -119,6 +120,13 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                     newPoint.Style */
                     if(ISGAAIRCRAFT && (idx==0 || idx==numOfWPs-1)) Task[idx++].Index=FindOrAddWaypoint(&newPoint,true); //if GA check widely if we have already depart and dest airports
                     else Task[idx++].Index=FindOrAddWaypoint(&newPoint,false); //else add WP normally
+
+                    if (newPoint.Details) {
+                        free(newPoint.Details);
+                    }
+                    if (newPoint.Comment) {
+                        free(newPoint.Comment);
+                    }
                 } //if(rtept)
             } //for(each node in rtept)
         } //if(rootNode)

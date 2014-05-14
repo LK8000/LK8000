@@ -599,6 +599,12 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *last
     GetAttribute(node, _T("style"), newPoint.Style);
 
     mWayPointLoaded[newPoint.Name] = FindOrAddWaypoint(&newPoint,lookupAirfield);
+    if(newPoint.Details) {
+        free(newPoint.Details);
+    }
+    if(newPoint.Comment) {
+        free(newPoint.Comment);
+    }
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
@@ -626,18 +632,21 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
         return false;
     }
 
+    bool bSuccess = false;
     int ContentSize = 0;
-    LPCTSTR szContent = topNode.createXMLString(1, &ContentSize);
+    LPTSTR szContent = topNode.createXMLString(1, &ContentSize);
     Utf8File file;
-    if (!file.Open(szFileName, Utf8File::io_create)) {
-        return false;
+    if (file.Open(szFileName, Utf8File::io_create)) {
+
+        file.WriteLn(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        file.WriteLn(szContent);
+        file.Close();
+        
+        bSuccess = true;
     }
+    free(szContent);
 
-    file.WriteLn(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    file.WriteLn(szContent);
-    file.Close();
-
-    return true;
+    return bSuccess;
 }
 
 bool CTaskFileHelper::SaveOption(XMLNode node) {
