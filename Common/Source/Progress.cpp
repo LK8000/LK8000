@@ -168,7 +168,7 @@ HWND CreateProgressDialog(const TCHAR* text) {
 
 	// AA
 	HBITMAP oldBitmap = (HBITMAP)SelectObject(hTempDC, hWelcomeBitmap);
-        SelectObject(hTempDC, LKSTARTBOTTOMFONT);
+    HFONT   oldFont = (HFONT) SelectObject(hTempDC, LKSTARTBOTTOMFONT);
 	SIZE TextSize;
         GetTextExtentPoint(hTempDC, _T("X"),1, &TextSize);
         yFontSize = TextSize.cy;
@@ -199,6 +199,7 @@ HWND CreateProgressDialog(const TCHAR* text) {
 
 
 	SelectObject(hTempDC, oldBitmap);
+	SelectObject(hTempDC, oldFont);
 	DeleteObject(hWelcomeBitmap);
 	if (DeleteDC(hTempDC)==0) StartupStore(_T("**** Cannot delete hTempDC\n"));
   }
@@ -221,13 +222,14 @@ HWND CreateProgressDialog(const TCHAR* text) {
 
   // we cannot use LKPen here because they are not still initialised for startup menu. no problem
   HPEN hP=(HPEN)  CreatePen(PS_SOLID,NIBLSCALE(1),RGB_GREEN);
-  SelectObject(hStartupDC,hP);
-  SelectObject(hStartupDC,hB);
+  HPEN ohP = (HPEN)SelectObject(hStartupDC,hP);
+  HBRUSH ohB = (HBRUSH)SelectObject(hStartupDC,hB);
   Rectangle(hStartupDC, PrintAreaR.left,PrintAreaR.top,PrintAreaR.right,PrintAreaR.bottom);
+  SelectObject(hStartupDC,ohP);
   DeleteObject(hP);
 
   hP=(HPEN)  CreatePen(PS_SOLID,NIBLSCALE(1),RGB_BLACK);
-  SelectObject(hStartupDC,hP);
+  ohP = (HPEN)SelectObject(hStartupDC,hP);
   Rectangle(hStartupDC, PrintAreaR.left+NIBLSCALE(2),PrintAreaR.top+NIBLSCALE(2),PrintAreaR.right-NIBLSCALE(2),PrintAreaR.bottom-NIBLSCALE(2));
 
   SetTextColor(hStartupDC,RGB_WHITE);
@@ -240,6 +242,8 @@ HWND CreateProgressDialog(const TCHAR* text) {
   ExtTextOut(hStartupDC,PrintAreaR.left+(xFontSize/2),PrintAreaR.top + ((PrintAreaR.bottom - PrintAreaR.top)/2)-(yFontSize/2),
 	ETO_OPAQUE,NULL,text,maxchars,NULL);
 
+  SelectObject(hStartupDC,ohB);
+  SelectObject(hStartupDC,ohP);
   SelectObject(hStartupDC,oldFont);
   // Sleep(300); // Slow down display of data? No because in case of important things, Sleep is set by calling part
 

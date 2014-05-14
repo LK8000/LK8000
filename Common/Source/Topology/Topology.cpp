@@ -158,6 +158,8 @@ Topology::Topology(const TCHAR* shpname) {
   scaleThreshold = 0;
   shpCache= NULL;
   hBitmap = NULL;
+  hPen = NULL;
+  hbBrush = NULL;
 
   shpBounds = NULL;
   shps = NULL;
