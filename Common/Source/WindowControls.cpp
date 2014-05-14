@@ -2182,6 +2182,11 @@ WndForm::WndForm(HWND Parent, const TCHAR *Name, const TCHAR *Caption,
   mClientRect.bottom=Width;
   mClientRect.right=Height;
 
+  mTitleRect.top=0;
+  mTitleRect.left=0;
+  mTitleRect.bottom=0;
+  mTitleRect.right=Height;
+
   cbTimerID = SetTimer(GetHandle(),1001,500,NULL);
 
   mModalResult = 0;
