@@ -404,8 +404,8 @@ bool LoadCupTask(LPCTSTR szFileName) {
         fclose(stream);
     }
     if(!ISGAAIRCRAFT) {
-        // Landing don't exist in LK Task Systems Remove It if is same as previous;
-        if ( bLoadComplet && (TaskWayPoint(0) == TaskWayPoint(getFinalWaypoint())) ) {
+        // Landing don't exist in LK Task Systems, so Remove It;
+        if ( bLoadComplet ) {
             RemoveTaskPoint(getFinalWaypoint());
         }
     }
