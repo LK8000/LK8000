@@ -60,7 +60,7 @@
 #endif
 
 
-WindAnalyser::WindAnalyser()
+WindAnalyser::WindAnalyser() : minVector(), maxVector()
 {
   //initialisation
   active=false;

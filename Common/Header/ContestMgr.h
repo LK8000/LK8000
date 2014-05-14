@@ -182,7 +182,7 @@ public:
  * Constructor to create dummy invalid contest result object.
  */
 inline CContestMgr::CResult::CResult():
-  _type(TYPE_INVALID), _predicted(0), _distance(0), _score(0)
+  _type(TYPE_INVALID), _predicted(0), _distance(0), _score(0), _speed(0)
 
 {
 }

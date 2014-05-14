@@ -1585,7 +1585,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
   int parsing_state = 0;
   CAirspace *newairspace = NULL;
   // Variables to store airspace parameters
-  TCHAR Name[NAME_SIZE+1];
+  TCHAR Name[NAME_SIZE+1] = {0};
   CPoint2DArray points;
   double Radius = 0;
   double Latitude = 0;

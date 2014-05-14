@@ -1994,7 +1994,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
    	  	DeleteObject(Membitmap);
    	 	DeleteDC    (Memhdc);
 
-		DeleteDC(hDC);
 		EndPaint(hWnd, &ps);
     return(0);
 
@@ -2181,6 +2180,11 @@ WndForm::WndForm(HWND Parent, const TCHAR *Name, const TCHAR *Caption,
   mClientRect.left=0;
   mClientRect.bottom=Width;
   mClientRect.right=Height;
+
+  mTitleRect.top=0;
+  mTitleRect.left=0;
+  mTitleRect.bottom=0;
+  mTitleRect.right=Height;
 
   cbTimerID = SetTimer(GetHandle(),1001,500,NULL);
 
