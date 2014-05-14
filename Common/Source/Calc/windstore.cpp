@@ -19,10 +19,11 @@
 #include "windstore.h"
 
 
-WindStore::WindStore() {
+WindStore::WindStore() : _lastWind() {
   //create the lists
   windlist = new WindMeasurementList();
   updated = true;
+  _lastAltitude = -10000.0; // invalide altitude for warantly first calculation done.
 }
 
 
