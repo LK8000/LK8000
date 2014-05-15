@@ -28,6 +28,8 @@
 // NOTE: up to v4 we have always saved taskpoints WITH NO COMMENTS AND NO DETAILS
 // only the old pointers to them, in the waypointlist, were save to tsk, but not used anymore.
 
+// Returns the waypoint index, or -1 if error (an unsigned int, not a bool)
+
 int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
 
     // WE SHOULD NOT HAVE ANY VALID Details or Comment here.
@@ -35,8 +37,8 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
     // and this is why we set it to NULL here, and no free()!!! We cant free because
     // the pointer is fake, saved from old session.
 
-    read_waypoint->Details = 0;
-    read_waypoint->Comment = 0;
+    read_waypoint->Details = NULL;
+    read_waypoint->Comment = NULL;
     read_waypoint->Name[NAME_SIZE-1] = 0; // prevent overrun if data is bogus
 
     int waypoint_index=-1;
@@ -54,7 +56,7 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
     if (waypoint_index == -1) { // waypoint not found, so add it!
         WAYPOINT* new_waypoint = GrowWaypointList();
         if (!new_waypoint) { // error, can't allocate!
-            return false;
+            return -1;
         }
 
         //
@@ -62,6 +64,8 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         // SO WE DONT NEED TO USE COMMENTS and DETAILS. They are useless.
         //
         memcpy(new_waypoint, read_waypoint, sizeof(WAYPOINT));
+        read_waypoint->Details = NULL;
+        read_waypoint->Comment = NULL;
         new_waypoint->FileNum=-1; // HERE WE SET THE FLAG FOR "DO NOT SAVE TO WAYPOINT FILE"
         waypoint_index = NumberOfWayPoints-1;
     }
