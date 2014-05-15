@@ -264,6 +264,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
 
             switch (FileSection) {
                 case Waypoint:
+                    memset(&newPoint, 0, sizeof(newPoint));
                     if (ParseCUPWayPointString(szString, &newPoint)) {
                         mapWaypoint[newPoint.Name] = newPoint;
                     }
@@ -442,6 +443,16 @@ bool LoadCupTask(LPCTSTR szFileName) {
         }
     }
     UnlockTaskData();
+    for (mapCode2Waypoint_t::iterator It = mapWaypoint.begin(); It != mapWaypoint.end(); ++It) {
+        if (It->second.Comment) {
+            free(It->second.Comment);
+        }
+        if (It->second.Details) {
+            free(It->second.Details);
+        }
+    }
+    mapWaypoint.clear();
+
     return ValidTaskPoint(0);
 }
 
