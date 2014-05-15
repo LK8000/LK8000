@@ -91,7 +91,10 @@ void UnlockTaskData() {
   LeaveCriticalSection(&CritSec_TaskData);
 }
 
-
+/*
+ * LockFlightData is used by Calc thread to protect CALCULATED_INFO and GPS_INFO while
+ * and FLARM data inside GPS_INFO of course
+ */
 void LockFlightData() {
   EnterCriticalSection(&CritSec_FlightData);
   csCount_FlightData++;
