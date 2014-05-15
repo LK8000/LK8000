@@ -64,8 +64,8 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         // SO WE DONT NEED TO USE COMMENTS and DETAILS. They are useless.
         //
         memcpy(new_waypoint, read_waypoint, sizeof(WAYPOINT));
-        read_waypoint->Details = NULL;
-        read_waypoint->Comment = NULL;
+        new_waypoint->Details = NULL;
+        new_waypoint->Comment = NULL;
         new_waypoint->FileNum=-1; // HERE WE SET THE FLAG FOR "DO NOT SAVE TO WAYPOINT FILE"
         waypoint_index = NumberOfWayPoints-1;
     }
