@@ -31,14 +31,6 @@
 // Returns the waypoint index, or -1 if error (an unsigned int, not a bool)
 
 int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
-
-    // WE SHOULD NOT HAVE ANY VALID Details or Comment here.
-    // In case of old tsk, we shall have still non-null data, but it is a mistake 
-    // and this is why we set it to NULL here, and no free()!!! We cant free because
-    // the pointer is fake, saved from old session.
-
-    read_waypoint->Details = NULL;
-    read_waypoint->Comment = NULL;
     read_waypoint->Name[NAME_SIZE-1] = 0; // prevent overrun if data is bogus
 
     int waypoint_index=-1;
@@ -64,8 +56,11 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         // SO WE DONT NEED TO USE COMMENTS and DETAILS. They are useless.
         //
         memcpy(new_waypoint, read_waypoint, sizeof(WAYPOINT));
+        // this is  needed for avoid freeing twice ...
+        // ownership of allocated memory is transfered from "read_waypoint" to "new_waypoint"
         read_waypoint->Details = NULL;
         read_waypoint->Comment = NULL;
+        
         new_waypoint->FileNum=-1; // HERE WE SET THE FLAG FOR "DO NOT SAVE TO WAYPOINT FILE"
         waypoint_index = NumberOfWayPoints-1;
     }
