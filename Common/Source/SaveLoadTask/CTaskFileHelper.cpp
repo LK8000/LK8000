@@ -655,6 +655,7 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
 
         bSuccess = true;
     }
+    free(szContent);
 
     return bSuccess;
 }
