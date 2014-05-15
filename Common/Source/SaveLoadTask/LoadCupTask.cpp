@@ -290,18 +290,42 @@ bool LoadCupTask(LPCTSTR szFileName) {
                                 if (It != mapWaypoint.end()) {
                                     if (bTakeOff) {
                                         // skip TakeOff Set At Home Waypoint
-                                        HomeWaypoint = FindOrAddWaypoint(&(It->second),false);
-                                        bTakeOff = false;
+                                        int ix = FindOrAddWaypoint(&(It->second),false);
+                                        if (ix>=0) {
+                                            HomeWaypoint = ix;
+                                            bTakeOff = false;
+                                        }
+                                        #if BUGSTOP
+                                        else LKASSERT(0); // .. else is unmanaged, TODO
+                                        #endif
                                     } else {
-                                        Task[idxTP++].Index = FindOrAddWaypoint(&(It->second),false);
+                                        int ix =  FindOrAddWaypoint(&(It->second),false);
+                                        if (ix>=0) Task[idxTP++].Index = ix;
+                                        #if BUGSTOP
+                                        else LKASSERT(0); // .. else is unmanaged, TODO
+                                        #endif
                                     }
                                 }
                             } else { //ISGAIRRCRAFT
                                 if(It != mapWaypoint.end()) {
-                                    if(WPtoAdd!=NULL) Task[idxTP++].Index = FindOrAddWaypoint(WPtoAdd,false); //add what we found in previous cycle: it was not the last one
+                                    if(WPtoAdd!=NULL) {
+                                        //add what we found in previous cycle: it was not the last one
+                                        int ix = FindOrAddWaypoint(WPtoAdd,false); 
+                                        if (ix>=0) Task[idxTP++].Index = ix;
+                                        #if BUGSTOP
+                                        else LKASSERT(0); // .. else is unmanaged, TODO
+                                        #endif
+                                    }
                                     if (bTakeOff) { //it's the first: may be we have a corresponding airfield
-                                        Task[idxTP++].Index = FindOrAddWaypoint(&(It->second),true); //look for departure airfield and add it
-                                        bTakeOff = false;
+                                        //look for departure airfield and add it
+                                        int ix = FindOrAddWaypoint(&(It->second),true); 
+                                        if (ix>=0) {
+                                            Task[idxTP++].Index = ix;
+                                            bTakeOff = false;
+                                        } 
+                                        #if BUGSTOP
+                                        else LKASSERT(0); // .. else is unmanaged, TODO
+                                        #endif
                                     } else WPtoAdd=&(It->second); //store it for next cycle (may be it is the last one)
                                 }
                             }
@@ -311,7 +335,15 @@ bool LoadCupTask(LPCTSTR szFileName) {
                     }
                     if(ISGAAIRCRAFT) { //For GA: check if we have an airport corresponding to the last WP
                         if(WPtoAdd!=NULL) { //if we have the last one (probably an airfield) still to add...
-                            if(idxTP<MAXTASKPOINTS) Task[idxTP++].Index=FindOrAddWaypoint(WPtoAdd,true); //look for arrival airport and add it
+                            if(idxTP<MAXTASKPOINTS) {
+                                int ix=FindOrAddWaypoint(WPtoAdd,true); //look for arrival airport and add it
+                                if (ix>=0) {
+                                    Task[idxTP++].Index= ix;
+                                }
+                                #if BUGSTOP
+                                else LKASSERT(0); // .. else is unmanaged, TODO
+                                #endif
+                            }
                             else bLoadComplet=false;
                         }
                     }
