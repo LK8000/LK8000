@@ -645,18 +645,19 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
         return false;
     }
 
+    bool bSuccess = false;
     int ContentSize = 0;
-    LPCTSTR szContent = topNode.createXMLString(1, &ContentSize);
+    LPTSTR szContent = topNode.createXMLString(1, &ContentSize);
     Utf8File file;
-    if (!file.Open(szFileName, Utf8File::io_create)) {
-        return false;
+    if (file.Open(szFileName, Utf8File::io_create)) {
+        file.WriteLn(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        file.WriteLn(szContent);
+        file.Close();
+
+        bSuccess = true;
     }
 
-    file.WriteLn(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
-    file.WriteLn(szContent);
-    file.Close();
-
-    return true;
+    return bSuccess;
 }
 
 bool CTaskFileHelper::SaveOption(XMLNode node) {
