@@ -62,6 +62,7 @@ bool LoadGpxTask(LPCTSTR szFileName) {
             XMLNode WPnode,detailNode;
             WAYPOINT newPoint;
             for(int i=0,idx=0;i<numWPnodes;i++) {
+                memset(&newPoint, 0, sizeof (newPoint));
                 WPnode=routeNode.getChildNode(i);
                 if(_tcscmp(WPnode.getName(),TEXT("rtept"))==0) {
                     dataStr=WPnode.getAttribute(TEXT("lat"));
@@ -92,6 +93,7 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                         dataStr=detailNode.getText(0);
                         if(dataStr) _tcscpy(newPoint.Name, dataStr);
                     }
+#ifdef TASK_COMMENTS
                     detailNode=WPnode.getChildNode(TEXT("cmt"),0);
                     if(detailNode) {
                         dataStr=detailNode.getText(0);
@@ -108,6 +110,10 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                             if(newPoint.Details) _tcscpy(newPoint.Details, dataStr);
                         }
                     }
+#else
+                    newPoint.Comment=NULL;
+                    newPoint.Details=NULL;
+#endif
                     /*TODO: other possible data to get somehow from the GPX file:
                     newPoint.Code
                     newPoint.Flags
@@ -117,8 +123,22 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                     newPoint.RunwayDir
                     newPoint.Country
                     newPoint.Style */
-                    if(ISGAAIRCRAFT && (idx==0 || idx==numOfWPs-1)) Task[idx++].Index=FindOrAddWaypoint(&newPoint,true); //if GA check widely if we have already depart and dest airports
-                    else Task[idx++].Index=FindOrAddWaypoint(&newPoint,false); //else add WP normally
+                    if(ISGAAIRCRAFT && (idx==0 || idx==numOfWPs-1)) {
+                        int ix =FindOrAddWaypoint(&newPoint,true); 
+                        //if GA check widely if we have already depart and dest airports
+                        if (ix>=0) Task[idx++].Index=ix;
+                    } else {
+                        int ix =FindOrAddWaypoint(&newPoint,false); 
+                        if (ix>=0) Task[idx++].Index=ix; //else add WP normally
+                    }
+#ifdef TASK_COMMENTS
+                    if (newPoint.Details) {
+                        free(newPoint.Details);
+                    }
+                    if (newPoint.Comment) {
+                        free(newPoint.Comment);
+                    }
+#endif
                 } //if(rtept)
             } //for(each node in rtept)
         } //if(rootNode)
