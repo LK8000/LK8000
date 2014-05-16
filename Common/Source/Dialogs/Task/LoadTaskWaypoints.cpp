@@ -20,9 +20,7 @@
 // It is supposed that calling function has its own structure.
 // The problem is that Comment and Details are always pointers, and in this case
 // the calling function should allocate it and loose control.
-// So we DONT WANT COMMENTS AND DETAILS BEING PASSED TO TASKPOINTS ANYMORE.
-// We dont use them for any purpose in flight. If a pilot want details and comments, he
-// can create a real waypoint, and do not expect to load details from a task.
+// So we DONT WANT DETAILS BEING PASSED TO TASKPOINTS ANYMORE.
 // Details is an external file, always!
 //
 // NOTE: up to v4 we have always saved taskpoints WITH NO COMMENTS AND NO DETAILS
@@ -58,12 +56,12 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         memcpy(new_waypoint, read_waypoint, sizeof(WAYPOINT));
         // this is  needed for avoid freeing twice ...
         // ownership of allocated memory is transferred from "read_waypoint" to "new_waypoint"
-        #if TASK_COMMENTS
-        read_waypoint->Details = NULL;
         read_waypoint->Comment = NULL;
+
+        #if TASK_DETAILS
+        read_waypoint->Details = NULL;
         #else
         new_waypoint->Details = NULL;
-        new_waypoint->Comment = NULL;
         #endif
 
         new_waypoint->FileNum=-1; // HERE WE SET THE FLAG FOR "DO NOT SAVE TO WAYPOINT FILE"

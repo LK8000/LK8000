@@ -93,7 +93,6 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                         dataStr=detailNode.getText(0);
                         if(dataStr) _tcscpy(newPoint.Name, dataStr);
                     }
-#ifdef TASK_COMMENTS
                     detailNode=WPnode.getChildNode(TEXT("cmt"),0);
                     if(detailNode) {
                         dataStr=detailNode.getText(0);
@@ -102,6 +101,7 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                             if(newPoint.Comment) _tcscpy(newPoint.Comment, dataStr);
                         }
                     }
+#ifdef TASK_DETAILS
                     detailNode=WPnode.getChildNode(TEXT("desc"),0);
                     if(detailNode) {
                         dataStr=detailNode.getText(0);
@@ -111,7 +111,6 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                         }
                     }
 #else
-                    newPoint.Comment=NULL;
                     newPoint.Details=NULL;
 #endif
                     /*TODO: other possible data to get somehow from the GPX file:
@@ -131,14 +130,14 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                         int ix =FindOrAddWaypoint(&newPoint,false); 
                         if (ix>=0) Task[idx++].Index=ix; //else add WP normally
                     }
-#ifdef TASK_COMMENTS
+#ifdef TASK_DETAILS
                     if (newPoint.Details) {
                         free(newPoint.Details);
                     }
+#endif
                     if (newPoint.Comment) {
                         free(newPoint.Comment);
                     }
-#endif
                 } //if(rtept)
             } //for(each node in rtept)
         } //if(rootNode)
