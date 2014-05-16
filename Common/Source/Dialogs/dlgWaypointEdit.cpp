@@ -69,9 +69,9 @@ static void OnCommentClicked(WindowControl *Sender) {
   if (buttonComment) {
 	//@ 101219
 	TCHAR comment[COMMENT_SIZE*2];
-	if (global_wpt->Comment != NULL)
-		_tcscpy(comment,global_wpt->Comment);
-	else
+	if (global_wpt->Comment != NULL) {
+		LK_tcsncpy(comment,global_wpt->Comment, COMMENT_SIZE);
+	} else
 		_tcscpy(comment,_T(""));
 	dlgTextEntryShowModal(comment, COMMENT_SIZE);
 
@@ -86,7 +86,7 @@ static void OnCommentClicked(WindowControl *Sender) {
 		if (global_wpt->Comment == NULL) {
 			OutOfMemory(__FILE__,__LINE__);
 		} else {
-			_tcscpy(global_wpt->Comment,comment);
+			LK_tcsncpy(global_wpt->Comment,comment,COMMENT_SIZE);
 		}
 	}
   }

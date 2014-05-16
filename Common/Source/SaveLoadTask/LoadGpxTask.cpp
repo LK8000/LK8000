@@ -98,7 +98,7 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                         dataStr=detailNode.getText(0);
                         if(dataStr) {
                             newPoint.Comment = (TCHAR*) malloc((_tcslen(dataStr)+1)*sizeof(TCHAR));
-                            if(newPoint.Comment) _tcscpy(newPoint.Comment, dataStr);
+                            if(newPoint.Comment) LK_tcsncpy(newPoint.Comment, dataStr,COMMENT_SIZE);
                         }
                     }
 #ifdef TASK_DETAILS

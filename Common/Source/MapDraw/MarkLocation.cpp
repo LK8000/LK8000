@@ -92,7 +92,11 @@ extern int GetVirtualWaypointMarkerSlot(void);
 	WayPointList[j].FarVisible=TRUE;
 
 	wsprintf(WayPointList[j].Name,_T("MK%S%02d"),marktime,GPS_INFO.Second);
-	wsprintf(WayPointList[j].Comment,_T("Near: %S"),snear);
+        #if BUGSTOP
+        LKASSERT(WayPointList[j].Comment!=NULL);
+        #endif
+        if (WayPointList[j].Comment!=NULL)
+	    wsprintf(WayPointList[j].Comment,_T("Near: %S"),snear);
 
 	WayPointCalc[j].WpType=WPT_TURNPOINT;
 

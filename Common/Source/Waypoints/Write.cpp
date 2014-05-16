@@ -42,9 +42,9 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	WaypointLongitudeToString(wpt->Longitude, longitude);
 	WaypointFlagsToString(wpt->Flags, flags);
  
-	if (wpt->Comment!=NULL)
-		_tcscpy(comment,wpt->Comment);
-	else
+	if (wpt->Comment!=NULL) {
+		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
+	} else
 		_tcscpy(comment,_T(""));
 
 	fprintf(fp,"%d,%S,%S,%dM,%S,%S,%S\r\n",
@@ -65,9 +65,9 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	char EW[]= "WE";
 
 
-	if (wpt->Comment!=NULL)
-		_tcscpy(comment,wpt->Comment);
-	else
+	if (wpt->Comment!=NULL) {
+		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
+	} else
 		_tcscpy(comment,_T(""));
 
 	fprintf(fp,"W  %S A %.10f%c%c %.10f%c%c 27-MAR-62 00:00:00 %.6f %S\r\n",
@@ -109,9 +109,9 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	} else
 		_tcscpy(cupCode,_T(""));
 
-	if (wpt->Comment!=NULL)
-		_tcscpy(comment,wpt->Comment);
-	else
+	if (wpt->Comment!=NULL) {
+		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
+	} else
 		_tcscpy(comment,_T(""));
 	fprintf(fp,"\"%S\",%S,%S,%S,%S,%d.0m,%d,%S,%S,%S,%S\r\n",
 		wpt->Name,
@@ -131,9 +131,9 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 
   if(filemode == LKW_OZI) {
 
-	if (wpt->Comment!=NULL)
-		_tcscpy(comment,wpt->Comment);
-	else
+	if (wpt->Comment!=NULL) {
+		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
+	} else
 		_tcscpy(comment,_T(""));
 
 	if(_tcslen(comment) > 40){

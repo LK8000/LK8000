@@ -20,7 +20,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TAKEOFF].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_TAKEOFF].Name, gettext(TEXT(RESWP_TAKEOFF_NAME)) ); // 100227
 	if ( WayPointList[RESWP_TAKEOFF].Comment == NULL)
-		WayPointList[RESWP_TAKEOFF].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+		WayPointList[RESWP_TAKEOFF].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	if (WayPointList[RESWP_TAKEOFF].Comment!=NULL)
 		_tcscpy(WayPointList[RESWP_TAKEOFF].Comment,_T("WAITING FOR GPS POSITION"));
 	WayPointList[RESWP_TAKEOFF].Reachable=FALSE;
@@ -40,7 +40,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_LASTTHERMAL].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Name, gettext(TEXT(RESWP_LASTTHERMAL_NAME)) );
 	if ( WayPointList[RESWP_LASTTHERMAL].Comment == NULL)
-		WayPointList[RESWP_LASTTHERMAL].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+		WayPointList[RESWP_LASTTHERMAL].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	// LKTOKEN _@M1320_ "LAST GOOD THERMAL"
 	if (WayPointList[RESWP_LASTTHERMAL].Comment!=NULL) 
 		_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, gettext(TEXT("_@M1320_")));		
@@ -66,7 +66,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TEAMMATE].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_TEAMMATE].Name, gettext(TEXT(RESWP_TEAMMATE_NAME)) );
 	if ( WayPointList[RESWP_TEAMMATE].Comment == NULL)
-		WayPointList[RESWP_TEAMMATE].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+		WayPointList[RESWP_TEAMMATE].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	// LKTOKEN _@M1321_ "TEAM MATE"
 	if (WayPointList[RESWP_TEAMMATE].Comment!=NULL) 
 		_tcscpy(WayPointList[RESWP_TEAMMATE].Comment, gettext(TEXT("_@M1321_")));
@@ -91,7 +91,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FLARMTARGET].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_FLARMTARGET].Name, gettext(TEXT(RESWP_FLARMTARGET_NAME)) );
 	if ( WayPointList[RESWP_FLARMTARGET].Comment == NULL)
-		WayPointList[RESWP_FLARMTARGET].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+		WayPointList[RESWP_FLARMTARGET].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	// LKTOKEN _@M1322_ "FLARM TARGET"
 	if (WayPointList[RESWP_FLARMTARGET].Comment!=NULL) 
 		_tcscpy(WayPointList[RESWP_FLARMTARGET].Comment, gettext(TEXT("_@M1322_")));
@@ -116,7 +116,11 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_OPTIMIZED].Flags=TURNPOINT;
 	// name will be assigned by function dynamically
 	_tcscpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
-	WayPointList[RESWP_OPTIMIZED].Comment = (TCHAR*)NULL;
+	if ( WayPointList[RESWP_OPTIMIZED].Comment == NULL)
+		WayPointList[RESWP_OPTIMIZED].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
+	if (WayPointList[RESWP_OPTIMIZED].Comment!=NULL) 
+	       _tcscpy(WayPointList[RESWP_OPTIMIZED].Comment, _T("OPTIMIZED") );
+
 	WayPointList[RESWP_OPTIMIZED].Reachable=FALSE;
 	WayPointList[RESWP_OPTIMIZED].AltArivalAGL=0.0;
 	WayPointList[RESWP_OPTIMIZED].Visible=FALSE;
@@ -141,7 +145,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FAIOPTIMIZED].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Name, gettext(TEXT(RESWP_FAIOPTIMIZED_NAME)) );
 	if ( WayPointList[RESWP_FAIOPTIMIZED].Comment == NULL)
-		WayPointList[RESWP_FAIOPTIMIZED].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+		WayPointList[RESWP_FAIOPTIMIZED].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	if (WayPointList[RESWP_FAIOPTIMIZED].Comment!=NULL)
 		_tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("FAI OPTIMIZED VIRTUAL TURNPOINT"));
 	WayPointList[RESWP_FAIOPTIMIZED].Reachable=FALSE;
@@ -164,7 +168,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FREEFLY].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_FREEFLY].Name, gettext(TEXT(RESWP_FREEFLY_NAME)) );
 	if ( WayPointList[RESWP_FREEFLY].Comment == NULL)
-		WayPointList[RESWP_FREEFLY].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+		WayPointList[RESWP_FREEFLY].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	if (WayPointList[RESWP_FREEFLY].Comment!=NULL)
 		_tcscpy(WayPointList[RESWP_FREEFLY].Comment,_T("START OF FREEFLIGHT VIRTUAL TURNPOINT"));
 	WayPointList[RESWP_FREEFLY].Reachable=FALSE;
@@ -188,7 +192,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_PANPOS].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_PANPOS].Name, _T("")); 
 	if ( WayPointList[RESWP_PANPOS].Comment == NULL)
-		WayPointList[RESWP_PANPOS].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+		WayPointList[RESWP_PANPOS].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	if (WayPointList[RESWP_PANPOS].Comment!=NULL)
 		_tcscpy(WayPointList[RESWP_PANPOS].Comment,_T("PANPOS VIRTUAL TURNPOINT"));
 	WayPointList[RESWP_PANPOS].Reachable=FALSE;
@@ -211,7 +215,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_UNUSED].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_UNUSED].Name, gettext(TEXT(RESWP_UNUSED_NAME)) );
 	if ( WayPointList[RESWP_UNUSED].Comment == NULL)
-		WayPointList[RESWP_UNUSED].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+		WayPointList[RESWP_UNUSED].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	if (WayPointList[RESWP_UNUSED].Comment!=NULL)
 		_tcscpy(WayPointList[RESWP_UNUSED].Comment,_T("UNUSED VIRTUAL TURNPOINT"));
 	WayPointList[RESWP_UNUSED].Reachable=FALSE;
@@ -232,7 +236,7 @@ void AddReservedWaypoints()
 	WayPointList[i].Flags=TURNPOINT;
 	_tcscpy(WayPointList[i].Name, _T("LKMARKER"));
 	if ( WayPointList[i].Comment == NULL)
-		WayPointList[i].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+		WayPointList[i].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	if (WayPointList[i].Comment!=NULL) 
 		_tcscpy(WayPointList[i].Comment, _T(""));
 	WayPointList[i].Reachable=FALSE;
