@@ -1409,7 +1409,7 @@ static void OnWaypointNewClicked(WindowControl * Sender){
   }
   edit_waypoint.FileNum = 0; // default, put into primary waypoint file
   edit_waypoint.Flags = 0;
-  edit_waypoint.Comment=(TCHAR*)malloc(100*sizeof(TCHAR));
+  edit_waypoint.Comment=(TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 
   extern void MSG_NotEnoughMemory(void);
   if (edit_waypoint.Comment == (TCHAR *)NULL) {

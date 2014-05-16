@@ -370,7 +370,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 		free(Temp->Comment);
 	}
 	Temp->Comment = (TCHAR*)malloc((_tcslen(tComment)+1)*sizeof(TCHAR));
-	if (Temp->Comment) _tcscpy(Temp->Comment,tComment);
+	if (Temp->Comment) LK_tcsncpy(Temp->Comment,tComment,COMMENT_SIZE);
   } else
 	Temp->Comment=NULL; //@ 101104
 

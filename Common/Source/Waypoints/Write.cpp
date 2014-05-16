@@ -51,9 +51,9 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	WaypointLongitudeToString(wpt->Longitude, longitude);
 	WaypointFlagsToString(wpt->Flags, flags);
  
-	if (wpt->Comment!=NULL)
-		_tcscpy(comment,wpt->Comment);
-	else
+	if (wpt->Comment!=NULL) {
+		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
+	} else
 		_tcscpy(comment,_T(""));
 
 	fprintf(fp,"%d,"PF_ASCIISTR","PF_ASCIISTR",%dM,"PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR"\r\n",
@@ -74,9 +74,9 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	char EW[]= "WE";
 
 
-	if (wpt->Comment!=NULL)
-		_tcscpy(comment,wpt->Comment);
-	else
+	if (wpt->Comment!=NULL) {
+		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
+	} else
 		_tcscpy(comment,_T(""));
 
 	fprintf(fp,"W  "PF_ASCIISTR" A %.10f%c%c %.10f%c%c 27-MAR-62 00:00:00 %.6f "PF_ASCIISTR"\r\n",
@@ -118,9 +118,9 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	} else
 		_tcscpy(cupCode,_T(""));
 
-	if (wpt->Comment!=NULL)
-		_tcscpy(comment,wpt->Comment);
-	else
+	if (wpt->Comment!=NULL) {
+		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
+	} else
 		_tcscpy(comment,_T(""));
 	fprintf(fp,"\""PF_ASCIISTR"\","PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR",%d.0m,%d,"PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR","PF_ASCIISTR"\r\n",
 		wpt->Name,
@@ -140,9 +140,9 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 
   if(filemode == LKW_OZI) {
 
-	if (wpt->Comment!=NULL)
-		_tcscpy(comment,wpt->Comment);
-	else
+	if (wpt->Comment!=NULL) {
+		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
+	} else
 		_tcscpy(comment,_T(""));
 
 	if(_tcslen(comment) > 40){
