@@ -86,7 +86,7 @@ static void OnCommentClicked(WindowControl *Sender) {
 		if (global_wpt->Comment == NULL) {
 			OutOfMemory(__FILE__,__LINE__);
 		} else {
-			LK_tcsncpy(global_wpt->Comment,comment,COMMENT_SIZE);
+			_tcscpy(global_wpt->Comment,comment);
 		}
 	}
   }
