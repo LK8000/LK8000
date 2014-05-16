@@ -101,7 +101,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
 		free(Temp->Comment);
 	}
 	Temp->Comment = (TCHAR*)malloc((_tcslen(ctemp)+1)*sizeof(TCHAR));
-	if (Temp->Comment) LK_tcsncpy(Temp->Comment, ctemp,COMMENT_SIZE);
+	if (Temp->Comment) _tcscpy(Temp->Comment, ctemp);
     }
 
   } else {

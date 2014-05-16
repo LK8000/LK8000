@@ -585,7 +585,7 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *last
     if (szAttr) {
         newPoint.Comment = (TCHAR*) malloc((_tcslen(szAttr) + 1) * sizeof (TCHAR));
         if (newPoint.Comment) {
-            LK_tcsncpy(newPoint.Comment, szAttr, COMMENT_SIZE);
+            _tcscpy(newPoint.Comment, szAttr);
         }
     }
 #if TASK_DETAILS
