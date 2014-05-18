@@ -1663,12 +1663,38 @@ void InputEvents::eventWind(const TCHAR *misc) {
 //   and appended with the checksum e.g. '*40'.  The user needs only
 //   to provide the text in between the '$' and '*'.
 //
-
+// For the simple SendNMEA without port specified, we assume it is a FLARM
+// commanded action from menu buttons.
+//
+extern NMEAParser nmeaParser1;
+extern NMEAParser nmeaParser2;
 void InputEvents::eventSendNMEA(const TCHAR *misc) {
-    if (misc) {
-        // Currently disabled, because nonexistent function
-        // PortWriteNMEA(misc);
-    }
+  #if TESTBENCH
+  StartupStore(_T("... SendNMEA: <%s>\n"),misc);
+  #endif
+  //
+  // We might consider strings starting with PF being FLARM stuff.
+  // But since we only manage FLARM buttons in v5, no reason to complicate life.
+  // if ( strncmp  misc PF ..)
+  short flarmfoundonport=-1;
+  if (nmeaParser2.isFlarm) flarmfoundonport=2; 
+  if (nmeaParser1.isFlarm) flarmfoundonport=1; // priority on lowest port
+  if (flarmfoundonport==-1) {
+      DoStatusMessage(_T("NO FLARM"));
+      #if TESTBENCH
+      StartupStore(_T("... NO FLARM\n"));
+      #endif
+      return;
+  }
+  #if TESTBENCH
+  StartupStore(_T("... SendNMEA sent to port %d\n"),flarmfoundonport);
+  #endif
+  if (misc) {
+      if (flarmfoundonport==1)
+          Port1WriteNMEA(misc);
+      else
+          Port2WriteNMEA(misc);
+  }
 }
 
 void InputEvents::eventSendNMEAPort1(const TCHAR *misc) {
