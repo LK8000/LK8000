@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release  140219
+# Release  140519
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -1689,14 +1689,14 @@ location=11
 mode=SetupFlarm
 type=key
 data=APP1
-event=SendNMEAPort1 PFLAR,0
+event=SendNMEA PFLAR,0
 label=_@M2088_\nFLARM
 location=1
 
 mode=SetupFlarm
 type=key
 data=APP2
-event=SendNMEAPort1 PFLAC,S,NMEAOUT,1
+event=SendNMEA PFLAC,S,NMEAOUT,1
 label=Normal\nNmea
 location=2
 
@@ -1717,7 +1717,7 @@ location=4
 mode=SetupFlarm
 type=key
 data=6
-event=SendNMEAPort1 PFLAC,S,CFLAGS,0
+event=SendNMEA PFLAC,S,CFLAGS,0
 label=Normal\nFlags
 location=5
 
@@ -1796,35 +1796,35 @@ location=4
 mode=FlarmRange
 type=key
 data=6
-event=SendNMEAPort1 PFLAC,S,RANGE,2000
+event=SendNMEA PFLAC,S,RANGE,2000
 label=_@M2089_\n2km
 location=5
 
 mode=FlarmRange
 type=key
 data=7
-event=SendNMEAPort1 PFLAC,S,RANGE,3000
+event=SendNMEA PFLAC,S,RANGE,3000
 label=_@M2090_\n3km
 location=6
 
 mode=FlarmRange
 type=key
 data=8
-event=SendNMEAPort1 PFLAC,S,RANGE,10000
+event=SendNMEA PFLAC,S,RANGE,10000
 label=_@M2091_\n10km
 location=7
 
 mode=FlarmRange
 type=key
 data=9
-event=SendNMEAPort1 PFLAC,S,RANGE,15000
+event=SendNMEA PFLAC,S,RANGE,15000
 label=_@M2091_\n15km
 location=8
 
 mode=FlarmRange
 type=key
 data=0
-event=SendNMEAPort1 PFLAC,S,RANGE,25500
+event=SendNMEA PFLAC,S,RANGE,25500
 label=_@M2092_\n25km
 location=9
 
@@ -1882,14 +1882,14 @@ location=5
 mode=FlarmStealth
 type=key
 data=7
-event=SendNMEAPort1 PFLAC,S,PRIV,0
+event=SendNMEA PFLAC,S,PRIV,0
 label=Stealth\n_@M2094_
 location=6
 
 mode=FlarmStealth
 type=key
 data=8
-event=SendNMEAPort1 PFLAC,S,PRIV,1
+event=SendNMEA PFLAC,S,PRIV,1
 label=Stealth\n_@M2093_
 location=7
 
@@ -1954,35 +1954,35 @@ location=4
 mode=FlarmSpeed
 type=key
 data=6
-event=SendNMEAPort1 PFLAC,S,BAUD,0
+event=SendNMEA PFLAC,S,BAUD,0
 label=Baud\n4800
 location=5
 
 mode=FlarmSpeed
 type=key
 data=7
-event=SendNMEAPort1 PFLAC,S,BAUD,1
+event=SendNMEA PFLAC,S,BAUD,1
 label=Baud\n9600
 location=6
 
 mode=FlarmSpeed
 type=key
 data=8
-event=SendNMEAPort1 PFLAC,S,BAUD,2
+event=SendNMEA PFLAC,S,BAUD,2
 label=Baud\n19200
 location=7
 
 mode=FlarmSpeed
 type=key
 data=9
-event=SendNMEAPort1 PFLAC,S,BAUD,4
+event=SendNMEA PFLAC,S,BAUD,4
 label=Baud\n38400
 location=8
 
 mode=FlarmSpeed
 type=key
 data=0
-event=SendNMEAPort1 PFLAC,S,BAUD,5
+event=SendNMEA PFLAC,S,BAUD,5
 label=Baud\n57600
 location=9
 
@@ -2040,28 +2040,28 @@ location=5
 mode=FlarmSig
 type=key
 data=7
-event=SendNMEAPort1 PFLAC,S,UI,0
+event=SendNMEA PFLAC,S,UI,0
 label=_@M2095_
 location=6
 
 mode=FlarmSig
 type=key
 data=8
-event=SendNMEAPort1 PFLAC,S,UI,1
+event=SendNMEA PFLAC,S,UI,1
 label=_@M2096_
 location=7
 
 mode=FlarmSig
 type=key
 data=9
-event=SendNMEAPort1 PFLAC,S,UI,2
+event=SendNMEA PFLAC,S,UI,2
 label=_@M2097_
 location=8
 
 mode=FlarmSig
 type=key
 data=0
-event=SendNMEAPort1 PFLAC,S,UI,3
+event=SendNMEA PFLAC,S,UI,3
 label=_@M2098_
 location=9
 
