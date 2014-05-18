@@ -313,7 +313,7 @@
 // Position 0 is takeoff, etc
 // moving waypoints will have assigned fixed slots and positions
 #define NUMRESMARKERS		10
-#define NUMRESWP		9+NUMRESMARKERS
+#define NUMRESWP		(9+NUMRESMARKERS)
 
 // Reserved Waypoints positions. Adjust also NUMRESWP!
 #define RESWP_INVALIDNUMBER	1.23	// an invalid number for latitude, longitude, altitude etc.
@@ -336,7 +336,7 @@
 #define RESWP_UNUSED_NAME	"_@M1815_"	// unused
 
 #define RESWP_FIRST_MARKER	9
-#define RESWP_LAST_MARKER	RESWP_FIRST_MARKER+NUMRESMARKERS-1	// 18
+#define RESWP_LAST_MARKER	(RESWP_FIRST_MARKER+NUMRESMARKERS-1)	// 18
 #define RESWP_END		RESWP_LAST_MARKER
 // WayPointList .Number int identifier 
 #define RESWP_ID		9999
