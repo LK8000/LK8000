@@ -19,7 +19,10 @@ double AirDensitySinkRate(double ias, double qnhaltitude) {
 
     sinkias=GlidePolar::SinkRate(ias)*AirDensityRatio(AltitudeToQNEAltitude(qnhaltitude));
 
+    // this can actually happen with a bad polar file loaded!
+    #if BUGSTOP
     LKASSERT(sinkias<=0);
+    #endif
     if (sinkias>0) sinkias=0;
     return sinkias;
 }
