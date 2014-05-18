@@ -120,7 +120,7 @@ FILE *fp;
 	}
 
 	if (distance<3 || distance>150) { // just ignore, no need to reset rotary
-		if (errs>9) {
+		if (errs==9) {
 #ifdef DEBUG_ROTARY
 			sprintf(ventabuffer,"Rotary reset after exceeding errors\r\n");
 			if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
@@ -130,10 +130,11 @@ FILE *fp;
 			StartupStore(_T("... LDROTARY RESET, distance errors\n"));
 			#endif
 			InitLDRotary(&rotaryLD);
+			errs=10; // an no more here until errs reset with valid data
 			return;
 
 		}
-		errs++;
+		if (errs<9) errs++;  // make it up to 9
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"(errs=%d) IGNORE INVALID distance=%d altitude=%d\r\n",errs,(int)(distance),(int)(Calculated->NavAltitude));
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
