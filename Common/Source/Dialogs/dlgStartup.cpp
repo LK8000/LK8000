@@ -621,6 +621,13 @@ short dlgStartupShowModal(void){
 	goto _exit;
   }
 
+  extern unsigned short Bitmaps_Errors;
+  if (Bitmaps_Errors) {
+      TCHAR mes[MAX_PATH];
+      _stprintf(mes,_T("MISSING %d SYSTEM BITMAPS! CHECK INSTALLATION."),Bitmaps_Errors);
+      MessageBoxX(hWndMainWindow, mes, _T("MISSING FILES!"), MB_OK|MB_ICONQUESTION, true);
+  }
+
   if  (!CheckPolarsDir()) {
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
