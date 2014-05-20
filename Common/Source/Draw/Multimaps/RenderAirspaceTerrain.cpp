@@ -161,7 +161,6 @@ int i,j;
   /**********************************************************************************
    * draw airspaces
    **********************************************************************************/
-  HPEN mpen = (HPEN)CreatePen(PS_NULL, 0, RGB(0xf0,0xf0,0xb0));
   HPEN oldpen = (HPEN)SelectObject(hdc, (HPEN)NULL);
   _TCHAR text [80];
   LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
@@ -196,7 +195,7 @@ int i,j;
 	  fFrameColFact *= 1.2;
 	long lColor = ChangeBrightness(FrameColor, fFrameColFact);
 	HPEN mpen2 =(HPEN)CreatePen(PS_SOLID,FRAMEWIDTH,lColor);
-	HPEN oldpen2 = (HPEN)SelectObject(hdc, (HPEN)mpen2);
+	HPEN oldpen2 = (HPEN)SelectObject(hdc, mpen2);
 
 	if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
 	  Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
@@ -259,6 +258,7 @@ int i,j;
       }
     }
   }
+  SelectObject(hdc, oldpen);
 
   /**********************************************************************************
    * draw airspace frames in reversed order
@@ -321,22 +321,17 @@ int i,j;
   HPEN   hpHorizonGround;
   HBRUSH hbHorizonGround;
 
+ /*********************************************************************
+  * draw terrain
+  *********************************************************************/
   hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1)+1, RGB(126,62,50));
   hbHorizonGround = (HBRUSH)CreateSolidBrush(GROUND_COLOUR);
-  SelectObject(hdc, hpHorizonGround);
-  SelectObject(hdc, hbHorizonGround);
+  HPEN oldPen = (HPEN)SelectObject(hdc, hpHorizonGround);
+  HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, hbHorizonGround);
 
-
-
-
-  /*********************************************************************
-   * draw terrain
-   *********************************************************************/
-  SelectObject(hdc, hpHorizonGround);
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
 	apTerrainPolygon[j].x = iround(j*dx1)+x0;
 	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag);
-
   }
 
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx1)+x0;; // x0;
@@ -346,6 +341,12 @@ int i,j;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag) ;//iBottom;
   Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
 
+  SelectObject(hdc, oldPen);
+  SelectObject(hdc, oldBrush);
+  DeleteObject(hpHorizonGround);
+  DeleteObject(hbHorizonGround);
+
+  
   /*********************************************************************
    * draw sea
    *********************************************************************/
@@ -362,12 +363,6 @@ int i,j;
 #endif
 
   SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
-  SelectObject(hdc, (HPEN)oldpen);
-  DeleteObject(mpen);
-  DeleteObject(hpHorizonGround);
-  DeleteObject(hbHorizonGround);
-
-
 }
 
 

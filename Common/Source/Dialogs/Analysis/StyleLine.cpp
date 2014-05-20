@@ -109,8 +109,9 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 			    COL, rc);
     break;
   case STYLE_MEDIUMBLACK:
-    SelectObject(hdc, penThinSignal /*GetStockObject(BLACK_PEN)*/);
+    oldpen = (HPEN)SelectObject(hdc, penThinSignal /*GetStockObject(BLACK_PEN)*/);
     MapWindow::_Polyline(hdc, line, 2, rc);
+    SelectObject(hdc, oldpen);
     break;
   case STYLE_THINDASHPAPER:
     MapWindow::DrawDashLine(hdc, 1, 
