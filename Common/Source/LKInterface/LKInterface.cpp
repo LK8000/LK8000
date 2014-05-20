@@ -160,7 +160,7 @@ void BottomSounds() {
    if (EnableSoundModes) {
 	switch(BottomMode) {
 		case 1:
-			PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
+			PlayResource(TEXT("IDR_WAV_BTONE7"));
 			break;
 		case 2:
 			PlayResource(TEXT("IDR_WAV_BTONE2"));
