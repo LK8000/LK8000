@@ -34,7 +34,7 @@ bool ReplayLogger::ReadLine(TCHAR *buffer) {
   }
 
   if (_fgetts(buffer, 200, fp)==NULL) {
-    _tcscat(buffer,TEXT("\0"));
+    buffer[0] = TEXT('\0');
     return false;
   }
   return true;
@@ -110,7 +110,7 @@ bool ReplayLogger::ReadPoint(double *Time,
 			     double *Longitude,
 			     double *Altitude)
 {
-  TCHAR buffer[200];
+  TCHAR buffer[200]={0};
 /*
   // This is creating problems with the interpolator and calculations based on differential times
   // such as variometer derived from altitude differences. Probably due to vario lowpass filters.
