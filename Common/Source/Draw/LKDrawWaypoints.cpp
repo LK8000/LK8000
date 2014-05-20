@@ -91,6 +91,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   TCHAR Buffer2[LKSIZEBUFFER];
   TCHAR sAltUnit[LKSIZEBUFFERUNIT];
   TextInBoxMode_t TextDisplayMode = {0};
+  HBITMAP oldBmp = NULL;
 
   static int resizer[10]={ 20,20,20,3,5,8,10,12,0 };
 
@@ -163,13 +164,15 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
   if (MapWindow::zoom.RealScale() <=20) for(i=0;i<NumberOfWayPoints;i++) {
 
+      oldBmp = NULL;
+              
 	if (WayPointList[i].Visible != TRUE )	continue; // false may not be FALSE?
 
 	if (WayPointCalc[i].IsAirport) {
 		if (WayPointList[i].Reachable == FALSE)	{ 
-			SelectObject(hDCTemp,hBmpAirportUnReachable);
+			oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpAirportUnReachable);
 		} else {
-			SelectObject(hDCTemp,hBmpAirportReachable);
+			oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpAirportReachable);
 			if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) {
 				arrivalcutoff = (int)(WayPointList[i].AltArivalAGL);
 				bestwp=i; foundairport++;
@@ -179,16 +182,21 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		if ( WayPointCalc[i].IsOutlanding ) {
 			// outlanding
 			if (WayPointList[i].Reachable == FALSE)
-				SelectObject(hDCTemp,hBmpFieldUnReachable);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpFieldUnReachable);
 			else { 
-				SelectObject(hDCTemp,hBmpFieldReachable);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpFieldReachable);
 				// get the outlanding as bestwp only if no other choice
 				if (foundairport == 0) { 
 					// do not set arrivalcutoff: any next reachable airport is better than an outlanding
 					if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) bestwp=i;  
 				}
 			}
-		} else continue; // do not draw icons for normal turnpoints here
+		} else {
+            if(oldBmp) {
+                SelectObject(hDCTemp, oldBmp);
+            }            
+            continue; // do not draw icons for normal turnpoints here
+        }
 	}
 
     if(Appearance.IndLandable == wpLandableDefault) 
@@ -214,6 +222,9 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   	  DrawBitmapX(hdc, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, hDCTemp,20,0,SRCAND,false);
     }
 
+    if(oldBmp) {
+        SelectObject(hDCTemp, oldBmp);
+    }
   } // for all waypoints
 
   if (foundairport==0 && bestwp>=0)  arrivalcutoff = (int)WayPointList[bestwp].AltArivalAGL;
@@ -221,6 +232,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
   for(i=0;i<NumberOfWayPoints;i++)
     {
+    oldBmp = NULL;
       if(WayPointList[i].Visible )
 	{
 
@@ -244,13 +256,13 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	    irange = inrange;
 
 	    if(MapWindow::zoom.RealScale() > 20) { 
-	      SelectObject(hDCTemp,hInvSmall);
+	      oldBmp = (HBITMAP)SelectObject(hDCTemp,hInvSmall);
 	      irange=false;
 	      goto NiklausWirth; // with compliments
 	    } 
 	    if (decluttericons) {
 		if (! (WayPointCalc[i].IsAirport && (WayPointList[i].RunwayLen>minrunway || WayPointList[i].RunwayLen==0))) {
-		      SelectObject(hDCTemp,hInvSmall);
+		      oldBmp = (HBITMAP)SelectObject(hDCTemp,hInvSmall);
 		      irange=false;
 		      goto NiklausWirth;
 		}
@@ -263,9 +275,9 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		TextDisplayMode.Reachable = 1;
 
 		if ( isairport )
-		  SelectObject(hDCTemp,hBmpAirportReachable);
+		  oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpAirportReachable);
 		else
-		  SelectObject(hDCTemp,hBmpFieldReachable);
+		  oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpFieldReachable);
 
 		if ((GetMultimap_Labels()<MAPLABELS_ALLOFF)||intask) { 
 
@@ -310,22 +322,22 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		{
 		  dowrite=true; 
 		  if ( isairport ) {
-		    SelectObject(hDCTemp,hBmpAirportUnReachable);
+		    oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpAirportUnReachable);
 		  } else {
-		    SelectObject(hDCTemp,hBmpFieldUnReachable);
+		    oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpFieldUnReachable);
 		  }
 		}
 	    } else { // waypoint is an ordinary turnpoint
 	      if(MapWindow::zoom.RealScale() > 4) {
 		if (BlackScreen) 
-			SelectObject(hDCTemp,hInvSmall);
+			oldBmp = (HBITMAP)SelectObject(hDCTemp,hInvSmall);
 		else
-			SelectObject(hDCTemp,hSmall);
+			oldBmp = (HBITMAP)SelectObject(hDCTemp,hSmall);
 	      } else {
 		if (BlackScreen) 
-			SelectObject(hDCTemp,hInvTurnPoint);
+			oldBmp = (HBITMAP)SelectObject(hDCTemp,hInvTurnPoint);
 		else
-			SelectObject(hDCTemp,hTurnPoint);
+			oldBmp = (HBITMAP)SelectObject(hDCTemp,hTurnPoint);
 	      }
 
 	    } // end landable-not landable
@@ -545,6 +557,10 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
       
 	     { ; }
 	} // if visible
+
+    if(oldBmp) {
+        SelectObject(hDCTemp, oldBmp);
+    }
     } // for all waypoints
  
   std::sort( &SortedWaypointLabelList[0], &SortedWaypointLabelList[MapWaypointLabelListCount], MapWaypointLabelListCompare );
@@ -556,6 +572,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
   for (j=MapWaypointLabelListCount-1; j>=0; j--){
 
+    oldBmp = NULL;
     MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     // draws if they are in task unconditionally,
@@ -570,14 +587,14 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
     // If we are at low zoom, use a dot for icons, so we dont clutter the screen
     if(MapWindow::zoom.RealScale() > 1) {
 	if (BlackScreen) 
- 		 SelectObject(hDCTemp,hInvSmall);
+ 		 oldBmp = (HBITMAP)SelectObject(hDCTemp,hInvSmall);
 	else
- 		 SelectObject(hDCTemp,hSmall);
+ 		 oldBmp = (HBITMAP)SelectObject(hDCTemp,hSmall);
     } else {
 	if (BlackScreen)
-		SelectObject(hDCTemp,hInvTurnPoint);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hInvTurnPoint);
 	else
-		SelectObject(hDCTemp,hTurnPoint);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hTurnPoint);
     }
     DrawBitmapX(hdc,
 	    E->Pos.x-10,
@@ -592,12 +609,15 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	    hDCTemp,20,0,SRCAND,false);
 
     } // wp in task
+    if(oldBmp) {
+        SelectObject(hDCTemp, oldBmp);
+    }
   } // for all waypoint, searching for those in task
 
   // now draw normal waypoints in order of range (furthest away last)
   // without writing over each other (or the task ones)
   for (j=0; j<MapWaypointLabelListCount; j++) {
-
+    oldBmp = NULL;
     MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
@@ -606,9 +626,9 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	// If we are at low zoom, use a dot for icons, so we dont clutter the screen
 	if(MapWindow::zoom.RealScale() > 4) {
 		if (BlackScreen) 
-	 		 SelectObject(hDCTemp,hInvSmall);
+	 		 oldBmp = (HBITMAP)SelectObject(hDCTemp,hInvSmall);
 		else
-	 		 SelectObject(hDCTemp,hSmall);
+	 		 oldBmp = (HBITMAP)SelectObject(hDCTemp,hSmall);
 	} else {
 		// We switch all styles in the correct order, to force a jump table by the compiler
 		// It would be much better to use an array of bitmaps, but no time to do it for 3.0
@@ -626,51 +646,51 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				break;
 
 			case STYLE_MTPASS:
-				SelectObject(hDCTemp,hMountpass);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hMountpass);
 				break;
 
 			case STYLE_MTTOP:
-				SelectObject(hDCTemp,hMountop);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hMountop);
 				break;
 
 			case STYLE_SENDER:
-				SelectObject(hDCTemp,hSender);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hSender);
 				break;
 
 			case STYLE_VOR:
-				SelectObject(hDCTemp,hVor);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hVor);
 				break;
 
 			case STYLE_NDB:
-				SelectObject(hDCTemp,hNdb);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hNdb);
 				break;
 
 			case STYLE_COOLTOWER:
-				SelectObject(hDCTemp,hCoolTower);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hCoolTower);
 				break;
 
 			case STYLE_DAM:
-				SelectObject(hDCTemp,hDam);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hDam);
 				break;
 
 			case STYLE_TUNNEL:
-				SelectObject(hDCTemp,hTunnel);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hTunnel);
 				break;
 
 			case STYLE_BRIDGE:
-				SelectObject(hDCTemp,hBridge);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hBridge);
 				break;
 
 			case STYLE_POWERPLANT:
-				SelectObject(hDCTemp,hPowerPlant);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hPowerPlant);
 				break;
 
 			case STYLE_CASTLE:
-				SelectObject(hDCTemp,hCastle);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hCastle);
 				break;
 
 			case STYLE_INTERSECTION:
-				SelectObject(hDCTemp,hIntersect);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hIntersect);
 				break;
 
 			case STYLE_TRAFFIC:
@@ -678,22 +698,22 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				break;
 			case STYLE_THERMAL:
                 if(E->AltArivalAGL>0) {
-                    SelectObject(hDCTemp,hLKThermal);
+                    oldBmp = (HBITMAP)SelectObject(hDCTemp,hLKThermal);
                 } else {
-                    SelectObject(hDCTemp,hLKThermalRed);
+                    oldBmp = (HBITMAP)SelectObject(hDCTemp,hLKThermalRed);
                 }
 				break;
 
 			case STYLE_MARKER:
-				SelectObject(hDCTemp,hBmpMarker);
+				oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpMarker);
 				break;
 
 			default:
 turnpoint:
 				if (BlackScreen)
-					SelectObject(hDCTemp,hInvTurnPoint);
+					oldBmp = (HBITMAP)SelectObject(hDCTemp,hInvTurnPoint);
 				else
-					SelectObject(hDCTemp,hTurnPoint);
+					oldBmp = (HBITMAP)SelectObject(hDCTemp,hTurnPoint);
 				break;
 
 		} // switch estyle
@@ -714,6 +734,9 @@ turnpoint:
 		    hDCTemp,20,0,SRCAND,false);
       }
     }
+    if(oldBmp) {
+        SelectObject(hDCTemp, oldBmp);
+    }
   }
 
 } // end DrawWaypoint
@@ -730,7 +753,7 @@ if(hLKPictori == NULL)
 	int cy = rc.bottom - rc.top;
 int x =cx/2;
 int y =cy/2;
-	SelectObject(hDCTemp,hLKPictori);
+	HBITMAP oldBmp = (HBITMAP)SelectObject(hDCTemp,hLKPictori);
 /*
 	  if (ScreenScale>1)
 		UseHiresBitmap=true;
@@ -757,10 +780,14 @@ else
 			45,45,
 	    hDCTemp,0,0,SRCCOPY,true);
 }
+    
+    SelectObject(hDCTemp, oldBmp);
 
 }
 void MapWindow::DrawWaypointPicto(HDC hdc, const RECT rc, WAYPOINT* wp)
 {
+    HBITMAP oldBmp = NULL;
+    
 switch(wp->Style) {
 	case STYLE_NORMAL:
 		goto turnpoint;
@@ -775,62 +802,62 @@ switch(wp->Style) {
 		break;
 
 	case STYLE_MTPASS:
-		SelectObject(hDCTemp,hMountpass);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hMountpass);
 		break;
 
 	case STYLE_MTTOP:
-		SelectObject(hDCTemp,hMountop);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hMountop);
 		break;
 
 	case STYLE_SENDER:
-		SelectObject(hDCTemp,hSender);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hSender);
 		break;
 
 	case STYLE_VOR:
-		SelectObject(hDCTemp,hVor);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hVor);
 		break;
 
 	case STYLE_NDB:
-		SelectObject(hDCTemp,hNdb);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hNdb);
 		break;
 
 	case STYLE_COOLTOWER:
-		SelectObject(hDCTemp,hCoolTower);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hCoolTower);
 		break;
 
 	case STYLE_DAM:
-		SelectObject(hDCTemp,hDam);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hDam);
 		break;
 
 	case STYLE_TUNNEL:
-		SelectObject(hDCTemp,hTunnel);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hTunnel);
 		break;
 
 	case STYLE_BRIDGE:
-		SelectObject(hDCTemp,hBridge);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hBridge);
 		break;
 
 	case STYLE_POWERPLANT:
-		SelectObject(hDCTemp,hPowerPlant);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hPowerPlant);
 		break;
 
 	case STYLE_CASTLE:
-		SelectObject(hDCTemp,hCastle);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hCastle);
 		break;
 
 	case STYLE_INTERSECTION:
-		SelectObject(hDCTemp,hIntersect);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hIntersect);
 		break;
 
 	case STYLE_TRAFFIC:
 		goto turnpoint;
 		break;
 	case STYLE_THERMAL:
-		SelectObject(hDCTemp,hLKThermal);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hLKThermal);
 		break;
 
 	case STYLE_MARKER:
-		SelectObject(hDCTemp,hBmpMarker);
+		oldBmp = (HBITMAP)SelectObject(hDCTemp,hBmpMarker);
 		break;
 
 	default:
@@ -838,9 +865,9 @@ turnpoint:
 bool inv = BlackScreen;
 
 		if (inv)
-			SelectObject(hDCTemp,hInvTurnPoint);
+			oldBmp = (HBITMAP)SelectObject(hDCTemp,hInvTurnPoint);
 		else
-			SelectObject(hDCTemp,hTurnPoint);
+			oldBmp = (HBITMAP)SelectObject(hDCTemp,hTurnPoint);
 		break;
 
 } // switch estyle
@@ -873,5 +900,8 @@ if(cx < 40)
   DrawBitmapX(hdc,x,y, 20,20, hDCTemp, 0,0,SRCPAINT,scale);
   DrawBitmapX(hdc,x,y, 20,20, hDCTemp,20,0,SRCAND,scale);
 
+  if(oldBmp) {
+      SelectObject(hDCTemp, oldBmp);
+  }
 //StartupStore(_T("Bitmap left:%i right:%i  top:%i bottom:%i x:%i y:%i\n"),rc.left,rc.right, rc.top,rc.bottom,x,y);
 }
