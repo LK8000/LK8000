@@ -19,7 +19,7 @@ using std::max;
 
 int Sideview_asp_heading_task=0;
 int Sideview_iNoHandeldSpaces=0;
-AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS] = {0};
+AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS] = {{{0}}};
 
 
 

@@ -54,10 +54,10 @@ int i,j;
 	SelectObject(hdc, OldPen);
   }
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
-  POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X+4];
-  double d_lat[AIRSPACE_SCANSIZE_X];
-  double d_lon[AIRSPACE_SCANSIZE_X];
-  double d_h[AIRSPACE_SCANSIZE_X];
+  POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X+4] = {{0}};
+  double d_lat[AIRSPACE_SCANSIZE_X] = {0};
+  double d_lon[AIRSPACE_SCANSIZE_X] = {0};
+  double d_h[AIRSPACE_SCANSIZE_X] = {0};
 
 #define   FRAMEWIDTH 2
   RasterTerrain::Lock(); // want most accurate rounding here
