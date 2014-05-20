@@ -3741,10 +3741,10 @@ void WndListFrame::Paint(HDC hDC){
                mClients[0]->GetHeight());
 
     HBITMAP oldBmp = (HBITMAP)SelectObject(HdcTemp, BmpMem);
+    HFONT oldFont = (HFONT)SelectObject(HdcTemp, mClients[0]->GetFont());
 
     for (i=0; i<mListInfo.ItemInViewCount; i++){
  
-      HFONT oldFont = (HFONT)SelectObject(HdcTemp, mClients[0]->GetFont());
 
       if (mOnListCallback != NULL){
         mListInfo.DrawIndex = mListInfo.TopIndex + i;
@@ -3765,12 +3765,12 @@ void WndListFrame::Paint(HDC hDC){
           SRCCOPY
         );
 
-      SelectObject(HdcTemp, oldFont);
 
     }
 
     mListInfo.DrawIndex = mListInfo.ItemIndex;
 
+    SelectObject(HdcTemp, oldFont);
     SelectObject(HdcTemp, oldBmp);
     DeleteObject(BmpMem);
     DeleteDC(HdcTemp);
@@ -3812,13 +3812,6 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   int w = GetWidth()- (ScrollbarWidth);
   int h = GetHeight() - ScrollbarTop;
 
-  if ( (sHdc==NULL) || (hScrollBarBitmapTop == NULL)) {
-	sHdc = CreateCompatibleDC(hDC); 
-  }
-
-  hP = LKPen_Black_N1;
-  SelectObject(hDC, hP);
-
   // ENTIRE SCROLLBAR AREA
   rc.left = w;
   rc.top = ScrollbarTop;
@@ -3835,6 +3828,14 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	return;
   }
 
+  if ( (sHdc==NULL) || (hScrollBarBitmapTop == NULL)) {
+	sHdc = CreateCompatibleDC(hDC); 
+  }
+
+  hP = LKPen_Black_N1;
+  HPEN oldPen = (HPEN)SelectObject(hDC, hP);
+
+  
   // draw rectangle around entire scrollbar area
   DrawLine2(hDC, rc.left, rc.top, rc.left, rc.bottom, rc.right, rc.bottom); 
   DrawLine2(hDC, rc.right, rc.bottom, rc.right, rc.top, rc.left, rc.top); 
@@ -3925,6 +3926,8 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 
   } // more items than fit on screen
 
+  SelectObject(hDC, oldPen);
+  
   SelectObject(GetTempDeviceContext(), oldBmp);
   
   rcScrollBarButton.left=rc.left;
