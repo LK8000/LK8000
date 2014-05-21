@@ -132,7 +132,7 @@ void Message::Initialize(RECT rc) {
 
   // change message font for different resolutions
   // Caution, remember to set font also in Resize..
-  if (ScreenSize > sslandscape )
+  if (ScreenLandscape )
 	SendMessage(hWndMessageWindow, WM_SETFONT, (WPARAM)LK8InfoBigFont,MAKELPARAM(TRUE,0));
   else
 	SendMessage(hWndMessageWindow, WM_SETFONT, (WPARAM)MapWindowBoldFont,MAKELPARAM(TRUE,0));
@@ -198,7 +198,7 @@ void Message::Resize() {
     SetWindowText(hWndMessageWindow, msgText);
 
     HFONT oldfont;
-    if (ScreenSize > sslandscape )
+    if (ScreenLandscape )
 	oldfont=(HFONT)SelectObject(hdc,LK8InfoBigFont);
     else
 	oldfont=(HFONT)SelectObject(hdc,MapWindowBoldFont);

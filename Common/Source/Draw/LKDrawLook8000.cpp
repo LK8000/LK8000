@@ -107,7 +107,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8MediumFont = TextSize.cy;
 
-	if ( ScreenSize < (ScreenSize_t)sslandscape ) {
+	if ( !ScreenLandscape ) {
 		switch (ScreenSize) {			// portrait fullscreen
 			case (ScreenSize_t)ss240x320:
 				tlenFullScreen=8;
@@ -1160,7 +1160,7 @@ drawOverlay:
 
 	if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
 		SelectObject(hdc, medFont); 
-		if ( ScreenSize < (ScreenSize_t)sslandscape )
+		if ( !ScreenLandscape )
 			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(10),
 				yClockposition,
 				0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
