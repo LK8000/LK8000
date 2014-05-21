@@ -57,7 +57,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   if (DoInit[MDI_DRAWTRAFFIC]) {
 
-  if ( ScreenSize < (ScreenSize_t)sslandscape ) {
+  if ( !ScreenLandscape ) {
 	left=rc.left+NIBLSCALE(1);
 	right=rc.right-NIBLSCALE(1);
   	bottom=rc.bottom-BottomSize-NIBLSCALE(2);
@@ -106,7 +106,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   Column5=Column4+intercolumn+AATextSize.cx;			// AA align right
 
 
-  if ( ScreenSize < (ScreenSize_t)sslandscape ) {
+  if ( !ScreenLandscape ) {
   	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   	TopSize+=HEADRAW;
@@ -126,14 +126,14 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   // Traffic name
   s_sortBox[0].left=Column0; // FIX 090925 era solo 0
-  if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(2);
+  if ( !ScreenLandscape ) s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(2);
   else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=2;
   s_sortBox[0].bottom=p1.y;
   SortBoxX[MSM_TRAFFIC][0]=s_sortBox[0].right;
 
   // Distance
-  if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
+  if ( !ScreenLandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
   else s_sortBox[1].left=Column1+afterwpname-INTERBOX-NIBLSCALE(2);
   s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=2;
@@ -252,7 +252,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   short cursortbox=SortedMode[curmapspace];
 
-  if ( ScreenSize < (ScreenSize_t)sslandscape ) { // portrait mode
+  if ( !ScreenLandscape ) { // portrait mode
 	FillRect(hdc,&s_sortBox[cursortbox], sortbrush); 
 	_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
   	SelectObject(hdc, LK8PanelMediumFont); 
