@@ -79,6 +79,31 @@ Old task files can still be loaded.
 Multimap page 2, final glide page, empowered with new informations.
 Automatically providing the minimal, current and max MC possible for the final glide, considering wind and obstacles.
 
+
+============
+Version 4.1x
+============
+
+FIXES
+
+Fix FLARM SETUP buttons working on any available port, starting from the first.
+    Port A has priority on port B. Previously working only on Port A.
+
+Fix bottom bar sound for neutral stripe, too low.
+
+Fix many display errors using custom screen resolutions in landscape mode
+
+Fix Next and Task ETE / ETA for GA and CAR modes
+    Still not accurate for task. Using basic ground speed, not IAS.
+    Not using wind component for task around turnpoints.
+    Always assuming time needed to go straight to turnpoint from the instant time.
+
+Fix wrong name for discus2 2c polar, being 18m. added Para Ozone wings.
+
+
+
+
+
 ============
 Version 4.1v
 ============
