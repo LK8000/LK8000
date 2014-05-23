@@ -938,12 +938,22 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
+			if (ISCAR || ISGAAIRCRAFT) {
+			    if ( ValidTaskPoint(ActiveWayPoint) && DerivedDrawInfo.ValidStart ) {
+				if (DerivedDrawInfo.LKTaskETE > 0) {
+					valid=true;
+					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LKTaskETE+DetectCurrentTime());
+				} else
+					wsprintf(BufferValue, TEXT(NULLTIME));
+			    }
+			} else {
+			    if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
 				if (DerivedDrawInfo.TaskTimeToGo > 0) {
 					valid=true;
 					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo+DetectCurrentTime());
 				} else
 					wsprintf(BufferValue, TEXT(NULLTIME));
+			    }
 			}
 			wsprintf(BufferUnit, TEXT("h"));
 			break;
@@ -959,7 +969,7 @@ goto_bearing:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			if(ISPARAGLIDER) {
-                LockTaskData();
+                                LockTaskData();
 				index = DoOptimizeRoute()?RESWP_OPTIMIZED:Task[ActiveWayPoint].Index;
 				if ( (ValidTaskPoint(ActiveWayPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
 					if (WayPointCalc[index].NextETE > 0) {
@@ -968,15 +978,28 @@ goto_bearing:
 					} else
 						wsprintf(BufferValue, TEXT(NULLTIME));
 				}
-                UnlockTaskData();
-			} else {
-				if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
-					if (DerivedDrawInfo.LegTimeToGo > 0) {
-						valid=true;
-						Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LegTimeToGo+DetectCurrentTime());
-					} else
-						wsprintf(BufferValue, TEXT(NULLTIME));
-				}
+                                UnlockTaskData();
+                                break;
+			} 
+                        if (ISCAR || ISGAAIRCRAFT) { 
+                            LockTaskData();
+			    if ( ValidTaskPoint(ActiveWayPoint) && (WayPointCalc[TASKINDEX].NextETE< 0.9*ERROR_TIME)) {
+				if (WayPointCalc[TASKINDEX].NextETE > 0) {
+					valid=true;
+					Units::TimeToText(BufferValue, (int)(WayPointCalc[TASKINDEX].NextETE+DetectCurrentTime()));
+				} else
+					wsprintf(BufferValue, TEXT(NULLTIME));
+			    }
+                            UnlockTaskData();
+                            break;
+			}
+
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
+				if (DerivedDrawInfo.LegTimeToGo > 0) {
+					valid=true;
+					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LegTimeToGo+DetectCurrentTime());
+				} else
+					wsprintf(BufferValue, TEXT(NULLTIME));
 			}
 			break;
 		// B47
@@ -2508,6 +2531,31 @@ lkfin_ete:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_FIN_ETE].Title );
 				// ^^ Notice we use LK_FIN_ETE, NOT LK_LKFIN_ETE which does NOT exist in DataOptions!
+
+			if (ISCAR || ISGAAIRCRAFT) {
+                            LockTaskData();
+			    if ( ValidTaskPoint(ActiveWayPoint)) {
+				if (DerivedDrawInfo.LKTaskETE > 0) { 
+					valid=true;
+					if ( Units::TimeToTextDown(BufferValue, (int)DerivedDrawInfo.LKTaskETE))
+						wsprintf(BufferUnit, TEXT("h"));
+					else
+						wsprintf(BufferUnit, TEXT(""));
+				} else {
+					index = Task[ActiveWayPoint].Index;
+					if ( WayPointCalc[index].NextETE > 0) { // single waypoint? uhm
+						valid=true;
+						if (Units::TimeToTextDown(BufferValue, (int)WayPointCalc[index].NextETE))
+                                                	wsprintf(BufferUnit, TEXT("h"));
+                                        	else
+                                        	        wsprintf(BufferUnit, TEXT(""));
+					} else
+						wsprintf(BufferValue, TEXT(NULLTIME));
+				}
+                            }
+                            UnlockTaskData();
+			    break;
+			}
 
             LockTaskData();
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {

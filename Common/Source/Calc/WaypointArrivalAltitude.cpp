@@ -9,13 +9,21 @@
 #include "externs.h"
 #include "McReady.h"
 
+void simpleETE(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
+   if (Basic->Speed <1 || !Calculated->Flying || Calculated->Circling) {
+       return;
+   }
+   #if BUGSTOP
+   LKASSERT(ValidWayPoint(i));
+   #endif
+   if (!ValidWayPoint(i)) return;
+
+   WayPointCalc[i].NextETE= WayPointCalc[i].Distance / Basic->Speed;
+}
+
 
 // This is also called by DoNearest and it is overwriting AltitudeRequired 
 double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
-
-  if (ISCAR) {
-	return (Basic->Altitude-WayPointList[i].Altitude);
-  }
 
   double altReqd;
   double wDistance, wBearing;
@@ -23,7 +31,6 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   double safetyaltitudearrival;
 
   safetyaltitudearrival=GetSafetyAltitude(i);
-
 
   DistanceBearing(Basic->Latitude, 
                   Basic->Longitude,
@@ -33,6 +40,11 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 
   WayPointCalc[i].Distance = wDistance;
   WayPointCalc[i].Bearing  = wBearing;
+
+  if (ISCAR) {
+        simpleETE(Basic,Calculated,i);
+	return (Basic->Altitude-WayPointList[i].Altitude);
+  }
 
 	altReqd = GlidePolar::MacCreadyAltitude ( GetMacCready(i,GMC_DEFAULT),
 		wDistance, wBearing, 
@@ -93,6 +105,11 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 		WayPointCalc[i].AltReqd[ALTA_AVEFF] = Calculated->NavAltitude - WayPointCalc[i].AltArriv[ALTA_AVEFF];
 		WayPointCalc[i].NextETE=600.0;
 */
+
+   // for GA recalculate simple ETE
+   if (ISGAAIRCRAFT) {
+        simpleETE(Basic,Calculated,i);
+   }
  
    return(WayPointCalc[i].AltArriv[AltArrivMode]); 
 
