@@ -2958,7 +2958,31 @@ lkfin_ete:
 			}
             UnlockTaskData();
 			break;
-
+        // B158
+        case LK_START_SPEED:
+            valid = false;
+            value = 0;
+            // Req. Speed For reach Gate
+            if (UseGates() && HaveGates()) {
+                // Time To Gate
+                const int gatechrono = GateTime(ActiveGate) - LocalTime(); // not always already set, update it ... 
+                if (gatechrono > 0) {
+                    const double DistToGate = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].Distance;
+                    const double SpeedToGate = DistToGate / gatechrono;
+                    value = SPEEDMODIFY*SpeedToGate;
+                    if (SpeedToGate < 1 || SpeedToGate > 300) { 
+                        // ignore too slow or to fast speed
+                        value = 0;
+                    } else {
+                        valid = true;
+                    }
+                }
+                _stprintf(BufferValue, TEXT("%d"), iround(value));
+                _stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
+                _tcscpy(BufferTitle, TEXT(""));
+            }
+			break;            
+            
 		// B253
 		case LK_DUMMY:
 			wsprintf(BufferValue,_T(NULLLONG));

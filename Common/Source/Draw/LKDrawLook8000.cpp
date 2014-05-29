@@ -832,23 +832,43 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
   if ( ISPARAGLIDER ) {
 
 	if (UseGates()&&ActiveWayPoint==0) {
-		SelectObject(hdc, bigFont); // use this font for big values
+		SelectObject(hdc, LK8TargetFont); // use this font for big values
 
 		if (HaveGates()) {
+            // Time To Gate
             gatechrono=GateTime(ActiveGate)-LocalTime(); // not always already set, update it ... 
 
 			Units::TimeToTextDown(BufferValue,gatechrono ); 
 			rcx=rc.right-NIBLSCALE(10);
 			GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
-			rcy=yrightoffset -TextSize.cy; // 101112
+			rcy=yrightoffset -TextSize.cy-NIBLSCALE(6); // 101112
 			LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
+            // Gate ETE Diff 
 			Value=WayPointCalc[DoOptimizeRoute()?RESWP_OPTIMIZED:Task[0].Index].NextETE-gatechrono;
 			Units::TimeToTextDown(BufferValue, (int)Value);
+            rcy += TextSize.cy-NIBLSCALE(2);
 			if (Value<=0) 
-				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
+				LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
 			else
-				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+				LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+
+            // Req. Speed For reach Gate
+            if (LKFormatValue(LK_START_SPEED, false, BufferValue, BufferUnit, BufferTitle)) {
+                SelectObject(hdc, LKMAPFONT);
+                GetTextExtentPoint(hdc, BufferUnit, _tcslen(BufferUnit), &TextSize);
+                rcx -= TextSize.cx;
+                SelectObject(hdc, LK8TargetFont);
+                GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
+                rcx -= (TextSize.cx + NIBLSCALE(2));
+                rcy += TextSize.cy-NIBLSCALE(2);
+                
+                LKWriteText(hdc, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
+
+                SelectObject(hdc, LKMAPFONT);
+                LKWriteText(hdc, BufferUnit, rcx + TextSize.cx + NIBLSCALE(2), rcy + (TextSize.cy / 3), 0,
+                        WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
+            }
 		}
 
 	} else {
@@ -926,7 +946,7 @@ drawOverlay:
 	// LKTOKEN  _@M316_ = "GATES CLOSED" 
 		_tcscpy(BufferValue,MsgToken(316));
 	}
-	rcy=yrightoffset -ySizeLK8BigFont-(ySizeLK8MediumFont*2); // 101112
+	rcy=yrightoffset -ySizeLK8TargetFont-(ySizeLK8MediumFont*2)-NIBLSCALE(2); // 101112
 	rcx=rc.right-NIBLSCALE(10);
 	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
