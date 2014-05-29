@@ -324,8 +324,8 @@ DoInit[MDI_DRAWTASK]=false;
             POINT ClipPt1 = sct1, ClipPt2 = sct2;
             if(LKGeom::ClipLine((POINT) {rc.left, rc.top}, (POINT) {rc.right, rc.bottom}, ClipPt1, ClipPt2)) {
                 DrawMulticolorDashLine(hdc, size_tasklines,
-                        sct1,
-                        sct2,
+                        ClipPt1,
+                        ClipPt2,
                         taskcolor, RGB_BLACK,rc);
                 
                 // draw small arrow along task direction
