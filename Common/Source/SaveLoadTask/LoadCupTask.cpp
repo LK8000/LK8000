@@ -232,6 +232,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
     size_t idxTP = 0;
     bool bTakeOff = true;
     bool bLoadComplet = true;
+    bool bLastInvalid=true;
 
     TCHAR szString[READLINE_LENGTH + 1];
     TCHAR TpCode[NAME_SIZE + 1];
@@ -293,7 +294,13 @@ bool LoadCupTask(LPCTSTR szFileName) {
                                         // skip TakeOff Set At Home Waypoint
                                         int ix = FindOrAddWaypoint(&(It->second),false);
                                         if (ix>=0) {
+                                            #if 0 // REMOVE
+                                            // We must not change HomeWaypoint without user knowing!
+                                            // The takeoff and homewaypoint are independent from task.
+                                            // In addition, this is a bug because on next run the index is invalid
+                                            // and we have no more HowWaypoint!
                                             HomeWaypoint = ix;
+                                            #endif
                                             bTakeOff = false;
                                         }
                                         #if BUGSTOP
@@ -306,6 +313,15 @@ bool LoadCupTask(LPCTSTR szFileName) {
                                         else LKASSERT(0); // .. else is unmanaged, TODO
                                         #endif
                                     }
+                                    bLastInvalid=false;
+                                } else {
+                                    // An invalid takeoff, probably a "???" , which we ignore
+                                    #if TESTBENCH
+                                    if (bTakeOff) StartupStore(_T("....... CUP Takeoff not found: <%s>\n"),TpCode);
+                                    #endif
+                                    // in any case bTakeOff now is false
+                                    bTakeOff=false;
+                                    bLastInvalid=true;
                                 }
                             } else { //ISGAIRRCRAFT
                                 if(It != mapWaypoint.end()) {
@@ -438,7 +454,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
     }
     if(!ISGAAIRCRAFT) {
         // Landing don't exist in LK Task Systems, so Remove It;
-        if ( bLoadComplet ) {
+        if ( bLoadComplet && !bLastInvalid ) {
             RemoveTaskPoint(getFinalWaypoint());
         }
     }
