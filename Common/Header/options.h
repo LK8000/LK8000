@@ -39,15 +39,15 @@
  // When expire date is reached, unnecessary old stuff can be removed, even if commented
  //
 
- #define BUGSTOP	1	// STOP by LKASSERT even if the condition was managed, to show
+ //#define BUGSTOP	1	// STOP by LKASSERT even if the condition was managed, to show
 				// the problem during alpha stages. 
 				// Normally these conditions should not exist
 
- #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD 
+ //#define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD 
 				// FOR DEVELOPMENT VERSIONS. CAN BE USED FOR SPECIAL BETAs,
 				// but normally should not be used for public releases.
 
- #define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
+ //#define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
 				// For TESTBENCH and beta versions this should be always ENABLED.
 				// Only in official stable versions it should be disabled.
 
