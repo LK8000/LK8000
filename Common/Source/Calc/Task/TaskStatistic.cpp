@@ -432,6 +432,11 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   else
 	Calculated->LKTaskETE=0;
 
+  // recalculate for powered people
+  if (ISCAR  || ISGAAIRCRAFT) {
+        if (Basic->Speed>0) Calculated->LKTaskETE = Calculated->TaskDistanceToGo/Basic->Speed;
+  }
+
 #ifdef BCT_ALT_FIX
   // This MCA call's only purpose is to update BestCruiseTrack (BCT).
   // It must occur after TaskAltitudeDifference (TAD) is updated,

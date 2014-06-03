@@ -2987,8 +2987,8 @@ void CAirspaceManager::SaveSettings() const {
             else fprintf(f, "-");
 
             //Comment
-            wsprintf(ubuf, TEXT(" #%s"), (*it)->Name());
-            unicode2utf(ubuf, buf, sizeof (buf));
+            _stprintf(ubuf, TEXT(" #%s"), (*it)->Name());
+            TCHAR2utf(ubuf, buf, sizeof (buf));
             fprintf(f, "%s", buf);
             //Newline
             fprintf(f, "\n");

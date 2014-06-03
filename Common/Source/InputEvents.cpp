@@ -1434,7 +1434,7 @@ void InputEvents::eventTimeGates(const TCHAR *misc) {
 void InputEvents::eventMyMenu(const TCHAR *misc) {
 
   unsigned int i, ckeymode;
-  i=_wtoi(misc);
+  i=_ttoi(misc);
   LKASSERT(i>0 && i<11);
 
   // test mode only!
@@ -2510,12 +2510,12 @@ void InputEvents::eventTaskLoad(const TCHAR *misc) {
     
     LPCTSTR wextension = _tcsrchr(szFileName, '.');
     if(wextension) {
-        if(wcscmp(wextension,_T(LKS_TSK))==0) {
+        if(_tcscmp(wextension,_T(LKS_TSK))==0) {
             CTaskFileHelper helper;
             if(!helper.Load(szFileName)) {
                
             }
-        } else if (wcscmp(wextension,_T(LKS_OLD_TSK))==0) {
+        } else if (_tcscmp(wextension,_T(LKS_OLD_TSK))==0) {
             LockTaskData();
             LoadNewTask(szFileName);
             UnlockTaskData();

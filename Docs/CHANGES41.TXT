@@ -81,6 +81,156 @@ Automatically providing the minimal, current and max MC possible for the final g
 
 
 ============
+Version 4.1x
+============
+
+FIXES
+
+Fix FLARM SETUP buttons working on any available port, starting from the first.
+    Port A has priority on port B. Previously working only on Port A.
+
+Fix bottom bar sound for neutral stripe, too low.
+
+Fix many display errors using custom screen resolutions in landscape mode
+
+Fix Next and Task ETE / ETA for GA and CAR modes
+    Still not accurate for task. Using basic ground speed, not IAS.
+    Not using wind component for task around turnpoints.
+    Always assuming time needed to go straight to turnpoint from the instant time.
+
+Fix wrong name for discus2 2c polar, being 18m. added Para Ozone wings.
+
+
+
+
+
+============
+Version 4.1v
+============
+
+NEW
+
+GA mode:  Implemented projection of future positions in 2, 5 and 10 min on heading line
+
+
+
+CHANGES
+
+Flight data recorder open file in append mode, not resetting old one.
+Disable baro altitude only if difference from hgps is over 100m , when the baro altitude is steady while hgps is 
+ changing, and not on ground
+
+HSI: print cross track error also with other distance units
+
+Active map retuned to return more waypoints, and sounding like Oracle
+
+
+
+FIXES
+
+fix draw Task/FAI button not reset with profile reset
+Fix reset bottombar mode to CRUISE after a profile reset
+Fix reset FAI28/45 config after profile reset
+Fix bug iFlarmRadar not initialised and not reset on profile reset
+Fix bug airspace changes (permanent changes or temporary) never init and never reset.
+Fix bug not showing task lines in target dialog is DrawTsk flag was unselected
+Fix clock overlay in 480x640
+
+Many fixes for possible crashes
+
+
+
+
+
+
+============
+Version 4.1t
+============
+
+
+FIXES
+
+Fix multimap 3 glitch
+
+fix broken "ProjectedDistance" if optional cross track error output parameter is not provided.
+ - this fix task speed & task coverage calculation
+
+Paragliding thermal exit timing changed from 9 to 15 seconds of straight flight, as a parameter
+
+
+Update ENG_MSG not distributed in latest betas
+Update PTB
+Polish translation updated
+Added polars for Discus B and Arcus M
+
+
+
+
+
+
+============
+Version 4.1s
+============
+
+FIXES
+
+Fix critical bug in V2 and other smartphones when LiveTracker was activated by user setting interval to 1 or more seconds, and no internet connection.
+After a period of time between 3 and 4 hours the PNA memory was saturated and the program was crashing.
+This bug was existing also in LK 4.
+
+Fix replay logger interpolator error, workaround
+
+Fix bug not saving history of waypoints goto after selecting a reserved wp like freeflight, faiclose etc
+
+Fix PC version:  Do NOT load resolution from profile, if we have requested a resolution from command line
+
+
+
+
+============
+Version 4.1r
+============
+
+
+
+FIXES
+
+Many important fixes, and one critical fix: possible crashes on PNA sending data to
+external devices.
+
+
+
+
+
+
+
+
+
+
+
+============
+Version 4.1q
+============
+
+CHANGES
+
+Simulator thermals repositioned and made closer to takeoff point, added a fourth thermal.
+
+Wind direction in degrees padded with 0 (example: 018 instead of 18).
+
+
+
+FIXES
+
+Fix Borgelt B50 device driver. Not using bugs and ballast because values are wrong 
+    We receive negative values, totally wrong and not compatible with CAI sentences.
+
+Fix order of Trail button, previously OFF-LONG-SHORT-FULL to OFF-SHORT-LONG-FULL
+
+
+
+
+============
 Version 4.1p
 ============
 

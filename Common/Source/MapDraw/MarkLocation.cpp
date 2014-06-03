@@ -96,7 +96,7 @@ extern int GetVirtualWaypointMarkerSlot(void);
         LKASSERT(WayPointList[j].Comment!=NULL);
         #endif
         if (WayPointList[j].Comment!=NULL)
-	    wsprintf(WayPointList[j].Comment,_T("Near: %hs"),snear);
+	    _stprintf(WayPointList[j].Comment,_T("Near: %s"),snear);
 
 	WayPointCalc[j].WpType=WPT_TURNPOINT;
 

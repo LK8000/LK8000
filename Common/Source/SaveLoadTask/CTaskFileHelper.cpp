@@ -658,7 +658,7 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
     LPTSTR szContent = topNode.createXMLString(1, &ContentSize);
     Utf8File file;
     if (file.Open(szFileName, Utf8File::io_create)) {
-        file.WriteLn(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        file.WriteLn(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
         file.WriteLn(szContent);
         file.Close();
 

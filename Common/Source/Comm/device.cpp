@@ -74,7 +74,7 @@ BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
 
   while ((ch = d->Com->GetChar()) != EOF){
 
-    if (token[i] == (unsigned)ch) 
+    if (token[i] == (TCHAR)ch) 
       i++;
     else
       i=0;
@@ -224,7 +224,7 @@ BOOL devInit(LPCTSTR CommandLine) {
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
-    std::set<std::wstring> UsedPort; // list of already used port
+    std::set<std::tstring> UsedPort; // list of already used port
     
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);
@@ -246,7 +246,7 @@ BOOL devInit(LPCTSTR CommandLine) {
         }
         
         ReadDeviceSettings(i, DeviceName);
-        DeviceList[i].Disabled = (wcscmp(DeviceName, _T(DEV_DISABLED_NAME)) == 0);
+        DeviceList[i].Disabled = (_tcscmp(DeviceName, _T(DEV_DISABLED_NAME)) == 0);
         if (DeviceList[i].Disabled) {
             StartupStore(_T(". Device %c is DISABLED.%s"), (_T('A') + i), NEWLINE);
             continue;
