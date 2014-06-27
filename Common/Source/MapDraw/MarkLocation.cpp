@@ -9,11 +9,12 @@
 #include "externs.h"
 #include "LKProcess.h"
 #include "Waypointparser.h"
+#include "utils/stringext.h"
 
 
 extern void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
 extern void LongitudeToCUPString(double Latitude, TCHAR *Buffer);
-extern void unicodetoascii(TCHAR *text, int tsize, char *atext);
+extern int GetVirtualWaypointMarkerSlot(void);
 
 
 #if USETOPOMARKS
@@ -58,18 +59,18 @@ void MarkLocation(const double lon, const double lat, const double altitude)
 
 	char marktime[10], slat[20], slon[20], snear[50];
 	Units::TimeToTextSimple(tstring,TimeLocal((int)GPS_INFO.Time));
-	unicodetoascii(tstring,_tcslen(tstring),marktime);
+	TCHAR2ascii(tstring,marktime,10);
 
 	LatitudeToCUPString(lat,tstring);
-	unicodetoascii(tstring,_tcslen(tstring),slat);
+	TCHAR2ascii(tstring,slat,20);
 	LongitudeToCUPString(lon,tstring);
-	unicodetoascii(tstring,_tcslen(tstring),slon);
+	TCHAR2ascii(tstring,slon,20);
 
 	int j=FindNearestFarVisibleWayPoint(lon,lat,15000,WPT_UNKNOWN);
 	if (j>0) {
-        	_tcscpy(tstring,WayPointList[j].Name); // Name is sized NAME_SIZE, 30, so ok with tstring[50]
-        	tstring[19]='\0'; // sized 20 chars
-		unicodetoascii(tstring,_tcslen(tstring),snear);
+        _tcscpy(tstring,WayPointList[j].Name); // Name is sized NAME_SIZE, 30, so ok with tstring[50]
+        tstring[19]='\0'; // sized 20 chars
+		TCHAR2ascii(tstring,snear,50);
 	} else {
 		strcpy(snear,"unknown");
 	}
@@ -81,7 +82,7 @@ void MarkLocation(const double lon, const double lat, const double altitude)
 	fwrite(message,strlen(message),1,stream);
 	fclose(stream);
 
-extern int GetVirtualWaypointMarkerSlot(void);
+
 
 	j=GetVirtualWaypointMarkerSlot();
 
@@ -91,11 +92,12 @@ extern int GetVirtualWaypointMarkerSlot(void);
 	WayPointList[j].Visible=TRUE;
 	WayPointList[j].FarVisible=TRUE;
 
-	wsprintf(WayPointList[j].Name,_T("MK%S%02d"),marktime,GPS_INFO.Second);
-        #if BUGSTOP
-        LKASSERT(WayPointList[j].Comment!=NULL);
-        #endif
-        if (WayPointList[j].Comment!=NULL)
+    ascii2TCHAR(marktime, tstring,50);
+	_stprintf(WayPointList[j].Name,_T("MK%s%02d"),tstring,GPS_INFO.Second);
+    #if BUGSTOP
+    LKASSERT(WayPointList[j].Comment!=NULL);
+    #endif
+    if (WayPointList[j].Comment!=NULL)
 	    _stprintf(WayPointList[j].Comment,_T("Near: %s"),snear);
 
 	WayPointCalc[j].WpType=WPT_TURNPOINT;

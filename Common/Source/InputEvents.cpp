@@ -709,7 +709,7 @@ bool InputEvents::processKey(int dWord) {
 // VENTA- DEBUG HARDWARE KEY PRESSED   
 #ifdef VENTA_DEBUG_KEY
 	TCHAR ventabuffer[80];
-	wsprintf(ventabuffer,TEXT("PRCKEY %d MODE %d EVENT %d"), dWord, mode,event_id);
+	_stprintf(ventabuffer,TEXT("PRCKEY %d MODE %d EVENT %d"), dWord, mode,event_id);
 	DoStatusMessage(ventabuffer);
 #endif
   if (event_id == 0) {
@@ -2892,7 +2892,7 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
 void InputEvents::eventUserDisplayModeForce(const TCHAR *misc){
 
   TCHAR tmode[50];
-  wsprintf(tmode,_T("%s: "), MsgToken(2249));
+  _stprintf(tmode,_T("%s: "), MsgToken(2249));
 
   if (_tcscmp(misc, TEXT("unforce")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE);
@@ -2991,7 +2991,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   if (new_waypoint) {
     tmpWaypointNum++;
     memcpy(new_waypoint,&edit_waypoint,sizeof(WAYPOINT));
-    wsprintf(new_waypoint->Name,TEXT("_%d"), tmpWaypointNum);
+    _stprintf(new_waypoint->Name,TEXT("_%d"), tmpWaypointNum);
     new_waypoint->Details= 0;
   }
   UnlockTaskData();
