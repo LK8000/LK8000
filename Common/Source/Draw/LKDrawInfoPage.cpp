@@ -927,11 +927,7 @@ label_HSI:
 			icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
 		}
 		if(showQFU) {
-			#ifndef __MINGW32__
-			_stprintf(Buffer, TEXT("QFU: %d\xB0"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
-			#else
-			_stprintf(Buffer, TEXT("QFU: %d°"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
-			#endif
+			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir,gettext(_T("_@M2179_")));
 			icolor=RGB_GREEN;
 		}
 	} else { //show next waypoint name

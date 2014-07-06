@@ -231,10 +231,10 @@ static void SetValues(void) {
     }
     if (hdist < 0) {
 	  // LKTOKEN _@M1257_ "to leave"
-	  _stprintf(buffer2, TEXT("%s %d")TEXT(DEG)TEXT(" %s"), buffer, iround(bearing), gettext(TEXT("_@M1257_")));
+	  _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), gettext(_T("_@M2179_")), gettext(TEXT("_@M1257_")));
     } else {
 	  // LKTOKEN _@M1258_ "to enter"
-	  _stprintf(buffer2, TEXT("%s %d")TEXT(DEG)TEXT(" %s"), buffer, iround(bearing), gettext(TEXT("_@M1258_")));
+	  _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), gettext(_T("_@M2179_")), gettext(TEXT("_@M1258_")));
 	}
     wp->SetText(buffer2);
     wp->RefreshDisplay();

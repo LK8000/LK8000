@@ -865,13 +865,6 @@ static const double PI = (4*atan(1));
 //
 #define MAX_FLARM_TRACES	5000
 
-
-// 
-// Special chars
-//
-
-#define DEG "\xB0"
-
 //
 // LOGGER
 //

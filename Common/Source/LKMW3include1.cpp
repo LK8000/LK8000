@@ -47,8 +47,8 @@
 
 	SelectObject(hdc, LK8PanelBigFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	//_stprintf(Buffer, TEXT("\xAB123\xB0"));
-	_stprintf(Buffer, TEXT("123\xB0\xBB"));
+	//_stprintf(Buffer, TEXT("%s123%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2179_")));
+	_stprintf(Buffer, TEXT("123%s%s"), gettext(_T("_@M2179_")),gettext(_T("_@M2183_")));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 0;
@@ -113,8 +113,8 @@
 
 	SelectObject(hdc, LK8PanelBigFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	//_stprintf(Buffer, TEXT("\xAB123\xB0"));
-	_stprintf(Buffer, TEXT("056\xB0"));
+	//_stprintf(Buffer, TEXT("%s123%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2179_")));
+	_stprintf(Buffer, TEXT("056%s"), gettext(_T("_@M2179_")));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 0;
@@ -164,8 +164,8 @@
 
 	SelectObject(hdc, LK8PanelBigFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	//_stprintf(Buffer, TEXT("\xAB123\xB0"));
-	_stprintf(Buffer, TEXT("251\xB0"));
+	//_stprintf(Buffer, TEXT("%s123%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2179_")));
+	_stprintf(Buffer, TEXT("251%s"), gettext(_T("_@M2179_")));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 0;

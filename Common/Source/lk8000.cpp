@@ -127,7 +127,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
                         LPWSTR     lpCmdLine,
                         int       nCmdShow)
 #endif
-{
+{   
 #ifdef INT_OVERFLOW
   SetErrorMode(SEM_NOGPFAULTERRORBOX|SEM_NOOPENFILEERRORBOX);
   // when we get a SIGABRT, call handler

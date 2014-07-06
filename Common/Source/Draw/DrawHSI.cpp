@@ -208,7 +208,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
     //Print the current track indication
     TCHAR Buffer[LKSIZEBUFFERVALUE];
     SelectObject(hDC, LK8InfoSmallFont);
-    _stprintf(Buffer, TEXT("%03d")TEXT(DEG),(int)round(DrawInfo.TrackBearing));
+    _stprintf(Buffer, TEXT("%03d%s"),(int)round(DrawInfo.TrackBearing),gettext(_T("_@M2179_")));
     LKWriteText(hDC,Buffer,posTRKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
 
     //Copies of the data needed from Task and WayPointList
@@ -337,7 +337,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
         //Print the desired course
         SelectObject(hDC, LK8InfoSmallFont);
-        _stprintf(Buffer, TEXT("%03d")TEXT(DEG),(int)round(course));
+        _stprintf(Buffer, TEXT("%03d%s"),(int)round(course),gettext(_T("_@M2179_")));
         LKWriteText(hDC,Buffer,posDTKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
 
         //Calculate rotation angle
@@ -460,7 +460,7 @@ HSIreturnStruct MapWindow::DrawHSI(HDC hDC, const RECT rc) {
 
             //Print the actual bearing to next WayPoint
             SelectObject(hDC, LK8InfoSmallFont);
-            _stprintf(Buffer, TEXT("%03d")TEXT(DEG),(int)round(DerivedDrawInfo.WaypointBearing));
+            _stprintf(Buffer, TEXT("%03d%s"),(int)round(DerivedDrawInfo.WaypointBearing),gettext(_T("_@M2179_")));
             LKWriteText(hDC,Buffer,posDTKx,posBRGy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_MAGENTA,false);
         } else { //flying to the departure or a direct GOTO without information for landing: don't draw CDI
             //Draw anyway the CDI scale in grey (disabled)

@@ -137,21 +137,12 @@ goto_bearing:
 						value = WayPointCalc[index].Bearing;
 
 					valid=true;
-#ifndef __MINGW32__
 					if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f\xB0"), value);			//Source editor encoding problem fixed
+						_stprintf(BufferValue, TEXT("%2.0f%s"), value, gettext(_T("_@M2179_")));
 					else if (value < -1)
-						_stprintf(BufferValue, TEXT("%2.0f\xB0"), -value);
-						else
-							_tcscpy(BufferValue, TEXT("0\xB0"));
-#else
-					if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f°"), value);
-					else if (value < -1)
-						_stprintf(BufferValue, TEXT("%2.0f°"), -value);
-						else
-							_tcscpy(BufferValue, TEXT("0°"));
-#endif
+						_stprintf(BufferValue, TEXT("%2.0f%s"), -value, gettext(_T("_@M2179_")));
+                    else
+                        _stprintf(BufferValue, TEXT("0%s"), gettext(_T("_@M2179_")));
 				}
 			}
 			break;
@@ -569,23 +560,13 @@ goto_bearing:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value = DrawInfo.TrackBearing;
 			valid=true;
-#ifndef __MINGW32__
 			if (value > 1)
-				_stprintf(BufferValue, TEXT("%2.0f\xB0"), value);
+				_stprintf(BufferValue, TEXT("%2.0f%s"), value, gettext(_T("_@M2179_")));
 			else if (value < -1)
-				_stprintf(BufferValue, TEXT("%2.0f\xB0"), -value);
-				else
-					_tcscpy(BufferValue, TEXT("0\xB0"));
-#else
-			if (value > 1)
-				_stprintf(BufferValue, TEXT("%2.0f°"), value);
-			else if (value < -1)
-				_stprintf(BufferValue, TEXT("%2.0f°"), -value);
-				else
-					_tcscpy(BufferValue, TEXT("0°"));
-#endif
+				_stprintf(BufferValue, TEXT("%2.0f%s"), -value, gettext(_T("_@M2179_")));
+			else
+				_stprintf(BufferValue, TEXT("0%s"), gettext(_T("_@M2179_")));
 			break;
-
 
 		// B24
 		case LK_VARIO:
@@ -627,7 +608,7 @@ goto_bearing:
 				value = DerivedDrawInfo.WindBearing;
 				valid=true;
 				if (value==360) value=0;
-				_stprintf(BufferValue,TEXT("%1.0f")_T(DEG), value );
+				_stprintf(BufferValue,TEXT("%1.0f%s"), value, gettext(_T("_@M2179_")));
 			} else {
 				_stprintf(BufferValue,TEXT(NULLMEDIUM));
 			}
@@ -996,30 +977,16 @@ goto_bearing:
 						else
 							if (value > 180.0)
 								value -= 360.0;
-#ifndef __MINGW32__
-						if (value > 1)
-							_stprintf(BufferValue, TEXT("%2.0f\xB0\xBB"), value);
-						else if (value < -1)
-							_stprintf(BufferValue, TEXT("\xAB%2.0f\xB0"), -value);
-							else
-								_tcscpy(BufferValue, TEXT("\xAB\xBB"));
-#else
-
-              if (value > 30)
-                _stprintf(BufferValue, TEXT("%2.0f°»"), value);
-              else
-                if (value > 2)
-                  _stprintf(BufferValue, TEXT("%2.0f°›"), value);
-                else
-                  if (value < -30)
-                    _stprintf(BufferValue, TEXT("«%2.0f°"), -value);
-                  else
-                    if (value < -2)
-                      _stprintf(BufferValue, TEXT("‹%2.0f°"),- value);
-                    else
-                      _stprintf(BufferValue, TEXT("«»"));
-                  //    _stprintf(BufferValue, TEXT("‹%2.0f°›"),0 /*fabs(value)*/);
-#endif
+                        if (value > 30)
+                          _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
+                        else if (value > 2)
+                            _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2185_")));
+                        else if (value < -30)
+                            _stprintf(BufferValue, TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
+                        else if (value < -2)
+                            _stprintf(BufferValue, TEXT("%s%2.0f%s"), gettext(_T("_@M2184_")), - value, gettext(_T("_@M2179_")));
+                        else
+                            _stprintf(BufferValue, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 					}
 					else goto goto_bearing;
 				}
@@ -1035,7 +1002,7 @@ goto_bearing:
                   }
                   else {
                     _stprintf(BufferValue, TEXT("%.0lf"), DrawInfo.OutsideAirTemperature);
-                    _stprintf(BufferUnit,  TEXT("%s"), _T(DEG));
+                    _stprintf(BufferUnit,  TEXT("%s"), gettext(_T("_@M2179_")));
                     valid = true;
                   }
                   break;
@@ -1173,11 +1140,11 @@ goto_bearing:
 				value=DerivedDrawInfo.TeammateBearing;
 				valid=true;
 				if (value > 1)
-					_stprintf(BufferValue, TEXT("%2.0f°"), value);
+					_stprintf(BufferValue, TEXT("%2.0f%s"), value, gettext(_T("_@M2179_")));
 				else if (value < -1)
-					_stprintf(BufferValue, TEXT("%2.0f°"), -value);
+					_stprintf(BufferValue, TEXT("%2.0f%s"), -value, gettext(_T("_@M2179_")));
 				else
-					_tcscpy(BufferValue, TEXT("0°"));
+					_stprintf(BufferValue, TEXT("0%s"), gettext(_T("_@M2179_")));
 			}
 			break;
 
@@ -1200,18 +1167,18 @@ goto_bearing:
 					if (value > 180.0) value -= 360.0;
 
 	              if (value > 30)
-	                _stprintf(BufferValue, TEXT("%2.0f°»"), value);
+	                _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
 	              else
 	                if (value > 2)
-	                  _stprintf(BufferValue, TEXT("%2.0f°›"), value);
+	                  _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2185_")));
 	                else
 	                  if (value < -30)
-	                    _stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+	                    _stprintf(BufferValue, TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
 	                  else
 	                    if (value < -2)
-	                      _stprintf(BufferValue, TEXT("‹%2.0f°"),- value);
+	                      _stprintf(BufferValue, TEXT("%s%2.0f%s"), gettext(_T("_@M2184_")), - value, gettext(_T("_@M2179_")));
 	                    else
-	                      _stprintf(BufferValue, TEXT("«»"));
+	                      _stprintf(BufferValue, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 			}
 			break;
 
@@ -1737,21 +1704,12 @@ goto_bearing:
 					// homeradial == 0, ok?
 					value = DerivedDrawInfo.HomeRadial;
 					valid=true;
-#ifndef __MINGW32__
 					if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f\xB0"), value);
+						_stprintf(BufferValue, TEXT("%2.0f%s"), value, gettext(_T("_@M2179_")));
 					else if (value < -1)
-						_stprintf(BufferValue, TEXT("%2.0f\xB0"), -value);
-						else
-							_tcscpy(BufferValue, TEXT("0\xB0"));
-#else
-					if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f°"), value);
-					else if (value < -1)
-						_stprintf(BufferValue, TEXT("%2.0f°"), -value);
-						else
-							_tcscpy(BufferValue, TEXT("0°"));
-#endif
+						_stprintf(BufferValue, TEXT("%2.0f%s"), -value, gettext(_T("_@M2179_")));
+                    else
+                        _stprintf(BufferValue, TEXT("0%s"), gettext(_T("_@M2179_")));
 				}
 			}
 			break;
@@ -2140,11 +2098,11 @@ olc_score:
 
 			if (valid) {
 				if (value > 1)
-					_stprintf(BufferValue, TEXT("%2.0f°"), value);
+					_stprintf(BufferValue, TEXT("%2.0f%s"), value, gettext(_T("_@M2179_")));
 				else if (value < -1)
-					_stprintf(BufferValue, TEXT("%2.0f°"), -value);
-					else
-						_tcscpy(BufferValue, TEXT("0°"));
+					_stprintf(BufferValue, TEXT("%2.0f%s"), -value, gettext(_T("_@M2179_")));
+                else
+                    _stprintf(BufferValue, TEXT("0%s"), gettext(_T("_@M2179_")));
 			} 
 			break;
 
@@ -2319,7 +2277,7 @@ olc_score:
 				value=DerivedDrawInfo.BankAngle;
 				_stprintf(BufferTitle, TEXT("e%s"), gettext(TEXT("_@M1197_")));
 			}
-            _stprintf(BufferValue,TEXT("%.0f°"), value);
+            _stprintf(BufferValue,TEXT("%.0f%s"), value, gettext(_T("_@M2179_")));
 			break;
 
 		// B128
@@ -2363,11 +2321,11 @@ olc_score:
 
 			if (valid) {
 				if (value > 1)
-					_stprintf(BufferValue, TEXT("%2.0f°"), value);
+					_stprintf(BufferValue, TEXT("%2.0f%s"), value, gettext(_T("_@M2179_")));
 				else if (value < -1)
-					_stprintf(BufferValue, TEXT("%2.0f°"), -value);
-					else
-						_tcscpy(BufferValue, TEXT("0°"));
+					_stprintf(BufferValue, TEXT("%2.0f%s"), -value, gettext(_T("_@M2179_")));
+                else
+                    _stprintf(BufferValue, TEXT("0%s"), gettext(_T("_@M2179_")));
 			} 
 			break;
 
@@ -2383,21 +2341,12 @@ olc_score:
 			    value = DerivedDrawInfo.Heading;
 			}
 			valid=true;
-#ifndef __MINGW32__
 			if (value > 1)
-				_stprintf(BufferValue, TEXT("%2.0f\xB0"), value);
+				_stprintf(BufferValue, TEXT("%2.0f%s"), value, gettext(_T("_@M2179_")));
 			else if (value < -1)
-				_stprintf(BufferValue, TEXT("%2.0f\xB0"), -value);
-				else
-					_tcscpy(BufferValue, TEXT("0\xB0"));
-#else
-			if (value > 1)
-				_stprintf(BufferValue, TEXT("%2.0f°"), value);
-			else if (value < -1)
-				_stprintf(BufferValue, TEXT("%2.0f°"), -value);
-				else
-					_tcscpy(BufferValue, TEXT("0°"));
-#endif
+				_stprintf(BufferValue, TEXT("%2.0f%s"), -value, gettext(_T("_@M2179_")));
+            else
+                _stprintf(BufferValue, TEXT("0%s"), gettext(_T("_@M2179_")));
 			break;
 
 
@@ -2418,8 +2367,8 @@ olc_score:
 						_stprintf(BufferValue,TEXT("%03.0f/%1.0f"), 
 							value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
 					else
-						_stprintf(BufferValue,TEXT("%03.0f")_T(DEG)_T("/%1.0f"), 
-							value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+						_stprintf(BufferValue,TEXT("%03.0f%s/%1.0f"), 
+							value, gettext(_T("_@M2179_")), SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
 				}
 			} else {
 				_stprintf(BufferValue,TEXT("--/--"));
@@ -2574,18 +2523,18 @@ lkfin_ete:
 							if (value > 180.0)
 								value -= 360.0;
 			              if (value > 30)
-			                _stprintf(BufferValue, TEXT("%2.0f°»"), value);
+			                _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
 			              else
 			                if (value > 2)
-			                  _stprintf(BufferValue, TEXT("%2.0f°›"), value);
+			                  _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2185_")));
 			                else
 			                  if (value < -30)
-			                    _stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+			                    _stprintf(BufferValue, TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
 			                  else
 			                    if (value < -2)
-			                      _stprintf(BufferValue, TEXT("‹%2.0f°"),- value);
+			                      _stprintf(BufferValue, TEXT("%s%2.0f%s"), gettext(_T("_@M2184_")), - value, gettext(_T("_@M2179_")));
 			                    else
-			                      _stprintf(BufferValue, TEXT("«»"));
+			                      _stprintf(BufferValue, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 				}
 			}
 			// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
@@ -2603,9 +2552,9 @@ lkfin_ete:
 						value = LKTraffic[LKTargetIndex].Bearing;
 						valid=true;
 						if (value == 360)
-							_stprintf(BufferValue, TEXT("0°"));
+							_stprintf(BufferValue, TEXT("0%s"), gettext(_T("_@M2179_")));
 						else 
-							_stprintf(BufferValue, TEXT("%2.0f°"), value);
+							_stprintf(BufferValue, TEXT("%2.0f%s"), value, gettext(_T("_@M2179_")));
 				}
 			}
 			// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
@@ -2971,27 +2920,27 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
 			if (value > 180.0)
 				value -= 360.0;
         if (value > 30)
-          _stprintf(BufferValue, TEXT("%2.0f°»"), value);
+          _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
         else
           if (value > 2)
-            _stprintf(BufferValue, TEXT("%2.0f°›"), value);
+            _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2185_")));
           else
             if (value < -30)
-              _stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+              _stprintf(BufferValue, TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
             else
               if (value < -2)
-                _stprintf(BufferValue, TEXT("‹%2.0f°"),- value);
+                _stprintf(BufferValue, TEXT("%s%2.0f%s"), gettext(_T("_@M2184_")), - value, gettext(_T("_@M2179_")));
               else
-                _stprintf(BufferValue, TEXT("«»"));
+                _stprintf(BufferValue, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 	} else {
 		// while circling, print simple bearing
 		value = WayPointCalc[index].Bearing;
 		if (value > 1)
-			_stprintf(BufferValue, TEXT("%2.0f°"), value);
+			_stprintf(BufferValue, TEXT("%2.0f%s"), value, gettext(_T("_@M2179_")));
 		else if (value < -1)
-				_stprintf(BufferValue, TEXT("%2.0f°"), -value);
-			else
-				_tcscpy(BufferValue, TEXT("0°"));
+            _stprintf(BufferValue, TEXT("%2.0f%s"), -value, gettext(_T("_@M2179_")));
+        else
+            _stprintf(BufferValue, TEXT("0%s"), gettext(_T("_@M2179_")));
 	}
   }
 }

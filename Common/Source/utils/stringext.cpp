@@ -835,7 +835,7 @@ int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars) {
     return  ascii2unicode(ascii, unicode, maxChars);
 #else
     size_t len = std::min(_tcslen(ascii), (size_t)maxChars);
-    _tcsncpy(unicode, ascii, len);
+    _tcsncpy(unicode, ascii, len+1);
     return len;
 #endif 
 }
@@ -864,7 +864,9 @@ int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
     _tcsncpy(utf, unicode, len);
     return len;
 #else
-#error    
+    size_t len = std::min(_tcslen(unicode), (size_t)maxChars);
+    _tcsncpy(utf, unicode, len+1);
+    return len;   
 #endif 
 }
 
@@ -873,10 +875,13 @@ int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars){
     return  utf2unicode(utf, unicode, maxChars);
 #elif defined(_MBCS)
     wchar_t temp[maxChars];
+    memset(unicode, 0, maxChars*sizeof(TCHAR));
     utf2unicode(utf, temp, maxChars);
     return wcstombs(unicode, temp, maxChars);
 #else
-#error    
+    size_t len = std::min(_tcslen(utf), (size_t)maxChars);
+    _tcsncpy(unicode, utf, len+1);
+    return len;
 #endif 
 }
   
@@ -894,6 +899,8 @@ int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize) {
     _tcsncpy(ascii, unicode, len);
     return len;
 #else
-#error    
+    size_t len = std::min(_tcslen(unicode), (size_t)outSize);
+    _tcsncpy(ascii, unicode, len+1);
+    return len;
 #endif 
 }

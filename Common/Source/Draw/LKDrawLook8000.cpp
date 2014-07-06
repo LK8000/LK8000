@@ -680,25 +680,25 @@ nextinit:
 			}
 
 		  SIZE tsize;
-      TCHAR Tmp[5];
+      TCHAR Tmp[150];
 int len = _tcslen(BufferValue);
 GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
       tsize.cx = -tsize.cx;
-      _stprintf(Tmp, TEXT("›"));
+      _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
       if(BufferValue[0] == Tmp[0])
       {
         GetTextExtentPoint(hdc, Tmp, 1, &tsize);
       }
-      _stprintf(Tmp, TEXT("«"));
+      _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2182_")));
 		  if(BufferValue[0] == Tmp[0])
 		  {
 	      GetTextExtentPoint(hdc, Tmp, 1, &tsize);
 		  }
-		  _stprintf(Tmp, TEXT("‹"));
+		  _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2184_")));
       if(BufferValue[0] == Tmp[0])
       {
         GetTextExtentPoint(hdc, Tmp, 1, &tsize);
-        _stprintf(Tmp, TEXT("›"));
+        _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
     //    if(BufferValue[len-1] == Tmp[0])
       //    tsize.cx =0;
       }

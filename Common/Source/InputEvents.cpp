@@ -1837,8 +1837,8 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	return;
   }
 
-  _stprintf(mbuf,_T("%.0f%s from %.0f")TEXT(DEG)_T("\n\nAccept and save?"), 
-	wspeed/3.6*SPEEDMODIFY, Units::GetHorizontalSpeedName(), wfrom);
+  _stprintf(mbuf,_T("%.0f%s from %.0f%s\n\nAccept and save?"), 
+	wspeed/3.6*SPEEDMODIFY, Units::GetHorizontalSpeedName(), wfrom, gettext(_T("_@M2179_")));
 
 #if 0
   if (reswp<80) _stprintf(ttmp,_T("TrueWind! Quality: low"));

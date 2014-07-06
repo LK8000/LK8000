@@ -400,9 +400,9 @@ static void SetDirectionData(DataField *Sender){
     int a = iround(CALCULATED_INFO.Heading);
     if (a <=0)
       a += 360;
-    _stprintf(sTmp, TEXT("HDG(%d")TEXT(DEG)TEXT(")"), a);
+    _stprintf(sTmp, TEXT("HDG(%d%s)"), a, gettext(_T("_@M2179_")));
   }else
-    _stprintf(sTmp, TEXT("%d")TEXT(DEG), DirectionFilter[DirectionFilterIdx]);
+    _stprintf(sTmp, TEXT("%d%s"), DirectionFilter[DirectionFilterIdx], gettext(_T("_@M2179_")));
 
   Sender->Set(sTmp);
 
@@ -506,7 +506,8 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       }
       w1 = GetTextWidth(hDC, TEXT("XXX"));
       w2 = GetTextWidth(hDC, TEXT(" 000km"));
-      w3 = GetTextWidth(hDC, TEXT(" 000")TEXT(DEG));
+      _stprintf(sTmp, _T(" 000%s"), gettext(_T("_@M2179_")));
+      w3 = GetTextWidth(hDC, sTmp);
       
       x1 = w0-w1-w2-w3;
 
@@ -532,7 +533,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
                  sTmp, _tcslen(sTmp), NULL);
       
       // right justified after distance
-      _stprintf(sTmp, TEXT("%d")TEXT(DEG),  iround(AirspaceSelectInfo[i].Direction));
+      _stprintf(sTmp, TEXT("%d%s"),  iround(AirspaceSelectInfo[i].Direction), gettext(_T("_@M2179_")));
       x3 = w0-GetTextWidth(hDC, sTmp);
       ExtTextOut(hDC, x3, 2*ScreenScale,
                  ETO_OPAQUE, NULL,

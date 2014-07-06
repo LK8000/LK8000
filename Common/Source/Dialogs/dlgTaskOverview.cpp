@@ -82,7 +82,8 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 
   int w0 = Sender->GetWidth()-1;
   int w1 = GetTextWidth(hDC, TEXT(" 000km"));
-  int w2 = GetTextWidth(hDC, TEXT("  000")TEXT(DEG));
+  _stprintf(sTmp, _T("  000%s"), gettext(_T("_@M2179_")));
+  int w2 = GetTextWidth(hDC, sTmp);
   
   int TextMargin = (Sender->GetHeight() - GetTextHeight(hDC, TEXT("A"))) / 2;
 
@@ -127,7 +128,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
 
-      _stprintf(sTmp, TEXT("%d")TEXT(DEG),  iround(Task[i].InBound));
+      _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),gettext(_T("_@M2179_")));
       ExtTextOut(hDC, Sender->GetHeight()+p2+w2-GetTextWidth(hDC, sTmp),
                  TextMargin,
                  ETO_OPAQUE, NULL,

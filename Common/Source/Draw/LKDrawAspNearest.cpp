@@ -428,14 +428,13 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 					value -= 360.0;
 
 			if (value > 1)
-				_stprintf(Buffer4[i][curpage], TEXT("%2.0f\xB0»"), value);
-			else
-				if (value < -1)
-					_stprintf(Buffer4[i][curpage], TEXT("«%2.0f\xB0"), -value);
-				else
-					_tcscpy(Buffer4[i][curpage], TEXT("«»"));
+				_stprintf(Buffer4[i][curpage], TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
+			else if (value < -1)
+				_stprintf(Buffer4[i][curpage], TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
+            else
+			    _stprintf(Buffer4[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 		} else
-			_stprintf(Buffer4[i][curpage], TEXT("%2.0f\xB0"), LKAirspaces[rli].Bearing);
+			_stprintf(Buffer4[i][curpage], TEXT("%2.0f%s"), LKAirspaces[rli].Bearing, gettext(_T("_@M2179_")));
 
 
 		//

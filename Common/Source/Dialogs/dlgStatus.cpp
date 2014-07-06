@@ -558,7 +558,7 @@ static void UpdateValuesFlight(void) {
 
     wp = (WndProperty*)wf->FindByName(TEXT("prpBearing"));
     if (wp) {
-      _stprintf(Temp, TEXT("%d")TEXT(DEG), iround(bearing));
+      _stprintf(Temp, TEXT("%d%s"), iround(bearing),gettext(_T("_@M2179_")));
       wp->SetText(Temp);
     }
 

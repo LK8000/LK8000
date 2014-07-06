@@ -242,9 +242,9 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   int bankindy=Start.y-radius/2;
 
   if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f\xB0"), beta);
+	_stprintf(Buffer, TEXT("%2.0f%s"), beta, gettext(_T("_@M2179_")));
   else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f\xB0"), -beta);
+	_stprintf(Buffer, TEXT("%2.0f%s"), -beta, gettext(_T("_@M2179_")));
   else
 	_tcscpy(Buffer, TEXT("--"));
 
@@ -638,21 +638,12 @@ double vscale = 0.25;
 */
   SelectObject(hDC, LK8TitleFont);
   int bankindy=Start.y-radius/2;
-#ifndef __MINGW32__
   if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f\xB0"), beta);
+	_stprintf(Buffer, TEXT("%2.0f%s"), beta, gettext(_T("_@M2179_")));
   else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f\xB0"), -beta);
+	_stprintf(Buffer, TEXT("%2.0f%s"), -beta, gettext(_T("_@M2179_")));
   else
 	_tcscpy(Buffer, TEXT("--"));
-#else
-  if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f°"), beta);
-  else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f°"), -beta);
-  else
-	_tcscpy(Buffer, TEXT("--"));
-#endif
 
   LKWriteText(hDC, Buffer, Start.x , bankindy, 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
 
