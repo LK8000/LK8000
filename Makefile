@@ -1052,7 +1052,8 @@ $(BIN)/Data/Dialogs/%.min.xml: Common/Data/Dialogs/%.xml
 	@$(NQ)echo "  minimize $@"
 	$(Q)xsltproc --output $@ build/dialogtemplate.xsl $<
 
-.PRECIOUS: $(BIN)/Data/Dialogs/%.min.xml
+.PRECIOUS: $(BIN)/Data/Dialogs/%.min.xml \
+	$(BIN)/lk8000.min.rc
 
 ####### include depends files
 
