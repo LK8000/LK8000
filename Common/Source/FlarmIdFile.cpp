@@ -99,7 +99,9 @@ void FlarmIdFile::GetItem(HANDLE hFile, FlarmId *flarmId)
 
 void FlarmIdFile::GetAsString(HANDLE hFile, int charCount, TCHAR *res)
 {
-  int bytesToRead = charCount * 2;
+  LKASSERT((charCount * 2)<=100);
+  int bytesToRead = std::min(charCount * 2, 100);
+
   char bytes[100];
 
   fread(bytes, 1, bytesToRead, (FILE*)hFile);
