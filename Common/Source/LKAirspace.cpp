@@ -1604,7 +1604,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
             if (nSize < 3)
                 continue; // Ensure newline removal won't fail
         }
-        nSize = _tcsclen(p);
+        nSize = _tcslen(p);
         if (p[nSize - 1] == _T('\n')) p[--nSize] = _T('\0');
         if (p[nSize - 1] == _T('\r')) p[--nSize] = _T('\0');
 

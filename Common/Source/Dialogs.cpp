@@ -8,13 +8,8 @@
 */
 
 #include "externs.h"
-
-#include <commdlg.h>
-#include <commctrl.h>
 #include "resource.h"
 #include "Message.h"
-
-
 
 
 bool forceDestroyStatusMessage = false;

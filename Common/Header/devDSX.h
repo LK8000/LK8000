@@ -9,7 +9,7 @@
 #ifndef	DEVDSX_H
 #define	DEVDSX_H
  
-#include <windows.h>
+
 
 BOOL DSXRegister(void);
 

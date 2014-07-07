@@ -5,7 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <windows.h>
+
 void DoLogger(TCHAR *strAssetNumber);
 void StartLogger(void);
 void LogPoint(double Lattitude, double Longditude, double Altitude,

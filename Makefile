@@ -884,8 +884,7 @@ JASPER	:=\
 
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
-	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
-	$(COMPATSRC)/wtoi.c
+	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp
 
 POCOSRC:=$(LIB)/poco
 POCO :=\

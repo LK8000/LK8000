@@ -137,17 +137,6 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   if (found) {
     // need to do this to prevent drawing of colored outline
     SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
-#if (WINDOWSPC<1)
-    TransparentImage(hdc,
-                     rc.left, rc.top,
-                     rc.right-rc.left,rc.bottom-rc.top,
-                     hDCTemp,
-                     rc.left, rc.top,
-                     rc.right-rc.left,rc.bottom-rc.top,
-                     whitecolor
-                     );
-    
-#else
     TransparentBlt(hdc,
                    rc.left,rc.top,
                    rc.right-rc.left,rc.bottom-rc.top,
@@ -156,7 +145,6 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
                    rc.right-rc.left,rc.bottom-rc.top,
                    whitecolor
                    );
-  #endif
     
     // restore original color
     //    SetTextColor(hDCTemp, origcolor);

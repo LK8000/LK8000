@@ -25,10 +25,6 @@
 typedef unsigned int uint;
 typedef unsigned char byte;
 
-#ifndef _tcsclen
-#define _tcsclen(x) _tcslen(x)
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif

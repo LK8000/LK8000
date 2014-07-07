@@ -82,11 +82,11 @@ public:
         return _MaxHWVal;
     }
 
-    const double ValueDouble() const {
+    double ValueDouble() const {
         return _tcstod(_Value.c_str(), NULL) * _Factor;
     }
 
-    const int ValueInt() const {
+    int ValueInt() const {
         int val = _tcstol(_Value.c_str(),NULL,10);
         if(Type() == TYPE_INTOFFSET) {
             val += _Factor;
@@ -96,7 +96,7 @@ public:
         return val;
     }
 
-    const bool ValueBool() const {
+    bool ValueBool() const {
         return ValueInt()!=0;
     }
 

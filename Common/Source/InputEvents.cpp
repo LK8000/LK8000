@@ -11,10 +11,6 @@
 #include "LKInterface.h"
 #include "Terrain.h"
 #include "LKProfiles.h"
-
-#include <commctrl.h>
-#include <aygshell.h>
-
 #include "InfoBoxLayout.h"
 #include "LKProcess.h"
 #include "Atmosphere.h"
@@ -1434,7 +1430,7 @@ void InputEvents::eventTimeGates(const TCHAR *misc) {
 void InputEvents::eventMyMenu(const TCHAR *misc) {
 
   unsigned int i, ckeymode;
-  i=_ttoi(misc);
+  i=_tcstoul(misc, NULL, 10);
   LKASSERT(i>0 && i<11);
 
   // test mode only!
