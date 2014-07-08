@@ -17,6 +17,7 @@
 #include <math.h>
 #include <malloc.h>
 
+#include "linuxcompat/CharUpper.h"
 
 #ifndef ASSERT
 #define ASSERT(x) assert(x)
