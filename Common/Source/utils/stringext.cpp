@@ -7,7 +7,6 @@
 */
 //______________________________________________________________________________
 
-#include "StdAfx.h"
 #include "stringext.h"
 #include "utf8/unchecked.h"
 
@@ -620,7 +619,7 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
 //______________________________________________________________________________
 
 #ifndef SYS_UTF8_CONV
-
+#include <windows.h>
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Iterator for constant size arrays (helper for utf8::utf16to8 etc).
 template <class ItemType> class array_back_insert_iterator

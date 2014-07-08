@@ -1,7 +1,6 @@
 #ifndef RASTERTERRAIN_H
 #define RASTERTERRAIN_H
 
-#include "StdAfx.h"
 #include <zzip/lib.h>
 #include "jasper/RasterTile.h"
 

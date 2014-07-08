@@ -7,7 +7,6 @@
 */
 //______________________________________________________________________________
 
-#include "StdAfx.h"
 #include "externs.h"
 #include "fileext.h"
 #include "stringext.h"

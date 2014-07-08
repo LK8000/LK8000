@@ -1,4 +1,5 @@
-#include "StdAfx.h"
+#include <windows.h>
+#include <tchar.h>
 #include "lkgpsapi.h"
 
 

@@ -1,8 +1,6 @@
 #ifndef SIMPLELIST_H
 #define SIMPLELIST_H
 
-#include "StdAfx.h"
-
 
 template <class T> class List
 {

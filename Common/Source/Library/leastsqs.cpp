@@ -20,14 +20,9 @@
 // Boston, MA  02111-1307, USA.
 //
 
-#include "StdAfx.h"
-
-#include <stdio.h>
-
 #include "leastsqs.h"
-
-#include "utils/heapcheck.h"
 #include "LKAssert.h"
+#include <math.h>
 
 /* 
 Least squares fit:

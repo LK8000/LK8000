@@ -9,6 +9,8 @@
 #if !defined(__UNITS_H)
 #define __UNITS_H
 
+#include "externs.h"
+
 #define UNITBITMAPNORMAL      0
 #define UNITBITMAPINVERS      1
 #define UNITBITMAPGRAY        2

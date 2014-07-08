@@ -6,7 +6,6 @@
    $Id$
 */
 
-#include "StdAfx.h"
 #include "externs.h"
 #include "devEye.h"
 

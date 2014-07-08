@@ -9,7 +9,6 @@
 #ifndef TOPOLOGY_H
 #define TOPOLOGY_H
 
-#include "StdAfx.h"
 #include "mapshape.h"
 
 
