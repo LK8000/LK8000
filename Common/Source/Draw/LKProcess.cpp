@@ -2969,16 +2969,20 @@ lkfin_ete:
                 if (gatechrono > 0) {
                     const double DistToGate = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].Distance;
                     const double SpeedToGate = DistToGate / gatechrono;
-                    value = SPEEDMODIFY*SpeedToGate;
-                    if (SpeedToGate < 1 || SpeedToGate > 300) { 
-                        // ignore too slow or to fast speed
-                        value = 0;
+                    const int RoundedSpeed = iround(SPEEDMODIFY*SpeedToGate);
+                    if (SpeedToGate > 300) {
+                        // ignore too fast speed
+                        _tcscpy(BufferValue, TEXT(INFINVAL));
+                        _tcscpy(BufferUnit, TEXT(""));
+                    } else if (RoundedSpeed <= 0) {
+                        _tcscpy(BufferValue, TEXT(NULLMEDIUM));
+                        _tcscpy(BufferUnit, TEXT(""));
                     } else {
-                        valid = true;
+                        _stprintf(BufferValue, TEXT("%d"), RoundedSpeed);
+                        _stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
                     }
+                    valid = true;
                 }
-                _stprintf(BufferValue, TEXT("%d"), iround(value));
-                _stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
                 _tcscpy(BufferTitle, TEXT(""));
             }
 			break;            
