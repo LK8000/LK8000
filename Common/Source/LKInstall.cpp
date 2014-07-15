@@ -59,53 +59,16 @@ short InstallSystem() {
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
   // because GetFileAttributes can be very slow or hang if checking a directory. In any case testing a file is 
   // much more faster.
-#if (0)
-  if (  GetFileAttributes(srcdir) != FILE_ATTRIBUTE_DIRECTORY) { // TODO FIX &= 
-	StartupStore(_T("------ InstallSystem ERROR could not find source directory <%s> !%s"),srcdir,NEWLINE); // 091104
-	failure=true;
-#else
   _stprintf(srcfile,TEXT("%s\\_SYSTEM"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) {
+  if ( !lk::filesystem::exist(srcfile) ) {
 	StartupStore(_T("------ InstallSystem ERROR could not find valid system directory <%s>%s"),srcdir,NEWLINE); // 091104
 	StartupStore(_T("------ Missing checkfile <%s>%s"),srcfile,NEWLINE);
 	failure=true;
-#endif
   } else {
 	#if TESTBENCH
 	StartupStore(_T(". InstallSystem source directory <%s> is available%s"),srcdir,NEWLINE);
 	#endif
   }
-
-#if (0)
-  attrib=GetFileAttributes(dstdir);
-  if ( attrib == 0xffffffff ) {
-	StartupStore(_T("------ InstallSystem ERROR Directory <%s> does not exist ???%s"),dstdir,NEWLINE);
-	failure=true;
-  }
-  if ( attrib &= FILE_ATTRIBUTE_SYSTEM ) {
-	StartupStore(_T(". Directory <%s> is identified as a system folder%s"),dstdir,NEWLINE);
-  }
-  if ( attrib &= FILE_ATTRIBUTE_COMPRESSED ) {
-	StartupStore(_T(". Directory <%s> is a compressed folder%s"),dstdir,NEWLINE);
-  }
-  if ( attrib &= FILE_ATTRIBUTE_HIDDEN ) {
-	StartupStore(_T(". Directory <%s> is a hidden folder%s"),dstdir,NEWLINE);
-  }
-  /* These attributes are not available
-  if ( attrib &= FILE_ATTRIBUTE_INROM ) {
-	StartupStore(_T("------ InstallSystem ERROR Directory <%s> is in ROM%s"),dstdir,NEWLINE);
-	failure=true;
-  }
-  if ( attrib &= FILE_ATTRIBUTE_ROMMODULE ) {
-	StartupStore(_T("------ InstallSystem ERROR Directory <%s> is a ROM MODULE%s"),dstdir,NEWLINE);
-	failure=true;
-  }
-  */
-  if ( attrib &= FILE_ATTRIBUTE_READONLY ) {
-	StartupStore(_T("------ InstallSystem ERROR Directory <%s> is READ ONLY%s"),dstdir,NEWLINE);
-	failure=true;
-  }
-#endif
 
   if (  failure ) {
 	StartupStore(_T("------ WARNING: NO font will be installed on device (and thus wrong text size displayed)%s"),NEWLINE);
@@ -118,16 +81,16 @@ short InstallSystem() {
 		StartupStore(_T(". InstallSystem checking desktop links for HP31X%s"),NEWLINE);
 
 		_stprintf(dstdir,TEXT("\\Windows\\Desktop"));
-		if (  GetFileAttributes(dstdir) != FILE_ATTRIBUTE_DIRECTORY) { // FIX
+		if ( !lk::filesystem::isDirectory(dstdir) ) { // FIX
 			StartupStore(_T("------ Desktop directory <%s> NOT found! Is this REALLY an HP31X?%s"),dstdir,NEWLINE);
 		} else {
 			_stprintf(srcfile,TEXT("%s\\LK8_HP310.lnk"),srcdir);
 			_stprintf(dstfile,TEXT("%s\\LK8000.lnk"),dstdir);
-			if (  GetFileAttributes(dstfile) != 0xffffffff ) {
+			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to LK8000 already found on the desktop, ok.%s"),NEWLINE);
 			} else {
 				StartupStore(_T(". Installing <%s>%s"),srcfile,NEWLINE);
-				if (!CopyFile(srcfile,dstfile,FALSE))  {
+				if (!lk::filesystem::copyFile(srcfile,dstfile,true))  {
 					StartupStore(_T("------ Could not install in <%s>. Strange.%s"),dstfile,NEWLINE);
 					StartupStore(_T("------ Error code was: %ld%s"),GetLastError(),NEWLINE);
 				} else
@@ -136,11 +99,11 @@ short InstallSystem() {
 			#if 0
 			_stprintf(srcfile,TEXT("%s\\LK8SIM_HP310.lnk"),srcdir);
 			_stprintf(dstfile,TEXT("%s\\SIM.lnk"),dstdir);
-			if (  GetFileAttributes(dstfile) != 0xffffffff ) {
+			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to SIM LK8000 already found on the desktop, ok.%s"),NEWLINE);
 			} else {
 				StartupStore(_T(". Installing <%s>%s"),srcfile,NEWLINE);
-				if (!CopyFile(srcfile,dstfile,FALSE))  {
+				if (!lk::filesystem::copyFile(srcfile,dstfile,true))  {
 					StartupStore(_T("------ Could not install in <%s>. Strange.%s"),dstfile,NEWLINE);
 					StartupStore(_T("------ Error code was: %ld%s"),GetLastError(),NEWLINE);
 				} else
@@ -149,11 +112,11 @@ short InstallSystem() {
 			#endif
 			_stprintf(srcfile,TEXT("%s\\BT_HP310.lnk"),srcdir);
 			_stprintf(dstfile,TEXT("%s\\BlueTooth.lnk"),dstdir);
-			if (  GetFileAttributes(dstfile) != 0xffffffff ) {
+			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to BlueTooth already found on the desktop, ok.%s"),NEWLINE);
 			} else {
 				StartupStore(_T(". Installing <%s>%s"),srcfile,NEWLINE);
-				if (!CopyFile(srcfile,dstfile,FALSE))  {
+				if (!lk::filesystem::copyFile(srcfile,dstfile,true))  {
 					StartupStore(_T("------ Could not install in <%s>. Strange.%s"),dstfile,NEWLINE);
 					StartupStore(_T("------ Error code was: %ld%s"),GetLastError(),NEWLINE);
 				} else
@@ -161,11 +124,11 @@ short InstallSystem() {
 			}
 			_stprintf(srcfile,TEXT("%s\\NAV_HP310.lnk"),srcdir);
 			_stprintf(dstfile,TEXT("%s\\CarNav.lnk"),dstdir);
-			if (  GetFileAttributes(dstfile) != 0xffffffff ) {
+			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to Car Navigator already found on the desktop, ok.%s"),NEWLINE);
 			} else {
 				StartupStore(_T(". Installing <%s>%s"),srcfile,NEWLINE);
-				if (!CopyFile(srcfile,dstfile,FALSE))  {
+				if (!lk::filesystem::copyFile(srcfile,dstfile,true))  {
 					StartupStore(_T("------ Could not install in <%s>. Strange.%s"),dstfile,NEWLINE);
 					StartupStore(_T("------ Error code was: %ld%s"),GetLastError(),NEWLINE);
 				} else
@@ -173,11 +136,11 @@ short InstallSystem() {
 			}
 			_stprintf(srcfile,TEXT("%s\\TLOCK_HP310.lnk"),srcdir);
 			_stprintf(dstfile,TEXT("%s\\TouchLock.lnk"),dstdir);
-			if (  GetFileAttributes(dstfile) != 0xffffffff ) {
+			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to TouchLock already found on the desktop, ok.%s"),NEWLINE);
 			} else {
 				StartupStore(_T(". Installing <%s>%s"),srcfile,NEWLINE);
-				if (!CopyFile(srcfile,dstfile,FALSE))  {
+				if (!lk::filesystem::copyFile(srcfile,dstfile,true))  {
 					StartupStore(_T("------ Could not install in <%s>. Strange.%s"),dstfile,NEWLINE);
 					StartupStore(_T("------ Error code was: %ld%s"),GetLastError(),NEWLINE);
 				} else
@@ -206,7 +169,7 @@ short InstallSystem() {
 	}
   } else {
 	StartupStore(_T(". RegKey Font directory is <%s>%s"),fontdir,NEWLINE);
-	CreateRecursiveDirectory(fontdir);
+	lk::filesystem::createDirectory(fontdir);
 	_tcscpy(dstdir,fontdir); 
   }
   #else
@@ -226,7 +189,7 @@ short InstallSystem() {
   StartupStore(tbuf);
   // on PNAs sometimes FolderPath is reported correctly, but the directory is not existing!
   // this is not needed really on PNA, but doesnt hurt
-  CreateDirectory(dstdir, NULL); // 100820
+  lk::filesystem::createDirectory(dstdir); // 100820
 
 
   // we cannot check directory existance without the risk of hanging for many seconds
@@ -237,12 +200,12 @@ short InstallSystem() {
   #endif
   _stprintf(srcfile,TEXT("%s\\TAHOMA.TTF"),srcdir);
   _stprintf(dstfile,TEXT("%s\\TAHOMA.TTF"),dstdir);
-  if (  GetFileAttributes(dstfile) != 0xffffffff ) {
+  if ( lk::filesystem::exist(dstfile) ) {
 	#if TESTBENCH
 	StartupStore(_T(". Font TAHOMA.TTF is already installed%s"),NEWLINE);
 	#endif
   } else {
-	if ( !CopyFile(srcfile,dstfile,TRUE))  {
+	if ( !lk::filesystem::copyFile(srcfile,dstfile,false) )  {
 		StartupStore(_T("------ Could not copy TAHOMA.TTF on device, not good.%s"),NEWLINE);
 		StartupStore(_T("------ Error code was: %ld%s"),GetLastError(),NEWLINE);
 	} else
@@ -257,12 +220,12 @@ short InstallSystem() {
   #endif
   _stprintf(srcfile,TEXT("%s\\TAHOMABD.TTF"),srcdir);
   _stprintf(dstfile,TEXT("%s\\TAHOMABD.TTF"),dstdir);
-  if (  GetFileAttributes(dstfile) != 0xffffffff ) {
+  if ( lk::filesystem::exist(dstfile) ) {
 	#if TESTBENCH
 	StartupStore(_T(". Font TAHOMABD.TTF is already installed%s"),NEWLINE);
 	#endif
   } else {
-	if ( !CopyFile(srcfile,dstfile,TRUE))  {
+	if ( !lk::filesystem::copyFile(srcfile,dstfile,false))  {
 		StartupStore(_T("------ Could not copy TAHOMABD.TTF on device, not good.%s"),NEWLINE);
 		StartupStore(_T("------ Error code was: %ld%s"),GetLastError(),NEWLINE);
 	} else
@@ -282,9 +245,7 @@ short InstallSystem() {
 bool CheckRootDir() {
   TCHAR rootdir[MAX_PATH];
   LocalPath(rootdir,_T(""));
-  DWORD fattr = GetFileAttributes(rootdir);
-  if ((fattr != 0xFFFFFFFF) && (fattr & FILE_ATTRIBUTE_DIRECTORY)) return true;
-  return false;
+  return lk::filesystem::isDirectory(rootdir);
 }
 
 
@@ -293,8 +254,7 @@ bool CheckDataDir() {
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir,_T(LKD_SYSTEM));
   _stprintf(srcfile,TEXT("%s\\_SYSTEM"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
-  return true;
+  return lk::filesystem::exist(srcfile);
 }
 
 bool CheckLanguageDir() {
@@ -302,10 +262,7 @@ bool CheckLanguageDir() {
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_LANGUAGE));
   _stprintf(srcfile,TEXT("%s\\_LANGUAGE"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) {
-	return false;
-  }
-  return true;
+  return lk::filesystem::exist(srcfile);
 }
 
 bool CheckLanguageEngMsg() {
@@ -313,8 +270,7 @@ bool CheckLanguageEngMsg() {
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_LANGUAGE));
   _stprintf(srcfile,TEXT("%s\\ENG_MSG.TXT"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
-  return true;
+  return lk::filesystem::exist(srcfile);
 }
 
 bool CheckSystemDefaultMenu() {
@@ -322,8 +278,7 @@ bool CheckSystemDefaultMenu() {
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_SYSTEM));
   _stprintf(srcfile,TEXT("%s\\DEFAULT_MENU.TXT"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
-  return true;
+  return lk::filesystem::exist(srcfile);
 }
 
 
@@ -332,15 +287,13 @@ bool CheckPolarsDir() {
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_POLARS));
   _stprintf(srcfile,TEXT("%s\\_POLARS"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) {
+  if ( !lk::filesystem::exist(srcfile) ) {
 	return false;
   }
 
   LocalPath(srcdir, _T(LKD_POLARS));
   _stprintf(srcfile,TEXT("%s\\Default.plr"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
-
-  return true;
+  return lk::filesystem::exist(srcfile);
 }
 
 bool CheckRegistryProfile() {
@@ -349,8 +302,7 @@ bool CheckRegistryProfile() {
 	if ( GlobalModelType == MODELTYPE_PNA_HP31X ) return false;
 	LocalPath(srcpath,TEXT(LKD_CONF)); // 091101
 	_stprintf(profilePath,_T("%s\\%s"),srcpath,LKPROFILE); // 091101
-	if (  GetFileAttributes(profilePath) == 0xffffffff) return false;
-	return true;
+    return lk::filesystem::exist(profilePath);
 }
 
 
@@ -359,8 +311,7 @@ bool CheckSystemBitmaps() {
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_BITMAPS));
   _stprintf(srcfile,TEXT("%s\\_BITMAPSH"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
-  return true;
+  return lk::filesystem::exist(srcfile);
 }
 
 bool CheckFilesystemWritable() {

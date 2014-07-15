@@ -397,8 +397,7 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
 
   // StartupStore(_T("... xmlOpen <%s>\n"),tfilename);
 
-  if (FileExists(tfilename))
-	xMainNode=XMLNode::openFileHelper(tfilename ,TEXT("PMML"));
+  xMainNode=XMLNode::openFileHelper(tfilename ,TEXT("PMML"));
 
   //
   // If nothing available in filesystem, load from internal resources

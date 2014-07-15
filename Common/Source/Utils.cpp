@@ -263,8 +263,7 @@ void SetOverColorRef() {
 bool CheckClubVersion() {
     TCHAR srcfile[MAX_PATH];
     LocalPath(srcfile, _T("CLUB"));
-    if (GetFileAttributes(srcfile) == 0xffffffff) return false;
-    return true;
+    return lk::filesystem::exist(srcfile);
 }
 
 void ClubForbiddenMsg() {

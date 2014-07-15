@@ -162,7 +162,7 @@ int DoSignature(TCHAR *homepath) {
   // If it is here, we remove it, we are in the hurry and cannot loose time on previous files.
   FILE *ft;
   ft=NULL;
-  DeleteFile(fulldstfile);
+  lk::filesystem::deleteFile(fulldstfile);
   #if TESTBENCH
   StartupStore(_T("... DoSignature: delete ok%s"),NEWLINE);
   #endif

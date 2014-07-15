@@ -97,10 +97,6 @@ static bool KeyTimer(bool isdown, DWORD thekey) {
 
 
 
-BOOL IsDots(const TCHAR* str) {
-  if(_tcscmp(str,TEXT(".")) && _tcscmp(str,TEXT(".."))) return FALSE;
-  return TRUE;
-}
 
 void DataFieldFileReader::Clear() {
     for (unsigned int i=1; i<nFiles; i++) {
@@ -133,7 +129,11 @@ void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* fil
   TCHAR buffer[MAX_PATH] = TEXT("\0");
   LocalPath(buffer);
   if (_tcslen(subdir)>0) {
-	_tcscat(buffer,_T("\\"));
+    const TCHAR* ptr = subdir;
+    const TCHAR* ptr2 = buffer + _tcslen(buffer) -1;
+    if(*ptr != _T('\\') && *ptr2 != _T('\\')) {
+         _tcscat(buffer, _T("\\"));
+     }
 	_tcscat(buffer,subdir);
   }
   ScanDirectories(buffer,filter);
@@ -142,154 +142,35 @@ void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* fil
 }
 
 
-BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, 
-					  const TCHAR* filter) {
+BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* filter) {
 
-  HANDLE hFind;  // file handle
-  WIN32_FIND_DATA FindFileData;
+    TCHAR DirPath[MAX_PATH];
+    TCHAR FileName[MAX_PATH];
 
-  TCHAR DirPath[MAX_PATH];
-  TCHAR FileName[MAX_PATH];
-
-  if (sPath) {
-    _tcscpy(DirPath,sPath);
-    _tcscpy(FileName,sPath);
-  } else {
-    DirPath[0]= 0;
-    FileName[0]= 0;
-  }
-
-  ScanFiles(FileName, filter);
-
-  _tcscat(DirPath,TEXT("\\"));
-  _tcscat(FileName,TEXT("\\*"));
-
-  hFind = FindFirstFile(FileName,&FindFileData); // find the first file
-  if(hFind == INVALID_HANDLE_VALUE) {
-    return FALSE;
-  }
-  _tcscpy(FileName,DirPath);
-
-  if(!IsDots(FindFileData.cFileName)) {
-    _tcscat(FileName,FindFileData.cFileName);
-
-    if((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-      // we have found a directory, recurse
-      //      if (!IsSystemDirectory(FileName)) {
-	if(!ScanDirectories(FileName,filter)) { 
-	  // none deeper
-	}
-	//      }
-    }
-  }
-  _tcscpy(FileName,DirPath);
-
-  bool bSearch = true;
-  while(bSearch) { // until we finds an entry
-    if(FindNextFile(hFind,&FindFileData)) {
-      if(IsDots(FindFileData.cFileName)) continue;
-      if((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-	// we have found a directory, recurse
-	_tcscat(FileName,FindFileData.cFileName);
-	//	if (!IsSystemDirectory(FileName)) {
-	  if(!ScanDirectories(FileName,filter)) { 
-	    // none deeper
-	  }
-	  //	}
-      }
-      _tcscpy(FileName,DirPath);
-    }
-    else {
-      if(GetLastError() == ERROR_NO_MORE_FILES) // no more files there
-	bSearch = false;
-      else {
-	// some error occured, close the handle and return FALSE
-	FindClose(hFind); 
-	return FALSE;
-      }
-    }
-  }
-  FindClose(hFind);  // closing file handle
- 
-  return TRUE;
-}
-
-
-BOOL DataFieldFileReader::ScanFiles(const TCHAR* sPath, 
-				    const TCHAR* filter) {
-  HANDLE hFind;  // file handle
-  WIN32_FIND_DATA FindFileData;
-
-  TCHAR DirPath[MAX_PATH];
-  TCHAR FileName[MAX_PATH];
-
-  if (sPath) {
-    _tcscpy(DirPath,sPath);
-  } else {
-    DirPath[0]= 0;
-  }
-  _tcscat(DirPath,TEXT("\\"));
-  _tcscat(DirPath,filter);    
-  if (sPath) {
-    _tcscpy(FileName,sPath);
-  } else {
-    FileName[0]= 0;
-  }
-  _tcscat(FileName,TEXT("\\"));
-
-  hFind = FindFirstFile(DirPath,&FindFileData); // find the first file
-  if(hFind == INVALID_HANDLE_VALUE) return FALSE;
-  _tcscpy(DirPath,FileName);
-
-
-  // found first one
-  if(!IsDots(FindFileData.cFileName)) {
-    _tcscat(FileName,FindFileData.cFileName);
-      
-    if((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-      // do nothing
-    }
-    else {
-      // DO SOMETHING WITH FileName
-      if (checkFilter(FindFileData.cFileName, filter)) {
-	addFile(FindFileData.cFileName, FileName);
-      }
-    }
-    _tcscpy(FileName,DirPath);
-  }
-
-  bool bSearch = true;
-  while(bSearch) { // until we finds an entry
-    if(FindNextFile(hFind,&FindFileData)) {
-      if(IsDots(FindFileData.cFileName)) continue;
-      _tcscat(FileName,FindFileData.cFileName);
-
-      if((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-	// do nothing
-      }
-      else {
-	// DO SOMETHING WITH FileName
-	if (checkFilter(FindFileData.cFileName, filter)) {
-	  addFile(FindFileData.cFileName, FileName);
-	}
-      }
-      _tcscpy(FileName,DirPath);
-    }
-    else {
-      if(GetLastError() == ERROR_NO_MORE_FILES) // no more files there
-	bSearch = false;
-      else {
-	// some error occured, close the handle and return FALSE
-	FindClose(hFind); 
-	return FALSE;
-      }
-
+    if (sPath) {
+        _tcscpy(DirPath, sPath);
+        _tcscpy(FileName, sPath);
+    } else {
+        DirPath[0] = 0;
+        FileName[0] = 0;
     }
 
-  }
-  FindClose(hFind);  // closing file handle
- 
-  return TRUE;
+    _tcscat(DirPath, TEXT("\\"));
+    _tcscat(FileName, TEXT("\\*"));
+
+    for (lk::filesystem::directory_iterator It(FileName); It; ++It) {
+        if (It.isDirectory()) {
+            _tcscpy(FileName, DirPath);
+            _tcscat(FileName, It.getName());
+            ScanDirectories(FileName, filter);
+        } else if(checkFilter(It.getName(), filter)) {
+            _tcscpy(FileName, DirPath);
+            _tcscat(FileName, It.getName());
+            addFile(It.getName(), FileName);
+        }
+    }
+
+    return TRUE;
 }
 
 bool DataFieldFileReader::Lookup(const TCHAR *Text) {

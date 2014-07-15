@@ -25,7 +25,6 @@ bool SetSoundVolume();
 
 #ifdef PNA
 BOOL GetFontPath(TCHAR *pPos);
-void CreateRecursiveDirectory(TCHAR *fontpath);
 #endif
 void StoreType(int Index,int InfoType);
 void irotate(int &xin, int &yin, const double &angle);
@@ -165,7 +164,7 @@ TCHAR* StringMallocParse(TCHAR* old_string);
 
 void LocalPath(TCHAR* buf, const TCHAR* file = TEXT(""));
 void LocalPathS(TCHAR* buf, const TCHAR* file = TEXT(""));
-TCHAR *LKGetLocalPath(void);
+const TCHAR *LKGetLocalPath(void);
 
 void ExpandLocalPath(TCHAR* filein);
 void ContractLocalPath(TCHAR* filein);
@@ -270,17 +269,6 @@ unsigned long FindFreeSpace(const TCHAR *path);
 bool MatchesExtension(const TCHAR *filename, const TCHAR* extension);
 BOOL PlayResource (const TCHAR* lpName);
 void CreateDirectoryIfAbsent(const TCHAR *filename);
-
-#ifdef __cplusplus
-extern "C"{
-#endif
-
-bool FileExists(const TCHAR *FileName);
-
-#ifdef __cplusplus
-}
-#endif
-
 
 //2^36 * 1.5,  (52-_shiftamt=36) uses limited precisicion to floor
 //16.16 fixed point representation,

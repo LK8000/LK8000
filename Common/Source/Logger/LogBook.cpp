@@ -73,13 +73,10 @@ void ResetLogBook(void) {
   #endif
 
   _stprintf(filename,_T("%s\\%s\\%s"), LKGetLocalPath(), _T(LKD_LOGS),_T(LKF_LOGBOOKTXT));
-  DeleteFile(filename);
+  lk::filesystem::deleteFile(filename);
 
   _stprintf(filename,_T("%s\\%s\\%s"), LKGetLocalPath(), _T(LKD_LOGS),_T(LKF_LOGBOOKLST));
-  DeleteFile(filename);
-
-
-  return;
+  lk::filesystem::deleteFile(filename);
 }
 
 

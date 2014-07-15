@@ -352,7 +352,6 @@ class DataFieldFileReader: public DataField {
   void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
 
  protected:
-  BOOL ScanFiles(const TCHAR *pattern, const TCHAR *filter);
   BOOL ScanDirectories(const TCHAR *pattern, const TCHAR *filter);
 
 };

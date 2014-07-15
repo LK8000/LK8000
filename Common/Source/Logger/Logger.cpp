@@ -167,7 +167,7 @@ void StopLogger(void) {
 	} else {
 		// RunSig ok, change logfile to new logger_sig
 		StartupStore(_T(". Logger OK, IGC signed with G-Record%s"),NEWLINE);
-		DeleteFile(szLoggerFileName);	// remove old LOGGER_TMP
+		lk::filesystem::deleteFile(szLoggerFileName);	// remove old LOGGER_TMP
 		_tcscpy(sztmplogfile,szSLoggerFileName); // use LOGGER_SIG, signed
 	}
 
@@ -177,7 +177,7 @@ void StopLogger(void) {
       const int imMax=3;
       for (imCount=0; imCount < imMax; imCount++) {
         // MoveFile() nonzero==Success
-        if (0 != MoveFile( sztmplogfile, szFLoggerFileName)) {
+        if (lk::filesystem::moveFile(sztmplogfile, szFLoggerFileName)) {
           iLoggerError=0;
           break; // success
         }
@@ -185,7 +185,7 @@ void StopLogger(void) {
       }
       if (imCount == imMax) { // MoveFile() failed all attempts
 
-        if (0 == MoveFile( sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
+        if (!lk::filesystem::moveFile(sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
           iLoggerError=1; //Fail.  NoMoveNoRename
         }
         else {
@@ -195,7 +195,7 @@ void StopLogger(void) {
 
     } // logger clearfreespace
     else { // Insufficient disk space.  // MoveFile() nonzero==Success
-      if (0 == MoveFile( sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
+      if (!lk::filesystem::moveFile(sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
         iLoggerError=3; //Fail.  Insufficient Disk Space, NoRename
       }
       else {
@@ -499,7 +499,6 @@ void StartLogger()
 
   SHOWTHREAD(_T("StartLogger"));
 
-  HANDLE hFile;
   int i;
   TCHAR path[MAX_PATH+1];
   TCHAR cAsset[3];
@@ -535,17 +534,17 @@ void StartLogger()
 
   _stprintf(szSLoggerFileName, TEXT("%s\\LOGGER_SIG.IGC"), path);
   TCHAR newfile[MAX_PATH+20];
-  if (GetFileAttributes(szLoggerFileName) != 0xffffffff) {
+  if (lk::filesystem::exist(szLoggerFileName)) {
 	StartupStore(_T("---- Logger recovery: Existing LOGGER_TMP.IGC found, renamed to LOST%s"),NEWLINE);
 	_stprintf(newfile, TEXT("%s\\LOST_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-	CopyFile(szLoggerFileName,newfile,TRUE);
-	DeleteFile(szLoggerFileName);
+	lk::filesystem::copyFile(szLoggerFileName,newfile,false);
+	lk::filesystem::deleteFile(szLoggerFileName);
   }
-  if (GetFileAttributes(szSLoggerFileName) != 0xffffffff) {
+  if (lk::filesystem::exist(szSLoggerFileName)) {
 	StartupStore(_T("---- Logger recovery (G): Existing LOGGER_SIG.IGC found, renamed to LOSTG%s"),NEWLINE);
 	_stprintf(newfile, TEXT("%s\\LOSTG_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-	CopyFile(szSLoggerFileName,newfile,TRUE);
-	DeleteFile(szSLoggerFileName);
+	lk::filesystem::copyFile(szSLoggerFileName,newfile,false);
+	lk::filesystem::deleteFile(szSLoggerFileName);
   }
 
   
@@ -610,23 +609,13 @@ void StartLogger()
                  cflight);
       } // end if
 
-      hFile = CreateFile(szFLoggerFileName, GENERIC_WRITE,
-			 FILE_SHARE_WRITE, NULL, CREATE_NEW,
-			 FILE_ATTRIBUTE_NORMAL, 0);
-      if(hFile!=INVALID_HANDLE_VALUE )
-	{
-          // file already exists
-      CloseHandle(hFile);
-      DeleteFile(szFLoggerFileName);
-      break;
-	}
+      if(!lk::filesystem::exist(szFLoggerFileName)) {
+        break;
+      }
   } // end while
 
   StartupStore(_T(". Logger Started %s  File <%s>%s"),
 	WhatTimeIsIt(), szFLoggerFileName,NEWLINE);
-
-
-  return;
 }
 
 
@@ -973,7 +962,7 @@ bool CheckDeclaration(void) {
 }
 
 
-FILETIME LogFileDate(TCHAR* filename) {
+FILETIME LogFileDate(const TCHAR* filename) {
   FILETIME ft;
   ft.dwLowDateTime = 0;
   ft.dwHighDateTime = 0;
@@ -1042,7 +1031,7 @@ FILETIME LogFileDate(TCHAR* filename) {
 }
 
 
-bool LogFileIsOlder(TCHAR *oldestname, TCHAR *thisname) {
+bool LogFileIsOlder(const TCHAR *oldestname, const TCHAR *thisname) {
   FILETIME ftold = LogFileDate(oldestname);
   FILETIME ftnew = LogFileDate(thisname);
   return (CompareFileTime(&ftold, &ftnew)>0);
@@ -1050,49 +1039,27 @@ bool LogFileIsOlder(TCHAR *oldestname, TCHAR *thisname) {
 
 
 bool DeleteOldIGCFile(TCHAR *pathname) {
-  HANDLE hFind;  // file handle
-  WIN32_FIND_DATA FindFileData;
-  TCHAR oldestname[MAX_PATH+1];
   TCHAR searchpath[MAX_PATH+1];
   TCHAR fullname[MAX_PATH+1];
-  _stprintf(searchpath, TEXT("%s*"),pathname);
-
-  hFind = FindFirstFile(searchpath, &FindFileData); // find the first file
-  if(hFind == INVALID_HANDLE_VALUE) {
-    return false;
-  }
-  if(!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-    if (MatchesExtension(FindFileData.cFileName, TEXT(".igc")) ||
-	MatchesExtension(FindFileData.cFileName, TEXT(".IGC"))) {
-      // do something...
-      _tcscpy(oldestname, FindFileData.cFileName);
-    } else {
-      return false;
+  _stprintf(searchpath, TEXT("%s*.igc"),pathname);
+    std::tstring oldestname;
+    lk::filesystem::directory_iterator It(searchpath);
+    if (It) {
+        oldestname = It.getName();
+        while (++It) {
+            if (LogFileIsOlder(oldestname.c_str(), It.getName())) {
+                // we have a new oldest name
+                oldestname = It.getName();
+            }
+        }
     }
-  }
-  bool bSearch = true;
-  while(bSearch) { // until we finds an entry
-    if(FindNextFile(hFind,&FindFileData)) {
-      if(!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
-	 (MatchesExtension(FindFileData.cFileName, TEXT(".igc")) ||
-	  (MatchesExtension(FindFileData.cFileName, TEXT(".IGC"))))) {
-	if (LogFileIsOlder(oldestname,FindFileData.cFileName)) {
-	  _tcscpy(oldestname, FindFileData.cFileName);
-	  // we have a new oldest name
-	}
-      }
-    } else {
-      bSearch = false;
-    }
-  }
-  FindClose(hFind);  // closing file handle
 
   // now, delete the file...
-  _stprintf(fullname, TEXT("%s%s"),pathname,oldestname);
+  _stprintf(fullname, TEXT("%s%s"),pathname,oldestname.c_str());
   #if TESTBENCH
   StartupStore(_T("... DeleteOldIGCFile <%s> ...\n"),fullname);
   #endif
-  DeleteFile(fullname);
+  lk::filesystem::deleteFile(fullname);
   #if TESTBENCH
   StartupStore(_T("... done DeleteOldIGCFile\n"));
   #endif
@@ -1335,7 +1302,7 @@ void AdditionalHeaders(void) {
   TCHAR pathfilename[MAX_PATH+1];
   _stprintf(pathfilename, TEXT("%s\\%s\\%s"), LKGetLocalPath(), TEXT(LKD_LOGS), _T(EXTHFILE));
 
-  if (GetFileAttributes(pathfilename) == 0xffffffff) {
+  if (!lk::filesystem::exist(pathfilename)) {
 	#if DEBUGHFILE
 	StartupStore(_T("... No additional headers file <%s>\n"),pathfilename);
 	#endif

@@ -584,7 +584,7 @@ static void OnDeleteClicked(WindowControl * Sender, WndListFrame::ListInfo_t *Li
   }
 
   if (file_index>0) {
-    DeleteFile(dfe->GetPathFile());
+    lk::filesystem::deleteFile(dfe->GetPathFile());
     // Cannot update dfe list, so we force exit.
     ItemIndex = -1; 
     wf->SetModalResult(mrOK);

@@ -190,25 +190,15 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   // END OF PRELOAD, PROGRAM GO!
 
   #ifdef PNA 
-  //  LocalPath is called for the very first time by CreateDirectoryIfAbsent.
-  //  In order to be able in the future to behave differently for each PNA device
-  //  and maybe also for common PDAs, we need to know the PNA/PDA Model Type 
-  //  BEFORE calling LocalPath. This was critical.
-  //  First we check the exec filename, which has priority over registry values.
-  SmartGlobalModelType();
-
-  // Huston we have a problem
-  // At this point we still havent loaded profile. Loading profile will also reload registry.
-  // If registry was deleted in PNA, model type is not configured. It is configured in profile, but
-  // it is too early here. So no ModelType .
-  //
-  // if we found no embedded name, try from registry
-  if (  !_tcscmp(GlobalModelName, _T("UNKNOWN")) ) {
-	if (  !SetModelType() ) {
-		// last chance: try from default profile
-		LoadModelFromProfile();
-	}
-  }
+    // At this point we still havent loaded profile. Loading profile will also reload registry.
+    // If registry was deleted in PNA, model type is not configured. It is configured in profile, but
+    // it is too early here. So no ModelType .
+    //
+    // if we found no embedded name, try from registry
+    if (  !SetModelType() ) {
+        // last chance: try from default profile
+        LoadModelFromProfile();
+    }
   #endif
   
   bool datadir;
@@ -219,9 +209,10 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 	WarningHomeDir=true;
   }
 
-  extern TCHAR *gmfcurrentpath();
   #if TESTBENCH
-  StartupStore(_T(". Program execution path is <%s>\n"),gmfcurrentpath());
+  TCHAR szPath[MAX_PATH] = {0};
+  lk::filesystem::getExePath(szPath, MAX_PATH);
+  StartupStore(_T(". Program execution path is <%s>\n"),szPath);
   StartupStore(_T(". Program data directory is <%s>\n"),LKGetLocalPath());
   #endif
 
@@ -341,12 +332,8 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   GlidePolar::SetBallast();
 
 
-#ifdef PNA // VENTA-ADDON 
-
-	TCHAR sTmp[MAX_PATH];
-	_stprintf(sTmp,TEXT("Conf=%s%s"), gmfpathname(),_T(LKDATADIR) ); // VENTA2 FIX double backslash
-	CreateProgressDialog(sTmp); 
-
+#ifdef PNA // VENTA-ADDON
+    TCHAR sTmp[250];
 	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);
 	CreateProgressDialog(sTmp); 
 #else

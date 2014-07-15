@@ -36,10 +36,17 @@
 #if MAPSHAPEERROR
 #include "maperror.h"
 #endif
-
+#include <stdbool.h>
 #include "utils/heapcheck.h"
 
-int FileExists(TCHAR *FileName);
+bool FileExists(const TCHAR *FileName){
+  FILE *file = _tfopen(FileName, _T("r"));
+  if (file != NULL) {
+    fclose(file);
+    return(true);
+  }
+  return (false);
+}
 /* -------------------------------------------------------------------- */
 /*      If the following is 0.5, nodes will be split in half.  If it    */
 /*      is 0.6 then each subnode will contain 60% of the parent         */

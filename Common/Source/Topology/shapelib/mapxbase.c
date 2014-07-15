@@ -36,6 +36,7 @@
 #endif
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "utils/heapcheck.h"
 

@@ -12,61 +12,6 @@
 
 #ifdef PNA
 
-//
-//	Check if the model type is encoded in the executable file name
-//
-//  GlobalModelName is a global variable, shown during startup and used for printouts only.
-//  In order to know what model you are using, GlobalModelType is used.
-// 
-//  This "smartname" facility is used to override the registry/config Model setup to force
-//  a model type to be used, just in case. The model types may not follow strictly those in
-//  config menu, nor be updated. Does'nt hurt though.
-//
-//  NOTE LK v5: this is going to be removed in V6, this is OBSOLETED and not used nor updated
-//
-void SmartGlobalModelType() {
-
-	GlobalModelType=MODELTYPE_PNA;	// default for ifdef PNA by now!
-
-	if ( GetGlobalModelName() ) 
-	{
-		ConvToUpper(GlobalModelName);
-	
-		if ( !_tcscmp(GlobalModelName,_T("PNA"))) {
-					GlobalModelType=MODELTYPE_PNA_PNA;
-					_tcscpy(GlobalModelName,_T("GENERIC") );
-		}
-		else 
-			if ( !_tcscmp(GlobalModelName,_T("HP31X")))	{
-					GlobalModelType=MODELTYPE_PNA_HP31X;
-			}
-		else	
-			if ( !_tcscmp(GlobalModelName,_T("PN6000"))) {
-					GlobalModelType=MODELTYPE_PNA_PN6000;
-			}
-		else	
-			if ( !_tcscmp(GlobalModelName,_T("MIO"))) {
-					GlobalModelType=MODELTYPE_PNA_MIO;
-			}
-		else
-			if ( !_tcscmp(GlobalModelName,_T("FUNTREK"))) {
-					GlobalModelType=MODELTYPE_PNA_FUNTREK;
-			}
-		else
-			if ( !_tcscmp(GlobalModelName,_T("ROYALTEK3200"))) {
-					GlobalModelType=MODELTYPE_PNA_ROYALTEK3200;
-			}
-		else
-			if ( !_tcscmp(GlobalModelName,_T("MINIMAP"))) {
-				GlobalModelType=MODELTYPE_PNA_MINIMAP;
-			}
-		else
-			_tcscpy(GlobalModelName,_T("UNKNOWN") );
-	} else	
-		_tcscpy(GlobalModelName, _T("UNKNOWN") );
-}
-
-
 // Parse a MODELTYPE value and set the equivalent model name. 
 // If the modeltype is invalid or not yet handled, assume that
 // the user changed it in the registry or in the profile, and 

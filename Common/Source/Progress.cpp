@@ -118,7 +118,7 @@ HWND CreateProgressDialog(const TCHAR* text) {
 	// first look for lkstart_480x272.bmp for example
 	_stprintf(srcfile,_T("%s\\LKSTART_%s.BMP"),sDir, GetSizeSuffix() );
 
-        if (  GetFileAttributes(srcfile) == 0xffffffff ) {
+        if ( !lk::filesystem::exist(srcfile) ) {
 		// no custom file, get a generic one
 		switch(ScreenSize) {
 			case ss800x480:

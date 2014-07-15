@@ -31,16 +31,11 @@ namespace DlgIgcFile {
         }
         _tcscat(szPath, _T("*.igc"));
 
-        WIN32_FIND_DATA ffd;
-        HANDLE hFind = FindFirstFile(szPath, &ffd); // find the first file
-        if (hFind != INVALID_HANDLE_VALUE) {
-            do {
-                if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                    FileList.push_back(ffd.cFileName);
-                }
-            } while (FindNextFile(hFind, &ffd) != 0);
+        for(lk::filesystem::directory_iterator It(szPath); It; ++It) {
+            if(!It.isDirectory()) {
+                FileList.push_back(It.getName());
+            }
         }
-        FindClose(hFind);
         
         std::sort(FileList.rbegin(), FileList.rend()); // sort in desc order.
     }

@@ -17,6 +17,7 @@
 
 // options first, then all dependencies
 #include "options.h"
+#include "utils/filesystem.h"
 #include "Sizes.h"
 #include "Defines.h"
 #include "Enums.h"
@@ -46,11 +47,7 @@
 //
 // Common Functions
 //
-extern TCHAR 		*gmfpathname();
-extern TCHAR		*gmfbasename();
-extern int		GetGlobalModelName();
-extern void		SmartGlobalModelType();
-extern short		InstallSystem();
+extern short	InstallSystem();
 extern bool		CheckRootDir();
 extern bool		CheckDataDir();
 extern bool		CheckLanguageDir();
