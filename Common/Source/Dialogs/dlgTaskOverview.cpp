@@ -311,6 +311,7 @@ static void OnTaskListEnter(WindowControl * Sender,
 			LockTaskData();
             ResetTaskWaypoint(ItemIndex);
 			Task[ItemIndex].Index = res;
+            Task[ItemIndex].PGConeBase = WayPointList[res].Altitude;
 
 			UnlockTaskData();
 //			wf->SetModalResult(mrOK);
