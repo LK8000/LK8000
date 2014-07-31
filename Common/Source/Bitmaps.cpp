@@ -20,14 +20,25 @@
 
 #define NULLBMP	LoadBitmap(hInst,MAKEINTRESOURCE(IDB_EMPTY))
 
-unsigned short Bitmaps_Errors=0;
+unsigned short Bitmaps_Errors = 0;
+static std::set<std::tstring> setMissingBitmap;
 
 HBITMAP LKLoadBitmap(const TCHAR *srcfile) {
- #if (WINDOWSPC>0)
- return (HBITMAP)LoadImage(GetModuleHandle(NULL),srcfile,IMAGE_BITMAP,0,0,LR_LOADFROMFILE);
- #else
- return (HBITMAP)SHLoadDIBitmap(srcfile);
- #endif
+
+#if (WINDOWSPC>0)
+    HBITMAP hBmp = (HBITMAP) LoadImage(GetModuleHandle(NULL), srcfile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+#else
+    HBITMAP hBmp = (HBITMAP) SHLoadDIBitmap(srcfile);
+#endif
+    if (!hBmp) {
+        auto ib = setMissingBitmap.insert(srcfile);
+        if(ib.second) {
+            StartupStore(_T(".... Failed to load file : <%s>%s"), srcfile, NEWLINE);
+        }
+        hBmp = NULLBMP;
+        ++Bitmaps_Errors;
+    }
+    return hBmp;
 }
 
 
@@ -208,98 +219,6 @@ void LKLoadFixedBitmaps(void) {
 
   _stprintf(srcfile,_T("%s\\PICTORI%s.BMP"),sDir,hires_suffix);
   hLKPictori=LKLoadBitmap(srcfile);
-
-  //
-  // Careful: the LK code using bitmaps will not check if they exist. If a bitmap
-  // is not loaded, the Select will silently fail and the old bitmap in use will
-  // be kept in use, resulting in confusing painting. So we load a null bitmap here.
-  // Let's respect the loading order.
-
-  if (hTurnPoint==NULL) { hTurnPoint=NULLBMP; Bitmaps_Errors++; }
-  if (hInvTurnPoint==NULL) { hInvTurnPoint=NULLBMP; Bitmaps_Errors++; }
-  if (hSmall==NULL) { hSmall=NULLBMP; Bitmaps_Errors++; }
-  if (hInvSmall==NULL) { hInvSmall=NULLBMP; Bitmaps_Errors++; }
-
-  if (hBatteryFull==NULL) { hBatteryFull=NULLBMP; Bitmaps_Errors++; }
-  if (hBatteryFullC==NULL) { hBatteryFullC=NULLBMP; Bitmaps_Errors++; }
-  if (hBattery96==NULL) { hBattery96=NULLBMP; Bitmaps_Errors++; }
-  if (hBattery84==NULL) { hBattery84=NULLBMP; Bitmaps_Errors++; }
-  if (hBattery72==NULL) { hBattery72=NULLBMP; Bitmaps_Errors++; }
-  if (hBattery60==NULL) { hBattery60=NULLBMP; Bitmaps_Errors++; }
-  if (hBattery48==NULL) { hBattery48=NULLBMP; Bitmaps_Errors++; }
-  if (hBattery36==NULL) { hBattery36=NULLBMP; Bitmaps_Errors++; }
-  if (hBattery24==NULL) { hBattery24=NULLBMP; Bitmaps_Errors++; }
-  if (hBattery12==NULL) { hBattery12=NULLBMP; Bitmaps_Errors++; }
-
-  if (hNoTrace==NULL) { hNoTrace=NULLBMP; Bitmaps_Errors++; }
-  if (hFullTrace==NULL) { hFullTrace=NULLBMP; Bitmaps_Errors++; }
-  if (hClimbTrace==NULL) { hClimbTrace=NULLBMP; Bitmaps_Errors++; }
-  if (hHeadUp==NULL) { hHeadUp=NULLBMP; Bitmaps_Errors++; }
-  if (hNorthUp==NULL) { hNorthUp=NULLBMP; Bitmaps_Errors++; }
-  if (hHeadRight==NULL) { hHeadRight=NULLBMP; Bitmaps_Errors++; }
-
-  if (hMM0==NULL) { hMM0=NULLBMP; Bitmaps_Errors++; }
-  if (hMM1==NULL) { hMM1=NULLBMP; Bitmaps_Errors++; }
-  if (hMM2==NULL) { hMM2=NULLBMP; Bitmaps_Errors++; }
-  if (hMM3==NULL) { hMM3=NULLBMP; Bitmaps_Errors++; }
-  if (hMM4==NULL) { hMM4=NULLBMP; Bitmaps_Errors++; }
-  if (hMM5==NULL) { hMM5=NULLBMP; Bitmaps_Errors++; }
-  if (hMM6==NULL) { hMM6=NULLBMP; Bitmaps_Errors++; }
-  if (hMM7==NULL) { hMM7=NULLBMP; Bitmaps_Errors++; }
-  if (hMM8==NULL) { hMM8=NULLBMP; Bitmaps_Errors++; }
-
-  if (hBmpLeft32==NULL) { hBmpLeft32=NULLBMP; Bitmaps_Errors++; }
-  if (hBmpRight32==NULL) { hBmpRight32=NULLBMP; Bitmaps_Errors++; }
-
-  if (hBmpThermalSource==NULL) { hBmpThermalSource=NULLBMP; Bitmaps_Errors++; }
-  if (hBmpTarget==NULL) { hBmpTarget=NULLBMP; Bitmaps_Errors++; }
-
-  if (hScrollBarBitmapTop==NULL) { hScrollBarBitmapTop=NULLBMP; Bitmaps_Errors++; }
-  if (hScrollBarBitmapMid==NULL) { hScrollBarBitmapMid=NULLBMP; Bitmaps_Errors++; }
-  if (hScrollBarBitmapBot==NULL) { hScrollBarBitmapBot=NULLBMP; Bitmaps_Errors++; }
-
-  if (hBmpMarker==NULL) { hBmpMarker=NULLBMP; Bitmaps_Errors++; }
-  if (hFLARMTraffic==NULL) { hFLARMTraffic=NULLBMP; Bitmaps_Errors++; }
-  if (hLogger==NULL) { hLogger=NULLBMP; Bitmaps_Errors++; }
-  if (hLoggerOff==NULL) { hLoggerOff=NULLBMP; Bitmaps_Errors++; }
-
-  if (hMountop==NULL) { hMountop=NULLBMP; Bitmaps_Errors++; }
-  if (hMountpass==NULL) { hMountpass=NULLBMP; Bitmaps_Errors++; }
-  if (hBridge==NULL) { hBridge=NULLBMP; Bitmaps_Errors++; }
-  if (hIntersect==NULL) { hIntersect=NULLBMP; Bitmaps_Errors++; }
-
-  if (hTerrainWarning==NULL) { hTerrainWarning=NULLBMP; Bitmaps_Errors++; }
-  if (hAirspaceWarning==NULL) { hAirspaceWarning=NULLBMP; Bitmaps_Errors++; }
-  if (hBmpTeammatePosition==NULL) { hBmpTeammatePosition=NULLBMP; Bitmaps_Errors++; }
-
-  if (hAirspaceBitmap[0]==NULL) { hAirspaceBitmap[0]=NULLBMP; Bitmaps_Errors++; }
-  if (hAirspaceBitmap[1]==NULL) { hAirspaceBitmap[1]=NULLBMP; Bitmaps_Errors++; }
-  if (hAirspaceBitmap[2]==NULL) { hAirspaceBitmap[2]=NULLBMP; Bitmaps_Errors++; }
-  if (hAirspaceBitmap[3]==NULL) { hAirspaceBitmap[3]=NULLBMP; Bitmaps_Errors++; }
-  if (hAirspaceBitmap[4]==NULL) { hAirspaceBitmap[4]=NULLBMP; Bitmaps_Errors++; }
-  if (hAirspaceBitmap[5]==NULL) { hAirspaceBitmap[5]=NULLBMP; Bitmaps_Errors++; }
-  if (hAirspaceBitmap[6]==NULL) { hAirspaceBitmap[6]=NULLBMP; Bitmaps_Errors++; }
-  if (hAirspaceBitmap[7]==NULL) { hAirspaceBitmap[7]=NULLBMP; Bitmaps_Errors++; }
-  LKASSERT(7<NUMAIRSPACEBRUSHES); // reminder
-
-  if (hAboveTerrainBitmap==NULL) { hAboveTerrainBitmap=NULLBMP; Bitmaps_Errors++; }
-
-  if (hDam==NULL) { hDam=NULLBMP; Bitmaps_Errors++; }
-  if (hSender==NULL) { hSender=NULLBMP; Bitmaps_Errors++; }
-  if (hNdb==NULL) { hNdb=NULLBMP; Bitmaps_Errors++; }
-  if (hVor==NULL) { hVor=NULLBMP; Bitmaps_Errors++; }
-  if (hCoolTower==NULL) { hCoolTower=NULLBMP; Bitmaps_Errors++; }
-  if (hTunnel==NULL) { hTunnel=NULLBMP; Bitmaps_Errors++; }
-  if (hPowerPlant==NULL) { hPowerPlant=NULLBMP; Bitmaps_Errors++; }
-  if (hCastle==NULL) { hCastle=NULLBMP; Bitmaps_Errors++; }
-  if (hLKThermal==NULL) { hLKThermal=NULLBMP; Bitmaps_Errors++; }
-  if (hLKThermalRed==NULL) { hLKThermalRed=NULLBMP; Bitmaps_Errors++; }
-  if (hLKPictori==NULL) { hLKPictori=NULLBMP; Bitmaps_Errors++; }
-  
-  if (Bitmaps_Errors>0) {
-	StartupStore(_T("... ERROR! MISSING %d BITMAPS!! CHECK SYSTEM BITMAPS!%s"),Bitmaps_Errors,NEWLINE);
-  }
-
 }
 
 
@@ -460,21 +379,6 @@ void LKLoadProfileBitmaps(void) {
 		break;
 
   }
-
-  // Check we loaded everything!
-
-  if (hBmpAirportReachable==NULL) { hBmpAirportReachable=NULLBMP; Bitmaps_Errors++; }
-  if (hBmpAirportUnReachable==NULL) { hBmpAirportUnReachable=NULLBMP; Bitmaps_Errors++; }
-  if (hBmpFieldReachable==NULL) { hBmpFieldReachable=NULLBMP; Bitmaps_Errors++; }
-  if (hBmpFieldUnReachable==NULL) { hBmpFieldUnReachable=NULLBMP; Bitmaps_Errors++; }
-
-  if (hCruise==NULL) { hCruise=NULLBMP; Bitmaps_Errors++; }
-  if (hClimb==NULL) { hClimb=NULLBMP; Bitmaps_Errors++; }
-  if (hFinalGlide==NULL) { hFinalGlide=NULLBMP; Bitmaps_Errors++; }
-
-  if (Bitmaps_Errors>0) {
-	StartupStore(_T("... ERROR! MISSING %d PROFILE BITMAPS!! CHECK SYSTEM BITMAPS!%s"),Bitmaps_Errors,NEWLINE);
-  }
 }
 
 
@@ -508,7 +412,5 @@ void LKUnloadProfileBitmaps(void) {
   hCruise=NULL;
   hClimb=NULL;
   hFinalGlide=NULL;
-
-
 }
 
