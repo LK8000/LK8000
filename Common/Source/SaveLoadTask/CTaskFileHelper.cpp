@@ -9,6 +9,7 @@
  * Created on 19 janvier 2013, 12:25
  */
 
+#include <math.h>
 #include <string>
 
 #include "CTaskFileHelper.h"

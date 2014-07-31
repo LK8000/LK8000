@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "NavFunctions.h"
+#include <cmath>
 
 
 void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
@@ -307,7 +308,7 @@ void xXY_Brg_Rng(double X_1, double Y_1, double X_2, double Y_2, double *Bearing
     Rad_Bearing += Rad_360;
   }
   *Bearing = (double)(RAD_TO_DEG * Rad_Bearing);
-  *Range = (double) (_hypot((double) (X_2 - X_1), (double) (Y_2 - Y_1)));
+  *Range = (double) (std::hypot((double) (X_2 - X_1), (double) (Y_2 - Y_1)));
 }
 
 void xBrg_Rng_XY(double X_RefPos, double Y_RefPos, double Bearing, double Range, double *X, double *Y)

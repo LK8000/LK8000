@@ -1,8 +1,6 @@
 #ifndef CLIMBAVERAGECALCULATOR_H
 #define CLIMBAVERAGECALCULATOR_H
 
-#include <map>
-
 class ClimbAverageCalculator
 {
 public:

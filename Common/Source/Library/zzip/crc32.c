@@ -29,7 +29,7 @@
 #include "zzip/zutil.h"      /* for STDC and FAR definitions */
 
 #include "utils/heapcheck.h"
-
+#include <stddef.h>
 #define local static
 
 /* Find a four-byte integer type for crc32_little() and crc32_big(). */

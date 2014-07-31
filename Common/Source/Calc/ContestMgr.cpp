@@ -51,8 +51,8 @@ CContestMgr::CContestMgr():
   _trace(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
   _traceSprint(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM)),
   _traceLoop(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
-  _prevFAIFront(0), _prevFAIBack(0),
-  _prevFAIPredictedFront(0), _prevFAIPredictedBack(0),
+  _prevFAIFront(), _prevFAIBack(),
+  _prevFAIPredictedFront(), _prevFAIPredictedBack(),
   _pgpsClosePoint(0,0,0,0),
   _pgpsBestClosePoint(0,0,0,0),
   _pgpsNearPoint(0,0,0,0)

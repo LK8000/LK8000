@@ -8,6 +8,7 @@
 //______________________________________________________________________________
 
 #include "stringext.h"
+#include <math.h>
 #include "utf8/unchecked.h"
 
 #include "utils/heapcheck.h"

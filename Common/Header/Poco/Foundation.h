@@ -158,6 +158,7 @@
 //
 #include "Poco/Bugcheck.h"
 #include "Poco/Types.h"
+#include <math.h>
 #include <string>
 
 

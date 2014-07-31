@@ -91,7 +91,7 @@ private:
 #ifdef TEST_CONTEST
   friend class CTestContest;
 #endif
-  typedef std::auto_ptr<CTrace> CTracePtr;
+  typedef std::unique_ptr<CTrace> CTracePtr;
   typedef std::multimap<unsigned, const CTrace::CPoint *> CDistanceMap;
 
   // Performance knobs
@@ -118,10 +118,10 @@ private:
   CTracePtr _trace;                               /**< @brief Main trace */
   CTracePtr _traceSprint;                         /**< @brief Trace for OLC-League */
   CTracePtr _traceLoop;                           /**< @brief Trace for OLC-League */
-  std::auto_ptr<CPointGPS> _prevFAIFront;         /**< @brief Last reviewed OLC-FAI loop end points */
-  std::auto_ptr<CPointGPS> _prevFAIBack;          /**< @brief Last reviewed OLC-FAI loop end points */
-  std::auto_ptr<CPointGPS> _prevFAIPredictedFront;/**< @brief Last reviewed OLC-FAI Predicted loop end points */
-  std::auto_ptr<CPointGPS> _prevFAIPredictedBack; /**< @brief Last reviewed OLC-FAI Predicted loop end points */
+  std::unique_ptr<CPointGPS> _prevFAIFront;         /**< @brief Last reviewed OLC-FAI loop end points */
+  std::unique_ptr<CPointGPS> _prevFAIBack;          /**< @brief Last reviewed OLC-FAI loop end points */
+  std::unique_ptr<CPointGPS> _prevFAIPredictedFront;/**< @brief Last reviewed OLC-FAI Predicted loop end points */
+  std::unique_ptr<CPointGPS> _prevFAIPredictedBack; /**< @brief Last reviewed OLC-FAI Predicted loop end points */
   CResultArray _resultArray;                      /**< @brief Array of results */
   
   CPointGPS _pgpsClosePoint;

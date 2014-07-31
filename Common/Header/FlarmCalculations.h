@@ -1,6 +1,7 @@
 #ifndef FLARMCALCULATIONS_H
 #define FLARMCALCULATIONS_H
 
+#include <math.h>
 #include <map>
 #include "ClimbAverageCalculator.h"
 

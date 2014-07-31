@@ -7,6 +7,7 @@
 #ifndef _TSTRING_H
 #define	_TSTRING_H
 
+#include <math.h> // needed for ERANGE  
 #include <string>
 
 

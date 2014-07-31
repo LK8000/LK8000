@@ -41,6 +41,7 @@
 
 
 #include "Poco/Foundation.h"
+#include <math.h>
 #include <string>
 #if defined(_DEBUG)
 #	include <iostream>
