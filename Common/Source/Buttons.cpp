@@ -280,7 +280,7 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
     ButtonDisabled[i]= false;
 
     SetLabelText(i,NULL);
-    SetWindowLong(hWndButtonWindow[i], GWL_USERDATA, 4);	  
+    SetWindowLongPtr(hWndButtonWindow[i], GWLP_USERDATA, 4);	  
   }
 
 }
@@ -329,7 +329,7 @@ void ButtonLabel::SetLabelText(int index, const TCHAR *text) {
 		SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 7);
 	else
 	#endif
-      SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 5);
+      SetWindowLongPtr(hWndButtonWindow[index], GWLP_USERDATA, 5);
       ButtonDisabled[index]= true;
     } else {
 	#ifdef LXMINIMAP
@@ -337,7 +337,7 @@ void ButtonLabel::SetLabelText(int index, const TCHAR *text) {
 		SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 6);
 	else
 	#endif
-      SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 4);
+      SetWindowLongPtr(hWndButtonWindow[index], GWLP_USERDATA, 4);
       ButtonDisabled[index]= false;
     }
 

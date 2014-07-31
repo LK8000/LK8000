@@ -75,7 +75,7 @@ static void OnAirspaceListEnter(WindowControl * Sender,
   }
 }
 
-static int _cdecl AirspaceNameCompare(const void *elem1, const void *elem2 ){
+static int AirspaceNameCompare(const void *elem1, const void *elem2 ){
   if (((const AirspaceSelectInfo_t *)elem1)->FourChars < ((const AirspaceSelectInfo_t *)elem2)->FourChars)
     return (-1);
   if (((const AirspaceSelectInfo_t *)elem1)->FourChars > ((const AirspaceSelectInfo_t *)elem2)->FourChars)
@@ -86,7 +86,7 @@ static int _cdecl AirspaceNameCompare(const void *elem1, const void *elem2 ){
   return _tcscmp(name1, name2);
 }
 
-static int _cdecl AirspaceDistanceCompare(const void *elem1, const void *elem2 ){
+static int AirspaceDistanceCompare(const void *elem1, const void *elem2 ){
   if (((const AirspaceSelectInfo_t *)elem1)->Distance < ((const AirspaceSelectInfo_t *)elem2)->Distance)
     return (-1);
   if (((const AirspaceSelectInfo_t *)elem1)->Distance > ((const AirspaceSelectInfo_t *)elem2)->Distance)
@@ -94,14 +94,14 @@ static int _cdecl AirspaceDistanceCompare(const void *elem1, const void *elem2 )
   return (0);
 }
 
-static int _cdecl AirspaceTypeCompare(const void *elem1, const void *elem2 ){
+static int AirspaceTypeCompare(const void *elem1, const void *elem2 ){
   if (((const AirspaceSelectInfo_t *)elem1)->Type == TypeFilterIdx-1)
     return (-1);
   return (+1);
 }
 
 
-static int _cdecl AirspaceDirectionCompare(const void *elem1, const void *elem2 ){
+static int AirspaceDirectionCompare(const void *elem1, const void *elem2 ){
 
   int a, a1, a2;
 

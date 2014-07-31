@@ -292,7 +292,7 @@ void DataFieldFileReader::Dec(void){
 }
 
 
-static int _cdecl DataFieldFileReaderCompare(const void *elem1, 
+static int DataFieldFileReaderCompare(const void *elem1, 
                                              const void *elem2 ){
   return _tcscmp(((const DataFieldFileReaderEntry*)elem1)->mTextFile,
                  ((const DataFieldFileReaderEntry*)elem2)->mTextFile);
@@ -596,7 +596,7 @@ void DataFieldEnum::Dec(void){
   }
 }
 
-static int _cdecl DataFieldEnumCompare(const void *elem1, 
+static int DataFieldEnumCompare(const void *elem1, 
                                              const void *elem2 ){
   return _tcscmp(((const DataFieldEnumEntry*)elem1)->mText,
                  ((const DataFieldEnumEntry*)elem2)->mText);
@@ -1239,9 +1239,9 @@ WindowControl::WindowControl(WindowControl *Owner,
   mBoundRect.right = GetWidth();
   mBoundRect.bottom = GetHeight();
 
-  mSavWndProcedure = GetWindowLong(mHWnd, GWL_WNDPROC);
-  SetWindowLong(mHWnd, GWL_USERDATA, (long)this);
-  SetWindowLong(mHWnd, GWL_WNDPROC, (LONG) WindowControlWndProc);
+  mSavWndProcedure = GetWindowLongPtr(mHWnd, GWLP_WNDPROC);
+  SetWindowLongPtr(mHWnd, GWLP_USERDATA, (LONG_PTR)this);
+  SetWindowLongPtr(mHWnd, GWLP_WNDPROC, (LONG_PTR) WindowControlWndProc);
 
   mHdc = GetDC(mHWnd);
 
@@ -1294,8 +1294,8 @@ void WindowControl::Destroy(void){
 	DeleteDC(sHdc);
 	sHdc=NULL;
   }
-  SetWindowLong(mHWnd, GWL_WNDPROC, (LONG) mSavWndProcedure);
-  SetWindowLong(mHWnd, GWL_USERDATA, (long)0);
+  SetWindowLongPtr(mHWnd, GWLP_WNDPROC, (LONG_PTR) mSavWndProcedure);
+  SetWindowLongPtr(mHWnd, GWLP_USERDATA, (LONG_PTR)0);
 
   // SetWindowLong(mHWnd, GWL_WNDPROC, (LONG) WindowControlWndProc);
   // ShowWindow(GetHandle(), SW_SHOW);
@@ -1805,7 +1805,7 @@ WindowControl *WindowControl::FocusPrev(WindowControl *Sender){
 
 LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
-	WindowControl *w = (WindowControl *) GetWindowLong(hwnd, GWL_USERDATA);
+	WindowControl *w = (WindowControl *) GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 	if (w)
 		return (w->WndProc(hwnd, uMsg, wParam, lParam));
@@ -2886,8 +2886,8 @@ WndProperty::WndProperty(WindowControl *Parent,
 	  ShowWindow(mhEdit, SW_HIDE);
   }
 
-  SetWindowLong(mhEdit, GWL_USERDATA, (long)this);
-  mEditWindowProcedure = (WNDPROC)SetWindowLong(mhEdit, GWL_WNDPROC, (LONG) WndPropertyEditWndProc);
+  SetWindowLongPtr(mhEdit, GWLP_USERDATA, (LONG_PTR)this);
+  mEditWindowProcedure = (WNDPROC)SetWindowLongPtr(mhEdit, GWLP_WNDPROC, (LONG_PTR) WndPropertyEditWndProc);
 
   SendMessage(mhEdit, WM_SETFONT,
 		     (WPARAM)mhValueFont, MAKELPARAM(TRUE,0));
@@ -2922,8 +2922,8 @@ void WndProperty::Destroy(void){
     }
   }
 
-  SetWindowLong(mhEdit, GWL_WNDPROC, (LONG) mEditWindowProcedure);
-  SetWindowLong(mhEdit, GWL_USERDATA, (long)0);
+  SetWindowLongPtr(mhEdit, GWLP_WNDPROC, (LONG_PTR) mEditWindowProcedure);
+  SetWindowLongPtr(mhEdit, GWLP_USERDATA, (LONG_PTR)0);
 
   DestroyWindow(mhEdit);
 
@@ -2940,7 +2940,7 @@ void WndProperty::SetText(const TCHAR *Value){
 
 LRESULT CALLBACK WndPropertyEditWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
-	WndProperty *w = (WndProperty *) GetWindowLong(hwnd, GWL_USERDATA);
+	WndProperty *w = (WndProperty *) GetWindowLongPtr(hwnd, GWLP_USERDATA);
 	if (w)
 		return (w->WndProcEditControl(hwnd, uMsg, wParam, lParam));
 	else

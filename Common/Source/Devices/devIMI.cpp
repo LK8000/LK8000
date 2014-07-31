@@ -152,7 +152,7 @@ struct CDevIMI::TMsg {
   IMIWORD crc16;
 };
 #define IMICOMM_MAX_MSG_SIZE (sizeof(TMsg))
-#define IMICOMM_MSG_HEADER_SIZE ((unsigned)(&(((TMsg *)0)->payload)))
+#define IMICOMM_MSG_HEADER_SIZE ((size_t)(&(((TMsg *)0)->payload)))
 #define IMICOMM_BIGPARAM1(param) ((IMIBYTE)((param) >> 16))
 #define IMICOMM_BIGPARAM2(param) ((IMIWORD)(param))
   

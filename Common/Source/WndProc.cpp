@@ -69,7 +69,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       return MainMenu(hWnd, message, wParam, lParam);
       break;
     case WM_CTLCOLORSTATIC:
-      wdata = GetWindowLong((HWND)lParam, GWL_USERDATA);
+      wdata = GetWindowLongPtr((HWND)lParam, GWLP_USERDATA);
       switch(wdata) {
       case 0:
         SetBkColor((HDC)wParam, ColorUnselected);

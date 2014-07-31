@@ -28,6 +28,7 @@ ifeq ($(DEBUG),y)
     OPTIMIZE := -O0
     OPTIMIZE += -g3 -gdwarf-2
     REMOVE_NS :=
+    BIN=Bin/$(TARGET)_debug
 endif
 
 ifeq ($(GPROF),y)
@@ -71,7 +72,11 @@ else
 	      CONFIG_LINUX := y
 	      CONFIG_ANDROID := n
 	      MINIMAL       :=n
-            endif
+		else
+		    ifeq ($(TARGET),PCX64)
+			CONFIG_PC:=y
+		    endif
+        endif
 	  endif
 	endif
       endif
@@ -82,9 +87,15 @@ endif
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC),y)
+ifeq ($(TARGET),PCX64)
+TCPATH		:=x86_64-w64-mingw32-
+CPU		:=
+MCPU		:=
+else
 TCPATH		:=i686-w64-mingw32-
 CPU		:=i586
 MCPU		:= -mcpu=$(CPU)
+endif
 else
 ifeq ($(CONFIG_WINE),y)
 TCPATH		:=wine
@@ -303,9 +314,12 @@ endif
 ####### compiler target
 
 ifeq ($(CONFIG_PC),y)
-TARGET_ARCH	:=-mwindows -march=i586 -mms-bitfields
+ifeq ($(TARGET),PCX64)
+    TARGET_ARCH := -m64
 else
-
+    TARGET_ARCH	:=-mwindows -march=i586 -mms-bitfields
+endif
+else
 TARGET_ARCH	:=-mwin32 $(MCPU)
 ifeq ($(TARGET),PNA)
 TARGET_ARCH	:=-mwin32

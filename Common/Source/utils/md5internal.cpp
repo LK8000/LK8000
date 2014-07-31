@@ -253,7 +253,7 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx) __THROW
 # define alignof(type) offsetof(struct { char c; type x; }, x)
 # define UNALIGNED_P(p) (((size_t) p) % alignof (md5_uint32) != 0)
 //      if (UNALIGNED_P (buffer))
-      unsigned int ipbuffer = (unsigned int)(buffer);
+      size_t ipbuffer = (size_t)(buffer);
       if ((ipbuffer % 4) != 0)
 	while (len > 64)
 	  {

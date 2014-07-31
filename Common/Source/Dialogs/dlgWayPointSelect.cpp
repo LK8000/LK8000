@@ -77,7 +77,7 @@ static void OnWaypointListEnter(WindowControl * Sender,
 static WayPointSelectInfo_t *WayPointSelectInfo=NULL;
 static int *StrIndex=NULL;
 
-static int _cdecl WaypointNameCompare(const void *elem1, const void *elem2 ){
+static int WaypointNameCompare(const void *elem1, const void *elem2 ){
   if (((const WayPointSelectInfo_t *)elem1)->FourChars < ((const WayPointSelectInfo_t *)elem2)->FourChars)
     return (-1);
   if (((const WayPointSelectInfo_t *)elem1)->FourChars > ((const WayPointSelectInfo_t *)elem2)->FourChars)
@@ -85,7 +85,7 @@ static int _cdecl WaypointNameCompare(const void *elem1, const void *elem2 ){
   return (0);
 }
 
-static int _cdecl WaypointDistanceCompare(const void *elem1, const void *elem2 ){
+static int WaypointDistanceCompare(const void *elem1, const void *elem2 ){
   if (((const WayPointSelectInfo_t *)elem1)->Distance < ((const WayPointSelectInfo_t *)elem2)->Distance)
     return (-1);
   if (((const WayPointSelectInfo_t *)elem1)->Distance > ((const WayPointSelectInfo_t *)elem2)->Distance)
@@ -93,31 +93,31 @@ static int _cdecl WaypointDistanceCompare(const void *elem1, const void *elem2 )
   return (0);
 }
 
-static int _cdecl WaypointAirportCompare(const void *elem1, const void *elem2 ){
+static int WaypointAirportCompare(const void *elem1, const void *elem2 ){
   if (((const WayPointSelectInfo_t *)elem1)->Type & (AIRPORT))
     return (-1);
   return (+1);
 }
 
-static int _cdecl WaypointLandableCompare(const void *elem1, const void *elem2 ){
+static int WaypointLandableCompare(const void *elem1, const void *elem2 ){
   if (((const WayPointSelectInfo_t *)elem1)->Type & (AIRPORT | LANDPOINT))
     return (-1);
   return (+1);
 }
 
-static int _cdecl WaypointWayPointCompare(const void *elem1, const void *elem2 ){
+static int WaypointWayPointCompare(const void *elem1, const void *elem2 ){
   if (((const WayPointSelectInfo_t *)elem1)->Type & (TURNPOINT))
     return (-1);
   return (+1);
 }
 
-static int _cdecl WaypointFileIdxCompare(const void *elem1, const void *elem2 ){
+static int WaypointFileIdxCompare(const void *elem1, const void *elem2 ){
   if (((const WayPointSelectInfo_t *)elem1)->FileIdx != SelectedWayPointFileIdx)
     return (+1);
   return (-1);
 }
 
-static int _cdecl WaypointDirectionCompare(const void *elem1, const void *elem2 ){
+static int WaypointDirectionCompare(const void *elem1, const void *elem2 ){
 
   int a, a1, a2;
 
