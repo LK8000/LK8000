@@ -410,7 +410,7 @@ _aftercar:
 	if (value>=6.00) meter=15;
 
 	if (meter>=0) {
-		for (unsigned short i=0; i<=meter && i<NUMVBRICKS; i++) {
+		for (unsigned short i=0; i<=meter && i<(NUMVBRICKS/2); i++) {
 			switch (lkvariobar) {
 				case vBarVarioColor:
 					SelectObject(hDC,*negativeBrush[i]);
