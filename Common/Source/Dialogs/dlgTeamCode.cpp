@@ -34,10 +34,10 @@ static void Update()
 			Value -= 360.0;
       
 	if (Value > 1)
-		_stprintf(Text, TEXT("%2.0f")TEXT(DEG)TEXT(">"), Value);
+		_stprintf(Text, TEXT("%2.0f%s>"), Value, gettext(_T("_@M2179_")));
 	else
 		if (Value < -1)
-			_stprintf(Text, TEXT("<%2.0f")TEXT(DEG), -Value);
+			_stprintf(Text, TEXT("<%2.0f%s"), -Value, gettext(_T("_@M2179_")));
 		else
 			_tcscpy(Text, TEXT("<>"));
       

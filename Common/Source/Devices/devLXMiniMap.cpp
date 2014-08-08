@@ -12,7 +12,6 @@
 //
 //_____________________________________________________________________includes_
 
-#include "StdAfx.h"
 #include "externs.h"
 #include "devLXMiniMap.h"
 #include "McReady.h"

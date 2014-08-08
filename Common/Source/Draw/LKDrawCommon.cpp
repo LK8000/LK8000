@@ -427,14 +427,13 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 					Value -= 360.0;
 
 			if (Value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0\xBB"), Value);
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), Value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
+			else if (Value < -1)
+				_stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -Value, gettext(_T("_@M2179_")));
 			else
-				if (Value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("\xAB%2.0f\xB0"), -Value);
-				else
-					_tcscpy(Buffer3[i][curpage], TEXT("\xAB\xBB"));
+				_stprintf(Buffer3[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 		} else
-			_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0"), WayPointCalc[rli].Bearing);
+			_stprintf(Buffer3[i][curpage], TEXT("%2.0f%s"), WayPointCalc[rli].Bearing, gettext(_T("_@M2179_")));
 
 		// Requested GR
 		Value=WayPointCalc[rli].GR;

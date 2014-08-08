@@ -50,26 +50,13 @@ _doit:
 
   // need to do this to prevent drawing of colored outline
   SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
-#if (WINDOWSPC<1)
-    TransparentImage(hDC,
-                     rc.left, rc.top,
-                     rc.right-rc.left,rc.bottom-rc.top,
-                     hDCTemp,
-                     rc.left, rc.top,
-                     rc.right-rc.left,rc.bottom-rc.top,
-                     whitecolor
-                     );
-    
-#else
-    TransparentBlt(hDC,
-                   rc.left,rc.top,
-                   rc.right-rc.left,rc.bottom-rc.top,
-                   hDCTemp,
-                   rc.left,rc.top,
-                   rc.right-rc.left,rc.bottom-rc.top,
-                   whitecolor
-                   );
-  #endif
+  TransparentBlt(hDC,
+          rc.left,rc.top,
+          rc.right-rc.left,rc.bottom-rc.top,
+          hDCTemp,
+          rc.left,rc.top,
+          rc.right-rc.left,rc.bottom-rc.top,
+          whitecolor);
 
   // restore original color
   SetTextColor(hDCTemp, origcolor);

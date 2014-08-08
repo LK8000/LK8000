@@ -28,9 +28,9 @@
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
-#include "StdAfx.h"
 #include "options.h"
 #include "mapprimitive.h"
+#include <math.h>
 #include "utils/heapcheck.h"
 
 #if 0 // UNUSED

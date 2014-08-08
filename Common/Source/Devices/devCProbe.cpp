@@ -454,17 +454,17 @@ void CDevCProbe::Update() {
 	WndProperty* wp;
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpPitch"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f\xB0"), _INFO.Pitch);
+		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Pitch, gettext(_T("_@M2179_")));
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpHeading"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f\xB0"), _INFO.MagneticHeading);
+		_stprintf(Temp, TEXT("%.2f%s"), _INFO.MagneticHeading, gettext(_T("_@M2179_")));
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpRoll"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f\xB0"), _INFO.Roll);
+		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Roll, gettext(_T("_@M2179_")));
 		wp->SetText(Temp);
 	}
 
@@ -486,7 +486,7 @@ void CDevCProbe::Update() {
 
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpTemp"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f \xB0""C"), _INFO.OutsideAirTemperature);
+		_stprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature, gettext(_T("_@M2179_")));
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)m_wf->FindByName(TEXT("prpRh"));

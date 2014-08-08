@@ -9,7 +9,7 @@
 #define SUN_DIAMETER 0.53     // Sunradius degrees
 #define AIR_REFRACTION 34.0/60.0 // athmospheric refraction degrees //
 
-#include <windows.h>
+
 
 
 class SunEphemeris {

@@ -1,6 +1,6 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
-#include "StdAfx.h"
+#include "externs.h"
 #include "Topology.h"
 
 

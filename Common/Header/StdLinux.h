@@ -17,6 +17,7 @@
 #include <math.h>
 #include <malloc.h>
 
+#include "linuxcompat/CharUpper.h"
 
 #ifndef ASSERT
 #define ASSERT(x) assert(x)
@@ -24,10 +25,6 @@
 
 typedef unsigned int uint;
 typedef unsigned char byte;
-
-#ifndef _tcsclen
-#define _tcsclen(x) _tcslen(x)
-#endif
 
 #ifdef __cplusplus
 extern "C" {

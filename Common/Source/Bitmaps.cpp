@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "resource.h"
 #include "LKMapWindow.h"
-#include <shellapi.h>
 
 #define STATIC_BITMAPS
 #include "Bitmaps.h"

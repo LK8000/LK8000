@@ -951,7 +951,7 @@ double DataFieldInteger::SetAsFloat(double Value){
 
 TCHAR *DataFieldInteger::SetAsString(const TCHAR *Value){
   TCHAR *res = GetAsString();
-  SetAsInteger(_ttoi(Value));
+  SetAsInteger(_tcstol(Value, NULL, 10));
   return(res);
 }
 

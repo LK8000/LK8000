@@ -4,7 +4,7 @@
 #ifndef _FILEHANDLERS_H_
 #define _FILEHANDLERS_H_
 
-#include <windows.h>
+
 #include <stdio.h>
 #include <unistd.h>
 

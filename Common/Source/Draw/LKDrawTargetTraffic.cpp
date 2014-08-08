@@ -228,12 +228,12 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
   TCHAR tbear[10];
   if (disabled && !notraffic) {
 	if (tangle > 1) {
-		_stprintf(tbear, TEXT("%2.0f\xB0\xBB"), tangle);
+		_stprintf(tbear, TEXT("%2.0f%s%s"), tangle, gettext(_T("_@M2179_")),gettext(_T("_@M2183_")));
 	} else {
 		if (tangle < -1) {
-			_stprintf(tbear, TEXT("\xAB%2.0f\xB0"), -tangle);
+			_stprintf(tbear, TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -tangle, gettext(_T("_@M2179_")));
 		} else {
-			_tcscpy(tbear, TEXT("\xAB\xBB"));
+			_stprintf(tbear, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 		}
 	}
 	SelectObject(hDC, LK8PanelBigFont);
@@ -253,9 +253,9 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 	#if 0
 	double tbearing = LKTraffic[LKTargetIndex].Bearing;
 	if (tbearing != 360) {
-		_stprintf(tbear, TEXT("%2.0f\xB0"), tbearing);
+		_stprintf(tbear, TEXT("%2.0f%s"), tbearing, gettext(_T("_@M2179_")));
 	} else {
-		_stprintf(tbear, TEXT("0\xB0"));
+		_stprintf(tbear, TEXT("0%s"), gettext(_T("_@M2179_")));
 	}
 	LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 	#endif
@@ -368,12 +368,12 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
   // always paint the bearing difference, cleverly
   if (!disabled && !notraffic) {
 	if (tangle > 1) {
-		_stprintf(tbear, TEXT("%2.0f\xB0\xBB"), tangle);
+		_stprintf(tbear, TEXT("%2.0f%s%s"), tangle, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
 	} else {
 		if (tangle < -1) {
-			_stprintf(tbear, TEXT("\xAB%2.0f\xB0"), -tangle);
+			_stprintf(tbear, TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -tangle, gettext(_T("_@M2179_")));
 		} else {
-			_tcscpy(tbear, TEXT("\xAB\xBB"));
+			_stprintf(tbear, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 		}
 	}
 	SelectObject(hDC, LK8PanelBigFont);

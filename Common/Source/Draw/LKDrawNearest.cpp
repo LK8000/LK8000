@@ -507,14 +507,14 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 					value -= 360.0;
 
 			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0\xBB"), value);
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")),gettext(_T("_@M2183_")));
 			else
 				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("\xAB%2.0f\xB0"), -value);
+					_stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
 				else
-					_tcscpy(Buffer3[i][curpage], TEXT("\xAB\xBB"));
+					_stprintf(Buffer3[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")),gettext(_T("_@M2183_")));
 		} else
-			_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0"), WayPointCalc[rli].Bearing); // 101219
+			_stprintf(Buffer3[i][curpage], TEXT("%2.0f%s"), WayPointCalc[rli].Bearing, gettext(_T("_@M2179_"))); // 101219
 
 		value=WayPointCalc[rli].GR;
 		if (value<1 || value>=MAXEFFICIENCYSHOW) 

@@ -28,9 +28,9 @@
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
-#include "StdAfx.h"
 #include "options.h"
-
+#include <malloc.h>
+#include <string.h>
 #include "mapshape.h"
 #include "maptree.h"
 #if MAPSHAPEERROR

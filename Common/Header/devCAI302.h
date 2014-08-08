@@ -2,7 +2,7 @@
 #ifndef	DEVCAI302_H
 #define	DEVCAI302_H
  
-#include <windows.h>
+
 
 BOOL cai302Register(void);
 BOOL cai302PutBugs(PDeviceDescriptor_t d, double Bugs);

@@ -8,10 +8,8 @@
 
 
 #include "externs.h"
-#include "LKProfiles.h"
 #include "Dialogs.h"
 #include "AirfieldDetails.h"
-#include <zzip/lib.h>
 
 ZZIP_FILE* zAirfieldDetails = NULL;
 

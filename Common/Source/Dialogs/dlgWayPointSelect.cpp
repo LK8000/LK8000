@@ -577,9 +577,9 @@ static void SetDirectionData(DataField *Sender){
     if (a <=0)
       a += 360;
 	//LKTOKEN _@M1229_ "HDG"
-    _stprintf(sTmp, TEXT("%s(%d%s)"), gettext(TEXT("_@M1229_")), a, TEXT(DEG));
+    _stprintf(sTmp, TEXT("%s(%d%s)"), gettext(TEXT("_@M1229_")), a, gettext(_T("_@M2179_")));
   }else
-    _stprintf(sTmp, TEXT("%d")TEXT(DEG), DirectionFilter[DirectionFilterIdx]);
+    _stprintf(sTmp, TEXT("%d%s"), DirectionFilter[DirectionFilterIdx],gettext(_T("_@M2179_")));
 
   Sender->Set(sTmp);
 
@@ -697,7 +697,8 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
 
     w1 = GetTextWidth(hDC, TEXT("XXX"));
     w2 = GetTextWidth(hDC, TEXT(" 000km"));
-    w3 = GetTextWidth(hDC, TEXT(" 000")TEXT(DEG));
+    _stprintf(sTmp, _T(" 000%s"),gettext(_T("_@M2179_")));
+    w3 = GetTextWidth(hDC, sTmp);
 
     x1 = w0-w1-w2-w3;
 
@@ -734,8 +735,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       sTmp, _tcslen(sTmp), NULL);
 
     // right justified after distance
-    _stprintf(sTmp, TEXT("%d")TEXT(DEG),  
-	      iround(WayPointSelectInfo[i].Direction));
+    _stprintf(sTmp, TEXT("%d%s"), iround(WayPointSelectInfo[i].Direction), gettext(_T("_@M2179_")));
     x3 = w0-GetTextWidth(hDC, sTmp);
     ExtTextOut(hDC, x3, 2*ScreenScale,
                ETO_OPAQUE, NULL,

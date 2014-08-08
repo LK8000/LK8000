@@ -20,7 +20,7 @@ static void ReplaceInString(TCHAR *String, const TCHAR *ToReplace,
   TCHAR *pC;
 
   while((pC = _tcsstr(String, ToReplace)) != NULL){
-    iR = _tcsclen(ToReplace);
+    iR = _tcslen(ToReplace);
     _tcscpy(TmpBuf, pC + iR);
     _tcscpy(pC, ReplaceWith);
     _tcscat(pC, TmpBuf);

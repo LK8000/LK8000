@@ -20,6 +20,8 @@
 #include <malloc.h>
 #include <commctrl.h>
 #include <aygshell.h>
+#include <stdlib.h>
+
 #ifndef ASSERT
 #define ASSERT(x) assert(x)
 #endif
@@ -27,27 +29,22 @@
 typedef unsigned int uint;
 typedef unsigned char byte;
 
-#ifndef __WINE__
-#ifndef _tcsclen
-#define _tcsclen(x) _tcslen(x)
-#endif
-#endif
-
+#ifdef __MINGW32CE__
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef __WINE__
-_CRTIMP int __cdecl     _wtoi (const wchar_t *);
-	void __cdecl	TransparentImage(HDC, ...);
-
-  // JMW _CRTIMP int __cdecl	SHSetAppKeyWndAssoc(int, HWND);
-_CRTIMP void __cdecl	SystemIdleTimerReset(void);
-#endif
-
+	// TransparentImage is not defined in arm-mingw32ce
+	WINGDIAPI WINBOOL WINAPI TransparentImage(HDC hdcDest,int xoriginDest,int yoriginDest,int wDest,int hDest,HDC hdcSrc,int xoriginSrc,int yoriginSrc,int wSrc,int hSrc,UINT crTransparent);
 #ifdef __cplusplus
 }
 #endif
+/* TransparentBlt (Windows CE 5.0)
+		The TransparentBlt function is a wrapper for the TransparentImage function.
+		http://msdn.microsoft.com/fr-fr/library/windows/apps/xaml/aa453778.aspx
+ */
+	#define TransparentBlt TransparentImage
+#endif
+
 
 
 #if (WINDOWSPC>0)

@@ -203,7 +203,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 #endif
 			break;
 		case IM_HSI:
-			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M1860_"))); // HSI
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M1860_"))); // HSI
 			break;
 		case IM_CONTEST:
 			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M957_"))); // Contest
@@ -899,7 +899,7 @@ label_TRI:
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 #endif
-	wsprintf(BufferTitle, gettext(TEXT("_@M915_"))); // NOT FOR IFR USAGE
+	_stprintf(BufferTitle, gettext(TEXT("_@M915_"))); // NOT FOR IFR USAGE
 	SelectObject(hdc, LK8PanelSmallFont);
 	LKWriteText(hdc, BufferTitle, qcolumn[8],qrow[12], 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
 #endif // not in LKCOMPETITION 
@@ -923,15 +923,11 @@ label_HSI:
 	}
 	if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
 		if(showVFRlanding) {
-			wsprintf(Buffer,TEXT("VFR %s"),gettext(TEXT("_@M931_"))); //TODO: toupper()
+			_stprintf(Buffer,TEXT("VFR %s"),gettext(TEXT("_@M931_"))); //TODO: toupper()
 			icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
 		}
 		if(showQFU) {
-			#ifndef __MINGW32__
-			wsprintf(Buffer, TEXT("QFU: %d\xB0"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
-			#else
-			wsprintf(Buffer, TEXT("QFU: %d°"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir);
-			#endif
+			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir,gettext(_T("_@M2179_")));
 			icolor=RGB_GREEN;
 		}
 	} else { //show next waypoint name
@@ -939,11 +935,11 @@ label_HSI:
 		if(ValidTaskPoint(ActiveWayPoint)) {
 			if(Task[ActiveWayPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveWayPoint].Index].Name);
 			else {
-				wsprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+				_stprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 				icolor=RGB_AMBER;
 			}
 		} else {
-			wsprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+			_stprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 			icolor=RGB_AMBER;
 		}
 	}

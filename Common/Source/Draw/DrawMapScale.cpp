@@ -12,6 +12,7 @@
 #include "DoInits.h"
 #include "RasterTerrain.h"
 #include "LKObjects.h"
+#include "utils/stl_utils.h"
 
 void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/, 
                              const bool ScaleChangeFeedback)
@@ -86,7 +87,7 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     else
     {
 	  DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
-	  _stprintf(Scale, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,_T(DEG) );
+	  _stprintf(Scale, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing, gettext(_T("_@M2179_")) );
     }
 
 
@@ -200,7 +201,7 @@ _skip2:
     if (inpanmode) {
 
 	TCHAR sCoordinate[32]={0};
-	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, sizeof(sCoordinate)-1);
+	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, array_size(sCoordinate)-1);
 	_tcscat(Scale, sCoordinate);
 	_tcscat(Scale, _T(" "));
     }

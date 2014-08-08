@@ -735,7 +735,10 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
   if (buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF)
     begin += 3;
 
-  return(utf2TCHAR(begin, unicode, maxChars) >= 0);
+  if(utf2TCHAR(begin, unicode, maxChars) < 0) {
+      StartupStore(_T("invalide string <%s>%s"), unicode, NEWLINE);
+  }
+  return true;
 }
 
 

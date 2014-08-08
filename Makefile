@@ -240,7 +240,7 @@ ifeq ($(CONFIG_LINUX),y)
 CPPFLAGS	+= $(UNICODE)
 else
 ifeq ($(CONFIG_PC),y)
-CPPFLAGS	+= -D_WINDOWS -D_MBCS -DWIN32 -DCECORE $(UNICODE)
+CPPFLAGS	+= -D_WINDOWS -DWIN32 -DCECORE -D_CRT_NON_CONFORMING_SWPRINTFS $(UNICODE)
   ifeq ($(CONFIG_WINE),y)
 CPPFLAGS	+= -D__MINGW32__
 # -mno-cygwin
@@ -884,8 +884,7 @@ JASPER	:=\
 
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
-	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
-	$(COMPATSRC)/wtoi.c
+	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp
 
 POCOSRC:=$(LIB)/poco
 POCO :=\
@@ -1052,7 +1051,8 @@ $(BIN)/Data/Dialogs/%.min.xml: Common/Data/Dialogs/%.xml
 	@$(NQ)echo "  minimize $@"
 	$(Q)xsltproc --output $@ build/dialogtemplate.xsl $<
 
-.PRECIOUS: $(BIN)/Data/Dialogs/%.min.xml
+.PRECIOUS: $(BIN)/Data/Dialogs/%.min.xml \
+	$(BIN)/lk8000.min.rc
 
 ####### include depends files
 

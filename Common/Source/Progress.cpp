@@ -8,14 +8,10 @@
 */
 
 #include "externs.h"
-
-#include <commdlg.h>
-#include <commctrl.h>
 #include "resource.h"
 #include "Message.h"
 #include "LKObjects.h"
 #include "RGB.h"
-#include <shellapi.h>
 
 //
 // The SPLASH screen for startup, shutdown and intermediate reloads

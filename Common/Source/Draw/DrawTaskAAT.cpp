@@ -128,16 +128,6 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
         if(MapWindow::AlphaBlendSupported()) {
             MapWindow::DoAlphaBlend(hdc,rcDraw, hDCTemp,rcDraw,255*35/100);
         } else {
-#if (WINDOWSPC<1)
-            TransparentImage(hdc,
-                    rcDraw.left, rcDraw.top,
-                    rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top,
-                    hDCTemp,
-                    rcDraw.left, rcDraw.top,
-                    rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top,
-                    whitecolor
-                    );
-#else
             TransparentBlt(hdc,
                     rcDraw.left, rcDraw.top,
                     rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top,
@@ -146,7 +136,6 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
                     rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top,
                     whitecolor
                     );
-#endif
         }
         SelectObject(hDCTemp, oldbitmap);
 	}

@@ -100,7 +100,7 @@ void Statistics::RenderTemperature(HDC hdc, const RECT rc)
     SetTextColor(hdc,RGB_GREEN);
   SetBkMode(hdc, OPAQUE);
   TCHAR text[80];
-  _tcscpy(text,TEXT(" T/\xB0sC "));
+  _stprintf(text,TEXT(" T/%sC "), gettext(_T("_@M2179_")));
   DrawXLabel(hdc, rc, text);
   _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
   DrawYLabel(hdc, rc, text);

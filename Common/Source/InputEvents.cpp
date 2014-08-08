@@ -11,10 +11,6 @@
 #include "LKInterface.h"
 #include "Terrain.h"
 #include "LKProfiles.h"
-
-#include <commctrl.h>
-#include <aygshell.h>
-
 #include "InfoBoxLayout.h"
 #include "LKProcess.h"
 #include "Atmosphere.h"
@@ -709,7 +705,7 @@ bool InputEvents::processKey(int dWord) {
 // VENTA- DEBUG HARDWARE KEY PRESSED   
 #ifdef VENTA_DEBUG_KEY
 	TCHAR ventabuffer[80];
-	wsprintf(ventabuffer,TEXT("PRCKEY %d MODE %d EVENT %d"), dWord, mode,event_id);
+	_stprintf(ventabuffer,TEXT("PRCKEY %d MODE %d EVENT %d"), dWord, mode,event_id);
 	DoStatusMessage(ventabuffer);
 #endif
   if (event_id == 0) {
@@ -1434,7 +1430,7 @@ void InputEvents::eventTimeGates(const TCHAR *misc) {
 void InputEvents::eventMyMenu(const TCHAR *misc) {
 
   unsigned int i, ckeymode;
-  i=_ttoi(misc);
+  i=_tcstoul(misc, NULL, 10);
   LKASSERT(i>0 && i<11);
 
   // test mode only!
@@ -1837,8 +1833,8 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	return;
   }
 
-  _stprintf(mbuf,_T("%.0f%s from %.0f")TEXT(DEG)_T("\n\nAccept and save?"), 
-	wspeed/3.6*SPEEDMODIFY, Units::GetHorizontalSpeedName(), wfrom);
+  _stprintf(mbuf,_T("%.0f%s from %.0f%s\n\nAccept and save?"), 
+	wspeed/3.6*SPEEDMODIFY, Units::GetHorizontalSpeedName(), wfrom, gettext(_T("_@M2179_")));
 
 #if 0
   if (reswp<80) _stprintf(ttmp,_T("TrueWind! Quality: low"));
@@ -2892,7 +2888,7 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
 void InputEvents::eventUserDisplayModeForce(const TCHAR *misc){
 
   TCHAR tmode[50];
-  wsprintf(tmode,_T("%s: "), MsgToken(2249));
+  _stprintf(tmode,_T("%s: "), MsgToken(2249));
 
   if (_tcscmp(misc, TEXT("unforce")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE);
@@ -2991,7 +2987,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   if (new_waypoint) {
     tmpWaypointNum++;
     memcpy(new_waypoint,&edit_waypoint,sizeof(WAYPOINT));
-    wsprintf(new_waypoint->Name,TEXT("_%d"), tmpWaypointNum);
+    _stprintf(new_waypoint->Name,TEXT("_%d"), tmpWaypointNum);
     new_waypoint->Details= 0;
   }
   UnlockTaskData();

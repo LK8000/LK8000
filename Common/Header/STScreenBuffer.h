@@ -14,7 +14,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "StdAfx.h"
+#include "externs.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // BGRColor structure encapsulates color information about one point. Color
