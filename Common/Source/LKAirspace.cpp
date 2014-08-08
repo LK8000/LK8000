@@ -12,6 +12,7 @@
 #include "dlgTools.h"
 
 #include <ctype.h>
+ #include <utility>
 
 #include <Point2D.h>
 #include "md5.h"
@@ -70,18 +71,18 @@ int CAirspace::_nearestvdistance = 0; // for infobox
 TCHAR* CAirspace::_nearesthname = NULL; // for infobox
 TCHAR* CAirspace::_nearestvname = NULL; // for infobox
 #endif
-bool CAirspace::_pos_in_flyzone = false; // for refine warnings in flyzones
-bool CAirspace::_pred_in_flyzone = false; // for refine warnings in flyzones
-bool CAirspace::_pos_in_acked_nonfly_zone = false; // for refine warnings in flyzones
-bool CAirspace::_pred_in_acked_nonfly_zone = false; // for refine warnings in flyzones
-int CAirspace::_now = 0; // gps time saved
-int CAirspace::_hdistancemargin = 0; // calculated horizontal distance margin to use
-CPoint2D CAirspace::_lastknownpos(0, 0); // last known position saved for calculations
-int CAirspace::_lastknownalt = 0; // last known alt saved for calculations
-int CAirspace::_lastknownagl = 0; // last known agl saved for calculations
-int CAirspace::_lastknownheading = 0; // last known heading saved for calculations
-int CAirspace::_lastknowntrackbearing = 0; // last known track bearing saved for calculations
-bool CAirspace::_pred_blindtime = true; // disable predicted position based warnings near takeoff, and other conditions
+bool CAirspaceBase::_pos_in_flyzone = false; // for refine warnings in flyzones
+bool CAirspaceBase::_pred_in_flyzone = false; // for refine warnings in flyzones
+bool CAirspaceBase::_pos_in_acked_nonfly_zone = false; // for refine warnings in flyzones
+bool CAirspaceBase::_pred_in_acked_nonfly_zone = false; // for refine warnings in flyzones
+int CAirspaceBase::_now = 0; // gps time saved
+int CAirspaceBase::_hdistancemargin = 0; // calculated horizontal distance margin to use
+CPoint2D CAirspaceBase::_lastknownpos(0, 0); // last known position saved for calculations
+int CAirspaceBase::_lastknownalt = 0; // last known alt saved for calculations
+int CAirspaceBase::_lastknownagl = 0; // last known agl saved for calculations
+int CAirspaceBase::_lastknownheading = 0; // last known heading saved for calculations
+int CAirspaceBase::_lastknowntrackbearing = 0; // last known track bearing saved for calculations
+bool CAirspaceBase::_pred_blindtime = true; // disable predicted position based warnings near takeoff, and other conditions
 CAirspace* CAirspace::_sideview_nearest_instance = NULL; // collect nearest airspace instance for sideview during warning calculations
 
 //
@@ -107,27 +108,20 @@ void CAirspace::Dump() const {
 
 }
 
-const TCHAR* CAirspace::TypeName(void) const {
+const TCHAR* CAirspaceBase::TypeName(void) const {
     return (CAirspaceManager::Instance().GetAirspaceTypeText(_type));
 
 };
 
-COLORREF CAirspace::TypeColor(void) const {
+COLORREF CAirspaceBase::TypeColor(void) const {
     return MapWindow::GetAirspaceColourByClass(_type);
 }
 
-HBRUSH CAirspace::TypeBrush(void) const {
+HBRUSH CAirspaceBase::TypeBrush(void) const {
     return MapWindow::GetAirspaceBrushByClass(_type);
 }
 
-
-// Calculate unique hash code for this airspace - prototype, normally never called
-
-void CAirspace::Hash(char *hashout, int maxbufsize) const {
-    *hashout = 0;
-}
-
-void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const {
+void CAirspaceBase::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const {
     double base_out = _base.Altitude;
     double top_out = _top.Altitude;
 
@@ -156,7 +150,7 @@ void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_
 
 // Called when QNH changed
 
-void CAirspace::QnhChangeNotify() {
+void CAirspaceBase::QnhChangeNotify() {
     if (_top.Base == abFL) _top.Altitude = AltitudeToQNHAltitude((_top.FL * 100) / TOFEET);
     if (_base.Base == abFL) _base.Altitude = AltitudeToQNHAltitude((_base.FL * 100) / TOFEET);
 }
@@ -173,7 +167,7 @@ inline bool CheckInsideLongitude(const double &longitude, const double &lon_min,
 
 // returns true if the given altitude inside this airspace + alt extension
 
-bool CAirspace::IsAltitudeInside(int alt, int agl, int extension) const {
+bool CAirspaceBase::IsAltitudeInside(int alt, int agl, int extension) const {
     return (
             ((((_base.Base != abAGL) && (alt >= (_base.Altitude - extension)))
             || ((_base.Base == abAGL) && (agl >= (_base.AGL - extension)))))
@@ -592,13 +586,13 @@ bool CAirspace::FinishWarning() {
 
 // Set ack timeout to configured value
 
-void CAirspace::SetAckTimeout() {
+void CAirspaceBase::SetAckTimeout() {
     _warnacktimeout = _now + AcknowledgementTime;
 }
 
 // Gets calculated distances, returns true if distances valid
 
-bool CAirspace::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const {
+bool CAirspaceBase::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const {
     if (_distances_ready) {
         Bearing = _bearing;
         hDistance = _hdistance;
@@ -611,7 +605,7 @@ bool CAirspace::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int 
 
 // Get warning point coordinates, returns true if distances valid
 
-bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const {
+bool CAirspaceBase::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const {
     if (_distances_ready && _enabled) {
         if (_flyzone && !_pos_inside_now) return false; // no warning labels if outside a flyzone
 
@@ -647,7 +641,7 @@ bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWar
 /******************************************************
  * compare name and type for gruping airspaces
  ******************************************************/
-bool CAirspace::IsSame(CAirspace &as2) {
+bool CAirspaceBase::IsSame(CAirspaceBase &as2) {
     bool ret = false;
     if (_type == as2.Type())
         if (_tcscmp((_name), (as2.Name())) == 0)
@@ -719,7 +713,7 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance, 
 
 // Reset warnings, if airspace outside calculation scope
 
-void CAirspace::ResetWarnings() {
+void CAirspaceBase::ResetWarnings() {
     _warninglevel = awNone;
     _warninglevelold = awNone;
     _distances_ready = false;
@@ -727,12 +721,29 @@ void CAirspace::ResetWarnings() {
 
 // Initialize instance attributes
 
-void CAirspace::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone) {
+void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone) {
     LK_tcsncpy(_name, name, NAME_SIZE);
     _type = type;
     memcpy(&_base, &base, sizeof (_base));
     memcpy(&_top, &top, sizeof (_top));
     _flyzone = flyzone;
+}
+
+void CAirspace::ClipScreenPoint(const RECT& rcDraw) {
+    // add extra point for final point if it doesn't equal the first
+    // this is required to close some airspace areas that have missing
+    // final point
+    if ((_screenpoints[_screenpoints.size() - 1].x != _screenpoints[0].x) || (_screenpoints[_screenpoints.size() - 1].y != _screenpoints[0].y)) {
+        _screenpoints.push_back(_screenpoints[0]);
+    }
+
+    _screenpoints_clipped.clear();
+    _screenpoints_clipped.reserve(_screenpoints.size());
+
+    LKGeom::ClipPolygon((POINT) {
+        rcDraw.left, rcDraw.top}, (POINT) {
+        rcDraw.right, rcDraw.bottom
+    }, _screenpoints, _screenpoints_clipped);
 }
 
 
@@ -867,12 +878,8 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
 
                 buildCircle(_screencenter, _screenradius, _screenpoints);
 
-                _screenpoints_clipped.clear();
 
-                LKGeom::ClipPolygon((POINT) {
-                    rcDraw.left, rcDraw.top}, (POINT) {
-                    rcDraw.right, rcDraw.bottom
-                }, _screenpoints, _screenpoints_clipped);
+                ClipScreenPoint(rcDraw);
             }
         }
     }
@@ -880,7 +887,7 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
 
 // Draw airspace
 
-void CAirspace_Circle::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
+void CAirspace::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
     size_t outLength = _screenpoints_clipped.size();
     const POINT * clip_ptout = &(*_screenpoints_clipped.begin());
 
@@ -899,14 +906,17 @@ void CAirspace_Circle::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
 //
 // CAIRSPACE AREA CLASS
 //
+CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace(), _geopoints(Area_Points) {
+    CalcBounds();
+    AirspaceAGLLookup((_bounds.miny + _bounds.maxy) / 2.0, (_bounds.minx + _bounds.maxx) / 2.0, &_base.Altitude, &_top.Altitude);
+}
+
+
 // Dumps object instance to Runtime.log
-
 void CAirspace_Area::Dump() const {
-    CPoint2DArray::const_iterator i;
-
     StartupStore(TEXT("CAirspace_Area Dump%s"), NEWLINE);
     CAirspace::Dump();
-    for (i = _geopoints.begin(); i != _geopoints.end(); ++i) {
+    for (CPoint2DArray::const_iterator i = _geopoints.begin(); i != _geopoints.end(); ++i) {
         StartupStore(TEXT("  Point lat:%f, lon:%f%s"), i->Latitude(), i->Longitude(), NEWLINE);
     }
 }
@@ -1057,17 +1067,6 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
     else return nearestdistance;
 }
 
-// Set polygon point list
-
-void CAirspace_Area::SetPoints(CPoint2DArray &Area_Points) {
-    POINT p;
-    _geopoints = Area_Points;
-    _screenpoints.clear();
-    for (unsigned int i = 0; i < _geopoints.size(); ++i) _screenpoints.push_back(p);
-    CalcBounds();
-    AirspaceAGLLookup((_bounds.miny + _bounds.maxy) / 2.0, (_bounds.minx + _bounds.maxx) / 2.0, &_base.Altitude, &_top.Altitude);
-}
-
 // Calculate airspace bounds
 
 void CAirspace_Area::CalcBounds() {
@@ -1153,20 +1152,8 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
                  * ULLI new code ends here
                  *******************************/
 #endif
-                // add extra point for final point if it doesn't equal the first
-                // this is required to close some airspace areas that have missing
-                // final point
-                if ((_screenpoints[_screenpoints.size() - 1].x != _screenpoints[0].x) || (_screenpoints[_screenpoints.size() - 1].y != _screenpoints[0].y)) {
-                    _screenpoints.push_back(_screenpoints[0]);
-                }
-
-                _screenpoints_clipped.clear();
-                _screenpoints_clipped.reserve(_screenpoints.size());
-
-                LKGeom::ClipPolygon((POINT) {
-                    rcDraw.left, rcDraw.top}, (POINT) {
-                    rcDraw.right, rcDraw.bottom
-                }, _screenpoints, _screenpoints_clipped);
+                ClipScreenPoint(rcDraw);
+                
 #if DEBUG_NEAR_POINTS
                 StartupStore(_T("... area point geo %i screen %i\n"), _geopoints.size(), _screenpoints.size());
 #endif
@@ -1175,24 +1162,6 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
     }
 }
 
-// Draw airspace
-
-void CAirspace_Area::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
-
-    size_t outLength = _screenpoints_clipped.size();
-    const POINT * clip_ptout = &(*_screenpoints_clipped.begin());
-
-    if (param1) {
-        if (outLength > 2) {
-            Polygon(hDCTemp, clip_ptout, outLength);
-        }
-    } else {
-        if (outLength > 1) {
-            Polyline(hDCTemp, clip_ptout, outLength);
-        }
-    }
-
-}
 //
 // CAIRSPACEMANAGER CLASS
 //
@@ -1627,8 +1596,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                     CorrectGeoPoints(points);
                                     // Skip it if we dont have minimum 3 points
                                     if (points.size() > 3) {
-                                        newairspace = new CAirspace_Area;
-                                        newairspace->SetPoints(points);
+                                        newairspace = new CAirspace_Area(std::move(points));
                                     }
                                 }
                             }
@@ -1813,8 +1781,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
             // Skip it if we dont have minimum 3 points
             if (points.size() < 3) {
             }
-            newairspace = new CAirspace_Area();
-            newairspace->SetPoints(points);
+            newairspace = new CAirspace_Area(std::move(points));
         }
         newairspace->Init(Name, Type, Base, Top, flyzone);
         CCriticalSection::CGuard guard(_csairspaces);
@@ -2517,7 +2484,7 @@ CAirspaceList CAirspaceManager::GetAirspacesInWarning() const {
 // NOTE: virtual methods don't work on copied instances!
 //       they have to be mapped through airspacemanager class because of the mutex
 
-CAirspace CAirspaceManager::GetAirspaceCopy(const CAirspace* airspace) const {
+CAirspaceBase CAirspaceManager::GetAirspaceCopy(const CAirspaceBase* airspace) const {
     LKASSERT(airspace != NULL);
     CCriticalSection::CGuard guard(_csairspaces);
     return *airspace;

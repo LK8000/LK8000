@@ -16,7 +16,7 @@
 #include "LKObjects.h"
 
 static CAirspace *airspace = NULL;
-static CAirspace airspace_copy;
+static CAirspaceBase airspace_copy;
 static WndForm *wf=NULL;
 COLORREF ContrastTextColor(COLORREF Col);
 static void SetValues(void);

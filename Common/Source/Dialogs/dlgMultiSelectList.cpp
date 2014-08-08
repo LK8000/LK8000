@@ -245,7 +245,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
 #define PICTO_WIDTH 50
     if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex >= 0)) {
         int j;
-        static CAirspace airspace_copy;
+        static CAirspaceBase airspace_copy;
         int i = DrawListIndex;
         LKASSERT(i < MAX_LIST_ITEMS);
         RECT rc = {0 * ScreenScale, 0 * ScreenScale, PICTO_WIDTH*ScreenScale, 34 * ScreenScale};

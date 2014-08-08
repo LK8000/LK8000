@@ -55,7 +55,7 @@ static double fHeigtScaleFact = 1.0;
   TCHAR text[TBSIZE+1];
   TCHAR buffer[TBSIZE+1];
 
-  CAirspace near_airspace;
+  CAirspaceBase near_airspace;
   CAirspace *found = NULL;
 //  bool bFound = false;
   DiagrammStruct sDia;

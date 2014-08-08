@@ -47,7 +47,7 @@ AirSpaceSonarLevelStruct sSonarLevel[10] = {
 // This function can manage more than 1 airspace as Input. 
 // However currently we only use one, the closest.
 //
-int CalcSonarDelay (const int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[], int iAltitudeAGL, int iAltitude)
+int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAltitudeAGL, int iAltitude)
 {
   int iAS_HorDist;
   int iAS_VertDist;
@@ -57,8 +57,6 @@ int CalcSonarDelay (const int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[], int i
   bool bOK = false;
 
   int iTreadLevel;
-//  CAirspace SelectedAS;
-  CAirspace *sel_pasp = NULL;
 
   int	iH_Level = 1000;
   int	iV_Level = 1000;
@@ -68,7 +66,7 @@ int CalcSonarDelay (const int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[], int i
   for( i =  0 ; i < iNoAs ; i++)
   {
 
-	sel_pasp =	asAirspaces[i].psAS;
+	const CAirspaceBase* sel_pasp =	asAirspaces[i];
 	if(sel_pasp != NULL)
 	{
 		//SelectedAS = CAirspaceManager::Instance().GetAirspaceCopy( sel_pasp );
@@ -174,8 +172,7 @@ void MapWindow::DoSonar(void) {
 	#endif
 	return;
   }
-  CAirspace near_airspace;
-  near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(aspfound);
+  CAirspaceBase near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(aspfound);
 
   // we dont use these at all
   bool bAS_Inside;
@@ -187,9 +184,8 @@ void MapWindow::DoSonar(void) {
 	int iSonarLevel=0;
 	if(ISCAR||ISGAAIRCRAFT||SIMMODE||DerivedDrawInfo.FreeFlying)
 	{
-		AirSpaceSideViewSTRUCT tmpasp;
-		tmpasp.psAS =  &near_airspace;
-		iSonarLevel = CalcSonarDelay( 1, &tmpasp, 
+		const CAirspaceBase* pAs = &near_airspace;
+		iSonarLevel = CalcSonarDelay( 1, &pAs, 
 			(int)DerivedDrawInfo.AltitudeAGL, (int)DerivedDrawInfo.NavAltitude);
 
 		#if DEBUG_SONAR

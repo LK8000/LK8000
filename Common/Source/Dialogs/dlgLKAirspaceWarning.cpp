@@ -17,7 +17,7 @@
 
 extern HWND   hWndMainWindow;
 extern HWND   hWndMapWindow;
-CAirspace airspace_copy;
+CAirspaceBase airspace_copy;
 AirspaceWarningMessage msg;
 int timer_counter;
 

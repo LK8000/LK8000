@@ -77,11 +77,10 @@ typedef enum {awsHidden, awsBlack, awsAmber, awsRed } AirspaceWarningDrawStyle_t
 // 
 // AIRSPACE BASE CLASS
 //
-
-class CAirspace 
+class CAirspaceBase
 {
 public:
-  CAirspace() :
+  CAirspaceBase() :
             _name(),
             _type( 0 ),
             _base(),
@@ -108,40 +107,16 @@ public:
             _enabled(true),
             _selected(false)
             {}
-  virtual ~CAirspace() {}
+  virtual ~CAirspaceBase() {}
 
 
-  // Check if a point horizontally inside in this airspace
-  virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const { return false; }
   // Check if an altitude vertically inside in this airspace
-          bool IsAltitudeInside(int alt, int agl, int extension=0) const;
-  // Set polygon points
-  virtual void SetPoints(CPoint2DArray &area_points) {}
-  // Dump this airspace to runtime.log
-  virtual void Dump() const;
-  // Calculate drawing coordinates on screen
-  virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) {}
-  // Draw airspace on map
-  virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const {}
-
-
-  // Calculate nearest horizontal distance and bearing to the airspace from a given point
-  virtual double Range(const double &longitude, const double &latitude, double &bearing) const { return 0.0; }
-  // Calculate unique hash code for this airspace
-  virtual void Hash(char *hashout, int maxbufsize) const;
+  bool IsAltitudeInside(int alt, int agl, int extension=0) const;
   // QNH change nofitier, called when global qhn changed
   void QnhChangeNotify();
   // compare airspce name and type for grouping
-  bool IsSame( CAirspace &as2 );
+  bool IsSame( CAirspaceBase &as2 );
   // Warning system
-  // Step1: At the start of warning calculation, set class attributes to init values
-  static void StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-  // Step2: Calculate warning level on airspace based on last/next/predicted position
-  void CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-  // Step3: Second pass warning level calculation on airspace
-  bool FinishWarning();
-  // Calculate airspace distance from last known position (used by warning system and dialog boxes)
-  bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude = _lastknownpos.Longitude(), double Latitude  = _lastknownpos.Latitude(), int Altitude = _lastknownalt );
   // Set ack validity timeout according to config prameter
   void SetAckTimeout();
   // get nearest distance info to this airspace, returns true if distances calculated by warning system
@@ -207,9 +182,6 @@ public:
   static int GetNearestVDistance() { return _nearestvdistance; }
 #endif
 
-  static void ResetSideviewNearestInstance() { _sideview_nearest_instance = NULL; }
-  static CAirspace* GetSideviewNearestInstance() { return _sideview_nearest_instance; }
-
 protected:
   TCHAR _name[NAME_SIZE + 1];                    // Name
   int _type;                                    // type (class) of airspace
@@ -263,18 +235,59 @@ protected:
   static int _lastknownheading;                // last known heading saved for calculations
   static int _lastknowntrackbearing;           // last known track bearing saved for calculations
   static bool _pred_blindtime;                 // disable predicted position based warnings near takeoff
-  static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
-  
-  
-////////////////////////////////////////////////////////////////////////////////
-// Draw Picto methods
-//  this methods are NEVER used at same time of airspace loading
-//  therefore we can be considered is thread safe
+};
+
+class CAirspace : public CAirspaceBase {
 public:
-  virtual void DrawPicto(HDC hDCTemp, const RECT &rc) const ;
+
+    CAirspace() : CAirspaceBase() { }
+
+    virtual ~CAirspace() { }
+
+    // Check if a point horizontally inside in this airspace
+    virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const = 0;
+    // Dump this airspace to runtime.log
+    virtual void Dump() const = 0;
+    // Calculate drawing coordinates on screen
+    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) = 0;
+    // Draw airspace on map
+    virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
+    // Calculate nearest horizontal distance and bearing to the airspace from a given point
+    virtual double Range(const double &longitude, const double &latitude, double &bearing) const  = 0;
+    // Calculate unique hash code for this airspace
+    virtual void Hash(char *hashout, int maxbufsize) const = 0;
+    
+    // Warning system
+    // Step1: At the start of warning calculation, set class attributes to init values
+    static void StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+    // Step2: Calculate warning level on airspace based on last/next/predicted position
+    void CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+    // Step3: Second pass warning level calculation on airspace
+    bool FinishWarning();
+    // Calculate airspace distance from last known position (used by warning system and dialog boxes)
+    bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude = _lastknownpos.Longitude(), double Latitude  = _lastknownpos.Latitude(), int Altitude = _lastknownalt );
+    
+    static void ResetSideviewNearestInstance() { _sideview_nearest_instance = NULL; }
+    static CAirspace* GetSideviewNearestInstance() { return _sideview_nearest_instance; }
+    
 protected:
-  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, POINTList &screenpoints_picto) const;
-////////////////////////////////////////////////////////////////////////////////  
+    void ClipScreenPoint(const RECT& rcDraw);
+    
+    // this 2 array is modified by DrawThread, never use it in another thread !!
+    POINTList _screenpoints;
+    POINTList _screenpoints_clipped;        // screen coordinates
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    // Draw Picto methods
+    //  this methods are NEVER used at same time of airspace loading
+    //  therefore we can be considered is thread safe
+public:
+    virtual void DrawPicto(HDC hDCTemp, const RECT &rc) const;
+protected:
+    virtual void CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList &screenpoints_picto) const = 0;
+    ////////////////////////////////////////////////////////////////////////////////  
+
+    static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
 };
 
 typedef struct
@@ -326,19 +339,16 @@ typedef struct
 //
 class CAirspace_Area: public CAirspace {
 public:
-  CAirspace_Area() : CAirspace() {}
+  CAirspace_Area(CPoint2DArray &&Area_Points);
   virtual ~CAirspace_Area() {};
 
   // Check if a point horizontally inside in this airspace
   virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const;
-  // Set polygon points
-  virtual void SetPoints(CPoint2DArray &area_points);
   // Dump this airspace to runtime.log
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
-  // Draw airspace on map
-  virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
+
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
   // Calculate unique hash code for this airspace
@@ -346,10 +356,6 @@ public:
 
 private:
   CPoint2DArray _geopoints;        // polygon points
-
-  // this 2 array is modified by DrawThread, never use it in another thread !!
-  POINTList _screenpoints;
-  POINTList _screenpoints_clipped;        // screen coordinates
 
   // Winding number calculation to check a point is horizontally inside polygon
   int wn_PnPoly( const double &longitude, const double &latitude ) const;
@@ -380,8 +386,7 @@ public:
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify);
-  // Draw airspace on map
-  virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
+
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
   // Calculate unique hash code for this airspace
@@ -393,10 +398,6 @@ private:
   double _latcenter;        // center point latitude
   double _loncenter;        // center point longitude
   double _radius;            // radius
-
-  // this 2 array is modified by DrawThread, never use it in another thread !!
-  POINTList _screenpoints;
-  POINTList _screenpoints_clipped;        // screen coordinates
 
   // Bound calculation helper function
   void ScanCircleBounds(double bearing);
@@ -483,7 +484,7 @@ public:
   const CAirspaceList GetAllAirspaces() const;
   const CAirspaceList& GetAirspacesForWarningLabels();
   CAirspaceList GetAirspacesInWarning() const;
-  CAirspace GetAirspaceCopy(const CAirspace* airspace) const;
+  CAirspaceBase GetAirspaceCopy(const CAirspaceBase* airspace) const;
   bool AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
   void AirspaceSetSelect(CAirspace &airspace);
   
