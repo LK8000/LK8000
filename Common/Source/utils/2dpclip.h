@@ -188,7 +188,7 @@ namespace LKGeom {
         }
  
         void CP_2D_polygon_clip(const polygon& inPoly, polygon& outPoly) {
-            register int j;
+            register unsigned j;
             register Upoint *pt_Cp_start = &Cp_start;
             register Upoint *pt_Cp_end = &Cp_end;
 
