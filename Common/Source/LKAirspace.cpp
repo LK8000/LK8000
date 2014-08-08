@@ -2141,7 +2141,7 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
     return found;
 }
 
-bool airspace_sorter(CAirspace *a, CAirspace *b) {
+inline bool airspace_sorter(const CAirspace *a, const CAirspace *b) {
     return (a->Top()->Altitude < b->Top()->Altitude);
 }
 
@@ -2481,7 +2481,7 @@ const CAirspaceList CAirspaceManager::GetAllAirspaces() const {
 
 // Comparer to sort airspaces based on label priority for drawing labels
 
-bool airspace_label_priority_sorter(CAirspace *a, CAirspace *b) {
+inline bool airspace_label_priority_sorter(const CAirspace *a, const CAirspace *b) {
     return a->LabelPriority() > b->LabelPriority();
 }
 
@@ -2531,7 +2531,7 @@ bool CAirspaceManager::AirspaceCalculateDistance(CAirspace *airspace, int *hDist
     return airspace->CalculateDistance(hDistance, Bearing, vDistance);
 }
 
-bool warning_queue_sorter(AirspaceWarningMessage a, AirspaceWarningMessage b) {
+inline bool warning_queue_sorter(const AirspaceWarningMessage& a, const AirspaceWarningMessage& b) {
     return (a.warnlevel > b.warnlevel);
 }
 
