@@ -1,0 +1,26 @@
+----------------
+- Version 5.1A - 
+----------------
+
+Screen : 
+  - Transpareny for bottom bar and airspace drawing can be use on all device
+  - Screen rotate feature inside LK turn only LK8000 display orientation, orientation of device shell is restored on LK8000 shutdown  
+
+Glide computer : 
+  - Aispeed accuracy for Glider polar is now 0.5m/s instead of 1m/s previously
+  - Improved accuracy of Speed to Fly calculation
+
+Task :
+  - New Conical ESS turnpoint type for PG optimized task
+      Best speed / climb rate for reach this turnpoint is displayed inside analysis / glidepolar screen.
+      Cone slope is draw on next turnpoint "side view".
+      AutoMC and Speed to fly take account of Conical ESS in Final Glide.
+      Default "Base Altitude" for this turnpoint is Altitude of turnpoint.
+  - Requiered speed for reach start on Time Gate Overlay, 
+      "---" is diplayed when speed is to slow, "oo" when speed is too fast.
+
+Simulator : 
+  - New netto vario parameter in integrated simulator.
+ 
+Auto Zoom : 
+  - Now autozoom is calcuated using "optimized turnpoint" (or AAT Target point) instead of center previously.
