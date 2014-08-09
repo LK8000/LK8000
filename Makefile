@@ -273,8 +273,8 @@ ifeq ($(INT_OVERFLOW), y)
 	CPPFLAGS	+=-ftrapv -DINT_OVERFLOW
 endif
 
-CXXFLAGS	:= -std=c++0x $(OPTIMIZE) $(PROFILE)
-CFLAGS		:=$(OPTIMIZE) $(PROFILE)
+CXXFLAGS	:= -std=gnu++0x $(OPTIMIZE) $(PROFILE)
+CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration
 
