@@ -12,6 +12,7 @@
 #include "dlgTools.h"
 #include "TraceThread.h"
 #include <ctype.h>
+#include <utils/stl_utils.h>
 
 // #define DEBUG_LOGGER	1
 
@@ -21,15 +22,14 @@
     #define HFGIDGLIDERID           "HFGIDGLIDERID:%S\r\n"
     #define HFCCLCOMPETITIONCLASS   "HFCCLCOMPETITIONCLASS:%S\r\n"
     #define HFCIDCOMPETITIONID      "HFCIDCOMPETITIONID:%S\r\n"
-    #define HFREMARK                "HFREMARK:%S\r\n"
 #else
     #define HFPLTPILOT              "HFPLTPILOT:%s\r\n"
     #define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%s\r\n"
     #define HFGIDGLIDERID           "HFGIDGLIDERID:%s\r\n"
     #define HFCCLCOMPETITIONCLASS   "HFCCLCOMPETITIONCLASS:%s\r\n"
     #define HFCIDCOMPETITIONID      "HFCIDCOMPETITIONID:%s\r\n"
-    #define HFREMARK                "HFREMARK:%s\r\n"
 #endif
+#define HFREMARK                "HFREMARK:%s\r\n"
 
 #define LOGGER_MANUFACTURER	"XLK"
 
@@ -1155,38 +1155,29 @@ char * CleanIGCRecord (char * szIn)
   return szIn;
 }
 
-bool IGCWriteRecord(char *szIn) 
-{
-  HANDLE hFile;
-  DWORD dwBytesRead;
-  char charbuffer[MAX_IGC_BUFF];
-  bool bRetVal = false;
+bool IGCWriteRecord(const char *szIn) {
+    char charbuffer[MAX_IGC_BUFF];
+    bool bRetVal = false;
 
-  static BOOL bWriting = false;
+    static bool bWriting = false;
 
-  // THIS IS NOT A SOLUTION. DATA LOSS GRANTED.
-  if ( !bWriting )
-    {
-      bWriting = true;
+    // THIS IS NOT A SOLUTION. DATA LOSS GRANTED.
+    if (!bWriting) {
+        bWriting = true;
 
-      hFile = CreateFile(szLoggerFileName, GENERIC_WRITE, FILE_SHARE_WRITE,
-			 NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-      SetFilePointer(hFile, 0, NULL, FILE_END);
-    
-      strcpy(charbuffer, CleanIGCRecord(szIn));
-
-      WriteFile(hFile, charbuffer, strlen(charbuffer), &dwBytesRead,
-		(OVERLAPPED *)NULL);
-
-
-      FlushFileBuffers(hFile);
-      CloseHandle(hFile);
-      bWriting = false;
-      bRetVal = true;
+        FILE* stream = _tfopen(szLoggerFileName, _T("ab"));
+        if (stream) {
+            strncpy(charbuffer, szIn, array_size(charbuffer));
+            charbuffer[array_size(charbuffer) - 1] = '\0';
+            CleanIGCRecord(charbuffer);
+            fwrite(charbuffer, sizeof(charbuffer[0]), strlen(charbuffer), stream);
+            fflush(stream);
+            fclose(stream);
+            bRetVal = true;
+        }
+        bWriting = false;
     }
-
-  return bRetVal;
-
+    return bRetVal;
 }
 
 
@@ -1288,84 +1279,52 @@ int RunSignature() {
 //
 // Paolo+Durval: feed external headers to LK for PNAdump software
 //
+#define MAXHLINE 100  
 #define EXTHFILE	"COMPE.CNF"
 //#define DEBUGHFILE	1
 
 void AdditionalHeaders(void) {
 
-  TCHAR pathfilename[MAX_PATH+1];
-  _stprintf(pathfilename, TEXT("%s\\%s\\%s"), LKGetLocalPath(), TEXT(LKD_LOGS), _T(EXTHFILE));
+    TCHAR pathfilename[MAX_PATH + 1];
+    _stprintf(pathfilename, TEXT("%s\\%s\\%s"), LKGetLocalPath(), TEXT(LKD_LOGS), _T(EXTHFILE));
 
-  if (!lk::filesystem::exist(pathfilename)) {
-	#if DEBUGHFILE
-	StartupStore(_T("... No additional headers file <%s>\n"),pathfilename);
-	#endif
-	return;
-  }
+    if (!lk::filesystem::exist(pathfilename)) {
+#if DEBUGHFILE
+        StartupStore(_T("... No additional headers file <%s>\n"), pathfilename);
+#endif
+        return;
+    }
 
-  #if DEBUGHFILE
-  StartupStore(_T("... HFILE <%s> FOUND\n"),pathfilename);
-  #endif
+#if DEBUGHFILE
+    StartupStore(_T("... HFILE <%s> FOUND\n"), pathfilename);
+#endif
 
-  HANDLE hfile = CreateFile(pathfilename, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-  if( hfile == INVALID_HANDLE_VALUE) {
-	StartupStore(_T("... ERROR, extHFILE <%s> not found!%s"),pathfilename,NEWLINE);
-	return;
-  }
-
-  #define MAXHLINE 100
-  TCHAR tmpString[MAXHLINE+1];
-  char tmps[MAXHLINE+1];
-  //char line[MAXHLINE+12];
-  tmpString[0]=0;
+    FILE* stream = _tfopen(pathfilename, _T("rb"));
+    if (!stream) {
+        StartupStore(_T("... ERROR, extHFILE <%s> not found!%s"), pathfilename, NEWLINE);
+        return;
+    }
 
 
-  while (ReadString(hfile, MAXHLINE, tmpString)) {
-	size_t len = _tcslen(tmpString);
+    char tmpString[MAXHLINE + 1];
+    char tmps[MAXHLINE + 1];
+    tmpString[MAXHLINE] = '\0';
+    
+    while(size_t nbRead = fread(tmpString, sizeof(tmpString[0]), array_size(tmpString) - 1U, stream)) {
+        tmpString[nbRead] = '\0';
+        char* pTmp = strpbrk(tmpString, "\r\n");
+        while(pTmp && (((*pTmp) == '\r') || ((*pTmp) == '\n'))) {
+            (*pTmp++) = '\0';
+        }
+        fseek(stream, -1 * (&tmpString[nbRead] - pTmp) ,SEEK_CUR); 
+        
+        size_t len = strlen(tmpString);
+        if ((len < 2) || (tmpString[0] != '$')) {
+            continue;
+        }
 
-	if (len < 2) continue;
-	if (tmpString[0]!='$' ) {
-		#if DEBUGHFILE
-		StartupStore(_T("Line skipped: <%s>\n"),tmpString);
-		#endif
-		continue;
-	}
-
-	// Remove trailing cr lf, three times to be sure
-	if ( (tmpString[len - 1] == '\r') || (tmpString[len-1]== '\n')) {
-		tmpString[len - 1]= 0;
-		len--;
-	}
-	if (len > 0) {
-		if ( (tmpString[len - 1] == '\r') || (tmpString[len-1]== '\n')) {
-			tmpString[len - 1]= 0;
-			len--;
-		}
-	}
-	if (len > 0) {
-		if ( (tmpString[len - 1] == '\r') || (tmpString[len-1]== '\n')) {
-			tmpString[len - 1]= 0;
-		}
-	}
-
-	#if DEBUGHFILE
-	StartupStore(_T("ADDING HEADER <%s>\n"),tmpString);
-	#endif
-
-	/*
-	unicode2ascii(&tmpString[1],tmps,MAXHLINE);
-	strcpy(line,"HFREMARK:");
-	strcat(line,tmps);
-	strcat(line,"\r\n");
-	*/
-	sprintf(tmps,HFREMARK,&tmpString[1]);
-	
-	IGCWriteRecord(tmps);
-  }
-
-  CloseHandle(hfile);
-
+        sprintf(tmps, HFREMARK, &tmpString[1]);
+        IGCWriteRecord(tmps);
+    }
+    fclose(stream);
 }
-
-

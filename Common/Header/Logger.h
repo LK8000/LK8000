@@ -53,7 +53,7 @@ class ReplayLogger {
 
 bool LoggerClearFreeSpace();
 void StopLogger(void);
-bool IGCWriteRecord(char *szIn);
+bool IGCWriteRecord(const char *szIn);
 bool LoggerGActive();
 #define MAX_IGC_BUFF 255
 
