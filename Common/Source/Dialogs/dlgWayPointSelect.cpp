@@ -224,7 +224,7 @@ static void PrepareData(void){
     WayPointSelectInfo[numvalidwp].Distance *= DISTANCEMODIFY;
 
     LK_tcsncpy(sTmp, WayPointList[i].Name, 4);
-    _tcsupr(sTmp);
+    CharUpper(sTmp);
 
     WayPointSelectInfo[numvalidwp].FourChars =
                     (((DWORD)sTmp[0] & 0xff) << 24)
@@ -340,7 +340,7 @@ static void UpdateList(void){
         sizeof(WayPointSelectInfo_t), WaypointNameCompare);
 
     LK_tcsncpy(sTmp,sNameFilter, NAMEFILTERLEN);
-    _tcsupr(sTmp);
+    CharUpper(sTmp);
     int iFilterLen = _tcslen(sNameFilter);
 
     if (iFilterLen<GC_SUB_STRING_THRESHOLD)
@@ -350,7 +350,7 @@ static void UpdateList(void){
 
 	LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)NumberOfWayPoints);
 	LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
-	_tcsupr(wname);
+	CharUpper(wname);
 
       if (_tcsnicmp(wname,sTmp,iFilterLen) >= 0) {
         LowLimit = i;
@@ -363,7 +363,7 @@ static void UpdateList(void){
 
 	LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)NumberOfWayPoints);
 	LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
-	_tcsupr(wname);
+	CharUpper(wname);
 
         if (_tcsnicmp(wname,sTmp,iFilterLen) != 0) {
           UpLimit = i;
@@ -380,7 +380,7 @@ static void UpdateList(void){
 
 		LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)NumberOfWayPoints);
 		LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
-		_tcsupr(wname);
+		CharUpper(wname);
 
 		if ( _tcsstr(  wname,sTmp ) ) {
 			StrIndex[matches++]=i;
@@ -410,7 +410,7 @@ static void UpdateList(void){
     sTmp[0] = NameFilter[NameFilterIdx];
     sTmp[1] = '\0';
     sTmp[2] = '\0';
-    _tcsupr(sTmp);
+    CharUpper(sTmp);
     for (i=0; i<UpLimit; i++){
       if ((BYTE)(WayPointSelectInfo[i].FourChars >> 24) >= (sTmp[0]&0xff)){
         LowLimit = i;

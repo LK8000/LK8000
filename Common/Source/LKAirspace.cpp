@@ -1245,7 +1245,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const 
 
     LK_tcsncpy(sTmp, Text, sizeof (sTmp) / sizeof (sTmp[0]) - 1);
 
-    _tcsupr(sTmp);
+    CharUpper(sTmp);
 
     pToken = strtok_r(sTmp, TEXT(" "), &pWClast);
 
@@ -1564,7 +1564,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
         if (*p == 0) continue;
         //Skip comment lines
         if (*p == '*') continue;
-        _tcsupr(p);
+        CharUpper(p);
         // Strip comments and newline chars from end of line
         Comment = _tcschr(p, _T('*'));
         if (Comment != NULL) {

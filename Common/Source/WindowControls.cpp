@@ -219,7 +219,7 @@ bool DataFieldFileReader::checkFilter(const TCHAR *filename,
     }
   }
 
-  _tcsupr(upfilter);
+  CharUpper(upfilter);
   ptr = _tcsstr(filename, upfilter);
   if (ptr) {
     if (_tcslen(ptr)==_tcslen(upfilter)) {

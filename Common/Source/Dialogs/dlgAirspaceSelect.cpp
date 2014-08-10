@@ -168,7 +168,7 @@ static void PrepareData(void){
 	AirspaceSelectInfo[index].Direction = bearing;
 
     LK_tcsncpy(sTmp, (*it)->Name(), 4);
-    _tcsupr(sTmp);
+    CharUpper(sTmp);
 
     AirspaceSelectInfo[index].FourChars =
                     (((DWORD)sTmp[0] & 0xff) << 24)
@@ -241,7 +241,7 @@ static void UpdateList(void){
     sTmp[0] = NameFilter[NameFilterIdx];
     sTmp[1] = '\0';
     sTmp[2] = '\0';
-    _tcsupr(sTmp);
+    CharUpper(sTmp);
     for (i=0; i<UpLimit; i++){
       if ((BYTE)(AirspaceSelectInfo[i].FourChars >> 24) >= (sTmp[0]&0xff)){
         LowLimit = i;

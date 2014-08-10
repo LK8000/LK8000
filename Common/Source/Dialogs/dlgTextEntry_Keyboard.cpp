@@ -78,7 +78,7 @@ static void UpdateTextboxProp(void)
     }
     wp = (WndProperty*)wf->FindByName(TEXT("prpMatch"));; if(wp != NULL) wp->SetVisible(WaypointKeyRed);
 /*
-    _tcsupr(szLanguageFile);
+    CharUpper(szLanguageFile);
     BOOL bGerChar = false;
     if( _tcscmp(szLanguageFile,_T("GERMAN.LNG"))==0)
 	  bGerChar = true;
@@ -247,7 +247,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
   ClearText();
 
   if (_tcslen(text)>0) {
-    _tcsupr(text);
+    CharUpper(text);
     LK_tcsncpy(edittext, text, max_width-1);
     // show previous test.
     // this text is replaced by first key down

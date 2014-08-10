@@ -797,7 +797,7 @@ void AddDeclaration(double Latitude, double Longitude, TCHAR *ID)
 
   TCHAR tmpstring[MAX_PATH];
   _tcscpy(tmpstring, ID);
-  _tcsupr(tmpstring);
+  CharUpper(tmpstring);
   for(i=0;i<(int)_tcslen(tmpstring);i++)
     {
       IDString[i] = (char)tmpstring[i];
