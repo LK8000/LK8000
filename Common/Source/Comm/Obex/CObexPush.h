@@ -11,6 +11,7 @@
 #ifndef COBEXPUSH_H
 #define	COBEXPUSH_H
 
+#ifdef UNDER_CE
 #include "win32_obex.h"
 #include "boost/noncopyable.hpp" 
 #include <list>
@@ -39,6 +40,6 @@ private:
 	ObexDeviceList_t _LstDevice;
 	int _SavedBtState;
 };
-
+#endif
 #endif	/* COBEXPUSH_H */
 
