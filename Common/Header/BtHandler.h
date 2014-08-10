@@ -11,7 +11,7 @@
 
 #if !defined(_COMMON_BTHANDLER_H_)
 #define _COMMON_BTHANDLER_H_
-
+#ifndef NO_BLUETOOTH
 #include <list>
 #include "bthapi.h"
 #include "boost/noncopyable.hpp"
@@ -90,4 +90,5 @@ protected:
 	static CBtHandler* m_pBtHandler;
 };
 
+#endif
 #endif

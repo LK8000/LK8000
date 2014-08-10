@@ -13,6 +13,8 @@
 #include "utils/stl_utils.h"
 #include <functional>
 
+#ifndef NO_BLUETOOTH
+
 const std::tstring BTPortPrefix(_T("BT:"));
 
 std::tstring BTAddrToStr(BT_ADDR ba) {
@@ -195,3 +197,5 @@ void CBtHandler::ClearDevices() {
     std::for_each(m_devices.begin(), m_devices.end(), safe_delete());
     m_devices.clear();
 }
+
+#endif

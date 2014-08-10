@@ -258,8 +258,12 @@ static void UpdateButtons(void) {
 
   WndButton* wCmdBth = ((WndButton *)wf->FindByName(TEXT("cmdBth")));
   if(wCmdBth) {
+#ifdef NO_BLUETOOTH
+      wCmdBth->SetVisible(false);
+#else
       CBtHandler* pHandler = CBtHandler::Get();
       wCmdBth->SetVisible(pHandler && pHandler->IsOk());
+#endif
   }
 }
 
@@ -1566,7 +1570,7 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
 	}
   }
 }
-
+#ifndef NO_BLUETOOTH
 static void OnBthDevice(WindowControl * Sender) {
     (void) Sender;
     DlgBluetooth::Show();
@@ -1580,6 +1584,7 @@ static void OnBthDevice(WindowControl * Sender) {
     UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
 
 }
+#endif
 
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
     const TCHAR* PortPropName[][2] = { 
@@ -1681,7 +1686,9 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAspPermModified),
   DeclareCallBackEntry(OnLk8000ModeChange),
   DeclareCallBackEntry(OnGearWarningModeChange),
+#ifndef NO_BLUETOOTH
   DeclareCallBackEntry(OnBthDevice),
+#endif
   DeclareCallBackEntry(NULL)
 };
 

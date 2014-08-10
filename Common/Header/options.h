@@ -17,8 +17,8 @@
 #endif
 #endif
 
-#ifdef __linux__
-//#define __GNUC__	1
+#if !defined(UNDER_CE)
+#define NO_BLUETOOTH
 #endif
 
 

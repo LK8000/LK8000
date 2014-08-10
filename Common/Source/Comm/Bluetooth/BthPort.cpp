@@ -11,6 +11,9 @@
 
 #include "externs.h"
 #include "BthPort.h"
+
+#ifndef NO_BLUETOOTH
+
 #include "BtHandler.h"
 #include "utils/stl_utils.h"
 #include <algorithm>
@@ -209,3 +212,4 @@ DWORD BthPort::RxThread() {
 
     return 0UL;
 }
+#endif

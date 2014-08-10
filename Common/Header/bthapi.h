@@ -11,6 +11,8 @@
 #ifndef CE_BTHAPI_H
 #define	CE_BTHAPI_H
 
+#ifdef _WIN32
+
 typedef ULONGLONG bt_addr, *pbt_addr, BT_ADDR, *PBT_ADDR, BTH_ADDR;
 
 #define NAP_MASK                ((ULONGLONG) 0xFFFF00000000LL)
@@ -78,5 +80,6 @@ enum BTH_RADIO_MODE {
   BTH_DISCOVERABLE
 };
 
+#endif
 #endif	/* CE_BTHAPI_H */
 

@@ -22,7 +22,7 @@ public:
 		_sName = szName;
 		_sLabel = szLabel;
 	}
-	
+#ifndef NO_BLUETOOTH
     inline COMMPortItem_t(const CBtDevice* pDev) : _sName(pDev->BTPortName()), _sLabel() { 
         _sLabel = _T("BT:") + pDev->GetName();
     }
@@ -32,6 +32,7 @@ public:
         _sLabel = _T("BT:") + pDev->GetName();
         return (*this);
     }
+ #endif
     inline bool IsSamePort(const TCHAR* szName) const { return _sName == szName; } 
     
     inline const TCHAR* GetName() const { return _sName.c_str(); }

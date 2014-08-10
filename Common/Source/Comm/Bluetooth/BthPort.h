@@ -12,6 +12,8 @@
 #ifndef BTHPORT_H
 #define	BTHPORT_H
 
+#include "ComPort.h"
+#ifndef NO_BLUETOOTH
 #ifdef PPC2002
 #include <winsock.h>
 // WSAGetLastError is alias of GetLastError, WSAGetLastError is not exported by winsok.dll
@@ -21,7 +23,7 @@
 #include <winsock2.h>
 #endif
 
-#include "ComPort.h"
+
 #include "bthapi.h"
 
 class BthPort : public ComPort {
@@ -64,6 +66,9 @@ private:
     SOCKET mSocket;
     DWORD mTimeout;
 };
-
+#else
+#include "../NullComPort.h"
+typedef NullComPort BthPort;
+#endif
 #endif	/* BTHPORT_H */
 

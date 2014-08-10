@@ -14,6 +14,8 @@
 #include "Dialogs.h"
 #include "Message.h"
 
+#ifndef NO_BLUETOOTH
+
 namespace DlgBluetooth {
 
     WndForm *wfBth = NULL;
@@ -75,7 +77,6 @@ namespace DlgBluetooth {
     void OnLookup(WindowControl * Sender) {
         (void) Sender;
         StartHourglassCursor();
-        
         CBtHandler * pBtHandler = CBtHandler::Get();
         if (pBtHandler && pBtHandler->StartHW() && pBtHandler->LookupDevices()) {
             WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));
@@ -174,3 +175,5 @@ namespace DlgBluetooth {
     }
 
 };
+
+#endif

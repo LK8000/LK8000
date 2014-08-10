@@ -6,6 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include "dlgTools.h"
+#include "options.h"
 
 void LKReadLanguageFile(void);
 void LKUnloadMessage();
@@ -109,9 +110,10 @@ void WriteMissingTranslations(void);
 void dlgTextEntryKeyboardShowModal(TCHAR *text, int width=0);
 void dlgNumEntryShowModal(TCHAR *text, int width,bool WPKeyRed);
 
+#ifndef NO_BLUETOOTH
 namespace DlgBluetooth {
     void Show();
 };
-
+#endif
 
 #endif

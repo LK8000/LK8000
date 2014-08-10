@@ -147,7 +147,8 @@ void RefreshComPortList() {
     COMMPort.push_back(_T("VSP0"));
     COMMPort.push_back(_T("VSP1"));
 #endif
-
+    
+#ifndef NO_BLUETOOTH
     CBtHandler* pBtHandler = CBtHandler::Get();
     if (pBtHandler) {
         std::copy(
@@ -156,6 +157,7 @@ void RefreshComPortList() {
         	std::back_insert_iterator<COMMPort_t>(COMMPort)
         );
     }
+#endif
 }
 
 void DeviceDescriptor_t::InitStruct(int i) {
@@ -279,12 +281,20 @@ BOOL devInit(LPCTSTR CommandLine) {
         
         ComPort *Com = NULL;
         if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
+#ifdef NO_BLUETOOTH
+            bool bStartOk = true;
+#else
+            bool bStartOk = false;
             CBtHandler* pBtHandler = CBtHandler::Get();
             StartupStore(_T(".. Initialise Bluetooth Device %s%s"), Port, NEWLINE);
             if (pBtHandler && pBtHandler->IsOk()) {
                 if (pBtHandler->StartHW()) {
-                    Com = new BthPort(i, &Port[3]);
+                    bStartOk = true;
                 }
+            }
+#endif
+            if(bStartOk) {
+                Com = new BthPort(i, &Port[3]);
             }
         } else if (_tcscmp(Port, _T("GPSID")) == 0) {
             Com = new GpsIdPort(i, Port);
