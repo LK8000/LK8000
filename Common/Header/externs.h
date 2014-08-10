@@ -9,7 +9,7 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
-#ifdef LINUX
+#ifdef __linux__
 #include "StdLinux.h"
 #else
 #include "StdAfx.h"

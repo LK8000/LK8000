@@ -17,7 +17,7 @@
 #endif
 #endif
 
-#ifdef LINUX
+#ifdef __linux__
 //#define __GNUC__	1
 #endif
 

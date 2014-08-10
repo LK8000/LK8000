@@ -187,7 +187,7 @@ EBROWSE         :=ebrowse
 ######## windows definitions
 
 ifeq ($(CONFIG_LINUX),y)
-CE_DEFS		:=-DLINUX -D__linux__
+CE_DEFS		:=-D__linux__
 else
 ifeq ($(CONFIG_PC),y)
 CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
