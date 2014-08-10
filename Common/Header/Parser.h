@@ -6,7 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Flarm.h"
-#ifndef LINUX
+#ifdef UNDER_CE
 #include "lkgpsapi.h"
 #endif
 
@@ -180,7 +180,7 @@ class NMEAParser {
 
   BOOL ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO);
  
-#ifndef LINUX 
+#ifdef UNDER_CE 
   static BOOL ParseGPS_POSITION(int portnum,
 			      const GPS_POSITION& loc, NMEA_INFO& GPSData);  
   BOOL ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData);

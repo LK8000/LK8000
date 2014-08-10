@@ -85,6 +85,7 @@ BOOL NMEAParser::ParseNMEAString(int device,
   return FALSE;
 }
 
+#ifdef UNDER_CE
 BOOL NMEAParser::ParseGPS_POSITION(int Idx, const GPS_POSITION& loc, NMEA_INFO& GPSData) {
     LKASSERT(!ReplayLogger::IsEnabled());
 
@@ -214,7 +215,7 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
     
     return TRUE;
 }
-
+#endif
 
 BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
 {

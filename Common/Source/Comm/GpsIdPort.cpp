@@ -10,6 +10,7 @@
  */
 #include "externs.h"
 #include "GpsIdPort.h"
+#ifdef UNDER_CE
 
 template <typename T>
 void GPSResetData(T& data) {
@@ -150,3 +151,5 @@ size_t GpsIdPort::Read(void *szString, size_t size) {
     LKASSERT(FALSE);
     return 0U;
 }
+
+#endif /* UNDER_CE */

@@ -12,6 +12,8 @@
 #ifndef GPSIDPORT_H
 #define	GPSIDPORT_H
 #include "ComPort.h"
+
+#ifdef UNDER_CE
 #include "lkgpsapi.h"
 
 class GpsIdPort  : public ComPort {
@@ -43,6 +45,9 @@ protected:
     HANDLE _hState;// signals GPS state arrival
 
 };
-
+#else
+#include "NullComPort.h"
+    typedef NullComPort GpsIdPort;
+#endif  /* UNDER_CE */
 #endif	/* GPSIDPORT_H */
 
