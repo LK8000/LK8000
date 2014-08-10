@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "Logger.h"
 #include "InputEvents.h"
-//#include "LKProfiles.h"
 #include "dlgTools.h"
 #include "TraceThread.h"
 #include <ctype.h>
@@ -1211,83 +1210,78 @@ bool LoggerGActive()
 //	other values, very bad
 //
 int RunSignature() {
+    TCHAR homedir[MAX_PATH];
+    LocalPath(homedir, TEXT(LKD_LOGS));
+       
+#ifndef NO_IGCPLUGIN
+    DWORD retval = 99;
 
-  DWORD retval=99;
+    TCHAR path[MAX_PATH];
+    LocalPath(path, _T(LKD_LOGS));
+#if (WINDOWSPC>0)
+    _tcscat(path, _T("\\LKRECORD_PC.LK8"));
+#endif
+    // CAREFUL!!! PNA is ALSO PPC2003!!
+    // 
+    // ATTENTION: on PNA we are executing LKRECORD_PNA.LK8.EXE really
+#ifdef PNA
+    _tcscat(path, _T("\\LKRECORD_PNA.LK8"));
+#else
+#ifdef PPC2002
+    _tcscat(path, _T("\\LKRECORD_2002.LK8"));
+#endif
+#ifdef PPC2003
+    _tcscat(path, _T("\\LKRECORD_2003.LK8"));
+#endif
+#endif 
 
-  TCHAR homedir[MAX_PATH];
-  TCHAR path[MAX_PATH];
+#if TESTBENCH
+    StartupStore(_T(".... RunSignature: homedir <%s>%s"), homedir, NEWLINE);
+#endif
 
-  LocalPath(path,_T(LKD_LOGS));
-  #if (WINDOWSPC>0)
-  _tcscat(path,_T("\\LKRECORD_PC.LK8"));
-  #endif
+    PROCESS_INFORMATION pi;
 
-  // CAREFUL!!! PNA is ALSO PPC2003!!
-  // 
-  // ATTENTION: on PNA we are executing LKRECORD_PNA.LK8.EXE really
-  #ifdef PNA
-  _tcscat(path,_T("\\LKRECORD_PNA.LK8"));
-  #else
-    #ifdef PPC2002
-    _tcscat(path,_T("\\LKRECORD_2002.LK8"));
-    #endif
-    #ifdef PPC2003
-    _tcscat(path,_T("\\LKRECORD_2003.LK8"));
-    #endif
-  #endif 
+#if (WINDOWSPC>0)
+    // Sadly, some parameters cannot be passed in the CE version
+    STARTUPINFO si;
+    ZeroMemory(&si, sizeof (STARTUPINFO));
+    si.cb = sizeof (STARTUPINFO);
+    si.wShowWindow = SW_SHOWNORMAL;
+    si.dwFlags = STARTF_USESHOWWINDOW;
 
-  LocalPath(homedir,TEXT(LKD_LOGS));
+    if (::CreateProcess(path, homedir, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
+#else
+    if (::CreateProcess(path, homedir, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, NULL, &pi)) {
+#endif
 
-  #if TESTBENCH
-  StartupStore(_T(".... RunSignature: homedir <%s>%s"),homedir,NEWLINE);
-  #endif
+        ::WaitForSingleObject(pi.hProcess, 30000); // 30s
+        GetExitCodeProcess(pi.hProcess, &retval);
+        // STILL_ACTIVE = 259, this retval should be checked for
 
+#if TESTBENCH
+        StartupStore(_T(".... RunSignature exec <%s> terminated, retval=%lu%s"), path, retval, NEWLINE);
+#endif
 
-  PROCESS_INFORMATION pi;
+        return retval;
+    } else {
+        DWORD lasterr = GetLastError();
 
-  #if (WINDOWSPC>0)
-  // Sadly, some parameters cannot be passed in the CE version
-  STARTUPINFO si;
-  ZeroMemory(&si,sizeof(STARTUPINFO));
-  si.cb=sizeof(STARTUPINFO);
-  si.wShowWindow= SW_SHOWNORMAL;
-  si.dwFlags = STARTF_USESHOWWINDOW;
+        if (lasterr != 2) {
+            // External executable failure, bad !
+            StartupStore(_T(".... RunSignature exec <%s> FAILED, error code=%lu %s"), path, lasterr, NEWLINE);
+#if TESTBENCH
+            StartupStore(_T(".... Trying with DoSignature\n"));
+#endif
+        }
+#if TESTBENCH
+        else
+            StartupStore(_T(".... no executable <%s> found, proceeding with DoSignature\n"), path);
+#endif      
+    }
+#endif
 
-  if (!::CreateProcess(path,homedir, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
-  #else
-  if (!::CreateProcess(path,homedir, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, NULL, &pi)) {
-  #endif
-	DWORD lasterr=GetLastError();
-
-	if (lasterr!=2) {
-		// External executable failure, bad !
-		StartupStore(_T(".... RunSignature exec <%s> FAILED, error code=%lu %s"),path,lasterr,NEWLINE);
-		#if TESTBENCH
-		StartupStore(_T(".... Trying with DoSignature\n"));
-		#endif
-	}
-
-	#if TESTBENCH
-	else 
-		StartupStore(_T(".... no executable <%s> found, proceeding with DoSignature\n"),path);
-	#endif
-
-	extern int DoSignature(TCHAR *hpath);
-	retval=DoSignature(homedir);
-
-	return retval;
-  }
-  ::WaitForSingleObject(pi.hProcess, 30000); // 30s
-  GetExitCodeProcess(pi.hProcess,&retval);
-  // STILL_ACTIVE = 259, this retval should be checked for
-
-  #if TESTBENCH
-  StartupStore(_T(".... RunSignature exec <%s> terminated, retval=%lu%s"),path,retval,NEWLINE);
-  #endif
-
-
-  return retval;
-
+    extern int DoSignature(TCHAR * hpath);
+    return DoSignature(homedir);
 }
 
 

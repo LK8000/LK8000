@@ -19,8 +19,8 @@
 
 #if !defined(UNDER_CE)
 #define NO_BLUETOOTH
+#define NO_IGCPLUGIN
 #endif
-
 
 #include "compatibility.h"
 
