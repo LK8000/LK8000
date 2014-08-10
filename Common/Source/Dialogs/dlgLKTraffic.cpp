@@ -213,7 +213,7 @@ static void SetValues(int indexid) {
 		buffer[MAXFLARMNAME]='\0';
 	} else {
 		LK_tcsncpy(buffer,LKTraffic[indexid].Name,MAXFLARMNAME);
-		ConvToUpper(buffer);
+		CharUpper(buffer);
 	}
 	//name=Name;
 	wp->SetText(buffer);

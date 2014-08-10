@@ -408,7 +408,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		else {
 			LK_tcsncpy(Buffer, WayPointList[rli].Name, wlen);
 		}
-		ConvToUpper(Buffer); // 100213 FIX UPPERCASE DRAWNEAREST
+		CharUpper(Buffer); // 100213 FIX UPPERCASE DRAWNEAREST
 		_tcscpy(Buffer1[i][curpage],Buffer); 
 
 		// Distance

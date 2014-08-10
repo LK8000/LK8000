@@ -741,23 +741,6 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
   return true;
 }
 
-
-
-/*
- * Convert to uppercase a TCHAR array
- */
-void ConvToUpper( TCHAR *str )
-{
-	if ( str )
-	{
-		for ( ; *str; ++str )
-		*str = _totupper(*str);
-
-	}
-
-	return ;
-}
-
 // ////////////////////////////////////////////////////////////////
 //            Unicode <> Ascii conversions
 //

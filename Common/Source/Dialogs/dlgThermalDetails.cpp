@@ -86,7 +86,7 @@ static void SetValues(int indexid) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
   if (wp) {
 	_tcscpy(buffer,ThermalHistory[indexid].Name);
-	ConvToUpper(buffer);
+	CharUpper(buffer);
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }

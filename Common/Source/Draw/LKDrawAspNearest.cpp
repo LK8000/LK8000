@@ -380,7 +380,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		else {
 			LK_tcsncpy(Buffer, LKAirspaces[rli].Name, wlen);
 		}
-		ConvToUpper(Buffer);
+		CharUpper(Buffer);
 		_tcscpy(Buffer1[i][curpage],Buffer); 
 
 
@@ -394,7 +394,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		else {
 			LK_tcsncpy(Buffer, LKAirspaces[rli].Type, wlen);
 		}
-		ConvToUpper(Buffer);
+		CharUpper(Buffer);
 		_tcscpy(Buffer2[i][curpage],Buffer); 
 
 		

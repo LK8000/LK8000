@@ -53,7 +53,6 @@ extern bool		CheckDataDir();
 extern bool		CheckLanguageDir();
 extern bool		CheckPolarsDir();
 extern bool		CheckRegistryProfile();
-extern void		ConvToUpper( TCHAR *);
 extern bool		Debounce(int debouncetime);
 extern bool		Debounce();
 

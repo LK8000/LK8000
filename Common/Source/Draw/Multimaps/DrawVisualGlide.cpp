@@ -407,7 +407,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 	TCHAR name[NAME_SIZE+1];
 	double ar=(WayPointCalc[wp].AltArriv[AltArrivMode]*ALTITUDEMODIFY);
 	_tcscpy(name,WayPointList[wp].Name);
-	ConvToUpper(name);
+	CharUpper(name);
 
 	if (IsSafetyAltitudeInUse(wp))
 		textcolor=RGB_DARKBLUE;

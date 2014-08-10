@@ -410,7 +410,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 			_stprintf(buffer2,_T(">%s"),Buffer);
 			_tcscpy(Buffer,buffer2);
 		}
-                ConvToUpper(Buffer);
+        CharUpper(Buffer);
 
 		_tcscpy(Buffer1[i][curpage],Buffer); 
 

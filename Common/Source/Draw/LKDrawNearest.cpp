@@ -490,7 +490,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		else {
 			LK_tcsncpy(Buffer, WayPointList[rli].Name, wlen);
 		}
-		ConvToUpper(Buffer);
+		CharUpper(Buffer);
 		_tcscpy(Buffer1[i][curpage],Buffer); 
 
 		value=WayPointCalc[rli].Distance*DISTANCEMODIFY;

@@ -341,7 +341,7 @@ _end:
   // VERY SORRY - YOUR POSITION IS UNKNOWN!
   if (!found) _stprintf(toracle,_T("\n\n%s\n\n%s"), gettext(_T("_@M1725_")),gettext(_T("_@M1726_")));
 
-  ConvToUpper(toracle);
+  CharUpper(toracle);
   MessageBoxX(hWndMainWindow, toracle, gettext(_T("_@M1690_")), MB_OK|MB_ICONQUESTION, true);
 
 }

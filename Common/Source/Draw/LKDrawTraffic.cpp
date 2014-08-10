@@ -432,7 +432,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 					LK_tcsncpy(Buffer, LKTraffic[rli].Name, wlen);
 				}
 			}
-			ConvToUpper(Buffer);
+			CharUpper(Buffer);
 		}
 		if (LKTraffic[rli].Locked) {
 			TCHAR buf2[LKSIZEBUFFERLARGE];

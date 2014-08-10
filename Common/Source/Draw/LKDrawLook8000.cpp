@@ -572,7 +572,7 @@ nextinit:
  			 	LK_tcsncpy(Buffer, buffername, wlen);
 			}
 
- 			 ConvToUpper(Buffer);
+ 			 CharUpper(Buffer);
 			 LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 		}
 
@@ -824,7 +824,7 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 		} else {
 	 	 	LK_tcsncpy(Buffer, buffername, wlen);
 		}
- 		ConvToUpper(Buffer);
+ 		CharUpper(Buffer);
 		LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 	}
 

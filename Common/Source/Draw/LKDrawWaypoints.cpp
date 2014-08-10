@@ -388,7 +388,6 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		} else {
 			LK_tcsncpy(Buffer2, WayPointList[i].Name, resizer[DisplayTextType]);
 		}
-		// ConvToUpper(Buffer2); 
 
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
