@@ -51,9 +51,8 @@ void OpenFLARMDetails() {
   StartupStore(TEXT(". OpenFLARMDetails: <%s>%s"),filename,NEWLINE);
   #endif
 
-  HANDLE hFile = CreateFile(filename,GENERIC_READ,0,NULL,
-			    OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
-  if( hFile == INVALID_HANDLE_VALUE) {
+  FILE * stream = _tfopen(filename, _T("rt"));
+  if( !stream ) {
 	#if TESTBENCH
 	StartupStore(_T("... No flarm details local file found%s"),NEWLINE);
 	#endif
@@ -61,7 +60,7 @@ void OpenFLARMDetails() {
   }
 
   TCHAR line[READLINE_LENGTH];
-  while (ReadString(hFile,READLINE_LENGTH, line)) {
+  while (ReadStringX(stream,READLINE_LENGTH, line)) {
     long id;
     TCHAR Name[MAX_PATH];
 
@@ -78,46 +77,28 @@ void OpenFLARMDetails() {
 	StartupStore(filename);
   }
 
-  CloseHandle(hFile);
+  fclose(stream);
 
 }
 
 
 void SaveFLARMDetails(void)
 {
-  DWORD bytesWritten;
   TCHAR filename[MAX_PATH];
   LocalPath(filename,TEXT(LKD_CONF)); // 091103
   _tcscat(filename,_T("\\"));
   _tcscat(filename,_T(LKF_FLARMIDS));
   
-  HANDLE hFile = CreateFile(filename,GENERIC_WRITE,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
-  if( hFile == INVALID_HANDLE_VALUE) {
-	// StartupStore(_T("-- Cannot save FLARM details, error --\n"));
-	return;
-  }
-  
-  TCHAR wsline[READLINE_LENGTH];
-  char cline[READLINE_LENGTH];
-  
-  for (int z = 0; z < NumberOfFLARMNames; z++)
-    {   
-      _stprintf(wsline, TEXT("%lx=%s\r\n"), FLARM_Names[z].ID,FLARM_Names[z].Name);
-#ifdef UNICODE
-      WideCharToMultiByte( CP_ACP, 0, wsline,
-			   _tcslen(wsline)+1,
-			   cline,
-			   READLINE_LENGTH, NULL, NULL);
-      
-      WriteFile(hFile, cline, strlen(cline), &bytesWritten, NULL);
-#else
-      UNUSED(cline);
-      WriteFile(hFile, wsline, strlen(wsline), &bytesWritten, NULL);
-#endif      
+  FILE * stream = _tfopen(filename,_T("wt"));
+  if(stream) {
+    for (int z = 0; z < NumberOfFLARMNames; z++) {   
+      _ftprintf(stream, TEXT("%lx=%s\n"), FLARM_Names[z].ID,FLARM_Names[z].Name);
     }
-  _stprintf(filename,_T("... Saved %d FLARM names%s"),NumberOfFLARMNames,NEWLINE);
-  StartupStore(filename);
-  CloseHandle(hFile);
+    fclose(stream);
+    StartupStore(_T("... Saved %d FLARM names%s"),NumberOfFLARMNames,NEWLINE);
+  } else {
+    StartupStore(_T("-- Cannot save FLARM details, error --\n"));
+  }
 }
 
 
@@ -202,38 +183,30 @@ int LookupFLARMDetails(TCHAR *cn)
   return 0;
 }
 
+bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile) {
+    bool bRet = false;
+    int index = LookupSecondaryFLARMId(id);
 
-bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile)
-{
-  int index = LookupSecondaryFLARMId(id);
-
-  #ifdef DEBUG_LKT
-  StartupStore(_T("... LookupSecondary id=%d result index=%d\n"),id,index);
-  #endif
-  if (index == -1)
-    {
-      if (NumberOfFLARMNames < MAXFLARMLOCALS)  // 100322 
-	{
-	  // create new record
-	  FLARM_Names[NumberOfFLARMNames].ID = id;
-	  LK_tcsncpy(FLARM_Names[NumberOfFLARMNames].Name, name,MAXFLARMNAME); // was 20 100322
-	  NumberOfFLARMNames++;
-	  SaveFLARMDetails();
-	  return true;
-	}
+#ifdef DEBUG_LKT
+    StartupStore(_T("... LookupSecondary id=%d result index=%d\n"), id, index);
+#endif
+    if (index == -1) {
+        if (NumberOfFLARMNames < MAXFLARMLOCALS) { // 100322 
+            // create new record
+            index = NumberOfFLARMNames++;
+        }
+    } 
+    
+    if(index != -1) {
+        FLARM_Names[index].ID = id;
+        LK_tcsncpy(FLARM_Names[index].Name, name, MAXFLARMNAME);
+        bRet = true;
     }
-  else
-    {
-      // modify existing record
-      FLARM_Names[index].ID = id;
-      LK_tcsncpy(FLARM_Names[index].Name, name,MAXFLARMNAME);
-      if (saveFile)
-	{
-	  SaveFLARMDetails();
-	}
-      return true;
+    
+    if (bRet && saveFile) {
+        SaveFLARMDetails();
     }
-  return false;
+    return bRet;
 }
 
 
