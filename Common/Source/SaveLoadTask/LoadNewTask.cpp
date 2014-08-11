@@ -53,14 +53,11 @@ typedef struct _OLD_TASK_POINT
 
 /*******************************************************/
 
-bool LoadTaskWaypoints(HANDLE hFile) {
+bool LoadTaskWaypoints(FILE* stream) {
   WAYPOINT read_waypoint;
-  DWORD dwBytesRead;
-
-  int i;
-  for(i=0;i<OLD_MAXTASKPOINTS;i++) {
-    if(!ReadFile(hFile,&read_waypoint,sizeof(read_waypoint),&dwBytesRead, (OVERLAPPED *)NULL)
-       || (dwBytesRead<sizeof(read_waypoint))) {
+  for(unsigned i=0;i<OLD_MAXTASKPOINTS;i++) {
+      
+    if(fread(&read_waypoint, 1, sizeof(read_waypoint), stream) != sizeof(read_waypoint)) {
       return false;
     }
     if (Task[i].Index != -1) { 
@@ -72,9 +69,8 @@ bool LoadTaskWaypoints(HANDLE hFile) {
       Task[i].Index = FindOrAddWaypoint(&read_waypoint,false);
     }
   }
-  for(i=0;i<MAXSTARTPOINTS;i++) {
-    if(!ReadFile(hFile,&read_waypoint,sizeof(read_waypoint),&dwBytesRead, (OVERLAPPED *)NULL)
-       || (dwBytesRead<sizeof(read_waypoint))) {
+  for(unsigned i=0;i<MAXSTARTPOINTS;i++) {
+    if(fread(&read_waypoint, 1, sizeof(read_waypoint), stream) != sizeof(read_waypoint)) {
       return false;
     }
     if (StartPoints[i].Index != -1) {
@@ -98,10 +94,8 @@ bool LoadTaskWaypoints(HANDLE hFile) {
 // we must use the FullResetAsked trick.
 void LoadNewTask(LPCTSTR szFileName)
 {
-  HANDLE hFile;
   TASK_POINT Temp;
   START_POINT STemp;
-  DWORD dwBytesRead;
   int i;
   bool TaskInvalid = false;
   bool WaypointInvalid = false;
@@ -128,11 +122,8 @@ void LoadNewTask(LPCTSTR szFileName)
   
   StartupStore(_T(". LoadNewTask <%s>%s"),taskFileName,NEWLINE);
 
-  hFile = CreateFile(taskFileName,GENERIC_READ,0, (LPSECURITY_ATTRIBUTES)NULL,OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL);
-
-  if(hFile!= INVALID_HANDLE_VALUE )
-    {
-
+  FILE* stream = _tfopen(taskFileName, _T("rb"));
+  if(stream) {
       // Defaults
       int   old_StartLine    = StartLine;
       int   old_SectorType   = SectorType;
@@ -147,10 +138,10 @@ void LoadNewTask(LPCTSTR szFileName)
 
       TaskLoaded = true;
 
-	if(!ReadFile(hFile,&taskinfo,LKPREAMBOLSIZE,&dwBytesRead, (OVERLAPPED *)NULL)) {
-		TaskInvalid = true;
-		goto goEnd;
-	}
+      if(fread(taskinfo, sizeof(char), LKPREAMBOLSIZE, stream) != LKPREAMBOLSIZE) {
+          TaskInvalid = true;
+          goto goEnd;
+      }
 
 	// task version check
 	if ( (taskinfo[0]!= 'L') || (taskinfo[1]!= 'K') || (taskinfo[2]!=LKTASKVERSION) ) { 
@@ -159,13 +150,11 @@ void LoadNewTask(LPCTSTR szFileName)
 		goto goEnd;
 	}
 
-      for(i=0;i<OLD_MAXTASKPOINTS;i++)
-        {
-          if(!ReadFile(hFile,&Temp,sizeof(OLD_TASK_POINT),&dwBytesRead, (OVERLAPPED *)NULL))
-            {
+      for(i=0;i<OLD_MAXTASKPOINTS;i++) {
+          if(fread(&Temp, 1, sizeof(OLD_TASK_POINT), stream) != sizeof(OLD_TASK_POINT)) {
               TaskInvalid = true;
               break;
-            }
+          }
           if(i < MAXTASKPOINTS) {
             memcpy(&Task[i],&Temp, sizeof(OLD_TASK_POINT));
 
@@ -174,54 +163,48 @@ void LoadNewTask(LPCTSTR szFileName)
                 // of the waypoints and not equal to -1.
                 // (Because -1 indicates a null task item)
                 WaypointInvalid = true; 
-        	}
+       	    }
           }
         }
 
       if (!TaskInvalid) {
-
-	if (!ReadFile(hFile,&AATEnabled,sizeof(BOOL),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-	if (!ReadFile(hFile,&AATTaskLength,sizeof(double),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-	
+        TaskInvalid = fread(&AATEnabled, 1, sizeof(BOOL), stream) != sizeof(BOOL);
+      }
+      if (!TaskInvalid) {
+        TaskInvalid = fread(&AATTaskLength, 1, sizeof(double), stream) != sizeof(double);
+      }
 	// ToDo review by JW
 	
 	// 20060521:sgi added additional task parameters
-	if (!ReadFile(hFile,&FinishRadius,sizeof(FinishRadius),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-	if (!ReadFile(hFile,&FinishLine,sizeof(FinishLine),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-	if (!ReadFile(hFile,&StartRadius,sizeof(StartRadius),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-	if (!ReadFile(hFile,&StartLine,sizeof(StartLine),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-	if (!ReadFile(hFile,&SectorType,sizeof(SectorType),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-	if (!ReadFile(hFile,&SectorRadius,sizeof(SectorRadius),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-	if (!ReadFile(hFile,&AutoAdvance,sizeof(AutoAdvance),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-
-        if (!ReadFile(hFile,&EnableMultipleStartPoints,sizeof(bool),&dwBytesRead,(OVERLAPPED*)NULL)) {
-          TaskInvalid = true;
-        }
-
-        for(i=0;i<MAXSTARTPOINTS;i++)
-        {
-          if(!ReadFile(hFile,&STemp,sizeof(START_POINT),&dwBytesRead, (OVERLAPPED *)NULL)) {
+      if (!TaskInvalid) {
+        TaskInvalid = fread(&FinishRadius, 1, sizeof(FinishRadius), stream) != sizeof(FinishRadius);
+      }
+      if (!TaskInvalid) {
+        TaskInvalid = fread(&FinishLine, 1, sizeof(FinishLine), stream) != sizeof(FinishLine);
+      }
+      if (!TaskInvalid) {
+        TaskInvalid = fread(&StartRadius, 1, sizeof(StartRadius), stream) != sizeof(StartRadius);
+      }
+      if (!TaskInvalid) {
+        TaskInvalid = fread(&StartLine, 1, sizeof(StartLine), stream) != sizeof(StartLine);
+      }
+      if (!TaskInvalid) {
+        TaskInvalid = fread(&SectorType, 1, sizeof(SectorType), stream) != sizeof(SectorType);
+      }
+      if (!TaskInvalid) {
+        TaskInvalid = fread(&SectorRadius, 1, sizeof(SectorRadius), stream) != sizeof(SectorRadius);
+      }
+      if (!TaskInvalid) {
+        TaskInvalid = fread(&AutoAdvance, 1, sizeof(AutoAdvance), stream) != sizeof(AutoAdvance);
+      }
+      if (!TaskInvalid) {
+        TaskInvalid = fread(&EnableMultipleStartPoints, 1, sizeof(EnableMultipleStartPoints), stream) != sizeof(EnableMultipleStartPoints);
+      }
+      for(i=0;i<MAXSTARTPOINTS;i++) {
+        if(fread(&STemp, 1, sizeof(START_POINT), stream) != sizeof(START_POINT)) {
             TaskInvalid = true;
             break;
-          }
+        }
 	  
           if( ValidNotResWayPoint(STemp.Index) || (STemp.Index==-1) ) { // 091213
             memcpy(&StartPoints[i],&STemp, sizeof(START_POINT));
@@ -233,49 +216,46 @@ void LoadNewTask(LPCTSTR szFileName)
 
         // search for waypoints...
         if (!TaskInvalid) {
-          if (!LoadTaskWaypoints(hFile) && WaypointInvalid) {
+          if (!LoadTaskWaypoints(stream) && WaypointInvalid) {
             // couldn't lookup the waypoints in the file and we know there are invalid waypoints
             TaskInvalid = true;
             StartupStore(_T(". LoadTaskNew: cant locate waypoint in file, and invalid wp in task file%s"),NEWLINE);
           }
         }
 
-      }
-      
         // TimeGate config
         if (!TaskInvalid) {
-            TaskInvalid = !ReadFile(hFile, &PGOpenTimeH, sizeof (PGOpenTimeH), &dwBytesRead, (OVERLAPPED*) NULL);
-        }
+            TaskInvalid = fread(&PGOpenTimeH, 1, sizeof(PGOpenTimeH), stream) != sizeof(PGOpenTimeH);
+        }  
         if (!TaskInvalid) {
-            TaskInvalid = !ReadFile(hFile, &PGOpenTimeM, sizeof (PGOpenTimeM), &dwBytesRead, (OVERLAPPED*) NULL);
-        }
+            TaskInvalid = fread(&PGOpenTimeM, 1, sizeof(PGOpenTimeM), stream) != sizeof(PGOpenTimeM);
+        }  
         if (!TaskInvalid) {
             InitActiveGate();
 
-			// PGOpenTime is Calculated !
-			int tmp;
-            TaskInvalid = !ReadFile(hFile, &tmp, sizeof (tmp), &dwBytesRead, (OVERLAPPED*) NULL);
+            // PGOpenTime is Calculated !
+            int tmp;
+            TaskInvalid = fread(&tmp, 1, sizeof(tmp), stream) != sizeof(tmp);
         }
         if (!TaskInvalid) {
-			PGCloseTime=86399;
-			
-			// PGCloseTime is Calculated !
-			int tmp;
-            TaskInvalid = !ReadFile(hFile, &tmp, sizeof (tmp), &dwBytesRead, (OVERLAPPED*) NULL);
+            PGCloseTime=86399;
+            // PGCloseTime is Calculated !
+            int tmp;
+            TaskInvalid = fread(&tmp, 1, sizeof(tmp), stream) != sizeof(tmp);
         }
         if (!TaskInvalid) {
-            TaskInvalid = !ReadFile(hFile, &PGGateIntervalTime, sizeof (PGGateIntervalTime), &dwBytesRead, (OVERLAPPED*) NULL);
+            TaskInvalid = fread(&PGGateIntervalTime, 1, sizeof(PGGateIntervalTime), stream) != sizeof(PGGateIntervalTime);
         }
         if (!TaskInvalid) {
-            TaskInvalid = !ReadFile(hFile, &PGNumberOfGates, sizeof (PGNumberOfGates), &dwBytesRead, (OVERLAPPED*) NULL);
+            TaskInvalid = fread(&PGNumberOfGates, 1, sizeof(PGNumberOfGates), stream) != sizeof(PGNumberOfGates);
         }
         if (!TaskInvalid) {
-            TaskInvalid = !ReadFile(hFile, &PGStartOut, sizeof (PGStartOut), &dwBytesRead, (OVERLAPPED*) NULL);
+            TaskInvalid = fread(&PGStartOut, 1, sizeof(PGStartOut), stream) != sizeof(PGStartOut);
         }    
 
 goEnd:
 
-      CloseHandle(hFile);
+      fclose(stream);
 
       if (TaskInvalid) {
 	if (oldversion)
