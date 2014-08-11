@@ -92,7 +92,6 @@ bool ReadWinPilotPolar(void) {
   TCHAR	szFile[MAX_PATH] = TEXT("\0");
   TCHAR ctemp[80];
   TCHAR TempString[READLINE_LENGTH+1];
-  HANDLE hFile;
 
   double dPOLARV[3];
   double dPOLARW[3];
@@ -120,11 +119,10 @@ bool ReadWinPilotPolar(void) {
     ExpandLocalPath(szFile);
     StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
 
-    hFile = CreateFile(szFile,GENERIC_READ,0,(LPSECURITY_ATTRIBUTES)NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+    FILE * stream = _tfopen(szFile, _T("rt"));
+    if (stream){
 
-    if (hFile != INVALID_HANDLE_VALUE ){
-
-        while(ReadString(hFile,READLINE_LENGTH,TempString) && (!foundline)){
+        while(ReadStringX(stream,READLINE_LENGTH,TempString) && (!foundline)){
 
 		if (_tcslen(TempString) <10) continue;
 
@@ -222,10 +220,10 @@ bool ReadWinPilotPolar(void) {
            currentFlapsPos++;
            GlidePolar::FlapsPosCount = currentFlapsPos; 
 	   break;
-	} while(ReadString(hFile,READLINE_LENGTH,TempString));
+	} while(ReadStringX(stream,READLINE_LENGTH,TempString));
 
       {
-	CloseHandle (hFile);
+	fclose(stream);
 	if (foundline) {
 		ContractLocalPath(szFile);
 		_tcscpy(szFile,szPolarFile);
