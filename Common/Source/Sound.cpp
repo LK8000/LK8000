@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "WaveThread.h"
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 #include "Modeltype.h"
 #include "LKHolux.h"
 #endif
@@ -23,7 +23,7 @@ BOOL PlayResource (const TCHAR* lpName)
 #ifdef DISABLEAUDIO
   return false;
 #else
-  #ifdef PNA
+  #if defined(PNA) && defined(UNDER_CE)
   if (DeviceIsGM130) {
 	MessageBeep(0xffffffff);
 	return true;
@@ -74,7 +74,7 @@ void LKSound(const TCHAR *lpName) {
   return false;
   #else
 
-  #ifdef PNA
+  #if defined(PNA) && defined(UNDER_CE)
   if (DeviceIsGM130) {
 	MessageBeep(0xffffffff); // default
 	return;
@@ -106,7 +106,7 @@ void LKSound(const TCHAR *lpName) {
   #endif
 }
 
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 bool SetSoundVolume()
 {
 

@@ -2689,6 +2689,7 @@ void InputEvents::eventAdjustForecastTemperature(const TCHAR *misc) {
 // Runs an external program of the specified filename.
 // Note that LK will wait until this program exits.
 void InputEvents::eventRun(const TCHAR *misc) {
+#ifdef _WIN32
   bool doexec=false;
   TCHAR path[MAX_PATH];
   if (_tcscmp(misc, TEXT("ext1")) == 0) {
@@ -2735,6 +2736,9 @@ void InputEvents::eventRun(const TCHAR *misc) {
 
   ::WaitForSingleObject(pi.hProcess, INFINITE);
   StartupStore(_T("... RUN TERMINATED%s"),NEWLINE);
+#else
+#warning "InputEvents::eventRun : Not implemented for this platform"
+#endif
 }
 
 void InputEvents::eventDeclutterLabels(const TCHAR *misc) {

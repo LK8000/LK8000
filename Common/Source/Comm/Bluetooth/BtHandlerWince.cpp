@@ -12,7 +12,7 @@
 #include "BtHandlerWince.h"
 #include "externs.h"
 
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 
 
 CBtHandler* CBtHandlerWince::Instance() {

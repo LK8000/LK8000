@@ -1,7 +1,7 @@
 /*
  * Royaltek interface to Windows CE by Paolo
  */
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 
 extern bool DeviceIsRoyaltek3200;
 

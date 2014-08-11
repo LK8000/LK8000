@@ -144,7 +144,7 @@ void RefreshComPortList() {
 
     COMMPort.push_back(_T("COM0"));
 
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
     COMMPort.push_back(_T("VSP0"));
     COMMPort.push_back(_T("VSP1"));
 #endif

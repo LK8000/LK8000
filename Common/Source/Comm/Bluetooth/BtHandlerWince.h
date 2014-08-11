@@ -12,7 +12,7 @@
 #ifndef CBTHANDLERWINCE_H
 #define	CBTHANDLERWINCE_H
 
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 
 #include <winsock2.h>
 #include <windows.h>

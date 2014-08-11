@@ -9,13 +9,10 @@
 #include "externs.h"
 #include <stdio.h>
 #include "Modeltype.h"
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
-#endif
 
-
-#ifdef PNA 	
 /* 
  * SetBacklight for PNA devices. There is no standard way of managing backlight on CE,
  * and every device may have different value names and settings. Microsoft did not set 

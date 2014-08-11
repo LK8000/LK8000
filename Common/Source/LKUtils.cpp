@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "LKProcess.h"
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 #include "LKHolux.h"
 #endif
 #include "utils/stringext.h"
@@ -38,7 +38,7 @@ void ChangeWindCalcSpeed(const int newspeed) {
 // runmode 0: exec inside LocalPath home of LK8000
 // runmode 1: exec inside 
 bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
-
+#ifdef _WIN32
   if (_tcslen(prog) <5) {
 	StartupStore(_T("... LKRun failure: invalid exec path <%s>%s"),prog,NEWLINE);
 	return false;
@@ -78,7 +78,9 @@ bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
 	StartupStore(_T(". LKRun exec terminated%s"),NEWLINE);
 	return true;
   }
-
+#else
+  #warning "LKRun : Not implemented for this platform"
+#endif
   return false;
 }
 

@@ -18,7 +18,7 @@ extern bool LockSettingsInFlight;
 extern bool LoggerShortName;
 
 
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 bool SetBacklight();
 bool SetSoundVolume();
 #endif

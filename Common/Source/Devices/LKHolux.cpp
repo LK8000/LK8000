@@ -1,4 +1,4 @@
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 
 #include "externs.h"
 #include "../utils/stl_utils.h"

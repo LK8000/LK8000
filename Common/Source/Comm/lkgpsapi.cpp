@@ -1,7 +1,7 @@
+#if defined(PNA) && defined(UNDER_CE)
 #include <windows.h>
 #include <tchar.h>
 #include "lkgpsapi.h"
-
 
 typedef HANDLE (WINAPI *GPSOpenDevice_t)(HANDLE hNewLocationData, HANDLE hDeviceStateChange, const WCHAR *szDeviceName, DWORD dwFlags);
 typedef DWORD  (WINAPI *GPSCloseDevice_t)(HANDLE hGPSDevice);
@@ -18,12 +18,10 @@ GPSGetDeviceState_t pGPSGetDeviceState = NULL;
 void InitGpsApiFunctionPtrs(){
 	g_hGpsApi = LoadLibrary(_T("GPSAPI.DLL"));
 	if(g_hGpsApi) {
-#ifdef PNA
-		pGPSOpenDevice = (GPSOpenDevice_t)::GetProcAddress(g_hGpsApi, _T("GPSOpenDevice"));
-		pGPSCloseDevice = (GPSCloseDevice_t)::GetProcAddress(g_hGpsApi, _T("GPSCloseDevice"));
-		pGPSGetPosition = (GPSGetPosition_t)::GetProcAddress(g_hGpsApi, _T("GPSGetPosition"));
-		pGPSGetDeviceState = (GPSGetDeviceState_t)::GetProcAddress(g_hGpsApi, _T("GPSGetDeviceState"));
-#endif
+            pGPSOpenDevice = (GPSOpenDevice_t)::GetProcAddress(g_hGpsApi, _T("GPSOpenDevice"));
+            pGPSCloseDevice = (GPSCloseDevice_t)::GetProcAddress(g_hGpsApi, _T("GPSCloseDevice"));
+            pGPSGetPosition = (GPSGetPosition_t)::GetProcAddress(g_hGpsApi, _T("GPSGetPosition"));
+            pGPSGetDeviceState = (GPSGetDeviceState_t)::GetProcAddress(g_hGpsApi, _T("GPSGetDeviceState"));
 	}
 }
 void DeInitGpsApiFunctionPtrs() {
@@ -72,3 +70,5 @@ public:
 };
 
 static CGpsApiInitializer	initObj;
+
+#endif

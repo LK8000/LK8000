@@ -11,7 +11,7 @@
 #include <shlobj.h>
 
 
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
 #endif
@@ -75,7 +75,7 @@ short InstallSystem() {
 	return 5; // 091109
   } else {
 
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 	if (GlobalModelType == MODELTYPE_PNA_HP31X) { // 091109
 
 		StartupStore(_T(". InstallSystem checking desktop links for HP31X%s"),NEWLINE);

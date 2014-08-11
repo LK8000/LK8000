@@ -11,7 +11,7 @@
 #include "Baro.h"
 #include "Logger.h"
 #include "Geoid.h"
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
 #endif

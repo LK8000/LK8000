@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "LKInterface.h"
 
-#ifdef PNA
+#if defined(PNA) && defined(UNDER_CE)
 #include "Modeltype.h"
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
