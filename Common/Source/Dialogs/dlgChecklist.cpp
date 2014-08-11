@@ -268,10 +268,8 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
 /// @retval false data load error
 ///
 static bool LoadAsciiChecklist(const TCHAR* fileName) {
-  HANDLE hChecklist = CreateFile(
-    fileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-  
-  if( hChecklist == INVALID_HANDLE_VALUE) {
+  FILE * stream = _tfopen(fileName, _T("rt"));
+  if(!stream) {
     StartupStore(_T("... Not found notes <%s>%s"),fileName,NEWLINE);
     return(false);
   }
@@ -289,7 +287,7 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
   Name[0]= 0;
   TempString[0]=0;
 
-  while (ReadString(hChecklist, MAXNOTETITLE, TempString)) {
+  while (ReadStringX(stream, MAXNOTETITLE, TempString)) {
     size_t len = _tcslen(TempString);
     if (len > 0) {
       if (TempString[len - 1] == '\r') {
@@ -312,7 +310,7 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
     addChecklist(Name, Details);
   }
   
-  CloseHandle(hChecklist);
+  fclose(stream);
   
   return(true);
 } // LoadAsciiChecklist 
