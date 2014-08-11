@@ -84,7 +84,6 @@ double ScreenAngle(int x1, int y1, int x2, int y2);
 void ReadUUID(void);
 void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top, TCHAR *szMessageBuffer, TCHAR *TileBuffer );
 BOOL ReadString(ZZIP_FILE* zFile, int Max, TCHAR *String);
-BOOL ReadString(HANDLE hFile, int Max, TCHAR *String);
 BOOL ReadStringX(FILE *fp, int Max, TCHAR *String);
 bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars);
 

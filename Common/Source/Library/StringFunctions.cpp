@@ -109,68 +109,11 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String)
 
 // read string from file
 // support national codepage
-// hFile:  file handle
+// fp:  file pointer
 // Max:    max chars to fit in Buffer
 // String: pointer to string buffer
 // return: True if at least one byte was read from file
-//         False Max > MAX_PATH or EOF or read error
-BOOL ReadString(HANDLE hFile, int Max, TCHAR *String)
-{
-  char sTmp[READLINE_LENGTH+1];
-  DWORD dwNumBytesRead=0;
-  DWORD dwTotalNumBytesRead=0;
-  char  FileBuffer[READLINE_LENGTH+1];
-  DWORD dwFilePos;
-
-  String[0] = '\0';
-  sTmp[0] = 0;
-
-  #if BUGSTOP
-  LKASSERT((unsigned)Max<sizeof(sTmp));
-  #endif
-
-  if (Max >= (int)(sizeof(sTmp)))  
-    return(FALSE);
-
-  dwFilePos = SetFilePointer(hFile, 0, NULL, FILE_CURRENT);
-
-  if (hFile == INVALID_HANDLE_VALUE)
-    return(FALSE);
-
-  if (ReadFile(hFile, FileBuffer, sizeof(FileBuffer), 
-	       &dwNumBytesRead, (OVERLAPPED *)NULL) == 0)
-    return(FALSE);
-
-  int i = 0;
-  int j = 0;
-  while(i<Max && j<(int)dwNumBytesRead){
-
-    char c = FileBuffer[j];
-    j++;
-    dwTotalNumBytesRead++;
-
-    if((c == '\n')){
-      break;
-    }
-
-    sTmp[i] = c;
-    i++;
-    continue;
-  }
-
-  sTmp[i] = 0;
-  SetFilePointer(hFile, dwFilePos+j, NULL, FILE_BEGIN);
-  sTmp[Max-1] = '\0';
-
-#ifdef UNICODE
-  mbstowcs(String, sTmp, strlen(sTmp)+1);
-#else
-  strncpy(String, sTmp, strlen(sTmp)+1);
-#endif
-  return (dwTotalNumBytesRead>0);
-
-}
-
+//         False if read error
 BOOL ReadStringX(FILE *fp, int Max, TCHAR *String){
   if (fp == NULL || Max < 1 || String == NULL) {
     if (String) {
@@ -192,9 +135,7 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String){
 
     return (1);
   }
-
   return (0);
-
 }
 
 
