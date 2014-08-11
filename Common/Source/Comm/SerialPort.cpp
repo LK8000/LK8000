@@ -13,7 +13,9 @@
 #include "SerialPort.h"
 #include "utils/stl_utils.h"
 #include <algorithm>
-#include <functional>
+#include <tr1/functional>
+
+using namespace std::tr1::placeholders;
 
 SerialPort::SerialPort(int idx, const std::tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) : 
         ComPort(idx, sName),
@@ -437,7 +439,7 @@ DWORD SerialPort::RxThread() {
                 dwBytesTransferred = ReadData(szString);
                 if (dwBytesTransferred > 0) {
                     if (ProgramStarted >= psNormalOp) { // ignore everything until started
-                        std::for_each(begin(szString), begin(szString) + dwBytesTransferred, std::bind1st(std::mem_fun(&SerialPort::ProcessChar), this));
+                        std::for_each(begin(szString), begin(szString) + dwBytesTransferred, std::tr1::bind(&SerialPort::ProcessChar, this, _1));
                     }
                 } else {
                     dwBytesTransferred = 0;

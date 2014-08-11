@@ -10,8 +10,11 @@
  */
 
 #include "externs.h"
+#include <tr1/functional>
 #include "utils/stl_utils.h"
-#include <functional>
+
+using namespace std::tr1::placeholders;
+
 
 #ifndef NO_BLUETOOTH
 
@@ -152,7 +155,7 @@ std::tstring CBtHandler::GetPortSection(const TCHAR* szPort) const {
 }
 
 CBtDevice* CBtHandler::FindDevice(const BT_ADDR& ba) const {
-    BtDeviceList_t::const_iterator It = std::find_if(m_devices.begin(), m_devices.end(), std::bind2nd(std::mem_fun(&CBtDevice::Equal_to), ba));
+    BtDeviceList_t::const_iterator It = std::find_if(m_devices.begin(), m_devices.end(), std::tr1::bind(&CBtDevice::Equal_to, _1, ba));
     if (It != m_devices.end()) {
         return (*It);
     }
@@ -186,7 +189,7 @@ CBtDevice* CBtHandler::GetDevice(size_t idx) const {
 }
 
 void CBtHandler::RemoveDevice(const BT_ADDR& ba) {
-    BtDeviceList_t::iterator It = std::find_if(m_devices.begin(), m_devices.end(), std::bind2nd(std::mem_fun(&CBtDevice::Equal_to), ba));
+    BtDeviceList_t::iterator It = std::find_if(m_devices.begin(), m_devices.end(), std::tr1::bind(&CBtDevice::Equal_to, _1, ba));
     if (It != m_devices.end()) {
         delete (*It);
         m_devices.erase(It);

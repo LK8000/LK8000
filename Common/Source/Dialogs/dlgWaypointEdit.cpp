@@ -12,7 +12,9 @@
 #include "Waypointparser.h"
 #include "Dialogs.h"
 #include "../utils/stl_utils.h"
+#include <tr1/functional>
 
+using namespace std::tr1::placeholders;
 
 extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
 extern void UtmToLatLonWGS84 (int utmXZone, char utmYZone, double easting, double northing, double& lat, double& lon);
@@ -203,7 +205,7 @@ static void SetValues(void) {
       if (wp) {
     	  DataFieldEnum* dfe = (DataFieldEnum*)wp->GetDataField();
     	  if(dfe){
-    		  std::for_each(begin(cYZone), end(cYZone), std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe));
+    		  std::for_each(begin(cYZone), end(cYZone), std::tr1::bind(&DataFieldEnum::addEnumText, dfe, _1));
     		  dfe->Set(YZoneToenum(utmYZone));
     	  }
     	  wp->RefreshDisplay();

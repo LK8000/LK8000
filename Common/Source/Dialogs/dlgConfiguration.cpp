@@ -28,13 +28,16 @@
 
 #include "utils/stl_utils.h"
 #include "BtHandler.h"
-#include <functional>
+#include <tr1/functional>
 
+using namespace std::tr1::placeholders;
 
 extern void UpdateAircraftConfig(void);
 extern void dlgCustomMenuShowModal(void);
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName);
+void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
+
 
 static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
@@ -186,20 +189,6 @@ int GlobalToBoxType(int i) {
 	}
 	return iTmp;
 }
-
-struct ShowWindowControl {
-    ShowWindowControl(WndForm* pOwner, bool bShow) : _pOwner(pOwner), _bShow(bShow) { }
-    
-    void operator()(const TCHAR* WndName) {
-        WindowControl* pWnd = _pOwner->FindByName(WndName);
-        if(pWnd) {
-            pWnd->SetVisible(_bShow);
-        }
-    }
-private:
-    WndForm* _pOwner;
-    bool _bShow;
-};
 
 static void UpdateButtons(void) {
   TCHAR text[120];
@@ -533,8 +522,8 @@ static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
         _tcscpy(DeviceList[idx].Name, Name);
         bHidePort |= (_tcscmp(Name, _T("Internal")) == 0);
         
-        ShowWindowControl(wf, !bHidePort)(DevicePropName[idx]);
-        ShowWindowControl(wf, !bHidePort && false/*DeviceList[idx].DoSetup*/)(SetupButtonName[idx]);  
+        ShowWindowControl(wf, DevicePropName[idx], !bHidePort);
+        ShowWindowControl(wf, SetupButtonName[idx], !bHidePort && false/*DeviceList[idx].DoSetup*/);  
         
         WndProperty* wp = (WndProperty*) wf->FindByName(DevicePropName[idx]);
         if (wp) {
@@ -1586,6 +1575,13 @@ static void OnBthDevice(WindowControl * Sender) {
 }
 #endif
 
+void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
+    WindowControl* pWnd = wf->FindByName(WndName);
+    if(pWnd) {
+        pWnd->SetVisible(bShow);
+    }
+}
+
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
     const TCHAR* PortPropName[][2] = { 
         { _T("prpComSpeed1"), _T("prpComBit1") }, 
@@ -1604,7 +1600,7 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
         std::for_each(
             begin(PortPropName[idx]), 
             end(PortPropName[idx]), 
-            ShowWindowControl(wf, !bHide)
+            std::tr1::bind(ShowWindowControl, wf, _1, !bHide)
         );
     }
 }
@@ -1797,12 +1793,13 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
             std::for_each(
             	COMMPort.begin(),
             	COMMPort.end(),
-            	std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe)
+            	std::tr1::bind(&DataFieldEnum::addEnumText, dfe, bind(&COMMPortItem_t::GetLabel, _1))
             );
             COMMPort_t::iterator It = std::find_if(
-                COMMPort.begin(), COMMPort.end(), 
-                std::bind2nd(std::mem_fun_ref(&COMMPortItem_t::IsSamePort), szPort));
-            
+                COMMPort.begin(), 
+                COMMPort.end(), 
+                std::tr1::bind(&COMMPortItem_t::IsSamePort, _1, szPort)
+            );
             if(It != COMMPort.end()) {
                 dfe->Set(std::distance(COMMPort.begin(), It));
             } else {
@@ -1879,7 +1876,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    std::for_each(begin(tSpeed), end(tSpeed), std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe));
+    std::for_each(begin(tSpeed), end(tSpeed), std::tr1::bind(&DataFieldEnum::addEnumText, dfe, _1));
     
     dfe->Set(dwSpeedIndex1);
     wp->SetReadOnly(false);
@@ -1929,7 +1926,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    std::for_each(begin(tSpeed), end(tSpeed), std::bind1st(std::mem_fun(&DataFieldEnum::addEnumText), dfe));
+    std::for_each(begin(tSpeed), end(tSpeed), std::tr1::bind(&DataFieldEnum::addEnumText, dfe, _1));
 
     dfe->Set(dwSpeedIndex2);
     wp->RefreshDisplay();

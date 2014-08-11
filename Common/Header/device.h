@@ -38,8 +38,6 @@ public:
     inline const TCHAR* GetName() const { return _sName.c_str(); }
     inline const TCHAR* GetLabel() const { return _sLabel.empty()?_sName.c_str():_sLabel.c_str(); }
     
-    inline operator const TCHAR*() const { return GetLabel(); }
-    
 protected:
     std::tstring _sName;
     std::tstring _sLabel;
