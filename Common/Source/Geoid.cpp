@@ -17,41 +17,27 @@ unsigned char* egm96data= NULL;
 extern HINSTANCE hInst;
 
 void OpenGeoid(void) {
-  LPTSTR lpRes; 
-  HRSRC hResInfo;
-  HGLOBAL hRes; 
-  int len;
-  hResInfo = FindResource (hInst, TEXT("IDR_RASTER_EGM96S"), TEXT("RASTERDATA")); 
-
-  if (hResInfo == NULL) {
-    // unable to find the resource
+    LKASSERT(!egm96data);
     egm96data = NULL;
-    return;
-  }
-  // Load the wave resource. 
-  hRes = LoadResource (hInst, hResInfo); 
-  if (hRes == NULL) {
-    // unable to load the resource
-    egm96data = NULL;
-    return;
-  }
 
-  // Lock the wave resource and do something with it. 
-  lpRes = (LPTSTR)LockResource (hRes);
-  
-  if (lpRes) {
-    len = SizeofResource(hInst,hResInfo);
-    if (len==EGM96SIZE) {
-      egm96data = (unsigned char*)malloc(len);
-      strncpy((char*)egm96data,(char*)lpRes,len);
-    } else {
-      egm96data = NULL;
-      return;
+    HRSRC hResInfo = FindResource(hInst, TEXT("IDR_RASTER_EGM96S"), TEXT("RASTERDATA"));
+    if (hResInfo) {
+        HGLOBAL hRes = LoadResource(hInst, hResInfo);
+        if (hRes) {
+            // Lock the wave resource and do something with it. 
+            BYTE* lpRes = (BYTE*) LockResource(hRes);
+            if (lpRes) {
+                size_t len = SizeofResource(hInst, hResInfo);
+                if (len == EGM96SIZE) {
+                    egm96data = (unsigned char*) malloc(len);
+                    memcpy((char*) egm96data, (char*) lpRes, len);
+                }
+                UnlockResource(lpRes);
+            }
+            FreeResource(hRes);
+        }
     }
-  }
-  return;
 }
-
 
 void CloseGeoid(void) {
   if (egm96data) {
