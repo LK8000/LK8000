@@ -175,6 +175,8 @@ CC		:=$(TCPATH)gcc$(EXE)
 SIZE		:=$(TCPATH)size$(EXE)
 STRIP		:=$(TCPATH)strip$(EXE)
 WINDRES		:=$(TCPATH)windres$(EXE)
+LD		:=$(TCPATH)ld$(EXE)
+OBJCOPY		:=$(TCPATH)objcopy$(EXE)
 SYNCE_PCP	:=synce-pcp
 SYNCE_PRM	:=synce-prm
 CE_VERSION	:=0x0$(CE_MAJOR)$(CE_MINOR)
@@ -192,6 +194,7 @@ else
 ifeq ($(CONFIG_PC),y)
 CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
 CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1 -DMSOFT
+CE_DEFS		+=-DWIN32_RESOURCE
 else
 CE_DEFS		:=-D_WIN32_WCE=$(CE_VERSION) -D_WIN32_IE=$(CE_VERSION)
 CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
@@ -946,6 +949,7 @@ DIALOG_XML = $(wildcard Common/Data/Dialogs/*.xml)
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
 	$(BIN)/poco.a \
+	$(BIN)/egm96s.a \
 
 
 ifneq ($(CONFIG_LINUX),y)
@@ -1040,6 +1044,11 @@ $(BIN)/compat.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(COMPAT)) $(patsubst $(SRC)%.
 $(BIN)/poco.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(POCO)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(POCO))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
+
+$(BIN)/egm96s.a: Common/Data/Bitmaps/egm96s.dem
+	@$(NQ)echo "  binary  $@"
+	$(Q)$(LD) -r -b binary  $^ -o $@
+	$(Q)$(OBJCOPY) --rename-section .data=.rodata,alloc,load,readonly,data,contents $@
 
 $(BIN)/%.o: $(SRC)/%.c
 	@$(NQ)echo "  CC      $@"

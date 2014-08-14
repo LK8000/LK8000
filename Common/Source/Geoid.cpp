@@ -5,6 +5,8 @@
 
 */
 
+#include <memory.h>
+
 #include "externs.h"
 
 
@@ -12,53 +14,77 @@
 #define EGM96_W 180
 #define EGM96SIZE EGM96_W * EGM96_H //16200
 
-unsigned char* egm96data= NULL;
 
+
+#ifdef WIN32_RESOURCE
+unsigned char* egm96data = NULL;
 extern HINSTANCE hInst;
+#else
+const unsigned char* egm96data = NULL;
 
-void OpenGeoid(void) {
-    LKASSERT(!egm96data);
-    egm96data = NULL;
+extern const unsigned char _binary_Common_Data_Bitmaps_egm96s_dem_start[];
+extern const unsigned char _binary_Common_Data_Bitmaps_egm96s_dem_end[];
+#endif
 
-    HRSRC hResInfo = FindResource(hInst, TEXT("IDR_RASTER_EGM96S"), TEXT("RASTERDATA"));
-    if (hResInfo) {
-        HGLOBAL hRes = LoadResource(hInst, hResInfo);
-        if (hRes) {
-            // Lock the wave resource and do something with it. 
-            BYTE* lpRes = (BYTE*) LockResource(hRes);
-            if (lpRes) {
-                size_t len = SizeofResource(hInst, hResInfo);
-                if (len == EGM96SIZE) {
-                    egm96data = (unsigned char*) malloc(len);
-                    memcpy((char*) egm96data, (char*) lpRes, len);
+bool OpenGeoid(void) {
+    if(UseGeoidSeparation) {
+#ifdef WIN32_RESOURCE
+        LKASSERT(!egm96data);
+        egm96data = NULL;
+        HRSRC hResInfo = FindResource(hInst, TEXT("IDR_RASTER_EGM96S"), TEXT("RASTERDATA"));
+        if (hResInfo) {
+            HGLOBAL hRes = LoadResource(hInst, hResInfo);
+            if (hRes) {
+                // Lock the wave resource and do something with it. 
+                const BYTE* lpRes = (BYTE*) LockResource(hRes);
+                if (lpRes) {
+                    const size_t len = SizeofResource(hInst, hResInfo);
+                    if (len == EGM96SIZE) {
+                        egm96data = (unsigned char*) malloc(len);
+                        memcpy((char*) egm96data, (char*) lpRes, len);
+                    }
+                    UnlockResource(lpRes);
                 }
-                UnlockResource(lpRes);
+                FreeResource(hRes);
             }
-            FreeResource(hRes);
         }
+#else
+        if(std::distance(_binary_Common_Data_Bitmaps_egm96s_dem_start, _binary_Common_Data_Bitmaps_egm96s_dem_end) == EGM96SIZE) {
+            egm96data = _binary_Common_Data_Bitmaps_egm96s_dem_start;
+        }
+#endif
+        // disable use Geoid if resource can't be loaded;
+        UseGeoidSeparation = (egm96data);
     }
+    return (egm96data);
 }
 
 void CloseGeoid(void) {
   if (egm96data) {
+#ifdef WIN32_RESSOURCE
     free(egm96data);
+#endif
     egm96data = NULL;
   }
 }
 
 
-double getEGM96data(int x, int y) {
-  return (double)(egm96data[x+y*EGM96_W])-127;
+inline double getEGM96data(int x, int y) {
+    LKASSERT(egm96data);
+    return (double)(egm96data[x+y*EGM96_W])-127;
 }
 
 
-double interpolation2d(double x, double y, double z11, double z12, double z21, double z22) {
-  return (z22*y*x+z12*(1-y)*x+z21*y*(1-x)+z11*(1-y)*(1-x)); //x and y must be between 0 and 1
+inline double interpolation2d(double x, double y, double z11, double z12, double z21, double z22) {
+    return (z22*y*x+z12*(1-y)*x+z21*y*(1-x)+z11*(1-y)*(1-x)); //x and y must be between 0 and 1
 }
 
 
 double LookupGeoidSeparation(double lat, double lon) {
-  if (!egm96data) return 0.0;
+  if (!egm96data || !OpenGeoid()) {
+      return 0.0;
+  }
+
   double y=(90.0-lat)/2.0;
   int ilat=(int)y;
   if(lon<0) lon+= 360.0;

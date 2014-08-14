@@ -854,16 +854,14 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   pGPS->Altitude = ParseAltitude(params[8], params[9]);
   pGPS->Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
  
-  double GeoidSeparation;
-
   if (_tcslen(params[10])>0) {
     // No real need to parse this value,
     // but we do assume that no correction is required in this case
-    GeoidSeparation = ParseAltitude(params[10], params[11]);
+//    double GeoidSeparation = ParseAltitude(params[10], params[11]);
   } else {
 	if (UseGeoidSeparation) {
-		GeoidSeparation = LookupGeoidSeparation(pGPS->Latitude, pGPS->Longitude);
-		pGPS->Altitude -= GeoidSeparation;
+            double GeoidSeparation = LookupGeoidSeparation(pGPS->Latitude, pGPS->Longitude);
+            pGPS->Altitude -= GeoidSeparation;
 	}
   }
 
