@@ -11,6 +11,9 @@
 #include "Topology.h"
 #include "Multimap.h"
 
+#include <Poco/Latin1Encoding.h>
+#include <Poco/UTF16Encoding.h>
+#include <Poco/TextConverter.h>
 
 XShape::XShape() {
   hide=false;
@@ -892,19 +895,31 @@ void XShapeLabel::setlabel(const char* src) {
       free(label);
       label= NULL;
   }
-  
+
 #ifdef UNICODE
-  int nChars = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
-  if(nChars) {
-    label = (TCHAR*)malloc(nChars*sizeof(TCHAR));
-    if(label) {
-        MultiByteToWideChar(CP_ACP, 0, src, -1, label, nChars);
+    // from Latin1 (ANSI) To UNICODE
+    int nChars = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
+    if (nChars) {
+        label = (TCHAR*) malloc(nChars * sizeof (TCHAR));
+        if (label) {
+            MultiByteToWideChar(CP_ACP, 0, src, -1, label, nChars);
+        }
     }
-  }
 #else
+    // from Latin1 (ISO-8859-1) To Utf8
     int size = strlen(src);
-    label = (char*)malloc(size*sizeof(char)+1);
-    strcpy(label, src);
+    std::tstring utf8String;
+
+    Poco::Latin1Encoding Latin1Encoding;
+    Poco::UTF8Encoding utf8Encoding;
+
+    Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
+    converter.convert(src, (int) size * sizeof (char*), utf8String);
+    size = utf8String.size();
+    if(size) {
+        label = (TCHAR*) malloc(size * sizeof (TCHAR) + 1);
+        strcpy(label, utf8String.c_str());
+    }
 #endif
   
   hide=false;
