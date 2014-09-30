@@ -70,8 +70,6 @@ char *_tcschr(const char *c1, int c2) { return (char*)strchr(c1,c2); }
 char *_tcscpy(char *c1, const char *c2) { return (char*)strcpy(c1,c2); }
 #endif
 
-inline int mmin( const int t1, const int t2 ) { return t1 < t2 ? t1 : t2; }
-
 // Enumeration used to decipher what type a token is
 typedef enum TokenTypeTag
 {
@@ -1332,7 +1330,7 @@ XMLNode XMLNode::parseFile(const TCHAR *filename, LPCTSTR tag, XMLResults *pResu
 #if defined(WIN32) || defined(UNDER_CE)
 #ifdef _UNICODE
 #if !defined(UNDER_CE)
-    if (!IsTextUnicode(buf,mmin(l,10000),NULL))
+    if (!IsTextUnicode(buf,std::min(l,10000),NULL))
     {
 #endif
         LPTSTR b2=(LPTSTR)malloc(l*2+2);
@@ -1349,7 +1347,7 @@ XMLNode XMLNode::parseFile(const TCHAR *filename, LPCTSTR tag, XMLResults *pResu
     }
 #endif
 #else
-    if (IsTextUnicode(buf,mmin(l,10000),NULL))
+    if (IsTextUnicode(buf,std::min(l,10000),NULL))
     {
         l>>=1;
         LPTSTR b2=(LPTSTR)malloc(l+2);
