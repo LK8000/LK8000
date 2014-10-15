@@ -8,8 +8,6 @@
 
 #include "externs.h"
 #include "DoInits.h"
-#include <shlobj.h>
-
 
 // return Path including trailing directory separator.
 const TCHAR * LKGetLocalPath(void) {
@@ -70,6 +68,7 @@ const TCHAR * LKGetLocalPath(void) {
 
 
 #ifdef PNA
+#include <shlobj.h>
 BOOL GetFontPath(TCHAR *pPos)
 {
   HKEY    hKey;

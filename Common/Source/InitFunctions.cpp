@@ -46,7 +46,7 @@ extern void StartupLogFreeRamAndStorage();
 
 void PreloadInitialisation(bool ask) {
   LKLanguageReady=false;
-  LKReadLanguageFile();
+  LKReadLanguageFile(szLanguageFile);
   FillDataOptions(); // Load infobox list
 
   if (ask) {
@@ -105,7 +105,7 @@ void PreloadInitialisation(bool ask) {
 
   // Interface (before interface)
   if (!ask) {
-    LKReadLanguageFile();
+    LKReadLanguageFile(szLanguageFile);
     InputEvents::readFile();
   }
   

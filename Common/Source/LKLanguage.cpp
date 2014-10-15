@@ -18,12 +18,13 @@
 #define MAX_MESSAGES		2500 //2250 // Max number of MSG items
 #define MAX_MESSAGE_SIZE	150 // just for setting a limit
 
+TCHAR LKLangSuffix[4];
+
 bool LKLoadMessages(bool fillup);
-void LKUnloadMessage();
 
 // _@Hnnnn@
 // minimal: _@H1_  maximal: _@H1234_
-
+// this function is not thread safe ...
 const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 
   static TCHAR sFile[MAX_PATH];
@@ -200,7 +201,7 @@ const TCHAR *LKGetText(const TCHAR *TextIn) {
         inumber = (inumber * 10) + ((char)TextIn[3 + i] - '0');
     }
 
-    if (inumber > MAX_MESSAGES) return TextIn; // safe check
+    if (inumber >= MAX_MESSAGES) return TextIn; // safe check
     if(LKMessages[inumber]) {
         return LKMessages[inumber];
     }
@@ -211,9 +212,9 @@ const TCHAR *LKGetText(const TCHAR *TextIn) {
 // Direct token access, with range check, faster than LKGetText of course
 // !!! this function is not threadsafe in case of Error;
 //
-TCHAR *MsgToken(const unsigned int inumber) {
-  if (inumber<=MAX_MESSAGES) {
-    return (TCHAR *)LKMessages[inumber];
+const TCHAR *MsgToken(const unsigned int inumber) {
+  if (inumber<=MAX_MESSAGES && LKMessages[inumber]) {
+    return LKMessages[inumber];
   }
   static TCHAR terr[30];
   _stprintf(terr,_T("_@M%u_"),inumber);
@@ -222,7 +223,7 @@ TCHAR *MsgToken(const unsigned int inumber) {
 
 
 
-void LKReadLanguageFile() {
+void LKReadLanguageFile(const TCHAR* szFileName) {
   static TCHAR oldLang[4];
 
   if (DoInit[MDI_READLANGUAGEFILE]) {
@@ -232,9 +233,9 @@ void LKReadLanguageFile() {
   }
 
   bool english=false;
-  TCHAR szFile1[MAX_PATH] = TEXT("\0");
+  TCHAR szFile1[MAX_PATH] = _T("\0");
   _tcscpy(LKLangSuffix,_T(""));
-  _tcscpy(szFile1,szLanguageFile);
+  _tcscpy(szFile1,szFileName);
   tryeng:
   if (_tcslen(szFile1)==0) {
 	_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
@@ -288,8 +289,6 @@ void LKReadLanguageFile() {
 			StartupStore(_T("... CRITICAL, no english langauge available!%s"),NEWLINE);
 		} else {
 			StartupStore(_T("... LoadText failed, fallback to english language\n"));
-			_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
-			_tcscpy(szLanguageFile,szFile1);
 			_tcscpy(LKLangSuffix,_T("ENG"));
 			LKLoadMessages(false);
 		}

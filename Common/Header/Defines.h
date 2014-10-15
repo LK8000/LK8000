@@ -934,7 +934,9 @@ extern int Test_NIBLSCALE(short x, const int line, const TCHAR *file);
 // For debugging and trace tests
 #define IMHERE	StartupStore(_T(">>> %s:%u\n"), _T(__FILE__), __LINE__);
 
-#define gettext LKGetText
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
 
 
 #endif

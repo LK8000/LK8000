@@ -5,11 +5,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "dlgTools.h"
 #include "options.h"
+#include "dlgTools.h"
 
-void LKReadLanguageFile(void);
-void LKUnloadMessage();
 
 void SetWindowText_gettext(HWND hDlg, int entry);
 void ClearStatusMessages(void);

@@ -193,11 +193,6 @@ int MeasureCPULoad();
 TCHAR* GetWinPilotPolarInternalName(int i);
 void WeightOffset(double wload);
 
-const TCHAR *LKgethelptext(const TCHAR *TextIn);
-bool LKloadtext(void);
-const TCHAR *LKGetText(const TCHAR *TextIn);
-TCHAR *MsgToken(const unsigned int tindex);
-
 void InitCustomHardware(void);
 void DeInitCustomHardware(void);
 

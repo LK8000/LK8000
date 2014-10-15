@@ -9,6 +9,7 @@
 #ifndef LK8000_LK8000_H
 #define LK8000_LK8000_H
 
+#include "Sizes.h"
 
 typedef struct _DATAOPTIONS
 {

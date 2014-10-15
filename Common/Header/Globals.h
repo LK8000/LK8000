@@ -142,7 +142,6 @@ GEXTERN int  RecentNumber;
 GEXTERN short  SortedMode[MSM_TOP+1];
 
 GEXTERN bool  WarningHomeDir;
-GEXTERN TCHAR LKLangSuffix[4];
 
 // Specials
 GEXTERN bool UseGeoidSeparation;

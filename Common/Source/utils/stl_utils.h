@@ -9,6 +9,7 @@
 #define stl_utils_h__
 
 #include <cstddef>
+#include <algorithm>
 
 template<typename T, size_t N>
 inline size_t array_size(T (&array)[N])  {

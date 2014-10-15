@@ -37,7 +37,7 @@
 #include "device.h"
 #include "Task.h"
 #include "Globals.h"
-
+#include "LKLanguage.h"
 // Include header for heap allocation checking
 // #include "utils/heapcheck.h"
 

@@ -393,7 +393,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   InitLK8000();
   ReadAirfieldFile();
   SetHome(false);
-  LKReadLanguageFile();
+  LKReadLanguageFile(szLanguageFile);
   LKLanguageReady=true;
 
   RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, 
