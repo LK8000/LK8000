@@ -212,7 +212,8 @@ endif
 ######## compiler flags
 
 CPPFLAGS	:= $(INCLUDES) $(CE_DEFS)
-CPPFLAGS	+= -DNDEBUG
+CPPFLAGS	+= -DNDEBUG 
+CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS 
 #
 # LX MINIMAP CUSTOM VERSION
 #
@@ -221,7 +222,7 @@ CPPFLAGS	+= -DNDEBUG
 #
 #CPPFLAGS	+= -DFLARM_AVERAGE  NOW INSIDE options.h
 #CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type
-#CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
+CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
 
 CPPFLAGS	+= -Wall -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations 
@@ -382,6 +383,8 @@ LKINTER	:=\
 	$(NTR)/LKInterface.cpp \
 	$(NTR)/OverTargets.cpp\
 	$(NTR)/VirtualKeys.cpp\
+	$(NTR)/CScreenOrientation.cpp\
+	
 
 DRAW	:=\
 	$(DRW)/CalculateScreen.cpp \
@@ -468,6 +471,8 @@ DRAW	:=\
 	$(DRW)/Sonar.cpp \
 	$(DRW)/TextInBox.cpp \
 	$(DRW)/UpdateAndRefresh.cpp \
+	$(DRW)/AlphaBlend.cpp \
+
 
 CALC	:=\
 	$(CLC)/AddSnailPoint.cpp 		\

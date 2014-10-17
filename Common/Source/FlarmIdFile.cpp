@@ -8,6 +8,7 @@
 #include "externs.h"
 #include "FlarmIdFile.h"
 #include "DoInits.h"
+#include "utils/stl_utils.h"
 
 
 FlarmIdFile::FlarmIdFile(void)
@@ -99,13 +100,13 @@ void FlarmIdFile::GetItem(HANDLE hFile, FlarmId *flarmId)
 
 void FlarmIdFile::GetAsString(HANDLE hFile, int charCount, TCHAR *res)
 {
-  int bytesToRead = charCount * 2;
+  unsigned bytesToRead = charCount * 2;
   char bytes[100];
 
   fread(bytes, 1, bytesToRead, (FILE*)hFile);
     	
   TCHAR *curChar = res;
-  for (int z = 0; z < bytesToRead; z += 2)
+  for (unsigned z = 0; z < bytesToRead && (z+1) < array_size(bytes) ; z += 2)
     {
       char tmp[3];
       tmp[0] = bytes[z];

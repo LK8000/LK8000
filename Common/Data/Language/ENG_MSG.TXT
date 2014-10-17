@@ -2078,6 +2078,8 @@ _@M2175_ "Conical ESS"
 _@M2176_ "Cone Slope"
 _@M2177_ "Base Altitude"
 _@M2178_ "Base Radius"
+_@M2179_ "Speed Opt."
+_@M2180_ "Thermal Min"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"

@@ -8,12 +8,14 @@
 
 #include "externs.h"
 #include "McReady.h"
+#include "utils/stl_utils.h"
+#include "LKObjects.h"
 
 
 
 void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
 {
-  int minSpeed = iround(GlidePolar::Vminsink*0.8);
+  int minSpeed = iround(GlidePolar::Vminsink()*0.6);
   int maxSpeed = iround(SAFTEYSPEED*1.1);
   
   ResetScale();
@@ -45,6 +47,7 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   #endif
   if (maxSpeed>=MAXAVERAGECLIMBRATESIZE) maxSpeed=MAXAVERAGECLIMBRATESIZE-1; // could be also without -1
 
+  // Draw Polar curve
   for (int i=minSpeed; i<maxSpeed; ++i) {
     
     sinkrate0 = GlidePolar::SinkRate(i);
@@ -75,15 +78,88 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
     } 
   }
 
-  double ff = maxSpeed / max(1.0, CALCULATED_INFO.VMacCready);
+  // Draw Current MC Glide Slope
   double sb = GlidePolar::SinkRate(CALCULATED_INFO.VMacCready);
-  ff= (sb-MACCREADY)/max(1.0, CALCULATED_INFO.VMacCready);
+  double ff= (sb-MACCREADY)/max(1.0, CALCULATED_INFO.VMacCready);
 
   DrawLine(hdc, rc,
            0, MACCREADY, 
            maxSpeed,
            MACCREADY+ff*maxSpeed,
            STYLE_REDTHICK);
+
+  if(DoOptimizeRoute()) {
+    // Draw Conical ESS Best Glide Slope
+    double ConeSlope = 0.;
+
+    // Find Cone Slope :
+    LockTaskData();
+    for(unsigned i = 0; ValidTaskPoint(i); ++i) {
+        int Type;
+        GetTaskSectorParameter(i, &Type, NULL);
+        if(Type == CONE) {
+          ConeSlope = Task[i].PGConeSlope;
+          break;
+        }
+    }
+    UnlockTaskData();
+
+    if(ConeSlope>0.) {
+      double VOpt = GlidePolar::FindSpeedForSlope(ConeSlope);
+      double eqMC = GlidePolar::EquMC(VOpt);
+
+      DrawLine(hdc, rc, 0, eqMC, maxSpeed, eqMC-(maxSpeed/ConeSlope), STYLE_BLUETHIN);
+
+      SetTextColor(hdc,INVERTCOLORS?RGB_BLACK:RGB_WHITE);
+
+      HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
+      TCHAR text[3][80]; TCHAR value[3][80];
+      _stprintf(text[0],TEXT("%s"), gettext(TEXT("_@M2175_"))); // Conical ESS
+      _stprintf(text[1],TEXT("  %s"), gettext(TEXT("_@M2179_")));  // Speed Opt.
+      _stprintf(text[2],TEXT("  %s"), gettext(TEXT("_@M2180_")));  // "Thermal Min"
+
+      _stprintf(value[0],TEXT(" : %.1f"), ConeSlope); // Conical ESS
+      _stprintf(value[1],TEXT(" : %.0f %s"), VOpt*SPEEDMODIFY, Units::GetHorizontalSpeedName()); // Speed
+      _stprintf(value[2],TEXT(" : %.1f %s"), eqMC*LIFTMODIFY, Units::GetVerticalSpeedName()); // "Min sink"
+
+      // Calc Size of text
+      SIZE tsize = {0,0};
+      SIZE vsize = {0,0};
+
+      for(unsigned i = 0; i<array_size(text); ++i) {
+        SIZE sizeTmp;
+        GetTextExtentPoint(hdc, text[i], _tcslen(text[i]), &sizeTmp);
+        tsize.cx = std::max(tsize.cx, sizeTmp.cx);
+        tsize.cy = std::max(tsize.cy, sizeTmp.cy);
+
+        GetTextExtentPoint(hdc, value[i], _tcslen(value[i]), &sizeTmp);
+        vsize.cx = std::max(vsize.cx, sizeTmp.cx);
+        vsize.cy = std::max(vsize.cy, sizeTmp.cy);
+
+      }
+
+      RECT blockR = {
+          rc.right-tsize.cx-vsize.cx-IBLSCALE(4),
+          rc.top,
+          rc.right-IBLSCALE(4),
+          rc.top+tsize.cy*(int)array_size(text)
+      };
+
+      ::FillRect(hdc, &blockR, INVERTCOLORS?LKBrush_White:LKBrush_Black);
+
+      int OldBck = SetBkMode(hdc, OPAQUE);
+      for(unsigned i = 0; i<array_size(text); ++i) {
+        ExtTextOut(hdc, blockR.left,
+                        blockR.top+tsize.cy*i,
+                        ETO_OPAQUE, NULL, text[i], _tcslen(text[i]), NULL);
+        ExtTextOut(hdc, blockR.left+tsize.cx,
+                        rc.top+tsize.cy*i,
+                        ETO_OPAQUE, NULL, value[i], _tcslen(value[i]), NULL);
+      }
+      SetBkMode(hdc, OldBck);
+      SelectObject(hdc, hfOldU);
+    }
+  }
 
   if(INVERTCOLORS)
     SetTextColor(hdc,RGB_DARKGREEN);
@@ -105,31 +181,18 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
     SetTextColor(hdc,RGB_WHITE);
 
   HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-  extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
-  LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, text, (WCHAR*) NULL);
-
-   ExtTextOut(hdc, rc.left+IBLSCALE(30),
- 	               rc.bottom-IBLSCALE(130),
- 	               ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-
-  _stprintf(text,TEXT("%s %.0f kg"),  
-            gettext(TEXT("_@M814_")), // Weight
-	        GlidePolar::GetAUW());
-  ExtTextOut(hdc, rc.left+IBLSCALE(30), 
-	              rc.bottom-IBLSCALE(110),
-	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-
-  _stprintf(text,TEXT("%s %.1f kg/m2"),  
+  if( GlidePolar::WingArea>0.1 ) {
+    _stprintf(text,TEXT("%s %.1f kg/m2"),
 	             gettext(TEXT("_@M821_")), // Wing load
 	             GlidePolar::WingLoading);
-  ExtTextOut(hdc, rc.left+IBLSCALE(30), 
+    ExtTextOut(hdc, rc.left+IBLSCALE(30),
 	              rc.bottom-IBLSCALE(90),
 	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-
-  _stprintf(text, TEXT("%s: %3.0f  @ %3.0f %s"),
+  }
+  _stprintf(text, TEXT("%s: %3.1f  @ %3.0f %s"),
 		MsgToken(140), // Best LD
                   GlidePolar::bestld,
-                  GlidePolar::Vbestld*SPEEDMODIFY,
+                  GlidePolar::Vbestld()*SPEEDMODIFY,
                   Units::GetHorizontalSpeedName());
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
 	              rc.bottom-IBLSCALE(70),
@@ -139,7 +202,7 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
 		MsgToken(437), // Min sink
                   GlidePolar::minsink*LIFTMODIFY,
                   Units::GetVerticalSpeedName(),
-                  GlidePolar::Vminsink*SPEEDMODIFY,
+                  GlidePolar::Vminsink()*SPEEDMODIFY,
                   Units::GetHorizontalSpeedName());
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
 	              rc.bottom-IBLSCALE(50),

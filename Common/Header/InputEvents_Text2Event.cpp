@@ -144,6 +144,9 @@ Text2Event[68].event = &eventInfoPage;
 Text2Event[69].text = TEXT("ModeType");
 Text2Event[69].event = &eventModeType;
 
+Text2Event[70].text = TEXT("ChangeNettoVario");
+Text2Event[70].event = &eventChangeNettoVario;
+
 Text2GCE[0] = TEXT("AIRSPACE_ENTER");
 Text2GCE[1] = TEXT("AIRSPACE_LEAVE");
 Text2GCE[2] = TEXT("COMMPORT_RESTART");
@@ -300,7 +303,7 @@ Text2NE[127] = TEXT("UNUSED_55");
 Text2NE[128] = TEXT("UNUSED_56");
 Text2NE[129] = TEXT("UNUSED_57");
 Text2NE[130] = TEXT("COUNT");
-Text2Event_count = 70;
+Text2Event_count = 71;
 // Check no array overrun
 //ASSERT(130 <= NE_COUNT);
 // Check no array overrun

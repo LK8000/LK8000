@@ -359,6 +359,7 @@ GEXTERN double ThLatitude;
 GEXTERN double ThLongitude;
 GEXTERN double ThermalRadius;
 GEXTERN double SinkRadius;
+GEXTERN double SimNettoVario;
 
 // Append over here NEW
 

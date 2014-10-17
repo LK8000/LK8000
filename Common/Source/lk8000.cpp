@@ -66,6 +66,7 @@
 
 
 #include "TraceThread.h"
+#include "LKInterface/CScreenOrientation.h"
 
 #ifdef INT_OVERFLOW
 	#include <signal.h>
@@ -144,6 +145,8 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #endif
 #endif
 
+    CScreenOrientation SaveScreen(LKGetLocalPath());
+    
 	MSG msg = {0};
   HACCEL hAccelTable;
   (void)hPrevInstance;

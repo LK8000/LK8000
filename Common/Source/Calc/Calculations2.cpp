@@ -220,7 +220,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
   LockTaskData();
 
   double start_speed = Calculated->TaskStartSpeed;
-  double V_bestld = GlidePolar::Vbestld;
+  double V_bestld = GlidePolar::Vbestld();
   double energy_height_start = 
     max(0.0, start_speed*start_speed-V_bestld*V_bestld)/(9.81*2.0);
 

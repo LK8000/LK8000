@@ -21,8 +21,9 @@
 #define GS		GPS_INFO.Speed*TOKPH
 #define FLYING		CALCULATED_INFO.Flying
 #define THERMALLING	CALCULATED_INFO.Circling
-#define MINSPEED	GlidePolar::Vminsink*TOKPH
-#define STALLSPEED	GlidePolar::Vminsink*TOKPH*0.85
+
+//#define MINSPEED	GlidePolar::Vminsink()*TOKPH
+#define STALLSPEED	GlidePolar::Vminsink()*TOKPH*0.6
 
 // WE DONT USE LANDING, CRASHING AND FULL STALL SIMULATION NOW
 // #define SIMLANDING	1
@@ -150,6 +151,7 @@ void LKSimulator(void) {
 		}
 		// ALTITUDE+=simlift+GlidePolar::minsink;
 	} else {
+        sinkias -= SimNettoVario;
 		if (circling) {
 			// we were circling, now leaving the thermal
 			circling=false;
