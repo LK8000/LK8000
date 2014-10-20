@@ -24,25 +24,49 @@ static FILE *pfp=NULL;
 // Overload write functions
 //
 void LKWriteToProfile(const TCHAR *varname, bool varvalue) {
+#ifdef UNICODE
   // pfprintf(pfp,"%S=%d (bool)%s", varname, varvalue==1?1:0,PNEWLINE); correct
-  _ftprintf(pfp,_T("%s=%d%s"), varname, varvalue,PNEWLINE); // check we dont have fake bools
+  fprintf(pfp,"%S=%d%s", varname, varvalue,PNEWLINE); // check we dont have fake bools
+#else
+  fprintf(pfp,"%s=%d%s", varname, varvalue,PNEWLINE); // check we dont have fake bools
+#endif
 }
 void LKWriteToProfile(const TCHAR *varname, int varvalue) {
-  _ftprintf(pfp,_T("%s=%d%s"), varname, varvalue,PNEWLINE);
+#ifdef UNICODE
+  fprintf(pfp,"%S=%d%s", varname, varvalue,PNEWLINE);
+#else
+  fprintf(pfp,"%s=%d%s", varname, varvalue,PNEWLINE);
+#endif
 }
 void LKWriteToProfile(const TCHAR *varname, unsigned int varvalue) {
-  _ftprintf(pfp,_T("%s=%u%s"), varname, varvalue,PNEWLINE);
+#ifdef UNICODE
+  fprintf(pfp,"%S=%u%s", varname, varvalue,PNEWLINE);
+#else
+  fprintf(pfp,"%s=%u%s", varname, varvalue,PNEWLINE);
+#endif
 }
 void LKWriteToProfile(const TCHAR *varname, DWORD varvalue) {
-  _ftprintf(pfp,_T("%s=%ul%s"), varname, (unsigned int) varvalue,PNEWLINE);
+#ifdef UNICODE
+  fprintf(pfp,"%S=%ul%s", varname, (unsigned int) varvalue,PNEWLINE);
+#else
+  fprintf(pfp,"%s=%ul%s", varname, (unsigned int) varvalue,PNEWLINE);
+#endif
 }
 void LKWriteToProfile(const TCHAR *varname, double varvalue) {
-  _ftprintf(pfp,_T("%s=%.0f%s"), varname, varvalue,PNEWLINE);
+#ifdef UNICODE
+  fprintf(pfp,"%S=%.0f%s", varname, varvalue,PNEWLINE);
+#else
+  fprintf(pfp,"%s=%.0f%s", varname, varvalue,PNEWLINE);
+#endif
 }
 void LKWriteToProfile(const TCHAR *varname, TCHAR *varvalue) {
+#ifdef UNICODE
   char stmp[MAX_PATH];
   TCHAR2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
-  _ftprintf(pfp,_T("%s=\"%s\"%s"), varname, stmp ,PNEWLINE);
+  fprintf(pfp,"%S=\"%s\"%s", varname, stmp ,PNEWLINE);
+#else
+  fprintf(pfp,"%s=\"%s\"%s", varname, varvalue ,PNEWLINE);
+#endif
 }
 
 
