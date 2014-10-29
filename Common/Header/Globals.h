@@ -733,9 +733,6 @@ GEXTERN short TerrainRamp;
 GEXTERN Appearance_t Appearance;
 GEXTERN bool InverseInfoBox_Config;
 
-GEXTERN HANDLE hCalculationThread;
-GEXTERN DWORD dwCalcThreadID;
-
 GEXTERN BOOL extGPSCONNECT;
 GEXTERN bool DialogActive;
 

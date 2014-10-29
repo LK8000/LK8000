@@ -146,10 +146,6 @@ void WeightOffset(double wload);
 void InitCustomHardware(void);
 void DeInitCustomHardware(void);
 
-
-void SetSourceRectangle(RECT fromRect);
-RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed);
-
 void OpenFLARMDetails();
 void CloseFLARMDetails();
 TCHAR* LookupFLARMCn(long id);

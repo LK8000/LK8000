@@ -17,19 +17,6 @@ long GetUTCOffset(void) {
     return UTCOffset;
 }
 
-
-#if 0 // REMOVE ANIMATION
-static RECT AnimationRectangle = {0, 0, 0, 0};
-
-void SetSourceRectangle(RECT fromRect) {
-    AnimationRectangle = fromRect;
-}
-
-RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed) {
-    return AnimationRectangle;
-}
-#endif 
-
 void RestartCommPorts() {
 
     StartupStore(TEXT(". RestartCommPorts begin @%s%s"), WhatTimeIsIt(), NEWLINE);

@@ -158,7 +158,7 @@ class DataField{
   void SetDetachGUI(bool bDetachGUI) {mDetachGUI=bDetachGUI;}  // allows combolist to iterate all values w/out triggering external events
   bool GetDetachGUI(void) {return mDetachGUI;}
   virtual int CreateComboList(void) {return 0;};
-  virtual int CreateKeyboard(void) {return FALSE;};
+  virtual bool CreateKeyboard(void) {return false;}
 
   ComboList* GetCombo(void) { return &mComboList;}
   virtual int SetFromCombo(int iDataFieldIndex, TCHAR *sValue) {return SetAsInteger(iDataFieldIndex);};
@@ -448,7 +448,7 @@ class DataFieldFloat:public DataField{
   void Inc(void);
   void Dec(void);
   int CreateComboList(void);
-  int CreateKeyboard(void);
+  bool CreateKeyboard(void);
   int SetFromCombo(int iDataFieldIndex, TCHAR *sValue);
 
   bool GetAsBoolean(void);

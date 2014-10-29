@@ -987,7 +987,7 @@ int DataFieldFloat::SetFromCombo(int iDataFieldIndex, TCHAR *sValue) {
   return 0;
 }
 
-int DataFieldFloat::CreateKeyboard(void){
+bool DataFieldFloat::CreateKeyboard(void){
 	TCHAR szText[20];
 	_tcscpy(szText, GetAsString());
 	dlgNumEntryShowModal(szText,20, false);
@@ -995,7 +995,7 @@ int DataFieldFloat::CreateKeyboard(void){
 	TCHAR*szStop;
 	SetAsFloat(floor((StrToDouble(szText, &szStop)/mStep)+0.5)*mStep);
 
-	return TRUE;
+	return true;
 }
 
 
@@ -2092,9 +2092,6 @@ int WndForm::ShowModal(bool bEnableMap) {
 
   RECT mRc;
   GetWindowRect(GetHandle(), &mRc);
-  #if 0 // REMOVE ANIMATION
-  DrawWireRects(&mRc, 5);
-  #endif
 
   SetVisible(true);
 
@@ -2236,18 +2233,6 @@ int WndForm::ShowModal(bool bEnableMap) {
     }
   } // End Modal Loop
   WndForm::timeAnyOpenClose = GetTickCount(); // static.  this is current open/close or child open/close
-
-  //  SetSourceRectangle(mRc);
-  //  DrawWireRects(&aniRect, 5);
-
-  /*
-  // reset to center?
-  aniRect.top = (mRc.top+mRc.bottom)/2;;
-  aniRect.left = (mRc.left+mRc.right)/2;
-  aniRect.right = (mRc.left+mRc.right)/2;
-  aniRect.bottom = (mRc.top+mRc.bottom)/2;
-  SetSourceRectangle(aniRect);
-  */
 
   SetFocus(oldFocusHwnd);
 
@@ -2522,9 +2507,7 @@ int WndButton::OnLButtonUp(WPARAM wParam, LPARAM lParam){
     if (mOnClickNotify != NULL) {
       RECT mRc;
       GetWindowRect(GetHandle(), &mRc);
-      #if 0 // REMOVE ANIMATION
-      SetSourceRectangle(mRc);
-      #endif
+
       (mOnClickNotify)(this);
     }
   }
@@ -2570,9 +2553,6 @@ int WndButton::OnKeyUp(WPARAM wParam, LPARAM lParam){
     	if (mOnClickNotify != NULL) {
           RECT mRc;
           GetWindowRect(GetHandle(), &mRc);
-	  #if 0 // REMOVE ANIMATION
-          SetSourceRectangle(mRc);
-	  #endif
           (mOnClickNotify)(this);
         }
       }
@@ -3331,9 +3311,6 @@ int WndFrame::OnKeyDown(WPARAM wParam, LPARAM lParam){
   if (mIsListItem && GetOwner()!=NULL){
     RECT mRc;
     GetWindowRect(GetHandle(), &mRc);
-    #if 0 // REMOVE ANIMATION
-    SetSourceRectangle(mRc);
-    #endif
     return(((WndListFrame*)GetOwner())->OnItemKeyDown(this, wParam, lParam));
   }
   return(1);
