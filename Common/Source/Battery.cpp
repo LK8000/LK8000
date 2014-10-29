@@ -15,7 +15,7 @@
 #include "DoInits.h"
 
 
-#if (WINDOWSPC<1)
+#ifdef UNDER_CE
 DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 {
     // set default return value
@@ -51,11 +51,7 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 
 
 void UpdateBatteryInfos(void) {
-
-  #if (WINDOWSPC>0)
-  return;
-  #else
-
+#ifdef UNDER_CE
   BATTERYINFO BatteryInfo; 
   BatteryInfo.acStatus = 0;
 
@@ -119,6 +115,7 @@ void LKBatteryManager() {
 	DoInit[MDI_BATTERYMANAGER]=false;
   }
 
+#ifdef WIN32
 
   // if first run,  and not passed 30 seconds, do nothing
   if (last_percent==0 && (GPS_INFO.Time<(init_time+30))) {
@@ -269,7 +266,7 @@ void LKBatteryManager() {
 	last_percent=PDABatteryPercent;
 	return;
   }
-
+#endif
 }
 
 // returns true if no problems with too many warnings
