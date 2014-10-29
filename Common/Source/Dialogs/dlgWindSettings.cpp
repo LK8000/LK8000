@@ -10,7 +10,6 @@
 #include "LKProfiles.h"
 #include "Dialogs.h"
 
-extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
 static void OnCancelClicked(WindowControl * Sender){

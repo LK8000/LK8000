@@ -181,10 +181,8 @@ bool lk::filesystem::getBasePath(TCHAR* szPath, size_t MaxSize) {
     return true;
 }
 
-extern HWND hWndMainWindow;
-
 bool lk::filesystem::getUserPath(TCHAR* szPath, size_t MaxSize) {
-    if (SHGetSpecialFolderPath(hWndMainWindow, szPath, CSIDL_PERSONAL, false)) {
+    if (SHGetSpecialFolderPath(NULL, szPath, CSIDL_PERSONAL, false)) {
         if (szPath[0] != _T('\0')) {
             size_t n = _tcslen(szPath);
             if (szPath[n - 1] != _T('\\')) {

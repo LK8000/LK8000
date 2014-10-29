@@ -13,7 +13,6 @@
 #include "Dialogs.h"
 
 
-extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 static WindowControl *btnMove = NULL;
 static int ActiveWayPointOnEntry = 0;

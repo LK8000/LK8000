@@ -12,7 +12,6 @@
 #include "Logger.h"
 
 
-extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
 

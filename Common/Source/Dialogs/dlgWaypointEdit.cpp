@@ -19,7 +19,6 @@ using namespace std::tr1::placeholders;
 extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
 extern void UtmToLatLonWGS84 (int utmXZone, char utmYZone, double easting, double northing, double& lat, double& lon);
 
-extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 static WAYPOINT *global_wpt=NULL;
 

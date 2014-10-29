@@ -13,7 +13,6 @@
 #include "Calculations2.h"
 
 
-extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
 extern double CRUISE_EFFICIENCY;

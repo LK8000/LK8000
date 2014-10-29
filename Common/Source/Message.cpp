@@ -32,7 +32,6 @@
 
 Poco::Mutex  CritSec_Messages;
 
-extern HWND hWndMainWindow; // Main Windows
 extern HINSTANCE hInst;      // The current instance
 
 RECT Message::rcmsg;

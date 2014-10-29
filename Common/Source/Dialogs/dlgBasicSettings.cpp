@@ -13,7 +13,6 @@
 #include "Dialogs.h"
 #include "TraceThread.h"
 
-extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
 extern bool UpdateQNH(const double newqnh);

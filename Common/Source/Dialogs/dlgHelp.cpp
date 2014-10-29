@@ -12,7 +12,6 @@
 #include "Dialogs.h"
 
 
-extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
 

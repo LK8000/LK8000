@@ -19,7 +19,6 @@ extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;
 
 
-extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 static bool multi_page = false;
 static int status_page = 0;

@@ -15,8 +15,6 @@
 
 #include "RGB.h"
 
-extern HWND   hWndMainWindow;
-extern HWND   hWndMapWindow;
 CAirspaceBase airspace_copy;
 AirspaceWarningMessage msg;
 int timer_counter;

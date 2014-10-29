@@ -13,7 +13,6 @@
 #include "Dialogs.h"
 
 
-extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
 static void OnComboPopupListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo);
