@@ -212,7 +212,7 @@ void StopLogger(void) {
       LK_tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device and called "),MAX_PATH);
       _tcsncat(szMessage,sztmplogfile,MAX_PATH);
 
-      MessageBoxX(hWndMapWindow,
+      MessageBoxX(
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
 		gettext(TEXT("_@M404_")), MB_OK| MB_ICONERROR);
@@ -223,7 +223,7 @@ void StopLogger(void) {
     case 2: // NoMoveYesRename
       LK_tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device"),MAX_PATH);
 
-      MessageBoxX(hWndMapWindow,
+      MessageBoxX(
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
 		gettext(TEXT("_@M404_")), MB_OK| MB_ICONERROR);
@@ -235,7 +235,7 @@ void StopLogger(void) {
       LK_tcsncpy(szMessage,TEXT("++++++ Insuff. storage. Logger file in device's root folder, called "),MAX_PATH);
       _tcsncat(szMessage,sztmplogfile,MAX_PATH);
 
-      MessageBoxX(hWndMapWindow,
+      MessageBoxX(
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
 		gettext(TEXT("_@M404_")), MB_OK| MB_ICONERROR);
@@ -246,7 +246,7 @@ void StopLogger(void) {
     case 4: // Insufficient Storage.  YesRename
       LK_tcsncpy(szMessage,TEXT("++++++ Insufficient storage.  Logger file is in the root folder of your device"),MAX_PATH);
 
-      MessageBoxX(hWndMapWindow,
+      MessageBoxX(
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
 		gettext(TEXT("_@M404_")), MB_OK| MB_ICONERROR);
@@ -862,7 +862,7 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
   LKDoNotResetComms=true;
 
   // LKTOKEN  _@M221_ = "Declare Task?" 
-  if (MessageBoxX(hWndMapWindow, gettext(TEXT("_@M221_")), 
+  if (MessageBoxX(gettext(TEXT("_@M221_")), 
 	dev->Name, MB_YESNO| MB_ICONQUESTION) == IDYES) {
 
 	const unsigned ERROR_BUFFER_LEN = 64;
@@ -870,7 +870,7 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
 
 	if (devDeclare(dev, decl, ERROR_BUFFER_LEN, errorBuffer)) {
 		// LKTOKEN  _@M686_ = "Task Declared!" 
-		MessageBoxX(hWndMapWindow, gettext(TEXT("_@M686_")),
+		MessageBoxX(gettext(TEXT("_@M686_")),
 			dev->Name, MB_OK| MB_ICONINFORMATION);
 
 		DeclaredToDevice = true;
@@ -889,7 +889,7 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
 
 		// LKTOKEN  _@M265_ = "Error! Task NOT declared!" 
 		_sntprintf(buffer, 2*ERROR_BUFFER_LEN, _T("%s\n%s"), gettext(_T("_@M265_")), errorBuffer);
-		MessageBoxX(hWndMapWindow, buffer, dev->Name, MB_OK| MB_ICONERROR);
+		MessageBoxX(buffer, dev->Name, MB_OK| MB_ICONERROR);
       
 		DeclaredToDevice = false;
 	}
@@ -907,7 +907,7 @@ void LoggerDeviceDeclare() {
   #if 0
   if (CALCULATED_INFO.Flying) {
     // LKTOKEN  _@M1423_ = "Forbidden during flight!"
-    MessageBoxX(hWndMapWindow, gettext(TEXT("_@M1423_")), _T(""), MB_OK| MB_ICONINFORMATION);
+    MessageBoxX(gettext(TEXT("_@M1423_")), _T(""), MB_OK| MB_ICONINFORMATION);
     return;
   }
   #endif
@@ -935,7 +935,7 @@ void LoggerDeviceDeclare() {
 
   if (!found_logger) {
 	// LKTOKEN  _@M474_ = "No logger connected" 
-    MessageBoxX(hWndMapWindow, gettext(TEXT("_@M474_")),
+    MessageBoxX(gettext(TEXT("_@M474_")),
 		devB()->Name, MB_OK| MB_ICONINFORMATION);
     DeclaredToDevice = true; // testing only
   }
@@ -947,7 +947,7 @@ bool CheckDeclaration(void) {
   if (!DeclaredToDevice) {
     return true;
   } else {
-    if(MessageBoxX(hWndMapWindow,
+    if(MessageBoxX(
 	// LKTOKEN  _@M492_ = "OK to invalidate declaration?" 
 		   gettext(TEXT("_@M492_")),
 	// LKTOKEN  _@M694_ = "Task declared" 

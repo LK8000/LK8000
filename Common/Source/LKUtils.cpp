@@ -94,7 +94,7 @@ void GotoWaypoint(const int wpnum) {
 	_tcscpy(wpname,WayPointList[wpnum].Name);
 	wpname[10] = '\0';
 
-	if (MessageBoxX(hWndMapWindow,
+	if (MessageBoxX(
 	// LKTOKEN  _@M158_ = "CONFIRM GOTO, ABORTING TASK?" 
 	gettext(TEXT("_@M158_")),
 	// LKTOKEN  _@M40_ = "A task is running!" 

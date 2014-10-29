@@ -59,7 +59,7 @@ namespace DlgIgcFile {
                 StartupStore(_T("LookupDevice OK \n"));
                 if(nDevice == 0) {
                     StopHourglassCursor();
-                    MessageBoxX(NULL, _T("No Device"), _T("Error"), MB_OK);
+                    MessageBoxX(_T("No Device"), _T("Error"), MB_OK);
                     StartHourglassCursor();
                 } else {
                     WndProperty* wp = (WndProperty*)wfDlg->FindByName(TEXT("prpDeviceList"));
@@ -110,21 +110,21 @@ namespace DlgIgcFile {
 
                         if(!Obex.SendFile(DeviceIndex, szFileFullPath)) {
                             StopHourglassCursor();
-                            MessageBoxX(NULL, _T("Send Failed"), _T("Error"), MB_OK);
+                            MessageBoxX(_T("Send Failed"), _T("Error"), MB_OK);
                             StartHourglassCursor();
                         } else {
                             StopHourglassCursor();
-                            MessageBoxX(NULL, _T("File sent!"), _T("Success"), MB_OK);
+                            MessageBoxX(_T("File sent!"), _T("Success"), MB_OK);
                             StartHourglassCursor();
                         }
                     }
                 }
                 Obex.Shutdown();
             } else {
-                MessageBoxX(NULL, _T("Unsupported on this device"), _T("Error"), MB_OK);
+                MessageBoxX(_T("Unsupported on this device"), _T("Error"), MB_OK);
             }
 #else
-            MessageBoxX(NULL, _T("Unsupported on this device"), _T("Error"), MB_OK);
+            MessageBoxX(_T("Unsupported on this device"), _T("Error"), MB_OK);
 #endif
             StopHourglassCursor();
         }

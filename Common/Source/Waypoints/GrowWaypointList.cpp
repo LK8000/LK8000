@@ -27,7 +27,7 @@ WAYPOINT* GrowWaypointList() {
                                   LMEM_MOVEABLE | LMEM_ZEROINIT)) == NULL){
       
 	StartupStore(_T("+++ GrowWaypointList FAILED!%s"),NEWLINE);
-      MessageBoxX(hWndMainWindow,
+      MessageBoxX(
 	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
                   gettext(TEXT("_@M486_")),
 	// LKTOKEN  _@M266_ = "Error" 
@@ -49,7 +49,7 @@ WAYPOINT* GrowWaypointList() {
                                   LMEM_MOVEABLE | LMEM_ZEROINIT)) == NULL){
       
 	StartupStore(_T("+++ GrowWaypointCalc FAILED!%s"),NEWLINE);
-      MessageBoxX(hWndMainWindow,
+      MessageBoxX(
 	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
                   gettext(TEXT("_@M486_")),
 	// LKTOKEN  _@M266_ = "Error" 

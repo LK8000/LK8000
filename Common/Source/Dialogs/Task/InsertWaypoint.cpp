@@ -37,7 +37,7 @@ void InsertWaypoint(int index, unsigned short append) {
   
   if (ValidTaskPoint(MAXTASKPOINTS-1)) {
     // No room for any more task points!
-    MessageBoxX(hWndMapWindow,
+    MessageBoxX(
 	// LKTOKEN  _@M727_ = "Too many waypoints in task!" 
       gettext(TEXT("_@M727_")),
 	// LKTOKEN  _@M357_ = "Insert Waypoint" 

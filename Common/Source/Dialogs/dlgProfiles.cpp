@@ -44,7 +44,7 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
 
   if (file_index>0) {
 	_tcscpy(file_name,dfe->GetAsString());
-	if(MessageBoxX(hWndMapWindow, file_name, 
+	if(MessageBoxX(file_name, 
 		// LKTOKEN  _@M509_ = "Overwrite profile?" 
 		MsgToken(509), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -66,7 +66,7 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
 				return;
 		}
 		// LKTOKEN  _@M535_ = "Profile saved!" 
-		MessageBoxX(hWndMapWindow, MsgToken(535),_T(""), MB_OK|MB_ICONEXCLAMATION);
+		MessageBoxX(MsgToken(535),_T(""), MB_OK|MB_ICONEXCLAMATION);
 		return;
 	}
   	dfe->Set(0);
@@ -109,7 +109,7 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 		MsgToken(458), 
 		profile_name);
 
-	if(MessageBoxX(hWndMapWindow, tmptext, 
+	if(MessageBoxX(tmptext, 
 		// LKTOKEN  _@M579_ = "Save ?" 
 		MsgToken(579), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -131,7 +131,7 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 		}
 		dfe->addFile(profile_name, file_name);
 
-		MessageBoxX(hWndMapWindow, 
+		MessageBoxX(
 		// LKTOKEN  _@M535_ = "Profile saved!" 
 		MsgToken(535), 
 		_T(""), MB_OK|MB_ICONEXCLAMATION);
@@ -148,12 +148,12 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 		profile_name);
 
 	if (CheckClubVersion() ) {
-		MessageBoxX(hWndMapWindow, tmptext,
+		MessageBoxX(tmptext,
 		// LKTOKEN  _@M162_ = "Cannot overwrite!" 
 		MsgToken(162),
 		MB_OK|MB_ICONEXCLAMATION);
 	} else {
-		if(MessageBoxX(hWndMapWindow, tmptext, 
+		if(MessageBoxX(tmptext, 
 		// LKTOKEN  _@M510_ = "Overwrite?" 
 		MsgToken(510), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -174,7 +174,7 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 				default:
 					return;
 			}
-			MessageBoxX(hWndMapWindow, 
+			MessageBoxX(
 			// LKTOKEN  _@M535_ = "Profile saved!" 
 			MsgToken(535),
 			_T(""), MB_OK|MB_ICONEXCLAMATION);
@@ -217,14 +217,14 @@ static void OnLoadClicked(WindowControl * Sender){
   if (file_index>0) {
 	_tcscpy(file_name,dfe->GetAsString());
 
-	if(MessageBoxX(hWndMapWindow, file_name, 
+	if(MessageBoxX(file_name, 
 		// LKTOKEN  _@M397_ = "Load this profile?" 
 		MsgToken(397), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 		SettingsEnter();
 		LKProfileLoad(dfe->GetPathFile());
 		SettingsLeave();
-		MessageBoxX(hWndMapWindow, 
+		MessageBoxX(
 		// LKTOKEN  _@M534_ = "Profile loaded!" 
 		MsgToken(534),
 		_T(""), MB_OK|MB_ICONEXCLAMATION);

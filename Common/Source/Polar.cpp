@@ -277,8 +277,7 @@ void CalculateNewPolarCoef(void)
   GlidePolar::WingArea = 12.4;
 
   // Probably called from wrong thread - check
-  MessageBoxX(NULL, 
-              gettext(TEXT("_@M920_")), // Error loading Polar file!
+  MessageBoxX(gettext(TEXT("_@M920_")), // Error loading Polar file!
               gettext(TEXT("_@M791_")), // Warning
               MB_OK|MB_ICONERROR);
 

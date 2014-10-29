@@ -1060,7 +1060,7 @@ static void OnPaste(WindowControl *Sender) {
     return;
   }
 
-  if(MessageBoxX(hWndMapWindow,
+  if(MessageBoxX(
 	// LKTOKEN  _@M510_ = "Overwrite?" 
 		 gettext(TEXT("_@M510_")),
 	// LKTOKEN  _@M354_ = "InfoBox paste" 
@@ -1176,7 +1176,7 @@ static void OnProfileSaveAs(WindowControl * Sender, short mode) {
 
   if (file_index>0) {
 	_tcscpy(file_name,dfe->GetAsString());
-	if(MessageBoxX(hWndMapWindow, file_name, 
+	if(MessageBoxX(file_name, 
 	// LKTOKEN  _@M509_ = "Overwrite profile?" 
 		gettext(TEXT("_@M509_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -1197,7 +1197,7 @@ static void OnProfileSaveAs(WindowControl * Sender, short mode) {
 		}
 
 		// LKTOKEN  _@M535_ = "Profile saved!" 
-		MessageBoxX(hWndMapWindow, gettext(TEXT("_@M535_")),_T(""), MB_OK|MB_ICONEXCLAMATION);
+		MessageBoxX(gettext(TEXT("_@M535_")),_T(""), MB_OK|MB_ICONEXCLAMATION);
 		return;
 	}
   	dfe->Set(0);
@@ -1284,7 +1284,7 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 		gettext(TEXT("_@M458_")), 
 		profile_name);
 
-	if(MessageBoxX(hWndMapWindow, tmptext, 
+	if(MessageBoxX(tmptext, 
 	// LKTOKEN  _@M579_ = "Save ?" 
 		gettext(TEXT("_@M579_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -1306,7 +1306,7 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 
 		dfe->addFile(profile_name, file_name);
 
-		MessageBoxX(hWndMapWindow, 
+		MessageBoxX(
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 		gettext(TEXT("_@M535_")), 
 		_T(""), MB_OK|MB_ICONEXCLAMATION);
@@ -1323,12 +1323,12 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 		profile_name);
 
 	if (CheckClubVersion() ) {
-		MessageBoxX(hWndMapWindow, tmptext,
+		MessageBoxX(tmptext,
 	// LKTOKEN  _@M162_ = "Cannot overwrite!" 
 		gettext(TEXT("_@M162_")),
 		MB_OK|MB_ICONEXCLAMATION);
 	} else {
-		if(MessageBoxX(hWndMapWindow, tmptext, 
+		if(MessageBoxX(tmptext, 
 	// LKTOKEN  _@M510_ = "Overwrite?" 
 		gettext(TEXT("_@M510_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -1348,7 +1348,7 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 					break;
 			}
 
-			MessageBoxX(hWndMapWindow, 
+			MessageBoxX(
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 			gettext(TEXT("_@M535_")),
 			_T(""), MB_OK|MB_ICONEXCLAMATION);
@@ -1379,7 +1379,7 @@ static void OnWaypointNewClicked(WindowControl * Sender){
 
   // Cannot save waypoint if no file
   if ( NumberOfWayPoints<=NUMRESWP) { 
-	MessageBoxX(hWndMapWindow, 
+	MessageBoxX(
 	// LKTOKEN  _@M478_ = "No waypoint file selected, cannot save." 
 	gettext(TEXT("_@M478_")),
 	// LKTOKEN  _@M457_ = "New Waypoint" 
@@ -1459,7 +1459,7 @@ static void OnWaypointEditClicked(WindowControl * Sender){
   if (res != -1){
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE) {      // 100212
-		MessageBoxX(hWndMapWindow, 
+		MessageBoxX(
 	// LKTOKEN  _@M716_ = "This waypoint is read-only" 
 		gettext(TEXT("_@M716_")),
 	// LKTOKEN  _@M194_ = "CompeGPS Waypoint" 
@@ -1471,7 +1471,7 @@ static void OnWaypointEditClicked(WindowControl * Sender){
 	#endif
 
 	if ( WayPointList[res].Format == LKW_VIRTUAL) {      // 100212
-		MessageBoxX(hWndMapWindow, 
+		MessageBoxX(
 	// LKTOKEN  _@M716_ = "This waypoint is read-only" 
 		gettext(TEXT("_@M716_")),
 	// LKTOKEN  _@M775_ = "VIRTUAL Waypoint" 
@@ -1490,7 +1490,7 @@ static void OnWaypointEditClicked(WindowControl * Sender){
 static void AskWaypointSave(void) {
   if (WaypointsOutOfRange==2) {
 
-    if(MessageBoxX(hWndMapWindow,
+    if(MessageBoxX(
 	// LKTOKEN  _@M810_ = "Waypoints excluded, save anyway?" 
                    gettext(TEXT("_@M810_")),
 	// LKTOKEN  _@M811_ = "Waypoints outside terrain" 
@@ -1530,7 +1530,7 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE ) { // 100212
 	// LKTOKEN  _@M716_ = "This waypoint is read-only" 
-		MessageBoxX(hWndMapWindow, gettext(TEXT("_@M716_")),
+		MessageBoxX(gettext(TEXT("_@M716_")),
 	// LKTOKEN  _@M194_ = "CompeGPS Waypoint" 
 			gettext(TEXT("_@M194_")),
 			MB_OK|MB_ICONEXCLAMATION);
@@ -1539,14 +1539,14 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
 	#endif
 		if ( WayPointList[res].Format == LKW_VIRTUAL ) { // 100212
 	// LKTOKEN  _@M716_ = "This waypoint is read-only" 
-			MessageBoxX(hWndMapWindow, gettext(TEXT("_@M716_")),
+			MessageBoxX(gettext(TEXT("_@M716_")),
 	// LKTOKEN  _@M775_ = "VIRTUAL Waypoint" 
 				gettext(TEXT("_@M775_")),
 				MB_OK|MB_ICONEXCLAMATION);
 			return;
 		} else 
 	// LKTOKEN  _@M229_ = "Delete Waypoint?" 
-	if(MessageBoxX(hWndMapWindow, WayPointList[res].Name, gettext(TEXT("_@M229_")), 
+	if(MessageBoxX(WayPointList[res].Name, gettext(TEXT("_@M229_")), 
 	MB_YESNO|MB_ICONQUESTION) == IDYES) {
 		LockTaskData();
 		WayPointList[res].FileNum = -1;
@@ -4852,8 +4852,8 @@ int ival;
   }
 
   if (waypointneedsave) {
-    if(MessageBoxX(hWndMapWindow,
-	// LKTOKEN  _@M581_ = "Save changes to waypoint file?" 
+    if(MessageBoxX(
+    // LKTOKEN  _@M581_ = "Save changes to waypoint file?" 
                    gettext(TEXT("_@M581_")),
 	// LKTOKEN  _@M809_ = "Waypoints edited" 
                    gettext(TEXT("_@M809_")),
@@ -4877,7 +4877,7 @@ int ival;
   InitActiveGate();
 
     if (requirerestart) {
-      MessageBoxX (hWndMainWindow, 
+      MessageBoxX (
 	// LKTOKEN  _@M561_ = "Restart LK8000 to apply changes." 
 		   gettext(TEXT("_@M561_")), 
 		   TEXT("Configuration"), MB_OK);

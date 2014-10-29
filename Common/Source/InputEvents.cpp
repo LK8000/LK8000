@@ -523,7 +523,7 @@ int InputEvents::mode2int(const TCHAR *mode, bool create) {
   }
 
   // Should never reach this point
-  MessageBoxX(hWndMapWindow,
+  MessageBoxX(
         _T("DEFAULT_PROFILE IS NOT CORRECT"),
         _T("CONFIGURATION ERROR"),
         MB_OK|MB_ICONEXCLAMATION);
@@ -1714,7 +1714,7 @@ void InputEvents::eventAdjustWaypoint(const TCHAR *misc) {
 void InputEvents::eventAbortTask(const TCHAR *misc) {
 
   if (ValidTaskPoint(ActiveWayPoint)) {
-	if (MessageBoxX(hWndMapWindow, 
+	if (MessageBoxX(
 	// LKTOKEN  _@M179_ = "Clear the task?" 
 		gettext(TEXT("_@M179_")), 
 	// LKTOKEN  _@M178_ = "Clear task" 
@@ -1724,7 +1724,7 @@ void InputEvents::eventAbortTask(const TCHAR *misc) {
 		ClearTask();
 	}
   } else {
-	MessageBoxX(hWndMapWindow, 
+	MessageBoxX(
 	// LKTOKEN  _@M468_ = "No Task" 
 		gettext(TEXT("_@M468_")), 
 	// LKTOKEN  _@M178_ = "Clear task" 
@@ -1844,7 +1844,7 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
   _stprintf(ttmp,_T("TrueWind! %s: %d%%"),gettext(TEXT("_@M866_")),resw); // Quality
 #endif
 
-  if (MessageBoxX(hWndMapWindow, mbuf, ttmp, MB_YESNO|MB_ICONQUESTION) == IDYES) {
+  if (MessageBoxX(mbuf, ttmp, MB_YESNO|MB_ICONQUESTION) == IDYES) {
 
 	SetWindEstimate(wspeed/3.6,wfrom);
 
@@ -1876,7 +1876,7 @@ void InputEvents::eventInvertColor(const TCHAR *misc) { // 100114
 void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-	if (MessageBoxX(hWndMapWindow, 
+	if (MessageBoxX(
 	// LKTOKEN  _@M563_ = "Restart task?" 
 		gettext(TEXT("_@M563_")), 
 	// LKTOKEN  _@M562_ = "Restart task" 
@@ -1887,7 +1887,7 @@ void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 		UnlockTaskData();
 	}
   } else {
-	MessageBoxX(hWndMapWindow, 
+	MessageBoxX(
 	// LKTOKEN  _@M468_ = "No Task" 
 		gettext(TEXT("_@M468_")), 
 	// LKTOKEN  _@M562_ = "Restart task" 
@@ -1898,7 +1898,7 @@ void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 }
 
 void InputEvents::eventResetQFE(const TCHAR *misc) { // 100211
-	if (MessageBoxX(hWndMapWindow, 
+	if (MessageBoxX(
 	// LKTOKEN  _@M557_ = "Reset QFE?" 
 		gettext(TEXT("_@M557_")), 
 	// LKTOKEN  _@M559_ = "Reset zero QFE" 
@@ -1910,7 +1910,7 @@ void InputEvents::eventResetQFE(const TCHAR *misc) { // 100211
 }
 
 void InputEvents::eventRestartCommPorts(const TCHAR *misc) { // 100211
-	if (MessageBoxX(hWndMapWindow, 
+	if (MessageBoxX(
 	// LKTOKEN  _@M558_ = "Reset and restart COM Ports?" 
 		gettext(TEXT("_@M558_")), 
 	// LKTOKEN  _@M538_ = "RESET ALL COMM PORTS" 
@@ -2029,7 +2029,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 		// LKTOKEN  _@M961_ = "CONFIRM SCREEN LOCK?" 
 		_tcscpy(mtext, gettext(_T("_@M961_")));
 	}
-	if (MessageBoxX(hWndMapWindow, 
+	if (MessageBoxX(
 		mtext, _T(""),
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 			if (LockMode(2)) { // invert LockMode
@@ -2117,7 +2117,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("LOGBRESET")) == 0) {
-	if (MessageBoxX(hWndMapWindow, gettext(_T("_@M1751_")), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+	if (MessageBoxX(gettext(_T("_@M1751_")), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
 		ResetLogBook();
 		DoStatusMessage(gettext(_T("_@M1752_"))); // Reset
 	}
@@ -2245,7 +2245,7 @@ extern bool RotateScreen(short angle);
 
   if(_tcscmp(misc, TEXT("TASKREVERSE")) == 0) {
 	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-		if (MessageBoxX(hWndMapWindow,
+		if (MessageBoxX(
 			gettext(TEXT("_@M1852_")), // LKTOKEN  _@M1852_ = "Reverse task?"
 			gettext(TEXT("_@M1851_")), // LKTOKEN  _@M1851_ = "Reverse task"
 			MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -2254,7 +2254,7 @@ extern bool RotateScreen(short angle);
 			UnlockTaskData();
 		}
 	  } else {
-		MessageBoxX(hWndMapWindow,
+		MessageBoxX(
 			gettext(TEXT("_@M468_")),  // LKTOKEN  _@M468_ = "No Task"
 			gettext(TEXT("_@M1851_")), // LKTOKEN  _@M1851_ = "Reverse task"
 			MB_OK|MB_ICONEXCLAMATION);
@@ -2547,7 +2547,7 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
   if (_tcslen(misc)>0) {
 
 	if (_tcscmp(misc,_T("Factory")) == 0) {
-		if (MessageBoxX(hWndMapWindow, 
+		if (MessageBoxX(
 			_T("This will reset configuration to factory default. Confirm ?"), 
 			_T("Reset Factory Profile"), 
 			MB_YESNO|MB_ICONQUESTION) == IDNO) {
@@ -2570,14 +2570,14 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 			_stprintf(buffer2,_T("Profile \"%s\" not found inside _System"),misc);
 		else
 			_stprintf(buffer2,_T("Profile \"%s\" not found inside _Configuration"),misc);
-		MessageBoxX(hWndMapWindow, buffer2, _T("Load Profile"), MB_OK|MB_ICONEXCLAMATION);
+		MessageBoxX(buffer2, _T("Load Profile"), MB_OK|MB_ICONEXCLAMATION);
 		return;
 	}
 	fclose(fp);
 
 	if (!factory) {
 		_stprintf(buffer2,_T("Confirm loading \"%s\" from _Configuration ?"),misc);
-		if (MessageBoxX(hWndMapWindow, 
+		if (MessageBoxX(
 			buffer2,
 			_T("Load Profile"), 
 			MB_YESNO|MB_ICONQUESTION) == IDNO) {
@@ -2589,7 +2589,7 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 	LKProfileLoad(buffer);
 	SettingsLeave();
 	_stprintf(buffer2,_T("Profile \"%s\" loaded"),misc);
-	MessageBoxX(hWndMapWindow, buffer2, _T("Load Profile"), MB_OK|MB_ICONEXCLAMATION);
+	MessageBoxX(buffer2, _T("Load Profile"), MB_OK|MB_ICONEXCLAMATION);
   }
 }
 
@@ -2599,7 +2599,7 @@ void InputEvents::eventProfileSave(const TCHAR *misc) {
   TCHAR buffer[MAX_PATH];
   if (_tcslen(misc)>0) {
 	_stprintf(buffer,_T("Confirm saving \"%s\" to _Configuration ?"),misc); 
-	if (MessageBoxX(hWndMapWindow, 
+	if (MessageBoxX(
 		buffer, 
 		_T("Save Profile"), 
 		MB_YESNO|MB_ICONQUESTION) == IDNO) {
@@ -2611,7 +2611,7 @@ void InputEvents::eventProfileSave(const TCHAR *misc) {
 	_tcscat(buffer,misc);
 	LKProfileSave(buffer);
 	_stprintf(buffer,_T("%s saved to _Configuration "),misc);
-	MessageBoxX(hWndMapWindow, buffer, _T("Save Profile"), MB_OK|MB_ICONEXCLAMATION);
+	MessageBoxX(buffer, _T("Save Profile"), MB_OK|MB_ICONEXCLAMATION);
   }
 }
 

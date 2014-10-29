@@ -23,7 +23,7 @@ void SaveTask(const TCHAR *szFileName) {
 #endif
     } else {
 
-        MessageBoxX(hWndMapWindow,
+        MessageBoxX(
                 // LKTOKEN  _@M263_ = "Error in saving task!" 
                 gettext(TEXT("_@M263_")), gettext(TEXT("Save task")), MB_OK | MB_ICONEXCLAMATION);
         

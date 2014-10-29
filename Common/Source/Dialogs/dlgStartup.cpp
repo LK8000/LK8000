@@ -550,8 +550,8 @@ short dlgStartupShowModal(void){
 
 	LocalPath(mydir,_T(""));
 	_stprintf(mes,_T("%s"),mydir);
-	MessageBoxX(hWndMainWindow, _T("NO LK8000 DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 000"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("NO LK8000 DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
+	MessageBoxX(_T("NO LK8000 DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 000"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(mes, _T("NO LK8000 DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	RUN_MODE=RUN_EXIT;
 	Shutdown();
 	goto _exit;
@@ -563,8 +563,8 @@ short dlgStartupShowModal(void){
 
 	LocalPath(mydir,_T(LKD_SYSTEM));
 	_stprintf(mes,_T("%s"),mydir);
-	MessageBoxX(hWndMainWindow, _T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("NO SYSTEM DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
+	MessageBoxX(_T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(mes, _T("NO SYSTEM DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	RUN_MODE=RUN_EXIT;
 	Shutdown();
 	goto _exit;
@@ -577,8 +577,8 @@ short dlgStartupShowModal(void){
 
 	LocalPath(mydir,_T(LKD_LANGUAGE));
 	_stprintf(mes,_T("%s"),mydir);
-	MessageBoxX(hWndMainWindow, _T("LANGUAGE DIRECTORY CHECK FAIL\nCheck Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
+	MessageBoxX(_T("LANGUAGE DIRECTORY CHECK FAIL\nCheck Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	RUN_MODE=RUN_EXIT;
 	Shutdown();
 	goto _exit;
@@ -589,8 +589,8 @@ short dlgStartupShowModal(void){
 	StartupStore(_T("... CHECK LANGUAGE ENG_MSG FAILED!%s"),NEWLINE);
 	LocalPath(mydir,_T(LKD_LANGUAGE));
 	_stprintf(mes,_T("%s/ENG_MSG.TXT"),mydir);
-	MessageBoxX(hWndMainWindow, _T("ENG_MSG.TXT MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
+	MessageBoxX(_T("ENG_MSG.TXT MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
 	RUN_MODE=RUN_EXIT;
 	Shutdown();
 	goto _exit;
@@ -601,8 +601,8 @@ short dlgStartupShowModal(void){
 	StartupStore(_T("... CHECK SYSTEM DEFAULT_MENU.TXT FAILED!%s"),NEWLINE);
 	LocalPath(mydir,_T(LKD_SYSTEM));
 	_stprintf(mes,_T("%s/DEFAULT_MENU.TXT"),mydir);
-	MessageBoxX(hWndMainWindow, _T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
+	MessageBoxX(_T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
 	RUN_MODE=RUN_EXIT;
 	Shutdown();
 	goto _exit;
@@ -614,8 +614,8 @@ short dlgStartupShowModal(void){
 	StartupStore(_T("... CHECK SYSTEM _BITMAPSH FAILED!%s"),NEWLINE);
 	LocalPath(mydir,_T(LKD_BITMAPS));
 	_stprintf(mes,_T("%s/_BITMAPSH"),mydir);
-	MessageBoxX(hWndMainWindow, _T("_BITMAPSH MISSING in SYSTEM Bitmaps\nCheck System Install"), _T("FATAL ERROR 032"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
+	MessageBoxX(_T("_BITMAPSH MISSING in SYSTEM Bitmaps\nCheck System Install"), _T("FATAL ERROR 032"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
 	RUN_MODE=RUN_EXIT;
 	Shutdown();
 	goto _exit;
@@ -625,7 +625,7 @@ short dlgStartupShowModal(void){
   if (Bitmaps_Errors) {
       TCHAR mes[MAX_PATH];
       _stprintf(mes,_T("MISSING %d SYSTEM BITMAPS! CHECK INSTALLATION."),Bitmaps_Errors);
-      MessageBoxX(hWndMainWindow, mes, _T("MISSING FILES!"), MB_OK|MB_ICONQUESTION, true);
+      MessageBoxX(mes, _T("MISSING FILES!"), MB_OK|MB_ICONQUESTION, true);
   }
 
   if  (!CheckPolarsDir()) {
@@ -635,8 +635,8 @@ short dlgStartupShowModal(void){
 
 	LocalPath(mydir,_T(LKD_POLARS));
 	_stprintf(mes,_T("%s"),mydir);
-	MessageBoxX(hWndMainWindow, _T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("NO POLARS DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
+	MessageBoxX(_T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(mes, _T("NO POLARS DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	RUN_MODE=RUN_EXIT;
 	Shutdown();
 	goto _exit;
@@ -644,7 +644,7 @@ short dlgStartupShowModal(void){
 
   extern bool CheckFilesystemWritable(void);
   if (!CheckFilesystemWritable()) {
-	MessageBoxX(hWndMainWindow, _T("LK8000 CANNOT WRITE IN MEMORY CARD!\nCARD IS LOCKED, OR DAMAGED, OR FULL."), _T("CRITICAL PROBLEM"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(_T("LK8000 CANNOT WRITE IN MEMORY CARD!\nCARD IS LOCKED, OR DAMAGED, OR FULL."), _T("CRITICAL PROBLEM"), MB_OK|MB_ICONQUESTION);
 	RUN_MODE=RUN_EXIT;
 	Shutdown();
 	goto _exit;
@@ -674,7 +674,7 @@ short dlgStartupShowModal(void){
 					#if TESTBENCH
 					StartupStore(_T("... Selected FULL RESET virtual profile\n"));
 					#endif
-					if (MessageBoxX(NULL, gettext(TEXT("_@M1758_")), 
+					if (MessageBoxX(gettext(TEXT("_@M1758_")), 
 						gettext(TEXT("_@M1757_")), MB_OK|MB_ICONQUESTION));
 					FullResetAsked=true;
 				} else {
@@ -724,7 +724,7 @@ short dlgStartupShowModal(void){
   }
   if (RUN_MODE==RUN_EXIT) {
 	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
-	if (MessageBoxX(hWndMainWindow, 
+	if (MessageBoxX(
 	// LKTOKEN  _@M198_ = "Confirm Exit?" 
 		gettext(TEXT("_@M198_")), 
 		TEXT("LK8000"), MB_YESNO|MB_ICONQUESTION) == IDYES) {

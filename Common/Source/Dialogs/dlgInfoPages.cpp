@@ -252,8 +252,7 @@ void dlgInfoPagesShowModal(void){
 
   if (changed) {
     UpdateConfIP();
-    MessageBoxX (hWndMainWindow,
-                 gettext(TEXT("_@M1608_")), // infopages config saved
+    MessageBoxX (gettext(TEXT("_@M1608_")), // infopages config saved
                  TEXT(""), MB_OK);
   }
 

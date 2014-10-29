@@ -81,7 +81,7 @@ void RemoveWaypoint(int index) {
 	// LKTOKEN  _@M551_ = "Remove active Waypoint?" 
 	gettext(TEXT("_@M551_")));
 
-      int ret = MessageBoxX(hWndMapWindow,
+      int ret = MessageBoxX(
         tlkbuf,
 	// LKTOKEN  _@M550_ = "Remove Waypoint" 
         gettext(TEXT("_@M550_")),

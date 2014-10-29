@@ -422,7 +422,7 @@ void ReplayLogger::Start(void) {
   NumLoggerBuffered = 0;
   flightstats.Reset();
   if (!UpdateInternal()) {
-    MessageBoxX(hWndMapWindow,
+    MessageBoxX(
 	// LKTOKEN  _@M201_ = "Could not open IGC file!" 
 		gettext(TEXT("_@M201_")),
 	// LKTOKEN  _@M305_ = "Flight replay" 

@@ -40,7 +40,7 @@ void guiStartLogger(bool noAsk) {
 	}
 
 	// LKTOKEN  _@M637_ = "Start Logger" 
-	if(noAsk || (MessageBoxX(hWndMapWindow,TaskMessage,gettext(TEXT("_@M637_")), MB_YESNO|MB_ICONQUESTION) == IDYES))
+	if(noAsk || (MessageBoxX(TaskMessage,gettext(TEXT("_@M637_")), MB_YESNO|MB_ICONQUESTION) == IDYES))
 	{
 		IGCWriteLock=true; // Lock ASAP
 		if (LoggerClearFreeSpace()) {
@@ -77,7 +77,7 @@ void guiStartLogger(bool noAsk) {
 		} else {
 
 	// LKTOKEN  _@M408_ = "Logger inactive, insufficient storage!" 
-			MessageBoxX(hWndMapWindow, gettext(TEXT("_@M408_")),
+			MessageBoxX(gettext(TEXT("_@M408_")),
 	// LKTOKEN  _@M404_ = "Logger Error" 
 			gettext(TEXT("_@M404_")), MB_OK| MB_ICONERROR);
 			StartupStore(TEXT("------ Logger not started: Insufficient Storage%s"),NEWLINE);
@@ -93,7 +93,7 @@ void guiStopLogger(bool noAsk) {
   if (LoggerActive) {
     if(noAsk || 
 	// LKTOKEN  _@M669_ = "Stop Logger" 
-       (MessageBoxX(hWndMapWindow,gettext(TEXT("_@M669_")),
+       (MessageBoxX(gettext(TEXT("_@M669_")),
 	// LKTOKEN  _@M669_ = "Stop Logger" 
 		    gettext(TEXT("_@M669_")),
 		    MB_YESNO|MB_ICONQUESTION) == IDYES)) {

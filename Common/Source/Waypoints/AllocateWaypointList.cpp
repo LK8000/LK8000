@@ -23,7 +23,7 @@ bool AllocateWaypointList(void) {
     if(WayPointList == NULL) 
       {
 	StartupStore(_T("FAILED!%s"),NEWLINE);
-        MessageBoxX(hWndMainWindow,
+        MessageBoxX(
 	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
                     gettext(TEXT("_@M486_")),
 	// LKTOKEN  _@M266_ = "Error" 
@@ -39,7 +39,7 @@ bool AllocateWaypointList(void) {
     if(WayPointCalc == NULL) 
       {
 	StartupStore(_T("FAILED!%s"),NEWLINE);
-        MessageBoxX(hWndMainWindow,
+        MessageBoxX(
 	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
                     gettext(TEXT("_@M486_")),
 	// LKTOKEN  _@M266_ = "Error" 

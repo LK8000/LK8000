@@ -35,8 +35,7 @@ static void OnTargetClicked(WindowControl * Sender) {
 
   if ( LKTraffic[SelectedTraffic].Locked ) {
 #if 0
-	if (MessageBoxX(hWndMapWindow,
-		gettext(TEXT("_@M880_")), // UNLOCK current target?
+	if (MessageBoxX(gettext(TEXT("_@M880_")), // UNLOCK current target?
 		gettext(TEXT("_@M881_")), // Target selection
 	MB_YESNO|MB_ICONQUESTION) == IDYES) {
 
@@ -55,8 +54,8 @@ static void OnTargetClicked(WindowControl * Sender) {
 	return;
   }
 #if 0
-  if (MessageBoxX(hWndMapWindow, 
-	gettext(TEXT("_@M884_")), // LOCK this target?
+  if (MessageBoxX(
+    gettext(TEXT("_@M884_")), // LOCK this target?
 	gettext(TEXT("_@M881_")), // Target selection
   MB_YESNO|MB_ICONQUESTION) == IDYES) {
 #endif
