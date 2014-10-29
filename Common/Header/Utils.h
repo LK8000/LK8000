@@ -121,9 +121,6 @@ const TCHAR *LKGetLocalPath(void);
 void ExpandLocalPath(TCHAR* filein);
 void ContractLocalPath(TCHAR* filein);
 
-void ConvertTToC(CHAR* pszDest, const TCHAR* pszSrc);
-void ConvertCToT(TCHAR* pszDest, const CHAR* pszSrc);
-
 void propGetFontSettings(const TCHAR *Name, LOGFONT* lplf);
 void propGetFontSettingsFromString(const TCHAR *Buffer, LOGFONT* lplf);
 #if 0

@@ -682,37 +682,6 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
   return true;
 }
 
-// ////////////////////////////////////////////////////////////////
-//            Unicode <> Ascii conversions
-//
-void ConvertTToC(CHAR* pszDest, const TCHAR* pszSrc)
-{
-	for(unsigned int i = 0; i < _tcslen(pszSrc); i++)
-		pszDest[i] = (CHAR) pszSrc[i];
-}
-
-void ConvertCToT(TCHAR* pszDest, const CHAR* pszSrc)
-{
-	for(unsigned int i = 0; i < strlen(pszSrc); i++)
-		pszDest[i] = (TCHAR) pszSrc[i];
-}
-
-void unicodetoascii(TCHAR *utext, int utextsize, char *atext) {
-
-	int i,j;
-	if (utextsize==0) {
-		atext[0]=0;
-		return;
-	}
-
-	for (i=0,j=0; i<utextsize; i++) {
-		if (utext[i]==0) continue;
-		atext[j++]=utext[i];
-	}
-	atext[j]=0;
-
-}
-
 //
 // v5 NOTE about LK_tcsncpy
 // Remember: the destination must ALWAYS be sized numchars+1 at least!!

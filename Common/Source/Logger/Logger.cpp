@@ -12,7 +12,8 @@
 #include "dlgTools.h"
 #include "TraceThread.h"
 #include <ctype.h>
-#include <utils/stl_utils.h>
+#include "utils/stl_utils.h"
+#include "utils/stringext.h"
 
 // #define DEBUG_LOGGER	1
 
@@ -675,10 +676,10 @@ void LoggerHeader(void)
 
   // PNAs are also PPC2003, so careful
   #ifdef PNA
-  char pnamodel[MAX_PATH+1];
-  ConvertTToC(pnamodel,GlobalModelName);
-  pnamodel[_tcslen(GlobalModelName)]='\0';
-    	#ifndef LKCOMPETITION
+    char pnamodel[MAX_PATH+1];
+    TCHAR2ascii(GlobalModelName, pnamodel, sizeof(pnamodel));
+    pnamodel[_tcslen(GlobalModelName)]='\0';
+    #ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s PNA %s\r\n", LKFORK,pnamodel);
 	#else
     sprintf(temp,"HFFTYFRTYPE:%sC PNA %s\r\n", LKFORK,pnamodel);
