@@ -14,7 +14,7 @@
 #include "LKObjects.h"
 #include "utils/stl_utils.h"
 
-void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/, 
+void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*/, 
                              const bool ScaleChangeFeedback)
 {
     static short terrainwarning=0;
@@ -51,18 +51,18 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     TCHAR Scale2[200];
     TCHAR TEMP[20];
 
-    HPEN hpOld = (HPEN)SelectObject(hDC, hpMapScale2);
+    LKPen hpOld = Surface.SelectObject(hpMapScale2);
 
-    DrawSolidLine(hDC,lineOneStart,lineOneEnd, rc);
-    DrawSolidLine(hDC,lineTwoStart,lineTwoEnd, rc);
-    DrawSolidLine(hDC,lineThreeStart,lineThreeEnd, rc);
+    Surface.DrawSolidLine(lineOneStart,lineOneEnd, rc);
+    Surface.DrawSolidLine(lineTwoStart,lineTwoEnd, rc);
+    Surface.DrawSolidLine(lineThreeStart,lineThreeEnd, rc);
 
-    SelectObject(hDC, LKPen_White_N0);
-    DrawSolidLine(hDC,lineOneStart,lineOneEnd, rc);
-    DrawSolidLine(hDC,lineTwoStartB,lineTwoEnd, rc);
-    DrawSolidLine(hDC,lineThreeStartB,lineThreeEnd, rc);
+    Surface.SelectObject(LKPen_White_N0);
+    Surface.DrawSolidLine(lineOneStart,lineOneEnd, rc);
+    Surface.DrawSolidLine(lineTwoStartB,lineTwoEnd, rc);
+    Surface.DrawSolidLine(lineThreeStartB,lineThreeEnd, rc);
 
-    SelectObject(hDC, hpOld);
+    Surface.SelectObject(hpOld);
 
     flipflop=!flipflop;
 
@@ -212,29 +212,29 @@ _skip2:
 
     SIZE tsize;
 
-    SetBkMode(hDC,TRANSPARENT);
-    HFONT oldFont = (HFONT)SelectObject(hDC, MapWindowFont);
-    HPEN  oldPen=(HPEN)SelectObject(hDC, GetStockObject(BLACK_PEN));
-    HBRUSH oldBrush=(HBRUSH)SelectObject(hDC, GetStockObject(BLACK_BRUSH));
+    Surface.SetBkMode(TRANSPARENT);
+    LKFont oldFont = Surface.SelectObject(MapWindowFont);
+    LKPen  oldPen = Surface.SelectObject(LK_BLACK_PEN);
+    LKBrush oldBrush = Surface.SelectObject(LKBrush_Black);
 
-    GetTextExtentPoint(hDC, Scale, _tcslen(Scale), &tsize);
-    COLORREF mapscalecolor=OverColorRef;
-    if (mapscalecolor==RGB_SBLACK) mapscalecolor=RGB_WHITE;
+    Surface.GetTextSize(Scale, _tcslen(Scale), &tsize);
 
-    LKWriteText(hDC, Scale, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3), 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true); 
+    LKColor mapscalecolor = OverColorRef;
+    if (OverColorRef==RGB_SBLACK) mapscalecolor=RGB_WHITE;
 
-    GetTextExtentPoint(hDC, Scale2, _tcslen(Scale2), &tsize);
+    LKWriteText(Surface, Scale, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3), 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+
+    Surface.GetTextSize(Scale2, _tcslen(Scale2), &tsize);
 
     if (!DerivedDrawInfo.TerrainValid) {
 	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
     }
 
-    LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3)+tsize.cy, 
-	0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true); 
+    LKWriteText(Surface, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3)+tsize.cy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
 
-    SelectObject(hDC, oldPen);
-    SelectObject(hDC, oldBrush);
-    SelectObject(hDC,oldFont);
+    Surface.SelectObject(oldPen);
+    Surface.SelectObject(oldBrush);
+    Surface.SelectObject(oldFont);
 
 }
 

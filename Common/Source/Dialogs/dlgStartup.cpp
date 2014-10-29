@@ -16,7 +16,7 @@
 
 
 extern void Shutdown(void);
-extern void LoadSplash(HDC hDC,const TCHAR *splashfile);
+extern void LoadSplash(LKSurface& Surface,const TCHAR *splashfile);
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
@@ -24,7 +24,7 @@ static WndOwnerDrawFrame *wSplash=NULL;
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
 extern bool CheckSystemBitmaps(void);
-void RawWrite(HDC hDC, const TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode);
+void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, const LKColor& rgbcolor, int wtmode);
 
 // This global is set true on startup only here, and it is cleared by the LoadNewTask
 // LoadNewTask is called by event manager at start of normal run
@@ -51,7 +51,7 @@ static int OnTimerNotify(WindowControl *Sender)
 	_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
 	short r,g,b;
 	r=rand()%256; g=rand()%256; b=rand()%256;
-	RawWrite(Sender->GetDeviceContext(),mes,12,1, RGB(r,g,b),WTMODE_NORMAL);
+	RawWrite(Sender->GetDeviceContext(),mes,12,1, LKColor;
    }
    #endif
    return 0;
@@ -62,34 +62,34 @@ static int OnTimerNotify(WindowControl *Sender)
 // Syntax  hdc _Text linenumber fontsize 
 // lines are: 0 - 9
 // fsize 0 small 1 normal 2 big
-void RawWrite(HDC hDC, const TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode) { 
-   HFONT oldfont=(HFONT)SelectObject(hDC,MapWindowFont);
+void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, const LKColor& rgbcolor,int wtmode) {
+   LKFont oldfont = Surface.SelectObject(MapWindowFont);
    switch(fsize) {
 	case 0:
-		SelectObject(hDC,TitleWindowFont);
+		Surface.SelectObject(TitleWindowFont);
 		break;
 	case 1:
-		SelectObject(hDC,LK8MapFont);
+		Surface.SelectObject(LK8MapFont);
 		break;
 	case 2:
-		SelectObject(hDC,LK8MediumFont);
+		Surface.SelectObject(LK8MediumFont);
 		break;
 	case 3:
-		SelectObject(hDC,LK8BigFont);
+		Surface.SelectObject(LK8BigFont);
 		break;
    }
-   SetBkMode(hDC,TRANSPARENT);
+   Surface.SetBkMode(TRANSPARENT);
    SIZE tsize;
-   GetTextExtentPoint(hDC, text, _tcslen(text), &tsize);
+   Surface.GetTextSize(text, _tcslen(text), &tsize);
    int y;
    y=tsize.cy*(line-1) + (tsize.cy/2);
 
-   MapWindow::LKWriteText(hDC,text,ScreenSizeX/2,y,0,wtmode,WTALIGN_CENTER,rgbcolor,false);
-   SelectObject(hDC,oldfont);
+   MapWindow::LKWriteText(Surface,text,ScreenSizeX/2,y,0,wtmode,WTALIGN_CENTER,rgbcolor,false);
+   Surface.SelectObject(oldfont);
 }
 
 
-static void OnSplashPaint(WindowControl * Sender, HDC hDC){
+static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 
  TCHAR srcfile[MAX_PATH];
  TCHAR fprefix[20];
@@ -101,7 +101,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
  else
 	_tcscpy(fprefix,_T("LKPROFILE"));
 
- LoadSplash(hDC,fprefix);
+ LoadSplash(Surface,fprefix);
 
   if (RUN_MODE==RUN_WELCOME) {
 	TCHAR mes[100];
@@ -150,14 +150,14 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	}
 	if (FullResetAsked) {
 		_stprintf(mes,_T("*** %s ***"),gettext(_T("_@M1757_")));
-		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
+		RawWrite(Surface,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
 	} else {
 #ifndef LKCOMPETITION
 		_stprintf(mes,_T("Version %s.%s (%s)"),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
 #else
 		_stprintf(mes,_T("V%s.%s (%s) COMPETITION"),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
 #endif
-		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
+		RawWrite(Surface,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
 	}
   }
 
@@ -171,44 +171,44 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 #else
 	_stprintf(mes,_T("%sC v%s.%s - %s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE),gettext(_T("_@M2054_")));
 #endif
-	RawWrite(hDC,mes,1,1, RGB_LIGHTGREY,WTMODE_NORMAL);
+	RawWrite(Surface,mes,1,1, RGB_LIGHTGREY,WTMODE_NORMAL);
 
 	unsigned long freeram = CheckFreeRam()/1024;
 	TCHAR buffer[MAX_PATH];
 	LocalPath(buffer);
 	unsigned long freestorage = FindFreeSpace(buffer);
 	_stprintf(mes,_T("free ram %.1ldM  storage %.1ldM"), freeram/1024,freestorage/1024);
-	RawWrite(hDC,mes,3,0, RGB_LIGHTGREY,WTMODE_NORMAL);
+	RawWrite(Surface,mes,3,0, RGB_LIGHTGREY,WTMODE_NORMAL);
 
 	if ( ScreenSize != ss320x240 && ScreenLandscape )
-	RawWrite(hDC,_T("_______________________"),2,2, RGB_LIGHTGREY,WTMODE_NORMAL);
+	RawWrite(Surface,_T("_______________________"),2,2, RGB_LIGHTGREY,WTMODE_NORMAL);
 
 	if (FullResetAsked) {
 		_stprintf(mes,_T("%s"),gettext(_T("_@M1757_")));	// LK8000 PROFILES RESET
-		RawWrite(hDC,mes,5,2, RGB_ICEWHITE, WTMODE_OUTLINED);
+		RawWrite(Surface,mes,5,2, RGB_ICEWHITE, WTMODE_OUTLINED);
 		_stprintf(mes,_T("%s"),gettext(_T("_@M1759_")));	// SELECTED IN SYSTEM
-		RawWrite(hDC,mes,6,2, RGB_ICEWHITE, WTMODE_OUTLINED);
+		RawWrite(Surface,mes,6,2, RGB_ICEWHITE, WTMODE_OUTLINED);
 	} else {
 		_stprintf(mes,_T("%s"),PilotName_Config);
-		RawWrite(hDC,mes,4,2, RGB_ICEWHITE, WTMODE_OUTLINED);
+		RawWrite(Surface,mes,4,2, RGB_ICEWHITE, WTMODE_OUTLINED);
 
 		_stprintf(mes,_T("%s"),AircraftRego_Config);
-		RawWrite(hDC,mes,5,2, RGB_AMBER, WTMODE_OUTLINED);
+		RawWrite(Surface,mes,5,2, RGB_AMBER, WTMODE_OUTLINED);
 
 		_stprintf(mes,_T("%s"),AircraftType_Config);
-		RawWrite(hDC,mes,6,2, RGB_AMBER, WTMODE_OUTLINED);
+		RawWrite(Surface,mes,6,2, RGB_AMBER, WTMODE_OUTLINED);
 
     LKASSERT(szPolarFile[0]);
 		extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
 		LK_tsplitpath(szPolarFile, (TCHAR*) NULL, (TCHAR*) NULL, srcfile, (TCHAR*) NULL);
 
 		_stprintf(mes,_T("%s %s"),gettext(_T("_@M528_")),srcfile);  // polar file
-		RawWrite(hDC,mes,7,2, RGB_AMBER, WTMODE_OUTLINED);
+		RawWrite(Surface,mes,7,2, RGB_AMBER, WTMODE_OUTLINED);
 
     LKASSERT(startProfileFile[0]);
 		LK_tsplitpath(startProfileFile, (TCHAR*) NULL, (TCHAR*) NULL, srcfile, (TCHAR*) NULL);
 		_stprintf(mes,_T("%s: %s"),MsgToken(1746),srcfile);  
-		RawWrite(hDC,mes,11,1, RGB_ICEWHITE, WTMODE_NORMAL);
+		RawWrite(Surface,mes,11,1, RGB_ICEWHITE, WTMODE_NORMAL);
 	}
 
 

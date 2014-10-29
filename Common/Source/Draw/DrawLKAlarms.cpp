@@ -13,7 +13,7 @@
 //
 // Called by DrawThread
 //
-void MapWindow::DrawLKAlarms(HDC hDC, const RECT rc) {
+void MapWindow::DrawLKAlarms(LKSurface& Surface, const RECT& rc) {
 
   static unsigned short displaycounter=0;
   static short oldvalidalarm=-1;
@@ -72,11 +72,11 @@ void MapWindow::DrawLKAlarms(HDC hDC, const RECT rc) {
 			break;
 	}
 
-	HFONT oldfont=NULL;
+	LKFont oldfont;
 	if (ScreenLandscape)
-		oldfont=(HFONT)SelectObject(hDC,LK8TargetFont);
+		oldfont=Surface.SelectObject(LK8TargetFont);
 	else
-		oldfont=(HFONT)SelectObject(hDC,LK8MediumFont);
+		oldfont=Surface.SelectObject(LK8MediumFont);
 
 	TextInBoxMode_t TextInBoxMode = {0};
 	TextInBoxMode.Color = RGB_WHITE;
@@ -86,9 +86,9 @@ void MapWindow::DrawLKAlarms(HDC hDC, const RECT rc) {
 	TextInBoxMode.Border = 1;
 
 	// same position for gps warnings: if navwarning, then no alarms. So no overlapping.
-        TextInBox(hDC, &rc, textalarm , (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode); 
+        TextInBox(Surface, &rc, textalarm , (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 
-	SelectObject(hDC,oldfont);
+	Surface.SelectObject(oldfont);
   }
 
 }

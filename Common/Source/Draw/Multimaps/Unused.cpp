@@ -27,29 +27,29 @@ bool bBlack = true;
 DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
 PolygonRotateShift(Telescope, 17, x, y, AngleLimit360( fAngle  ));
 
-HPEN	oldBPen ;
-HBRUSH oldBrush ;
+LKPen	oldBPen ;
+LKBrush oldBrush ;
 if (!bBlack)
 {
-  oldBPen  = (HPEN)    SelectObject(hdc, GetStockObject(WHITE_PEN));
-  oldBrush = (HBRUSH)  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+  oldBPen  = Surface.SelectObject(LK_WHITE_PEN));
+  oldBrush = Surface.SelectObject(LKBrush_White);
 }
 else
 {
-  oldBPen  = (HPEN)    SelectObject(hdc, GetStockObject(BLACK_PEN));
-  oldBrush = (HBRUSH)  SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+  oldBPen  = Surface.SelectObject(LK_BLACK_PEN);
+  oldBrush = Surface.SelectObject(LKBrush_Black);
 }
-Polygon(hdc,Telescope,17);
+Surface.Polygon(Telescope,17);
 
 if (!bBlack)
-  SelectObject(hdc, GetStockObject(BLACK_PEN));
+  Surface.SelectObject(LK_BLACK_PEN));
 else
-  SelectObject(hdc, GetStockObject(WHITE_PEN));
+  Surface.SelectObject(LK_WHITE_PEN));
 
-Polygon(hdc,Telescope,17);
+Surface.Polygon(Telescope,17);
 
-SelectObject(hdc, oldBrush);
-SelectObject(hdc, oldBPen);
+Surface.SelectObject(oldBrush);
+Surface.SelectObject(oldBPen);
 }
 
 
@@ -111,15 +111,15 @@ RECT rc	= psDia->rc;
   int y = rc.top+35;
 
   if (ret) {
-    SelectObject(hdc, LK8MediumFont);
+    Surface.SelectObject(LK8MediumFont);
     GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &tsize);
     y = rc.top;
-    ExtTextOut(hdc, x- tsize.cx/2, y, ETO_OPAQUE, NULL, BufferValue, _tcslen(BufferValue), NULL);
+    DrawText(hdc, x- tsize.cx/2, y, ETO_OPAQUE, NULL, BufferValue, _tcslen(BufferValue), NULL);
 
 	y += tsize.cy-5;
-	SelectObject(hdc, LK8PanelUnitFont);
+	Surface.SelectObject(LK8PanelUnitFont);
 	GetTextExtentPoint(hdc, szOvtname, _tcslen(szOvtname), &tsize);
-	ExtTextOut(hdc, x-tsize.cx/2, y, ETO_OPAQUE, NULL, szOvtname, _tcslen(szOvtname), NULL);
+	DrawText(hdc, x-tsize.cx/2, y, ETO_OPAQUE, NULL, szOvtname, _tcslen(szOvtname), NULL);
   }
 }
 

@@ -51,18 +51,16 @@ void MapWindow::DrawThread ()
   UpdateTimeStats(true);
 
   
-  SetBkMode(hdcDrawWindow,TRANSPARENT);
-  SetBkMode(hDCTemp,OPAQUE);
-  SetBkMode(hDCMask,OPAQUE);
+  hdcDrawWindow.SetBkMode(TRANSPARENT);
+  hdcMask.SetBkMode(OPAQUE);
 
   // paint draw window black to start
-  SelectObject(hdcDrawWindow, GetStockObject(BLACK_PEN));
-  Rectangle(hdcDrawWindow,MapRect.left,MapRect.top,
-            MapRect.right,MapRect.bottom);
+  hdcDrawWindow.SelectObject(LK_BLACK_PEN);
+  hdcDrawWindow.Rectangle(MapRect.left,MapRect.top, MapRect.right,MapRect.bottom);
 
-  BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
+  ScreenSurface.Copy(0, 0, MapRect.right-MapRect.left,
          MapRect.bottom-MapRect.top, 
-         hdcDrawWindow, 0, 0, SRCCOPY);
+         hdcDrawWindow, 0, 0);
 
   // This is just here to give fully rendered start screen
   UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
@@ -147,28 +145,21 @@ void MapWindow::DrawThread ()
 		
 		if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
 
-			int fromX=0, fromY=0;
+			const int fromX=XstartScreen-XtargetScreen;
+			const int fromY=YstartScreen-YtargetScreen;
 
-			fromX=XstartScreen-XtargetScreen;
-			fromY=YstartScreen-YtargetScreen;
+			ScreenSurface.Whiteness(0, 0,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 
-			BitBlt(hdcScreen, 0, 0, 
-				MapRect.right-MapRect.left, 
-				MapRect.bottom-MapRect.top, 
-				hdcDrawWindow, 0, 0, WHITENESS);
-
-
-			BitBlt(hdcScreen, 0, 0,
+			ScreenSurface.Copy(0, 0,
 				MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
 				hdcDrawWindow, 
-				fromX,fromY, 				// source
-				SRCCOPY);
+				fromX,fromY);
 
 			POINT centerscreen;
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-			DrawMapScale(hdcScreen,MapRect,false);
-			DrawCrossHairs(hdcScreen, centerscreen, MapRect);
+			DrawMapScale(ScreenSurface,MapRect,false);
+			DrawCrossHairs(ScreenSurface, centerscreen, MapRect);
 			lastdrawwasbitblitted=true;
 		} else {
 			// THIS IS NOT GOING TO HAPPEN!
@@ -176,9 +167,9 @@ void MapWindow::DrawThread ()
 			// The map was not dirty, and we are not in fastpanning mode.
 			// FastRefresh!  We simply redraw old bitmap. 
 			//
-			BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
+			ScreenSurface.Copy(0, 0, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
-				hdcDrawWindow, 0, 0, SRCCOPY);
+				hdcDrawWindow, 0, 0);
 
 			lastdrawwasbitblitted=true;
 		}
@@ -206,14 +197,14 @@ void MapWindow::DrawThread ()
 				lasthere=LKHearthBeats;
 				goto _dontbitblt;
 			}
-			BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
+			ScreenSurface.Copy(0, 0, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
-				hdcDrawWindow, 0, 0, SRCCOPY);
+				hdcDrawWindow, 0, 0);
 
 			POINT centerscreen;
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-			DrawMapScale(hdcScreen,MapRect,false);
-			DrawCrossHairs(hdcScreen, centerscreen, MapRect);
+			DrawMapScale(ScreenSurface,MapRect,false);
+			DrawCrossHairs(ScreenSurface, centerscreen, MapRect);
 			continue;
 		} 
 		#endif // --------------------------
@@ -228,11 +219,12 @@ _dontbitblt:
 	RenderMapWindow(MapRect);
     
 	if (!ForceRenderMap && !first_run) {
-		BitBlt(hdcScreen, 0, 0, 
+		ScreenSurface.Copy(0, 0,
 			MapRect.right-MapRect.left,
 			MapRect.bottom-MapRect.top, 
-			hdcDrawWindow, 0, 0, SRCCOPY);
-		InvalidateRect(hWndMapWindow, &MapRect, false);
+			hdcDrawWindow, 0, 0);
+
+        InvalidateRect(hWndMapWindow, &MapRect, false);
 	}
 
 	// Draw cross sight for pan mode, in the screen center, 
@@ -240,9 +232,9 @@ _dontbitblt:
 	if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
 		POINT centerscreen;
 		centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-		DrawMapScale(hdcScreen,MapRect,false);
-		DrawCompass(hdcScreen, MapRect, DisplayAngle);
-		DrawCrossHairs(hdcScreen, centerscreen, MapRect);
+		DrawMapScale(ScreenSurface,MapRect,false);
+		DrawCompass(ScreenSurface, MapRect, DisplayAngle);
+		DrawCrossHairs(ScreenSurface, centerscreen, MapRect);
 	}
 
 	UpdateTimeStats(false);

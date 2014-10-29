@@ -14,12 +14,12 @@ DWORD MapWindow::timestamp_newdata=0;
 //
 // Execution at 1hz inside RenderMapWindow
 //
-void MapWindow::DrawFunctions1HZ(HDC hDC, const RECT rc) {
+void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
 
   ONEHZLIMITER;
 
-  DrawLKAlarms(hDC, rc);
-  DrawFDRAlarms(hDC, rc);
+  DrawLKAlarms(Surface, rc);
+  DrawFDRAlarms(Surface, rc);
   #if (WINDOWSPC<1)
   LKBatteryManager();
   #endif
@@ -39,7 +39,7 @@ bool FastZoom;
 //
 // CALLED BY THE DRAW_THREAD MAIN LOOP
 //
-void MapWindow::RenderMapWindow(RECT rc)
+void MapWindow::RenderMapWindow(const RECT& rc)
 {
   // First of all we set the flag for DrawBottom. This is critical.
   if (NOTANYPAN)

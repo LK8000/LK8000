@@ -9,33 +9,24 @@
 #include "externs.h"
 #include "resource.h"
 #include "LKMapWindow.h"
-
+#include "utils/stl_utils.h"
+#include <functional>
 #define STATIC_BITMAPS
 #include "Bitmaps.h"
 
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-
-
-#define NULLBMP	LoadBitmap(hInst,MAKEINTRESOURCE(IDB_EMPTY))
+using std::placeholders::_1;
 
 unsigned short Bitmaps_Errors = 0;
 static std::set<std::tstring> setMissingBitmap;
 
-HBITMAP LKLoadBitmap(const TCHAR *srcfile) {
-
-#if (WINDOWSPC>0)
-    HBITMAP hBmp = (HBITMAP) LoadImage(GetModuleHandle(NULL), srcfile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-#else
-    HBITMAP hBmp = (HBITMAP) SHLoadDIBitmap(srcfile);
-#endif
-    if (!hBmp) {
+LKBitmap LKLoadBitmap(const TCHAR *srcfile) {
+    LKBitmap hBmp;
+    if (!hBmp.LoadFromFile(srcfile)) {
         auto ib = setMissingBitmap.insert(srcfile);
         if(ib.second) {
             StartupStore(_T(".... Failed to load file : <%s>%s"), srcfile, NEWLINE);
         }
-        hBmp = NULLBMP;
+        hBmp.LoadFromResource(MAKEINTRESOURCE(IDB_EMPTY));
         ++Bitmaps_Errors;
     }
     return hBmp;
@@ -226,84 +217,83 @@ void LKLoadFixedBitmaps(void) {
 // Unloading bitmaps can be done only after removing brushes!
 // No need to set them NULL, because they are removed on exit.
 //
+
 void LKUnloadFixedBitmaps(void) {
 
-  #if TESTBENCH
-  StartupStore(_T("... Unload Fixed Bitmaps\n"));
-  #endif
+#if TESTBENCH
+    StartupStore(_T("... Unload Fixed Bitmaps\n"));
+#endif
 
-  if (hTurnPoint!=NULL)	DeleteObject(hTurnPoint);
-  if (hSmall!=NULL) DeleteObject(hSmall);
-  if (hInvTurnPoint!=NULL) DeleteObject(hInvTurnPoint);
-  if (hInvSmall!=NULL) DeleteObject(hInvSmall);
-  if (hFLARMTraffic!=NULL) DeleteObject(hFLARMTraffic);
-  if (hTerrainWarning!=NULL) DeleteObject(hTerrainWarning);
-  if (hAirspaceWarning!=NULL) DeleteObject(hAirspaceWarning);
-  if (hLogger!=NULL) DeleteObject(hLogger);
-  if (hLoggerOff!=NULL) DeleteObject(hLoggerOff);
+    hTurnPoint.Release();
+    hSmall.Release();
+    hInvTurnPoint.Release();
+    hInvSmall.Release();
+    hFLARMTraffic.Release();
+    hTerrainWarning.Release();
+    hAirspaceWarning.Release();
+    hLogger.Release();
+    hLoggerOff.Release();
 
-  if (hBatteryFull!=NULL) DeleteObject(hBatteryFull);
-  if (hBatteryFullC!=NULL) DeleteObject(hBatteryFull);
-  if (hBattery96!=NULL) DeleteObject(hBattery96);
-  if (hBattery84!=NULL) DeleteObject(hBattery84);
-  if (hBattery72!=NULL) DeleteObject(hBattery72);
-  if (hBattery60!=NULL) DeleteObject(hBattery60);
-  if (hBattery48!=NULL) DeleteObject(hBattery48);
-  if (hBattery36!=NULL) DeleteObject(hBattery36);
-  if (hBattery24!=NULL) DeleteObject(hBattery24);
-  if (hBattery12!=NULL) DeleteObject(hBattery12);
+    hBatteryFull.Release();
+    hBatteryFull.Release();
+    hBattery96.Release();
+    hBattery84.Release();
+    hBattery72.Release();
+    hBattery60.Release();
+    hBattery48.Release();
+    hBattery36.Release();
+    hBattery24.Release();
+    hBattery12.Release();
 
 
-  if (hNoTrace   !=NULL) DeleteObject(hNoTrace);
-  if (hFullTrace !=NULL) DeleteObject(hFullTrace);
-  if (hClimbTrace!=NULL) DeleteObject(hClimbTrace);
-  if (hHeadRight !=NULL) DeleteObject(hHeadRight);
-  if (hNorthUp   !=NULL) DeleteObject(hNorthUp);
-  if (hHeadUp    !=NULL) DeleteObject(hHeadUp);
+    hNoTrace.Release();
+    hFullTrace.Release();
+    hClimbTrace.Release();
+    hHeadRight.Release();
+    hNorthUp.Release();
+    hHeadUp.Release();
 
-  if (hMM0	 !=NULL) DeleteObject(hMM0);
-  if (hMM1	 !=NULL) DeleteObject(hMM1);
-  if (hMM2	 !=NULL) DeleteObject(hMM2);
-  if (hMM3	 !=NULL) DeleteObject(hMM3);
-  if (hMM4	 !=NULL) DeleteObject(hMM4);
-  if (hMM5	 !=NULL) DeleteObject(hMM5);
-  if (hMM6	 !=NULL) DeleteObject(hMM6);
-  if (hMM7	 !=NULL) DeleteObject(hMM7);
-  if (hMM8	 !=NULL) DeleteObject(hMM8);
+    hMM0.Release();
+    hMM1.Release();
+    hMM2.Release();
+    hMM3.Release();
+    hMM4.Release();
+    hMM5.Release();
+    hMM6.Release();
+    hMM7.Release();
+    hMM8.Release();
 
-  if (hBmpThermalSource!=NULL) DeleteObject(hBmpThermalSource);
-  if (hBmpTarget!=NULL) DeleteObject(hBmpTarget);
-  if (hBmpTeammatePosition!=NULL) DeleteObject(hBmpTeammatePosition);
-  if (hBmpMarker!=NULL) DeleteObject(hBmpMarker);
+    hBmpThermalSource.Release();
+    hBmpTarget.Release();
+    hBmpTeammatePosition.Release();
+    hBmpMarker.Release();
 
-  for(short i=0;i<NUMAIRSPACEBRUSHES;i++) {
-	if (hAirspaceBitmap[i]!=NULL) DeleteObject(hAirspaceBitmap[i]);
-  }
+    std::for_each(begin(hAirspaceBitmap), end(hAirspaceBitmap), std::bind(&LKBitmap::Release, _1));
 
-  if (hAboveTerrainBitmap!=NULL) DeleteObject(hAboveTerrainBitmap);
+    hAboveTerrainBitmap.Release();
 
-  if (hBmpLeft32!=NULL) DeleteObject(hBmpLeft32);
-  if (hBmpRight32!=NULL) DeleteObject(hBmpRight32);
+    hBmpLeft32.Release();
+    hBmpRight32.Release();
 
-  if (hScrollBarBitmapTop!=NULL) DeleteObject(hScrollBarBitmapTop);
-  if (hScrollBarBitmapMid!=NULL) DeleteObject(hScrollBarBitmapMid);
-  if (hScrollBarBitmapBot!=NULL) DeleteObject(hScrollBarBitmapBot);
+    hScrollBarBitmapTop.Release();
+    hScrollBarBitmapMid.Release();
+    hScrollBarBitmapBot.Release();
 
-  if (hMountop!=NULL) DeleteObject(hMountop);
-  if (hMountpass!=NULL) DeleteObject(hMountpass);
-  if (hBridge!=NULL) DeleteObject(hBridge);
-  if (hIntersect!=NULL) DeleteObject(hIntersect);
-  if (hDam!=NULL) DeleteObject(hDam);
-  if (hSender!=NULL) DeleteObject(hSender);
-  if (hNdb!=NULL) DeleteObject(hNdb);
-  if (hVor!=NULL) DeleteObject(hVor);
-  if (hCoolTower!=NULL) DeleteObject(hCoolTower);
-  if (hTunnel!=NULL) DeleteObject(hTunnel);
-  if (hPowerPlant!=NULL) DeleteObject(hPowerPlant);
-  if (hCastle!=NULL) DeleteObject(hCastle);
-  if (hLKThermal!=NULL) DeleteObject(hLKThermal);
-  if (hLKThermalRed!=NULL) DeleteObject(hLKThermalRed);
-  if (hLKPictori!=NULL) DeleteObject(hLKPictori);
+    hMountop.Release();
+    hMountpass.Release();
+    hBridge.Release();
+    hIntersect.Release();
+    hDam.Release();
+    hSender.Release();
+    hNdb.Release();
+    hVor.Release();
+    hCoolTower.Release();
+    hTunnel.Release();
+    hPowerPlant.Release();
+    hCastle.Release();
+    hLKThermal.Release();
+    hLKThermalRed.Release();
+    hLKPictori.Release();
 
 }
 
@@ -381,36 +371,18 @@ void LKLoadProfileBitmaps(void) {
   }
 }
 
-
 void LKUnloadProfileBitmaps(void) {
 
-  #if TESTBENCH
-  StartupStore(_T("... Unload Profile Bitmaps\n"));
-  #endif
+#if TESTBENCH
+    StartupStore(_T("... Unload Profile Bitmaps\n"));
+#endif
 
-  if (hBmpAirportReachable!=NULL)
-	DeleteObject(hBmpAirportReachable);
-  if (hBmpAirportUnReachable!=NULL)
-	DeleteObject(hBmpAirportUnReachable);
-  if (hBmpFieldReachable!=NULL)
-	DeleteObject(hBmpFieldReachable);
-  if (hBmpFieldUnReachable!=NULL)
-	DeleteObject(hBmpFieldUnReachable);
+    hBmpAirportReachable.Release();
+    hBmpAirportUnReachable.Release();
+    hBmpFieldReachable.Release();
+    hBmpFieldUnReachable.Release();
 
-  if (hCruise!=NULL)
-	DeleteObject(hCruise);
-  if (hClimb!= NULL)
-	DeleteObject(hClimb);
-  if (hFinalGlide!= NULL)
-	DeleteObject(hFinalGlide);
-
-  hBmpAirportReachable=NULL;
-  hBmpAirportUnReachable=NULL;
-  hBmpFieldReachable=NULL;
-  hBmpFieldUnReachable=NULL;
-
-  hCruise=NULL;
-  hClimb=NULL;
-  hFinalGlide=NULL;
+    hCruise.Release();
+    hClimb.Release();
+    hFinalGlide.Release();
 }
-

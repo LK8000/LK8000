@@ -9,6 +9,8 @@
 #if !defined(__WINDOWSCONTROL_H)
 #define __WINDOWSCONTROL_H
 
+#include "Screen/LKWindowSurface.h"
+
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
 #define MAXSETCAPTION 254	// max chars in SetCaption, autolimited
@@ -19,23 +21,23 @@
 #define BORDERLEFT   (1<<bkLeft)
 
 #define clBlack   RGB_BLACK;
-#define clMaroon  RGB(0x00,0x00,0x80)
-#define clGreen   RGB(0x00,0x80,0x00)
-#define clOlive   RGB(0x00,0x80,0x80)
-#define clNavy    RGB(0x80,0x00,0x00)
-#define clPurple  RGB(0x80,0x00,0x80)
-#define clTeal    RGB(0x80,0x80,0x00)
-#define clGray    RGB(0x80,0x80,0x80)
-#define clSilver  RGB(0xC0,0xC0,0xC0)
-#define clRed     RGB(0xFF,0x00,0xFF)
-#define clLime    RGB(0x00,0xFF,0x00)
-#define clYellow  RGB(0x00,0xFF,0xFF)
-#define clBlue    RGB(0xFF,0x00,0x00)
-#define clFuchsia RGB(0xFF,0x00,0xFF)
-#define clAqua    RGB(0xFF,0xFF,0x00)
-#define clLtGray  RGB(0xC0,0xC0,0xC0)
-#define clDkGray  RGB(0x80,0x80,0x80)
-#define clWhite   RGB(0xFF,0xFF,0xFF)
+#define clMaroon  LKColor(0x00,0x00,0x80)
+#define clGreen   LKColor(0x00,0x80,0x00)
+#define clOlive   LKColor(0x00,0x80,0x80)
+#define clNavy    LKColor(0x80,0x00,0x00)
+#define clPurple  LKColor(0x80,0x00,0x80)
+#define clTeal    LKColor(0x80,0x80,0x00)
+#define clGray    LKColor(0x80,0x80,0x80)
+#define clSilver  LKColor(0xC0,0xC0,0xC0)
+#define clRed     LKColor(0xFF,0x00,0xFF)
+#define clLime    LKColor(0x00,0xFF,0x00)
+#define clYellow  LKColor(0x00,0xFF,0xFF)
+#define clBlue    LKColor(0xFF,0x00,0x00)
+#define clFuchsia LKColor(0xFF,0x00,0xFF)
+#define clAqua    LKColor(0xFF,0xFF,0x00)
+#define clLtGray  LKColor(0xC0,0xC0,0xC0)
+#define clDkGray  LKColor(0x80,0x80,0x80)
+#define clWhite   LKColor(0xFF,0xFF,0xFF)
 #define clNone    0x1FFFFFFF
 #define clDefault 0x20000000
 
@@ -523,16 +525,15 @@ class WindowControl {
     HWND mParent;
     WindowControl *mOwner;
     WindowControl *mTopOwner;
-    HDC  mHdc;
-    HBITMAP mBmpMem;
+    LKBitmap mBmpMem;
     int  mBorderKind;
-    COLORREF mColorBack;
-    COLORREF mColorFore;
-    HBRUSH mhBrushBk;
-    HPEN mhPenBorder;
-    HPEN mhPenSelector;
+    LKColor mColorBack;
+    LKColor mColorFore;
+    LKBrush mhBrushBk;
+    LKPen mhPenBorder;
+    LKPen mhPenSelector;
     RECT mBoundRect;
-    HFONT mhFont;
+    LKFont mhFont;
     TCHAR mName[64];
     TCHAR *mHelpText;
 
@@ -550,9 +551,9 @@ class WindowControl {
     LONG mSavWndProcedure;
 
     static int InstCount;
-    static HBRUSH hBrushDefaultBk;
-    static HPEN hPenDefaultBorder;
-    static HPEN hPenDefaultSelector;
+    static LKBrush hBrushDefaultBk;
+    static LKPen hPenDefaultBorder;
+    static LKPen hPenDefaultSelector;
 
   protected:
 
@@ -564,7 +565,7 @@ class WindowControl {
     WindowControl *mClients[50];
     int mClientCount;
 
-    virtual void PaintSelector(HDC hDC);
+    virtual void PaintSelector(LKSurface& Surface);
     virtual WindowControl *SetOwner(WindowControl *Value);
     void UpdatePosSize(void);
     bool HasFocus(void) { return mHasFocus; };
@@ -575,7 +576,7 @@ class WindowControl {
 
     virtual void AddClient(WindowControl *Client);
 
-    virtual void Paint(HDC hDC);
+    virtual void Paint(LKSurface& Surface);
 
     virtual int OnHelp();
 
@@ -622,7 +623,7 @@ class WindowControl {
       mOnHelpCallback = Function;
     }
 
-    RECT *GetBoundRect(void){return(&mBoundRect);};
+    const RECT& GetBoundRect(void) const {return(mBoundRect);}
 
     int GetWidth(void){return(mWidth);};
     int GetHeight(void){return(mHeight);};
@@ -641,18 +642,18 @@ class WindowControl {
     int  GetBorderKind(void);
     int  SetBorderKind(int Value);
 
-    HFONT GetFont(void){return(mhFont);};
-    virtual HFONT SetFont(HFONT Value);
+    const LKFont& GetFont(void) const {return(mhFont);};
+    virtual LKFont SetFont(const LKFont& Value);
 
-    virtual COLORREF SetForeColor(COLORREF Value);
-    COLORREF GetForeColor(void){return(mColorFore);};
+    virtual LKColor SetForeColor(const LKColor& Value);
+    const LKColor& GetForeColor(void) const {return(mColorFore);};
 
-    virtual COLORREF SetBackColor(COLORREF Value);
-    COLORREF GetBackColor(void){return(mColorBack);};
+    virtual LKColor SetBackColor(const LKColor& Value);
+    const LKColor& GetBackColor(void) const {return(mColorBack);};
 
-    HBRUSH   GetBackBrush(void){return(mhBrushBk);};
-    HPEN     GetBorderPen(void){return(mhPenBorder);};
-    HPEN     GetSelectorPen(void){return(mhPenSelector);};
+    const LKBrush& GetBackBrush(void){return(mhBrushBk);};
+    const LKPen& GetBorderPen(void) const {return(mhPenBorder);};
+    const LKPen& GetSelectorPen(void) const {return(mhPenSelector);};
 
     virtual void SetCaption(const TCHAR *Value);
     void SetHelpText(const TCHAR *Value);
@@ -661,7 +662,6 @@ class WindowControl {
     HWND GetHandle(void){return(mHWnd);};
     virtual HWND GetClientAreaHandle(void){return(mHWnd);};
     HWND GetParent(void){return(mParent);};
-    HDC  GetDeviceContext(void){return(mHdc);};
 
     WindowControl *GetOwner(void){return(mOwner);};
 
@@ -746,7 +746,7 @@ class WndFrame:public WindowControl{
     int mLastDrawTextHeight;
     UINT mCaptionStyle;
 
-    virtual void Paint(HDC hDC);
+    virtual void Paint(LKSurface& Surface);
 
 };
 
@@ -781,7 +781,7 @@ class WndListFrame:public WndFrame{
     void ResetList(void);
     void SetEnterCallback(void (*OnListCallback)(WindowControl * Sender, ListInfo_t *ListInfo));
     void RedrawScrolled(bool all);
-    void DrawScrollBar(HDC hDC);
+    void DrawScrollBar(LKSurface& Surface);
     int RecalculateIndices(bool bigscroll);
     void Redraw(void);
     int GetItemIndex(void){return(mListInfo.ItemIndex);}
@@ -810,7 +810,7 @@ class WndListFrame:public WndFrame{
     OnListCallback_t mOnListCallback;
     OnListCallback_t mOnListEnterCallback;
     ListInfo_t mListInfo;
-    virtual void Paint(HDC hDC);
+    virtual void Paint(LKSurface& Surface);
 	  RECT rcScrollBarButton;
 	  RECT rcScrollBar;
     int mMouseScrollBarYOffset; // where in the scrollbar button was mouse down at
@@ -826,9 +826,9 @@ class WndOwnerDrawFrame:public WndFrame{
 
   public:
 
-    typedef void (*OnPaintCallback_t)(WindowControl * Sender, HDC hDC);
+    typedef void (*OnPaintCallback_t)(WindowControl * Sender, LKSurface& Surface);
 
-    WndOwnerDrawFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, int Width, int Height, void(*OnPaintCallback)(WindowControl * Sender, HDC hDC)):
+    WndOwnerDrawFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, int Width, int Height, void(*OnPaintCallback)(WindowControl * Sender, LKSurface& Surface)):
       WndFrame(Owner, Name, X, Y, Width, Height)
     {
       mCaption[0] = '\0';
@@ -840,14 +840,14 @@ class WndOwnerDrawFrame:public WndFrame{
 
     virtual void Destroy(void);
 
-    void SetOnPaintNotify(void (*OnPaintCallback)(WindowControl * Sender, HDC hDC)){
+    void SetOnPaintNotify(void (*OnPaintCallback)(WindowControl * Sender, LKSurface& Surface)){
       mOnPaintCallback = OnPaintCallback;
     }
 
   protected:
 
     OnPaintCallback_t mOnPaintCallback;
-    virtual void Paint(HDC hDC);
+    virtual void Paint(LKSurface& Surface);
 
 };
 
@@ -865,9 +865,9 @@ class WndForm:public WindowControl{
 
     int mModalResult;
     HACCEL mhAccelTable;
-    COLORREF mColorTitle;
-    HBRUSH mhBrushTitle;
-    HFONT mhTitleFont;
+    LKColor mColorTitle;
+    LKBrush mhBrushTitle;
+    LKFont mhTitleFont;
     WindowControl *mClientWindow;
     RECT mClientRect;
     RECT mTitleRect;
@@ -881,7 +881,7 @@ class WndForm:public WindowControl{
 
     int OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    virtual void Paint(HDC hDC);
+    virtual void Paint(LKSurface& Surface);
     int cbTimerID;
 
   public:
@@ -914,7 +914,7 @@ class WndForm:public WindowControl{
     int GetModalResult(void){return(mModalResult);};
     int SetModalResult(int Value){mModalResult = Value;return(Value);};
 
-    HFONT SetTitleFont(HFONT Value);
+    LKFont SetTitleFont(const LKFont& Value);
 
     int ShowModal(bool bEnableMap);
     int ShowModal(void);
@@ -925,9 +925,9 @@ class WndForm:public WindowControl{
 
     virtual int OnCommand(WPARAM wParam, LPARAM lParam);
 
-    COLORREF SetForeColor(COLORREF Value);
-    COLORREF SetBackColor(COLORREF Value);
-    HFONT SetFont(HFONT Value);
+    LKColor SetForeColor(const LKColor& Value);
+    LKColor SetBackColor(const LKColor& Value);
+    LKFont SetFont(const LKFont& Value);
     void SetKeyDownNotify(int (*KeyDownNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam));
     void SetKeyUpNotify(int (*KeyUpNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam));
     void SetLButtonUpNotify(int (*LButtonUpNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam));
@@ -944,7 +944,7 @@ class WndButton:public WindowControl{
 
   private:
 
-    virtual void Paint(HDC hDC);
+    virtual void Paint(LKSurface& Surface);
     bool mDown;
     bool mDefault;
     int mLastDrawTextHeight;
@@ -984,8 +984,8 @@ class WndProperty:public WindowControl{
     HWND mhEdit;
     POINT mEditSize;
     POINT mEditPos;
-    HFONT mhCaptionFont;
-    HFONT mhValueFont;
+    LKFont mhCaptionFont;
+    LKFont mhValueFont;
     int  mBitmapSize;
     int  mCaptionWidth;
     RECT mHitRectUp;
@@ -994,7 +994,7 @@ class WndProperty:public WindowControl{
     bool mUpDown;
     bool mUseKeyboard;
 
-    virtual void Paint(HDC hDC);
+    virtual void Paint(LKSurface& Surface);
     void (*mOnClickUpNotify)(WindowControl * Sender);
     void (*mOnClickDownNotify)(WindowControl * Sender);
 
@@ -1030,7 +1030,7 @@ class WndProperty:public WindowControl{
 
     void RefreshDisplay(void);
 
-    HFONT SetFont(HFONT Value);
+    LKFont SetFont(const LKFont& Value);
 
     int OnKeyDown(WPARAM wParam, LPARAM lParam);
     int OnEditKeyDown(WPARAM wParam, LPARAM lParam);

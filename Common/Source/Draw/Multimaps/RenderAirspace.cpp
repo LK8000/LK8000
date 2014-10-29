@@ -32,7 +32,7 @@ int k;
 double fZOOMScale[NUMBER_OF_SHARED_MULTIMAPS] = {1.0,1.0,1.0,1.0};
 double fDelta = MIN_OFFSET;
 extern int XstartScreen, YstartScreen;
-extern COLORREF  Sideview_TextColor;
+extern LKColor  Sideview_TextColor;
 
 double  PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_bearing, const double GlideSlope);
 
@@ -43,7 +43,7 @@ double  PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double 
 //#define USE_TCOLORS 1
 //#define SHOWLD	// optional 
 
-void MapWindow::RenderAirspace(HDC hdc, const RECT rc_input) {
+void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
 
   RECT rci = rc_input;
 
@@ -53,7 +53,7 @@ void MapWindow::RenderAirspace(HDC hdc, const RECT rc_input) {
   zoom.SetLimitMapScale(false);
   /****************************************************************/
   if (GetSideviewPage() == IM_NEAR_AS)
-	return  RenderNearAirspace( hdc,   rci);
+	return  RenderNearAirspace(Surface,   rci);
   /****************************************************************/
 
 int x=0,y=0;
@@ -83,11 +83,11 @@ TCHAR text[TBSIZE+1];
 TCHAR text2[TBSIZE+1];
 TCHAR buffer[TBSIZE+1];
 BOOL bDrawRightSide =false;
-COLORREF GREEN_COL     = RGB_GREEN;
-//COLORREF RED_COL       = RGB_LIGHTORANGE;
-COLORREF BLUE_COL      = RGB_BLUE;
-COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
-COLORREF col           =  RGB_BLACK;
+LKColor GREEN_COL     = RGB_GREEN;
+//LKColor RED_COL       = RGB_LIGHTORANGE;
+LKColor BLUE_COL      = RGB_BLUE;
+LKColor LIGHTBLUE_COL = RGB_LIGHTBLUE;
+LKColor col           =  RGB_BLACK;
 double zoomfactor=1;
 
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
@@ -108,18 +108,16 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if(bInvCol)
 	col =  RGB_WHITE;
 
-  HPEN hpHorizon   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(1), col);
-  HBRUSH hbHorizon = (HBRUSH)CreateSolidBrush(col);
-  HPEN OldPen      = (HPEN)   SelectObject(hdc, hpHorizon);
-  HBRUSH OldBrush  = (HBRUSH) SelectObject(hdc, hbHorizon);
+  LKPen hpHorizon(PEN_SOLID, IBLSCALE(1), col);
+  LKBrush hbHorizon(col);
+  LKPen OldPen = Surface.SelectObject(hpHorizon);
+  LKBrush OldBrush  = Surface.SelectObject(hbHorizon);
 
 
   //bool bFound = false;
-  SelectObject(hdc, OldPen);
-  SelectObject(hdc, OldBrush);
-  DeleteObject(hpHorizon);
-  DeleteObject(hbHorizon);
-
+  Surface.SelectObject(OldPen);
+  Surface.SelectObject(OldBrush);
+  
   RECT rct = rc; /* rectangle for topview */
   rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
   rct.bottom = rc.top ;
@@ -132,7 +130,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   else
     Sideview_TextColor = RGB_WHITE;
 
-  SetTextColor(hdc, Sideview_TextColor);
+  Surface.SetTextColor(Sideview_TextColor);
 
   /****************************************************************/
 	  switch(LKevent) {
@@ -311,10 +309,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   if(bInvCol)
   {
-    GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
-    //RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
-    BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
-    LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
+    GREEN_COL     = GREEN_COL.ChangeBrightness(0.6);
+    //RED_COL       = RGB_RED.ChangeBrightness(0.6);;
+    BLUE_COL      = BLUE_COL.ChangeBrightness(0.6);
+    LIGHTBLUE_COL = LIGHTBLUE_COL.ChangeBrightness(0.4);
   }
 //  LockFlightData();
   {
@@ -334,7 +332,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   }
 //  UnlockFlightData();
 
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
   overindex = GetOvertargetIndex();
   wpt_brg = AngleLimit360( acb );
   wpt_dist         = 0.0;
@@ -437,10 +435,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 
   // What is this text color used for.. apparently there is no difference to take it off.
-  SetTextColor(hdc, GROUND_TEXT_COLOUR);
+  Surface.SetTextColor(GROUND_TEXT_COLOUR);
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
-	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+	  Surface.SetTextColor(INV_GROUND_TEXT_COLOUR);
 
   // This is tricky and bad, a lot misleading in fact.
   // We manage the long click belonging to the PREVIOUS drawvisualglide.
@@ -454,14 +452,14 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	if(fSplitFact > 0.0) {
   		sDia.rc = rct;
 		sDia.rc.bottom-=1;
-		MapWindow::SharedTopView(hdc, &sDia, GPSbrg, 90.0);
+		MapWindow::SharedTopView(Surface, &sDia, GPSbrg, 90.0);
 		sDia.rc = rct;
 	}
 
 
 	if ( (fSplitFact*100)<SIZE4 ) { // TopView not full screen?
-		DrawVisualGlide(hdc,&sDia);
-		DrawMultimap_SideTopSeparator(hdc,rct);
+		DrawVisualGlide(Surface,&sDia);
+		DrawMultimap_SideTopSeparator(Surface,rct);
 	}
 	zoom.SetLimitMapScale(true);
 	return;
@@ -473,10 +471,10 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   	sDia.rc = rct;
 	sDia.rc.bottom-=1;
     if (getsideviewpage == IM_HEADING)
-  	  MapWindow::SharedTopView(hdc, &sDia, GPSbrg, 90.0);
+  	  MapWindow::SharedTopView(Surface, &sDia, GPSbrg, 90.0);
 
     if (getsideviewpage == IM_NEXT_WP)
-  	  MapWindow::SharedTopView(hdc, &sDia, acb, wpt_brg );
+  	  MapWindow::SharedTopView(Surface, &sDia, acb, wpt_brg );
 
     //sDia.rc = rcc;
 
@@ -490,7 +488,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
 
   if ((Current_Multimap_SizeY<SIZE4) || ( GetMMNorthUp(getsideviewpage)  != NORTHUP))
-    RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
+    RenderAirspaceTerrain(Surface, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
 
 
 
@@ -511,22 +509,22 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   if(bInvCol)
   {
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
-    SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+    Surface.SelectObject(LK_BLACK_PEN);
+    Surface.SelectObject(LKBrush_Black);
   }
   else
   {
-    SelectObject(hdc, GetStockObject(WHITE_PEN));
-    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+    Surface.SelectObject(LK_WHITE_PEN);
+    Surface.SelectObject(LKBrush_White);
   }
 
-  SelectObject(hdc, LK8PanelUnitFont);
-  COLORREF txtCol = GROUND_TEXT_COLOUR;
+  Surface.SelectObject(LK8PanelUnitFont);
+  LKColor txtCol = GROUND_TEXT_COLOUR;
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
     	txtCol = INV_GROUND_TEXT_COLOUR;
-  SetBkMode(hdc, TRANSPARENT);
-  SetTextColor(hdc, txtCol);
+  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetTextColor(txtCol);
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
 
@@ -535,14 +533,14 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   {
 	 case NORTHUP:
 	 default:
-       DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
+       DrawXGrid(Surface, rc, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
      break;
 
 	 case TRACKUP:
-       DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
+       DrawXGrid(Surface, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
      break;
   }
-  SetTextColor(hdc, Sideview_TextColor);
+  Surface.SetTextColor(Sideview_TextColor);
 
   double fHeight = sDia.fYMax - sDia.fYMin;
   double  ytick = 100.0;
@@ -559,7 +557,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   // Draw only if topview is not fullscreen
   if (Current_Multimap_SizeY<SIZE4)
-	DrawYGrid(hdc, rcc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
+	DrawYGrid(Surface, rcc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
 
   POINT line[4];
 
@@ -576,7 +574,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       line[0].y = y0;
       line[1].x = line[0].x;
       line[1].y = rc.top;
-      DrawDashLine(hdc,4, line[0], line[1],  RGB_DARKGREY, rc);
+      Surface.DrawDashLine(4, line[0], line[1],  RGB_DARKGREY, rc);
     }
     else
     {
@@ -585,7 +583,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       line[0].y = CalcHeightCoordinat( wpt_altitude, &sDia);
       line[1].x = line[0].x;
       line[1].y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10)+wpt_altitude,  &sDia );
-      _DrawLine   (hdc, PS_SOLID, 5, line[0], line[1], RGB_ORANGE, rc);
+      Surface.DrawLine(PEN_SOLID, 5, line[0], line[1], RGB_ORANGE, rc);
 
 
       float fArrHight = 0.0f;
@@ -596,14 +594,14 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
         line[0].y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10)+wpt_altitude,  &sDia );
         line[1].x = line[0].x;
         line[1].y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10)+wpt_altitude+fArrHight, &sDia );
-        _DrawLine   (hdc, PS_SOLID, 4, line[0], line[1], RGB_GREEN, rc);
+        Surface.DrawLine(PEN_SOLID, 4, line[0], line[1], RGB_GREEN, rc);
       }
       // Mark wpt with a vertical marker line
       line[0].x = iWpPos;
       line[0].y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10)+wpt_altitude+fArrHight,  &sDia );
       line[1].x = line[0].x;
       line[1].y = rc.top;
-      DrawDashLine(hdc,4, line[0], line[1],  RGB_DARKGREY, rc);
+      Surface.DrawDashLine(4, line[0], line[1],  RGB_DARKGREY, rc);
     }
   }
  } // overindex is valid
@@ -629,7 +627,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
         line[0].y = CalcHeightCoordinat ( DerivedDrawInfo.NavAltitude, &sDia );
         line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
         line[1].y = CalcHeightCoordinatOutbound( altarriv ,  &sDia );
-        DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
+        Surface.DrawDashLine(3, line[0], line[1],  RGB_BLUE, rc);
       }
       altarriv = wpt_altarriv + wpt_altitude;
       if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL/10);
@@ -643,7 +641,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 		line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
 		line[1].y = CalcHeightCoordinatOutbound( altarriv ,  &sDia );
 	}
-	DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
+	Surface.DrawDashLine(3, line[0], line[1],  RGB_BLUE, rc);
 
     } else {
     //  double t = fDist/(speed!=0?speed:1);
@@ -667,14 +665,14 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
       if (ISGLIDER || ISPARAGLIDER)
 	    if ( line[1].y  < line[0].y )  line[1].y  = line[0].y;
 
-      DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
+      Surface.DrawDashLine(3, line[0], line[1],  RGB_BLUE, rc);
     }
     ForcedClipping=false;
   }
 
 
-  SelectObject(hdc, GetStockObject(Sideview_TextColor));
-  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+  Surface.SetTextColor(Sideview_TextColor);
+  Surface.SelectObject(LKBrush_White);
 
 
   //
@@ -683,37 +681,37 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if ( (getsideviewpage == IM_NEXT_WP) && (Current_Multimap_SizeY<SIZE4) && (overindex>=0)) {
 
 	    // Print current Elevation
-	    SetTextColor(hdc, RGB_BLACK);
+	    Surface.SetTextColor(RGB_BLACK);
 	    if((calc_terrainalt- hmin) > 0)
 	    {
 	  	  Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
 	      LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer));
 	      _tcscat(text,buffer);
-	      GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+	      Surface.GetTextSize(text, _tcslen(text), &tsize);
 	      x = CalcDistanceCoordinat(0, &sDia)- tsize.cx/2;
 	      y = CalcHeightCoordinat(  (calc_terrainalt), &sDia );
 	      if ((ELV_FACT*tsize.cy) < abs(rc.bottom - y))
 	      {
-	        ExtTextOut(hdc, x, rc.bottom -(int)(ELV_FACT * tsize.cy) /* rc.top-tsize.cy*/, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	        Surface.DrawText(x, rc.bottom -(int)(ELV_FACT * tsize.cy) /* rc.top-tsize.cy*/, text, _tcslen(text));
 	      }
 	    }
 
 
 	    // Print arrival Elevation
-	    SetTextColor(hdc, RGB_BLACK);
+	    Surface.SetTextColor(RGB_BLACK);
 	    if((wpt_altitude- hmin) > 0)
 	    {
 	  	  Units::FormatUserAltitude(wpt_altitude, buffer, 7);
 	      LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer));
 	      _tcscat(text,buffer);
-	      GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+	      Surface.GetTextSize(text, _tcslen(text), &tsize);
 	      x0 = CalcDistanceCoordinat(wpt_dist, &sDia)- tsize.cx/2;
 	      if(abs(x - x0)> tsize.cx )
 	      {
 	        y = CalcHeightCoordinat(  (wpt_altitude), &sDia );
 	          if ((ELV_FACT*tsize.cy) < abs(rc.bottom - y))
 	          {
-	            ExtTextOut(hdc, x0, rc.bottom -(int)(ELV_FACT * tsize.cy) /* rc.top-tsize.cy*/, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	            Surface.DrawText(x0, rc.bottom -(int)(ELV_FACT * tsize.cy) /* rc.top-tsize.cy*/, text, _tcslen(text));
 	          }
 	      }
 	    }
@@ -734,7 +732,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     Units::FormatUserDistance(wpt_dist, text2, 7);
     _tcscat(text,text2);
 
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, _tcslen(text), &tsize);
     x = line[0].x - tsize.cx - NIBLSCALE(5);
 
     if (x<x0) bDrawRightSide = true;
@@ -743,11 +741,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     y = rc.top + 2*tsize.cy;
 
     if (INVERTCOLORS)
-	SelectObject(hdc,LKBrush_Petrol);
+        Surface.SelectObject(LKBrush_Petrol);
     else
-	SelectObject(hdc,LKBrush_LightCyan);
+        Surface.SelectObject(LKBrush_LightCyan);
 
-    MapWindow::LKWriteBoxedText(hdc,&rc,text,  line[0].x, y-3, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
+    MapWindow::LKWriteBoxedText(Surface, rc,text,  line[0].x, y-3, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
 
      y =  line[0].y - 2*tsize.cy;
 
@@ -764,7 +762,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
     // size a template
     _stprintf(text, TEXT("Mc 99.9: +12345"));
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, _tcslen(text), &tsize);
 
     if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL/10);
 
@@ -781,9 +779,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     y = CalcHeightCoordinat  ( SAFETYALTITUDEARRIVAL/10+wpt_altarriv_mc0+wpt_altitude,  &sDia);
     y -= (int)(1.3*tsize.cy);
     // We don't know if there are obstacles for mc0
-    SelectObject(hdc,LKBrush_Nlight);
+    Surface.SelectObject(LKBrush_Nlight);
 
-    MapWindow::LKWriteBoxedText(hdc,&rc,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
+    MapWindow::LKWriteBoxedText(Surface, rc,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
     
 _skip_mc0:
 
@@ -799,12 +797,12 @@ if(SAFETYALTITUDEARRIVAL > 0)
       Units::FormatUserAltitude(altarriv, buffer, 7);
       LK_tcsncpy(text, MsgToken(1742), TBSIZE-_tcslen(buffer));
       _tcscat(text,buffer);
-      GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+      Surface.GetTextSize(text, _tcslen(text), &tsize);
       x = line[0].x -  NIBLSCALE(5);
 
       y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10 + wpt_altitude + altarriv)*7/10 , &sDia );
-      SelectObject(hdc,LKBrush_Nlight);
-      MapWindow::LKWriteBoxedText(hdc,&rc,text,  x, y, 0, WTALIGN_RIGHT, RGB_BLACK, RGB_BLACK);
+      Surface.SelectObject(LKBrush_Nlight);
+      MapWindow::LKWriteBoxedText(Surface, rc, text,  x, y, 0, WTALIGN_RIGHT, RGB_BLACK, RGB_BLACK);
     }
 }
 
@@ -820,11 +818,11 @@ if(SAFETYALTITUDEARRIVAL > 0)
     } else {
       _tcscat(text, TEXT("---"));
     }
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, _tcslen(text), &tsize);
     if(  ValidWayPoint(overindex) && WayPointList[overindex].Reachable) {
-	SelectObject(hdc,LKBrush_LightGreen);
+	Surface.SelectObject(LKBrush_LightGreen);
     } else {
-	SelectObject(hdc,LKBrush_Orange);
+	Surface.SelectObject(LKBrush_Orange);
     }
     x = line[0].x - tsize.cx - NIBLSCALE(5);
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
@@ -832,7 +830,7 @@ if(SAFETYALTITUDEARRIVAL > 0)
     y = CalcHeightCoordinat  ( SAFETYALTITUDEARRIVAL/10+wpt_altitude+wpt_altarriv,  &sDia);
     if (wpt_altarriv==wpt_altarriv_mc0)
       y -= tsize.cy/2;
-    MapWindow::LKWriteBoxedText(hdc,&rc,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
+    MapWindow::LKWriteBoxedText(Surface, rc, text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
 /*
     y = CalcHeightCoordinat  ( SAFETYALTITUDEARRIVAL/10+wpt_altarriv_mc0,  &sDia)-2*tsize.cy;
     // We don't know if there are obstacles for mc0
@@ -883,16 +881,16 @@ if(SAFETYALTITUDEARRIVAL > 0)
 
 	x = line[0].x - tsize.cx - NIBLSCALE(5);
 	if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, _tcslen(text), &tsize);
     int yn = CalcHeightCoordinat  ( SAFETYALTITUDEARRIVAL/10+wpt_altitude,  &sDia);//+0.5*tsize.cy;
     if(yn > y + tsize.cy)
     	y=yn;
     else
         y+= (int)(1.2*tsize.cy);
 //	y += tsize.cy+NIBLSCALE(3);
-	SelectObject(hdc,LKBrush_Nlight);
+	Surface.SelectObject(LKBrush_Nlight);
 
-	MapWindow::LKWriteBoxedText(hdc,&rc,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
+	MapWindow::LKWriteBoxedText(Surface, rc,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
 
     }
 
@@ -908,7 +906,7 @@ _after_additionals:
     {
     // Print GR
       _stprintf(text, TEXT("1/%i"), (int)fLD);
-      GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+      Surface.GetTextSize(text, _tcslen(text), &tsize);
       x = CalcDistanceCoordinat(wpt_dist/2, &sDia)- tsize.cx/2;
       y = CalcHeightCoordinat( (DerivedDrawInfo.NavAltitude + altarriv)/2 + wpt_altitude , &sDia ) + tsize.cy;
       if(  WayPointList[overindex].Reachable) {
@@ -923,19 +921,19 @@ _after_additionals:
     // Print current AGL
     if(calc_altitudeagl - hmin > 0)
     {
-      SetTextColor(hdc, LIGHTBLUE_COL);
+      Surface.SetTextColor(LIGHTBLUE_COL);
       Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
       LK_tcsncpy(text, MsgToken(1742), TBSIZE-_tcslen(buffer));
       _tcscat(text,buffer);
-      GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+      Surface.GetTextSize(text, _tcslen(text), &tsize);
       x = CalcDistanceCoordinat( 0, &sDia) - tsize.cx/2;
       y = CalcHeightCoordinat(  (calc_terrainalt +  calc_altitudeagl)*0.8,   &sDia );
           if((tsize.cy) < ( CalcHeightCoordinat(  calc_terrainalt, &sDia )-y)) {
-            ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+            Surface.DrawText(x, y, text, _tcslen(text));
           }
     }
-    SetBkMode(hdc, TRANSPARENT);
-    SelectObject(hdc, hfOld);
+    Surface.SetBkMode(TRANSPARENT);
+    Surface.SelectObject(hfOld);
   } // IM_NEXT_WP with valid overindex
 
 
@@ -943,26 +941,26 @@ _after_additionals:
     wpt_brg =90.0;
 
   if ( Current_Multimap_SizeY<SIZE4)
-  RenderPlaneSideview( hdc,  0.0f, DerivedDrawInfo.NavAltitude,wpt_brg, &sDia );
+  RenderPlaneSideview(Surface,  0.0f, DerivedDrawInfo.NavAltitude,wpt_brg, &sDia );
 
-  HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-  SetTextColor(hdc, Sideview_TextColor);
+  LKFont hfOld2 = Surface.SelectObject(LK8InfoNormalFont);
+  Surface.SetTextColor(Sideview_TextColor);
 
-  SelectObject(hdc, hfOld2);
-  SelectObject(hdc, hfOld);
+  Surface.SelectObject(hfOld2);
+  Surface.SelectObject(hfOld);
 
-  SetTextColor(hdc, GROUND_TEXT_COLOUR);
+  Surface.SetTextColor(GROUND_TEXT_COLOUR);
 
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
-	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+	  Surface.SetTextColor(INV_GROUND_TEXT_COLOUR);
 
-  SelectObject(hdc,hfOld/* Sender->GetFont()*/);
+  Surface.SelectObject(hfOld/* Sender->GetFont()*/);
 
   if(fSplitFact > 0.0)
   	sDia.rc = rct;
 
-  hfOld = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
+  hfOld = Surface.SelectObject(LK8InfoNormalFont/* Sender->GetFont()*/);
 
 /*
   switch(GetMMNorthUp(getsideviewpage))
@@ -978,20 +976,20 @@ _after_additionals:
   }
 */
 
-  DrawMultimap_SideTopSeparator(hdc,rct);
+  DrawMultimap_SideTopSeparator(Surface,rct);
 
   /****************************************************************************************************
    * draw selection frame
    ****************************************************************************************************/
 	if(bHeightScale)
-	  DrawSelectionFrame(hdc,  rc);
+	  DrawSelectionFrame(Surface,  rc);
 #ifdef TOP_SELECTION_FRAME
 	else
 	  DrawSelectionFrame(hdc,  rci);
 #endif
 
 
-  SelectObject(hdc,hfOld/* Sender->GetFont()*/);
+  Surface.SelectObject(hfOld/* Sender->GetFont()*/);
   zoom.SetLimitMapScale(true);
 }
 

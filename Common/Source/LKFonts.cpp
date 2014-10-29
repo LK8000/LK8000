@@ -646,41 +646,23 @@ void InitLKFonts()
   ApplyClearType(&logfontPanelUnit);
   ApplyFontSize(&logfontPanelUnit);
 
-  if (LK8TargetFont!=NULL) DeleteObject(LK8TargetFont);
-  if (LK8BigFont!=NULL) DeleteObject(LK8BigFont);
-  if (LK8ValueFont!=NULL) DeleteObject(LK8ValueFont);
-  if (LK8TitleFont!=NULL) DeleteObject(LK8TitleFont);
-  if (LK8MapFont!=NULL) DeleteObject(LK8MapFont);
-  if (LK8TitleNavboxFont!=NULL) DeleteObject(LK8TitleNavboxFont);
-  if (LK8UnitFont!=NULL) DeleteObject(LK8UnitFont);
-  if (LK8MediumFont!=NULL) DeleteObject(LK8MediumFont);
-  if (LK8SmallFont!=NULL) DeleteObject(LK8SmallFont);
-  if (LK8InfoBigFont!=NULL) DeleteObject(LK8InfoBigFont);
-  if (LK8InfoBigItalicFont!=NULL) DeleteObject(LK8InfoBigItalicFont);
-  if (LK8InfoNormalFont!=NULL) DeleteObject(LK8InfoNormalFont);
-  if (LK8InfoSmallFont!=NULL) DeleteObject(LK8InfoSmallFont);
-  if (LK8PanelBigFont!=NULL) DeleteObject(LK8PanelBigFont);
-  if (LK8PanelMediumFont!=NULL) DeleteObject(LK8PanelMediumFont);
-  if (LK8PanelSmallFont!=NULL) DeleteObject(LK8PanelSmallFont);
-  if (LK8PanelUnitFont!=NULL) DeleteObject(LK8PanelUnitFont);
-
-  LK8TargetFont	= CreateFontIndirect (&logfontTarget); 
-  LK8BigFont	= CreateFontIndirect (&logfontBig);
-  LK8ValueFont	= CreateFontIndirect (&logfontValue);
-  LK8TitleFont	= CreateFontIndirect (&logfontTitle);
-  LK8MapFont	= CreateFontIndirect (&logfontMap);
-  LK8TitleNavboxFont	= CreateFontIndirect (&logfontTitleNavbox);
-  LK8UnitFont	= CreateFontIndirect (&logfontUnit);
-  LK8MediumFont	= CreateFontIndirect (&logfontMedium);
-  LK8SmallFont	= CreateFontIndirect (&logfontSmall);
-  LK8InfoBigFont	= CreateFontIndirect (&logfontInfoBig);
-  LK8InfoBigItalicFont	= CreateFontIndirect (&logfontInfoBigItalic);
-  LK8InfoNormalFont	= CreateFontIndirect (&logfontInfoNormal);
-  LK8InfoSmallFont	= CreateFontIndirect (&logfontInfoSmall);
-  LK8PanelBigFont	= CreateFontIndirect (&logfontPanelBig);
-  LK8PanelMediumFont	= CreateFontIndirect (&logfontPanelMedium);
-  LK8PanelSmallFont	= CreateFontIndirect (&logfontPanelSmall);
-  LK8PanelUnitFont	= CreateFontIndirect (&logfontPanelUnit);
+  LK8TargetFont.Create(&logfontTarget); 
+  LK8BigFont.Create(&logfontBig);
+  LK8ValueFont.Create(&logfontValue);
+  LK8TitleFont.Create(&logfontTitle);
+  LK8MapFont.Create(&logfontMap);
+  LK8TitleNavboxFont.Create(&logfontTitleNavbox);
+  LK8UnitFont.Create(&logfontUnit);
+  LK8MediumFont.Create(&logfontMedium);
+  LK8SmallFont.Create(&logfontSmall);
+  LK8InfoBigFont.Create(&logfontInfoBig);
+  LK8InfoBigItalicFont.Create(&logfontInfoBigItalic);
+  LK8InfoNormalFont.Create(&logfontInfoNormal);
+  LK8InfoSmallFont.Create(&logfontInfoSmall);
+  LK8PanelBigFont.Create(&logfontPanelBig);
+  LK8PanelMediumFont.Create(&logfontPanelMedium);
+  LK8PanelSmallFont.Create(&logfontPanelSmall);
+  LK8PanelUnitFont.Create(&logfontPanelUnit);
 
 /* Old try
   LONG mastersize=800/22; // should be equivalent to PNA best MapWindowFont 36
@@ -692,7 +674,7 @@ void InitLKFonts()
   logfontTarget.lfWidth =  0;
   logfontTarget.lfWeight = FW_NORMAL;
   logfontTarget.lfItalic = FALSE;
-  LK8TargetFont = CreateFontIndirect (&logfontTarget); 
+  LK8TargetFont.Create(&logfontTarget); 
   BottomSize= int (ceil(mastersize*1.77 + mastersize));
 */
 

@@ -30,18 +30,6 @@ RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed) {
 }
 #endif 
 
-int GetTextWidth(HDC hDC, const TCHAR *text) {
-    SIZE tsize;
-    GetTextExtentPoint(hDC, text, _tcslen(text), &tsize);
-    return tsize.cx;
-}
-
-int GetTextHeight(HDC hDC, const TCHAR *text) {
-    SIZE tsize;
-    GetTextExtentPoint(hDC, text, _tcslen(text), &tsize);
-    return tsize.cy;
-}
-
 void RestartCommPorts() {
 
     StartupStore(TEXT(". RestartCommPorts begin @%s%s"), WhatTimeIsIt(), NEWLINE);

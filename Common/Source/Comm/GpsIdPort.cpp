@@ -10,7 +10,7 @@
  */
 #include "externs.h"
 #include "GpsIdPort.h"
-#ifdef UNDER_CE
+#if defined(PNA) && defined(UNDER_CE)
 
 template <typename T>
 void GPSResetData(T& data) {

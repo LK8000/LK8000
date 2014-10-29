@@ -21,7 +21,6 @@
   #undef  GEXTTRUE
   #undef  GEXTFALSE
   #undef  GEXTNULL
-  #undef  GEXTFONTNULL
   #undef  GEXTZERO
 
 #if defined(STATIC_GLOBALS)
@@ -30,7 +29,6 @@
   #define GEXTTRUE       = true
   #define GEXTFALSE      = false
   #define GEXTNULL       = NULL
-  #define GEXTFONTNULL	 =(HFONT)NULL
   #define GEXTZERO       = 0
 
 #else
@@ -38,7 +36,6 @@
   #define GEXTTRUE  
   #define GEXTFALSE 
   #define GEXTNULL 
-  #define GEXTFONTNULL 
   #define GEXTZERO 
 
   extern void Globals_Init(void);
@@ -175,7 +172,7 @@ GEXTERN bool HideUnits;
 GEXTERN short OutlinedTp;
 GEXTERN short OutlinedTp_Config;
 GEXTERN int  OverColor;
-GEXTERN COLORREF OverColorRef;
+GEXTERN LKColor OverColorRef;
 GEXTERN int TpFilter;
 GEXTERN short MapBox;
 GEXTERN short GlideBarMode; 
@@ -785,30 +782,30 @@ GEXTERN TCHAR defaultPilotFile[MAX_PATH];
 //
 // Fonts
 //
-GEXTERN HFONT	TitleWindowFont;
-GEXTERN HFONT   MapWindowFont;
-GEXTERN HFONT   MapWindowBoldFont;
-GEXTERN HFONT   CDIWindowFont;
-GEXTERN HFONT   MapLabelFont;
-GEXTERN HFONT   StatisticsFont;
+GEXTERN LKFont	TitleWindowFont;
+GEXTERN LKFont   MapWindowFont;
+GEXTERN LKFont   MapWindowBoldFont;
+GEXTERN LKFont   CDIWindowFont;
+GEXTERN LKFont   MapLabelFont;
+GEXTERN LKFont   StatisticsFont;
 
-GEXTERN HFONT   LK8UnitFont GEXTFONTNULL;
-GEXTERN HFONT   LK8TitleFont GEXTFONTNULL;
-GEXTERN HFONT   LK8MapFont GEXTFONTNULL;
-GEXTERN HFONT   LK8TitleNavboxFont GEXTFONTNULL;
-GEXTERN HFONT   LK8ValueFont GEXTFONTNULL;
-GEXTERN HFONT   LK8TargetFont GEXTFONTNULL;
-GEXTERN HFONT   LK8BigFont GEXTFONTNULL;
-GEXTERN HFONT   LK8MediumFont GEXTFONTNULL;
-GEXTERN HFONT   LK8SmallFont GEXTFONTNULL;
-GEXTERN HFONT   LK8InfoBigFont GEXTFONTNULL;
-GEXTERN HFONT   LK8InfoBigItalicFont GEXTFONTNULL;
-GEXTERN HFONT   LK8InfoNormalFont GEXTFONTNULL;
-GEXTERN HFONT   LK8InfoSmallFont GEXTFONTNULL;
-GEXTERN HFONT   LK8PanelBigFont GEXTFONTNULL;
-GEXTERN HFONT   LK8PanelMediumFont GEXTFONTNULL;
-GEXTERN HFONT   LK8PanelSmallFont GEXTFONTNULL;
-GEXTERN HFONT   LK8PanelUnitFont GEXTFONTNULL;
+GEXTERN LKFont   LK8UnitFont;
+GEXTERN LKFont   LK8TitleFont;
+GEXTERN LKFont   LK8MapFont;
+GEXTERN LKFont   LK8TitleNavboxFont;
+GEXTERN LKFont   LK8ValueFont;
+GEXTERN LKFont   LK8TargetFont;
+GEXTERN LKFont   LK8BigFont;
+GEXTERN LKFont   LK8MediumFont;
+GEXTERN LKFont   LK8SmallFont;
+GEXTERN LKFont   LK8InfoBigFont;
+GEXTERN LKFont   LK8InfoBigItalicFont;
+GEXTERN LKFont   LK8InfoNormalFont;
+GEXTERN LKFont   LK8InfoSmallFont;
+GEXTERN LKFont   LK8PanelBigFont;
+GEXTERN LKFont   LK8PanelMediumFont;
+GEXTERN LKFont   LK8PanelSmallFont;
+GEXTERN LKFont   LK8PanelUnitFont;
 
 GEXTERN LOGFONT  autoTitleWindowLogFont;
 GEXTERN LOGFONT  autoMapWindowLogFont;
@@ -869,12 +866,6 @@ GEXTERN TCHAR CompetitionID_Config[50];
 
 GEXTERN bool LockSettingsInFlight;
 GEXTERN bool LoggerShortName;
-
-GEXTERN double COSTABLE[4096];
-GEXTERN double SINETABLE[4096];
-GEXTERN double INVCOSINETABLE[4096];
-GEXTERN int ISINETABLE[4096];
-GEXTERN int ICOSTABLE[4096];
 
 GEXTERN short TouchContext;
 GEXTERN bool UseHiresBitmap;

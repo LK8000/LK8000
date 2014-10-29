@@ -18,25 +18,24 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-void drawOutlineText(HDC hdc,int x,int y,const TCHAR * textBuffer,COLORREF color )
+void drawOutlineText(LKSurface& Surface,int x,int y,const TCHAR * textBuffer, const LKColor& color )
 {
 	size_t len = _tcslen(textBuffer);
 
 
-	SetTextColor(hdc, RGB_BLACK);
-	ExtTextOut( hdc,x -1, y -1, ETO_OPAQUE, NULL, textBuffer , len, NULL );
-	ExtTextOut( hdc,x +1, y +1, ETO_OPAQUE, NULL, textBuffer , len, NULL );
-	ExtTextOut( hdc,x -1, y   , ETO_OPAQUE, NULL, textBuffer , len, NULL );
-	ExtTextOut( hdc,x   , y +1, ETO_OPAQUE, NULL, textBuffer , len, NULL );
+	Surface.SetTextColor(RGB_BLACK);
+	Surface.DrawText(x -1, y -1, textBuffer , len);
+	Surface.DrawText(x +1, y +1, textBuffer , len);
+	Surface.DrawText(x -1, y   , textBuffer , len);
+	Surface.DrawText(x   , y +1, textBuffer , len);
 
-	SetTextColor(hdc, color);
-	ExtTextOut( hdc,x , y , ETO_OPAQUE, NULL, textBuffer , len, NULL );
-
+	Surface.SetTextColor(color);
+	Surface.DrawText(x , y , textBuffer , len);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-int MapWindow::DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
+int MapWindow::DrawCompassArc(LKSurface& Surface, long x, long y, int radius, const RECT& rc,
 	    double bearing)
 
 {
@@ -45,15 +44,15 @@ int MapWindow::DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
 		// For Oren: remember to always DeleteObject you create with Create, or in 1 hour any
 		// device will run out of GDI space, including your PC...
 		// Meanwhile, I have created LKObjects, so anytime we should use them . No need to delete them.
-		//HPEN hPenBlack = ::CreatePen(PS_SOLID, (5), RGB(0x00,0x0,0x0));  
-		//HPEN hPenWhite = (HPEN)CreatePen(PS_SOLID, (2), RGB(0xff,0xff,0xff));
-		HPEN hPenBlack = LKPen_Black_N5;
-		HPEN hPenWhite = LKPen_White_N2;
-		HFONT oldfont;
-		HPEN oldpen;
+		//HPEN hPenBlack = ::CreatePen(PEN_SOLID, (5), LKColor(0x00,0x0,0x0));  
+		//HPEN hPenWhite = (HPEN)CreatePen(PEN_SOLID, (2), LKColor(0xff,0xff,0xff));
+		LKPen hPenBlack = LKPen_Black_N5;
+		LKPen hPenWhite = LKPen_White_N2;
+		LKFont oldfont;
+		LKPen oldpen;
 
-		oldpen=(HPEN) SelectObject(hdc, hPenBlack);
-		DrawArc(hdc, x, y,radius, rc, 300, 60);
+		oldpen=Surface.SelectObject(hPenBlack);
+		Surface.DrawArc(x, y,radius, rc, 300, 60);
 
 		int heading = (int)(bearing +0.5);
 
@@ -68,7 +67,7 @@ int MapWindow::DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
 		POINT pt[2];
 		int i;
 
-		oldfont=(HFONT)SelectObject(hdc, LK8MediumFont); // always remember to save object or we miss font 
+		oldfont=Surface.SelectObject(LK8MediumFont); // always remember to save object or we miss font
 
 		for(i = - 60; i<= 60;
 				i+=indicatorStep,screenAngle += indicatorStep,curHeading += indicatorStep)
@@ -119,11 +118,11 @@ int MapWindow::DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
 					}
 
 					SIZE textSize;
-					GetTextExtentPoint(hdc, textBuffer, _tcslen(textBuffer), &textSize);
+					Surface.GetTextSize(textBuffer, _tcslen(textBuffer), &textSize);
 
 					int textX = x + (long) ((radius - (textSize.cy/2)-2) * fastsine(screenAngle) ) - textSize.cx/2;
 					int textY = y - (long) ((radius - (textSize.cy/2)-2) * fastcosine(screenAngle) );
-					drawOutlineText(hdc,textX,textY ,textBuffer,RGB_WHITE);
+					drawOutlineText(Surface, textX,textY ,textBuffer,RGB_WHITE);
 				}
 			}
 			else // Otherwise it gets a short tick
@@ -131,26 +130,26 @@ int MapWindow::DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
 
 			pt[1].x = x + (long) ((radius -tickLength) * fastsine(screenAngle) );
 			pt[1].y = y - (long) ((radius -tickLength) * fastcosine(screenAngle) );
-			SelectObject(hdc, hPenBlack);
-			::Polyline(hdc,pt,2);
-			SelectObject(hdc, hPenWhite);
-			::Polyline(hdc,pt,2);
+			Surface.SelectObject(hPenBlack);
+			Surface.Polyline(pt,2);
+			Surface.SelectObject(hPenWhite);
+			Surface.Polyline(pt,2);
 		}
 
-		SelectObject(hdc, hPenWhite);
-		DrawArc(hdc, x, y,radius, rc, 300, 60);
-		SelectObject(hdc, oldfont);
-		SelectObject(hdc, oldpen);
+		Surface.SelectObject(hPenWhite);
+		Surface.DrawArc(x, y,radius, rc, 300, 60);
+		Surface.SelectObject(oldfont);
+		Surface.SelectObject(oldpen);
 		return 0;
 }
 
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-void MapWindow::DrawHSIarc(HDC hdc, POINT Orig, RECT rc )
+void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc )
 {
-	HFONT oldfont;
-	HPEN oldpen;
+	LKFont oldfont;
+	LKPen oldpen;
 
 	// short rcHeight = rc.bottom;
 	short rcx=rc.left+rc.right/2;
@@ -168,12 +167,12 @@ void MapWindow::DrawHSIarc(HDC hdc, POINT Orig, RECT rc )
 
 
 	//XXXOREN - move to globals
-	//HPEN hPenBlack = ::CreatePen(PS_SOLID, (5), RGB(0x00,0x0,0x0));
-	//HPEN hPenWhite = (HPEN)CreatePen(PS_SOLID, (2), RGB(0xff,0xff,0xff));
-	HPEN hPenBlack = LKPen_Black_N3;
-	HPEN hPenWhite = LKPen_White_N2;
+	//HPEN hPenBlack = ::CreatePen(PEN_SOLID, (5), LKColor(0x00,0x0,0x0));
+	//HPEN hPenWhite = (HPEN)CreatePen(PEN_SOLID, (2), LKColor(0xff,0xff,0xff));
+	LKPen hPenBlack = LKPen_Black_N3;
+	LKPen hPenWhite = LKPen_White_N2;
 
-	oldfont = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+	oldfont = Surface.SelectObject(LK8InfoNormalFont);
 
 	//Draw current heading
 	///////////////////
@@ -183,8 +182,8 @@ void MapWindow::DrawHSIarc(HDC hdc, POINT Orig, RECT rc )
 	_stprintf(brgText,_T("%03d"),bearing);
 
 	SIZE brgSize;
-	GetTextExtentPoint(hdc, brgText, _tcslen(brgText), &brgSize);
-	drawOutlineText(hdc,rcx -(brgSize.cx/2), 0 ,brgText,RGB_WHITE);
+	Surface.GetTextSize(brgText, _tcslen(brgText), &brgSize);
+	drawOutlineText(Surface, rcx -(brgSize.cx/2), 0 ,brgText,RGB_WHITE);
 
 	//Draw pointer
 	POINT pt[7];
@@ -209,19 +208,19 @@ void MapWindow::DrawHSIarc(HDC hdc, POINT Orig, RECT rc )
 	pt[6].x = rcx + (brgSize.cx/2) +5;
 	pt[6].y = brgSize.cy - 5;
 
-	oldpen=(HPEN) SelectObject(hdc, hPenBlack);
-	::Polyline(hdc,pt,7);
-	SelectObject(hdc, hPenWhite);
-	::Polyline(hdc,pt,7);
+	oldpen=Surface.SelectObject(hPenBlack);
+	Surface.Polyline(pt,7);
+	Surface.SelectObject(hPenWhite);
+	Surface.Polyline(pt,7);
 
 	//Offset arc below heading
 	rcy += brgSize.cy +10;
 
-	DrawCompassArc(hdc,Orig.x,rcy,rad,rc,DrawInfo.TrackBearing);
+	DrawCompassArc(Surface,Orig.x,rcy,rad,rc,DrawInfo.TrackBearing);
 
-	SetTextColor(hdc,RGB_BLACK);
-	SelectObject(hdc,(HPEN)oldpen);
-	SelectObject(hdc,(HFONT) oldfont);
+	Surface.SetTextColor(RGB_BLACK);
+	Surface.SelectObject(oldpen);
+	Surface.SelectObject(oldfont);
 
 }
 

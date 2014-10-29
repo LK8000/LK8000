@@ -139,12 +139,12 @@ namespace DlgIgcFile {
         }
     }
 
-    void OnPaintIgcFileListItem(WindowControl * Sender, HDC hDC) {
+    void OnPaintIgcFileListItem(WindowControl * Sender, LKSurface& Surface) {
         if (DrawListIndex < FileList.size()) {
             FileList_t::const_iterator ItFileName = FileList.begin();
             std::advance(ItFileName, DrawListIndex);
             int w0 = Sender->GetWidth();
-            ExtTextOutClip(hDC, 2 * ScreenScale, 2 * ScreenScale, ItFileName->c_str(), w0 - ScreenScale * 5);
+            Surface.DrawTextClip(2 * ScreenScale, 2 * ScreenScale, ItFileName->c_str(), w0 - ScreenScale * 5);
 
 
         }

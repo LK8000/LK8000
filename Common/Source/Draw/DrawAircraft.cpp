@@ -11,7 +11,7 @@
 #include "Multimap.h"
 
 
-void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
+void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig)
 {
 
   if ( ISPARAGLIDER || ISCAR ) {
@@ -25,9 +25,9 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     };
 
     int pi;
-    HPEN hpPOld;
-    HBRUSH hbPAircraftSolid; 
-    HBRUSH hbPAircraftSolidBg;
+    LKPen hpPOld;
+    LKBrush hbPAircraftSolid; 
+    LKBrush hbPAircraftSolidBg;
 
     if (BlackScreen) {
       hbPAircraftSolid = LKBrush_LightCyan;
@@ -37,28 +37,28 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
       hbPAircraftSolidBg = LKBrush_Grey;
     }
 
-    HBRUSH hbPOld = (HBRUSH)SelectObject(hdc, hbPAircraftSolidBg);
-    hpPOld = (HPEN)SelectObject(hdc, LKPen_White_N3);
+    LKBrush hbPOld = Surface.SelectObject(hbPAircraftSolidBg);
+    hpPOld = Surface.SelectObject(LKPen_White_N3);
   
     PolygonRotateShift(Para, NUMPARAPOINTS, Orig.x+1, Orig.y+1,
                        DisplayAircraftAngle+
                        (DerivedDrawInfo.Heading-DrawInfo.TrackBearing));
 
-    Polygon(hdc, Para, NUMPARAPOINTS);
+    Surface.Polygon(Para, NUMPARAPOINTS);
 
     // draw it again so can get white border
-    SelectObject(hdc, LKPen_Black_N1);
-    SelectObject(hdc, hbPAircraftSolid);
+    Surface.SelectObject(LKPen_Black_N1);
+    Surface.SelectObject(hbPAircraftSolid);
 
     for(pi=0; pi<NUMPARAPOINTS; pi++)
       {
 	Para[pi].x -= 1;  Para[pi].y -= 1;
       }
 
-    Polygon(hdc, Para, NUMPARAPOINTS);
+    Surface.Polygon(Para, NUMPARAPOINTS);
 
-    SelectObject(hdc, hpPOld);
-    SelectObject(hdc, hbPOld);
+    Surface.SelectObject(hpPOld);
+    Surface.SelectObject(hbPOld);
 
     return;
   }
@@ -87,35 +87,35 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     };
 
     int i;
-    HPEN hpOld;
-    HBRUSH hbAircraftSolid; 
-    HBRUSH hbAircraftSolidBg;
+    LKPen hpOld;
+    LKBrush hbAircraftSolid; 
+    LKBrush hbAircraftSolidBg;
 
     hbAircraftSolid = LKBrush_Black;
     hbAircraftSolidBg = LKBrush_White;
 
-    HBRUSH hbOld = (HBRUSH)SelectObject(hdc, hbAircraftSolidBg);
-    hpOld = (HPEN)SelectObject(hdc, hpAircraft);
+    LKBrush hbOld = Surface.SelectObject(hbAircraftSolidBg);
+    hpOld = Surface.SelectObject(hpAircraft);
   
     PolygonRotateShift(Aircraft, NUMAIRCRAFTPOINTS, Orig.x+1, Orig.y+1,
                        DisplayAircraftAngle+
                        (DerivedDrawInfo.Heading-DrawInfo.TrackBearing));
 
-    Polygon(hdc, Aircraft, NUMAIRCRAFTPOINTS);
+    Surface.Polygon(Aircraft, NUMAIRCRAFTPOINTS);
 
     // draw it again so can get white border
-    SelectObject(hdc, LKPen_White_N2);
-    SelectObject(hdc, hbAircraftSolid);
+    Surface.SelectObject(LKPen_White_N2);
+    Surface.SelectObject(hbAircraftSolid);
 
     for(i=0; i<NUMAIRCRAFTPOINTS; i++)
       {
 	Aircraft[i].x -= 1;  Aircraft[i].y -= 1;
       }
 
-    Polygon(hdc, Aircraft, NUMAIRCRAFTPOINTS);
+    Surface.Polygon(Aircraft, NUMAIRCRAFTPOINTS);
 
-    SelectObject(hdc, hpOld);
-    SelectObject(hdc, hbOld);
+    Surface.SelectObject(hpOld);
+    Surface.SelectObject(hbOld);
     
     return;
 
@@ -123,7 +123,6 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
 
       // GLIDER AICRAFT NORMAL ICON
 
-      HPEN oldPen;
       POINT Aircraft[] = {
 	{1, -5},
 	{1, 0},
@@ -152,16 +151,15 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
       PolygonRotateShift(Aircraft, n,
 			 Orig.x-1, Orig.y, angle);
 
-      oldPen = (HPEN)SelectObject(hdc, hpAircraft);
-      Polygon(hdc, Aircraft, n);
+      LKPen oldPen = Surface.SelectObject(hpAircraft);
+      Surface.Polygon(Aircraft, n);
 
-      HBRUSH hbOld;
-      hbOld = (HBRUSH)SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-      SelectObject(hdc, LKPen_White_N2);
-      Polygon(hdc, Aircraft, n);
+      LKBrush hbOld = Surface.SelectObject(LKBrush_Black);
+      Surface.SelectObject(LKPen_White_N2);
+      Surface.Polygon(Aircraft, n);
 
-      SelectObject(hdc, oldPen);
-      SelectObject(hdc, hbOld);
+      Surface.SelectObject(oldPen);
+      Surface.SelectObject(hbOld);
 
 
 }

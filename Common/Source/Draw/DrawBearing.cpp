@@ -13,7 +13,7 @@
 
 
 
-void MapWindow::DrawBearing(HDC hdc, const RECT rc)
+void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
 {
   int overindex=GetOvertargetIndex();
   if (overindex<0) return;
@@ -28,7 +28,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
     targetLat = WayPointList[overindex].Latitude;
     targetLon = WayPointList[overindex].Longitude;
     UnlockTaskData();
-    DrawGreatCircle(hdc, startLon, startLat, targetLon, targetLat, rc);
+    DrawGreatCircle(Surface, startLon, startLat, targetLon, targetLat, rc);
   }
   else {
     if (!ValidTaskPoint(ActiveWayPoint)) {
@@ -45,7 +45,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
     }
     UnlockTaskData();
 
-    DrawGreatCircle(hdc, startLon, startLat, targetLon, targetLat, rc);
+    DrawGreatCircle(Surface, startLon, startLat, targetLon, targetLat, rc);
 
     if (mode.Is(Mode::MODE_TARGET_PAN)) {
       // Draw all of task if in target pan mode
@@ -64,7 +64,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
             targetLon = WayPointList[Task[i].Index].Longitude; 
           }
        
-          DrawGreatCircle(hdc, startLon, startLat,
+          DrawGreatCircle(Surface, startLon, startLat,
                           targetLon, targetLat, rc);
 
           startLat = targetLat;
@@ -86,7 +86,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
             LatLon2Screen(Task[i].AATTargetLon, 
                           Task[i].AATTargetLat, 
                           sct);
-            DrawBitmapIn(hdc, sct, hBmpTarget,true);
+            DrawBitmapIn(Surface, sct, hBmpTarget,true);
           }
         }
       }
@@ -96,7 +96,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
       LatLon2Screen(Task[ActiveWayPoint].AATTargetLon, 
                     Task[ActiveWayPoint].AATTargetLat, 
                     sct);
-      DrawBitmapIn(hdc, sct, hBmpTarget,true);
+      DrawBitmapIn(Surface, sct, hBmpTarget,true);
     }
     UnlockTaskData();
   }

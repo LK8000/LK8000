@@ -34,7 +34,7 @@ bool RectangleIsInside(rectObj r_exterior, rectObj r_interior) {
 //
 // This is called FORCED when changing multimap
 //
-void SetTopologyBounds(const RECT rcin, const bool force) {
+void SetTopologyBounds(const RECT& rcin, const bool force) {
   static rectObj bounds_active;
   static double range_active = 1.0;
   bool unchanged=false;

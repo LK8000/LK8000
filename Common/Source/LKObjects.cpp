@@ -9,9 +9,6 @@
 //  Create common shared graphic objects, from MapWindow
 
 #include "externs.h"
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
 
 #define STATIC_LKOBJECTS
 #include "LKObjects.h"
@@ -19,81 +16,79 @@
 
 #include "RGB.h"
 
-extern COLORREF ChangeBrightness(long Color, double fBrightFact);
-
+#include "utils/stl_utils.h"
+using std::placeholders::_1;
 
 void LKObjects_Create() {
-
-  int i;
 
   #if TESTBENCH
   StartupStore(_T("... LKObjects_Create\n"));
   #endif
 
   // STOCK BRUSHES
-  LKBrush_White = (HBRUSH)GetStockObject(WHITE_BRUSH);
-  LKBrush_Black = (HBRUSH)GetStockObject(BLACK_BRUSH);
+  LKBrush_White = LK_WHITE_BRUSH;
+  LKBrush_Black = LK_BLACK_BRUSH;
+  LKBrush_Hollow = LK_HOLLOW_BRUSH;
 
   // CUSTOM BRUSHES
-  LKBrush_Petrol = CreateSolidBrush(COLORREF RGB_PETROL);
-  LKBrush_LightGreen = CreateSolidBrush(COLORREF RGB_LIGHTGREEN);
-  LKBrush_DarkGreen = CreateSolidBrush(COLORREF RGB_DARKGREEN);
-  LKBrush_Ndark = CreateSolidBrush(COLORREF RGB_NDARK);
-  LKBrush_Nlight = CreateSolidBrush(COLORREF RGB_NLIGHT);
-  LKBrush_Mdark = CreateSolidBrush(COLORREF RGB_MDARK);
-  LKBrush_Mlight = CreateSolidBrush(COLORREF RGB_MLIGHT);
-  LKBrush_Red = CreateSolidBrush(COLORREF RGB_RED);
-  LKBrush_Yellow = CreateSolidBrush(COLORREF RGB_YELLOW);
-  LKBrush_Green = CreateSolidBrush(COLORREF RGB_GREEN);
-  LKBrush_DarkYellow2 = CreateSolidBrush(COLORREF RGB_DARKYELLOW2);
-  LKBrush_Orange = CreateSolidBrush(COLORREF RGB_ORANGE);
-  LKBrush_Lake = CreateSolidBrush(COLORREF RGB_LAKE);
-  LKBrush_Blue = CreateSolidBrush(COLORREF RGB_BLUE);
-  LKBrush_Indigo = CreateSolidBrush(COLORREF RGB_INDIGO);
-  LKBrush_LightGrey = CreateSolidBrush(COLORREF RGB_LIGHTGREY);
-  LKBrush_DarkGrey = CreateSolidBrush(RGB(100,100,100));
-  LKBrush_LcdGreen = CreateSolidBrush(COLORREF RGB_LCDGREEN);
-  LKBrush_LcdDarkGreen = CreateSolidBrush(COLORREF RGB_LCDDARKGREEN);
-  LKBrush_Grey = CreateSolidBrush(COLORREF RGB_GREY);
-  LKBrush_Emerald = CreateSolidBrush(COLORREF RGB_EMERALD);
-  LKBrush_DarkSlate = CreateSolidBrush(COLORREF RGB_DARKSLATE);
-  LKBrush_LightCyan = CreateSolidBrush(COLORREF RGB_LIGHTCYAN);
-  LKBrush_RifleGrey = CreateSolidBrush(COLORREF RGB_RIFLEGREY);
+  LKBrush_Petrol.Create(RGB_PETROL);
+  LKBrush_LightGreen.Create(RGB_LIGHTGREEN);
+  LKBrush_DarkGreen.Create(RGB_DARKGREEN);
+  LKBrush_Ndark.Create(RGB_NDARK);
+  LKBrush_Nlight.Create(RGB_NLIGHT);
+  LKBrush_Mdark.Create(RGB_MDARK);
+  LKBrush_Mlight.Create(RGB_MLIGHT);
+  LKBrush_Red.Create(RGB_RED);
+  LKBrush_Yellow.Create(RGB_YELLOW);
+  LKBrush_Green.Create(RGB_GREEN);
+  LKBrush_DarkYellow2.Create(RGB_DARKYELLOW2);
+  LKBrush_Orange.Create(RGB_ORANGE);
+  LKBrush_Lake.Create(RGB_LAKE);
+  LKBrush_Blue.Create(RGB_BLUE);
+  LKBrush_Indigo.Create(RGB_INDIGO);
+  LKBrush_LightGrey.Create(RGB_LIGHTGREY);
+  LKBrush_DarkGrey.Create(LKColor(100,100,100));
+  LKBrush_LcdGreen.Create(RGB_LCDGREEN);
+  LKBrush_LcdDarkGreen.Create(RGB_LCDDARKGREEN);
+  LKBrush_Grey.Create(RGB_GREY);
+  LKBrush_Emerald.Create(RGB_EMERALD);
+  LKBrush_DarkSlate.Create(RGB_DARKSLATE);
+  LKBrush_LightCyan.Create(RGB_LIGHTCYAN);
+  LKBrush_RifleGrey.Create(RGB_RIFLEGREY);
 
-  LKBrush_Vario_neg4 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 0.4));
-  LKBrush_Vario_neg3 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 0.6));
-  LKBrush_Vario_neg2 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 0.8));
-  LKBrush_Vario_neg1 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 1.0));
-  LKBrush_Vario_0    = CreateSolidBrush(ChangeBrightness(RGB_YELLOW, 0.8));
-  LKBrush_Vario_pos1 = CreateSolidBrush(ChangeBrightness(RGB_GREEN, 0.6));
-  LKBrush_Vario_pos2 = CreateSolidBrush(ChangeBrightness(RGB_GREEN, 0.7));
-  LKBrush_Vario_pos3 = CreateSolidBrush(ChangeBrightness(RGB_GREEN, 0.8));
-  LKBrush_Vario_pos4 = CreateSolidBrush(ChangeBrightness(RGB_GREEN, 1.0));
+  LKBrush_Vario_neg4.Create(RGB_BLUE.ChangeBrightness(0.4));
+  LKBrush_Vario_neg3.Create(RGB_BLUE.ChangeBrightness(0.6));
+  LKBrush_Vario_neg2.Create(RGB_BLUE.ChangeBrightness(0.8));
+  LKBrush_Vario_neg1.Create(RGB_BLUE.ChangeBrightness(1.0));
+  LKBrush_Vario_0   .Create(RGB_YELLOW.ChangeBrightness(0.8));
+  LKBrush_Vario_pos1.Create(RGB_GREEN.ChangeBrightness(0.6));
+  LKBrush_Vario_pos2.Create(RGB_GREEN.ChangeBrightness(0.7));
+  LKBrush_Vario_pos3.Create(RGB_GREEN.ChangeBrightness(0.8));
+  LKBrush_Vario_pos4.Create(RGB_GREEN.ChangeBrightness(1.0));
   // CUSTOM PENS
-  LKPen_Black_N0 = (HPEN) CreatePen(PS_SOLID,0,RGB_BLACK);
-  LKPen_Black_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_BLACK);
-  LKPen_Black_N2 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(2),RGB_BLACK);
-  LKPen_Black_N3= (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_BLACK);
-  LKPen_Black_N4= (HPEN) CreatePen(PS_SOLID,NIBLSCALE(4),RGB_BLACK);
-  LKPen_Black_N5= (HPEN) CreatePen(PS_SOLID,NIBLSCALE(5),RGB_BLACK);
+  LKPen_Black_N0.Create(PEN_SOLID,0,RGB_BLACK);
+  LKPen_Black_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_BLACK);
+  LKPen_Black_N2.Create(PEN_SOLID,NIBLSCALE(2),RGB_BLACK);
+  LKPen_Black_N3.Create(PEN_SOLID,NIBLSCALE(3),RGB_BLACK);
+  LKPen_Black_N4.Create(PEN_SOLID,NIBLSCALE(4),RGB_BLACK);
+  LKPen_Black_N5.Create(PEN_SOLID,NIBLSCALE(5),RGB_BLACK);
 
-  LKPen_White_N0= (HPEN) CreatePen(PS_SOLID,0,RGB_WHITE);
-  LKPen_White_N1= (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_WHITE);
-  LKPen_White_N2= (HPEN) CreatePen(PS_SOLID,NIBLSCALE(2),RGB_WHITE);
-  LKPen_White_N3= (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_WHITE);
-  LKPen_White_N4= (HPEN) CreatePen(PS_SOLID,NIBLSCALE(4),RGB_WHITE);
-  LKPen_White_N5= (HPEN) CreatePen(PS_SOLID,NIBLSCALE(5),RGB_WHITE);
+  LKPen_White_N0.Create(PEN_SOLID,0,RGB_WHITE);
+  LKPen_White_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_WHITE);
+  LKPen_White_N2.Create(PEN_SOLID,NIBLSCALE(2),RGB_WHITE);
+  LKPen_White_N3.Create(PEN_SOLID,NIBLSCALE(3),RGB_WHITE);
+  LKPen_White_N4.Create(PEN_SOLID,NIBLSCALE(4),RGB_WHITE);
+  LKPen_White_N5.Create(PEN_SOLID,NIBLSCALE(5),RGB_WHITE);
 
-  LKPen_Petrol_C2= (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1)+2,RGB_PETROL);
+  LKPen_Petrol_C2.Create(PEN_SOLID,NIBLSCALE(1)+2,RGB_PETROL);
 
-  LKPen_Green_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_GREEN);
-  LKPen_Red_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_RED);
-  LKPen_Blue_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_BLUE);
+  LKPen_Green_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_GREEN);
+  LKPen_Red_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_RED);
+  LKPen_Blue_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_BLUE);
 
-  LKPen_Grey_N0 = (HPEN) CreatePen(PS_SOLID,1,RGB_GREY);
-  LKPen_Grey_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_GREY);
-  LKPen_Grey_N2 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(2),RGB_GREY);
-
+  LKPen_Grey_N0.Create(PEN_SOLID,1,RGB_GREY);
+  LKPen_Grey_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_GREY);
+  LKPen_Grey_N2.Create(PEN_SOLID,NIBLSCALE(2),RGB_GREY);
 
   switch(ScreenSize) {
 	// portrait small screen
@@ -105,11 +100,11 @@ void LKObjects_Create() {
 	case ss400x240:
 	case ss480x272:
 		MapWindow::hpAircraft = LKPen_Black_N5; // LK v4 has it bolder
-		LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(5),RGB_MAGENTA);
+		LKPen_GABRG.Create(PEN_SOLID,NIBLSCALE(5),RGB_MAGENTA);
 		break;
 	default:
 		MapWindow::hpAircraft = LKPen_Black_N4; // up to LK version 3
-		LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_MAGENTA);
+		LKPen_GABRG.Create(PEN_SOLID,NIBLSCALE(3),RGB_MAGENTA);
 		break;
   }
 
@@ -117,13 +112,15 @@ void LKObjects_Create() {
   // MapWindow objects
   //
 
-//  COLORREF ChangeBrightness(long Color, double fBrightFact)
-  for (i=0; i<AIRSPACECLASSCOUNT; i++) {
+  for (unsigned i=0; i<AIRSPACECLASSCOUNT; i++) {
 	LKASSERT( MapWindow::iAirspaceColour[i]< NUMAIRSPACECOLORS);
-	MapWindow::hAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(1), MapWindow::Colours[MapWindow::iAirspaceColour[i]]);
-	MapWindow::hBigAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(3),ChangeBrightness( MapWindow::Colours[MapWindow::iAirspaceColour[i]], 0.75));
+
+    const LKColor& Color = MapWindow::Colours[MapWindow::iAirspaceColour[i]];
+    
+	MapWindow::hAirspacePens[i].Create(PEN_SOLID, NIBLSCALE(1), Color);
+	MapWindow::hBigAirspacePens[i].Create(PEN_SOLID, NIBLSCALE(3),Color.ChangeBrightness(0.75));
   }
-  MapWindow::hAirspaceBorderPen = CreatePen(PS_SOLID, NIBLSCALE(10), RGB_WHITE);
+  MapWindow::hAirspaceBorderPen.Create(PEN_SOLID, NIBLSCALE(10), RGB_WHITE);
 
   int iwidth;
   iwidth=IBLSCALE(MapWindow::SnailWidthScale);
@@ -143,26 +140,32 @@ void LKObjects_Create() {
   MapWindow::hSnailColours[13] = RGB_RED;
   MapWindow::hSnailColours[14] = RGB_DARKRED;
 
-  MapWindow::hSnailPens[0] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[0]);
-  MapWindow::hSnailPens[1] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[1]);
-  MapWindow::hSnailPens[2] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[2]);
-  MapWindow::hSnailPens[3] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[3]);
-  MapWindow::hSnailPens[4] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(2), MapWindow::hSnailColours[4]);
-  MapWindow::hSnailPens[5] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[5]);
-  MapWindow::hSnailPens[6] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[6]);
-  MapWindow::hSnailPens[7] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(6), MapWindow::hSnailColours[7]);
-  MapWindow::hSnailPens[8] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[8]);
-  MapWindow::hSnailPens[9] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[9]);
-  MapWindow::hSnailPens[10] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[10]);
-  MapWindow::hSnailPens[11] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[11]);
-  MapWindow::hSnailPens[12] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[12]);
-  MapWindow::hSnailPens[13] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[13]);
-  MapWindow::hSnailPens[14] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[14]);
+  MapWindow::hSnailPens[0].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[0]);
+  MapWindow::hSnailPens[1].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[1]);
+  MapWindow::hSnailPens[2].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[2]);
+  MapWindow::hSnailPens[3].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[3]);
+  MapWindow::hSnailPens[4].Create(PEN_SOLID,  iwidth/NIBLSCALE(2), MapWindow::hSnailColours[4]);
+  MapWindow::hSnailPens[5].Create(PEN_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[5]);
+  MapWindow::hSnailPens[6].Create(PEN_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[6]);
+  MapWindow::hSnailPens[7].Create(PEN_SOLID,  iwidth/NIBLSCALE(6), MapWindow::hSnailColours[7]);
+  MapWindow::hSnailPens[8].Create(PEN_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[8]);
+  MapWindow::hSnailPens[9].Create(PEN_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[9]);
+  MapWindow::hSnailPens[10].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[10]);
+  MapWindow::hSnailPens[11].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[11]);
+  MapWindow::hSnailPens[12].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[12]);
+  MapWindow::hSnailPens[13].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[13]);
+  MapWindow::hSnailPens[14].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[14]);
 
-  for (i=0; i<NUMAIRSPACEBRUSHES; i++) {
-	MapWindow::hAirspaceBrushes[i] = CreatePatternBrush((HBITMAP)hAirspaceBitmap[i]);
+  static_assert(array_size(MapWindow::hAirspaceBrushes) == array_size(hAirspaceBitmap), "Array Size error");
+
+  for (unsigned i=0; i<array_size(MapWindow::hAirspaceBrushes); ++i) {
+	MapWindow::hAirspaceBrushes[i].Create(hAirspaceBitmap[i]);
   }
-  MapWindow::hAboveTerrainBrush = CreatePatternBrush((HBITMAP)hAboveTerrainBitmap);
+  if(LKSurface::AlphaBlendSupported()) {
+      MapWindow::InitAirSpaceSldBrushes(MapWindow::Colours);
+  }
+  
+  MapWindow::hAboveTerrainBrush.Create(hAboveTerrainBitmap);
 
   MapWindow::hInvBackgroundBrush[0] = LKBrush_White;
   MapWindow::hInvBackgroundBrush[1] = LKBrush_LightGrey;
@@ -176,16 +179,16 @@ void LKObjects_Create() {
   MapWindow::hInvBackgroundBrush[9] = LKBrush_Black;
 
 
-  extern COLORREF taskcolor;
-  MapWindow::hpStartFinishThick=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(2)+1, taskcolor);
-  MapWindow::hpMapScale2 = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1)+1, RGB_BLACK);
-  MapWindow::hpWindThick = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(4), RGB(255,220,220));
-  MapWindow::hpThermalBand = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x40,0x40,0xFF));
-  MapWindow::hpThermalBandGlider = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x00,0x00,0x30));
-  MapWindow::hpFinalGlideBelow = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xFF,0xA0,0xA0)); // another light red
-  MapWindow::hpFinalGlideAbove = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xA0,0xFF,0xA0)); // another light green
-  MapWindow::hpTerrainLine = (HPEN)CreatePen(PS_DASH, (1), RGB(0x30,0x30,0x30)); // shade
-  MapWindow::hpTerrainLineBg = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN); // perimeter
+  extern LKColor taskcolor;
+  MapWindow::hpStartFinishThick.Create(PEN_SOLID, NIBLSCALE(2)+1, taskcolor);
+  MapWindow::hpMapScale2.Create(PEN_SOLID, NIBLSCALE(1)+1, RGB_BLACK);
+  MapWindow::hpWindThick.Create(PEN_SOLID, NIBLSCALE(4), LKColor(255,220,220));
+  MapWindow::hpThermalBand.Create(PEN_SOLID, NIBLSCALE(2), LKColor(0x40,0x40,0xFF));
+  MapWindow::hpThermalBandGlider.Create(PEN_SOLID, NIBLSCALE(2), LKColor(0x00,0x00,0x30));
+  MapWindow::hpFinalGlideBelow.Create(PEN_SOLID, NIBLSCALE(1), LKColor(0xFF,0xA0,0xA0)); // another light red
+  MapWindow::hpFinalGlideAbove.Create(PEN_SOLID, NIBLSCALE(1), LKColor(0xA0,0xFF,0xA0)); // another light green
+  MapWindow::hpTerrainLine.Create(PEN_DASH, (1), LKColor(0x30,0x30,0x30)); // shade
+  MapWindow::hpTerrainLineBg.Create(PEN_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN); // perimeter
 
 
 }
@@ -193,97 +196,90 @@ void LKObjects_Create() {
 
 void LKObjects_Delete() {
 
-  int i;
-
   #if TESTBENCH
   StartupStore(_T("... LKObjects_Delete\n"));
   #endif
 
   // No need to delete stock objects
-  if(LKBrush_Petrol) DeleteObject(LKBrush_Petrol);
-  if(LKBrush_LightGreen) DeleteObject(LKBrush_LightGreen);
-  if(LKBrush_DarkGreen) DeleteObject(LKBrush_DarkGreen);
-  if(LKBrush_Ndark) DeleteObject(LKBrush_Ndark);
-  if(LKBrush_Nlight) DeleteObject(LKBrush_Nlight);
-  if(LKBrush_Mdark) DeleteObject(LKBrush_Mdark);
-  if(LKBrush_Mlight) DeleteObject(LKBrush_Mlight);
-  if(LKBrush_Red) DeleteObject(LKBrush_Red);
-  if(LKBrush_Yellow) DeleteObject(LKBrush_Yellow);
-  if(LKBrush_Green) DeleteObject(LKBrush_Green);
-  if(LKBrush_DarkYellow2) DeleteObject(LKBrush_DarkYellow2);
-  if(LKBrush_Orange) DeleteObject(LKBrush_Orange);
-  if(LKBrush_Lake) DeleteObject(LKBrush_Lake);
-  if(LKBrush_Blue) DeleteObject(LKBrush_Blue);
-  if(LKBrush_Indigo) DeleteObject(LKBrush_Indigo);
-  if(LKBrush_LightGrey) DeleteObject(LKBrush_LightGrey);
-  if(LKBrush_DarkGrey) DeleteObject(LKBrush_DarkGrey);
-  if(LKBrush_LcdGreen) DeleteObject(LKBrush_LcdGreen);
-  if(LKBrush_LcdDarkGreen) DeleteObject(LKBrush_LcdDarkGreen);
-  if(LKBrush_Grey) DeleteObject(LKBrush_Grey);
-  if(LKBrush_Emerald) DeleteObject(LKBrush_Emerald);
-  if(LKBrush_DarkSlate) DeleteObject(LKBrush_DarkSlate);
-  if(LKBrush_RifleGrey) DeleteObject(LKBrush_RifleGrey);
-  if(LKBrush_LightCyan) DeleteObject(LKBrush_LightCyan);
+  LKBrush_Petrol.Release();
+  LKBrush_LightGreen.Release();
+  LKBrush_DarkGreen.Release();
+  LKBrush_Ndark.Release();
+  LKBrush_Nlight.Release();
+  LKBrush_Mdark.Release();
+  LKBrush_Mlight.Release();
+  LKBrush_Red.Release();
+  LKBrush_Yellow.Release();
+  LKBrush_Green.Release();
+  LKBrush_DarkYellow2.Release();
+  LKBrush_Orange.Release();
+  LKBrush_Lake.Release();
+  LKBrush_Blue.Release();
+  LKBrush_Indigo.Release();
+  LKBrush_LightGrey.Release();
+  LKBrush_DarkGrey.Release();
+  LKBrush_LcdGreen.Release();
+  LKBrush_LcdDarkGreen.Release();
+  LKBrush_Grey.Release();
+  LKBrush_Emerald.Release();
+  LKBrush_DarkSlate.Release();
+  LKBrush_RifleGrey.Release();
+  LKBrush_LightCyan.Release();
 
-  if(LKBrush_Vario_neg4) DeleteObject(LKBrush_Vario_neg4);
-  if(LKBrush_Vario_neg3) DeleteObject(LKBrush_Vario_neg3);
-  if(LKBrush_Vario_neg2) DeleteObject(LKBrush_Vario_neg2);
-  if(LKBrush_Vario_neg1) DeleteObject(LKBrush_Vario_neg1);
-  if(LKBrush_Vario_0)    DeleteObject(LKBrush_Vario_0);
-  if(LKBrush_Vario_pos1) DeleteObject(LKBrush_Vario_pos1);
-  if(LKBrush_Vario_pos2) DeleteObject(LKBrush_Vario_pos2);
-  if(LKBrush_Vario_pos3) DeleteObject(LKBrush_Vario_pos3);
-  if(LKBrush_Vario_pos4) DeleteObject(LKBrush_Vario_pos4);
-
-
-  if(LKPen_Black_N0) DeleteObject(LKPen_Black_N0);
-  if(LKPen_Black_N1) DeleteObject(LKPen_Black_N1);
-  if(LKPen_Black_N2) DeleteObject(LKPen_Black_N2);
-  if(LKPen_Black_N3) DeleteObject(LKPen_Black_N3);
-  if(LKPen_Black_N4) DeleteObject(LKPen_Black_N4);
-  if(LKPen_Black_N5) DeleteObject(LKPen_Black_N5);
-  if(LKPen_White_N0) DeleteObject(LKPen_White_N0);
-  if(LKPen_White_N1) DeleteObject(LKPen_White_N1);
-  if(LKPen_White_N2) DeleteObject(LKPen_White_N2);
-  if(LKPen_White_N3) DeleteObject(LKPen_White_N3);
-  if(LKPen_White_N4) DeleteObject(LKPen_White_N4);
-  if(LKPen_White_N5) DeleteObject(LKPen_White_N5);
-
-  if(LKPen_Petrol_C2) DeleteObject(LKPen_Petrol_C2);
-  if(LKPen_Green_N1) DeleteObject(LKPen_Green_N1);
-  if(LKPen_Red_N1) DeleteObject(LKPen_Red_N1);
-  if(LKPen_Blue_N1) DeleteObject(LKPen_Blue_N1);
-  if(LKPen_Grey_N0) DeleteObject(LKPen_Grey_N0);
-  if(LKPen_Grey_N1) DeleteObject(LKPen_Grey_N1);
-  if(LKPen_Grey_N2) DeleteObject(LKPen_Grey_N2);
-  if(LKPen_GABRG) DeleteObject(LKPen_GABRG);
-
-  for (i=0; i<AIRSPACECLASSCOUNT; i++) {
-	if(MapWindow::hAirspacePens[i]) DeleteObject(MapWindow::hAirspacePens[i]);
-	if(MapWindow::hBigAirspacePens[i]) DeleteObject(MapWindow::hBigAirspacePens[i]);
-
-  }
-  DeleteObject(MapWindow::hAirspaceBorderPen);
-
-  for (i=0; i<NUMSNAILCOLORS; i++) {
-	if (MapWindow::hSnailPens[i]) DeleteObject(MapWindow::hSnailPens[i]);
-  }
-
-  for(i=0;i<NUMAIRSPACEBRUSHES;i++) {
-	if (MapWindow::hAirspaceBrushes[i]) DeleteObject(MapWindow::hAirspaceBrushes[i]);
-  }
-  if (MapWindow::hAboveTerrainBrush) DeleteObject(MapWindow::hAboveTerrainBrush);
-  if (MapWindow::hpStartFinishThick) DeleteObject((HPEN)MapWindow::hpStartFinishThick);
-  if (MapWindow::hpMapScale2) DeleteObject((HPEN)MapWindow::hpMapScale2);
-  if (MapWindow::hpWindThick) DeleteObject((HPEN)MapWindow::hpWindThick);
-  if (MapWindow::hpThermalBand) DeleteObject((HPEN)MapWindow::hpThermalBand);
-  if (MapWindow::hpThermalBandGlider) DeleteObject((HPEN)MapWindow::hpThermalBandGlider);
-  if (MapWindow::hpFinalGlideBelow) DeleteObject((HPEN)MapWindow::hpFinalGlideBelow);
-  if (MapWindow::hpFinalGlideAbove) DeleteObject((HPEN)MapWindow::hpFinalGlideAbove);
-  if (MapWindow::hpTerrainLine) DeleteObject((HPEN)MapWindow::hpTerrainLine);
-  if (MapWindow::hpTerrainLineBg) DeleteObject((HPEN)MapWindow::hpTerrainLineBg);
+  LKBrush_Vario_neg4.Release();
+  LKBrush_Vario_neg3.Release();
+  LKBrush_Vario_neg2.Release();
+  LKBrush_Vario_neg1.Release();
+  LKBrush_Vario_0.Release();
+  LKBrush_Vario_pos1.Release();
+  LKBrush_Vario_pos2.Release();
+  LKBrush_Vario_pos3.Release();
+  LKBrush_Vario_pos4.Release();
 
 
+  LKPen_Black_N0.Release();
+  LKPen_Black_N1.Release();
+  LKPen_Black_N2.Release();
+  LKPen_Black_N3.Release();
+  LKPen_Black_N4.Release();
+  LKPen_Black_N5.Release();
+  LKPen_White_N0.Release();
+  LKPen_White_N1.Release();
+  LKPen_White_N2.Release();
+  LKPen_White_N3.Release();
+  LKPen_White_N4.Release();
+  LKPen_White_N5.Release();
+
+  LKPen_Petrol_C2.Release();
+  LKPen_Green_N1.Release();
+  LKPen_Red_N1.Release();
+  LKPen_Blue_N1.Release();
+  LKPen_Grey_N0.Release();
+  LKPen_Grey_N1.Release();
+  LKPen_Grey_N2.Release();
+  LKPen_GABRG.Release();
+
+
+  MapWindow::hAirspaceBorderPen.Release();
+
+  std::for_each(begin(MapWindow::hSnailPens), end(MapWindow::hSnailPens), std::bind(&LKPen::Release, _1) );
+
+  std::for_each(begin(MapWindow::hAirspacePens), end(MapWindow::hAirspacePens), std::bind(&LKPen::Release, _1) );
+  std::for_each(begin(MapWindow::hBigAirspacePens), end(MapWindow::hBigAirspacePens), std::bind(&LKPen::Release, _1) );
+  std::for_each(begin(MapWindow::hAirspaceBrushes), end(MapWindow::hAirspaceBrushes), std::bind(&LKBrush::Release, _1) );
+  std::for_each(begin(MapWindow::hAirSpaceSldBrushes), end(MapWindow::hAirSpaceSldBrushes), std::bind(&LKBrush::Release, _1));
+
+  MapWindow::hAboveTerrainBrush.Release();
+  
+  MapWindow::hpStartFinishThick.Release();
+  MapWindow::hpMapScale2.Release();
+  MapWindow::hpWindThick.Release();
+  MapWindow::hpThermalBand.Release();
+  MapWindow::hpThermalBandGlider.Release();
+  MapWindow::hpFinalGlideBelow.Release();
+  MapWindow::hpFinalGlideAbove.Release();
+  MapWindow::hpTerrainLine.Release();
+  MapWindow::hpTerrainLineBg.Release();
 }
 
 

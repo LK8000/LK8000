@@ -15,7 +15,7 @@
 #include "Sideview.h"
 #include "Multimap.h"
 
-extern void LoadSplash(HDC hDC, const TCHAR *splashfile);
+extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
 extern void LKDrawMultimap_Asp(HDC hdc,RECT rc);
 
 //
@@ -24,10 +24,10 @@ extern void LKDrawMultimap_Asp(HDC hdc,RECT rc);
 // Normally there is plenty of cpu available because the map is not even calculated.
 // This is why we bring to the Draw thread, in the nearest pages case, also calculations.
 //
-void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
+void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc ) {
 
-  HFONT oldfont;
-  HBRUSH hB;
+  LKFont oldfont;
+  LKBrush hB;
 
   TextInBoxMode_t TextDisplayMode = {0};
   TCHAR Buffer[LKSIZEBUFFERLARGE*2];
@@ -49,9 +49,9 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	  hB=LKBrush_Mlight;
 
   }
-  oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // save font
+  oldfont = Surface.SelectObject(LKINFOFONT); // save font
 
-  if (MapSpaceMode!=MSM_WELCOME) FillRect(hdc,&rc, hB); 
+  if (MapSpaceMode!=MSM_WELCOME) Surface.FillRect(&rc, hB);
 
   if (DoInit[MDI_DRAWMAPSPACE]) {
 	p[0].x=0; p[0].y=rc.bottom-BottomSize-NIBLSCALE(2); p[1].x=rc.right-1; p[1].y=p[0].y;
@@ -71,7 +71,7 @@ ConfIP[LKMODE_NAV][0],ConfIP31,
 ConfIP[LKMODE_NAV][1],ConfIP32);
 */
 
-	if (MapSpaceMode==MSM_WELCOME) LoadSplash(hdc,_T("LKPROFILE"));
+	if (MapSpaceMode==MSM_WELCOME) LoadSplash(Surface,_T("LKPROFILE"));
 	DoInit[MDI_DRAWMAPSPACE]=false; 
   }
 
@@ -79,15 +79,15 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
   if (MapSpaceMode==MSM_WELCOME || (!IsMultiMap() && MapSpaceMode!=MSM_MAP) )
   {
 	  if (INVERTCOLORS) {
-		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[2], p[3], RGB_GREEN, rc);
-		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[4], p[5], RGB_GREEN, rc);
-		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[6], p[7], RGB_GREEN, rc);
-		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[0], p[1], RGB_GREEN, rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p[2], p[3], RGB_GREEN, rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p[4], p[5], RGB_GREEN, rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p[6], p[7], RGB_GREEN, rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p[0], p[1], RGB_GREEN, rc);
 	  } else {
-		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[2], p[3], RGB_DARKGREEN, rc);
-		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[4], p[5], RGB_DARKGREEN, rc);
-		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[6], p[7], RGB_DARKGREEN, rc);
-		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[0], p[1], RGB_DARKGREEN, rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p[2], p[3], RGB_DARKGREEN, rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p[4], p[5], RGB_DARKGREEN, rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p[6], p[7], RGB_DARKGREEN, rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p[0], p[1], RGB_DARKGREEN, rc);
 	  }
   }
 
@@ -123,11 +123,11 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 			break;
 		}
 
-		DrawWelcome8000(hdc, rc);
+		DrawWelcome8000(Surface, rc);
 		break;
 	case MSM_MAPTRK:
 		SetSideviewPage(IM_HEADING);
-		LKDrawMultimap_Asp(hdc,rc);
+		LKDrawMultimap_Asp(Surface,rc);
 		break;
 	case MSM_MAPWPT:
 		#if 0
@@ -139,33 +139,33 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		}
 		#endif
 		SetSideviewPage(IM_NEXT_WP);
-		LKDrawMultimap_Asp(hdc,rc);
+		LKDrawMultimap_Asp(Surface,rc);
 		break;
 	case MSM_MAPASP:
 		SetSideviewPage(IM_NEAR_AS);
-		LKDrawMultimap_Asp(hdc,rc);
+		LKDrawMultimap_Asp(Surface,rc);
 		break;
 	case MSM_MAPRADAR:
-		LKDrawMultimap_Radar(hdc,rc);
+		LKDrawMultimap_Radar(Surface,rc);
 		break;
 	case MSM_VISUALGLIDE:
 		SetSideviewPage(IM_VISUALGLIDE);
-		LKDrawMultimap_Asp(hdc,rc);
+		LKDrawMultimap_Asp(Surface,rc);
 		break;
 	case MSM_MAPTEST:
-		LKDrawMultimap_Test(hdc,rc);
+		LKDrawMultimap_Test(Surface,rc);
 		break;
 	case MSM_LANDABLE:
 	case MSM_NEARTPS:
 	case MSM_AIRPORTS:
-		DrawNearest(hdc, rc);
+		DrawNearest(Surface, rc);
 		break;
 	case MSM_AIRSPACES:
-		DrawAspNearest(hdc, rc);
+		DrawAspNearest(Surface, rc);
 		break;
 	case MSM_COMMON:
 	case MSM_RECENT:
-		DrawCommon(hdc, rc);
+		DrawCommon(Surface, rc);
 		break;
 	case MSM_MAP:
 		break;
@@ -178,13 +178,13 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 	case MSM_INFO_TRF:
 	case MSM_INFO_TARGET:
 	case MSM_INFO_CONTEST:
-		DrawInfoPage(hdc,rc, false);
+		DrawInfoPage(Surface,rc, false);
 		break;
 	case MSM_TRAFFIC:
-		DrawTraffic(hdc,rc);
+		DrawTraffic(Surface,rc);
 		break;
 	case MSM_THERMALS:
-		DrawThermalHistory(hdc,rc);
+		DrawThermalHistory(Surface,rc);
 		break;
 
   default:
@@ -192,16 +192,16 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
     TextDisplayMode.Color = RGB_WHITE;
     TextDisplayMode.NoSetFont = 1; 
     TextDisplayMode.AlligneCenter = 1;
-    SelectObject(hdc, LK8TargetFont);
+    Surface.SelectObject(LK8TargetFont);
     _stprintf(Buffer,TEXT("MapSpaceMode=%d"),MapSpaceMode);
-    TextInBox(hdc, &rc, Buffer, (rc.right-rc.left)/2, NIBLSCALE(50) , 0, &TextDisplayMode, false);
+    TextInBox(Surface, &rc, Buffer, (rc.right-rc.left)/2, NIBLSCALE(50) , 0, &TextDisplayMode, false);
     break;
   }
 #ifdef DRAWLKSTATUS
   // no need to clear dodrawlkstatus, it is already reset at each run
   if (dodrawlkstatus) DrawLKStatus(hdc, rc);
 #endif
-  SelectObject(hdc, oldfont); 
+  Surface.SelectObject(oldfont);
 }
 
 

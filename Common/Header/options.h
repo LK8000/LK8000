@@ -94,14 +94,14 @@
 //
 // ----------------------------------------------------------------------------------------
 
-//#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
+#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
-//#define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
+  #define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
   #define BUTTONS_MS
   #define OWN_POS_MS
   #define OWN_FLARM_TRACES
   #define FLARM_MS
-//#define OUTLINE_2ND		// double outline airspaces
+  #define OUTLINE_2ND		// double outline airspaces
 #endif
 
 /*
@@ -112,11 +112,14 @@
 // They must be first enabled with BUTTONS_MS
 // WARNING THESE FUNCTIONS ARE NOT CHECKED FOR THREAD SAFETY AND CAN LEAD TO CRASHES
 //
-//#define BUTTONS_MS		// this is REQUIRED to enable one of the following:
-//#define TEAM_CODE_MS		// button to trigger team code
-//#define OWN_POS_MS		// button to trigger basic settings
-//#define ORACLE_MS		// button to trigger oracle
-//#define FLARM_MS
+  #define BUTTONS_MS		// this is REQUIRED to enable one of the following:
+  #define TEAM_CODE_MS		// button to trigger team code
+  #define OWN_POS_MS		// button to trigger basic settings
+  #define ORACLE_MS		// button to trigger oracle
+  #define FLARM_MS
+
+// still to be tested in v5.0
+  #define USE_AHRS
 
 // Use F Record in IGC log files- not needed really
 // #define LOGFRECORD	1
@@ -150,8 +153,6 @@
 // #define RASTERCACHE		1	// fallback to cached dem if it does not fit in memory entirely. 
 					// Does not work. 
 
-// #define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
-					// Needs USEBIGZOOM
 
 // #define USESWITCHES	1	// External device switch support / to be completed because unused
 				// Do not remove, it can be worked out with no problems if we want to

@@ -10,11 +10,11 @@
 #include "DoInits.h"
 #include "LKObjects.h"
 
-void MapWindow::DrawCompass(HDC hDC, const RECT rc, const double angle)
+void MapWindow::DrawCompass(LKSurface& Surface, const RECT& rc, const double angle)
 {
   POINT Start;
-  HPEN hpOld;
-  HBRUSH hbOld; 
+  LKPen hpOld;
+  LKBrush hbOld; 
 
     static double lastDisplayAngle = 9999.9;
     static int lastRcRight = 0, lastRcTop = 0;
@@ -52,15 +52,15 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc, const double angle)
       lastRcTop = rc.top;
     }
 
-    hpOld = (HPEN)SelectObject(hDC, LKPen_Black_N2);
-    hbOld = (HBRUSH)SelectObject(hDC, LKBrush_White);
-    Polygon(hDC,Arrow,5);
+    hpOld = Surface.SelectObject(LKPen_Black_N2);
+    hbOld = Surface.SelectObject(LKBrush_White);
+    Surface.Polygon(Arrow,5);
 
-    SelectObject(hDC, LKPen_Black_N1);
-    Polygon(hDC,Arrow,5);
+    Surface.SelectObject(LKPen_Black_N1);
+    Surface.Polygon(Arrow,5);
 
-    SelectObject(hDC, hbOld);
-    SelectObject(hDC, hpOld);
+    Surface.SelectObject(hbOld);
+    Surface.SelectObject(hpOld);
 
 }
 

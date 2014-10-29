@@ -13,10 +13,10 @@
 #include "DoInits.h"
 #include "FlarmRadar.h"
 
-extern HBRUSH * variobrush[NO_VARIO_COLORS];
+extern const LKBrush * variobrush[NO_VARIO_COLORS];
 
 // This is painting traffic icons on the screen.
-void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
+void MapWindow::LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft) {
 
   if (!EnableFLARMMap) return;
 
@@ -60,13 +60,11 @@ static int	iRectangleSize = 4;
 	DoInit[MDI_DRAWFLARMTRAFFIC]=false;
   }
 
-  HPEN hpold;
-  HPEN thinBlackPen = LKPen_Black_N1;
   POINT Arrow[5];
 
   TCHAR lbuffer[50];
 
-  hpold = (HPEN)SelectObject(hDC, thinBlackPen);
+  LKPen hpold = Surface.SelectObject(LKPen_Black_N1);
 
   int i;
   int painted=0;
@@ -84,7 +82,7 @@ static int	iRectangleSize = 4;
 
 
 
-  HFONT  oldfont = (HFONT)SelectObject(hDC, LK8MapFont);
+  LKFont  oldfont = Surface.SelectObject(LK8MapFont);
 
   for (i=0,painted=0; i<FLARM_MAX_TRAFFIC; i++) {
 
@@ -138,11 +136,11 @@ static int	iRectangleSize = 4;
 		displaymode.Border=1;
 
 		if (_tcslen(lbuffer)>0)
-		TextInBox(hDC, &rc, lbuffer, sc.x+tscaler, sc.y+tscaler, 0, &displaymode, false);
+		TextInBox(Surface, &rc, lbuffer, sc.x+tscaler, sc.y+tscaler, 0, &displaymode, false);
 
 		// red circle
 		if ((DrawInfo.FLARM_Traffic[i].AlarmLevel>0) && (DrawInfo.FLARM_Traffic[i].AlarmLevel<4)) {
-			DrawBitmapIn(hDC, sc, hFLARMTraffic,true);
+			DrawBitmapIn(Surface, sc, hFLARMTraffic,true);
 		}
 #if 1 // 1
 		Arrow[0].x = -4;
@@ -179,13 +177,13 @@ static int	iRectangleSize = 4;
 /*
 		switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
 			case LKT_GHOST:
-				SelectObject(hDC, yellowBrush);
+				Surface.SelectObject(yellowBrush);
 				break;
 			case LKT_ZOMBIE:
-				SelectObject(hDC, redBrush);
+				Surface.SelectObject(redBrush);
 				break;
 			default:
-				SelectObject(hDC, greenBrush);
+				Surface.SelectObject(greenBrush);
 				break;
 		}
 */
@@ -196,26 +194,26 @@ static int	iRectangleSize = 4;
 		  int iVarioIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s  -0.5)+NO_VARIO_COLORS/2;
 		  if(iVarioIdx < 0) iVarioIdx =0;
 		  if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
-		  SelectObject(hDC, *variobrush[iVarioIdx]);
+		  Surface.SelectObject(*variobrush[iVarioIdx]);
 
 		  switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
 			case LKT_GHOST:
-				Rectangle(hDC, sc.x-iRectangleSize,  sc.y-iRectangleSize,sc.x+iRectangleSize, sc.y+iRectangleSize);
+				Surface.Rectangle(sc.x-iRectangleSize,  sc.y-iRectangleSize,sc.x+iRectangleSize, sc.y+iRectangleSize);
 				break;
 			case LKT_ZOMBIE:
-				Circle(hDC,  sc.x,  sc.x, iCircleSize, rc, true, true );
+				Surface.Circle(sc.x,  sc.x, iCircleSize, rc, true, true );
 				break;
 			default:
 				PolygonRotateShift(Arrow, 5, sc.x, sc.y, DrawInfo.FLARM_Traffic[i].TrackBearing - DisplayAngle);
-				Polygon(hDC,Arrow,5);
+				Surface.Polygon(Arrow,5);
 				break;
 		  }
 
 	}
   }
 
-  SelectObject(hDC, oldfont);
-  SelectObject(hDC, hpold);
+  Surface.SelectObject(oldfont);
+  Surface.SelectObject(hpold);
 
 }
 

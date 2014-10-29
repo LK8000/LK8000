@@ -9,11 +9,9 @@
 #include "externs.h"
 #include "LKObjects.h"
 
-void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
+void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const RECT& rc) {
   int i;
   POINT Start;
-  HPEN hpOld;
-  HBRUSH hbOld; 
   TCHAR sTmp[12];
   static SIZE tsize = {0,0};
   
@@ -23,14 +21,14 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   
   if (tsize.cx == 0){
 
-    HFONT oldFont = (HFONT)SelectObject(hdc, MapWindowBoldFont);
-    GetTextExtentPoint(hdc, TEXT("99"), 2, &tsize);
-    SelectObject(hdc, oldFont);
+    LKFont oldFont = Surface.SelectObject(MapWindowBoldFont);
+    Surface.GetTextSize(TEXT("99"), 2, &tsize);
+    Surface.SelectObject(oldFont);
     tsize.cx = tsize.cx/2;
   }
 
-  hpOld = (HPEN)SelectObject(hdc, LKPen_Black_N2);
-  hbOld = (HBRUSH)SelectObject(hdc, LKBrush_Grey);
+  LKPen hpOld = Surface.SelectObject(LKPen_Black_N2);
+  LKBrush hbOld = Surface.SelectObject(LKBrush_Grey);
   
   int wmag = iround(4.0*DerivedDrawInfo.WindSpeed);
   
@@ -63,7 +61,7 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
     protateshift(Tail[i], angle, Start.x, Start.y);
   }
   // optionally draw dashed line for wind arrow
-  _DrawLine(hdc, PS_DASH, 1, Tail[0], Tail[1], RGB(0,0,0), rc);
+  Surface.DrawLine(PEN_DASH, 1, Tail[0], Tail[1], LKColor(0,0,0), rc);
 
   // Paint wind value only while circling
   if ( (mode.Is(Mode::MODE_CIRCLING)) ) {
@@ -74,15 +72,15 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
     TextInBoxMode.AlligneCenter = true;   // { 16 | 32 }; // JMW test {2 | 16};
     TextInBoxMode.WhiteBorder = true;
     if (Arrow[5].y>=Arrow[6].y) {
-      TextInBox(hdc, &rc, sTmp, Arrow[5].x-kx, Arrow[5].y, 0, &TextInBoxMode);
+      TextInBox(Surface, &rc, sTmp, Arrow[5].x-kx, Arrow[5].y, 0, &TextInBoxMode);
     } else {
-      TextInBox(hdc, &rc, sTmp, Arrow[6].x-kx, Arrow[6].y, 0, &TextInBoxMode);
+      TextInBox(Surface, &rc, sTmp, Arrow[6].x-kx, Arrow[6].y, 0, &TextInBoxMode);
     }
   }
-  Polygon(hdc,Arrow,5);
+  Surface.Polygon(Arrow,5);
 
 
-  SelectObject(hdc, hbOld);
-  SelectObject(hdc, hpOld);
+  Surface.SelectObject(hbOld);
+  Surface.SelectObject(hpOld);
 }
 

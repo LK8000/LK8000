@@ -9,14 +9,14 @@
 #include "externs.h"
 
 
-void Statistics::RenderClimb(HDC hdc, const RECT rc) 
+void Statistics::RenderClimb(LKSurface& Surface, const RECT& rc)
 {
 
   if (flightstats.ThermalAverage.sum_n<1) {
-    DrawNoData(hdc, rc);
+    DrawNoData(Surface, rc);
     return;
   }
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
   ResetScale();
   ScaleYFromData(rc, &flightstats.ThermalAverage);
   ScaleYFromValue(rc, (MACCREADY+1.0));
@@ -28,37 +28,37 @@ void Statistics::RenderClimb(HDC hdc, const RECT rc)
   RECT rci = rc;
   rci.top += BORDER_Y;
   if(Units::GetUserInvAltitudeUnit() == unFeet) {
-    DrawYGrid(hdc, rci, 0.5/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 0.5, true);
+    DrawYGrid(Surface, rci, 0.5/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 0.5, true);
   } else {
-    DrawYGrid(hdc, rci, 1.0/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 1.0, true);
+    DrawYGrid(Surface, rci, 1.0/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 1.0, true);
   }
 
-  DrawBarChart(hdc, rc,
-               &flightstats.ThermalAverage);
+  DrawBarChart(Surface, rc, &flightstats.ThermalAverage);
 
-  DrawLine(hdc, rc,
+  DrawLine(Surface, rc,
            0, MACCREADY, 
            flightstats.ThermalAverage.sum_n,
            MACCREADY,
            STYLE_REDTHICK);
 
-  DrawLabel(hdc, rc, TEXT("MC"), 
+  DrawLabel(Surface, rc, TEXT("MC"),
 	    max(0.5, (double)flightstats.ThermalAverage.sum_n-1), MACCREADY);
   
-  DrawTrendN(hdc, rc,
+  DrawTrendN(Surface, rc,
              &flightstats.ThermalAverage,
              STYLE_BLUETHIN);
-  SelectObject(hdc, hfOld);
+  Surface.SelectObject(hfOld);
   if(INVERTCOLORS)
-    SetTextColor(hdc,RGB_DARKGREEN);
+    Surface.SetTextColor(RGB_DARKGREEN);
   else
-    SetTextColor(hdc,RGB_GREEN);
-  SetBkMode(hdc, OPAQUE);
+    Surface.SetTextColor(RGB_GREEN);
+
+  Surface.SetBkMode(OPAQUE);
   TCHAR text[80];
 
-  DrawXLabel(hdc, rc, TEXT("n"));
+  DrawXLabel(Surface, rc, TEXT("n"));
   _stprintf(text,TEXT(" v/%s "),Units::GetVerticalSpeedName());
-  DrawYLabel(hdc, rc, text);
+  DrawYLabel(Surface, rc, text);
 
 }
 

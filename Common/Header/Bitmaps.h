@@ -4,108 +4,108 @@
    See CREDITS.TXT file for authors and copyrights
 
    $Id: Bitmaps.h,v 1.1 2011/12/21 10:35:29 root Exp root $
-*/
+ */
 
 #if !defined(BITMAPS_H)
 #define BITMAPS_H
 
+#include "Screen/LKBitmap.h"
+
 #if defined(STATIC_BITMAPS)
-  #define BEXTMODE 
-  #undef  STATIC_BITMAPS
-  #define BEXTNULL	=NULL
+#define BEXTMODE 
+#undef  STATIC_BITMAPS
 
 #else
-  #undef  BEXTMODE
-  #define BEXTMODE extern
-  #define BEXTNULL
+#undef  BEXTMODE
+#define BEXTMODE extern
 
-  extern void LKLoadFixedBitmaps(void);
-  extern void LKLoadProfileBitmaps(void);
-  extern void LKUnloadFixedBitmaps(void);
-  extern void LKUnloadProfileBitmaps(void);
+extern void LKLoadFixedBitmaps(void);
+extern void LKLoadProfileBitmaps(void);
+extern void LKUnloadFixedBitmaps(void);
+extern void LKUnloadProfileBitmaps(void);
 #endif
 
 //
 // FIXED BITMAPS
 //
-BEXTMODE  HBITMAP hTurnPoint BEXTNULL;
-BEXTMODE  HBITMAP hInvTurnPoint BEXTNULL;
-BEXTMODE  HBITMAP hSmall BEXTNULL;
-BEXTMODE  HBITMAP hInvSmall BEXTNULL;
-BEXTMODE  HBITMAP hTerrainWarning BEXTNULL;
-BEXTMODE  HBITMAP hAirspaceWarning BEXTNULL;
-BEXTMODE  HBITMAP hLogger BEXTNULL;
-BEXTMODE  HBITMAP hLoggerOff BEXTNULL;
-BEXTMODE  HBITMAP hFLARMTraffic BEXTNULL;
-BEXTMODE  HBITMAP hBatteryFull BEXTNULL;
-BEXTMODE  HBITMAP hBatteryFullC BEXTNULL;
-BEXTMODE  HBITMAP hBattery96 BEXTNULL;
-BEXTMODE  HBITMAP hBattery84 BEXTNULL;
-BEXTMODE  HBITMAP hBattery72 BEXTNULL;
-BEXTMODE  HBITMAP hBattery60 BEXTNULL;
-BEXTMODE  HBITMAP hBattery48 BEXTNULL;
-BEXTMODE  HBITMAP hBattery36 BEXTNULL;
-BEXTMODE  HBITMAP hBattery24 BEXTNULL;
-BEXTMODE  HBITMAP hBattery12 BEXTNULL;
+BEXTMODE LKBitmap hTurnPoint;
+BEXTMODE LKBitmap hInvTurnPoint;
+BEXTMODE LKBitmap hSmall;
+BEXTMODE LKBitmap hInvSmall;
+BEXTMODE LKBitmap hTerrainWarning;
+BEXTMODE LKBitmap hAirspaceWarning;
+BEXTMODE LKBitmap hLogger;
+BEXTMODE LKBitmap hLoggerOff;
+BEXTMODE LKBitmap hFLARMTraffic;
+BEXTMODE LKBitmap hBatteryFull;
+BEXTMODE LKBitmap hBatteryFullC;
+BEXTMODE LKBitmap hBattery96;
+BEXTMODE LKBitmap hBattery84;
+BEXTMODE LKBitmap hBattery72;
+BEXTMODE LKBitmap hBattery60;
+BEXTMODE LKBitmap hBattery48;
+BEXTMODE LKBitmap hBattery36;
+BEXTMODE LKBitmap hBattery24;
+BEXTMODE LKBitmap hBattery12;
 
-BEXTMODE  HBITMAP hNoTrace BEXTNULL;
-BEXTMODE  HBITMAP hFullTrace BEXTNULL;
-BEXTMODE  HBITMAP hClimbTrace BEXTNULL;
-BEXTMODE  HBITMAP hHeadUp BEXTNULL;
-BEXTMODE  HBITMAP hHeadRight BEXTNULL;
-BEXTMODE  HBITMAP hNorthUp BEXTNULL;
+BEXTMODE LKBitmap hNoTrace;
+BEXTMODE LKBitmap hFullTrace;
+BEXTMODE LKBitmap hClimbTrace;
+BEXTMODE LKBitmap hHeadUp;
+BEXTMODE LKBitmap hHeadRight;
+BEXTMODE LKBitmap hNorthUp;
 
 
-BEXTMODE  HBITMAP hMM0 BEXTNULL;
-BEXTMODE  HBITMAP hMM1 BEXTNULL;
-BEXTMODE  HBITMAP hMM2 BEXTNULL;
-BEXTMODE  HBITMAP hMM3 BEXTNULL;
-BEXTMODE  HBITMAP hMM4 BEXTNULL;
-BEXTMODE  HBITMAP hMM5 BEXTNULL;
-BEXTMODE  HBITMAP hMM6 BEXTNULL;
-BEXTMODE  HBITMAP hMM7 BEXTNULL;
-BEXTMODE  HBITMAP hMM8 BEXTNULL;
+BEXTMODE LKBitmap hMM0;
+BEXTMODE LKBitmap hMM1;
+BEXTMODE LKBitmap hMM2;
+BEXTMODE LKBitmap hMM3;
+BEXTMODE LKBitmap hMM4;
+BEXTMODE LKBitmap hMM5;
+BEXTMODE LKBitmap hMM6;
+BEXTMODE LKBitmap hMM7;
+BEXTMODE LKBitmap hMM8;
 
-BEXTMODE  HBITMAP hBmpThermalSource BEXTNULL;
-BEXTMODE  HBITMAP hBmpTarget BEXTNULL;
-BEXTMODE  HBITMAP hBmpMarker BEXTNULL;
-BEXTMODE  HBITMAP hBmpTeammatePosition BEXTNULL;
-BEXTMODE  HBITMAP hAboveTerrainBitmap BEXTNULL;
+BEXTMODE LKBitmap hBmpThermalSource;
+BEXTMODE LKBitmap hBmpTarget;
+BEXTMODE LKBitmap hBmpMarker;
+BEXTMODE LKBitmap hBmpTeammatePosition;
+BEXTMODE LKBitmap hAboveTerrainBitmap;
 
-BEXTMODE  HBITMAP hAirspaceBitmap[NUMAIRSPACEBRUSHES];
+BEXTMODE LKBitmap hAirspaceBitmap[NUMAIRSPACEBRUSHES];
 
-BEXTMODE  HBITMAP hBmpLeft32 BEXTNULL;
-BEXTMODE  HBITMAP hBmpRight32 BEXTNULL;
-BEXTMODE  HBITMAP hScrollBarBitmapTop BEXTNULL;
-BEXTMODE  HBITMAP hScrollBarBitmapMid BEXTNULL;
-BEXTMODE  HBITMAP hScrollBarBitmapBot BEXTNULL;
+BEXTMODE LKBitmap hBmpLeft32;
+BEXTMODE LKBitmap hBmpRight32;
+BEXTMODE LKBitmap hScrollBarBitmapTop;
+BEXTMODE LKBitmap hScrollBarBitmapMid;
+BEXTMODE LKBitmap hScrollBarBitmapBot;
 
 // Map icons 
-BEXTMODE  HBITMAP hMountop   BEXTNULL;
-BEXTMODE  HBITMAP hMountpass BEXTNULL;
-BEXTMODE  HBITMAP hBridge    BEXTNULL;
-BEXTMODE  HBITMAP hIntersect BEXTNULL;
-BEXTMODE  HBITMAP hDam       BEXTNULL;
-BEXTMODE  HBITMAP hSender    BEXTNULL;
-BEXTMODE  HBITMAP hNdb       BEXTNULL;
-BEXTMODE  HBITMAP hVor       BEXTNULL;
-BEXTMODE  HBITMAP hCoolTower BEXTNULL;
-BEXTMODE  HBITMAP hTunnel    BEXTNULL;
-BEXTMODE  HBITMAP hCastle    BEXTNULL;
-BEXTMODE  HBITMAP hPowerPlant BEXTNULL;
-BEXTMODE  HBITMAP hLKThermal BEXTNULL;
-BEXTMODE  HBITMAP hLKThermalRed BEXTNULL;
-BEXTMODE  HBITMAP hLKPictori BEXTNULL;
+BEXTMODE LKBitmap hMountop;
+BEXTMODE LKBitmap hMountpass;
+BEXTMODE LKBitmap hBridge;
+BEXTMODE LKBitmap hIntersect;
+BEXTMODE LKBitmap hDam;
+BEXTMODE LKBitmap hSender;
+BEXTMODE LKBitmap hNdb;
+BEXTMODE LKBitmap hVor;
+BEXTMODE LKBitmap hCoolTower;
+BEXTMODE LKBitmap hTunnel;
+BEXTMODE LKBitmap hCastle;
+BEXTMODE LKBitmap hPowerPlant;
+BEXTMODE LKBitmap hLKThermal;
+BEXTMODE LKBitmap hLKThermalRed;
+BEXTMODE LKBitmap hLKPictori;
 
 //
 // PROFILE DEPENDENT BITMAPS
 //
-BEXTMODE  HBITMAP hBmpAirportReachable BEXTNULL;
-BEXTMODE  HBITMAP hBmpAirportUnReachable BEXTNULL;
-BEXTMODE  HBITMAP hBmpFieldReachable BEXTNULL;
-BEXTMODE  HBITMAP hBmpFieldUnReachable BEXTNULL;
-BEXTMODE  HBITMAP hCruise BEXTNULL;
-BEXTMODE  HBITMAP hClimb BEXTNULL;
-BEXTMODE  HBITMAP hFinalGlide BEXTNULL;
+BEXTMODE LKBitmap hBmpAirportReachable;
+BEXTMODE LKBitmap hBmpAirportUnReachable;
+BEXTMODE LKBitmap hBmpFieldReachable;
+BEXTMODE LKBitmap hBmpFieldUnReachable;
+BEXTMODE LKBitmap hCruise;
+BEXTMODE LKBitmap hClimb;
+BEXTMODE LKBitmap hFinalGlide;
 
 #endif

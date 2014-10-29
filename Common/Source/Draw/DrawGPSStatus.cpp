@@ -12,10 +12,10 @@
 //
 // This will draw both GPS and LOCK SCREEN status
 //
-void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
+void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
 {
 
-  HFONT oldfont=NULL;
+  LKFont oldfont;
   if ((MapSpaceMode==MSM_WELCOME)||(mode.AnyPan()) ) return; // 100210
 
   if (!LKLanguageReady) return;
@@ -29,7 +29,7 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
 
   if (!extGPSCONNECT) {
 
-    oldfont=(HFONT)SelectObject(hDC,LK8TargetFont); 
+    oldfont=Surface.SelectObject(LK8TargetFont);
     TextInBoxMode_t TextInBoxMode = {0};
     TextInBoxMode.Color = RGB_WHITE;
     TextInBoxMode.NoSetFont=1;
@@ -37,24 +37,24 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     TextInBoxMode.WhiteBorder = 1;
     TextInBoxMode.Border = 1;
     if (ComPortStatus[0]==CPS_OPENKO) {
-      TextInBox(hDC, &rc, gettext(_T("_@M971_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode); // No ComPort
+      TextInBox(Surface, &rc, gettext(_T("_@M971_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode); // No ComPort
     } else {
     	if (ComPortStatus[0]==CPS_OPENOK) {
 		if ((ComPortRx[0]>0) && !firstrun) {
 			// GPS IS MISSING
-			TextInBox(hDC, &rc, MsgToken(973), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+			TextInBox(Surface, &rc, MsgToken(973), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 			firstrun=false; 
 		} else {
 			// NO DATA RX
-			TextInBox(hDC, &rc, MsgToken(972), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+			TextInBox(Surface, &rc, MsgToken(972), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 		}
 	} else  {
 		if (ComPortStatus[0]==CPS_EFRAME)  {
 			// DATA ERROR
-			TextInBox(hDC, &rc, MsgToken(975), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+			TextInBox(Surface, &rc, MsgToken(975), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 		} else {
 			// GPS NOT CONNECTED
-			TextInBox(hDC, &rc, MsgToken(974), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+			TextInBox(Surface, &rc, MsgToken(974), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 		}
 	}
 
@@ -63,7 +63,7 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
 
   } else
     if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
-    oldfont=(HFONT)SelectObject(hDC,LK8TargetFont); // 100210
+    oldfont=Surface.SelectObject(LK8TargetFont); // 100210
     TextInBoxMode_t TextInBoxMode = {0};
     TextInBoxMode.Color = RGB_WHITE;
     TextInBoxMode.NoSetFont=1;
@@ -71,16 +71,16 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     TextInBoxMode.WhiteBorder = 1;
     TextInBoxMode.Border = 1;
     // NO VALID FIX
-    TextInBox(hDC, &rc, MsgToken(970), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+    TextInBox(Surface, &rc, MsgToken(970), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
 
     }
 
 goto_DrawLockModeStatus:
   if (LockModeStatus) {
-    if (oldfont!=NULL)
-      oldfont=(HFONT)SelectObject(hDC,LK8MediumFont);
+    if (oldfont)
+      oldfont=Surface.SelectObject(LK8MediumFont);
     else
-      SelectObject(hDC,LK8MediumFont);
+      Surface.SelectObject(LK8MediumFont);
 
     TextInBoxMode_t TextInBoxModeL = {0};
     TextInBoxModeL.Color = RGB_WHITE;
@@ -88,12 +88,14 @@ goto_DrawLockModeStatus:
     TextInBoxModeL.AlligneCenter = 1;
     TextInBoxModeL.WhiteBorder = 1;
     TextInBoxModeL.Border = 1;
-    if (ISPARAGLIDER) TextInBox(hDC, &rc,gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), 0, &TextInBoxModeL);
-    SelectObject(hDC,LK8MapFont);
-    TextInBox(hDC, &rc, gettext(_T("_@M1601_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), 0, &TextInBoxModeL);
+    if (ISPARAGLIDER){
+        TextInBox(Surface, &rc,gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), 0, &TextInBoxModeL);
+    }
+    Surface.SelectObject(LK8MapFont);
+    TextInBox(Surface, &rc, gettext(_T("_@M1601_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), 0, &TextInBoxModeL);
   }
 
-  SelectObject(hDC,oldfont);
+  Surface.SelectObject(oldfont);
   return;
 }
 

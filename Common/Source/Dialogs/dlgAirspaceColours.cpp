@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
-
+#include "LKObjects.h"
 
 
 static WndForm *wf=NULL;
@@ -26,19 +26,16 @@ static void UpdateList(void){
 
 static int DrawListIndex=0;
 
-static void OnAirspaceColoursPaintListItem(WindowControl * Sender, HDC hDC){
+static void OnAirspaceColoursPaintListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   if ((DrawListIndex < NUMAIRSPACECOLORS) &&(DrawListIndex>=0)) {
     int i = DrawListIndex;
-    SelectObject(hDC, GetStockObject(WHITE_BRUSH));
-    SelectObject(hDC, GetStockObject(BLACK_PEN));
-    SetBkColor(hDC, 
-	       RGB(0xFF, 0xFF, 0xFF));
-    SelectObject(hDC, 
-		 MapWindow::GetAirspaceBrush(1)); // this is the solid brush
-    SetTextColor(hDC, 
-		 MapWindow::GetAirspaceColour(i));
-    Rectangle(hDC, 
+    Surface.SelectObject(LKBrush_White);
+    Surface.SelectObject(LK_BLACK_PEN);
+    Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+    Surface.SelectObject(MapWindow::GetAirspaceBrush(1)); // this is the solid brush
+    Surface.SetTextColor(MapWindow::GetAirspaceColour(i));
+    Surface.Rectangle(
               100*ScreenScale, 
               2*ScreenScale,
               180*ScreenScale,

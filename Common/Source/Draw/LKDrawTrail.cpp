@@ -13,7 +13,7 @@
 #define TRAIL_DRIFT_FIX 1
 //      Attempts to fix bug that caused trail points to disappear
 //      (more so in stronger winds and when more zoomed in) while
-//      in circling zoom with “trail drift” on.
+//      in circling zoom with ï¿½trail driftï¿½ on.
 //      by Eric Carden, March 4, 2012
 
 //#define DEBUG_DRAWTRAIL 1
@@ -22,7 +22,7 @@
 // #define FIXSNAIL 1
 
 // try not to use colors when over a useless mapscale
-double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
+double MapWindow::LKDrawTrail( LKSurface& Surface, const POINT& Orig, const RECT& rc)
 {
   if(!TrailActive) return -1;
 
@@ -42,7 +42,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   #ifdef TRAIL_DRIFT_FIX
   double this_lat, this_lon;  // lat & lon of point as it is to be drawn on
-                              // screen (accounts for “trail drift” if
+                              // screen (accounts for ï¿½trail driftï¿½ if
                               // appropriate)
   #endif
 
@@ -221,7 +221,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
       continue;
     }
 
-    #ifdef TRAIL_DRIFT_FIX  // calc drifted lat/lon BEFORE determining “visibility”
+    #ifdef TRAIL_DRIFT_FIX  // calc drifted lat/lon BEFORE determining ï¿½visibilityï¿½
     if (trail_is_drifted) {
       double dt = max(0.0, (display_time - P1.Time) * P1.DriftFactor);
       this_lat = P1.Latitude + traildrift_lat * dt;
@@ -336,19 +336,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 	// predefined color, we are in low zoom.
 	pointcolour = 3; // blue
     }
-    SelectObject(hdc, hSnailPens[pointcolour]);
+    Surface.SelectObject(hSnailPens[pointcolour]);
 
 
-    if (!last_visible) { // draw set cursor at P1
-	#ifndef NOLINETO
-	MoveToEx(hdc, P1.Screen.x, P1.Screen.y, NULL);
-	#endif
-    } else {
-	#ifndef NOLINETO
-	LineTo(hdc, P1.Screen.x, P1.Screen.y);
-	#else
-	DrawSolidLine(hdc, P1.Screen, point_lastdrawn, rc);
-	#endif
+    if (last_visible) { // draw set cursor at P1
+        Surface.DrawSolidLine(P1.Screen, point_lastdrawn, rc);
     }
     #if FIXSNAIL
     numsum=0;
@@ -360,11 +352,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   // draw final point to glider
   if (last_visible) {
-#ifndef NOLINETO 
-    LineTo(hdc, Orig.x, Orig.y);
-#else
-    DrawSolidLine(hdc, Orig, point_lastdrawn, rc);
-#endif
+    Surface.DrawSolidLine(Orig, point_lastdrawn, rc);
   }
 
   #if DEBUG_DRAWTRAIL

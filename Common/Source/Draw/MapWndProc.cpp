@@ -17,6 +17,7 @@
 #include "Multimap.h"
 #include "Logger.h"
 #include "Dialogs.h"
+#include "Screen/LKBitmapSurface.h"
 
 #define KEYDEBOUNCE 100
 
@@ -25,7 +26,7 @@
 
 static bool isListPage(void);
 
-COLORREF taskcolor = RGB_TASKLINECOL; // 091216
+LKColor taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
 static bool MouseWasPanMoving=false;
 bool OnFastPanning=false;
@@ -33,7 +34,7 @@ bool OnFastPanning=false;
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
 
-HBRUSH  MapWindow::hAboveTerrainBrush;
+LKBrush  MapWindow::hAboveTerrainBrush;
 
 int MapWindow::SnailWidthScale = 16;
 int MapWindow::ScaleListCount = 0;
@@ -44,21 +45,23 @@ POINT MapWindow::Orig_Screen;
 
 RECT MapWindow::MapRect;	// the entire screen area in use
 RECT MapWindow::DrawRect;	// the portion of MapRect for drawing terrain, topology etc. (the map)
+/*
+LKBitmap MapWindow::hDrawBitMap;
+LKBitmap MapWindow::hDrawBitMapTmp;
+LKBitmap MapWindow::hMaskBitMap;
+LKBitmap MapWindow::mhbbuffer;
+*/
+LKWindowSurface MapWindow::ScreenSurface;
 
-HBITMAP MapWindow::hDrawBitMap = NULL;
-HBITMAP MapWindow::hDrawBitMapTmp = NULL;
-HBITMAP MapWindow::hMaskBitMap = NULL;
-HBITMAP MapWindow::mhbbuffer = NULL;
-HDC MapWindow::hdcDrawWindow = NULL;
-HDC MapWindow::hdcScreen = NULL;
-HDC MapWindow::hDCTemp = NULL;
-HDC MapWindow::hDCMask = NULL;
-HDC MapWindow::mhdcbuffer = NULL;
 
-#if NEWSMARTZOOM
-HBITMAP MapWindow::hQuickDrawBitMap = NULL;
-HDC MapWindow::hdcQuickDrawWindow = NULL;
-#endif
+LKBitmapSurface MapWindow::hdcDrawWindow;
+  
+LKBitmapSurface MapWindow::hDCTempTask;
+LKBitmapSurface MapWindow::hdcTempTerrainAbove;
+
+LKBitmapSurface MapWindow::hdcTempAsp;
+LKMaskBitmapSurface MapWindow::hdcMask;
+LKBitmapSurface MapWindow::hdcbuffer;
 
 double MapWindow::PanLatitude = 0.0;
 double MapWindow::PanLongitude = 0.0;
@@ -81,8 +84,8 @@ DWORD MapWindow::targetPanSize = 0;
 
 bool MapWindow::LandableReachable = false;
 
-HPEN MapWindow::hSnailPens[NUMSNAILCOLORS];
-COLORREF MapWindow::hSnailColours[NUMSNAILCOLORS];
+LKPen MapWindow::hSnailPens[NUMSNAILCOLORS];
+LKColor MapWindow::hSnailColours[NUMSNAILCOLORS];
 
 POINT MapWindow::Groundline[NUMTERRAINSWEEPS+1];
 #ifdef GTL2
@@ -94,36 +97,36 @@ int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = {2,0,0,0,3,3,3,3,0,3,2,
 int      MapWindow::iAirspaceColour[AIRSPACECLASSCOUNT] = {5,0,0,10,0,0,10,2,0,10,9,3,7,7,7,10};
 int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] = {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0};
 
-HPEN MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
-HPEN MapWindow::hBigAirspacePens[AIRSPACECLASSCOUNT];
-HPEN MapWindow::hAirspaceBorderPen;
+LKPen MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
+LKPen MapWindow::hBigAirspacePens[AIRSPACECLASSCOUNT];
+LKPen MapWindow::hAirspaceBorderPen;
 
-HBRUSH  MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
+LKBrush  MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
 
-HBRUSH  MapWindow::hAirspaceBrushes[NUMAIRSPACEBRUSHES];
+LKBrush  MapWindow::hAirspaceBrushes[NUMAIRSPACEBRUSHES];
 
-COLORREF MapWindow::Colours[NUMAIRSPACECOLORS] =
-  {RGB(0xFF,0x00,0x00), RGB(0x00,0xFF,0x00),
-   RGB(0x00,0x00,0xFF), RGB(0xFF,0xFF,0x00),
-   RGB(0xFF,0x00,0xFF), RGB(0x00,0xFF,0xFF),
-   RGB(0x7F,0x00,0x00), RGB(0x00,0x7F,0x00),
-   RGB(0x00,0x00,0x7F), RGB(0x7F,0x7F,0x00),
-   RGB(0x7F,0x00,0x7F), RGB(0x00,0x7F,0x7F),
-   RGB(0xFF,0xFF,0xFF), RGB(0xC0,0xC0,0xC0),
-   RGB(0x7F,0x7F,0x7F), RGB(0x00,0x00,0x00)};
+LKColor MapWindow::Colours[NUMAIRSPACECOLORS] =
+  {LKColor(0xFF,0x00,0x00), LKColor(0x00,0xFF,0x00),
+   LKColor(0x00,0x00,0xFF), LKColor(0xFF,0xFF,0x00),
+   LKColor(0xFF,0x00,0xFF), LKColor(0x00,0xFF,0xFF),
+   LKColor(0x7F,0x00,0x00), LKColor(0x00,0x7F,0x00),
+   LKColor(0x00,0x00,0x7F), LKColor(0x7F,0x7F,0x00),
+   LKColor(0x7F,0x00,0x7F), LKColor(0x00,0x7F,0x7F),
+   LKColor(0xFF,0xFF,0xFF), LKColor(0xC0,0xC0,0xC0),
+   LKColor(0x7F,0x7F,0x7F), LKColor(0x00,0x00,0x00)};
 
 
-HPEN MapWindow::hpAircraft;
-HPEN MapWindow::hpWindThick;
+LKPen MapWindow::hpAircraft;
+LKPen MapWindow::hpWindThick;
 
-HPEN MapWindow::hpThermalBand;
-HPEN MapWindow::hpThermalBandGlider;
-HPEN MapWindow::hpFinalGlideAbove;
-HPEN MapWindow::hpFinalGlideBelow;
-HPEN MapWindow::hpMapScale2;
-HPEN MapWindow::hpTerrainLine;
-HPEN MapWindow::hpTerrainLineBg;
-HPEN MapWindow::hpStartFinishThick;
+LKPen MapWindow::hpThermalBand;
+LKPen MapWindow::hpThermalBandGlider;
+LKPen MapWindow::hpFinalGlideAbove;
+LKPen MapWindow::hpFinalGlideBelow;
+LKPen MapWindow::hpMapScale2;
+LKPen MapWindow::hpTerrainLine;
+LKPen MapWindow::hpTerrainLineBg;
+LKPen MapWindow::hpStartFinishThick;
 
 bool MapWindow::MapDirty = true;
 bool PanRefreshed=false;
@@ -251,101 +254,30 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		break;
 
     case WM_SIZE:
-	if (!THREADRUNNING) {
-		#if TESTBENCH
-		StartupStore(_T("... MapWndProc WM_SIZE detected, DrawThread not running\n"));
-		LKASSERT(hdcScreen);
-		#endif
-		if (hdcScreen) ReleaseDC(hWnd, hdcScreen);
+        if (!MapWindow::IsDisplayRunning()) {
+            hdcDrawWindow.Resize(lparam_X, lparam_Y);
 
-		LKASSERT(hdcDrawWindow);
-		DeleteDC(hdcDrawWindow);
+            hDCTempTask.Resize(lparam_X, lparam_Y);
+            hdcTempTerrainAbove.Resize(lparam_X, lparam_Y);
 
-		LKASSERT(hDCTemp);
-		DeleteDC(hDCTemp);
-
-		LKASSERT(hDCMask);
-		DeleteDC(hDCMask);
-
-		#if NEWSMARTZOOM
-		LKASSERT(hdcQuickDrawWindow);
-		DeleteDC(hdcQuickDrawWindow);
-		#endif
-	
-		hdcScreen = GetDC(hWnd);
-		LKASSERT(hdcScreen);
-
-		hdcDrawWindow = CreateCompatibleDC(hdcScreen);
-		LKASSERT(hdcDrawWindow);
-		#if NEWSMARTZOOM
-		hdcQuickDrawWindow = CreateCompatibleDC(hdcScreen);
-		LKASSERT(hdcQuickDrawWindow);
-		#endif
-		hDCTemp = CreateCompatibleDC(hdcDrawWindow);
-		LKASSERT(hDCTemp);
-		hDCMask = CreateCompatibleDC(hdcDrawWindow);
-		LKASSERT(hdcDrawWindow);
-
-        mhdcbuffer = CreateCompatibleDC(hdcDrawWindow);
-        LKASSERT(mhdcbuffer);
-	}
-
-	if (hDrawBitMap) DeleteObject(hDrawBitMap);
-	hDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
-	LKASSERT(hDrawBitMap);
-	SelectObject(hdcDrawWindow, (HBITMAP)hDrawBitMap);
-
-	if (hDrawBitMapTmp) DeleteObject(hDrawBitMapTmp);
-	hDrawBitMapTmp = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
-	LKASSERT(hDrawBitMapTmp);
-	SelectObject(hDCTemp, (HBITMAP)hDrawBitMapTmp);
-
-	if (hMaskBitMap) DeleteObject(hMaskBitMap);
-	hMaskBitMap = CreateBitmap(lparam_X+1, lparam_Y+1, 1, 1, NULL);
-	LKASSERT(hMaskBitMap);
-	SelectObject(hDCMask, (HBITMAP)hMaskBitMap);
-    
-	if (mhbbuffer) DeleteObject(mhbbuffer);
-    mhbbuffer = CreateCompatibleBitmap(hdcDrawWindow, lparam_X, lparam_Y);
-    SelectObject(mhdcbuffer, mhbbuffer);
-    LKASSERT(mhbbuffer);
-
-
-	#if NEWSMARTZOOM
-	if (hQuickDrawBitMap) DeleteObject(hQuickDrawBitMap);
-	hQuickDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
-	LKASSERT(hQuickDrawBitMap);
-	SelectObject(hdcQuickDrawWindow, (HBITMAP)hQuickDrawBitMap);
-	#endif
-
+            hdcTempAsp.Resize(lparam_X, lparam_Y);
+            hdcbuffer.Resize(lparam_X, lparam_Y);
+            hdcMask.Resize(lparam_X+1, lparam_Y+1);
+        }
 	break;
 
     case WM_CREATE:
 
-	LKASSERT(!hdcScreen); 
-	hdcScreen = GetDC(hWnd);
-	LKASSERT(hdcScreen); 
+    	ScreenSurface.Create(hWnd);
 
-	LKASSERT(!hdcDrawWindow);
-	hdcDrawWindow = CreateCompatibleDC(hdcScreen);
-	LKASSERT(hdcDrawWindow);
+        hdcDrawWindow.Create(ScreenSurface, lparam_X, lparam_Y);
+        
+        hDCTempTask.Create(ScreenSurface, lparam_X, lparam_Y);
+        hdcTempTerrainAbove.Create(ScreenSurface, lparam_X, lparam_Y);
 
-	#if NEWSMARTZOOM
-	LKASSERT(!hdcQuickDrawWindow);
-	hdcQuickDrawWindow = CreateCompatibleDC(hdcScreen);
-	LKASSERT(hdcQuickDrawWindow);
-	#endif
-	LKASSERT(!hDCTemp);
-	hDCTemp = CreateCompatibleDC(hdcDrawWindow);
-	LKASSERT(hDCTemp);
-	LKASSERT(!hDCMask);
-	hDCMask = CreateCompatibleDC(hdcDrawWindow);
-	LKASSERT(hDCMask);
-  
-    mhdcbuffer = CreateCompatibleDC(hdcDrawWindow);
-    LKASSERT(mhdcbuffer);
-    
-	AlphaBlendInit();
+        hdcTempAsp.Create(ScreenSurface, lparam_X, lparam_Y);
+        hdcbuffer.Create(ScreenSurface, lparam_X, lparam_Y);
+        hdcMask.Create(ScreenSurface, lparam_X+1, lparam_Y+1);
 
 	// Signal that draw thread can run now
 	Initialised = TRUE;
@@ -355,52 +287,17 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
     case WM_DESTROY:
 
-	if (hdcScreen) {
-		ReleaseDC(hWnd, hdcScreen);
-		hdcScreen=NULL;
-	}
+        ScreenSurface.Release();
 
-	if (hdcDrawWindow) {     
-		DeleteDC(hdcDrawWindow);
-		hdcDrawWindow=NULL;
-	}
-	if (hDCTemp) {
-		DeleteDC(hDCTemp);
-		hDCTemp=NULL;
-	}
-	if (hDCMask) {
-		DeleteDC(hDCMask);
-		hDCMask=NULL;
-	}
-    if(mhdcbuffer) {
-        DeleteDC(mhdcbuffer);
-        mhdcbuffer=NULL;
-    }
-	if (hDrawBitMap) {
-		DeleteObject(hDrawBitMap);
-		hDrawBitMap=NULL;
-	}
-	if (hMaskBitMap) {
-		DeleteObject(hMaskBitMap);
-		hMaskBitMap=NULL;
-	}
-    if (mhbbuffer) {
-        DeleteObject(mhbbuffer);
-        mhbbuffer=NULL;
-    }
+        hdcDrawWindow.Release();
+        
+        hDCTempTask.Release();
+        hdcTempTerrainAbove.Release();
 
-    #if NEWSMARTZOOM
-	if (hdcQuickDrawWindow) {
-		DeleteDC(hdcQuickDrawWindow);
-		hdcQuickDrawWindow=NULL;
-	}
-	if (hQuickDrawBitMap) {
-		DeleteObject(hQuickDrawBitMap);
-		hQuickDrawBitMap=NULL;
-	}
-	#endif
+        hdcTempAsp.Release();
+        hdcbuffer.Release();
+        hdcMask.Release();
 
-	AlphaBlendDestroy();
 	PostQuitMessage (0);
 	break;
 
@@ -2120,5 +2017,3 @@ static bool isListPage(void) {
   else
 	return false;
 }
-
-

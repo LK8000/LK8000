@@ -14,7 +14,7 @@
 #endif // _MSC_VER > 1000
 
 #include "leastsqs.h"
-
+#include "Screen/LKSurface.h"
 #define BORDER_X 15
 #define BORDER_Y  19
 
@@ -47,36 +47,36 @@ class Statistics {
 
 
   void Reset();
-  static void DrawBarChart(HDC hdc, const RECT rc, LeastSquares* lsdata);
+  static void DrawBarChart(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata);
 
-  static void DrawFilledLineGraph(HDC hdc, const RECT rc, 
+  static void DrawFilledLineGraph(LKSurface& Surface, const RECT& rc,
 				  LeastSquares* lsdata,
-				  const COLORREF thecolor);
+				  const LKColor& thecolor);
 
-  static void DrawLineGraph(HDC hdc, const RECT rc, LeastSquares* lsdata,
+  static void DrawLineGraph(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
                             const int Style);
-  static void DrawTrend(HDC hdc, const RECT rc, LeastSquares* lsdata,
+  static void DrawTrend(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
                         const int Style);
-  static void DrawTrendN(HDC hdc, const RECT rc, LeastSquares* lsdata,
+  static void DrawTrendN(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
                          const int Style);
 
-  static void DrawLine(HDC hdc, RECT rc, 
+  static void DrawLine(LKSurface& Surface, const RECT& rc,
 		       const double xmin, 
 		       const double ymin,
                        const double xmax, 
 		       const double ymax, const int Style);
 
-  static int ScaleX(const RECT rc, double x);
+  static int ScaleX(const RECT& rc, double x);
 
-  static int ScaleY(const RECT rc,double y);
+  static int ScaleY(const RECT& rc,double y);
 
-  static void ScaleYFromData(const RECT rc, LeastSquares* lsdata);
-  static void ScaleXFromData(const RECT rc, LeastSquares* lsdata);
-  static void ScaleYFromValue(const RECT rc, const double val);
-  static void ScaleXFromValue(const RECT rc, const double val);
-  static void ScaleMakeSquare(const RECT rc);
+  static void ScaleYFromData(const RECT& rc, LeastSquares* lsdata);
+  static void ScaleXFromData(const RECT& rc, LeastSquares* lsdata);
+  static void ScaleYFromValue(const RECT& rc, const double val);
+  static void ScaleXFromValue(const RECT& rc, const double val);
+  static void ScaleMakeSquare(const RECT& rc);
 
-  static void StyleLine(HDC hdc, const POINT l1, const POINT l2, const int Style, const RECT rc);
+  static void StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2, const int Style, const RECT& rc);
 
 
 
@@ -89,48 +89,41 @@ class Statistics {
   static void ResetScale();
 
   static void FormatTicText(TCHAR *text, const double val, const double step);
-  static void DrawXGrid(HDC hdc, const RECT rc, 
+  static void DrawXGrid(LKSurface& Surface, const RECT& rc,
 			const double tic_step, 
 			const double zero,
                         const int Style, 
 			const double unit_step, 
 			bool draw_units=false);
-  static void DrawYGrid(HDC hdc, const RECT rc, 
+  static void DrawYGrid(LKSurface& Surface, const RECT& rc,
 			const double tic_step, 
 			const double zero,
                         const int Style, 
 			const double unit_step, bool draw_units=false);
-  static void DrawYGrid_cor(HDC hdc, const RECT rc,
+  static void DrawYGrid_cor(LKSurface& Surface, const RECT& rc,
 			const double tic_step,
 			const double zero,
                         const int Style,
 			const double unit_step, bool draw_units=false);
-  static void DrawXLabel(HDC hdc, const RECT rc, const TCHAR *text);
-  static void DrawYLabel(HDC hdc, const RECT rc, const TCHAR *text);
-  static void DrawLabel(HDC hdc, const RECT rc, const TCHAR *text, 
+  static void DrawXLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text);
+  static void DrawYLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text);
+  static void DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text,
 			const double xv, const double yv);
-  static void DrawNoData(HDC hdc, const RECT rc);
+  static void DrawNoData(LKSurface& Surface, const RECT& rc);
 
   ///
     
 
-    static void RenderBarograph(HDC hdc, const RECT rc);
-    static void RenderClimb(HDC hdc, const RECT rc);
-    static void RenderGlidePolar(HDC hdc, const RECT rc);
-    static void RenderWind(HDC hdc, const RECT rc);
-    static void RenderTemperature(HDC hdc, const RECT rc);
-    static void RenderTask(HDC hdc, const RECT rc, const bool olcmode);
-    static void RenderContest(HDC hdc, const RECT rc);
-    static void RenderFAIOptimizer(HDC hdc, const RECT rc);
-    static int  RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , COLORREF fillcolor);
-    static void RenderSpeed(HDC hdc, const RECT rc);
-
-//    static void RenderNearAirspace(HDC hdc, const RECT rc) ;
-
+    static void RenderBarograph(LKSurface& Surface, const RECT& rc);
+    static void RenderClimb(LKSurface& Surface, const RECT& rc);
+    static void RenderGlidePolar(LKSurface& Surface, const RECT& rc);
+    static void RenderWind(LKSurface& Surface, const RECT& rc);
+    static void RenderTemperature(LKSurface& Surface, const RECT& rc);
+    static void RenderTask(LKSurface& Surface, const RECT& rc, const bool olcmode);
+    static void RenderContest(LKSurface& Surface, const RECT& rc);
+    static void RenderFAIOptimizer(LKSurface& Surface, const RECT& rc);
+    static int  RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , const LKColor& fillcolor);
+    static void RenderSpeed(LKSurface& Surface, const RECT& rc);
 };
-
-
-LRESULT CALLBACK AnalysisProc (HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
-
 
 #endif

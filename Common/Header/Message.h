@@ -49,7 +49,6 @@ class Message {
   static RECT rcmsg; // maximum message size
   static HWND hWndMessageWindow;
   static TCHAR msgText[2000];
-  static HDC hdc;
   static void Resize();
   static int GetEmptySlot();
   static bool hidden;

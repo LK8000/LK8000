@@ -10,7 +10,7 @@
 #include "Dialogs.h"
 
 #include "InfoBoxLayout.h"
-
+#include "LKObjects.h"
 
 
 static WndForm *wf=NULL;
@@ -30,7 +30,7 @@ static void UpdateList(void){
 
 static int DrawListIndex=0;
 
-static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
+static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
   
   TCHAR label[40];
   (void)Sender;
@@ -44,30 +44,23 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
       w0 = 225*ScreenScale;
     }
 	// LKTOKEN  _@M789_ = "Warn" 
-    w1 = GetTextWidth(hDC, gettext(TEXT("_@M789_")))+ScreenScale*10;
+    w1 = Surface.GetTextWidth(gettext(TEXT("_@M789_")))+ScreenScale*10;
 	// LKTOKEN  _@M241_ = "Display" 
-    w2 = GetTextWidth(hDC, gettext(TEXT("_@M241_")))+ScreenScale*10;
+    w2 = Surface.GetTextWidth(gettext(TEXT("_@M241_")))+ScreenScale*10;
     x0 = w0-w1-w2;
 
-    ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale,
+    Surface.DrawTextClip(2*ScreenScale, 2*ScreenScale,
                    label, x0-ScreenScale*10);
 
     if (colormode) {
 
-      SelectObject(hDC, GetStockObject(WHITE_PEN));
-      SelectObject(hDC, GetStockObject(WHITE_BRUSH));
-      Rectangle(hDC,
-          x0, 2*ScreenScale,
-          w0, 22*ScreenScale);
-      SetTextColor(hDC,
-         MapWindow::GetAirspaceColourByClass(i));
-         SetBkColor(hDC,
-         RGB(0xFF, 0xFF, 0xFF));
-      SelectObject(hDC,
-		   MapWindow::GetAirspaceBrushByClass(i));
-        Rectangle(hDC,
-        x0, 2*ScreenScale,
-        w0, 22*ScreenScale);
+      Surface.SelectObject(LK_WHITE_PEN);
+      Surface.SelectObject(LKBrush_White);
+      Surface.Rectangle(x0, 2*ScreenScale,w0, 22*ScreenScale);
+      Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(i));
+      Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+      Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(i));
+      Surface.Rectangle(x0, 2*ScreenScale,w0, 22*ScreenScale);
         
     } else {
     
@@ -79,24 +72,12 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
       if (iswarn) {
 	// LKTOKEN  _@M789_ = "Warn" 
         _tcscpy(label, gettext(TEXT("_@M789_")));
-        ExtTextOut(hDC,
-                   w0-w1-w2,
-                   2*ScreenScale,
-                   ETO_OPAQUE, NULL,
-                   label,
-                   _tcslen(label),
-                   NULL);
+        Surface.DrawText(w0-w1-w2, 2*ScreenScale, label, _tcslen(label));
       }
       if (isdisplay) {
 	// LKTOKEN  _@M241_ = "Display" 
         _tcscpy(label, gettext(TEXT("_@M241_")));
-        ExtTextOut(hDC,
-                   w0-w2,
-                   2*ScreenScale,
-                   ETO_OPAQUE, NULL,
-                   label,
-                   _tcslen(label),
-                   NULL);
+        Surface.DrawText(w0-w2, 2*ScreenScale, label, _tcslen(label));
       }
 
     }

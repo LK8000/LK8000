@@ -11,7 +11,7 @@ class ButtonLabel {
   static bool ButtonDisabled[NUMBUTTONLABELS];
   static void CreateButtonLabels(RECT rc);
   static void AnimateButton(int i);
-  static void SetFont(HFONT Font);
+  static void SetFont(const LKFont& Font);
   static void Destroy();
   static void SetLabelText(int index, const TCHAR *text);
   static bool CheckButtonPress(HWND pressedwindow);

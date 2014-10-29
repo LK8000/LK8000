@@ -17,17 +17,17 @@
 using std::min;
 using std::max;
 
-#define RGB_ROYAL_BLUE  RGB(18,32,139)
-#define RGB_STEEL_BLUE  RGB(70,130,180)
+#define RGB_ROYAL_BLUE  LKColor(18,32,139)
+#define RGB_STEEL_BLUE  LKColor(70,130,180)
 
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
-extern COLORREF Sideview_TextColor;
+extern LKColor Sideview_TextColor;
 extern int Sideview_iNoHandeldSpaces;
 
 //#define OUTLINE_2ND    // double outline for airspaces
 
 
-void RenderAirspaceTerrain(HDC hdc, double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
+void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
 {
 RECT rc	= psDiag->rc;
 //rc.bottom +=BORDER_Y;
@@ -44,14 +44,14 @@ int i,j;
 
 
    if(IsMultimapTerrain())
-     RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
+     RenderSky(Surface, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
    else
    {
-	HPEN OldPen = (HPEN) SelectObject(hdc, LKPen_Black_N1);
-	HBRUSH OldBrush =  (HBRUSH) SelectObject(hdc, MapWindow::hInvBackgroundBrush[BgMapColor]);
-	Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
-	SelectObject(hdc, OldBrush);
-	SelectObject(hdc, OldPen);
+	LKPen OldPen = Surface.SelectObject(LKPen_Black_N1);
+	LKBrush OldBrush =  Surface.SelectObject(MapWindow::hInvBackgroundBrush[BgMapColor]);
+	Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
+	Surface.SelectObject(OldBrush);
+	Surface.SelectObject(OldPen);
   }
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
   POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X+4] = {{0}};
@@ -161,7 +161,7 @@ int i,j;
   /**********************************************************************************
    * draw airspaces
    **********************************************************************************/
-  HPEN oldpen = (HPEN)SelectObject(hdc, (HPEN)NULL);
+  LKPen oldpen = Surface.SelectObject(LK_NULL_PEN);
   _TCHAR text [80];
   LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
   for (int m=0 ; m < Sideview_iNoHandeldSpaces; m++)
@@ -174,18 +174,19 @@ int i,j;
 	
 	int  type = Sideview_pHandeled[iSizeIdx].iType;
 	RECT rcd  = Sideview_pHandeled[iSizeIdx].rc;
-	COLORREF FrameColor =  MapWindow::GetAirspaceColourByClass(type);
+	LKColor FrameColor;
 	double fFrameColFact;
 	if(Sideview_pHandeled[iSizeIdx].bEnabled)
 	{
-	  SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
-	  SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
+	  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
+	  Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(type));
 	  fFrameColFact = 0.8;
+      FrameColor =  MapWindow::GetAirspaceColourByClass(type);
 	}
 	else
 	{
-	  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-	  SetTextColor(hdc, RGB_GGREY);
+	  Surface.SelectObject(LKBrush_Hollow);
+	  Surface.SetTextColor(RGB_GGREY);
 	  FrameColor = RGB_GGREY;
 	  fFrameColFact = 1.2;
 	}
@@ -193,22 +194,21 @@ int i,j;
 	  fFrameColFact *= 0.8;
 	else
 	  fFrameColFact *= 1.2;
-	long lColor = ChangeBrightness(FrameColor, fFrameColFact);
-	HPEN mpen2 =(HPEN)CreatePen(PS_SOLID,FRAMEWIDTH,lColor);
-	HPEN oldpen2 = (HPEN)SelectObject(hdc, mpen2);
+	LKColor Color = FrameColor.ChangeBrightness(fFrameColFact);
+	LKPen mpen2(PEN_SOLID,FRAMEWIDTH,Color);
+	LKPen oldpen2 = Surface.SelectObject(mpen2);
 
 	if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
-	  Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
+	  Surface.Rectangle(rcd.left+1,rcd.top,rcd.right,rcd.bottom);
 	else
-	  Polygon(hdc,Sideview_pHandeled[iSizeIdx].apPolygon ,Sideview_pHandeled[iSizeIdx].iNoPolyPts );
+	  Surface.Polygon(Sideview_pHandeled[iSizeIdx].apPolygon ,Sideview_pHandeled[iSizeIdx].iNoPolyPts );
 
-	SelectObject(hdc, (HPEN)oldpen2);
-	DeleteObject (mpen2);
+	Surface.SelectObject(oldpen2);
 
     if(Sideview_pHandeled[iSizeIdx].bEnabled)
-	  SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
+	  Surface.SetTextColor(Sideview_TextColor); // RGB_MENUTITLEFG
     else
-	  SetTextColor(hdc, RGB_GGREY);
+	  Surface.SetTextColor(RGB_GGREY);
 
     /***********************************************
      * build view overlap for centering text
@@ -224,7 +224,7 @@ int i,j;
     SIZE aispacesize = {rcd.right-rcd.left , rcd.bottom- rcd.top};
 
     LK_tcsncpy(text, Sideview_pHandeled[iSizeIdx].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &textsize);
+    Surface.GetTextSize(text, _tcslen(text), &textsize);
 
     int x = rcd.left + aispacesize.cx/2;;
     int y = rcd.top  + aispacesize.cy/2;
@@ -239,26 +239,26 @@ int i,j;
 
     if ( (textsize.cx < aispacesize.cx) &&  (textsize.cy < aispacesize.cy ) )
     {
-  	  ExtTextOut(hdc, x-textsize.cx/2, y-iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+  	  Surface.DrawText(x-textsize.cx/2, y-iOffset-textsize.cy/2, text, _tcslen(text));
       blongtext = true;
     }
 
     LK_tcsncpy(text, CAirspaceManager::Instance().GetAirspaceTypeShortText( Sideview_pHandeled[iSizeIdx].iType), NAME_SIZE);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &textsize);
+    Surface.GetTextSize(text, _tcslen(text), &textsize);
     if(textsize.cx < aispacesize.cx)
     {
       if (2*textsize.cy < aispacesize.cy )
       {
-	    ExtTextOut(hdc, x-textsize.cx/2, y+iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	    Surface.DrawText(x-textsize.cx/2, y+iOffset-textsize.cy/2, text, _tcslen(text));
       }
       else
       {
         if ((textsize.cy < aispacesize.cy ) && (!blongtext))
-            ExtTextOut(hdc, x-textsize.cx/2, y-iOffset-textsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+            Surface.DrawText(x-textsize.cx/2, y-iOffset-textsize.cy/2, text, _tcslen(text));
       }
     }
   }
-  SelectObject(hdc, oldpen);
+  Surface.SelectObject(oldpen);
 
   /**********************************************************************************
    * draw airspace frames in reversed order
@@ -276,18 +276,18 @@ int i,j;
 
 	  int  type = Sideview_pHandeled[iSizeIdx].iType;
 	  RECT rcd  = Sideview_pHandeled[iSizeIdx].rc;
-	  COLORREF FrameColor =  MapWindow::GetAirspaceColourByClass(type);
+	  LKColor FrameColor =  MapWindow::GetAirspaceColourByClass(type);
 	  double fFrameColFact;
-	  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+	  Surface.SelectObject(LKBrush_Hollow);
 	  if(Sideview_pHandeled[iSizeIdx].bEnabled)
 	  {
-//		SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
-		SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
+//		Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
+		Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(type));
 		fFrameColFact = 0.8;
 	  }
 	  else
 	  {
-		SetTextColor(hdc, RGB_GGREY);
+		Surface.SetTextColor(RGB_GGREY);
 		FrameColor = RGB_GGREY;
 		fFrameColFact = 1.2;
 	  }
@@ -296,18 +296,17 @@ int i,j;
 		fFrameColFact *= 0.8;
 	  else
 		fFrameColFact *= 1.2;
-	  long lColor = ChangeBrightness(FrameColor, fFrameColFact);
-	  HPEN mpen2 =(HPEN)CreatePen(PS_SOLID,FRAMEWIDTH,lColor);
-	  HPEN oldpen2 = (HPEN)SelectObject(hdc, (HPEN)mpen2);
+	  LKColor lColor = FrameColor.ChangeBrightness(fFrameColFact);
+	  LKPen mpen2(PEN_SOLID,FRAMEWIDTH,lColor);
+	  LKPen oldpen2 = Surface.SelectObject(mpen2);
 
 	  if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
-	    Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
+	    Surface.Rectangle(rcd.left+1,rcd.top,rcd.right,rcd.bottom);
 	  else
-	    Polygon(hdc,Sideview_pHandeled[iSizeIdx].apPolygon ,Sideview_pHandeled[iSizeIdx].iNoPolyPts );
+	    Surface.Polygon(Sideview_pHandeled[iSizeIdx].apPolygon ,Sideview_pHandeled[iSizeIdx].iNoPolyPts );
 
 
-	  SelectObject(hdc, (HPEN)oldpen2);
-	  DeleteObject (mpen2);
+	  Surface.SelectObject(oldpen2);
 	}
   }
 #endif
@@ -318,16 +317,13 @@ int i,j;
 
   // draw ground
 
-  HPEN   hpHorizonGround;
-  HBRUSH hbHorizonGround;
-
  /*********************************************************************
   * draw terrain
   *********************************************************************/
-  hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1)+1, RGB(126,62,50));
-  hbHorizonGround = (HBRUSH)CreateSolidBrush(GROUND_COLOUR);
-  HPEN oldPen = (HPEN)SelectObject(hdc, hpHorizonGround);
-  HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, hbHorizonGround);
+  LKPen hpHorizonGround(PEN_SOLID, IBLSCALE(1)+1, LKColor(126,62,50));
+  LKBrush hbHorizonGround(GROUND_COLOUR);
+  LKPen oldPen = Surface.SelectObject(hpHorizonGround);
+  LKBrush oldBrush = Surface.SelectObject(hbHorizonGround);
 
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
 	apTerrainPolygon[j].x = iround(j*dx1)+x0;
@@ -339,13 +335,10 @@ int i,j;
 
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx1)+x0;  //iround(j*dx1)+x0;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag) ;//iBottom;
-  Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
+  Surface.Polygon(apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
 
-  SelectObject(hdc, oldPen);
-  SelectObject(hdc, oldBrush);
-  DeleteObject(hpHorizonGround);
-  DeleteObject(hbHorizonGround);
-
+  Surface.SelectObject(oldPen);
+  Surface.SelectObject(oldBrush);
   
   /*********************************************************************
    * draw sea
@@ -355,14 +348,14 @@ int i,j;
   if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
   {
 	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom+SV_BORDER_Y};
-	RenderSky( hdc,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
+	RenderSky(Surface,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
   }
 #else
   if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
 	Rectangle(hdc,rc.left,rc.bottom,rc.right,rc.bottom+BORDER_Y);
 #endif
 
-  SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
+  Surface.SetTextColor(Sideview_TextColor); // RGB_MENUTITLEFG
 }
 
 
@@ -370,7 +363,7 @@ int i,j;
 
 
 
-void Render3DTerrain(HDC hdc, double PosLat, double PosLon,  double Bearing,  DiagrammStruct* psDiag, double Altitude )
+void Render3DTerrain(LKSurface& Surface, double PosLat, double PosLon,  double Bearing,  DiagrammStruct* psDiag, double Altitude )
 {
 RECT rc	= psDiag->rc;
 //rc.bottom +=BORDER_Y;
@@ -386,7 +379,7 @@ double fMaxDis = 3*psDiag->fXMax;
 #define MAX_COL_DIS 50000.0
 if(fMaxDis > MAX_COL_DIS)
 	fMaxDis = MAX_COL_DIS;
-COLORREF rgb_Depth = RGB_LIGHTGREY;// MixColors(  GROUND_COLOUR,RGB_LIGHTGREY,fMaxDis/MAX_COL_DIS);
+LKColor rgb_Depth = RGB_LIGHTGREY;// MixColors(  GROUND_COLOUR,RGB_LIGHTGREY,fMaxDis/MAX_COL_DIS);
 
 
 double dx =  fMaxDis / NO_SLICES;
@@ -456,31 +449,21 @@ for(k=0; k < NO_SLICES; k++)
    *************************************************************/
 
   // draw ground
-
-  HPEN   hpHorizonGround;
-  HBRUSH hbHorizonGround;
-
-  hpHorizonGround = (HPEN)CreatePen(PS_SOLID,1/* IBLSCALE(1)*/,MixColors(  RGB_BLACK,rgb_Depth,  (double) k / (double) NO_SLICES)   /*GROUND_COLOUR*/);
-  hbHorizonGround = (HBRUSH)CreateSolidBrush( MixColors(  GROUND_COLOUR,rgb_Depth,  (double) k / (double) NO_SLICES)  );
-  SelectObject(hdc, hpHorizonGround);
-  SelectObject(hdc, hbHorizonGround);
-
-
-
-
+  LKPen hpHorizonGround(PEN_SOLID,1/* IBLSCALE(1)*/,RGB_BLACK.MixColors(rgb_Depth,  (double) k / (double) NO_SLICES)   /*GROUND_COLOUR*/);
+  LKBrush hbHorizonGround( GROUND_COLOUR.MixColors(rgb_Depth,  (double) k / (double) NO_SLICES)  );
+  Surface.SelectObject(hpHorizonGround);
+  Surface.SelectObject(hbHorizonGround);
 
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx2)+x0;; // x0;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag)   + (long)hx ;//iBottom;
 
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx2)+x0;  //iround(j*dx2)+x0;
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag)  +(long)hx;//iBottom;
-  Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
+  Surface.Polygon(apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
 
 
-  SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
+  Surface.SetTextColor(Sideview_TextColor); // RGB_MENUTITLEFG
 
-  DeleteObject(hpHorizonGround);
-  DeleteObject(hbHorizonGround);
 }
 
 /*********************************************************************
@@ -491,7 +474,7 @@ for(k=0; k < NO_SLICES; k++)
 if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
 {
 	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom+SV_BORDER_Y};
-	RenderSky( hdc,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
+	RenderSky(Surface,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
 }
 #else
 if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)

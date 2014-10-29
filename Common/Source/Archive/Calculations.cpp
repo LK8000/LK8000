@@ -332,11 +332,6 @@ void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance) {
 }
 
 
-double LowPassFilter(double y_last, double x_in, double fact) {
-  return (1.0-fact)*y_last+(fact)*x_in;
-}
-
-
 //
 // Sollfarh / Dolphin Speed calculator
 //

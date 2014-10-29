@@ -14,26 +14,26 @@ $Id$
 #include "LKObjects.h"
 #include "utils/2dpclip.h"
 
-extern int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor);
-extern COLORREF taskcolor;
+extern int RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
+extern LKColor taskcolor;
 
 //
 // THIS FUNCTION IS THREAD SAFE, but not using optimized clipping
 //
-void MapWindow::DrawTaskPicto(HDC hdc,int TaskIdx, RECT rc, double fScaleFact)
+void MapWindow::DrawTaskPicto(LKSurface& Surface,int TaskIdx, const RECT& rc, double fScaleFact)
 {
 int center_x = (rc.right-rc.left)/2;
 int center_y = (rc.bottom-rc.top)/2;
 int SecType = SectorType;
 int width = center_x-2;
-HPEN oldpen = 0;
-HBRUSH oldbrush = 0;
+LKPen oldpen;
+LKBrush oldbrush;
 if(AATEnabled)
-  oldbrush = (HBRUSH) SelectObject(hdc, LKBrush_LightGrey);
+  oldbrush = Surface.SelectObject(LKBrush_LightGrey);
 else
-  oldbrush = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+  oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
-oldpen = (HPEN) SelectObject(hdc, hpStartFinishThick);
+oldpen = Surface.SelectObject(hpStartFinishThick);
 int finish=0;
 
 while( ValidTaskPoint(finish))
@@ -73,13 +73,13 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
     switch (SecType)
     {
         case CIRCLE:
-            CircleNoCliping(hdc,
+            Surface.CircleNoCliping(
              center_x,
              center_y,
              width-2, rc, true);
             break;
         case SECTOR:
-            Segment(hdc,
+            Surface.Segment(
              center_x,
              center_y, width, rc,
              StartRadial,
@@ -88,12 +88,12 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
         case DAe:
             if (!AATEnabled) { // this Type exist only if not AAT task
                 // JMW added german rules
-                CircleNoCliping(hdc,
+                Surface.CircleNoCliping(
                  center_x,
                  center_y,
                  width/8, rc, true);
 
-                Segment(hdc,
+                Surface.Segment(
                  center_x,
                  center_y, width, rc,
                  StartRadial,
@@ -110,42 +110,42 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
                 LineBrg = Task[TaskIdx].Bisector;
             }
             threadsafePolygonRotateShift(startfinishline, 2, center_x, center_y, LineBrg);
-            Polygon(hdc, startfinishline, 2);
+            Surface.Polyline(startfinishline, 2);
             if ((TaskIdx == 0) || (TaskIdx == finish)) {
                 threadsafePolygonRotateShift(track, 3, center_x, center_y, LineBrg);
-                Polygon(hdc, track, 3);
+                Surface.Polygon(track, 3);
             }
        break;
         case CONE:
             if (DoOptimizeRoute()) {
 
                 int radius = width-2;
-                CircleNoCliping(hdc, center_x, center_y, radius, rc, true);
-                HPEN prevPen = (HPEN)::SelectObject(hdc, hpTerrainLine);
+                Surface.CircleNoCliping(center_x, center_y, radius, rc, true);
+                LKPen prevPen = Surface.SelectObject(hpTerrainLine);
                 for( int i = 1; i < 4 && radius > (width/5); ++i) {
-                    CircleNoCliping(hdc, center_x, center_y, radius -= width/5, rc, true);
+                    Surface.CircleNoCliping(center_x, center_y, radius -= width/5, rc, true);
                 }
-                ::SelectObject(hdc, prevPen);
+                Surface.SelectObject(prevPen);
             }
             break;
     }
 UnlockTaskData();
 
-SelectObject(hdc, oldpen);
-SelectObject(hdc, oldbrush);
+Surface.SelectObject(oldpen);
+Surface.SelectObject(oldbrush);
 }
 
 
 
 
-void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft) {
+void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft) {
     int i;
     double tmp;
 
-    COLORREF whitecolor = RGB_WHITE;
-    COLORREF origcolor = SetTextColor(hDCTemp, whitecolor);
-    HPEN oldpen = 0;
-    HBRUSH oldbrush = 0;
+    LKColor whitecolor = RGB_WHITE;
+    LKColor origcolor = hDCTempTask.SetTextColor(whitecolor);
+    LKPen oldpen;
+    LKBrush oldbrush;
 
     static short size_tasklines=0;
 
@@ -166,8 +166,8 @@ DoInit[MDI_DRAWTASK]=false;
 
     if (!WayPointList) return;
 
-    oldpen = (HPEN) SelectObject(hdc, hpStartFinishThick);
-    oldbrush = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+    oldpen = Surface.SelectObject(hpStartFinishThick);
+    oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
     LockTaskData(); // protect from external task changes
 
@@ -176,12 +176,12 @@ DoInit[MDI_DRAWTASK]=false;
             if (ActiveWayPoint > 1 || !ValidTaskPoint(2)) {
                 // only draw finish line when past the first
                 // waypoint. FIXED 110307: or if task is with only 2 tps
-                DrawStartEndSector(hdc, rc, Task[i].Start, Task[i].End, Task[i].Index, FinishLine, FinishRadius);
+                DrawStartEndSector(Surface, rc, Task[i].Start, Task[i].End, Task[i].Index, FinishLine, FinishRadius);
             }
         } else { // normal sector
             if (AATEnabled != TRUE) {
-                //_DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
-                //_DrawLine(hdc, PS_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
+                //Surface.DrawLine(PEN_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
+                //Surface.DrawLine(PEN_DASH, NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
          // DrawDashLine(hdc, size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
          // DrawDashLine(hdc, size_tasklines, WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
             }
@@ -192,14 +192,14 @@ DoInit[MDI_DRAWTASK]=false;
             switch (Type) {
                 case CIRCLE:
                     tmp = Radius * zoom.ResScaleOverDistanceModify();
-                    Circle(hdc,
+                    Surface.Circle(
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y,
                             (int) tmp, rc, false, false);
                     break;
                 case SECTOR:
                     tmp = Radius * zoom.ResScaleOverDistanceModify();
-                    Segment(hdc,
+                    Surface.Segment(
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y, (int) tmp, rc,
                             Task[i].AATStartRadial - DisplayAngle,
@@ -209,14 +209,14 @@ DoInit[MDI_DRAWTASK]=false;
                     if (!AATEnabled) { // this Type exist only if not AAT task
                         // JMW added german rules
                         tmp = 500 * zoom.ResScaleOverDistanceModify();
-                        Circle(hdc,
+                        Surface.Circle(
                                 WayPointList[Task[i].Index].Screen.x,
                                 WayPointList[Task[i].Index].Screen.y,
                                 (int) tmp, rc, false, false);
 
                         tmp = 10e3 * zoom.ResScaleOverDistanceModify();
 
-                        Segment(hdc,
+                        Surface.Segment(
                                 WayPointList[Task[i].Index].Screen.x,
                                 WayPointList[Task[i].Index].Screen.y, (int) tmp, rc,
                                 Task[i].AATStartRadial - DisplayAngle,
@@ -234,20 +234,20 @@ DoInit[MDI_DRAWTASK]=false;
                     		rotation=Reciprocal(rotation);
                     		end.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
                     		end.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
-                    		_DrawLine(hdc, PS_SOLID, NIBLSCALE(3), start, end, taskcolor, rc);
-                    	} else _DrawLine(hdc, PS_SOLID, NIBLSCALE(3), Task[i].Start, Task[i].End, taskcolor, rc);
+                    		Surface.DrawLine(PEN_SOLID, NIBLSCALE(3), start, end, taskcolor, rc);
+                    	} else Surface.DrawLine(PEN_SOLID, NIBLSCALE(3), Task[i].Start, Task[i].End, taskcolor, rc);
                     }
                     break;
                 case CONE:
                     tmp = Radius * zoom.ResScaleOverDistanceModify();
                     int center_x = WayPointList[Task[i].Index].Screen.x;
                     int center_y = WayPointList[Task[i].Index].Screen.y;
-                    Circle(hdc, center_x, center_y, (int) tmp, rc, false, false);
-                    HPEN prevPen = (HPEN)::SelectObject(hdc, hpTerrainLine);
+                    Surface.Circle(center_x, center_y, (int) tmp, rc, false, false);
+                    LKPen prevPen = Surface.SelectObject(hpTerrainLine);
                     for( int j = 1; j < 5 && tmp > 0; ++j) {
-                        Circle(hdc, center_x, center_y, tmp -= NIBLSCALE(5), rc, true, true);
+                        Surface.Circle(center_x, center_y, tmp -= NIBLSCALE(5), rc, true, true);
                     }
-                    ::SelectObject(hdc, prevPen);
+                    Surface.SelectObject(prevPen);
                     break;
             }
 
@@ -267,10 +267,10 @@ DoInit[MDI_DRAWTASK]=false;
                         for (int j = 0; j < MAXISOLINES - 1; j++) {
                             if (TaskStats[i].IsoLine_valid[j]
                                     && TaskStats[i].IsoLine_valid[j + 1]) {
-                                _DrawLine(hdc, PS_SOLID, NIBLSCALE(2),
+                                Surface.DrawLine(PEN_SOLID, NIBLSCALE(2),
                                         TaskStats[i].IsoLine_Screen[j],
                                         TaskStats[i].IsoLine_Screen[j + 1],
-                                        RGB(0, 0, 255), rc);
+                                        LKColor(0, 0, 255), rc);
                             }
                         }
                     }
@@ -280,11 +280,11 @@ DoInit[MDI_DRAWTASK]=false;
     }
 
     if ((ActiveWayPoint < 2) && ValidTaskPoint(0) && ValidTaskPoint(1)) {
-        DrawStartEndSector(hdc, rc, Task[0].Start, Task[0].End, Task[0].Index, StartLine, StartRadius);
+        DrawStartEndSector(Surface, rc, Task[0].Start, Task[0].End, Task[0].Index, StartLine, StartRadius);
         if (EnableMultipleStartPoints) {
             for (i = 0; i < MAXSTARTPOINTS; i++) {
                 if (StartPoints[i].Active && ValidWayPoint(StartPoints[i].Index)) {
-                    DrawStartEndSector(hdc, rc, StartPoints[i].Start, StartPoints[i].End,
+                    DrawStartEndSector(Surface, rc, StartPoints[i].Start, StartPoints[i].End,
                             StartPoints[i].Index, StartLine, StartRadius);
                 }
             }
@@ -311,7 +311,7 @@ DoInit[MDI_DRAWTASK]=false;
                     NULL, &bearing);
 
             // draw nominal track line
-            DrawDashLine(hdc, NIBLSCALE(1), // 091217
+            Surface.DrawDashLine(NIBLSCALE(1), // 091217
                     WayPointList[imin].Screen,
                     WayPointList[imax].Screen,
                     taskcolor, rc);
@@ -322,8 +322,8 @@ DoInit[MDI_DRAWTASK]=false;
 
         if ((i >= ActiveWayPoint && DoOptimizeRoute()) || !DoOptimizeRoute()) {
             POINT ClipPt1 = sct1, ClipPt2 = sct2;
-            if(LKGeom::ClipLine((POINT) {rc.left, rc.top}, (POINT) {rc.right, rc.bottom}, ClipPt1, ClipPt2)) {
-                DrawMulticolorDashLine(hdc, size_tasklines,
+            if(LKGeom::ClipLine(rc, ClipPt1, ClipPt2)) {
+                DrawMulticolorDashLine(Surface, size_tasklines,
                         ClipPt1,
                         ClipPt2,
                         taskcolor, RGB_BLACK,rc);
@@ -338,8 +338,8 @@ DoInit[MDI_DRAWTASK]=false;
                         Orig_Aircraft, &p_p, NIBLSCALE(25));
                 threadsafePolygonRotateShift(Arrow, 2, p_p.x, p_p.y, bearing - DisplayAngle);
 
-                _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[0], p_p, taskcolor, rc);
-                _DrawLine(hdc, PS_SOLID, size_tasklines-NIBLSCALE(1), Arrow[1], p_p, taskcolor, rc);
+                Surface.DrawLine(PEN_SOLID, size_tasklines-NIBLSCALE(1), Arrow[0], p_p, taskcolor, rc);
+                Surface.DrawLine(PEN_SOLID, size_tasklines-NIBLSCALE(1), Arrow[1], p_p, taskcolor, rc);
             }
         }
     }
@@ -348,7 +348,7 @@ DoInit[MDI_DRAWTASK]=false;
     if(ValidTaskPoint(ActiveWayPoint)) {
         POINT ptStart;
         LatLon2Screen(DrawInfo.Longitude, DrawInfo.Latitude, ptStart);
-        DrawDashLine(hdc, NIBLSCALE(1),
+        Surface.DrawDashLine(NIBLSCALE(1),
                     ptStart,
                     WayPointList[Task[ActiveWayPoint].Index].Screen,
                     taskcolor, rc);
@@ -360,15 +360,15 @@ DoInit[MDI_DRAWTASK]=false;
     }
 
     // restore original color
-    SetTextColor(hDCTemp, origcolor);
-    SelectObject(hdc, oldpen);
-    SelectObject(hdc, oldbrush);
+    hDCTempTask.SetTextColor(origcolor);
+    Surface.SelectObject(oldpen);
+    Surface.SelectObject(oldbrush);
 }
 
 
 
 
-void MapWindow::DrawTaskSectors(HDC hdc, RECT rc) {
+void MapWindow::DrawTaskSectors(LKSurface& Surface, const RECT& rc) {
 int Active = ActiveWayPoint;
 if(ValidTaskPoint(PanTaskEdit))
 Active = PanTaskEdit;
@@ -425,8 +425,8 @@ double	lon1 = WayPointList[Task[a].Index].Longitude;
 double	lat2 = WayPointList[Task[b].Index].Latitude;
 double	lon2 = WayPointList[Task[b].Index].Longitude;
 
-RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 1, RGB_YELLOW );
-RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 0, RGB_CYAN );
+RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 1, RGB_YELLOW );
+RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 0, RGB_CYAN );
 
 
 

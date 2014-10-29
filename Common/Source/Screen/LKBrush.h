@@ -1,0 +1,55 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File:   LKBrush.h
+ * Author: Bruno de Lacheisserie
+ *
+ * Created on 23 octobre 2014, 20:28
+ */
+
+#ifndef LKBRUSH_H
+#define	LKBRUSH_H
+class LKColor;
+class LKBitmap;
+
+
+class LKBrush {
+public:
+    LKBrush();
+	
+    LKBrush(const LKBrush& Brush);
+    LKBrush& operator=(const LKBrush& Brush);
+
+    LKBrush(LKBrush&& Brush); // tranfert ownership
+    LKBrush& operator= (LKBrush&& Brush); // tranfert ownership
+
+    explicit LKBrush(const LKColor& Color);
+    
+    virtual ~LKBrush();
+    
+    void Create(const LKColor& Color);
+    void Create(const LKBitmap& Bitmap);
+
+    void Release();
+#ifdef WIN32
+public:
+    explicit LKBrush(HBRUSH Brush) : _Brush(Brush), _Destroy(false) {}
+
+    operator HBRUSH() const { return _Brush; }
+	operator bool() const { return (_Brush != NULL); }
+
+protected:
+    HBRUSH _Brush;
+    bool _Destroy;
+#endif
+
+};
+
+extern const LKBrush  LK_WHITE_BRUSH;
+extern const LKBrush  LK_BLACK_BRUSH;
+extern const LKBrush  LK_HOLLOW_BRUSH;
+
+#endif	/* LKBRUSH_H */
+

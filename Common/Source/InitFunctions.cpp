@@ -19,19 +19,19 @@
 #include "DoInits.h"
 
 
-extern HBRUSH hBrushSelected;
-extern HBRUSH hBrushUnselected;
-extern HBRUSH hBrushButton;
+extern LKBrush hBrushSelected;
+extern LKBrush hBrushUnselected;
+extern LKBrush hBrushButton;
 #ifdef LXMINIMAP
-extern HBRUSH hBrushButtonHasFocus;
+extern LKBrush hBrushButtonHasFocus;
 #endif
-extern COLORREF ColorSelected;
-extern COLORREF ColorUnselected;
-extern COLORREF ColorWarning;
-extern COLORREF ColorOK;
-extern COLORREF ColorButton;
+extern LKColor ColorSelected;
+extern LKColor ColorUnselected;
+extern LKColor ColorWarning;
+extern LKColor ColorOK;
+extern LKColor ColorButton;
 #ifdef LXMINIMAP
-extern COLORREF ColorButtonHasFocus;
+extern LKColor ColorButtonHasFocus;
 #endif
 
 
@@ -142,7 +142,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
   wc.hInstance                  = hInstance;
   wc.hIcon                      = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LK8000SWIFT));
   wc.hCursor                    = 0;
-  wc.hbrBackground              = (HBRUSH) GetStockObject(BLACK_BRUSH); 
+  wc.hbrBackground              = LKBrush_Black; 
   wc.lpszMenuName               = 0;
   wc.lpszClassName              = szWindowClass;
 
@@ -163,7 +163,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
   wc.hInstance = hInstance;
   wc.hIcon = (HICON)NULL;
   wc.hCursor = NULL;
-  wc.hbrBackground = (HBRUSH)GetStockObject (WHITE_BRUSH); // refixed 100101
+  wc.hbrBackground = LKBrush_White;
   wc.lpszMenuName = 0;
   wc.lpszClassName = TEXT("MapWindowClass");
 
@@ -258,11 +258,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     }
 
 
-  hBrushSelected = (HBRUSH)CreateSolidBrush(ColorSelected);
-  hBrushUnselected = (HBRUSH)CreateSolidBrush(ColorUnselected);
-  hBrushButton = (HBRUSH)CreateSolidBrush(ColorButton);
+  hBrushSelected.Create(ColorSelected);
+  hBrushUnselected.Create(ColorUnselected);
+  hBrushButton.Create(ColorButton);
   #ifdef LXMINIMAP
-  hBrushButtonHasFocus = (HBRUSH)CreateSolidBrush(ColorButtonHasFocus);
+  hBrushButtonHasFocus.Create(ColorButtonHasFocus);
   #endif
 
   GetClientRect(hWndMainWindow, &rc);

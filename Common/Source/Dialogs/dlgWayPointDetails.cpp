@@ -30,28 +30,22 @@ static int nTextLines=0;
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
-static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
-	  (void)Sender;
-	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
-	  LKASSERT(wPicto!=NULL);
+static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
+    (void) Sender;
+    WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmWaypointPicto")));
+    if(wPicto) {
 
-RECT *prc;
-prc = wPicto->GetBoundRect();
+        const RECT& rc = wPicto->GetBoundRect();
 
+        Surface.SetBkColor(RGB_LIGHTGREY);
 
-//  StartupStore(_T("..Entered OnPaintWaypointPicto \n"));
-
-  SetBkColor  (hDC, RGB_LIGHTGREY);
-
-  if (WayPointCalc[SelectedWaypoint].IsLandable )
-  {
-	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 7000 , true);
-  }
-  else
-  {
-	MapWindow::DrawWaypointPictoBg(hDC,  *prc);
-	MapWindow::DrawWaypointPicto(hDC,  *prc, &WayPointList[SelectedWaypoint]);
-  }
+        if (WayPointCalc[SelectedWaypoint].IsLandable) {
+            MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 7000, true);
+        } else {
+            MapWindow::DrawWaypointPictoBg(Surface, rc);
+            MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
+        }
+    }
 }
 
 
@@ -109,7 +103,7 @@ static void NextPage(int Step){
 }
 
 
-static void OnPaintDetailsListItem(WindowControl * Sender, HDC hDC){
+static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   if (DrawListIndex < nTextLines){
     TCHAR* text = WayPointList[SelectedWaypoint].Details;
@@ -128,11 +122,7 @@ static void OnPaintDetailsListItem(WindowControl * Sender, HDC hDC){
       nlen--;
     }
     if (nlen>0) {
-      ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
-		 ETO_OPAQUE, NULL,
-		 text+nstart,
-		 nlen, 
-		 NULL);
+      Surface.DrawText(2*ScreenScale, 2*ScreenScale, text+nstart, nlen);
     }
   }
 }

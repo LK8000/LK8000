@@ -10,9 +10,9 @@
 #include "resource.h"
 #include <shellapi.h>
 
-void LoadSplash(HDC hDC, const TCHAR *splashfile){
+void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
 
- HBITMAP hWelcomeBitmap=NULL;
+ LKBitmap hWelcomeBitmap;
  TCHAR sDir[MAX_PATH];
  TCHAR srcfile[MAX_PATH];
  bool fullsize=true;
@@ -57,51 +57,21 @@ void LoadSplash(HDC hDC, const TCHAR *splashfile){
         }
     }
 
- #if (WINDOWSPC>0)
- hWelcomeBitmap=(HBITMAP)LoadImage(GetModuleHandle(NULL),srcfile,IMAGE_BITMAP,0,0,LR_LOADFROMFILE);
- #else
- hWelcomeBitmap=(HBITMAP)SHLoadDIBitmap(srcfile);
- #endif
- if (hWelcomeBitmap==NULL) hWelcomeBitmap=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SWIFT));
+    if(!hWelcomeBitmap.LoadFromFile(srcfile)) {
+        hWelcomeBitmap.LoadFromResource(MAKEINTRESOURCE(IDB_SWIFT));
+    }
 
- HDC hTempDC = CreateCompatibleDC(hDC);
- HBITMAP oldBitmap=(HBITMAP)SelectObject(hTempDC, hWelcomeBitmap);
+    SIZE bmSize = hWelcomeBitmap.GetSize();
 
- BITMAP bm;
- GetObject(hWelcomeBitmap,sizeof(bm), &bm);
+    Surface.Blackness(0,0,ScreenSizeX,ScreenSizeY);
 
- StretchBlt(hDC,0,0,
-	ScreenSizeX,ScreenSizeY,
-	hTempDC, 0, 0,
-	2,2,
-	BLACKNESS);
-
-  if (fullsize) {
-	BitBlt(hDC,0,0,bm.bmWidth,bm.bmHeight,hTempDC, 0, 0, SRCCOPY);
-  } else {
-  	if ( (bm.bmWidth >ScreenSizeX)||(bm.bmHeight>ScreenSizeY)) {
-		StretchBlt(hDC,0,0,
-			ScreenSizeX,ScreenSizeY-NIBLSCALE(35),
-			hTempDC, 0, 0,
-			bm.bmWidth,bm.bmHeight,
-			SRCCOPY);
+    if (fullsize) {
+        Surface.DrawBitmap(0,0,bmSize.cx,bmSize.cy,hWelcomeBitmap,bmSize.cx,bmSize.cy);
+    } else if ( (bmSize.cx > ScreenSizeX)||(bmSize.cy > ScreenSizeY)) {
+        Surface.DrawBitmap(0,0,ScreenSizeX,ScreenSizeY-NIBLSCALE(35),hWelcomeBitmap,bmSize.cx,bmSize.cy);
+	} else if ( (bmSize.cx < ScreenSizeX)||(bmSize.cy < ScreenSizeY)) {
+        Surface.DrawBitmap(NIBLSCALE(20),0,ScreenSizeX-NIBLSCALE(40), ScreenSizeY-BottomSize-NIBLSCALE(20),hWelcomeBitmap,bmSize.cx,bmSize.cy);
 	} else {
-  		if ( (bm.bmWidth <ScreenSizeX)||(bm.bmHeight<ScreenSizeY)) {
-			StretchBlt(hDC,NIBLSCALE(20),0,
-				ScreenSizeX-NIBLSCALE(40), ScreenSizeY-BottomSize-NIBLSCALE(20),
-				hTempDC, 0, 0,
-				bm.bmWidth,bm.bmHeight,
-				SRCCOPY);
-		} else {
-			BitBlt(hDC,(ScreenSizeX-bm.bmWidth)/2,0,bm.bmWidth,IBLSCALE(260),hTempDC, 0, 0, SRCCOPY);
-		}
+        Surface.DrawBitmap((ScreenSizeX-bmSize.cx)/2,0,bmSize.cx,IBLSCALE(260),hWelcomeBitmap,bmSize.cx,bmSize.cy);
 	}
-  }
-
-  SelectObject(hTempDC, oldBitmap);
-  DeleteDC(hTempDC);
-  DeleteObject(hWelcomeBitmap);
-
 }
-
-

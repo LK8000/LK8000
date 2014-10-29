@@ -50,15 +50,15 @@
 
 #define ZOOMFACTOR 1.3
 
-#define GROUND_COLOUR	RGB(184,152,137)
+#define GROUND_COLOUR	LKColor(184,152,137)
 #define GROUND_TEXT_COLOUR RGB_WHITE
-#define INV_GROUND_TEXT_COLOUR   RGB(0,0,0)
+#define INV_GROUND_TEXT_COLOUR   LKColor(0,0,0)
 #if (WINDOWSPC>0)
 #define GC_NO_COLOR_STEPS  50
 #else
 #define GC_NO_COLOR_STEPS  25
 #endif
-#define SKY_SPACE_COL  RGB(150,150,255)
+#define SKY_SPACE_COL  LKColor(150,150,255)
 #define SKY_HORIZON_COL  RGB_WHITE
 
 
@@ -90,18 +90,16 @@ int DecSideviewPage(void);
 int GetSideviewPage (void);
 int SetSideviewPage (int i);
 
-void DrawSelectionFrame(HDC hdc, RECT rc);
-//void DrawTelescope (HDC hdc, double fAngle, int x, int y);
-void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y);
-void RenderSky(HDC hdc, const RECT rc, COLORREF Col1, COLORREF Col2 , int iSteps);
-void RenderPlaneSideview(HDC hdc, double fDist, double fAltitude,double brg, DiagrammStruct* psDia );
-//void RenderBearingDiff(HDC hdc, double brg, DiagrammStruct* psDia );
-void RenderAirspaceTerrain(HDC hdc, double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag );
+void DrawSelectionFrame(LKSurface& Surface, const RECT& rc);
+
+void DrawWindRoseDirection(LKSurface& Surface, double fAngle, int x, int y);
+void RenderSky(LKSurface& Surface, const RECT& rc, const LKColor& Col1, const LKColor& Col2 , int iSteps);
+void RenderPlaneSideview(LKSurface& Surface, double fDist, double fAltitude, double brg, DiagrammStruct* psDia );
+
+void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag );
 int CalcHeightCoordinat(double fHeight,   DiagrammStruct* psDia);
 int CalcHeightCoordinatOutbound(double fHeight,   DiagrammStruct* psDia);
 int CalcDistanceCoordinat(double fDist,   DiagrammStruct* psDia);
-COLORREF ChangeBrightness(long Color, double fBrightFact);
-COLORREF MixColors(COLORREF Color1, COLORREF Color2, double fFact1);
 bool PtInRect(int X,int Y, RECT rcd );
 
 void SetMMNorthUp( int iPage, int bVal);

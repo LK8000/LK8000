@@ -16,10 +16,10 @@ CContestMgr::TType contestType = CContestMgr::TYPE_OLC_CLASSIC;
  * Alpha Lima splitted RenderContest from Render Task for CC
  * adding FAI Sector display
  ****************************************************************/
-void Statistics::RenderContest(HDC hdc, const RECT rc)
+void Statistics::RenderContest(LKSurface& Surface, const RECT& rc)
 {
 if(contestType == CContestMgr::TYPE_FAI_TRIANGLE)
-   RenderFAIOptimizer(hdc, rc);
+   RenderFAIOptimizer(Surface, rc);
 else
 {
   unsigned int ui;
@@ -52,7 +52,7 @@ else
     ScaleXFromValue(rc, lon1);
   }
 
-  HFONT hfOldU = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+  LKFont hfOldU = Surface.SelectObject(LK8PanelUnitFont);
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;
 
@@ -91,7 +91,7 @@ else
     y1 = (lat1-lat_c);
     x2 = (lon2-lon_c)*fastcosine(lat2);
     y2 = (lat2-lat_c);
-    DrawLine(hdc, rc,  x1, y1, x2, y2, STYLE_MEDIUMBLACK);
+    DrawLine(Surface, rc,  x1, y1, x2, y2, STYLE_MEDIUMBLACK);
   }
   // Draw aircraft on top
 double  lat_p = GPS_INFO.Latitude;
@@ -135,7 +135,7 @@ double  yp = (lat_p-lat_c);
       }
 
       if((contestType != CContestMgr::TYPE_FAI_TRIANGLE) )
-        DrawLine(hdc, rc, x1, y1, x2, y2, style);
+        DrawLine(Surface, rc, x1, y1, x2, y2, style);
     }
 
 
@@ -152,17 +152,17 @@ double  yp = (lat_p-lat_c);
     x2 = (lon2-lon_c)*fastcosine(lat2);
     y2 = (lat2-lat_c);
 
-    DrawLine(hdc, rc, x1, y1, x2, y2, result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
+    DrawLine(Surface, rc, x1, y1, x2, y2, result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
 
   }
 
-  DrawXGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
-  DrawYGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+  DrawXGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+  DrawYGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 
-  SelectObject(hdc, hfOldU);
-  SetTextColor(hdc, RGB_MAGENTA);
-  SetBkMode(hdc, TRANSPARENT);
-  DrawLabel(hdc, rc, TEXT("O"), xp, yp);
+  Surface.SelectObject(hfOldU);
+  Surface.SetTextColor(RGB_MAGENTA);
+  Surface.SetBkMode(TRANSPARENT);
+  DrawLabel(Surface, rc, TEXT("O"), xp, yp);
 }
 }
 }
@@ -175,7 +175,7 @@ double  yp = (lat_p-lat_c);
  * Alpha Lima splitted RenderContest from Render Task for CC
  * adding FAI Sector display
  ****************************************************************/
-void Statistics::RenderFAIOptimizer(HDC hdc, const RECT rc)
+void Statistics::RenderFAIOptimizer(LKSurface& Surface, const RECT& rc)
 {
 
 unsigned int ui;
@@ -218,7 +218,7 @@ ResetScale();
   }
 
 
-  HFONT hfOldU = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+  LKFont hfOldU = Surface.SelectObject(LK8PanelUnitFont);
   BOOL bFAITri =  CContestMgr::Instance().FAI();
   double fDist, fAngle;
   lat_c = (y_max+y_min)/2;
@@ -267,7 +267,7 @@ ResetScale();
       {
 		if(fDist > 5000)
 		{
-		  COLORREF rgbCol = RGB_BLUE;
+		  LKColor rgbCol = RGB_BLUE;
 		  switch(ui)
 		  {
 			case 0: rgbCol = RGB_LIGHTYELLOW; break;
@@ -276,8 +276,8 @@ ResetScale();
 			default:
 			break;
 		  }
-		  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, rgbCol );
-		  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, rgbCol );
+		  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, rgbCol );
+		  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, rgbCol );
 		}
       }
       if((fDist / fTotalDistance ) > 0.45) /* prevent drawing almost same sectors */
@@ -295,7 +295,7 @@ ResetScale();
       y1 = (lat1-lat_c);
       x2 = (lon2-lon_c)*fastcosine(lat2);
       y2 = (lat2-lat_c);
-      DrawLine(hdc, rc,  x1, y1, x2, y2, STYLE_MEDIUMBLACK);
+      DrawLine(Surface, rc,  x1, y1, x2, y2, STYLE_MEDIUMBLACK);
     }
 
 
@@ -325,13 +325,13 @@ ResetScale();
 		  SIZE tsize;
 		  fTotalPercent -= fDist/result.Distance();
 		  _stprintf(text, TEXT("%3.1f%%"), (fDist/result.Distance()*100.0));
-		  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-		  SetTextColor(hdc, RGB_BLUE);
-	      ExtTextOut(hdc, ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+		  Surface.GetTextSize(text, _tcslen(text), &tsize);
+		  Surface.SetTextColor(RGB_BLUE);
+	      Surface.DrawText(ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), text, _tcslen(text));
 	    }
 	#endif
 
-	    DrawLine(hdc, rc, x1, y1, x2, y2, style);
+	    DrawLine(Surface, rc, x1, y1, x2, y2, style);
 	  }
 	}
 
@@ -350,7 +350,7 @@ ResetScale();
 		  y1 = (lat0-lat_c);
 		  x2 = (lon1-lon_c)*fastcosine(lat1);
 		  y2 = (lat1-lat_c);
-		  DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_ORANGETHIN ); //result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
+		  DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_ORANGETHIN ); //result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
         }
 
 	    lat1 = points[1].Latitude();
@@ -362,21 +362,21 @@ ResetScale();
 	    x2 = (lon2-lon_c)*fastcosine(lat2);
 	    y2 = (lat2-lat_c);
 
-	    DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_THINDASHPAPER ); //result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
+	    DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_THINDASHPAPER ); //result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
 #ifdef DRAWPERCENT
 	    TCHAR text[180];
 	    SIZE tsize;
 	    _stprintf(text, TEXT("%3.1f%%"), (fTotalPercent*100.0));
-	    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-	    SetTextColor(hdc, RGB_LIGHTBLUE);
-	    ExtTextOut(hdc, ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	    Surface.GetTextSize(text, _tcslen(text), &tsize);
+	    Surface.SetTextColor(RGB_LIGHTBLUE);
+	    Surface.DrawText(ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), text, _tcslen(text));
 #endif
 
 	    lat0 = CContestMgr::Instance().GetClosingPoint().Latitude();
 	    lon0 = CContestMgr::Instance().GetClosingPoint().Longitude();
 	    x0 = (lon0-lon_c)*fastcosine(lat0);
 	    y0 = (lat0-lat_c);
-	    DrawLine(hdc, rc, xp, yp, x0, y0, STYLE_REDTHICK);
+	    DrawLine(Surface, rc, xp, yp, x0, y0, STYLE_REDTHICK);
 	  }
     }
   }
@@ -384,12 +384,12 @@ ResetScale();
 
 
 
-DrawXGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
-DrawYGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
-SetBkMode(hdc, TRANSPARENT);
-SetTextColor(hdc, RGB_MAGENTA);
-DrawLabel(hdc, rc, TEXT("O"), xp, yp);
-SelectObject(hdc, hfOldU);
+DrawXGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+DrawYGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+Surface.SetBkMode(TRANSPARENT);
+Surface.SetTextColor(RGB_MAGENTA);
+DrawLabel(Surface, rc, TEXT("O"), xp, yp);
+Surface.SelectObject(hfOldU);
 
 }
 

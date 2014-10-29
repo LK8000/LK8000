@@ -22,7 +22,7 @@ bool   Statistics::unscaled_x;
 bool   Statistics::unscaled_y;
 
 
-HPEN penThinSignal = NULL;
+LKPen penThinSignal;
 
 int analysis_page=0;
 WndForm *wfa=NULL;
@@ -80,23 +80,20 @@ static void SetCalcCaption(const TCHAR* caption) {
 
 
 
-static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
+static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
 
-  RECT  rcgfx;
-  HFONT hfOld;
-
-  CopyRect(&rcgfx, Sender->GetBoundRect());
-  hfOld = (HFONT)SelectObject(hDC,LK8PanelUnitFont/* Sender->GetFont()*/);
+  const RECT& rcgfx = Sender->GetBoundRect();
+  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
     if(INVERTCOLORS)
     {
       Sender->SetBackColor(SKY_HORIZON_COL);
-      SetTextColor(hDC, RGB_DARKBLUE);
+      Surface.SetTextColor(RGB_DARKBLUE);
     }
     else
-      SetTextColor(hDC, RGB_WHITE);
+      Surface.SetTextColor(RGB_WHITE);
 
-  SetBkMode(hDC, TRANSPARENT);
+  Surface.SetBkMode(TRANSPARENT);
 //  SetTextColor(hDC, Sender->GetForeColor());
 //  SetTextColor(hDC, Sideview_TextColor);
 
@@ -104,35 +101,35 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   switch (analysis_page) {
   case ANALYSIS_PAGE_BAROGRAPH:
     SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
-    Statistics::RenderBarograph(hDC, rcgfx);
+    Statistics::RenderBarograph(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_CLIMB:
     SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
-    Statistics::RenderClimb(hDC, rcgfx);
+    Statistics::RenderClimb(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_WIND:
     SetCalcCaption(gettext(TEXT("_@M887_"))); // Set wind
-    Statistics::RenderWind(hDC, rcgfx);
+    Statistics::RenderWind(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_POLAR:
     SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
-    Statistics::RenderGlidePolar(hDC, rcgfx);
+    Statistics::RenderGlidePolar(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_TEMPTRACE:
     SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
-    Statistics::RenderTemperature(hDC, rcgfx);
+    Statistics::RenderTemperature(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_TASK:
     SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
     LockTaskData();
-    Statistics::RenderTask(hDC, rcgfx, false);
+    Statistics::RenderTask(Surface, rcgfx, false);
     UnlockTaskData();
     break;
 
   case ANALYSIS_PAGE_CONTEST:
     SetCalcCaption(gettext(TEXT("_@M1451_"))); // Change
     LockTaskData();
-    Statistics::RenderContest(hDC, rcgfx);
+    Statistics::RenderContest(Surface, rcgfx);
     UnlockTaskData();
     break;
 
@@ -140,14 +137,14 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   case ANALYSIS_PAGE_TASK_SPEED:
     SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
     LockTaskData();
-    Statistics::RenderSpeed(hDC, rcgfx);
+    Statistics::RenderSpeed(Surface, rcgfx);
     UnlockTaskData();
     break;
   default:
     // should never get here!
     break;
   }
-  SelectObject(hDC, hfOld);
+  Surface.SelectObject(hfOld);
 
 }
 
@@ -324,10 +321,10 @@ if (entered == true) /* prevent re entrance */
 
   if (!wfa) return;
 
-  COLORREF COL = RGB(50,243,45);
+  LKColor COL = LKColor(50,243,45);
   if(INVERTCOLORS)
-	COL = ChangeBrightness(COL,0.7);
-  penThinSignal = CreatePen(PS_SOLID, IBLSCALE(2) , COL);
+	COL = COL.ChangeBrightness(0.7);
+  penThinSignal.Create(PEN_SOLID, IBLSCALE(2) , COL);
 
 
   wfa->SetKeyDownNotify(FormKeyDown);
@@ -407,7 +404,7 @@ if (entered == true) /* prevent re entrance */
 
   wfa = NULL;
 
-  DeleteObject(penThinSignal);
+  penThinSignal.Release();
 
 
   MapWindow::RequestFastRefresh();

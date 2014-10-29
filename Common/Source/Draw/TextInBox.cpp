@@ -104,12 +104,12 @@ bool TextInBoxMoveInView(const RECT *clipRect, POINT *offset, RECT *brect){
 
 
 
-bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  const TCHAR* Value, int x, int y, 
+bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR* Value, int x, int y, 
                           int size, TextInBoxMode_t *Mode, bool noOverlap) {
 
   SIZE tsize;
   RECT brect;
-  HFONT oldFont=0;
+  LKFont oldFont;
   bool drawn=false;
 
   if ((x<clipRect->left-WPCIRCLESIZE) || 
@@ -125,10 +125,8 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  const TCHAR* Value, in
     size = _tcslen(Value);
   }
   
-  HBRUSH hbOld;
-  HPEN   hpOld;
-  hbOld = (HBRUSH)SelectObject(hDC, GetStockObject(WHITE_BRUSH));
-  hpOld = (HPEN)SelectObject(hDC,GetStockObject(BLACK_PEN));
+  LKBrush hbOld = Surface.SelectObject(LKBrush_White);
+  LKPen hpOld = Surface.SelectObject(LK_BLACK_PEN);
 
   if (Mode->Reachable){
     if (Appearance.IndLandable == wpLandableDefault){
@@ -142,13 +140,13 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  const TCHAR* Value, in
   // landable waypoint label inside white box 
   if (!Mode->NoSetFont) {  // VENTA5 predefined font from calling function
     if (Mode->Border){
-      oldFont = (HFONT)SelectObject(hDC, MapWindowBoldFont);
+      oldFont = Surface.SelectObject(MapWindowBoldFont);
     } else {
-      oldFont = (HFONT)SelectObject(hDC, MapWindowFont);
+      oldFont = Surface.SelectObject(MapWindowFont);
     }
   }
   
-  GetTextExtentPoint(hDC, Value, size, &tsize);
+  Surface.GetTextSize(Value, size, &tsize);
 
   if (Mode->AlligneRight){
     x -= tsize.cx;
@@ -185,22 +183,16 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  const TCHAR* Value, in
 
   
     if (!noOverlap || notoverlapping) {
-      HPEN oldPen;
+      LKPen oldPen;
       if (Mode->Border) {
-        oldPen = (HPEN)SelectObject(hDC, LKPen_Black_N1);
+        oldPen = Surface.SelectObject(LKPen_Black_N1);
       } else {
-        oldPen = (HPEN)SelectObject(hDC, GetStockObject(WHITE_PEN));
+        oldPen = Surface.SelectObject(LK_WHITE_PEN);
       }
-      RoundRect(hDC, brect.left, brect.top, brect.right, brect.bottom, 
-                NIBLSCALE(8), NIBLSCALE(8));
-      SelectObject(hDC, oldPen);
-      if (Mode->SetTextColor) SetTextColor(hDC,Mode->Color); else SetTextColor(hDC, RGB_BLACK);
-#if (WINDOWSPC>0)
-      SetBkMode(hDC,TRANSPARENT);
-      ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
-#else
-      ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
-#endif
+      Surface.RoundRect(brect, NIBLSCALE(8), NIBLSCALE(8));
+      Surface.SelectObject(oldPen);
+      if (Mode->SetTextColor) Surface.SetTextColor(Mode->Color); else Surface.SetTextColor(RGB_BLACK);
+      Surface.DrawText(x, y, Value, size);
       drawn=true;
     }
 
@@ -229,9 +221,9 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  const TCHAR* Value, in
 	notoverlapping = checkLabelBlock(&brect); 
   
     if (!noOverlap || notoverlapping) {
-      COLORREF oldColor = SetBkColor(hDC, RGB_WHITE);
-      ExtTextOut(hDC, x, y, ETO_OPAQUE, &brect, Value, size, NULL);
-      SetBkColor(hDC, oldColor);
+      LKColor oldColor = Surface.SetBkColor(RGB_WHITE);
+      Surface.DrawText(x, y, Value, size);
+      Surface.SetBkColor(oldColor);
       drawn=true;
     }
 
@@ -277,67 +269,38 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  const TCHAR* Value, in
   
     if (!noOverlap || notoverlapping) { 
       if (OutlinedTp)
-	SetTextColor(hDC,RGB_BLACK);
+	Surface.SetTextColor(RGB_BLACK);
       else
-	SetTextColor(hDC,RGB_WHITE); 
+	Surface.SetTextColor(RGB_WHITE);
 
-#if 1
+
     #ifdef WINE
-    SetBkMode(hDC,TRANSPARENT);
+    Surface.SetBkMode(TRANSPARENT);
     #endif
     // Simplified, shadowing better and faster
     // ETO_OPAQUE not necessary since we pass a NULL rect
     //
-    ExtTextOut(hDC, x-1, y-1, 0, NULL, Value, size, NULL);
-    ExtTextOut(hDC, x-1, y+1, 0, NULL, Value, size, NULL);
-    ExtTextOut(hDC, x+1, y-1, 0, NULL, Value, size, NULL);
-    ExtTextOut(hDC, x+1, y+1, 0, NULL, Value, size, NULL);
+    Surface.DrawText(x-1, y-1, Value, size);
+    Surface.DrawText(x-1, y+1, Value, size);
+    Surface.DrawText(x+1, y-1, Value, size);
+    Surface.DrawText(x+1, y+1, Value, size);
 
     if (OutlinedTp && 1) {
-	ExtTextOut(hDC, x-2, y, 0, NULL, Value, size, NULL);
-	ExtTextOut(hDC, x+2, y, 0, NULL, Value, size, NULL);
-	ExtTextOut(hDC, x, y-2, 0, NULL, Value, size, NULL);
-	ExtTextOut(hDC, x, y+2, 0, NULL, Value, size, NULL);
+        Surface.DrawText(x-2, y, Value, size);
+        Surface.DrawText(x+2, y, Value, size);
+        Surface.DrawText(x, y-2, Value, size);
+        Surface.DrawText(x, y+2, Value, size);
     }
-#endif
-
-#if 0 //  UNUSED since 3.1i REMOVE
-#ifdef WINE
-      SetBkMode(hDC,TRANSPARENT);
-      ExtTextOut(hDC, x+2, y, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x+1, y, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x-1, y, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x-2, y, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x, y+1, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x, y-1, 0, NULL, Value, size, NULL);
-  //    ExtTextOut(hDC, x+1, y+1, 0, NULL, Value, size, NULL);
-   //   ExtTextOut(hDC, x-1, y-1, 0, NULL, Value, size, NULL);
-#else /* WINE */
-      ExtTextOut(hDC, x+2, y, ETO_OPAQUE, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x+1, y, ETO_OPAQUE, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x-1, y, ETO_OPAQUE, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x-2, y, ETO_OPAQUE, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x, y+1, ETO_OPAQUE, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
-    //  ExtTextOut(hDC, x-1, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
-     // ExtTextOut(hDC, x+1, y+1, ETO_OPAQUE, NULL, Value, size, NULL);
-      //ExtTextOut(hDC, x+2, y+1, ETO_OPAQUE, NULL, Value, size, NULL);
-    //  ExtTextOut(hDC, x-2, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
-#endif /* WINE */
-#endif
 
       if (OutlinedTp) {
-        SetTextColor(hDC,Mode->Color);
+        Surface.SetTextColor(Mode->Color);
       } else {
-        SetTextColor(hDC,RGB_BLACK); 
+        Surface.SetTextColor(RGB_BLACK);
       }
-#ifdef WINE
-      ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
-#else
-      ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
-#endif /* WINE */
+      Surface.DrawText(x, y, Value, size);
+
       if (OutlinedTp)
-	SetTextColor(hDC,RGB_BLACK); // TODO somewhere else text color is not set correctly
+        Surface.SetTextColor(RGB_BLACK); // TODO somewhere else text color is not set correctly
       drawn=true;
     }
 
@@ -382,24 +345,17 @@ bool MapWindow::TextInBox(HDC hDC, const RECT *clipRect,  const TCHAR* Value, in
 	notoverlapping = checkLabelBlock(&brect); 
   
     if (!noOverlap || notoverlapping) {
-#if (WINDOWSPC>0)
-      SetBkMode(hDC,TRANSPARENT);
-      SetTextColor(hDC,Mode->Color);
-      ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
-      SetTextColor(hDC,RGB_BLACK); 
-#else
-      SetTextColor(hDC,Mode->Color);
-      ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
-      SetTextColor(hDC,RGB_BLACK); 
-#endif
+      Surface.SetTextColor(Mode->Color);
+      Surface.DrawText(x, y, Value, size);
+      Surface.SetTextColor(RGB_BLACK);
       drawn=true;
     }
 
   }
  
-  if (!Mode->NoSetFont) SelectObject(hDC, oldFont); // VENTA5
-  SelectObject(hDC, hbOld);
-  SelectObject(hDC,hpOld);
+  if (!Mode->NoSetFont) Surface.SelectObject(oldFont); // VENTA5
+  Surface.SelectObject(hbOld);
+  Surface.SelectObject(hpOld);
 
   return drawn;
 

@@ -13,44 +13,46 @@
 //
 // invertable is used coped with LKTextBlack: if both are active, then text is forced reversed
 //
-void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y, 
-                          int maxsize, const bool lwmode, const short align, COLORREF rgb_text, bool invertable ) {
+void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y,
+                          int maxsize, const bool lwmode, const short align, const LKColor& rgb_text, bool invertable ) {
 
 	SIZE tsize;
 	if (maxsize==0) maxsize=_tcslen(wText);
   
-	GetTextExtentPoint(hDC, wText, maxsize, &tsize);
-
+	Surface.GetTextSize(wText, maxsize, &tsize);
+    LKColor textColor = rgb_text;
 	// by default, LK8000 is white on black, i.e. inverted
-	if ((!INVERTCOLORS) || (LKTextBlack&&invertable)) switch(rgb_text) { // 091110
+	if ((!INVERTCOLORS) || (LKTextBlack&&invertable)) {
+        switch(rgb_text) { // 091110
 		case RGB_WHITE:
-			rgb_text=RGB_BLACK;
+			textColor=RGB_BLACK;
 			break;
 		case RGB_BLACK:
-			rgb_text=RGB_WHITE;
+			textColor=RGB_WHITE;
 			break;
 		case RGB_SBLACK:		// FIXED MISSING 100511
-			rgb_text=RGB_SWHITE;
+			textColor=RGB_SWHITE;
 			break;
 		case RGB_LIGHTGREEN:
 			// rgb_text=RGB_DARKBLUE; 100915
-			rgb_text=RGB_DARKGREEN;
+			textColor=RGB_DARKGREEN;
 			break;
 		case RGB_LIGHTRED:
-			rgb_text=RGB_DARKRED;
+			textColor=RGB_DARKRED;
 			break;
 		case RGB_LIGHTYELLOW:
-			rgb_text=RGB_DARKYELLOW;
+			textColor=RGB_DARKYELLOW;
 			break;
 		case RGB_SWHITE:
-			rgb_text=RGB_SBLACK;
+			textColor=RGB_SBLACK;
 			break;
 		case RGB_AMBER:
-			rgb_text=RGB_ORANGE;
+			textColor=RGB_ORANGE;
 			break;
 		case RGB_PETROL:
-			rgb_text=RGB_ICEWHITE;
+			textColor=RGB_ICEWHITE;
 			break;
+        }
 	}
 
 	switch(align) {
@@ -71,52 +73,52 @@ bool moreoutline=false;
 			// First set a background color for outlining
 			// black outline requires more width, to gain contrast.
 			//
-			switch (rgb_text ) {
+			switch (textColor ) {
 				// Here we invert colors, looking at the foreground. The trick is that the foreground
 				// colour is slightly different white to white, in order to understand how to invert it
 				// correctly!
 				case RGB_BLACK:
 				//case RGB_SWHITE:
 					// text black, light background
-					SetTextColor(hDC,RGB_WHITE);
+					Surface.SetTextColor(RGB_WHITE);
 					
 					break;
 				case RGB_SWHITE:  
-					SetTextColor(hDC,RGB_SBLACK);
+					Surface.SetTextColor(RGB_SBLACK);
 					moreoutline=true;
 					break;
 				case RGB_SBLACK:
-					SetTextColor(hDC,RGB_SWHITE);
+					Surface.SetTextColor(RGB_SWHITE);
 					break;
 				case RGB_DARKBLUE:
-					SetTextColor(hDC,RGB_WHITE);
+					Surface.SetTextColor(RGB_WHITE);
 					break;
 				case RGB_GREEN:
-					SetTextColor(hDC,RGB_BLACK);
+					Surface.SetTextColor(RGB_BLACK);
 					moreoutline=true;
 					break;
 				case RGB_PETROL:
 				case RGB_DARKGREY:
 				case RGB_VDARKGREY:
 				case RGB_DARKGREEN:
-					SetTextColor(hDC,RGB_WHITE);
+					Surface.SetTextColor(RGB_WHITE);
 					break;
 				case RGB_ICEWHITE:  
-					SetTextColor(hDC,RGB_DARKBLUE);
+					Surface.SetTextColor(RGB_DARKBLUE);
 					moreoutline=true;
 					break;
 				case RGB_WHITENOREV:
-					SetTextColor(hDC,RGB_BLACK);
+					Surface.SetTextColor(RGB_BLACK);
 					moreoutline=true;
 					break;
 				case RGB_AMBERNOREV:
-					SetTextColor(hDC,RGB_BLACK);
+					Surface.SetTextColor(RGB_BLACK);
 					moreoutline=true;
 					break;
 				default:
 					// this is the default also for white text. Normally we are writing on a 
 					// not-too-light background
-					SetTextColor(hDC,RGB_BLACK);
+					Surface.SetTextColor(RGB_BLACK);
 					moreoutline=true;
 					break;
 			}
@@ -127,83 +129,33 @@ bool moreoutline=false;
 			// Simplified, shadowing better and faster
 			// ETO_OPAQUE not necessary since we pass a NULL rect
 			//
-			ExtTextOut(hDC, x-1, y-1, 0, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x-1, y+1, 0, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x+1, y-1, 0, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x+1, y+1, 0, NULL, wText, maxsize, NULL);
+			Surface.DrawText(x-1, y-1, wText, maxsize);
+			Surface.DrawText(x-1, y+1, wText, maxsize);
+			Surface.DrawText(x+1, y-1, wText, maxsize);
+			Surface.DrawText(x+1, y+1, wText, maxsize);
 
 			// SetTextColor(hDC,RGB_GREY);  // This would give an Emboss effect
-			// ExtTextOut(hDC, x, y+2, 0, NULL, wText, maxsize, NULL);
+			// Surface.DrawText(x, y+2, 0, wText, maxsize);
 
 			if (moreoutline) {
-				ExtTextOut(hDC, x-2, y, 0, NULL, wText, maxsize, NULL);
-				ExtTextOut(hDC, x+2, y, 0, NULL, wText, maxsize, NULL);
-				ExtTextOut(hDC, x, y-2, 0, NULL, wText, maxsize, NULL);
-				ExtTextOut(hDC, x, y+2, 0, NULL, wText, maxsize, NULL);
+				Surface.DrawText(x-2, y, wText, maxsize);
+				Surface.DrawText(x+2, y, wText, maxsize);
+				Surface.DrawText(x, y-2, wText, maxsize);
+				Surface.DrawText(x, y+2, wText, maxsize);
 			}
 
-			SetTextColor(hDC,rgb_text); 
-			ExtTextOut(hDC, x, y, 0, NULL, wText, maxsize, NULL);
-			SetTextColor(hDC,RGB_BLACK); 
+			Surface.SetTextColor(textColor);
+			Surface.DrawText(x, y, wText, maxsize);
+			Surface.SetTextColor(RGB_BLACK);
 #endif
 
-/*	UNUSED since 3.1i  REMOVE
-#if (WINDOWSPC>0)
-			ExtTextOut(hDC, x+1, y, 0, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x+2, y, 0, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x-1, y, 0, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x-2, y, 0, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x, y+1, 0, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x, y-1, 0, NULL, wText, maxsize, NULL);
-
-			if (ScreenSize == (ScreenSize_t)ss800x480) {
-				ExtTextOut(hDC, x+3, y, 0, NULL, wText, maxsize, NULL); 
-				ExtTextOut(hDC, x-3, y, 0, NULL, wText, maxsize, NULL); 
-				ExtTextOut(hDC, x, y+2, 0, NULL, wText, maxsize, NULL); 
-				ExtTextOut(hDC, x, y-2, 0, NULL, wText, maxsize, NULL); 
-				ExtTextOut(hDC, x, y+3, 0, NULL, wText, maxsize, NULL); 
-				ExtTextOut(hDC, x, y-3, 0, NULL, wText, maxsize, NULL); 
-			}
-
-			SetTextColor(hDC,rgb_text); 
-			ExtTextOut(hDC, x, y, 0, NULL, wText, maxsize, NULL);
-			SetTextColor(hDC,RGB_BLACK); 
-#else
-
-			ExtTextOut(hDC, x+1, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x+2, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x-1, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x-2, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x, y+1, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-			ExtTextOut(hDC, x, y-1, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-
-			if (ScreenSize == (ScreenSize_t)ss800x480) {
-				ExtTextOut(hDC, x+3, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-				ExtTextOut(hDC, x-3, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-				ExtTextOut(hDC, x, y+2, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-				ExtTextOut(hDC, x, y-2, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-				ExtTextOut(hDC, x, y+3, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-				ExtTextOut(hDC, x, y-3, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-			}
-			SetTextColor(hDC,rgb_text);
-
-			ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-			SetTextColor(hDC,RGB_BLACK);
-#endif
-*/
 			break;
 
 		case WTMODE_NORMAL:
 
-#if (WINDOWSPC>0)
-			SetTextColor(hDC,rgb_text); 
-			ExtTextOut(hDC, x, y, 0, NULL, wText, maxsize, NULL);
-			SetTextColor(hDC,RGB_BLACK); 
-#else
-			SetTextColor(hDC,rgb_text); 
-      			ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
-			SetTextColor(hDC,RGB_BLACK); 
-#endif
+			Surface.SetTextColor(textColor);
+            Surface.DrawText(x, y, wText, maxsize);
+			Surface.SetTextColor(RGB_BLACK);
 			break;
 
 	}
@@ -220,35 +172,33 @@ bool moreoutline=false;
 // A note about DrawRect: in main moving map, DrawRect is the part of screen excluding BottomBar, 
 // when the bottom bar is opaque. So choose carefully.
 //
-void MapWindow::LKWriteBoxedText(HDC hDC, RECT *clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align , 
-	COLORREF dir_rgb, COLORREF inv_rgb  ) {
+void MapWindow::LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align ,
+	const LKColor& dir_rgb, const LKColor& inv_rgb  ) {
 
-  COLORREF oldTextColor;
-  oldTextColor=SetTextColor(hDC,INVERTCOLORS?dir_rgb:inv_rgb);
+  LKColor oldTextColor = Surface.SetTextColor(INVERTCOLORS?dir_rgb:inv_rgb);
 
   SIZE tsize;
   if (maxsize==0) maxsize=_tcslen(wText);
   
-  GetTextExtentPoint(hDC, wText, maxsize, &tsize);
+  Surface.GetTextSize(wText, maxsize, &tsize);
   short vy;
   switch(align) {
 	case WTALIGN_LEFT:
 		vy=y+tsize.cy+NIBLSCALE(2)+1;
-		if (vy>=clipRect->bottom) return;
-		Rectangle(hDC, x+tsize.cx+NIBLSCALE(8), vy, x, y);
-		x += NIBLSCALE(4);
+		if (vy>=clipRect.bottom) return;
+		Surface.Rectangle(x+tsize.cx+NIBLSCALE(8), vy, x, y);
+        x += NIBLSCALE(4);
 		break;
 	case WTALIGN_RIGHT:
 		vy=y+tsize.cy+NIBLSCALE(2)+1;
-		if (vy>=clipRect->bottom) return;
-		Rectangle(hDC, x-tsize.cx-NIBLSCALE(8), vy, x, y);
-		x -= (tsize.cx+NIBLSCALE(4));
+		if (vy>=clipRect.bottom) return;
+        Surface.Rectangle(x-tsize.cx-NIBLSCALE(8), vy, x, y);
+        x -= (tsize.cx+NIBLSCALE(4));
 		break;
 	case WTALIGN_CENTER:
 		vy=y+(tsize.cy/2)+NIBLSCALE(1)+1;
-		if (vy>=clipRect->bottom) return;
-		Rectangle(hDC, 
-			x-(tsize.cx/2)-NIBLSCALE(4), 
+		if (vy>=clipRect.bottom) return;
+		Surface.Rectangle(x-(tsize.cx/2)-NIBLSCALE(4),
 			y-(tsize.cy/2)-NIBLSCALE(1)-1,
 			x+(tsize.cx/2)+NIBLSCALE(4), 
 			vy);
@@ -261,11 +211,8 @@ void MapWindow::LKWriteBoxedText(HDC hDC, RECT *clipRect, const TCHAR* wText, in
   y += NIBLSCALE(1);
 
 
-  ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
+  Surface.DrawText(x, y, wText, maxsize);
 
   //SetTextColor(hDC,RGB_BLACK);   THIS WAS FORCED BLACk SO FAR 121005
-  SetTextColor(hDC,oldTextColor);
-  return;
+  Surface.SetTextColor(oldTextColor);
 }
-
-

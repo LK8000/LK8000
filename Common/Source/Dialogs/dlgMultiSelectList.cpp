@@ -240,7 +240,7 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
     } // if no elements..
 }
 
-static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
+static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     (void) Sender;
 #define PICTO_WIDTH 50
     if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex >= 0)) {
@@ -258,7 +258,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
         TCHAR text2[180] = {TEXT("empty")};
         TCHAR Comment[80] = {TEXT("")};
         TCHAR Comment1[80] = {TEXT("")};
-        SetBkColor(hDC, RGB(0xFF, 0xFF, 0xFF));
+        Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
         LKASSERT(i < MAX_LIST_ITEMS);
 
         switch (Elements[i].type) {
@@ -290,7 +290,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
                  * original data are shared ressources !
                  * for that we need to grant all called methods are thread safe
                  ****************************************************************/
-                pAS->DrawPicto(hDC, rc);
+                pAS->DrawPicto(Surface, rc);
             }
             break;
 
@@ -317,7 +317,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
 
             if (Elements[i].type != IM_TASK_PT) {
                 if (WayPointCalc[idx].IsLandable) {
-                    MapWindow::DrawRunway(hDC, &WayPointList[idx], rc, 4000, true);
+                    MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, 4000, true);
 
                     if (WayPointCalc[idx].IsAirport) {
                         // remove spaces from frequency
@@ -352,7 +352,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
 
                 }// waypoint isLandable
                 else {
-                    MapWindow::DrawWaypointPicto(hDC, rc, &WayPointList[idx]);
+                    MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[idx]);
                     _stprintf(text1, TEXT("%s %s"), WayPointList[idx].Name, Comment);
 
                     _stprintf(text2, TEXT("%3.1f%s (%i%s)"), Distance*DISTANCEMODIFY
@@ -365,7 +365,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
             else {
                 LockTaskData(); // protect from external task changes
                 int iTaskIdx = Elements[i].iIdx;
-                MapWindow::DrawTaskPicto(hDC, iTaskIdx, rc, 3000);
+                MapWindow::DrawTaskPicto(Surface, iTaskIdx, rc, 3000);
                 int iLastTaskPoint = 0;
 
                 while (ValidTaskPoint(iLastTaskPoint))
@@ -416,17 +416,17 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, HDC hDC) {
         /********************
          * show text
          ********************/
-        SetBkMode(hDC, TRANSPARENT);
-        SetTextColor(hDC, RGB_BLACK);
+        Surface.SetBkMode(TRANSPARENT);
+        Surface.SetTextColor(RGB_BLACK);
         int iLen = _tcslen(text1);
         if (iLen > 100)
             iLen = 100;
-        ExtTextOut(hDC, (int) (PICTO_WIDTH * 1.1) * ScreenScale, 2 * ScreenScale, ETO_OPAQUE, NULL, text1, iLen, NULL);
-        SetTextColor(hDC, RGB_DARKBLUE);
+        Surface.DrawText((int) (PICTO_WIDTH * 1.1) * ScreenScale, 2 * ScreenScale, text1, iLen);
+        Surface.SetTextColor(RGB_DARKBLUE);
         iLen = _tcslen(text2);
         if (iLen > 100)
             iLen = 100;
-        ExtTextOut(hDC, (int) (PICTO_WIDTH * 1.1) * ScreenScale, 15 * ScreenScale, ETO_OPAQUE, NULL, text2, iLen, NULL);
+        Surface.DrawText((int) (PICTO_WIDTH * 1.1) * ScreenScale, 15 * ScreenScale, text2, iLen);
 
     }
 }

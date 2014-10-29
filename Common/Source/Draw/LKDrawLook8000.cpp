@@ -17,11 +17,11 @@
 #include "Multimap.h"
 #include "Sideview.h"
 
-void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
+void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc )
 {
-  HFONT		oldfont=0;
-  HBRUSH	oldbrush=0;
-  HPEN		oldpen=0;
+  LKFont oldfont;
+  LKBrush	oldbrush;
+  LKPen		oldpen;
 
   SIZE TextSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
@@ -35,7 +35,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   bool redwarning; // 091203
   int gatechrono=0;
 
-  HFONT *bigFont, *medFont;
+  LKFont bigFont, medFont;
 
   short leftmargin=0;
 
@@ -69,15 +69,15 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
   redwarning=false;
 
-  if (INVERTCOLORS) {
-    oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
-    oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_Black);
-    oldpen=(HPEN)SelectObject(hdc, LKPen_Grey_N1);
-  } else {
-    oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
-    oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_White);
-    oldpen=(HPEN)SelectObject(hdc, LKPen_Grey_N1);
-  }
+    if (INVERTCOLORS) {
+        oldfont = Surface.SelectObject(LKINFOFONT);
+        oldbrush = Surface.SelectObject(LKBrush_Black);
+        oldpen = Surface.SelectObject(LKPen_Grey_N1);
+    } else {
+        oldfont = Surface.SelectObject(LKINFOFONT);
+        oldbrush = Surface.SelectObject(LKBrush_White);
+        oldpen = Surface.SelectObject(LKPen_Grey_N1);
+    }
 
 
   if ( ++flipflopcount >2 ) {
@@ -86,25 +86,25 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   }
 
   if (OverlaySize==0) {
-	bigFont=(HFONT *)LK8BigFont;
-	medFont=(HFONT *)LK8TargetFont;
+	bigFont=LK8BigFont;
+	medFont=LK8TargetFont;
   } else {
-	bigFont=(HFONT *)LK8TargetFont;
-	medFont=(HFONT *)LK8TargetFont;
+	bigFont=LK8TargetFont;
+	medFont=LK8TargetFont;
   }
 
   if (DoInit[MDI_DRAWLOOK8000]) {
 	TCHAR Tdummy[]=_T("T");
-	SelectObject(hdc, bigFont); 
-	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
+	Surface.SelectObject(bigFont);
+	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8BigFont = TextSize.cy;
 
-	SelectObject(hdc, medFont); 
-	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
+	Surface.SelectObject(medFont);
+	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8TargetFont = TextSize.cy;
 
-	SelectObject(hdc, LK8MediumFont); 
-	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
+	Surface.SelectObject(LK8MediumFont);
+	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8MediumFont = TextSize.cy;
 
 	if ( !ScreenLandscape ) {
@@ -479,7 +479,7 @@ nextinit:
 
   } // end doinit
 
-  COLORREF overcolor,distcolor;
+  LKColor overcolor,distcolor;
   overcolor=OverColorRef;
   distcolor=OverColorRef;
 
@@ -522,7 +522,7 @@ nextinit:
 		rcy=rc.top+NIBLSCALE(1);
 			
 		// Waypoint name and distance
-		SelectObject(hdc, medFont);
+		Surface.SelectObject(medFont);
 
 	if ( index >=0 ) {
 		#if 0
@@ -561,7 +561,7 @@ nextinit:
 				_stprintf(Buffer,_T("%s%d/%d"),StartGateName,gateinuse+1,PGNumberOfGates);
 			}
 
-	 		LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
+	 		LKWriteText(Surface, Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 		} else {
 			TCHAR buffername[LKSIZEBUFFERLARGE];
 			GetOvertargetName(buffername);
@@ -573,7 +573,7 @@ nextinit:
 			}
 
  			 CharUpper(Buffer);
-			 LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
+			 LKWriteText(Surface, Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 		}
 
 		 if (gateinuse>=-1 ) {
@@ -627,18 +627,18 @@ nextinit:
 
 		if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates())) ) {
                   _stprintf(BufferValue + _tcslen(BufferValue), _T(" %s"),BufferUnit);
-			SelectObject(hdc, medFont); 
-			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+			Surface.SelectObject(medFont);
+			LKWriteText(Surface,  BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 		} else
-			LKWriteText(hdc,BufferValue, rcx+NIBLSCALE(2), rcy+ ySizeLK8TargetFont, 0, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
+			LKWriteText(Surface, BufferValue, rcx+NIBLSCALE(2), rcy+ ySizeLK8TargetFont, 0, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
 
- 		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
+ 		Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
 		if (!HideUnits) {
-			SelectObject(hdc, LKMAPFONT); // TODO FIX BUG here.. using different font from size
+			Surface.SelectObject(LKMAPFONT); // TODO FIX BUG here.. using different font from size
 			if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
 
 			} else {
-			 LKWriteText(hdc, BufferUnit, rcx+NIBLSCALE(4)+TextSize.cx,rcy+ySizeLK8TargetFont+(ySizeLK8TargetFont/3)-NIBLSCALE(1), 0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true); 
+			 LKWriteText(Surface,  BufferUnit, rcx+NIBLSCALE(4)+TextSize.cx,rcy+ySizeLK8TargetFont+(ySizeLK8TargetFont/3)-NIBLSCALE(1), 0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 			}
 		}
 
@@ -682,22 +682,22 @@ nextinit:
 		  SIZE tsize;
       TCHAR Tmp[150];
 int len = _tcslen(BufferValue);
-GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
+Surface.GetTextSize(&BufferValue[len-1], 1, &tsize);
       tsize.cx = -tsize.cx;
       _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
       if(BufferValue[0] == Tmp[0])
       {
-        GetTextExtentPoint(hdc, Tmp, 1, &tsize);
+        Surface.GetTextSize(Tmp, 1, &tsize);
       }
       _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2182_")));
 		  if(BufferValue[0] == Tmp[0])
 		  {
-	      GetTextExtentPoint(hdc, Tmp, 1, &tsize);
+	      Surface.GetTextSize(Tmp, 1, &tsize);
 		  }
 		  _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2184_")));
       if(BufferValue[0] == Tmp[0])
       {
-        GetTextExtentPoint(hdc, Tmp, 1, &tsize);
+        Surface.GetTextSize(Tmp, 1, &tsize);
         _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
     //    if(BufferValue[len-1] == Tmp[0])
       //    tsize.cx =0;
@@ -705,13 +705,13 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 
 
 
-			SelectObject(hdc, medFont); 
+			Surface.SelectObject(medFont);
 			if (!ISGAAIRCRAFT) {
 				if (ScreenLandscape)
-					LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2-tsize.cx, rc.top+ NIBLSCALE(15), 0,
+					LKWriteText(Surface,  BufferValue, (rc.right+rc.left)/2-tsize.cx, rc.top+ NIBLSCALE(15), 0,
 						WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
 				else
-					LKWriteText(hdc, BufferValue, ((rc.right+rc.left)/3)*2-tsize.cx/2, rc.top+ NIBLSCALE(15), 0,
+					LKWriteText(Surface,  BufferValue, ((rc.right+rc.left)/3)*2-tsize.cx/2, rc.top+ NIBLSCALE(15), 0,
 						WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
 			}
 
@@ -720,7 +720,7 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 		// Draw efficiency required and altitude arrival for destination waypoint
 		// For paragliders, average efficiency and arrival destination
 
-		SelectObject(hdc, bigFont); // use this font for big values
+		Surface.SelectObject(bigFont); // use this font for big values
 
 		if ( ISGLIDER) {
 			switch (OvertargetMode) {
@@ -756,14 +756,14 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 					break;
 			}
 
-			GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
+			Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
 			//	rcy=(rc.bottom + rc.top)/2 -TextSize.cy-NIBLSCALE(10); OLD
 			rcy=yrightoffset -TextSize.cy; // 101112
 			rcx=rc.right-NIBLSCALE(10);
 			if (redwarning)  // 091203
-				LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true);
+				LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true);
 			else
-				LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
+				LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 			// Altitude difference with current MC
 			switch (OvertargetMode) {
@@ -799,17 +799,17 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 					break;
 			}
 			if (redwarning) 
-				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, 
+				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0,
 					WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
 			else
-				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, 
+				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0,
 					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 
 			if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
-				SelectObject(hdc, LK8SmallFont); 
+				Surface.SelectObject(LK8SmallFont);
 				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
-				LKWriteBoxedText(hdc, &MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+				LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
 			}
 		}
 
@@ -825,44 +825,44 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 	 	 	LK_tcsncpy(Buffer, buffername, wlen);
 		}
  		CharUpper(Buffer);
-		LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
+		LKWriteText(Surface, Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 	}
 
   // moved out from task paragliders stuff - this is painted on the right
   if ( ISPARAGLIDER ) {
 
 	if (UseGates()&&ActiveWayPoint==0) {
-		SelectObject(hdc, bigFont); // use this font for big values
+		Surface.SelectObject(bigFont); // use this font for big values
 
 		if (HaveGates()) {
             gatechrono=GateTime(ActiveGate)-LocalTime(); // not always already set, update it ... 
 
 			Units::TimeToTextDown(BufferValue,gatechrono ); 
 			rcx=rc.right-NIBLSCALE(10);
-			GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
+			Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
 			rcy=yrightoffset -TextSize.cy; // 101112
-			LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
+			LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 			Value=WayPointCalc[DoOptimizeRoute()?RESWP_OPTIMIZED:Task[0].Index].NextETE-gatechrono;
 			Units::TimeToTextDown(BufferValue, (int)Value);
 			if (Value<=0) 
-				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
+				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
 			else
-				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 		}
 
 	} else {
-		SelectObject(hdc, bigFont); // use this font for big values
+		Surface.SelectObject(bigFont); // use this font for big values
 	  	if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
 			LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
 		else
 			LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
 
-		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
+		Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
 		rcy=yrightoffset -TextSize.cy; // 101112
 
 		rcx=rc.right-NIBLSCALE(10);
-		LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
+		LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 		// Altitude difference with current MC
 		switch (OvertargetMode) {
@@ -898,16 +898,16 @@ GetTextExtentPoint(hdc, &BufferValue[len-1], 1, &tsize);
 				break;
 		}
 		if (redwarning)
-			LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
+			LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
 		else
-			LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+			LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 
 		if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
-			SelectObject(hdc, LK8SmallFont); 
-			// LKWriteBoxedText(hdc, gettext(1694), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+			Surface.SelectObject(LK8SmallFont);
+			// LKWriteBoxedText(Surface, gettext(1694), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
 			_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
-			LKWriteBoxedText(hdc, &MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT,RGB_WHITE,RGB_BLACK);
+			LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT,RGB_WHITE,RGB_BLACK);
 
 		}
 	} // end no UseGates()
@@ -917,7 +917,7 @@ drawOverlay:
   // In place of MC, print gate time
   // Even if lxcNoOverlay, we print startgates..
   if (UseGates()&&ActiveWayPoint==0) {
-	SelectObject(hdc, LK8MediumFont); 
+	Surface.SelectObject(LK8MediumFont);
 
 	if (HaveGates()) {
 		Units::TimeToText(BufferTitle,GateTime(ActiveGate)); 
@@ -928,7 +928,7 @@ drawOverlay:
 	}
 	rcy=yrightoffset -ySizeLK8BigFont-(ySizeLK8MediumFont*2); // 101112
 	rcx=rc.right-NIBLSCALE(10);
-	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
+	LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 	// USE THIS SPACE FOR MESSAGES TO THE PILOT
 	rcy+=ySizeLK8MediumFont;
@@ -983,41 +983,41 @@ drawOverlay:
 		// LKTOKEN  _@M925_ = "NO TSK START"
 		_tcscpy(BufferValue,MsgToken(925));
 	}
-	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
+	LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
   } else
   if (McOverlay && Look8000>lxcNoOverlay && (ISGLIDER || ISPARAGLIDER)) {
 
-	SelectObject(hdc, bigFont); 
+	Surface.SelectObject(bigFont);
 	LKFormatValue(LK_MC, false, BufferValue, BufferUnit, BufferTitle);
 	// rcy=(rc.bottom + rc.top)/2 -ySizeLK8BigFont-NIBLSCALE(10)-ySizeLK8BigFont; VERTICAL CENTERED
 	rcy=yrightoffset -ySizeLK8BigFont-ySizeLK8BigFont;
 	rcx=rc.right-NIBLSCALE(10);
-	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
+	LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 	extern bool IsSafetyMacCreadyInUse(int val);
 	if (IsSafetyMacCreadyInUse(GetOvertargetIndex()) && GlidePolar::SafetyMacCready>0) {
-		SelectObject(hdc, LK8SmallFont); 
+		Surface.SelectObject(LK8SmallFont);
 		_stprintf(BufferValue,_T(" %.1f %s "),GlidePolar::SafetyMacCready*LIFTMODIFY,
 		Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
-		LKWriteBoxedText(hdc, &MapRect,BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+		LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
 	}
 
 	if (DerivedDrawInfo.AutoMacCready == true) {
-	  SelectObject(hdc, LK8TitleFont);
+	  Surface.SelectObject(LK8TitleFont);
 
-	HBRUSH ob=NULL;
+	LKBrush ob;
 	if (LKTextBlack) {
-		ob=(HBRUSH)SelectObject(hdc, LKBrush_White);
+		ob=Surface.SelectObject(LKBrush_White);
 	}
-	  Rectangle(hdc, 
+	  Surface.Rectangle(
 		rectLeft_AutoMc[ScreenSize],
 	  	rectTop_AutoMc[ScreenSize],
 	  	rectRight_AutoMc[ScreenSize],
 	  	rectBottom_AutoMc[ScreenSize]);
 
 	if (LKTextBlack) {
-		SelectObject(hdc, ob);
+		Surface.SelectObject(ob);
 	}
 
 	  TCHAR amcmode[10];
@@ -1042,7 +1042,7 @@ drawOverlay:
 			break;
 	 }
 
-	  LKWriteText(hdc, amcmode, writeX_AutoMc[ScreenSize], writeY_AutoMc[ScreenSize], 
+	  LKWriteText(Surface,  amcmode, writeX_AutoMc[ScreenSize], writeY_AutoMc[ScreenSize],
 		0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
 
 	  // Sampling mode only - this will autoset positions, but still need fine tuning
@@ -1050,7 +1050,7 @@ drawOverlay:
 	  #if 0 
 	  if (OverlaySize==0) {
 	    Rectangle(hdc,rcx,rcy+ySizeLK8MediumFont/2-2,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/2);
-	    LKWriteText(hdc, _T("A"), rc.right,rcy+ySizeLK8MediumFont/2, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
+	    LKWriteText(Surface,  _T("A"), rc.right,rcy+ySizeLK8MediumFont/2, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
 		StartupStore(_T(".... Oversize0: rectleft=%d recttop=%d  rectright=%d rectbottom=%d\n"),
 		    rcx,rcy+ySizeLK8MediumFont/2-2,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/2);
 		StartupStore(_T(".... Oversize0: writex=%d writey=%d\n"),
@@ -1061,7 +1061,7 @@ drawOverlay:
 	    rcx,rcy+ySizeLK8MediumFont/4,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/4);
 		StartupStore(_T(".... Oversize1: writex=%d writey=%d\n"),
 	    rc.right,rcy+ySizeLK8MediumFont/4);
-	    LKWriteText(hdc, _T("A"), rc.right,rcy+ySizeLK8MediumFont/4, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
+	    LKWriteText(Surface,  _T("A"), rc.right,rcy+ySizeLK8MediumFont/4, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
 	  }
 	  #endif
 	} // AutoMacCready true
@@ -1072,7 +1072,7 @@ drawOverlay:
 
   if ( (Look8000==(Look8000_t)lxcAdvanced) ) {
 
-	SelectObject(hdc, bigFont); 
+	Surface.SelectObject(bigFont);
 	if (ISPARAGLIDER) {
 		LKFormatValue(LK_HNAV, false, BufferValue, BufferUnit, BufferTitle); // 091115
 	} else {
@@ -1081,7 +1081,7 @@ drawOverlay:
 		else
 			LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
 	}
-	GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
+	Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
 	if (IsMultimapOverlaysGauges() && !mode.AnyPan())
 		rcx=rc.left+NIBLSCALE(10)+leftmargin+GlideBarOffset;
 	else
@@ -1092,18 +1092,18 @@ drawOverlay:
 		rcy=(rc.bottom + rc.top)/2 -TextSize.cy-NIBLSCALE(10);
 
 	if (ISPARAGLIDER) {
-		LKWriteText(hdc, BufferValue, rcx, rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+		LKWriteText(Surface,  BufferValue, rcx, rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 		if (!HideUnits) {
-			SelectObject(hdc, LKMAPFONT);  // FIXFONT
-			LKWriteText(hdc, BufferUnit, rcx+TextSize.cx+NIBLSCALE(2),rcy+(TextSize.cy/3), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+			Surface.SelectObject(LKMAPFONT);  // FIXFONT
+			LKWriteText(Surface,  BufferUnit, rcx+TextSize.cx+NIBLSCALE(2),rcy+(TextSize.cy/3), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 		}
 
 	} else {
 		if (ISGLIDER) {
-			LKWriteText(hdc, BufferValue, rcx+NIBLSCALE(9), rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+			LKWriteText(Surface,  BufferValue, rcx+NIBLSCALE(9), rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 			if (!HideUnits) {
-				SelectObject(hdc, LKMAPFONT);  // FIXFONT
-				LKWriteText(hdc, BufferUnit, rcx+TextSize.cx+NIBLSCALE(9),rcy+(TextSize.cy/3), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+				Surface.SelectObject(LKMAPFONT);  // FIXFONT
+				LKWriteText(Surface,  BufferUnit, rcx+TextSize.cx+NIBLSCALE(9),rcy+(TextSize.cy/3), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 			}
 		}
 	}
@@ -1126,13 +1126,13 @@ drawOverlay:
 			}
 		}
 
-		SelectObject(hdc, bigFont); 
-		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
+		Surface.SelectObject(bigFont);
+		Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
 		rcy+=TextSize.cy;
-		LKWriteText(hdc, BufferValue, rcx,rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+		LKWriteText(Surface,  BufferValue, rcx,rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 		if (!HideUnits) {
-			SelectObject(hdc, LKMAPFONT); // FIXFONT
-			LKWriteText(hdc, BufferUnit, rcx+TextSize.cx+NIBLSCALE(2),rcy+(TextSize.cy/3), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+			Surface.SelectObject(LKMAPFONT); // FIXFONT
+			LKWriteText(Surface,  BufferUnit, rcx+TextSize.cx+NIBLSCALE(2),rcy+(TextSize.cy/3), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 		}
 	}
 	if (!ISGAAIRCRAFT && !ISCAR) {
@@ -1145,13 +1145,13 @@ drawOverlay:
 				LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
 			}
 		}
-		SelectObject(hdc, bigFont); 
-		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
+		Surface.SelectObject(bigFont);
+		Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
 		rcy+=TextSize.cy;
-		LKWriteText(hdc, BufferValue, rcx,rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+		LKWriteText(Surface,  BufferValue, rcx,rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 		if (!HideUnits) {
-			SelectObject(hdc, LKMAPFONT);  
-			LKWriteText(hdc, BufferUnit, rcx+TextSize.cx+NIBLSCALE(2),rcy+(TextSize.cy/3), 0, 
+			Surface.SelectObject(LKMAPFONT);
+			LKWriteText(Surface,  BufferUnit, rcx+TextSize.cx+NIBLSCALE(2),rcy+(TextSize.cy/3), 0,
 				WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 		}
 	}
@@ -1159,13 +1159,13 @@ drawOverlay:
 	LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
 
 	if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
-		SelectObject(hdc, medFont); 
+		Surface.SelectObject(medFont);
 		if ( !ScreenLandscape )
-			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(10),
+			LKWriteText(Surface,  BufferValue, rc.right-NIBLSCALE(10),
 				yClockposition,
 				0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 		else // landscape
-			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, 
+			LKWriteText(Surface,  BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0,
 				WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 	}
 
@@ -1179,7 +1179,7 @@ Drawbottom:
   //
   // Draw wind 
   //
-  SelectObject(hdc, medFont);
+  Surface.SelectObject(medFont);
 
   if (Look8000 == lxcNoOverlay) goto afterWind; // 100930
 
@@ -1197,9 +1197,9 @@ Drawbottom:
   rcy=ySizeLK8TargetFont;
  
   if (DrawBottom)
-  	LKWriteText(hdc, Buffer, rc.left+NIBLSCALE(5)+leftmargin, rc.bottom - BottomSize- rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+  	LKWriteText(Surface,  Buffer, rc.left+NIBLSCALE(5)+leftmargin, rc.bottom - BottomSize- rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
   else
-  	LKWriteText(hdc, Buffer, rc.left+NIBLSCALE(5)+leftmargin, rc.bottom - rcy-NIBLSCALE(5), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+  	LKWriteText(Surface,  Buffer, rc.left+NIBLSCALE(5)+leftmargin, rc.bottom - rcy-NIBLSCALE(5), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 
 
 afterWind:
@@ -1208,9 +1208,9 @@ afterWind:
 TheEnd:
 
   // restore objects and return
-  SelectObject(hdc, oldpen); 
-  SelectObject(hdc, oldbrush); 
-  SelectObject(hdc, oldfont); 
+  Surface.SelectObject(oldpen);
+  Surface.SelectObject(oldbrush);
+  Surface.SelectObject(oldfont);
 
 
 }

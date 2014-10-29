@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Defines.h"
+#include "LKObjects.h"
 
 #ifdef PNA
 #define FAI_SECTOR_STEPS 11
@@ -18,7 +19,7 @@
 #define MAX_FAI_SECTOR_PTS (8*FAI_SECTOR_STEPS)
 
 
-int Statistics::RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , COLORREF fillcolor)
+int Statistics::RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , const LKColor& fillcolor)
 {
 float fFAI_Percentage = FAI_NORMAL_PERCENTAGE;
 double fDist_a, fDist_b, fDist_c, fAngle;
@@ -347,37 +348,34 @@ if(fDistMin < FAI28_45Threshold)
   /********************************************************************
    * draw polygon
    ********************************************************************/
-  HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), RGB_GREEN);
-  HBRUSH hpSectorFill = NULL;
-
-  HPEN hpOldPen     = (HPEN)  SelectObject(hdc, hpSectorPen);
-  HBRUSH hpOldBrush;
+  LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), RGB_GREEN);
+  LKPen hpOldPen = Surface.SelectObject(hpSectorPen);
+  LKBrush hpOldBrush;
+  LKBrush hpSectorFill;
   if (fillcolor != 0)
   {
-	hpSectorFill = (HBRUSH)CreateSolidBrush(fillcolor);
-    hpOldBrush = (HBRUSH)SelectObject(hdc, hpSectorFill);
+    hpSectorFill.Create(fillcolor);
+    hpOldBrush = Surface.SelectObject(hpSectorFill);
   }
   else
-    hpOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+    hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
 
 
   /********************************************/
-  Polygon(hdc, apSectorPolygon,iPolyPtr);
+  Surface.Polygon(apSectorPolygon,iPolyPtr);
   /********************************************/
 
-  SelectObject(hdc, (HPEN)hpOldPen);
-  SelectObject(hdc, (HBRUSH)hpOldBrush);
-  DeleteObject(hpSectorPen);
-  if(hpSectorFill != NULL)
-    DeleteObject(hpSectorFill);
+  Surface.SelectObject(hpOldPen);
+  Surface.SelectObject(hpOldBrush);
+  hpSectorPen.Release();
 
 
 
   /********************************************************************
    * calc round leg grid
    ********************************************************************/
-  hpSectorPen  = (HPEN)CreatePen(PS_SOLID, (1), RGB_GREY );
-  SelectObject(hdc, hpSectorPen);
+  hpSectorPen.Create(PEN_SOLID, (1), RGB_GREY );
+  Surface.SelectObject(hpSectorPen);
 
   double fTic= 1/DISTANCEMODIFY;
   if(fDist_c > 5/DISTANCEMODIFY)   fTic = 10/DISTANCEMODIFY;
@@ -389,7 +387,7 @@ if(fDistMin < FAI28_45Threshold)
   BOOL bFirstUnit = true;
   LKASSERT(fTic!=0);
   fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
 int iCnt = 0;
 
@@ -401,8 +399,8 @@ int iCnt = 0;
 	else
 	  _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
 	bFirstUnit = false;
-	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-	SetTextColor(hdc, RGB_GREY);
+	Surface.GetTextSize(text, _tcslen(text), &tsize);
+	Surface.SetTextColor(RGB_GREY);
     int j=0;
 
 	if(fDistTri < FAI28_45Threshold)
@@ -452,12 +450,12 @@ int iCnt = 0;
 
       if(j>0)
       {
-	    Polyline(hdc, line, 2);
+	    Surface.Polyline(line, 2);
       }
 
       if(j==0)
       {
-    	ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    	Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
     	j=1;
 
       }
@@ -469,13 +467,10 @@ int iCnt = 0;
 	  fDist_b += fDelta_Dist;
     }
     fDistTri+=fTic;iCnt++;
- //   if((iCnt %2) ==0)
-  //    ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   }
 
-SelectObject(hdc, hfOld);
-SelectObject(hdc, (HPEN)hpOldPen);
-DeleteObject( hpSectorPen);
+Surface.SelectObject(hfOld);
+Surface.SelectObject(hpOldPen);
 return 0;
 }
 

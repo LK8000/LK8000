@@ -25,6 +25,9 @@
 #include "lk8000.h"
 #include "Macro.h"
 
+#include "Screen/LKColor.h"
+#include "Screen/LKPen.h"
+
 #include "Parser.h"
 #include "Calculations.h"
 #include "Statistics.h"
@@ -43,7 +46,7 @@
 
 // Include assert for LK testbench
 #include "LKAssert.h"
-
+#include "MathFunctions.h"
 //
 // Common Functions
 //

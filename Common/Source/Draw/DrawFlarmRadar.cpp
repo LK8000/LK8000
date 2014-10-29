@@ -69,7 +69,7 @@ typedef struct
 static sFlarmPositions asFLARMPos[FLARM_MAX_TRAFFIC+1];
 
 
-HBRUSH * variobrush[NO_VARIO_COLORS] = {
+const LKBrush * variobrush[NO_VARIO_COLORS] = {
 		  &LKBrush_Vario_neg4,
 		  &LKBrush_Vario_neg3,
 		  &LKBrush_Vario_neg2,
@@ -97,8 +97,8 @@ typedef enum{
 	DrawCenter
 } TextAlign;
 
-void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
-                           COLORREF color, DiagrammStruct *psDia, const TCHAR *pLable) {
+void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,double unit_step, double zero, int iTextAling,
+                           const LKColor& color, DiagrammStruct *psDia, const TCHAR *pLable) {
 
   POINT line[2];
   SIZE tsize;
@@ -130,7 +130,7 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	line[0].y = ymin;
     }
 
-    DrawDashLine(hdc,1, line[0], line[1], color, rc);
+    Surface.DrawDashLine(1, line[0], line[1], color, rc);
 
 
 
@@ -140,7 +140,7 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	   FormatTicText(unit_text, xval*unit_step/ticstep, unit_step);
 
 
-	   GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
+	   Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
 	   switch(iTextAling)
 	   {
 	     case TEXT_ABOVE_LEFT    : xoff = -tsize.cx  ; yoff= -tsize.cy  ; break;
@@ -155,12 +155,11 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	     case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2; yoff= -tsize.cy/2; break;
 	   }
 
-	   ExtTextOut(hdc, xmin+xoff, ymax+yoff,
-	   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
+	   Surface.DrawText(xmin+xoff, ymax+yoff, unit_text, _tcslen(unit_text));
 
 	   if(pLable != NULL)
 		if((xval+ticstep) > x_max)
-		  ExtTextOut(hdc, xmin, ymax+yoff, ETO_OPAQUE, NULL, pLable, _tcslen(pLable), NULL);
+		  Surface.DrawText(xmin, ymax+yoff, pLable, _tcslen(pLable));
 	}
 
   }
@@ -181,14 +180,14 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	line[0].y = ymin;
     }
 
-    DrawDashLine(hdc,1, line[0], line[1],  color, rc);
+    Surface.DrawDashLine(1, line[0], line[1],  color, rc);
 
 
     if (iTextAling>TEXT_NO_TEXT)
     {
 
        FormatTicText(unit_text, xval*unit_step/ticstep, unit_step);
-       GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
+       Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
 	   switch(iTextAling)
 	   {
 	     case TEXT_ABOVE_LEFT    : xoff = -tsize.cx   ; yoff= -tsize.cy  ; break;
@@ -203,22 +202,13 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	     case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2 ; yoff= -tsize.cy/2; break;
 	   }
 
-       ExtTextOut(hdc, xmin+xoff, ymax+yoff,
-  	   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
-       /*
-	   if(pLable != NULL)
-		if(xval < 0)
-		  if((xval-ticstep) < x_min)
-		    ExtTextOut(hdc, xmin, ymax+yoff, ETO_OPAQUE, NULL, pLable, _tcslen(pLable), NULL);*/
+       Surface.DrawText(xmin+xoff, ymax+yoff, unit_text, _tcslen(unit_text));
     }
-
-
-
-}
+  }
 }
 
-void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
-		 COLORREF color, DiagrammStruct *psDia,  const TCHAR *pUnit) {
+void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,double unit_step, double zero, int iTextAling,
+		 const LKColor& color, DiagrammStruct *psDia,  const TCHAR *pUnit) {
   POINT line[2];
   SIZE tsize;
 
@@ -245,7 +235,9 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     line[1].y = ymax;
 
     // If sideview is at minimal size, print units but not the dashed lines to avoid cluttering.
-    if (Current_Multimap_SizeY<SIZE3) DrawDashLine(hdc,1, line[0], line[1], color, rc);
+    if (Current_Multimap_SizeY<SIZE3) {
+        Surface.DrawDashLine(1, line[0], line[1], color, rc);
+    }
 
     // Do not print 0 altitude in shared maps, it is useless and we have no spare space to do it.
     // Beside, we would print it black on blue.
@@ -259,7 +251,7 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	  if(pUnit != NULL)
             if(yval+ticstep >y_max)
               _stprintf(unit_text + _tcslen(unit_text), TEXT("%s"), pUnit);
-	  GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
+	  Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
 	  switch(iTextAling)
 	  {
 	    case TEXT_ABOVE_LEFT    : xoff = -tsize.cx  ; yoff= -tsize.cy-2  ; break;
@@ -273,8 +265,7 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	    case TEXT_MIDDLE_RIGHT  : xoff = 1          ; yoff= -tsize.cy/2-1; break;
 	    case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2; yoff= -tsize.cy/2-1; break;
 	  }
-	  ExtTextOut(hdc, xmin+xoff, ymin+yoff,
-	  ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
+	  Surface.DrawText(xmin+xoff, ymin+yoff, unit_text, _tcslen(unit_text));
     }
   }
 
@@ -290,8 +281,9 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     line[1].x = xmax;
     line[1].y = ymax;
 
-    if (Current_Multimap_SizeY<SIZE3) DrawDashLine((HDC)hdc,(int)1,(POINT) line[0],(POINT) line[1], color, rc);
-
+    if (Current_Multimap_SizeY<SIZE3) {
+        Surface.DrawDashLine(1,(POINT) line[0],(POINT) line[1], color, rc);
+    }
     // Do not print 0 altitude in shared maps, it is useless and we have no spare space to do it.
     // Beside, we would print it black on blue.
     if (IsMultiMapShared() && yval==0) continue;
@@ -300,7 +292,7 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     {
 	  TCHAR unit_text[MAX_PATH];
 	  FormatTicText(unit_text, yval*unit_step/ticstep, unit_step);
-	  GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
+	  Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
 	  switch(iTextAling)
 	  {
 	    case TEXT_ABOVE_LEFT    : xoff = -tsize.cx  ; yoff= -tsize.cy  ; break;
@@ -314,8 +306,7 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	    case TEXT_MIDDLE_RIGHT  : xoff = 0          ; yoff= -tsize.cy/2; break;
 	    case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2; yoff= -tsize.cy/2; break;
 	  }
-	  ExtTextOut(hdc, xmin+xoff, ymin+yoff,
-		         ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
+	  Surface.DrawText(xmin+xoff, ymin+yoff, unit_text, _tcslen(unit_text));
     }
   }
 
@@ -353,7 +344,7 @@ int	xPos = (int)((fDist- psDia->fXMin)*xscale)+psDia->rc.left ;
 
 
 // draw Flarm aircraft
-void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltitude,double brg, DiagrammStruct* psDia ,double fScale )
+void RenderFlarmPlaneSideview(LKSurface& Surface, const RECT& rc,double fDist, double fAltitude,double brg, DiagrammStruct* psDia ,double fScale )
 {
 
 
@@ -450,12 +441,12 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
   Start.x =  MapWindow::DistanceToX(fDist,  psDia);
   Start.y =  MapWindow::HeightToY(fAltitude,  psDia);
 
-  HPEN oldPen ;
+  LKPen oldPen ;
 
   if(INVERTCOLORS)
-    oldPen = (HPEN) SelectObject(hdc, LKPen_Grey_N0);
+    oldPen = Surface.SelectObject(LKPen_Grey_N0);
   else
-	oldPen = (HPEN) SelectObject(hdc, LKPen_Grey_N0);
+    oldPen = Surface.SelectObject(LKPen_Grey_N0);
   PolygonRotateShift(AircraftWing, 13,  Start.x, Start.y,  0);
   PolygonRotateShift(AircraftSide, 8,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftTail, 5,   Start.x, Start.y,  0);
@@ -466,28 +457,28 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
 
   if((brg < 180))
   {
-    Polygon(hdc,AircraftWingL ,7 );
-    Polygon(hdc,AircraftSide  ,8 );
-    Polygon(hdc,AircraftWingR ,7 );
+    Surface.Polygon(AircraftWingL ,7 );
+    Surface.Polygon(AircraftSide  ,8 );
+    Surface.Polygon(AircraftWingR ,7 );
   }
   else
   {
-    Polygon(hdc,AircraftWingR ,7 );
-    Polygon(hdc,AircraftSide  ,8 );
-    Polygon(hdc,AircraftWingL ,7 );
-    Polygon(hdc,AircraftWing  ,13);
+    Surface.Polygon(AircraftWingR ,7 );
+    Surface.Polygon(AircraftSide  ,8 );
+    Surface.Polygon(AircraftWingL ,7 );
+    Surface.Polygon(AircraftWing  ,13);
   }
   if((brg < 90)|| (brg > 270)) {
-    Polygon(hdc,AircraftTail  ,5 );
+    Surface.Polygon(AircraftTail  ,5 );
   }
-  SelectObject(hdc,oldPen);
+  Surface.SelectObject(oldPen);
 } //else !asp_heading_task
 
 
 
 //#define OWNPOS  // optional
 
-void MapWindow::LKDrawFlarmRadar(HDC hdc, const RECT rci)
+void MapWindow::LKDrawFlarmRadar(LKSurface& Surface, const RECT& rci)
 {
 RECT rc  = rci; /* rectangle for sideview */
 RECT rct = rc;  /* rectangle for topview */
@@ -508,19 +499,19 @@ static RECT OwnPosTopView;
 static RECT OwnPosSideView;
 #endif
 int iTouchAreaSize = 45;
-HPEN   hOrangePen ;
-HPEN   hGreenPen ;
-HPEN   hOldPen;
-HBRUSH hOldBrush;
-HPEN   hDrawPen ;
-HBRUSH hDrawBrush;
+LKPen   hOrangePen ;
+LKPen   hGreenPen ;
+LKPen   hOldPen;
+LKBrush hOldBrush;
+LKPen   hDrawPen ;
+LKBrush hDrawBrush;
 bool bSideview = true;
 
 
-HFONT hfOldFont = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
-COLORREF rgbGridColor = RGB_DARKGREEN;
-COLORREF rgbDrawColor = RGB_GREEN;
-COLORREF rgb_targetlinecol = RGB_RED;
+LKFont hfOldFont = Surface.SelectObject(LK8PanelUnitFont);
+LKColor rgbGridColor = RGB_DARKGREEN;
+LKColor rgbDrawColor = RGB_GREEN;
+LKColor rgb_targetlinecol = RGB_RED;
 double fPlaneSize = 1.0;
 double fOwnTopPlaneSize = 1.0;
 
@@ -538,25 +529,25 @@ if(bInvCol)
   rgbDrawColor = RGB_GREY;
   rgbGridColor = RGB_GREY;
   rgb_targetlinecol = RGB_LIGHTBLUE;
-  hDrawPen   = (HPEN)  LKPen_Grey_N0 ; //GetStockObject( BLACK_PEN);
-  hDrawBrush = (HBRUSH)GetStockObject( WHITE_BRUSH) ;
-  hOrangePen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_ORANGE);
-  hGreenPen  = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_GREEN);
+  hDrawPen   = LKPen_Grey_N0;
+  hDrawBrush = LKBrush_White;
+  hOrangePen.Create(PEN_SOLID, NIBLSCALE (1),RGB_ORANGE);
+  hGreenPen.Create(PEN_SOLID, NIBLSCALE (1),RGB_GREEN);
 }
 else
 {
   rgbDrawColor = RGB_DARKGREY;
   rgbGridColor = RGB_DARKGREY;
   rgb_targetlinecol = RGB_BLUE;
-  hDrawPen   = (HPEN) LKPen_Grey_N0 ; // GetStockObject( WHITE_PEN );
-  hDrawBrush = (HBRUSH)GetStockObject( BLACK_BRUSH) ;
-  hOrangePen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_LIGHTORANGE);
-  hGreenPen  = (HPEN)CreatePen(PS_SOLID, NIBLSCALE (1),RGB_DARKGREY);
+  hDrawPen   = LKPen_Grey_N0; // GetStockObject( WHITE_PEN );
+  hDrawBrush = LKBrush_Black;
+  hOrangePen.Create(PEN_SOLID, NIBLSCALE (1),RGB_LIGHTORANGE);
+  hGreenPen.Create(PEN_SOLID, NIBLSCALE (1),RGB_DARKGREY);
 }
 
-SetTextColor(hdc, rgbDrawColor);
-hOldPen   = (HPEN)SelectObject(hdc, hDrawPen);
-hOldBrush = (HBRUSH)SelectObject(hdc, hDrawBrush);
+Surface.SetTextColor(rgbDrawColor);
+hOldPen   = Surface.SelectObject(hDrawPen);
+hOldBrush = Surface.SelectObject(hDrawBrush);
 
 /****************************************************************
  * clear background
@@ -613,7 +604,7 @@ switch(LKevent)
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 			  if(LKTraffic[aiSortArray[i]].ID == LKTraffic[j].ID)
 			  {
-#if FLARM_MS
+#ifdef FLARM_MS
 			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
 #else
 			    dlgLKTrafficDetails( j); // With no Multiselect
@@ -623,7 +614,7 @@ switch(LKevent)
 		    }
 		  }
 	    }
-#if FLARM_MS
+#ifdef FLARM_MS
 	dlgMultiSelectListShowModal();
 #endif
 	if(!bFound)
@@ -845,7 +836,7 @@ DiagrammStruct sDia;
    *******************************************************/
 
    if(!bInvCol)
-     RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
+     RenderSky( Surface, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
 
 
   double xtick = 0.001;
@@ -868,7 +859,7 @@ DiagrammStruct sDia;
   rc34.top += (rct.top-rct.bottom)/2;
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
-  DrawXGrid(hdc, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
+  DrawXGrid(Surface, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
 
 
   /****************************************************************************************************
@@ -910,9 +901,9 @@ int iCircleRadius = 0;
 RECT rcc = rct;
 double scl = xtick;
     rcc.bottom -=3;
-	SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+	Surface.SelectObject(LKBrush_Hollow);
 	scl *=1000.0;
-	SelectObject(hdc, hGreenPen);
+	Surface.SelectObject(hGreenPen);
 	if(sDia.fXMax ==sDia.fXMin)
 	  sDia.fXMax= sDia.fXMin+1.0;
 	LKASSERT( sDia.fXMax !=sDia.fXMin )
@@ -920,25 +911,25 @@ double scl = xtick;
 	for ( i = 0; i < (sDia.fXMax /scl); i++)
 	{
 	  iCircleRadius =(int) (fRing* fCScale / (DISTANCEMODIFY*1000.0f));
-	  Circle(hdc, x_middle, y_middle, iCircleRadius, rcc, true, false );
+	  Surface.Circle(x_middle, y_middle, iCircleRadius, rcc, true, false );
 	  fRing = fRing + scl;
 	}
 
 
-	Rectangle(hdc,rct.left , rct.bottom ,rct.right, rct.top);
+	Surface.Rectangle(rct.left , rct.bottom ,rct.right, rct.top);
 
-	SelectObject(hdc, hOrangePen);
+	Surface.SelectObject(hOrangePen);
 	fRing = xtick/2;
 	if((sDia.fXMax /xtick)  < 3)
 	  for ( i = 0; i < (sDia.fXMax /xtick); i++)
 	  {
 	    iCircleRadius = (int) (fRing * fCScale / (DISTANCEMODIFY*1000.0f));
-	    Circle(hdc, x_middle, y_middle, iCircleRadius, rcc, true, false );
+	    Surface.Circle(x_middle, y_middle, iCircleRadius, rcc, true, false );
 	    fRing = fRing + xtick;
 	  }
 
-	SelectObject(hdc, hDrawBrush);
-	SelectObject(hdc, hDrawPen);
+	Surface.SelectObject(hDrawBrush);
+	Surface.SelectObject(hDrawPen);
 
 
 	/***********************************************
@@ -954,7 +945,7 @@ double scl = xtick;
 	/**********************************************
 	 * loop over FLARM objects.
 	 */
-	SelectObject(hdc, hDrawPen);
+	Surface.SelectObject(hDrawPen);
 	if(iFlarmDirection == 2)
 	{
 		Planebrg = GPSbrg;
@@ -1027,13 +1018,13 @@ double scl = xtick;
      ***********************************************/
      if(bTrace)
        if(SPLITSCREEN_FACTOR >0)
-         DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia);
+         DrawFlarmObjectTrace(Surface, fScaleFact,&sTopDia);
 
     /***********************************************
      * FLARM object loop
      ***********************************************/
 bool bCenter = false;
-SelectObject(hdc, hDrawPen);
+Surface.SelectObject(hDrawPen);
 if(SPLITSCREEN_FACTOR >0)
 {
   for (j=0; j<nEntrys; j++)
@@ -1076,10 +1067,10 @@ if(SPLITSCREEN_FACTOR >0)
 	      if(fFlarmAlt > 0 )
 	      {
 	        bCenter = true;
-		    SelectObject(hdc, hDrawBrush);
-		    SelectObject(hdc, hDrawPen);
+		    Surface.SelectObject(hDrawBrush);
+		    Surface.SelectObject(hDrawPen);
 			PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN+Planebrg);
-		    Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
+		    Surface.Polygon(AircraftTop,NUMAIRCRAFTPTS);
 	      }
 	    }
 	    /*************************************************************************
@@ -1089,23 +1080,23 @@ if(SPLITSCREEN_FACTOR >0)
 	    int iVarioIdx = (int)(2*fInteg30-0.5)+NO_VARIO_COLORS/2;
 	    if(iVarioIdx < 0) iVarioIdx =0;
 	    if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
-	    SelectObject(hdc, *variobrush[iVarioIdx]);
-		SelectObject(hdc, hDrawPen);
+	    Surface.SelectObject(*variobrush[iVarioIdx]);
+	    Surface.SelectObject(hDrawPen);
 
 	    /*************************************************************************
 	     * draw side view
 	     *************************************************************************/
 	    switch (LKTraffic[i].Status) { // 100321
 		  case LKT_GHOST:
-			Rectangle(hdc,x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
+			Surface.Rectangle(x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
 			break;
 		  case LKT_ZOMBIE:
-			Circle(hdc, x, y, iCircleSize, rct, true, true );
+			Surface.Circle(x, y, iCircleSize, rct, true, true );
 			break;
 		  default:
 	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
 			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360( asFLARMPos[i].fFlarmBearing ));
-			Polygon(hdc,Triangle,5);
+			Surface.Polygon(Triangle,5);
 
 		    /*************************************************************************
 		     * draw label
@@ -1113,10 +1104,10 @@ if(SPLITSCREEN_FACTOR >0)
 		   _stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*LKTraffic[i].Average30s);
 
 		    SIZE tsize;
-		    SetBkMode(hdc, TRANSPARENT);
-		    GetTextExtentPoint(hdc, lbuffer, _tcslen(lbuffer), &tsize);
+		    Surface.SetBkMode(TRANSPARENT);
+		    Surface.GetTextSize(lbuffer, _tcslen(lbuffer), &tsize);
 		    if (_tcslen(lbuffer)>0)
-			  TextInBox(hdc, &rct, lbuffer,x+tscaler, y+tsize.cy/4, 0, &displaymode, false);
+			  TextInBox(Surface, &rct, lbuffer,x+tscaler, y+tsize.cy/4, 0, &displaymode, false);
 
 			break;
 	      }
@@ -1125,7 +1116,7 @@ if(SPLITSCREEN_FACTOR >0)
 	     */
 	      if(LKTraffic[i].Locked)
 	      {
-		    DrawDashLine(hdc, 4, (POINT){x_middle, y_middle},(POINT){ x, y} ,rgb_targetlinecol, rct );
+		    Surface.DrawDashLine(4, (POINT){x_middle, y_middle},(POINT){ x, y} ,rgb_targetlinecol, rct );
 	      }
 	    }
       }
@@ -1138,10 +1129,10 @@ if(SPLITSCREEN_FACTOR >0)
   {
     if(bCenter == false)
     {
-      SelectObject(hdc, hDrawBrush);
-      SelectObject(hdc, hDrawPen);
+      Surface.SelectObject(hDrawBrush);
+      Surface.SelectObject(hDrawPen);
       PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN+Planebrg);
-      Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
+      Surface.Polygon(AircraftTop,NUMAIRCRAFTPTS);
     }
   }
 
@@ -1149,13 +1140,13 @@ if(SPLITSCREEN_FACTOR >0)
    * clear background
    ****************************************************************/
   if(!bInvCol)
-    SelectObject(hdc,LKBrush_White);
+    Surface.SelectObject(LKBrush_White);
   else
-    SelectObject(hdc,LKBrush_Black);
-  SetTextColor(hdc, rgbDrawColor);
-  Rectangle(hdc,rc.left , rc.bottom+5 ,rc.right, rc.top);
-  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-  DrawXGrid(hdc, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
+    Surface.SelectObject(LKBrush_Black);
+  Surface.SetTextColor(rgbDrawColor);
+  Surface.Rectangle(rc.left , rc.bottom+5 ,rc.right, rc.top);
+  Surface.SelectObject(LKBrush_Hollow);
+  DrawXGrid(Surface, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
 
 
   /*********************************************************************************
@@ -1203,7 +1194,7 @@ if(SPLITSCREEN_FACTOR >0)
   if(bSideview)
   {
     _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
-    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,rgbGridColor,  &sDia, text);
+    DrawYGrid(Surface, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,rgbGridColor,  &sDia, text);
   }
 
 /*************************************************************************
@@ -1258,28 +1249,28 @@ if(bSideview)
 		if(fy < 0 )
 		{
 		  bCenter = true;
-		  SelectObject(hdc, hDrawBrush);
-		  SelectObject(hdc, hDrawPen);
-		  RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN+Planebrg, &sDia , fPlaneSize);
+		  Surface.SelectObject(hDrawBrush);
+		  Surface.SelectObject(hDrawPen);
+		  RenderFlarmPlaneSideview(Surface, rc,0 , 0,RADAR_TURN+Planebrg, &sDia , fPlaneSize);
 		}
 	  /*************************************************************************
 	   * get the climb color
 	   *************************************************************************/
 	  LKASSERT(asFLARMPos[i].iColorIdx>=0 && asFLARMPos[i].iColorIdx<NO_VARIO_COLORS);
-	  SelectObject(hdc, *variobrush[asFLARMPos[i].iColorIdx]);
-	  SelectObject(hdc, hDrawPen);
+	  Surface.SelectObject(*variobrush[asFLARMPos[i].iColorIdx]);
+	  Surface.SelectObject(hDrawPen);
 	  /*************************************************************************
 	   * draw side view
 	   *************************************************************************/
 	  switch (LKTraffic[i].Status) { // 100321
 		case LKT_GHOST:
-			Rectangle(hdc,x-iRectangleSize,hy-iRectangleSize,x+iRectangleSize,hy+iRectangleSize);
+			Surface.Rectangle(x-iRectangleSize,hy-iRectangleSize,x+iRectangleSize,hy+iRectangleSize);
 			break;
 		case LKT_ZOMBIE:
-			Circle(hdc, x, hy, iCircleSize, rc, true, true );
+			Surface.Circle(x, hy, iCircleSize, rc, true, true );
 			break;
 		default:
-			RenderFlarmPlaneSideview( hdc,   rc, fx,  fFlarmAlt, asFLARMPos[i].fFlarmBearing , &sDia , fPlaneSize/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
+			RenderFlarmPlaneSideview(Surface,   rc, fx,  fFlarmAlt, asFLARMPos[i].fFlarmBearing , &sDia , fPlaneSize/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
 			break;
 	  }
 	  _tcscpy(lbuffer,_T(""));
@@ -1289,24 +1280,24 @@ if(bSideview)
 
 
 	  SIZE tsize;
-	  SetBkMode(hdc, TRANSPARENT);
-	  GetTextExtentPoint(hdc, lbuffer,  _tcslen(lbuffer), &tsize);
+	  Surface.SetBkMode(TRANSPARENT);
+	  Surface.GetTextSize(lbuffer,  _tcslen(lbuffer), &tsize);
 	  if (_tcslen(lbuffer)>0)
-		TextInBox(hdc, &rc, lbuffer, x+tscaler,  hy+tsize.cy/4, 0, &displaymode, false);	
+		TextInBox(Surface, &rc, lbuffer, x+tscaler,  hy+tsize.cy/4, 0, &displaymode, false);
 	  /*********************************************
 	   * draw lines to target if target selected
 	   */
 	  if(LKTraffic[i].Locked)
 	  {
 		int  h0 = HeightToY(0,&sDia);
-		DrawDashLine(hdc, 4, (POINT){x_middle,       h0},(POINT){ x, hy} ,rgb_targetlinecol, rc );
+		Surface.DrawDashLine(4, (POINT){x_middle,       h0},(POINT){ x, hy} ,rgb_targetlinecol, rc );
 	  }
 	}
   }
   /*************************************************************************
    * draw own plane position
    *************************************************************************/
-  SelectObject(hdc, hDrawBrush);
+  Surface.SelectObject(hDrawBrush);
   #ifdef OWNPOS
   OwnPosSideView.left   = x_middle-iTouchAreaSize;
   OwnPosSideView.right  = x_middle+iTouchAreaSize;
@@ -1315,16 +1306,17 @@ if(bSideview)
   #endif
 
   if(!bCenter)
-    RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN+Planebrg, &sDia , fPlaneSize);
+    RenderFlarmPlaneSideview( Surface, rc,0 , 0,RADAR_TURN+Planebrg, &sDia , fPlaneSize);
 
   /*****************************************
    * draw sideview frame
    *****************************************/
-  SelectObject(hdc, hGreenPen);
-  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-  Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom+5);
+  Surface.SelectObject(hGreenPen);
+  Surface.SelectObject(LKBrush_Hollow);
+  Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom+5);
 }
 
+  LKBitmap bmpTemp;
 
   /********************************************************
    * draw trace icon
@@ -1332,27 +1324,33 @@ if(bSideview)
   switch(bTrace)
   {
     default:
-    case 0:  SelectObject(hDCTemp,hNoTrace)   ; break; //  no trace
-    case 1:  SelectObject(hDCTemp,hFullTrace) ; break; //  climb/sink trace
-    case 2:  SelectObject(hDCTemp,hClimbTrace); break; //  climb trace
+    case 0:  bmpTemp = hNoTrace; break; //  no trace
+    case 1:  bmpTemp = hFullTrace; break; //  climb/sink trace
+    case 2:  bmpTemp = hClimbTrace; break; //  climb trace
   }
-  DrawBitmapX(hdc,	rci.left+NIBLSCALE(5),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
-  DrawBitmapX(hdc,	rci.left+NIBLSCALE(5),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
+  if(bmpTemp) {
+    Surface.DrawMaskedBitmap(rci.left+NIBLSCALE(5),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), bmpTemp, 22, 22);
+    bmpTemp.Release();
+  }
+          
+
   /********************************************************
    * draw head up/right icon
    ********************************************************/
   switch(iFlarmDirection)
   {
     default:
-    case 0:  SelectObject(hDCTemp,hHeadUp) ; break; //     "Head Up"
-    case 1:  SelectObject(hDCTemp,hNorthUp); break; //      Head Right"
-    case 2:  SelectObject(hDCTemp,hHeadRight) ; break; //     "Head Up"
+    case 0:  bmpTemp = hHeadUp ; break; //     "Head Up"
+    case 1:  bmpTemp = hNorthUp; break; //      Head Right"
+    case 2:  bmpTemp = hHeadRight ; break; //     "Head Up"
   }
-  DrawBitmapX(hdc,	rci.right-NIBLSCALE(27),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	0,0,SRCPAINT,true);
-  DrawBitmapX(hdc,	rci.right-NIBLSCALE(27),	rci.top+TOPLIMITER,	22,22,	hDCTemp,	22,0,SRCAND,true);
+  if(bmpTemp) {
+    Surface.DrawMaskedBitmap(rci.left+NIBLSCALE(27),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), bmpTemp, 22, 22);
+    bmpTemp.Release();
+  }
 
   if(bHeightScale)
-    DrawSelectionFrame(hdc,  rc);
+    DrawSelectionFrame(Surface,  rc);
 #ifdef TOP_SELECTION_FRAME
   else
 	DrawSelectionFrame(hdc,  rci);
@@ -1361,17 +1359,15 @@ if(bSideview)
 
 //DrawMultimap_Topleft(hdc, rci);
 
-SelectObject(hdc, hfOldFont);
-SelectObject(hdc, hOldPen);
-SelectObject(hdc, hOldBrush);
-DeleteObject (hGreenPen);
-DeleteObject (hOrangePen);
+Surface.SelectObject(hfOldFont);
+Surface.SelectObject(hOldPen);
+Surface.SelectObject(hOldBrush);
 }
 
 
 
 
-int MapWindow::DrawFlarmObjectTrace(HDC hDC, double fZoom,DiagrammStruct* pDia)
+int MapWindow::DrawFlarmObjectTrace(LKSurface& Surface, double fZoom,DiagrammStruct* pDia)
 {
 double GPSlat = DrawInfo.Latitude;
 double GPSlon = DrawInfo.Longitude;
@@ -1399,8 +1395,8 @@ if(iFlarmDirection == 2)
 	//Planebrg = GPSbrg;
 	GPSbrg =0.0;
 }
-HBRUSH *pOldBrush =NULL;
-HPEN oldPen =	(HPEN)SelectObject(hDC, GetStockObject(NULL_PEN));
+const LKBrush *pOldBrush =NULL;
+LKPen oldPen = Surface.SelectObject(LK_NULL_PEN);
 
 int iStep =(int)  (fZoom *3.0 / (double)GC_TRACE_TIME_SKIP);
 if (iStep < 1)
@@ -1436,9 +1432,9 @@ DWORD lStartTime = GetTickCount();
 		        if(variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx]!= pOldBrush)
 		        {
 			      pOldBrush  = variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx];
-		          SelectObject(hDC, *pOldBrush);
+		          Surface.SelectObject(*pOldBrush);
 		        }
-		        Rectangle(hDC,Pnt.x-iTraceDotSize, Pnt.y-iTraceDotSize,Pnt.x+iTraceDotSize, Pnt.y+iTraceDotSize);
+		        Surface.Rectangle(Pnt.x-iTraceDotSize, Pnt.y-iTraceDotSize,Pnt.x+iTraceDotSize, Pnt.y+iTraceDotSize);
 		        iCnt++;
 		      }
 		    }
@@ -1456,7 +1452,7 @@ DWORD lStartTime = GetTickCount();
         i = iTo;                                /* fast exit on timeout               */
 	}
 
-SelectObject(hDC, (HPEN) oldPen);
+Surface.SelectObject(oldPen);
 return iCnt;
 }
 
@@ -1468,7 +1464,7 @@ void MapWindow::DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC* pTraf) {
 //
 // THIS FUNCTION IS NOT THREADSAFE
 //
-void MapWindow::DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC* pTraf)
+void MapWindow::DrawFlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf)
 {
 	static POINT Arrow[5];
 int cx = rc.right-rc.left;
@@ -1496,21 +1492,21 @@ static double zoomfact = (double)cy/NIBLSCALE(18);
     int iVarioIdx = (int)(2*fInteg30-0.5)+NO_VARIO_COLORS/2;
     if(iVarioIdx < 0) iVarioIdx =0;
     if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
-	HBRUSH oldb = (HBRUSH)   SelectObject(hDC, *variobrush[iVarioIdx]);
+	LKBrush oldb = Surface.SelectObject(*variobrush[iVarioIdx]);
 
 	    switch (pTraf->Status) { // 100321
 		  case LKT_GHOST:
-			Rectangle(hDC,x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
+			Surface.Rectangle(x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
 			break;
 		  case LKT_ZOMBIE:
-			Circle(hDC, x, y, iCircleSize, rc, true, true );
+			Surface.Circle(x, y, iCircleSize, rc, true, true );
 			break;
 		  default:
 	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
 			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360(  pTraf->TrackBearing ));
-			Polygon(hDC,Triangle,5);
+			Surface.Polygon(Triangle,5);
 	    }
-		SelectObject(hDC, oldb);
+		Surface.SelectObject(oldb);
 }
 // This is painting traffic icons on the screen.
 #endif

@@ -657,7 +657,7 @@ static void OnFilterType(DataField *Sender, DataField::DataAccessKind_t Mode){
 static unsigned int DrawListIndex=0;
 
 // Painting elements after init
-static void OnPaintListItem(WindowControl * Sender, HDC hDC){
+static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   unsigned int n = UpLimit - LowLimit;
   TCHAR sTmp[12];
@@ -695,14 +695,14 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
    	 w0=wlf->GetWidth() - wlf->ScrollbarWidth - 20;
     }
 
-    w1 = GetTextWidth(hDC, TEXT("XXX"));
-    w2 = GetTextWidth(hDC, TEXT(" 000km"));
+    w1 = Surface.GetTextWidth(TEXT("XXX"));
+    w2 = Surface.GetTextWidth(TEXT(" 000km"));
     _stprintf(sTmp, _T(" 000%s"),gettext(_T("_@M2179_")));
-    w3 = GetTextWidth(hDC, sTmp);
+    w3 = Surface.GetTextWidth(sTmp);
 
     x1 = w0-w1-w2-w3;
 
-    ExtTextOutClip(hDC, (int)(PICTO_OFFSET+4)*ScreenScale, 2*ScreenScale,
+    Surface.DrawTextClip((int)(PICTO_OFFSET+4)*ScreenScale, 2*ScreenScale,
                    WayPointList[WayPointSelectInfo[i].Index].Name,
                    x1-ScreenScale*10);
 
@@ -713,40 +713,32 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     RECT rc = {0,  0, (int)(PICTO_OFFSET*1)*ScreenScale,   20*ScreenScale};
     int idx = WayPointSelectInfo[i].Index;
      if (WayPointCalc[idx].IsLandable )
-  	  MapWindow::DrawRunway(hDC,&WayPointList[idx],  rc, 3000, true);
+  	  MapWindow::DrawRunway(Surface,&WayPointList[idx],  rc, 3000, true);
      else
      {   rc.right = rc.right/2;
    //  rc.top += (rc.bottom)/2;
      rc.bottom = 5;
-       MapWindow::DrawWaypointPicto(hDC,  rc, &WayPointList[idx]);
+       MapWindow::DrawWaypointPicto(Surface,  rc, &WayPointList[idx]);
      }
     // left justified
-    ExtTextOut(hDC, x1, 2*ScreenScale,
-               ETO_OPAQUE, NULL,
-               sTmp, _tcslen(sTmp), NULL);
+    Surface.DrawText(x1, 2*ScreenScale, sTmp, _tcslen(sTmp));
 
     // right justified after waypoint flags
     _stprintf(sTmp, TEXT("%.0f%s"), 
               WayPointSelectInfo[i].Distance,
               Units::GetDistanceName());
-    x2 = w0-w3-GetTextWidth(hDC, sTmp);
-    ExtTextOut(hDC, x2, 2*ScreenScale,
-      ETO_OPAQUE, NULL,
-      sTmp, _tcslen(sTmp), NULL);
+    x2 = w0-w3-Surface.GetTextWidth(sTmp);
+    Surface.DrawText(x2, 2*ScreenScale, sTmp, _tcslen(sTmp));
 
     // right justified after distance
     _stprintf(sTmp, TEXT("%d%s"), iround(WayPointSelectInfo[i].Direction), gettext(_T("_@M2179_")));
-    x3 = w0-GetTextWidth(hDC, sTmp);
-    ExtTextOut(hDC, x3, 2*ScreenScale,
-               ETO_OPAQUE, NULL,
-               sTmp, _tcslen(sTmp), NULL);
+    x3 = w0-Surface.GetTextWidth(sTmp);
+    Surface.DrawText(x3, 2*ScreenScale, sTmp, _tcslen(sTmp));
   } else {
     if (DrawListIndex == 0){
 	// LKTOKEN  _@M466_ = "No Match!" 
       _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
-      ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
-        ETO_OPAQUE, NULL,
-        sTmp, _tcslen(sTmp), NULL);
+      Surface.DrawText(2*ScreenScale, 2*ScreenScale, sTmp, _tcslen(sTmp));
     }
 
 

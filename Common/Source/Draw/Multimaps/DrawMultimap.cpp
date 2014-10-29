@@ -22,7 +22,7 @@ extern TCHAR Sideview_szNearAS[];
 // Top-Left Header for multimaps
 // some choices to choose one from 
 //
-void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
+void MapWindow::DrawMultimap_Topleft(LKSurface& Surface, const RECT& rci)
 {
 
   TCHAR topleft_txt[80];
@@ -76,18 +76,17 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 
   if (noaction) return;
 
-  HFONT oldFont = (HFONT)SelectObject(hdc, LK8TargetFont);
- // HFONT  oldFont = (HFONT) SelectObject(hdc, LK8MediumFont);
-  HBRUSH oldBrush= (HBRUSH)SelectObject(hdc,LKBrush_Mdark);
-  HPEN     oldPen= (HPEN)  SelectObject(hdc, GetStockObject(WHITE_PEN));
+  LKFont oldFont = Surface.SelectObject(LK8TargetFont);
+  LKBrush oldBrush= Surface.SelectObject(LKBrush_Mdark);
+  LKPen oldPen = Surface.SelectObject(LK_WHITE_PEN);
 
-  MapWindow::LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_SBLACK, true);
+  MapWindow::LKWriteText(Surface, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_SBLACK, true);
 
   if (counter<255) counter++;
 
-  SelectObject(hdc,oldBrush);
-  SelectObject(hdc,oldPen);
-  SelectObject(hdc,oldFont);
+  Surface.SelectObject(oldBrush);
+  Surface.SelectObject(oldPen);
+  Surface.SelectObject(oldFont);
 }
 
 
@@ -95,11 +94,11 @@ void MapWindow::DrawMultimap_Topleft(const HDC hdc, const RECT rci)
 #define MMCOLOR_ENABLED_FLOP	RGB_GREEN
 #define MMCOLOR_DISABLED RGB_AMBER
 
-void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
+void MapWindow::DrawMultimap_Topright(LKSurface& Surface, const RECT& rci) {
 
   TCHAR topright_txt[80];
   bool noaction=false;
-  COLORREF wcolor;
+  LKColor wcolor;
   static bool flip= true;
 
   flip = !flip;
@@ -138,39 +137,39 @@ void MapWindow::DrawMultimap_Topright(const HDC hdc, const RECT rci) {
 
   if (noaction) return;
 
-  HFONT  oldFont = (HFONT) SelectObject(hdc, MapWindowFont);
-  HBRUSH oldBrush= (HBRUSH)SelectObject(hdc,LKBrush_Mdark);
-  HPEN   oldPen= (HPEN)  SelectObject(hdc, GetStockObject(WHITE_PEN));
+  LKFont  oldFont = Surface.SelectObject(MapWindowFont);
+  LKBrush oldBrush= Surface.SelectObject(LKBrush_Mdark);
+  LKPen oldPen = Surface.SelectObject(LK_WHITE_PEN);
 
-  LKWriteText(hdc, topright_txt, rci.right-RIGHTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, wcolor, true);
+  LKWriteText(Surface, topright_txt, rci.right-RIGHTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, wcolor, true);
 
-  SelectObject(hdc,oldBrush);
-  SelectObject(hdc,oldPen);
-  SelectObject(hdc,oldFont);
+  Surface.SelectObject(oldBrush);
+  Surface.SelectObject(oldPen);
+  Surface.SelectObject(oldFont);
 }
 
 
 
-void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
+void MapWindow::DrawMultimap_DynaLabel(LKSurface& Surface, const RECT& rci)
 {
 #if 0
   if (!IsMultimapOverlays()) return;
 
-  HBRUSH oldBrush;
-  HFONT oldFont;
+  LKBrush oldBrush;
+  LKFont oldFont;
 
   if (INVERTCOLORS)
-        oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_Ndark);
+        oldBrush=Surface.SelectObject(LKBrush_Ndark);
   else
-        oldBrush=(HBRUSH)SelectObject(hdc,LKBrush_LightGrey);
+        oldBrush=Surface.SelectObject(LKBrush_LightGrey);
 
   extern double fSplitFact;
   SIZE textSize;
   int midsplit=(long)((double)(rci.bottom-rci.top)*fSplitFact);	 // this is ok
   //int midsplit=Current_Multimap_TopRect.bottom;	// this SHOULD be ok, but in M3 the TopRect is updated 1s late
 
-  //oldFont=(HFONT)SelectObject(hdc, LK8UnitFont);
-  oldFont=(HFONT)SelectObject(hdc, LK8PanelSmallFont);
+  //oldFont=(HFONT)Surface.SelectObject(LK8UnitFont);
+  oldFont=(HFONT)Surface.SelectObject(LK8PanelSmallFont);
 
   GetTextExtentPoint(hdc, _T("Y"), 1, &textSize);
   // move the label on top view when the topview window is big enough
@@ -185,7 +184,7 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
         TCHAR topcenter_txt[80];
         _stprintf(topcenter_txt, TEXT("%s"), Sideview_szNearAS );
 
-	HPEN oldpen=(HPEN)SelectObject(hdc,LKPen_White_N1);
+	LKPen oldpen=(HPEN)SelectObject(hdc,LKPen_White_N1);
 
         MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rci.right/3, midsplit, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
 
@@ -214,7 +213,7 @@ void MapWindow::DrawMultimap_DynaLabel(const HDC hdc, const RECT rci)
 	_tcscat(topcenter_txt,BufferValue);
 	_tcscat(topcenter_txt,BufferUnit);
 
-	HPEN oldpen=(HPEN)SelectObject(hdc,LKPen_White_N1);
+	LKPen oldpen=(HPEN)SelectObject(hdc,LKPen_White_N1);
         MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rci.right/4+NIBLSCALE(4), midsplit, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
 
 	//
@@ -267,14 +266,14 @@ _return:
 //
 // Simple thin black line separator between side and topview, if needed
 //
-void MapWindow::DrawMultimap_SideTopSeparator(const HDC hdc, const RECT rct) {
+void MapWindow::DrawMultimap_SideTopSeparator(LKSurface& Surface, const RECT& rci) {
   if ( DrawRect.bottom>0 && Current_Multimap_SizeY<SIZE4 ) {
 	POINT line[2];
-	line[0].x = rct.left;
-	line[1].x = rct.right;
+	line[0].x = rci.left;
+	line[1].x = rci.right;
 	line[0].y=DrawRect.bottom;
 	line[1].y=DrawRect.bottom;
-        _DrawLine(hdc, PS_SOLID, 1, line[0], line[1], RGB_BLACK,rct);
+        Surface.DrawLine(PEN_SOLID, 1, line[0], line[1], RGB_BLACK,rci);
   }
 }
 

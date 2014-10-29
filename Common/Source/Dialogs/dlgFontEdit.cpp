@@ -10,7 +10,7 @@
 #include "Dialogs.h"
 #include "LKProfiles.h"
 
-extern void InitializeOneFont (HFONT * theFont, 
+extern void InitializeOneFont (LKFont& theFont, 
                                const TCHAR FontRegKey[] , 
                                LOGFONT autoLogFont, 
                                LOGFONT * LogFontUsed);
@@ -20,7 +20,7 @@ static WndForm *wf=NULL;
 static LOGFONT OriginalLogFont;
 static LOGFONT NewLogFont;
 static LOGFONT resetLogFont;
-static HFONT NewFont;
+static LKFont NewFont;
 const static TCHAR * OriginalFontRegKey;
 static bool IsInitialized=false;
 
@@ -102,9 +102,7 @@ static void RedrawSampleFont(void)
   }
 */
   
-  DeleteObject(NewFont);
-
-  NewFont = CreateFontIndirect (&NewLogFont);
+  NewFont.Create(&NewLogFont);
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontSample"));
 
@@ -397,7 +395,7 @@ bool dlgFontEditShowModal(const TCHAR * FontDescription,
 
   int UseCustomFontsold = UseCustomFonts; 
   UseCustomFonts=1;// global var
-  InitializeOneFont (&NewFont, 
+  InitializeOneFont (NewFont, 
                         FontRegKey, 
                         autoLogFont,
                         &OriginalLogFont);

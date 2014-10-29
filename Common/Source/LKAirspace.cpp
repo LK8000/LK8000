@@ -16,6 +16,7 @@
 
 #include <Point2D.h>
 #include "md5.h"
+#include "LKObjects.h"
 
 #include "utils/2dpclip.h"
 #include "utils/stringext.h"
@@ -113,11 +114,11 @@ const TCHAR* CAirspaceBase::TypeName(void) const {
 
 };
 
-COLORREF CAirspaceBase::TypeColor(void) const {
+const LKColor& CAirspaceBase::TypeColor(void) const {
     return MapWindow::GetAirspaceColourByClass(_type);
 }
 
-HBRUSH CAirspaceBase::TypeBrush(void) const {
+const LKBrush& CAirspaceBase::TypeBrush(void) const {
     return MapWindow::GetAirspaceBrushByClass(_type);
 }
 
@@ -740,10 +741,7 @@ void CAirspace::ClipScreenPoint(const RECT& rcDraw) {
     _screenpoints_clipped.clear();
     _screenpoints_clipped.reserve(_screenpoints.size());
 
-    LKGeom::ClipPolygon((POINT) {
-        rcDraw.left, rcDraw.top}, (POINT) {
-        rcDraw.right, rcDraw.bottom
-    }, _screenpoints, _screenpoints_clipped);
+    LKGeom::ClipPolygon(rcDraw, _screenpoints, _screenpoints_clipped);
 }
 
 
@@ -876,7 +874,7 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
                 MapWindow::LatLon2Screen(_loncenter, _latcenter, _screencenter);
                 _screenradius = iround(_radius * ResMapScaleOverDistanceModify);
 
-                buildCircle(_screencenter, _screenradius, _screenpoints);
+                LKSurface::buildCircle(_screencenter, _screenradius, _screenpoints);
 
 
                 ClipScreenPoint(rcDraw);
@@ -887,17 +885,17 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
 
 // Draw airspace
 
-void CAirspace::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
+void CAirspace::Draw(LKSurface& Surface, const RECT &rc, bool param1) const {
     size_t outLength = _screenpoints_clipped.size();
     const POINT * clip_ptout = &(*_screenpoints_clipped.begin());
 
     if (param1) {
         if (outLength > 2) {
-            Polygon(hDCTemp, clip_ptout, outLength);
+            Surface.Polygon(clip_ptout, outLength);
         }
     } else {
         if (outLength > 1) {
-            Polyline(hDCTemp, clip_ptout, outLength);
+            Surface.Polyline(clip_ptout, outLength);
         }
     }
 }
@@ -3062,7 +3060,7 @@ void CAirspaceManager::AirspaceDisableWaveSectors(void) {
 //  this methods are NEVER used at same time of airspace loading
 //  therefore we can be considered is thread safe.
 
-void CAirspace::DrawPicto(HDC hDCTemp, const RECT &rc) const {
+void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
     POINTList screenpoints_picto;
     CalculatePictPosition(rc, 0.9, screenpoints_picto);
 
@@ -3071,18 +3069,18 @@ void CAirspace::DrawPicto(HDC hDCTemp, const RECT &rc) const {
 
         const POINT * ptOut = &(*screenpoints_picto.begin());
 
-        HPEN FramePen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), TypeColor());
+        LKPen FramePen(PEN_SOLID, IBLSCALE(1), TypeColor());
 
-        COLORREF oldColor = SetTextColor(hDCTemp, TypeColor());
-        HPEN oldPen = (HPEN) SelectObject(hDCTemp, FramePen);
-        HBRUSH oldBrush = (HBRUSH) SelectObject(hDCTemp, Enabled() ? TypeBrush() : GetStockObject(HOLLOW_BRUSH));
+        LKColor oldColor = Surface.SetTextColor(TypeColor());
+        
+        LKPen oldPen = Surface.SelectObject(FramePen);
+        LKBrush oldBrush = Surface.SelectObject(Enabled() ? TypeBrush() : LKBrush_Hollow);
 
-        Polygon(hDCTemp, ptOut, Length);
+        Surface.Polygon(ptOut, Length);
 
-        SelectObject(hDCTemp, oldBrush);
-        SelectObject(hDCTemp, oldPen);
-        SetTextColor(hDCTemp, oldColor);
-        DeleteObject(FramePen);
+        Surface.SelectObject(oldBrush);
+        Surface.SelectObject(oldPen);
+        Surface.SetTextColor(oldColor);
     }
 }
 
@@ -3096,7 +3094,7 @@ void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, PO
     const int radius = iround(((double) ((cy < cx) ? cy : cx) / 2.0) * zoom);
     const POINT center = {rcDraw.left + cx / 2, rcDraw.top + cy / 2};
 
-    buildCircle(center, radius, screenpoints_picto);
+    LKSurface::buildCircle(center, radius, screenpoints_picto);
 }
 
 void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {

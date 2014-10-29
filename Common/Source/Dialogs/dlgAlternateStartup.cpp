@@ -16,7 +16,7 @@
 
 
 extern void Shutdown(void);
-extern void LoadSplash(HDC hDC, const TCHAR *splashfile);
+extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
@@ -24,7 +24,7 @@ static WndOwnerDrawFrame *wSplash=NULL;
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
 extern bool CheckSystemBitmaps(void);
-void RawWrite(HDC hDC, const TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode);
+void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, const LKColor& rgbcolor,int wtmode);
 
 bool fullresetasked=false;
 
@@ -104,7 +104,7 @@ static int OnTimerNotify(WindowControl *Sender)
 		short r,g,b;
 
 		r=rand()%256; g=rand()%256; b=rand()%256;
-		RawWrite(Sender->GetDeviceContext(),mes,pos,1, RGB(r,g,r),WTMODE_NORMAL);
+		RawWrite(Sender->GetDeviceContext(),mes,pos,1, LKColor(r,g,r),WTMODE_NORMAL);
 	}
    }
 
@@ -117,8 +117,8 @@ static int OnTimerNotify(WindowControl *Sender)
 // Syntax  hdc _Text linenumber fontsize 
 // lines are: 0 - 9
 // fsize 0 small 1 normal 2 big
-void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode) { 
-   HFONT oldfont=(HFONT)SelectObject(hDC,MapWindowFont);
+void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,LKColor rgbcolor,int wtmode) {
+   LKFont oldfont=(LKFont)SelectObject(hDC,MapWindowFont);
    switch(fsize) {
 	case 0:
 		SelectObject(hDC,TitleWindowFont);
@@ -150,7 +150,7 @@ void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,COLORREF rgbcolor,int 
 
 
 
-static void OnSplashPaint(WindowControl * Sender, HDC hDC){
+static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 
  TCHAR srcfile[MAX_PATH];
  TCHAR fprefix[20];

@@ -39,11 +39,11 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName);
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
 
 
-static HFONT TempMapWindowFont;
-static HFONT TempMapLabelFont;
-static HFONT TempUseCustomFontsFont;
+static LKFont TempMapWindowFont;
+static LKFont TempMapLabelFont;
+static LKFont TempUseCustomFontsFont;
 
-extern void InitializeOneFont (HFONT * theFont, 
+extern void InitializeOneFont (LKFont& theFont, 
                                const TCHAR FontRegKey[] , 
                                LOGFONT autoLogFont, 
                                LOGFONT * LogFontUsed);
@@ -714,17 +714,17 @@ static void ResetFonts(bool bUseCustom) {
 
 
 
-  InitializeOneFont (&TempUseCustomFontsFont, 
+  InitializeOneFont (TempUseCustomFontsFont, 
                         TEXT("THIS FONT IS NOT CUSTOMIZABLE"), 
                         autoMapWindowLogFont,
                         NULL);
 
-  InitializeOneFont (&TempMapWindowFont, 
+  InitializeOneFont (TempMapWindowFont, 
                         szRegistryFontMapWindowFont, 
                         autoMapWindowLogFont,
                         NULL);
 
-  InitializeOneFont (&TempMapLabelFont, 
+  InitializeOneFont (TempMapLabelFont, 
                         szRegistryFontMapLabelFont, 
                         autoMapLabelLogFont,
                         NULL);
@@ -1985,7 +1985,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M941_")));
     dfe->addEnumText(gettext(TEXT("_@M942_")));
     dfe->addEnumText(gettext(TEXT("_@M945_")));
-    if (MapWindow::AlphaBlendSupported()) {
+    if (LKSurface::AlphaBlendSupported()) {
       dfe->addEnumText(gettext(TEXT("_@M943_")));
       dfe->addEnumText(gettext(TEXT("_@M946_")));
     }
@@ -2041,11 +2041,11 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("90 %"));
     dfe->addEnumText(TEXT("95 %"));
     dfe->addEnumText(TEXT("100 %"));
-    if (!MapWindow::AlphaBlendSupported()) {
-	dfe->Set(100 / 5);
-	wp->SetReadOnly(!MapWindow::AlphaBlendSupported());
+    if (!LKSurface::AlphaBlendSupported()) {
+        dfe->Set(100 / 5);
+        wp->SetReadOnly(true);
     } else {
-	dfe->Set(BarOpacity / 5);
+        dfe->Set(BarOpacity / 5);
     }
     wp->RefreshDisplay();
   }
@@ -4606,10 +4606,6 @@ int ival;
     (UseCustomFonts && FontRegistryChanged) ) {
       requirerestart = true;
   }
-  DeleteObject(TempUseCustomFontsFont);
-
-  DeleteObject (TempMapWindowFont);
-  DeleteObject (TempMapLabelFont);
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndLandable"));
   if (wp) {

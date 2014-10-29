@@ -22,8 +22,8 @@ extern void ClearGTL2(void);
 // It will also draw the perimeter, even if a shaded area was painted previously
 //
 
-void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
-  HPEN hpOld;
+void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc) {
+  LKPen hpOld;
 
   //double h,dh;
   TCHAR hbuf[10];
@@ -66,14 +66,14 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
   }
   #endif
 
-  hpOld = (HPEN)SelectObject(hDC, hpTerrainLineBg); 
+  hpOld = Surface.SelectObject(hpTerrainLineBg); 
 
   #ifdef GTL2
   // Draw the wide, solid part of the glide terrain line.
   #else
   // draw a dashed perimetral line first
   #endif
-  _Polyline(hDC,Groundline,NUMTERRAINSWEEPS+1, rc);
+  Surface.Polyline(Groundline,NUMTERRAINSWEEPS+1, rc);
 
   // draw perimeter if selected and during a flight
   #ifdef GTL2
@@ -82,20 +82,19 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
   #else
   if ((FinalGlideTerrain==1) || ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && (FinalGlideTerrain==2))) { 
   #endif
-	SelectObject(hDC,hpTerrainLine);
-	_Polyline(hDC,Groundline,NUMTERRAINSWEEPS+1, rc);
+	Surface.SelectObject(hpTerrainLine);
+	Surface.Polyline(Groundline,NUMTERRAINSWEEPS+1, rc);
   }
   
   #ifdef GTL2  
   // draw glide terrain line around next waypoint
   if (DrawGTL2) {
     // Draw a solid white line.
-    SelectObject(hDC, LKPen_White_N2);
-    _Polyline(hDC, Groundline2, NUMTERRAINSWEEPS+1, rc);
+    Surface.SelectObject(LKPen_White_N2);
+    Surface.Polyline(Groundline2, NUMTERRAINSWEEPS+1, rc);
 
     // Draw a dashed red line.
-    DrawDashPoly(hDC, NIBLSCALE(2), RGB_RED, Groundline2,
-                 NUMTERRAINSWEEPS+1, rc);
+    Surface.DrawDashPoly(NIBLSCALE(2), RGB_RED, Groundline2, NUMTERRAINSWEEPS+1, rc);
   }
   #endif
 
@@ -117,18 +116,18 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
 		if (DerivedDrawInfo.FarObstacle_Lon >0) 
 		if (PointVisible(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat)) {
 			LatLon2Screen(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat, sc);
-			DrawBitmapIn(hDC, sc, hTerrainWarning,true);
+			DrawBitmapIn(Surface, sc, hTerrainWarning,true);
 
 			if (DerivedDrawInfo.FarObstacle_AltArriv <=-50 ||  DerivedDrawInfo.FarObstacle_Dist<5000 ) {
 				_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.FarObstacle_AltArriv);
-				TextInBox(hDC,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
+				TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
 				wrotevalue=true;
 			}
 		} // visible far obstacle
 
 		if (PointVisible(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude)) {
 			LatLon2Screen(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude, sc);
-			DrawBitmapIn(hDC, sc, hTerrainWarning,true);
+			DrawBitmapIn(Surface, sc, hTerrainWarning,true);
 #if 0
 			// 091203 add obstacle altitude on moving map
 			h =  max(0,RasterTerrain::GetTerrainHeight(DerivedDrawInfo.TerrainWarningLatitude, 
@@ -148,7 +147,7 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
 					// and there is a significant difference in the numbers, then paint value also for nearest
 					if (  fabs(DerivedDrawInfo.ObstacleAltArriv - DerivedDrawInfo.FarObstacle_AltArriv) >100 ) {
 						_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.ObstacleAltArriv);
-						TextInBox(hDC,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
+						TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
 					}
 				}
 			} else {
@@ -160,7 +159,7 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
 				 ((DerivedDrawInfo.ObstacleAltArriv<0) && (DerivedDrawInfo.ObstacleDistance<5000)) ) {
 
 					_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.ObstacleAltArriv);
-					TextInBox(hDC,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
+					TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
 				}
 			}
 #endif
@@ -168,6 +167,6 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
 	} // obstacles detected
   } // within glide range
 
-  SelectObject(hDC, hpOld);
+  Surface.SelectObject(hpOld);
 }
 

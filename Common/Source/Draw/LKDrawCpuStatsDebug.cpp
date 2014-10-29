@@ -79,7 +79,7 @@ void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
   TextDisplayMode.AlligneCenter = 1;
   TextDisplayMode.WhiteBold = 1;
   TextDisplayMode.Border = 1;
-  // HFONT oldfont=(HFONT)SelectObject(hdc, LK8PanelBigFont);
+  // HFONT oldfont=(HFONT)Surface.SelectObject(LK8PanelBigFont);
 
   switch(ModeIndex) {
 	case LKMODE_MAP:
@@ -100,7 +100,7 @@ void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
   }
   TextInBox(hdc, &rc, Buffer, middlex, 200 , 0, &TextDisplayMode, false);
 
-  //SelectObject(hdc, oldfont);
+  //Surface.SelectObject(oldfont);
   return;
 }
 #endif

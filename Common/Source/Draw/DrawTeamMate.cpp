@@ -4,36 +4,19 @@
    See CREDITS.TXT file for authors and copyrights
 
    $Id$
-*/
+ */
 
 #include "externs.h"
 #include "Bitmaps.h"
 
+void MapWindow::DrawTeammate(LKSurface& Surface, const RECT& rc) {
+    POINT point;
 
-
-void MapWindow::DrawTeammate(HDC hdc, RECT rc)
-{
-  POINT point;
-
-  if (TeammateCodeValid)
-    {
-      if(PointVisible(TeammateLongitude, TeammateLatitude) )
-	{
-	  LatLon2Screen(TeammateLongitude, TeammateLatitude, point);
-
-	  SelectObject(hDCTemp,hBmpTeammatePosition);
-	  DrawBitmapX(hdc,
-		      point.x-NIBLSCALE(10), 
-		      point.y-NIBLSCALE(10),
-		      20,20,
-		      hDCTemp,0,0,SRCPAINT,true);
-	
-	  DrawBitmapX(hdc,
-		      point.x-NIBLSCALE(10), 
-		      point.y-NIBLSCALE(10),
-		      20,20,
-		      hDCTemp,20,0,SRCAND,true);
-	}
+    if (TeammateCodeValid) {
+        if (PointVisible(TeammateLongitude, TeammateLatitude)) {
+            LatLon2Screen(TeammateLongitude, TeammateLatitude, point);
+            Surface.DrawMaskedBitmap(point.x - NIBLSCALE(10), point.y - NIBLSCALE(10), IBLSCALE(20), IBLSCALE(20), hBmpTeammatePosition, 20, 20);
+        }
     }
 }
 

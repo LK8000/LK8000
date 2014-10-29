@@ -13,32 +13,16 @@
 #include "LKGeneralAviation.h"
 #include "Multimap.h"
 
-#if NEWSMARTZOOM
-// We do smart zoom only with real map painted, and in quickdraw mode
-// Temporarily, work only in Inversemode to test speed difference on PNAs (Inverse works..inverted!)
-#define ONSMARTZOOM	((MAPMODE8000 &&  QUICKDRAW) &&  Appearance.InverseInfoBox )
-#define OFFSMARTZOOM	((MAPMODE8000 && !QUICKDRAW) || !Appearance.InverseInfoBox )
-#endif
 
 extern bool FastZoom;
 extern bool TargetDialogOpen;
 
-void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
+void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
 				  const POINT &Orig,
 				  const POINT &Orig_Aircraft)
 {
 
-  #if NEWSMARTZOOM
-  static double quickdrawscale=0.0;
-  static double delta_drawscale=1.0;
-  #endif
-
-  #if 0 
-  extern void TestChangeRect();
-  TestChangeRect();
-  #endif
-
-  if ((MapWindow::AlphaBlendSupported() && BarOpacity<100) || mode.AnyPan()) {
+    if ((LKSurface::AlphaBlendSupported() && BarOpacity<100) || mode.AnyPan()) {
 	MapWindow::ChangeDrawRect(MapRect);
   } else {
 	RECT newRect={0,0,ScreenSizeX,ScreenSizeY-BottomSize};
@@ -107,16 +91,16 @@ QuickRedraw:
   //
   if (DONTDRAWTHEMAP) 
   {
-	DrawMapSpace(hdc, rc);
+	DrawMapSpace(Surface, rc);
 	// Is this a "shared map" environment? 
 	if (IsMultiMapShared()) { 
 		// Shared map, of course not MSN_MAP, since dontdrawthemap was checked
 		//
 		if (IsMultimapOverlaysText()) {
-			DrawLook8000(hdc,rc);
+			DrawLook8000(Surface,rc);
 		}
 		if (IsMultimapOverlaysGauges()) {
-			if (LKVarioBar) LKDrawVario(hdc,rc);
+			if (LKVarioBar) LKDrawVario(Surface,rc);
 
 			if (IsThermalBarVisible()) {
 				DrawThermalBand(hdcDrawWindow, rc);
@@ -131,7 +115,7 @@ QuickRedraw:
 	}
 
 	// 
-	DrawBottomBar(hdc,rc);
+	DrawBottomBar(Surface,rc);
 #ifdef DRAWDEBUG
 	DrawDebug(hdc,rc);
 #endif
@@ -144,10 +128,10 @@ QuickRedraw:
   if (!IsMultimapTerrain() || !DerivedDrawInfo.TerrainValid || !RasterTerrain::isTerrainLoaded() ) {
 
     // display border and fill background..
-	SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
-	SelectObject(hdc, GetStockObject(WHITE_PEN));
+	Surface.SelectObject(hInvBackgroundBrush[BgMapColor]);
+	Surface.SelectObject(LK_WHITE_PEN);
 
-	Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
+	Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
 	// We force LK painting black values on screen depending on the background color in use
 	// TODO make it an array once settled
 	// blackscreen would force everything to be painted white, instead
@@ -158,52 +142,7 @@ QuickRedraw:
 	BlackScreen=false;
   }
 
-  #if NEWSMARTZOOM
-  // Copy the old background map with no overlays
-  if (ONSMARTZOOM) {
-
-	if (quickdrawscale>0) {
-		delta_drawscale=zoom.DrawScale() / quickdrawscale;
-	}
-
-// StartupStore(_T("... QuickDrawScale=%.2f new zoom=%.2f  delta=%.2f\n"),quickdrawscale,zoom.DrawScale(),delta_drawscale);
-
-	int dx=MapRect.right-MapRect.left;
-	int dy=MapRect.bottom-MapRect.top;
-
-	// notice: zoom in is always ok.. but zoom out starting from high zoom levels will make the picture
-	// very small and unusable. We can consider to zoom out in fast zoom normally, in such cases?
-	//
-	// Notice 2: the delta is not yet working correctly 
-	//
-	if (delta_drawscale>1.0) {
-		// zoom in
-		StretchBlt(hdcDrawWindow, 
-			0,0,
-			dx,dy, 
-			hdcQuickDrawWindow,
-			(int)((dx/2) - (dx / delta_drawscale)/2),
-			(int)((dy/2) - (dy / delta_drawscale)/2),
-			(int)(dx / delta_drawscale),
-			(int)(dy / delta_drawscale), 
-			SRCCOPY);
-	} else {
-		// zoom out
-		StretchBlt(hdcDrawWindow,
-			(int)((dx/2) - (dx * delta_drawscale)/2),
-			(int)((dy/2) - (dy * delta_drawscale)/2),
-			(int)(dx * delta_drawscale),
-			(int)(dy * delta_drawscale), 
-			hdcQuickDrawWindow,
-			0,0,
-			dx,dy,  
-			SRCCOPY);
-	}
-  }
-  #endif
-
-
-  // Logic of DONTDRAWTHEMAP is the following:
+    // Logic of DONTDRAWTHEMAP is the following:
   // We are rendering the screen page here. If we are here, we passed Checkpoint Charlie.
   // So we were, at charlie, in MSM_MAP: preparing the main map stuff.
   // If we detect that MapSpace has CHANGED while we were doing our job here,
@@ -213,10 +152,6 @@ QuickRedraw:
   if (DONTDRAWTHEMAP) {
 	goto QuickRedraw;
   }
-
-  #if NEWSMARTZOOM
-  if ( OFFSMARTZOOM ) {
-  #endif
 
   bool terrainpainted=false;
 
@@ -232,7 +167,7 @@ QuickRedraw:
 		UnlockTerrainDataGraphics();
 		goto QuickRedraw;
 	}
-    DrawTerrain(hdc, DrawRect, sunazimuth, sunelevation);
+    DrawTerrain(Surface, DrawRect, sunazimuth, sunelevation);
     terrainpainted=true;
  	if (DONTDRAWTHEMAP) {
 		UnlockTerrainDataGraphics();
@@ -246,15 +181,11 @@ QuickRedraw:
         #else
     	if ((FinalGlideTerrain==2) && DerivedDrawInfo.TerrainValid) {
         #endif
-    	  DrawTerrainAbove(hdc, DrawRect);
+    	  DrawTerrainAbove(Surface, DrawRect);
     	}
     }
     UnlockTerrainDataGraphics();
   }
-
-  #if NEWSMARTZOOM
-  }
-  #endif
 
   //
   // REMINDER: WE ARE IN MAIN MAP HERE: MSM_MAP ONLY, OR PANNING MODE!
@@ -267,10 +198,10 @@ QuickRedraw:
   }
 
   if (IsMultimapTopology()) {
-    DrawTopology(hdc, DrawRect);
+    DrawTopology(Surface, DrawRect);
   } else {
 	// If no topology wanted, but terrain painted, we paint only water stuff
-	if (terrainpainted) DrawTopology(hdc, DrawRect,true);
+	if (terrainpainted) DrawTopology(Surface, DrawRect,true);
   }
   #if 0
   StartupStore(_T("... Experimental1=%.0f\n"),Experimental1);
@@ -284,7 +215,7 @@ QuickRedraw:
   ResetLabelDeclutter();
   
   if ((Flags_DrawTask||TargetDialogOpen) && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-	DrawTaskAAT(hdc, DrawRect);
+	DrawTaskAAT(Surface, DrawRect);
   }
 
   
@@ -295,12 +226,12 @@ QuickRedraw:
   if (IsMultimapAirspace())
   {
     if ( (GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders) )
-      DrawTptAirSpace(hdc, rc);
+      DrawTptAirSpace(Surface, rc);
     else {
 	if ( GetAirSpaceFillType() == asp_fill_border_only)
-		DrawAirSpaceBorders(hdc, rc); // full screen, to hide clipping effect on low border
+		DrawAirSpaceBorders(Surface, rc); // full screen, to hide clipping effect on low border
 	else
-		DrawAirSpace(hdc, rc);	 // full screen, to hide clipping effect on low border
+		DrawAirSpace(Surface, rc);	 // full screen, to hide clipping effect on low border
     }
   }
 
@@ -324,12 +255,12 @@ QuickRedraw:
 	goto QuickRedraw;
   }
 
-  DrawThermalEstimate(hdc, DrawRect);
-  if (OvertargetMode==OVT_THER) DrawThermalEstimateMultitarget(hdc, DrawRect);
+  DrawThermalEstimate(Surface, DrawRect);
+  if (OvertargetMode==OVT_THER) DrawThermalEstimateMultitarget(Surface, DrawRect);
  
   // draw red cross on glide through terrain marker
   if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid) {
-    DrawGlideThroughTerrain(hdc, DrawRect);
+    DrawGlideThroughTerrain(Surface, DrawRect);
   }
   
   if (DONTDRAWTHEMAP) { 
@@ -340,22 +271,22 @@ _skip_stuff:
 
   if (IsMultimapAirspace() && AirspaceWarningMapLabels)
   {
-	DrawAirspaceLabels(hdc, DrawRect, Orig_Aircraft);
+	DrawAirspaceLabels(Surface, DrawRect, Orig_Aircraft);
 	if (DONTDRAWTHEMAP) { // 100319
 		goto QuickRedraw;
 	}
   }
 
   if (IsMultimapWaypoints()) {
-	DrawWaypointsNew(hdc,DrawRect);
+	DrawWaypointsNew(Surface,DrawRect);
   }
 #ifdef TRAIL_OVER_AIRFIELD
   if(TrailActive) {
         #if LONGSNAIL
-	LKDrawLongTrail(hdc, Orig_Aircraft, DrawRect);
+	LKDrawLongTrail(Surface, Orig_Aircraft, DrawRect);
         #endif
 	// NEED REWRITING
-	LKDrawTrail(hdc, Orig_Aircraft, DrawRect);
+	LKDrawTrail(Surface, Orig_Aircraft, DrawRect);
   }
 #endif
   if (DONTDRAWTHEMAP) {
@@ -363,58 +294,49 @@ _skip_stuff:
   }
 
   if ((Flags_DrawTask||TargetDialogOpen) && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-	DrawTask(hdc, DrawRect, Orig_Aircraft);
+	DrawTask(Surface, DrawRect, Orig_Aircraft);
 
   }
   if(Flags_DrawFAI)
   {
     if(MapWindow::DerivedDrawInfo.Flying)   {  	// FAI optimizer does not depend on tasks, being based on trace
-	  DrawFAIOptimizer(hdc, DrawRect, Orig_Aircraft);  }
+	  DrawFAIOptimizer(Surface, DrawRect, Orig_Aircraft);  }
     else
     { // not flying => show FAI sectors for the task
       if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-	    DrawTaskSectors(hdc, DrawRect);}
+	    DrawTaskSectors(Surface, DrawRect);}
     }
   }
 
 
   // In QUICKDRAW do not paint other useless stuff
   if (QUICKDRAW) {
-	if (extGPSCONNECT) DrawBearing(hdc, DrawRect);
+	if (extGPSCONNECT) DrawBearing(Surface, DrawRect);
 	goto _skip_2;
   }
 
   // ---------------------------------------------------
 
-  DrawTeammate(hdc, rc);
+  DrawTeammate(Surface, rc);
 
   if (extGPSCONNECT) {
-    DrawBestCruiseTrack(hdc, Orig_Aircraft);
-    DrawBearing(hdc, DrawRect);
+    DrawBestCruiseTrack(Surface, Orig_Aircraft);
+    DrawBearing(Surface, DrawRect);
   }
 
   // draw wind vector at aircraft
   if (NOTANYPAN) {
-    DrawWindAtAircraft2(hdc, Orig_Aircraft, DrawRect);
+    DrawWindAtAircraft2(Surface, Orig_Aircraft, DrawRect);
   } else if (mode.Is(Mode::MODE_TARGET_PAN)) {
-    DrawWindAtAircraft2(hdc, Orig, rc);
+    DrawWindAtAircraft2(Surface, Orig, rc);
   }
-
-  #if NEWSMARTZOOM
-  // Save the current rendered map before painting overlays
-  if ( OFFSMARTZOOM ) {
-	quickdrawscale=zoom.DrawScale();
-	BitBlt(hdcQuickDrawWindow, 0, 0, MapRect.right-MapRect.left, MapRect.bottom-MapRect.top,
-		hdcDrawWindow, 0, 0, SRCCOPY);
-  }
-  #endif
 
   if (DONTDRAWTHEMAP) {
 	goto QuickRedraw;
   }
 
   // Draw traffic and other specifix LK gauges
-  LKDrawFLARMTraffic(hdc, DrawRect, Orig_Aircraft);
+  LKDrawFLARMTraffic(Surface, DrawRect, Orig_Aircraft);
 
   // ---------------------------------------------------
 _skip_2:
@@ -424,8 +346,8 @@ _skip_2:
         DrawThermalBand(hdcDrawWindow, rc);
     }
 
-    if (IsMultimapOverlaysText()) DrawLook8000(hdc,rc); 
-    DrawBottomBar(hdc,rc);
+    if (IsMultimapOverlaysText()) DrawLook8000(Surface,rc);
+    DrawBottomBar(Surface,rc);
   }
 
   if (DONTDRAWTHEMAP) {
@@ -433,17 +355,17 @@ _skip_2:
   }
     
   if (IsMultimapOverlaysGauges() && (LKVarioBar && NOTANYPAN)) 
-	LKDrawVario(hdc,rc);
+	LKDrawVario(Surface,rc);
   
   // Draw glider or paraglider
   if (extGPSCONNECT) {
-    DrawAircraft(hdc, Orig_Aircraft);
+    DrawAircraft(Surface, Orig_Aircraft);
   }
 
   if (NOTANYPAN) {
 	if (TrackBar) {
-	    DrawHeading(hdc, Orig, DrawRect);
-	    if (ISGAAIRCRAFT) DrawFuturePos(hdc, Orig, DrawRect);
+	    DrawHeading(Surface, Orig, DrawRect);
+	    if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, DrawRect);
 	}
   }
 
@@ -452,7 +374,7 @@ _skip_2:
   DrawMarks(hdc, rc);
   #endif
 
-  if (ISGAAIRCRAFT && IsMultimapOverlaysGauges() && NOTANYPAN) DrawHSIarc(hdc,Orig,DrawRect);
+  if (ISGAAIRCRAFT && IsMultimapOverlaysGauges() && NOTANYPAN) DrawHSIarc(Surface,Orig,DrawRect);
 
   if (!INPAN) {
 	DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom

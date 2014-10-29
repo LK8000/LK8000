@@ -9,17 +9,17 @@
 #include "externs.h"
 #include "LKInterface.h"
 #include "RGB.h"
+#include "LKObjects.h"
 
-void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
+void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     int i;
     double tmp1 = 0.0;
 
     if (!WayPointList) return;
     if (!AATEnabled) return;
 
-    HPEN oldpen = 0;
-    HBRUSH oldbrush = 0;
-    HBITMAP oldbitmap = 0;
+    LKPen oldpen;
+    LKBrush oldbrush;
 
     LockTaskData(); // protect from external task changes
     /**********************************************/
@@ -68,29 +68,27 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
         rcDraw.left = std::max(rc.left, rcDraw.left);
         rcDraw.right = std::min(rc.right, rcDraw.right);
 
-        COLORREF whitecolor = RGB_WHITE;
-        COLORREF origcolor = SetTextColor(hDCTemp, whitecolor);
+        LKColor whitecolor = RGB_WHITE;
+        LKColor origcolor = hDCTempTask.SetTextColor(whitecolor);
 
-        oldbitmap = (HBITMAP) SelectObject(hDCTemp, (HBITMAP) hDrawBitMapTmp);
-
-        oldpen = (HPEN) SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
-        oldbrush = (HBRUSH) SelectObject(hDCTemp, GetStockObject(WHITE_BRUSH));
-        if(MapWindow::AlphaBlendSupported()) {
+        oldpen = hDCTempTask.SelectObject(LK_WHITE_PEN);
+        oldbrush = hDCTempTask.SelectObject(LKBrush_White);
+        if(LKSurface::AlphaBlendSupported()) {
             // copy original bitmap into temp (for saving fully transparent areas)
-            BitBlt(hDCTemp, rcDraw.left, rcDraw.top, 
+            hDCTempTask.Copy(rcDraw.left, rcDraw.top,
                     rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, 
-                    hdc, rcDraw.left, rcDraw.top, SRCCOPY);
+                    Surface, rcDraw.left, rcDraw.top);
         } else {
-            Rectangle(hDCTemp, rcDraw.left, rcDraw.top, rcDraw.right, rcDraw.bottom);
+            hDCTempTask.Rectangle(rcDraw.left, rcDraw.top, rcDraw.right, rcDraw.bottom);
         }
         
-        SelectObject(hDCTemp, GetStockObject(NULL_PEN));
-        SelectObject(hDCTemp, hAirspaceBrushes[iAirspaceBrush[AATASK]]);
+        hDCTempTask.SelectObject(LK_NULL_PEN);
+        hDCTempTask.SelectObject(hAirspaceBrushes[iAirspaceBrush[AATASK]]);
 
         // this color is used as the black bit
-        SetTextColor(hDCTemp, Colours[iAirspaceColour[AATASK]]);
+        hDCTempTask.SetTextColor(Colours[iAirspaceColour[AATASK]]);
         // this color is the transparent bit
-        SetBkColor(hDCTemp, whitecolor);
+        hDCTempTask.SetBkColor(whitecolor);
 
         for (i = maxTp - 1; i > std::max(0, ActiveWayPoint - 1); i--) {
         if (ValidTaskPoint(i)) {
@@ -102,14 +100,14 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
                 case CONE:
                 case CIRCLE:
                     tmp1 = Radius * zoom.ResScaleOverDistanceModify();
-                    Circle(hDCTemp,
+                    hDCTempTask.Circle(
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y,
                             (int) tmp1, rc, true, true);
                     break;
                 case SECTOR:
                     tmp1 = Radius * zoom.ResScaleOverDistanceModify();
-                    Segment(hDCTemp,
+                    hDCTempTask.Segment(
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y, (int) tmp1, rc,
                             Task[i].AATStartRadial - DisplayAngle,
@@ -120,24 +118,21 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc) {
         }
 
         // restore original color
-        SetTextColor(hDCTemp, origcolor);
-        SelectObject(hDCTemp, oldpen);
-        SelectObject(hDCTemp, oldbrush);
+        hDCTempTask.SetTextColor(origcolor);
+        hDCTempTask.SelectObject(oldpen);
+        hDCTempTask.SelectObject(oldbrush);
         
-        // Use AlphaBlend if supported !
-        if(MapWindow::AlphaBlendSupported()) {
-            MapWindow::DoAlphaBlend(hdc,rcDraw, hDCTemp,rcDraw,255*35/100);
-        } else {
-            TransparentBlt(hdc,
+        if(!Surface.AlphaBlend(rcDraw, hDCTempTask,rcDraw, 255*35/100)) {
+            // if AlphaBlend is not supported, use TransparentBld
+            Surface.TransparentCopy(
                     rcDraw.left, rcDraw.top,
                     rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top,
-                    hDCTemp,
+                    hDCTempTask,
                     rcDraw.left, rcDraw.top,
                     rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top,
                     whitecolor
                     );
         }
-        SelectObject(hDCTemp, oldbitmap);
 	}
     {
         UnlockTaskData();

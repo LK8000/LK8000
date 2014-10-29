@@ -484,7 +484,7 @@ static void OnFilterType(DataField *Sender,
 
 static int DrawListIndex=0;
 
-static void OnPaintListItem(WindowControl * Sender, HDC hDC){
+static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   int n = UpLimit - LowLimit;
   TCHAR sTmp[12];
@@ -504,14 +504,14 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       } else {
         w0 = 225*ScreenScale;
       }
-      w1 = GetTextWidth(hDC, TEXT("XXX"));
-      w2 = GetTextWidth(hDC, TEXT(" 000km"));
+      w1 = Surface.GetTextWidth(TEXT("XXX"));
+      w2 = Surface.GetTextWidth(TEXT(" 000km"));
       _stprintf(sTmp, _T(" 000%s"), gettext(_T("_@M2179_")));
-      w3 = GetTextWidth(hDC, sTmp);
+      w3 = Surface.GetTextWidth(sTmp);
       
       x1 = w0-w1-w2-w3;
 
-      ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale, Name, x1-ScreenScale*5); 
+      Surface.DrawTextClip(2*ScreenScale, 2*ScreenScale, Name, x1-ScreenScale*5);
       
       sTmp[0] = '\0';
       sTmp[1] = '\0';
@@ -519,25 +519,19 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
 	  LK_tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
       // left justified
      
-      ExtTextOut(hDC, x1, 2*ScreenScale,
-                 ETO_OPAQUE, NULL,
-                 sTmp, _tcslen(sTmp), NULL);
+      Surface.DrawText(x1, 2*ScreenScale, sTmp, _tcslen(sTmp));
 
       // right justified after airspace type
       _stprintf(sTmp, TEXT("%.0f%s"), 
                 AirspaceSelectInfo[i].Distance,
                 Units::GetDistanceName());
-      x2 = w0-w3-GetTextWidth(hDC, sTmp);
-      ExtTextOut(hDC, x2, 2*ScreenScale,
-                 ETO_OPAQUE, NULL,
-                 sTmp, _tcslen(sTmp), NULL);
+      x2 = w0-w3-Surface.GetTextWidth(sTmp);
+      Surface.DrawText(x2, 2*ScreenScale, sTmp, _tcslen(sTmp));
       
       // right justified after distance
       _stprintf(sTmp, TEXT("%d%s"),  iround(AirspaceSelectInfo[i].Direction), gettext(_T("_@M2179_")));
-      x3 = w0-GetTextWidth(hDC, sTmp);
-      ExtTextOut(hDC, x3, 2*ScreenScale,
-                 ETO_OPAQUE, NULL,
-                 sTmp, _tcslen(sTmp), NULL);
+      x3 = w0-Surface.GetTextWidth(sTmp);
+      Surface.DrawText(x3, 2*ScreenScale, sTmp, _tcslen(sTmp));
     } else {
       // should never get here!
     }
@@ -545,9 +539,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     if (DrawListIndex == 0){
 	// LKTOKEN  _@M466_ = "No Match!" 
       _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
-      ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
-                 ETO_OPAQUE, NULL,
-                 sTmp, _tcslen(sTmp), NULL);
+      Surface.DrawText(2*ScreenScale, 2*ScreenScale, sTmp, _tcslen(sTmp));
     }
   }
 }

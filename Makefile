@@ -14,6 +14,7 @@ TSK=Common/Source/Calc/Task
 CMM=Common/Source/Comm
 WPT=Common/Source/Waypoints
 HDR=Common/Header
+SRC_SCREEN=$(SRC)/Screen
 
 BIN=Bin/$(TARGET)
 
@@ -358,6 +359,16 @@ ifeq ($(CONFIG_PC),n)
 endif
 
 ####### sources
+
+SCREEN := \
+	$(SRC_SCREEN)/LKColor.cpp \
+	$(SRC_SCREEN)/LKPen.cpp \
+	$(SRC_SCREEN)/LKBitmap.cpp \
+	$(SRC_SCREEN)/LKBrush.cpp \
+	$(SRC_SCREEN)/LKFont.cpp \
+	$(SRC_SCREEN)/LKSurface.cpp \
+	$(SRC_SCREEN)/LKWindowSurface.cpp \
+	$(SRC_SCREEN)/LKBitmapSurface.cpp \
 
 LIBRARY	:=\
 	$(LIB)/bsearch.cpp \
@@ -768,6 +779,7 @@ DLGS	:=\
 	
 
 SRC_FILES :=\
+	$(SCREEN) \
 	$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Alarms.cpp\
 	$(SRC)/Backlight.cpp 		\
@@ -996,8 +1008,8 @@ tags:
 
 cppcheck : 
 	$(Q)cppcheck --force --enable=warning -q -j4 $(SRC_FILES)
-	$(Q)cppcheck --force --enable=warning -q -j4 $(ZZIPSRC)
-	$(Q)cppcheck --force --enable=warning -q -j4 $(COMPAT)
+#	$(Q)cppcheck --force --enable=warning -q -j4 $(ZZIPSRC)
+#	$(Q)cppcheck --force --enable=warning -q -j4 $(COMPAT)
 	
 
 #

@@ -13,7 +13,7 @@
 #define	GPSIDPORT_H
 #include "ComPort.h"
 
-#ifdef UNDER_CE
+#if defined(PNA) && defined(UNDER_CE)
 #include "lkgpsapi.h"
 
 class GpsIdPort  : public ComPort {

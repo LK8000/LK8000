@@ -10,7 +10,7 @@
 
 #include "InfoBoxLayout.h"
 #include "Dialogs.h"
-
+#include "LKObjects.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wAirspacePatternsList=NULL;
@@ -26,23 +26,17 @@ static void UpdateList(void){
 
 static int DrawListIndex=0;
 
-static void OnAirspacePatternsPaintListItem(WindowControl * Sender, HDC hDC){
-  (void)Sender;
-  if ((DrawListIndex < NUMAIRSPACEBRUSHES) &&(DrawListIndex>=0)) {
-    int i = DrawListIndex;
-    SelectObject(hDC, GetStockObject(WHITE_BRUSH));
-    SelectObject(hDC, GetStockObject(BLACK_PEN));
-    SetBkColor(hDC, 
-	       RGB(0xFF, 0xFF, 0xFF));
-    SelectObject(hDC, 
-		 MapWindow::GetAirspaceBrush(i)); 
-    SetTextColor(hDC, RGB(0x00,0x00, 0x00));
-    Rectangle(hDC, 
-              100*ScreenScale, 
-              2*ScreenScale,
-              180*ScreenScale,
-              22*ScreenScale);
-  }
+static void OnAirspacePatternsPaintListItem(WindowControl * Sender, LKSurface& Surface) {
+    (void) Sender;
+    if ((DrawListIndex < NUMAIRSPACEBRUSHES) &&(DrawListIndex >= 0)) {
+        int i = DrawListIndex;
+        Surface.SelectObject(LKBrush_White);
+        Surface.SelectObject(LK_BLACK_PEN);
+        Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+        Surface.SelectObject(MapWindow::GetAirspaceBrush(i));
+        Surface.SetTextColor(LKColor(0x00, 0x00, 0x00));
+        Surface.Rectangle(100 * ScreenScale, 2 * ScreenScale, 180 * ScreenScale, 22 * ScreenScale);
+    }
 }
 
 

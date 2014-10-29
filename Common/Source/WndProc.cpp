@@ -20,19 +20,19 @@
 #include "LiveTracker.h"
 #include "Dialogs.h"
 
-HBRUSH hBrushSelected;
-HBRUSH hBrushUnselected;
-HBRUSH hBrushButton;
+LKBrush hBrushSelected;
+LKBrush hBrushUnselected;
+LKBrush hBrushButton;
 #ifdef LXMINIMAP
-HBRUSH hBrushButtonHasFocus;
+LKBrush hBrushButtonHasFocus;
 #endif
-COLORREF ColorSelected = RGB(0xC0,0xC0,0xC0);
-COLORREF ColorUnselected = RGB_WHITE;
-COLORREF ColorWarning = RGB_RED;
-COLORREF ColorOK = RGB_BLUE;
-COLORREF ColorButton = RGB_BUTTONS;  
+LKColor ColorSelected = LKColor(0xC0,0xC0,0xC0);
+LKColor ColorUnselected = RGB_WHITE;
+LKColor ColorWarning = RGB_RED;
+LKColor ColorOK = RGB_BLUE;
+LKColor ColorButton = RGB_BUTTONS;  
 #ifdef LXMINIMAP
-COLORREF ColorButtonHasFocus=RGB_DARKYELLOW2;
+LKColor ColorButtonHasFocus=RGB_DARKYELLOW2;
 #endif
 
 static int iTimerID= 0;
@@ -73,41 +73,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       switch(wdata) {
       case 0:
         SetBkColor((HDC)wParam, ColorUnselected);
-        SetTextColor((HDC)wParam, RGB(0x00,0x00,0x00));
-        return (LRESULT)hBrushUnselected;
+        SetTextColor((HDC)wParam, LKColor(0x00,0x00,0x00));
+        return (LRESULT)(HBRUSH)hBrushUnselected;
       case 1:
         SetBkColor((HDC)wParam, ColorSelected);
-        SetTextColor((HDC)wParam, RGB(0x00,0x00,0x00));
-        return (LRESULT)hBrushSelected;
+        SetTextColor((HDC)wParam, LKColor(0x00,0x00,0x00));
+        return (LRESULT)(HBRUSH)hBrushSelected;
       case 2:
 	SetBkColor((HDC)wParam, ColorUnselected);
         SetTextColor((HDC)wParam, ColorWarning);
-	return (LRESULT)hBrushUnselected;
+	return (LRESULT)(HBRUSH)hBrushUnselected;
       case 3:
 	SetBkColor((HDC)wParam, ColorUnselected);
         SetTextColor((HDC)wParam, ColorOK);
-	return (LRESULT)hBrushUnselected;
+	return (LRESULT)(HBRUSH)hBrushUnselected;
       case 4:
 	// black on light green
         SetTextColor((HDC)wParam, RGB_BLACK); 
 	SetBkColor((HDC)wParam, ColorButton);
-	return (LRESULT)hBrushButton;
+	return (LRESULT)(HBRUSH)hBrushButton;
       case 5:
 	// grey on light green
 	SetBkColor((HDC)wParam, ColorButton);
-        SetTextColor((HDC)wParam, RGB(0x80,0x80,0x80));
-	return (LRESULT)hBrushButton;
+        SetTextColor((HDC)wParam, LKColor(0x80,0x80,0x80));
+	return (LRESULT)(HBRUSH)hBrushButton;
 #ifdef LXMINIMAP
       case 6:
         // black on dark yellow
         SetTextColor((HDC)wParam, RGB_BLACK);
         SetBkColor((HDC)wParam, ColorButtonHasFocus);
-        return (LRESULT)hBrushButtonHasFocus;
+        return (LRESULT)(HBRUSH)hBrushButtonHasFocus;
       case 7:
         // grey on dark yellow
-        SetTextColor((HDC)wParam, RGB(0x80,0x80,0x80));
+        SetTextColor((HDC)wParam, LKColor(0x80,0x80,0x80));
         SetBkColor((HDC)wParam, ColorButtonHasFocus);
-        return (LRESULT)hBrushButtonHasFocus;
+        return (LRESULT)(HBRUSH)hBrushButtonHasFocus;
 #endif
 
       }
@@ -440,11 +440,11 @@ void Shutdown(void) {
   
   // Kill graphics objects
 
-  DeleteObject(hBrushSelected);
-  DeleteObject(hBrushUnselected);
-  DeleteObject(hBrushButton);
+  hBrushSelected.Release();
+  hBrushUnselected.Release();
+  hBrushButton.Release();
   #ifdef LXMINIMAP
-  DeleteObject(hBrushButtonHasFocus);
+  hBrushButtonHasFocus.Release();
   #endif
 
   extern void DeInitialiseFonts(void);

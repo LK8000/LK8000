@@ -19,7 +19,7 @@ class XShape {
 
   virtual void load(shapefileObj* shpfile, int i);
   virtual void clear();
-  virtual bool renderSpecial(HDC hdc, int x, int y, bool RetVal) { (void)x; (void)y; (void)hdc; return(RetVal);};
+  virtual bool renderSpecial(LKSurface& Surface, int x, int y, bool RetVal) { (void)x; (void)y; (void)Surface; return(RetVal);};
   virtual bool nearestItem(int category, double lon, double lat) { (void)category; (void)lon; (void)lat; return(true);};
 
   bool hide;
@@ -36,7 +36,7 @@ class XShapeLabel: public XShape {
   virtual ~XShapeLabel();
   virtual void clear();
   void setlabel(const char* src);
-  virtual bool renderSpecial(HDC hdc, int x, int y, bool RetVal);
+  virtual bool renderSpecial(LKSurface& Surface, int x, int y, bool RetVal);
   virtual bool nearestItem(int category, double lon, double lat);
 protected:
   TCHAR *label;
@@ -59,7 +59,7 @@ class Topology {
   void Close();
 
   void updateCache(rectObj thebounds, bool purgeonly=false);
-  void Paint(HDC hdc, RECT rc);
+  void Paint(LKSurface& Surface, const RECT& rc);
   void SearchNearest(RECT rc);
 
   double scaleThreshold;
@@ -77,7 +77,7 @@ class Topology {
   bool checkVisible(shapeObj& shape, rectObj &screenRect);
 
   void loadBitmap(const int);
-  void loadPenBrush(const COLORREF thecolor);
+  void loadPenBrush(const LKColor thecolor);
 
   TCHAR filename[MAX_PATH];
 
@@ -91,9 +91,9 @@ class Topology {
   bool append;
 #endif
   bool in_scale;
-  HPEN hPen;
-  HBRUSH hbBrush;
-  HBITMAP hBitmap;
+  LKPen hPen;
+  LKBrush hbBrush;
+  LKBitmap hBitmap;
   shapefileObj shpfile;
   bool shapefileopen;
   void initCache();
@@ -128,9 +128,5 @@ class TopologyLabel: public Topology {
   int field;
 
 };
-
-void ClipPolygon(HDC hdc, POINT *ptin, unsigned int n, 
-                 RECT rc, bool fill=true);
-
 
 #endif

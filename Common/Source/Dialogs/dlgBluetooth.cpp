@@ -88,16 +88,16 @@ namespace DlgBluetooth {
         StopHourglassCursor();
     }
 
-    void OnPaintListItem(WindowControl * Sender, HDC hDC) {
+    void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         CBtHandler* pBtHandler = CBtHandler::Get();
         if (pBtHandler) {
             CBtDevice * bt = pBtHandler->GetDevice(DrawListIndex);
             if (bt) {
-                int w1 = GetTextWidth(hDC, TEXT("PAIRED"));
+                int w1 = Surface.GetTextWidth(TEXT("PAIRED"));
                 int w0 = Sender->GetWidth();
-                ExtTextOutClip(hDC, 2 * ScreenScale, 2 * ScreenScale, bt->GetName().c_str(), w0 - w1 - ScreenScale * 5);
+                Surface.DrawTextClip(2 * ScreenScale, 2 * ScreenScale, bt->GetName().c_str(), w0 - w1 - ScreenScale * 5);
                 if ((bt->m_src & (BDSRC_REGSVC | BDSRC_REGNAV | BDSRC_REGPIN))) {
-                    ExtTextOutClip(hDC, 2 * ScreenScale + w0 - w1, 2 * ScreenScale, _T("Paired"), w1);
+                    Surface.DrawTextClip(2 * ScreenScale + w0 - w1, 2 * ScreenScale, _T("Paired"), w1);
                 }
             }
         }

@@ -20,20 +20,20 @@
 
 
 // Available only in fullscreen landscape mode
-void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
+void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
-  HPEN		oldPen;
-  HBRUSH	oldBrush;
+  LKPen		oldPen;
+  LKBrush	oldBrush;
 
   static RECT	vrc, mrc, hrc, htrc, hbrc;
   static RECT	brc[NUMVBRICKS];
-  static HPEN	blackThickPen;
-  static HPEN	blackThinPen, whiteThinPen;
-  static HBRUSH blackBrush, whiteBrush;
-  static HBRUSH greenBrush, darkyellowBrush, orangeBrush, redBrush;
-  static HBRUSH lakeBrush, blueBrush, indigoBrush;
-  static HBRUSH *positiveBrush[NUMVBRICKS/2];
-  static HBRUSH *negativeBrush[NUMVBRICKS/2];
+  static LKPen	blackThickPen;
+  static LKPen	blackThinPen, whiteThinPen;
+  static LKBrush blackBrush, whiteBrush;
+  static LKBrush greenBrush, darkyellowBrush, orangeBrush, redBrush;
+  static LKBrush lakeBrush, blueBrush, indigoBrush;
+  static const LKBrush *positiveBrush[NUMVBRICKS/2];
+  static const LKBrush *negativeBrush[NUMVBRICKS/2];
 
   static short startInitCounter=0;
   static bool dogaugeinit=true;
@@ -217,28 +217,28 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 
   // draw external box
   if (BgMapColor>POSCOLOR) 
-	oldPen=(HPEN)SelectObject(hDC,whiteThinPen);
+	oldPen=Surface.SelectObject(whiteThinPen);
   else
-	oldPen=(HPEN)SelectObject(hDC,blackThickPen);
+	oldPen=Surface.SelectObject(blackThickPen);
 
   if (LKVarioBar>vBarVarioGR) {
-	oldBrush=(HBRUSH)SelectObject(hDC,GetStockObject(NULL_BRUSH));
+	oldBrush=Surface.SelectObject(LKBrush_Hollow);
   } else {
-	oldBrush=(HBRUSH)SelectObject(hDC,hInvBackgroundBrush[BgMapColor]);
-  	Rectangle(hDC,vrc.left, vrc.top, vrc.right, vrc.bottom);
+	oldBrush=Surface.SelectObject(hInvBackgroundBrush[BgMapColor]);
+  	Surface.Rectangle(vrc.left, vrc.top, vrc.right, vrc.bottom);
   }
 
 
   // draw middle separator for 0 scale indicator
   if (BgMapColor>POSCOLOR) 
-  	FillRect(hDC,&hrc, whiteBrush);
+  	Surface.FillRect(&hrc, whiteBrush);
   else
-  	FillRect(hDC,&hrc, blackBrush);
+  	Surface.FillRect(&hrc, blackBrush);
 
   if (BgMapColor>POSCOLOR)
-	  SelectObject(hDC,whiteThinPen);
+	  Surface.SelectObject(whiteThinPen);
   else
-	  SelectObject(hDC,blackThinPen);
+	  Surface.SelectObject(blackThinPen);
 
   double value=0;
 
@@ -320,16 +320,16 @@ _aftercar:
 		short j=NUMVBRICKS/2;
 		// Demo show all bricks
 		for (int i=0; i<j; i++)  {
-			SelectObject(hDC,*positiveBrush[i]);
-			Rectangle(hDC,brc[i].left, brc[i].top, brc[i].right, brc[i].bottom);
+			Surface.SelectObject(*positiveBrush[i]);
+			Surface.Rectangle(brc[i].left, brc[i].top, brc[i].right, brc[i].bottom);
 		}
 		for (int i=0; i<j; i++)  {
-			SelectObject(hDC,*negativeBrush[i]);
-			Rectangle(hDC,brc[i+(NUMVBRICKS/2)].left, brc[i+(NUMVBRICKS/2)].top, brc[i+(NUMVBRICKS/2)].right, brc[i+(NUMVBRICKS/2)].bottom);
+			Surface.SelectObject(*negativeBrush[i]);
+			Surface.Rectangle(brc[i+(NUMVBRICKS/2)].left, brc[i+(NUMVBRICKS/2)].top, brc[i+(NUMVBRICKS/2)].right, brc[i+(NUMVBRICKS/2)].bottom);
 		}
 		
-		SelectObject(hDC,oldPen);
-		SelectObject(hDC,oldBrush);
+		Surface.SelectObject(oldPen);
+		Surface.SelectObject(oldBrush);
 		return;
 
 	}
@@ -361,33 +361,33 @@ _aftercar:
 		for (unsigned short i=15; i>=meter && i<NUMVBRICKS; i--) {
 			switch (lkvariobar) {
 				case vBarVarioColor:
-					SelectObject(hDC,*positiveBrush[i]);
+					Surface.SelectObject(*positiveBrush[i]);
 					break;
 				case vBarVarioMono:
 					if (BgMapColor>POSCOLOR)
-						SelectObject(hDC,whiteBrush);
+						Surface.SelectObject(whiteBrush);
 					else
-						SelectObject(hDC,blackBrush);
+						Surface.SelectObject(blackBrush);
 					break;
 				case vBarVarioRB:
-					SelectObject(hDC,redBrush);
+					Surface.SelectObject(redBrush);
 					break;
 				case vBarVarioGR:
 				default:
-					SelectObject(hDC,greenBrush);
+					Surface.SelectObject(greenBrush);
 					break;
 			}
 /*
 			if (LKVarioBar == vBarVarioColor) 
-				SelectObject(hDC,*positiveBrush[i]);
+				Surface.SelectObject(*positiveBrush[i]);
 			else {
 				if (BgMapColor>POSCOLOR)
-					SelectObject(hDC,whiteBrush);
+					Surface.SelectObject(whiteBrush);
 				else
-					SelectObject(hDC,blackBrush);
+					Surface.SelectObject(blackBrush);
 			}
 */
-			Rectangle(hDC,brc[i].left, brc[i].top, brc[i].right, brc[i].bottom);
+			Surface.Rectangle(brc[i].left, brc[i].top, brc[i].right, brc[i].bottom);
 		}
 	}
   } else if (value <0) {
@@ -413,41 +413,41 @@ _aftercar:
 		for (unsigned short i=0; i<=meter && i<(NUMVBRICKS/2); i++) {
 			switch (lkvariobar) {
 				case vBarVarioColor:
-					SelectObject(hDC,*negativeBrush[i]);
+					Surface.SelectObject(*negativeBrush[i]);
 					break;
 				case vBarVarioMono:
 					if (BgMapColor>POSCOLOR)
-						SelectObject(hDC,whiteBrush);
+						Surface.SelectObject(whiteBrush);
 					else
-						SelectObject(hDC,blackBrush);
+						Surface.SelectObject(blackBrush);
 					break;
 				case vBarVarioRB:
-					SelectObject(hDC,blueBrush);
+					Surface.SelectObject(blueBrush);
 					break;
 				case vBarVarioGR:
 				default:
-					SelectObject(hDC,redBrush);
+					Surface.SelectObject(redBrush);
 					break;
 			}
 /*
 			if (LKVarioBar == vBarVarioColor) 
-				SelectObject(hDC,*negativeBrush[i]);
+				Surface.SelectObject(*negativeBrush[i]);
 			else {
 				if (BgMapColor>POSCOLOR)
-					SelectObject(hDC,whiteBrush);
+					Surface.SelectObject(whiteBrush);
 				else
-					SelectObject(hDC,blackBrush);
+					Surface.SelectObject(blackBrush);
 			}
 */
-			Rectangle(hDC,brc[i+(NUMVBRICKS/2)].left, brc[i+(NUMVBRICKS/2)].top, brc[i+(NUMVBRICKS/2)].right, brc[i+(NUMVBRICKS/2)].bottom);
+			Surface.Rectangle(brc[i+(NUMVBRICKS/2)].left, brc[i+(NUMVBRICKS/2)].top, brc[i+(NUMVBRICKS/2)].right, brc[i+(NUMVBRICKS/2)].bottom);
 		}
 	}
 
   }
 	
   // cleanup and return 
-  SelectObject(hDC,oldPen);
-  SelectObject(hDC,oldBrush);
+  Surface.SelectObject(oldPen);
+  Surface.SelectObject(oldBrush);
   return;
 
 }

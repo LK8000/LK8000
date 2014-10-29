@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "LKObjects.h"
 
-void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
+void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
 {
   POINT GliderBand[5] = { {0,0},{23,0},{22,0},{24,0},{0,0} };
   
@@ -103,13 +103,13 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
   }
   
   // drawing info
-  HPEN hpOld;
+  LKPen hpOld;
   
 
   // position of thermal band
   if (numtherm>1) {
-    hpOld = (HPEN)SelectObject(hDC, hpThermalBand);
-    HBRUSH hbOld = (HBRUSH)SelectObject(hDC, LKBrush_Emerald);
+    hpOld = Surface.SelectObject(hpThermalBand);
+    LKBrush hbOld = Surface.SelectObject(LKBrush_Emerald);
  
 
     POINT ThermalProfile[NUMTHERMALBUCKETS+2];
@@ -125,8 +125,8 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
     ThermalProfile[numtherm+1].x = lkvariooffset; //@ 091118
     ThermalProfile[numtherm+1].y = ThermalProfile[numtherm].y;
 
-    Polygon(hDC,ThermalProfile,numtherm+2);
-    SelectObject(hDC, hbOld);
+    Surface.Polygon(ThermalProfile,numtherm+2);
+    Surface.SelectObject(hbOld);
   }
     
   // position of thermal band
@@ -143,19 +143,19 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
   GliderBand[4].x = GliderBand[1].x-NIBLSCALE(4);
   GliderBand[4].y = GliderBand[0].y+NIBLSCALE(4);
 
-  hpOld = (HPEN)SelectObject(hDC, hpThermalBandGlider);
+  hpOld = Surface.SelectObject(hpThermalBandGlider);
   
-  Polyline(hDC,GliderBand, 2);
-  Polyline(hDC,GliderBand+2, 3); // arrow head
+  Surface.Polyline(GliderBand, 2);
+  Surface.Polyline(GliderBand+2, 3); // arrow head
 
   if (draw_start_height) {
-    SelectObject(hDC, hpFinalGlideBelow);
+    Surface.SelectObject(hpFinalGlideBelow);
     GliderBand[0].y = NIBLSCALE(4)+iround(TBSCALEY*(1.0-hstart))+rc.top;
     GliderBand[1].y = GliderBand[0].y;
-    Polyline(hDC, GliderBand, 2);
+    Surface.Polyline(GliderBand, 2);
   }
 
-  SelectObject(hDC, hpOld);
+  Surface.SelectObject(hpOld);
   
 }
 

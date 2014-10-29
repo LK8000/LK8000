@@ -18,7 +18,7 @@ extern long VKtime;
 
 #if TESTBENCH
 
-void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
+void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
 {
 
   if (DoInit[MDI_MAPTEST]) {
@@ -69,25 +69,25 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
   double sunazimuth=GetAzimuth();
   if (IsMultimapTerrain() && DerivedDrawInfo.TerrainValid) {
 	LockTerrainDataGraphics();
-	DrawTerrain(hdc, rct, sunazimuth, sunelevation);
+	DrawTerrain(Surface, rct, sunazimuth, sunelevation);
 	UnlockTerrainDataGraphics();
   }
 
   ResetLabelDeclutter();	// This is needed to reset at each run the declutter, for topology and waypoints!
   // SaturateLabelDeclutter();	// Use this to force no labels be printed, from now on.
 
-  DrawTopology(hdc, rct);
-  DrawAirSpace(hdc, rct);
+  DrawTopology(Surface, rct);
+  DrawAirSpace(Surface, rct);
 
   // ResetLabelDeclutter();	// If you saturated labels for topology, now you can reset the declutter to allow
 				// printing only waypoints, 
 
-  DrawWaypointsNew(hdc,rct);
+  DrawWaypointsNew(Surface,rct);
 
-  HPEN oldpen=(HPEN)SelectObject(hdc,LKPen_White_N1);
-  HBRUSH oldbrush=(HBRUSH)SelectObject(hdc,LKBrush_LightGrey);
+  LKPen oldpen = Surface.SelectObject(LKPen_White_N1);
+  LKBrush oldbrush=Surface.SelectObject(LKBrush_LightGrey);
 
-  LKWriteBoxedText(hdc, &rct, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
+  LKWriteBoxedText(Surface, rct, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
 
 
   TCHAR ttext[100];
@@ -152,14 +152,14 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
 		break;
   }
 
-  LKWriteBoxedText(hdc, &rct, ttext, 1, 50 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
+  LKWriteBoxedText(Surface, rct, ttext, 1, 50 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
 
   //
   // Be sure to check that an EVENT was generated, otherwise you are checking even bottombar key presses.
   //
   if (LKevent!=LKEVENT_NONE) {
 	_stprintf(ttext,_T("Last coords: X=%d Y=%d  , duration=%ld ms"),X,Y,VKtime);
-	LKWriteBoxedText(hdc, &rct, ttext, 1, 100 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
+	LKWriteBoxedText(Surface, rct, ttext, 1, 100 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
   }
 
 
@@ -169,8 +169,8 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
   // the key pressed, but remember to clear it.
   LKevent=LKEVENT_NONE;
 
-SelectObject(hdc,oldbrush);
-SelectObject(hdc,oldpen);
+Surface.SelectObject(oldbrush);
+Surface.SelectObject(oldpen);
 
 
 }

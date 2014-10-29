@@ -7,12 +7,12 @@
 */
 
 #include "externs.h"
-
+#include "LKObjects.h"
 //
 // Draw the reachable SHADED terrain glide amoeba
 // This is not the outlined perimeter
 //
-void MapWindow::DrawTerrainAbove(HDC hDC, const RECT rc) {
+void MapWindow::DrawTerrainAbove(LKSurface& Surface, const RECT& rc) {
 
   // Lets try to make it better understandable with a goto.
   // If CAR or GA users dont want amoeba, they should disable it in config. 
@@ -30,37 +30,36 @@ void MapWindow::DrawTerrainAbove(HDC hDC, const RECT rc) {
 
 _doit:
 
-  COLORREF whitecolor = RGB(0xff,0xff,0xff);
-  COLORREF graycolor = RGB(0xf0,0xf0,0xf0);
-  COLORREF origcolor = SetTextColor(hDCTemp, whitecolor);
+  LKColor whitecolor = LKColor(0xff,0xff,0xff);
+  LKColor graycolor = LKColor(0xf0,0xf0,0xf0);
+  LKColor origcolor = hdcTempTerrainAbove.SetTextColor(whitecolor);
 
-  SetBkMode(hDCTemp, TRANSPARENT);
+  hdcTempTerrainAbove.SetBkMode(TRANSPARENT);
 
-  SelectObject(hDCTemp, (HBITMAP)hDrawBitMapTmp);
-  SetBkColor(hDCTemp, whitecolor);
+  hdcTempTerrainAbove.SetBkColor(whitecolor);
 
-  SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
-  SetTextColor(hDCTemp, graycolor);
-  SelectObject(hDCTemp, hAboveTerrainBrush); // hAirspaceBrushes[3] or 6
-  Rectangle(hDCTemp,rc.left,rc.top,rc.right,rc.bottom);
+  hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
+  hdcTempTerrainAbove.SetTextColor(graycolor);
+  hdcTempTerrainAbove.SelectObject(hAboveTerrainBrush); // hAirspaceBrushes[3] or 6
+  hdcTempTerrainAbove.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
 
-  SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
-  SelectObject(hDCTemp, GetStockObject(WHITE_BRUSH));
-  Polygon(hDCTemp,Groundline,NUMTERRAINSWEEPS+1);
+  hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
+  hdcTempTerrainAbove.SelectObject(LKBrush_White);
+  hdcTempTerrainAbove.Polygon(Groundline,NUMTERRAINSWEEPS+1);
 
   // need to do this to prevent drawing of colored outline
-  SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
-  TransparentBlt(hDC,
+  hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
+  Surface.TransparentCopy(
           rc.left,rc.top,
           rc.right-rc.left,rc.bottom-rc.top,
-          hDCTemp,
+          hdcTempTerrainAbove,
           rc.left,rc.top,
           rc.right-rc.left,rc.bottom-rc.top,
           whitecolor);
 
   // restore original color
-  SetTextColor(hDCTemp, origcolor);
-  SetBkMode(hDCTemp,OPAQUE);
+  hdcTempTerrainAbove.SetTextColor(origcolor);
+  hdcTempTerrainAbove.SetBkMode(OPAQUE);
 
 }
 

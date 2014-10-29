@@ -69,7 +69,7 @@ void MapWindow::CalculateOrientationTargetPan(void) {
 
 
 
-void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig) {
+void MapWindow::CalculateOrigin(const RECT& rc, POINT *Orig) {
 
   if (mode.Is(Mode::MODE_PAN)) {
 	// North up

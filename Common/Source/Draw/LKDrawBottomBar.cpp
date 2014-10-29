@@ -14,12 +14,13 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "McReady.h"
+#include "Screen/LKBitmapSurface.h"
 
 
 extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;
 
-void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
+void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 {
 
   TCHAR BufferValue[LKSIZEBUFFERVALUE];
@@ -36,7 +37,7 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
   static bool wascircling=false; // init not circling of course
   static short OldBottomMode=BM_FIRST;
 
-  COLORREF barTextColor=RGB_WHITE; // default bottom bar text color, reversable
+  LKColor barTextColor=RGB_WHITE; // default bottom bar text color, reversable
 
   // position Y of text in navboxes
   static short yRow2Title=0;	// higher row in portrait, unused in landscape
@@ -49,7 +50,7 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
   static int splitoffset;
   static int splitoffset2; // second raw, which really is the first from top!
 
-  HBRUSH brush_bar;
+  LKBrush brush_bar;
   if (INVERTCOLORS) {
     brush_bar = LKBrush_Black;
   } else {
@@ -67,11 +68,11 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
 
 	// All these values are fine tuned for font/resolution/screenmode.
 	// there is no speed issue inside doinit. take your time.
-	SelectObject(hdc, LK8TitleNavboxFont); 
-	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
+	Surface.SelectObject(LK8TitleNavboxFont);
+	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	int syTitle = TextSize.cy;
-	SelectObject(hdc, LK8ValueFont); 
-	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
+	Surface.SelectObject(LK8ValueFont);
+	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	int syValue = TextSize.cy;
 
 	switch (ScreenSize) {
@@ -144,37 +145,28 @@ void MapWindow::DrawBottomBar(HDC hdc,  RECT rc )
     nrc.bottom=rc.bottom;
 
 
-  if (MapWindow::AlphaBlendSupported() && MapSpaceMode==MSM_MAP && BarOpacity<100) {
-	static HDC hdc2=NULL;
-	static HBITMAP bitmapnew=NULL, bitmapold=NULL;
-	if (DoInit[MDI_LOOKABLEND]) {
-		// drop old object to allow deleteDC correctly
-		if (bitmapold) SelectObject(hdc2,bitmapold);
-		if (bitmapnew) DeleteObject(bitmapnew);
-		if (hdc2) DeleteObject(hdc2);
+    if (LKSurface::AlphaBlendSupported() && MapSpaceMode == MSM_MAP && BarOpacity < 100) {
+        static LKBitmapSurface BckSurface;
+        if (DoInit[MDI_LOOKABLEND]) {
+            BckSurface.Create(Surface, rc.right, rc.bottom);
+            DoInit[MDI_LOOKABLEND] = false;
+        }
 
-		hdc2=CreateCompatibleDC(hdc);
-		bitmapnew=CreateCompatibleBitmap(hdc,rc.right,rc.bottom);
-		DoInit[MDI_LOOKABLEND]=false;
-	}
-
-	if (BarOpacity==0) {
-		barTextColor=RGB_BLACK;
-	} else {
-		bitmapold=(HBITMAP)SelectObject(hdc2,bitmapnew); 
-		FillRect(hdc2,&nrc, brush_bar);
-		MapWindow::DoAlphaBlend(hdc,nrc,hdc2,nrc,BarOpacity*255/100);
-		if (BarOpacity>25)
-			barTextColor=RGB_WHITE;
-		else
-			barTextColor=RGB_BLACK;
-	}
-
-	
-  } else {
-	barTextColor=RGB_WHITE;
-	FillRect(hdc,&nrc, brush_bar); 
-  }
+        if (BarOpacity == 0) {
+            barTextColor = RGB_BLACK;
+        } else {
+            BckSurface.FillRect(&nrc, brush_bar);
+            Surface.AlphaBlend(nrc, BckSurface, nrc, BarOpacity * 255 / 100);
+            if (BarOpacity > 25) {
+                barTextColor = RGB_WHITE;
+            } else {
+                barTextColor = RGB_BLACK;
+            }
+        }
+    } else {
+        barTextColor = RGB_WHITE;
+        Surface.FillRect(&nrc, brush_bar);
+    }
 
   // NAVBOXES
 
@@ -273,7 +265,7 @@ _afterautotrm:
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   SECOND VALUE
@@ -356,7 +348,7 @@ _afterautotrm:
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   THIRD VALUE
@@ -458,7 +450,7 @@ _afterautotrm:
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   FOURTH VALUE
@@ -542,7 +534,7 @@ _afterautotrm:
 	rcx=rc.left+(splitoffset2/2);
   }
   #include "LKMW3include_navbox1.cpp"
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   FIFTH VALUE
@@ -647,7 +639,7 @@ _afterautotrm:
   }
   #include "LKMW3include_navbox1.cpp"
 
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   SIXTH VALUE
@@ -717,7 +709,7 @@ _afterautotrm:
 	rcx+=splitoffset2;
   }
   #include "LKMW3include_navbox1.cpp"
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *    CLEAN UP 

@@ -12,7 +12,7 @@
 #include <algorithm>
 
 template<typename T, size_t N>
-inline size_t array_size(T (&array)[N])  {
+constexpr size_t array_size(T (&array)[N])  {
 	return N;
 }
 

@@ -567,25 +567,24 @@ static void OnTaskRulesClicked(WindowControl * Sender){
   wf->SetVisible(true);
 }
 
+static void OnTaskPointPicto(WindowControl * Sender, LKSurface& Surface) {
+    (void) Sender;
 
+    WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmTaskPointPicto")));
+    if(wPicto) {
+        /********************/
+        ReadValues();
+        GetWaypointValues();
+        //  CalculateTaskSectors();
+        //  if (AATEnabled)
+        //    CalculateAATTaskSectors();
+        RefreshTask();
+        /*******************/
+        const RECT& rc = wPicto->GetBoundRect();
 
-static void OnTaskPointPicto(WindowControl * Sender, HDC hDC){
-	  (void)Sender;
-	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmTaskPointPicto")));
-/********************/
-	    ReadValues();
-	    GetWaypointValues();
-	  //  CalculateTaskSectors();
-	  //  if (AATEnabled)
-	  //    CalculateAATTaskSectors();
-	    RefreshTask();
-/*******************/
-RECT *prc;
-prc = wPicto->GetBoundRect();
-
-
-  MapWindow::DrawWaypointPictoBg(hDC,  *prc);
-  MapWindow::DrawTaskPicto(hDC, twItemIndex, *prc, 2000);
+        MapWindow::DrawWaypointPictoBg(Surface, rc);
+        MapWindow::DrawTaskPicto(Surface, twItemIndex, rc, 2000);
+    }
 }
 
 

@@ -18,29 +18,29 @@
 static CAirspace *airspace = NULL;
 static CAirspaceBase airspace_copy;
 static WndForm *wf=NULL;
-COLORREF ContrastTextColor(COLORREF Col);
+
 static void SetValues(void);
 
-static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
+static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
 	  (void)Sender;
-	  RECT *prc;
+
 	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
 	  LKASSERT(wPicto!=NULL);
-	  prc = wPicto->GetBoundRect();
-	  SelectObject(hDC,LKPen_Petrol_C2);
+	  const RECT& rc = wPicto->GetBoundRect();
+	  Surface.SelectObject(LKPen_Petrol_C2);
 
-	  SelectObject(hDC,LKBrush_Petrol);
-	  Rectangle(hDC,prc->left,prc->top,prc->right,prc->bottom);
+	  Surface.SelectObject(LKBrush_Petrol);
+	  Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
 
 
-	  SetBkColor  (hDC, RGB_LIGHTGREY);
+	  Surface.SetBkColor(RGB_LIGHTGREY);
       /****************************************************************
        * for drawing the airspace pictorial, we need the original data.
        * copy contain only base class property, not geo data, 
        * original data are shared ressources ! 
        * for that we need to grant all called methods are thread safe
        ****************************************************************/
-	  airspace->DrawPicto(hDC, *prc);
+	  airspace->DrawPicto(Surface, rc);
 }
 
 static void OnFlyClicked(WindowControl * Sender){
@@ -122,9 +122,9 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
 
   WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
   LKASSERT(wPicto!=NULL);
-  HDC hDC =  wPicto->GetDeviceContext();
-  OnPaintAirspacePicto(Sender, hDC);
-
+  
+  LKWindowSurface Surface(wPicto->GetHandle());
+  OnPaintAirspacePicto(Sender, Surface);
 
   SetValues();
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));

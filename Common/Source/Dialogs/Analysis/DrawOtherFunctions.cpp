@@ -9,69 +9,69 @@
 #include "Sideview.h"
 
 
-void Statistics::DrawLabel(HDC hdc, const RECT rc, const TCHAR *text, 
+void Statistics::DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text,
 			   const double xv, const double yv) {
 
   SIZE tsize;
-  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+  Surface.GetTextSize(text, _tcslen(text), &tsize);
   int x = (int)((xv-x_min)*xscale)+rc.left-tsize.cx/2+BORDER_X;
   int y = (int)((y_max-yv)*yscale)+rc.top-tsize.cy/2;
 //  SetBkMode(hdc, OPAQUE);
   if(INVERTCOLORS)
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
+    Surface.SelectObject(LK_BLACK_PEN);
 
 
-  ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-  SetBkMode(hdc, TRANSPARENT);
+  Surface.DrawText(x, y, text, _tcslen(text));
+  Surface.SetBkMode(TRANSPARENT);
 }
 
 
-void Statistics::DrawNoData(HDC hdc, RECT rc) {
+void Statistics::DrawNoData(LKSurface& Surface, const RECT& rc) {
 
   SIZE tsize;
   TCHAR text[80];
 	// LKTOKEN  _@M470_ = "No data" 
   _stprintf(text,TEXT("%s"), gettext(TEXT("_@M470_")));
-  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+  Surface.GetTextSize(text, _tcslen(text), &tsize);
   int x = (int)(rc.left+rc.right-tsize.cx)/2;
   int y = (int)(rc.top+rc.bottom-tsize.cy)/2;
-  SetBkMode(hdc, OPAQUE);
-  ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-  SetBkMode(hdc, TRANSPARENT);
+  Surface.SetBkMode(OPAQUE);
+  Surface.DrawText(x, y, text, _tcslen(text));
+  Surface.SetBkMode(TRANSPARENT);
 }
 
 
 
-void Statistics::DrawXLabel(HDC hdc, const RECT rc, const TCHAR *text) {
+void Statistics::DrawXLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text) {
   SIZE tsize;
-  HFONT hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
-  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+  LKFont hfOld = Surface.SelectObject(MapLabelFont);
+  Surface.GetTextSize(text, _tcslen(text), &tsize);
   int x = rc.right-tsize.cx-IBLSCALE(3);
   int y = rc.bottom-tsize.cy;
   if(INVERTCOLORS)
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
+    Surface.SelectObject(LK_BLACK_PEN);
 
-  ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-  SelectObject(hdc, hfOld);
+  Surface.DrawText(x, y, text, _tcslen(text));
+  Surface.SelectObject(hfOld);
 }
 
 
-void Statistics::DrawYLabel(HDC hdc, const RECT rc, const TCHAR *text) {
+void Statistics::DrawYLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text) {
   SIZE tsize;
-  HFONT hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
-  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+  LKFont hfOld = Surface.SelectObject(MapLabelFont);
+  Surface.GetTextSize(text, _tcslen(text), &tsize);
   int x = max(2,(int)rc.left-(int)tsize.cx);
   int y = rc.top;
   if(INVERTCOLORS)
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
+    Surface.SelectObject(LK_BLACK_PEN);
 
 
-  ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-  SelectObject(hdc, hfOld);
+  Surface.DrawText(x, y, text, _tcslen(text));
+  Surface.SelectObject(hfOld);
 }
 
 
-void Statistics::DrawTrend(HDC hdc, const RECT rc, LeastSquares* lsdata, 
+void Statistics::DrawTrend(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
 			   const int Style) 
 {
   if (lsdata->sum_n<2) {
@@ -98,12 +98,12 @@ void Statistics::DrawTrend(HDC hdc, const RECT rc, LeastSquares* lsdata,
   line[1].x = (int)xmax;
   line[1].y = (int)ymax;
 
-  StyleLine(hdc, line[0], line[1], Style, rc);
+  StyleLine(Surface, line[0], line[1], Style, rc);
 
 }
 
 
-void Statistics::DrawTrendN(HDC hdc, const RECT rc, 
+void Statistics::DrawTrendN(LKSurface& Surface, const RECT& rc,
 			    LeastSquares* lsdata, 
                             const int Style) 
 {
@@ -131,13 +131,13 @@ void Statistics::DrawTrendN(HDC hdc, const RECT rc,
   line[1].x = (int)xmax;
   line[1].y = (int)ymax;
 
-  StyleLine(hdc, line[0], line[1], Style, rc);
+  StyleLine(Surface, line[0], line[1], Style, rc);
 
 }
 
 
 
-void Statistics::DrawLine(HDC hdc, const RECT rc, 
+void Statistics::DrawLine(LKSurface& Surface, const RECT& rc,
 			  const double xmin, const double ymin,
                           const double xmax, const double ymax,
                           const int Style) {
@@ -151,27 +151,27 @@ void Statistics::DrawLine(HDC hdc, const RECT rc,
   line[1].x = (int)((xmax-x_min)*xscale)+rc.left+BORDER_X;
   line[1].y = (int)((y_max-ymax)*yscale)+rc.top;
 
-  StyleLine(hdc, line[0], line[1], Style, rc);
+  StyleLine(Surface, line[0], line[1], Style, rc);
 
 }
 
 
-void Statistics::DrawBarChart(HDC hdc, const RECT rc, LeastSquares* lsdata) {
+void Statistics::DrawBarChart(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata) {
   int i;
-COLORREF Col;
+LKColor Col;
   if (unscaled_x || unscaled_y) {
     return;
   }
 
 if(INVERTCOLORS)
-  Col = ChangeBrightness(RGB_GREEN, 0.5);
+  Col = RGB_GREEN.ChangeBrightness(0.5);
 else
   Col = RGB_WHITE;
 
-  HPEN    hpBar = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), Col);
-  HBRUSH  hbBar = (HBRUSH)CreateSolidBrush(Col);
-  HPEN   oldpen   = (HPEN)   SelectObject(hdc, hpBar);
-  HBRUSH oldbrush = (HBRUSH) SelectObject(hdc, hbBar);
+  LKPen hpBar(PEN_SOLID, IBLSCALE(1), Col);
+  LKBrush hbBar(Col);
+  LKPen oldpen = Surface.SelectObject(hpBar);
+  LKBrush oldbrush = Surface.SelectObject(hbBar);
 
 
   int xmin, ymin, xmax, ymax;
@@ -181,23 +181,17 @@ else
     ymin = (int)((y_max-y_min)*yscale)+rc.top;
     xmax = (int)((i+1+0.8)*xscale)+rc.left+BORDER_X;
     ymax = (int)((y_max-lsdata->ystore[i])*yscale)+rc.top;
-    Rectangle(hdc, 
-              xmin, 
-              ymin,
-              xmax,
-              ymax);
+    Surface.Rectangle(xmin, ymin, xmax, ymax);
   }
 
-  SelectObject(hdc, oldpen);
-  SelectObject(hdc, oldbrush);
-  DeleteObject (hpBar);
-  DeleteObject (hbBar);
+  Surface.SelectObject(oldpen);
+  Surface.SelectObject(oldbrush);
 }
 
 
-void Statistics::DrawFilledLineGraph(HDC hdc, const RECT rc, 
+void Statistics::DrawFilledLineGraph(LKSurface& Surface, const RECT& rc,
 				     LeastSquares* lsdata,
-				     const COLORREF color) {
+				     const LKColor& color) {
 
   POINT line[4];
 
@@ -210,13 +204,13 @@ void Statistics::DrawFilledLineGraph(HDC hdc, const RECT rc,
     line[2].y = rc.bottom-BORDER_Y;
     line[3].x = line[0].x;
     line[3].y = rc.bottom-BORDER_Y;
-    Polygon(hdc, line, 4);
+    Surface.Polygon(line, 4);
   }
 }
 
 
 
-void Statistics::DrawLineGraph(HDC hdc, RECT rc, LeastSquares* lsdata,
+void Statistics::DrawLineGraph(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
                                int Style) {
 
   POINT line[2];
@@ -229,7 +223,7 @@ void Statistics::DrawLineGraph(HDC hdc, RECT rc, LeastSquares* lsdata,
 
     // STYLE_DASHGREEN
     // STYLE_MEDIUMBLACK
-    StyleLine(hdc, line[0], line[1], Style, rc);
+    StyleLine(Surface, line[0], line[1], Style, rc);
   }
 }
 

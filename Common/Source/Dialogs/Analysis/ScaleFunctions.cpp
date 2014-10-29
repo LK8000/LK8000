@@ -15,7 +15,7 @@ void Statistics::ResetScale() {
 }
 
 
-void Statistics::ScaleYFromData(const RECT rc, LeastSquares* lsdata) 
+void Statistics::ScaleYFromData(const RECT& rc, LeastSquares* lsdata)
 {
   if (!lsdata->sum_n) {
     return;
@@ -50,7 +50,7 @@ void Statistics::ScaleYFromData(const RECT rc, LeastSquares* lsdata)
 }
 
 
-void Statistics::ScaleXFromData(const RECT rc, LeastSquares* lsdata) 
+void Statistics::ScaleXFromData(const RECT& rc, LeastSquares* lsdata)
 {
   if (!lsdata->sum_n) {
     return;
@@ -71,7 +71,7 @@ void Statistics::ScaleXFromData(const RECT rc, LeastSquares* lsdata)
 }
 
 
-void Statistics::ScaleYFromValue(const RECT rc, const double value) 
+void Statistics::ScaleYFromValue(const RECT& rc, const double value)
 {
   if (unscaled_y) {
     y_min = value;
@@ -89,7 +89,7 @@ void Statistics::ScaleYFromValue(const RECT rc, const double value)
 }
 
 
-void Statistics::ScaleXFromValue(const RECT rc, const double value) 
+void Statistics::ScaleXFromValue(const RECT& rc, const double value)
 {
   if (unscaled_x) {
     x_min = value;
@@ -108,7 +108,7 @@ void Statistics::ScaleXFromValue(const RECT rc, const double value)
 }
 
 
-void Statistics::ScaleMakeSquare(const RECT rc) {
+void Statistics::ScaleMakeSquare(const RECT& rc) {
   if (y_max-y_min<=0) return;
   if (rc.bottom-rc.top-BORDER_Y<=0) return;
   double ar = ((double)(rc.right-rc.left-BORDER_X))
@@ -146,12 +146,12 @@ void Statistics::ScaleMakeSquare(const RECT rc) {
 
 
 
-int Statistics::ScaleX(const RECT rc, double x)
+int Statistics::ScaleX(const RECT& rc, double x)
 {
   return (int)((x-x_min)*xscale)+rc.left+BORDER_X;
 }
 
-int Statistics::ScaleY(const RECT rc,double y)
+int Statistics::ScaleY(const RECT& rc,double y)
 {
   return(int)((y_max-y)*yscale)+rc.top;
 }

@@ -14,49 +14,49 @@
 //
 // Draw circles and gadgets for thermals
 //
-void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
+void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc) {
   POINT screen;
-  HPEN oldPen;
   if (!EnableThermalLocator) return;
 
   if (mode.Is(Mode::MODE_CIRCLING)) {
 	if (DerivedDrawInfo.ThermalEstimate_R>0) {
 		LatLon2Screen(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude, screen);
-		DrawBitmapIn(hdc, screen, hBmpThermalSource,true);
+		DrawBitmapIn(Surface, screen, hBmpThermalSource,true);
 
-		SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+		LKBrush oldBrush = Surface.SelectObject(LKBrush_Hollow);
 		double tradius;
 		if (ISPARAGLIDER)
 			tradius=50;
 		else
 			tradius=100;
 			
-		oldPen=(HPEN)SelectObject(hdc, LKPen_White_N3); 
-		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
-		SelectObject(hdc, LKPen_Black_N1); 
-		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
-		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+		LKPen oldPen = Surface.SelectObject(LKPen_White_N3);
+		Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+		Surface.SelectObject(LKPen_Black_N1);
+		Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
+		Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
 
 		/* 101219 This would display circles around the simulated thermal, but people is confused.
 		if (SIMMODE && (ThLatitude>1 && ThLongitude>1)) { // there's a thermal to show
 			if ((counter==5 || counter==6|| counter==7)) {
 				LatLon2Screen(ThLongitude, ThLatitude, screen);
-				SelectObject(hdc, hSnailPens[7]);  
+				Surface.SelectObject(hSnailPens[7]);  
 				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*zoom.ResScaleOverDistanceModify()), rc); 
-				SelectObject(hdc, hSnailPens[7]); 
+				Surface.SelectObject(hSnailPens[7]); 
 				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*zoom.ResScaleOverDistanceModify()), rc); 
 			}
 			if (++counter>=60) counter=0;
 		}
  		*/
 
-		SelectObject(hdc,oldPen);
+		Surface.SelectObject(oldPen);
+        Surface.SelectObject(oldBrush);
 	}
   } else {
 	if (zoom.RealScale() <= 4) {
 		for (int i=0; i<MAX_THERMAL_SOURCES; i++) {
 			if (DerivedDrawInfo.ThermalSources[i].Visible) {
-				DrawBitmapIn(hdc, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource,true);
+				DrawBitmapIn(Surface, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource,true);
 			}
 		}
 	}
@@ -69,10 +69,10 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 // Paint a circle around thermal multitarget
 // Called only during map mode L>
 //
-void MapWindow::DrawThermalEstimateMultitarget(HDC hdc, const RECT rc) {
+void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& rc) {
 
   POINT screen;
-  HPEN  oldPen;
+
   int idx=0;
 
   // do not mix old and new thermals 
@@ -91,22 +91,22 @@ void MapWindow::DrawThermalEstimateMultitarget(HDC hdc, const RECT rc) {
 
   //DrawBitmapIn(hdc, screen, hBmpThermalSource);
 
-  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+  LKBrush oldBrush = Surface.SelectObject(LKBrush_Hollow);
   double tradius;
   if (ISPARAGLIDER)
      tradius=100;
   else
      tradius=200;
 
-  oldPen=(HPEN)SelectObject(hdc, LKPen_White_N3);
+  LKPen oldPen= Surface.SelectObject(LKPen_White_N3);
 
-  Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
-  SelectObject(hdc, LKPen_White_N2);
-  Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
-  Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+  Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+  Surface.SelectObject(LKPen_White_N2);
+  Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
+  Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
 
-  SelectObject(hdc,oldPen);
-
+  Surface.SelectObject(oldPen);
+  Surface.SelectObject(oldBrush);
 
 }
 

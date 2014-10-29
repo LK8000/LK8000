@@ -12,6 +12,7 @@
 #include "ContestMgr.h"
 #include "Defines.h"
 #include "Topology.h"
+#include "LKObjects.h"
 
 #ifdef PNA
   #define FAI_SECTOR_STEPS 11
@@ -19,19 +20,17 @@
   #define FAI_SECTOR_STEPS 21
 #endif
 #define MAX_FAI_SECTOR_PTS (8*FAI_SECTOR_STEPS)
-extern COLORREF taskcolor;
-int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor);
+extern LKColor taskcolor;
+int RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
 
 
-void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
+void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft)
 {
 
-  COLORREF whitecolor = RGB_WHITE;
-  COLORREF origcolor = SetTextColor(hDCTemp, whitecolor);
-  HPEN oldpen = 0;
-  HBRUSH oldbrush = 0;
-  oldpen = (HPEN) SelectObject(hdc, hpStartFinishThick);
-  oldbrush = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+  LKColor whitecolor = RGB_WHITE;
+  LKColor origcolor = Surface.SetTextColor(whitecolor);
+  LKPen oldpen = Surface.SelectObject(hpStartFinishThick);
+  LKBrush oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
 
 /********************************************************************/
@@ -75,7 +74,7 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 
       if(((fDist > FAI_MIN_DISTANCE_THRESHOLD) && (ui < 3) && !bFlat && (fDist/ fFAIDistance  > 0.05)) )
   	  {
-  		COLORREF rgbCol = RGB_BLUE;
+  		LKColor rgbCol = RGB_BLUE;
   		switch(ui)
   		{
   		  case 0: rgbCol = RGB_YELLOW; break;
@@ -84,8 +83,8 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
   		  default:
   		  break;
   		}
-  		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 1, rgbCol );
-  		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, 0, rgbCol );
+  		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 1, rgbCol );
+  		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 0, rgbCol );
   	  }
       if (fFAIDistance > 0)  /* check if triangle is too flat for second sector */
         if(fDist/ fFAIDistance  > 0.45)
@@ -96,18 +95,17 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 
     if(ISPARAGLIDER && bFAI)
     {
-      HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
-      HPEN hOldPen = (HPEN) SelectObject (hdc, hpSectorPen);
+      LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
+      LKPen hOldPen = Surface.SelectObject(hpSectorPen);
       POINT Pt1;
-	  MapWindow::LatLon2Screen(lon_CP, lat_CP,  Pt1);
+      MapWindow::LatLon2Screen(lon_CP, lat_CP,  Pt1);
       FindLatitudeLongitude(lat1, lon1, 0 , fFAIDistance* 0.20, &lat2, &lon2); /* 1000m destination circle */
       int iRadius = (int)((lat2-lat1)*zoom.DrawScale());
-      Circle(hdc, Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
+      Surface.Circle(Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
       FindLatitudeLongitude(lat1, lon1, 0 , 500, &lat2, &lon2); /* 1000m destination circle */
       iRadius = (int)((lat2-lat1)*zoom.DrawScale());
-      Circle(hdc, Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
-      SelectObject (hdc, hOldPen);
-      DeleteObject(hpSectorPen);
+      Surface.Circle(Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
+      Surface.SelectObject (hOldPen);
     }
 
 /*********************************************************/
@@ -119,15 +117,15 @@ void MapWindow::DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
     
 /********************************************************************/
     // restore original color
-    SetTextColor(hDCTemp, origcolor);
-    SelectObject(hdc, oldpen);
-    SelectObject(hdc, oldbrush);
+    Surface.SetTextColor(origcolor);
+    Surface.SelectObject(oldpen);
+    Surface.SelectObject(oldbrush);
 
 }
 
 
 
-int RenderFAISector (HDC hdc, const RECT rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , COLORREF fillcolor)
+int RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor)
 {
 
 POINT Pt1;
@@ -179,7 +177,7 @@ if (iOpposite >0)
   FindLatitudeLongitude(lat_d, lon_d, AngleLimit360 (fAngle-90.0), fDist_c, &lat_d, &lon_d);
   x2 = (lon_d - lon_c)*fastcosine(lat_d);
   y2 = (lat_d - lat_c);
-  DrawLine(hdc, rc, x1, y1, x2, y2, style);
+  Surface.DrawLine(rc, x1, y1, x2, y2, style);
 #endif
 
   /********************************************************************
@@ -448,36 +446,23 @@ if(fDistMin < FAI28_45Threshold)
   /********************************************************************
    * draw polygon
    ********************************************************************/
-  HPEN   hpSectorPen  = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  fillcolor );
-  HBRUSH hpSectorFill = NULL;
+  LKPen   hpSectorPen(PEN_SOLID, IBLSCALE(2),  fillcolor );
 
-  HPEN hpOldPen     = (HPEN)  SelectObject(hdc, hpSectorPen);
-  HBRUSH hpOldBrush;
+  LKPen hpOldPen = Surface.SelectObject(hpSectorPen);
+  LKBrush hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
 
-    hpOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+  Surface.Polygon(apSectorPolygon,iPolyPtr,rc);
 
-
-  /********************************************/
-  if (ForcedClipping || DeviceNeedClipping)
-    ClipPolygon(hdc,apSectorPolygon,iPolyPtr,rc, true);
-  else
-    Polygon(hdc,apSectorPolygon,iPolyPtr);
-  /********************************************/
-
-  SelectObject(hdc, (HPEN)hpOldPen);
-  SelectObject(hdc, (HBRUSH)hpOldBrush);
-  DeleteObject(hpSectorPen);
-  if(hpSectorFill != NULL)
-    DeleteObject(hpSectorFill);
-
-
+  Surface.SelectObject(hpOldPen);
+  Surface.SelectObject(hpOldBrush);
+  hpSectorPen.Release();
 
   /********************************************************************
    * calc round leg grid
    ********************************************************************/
-  hpSectorPen  = (HPEN)CreatePen(PS_SOLID, (1), RGB_BLACK );
-  SelectObject(hdc, hpSectorPen);
-  SetTextColor(hdc, RGB_BLACK);
+  hpSectorPen.Create(PEN_SOLID, (1), RGB_BLACK );
+  Surface.SelectObject(hpSectorPen);
+  Surface.SetTextColor(RGB_BLACK);
   double fTic= 1/DISTANCEMODIFY;
   if(fDist_c > 5/DISTANCEMODIFY)   fTic = 10/DISTANCEMODIFY;
   if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
@@ -488,7 +473,7 @@ if(fDistMin < FAI28_45Threshold)
   BOOL bFirstUnit = true;
   LKASSERT(fTic!=0);
   fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
 int iCnt = 0;
 
@@ -500,7 +485,7 @@ int iCnt = 0;
 	else
 	  _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
 	bFirstUnit = false;
-	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+	Surface.GetTextSize(text, _tcslen(text), &tsize);
 
     int j=0;
 
@@ -548,14 +533,14 @@ int iCnt = 0;
       if(j> 0)
       {
   		ForcedClipping=true;
-  		MapWindow::_DrawLine(hdc, PS_DASH, NIBLSCALE(1), line[0] , line[1] , RGB_BLACK, rc);
+  		Surface.DrawLine(PEN_DASH, NIBLSCALE(1), line[0] , line[1] , RGB_BLACK, rc);
   		ForcedClipping=false;
       }
 
 
       if(j==0)
       {
-    	ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    	Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
     	j=1;
 
       }
@@ -565,17 +550,17 @@ int iCnt = 0;
         _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
       else
         _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
-      GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+      Surface.GetTextSize(text, _tcslen(text), &tsize);
       if(i == 0)
-        ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+        Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
 
       if(iCnt > 1)
   	    if(i == FAI_SECTOR_STEPS-1)
-  	      ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+  	      Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
 
       if(iCnt > 2)
   	    if((i== (FAI_SECTOR_STEPS/2)))
-  	      ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+  	      Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
 
       line[1] =  line[0];
 
@@ -586,12 +571,12 @@ int iCnt = 0;
     }
     fDistTri+=fTic;iCnt++;
  //   if((iCnt %2) ==0)
-  //    ExtTextOut(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+  //    DrawText(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   }
 
-SelectObject(hdc, hfOld);
-SelectObject(hdc, (HPEN)hpOldPen);
-DeleteObject( hpSectorPen);
+Surface.SelectObject(hfOld);
+Surface.SelectObject(hpOldPen);
+
 return 0;
 }
 

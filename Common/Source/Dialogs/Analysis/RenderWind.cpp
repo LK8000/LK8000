@@ -13,7 +13,7 @@
 #include "windanalyser.h"
 extern WindAnalyser *windanalyser;
 
-void Statistics::RenderWind(HDC hdc, const RECT rc) 
+void Statistics::RenderWind(LKSurface& Surface, const RECT& rc)
 {
   int numsteps=10;
   int i;
@@ -26,7 +26,7 @@ void Statistics::RenderWind(HDC hdc, const RECT rc)
 
   if (flightstats.Altitude_Ceiling.y_max
       -flightstats.Altitude_Ceiling.y_min<=10) {
-    DrawNoData(hdc, rc);
+    DrawNoData(Surface, rc);
     return;
   }
 
@@ -52,11 +52,11 @@ void Statistics::RenderWind(HDC hdc, const RECT rc)
 
   ScaleYFromData(rc, &windstats_mag);
 
-  DrawXGrid(hdc, rc, 5/SPEEDMODIFY, 0, STYLE_THINDASHPAPER, 5.0, true);
-  DrawYGrid(hdc, rc, 1000/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER,
+  DrawXGrid(Surface, rc, 5/SPEEDMODIFY, 0, STYLE_THINDASHPAPER, 5.0, true);
+  DrawYGrid(Surface, rc, 1000/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER,
             1000.0, true);
 
-  DrawLineGraph(hdc, rc, &windstats_mag,
+  DrawLineGraph(Surface, rc, &windstats_mag,
                 STYLE_MEDIUMBLACK);
 
 #define WINDVECTORMAG 25
@@ -92,14 +92,14 @@ void Statistics::RenderWind(HDC hdc, const RECT rc)
     rotate(dX,dY,angle);
     wv[1].x = (int)(wv[0].x + dX);
     wv[1].y = (int)(wv[0].y + dY);
-    StyleLine(hdc, wv[0], wv[1], STYLE_MEDIUMBLACK, rc);
+    StyleLine(Surface, wv[0], wv[1], STYLE_MEDIUMBLACK, rc);
 
     dX = (mag*WINDVECTORMAG-5);
     dY = -3;
     rotate(dX,dY,angle);
     wv[2].x = (int)(wv[0].x + dX);
     wv[2].y = (int)(wv[0].y + dY);
-    StyleLine(hdc, wv[1], wv[2], STYLE_MEDIUMBLACK, rc);
+    StyleLine(Surface, wv[1], wv[2], STYLE_MEDIUMBLACK, rc);
 
     dX = (mag*WINDVECTORMAG-5);
     dY = 3;
@@ -107,20 +107,20 @@ void Statistics::RenderWind(HDC hdc, const RECT rc)
     wv[3].x = (int)(wv[0].x + dX);
     wv[3].y = (int)(wv[0].y + dY);
 
-    StyleLine(hdc, wv[1], wv[3], STYLE_MEDIUMBLACK, rc);
+    StyleLine(Surface, wv[1], wv[3], STYLE_MEDIUMBLACK, rc);
 
   }
 
   if(INVERTCOLORS)
-    SetTextColor(hdc,RGB_DARKGREEN);
+    Surface.SetTextColor(RGB_DARKGREEN);
   else
-    SetTextColor(hdc,RGB_GREEN);
-  SetBkMode(hdc, OPAQUE);
+    Surface.SetTextColor(RGB_GREEN);
+  Surface.SetBkMode(OPAQUE);
   TCHAR text[80];
   _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
-  DrawXLabel(hdc, rc, text);
+  DrawXLabel(Surface, rc, text);
   _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
-  DrawYLabel(hdc, rc, text);
+  DrawYLabel(Surface, rc, text);
 
  // DrawXLabel(hdc, rc, TEXT("w"));
  // DrawYLabel(hdc, rc, TEXT("h"));

@@ -5,7 +5,7 @@
  */
 
 
-double MapWindow::LKDrawLongTrail( HDC hdc, const POINT Orig, const RECT rc)
+double MapWindow::LKDrawLongTrail( LKSurface& Surface, const POINT& Orig, const RECT& rc)
 {
   if(TrailActive!=3) return -1; // only when full trail is selected
   if (iLongSnailNext<2) return -1; // no reason to draw a single point
@@ -40,7 +40,7 @@ double MapWindow::LKDrawLongTrail( HDC hdc, const POINT Orig, const RECT rc)
   // below this distance, no painting
   nearby=14;
 
-    HPEN oldPen = (HPEN)SelectObject(hdc, hSnailPens[3]); // blue color
+    LKPen oldPen = Surface.SelectObject(hSnailPens[3]); // blue color
 
     // draw from oldest to newest point
     // the "+1" is the latest point in the snail trail, to connect the two trails
@@ -79,32 +79,20 @@ double MapWindow::LKDrawLongTrail( HDC hdc, const POINT Orig, const RECT rc)
 	    }
         }
 
-        if (!last_visible) { // draw set cursor at P1
-	    #ifndef NOLINETO
-            MoveToEx(hdc, P1.Screen.x, P1.Screen.y, NULL);
-            #endif
-        } else {
-	    #ifndef NOLINETO
-	    LineTo(hdc, P1.Screen.x, P1.Screen.y);
-	    #else
-	    DrawSolidLine(hdc, P1.Screen, point_lastdrawn, rc);
-	    #endif
+        if (last_visible) { // draw set cursor at P1
+            Surface.DrawSolidLine(P1.Screen, point_lastdrawn, rc);
         }
         point_lastdrawn = P1.Screen;
         last_visible = this_visible;
 
     } // big for loop
-    SelectObject(hdc, oldPen);
+    Surface.SelectObject(oldPen);
 
 #if 0
   // TODO we may draw to oldest point in the snailtrail, instead.. if really we want to do it
   // Otherwise we have 1 minute gap between snail and long trail
   if (last_visible) {
-#ifndef NOLINETO 
-    LineTo(hdc, Orig.x, Orig.y);
-#else
-    DrawSolidLine(hdc, Orig, point_lastdrawn, rc);
-#endif
+    Surface.DrawSolidLine(Orig, point_lastdrawn, rc);
   }
 #endif
 

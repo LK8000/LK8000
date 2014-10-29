@@ -11,10 +11,31 @@
 
 #define	BYTE	int8_t
 #define BOOL	bool
+#define LONG	long
 
 typedef unsigned long DWORD;
 typedef unsigned short WORD;
 typedef unsigned int UNINT32;
+typedef unsigned int UINT;
+
+typedef int INT;
+
+typedef struct tagSIZE {
+  long cx;
+  long cy;
+} SIZE;
+
+typedef struct tagPOINT {
+  long x;
+  long y;
+} POINT;
+
+typedef struct tagRECT {
+  long left;
+  long top;
+  long right;
+  long bottom;
+} RECT;
 
 #endif	
 

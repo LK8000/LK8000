@@ -14,7 +14,7 @@
 //
 // Final Glide Bar, revised for variometer gauge
 //
-void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
+void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc)
 {
 
   SIZE           TextSize;
@@ -27,8 +27,8 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
   POINT GlideBar[6] = { {0,0},{9,-9},{18,0},{18,0},{9,0},{0,0} };
   POINT GlideBar0[6] = { {0,0},{9,-9},{18,0},{18,0},{9,0},{0,0} };
   
-  HPEN hpOld;
-  HBRUSH hbOld;
+  LKPen hpOld;
+  LKBrush hbOld;
   
   TCHAR Value[10];
   
@@ -167,13 +167,13 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	// draw actual glide bar
 
 	if (Offset<=0) {
-		hpOld = (HPEN)SelectObject(hDC, hpFinalGlideBelow);
-		hbOld = (HBRUSH)SelectObject(hDC, LKBrush_Red);
+		hpOld = Surface.SelectObject(hpFinalGlideBelow);
+		hbOld = Surface.SelectObject(LKBrush_Red);
 	} else {
-		hpOld = (HPEN)SelectObject(hDC, hpFinalGlideAbove);
-		hbOld = (HBRUSH)SelectObject(hDC, LKBrush_Green);
+		hpOld = Surface.SelectObject(hpFinalGlideAbove);
+		hbOld = Surface.SelectObject(LKBrush_Green);
 	}
-	Polygon(hDC,GlideBar,6);
+	Surface.Polygon(GlideBar,6);
 
 	// in case of invalid bar because finish mode with real task but no valid start, we skip
 	if (invalidbar) {
@@ -185,14 +185,14 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	// we dont have mc0 calc ready for other overtargets, not granted at least
 	if (OvertargetMode == OVT_TASK) {
 		if (Offset0<=0) {
-			SelectObject(hDC, hpFinalGlideBelow);
-			SelectObject(hDC, GetStockObject(HOLLOW_BRUSH));
+			Surface.SelectObject(hpFinalGlideBelow);
+			Surface.SelectObject(LKBrush_Hollow);
 		} else {
-			SelectObject(hDC, hpFinalGlideAbove);
-			SelectObject(hDC, GetStockObject(HOLLOW_BRUSH));
+			Surface.SelectObject(hpFinalGlideAbove);
+			Surface.SelectObject(LKBrush_Hollow);
 		}
 		if (Offset!=Offset0) {
-			Polygon(hDC,GlideBar0,6);
+			Surface.Polygon(GlideBar0,6);
 		}
 
 
@@ -200,25 +200,25 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		if ( (GlideBarMode == (GlideBarMode_t)gbFinish) ) {
 			if ((DerivedDrawInfo.TaskTimeToGo>0.9*ERROR_TIME) || 
 			((MACCREADY<0.01) && (DerivedDrawInfo.TaskAltitudeDifference<0))) {
-				SelectObject(hDC, LKPen_White_N2);
+				Surface.SelectObject(LKPen_White_N2);
 				POINT Cross[4] = { {-5, -5}, { 5,  5}, {-5,  5}, { 5, -5} };
 				for (i=0; i<4; i++) {
 					Cross[i].x = IBLSCALE(Cross[i].x+9)+lkVarioOffset; //@ 091114
 					Cross[i].y = IBLSCALE(Cross[i].y+9)+y0;
 				}
-				Polygon(hDC,Cross,2);
-				Polygon(hDC,&Cross[2],2);
+				Surface.Polyline(&Cross[0],2);
+                Surface.Polyline(&Cross[2],2);
 			}
 		} else {
 			if ((MACCREADY<0.01) && (DerivedDrawInfo.NextAltitudeDifference<0)) {
-				SelectObject(hDC, LKPen_White_N2);
+				Surface.SelectObject(LKPen_White_N2);
 				POINT Cross[4] = { {-5, -5}, { 5,  5}, {-5,  5}, { 5, -5} };
 				for (i=0; i<4; i++) {
 					Cross[i].x = IBLSCALE(Cross[i].x+9)+lkVarioOffset;
 					Cross[i].y = IBLSCALE(Cross[i].y+9)+y0;
 				}
-				Polygon(hDC,Cross,2);
-				Polygon(hDC,&Cross[2],2);
+				Surface.Polyline(&Cross[0],2);
+				Surface.Polyline(&Cross[2],2);
 			}
 		}
 	}
@@ -271,17 +271,17 @@ _skipout:
 			}
 		}
 		// VENTA10
-		GetTextExtentPoint(hDC, Value, _tcslen(Value), &TextSize); 
+		Surface.GetTextSize(Value, _tcslen(Value), &TextSize); 
 		GlideBarOffset=max(NIBLSCALE(11),(int)TextSize.cx) - NIBLSCALE(2);
  
     TextInBoxMode_t TextInBoxMode = {0};
     TextInBoxMode.Border = true;          //={1|8};
     TextInBoxMode.Reachable = true;
     // boxed numbers are a bit too much on the left, so increase the offset
-    TextInBox(hDC, &rc,Value, lkVarioOffset+NIBLSCALE(1), (int)Offset, 0, &TextInBoxMode); //@ 091114
+    TextInBox(Surface, &rc,Value, lkVarioOffset+NIBLSCALE(1), (int)Offset, 0, &TextInBoxMode); //@ 091114
 
-	SelectObject(hDC, hbOld);
-	SelectObject(hDC, hpOld);
+	Surface.SelectObject(hbOld);
+	Surface.SelectObject(hpOld);
     } else GlideBarOffset=0; 	// 091125 BUGFIX glidebaroffset is zero when no task point
      {
        UnlockTaskData();

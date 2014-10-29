@@ -37,13 +37,13 @@ void XShape::load(shapefileObj* shpfile, int i) {
 
 
 void Topology::loadBitmap(const int xx) {
-  hBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(xx));
+  hBitmap.LoadFromResource(MAKEINTRESOURCE(xx));
 }
 
 // thecolor is relative to shapes, not to labels
 // TODO (maybe): get rid of LKM internal colors defined per shape level,
 // and assign them here dynamically. Easy and fast to do.
-void Topology::loadPenBrush(const COLORREF thecolor) {
+void Topology::loadPenBrush(const LKColor thecolor) {
   int psize;
   switch(scaleCategory) {
 	case 20: // water lines
@@ -141,8 +141,8 @@ void Topology::loadPenBrush(const COLORREF thecolor) {
 		psize=NIBLSCALE(1);
 		break;
   }
-  hPen = (HPEN)CreatePen(PS_SOLID, psize, thecolor);
-  hbBrush=(HBRUSH)CreateSolidBrush(thecolor);
+  hPen.Create(PEN_SOLID, psize, thecolor);
+  hbBrush.Create(thecolor);
 
 }
 
@@ -160,9 +160,6 @@ Topology::Topology(const TCHAR* shpname) {
   triggerUpdateCache = false;
   scaleThreshold = 0;
   shpCache= NULL;
-  hBitmap = NULL;
-  hPen = NULL;
-  hbBrush = NULL;
 
   shpBounds = NULL;
   shps = NULL;
@@ -326,13 +323,6 @@ void Topology::Close() {
 
 Topology::~Topology() {
   Close();
-  if (hPen) {
-    DeleteObject((HPEN)hPen);
-    DeleteObject((HBRUSH)hbBrush);    
-  }
-  if (hBitmap) {
-    DeleteObject(hBitmap);
-  }
 }
 
 
@@ -540,7 +530,7 @@ bool Topology::checkVisible(shapeObj& shape, rectObj &screenRect) {
 
 // Paint a single topology element
 
-void Topology::Paint(HDC hdc, RECT rc) {
+void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 
   if (!shapefileopen) return;
   bool nolabels=false;
@@ -560,18 +550,15 @@ void Topology::Paint(HDC hdc, RECT rc) {
   // checkVisible does only check lat lon , not screen pixels..
   // We need to check also screen.
 
-  HPEN  hpOld;
-  HBRUSH hbOld;
-  HFONT hfOld;
 
-  if (hPen) {
-    hpOld = (HPEN)SelectObject(hdc,  hPen);
-    hbOld = (HBRUSH)SelectObject(hdc, hbBrush);
-  } else {
-    hpOld = NULL;
-    hbOld = NULL;
+  LKPen hpOld = Surface.SelectObject(hPen);
+
+  LKBrush hbOld;
+  if (hbBrush) {
+    hbOld = Surface.SelectObject(hbBrush);
   }
-  hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
+
+  LKFont hfOld = Surface.SelectObject(MapLabelFont);
 
   // get drawing info
   int iskip = 1;
@@ -622,10 +609,10 @@ void Topology::Paint(HDC hdc, RECT rc) {
 				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
 				if (dobitmap) {
 					// bugfix 101212 missing case for scaleCategory 0 (markers)
-					if (scaleCategory==0||cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted)) 
-						MapWindow::DrawBitmapIn(hdc, sc, hBitmap,true);
+					if (scaleCategory==0||cshape->renderSpecial(Surface, sc.x, sc.y,labelprinted))
+						MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
 				} else {
-					cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted);
+					cshape->renderSpecial(Surface, sc.x, sc.y,labelprinted);
 				}
 			}
 		}
@@ -650,15 +637,15 @@ void Topology::Paint(HDC hdc, RECT rc) {
 				#if 101016
 				// only paint icon if label is printed too
 				if (noiconwithnolabel) {
-					if (cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted))
-						MapWindow::DrawBitmapIn(hdc, sc, hBitmap,true);
+					if (cshape->renderSpecial(Surface, sc.x, sc.y,labelprinted))
+						MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
 				} else {
-					MapWindow::DrawBitmapIn(hdc, sc, hBitmap,true);
-					cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted);
+					MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
+					cshape->renderSpecial(Surface, sc.x, sc.y,labelprinted);
 				}
 				#else
-				MapWindow::DrawBitmapIn(hdc, sc, hBitmap,true);
-				cshape->renderSpecial(hdc, sc.x, sc.y);
+				MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
+				cshape->renderSpecial(Surface, sc.x, sc.y);
 				#endif
 			}
 		}
@@ -670,21 +657,21 @@ void Topology::Paint(HDC hdc, RECT rc) {
     case(MS_SHAPE_LINE):
 
       if (checkVisible(*shape, screenRect))
-        for (int tt = 0; tt < shape->numlines; tt ++) {
+        for (int tt = 0; tt < shape->numlines; ++tt) {
           
           int minx = rc.right;
           int miny = rc.bottom;
           int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
 
-	  MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize, 1);
-          for (int jj=0; jj< msize; jj++) {
+          MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize, 1);
+          for (int jj=0; jj< msize; ++jj) {
             if (pt[jj].x<=minx) {
               minx = pt[jj].x;
               miny = pt[jj].y;
             }
-	  }
-           ClipPolygon(hdc, pt, msize, rc, false);
-          cshape->renderSpecial(hdc,minx,miny,labelprinted);
+	      }
+          Surface.Polyline(pt, msize, rc);
+          cshape->renderSpecial(Surface,minx,miny,labelprinted);
         }
       break;
       
@@ -694,33 +681,33 @@ void Topology::Paint(HDC hdc, RECT rc) {
 	// labels only up to custom label levels
 	if ( nolabels ) {
 		if (checkVisible(*shape, screenRect)) {
-			for (int tt = 0; tt < shape->numlines; tt ++) {
+			for (int tt = 0; tt < shape->numlines; ++tt) {
 				int minx = rc.right;
 				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
 				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
-				for (int jj=0; jj< msize; jj++) {
+				for (int jj=0; jj< msize; ++jj) {
 					if (pt[jj].x<=minx) {
 						minx = pt[jj].x;
 					}
 				}
-				ClipPolygon(hdc,pt, msize, rc, true);
+				Surface.Polygon(pt, msize, rc);
 			}
 		}
 	} else 
 	if (checkVisible(*shape, screenRect)) {
-		for (int tt = 0; tt < shape->numlines; tt ++) {
+		for (int tt = 0; tt < shape->numlines; ++tt) {
 			int minx = rc.right;
 			int miny = rc.bottom;
 			int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
 			MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
-			for (int jj=0; jj< msize; jj++) {
+			for (int jj=0; jj< msize; ++jj) {
 				if (pt[jj].x<=minx) {
 					minx = pt[jj].x;
 					miny = pt[jj].y;
 				}
 			}
-			ClipPolygon(hdc,pt, msize, rc, true);
-			cshape->renderSpecial(hdc,minx,miny,labelprinted);
+			Surface.Polygon(pt, msize, rc);
+			cshape->renderSpecial(Surface,minx,miny,labelprinted);
 		}
 	}
 	break;
@@ -730,10 +717,10 @@ void Topology::Paint(HDC hdc, RECT rc) {
     }
   }
   if (hpOld) {
-    SelectObject(hdc, hbOld);
-    SelectObject(hdc, hpOld);
+    Surface.SelectObject(hbOld);
   }
-  SelectObject(hdc, (HFONT)hfOld);
+  Surface.SelectObject(hpOld);
+  Surface.SelectObject(hfOld);
 
 }
 
@@ -820,7 +807,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 }
 
 // Print topology labels
-bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
+bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, bool retval) {
   if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
 
     //Do not waste time with null labels
@@ -829,11 +816,11 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
         return false;
     }
 
-	SetBkMode(hDC,TRANSPARENT);
+	Surface.SetBkMode(TRANSPARENT);
 
 	SIZE tsize;
 	RECT brect;
-	GetTextExtentPoint(hDC, label, size, &tsize);
+	Surface.GetTextSize(label, size, &tsize);
 
 	// shift label from center point of shape
 	x+= NIBLSCALE(2); 
@@ -853,9 +840,9 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 		brect.left<=MapWindow::DrawRect.left ||
 		brect.right>=MapWindow::DrawRect.right) return false;
 
-	SetTextColor(hDC, RGB(0,50,50)); // PETROL too light at 66
+	Surface.SetTextColor(LKColor(0,50,50)); // PETROL too light at 66
     
-	ExtTextOut(hDC, x, y, 0, NULL, label, size, NULL);
+	Surface.DrawText(x, y, label, size);
 	return true; // 101016
   }
   return false; // 101016
@@ -958,7 +945,7 @@ TopologyWriter::~TopologyWriter() {
 }
 
 
-TopologyWriter::TopologyWriter(const TCHAR* shpname, COLORREF thecolor):
+TopologyWriter::TopologyWriter(const TCHAR* shpname, LKColor thecolor):
   Topology(shpname, thecolor, true) {
 
   Reset();
@@ -1018,294 +1005,6 @@ void TopologyWriter::addPoint(double x, double y) {
 }
 #endif // USETOPOMARKS
 // //////////////////////////////////////////////////////////////
-
-
-
-// The "OutputToInput" function sets the resulting polygon of this
-// step up to be the input polygon for next step of the clipping
-// algorithm. As the Sutherland-Hodgman algorithm is a polygon
-// clipping algorithm, it does not handle line clipping very well. The
-// modification so that lines may be clipped as well as polygons is
-// included in this function. The code for this function is:
-
-static void OutputToInput(unsigned int *inLength, 
-			  POINT *inVertexArray, 
-			  unsigned int *outLength, 
-			  POINT *outVertexArray )
-{ 
-  if ((*inLength==2) && (*outLength==3)) //linefix
-    {
-      inVertexArray[0].x=outVertexArray [0].x;
-      inVertexArray[0].y=outVertexArray [0].y;
-      if ((outVertexArray[0].x==outVertexArray[1].x) 
-          && (outVertexArray[0].y==outVertexArray[1].y)) /*First two vertices 
-                                                      are same*/
-        {
-          inVertexArray[1].x=outVertexArray [2].x;
-          inVertexArray[1].y=outVertexArray [2].y;
-        }
-      else                    /*First vertex is same as third vertex*/
-        {
-          inVertexArray[1].x=outVertexArray [1].x;
-          inVertexArray[1].y=outVertexArray [1].y;
-        }
-      
-      *inLength=2;
-      
-    } 
-  else  /* set the outVertexArray as inVertexArray for next step*/
-    {
-      *inLength= *outLength;
-      memcpy((void*)inVertexArray, (void*)outVertexArray, 
-             (*outLength)*sizeof(POINT));
-    }
-}
-
-
-// The "Inside" function returns TRUE if the vertex tested is on the
-// inside of the clipping boundary. "Inside" is defined as "to the
-// left of clipping boundary when one looks from the first vertex to
-// the second vertex of the clipping boundary". The code for this
-// function is:
-
-/*
-static bool Inside (const POINT *testVertex, const POINT *clipBoundary)
-{
-  if (clipBoundary[1].x > clipBoundary[0].x)              // bottom edge
-    if (testVertex->y <= clipBoundary[0].y) return TRUE;
-  if (clipBoundary[1].x < clipBoundary[0].x)              // top edge
-   if (testVertex->y >= clipBoundary[0].y) return TRUE;
-  if (clipBoundary[1].y < clipBoundary[0].y)              // right edge
-    if (testVertex->x <= clipBoundary[1].x) return TRUE;
-  if (clipBoundary[1].y > clipBoundary[0].y)              // left edge
-    if (testVertex->x >= clipBoundary[1].x) return TRUE;
-  return FALSE;
-}
-*/
-
-#define INSIDE_LEFT_EDGE(a,b)   (a->x >= b[1].x)
-#define INSIDE_BOTTOM_EDGE(a,b) (a->y <= b[0].y)
-#define INSIDE_RIGHT_EDGE(a,b)  (a->x <= b[1].x)
-#define INSIDE_TOP_EDGE(a,b)    (a->y >= b[0].y)
-
-// The "Intersect" function calculates the intersection of the polygon
-// edge (vertex s to p) with the clipping boundary. The code for this
-// function is:
-
-
-static bool Intersect (const POINT &first, const POINT &second, 
-		       const POINT *clipBoundary,
-		       POINT *intersectPt)
-{
-  float f;
-  if (clipBoundary[0].y==clipBoundary[1].y)     /*horizontal*/
-   {
-     intersectPt->y=clipBoundary[0].y;
-     if (second.y != first.y) {
-       f = ((float)(second.x-first.x))/((float)(second.y-first.y));
-       intersectPt->x= first.x + (long)(((clipBoundary[0].y-first.y)*f));
-       return true;
-     }
-   } else { /*Vertical*/
-    intersectPt->x=clipBoundary[0].x;
-    if (second.x != first.x) {
-      f = ((float)(second.y-first.y))/((float)(second.x-first.x));
-      intersectPt->y=first.y + (long)(((clipBoundary[0].x-first.x)*f));
-      return true;
-    } 
-  }
-  return false; // no need to add point!
-}
-
-
-// The "Output" function moves "newVertex" to "outVertexArray" and
-// updates "outLength".
-
-static void Output(const POINT *newVertex, 
-		   unsigned int *outLength, POINT *outVertexArray)
-{
-  if (*outLength) {
-    if ((newVertex->x == outVertexArray[*outLength-1].x)
-        &&(newVertex->y == outVertexArray[*outLength-1].y)) {
-      // no need for duplicates
-      return;
-    }
-  }
-  outVertexArray[*outLength].x= newVertex->x;
-  outVertexArray[*outLength].y= newVertex->y;
-  (*outLength)++;
-}
-
-
-static bool ClipEdge(const bool &s_inside, 
-		     const bool &p_inside, 
-		     const POINT *clipBoundary, 
-		     POINT *outVertexArray, 
-		     const POINT *s,
-		     const POINT *p,
-		     unsigned int *outLength,
-		     const bool fill) {
-
-  if (fill) {
-    if (p_inside && s_inside) {
-      // case 1, save endpoint p
-      return true;
-    } else if (p_inside != s_inside) {
-      POINT i;
-      if (Intersect(*s, *p, clipBoundary, &i)) {
-	Output(&i, outLength, outVertexArray);
-      }
-      // case 4, save intersection and endpoint
-      // case 2, exit visible, save intersection i
-      return p_inside;
-    } else {
-      // case 3, both outside, save nothing
-      return false;
-    }
-  } else {
-    if (p_inside) {
-      return true;
-    }
-  }
-  return false;
-}
-
-
-static unsigned int SutherlandHodgmanPolygoClip (POINT* inVertexArray,
-						 POINT* outVertexArray,
-						 const unsigned int inLength,
-						 const POINT *clipBoundary, 
-						 const bool fill,
-						 const int mode)
-{
-  POINT *s, *p; /*Start, end point of current polygon edge*/ 
-  unsigned int j;       /*Vertex loop counter*/
-  unsigned int outLength = 0;
-
-  if (inLength<1) return 0;
-
-  s = inVertexArray + inLength-1;
-  p = inVertexArray;
-
-  bool s_inside, p_inside;
-
-  /*Start with the last vertex in inVertexArray*/
-  switch (mode) {
-  case 0:
-    for (j=inLength; j--; ) {
-      s_inside = INSIDE_LEFT_EDGE(s,clipBoundary);
-      p_inside = INSIDE_LEFT_EDGE(p,clipBoundary);
-      /*Now s and p correspond to the vertices*/
-      if (ClipEdge(s_inside, 
-		   p_inside, 
-		   clipBoundary, outVertexArray, s, p,
-		   &outLength, fill || (p != inVertexArray))) {
-	Output(p, &outLength, outVertexArray);
-      }
-      /*Advance to next pair of vertices*/
-      s = p; p++;
-    }
-    break;
-  case 1:
-    for (j=inLength; j--; ) {
-      s_inside = INSIDE_BOTTOM_EDGE(s,clipBoundary);
-      p_inside = INSIDE_BOTTOM_EDGE(p,clipBoundary);
-      if (ClipEdge(s_inside, p_inside, clipBoundary, outVertexArray, s, p,
-		   &outLength, fill || (p != inVertexArray))) {
-	Output(p, &outLength, outVertexArray);
-      }
-      s = p; p++;
-    }
-    break;
-  case 2:
-    for (j=inLength; j--; ) {
-      s_inside = INSIDE_RIGHT_EDGE(s,clipBoundary);
-      p_inside = INSIDE_RIGHT_EDGE(p,clipBoundary);
-      if (ClipEdge(s_inside, p_inside, clipBoundary, outVertexArray, s, p,
-		   &outLength, fill || (p != inVertexArray))) {
-	Output(p, &outLength, outVertexArray);
-      }
-      s = p; p++;
-    }
-    break;
-  case 3:
-    for (j=inLength; j--; ) {
-      s_inside = INSIDE_TOP_EDGE(s,clipBoundary);
-      p_inside = INSIDE_TOP_EDGE(p,clipBoundary);
-      if (ClipEdge(s_inside, p_inside, clipBoundary, outVertexArray, s, p,
-		   &outLength, fill || (p != inVertexArray))) {
-	Output(p, &outLength, outVertexArray);
-      }
-      s = p; p++;
-    }
-    break;
-  }
-  return outLength;
-}    
-
-
-// Classic traditional Clipping function using Sutherland Hodgman algo
-static POINT clip_ptout[MAXCLIPPOLYGON];
-static POINT clip_ptin[MAXCLIPPOLYGON];
-
-//
-// THIS FUNCTION IS NOT THREAD SAFE
-// AND SHOULD NOT BE USED OUTSIDE DRAW THREAD
-//
-void ClipPolygon(HDC hdc, POINT *m_ptin, unsigned int inLength, 
-                 RECT rc, bool fill) {
-
-  unsigned int outLength = 0;
-
-  if (inLength>=MAXCLIPPOLYGON-1) {
-    inLength=MAXCLIPPOLYGON-2;
-  }
-  if (inLength<2) {
-    return;
-  }
-
-  memcpy((void*)clip_ptin, (void*)m_ptin, inLength*sizeof(POINT));
-
-  // add extra point for final point if it doesn't equal the first
-  // this is required to close some airspace areas that have missing
-  // final point
-  if (fill) {
-    if ((m_ptin[inLength-1].x != m_ptin[0].x) &&
-	(m_ptin[inLength-1].y != m_ptin[0].y)) {
-      clip_ptin[inLength] = clip_ptin[0];
-      inLength++;
-    }
-  }
-
-  // PAOLO NOTE: IF CLIPPING WITH N>2 DOESN'T WORK,
-  // TRY IFDEF'ing out THE FOLLOWING ADJUSTMENT TO THE CLIPPING RECTANGLE
-  rc.top--;
-  rc.bottom++;
-  rc.left--;
-  rc.right++;
-  // OK, do the clipping
-  POINT edge[5] = {{rc.left, rc.top}, 
-		   {rc.left, rc.bottom},
-		   {rc.right, rc.bottom},
-		   {rc.right, rc.top},
-		   {rc.left, rc.top}};
-  //steps left_edge, bottom_edge, right_edge, top_edge
-  for (int step=0; step<4; step++) {
-    outLength = SutherlandHodgmanPolygoClip (clip_ptin, clip_ptout, 
-					     inLength, 
-					     edge+step, fill, step);
-    OutputToInput(&inLength, clip_ptin, &outLength, clip_ptout);
-  }
-  if (fill) {
-    if (outLength>2) {
-      Polygon(hdc, clip_ptout, outLength);
-    }
-  } else {
-    if (outLength>1) {
-      Polyline(hdc, clip_ptout, outLength);
-    }
-  }
-} // indentation wrong
 
 void Topology::SearchNearest(RECT rc) {
 

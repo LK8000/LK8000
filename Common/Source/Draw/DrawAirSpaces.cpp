@@ -18,31 +18,31 @@
 
 
 void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
-  COLORREF whitecolor = RGB(0xff,0xff,0xff);
+      LKColor whitecolor = LKColor(0xff,0xff,0xff);
 
-  SetTextColor(hDCTemp, whitecolor);
-  SetBkMode(hDCTemp, TRANSPARENT);	  
-  SelectObject(hDCTemp, (HBITMAP)hDrawBitMapTmp);
-  SetBkColor(hDCTemp, whitecolor);	  
-  SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
-  SelectObject(hDCTemp, GetStockObject(WHITE_BRUSH));
-  FillRect(hDCTemp, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));        
+  hdcTempAsp.SetTextColor(whitecolor);
+  hdcTempAsp.SetBkMode(TRANSPARENT);
+  hdcTempAsp.SetBkColor(whitecolor);
+  hdcTempAsp.SelectObject(LK_WHITE_PEN);
+  hdcTempAsp.SelectObject(LKBrush_White);
+
+  hdcTempAsp.FillRect(&rc, LKBrush_White);
 
   if (GetAirSpaceFillType() == asp_fill_patterns_borders) {
-    FillRect(mhdcbuffer, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));        
-    SelectObject(mhdcbuffer, GetStockObject(NULL_PEN));
+    hdcbuffer.FillRect(&rc, LKBrush_White);
+    hdcbuffer.SelectObject(LK_NULL_PEN);
   
-    FillRect(hDCMask, &rc, (HBRUSH)GetStockObject(BLACK_BRUSH));        
-    SelectObject(hDCMask, hAirspaceBorderPen);
-    SelectObject(hDCMask, GetStockObject(HOLLOW_BRUSH));
+    hdcMask.FillRect(&rc, LKBrush_Black);
+    hdcMask.SelectObject(hAirspaceBorderPen);
+    hdcMask.SelectObject(LKBrush_Hollow);
   }
 }
 
 
 // TODO code: optimise airspace drawing
-void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
+void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
 {
-  COLORREF whitecolor = RGB(0xff,0xff,0xff);
+  LKColor whitecolor = LKColor(0xff,0xff,0xff);
   CAirspaceList::const_iterator it;
   CAirspaceList::const_reverse_iterator itr;
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
@@ -53,9 +53,9 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
   
-  int nDC1 = SaveDC(mhdcbuffer);
-  int nDC2 = SaveDC(hDCMask);
-  int nDC3 = SaveDC(hDCTemp);
+  int nDC1 = hdcbuffer.SaveState();
+  int nDC2 = hdcMask.SaveState();
+  int nDC3 = hdcTempAsp.SaveState();
   
   if (GetAirSpaceFillType() != asp_fill_border_only) {
     if (1) {
@@ -73,11 +73,11 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
               found = true;
             }
             // this color is used as the black bit
-            SetTextColor(mhdcbuffer, Colours[iAirspaceColour[airspace_type]]);
+            hdcbuffer.SetTextColor(Colours[iAirspaceColour[airspace_type]]);
             // get brush, can be solid or a 1bpp bitmap
-            SelectObject(mhdcbuffer, hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
-            (*itr)->Draw(mhdcbuffer, rc, true);
-            (*itr)->Draw(hDCMask, rc, false);
+            hdcbuffer.SelectObject(hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+            (*itr)->Draw(hdcbuffer, rc, true);
+            (*itr)->Draw(hdcMask, rc, false);
         }
       }//for
     } else {
@@ -89,10 +89,10 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
               found = true;
             }
             // this color is used as the black bit
-            SetTextColor(hDCTemp, Colours[iAirspaceColour[airspace_type]]);
+            hdcTempAsp.SetTextColor(Colours[iAirspaceColour[airspace_type]]);
             // get brush, can be solid or a 1bpp bitmap
-            SelectObject(hDCTemp, hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
-            (*it)->Draw(hDCTemp, rc, true);
+            hdcTempAsp.SelectObject(hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+            (*it)->Draw(hdcTempAsp, rc, true);
         }
       }//for
     }
@@ -102,15 +102,15 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 
   if (found) {
     if (borders_only) {
-        SetTextColor(mhdcbuffer, RGB_BLACK);
-        MaskBlt(hDCTemp,
+        hdcbuffer.SetTextColor(RGB_BLACK);
+        hdcTempAsp.CopyWithMask(
                 rc.left,rc.top,
                 rc.right-rc.left,rc.bottom-rc.top,
-                mhdcbuffer,rc.left,rc.top,
-                hMaskBitMap,rc.left,rc.top, MAKEROP4(SRCAND,  0x00AA0029));
+                hdcbuffer,rc.left,rc.top,
+                hdcMask,rc.left,rc.top);
     }
-    SelectObject(hDCTemp, GetStockObject(HOLLOW_BRUSH));
-    SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
+    hdcTempAsp.SelectObject(LKBrush_Hollow);
+    hdcTempAsp.SelectObject(LK_WHITE_PEN);
   }
 
     if (1) {
@@ -123,24 +123,24 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
             found = true;
           }
           if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only)  ^ (asp_selected_flash && (*it)->Selected()) ) {
-            SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
+            hdcTempAsp.SelectObject(LK_BLACK_PEN);
           } else {
-            SelectObject(hDCTemp, hAirspacePens[airspace_type]);
+            hdcTempAsp.SelectObject(hAirspacePens[airspace_type]);
           }
 		  if(((*it)->DrawStyle()==adsDisabled))
-		    SelectObject(hDCTemp, LKPen_Grey_N1);
-          (*it)->Draw(hDCTemp, rc, false);
+		    hdcTempAsp.SelectObject(LKPen_Grey_N1);
+          (*it)->Draw(hdcTempAsp, rc, false);
         }
       }//for
     }
 
   if (found) {
     // need to do this to prevent drawing of colored outline
-    SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
-    TransparentBlt(hdc,
+    hdcTempAsp.SelectObject(LK_WHITE_PEN);
+    Surface.TransparentCopy(
                    rc.left,rc.top,
                    rc.right-rc.left,rc.bottom-rc.top,
-                   hDCTemp,
+                   hdcTempAsp,
                    rc.left,rc.top,
                    rc.right-rc.left,rc.bottom-rc.top,
                    whitecolor
@@ -148,11 +148,11 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
     
     // restore original color
     //    SetTextColor(hDCTemp, origcolor);
-    SetBkMode(hDCTemp,OPAQUE);
+    hdcTempAsp.SetBkMode(OPAQUE);
   }
-  RestoreDC(mhdcbuffer, nDC1);
-  RestoreDC(hDCMask, nDC2);    
-  RestoreDC(hDCTemp, nDC3);    
+  hdcbuffer.RestoreState(nDC1);
+  hdcMask.RestoreState(nDC2);    
+  hdcTempAsp.RestoreState(nDC3);    
 }
 
 

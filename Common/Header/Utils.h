@@ -27,17 +27,6 @@ bool SetSoundVolume();
 BOOL GetFontPath(TCHAR *pPos);
 #endif
 void StoreType(int Index,int InfoType);
-void irotate(int &xin, int &yin, const double &angle);
-void irotatescale(int &xin, int &yin, const double &angle, const double &scale,
-                  double &x, double &y);
-void protate(POINT &pin, const double &angle);
-void protateshift(POINT &pin, const double &angle, const int &x, const int &y);
-void rotate(double &xin, double &yin, const double &angle);
-void frotate(float &xin, float &yin, const float &angle);
-void rotatescale(double &xin, double &yin, const double &angle, const double &scale);
-void frotatescale(float &xin, float &yin, const float &angle, const float &scale);
-int  roundupdivision(int a, int b);
-double LowPassFilter(double y_last, double x_in, double fact);
 
 
 void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
@@ -45,9 +34,6 @@ void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
 double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
 		      double lat3, double lon3);
 
-double Reciprocal(double InBound);
-double BiSector(double InBound, double OutBound);
-double HalfAngle(double Angle0, double Angle1);
 void SectorEndPoint(double StartLat, double StartLon, double  Radial, double Dist, double *EndLat, double *EndLon);
 void CalculateNewPolarCoef(void);
 void FindLatitudeLongitude(double Lat, double Lon, 
@@ -62,51 +48,21 @@ void WritePort1Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index);
 void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit2Index);
 //void WritePort3Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit3Index);
 
-void buildCircle(const POINT& center, int radius, std::vector<POINT>& list);
-int  Circle(HDC hdc, long x, long y, int radius, RECT rc, bool clip=false,
-            bool fill=true);
-int CircleNoCliping(HDC hdc, long x, long y, int radius, RECT rc, bool fill);
 
-int Segment(HDC hdc, long x, long y, int radius, RECT rc, 
-	    double start,
-	    double end,
-            bool horizon= false);
-// VENTA3 DrawArc
-int DrawArc(HDC hdc, long x, long y, int radius, RECT rc, 
-	    double start,
-	    double end);
+
 void ReadAssetNumber(void);
 void WriteProfile(const TCHAR *szFile);
 void ReadProfile(const TCHAR *szFile);
 bool SetModelType();
 bool SetModelName(DWORD Temp);
-double ScreenAngle(int x1, int y1, int x2, int y2);
 void ReadUUID(void);
 void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top, TCHAR *szMessageBuffer, TCHAR *TileBuffer );
 BOOL ReadString(ZZIP_FILE* zFile, int Max, TCHAR *String);
 BOOL ReadStringX(FILE *fp, int Max, TCHAR *String);
 bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars);
 
-// Fast trig functions
-void InitSineTable(void);
 
-double AngleDifference(double angle1, double angle0);
-bool AngleInRange(double Angle0, double Angle1, double x, bool is_signed=false);
-double AngleLimit180(double theta);
-double AngleLimit360(double theta);
 void LatLon2Flat(double lon, double lat, int *scx, int *scy);
-
-#ifdef __MINGW32__
-#define DEG_TO_INT(x) ((unsigned short)(int)((x)*(65536.0/360.0)))>>4
-#else
-#define DEG_TO_INT(x) ((unsigned short)((x)*(65536.0/360.0)))>>4
-#endif
-
-#define invfastcosine(x) INVCOSINETABLE[DEG_TO_INT(x)]
-#define ifastcosine(x) ICOSTABLE[DEG_TO_INT(x)]
-#define ifastsine(x) ISINETABLE[DEG_TO_INT(x)]
-#define fastcosine(x) COSTABLE[DEG_TO_INT(x)]
-#define fastsine(x) SINETABLE[DEG_TO_INT(x)]
 
 double StrToDouble(TCHAR *Source, TCHAR **Stop);
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, int DesiredFieldNumber);
@@ -115,9 +71,6 @@ void LoadWindFromRegistry();
 void SaveSoundSettings();
 void ReadDeviceSettings(const int devIdx, TCHAR *Name);
 void WriteDeviceSettings(const int devIdx, const TCHAR *Name);
-
-unsigned int isqrt4(unsigned long val);
-
 
 WORD crcCalc(void *Buffer, size_t size);
 void ExtractDirectory(TCHAR *Dest, TCHAR *Source);
@@ -264,57 +217,8 @@ bool MatchesExtension(const TCHAR *filename, const TCHAR* extension);
 BOOL PlayResource (const TCHAR* lpName);
 void CreateDirectoryIfAbsent(const TCHAR *filename);
 
-//2^36 * 1.5,  (52-_shiftamt=36) uses limited precisicion to floor
-//16.16 fixed point representation,
-
-// =================================================================================
-// Real2Int
-// =================================================================================
-inline int Real2Int(double val)
-{
-#if (WINDOWS_PC>0)
-  val += 68719476736.0*1.5;
-  return *((long*)&val) >> 16; 
-#else
-  return (int)val;
-#endif
-}
-
-
-// =================================================================================
-// Real2Int
-// =================================================================================
-inline int Real2Int(float val)
-{
-#if (WINDOWS_PC>0)
-  return Real2Int ((double)val);
-#else
-  return (int)val;
-#endif
-}
-
-
-inline int iround(double i) {
-    return Real2Int(floor(i+0.5));
-}
-
-inline long lround(double i) {
-    return (long)(floor(i+0.5));
-}
-
-inline unsigned int CombinedDivAndMod(unsigned int &lx) {
-  unsigned int ox = lx & 0xff;
-  // JMW no need to check max since overflow will result in 
-  // beyond max dimensions
-  lx = lx>>8;
-  return ox;
-}
-
 bool RotateScreen(short angle);
 
-int GetTextWidth(HDC hDC, const TCHAR *text);
-int GetTextHeight(HDC hDC, const TCHAR *text);
-void ExtTextOutClip(HDC hDC, int x, int y, const TCHAR *text, int width);
 void UpdateConfBB(void);
 void UpdateConfIP(void);
 void UpdateMultimapOrient(void);
@@ -346,11 +250,5 @@ void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numof
 void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars);
 #define LK_tcsncpy(dest, src, numofchars) LK_tcsncpy_internal(dest, src, numofchars)
 #endif
-
-#ifndef MulDiv
-    #define MulDiv _MulDiv
-#endif
-
-int _MulDiv(int nNumber, int nNumerator, int nDenominator);
 
 #endif

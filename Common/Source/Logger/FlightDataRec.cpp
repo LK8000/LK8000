@@ -307,7 +307,7 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 //
 // This function is called by DrawFunctions1HZ  once per second max.
 //
-void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
+void MapWindow::DrawFDRAlarms(LKSurface& Surface, const RECT& rc)
 {
 
   int i;

@@ -16,11 +16,8 @@
 // map to be calculated, and we have plenty of CPU to spend.
 // On a 400Mhz PNA, only 8% cpu is used by LK in this modality.
 //
-void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tleft, int tright)
+void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbottom, int tleft, int tright)
 {
-
-  HPEN   hp, hpOld;
-  HBRUSH hb, hbOld;
 
   bool disabled=false,notraffic=false;
 
@@ -169,34 +166,34 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 	disabled=true;
   }
 
-  COLORREF hscalecol, vscalecol;
+  LKColor hscalecol, vscalecol;
   // First we draw the cross sight
   if (disabled) {
 	if (notraffic) {
 		if (Appearance.InverseInfoBox) {
-			_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_GREY,rc);
-			_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_GREY,rc);
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_GREY,rc);
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_GREY,rc);
 		} else {
-			_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
-			_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
 		}
 		hscalecol=RGB_DARKGREEN;
 		vscalecol=RGB_DARKGREEN;
 	} else {
-		_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
-		_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
 		hscalecol=RGB_DARKGREEN;
 		vscalecol=RGB_DARKGREEN;
 	}
   } else {
 	if (Appearance.InverseInfoBox) {
-		_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_ICEWHITE,rc);
-		_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_ICEWHITE,rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_ICEWHITE,rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_ICEWHITE,rc);
 		hscalecol=RGB_GREEN;
 		vscalecol=RGB_GREEN;
 	} else {
-		_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
-		_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
+		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
 		hscalecol=RGB_DARKGREEN;
 		vscalecol=RGB_DARKGREEN;
 	}
@@ -204,23 +201,23 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 
 
   // Then we draw the scales, degrees on horizontal line
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[0], degline_bottom[0], hscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[5], degline_bottom[5], hscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[1], degline_bottom[1], hscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[6], degline_bottom[6], hscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[2], degline_bottom[2], hscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[7], degline_bottom[7], hscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[3], degline_bottom[3], hscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[8], degline_bottom[8], hscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[4], degline_bottom[4], hscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), degline_top[9], degline_bottom[9], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[0], degline_bottom[0], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[5], degline_bottom[5], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[1], degline_bottom[1], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[6], degline_bottom[6], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[2], degline_bottom[2], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[7], degline_bottom[7], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[3], degline_bottom[3], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[8], degline_bottom[8], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[4], degline_bottom[4], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), degline_top[9], degline_bottom[9], hscalecol,rc);
   // altitudes on vertical line
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), altline_left[0], altline_right[0], vscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), altline_left[1], altline_right[1], vscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), altline_left[2], altline_right[2], vscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), altline_left[3], altline_right[3], vscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), altline_left[4], altline_right[4], vscalecol,rc);
-  _DrawLine(hDC, PS_SOLID, NIBLSCALE(1), altline_left[5], altline_right[5], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), altline_left[0], altline_right[0], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), altline_left[1], altline_right[1], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), altline_left[2], altline_right[2], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), altline_left[3], altline_right[3], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), altline_left[4], altline_right[4], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), altline_left[5], altline_right[5], vscalecol,rc);
 
 
 
@@ -236,16 +233,16 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 			_stprintf(tbear, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 		}
 	}
-	SelectObject(hDC, LK8PanelBigFont);
+	Surface.SelectObject(LK8PanelBigFont);
 	switch ( LKTraffic[LKTargetIndex].Status ) {
 		case LKT_GHOST:
-			LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
+			LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
 			break;
 		case LKT_ZOMBIE:
-			LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
+			LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
 			break;
 		default:
-			LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
+			LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 			break;
 	}
 
@@ -257,7 +254,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 	} else {
 		_stprintf(tbear, TEXT("0%s"), gettext(_T("_@M2179_")));
 	}
-	LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
+	LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 	#endif
   }
 
@@ -285,7 +282,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 
 	// Position of the glider on the sight screen
 	int leftwingsize=0, rightwingsize=0;
-	COLORREF planecolor;
+	LKColor planecolor;
 
 	if (Appearance.InverseInfoBox) {
 		switch(LKTraffic[LKTargetIndex].Status) {
@@ -313,10 +310,10 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 		}
 	}
 
-	hp = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), planecolor);
-	hb = (HBRUSH)CreateSolidBrush( planecolor);
-	hpOld = (HPEN) SelectObject(hDC, hp);
-	hbOld = (HBRUSH) SelectObject(hDC, hb);
+	LKPen hp(PEN_SOLID, NIBLSCALE(2), planecolor);
+	LKBrush hb(planecolor);
+	LKPen hpOld = Surface.SelectObject(hp);
+	LKBrush hbOld = Surface.SelectObject(hb);
 
 	// does the glider exceed screen space on the right?
 	if (tangle>1) {
@@ -342,7 +339,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 		leftwingsize=TWINGSIZE;
 	}
 
-	Circle(hDC, tcenter.x, tcenter.y, NIBLSCALE(6), rc, false, true );
+	Surface.Circle(tcenter.x, tcenter.y, NIBLSCALE(6), rc, false, true );
 
 	POINT a1, a2;
 
@@ -351,18 +348,16 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 	a1.y = tcenter.y;
 	a2.x = tcenter.x + rightwingsize;
 	a2.y = tcenter.y;
-	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, planecolor,rc);
+	Surface.DrawLine(PEN_SOLID, NIBLSCALE(4), a1, a2, planecolor,rc);
 	// Draw the tail
 	a1.x = tcenter.x;
 	a1.y = tcenter.y;
 	a2.x = tcenter.x;
 	a2.y = tcenter.y - tailsize;
-	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, planecolor,rc);
+	Surface.DrawLine(PEN_SOLID, NIBLSCALE(4), a1, a2, planecolor,rc);
 
-	SelectObject(hDC, hbOld);
-	SelectObject(hDC, hpOld);
-	DeleteObject((HPEN)hp);
-	DeleteObject((HBRUSH)hb);
+	Surface.SelectObject(hbOld);
+	Surface.SelectObject(hpOld);
   }
   
   // always paint the bearing difference, cleverly
@@ -376,7 +371,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 			_stprintf(tbear, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
 		}
 	}
-	SelectObject(hDC, LK8PanelBigFont);
+	Surface.SelectObject(LK8PanelBigFont);
 	// if target is below middle line, paint on top
 	int yposbear;
 	if (tcenter.y >= ncentery ) {
@@ -384,19 +379,19 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 	} else
 		yposbear=altline_left[5].y;
 
-//	LKWriteText(hDC, tbear, ncenterx,altline_left[5].y, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
+//	LKWriteText(Surface,  tbear, ncenterx,altline_left[5].y, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 	switch ( LKTraffic[LKTargetIndex].Status ) {
 		case LKT_GHOST:
-			//LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
-			LKWriteText(hDC, tbear, ncenterx,yposbear, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
+			//LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
+			LKWriteText(Surface,  tbear, ncenterx,yposbear, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
 			break;
 		case LKT_ZOMBIE:
-			//LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
-			LKWriteText(hDC, tbear, ncenterx,yposbear, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
+			//LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
+			LKWriteText(Surface,  tbear, ncenterx,yposbear, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
 			break;
 		default:
-			//LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
-			LKWriteText(hDC, tbear, ncenterx,yposbear, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
+			//LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
+			LKWriteText(Surface,  tbear, ncenterx,yposbear, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 			break;
 	}
   }

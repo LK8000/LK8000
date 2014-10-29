@@ -8,11 +8,11 @@
 
 #include "externs.h"
 #include "Sideview.h"
-
+#include "LKObjects.h"
 
 
 // draw aircraft
-void RenderPlaneSideview(HDC hdc, double fDist, double fAltitude,double brg, DiagrammStruct* psDia )
+void RenderPlaneSideview(LKSurface& Surface, double fDist, double fAltitude,double brg, DiagrammStruct* psDia )
 {
 //BOOL bInvCol = true ; //INVERTCOLORS
   #define NO_AP_PTS 17
@@ -107,66 +107,50 @@ void RenderPlaneSideview(HDC hdc, double fDist, double fAltitude,double brg, Dia
 
   Start.x = CalcDistanceCoordinat(fDist,  psDia);
   Start.y = CalcHeightCoordinat(fAltitude, psDia);
-  HBRUSH oldBrush;
-  HPEN   oldPen;
-/*
-  if(bInvCol)
-  {
-    oldPen   = (HPEN)SelectObject(hdc, GetStockObject(WHITE_PEN));
-    oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-  }
-  else
-*/
-  {
-    oldPen   = (HPEN) SelectObject(hdc, GetStockObject(BLACK_PEN));
-    oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-  }
 
-  //SelectObject(hdc, GetStockObject(BLACK_PEN));
+  LKPen oldPen   = Surface.SelectObject(LK_BLACK_PEN);
+  LKBrush oldBrush = Surface.SelectObject(LKBrush_White);
+
   PolygonRotateShift(AircraftWing, 13,  Start.x, Start.y,  0);
   PolygonRotateShift(AircraftSide, 8,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftTail, 5,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftWingL, 7,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftWingR, 7,   Start.x, Start.y,  0);
 
-  HBRUSH GreenBrush = CreateSolidBrush(COLORREF RGB_GREEN);
-  HBRUSH RedBrush = CreateSolidBrush(COLORREF RGB_RED);
+  LKBrush GreenBrush(RGB_GREEN);
+  LKBrush RedBrush(RGB_RED);
   if((brg < 180))
   {
-    SelectObject(hdc, RedBrush);
-    Polygon(hdc,AircraftWingL ,7 );
+    Surface.SelectObject(RedBrush);
+    Surface.Polygon(AircraftWingL ,7 );
 
-    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-    Polygon(hdc,AircraftSide  ,8 );
+    Surface.SelectObject(LKBrush_White);
+    Surface.Polygon(AircraftSide  ,8 );
 
-    SelectObject(hdc, GreenBrush);
-    Polygon(hdc,AircraftWingR ,7 );
+    Surface.SelectObject(GreenBrush);
+    Surface.Polygon(AircraftWingR ,7 );
 
-    SelectObject(hdc, oldBrush);
+    Surface.SelectObject(oldBrush);
   }
   else
   {
-    SelectObject(hdc, GreenBrush);
-    Polygon(hdc,AircraftWingR ,7 );
+    Surface.SelectObject(GreenBrush);
+    Surface.Polygon(AircraftWingR ,7 );
 
-    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-    Polygon(hdc,AircraftSide  ,8 );
+    Surface.SelectObject(LKBrush_White);
+    Surface.Polygon(AircraftSide  ,8 );
 
-    SelectObject(hdc, RedBrush);
-    Polygon(hdc,AircraftWingL ,7 );
+    Surface.SelectObject(RedBrush);
+    Surface.Polygon(AircraftWingL ,7 );
 
-    SelectObject(hdc, oldBrush);
-   //Polygon(hdc,AircraftWing  ,13);
+    Surface.SelectObject(oldBrush);
   }
   if((brg < 90)|| (brg > 270)) {
-    Polygon(hdc,AircraftTail  ,5 );
+    Surface.Polygon(AircraftTail  ,5 );
   }
 
-  SelectObject(hdc, oldPen);
-  SelectObject(hdc, oldBrush);
-  DeleteObject(RedBrush);
-  DeleteObject(GreenBrush);
-
+  Surface.SelectObject(oldPen);
+  Surface.SelectObject(oldBrush);
 } //else !asp_heading_task
 
 

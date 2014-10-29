@@ -9,14 +9,14 @@
 #include "externs.h"
 
 
-void Statistics::DrawXGrid(HDC hdc, const RECT rc, 
+void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
 			   const double tic_step, 
 			   const double zero,
                            const int Style, 
 			   const double unit_step, bool draw_units) {
 
   if(INVERTCOLORS)
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
+    Surface.SelectObject(LK_BLACK_PEN);
 
 
   POINT line[2];
@@ -44,17 +44,16 @@ void Statistics::DrawXGrid(HDC hdc, const RECT rc,
     // STYLE_THINDASHPAPER
     if ((xval< x_max) 
         && (xmin>=rc.left+BORDER_X) && (xmin<=rc.right)) {
-      StyleLine(hdc, line[0], line[1], Style, rc);
+      StyleLine(Surface, line[0], line[1], Style, rc);
 
       if (draw_units) {
 	TCHAR unit_text[MAX_PATH];
 	FormatTicText(unit_text, xval*unit_step/tic_step, unit_step);
 
 //	SetBkMode(hdc, OPAQUE);
-	GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
-	ExtTextOut(hdc, xmin-tsize.cx/2, ymax-tsize.cy ,
-		   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
-	SetBkMode(hdc, TRANSPARENT);
+	Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+	Surface.DrawText(xmin-tsize.cx/2, ymax-tsize.cy, unit_text, _tcslen(unit_text));
+	Surface.SetBkMode(TRANSPARENT);
       }
     }
 
@@ -76,16 +75,15 @@ void Statistics::DrawXGrid(HDC hdc, const RECT rc,
     if ((xval> x_min) 
         && (xmin>=rc.left+BORDER_X) && (xmin<=rc.right)) {
 
-      StyleLine(hdc, line[0], line[1], Style, rc);
+      StyleLine(Surface, line[0], line[1], Style, rc);
 
       if (draw_units) {
 	TCHAR unit_text[MAX_PATH];
 	FormatTicText(unit_text, xval*unit_step/tic_step, unit_step);
 //	SetBkMode(hdc, OPAQUE);
-	GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
-	ExtTextOut(hdc, xmin-tsize.cx/2, ymax-tsize.cy,
-		   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
-	SetBkMode(hdc, TRANSPARENT);
+	Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+	Surface.DrawText(xmin-tsize.cx/2, ymax-tsize.cy, unit_text, _tcslen(unit_text));
+	Surface.SetBkMode(TRANSPARENT);
       }
     }
 
@@ -95,7 +93,7 @@ void Statistics::DrawXGrid(HDC hdc, const RECT rc,
 
 
 
-void Statistics::DrawYGrid(HDC hdc, const RECT rc, 
+void Statistics::DrawYGrid(LKSurface& Surface, const RECT& rc,
 			   const double tic_step, 
 			   const double zero,
                            const int Style, 
@@ -106,7 +104,7 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
   double yval;
 
   if(INVERTCOLORS)
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
+    Surface.SelectObject(LK_BLACK_PEN);
 
 
   int xmin, ymin, xmax, ymax;
@@ -128,15 +126,14 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
     if ((yval< y_max) && 
         (ymin>=rc.top) && (ymin<=rc.bottom-BORDER_Y)) {
 
-      StyleLine(hdc, line[0], line[1], Style, rc);
+      StyleLine(Surface, line[0], line[1], Style, rc);
 
       if (draw_units) {
 	TCHAR unit_text[MAX_PATH];
 	FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
 //	SetBkMode(hdc, OPAQUE);
-	GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
-	ExtTextOut(hdc, xmin, ymin-tsize.cy/2,
-		   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
+	Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+	Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text, _tcslen(unit_text));
 //	SetBkMode(hdc, TRANSPARENT);
       }
     }
@@ -157,15 +154,14 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
     if ((yval> y_min) &&
         (ymin>=rc.top) && (ymin<=rc.bottom-BORDER_Y)) {
 
-      StyleLine(hdc, line[0], line[1], Style, rc);
+      StyleLine(Surface, line[0], line[1], Style, rc);
 
       if (draw_units) {
 	TCHAR unit_text[MAX_PATH];
 	FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
 //	SetBkMode(hdc, OPAQUE);
-	GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
-	ExtTextOut(hdc, xmin, ymin-tsize.cy/2,
-		   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
+	Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+	Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text, _tcslen(unit_text));
 //	SetBkMode(hdc, TRANSPARENT);
       }
     }
@@ -174,7 +170,7 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
 
 
 
-void Statistics::DrawYGrid_cor(HDC hdc, const RECT rc,
+void Statistics::DrawYGrid_cor(LKSurface& Surface, const RECT& rc,
 			   const double tic_step,
 			   const double zero,
                            const int Style,
@@ -185,7 +181,7 @@ void Statistics::DrawYGrid_cor(HDC hdc, const RECT rc,
   double yval;
 
   if(INVERTCOLORS)
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
+    Surface.SelectObject(LK_BLACK_PEN);
 
 
   int xmin, ymin, xmax, ymax;
@@ -208,15 +204,14 @@ void Statistics::DrawYGrid_cor(HDC hdc, const RECT rc,
     if ((yval< y_max) &&
         (ymin>=rc.top) && (ymin<=rc.bottom)) {
 
-      StyleLine(hdc, line[0], line[1], Style, rc);
+      StyleLine(Surface, line[0], line[1], Style, rc);
 
       if (draw_units) {
 	TCHAR unit_text[MAX_PATH];
 	FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
 //	SetBkMode(hdc, OPAQUE);
-	GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
-	ExtTextOut(hdc, xmin, ymin-tsize.cy/2,
-		   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
+	Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+	Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text, _tcslen(unit_text));
 //	SetBkMode(hdc, TRANSPARENT);
       }
     }
@@ -237,15 +232,14 @@ void Statistics::DrawYGrid_cor(HDC hdc, const RECT rc,
     if ((yval> y_min) &&
         (ymin>=rc.top) && (ymin<=rc.bottom)) {
 
-      StyleLine(hdc, line[0], line[1], Style, rc);
+      StyleLine(Surface, line[0], line[1], Style, rc);
 
       if (draw_units) {
 	TCHAR unit_text[MAX_PATH];
 	FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
 //	SetBkMode(hdc, OPAQUE);
-	GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
-	ExtTextOut(hdc, xmin, ymin-tsize.cy/2,
-		   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
+	Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+	Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text, _tcslen(unit_text));
 //	SetBkMode(hdc, TRANSPARENT);
       }
     }

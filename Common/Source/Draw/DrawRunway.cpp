@@ -22,11 +22,10 @@
 //
 // THIS FUNCTION is threadsafe only if called by dialogs using picto bool true
 //
-void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL picto)
+void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, double fScaleFact, BOOL picto)
 {
   int solid= false;
-  HPEN    oldPen  ;
-  HBRUSH  oldBrush ;
+  LKBrush  oldBrush ;
   bool bGlider = false;
   bool bOutland = false;
   bool bRunway = false;
@@ -146,19 +145,19 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
   // if( !picto && (MapWindow::zoom.RealScale() > 3) ) 
   //	bGlider=false; 
 
-  oldPen   = (HPEN) SelectObject(hdc, GetStockObject(BLACK_PEN));
-  oldBrush = (HBRUSH)SelectObject(hdc, LKBrush_Red);
+  LKPen oldPen = Surface.SelectObject(LK_BLACK_PEN);
+  oldBrush = Surface.SelectObject(LKBrush_Red);
 
   if( wp->Reachable == TRUE)
-    SelectObject(hdc, LKBrush_Green);
+    Surface.SelectObject(LKBrush_Green);
 
 
   if(!bOutland)
   {
 	if (picto)
-		CircleNoCliping( hdc,Center_x, Center_y, p,  rc,true);
+		Surface.CircleNoCliping(Center_x, Center_y, p,  rc,true);
 	else
-		Circle( hdc,Center_x, Center_y, p,  rc, true, true);
+		Surface.Circle(Center_x, Center_y, p,  rc, true, true);
   }
 
   if(bRunway)
@@ -173,16 +172,16 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 	if(!bOutland)
 	{
 	    if(solid)
-	  	  SelectObject(hdc, LKBrush_DarkGrey );
+	  	  Surface.SelectObject(LKBrush_DarkGrey );
 	    else
-		  SelectObject(hdc, LKBrush_White);
+		  Surface.SelectObject(LKBrush_White);
 	}
 	if(picto) {
 	  threadsafePolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir);
 	} else {
 	  PolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
 	}
-	Polygon(hdc,Runway ,5 );
+	Surface.Polygon(Runway ,5 );
 
   } // bRunway
 
@@ -215,7 +214,7 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 	    else
 	       PolygonRotateShift(WhiteWing, 15,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
 
-	    Polygon(hdc,WhiteWing ,15 );
+	    Surface.Polygon(WhiteWing ,15 );
     }
   }
 
@@ -225,23 +224,23 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
   if( MapWindow::zoom.RealScale() <= scale_drawradio ) 
   {
 
-	HFONT hfOld;
+	LKFont hfOld;
 
 	if (MapWindow::zoom.RealScale() <= scale_bigfont) 
-		hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+		hfOld = Surface.SelectObject(LK8PanelUnitFont);
 	else
-		hfOld = (HFONT)SelectObject(hdc, LK8UnitFont);
+		hfOld = Surface.SelectObject(LK8UnitFont);
 
 	if (INVERTCOLORS)
-		SelectObject(hdc,LKBrush_Petrol);
+		Surface.SelectObject(LKBrush_Petrol);
 	else
-		SelectObject(hdc,LKBrush_LightCyan);
+		Surface.SelectObject(LKBrush_LightCyan);
 
 	unsigned int offset = p + NIBLSCALE(1) ;
 	if( !picto)
 	{
 		if ( _tcslen(wp->Freq)>0 ) {
-			MapWindow::LKWriteBoxedText(hdc,&DrawRect,wp->Freq, Center_x- offset, Center_y -offset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+			MapWindow::LKWriteBoxedText(Surface,DrawRect,wp->Freq, Center_x- offset, Center_y -offset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
 		}
 
 		//
@@ -249,25 +248,25 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOO
 		//
 		if (MapWindow::zoom.RealScale() <=scale_fullinfos) {
 			if ( _tcslen(wp->Code)==4 ) {
-				MapWindow::LKWriteBoxedText(hdc,&DrawRect,wp->Code,Center_x + offset, Center_y - offset, 0, WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
+				MapWindow::LKWriteBoxedText(Surface,DrawRect,wp->Code,Center_x + offset, Center_y - offset, 0, WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
 			}
 
 			if (wp->Altitude >0) {
 				TCHAR tAlt[20];
 				_stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
-				MapWindow::LKWriteBoxedText(hdc,&DrawRect,tAlt, Center_x + offset, Center_y + offset, 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+				MapWindow::LKWriteBoxedText(Surface,DrawRect,tAlt, Center_x + offset, Center_y + offset, 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
 			}
 
 		}
 	}
-	SelectObject(hdc, hfOld);
+	Surface.SelectObject(hfOld);
 
   }
 
 
 
-  SelectObject(hdc, oldPen);
-  SelectObject(hdc, oldBrush);
+  Surface.SelectObject(oldPen);
+  Surface.SelectObject(oldBrush);
 
 }
 

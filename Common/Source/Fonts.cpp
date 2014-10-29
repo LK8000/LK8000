@@ -63,37 +63,33 @@ bool IsNullLogFont(LOGFONT logfont) {
 }
 
 
-void InitializeOneFont (HFONT * theFont, 
+void InitializeOneFont (LKFont& theFont, 
                                const TCHAR FontRegKey[] , 
                                LOGFONT autoLogFont, 
                                LOGFONT * LogFontUsed)
 {
-  LOGFONT logfont;
-  if (GetObjectType(*theFont) == OBJ_FONT) {
-    DeleteObject(*theFont); // RLD the EditFont screens use the Delete
-  }
+  theFont.Release();
 
+  LOGFONT logfont;
   memset ((char *)&logfont, 0, sizeof (LOGFONT));
 
   if (UseCustomFonts) {
     propGetFontSettings(FontRegKey, &logfont);
     if (!IsNullLogFont(logfont)) {
-      *theFont = CreateFontIndirect (&logfont);
-      if (GetObjectType(*theFont) == OBJ_FONT) {
-        if (LogFontUsed != NULL) *LogFontUsed = logfont; // RLD save for custom font GUI
+      theFont.Create(&logfont);
+      if (LogFontUsed != NULL) {
+        *LogFontUsed = logfont; // RLD save for custom font GUI
       }
     }
   }
 
-  if (GetObjectType(*theFont) != OBJ_FONT) {
-    if (!IsNullLogFont(autoLogFont)) {
+  if (!IsNullLogFont(autoLogFont)) {
       ApplyClearType(&autoLogFont);
       ApplyFontSize(&autoLogFont);
-      *theFont = CreateFontIndirect (&autoLogFont);
-      if (GetObjectType(*theFont) == OBJ_FONT) {
-        if (LogFontUsed != NULL) *LogFontUsed = autoLogFont; // RLD save for custom font GUI
+      theFont.Create(&autoLogFont);
+      if (LogFontUsed != NULL) {
+          *LogFontUsed = autoLogFont; // RLD save for custom font GUI
       }
-    }
   }
 }
 
@@ -259,24 +255,24 @@ void InitialiseFontsHardCoded(RECT rc,
 
 void DeInitialiseFonts(void) {
 
-  if (TitleWindowFont)	 DeleteObject(TitleWindowFont);
-  if (MapWindowFont)	 DeleteObject(MapWindowFont);
-  if (MapWindowBoldFont) DeleteObject(MapWindowBoldFont);
-  if (CDIWindowFont)	 DeleteObject(CDIWindowFont);
-  if (MapLabelFont)	 DeleteObject(MapLabelFont);
-  if (StatisticsFont)	 DeleteObject(StatisticsFont);
+  TitleWindowFont.Release();
+  MapWindowFont.Release();
+  MapWindowBoldFont.Release();
+  CDIWindowFont.Release();
+  MapLabelFont.Release();
+  StatisticsFont.Release();
 
 }
 
 void InitialiseFonts(RECT rc)
 { //this routine must be called only at start/restart b/c there are many pointers to these fonts
 
-  if (TitleWindowFont)	 DeleteObject(TitleWindowFont);
-  if (MapWindowFont)	 DeleteObject(MapWindowFont);
-  if (MapWindowBoldFont) DeleteObject(MapWindowBoldFont);
-  if (CDIWindowFont)	 DeleteObject(CDIWindowFont);
-  if (MapLabelFont)	 DeleteObject(MapLabelFont);
-  if (StatisticsFont)	 DeleteObject(StatisticsFont);
+  TitleWindowFont.Release();
+  MapWindowFont.Release();
+  MapWindowBoldFont.Release();
+  CDIWindowFont.Release();
+  MapLabelFont.Release();
+  StatisticsFont.Release();
 
   LOGFONT hardTitleWindowLogFont;
   LOGFONT hardMapWindowLogFont;
@@ -325,38 +321,38 @@ void InitialiseFonts(RECT rc)
     autoStatisticsLogFont = hardStatisticsLogFont;
 
 
-  InitializeOneFont (&TitleWindowFont, 
+  InitializeOneFont (TitleWindowFont, 
                         NULL,
                         autoTitleWindowLogFont,
                         NULL);
 
-  InitializeOneFont (&CDIWindowFont, 
+  InitializeOneFont (CDIWindowFont, 
                         NULL,
                         autoCDIWindowLogFont,
                         NULL);
 
-  InitializeOneFont (&MapLabelFont, 
+  InitializeOneFont (MapLabelFont, 
                         szRegistryFontMapLabelFont, 
                         autoMapLabelLogFont,
                         NULL);
 
-  InitializeOneFont (&StatisticsFont, 
+  InitializeOneFont (StatisticsFont, 
                         NULL,
                         autoStatisticsLogFont,
                         NULL);
 
-  InitializeOneFont (&MapWindowFont, 
+  InitializeOneFont (MapWindowFont, 
                         szRegistryFontMapWindowFont, 
                         autoMapWindowLogFont,
                         NULL);
 
-  InitializeOneFont (&MapWindowBoldFont, 
+  InitializeOneFont (MapWindowBoldFont, 
                         NULL,
                         autoMapWindowBoldLogFont,
                         NULL);
 
   SendMessage(hWndMapWindow,WM_SETFONT,
-              (WPARAM)MapWindowFont,MAKELPARAM(TRUE,0));
+              (WPARAM)(HFONT)MapWindowFont,MAKELPARAM(TRUE,0));
 
 }
 

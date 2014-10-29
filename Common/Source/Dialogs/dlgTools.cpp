@@ -15,6 +15,7 @@
 #include "RGB.h"
 #include "Dialogs.h"
 #include "utils/stringext.h"
+#include "utils/stl_utils.h"
 
 
 int DLGSCALE(int x) {
@@ -249,13 +250,7 @@ void *CallBackLookup(CallBackTableEntry_t *LookUpTable, TCHAR *Name){
 void LoadChildsFromXML(WindowControl *Parent, CallBackTableEntry_t *LookUpTable, XMLNode *Node, int Font);
 
 // The Font=n in dialogs.  0-4, 4 unused kept for compat issue with very old code
-static HFONT FontMap[5] = {
-    TitleWindowFont,
-    MapWindowFont,
-    MapWindowBoldFont,
-    CDIWindowFont,
-    CDIWindowFont, // was InfoWindow 
-  };
+static LKFont FontMap[5];
 
 
 #include <stdio.h>
@@ -429,14 +424,13 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
   FontMap[2] = MapWindowBoldFont;
   FontMap[3] = CDIWindowFont;
   FontMap[4] = CDIWindowFont;
+  static_assert(array_size(FontMap)>4, " invalide \"FontMap\" size");
 
   if (!xNode.isEmpty()){
     int X,Y,Width,Height,Popup,Font;
     TCHAR sTmp[128];
     TCHAR Name[64];
 
-    COLORREF BackColor;
-    COLORREF ForeColor;
     RECT rc;
     GetClientRect(Parent, &rc);
 
@@ -450,11 +444,6 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
       Y=0;
     }
 
-    BackColor = StringToIntDflt(xNode.getAttribute(TEXT("BackColor")), 
-                                0xffffffff);
-    ForeColor = StringToIntDflt(xNode.getAttribute(TEXT("ForeColor")), 
-                                0xffffffff);
-
     theForm = new WndForm(Parent, Name, sTmp, X, Y, Width, Height);
 
     if (Font != -1)
@@ -462,13 +451,15 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
 
     if (Font != -1)
       theForm->SetFont(FontMap[Font]);
-    if (BackColor != 0xffffffff){
-      	BackColor = RGB((BackColor>>16)&0xff, (BackColor>>8)&0xff, (BackColor>>0)&0xff);
-      theForm->SetBackColor(BackColor);
+
+    unsigned uBackColor = StringToIntDflt(xNode.getAttribute(TEXT("BackColor")), 0xffffffff);
+    if (uBackColor != 0xffffffff){
+        theForm->SetBackColor(LKColor((uBackColor>>16)&0xff, (uBackColor>>8)&0xff, (uBackColor>>0)&0xff));
     }
-    if (ForeColor != 0xffffffff){
-	ForeColor = RGB((ForeColor>>16)&0xff, (ForeColor>>8)&0xff, (ForeColor>>0)&0xff);
-      theForm->SetForeColor(ForeColor);
+
+    unsigned uForeColor = StringToIntDflt(xNode.getAttribute(TEXT("ForeColor")), 0xffffffff);
+    if (uForeColor != 0xffffffff){
+        theForm->SetForeColor(LKColor((uForeColor>>16)&0xff, (uForeColor>>8)&0xff, (uForeColor>>0)&0xff));
     }
 
     LoadChildsFromXML(theForm, LookUpTable, &xNode, Font);
@@ -506,8 +497,6 @@ void LoadChildsFromXML(WindowControl *Parent,
   int X,Y,Width,Height,Popup,Font;
   TCHAR Caption[128];
   TCHAR Name[64];
-  COLORREF BackColor;
-  COLORREF ForeColor;
   bool Visible;
   int Border;
 
@@ -525,23 +514,11 @@ void LoadChildsFromXML(WindowControl *Parent,
                                  &Width, &Height, &Popup,
                                  &Font, Caption);
 
-    BackColor = StringToIntDflt(childNode.getAttribute(TEXT("BackColor")), 
-                                0xffffffff);
-    ForeColor = StringToIntDflt(childNode.getAttribute(TEXT("ForeColor")), 
-                                0xffffffff);
-    Visible = StringToIntDflt(childNode.getAttribute(TEXT("Visible")), 1) == 1;
-    if (BackColor != 0xffffffff){
-      BackColor = RGB((BackColor>>16)&0xff,
-                      (BackColor>>8)&0xff,
-                      (BackColor>>0)&0xff);
-    }
-    if (ForeColor != 0xffffffff){
-      ForeColor = RGB((ForeColor>>16)&0xff,
-                      (ForeColor>>8)&0xff,
-                      (ForeColor>>0)&0xff);
-    }
-    Font = StringToIntDflt(childNode.getAttribute(TEXT("Font")), ParentFont);
+    unsigned uBackColor = StringToIntDflt(childNode.getAttribute(TEXT("BackColor")), 0xffffffff);
+    unsigned uForeColor = StringToIntDflt(childNode.getAttribute(TEXT("ForeColor")), 0xffffffff);
 
+    Visible = StringToIntDflt(childNode.getAttribute(TEXT("Visible")), 1) == 1;
+    Font = StringToIntDflt(childNode.getAttribute(TEXT("Font")), ParentFont);
     Border = StringToIntDflt(childNode.getAttribute(TEXT("Border")), 0);
 
     if (_tcscmp(childNode.getName(), TEXT("WndProperty")) == 0){
@@ -759,12 +736,12 @@ void LoadChildsFromXML(WindowControl *Parent,
       if (Font != -1)
         WC->SetFont(FontMap[Font]);
 
-      if (BackColor != 0xffffffff){
-        WC->SetBackColor(BackColor);
+      if (uBackColor != 0xffffffff){
+        WC->SetBackColor(LKColor((uBackColor>>16)&0xff, (uBackColor>>8)&0xff, (uBackColor>>0)&0xff));
       }
 
-      if (ForeColor != 0xffffffff){
-        WC->SetForeColor(ForeColor);
+      if (uForeColor != 0xffffffff){
+        WC->SetForeColor(LKColor((uForeColor>>16)&0xff, (uForeColor>>8)&0xff, (uForeColor>>0)&0xff));
       }
 
       if (!Visible){

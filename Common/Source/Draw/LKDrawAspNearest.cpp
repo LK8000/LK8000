@@ -13,14 +13,10 @@
 #include "Dialogs.h"
 #include "DoInits.h"
 
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-
 
 extern bool ValidAirspace(int i);
 
-void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
+void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 
 
   SIZE ASPTextSize, DSTextSize, BETextSize, TYTextSize, ACTextSize, HLTextSize, MITextSize;
@@ -33,7 +29,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   static TCHAR s_trailspace[3];
   short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
-  COLORREF rcolor;
+  LKColor rcolor;
 
   // column0 starts after writing 1:2 (ModeIndex:CURTYPE+1) with a different font..
   static short Column0;
@@ -53,7 +49,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   // Vertical and horizontal spaces
   #define INTERRAW	1
   #define HEADRAW	NIBLSCALE(6)	
-  HBRUSH sortbrush;
+  LKBrush sortbrush;
   RECT invsel;
 
   if (INVERTCOLORS) {
@@ -86,33 +82,33 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 
 
   /// WPT is now AIRSPACE name
-  SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest  was LK8Title
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &ASPTextSize);
+  Surface.SelectObject(LK8InfoBigFont); // Text font for Nearest  was LK8Title
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &ASPTextSize);
 
   // DST is always distance
   _stprintf(Buffer,TEXT("000.0")); 
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &DSTextSize);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &DSTextSize);
 
   // Bearing
   _stprintf(Buffer,TEXT("<<123")); 
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &BETextSize);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &BETextSize);
 
   // TYPE, 4 letters printed
   #define LKASP_TYPE_LEN	4
   _stprintf(Buffer,TEXT("CTRA")); 
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &TYTextSize);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &TYTextSize);
 
   // Flags can be SFE, three chars
   _stprintf(Buffer,TEXT("SFE")); 
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &ACTextSize);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &ACTextSize);
 
-  SelectObject(hdc, LK8InfoNormalFont);
+  Surface.SelectObject(LK8InfoNormalFont);
   _stprintf(Buffer,TEXT("MMMM")); 
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &HLTextSize);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &HLTextSize);
 
-  SelectObject(hdc, LK8PanelMediumFont);  
+  Surface.SelectObject(LK8PanelMediumFont);
   _stprintf(Buffer,TEXT("1.1")); 
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &MITextSize);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &MITextSize);
 
   short afterwpname=left+ASPTextSize.cx+NIBLSCALE(5);
   short intercolumn=(right-afterwpname- DSTextSize.cx-BETextSize.cx-TYTextSize.cx-ACTextSize.cx)/3; 
@@ -260,99 +256,99 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   }
 
   if (INVERTCOLORS)
-	  _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p1, p2, RGB_GREEN, rc);
+	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p1, p2, RGB_GREEN, rc);
   else
-	  _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p1, p2, RGB_DARKGREEN, rc);
+	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p1, p2, RGB_DARKGREEN, rc);
 
-  SelectObject(hdc, LK8InfoNormalFont); // Heading line
+  Surface.SelectObject(LK8InfoNormalFont); // Heading line
 
   short cursortbox=SortedMode[curmapspace];
 
   if ( !ScreenLandscape ) { // portrait mode
-	FillRect(hdc,&s_sortBox[cursortbox], sortbrush); 
+	Surface.FillRect(&s_sortBox[cursortbox], sortbrush);
 
 	_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
-  	SelectObject(hdc, LK8PanelMediumFont); 
+  	Surface.SelectObject(LK8PanelMediumFont);
 
-	LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-  	SelectObject(hdc, LK8InfoNormalFont); 
+	LKWriteText(Surface, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+  	Surface.SelectObject(LK8InfoNormalFont);
 
 	_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1642_")), curpage+1, AspNumpages);  // ASP
 
 	if (cursortbox == 0)
-		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
+		LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 	else
-		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+		LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 	_stprintf(Buffer,gettext(TEXT("_@M752_"))); // Type
 	if (cursortbox==1)
-		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
+		LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
-		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+		LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	_stprintf(Buffer,gettext(TEXT("_@M1300_")));  // Dist
 	if (cursortbox==2)
-		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
+		LKWriteText(Surface, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
-		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+		LKWriteText(Surface, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	_stprintf(Buffer,gettext(TEXT("_@M1301_")));  // Dir
 	if (cursortbox==3)
-		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
+		LKWriteText(Surface, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
-		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+		LKWriteText(Surface, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	// Active mode
 	_stprintf(Buffer,TEXT("*")); 
 	if (cursortbox==4)
-		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
+		LKWriteText(Surface, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
-		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+		LKWriteText(Surface, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 
   } else {
-	FillRect(hdc,&s_sortBox[cursortbox], sortbrush);
+	Surface.FillRect(&s_sortBox[cursortbox], sortbrush);
 
 		_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
-  		SelectObject(hdc, LK8PanelMediumFont); 
-		LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-  		SelectObject(hdc, LK8InfoNormalFont); 
+  		Surface.SelectObject(LK8PanelMediumFont);
+		LKWriteText(Surface, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+  		Surface.SelectObject(LK8InfoNormalFont);
 
 		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1642_")), curpage+1, AspNumpages);  // ASP
 
 		if (cursortbox==0)
-			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
+			LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 		else
-			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+			LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 		_stprintf(Buffer,gettext(TEXT("_@M752_"))); // Type
 		if (cursortbox==1)
-			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
+			LKWriteText(Surface, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
-			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+			LKWriteText(Surface, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		_stprintf(Buffer,gettext(TEXT("_@M1300_")));  // Dist
 		if (cursortbox==2)
-			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
+			LKWriteText(Surface, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
-			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+			LKWriteText(Surface, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		_stprintf(Buffer,gettext(TEXT("_@M1301_")));  // dir
 		if (cursortbox==3)
-			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
+			LKWriteText(Surface, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
-			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+			LKWriteText(Surface, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		_stprintf(Buffer,TEXT("*"));
 		if (cursortbox==4)
-			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
+			LKWriteText(Surface, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
-			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+			LKWriteText(Surface, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
   } // landscape mode
 
 
-  SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
+  Surface.SelectObject(LK8InfoBigFont); // Text font for Nearest
 
 
   int *psortedindex;
@@ -467,31 +463,31 @@ KeepOldValues:
 		switch(LKAirspaces[rli].WarningLevel) {
 			case awYellow:
 				rcolor=RGB_LIGHTYELLOW;
-  				SelectObject(hdc, LK8InfoBigItalicFont); 
+  				Surface.SelectObject(LK8InfoBigItalicFont);
 				break;
 			case awRed:
 				rcolor=RGB_LIGHTRED;
-  				SelectObject(hdc, LK8InfoBigItalicFont); 
+  				Surface.SelectObject(LK8InfoBigItalicFont);
 				break;
 			case awNone:
 			default:
 				rcolor=RGB_WHITE;
-  				SelectObject(hdc, LK8InfoBigFont); 
+  				Surface.SelectObject(LK8InfoBigFont);
 				break;
 		}
 	} else {
 		rcolor=RGB_GREY;
 	}
 
-	LKWriteText(hdc, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+	LKWriteText(Surface, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
 	
-	LKWriteText(hdc, Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+	LKWriteText(Surface, Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
 
-	LKWriteText(hdc, Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+	LKWriteText(Surface, Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
 
-	LKWriteText(hdc, Buffer4[i][curpage], Column4, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+	LKWriteText(Surface, Buffer4[i][curpage], Column4, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
 
-	LKWriteText(hdc, Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+	LKWriteText(Surface, Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
 
   } 
 
@@ -521,7 +517,7 @@ KeepOldValues:
 	invsel.right=right;
 	invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
 	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]+1))-NIBLSCALE(1);
-	InvertRect(hdc,&invsel);
+	Surface.InvertRect(invsel);
 
   } 
 

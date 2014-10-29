@@ -70,7 +70,7 @@ static void UpdateCaption (void) {
   wf->SetCaption(title);
 }
 
-static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
+static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   int n = UpLimit - LowLimit;
   TCHAR sTmp[120];
@@ -81,11 +81,11 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   LockTaskData();
 
   int w0 = Sender->GetWidth()-1;
-  int w1 = GetTextWidth(hDC, TEXT(" 000km"));
+  int w1 = Surface.GetTextWidth(TEXT(" 000km"));
   _stprintf(sTmp, _T("  000%s"), gettext(_T("_@M2179_")));
-  int w2 = GetTextWidth(hDC, sTmp);
+  int w2 = Surface.GetTextWidth(sTmp);
   
-  int TextMargin = (Sender->GetHeight() - GetTextHeight(hDC, TEXT("A"))) / 2;
+  int TextMargin = (Sender->GetHeight() - Surface.GetTextHeight(TEXT("A"))) / 2;
 
   int p1 = w0-w1-w2- Sender->GetHeight()-2;
   int p2 = w0-w2- Sender->GetHeight()-2;
@@ -94,7 +94,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
     int i = LowLimit + DrawListIndex;
 //    if ((WayPointList[Task[i].Index].Flags & LANDPOINT) >0)
 //      MapWindow::DrawRunway(hDC,  &WayPointList[Task[i].Index],  rc, 3000,true);
-    MapWindow::DrawTaskPicto(hDC, DrawListIndex,  rc, 2500);
+    MapWindow::DrawTaskPicto(Surface, DrawListIndex,  rc, 2500);
     if (Task[i].Index>=0) {
       _stprintf(wpName, TEXT("%s%s"),
                 WayPointList[Task[i].Index].Name,
@@ -117,22 +117,16 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
         _stprintf(sTmp, TEXT("%s"), wpName);
       }
 
-      ExtTextOutClip(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
+      Surface.DrawTextClip(Sender->GetHeight()+2*ScreenScale, TextMargin,
 		     sTmp, p1-4*ScreenScale);
 
       _stprintf(sTmp, TEXT("%.0f %s"), 
 		Task[i].Leg*DISTANCEMODIFY,
 		Units::GetDistanceName());
-      ExtTextOut(hDC, Sender->GetHeight()+p1+w1-GetTextWidth(hDC, sTmp),
-                 TextMargin,
-                 ETO_OPAQUE, NULL,
-                 sTmp, _tcslen(sTmp), NULL);
+      Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp, _tcslen(sTmp));
 
       _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),gettext(_T("_@M2179_")));
-      ExtTextOut(hDC, Sender->GetHeight()+p2+w2-GetTextWidth(hDC, sTmp),
-                 TextMargin,
-                 ETO_OPAQUE, NULL,
-                 sTmp, _tcslen(sTmp), NULL);
+      Surface.DrawText(Sender->GetHeight()+p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp, _tcslen(sTmp));
       
     }
 
@@ -142,17 +136,13 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 
 	// LKTOKEN  _@M832_ = "add waypoint" 
       _stprintf(sTmp, TEXT("  (%s)"), gettext(TEXT("_@M832_")));
-      ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
-		 ETO_OPAQUE, NULL,
-		 sTmp, _tcslen(sTmp), NULL);
+      Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp, _tcslen(sTmp));
     } else if ((DrawListIndex==n+1) && ValidTaskPoint(0)) {
 
       if (!AATEnabled || ISPARAGLIDER) {
 	// LKTOKEN  _@M735_ = "Total:" 
 	_stprintf(sTmp, gettext(TEXT("_@M735_")));
-	ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
-		   ETO_OPAQUE, NULL,
-		   sTmp, _tcslen(sTmp), NULL);
+	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp, _tcslen(sTmp));
       
 	if (fai_ok) {
 	  _stprintf(sTmp, TEXT("%.0f %s FAI"), lengthtotal*DISTANCEMODIFY,
@@ -161,10 +151,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 	  _stprintf(sTmp, TEXT("%.0f %s"), lengthtotal*DISTANCEMODIFY,
 		    Units::GetDistanceName());
 	}
-	ExtTextOut(hDC, Sender->GetHeight()+p1+w1-GetTextWidth(hDC, sTmp),
-                  TextMargin,
-		   ETO_OPAQUE, NULL,
-		   sTmp, _tcslen(sTmp), NULL);
+	Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp, _tcslen(sTmp));
 
       } else {
 
@@ -184,9 +171,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 		  DISTANCEMODIFY*lengthtotal,
 		  DISTANCEMODIFY*d1,
 		  Units::GetDistanceName());
-	ExtTextOut(hDC, Sender->GetHeight()+2*ScreenScale, TextMargin,
-		   ETO_OPAQUE, NULL,
-		   sTmp, _tcslen(sTmp), NULL);
+	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp, _tcslen(sTmp));
       } 
     }
   }

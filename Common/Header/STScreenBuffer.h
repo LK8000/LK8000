@@ -47,11 +47,11 @@ public:
 
 	// Creates buffer with the given size and fills it with 
 	// the given color
-	void Create(int nWidth, int nHeight, COLORREF clr);
+	void Create(int nWidth, int nHeight, LKColor clr);
 
 	// Creates buffer with the same width andheight as
 	// the given bitmap and that contains the same picture.
-	void Create(HBITMAP hBitmap);
+	void Create(const LKBitmap& hBitmap);
 
 	// Creates buffer that will contain picture from the given
  	// area of the given device context.
@@ -69,13 +69,13 @@ public:
 
 	// Draws buffer into the given device context starting from
 	// the given point (top left corner)
-	BOOL DrawStretch(HDC *pDC, POINT ptDest, unsigned int cx, 
+	BOOL DrawStretch(LKSurface& Surface, const POINT& ptDest, unsigned int cx,
                          unsigned int cy);
 
 	HDC memDc;
 
 	// Draws buffer into given device context within rectangle
-	BOOL DrawStretch(HDC* pDC, RECT rcDest);
+	BOOL DrawStretch(LKSurface& Surface, const RECT& rcDest);
 
 	// Sets color of the given point
 	inline void SetPoint(int nX, int nY, byte R, byte G, byte B) {
@@ -142,9 +142,10 @@ public:
 	void ReleaseDC();
 
 public:
+#if 0 // Unused
 	// Creates bitmap with the given sizes and the given array of colors.
 	static HBITMAP CreateBitmapByRGBArray(void *pData, int nWidth, int nHeight);
-
+#endif
 	// Returns minimum width that is greater then the given width and
 	// that is acceptable as image width (not all numbers are acceptable)
 	static int CorrectedWidth(int nWidth);
@@ -159,7 +160,7 @@ protected:
 	unsigned int m_nCorrectedWidth;
 	BGRColor *m_pBuffer;
 	BGRColor *m_pBufferTmp;
-	HBITMAP m_hBitmap;
+	LKBitmap m_hBitmap;
 
 	// Members related to device context
 	HDC m_pDC;

@@ -11,11 +11,11 @@
 
 
 
-void Statistics::RenderBarograph(HDC hdc, const RECT rc)
+void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)
 {
 
   if (flightstats.Altitude.sum_n<2) {
-    DrawNoData(hdc, rc);
+    DrawNoData(Surface, rc);
     return;
   }
 
@@ -32,14 +32,14 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
 #else
   if(ISCAR && INVERTCOLORS)
 #endif
-	RenderSky( hdc,   rc, SKY_HORIZON_COL , SKY_SPACE_COL, GC_NO_COLOR_STEPS );
+	RenderSky( Surface,   rc, SKY_HORIZON_COL , SKY_SPACE_COL, GC_NO_COLOR_STEPS );
 
   for(int j=1;j<MAXTASKPOINTS;j++) {
     if (ValidTaskPoint(j) && (flightstats.LegStartTime[j]>=0)) {
       double xx = 
         (flightstats.LegStartTime[j]-CALCULATED_INFO.TakeOffTime)/3600.0;
       if (xx>=0) {
-        DrawLine(hdc, rc,
+        DrawLine(Surface, rc,
                  xx, y_min,
                  xx, y_max,
                  STYLE_REDTHICK);
@@ -47,23 +47,17 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
     }
   }
 
-  HPEN   hpHorizonGround;
-  HBRUSH hbHorizonGround;
-  hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), 
-                                    GROUND_COLOUR);
-  hbHorizonGround = (HBRUSH)CreateSolidBrush(GROUND_COLOUR);
-  HPEN  oldPen = (HPEN) SelectObject(hdc, hpHorizonGround);
-  HBRUSH oldBrush =(HBRUSH) SelectObject(hdc, hbHorizonGround);
+  LKPen hpHorizonGround(PEN_SOLID, IBLSCALE(1), GROUND_COLOUR);
+  LKBrush hbHorizonGround(GROUND_COLOUR);
+  LKPen oldPen = Surface.SelectObject(hpHorizonGround);
+  LKBrush oldBrush = Surface.SelectObject(hbHorizonGround);
 
-  DrawFilledLineGraph(hdc, rc, &flightstats.Altitude_Terrain,
-                GROUND_COLOUR);
+  DrawFilledLineGraph(Surface, rc, &flightstats.Altitude_Terrain, GROUND_COLOUR);
 
-  SelectObject(hdc, oldPen);
-  SelectObject(hdc, oldBrush);
-  DeleteObject(hpHorizonGround);
-  DeleteObject(hbHorizonGround);
+  Surface.SelectObject(oldPen);
+  Surface.SelectObject(oldBrush);
 
-  DrawXGrid(hdc, rc, 
+  DrawXGrid(Surface, rc,
             0.5, flightstats.Altitude.x_min,
             STYLE_THINDASHPAPER, 0.5, true);
 
@@ -71,26 +65,26 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
   rci.top += BORDER_Y;
 
   if(Units::GetUserInvAltitudeUnit() == unFeet) {
-    DrawYGrid(hdc, rci, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
+    DrawYGrid(Surface, rci, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
   } else {
-    DrawYGrid(hdc, rci, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
+    DrawYGrid(Surface, rci, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
   }
-  DrawLineGraph(hdc, rc, &flightstats.Altitude,
+  DrawLineGraph(Surface, rc, &flightstats.Altitude,
                 STYLE_MEDIUMBLACK);
 
-  DrawTrend(hdc, rc, &flightstats.Altitude_Base, STYLE_BLUETHIN);
+  DrawTrend(Surface, rc, &flightstats.Altitude_Base, STYLE_BLUETHIN);
 
-  DrawTrend(hdc, rc, &flightstats.Altitude_Ceiling, STYLE_BLUETHIN);
+  DrawTrend(Surface, rc, &flightstats.Altitude_Ceiling, STYLE_BLUETHIN);
 
   if(INVERTCOLORS)
-    SetTextColor(hdc,RGB_DARKGREEN);
+    Surface.SetTextColor(RGB_DARKGREEN);
   else
-    SetTextColor(hdc,RGB_GREEN);
+    Surface.SetTextColor(RGB_GREEN);
 
   TCHAR text[80];
-  DrawXLabel(hdc, rc, TEXT(" t/h "));
+  DrawXLabel(Surface, rc, TEXT(" t/h "));
   _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
-  DrawYLabel(hdc, rc, text);
+  DrawYLabel(Surface, rc, text);
 
 
 //  DrawYLabel(hdc, rc, TEXT("h"));

@@ -14,7 +14,6 @@
 
 
 extern void PercentCircling(NMEA_INFO *Basic, DERIVED_INFO *Calculated,const double Rate);
-extern double LowPassFilter(double y_last, double x_in, double fact);
 extern void SwitchZoomClimb(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool isclimb, bool left);
 extern void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -231,7 +230,7 @@ _forcereset:
        if( (!ISCAR && !ISGAAIRCRAFT && ((Basic->Time  - StartTime) > cruiseclimbswitch))|| forcecircling) { 
 
          #ifdef TOW_CRUISE
-         // If free flight (FF) hasn’t yet been detected, then we may
+         // If free flight (FF) hasnï¿½t yet been detected, then we may
          // still be on tow.  The following prevents climb mode from
          // engaging due to normal on-aerotow turns.
 

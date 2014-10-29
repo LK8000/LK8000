@@ -25,7 +25,7 @@ static void UpdateList(void){
 
 static int DrawListIndex=0;
 
-static void OnStartPointPaintListItem(WindowControl * Sender, HDC hDC){
+static void OnStartPointPaintListItem(WindowControl * Sender, LKSurface& Surface){
 	(void)Sender;
 
   TCHAR label[MAX_PATH];
@@ -50,13 +50,7 @@ static void OnStartPointPaintListItem(WindowControl * Sender, HDC hDC){
         _tcscpy(label, TEXT(" "));
       }
     }
-    ExtTextOut(hDC,
-	       2*ScreenScale,
-	       2*ScreenScale,
-	       ETO_OPAQUE, NULL,
-	       label,
-	       _tcslen(label),
-	       NULL);
+    Surface.DrawText(2*ScreenScale, 2*ScreenScale, label, _tcslen(label));
   }
 }
 

@@ -25,35 +25,20 @@ WndForm *dlg=NULL;
 
 void dlgLKAirspaceFill();
 
-static void OnPaintAirspacePicto(WindowControl * Sender, HDC hDC){
-	  (void)Sender;
-	  RECT *prc;
-	  WndFrame  *wPicto = ((WndFrame *)dlg->FindByName(TEXT("frmAirspacePicto")));
-	  prc = wPicto->GetBoundRect();
+static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface) {
+    (void) Sender;
 
-
-	  SetBkColor  (hDC, RGB_LIGHTGREY);
-      /****************************************************************
-       * for drawing the airspace pictorial, we need the original data.
-       * copy contain only base class property, not geo data, 
-       * original data are shared ressources ! 
-       * for that we need to grant all called methods are thread safe
-       ****************************************************************/
-	  msg.originator->DrawPicto(hDC, *prc);
-
-}
-
-COLORREF ContrastTextColor(COLORREF Col)
-{
-//  human eye brightness color factors
-//	Y=0.30 R + 0.59 G + 0.11 B.
-	double  Brightness = 0.30 *(double)((Col & 0xFF0000) >> 16);
-	Brightness   +=      0.59 *(double)((Col & 0x00FF00) >> 8 );
-	Brightness   +=      0.11 *(double)((Col & 0x0000FF)      );
-	if(  Brightness > 127.0)
-	  return( RGB_BLACK);
-	else
-	  return( RGB_WHITE);
+    WndFrame *wPicto = ((WndFrame *) dlg->FindByName(TEXT("frmAirspacePicto")));
+    if (wPicto) {
+        Surface.SetBkColor(RGB_LIGHTGREY);
+        /****************************************************************
+         * for drawing the airspace pictorial, we need the original data.
+         * copy contain only base class property, not geo data,
+         * original data are shared ressources !
+         * for that we need to grant all called methods are thread safe
+         ****************************************************************/
+        msg.originator->DrawPicto(Surface, wPicto->GetBoundRect());
+    }
 }
 
 static void OnAckForTimeClicked(WindowControl * Sender)

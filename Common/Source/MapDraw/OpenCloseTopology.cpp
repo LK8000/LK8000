@@ -251,7 +251,7 @@ void OpenTopology() {
           TopoStore[numtopo]->loadBitmap(ShapeIcon);
 	else {
 	  // Careful not to use hPen and hBrush then! Always check that it is not null
-          TopoStore[numtopo]->loadPenBrush(RGB(red,green,blue));
+          TopoStore[numtopo]->loadPenBrush(LKColor(red,green,blue));
 	}
 
 	if (shapeIndex ==  5) if ( LKTopoZoomCat05 <=100 ) TopoStore[numtopo]->scaleThreshold = LKTopoZoomCat05;

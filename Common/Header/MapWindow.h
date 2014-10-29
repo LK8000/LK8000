@@ -17,6 +17,9 @@
 #include "mapprimitive.h"
 #include "Poco/ThreadTarget.h"
 #include "Poco/Thread.h"
+#include "Screen/LKBitmap.h"
+#include "Screen/LKBitmapSurface.h"
+#include "Screen/LKWindowSurface.h"
 
 #define NORTHSMART 5
 #define NORTHTRACK 4
@@ -169,7 +172,7 @@ typedef struct {
     bool WhiteBold;
     bool NoSetFont;  // VENTA5
     bool SetTextColor;  // Set text color in border mode
-    int Color;
+    LKColor Color;
 }TextInBoxMode_t;
 
 
@@ -374,19 +377,23 @@ class MapWindow {
   static int iAirspaceColour[AIRSPACECLASSCOUNT];
   static BOOL CLOSETHREAD;
 
-  static COLORREF GetAirspaceColour(int i) {
+  static const LKColor& GetAirspaceColour(int i) {
     return Colours[i];
   }
-  static HBRUSH GetAirspaceBrush(int i) {
+  static const LKBrush& GetAirspaceBrush(int i) {
     return hAirspaceBrushes[i];
   }
-  static COLORREF GetAirspaceColourByClass(int i) {
+  static const LKColor& GetAirspaceColourByClass(int i) {
     return Colours[iAirspaceColour[i]];
   }
-  static HBRUSH GetAirspaceBrushByClass(int i) {
+  static const LKBrush& GetAirspaceBrushByClass(int i) {
     return hAirspaceBrushes[iAirspaceBrush[i]];
   }
 
+  // initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
+  static void InitAirSpaceSldBrushes(const LKColor colours[]);
+
+  
  private:
 
   static BOOL Initialised;
@@ -397,14 +404,17 @@ class MapWindow {
  public:
 
   // 12 is number of airspace types
-  static COLORREF Colours[NUMAIRSPACECOLORS];
-  static HPEN hAirspacePens[AIRSPACECLASSCOUNT];
-  static HPEN hBigAirspacePens[AIRSPACECLASSCOUNT];
-  static HPEN hAirspaceBorderPen;
-  static HPEN hSnailPens[NUMSNAILCOLORS];
-  static COLORREF hSnailColours[NUMSNAILCOLORS];
-  static HBRUSH hAirspaceBrushes[NUMAIRSPACEBRUSHES];
-  static HBRUSH hAboveTerrainBrush;
+  static LKColor Colours[NUMAIRSPACECOLORS];
+  static LKPen hAirspacePens[AIRSPACECLASSCOUNT];
+  static LKPen hBigAirspacePens[AIRSPACECLASSCOUNT];
+  static LKPen hAirspaceBorderPen;
+  static LKPen hSnailPens[NUMSNAILCOLORS];
+  static LKColor hSnailColours[NUMSNAILCOLORS];
+  static LKBrush hAirspaceBrushes[NUMAIRSPACEBRUSHES];
+  // solid brushes for airspace drawing (initialized in InitAirSpaceSldBrushes())
+  static LKBrush hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
+ 
+  static LKBrush hAboveTerrainBrush;
 
   static Zoom zoom;
   static Mode mode;
@@ -424,34 +434,12 @@ class MapWindow {
   static void UpdateTimeStats(bool start);
 
   // Drawing primitives
-  static void DrawDashLine(HDC , const int , const POINT , const POINT , 
-			   const COLORREF , 
-			   const RECT rc);
+  
+  static void DrawMulticolorDashLine(LKSurface& , const int , const POINT& , const POINT& ,
+			   const LKColor& , const LKColor&,
+			   const RECT&);
 
-  static void DrawMulticolorDashLine(HDC , const int , const POINT , const POINT , 
-			   const COLORREF , const COLORREF,
-			   const RECT rc);
-
-  #ifdef GTL2
-  static void DrawDashPoly(HDC hdc, const int width, const COLORREF color,
-                           POINT* pt, const int npoints, const RECT rc);
-  #endif
-
-  /* Not used
-  static void DrawDotLine(HDC, const POINT , const POINT , const COLORREF , 
-			  const RECT rc);
-  */
-
-  static void _DrawLine(HDC hdc, const int PenStyle, const int width, 
-	       const POINT ptStart, const POINT ptEnd, 
-	       const COLORREF cr, const RECT rc);
-  static void _Polyline(HDC hdc, POINT* pt, const int npoints, const RECT rc);
-  static void DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h, const bool autostretch);
-  static void DrawBitmapX(const HDC hdc, const int top, const int right,
-		     const int sizex, const int sizey,
-		     const HDC source,
-		     const int offsetx, const int offsety,
-		     const DWORD mode,const bool autostretch);
+  static void DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKBitmap& h, const bool autostretch);
 
   // ...
   static void RequestToggleFullScreen();
@@ -472,8 +460,10 @@ class MapWindow {
   static void CreateDrawingThread(void);
   static void SuspendDrawingThread(void);
   static void ResumeDrawingThread(void);
-  static void LKWriteText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, COLORREF rgb_tex, bool invertable);
-  static void LKWriteBoxedText(HDC hDC, RECT *clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align, const COLORREF rgb_dir, const COLORREF rgb_inv );
+  
+  static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, const LKColor& rgb_tex, bool invertable);
+  static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
+
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
   static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
 
@@ -496,35 +486,35 @@ class MapWindow {
 
   static int HeightToY(double fHeight,  DiagrammStruct* psDia);
   static int DistanceToX(double fDist,  DiagrammStruct* psDia)  ;
-  static void RenderNearAirspace(HDC hdc, const RECT rci);
-  static int SharedTopView(HDC hdc,   DiagrammStruct* pDia, double iAS_Bearing, double wpt_brg);
-  static void RenderAirspace(HDC hdc, const RECT rc);
-  static void DrawVisualGlide (HDC hdc, DiagrammStruct* pDia);
+  static void RenderNearAirspace(LKSurface& Surface, const RECT rci);
+  static int SharedTopView(LKSurface& Surface,   DiagrammStruct* pDia, double iAS_Bearing, double wpt_brg);
+  static void RenderAirspace(LKSurface& Surface, const RECT rc);
+  static void DrawVisualGlide (LKSurface& Surface, DiagrammStruct* pDia);
   static short GetVisualGlidePoints(unsigned short numslots );
-  static void LKDrawFlarmRadar(HDC hdc, const RECT rci);
-  static void LKDrawMultimap_Example(HDC hdc, const RECT rci);
-  static void LKDrawMultimap_Test(HDC hdc, const RECT rci);
-  static void LKDrawMultimap_Asp(HDC hdc, const RECT rci);
-  static void LKDrawMultimap_Radar(HDC hdc, const RECT rci);
+  static void LKDrawFlarmRadar(LKSurface& Surface, const RECT& rci);
+  static void LKDrawMultimap_Example(LKSurface& Surface, const RECT& rci);
+  static void LKDrawMultimap_Test(LKSurface& Surface, const RECT& rci);
+  static void LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rci);
+  static void LKDrawMultimap_Radar(LKSurface& Surface, const RECT& rci);
 
-  static void DrawMultimap_Topleft(const HDC hdc, const RECT rci);
-  static void DrawMultimap_Topright(const HDC hdc, const RECT rci);
-  static void DrawMultimap_DynaLabel(const HDC hdc, const RECT rci);
-  static void DrawMultimap_SideTopSeparator(const HDC hdc, const RECT rci);
+  static void DrawMultimap_Topleft(LKSurface& Surface, const RECT& rci);
+  static void DrawMultimap_Topright(LKSurface& Surface, const RECT& rci);
+  static void DrawMultimap_DynaLabel(LKSurface& Surface, const RECT& rci);
+  static void DrawMultimap_SideTopSeparator(LKSurface& Surface, const RECT& rci);
 
 
 
-  static int DrawFlarmObjectTrace(HDC hDC,double fZoom, DiagrammStruct* Dia);
+  static int DrawFlarmObjectTrace(LKSurface& Surface,double fZoom, DiagrammStruct* Dia);
 
-  static void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact, BOOL Picto = false);
-  static void DrawTaskPicto(HDC hdc, int TaskIdx, RECT rc, double fScaleFact);
-  static void DrawWaypointPictoBg(HDC hdc, const RECT rc);
-  static void DrawWaypointPicto(HDC hdc, const RECT rc, WAYPOINT* wp);
-  static void DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC*);
-  static void DrawAircraft(HDC hdc, const POINT Orig);
+  static void DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, double fScaleFact, BOOL Picto = false);
+  static void DrawTaskPicto(LKSurface& Surface, int TaskIdx, const RECT& rc, double fScaleFact);
+  static void DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc);
+  static void DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp);
+  static void DrawFlarmPicto(LKSurface& hDC, const RECT& rc, FLARM_TRAFFIC*);
+  static void DrawAircraft(LKSurface& Surface, const POINT& Orig);
  private:
-  static void DrawAHRS(HDC hdc, const RECT rc);
-  static void DrawCompassRose(HDC hDC, const RECT rc, double direction);
+  static void DrawAHRS(LKSurface& Surface, const RECT& rc);
+  static void DrawCompassRose(LKSurface& Surface, const RECT& rc, double direction);
   static void CalculateScreenPositions(POINT Orig, RECT rc, 
                                        POINT *Orig_Aircraft);
   static void CalculateScreenPositionsGroundline();
@@ -538,43 +528,41 @@ class MapWindow {
 			  const rectObj &bounds);
 
 
-  static void DrawCrossHairs(HDC hdc, const POINT Orig, const RECT rc);
-  static void DrawHeading(HDC hdc, const POINT Orig, const RECT rc); // VENTA10
-  static void DrawBestCruiseTrack(HDC hdc, const POINT Orig);
-  static void DrawCompass(HDC hdc, const RECT rc,const double angle);
-  static void DrawTRI(HDC hdc, const RECT rc);
-  static void DrawAcceleration(HDC hdc, const RECT rc);
-  static void DrawTarget(HDC hdc, const RECT rc,int ttop,int tbottom,int tleft,int tright);
-  //  static void DrawHorizon(HDC hdc, const RECT rc);
-  //  static void DrawWind(HDC hdc, POINT Orig, RECT rc);
-  //  static void DrawWindAtAircraft(HDC hdc, POINT Orig, RECT rc);
-  static void DrawWindAtAircraft2(HDC hdc, POINT Orig, RECT rc);
-  static void DrawAirSpace(HDC hdc, const RECT rc);
-  static void DrawAirSpaceBorders(HDC hdc, const RECT rc);
-  static void DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Aircraft);
-  static void DrawWaypoints(HDC hdc, const RECT rc);
-  static void DrawWaypointsNew(HDC hdc, const RECT rc);
-  static void DrawLook8000(HDC hdc, const RECT rc);
-  static void DrawBottomBar(HDC hdc, const RECT rc);
-  static void DrawMapSpace(HDC hdc, const RECT rc);
-  static void DrawNearest(HDC hdc, const RECT rc);
-  static void DrawAspNearest(HDC hdc, const RECT rc);
-  static void DrawCommon(HDC hdc, const RECT rc);
-  static void DrawInfoPage(HDC hdc, const RECT rc, const bool forceinit);
-  static void DrawTraffic(HDC hdc, const RECT rc);
-  static void DrawThermalHistory(HDC hdc, const RECT rc);
-  static int DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc, double bearing);
-  static void DrawHSIarc(HDC hdc, POINT Orig, RECT rc );
-  static void DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc , double, double);
-  static void DrawFuturePos(HDC hdc, const POINT Orig, const RECT rc, const bool headUpLine = false);
+  static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
+  static void DrawHeading(LKSurface& Surface, const POINT& Orig, const RECT& rc); // VENTA10
+  static void DrawBestCruiseTrack(LKSurface& Surface, const POINT& Orig);
+  static void DrawCompass(LKSurface& Surface, const RECT& rc,const double angle);
+  static void DrawTRI(LKSurface&, const RECT& rc);
+  static void DrawAcceleration(LKSurface& Surface, const RECT& rc);
+  static void DrawTarget(LKSurface& Surface, const RECT& rc,int ttop,int tbottom,int tleft,int tright);
+
+  static void DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const RECT& rc);
+  static void DrawAirSpace(LKSurface& Surface, const RECT& rc);
+  static void DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc);
+  static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
+  static void DrawWaypoints(LKSurface& Surface, const RECT& rc);
+  static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc);
+  static void DrawLook8000(LKSurface& Surface, const RECT& rc);
+  static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
+  static void DrawMapSpace(LKSurface& Surface, const RECT& rc);
+  static void DrawNearest(LKSurface& Surface, const RECT& rc);
+  static void DrawAspNearest(LKSurface& Surface, const RECT& rc);
+  static void DrawCommon(LKSurface& Surface, const RECT& rc);
+  static void DrawInfoPage(LKSurface& Surface, const RECT& rc, const bool forceinit);
+  static void DrawTraffic(LKSurface& Surface, const RECT& rc);
+  static void DrawThermalHistory(LKSurface& Surface, const RECT& rc);
+  static int DrawCompassArc(LKSurface& Surface, long x, long y, int radius, const RECT& rc, double bearing);
+  static void DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc );
+  static void DrawHeadUpLine(LKSurface& Surface, const POINT& Orig, const RECT& rc , double, double);
+  static void DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT& rc, const bool headUpLine = false);
 
   //Here the staff for the new HSI info screen: remove after what is not needed
-  static HSIreturnStruct DrawHSI(HDC hDC, const RECT);
-  static void DrawHSIAHRS(HDC hDC, const RECT rc);
-  static void DrawHSICompassRose(HDC hDC, const RECT rc, double direction);
-  static void DrawHSIAcceleration(HDC hDC, const RECT rc);
+  static HSIreturnStruct DrawHSI(LKSurface& Surface, const RECT& rc);
+  static void DrawHSIAHRS(LKSurface& Surface, const RECT& rc);
+  static void DrawHSICompassRose(LKSurface& Surface, const RECT& rc, double direction);
+  static void DrawHSIAcceleration(LKSurface& Surface, const RECT& rc);
 
-  static void WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
+  static void WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
                                 short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
   // static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
   static void LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
@@ -582,72 +570,64 @@ class MapWindow {
   static void LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKUpdateOlc(void);
-//  static void LKWriteText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, COLORREF rgb_tex, bool invertable);
 
 #ifdef DRAWDEBUG
   static void DrawDebug(HDC hdc, const RECT rc);
 #endif
-  static void DrawWelcome8000(HDC hdc, const RECT rc); 
-  static void DrawLKStatus(HDC hdc, const RECT rc);
-  static void DrawFlightMode(HDC hdc, const RECT rc);
-  static void DrawGPSStatus(HDC hdc, const RECT rc);
-  static void DrawFunctions1HZ(HDC hdc, const RECT rc);
-  static void DrawLKAlarms(HDC hdc, const RECT rc);
-  static void DrawFDRAlarms(HDC hdc, const RECT rc);
+  static void DrawWelcome8000(LKSurface& Surface, const RECT& rc); 
+  static void DrawLKStatus(LKSurface& Surface, const RECT& rc);
+  static void DrawFlightMode(LKSurface& Surface, const RECT& rc);
+  static void DrawGPSStatus(LKSurface& Surface, const RECT& rc);
+  static void DrawFunctions1HZ(LKSurface& Surface, const RECT& rc);
+  static void DrawLKAlarms(LKSurface& Surface, const RECT& rc);
+  static void DrawFDRAlarms(LKSurface& Surface, const RECT& rc);
 
 
 
-  static void DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
-		                COLORREF color, DiagrammStruct *psDia, const TCHAR *pLable=NULL);
-  static void DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
-                        COLORREF color, DiagrammStruct *psDia,  const TCHAR *pLable=NULL);
+  static void DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,double unit_step, double zero, int iTextAling,
+		                const LKColor& color, DiagrammStruct *psDia, const TCHAR *pLable=NULL);
+  static void DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,double unit_step, double zero, int iTextAling,
+                        const LKColor& color, DiagrammStruct *psDia,  const TCHAR *pLable=NULL);
 
 
-  static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
+  static double LKDrawTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   #if LONGSNAIL
-  static double LKDrawLongTrail(HDC hdc, const POINT Orig, const RECT rc);
+  static double LKDrawLongTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   #endif
-  static void DrawTeammate(HDC hdc, const RECT rc);
-  static void DrawOffTrackIndicator(HDC hdc, const RECT rc);
-  static void DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig);
-  static void DrawStartEndSector(HDC hdc, const RECT& rc, 
+  static void DrawTeammate(LKSurface& Surface, const RECT& rc);
+  static void DrawOffTrackIndicator(LKSurface& Surface, const RECT& rc);
+  static void DrawProjectedTrack(LKSurface& Surface, const RECT& rc, const POINT& Orig);
+  static void DrawStartEndSector(LKSurface& Surface, const RECT& rc, 
                                     const POINT &Start, const POINT &End, int Index, 
                                     int Type, double Radius);
-  static void DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft);
-  static void DrawTaskSectors(HDC hdc, RECT rc ) ;
-  static void DrawFAIOptimizer(HDC hdc, RECT rc, const POINT &Orig_Aircraft) ;
-  static void DrawThermalEstimate(HDC hdc, const RECT rc);
-  static void DrawThermalEstimateMultitarget(HDC hdc, const RECT rc);
-  static void DrawTaskAAT(HDC hdc, const RECT rc);
-  static void DrawBearing(HDC hdc, const RECT rc);
-  static void DrawGreatCircle(HDC hdc,
+  static void DrawTask(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft);
+  static void DrawTaskSectors(LKSurface& Surface, const RECT& rc ) ;
+  static void DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft) ;
+  static void DrawThermalEstimate(LKSurface& Surface, const RECT& rc);
+  static void DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& rc);
+  static void DrawTaskAAT(LKSurface& Surface, const RECT& rc);
+  static void DrawBearing(LKSurface& Surface, const RECT& rc);
+  static void DrawGreatCircle(LKSurface& Surface,
                               double lon_start, double lat_start,
                               double lon_end, double lat_end,
-			      const RECT rc);
-  // static void DrawMapScale(HDC hDC,RECT rc);
-  static void DrawMapScale(HDC hDC, const RECT rc, 
+			      const RECT& rc);
+
+  static void DrawMapScale(LKSurface& Surface, const RECT& rc, 
 			   const bool ScaleChangeFeedback);
-  static void DrawMapScale2(HDC hDC, const RECT rc, 
-			    const POINT Orig_Aircraft);
-  static void DrawFinalGlide(HDC hDC, const RECT rc);
-  static void DrawThermalBand(HDC hDC, const RECT rc);
-  static void DrawGlideThroughTerrain(HDC hDC, const RECT rc);
-  static void DrawTerrainAbove(HDC hDC, const RECT rc);
-  static void LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
-  static void LKDrawVario(HDC hDC, RECT rc);
+  static void DrawMapScale2(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
+  static void DrawFinalGlide(LKSurface& Surface, const RECT& rc);
+  static void DrawThermalBand(LKSurface& Surface, const RECT& rc);
+  static void DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc);
+  static void DrawTerrainAbove(LKSurface& Surface, const RECT& rc);
+  static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
+  static void LKDrawVario(LKSurface& Surface, const RECT& rc);
 
 
   static void DoSonar(void);
 
-    
-  static void DrawSolidLine(const HDC&hdc, 
-			    const POINT&start, 
-			    const POINT&end ,
-			    const RECT rc);
-  static bool TextInBox(HDC hDC, const RECT *area, const TCHAR* Value, int x, int y, int size, TextInBoxMode_t *Mode, bool noOverlap=false);
-  static void VGTextInBox(HDC hDC, const unsigned short nslot, const short numlines, const TCHAR* wText1, const TCHAR *wText2, const TCHAR *wText3, int x, int y, COLORREF trgb, HBRUSH bbrush);
+  static bool TextInBox(LKSurface& Surface, const RECT *area, const TCHAR* Value, int x, int y, int size, TextInBoxMode_t *Mode, bool noOverlap=false);
+  static void VGTextInBox(LKSurface& Surface, const unsigned short nslot, const short numlines, const TCHAR* wText1, const TCHAR *wText2, const TCHAR *wText3, int x, int y, const LKColor& trgb, const LKBrush& bbrush);
   static void ToggleFullScreenStart();
-  //static void TextColor(HDC hDC, short colorcode);
   static bool WaypointInTask(int ind);
 
  private:
@@ -655,19 +635,17 @@ class MapWindow {
 #if LONGSNAIL
   static int iLongSnailNext;
 #endif
-  static HBITMAP hDrawBitMap;
-  static HBITMAP hDrawBitMapTmp;
-  static HBITMAP hMaskBitMap;
-  static HBITMAP mhbbuffer;
-  static HDC hdcDrawWindow;
-  static HDC hdcScreen;
-  static HDC hDCTemp;
-  static HDC hDCMask;
-  static HDC mhdcbuffer;
-#if NEWSMARTZOOM
-  static HBITMAP hQuickDrawBitMap;
-  static HDC hdcQuickDrawWindow;
-#endif
+
+  static LKWindowSurface ScreenSurface;
+
+  static LKBitmapSurface hdcDrawWindow;
+  
+  static LKBitmapSurface hDCTempTask;
+  static LKBitmapSurface hdcTempTerrainAbove;
+  static LKBitmapSurface hdcTempAsp; // Only used For Airspaces drawing
+  static LKMaskBitmapSurface hdcMask; // Only used For Airspaces drawing "Transparent Border" or "Paterns Borders"
+  static LKBitmapSurface hdcbuffer; // Used For aispaces
+  
   static double PanLatitude;
   static double PanLongitude;
 
@@ -694,39 +672,39 @@ class MapWindow {
   static double GetDisplayAngle() { return DisplayAngle; }
   static void SetAutoOrientation(bool doreset);
 
-  static HBRUSH   hInvBackgroundBrush[LKMAXBACKGROUNDS]; // fixed number of backgrounds in MapWindow
+  static LKBrush hInvBackgroundBrush[LKMAXBACKGROUNDS]; // fixed number of backgrounds in MapWindow
 
-  static      HPEN hpAircraft;
-  static      HPEN hpWind;
-  static      HPEN hpWindThick;
-  static	HPEN hpThermalCircle;
-  static      HPEN hpOvertarget;
-  static      HPEN hpThermalBand;
-  static      HPEN hpThermalBandGlider;
-  static      HPEN hpFinalGlideAbove;
-  static      HPEN hpFinalGlideBelow;
-  static      HPEN hpMapScale2;
-  static      HPEN hpTerrainLine;
-  static      HPEN hpTerrainLineBg;
-  static      HPEN hpStartFinishThick;
+  static      LKPen hpAircraft;
+  static      LKPen hpWind;
+  static      LKPen hpWindThick;
+  static      LKPen hpThermalCircle;
+  static      LKPen hpOvertarget;
+  static      LKPen hpThermalBand;
+  static      LKPen hpThermalBandGlider;
+  static      LKPen hpFinalGlideAbove;
+  static      LKPen hpFinalGlideBelow;
+  static      LKPen hpMapScale2;
+  static      LKPen hpTerrainLine;
+  static      LKPen hpTerrainLineBg;
+  static      LKPen hpStartFinishThick;
   
  private:
 
   static DWORD fpsTime0;
 
-  static void CalculateOrigin(const RECT rc, POINT *Orig);
+  static void CalculateOrigin(const RECT& rc, POINT *Orig);
 
 
   static void DrawThread ();
 
   static Poco::ThreadTarget MapWindowThreadRun;
 
-  static void RenderMapWindow(  RECT rc);
-  static void RenderMapWindowBg(HDC hdc, const RECT rc,
+  static void RenderMapWindow(const RECT& rc);
+  static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
 				const POINT &Orig,
 				const POINT &Orig_Aircraft);
   static void UpdateCaches(bool force=false);
-  static double findMapScaleBarSize(const RECT rc);
+  static double findMapScaleBarSize(const RECT& rc);
 
   #define SCALELISTSIZE  30
   static int ScaleListCount;

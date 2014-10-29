@@ -22,7 +22,7 @@ extern bool IsMultimapConfigShown;
 
 
 
-void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
+void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
 {
 
 
@@ -107,7 +107,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
    AltitudeMode = ALLON;
 #endif
 
-  RenderAirspace(hdc, rci);
+  RenderAirspace(Surface, rci);
 
 #ifdef ENABLE_ALL_AS_FOR_SIDEVIEW
   AltitudeMode = oldAltMode;

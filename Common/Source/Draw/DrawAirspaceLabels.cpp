@@ -18,7 +18,7 @@
 
 
 
-void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Aircraft)
+void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft)
 {
   static short int label_sequencing_divider = 0;
   CAirspaceList::const_iterator it;
@@ -46,7 +46,7 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
           if (distances_ready && (hlabeldrawstyle > awsHidden) && PointVisible(lon, lat)) {
 
               LatLon2Screen(lon, lat, sc);
-              DrawBitmapIn(hdc, sc, hAirspaceWarning,true);
+              Surface.DrawMaskedBitmap(sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10), hAirspaceWarning, 10, 10);              
               
               Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
               _tcscpy(hbuf, (*it)->Name());
@@ -77,14 +77,12 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
                      TextDisplayMode.WhiteBold = 1; // outlined  
               }
 
-              hlabel_draws = TextInBox(hdc, &rc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
+              hlabel_draws = TextInBox(Surface, &rc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
            }
            
           // Vertical warning point
           if (distances_ready && vlabeldrawstyle > awsHidden) {
 
-              //DrawBitmapIn(hdc, Orig_Aircraft, hAirspaceWarning);
-              
               Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
               _tcscpy(hbuf, (*it)->Name());
               _tcscat(hbuf, TEXT(" "));
@@ -114,7 +112,7 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
                      TextDisplayMode.WhiteBold = 1; // outlined  
               }
 
-              vlabel_draws = TextInBox(hdc, &rc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
+              vlabel_draws = TextInBox(Surface, &rc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
            }
            if (!label_sequencing_divider) CAirspaceManager::Instance().AirspaceWarningLabelPrinted(**it, hlabel_draws || vlabel_draws);
            

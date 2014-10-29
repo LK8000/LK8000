@@ -29,24 +29,6 @@
 typedef unsigned int uint;
 typedef unsigned char byte;
 
-#ifdef __MINGW32CE__
-#ifdef __cplusplus
-extern "C" {
-#endif
-	// TransparentImage is not defined in arm-mingw32ce
-	WINGDIAPI WINBOOL WINAPI TransparentImage(HDC hdcDest,int xoriginDest,int yoriginDest,int wDest,int hDest,HDC hdcSrc,int xoriginSrc,int yoriginSrc,int wSrc,int hSrc,UINT crTransparent);
-#ifdef __cplusplus
-}
-#endif
-/* TransparentBlt (Windows CE 5.0)
-		The TransparentBlt function is a wrapper for the TransparentImage function.
-		http://msdn.microsoft.com/fr-fr/library/windows/apps/xaml/aa453778.aspx
- */
-	#define TransparentBlt TransparentImage
-#endif
-
-
-
 #if (WINDOWSPC>0)
 #define VK_APP1     0x31
 #define VK_APP2     0x32

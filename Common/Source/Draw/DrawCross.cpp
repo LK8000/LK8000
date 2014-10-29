@@ -14,8 +14,7 @@
 // Cross is drawn when in Pan mode, and aircraft icon is not painted of course
 //
 
-void MapWindow::DrawCrossHairs(HDC hdc, const POINT Orig,
-			       const RECT rc)
+void MapWindow::DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc)
 {
   POINT o1, o2;
   
@@ -25,12 +24,12 @@ void MapWindow::DrawCrossHairs(HDC hdc, const POINT Orig,
   o2.y = Orig.y;
 
   if (BlackScreen)
-	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_INVDRAW, rc);
+	  Surface.DrawLine(PEN_SOLID, 1, o1, o2, RGB_INVDRAW, rc);
   else
-	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_DARKGREY, rc);
+	  Surface.DrawLine(PEN_SOLID, 1, o1, o2, RGB_DARKGREY, rc);
 
-  SetPixel(hdc,o1.x,o1.y,RGB_YELLOW);
-  SetPixel(hdc,o2.x,o2.y,RGB_YELLOW);
+  Surface.SetPixel(o1.x,o1.y,RGB_YELLOW);
+  Surface.SetPixel(o2.x,o2.y,RGB_YELLOW);
 
   o1.x = Orig.x;
   o2.x = Orig.x;
@@ -38,12 +37,12 @@ void MapWindow::DrawCrossHairs(HDC hdc, const POINT Orig,
   o2.y = Orig.y-NIBLSCALE(20);
 
   if (BlackScreen)
-	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_INVDRAW, rc); // 091219
+	  Surface.DrawLine(PEN_SOLID, 1, o1, o2, RGB_INVDRAW, rc); // 091219
   else
-	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_DARKGREY, rc); // 091219
+	  Surface.DrawLine(PEN_SOLID, 1, o1, o2, RGB_DARKGREY, rc); // 091219
 
-  SetPixel(hdc,o1.x,o1.y,RGB_YELLOW);
-  SetPixel(hdc,o2.x,o2.y,RGB_YELLOW);
+  Surface.SetPixel(o1.x,o1.y,RGB_YELLOW);
+  Surface.SetPixel(o2.x,o2.y,RGB_YELLOW);
 
 
 }

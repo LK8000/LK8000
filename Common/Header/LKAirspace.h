@@ -15,6 +15,7 @@
 #include <list>
 #include <algorithm>
 
+#include "Screen/LKSurface.h"
 
 // changed by AlphaLima since we have a second airspace view to next waypoint,
 // the waypoint can be much more far away (e.g.  167km for a 500km FAI triangle)
@@ -132,8 +133,8 @@ public:
 
 
   const TCHAR* TypeName(void) const;
-  COLORREF TypeColor(void) const;
-  HBRUSH TypeBrush(void) const;
+  const LKColor& TypeColor(void) const;
+  const LKBrush& TypeBrush(void) const;
 
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }
@@ -251,7 +252,7 @@ public:
     // Calculate drawing coordinates on screen
     virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) = 0;
     // Draw airspace on map
-    virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
+    virtual void Draw(LKSurface& Surface, const RECT &rc, bool param1) const;
     // Calculate nearest horizontal distance and bearing to the airspace from a given point
     virtual double Range(const double &longitude, const double &latitude, double &bearing) const  = 0;
     // Calculate unique hash code for this airspace
@@ -282,7 +283,7 @@ protected:
     //  this methods are NEVER used at same time of airspace loading
     //  therefore we can be considered is thread safe
 public:
-    virtual void DrawPicto(HDC hDCTemp, const RECT &rc) const;
+    virtual void DrawPicto(LKSurface& Surface, const RECT &rc) const;
 protected:
     virtual void CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList &screenpoints_picto) const = 0;
     ////////////////////////////////////////////////////////////////////////////////  

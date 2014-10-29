@@ -19,42 +19,30 @@ static WndForm *wf=NULL;
 
 static short retStatus;
 
-static void OnPaintWaypointPicto(WindowControl * Sender, HDC hDC){
-	  (void)Sender;
+static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
+    (void) Sender;
+    if (wf) {
 
+        WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmWaypointPicto")));
+        if (wPicto) {
+            const RECT& rc = wPicto->GetBoundRect();
 
-
-RECT *prc;
-WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmWaypointPicto")));
-
-#if BUGSTOP
-LKASSERT(wPicto!=NULL);
-#endif
-if (wPicto==NULL) return;
-
-prc = wPicto->GetBoundRect();
-
-//  StartupStore(_T("..Entered OnPaintWaypointPicto \n"));
-
-
-
-
-  MapWindow::DrawWaypointPictoBg(hDC,  *prc);
-  LKASSERT(ValidWayPoint(SelectedWaypoint));
-  if (WayPointCalc[SelectedWaypoint].IsLandable )
-  {
-	MapWindow::DrawRunway(hDC,&WayPointList[SelectedWaypoint],  *prc, 4000 , true);
-  }
-  else
-  {
-	MapWindow::DrawWaypointPicto(hDC,  *prc, &WayPointList[SelectedWaypoint]);
-  }
+            MapWindow::DrawWaypointPictoBg(Surface, rc);
+            LKASSERT(ValidWayPoint(SelectedWaypoint));
+            if (WayPointCalc[SelectedWaypoint].IsLandable) {
+                MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 4000, true);
+            } else {
+                MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
+            }
+        }
+    }
 }
 
-
-static void OnCancelClicked(WindowControl * Sender){
-(void)Sender;
+static void OnCancelClicked(WindowControl * Sender) {
+    (void) Sender;
+    if (wf) {
         wf->SetModalResult(mrOK);
+    }
 }
 
 static void OnSetAlt1Clicked(WindowControl * Sender){

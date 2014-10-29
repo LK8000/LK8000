@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Atmosphere.h"
 
-void Statistics::RenderTemperature(HDC hdc, const RECT rc)
+void Statistics::RenderTemperature(LKSurface& Surface, const RECT& rc)
 {
   ResetScale();
 
@@ -35,7 +35,7 @@ void Statistics::RenderTemperature(HDC hdc, const RECT rc)
   }
 
   if (hmin>= hmax) {
-    DrawNoData(hdc, rc);
+    DrawNoData(Surface, rc);
     return;
   }
 
@@ -57,34 +57,34 @@ void Statistics::RenderTemperature(HDC hdc, const RECT rc)
 
       ipos++;
 
-      DrawLine(hdc, rc,
+      DrawLine(Surface, rc,
 	       CuSonde::cslevels[i].tempDry, i,
 	       CuSonde::cslevels[i+1].tempDry, (i+1), 
 	       STYLE_REDTHICK);
 
-      DrawLine(hdc, rc,
+      DrawLine(Surface, rc,
 	       CuSonde::cslevels[i].airTemp, i,
 	       CuSonde::cslevels[i+1].airTemp, (i+1), 
 	       STYLE_MEDIUMBLACK);
 
-      DrawLine(hdc, rc,
+      DrawLine(Surface, rc,
 	       CuSonde::cslevels[i].dewpoint, i,
 	       CuSonde::cslevels[i+1].dewpoint, i+1, 
 	       STYLE_BLUETHIN);
 
       if (ipos> 2) {
 	if (!labelDry) {
-	  DrawLabel(hdc, rc, TEXT("DALR"), 
+	  DrawLabel(Surface, rc, TEXT("DALR"),
 		    CuSonde::cslevels[i+1].tempDry, i);
 	  labelDry = true;
 	} else {
 	  if (!labelAir) {
-	    DrawLabel(hdc, rc, TEXT("Air"), 
+	    DrawLabel(Surface, rc, TEXT("Air"),
 		      CuSonde::cslevels[i+1].airTemp, i);
 	    labelAir = true;
 	  } else {
 	    if (!labelDew) {
-	      DrawLabel(hdc, rc, TEXT("Dew"), 
+	      DrawLabel(Surface, rc, TEXT("Dew"),
 			CuSonde::cslevels[i+1].dewpoint, i);
 	      labelDew = true;
 	    }
@@ -95,15 +95,15 @@ void Statistics::RenderTemperature(HDC hdc, const RECT rc)
   }
 
   if(INVERTCOLORS)
-    SetTextColor(hdc,RGB_DARKGREEN);
+    Surface.SetTextColor(RGB_DARKGREEN);
   else
-    SetTextColor(hdc,RGB_GREEN);
-  SetBkMode(hdc, OPAQUE);
+    Surface.SetTextColor(RGB_GREEN);
+  Surface.SetBkMode(OPAQUE);
   TCHAR text[80];
   _stprintf(text,TEXT(" T/%sC "), gettext(_T("_@M2179_")));
-  DrawXLabel(hdc, rc, text);
+  DrawXLabel(Surface, rc, text);
   _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
-  DrawYLabel(hdc, rc, text);
+  DrawYLabel(Surface, rc, text);
 
 
 //  DrawXLabel(hdc, rc, TEXT("T")TEXT(DEG));

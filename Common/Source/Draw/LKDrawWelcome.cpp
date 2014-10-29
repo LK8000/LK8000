@@ -13,7 +13,7 @@
 #include "RGB.h"
 
 
-void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
+void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
   SIZE textSize, headerSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
@@ -39,49 +39,49 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 		break;
   }
   
-  SelectObject(hdc, LK8BigFont);
+  Surface.SelectObject(LK8BigFont);
   _stprintf(Buffer,TEXT("LK8000"));
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &headerSize);
-  LKWriteText(hdc, Buffer, middlex, (headerSize.cy/2)+NIBLSCALE(2) , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITENOREV, false);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &headerSize);
+  LKWriteText(Surface, Buffer, middlex, (headerSize.cy/2)+NIBLSCALE(2) , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
   _stprintf(Buffer,gettext(TEXT("_@M904_"))); // Tactical Flight Computer
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
-  SelectObject(hdc, LK8MediumFont);
-  LKWriteText(hdc, Buffer, middlex, (headerSize.cy/2)+(textSize.cy/2)+NIBLSCALE(4)+1 , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITENOREV, false);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
+  Surface.SelectObject(LK8MediumFont);
+  LKWriteText(Surface, Buffer, middlex, (headerSize.cy/2)+(textSize.cy/2)+NIBLSCALE(4)+1 , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
 
-  //SelectObject(hdc, LK8InfoBigFont);
-  SelectObject(hdc, LK8TitleFont);
+  //Surface.SelectObject(LK8InfoBigFont);
+  Surface.SelectObject(LK8TitleFont);
 #ifndef LKCOMPETITION
   _stprintf(Buffer,TEXT("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
 #else
   _stprintf(Buffer,TEXT("%sC v%s.%s COMPETITION"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
 #endif
   if (SIMMODE) _tcscat(Buffer,_T(" (Simulator)"));
-  LKWriteText(hdc, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBERNOREV, false);
+  LKWriteText(Surface, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBERNOREV, false);
 
 
   _stprintf(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
-  LKWriteText(hdc, Buffer, middlex, ((rc.bottom-rc.top)-textSize.cy)/2 , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
+  LKWriteText(Surface, Buffer, middlex, ((rc.bottom-rc.top)-textSize.cy)/2 , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
 
-  SelectObject(hdc, LK8UnitFont);
+  Surface.SelectObject(LK8UnitFont);
   if (ScreenSize==0) {
 	_stprintf(Buffer,TEXT("Screen %ldx%ld experimental"),rc.right,rc.bottom );
-	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
+	Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
-	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
+	LKWriteText(Surface, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
   } else {
 	_stprintf(Buffer,TEXT("%s"), LK8000_Version);
-	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
+	Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
-	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);
+	LKWriteText(Surface, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);
 	_stprintf(Buffer,TEXT("HTTP://WWW.LK8000.IT  email:info@lk8000.it"));
-	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
+	LKWriteText(Surface, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
  }
 
-  SelectObject(hdc, LK8InfoSmallFont);
+  Surface.SelectObject(LK8InfoSmallFont);
 
 #if TESTBENCH
   _stprintf(Buffer, _T("%d WPs, %0.1fM free"),NumberOfWayPoints-NUMRESWP,freeram);
@@ -92,8 +92,8 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 #ifndef NDEBUG
   _tcscat(Buffer,_T(" (+debug)"));
 #endif
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
-  LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
+  LKWriteText(Surface, Buffer, middlex, bottomlines-(textSize.cy)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
   _tcscpy(Buffer, _T(""));
   if (GPSAltitudeOffset != 0) _stprintf(Buffer, _T("(GpsOffset %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); // 100429 /1000
@@ -101,8 +101,8 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   _tcscat(Buffer,_T(" TESTBENCH! "));
   #endif
   if (!LoggerGActive()) _tcscat(Buffer,_T(" (No GRecord)"));
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
-  LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy*2)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
+  LKWriteText(Surface, Buffer, middlex, bottomlines-(textSize.cy*2)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
   if (WarningHomeDir) {
 	TCHAR nopath[MAX_PATH];

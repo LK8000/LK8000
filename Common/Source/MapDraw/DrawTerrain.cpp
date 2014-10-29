@@ -717,7 +717,7 @@ void ColorTable() {
   }
 }
 
-  void Draw(HDC hdc, RECT rc) {
+  void Draw(LKSurface& Surface, const RECT& rc) {
 
     sbuf->Zoom(oversampling);
 
@@ -727,7 +727,7 @@ void ColorTable() {
       sbuf->VerticalBlur(blursize);
 
     }
-    sbuf->DrawStretch(&hdc, rc);
+    sbuf->DrawStretch(Surface, rc);
 
   }
 
@@ -749,7 +749,7 @@ void CloseTerrainRenderer() {
 }
 
 
-void DrawTerrain( const HDC hdc, const RECT rc, 
+void DrawTerrain( LKSurface& Surface, const RECT& rc,
                   const double sunazimuth, const double sunelevation)
 {
   (void)sunelevation; // TODO feature: sun-based rendering option
@@ -845,7 +845,7 @@ _redo:
   trenderer->Slope(sx, sy, sz); 
  
   // step 5: draw
-  trenderer->Draw(hdc, rc);
+  trenderer->Draw(Surface, rc);
 
 }
 

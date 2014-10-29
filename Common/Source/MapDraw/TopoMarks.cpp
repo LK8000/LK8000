@@ -50,7 +50,7 @@ void TopologyInitialiseMarks() {
   TCHAR buf[MAX_PATH];
   LocalPath(buf, _T(LKD_CONF));
   _tcscat(buf, _T("\\")); _tcscat(buf, _T(LKF_SMARKS)); 
-  topo_marks = new TopologyWriter(buf, RGB(0xD0,0xD0,0xD0)); 
+  topo_marks = new TopologyWriter(buf, LKColor(0xD0,0xD0,0xD0)); 
   if (topo_marks) {
     topo_marks->scaleThreshold = 30.0;
     //topo_marks->scaleDefaultThreshold = 30.0;	// 101212

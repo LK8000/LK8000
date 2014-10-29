@@ -10,7 +10,7 @@
 
 
 
-void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
+void Statistics::RenderTask(LKSurface& Surface, const RECT& rc, const bool olcmode)
 {
   int i, j;
   unsigned int ui;
@@ -28,7 +28,7 @@ double fXY_Scale = 1.5;
 
   if ( (!ValidTaskPoint(0) || !ValidTaskPoint(1)) && !olcmode)
   {
-	DrawNoData(hdc,rc);
+	DrawNoData(Surface,rc);
 	return;
   }
 
@@ -52,7 +52,7 @@ double fXY_Scale = 1.5;
 
   if (nowaypoints )
   {
-    DrawNoData(hdc, rc);
+    DrawNoData(Surface, rc);
     return;
   }
 
@@ -65,7 +65,7 @@ double fXY_Scale = 1.5;
     ScaleYFromValue(rc, lat1);
     ScaleXFromValue(rc, lon1);
   }
-  HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+  LKFont hfOldU = Surface.SelectObject(LK8InfoNormalFont);
 
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;
@@ -162,15 +162,15 @@ double fXY_Scale = 1.5;
 		  x2 = (lon2-lon_c)*fastcosine(lat2);
 		  y2 = (lat2-lat_c);
 
-		  SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(AATASK));
-		  SelectObject(hdc, GetStockObject(WHITE_PEN));
+		  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(AATASK));
+		  Surface.SelectObject(LK_WHITE_PEN);
 		  if (Task[i].AATType == SECTOR)
 		  {
-			Segment(hdc,(long)((x2-x_min)*xscale+rc.left+BORDER_X),(long)((y_max-y2)*yscale+rc.top),(long)(aatradius[i]*yscale),rc,	Task[i].AATStartRadial,	Task[i].AATFinishRadial);
+			Surface.Segment((long)((x2-x_min)*xscale+rc.left+BORDER_X),(long)((y_max-y2)*yscale+rc.top),(long)(aatradius[i]*yscale),rc,	Task[i].AATStartRadial,	Task[i].AATFinishRadial);
 		  }
 		  else
 		  {
-	        Circle(hdc, (long)((x2-x_min)*xscale+rc.left+BORDER_X), (long)((y_max-y2)*yscale+rc.top),  (long)(aatradius[i]*yscale), rc);
+	        Surface.Circle((long)((x2-x_min)*xscale+rc.left+BORDER_X), (long)((y_max-y2)*yscale+rc.top),  (long)(aatradius[i]*yscale), rc);
 	      }
         }
       }
@@ -201,11 +201,11 @@ double fXY_Scale = 1.5;
 	//	DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
 		if( ValidTaskPoint(4) && i <2)
 			goto skip_FAI;
-		RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
-	    RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
+		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
+	    RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
 	    skip_FAI:
-		DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
-		Segment(hdc,(long)((x2-x_min)*xscale+rc.left+BORDER_X),(long)((y_max-y2)*yscale+rc.top),(long)(aatradius[i]*yscale),rc,	Task[i].AATStartRadial,	Task[i].AATFinishRadial);
+		DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
+		Surface.Segment((long)((x2-x_min)*xscale+rc.left+BORDER_X),(long)((y_max-y2)*yscale+rc.top),(long)(aatradius[i]*yscale),rc,	Task[i].AATStartRadial,	Task[i].AATFinishRadial);
 	  }
 	}
 
@@ -215,8 +215,8 @@ double fXY_Scale = 1.5;
 	  lon1 = WayPointList[Task[3].Index].Longitude;
 	  lat2 = WayPointList[Task[1].Index].Latitude;
 	  lon2 = WayPointList[Task[1].Index].Longitude;
-	  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
-	  RenderFAISector ( hdc, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
+	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
+	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
 	}
   }
 	// draw task lines and label
@@ -240,11 +240,10 @@ double fXY_Scale = 1.5;
 		x2 = (lon2-lon_c)*fastcosine(lat2);
 		y2 = (lat2-lat_c);
 
-		DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_BLUETHIN);
-	    SetBkMode(hdc,OPAQUE);
-	    SetBkMode(hdc, OPAQUE);
+		DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_BLUETHIN);
+	    Surface.SetBkMode(OPAQUE);
 		TCHAR text[100];
-		 SetTextColor(hdc, RGB_BLUE);
+		 Surface.SetTextColor(RGB_BLUE);
 /*
 		if ((i==nwps-1) && (Task[i].Index == Task[0].Index))
 		{
@@ -254,7 +253,7 @@ double fXY_Scale = 1.5;
 		else */
 		{
 		  _stprintf(text,TEXT("%0d"),i);
-		  DrawLabel(hdc, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
+		  DrawLabel(Surface, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
 		}
 
 		if ((i==ActiveWayPoint)&&(!AATEnabled))
@@ -263,7 +262,7 @@ double fXY_Scale = 1.5;
 		  lon1 = GPS_INFO.Longitude;
 		  x1 = (lon1-lon_c)*fastcosine(lat1);
 		  y1 = (lat1-lat_c);
-		  DrawLine(hdc, rc, x1, y1, x2, y2,  STYLE_REDTHICK);
+		  DrawLine(Surface, rc, x1, y1, x2, y2,  STYLE_REDTHICK);
 		}
 	  }
 	}
@@ -294,22 +293,22 @@ double fXY_Scale = 1.5;
 		  x2 = (lon2-lon_c)*fastcosine(lat2);
 		  y2 = (lat2-lat_c);
 
-		  DrawLine(hdc, rc,   x1, y1, x2, y2,  STYLE_REDTHICK);
+		  DrawLine(Surface, rc,   x1, y1, x2, y2,  STYLE_REDTHICK);
 		}
 	  }
 	}
 
-	  DrawXGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
-	  DrawYGrid(hdc, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+	  DrawXGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
+	  DrawYGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 
 
-  SelectObject(hdc, hfOldU);
+  Surface.SelectObject(hfOldU);
   // Draw aircraft on top
   lat1 = GPS_INFO.Latitude;
   lon1 = GPS_INFO.Longitude;
   x1 = (lon1-lon_c)*fastcosine(lat1);
   y1 = (lat1-lat_c);
-  SetBkMode(hdc, TRANSPARENT);
-  DrawLabel(hdc, rc, TEXT("+"), x1, y1);
+  Surface.SetBkMode(TRANSPARENT);
+  DrawLabel(Surface, rc, TEXT("+"), x1, y1);
 }
 

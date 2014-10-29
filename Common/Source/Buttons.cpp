@@ -285,10 +285,10 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
 
 }
 
-void ButtonLabel::SetFont(HFONT Font) {
+void ButtonLabel::SetFont(const LKFont& Font) {
   int i;
   for (i=0; i<NUMBUTTONLABELS; i++) {
-    SendMessage(hWndButtonWindow[i], WM_SETFONT, (WPARAM)Font, MAKELPARAM(TRUE,0));
+    SendMessage(hWndButtonWindow[i], WM_SETFONT, (WPARAM)(HFONT)Font, MAKELPARAM(TRUE,0));
   }
 }
 

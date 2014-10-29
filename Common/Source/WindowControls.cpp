@@ -16,6 +16,9 @@
 #include "Modeltype.h"
 #include "TraceThread.h"
 
+#include "Screen/LKBitmapSurface.h"
+#include "Screen/LKWindowSurface.h"
+
 #if (WINDOWSPC<1)
 #ifndef __MINGW32__
 #include <projects.h>
@@ -28,43 +31,7 @@
 #define SELECTORWIDTH         4*ISCALE
 
 
-HDC sHdc;
-HDC  GetTempDeviceContext(void){return(sHdc);};
-
 // utility functions
-
-void DrawLine(const HDC&hdc, int x1, int y1, int x2, int y2) {
-#ifndef NOLINETO
-  MoveToEx(hdc, x1, y1, NULL);
-  LineTo(hdc, x2, y2);
-#else
-  POINT p[2];
-  p[0].x = x1;
-  p[0].y = y1;
-  p[1].x = x2;
-  p[1].y = y2;
-  Polyline(hdc, p, 2);
-#endif
-
-}
-
-
-void DrawLine2(const HDC&hdc, int x1, int y1, int x2, int y2, int x3, int y3) {
-#ifndef NOLINETO
-  MoveToEx(hdc, x1, y1, NULL);
-  LineTo(hdc, x2, y2);
-  LineTo(hdc, x3, y3);
-#else
-  POINT p[3];
-  p[0].x = x1;
-  p[0].y = y1;
-  p[1].x = x2;
-  p[1].y = y2;
-  p[2].x = x3;
-  p[2].y = y3;
-  Polyline(hdc, p, 3);
-#endif
-}
 
 
 #define ENABLECOMBO true // master on/off for combo popup
@@ -1147,12 +1114,12 @@ void InitWindowControlModule(void);
 LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg, 
                                       WPARAM wParam, LPARAM lParam);
 
-static COLORREF bkColor = RGB_WINBACKGROUND; // PETROL
-static COLORREF fgColor = RGB_WINFOREGROUND; // WHITE
+static LKColor bkColor = RGB_WINBACKGROUND; // PETROL
+static LKColor fgColor = RGB_WINFOREGROUND; // WHITE
 int WindowControl::InstCount=0;
-HBRUSH WindowControl::hBrushDefaultBk=NULL;
-HPEN WindowControl::hPenDefaultBorder=NULL;
-HPEN WindowControl::hPenDefaultSelector=NULL;
+LKBrush WindowControl::hBrushDefaultBk;
+LKPen WindowControl::hPenDefaultBorder;
+LKPen WindowControl::hPenDefaultSelector;
 
 WindowControl::WindowControl(WindowControl *Owner, 
 			     HWND Parent, 
@@ -1243,16 +1210,12 @@ WindowControl::WindowControl(WindowControl *Owner,
   SetWindowLongPtr(mHWnd, GWLP_USERDATA, (LONG_PTR)this);
   SetWindowLongPtr(mHWnd, GWLP_WNDPROC, (LONG_PTR) WindowControlWndProc);
 
-  mHdc = GetDC(mHWnd);
-
   mhBrushBk = hBrushDefaultBk;
   mhPenBorder = hPenDefaultBorder;
   mhPenSelector = hPenDefaultSelector;
   mBorderSize = 1;
 
   mBorderKind = 0; //BORDERRIGHT | BORDERBOTTOM;
-
-  SetBkMode(mHdc, TRANSPARENT);
 
   if (mVisible)
     ShowWindow(GetHandle(), SW_SHOW);
@@ -1279,21 +1242,6 @@ void WindowControl::Destroy(void){
   if (ActiveControl == this)
     ActiveControl = NULL;
 
-  if (mhBrushBk != hBrushDefaultBk){
-    DeleteObject(mhBrushBk);
-  }
-  if (mhPenBorder != hPenDefaultBorder){
-    DeleteObject(mhPenBorder);
-  }
-  if (mhPenSelector != hPenDefaultSelector){
-    DeleteObject(mhPenSelector);
-  }
-
-  ReleaseDC(mHWnd, mHdc);
-  if (sHdc!=NULL) {
-	DeleteDC(sHdc);
-	sHdc=NULL;
-  }
   SetWindowLongPtr(mHWnd, GWLP_WNDPROC, (LONG_PTR) mSavWndProcedure);
   SetWindowLongPtr(mHWnd, GWLP_USERDATA, (LONG_PTR)0);
 
@@ -1486,14 +1434,14 @@ void WindowControl::SetCaption(const TCHAR *Value){
 
   if (Value == NULL && mCaption[0] != '\0') {
 	mCaption[0] ='\0';
-	InvalidateRect(GetHandle(), GetBoundRect(), false);
+	InvalidateRect(GetHandle(), &GetBoundRect(), false);
 	UpdateWindow(GetHandle());
 	return;
   }
 
   if (_tcscmp(mCaption, Value) != 0) {
 	LK_tcsncpy(mCaption, Value,MAXSETCAPTION); // destination already sized MAXSETCAPTION+1
-	InvalidateRect(GetHandle(), GetBoundRect(), false);
+	InvalidateRect(GetHandle(), &GetBoundRect(), false);
 	UpdateWindow(GetHandle());
   }
 
@@ -1563,7 +1511,7 @@ bool WindowControl::SetVisible(bool Value){
     */
 
     if (mVisible){
-      InvalidateRect(GetHandle(), GetBoundRect(), false);
+      InvalidateRect(GetHandle(), &GetBoundRect(), false);
       UpdateWindow(GetHandle());
       ShowWindow(GetHandle(), SW_SHOW);
     } else {
@@ -1586,19 +1534,16 @@ int WindowControl::SetBorderKind(int Value){
   int res = mBorderKind;
   if (mBorderKind != Value){
     mBorderKind = Value;
-    InvalidateRect(GetHandle(), GetBoundRect(), false);
+    InvalidateRect(GetHandle(), &GetBoundRect(), false);
     UpdateWindow(GetHandle());
   }
   return(res);
 }
 
-HFONT WindowControl::SetFont(HFONT Value){
-  HFONT res = mhFont;
-  if (mhFont != Value){
-    // todo
-    mhFont = Value;
-  }
-  return(res);
+LKFont WindowControl::SetFont(const LKFont& Value){
+  const LKFont res = mhFont;
+  mhFont = Value;
+  return (res);
 }
 
 bool WindowControl::SetReadOnly(bool Value){
@@ -1613,8 +1558,8 @@ bool WindowControl::SetReadOnly(bool Value){
   return(res);
 }
 
-COLORREF WindowControl::SetForeColor(COLORREF Value){
-  COLORREF res = mColorFore;
+LKColor WindowControl::SetForeColor(const LKColor& Value){
+  LKColor res = mColorFore;
   if (mColorFore != Value){
     mColorFore = Value;
     if (mVisible){
@@ -1623,62 +1568,57 @@ COLORREF WindowControl::SetForeColor(COLORREF Value){
     	InvalidateRect(mHWnd,&rc,false);
     }
   }
-  return(res);
+  return res;
 }
 
-COLORREF WindowControl::SetBackColor(COLORREF Value){
-  COLORREF res = mColorBack;
+LKColor WindowControl::SetBackColor(const LKColor& Value){
+  LKColor res = mColorBack;
   if (mColorBack != Value){
 	mColorBack = Value;
-	if (mhBrushBk != hBrushDefaultBk){
-		// WE ARE NEVER GETTING HERE! 101117
-		// JMW possible memory leak if this brush is being used! 
-		DeleteObject(mhBrushBk);
-	}
-	mhBrushBk = (HBRUSH)CreateSolidBrush(mColorBack);
+	mhBrushBk.Create(mColorBack);
 	if (mVisible){
     	RECT rc = {0,0,0,0};
     	GetClientRect(mHWnd, &rc);
     	InvalidateRect(mHWnd,&rc,false);
 	}
   }
-  return(res);
+  return res;
 }
 
 
-void WindowControl::PaintSelector(HDC hDC){
+void WindowControl::PaintSelector(LKSurface& Surface){
 
   if (!mDontPaintSelector && mCanFocus && mHasFocus){
-    HPEN oldPen = (HPEN)SelectObject(hDC, hPenDefaultSelector);
+    LKPen oldPen = Surface.SelectObject(hPenDefaultSelector);
 
-    DrawLine2(hDC, 
+    Surface.DrawLine(
 	      mWidth-SELECTORWIDTH-1, 0,
 	      mWidth-1, 0,
 	      mWidth-1, SELECTORWIDTH+1);
 
-    DrawLine2(hDC, 
+    Surface.DrawLine(
 	      mWidth-1, mHeight-SELECTORWIDTH-2,
 	      mWidth-1, mHeight-1,
 	      mWidth-SELECTORWIDTH-1, mHeight-1);
 
-    DrawLine2(hDC, 
+    Surface.DrawLine(
 	      SELECTORWIDTH+1, mHeight-1, 
 	      0, mHeight-1,
 	      0, mHeight-SELECTORWIDTH-2);
 
-    DrawLine2(hDC, 
+    Surface.DrawLine(
 	      0, SELECTORWIDTH+1,
 	      0, 0,
 	      SELECTORWIDTH+1, 0);
 
-    SelectObject(hDC,oldPen);
+    Surface.SelectObject(oldPen);
   }
 
 }
 
 void WindowControl::Redraw(void){
   if (GetVisible()){
-    InvalidateRect(GetHandle(), GetBoundRect(), false);
+    InvalidateRect(GetHandle(), &GetBoundRect(), false);
     UpdateWindow(GetHandle());
   }
 }
@@ -1701,8 +1641,9 @@ int WindowControl::OnHelp() {
     }
 };
 
-void WindowControl::Paint(HDC hDC){
+void WindowControl::Paint(LKSurface& Surface){
 
+  Surface.SetBkMode(TRANSPARENT);
   RECT rc;
 
   rc.left = 0;
@@ -1712,44 +1653,40 @@ void WindowControl::Paint(HDC hDC){
 
   if (!mVisible) return;
 
-  FillRect(hDC, &rc, mhBrushBk);
+  Surface.FillRect(&rc, mhBrushBk);
 
   // JMW added highlighting, useful for lists
   if (!mDontPaintSelector && mCanFocus && mHasFocus){
-    HBRUSH hB = LKBrush_DarkYellow2;
+    LKBrush hB = LKBrush_DarkYellow2;
     rc.left += 0;
     rc.right -= 2;
     rc.top += 0;
     rc.bottom -= 2;
-    FillRect(hDC, &rc, hB);
+    Surface.FillRect(&rc, hB);
 
   }
 
   if (mBorderKind != 0){
 
-    HPEN oldPen = (HPEN)SelectObject(hDC, mhPenBorder);
+    LKPen oldPen = Surface.SelectObject(mhPenBorder);
 
     if (mBorderKind & BORDERTOP){
-      DrawLine(hDC,0,0, mWidth, 0);
+      Surface.DrawLine(0,0, mWidth, 0);
     }
     if (mBorderKind & BORDERRIGHT){
-      DrawLine(hDC, mWidth-1, 0,
-	       mWidth-1, mHeight);
+      Surface.DrawLine(mWidth-1, 0, mWidth-1, mHeight);
     }
     if (mBorderKind & BORDERBOTTOM){
-      DrawLine(hDC, 
-	       mWidth-1, mHeight-1, 
-	       -1, mHeight-1);
+      Surface.DrawLine(mWidth-1, mHeight-1, -1, mHeight-1);
     }
     if (mBorderKind & BORDERLEFT){
-      DrawLine(hDC, 
-	       0, mHeight-1,
-	       0, -1);
+      Surface.DrawLine(0, mHeight-1, 0, -1);
     }
-    SelectObject(hDC,oldPen);
+    
+    Surface.SelectObject(oldPen);
   }
 
-  PaintSelector(hDC);
+  PaintSelector(Surface);
 
 }
 
@@ -1820,12 +1757,8 @@ LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 //
 int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
-  PAINTSTRUCT ps;            // structure for paint info
-  HDC hDC;                   // handle to graphics device context,
-
-  HDC Memhdc;
-  HBITMAP Membitmap;
-  HGDIOBJ Oldbitmap;
+  LKBitmap Membitmap;
+  LKBitmap Oldbitmap;
   HWND hWnd;
   RECT Client_Rect;
   int win_width;
@@ -1847,35 +1780,29 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 	StartupStore(_T(".... WNDPROC> PAINT\n"));
 	#endif
     	hWnd = GetHandle();
+        if(hWnd) {
+            GetClientRect(hWnd, &Client_Rect);
+            win_width = Client_Rect.right - Client_Rect.left;
+            win_height = Client_Rect.bottom + Client_Rect.left;
 
-    	hDC = BeginPaint(hWnd, &ps);
+            LKPaintSurface PaintSurface(hWnd);
+            LKBitmapSurface MemSurface(PaintSurface, win_width, win_height);
 
-		GetClientRect(hWnd,&Client_Rect);
-		win_width = Client_Rect.right - Client_Rect.left;
-		win_height = Client_Rect.bottom + Client_Rect.left;
-		Memhdc = CreateCompatibleDC(hDC);
-		Membitmap = CreateCompatibleBitmap(hDC, win_width, win_height);
-		Oldbitmap = SelectObject(Memhdc, Membitmap);
+            Paint(MemSurface);
 
-   	  	Paint(Memhdc);
+            ptOffset.x = Client_Rect.left;
+            ptOffset.y = Client_Rect.top;
+            ClientToScreen(hWnd, &ptOffset);
+            if ((hChildWnd = GetWindow(hWnd, GW_CHILD)) != NULL) {
+                if (IsWindowVisible(hChildWnd)) {
+                    GetWindowRect(hChildWnd, &Client_Rect);
+                    OffsetRect(&Client_Rect, -ptOffset.x, -ptOffset.y);
+                    PaintSurface.ExcludeClipRect(Client_Rect);
+                }
+            }
 
-   	  	ptOffset.x = Client_Rect.left;
-   	  	ptOffset.y = Client_Rect.top;
-   	  	ClientToScreen(hWnd, &ptOffset);
-   	  	if((hChildWnd = GetWindow(hWnd, GW_CHILD)) != NULL) {
-			if(IsWindowVisible(hChildWnd)){
-				GetWindowRect(hChildWnd, &Client_Rect);
-				OffsetRect(&Client_Rect, -ptOffset.x, -ptOffset.y);
-				ExcludeClipRect( hDC,Client_Rect.left, Client_Rect.top, Client_Rect.right, Client_Rect.bottom );
-			}
-   	  	}
-
-   	  	BitBlt(hDC, 0, 0, win_width, win_height, Memhdc, 0, 0, SRCCOPY);
-		SelectObject(Memhdc, Oldbitmap);
-   	  	DeleteObject(Membitmap);
-   	 	DeleteDC    (Memhdc);
-
-		EndPaint(hWnd, &ps);
+            PaintSurface.Copy(0, 0, win_width, win_height, MemSurface, 0, 0);
+        }
     return(0);
 
     case WM_WINDOWPOSCHANGED:
@@ -2135,19 +2062,10 @@ int WndForm::OnCommand(WPARAM wParam, LPARAM lParam){
 
 };
 
-HFONT WndForm::SetTitleFont(HFONT Value){
-  HFONT res = mhTitleFont;
-
-  if (mhTitleFont != Value){
-    // todo
-    mhTitleFont = Value;
-
-
-
-  }
-
-  return(res);
-
+LKFont WndForm::SetTitleFont(const LKFont& Value){
+  const LKFont res = mhTitleFont;
+  mhTitleFont = Value;
+  return (res);
 }
 
 void WndForm::SetToForeground(void) 
@@ -2340,70 +2258,61 @@ int WndForm::ShowModal(bool bEnableMap) {
 
 }
 
-void WndForm::Paint(HDC hDC){
+void WndForm::Paint(LKSurface& Surface){
 
-  RECT rcClient;
-  SIZE tsize;
-  HPEN oldPen;
-  HBRUSH oldBrush;
-  HFONT oldFont;
+    if (!GetVisible()) return;
 
-  if (!GetVisible()) return;
+    RECT rcClient = GetBoundRect();
+    size_t nChar = _tcslen(mCaption);
+    if(nChar > 0) {
+        SIZE tsize = {0,0};
 
+        const LKPen oldPen = Surface.SelectObject(GetBorderPen());
+        const LKBrush oldBrush = Surface.SelectObject(GetBackBrush());
 
-  CopyRect(&rcClient, GetBoundRect());
+        Surface.SetTextColor(RGB_MENUTITLEFG);
+        Surface.SetBkColor(mColorTitle);
+        Surface.SetBkMode(TRANSPARENT);
 
-  oldPen = (HPEN)SelectObject(hDC, GetBorderPen());
-  oldBrush = (HBRUSH) SelectObject(hDC, GetBackBrush());
+        LKFont oldFont = Surface.SelectObject(mhTitleFont);
+        Surface.GetTextSize(mCaption, _tcslen(mCaption), &tsize);
 
-  DrawEdge(hDC, &rcClient, EDGE_RAISED, BF_ADJUST | BF_FLAT | BF_RECT);
-  SetTextColor(hDC, RGB_MENUTITLEFG);
-  SetBkColor(hDC, mColorTitle);
-  SetBkMode(hDC, TRANSPARENT);
+        mTitleRect = rcClient;
+        mTitleRect.bottom = mTitleRect.top + tsize.cy;
 
-  oldFont = (HFONT)SelectObject(hDC, mhTitleFont);
-  GetTextExtentPoint(hDC, mCaption, _tcslen(mCaption), &tsize);
-  if (_tcslen(mCaption)==0) tsize.cy=0; //@ 101115 BUGFIX
+        POINT p1, p2;
+        p1.x=0; p1.y=mTitleRect.bottom;
+        p2.x=mTitleRect.right; p2.y=mTitleRect.bottom;
+        Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p1, p2, RGB_GREEN, mTitleRect);
 
-  // JMW todo add here icons?
+        if (ScreenLandscape && (ScreenSize!=ss800x480))
+            rcClient.top = mTitleRect.bottom+NIBLSCALE(1);
+        else
+            rcClient.top = mTitleRect.bottom+NIBLSCALE(1)-1;
 
-  CopyRect(&mTitleRect, &rcClient);
-  mTitleRect.bottom = mTitleRect.top + tsize.cy;
+        if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
+            SetWindowPos(mClientWindow->GetHandle(), HWND_TOP, rcClient.left, rcClient.top, rcClient.right-rcClient.left, rcClient.bottom-rcClient.top, 0);
+            mClientRect = rcClient;
+        }
 
-  POINT p1, p2;
-  p1.x=0; p1.y=mTitleRect.bottom;
-  p2.x=mTitleRect.right; p2.y=mTitleRect.bottom;
-  MapWindow::_DrawLine(hDC, PS_SOLID, NIBLSCALE(1), p1, p2, RGB_GREEN, mTitleRect);
-  //rcClient.top += tsize.cy+NIBLSCALE(1)-1;
-  if (ScreenLandscape && (ScreenSize!=ss800x480))
-		rcClient.top = mTitleRect.bottom+NIBLSCALE(1);
-  else
-		rcClient.top = mTitleRect.bottom+NIBLSCALE(1)-1;
+        Surface.DrawText(mTitleRect.left, mTitleRect.top, mCaption, _tcslen(mCaption));
 
-  if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
-
-    SetWindowPos(mClientWindow->GetHandle(), HWND_TOP,
-      rcClient.left, rcClient.top, rcClient.right-rcClient.left, rcClient.bottom-rcClient.top,
-      0);
-
-    CopyRect(&mClientRect, &rcClient);
-
-  }
-
-  ExtTextOut(hDC, mTitleRect.left+1, mTitleRect.top-2,
-             ETO_OPAQUE, &mTitleRect, mCaption, _tcslen(mCaption), NULL);
-
-  SelectObject(hDC, oldBrush);
-  SelectObject(hDC, oldPen);
-  SelectObject(hDC, oldFont);
-
+        Surface.SelectObject(oldBrush);
+        Surface.SelectObject(oldPen);
+        Surface.SelectObject(oldFont);
+    } else {
+        if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
+            SetWindowPos(mClientWindow->GetHandle(), HWND_TOP, rcClient.left, rcClient.top, rcClient.right-rcClient.left, rcClient.bottom-rcClient.top, 0);
+            mClientRect = rcClient;
+        }
+    }
 }
 
 void WndForm::SetCaption(const TCHAR *Value) {
 
   if (Value == NULL && mCaption[0] != '\0') {
 	mCaption[0] ='\0';
-	InvalidateRect(GetHandle(), GetBoundRect(), false);
+	InvalidateRect(GetHandle(), &GetBoundRect(), false);
 	UpdateWindow(GetHandle());
 	return;
   }
@@ -2416,19 +2325,19 @@ void WndForm::SetCaption(const TCHAR *Value) {
 }
 
 
-COLORREF WndForm::SetForeColor(COLORREF Value){
+LKColor WndForm::SetForeColor(const LKColor& Value){
   if (mClientWindow)
     mClientWindow->SetForeColor(Value);
   return(WindowControl::SetForeColor(Value));
 }
 
-COLORREF WndForm::SetBackColor(COLORREF Value){
+LKColor WndForm::SetBackColor(const LKColor& Value){
   if (mClientWindow)
   mClientWindow->SetBackColor(Value);
   return(WindowControl::SetBackColor(Value));
 }
 
-HFONT WndForm::SetFont(HFONT Value){
+LKFont WndForm::SetFont(const LKFont& Value){
   if (mClientWindow)
     mClientWindow->SetFont(Value);
   return(WindowControl::SetFont(Value));
@@ -2609,7 +2518,7 @@ int WndButton::OnLButtonUp(WPARAM wParam, LPARAM lParam){
 
   //POINTSTOPOINT(Pos, MAKEPOINTS(lParam));
 
-  if (PtInRect(GetBoundRect(), Pos)){
+  if (PtInRect(&GetBoundRect(), Pos)){
     if (mOnClickNotify != NULL) {
       RECT mRc;
       GetWindowRect(GetHandle(), &mRc);
@@ -2682,7 +2591,7 @@ int WndButton::OnLButtonDown(WPARAM wParam, LPARAM lParam){
   if (!GetFocused())
     SetFocus(GetHandle());
   else {
-    InvalidateRect(GetHandle(), GetBoundRect(), false);
+    InvalidateRect(GetHandle(), &GetBoundRect(), false);
     UpdateWindow(GetHandle());
   }
   SetCapture(GetHandle());
@@ -2693,46 +2602,39 @@ int WndButton::OnLButtonDoubleClick(WPARAM wParam, LPARAM lParam){
 	(void)lParam; (void)wParam;
   TouchContext=TCX_BUTTON_DOUBLECLICK;
   mDown = true;
-  InvalidateRect(GetHandle(), GetBoundRect(), false);
+  InvalidateRect(GetHandle(), &GetBoundRect(), false);
   UpdateWindow(GetHandle());
   SetCapture(GetHandle());
   return(1);
 };
 
 
-void WndButton::Paint(HDC hDC){
-
-  RECT rc;
+void WndButton::Paint(LKSurface& Surface){
 
   if (!GetVisible()) return;
 
-  WindowControl::Paint(hDC);
+  WindowControl::Paint(Surface);
 
-  CopyRect(&rc, GetBoundRect());
+  RECT rc = GetBoundRect();
   InflateRect(&rc, -2, -2); // todo border width
 
   // JMW todo: add icons?
 
 
   if(GlobalModelType != MODELTYPE_PNA_MINIMAP || (GlobalModelType == MODELTYPE_PNA_MINIMAP && !HasFocus())) {
-    if(mDown) {
-      DrawFrameControl(hDC, &rc, DFC_BUTTON, DFCS_BUTTONPUSH | DFCS_PUSHED);
-    }
-    else {
-      DrawFrameControl(hDC, &rc, DFC_BUTTON, DFCS_BUTTONPUSH);
-    }
+    Surface.DrawPushButton(rc, mDown);
   }
 
   if (mCaption != NULL && mCaption[0] != '\0'){
 
-    SetTextColor(hDC, GetForeColor());
+    Surface.SetTextColor(GetForeColor());
 
-    SetBkColor(hDC, GetBackColor());
-    SetBkMode(hDC, TRANSPARENT);
+    Surface.SetBkColor(GetBackColor());
+    Surface.SetBkMode(TRANSPARENT);
 
-    HFONT oldFont = (HFONT)SelectObject(hDC, GetFont());
+    LKFont oldFont = Surface.SelectObject(GetFont());
 
-    CopyRect(&rc, GetBoundRect());
+    rc = GetBoundRect();
     InflateRect(&rc, -2, -2); // todo border width
 
     if (mDown)
@@ -2740,7 +2642,7 @@ void WndButton::Paint(HDC hDC){
 
     if (mLastDrawTextHeight < 0){
 
-      DrawText(hDC, mCaption, _tcslen(mCaption), &rc,
+      Surface.DrawText(mCaption, _tcslen(mCaption), &rc,
           DT_CALCRECT
         | DT_EXPANDTABS
         | DT_CENTER
@@ -2750,7 +2652,7 @@ void WndButton::Paint(HDC hDC){
 
       mLastDrawTextHeight = rc.bottom - rc.top;
       // DoTo optimize
-      CopyRect(&rc, GetBoundRect());
+      rc = GetBoundRect();
       InflateRect(&rc, -2, -2); // todo border width
       if (mDown)
         OffsetRect(&rc, 2, 2);
@@ -2759,14 +2661,14 @@ void WndButton::Paint(HDC hDC){
 
     rc.top += ((GetHeight()-4-mLastDrawTextHeight)/2);
 
-    DrawText(hDC, mCaption, _tcslen(mCaption), &rc,
+    Surface.DrawText(mCaption, _tcslen(mCaption), &rc,
         DT_EXPANDTABS
       | DT_CENTER
       | DT_NOCLIP
       | DT_WORDBREAK // mCaptionStyle // | DT_CALCRECT
     );
 
-    SelectObject(hDC, oldFont);
+    Surface.SelectObject(oldFont);
 
 
   }
@@ -2890,7 +2792,7 @@ WndProperty::WndProperty(WindowControl *Parent,
   mEditWindowProcedure = (WNDPROC)SetWindowLongPtr(mhEdit, GWLP_WNDPROC, (LONG_PTR) WndPropertyEditWndProc);
 
   SendMessage(mhEdit, WM_SETFONT,
-		     (WPARAM)mhValueFont, MAKELPARAM(TRUE,0));
+		     (WPARAM)(HFONT)mhValueFont, MAKELPARAM(TRUE,0));
 
 
   mCanFocus = true;
@@ -2947,18 +2849,13 @@ LRESULT CALLBACK WndPropertyEditWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 		return (DefWindowProc(hwnd, uMsg, wParam, lParam));
 }
 
-HFONT WndProperty::SetFont(HFONT Value){
-  HFONT res = GetFont();
+LKFont WndProperty::SetFont(const LKFont& Value){
+  LKFont res = GetFont();
 
   WindowControl::SetFont(Value);
 
-  // todo, support value font
-
-  if (res != Value){
-    mhValueFont = Value;
-    SendMessage(mhEdit, WM_SETFONT,
-		     (WPARAM)mhValueFont, MAKELPARAM(TRUE,0));
-  }
+  mhValueFont = Value;
+  SendMessage(mhEdit, WM_SETFONT, (WPARAM)(HFONT)mhValueFont, MAKELPARAM(TRUE,0));
   return(res);
 }
 
@@ -3011,7 +2908,7 @@ int WndProperty::SetButtonSize(int Value){
     );
 
     if (GetVisible()){
-      InvalidateRect(GetHandle(), GetBoundRect(), false);
+      InvalidateRect(GetHandle(), &GetBoundRect(), false);
       UpdateWindow(GetHandle());
     }
   }
@@ -3293,33 +3190,31 @@ int WndProperty::DecValue(void){
 }
 
 
-void WndProperty::Paint(HDC hDC){
+void WndProperty::Paint(LKSurface& Surface){
 
   //  RECT r;
   SIZE tsize;
   POINT org;
-  HBITMAP oldBmp;
-  
 
   if (!GetVisible()) return;
 
-  WindowControl::Paint(hDC);
+  WindowControl::Paint(Surface);
 
   // r.left = 0;
   // r.top = 0;
   // r.right = GetWidth();
   // r.bottom = GetHeight();
 
-  SetTextColor(hDC, GetForeColor());
+  Surface.SetTextColor(GetForeColor());
 #ifdef WINE
   // JMW make it look nice on wine
   if (!GetFocused())
-    SetBkColor(hDC, GetBackColor());
+    Surface.SetBkColor(GetBackColor());
 #endif /* WINE */
-  SetBkMode(hDC, TRANSPARENT);
-  HFONT oldFont = (HFONT)SelectObject(hDC, GetFont());
+  Surface.SetBkMode(TRANSPARENT);
+  LKFont oldFont = Surface.SelectObject(GetFont());
 
-  GetTextExtentPoint(hDC, mCaption, _tcslen(mCaption), &tsize);
+  Surface.GetTextSize(mCaption, _tcslen(mCaption), &tsize);
   if (_tcslen(mCaption)==0) tsize.cy=0; //@ 101115 BUGFIX
 
   if (mCaptionWidth==0){
@@ -3333,52 +3228,19 @@ void WndProperty::Paint(HDC hDC){
   if (org.x < 1)
 	org.x = 1;
 
-  ExtTextOut(hDC, org.x, org.y, ETO_OPAQUE, NULL, mCaption, _tcslen(mCaption), NULL);
+  Surface.DrawText(org.x, org.y, mCaption, _tcslen(mCaption));
 
   // these are button left and right icons for waypoint select, for example
   if (mDialogStyle) // can't but dlgComboPicker here b/c it calls paint when combopicker closes too
   {     // so it calls dlgCombopicker on the click/focus handlers for the wndproperty & label
 	// opening a window, each subwindow goes here once
-  }
-  else 
-  {
+  } else {
 	if (GetFocused() && !GetReadOnly()) {
-
-		oldBmp = (HBITMAP)SelectObject(GetTempDeviceContext(), hBmpLeft32);
-
-		if (mDownDown)
-			StretchBlt(hDC, mHitRectDown.left, mHitRectDown.top, mBitmapSize, mBitmapSize,
-		        GetTempDeviceContext(),
-		        32, 0,
-		        32,32, 
-		        SRCCOPY);
-		else
-			StretchBlt(hDC, mHitRectDown.left, mHitRectDown.top, mBitmapSize, mBitmapSize,
-		        GetTempDeviceContext(),
-		        0, 0,
-		        32,32, 
-		        SRCCOPY);
-
-		SelectObject(GetTempDeviceContext(), hBmpRight32);
-
-		if (mUpDown)
-			StretchBlt(hDC, mHitRectUp.left, mHitRectUp.top, mBitmapSize, mBitmapSize,
-		        GetTempDeviceContext(),
-		        32, 0,
-		        32,32, 
-		        SRCCOPY);
-
-		else
-			StretchBlt(hDC, mHitRectUp.left, mHitRectUp.top, mBitmapSize, mBitmapSize,
-		        GetTempDeviceContext(),
-		        0, 0,
-		        32,32, 
-		        SRCCOPY);
-
-		SelectObject(GetTempDeviceContext(), oldBmp);
+        Surface.DrawMaskedBitmap(mHitRectDown.left, mHitRectDown.top, mBitmapSize, mBitmapSize, hBmpLeft32, 32, 32);
+        Surface.DrawMaskedBitmap(mHitRectUp.left, mHitRectUp.top, mBitmapSize, mBitmapSize, hBmpRight32, 32, 32);
 	}
   }
-  SelectObject(hDC, oldFont);
+  Surface.SelectObject(oldFont);
 }
 
 
@@ -3414,12 +3276,7 @@ DataField *WndProperty::SetDataField(DataField *Value){
 
     mDataField->GetData();
 
-
-    
-    mDialogStyle=ENABLECOMBO;
-
-    if (mDataField->SupportCombo == false )
-      mDialogStyle=false;
+    mDialogStyle= mDataField->SupportCombo;
 
 
     if (mDialogStyle)
@@ -3441,18 +3298,18 @@ DataField *WndProperty::SetDataField(DataField *Value){
 }
 
 
-void WndOwnerDrawFrame::Paint(HDC hDC){
+void WndOwnerDrawFrame::Paint(LKSurface& Surface){
 
   if (!GetVisible()) return;
 
-  WndFrame::Paint(hDC);
+  WndFrame::Paint(Surface);
 
-  HFONT oldFont = (HFONT)SelectObject(hDC, GetFont());
+  LKFont oldFont = Surface.SelectObject(GetFont());
 
   if (mOnPaintCallback != NULL)
-    (mOnPaintCallback)(this, hDC);
+    (mOnPaintCallback)(this, Surface);
 
-  SelectObject(hDC, oldFont);
+  Surface.SelectObject(oldFont);
 
 }
 
@@ -3482,7 +3339,7 @@ int WndFrame::OnKeyDown(WPARAM wParam, LPARAM lParam){
   return(1);
 }
 
-void WndFrame::Paint(HDC hDC){
+void WndFrame::Paint(LKSurface& Surface){
 
   if (!GetVisible()) return;
 
@@ -3490,30 +3347,26 @@ void WndFrame::Paint(HDC hDC){
     ((WndListFrame*)GetOwner())->PrepareItemDraw();
   }
 
-  WindowControl::Paint(hDC);
+  WindowControl::Paint(Surface);
 
-  if (mCaption != 0){
+  if (_tcslen(mCaption) > 0){
 
-    RECT rc;
+    Surface.SetTextColor(GetForeColor());
+    Surface.SetBkColor(GetBackColor());
+    Surface.SetBkMode(TRANSPARENT);
 
-    SetTextColor(hDC, GetForeColor());
-    SetBkColor(hDC, GetBackColor());
-    SetBkMode(hDC, TRANSPARENT);
+    LKFont oldFont = Surface.SelectObject(GetFont());
 
-    HFONT oldFont = (HFONT)SelectObject(hDC, GetFont());
-
-    CopyRect(&rc, GetBoundRect());
+    RECT rc = GetBoundRect();
     InflateRect(&rc, -2, -2); // todo border width
 
 //    h = rc.bottom - rc.top;
 
-    DrawText(hDC, mCaption, _tcslen(mCaption), &rc,
-      mCaptionStyle // | DT_CALCRECT
-    );
+    Surface.DrawText(mCaption, _tcslen(mCaption), &rc,mCaptionStyle /* | DT_CALCRECT*/ );
 
     mLastDrawTextHeight = rc.bottom - rc.top;
 
-    SelectObject(hDC, oldFont);
+    Surface.SelectObject(oldFont);
   }
 
 }
@@ -3522,7 +3375,7 @@ void WndFrame::SetCaption(const TCHAR *Value){
 
   if (Value == NULL && mCaption[0] != '\0'){
     mCaption[0] ='\0';
-    InvalidateRect(GetHandle(), GetBoundRect(), false);
+    InvalidateRect(GetHandle(), &GetBoundRect(), false);
     UpdateWindow(GetHandle());
 
     return;
@@ -3531,7 +3384,7 @@ void WndFrame::SetCaption(const TCHAR *Value){
 
   if (_tcscmp(mCaption, Value) != 0){
     LK_tcsncpy(mCaption, Value,MAXSETCAPTION); // destination already sized MAXSETCAPTION+1
-    InvalidateRect(GetHandle(), GetBoundRect(), false);
+    InvalidateRect(GetHandle(), &GetBoundRect(), false);
     UpdateWindow(GetHandle());
 
   }
@@ -3542,7 +3395,7 @@ UINT WndFrame::SetCaptionStyle(UINT Value){
   if (res != Value){
     mCaptionStyle = Value;
 
-    InvalidateRect(GetHandle(), GetBoundRect(), false);
+    InvalidateRect(GetHandle(), &GetBoundRect(), false);
     UpdateWindow(GetHandle());
 
   }
@@ -3595,69 +3448,53 @@ void WndListFrame::Destroy(void){
 
 }
 
+void WndListFrame::Paint(LKSurface& Surface) {
+    int i;
 
-void WndListFrame::Paint(HDC hDC){
-  int i;
-
-  if (mClientCount > 0){
-    ((WndFrame *)mClients[0])->SetIsListItem(true);
-//    ShowWindow(mClients[0]->GetHandle(), SW_HIDE);
-/*
-    if (mOnListCallback != NULL){
-      mListInfo.DrawIndex = mListInfo.ItemIndex;
-      mOnListCallback(this, &mListInfo);
-      mClients[0]->SetTop(mClients[0]->GetHeight() * (mListInfo.ItemIndex-mListInfo.TopIndex));
-    }
-*/
-  }
-
-  WndFrame::Paint(hDC);
-
-  if (mClientCount > 0){
-
-	HDC HdcTemp = CreateCompatibleDC(hDC);
-
-    HBITMAP BmpMem = CreateCompatibleBitmap(hDC,
-               mClients[0]->GetWidth(),
-               mClients[0]->GetHeight());
-
-    HBITMAP oldBmp = (HBITMAP)SelectObject(HdcTemp, BmpMem);
-    HFONT oldFont = (HFONT)SelectObject(HdcTemp, mClients[0]->GetFont());
-
-    for (i=0; i<mListInfo.ItemInViewCount; i++){
- 
-
-      if (mOnListCallback != NULL){
-        mListInfo.DrawIndex = mListInfo.TopIndex + i;
-        if (mListInfo.DrawIndex == mListInfo.ItemIndex)
-          continue;
-        mOnListCallback(this, &mListInfo);
-      }
-
-      mClients[0]->PaintSelector(true);
-      mClients[0]->Paint(HdcTemp);
-      mClients[0]->PaintSelector(false);
-
-      BitBlt(hDC,
-          mClients[0]->GetLeft(), i*mClients[0]->GetHeight(),
-          mClients[0]->GetWidth(), mClients[0]->GetHeight(),
-          HdcTemp,
-          0,0,
-          SRCCOPY
-        );
-
-
+    if (mClientCount > 0) {
+        ((WndFrame *) mClients[0])->SetIsListItem(true);
+        //    ShowWindow(mClients[0]->GetHandle(), SW_HIDE);
+        /*
+            if (mOnListCallback != NULL){
+              mListInfo.DrawIndex = mListInfo.ItemIndex;
+              mOnListCallback(this, &mListInfo);
+              mClients[0]->SetTop(mClients[0]->GetHeight() * (mListInfo.ItemIndex-mListInfo.TopIndex));
+            }
+         */
     }
 
-    mListInfo.DrawIndex = mListInfo.ItemIndex;
+    WndFrame::Paint(Surface);
 
-    SelectObject(HdcTemp, oldFont);
-    SelectObject(HdcTemp, oldBmp);
-    DeleteObject(BmpMem);
-    DeleteDC(HdcTemp);
+    if (mClientCount > 0) {
 
-    DrawScrollBar(hDC);
-  }
+        LKBitmapSurface TmpSurface;
+        TmpSurface.Create(Surface, mClients[0]->GetWidth(), mClients[0]->GetHeight());
+
+        LKFont oldFont = TmpSurface.SelectObject(mClients[0]->GetFont());
+
+        for (i = 0; i < mListInfo.ItemInViewCount; i++) {
+            if (mOnListCallback != NULL) {
+                mListInfo.DrawIndex = mListInfo.TopIndex + i;
+                if (mListInfo.DrawIndex == mListInfo.ItemIndex)
+                    continue;
+                mOnListCallback(this, &mListInfo);
+            }
+
+            mClients[0]->PaintSelector(true);
+            mClients[0]->Paint(TmpSurface);
+            mClients[0]->PaintSelector(false);
+
+            Surface.Copy(
+                    mClients[0]->GetLeft(), i * mClients[0]->GetHeight(),
+                    mClients[0]->GetWidth(), mClients[0]->GetHeight(),
+                    TmpSurface, 0, 0);
+        }
+        TmpSurface.SelectObject(oldFont);
+
+        mListInfo.DrawIndex = mListInfo.ItemIndex;
+
+        DrawScrollBar(Surface);
+    }
 }
 
 void WndListFrame::Redraw(void){
@@ -3666,10 +3503,10 @@ void WndListFrame::Redraw(void){
 }
 
 
-void WndListFrame::DrawScrollBar(HDC hDC) {
+void WndListFrame::DrawScrollBar(LKSurface& Surface) {
   RECT rc;
-  HPEN hP, hP3;
-  HBITMAP oldBmp;
+  LKPen hP, hP3;
+  LKBitmap oldBmp;
 
 
   if ( ScrollbarWidth == -1) {  // resize height for each dialog so top button is below 1st item (to avoid initial highlighted overlap)
@@ -3709,17 +3546,13 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	return;
   }
 
-  if ( (sHdc==NULL) || (hScrollBarBitmapTop == NULL)) {
-	sHdc = CreateCompatibleDC(hDC); 
-  }
-
   hP = LKPen_Black_N1;
-  HPEN oldPen = (HPEN)SelectObject(hDC, hP);
+  LKPen oldPen = Surface.SelectObject(hP);
 
   
   // draw rectangle around entire scrollbar area
-  DrawLine2(hDC, rc.left, rc.top, rc.left, rc.bottom, rc.right, rc.bottom); 
-  DrawLine2(hDC, rc.right, rc.bottom, rc.right, rc.top, rc.left, rc.top); 
+  Surface.DrawLine(rc.left, rc.top, rc.left, rc.bottom, rc.right, rc.bottom); 
+  Surface.DrawLine(rc.right, rc.bottom, rc.right, rc.top, rc.left, rc.top); 
 
   // Just Scroll Bar Slider button
   rc.left = w;
@@ -3734,54 +3567,17 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	rc.top += d;
   }
 
-  unsigned long ctUpDown =0;
-
-  bool bTransparentUpDown = true;
-
-  if (bTransparentUpDown)
-	ctUpDown=SRCAND;  //Combines the colors of the source and destination rectangles by using the Boolean AND operator.
-  else
-	ctUpDown=SRCCOPY;  //Copies the source rectangle directly to the destination rectangle.
-
   // TOP Dn Button 32x32
   // BOT Up Button 32x32
-  if (ScrollbarWidth == SCROLLBARWIDTH_INITIAL) {
-	oldBmp = (HBITMAP)SelectObject(GetTempDeviceContext(), hScrollBarBitmapTop);
-	BitBlt(hDC, w, ScrollbarTop, SCROLLBARWIDTH_INITIAL, SCROLLBARWIDTH_INITIAL, GetTempDeviceContext(), 0, 0, ctUpDown); 
-    
-	SelectObject(GetTempDeviceContext(), hScrollBarBitmapBot);
-	BitBlt(hDC, w, h-SCROLLBARWIDTH_INITIAL+ScrollbarTop, SCROLLBARWIDTH_INITIAL, SCROLLBARWIDTH_INITIAL,
-	     GetTempDeviceContext(), 0, 0, ctUpDown);  
-  } else {
-	oldBmp = (HBITMAP)SelectObject(GetTempDeviceContext(), hScrollBarBitmapTop);
-
-	StretchBlt(hDC, w, ScrollbarTop, 
-		 (ScrollbarWidth), 
-		 (ScrollbarWidth),
-		 GetTempDeviceContext(),
-		 0, 0, SCROLLBARWIDTH_INITIAL, SCROLLBARWIDTH_INITIAL,
-		 ctUpDown);
-
-    
-	// BOT Up Button 32x32
-	SelectObject(GetTempDeviceContext(), hScrollBarBitmapBot);
-
-	StretchBlt(hDC, w, h-(ScrollbarWidth)+ScrollbarTop, 
-		 (ScrollbarWidth), 
-		 (ScrollbarWidth),
-		 GetTempDeviceContext(),
-		 0, 0, SCROLLBARWIDTH_INITIAL, SCROLLBARWIDTH_INITIAL,
-		 ctUpDown);
-  }
+  Surface.DrawMaskedBitmap(w, ScrollbarTop, ScrollbarWidth, ScrollbarWidth, hScrollBarBitmapTop, SCROLLBARWIDTH_INITIAL, SCROLLBARWIDTH_INITIAL);
+  Surface.DrawMaskedBitmap(w, h-(ScrollbarWidth)+ScrollbarTop, ScrollbarWidth, ScrollbarWidth, hScrollBarBitmapBot, SCROLLBARWIDTH_INITIAL, SCROLLBARWIDTH_INITIAL);
 
   // Middle Slider Button 30x28
   if (mListInfo.ItemCount > mListInfo.ItemInViewCount) {
     
 	// handle on slider
-	SelectObject(GetTempDeviceContext(), hScrollBarBitmapMid); 
 	if (ScrollbarWidth == SCROLLBARWIDTH_INITIAL) {
-		BitBlt(hDC, w+1, rc.top + GetScrollBarHeight()/2 - 14, 30, 28,
-			GetTempDeviceContext(), 0, 0, SRCAND); // always SRCAND b/c on top of scrollbutton texture
+		Surface.DrawMaskedBitmap(w+1, rc.top + GetScrollBarHeight()/2 - 14, 30, 28, hScrollBarBitmapMid, 30, 28);
 	} else {
 		static int SCButtonW = -1;
 		static int SCButtonH = -1;
@@ -3791,25 +3587,20 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 			SCButtonH = (int) (28.0 * (float)ScrollbarWidth / (float)SCROLLBARWIDTH_INITIAL);
 			SCButtonY = (int) (14.0 * (float)ScrollbarWidth / (float)SCROLLBARWIDTH_INITIAL);
 		}
-		StretchBlt(hDC, w+1, rc.top + GetScrollBarHeight()/2 - SCButtonY, SCButtonW, SCButtonH,
-			   GetTempDeviceContext(), 0, 0, 
-			   30, 28,
-			   SRCAND); // always SRCAND b/c on top of scrollbutton texture
+		Surface.DrawMaskedBitmap(w+1, rc.top + GetScrollBarHeight()/2 - SCButtonY, SCButtonW, SCButtonH, hScrollBarBitmapMid, 30, 28);
 	}
 
 	// box around slider rect
 	hP3=LKPen_Black_N2;
 	int iBorderOffset = 1;  // set to 1 if BORDERWIDTH >2, else 0
-	SelectObject(hDC, hP3);
+	Surface.SelectObject(hP3);
 	// just left line of scrollbar
-	DrawLine2(hDC, rc.left+iBorderOffset, rc.top, rc.left+iBorderOffset, rc.bottom, rc.right, rc.bottom); 
-	DrawLine2(hDC, rc.right, rc.bottom, rc.right, rc.top, rc.left+iBorderOffset, rc.top); // just left line of scrollbar
+	Surface.DrawLine(rc.left+iBorderOffset, rc.top, rc.left+iBorderOffset, rc.bottom, rc.right, rc.bottom); 
+	Surface.DrawLine(rc.right, rc.bottom, rc.right, rc.top, rc.left+iBorderOffset, rc.top); // just left line of scrollbar
 
   } // more items than fit on screen
 
-  SelectObject(hDC, oldPen);
-  
-  SelectObject(GetTempDeviceContext(), oldBmp);
+  Surface.SelectObject(oldPen);
   
   rcScrollBarButton.left=rc.left;
   rcScrollBarButton.right=rc.right;
@@ -4011,7 +3802,7 @@ int WndFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {
       //return(1);
     } 
     //else {  // always doing this allows selected item in list to remain selected.
-      InvalidateRect(GetHandle(), GetBoundRect(), false);
+      InvalidateRect(GetHandle(), &GetBoundRect(), false);
       UpdateWindow(GetHandle());
     //}
 

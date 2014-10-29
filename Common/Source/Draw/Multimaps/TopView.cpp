@@ -12,10 +12,10 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 
-extern COLORREF  Sideview_TextColor;
+extern LKColor  Sideview_TextColor;
 
 
-int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing)
+int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double fAS_Bearing, double fWP_Bearing)
 {
   int iOldDisplayOrientation =  DisplayOrientation;
   DiagrammStruct m_Dia =	*psDia;
@@ -39,7 +39,7 @@ int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing
   }
 
   double fOldScale  =  zoom.Scale();
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
   if(zoom.AutoZoom())
 	zoom.AutoZoom(false);
@@ -124,16 +124,16 @@ int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing
         LKTextBlack=false;
         BlackScreen=false;
 	LockTerrainDataGraphics();
-	DrawTerrain(hdc, rct, GetAzimuth(), 40.0);
+	DrawTerrain(Surface, rct, GetAzimuth(), 40.0);
 	UnlockTerrainDataGraphics();
 	terrainpainted=true;
   } else {
 	// We fill up the background wity chosen empty map color
 
 	// display border and fill background..
-        SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
-        SelectObject(hdc, GetStockObject(WHITE_PEN));
-        Rectangle(hdc,rct.left,rct.top,rct.right,rct.bottom);
+        Surface.SelectObject(hInvBackgroundBrush[BgMapColor]);
+        Surface.SelectObject(LK_WHITE_PEN);
+        Surface.Rectangle(rct.left,rct.top,rct.right,rct.bottom);
         // We force LK painting black values on screen depending on the background color in use
         // blackscreen would force everything to be painted white, instead
         LKTextBlack=BgMapColorTextBlack[BgMapColor];
@@ -160,39 +160,39 @@ _nomoredeclutter:
 	// SaturateLabelDeclutter();
 	RECT rc_red = rct;
 	rc_red.bottom -= 3;
-	DrawTopology  (hdc, rc_red);
+	DrawTopology(Surface, rc_red);
   } else {
 	// No topology is desired, but terrain requires water areas nevertheless
 	if (terrainpainted) {
 		RECT rc_red = rct;
 		rc_red.bottom -= 3;
-		DrawTopology  (hdc, rc_red,true); // water only!
+		DrawTopology(Surface, rc_red,true); // water only!
 	}
   }
 
 
   if (IsMultimapAirspace()) {
 	if ( (GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders) ) {
-		DrawTptAirSpace(hdc, rct);
+		DrawTptAirSpace(Surface, rct);
 	} else {
 		if ( GetAirSpaceFillType() == asp_fill_border_only)
-			DrawAirSpaceBorders(hdc, rct); // full screen, to hide clipping effect on low border
+			DrawAirSpaceBorders(Surface, rct); // full screen, to hide clipping effect on low border
 		else
-			DrawAirSpace(hdc, rct);   // full screen, to hide clipping effect on low border
+			DrawAirSpace(Surface, rct);   // full screen, to hide clipping effect on low border
 	}
 	// DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
   }
 
   if (Flags_DrawTask && MapSpaceMode!=MSM_MAPASP && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-    DrawTaskAAT(hdc, DrawRect);
-    DrawTask(hdc, DrawRect, Current_Multimap_TopOrig);
+    DrawTaskAAT(Surface, DrawRect);
+    DrawTask(Surface, DrawRect, Current_Multimap_TopOrig);
   }
 
   if (IsMultimapWaypoints()) {
-	DrawWaypointsNew(hdc,DrawRect);
+	DrawWaypointsNew(Surface,DrawRect);
   }
   if (Flags_DrawFAI)
-	DrawFAIOptimizer(hdc, DrawRect, Current_Multimap_TopOrig);
+	DrawFAIOptimizer(Surface, DrawRect, Current_Multimap_TopOrig);
 
   DeclutterMode=olddecluttermode; // set it back correctly
 
@@ -211,30 +211,30 @@ _nomoredeclutter:
   if (MapSpaceMode==MSM_MAPTRK) {
 	if(IsMultimapTerrain() || IsMultimapTopology() ) {
 		if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
-			DrawGlideThroughTerrain(hdc, DrawRect); 
+			DrawGlideThroughTerrain(Surface, DrawRect);
 	}
 	if (extGPSCONNECT)
-		DrawBearing(hdc, DrawRect);
+		DrawBearing(Surface, DrawRect);
 	// Wind arrow
 	if (IsMultimapOverlaysGauges())
-		DrawWindAtAircraft2(hdc, Current_Multimap_TopOrig, DrawRect);
+		DrawWindAtAircraft2(Surface, Current_Multimap_TopOrig, DrawRect);
   }
 
   if (MapSpaceMode==MSM_MAPWPT) {
 	if (extGPSCONNECT)
-		DrawBearing(hdc, DrawRect);
+		DrawBearing(Surface, DrawRect);
   }
 
   switch(GetMMNorthUp(getsideviewpage)) {
 	case NORTHUP:
 	default:
-		DrawCompass( hdc,  rct, 0);
+		DrawCompass( Surface,  rct, 0);
 	break;
 	case TRACKUP:
 		if(getsideviewpage ==  IM_HEADING || getsideviewpage == IM_VISUALGLIDE)
-		  DrawCompass( hdc,  rct, DrawInfo.TrackBearing-90.0);
+		  DrawCompass( Surface,  rct, DrawInfo.TrackBearing-90.0);
 		else
-		  DrawCompass( hdc,  rct, DisplayAngle);
+		  DrawCompass( Surface,  rct, DisplayAngle);
 	break;
   }
 
@@ -253,11 +253,11 @@ _nomoredeclutter:
      case TRACKUP:
 	// Are we are not topview fullscreen?
 	if (Current_Multimap_SizeY<SIZE4 && !MapSpaceMode==MSM_VISUALGLIDE) {
-		DrawDashLine(hdc,NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
+		Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
 	} else {
 	    if (TrackBar) {
-    	 	    DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
-    	 	    if (ISGAAIRCRAFT) DrawFuturePos(hdc, Orig, DrawRect, true);
+    	 	    DrawHeadUpLine(Surface, Orig, rct, psDia->fXMin ,psDia->fXMax);
+    	 	    if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, DrawRect, true);
     	 	}
 	}
      break;
@@ -265,22 +265,22 @@ _nomoredeclutter:
      case NORTHUP:
      default:
 	if (TrackBar) {
-		DrawHeadUpLine(hdc, Orig, rct, psDia->fXMin ,psDia->fXMax);
-		if (ISGAAIRCRAFT) DrawFuturePos(hdc, Orig, DrawRect, true);
+		DrawHeadUpLine(Surface, Orig, rct, psDia->fXMin ,psDia->fXMax);
+		if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, DrawRect, true);
 	}
 	break;
   }
-  DrawAircraft(hdc, Orig_Aircraft);
+  DrawAircraft(Surface, Orig_Aircraft);
 
   // M3 has sideview always on, so wont apply here, and no need to check
   if (Current_Multimap_SizeY==SIZE4) {
-	DrawMapScale(hdc,rct,0);
+	DrawMapScale(Surface,rct,0);
   }
 
   MapWindow::zoom.RequestedScale(fOldScale);
   EnableThermalLocator = iOldLocator;
   DisplayOrientation = iOldDisplayOrientation;
-  SelectObject(hdc, hfOld);
+  Surface.SelectObject(hfOld);
   return 0;
 
 }
@@ -288,9 +288,9 @@ _nomoredeclutter:
 
 
 
-void MapWindow::DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc, double fMin, double fMax  ) {
+void MapWindow::DrawHeadUpLine(LKSurface& Surface, const POINT& Orig, const RECT& rc, double fMin, double fMax  ) {
 
-  COLORREF rgbCol = RGB_BLACK;
+  LKColor rgbCol = RGB_BLACK;
   POINT p1, p2;
   double tmp = fMax*zoom.ResScaleOverDistanceModify();
   
@@ -306,11 +306,8 @@ void MapWindow::DrawHeadUpLine(HDC hdc, POINT Orig, RECT rc, double fMin, double
 
   ForcedClipping=true;
   // Reduce the rectangle for a better effect
-  rc.top+=NIBLSCALE(5);
-  rc.right-=NIBLSCALE(5);
-  rc.bottom-=NIBLSCALE(5);
-  rc.left+=NIBLSCALE(5);
-  _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p1, p2, rgbCol, rc);
+  RECT DrawRect = (RECT){rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p1, p2, rgbCol, DrawRect);
   ForcedClipping=false;
 
 }

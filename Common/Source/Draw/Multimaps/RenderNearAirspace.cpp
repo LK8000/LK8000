@@ -12,12 +12,13 @@
 #include "Sideview.h"
 #include "Multimap.h"
 #include "Dialogs.h"
+#include "LKObjects.h"
 
 #define THICK_LINE 3
 
 extern double fSplitFact;
 extern double fOffset;
-extern COLORREF  Sideview_TextColor;
+extern LKColor  Sideview_TextColor;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern int Sideview_iNoHandeldSpaces;
 extern int XstartScreen, YstartScreen;
@@ -29,7 +30,7 @@ extern double fZOOMScale[];
 
 TCHAR Sideview_szNearAS[TBSIZE+1];
 
-void  MapWindow::RenderNearAirspace(HDC hdc, const RECT rci)
+void  MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT rci)
 {
 RECT rc  = rci; /* rectangle for sideview */
 RECT rct = rc; /* rectangle for topview */
@@ -39,7 +40,7 @@ rct.bottom = rc.top ;
 // Expose the topview rect size in use..
 Current_Multimap_TopRect=rct;
 
-HFONT	 hfOldFnt = (HFONT)SelectObject(hdc,LK8PanelUnitFont/* Sender->GetFont()*/);
+LKFont	 hfOldFnt = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 
@@ -71,9 +72,9 @@ static  bool bHeightScale = false;
   POINT TxYPt;
   POINT TxXPt;
   SIZE tsize;
-  COLORREF GREEN_COL     = RGB_GREEN;
-  COLORREF BLUE_COL      = RGB_BLUE;
-  COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
+  LKColor GREEN_COL     = RGB_GREEN;
+  LKColor BLUE_COL      = RGB_BLUE;
+  LKColor LIGHTBLUE_COL = RGB_LIGHTBLUE;
   BOOL bInvCol = true; //INVERTCOLORS
 
   unsigned short getsideviewpage=GetSideviewPage();
@@ -191,9 +192,9 @@ static  bool bHeightScale = false;
 
   if(bInvCol)
   {
-    GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
-    BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
-    LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
+    GREEN_COL     = GREEN_COL.ChangeBrightness(0.6);
+    BLUE_COL      = BLUE_COL.ChangeBrightness(0.6);;
+    LIGHTBLUE_COL = LIGHTBLUE_COL.ChangeBrightness(0.4);;
   }
 
     GPSlat = DrawInfo.Latitude;
@@ -343,7 +344,7 @@ if(bValid)
   {
     sDia.rc = rct;
     sDia.rc.bottom-=1;
-    SharedTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg);
+    SharedTopView(Surface, &sDia, (double) iAS_Bearing, (double) wpt_brg);
 
   }
 
@@ -355,26 +356,26 @@ if(bValid)
     rcc.bottom -= SV_BORDER_Y; /* scale witout sea  */
   sDia.rc = rcc;
 
-  RenderAirspaceTerrain( hdc, GPSlat, GPSlon, iAS_Bearing, &sDia );
+  RenderAirspaceTerrain(Surface, GPSlat, GPSlon, iAS_Bearing, &sDia );
 
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+  LKFont hfOld = Surface.SelectObject(LK8InfoNormalFont);
   if(bValid) {
     LKASSERT(_tcslen(near_airspace.Name())<TBSIZE); // Diagnostic only in 3.1j, to be REMOVED
     LK_tcsncpy(Sideview_szNearAS, near_airspace.Name(), TBSIZE );
   } else
   {
 	_stprintf(text,TEXT("%s"), MsgToken(1259)); 	 // LKTOKEN _@M1259_ "Too far, not calculated"
-	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+	Surface.GetTextSize(text, _tcslen(text), &tsize);
 	TxYPt.x = (rc.right-rc.left-tsize.cx)/2;
 	TxYPt.y = (rc.bottom-rc.top)/2;
 
-	SetBkMode(hdc, TRANSPARENT);
-	ExtTextOut(hdc,TxYPt.x, TxYPt.y-20, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	Surface.SetBkMode(TRANSPARENT);
+	Surface.DrawText(TxYPt.x, TxYPt.y-20, text, _tcslen(text));
 
 	_stprintf(Sideview_szNearAS,TEXT("%s"), text);
 
   }
-  SelectObject(hdc, hfOld);
+  Surface.SelectObject(hfOld);
   /****************************************************************************************************
    * draw airspace and terrain elements
    ****************************************************************************************************/
@@ -395,36 +396,36 @@ if(bValid)
 
   if(bInvCol)
   {
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
-    SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+    Surface.SelectObject(LK_BLACK_PEN);
+    Surface.SelectObject(LKBrush_Black);
   }
   else
   {
-    SelectObject(hdc, GetStockObject(WHITE_PEN));
-    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+    Surface.SelectObject(LK_WHITE_PEN);
+    Surface.SelectObject(LKBrush_White);
   }
 
-  COLORREF txtCol = GROUND_TEXT_COLOUR;
+  LKColor txtCol = GROUND_TEXT_COLOUR;
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
     	txtCol = INV_GROUND_TEXT_COLOUR;
-  SetBkMode(hdc, TRANSPARENT);
-  SetTextColor(hdc, txtCol);
+  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetTextColor(txtCol);
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
 
   switch(GetMMNorthUp(getsideviewpage))
   {
 	 case NORTHUP:
 	 default:
-	   DrawXGrid(hdc, rc , xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
+	   DrawXGrid(Surface, rc , xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
      break;
 
 	 case TRACKUP:
-	   DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
+	   DrawXGrid(Surface, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
      break;
   }
 
-  SetTextColor(hdc, Sideview_TextColor);
+  Surface.SetTextColor(Sideview_TextColor);
 
   double  fHeight = (sDia.fYMax-sDia.fYMin);
   double  ytick = 100.0;
@@ -440,45 +441,45 @@ if(bValid)
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
   if(sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
 	  rc.bottom -= SV_BORDER_Y; /* scale witout sea  */
-  DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
+  DrawYGrid(Surface, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
 
 
   if(!bInvCol)
-    SetBkMode(hdc, OPAQUE);
+    Surface.SetBkMode(OPAQUE);
   /****************************************************************************************************
    * draw AGL
    ****************************************************************************************************/
   if(calc_altitudeagl - sDia.fYMin  > 500)
   {
-    SetTextColor(hdc, LIGHTBLUE_COL);
+    Surface.SetTextColor(LIGHTBLUE_COL);
     Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
     LK_tcsncpy(text, MsgToken(1742), TBSIZE-_tcslen(buffer)); // AGL:
     _tcscat(text,buffer);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, _tcslen(text), &tsize);
     TxYPt.x = CalcDistanceCoordinat(0,  &sDia)- tsize.cx/2;
     TxYPt.y  = CalcHeightCoordinat(  (calc_terrainalt + calc_altitudeagl )*0.8,  &sDia );
     if((tsize.cy) < ( CalcHeightCoordinat(  calc_terrainalt, &sDia )- TxYPt.y )) {
-      ExtTextOut(hdc,  TxYPt.x+IBLSCALE(1),  TxYPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      Surface.DrawText(TxYPt.x+IBLSCALE(1),  TxYPt.y , text, _tcslen(text));
     }
   }
 
-  SetBkMode(hdc, TRANSPARENT);
+  Surface.SetBkMode(TRANSPARENT);
 
   /****************************************************************************************************
    * Print current Elevation
    ****************************************************************************************************/
-  SetTextColor(hdc, RGB_BLACK);
+  Surface.SetTextColor(RGB_BLACK);
   int x,y;
   if((calc_terrainalt-  sDia.fYMin)  > 0)
   {
 	Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
     LK_tcsncpy(text, MsgToken(1743), TBSIZE-_tcslen(buffer));   // ELV:
     _tcscat(text,buffer);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, _tcslen(text), &tsize);
     x = CalcDistanceCoordinat(0, &sDia) - tsize.cx/2;
     y = CalcHeightCoordinat( calc_terrainalt,  &sDia  );
     if ((ELV_FACT*tsize.cy) < abs(rc.bottom - y)) {
-      ExtTextOut(hdc, x, rc.bottom -(int)(ELV_FACT * tsize.cy) , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      Surface.DrawText(x, rc.bottom -(int)(ELV_FACT * tsize.cy), text, _tcslen(text));
     }
   }
 
@@ -486,20 +487,20 @@ if(bValid)
   /****************************************************************************************************
    * draw side elements
    ****************************************************************************************************/
-  SetTextColor(hdc, Sideview_TextColor);
-  SetBkMode(hdc, OPAQUE);
-  HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+  Surface.SetTextColor(Sideview_TextColor);
+  Surface.SetBkMode(OPAQUE);
+  LKFont hfOld2 = Surface.SelectObject(LK8InfoNormalFont);
 
   //  DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right  - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
 
-  SelectObject(hdc, hfOld2);
-  SetBkMode(hdc, TRANSPARENT);
+  Surface.SelectObject(hfOld2);
+  Surface.SetBkMode(TRANSPARENT);
 
-  SelectObject(hdc, hfOld);
-  SetTextColor(hdc, GROUND_TEXT_COLOUR);
+  Surface.SelectObject(hfOld);
+  Surface.SetTextColor(GROUND_TEXT_COLOUR);
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
-	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+	  Surface.SetTextColor(INV_GROUND_TEXT_COLOUR);
 
 
 
@@ -516,21 +517,21 @@ if(bValid)
 	/****************************************************************************************************
 	 * draw horizontal distance to next airspace
 	 ****************************************************************************************************/
-	SetTextColor(hdc, Sideview_TextColor);
-	SetBkMode(hdc, OPAQUE);
-	HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+	Surface.SetTextColor(Sideview_TextColor);
+	Surface.SetBkMode(OPAQUE);
+	LKFont hfOldU = Surface.SelectObject(LK8InfoNormalFont);
     // horizontal distance
     line[0].x = CalcDistanceCoordinat(0, &sDia);
     line[0].y = CalcHeightCoordinat(  GPSalt,  &sDia );
     line[1].x = CalcDistanceCoordinat(iABS_AS_HorDistance, &sDia);
     line[1].y = line[0].y;
-    DrawDashLine(hdc,THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
+    Surface.DrawDashLine(THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
     if(iAS_HorDistance < 0)
     {
       line[0].y = CalcHeightCoordinat(  GPSalt - (double)iAS_VertDistance, &sDia );
       line[1].y = line[0].y;
 
-      DrawDashLine(hdc,THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
+      Surface.DrawDashLine(THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
     }
 
     bool bLeft = false;
@@ -541,7 +542,7 @@ if(bValid)
 
     Units::FormatUserDistance(iABS_AS_HorDistance, buffer, 7);
     _stprintf(text,_T(" %s"),buffer);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, _tcslen(text), &tsize);
 
     if((GPSalt- sDia.fYMin /*-calc_terrainalt */) < 300)
       TxXPt.y = CalcHeightCoordinat(  GPSalt, &sDia ) -  tsize.cy;
@@ -553,7 +554,7 @@ if(bValid)
       TxXPt.x = CalcDistanceCoordinat( iABS_AS_HorDistance ,&sDia) -tsize.cx-  NIBLSCALE(3);
     else
       TxXPt.x = CalcDistanceCoordinat( iABS_AS_HorDistance / 2.0, &sDia) -tsize.cx/2;
-    ExtTextOut(hdc,  TxXPt.x,  TxXPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    Surface.DrawText(TxXPt.x,  TxXPt.y, text, _tcslen(text));
 
 
 
@@ -565,10 +566,10 @@ if(bValid)
     line[1].x = line[0].x;
     line[1].y = CalcHeightCoordinat( GPSalt - (double)iAS_VertDistance, &sDia );
 
-    DrawDashLine(hdc,THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
+    Surface.DrawDashLine(THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
     Units::FormatUserAltitude( (double)abs(iAS_VertDistance), buffer, 7);
     _stprintf(text,_T(" %s"),buffer);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, _tcslen(text), &tsize);
 
     if ( bLeft )
       TxYPt.x = CalcDistanceCoordinat(iABS_AS_HorDistance,  &sDia)- tsize.cx - NIBLSCALE(3);
@@ -578,31 +579,31 @@ if(bValid)
       TxYPt.y = CalcHeightCoordinat( GPSalt - (double)iAS_VertDistance/2.0, &sDia) -tsize.cy/2 ;
     else
       TxYPt.y = min( line[0].y ,  line[1].y) - tsize.cy ;
-    ExtTextOut(hdc,  TxYPt.x,  TxYPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-	SelectObject(hdc, hfOldU);
+    Surface.DrawText(TxYPt.x,  TxYPt.y , text, _tcslen(text));
+	Surface.SelectObject(hfOldU);
   }
 
  /****************************************************************************************************
   * draw plane sideview at least
   ****************************************************************************************************/
-  RenderPlaneSideview( hdc, 0.0 , GPSalt,wpt_brg, &sDia );
+  RenderPlaneSideview(Surface, 0.0 , GPSalt,wpt_brg, &sDia );
 
-  hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
+  hfOldFnt = Surface.SelectObject(LK8InfoNormalFont/* Sender->GetFont()*/);
 
-  DrawMultimap_SideTopSeparator(hdc,rct);
+  DrawMultimap_SideTopSeparator(Surface,rct);
 
   /****************************************************************************************************
    * draw selection frame
    ****************************************************************************************************/
   if(bHeightScale)
-	DrawSelectionFrame(hdc,  rc);
+	DrawSelectionFrame(Surface,  rc);
 #ifdef TOP_SELECTION_FRAME
   else
 	DrawSelectionFrame(hdc,  rci);
 #endif
-  SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
-  SetBkMode(hdc, TRANSPARENT);
-  SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
+  Surface.SelectObject(hfOldFnt/* Sender->GetFont()*/);
+  Surface.SetBkMode(TRANSPARENT);
+  Surface.SelectObject(hfOldFnt/* Sender->GetFont()*/);
 }
 
 

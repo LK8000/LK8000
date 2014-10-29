@@ -111,7 +111,7 @@ static void NextPage(int Step){
 }
 
 
-static void OnPaintDetailsListItem(WindowControl * Sender, HDC hDC){
+static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   if (DrawListIndex < nTextLines){
     TCHAR* text = ChecklistText[page];
@@ -131,11 +131,7 @@ static void OnPaintDetailsListItem(WindowControl * Sender, HDC hDC){
       nlen--;
     }
     if (nlen>0) {
-      ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
-		 ETO_OPAQUE, NULL,
-		 text+nstart,
-		 nlen, 
-		 NULL);
+      Surface.DrawText(2*ScreenScale, 2*ScreenScale, text+nstart, nlen);
     }
   }
 }

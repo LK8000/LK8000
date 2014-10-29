@@ -30,7 +30,7 @@ extern void ResetVisualGlideGlobals(void);
 // Size of the box, fixed for each waypoint at this resolution
 static unsigned int boxSizeX=0 ,boxSizeY=0;
 static int maxtSizeX=0;
-static HFONT line1Font, line2Font;
+static LKFont line1Font, line2Font;
 
 extern int slotWpIndex[MAXBSLOT+1];
 
@@ -48,7 +48,7 @@ unsigned short Sideview_VGBox_Number=0;
 // #define MIDCENTER	1
 
 
-void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
+void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 
   unsigned short numboxrows=1;
 
@@ -121,8 +121,8 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 
   SIZE textSize;
-  SelectObject(hdc, line1Font);
-  GetTextExtentPoint(hdc, tmpT, _tcslen(tmpT), &textSize);
+  Surface.SelectObject(line1Font);
+  Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSize);
   maxtSizeX=textSize.cx;
 
   int a=ScreenSizeX/textSize.cx; 
@@ -132,8 +132,8 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   boxSizeY=textSize.cy+1;  // distance from bottombar
 
   if (numboxrows>1) {
-	SelectObject(hdc, line2Font);
-	GetTextExtentPoint(hdc, tmpT, _tcslen(tmpT), &textSize);
+	Surface.SelectObject(line2Font);
+	Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSize);
 	boxSizeY+=(textSize.cy*(numboxrows-1))-NIBLSCALE(2);
 	if (numboxrows>2) boxSizeY-=NIBLSCALE(1);
   }
@@ -155,17 +155,17 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   StartupStore(_T("VG AREA LTRB: %d,%d %d,%d\n"),vrc.left,vrc.top,vrc.right,vrc.bottom);
   #endif
 
-  HBRUSH oldBrush=(HBRUSH) SelectObject(hdc,GetStockObject(WHITE_BRUSH));
-  HPEN   oldPen  =(HPEN)   SelectObject(hdc, GetStockObject(BLACK_PEN));
+  LKBrush oldBrush=Surface.SelectObject(LKBrush_White);
+  LKPen oldPen = Surface.SelectObject(LK_BLACK_PEN);
 
-  HBRUSH brush_back;
+  LKBrush brush_back;
   if (!INVERTCOLORS) {
     brush_back = LKBrush_Black;
   } else {
     brush_back = LKBrush_Nlight;
   }
 
-  FillRect(hdc, &vrc, brush_back);
+  Surface.FillRect(&vrc, brush_back);
 
   POINT center, p1, p2;
   center.y=vrc.top+(vrc.bottom-vrc.top)/2;
@@ -231,7 +231,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 
 
-  SetBkMode(hdc,TRANSPARENT);
+  Surface.SetBkMode(TRANSPARENT);
 
   RECT trc;
   trc=vrc;
@@ -239,24 +239,24 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   // Top part of visual rect, target is over us=unreachable=red
   trc.top=vrc.top;
   trc.bottom=center.y-1;
-  RenderSky( hdc, trc, RGB_WHITE, RGB(150,255,150),GC_NO_COLOR_STEPS/2);
+  RenderSky(Surface, trc, RGB_WHITE, LKColor(150,255,150),GC_NO_COLOR_STEPS/2);
   // Bottom part, target is below us=reachable=green
   trc.top=center.y+1;
   trc.bottom=vrc.bottom;
-  RenderSky( hdc, trc, RGB(255,150,150), RGB_WHITE, GC_NO_COLOR_STEPS/2);
+  RenderSky(Surface, trc, LKColor(255,150,150), RGB_WHITE, GC_NO_COLOR_STEPS/2);
 
   // Draw center line
   p1.x=vrc.left+1; p1.y=center.y;
   p2.x=vrc.right-1; p2.y=center.y;
-  SelectObject(hdc, LKPen_Black_N1);
-  DrawSolidLine(hdc, p1, p2, vrc);
+  Surface.SelectObject(LKPen_Black_N1);
+  Surface.DrawSolidLine(p1, p2, vrc);
 
   #if DEBUG_SCR
   StartupStore(_T("... Center line: Y=%d\n"),center.y);
   #endif
 
-  SelectObject(hdc, line1Font);
-  SelectObject(hdc,LKPen_Black_N0);
+  Surface.SelectObject(line1Font);
+  Surface.SelectObject(LKPen_Black_N0);
 
   ResetVisualGlideGlobals();
 
@@ -278,8 +278,8 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
   // Print them all!
   int offset=(boxSizeY/2)+CENTERYSPACE;
 
-  HBRUSH bcolor=NULL;
-  COLORREF rgbcolor, textcolor;
+  LKBrush bcolor;
+  LKColor rgbcolor, textcolor;
   int wp;
 
   unsigned short zeroslot=0;
@@ -328,8 +328,8 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
   p1.y=vrc.top+1;
   p2.y=vrc.bottom-1;
-  SelectObject(hdc, LKPen_Black_N1);
-  DrawSolidLine(hdc, p1, p2, vrc);
+  Surface.SelectObject(LKPen_Black_N1);
+  Surface.DrawSolidLine(p1, p2, vrc);
 
 
 
@@ -376,7 +376,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 		//
 		// This is too confusing. We want simple colors, not shaded
-		// rgbcolor = MixColors( RGB(50,255,50), RGB(230,255,230),  altdiff/(vscale-50));
+		// rgbcolor = MixColors( LKColor(50,255,50), LKColor(230,255,230),  altdiff/(vscale-50));
 		//
 
 		if (altdiff<=SAFETERRAIN) {
@@ -389,7 +389,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 				rgbcolor = RGB_LIGHTGREEN;
 			}
 		}
-		bcolor=CreateSolidBrush(rgbcolor);
+		bcolor.Create(rgbcolor);
 
 	} else {
 		double d=vscale/altdiff;
@@ -399,7 +399,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
 		
 		rgbcolor = RGB_LIGHTRED;
-		bcolor=CreateSolidBrush(rgbcolor);
+		bcolor.Create(rgbcolor);
 	}
 
 	TCHAR line2[40], line3[40];
@@ -423,7 +423,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 		case 1:
 			// 1 line: waypoint name
-			VGTextInBox(hdc,n,1,name, NULL,NULL, slotCenterX[n] , ty,  textcolor, bcolor);
+			VGTextInBox(Surface,n,1,name, NULL,NULL, slotCenterX[n] , ty,  textcolor, bcolor);
 			break;
 
 		case 2:
@@ -441,7 +441,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 				_stprintf(line2,_T("%s   ---"),value);
 			}
 
-			VGTextInBox(hdc,n,2,name, line2, NULL, slotCenterX[n] , ty,  textcolor, bcolor);
+			VGTextInBox(Surface,n,2,name, line2, NULL, slotCenterX[n] , ty,  textcolor, bcolor);
 			break;
 
 		case 3:
@@ -466,7 +466,7 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 				_stprintf(line3,_T("%s   ---"),value);
 			}
 
-			VGTextInBox(hdc,n,3,name, line2, line3, slotCenterX[n] , ty,  textcolor, bcolor);
+			VGTextInBox(Surface,n,3,name, line2, line3, slotCenterX[n] , ty,  textcolor, bcolor);
 			break;
 		default:
 			#if BUGSTOP
@@ -474,15 +474,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 			#endif
 			return;
 	}
-	if (bcolor) DeleteObject(bcolor);
 			
   } // for numSlotX
 
 
 
   // Cleanup and return
-  SelectObject(hdc,oldBrush); 
-  SelectObject(hdc,oldPen); 
+  Surface.SelectObject(oldBrush);
+  Surface.SelectObject(oldPen);
   return;
 }
 
@@ -491,14 +490,14 @@ void MapWindow::DrawVisualGlide(HDC hdc, DiagrammStruct* pDia) {
 
 // trgb color is used only for line1, because using any other color than black  on thin characters on line 2 and 3 would
 // make it quite less visible.
-void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const TCHAR* wText1, const TCHAR* wText2, const TCHAR *wText3, int x, int y, COLORREF trgb, HBRUSH bbrush) {
+void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numlines, const TCHAR* wText1, const TCHAR* wText2, const TCHAR *wText3, int x, int y, const LKColor& trgb, const LKBrush& bbrush) {
 
   #if BUGSTOP
   LKASSERT(wText1!=NULL);
   #endif
   if (!wText1) return;
 
-  COLORREF oldTextColor=SetTextColor(hDC,trgb);
+  LKColor oldTextColor=Surface.SetTextColor(trgb);
 
   SIZE tsize;
   int tx, ty;
@@ -506,16 +505,16 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
 
   Sideview_VGBox_Number++;
 
-  SelectObject(hDC, line1Font);
+  Surface.SelectObject(line1Font);
   unsigned int tlen=_tcslen(wText1);
-  GetTextExtentPoint(hDC, wText1, tlen, &tsize);
+  Surface.GetTextSize(wText1, tlen, &tsize);
   int line1fontYsize=tsize.cy;
 
   // Fit as many characters in the available boxed space
   if (tsize.cx>maxtSizeX) {
 	LKASSERT(tlen>0);
 	for (short t=tlen-1; t>0; t--) {
-		GetTextExtentPoint(hDC, wText1, t, &tsize);
+		Surface.GetTextSize(wText1, t, &tsize);
 		if (tsize.cx<=maxtSizeX) {
 			tlen=t;
 			break;
@@ -524,8 +523,8 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   }
 
   short vy=y+(boxSizeY/2);
-  SelectObject(hDC,bbrush);
-  Rectangle(hDC, 
+  Surface.SelectObject(bbrush);
+  Surface.Rectangle(
 	x-(boxSizeX/2),
 	y-(boxSizeY/2),
 	x+(boxSizeX/2),
@@ -542,7 +541,7 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   tx = x-(tsize.cx/2);
   ty = y-(vy-y);
 
-  ExtTextOut(hDC, tx, ty, ETO_OPAQUE, NULL, wText1, tlen, NULL);
+  Surface.DrawText(tx, ty, wText1, tlen);
 
   if (numlines==1) goto _end;
   #if BUGSTOP
@@ -553,14 +552,14 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   //
   // LINE 2
   // 
-  SetTextColor(hDC,RGB_BLACK);
-  SelectObject(hDC, line2Font);
+  Surface.SetTextColor(RGB_BLACK);
+  Surface.SelectObject(line2Font);
   tlen=_tcslen(wText2);
-  GetTextExtentPoint(hDC, wText2, tlen, &tsize);
+  Surface.GetTextSize(wText2, tlen, &tsize);
   tx = x-(tsize.cx/2);
   ty += tsize.cy-NIBLSCALE(2);
   if ( (line1fontYsize-tsize.cy)>0 ) ty -= (line1fontYsize-tsize.cy);
-  ExtTextOut(hDC, tx, ty, ETO_OPAQUE, NULL, wText2, tlen, NULL);
+  Surface.DrawText(tx, ty, wText2, tlen);
 
   if (numlines==2) goto _end;
   #if BUGSTOP
@@ -571,15 +570,15 @@ void MapWindow::VGTextInBox(HDC hDC, unsigned short nslot, short numlines, const
   //
   // LINE 3
   //
-  SetTextColor(hDC,RGB_BLACK);
+  Surface.SetTextColor(RGB_BLACK);
   tlen=_tcslen(wText3);
-  GetTextExtentPoint(hDC, wText3, tlen, &tsize);
+  Surface.GetTextSize(wText3, tlen, &tsize);
   tx = x-(tsize.cx/2);
   ty += tsize.cy-NIBLSCALE(1);
-  ExtTextOut(hDC, tx, ty, ETO_OPAQUE, NULL, wText3, tlen, NULL);
+  Surface.DrawText(tx, ty, wText3, tlen);
 
 _end:
-  SetTextColor(hDC,oldTextColor);
+  Surface.SetTextColor(oldTextColor);
   return;
 }
 

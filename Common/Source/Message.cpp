@@ -37,7 +37,6 @@ extern HINSTANCE hInst;      // The current instance
 
 RECT Message::rcmsg;
 HWND Message::hWndMessageWindow;
-HDC Message::hdc;
 struct singleMessage Message::messages[MAXMESSAGES];
 bool Message::hidden=false;
 int Message::nvisible=0;
@@ -131,9 +130,9 @@ void Message::Initialize(RECT rc) {
   // change message font for different resolutions
   // Caution, remember to set font also in Resize..
   if (ScreenLandscape )
-	SendMessage(hWndMessageWindow, WM_SETFONT, (WPARAM)LK8InfoBigFont,MAKELPARAM(TRUE,0));
+	SendMessage(hWndMessageWindow, WM_SETFONT, (WPARAM)(HFONT)LK8InfoBigFont,MAKELPARAM(TRUE,0));
   else
-	SendMessage(hWndMessageWindow, WM_SETFONT, (WPARAM)MapWindowBoldFont,MAKELPARAM(TRUE,0));
+	SendMessage(hWndMessageWindow, WM_SETFONT, (WPARAM)(HFONT)MapWindowBoldFont,MAKELPARAM(TRUE,0));
 
   /*
   SetWindowLong(hWndMessageWindow, GWL_WNDPROC, 
@@ -141,8 +140,6 @@ void Message::Initialize(RECT rc) {
   EnableWindow(hWndMessageWindow, FALSE); // prevent window receiving
 					  // keyboard/mouse input
   */
-
-  hdc = GetDC(hWndMessageWindow);
 
   hidden = false;
   nvisible = 0;
@@ -163,7 +160,6 @@ void Message::Initialize(RECT rc) {
 
 void Message::Destroy() {
   // destroy window
-  ReleaseDC(hWndMessageWindow, hdc);
   DestroyWindow(hWndMessageWindow);
 }
 
@@ -194,15 +190,16 @@ void Message::Resize() {
   } else {
     SetWindowText(hWndMessageWindow, msgText);
 
-    HFONT oldfont;
+    LKWindowSurface Surface(hWndMessageWindow);
+    LKFont oldfont;
     if (ScreenLandscape )
-	oldfont=(HFONT)SelectObject(hdc,LK8InfoBigFont);
+	oldfont=Surface.SelectObject(LK8InfoBigFont);
     else
-	oldfont=(HFONT)SelectObject(hdc,MapWindowBoldFont);
+	oldfont=Surface.SelectObject(MapWindowBoldFont);
 
-    GetTextExtentPoint(hdc, msgText, size, &tsize);
+    Surface.GetTextSize(msgText, size, &tsize);
 
-    SelectObject(hdc,oldfont); // 100215
+    Surface.SelectObject(oldfont); // 100215
 
     int linecount = max(nvisible,max(1,
 			(int)SendMessage(hWndMessageWindow, 

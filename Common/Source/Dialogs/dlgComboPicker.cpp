@@ -17,7 +17,7 @@ extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
 static void OnComboPopupListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo);
-static void OnPaintComboPopupListItem(WindowControl * Sender, HDC hDC);
+static void OnPaintComboPopupListItem(WindowControl * Sender, LKSurface& Surface);
 
 WndProperty * wComboPopupWndProperty;
 WindowControl * wComboPopupListEntry;
@@ -28,7 +28,7 @@ ComboList * ComboListPopup=NULL;
 static TCHAR sSavedInitialValue[ComboPopupITEMMAX];
 static int iSavedInitialDataIndex=-1;
 
-static void OnPaintComboPopupListItem(WindowControl * Sender, HDC hDC){
+static void OnPaintComboPopupListItem(WindowControl * Sender, LKSurface& Surface){
 
   (void)Sender;
 
@@ -39,7 +39,7 @@ static void OnPaintComboPopupListItem(WindowControl * Sender, HDC hDC){
 
 	w=Sender->GetWidth();
 
-	ExtTextOutClip(hDC, 2*ScreenScale,
+	Surface.DrawTextClip(2*ScreenScale,
 		2*ScreenScale,
 		ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupDrawListIndex]->StringValueFormatted,
 		w-ScreenScale*5);

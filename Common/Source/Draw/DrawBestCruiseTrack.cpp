@@ -10,10 +10,10 @@
 #include "LKObjects.h"
 
 
-void MapWindow::DrawBestCruiseTrack(HDC hdc, const POINT Orig)
+void MapWindow::DrawBestCruiseTrack(LKSurface& Surface, const POINT& Orig)
 {
-  HPEN hpOld;
-  HBRUSH hbOld;
+  LKPen hpOld;
+  LKBrush hbOld;
 
   if (OvertargetMode>OVT_TASK) return;
 
@@ -27,8 +27,8 @@ void MapWindow::DrawBestCruiseTrack(HDC hdc, const POINT Orig)
   } 
 
 
-  hpOld = (HPEN)SelectObject(hdc, LKPen_Blue_N1);
-  hbOld = (HBRUSH)SelectObject(hdc, LKBrush_Blue);
+  hpOld = Surface.SelectObject(LKPen_Blue_N1);
+  hbOld = Surface.SelectObject(LKBrush_Blue);
 
   if (Appearance.BestCruiseTrack == ctBestCruiseTrackDefault){
 
@@ -43,7 +43,7 @@ void MapWindow::DrawBestCruiseTrack(HDC hdc, const POINT Orig)
     PolygonRotateShift(Arrow, 7, Orig.x, Orig.y, 
                        DerivedDrawInfo.BestCruiseTrack-DisplayAngle);
 
-    Polygon(hdc,Arrow,7);
+    Surface.Polygon(Arrow,7);
 
   } else
   if (Appearance.BestCruiseTrack == ctBestCruiseTrackAltA){
@@ -53,11 +53,11 @@ void MapWindow::DrawBestCruiseTrack(HDC hdc, const POINT Orig)
     PolygonRotateShift(Arrow, sizeof(Arrow)/sizeof(Arrow[0]),
                        Orig.x, Orig.y, 
                        DerivedDrawInfo.BestCruiseTrack-DisplayAngle);
-    Polygon(hdc, Arrow, (sizeof(Arrow)/sizeof(Arrow[0])));
+    Surface.Polygon(Arrow, (sizeof(Arrow)/sizeof(Arrow[0])));
   }
 
-  SelectObject(hdc, hpOld);
-  SelectObject(hdc, hbOld);
+  Surface.SelectObject(hpOld);
+  Surface.SelectObject(hbOld);
 }
 
 

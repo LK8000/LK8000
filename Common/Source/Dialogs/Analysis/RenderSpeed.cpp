@@ -9,12 +9,12 @@
 #include "externs.h"
 
 
-void Statistics::RenderSpeed(HDC hdc, const RECT rc)
+void Statistics::RenderSpeed(LKSurface& Surface, const RECT& rc)
 {
 
   if ((flightstats.Task_Speed.sum_n<2)
       || !ValidTaskPoint(ActiveWayPoint)) {
-    DrawNoData(hdc, rc);
+    DrawNoData(Surface, rc);
     return;
   }
 
@@ -31,7 +31,7 @@ void Statistics::RenderSpeed(HDC hdc, const RECT rc)
       double xx = 
         (flightstats.LegStartTime[j]-CALCULATED_INFO.TaskStartTime)/3600.0;
       if (xx>=0) {
-        DrawLine(hdc, rc,
+        DrawLine(Surface, rc,
                  xx, y_min,
                  xx, y_max,
                  STYLE_REDTHICK);
@@ -39,33 +39,32 @@ void Statistics::RenderSpeed(HDC hdc, const RECT rc)
     }
   }
 
-  DrawXGrid(hdc, rc, 
+  DrawXGrid(Surface, rc,
             0.5, flightstats.Task_Speed.x_min,
             STYLE_THINDASHPAPER, 0.5, true);
 
  /* DrawYGrid(hdc, rc, 10/TASKSPEEDMODIFY, 0, STYLE_THINDASHPAPER,
             10, true);*/
   if(Units::GetUserHorizontalSpeedUnit() == unStatuteMilesPerHour) {
-    DrawYGrid(hdc, rc, 5.0/TASKSPEEDMODIFY, 0, STYLE_THINDASHPAPER, 5.0, true);
+    DrawYGrid(Surface, rc, 5.0/TASKSPEEDMODIFY, 0, STYLE_THINDASHPAPER, 5.0, true);
   } else {
-    DrawYGrid(hdc, rc, 10/TASKSPEEDMODIFY, 0, STYLE_THINDASHPAPER, 10, true);
+    DrawYGrid(Surface, rc, 10/TASKSPEEDMODIFY, 0, STYLE_THINDASHPAPER, 10, true);
   }
 
-  DrawLineGraph(hdc, rc, &flightstats.Task_Speed,
-                STYLE_MEDIUMBLACK);
+  DrawLineGraph(Surface, rc, &flightstats.Task_Speed,STYLE_MEDIUMBLACK);
 
-  DrawTrend(hdc, rc, &flightstats.Task_Speed, STYLE_BLUETHIN);
+  DrawTrend(Surface, rc, &flightstats.Task_Speed, STYLE_BLUETHIN);
 
 
   if(INVERTCOLORS)
-    SetTextColor(hdc,RGB_DARKGREEN);
+    Surface.SetTextColor(RGB_DARKGREEN);
   else
-    SetTextColor(hdc,RGB_GREEN);
-  SetBkMode(hdc, OPAQUE);
+    Surface.SetTextColor(RGB_GREEN);
+  Surface.SetBkMode(OPAQUE);
   TCHAR text[80];
-  DrawXLabel(hdc, rc, TEXT(" t/h "));
+  DrawXLabel(Surface, rc, TEXT(" t/h "));
   _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
-  DrawYLabel(hdc, rc, text);
+  DrawYLabel(Surface, rc, text);
 
 
 //  DrawXLabel(hdc, rc, TEXT("t"));
