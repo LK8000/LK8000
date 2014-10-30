@@ -134,7 +134,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   LocalPathS(filename, TEXT("dlgAirspaceWarningParams.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_AIRSPACEWARNINGPARAMS"));
 
   if (!wf) return;

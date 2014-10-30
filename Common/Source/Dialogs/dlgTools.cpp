@@ -75,7 +75,7 @@ int MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, UINT uType, bool wfullscreen)
   w = DLGSCALE(60);
   h = DLGSCALE(32);
 
-  wf = new WndForm(hWnd, TEXT("frmXcSoarMessageDlg"), 
+  wf = new WndForm(TEXT("frmXcSoarMessageDlg"), 
                    lpCaption, X, Y, Width, Height);
   wf->SetFont(MapWindowBoldFont);
   wf->SetTitleFont(MapWindowBoldFont);
@@ -383,8 +383,7 @@ static XMLNode xmlOpenResourceHelper(const TCHAR *lpszXML, LPCTSTR tag)
 
 
 
-WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilename, HWND Parent,
-                        const TCHAR* raw_resource) {
+WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilename, const TCHAR* raw_resource) {
 
   WndForm *theForm = NULL;
   XMLNode xMainNode;
@@ -431,20 +430,21 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
     TCHAR sTmp[128];
     TCHAR Name[64];
 
-    RECT rc;
-    GetClientRect(Parent, &rc);
 
     // fix screen width adjust but do not enlarge it if popup is selected
     GetDefaultWindowControlProps(&xNode, Name, &X, &Y, &Width, &Height, &Popup,
                                  &Font, sTmp);
     if (!Popup) {
+      RECT rc;
+      GetClientRect(hWndMainWindow, &rc);
+        
       Width=rc.right;
       Height=rc.bottom;
       X=0;
       Y=0;
     }
 
-    theForm = new WndForm(Parent, Name, sTmp, X, Y, Width, Height);
+    theForm = new WndForm(Name, sTmp, X, Y, Width, Height);
 
     if (Font != -1)
       theForm->SetTitleFont(FontMap[Font]);

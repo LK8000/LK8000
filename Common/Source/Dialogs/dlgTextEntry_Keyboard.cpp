@@ -239,7 +239,6 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
     LocalPathS(filename, szFile);
     wf = dlgLoadFromXML(CallBackTable,
 			filename,
-			hWndMainWindow,
 			szResource);
   if (!wf) return;
 

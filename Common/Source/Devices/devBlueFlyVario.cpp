@@ -362,7 +362,7 @@ namespace dlgBlueFlyConfig {
             resName = TEXT("IDR_XML_BLUEFLYCONFIG_L");
         }
 
-        wfDlg = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, resName);
+        wfDlg = dlgLoadFromXML(CallBackTable, filename, resName);
         if (wfDlg) {
             // build list of page WindowConrol*
             lstPageWnd.clear();

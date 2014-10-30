@@ -161,14 +161,12 @@ bool dlgAirspaceShowModal(bool coloredit){
     LocalPathS(filename, TEXT("dlgAirspace_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACE_L"));
   } else {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspace.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACE"));
   }
   if (!wf) return false;

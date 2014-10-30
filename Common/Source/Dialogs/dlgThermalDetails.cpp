@@ -142,7 +142,6 @@ void dlgThermalDetails(int indexid) {
   LocalPathS(filename, TEXT("dlgThermalDetails.xml"));
   wf = dlgLoadFromXML(CallBackTable,
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_THERMALDETAILS"));
 
   if (!wf) return;

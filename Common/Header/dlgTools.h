@@ -19,8 +19,7 @@ typedef struct{
   void *Ptr;
 }CallBackTableEntry_t;
 
-WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *FileName, 
-			HWND Parent, const TCHAR *resource=NULL);
+WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *FileName, const TCHAR *resource=NULL);
 
 int MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, UINT uType, bool wfullscreen=false);
 

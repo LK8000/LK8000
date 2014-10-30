@@ -283,9 +283,7 @@ void dlgWayPointDetailsShowModal(short mypage){
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointDetails_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_WAYPOINTDETAILS_L"));
 
   } else {
@@ -293,7 +291,6 @@ void dlgWayPointDetailsShowModal(short mypage){
     LocalPathS(filename, TEXT("dlgWayPointDetails.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_WAYPOINTDETAILS"));
   }
   nTextLines = 0;

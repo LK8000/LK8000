@@ -364,7 +364,7 @@ BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
 
 	TCHAR filename[MAX_PATH];
 	LocalPathS(filename, TEXT("dlgDevCProbe.xml"));
-	m_wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DEVCPROBE"));
+	m_wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_DEVCPROBE"));
 
     WndButton *wBt = NULL;
             

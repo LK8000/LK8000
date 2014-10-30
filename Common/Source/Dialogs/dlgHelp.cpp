@@ -37,14 +37,12 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
     LocalPathS(filename, TEXT("dlgHelp_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename,
-                        hWndMainWindow,
                         TEXT("IDR_XML_HELP_L"));
   } else {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgHelp.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_HELP"));
   }
   WndProperty* wp;

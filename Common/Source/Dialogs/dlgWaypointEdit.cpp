@@ -579,7 +579,7 @@ void dlgWaypointEditShowModal(WAYPOINT *wpt) {
 
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, szXmlFileName);
-    wf = dlgLoadFromXML(CallBackTable, filename,hWndMainWindow,szXmlResName);
+    wf = dlgLoadFromXML(CallBackTable, filename, szXmlResName);
 
   if (wf) {
 

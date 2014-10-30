@@ -112,7 +112,6 @@ void dlgBottomBarShowModal(void){
   LocalPathS(filename, TEXT("dlgBottomBar.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_BOTTOMBAR"));
 
   if (!wf) return;

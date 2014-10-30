@@ -615,16 +615,13 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTaskWaypoint_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_TASKWAYPOINT_L"));
   } else {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTaskWaypoint.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_TASKWAYPOINT"));    
   }
 

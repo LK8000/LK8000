@@ -127,7 +127,6 @@ bool dlgTaskRules(void){
   LocalPathS(filename, TEXT("dlgTaskRules.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_TASKRULES"));
 
   if (!wf) return false;

@@ -136,7 +136,7 @@ namespace DlgBluetooth {
             LocalPathS(filename, TEXT("dlgBluetooth.xml"));
             resName = TEXT("IDR_XML_BLUETOOTH");
         }
-        wfBth = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, resName);
+        wfBth = dlgLoadFromXML(CallBackTable, filename, resName);
         if (wfBth) {
 
             WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));

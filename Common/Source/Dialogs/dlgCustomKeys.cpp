@@ -128,7 +128,6 @@ void dlgCustomKeysShowModal(void){
   LocalPathS(filename, TEXT("dlgCustomKeys.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_CUSTOMKEYS"));
 
   if (!wf) return;

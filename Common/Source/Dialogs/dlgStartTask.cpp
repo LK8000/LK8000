@@ -44,9 +44,7 @@ void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double A
   TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgStartTask.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
-		      
                       filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_STARTTASK"));
 
   if (wf) {

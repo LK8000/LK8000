@@ -389,7 +389,6 @@ bool dlgFontEditShowModal(const TCHAR * FontDescription,
   LocalPathS(filename, TEXT("dlgFontEdit.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
                       filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_FONTEDIT"));
 
 

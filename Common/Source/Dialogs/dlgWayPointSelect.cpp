@@ -874,14 +874,12 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
     LocalPathS(filename, TEXT("dlgWayPointSelect_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_WAYPOINTSELECT_L"));
   } else {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointSelect.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_WAYPOINTSELECT"));
   }
 

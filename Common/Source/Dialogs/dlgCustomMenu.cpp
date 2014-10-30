@@ -190,7 +190,6 @@ void dlgCustomMenuShowModal(void){
   LocalPathS(filename, TEXT("dlgCustomMenu.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_CUSTOMMENU"));
 
   if (!wf) return;

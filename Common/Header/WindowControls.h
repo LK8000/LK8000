@@ -522,7 +522,6 @@ class WindowControl {
     int mWidth;
     int mHeight;
 
-    HWND mParent;
     WindowControl *mOwner;
     WindowControl *mTopOwner;
     LKBitmap mBmpMem;
@@ -659,13 +658,10 @@ class WindowControl {
     void SetHelpText(const TCHAR *Value);
 	const TCHAR* GetHelpText() const { return mHelpText; }
 
-    HWND GetHandle(void){return(mHWnd);};
-    virtual HWND GetClientAreaHandle(void){return(mHWnd);};
-    HWND GetParent(void){return(mParent);};
+    HWND GetHandle(void){return(mHWnd);}
+    virtual WindowControl* GetClientArea(void) { return (this); }
 
     WindowControl *GetOwner(void){return(mOwner);};
-
-    void SetParentHandle(HWND hwnd);
 
     int GetTag(void){return(mTag);};
     int SetTag(int Value){mTag = Value; return(mTag);};
@@ -681,7 +677,7 @@ class WindowControl {
     WindowControl *FocusNext(WindowControl *Sender);
     WindowControl *FocusPrev(WindowControl *Sender);
 
-    WindowControl(WindowControl *Owner, HWND Parent, const TCHAR *Name, int X, int Y, int Width, int Height, bool Visible=true);
+    WindowControl(WindowControl *Owner, const TCHAR *Name, int X, int Y, int Width, int Height, bool Visible=true);
     virtual ~WindowControl(void);
 
     virtual void Destroy(void);
@@ -702,7 +698,7 @@ class WndFrame:public WindowControl{
 
     WndFrame(WindowControl *Owner, const TCHAR *Name, 
              int X, int Y, int Width, int Height):
-      WindowControl(Owner, NULL, Name, X, Y, Width, Height)
+      WindowControl(Owner, Name, X, Y, Width, Height)
     {
 
       mLastDrawTextHeight = 0;
@@ -886,12 +882,12 @@ class WndForm:public WindowControl{
 
   public:
 
-    WndForm(HWND Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height);
+    WndForm(const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height);
     ~WndForm(void);
     virtual void Destroy(void);
 
     bool bLButtonDown; //RLD
-    HWND GetClientAreaHandle(void);
+    WindowControl* GetClientArea() { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
     void AddClient(WindowControl *Client);
 
     virtual bool SetFocused(bool Value, HWND FromTo);

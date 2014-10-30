@@ -781,7 +781,6 @@ void dlgStatusShowModal(int start_page){
   LocalPathS(filename, TEXT("dlgStatus.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
                       filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_STATUS"));
 
   if (!wf) return;

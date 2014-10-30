@@ -339,7 +339,6 @@ void dlgLKTrafficDetails(int indexid) {
   LocalPathS(filename, TEXT("dlgLKTraffic.xml"));
   wf = dlgLoadFromXML(CallBackTable,
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_LKTRAFFICDETAILS"));
 
   if (!wf) return;

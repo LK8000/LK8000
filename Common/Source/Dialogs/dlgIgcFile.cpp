@@ -171,7 +171,7 @@ void dlgIgcFileShowModal() {
         LocalPathS(filename, TEXT("dlgIgcFile_L.xml"));
         resName = TEXT("IDR_XML_IGCFILE_L");
     }
-    wfDlg = dlgLoadFromXML(DlgIgcFile::CallBackTable, filename, hWndMainWindow, resName);
+    wfDlg = dlgLoadFromXML(DlgIgcFile::CallBackTable, filename, resName);
     if (wfDlg) {
 
         WndListFrame* wndFileList = (WndListFrame*) wfDlg->FindByName(TEXT("frmIgcFileList"));

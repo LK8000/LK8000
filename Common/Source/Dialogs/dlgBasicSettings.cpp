@@ -306,10 +306,10 @@ void dlgBasicSettingsShowModal(void){
   TCHAR filename[MAX_PATH];
   if (!ScreenLandscape) {
 	LocalPathS(filename, TEXT("dlgBasicSettings_L.xml"));
-	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_BASICSETTINGS_L"));
+	wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_BASICSETTINGS_L"));
   } else {
 	LocalPathS(filename, TEXT("dlgBasicSettings.xml"));
-	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_BASICSETTINGS"));
+	wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_BASICSETTINGS"));
   }
 
   WndProperty* wp;

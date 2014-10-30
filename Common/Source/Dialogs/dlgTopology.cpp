@@ -203,7 +203,6 @@ void dlgTopologyShowModal(void){
   LocalPathS(filename, TEXT("dlgTopology.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_TOPOLOGY"));
 
   if (!wf) return;

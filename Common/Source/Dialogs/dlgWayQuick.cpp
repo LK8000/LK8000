@@ -108,10 +108,10 @@ short dlgWayQuickShowModal(void){
 
   if (ScreenLandscape) {
 	LocalPathS(filename, TEXT("dlgWayQuick.xml"));
-	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_WAYPOINTQUICK"));
+	wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_WAYPOINTQUICK"));
   } else {
 	LocalPathS(filename, TEXT("dlgWayQuick_P.xml"));
-	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_WAYPOINTQUICK_P"));
+	wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_WAYPOINTQUICK_P"));
   }
 
   if (!wf) return 0;

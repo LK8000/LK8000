@@ -513,14 +513,12 @@ ListElement* dlgMultiSelectListShowModal(void) {
         LocalPathS(filename, TEXT("dlgMultiSelectList_L.xml"));
         wf = dlgLoadFromXML(CallBackTable,
                             filename,
-                            hWndMainWindow,
                             TEXT("IDR_XML_MULTISELECTLIST_L"));
     } else {
         TCHAR filename[MAX_PATH];
         LocalPathS(filename, TEXT("dlgMultiSelectList.xml"));
         wf = dlgLoadFromXML(CallBackTable,
                             filename,
-                            hWndMainWindow,
                             TEXT("IDR_XML_MULTISELECTLIST"));
     }
 

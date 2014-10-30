@@ -399,14 +399,12 @@ void dlgChecklistShowModal(short checklistmode){
     LocalPathS(filename, TEXT("dlgChecklist_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_CHECKLIST_L"));
   } else {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgChecklist.xml"));
     wf = dlgLoadFromXML(CallBackTable,                        
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_CHECKLIST"));
   }
 

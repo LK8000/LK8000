@@ -100,9 +100,7 @@ void dlgWindSettingsShowModal(void){
   TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgWindSettings.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
-		      
                       filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_WINDSETTINGS"));
 
   if (wf) {

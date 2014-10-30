@@ -111,7 +111,6 @@ void dlgTimeGatesShowModal(void){
   LocalPathS(filename, TEXT("dlgTimeGates.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_TIMEGATES"));
 
   if (!wf) return;

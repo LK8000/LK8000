@@ -129,7 +129,6 @@ void dlgMultimapsShowModal(void){
   LocalPathS(filename, TEXT("dlgMultimaps.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_MULTIMAPS"));
 
   if (!wf) return;

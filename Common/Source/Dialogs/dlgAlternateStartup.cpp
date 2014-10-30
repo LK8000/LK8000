@@ -367,10 +367,10 @@ short dlgStartupShowModal(void){
   if (RUN_MODE==RUN_WELCOME) {
 	if (!ScreenLandscape) {
 		LocalPathS(filename, TEXT("dlgFlySim_L.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_FLYSIM_L"));
+		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_FLYSIM_L"));
 	} else {
 		LocalPathS(filename, TEXT("dlgFlySim.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_FLYSIM"));
+		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_FLYSIM"));
 	}
 	if (!wf) {
 		return 0;
@@ -381,10 +381,10 @@ short dlgStartupShowModal(void){
   if (RUN_MODE==RUN_DUALPROF) {
 	if (!ScreenLandscape) {
 		LocalPathS(filename, TEXT("dlgDualProfile_L.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DUALPROFILE_L"));
+		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_DUALPROFILE_L"));
 	} else {
 		LocalPathS(filename, TEXT("dlgDualProfile.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DUALPROFILE"));
+		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_DUALPROFILE"));
 	}
 	if (!wf) return 0;
   }
@@ -393,10 +393,10 @@ short dlgStartupShowModal(void){
   if (RUN_MODE==RUN_PROFILE || RUN_MODE==RUN_AIRCRAFT || RUN_MODE==RUN_PILOT || RUN_MODE==RUN_DEVICE) {
 	if (!ScreenLandscape) {
 		LocalPathS(filename, TEXT("dlgStartup_L.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP_L"));
+		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_STARTUP_L"));
 	} else {
 		LocalPathS(filename, TEXT("dlgStartup.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP"));
+		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_STARTUP"));
 	}
 	if (!wf) return 0;
   }

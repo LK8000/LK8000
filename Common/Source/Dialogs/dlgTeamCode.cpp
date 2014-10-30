@@ -144,9 +144,7 @@ void dlgTeamCodeShowModal(void)
     {
       LocalPathS(filename, TEXT("dlgTeamCode_L.xml"));
       wf = dlgLoadFromXML(CallBackTable, 
-
 			  filename, 
-			  hWndMainWindow,
 			  TEXT("IDR_XML_TEAMCODE_L"));
       if (!wf) return;
     }
@@ -154,9 +152,7 @@ void dlgTeamCodeShowModal(void)
     {
       LocalPathS(filename, TEXT("dlgTeamCode.xml"));
       wf = dlgLoadFromXML(CallBackTable, 
-
 			  filename, 
-			  hWndMainWindow,
 			  TEXT("IDR_XML_TEAMCODE"));
       if (!wf) return;
     }

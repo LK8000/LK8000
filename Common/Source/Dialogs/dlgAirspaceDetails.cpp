@@ -350,7 +350,6 @@ void dlgAirspaceDetails(CAirspace *airspace_to_show) {
   LocalPathS(filename, TEXT("dlgAirspaceDetails.xml"));
   wf = dlgLoadFromXML(CallBackTable,
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_AIRSPACEDETAILS"));
 
   if (!wf) return;

@@ -409,9 +409,9 @@ short ShowAirspaceWarningsToUser()
   // show dialog to user if needed
   if (ackdialog_required && (airspace_copy.WarningLevel() == msg.warnlevel)) {
     if (!ScreenLandscape)
-      dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING_L"));
+      dlg = dlgLoadFromXML(CallBackTable, NULL, TEXT("IDR_XML_LKAIRSPACEWARNING_L"));
     else
-      dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING"));
+      dlg = dlgLoadFromXML(CallBackTable, NULL, TEXT("IDR_XML_LKAIRSPACEWARNING"));
 
     if (dlg==NULL) {
       StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"),NEWLINE); //@ 101027

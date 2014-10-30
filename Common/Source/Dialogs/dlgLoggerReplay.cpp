@@ -74,7 +74,6 @@ void dlgLoggerReplayShowModal(void){
   LocalPathS(filename, TEXT("dlgLoggerReplay.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
                       filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_LOGGERREPLAY"));
 
   WndProperty* wp;

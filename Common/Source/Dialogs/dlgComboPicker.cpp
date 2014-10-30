@@ -129,14 +129,12 @@ int dlgComboPicker(WndProperty* theProperty){
       LocalPathS(filename, TEXT("dlgComboPicker_L.xml"));
       wf = dlgLoadFromXML(CallBackTable, 
                           filename, 
-                          hWndMainWindow,
                           TEXT("IDR_XML_COMBOPICKER_L"));
     } else {
       TCHAR filename[MAX_PATH];
       LocalPathS(filename, TEXT("dlgComboPicker.xml"));
       wf = dlgLoadFromXML(CallBackTable, 
                           filename, 
-                          hWndMainWindow,
                           TEXT("IDR_XML_COMBOPICKER"));
     }
 

@@ -644,16 +644,13 @@ void dlgAirspaceSelect(void) {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceSelect_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACESELECT_L"));
   } else {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceSelect.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACESELECT"));
   }
 

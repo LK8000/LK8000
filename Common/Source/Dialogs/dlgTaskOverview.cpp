@@ -619,14 +619,12 @@ void dlgTaskOverviewShowModal(int Idx){
     LocalPathS(filename, TEXT("dlgTaskOverview_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_TASKOVERVIEW_L"));
   } else {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTaskOverview.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_TASKOVERVIEW"));
   }
 

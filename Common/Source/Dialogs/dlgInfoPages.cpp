@@ -127,7 +127,6 @@ void dlgInfoPagesShowModal(void){
   LocalPathS(filename, TEXT("dlgInfoPages.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
 		      filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_INFOPAGES"));
 
   if (!wf) return;

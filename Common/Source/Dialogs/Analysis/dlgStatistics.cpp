@@ -306,16 +306,13 @@ if (entered == true) /* prevent re entrance */
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAnalysis_L.xml"));
     wfa = dlgLoadFromXML(CallBackTable, 
-                        
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_ANALYSIS_L"));
   } else  {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAnalysis.xml"));
     wfa = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_ANALYSIS"));
   }
 

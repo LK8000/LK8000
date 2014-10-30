@@ -1122,7 +1122,6 @@ LKPen WindowControl::hPenDefaultBorder;
 LKPen WindowControl::hPenDefaultSelector;
 
 WindowControl::WindowControl(WindowControl *Owner, 
-			     HWND Parent, 
 			     const TCHAR *Name, 
 			     int X, int Y, 
 			     int Width, int Height, 
@@ -1147,7 +1146,6 @@ WindowControl::WindowControl(WindowControl *Owner,
   mY = Y;
   mWidth = Width;
   mHeight = Height;
-  mParent = Parent;
   mOwner = Owner;
   // setup Master Window (the owner of all)
   mTopOwner = Owner;
@@ -1159,9 +1157,6 @@ WindowControl::WindowControl(WindowControl *Owner,
   mVisible = Visible;
   mCaption[0] = '\0';
   mDontPaintSelector = false;
-
-  if ((mParent == NULL) && (mOwner != NULL))
-    mParent = mOwner->GetClientAreaHandle();
 
   if (Name != NULL)
     _tcscpy(mName, Name);  // todo size check
@@ -1184,14 +1179,12 @@ WindowControl::WindowControl(WindowControl *Owner,
     | ES_READONLY | WS_CLIPCHILDREN
     | WS_CLIPSIBLINGS;
 
-  if (mParent == NULL)
-    Style |= WS_POPUP;
+  // if Owner is Not provided, use MainWindow
+  HWND hWndOnwer = Owner?(Owner->GetClientArea()->GetHandle()):hWndMainWindow;
 
   mHWnd = CreateWindow(TEXT("STATIC"), TEXT("\0"),
-		     Style,
-		     mX, mY,
-		     mWidth, mHeight,
-		     mParent, NULL, hInst, NULL);
+		     Style, mX, mY, mWidth, mHeight,
+		     hWndOnwer, NULL, hInst, NULL);
 
   SetWindowPos(mHWnd, HWND_TOP,
 		     mX, mY,
@@ -1398,13 +1391,6 @@ WindowControl *WindowControl::FindByName(const TCHAR *Name){
   }
   return(NULL);
 }
-
-
-void WindowControl::SetParentHandle(HWND hwnd){
-  mParent = hwnd;
-  SetParent(GetHandle(), hwnd);
-}
-
 
 WindowControl *WindowControl::SetOwner(WindowControl *Value){
   WindowControl *res = mOwner;
@@ -1962,9 +1948,9 @@ ACCEL  WndForm::mAccel[] = {
   {0, VK_RETURN,  VK_RETURN},
 };
 
-WndForm::WndForm(HWND Parent, const TCHAR *Name, const TCHAR *Caption, 
+WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption, 
                  int X, int Y, int Width, int Height):
-  WindowControl(NULL, Parent, Name, X, Y, Width, Height, false) {
+  WindowControl(NULL, Name, X, Y, Width, Height, false) {
 
   mClientWindow = NULL;
   mOnKeyDownNotify = NULL;
@@ -1980,7 +1966,7 @@ WndForm::WndForm(HWND Parent, const TCHAR *Name, const TCHAR *Caption,
 
   mhBrushTitle = LKBrush_Black; // 101204
 
-  mClientWindow = new WindowControl(this, GetHandle(), TEXT(""), 20, 20, Width, Height);
+  mClientWindow = new WindowControl(this, TEXT(""), 20, 20, Width, Height);
   mClientWindow->SetBackColor(RGB_WINBACKGROUND);
   mClientWindow->SetCanFocus(false);
 
@@ -2022,20 +2008,6 @@ void WndForm::Destroy(void){
   WindowControl::Destroy();  // delete all childs
 
 }
-
-
-HWND WndForm::GetClientAreaHandle(void){
-
-  if (mClientWindow != NULL)
-
-    return(mClientWindow->GetHandle());
-
-  else
-
-    return(GetHandle());
-
-};
-
 
 void WndForm::AddClient(WindowControl *Client){      // add client window
   if (mClientWindow != NULL){
@@ -2459,7 +2431,7 @@ void WndForm::Show(void){
 //-----------------------------------------------------------
 
 WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, void(*Function)(WindowControl * Sender)):
-      WindowControl(Parent, NULL /*Parent->GetHandle()*/, Name, X, Y, Width, Height){
+      WindowControl(Parent, Name, X, Y, Width, Height){
 
   mOnClickNotify = Function;
   mDown = false;
@@ -2672,9 +2644,7 @@ WndProperty::WndProperty(WindowControl *Parent,
 			 int (*DataChangeNotify)(WindowControl * Sender, 
 						 int Mode, int Value), 
 			 int MultiLine):
-  WindowControl(Parent, 
-		NULL /*Parent->GetHandle()*/, 
-		Name, X, Y, Width, Height){
+  WindowControl(Parent, Name, X, Y, Width, Height){
 
   mOnClickUpNotify = NULL;
   mOnClickDownNotify = NULL;
@@ -2918,10 +2888,11 @@ int WndProperty::WndProcEditControl(HWND hwnd, UINT uMsg,
       } 
 
       if (wParam == VK_UP || wParam == VK_DOWN){
-        PostMessage(GetParent(), uMsg, wParam, lParam);   
-	// pass the message to the parent window;
-        return(0);
-        // return(1);
+          if(GetClientArea()) {
+            // pass the message to the parent window;
+            PostMessage(GetClientArea()->GetHandle(), uMsg, wParam, lParam);
+            return(0);
+          }
       }
       if (!OnEditKeyDown(wParam, lParam))
         return(1);

@@ -119,11 +119,11 @@ void dlgOracleShowModal(void){
   if (!ScreenLandscape) {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgOracle_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_ORACLE_L"));
+    wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_ORACLE_L"));
   } else  {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgOracle.xml"));
-    wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_ORACLE"));
+    wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_ORACLE"));
   }
 
   if (!wf) return;

@@ -3532,28 +3532,24 @@ void dlgConfigurationShowModal(short mode){
 			LocalPathS(filename, TEXT("dlgConfiguration_L.xml"));
 			wf = dlgLoadFromXML(CallBackTable, 
 				filename, 
-				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGURATION_L"));
 			break;
 		case 1:
 			LocalPathS(filename, TEXT("dlgConfigPilot_L.xml"));
 			wf = dlgLoadFromXML(CallBackTable, 
 				filename, 
-				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGPILOT_L"));
 			break;
 		case 2:
 			LocalPathS(filename, TEXT("dlgConfigAircraft_L.xml"));
 			wf = dlgLoadFromXML(CallBackTable, 
 				filename, 
-				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGAIRCRAFT_L"));
 			break;
 		case 3:
 			LocalPathS(filename, TEXT("dlgConfigDevice_L.xml"));
 			wf = dlgLoadFromXML(CallBackTable, 
 				filename, 
-				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGDEVICE_L"));
 			break;
 		default:
@@ -3566,28 +3562,24 @@ void dlgConfigurationShowModal(short mode){
 			LocalPathS(filename, TEXT("dlgConfiguration.xml"));
 			wf = dlgLoadFromXML(CallBackTable, 
 				filename, 
-				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGURATION"));
 			break;
 		case 1:
 			LocalPathS(filename, TEXT("dlgConfigPilot.xml"));
 			wf = dlgLoadFromXML(CallBackTable, 
 				filename, 
-				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGPILOT"));
 			break;
 		case 2:
 			LocalPathS(filename, TEXT("dlgConfigAircraft.xml"));
 			wf = dlgLoadFromXML(CallBackTable, 
 				filename, 
-				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGAIRCRAFT"));
 			break;
 		case 3:
 			LocalPathS(filename, TEXT("dlgConfigDevice.xml"));
 			wf = dlgLoadFromXML(CallBackTable, 
 				filename, 
-				hWndMainWindow,
 				TEXT("IDR_XML_CONFIGDEVICE"));
 			break;
 		default:

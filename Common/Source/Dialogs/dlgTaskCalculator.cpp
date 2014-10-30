@@ -314,7 +314,6 @@ void dlgTaskCalculatorShowModal(void){
   LocalPathS(filename, TEXT("dlgTaskCalculator.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
                       filename, 
-		      hWndMainWindow,
 		      TEXT("IDR_XML_TASKCALCULATOR"));
 
   if (!wf) return;

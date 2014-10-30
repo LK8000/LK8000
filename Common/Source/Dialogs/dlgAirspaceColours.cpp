@@ -91,17 +91,13 @@ int dlgAirspaceColoursShowModal(void){
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceColours_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACECOLOURS_L"));
   } else {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceColours.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        
                         filename, 
-                        hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACECOLOURS"));
   }
 
