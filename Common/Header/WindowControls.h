@@ -977,8 +977,6 @@ class WndProperty:public WindowControl{
 
   private:
 
-    static int InstCount;
-
     HWND mhEdit;
     POINT mEditSize;
     POINT mEditPos;

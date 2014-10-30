@@ -2611,9 +2611,6 @@ void WndButton::Paint(LKSurface& Surface){
 }
 
 
-int     WndProperty::InstCount=0;
-
-
 LRESULT CALLBACK WndPropertyEditWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 
@@ -2675,8 +2672,6 @@ WndProperty::WndProperty(WindowControl *Parent,
   SetForeColor(GetOwner()->GetForeColor());
   SetBackColor(GetOwner()->GetBackColor());
 
-  InstCount++;
-
   mDownDown = false;
   mUpDown = false;
 
@@ -2687,8 +2682,6 @@ WndProperty::~WndProperty(void){
 }
 
 void WndProperty::Destroy(void){
-
-  InstCount--;
 
   if (mDataField != NULL){
     if (!mDataField->Unuse()) {
