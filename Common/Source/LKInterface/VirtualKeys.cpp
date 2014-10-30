@@ -196,9 +196,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				*point++='\0';
 				//mbuf[1]=0xc4;
 				//mbuf[1]=0x86;
-				Message::Lock();
 				Message::AddMessage(20000, 3, mbuf);
-				Message::Unlock();
 				return 0;
 			}
 #endif

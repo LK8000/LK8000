@@ -93,32 +93,11 @@ void Message::Initialize(RECT rc) {
 
   rcmsg = rc; // default; message window can be full size of screen
 
-#if 100215
-#if 0
-  hWndMessageWindow = CreateWindowEx( WS_EX_STATICEDGE|WS_EX_OVERLAPPEDWINDOW,
-				     TEXT("EDIT"), TEXT(" "),
-				   WS_VISIBLE|WS_CHILD|ES_MULTILINE|ES_CENTER
-				   |WS_BORDER|ES_READONLY | WS_CLIPCHILDREN 
-				   | WS_CLIPSIBLINGS| WS_THICKFRAME,
-				   0,0,0,0,hWndMainWindow,NULL,hInst,NULL);
-#else
   hWndMessageWindow = CreateWindow( TEXT("EDIT"), TEXT(" "),
 				   WS_VISIBLE|WS_CHILD|ES_MULTILINE|ES_CENTER
 				   |WS_BORDER|ES_READONLY | WS_CLIPCHILDREN 
 				   | WS_CLIPSIBLINGS,
 				   0,0,0,0,hWndMainWindow,NULL,hInst,NULL);
-
-
-#endif
-#else
-  hWndMessageWindow = CreateWindow(// WS_EX_CLIENTEDGE,
-				     TEXT("EDIT"), TEXT(" "),
-				   WS_VISIBLE|WS_CHILD|ES_MULTILINE|ES_CENTER
-				   |WS_BORDER|ES_READONLY | WS_CLIPCHILDREN 
-				   | WS_CLIPSIBLINGS,
-				   0,0,0,0,hWndMainWindow,NULL,hInst,NULL);
-
-#endif
 
   SetWindowPos(hWndMessageWindow, HWND_TOP,
 	       rcmsg.left, rcmsg.top, 

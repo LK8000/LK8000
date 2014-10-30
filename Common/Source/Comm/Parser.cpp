@@ -976,9 +976,7 @@ BOOL NMEAParser::PDSXT(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	_stprintf(mbuf,_T("MESSAGE FROM <%s>: %s"), params[0], params[1]);
   else
 	_stprintf(mbuf,_T("MESSAGE: %s"),params[1] );
-  Message::Lock(); // 091211
   Message::AddMessage(30000, 3, mbuf);
-  Message::Unlock();
   #ifndef DISABLEAUDIO
   if (EnableSoundModes) LKSound(TEXT("LK_TONEUP.WAV"));
   #endif

@@ -582,9 +582,7 @@ void AlertBestAlternate(short soundmode) {
 				_stprintf(mbuf,_T("%s %s  @%.0f%s"), gettext(TEXT("_@M1840_")), WayPointList[BestAlternate].Name,
 				DISTANCEMODIFY*WayPointCalc[BestAlternate].Distance,
 				(Units::GetDistanceName()) );
-				Message::Lock(); // 091211
 				Message::AddMessage(2000, 3, mbuf);
-				Message::Unlock();
 				break;
 			case 2: 
 				#ifndef DISABLEAUDIO
@@ -593,9 +591,7 @@ void AlertBestAlternate(short soundmode) {
 				_stprintf(mbuf,_T("%s %s"), gettext(TEXT("_@M1840_")), gettext(TEXT("_@M916_"))); // WARNING, NO LANDINGS
 				// Do NOT disturb the pilot for 5 minutes with useless further messages
 				LastAlertTime += 180.0;
-				Message::Lock(); // 091211
 				Message::AddMessage(2000, 3, mbuf);
-				Message::Unlock();
 	
 				break;
 			case 11:
