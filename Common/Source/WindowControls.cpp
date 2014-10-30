@@ -2646,76 +2646,19 @@ WndProperty::WndProperty(WindowControl *Parent,
     mBitmapSize = 0;
 
   UpdateButtonData(mBitmapSize);
-  if (MultiLine) {
-// VENTA3 better borders on PNA HP31X
-#ifdef PNA // VENTA3 FIX
-    if (GlobalModelType == MODELTYPE_PNA_HP31X )
-    mhEdit = CreateWindowEx(WS_EX_CLIENTEDGE,TEXT("EDIT"), TEXT("\0"),
-			  WS_BORDER | WS_VISIBLE | WS_CHILD 
-			  | ES_LEFT // | ES_AUTOHSCROLL
-			  | WS_CLIPCHILDREN
-			  | WS_CLIPSIBLINGS
-			  | WS_VSCROLL // RLD Added HSSCROLL
-			  | ES_MULTILINE, // JMW added MULTILINE
-        mEditPos.x, mEditPos.y,
-			  mEditSize.x, mEditSize.y,
-			  GetHandle(), NULL, hInst, NULL);
-   else
-    mhEdit = CreateWindow(TEXT("EDIT"), TEXT("\0"),
-			  WS_BORDER | WS_VISIBLE | WS_CHILD 
-			  | ES_LEFT // | ES_AUTOHSCROLL
-			  | WS_CLIPCHILDREN
-			  | WS_CLIPSIBLINGS
-			  | WS_VSCROLL // RLD Added HSSCROLL
-			  | ES_MULTILINE, // JMW added MULTILINE
-			  mEditPos.x, mEditPos.y,
-			  mEditSize.x, mEditSize.y,
-			  GetHandle(), NULL, hInst, NULL);
 
-#else
-    mhEdit = CreateWindow(TEXT("EDIT"), TEXT("\0"),
-			  WS_BORDER | WS_VISIBLE | WS_CHILD 
-			  | ES_LEFT // | ES_AUTOHSCROLL
-			  | WS_CLIPCHILDREN
-			  | WS_CLIPSIBLINGS
-			  | WS_VSCROLL // RLD Added HSSCROLL
-			  | ES_MULTILINE, // JMW added MULTILINE
-			  mEditPos.x, mEditPos.y,
-			  mEditSize.x, mEditSize.y,
-			  GetHandle(), NULL, hInst, NULL);
-#endif
-  } else {
-#ifdef PNA // VENTA3 FIX
-    if (GlobalModelType == MODELTYPE_PNA_HP31X )
-    mhEdit = CreateWindowEx(WS_EX_CLIENTEDGE,TEXT("EDIT"), TEXT("\0"),
-			  WS_BORDER | WS_VISIBLE | WS_CHILD 
-			  | ES_LEFT | ES_AUTOHSCROLL
-			  | WS_CLIPCHILDREN
-			  | WS_CLIPSIBLINGS,
-			  mEditPos.x, mEditPos.y,
-			  mEditSize.x, mEditSize.y,
-			  GetHandle(), NULL, hInst, NULL);
-    else
-    mhEdit = CreateWindow(TEXT("EDIT"), TEXT("\0"),
-			  WS_BORDER | WS_VISIBLE | WS_CHILD 
-			  | ES_LEFT | ES_AUTOHSCROLL
-			  | WS_CLIPCHILDREN
-			  | WS_CLIPSIBLINGS,
-			  mEditPos.x, mEditPos.y,
-			  mEditSize.x, mEditSize.y,
-			  GetHandle(), NULL, hInst, NULL);
-#else
-    mhEdit = CreateWindow(TEXT("EDIT"), TEXT("\0"),
-			  WS_BORDER | WS_VISIBLE | WS_CHILD 
-			  | ES_LEFT | ES_AUTOHSCROLL
-			  | WS_CLIPCHILDREN
-			  | WS_CLIPSIBLINGS,
-			  mEditPos.x, mEditPos.y,
-			  mEditSize.x, mEditSize.y,
-			  GetHandle(), NULL, hInst, NULL);
-#endif
-  }
-  
+    UINT uStyle =  WS_BORDER | WS_VISIBLE | WS_CHILD
+			  | ES_LEFT | WS_CLIPCHILDREN | WS_CLIPSIBLINGS
+			  | (MultiLine ? (WS_VSCROLL| ES_MULTILINE) : ES_AUTOHSCROLL);
+    
+    // VENTA3 better borders on PNA HP31X
+    UINT uStyleEx = (GlobalModelType == MODELTYPE_PNA_HP31X ) ?  WS_EX_CLIENTEDGE : 0;
+    
+    mhEdit = CreateWindowEx(uStyleEx,TEXT("EDIT"), TEXT("\0"), uStyle,
+          mEditPos.x, mEditPos.y,
+          mEditSize.x, mEditSize.y,
+          GetHandle(), NULL, hInst, NULL);
+
   if(mEditSize.x <= 0) {
 	  ShowWindow(mhEdit, SW_HIDE);
   }
