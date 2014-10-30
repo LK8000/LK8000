@@ -1146,11 +1146,10 @@ WindowControl::WindowControl(WindowControl *Owner,
   mY = Y;
   mWidth = Width;
   mHeight = Height;
-  mOwner = Owner;
+
+  mOwner = Owner?Owner->GetClientArea():NULL;
   // setup Master Window (the owner of all)
-  mTopOwner = Owner;
-  while (Owner != NULL && mTopOwner->GetOwner() != NULL)
-    mTopOwner = mTopOwner->GetOwner();
+  mTopOwner = Owner?Owner->GetTopOwner():NULL;
     
   // todo
   mhFont = MapWindowFont;
@@ -1301,9 +1300,6 @@ void WindowControl::AddClient(WindowControl *Client){
   mClients[mClientCount] = Client;
   mClientCount++;
 
-  Client->SetOwner(this);
-  // dont work propertly
-//  Client->SetParentHandle(GetHandle());
   Client->SetFont(GetFont());
 
   // TODO unify these checks once consolidated LKWINCONTROL
@@ -1384,14 +1380,6 @@ WindowControl *WindowControl::FindByName(const TCHAR *Name){
       return(W);
   }
   return(NULL);
-}
-
-WindowControl *WindowControl::SetOwner(WindowControl *Value){
-  WindowControl *res = mOwner;
-  if (mOwner != Value){
-    mOwner = Value;
-  }
-  return(res);
 }
 
 void WindowControl::SetHelpText(const TCHAR *Value) {  

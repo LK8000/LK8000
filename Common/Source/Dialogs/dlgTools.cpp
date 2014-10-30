@@ -26,8 +26,9 @@ int DLGSCALE(int x) {
 
 
 static void OnButtonClick(WindowControl * Sender){
-
-  ((WndForm *)Sender->GetOwner()->GetOwner())->SetModalResult(Sender->GetTag());
+    if(Sender && Sender->GetTopOwner()) {
+        ((WndForm *)Sender->GetTopOwner())->SetModalResult(Sender->GetTag());
+    }
 }
 
 int MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, UINT uType, bool wfullscreen){

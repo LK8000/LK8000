@@ -563,7 +563,7 @@ class WindowControl {
     int mClientCount;
 
     virtual void PaintSelector(LKSurface& Surface);
-    virtual WindowControl *SetOwner(WindowControl *Value);
+
     void UpdatePosSize(void);
     bool HasFocus(void) { return mHasFocus; };
 
@@ -571,6 +571,7 @@ class WindowControl {
     TCHAR* GetCaption(void) { return mCaption; };
     int WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+	// only Call by final contructor or overwrite
     virtual void AddClient(WindowControl *Client);
 
     virtual void Paint(LKSurface& Surface);
@@ -659,7 +660,8 @@ class WindowControl {
     HWND GetHandle(void){return(mHWnd);}
     virtual WindowControl* GetClientArea(void) { return (this); }
 
-    WindowControl *GetOwner(void){return(mOwner);};
+    WindowControl *GetOwner(void) {return(mOwner);};
+    virtual WindowControl *GetTopOwner(void) {return(mTopOwner);}
 
     int GetTag(void){return(mTag);};
     int SetTag(int Value){mTag = Value; return(mTag);};
@@ -886,6 +888,8 @@ class WndForm:public WindowControl{
 
     bool bLButtonDown; //RLD
     WindowControl* GetClientArea() { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
+	virtual WindowControl* GetTopOwner(void) {return(this);}
+
     void AddClient(WindowControl *Client);
 
     virtual bool SetFocused(bool Value, HWND FromTo);
