@@ -1199,7 +1199,6 @@ WindowControl::WindowControl(WindowControl *Owner,
   mBoundRect.right = GetWidth();
   mBoundRect.bottom = GetHeight();
 
-  mSavWndProcedure = GetWindowLongPtr(mHWnd, GWLP_WNDPROC);
   SetWindowLongPtr(mHWnd, GWLP_USERDATA, (LONG_PTR)this);
   SetWindowLongPtr(mHWnd, GWLP_WNDPROC, (LONG_PTR) WindowControlWndProc);
 
@@ -1235,11 +1234,6 @@ void WindowControl::Destroy(void){
   if (ActiveControl == this)
     ActiveControl = NULL;
 
-  SetWindowLongPtr(mHWnd, GWLP_WNDPROC, (LONG_PTR) mSavWndProcedure);
-  SetWindowLongPtr(mHWnd, GWLP_USERDATA, (LONG_PTR)0);
-
-  // SetWindowLong(mHWnd, GWL_WNDPROC, (LONG) WindowControlWndProc);
-  // ShowWindow(GetHandle(), SW_SHOW);
   DestroyWindow(mHWnd);
 
   InstCount--;
