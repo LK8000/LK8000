@@ -27,9 +27,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
   int nLineNumber=0;
   short fileformat=LKW_DAT;
 
-  HWND hProgress;
-
-  hProgress = CreateProgressDialog(gettext(TEXT("_@M903_"))); // Loading Waypoints File...
+  CreateProgressDialog(gettext(TEXT("_@M903_"))); // Loading Waypoints File...
 
   fSize = zzip_file_size(fp);
 
@@ -251,10 +249,6 @@ goto_inloop:
 
   }
 
-  if (hProgress) {
-	_stprintf(szTemp,TEXT("100%%"));       
-	SetDlgItemText(hProgress,IDC_PROGRESS,szTemp);
-  }
   return fileformat;
 
 }

@@ -13,7 +13,7 @@ void ClearStatusMessages(void);
 
 void StartupScreen();
 
-HWND CreateProgressDialog(const TCHAR *text);
+void CreateProgressDialog(const TCHAR *text);
 void CloseProgressDialog();
 void StartHourglassCursor();
 void StopHourglassCursor();

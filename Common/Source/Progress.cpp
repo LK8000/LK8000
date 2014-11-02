@@ -33,7 +33,7 @@ void CloseProgressDialog() {
 
 
 
-HWND CreateProgressDialog(const TCHAR* text) {
+void CreateProgressDialog(const TCHAR* text) {
 
   static int yFontSize, xFontSize;
 
@@ -47,20 +47,8 @@ HWND CreateProgressDialog(const TCHAR* text) {
 	hStartupWindow=CreateWindow(TEXT("STATIC"), TEXT("\0"), Style, 0, 0, ScreenSizeX, ScreenSizeY, hWndMainWindow, NULL, hInst, NULL);
 	if (hStartupWindow==NULL) {
 		StartupStore(_T("***** CRITIC, no startup window!%s"),NEWLINE);
-		return NULL;
+		return;
 	}
-
-/*
-	SHFullScreen(hProgress, SHFS_HIDETASKBAR |SHFS_HIDESIPBUTTON |SHFS_HIDESTARTICON);
-	SetWindowPos(hProgress,HWND_TOP,0,0,0,0, SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
-*/
-	//RECT rt;
-	//GetClientRect(hStartupWindow,&rt);
-	//FillRect(hStartupDC,&rt,LKBrush_Black);
-	//SetWindowPos(hStartupWindow,HWND_TOP,0,0,0,0, SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
-	//SHFullScreen(hStartupWindow, SHFS_HIDETASKBAR |SHFS_HIDESIPBUTTON |SHFS_HIDESTARTICON); 
-	//SetForegroundWindow(hStartupWindow);
-	//UpdateWindow(hStartupWindow);
 
 	ShowWindow(hStartupWindow,SW_SHOWNORMAL);
 	BringWindowToTop(hStartupWindow);
@@ -173,11 +161,4 @@ HWND CreateProgressDialog(const TCHAR* text) {
   hStartupDC.SelectObject(ohB);
   hStartupDC.SelectObject(ohP);
   hStartupDC.SelectObject(oldFont);
-  // Poco::Thread::sleep(300); // Slow down display of data? No because in case of important things, Poco::Thread::sleep is set by calling part
-
-  return hStartupWindow;
 }
-
-
-
-
