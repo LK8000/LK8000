@@ -32,9 +32,9 @@ extern bool UpdateQNH(const double newqnh);
 /// @retval false device cannot be registered
 ///
 //static
-unsigned long		  TICKER = 0;
-unsigned long		  TICKER_PFLX4 = 0;
-unsigned long		  AlttimeOutTicker = 0;
+Poco::Timestamp		  TICKER = 0;
+Poco::Timestamp		  TICKER_PFLX4 = 0;
+Poco::Timestamp		  AlttimeOutTicker = 0;
 bool AltTimeoutWait = false;
 
 
@@ -122,7 +122,7 @@ BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t *d, double NewQNH){
 	double xy = QNHAltitudeToQNEAltitude(1000.0);
 	AltOffset = 1000.0 - xy;
 	AltTimeoutWait = true;
-	AlttimeOutTicker = GetTickCount();
+	AlttimeOutTicker.update();
 
 
 
@@ -197,25 +197,19 @@ BOOL DevLXMiniMap::SendPFLX4(DeviceDescriptor_t *d)
 
 
 BOOL DevLXMiniMap::LXMiniMapOnSysTicker(DeviceDescriptor_t *d) {
+    if (TICKER_PFLX4.elapsed() > Poco::Timespan(2, 0).totalMicroseconds()) {
+        TICKER_PFLX4.update();
+        SendPFLX4(d);
 
+        if (TICKER.elapsed() > Poco::Timespan(20, 0).totalMicroseconds()) {
+            TICKER.update();
+            TCHAR mcbuf[100];
+            _stprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"), 4);
+            devWriteNMEAString(d, mcbuf);
+        }
+    }
 
-
-
-	   if(abs(GetTickCount() - TICKER_PFLX4) > 2000)
-	   {
-		   TICKER_PFLX4 = GetTickCount();
-		   SendPFLX4(d);
-
-	    	if(abs(GetTickCount() - TICKER) > 20000)
-	    	{
-	    		TICKER = GetTickCount();
-	    		TCHAR mcbuf[100];
-	    		_stprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"),4);
-	    		devWriteNMEAString(d, mcbuf);
-	    	}
-	   }
-
-	return (TRUE);
+    return (TRUE);
 }
 
 BOOL DevLXMiniMap::Open(PDeviceDescriptor_t d, int Port){
@@ -303,7 +297,7 @@ bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   // e.g.:
   // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
 
-  TICKER = GetTickCount();
+  TICKER.update();
 
   double alt, airspeed;
 
@@ -490,8 +484,7 @@ bool DevLXMiniMap::LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
 	if(AltTimeoutWait)
 	{
-		if(abs(GetTickCount() - AlttimeOutTicker) > 4000)
-		{
+        if (AlttimeOutTicker.elapsed() > Poco::Timespan(4, 0).totalMicroseconds()) {
 			AltTimeoutWait = false;
 		}
 	}

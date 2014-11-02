@@ -614,7 +614,7 @@ static void LiveTrackerThread()
   _t_end = false;
   _t_run = true;
 
-  srand(GetTickCount());
+  srand(Poco::Timestamp().epochTime());
 
   do {
     if (NewDataEvent.tryWait(5000)) NewDataEvent.reset();

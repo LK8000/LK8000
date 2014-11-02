@@ -19,6 +19,7 @@
 #include "Multimap.h"
 #include "Bitmaps.h"
 #include "Dialogs.h"
+#include "Poco/Timestamp.h"
 
 extern int XstartScreen, YstartScreen;
 
@@ -1402,7 +1403,8 @@ int iStep =(int)  (fZoom *3.0 / (double)GC_TRACE_TIME_SKIP);
 if (iStep < 1)
   iStep = 1;
 iStep = 1;
-DWORD lStartTime = GetTickCount();
+
+    Poco::Timestamp StartTime;
 
 	for(i= 0; i < iTo; i=i+iStep)
 	{
@@ -1448,8 +1450,12 @@ DWORD lStartTime = GetTickCount();
       /************************************************************************
        * check drawing timeout (350m)
        */
-	  if(((GetTickCount()- lStartTime ) > 350)) /* drawing still took less than 350ms */
-        i = iTo;                                /* fast exit on timeout               */
+      const Poco::Timespan TimeOut(0, 350*1000);
+	  if(StartTime.isElapsed(TimeOut.totalMicroseconds())) {
+        /* drawing still took less than 350ms */
+        /* fast exit on timeout               */
+        i = iTo;
+      }
 	}
 
 Surface.SelectObject(oldPen);

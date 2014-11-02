@@ -10,6 +10,7 @@
 #define __WINDOWSCONTROL_H
 
 #include "Screen/LKWindowSurface.h"
+#include "Poco/Timestamp.h"
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
@@ -369,7 +370,7 @@ class DataFieldInteger:public DataField{
     int mMin;
     int mMax;
     int mStep;
-    DWORD mTmLastStep;
+    Poco::Timestamp mTmLastStep;
     int mSpeedup;
     TCHAR mOutBuf[OUTBUFFERSIZE+1];
 
@@ -421,7 +422,7 @@ class DataFieldFloat:public DataField{
     double mMin;
     double mMax;
     double mStep;
-    DWORD mTmLastStep;
+    Poco::Timestamp mTmLastStep;
     int mSpeedup;
     int mFine;
     TCHAR mOutBuf[OUTBUFFERSIZE+1];
@@ -811,11 +812,8 @@ class WndListFrame:public WndFrame{
 	  RECT rcScrollBar;
     int mMouseScrollBarYOffset; // where in the scrollbar button was mouse down at
     bool mMouseDown;
-#ifdef GTCFIX
-    DWORD LastMouseMoveTime;
-#else
-    int LastMouseMoveTime;
-#endif
+
+    Poco::Timestamp LastMouseMoveTime;
 };
 
 class WndOwnerDrawFrame:public WndFrame{
@@ -905,7 +903,7 @@ class WndForm:public WindowControl{
       mModalResult = mrCancle;
     }
 
-    DWORD enterTime;
+    Poco::Timestamp enterTime;
 
     void SetToForeground(void);
 
@@ -934,7 +932,7 @@ class WndForm:public WindowControl{
 
     void SetUserMsgNotify(int (*OnUserMsgNotify)(WindowControl * Sender, MSG *msg));
 private:
-    static DWORD timeAnyOpenClose; // when any dlg opens or child closes
+    static Poco::Timestamp timeAnyOpenClose; // when any dlg opens or child closes
 
 };
 

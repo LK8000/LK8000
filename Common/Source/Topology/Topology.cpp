@@ -15,6 +15,8 @@
 #include <Poco/UTF16Encoding.h>
 #include <Poco/TextConverter.h>
 
+//#define DEBUG_TFC 
+
 XShape::XShape() {
   hide=false;
 }
@@ -348,7 +350,7 @@ void Topology::TriggerIfScaleNowVisible(void) {
 void Topology::flushCache() {
 #ifdef DEBUG_TFC
   StartupStore(TEXT("---flushCache() starts%s"),NEWLINE);
-  int starttick = GetTickCount();
+  Poco::Timestamp starttick;;
 #endif
   switch (cache_mode) {
 	case 0:  // Original
@@ -365,7 +367,7 @@ void Topology::flushCache() {
   }//sw		
   shapes_visible_count = 0;
 #ifdef DEBUG_TFC
-  StartupStore(TEXT("   flushCache() ends (%dms)%s"),GetTickCount()-starttick,NEWLINE);
+  StartupStore(TEXT("   flushCache() ends (%dms)%s"),Poco::Timespan(starttick.elapsed()).totalMilliseconds(),NEWLINE);
 #endif
 }
 
@@ -394,7 +396,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 #ifdef DEBUG_TFC
   StartupStore(TEXT("---UpdateCache() starts, mode%d%s"),cache_mode,NEWLINE);
-  int starttick = GetTickCount();
+  Poco::Timestamp starttick;
 #endif
 
   if(msRectOverlap(&shpfile.bounds, &thebounds) != MS_TRUE) {
@@ -500,7 +502,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 #ifdef DEBUG_TFC
   long free_size = CheckFreeRam();
-  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%ldM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), GetTickCount()-starttick,NEWLINE);
+  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%ldM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), Poco::Timespan(starttick.elapsed()).totalMilliseconds(),NEWLINE);
 #endif
 }
 

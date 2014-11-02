@@ -932,6 +932,7 @@ POCO :=\
      $(POCOSRC)/ThreadLocal.cpp \
      $(POCOSRC)/ThreadTarget.cpp \
      $(POCOSRC)/Timestamp.cpp \
+     $(POCOSRC)/Timespan.cpp \
      $(POCOSRC)/UnicodeConverter.cpp \
      $(POCOSRC)/UTF8Encoding.cpp \
      $(POCOSRC)/UTF16Encoding.cpp \

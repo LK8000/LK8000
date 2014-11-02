@@ -7,9 +7,10 @@
 */
 
 #include "externs.h"
+#include "Poco/Timestamp.h"
 
 
-DWORD MapWindow::timestamp_newdata=0;
+Poco::Timestamp MapWindow::timestamp_newdata = 0;
 
 //
 // Execution at 1hz inside RenderMapWindow
@@ -30,7 +31,7 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
 
 void MapWindow::UpdateTimeStats(bool start) {
   if (start) {
-    timestamp_newdata = ::GetTickCount();
+    timestamp_newdata.update();
   }
 }
 
@@ -47,7 +48,7 @@ void MapWindow::RenderMapWindow(const RECT& rc)
   else
 	DrawBottom=false;
 
-  static DWORD fastzoomStart=0;
+  static Poco::Timestamp fastzoomStart = 0;
   // static short ZoomDelayTimes=0; // alternate rebouncing, with the lowest possible interval: 1 loop
 
   // We do this in order to wait for a late zoom request after another.
@@ -57,16 +58,16 @@ void MapWindow::RenderMapWindow(const RECT& rc)
 	zoom.BigZoom(false);
 	// How many times we shall loop waiting for a next bigzoom to come
 	// ZoomDelayTimes=1; shortest possible
-	fastzoomStart=GetTickCount(); // time granted delay
+	fastzoomStart.update(); // time granted delay
   } else {
-	if (fastzoomStart) {
+	if (fastzoomStart.epochMicroseconds()) {
 		// no bigzoom, but we wait a bit to detect another click for zoom
 		// and avoid to redraw entirely in the meantime. We shall fall down here
 		// because we have forced a map redraw after the first zoom, even with not
 		// a click pressed.
 		//if (ZoomDelayTimes >0) {
 		//	ZoomDelayTimes--;
-		if ( (GetTickCount()-fastzoomStart) <(unsigned int)debounceTimeout ) {
+		if (!fastzoomStart.isElapsed(debounceTimeout.totalMicroseconds())) {
 			#if (WINDOWSPC>0)	
 			  #if TESTBENCH
 			  FastZoom=true;

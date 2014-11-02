@@ -61,6 +61,7 @@
 
 
 #include "RGB.h"
+#include "Poco/Timestamp.h"
 
 // NOT USED ANYMORE, USE RGB_xxx as color definition
 // Used by MapWindow::TextColor 
@@ -398,7 +399,7 @@ class MapWindow {
 
   static BOOL Initialised;
   static bool GliderCenter;
-  static DWORD timestamp_newdata;
+  static Poco::Timestamp timestamp_newdata;
   static bool LandableReachable;
 
  public:

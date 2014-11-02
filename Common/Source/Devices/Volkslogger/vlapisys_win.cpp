@@ -19,7 +19,7 @@
 #include "Volkslogger/vla_support.h"
 
 #include <stdio.h>
-#if (WINDOWSPC>0)
+#if defined(HAVE_POSIX) || !defined(_WIN32_WCE)
 #include <time.h>
 #endif
 
@@ -43,8 +43,8 @@ void VLA_SYS::wait_ms(const int32 t)  {
 
 /** read value of a continous running seconds-timer */
 int32 VLA_SYS::get_timer_s()  {  
-#if (WINDOWSPC>0)
-  return time(NULL);  
+#if defined(HAVE_POSIX) || !defined(_WIN32_WCE)
+  return time(NULL);
 #else
   return GetTickCount()/1000;
 #endif

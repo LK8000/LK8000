@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Terrain.h"
+#include "Poco/Timespan.h"
 
 
 //
@@ -27,19 +28,11 @@ void MapWindow::RefreshMap() {
 
 
 bool MapWindow::RenderTimeAvailable() {
-  DWORD fpsTime = ::GetTickCount();
-  if (MapDirty) return false;
+    const Poco::Timespan RenderInterval(0, 700*1000); // 700ms 
 
-  if (fpsTime-timestamp_newdata<700) { 
-    // it's been less than 700 ms since last data
-    // was posted
-    return true;
-  } else {
-    return false;
-  }
+    // it's been less than 700 ms since last data was posted
+    return !MapDirty && !timestamp_newdata.isElapsed(RenderInterval.totalMicroseconds());
 }
-
-
 
 void MapWindow::UpdateInfo(NMEA_INFO *nmea_info,
                            DERIVED_INFO *derived_info) {

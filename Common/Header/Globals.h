@@ -15,6 +15,8 @@
 #define GLOBALS_H
 
 #include "Poco/Event.h"
+#include "Poco/Timestamp.h"
+#include "Poco/Timespan.h"
 
 
   #undef  GEXTERN
@@ -582,7 +584,7 @@ GEXTERN short TerrainRamp_Config;
 
 GEXTERN double QNH;
 GEXTERN int NettoSpeed;
-GEXTERN int debounceTimeout;
+GEXTERN Poco::Timespan debounceTimeout;
 GEXTERN bool SetSystemTimeFromGPS;
 GEXTERN bool ForceFinalGlide;
 GEXTERN bool AutoForceFinalGlide;

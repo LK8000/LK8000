@@ -43,7 +43,7 @@ int Message::nvisible=0;
 TCHAR Message::msgText[2000];
 
 // Get start time to reduce overrun errors
-DWORD startTime = ::GetTickCount();
+Poco::Timestamp startTime;
 
 // Intercept messages destined for the Status Message window
 LRESULT CALLBACK MessageWindowProc(HWND hwnd, UINT message, 
@@ -230,7 +230,7 @@ bool Message::Render() {
   if (block_ref) return false;
 
   Lock();
-  DWORD	fpsTime = ::GetTickCount() - startTime;
+  Poco::Timespan fpsTime = startTime.elapsed();
 
   // this has to be done quickly, since it happens in GUI thread
   // at subsecond interval
@@ -240,8 +240,7 @@ bool Message::Render() {
   // new messages
 
   bool changed = false;
-  int i;
-  for (i=0; i<MAXMESSAGES; i++) {
+  for (unsigned i=0; i<MAXMESSAGES; i++) {
     if (messages[i].type==0) continue; // ignore unknown messages
 
     if (
@@ -281,7 +280,7 @@ bool Message::Render() {
   doresize = true;
   msgText[0]= 0;
   nvisible=0;
-  for (i=0; i<MAXMESSAGES; i++) {
+  for (unsigned i=0; i<MAXMESSAGES; i++) {
     if (messages[i].type==0) continue; // ignore unknown messages
 
     if (messages[i].texpiry< fpsTime) {
@@ -289,20 +288,14 @@ bool Message::Render() {
       // reset expiry so we don't refresh
       continue;
     }
+    if(nvisible > 0) {
+        // this is a line separator
+        _tcscat(msgText, TEXT("\r\n"));
+    }
 
     _tcscat(msgText, messages[i].text);
-    // this is a line separator, so we don't need it if it is the last line
-    _tcscat(msgText, TEXT("\r\n"));
     nvisible++;
-
   }
-  // remove \r\n from last line of message
-  i=_tcslen(msgText);
-  if (i>3) {
-	msgText[i-1]=_T('\0');
-	msgText[i-2]=_T('\0');
-  }
-
 
   Resize();
 
@@ -312,15 +305,14 @@ bool Message::Render() {
 
 
 
-int Message::GetEmptySlot() {
+unsigned Message::GetEmptySlot() {
   // find oldest message that is no longer visible
 
   // todo: make this more robust with respect to message types and if can't
   // find anything to remove..
-  int i;
-  DWORD tmin=0;
-  int imin=0;
-  for (i=0; i<MAXMESSAGES; i++) {
+  Poco::Timespan tmin=0;
+  unsigned imin=0;
+  for (unsigned i=0; i<MAXMESSAGES; i++) {
     if ((i==0) || (messages[i].tstart<tmin)) {
       tmin = messages[i].tstart;
       imin = i; 
@@ -334,9 +326,8 @@ void Message::AddMessage(DWORD tshow, int type, const TCHAR* Text) {
 
   Lock();
 
-  int i;
-  DWORD	fpsTime = ::GetTickCount() - startTime;
-  i = GetEmptySlot();
+  Poco::Timespan fpsTime = startTime.elapsed();
+  unsigned i = GetEmptySlot();
 
   messages[i].type = type;
   messages[i].tshow = tshow;
@@ -349,21 +340,20 @@ void Message::AddMessage(DWORD tshow, int type, const TCHAR* Text) {
 }
 
 void Message::Repeat(int type) {
-  int i;
-  DWORD tmax=0;
+  Poco::Timespan tmax=0;
   int imax= -1;
 
   Lock();
 
-  DWORD	fpsTime = ::GetTickCount() - startTime;
+  Poco::Timespan fpsTime = startTime.elapsed();
 
   // find most recent non-visible message
 
-  for (i=0; i<MAXMESSAGES; i++) {
+  for (unsigned i=0; i<MAXMESSAGES; ++i) {
 
-    if ((messages[i].texpiry < fpsTime)
-	&&(messages[i].tstart > tmax)
-	&&((messages[i].type == type)|| (type==0))) {
+    if (((messages[i].type == type)|| (type==0))
+            &&(messages[i].texpiry < fpsTime)
+            &&(messages[i].tstart > tmax)) {
       imax = i;
       tmax = messages[i].tstart;
     }
@@ -386,24 +376,23 @@ void Message::CheckTouch(HWND wmControl) {
   }
 }
 
-
 bool Message::Acknowledge(int type) {
-  Lock();
-  int i;
-  bool ret = false;	// Did we acknowledge?
-  DWORD	fpsTime = ::GetTickCount() - startTime;
+    Lock();
+    bool ret = false; // Did we acknowledge?
+    Poco::Timespan fpsTime = startTime.elapsed();
 
-  for (i=0; i<MAXMESSAGES; i++) {
-    if ((messages[i].texpiry> messages[i].tstart)
-	&& ((type==0)||(type==messages[i].type))) {
-      // message was previously visible, so make it expire now.
-      messages[i].texpiry = fpsTime-1;
-	  ret = true;
+    for (unsigned i = 0; i < MAXMESSAGES; i++) {
+        if (type == 0 || (type != messages[i].type)) {
+            if (messages[i].texpiry > messages[i].tstart) {
+                // message was previously visible, so make it expire now.
+                messages[i].texpiry = 0;
+                ret = true;
+            }
+        }
     }
-  }
 
-  Unlock();
-  //  Render(); NO! this can cause crashes
-  return ret;
+    Unlock();
+    //  Render(); NO! this can cause crashes
+    return ret;
 }
 

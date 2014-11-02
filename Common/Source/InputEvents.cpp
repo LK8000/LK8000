@@ -92,7 +92,7 @@ int SelectedButtonIndex=0;
 bool IsMenuShown = false;
 //bool SelectMode = false;
 
-long LastActiveSelectMode = 0;//GetTickCount()
+Poco::Timestamp LastActiveSelectMode = 0;
 #endif
 
 // This is set when multimaps are calling MMCONF menu.
@@ -3414,9 +3414,10 @@ void InputEvents::eventChangeSorting(const TCHAR *misc)
 
 bool InputEvents::isSelectMode()
 {
-	if(GetTickCount()- LastActiveSelectMode < 5000)
+    Poco::Timespan TimeLimit(5,0);
+	if(!LastActiveSelectMode.isElapsed(TimeLimit.totalMicroseconds()))
 	{
-		 LastActiveSelectMode = GetTickCount();
+		 LastActiveSelectMode.update();
 		return true;
 	}
 	else return false;
@@ -3451,7 +3452,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		}
 		else
 		{
-			 LastActiveSelectMode = GetTickCount();
+			 LastActiveSelectMode.update();
 			 eventStatusMessage(_T("Select active!"));
 		}
 

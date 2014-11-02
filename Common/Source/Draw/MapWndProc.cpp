@@ -160,7 +160,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
   //
   static bool  pressed = false;
   static double Xstart, Ystart;
-  static DWORD dwDownTime= 0L, dwUpTime= 0L, dwInterval= 0L;
+  static Poco::Timestamp tsDownTime= 0L, tsUpTime= 0L;
+  static Poco::Timespan DownUpInterval= 0L;
   static double Xlat, Ylat;
   static double distance;
 
@@ -310,7 +311,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
       // So we go directly to buttondown, simulating a non-doubleclick.
       if (!LockModeStatus) goto _buttondown;
 
-      dwDownTime = GetTickCount();  
+      tsDownTime.update();  
       XstartScreen = lparam_X; YstartScreen = lparam_Y;
 
 	if (LockModeStatus) {
@@ -348,7 +349,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			Screen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
 			PanRefreshed=false;
 			// NO! This is causing false clicks passing underneath CANCEL button!
-			// dwDownTime=GetTickCount();
+			// dwDownTime.update();
 			break;
 		}
 		// set a min mouse move to trigger panning
@@ -379,15 +380,12 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			// forget the Redraw requests from other parts of LK, which would cause PanRefreshed.
 			// We have no control on those requests issued for example by Calc thread.
 			// However we force full map refresh after some time in ms
-			#if (WINDOWSPC>0) && !TESTBENCH
-			if ( (GetTickCount()-dwDownTime)>250) {
-			#else
+
 			// If time has passed  then force a MapDirty and redraw the whole screen.
 			// This was previously not working in v3 because ThreadCalculations was forcing MapDirty 
 			// in the background each second, and we were loosing control!
-			if ( (GetTickCount()-dwDownTime)>700) {
-			#endif
-				dwDownTime=GetTickCount();
+			if ( tsDownTime.isElapsed(Poco::Timespan(0,1000*FASTPANNING).totalMicroseconds()) ) {
+				tsDownTime.update();
 				OnFastPanning=false;
 				RefreshMap();
 			} else {
@@ -446,7 +444,7 @@ _buttondown:
 #endif
       if (LockModeStatus) break;
       pressed = true;
-      dwDownTime = GetTickCount();
+      tsDownTime.update();
 #ifdef LONGCLICK_FEEDBACK
       if(!mode.Is(Mode::MODE_PAN))
       {
@@ -503,10 +501,10 @@ _buttondown:
 		OnFastPanning=false;
 		ignorenext=false;
 		RefreshMap();
-		dwDownTime=0; // otherwise we shall get a fake click passthrough
+		tsDownTime=0; // otherwise we shall get a fake click passthrough
 		break;
 	}
-	if (ignorenext||dwDownTime==0) { 
+	if (ignorenext||tsDownTime==0) { 
                 #ifdef DEBUG_MAPINPUT
 		if (ignorenext && (dwDownTime==0) )
 			DoStatusMessage(_T("DBG-098 ignorenext&&dwDownTime0"));
@@ -523,9 +521,9 @@ _buttondown:
 	// while processing a virtual key for example, and also for acceleration.
 	dontdrawthemap=(DONTDRAWTHEMAP);
 
-	dwUpTime = GetTickCount(); 
-	dwInterval=dwUpTime-dwDownTime;
-	dwDownTime=0; // do it once forever
+	tsUpTime.update();
+	DownUpInterval=tsUpTime-tsDownTime;
+	tsDownTime=0; // do it once forever
 
 	gestDir=LKGESTURE_NONE; gestDist=-1;
 
@@ -589,7 +587,7 @@ _buttondown:
 
 		// short click on aircraft icon
 		//
-		if ( dwInterval <= (DOUBLECLICKINTERVAL)) {
+		if ( DownUpInterval.totalMilliseconds() <= DOUBLECLICKINTERVAL) {
 goto_menu:
 			#ifndef DISABLEAUDIO
                 	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -599,7 +597,7 @@ goto_menu:
 		} else
 		// Long click on aircraft icon, toggle thermal mode
 		//
-		if ( dwInterval >=VKLONGCLICK) { // in Defines.h
+		if ( DownUpInterval.totalMilliseconds() >=VKLONGCLICK) { // in Defines.h
 			#if 0
 			if (mode.Is(Mode::MODE_CIRCLING)) {
 				mode.UserForcedMode(Mode::MODE_FLY_CRUISE);
@@ -618,7 +616,7 @@ goto_menu:
 			#endif
 		} else {
 			// We are here in any case only when dwInterval is <VKLONGCLICK
-			if (dwInterval >=(unsigned)CustomKeyTime) {
+			if (DownUpInterval.totalMilliseconds() >= CustomKeyTime) {
 				if (!CustomKeyHandler(CKI_BOTTOMICON)) goto goto_menu;
 			}
 			break;
@@ -629,7 +627,7 @@ goto_menu:
 
 	// MultiMap custom specials, we use same geometry of MSM_MAP
 
-if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
+if((DownUpInterval.totalMilliseconds() < AIRSPACECLICK) || ISPARAGLIDER)
 {
 	if (NOTANYPAN && IsMultiMapCustom() ) {
 		if ( (lparam_X <= P_UngestureLeft.x) && (lparam_Y <= P_UngestureLeft.y) ) {
@@ -655,20 +653,10 @@ if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 	if ( (lparam_X <= P_UngestureLeft.x) && (lparam_Y <= P_UngestureLeft.y) ) {
 		
 		if (!CustomKeyHandler(CKI_TOPLEFT)) {
-			#if OLDZOOM
-			// Well we better NOT play a click while zoomin in and out, because on slow
-			// devices it will slow down the entire process.
-			// Instead, we make a click from InputEvents, debounced.
-			wParam = 0x26; 
-			// zoom in
-			InputEvents::processKey(wParam);
-			return TRUE;
-			#else
 			// we click in any case to let the user have a response feeling
 			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 			MapWindow::zoom.EventScaleZoom(1);
 			return TRUE;
-			#endif
 		}
 		MapWindow::RefreshMap();
 		break;
@@ -680,7 +668,7 @@ if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 	// Use the compass to pullup UTM informations to paragliders
 	if ( (lparam_X > P_UngestureRight.x) && (lparam_Y <= P_UngestureRight.y) ) {
 
-		if ((dwInterval >= DOUBLECLICKINTERVAL) ) {
+		if (DownUpInterval.totalMilliseconds() >= DOUBLECLICKINTERVAL) {
 
 			// if we are running a real task, with gates, and we could still start
 			// if only 1 time gate, and we passed valid start, no reason to resettask
@@ -709,16 +697,10 @@ if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 	{ 
 		if ( (lparam_X > P_UngestureRight.x) && (lparam_Y <= P_UngestureRight.y) ) {
 			if (!CustomKeyHandler(CKI_TOPRIGHT)) {
-				#if OLDZOOM
-				wParam = 0x26; 
-				InputEvents::processKey(wParam);
-				return TRUE;
-				#else
 				// we click in any case to let the user have a response feeling
 				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 				MapWindow::zoom.EventScaleZoom(1);
 				return TRUE;
-				#endif
 			}
 			MapWindow::RefreshMap();
 			break;
@@ -737,11 +719,11 @@ if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 	if (dontdrawthemap||(NOTANYPAN && IsMultiMapShared())) {
 
 		if ( gestDir == LKGESTURE_LEFT) {
-			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_LEFT);
+			ProcessVirtualKey(lparam_X,lparam_Y,DownUpInterval.totalMilliseconds(),LKGESTURE_LEFT);
 			break;
 		}
 		if ( gestDir == LKGESTURE_RIGHT) {
-			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_RIGHT);
+			ProcessVirtualKey(lparam_X,lparam_Y,DownUpInterval.totalMilliseconds(),LKGESTURE_RIGHT);
 			break;
 		}
 
@@ -750,17 +732,17 @@ if((dwInterval < (DWORD) AIRSPACECLICK) || ISPARAGLIDER)
 		if (MapSpaceMode==MSM_MAP) goto _continue;
 
 		if ( gestDir == LKGESTURE_UP) {
-			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_UP);
+			ProcessVirtualKey(lparam_X,lparam_Y,DownUpInterval.totalMilliseconds(),LKGESTURE_UP);
 			break;
 		}
 		if ( gestDir == LKGESTURE_DOWN) {
-			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_DOWN);
+			ProcessVirtualKey(lparam_X,lparam_Y,DownUpInterval.totalMilliseconds(),LKGESTURE_DOWN);
 			break;
 		}
 
 		// We are here when lk8000, and NO moving map displayed: virtual enter, virtual up/down, or 
 		// navbox operations including center key.
-		wParam=ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_NONE);
+		wParam=ProcessVirtualKey(lparam_X,lparam_Y,DownUpInterval.totalMilliseconds(),LKGESTURE_NONE);
                 #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-035 navboxes")); 
                 #endif
@@ -780,7 +762,7 @@ _continue:
 	// maybe check LK8000 active?
 	// This point is selected when in MapSpaceMode==MSM_MAP, i.e. lk8000 with moving map on.
 	if (  DrawBottom && (lparam_Y >= Y_BottomBar) && !mode.AnyPan() ) {
-		wParam=ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_NONE);
+		wParam=ProcessVirtualKey(lparam_X,lparam_Y,DownUpInterval.totalMilliseconds(),LKGESTURE_NONE);
                 #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-034 navboxes")); 
                 #endif
@@ -792,7 +774,7 @@ _continue:
 	}
 
 
-      if (dwInterval == 0) {
+      if (DownUpInterval == 0) {
 		break; // should be impossible
       }
 
@@ -820,7 +802,7 @@ _continue:
 		// do not process virtual key if it is timed as a DBLCLK
 		// we want users to get used to double clicking only on infoboxes
 		// and avoid triggering unwanted waypoints details
-		if (dwInterval >= ( (DOUBLECLICKINTERVAL/2-30) )) { // fast dblclk required here.
+		if (DownUpInterval.totalMilliseconds() >= FASTDOUBLECLICK) { // fast dblclk required here.
 			#ifdef DEBUG_VIRTUALKEYS // 100320
 			wParam=ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_NONE);
 			if (wParam==0) {
@@ -828,7 +810,7 @@ _continue:
 				break;
 			}
 			#else
-			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_NONE);
+			ProcessVirtualKey(lparam_X,lparam_Y,DownUpInterval.totalMilliseconds(),LKGESTURE_NONE);
 			#endif
 			break; 
 		}
@@ -869,7 +851,7 @@ _continue:
 		//
 		// Finally process normally a click on the moving map.
 		//
-			if(dwInterval < (DWORD) AIRSPACECLICK) { // original and untouched interval
+			if(DownUpInterval.totalMilliseconds() < AIRSPACECLICK) { // original and untouched interval
 				{
 					if (!mode.AnyPan() && (UseUngestures || !ISPARAGLIDER)) {
 						if (lparam_X<=X_Left) {
@@ -884,30 +866,6 @@ _continue:
 						}
 					}
 
-					#if OLDZOOM
-					if (lparam_Y<Y_Up) {
-						// pg UP = zoom in
-						wParam = 0x26;
-					} else {
-						if (lparam_Y>Y_Down) {
-							// pg DOWN = zoom out
-							wParam = 0x28;
-						} 
-						else {
-							// process center key, do nothing 
-							break;
-						}
-					}
-					static DWORD lastClickTime=0;
-					if ((GetTickCount()-lastClickTime)>300) {
-						if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-						lastClickTime=GetTickCount();
-					}
-
-					// no sound for zoom clicks
-					InputEvents::processKey(wParam);
-					dwDownTime= 0L;
-					#else // NEW ZOOM
 					if (lparam_Y<Y_Up) {
 						MapWindow::zoom.EventScaleZoom(1);
 						if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -921,8 +879,7 @@ _continue:
 							break;
 						}
 					}
-					dwDownTime= 0L;
-					#endif // new zoom
+					tsDownTime= 0L;
 
 					return TRUE; 
 				}
@@ -1258,7 +1215,7 @@ _continue:
 		#if (WINDOWSPC<1)
 		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
-		dwDownTime= 0L;
+		tsDownTime= 0L;
 		switch(wParam) {
 			//
 			// THE BOTTOM BAR
@@ -1401,7 +1358,7 @@ _continue:
 		#if (WINDOWSPC<1)
 		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
-		dwDownTime= 0L;
+		tsDownTime= 0L;
 		switch(wParam) {
 			//
 			// THE BOTTOM BAR
@@ -1542,7 +1499,7 @@ _continue:
 		#if (WINDOWSPC<1)
 		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
-		dwDownTime= 0L;
+		tsDownTime= 0L;
 		switch(wParam) {
 			//
 			// THE BOTTOM BAR
@@ -1685,7 +1642,7 @@ _continue:
 		#if (WINDOWSPC<1)
 		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
-		dwDownTime= 0L;
+		tsDownTime= 0L;
 		switch(wParam) {
 			case '1':
 				CustomKeyHandler(CustomMenu1+1000);
@@ -1730,7 +1687,7 @@ _continue:
 		#if (WINDOWSPC<1)
 		if (!Debounce(KEYDEBOUNCE)) return FALSE;
 		#endif
-		dwDownTime= 0L;
+		tsDownTime= 0L;
 		switch(wParam) {
 			case '1':
 			case '2':
@@ -1907,7 +1864,7 @@ _key_gesture_up:
 #endif
 
 _key_gesture_down:
-	ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_DOWN);
+	ProcessVirtualKey(lparam_X,lparam_Y,DownUpInterval.totalMilliseconds(),LKGESTURE_DOWN);
 	MapWindow::RefreshMap();
 	return TRUE;
 
@@ -1996,9 +1953,9 @@ _key_bottombar_previous:
 	// End of key manager
 
 _skipout:
-	dwDownTime= 0L; // removable? check
+	tsDownTime= 0L; // removable? check
 	InputEvents::processKey(wParam);
-	dwDownTime= 0L;
+	tsDownTime= 0L;
 	return TRUE; 
     }
 

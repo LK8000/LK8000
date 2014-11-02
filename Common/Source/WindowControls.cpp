@@ -40,12 +40,12 @@
 // returns true if it is a long press,
 // otherwise returns false
 static bool KeyTimer(bool isdown, DWORD thekey) {
-  static DWORD fpsTimeDown= 0;
+  static Poco::Timestamp fpsTimeDown = 0;
   static DWORD savedKey=0;
 
-  unsigned int dT = ::GetTickCount()-fpsTimeDown;
-  if ((dT>2000)&&(thekey==savedKey)) {
-    fpsTimeDown = ::GetTickCount();
+  Poco::Timespan dT = fpsTimeDown.elapsed();
+  if ((dT.totalMilliseconds()>2000)&&(thekey==savedKey)) {
+    fpsTimeDown.update();
     savedKey = 0;
     return true;
   }
@@ -55,7 +55,7 @@ static bool KeyTimer(bool isdown, DWORD thekey) {
   } else {
     // key is lowered
     if (thekey != savedKey) {
-      fpsTimeDown = ::GetTickCount();
+      fpsTimeDown.update();
       savedKey = thekey;
     }
   }
@@ -823,24 +823,25 @@ int DataFieldInteger::SpeedUp(bool keyup){
   if (keyup != DataFieldKeyUp) {
     mSpeedup = 0;
     DataFieldKeyUp = keyup;
-    mTmLastStep = GetTickCount();
+    mTmLastStep.update();
     return 1;
   }
 
-  if ((unsigned long)(GetTickCount()-mTmLastStep) < 200){
+  if (!mTmLastStep.isElapsed(Poco::Timespan(0,200*1000).totalMicroseconds())){
     mSpeedup++;
 
     if (mSpeedup > 5){
       res = 10;
 
-      mTmLastStep = GetTickCount()+350;
+      mTmLastStep.update(); // now + 350ms
+      mTmLastStep += Poco::Timespan(0, 350*1000).totalMicroseconds();
       return(res);
 
     }
   } else
     mSpeedup = 0;
 
-  mTmLastStep = GetTickCount();
+  mTmLastStep.update();
 
   return(res);
 }
@@ -960,24 +961,25 @@ double DataFieldFloat::SpeedUp(bool keyup){
   if (keyup != DataFieldKeyUp) {
     mSpeedup = 0;
     DataFieldKeyUp = keyup;
-    mTmLastStep = GetTickCount();
+    mTmLastStep.update();
     return 1.0;
   }
 
-  if ((unsigned long)(GetTickCount()-mTmLastStep) < 200){
+  if (!mTmLastStep.isElapsed(Poco::Timespan(0,200*1000).totalMicroseconds())){
     mSpeedup++;
 
     if (mSpeedup > 5){
       res = 10;
 
-      mTmLastStep = GetTickCount()+350;
+      mTmLastStep.update(); // now + 350ms
+      mTmLastStep += Poco::Timespan(0, 350*1000).totalMicroseconds();
       return(res);
 
     }
   } else
     mSpeedup = 0;
 
-  mTmLastStep = GetTickCount();
+  mTmLastStep.update();
 
   return(res);
 }
@@ -1924,7 +1926,7 @@ void InitWindowControlModule(void){
 
 }
 
-DWORD WndForm::timeAnyOpenClose=0;
+Poco::Timestamp WndForm::timeAnyOpenClose=0;
 ACCEL  WndForm::mAccel[] = {
   {0, VK_ESCAPE,  VK_ESCAPE},
   {0, VK_RETURN,  VK_RETURN},
@@ -2034,13 +2036,13 @@ int WndForm::ShowModal(void){
 }
 
 int WndForm::ShowModal(bool bEnableMap) {
-#define OPENCLOSESUPPRESSTIME 500
+#define OPENCLOSESUPPRESSTIME Poco::Timespan(0,500*1000).totalMicroseconds()
   MSG msg;
   HWND oldFocusHwnd;
 
   SHOWTHREAD(_T("ShowModal"));
 
-  enterTime = ::GetTickCount();
+  enterTime.update();
 
   Message::BlockRender(true);
 
@@ -2058,10 +2060,10 @@ int WndForm::ShowModal(bool bEnableMap) {
   FocusNext(NULL);
 
   bool hastimed = false;
-  WndForm::timeAnyOpenClose = GetTickCount(); // when current dlg opens or child closes
+  WndForm::timeAnyOpenClose.update(); // when current dlg opens or child closes
 
   while ((mModalResult == 0) && GetMessage(&msg, NULL, 0, 0)) {
-    DWORD timeMsg = GetTickCount();
+    Poco::Timestamp timeMsg;
 
     if ((msg.message == WM_KEYDOWN) && ((msg.wParam & 0xffff) == VK_ESCAPE))
       mModalResult = mrCancle;
@@ -2175,18 +2177,19 @@ int WndForm::ShowModal(bool bEnableMap) {
     // TODO code: maybe this should block all key handlers to avoid 
     // accidental key presses
     if (!hastimed) {
-	#if defined(PNA) || (WINDOWSPC>0) 
-	if (::GetTickCount()-enterTime<400) { // 091217
-	#else
-	if (::GetTickCount()-enterTime<1000) {
-	#endif
-		mModalResult = 0;
-	} else {
-		hastimed = true;
-	}
+#if defined(PNA) || !defined(UNDER_CE) 
+        Poco::Timespan Elapsed(0, 400 * 1000); // 400ms
+#else
+        Poco::Timespan Elapsed(1); // 1s
+#endif
+        if (!enterTime.isElapsed(Elapsed.totalMicroseconds())) { // 091217
+            mModalResult = 0;
+        } else {
+            hastimed = true;
+        }
     }
   } // End Modal Loop
-  WndForm::timeAnyOpenClose = GetTickCount(); // static.  this is current open/close or child open/close
+  WndForm::timeAnyOpenClose.update(); // static.  this is current open/close or child open/close
 
   SetFocus(oldFocusHwnd);
 
@@ -3762,7 +3765,7 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos,
 
 int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {  
 
-  if ( (GetTickCount()) >= (unsigned int)LastMouseMoveTime )
+  if ( Poco::Timestamp() >= LastMouseMoveTime )
   {
     POINT Pos;
     Pos.x = LOWORD(lParam); 
@@ -3785,7 +3788,7 @@ int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {
     {
       mMouseDown = false; // force re-click of scroll bar
     }
-    LastMouseMoveTime = GetTickCount();
+    LastMouseMoveTime.update();
   } // Tickcount
   return(1);
 }

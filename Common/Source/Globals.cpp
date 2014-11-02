@@ -317,7 +317,7 @@ void Globals_Init(void) {
   SCREENHEIGHT=400;
   #endif
 
-  debounceTimeout=200;
+  debounceTimeout.assign(0, 250*1000); //250ms
 
   WarningHomeDir=false;
 

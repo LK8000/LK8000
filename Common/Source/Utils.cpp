@@ -12,6 +12,7 @@
 #include "Modeltype.h"
 #include "dlgTools.h"
 #include "TraceThread.h"
+#include "Poco/Timestamp.h"
 
 long GetUTCOffset(void) {
     return UTCOffset;
@@ -60,14 +61,11 @@ void TriggerVarioUpdate() {
 // Possible undebounced triggers could be issued> to check in WindowControls and many parts.
 // No complaints so far, but this should be fixed. Otherwise the debounceTimeout was UNUSED
 // and the simple Debounce(void) call was always true!!
-static DWORD fpsTimeLast = 0;
+static Poco::Timestamp fpsTimeLast(0);
 
 bool Debounce(void) {
-    DWORD fpsTimeThis = ::GetTickCount();
-    DWORD dT = fpsTimeThis - fpsTimeLast;
-
-    if (dT > (unsigned int) debounceTimeout) {
-        fpsTimeLast = fpsTimeThis;
+    if (fpsTimeLast.isElapsed(debounceTimeout.totalMicroseconds())) {
+        fpsTimeLast.update();
         return true;
     } else {
         return false;
@@ -75,11 +73,9 @@ bool Debounce(void) {
 }
 
 bool Debounce(int dtime) {
-    DWORD fpsTimeThis = ::GetTickCount();
-    DWORD dT = fpsTimeThis - fpsTimeLast;
-
-    if (dT > (unsigned int) dtime) {
-        fpsTimeLast = fpsTimeThis;
+    const Poco::Timespan TimeOut(0, 1000*dtime);
+    if (fpsTimeLast.isElapsed(TimeOut.totalMicroseconds())) {
+        fpsTimeLast.update();
         return true;
     } else {
         return false;

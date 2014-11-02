@@ -250,7 +250,7 @@ void LKProfileResetDefault(void) {
 
   BgMapColor_Config = 2;
 
-  debounceTimeout = 250;
+  debounceTimeout.assign(0, 250*1000); // 250ms;
 
   DeviceNeedClipping=false;
 

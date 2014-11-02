@@ -2160,12 +2160,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
     // We need a valid GPS fix in FLY mode
     if (Basic->NAVWarning && !SIMMODE) return;
 
-#ifdef DEBUG_AIRSPACE_2
-    int starttick = GetTickCount();
-    StartupStore(TEXT("---AirspaceWarning start%s"), NEWLINE);
-#endif
-
-
     switch (step) {
         default:
         case 0:
@@ -2313,10 +2307,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             break;
 
     } // sw step
-
-#ifdef DEBUG_AIRSPACE_2
-    StartupStore(TEXT("   step %d takes %dms, processed %d airspaces from %d%s"), step, GetTickCount() - starttick, _airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
-#endif
 }
 
 CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const {

@@ -111,7 +111,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 	MessageBoxX(nopath, gettext(TEXT("_@M1209_")), mbOk);
 	WarningHomeDir=false;
   }
-#if ( WINDOWSPC==0 )
+#ifdef UNDER_CE
   static bool checktickcountbug=true; // 100510
   if (checktickcountbug) {
 	DWORD counts=GetTickCount();

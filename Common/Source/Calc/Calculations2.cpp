@@ -11,7 +11,7 @@
 #include "TeamCodeCalculation.h"
 #include "InputEvents.h"
 #include "NavFunctions.h" 
-
+#include "Poco/Timespan.h"
 
 
 
@@ -57,20 +57,22 @@ double MacCreadyTimeLimit(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 }
 
 
-DWORD lastTeamCodeUpdateTime = GetTickCount();
+Poco::Timestamp lastTeamCodeUpdateTime;
 
 void CalculateOwnTeamCode(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
   if (!WayPointList) return;
   if (TeamCodeRefWaypoint < 0) return;
-  if (lastTeamCodeUpdateTime + 10000 > GetTickCount()) return;
 
+  Poco::Timespan TimeOut(10, 0); // 10s 
+  // only calculate each 10s  
+  if(!lastTeamCodeUpdateTime.isElapsed(TimeOut.totalMicroseconds())) return;
+  lastTeamCodeUpdateTime.update();
 	
   double distance = 0;
   double bearing = 0;
   TCHAR code[10];
 	
-  lastTeamCodeUpdateTime = GetTickCount();
 
   /*
   distance =  Distance(WayPointList[TeamCodeRefWaypoint].Latitude, 

@@ -1,6 +1,9 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include "Poco/Timespan.h"
+
+
 
 #define MAXMESSAGES 20
 
@@ -16,9 +19,9 @@ enum {
 struct singleMessage {
   TCHAR text[1000];
   int type;
-  DWORD tstart; // time message was created
-  DWORD texpiry; // time message will expire
-  DWORD tshow; // time message is visible for
+  Poco::Timespan tstart; // time message was created
+  Poco::Timespan texpiry; // time message will expire
+  Poco::Timespan tshow; // time message is visible for
 };
 
 
@@ -50,7 +53,7 @@ class Message {
   static HWND hWndMessageWindow;
   static TCHAR msgText[2000];
   static void Resize();
-  static int GetEmptySlot();
+  static unsigned GetEmptySlot();
   static bool hidden;
   static int nvisible;
   static int block_ref;

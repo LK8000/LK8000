@@ -710,7 +710,8 @@ short dlgStartupShowModal(void){
   // Standby for a system request to close the application during this phase.
   wf->SetTimerNotify(OnTimerNotify);
   #if 1
-  srand(GetTickCount());
+  #error
+  srand(Poco::Timestamp());
   #endif
 
   wf->ShowModal();

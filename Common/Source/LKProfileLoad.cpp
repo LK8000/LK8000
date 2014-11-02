@@ -98,6 +98,13 @@ void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR
   matchedstring=true;
 }
 
+void SetProfileVariable(const TCHAR *curname, const TCHAR *curvalue, const TCHAR *lookupname, Poco::Timespan* lookupvalue) {
+  if (_tcscmp(curname,lookupname)) return;
+  int ival= _tcstol(curvalue, NULL, 10);
+ 
+  (*lookupvalue).assign(0, 1000*ival);
+  matchedstring=true;
+}
 
 int nMaxValueValueSize = MAX_PATH*2 + 6;	// max regkey name is 256 chars + " = "
 
