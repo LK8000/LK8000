@@ -227,62 +227,22 @@ void ButtonLabel::GetButtonPosition(int i, RECT rc,
 
 
 void ButtonLabel::CreateButtonLabels(RECT rc) {
-  int i;
   int x, y, xsize, ysize;
 
-  int buttonWidth = NIBLSCALE(50);
-  int buttonHeight = NIBLSCALE(15);
-
-
-  for (i=0; i<NUMBUTTONLABELS; i++) {
-
-  #if (WINDOWSPC>0)
-
-  hWndButtonWindow[i] = CreateWindow(
-	TEXT("STATIC"), TEXT("\0"),
-	WS_CHILD|WS_TABSTOP
-	|SS_CENTER|SS_NOTIFY
-	|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
-	rc.left, rc.top, 
-	buttonWidth, buttonHeight, hWndMainWindow, NULL, hInst, NULL);
-
-   #else
-
-   switch(ScreenSize) {
-	case ss800x480:
-		hWndButtonWindow[i] = CreateWindowEx( WS_EX_STATICEDGE,
-			TEXT("STATIC"), TEXT("\0"),
-			WS_CHILD|WS_TABSTOP
-			|SS_CENTER|SS_NOTIFY
-			|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
-			rc.left, rc.top, 
-			buttonWidth, buttonHeight, hWndMainWindow, NULL, hInst, NULL);
-			break;
-	default:
-		//hWndButtonWindow[i] = CreateWindow(
-		hWndButtonWindow[i] = CreateWindowEx( WS_EX_STATICEDGE,
-			TEXT("STATIC"), TEXT("\0"),
-			WS_CHILD|WS_TABSTOP
-			|SS_CENTER|SS_NOTIFY
-			|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
-			rc.left, rc.top, 
-			buttonWidth, buttonHeight, hWndMainWindow, NULL, hInst, NULL);
-			break;
-    }
-
-    #endif
-
-
+  for (int i=0; i<NUMBUTTONLABELS; i++) {
     GetButtonPosition(i, rc, &x, &y, &xsize, &ysize);
 
-    SetWindowPos(hWndButtonWindow[i],HWND_TOP, x, y, xsize, ysize, SWP_SHOWWINDOW);
-    ButtonVisible[i]= true;
+ 	hWndButtonWindow[i] = CreateWindow(TEXT("STATIC"), TEXT("\0"),
+			WS_CHILD|WS_TABSTOP	|SS_CENTER|SS_NOTIFY
+			|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
+			x, y, xsize, ysize, hWndMainWindow, NULL, hInst, NULL);
+
+
+    ButtonVisible[i]= false;
     ButtonDisabled[i]= false;
 
-    SetLabelText(i,NULL);
     SetWindowLongPtr(hWndButtonWindow[i], GWLP_USERDATA, 4);	  
   }
-
 }
 
 void ButtonLabel::SetFont(const LKFont& Font) {
