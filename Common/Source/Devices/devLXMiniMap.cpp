@@ -603,7 +603,7 @@ BOOL DevLXMiniMap::DeclareTaskMinimap(PDeviceDescriptor_t d,
   {
 	  devWriteNMEAString(d,TEXT("PFLX0,COLIBRI") );
 
-	 Sleep(100);
+	 Poco::Thread::sleep(100);
 
 
 	 d->Com->SetBaudrate(4800);

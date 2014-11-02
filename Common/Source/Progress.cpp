@@ -173,7 +173,7 @@ HWND CreateProgressDialog(const TCHAR* text) {
   hStartupDC.SelectObject(ohB);
   hStartupDC.SelectObject(ohP);
   hStartupDC.SelectObject(oldFont);
-  // Sleep(300); // Slow down display of data? No because in case of important things, Sleep is set by calling part
+  // Poco::Thread::sleep(300); // Slow down display of data? No because in case of important things, Poco::Thread::sleep is set by calling part
 
   return hStartupWindow;
 }

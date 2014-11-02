@@ -254,7 +254,7 @@ static bool InterruptibleSleep(int msecs)
       CCriticalSection::CGuard guard(_t_mutex);
       if (!_t_run) return true;
     }
-    Sleep(1000);
+    Poco::Thread::sleep(1000);
   } while (secs--);
   return false;
 }

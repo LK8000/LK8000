@@ -44,7 +44,7 @@ public:
         goCalculationThread = true; // 091119 CHECK
         // wait for proper startup signal
         while (!MapWindow::IsDisplayRunning()) {
-            Sleep(100);
+            Poco::Thread::sleep(100);
         }
 
 #if TRACETHREAD
@@ -52,8 +52,8 @@ public:
         StartupStore(_T("##############  CALC threadid=%d\n"), GetCurrentThreadId());
 #endif
 
-        // while (!goCalculating) Sleep(100);
-        Sleep(1000); // 091213  BUGFIX need to syncronize !!! TOFIX02 TODO
+        // while (!goCalculating) Poco::Thread::sleep(100);
+        Poco::Thread::sleep(1000); // 091213  BUGFIX need to syncronize !!! TOFIX02 TODO
 
         while (!MapWindow::CLOSETHREAD) {
 

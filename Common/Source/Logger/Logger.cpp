@@ -181,7 +181,7 @@ void StopLogger(void) {
           iLoggerError=0;
           break; // success
         }
-        Sleep(750); // wait for file system cache to fix itself?
+        Poco::Thread::sleep(750); // wait for file system cache to fix itself?
       }
       if (imCount == imMax) { // MoveFile() failed all attempts
 

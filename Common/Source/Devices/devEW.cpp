@@ -93,7 +93,7 @@ BOOL EWDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   _stprintf(sTmp, TEXT("#SPI"));                  // send SetPilotInfo
   appendCheckSum(sTmp);
   d->Com->WriteString(sTmp);
-  Sleep(50);
+  Poco::Thread::sleep(50);
 
   LK_tcsncpy(sPilot, decl->PilotName, 12);               // copy and strip fields
   LK_tcsncpy(sGliderType, decl->AircraftType, 8);
@@ -123,7 +123,7 @@ BOOL EWDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   _stprintf(sTmp, TEXT("#SUI%02d"), 0);           // send pilot name
   appendCheckSum(sTmp);
   d->Com->WriteString(sTmp);
-  Sleep(50);
+  Poco::Thread::sleep(50);
   d->Com->WriteString(PilotsName);
   d->Com->WriteString(TEXT("\r"));
 
@@ -135,7 +135,7 @@ BOOL EWDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   _stprintf(sTmp, TEXT("#SUI%02d"), 1);           // send type of aircraft
   appendCheckSum(sTmp);
   d->Com->WriteString(sTmp);
-  Sleep(50);
+  Poco::Thread::sleep(50);
   d->Com->WriteString(Class);
   d->Com->WriteString(TEXT("\r"));
 
@@ -147,7 +147,7 @@ BOOL EWDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   _stprintf(sTmp, TEXT("#SUI%02d"), 2);           // send aircraft ID
   appendCheckSum(sTmp);
   d->Com->WriteString(sTmp);
-  Sleep(50);
+  Poco::Thread::sleep(50);
   d->Com->WriteString(ID);
   d->Com->WriteString(TEXT("\r"));
 

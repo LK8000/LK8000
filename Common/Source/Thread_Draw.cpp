@@ -30,7 +30,7 @@ bool ForceRenderMap=true;
 void MapWindow::DrawThread ()
 {
   while ((!ProgramStarted) || (!Initialised)) {
-	Sleep(50);
+	Poco::Thread::sleep(50);
   }
 
   #if TRACETHREAD
@@ -84,7 +84,7 @@ void MapWindow::DrawThread ()
 	if (CLOSETHREAD) break; // drop out without drawing
 
 	if ((!THREADRUNNING) || (!GlobalRunning)) {
-		Sleep(50);
+		Poco::Thread::sleep(50);
 		continue;
 	}
 
@@ -311,7 +311,7 @@ void MapWindow::CloseDrawingThread(void)
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread wait THREADEXIT\n"));
   #endif
-  while(!THREADEXIT) { Sleep(50); };
+  while(!THREADEXIT) { Poco::Thread::sleep(50); };
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread finished\n"));
   #endif

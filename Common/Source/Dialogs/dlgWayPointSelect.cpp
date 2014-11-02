@@ -684,7 +684,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
     }else
 	i = LowLimit + DrawListIndex;
 
-// Sleep(100);
+// Poco::Thread::sleep(100);
 
     LKASSERT(i < NumberOfWayPoints);
     

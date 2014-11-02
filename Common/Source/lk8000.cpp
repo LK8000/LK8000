@@ -343,17 +343,17 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
     CreateProgressDialog(gettext(TEXT("_@M1208_")));
-    Sleep(3000);
+    Poco::Thread::sleep(3000);
   }
 #endif
   _stprintf(sTmpB, TEXT("Conf=%s"),sTmpA);
   CreateProgressDialog(sTmpB); 
 #if ( WINDOWSPC==0 )
   if ( !datadir ) {
-    Sleep(3000);
+    Poco::Thread::sleep(3000);
     // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
 	CreateProgressDialog(gettext(TEXT("_@M1209_")));
-    Sleep(3000);
+    Poco::Thread::sleep(3000);
   }
 #endif
 #endif // non PNA
@@ -498,14 +498,14 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   StartupStore(TEXT(".... WinMain CreateDrawingThread%s"),NEWLINE);
   #endif
   MapWindow::CreateDrawingThread();
-  Sleep(50);
+  Poco::Thread::sleep(50);
 
   SwitchToMapWindow();
   #if TESTBENCH
   StartupStore(TEXT(".... CreateCalculationThread%s"),NEWLINE);
   #endif
   CreateCalculationThread();
-  while(!(goCalculationThread)) Sleep(50);
+  while(!(goCalculationThread)) Poco::Thread::sleep(50);
 
   // find unique ID of this PDA or create a new one
   // Currently disabled in LK, we use a dummy ID

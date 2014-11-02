@@ -493,7 +493,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
     int i = LowLimit + DrawListIndex;
 
-// Sleep(100);
+// Poco::Thread::sleep(100);
 	const TCHAR *Name = NULL;
 	if (AirspaceSelectInfo[i].airspace) Name = AirspaceSelectInfo[i].airspace->Name();
     if (Name) {

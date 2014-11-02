@@ -92,9 +92,9 @@ BOOL DevLXV7::LXV7DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable) {
         _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
         LXV7NMEAddCheckSumStrg(szTmp);
         d->Com->WriteString(szTmp);
-        Sleep(CHANGE_DELAY);
+        Poco::Thread::sleep(CHANGE_DELAY);
         d->Com->WriteString(szTmp);
-        Sleep(CHANGE_DELAY);
+        Poco::Thread::sleep(CHANGE_DELAY);
     }
 
     if(bLinkEnable) {
@@ -107,25 +107,25 @@ BOOL DevLXV7::LXV7DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable) {
 	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,DIRECT"));
 	LXV7NMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
 
         if(LXV7_iPDABaudrate != LXV7_iGPSBaudrate) {
 	    d->Com->SetBaudrate(LXV7_iGPSBaudrate);
 	    #if TESTBENCH
 	    StartupStore(TEXT("Set Baudrate %i %s"),LXV7_iGPSBaudrate, NEWLINE);
 	    #endif
-	    Sleep(CHANGE_DELAY);
+	    Poco::Thread::sleep(CHANGE_DELAY);
         }
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
     } else {
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
 
         if(LXV7_iPDABaudrate != LXV7_iGPSBaudrate) {
 	    #if TESTBENCH
 	    StartupStore(TEXT("Set Baudrate %i %s"),LXV7_iPDABaudrate, NEWLINE);
 	    #endif
 	    d->Com->SetBaudrate(LXV7_iPDABaudrate);
-	    Sleep(CHANGE_DELAY);
+	    Poco::Thread::sleep(CHANGE_DELAY);
         }
 
 	#if TESTBENCH
@@ -134,9 +134,9 @@ BOOL DevLXV7::LXV7DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable) {
 	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,VSEVEN"));
 	LXV7NMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
 	UnlockComm();
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
 
     }
     return true;

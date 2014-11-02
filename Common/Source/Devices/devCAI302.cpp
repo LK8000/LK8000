@@ -218,7 +218,7 @@ void test(void){
 
       for (retries=0; retries < 10 && DeleteFile(Buffer) == 0; retries++){
         SendMessage(HWND_BROADCAST, WM_WININICHANGE, 0xF2, 0);
-        Sleep(250*retries);
+        Poco::Thread::sleep(250*retries);
       }
 
     }
@@ -284,7 +284,7 @@ BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffe
   ExpectString(d, TEXT("$$$"));
 
   d->Com->WriteString(TEXT("O\r"));
-  Sleep(500); // some params come up 0 if we don't wait!
+  Poco::Thread::sleep(500); // some params come up 0 if we don't wait!
   d->Com->Read(&cai302_OdataNoArgs, sizeof(cai302_OdataNoArgs));
   
   if (!ExpectString(d, TEXT("up>"))){
@@ -293,7 +293,7 @@ BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffe
   }
 
   d->Com->WriteString(TEXT("O 0\r"));  // 0=active pilot
-  Sleep(1000); // some params come up 0 if we don't wait!
+  Poco::Thread::sleep(1000); // some params come up 0 if we don't wait!
   d->Com->Read(&cai302_OdataPilot, min(sizeof(cai302_OdataPilot), (size_t)cai302_OdataNoArgs.PilotRecordSize+3));
   if (!ExpectString(d, TEXT("up>"))){
     nDeclErrorCode = 1;
@@ -535,7 +535,7 @@ $PCAID,<1>,<2>,<3>,<4>*hh<CR><LF>
 <2> Barometer Altitude in meters (Leading zeros will be transmitted)
 <3> Engine Noise Level
 <4> Log Flags
-*hh Checksum, XOR of all bytes of the sentence after the ‘$’ and before the ‘*’
+*hh Checksum, XOR of all bytes of the sentence after the ï¿½$ï¿½ and before the ï¿½*ï¿½
 */
 
 static bool have_Qnhaltitude=false;

@@ -95,9 +95,9 @@ if(LXV7_EXP_iGPSBaudrate ==0)
   _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
   LXV7_EXPNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-  Sleep(CHANGE_DELAY);
+  Poco::Thread::sleep(CHANGE_DELAY);
   d->Com->WriteString(szTmp);
-  Sleep(CHANGE_DELAY);
+  Poco::Thread::sleep(CHANGE_DELAY);
 }
 
 
@@ -112,20 +112,20 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,DIRECT"));
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
     if(LXV7_EXP_iPDABaudrate != LXV7_EXP_iGPSBaudrate)
     {
 	  d->Com->SetBaudrate(LXV7_EXP_iGPSBaudrate);
 	#if TESTBENCH
 	  StartupStore(TEXT("V7: Set Baudrate %i %s"),LXV7_EXP_iGPSBaudrate, NEWLINE);
 	#endif
-	  Sleep(CHANGE_DELAY);
+	  Poco::Thread::sleep(CHANGE_DELAY);
     }
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
   }
   else
   {
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
 
     if(LXV7_EXP_iPDABaudrate != LXV7_EXP_iGPSBaudrate)
     {
@@ -133,7 +133,7 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 	  StartupStore(TEXT("V7: Set Baudrate %i %s"),LXV7_EXP_iPDABaudrate, NEWLINE);
 	#endif
 	  d->Com->SetBaudrate(LXV7_EXP_iPDABaudrate);
-	  Sleep(CHANGE_DELAY);
+	  Poco::Thread::sleep(CHANGE_DELAY);
     }
 
 	#if TESTBENCH
@@ -142,9 +142,9 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,VSEVEN"));
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
 	UnlockComm();
-	Sleep(CHANGE_DELAY);
+	Poco::Thread::sleep(CHANGE_DELAY);
 
   }
 

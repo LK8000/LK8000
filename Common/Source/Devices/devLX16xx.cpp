@@ -130,7 +130,7 @@ TCHAR  szTmp[254];
 	_stprintf(szTmp, TEXT("$PFLX0,COLIBRI"));
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	Sleep(100);
+	Poco::Thread::sleep(100);
   }
   else
   {
@@ -144,19 +144,19 @@ TCHAR  szTmp[254];
 
 	/* switch to 4k8 for new Firmware versions of LX1600 */
 	d->Com->SetBaudrate(4800);
-	Sleep(100);
+	Poco::Thread::sleep(100);
 	d->Com->WriteString(szTmp);
-	Sleep(100);
+	Poco::Thread::sleep(100);
 	d->Com->WriteString(szTmp);
-	Sleep(100);
+	Poco::Thread::sleep(100);
 
 	/* return to previous original */
 	d->Com->SetBaudrate(lOldBR);
-	Sleep(100);
+	Poco::Thread::sleep(100);
 	d->Com->WriteString(szTmp);
-	Sleep(100);
+	Poco::Thread::sleep(100);
 	d->Com->WriteString(szTmp);
-	Sleep(100);
+	Poco::Thread::sleep(100);
 	UnlockComm();
   }
   return true;

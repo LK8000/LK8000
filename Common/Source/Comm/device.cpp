@@ -781,7 +781,7 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
   {
     if (ExpectString(d, Buffer))
 	  return true;
-    Sleep(20);
+    Poco::Thread::sleep(20);
   }
 
   return false;
@@ -863,19 +863,19 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
 
   // Reboot flarm to make declaration active, according to specs
 
-  Sleep(100);
+  Poco::Thread::sleep(100);
 
   devFormatNMEAString(Buffer, BUFF_LEN, TEXT("PFLAR,0") );
   if(result == TRUE)
     d->Com->WriteString(Buffer);
-  Sleep(100);
+  Poco::Thread::sleep(100);
 
 
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
   d->Com->StartRxThread();                       // restart RX thread
   if(result == TRUE)
     return result;
-  Sleep(100);
+  Poco::Thread::sleep(100);
 }
  return false; // no success
 }

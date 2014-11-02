@@ -135,7 +135,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (IGCWriteLock) {
 	unsigned short loop=0;
 	while (++loop<50) {
-		Sleep(10); //  500 ms delay max
+		Poco::Thread::sleep(10); //  500 ms delay max
 		if (!IGCWriteLock) break;
 	}
 	if (IGCWriteLock) {

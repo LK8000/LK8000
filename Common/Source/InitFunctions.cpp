@@ -238,7 +238,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   */
 #endif
 
-  if (!goInstallSystem) Sleep(50); // 091119
+  if (!goInstallSystem) Poco::Thread::sleep(50); // 091119
   #if TESTBENCH
   StartupStore(TEXT(". Create main window%s"),NEWLINE);
   #endif

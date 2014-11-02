@@ -151,10 +151,10 @@ failed:
         hPort = INVALID_HANDLE_VALUE;
 
 #if (WINDOWSPC>0) || NEWCOMM // 091206
-        Sleep(2000); // needed for windows bug
+        Poco::Thread::sleep(2000); // needed for windows bug
 #endif
 #if !(WINDOWSPC>0)
-        if (_PollingMode) Sleep(2000);
+        if (_PollingMode) Poco::Thread::sleep(2000);
 #endif
     }
     return false;
@@ -212,7 +212,7 @@ unsigned long SerialPort::SetBaudrate(unsigned long BaudRate) {
         ClearCommError(hPort, &dwErrors, &ComStat);
     } while (ComStat.cbOutQue > 0);
 
-    Sleep(10);
+    Poco::Thread::sleep(10);
 
     GetCommState(hPort, &PortDCB);
 
@@ -239,7 +239,7 @@ unsigned long SerialPort::GetBaudrate() const {
         ClearCommError(hPort, &dwErrors, &ComStat);
     } while (ComStat.cbOutQue > 0);
 
-    Sleep(10);
+    Poco::Thread::sleep(10);
 
     GetCommState(hPort, &PortDCB);
 
@@ -270,10 +270,10 @@ bool SerialPort::Close() {
             Ret = false;
         } else {
 #if (WINDOWSPC>0) || NEWCOMM // 091206
-            Sleep(2000); // needed for windows bug
+            Poco::Thread::sleep(2000); // needed for windows bug
 #endif
 #if !(WINDOWSPC>0)
-            if (_PollingMode) Sleep(2000);
+            if (_PollingMode) Poco::Thread::sleep(2000);
 #endif            
             hPort = INVALID_HANDLE_VALUE;
             StartupStore(_T(". ComPort %u closed Ok.%s"), GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
@@ -413,15 +413,15 @@ DWORD SerialPort::RxThread() {
 
 #if (WINDOWSPC>0) || NEWCOMM // 091206
         // PC version does BUSY WAIT
-        Sleep(50); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
+        Poco::Thread::sleep(50); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
 #else
         if (_PollingMode)
-            Sleep(100);
+            Poco::Thread::sleep(100);
         else
             // Wait for an event to occur for the port.
             if (!WaitCommEvent(hPort, &dwCommModemStatus, 0)) {
             // error reading from port
-            Sleep(100);
+            Poco::Thread::sleep(100);
         }
 #endif
 
@@ -445,7 +445,7 @@ DWORD SerialPort::RxThread() {
                     dwBytesTransferred = 0;
                 }
 
-                Sleep(50); // JMW20070515: give port some time to
+                Poco::Thread::sleep(50); // JMW20070515: give port some time to
                 // fill... prevents ReadFile from causing the
                 // thread to take up too much CPU
 
@@ -456,7 +456,7 @@ DWORD SerialPort::RxThread() {
         }
 
         // give port some time to fill
-        Sleep(5);
+        Poco::Thread::sleep(5);
 
         // Retrieve modem control-register values.
 #if ((WINDOWSPC == 0)) 

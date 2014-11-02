@@ -37,7 +37,7 @@ int noninteractive=1;
 /** wait a specified amount of milliseconds (t) */
 void VLA_SYS::wait_ms(const int32 t)  {  
   if (t>0) {
-    Sleep(t);
+    Poco::Thread::sleep(t);
   }
 }
 
