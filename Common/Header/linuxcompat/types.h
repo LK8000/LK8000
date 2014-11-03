@@ -11,6 +11,7 @@
 
 #include "tchar.h"
 #include "stdint.h"
+#include "ScreenCoordinate.h"
 
 #define	BYTE	int8_t
 #define BOOL	bool
@@ -25,24 +26,6 @@ typedef int INT;
 
 typedef char* LPTSTR, LPSTR;
 typedef const char* LPCTSTR;
-
-
-typedef struct tagSIZE {
-  long cx;
-  long cy;
-} SIZE;
-
-typedef struct tagPOINT {
-  long x;
-  long y;
-} POINT;
-
-typedef struct tagRECT {
-  long left;
-  long top;
-  long right;
-  long bottom;
-} RECT;
 
 typedef struct tagLOGFONT {
 	long lfHeight;

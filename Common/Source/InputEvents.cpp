@@ -659,9 +659,6 @@ bool InputEvents::processButton(int bindex) {
 		#endif
 
 		if (!ButtonLabel::ButtonDisabled[bindex]) {
-			#if 0 // REMOVE ANIMATION
-			ButtonLabel::AnimateButton(bindex);
-			#endif
 			processGo(ModeLabel[thismode][i].event);
 		}
 
@@ -763,11 +760,6 @@ bool InputEvents::processKey(int dWord) {
         SelectedButtonIndex = bindex;
 #endif
         pLabelText = ModeLabel[mode][i].label;
-	#if 0 // REMOVE ANIMATION
-        if (bindex>0) {
-          ButtonLabel::AnimateButton(bindex);
-        }
-	#endif
       }
     }
 

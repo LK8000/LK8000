@@ -141,7 +141,8 @@ extern void ShowMenu();
 //
 // Dragged position on screen: start and and end coordinates (globals!)
 //
-int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
+POINT startScreen;
+POINT targetScreen;
 
 //
 // Reminder: this is a callback function called each time an event is signalled.
@@ -312,12 +313,12 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
       if (!LockModeStatus) goto _buttondown;
 
       tsDownTime.update();  
-      XstartScreen = lparam_X; YstartScreen = lparam_Y;
+      startScreen.x = lparam_X; startScreen.y = lparam_Y;
 
 	if (LockModeStatus) {
         	ignorenext=true; // do not interpret the second click of the doubleclick as a real click.
-		if (XstartScreen < P_Doubleclick_bottomright.x) break;
-		if (YstartScreen < P_Doubleclick_bottomright.y) break;
+		if (startScreen.x < P_Doubleclick_bottomright.x) break;
+		if (startScreen.y < P_Doubleclick_bottomright.y) break;
 		LockMode(2);
 		DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED
 	}
@@ -326,7 +327,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
       // and this means also fast clicking on bottombar!!
       // so first lets see if we are in lk8000 text screens.. 
 	// The idea was/is: break if we are in the nearest pages, or in main map but on the bottom bar.
-	if ((DONTDRAWTHEMAP) || (IsMultiMap() && (YstartScreen >=BottomBarY))) {  
+	if ((DONTDRAWTHEMAP) || (IsMultiMap() && (startScreen.y >=BottomBarY))) {
 		// do not ignore next, let buttonup get the signal
 		break;
       }
@@ -345,15 +346,15 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		if (PanRefreshed) {
 			// if map was redrawn, we update our position as well. just like
 			// we just clicked on mouse from here, like in BUTTONDOWN
-			XstartScreen = lparam_X; YstartScreen = lparam_Y;
-			Screen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
+			startScreen.x = lparam_X; startScreen.y = lparam_Y;
+			Screen2LatLon(startScreen.x, startScreen.y, Xstart, Ystart);
 			PanRefreshed=false;
 			// NO! This is causing false clicks passing underneath CANCEL button!
 			// dwDownTime.update();
 			break;
 		}
 		// set a min mouse move to trigger panning
-		if ( (abs(XstartScreen-lparam_X)+abs(YstartScreen-lparam_Y)) > (ScreenScale+1)) {
+		if ( (abs(startScreen.x-lparam_X)+abs(startScreen.y-lparam_Y)) > (ScreenScale+1)) {
 			Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
 			PanLongitude += (Xstart-Xlat);
 			PanLatitude  += (Ystart-Ylat);
@@ -389,7 +390,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				OnFastPanning=false;
 				RefreshMap();
 			} else {
-				XtargetScreen=lparam_X; YtargetScreen=lparam_Y;
+				targetScreen.x=lparam_X; targetScreen.y=lparam_Y;
 				// Lets not forget that if we stop moving the mouse, or we exit the windows while
 				// dragging, or we endup on another window -f.e. a button - then we will NOT
 				// receive any more events in this loop! For this reason we must let the
@@ -461,10 +462,10 @@ _buttondown:
                 #endif
 		break;
       }
-      XstartScreen = lparam_X; YstartScreen = lparam_Y;
+      startScreen.x = lparam_X; startScreen.y = lparam_Y;
       // TODO VNT move Screen2LatLon in LBUTTONUP after making sure we really need Xstart and Ystart
       // so we save precious milliseconds waiting for BUTTONUP GetTickCount
-      Screen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
+      Screen2LatLon(startScreen.x, startScreen.y, Xstart, Ystart);
 
       LKevent=LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
 
@@ -527,8 +528,8 @@ _buttondown:
 
 	gestDir=LKGESTURE_NONE; gestDist=-1;
 
-	gestY=YstartScreen-lparam_Y;
-	gestX=XstartScreen-lparam_X;
+	gestY=startScreen.y-lparam_Y;
+	gestX=startScreen.x-lparam_X;
 
 	if ( ( dontdrawthemap && (lparam_Y <Y_BottomBar)) || ((MapSpaceMode==MSM_MAP)) ) { 
 
@@ -782,7 +783,7 @@ _continue:
 	if (gestDist>=0)
 		distance = gestDist /ScreenScale;
 	else
-		distance = isqrt4((long)((XstartScreen-lparam_X)*(XstartScreen-lparam_X)+ (YstartScreen-lparam_Y)*(YstartScreen-lparam_Y))) /ScreenScale;
+		distance = isqrt4((long)((startScreen.x-lparam_X)*(startScreen.y-lparam_X)+ (startScreen.y-lparam_Y)*(startScreen.y-lparam_Y))) /ScreenScale;
 
 	#ifdef DEBUG_VIRTUALKEYS
 	TCHAR buf[80]; char sbuf[80];

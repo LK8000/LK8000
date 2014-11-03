@@ -195,27 +195,3 @@ int	xPos = (int)((fDist- psDia->fXMin)*xscale)+rc.left ;
 
 }
 
-
-bool PtInRect(int X,int Y, RECT rcd )
-{
-  if( X  > rcd.left   )
-    if( X  < rcd.right  )
-      if( Y  < rcd.bottom )
-        if( Y  > rcd.top    )
-          return true;
-  return false;
-}
-
-
-RECT RectIntersect(RECT A, RECT B)
-{
-  RECT Inter;
-  Inter.left    = max( A.left  , B.left);
-  Inter.right   = min( A.right , B.right);
-  Inter.top     = min( A.top   , B.top);
-  Inter.bottom  = max( A.bottom, B.bottom);
-
-return Inter;
-
-}
-

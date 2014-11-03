@@ -13,7 +13,7 @@
 #include "DoInits.h"
 #include "Terrain.h"
 #include "Multimap.h"
-extern int XstartScreen, YstartScreen;
+extern POINT startScreen;
 extern long VKtime;
 
 #if TESTBENCH
@@ -32,8 +32,8 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
   // In some cases, you will read old coordinates because for example after clicking in the center of 
   // bottom bar, the page changed out of multimap and entered nearest pages.  
   // 
-  int X=XstartScreen;
-  int Y=YstartScreen;
+  int X=startScreen.x;
+  int Y=startScreen.y;
 
   //
   // Duration of key is inside long VKtime, in milliseconds.

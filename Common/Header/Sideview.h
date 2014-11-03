@@ -100,7 +100,6 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon,  do
 int CalcHeightCoordinat(double fHeight,   DiagrammStruct* psDia);
 int CalcHeightCoordinatOutbound(double fHeight,   DiagrammStruct* psDia);
 int CalcDistanceCoordinat(double fDist,   DiagrammStruct* psDia);
-bool PtInRect(int X,int Y, RECT rcd );
 
 void SetMMNorthUp( int iPage, int bVal);
 int GetMMNorthUp( int iPage);

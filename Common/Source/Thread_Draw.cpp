@@ -126,7 +126,7 @@ void MapWindow::DrawThread ()
 	//
 
 
-	extern int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
+	extern POINT startScreen, targetScreen;
 	extern bool OnFastPanning;
 	// While we are moving in bitblt mode, ignore RefreshMap requests from LK
 	// unless a timeout was triggered by MapWndProc itself.
@@ -145,8 +145,8 @@ void MapWindow::DrawThread ()
 		
 		if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
 
-			const int fromX=XstartScreen-XtargetScreen;
-			const int fromY=YstartScreen-YtargetScreen;
+			const int fromX=startScreen.x-targetScreen.y;
+			const int fromY=startScreen.y-targetScreen.y;
 
 			ScreenSurface.Whiteness(0, 0,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 

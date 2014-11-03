@@ -17,7 +17,7 @@
 #include "InputEvents.h"
 #include "Multimap.h"
 
-extern int XstartScreen, YstartScreen;
+extern POINT startScreen;
 extern bool IsMultimapConfigShown;
 
 
@@ -82,14 +82,13 @@ void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
 		// We need to know very often how is the screen splitted, and where!
 		// It should be made global somewhere else, not here.
 		//
-	if ( YstartScreen < Current_Multimap_TopRect.bottom)
+	if ( startScreen.y < Current_Multimap_TopRect.bottom)
 	{
-	  POINT Pos={XstartScreen, YstartScreen};
-	  if( PtInRect(&rc, Pos))
+	  if( PtInRect(&rc, startScreen))
 	  {
 
 		double Xstart, Ystart;
-		SideviewScreen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
+		SideviewScreen2LatLon(startScreen.x, startScreen.y, Xstart, Ystart);
 //		StartupStore(_T("...... LKDrawMultimap_Asp lon:%f  lat:%f  \n"),Xstart,Ystart);
 		MapWindow::Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.RealScale(), false);
 	//	LKevent=LKEVENT_NONE;

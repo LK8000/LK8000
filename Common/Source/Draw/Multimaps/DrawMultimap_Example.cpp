@@ -12,7 +12,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 
-extern int XstartScreen, YstartScreen;
+extern POINT startScreen;
 extern long VKtime;
 
 
@@ -37,8 +37,8 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
   // Beware that they are by no means a trigger: they are always set!
   // If you want to know if user has touched the screen, you need to check for an event!
   // 
-  int X=XstartScreen;
-  int Y=YstartScreen;
+  int X=startScreen.x;
+  int Y=startScreen.y;
 
   //
   // Duration of key is inside long VKtime, in milliseconds.

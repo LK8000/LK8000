@@ -21,7 +21,7 @@ extern double fOffset;
 extern LKColor  Sideview_TextColor;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern int Sideview_iNoHandeldSpaces;
-extern int XstartScreen, YstartScreen;
+extern POINT startScreen;
 
 
 extern double fZOOMScale[];
@@ -117,7 +117,7 @@ static  bool bHeightScale = false;
 			 {
 			   if( Sideview_pHandeled[k].psAS != NULL)
 			   {
-				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
+				 if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen))
 				 {	
 				   #if 1 // MULTISELECT
 				     dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
@@ -132,9 +132,9 @@ static  bool bHeightScale = false;
 			 dlgMultiSelectListShowModal();
 
 		     if ( LKevent != LKEVENT_NONE ) {
-			 if (PtInRect(XstartScreen, YstartScreen,rc ))
+			 if (PtInRect(&rc, startScreen))
 			   bHeightScale = !bHeightScale;
-			 if (PtInRect(XstartScreen, YstartScreen,rct ))
+			 if (PtInRect(&rct, startScreen))
 			   bHeightScale = false;
 		     }
 	     break;

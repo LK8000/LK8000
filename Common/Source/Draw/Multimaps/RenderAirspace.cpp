@@ -31,7 +31,7 @@ using std::max;
 int k;
 double fZOOMScale[NUMBER_OF_SHARED_MULTIMAPS] = {1.0,1.0,1.0,1.0};
 double fDelta = MIN_OFFSET;
-extern int XstartScreen, YstartScreen;
+extern POINT startScreen;
 extern LKColor  Sideview_TextColor;
 
 double  PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_bearing, const double GlideSlope);
@@ -176,7 +176,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 				for (unsigned short i=0; i<MAXBSLOT; i++) {
 					if (Sideview_VGBox[i].bottom==0) continue;
 					if (Sideview_VGBox[i].right==0) continue;
-					if (PtInRect(XstartScreen, YstartScreen,Sideview_VGBox[i])) {
+					if (PtInRect(&Sideview_VGBox[i], startScreen)) {
 						if (ValidWayPoint(Sideview_VGWpt[i])) {
 							// trigger details
 							SelectedWaypoint = Sideview_VGWpt[i];;
@@ -191,7 +191,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	             {
 			   if( Sideview_pHandeled[k].psAS != NULL)
 			   {
-				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
+				 if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen))
 				 {
 #if 1	// MULTISELECT
 				   dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
@@ -219,9 +219,9 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 	             }			
 #endif
         	 if (LKevent!=LKEVENT_NONE) {
-			   if (PtInRect(XstartScreen, YstartScreen,rc ))
+			   if (PtInRect(&rc, startScreen))
 			     bHeightScale = !bHeightScale;
-			   if (PtInRect(XstartScreen, YstartScreen,rct ))
+			   if (PtInRect(&rct, startScreen))
 			     bHeightScale = false;
 		     }
 	     break;

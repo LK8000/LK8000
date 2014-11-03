@@ -21,7 +21,7 @@
 #include "Dialogs.h"
 #include "Poco/Timestamp.h"
 
-extern int XstartScreen, YstartScreen;
+extern POINT startScreen;
 
 
 /*
@@ -584,11 +584,11 @@ switch(LKevent)
 
   break;
   case LKEVENT_LONGCLICK:
-	if( PtInRect(XstartScreen,YstartScreen, rct))
+	if( PtInRect(&rct, startScreen))
 		bHeightScale	= false;
 	#ifdef OWNPOS
-	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
-	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
+	if( PtInRect(&OwnPosSideView, startScreen)||
+	    PtInRect(&OwnPosTopView, startScreen) )
 	{
 	  iFlarmDirection = 	(iFlarmDirection+1)%3;
 	}
@@ -598,8 +598,8 @@ switch(LKevent)
 		{
 		  LKASSERT(i<FLARM_MAX_TRAFFIC);
 		  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
-		  if( PtInRect(XstartScreen,YstartScreen, PositionTopView[aiSortArray[i]])||
-		      PtInRect(XstartScreen,YstartScreen, PositionSideView[aiSortArray[i]]) )
+		  if( PtInRect(&PositionTopView[aiSortArray[i]], startScreen) ||
+		      PtInRect(&PositionSideView[aiSortArray[i]], startScreen) )
 		  {
 		    for (j = 0; j < FLARM_MAX_TRAFFIC; j++ ) {
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
@@ -619,7 +619,7 @@ switch(LKevent)
 	dlgMultiSelectListShowModal();
 #endif
 	if(!bFound)
-	  if( PtInRect(XstartScreen,YstartScreen, rc))
+	  if( PtInRect(&rc, startScreen))
 		bHeightScale	= !bHeightScale;
 
   break;
@@ -1416,37 +1416,25 @@ iStep = 1;
 	  Pnt.x  = DistanceToX(fFlarmDist * sin(fDistBearing*DEG_TO_RAD), pDia);
 	  Pnt.y  = HeightToY  (fFlarmDist * cos(fDistBearing*DEG_TO_RAD), pDia);
 
-	//	if(PtInRect(Pnt, pDia->rc ))
-
-	  if( Pnt.x  > pDia->rc.left   )
-	  {
-	    if( Pnt.x  < pDia->rc.right  )
-	    {
-		  if( Pnt.y  < pDia->rc.bottom )
-		  {
-		    if( Pnt.y > pDia->rc.top    )
-		    {
-		      if((bTrace == IM_POS_TRACE_ONLY) && (DrawInfo.FLARM_RingBuf[iIdx].iColorIdx <(NO_VARIO_COLORS/2)))
-		    	; // do nothing (skip drawing if neg vario)!!
-		      else
-		      {
-	  		    LKASSERT(DrawInfo.FLARM_RingBuf[iIdx].iColorIdx>=0 && DrawInfo.FLARM_RingBuf[iIdx].iColorIdx<NO_VARIO_COLORS);
-		        if(variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx]!= pOldBrush)
-		        {
-			      pOldBrush  = variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx];
-		          Surface.SelectObject(*pOldBrush);
-		        }
-		        Surface.Rectangle(Pnt.x-iTraceDotSize, Pnt.y-iTraceDotSize,Pnt.x+iTraceDotSize, Pnt.y+iTraceDotSize);
-		        iCnt++;
-		      }
-		    }
-		  }
-	    }
+      if(PtInRect(&pDia->rc, Pnt)) {
+        if((bTrace == IM_POS_TRACE_ONLY) && (DrawInfo.FLARM_RingBuf[iIdx].iColorIdx <(NO_VARIO_COLORS/2)))
+          ; // do nothing (skip drawing if neg vario)!!
+        else
+        {
+          LKASSERT(DrawInfo.FLARM_RingBuf[iIdx].iColorIdx>=0 && DrawInfo.FLARM_RingBuf[iIdx].iColorIdx<NO_VARIO_COLORS);
+          if(variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx]!= pOldBrush)
+          {
+            pOldBrush  = variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx];
+            Surface.SelectObject(*pOldBrush);
+          }
+          Surface.Rectangle(Pnt.x-iTraceDotSize, Pnt.y-iTraceDotSize,Pnt.x+iTraceDotSize, Pnt.y+iTraceDotSize);
+          iCnt++;
+        }
 	  }
 	  iIdx-=iStep ;  /* draw backward to cut the oldest trace parts in case the drawing time exceeds */
 	  if(iIdx < 0) {
 		iIdx += MAX_FLARM_TRACES;
-	  };
+	  }
       /************************************************************************
        * check drawing timeout (350m)
        */
