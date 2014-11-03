@@ -1720,6 +1720,12 @@ LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 		return (DefWindowProc(hwnd, uMsg, wParam, lParam));
 }
 
+#ifndef GET_X_LPARAM
+#define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
+#endif
+#ifndef GET_Y_LPARAM
+#define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
+#endif
 
 //#define TRACE_WNDPROC	1
 //
@@ -1812,7 +1818,8 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 	#if TRACE_WNDPROC
 	StartupStore(_T(".... WNDPROC> DOUBLECLICK\n"));
 	#endif
-      if (!OnLButtonDoubleClick(wParam, lParam)) {
+
+      if (!OnLButtonDoubleClick((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
         return(0);
       }
     break;
@@ -1822,7 +1829,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 	StartupStore(_T(".... WNDPROC> LBUTTONDOWN\n"));
 	#endif
       TouchContext=TCX_PROC_DOWN;
-      if (!OnLButtonDown(wParam, lParam)) {
+      if (!OnLButtonDown((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
         return(0);
       }
       // TODO enhancement: need to be able to focus list items here...
@@ -1833,7 +1840,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 	#if TRACE_WNDPROC
 	StartupStore(_T(".... WNDPROC> LBUTTONUP\n"));
 	#endif
-      if (!OnLButtonUp(wParam, lParam)) {
+      if (!OnLButtonUp((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
         return(0);
       }
     break;
@@ -1862,7 +1869,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
     case WM_MOUSEMOVE:
       TouchContext=TCX_PROC_MOUSEMOVE;
-      OnMouseMove(wParam, lParam);
+      OnMouseMove((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)});
       return (0);
       break;
 
@@ -2133,7 +2140,7 @@ int WndForm::ShowModal(bool bEnableMap) {
       }
       if (msg.message == WM_LBUTTONUP){
         if (mOnLButtonUpNotify != NULL)
-          if (!(mOnLButtonUpNotify)(this, msg.wParam, msg.lParam)) 
+          if (!(mOnLButtonUpNotify)(this, (POINT){GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam)}))
             continue;
 
       }
@@ -2294,7 +2301,7 @@ void WndForm::SetKeyUpNotify(int (*KeyUpNotify)(WindowControl * Sender, WPARAM w
   mOnKeyUpNotify = KeyUpNotify;
 }
 
-void WndForm::SetLButtonUpNotify( int (*LButtonUpNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam)){
+void WndForm::SetLButtonUpNotify( int (*LButtonUpNotify)(WindowControl * Sender, const POINT& Pos)){
   mOnLButtonUpNotify = LButtonUpNotify;
 }
 
@@ -2353,7 +2360,7 @@ int WndForm::OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
   if (msg.message == WM_LBUTTONUP){
     bLButtonDown=false;
     if (mOnLButtonUpNotify != NULL)
-      if (!(mOnLButtonUpNotify)(this, msg.wParam, msg.lParam))
+      if (!(mOnLButtonUpNotify)(this, (POINT){GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam)}))
         return(0);
 
   }
@@ -2439,9 +2446,7 @@ void WndButton::Destroy(void){
 }
 
 
-int WndButton::OnLButtonUp(WPARAM wParam, LPARAM lParam){
-  POINT Pos;
-  (void)wParam;
+int WndButton::OnLButtonUp(const POINT& Pos){
 
   #if TRACE_WNDPROC
   StartupStore(_T(".... WndButton>  UP\n"));
@@ -2454,11 +2459,6 @@ int WndButton::OnLButtonUp(WPARAM wParam, LPARAM lParam){
   InvalidateRect(mHWnd,&rc,false);
 
   ReleaseCapture();
-
-  Pos.x = lParam & 0x0000ffff; 
-  Pos.y = (lParam >> 16)& 0x0000ffff;
-
-  //POINTSTOPOINT(Pos, MAKEPOINTS(lParam));
 
   if (PtInRect(&GetBoundRect(), Pos)){
     if (mOnClickNotify != NULL) {
@@ -2518,8 +2518,7 @@ int WndButton::OnKeyUp(WPARAM wParam, LPARAM lParam){
   return(1);
 }
 
-int WndButton::OnLButtonDown(WPARAM wParam, LPARAM lParam){
-	(void)lParam; (void)wParam;
+int WndButton::OnLButtonDown(const POINT& Pos){
   mDown = true;
   #if TRACE_WNDPROC
   StartupStore(_T(".... WndButton>  DOWN\n"));
@@ -2535,8 +2534,7 @@ int WndButton::OnLButtonDown(WPARAM wParam, LPARAM lParam){
   return(1);
 };
 
-int WndButton::OnLButtonDoubleClick(WPARAM wParam, LPARAM lParam){
-	(void)lParam; (void)wParam;
+int WndButton::OnLButtonDoubleClick(const POINT& Pos){
   TouchContext=TCX_BUTTON_DOUBLECLICK;
   mDown = true;
   InvalidateRect(GetHandle(), &GetBoundRect(), false);
@@ -2795,7 +2793,7 @@ int WndProperty::WndProcEditControl(HWND hwnd, UINT uMsg,
     case WM_KEYDOWN:
       if ((wParam & 0xffff) == VK_RETURN || (wParam & 0xffff) == VK_F23) { // Compaq uses VKF23
         if (this->mDialogStyle) {
-          if (!OnLButtonDown(wParam, lParam)) {
+          if (!OnLButtonDown((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
             return(0);
           }
         } //end combopicker
@@ -2833,7 +2831,7 @@ int WndProperty::WndProcEditControl(HWND hwnd, UINT uMsg,
     case WM_LBUTTONDOWN:
       // if it's an Combopicker field, then call the combopicker routine
       if (this->mDialogStyle) {
-        if (!OnLButtonDown(wParam, lParam)) {
+        if (!OnLButtonDown((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
           return(0);
         }
       } //end combopicker
@@ -2955,10 +2953,7 @@ int WndProperty::OnKeyDown(WPARAM wParam, LPARAM lParam){
 
 extern BOOL dlgKeyboard(WndProperty* theProperty);
 
-int WndProperty::OnLButtonDown(WPARAM wParam, LPARAM lParam){
-  (void)wParam;
-  POINT Pos;
-
+int WndProperty::OnLButtonDown(const POINT& Pos){
   if (mDialogStyle)
   {
     if (!GetReadOnly())  // when they click on the label
@@ -2980,10 +2975,6 @@ int WndProperty::OnLButtonDown(WPARAM wParam, LPARAM lParam){
       return(0);
     }
 
-    Pos.x = lParam & 0x0000ffff; 
-    Pos.y = (lParam >> 16)& 0x0000ffff;
-    //POINTSTOPOINT(Pos, MAKEPOINTS(lParam));
-
     mDownDown = (PtInRect(&mHitRectDown, Pos) != 0);
 
     if (mDownDown) {
@@ -3004,15 +2995,13 @@ int WndProperty::OnLButtonDown(WPARAM wParam, LPARAM lParam){
   return(0);
 };
 
-int WndProperty::OnLButtonDoubleClick(WPARAM wParam, LPARAM lParam){
+int WndProperty::OnLButtonDoubleClick(const POINT& Pos){
 
-  return(OnLButtonDown(wParam, lParam));
+  return (OnLButtonDown(Pos));
 
 }
 
-int WndProperty::OnLButtonUp(WPARAM wParam, LPARAM lParam){
-	(void)lParam;
-	(void)wParam;
+int WndProperty::OnLButtonUp(const POINT& Pos){
 
   if (mDialogStyle)
   {
@@ -3647,20 +3636,19 @@ int WndListFrame::PrepareItemDraw(void){
   return(1);
 }
 
-int WndListFrame::OnLButtonUp(WPARAM wParam, LPARAM lParam) {
+int WndListFrame::OnLButtonUp(const POINT& Pos) {
     mMouseDown=false;
     return 1;
 }
 
 static bool isselect = false;
 
-int WndFrame::OnLButtonUp(WPARAM wParam, LPARAM lParam) {
+int WndFrame::OnLButtonUp(const POINT& Pos) {
   return 1;
 }
 
 // JMW needed to support mouse/touchscreen
-int WndFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {
-	(void)wParam;
+int WndFrame::OnLButtonDown(const POINT& Pos) {
 
   if (mIsListItem && GetOwner()!=NULL) {
 
@@ -3675,13 +3663,11 @@ int WndFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {
       UpdateWindow(GetHandle());
     //}
 
-    int xPos = LOWORD(lParam);  // horizontal position of cursor 
-    int yPos = HIWORD(lParam);  // vertical position of cursor 
     WndListFrame* wlf = ((WndListFrame*)GetOwner());
     RECT mRc;
     GetWindowRect(GetHandle(), &mRc);
     LKASSERT(wlf!=NULL);
-    wlf->SelectItemFromScreen(xPos, yPos, &mRc);
+    wlf->SelectItemFromScreen(Pos.x, Pos.y, &mRc);
   }
   isselect = false;
   return(1);
@@ -3763,14 +3749,10 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos,
 }
 
 
-int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {  
+int WndListFrame::OnMouseMove(const POINT& Pos) {
 
   if ( Poco::Timestamp() >= LastMouseMoveTime )
   {
-    POINT Pos;
-    Pos.x = LOWORD(lParam); 
-    Pos.y = HIWORD(lParam);                     
-
     if (mMouseDown && PtInRect(&rcScrollBar, Pos))
     {
       int iScrollBarTop = max(1, (int)Pos.y - mMouseScrollBarYOffset);
@@ -3793,11 +3775,8 @@ int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {
   return(1);
 }
 
-int WndListFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {  
+int WndListFrame::OnLButtonDown(const POINT& Pos) {
 
-  POINT Pos;
-  Pos.x = LOWORD(lParam); 
-  Pos.y = HIWORD(lParam);                     
   mMouseDown=false;
     
   if (PtInRect(&rcScrollBarButton, Pos))  // see if click is on scrollbar handle
@@ -3828,7 +3807,7 @@ int WndListFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {
   if (mClientCount > 0)
   {
     isselect = true;
-    ((WndFrame *)mClients[0])->OnLButtonDown(wParam, lParam);
+    ((WndFrame *)mClients[0])->OnLButtonDown(Pos);
   }
 
   return(1);

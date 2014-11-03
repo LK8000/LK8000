@@ -579,16 +579,16 @@ class WindowControl {
 
     virtual int OnHelp();
 
-    virtual int OnLButtonDoubleClick(WPARAM wParam, LPARAM lParam){
-		(void)wParam; (void)lParam;
+    virtual int OnLButtonDoubleClick(const POINT& Pos){
+		(void)Pos;
       return(1);
     };
-    virtual int OnLButtonDown(WPARAM wParam, LPARAM lParam){
-		(void)wParam; (void)lParam;
+    virtual int OnLButtonDown(const POINT& Pos){
+		(void)Pos;
       return(1);
     };
-    virtual int OnLButtonUp(WPARAM wParam, LPARAM lParam){
-		(void)wParam; (void)lParam;
+    virtual int OnLButtonUp(const POINT& Pos){
+		(void)Pos;
       return(1);
     };
     virtual int OnKeyDown(WPARAM wParam, LPARAM lParam){
@@ -603,8 +603,8 @@ class WindowControl {
 		(void)wParam; (void)lParam;
       return(1);
     };
-    virtual int OnMouseMove(WPARAM wParam, LPARAM lParam){
-		(void)wParam; (void)lParam;
+    virtual int OnMouseMove(const POINT& Pos){
+		(void)Pos;
       return(1);
     };
     virtual int OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
@@ -715,8 +715,8 @@ class WndFrame:public WindowControl{
 
     virtual void Destroy(void);
 
-    virtual int OnMouseMove(WPARAM wParam, LPARAM lParam){
-		(void)wParam; (void)lParam;
+    virtual int OnMouseMove(const POINT& Pos){
+		(void)Pos;
       return(1);
     };
 
@@ -731,8 +731,8 @@ class WndFrame:public WindowControl{
     void SetIsListItem(bool Value){mIsListItem = Value;};
 
 
-    int OnLButtonDown(WPARAM wParam, LPARAM lParam);
-    int OnLButtonUp(WPARAM wParam, LPARAM lParam);
+    int OnLButtonDown(const POINT& Pos);
+    int OnLButtonUp(const POINT& Pos);
 
   protected:
 
@@ -772,7 +772,7 @@ class WndListFrame:public WndFrame{
 
     virtual void Destroy(void);
     
-    int OnMouseMove(WPARAM wParam, LPARAM lParam);
+    int OnMouseMove(const POINT& Pos);
     int OnItemKeyDown(WindowControl *Sender, WPARAM wParam, LPARAM lParam);
     int PrepareItemDraw(void);
     void ResetList(void);
@@ -801,8 +801,8 @@ class WndListFrame:public WndFrame{
     int ScrollbarWidth;
 #endif
 
-    int OnLButtonDown(WPARAM wParam, LPARAM lParam);
-    int OnLButtonUp(WPARAM wParam, LPARAM lParam);
+    int OnLButtonDown(const POINT& Pos);
+    int OnLButtonUp(const POINT& Pos);
 
     OnListCallback_t mOnListCallback;
     OnListCallback_t mOnListEnterCallback;
@@ -869,7 +869,7 @@ class WndForm:public WindowControl{
     int (*mOnTimerNotify)(WindowControl * Sender);
     int (*mOnKeyDownNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam);
     int (*mOnKeyUpNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam);
-    int (*mOnLButtonUpNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam);
+    int (*mOnLButtonUpNotify)(WindowControl * Sender, const POINT& Pos);
     int (*mOnUserMsgNotify)(WindowControl * Sender, MSG *msg);
 
 
@@ -893,8 +893,7 @@ class WndForm:public WindowControl{
     virtual bool SetFocused(bool Value, HWND FromTo);
 
 
-    int OnLButtonUp(WPARAM wParam, LPARAM lParam){
-		(void)wParam; (void)lParam;
+    int OnLButtonUp(const POINT& Pos){
       return(0);
     };
 
@@ -926,7 +925,7 @@ class WndForm:public WindowControl{
     LKFont SetFont(const LKFont& Value);
     void SetKeyDownNotify(int (*KeyDownNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam));
     void SetKeyUpNotify(int (*KeyUpNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam));
-    void SetLButtonUpNotify(int (*LButtonUpNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam));
+    void SetLButtonUpNotify(int (*LButtonUpNotify)(WindowControl * Sender, const POINT& Pos));
 
     void SetTimerNotify(int (*OnTimerNotify)(WindowControl * Sender));
 
@@ -953,9 +952,9 @@ class WndButton:public WindowControl{
     WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, void(*Function)(WindowControl * Sender) = NULL);
     virtual void Destroy(void);
 
-    int OnLButtonUp(WPARAM wParam, LPARAM lParam);
-    int OnLButtonDown(WPARAM wParam, LPARAM lParam);
-    int OnLButtonDoubleClick(WPARAM wParam, LPARAM lParam);
+    int OnLButtonUp(const POINT& Pos);
+    int OnLButtonDown(const POINT& Pos);
+    int OnLButtonDoubleClick(const POINT& Pos);
 
     int OnKeyDown(WPARAM wParam, LPARAM lParam);
     int OnKeyUp(WPARAM wParam, LPARAM lParam);
@@ -1028,9 +1027,9 @@ class WndProperty:public WindowControl{
 
     int OnKeyDown(WPARAM wParam, LPARAM lParam);
     int OnEditKeyDown(WPARAM wParam, LPARAM lParam);
-    int OnLButtonDown(WPARAM wParam, LPARAM lParam);
-    int OnLButtonUp(WPARAM wParam, LPARAM lParam);
-    int OnLButtonDoubleClick(WPARAM wParam, LPARAM lParam);
+    int OnLButtonDown(const POINT& Pos);
+    int OnLButtonUp(const POINT& Pos);
+    int OnLButtonDoubleClick(const POINT& Pos);
 
 //    int GetAsInteger(void){return(mValue);};
 //    int SetAsInteger(int Value);
