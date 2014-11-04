@@ -1392,47 +1392,47 @@ static void OnComPort2Data(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnAirspaceColoursClicked),
-  DeclareCallBackEntry(OnAirspaceModeClicked),
-  DeclareCallBackEntry(OnAirspaceWarningParamsClicked),
-  DeclareCallBackEntry(OnUTCData),
-  DeclareCallBackEntry(OnNextClicked),
-  DeclareCallBackEntry(OnPrevClicked),
-  DeclareCallBackEntry(OnSetupDeviceAClicked),
-  DeclareCallBackEntry(OnSetupDeviceBClicked),
-  DeclareCallBackEntry(OnInfoBoxHelp),
-  DeclareCallBackEntry(OnWaypointNewClicked),
-  DeclareCallBackEntry(OnWaypointDeleteClicked),
-  DeclareCallBackEntry(OnWaypointEditClicked),
-  DeclareCallBackEntry(OnWaypointSaveClicked),
+  ClickNotifyCallbackEntry(OnAirspaceColoursClicked),
+  ClickNotifyCallbackEntry(OnAirspaceModeClicked),
+  ClickNotifyCallbackEntry(OnAirspaceWarningParamsClicked),
+  DataAccessCallbackEntry(OnUTCData),
+  ClickNotifyCallbackEntry(OnNextClicked),
+  ClickNotifyCallbackEntry(OnPrevClicked),
+  ClickNotifyCallbackEntry(OnSetupDeviceAClicked),
+  ClickNotifyCallbackEntry(OnSetupDeviceBClicked),
+  OnHelpCallbackEntry(OnInfoBoxHelp),
+  ClickNotifyCallbackEntry(OnWaypointNewClicked),
+  ClickNotifyCallbackEntry(OnWaypointDeleteClicked),
+  ClickNotifyCallbackEntry(OnWaypointEditClicked),
+  ClickNotifyCallbackEntry(OnWaypointSaveClicked),
 
-  DeclareCallBackEntry(OnDeviceAData),
-  DeclareCallBackEntry(OnDeviceBData),
+  DataAccessCallbackEntry(OnDeviceAData),
+  DataAccessCallbackEntry(OnDeviceBData),
   
-  DeclareCallBackEntry(OnComPort1Data),
-  DeclareCallBackEntry(OnComPort2Data),
+  DataAccessCallbackEntry(OnComPort1Data),
+  DataAccessCallbackEntry(OnComPort2Data),
 
-  DeclareCallBackEntry(OnUseCustomFontData),
-  DeclareCallBackEntry(OnEditMapWindowFontClicked),
-  DeclareCallBackEntry(OnEditMapLabelFontClicked),
+  DataAccessCallbackEntry(OnUseCustomFontData),
+  ClickNotifyCallbackEntry(OnEditMapWindowFontClicked),
+  ClickNotifyCallbackEntry(OnEditMapLabelFontClicked),
 
-  DeclareCallBackEntry(OnSetTopologyClicked),
-  DeclareCallBackEntry(OnSetCustomKeysClicked),
-  DeclareCallBackEntry(OnMultimapsClicked),
-  DeclareCallBackEntry(OnSetCustomMenuClicked),
-  DeclareCallBackEntry(OnSetBottomBarClicked),
-  DeclareCallBackEntry(OnSetInfoPagesClicked),
-  DeclareCallBackEntry(OnTaskRulesClicked),
+  ClickNotifyCallbackEntry(OnSetTopologyClicked),
+  ClickNotifyCallbackEntry(OnSetCustomKeysClicked),
+  ClickNotifyCallbackEntry(OnMultimapsClicked),
+  ClickNotifyCallbackEntry(OnSetCustomMenuClicked),
+  ClickNotifyCallbackEntry(OnSetBottomBarClicked),
+  ClickNotifyCallbackEntry(OnSetInfoPagesClicked),
+  ClickNotifyCallbackEntry(OnTaskRulesClicked),
   
-  DeclareCallBackEntry(OnAirspaceFillType),
-  DeclareCallBackEntry(OnAirspaceDisplay),
-  DeclareCallBackEntry(OnAspPermModified),
-  DeclareCallBackEntry(OnLk8000ModeChange),
-  DeclareCallBackEntry(OnGearWarningModeChange),
+  DataAccessCallbackEntry(OnAirspaceFillType),
+  DataAccessCallbackEntry(OnAirspaceDisplay),
+  DataAccessCallbackEntry(OnAspPermModified),
+  DataAccessCallbackEntry(OnLk8000ModeChange),
+  DataAccessCallbackEntry(OnGearWarningModeChange),
 #ifndef NO_BLUETOOTH
-  DeclareCallBackEntry(OnBthDevice),
+  ClickNotifyCallbackEntry(OnBthDevice),
 #endif
-  DeclareCallBackEntry(NULL)
+  EndCallBackEntry()
 };
 
 

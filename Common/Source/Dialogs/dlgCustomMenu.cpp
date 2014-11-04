@@ -176,9 +176,9 @@ static void OnResetClicked(WindowControl * Sender){
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnResetClicked),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  ClickNotifyCallbackEntry(OnResetClicked),
+  EndCallBackEntry()
 };
 
 

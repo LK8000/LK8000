@@ -42,9 +42,9 @@ static void OnCloseClicked(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnRulesActiveData),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(NULL)
+  DataAccessCallbackEntry(OnRulesActiveData),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  EndCallBackEntry()
 };
 
 

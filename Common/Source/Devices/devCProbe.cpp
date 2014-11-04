@@ -353,7 +353,7 @@ BOOL CDevCProbe::SetCalGyro(PDeviceDescriptor_t d) {
 }
 
 CallBackTableEntry_t CDevCProbe::CallBackTable[]={
-  DeclareCallBackEntry(NULL)
+  EndCallBackEntry()
 };
 
 BOOL CDevCProbe::Config(PDeviceDescriptor_t d){

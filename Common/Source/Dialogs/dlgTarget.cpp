@@ -535,13 +535,13 @@ static void OnTaskPointData(DataField *Sender, DataField::DataAccessKind_t Mode)
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnTaskPointData), 
-  DeclareCallBackEntry(OnRangeData), 
-  DeclareCallBackEntry(OnRadialData), 
-  DeclareCallBackEntry(OnLockedData), 
-  DeclareCallBackEntry(OnOKClicked),
-  DeclareCallBackEntry(OnMoveClicked),
-  DeclareCallBackEntry(NULL)
+  DataAccessCallbackEntry(OnTaskPointData),
+  DataAccessCallbackEntry(OnRangeData),
+  DataAccessCallbackEntry(OnRadialData),
+  DataAccessCallbackEntry(OnLockedData),
+  ClickNotifyCallbackEntry(OnOKClicked),
+  ClickNotifyCallbackEntry(OnMoveClicked),
+  EndCallBackEntry()
 };
 
 

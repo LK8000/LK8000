@@ -490,13 +490,13 @@ static void OnCloseClicked(WindowControl * Sender) {
 
 
 static CallBackTableEntry_t CallBackTable[] = {
-    DeclareCallBackEntry(OnMultiSelectListPaintListItem),
-    DeclareCallBackEntry(OnMultiSelectListListInfo),
-    DeclareCallBackEntry(OnCloseClicked),
-    DeclareCallBackEntry(OnUpClicked),
-    DeclareCallBackEntry(OnEnterClicked),
-    DeclareCallBackEntry(OnDownClicked),
-    DeclareCallBackEntry(NULL)
+    OnPaintCallbackEntry(OnMultiSelectListPaintListItem),
+    OnListCallbackEntry(OnMultiSelectListListInfo),
+    ClickNotifyCallbackEntry(OnCloseClicked),
+    ClickNotifyCallbackEntry(OnUpClicked),
+    ClickNotifyCallbackEntry(OnEnterClicked),
+    ClickNotifyCallbackEntry(OnDownClicked),
+    EndCallBackEntry()
 };
 
 ListElement* dlgMultiSelectListShowModal(void) {

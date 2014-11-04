@@ -193,10 +193,10 @@ static void OnCloseClicked(WindowControl * Sender){
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnSaveNewClicked),
-  DeclareCallBackEntry(OnSaveExistingClicked),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  ClickNotifyCallbackEntry(OnSaveNewClicked),
+  ClickNotifyCallbackEntry(OnSaveExistingClicked),
+  EndCallBackEntry()
 };
 
 

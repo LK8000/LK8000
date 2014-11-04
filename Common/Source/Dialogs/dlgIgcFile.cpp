@@ -151,11 +151,11 @@ namespace DlgIgcFile {
     }
 
     CallBackTableEntry_t CallBackTable[] = {
-        DeclareCallBackEntry(OnClose),
-        DeclareCallBackEntry(OnSend),
-        DeclareCallBackEntry(OnIgcFileListInfo),
-        DeclareCallBackEntry(OnPaintIgcFileListItem),
-        DeclareCallBackEntry(NULL)
+        ClickNotifyCallbackEntry(OnClose),
+        ClickNotifyCallbackEntry(OnSend),
+        OnListCallbackEntry(OnIgcFileListInfo),
+        OnPaintCallbackEntry(OnPaintIgcFileListItem),
+        EndCallBackEntry()
     };
 }
 

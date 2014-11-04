@@ -115,9 +115,9 @@ static void setVariables(void) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnCustomKeysActiveData),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(NULL)
+  DataAccessCallbackEntry(OnCustomKeysActiveData),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  EndCallBackEntry()
 };
 
 

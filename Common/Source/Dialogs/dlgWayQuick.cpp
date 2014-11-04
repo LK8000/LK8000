@@ -89,13 +89,13 @@ static void OnTaskClicked(WindowControl * Sender){
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnGotoClicked),
-  DeclareCallBackEntry(OnSetAlt1Clicked),
-  DeclareCallBackEntry(OnSetAlt2Clicked),
-  DeclareCallBackEntry(OnTaskClicked),
-  DeclareCallBackEntry(OnCancelClicked),
-  DeclareCallBackEntry(OnPaintWaypointPicto),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnGotoClicked),
+  ClickNotifyCallbackEntry(OnSetAlt1Clicked),
+  ClickNotifyCallbackEntry(OnSetAlt2Clicked),
+  ClickNotifyCallbackEntry(OnTaskClicked),
+  ClickNotifyCallbackEntry(OnCancelClicked),
+  OnPaintCallbackEntry(OnPaintWaypointPicto),
+  EndCallBackEntry()
 };
 
 // Will return 0 if cancel or error, 1 if details needed, 2 if goto, 3 if alt1, 4 if alt2

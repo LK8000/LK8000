@@ -216,14 +216,14 @@ static void OnHelpClicked(WindowControl * Sender){
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnKey),
-  DeclareCallBackEntry(OnClear),
-  DeclareCallBackEntry(OnOk),
-  DeclareCallBackEntry(OnDel),
-  DeclareCallBackEntry(OnDate),
-  DeclareCallBackEntry(OnTime),
-  DeclareCallBackEntry(OnHelpClicked),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnKey),
+  ClickNotifyCallbackEntry(OnClear),
+  ClickNotifyCallbackEntry(OnOk),
+  ClickNotifyCallbackEntry(OnDel),
+  ClickNotifyCallbackEntry(OnDate),
+  ClickNotifyCallbackEntry(OnTime),
+  OnHelpCallbackEntry(OnHelpClicked),
+  EndCallBackEntry()
 };
 
 void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, const TCHAR* szResource)

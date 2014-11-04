@@ -16,7 +16,7 @@ extern void WhereAmI(void);
 extern void ResetNearestTopology();
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(NULL)
+  EndCallBackEntry()
 };
 
 short WaitToCallForce=0;

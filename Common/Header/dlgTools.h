@@ -11,7 +11,17 @@
 
 #include "WindowControls.h"
 
-#define DeclareCallBackEntry(x)        {TEXT(#x), (void *)x}
+
+
+#define OnHelpCallbackEntry(x)      {TEXT(#x), (void *)static_cast<WindowControl::OnHelpCallback_t>(x)}
+#define OnListCallbackEntry(x)      {TEXT(#x), (void *)static_cast<WndListFrame::OnListCallback_t>(x)}
+#define OnPaintCallbackEntry(x)     {TEXT(#x), (void *)static_cast<WndOwnerDrawFrame::OnPaintCallback_t>(x)}
+#define ClickNotifyCallbackEntry(x) {TEXT(#x), (void *)static_cast<WndButton::ClickNotifyCallback_t>(x)}
+#define DataChangeCallbackEntry(x)  {TEXT(#x), (void *)static_cast<WndProperty::DataChangeCallback_t>(x)}
+#define DataAccessCallbackEntry(x)  {TEXT(#x), (void *)static_cast<DataField::DataAccessCallback_t>(x)}
+
+#define EndCallBackEntry()          {TEXT(""), NULL}
+
 int DLGSCALE(int x);
 
 typedef struct{

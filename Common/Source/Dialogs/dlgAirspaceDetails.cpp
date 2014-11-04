@@ -150,12 +150,12 @@ static int OnTimer(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnAcknowledgeClicked),
-  DeclareCallBackEntry(OnFlyClicked),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnSelectClicked),
-  DeclareCallBackEntry(OnPaintAirspacePicto),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnAcknowledgeClicked),
+  ClickNotifyCallbackEntry(OnFlyClicked),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  ClickNotifyCallbackEntry(OnSelectClicked),
+  OnPaintCallbackEntry(OnPaintAirspacePicto),
+  EndCallBackEntry()
 };
 
 static void SetValues(void) {

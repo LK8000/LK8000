@@ -593,18 +593,18 @@ static void OnTaskPointPicto(WindowControl * Sender, LKSurface& Surface) {
 
 static CallBackTableEntry_t CallBackTable[]={
 
-  DeclareCallBackEntry(OnMoveClicked),
-  DeclareCallBackEntry(OnSelectClicked),
-  DeclareCallBackEntry(OnDetailsClicked),
-  DeclareCallBackEntry(OnRemoveClicked),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnStartPointClicked),
-  DeclareCallBackEntry(OnMoveAfterClicked),
-  DeclareCallBackEntry(OnMoveBeforeClicked),
-  DeclareCallBackEntry(OnAATEnabled),
-  DeclareCallBackEntry(OnTaskRulesClicked),
-  DeclareCallBackEntry(OnTaskPointPicto),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnMoveClicked),
+  ClickNotifyCallbackEntry(OnSelectClicked),
+  ClickNotifyCallbackEntry(OnDetailsClicked),
+  ClickNotifyCallbackEntry(OnRemoveClicked),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  ClickNotifyCallbackEntry(OnStartPointClicked),
+  ClickNotifyCallbackEntry(OnMoveAfterClicked),
+  ClickNotifyCallbackEntry(OnMoveBeforeClicked),
+  DataAccessCallbackEntry(OnAATEnabled),
+  ClickNotifyCallbackEntry(OnTaskRulesClicked),
+  OnPaintCallbackEntry(OnTaskPointPicto),
+  EndCallBackEntry()
 };
 
 

@@ -184,11 +184,11 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnNextClicked),
-  DeclareCallBackEntry(OnPrevClicked),
-  DeclareCallBackEntry(OnPaintDetailsListItem),
-  DeclareCallBackEntry(OnDetailsListInfo),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnNextClicked),
+  ClickNotifyCallbackEntry(OnPrevClicked),
+  OnPaintCallbackEntry(OnPaintDetailsListItem),
+  OnListCallbackEntry(OnDetailsListInfo),
+  EndCallBackEntry()
 };
 
 

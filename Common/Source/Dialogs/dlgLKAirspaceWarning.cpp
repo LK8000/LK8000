@@ -94,10 +94,10 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnAckForTimeClicked),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnPaintAirspacePicto),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnAckForTimeClicked),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  OnPaintCallbackEntry(OnPaintAirspacePicto),
+  EndCallBackEntry()
 };
 
 

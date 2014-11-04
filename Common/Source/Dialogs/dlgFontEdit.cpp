@@ -221,15 +221,15 @@ static void OnFontPitchAndFamilyData(DataField *Sender, DataField::DataAccessKin
 
 static CallBackTableEntry_t CallBackTable[]={
 
-  DeclareCallBackEntry(OnFontPitchAndFamilyData),
-  DeclareCallBackEntry(OnFontItalicData),
-  DeclareCallBackEntry(OnFontWeightData),
-  DeclareCallBackEntry(OnFontHeightData),
-  DeclareCallBackEntry(OnFontNameData),
-  DeclareCallBackEntry(OnResetClicked),
-  DeclareCallBackEntry(OnCancelClicked), 
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(NULL)
+  DataAccessCallbackEntry(OnFontPitchAndFamilyData),
+  DataAccessCallbackEntry(OnFontItalicData),
+  DataAccessCallbackEntry(OnFontWeightData),
+  DataAccessCallbackEntry(OnFontHeightData),
+  DataAccessCallbackEntry(OnFontNameData),
+  ClickNotifyCallbackEntry(OnResetClicked),
+  ClickNotifyCallbackEntry(OnCancelClicked),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  EndCallBackEntry()
 };
 
 

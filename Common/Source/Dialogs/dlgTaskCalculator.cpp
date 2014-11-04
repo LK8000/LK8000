@@ -297,14 +297,14 @@ static void OnOptimiseClicked(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnMacCreadyData),
-  DeclareCallBackEntry(OnRangeData), 
-  DeclareCallBackEntry(OnOKClicked),
-  DeclareCallBackEntry(OnCancelClicked),
-  DeclareCallBackEntry(OnOptimiseClicked),
-  DeclareCallBackEntry(OnTargetClicked),
-  DeclareCallBackEntry(OnCruiseEfficiencyData), 
-  DeclareCallBackEntry(NULL)
+  DataAccessCallbackEntry(OnMacCreadyData),
+  DataAccessCallbackEntry(OnRangeData),
+  ClickNotifyCallbackEntry(OnOKClicked),
+  ClickNotifyCallbackEntry(OnCancelClicked),
+  ClickNotifyCallbackEntry(OnOptimiseClicked),
+  ClickNotifyCallbackEntry(OnTargetClicked),
+  DataAccessCallbackEntry(OnCruiseEfficiencyData),
+  EndCallBackEntry()
 };
 
 

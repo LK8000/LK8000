@@ -181,10 +181,10 @@ static void OnResetTopologyClicked(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnTopoActiveData),
-  DeclareCallBackEntry(OnResetTopologyClicked),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(NULL)
+  DataAccessCallbackEntry(OnTopoActiveData),
+  ClickNotifyCallbackEntry(OnResetTopologyClicked),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  EndCallBackEntry()
 };
 
 

@@ -127,10 +127,9 @@ static int OnTimerNotify(WindowControl * Sender) {
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnTimerNotify),
-//  DeclareCallBackEntry(OnFlarmLockClicked),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnCloseClicked),
+//  ClickNotifyCallbackEntry(OnFlarmLockClicked),
+  EndCallBackEntry()
 };
 
 

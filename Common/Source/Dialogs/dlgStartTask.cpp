@@ -34,9 +34,9 @@ static void OnStartTaskAnywayClicked(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnStartTaskAnywayClicked),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnStartTaskAnywayClicked),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  EndCallBackEntry()
 };
 
 void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double Altitude){

@@ -114,11 +114,11 @@ static void OnClearClicked(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnStartPointPaintListItem),
-  DeclareCallBackEntry(OnStartPointListInfo),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnClearClicked),
-  DeclareCallBackEntry(NULL)
+  OnPaintCallbackEntry(OnStartPointPaintListItem),
+  OnListCallbackEntry(OnStartPointListInfo),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  ClickNotifyCallbackEntry(OnClearClicked),
+  EndCallBackEntry()
 };
 
 

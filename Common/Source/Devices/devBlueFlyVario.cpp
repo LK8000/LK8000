@@ -305,11 +305,11 @@ namespace dlgBlueFlyConfig {
     }
 
     CallBackTableEntry_t CallBackTable[] = {
-        DeclareCallBackEntry(OnClose),
-        DeclareCallBackEntry(OnNextClicked),
-        DeclareCallBackEntry(OnPrevClicked),
-        DeclareCallBackEntry(OnParamData),
-        DeclareCallBackEntry(NULL)
+        ClickNotifyCallbackEntry(OnClose),
+        ClickNotifyCallbackEntry(OnNextClicked),
+        ClickNotifyCallbackEntry(OnPrevClicked),
+        DataAccessCallbackEntry(OnParamData),
+        EndCallBackEntry()
     };
     
     void FillProperty(CHardwareParameters::value_type& Val) {

@@ -72,10 +72,10 @@ static void OnCloseClicked(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnAirspacePatternsPaintListItem),
-  DeclareCallBackEntry(OnAirspacePatternsListInfo),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(NULL)
+  OnPaintCallbackEntry(OnAirspacePatternsPaintListItem),
+  OnListCallbackEntry(OnAirspacePatternsListInfo),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  EndCallBackEntry()
 };
 
 

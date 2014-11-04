@@ -618,13 +618,13 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnFilterName),
-  DeclareCallBackEntry(OnFilterDistance),
-  DeclareCallBackEntry(OnFilterDirection),
-  DeclareCallBackEntry(OnFilterType),
-  DeclareCallBackEntry(OnPaintListItem),
-  DeclareCallBackEntry(OnWpListInfo),
-  DeclareCallBackEntry(NULL)
+  DataAccessCallbackEntry(OnFilterName),
+  DataAccessCallbackEntry(OnFilterDistance),
+  DataAccessCallbackEntry(OnFilterDirection),
+  DataAccessCallbackEntry(OnFilterType),
+  OnPaintCallbackEntry(OnPaintListItem),
+  OnListCallbackEntry(OnWpListInfo),
+  EndCallBackEntry()
 };
 
 

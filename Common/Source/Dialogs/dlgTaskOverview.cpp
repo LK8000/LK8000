@@ -359,8 +359,8 @@ static void OnCloseClicked(WindowControl * Sender){
 
 
 
-static void OnClearClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
-	(void)ListInfo; (void)Sender;
+static void OnClearClicked(WindowControl * Sender){
+	(void)Sender;
   if (MessageBoxX(
 	// LKTOKEN  _@M179_ = "Clear the task?" 
                   gettext(TEXT("_@M179_")),
@@ -376,10 +376,8 @@ static void OnClearClicked(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
   }
 }
 
-static void OnCalcClicked(WindowControl * Sender, 
-			  WndListFrame::ListInfo_t *ListInfo){
+static void OnCalcClicked(WindowControl * Sender){
   (void)Sender;
-  (void)ListInfo;
 
   wf->SetVisible(false);
   dlgTaskCalculatorShowModal();
@@ -388,29 +386,24 @@ static void OnCalcClicked(WindowControl * Sender,
 }
 
 
-static void OnAnalysisClicked(WindowControl * Sender, 
-                              WndListFrame::ListInfo_t *ListInfo){
+static void OnAnalysisClicked(WindowControl * Sender){
   (void)Sender;
-  (void)ListInfo;
 
   wf->SetVisible(false);
   dlgAnalysisShowModal(ANALYSIS_PAGE_TASK);
   wf->SetVisible(true);
 }
 
-static void OnTimegatesClicked(WindowControl * Sender, 
-                              WndListFrame::ListInfo_t *ListInfo){
+static void OnTimegatesClicked(WindowControl * Sender){
   (void)Sender;
-  (void)ListInfo;
 
   wf->SetVisible(false);
   dlgTimeGatesShowModal();
   wf->SetVisible(true);
 }
 
-static void OnDeclareClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
+static void OnDeclareClicked(WindowControl * Sender){
 	(void)Sender;
-	(void)ListInfo;
   RefreshTask();
 
   LoggerDeviceDeclare();
@@ -421,8 +414,8 @@ static void OnDeclareClicked(WindowControl * Sender, WndListFrame::ListInfo_t *L
 
 
 
-static void OnSaveClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
-  (void)ListInfo; (void)Sender;
+static void OnSaveClicked(WindowControl * Sender){
+  (void)Sender;
 
   int file_index; 
   TCHAR task_name[MAX_PATH];
@@ -485,8 +478,8 @@ static void OnSaveClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
 
 
 
-static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){ // 091216
-  (void)ListInfo; (void)Sender;
+static void OnLoadClicked(WindowControl * Sender){ // 091216
+  (void)Sender;
 
   TCHAR file_name[MAX_PATH];
 
@@ -542,8 +535,8 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
 }
 
 
-static void OnDeleteClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
-  (void)ListInfo; (void)Sender;
+static void OnDeleteClicked(WindowControl * Sender){
+  (void)Sender;
 
   TCHAR file_name[MAX_PATH];
 
@@ -579,26 +572,26 @@ static void OnDeleteClicked(WindowControl * Sender, WndListFrame::ListInfo_t *Li
 
 
 
-static void OnAdvancedClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
-  (void)Sender; (void)ListInfo;
+static void OnAdvancedClicked(WindowControl * Sender){
+  (void)Sender;
   showAdvanced = !showAdvanced;
   UpdateAdvanced();
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnTaskPaintListItem),
-  DeclareCallBackEntry(OnTaskListInfo),
-  DeclareCallBackEntry(OnDeclareClicked),
-  DeclareCallBackEntry(OnCalcClicked),
-  DeclareCallBackEntry(OnClearClicked),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnAdvancedClicked),
-  DeclareCallBackEntry(OnSaveClicked),
-  DeclareCallBackEntry(OnLoadClicked),
-  DeclareCallBackEntry(OnDeleteClicked),
-  DeclareCallBackEntry(OnAnalysisClicked),
-  DeclareCallBackEntry(OnTimegatesClicked),
-  DeclareCallBackEntry(NULL)
+  OnPaintCallbackEntry(OnTaskPaintListItem),
+  OnListCallbackEntry(OnTaskListInfo),
+  ClickNotifyCallbackEntry(OnDeclareClicked),
+  ClickNotifyCallbackEntry(OnCalcClicked),
+  ClickNotifyCallbackEntry(OnClearClicked),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  ClickNotifyCallbackEntry(OnAdvancedClicked),
+  ClickNotifyCallbackEntry(OnSaveClicked),
+  ClickNotifyCallbackEntry(OnLoadClicked),
+  ClickNotifyCallbackEntry(OnDeleteClicked),
+  ClickNotifyCallbackEntry(OnAnalysisClicked),
+  ClickNotifyCallbackEntry(OnTimegatesClicked),
+  EndCallBackEntry()
 };
 
 

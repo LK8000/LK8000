@@ -93,12 +93,12 @@ static void OnCancelClicked(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnComboPopupListInfo),
-  DeclareCallBackEntry(OnPaintComboPopupListItem),
-  DeclareCallBackEntry(OnHelpClicked),
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnCancelClicked),
-  DeclareCallBackEntry(NULL)
+  OnListCallbackEntry(OnComboPopupListInfo),
+  OnPaintCallbackEntry(OnPaintComboPopupListItem),
+  OnHelpCallbackEntry(OnHelpClicked),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  ClickNotifyCallbackEntry(OnCancelClicked),
+  EndCallBackEntry()
 };
 
 

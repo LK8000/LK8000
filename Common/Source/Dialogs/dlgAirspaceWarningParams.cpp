@@ -119,9 +119,9 @@ static void setVariables(void) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnCloseClicked),
-  DeclareCallBackEntry(OnWarningsClicked),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnCloseClicked),
+  DataAccessCallbackEntry(OnWarningsClicked),
+  EndCallBackEntry()
 };
 
 

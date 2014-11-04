@@ -268,8 +268,8 @@ static void OnPILOTClicked(WindowControl * Sender){
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnSplashPaint),
-  DeclareCallBackEntry(NULL)
+  OnPaintCallbackEntry(OnSplashPaint),
+  EndCallBackEntry()
 };
 
 

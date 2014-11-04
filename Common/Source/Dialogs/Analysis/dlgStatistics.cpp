@@ -207,9 +207,7 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
   return(1);
 }
 
-static void OnCalcClicked(WindowControl * Sender, 
-			  WndListFrame::ListInfo_t *ListInfo){
-  (void)ListInfo;
+static void OnCalcClicked(WindowControl * Sender){
   (void)Sender;
   if (analysis_page==ANALYSIS_PAGE_BAROGRAPH) {
     dlgBasicSettingsShowModal();
@@ -277,12 +275,12 @@ static void OnAspBearClicked(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnAnalysisPaint),
-  DeclareCallBackEntry(OnNextClicked),
-  DeclareCallBackEntry(OnPrevClicked),
-  DeclareCallBackEntry(OnCalcClicked),
-  DeclareCallBackEntry(OnAspBearClicked),
-  DeclareCallBackEntry(NULL)
+  OnPaintCallbackEntry(OnAnalysisPaint),
+  ClickNotifyCallbackEntry(OnNextClicked),
+  ClickNotifyCallbackEntry(OnPrevClicked),
+  ClickNotifyCallbackEntry(OnCalcClicked),
+  ClickNotifyCallbackEntry(OnAspBearClicked),
+  EndCallBackEntry()
 };
 
 

@@ -169,9 +169,9 @@ static void OnPrevClicked(WindowControl * Sender){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DeclareCallBackEntry(OnNextClicked),
-  DeclareCallBackEntry(OnPrevClicked),
-  DeclareCallBackEntry(NULL)
+  ClickNotifyCallbackEntry(OnNextClicked),
+  ClickNotifyCallbackEntry(OnPrevClicked),
+  EndCallBackEntry()
 };
 
 static bool first = true;
