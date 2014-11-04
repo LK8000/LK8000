@@ -53,12 +53,12 @@ static void OnFlyClicked(WindowControl * Sender){
   UINT answer;
   if (airspace_copy.Flyzone()) {
 	// LKTOKEN _@M1273_ "Set as NOFLY zone?"
-	answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1273_")), MB_YESNO|MB_ICONQUESTION);
+	answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1273_")), mbYesNo);
   } else {
 	// LKTOKEN _@M1272_ "Set as FLY zone?"
-	answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1272_")), MB_YESNO|MB_ICONQUESTION);
+	answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1272_")), mbYesNo);
   }
-  if (answer == IDYES) {
+  if (answer == IdYes) {
 	CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
 	SetValues();
 	// wf->SetModalResult(mrOK);
@@ -94,16 +94,16 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
   if (!airspace_copy.Enabled()) {
   
     // LKTOKEN  _@M1280_ "Enable this airspace?"
-    answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1280_")),  MB_YESNO|MB_ICONQUESTION);
-    if (answer == IDYES) {
+    answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1280_")),  mbYesNo);
+    if (answer == IdYes) {
       // this will cancel a daily ack
       CAirspaceManager::Instance().AirspaceEnable(*airspace);
       wf->SetModalResult(mrOK);
     }
   } else {
     // LKTOKEN  _@M1284_ "Disable this airspace?" 
-    answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1284_")),	MB_YESNO|MB_ICONQUESTION);
-    if (answer == IDYES) {
+    answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1284_")),	mbYesNo);
+    if (answer == IdYes) {
       CAirspaceManager::Instance().AirspaceDisable(*airspace);
       wf->SetModalResult(mrOK);
     }

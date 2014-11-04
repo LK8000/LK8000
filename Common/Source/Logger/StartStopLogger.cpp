@@ -40,7 +40,7 @@ void guiStartLogger(bool noAsk) {
 	}
 
 	// LKTOKEN  _@M637_ = "Start Logger" 
-	if(noAsk || (MessageBoxX(TaskMessage,gettext(TEXT("_@M637_")), MB_YESNO|MB_ICONQUESTION) == IDYES))
+	if(noAsk || (MessageBoxX(TaskMessage,gettext(TEXT("_@M637_")), mbYesNo) == IdYes))
 	{
 		IGCWriteLock=true; // Lock ASAP
 		if (LoggerClearFreeSpace()) {
@@ -79,7 +79,7 @@ void guiStartLogger(bool noAsk) {
 	// LKTOKEN  _@M408_ = "Logger inactive, insufficient storage!" 
 			MessageBoxX(gettext(TEXT("_@M408_")),
 	// LKTOKEN  _@M404_ = "Logger Error" 
-			gettext(TEXT("_@M404_")), MB_OK| MB_ICONERROR);
+			gettext(TEXT("_@M404_")), mbOk);
 			StartupStore(TEXT("------ Logger not started: Insufficient Storage%s"),NEWLINE);
 		}
 		IGCWriteLock=false; 
@@ -96,7 +96,7 @@ void guiStopLogger(bool noAsk) {
        (MessageBoxX(gettext(TEXT("_@M669_")),
 	// LKTOKEN  _@M669_ = "Stop Logger" 
 		    gettext(TEXT("_@M669_")),
-		    MB_YESNO|MB_ICONQUESTION) == IDYES)) {
+		    mbYesNo) == IdYes)) {
       StopLogger();
       if (!noAsk) {
 	// force landing for paragliders..

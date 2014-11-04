@@ -427,7 +427,7 @@ void ReplayLogger::Start(void) {
 		gettext(TEXT("_@M201_")),
 	// LKTOKEN  _@M305_ = "Flight replay" 
 		gettext(TEXT("_@M305_")),
-		MB_OK| MB_ICONINFORMATION);
+		mbOk);
   }
 }
 

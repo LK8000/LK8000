@@ -42,7 +42,7 @@ void InsertWaypoint(int index, unsigned short append) {
       gettext(TEXT("_@M727_")),
 	// LKTOKEN  _@M357_ = "Insert Waypoint" 
       gettext(TEXT("_@M357_")),
-      MB_OK|MB_ICONEXCLAMATION);
+      mbOk);
     
     UnlockTaskData();
     return;

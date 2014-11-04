@@ -206,17 +206,23 @@ typedef enum{
 	mm_enabled_northup,
 } Multimap_t;
 
+typedef enum {
+    mbOk,
+    mbOkCancel,
+    mbYesNo,
+    mbYesNoCancel,
+    mbAbortRetryIgnore,
+    mbRetryCancel,
+} MsgType_t;
 
-
-
-
-
-
-
-
-
-
-
-
+typedef enum {
+    IdOk,
+    IdCancel,
+    IdYes,
+    IdNo,
+    IdAbort,
+    IdRetry,
+    IdIgnore
+} MsgReturn_t;
 
 #endif

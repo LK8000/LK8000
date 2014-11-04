@@ -174,7 +174,7 @@ static void OnResetTopologyClicked(WindowControl * Sender){
   //LKTOKEN _@M1223_ "Topology reset to default values"
   MessageBoxX (
 		 gettext(TEXT("_@M1223_")), 
-		 TEXT(""), MB_OK);
+		 TEXT(""), mbOk);
 }
 
 
@@ -194,7 +194,7 @@ void dlgTopologyShowModal(void){
 	MessageBoxX (
 	// LKTOKEN  _@M502_ = "Only LKMaps can be configured, sorry!" 
 		gettext(TEXT("_@M502_")), 
-		TEXT(""), MB_OK);
+		TEXT(""), mbOk);
   	return;
   }
 

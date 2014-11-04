@@ -31,7 +31,7 @@ WAYPOINT* GrowWaypointList() {
 	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
                   gettext(TEXT("_@M486_")),
 	// LKTOKEN  _@M266_ = "Error" 
-                  gettext(TEXT("_@M266_")),MB_OK|MB_ICONSTOP);
+                  gettext(TEXT("_@M266_")),mbOk);
       
       return 0; // failed to allocate
     }
@@ -53,7 +53,7 @@ WAYPOINT* GrowWaypointList() {
 	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
                   gettext(TEXT("_@M486_")),
 	// LKTOKEN  _@M266_ = "Error" 
-                  gettext(TEXT("_@M266_")),MB_OK|MB_ICONSTOP);
+                  gettext(TEXT("_@M266_")),mbOk);
       
       return 0; // failed to allocate
     }

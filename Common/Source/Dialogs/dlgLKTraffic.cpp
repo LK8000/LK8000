@@ -37,7 +37,7 @@ static void OnTargetClicked(WindowControl * Sender) {
 #if 0
 	if (MessageBoxX(gettext(TEXT("_@M880_")), // UNLOCK current target?
 		gettext(TEXT("_@M881_")), // Target selection
-	MB_YESNO|MB_ICONQUESTION) == IDYES) {
+	mbYesNo) == IdYes) {
 
 #endif
 	LockFlightData();
@@ -57,7 +57,7 @@ static void OnTargetClicked(WindowControl * Sender) {
   if (MessageBoxX(
     gettext(TEXT("_@M884_")), // LOCK this target?
 	gettext(TEXT("_@M881_")), // Target selection
-  MB_YESNO|MB_ICONQUESTION) == IDYES) {
+  mbYesNo) == IdYes) {
 #endif
 	// one more check for existance
 	if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].ID <1 ) {

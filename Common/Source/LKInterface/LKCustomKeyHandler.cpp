@@ -338,7 +338,7 @@ passthrough:
 		if (!CALCULATED_INFO.Flying) {
 			DoStatusMessage(MsgToken(922)); // NOT FLYING
 		} else {
-			if (MessageBoxX(MsgToken(1754), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+			if (MessageBoxX(MsgToken(1754), _T(""), mbYesNo) == IdYes) {
 				LKSW_ForceFreeFlightRestart=true;
 			}
 		}
@@ -414,7 +414,7 @@ passthrough:
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
-		if (MessageBoxX(MsgToken(2229), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		if (MessageBoxX(MsgToken(2229), _T(""), mbYesNo) == IdYes) {
 			LKSW_ResetOdometer=true;
 		}
 		return true;
@@ -428,7 +428,7 @@ passthrough:
 			if ( (GPS_INFO.Speed > TakeOffSpeedThreshold) && (!GPS_INFO.NAVWarning) ) {
 				DoStatusMessage(MsgToken(1799)); // STOP MOVING!
 			} else {
-				if (MessageBoxX(MsgToken(2230), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+				if (MessageBoxX(MsgToken(2230), _T(""), mbYesNo) == IdYes) {
 					LKSW_ForceLanding=true;
 				}
 			}
@@ -438,7 +438,7 @@ passthrough:
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
-		if (MessageBoxX(MsgToken(2236), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		if (MessageBoxX(MsgToken(2236), _T(""), mbYesNo) == IdYes) {
 			LKSW_ResetTripComputer=true;
 		}
 		return true;

@@ -62,7 +62,7 @@ bool BthPort::Initialize() {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
         // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
-        StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());        
+        StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());        
 
         goto failed;
     }
@@ -75,7 +75,7 @@ bool BthPort::Initialize() {
     StartupStore(_T(". Bluetooth Port %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
     return true;
 failed:
-    StatusMessage(MB_OK, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
+    StatusMessage(mbOk, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
 
     // Failed to initialize
     if (mSocket != INVALID_SOCKET) {

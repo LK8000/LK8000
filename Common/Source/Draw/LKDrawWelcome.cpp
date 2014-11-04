@@ -108,7 +108,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 	TCHAR nopath[MAX_PATH];
 	LocalPath(nopath,_T(""));
 	// LKTOKEN _@M1209_ "CHECK INSTALLATION!"
-	MessageBoxX(nopath, gettext(TEXT("_@M1209_")), MB_OK|MB_ICONEXCLAMATION);
+	MessageBoxX(nopath, gettext(TEXT("_@M1209_")), mbOk);
 	WarningHomeDir=false;
   }
 #if ( WINDOWSPC==0 )
@@ -119,7 +119,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 	// LKTOKEN  _@M527_ = "Please exit LK8000 and reset your device.\n" 
 		MessageBoxX(gettext(TEXT("_@M527_")),
                 TEXT("Device need reset!"),
-                MB_OK|MB_ICONEXCLAMATION);
+                mbOk);
 	}
 	checktickcountbug=false;
   }
@@ -131,7 +131,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 	// LKTOKEN  _@M155_ = "CHECK safety arrival altitude\n" 
 		MessageBoxX(gettext(TEXT("_@M155_")),
                 TEXT("Warning!"),
-                MB_OK|MB_ICONEXCLAMATION);
+                mbOk);
 	}
 	checksafetyaltitude=false;
   }

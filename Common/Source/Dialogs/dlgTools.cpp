@@ -31,14 +31,15 @@ static void OnButtonClick(WindowControl * Sender){
     }
 }
 
-int MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, UINT uType, bool wfullscreen){
+MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen){
 
   WndForm *wf=NULL;
   WndFrame *wText=NULL;
   int X, Y, Width, Height;
   WndButton *wButtons[10];
   int ButtonCount = 0;
-  int i,x,y,d,w,h,res,dY;
+  int i,x,y,d,w,h,dY;
+  MsgReturn_t res;
   RECT rc;
 
   // todo
@@ -110,68 +111,65 @@ int MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, UINT uType, bool wfullscreen)
 
   y += dY;
 
-  uType = uType & 0x000f;
-
-  if (uType == MB_OK
-      || uType == MB_OKCANCEL
-
-  ){
+  if (uType == mbOk
+      || uType == mbOkCancel)
+  {
     wButtons[ButtonCount] = new WndButton(wf, TEXT(""), TEXT("OK"), 
                                           0, y, w, h, OnButtonClick);
-    wButtons[ButtonCount]->SetTag(IDOK);
+    wButtons[ButtonCount]->SetTag(IdOk);
     ButtonCount++;
   }
 
-  if (uType == MB_YESNO
-      || uType == MB_YESNOCANCEL
-  ){
+  if (uType == mbYesNo
+      || uType == mbYesNoCancel)
+  {
 	// LKTOKEN  _@M827_ = "Yes" 
     wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M827_")), 
                                           0, y, w, h, OnButtonClick);
-    wButtons[ButtonCount]->SetTag(IDYES);
+    wButtons[ButtonCount]->SetTag(IdYes);
     ButtonCount++;
     wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M890_")),  // No
                                           0, y, w, h, OnButtonClick);
-    wButtons[ButtonCount]->SetTag(IDNO);
+    wButtons[ButtonCount]->SetTag(IdNo);
     ButtonCount++;
   }
 
-  if (uType == MB_ABORTRETRYIGNORE
-      || uType == MB_RETRYCANCEL
-  ){
+  if (uType == mbAbortRetryIgnore
+      || uType == mbRetryCancel)
+  {
     wButtons[ButtonCount] = new WndButton(wf, TEXT(""), 
 	// LKTOKEN  _@M566_ = "Retry" 
                                           gettext(TEXT("_@M566_")), 
                                           0, y, w, h, OnButtonClick);
-    wButtons[ButtonCount]->SetTag(IDRETRY);
+    wButtons[ButtonCount]->SetTag(IdRetry);
     ButtonCount++;
   }
 
-  if (uType == MB_OKCANCEL
-      || uType == MB_RETRYCANCEL
-      || uType == MB_YESNOCANCEL
-  ){
+  if (uType == mbOkCancel
+      || uType == mbRetryCancel
+      || uType == mbYesNoCancel)
+  {
     wButtons[ButtonCount] = new WndButton(wf, TEXT(""), 
 	// LKTOKEN  _@M161_ = "Cancel" 
                                           gettext(TEXT("_@M161_")), 
                                           0, y, w, h, OnButtonClick);
-    wButtons[ButtonCount]->SetTag(IDCANCEL);
+    wButtons[ButtonCount]->SetTag(IdCancel);
     ButtonCount++;
   }
 
-  if (uType == MB_ABORTRETRYIGNORE
-  ){
+  if (uType == mbAbortRetryIgnore) 
+  {
     wButtons[ButtonCount] = new WndButton(wf, TEXT(""), 
 	// LKTOKEN  _@M47_ = "Abort" 
                                           gettext(TEXT("_@M47_")), 
                                           0, y, w, h, OnButtonClick);
-    wButtons[ButtonCount]->SetTag(IDABORT);
+    wButtons[ButtonCount]->SetTag(IdAbort);
     ButtonCount++;
     wButtons[ButtonCount] = new WndButton(wf, TEXT(""), 
 	// LKTOKEN  _@M349_ = "Ignore" 
                                           gettext(TEXT("_@M349_")), 
                                           0, y, w, h, OnButtonClick);
-    wButtons[ButtonCount]->SetTag(IDIGNORE);
+    wButtons[ButtonCount]->SetTag(IdIgnore);
     ButtonCount++;
   }
 
@@ -184,7 +182,7 @@ int MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, UINT uType, bool wfullscreen)
     x += d;
   }
 
-  res = wf->ShowModal();
+  res = static_cast<MsgReturn_t>(wf->ShowModal());
 
   delete wf;
 
@@ -273,7 +271,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
     MessageBoxX(
       TEXT("Can't find resource"),
       TEXT("Dialog error"),
-      MB_OK|MB_ICONEXCLAMATION);
+      mbOk);
 
     // unable to find the resource
     return XMLNode::emptyXMLNode;
@@ -286,7 +284,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
     MessageBoxX(
       TEXT("Can't load resource"),
       TEXT("Dialog error"),
-      MB_OK|MB_ICONEXCLAMATION);
+      mbOk);
 
     // unable to load the resource
     return XMLNode::emptyXMLNode;
@@ -331,7 +329,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
           MessageBoxX(
                         TEXT("Invalid dialog template"),
                         TEXT("Dialog error"),
-                        MB_OK|MB_ICONEXCLAMATION);
+                        mbOk);
           
           return XMLNode::emptyXMLNode;
       }
@@ -344,14 +342,14 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
   MessageBoxX(
               TEXT("Can't lock resource"),
               TEXT("Dialog error"),
-              MB_OK|MB_ICONEXCLAMATION);
+              mbOk);
   return XMLNode::emptyXMLNode;
   
 _errmem:
     MessageBoxX(
                 TEXT("Can't allocate memory"),
                 TEXT("Dialog error"),
-                MB_OK|MB_ICONEXCLAMATION);
+                mbOk);
     // unable to allocate memory
     return XMLNode::emptyXMLNode;
 }
@@ -375,7 +373,7 @@ static XMLNode xmlOpenResourceHelper(const TCHAR *lpszXML, LPCTSTR tag)
       MessageBoxX(
                   errortext,
                   TEXT("Dialog error"),
-                  MB_OK|MB_ICONEXCLAMATION);
+                  mbOk);
         // was exit(255);
 
     }
@@ -411,7 +409,7 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
     MessageBoxX(
       TEXT("Error in loading XML dialog"),
       TEXT("Dialog error"),
-      MB_OK|MB_ICONEXCLAMATION);
+      mbOk);
 
     return NULL;
   }
@@ -469,7 +467,7 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
       MessageBoxX(
                  TEXT("Error in loading XML dialog"),
                  TEXT("Dialog error"),
-                 MB_OK|MB_ICONEXCLAMATION);
+                 mbOk);
 
       delete theForm;
       return NULL;
@@ -479,7 +477,7 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
     MessageBoxX(
       TEXT("Error in loading XML dialog"),
       TEXT("Dialog error"),
-      MB_OK|MB_ICONEXCLAMATION);
+      mbOk);
 
     return NULL;
   }

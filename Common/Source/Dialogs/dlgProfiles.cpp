@@ -47,7 +47,7 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
 	if(MessageBoxX(file_name, 
 		// LKTOKEN  _@M509_ = "Overwrite profile?" 
 		MsgToken(509), 
-		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		mbYesNo) == IdYes) {
 
 		switch (profilemode) {
 			case 0:
@@ -66,7 +66,7 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
 				return;
 		}
 		// LKTOKEN  _@M535_ = "Profile saved!" 
-		MessageBoxX(MsgToken(535),_T(""), MB_OK|MB_ICONEXCLAMATION);
+		MessageBoxX(MsgToken(535),_T(""), mbOk);
 		return;
 	}
   	dfe->Set(0);
@@ -112,7 +112,7 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 	if(MessageBoxX(tmptext, 
 		// LKTOKEN  _@M579_ = "Save ?" 
 		MsgToken(579), 
-		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		mbYesNo) == IdYes) {
 		switch (profilemode) {
 			case 0:
 				LKProfileSave(file_name);
@@ -134,7 +134,7 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 		MessageBoxX(
 		// LKTOKEN  _@M535_ = "Profile saved!" 
 		MsgToken(535), 
-		_T(""), MB_OK|MB_ICONEXCLAMATION);
+		_T(""), mbOk);
 
   		dfe->Set(0);
 		return;
@@ -151,12 +151,12 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 		MessageBoxX(tmptext,
 		// LKTOKEN  _@M162_ = "Cannot overwrite!" 
 		MsgToken(162),
-		MB_OK|MB_ICONEXCLAMATION);
+		mbOk);
 	} else {
 		if(MessageBoxX(tmptext, 
 		// LKTOKEN  _@M510_ = "Overwrite?" 
 		MsgToken(510), 
-		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		mbYesNo) == IdYes) {
 
 			switch (profilemode) {
 				case 0:
@@ -177,7 +177,7 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 			MessageBoxX(
 			// LKTOKEN  _@M535_ = "Profile saved!" 
 			MsgToken(535),
-			_T(""), MB_OK|MB_ICONEXCLAMATION);
+			_T(""), mbOk);
 			return;
 		}
 	}
@@ -220,14 +220,14 @@ static void OnLoadClicked(WindowControl * Sender){
 	if(MessageBoxX(file_name, 
 		// LKTOKEN  _@M397_ = "Load this profile?" 
 		MsgToken(397), 
-		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		mbYesNo) == IDYES) {
 		SettingsEnter();
 		LKProfileLoad(dfe->GetPathFile());
 		SettingsLeave();
 		MessageBoxX(
 		// LKTOKEN  _@M534_ = "Profile loaded!" 
 		MsgToken(534),
-		_T(""), MB_OK|MB_ICONEXCLAMATION);
+		_T(""), mbOk);
 		return;
 	}
   	dfe->Set(0);

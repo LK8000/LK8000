@@ -107,7 +107,7 @@ BOOL ComPort::StartRxThread() {
         StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
 
         // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
-        StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M761_")), GetPortName());
+        StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M761_")), GetPortName());
         //DWORD dwError = GetLastError();
         return FALSE;
     }
@@ -178,7 +178,7 @@ void ComPort::SetPortStatus(int nStatus) {
     }
 }
 
-void ComPort::StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...) {
+void ComPort::StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *fmt, ...) {
     TCHAR tmp[127];
     va_list ap;
     LKASSERT(fmt!=NULL);

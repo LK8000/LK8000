@@ -348,7 +348,7 @@ namespace dlgBlueFlyConfig {
     }
 
     int Show(DeviceDescriptor_t *d) {
-        int nRet = IDCANCEL;
+        int nRet = IdCancel;
         TCHAR filename[MAX_PATH];
         const TCHAR *resName = NULL;
         pDevice = d;
@@ -399,7 +399,7 @@ namespace dlgBlueFlyConfig {
 
             Init = false;
             if (wfDlg->ShowModal(true)) {
-                nRet = IDOK;
+                nRet = IdOk;
             }
             AssocFieldParam.clear();
             lstPageWnd.clear();
@@ -467,7 +467,7 @@ BOOL BlueFlyVarioClose(PDeviceDescriptor_t d) {
 
 BOOL BlueFlyConfig(PDeviceDescriptor_t d) {
     if(gHardwareParameters[d]) {
-        return (dlgBlueFlyConfig::Show(d) == IDOK);
+        return (dlgBlueFlyConfig::Show(d) == IdOk);
     }
     return FALSE;
 }

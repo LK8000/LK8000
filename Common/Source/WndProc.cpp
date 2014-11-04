@@ -233,7 +233,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// LKTOKEN  _@M198_ = "Confirm Exit?"
                	gettext(TEXT("_@M198_")),
                       TEXT("LK8000"),
-                      MB_YESNO|MB_ICONQUESTION) == IDYES)) 
+                      mbYesNo) == IdYes)) 
         {
           if(iTimerID) {
             KillTimer(hWnd,iTimerID);

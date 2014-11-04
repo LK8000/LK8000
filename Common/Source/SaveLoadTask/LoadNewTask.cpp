@@ -297,12 +297,12 @@ goEnd:
 	// LKTOKEN  _@M360_ = "Invalid old task format!" 
 		MessageBoxX(gettext(TEXT("_@M360_")), 
 	// LKTOKEN  _@M396_ = "Load task" 
-			gettext(TEXT("_@M396_")), MB_OK|MB_ICONEXCLAMATION);
+			gettext(TEXT("_@M396_")), mbOk);
 	} else {
 	// LKTOKEN  _@M264_ = "Error in task file!" 
 		MessageBoxX(gettext(TEXT("_@M264_")), 
 	// LKTOKEN  _@M396_ = "Load task" 
-			gettext(TEXT("_@M396_")), MB_OK|MB_ICONEXCLAMATION);
+			gettext(TEXT("_@M396_")), mbOk);
 	}
   } else {
 	#if TESTBENCH

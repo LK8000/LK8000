@@ -1065,7 +1065,7 @@ static void OnPaste(WindowControl *Sender) {
 		 gettext(TEXT("_@M510_")),
 	// LKTOKEN  _@M354_ = "InfoBox paste" 
 		 gettext(TEXT("_@M354_")),
-		 MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		 mbYesNo) == IdYes) {
 
     for (int item=0; item<8; item++) {
       InfoBoxPropName(name, item, mode);
@@ -1179,7 +1179,7 @@ static void OnProfileSaveAs(WindowControl * Sender, short mode) {
 	if(MessageBoxX(file_name, 
 	// LKTOKEN  _@M509_ = "Overwrite profile?" 
 		gettext(TEXT("_@M509_")), 
-		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		mbYesNo) == IDYES) {
   		switch(mode) {
 			case 0:
 				UpdateAircraftConfig();
@@ -1197,7 +1197,7 @@ static void OnProfileSaveAs(WindowControl * Sender, short mode) {
 		}
 
 		// LKTOKEN  _@M535_ = "Profile saved!" 
-		MessageBoxX(gettext(TEXT("_@M535_")),_T(""), MB_OK|MB_ICONEXCLAMATION);
+		MessageBoxX(gettext(TEXT("_@M535_")),_T(""), mbOk);
 		return;
 	}
   	dfe->Set(0);
@@ -1287,7 +1287,7 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 	if(MessageBoxX(tmptext, 
 	// LKTOKEN  _@M579_ = "Save ?" 
 		gettext(TEXT("_@M579_")), 
-		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		mbYesNo) == IDYES) {
 		switch(mode) {
 			case 0:
 				UpdateAircraftConfig();
@@ -1309,7 +1309,7 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 		MessageBoxX(
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 		gettext(TEXT("_@M535_")), 
-		_T(""), MB_OK|MB_ICONEXCLAMATION);
+		_T(""), mbOk);
 
   		dfe->Set(0);
 		return;
@@ -1326,12 +1326,12 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 		MessageBoxX(tmptext,
 	// LKTOKEN  _@M162_ = "Cannot overwrite!" 
 		gettext(TEXT("_@M162_")),
-		MB_OK|MB_ICONEXCLAMATION);
+		mbOk);
 	} else {
 		if(MessageBoxX(tmptext, 
 	// LKTOKEN  _@M510_ = "Overwrite?" 
 		gettext(TEXT("_@M510_")), 
-		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		mbYesNo) == IDYES) {
 
 			switch (mode) {
 				case 0:
@@ -1351,7 +1351,7 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 			MessageBoxX(
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 			gettext(TEXT("_@M535_")),
-			_T(""), MB_OK|MB_ICONEXCLAMATION);
+			_T(""), mbOk);
 			return;
 		}
 	}
@@ -1384,7 +1384,7 @@ static void OnWaypointNewClicked(WindowControl * Sender){
 	gettext(TEXT("_@M478_")),
 	// LKTOKEN  _@M457_ = "New Waypoint" 
                gettext(TEXT("_@M457_")),
-               MB_OK|MB_ICONEXCLAMATION);
+               mbOk);
 
 	return; 
   }
@@ -1464,7 +1464,7 @@ static void OnWaypointEditClicked(WindowControl * Sender){
 		gettext(TEXT("_@M716_")),
 	// LKTOKEN  _@M194_ = "CompeGPS Waypoint" 
                 gettext(TEXT("_@M194_")),
-                MB_OK|MB_ICONEXCLAMATION);
+                mbOk);
 
 		return;
 	}
@@ -1476,7 +1476,7 @@ static void OnWaypointEditClicked(WindowControl * Sender){
 		gettext(TEXT("_@M716_")),
 	// LKTOKEN  _@M775_ = "VIRTUAL Waypoint" 
                 gettext(TEXT("_@M775_")),
-                MB_OK|MB_ICONEXCLAMATION);
+                mbOk);
 
 		return;
 	}
@@ -1495,7 +1495,7 @@ static void AskWaypointSave(void) {
                    gettext(TEXT("_@M810_")),
 	// LKTOKEN  _@M811_ = "Waypoints outside terrain" 
                    gettext(TEXT("_@M811_")),
-                   MB_YESNO|MB_ICONQUESTION) == IDYES) {
+                   mbYesNo) == IdYes) {
       
       WaypointWriteFiles();
       
@@ -1533,7 +1533,7 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
 		MessageBoxX(gettext(TEXT("_@M716_")),
 	// LKTOKEN  _@M194_ = "CompeGPS Waypoint" 
 			gettext(TEXT("_@M194_")),
-			MB_OK|MB_ICONEXCLAMATION);
+			mbOk);
 		return;
 	} else 
 	#endif
@@ -1542,12 +1542,12 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
 			MessageBoxX(gettext(TEXT("_@M716_")),
 	// LKTOKEN  _@M775_ = "VIRTUAL Waypoint" 
 				gettext(TEXT("_@M775_")),
-				MB_OK|MB_ICONEXCLAMATION);
+				mbOk);
 			return;
 		} else 
 	// LKTOKEN  _@M229_ = "Delete Waypoint?" 
 	if(MessageBoxX(WayPointList[res].Name, gettext(TEXT("_@M229_")), 
-	MB_YESNO|MB_ICONQUESTION) == IDYES) {
+	mbYesNo) == IdYes) {
 		LockTaskData();
 		WayPointList[res].FileNum = -1;
 		UnlockTaskData();
@@ -4849,7 +4849,7 @@ int ival;
                    gettext(TEXT("_@M581_")),
 	// LKTOKEN  _@M809_ = "Waypoints edited" 
                    gettext(TEXT("_@M809_")),
-                   MB_YESNO|MB_ICONQUESTION) == IDYES) {
+                   mbYesNo) == IdYes) {
     
       AskWaypointSave();
 
@@ -4872,7 +4872,7 @@ int ival;
       MessageBoxX (
 	// LKTOKEN  _@M561_ = "Restart LK8000 to apply changes." 
 		   gettext(TEXT("_@M561_")), 
-		   TEXT("Configuration"), MB_OK);
+		   TEXT("Configuration"), mbOk);
     }
 
   delete wf;

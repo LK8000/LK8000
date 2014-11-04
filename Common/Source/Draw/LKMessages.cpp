@@ -15,7 +15,7 @@ void MSG_NotEnoughMemory(void) {
   MessageBoxX(
     MsgToken(1663),  // NOT ENOUGH MEMORY
     MsgToken(1662),  // SYSTEM ERROR
-    MB_OK|MB_ICONEXCLAMATION);
+    mbOk);
 
 }
 
@@ -27,7 +27,7 @@ void MSG_ASSERTION(int line, const TCHAR *filename) {
   _stprintf(ames,_T("Execution failure in file\n%s\nat line %d\n\nLK8000 terminated!"),filename,line);
   MessageBoxX(ames,
     _T("CRITICAL ASSERTION FAILURE !"),
-    MB_OK|MB_ICONEXCLAMATION,true);
+    mbOk,true);
 
 }
 #endif

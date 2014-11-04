@@ -62,7 +62,7 @@ protected:
         return Read(szString, sizeof (szString));
     }
 
-    void StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...);
+    void StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *fmt, ...);
 
     void AddStatRx(DWORD dwBytes);
     void AddStatErrRx(DWORD dwBytes);

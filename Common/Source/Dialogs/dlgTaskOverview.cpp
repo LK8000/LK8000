@@ -268,7 +268,7 @@ static void OnTaskListEnter(WindowControl * Sender,
 			gettext(TEXT("_@M817_")),
 			// LKTOKEN  _@M54_ = "Add Waypoint" 
 			gettext(TEXT("_@M54_")),
-			MB_YESNO|MB_ICONQUESTION) == IDYES)
+			mbYesNo) == IdYes)
 #else
 		    if(0)
 #endif
@@ -366,7 +366,7 @@ static void OnClearClicked(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
                   gettext(TEXT("_@M179_")),
 	// LKTOKEN  _@M178_ = "Clear task" 
                   gettext(TEXT("_@M178_")),
-                  MB_YESNO|MB_ICONQUESTION) == IDYES) {
+                  mbYesNo) == IdYes) {
     if (CheckDeclaration()) {
       ClearTask();
       UpdateFilePointer();
@@ -473,7 +473,7 @@ static void OnSaveClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
 			file_name,
 			// LKTOKEN  _@M510_ = "Overwrite?" 
 			gettext(TEXT("_@M510_")),
-			MB_YESNO|MB_ICONQUESTION) != IDYES) {
+			mbYesNo) != IdYes) {
 
 			return;
 		}
@@ -504,13 +504,13 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
   if (file_index>0) {
 	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
 		_stprintf(file_name, TEXT("%s '%s' ?"), gettext(TEXT("_@M891_")), dfe->GetAsString()); // Clear old task and load
-		if(MessageBoxX(file_name, _T(" "), MB_YESNO|MB_ICONQUESTION) == IDNO) {
+		if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
 			return;
 		}
 	}
   } else {
 	// LKTOKEN  _@M467_ = "No Task to load" 
-	MessageBoxX(gettext(TEXT("_@M467_")),_T(" "), MB_OK|MB_ICONEXCLAMATION);
+	MessageBoxX(gettext(TEXT("_@M467_")),_T(" "), mbOk);
 	return;
   }
 
@@ -531,7 +531,7 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
               bOK = LoadGpxTask(szFileName);
           }
           if(!bOK) {
-              MessageBoxX(gettext(TEXT("_@M467_")),_T(" "), MB_OK|MB_ICONEXCLAMATION);
+              MessageBoxX(gettext(TEXT("_@M467_")),_T(" "), mbOk);
               return;
           }
           OverviewRefreshTask();
@@ -560,11 +560,11 @@ static void OnDeleteClicked(WindowControl * Sender, WndListFrame::ListInfo_t *Li
   int file_index = dfe->GetAsInteger();
   if (file_index>0) {
 	_stprintf(file_name, TEXT("%s '%s' ?"), MsgToken(1789), dfe->GetAsString()); // Delete task file?
-	if(MessageBoxX(file_name, _T(" "), MB_YESNO|MB_ICONQUESTION) == IDNO) {
+	if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
 		return;
 	}
   } else {
-	MessageBoxX(MsgToken(1790),_T(" "), MB_OK|MB_ICONEXCLAMATION); // No task file to delete
+	MessageBoxX(MsgToken(1790),_T(" "), mbOk); // No task file to delete
 	return;
   }
 

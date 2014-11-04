@@ -342,7 +342,7 @@ _end:
   if (!found) _stprintf(toracle,_T("\n\n%s\n\n%s"), gettext(_T("_@M1725_")),gettext(_T("_@M1726_")));
 
   CharUpper(toracle);
-  MessageBoxX(toracle, gettext(_T("_@M1690_")), MB_OK|MB_ICONQUESTION, true);
+  MessageBoxX(toracle, gettext(_T("_@M1690_")), mbOk, true);
 
 }
 

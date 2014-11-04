@@ -85,10 +85,10 @@ void RemoveWaypoint(int index) {
         tlkbuf,
 	// LKTOKEN  _@M550_ = "Remove Waypoint" 
         gettext(TEXT("_@M550_")),
-        MB_YESNO|MB_ICONQUESTION);
+        mbYesNo);
       LockTaskData();
       
-      if (ret == IDYES) {
+      if (ret == IdYes) {
         RemoveTaskPoint(ActiveWayPoint);
         if (Task[ActiveWayPoint].Index == -1) {
           // Active WayPoint was last in the list so is currently

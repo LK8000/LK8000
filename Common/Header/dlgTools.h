@@ -21,6 +21,6 @@ typedef struct{
 
 WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *FileName, const TCHAR *resource=NULL);
 
-int MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, UINT uType, bool wfullscreen=false);
+MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false);
 
 #endif

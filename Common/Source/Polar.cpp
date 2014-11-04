@@ -279,7 +279,7 @@ void CalculateNewPolarCoef(void)
   // Probably called from wrong thread - check
   MessageBoxX(gettext(TEXT("_@M920_")), // Error loading Polar file!
               gettext(TEXT("_@M791_")), // Warning
-              MB_OK|MB_ICONERROR);
+              mbOk);
 
 }
 

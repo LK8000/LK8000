@@ -99,7 +99,7 @@ void GotoWaypoint(const int wpnum) {
 	gettext(TEXT("_@M158_")),
 	// LKTOKEN  _@M40_ = "A task is running!" 
 	gettext(TEXT("_@M40_")),
-	MB_YESNO|MB_ICONQUESTION) == IDYES) {
+	mbYesNo) == IdYes) {
 		LockTaskData();
 		FlyDirectTo(wpnum);
 		OvertargetMode=OVT_TASK;

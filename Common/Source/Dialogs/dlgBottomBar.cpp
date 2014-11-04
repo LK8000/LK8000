@@ -215,14 +215,14 @@ void dlgBottomBarShowModal(void){
         ConfBB6 || ConfBB7 || ConfBB8 || ConfBB9)) {
       MessageBoxX(
                    gettext(TEXT("_@M16_")), // can't disable all non-TRM0
-                   TEXT(""), MB_OK);        // bottom bar stripes
+                   TEXT(""), mbOk);        // bottom bar stripes
       // Automatically enable NAV1 bottom bar
       ConfBB1 = true;
     }
 
     UpdateConfBB();
     MessageBoxX (gettext(TEXT("_@M1607_")), // bottom bar config saved
-                 TEXT(""), MB_OK);
+                 TEXT(""), mbOk);
 
     // If the user just disabled the currently-shown BB stripe, then
     // automatically advance to the next enabled stripe.

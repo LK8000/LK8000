@@ -246,7 +246,7 @@ void ClubForbiddenMsg() {
             // LKTOKEN  _@M503_ = "Operation forbidden on CLUB devices" 
             gettext(TEXT("_@M503_")),
             _T("CLUB DEVICE"),
-            MB_OK | MB_ICONEXCLAMATION);
+            mbOk);
     return;
 }
 

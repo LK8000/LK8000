@@ -417,7 +417,7 @@ void CDevCProbe::OnCompassCalClicked(WindowControl * Sender){
 		} else {
 			SetCompassCalOn(m_pDevice);
 
-			MessageBoxX(LKGetText(TEXT("_@M2136_")), TEXT("C-Probe"), MB_OK, false);
+			MessageBoxX(LKGetText(TEXT("_@M2136_")), TEXT("C-Probe"), mbOk, false);
 
 			SetCompassCalOff(m_pDevice);
 		}

@@ -59,7 +59,7 @@ bool SerialPort::Initialize() {
     if (hPort == INVALID_HANDLE_VALUE) {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init failed, error=%lu%s"), GetPortIndex() + 1, dwError, NEWLINE); // 091117
-        StatusMessage(MB_OK, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
+        StatusMessage(mbOk, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
 
         goto failed;
     }
@@ -71,7 +71,7 @@ bool SerialPort::Initialize() {
     if (GetCommState(hPort, &PortDCB)==0) {
     	StartupStore(_T("... ComPort %u GetCommState failed, error=%lu%s"),GetPortIndex()+1,GetLastError(),NEWLINE);
         // @M759 = Unable to Change Settings on Port
-        StatusMessage(MB_OK|MB_ICONINFORMATION, NULL, TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
+        StatusMessage(mbOk, NULL, TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
         goto failed;
     }
     // Change the DCB structure settings.
@@ -110,7 +110,7 @@ bool SerialPort::Initialize() {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change setting FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
 		// @M759 = Unable to Change Settings on Port
-    	StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
+    	StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M759_")), GetPortName());
 
         goto failed;
     }
@@ -119,7 +119,7 @@ bool SerialPort::Initialize() {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
         // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
-        StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());        
+        StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M760_")), GetPortName());        
 
         goto failed;
     }
