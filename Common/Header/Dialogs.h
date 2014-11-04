@@ -9,7 +9,6 @@
 #include "dlgTools.h"
 
 
-void SetWindowText_gettext(HWND hDlg, int entry);
 void ClearStatusMessages(void);
 
 void StartupScreen();

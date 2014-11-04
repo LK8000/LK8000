@@ -192,56 +192,10 @@ static void OnCloseClicked(WindowControl * Sender){
         wf->SetModalResult(mrOK);
 }
 
-
-// We dont load profiles at runtime, too many issues against doing this.
-// We can consider loading specific things, such as maps and airspaces, but not all stuff.
-// For the future, in any case not now.
-#if 0 // UNUSED in 3.0
-extern void SettingsEnter();
-extern void SettingsLeave();
-static void OnLoadClicked(WindowControl * Sender){
-
- TCHAR file_name[MAX_PATH];
-
-  WndProperty* wp;
-  DataFieldFileReader *dfe;
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
-  if (!wp) return;
-
-  HWND hwnd = wp->GetHandle();
-  SendMessage(hwnd,WM_LBUTTONDOWN,0,0);
-  dfe = (DataFieldFileReader*) wp->GetDataField();
-
-  int file_index = dfe->GetAsInteger();
-  if (file_index>0) {
-	_tcscpy(file_name,dfe->GetAsString());
-
-	if(MessageBoxX(file_name, 
-		// LKTOKEN  _@M397_ = "Load this profile?" 
-		MsgToken(397), 
-		mbYesNo) == IDYES) {
-		SettingsEnter();
-		LKProfileLoad(dfe->GetPathFile());
-		SettingsLeave();
-		MessageBoxX(
-		// LKTOKEN  _@M534_ = "Profile loaded!" 
-		MsgToken(534),
-		_T(""), mbOk);
-		return;
-	}
-  	dfe->Set(0);
-  }
-  
-}
-#endif
-
-
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnCloseClicked),
   DeclareCallBackEntry(OnSaveNewClicked),
   DeclareCallBackEntry(OnSaveExistingClicked),
-//   DeclareCallBackEntry(OnLoadClicked), // UNUSED in 3.0
   DeclareCallBackEntry(NULL)
 };
 
