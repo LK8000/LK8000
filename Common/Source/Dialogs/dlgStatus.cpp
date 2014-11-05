@@ -95,11 +95,10 @@ static void OnCloseClicked(WindowControl * Sender){
 }
 
 
-static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
-	(void)lParam;
+static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
 	(void)Sender;
 
-  switch(wParam & 0xffff){
+  switch(KeyCode & 0xffff){
     case VK_LEFT:
     case '6':
       SetFocus(((WndButton *)wf->FindByName(TEXT("cmdPrev")))->GetHandle());

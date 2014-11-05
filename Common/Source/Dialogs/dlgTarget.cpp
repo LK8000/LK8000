@@ -198,10 +198,9 @@ static void MoveTarget(double target_longitude, double target_latitude) {
 }
 
 
-static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
-	(void)lParam;
+static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
 	(void)Sender;
-  switch(wParam & 0xffff){
+  switch(KeyCode & 0xffff){
     case '2':
       MoveTarget(0);
     return(0);
@@ -217,7 +216,7 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
   }
   if (TargetMoveMode) {
     StartupStore(TEXT("... moving%s"),NEWLINE);
-    switch(wParam & 0xffff){
+    switch(KeyCode & 0xffff){
     case VK_UP:
       MoveTarget(0);
       return(0);

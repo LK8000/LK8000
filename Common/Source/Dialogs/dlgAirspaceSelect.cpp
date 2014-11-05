@@ -584,17 +584,16 @@ static int OnTimerNotify(WindowControl * Sender) {
   return 0;
 }
 
-static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
+static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
 
   WndProperty* wp;
   unsigned NewIndex = TypeFilterIdx;
 
-  (void)lParam;
   (void)Sender;
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpFltType")));
 
-  switch(wParam & 0xffff){
+  switch(KeyCode & 0xffff){
     case VK_F1:
       NewIndex = 0;
     break;

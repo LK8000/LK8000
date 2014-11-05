@@ -76,10 +76,9 @@ static int OnTimer(WindowControl * Sender){
   return(0);
 }
 
-static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
+static int OnKeyDown(WindowControl * Sender, unsigned KeyCode)
 {
-  (void)lParam;
-    switch(wParam){
+    switch(KeyCode){
     case VK_RETURN:
       OnAckForTimeClicked(Sender);
       return(0);

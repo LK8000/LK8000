@@ -184,13 +184,13 @@ static void OnCloseClicked(WindowControl * Sender){
 }
 
 
-static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
-  (void)Sender; (void)lParam;
+static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
+  (void)Sender;
 
   if (waGrid->GetFocused())
     return(0);
   
-  switch(wParam & 0xffff){
+  switch(KeyCode & 0xffff){
     case VK_LEFT:
     case '6':
       SetFocus(((WndButton *)wfa->FindByName(TEXT("cmdPrev")))->GetHandle());

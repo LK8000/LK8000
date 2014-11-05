@@ -30,7 +30,6 @@
 #define DEFAULTBORDERPENWIDTH 1*ISCALE
 #define SELECTORWIDTH         4*ISCALE
 
-
 // utility functions
 
 
@@ -1849,7 +1848,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
       TouchContext=TCX_PROC_KEYDOWN;
       KeyTimer(true, wParam & 0xffff);
 
-      if (!OnKeyDown(wParam, lParam)) {
+      if (!OnKeyDown(wParam)) {
         return(0);
       }
       break;
@@ -1862,7 +1861,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 	    if (OnHelp()) return (0);
 	  }
 	} 
-        if (!OnKeyUp(wParam, lParam)) {
+        if (!OnKeyUp(wParam)) {
           return(0);
         }
       break;
@@ -2129,13 +2128,13 @@ int WndForm::ShowModal(bool bEnableMap) {
         }
 */
         if (mOnKeyDownNotify != NULL)
-          if (!(mOnKeyDownNotify)(this, msg.wParam, msg.lParam))
+          if (!(mOnKeyDownNotify)(this, msg.wParam))
             continue;
 
       }
       if (msg.message == WM_KEYUP){
         if (mOnKeyUpNotify != NULL)
-          if (!(mOnKeyUpNotify)(this, msg.wParam, msg.lParam))
+          if (!(mOnKeyUpNotify)(this, msg.wParam))
             continue;
       }
       if (msg.message == WM_LBUTTONUP){
@@ -2292,27 +2291,6 @@ LKFont WndForm::SetFont(const LKFont& Value){
   return(WindowControl::SetFont(Value));
 }
 
-
-void WndForm::SetKeyDownNotify(int (*KeyDownNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam)){
-  mOnKeyDownNotify = KeyDownNotify;
-}
-
-void WndForm::SetKeyUpNotify(int (*KeyUpNotify)(WindowControl * Sender, WPARAM wParam, LPARAM lParam)){
-  mOnKeyUpNotify = KeyUpNotify;
-}
-
-void WndForm::SetLButtonUpNotify( int (*LButtonUpNotify)(WindowControl * Sender, const POINT& Pos)){
-  mOnLButtonUpNotify = LButtonUpNotify;
-}
-
-void WndForm::SetTimerNotify(int (*OnTimerNotify)(WindowControl * Sender)) {
-  mOnTimerNotify = OnTimerNotify;
-}
-
-void WndForm::SetUserMsgNotify(int (*OnUserMsgNotify)(WindowControl * Sender, MSG *msg)){
-  mOnUserMsgNotify = OnUserMsgNotify;
-}
-
 // normal form stuff (nonmodal)
 
 bool WndForm::SetFocused(bool Value, HWND FromTo){
@@ -2348,13 +2326,13 @@ int WndForm::OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
   }
   if (msg.message == WM_KEYDOWN){
     if (mOnKeyDownNotify != NULL)
-      if (!(mOnKeyDownNotify)(this, msg.wParam, msg.lParam))
+      if (!(mOnKeyDownNotify)(this, msg.wParam))
         return(0);
 
   }
   if (msg.message == WM_KEYUP){
     if (mOnKeyUpNotify != NULL)
-      if (!(mOnKeyUpNotify)(this, msg.wParam, msg.lParam))
+      if (!(mOnKeyUpNotify)(this, msg.wParam))
         return(0);
   }
   if (msg.message == WM_LBUTTONUP){
@@ -2422,10 +2400,10 @@ void WndForm::Show(void){
 // WndButton
 //-----------------------------------------------------------
 
-WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, void(*Function)(WindowControl * Sender)):
+WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, ClickNotifyCallback_t Function):
       WindowControl(Parent, Name, X, Y, Width, Height){
 
-  mOnClickNotify = Function;
+  SetOnClickNotify(Function);
   mDown = false;
   mDefault = false;
   mCanFocus = true;
@@ -2473,14 +2451,13 @@ int WndButton::OnLButtonUp(const POINT& Pos){
 };
 
 
-int WndButton::OnKeyDown(WPARAM wParam, LPARAM lParam){
-	(void)lParam;
+int WndButton::OnKeyDown(unsigned KeyCode){
 #ifdef VENTA_DEBUG_EVENT  
 	TCHAR ventabuffer[80];
 	_stprintf(ventabuffer,TEXT("ONKEYDOWN WPARAM %d"), wParam); // VENTA-
 	DoStatusMessage(ventabuffer);
 #endif
-  switch (wParam){
+  switch (KeyCode){
     case VK_RETURN:
     case VK_SPACE:
       if (!mDown){
@@ -2494,9 +2471,8 @@ int WndButton::OnKeyDown(WPARAM wParam, LPARAM lParam){
   return(1);
 }
 
-int WndButton::OnKeyUp(WPARAM wParam, LPARAM lParam){
-	(void)lParam;
-  switch (wParam){
+int WndButton::OnKeyUp(unsigned KeyCode){
+  switch (KeyCode){
     case VK_RETURN:
     case VK_SPACE:
       if (!Debounce()) return(1); // prevent false trigger
@@ -2621,13 +2597,10 @@ WndProperty::WndProperty(WindowControl *Parent,
 			 int X, int Y, 
 			 int Width, int Height, 
 			 int CaptionWidth, 
-			 int (*DataChangeNotify)(WindowControl * Sender, 
-						 int Mode, int Value), 
+			 DataChangeCallback_t DataChangeNotify,
 			 int MultiLine):
   WindowControl(Parent, Name, X, Y, Width, Height){
 
-  mOnClickUpNotify = NULL;
-  mOnClickDownNotify = NULL;
   mOnDataChangeNotify = DataChangeNotify;
   _tcscpy(mCaption, Caption);
   mhEdit = NULL;
@@ -2813,7 +2786,7 @@ int WndProperty::WndProcEditControl(HWND hwnd, UINT uMsg,
             return(0);
           }
       }
-      if (!OnEditKeyDown(wParam, lParam))
+      if (!OnEditKeyDown(wParam))
         return(1);
     break;
 
@@ -2923,9 +2896,8 @@ bool WndProperty::SetFocused(bool Value, HWND FromTo){
   return(0);
 }
 
-int WndProperty::OnEditKeyDown(WPARAM wParam, LPARAM lParam){
-  (void)lParam; 
-  switch (wParam){
+int WndProperty::OnEditKeyDown(unsigned KeyCode){
+  switch (KeyCode){
     case VK_RIGHT:
       IncValue();
     return(0);
@@ -2937,9 +2909,8 @@ int WndProperty::OnEditKeyDown(WPARAM wParam, LPARAM lParam){
   return(1);
 }
 
-int WndProperty::OnKeyDown(WPARAM wParam, LPARAM lParam){
-  (void)lParam;
-  switch (wParam){
+int WndProperty::OnKeyDown(unsigned KeyCode){
+  switch (KeyCode){
     case VK_RIGHT:
       IncValue();
     return(0);
@@ -3188,11 +3159,11 @@ void WndFrame::Destroy(void){
 }
 
 
-int WndFrame::OnKeyDown(WPARAM wParam, LPARAM lParam){
+int WndFrame::OnKeyDown(unsigned KeyCode){
   if (mIsListItem && GetOwner()!=NULL){
     RECT mRc;
     GetWindowRect(GetHandle(), &mRc);
-    return(((WndListFrame*)GetOwner())->OnItemKeyDown(this, wParam, lParam));
+    return(((WndListFrame*)GetOwner())->OnItemKeyDown(this, KeyCode));
   }
   return(1);
 }
@@ -3263,8 +3234,7 @@ UINT WndFrame::SetCaptionStyle(UINT Value){
 
 WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, 
                            int Width, int Height, 
-                           void (*OnListCallback)(WindowControl * Sender, 
-                                                  ListInfo_t *ListInfo)):
+                           OnListCallback_t OnListCallback):
   WndFrame(Owner, Name, X, Y, Width, Height)
 {
 
@@ -3467,15 +3437,6 @@ void WndListFrame::DrawScrollBar(LKSurface& Surface) {
 
 }
 
-
-void WndListFrame::SetEnterCallback(void 
-                                    (*OnListCallback)(WindowControl *Sender, 
-                                                      ListInfo_t *ListInfo)) 
-{
-  mOnListEnterCallback = OnListCallback;
-}
-
-
 void WndListFrame::RedrawScrolled(bool all) {
 
   int newTop;
@@ -3559,10 +3520,10 @@ int WndListFrame::RecalculateIndices(bool bigscroll) {
 }
 
 
-int WndListFrame::OnItemKeyDown(WindowControl *Sender, WPARAM wParam, LPARAM lParam){
+int WndListFrame::OnItemKeyDown(WindowControl *Sender, unsigned KeyCode){
 	(void)Sender;
-	(void)lParam;
-  switch (wParam){
+
+   switch (KeyCode){
   case VK_RETURN:
     if (mOnListEnterCallback) {
       mOnListEnterCallback(this, &mListInfo);

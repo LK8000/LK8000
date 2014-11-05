@@ -90,8 +90,8 @@ static void UpdateTextboxProp(void)
   }
 }
 
-static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam) {
-  switch(wParam & 0xffff){
+static int FormKeyDown(WindowControl * Sender, unsigned KeyCode) {
+  switch(KeyCode & 0xffff){
     case VK_LEFT:
       if (cursor<1)
         return(0); // min width
