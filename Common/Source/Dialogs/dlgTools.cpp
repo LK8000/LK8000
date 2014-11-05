@@ -96,7 +96,6 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
       | DT_CENTER
       | DT_NOCLIP
       | DT_WORDBREAK
-        //      | DT_VCENTER
   );
 
   /* TODO code: this doesnt work to set font height 

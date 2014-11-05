@@ -25,6 +25,22 @@
 #include "LKBitmap.h"
 #include "LKFont.h"
 
+#ifndef WIN32
+// DrawText Format.
+#define DT_LEFT         0x00000000
+#define DT_CENTER       0x00000001
+#define DT_WORDBREAK    0x00000010
+#define DT_EXPANDTABS   0x00000040
+#define DT_NOCLIP       0x00000100
+#define DT_CALCRECT     0x00000400
+
+// BckMode
+#define TRANSPARENT 1
+#define OPAQUE 2
+
+#endif
+
+
 class LKSurface : public boost::noncopyable {
 public:
     LKSurface();
