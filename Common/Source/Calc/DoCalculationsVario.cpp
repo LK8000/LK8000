@@ -11,7 +11,7 @@
 extern void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
-BOOL DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
+bool DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   static double LastTime = 0;
 
@@ -26,5 +26,5 @@ BOOL DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     }
   LastTime = Basic->Time;
 
-  return TRUE;
+  return true;
 }

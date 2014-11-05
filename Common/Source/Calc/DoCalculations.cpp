@@ -47,7 +47,7 @@ extern bool TargetDialogOpen;
 
 
 
-BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
+bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
 
   // first thing: assign navaltitude!
@@ -108,7 +108,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   if (!FlightTimes(Basic, Calculated)) {
     // time hasn't advanced, so don't do calculations requiring an advance
     // or movement
-    return FALSE;
+    return false;
   }
 
   Turning(Basic, Calculated);
@@ -182,5 +182,5 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   ConditionMonitorsUpdate(Basic, Calculated);
 
-  return TRUE;
+  return true;
 }

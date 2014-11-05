@@ -247,8 +247,8 @@ typedef struct _DERIVED_INFO
 #ifdef GTL2
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);
 #endif
-int DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-int DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+bool DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
