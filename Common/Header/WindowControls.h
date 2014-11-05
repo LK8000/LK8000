@@ -859,7 +859,6 @@ class WndForm:public WindowControl{
     typedef int (*OnKeyDownNotify_t)(WindowControl * Sender, unsigned KeyCode);
     typedef int (*OnKeyUpNotify_t)(WindowControl * Sender, unsigned KeyCode);
     typedef int (*OnLButtonUpNotify_t)(WindowControl * Sender, const POINT& Pos);
-    typedef int (*OnUserMsgNotify_t)(WindowControl * Sender, MSG *msg);
 
   protected:
 
@@ -875,8 +874,6 @@ class WndForm:public WindowControl{
     OnKeyDownNotify_t mOnKeyDownNotify;
     OnKeyUpNotify_t mOnKeyUpNotify;
     OnLButtonUpNotify_t mOnLButtonUpNotify;
-    OnUserMsgNotify_t mOnUserMsgNotify;
-
 
     int OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -941,10 +938,6 @@ class WndForm:public WindowControl{
 
     void SetTimerNotify(OnTimerNotify_t OnTimerNotify) {
         mOnTimerNotify = OnTimerNotify;
-    }
-
-    void SetUserMsgNotify(OnUserMsgNotify_t OnUserMsgNotify) {
-        mOnUserMsgNotify = OnUserMsgNotify;
     }
 
 private:

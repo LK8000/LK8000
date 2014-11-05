@@ -2284,11 +2284,6 @@ int WndForm::OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     msg.wParam = WA_ACTIVE;
   }*/
 
-  if (msg.message >= WM_USER && msg.message < WM_USER+100){
-    if (mOnUserMsgNotify != NULL)
-      if (!(mOnUserMsgNotify)(this, &msg))
-        return(0);
-  }
   if (msg.message == WM_KEYUP){
   }
   if (msg.message == WM_KEYDOWN){
