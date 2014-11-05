@@ -36,12 +36,12 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
   Temp->FileNum = globalFileNum;
 
   // ExtractParameter(TempString,ctemp,0);
-  if ((pToken = strtok_r(TempString, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = _tcstok_r(TempString, TEXT(","), &pWClast)) == NULL)
     return FALSE;
   Temp->Number = _tcstol(pToken, &Number, 10);
         
   //ExtractParameter(TempString,ctemp,1); //Latitude
-  if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL)
     return FALSE;
   Temp->Latitude = CalculateAngle(pToken);
 
@@ -51,7 +51,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
     }
 
   //ExtractParameter(TempString,ctemp,2); //Longitude
-  if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL)
     return FALSE;
   Temp->Longitude  = CalculateAngle(pToken);
   if((Temp->Longitude  > 180) || (Temp->Longitude  < -180))
@@ -60,7 +60,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
     }
 
   //ExtractParameter(TempString,ctemp,3); //Altitude
-  if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL)
     return FALSE;
   Temp->Altitude = ReadAltitude(pToken);
   if (Temp->Altitude == -9999){
@@ -68,12 +68,12 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
   }
 
   //ExtractParameter(TempString,ctemp,4); //Flags
-  if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL)
     return FALSE;
   Temp->Flags = CheckFlags(pToken);
 
   //ExtractParameter(TempString,ctemp,5); // Name
-  if ((pToken = strtok_r(NULL, TEXT(",\n\r"), &pWClast)) == NULL)
+  if ((pToken = _tcstok_r(NULL, TEXT(",\n\r"), &pWClast)) == NULL)
     return FALSE;
 
   // guard against overrun
@@ -93,7 +93,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
 
   //ExtractParameter(TempString,ctemp,6); // Comment
   // DAT Comment
-  if ((pToken = strtok_r(NULL, TEXT("\n\r"), &pWClast)) != NULL){
+  if ((pToken = _tcstok_r(NULL, TEXT("\n\r"), &pWClast)) != NULL){
     LK_tcsncpy(ctemp, pToken, COMMENT_SIZE); //@ 101102 BUGFIX bad. ctemp was not sized correctly!
 
     if (_tcslen(ctemp) >0 ) {

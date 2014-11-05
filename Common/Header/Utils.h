@@ -78,7 +78,7 @@ double DoSunEphemeris(double lon, double lat);
 
 void *bsearch(void *key, void *base0, size_t nmemb, size_t size, int (*compar)(const void *elem1, const void *elem2));
 
-TCHAR *strtok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
+TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 
 void SaveRegistryToFile(const TCHAR* szFile); 

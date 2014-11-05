@@ -332,7 +332,7 @@ _hexstrtodouble_return:
 
 
 
-TCHAR *strtok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
+TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
 // "s" MUST be a pointer to an array, not to a string!!! 
 // (ARM92, Win emulator cause access violation if not)
 

@@ -1245,7 +1245,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const 
 
     CharUpper(sTmp);
 
-    pToken = strtok_r(sTmp, TEXT(" "), &pWClast);
+    pToken = _tcstok_r(sTmp, TEXT(" "), &pWClast);
 
     Alt->Altitude = 0;
     Alt->FL = 0;
@@ -1344,7 +1344,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const 
             Alt->Altitude = 50000;
         }
 
-        pToken = strtok_r(NULL, TEXT(" \t"), &pWClast);
+        pToken = _tcstok_r(NULL, TEXT(" \t"), &pWClast);
 
     }
 
