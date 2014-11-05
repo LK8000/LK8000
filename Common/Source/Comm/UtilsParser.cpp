@@ -201,8 +201,6 @@ BOOL NMEAParser::NMEAChecksum(const TCHAR *String)
 	c1 = pEnd[1], c2 = pEnd[2];
   }
 
-  //  iswdigit('0'); // what's this for?
-
   if(_istdigit(c1))
     v1 = (unsigned char)(c1 - '0');
   if(_istdigit(c2))

@@ -335,19 +335,19 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* pGPS)
 double TimeModify(const TCHAR* StrTime, NMEA_INFO* pGPS, int& StartDay) {
     double secs = 0.0;
 
-    if (iswdigit(StrTime[0]) && iswdigit(StrTime[1])) {
+    if (_istdigit(StrTime[0]) && _istdigit(StrTime[1])) {
         pGPS->Hour = (StrTime[0] - '0')*10 + (StrTime[1] - '0');
     }
-    if (iswdigit(StrTime[2]) && iswdigit(StrTime[3])) {
+    if (_istdigit(StrTime[2]) && _istdigit(StrTime[3])) {
         pGPS->Minute = (StrTime[2] - '0')*10 + (StrTime[3] - '0');
     }
-    if (iswdigit(StrTime[4]) && iswdigit(StrTime[5])) {
+    if (_istdigit(StrTime[4]) && _istdigit(StrTime[5])) {
         pGPS->Second = (StrTime[4] - '0')*10 + (StrTime[5] - '0');
     }
 
     if (StrTime[6] == '.') {
         int i = 7;
-        while (iswdigit(StrTime[i])) {
+        while (_istdigit(StrTime[i])) {
             double tmp = (StrTime[i] - '0')*0.1;
             for (int j = 7; j < i; ++j) {
                 tmp *= 0.1;
