@@ -10,7 +10,6 @@
 #include <ctype.h>
 #include "Terrain.h"
 #include "RasterTerrain.h"
-#include "STScreenBuffer.h"
 #include "RGB.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
