@@ -1807,11 +1807,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
     break;
 
-    case WM_COMMAND:
-      // This is called several times per second
-      if (OnCommand(wParam, lParam)) return(0);
-    break;
-
     case WM_LBUTTONDBLCLK:
       TouchContext=TCX_PROC_DOUBLECLICK;
 	#if TRACE_WNDPROC
@@ -1933,10 +1928,6 @@ void InitWindowControlModule(void){
 }
 
 Poco::Timestamp WndForm::timeAnyOpenClose=0;
-ACCEL  WndForm::mAccel[] = {
-  {0, VK_ESCAPE,  VK_ESCAPE},
-  {0, VK_RETURN,  VK_RETURN},
-};
 
 WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption, 
                  int X, int Y, int Width, int Height):
@@ -1948,7 +1939,6 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
   mOnLButtonUpNotify = NULL;
   mOnTimerNotify = NULL;
   bLButtonDown= false; 
-  mhAccelTable = CreateAcceleratorTable(mAccel, sizeof(mAccel)/sizeof(mAccel[0]));
 
   mColorTitle = RGB_MENUTITLEBG;
 
@@ -1993,8 +1983,6 @@ void WndForm::Destroy(void){
 
   KillTimer(GetHandle(),cbTimerID);
 
-  DestroyAcceleratorTable(mhAccelTable);
-
   WindowControl::Destroy();  // delete all childs
 
 }
@@ -2005,24 +1993,6 @@ void WndForm::AddClient(WindowControl *Client){      // add client window
   } else
     WindowControl::AddClient(Client);
 }
-
-
-int WndForm::OnCommand(WPARAM wParam, LPARAM lParam){
-   (void)lParam;
-
-   // VENTA- DEBUG HARDWARE KEY PRESSED   
-#ifdef VENTA_DEBUG_KEY
-	TCHAR ventabuffer[80];
-	_stprintf(ventabuffer,TEXT("ONCKEY WPARAM %d"), wParam);
-	DoStatusMessage(ventabuffer);
-#endif
-   if ((wParam & 0xffff) == VK_ESCAPE){
-     mModalResult = mrCancle;
-     return(0);
-   }
-   return(1);
-
-};
 
 LKFont WndForm::SetTitleFont(const LKFont& Value){
   const LKFont res = mhTitleFont;
@@ -2093,8 +2063,6 @@ int WndForm::ShowModal(bool bEnableMap) {
          )
     )
       continue;   // make it modal
-
-    if (!TranslateAccelerator(GetHandle(), mhAccelTable, &msg)){
 
       if (msg.message == WM_KEYUP){
 	/*
@@ -2177,7 +2145,6 @@ int WndForm::ShowModal(bool bEnableMap) {
         } else {
         } // DispatchMessage
       } // timeMsg
-  }
 
     // hack to stop exiting immediately
     // TODO code: maybe this should block all key handlers to avoid 

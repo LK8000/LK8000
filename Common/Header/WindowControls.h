@@ -599,10 +599,6 @@ class WindowControl {
 		(void)KeyCode;
       return(1);
     };
-    virtual int OnCommand(WPARAM wParam, LPARAM lParam){
-		(void)wParam; (void)lParam;
-      return(1);
-    };
     virtual int OnMouseMove(const POINT& Pos){
 		(void)Pos;
       return(1);
@@ -867,10 +863,7 @@ class WndForm:public WindowControl{
 
   protected:
 
-    static ACCEL  mAccel[];
-
     int mModalResult;
-    HACCEL mhAccelTable;
     LKColor mColorTitle;
     LKBrush mhBrushTitle;
     LKFont mhTitleFont;
@@ -929,8 +922,6 @@ class WndForm:public WindowControl{
 
     void SetCaption(const TCHAR *Value);
     TCHAR *GetCaption(void){return(mCaption);};
-
-    virtual int OnCommand(WPARAM wParam, LPARAM lParam);
 
     LKColor SetForeColor(const LKColor& Value);
     LKColor SetBackColor(const LKColor& Value);
