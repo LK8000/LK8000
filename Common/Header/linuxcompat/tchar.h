@@ -284,7 +284,7 @@ typedef char	_TCHAR;
 #define	_tcsstr		strstr
 #define _tcstok		strtok
 #define	_tcsdup		_strdup
-#define	_tcsicmp	_stricmp
+#define	_tcsicmp	strcasecmp
 #define	_tcsnicmp	_strnicmp
 #define	_tcsnset	_strnset
 #define	_tcsrev		_strrev
