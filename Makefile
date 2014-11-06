@@ -282,13 +282,20 @@ CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration
 
+ifeq ($(CONFIG_LINUX),y)
+LDFLAGS =
+else
 LDFLAGS		:=-Wl,--major-subsystem-version=$(CE_MAJOR)
 LDFLAGS		+=-Wl,--minor-subsystem-version=$(CE_MINOR)
 ifeq ($(CONFIG_PC),y)
 LDFLAGS		+=-Wl,-subsystem,windows
 endif
+endif
 LDFLAGS		+=$(PROFILE) -Wl,-Map=output.map
 
+ifeq ($(CONFIG_LINUX),y)
+  LDLIBS		+= -lstdc++ -lzzip -pthread -march=native
+else
 ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lole32 -loleaut32 -luuid
 else
@@ -305,10 +312,8 @@ else
     endif
   endif
 endif
-
-ifeq ($(CONFIG_LINUX),y)
-  LDLIBS		+= -lzzip 
 endif
+
 
 
 ifeq ($(DMALLOC),y)
@@ -945,6 +950,7 @@ POCO :=\
      $(POCOSRC)/TextConverter.cpp \
      $(POCOSRC)/Ascii.cpp \
      $(POCOSRC)/AtomicCounter.cpp \
+     $(POCOSRC)/RefCountedObject.cpp \
 
 
 #ifneq ($(CONFIG_PC),y)
