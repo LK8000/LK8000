@@ -46,8 +46,7 @@ void RefreshTask(void) {
   }
 
   // Determine if a waypoint is in the task
-  if (WayPointList) {
-    for (i=NUMRESWP; i< (int)NumberOfWayPoints; i++) { // maybe paragliders takeoff is set as home
+    for (i=NUMRESWP; i< (int)WayPointList.size(); i++) { // maybe paragliders takeoff is set as home
       WayPointList[i].InTask = false;
       if ((WayPointList[i].Flags & HOME) == HOME) {
         WayPointList[i].InTask = true;
@@ -68,7 +67,6 @@ void RefreshTask(void) {
         }
       }
     }
-  }
 
   CalculateTaskSectors();
   CalculateAATTaskSectors();

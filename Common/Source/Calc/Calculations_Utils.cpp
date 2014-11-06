@@ -63,7 +63,7 @@ unsigned int GetWpChecksum(unsigned int index) { //@ 101018
 
   int clon, clat, csum;
 
-  if (index<NUMRESWP || index > NumberOfWayPoints) {
+  if (index<NUMRESWP || index > WayPointList.size()) {
         // it is ok to insert a reserved wp in the history, but not to save it. 
         // So we get this error, which is not an error for reswp..
         if (index>=NUMRESWP)

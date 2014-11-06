@@ -115,7 +115,7 @@ static void SetValues(int indexid) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTeamCode"));
   if (wp) {
 	// Taken from CalculateTeamBear..
-	if (!WayPointList) return;
+	if (WayPointList.empty()) return;
 	if (TeamCodeRefWaypoint < 0) return;
 
 	double distance=0, bearing=0;

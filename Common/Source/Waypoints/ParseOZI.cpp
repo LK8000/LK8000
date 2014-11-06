@@ -19,7 +19,7 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	Temp->Visible = true; // default all waypoints visible at start
 	Temp->FarVisible = true;
 	Temp->Format = LKW_OZI;
-	Temp->Number = NumberOfWayPoints;
+	Temp->Number = WayPointList.size();
 	Temp->FileNum = globalFileNum;
 	Temp->Flags = TURNPOINT;
 

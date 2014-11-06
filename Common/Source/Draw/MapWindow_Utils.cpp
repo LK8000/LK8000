@@ -14,7 +14,7 @@
 
 
 bool MapWindow::WaypointInTask(int ind) {
-  if (!WayPointList) return false;
+  if (WayPointList.empty()) return false;
   return WayPointList[ind].InTask;
 }
 
@@ -173,19 +173,17 @@ _normal_run:
 #endif
 
   // far visibility for waypoints
-
-  if (WayPointList) {
-    WAYPOINT *wv = WayPointList;
-    const WAYPOINT *we = WayPointList+NumberOfWayPoints;
-    while (wv<we) {
-      // TODO code: optimise waypoint visibility
+/*
+    WAYPOINT& wv = WayPointList.front();
+    const WAYPOINT& we = WayPointList.back();
+ */
+  for( std::vector<WAYPOINT>::iterator wv = WayPointList.begin(); wv != WayPointList.end(); ++wv) {
+    // TODO code: optimise waypoint visibility
 	// TODO 110203 make it happen in 3 steps, with MULTICALC approach
       wv->FarVisible = ((wv->Longitude> bounds.minx) &&
 			(wv->Longitude< bounds.maxx) &&
 			(wv->Latitude> bounds.miny) &&
 			(wv->Latitude< bounds.maxy));
-      wv++;
-    }
   }
 
   // far visibility for airspace

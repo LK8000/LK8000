@@ -15,7 +15,6 @@
 // Returns -1 if no result
 int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange, short wpType)
 {
-  unsigned int i;
   int nearestIndex = -1;
   double nearestDistance, dist;
 
@@ -23,10 +22,10 @@ int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange, short wpT
   int farvisibles=0;
   #endif
 
-  if(NumberOfWayPoints <= NUMRESWP ) return -1;
+  if(WayPointList.size() <= NUMRESWP ) return -1;
   nearestDistance = maxRange;
 
-  for(i=NUMRESWP;i<NumberOfWayPoints;i++) {
+  for(unsigned i=NUMRESWP; i<WayPointList.size(); ++i) {
 
 	if (!WayPointList[i].FarVisible) continue;
 	if (wpType && (WayPointCalc[i].WpType != wpType)) continue;

@@ -2977,7 +2977,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   edit_waypoint.Comment = NULL;
   edit_waypoint.Name[0] = 0;
   edit_waypoint.Details = 0;
-  edit_waypoint.Number = NumberOfWayPoints;
+  edit_waypoint.Number = WayPointList.size();
 
   WAYPOINT *new_waypoint = GrowWaypointList();
   if (new_waypoint) {

@@ -98,7 +98,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
   // if pan mode, show full names
   int pDisplayTextType = DisplayTextType;
 
-  if (!WayPointList) return;
+  if (WayPointList.empty()) return;
 
   _tcscpy(sAltUnit, Units::GetAltitudeName());
 
@@ -161,7 +161,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		break;
   }
 
-  if (MapWindow::zoom.RealScale() <=20) for(i=0;i<NumberOfWayPoints;i++) {
+  if (MapWindow::zoom.RealScale() <=20) for(i=0;i<WayPointList.size();i++) {
     LKBitmap WptBmp;
       
 	if (WayPointList[i].Visible != TRUE )	continue; // false may not be FALSE?
@@ -220,7 +220,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
   if (foundairport==0 && bestwp>=0)  arrivalcutoff = (int)WayPointList[bestwp].AltArivalAGL;
 
 
-  for(i=0;i<NumberOfWayPoints;i++) {
+  for(i=0;i<WayPointList.size();i++) {
     LKBitmap WptBmp;
 
       if(WayPointList[i].Visible )

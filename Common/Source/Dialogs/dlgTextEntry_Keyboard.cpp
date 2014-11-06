@@ -305,7 +305,7 @@ unsigned int NumChar=0;
 bool CharEqual = true;
 char Charlist[MAX_SEL_LIST_SIZE]={"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_ \xD6\xDC\xC4"};
 
-unsigned int i,j,EqCnt=NumberOfWayPoints;
+unsigned int i,j,EqCnt=WayPointList.size();
 
 
 WndProperty *wp;
@@ -324,7 +324,7 @@ IdenticalIndex = -1;
   {
     EqCnt=0; /* reset number of found waypoints */
     NumChar =0;
-    for (i=NUMRESWP; i< NumberOfWayPoints; i++)
+    for (i=NUMRESWP; i< WayPointList.size(); i++)
     {
       NameLen =  _tcslen(WayPointList[i].Name);
       Offset = 0;
@@ -366,7 +366,7 @@ IdenticalIndex = -1;
         }
         EqCnt++;
         LKASSERT((cursor+Offset)<=NAME_SIZE);
-        LKASSERT(i<=NumberOfWayPoints);
+        LKASSERT(i<=WayPointList.size());
         TCHAR newChar = ToUpper(WayPointList[i].Name[cursor+Offset]);
         bool existing = false;
         j=0;
@@ -396,7 +396,7 @@ IdenticalIndex = -1;
     {
       if(EqCnt ==1)
       {
-    	LKASSERT(IdenticalIndex<= (int)NumberOfWayPoints);
+    	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
 	    wp->SetText(WayPointList[IdenticalIndex].Name);
       }
       else
@@ -404,7 +404,7 @@ IdenticalIndex = -1;
         if((cursor >0) &&  (EqCnt >0))
         {
           LKASSERT(cursor < NAME_SIZE);
-          LKASSERT(IdenticalIndex<=(int)NumberOfWayPoints);
+          LKASSERT(IdenticalIndex<=(int)WayPointList.size());
           _stprintf(Found,_T("%s"),WayPointList[IdenticalIndex].Name);
     	  for( i = 0; i < cursor; i++)
     	     Found[i+IdenticalOffset] = toupper(WayPointList[IdenticalIndex].Name[i+IdenticalOffset]);

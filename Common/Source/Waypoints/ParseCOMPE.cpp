@@ -71,7 +71,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   Temp->Visible = true; // default all waypoints visible at start
   Temp->FarVisible = true;
   Temp->Format = LKW_COMPE;
-  Temp->Number = NumberOfWayPoints;
+  Temp->Number = WayPointList.size();
   Temp->FileNum = globalFileNum;
 
 

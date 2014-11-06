@@ -164,7 +164,7 @@ break;
 DoInit[MDI_DRAWTASK]=false;
     }
 
-    if (!WayPointList) return;
+    if (WayPointList.empty()) return;
 
     oldpen = Surface.SelectObject(hpStartFinishThick);
     oldbrush = Surface.SelectObject(LKBrush_Hollow);

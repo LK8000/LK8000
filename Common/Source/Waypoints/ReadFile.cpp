@@ -48,7 +48,11 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 	return -1;
   }
 
-  new_waypoint = WayPointList+NumberOfWayPoints;
+  if(WayPointList.capacity() < WayPointList.size()+1) {
+  	WayPointList.reserve(WayPointList.size()+1);
+  }
+  new_waypoint = &WayPointList.back();
+  ++new_waypoint;
 
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
@@ -170,7 +174,7 @@ goto_inloop:
 
 			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
+				memcpy(&WayPointList[RESWP_TAKEOFF],new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
 
@@ -190,7 +194,7 @@ goto_inloop:
 		if (ParseCUPWayPointString(nTemp2String, new_waypoint)) {
 			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
+				memcpy(&WayPointList[RESWP_TAKEOFF],new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
 
@@ -207,11 +211,11 @@ goto_inloop:
 		if (ParseCOMPEWayPointString(nTemp2String, new_waypoint)) {
 			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
+				memcpy(&WayPointList[RESWP_TAKEOFF],new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
 
-			if (WaypointInTerrainRange(new_waypoint)) { 
+			if (WaypointInTerrainRange(new_waypoint)) {
 				new_waypoint = GrowWaypointList();
 				if (!new_waypoint) {
 					return -1; // failed to allocate
@@ -229,7 +233,7 @@ goto_inloop:
 		if(ParseOZIWayPointString(nTemp2String, new_waypoint)){
 			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
+				memcpy(&WayPointList[RESWP_TAKEOFF],new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
 

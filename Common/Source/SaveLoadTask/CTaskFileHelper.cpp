@@ -630,7 +630,7 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *last
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
-    if (!WayPointList) return false; // this should never happen, but just to be safe...
+    if (WayPointList.empty()) return false; // this should never happen, but just to be safe...
 
     CScopeLock LockTask(LockTaskData, UnlockTaskData);
     StartupStore(_T(". SaveTask : saving <%s>%s"), szFileName, NEWLINE);

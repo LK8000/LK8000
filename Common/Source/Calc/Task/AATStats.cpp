@@ -163,8 +163,7 @@ void AATStats_Distance(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 void AATStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
 
-  if (!WayPointList 
-      || !AATEnabled 
+  if (!AATEnabled 
       || Calculated->ValidFinish) return ;
 
   AATStats_Distance(Basic, Calculated);

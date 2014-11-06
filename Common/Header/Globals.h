@@ -105,7 +105,6 @@ GEXTERN bool DisableBestAlternate;
 
 GEXTERN int ActiveAlternate;
 
-GEXTERN unsigned int NumberOfWayPoints;
 GEXTERN int  WaypointsOutOfRange;
 GEXTERN int  RangeLandableIndex[MAXRANGELANDABLE+1]; 
 GEXTERN int  RangeAirportIndex[MAXRANGELANDABLE+1];
@@ -480,15 +479,17 @@ TaskStats_t TaskStats;
 Task_t Task = {{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0
 ,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0}};
 
-WAYPOINT *WayPointList=NULL;
-WPCALC   *WayPointCalc=NULL;
+std::vector<WAYPOINT> WayPointList;
+std::vector<WPCALC> WayPointCalc;
+
 #undef STATIC_GLOBALS
 #else
 extern Start_t StartPoints;
 extern Task_t Task;
 extern TaskStats_t TaskStats;
-extern WAYPOINT *WayPointList;
-extern WPCALC   *WayPointCalc;
+
+extern std::vector<WAYPOINT> WayPointList;
+extern std::vector<WPCALC> WayPointCalc;
 #endif
 
 GEXTERN int PanTaskEdit;

@@ -4,66 +4,47 @@
    See CREDITS.TXT file for authors and copyrights
 
    $Id$
-*/
+ */
 
 #include "externs.h"
 #include "Waypointparser.h"
 #include "Dialogs.h"
 
-
 WAYPOINT* GrowWaypointList() {
-  // memory allocation
-  if (!AllocateWaypointList()) {
-    return 0;
-  }
 
-  if (((NumberOfWayPoints+1) % 50) == 0) {
-    WAYPOINT *p;
-    
-    if ((p = 
-         (WAYPOINT *)LocalReAlloc(WayPointList, 
-                                  (((NumberOfWayPoints+1)/50)+1) 
-                                  * 50 * sizeof(WAYPOINT), 
-                                  LMEM_MOVEABLE | LMEM_ZEROINIT)) == NULL){
-      
-	StartupStore(_T("+++ GrowWaypointList FAILED!%s"),NEWLINE);
-      MessageBoxX(
-	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
-                  gettext(TEXT("_@M486_")),
-	// LKTOKEN  _@M266_ = "Error" 
-                  gettext(TEXT("_@M266_")),mbOk);
-      
-      return 0; // failed to allocate
-    }
-    
-    if (p != WayPointList){
-      WayPointList = p;      
+#if TESTBENCH
+    StartupStore(_T(". AllocateWaypointList: "));
+#endif
+    try {
+        if(WayPointList.capacity() <= WayPointList.size()) {
+            // always reserve more than need, it's required By Waypoint loading algorithm
+            WayPointList.reserve(WayPointList.size()+10);
+        }
+        WayPointList.resize(WayPointList.size());
+    } catch (std::exception& e) {
+        StartupStore(_T("FAILED! <%s>%s"), e.what(), NEWLINE);
+        MessageBoxX(gettext(TEXT("_@M486_")), // "Not Enough Memory For Waypoints"
+                gettext(TEXT("_@M266_")) /* "Error" */, mbOk);
+        return NULL;
     }
 
-    WPCALC *q;
-    
-    if ((q = 
-         (WPCALC *)LocalReAlloc(WayPointCalc, 
-                                  (((NumberOfWayPoints+1)/50)+1) 
-                                  * 50 * sizeof(WPCALC), 
-                                  LMEM_MOVEABLE | LMEM_ZEROINIT)) == NULL){
-      
-	StartupStore(_T("+++ GrowWaypointCalc FAILED!%s"),NEWLINE);
-      MessageBoxX(
-	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
-                  gettext(TEXT("_@M486_")),
-	// LKTOKEN  _@M266_ = "Error" 
-                  gettext(TEXT("_@M266_")),mbOk);
-      
-      return 0; // failed to allocate
+#if TESTBENCH
+    StartupStore(_T("OK%s"), NEWLINE);
+    StartupStore(_T(". AllocateWayPointCalc..."));
+#endif
+    try {
+        WayPointList.reserve(WayPointList.size()+1);
+        WayPointCalc.resize(WayPointList.size());
+    } catch (std::exception& e) {
+        StartupStore(_T("FAILED! <%s>%s"), e.what(), NEWLINE);
+        MessageBoxX(gettext(TEXT("_@M486_")), // "Not Enough Memory For Waypoints"
+                gettext(TEXT("_@M266_")) /* "Error" */, mbOk);
+        return NULL;
     }
+#if TESTBENCH
+    StartupStore(_T("OK%s"), NEWLINE);
+#endif
     
-    if (q != WayPointCalc){
-      WayPointCalc = q;      
-    }
-  }
-
-  NumberOfWayPoints++;
-  return WayPointList + NumberOfWayPoints-1;
-  // returns the newly created waypoint
+    // returns the newly created waypoint
+    return &WayPointList.back();
 }

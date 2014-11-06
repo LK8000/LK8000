@@ -16,13 +16,12 @@
 int FindNearestWayPoint(double X, double Y, double MaxRange,
                         bool exhaustive)
 {
-  unsigned int i;
   int NearestIndex = -1;
   double NearestDistance, Dist;
 
   NearestDistance = MaxRange;
 
-    for(i=RESWP_FIRST_MARKER;i<NumberOfWayPoints;i++) {
+    for(unsigned i=RESWP_FIRST_MARKER;i<WayPointList.size(); ++i) {
 
       // Consider only valid markers
       if ( (i<NUMRESWP)  &&  (WayPointCalc[i].WpType!=WPT_TURNPOINT) ) continue;
