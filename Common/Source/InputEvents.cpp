@@ -437,7 +437,7 @@ int InputEvents::findKey(const TCHAR *data) {
 #endif
 
   else if (_tcslen(data) == 1)
-    return towupper(data[0]);
+    return _totupper(data[0]);
   else
     return 0;
   
