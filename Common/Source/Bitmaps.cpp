@@ -268,7 +268,7 @@ void LKUnloadFixedBitmaps(void) {
     hBmpTeammatePosition.Release();
     hBmpMarker.Release();
 
-    std::for_each(begin(hAirspaceBitmap), end(hAirspaceBitmap), std::bind(&LKBitmap::Release, _1));
+    std::for_each(std::begin(hAirspaceBitmap), std::end(hAirspaceBitmap), std::bind(&LKBitmap::Release, _1));
 
     hAboveTerrainBitmap.Release();
 

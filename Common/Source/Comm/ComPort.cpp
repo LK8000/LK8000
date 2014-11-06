@@ -10,14 +10,14 @@
  */
 #include "externs.h"
 #include "ComPort.h"
-#include "utils/stl_utils.h"
+#include <iterator>
 #include <algorithm>
 #include "dlgTools.h"
 #include <functional>
 #include "Poco/RunnableAdapter.h"
 
 ComPort::ComPort(int idx, const std::tstring& sName) : devIdx(idx), sPortName(sName) {
-    pLastNmea = begin(_NmeaString);
+    pLastNmea = std::begin(_NmeaString);
 }
 
 ComPort::~ComPort() {
@@ -123,14 +123,14 @@ void ComPort::run() {
 void ComPort::ProcessChar(char c) {
     // last char need to be reserved for '\0' for avoid buffer overflow
     // in theory this should never happen because NMEA sentence can't have more than 82 char and _NmeaString size is 160.
-    if (pLastNmea >= begin(_NmeaString) && (pLastNmea+1) < end(_NmeaString)) {
+    if (pLastNmea >= std::begin(_NmeaString) && (pLastNmea+1) < std::end(_NmeaString)) {
 
         if (c == '\n' || c == '\r') {
             // abcd\n , now closing the line also with \r
             *(pLastNmea++) = _T('\n');
             *(pLastNmea) = _T('\0'); // terminate string.
             // process only meaningful sentences, avoid processing a single \n \r etc.
-            if (pLastNmea - begin(_NmeaString) > 5) {
+            if (pLastNmea - std::begin(_NmeaString) > 5) {
                 LockFlightData();
                 devParseNMEA(devIdx, _NmeaString, &GPS_INFO);
                 UnlockFlightData();
@@ -141,7 +141,7 @@ void ComPort::ProcessChar(char c) {
         }
     }
     // overflow, so reset buffer
-    pLastNmea = begin(_NmeaString);
+    pLastNmea = std::begin(_NmeaString);
 }
 
 void ComPort::AddStatRx(DWORD dwBytes) {

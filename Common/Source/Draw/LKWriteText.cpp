@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "RGB.h"
+#include <iterator>
 #include <functional>
 
 using std::placeholders::_1;

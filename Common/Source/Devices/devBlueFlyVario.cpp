@@ -19,10 +19,10 @@
 #include "devLK8EX1.h"
 #include "devFlyNet.h"
 #include "dlgTools.h"
-#include "utils/stl_utils.h"
-#include <tr1/functional>
+#include <iterator>
+#include <functional>
 
-using std::tr1::placeholders::_1;
+using std::placeholders::_1;
 
 enum ValueType {
     TYPE_BOOLEAN,
@@ -366,10 +366,10 @@ namespace dlgBlueFlyConfig {
         if (wfDlg) {
             // build list of page WindowConrol*
             lstPageWnd.clear();
-            lstPageWnd.reserve(std::distance(begin(lstPageName), end(lstPageName)));
-            std::transform(begin(lstPageName), end(lstPageName),
+            lstPageWnd.reserve(std::distance(std::begin(lstPageName), std::end(lstPageName)));
+            std::transform(std::begin(lstPageName), std::end(lstPageName),
                     std::inserter(lstPageWnd, lstPageWnd.begin()),
-                    std::tr1::bind(&WndForm::FindByName, wfDlg, _1));
+                    std::bind(&WndForm::FindByName, wfDlg, _1));
 
             if(!lstPageWnd.empty()) {
                 // Show First Page
@@ -377,7 +377,7 @@ namespace dlgBlueFlyConfig {
                 NextPage(0);
 
                 // Hide All Next Page
-                std::for_each(++lstPageWnd.begin(), lstPageWnd.end(), std::tr1::bind(&WindowControl::Close, _1));
+                std::for_each(++lstPageWnd.begin(), lstPageWnd.end(), std::bind(&WindowControl::Close, _1));
             }
 
             // Init Enum WndProperty

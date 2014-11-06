@@ -1,7 +1,8 @@
 #if defined(PNA) && defined(UNDER_CE)
 
 #include "externs.h"
-#include "../utils/stl_utils.h"
+#include <iterator>
+
 
 /*  **********************************************************
  *
@@ -98,7 +99,7 @@ bool Init_GM130(void) {
   }
 
   hapiHandle = NULL;
-  for(const LPCTSTR* szLib = begin(HOLIB); hapiHandle==(HMODULE)NULL && szLib != end(HOLIB); ++szLib) {
+  for(const LPCTSTR* szLib = std::begin(HOLIB); hapiHandle==(HMODULE)NULL && szLib != std::end(HOLIB); ++szLib) {
       hapiHandle=LoadLibrary(*szLib);
   }
   

@@ -24,9 +24,9 @@ void ClearTask(void) {
 
   EnableMultipleStartPoints = false;
 
-  std::for_each(begin(Task), end(Task), ResetTaskWpt);
-  std::for_each(begin(TaskStats), end(TaskStats), ResetTaskStat);
-  std::for_each(begin(StartPoints), end(StartPoints), ResetStartPoint);
+  std::for_each(std::begin(Task), std::end(Task), ResetTaskWpt);
+  std::for_each(std::begin(TaskStats), std::end(TaskStats), ResetTaskStat);
+  std::for_each(std::begin(StartPoints), std::end(StartPoints), ResetStartPoint);
 
   UnlockTaskData();
 }

@@ -11,10 +11,10 @@
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 #include "Dialogs.h"
-#include "../utils/stl_utils.h"
-#include <tr1/functional>
+#include <iterator>
+#include <functional>
 
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 
 extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
 extern void UtmToLatLonWGS84 (int utmXZone, char utmYZone, double easting, double northing, double& lat, double& lon);
@@ -182,7 +182,7 @@ char enumToYZone(int i){
 int YZoneToenum(char c){
 	static const char cArray[] = "CDEFGHJKLMNPQRSTUVWX";
 
-	return std::distance(begin(cArray), std::find(begin(cArray), end(cArray), c));
+	return std::distance(std::begin(cArray), std::find(std::begin(cArray), std::end(cArray), c));
 }
 
 
@@ -204,7 +204,7 @@ static void SetValues(void) {
       if (wp) {
     	  DataFieldEnum* dfe = (DataFieldEnum*)wp->GetDataField();
     	  if(dfe){
-    		  std::for_each(begin(cYZone), end(cYZone), std::tr1::bind(&DataFieldEnum::addEnumText, dfe, _1));
+    		  std::for_each(std::begin(cYZone), std::end(cYZone), std::bind(&DataFieldEnum::addEnumText, dfe, _1));
     		  dfe->Set(YZoneToenum(utmYZone));
     	  }
     	  wp->RefreshDisplay();

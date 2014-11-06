@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "utils/stl_utils.h"
+#include <iterator>
 
 bool TaskModified = false;
 bool TargetModified = false;
@@ -101,7 +101,7 @@ void ResetTaskWpt(TASK_POINT& TaskWpt) {
 }
 
 void ResetTaskStat(TASKSTATS_POINT& StatPt) {
-    std::fill(begin(StatPt.IsoLine_valid), end(StatPt.IsoLine_valid), false);
+    std::fill(std::begin(StatPt.IsoLine_valid), std::end(StatPt.IsoLine_valid), false);
 }
 
 void ResetTaskWaypoint(int j) {

@@ -328,7 +328,7 @@ bool LKLoadMessages(bool fillup) {
   static bool doinit=true;
 
   if (doinit) {
-    std::fill(begin(LKMessages), end(LKMessages), (TCHAR*)NULL);
+    std::fill(std::begin(LKMessages), std::end(LKMessages), (TCHAR*)NULL);
 	doinit=false;
   } else {
 	if (!fillup) {
@@ -496,5 +496,5 @@ bool LKLoadMessages(bool fillup) {
 }
 
 void LKUnloadMessage(){
-	std::for_each(begin(LKMessages), end(LKMessages), safe_free());
+	std::for_each(std::begin(LKMessages), std::end(LKMessages), safe_free());
 }

@@ -13,9 +13,9 @@
 #include "SerialPort.h"
 #include "Bluetooth/BthPort.h"
 #include "GpsIdPort.h"
-#include <tr1/functional>
+#include <functional>
 
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 
 // A note about locking.
 //  The ComPort RX threads lock using FlightData critical section.
@@ -249,7 +249,7 @@ BOOL devInit(LPCTSTR CommandLine) {
             continue;
         }
 
-        DeviceRegister_t* pDev = std::find_if(&DeviceRegister[0], &DeviceRegister[DeviceRegisterCount], std::tr1::bind(&devNameCompare, _1, DeviceName));
+        DeviceRegister_t* pDev = std::find_if(&DeviceRegister[0], &DeviceRegister[DeviceRegisterCount], std::bind(&devNameCompare, _1, DeviceName));
         if (pDev == &DeviceRegister[DeviceRegisterCount]) {
             DeviceList[i].Disabled = true;
             StartupStore(_T(". Device %c : invalide drivers name <%s>%s"), (_T('A') + i), DeviceName, NEWLINE);

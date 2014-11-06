@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include "Comm/Obex/CObexPush.h"
 #include "Message.h"
+#include <iterator>
 #include "utils/stl_utils.h"
 
 namespace DlgIgcFile {
@@ -73,7 +74,7 @@ namespace DlgIgcFile {
                     }
                     for(size_t i = 0; i < nDevice; ++i) {
                         TCHAR szDeviceName[100] = {0};
-                        if(!Obex.GetDeviceName(i, szDeviceName, std::distance(begin(szDeviceName), end(szDeviceName)))) {
+                        if(!Obex.GetDeviceName(i, szDeviceName, array_size(szDeviceName))) {
                             _stprintf(szDeviceName, _T("Unknown device <%d>"), i);
                         }
                         StartupStore(_T("GetDeviceName <%d><%s> \n"), i, szDeviceName);

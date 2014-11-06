@@ -27,10 +27,11 @@
 #include "Dialogs.h"
 
 #include "utils/stl_utils.h"
+#include <iterator>
 #include "BtHandler.h"
-#include <tr1/functional>
+#include <functional>
 
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 
 extern void UpdateAircraftConfig(void);
 extern void dlgCustomMenuShowModal(void);
@@ -508,14 +509,11 @@ static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
     const TCHAR * DevicePropName[] = {_T("prpComPort1"), _T("prpComPort2")};
     const TCHAR * SetupButtonName[] = {_T("cmdSetupDeviceA"), _T("cmdSetupDeviceB")};
 
-#if BUGSTOP
-    // check if all array have same size;
-    int DevCount = std::distance(begin(DeviceList), end(DeviceList));
-    LKASSERT(DevCount == std::distance(begin(DevicePropName), end(DevicePropName)));
-    LKASSERT(DevCount == std::distance(begin(SetupButtonName), end(SetupButtonName)));
-#endif
+    // check if all array have same size ( compil time check );
+    static_assert(array_size(DeviceList) == array_size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
+    static_assert(array_size(DeviceList) == array_size(SetupButtonName), "SetupButtonName array size need to be same of DeviceList array size");
 
-    if (begin(DeviceList) + idx < end(DeviceList)) {
+    if (std::begin(DeviceList) + idx < std::end(DeviceList)) {
         bool bHidePort = DeviceList[idx].Disabled = (_tcslen(Name) == 0) || (_tcscmp(Name, _T(DEV_DISABLED_NAME)) == 0);
         _tcscpy(DeviceList[idx].Name, Name);
         bHidePort |= (_tcscmp(Name, _T("Internal")) == 0);
@@ -1346,19 +1344,16 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
         { _T("prpComSpeed2"), _T("prpComBit2") }
     };
     
-#if defined(BUGSTOP) && BUGSTOP
-    // check if all array have same size;
-    int DevCount = std::distance(begin(DeviceList), end(DeviceList));
-    LKASSERT(DevCount == std::distance(begin(PortPropName), end(PortPropName)));
-#endif
+    // check if all array have same size ( compil time check );
+    static_assert(array_size(DeviceList) == array_size(PortPropName), "PortPropName array size need to be same of DeviceList array size");
     
-    if(begin(PortPropName)+idx < end(PortPropName)) {
+    if(std::begin(PortPropName)+idx < std::end(PortPropName)) {
         bool bHide = ((_tcsncmp(szPortName, _T("BT:"), 3) == 0) || DeviceList[idx].Disabled);
         bHide = bHide || (_tcscmp(DeviceList[idx].Name, _T("Internal")) == 0);
         std::for_each(
-            begin(PortPropName[idx]), 
-            end(PortPropName[idx]), 
-            std::tr1::bind(ShowWindowControl, wf, _1, !bHide)
+            std::begin(PortPropName[idx]), 
+            std::end(PortPropName[idx]), 
+            std::bind(ShowWindowControl, wf, _1, !bHide)
         );
     }
 }
@@ -1539,12 +1534,12 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
             std::for_each(
             	COMMPort.begin(),
             	COMMPort.end(),
-            	std::tr1::bind(&DataFieldEnum::addEnumText, dfe, bind(&COMMPortItem_t::GetLabel, _1))
+            	std::bind(&DataFieldEnum::addEnumText, dfe, std::bind(&COMMPortItem_t::GetLabel, _1))
             );
             COMMPort_t::iterator It = std::find_if(
                 COMMPort.begin(), 
                 COMMPort.end(), 
-                std::tr1::bind(&COMMPortItem_t::IsSamePort, _1, szPort)
+                std::bind(&COMMPortItem_t::IsSamePort, _1, szPort)
             );
             if(It != COMMPort.end()) {
                 dfe->Set(std::distance(COMMPort.begin(), It));
@@ -1622,7 +1617,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    std::for_each(begin(tSpeed), end(tSpeed), std::tr1::bind(&DataFieldEnum::addEnumText, dfe, _1));
+    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataFieldEnum::addEnumText, dfe, _1));
     
     dfe->Set(dwSpeedIndex1);
     wp->SetReadOnly(false);
@@ -1672,7 +1667,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    std::for_each(begin(tSpeed), end(tSpeed), std::tr1::bind(&DataFieldEnum::addEnumText, dfe, _1));
+    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataFieldEnum::addEnumText, dfe, _1));
 
     dfe->Set(dwSpeedIndex2);
     wp->RefreshDisplay();

@@ -11,11 +11,11 @@
 
 #include "externs.h"
 #include "SerialPort.h"
-#include "utils/stl_utils.h"
+#include <iterator>
 #include <algorithm>
-#include <tr1/functional>
+#include <functional>
 
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 
 SerialPort::SerialPort(int idx, const std::tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) : 
         ComPort(idx, sName),
@@ -439,7 +439,7 @@ DWORD SerialPort::RxThread() {
                 dwBytesTransferred = ReadData(szString);
                 if (dwBytesTransferred > 0) {
                     if (ProgramStarted >= psNormalOp) { // ignore everything until started
-                        std::for_each(begin(szString), begin(szString) + dwBytesTransferred, std::tr1::bind(&SerialPort::ProcessChar, this, _1));
+                        std::for_each(std::begin(szString), std::begin(szString) + dwBytesTransferred, std::bind(&SerialPort::ProcessChar, this, _1));
                     }
                 } else {
                     dwBytesTransferred = 0;

@@ -262,12 +262,12 @@ void LKObjects_Delete() {
 
   MapWindow::hAirspaceBorderPen.Release();
 
-  std::for_each(begin(MapWindow::hSnailPens), end(MapWindow::hSnailPens), std::bind(&LKPen::Release, _1) );
+  std::for_each(std::begin(MapWindow::hSnailPens), std::end(MapWindow::hSnailPens), std::bind(&LKPen::Release, _1) );
 
-  std::for_each(begin(MapWindow::hAirspacePens), end(MapWindow::hAirspacePens), std::bind(&LKPen::Release, _1) );
-  std::for_each(begin(MapWindow::hBigAirspacePens), end(MapWindow::hBigAirspacePens), std::bind(&LKPen::Release, _1) );
-  std::for_each(begin(MapWindow::hAirspaceBrushes), end(MapWindow::hAirspaceBrushes), std::bind(&LKBrush::Release, _1) );
-  std::for_each(begin(MapWindow::hAirSpaceSldBrushes), end(MapWindow::hAirSpaceSldBrushes), std::bind(&LKBrush::Release, _1));
+  std::for_each(std::begin(MapWindow::hAirspacePens), std::end(MapWindow::hAirspacePens), std::bind(&LKPen::Release, _1) );
+  std::for_each(std::begin(MapWindow::hBigAirspacePens), std::end(MapWindow::hBigAirspacePens), std::bind(&LKPen::Release, _1) );
+  std::for_each(std::begin(MapWindow::hAirspaceBrushes), std::end(MapWindow::hAirspaceBrushes), std::bind(&LKBrush::Release, _1) );
+  std::for_each(std::begin(MapWindow::hAirSpaceSldBrushes), std::end(MapWindow::hAirSpaceSldBrushes), std::bind(&LKBrush::Release, _1));
 
   MapWindow::hAboveTerrainBrush.Release();
   
