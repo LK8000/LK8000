@@ -8,6 +8,8 @@
 #include "externs.h"
 #include "McReady.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
+#include "dlgTools.h"
 
 
 #include "Calculations2.h"

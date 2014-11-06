@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "McReady.h"
 #include "LKProfiles.h"
-#include "dlgTools.h"
+#include "Dialogs.h"
 
 
 bool ReadWinPilotPolarInternal(int i);

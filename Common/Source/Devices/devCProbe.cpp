@@ -6,8 +6,10 @@
    $Id$
 */
 #include "externs.h"
-
 #include "devCProbe.h"
+#include "dlgtools.h"
+#include "Dialogs.h"
+#include "WindowControls.h"
 
 #define BARO__CPROBE		7
 extern bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);

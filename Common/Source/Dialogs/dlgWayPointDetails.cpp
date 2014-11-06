@@ -9,9 +9,10 @@
 
 #include "externs.h"
 #include "McReady.h"
-#include "InfoBoxLayout.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
+#include "dlgTools.h"
 
 extern void DrawJPG(HDC hdc, RECT rc);
 

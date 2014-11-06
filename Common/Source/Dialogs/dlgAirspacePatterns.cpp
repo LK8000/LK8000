@@ -7,8 +7,8 @@
 */
 
 #include "externs.h"
-
-#include "InfoBoxLayout.h"
+#include "WindowControls.h"
+#include "dlgTools.h"
 #include "Dialogs.h"
 #include "LKObjects.h"
 

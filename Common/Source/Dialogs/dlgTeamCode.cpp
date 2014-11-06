@@ -7,8 +7,9 @@
 */
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
+#include "dlgTools.h"
 
 
 static WndForm *wf=NULL;

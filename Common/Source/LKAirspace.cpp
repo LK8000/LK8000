@@ -9,7 +9,7 @@
 #include "LKAirspace.h"
 #include "RasterTerrain.h"
 #include "LKProfiles.h"
-#include "dlgTools.h"
+#include "Dialogs.h"
 
 #include <ctype.h>
  #include <utility>

@@ -7,6 +7,8 @@
 */
 
 #include "externs.h"
+#include <stdio.h>      /* printf */
+#include <stdarg.h>     /* va_list, va_start, va_arg, va_end */
 #include "utils/stringext.h"
 
 void StartupLogFreeRamAndStorage() {

@@ -7,9 +7,11 @@
 */
 
 #include "externs.h"
+#include "dlgTools.h"
 #include "LKProcess.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
 
 
 

@@ -13,6 +13,7 @@
 
 #include <Poco/Latin1Encoding.h>
 #include <Poco/UTF16Encoding.h>
+#include <Poco/UTF8Encoding.h>
 #include <Poco/TextConverter.h>
 
 //#define DEBUG_TFC 

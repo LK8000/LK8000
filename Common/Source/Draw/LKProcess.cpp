@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "McReady.h"
 #include "InputEvents.h"
-#include "InfoBoxLayout.h"
 #include "Logger.h"
 #include "LKProcess.h"
 #include "DoInits.h"

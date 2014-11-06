@@ -7,11 +7,12 @@
 */
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
 #include "LKObjects.h"
 #include "Bitmaps.h"
+#include "WindowControls.h"
+#include "dlgTools.h"
 
 static WndForm *wf=NULL;
 #define WPLSEL WayPointList[SelectedWaypoint]

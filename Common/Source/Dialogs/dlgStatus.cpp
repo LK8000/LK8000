@@ -12,7 +12,9 @@
 #include "Logger.h"
 #include "LKProcess.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
 #include "device.h"
+#include "dlgTools.h"
 
 extern BOOL extGPSCONNECT;
 extern NMEAParser nmeaParser1;

@@ -7,8 +7,9 @@
 */
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
 #include "Dialogs.h"
+#include "dlgTools.h"
+#include "WindowControls.h"
 #include <ctype.h>
 
 static bool first= true;

@@ -7,7 +7,8 @@
 */
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
+#include "WindowControls.h"
+#include "dlgTools.h"
 #include "InputEvents.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"

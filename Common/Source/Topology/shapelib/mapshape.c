@@ -31,6 +31,8 @@
 #include "options.h"
 #include <malloc.h>
 #include <string.h>
+#include <tchar.h>
+#include <zzip/lib.h>
 #include "mapshape.h"
 #include "maptree.h"
 #if MAPSHAPEERROR

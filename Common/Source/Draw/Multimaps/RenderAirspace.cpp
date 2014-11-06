@@ -7,9 +7,8 @@
 */
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
 #include "McReady.h"
-#include "dlgTools.h"
+#include "Dialogs.h"
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
 #include "LKInterface.h"

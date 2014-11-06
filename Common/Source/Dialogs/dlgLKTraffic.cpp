@@ -8,9 +8,9 @@
 
 #include "externs.h"
 #include "LKInterface.h"
-#include "InfoBoxLayout.h"
+#include "WindowControls.h"
 #include "Dialogs.h"
-
+#include "dlgTools.h"
 #include "FlarmIdFile.h"
 extern FlarmIdFile *file;
 

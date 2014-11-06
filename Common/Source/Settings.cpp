@@ -10,7 +10,6 @@
 #include "externs.h"
 #include "InputEvents.h"
 #include "Terrain.h"
-#include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 #include "RasterTerrain.h"
 #include "McReady.h"

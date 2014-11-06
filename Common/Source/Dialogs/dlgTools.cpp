@@ -8,10 +8,9 @@
 
 #include "externs.h"
 #include <limits.h>
-
+#include "dlgTools.h"
 #include "WindowControls.h"
 #include "xmlParser.h"
-#include "InfoBoxLayout.h"
 #include "RGB.h"
 #include "Dialogs.h"
 #include "utils/stringext.h"

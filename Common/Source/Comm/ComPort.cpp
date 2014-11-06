@@ -9,10 +9,11 @@
  * Created on 28 juillet 2013, 16:15
  */
 #include "externs.h"
+#include <stdarg.h>
 #include "ComPort.h"
 #include <iterator>
 #include <algorithm>
-#include "dlgTools.h"
+#include "Dialogs.h"
 #include <functional>
 #include "Poco/RunnableAdapter.h"
 

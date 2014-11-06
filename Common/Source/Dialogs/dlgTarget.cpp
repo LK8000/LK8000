@@ -7,10 +7,10 @@
 */
 
 #include "externs.h"
-
+#include "dlgTools.h"
 #include "Calculations2.h"
-#include "InfoBoxLayout.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
 
 
 static WndForm *wf=NULL;

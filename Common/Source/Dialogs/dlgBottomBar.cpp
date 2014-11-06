@@ -9,7 +9,8 @@
 #include "externs.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-
+#include "dlgTools.h"
+#include "WindowControls.h"
 #include "Terrain.h"
 #include "LKMapWindow.h"
 

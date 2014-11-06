@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
 #include "RGB.h"
 #include "resource.h"
 #include "LKObjects.h"

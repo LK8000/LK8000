@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "dlgTools.h"
+#include "Dialogs.h"
 #include "CTaskFileHelper.h"
 
 void RenameIfVirtual(const unsigned int i);

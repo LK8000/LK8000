@@ -8,11 +8,11 @@
 
 #include "externs.h"
 #include "Dialogs.h"
-#include "InfoBoxLayout.h"
 #include "WindowControls.h"
 #include "DoInits.h"
 #include "TraceThread.h"
 #include <ctype.h>
+#include "dlgTools.h"
 
   #define PICTO_OFFSET 28
 

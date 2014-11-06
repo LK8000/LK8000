@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
 #include "McReady.h"
 #include "Atmosphere.h"
 #include "ContestMgr.h"

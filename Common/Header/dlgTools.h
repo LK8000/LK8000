@@ -9,9 +9,7 @@
 #if !defined(__DLGTOOLS_H)
 #define __DLGTOOLS_H
 
-#include "WindowControls.h"
-
-
+class WndForm;
 
 #define OnHelpCallbackEntry(x)      {TEXT(#x), (void *)static_cast<WindowControl::OnHelpCallback_t>(x)}
 #define OnListCallbackEntry(x)      {TEXT(#x), (void *)static_cast<WndListFrame::OnListCallback_t>(x)}
@@ -30,7 +28,5 @@ typedef struct{
 }CallBackTableEntry_t;
 
 WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *FileName, const TCHAR *resource=NULL);
-
-MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false);
 
 #endif

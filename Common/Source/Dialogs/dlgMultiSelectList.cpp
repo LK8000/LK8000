@@ -7,10 +7,10 @@
  */
 
 #include "externs.h"
-#include "MapWindow.h"
 #include "Dialogs.h"
+#include "dlgTools.h"
+#include "WindowControls.h"
 #include "Multimap.h"
-
 
 #define MAX_LIST_ITEMS 50
 ListElement* pResult = NULL;

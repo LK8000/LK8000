@@ -10,6 +10,8 @@
 #include "externs.h"
 #include "LKProcess.h"
 #include "Dialogs.h"
+#include "dlgTools.h"
+#include "WindowControls.h"
 
 
 static WndForm *wf=NULL;

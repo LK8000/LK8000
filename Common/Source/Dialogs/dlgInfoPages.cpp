@@ -11,7 +11,8 @@
 #include "LKMapWindow.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-
+#include "WindowControls.h"
+#include "dlgtools.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;

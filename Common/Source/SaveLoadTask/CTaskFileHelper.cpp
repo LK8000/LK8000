@@ -11,7 +11,7 @@
 
 #include <math.h>
 #include <string>
-
+#include <stdarg.h>
 #include "CTaskFileHelper.h"
 #include "../utils/tstring.h"
 #include "utils/fileext.h"

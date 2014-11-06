@@ -13,6 +13,7 @@
 #include "nmeaistream.h"
 #include "dlgTools.h"
 
+class WindowControl;
 
 class CDevCProbe : public DevBase
 {

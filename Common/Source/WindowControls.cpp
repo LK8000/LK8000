@@ -7,23 +7,18 @@
 */
 
 #include "externs.h"
+#include "WindowControls.h"
 #include "Message.h"
-#include "InfoBoxLayout.h"
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "RGB.h"
 #include "Dialogs.h"
+#include "dlgtools.h"
 #include "Modeltype.h"
 #include "TraceThread.h"
 
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
-
-#if (WINDOWSPC<1)
-#ifndef __MINGW32__
-#include <projects.h>
-#endif
-#endif
 
 #define ISCALE ScreenScale
 

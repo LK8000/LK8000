@@ -7,12 +7,13 @@
 */
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
 #include "InputEvents.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
 #include "LKInterface.h"
 #include "TraceThread.h"
-
+#include "WindowControls.h"
+#include "dlgTools.h"
 #include "RGB.h"
 
 CAirspaceBase airspace_copy;

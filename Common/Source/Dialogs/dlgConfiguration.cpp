@@ -10,14 +10,13 @@
 #include "externs.h"
 #include "Terrain.h"
 #include "LKProcess.h"
-
+#include "dlgTools.h"
 #include "WindowControls.h"
 #include "McReady.h"
 
 #include "Modeltype.h"
 
 #include "McReady.h"
-#include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 #include "LKMapWindow.h"
 #include "LKProfiles.h"

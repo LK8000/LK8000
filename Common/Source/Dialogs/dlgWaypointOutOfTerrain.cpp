@@ -8,7 +8,9 @@
 
 #include "externs.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
 #include "Waypointparser.h"
+#include "dlgTools.h"
 
 
 static WndForm *wf=NULL;

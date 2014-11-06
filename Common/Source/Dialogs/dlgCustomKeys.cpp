@@ -11,6 +11,8 @@
 #include "LKMapWindow.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
+#include "dlgtools.h"
+#include "WindowControls.h"
 
 extern void AddCustomKeyList( DataFieldEnum* dfe);
 

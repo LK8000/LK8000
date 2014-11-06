@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "Message.h"
-#include "InfoBoxLayout.h"
 #include "TraceThread.h"
 
 

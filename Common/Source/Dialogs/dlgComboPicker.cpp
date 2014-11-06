@@ -9,8 +9,8 @@
 #include "externs.h"
 #include "InputEvents.h"
 #include "WindowControls.h"
-#include "InfoBoxLayout.h"
 #include "Dialogs.h"
+#include "dlgTools.h"
 
 
 static WndForm *wf=NULL;

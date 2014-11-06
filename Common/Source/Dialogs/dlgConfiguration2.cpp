@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
+#include "WindowControls.h"
 #include "Waypointparser.h"
 #include "Dialogs.h"
 

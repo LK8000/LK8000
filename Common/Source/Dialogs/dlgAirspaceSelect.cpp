@@ -8,7 +8,8 @@
 
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
+#include "dlgTools.h"
+#include "WindowControls.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"
 #include "Dialogs.h"

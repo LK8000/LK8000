@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "resource.h"
-#include <shellapi.h>
 
 void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
 

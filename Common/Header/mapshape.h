@@ -2,6 +2,7 @@
 #define MAPSHAPE_H
 
 #include <stdio.h>
+#include <tchar.h>
 #include "mapprimitive.h"
 
 #ifdef __cplusplus

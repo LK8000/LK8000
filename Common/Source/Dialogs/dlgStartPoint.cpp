@@ -8,9 +8,8 @@
 
 #include "externs.h"
 #include "Dialogs.h"
-
-#include "InfoBoxLayout.h"
-
+#include "WindowControls.h"
+#include "dlgTools.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wStartPointList=NULL;

@@ -8,9 +8,10 @@
 
 #include "externs.h"
 #include "InputEvents.h"
-#include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 #include "Dialogs.h"
+#include "dlgTools.h"
+#include "WindowControls.h"
 #include <iterator>
 #include <functional>
 

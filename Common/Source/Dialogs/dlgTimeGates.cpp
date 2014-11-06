@@ -11,6 +11,8 @@
 #include "LKProfiles.h"
 #include "Calculations2.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
+#include "dlgTools.h"
 
 
 static bool changed = false;

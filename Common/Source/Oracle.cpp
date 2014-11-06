@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "LKProcess.h"
 #include "Waypointparser.h"
-#include "dlgTools.h"
+#include "Dialogs.h"
 
 
 const TCHAR *DegreesToText(double brg) {

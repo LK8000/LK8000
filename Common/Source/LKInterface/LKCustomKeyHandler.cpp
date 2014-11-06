@@ -11,7 +11,7 @@
 #include "LKInterface.h"
 #include "Calculations2.h"
 #include "Multimap.h"
-#include "dlgTools.h"
+#include "Dialogs.h"
 #include "Sideview.h"
 
 extern void ShowMenu();

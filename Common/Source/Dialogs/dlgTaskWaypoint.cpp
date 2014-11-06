@@ -8,9 +8,10 @@
 
 #include "externs.h"
 #include "Logger.h"
-#include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
+#include "dlgTools.h"
 #include "InputEvents.h"
 
 extern void ResetTaskWaypoint(int j);

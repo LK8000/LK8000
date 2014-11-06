@@ -12,8 +12,8 @@
 #include <windows.h>
 #endif
 
-#include "LKBrush.h"
 #include "LKColor.h"
+#include "LKBrush.h"
 #include "LKBitmap.h"
 
 #ifndef WIN32

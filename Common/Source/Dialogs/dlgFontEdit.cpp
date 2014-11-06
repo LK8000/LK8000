@@ -8,7 +8,9 @@
 
 #include "externs.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
 #include "LKProfiles.h"
+#include "dlgTools.h"
 
 extern void InitializeOneFont (LKFont& theFont, 
                                const TCHAR FontRegKey[] , 

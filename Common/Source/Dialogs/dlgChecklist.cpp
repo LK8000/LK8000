@@ -9,8 +9,8 @@
 
 #include "externs.h"
 #include "Dialogs.h"
-
-#include "InfoBoxLayout.h"
+#include "dlgtools.h"
+#include "WindowControls.h"
 #include "utils/fileext.h"
 
 

@@ -9,8 +9,9 @@
 #include "externs.h"
 #include "Sideview.h"
 #include "Dialogs.h"
+#include "WindowControls.h"
 #include "ContestMgr.h"
-
+#include "dlgtools.h"
 
 double Statistics::yscale;
 double Statistics::xscale;

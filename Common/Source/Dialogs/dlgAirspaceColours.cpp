@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "dlgTools.h"
-#include "InfoBoxLayout.h"
+#include "WindowControls.h"
 #include "LKObjects.h"
 
 

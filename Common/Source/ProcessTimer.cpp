@@ -9,7 +9,6 @@
 #include "Logger.h"
 #include "Message.h"
 #include "InputEvents.h"
-#include "winbase.h"
 #include "TraceThread.h"
 
 extern int ConnectionProcessTimer(int itimeout);

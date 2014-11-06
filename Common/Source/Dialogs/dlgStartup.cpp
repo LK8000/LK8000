@@ -7,12 +7,13 @@
 */
 
 #include "externs.h"
-#include "InfoBoxLayout.h"
+#include "WindowControls.h"
 #include "RGB.h"
 #include "resource.h"
 #include "LKObjects.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
+#include "dlgTools.h"
 
 
 extern void Shutdown(void);
