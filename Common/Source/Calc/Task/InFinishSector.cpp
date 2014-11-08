@@ -18,7 +18,7 @@ bool InFinishSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i)
   double FirstPointDistance;
   bool retval = false;
 
-  if (WayPointList.empty()) return FALSE;
+  if (!WayPointList) return FALSE;
 
   if (!ValidFinish(Basic, Calculated)) return FALSE;
 

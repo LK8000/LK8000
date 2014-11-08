@@ -207,10 +207,11 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
   LockTaskData();
 
-  if (!WayPointList.empty()) {
+  if (WayPointList) {
+    int index;
     for (i=0; i<MAXTASKPOINTS; i++) {
-      unsigned index = Task[i].Index;
-      if (index < WayPointList.size()) {
+      index = Task[i].Index;
+      if (index>=0) {
         
         LatLon2Screen(WayPointList[index].Longitude, 
                       WayPointList[index].Latitude, 
@@ -221,8 +222,8 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
     }
     if (EnableMultipleStartPoints) {
       for(i=0;i<MAXSTARTPOINTS-1;i++) {
-        unsigned index = StartPoints[i].Index;
-        if (StartPoints[i].Active && (index < WayPointList.size())) {
+        index = StartPoints[i].Index;
+        if (StartPoints[i].Active && (index>=0)) {
 
           LatLon2Screen(WayPointList[index].Longitude, 
                         WayPointList[index].Latitude, 
@@ -236,7 +237,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
     // only calculate screen coordinates for waypoints that are visible
 
     // TODO 110203 OPTIMIZE THIS !
-    for(i=0;i<WayPointList.size();i++)
+    for(i=0;i<NumberOfWayPoints;i++)
       {
         WayPointList[i].Visible = false;
         if (!WayPointList[i].FarVisible) continue;

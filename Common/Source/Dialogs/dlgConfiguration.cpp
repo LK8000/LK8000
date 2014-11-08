@@ -1133,7 +1133,7 @@ static void OnWaypointNewClicked(WindowControl * Sender){
   (void)Sender;
 
   // Cannot save waypoint if no file
-  if ( WayPointList.size()<=NUMRESWP) {
+  if ( NumberOfWayPoints<=NUMRESWP) { 
 	MessageBoxX(
 	// LKTOKEN  _@M478_ = "No waypoint file selected, cannot save." 
 	gettext(TEXT("_@M478_")),
@@ -1168,7 +1168,7 @@ static void OnWaypointNewClicked(WindowControl * Sender){
 
   edit_waypoint.Name[0] = 0;
   edit_waypoint.Details = 0;
-  edit_waypoint.Number = WayPointList.size();
+  edit_waypoint.Number = NumberOfWayPoints;
   edit_waypoint.Format = LKW_NEW;	// 100208
   edit_waypoint.RunwayLen = 0;
   edit_waypoint.RunwayDir = -1;

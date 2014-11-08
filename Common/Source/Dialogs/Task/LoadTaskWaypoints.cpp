@@ -65,7 +65,7 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         #endif
 
         new_waypoint->FileNum=-1; // HERE WE SET THE FLAG FOR "DO NOT SAVE TO WAYPOINT FILE"
-        waypoint_index = WayPointList.size()-1;
+        waypoint_index = NumberOfWayPoints-1;
     }
     return waypoint_index;
 }

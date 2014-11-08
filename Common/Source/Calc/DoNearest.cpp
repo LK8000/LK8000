@@ -73,7 +73,7 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    LastDoNearest = 0;
    LKForceDoNearest=false;
 
-   if (WayPointList.empty()) return;
+   if (!WayPointList) return;
    // No need to check airports, cannot be better because Airports are landables
    if ( RangeLandableNumber==0 && RangeTurnpointNumber==0) {
 	return;

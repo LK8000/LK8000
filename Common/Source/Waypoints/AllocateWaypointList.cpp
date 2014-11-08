@@ -9,42 +9,47 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "Dialogs.h"
-#include <exception>
+
 
 
 // VENTA3 added additional WP calculated list
 bool AllocateWaypointList(void) {
-    if (WayPointList.empty()) {
-#if TESTBENCH
-        StartupStore(_T(". AllocateWaypointList: "));
-#endif
-        try {
-            WayPointList.reserve(50);
-            WayPointList.resize(NUMRESWP);
+  if (!WayPointList) {
+    NumberOfWayPoints = 0;
+    #if TESTBENCH
+    StartupStore(_T(". AllocateWaypointList: "));
+    #endif
+    WayPointList = (WAYPOINT *)LocalAlloc(LPTR, 50 * sizeof(WAYPOINT));
+    if(WayPointList == NULL) 
+      {
+	StartupStore(_T("FAILED!%s"),NEWLINE);
+        MessageBoxX(
+	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
+                    gettext(TEXT("_@M486_")),
+	// LKTOKEN  _@M266_ = "Error" 
+                    gettext(TEXT("_@M266_")),mbOk);
+        return 0;
+      }
+    #if TESTBENCH
+    StartupStore(_T("OK%s"),NEWLINE);
+    StartupStore(_T(". AllocateWayPointCalc..."));
+    #endif
 
-        } catch (std::exception& e) {
-            StartupStore(_T("FAILED! <%s>%s"), e.what(), NEWLINE);
-            MessageBoxX(gettext(TEXT("_@M486_")), // "Not Enough Memory For Waypoints"
-                        gettext(TEXT("_@M266_")) /* "Error" */,mbOk);
-            return false;
-        }
-
-#if TESTBENCH
-        StartupStore(_T("OK%s"),NEWLINE);
-        StartupStore(_T(". AllocateWayPointCalc..."));
-#endif
-        try {
-            WayPointCalc.reserve(50);
-            WayPointCalc.resize(NUMRESWP);
-        } catch (std::exception& e) {
-            StartupStore(_T("FAILED! <%s>%s"), e.what(), NEWLINE);
-            MessageBoxX(gettext(TEXT("_@M486_")), // "Not Enough Memory For Waypoints"
-                        gettext(TEXT("_@M266_")) /* "Error" */,mbOk);
-            return false;
-        }
-#if TESTBENCH
-        StartupStore(_T("OK%s"),NEWLINE);
-#endif
-    }
+    WayPointCalc = (WPCALC *)LocalAlloc(LPTR, 50 * sizeof(WPCALC));
+    if(WayPointCalc == NULL) 
+      {
+	StartupStore(_T("FAILED!%s"),NEWLINE);
+        MessageBoxX(
+	// LKTOKEN  _@M486_ = "Not Enough Memory For Waypoints" 
+                    gettext(TEXT("_@M486_")),
+	// LKTOKEN  _@M266_ = "Error" 
+                    gettext(TEXT("_@M266_")),mbOk);
+        return 0;
+      }
+    #if TESTBENCH
+    StartupStore(_T("OK%s"),NEWLINE);
+    #endif
     return true;
+  }
+  return true;
 }

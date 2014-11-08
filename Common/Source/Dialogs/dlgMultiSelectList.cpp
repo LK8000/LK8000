@@ -98,7 +98,7 @@ void dlgAddMultiSelectListDetailsDialog(int Index) {
             break;
 
         case IM_WAYPOINT:
-            LKASSERT(Elements[Index].iIdx < (int)WayPointList.size());
+            LKASSERT(Elements[Index].iIdx < (int) NumberOfWayPoints);
             SelectedWaypoint = Elements[Index].iIdx;
             PopupWaypointDetails();
             break;
@@ -303,8 +303,8 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                 idx = Task[Elements[i].iIdx].Index;
             }
 
-            if (idx >= WayPointList.size()) idx = WayPointList.size();
-            LKASSERT(idx <= WayPointList.size());
+            if (idx >= NumberOfWayPoints) idx = NumberOfWayPoints;
+            LKASSERT(idx <= NumberOfWayPoints);
 
             if (WayPointList[idx].Comment != NULL) {
                 LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);

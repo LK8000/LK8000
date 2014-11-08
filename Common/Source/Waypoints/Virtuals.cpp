@@ -274,9 +274,9 @@ void InitVirtualWaypoints()	// 091102
   }
 
   // if first load, reserve space
-  if (WayPointList.size()<=NUMRESWP) {
-	WayPointList.resize(NUMRESWP);
+  if (NumberOfWayPoints<=NUMRESWP) {
 	AddReservedWaypoints();
+	NumberOfWayPoints=NUMRESWP;
 	#if TESTBENCH
 	StartupStore(_T(". InitVirtualWaypoints: done (%d vwp)%s"),NUMRESWP,NEWLINE);
 	#endif

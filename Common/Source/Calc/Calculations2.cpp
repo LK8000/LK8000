@@ -61,7 +61,7 @@ Poco::Timestamp lastTeamCodeUpdateTime;
 
 void CalculateOwnTeamCode(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
-  if (WayPointList.empty()) return;
+  if (!WayPointList) return;
   if (TeamCodeRefWaypoint < 0) return;
 
   Poco::Timespan TimeOut(10, 0); // 10s 
@@ -110,7 +110,7 @@ void CalculateTeammateBearingRange(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   static bool InTeamSector = false;
 
-  if (WayPointList.empty()) return;
+  if (!WayPointList) return;
   if (TeamCodeRefWaypoint < 0) return;
 
   double ownDistance = 0;

@@ -28,7 +28,7 @@ bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	CommonIndex[i]= -1;
    }
 
-   if (WayPointList.empty()) {
+   if (!WayPointList) {
         return false;
    }
 
@@ -106,7 +106,7 @@ void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         DoInit[MDI_DOCOMMON]=false;
    }
 
-   if (WayPointList.empty()) return;
+   if (!WayPointList) return;
 
    // Consider replay mode...
    if (  LastRunTime > Basic->Time ) LastRunTime=Basic->Time;

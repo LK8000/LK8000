@@ -18,7 +18,7 @@ void InitWayPointCalc() {
   
   DisableBestAlternate = true;
 
-  for (unsigned int i=0; i< WayPointList.size(); i++) {
+  for (unsigned int i=0; i< NumberOfWayPoints; i++) {
 
 	WayPointCalc[i].Preferred = false;
 	WayPointCalc[i].Distance=-1;

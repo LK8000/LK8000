@@ -189,18 +189,18 @@ static void PrepareData(void){
   TCHAR sTmp[20];
   numvalidwp=0; // Reset them on entry!!
 
-  if (WayPointList.empty()) return;
+  if (!WayPointList) return;
 
   sNameFilter[0]='\0';
   SetWPNameCaption(TEXT("*"));
-  WayPointSelectInfo = (WayPointSelectInfo_t*)malloc(sizeof(WayPointSelectInfo_t) * WayPointList.size());
+  WayPointSelectInfo = (WayPointSelectInfo_t*)malloc(sizeof(WayPointSelectInfo_t) * NumberOfWayPoints);
   if (WayPointSelectInfo==NULL) {
 	OutOfMemory(__FILE__,__LINE__);
 	return;
   }
-  memset(WayPointSelectInfo, 0, sizeof(WayPointSelectInfo_t) * WayPointList.size());
+  memset(WayPointSelectInfo, 0, sizeof(WayPointSelectInfo_t) * NumberOfWayPoints);
 
-  StrIndex = (int*)malloc(sizeof(int)*(WayPointList.size()+1));
+  StrIndex = (int*)malloc(sizeof(int)*(NumberOfWayPoints+1));
   if (StrIndex==NULL) {
 	OutOfMemory(__FILE__,__LINE__);
 	free(WayPointSelectInfo);
@@ -208,9 +208,9 @@ static void PrepareData(void){
 	return;
   }
 
-  for (int i=0; i<(int)WayPointList.size(); i++){
+  for (int i=0; i<(int)NumberOfWayPoints; i++){
 
-    LKASSERT(numvalidwp<=WayPointList.size());
+    LKASSERT(numvalidwp<=NumberOfWayPoints);
 
     if (WayPointList[i].Latitude==RESWP_INVALIDNUMBER) continue;
     WayPointSelectInfo[numvalidwp].Index = i;
@@ -348,7 +348,7 @@ static void UpdateList(void){
     for (i=0; i<UpLimit; i++){
       // compare entire name which may be more than 4 chars
 
-	LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)WayPointList.size());
+	LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)NumberOfWayPoints);
 	LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
 	CharUpper(wname);
 
@@ -361,7 +361,7 @@ static void UpdateList(void){
     if (_tcscmp(sTmp, TEXT("")) != 0) { // if it's blanks, then leave UpLimit at end of list
       for (; i<UpLimit; i++){
 
-	LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)WayPointList.size());
+	LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)NumberOfWayPoints);
 	LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
 	CharUpper(wname);
 
@@ -378,7 +378,7 @@ static void UpdateList(void){
 	// now we create a secondary index pointing to this list
 	for (i=0, matches=0; i<UpLimit; i++) {
 
-		LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)WayPointList.size());
+		LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)NumberOfWayPoints);
 		LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
 		CharUpper(wname);
 
@@ -502,7 +502,7 @@ static void OnFilterNameButton(WindowControl *Sender) {
   }
   FilterMode(true);
   UpdateList();
-  if((SelectedWp>=0) && (SelectedWp < (int)WayPointList.size()))
+  if((SelectedWp>=0) && (SelectedWp < (int)NumberOfWayPoints))
   {
 	for (i=0; i<UpLimit; i++)
 	{
@@ -686,7 +686,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
 // Poco::Thread::sleep(100);
 
-    LKASSERT(i < WayPointList.size());
+    LKASSERT(i < NumberOfWayPoints);
     
 
     int w1, w2, w3, x1, x2, x3;

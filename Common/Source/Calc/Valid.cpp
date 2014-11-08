@@ -13,7 +13,7 @@
 bool ValidWayPoint(int i) {
   bool retval = true;
   LockTaskData();
-  if ((i<0)||(i>=(int)WayPointList.size())) {
+  if ((!WayPointList)||(i<0)||(i>=(int)NumberOfWayPoints)) {
     retval = false;
   }
   UnlockTaskData();
@@ -24,7 +24,7 @@ bool ValidWayPoint(int i) {
 bool ValidNotResWayPoint(int i) { // 091213
   bool retval = true;
   LockTaskData();
-  if ((i<=RESWP_END)||(i>=(int)WayPointList.size())) {
+  if ((!WayPointList)||(i<=RESWP_END)||(i>=(int)NumberOfWayPoints)) {
     retval = false;
   }
   UnlockTaskData();

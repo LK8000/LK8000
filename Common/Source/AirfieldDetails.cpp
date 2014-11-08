@@ -56,6 +56,7 @@ void CloseAirfieldDetails() {
 
 
 void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
+  int i;
   TCHAR UName[100];
   TCHAR NameA[100];
   TCHAR NameB[100];
@@ -64,9 +65,9 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
   TCHAR TmpName[100];
   bool isHome, isPreferred, isLandable;
 
-  if (WayPointList.empty()) return;
+  if (!WayPointList) return;
 
-  for(unsigned i=NUMRESWP;i<WayPointList.size();++i) {
+  for(i=NUMRESWP;i<(int)NumberOfWayPoints;i++) {
 
 	_tcscpy(UName, WayPointList[i].Name);
 

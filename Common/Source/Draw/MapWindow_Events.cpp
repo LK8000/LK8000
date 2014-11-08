@@ -51,7 +51,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
 #endif	// BUTTONS_MS
 
 
-    for(i=NUMRESWP;i<WayPointList.size();i++) {    // Consider only valid markers
+    for(i=NUMRESWP;i<NumberOfWayPoints;i++) {    // Consider only valid markers
         if ((WayPointCalc[i].WpType==WPT_AIRPORT)|| (WayPointCalc[i].WpType==WPT_OUTLANDING)) {
             DistanceBearing(lat,lon, WayPointList[i].Latitude, WayPointList[i].Longitude, &Dist, NULL);
             if(Dist < dyn_range) {
@@ -86,7 +86,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
     }
 
 
-    for(i=1;i<WayPointList.size();i++) {    // Consider only valid markers
+    for(i=1;i<NumberOfWayPoints;i++) {    // Consider only valid markers
         if ((WayPointCalc[i].WpType != WPT_AIRPORT)|| (WayPointCalc[i].WpType != WPT_OUTLANDING)) {
             DistanceBearing(lat,lon, WayPointList[i].Latitude, WayPointList[i].Longitude, &Dist, NULL);
             if(Dist < (dyn_range)) {
@@ -104,7 +104,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
 
     LockTaskData();
     for(i=0; ValidTaskPoint(i); i++) {
-        LKASSERT(Task[i].Index <=(int)WayPointList.size());
+        LKASSERT(Task[i].Index <=(int)NumberOfWayPoints);
         DistanceBearing(lat,lon,
             WayPointList[Task[i].Index].Latitude,
             WayPointList[Task[i].Index].Longitude, &Dist, &Bear);

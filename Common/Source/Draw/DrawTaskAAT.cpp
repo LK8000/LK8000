@@ -15,7 +15,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     int i;
     double tmp1 = 0.0;
 
-    if (WayPointList.empty()) return;
+    if (!WayPointList) return;
     if (!AATEnabled) return;
 
     LKPen oldpen;

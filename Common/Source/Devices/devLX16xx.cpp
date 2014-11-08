@@ -608,8 +608,8 @@ extern WPCALC   *WayPointCalc;
       WayPointList[overindex].Name,
       WayPointList[overindex].Latitude * 100,
       WayPointList[overindex].Longitude * 100,
-      WayPointCalc[0].Distance * 1000 * TONAUTICALMILES, WayPointCalc[0].Bearing,
-      WayPointCalc[0].VGR * TOKNOTS);
+      WayPointCalc->Distance * 1000 * TONAUTICALMILES, WayPointCalc->Bearing,
+      WayPointCalc->VGR * TOKNOTS);
 
   //  _stprintf(szTmp, TEXT("$GPRMB,A,0.00,L,KLE,UWOE,4917.24,N,12309.57,E,011.3,052.5,000.5,V"));
   LX16xxNMEAddCheckSumStrg(szTmp);
