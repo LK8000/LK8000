@@ -2177,19 +2177,21 @@ void WndForm::Paint(LKSurface& Surface){
     if(nChar > 0) {
         SIZE tsize = {0,0};
 
-        const LKPen oldPen = Surface.SelectObject(GetBorderPen());
-        const LKBrush oldBrush = Surface.SelectObject(GetBackBrush());
-
         Surface.SetTextColor(RGB_MENUTITLEFG);
         Surface.SetBkColor(mColorTitle);
         Surface.SetBkMode(TRANSPARENT);
-
-        LKFont oldFont = Surface.SelectObject(mhTitleFont);
+        
+        const LKPen oldPen = Surface.SelectObject(GetBorderPen());
+        const LKBrush oldBrush = Surface.SelectObject(GetBackBrush());
+        const LKFont oldFont = Surface.SelectObject(mhTitleFont);
+        
         Surface.GetTextSize(mCaption, _tcslen(mCaption), &tsize);
 
         mTitleRect = rcClient;
         mTitleRect.bottom = mTitleRect.top + tsize.cy;
 
+        Surface.FillRect(&mTitleRect, mhBrushTitle);
+        
         POINT p1, p2;
         p1.x=0; p1.y=mTitleRect.bottom;
         p2.x=mTitleRect.right; p2.y=mTitleRect.bottom;
