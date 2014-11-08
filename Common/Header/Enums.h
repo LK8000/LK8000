@@ -216,7 +216,7 @@ typedef enum {
 } MsgType_t;
 
 typedef enum {
-    IdOk,
+    IdOk = 1, 
     IdCancel,
     IdYes,
     IdNo,
