@@ -1549,6 +1549,28 @@ LKColor WindowControl::SetBackColor(const LKColor& Value){
   return res;
 }
 
+void WindowControl::PaintBorder(LKSurface& Surface) {
+    
+  if (mBorderKind != 0){
+
+    LKPen oldPen = Surface.SelectObject(mhPenBorder);
+
+    if (mBorderKind & BORDERTOP){
+      Surface.DrawLine(0,0, mWidth, 0);
+    }
+    if (mBorderKind & BORDERRIGHT){
+      Surface.DrawLine(mWidth-1, 0, mWidth-1, mHeight);
+    }
+    if (mBorderKind & BORDERBOTTOM){
+      Surface.DrawLine(mWidth-1, mHeight-1, -1, mHeight-1);
+    }
+    if (mBorderKind & BORDERLEFT){
+      Surface.DrawLine(0, mHeight-1, 0, -1);
+    }
+    
+    Surface.SelectObject(oldPen);
+  }
+}
 
 void WindowControl::PaintSelector(LKSurface& Surface){
 
@@ -1629,27 +1651,7 @@ void WindowControl::Paint(LKSurface& Surface){
     Surface.FillRect(&rc, hB);
 
   }
-
-  if (mBorderKind != 0){
-
-    LKPen oldPen = Surface.SelectObject(mhPenBorder);
-
-    if (mBorderKind & BORDERTOP){
-      Surface.DrawLine(0,0, mWidth, 0);
-    }
-    if (mBorderKind & BORDERRIGHT){
-      Surface.DrawLine(mWidth-1, 0, mWidth-1, mHeight);
-    }
-    if (mBorderKind & BORDERBOTTOM){
-      Surface.DrawLine(mWidth-1, mHeight-1, -1, mHeight-1);
-    }
-    if (mBorderKind & BORDERLEFT){
-      Surface.DrawLine(0, mHeight-1, 0, -1);
-    }
-    
-    Surface.SelectObject(oldPen);
-  }
-
+  PaintBorder(Surface);
   PaintSelector(Surface);
 
 }
@@ -1937,6 +1939,7 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
 
   mColorTitle = RGB_MENUTITLEBG;
 
+  SetBorderPen(LKPen_Black_N1);
   mhTitleFont = GetFont();
 
   mhBrushTitle = LKBrush_Black; // 101204
@@ -2173,6 +2176,16 @@ void WndForm::Paint(LKSurface& Surface){
     if (!GetVisible()) return;
 
     RECT rcClient = GetBoundRect();
+    if(GetBorderKind()&BORDERLEFT) {
+        rcClient.left += 1;
+    }
+    if(GetBorderKind()&BORDERRIGHT) {
+        rcClient.right -= 1;
+    }
+    if(GetBorderKind()&BORDERBOTTOM) {
+        rcClient.bottom -= 1;
+    }
+    
     size_t nChar = _tcslen(mCaption);
     if(nChar > 0) {
         SIZE tsize = {0,0};
@@ -2213,11 +2226,15 @@ void WndForm::Paint(LKSurface& Surface){
         Surface.SelectObject(oldPen);
         Surface.SelectObject(oldFont);
     } else {
+        if(GetBorderKind()&BORDERTOP) {
+            rcClient.top += 1;
+        }
         if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
             SetWindowPos(mClientWindow->GetHandle(), HWND_TOP, rcClient.left, rcClient.top, rcClient.right-rcClient.left, rcClient.bottom-rcClient.top, 0);
             mClientRect = rcClient;
         }
     }
+    PaintBorder(Surface);
 }
 
 void WndForm::SetCaption(const TCHAR *Value) {

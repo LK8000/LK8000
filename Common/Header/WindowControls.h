@@ -563,6 +563,7 @@ class WindowControl {
     WindowControl *mClients[50];
     int mClientCount;
 
+    virtual void PaintBorder(LKSurface& Surface);
     virtual void PaintSelector(LKSurface& Surface);
 
     void UpdatePosSize(void);
@@ -647,7 +648,10 @@ class WindowControl {
     const LKColor& GetBackColor(void) const {return(mColorBack);};
 
     const LKBrush& GetBackBrush(void){return(mhBrushBk);};
+
     const LKPen& GetBorderPen(void) const {return(mhPenBorder);};
+    void SetBorderPen(const LKPen& Pen) { mhPenBorder = Pen;}
+
     const LKPen& GetSelectorPen(void) const {return(mhPenSelector);};
 
     virtual void SetCaption(const TCHAR *Value);

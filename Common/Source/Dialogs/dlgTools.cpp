@@ -15,6 +15,7 @@
 #include "Dialogs.h"
 #include "utils/stringext.h"
 #include "utils/stl_utils.h"
+#include "LKInterface.h"
 
 
 int DLGSCALE(int x) {
@@ -100,10 +101,12 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   /* TODO code: this doesnt work to set font height 
   dY = wText->GetLastDrawTextHeight() - Height;
   */
-  if (wfullscreen)
+  if (wfullscreen) {
 	dY=0;
-  else
+  } else {
 	dY = DLGSCALE(-40);
+    wf->SetBorderKind(BORDERTOP|BORDERRIGHT|BORDERBOTTOM|BORDERLEFT);
+  }
   // wText->SetHeight(wText->GetLastDrawTextHeight()+5);
   wf->SetHeight(wf->GetHeight() + dY);
 
