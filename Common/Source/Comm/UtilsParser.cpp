@@ -180,9 +180,8 @@ BOOL NMEAParser::NMEAChecksum(const TCHAR *String)
   int i;
   TCHAR c1,c2;
   unsigned char v1 = 0,v2 = 0;
-  TCHAR *pEnd;
 
-  pEnd = _tcschr(String,_T('*'));
+  const TCHAR *pEnd = _tcschr(String,_T('*'));
   if(pEnd == NULL)
     return FALSE;
 
