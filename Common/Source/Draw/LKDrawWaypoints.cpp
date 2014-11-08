@@ -27,9 +27,6 @@ MapWaypointLabel_t* SortedWaypointLabelList[200];
 int MapWaypointLabelListCount=0;
 
 
-void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact);
-
-
 inline bool MapWaypointLabelListCompare(const MapWaypointLabel_t* elem1, const MapWaypointLabel_t* elem2 ){
   // Now sorts elements in task preferentially.
   return (elem1->AltArivalAGL < elem2->AltArivalAGL);

@@ -16,7 +16,6 @@
 #include "Multimap.h"
 
 extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
-extern void LKDrawMultimap_Asp(HDC hdc,RECT rc);
 
 //
 // Called by LKDrawLook8000, this is what happens when we change mapspace mode, advancing through types.

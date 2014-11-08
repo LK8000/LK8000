@@ -14,8 +14,6 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 
-extern void DrawJPG(HDC hdc, RECT rc);
-
 static int page=0;
 static WndForm *wf=NULL;
 static WndListFrame *wDetails=NULL;

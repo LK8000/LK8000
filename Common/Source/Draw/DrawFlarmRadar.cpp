@@ -49,9 +49,6 @@ int bTrace = 1;
 #define MAX_DIST_SCALE 25.0       /* maximum radar distance              */
 
 
-int DrawFlarmObjectTrace(HDC hDC, DiagrammStruct* Dia, int iFlarmIdx);
-//#define COLORLIST
-
 using std::min;
 using std::max;
 
