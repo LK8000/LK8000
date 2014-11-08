@@ -166,7 +166,14 @@ endif
 
 ######## output files
 
+ifeq ($(DEBUG),y)
+OUTPUTS 	:= LK8000-$(TARGET)_debug.exe
+OUTPUTS_NS	:= LK8000-$(TARGET)_debug_ns.exe	
+	
+else
 OUTPUTS 	:= LK8000-$(TARGET).exe
+OUTPUTS_NS	:= LK8000-$(TARGET)_ns.exe	
+endif
 
 ######## tools
 
@@ -1005,8 +1012,8 @@ rebuild:
 clean: cleani
 	@$(NQ)echo "  CLEAN   $(BIN)"
 	$(Q)$(FIND) $(BIN) $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' -o -name '*.min.*' \) -type f -print | xargs -r $(RM)
-	$(Q)$(RM) LK8000-$(TARGET)-ns.exe
-	$(Q)$(RM) LK8000-$(TARGET).exe
+	$(Q)$(RM) $(OUTPUTS_NS)
+	$(Q)$(RM) $(OUTPUTS)
 
 cleani:
 	@$(NQ)echo "  CLEANI"
@@ -1039,16 +1046,16 @@ cppcheck :
 
 ####### rules
 
-LK8000-$(TARGET).exe: LK8000-$(TARGET)-ns.exe
+$(OUTPUTS) : $(OUTPUTS_NS)
 	@$(NQ)echo "  STRIP   $@"
 	$(Q)$(STRIP) $< -o $@
 	$(Q)$(SIZE) $@
 
 ifeq ($(REMOVE_NS),y)
-	$(RM) LK8000-$(TARGET)-ns.exe
+	$(RM) $(OUTPUTS_NS)
 endif
 
-LK8000-$(TARGET)-ns.exe: $(OBJS)
+$(OUTPUTS_NS): $(OBJS)
 	@$(NQ)echo "  LINK    $@"
 	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
