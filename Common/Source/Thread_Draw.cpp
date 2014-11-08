@@ -145,7 +145,7 @@ void MapWindow::DrawThread ()
 		
 		if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
 
-			const int fromX=startScreen.x-targetScreen.y;
+			const int fromX=startScreen.x-targetScreen.x;
 			const int fromY=startScreen.y-targetScreen.y;
 
 			ScreenSurface.Whiteness(0, 0,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
