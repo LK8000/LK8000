@@ -120,7 +120,7 @@ bool devIsDisabled(int Index) {
   return DeviceList[Index].Disabled;
 }
 
-static int devIsFalseReturn(PDeviceDescriptor_t d){
+static BOOL devIsFalseReturn(PDeviceDescriptor_t d){
   (void)d;
   return(FALSE);
 
@@ -179,7 +179,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
     IsBaroSource = devIsFalseReturn;
     IsRadio = devIsFalseReturn;
 
-    PutVoice = (int (*)(struct DeviceDescriptor_t *,TCHAR *))devIsFalseReturn;
+    PutVoice = NULL;
     PortNumber = i;
     PutQNH = NULL;
     OnSysTicker = NULL;
