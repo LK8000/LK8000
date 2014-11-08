@@ -58,7 +58,7 @@ FlarmIdFile::~FlarmIdFile(void)
 {
 }
 
-void FlarmIdFile::GetItem(HANDLE hFile, FlarmId *flarmId)
+void FlarmIdFile::GetItem(FILE* hFile, FlarmId *flarmId)
 {
   GetAsString(hFile, FLARMID_SIZE_ID-1, flarmId->id);
   GetAsString(hFile, FLARMID_SIZE_NAME-1, flarmId->name);
@@ -97,7 +97,7 @@ void FlarmIdFile::GetItem(HANDLE hFile, FlarmId *flarmId)
 
 
 
-void FlarmIdFile::GetAsString(HANDLE hFile, int charCount, TCHAR *res)
+void FlarmIdFile::GetAsString(FILE* hFile, int charCount, TCHAR *res)
 {
   LKASSERT((charCount * 2)<=100);
   int bytesToRead = std::min(charCount * 2, 100);

@@ -32,8 +32,8 @@ class FlarmIdFile
 {
 private:
   FlarmIdMap flarmIds;
-  void GetAsString(HANDLE hFile, int charCount, TCHAR *res);
-  void GetItem(HANDLE hFile, FlarmId *flarmId);
+  void GetAsString(FILE* hFile, int charCount, TCHAR *res);
+  void GetItem(FILE* hFile, FlarmId *flarmId);
 public:
   FlarmIdFile(void);
   ~FlarmIdFile(void);
