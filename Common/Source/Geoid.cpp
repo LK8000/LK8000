@@ -20,10 +20,8 @@
 unsigned char* egm96data = NULL;
 extern HINSTANCE hInst;
 #else
+#include "resource_data.h"
 const unsigned char* egm96data = NULL;
-
-extern const unsigned char _binary_Common_Data_Bitmaps_egm96s_dem_start[];
-extern const unsigned char _binary_Common_Data_Bitmaps_egm96s_dem_end[];
 #endif
 
 bool OpenGeoid(void) {
@@ -35,7 +33,7 @@ bool OpenGeoid(void) {
         if (hResInfo) {
             HGLOBAL hRes = LoadResource(hInst, hResInfo);
             if (hRes) {
-                // Lock the wave resource and do something with it. 
+                // Retrieves a pointer to the resource in memory 
                 const BYTE* lpRes = (BYTE*) LockResource(hRes);
                 if (lpRes) {
                     const size_t len = SizeofResource(hInst, hResInfo);
@@ -43,14 +41,12 @@ bool OpenGeoid(void) {
                         egm96data = (unsigned char*) malloc(len);
                         memcpy((char*) egm96data, (char*) lpRes, len);
                     }
-                    UnlockResource(lpRes);
                 }
-                FreeResource(hRes);
             }
         }
 #else
-        if(std::distance(_binary_Common_Data_Bitmaps_egm96s_dem_start, _binary_Common_Data_Bitmaps_egm96s_dem_end) == EGM96SIZE) {
-            egm96data = _binary_Common_Data_Bitmaps_egm96s_dem_start;
+        if(std::distance(IDR_RASTER_EGM96S_begin, IDR_RASTER_EGM96S_end) == EGM96SIZE) {
+            egm96data = IDR_RASTER_EGM96S_begin;
         }
 #endif
         // disable use Geoid if resource can't be loaded;

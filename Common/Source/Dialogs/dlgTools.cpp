@@ -252,15 +252,18 @@ static LKFont FontMap[5];
 
 #include <stdio.h>
 
+#ifndef WIN32_RESSOURCE
+#include "resource_data.h"
+#endif
 
-XMLNode xmlLoadFromResource(const TCHAR* lpName,
-                            LPCTSTR tag, 
-                            XMLResults *pResults) {
-  LPTSTR lpRes; 
+XMLNode xmlLoadFromResource(const TCHAR* lpName, LPCTSTR tag, XMLResults *pResults) {
+    const char *lpRes = NULL;
+    int l = 0;
+    TCHAR * szXML = NULL;
+
+#ifdef WIN32_RESSOURCE
   HRSRC hResInfo;
   HGLOBAL hRes; 
-  int l;
-  TCHAR * szXML;
 
   // Find the xml resource.
   hResInfo = FindResource (hInst, lpName, TEXT("XMLDialog")); 
@@ -288,29 +291,42 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
     return XMLNode::emptyXMLNode;
   }
 
-  // Lock the wave resource and do something with it. 
-  lpRes = (LPTSTR)LockResource (hRes);
-  
-  if (lpRes) {
-    l = SizeofResource(hInst,hResInfo);
-    if (l>0) {
+    // Retrieves a pointer to the xml resource in memory 
+    lpRes = (const char*) LockResource(hRes);
+    if (lpRes) {
+        l = SizeofResource(hInst, hResInfo);
+    }
+
+#else
+    lpRes = GetNamedResource(lpName);
+    if(lpRes) {
+        l = strlen(lpRes);
+    }
+#endif
+
+    if (lpRes && l > 0) {
 #ifdef _UNICODE
-      char *buf= (char*)malloc(l+2);
-      if (!buf) {
-        //StartupStore(_T("------ LoadFromRes malloc error%s"),NEWLINE); // 100101
-          goto _errmem;
-      }
-      strncpy(buf,(char*)lpRes,l);
-      buf[l]=0; // need to explicitly null-terminate.
-      buf[l+1]=0;
-     
-      szXML = (TCHAR*) calloc(l+2, sizeof (TCHAR));
-      if (!szXML) {
-        //StartupStore(_T("------ LoadFromRes malloc2 error%s"),NEWLINE); // 100101
-          goto _errmem;
-      }
-      int nSize = utf2unicode(buf, szXML, l+1);
-      free(buf);
+        char *buf = NULL;
+        if(lpRes[l] != '\0') {
+            buf = (char*) malloc(l + 2);
+            if (!buf) {
+                //StartupStore(_T("------ LoadFromRes malloc error%s"),NEWLINE); // 100101
+                goto _errmem;
+            }
+            strncpy(buf, (char*) lpRes, l);
+            buf[l] = 0; // need to explicitly null-terminate.
+            buf[l + 1] = 0;
+            lpRes = buf;
+        }
+        szXML = (TCHAR*) calloc(l + 2, sizeof (TCHAR));
+        if (!szXML) {
+            //StartupStore(_T("------ LoadFromRes malloc2 error%s"),NEWLINE); // 100101
+            goto _errmem;
+        }
+        int nSize = utf2unicode(lpRes, szXML, l + 1);
+        if(buf) {
+            free(buf);
+        }
 #else
       int nSize = l;
       szXML= (char*)malloc(l+2);
@@ -336,7 +352,6 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
       free(szXML);
       return x;
     }
-  }
   MessageBoxX(
               TEXT("Can't lock resource"),
               TEXT("Dialog error"),

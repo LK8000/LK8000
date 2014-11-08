@@ -13,6 +13,7 @@ CLC=Common/Source/Calc
 TSK=Common/Source/Calc/Task
 CMM=Common/Source/Comm
 WPT=Common/Source/Waypoints
+RSC=Common/Source/Resources
 HDR=Common/Header
 SRC_SCREEN=$(SRC)/Screen
 
@@ -171,6 +172,7 @@ OUTPUTS 	:= LK8000-$(TARGET).exe
 
 EXE		:=$(findstring .exe,$(MAKE))
 AR		:=$(TCPATH)ar$(EXE)
+AS		:=$(TCPATH)as$(EXE)
 CXX		:=$(TCPATH)g++$(EXE)
 CC		:=$(TCPATH)gcc$(EXE)
 SIZE		:=$(TCPATH)size$(EXE)
@@ -195,10 +197,10 @@ else
 ifeq ($(CONFIG_PC),y)
 CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
 CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1 -DMSOFT
-CE_DEFS		+=-DWIN32_RESOURCE
 else
 CE_DEFS		:=-D_WIN32_WCE=$(CE_VERSION) -D_WIN32_IE=$(CE_VERSION)
 CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
+CE_DEFS		+=-DWIN32_RESOURCE
 endif
 endif
 
@@ -782,7 +784,6 @@ DLGS	:=\
 	$(DLG)/dlgBluetooth.cpp\
 	$(DLG)/dlgIgcFile.cpp\
 	
-
 SRC_FILES :=\
 	$(SCREEN) \
 	$(SRC)/AirfieldDetails.cpp \
@@ -883,6 +884,7 @@ SRC_FILES :=\
 
 
 ####### libraries
+RSCSRC  := $(SRC)/Resource
 
 ZZIPSRC	:=$(LIB)/zzip
 ZZIP	:=\
@@ -967,8 +969,10 @@ DIALOG_XML = $(wildcard Common/Data/Dialogs/*.xml)
 
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
-	$(BIN)/poco.a \
-	$(BIN)/egm96s.a \
+	$(BIN)/poco.a 
+	
+	
+OBJS	+= $(BIN)/resource.a
 
 
 ifneq ($(CONFIG_LINUX),y)
@@ -1064,11 +1068,6 @@ $(BIN)/poco.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(POCO)) $(patsubst $(SRC)%.c,$(
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
-$(BIN)/egm96s.a: Common/Data/Bitmaps/egm96s.dem
-	@$(NQ)echo "  binary  $@"
-	$(Q)$(LD) -r -b binary  $^ -o $@
-	$(Q)$(OBJCOPY) --rename-section .data=.rodata,alloc,load,readonly,data,contents $@
-
 $(BIN)/%.o: $(SRC)/%.c
 	@$(NQ)echo "  CC      $@"
 	$(Q)$(MKDIR) $(dir $@)
@@ -1080,6 +1079,24 @@ $(BIN)/%.o: $(SRC)/%.cpp
 	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
 	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
+
+$(BIN)/resource.a: $(BIN)/Resource/resource_data.o $(BIN)/Resource/resource_xml.o
+	@$(NQ)echo "  AR      $@"
+	$(Q)$(AR) $(ARFLAGS) $@ $^
+
+$(BIN)/Resource/resource_xml.o:  $(BIN)/Resource/resource_xml.min.S
+	@$(NQ)echo "  AS     $@"
+	$(Q)$(MKDIR) $(dir $@)
+	$(Q)$(AS) -I'$(dir $<)' $(OUTPUT_OPTION) $<
+
+$(BIN)/Resource/resource_data.o:  $(RSCSRC)/resource_data.S
+	@$(NQ)echo "  AS     $@"
+	$(Q)$(MKDIR) $(dir $@)
+	$(Q)$(AS) -I'$(dir $<)' $(OUTPUT_OPTION) $<
+
+$(BIN)/Resource/resource_xml.min.S :  $(RSCSRC)/resource_xml.S
+	@$(NQ)echo "  update $@"
+	@sed -r 's|(^.*")\.\./\.\./(Data/Dialogs[^"]+)(.xml".*)$$|\1\.\./\.\./\.\./$(BIN)/\2.min\3|g' $< > $@
 
 $(BIN)/%.rsc: $(BIN)/%.min.rc 
 	@$(NQ)echo "  WINDRES $@"

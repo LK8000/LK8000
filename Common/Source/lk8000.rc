@@ -103,7 +103,7 @@ END
 //
 // XMLDIALOG
 //
-
+#ifdef WIN32_RESOURCE
 IDR_XML_AIRSPACE        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspace.xml"
 IDR_XML_AIRSPACECOLOURS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceColours.xml"
 IDR_XML_MULTISELECTLIST XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgMultiSelectList.xml"
@@ -204,7 +204,6 @@ IDR_XML_IGCFILE_L	XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgIgcFile_L.xml"
 IDR_XML_BLUEFLYCONFIG_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig_L.xml"
 IDR_XML_BLUEFLYCONFIG XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig.xml"
 
-#ifdef WIN32_RESOURCE
 IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
 #endif
 
