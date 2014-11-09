@@ -2963,9 +2963,10 @@ void InputEvents::eventAirspaceDisplayMode(const TCHAR *misc){
 
 // THIS IS UNUSED, AND SHOULD NOT BE USED SINCE IT DOES NOT SUPPORT CUPs
 void InputEvents::eventAddWaypoint(const TCHAR *misc) {
-  static int tmpWaypointNum = 0;
   WAYPOINT edit_waypoint;
   LockTaskData();
+  size_t tmpWaypointNum = WayPointList.size();
+
   edit_waypoint.Latitude = GPS_INFO.Latitude;
   edit_waypoint.Longitude = GPS_INFO.Longitude;
   edit_waypoint.Altitude = CALCULATED_INFO.TerrainAlt;
@@ -2975,17 +2976,12 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
     edit_waypoint.Flags += LANDPOINT;
   }
   edit_waypoint.Comment = NULL;
-  edit_waypoint.Name[0] = 0;
+  _stprintf(edit_waypoint.Name,TEXT("_%u"), tmpWaypointNum);
   edit_waypoint.Details = 0;
-  edit_waypoint.Number = NumberOfWayPoints;
+  edit_waypoint.Number = WayPointList.size();
+  
+  AddWaypoint(std::move(edit_waypoint));
 
-  WAYPOINT *new_waypoint = GrowWaypointList();
-  if (new_waypoint) {
-    tmpWaypointNum++;
-    memcpy(new_waypoint,&edit_waypoint,sizeof(WAYPOINT));
-    _stprintf(new_waypoint->Name,TEXT("_%d"), tmpWaypointNum);
-    new_waypoint->Details= 0;
-  }
   UnlockTaskData();
 }
 

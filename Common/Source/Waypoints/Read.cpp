@@ -11,7 +11,8 @@
 
 int globalFileNum = 0;
 
-
+void InitVirtualWaypoints();
+void InitWayPointCalc(void); 
 
 void ReadWayPoints(void)
 {
@@ -72,6 +73,9 @@ void ReadWayPoints(void)
         StartupStore(TEXT("--- No waypoint file 2%s"),NEWLINE);
       }
     }
+	
+    // each time we load WayPoint, we need to init WaypointCalc !!
+    InitWayPointCalc();
 
   UnlockTaskData();
 

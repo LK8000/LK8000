@@ -13,6 +13,9 @@
 
 void AddReservedWaypoints()
 {
+    WayPointList.resize(NUMRESWP);
+    WayPointCalc.resize(NUMRESWP);
+        
 	WayPointList[RESWP_TAKEOFF].Number=RESWP_TAKEOFF+1;
 	WayPointList[RESWP_TAKEOFF].Latitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_TAKEOFF].Longitude=RESWP_INVALIDNUMBER;
@@ -261,22 +264,14 @@ void AddReservedWaypoints()
 // Must be called BEFORE ReadWaypoints()!! 
 void InitVirtualWaypoints()	// 091102
 {
-
   #if TESTBENCH
   StartupStore(_T(". InitVirtualWaypoints: start%s"),NEWLINE);
   #endif
-    LockTaskData();
-
-  if (!AllocateWaypointList()) {
-  	StartupStore(_T("!!!!!! InitVirtualWaypoints: AllocateWaypointList FAILED. CRITIC!%s"),NEWLINE);
-    	UnlockTaskData(); // BUGFIX 091122
-	return;
-  }
+  LockTaskData();
 
   // if first load, reserve space
-  if (NumberOfWayPoints<=NUMRESWP) {
+  if (WayPointList.size()<=NUMRESWP) {
 	AddReservedWaypoints();
-	NumberOfWayPoints=NUMRESWP;
 	#if TESTBENCH
 	StartupStore(_T(". InitVirtualWaypoints: done (%d vwp)%s"),NUMRESWP,NEWLINE);
 	#endif

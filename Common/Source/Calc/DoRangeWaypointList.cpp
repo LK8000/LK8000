@@ -26,14 +26,15 @@ extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
-   int i, kl, kt, ka;
+   size_t i;
+   int kl, kt, ka;
    //double arrival_altitude;
 
    #if DEBUG_DORANGE
    StartupStore(_T(".... >> DoRangeWaypointList is running! <<\n"));
    #endif
 
-   if (!WayPointList) {
+   if (WayPointList.empty()) {
 	return false;
    }
 
@@ -118,7 +119,7 @@ _retunedst:
   StartupStore(_T(".... dstrangeturnpoint=%d  dstrangelandable=%d\n"),dstrangeturnpoint,dstrangelandable);
   #endif
 
-  for (i=0, kt=0, kl=0, ka=0; i<(int)NumberOfWayPoints; i++) {
+  for (i=0, kt=0, kl=0, ka=0; i<WayPointList.size(); i++) {
 
 	int approx_distance = CalculateWaypointApproxDistance(scx_aircraft, scy_aircraft, i);
 

@@ -25,7 +25,8 @@ static void Update()
   double teammateBearing = CALCULATED_INFO.TeammateBearing;
   double teammateRange = CALCULATED_INFO.TeammateRange;
 
-  if((TeamCodeRefWaypoint >=0)&&(WayPointList) && TeammateCodeValid ) {
+  
+  if(ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid ) {
 	double Value = CALCULATED_INFO.TeammateBearing -  GPS_INFO.TrackBearing;
       
 	if (Value < -180.0)
@@ -158,7 +159,7 @@ void dlgTeamCodeShowModal(void)
     }
 
   TCHAR sTmp[32] = { 0 };
-  if( WayPointList && ValidWayPoint(TeamCodeRefWaypoint)) {
+  if( ValidWayPoint(TeamCodeRefWaypoint)) {
 	// LKTOKEN _@M1230_ "Team Ref.: "
 	LK_tcsncpy(sTmp, gettext(TEXT("_@M1230_")), 20);
 	_tcsncat(sTmp, WayPointList[TeamCodeRefWaypoint].Name,10);

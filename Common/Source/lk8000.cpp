@@ -384,8 +384,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   RasterTerrain::OpenTerrain();
 
   ReadWayPoints();
-  StartupStore(_T(". LOADED %d WAYPOINTS + %d virtuals%s"),NumberOfWayPoints-NUMRESWP,NUMRESWP,NEWLINE);
-  InitWayPointCalc(); 
+  StartupStore(_T(". LOADED %d WAYPOINTS + %d virtuals%s"),WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
   InitLDRotary(&rotaryLD); 
   InitWindRotary(&rotaryWind); // 100103
   MapWindow::zoom.Reset();

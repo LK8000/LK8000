@@ -21,8 +21,7 @@ static TCHAR nTemp2String[READLINE_LENGTH*2];
 // returns -1 if error, or the WpFileType 
 int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 {
-  WAYPOINT *new_waypoint;
-  TCHAR szTemp[100];
+  WAYPOINT new_waypoint {};
   DWORD fSize, fPos=0;
   int nLineNumber=0;
   short fileformat=LKW_DAT;
@@ -42,14 +41,6 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 	StartupStore(_T("... ReadWayPointFile: waypoint file %s type=%d is empty%s"), CurrentWpFileName,fileformat,NEWLINE);
 	return -1;
   }
-
-  if (!AllocateWaypointList()) {
-	StartupStore(_T("!!!!!! ReadWayPointFile: AllocateWaypointList FAILED%s"),NEWLINE);
-	return -1;
-  }
-
-  new_waypoint = WayPointList+NumberOfWayPoints;
-
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 
@@ -162,24 +153,22 @@ goto_inloop:
 	if (nTemp2String[0] == '\0')
 		continue;
 
-	new_waypoint->Details = NULL; 
-	new_waypoint->Comment = NULL; 
+	new_waypoint.Details = NULL; 
+	new_waypoint.Comment = NULL; 
 
 	if ( fileformat == LKW_DAT || fileformat== LKW_XCW ) {
-		if (ParseDAT(nTemp2String, new_waypoint)) {
+		if (ParseDAT(nTemp2String, &new_waypoint)) {
 
-			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
+			if ( (_tcscmp(new_waypoint.Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
+				memcpy(&WayPointList[RESWP_TAKEOFF],&new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
 
-			if (WaypointInTerrainRange(new_waypoint)) { 
-				new_waypoint = GrowWaypointList();
-				if (!new_waypoint) {
+			if (WaypointInTerrainRange(&new_waypoint)) { 
+                if(!AddWaypoint(std::move(new_waypoint))) {
 					return -1; // failed to allocate
 				}
-				new_waypoint++; // we want the next blank one
 			}	
 	  	}
 	}
@@ -187,36 +176,32 @@ goto_inloop:
 		if ( _tcsncmp(_T("-----Related Tasks"),nTemp2String,18)==0) {
 			break;
 		}
-		if (ParseCUPWayPointString(nTemp2String, new_waypoint)) {
-			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
+		if (ParseCUPWayPointString(nTemp2String, &new_waypoint)) {
+			if ( (_tcscmp(new_waypoint.Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
+				memcpy(&WayPointList[RESWP_TAKEOFF],&new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
 
-			if (WaypointInTerrainRange(new_waypoint)) { 
-				new_waypoint = GrowWaypointList();
-				if (!new_waypoint) {
+			if (WaypointInTerrainRange(&new_waypoint)) { 
+				if(AddWaypoint(std::move(new_waypoint))) {
 					return -1; // failed to allocate
 				}
-				new_waypoint++; // we want the next blank one
 			}
 		}
 	}
 	if ( fileformat == LKW_COMPE ) {
-		if (ParseCOMPEWayPointString(nTemp2String, new_waypoint)) {
-			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
+		if (ParseCOMPEWayPointString(nTemp2String, &new_waypoint)) {
+			if ( (_tcscmp(new_waypoint.Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
+				memcpy(&WayPointList[RESWP_TAKEOFF],&new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
 
-			if (WaypointInTerrainRange(new_waypoint)) { 
-				new_waypoint = GrowWaypointList();
-				if (!new_waypoint) {
+			if (WaypointInTerrainRange(&new_waypoint)) {
+                if(AddWaypoint(std::move(new_waypoint))) {
 					return -1; // failed to allocate
 				}
-				new_waypoint++; // we want the next blank one
 			}
 		}
 	}
@@ -226,19 +211,17 @@ goto_inloop:
 		if(nLineNumber <= 3)
 			continue;
 
-		if(ParseOZIWayPointString(nTemp2String, new_waypoint)){
-			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
+		if(ParseOZIWayPointString(nTemp2String, &new_waypoint)){
+			if ( (_tcscmp(new_waypoint.Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
+				memcpy(&WayPointList[RESWP_TAKEOFF],&new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
 
-			if (WaypointInTerrainRange(new_waypoint)) {
-				new_waypoint = GrowWaypointList();
-				if (!new_waypoint) {
+			if (WaypointInTerrainRange(&new_waypoint)) {
+                if(!AddWaypoint(std::move(new_waypoint))) {
 					return -1; // failed to allocate
 				}
-				new_waypoint++; // we want the next blank one
 			}
 		}
 	}

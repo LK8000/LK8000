@@ -173,10 +173,6 @@ void Globals_Init(void) {
   TeamFlarmTracking = false;
   TeammateCodeValid = false;
 
-  WayPointList = NULL;
-  WayPointCalc = NULL;
-
-  NumberOfWayPoints = 0;
   SectorType = 1; // FAI sector
   SectorRadius = 3000;
   StartLine = TRUE;

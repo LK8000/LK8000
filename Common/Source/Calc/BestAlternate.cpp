@@ -48,7 +48,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   TCHAR ventabuffer[200];
   #endif
 
-  if (!WayPointList) return;
+  if (WayPointList.empty()) return;
 
   CScopeLock Lock(LockTaskData, UnlockTaskData);
   

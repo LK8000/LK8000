@@ -151,7 +151,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 
 	// Calc Waypoint pos in file
 	int nWaypointPos = 1;
-	for(int i = NUMRESWP; i < (wpt-WayPointList); i++) {
+	for(int i = NUMRESWP; i < (wpt-&(WayPointList.front())); i++) {
 		if(WayPointList[i].FileNum == wpt->FileNum)
 			nWaypointPos++;
 	}
@@ -174,10 +174,8 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 
 // globalFileNum is 0 for file1 and 1 for file2
 void WriteWayPointFile(FILE *fp) {
-  int i;
-
   // remove previous home if it exists in this file
-  for (i=NUMRESWP; i<(int)NumberOfWayPoints; i++) {  // BUGFIX 091206
+  for (unsigned i=NUMRESWP; i<WayPointList.size(); i++) {  // BUGFIX 091206
     if (WayPointList[i].FileNum == globalFileNum) {
       if ((WayPointList[i].Flags & HOME) == HOME) {
         WayPointList[i].Flags -= HOME;
@@ -204,11 +202,11 @@ void WriteWayPointFile(FILE *fp) {
 	StartupStore(_T("... WriteWayPointFile: invalid globalFileNum%s"),NEWLINE);
 	return;
   }
-  for (i=NUMRESWP; i<(int)NumberOfWayPoints; i++) {
+  for (unsigned i=NUMRESWP; i<WayPointList.size(); i++) {
     if (WayPointList[i].FileNum == globalFileNum) {
 
       // set home flag if it's the home
-      if (i==HomeWaypoint) {
+      if (i==(unsigned)HomeWaypoint) {
         if ((WayPointList[i].Flags & HOME) != HOME) {
           WayPointList[i].Flags += HOME;
         }

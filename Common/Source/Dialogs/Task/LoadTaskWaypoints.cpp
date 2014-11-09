@@ -44,16 +44,13 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         waypoint_index = FindMatchingWaypoint(read_waypoint);
 
     if (waypoint_index == -1) { // waypoint not found, so add it!
-        WAYPOINT* new_waypoint = GrowWaypointList();
-        if (!new_waypoint) { // error, can't allocate!
-            return -1;
-        }
+        WAYPOINT new_waypoint = {};
 
         //
         // Note: we dont save task waypoints inside WP files!
         // SO WE DONT NEED TO USE COMMENTS and DETAILS. They are useless.
         //
-        memcpy(new_waypoint, read_waypoint, sizeof(WAYPOINT));
+        memcpy(&new_waypoint, read_waypoint, sizeof(WAYPOINT));
         // this is  needed for avoid freeing twice ...
         // ownership of allocated memory is transferred from "read_waypoint" to "new_waypoint"
         read_waypoint->Comment = NULL;
@@ -61,11 +58,13 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         #if TASK_DETAILS
         read_waypoint->Details = NULL;
         #else
-        new_waypoint->Details = NULL;
+        new_waypoint.Details = NULL;
         #endif
 
-        new_waypoint->FileNum=-1; // HERE WE SET THE FLAG FOR "DO NOT SAVE TO WAYPOINT FILE"
-        waypoint_index = NumberOfWayPoints-1;
+        new_waypoint.FileNum=-1; // HERE WE SET THE FLAG FOR "DO NOT SAVE TO WAYPOINT FILE"
+        if(AddWaypoint(std::move(new_waypoint))) {
+            waypoint_index = WayPointList.size() -1;
+        }
     }
     return waypoint_index;
 }

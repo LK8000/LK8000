@@ -58,7 +58,7 @@ void SetHome(bool reset)
   if (!ValidNotResWayPoint(HomeWaypoint)) {
     // search for home in waypoint list, if we don't have a home
     HomeWaypoint = -1;
-    for(i=NUMRESWP;i<NumberOfWayPoints;i++) {
+    for(i=NUMRESWP;i<WayPointList.size();++i) {
 	if( (WayPointList[i].Flags & HOME) == HOME) {
 		if (HomeWaypoint < 0) {
 			HomeWaypoint = i;
@@ -79,7 +79,7 @@ void SetHome(bool reset)
   // if we still don't have a valid home , search for match against memory home
   // This will fix a problem reloading waypoints after editing, or changing files with similars
   if ( (!ValidNotResWayPoint(HomeWaypoint)) && (WpHome_Lat!=0)) {
-	for(i=NUMRESWP;i<NumberOfWayPoints;i++) {
+	for(i=NUMRESWP;i<WayPointList.size();i++) {
 		if( WayPointList[i].Latitude  ==  WpHome_Lat)
 			if( WayPointList[i].Longitude  == WpHome_Lon)
 				if ( _tcscmp(WayPointList[i].Name,WpHome_Name) == 0 ) {

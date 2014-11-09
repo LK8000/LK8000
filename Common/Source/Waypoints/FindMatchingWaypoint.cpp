@@ -12,11 +12,8 @@
 
 
 int FindMatchingWaypoint(WAYPOINT *waypoint) {
-    if (!WayPointList) {
-        return -1;
-    }
-    unsigned int i;
-    for (i=NUMRESWP; i<NumberOfWayPoints; i++) {
+
+    for (unsigned i=NUMRESWP; i<WayPointList.size(); ++i) {
         if (_tcscmp(waypoint->Name, WayPointList[i].Name)!=0) continue; // if different name, no match
         // if same name, lat lon and flags must be the same in order to match a previously existing waypoint
         if ((fabs(waypoint->Latitude-WayPointList[i].Latitude)<1.0e-6) &&
@@ -29,9 +26,9 @@ int FindMatchingWaypoint(WAYPOINT *waypoint) {
 }
 
 int FindMatchingAirfield(WAYPOINT *waypoint) {
-    if(!WayPointList) return -1;
+
     const double limit=0.00899928005; //1 Km expressed in deg
-    for(unsigned int i=NUMRESWP; i<NumberOfWayPoints; i++) { //for all WP in list
+    for (unsigned i=NUMRESWP; i<WayPointList.size(); ++i) {
         if(WayPointList[i].Style>=STYLE_AIRFIELDGRASS && //if it is any kind of airport/airfield
                 WayPointList[i].Style<=STYLE_AIRFIELDSOLID &&
                 (fabs(waypoint->Latitude-WayPointList[i].Latitude)<limit) && //and if coordinates within 1 Km range

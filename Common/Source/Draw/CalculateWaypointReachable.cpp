@@ -57,9 +57,8 @@ void MapWindow::LKCalculateWaypointReachable(const bool forced)
                                  // and the first scan is made while still initializing other things
 
   short numslots=1; // TODO assign numslots with a function, based also on available CPU time
-
-  if (NumberOfWayPoints>200) {
-	numslots=NumberOfWayPoints/400;
+  if (WayPointList.size()>200) {
+	numslots=WayPointList.size()/400;
 	// keep numslots optimal
 	if (numslots<MULTICALC_MINROBIN) numslots=MULTICALC_MINROBIN; // seconds for full scan, as this is executed at 1Hz
 	if (numslots>MULTICALC_MAXROBIN) numslots=MULTICALC_MAXROBIN;
@@ -82,7 +81,7 @@ void MapWindow::LKCalculateWaypointReachable(const bool forced)
   // However it is still to be understood what drawbacks we might have by changing calculations here.
   LandableReachable = false;
 
-  if (!WayPointList) return;
+  if (WayPointList.empty()) return;
 
   unsigned int scanstart;
   unsigned int scanend;
@@ -95,22 +94,20 @@ void MapWindow::LKCalculateWaypointReachable(const bool forced)
 
   if (multicalc_slot==0) {
 	scanstart=0; // including this
-	scanend=NumberOfWayPoints; // will be used -1, so up to this excluded value
+	scanend=WayPointList.size(); // will be used -1, so up to this excluded value
 
 	#if DEBUGCW
-	StartupStore(_T("... wps=%d multicalc_slot=0 ignored numslot=%d, full scan %d < %d%s"),NumberOfWayPoints,
-		numslots,scanstart,scanend,NEWLINE);
+	StartupStore(_T("... wps=%d multicalc_slot=0 ignored numslot=%d, full scan %d < %d%s"),WayPointList.size(),numslots,scanstart,scanend,NEWLINE);
 	#endif
   } else {
-	scanstart=(NumberOfWayPoints/numslots)*(multicalc_slot-1); 
+	scanstart=(WayPointList.size()/numslots)*(multicalc_slot-1);
 	if (multicalc_slot==numslots)
-		scanend=NumberOfWayPoints;
+		scanend=WayPointList.size();
 	else
-		scanend=scanstart+(NumberOfWayPoints/numslots);
+		scanend=scanstart+(WayPointList.size()/numslots);
 
 	#if DEBUGCW
-	StartupStore(_T("... wps=%d multicalc_slot=%d of %d, scan %d < %d%s"),NumberOfWayPoints,
-		multicalc_slot, numslots,scanstart,scanend,NEWLINE);
+	StartupStore(_T("... wps=%d multicalc_slot=%d of %d, scan %d < %d%s"),WayPointList.size(),multicalc_slot, numslots,scanstart,scanend,NEWLINE);
 	#endif
   }
 

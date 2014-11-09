@@ -25,13 +25,10 @@ void WaypointWriteFiles(void);
 void WaypointAltitudeFromTerrain(WAYPOINT* wpt);
 double AltitudeFromTerrain(double Lat, double Lon);
 void UpdateTargetAltitude(TASK_POINT& TskPt);
-WAYPOINT* GrowWaypointList();
+
+bool AddWaypoint(WAYPOINT&& waypoint);
 int FindMatchingWaypoint(WAYPOINT *waypoint);
 int FindMatchingAirfield(WAYPOINT *waypoint);
-void InitWayPointCalc(void); 
-void AddReservedWaypoints();
-void InitVirtualWaypoints();
-bool AllocateWaypointList(void);
 int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield);
 
 void WaypointFlagsToString(int FlagsNum, TCHAR *Flags);

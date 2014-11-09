@@ -38,7 +38,7 @@ void SaveTask(const TCHAR *szFileName) {
 void RenameIfVirtual(const unsigned int i) {
 
   if (i>RESWP_END) return;
-  LKASSERT(i<=NumberOfWayPoints);
+  LKASSERT(i<WayPointList.size());
 
   if ( _tcslen(WayPointList[i].Name)> (NAME_SIZE-5)) return;
 

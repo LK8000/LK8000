@@ -33,7 +33,7 @@ bool LoadRecentList() {
 	RecentChecksum[i]=0;
    }
 
-   if (!WayPointList) {
+   if (WayPointList.empty()) {
    	StartupStore(_T("... Load RecentList: No Waypoint List available%s"),NEWLINE);
         return false;
    }
@@ -91,7 +91,7 @@ bool SaveRecentList() {
   _tcscat(buffer,_T(LKF_RECENTS)); // 091101
 
    StartupStore(_T(". Save history to <%s>%s"),buffer,NEWLINE);  // 091122
-   if (!WayPointList) {
+   if (WayPointList.empty()) {
    	StartupStore(_T(". No Waypoint List is available, cannot save history%s"),NEWLINE);
         return false;
    }
@@ -211,7 +211,7 @@ void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         DoInit=false;
    }
 
-   if (!WayPointList) return;
+   if (WayPointList.empty()) return;
 
    // Consider replay mode...
    if (  LastRunTime > Basic->Time ) LastRunTime=Basic->Time;

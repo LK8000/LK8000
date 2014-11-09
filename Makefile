@@ -409,7 +409,6 @@ WAYPT	:=\
 	$(WPT)/FindMatchingWaypoint.cpp\
 	$(WPT)/FindNearestFarVisible.cpp\
 	$(WPT)/FindNearestWayPoint.cpp\
-	$(WPT)/GrowWaypointList.cpp\
 	$(WPT)/InTerrainRange.cpp\
 	$(WPT)/InitWayPointCalc.cpp\
 	$(WPT)/ParseCOMPE.cpp\
