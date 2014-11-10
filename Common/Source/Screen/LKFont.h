@@ -21,13 +21,13 @@ public:
 
     LKFont& operator=(LKFont&& Font);
     LKFont& operator=(const LKFont& Font);
+
+    void Create(LOGFONT* pLogFont);
     void Release();
     
 #ifdef WIN32        
 public:
     explicit LKFont(HFONT Font) : _Font(Font), _Destroy(false) {}
-    
-    void Create(LOGFONT* pLogFont);
     
     operator HFONT() const { return _Font; } 
 	operator bool() const { return (_Font != NULL); }
@@ -35,6 +35,8 @@ public:
 protected:
     HFONT _Font;
     bool _Destroy;
+#else
+    operator bool() const;
     
 #endif
 };

@@ -33,12 +33,14 @@ public:
     void Create(const LKBitmap& Bitmap);
 
     void Release();
+    
+    operator bool() const;
+    
 #ifdef WIN32
 public:
     explicit LKBrush(HBRUSH Brush) : _Brush(Brush), _Destroy(false) {}
 
     operator HBRUSH() const { return _Brush; }
-	operator bool() const { return (_Brush != NULL); }
 
 protected:
     HBRUSH _Brush;
@@ -46,6 +48,10 @@ protected:
 #endif
 
 };
+
+#ifdef WIN32
+inline LKBrush::operator bool() const { return (_Brush != NULL); }
+#endif
 
 extern const LKBrush  LK_WHITE_BRUSH;
 extern const LKBrush  LK_BLACK_BRUSH;

@@ -12,7 +12,7 @@
 #ifdef WIN32
 #include <windows.h>
 #else
-#warning "TODO: need to implement"
+#include "linuxcompat/types.h"
 #endif
 #include "LKFont.h"
 

@@ -46,7 +46,8 @@ public:
 protected:
     HPEN _Pen;
     bool _Destroy;
-
+#else
+    operator bool() const;
 #endif
     
 

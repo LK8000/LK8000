@@ -18,6 +18,9 @@
 #ifdef __linux__
 #include "linuxcompat/tchar.h"
 #include "linuxcompat/types.h"
+
+#define MAKEINTRESOURCE(i) (#i)
+
 #endif
 
 class LKBitmap {
@@ -49,6 +52,8 @@ public:
 protected:
 	HBITMAP _Bitmap;
 	bool _Destroy;
+#else
+    operator bool() const { return false; }
 #endif
 
 };

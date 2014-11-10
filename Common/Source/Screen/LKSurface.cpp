@@ -31,10 +31,6 @@ LKSurface::LKSurface() : _OutputDC(), _AttribDC(), _TempDC() {
 
 }
 
-LKSurface::~LKSurface() {
-    Release();
-}
-
 void LKSurface::SetAttribDC(HDC hDC) {
     _AttribDC = hDC;
 }
@@ -86,6 +82,10 @@ HDC LKSurface::Detach() {
     return hDC;
 }
 #endif
+
+LKSurface::~LKSurface() {
+    Release();
+}
 
 LKColor LKSurface::SetTextColor(const LKColor& Color) {
 #ifdef WIN32

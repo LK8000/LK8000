@@ -40,6 +40,8 @@ protected:
     constexpr uint8_t Green() const { return _Green; };
     constexpr uint8_t Blue() const { return _Blue; };
     
+    constexpr bool operator==(const LKColor& Color) { return (Red() == Color.Red() && Green()==Color.Green() && Blue()==Color.Blue()); }
+    
 protected:
     uint8_t _Red;
     uint8_t _Green;
