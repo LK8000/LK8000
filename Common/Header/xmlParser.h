@@ -64,7 +64,7 @@
     #define TRUE 1
 #endif /* TRUE */
 
-#if !defined(WIN32) && !defined(UNDER_CE)
+#if !defined(WIN32) && !defined(UNDER_CE) && !defined(_T)
 #define _T(c) c
 #endif
 
