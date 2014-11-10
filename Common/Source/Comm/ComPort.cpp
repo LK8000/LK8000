@@ -15,6 +15,8 @@
 #include <algorithm>
 #include "Dialogs.h"
 #include <functional>
+#include <stdarg.h> 
+#include <stdio.h>
 #include "Poco/RunnableAdapter.h"
 
 ComPort::ComPort(int idx, const std::tstring& sName) : devIdx(idx), sPortName(sName) {
@@ -75,7 +77,7 @@ void ComPort::PutChar(BYTE b) {
     Write(&b, sizeof (b));
 }
 
-BOOL ComPort::StopRxThread() {
+bool ComPort::StopRxThread() {
     StopEvt.set();
 
 #ifdef _DEBUG_STOP_RXTHREAD
@@ -92,10 +94,10 @@ BOOL ComPort::StopRxThread() {
     }
     StopEvt.reset();
 
-    return TRUE;
+    return true;
 }
 
-BOOL ComPort::StartRxThread() {
+bool ComPort::StartRxThread() {
     StopEvt.reset();
 
     
@@ -110,9 +112,9 @@ BOOL ComPort::StartRxThread() {
         // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
         StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M761_")), GetPortName());
         //DWORD dwError = GetLastError();
-        return FALSE;
+        return false;
     }
-    return FALSE;
+    return true;
 }
 
 void ComPort::run() {

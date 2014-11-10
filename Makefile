@@ -697,6 +697,7 @@ COMMS	:=\
 	$(CMM)/GpsIdPort.cpp\
 	$(CMM)/lkgpsapi.cpp\
 	$(CMM)/SerialPort.cpp\
+	$(CMM)/TTYPort.cpp\
 	$(CMM)/UpdateBaroSource.cpp \
 	$(CMM)/UpdateMonitor.cpp \
 	$(CMM)/UpdateQNH.cpp \

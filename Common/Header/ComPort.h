@@ -23,8 +23,8 @@ public:
     ComPort(int idx, const std::tstring& sName);
     virtual ~ComPort();
 
-    BOOL StopRxThread();
-    BOOL StartRxThread();
+    bool StopRxThread();
+    bool StartRxThread();
 
     inline LPCTSTR GetPortName() const {
         return sPortName.c_str();

@@ -128,7 +128,7 @@ static BOOL devIsFalseReturn(PDeviceDescriptor_t d){
 
 void RefreshComPortList() {
     COMMPort.clear();
-    
+#ifdef WIN32    
     TCHAR szPort[10];
     for (unsigned i = 1; i < 10; ++i) {
         _stprintf(szPort, _T("COM%u"), i);
@@ -147,6 +147,11 @@ void RefreshComPortList() {
 #if defined(PNA) && defined(UNDER_CE)
     COMMPort.push_back(_T("VSP0"));
     COMMPort.push_back(_T("VSP1"));
+#endif
+#endif
+    
+#ifdef __linux__
+#warning "TODO : enumerate TTY port"
 #endif
     
 #ifndef NO_BLUETOOTH

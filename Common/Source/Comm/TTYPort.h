@@ -3,22 +3,23 @@
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
  * 
- * File:   SerialPort.h
+ * File:   TTYPort.h
  * Author: Bruno de Lacheisserie
  *
- * Created on 2 août 2013, 19:11
+ * Created on 11 août 2014, 10:42
  */
 
-#ifndef SERIALPORT_H
-#define	SERIALPORT_H
+#ifndef TTYPORT_H
+#define	TTYPORT_H
+#ifdef __linux__
 #include "ComPort.h"
+#include <atomic>
+#include <termios.h>
 
-
-#ifdef WIN32
-class SerialPort : public ComPort {
+class TTYPort : public ComPort {
 public:
-    SerialPort(int idx, const std::tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling);
-    virtual ~SerialPort();
+    TTYPort(int idx, const std::tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling);
+    virtual ~TTYPort();
 
     virtual bool Initialize();
     virtual bool Close();
@@ -39,24 +40,19 @@ public:
 
 protected:
     virtual DWORD RxThread();
-    
+
 private:
-    HANDLE hPort;
-            
+    void signal_handler_IO(int status);
+
     DWORD _dwPortSpeed;
     BitIndex_t _dwPortBit;
     unsigned short valid_frames;
 
-    bool _PollingMode;
-    DWORD _dwMask;
-};
-#elif __linux__
-    #include "TTYPort.h"
-    typedef TTYPort SerialPort;
-#else
-#warning "No Com Port in this platform"
-    typedef NullComPort SerialPort;
-#endif
+    int _tty;
+    struct termios _oldtio;
+    int _Timeout;
 
-#endif	/* SERIALPORT_H */
+};
+#endif
+#endif	/* TTYPORT_H */
 

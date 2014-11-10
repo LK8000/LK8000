@@ -10,6 +10,7 @@
  */
 
 #include "externs.h"
+#ifdef WIN32
 #include "SerialPort.h"
 #include <iterator>
 #include <algorithm>
@@ -471,3 +472,4 @@ DWORD SerialPort::RxThread() {
 
     return 0;
 }
+#endif
