@@ -22,13 +22,20 @@ static TCHAR nTemp2String[READLINE_LENGTH*2];
 int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 {
   WAYPOINT new_waypoint {};
-  DWORD fSize, fPos=0;
+  DWORD fPos=0;
   int nLineNumber=0;
   short fileformat=LKW_DAT;
 
   CreateProgressDialog(gettext(TEXT("_@M903_"))); // Loading Waypoints File...
 
-  fSize = zzip_file_size(fp);
+#ifdef WIN32
+  // zzip_file_size only exist in private version of zziplib
+  zzip_off_t fSize = zzip_file_size(fp);
+  if (fSize <10) {
+	StartupStore(_T("... ReadWayPointFile: waypoint file %s type=%d is empty%s"), CurrentWpFileName,fileformat,NEWLINE);
+	return -1;
+  }
+#endif
 
   fileformat=GetWaypointFileFormatType(CurrentWpFileName);
 
@@ -37,10 +44,6 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 	// We do NOT return, because first we analyze the content.
   }
 
-  if (fSize <10) {
-	StartupStore(_T("... ReadWayPointFile: waypoint file %s type=%d is empty%s"), CurrentWpFileName,fileformat,NEWLINE);
-	return -1;
-  }
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 
