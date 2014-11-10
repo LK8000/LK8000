@@ -36,7 +36,7 @@
 
 .endm	
 
-    .section .rodata, "dr"
+    .section .rodata
 
     /* XMLDIALOG */
     binfile IDR_XML_AIRSPACE "../../Data/Dialogs/dlgAirspace.xml"

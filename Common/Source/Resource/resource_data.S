@@ -36,6 +36,6 @@
 
 .endm	
 
-    .section .rodata, "dr"
+    .section .rodata
 
     binfile IDR_RASTER_EGM96S "../../Data/Bitmaps/egm96s.dem"
