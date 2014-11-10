@@ -11,6 +11,8 @@
 
 #include <sys/stat.h>
 #include <sys/sendfile.h>
+#include <sys/types.h>
+#include <pwd.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -195,7 +197,7 @@ bool lk::filesystem::getExeName(TCHAR* szName, size_t MaxSize) {
     if (-1 == ret) {
         return false;
     }
-    szName[std::min(MaxSize, ret)] = '\0';
+    szName[std::min((ssize_t)MaxSize, ret)] = '\0';
 
     TCHAR* szSep = _tcsrchr(szName, '/');
     if (!szSep) {
@@ -217,7 +219,7 @@ bool lk::filesystem::getExePath(TCHAR* szPath, size_t MaxSize) {
     if (-1 == ret) {
         return false;
     }
-    szPath[std::min(MaxSize, ret)] = '\0';
+    szPath[std::min((ssize_t)MaxSize, ret)] = '\0';
 
     TCHAR* szSep = _tcsrchr(szPath, '/');
     if (!szSep) {
@@ -240,7 +242,7 @@ bool lk::filesystem::getBasePath(TCHAR* szPath, size_t MaxSize) {
     if (-1 == ret) {
         return false;
     }
-    szPath[std::min(MaxSize, ret)] = '\0';
+    szPath[std::min((ssize_t)MaxSize, ret)] = '\0';
 
     TCHAR* szTmp = szPath;
     if ((*szTmp) == '/') {
@@ -260,19 +262,19 @@ bool lk::filesystem::getUserPath(TCHAR* szPath, size_t MaxSize) {
     szPath[0] = '\0';
     char* szHome = getenv("HOME");
     if (szHome) {
-        strncpy(szPath,, MaxSize);
+        strncpy(szPath, szHome, MaxSize);
     }
 
     if (strlen(szPath) == 0) {
         struct passwd pwd;
         struct passwd *result;
 
-        size_t bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+        int bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
         if (bufsize == -1) /* Value was indeterminate */
             bufsize = 16384; /* Should be more than enough */
 
-        char* buf = malloc(bufsize);
-        int s = getpwuid_r(getpwuid(getuid()), &pwd, buf, bufsize, &result);
+        char* buf = (char*)malloc(bufsize);
+        int s = getpwuid_r(getuid(), &pwd, buf, bufsize, &result);
         if (s != 0 || result == NULL) {
             free(buf);
             return false;
