@@ -17,6 +17,10 @@
 // The SPLASH screen for startup, shutdown and intermediate reloads
 //
 
+extern HINSTANCE hInst;      // The current instance
+extern HWND hWndMainWindow;
+
+
 static HWND	hStartupWindow = NULL;
 static bool	doinitprogress=true;
 

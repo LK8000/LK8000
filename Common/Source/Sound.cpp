@@ -26,7 +26,7 @@ void LKSound(const TCHAR *lpName) {
 #else
 #include "mmsystem.h"
 
-extern HINSTANCE                       hInst; // The current instance
+extern HINSTANCE hInst; // The current instance
 
 BOOL PlayResource (const TCHAR* lpName)
 {

@@ -34,6 +34,9 @@ extern LKColor ColorButton;
 extern LKColor ColorButtonHasFocus;
 #endif
 
+HINSTANCE hInst; // The current instance
+HWND hWndMainWindow;
+HWND hWndMapWindow;
 
 
 ATOM	MyRegisterClass (HINSTANCE, LPTSTR);

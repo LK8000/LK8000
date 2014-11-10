@@ -20,6 +20,10 @@
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
 
+extern HINSTANCE hInst; // The current instance
+extern HWND hWndMainWindow;
+extern HWND hWndMapWindow;
+
 #define ISCALE ScreenScale
 
 #define DEFAULTBORDERPENWIDTH 1*ISCALE

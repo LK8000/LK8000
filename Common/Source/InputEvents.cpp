@@ -38,6 +38,9 @@
 #define MAX_EVENTS 2048
 #define MAX_LABEL NUMBUTTONLABELS
 
+extern HWND hWndMainWindow;
+extern HWND hWndMapWindow;
+
 extern AATDistance aatdistance;
 extern bool ForceRenderMap;
 

@@ -53,6 +53,9 @@ extern void StartupLogFreeRamAndStorage();
 extern void SIMProcessTimer (void);
 extern void ProcessTimer    (void);
 
+extern HWND hWndMainWindow;
+extern HWND hWndMapWindow;
+
 HWND hWndWithFocus=NULL;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

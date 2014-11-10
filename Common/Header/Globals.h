@@ -60,11 +60,7 @@ GEXTERN bool goCalculationThread GEXTFALSE;
 
 GEXTERN TCHAR LK8000_Version[256];
 
-// instance of main program
-GEXTERN HINSTANCE hInst;
-
 GEXTERN StartupState_t ProgramStarted;
-
 
 GEXTERN int UTCOffset;
 
@@ -76,10 +72,6 @@ GEXTERN BYTE RUN_MODE;
 
 // asset/registration data
 GEXTERN TCHAR strAssetNumber[MAX_ASSETIDSTRING];
-
-// windows
-GEXTERN HWND hWndMainWindow;           // HWND Main Window
-GEXTERN HWND hWndMapWindow;            // HWND MapWindow
 
 // infoboxes
 GEXTERN int  InfoType[MAXINFOWINDOWS];

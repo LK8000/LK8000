@@ -17,6 +17,7 @@
 #include "utils/stl_utils.h"
 #include "LKInterface.h"
 
+extern HWND hWndMainWindow;
 
 int DLGSCALE(int x) {
   int iRetVal = x;

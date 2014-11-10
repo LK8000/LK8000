@@ -20,7 +20,8 @@
 #include "DoInits.h"
 
 
-
+extern HWND hWndMapWindow;
+extern HWND hWndMainWindow;
 //
 // Detect if screen resolution and/or orientation has changed
 //

@@ -11,6 +11,8 @@
 #include "InputEvents.h"
 #endif
 
+extern HINSTANCE                       hInst; // The current instance
+extern HWND hWndMainWindow;
 
 HWND ButtonLabel::hWndButtonWindow[NUMBUTTONLABELS];
 bool ButtonLabel::ButtonVisible[NUMBUTTONLABELS];

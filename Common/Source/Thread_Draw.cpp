@@ -26,6 +26,7 @@ BOOL MapWindow::Initialised = FALSE;
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
 
+extern HWND hWndMapWindow;
 
 void MapWindow::DrawThread ()
 {

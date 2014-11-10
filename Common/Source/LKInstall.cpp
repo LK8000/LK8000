@@ -10,6 +10,8 @@
 #include "Modeltype.h"
 #include <shlobj.h>
 
+extern HWND hWndMainWindow;
+
 
 #if defined(PNA) && defined(UNDER_CE)
 #include "LKHolux.h"

@@ -8,6 +8,8 @@
 #include "externs.h"
 #include "LKProfiles.h"
 
+extern HWND hWndMapWindow;
+
 
 #define CLEARTYPE_COMPAT_QUALITY 	6
 int GetFontRenderer() { 
