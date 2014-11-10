@@ -122,15 +122,11 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
 
 
   WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
-  LKASSERT(wPicto!=NULL);
-  
-  LKWindowSurface Surface(wPicto->GetHandle());
-  OnPaintAirspacePicto(Sender, Surface);
-
+  if(wPicto) {
+    wPicto->Redraw();
+  }
   SetValues();
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-
-
 }
 
 static void OnCloseClicked(WindowControl * Sender){
