@@ -1100,7 +1100,7 @@ $(BIN)/Resource/resource_data.o:  $(RSCSRC)/resource_data.S
 	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(AS) -I'$(dir $<)' $(OUTPUT_OPTION) $<
 
-$(BIN)/Resource/resource_xml.min.S :  $(RSCSRC)/resource_xml.S
+$(BIN)/Resource/resource_xml.min.S :  $(RSCSRC)/resource_xml.S $(patsubst Common/Data/Dialogs/%.xml,$(BIN)/Data/Dialogs/%.min.xml,$(DIALOG_XML))
 	@$(NQ)echo "  update $@"
 	@sed -r 's|(^.*")\.\./\.\./(Data/Dialogs[^"]+)(.xml".*)$$|\1\.\./\.\./\.\./$(BIN)/\2.min\3|g' $< > $@
 
