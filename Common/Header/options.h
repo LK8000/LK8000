@@ -26,7 +26,11 @@
 
 
 // Disable internally generated sounds
-// #define DISABLEAUDIO
+
+#ifdef __linux__
+ // temporary disable, need to be port...
+ #define DISABLEAUDIO
+#endif
 
 #ifdef PNA
 #define NOLINETO

@@ -7,22 +7,29 @@
 */
 
 #include "externs.h"
-#include "WaveThread.h"
 #if defined(PNA) && defined(UNDER_CE)
 #include "Modeltype.h"
 #include "LKHolux.h"
 #endif
 #include "DoInits.h"
 
+#ifdef DISABLEAUDIO
+
+BOOL PlayResource (const TCHAR* lpName) {
+    return false;
+}
+
+void LKSound(const TCHAR *lpName) {
+    
+}
+
+#else
 #include "mmsystem.h"
 
 extern HINSTANCE                       hInst; // The current instance
 
 BOOL PlayResource (const TCHAR* lpName)
 {
-#ifdef DISABLEAUDIO
-  return false;
-#else
   #if defined(PNA) && defined(UNDER_CE)
   if (DeviceIsGM130) {
 	MessageBeep(0xffffffff);
@@ -63,17 +70,12 @@ BOOL PlayResource (const TCHAR* lpName)
       bRtn = 0;
   }
   return bRtn; 
-#endif
 }
 
 
 
 // Play a sound from filesystem
 void LKSound(const TCHAR *lpName) {
-  #ifdef DISABLEAUDIO
-  return false;
-  #else
-
   #if defined(PNA) && defined(UNDER_CE)
   if (DeviceIsGM130) {
 	MessageBeep(0xffffffff); // default
@@ -103,7 +105,6 @@ void LKSound(const TCHAR *lpName) {
   sndPlaySound (sndfile, SND_ASYNC| SND_NODEFAULT );
   return;
 
-  #endif
 }
 
 #if defined(PNA) && defined(UNDER_CE)
@@ -150,4 +151,5 @@ bool SetSoundVolume()
 
   return true;
 }
+#endif
 #endif // PNA
