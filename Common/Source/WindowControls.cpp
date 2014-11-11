@@ -13,7 +13,7 @@
 #include "Bitmaps.h"
 #include "RGB.h"
 #include "Dialogs.h"
-#include "dlgtools.h"
+#include "dlgTools.h"
 #include "Modeltype.h"
 #include "TraceThread.h"
 

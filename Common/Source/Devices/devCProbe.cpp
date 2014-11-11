@@ -7,7 +7,7 @@
 */
 #include "externs.h"
 #include "devCProbe.h"
-#include "dlgtools.h"
+#include "dlgTools.h"
 #include "Dialogs.h"
 #include "WindowControls.h"
 

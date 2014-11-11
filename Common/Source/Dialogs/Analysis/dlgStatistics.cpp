@@ -11,7 +11,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "ContestMgr.h"
-#include "dlgtools.h"
+#include "dlgTools.h"
 
 double Statistics::yscale;
 double Statistics::xscale;

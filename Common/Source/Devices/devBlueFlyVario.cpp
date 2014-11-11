@@ -19,7 +19,7 @@
 #include "devLK8EX1.h"
 #include "devFlyNet.h"
 #include "Dialogs.h"
-#include "dlgtools.h"
+#include "dlgTools.h"
 #include "WindowControls.h"
 #include <iterator>
 #include <functional>

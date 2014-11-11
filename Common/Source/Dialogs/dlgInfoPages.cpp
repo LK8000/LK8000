@@ -12,7 +12,7 @@
 #include "LKProfiles.h"
 #include "Dialogs.h"
 #include "WindowControls.h"
-#include "dlgtools.h"
+#include "dlgTools.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;
