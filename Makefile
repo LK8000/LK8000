@@ -196,6 +196,8 @@ FIND            :=find
 ETAGS           :=etags
 EBROWSE         :=ebrowse
 
+GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
+
 ######## windows definitions
 
 ifeq ($(CONFIG_LINUX),y)
@@ -265,7 +267,12 @@ CPPFLAGS	+= $(UNICODE)
 else
 ifeq ($(CONFIG_PC),y)
 CPPFLAGS	+= -D_WINDOWS -DWIN32 -DCECORE $(UNICODE)
-  ifeq ($(CONFIG_WINE),y)
+
+ifeq ($(GCCVERSION), 4.8.3)
+    CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
+endif
+
+ ifeq ($(CONFIG_WINE),y)
 CPPFLAGS	+= -D__MINGW32__
 # -mno-cygwin
   else
@@ -1003,7 +1010,8 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 .PHONY: FORCE all clean cleani tags rebuild cppcheck
 
 all:	$(OUTPUTS)
-
+	@$(NQ)echo "GCCVERSION : $(GCCVERSION)"
+	
 rebuild:
 	@$(MAKE) clean
 	@$(MAKE) all
