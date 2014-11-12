@@ -185,7 +185,7 @@ int dlgComboPicker(WndProperty* theProperty){
     
     WindowControl* pBtHelp = wf->FindByName(TEXT("cmdHelp"));
     if(pBtHelp) {
-        pBtHelp->SetVisible(wComboPopupWndProperty->GetHelpText());
+        pBtHelp->SetVisible(wComboPopupWndProperty->HasHelpText());
     }
 
     wf->ShowModal();
