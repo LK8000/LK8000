@@ -13,6 +13,7 @@
 #define	LKWINDOWSURFACE_H
 
 #include "LKSurface.h"
+#include "Window/WindowBase.h"
 
 class LKWindowSurface : public LKSurface {
 public:
@@ -21,9 +22,10 @@ public:
 
     virtual void Release();
     
-#ifdef WIN32    
+    void Create(Window& Wnd);
+
+#ifdef WIN32
     explicit LKWindowSurface(HWND hWnd);
-    void Create(HWND hWnd);
 
 private:
     HWND _hWnd;
@@ -38,6 +40,7 @@ public:
         virtual void Release();
 #ifdef WIN32
 	explicit LKPaintSurface(HWND hWnd); // BeginPaint
+    RECT GetRect() const { return _ps.rcPaint; }
 
 protected:
 	HWND _hWnd;

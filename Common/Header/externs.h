@@ -41,6 +41,8 @@
 #include "Task.h"
 #include "Globals.h"
 #include "LKLanguage.h"
+#include "Window/WndMain.h"
+
 // Include header for heap allocation checking
 // #include "utils/heapcheck.h"
 
@@ -61,7 +63,7 @@ extern bool		Debounce();
 
 extern void DoStatusMessage(const TCHAR* text, const TCHAR* data = NULL, const bool playsound = true);
 
-
+extern WndMain MainWindow;
 
 
 //

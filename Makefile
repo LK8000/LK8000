@@ -16,6 +16,8 @@ WPT=Common/Source/Waypoints
 RSC=Common/Source/Resources
 HDR=Common/Header
 SRC_SCREEN=$(SRC)/Screen
+SRC_WINDOW=$(SRC)/Window
+
 
 BIN=Bin/$(TARGET)
 
@@ -209,8 +211,13 @@ CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1 -DMSOFT
 else
 CE_DEFS		:=-D_WIN32_WCE=$(CE_VERSION) -D_WIN32_IE=$(CE_VERSION)
 CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
-CE_DEFS		+=-DWIN32_RESOURCE
+# UNIX like ressource work on all plarform, so no need.
+#WIN32_RESSOURCE := y 
 endif
+endif
+
+ifeq ($(WIN32_RESSOURCE), y)
+CE_DEFS		+=-DWIN32_RESOURCE
 endif
 
 ifeq ($(CONFIG_PPC2002),y)
@@ -380,6 +387,12 @@ ifeq ($(CONFIG_PC),n)
 endif
 
 ####### sources
+WINDOW := \
+	$(SRC_WINDOW)/WindowBase.cpp \
+	$(SRC_WINDOW)/WndMain.cpp \
+	$(SRC_WINDOW)/Win32/Window.cpp \
+	$(SRC_WINDOW)/Win32/WndMainBase.cpp\
+	$(SRC_WINDOW)/Win32/WndProc.cpp\
 
 SCREEN := \
 	$(SRC_SCREEN)/LKColor.cpp \
@@ -798,6 +811,7 @@ DLGS	:=\
 	$(DLG)/dlgIgcFile.cpp\
 	
 SRC_FILES :=\
+	$(WINDOW) \
 	$(SCREEN) \
 	$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Alarms.cpp\
@@ -877,7 +891,6 @@ SRC_FILES :=\
 	$(SRC)/TrueWind.cpp		\
 	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\
-	$(SRC)/WndProc.cpp\
 	$(SRC)/WindowControls.cpp \
 	\
 	$(LKINTER) \
@@ -984,9 +997,9 @@ OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
 	$(BIN)/poco.a 
 	
-	
+ifneq ($(WIN32_RESSOURCE), y)	
 OBJS	+= $(BIN)/resource.a
-
+endif
 
 ifneq ($(CONFIG_LINUX),y)
 OBJS	+= $(BIN)/zzip.a 

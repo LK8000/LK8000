@@ -38,9 +38,6 @@
 #define MAX_EVENTS 2048
 #define MAX_LABEL NUMBUTTONLABELS
 
-extern HWND hWndMainWindow;
-extern HWND hWndMapWindow;
-
 extern AATDistance aatdistance;
 extern bool ForceRenderMap;
 
@@ -2778,8 +2775,7 @@ void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
 
 void InputEvents::eventExit(const TCHAR *misc) {
 	(void)misc;
-  SendMessage(hWndMainWindow, WM_CLOSE,
-	      0, 0);
+    MainWindow.Close();
 }
 
 void InputEvents::eventChangeTurn(const TCHAR *misc) {
@@ -3035,7 +3031,8 @@ int iOrientation = DisplayOrientation ;
 
 void SwitchToMapWindow(void)
 {
-  SetFocus(hWndMapWindow);
+  MainWindow.SetFocus();
+
   if (MenuTimeOut< MenuTimeout_Config) {
 	MenuTimeOut = MenuTimeout_Config;
   }
@@ -3092,20 +3089,9 @@ void ShowMenu() {
 
 
 void FullScreen() {
+    
   if (!MenuActive) {
-    SetForegroundWindow(hWndMainWindow);
-#if (WINDOWSPC>0)
-    SetWindowPos(hWndMainWindow,HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW|SWP_NOMOVE|SWP_NOSIZE);
-#else
-#ifndef CECORE
-    SHFullScreen(hWndMainWindow, SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
-#endif
-    SetWindowPos(hWndMainWindow,HWND_TOP,
-                 0,0,
-                 GetSystemMetrics(SM_CXSCREEN),
-                 GetSystemMetrics(SM_CYSCREEN),
-                 SWP_SHOWWINDOW);
-#endif
+    MainWindow.FullScreen();
   }
   MapWindow::RequestFastRefresh();
 }

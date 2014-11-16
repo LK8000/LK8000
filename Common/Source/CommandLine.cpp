@@ -13,12 +13,7 @@
 bool CommandResolution=false;
 #endif
 
-#ifndef UNDER_CE
-void LK8000GetOpts()
-#else
-void LK8000GetOpts()
-#endif
-{
+void LK8000GetOpts(const TCHAR *MyCommandLine) {
 
 #if (WINDOWSPC>0) 
   SCREENWIDTH=800;
@@ -31,8 +26,6 @@ void LK8000GetOpts()
   SCREENHEIGHT=SCREENHEIGHT_;
   #endif
   CommandResolution=false;
-
-  TCHAR *MyCommandLine = GetCommandLine();
 
   if (MyCommandLine != NULL){
     TCHAR *pC, *pCe;

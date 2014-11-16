@@ -6,6 +6,8 @@
 #endif // _MSC_VER > 1000
 
 #include "options.h"
+#include "Enums.h"
+class CAirspace;
 
 MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false);
 

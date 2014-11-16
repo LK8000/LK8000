@@ -11,8 +11,8 @@
 #include "InputEvents.h"
 #endif
 
-extern HINSTANCE                       hInst; // The current instance
-extern HWND hWndMainWindow;
+extern HINSTANCE _hInstance;
+
 
 HWND ButtonLabel::hWndButtonWindow[NUMBUTTONLABELS];
 bool ButtonLabel::ButtonVisible[NUMBUTTONLABELS];
@@ -237,7 +237,7 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
  	hWndButtonWindow[i] = CreateWindow(TEXT("STATIC"), TEXT("\0"),
 			WS_CHILD|WS_TABSTOP	|SS_CENTER|SS_NOTIFY
 			|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
-			x, y, xsize, ysize, hWndMainWindow, NULL, hInst, NULL);
+			x, y, xsize, ysize, MainWindow.Handle(), NULL, _hInstance, NULL);
 
 
     ButtonVisible[i]= false;

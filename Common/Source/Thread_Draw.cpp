@@ -26,8 +26,6 @@ BOOL MapWindow::Initialised = FALSE;
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
 
-extern HWND hWndMapWindow;
-
 void MapWindow::DrawThread ()
 {
   while ((!ProgramStarted) || (!Initialised)) {
@@ -45,7 +43,7 @@ void MapWindow::DrawThread ()
   // Reset common topology and waypoint label declutter, first init. Done also in other places.
   ResetLabelDeclutter();
 
-  GetClientRect(hWndMapWindow, &MapRect);
+  MapRect = MainWindow.GetClientRect();
   // Default draw area is full screen, no opacity
   DrawRect=MapRect;
 
@@ -95,7 +93,7 @@ void MapWindow::DrawThread ()
 		StartupStore(_T(".... SWITCH: ReloadProfileBitmaps detected\n"));
 		#endif
 		// This is needed to update resolution change
-		GetClientRect(hWndMapWindow, &MapRect);
+		MapRect = MainWindow.GetClientRect();
 		DrawRect=MapRect;
 		FillScaleListForEngineeringUnits();
 		LKUnloadProfileBitmaps();
@@ -177,6 +175,7 @@ void MapWindow::DrawThread ()
 
 		// Now we can clear the flag. If it was off already, no problems.
 		OnFastPanning=false;
+        MainWindow.Redraw(MapRect);
 		continue;
 
 	} else {
@@ -206,6 +205,7 @@ void MapWindow::DrawThread ()
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
 			DrawMapScale(ScreenSurface,MapRect,false);
 			DrawCrossHairs(ScreenSurface, centerscreen, MapRect);
+            MainWindow.Redraw(MapRect);
 			continue;
 		} 
 		#endif // --------------------------
@@ -225,7 +225,6 @@ _dontbitblt:
 			MapRect.bottom-MapRect.top, 
 			hdcDrawWindow, 0, 0);
 
-        InvalidateRect(hWndMapWindow, &MapRect, false);
 	}
 
 	// Draw cross sight for pan mode, in the screen center, 
@@ -251,6 +250,7 @@ _dontbitblt:
 	if (ProgramStarted==psInitDone) {
 		ProgramStarted = psFirstDrawDone;
 	}
+    MainWindow.Redraw(MapRect);
 
   } // Big LOOP
 

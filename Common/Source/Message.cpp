@@ -31,8 +31,7 @@
 
 Poco::Mutex  CritSec_Messages;
 
-extern HINSTANCE hInst;      // The current instance
-extern HWND hWndMainWindow;
+extern HINSTANCE _hInstance;      // The current instance
 
 RECT Message::rcmsg;
 HWND Message::hWndMessageWindow;
@@ -97,7 +96,7 @@ void Message::Initialize(RECT rc) {
 				   WS_VISIBLE|WS_CHILD|ES_MULTILINE|ES_CENTER
 				   |WS_BORDER|ES_READONLY | WS_CLIPCHILDREN 
 				   | WS_CLIPSIBLINGS,
-				   0,0,0,0,hWndMainWindow,NULL,hInst,NULL);
+				   0,0,0,0,MainWindow.Handle(),NULL,_hInstance,NULL);
 
   SetWindowPos(hWndMessageWindow, HWND_TOP,
 	       rcmsg.left, rcmsg.top, 

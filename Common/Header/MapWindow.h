@@ -634,13 +634,17 @@ class MapWindow {
   static void ToggleFullScreenStart();
   static bool WaypointInTask(int ind);
 
- private:
+
+protected:
+  static LKBitmapSurface ScreenSurface;
+
+private:
   static int iSnailNext;
 #if LONGSNAIL
   static int iLongSnailNext;
 #endif
 
-  static LKWindowSurface ScreenSurface;
+  static LKWindowSurface TempSurface; // used as AttribDC for Bitmap Surface.
 
   static LKBitmapSurface hdcDrawWindow;
   
@@ -756,19 +760,22 @@ private:
   static int SnailWidthScale; 
   static bool TargetMoved(double &longitude, double &latitude);
 
+    // Touch Screen Events Area
+    static void UpdateActiveScreenZone(int cx, int cy);
+
 protected:
-	static void OnSize(int cx, int cy);
-	static void OnCreate(HWND hWnd, int cx, int cy);
-	static void OnDestroy();
+	static void _OnSize(int cx, int cy);
+	static void _OnCreate(Window& Wnd, int cx, int cy);
+	static void _OnDestroy();
     
 /////////////////////////////////////////////////////        
 // Mouse Event Handling /////////////////////////////
-	static void OnDragMove(const POINT& Pos);
+	static void _OnDragMove(const POINT& Pos);
     
-	static void OnLButtonDown(const POINT& Pos);
-    static void OnLButtonUp(const POINT& Pos);
+	static void _OnLButtonDown(const POINT& Pos);
+    static void _OnLButtonUp(const POINT& Pos);
     
-	static void OnLButtonDblClick(const POINT& Pos);
+	static void _OnLButtonDblClick(const POINT& Pos);
     
     // Values to be remembered
     static bool pressed;
@@ -779,10 +786,7 @@ protected:
     static double Xlat, Ylat;
     static double distance;
 
-    // Touch Screen Events Area
-    static void UpdateActiveScreenZone(int cx, int cy);
-    
-    // this property is calculated in OnCreate(...) and OnSize(...) 
+    // this property is calculated by UpdateActiveScreenZone() on OnCreate(...) and OnSize(...) or user call
     static short Y_BottomBar; // this is different from BottomBarY
     static POINT P_Doubleclick_bottomright; // squared area for screen lock doubleclick, normally on right bottombar
     static POINT P_MenuIcon_DrawBottom; // Menu icon area (topleft coord)
@@ -798,7 +802,7 @@ protected:
     
 /////////////////////////////////////////////////////    
 // Keyboard Event Handling //////////////////////////
-    static void OnKeyDown(unsigned KeyCode);
+    static void _OnKeyDown(unsigned KeyCode);
 
 	static void key_bottombar_previous();
 	static void key_bottombar_next();

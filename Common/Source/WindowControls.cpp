@@ -20,9 +20,7 @@
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
 
-extern HINSTANCE hInst; // The current instance
-extern HWND hWndMainWindow;
-extern HWND hWndMapWindow;
+extern HINSTANCE _hInstance; // The current instance
 
 #define ISCALE ScreenScale
 
@@ -1179,11 +1177,11 @@ WindowControl::WindowControl(WindowControl *Owner,
     | WS_CLIPSIBLINGS;
 
   // if Owner is Not provided, use MainWindow
-  HWND hWndOnwer = Owner?(Owner->GetClientArea()->GetHandle()):hWndMainWindow;
+  HWND hWndOnwer = Owner?(Owner->GetClientArea()->GetHandle()):MainWindow.Handle();
 
   mHWnd = CreateWindow(TEXT("STATIC"), TEXT("\0"),
 		     Style, mX, mY, mWidth, mHeight,
-		     hWndOnwer, NULL, hInst, NULL);
+		     hWndOnwer, NULL, _hInstance, NULL);
 
   SetWindowPos(mHWnd, HWND_TOP,
 		     mX, mY,
@@ -2056,7 +2054,7 @@ int WndForm::ShowModal(bool bEnableMap) {
         && msg.hwnd != GetHandle() && !IsChild(GetHandle(), msg.hwnd)  // not current window or child
         &&  !( // exception
               bEnableMap
-              && msg.hwnd == hWndMapWindow
+              && msg.hwnd == MainWindow.Handle()
               && (
                 msg.message == WM_LBUTTONDOWN
                 || msg.message == WM_LBUTTONUP
@@ -2608,7 +2606,7 @@ WndProperty::WndProperty(WindowControl *Parent,
     mhEdit = CreateWindowEx(uStyleEx,TEXT("EDIT"), TEXT("\0"), uStyle,
           mEditPos.x, mEditPos.y,
           mEditSize.x, mEditSize.y,
-          GetHandle(), NULL, hInst, NULL);
+          GetHandle(), NULL, _hInstance, NULL);
 
   if(mEditSize.x <= 0) {
 	  ShowWindow(mhEdit, SW_HIDE);

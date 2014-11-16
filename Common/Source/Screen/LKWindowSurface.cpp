@@ -18,22 +18,16 @@
 #include <cassert>
 #include "LKWindowSurface.h"
 
+LKWindowSurface::LKWindowSurface() : LKSurface()
 #ifdef WIN32
-LKWindowSurface::LKWindowSurface() : LKSurface(), _hWnd() {
-
-}
-
-LKWindowSurface::LKWindowSurface(HWND hWnd) : LKSurface(), _hWnd() { 
-    Create(hWnd); 
-}
+    , _hWnd() 
 #endif
+{
 
-LKWindowSurface::~LKWindowSurface() {
-    Release();
 }
 
 #ifdef WIN32
-void LKWindowSurface::Create(HWND hWnd){
+LKWindowSurface::LKWindowSurface(HWND hWnd) : LKSurface(), _hWnd() {
     assert(hWnd);
     assert(::IsWindow(hWnd));
 
@@ -42,6 +36,22 @@ void LKWindowSurface::Create(HWND hWnd){
     }
 }
 #endif
+
+LKWindowSurface::~LKWindowSurface() {
+    Release();
+}
+
+void LKWindowSurface::Create(Window& Wnd){
+#ifdef WIN32
+    HWND hWnd = Wnd.Handle();
+    assert(hWnd);
+    assert(::IsWindow(hWnd));
+
+    if(Attach(::GetDC(hWnd))) {
+        assert(false);
+    }
+#endif
+}
 
 void LKWindowSurface::Release() {
 #ifdef WIN32

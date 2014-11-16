@@ -8,9 +8,6 @@
 #include "externs.h"
 #include "LKProfiles.h"
 
-extern HWND hWndMapWindow;
-
-
 #define CLEARTYPE_COMPAT_QUALITY 	6
 int GetFontRenderer() { 
 
@@ -353,9 +350,7 @@ void InitialiseFonts(RECT rc)
                         autoMapWindowBoldLogFont,
                         NULL);
 
-  SendMessage(hWndMapWindow,WM_SETFONT,
-              (WPARAM)(HFONT)MapWindowFont,MAKELPARAM(TRUE,0));
-
+  MainWindow.SetFont(MapWindowFont);
 }
 
 

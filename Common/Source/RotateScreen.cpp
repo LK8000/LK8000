@@ -125,22 +125,22 @@ bool RotateScreen(short angle) {
 		#if TESTBENCH
 		StartupStore(_T("... Screen Rotation successful, setting to %d x %d\n"),ScreenSizeY,ScreenSizeX);
 		#endif
-		SetWindowPos(hWndMainWindow,HWND_TOPMOST,0,0,ScreenSizeY,ScreenSizeX,SWP_SHOWWINDOW);
+		SetWindowPos(MainWindow.Handle(),HWND_TOPMOST,0,0,ScreenSizeY,ScreenSizeX,SWP_SHOWWINDOW);
 	} else {
 		#if TESTBENCH
 		StartupStore(_T("... Screen Rotation successful, setting to %d x %d\n"),ScreenSizeX,ScreenSizeY);
 		#endif
-		SetWindowPos(hWndMainWindow,HWND_TOPMOST,0,0,ScreenSizeX,ScreenSizeY,SWP_SHOWWINDOW);
+		SetWindowPos(MainWindow.Handle(),HWND_TOPMOST,0,0,ScreenSizeX,ScreenSizeY,SWP_SHOWWINDOW);
 	}
 
-	ShowWindow(hWndMainWindow, SW_SHOWNORMAL);
-        BringWindowToTop(hWndMainWindow);
+	ShowWindow(MainWindow.Handle(), SW_SHOWNORMAL);
+    BringWindowToTop(MainWindow.Handle());
 
 	#ifdef HAVE_ACTIVATE_INFO
-	SHFullScreen(hWndMainWindow,SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
+	SHFullScreen(MainWindow.Handle(),SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
 	#endif
 
-//	UpdateWindow(hWndMainWindow); No! No WM_PAINT please!
+//	UpdateWindow(MainWindow); No! No WM_PAINT please!
 
 	return mustresetlk;
   } else {

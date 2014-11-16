@@ -47,7 +47,6 @@
 	MDI_DRAWTHERMALHISTORY,		// screen change, font change
 	MDI_DRAWTRAFFIC,		// screen change, font change
 	MDI_DRAWVARIO,			// screen change
-	MDI_MAPWNDPROC,			// screen change
 	MDI_GETOVERTARGETHEADER,	// language change
 	MDI_PROCESSVIRTUALKEY,		// screen change
 	MDI_ONPAINTLISTITEM,		// screen change, font change

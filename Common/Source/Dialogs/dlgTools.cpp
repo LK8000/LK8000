@@ -17,8 +17,6 @@
 #include "utils/stl_utils.h"
 #include "LKInterface.h"
 
-extern HWND hWndMainWindow;
-
 int DLGSCALE(int x) {
   int iRetVal = x;
   iRetVal = (int) ((x)*ScreenDScale);
@@ -41,17 +39,7 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   int ButtonCount = 0;
   int i,x,y,d,w,h,dY;
   MsgReturn_t res;
-  RECT rc;
-
-  // todo
-  
-  HWND hWnd = hWndMainWindow;
-  //ASSERT(hWnd == hWndMainWindow);
-
-  //ASSERT(lpText != NULL);
-  //ASSERT(lpCaption != NULL);
-
-  GetClientRect(hWnd, &rc);
+  RECT rc = MainWindow.GetClientRect();
 
   if (wfullscreen) {
 	Width = rc.right;
@@ -256,8 +244,10 @@ static LKFont FontMap[5];
 
 #include <stdio.h>
 
-#ifndef WIN32_RESSOURCE
+#ifndef WIN32_RESOURCE
 #include "resource_data.h"
+#else
+extern HINSTANCE _hInstance;
 #endif
 
 XMLNode xmlLoadFromResource(const TCHAR* lpName, LPCTSTR tag, XMLResults *pResults) {
@@ -265,12 +255,12 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName, LPCTSTR tag, XMLResults *pResul
     int l = 0;
     TCHAR * szXML = NULL;
 
-#ifdef WIN32_RESSOURCE
+#ifdef WIN32_RESOURCE
   HRSRC hResInfo;
   HGLOBAL hRes; 
 
   // Find the xml resource.
-  hResInfo = FindResource (hInst, lpName, TEXT("XMLDialog")); 
+  hResInfo = FindResource (_hInstance, lpName, TEXT("XMLDialog"));
 
   if (hResInfo == NULL) {
     MessageBoxX(
@@ -283,7 +273,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName, LPCTSTR tag, XMLResults *pResul
   }
 
   // Load the wave resource. 
-  hRes = LoadResource (hInst, hResInfo); 
+  hRes = LoadResource (_hInstance, hResInfo);
 
   if (hRes == NULL) {
     MessageBoxX(
@@ -298,7 +288,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName, LPCTSTR tag, XMLResults *pResul
     // Retrieves a pointer to the xml resource in memory 
     lpRes = (const char*) LockResource(hRes);
     if (lpRes) {
-        l = SizeofResource(hInst, hResInfo);
+        l = SizeofResource(_hInstance, hResInfo);
     }
 
 #else
@@ -451,8 +441,7 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
     GetDefaultWindowControlProps(&xNode, Name, &X, &Y, &Width, &Height, &Popup,
                                  &Font, sTmp);
     if (!Popup) {
-      RECT rc;
-      GetClientRect(hWndMainWindow, &rc);
+      const RECT rc = MainWindow.GetClientRect();
         
       Width=rc.right;
       Height=rc.bottom;

@@ -75,22 +75,13 @@ using std::max;
 // char dedicated_by_{yourname}="....";
 char dedicated_by_paolo[]="Qrqvpngrq gb zl sngure Ivggbevb";
 
-ATOM	MyRegisterClass (HINSTANCE, LPTSTR);
-BOOL	InitInstance    (HINSTANCE, int);
-LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
+BOOL	InitInstance    ();
 
 extern void CreateCalculationThread();
 extern void StartupLogFreeRamAndStorage();
 extern void PreloadInitialisation(bool ask);
 #ifdef PNA
 extern bool LoadModelFromProfile(void);
-#endif
-
-#if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
-#define HAVE_ACTIVATE_INFO
-SHACTIVATEINFO s_sai;
-bool api_has_SHHandleWMActivate = false;
-bool api_has_SHHandleWMSettingChange = false;
 #endif
 
 void CleanupForShutdown(void);
@@ -113,6 +104,8 @@ void handler(int /*signal*/) {
 // 
 //  259 is reserved by OS (STILL_ACTIVE) status
 
+HINSTANCE _hInstance;
+
 #ifndef UNDER_CE
 int WINAPI WinMain(     HINSTANCE hInstance,
                         HINSTANCE hPrevInstance,
@@ -125,6 +118,10 @@ int WINAPI WinMain(     HINSTANCE hInstance,
                         int       nCmdShow)
 #endif
 {   
+    _hInstance = hInstance; // this need to be first, always !
+    const TCHAR* szCmdLine = GetCommandLine();
+
+
 #ifdef INT_OVERFLOW
   SetErrorMode(SEM_NOGPFAULTERRORBOX|SEM_NOOPENFILEERRORBOX);
   // when we get a SIGABRT, call handler
@@ -224,14 +221,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   #endif
   #endif
 
-  #ifdef HAVE_ACTIVATE_INFO
-  FARPROC ptr;
-  ptr = GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMActivate"));
-  if (ptr != NULL) api_has_SHHandleWMActivate = true;
-  ptr = GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMSettingChange"));
-  if (ptr != NULL) api_has_SHHandleWMSettingChange = true;
-  #endif
-    
   // These directories are needed if missing, as LK can run also with no maps and no waypoints..
   CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
   CreateDirectoryIfAbsent(TEXT(LKD_CONF));
@@ -249,26 +238,17 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   _tcscpy(startDeviceFile, defaultDeviceFile);
 
 
-  LK8000GetOpts();
+  LK8000GetOpts(szCmdLine);
 
   InitCommonControls();
   InitSineTable();
 
   // Perform application initialization: also ScreenGeometry and LKIBLSCALE, and Objects
-  if (!InitInstance (hInstance, nCmdShow))
+  if (!InitInstance ())
     {
 	StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
 	return -1;
     }
-
-  #ifdef HAVE_ACTIVATE_INFO
-  SHSetAppKeyWndAssoc(VK_APP1, hWndMainWindow);
-  SHSetAppKeyWndAssoc(VK_APP2, hWndMainWindow);
-  SHSetAppKeyWndAssoc(VK_APP3, hWndMainWindow);
-  SHSetAppKeyWndAssoc(VK_APP4, hWndMainWindow);
-  SHSetAppKeyWndAssoc(VK_APP5, hWndMainWindow);
-  SHSetAppKeyWndAssoc(VK_APP6, hWndMainWindow);
-  #endif
 
   // Initialise main blackboard data
 

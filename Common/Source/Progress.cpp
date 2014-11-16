@@ -17,8 +17,7 @@
 // The SPLASH screen for startup, shutdown and intermediate reloads
 //
 
-extern HINSTANCE hInst;      // The current instance
-extern HWND hWndMainWindow;
+extern HINSTANCE _hInstance;      // The current instance
 
 
 static HWND	hStartupWindow = NULL;
@@ -48,7 +47,7 @@ void CreateProgressDialog(const TCHAR* text) {
 	DWORD Style=0;
 	Style = WS_CHILD | ES_MULTILINE | ES_CENTER | ES_READONLY | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
     
-	hStartupWindow=CreateWindow(TEXT("STATIC"), TEXT("\0"), Style, 0, 0, ScreenSizeX, ScreenSizeY, hWndMainWindow, NULL, hInst, NULL);
+	hStartupWindow=CreateWindow(TEXT("STATIC"), TEXT("\0"), Style, 0, 0, ScreenSizeX, ScreenSizeY, MainWindow.Handle(), NULL, _hInstance, NULL);
 	if (hStartupWindow==NULL) {
 		StartupStore(_T("***** CRITIC, no startup window!%s"),NEWLINE);
 		return;

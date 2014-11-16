@@ -1,0 +1,172 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File:   Window.cpp
+ * Author: Bruno de Lacheisserie
+ * 
+ * Created on 9 novembre 2014, 14:49
+ */
+
+/*
+ * References :
+ *  Steve Hanov, A Lightweight Windows Wrapper, C/C++ Users Journal, Aug 2000 pg.26
+*/
+
+#include "Window.h"
+#include "Screen/LKWindowSurface.h"
+
+extern HINSTANCE _hInstance; // Set by WinMain
+
+BOOL Window::RegisterWindow()
+{
+    WNDCLASS wcx; 
+ 
+    // Fill in the window class structure with default parameters 
+ 
+    wcx.style = CS_HREDRAW | CS_VREDRAW;						// redraw if size changes 
+    wcx.lpfnWndProc = Window::stWinMsgHandler;				// points to window procedure 
+    wcx.cbClsExtra = 0;											// no extra class memory 
+    wcx.cbWndExtra = 0;											// no extra window memory 
+    wcx.hInstance = _hInstance;									// handle to instance 
+    wcx.hIcon = LoadIcon(NULL, IDI_APPLICATION);				// predefined app. icon 
+    wcx.hCursor = LoadCursor(NULL, IDC_ARROW);					// predefined arrow 
+    wcx.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);	// white background brush 
+    wcx.lpszMenuName = NULL;									// name of menu resource 
+    wcx.lpszClassName = _T("BaseWindow");						// name of window class 
+
+    // Register the window class. 
+    return RegisterWindow(&wcx); 
+
+}
+
+BOOL Window::RegisterWindow(UINT style, HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, 
+									LPCTSTR lpszMenuName, LPCTSTR lpszClassName)
+{
+    WNDCLASS wcx; 
+ 
+    // Fill in the window class structure with default parameters 
+ 
+    wcx.style = style;								// redraw if size changes 
+    wcx.lpfnWndProc = Window::stWinMsgHandler;	// points to window procedure 
+    wcx.cbClsExtra = 0;								// no extra class memory 
+    wcx.cbWndExtra = 0;								// no extra window memory 
+    wcx.hInstance = _hInstance;						// handle to instance 
+    wcx.hIcon = hIcon;								// predefined app. icon 
+    wcx.hCursor = hCursor;							// predefined arrow 
+    wcx.hbrBackground = hbrBackground;				// white background brush 
+    wcx.lpszMenuName = lpszMenuName;				// name of menu resource 
+    wcx.lpszClassName = lpszClassName;				// name of window class 
+ 
+    // Register the window class. 
+    return RegisterWindow(&wcx); 
+}
+
+BOOL Window::RegisterWindow(const WNDCLASS* wcx)
+{
+	// Register the window class. 
+	_szClassName  = wcx->lpszClassName;
+
+	if (RegisterClass(wcx) == 0)
+		return FALSE;
+	else
+		return TRUE;
+}
+
+/*
+	You can not initialize the window class with a class method as the window 
+	procedure unless it is a static method, so the class also needs a static 
+	message handler that determines which instance of the class is the recipient 
+	of the message and calls that instance's window procedure.
+
+	See "http://www.gamedev.net/reference/articles/article1810.asp" for more info.
+*/
+LRESULT CALLBACK Window::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    
+/* 
+ * A difference between a desktop version of Windows and the CE version is in the window creation process. 
+ * On the desktop WM_NCCREATE is the first message so the this pointer should be captured during the its processing.
+ * In Windows CE this message doesn't exist. The first message is WM_CREATE so it must be used.
+ */
+#ifdef UNDER_CE
+	if (uMsg == WM_CREATE)
+#else 
+	if (uMsg == WM_NCCREATE)
+#endif        
+	{
+		// get the pointer to the window from lpCreateParams which was set in CreateWindow
+		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)((LPCREATESTRUCT(lParam))->lpCreateParams));
+	}
+
+	// get the pointer to the window
+	Window* pWnd = GetObjectFromWindow(hwnd);
+
+	// if we have the pointer, go to the message handler of the window
+	// else, use DefWindowProc
+	if (pWnd)
+		return pWnd->WinMsgHandler(hwnd, uMsg, wParam, lParam);
+	else
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+bool Window::Create(DWORD dwStyles, const RECT& rect)
+{ 
+	// Create the window
+	
+	// send the this pointer as the window creation parameter
+	_hWnd = CreateWindow(_szClassName.c_str(), _szWindowTitle.c_str(), dwStyles, rect.left, rect.top, 
+		rect.right - rect.left, rect.bottom - rect.top, NULL, NULL, _hInstance, 
+		(void *)this);
+
+	return (_hWnd != NULL);
+}
+
+LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch (uMsg) {
+        case WM_CREATE:
+            if (lParam && OnCreate(((CREATESTRUCT*) lParam)->x, ((CREATESTRUCT*) lParam)->y,
+                                   ((CREATESTRUCT*) lParam)->cx, ((CREATESTRUCT*) lParam)->cy)) {
+                return 0;
+            }
+            break;
+        case WM_CLOSE:
+            if (OnClose()) return 0;
+            break;
+        case WM_DESTROY:
+            if(OnDestroy()) return 0;
+            break;
+        case WM_SIZE:
+            if(OnSize(LOWORD(lParam), HIWORD(lParam))) return 0;
+            break;
+        case WM_PAINT:
+            if(hWnd) {
+                LKPaintSurface Surface(hWnd);
+                if(OnPaint(Surface, Surface.GetRect())) return 0;
+            }
+            break;
+        case WM_KEYDOWN:
+            if(OnKeyDown(wParam)) return 0;
+            break;
+        case WM_LBUTTONDBLCLK:
+            if(OnLButtonDblClick((POINT){LOWORD(lParam), HIWORD(lParam)})) return 0;
+            break;
+        case WM_MOUSEMOVE:
+            if(OnMouseMove((POINT){LOWORD(lParam), HIWORD(lParam)})) return 0;
+            break;
+        case WM_LBUTTONDOWN:
+            if(OnLButtonDown((POINT){LOWORD(lParam), HIWORD(lParam)})) return 0;
+            break;
+        case WM_LBUTTONUP:
+            if(OnLButtonUp((POINT){LOWORD(lParam), HIWORD(lParam)})) return 0;
+            break;
+        case WM_KILLFOCUS:
+            if(OnKillFocus()) return 0;
+            break;
+        default:
+            break;
+    }
+    // TODO :  call original WNDPROC if subclass.
+    return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+    

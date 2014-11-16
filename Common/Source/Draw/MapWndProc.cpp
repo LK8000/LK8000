@@ -43,16 +43,12 @@ int MapWindow::ScaleCurrent;
 
 POINT MapWindow::Orig_Screen;
 
-RECT MapWindow::MapRect;	// the entire screen area in use
-RECT MapWindow::DrawRect;	// the portion of MapRect for drawing terrain, topology etc. (the map)
-/*
-LKBitmap MapWindow::hDrawBitMap;
-LKBitmap MapWindow::hDrawBitMapTmp;
-LKBitmap MapWindow::hMaskBitMap;
-LKBitmap MapWindow::mhbbuffer;
-*/
-LKWindowSurface MapWindow::ScreenSurface;
+RECT MapWindow::MapRect; // the entire screen area in use
+RECT MapWindow::DrawRect; // the portion of MapRect for drawing terrain, topology etc. (the map)
 
+LKWindowSurface MapWindow::TempSurface;
+
+LKBitmapSurface MapWindow::ScreenSurface;
 
 LKBitmapSurface MapWindow::hdcDrawWindow;
   
@@ -170,115 +166,9 @@ POINT startScreen;
 POINT targetScreen;
 
 
-
-
-//
-// Reminder: this is a callback function called each time an event is signalled.
-// This means it can happen several times per second, while dragging for example.
-// Some events are unmanaged and thus ignored, btw.
-//
-
-LRESULT CALLBACK MapWindow::MapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
-
-#ifdef LONGCLICK_FEEDBACK
-    static LPARAM lOld = 0;
-#endif
-
-    //
-    // CURRENTLY DialogActive is never set. 
-    // 120322 To be carefully checks for all situations.
-    //
-#if 0
-    if (DialogActive) return TRUE;
-#endif
-
-    switch (uMsg) {
-        case WM_ERASEBKGND:
-            return TRUE;
-
-        case WM_SETFOCUS:
-#if DEBUG_FOCUS
-            StartupStore(_T("............ MAPWINDOWS HAS FOCUS\n"));
-#endif
-            extern HWND hWndWithFocus;
-            hWndWithFocus = hWnd;
-            return 0;
-            break;
-
-        case WM_SIZE:
-            OnSize(LOWORD(lParam), HIWORD(lParam));
-            break;
-
-        case WM_CREATE:
-            if (lParam) {
-                CREATESTRUCT* cs = (CREATESTRUCT*) lParam;
-                OnCreate(hWnd, cs->cx, cs->cy);
-            }
-            break;
-
-        case WM_DESTROY:
-            OnDestroy();
-            break;
-
-        case WM_LBUTTONDBLCLK:
-            OnLButtonDblClick((POINT){LOWORD(lParam), HIWORD(lParam)});
-            break;
-
-        case WM_MOUSEMOVE:
-            // Mouse moving!
-            if (wParam == MK_LBUTTON) {
-                // Consider only pure PAN mode, ignore the rest of cases here
-                OnDragMove((POINT){LOWORD(lParam), HIWORD(lParam)});
-            }
-            break;
-
-
-        case WM_LBUTTONDOWN:
-#ifdef LONGCLICK_FEEDBACK
-            lOld = lParam;
-#endif
-            OnLButtonDown((POINT){LOWORD(lParam), HIWORD(lParam)});
-            break;
-
-        case WM_TIMER:
-#ifdef LONGCLICK_FEEDBACK
-            if (wParam == WM_USER_LONGTIME_CLICK_TIMER) {
-                if (EnableSoundModes)
-                    PlayResource(TEXT("IDR_WAV_MM1"));
-                KillTimer(hWnd, WM_USER_LONGTIME_CLICK_TIMER);
-                //    StartupStore(_T("... Ulli: WM_TIMER: %i %i\n"),0,  lOld);
-            }
-#endif
-            break;
-
-        case WM_LBUTTONUP:
-#ifdef LONGCLICK_FEEDBACK
-            KillTimer(hWnd, WM_USER_LONGTIME_CLICK_TIMER);
-#endif
-            OnLButtonUp((POINT){LOWORD(lParam), HIWORD(lParam)});
-            break;
-
-
-#if defined(PNA)
-        case WM_KEYDOWN:
-#else
-#if  (WINDOWSPC>0)
-        case WM_KEYDOWN:
-            if (!Debounce(50)) return 0;
-#else
-        case WM_KEYUP:
-#endif
-#endif
-            OnKeyDown(wParam);
-            return 0;
-    }
-
-    return (DefWindowProc(hWnd, uMsg, wParam, lParam));
-}
-
-void MapWindow::OnSize(int cx, int cy) {
+void MapWindow::_OnSize(int cx, int cy) {
     if (!MapWindow::IsDisplayRunning()) {
+        ScreenSurface.Resize(cx, cy);
         hdcDrawWindow.Resize(cx, cy);
         hDCTempTask.Resize(cx, cy);
         hdcTempTerrainAbove.Resize(cx, cy);
@@ -310,14 +200,15 @@ void MapWindow::UpdateActiveScreenZone(int cx, int cy) {
     X_Right = (cx / 2) + (cx / 3);    
 }
 
-void MapWindow::OnCreate(HWND hWnd, int cx, int cy) {
-    ScreenSurface.Create(hWnd);
-    hdcDrawWindow.Create(ScreenSurface, cx, cy);
-    hDCTempTask.Create(ScreenSurface, cx, cy);
-    hdcTempTerrainAbove.Create(ScreenSurface, cx, cy);
-    hdcTempAsp.Create(ScreenSurface, cx, cy);
-    hdcbuffer.Create(ScreenSurface, cx, cy);
-    hdcMask.Create(ScreenSurface, cx, cy);
+void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
+    TempSurface.Create(Wnd);
+    ScreenSurface.Create(TempSurface, cx, cy);
+    hdcDrawWindow.Create(TempSurface, cx, cy);
+    hDCTempTask.Create(TempSurface, cx, cy);
+    hdcTempTerrainAbove.Create(TempSurface, cx, cy);
+    hdcTempAsp.Create(TempSurface, cx, cy);
+    hdcbuffer.Create(TempSurface, cx, cy);
+    hdcMask.Create(TempSurface, cx, cy);
 
     UpdateActiveScreenZone(cx, cy);
     
@@ -325,7 +216,7 @@ void MapWindow::OnCreate(HWND hWnd, int cx, int cy) {
     Initialised = TRUE;
 }
 
-void MapWindow::OnDestroy() {
+void MapWindow::_OnDestroy() {
     ScreenSurface.Release();
     hdcDrawWindow.Release();
     hDCTempTask.Release();
@@ -333,12 +224,14 @@ void MapWindow::OnDestroy() {
     hdcTempAsp.Release();
     hdcbuffer.Release();
     hdcMask.Release();
+
+    TempSurface.Release();
 }
 
 /*
  * Handle Mouse Event when we are in Pan Mode for Drag Map.
  */
-void MapWindow::OnDragMove(const POINT& Pos) {
+void MapWindow::_OnDragMove(const POINT& Pos) {
     // Consider only pure PAN mode, ignore the rest of cases here
     if (mode.Is(Mode::MODE_PAN) && !mode.Is(Mode::MODE_TARGET_PAN)) {
 
@@ -439,7 +332,7 @@ void MapWindow::OnDragMove(const POINT& Pos) {
 
 #define WM_USER_LONGTIME_CLICK_TIMER  50
 
-void MapWindow::OnLButtonDown(const POINT& Pos) {
+void MapWindow::_OnLButtonDown(const POINT& Pos) {
 
     if (!LockModeStatus) {
         pressed = true;
@@ -474,14 +367,14 @@ void MapWindow::OnLButtonDown(const POINT& Pos) {
  *   Unlock screen if inside bottom right screen corner if screen is locked
  *   otherwise, call OnLButtonDown ( this is probably useless )
  */
-void MapWindow::OnLButtonDblClick(const POINT& Pos) {
+void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
 
     // Attention please: a DBLCLK is followed by a simple BUTTONUP with NO buttondown.
     //
     // 111110 there is no need to process buttondblclick if the map is unlocked.
     // So we go directly to buttondown, simulating a non-doubleclick.
     if (!LockModeStatus) {
-        OnLButtonDown(Pos);
+        _OnLButtonDown(Pos);
     } else {
 
         tsDownTime.update();
@@ -506,7 +399,7 @@ void MapWindow::OnLButtonDblClick(const POINT& Pos) {
     }
 }
 
-void MapWindow::OnLButtonUp(const POINT& Pos) {
+void MapWindow::_OnLButtonUp(const POINT& Pos) {
     if (!LockModeStatus && pressed) {
         pressed = false;
         // Mouse released DURING panning, full redraw requested.
@@ -889,7 +782,8 @@ void MapWindow::OnLButtonUp(const POINT& Pos) {
     }
 }
 
-void MapWindow::OnKeyDown(unsigned KeyCode) {
+void MapWindow::_OnKeyDown(unsigned KeyCode) {
+    if (!Debounce(50)) return;
 
     //
     // Special SIM mode keys for PC
@@ -1152,9 +1046,6 @@ void MapWindow::OnKeyDown(unsigned KeyCode) {
     // Keyboard type 1.
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1) {
-#if (WINDOWSPC<1)
-        if (!Debounce(KEYDEBOUNCE)) return FALSE;
-#endif
         switch (KeyCode) {
                 //
                 // THE BOTTOM BAR
@@ -1293,9 +1184,6 @@ void MapWindow::OnKeyDown(unsigned KeyCode) {
     // Keyboard type 2.
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK2) {
-#if (WINDOWSPC<1)
-        if (!Debounce(KEYDEBOUNCE)) return FALSE;
-#endif
         switch (KeyCode) {
                 //
                 // THE BOTTOM BAR
@@ -1432,9 +1320,6 @@ void MapWindow::OnKeyDown(unsigned KeyCode) {
     // Keyboard type 3.
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK3) {
-#if (WINDOWSPC<1)
-        if (!Debounce(KEYDEBOUNCE)) return FALSE;
-#endif
         switch (KeyCode) {
                 //
                 // THE BOTTOM BAR
@@ -1573,9 +1458,6 @@ void MapWindow::OnKeyDown(unsigned KeyCode) {
     // universal Keyboard type
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKA) {
-#if (WINDOWSPC<1)
-        if (!Debounce(KEYDEBOUNCE)) return FALSE;
-#endif
         switch (KeyCode) {
             case '1':
                 CustomKeyHandler(CustomMenu1 + 1000);
@@ -1617,9 +1499,7 @@ void MapWindow::OnKeyDown(unsigned KeyCode) {
     // universal Keyboard type
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKB) {
-#if (WINDOWSPC<1)
-        if (!Debounce(KEYDEBOUNCE)) return FALSE;
-#endif
+
         switch (KeyCode) {
             case '1':
             case '2':

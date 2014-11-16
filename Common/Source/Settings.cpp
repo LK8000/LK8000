@@ -16,9 +16,6 @@
 #include "AirfieldDetails.h"
 #include "Dialogs.h"
 
-extern HWND hWndMapWindow;
-
-
 void SettingsEnter() {
   MenuActive = true;
 
@@ -143,7 +140,7 @@ void SettingsLeave() {
       || TOPOLOGYFILECHANGED
       ) {
 	CloseProgressDialog();
-	SetFocus(hWndMapWindow);
+	MainWindow.SetFocus();
   }
   
   UnlockTaskData();

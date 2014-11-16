@@ -146,6 +146,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 
 
     if (LKSurface::AlphaBlendSupported() && MapSpaceMode == MSM_MAP && BarOpacity < 100) {
+        // this need to be changed,otherwise is destroy to late.
         static LKBitmapSurface BckSurface;
         if (DoInit[MDI_LOOKABLEND]) {
             BckSurface.Create(Surface, rc.right, rc.bottom);

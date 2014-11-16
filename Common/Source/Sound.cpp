@@ -26,7 +26,7 @@ void LKSound(const TCHAR *lpName) {
 #else
 #include "mmsystem.h"
 
-extern HINSTANCE hInst; // The current instance
+extern HINSTANCE _hInstance; // The current instance
 
 BOOL PlayResource (const TCHAR* lpName)
 {
@@ -48,13 +48,13 @@ BOOL PlayResource (const TCHAR* lpName)
   } else {
     
     // Find the wave resource.
-    hResInfo = FindResource (hInst, lpName, TEXT("WAVE")); 
+    hResInfo = FindResource (_hInstance, lpName, TEXT("WAVE"));
     
     if (hResInfo == NULL) 
       return FALSE; 
     
     // Load the wave resource. 
-    hRes = LoadResource (hInst, (HRSRC)hResInfo); 
+    hRes = LoadResource (_hInstance, (HRSRC)hResInfo);
     
     if (hRes == NULL) 
       return FALSE; 

@@ -131,7 +131,7 @@ long GetUTCOffset(void);
 int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines);
 void RestoreRegistry(void);
 void StoreRegistry(void);
-void LK8000GetOpts();
+void LK8000GetOpts(const TCHAR *MyCommandLine);
 
 bool CheckRectOverlap(const RECT *rc1, const RECT *rc2);
 int MeasureCPULoad();

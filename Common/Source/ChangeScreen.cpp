@@ -20,8 +20,6 @@
 #include "DoInits.h"
 
 
-extern HWND hWndMapWindow;
-extern HWND hWndMainWindow;
 //
 // Detect if screen resolution and/or orientation has changed
 //
@@ -72,7 +70,7 @@ void ReinitScreen(void) {
   static int oldSCREENWIDTH=0;
   static int oldSCREENHEIGHT=0;
 
-  RECT WindowSize, rc;
+  RECT WindowSize;
 
   // This is needed to hide any menu currently on, as first thing.
   InputEvents::setMode(TEXT("default"));
@@ -160,34 +158,23 @@ void ReinitScreen(void) {
 	SCREENWIDTH = WindowSize.right;
 	SCREENHEIGHT= WindowSize.bottom;
 	#endif
-	SendMessage(hWndMapWindow, WM_SIZE, (WPARAM)SIZE_RESTORED, MAKELPARAM(0,0));
   }
 
 #if (WINDOWSPC>0)
+  // We must consider the command bar size on PC window
+
   WindowSize.right = SCREENWIDTH + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
   WindowSize.left = (GetSystemMetrics(SM_CXSCREEN) - WindowSize.right) / 2;
+  WindowSize.right += WindowSize.left;
   WindowSize.bottom = SCREENHEIGHT + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
   WindowSize.top = (GetSystemMetrics(SM_CYSCREEN) - WindowSize.bottom) / 2;
-
-  // We must consider the command bar size on PC window
-  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, WindowSize.right, WindowSize.bottom, TRUE);
-  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, FALSE); // also TRUE?
-#else
-
-  // Still to be tested!
-  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, WindowSize.right, WindowSize.bottom, TRUE);
-  MoveWindow(hWndMapWindow, 0, 0, WindowSize.right, WindowSize.bottom, FALSE); 
-
-
+  WindowSize.bottom += WindowSize.top;
 #endif
 
-  GetClientRect(hWndMainWindow, &rc);
-#if (WINDOWSPC>0)
-  rc.left = 0;
-  rc.right = SCREENWIDTH;
-  rc.top = 0;
-  rc.bottom = SCREENHEIGHT;
-#endif
+  MainWindow.Move(WindowSize, true);
+
+  const RECT rc = MainWindow.GetClientRect();
+
   InitLKScreen();
 
   LKSW_ReloadProfileBitmaps=true;
@@ -235,17 +222,21 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_MAPASP);
   Reset_Single_DoInits(MDI_MAPRADAR); // doing nothing reallt
   Reset_Single_DoInits(MDI_FLARMRADAR);
-  Reset_Single_DoInits(MDI_MAPWNDPROC);
   Reset_Single_DoInits(MDI_DRAWBOTTOMBAR);
   Reset_Single_DoInits(MDI_DRAWTASK);
 
   #if TESTBENCH
   StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));
   #endif
-  MapWindow::ResumeDrawingThread();
 
-  ShowWindow(hWndMainWindow, SW_SHOWNORMAL);
-  BringWindowToTop(hWndMainWindow);
+  // Since MapWindow is doing static inits, we want them to be recalculated at the end of
+  // initializations, since some values in use might have been not available yet, for example BottomSize.
+  // maybe useless, already done by MainWindow::OnSize()
+  MainWindow.UpdateActiveScreenZone(rc.right - rc.left, rc.bottom - rc.top);
+
+
+  MapWindow::ResumeDrawingThread();
+  MainWindow.SetToForeground();
 
   return;
 }

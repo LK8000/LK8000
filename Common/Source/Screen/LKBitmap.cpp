@@ -19,6 +19,9 @@
 
 #ifdef WIN32
 
+extern HINSTANCE _hInstance;
+
+
 LKBitmap::LKBitmap() : _Bitmap(), _Destroy() {
 }
 
@@ -84,8 +87,7 @@ bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
 bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
     Release();
 #ifdef WIN32
-    extern HINSTANCE hInst;
-    _Bitmap = LoadBitmap(hInst, ResourceName);
+    _Bitmap = LoadBitmap(_hInstance, ResourceName);
     if (_Bitmap) {
         _Destroy = true;
         return true;

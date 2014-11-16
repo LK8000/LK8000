@@ -18,7 +18,7 @@
 
 #ifdef WIN32_RESOURCE
 unsigned char* egm96data = NULL;
-extern HINSTANCE hInst;
+extern HINSTANCE _hInstance;
 #else
 #include "resource_data.h"
 const unsigned char* egm96data = NULL;
@@ -29,14 +29,14 @@ bool OpenGeoid(void) {
 #ifdef WIN32_RESOURCE
         LKASSERT(!egm96data);
         egm96data = NULL;
-        HRSRC hResInfo = FindResource(hInst, TEXT("IDR_RASTER_EGM96S"), TEXT("RASTERDATA"));
+        HRSRC hResInfo = FindResource(_hInstance, TEXT("IDR_RASTER_EGM96S"), TEXT("RASTERDATA"));
         if (hResInfo) {
-            HGLOBAL hRes = LoadResource(hInst, hResInfo);
+            HGLOBAL hRes = LoadResource(_hInstance, hResInfo);
             if (hRes) {
                 // Retrieves a pointer to the resource in memory 
                 const BYTE* lpRes = (BYTE*) LockResource(hRes);
                 if (lpRes) {
-                    const size_t len = SizeofResource(hInst, hResInfo);
+                    const size_t len = SizeofResource(_hInstance, hResInfo);
                     if (len == EGM96SIZE) {
                         egm96data = (unsigned char*) malloc(len);
                         memcpy((char*) egm96data, (char*) lpRes, len);
