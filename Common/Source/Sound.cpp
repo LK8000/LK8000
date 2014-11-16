@@ -28,54 +28,48 @@ void LKSound(const TCHAR *lpName) {
 
 extern HINSTANCE _hInstance; // The current instance
 
-BOOL PlayResource (const TCHAR* lpName)
-{
-  #if defined(PNA) && defined(UNDER_CE)
-  if (DeviceIsGM130) {
-	MessageBeep(0xffffffff);
-	return true;
-  }
-  #endif
-  BOOL bRtn;
-  LPTSTR lpRes;
-  HANDLE hResInfo, hRes;
+BOOL PlayResource(const TCHAR* lpName) {
+    if(!EnableSoundModes) return true;
+    
+#if defined(PNA) && defined(UNDER_CE)
+    if (DeviceIsGM130) {
+        MessageBeep(0xffffffff);
+        return true;
+    }
+#endif
+    BOOL bRtn = false;
+    // TODO code: Modify to allow use of WAV Files and/or Embedded files
 
-  // TODO code: Modify to allow use of WAV Files and/or Embedded files
+    if (_tcsstr(lpName, TEXT(".wav"))) {
+        bRtn = sndPlaySound(lpName, SND_ASYNC | SND_NODEFAULT);
+    } else {
 
-  if (_tcsstr(lpName, TEXT(".wav"))) {
-    bRtn = sndPlaySound (lpName, SND_ASYNC | SND_NODEFAULT ); 
-
-  } else {
-    
-    // Find the wave resource.
-    hResInfo = FindResource (_hInstance, lpName, TEXT("WAVE"));
-    
-    if (hResInfo == NULL) 
-      return FALSE; 
-    
-    // Load the wave resource. 
-    hRes = LoadResource (_hInstance, (HRSRC)hResInfo);
-    
-    if (hRes == NULL) 
-      return FALSE; 
-    
-    // Lock the wave resource and play it. 
-    lpRes = (LPTSTR)LockResource ((HGLOBAL)hRes);
-    
-    if (lpRes != NULL) 
-      { 
-	bRtn = sndPlaySound (lpRes, SND_MEMORY | SND_ASYNC | SND_NODEFAULT ); 
-      } 
-    else 
-      bRtn = 0;
-  }
-  return bRtn; 
+        // Find the wave resource.
+        HRSRC hResInfo = FindResource(_hInstance, lpName, TEXT("WAVE"));
+        if (hResInfo) {
+            // Load the wave resource. 
+            HGLOBAL hRes = LoadResource(_hInstance, hResInfo);
+            if (hRes) {
+                // Lock the wave resource and play it. 
+                LPCTSTR lpRes = (LPCTSTR) LockResource(hRes);
+                if (lpRes) {
+                    bRtn = sndPlaySound(lpRes, SND_MEMORY | SND_ASYNC | SND_NODEFAULT);
+                }
+            }
+        }
+    }
+    if (!bRtn) {
+        bRtn = MessageBeep(MB_ICONEXCLAMATION);
+    }
+    return bRtn;
 }
 
 
 
 // Play a sound from filesystem
 void LKSound(const TCHAR *lpName) {
+    if(!EnableSoundModes) return;
+    
   #if defined(PNA) && defined(UNDER_CE)
   if (DeviceIsGM130) {
 	MessageBeep(0xffffffff); // default
@@ -103,8 +97,6 @@ void LKSound(const TCHAR *lpName) {
   TCHAR sndfile[MAX_PATH];
   _stprintf(sndfile,_T("%s\\%s"),sDir,lpName);
   sndPlaySound (sndfile, SND_ASYNC| SND_NODEFAULT );
-  return;
-
 }
 
 #if defined(PNA) && defined(UNDER_CE)

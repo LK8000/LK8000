@@ -570,24 +570,20 @@ void AlertBestAlternate(short soundmode) {
   }
 
   if ( GPS_INFO.Time > LastAlertTime + 120.0 ) { 
-	if (EnableSoundModes) {
 		LastAlertTime = GPS_INFO.Time; 
 		switch (soundmode) {
 			case 0:
 				break;
 			case 1:
-				#ifndef DISABLEAUDIO
 				LKSound(_T("LK_GREEN.WAV"));
-				#endif
+
 				_stprintf(mbuf,_T("%s %s  @%.0f%s"), gettext(TEXT("_@M1840_")), WayPointList[BestAlternate].Name,
 				DISTANCEMODIFY*WayPointCalc[BestAlternate].Distance,
 				(Units::GetDistanceName()) );
 				Message::AddMessage(2000, 3, mbuf);
 				break;
 			case 2: 
-				#ifndef DISABLEAUDIO
 				LKSound(_T("LK_RED.WAV"));
-				#endif
 				_stprintf(mbuf,_T("%s %s"), gettext(TEXT("_@M1840_")), gettext(TEXT("_@M916_"))); // WARNING, NO LANDINGS
 				// Do NOT disturb the pilot for 5 minutes with useless further messages
 				LastAlertTime += 180.0;
@@ -595,10 +591,8 @@ void AlertBestAlternate(short soundmode) {
 	
 				break;
 			case 11:
-				#ifndef DISABLEAUDIO
 				LKSound(_T("LK_GREEN.WAV"));
 				LKSound(_T("LK_GREEN.WAV"));
-				#endif
 				break;
 			default:
 				break;
@@ -608,7 +602,6 @@ void AlertBestAlternate(short soundmode) {
 		if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 		{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 		#endif
-	} 
   } else {
 	#ifdef DEBUG_BESTALTERNATE
 	_stprintf(ventabuffer,TEXT("(QUIET, NO PLAY ALERT SOUND, soundmode=%d)"), soundmode);

@@ -977,9 +977,7 @@ BOOL NMEAParser::PDSXT(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   else
 	_stprintf(mbuf,_T("MESSAGE: %s"),params[1] );
   Message::AddMessage(30000, 3, mbuf);
-  #ifndef DISABLEAUDIO
-  if (EnableSoundModes) LKSound(TEXT("LK_TONEUP.WAV"));
-  #endif
+  LKSound(TEXT("LK_TONEUP.WAV"));
 
   return TRUE;
 

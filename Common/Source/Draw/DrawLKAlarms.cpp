@@ -29,21 +29,19 @@ void MapWindow::DrawLKAlarms(LKSurface& Surface, const RECT& rc) {
 
   // If we have a new alarm, play sound if available and enabled
   if (validalarm>=0) {
-	if (EnableSoundModes) {
-		switch (validalarm) {
-			case 0:
-				LKSound(_T("LK_ALARM_ALT1.WAV"));
-				break;
-			case 1:
-				LKSound(_T("LK_ALARM_ALT2.WAV"));
-				break;
-			case 2:
-				LKSound(_T("LK_ALARM_ALT3.WAV"));
-				break;
-			default:
-				break;
-		}
-	}
+    switch (validalarm) {
+        case 0:
+            LKSound(_T("LK_ALARM_ALT1.WAV"));
+            break;
+        case 1:
+            LKSound(_T("LK_ALARM_ALT2.WAV"));
+            break;
+        case 2:
+            LKSound(_T("LK_ALARM_ALT3.WAV"));
+            break;
+        default:
+            break;
+    }
 	displaycounter=12; // seconds to display alarm on screen, resetting anything set previously
   }
 

@@ -131,8 +131,7 @@ void NextModeIndex() {
 }
 
 void SoundModeIndex() {
-#ifndef DISABLEAUDIO
-	if (EnableSoundModes) {
+
 		switch(ModeIndex) {
 			case LKMODE_MAP:
 				PlayResource(TEXT("IDR_WAV_TONE7"));
@@ -150,13 +149,9 @@ void SoundModeIndex() {
 				PlayResource(TEXT("IDR_WAV_TONE4"));
 				break;
 		}
-	}
-#endif
 }
 
 void BottomSounds() {
-#ifndef DISABLEAUDIO
-   if (EnableSoundModes) {
 	switch(BottomMode) {
 		case 1:
 			PlayResource(TEXT("IDR_WAV_BTONE7"));
@@ -189,8 +184,6 @@ void BottomSounds() {
 			PlayResource(TEXT("IDR_WAV_CLICK"));
 			break;
 	}
-  }
-#endif
 }
 
 void PreviousModeIndex() {

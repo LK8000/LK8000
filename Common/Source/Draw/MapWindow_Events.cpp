@@ -19,7 +19,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
     double dyn_range = range*3.5;
 
     //StartupStore(_T("RANGE=%f\n"),dyn_range);
-    if (EnableSoundModes) LKSound(TEXT("LK_BELL.WAV"));
+    LKSound(TEXT("LK_BELL.WAV"));
 
 
     if(pan && (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN))) {
@@ -131,7 +131,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
             DoStatusMessage(gettext(TEXT("_@M2248_")));  // _@M2248_  "No Near Object found!"
         }
     } else {
-        if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV"));
+        LKSound(TEXT("LK_GREEN.WAV"));
 	dlgMultiSelectListShowModal();
 	if(ValidTaskPoint(PanTaskEdit)) {
     	    MapWindow::Event_Pan(1);

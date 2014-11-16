@@ -68,7 +68,7 @@ static void OnFlyClicked(WindowControl * Sender){
 
   CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
   SetValues();
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+  PlayResource(TEXT("IDR_WAV_CLICK"));
 
 }
 
@@ -79,7 +79,7 @@ static void OnSelectClicked(WindowControl * Sender){
 
   CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
   SetValues();
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+  PlayResource(TEXT("IDR_WAV_CLICK"));
 
 }
 
@@ -126,7 +126,7 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
     wPicto->Redraw();
   }
   SetValues();
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+  PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
 static void OnCloseClicked(WindowControl * Sender){

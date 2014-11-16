@@ -52,7 +52,7 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound)
   }
 
   // doSound always true, to be removed the StatusFile entirely 
-  if (EnableSoundModes && LocalMessage.doSound &&playsound)
+  if (LocalMessage.doSound && playsound)
     PlayResource(LocalMessage.sound);
   
   // TODO code: consider what is a sensible size?

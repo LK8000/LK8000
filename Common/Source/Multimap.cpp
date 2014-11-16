@@ -407,8 +407,6 @@ void Reset_Multimap_Flags(void) {
 
 
 void MultiMapSound() {
-#ifndef DISABLEAUDIO
-  if (EnableSoundModes) {
 	switch(CURTYPE) {
 		case 0: // MP_WELCOME
 			break;
@@ -436,8 +434,6 @@ void MultiMapSound() {
 		default:
 			break;
 	}
-  }
-#endif
 }
 
 

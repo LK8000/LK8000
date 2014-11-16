@@ -109,7 +109,7 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		if ( DrawInfo.Time > (firsttime+1.0) ) {
 			SetModeType(LKMODE_MAP,MP_MOVING);
 			LKevent=LKEVENT_NONE;
-			if (EnableSoundModes) LKSound(_T("LK_BEEP1.WAV"));
+			LKSound(_T("LK_BEEP1.WAV"));
 			RefreshMap();
 			break;
 		}

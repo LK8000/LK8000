@@ -54,18 +54,14 @@ void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
 	case LKEVENT_TOPRIGHT:
 		if (MapSpaceMode==MSM_MAPASP) {
 			SonarWarning = !SonarWarning;
-			if (EnableSoundModes) {
-				if (SonarWarning)
-					LKSound(TEXT("LK_TONEUP.WAV"));
-				else
-					LKSound(TEXT("LK_TONEDOWN.WAV"));
-			}
+            if (SonarWarning)
+                LKSound(TEXT("LK_TONEUP.WAV"));
+            else
+                LKSound(TEXT("LK_TONEDOWN.WAV"));
 		}
 		// ACTIVE is available only when there is a topview shown!
 		if ( (MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT) && (Current_Multimap_TopRect.bottom>0)) {
-			if (EnableSoundModes) {
-					LKSound(TEXT("LK_TONEDOWN.WAV"));
-			}
+			LKSound(TEXT("LK_TONEDOWN.WAV"));
 		}
 		break;
 	default:

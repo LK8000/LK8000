@@ -654,9 +654,7 @@ bool InputEvents::processButton(int bindex) {
 		#endif
 
 		// 101212 moved here so that an internal resource played will not stop LKsound running
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 
 		if (!ButtonLabel::ButtonDisabled[bindex]) {
 			processGo(ModeLabel[thismode][i].event);
@@ -966,10 +964,8 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	return;
   } 
 
-  #ifndef DISABLEAUDIO
-  if (EnableSoundModes) LKSound(TEXT("DROPMARKER.WAV"));
-  #endif
-
+  LKSound(TEXT("DROPMARKER.WAV"));
+  
   LockFlightData();
 
   if (_tcscmp(misc, TEXT("pan")) == 0) {
@@ -1930,16 +1926,12 @@ void InputEvents::eventService(const TCHAR *misc) {
 	else {
 		if (SIMMODE) DoStatusMessage(MsgToken(930),NULL,false); // Takeoff
 	}
-        if (EnableSoundModes) {
-                LKSound(_T("LK_TAKEOFF.WAV"));
-        }
+    LKSound(_T("LK_TAKEOFF.WAV"));
 	return;
   }
   if (_tcscmp(misc, TEXT("LANDING")) == 0) {
 	DoStatusMessage(MsgToken(931),NULL,false);
-        if (EnableSoundModes) {
-                LKSound(_T("LK_LANDING.WAV"));
-        }
+    LKSound(_T("LK_LANDING.WAV"));
 	return;
   }
 
@@ -1952,9 +1944,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("TASKSTART")) == 0) {
 	extern void TaskStartMessage(void);
 	TaskStartMessage();
-        if (EnableSoundModes) {
-                LKSound(_T("LK_TASKSTART.WAV"));
-        }
+    LKSound(_T("LK_TASKSTART.WAV"));
 	return;
   }
 
@@ -1962,18 +1952,14 @@ void InputEvents::eventService(const TCHAR *misc) {
 
 	extern void TaskFinishMessage(void);
 	TaskFinishMessage();
-	if (EnableSoundModes) {
-		LKSound(_T("LK_TASKFINISH.WAV"));
-	}
+    LKSound(_T("LK_TASKFINISH.WAV"));
 	return;
   }
 
   if (_tcscmp(misc, TEXT("TASKNEXTWAYPOINT")) == 0) {
 	// LKTOKEN  _@M461_ = "Next turnpoint" 
 	DoStatusMessage(gettext(TEXT("_@M461_")));
-	if (EnableSoundModes) {
-		LKSound(_T("LK_TASKPOINT.WAV"));
-	}
+	LKSound(_T("LK_TASKPOINT.WAV"));
 	return;
   }
 
@@ -1988,7 +1974,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("TASKCONFIRMSTART")) == 0) {
 	bool startTaskAnyway = false;
-        if (EnableSoundModes) LKSound(_T("LK_TASKSTART.WAV"));
+        LKSound(_T("LK_TASKSTART.WAV"));
 	dlgStartTaskShowModal(&startTaskAnyway, 
 		CALCULATED_INFO.TaskStartTime,
 		CALCULATED_INFO.TaskStartSpeed,
@@ -2039,9 +2025,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	int utmzone; char utmchar;
 	double easting, northing;
 	TCHAR mbuf[80];
-	#ifndef DISABLEAUDIO
-	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-	#endif
+	PlayResource(TEXT("IDR_WAV_CLICK"));
 	LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
 	_stprintf(mbuf,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
 	Message::Lock();
@@ -2063,9 +2047,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 		return;
 	}
 
-	#ifndef DISABLEAUDIO
-	if (EnableSoundModes) LKSound(TEXT("LK_BELL.WAV"));
-	#endif
+	LKSound(TEXT("LK_BELL.WAV"));
 	dlgOracleShowModal();
 	return;
   }
@@ -2198,7 +2180,7 @@ extern bool RotateScreen(short angle);
 	GPS_INFO.Latitude=MapWindow::GetPanLatitude();
 	GPS_INFO.Longitude=MapWindow::GetPanLongitude();
 	LastDoRangeWaypointListTime=0; // force DoRange
-	if (EnableSoundModes) LKSound(_T("LK_BEEP1.WAV"));
+	LKSound(_T("LK_BEEP1.WAV"));
 	extern bool ForceRenderMap;
 	ForceRenderMap=true;
 	MapWindow::ForceVisibilityScan=true;
@@ -2609,9 +2591,7 @@ void InputEvents::eventProfileSave(const TCHAR *misc) {
 
 
 void InputEvents::eventBeep(const TCHAR *misc) {
-#ifndef DISABLEAUDIO
-  if (EnableSoundModes) MessageBeep(MB_ICONEXCLAMATION); // 100221 FIX
-#endif
+  PlayResource(misc); // 100221 FIX
 }
 
 void SystemConfiguration(short mode);
@@ -3081,7 +3061,7 @@ void HideMenu() {
 }
 
 void ShowMenu() {
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));    
+  PlayResource(TEXT("IDR_WAV_CLICK"));    
   InputEvents::setMode(TEXT("Menu"));
   MenuTimeOut = 0;
 }
@@ -3354,33 +3334,25 @@ void InputEvents::eventChangeSorting(const TCHAR *misc)
 	  		case MSM_NEARTPS:
 	  					SortedMode[MapSpaceMode]=j;
 	  					LKForceDoNearest=true;
-	  					#ifndef DISABLEAUDIO
-	  					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-	  					#endif
+	  					PlayResource(TEXT("IDR_WAV_CLICK"));
 	  					break;
 	  		case MSM_TRAFFIC:
 	  					SortedMode[MapSpaceMode]=j;
 	  					// force immediate resorting
 	  					LastDoTraffic=0;
-	  					#ifndef DISABLEAUDIO
-	  					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-	  					#endif
+	  					PlayResource(TEXT("IDR_WAV_CLICK"));
 	  					break;
 	  		case MSM_AIRSPACES:
 	  					SortedMode[MapSpaceMode]=j;
 	  					LastDoAirspaces=0;
-	  					#ifndef DISABLEAUDIO
-	  					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-	  					#endif
+	  					PlayResource(TEXT("IDR_WAV_CLICK"));
 	  					break;
 
 	  		case MSM_THERMALS:
 	  					SortedMode[MapSpaceMode]=j;
 	  					// force immediate resorting
 	  					LastDoThermalH=0;
-	  					#ifndef DISABLEAUDIO
-	  					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-	  					#endif
+	  					PlayResource(TEXT("IDR_WAV_CLICK"));
 	  					break;
 	  		default:
 	  				//	DoStatusMessage(_T("ERR-022 UNKNOWN MSM in VK"));

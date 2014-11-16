@@ -157,10 +157,7 @@ void AlertGateOpen(int gate) {
 		gettext(TEXT("_@M347_")));
   }
   DoStatusMessage(tag);
-  if (EnableSoundModes) {
-	LKSound(_T("LK_GATEOPEN.WAV"));
-  }
-
+  LKSound(_T("LK_GATEOPEN.WAV"));
 }
 
 // Are we on the correct side of start cylinder?

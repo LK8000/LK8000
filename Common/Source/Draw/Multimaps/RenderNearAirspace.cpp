@@ -122,7 +122,7 @@ static  bool bHeightScale = false;
 				   #if 1 // MULTISELECT
 				     dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
 				   #else 	
-				     if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
+				     PlayResource(TEXT("IDR_WAV_BTONE4"));
 				     dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
                    #endif
 				   LKevent=LKEVENT_NONE;

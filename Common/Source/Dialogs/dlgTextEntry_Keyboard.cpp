@@ -123,9 +123,7 @@ if(first)
 
 
   TCHAR *Caption = Sender->GetCaption();
-  #ifndef DISABLEAUDIO
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-  #endif
+  PlayResource(TEXT("IDR_WAV_CLICK"));
   if (cursor < max_width-1)
     {
       edittext[cursor++] = toupper(Caption[0]);
@@ -143,9 +141,7 @@ if(first)
 static void OnDel(WindowControl * Sender)
 {
   first = false;
-  #ifndef DISABLEAUDIO
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-  #endif
+  PlayResource(TEXT("IDR_WAV_CLICK"));
   if (cursor >0) {
 	edittext[--cursor] = '\0';
   }
@@ -155,9 +151,7 @@ static void OnDel(WindowControl * Sender)
 
 static void OnTime(WindowControl * Sender)
 {
-  #ifndef DISABLEAUDIO
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-  #endif
+  PlayResource(TEXT("IDR_WAV_CLICK"));
   if ( (cursor+6)<(max_width-1) ) {
 	TCHAR ltime[10];
 	_stprintf(ltime,_T("%02d%02d%02d"),GPS_INFO.Hour,GPS_INFO.Minute,GPS_INFO.Second);
@@ -170,9 +164,7 @@ static void OnTime(WindowControl * Sender)
 
 static void OnDate(WindowControl * Sender)
 {
-  #ifndef DISABLEAUDIO
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-  #endif
+  PlayResource(TEXT("IDR_WAV_CLICK"));
   if ( (cursor+6)<(max_width-1) ) {
 	int nyear=GPS_INFO.Year;
 	if (nyear>2000)
@@ -194,9 +186,7 @@ static void OnDate(WindowControl * Sender)
 
 static void OnOk(WindowControl * Sender)
 {
-  #ifndef DISABLEAUDIO
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-  #endif
+  PlayResource(TEXT("IDR_WAV_CLICK"));
   wf->SetModalResult(mrOK);
 }
 
@@ -204,9 +194,7 @@ static void OnOk(WindowControl * Sender)
 
 static void OnClear(WindowControl * Sender)
 {
-  #ifndef DISABLEAUDIO
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-  #endif
+  PlayResource(TEXT("IDR_WAV_CLICK"));
   ClearText();
 }
 

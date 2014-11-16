@@ -70,35 +70,25 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 			if (gatetimediff==3600 && ((PGGateIntervalTime>=70)||ActiveGate==0) ) { 
 				//  850  FIRST GATE OPEN IN 1 HOUR
 				DoStatusMessage(gettext(TEXT("_@M850_")));
-				if (EnableSoundModes) {
-					LKSound(_T("LK_DINGDONG.WAV"));
-				}
+				LKSound(_T("LK_DINGDONG.WAV"));
 			}
 			if (gatetimediff==1800 && ((PGGateIntervalTime>=45)||ActiveGate==0) ) { 
 				//  851  FIRST GATE OPEN IN 30 MINUTES
 				DoStatusMessage(gettext(TEXT("_@M851_")));
-				if (EnableSoundModes) {
-					LKSound(_T("LK_DINGDONG.WAV"));
-				}
+				LKSound(_T("LK_DINGDONG.WAV"));
 			}
 			if (gatetimediff==600 && ((PGGateIntervalTime>=15)||ActiveGate==0) ) { // 10 minutes to go
 				//  852  10 MINUTES TO GO
 				DoStatusMessage(gettext(TEXT("_@M852_")));
-				if (EnableSoundModes) {
-					LKSound(_T("LK_HITONE.WAV"));
-				}
+				LKSound(_T("LK_HITONE.WAV"));
 			}
 			if (gatetimediff==300 && ((PGGateIntervalTime>=10)||ActiveGate==0)) { // 5 minutes to go
 				//  853  5 MINUTES TO GO
 				DoStatusMessage(gettext(TEXT("_@M853_")));
-				if (EnableSoundModes) {
-					LKSound(_T("LK_HITONE.WAV"));
-				}
+				LKSound(_T("LK_HITONE.WAV"));
 			}
 			if (gatetimediff==60) { // 1 minute to go
-				if (EnableSoundModes) {
-					LKSound(_T("LK_3HITONES.WAV"));
-				}
+				LKSound(_T("LK_3HITONES.WAV"));
 			}
 
 		} // HaveGates

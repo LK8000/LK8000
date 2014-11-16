@@ -160,9 +160,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 #if (0)
 			// Output NMEA to device
 			if (keytime>1000) {
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-				#endif
+				PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
+
 				devWriteNMEAString(devA(),_T("$PGRMCE"));
 				Message::AddMessage(1000, 3, _T("NMEA out $PGRMCE"));
 				return 0;
@@ -205,18 +204,14 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			if (keytime>=CustomKeyTime) {
 				if (OvertargetMode==OVT_MAXMODE) OvertargetMode=0;
 				else OvertargetMode++;
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-				#endif
+				PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
 				return 0;
 			}
 #endif
 
 #if (0)
 			if (keytime>=CustomKeyTime) {
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-				#endif
+				PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
 				extern bool RunSignature(void);
 				RunSignature();
 
@@ -227,9 +222,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 #if (0)
 			// Long press in center screen bottom bar
 			if (keytime>=CustomKeyTime) {
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-				#endif
+				PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
 				extern void ReinitScreen(void);
 				ReinitScreen();
 				return 0;
@@ -297,33 +290,25 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				case MSM_NEARTPS:
 							SortedMode[MapSpaceMode]=j;
 							LKForceDoNearest=true;
-							#ifndef DISABLEAUDIO
-							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-							#endif
+							PlayResource(TEXT("IDR_WAV_CLICK"));
 							break;
 				case MSM_TRAFFIC:
 							SortedMode[MapSpaceMode]=j;
 							// force immediate resorting
 							LastDoTraffic=0;
-							#ifndef DISABLEAUDIO
-							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-							#endif
+							PlayResource(TEXT("IDR_WAV_CLICK"));
 							break;
 				case MSM_AIRSPACES:
 							SortedMode[MapSpaceMode]=j;
 							LastDoAirspaces=0;
-							#ifndef DISABLEAUDIO
-							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-							#endif
+							PlayResource(TEXT("IDR_WAV_CLICK"));
 							break;
 
 				case MSM_THERMALS:
 							SortedMode[MapSpaceMode]=j;
 							// force immediate resorting
 							LastDoThermalH=0;
-							#ifndef DISABLEAUDIO
-							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-							#endif
+							PlayResource(TEXT("IDR_WAV_CLICK"));
 							break;
 				default:
 							DoStatusMessage(_T("ERR-022 UNKNOWN MSM in VK"));
@@ -387,14 +372,10 @@ shortcut_gesture:
 				}
 				// careful, selectedpage starts from 0
 				if (++SelectedPage[MapSpaceMode] >=numpages) {
-					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-					#endif
+					PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
 					SelectedPage[MapSpaceMode]=0;
 				} else {
-					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-					#endif
+					PlayResource(TEXT("IDR_WAV_CLICK"));
 				}
 				LKevent=LKEVENT_NEWPAGE;
 				MapWindow::RefreshMap();
@@ -408,19 +389,13 @@ shortcut_gesture:
 					return 0;
 				}
 				if (--SelectedPage[MapSpaceMode] <0) {
-					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-					#endif
+					PlayResource(TEXT("IDR_WAV_CLICK"));
 					SelectedPage[MapSpaceMode]=(numpages-1);
 				} else {
 					if (SelectedPage[MapSpaceMode]==0) {
-						#ifndef DISABLEAUDIO
-						if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-						#endif
+						PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
 					} else {
-						#ifndef DISABLEAUDIO
-						if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-						#endif
+						PlayResource(TEXT("IDR_WAV_CLICK"));
 					}
 				}
 				LKevent=LKEVENT_NEWPAGE;
@@ -430,9 +405,8 @@ shortcut_gesture:
 gesture_right:
 				NextModeType();
 				MapWindow::RefreshMap();
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) {
-					// Notice: MultiMap has its own sounds. We come here when switching pages, but with
+
+                    // Notice: MultiMap has its own sounds. We come here when switching pages, but with
 					// an exception: from moving map we generate currently a direct NextModeType from
 					// MapWndProc, and thus we dont get ProcessVirtualKeys for that single case.	
 					// We should not be playing a CLICK sound while we are playing the MM tone, or
@@ -443,8 +417,6 @@ gesture_right:
 						else
 							PlayResource(TEXT("IDR_WAV_CLICK"));
 					}
-				}
-				#endif
 				return 0;
 
 				break;
@@ -453,16 +425,12 @@ gesture_right:
 gesture_left:
 				PreviousModeType();
 				MapWindow::RefreshMap();
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) {
-					if (ModeIndex!=LKMODE_MAP) {
-						if (CURTYPE == 0)
-							PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-						else
-							PlayResource(TEXT("IDR_WAV_CLICK"));
-					}
-				}
-				#endif
+                if (ModeIndex!=LKMODE_MAP) {
+                    if (CURTYPE == 0)
+                        PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
+                    else
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                }
 				return 0;
 
 				break;
@@ -509,17 +477,13 @@ gesture_left:
 				// DoStatusMessage(_T("DBG-032-A event up not used here"));
 				return 0;
 			}
-			#ifndef DISABLEAUDIO
-	        	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
+        	PlayResource(TEXT("IDR_WAV_CLICK"));
 			LKevent=LKEVENT_UP;
 			MapWindow::RefreshMap();
 			// DoStatusMessage(_T("DBG-032-B event up used here"));
 			return 0;
 		}
-		#ifndef DISABLEAUDIO
-	        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+        PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (keytime>=VKTIMELONG)
 			return 0xc1;
 		else
@@ -528,16 +492,12 @@ gesture_left:
 	if (Y>ydown) {
 		if (dontdrawthemap) {
 			if (MapSpaceMode<=MSM_MAP) return 0;
-			#ifndef DISABLEAUDIO
-	        	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
+        	PlayResource(TEXT("IDR_WAV_CLICK"));
 			LKevent=LKEVENT_DOWN;
 			MapWindow::RefreshMap();
 			return 0;
 		}
-		#ifndef DISABLEAUDIO
-	        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+        PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (keytime>=VKTIMELONG)
 			return 0xc2;
 		else
@@ -558,18 +518,14 @@ gesture_left:
 		SetModeType(LKMODE_MAP,MP_MOVING);
 		LKevent=LKEVENT_NONE;
 		MapWindow::RefreshMap();
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) LKSound(_T("LK_BEEP0.WAV"));
-		#endif
+		LKSound(_T("LK_BEEP0.WAV"));
 		return 0;
 	}
 		
 
 		// If in mapspacemode process ENTER 
 		if ( (keytime>=(VKSHORTCLICK*2)) && dontdrawthemap && !IsMultiMap()) {
-			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) LKSound(_T("LK_BEEP1.WAV"));
-			#endif
+			LKSound(_T("LK_BEEP1.WAV"));
 			LKevent=LKEVENT_ENTER;
 			MapWindow::RefreshMap();
 			return 0;

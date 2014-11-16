@@ -500,13 +500,13 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                     if (mode.Is(Mode::MODE_CIRCLING)) {
                         mode.UserForcedMode(Mode::MODE_FLY_CRUISE);
 
-                        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
 
                         break;
                     } else if (mode.Is(Mode::MODE_CRUISE)) {
                         mode.UserForcedMode(Mode::MODE_FLY_NONE);
 
-                        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
 
                         break;
                     }
@@ -531,7 +531,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             if (NOTANYPAN && IsMultiMapCustom()) {
                 if ((Pos.x <= P_UngestureLeft.x) && (Pos.y <= P_UngestureLeft.y)) {
 
-                    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                    PlayResource(TEXT("IDR_WAV_CLICK"));
 
                     LKevent = LKEVENT_TOPLEFT;
                     MapWindow::RefreshMap();
@@ -539,7 +539,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 }
                 if ((Pos.x > P_UngestureRight.x) && (Pos.y <= P_UngestureRight.y)) {
 
-                    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                    PlayResource(TEXT("IDR_WAV_CLICK"));
 
                     LKevent = LKEVENT_TOPRIGHT;
                     MapWindow::RefreshMap();
@@ -553,7 +553,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
                     if (!CustomKeyHandler(CKI_TOPLEFT)) {
                         // we click in any case to let the user have a response feeling
-                        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
                         MapWindow::zoom.EventScaleZoom(1);
                         return;
                     }
@@ -597,7 +597,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 if ((Pos.x > P_UngestureRight.x) && (Pos.y <= P_UngestureRight.y)) {
                     if (!CustomKeyHandler(CKI_TOPRIGHT)) {
                         // we click in any case to let the user have a response feeling
-                        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
                         MapWindow::zoom.EventScaleZoom(1);
                         return;
                     }
@@ -751,11 +751,11 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
                     if (Pos.y < Y_Up) {
                         MapWindow::zoom.EventScaleZoom(1);
-                        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
                     } else {
                         if (Pos.y > Y_Down) {
                             MapWindow::zoom.EventScaleZoom(-1);
-                            if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                            PlayResource(TEXT("IDR_WAV_CLICK"));
                         } else {
                             // process center key, do nothing 
                             // v5 obsoleted, should not happen
@@ -967,7 +967,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
             case 68:
             case 27:
                 if (CustomKeyHandler(CKI_BOTTOMLEFT)) {
-                    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                    PlayResource(TEXT("IDR_WAV_CLICK"));
                     // MapWindow::RefreshMap();
                     return;
                 }
@@ -976,7 +976,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 // Button C is generating a RETURN
             case 13:
                 if (CustomKeyHandler(CKI_BOTTOMCENTER)) {
-                    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                    PlayResource(TEXT("IDR_WAV_CLICK"));
                     // MapWindow::RefreshMap();
                     return;
                 }
@@ -985,7 +985,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 // Button D is generating a SPACE
             case 32:
                 if (CustomKeyHandler(CKI_BOTTOMRIGHT)) {
-                    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                    PlayResource(TEXT("IDR_WAV_CLICK"));
 
                     // MapWindow::RefreshMap();
                     return;
@@ -1001,7 +1001,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                         return;
                     }
 
-                    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                    PlayResource(TEXT("IDR_WAV_CLICK"));
 
                     LKevent = LKEVENT_UP;
                     MapWindow::RefreshMap();
@@ -1016,7 +1016,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                         return;
                     }
 
-                    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+                    PlayResource(TEXT("IDR_WAV_CLICK"));
 
                     LKevent = LKEVENT_DOWN;
                     MapWindow::RefreshMap();
@@ -1661,8 +1661,7 @@ void MapWindow::key_topright() {
 void MapWindow::key_enter() {
     if (!MapWindow::mode.AnyPan() && MapSpaceMode != 1) { // dontdrawthemap
         if (MapSpaceMode > MSM_MAP) {
-            if (EnableSoundModes)
-                PlayResource(TEXT("IDR_WAV_CLICK"));
+            PlayResource(TEXT("IDR_WAV_CLICK"));
 
             LKevent = LKEVENT_ENTER;
             MapWindow::RefreshMap();
@@ -1671,7 +1670,7 @@ void MapWindow::key_enter() {
 #if 0 // no center screen ck anymore
     else {
         if (CustomKeyHandler(CKI_CENTERSCREEN)) {
-            if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+            PlayResource(TEXT("IDR_WAV_CLICK"));
         }
         // MapWindow::RefreshMap();
     }
@@ -1692,7 +1691,7 @@ void MapWindow::key_previous_page() {
     PreviousModeType();
     MapWindow::RefreshMap();
     if (ModeIndex != LKMODE_MAP) {
-        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+        PlayResource(TEXT("IDR_WAV_CLICK"));
     }
 }
 
@@ -1700,7 +1699,7 @@ void MapWindow::key_next_page() {
     NextModeType();
     MapWindow::RefreshMap();
     if (ModeIndex != LKMODE_MAP) {
-        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+        PlayResource(TEXT("IDR_WAV_CLICK"));
     }
 }
 
@@ -1710,14 +1709,14 @@ void MapWindow::key_down() {
         if (MapSpaceMode <= MSM_MAP) {
 
         } else {
-            if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+            PlayResource(TEXT("IDR_WAV_CLICK"));
 
             LKevent = LKEVENT_DOWN;
             MapWindow::RefreshMap();
         }
     } else {
         // careful! zoom works inverted!!
-        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+        PlayResource(TEXT("IDR_WAV_CLICK"));
 
         MapWindow::zoom.EventScaleZoom(-1);
     }
@@ -1731,13 +1730,13 @@ void MapWindow::key_up() {
         if (MapSpaceMode <= MSM_MAP) {
             ;
         } else {
-            if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+            PlayResource(TEXT("IDR_WAV_CLICK"));
             LKevent = LKEVENT_UP;
             MapWindow::RefreshMap();
         }
     } else {
         // careful! zoom works inverted!!
-        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+        PlayResource(TEXT("IDR_WAV_CLICK"));
         MapWindow::zoom.EventScaleZoom(1);
     }
 }

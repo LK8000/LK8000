@@ -606,14 +606,10 @@ void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot) {
   if ( (pGPS->Time - pGPS->FLARM_Traffic[flarmslot].Time_Fix) >=900) {
 	// LKTOKEN  _@M674_ = "TARGET BACK VISIBLE" 
 	DoStatusMessage(gettext(TEXT("_@M674_")));
-	#ifndef DISABLEAUDIO
-	if (EnableSoundModes) LKSound(_T("TARGVISIBLE.WAV"));
-	#endif
+	LKSound(_T("TARGVISIBLE.WAV"));
   } else {
 	// otherwise a simple sound
-	#ifndef DISABLEAUDIO
-	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_DRIP"));
-	#endif
+	PlayResource(TEXT("IDR_WAV_DRIP"));
   }
 }
 

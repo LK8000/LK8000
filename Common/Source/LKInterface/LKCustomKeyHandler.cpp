@@ -74,30 +74,22 @@ passthrough:
 	case ckDisabled:
 		break;
 	case ckZoomIn:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		MapWindow::zoom.EventScaleZoom(1);
 		return true;
 		break;
 	case ckZoomInMore:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		MapWindow::zoom.EventScaleZoom(2);
 		return true;
 		break;
 	case ckZoomOut:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		MapWindow::zoom.EventScaleZoom(-1);
 		return true;
 		break;
 	case ckZoomOutMore:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		MapWindow::zoom.EventScaleZoom(-2);
 		return true;
 		break;
@@ -121,23 +113,17 @@ passthrough:
 		return true;
 
 	case ckTrueWind:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::setMode(_T("TrueWind"));
 		return true;
 
 	case ckTeamCode:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventSetup(_T("Teamcode"));
 		return true;
 
 	case ckToggleOverlays:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		ToggleMultimapOverlays();
 		return true;
 
@@ -181,24 +167,18 @@ passthrough:
 		SoundModeIndex();
 		return true;
 	case ckInvertColors:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventInvertColor(NULL);
 		return true;
 	case ckTimeGates:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventTimeGates(NULL);
 		return true;
 	case ckMarkLocation:
 		InputEvents::eventMarkLocation(_T(""));
 		return true;
 	case ckAutoZoom:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventZoom(_T("auto toggle"));
 		InputEvents::eventZoom(_T("auto show"));
 		return true;
@@ -207,12 +187,10 @@ passthrough:
 		return true;
 	case ckBooster:
 		DoStatusMessage(_T("FEEL THE THERMAL"));
-		if (EnableSoundModes) LKSound(_T("LK_BOOSTER.WAV"));
+		LKSound(_T("LK_BOOSTER.WAV"));
 		return true;
 	case ckGoHome:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (ValidWayPoint(HomeWaypoint)) {
 			if ( (ValidTaskPoint(ActiveWayPoint)) && (Task[ActiveWayPoint].Index == HomeWaypoint )) {
 	// LKTOKEN  _@M82_ = "Already going home" 
@@ -229,9 +207,7 @@ passthrough:
 			PGZoomTrigger=true;
 		else
 			LastZoomTrigger=0;
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		return true;
 
 	case ckMultitargetRotate:
@@ -239,24 +215,18 @@ passthrough:
 		return true;
 
 	case ckMultitargetMenu:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::setMode(_T("MTarget"));
 		return true;
 	case ckBaroToggle:
 		ToggleBaroAltitude();
 		return true;
 	case ckBasicSetup:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventSetup(_T("Basic"));
 		return true;
 	case ckSimMenu:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::setMode(_T("SIMMENU"));
 		return true;
 	case ckToggleMapAirspace:
@@ -273,9 +243,7 @@ passthrough:
 		SoundModeIndex();
 		return true;
 	case ckOptimizeRoute:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		PGOptimizeRoute=!PGOptimizeRoute;
 		if (ISPARAGLIDER && PGOptimizeRoute) {
 			AATEnabled = true;
@@ -283,9 +251,7 @@ passthrough:
 		}
 		return true;
 	case ckLockScreen:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventService(_T("LOCKMODE"));
 		return true;
 	case ckWhereAmI:
@@ -293,45 +259,31 @@ passthrough:
 		InputEvents::eventService(_T("ORACLE"));
 		return true;
 	case ckUseTotalEnergy:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventService(_T("TOTALEN"));
 		return true;
 	case ckNotepad:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventChecklist(_T(""));
 		return true;
 	case ckTerrainColors:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventService(_T("TERRCOL"));
 		return true;
 	case ckNearestAirspace:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventNearestAirspaceDetails(NULL);
 		return true;
 	case ckOlcAnalysis:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventSetup(_T("OlcAnalysis"));
 		return true;
 	case ckTerrainColorsBack:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventService(_T("TERRCOLBACK"));
 		return true;
 	case ckForceFreeFlightRestart:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (!CALCULATED_INFO.Flying) {
 			DoStatusMessage(MsgToken(922)); // NOT FLYING
 		} else {
@@ -341,28 +293,20 @@ passthrough:
 		}
 		return true;
 	case ckCustomMenu1:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		extern void dlgCustomMenuShowModal(void);
 		InputEvents::eventMode(_T("MYMODE"));
 		return true;
 	case ckTaskCalc:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventCalculator(NULL);
 		return true;
 	case ckTaskTarget:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventSetup(_T("Target"));
 		return true;
 	case ckArmAdvance:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventArmAdvance(_T("toggle"));
 		InputEvents::eventArmAdvance(_T("show"));
 		return true;
@@ -372,23 +316,17 @@ passthrough:
                 return true;
 		
 	case ckWaypointLookup:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventWaypointDetails(_T("select"));
 		return true;
 
 	case ckPan:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventPan(_T("toggle"));
 		return true;
 
 	case ckWindRose:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		UseWindRose=!UseWindRose;
 		return true;
 
@@ -408,17 +346,13 @@ passthrough:
 		}
 		return true;
 	case ckResetOdometer:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (MessageBoxX(MsgToken(2229), _T(""), mbYesNo) == IdYes) {
 			LKSW_ResetOdometer=true;
 		}
 		return true;
 	case ckForceLanding:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if ( !CALCULATED_INFO.Flying ) {
 			DoStatusMessage(MsgToken(922)); // NOT FLYING
 		} else {
@@ -432,9 +366,7 @@ passthrough:
 		}
 		return true;
 	case ckResetTripComputer:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (MessageBoxX(MsgToken(2236), _T(""), mbYesNo) == IdYes) {
 			LKSW_ResetTripComputer=true;
 		}
@@ -448,12 +380,10 @@ passthrough:
 		else
 			_tcscat(sonarmsg,MsgToken(1600)); // DISABLED
 		DoStatusMessage(sonarmsg,NULL,false);
-		if (EnableSoundModes) {
-			if (SonarWarning)
-				LKSound(TEXT("LK_TONEUP.WAV"));
-			else
-				LKSound(TEXT("LK_TONEDOWN.WAV"));
-		}
+        if (SonarWarning)
+            LKSound(TEXT("LK_TONEUP.WAV"));
+        else
+            LKSound(TEXT("LK_TONEDOWN.WAV"));
 		return true;
 	case ckResetView:
 		ModeType[LKMODE_MAP]    =       MP_MOVING;
@@ -469,9 +399,7 @@ passthrough:
 		return true;
 
 	case  ckMapOrient:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 
 		TCHAR MapOrientMsg[60];
 
@@ -499,14 +427,12 @@ passthrough:
 
 		return true;
     case ckResetComm:
-        #ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		PlayResource(TEXT("IDR_WAV_CLICK"));
         InputEvents::eventRestartCommPorts(NULL);
         return true;
 
     case ckDspMode:
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::setMode(_T("Display3"));
 		return true;
 

@@ -189,8 +189,6 @@ _tryagain:
   if (OvertargetMode>OVT_ROTATE) {
 	OvertargetMode=OVT_TASK;
   }
-  #ifndef DISABLEAUDIO
-  if (EnableSoundModes) {
 	switch(OvertargetMode) {
 		case 0:
 			PlayResource(TEXT("IDR_WAV_OVERTONE7"));
@@ -223,9 +221,5 @@ _tryagain:
 			PlayResource(TEXT("IDR_WAV_OVERTONE5"));
 			break;
 	}
-  }
-  #endif
-  return;
-
 }
 

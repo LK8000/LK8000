@@ -431,10 +431,9 @@ short ShowAirspaceWarningsToUser()
 
     dlgLKAirspaceFill();
 
-    #ifndef DISABLEAUDIO
-    if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
-    #endif
-		  if( _tcsnicmp( airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
+    LKSound(_T("LK_AIRSPACE.WAV")); // 100819
+
+          if( _tcsnicmp( airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
 			_stprintf(msgbuf,TEXT("%s"),airspace_copy.Name());
 		  else
 		    _stprintf(msgbuf,TEXT("%s %s"),airspace_copy.TypeName(),airspace_copy.Name());

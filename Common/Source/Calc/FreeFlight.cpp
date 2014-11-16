@@ -331,9 +331,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   confirmbacktrue:
   // Always sound
-  if (EnableSoundModes) {
-	LKSound(_T("LK_FREEFLIGHT.WAV"));
-  }
+  LKSound(_T("LK_FREEFLIGHT.WAV"));
 
   StartupStore(_T(". Free Flight started %s%s"), WhatTimeIsIt(),NEWLINE);
 

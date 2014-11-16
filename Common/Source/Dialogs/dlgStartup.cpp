@@ -210,7 +210,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 static void OnCloseClicked(WindowControl * Sender){
 	(void)Sender;
 
-  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+  LKSound(_T("LK_SLIDE.WAV"));
   switch(RUN_MODE) {
 	case RUN_DUALPROF:
 		RUN_MODE=RUN_WELCOME;
@@ -235,7 +235,7 @@ static void OnFLYClicked(WindowControl * Sender){
 static void OnDUALPROFILEClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_DUALPROF;
-  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+  LKSound(_T("LK_SLIDE.WAV"));
   wf->SetModalResult(mrOK);
 }
 static void OnEXITClicked(WindowControl * Sender){
@@ -246,25 +246,25 @@ static void OnEXITClicked(WindowControl * Sender){
 static void OnPROFILEClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_PROFILE;
-  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+  LKSound(_T("LK_SLIDE.WAV"));
   wf->SetModalResult(mrOK);
 }
 static void OnAIRCRAFTClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_AIRCRAFT;
-  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+  LKSound(_T("LK_SLIDE.WAV"));
   wf->SetModalResult(mrOK);
 }
 static void OnDEVICEClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_DEVICE;
-  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+  LKSound(_T("LK_SLIDE.WAV"));
   wf->SetModalResult(mrOK);
 }
 static void OnPILOTClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_PILOT;
-  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+  LKSound(_T("LK_SLIDE.WAV"));
   wf->SetModalResult(mrOK);
 }
 
@@ -708,7 +708,7 @@ short dlgStartupShowModal(void){
 	RUN_MODE=RUN_DUALPROF;
   }
   if (RUN_MODE==RUN_EXIT) {
-	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+	LKSound(_T("LK_SLIDE.WAV"));
 	if (MessageBoxX(
 	// LKTOKEN  _@M198_ = "Confirm Exit?" 
 		gettext(TEXT("_@M198_")), 
@@ -726,7 +726,7 @@ _exit:
   }
 
   if (RUN_MODE==RUN_FLY || RUN_MODE==RUN_SIM) {
-	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+	LKSound(_T("LK_SLIDE.WAV"));
 	return 0;	// do not repeat dialog
   }
 

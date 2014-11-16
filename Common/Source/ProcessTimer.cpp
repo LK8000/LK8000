@@ -174,7 +174,7 @@ int ConnectionProcessTimer(int itimeout) {
   
 		s_connectWait = true;
 
-		if (EnableSoundModes && !s_firstcom) LKSound(TEXT("LK_GPSNOCOM.WAV"));
+		if (!s_firstcom) LKSound(TEXT("LK_GPSNOCOM.WAV"));
 		FullScreen();
 	} else {
 		// restart comm ports on timeouts, but not during managed special communications with devices
@@ -221,9 +221,7 @@ int ConnectionProcessTimer(int itimeout) {
 		TriggerGPSUpdate();
 	  
 		s_lockWait = true;
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) LKSound(TEXT("LK_GPSNOFIX.WAV"));
-		#endif
+		LKSound(TEXT("LK_GPSNOFIX.WAV"));
 		FullScreen();
 	} else {
 		if((navwarning == false) && (s_lockWait == true)) {

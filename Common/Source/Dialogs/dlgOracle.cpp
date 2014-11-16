@@ -103,7 +103,7 @@ _end:
   wf->SetTimerNotify(NULL);
 
   // Bell, and print results
-  if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV"));
+  LKSound(TEXT("LK_GREEN.WAV"));
   WhereAmI();
 
   // Remember to force exit from showmodal, because there is no Close button

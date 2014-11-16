@@ -216,9 +216,7 @@ void LKBatteryManager() {
 	// LKTOKEN _@M1354_ "BATTERY LEVEL CRITIC!"
 	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, gettext(TEXT("_@M1354_")));
 	DoStatusMessage(mbuf);
-	#ifndef DISABLEAUDIO
-        LKSound(TEXT("LK_RED.WAV"));
-	#endif
+    LKSound(TEXT("LK_RED.WAV"));
 
 	// repeat after 1 minute, forced
 	last_time=GPS_INFO.Time-(60*4);
