@@ -11,7 +11,6 @@
 #include "InputEvents.h"
 #include "Multimap.h"
 
-extern void ShowMenu();
 extern bool IsMultimapConfigShown;
 
 void SetModeType(short modeindex, short modetype) {

@@ -3084,6 +3084,7 @@ void HideMenu() {
 }
 
 void ShowMenu() {
+  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));    
   InputEvents::setMode(TEXT("Menu"));
   MenuTimeOut = 0;
 }

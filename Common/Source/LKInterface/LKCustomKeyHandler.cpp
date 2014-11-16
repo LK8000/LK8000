@@ -102,9 +102,6 @@ passthrough:
 		return true;
 		break;
 	case ckMenu:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
 		ShowMenu();
 		return true;
 	case ckBackMode:

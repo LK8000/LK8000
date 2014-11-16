@@ -75,8 +75,6 @@ using std::max;
 // char dedicated_by_{yourname}="....";
 char dedicated_by_paolo[]="Qrqvpngrq gb zl sngure Ivggbevb";
 
-extern HWND hWndMainWindow;
-
 ATOM	MyRegisterClass (HINSTANCE, LPTSTR);
 BOOL	InitInstance    (HINSTANCE, int);
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);

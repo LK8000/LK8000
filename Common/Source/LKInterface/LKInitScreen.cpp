@@ -206,10 +206,6 @@ void InitLKScreen() {
 		break;
   }
 
-  // Used by MapWndProc touch key ckecks to know if a key is on the bottombar
-  // We can use Y_BottomBar here
-  BottomBarY=ScreenSizeY-BottomSize-NIBLSCALE(2);
-
   AircraftMenuSize=NIBLSCALE(28)+14;
   CompassMenuSize=AircraftMenuSize+NIBLSCALE(17);
 

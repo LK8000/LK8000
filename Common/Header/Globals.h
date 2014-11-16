@@ -426,8 +426,7 @@ GEXTERN double ScreenDScale;
 GEXTERN int ScreenScale;
 GEXTERN bool ScreenIntScale;
 GEXTERN double Screen0Ratio;
-// Used as a delimiter in MapWnd for clicks on screen.
-GEXTERN int BottomBarY;
+
 GEXTERN int AircraftMenuSize;
 GEXTERN int CompassMenuSize;
 

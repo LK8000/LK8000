@@ -17,6 +17,7 @@
 #include "mapprimitive.h"
 #include "Poco/ThreadTarget.h"
 #include "Poco/Thread.h"
+#include "Poco/Timespan.h"
 #include "Screen/LKBitmap.h"
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
@@ -755,6 +756,67 @@ private:
   static int SnailWidthScale; 
   static bool TargetMoved(double &longitude, double &latitude);
 
+protected:
+	static void OnSize(int cx, int cy);
+	static void OnCreate(HWND hWnd, int cx, int cy);
+	static void OnDestroy();
+    
+/////////////////////////////////////////////////////        
+// Mouse Event Handling /////////////////////////////
+	static void OnDragMove(const POINT& Pos);
+    
+	static void OnLButtonDown(const POINT& Pos);
+    static void OnLButtonUp(const POINT& Pos);
+    
+	static void OnLButtonDblClick(const POINT& Pos);
+    
+    // Values to be remembered
+    static bool pressed;
+    static double Xstart, Ystart;
+    static Poco::Timestamp tsDownTime; 
+    static Poco::Timestamp tsUpTime;
+    static Poco::Timespan DownUpInterval;
+    static double Xlat, Ylat;
+    static double distance;
+
+    // Touch Screen Events Area
+    static void UpdateActiveScreenZone(int cx, int cy);
+    
+    // this property is calculated in OnCreate(...) and OnSize(...) 
+    static short Y_BottomBar; // this is different from BottomBarY
+    static POINT P_Doubleclick_bottomright; // squared area for screen lock doubleclick, normally on right bottombar
+    static POINT P_MenuIcon_DrawBottom; // Menu icon area (topleft coord)
+    static POINT P_MenuIcon_noDrawBottom; // same, without bottombar drawn, forgot why it is different
+
+    static POINT P_UngestureLeft;
+    static POINT P_UngestureRight;
+
+    static short Y_Up, Y_Down; // Up and Down keys vertical limits, ex. for zoom in out on map
+    static short X_Left, X_Right; // Ungestured fast clicks on infopages (THE SAME AS IN: PROCESS_VIRTUALKEY)
+    
+/////////////////////////////////////////////////////    
+    
+/////////////////////////////////////////////////////    
+// Keyboard Event Handling //////////////////////////
+    static void OnKeyDown(unsigned KeyCode);
+
+	static void key_bottombar_previous();
+	static void key_bottombar_next();
+	static void key_overtarget_rotate();
+	static void key_topcenter();
+	static void key_topleft();
+	static void key_topright();
+	static void key_enter();
+	static void key_gesture_down();
+	static void key_gesture_up();
+	static void key_previous_page();
+	static void key_next_page();
+	static void key_down();
+	static void key_up();
+	static void key_previous_mode();
+	static void key_next_mode();
+/////////////////////////////////////////////////////
+    
  private:
   static NMEA_INFO DrawInfo;
   static DERIVED_INFO DerivedDrawInfo;
