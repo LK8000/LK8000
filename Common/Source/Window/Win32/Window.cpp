@@ -110,12 +110,12 @@ LRESULT CALLBACK Window::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-bool Window::Create(DWORD dwStyles, const RECT& rect)
+bool Window::Create(const RECT& rect)
 { 
 	// Create the window
 	
 	// send the this pointer as the window creation parameter
-	_hWnd = CreateWindow(_szClassName.c_str(), _szWindowTitle.c_str(), dwStyles, rect.left, rect.top, 
+	_hWnd = CreateWindow(_szClassName.c_str(), _szWindowText.c_str(), _dwStyles, rect.left, rect.top, 
 		rect.right - rect.left, rect.bottom - rect.top, NULL, NULL, _hInstance, 
 		(void *)this);
 
@@ -143,6 +143,17 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
             if(hWnd) {
                 LKPaintSurface Surface(hWnd);
                 if(OnPaint(Surface, Surface.GetRect())) return 0;
+            }
+            break;
+        case WM_SYSKEYDOWN:
+            /* 
+             * http://msdn.microsoft.com/en-us/library/windows/desktop/ms646286(v=vs.85).aspx
+             * Bit 29 of lParam : 
+             * The context code. The value is 1 if the ALT key is down while the key is pressed; it is 0 if the 
+             * WM_SYSKEYDOWN message is posted to the active window because no window has the keyboard focus.
+             */
+            if(!((lParam>>29)&0x01)) {
+                if(OnKeyDown(wParam)) return 0;
             }
             break;
         case WM_KEYDOWN:

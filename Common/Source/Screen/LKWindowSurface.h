@@ -21,7 +21,8 @@ public:
     virtual ~LKWindowSurface();
 
     virtual void Release();
-    
+
+    explicit LKWindowSurface(Window& Wnd);
     void Create(Window& Wnd);
 
 #ifdef WIN32

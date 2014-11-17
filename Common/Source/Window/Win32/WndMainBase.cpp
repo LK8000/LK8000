@@ -14,7 +14,7 @@
 
 extern HINSTANCE _hInstance; // Set by WinMain
 
-WndMainBase::WndMainBase() : Window(NULL), iTimerID()  {
+WndMainBase::WndMainBase() : Window(NULL), iTimerID(), _hWndFocus()  {
 
 #ifdef HAVE_ACTIVATE_INFO
     if(GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMActivate"))) {
@@ -39,11 +39,6 @@ bool WndMainBase::Create(const RECT& rect) {
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
     wc.lpfnWndProc = Window::stWinMsgHandler;
     wc.cbClsExtra = 0;
-#if (WINDOWSPC>0)
-    wc.cbWndExtra = 0;
-#else
-    wc.cbWndExtra = dc.cbWndExtra;
-#endif
     wc.hInstance = _hInstance;
     wc.hIcon = LoadIcon(_hInstance, MAKEINTRESOURCE(IDI_LK8000SWIFT));
     wc.hCursor = 0;
@@ -51,14 +46,27 @@ bool WndMainBase::Create(const RECT& rect) {
     wc.lpszMenuName = 0;
     wc.lpszClassName = _T("LK8000_Main");
 
+/* 
+ * http://msdn.microsoft.com/fr-fr/library/windows/apps/xaml/ms908209.aspx
+ * 
+ * Applications create custom dialog box classes by filling a WNDCLASS structure with appropriate information and 
+ * registering the class with the RegisterClass function. Some applications fill the structure by using the GetClassInfo
+ * function, specifying the name of the predefined dialog box. In such cases, the applications modify at least the
+ * lpszClassName member before registering. In all cases, the cbWndExtra member of WNDCLASS for a custom 
+ * dialog box class must be set to at least DLGWINDOWEXTRA.
+ */    
+    wc.cbWndExtra = DLGWINDOWEXTRA;
+    
+    
     // Register the window class.
     _szClassName = wc.lpszClassName;
 
     RegisterClass(&wc);
 
-    _szWindowTitle = _T("LK8000");
+    _szWindowText = _T("LK8000");
+    _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
 
-    return Window::Create(WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS, rect);
+    return Window::Create(rect);
 }
 
 bool WndMainBase::OnCreate(int x, int y, int cx, int cy) {

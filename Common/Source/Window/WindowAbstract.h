@@ -33,6 +33,8 @@ public:
 
     virtual void SetFont(const LKFont& Font) = 0;
     virtual void Redraw(const RECT& Rect) = 0;
+    
+    virtual void SetText(const TCHAR* lpszText) = 0;
 
 protected:
     // Event Handling virtual function ( return true for ignore default process ) :

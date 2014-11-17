@@ -14,6 +14,7 @@
 
 #include <windows.h>
 #include <tchar.h>
+#include <assert.h>
 #include "utils/stl_utils.h"
 #include "utils/tstring.h"
 #include "Screen/LKFont.h"
@@ -33,11 +34,17 @@ public:
 
     // just so you can change the window caption...
 
-    void SetWindowTitle(LPCTSTR lpszTitle) {
-        _szWindowTitle = lpszTitle;
-    };
+    virtual void SetText(const TCHAR* lpszText) {
+        assert(lpszText);
+        _szWindowText = lpszText;
+        if(_hWnd) {
+            // already exist
+            ::SetWindowText(_hWnd, _szWindowText.c_str());
+        }
+        // else, Text is set by CreateWindow().
+    }
 
-    virtual bool Create(DWORD dwStyles, const RECT& rect);
+    virtual bool Create(const RECT& rect);
 
     HWND Handle() {
         return _hWnd;
@@ -86,8 +93,9 @@ public:
 
 protected:
     HWND _hWnd;
+    DWORD _dwStyles;
     std::tstring _szClassName;
-    std::tstring _szWindowTitle;
+    std::tstring _szWindowText;
 
     //contructor
     Window(CONST WNDCLASS* wcx = NULL) : _hWnd() {

@@ -1870,8 +1870,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 	#if DEBUG_FOCUS
 	StartupStore(_T("............ WNDCONTROL HAS FOCUS\n"));
 	#endif
-	extern HWND hWndWithFocus;
-	hWndWithFocus=hwnd;
       SetFocused(true, (HWND) wParam);
     return(0);
 
@@ -2801,8 +2799,6 @@ int WndProperty::WndProcEditControl(HWND hwnd, UINT uMsg,
 		#if DEBUG_FOCUS
 		StartupStore(_T("............ WNDPROCEDIT HAS FOCUS\n"));
 		#endif
-		extern HWND hWndWithFocus;
-		hWndWithFocus=hwnd;
 	}
       }
     break;

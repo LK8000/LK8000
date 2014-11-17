@@ -51,8 +51,6 @@ extern void SIMProcessTimer (void);
 extern void ProcessTimer    (void);
 
 
-HWND hWndWithFocus=NULL;
-
 LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     long wdata;
 
@@ -121,8 +119,13 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
             break;
 
         case WM_ACTIVATE:
-
-            if (LOWORD(wParam) != WA_INACTIVE) {
+            if(LOWORD(wParam) == WA_INACTIVE) {
+                HWND hWndFocus = ::GetFocus();
+                if(hWndFocus && ::IsChild(_hWnd, hWndFocus)) {
+                   //  Save Focus if Main Window Loses activation. 
+                    _hWndFocus = hWndFocus;
+                }
+            } else {
                 SetWindowPos(_hWnd, HWND_TOP,
                         0, 0, 0, 0,
                         SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
@@ -157,39 +160,14 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
 #endif
             return 0;
 
-#if DEBUG_FOCUS
-        case WM_KILLFOCUS:
-            // This is happening when focus is given to another window, either internally inside LK
-            // or externally, for example to explorer..
-            // SO: if we select MapWindow, we get here a KILLFOCUS from it.
-            // When we select another process/program, or click on the desktop, the old window having focus is
-            // receiving KILLFOCUS. So in case MapWindow was working, the signal will be sent over there, not here.
-            // 
-            StartupStore(_T("............ WNDPROC LOST FOCUS (KILLFOCUS)\n"));
-            break;
-#endif
-
         case WM_SETFOCUS:
-            // When explorer/desktop is giving focus to LK, this is where we get the signal.
-            // But we must return focus to previous windows otherwise keys will not be working.
-            // Mouse is another story, because mouse click is pertinent to a screen area which is mapped.
-            // A mouse click will be sent to the window in the background, whose handler will receive the event.
-            //
-            // Each event handler receiving focus has to save it in hWndWithFocus, in LK.
-            // Each event handler must thus handle SETFOCUS!
-            //
-#if DEBUG_FOCUS
-            StartupStore(_T("............ WNDPROC HAS FOCUS  (SETFOCUS)\n"));
-            if (hWndWithFocus == NULL)
-                StartupStore(_T(".....(no Wnd to give focus to)\n"));
-            else
-                StartupStore(_T(".....(passing focus to other window)\n"));
-#endif
-            if (hWndWithFocus != NULL) {
-                ::SetFocus(hWndWithFocus);
-            }
-            return 0; // we have processes this message;
-
+        	if(::IsWindow(_hWndFocus) && IsChild(_hWnd, _hWndFocus)) {
+        		// Set the Focus to the last know focus window
+        		::SetFocus(_hWndFocus);
+        		return 0; 
+        	}
+        	_hWndFocus = NULL;
+        	break; // process default.
         case WM_KEYUP:
             return 0; // we have processes this message;
 

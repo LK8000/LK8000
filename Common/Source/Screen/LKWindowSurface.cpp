@@ -41,6 +41,10 @@ LKWindowSurface::~LKWindowSurface() {
     Release();
 }
 
+LKWindowSurface::LKWindowSurface(Window& Wnd){
+    Create(Wnd);
+}
+
 void LKWindowSurface::Create(Window& Wnd){
 #ifdef WIN32
     HWND hWnd = Wnd.Handle();

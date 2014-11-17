@@ -35,6 +35,7 @@ protected:
 
 private:
     int iTimerID;
+    HWND _hWndFocus;
 
 #ifdef HAVE_ACTIVATE_INFO
     SHACTIVATEINFO s_sai;
