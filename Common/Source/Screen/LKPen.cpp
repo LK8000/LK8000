@@ -29,8 +29,9 @@ const LKPen LK_WHITE_PEN((HPEN)GetStockObject(WHITE_PEN));
 LKPen::LKPen() : _Pen(), _Destroy() {
 }
 
-LKPen::LKPen(LKPen&& Pen) : _Pen(), _Destroy() {
-    *this = Pen;
+LKPen::LKPen(LKPen&& Pen) : _Pen(Pen._Pen), _Destroy(Pen._Destroy) {
+    Pen._Pen = nullptr;
+    Pen._Destroy = false;
 }
 
 LKPen::LKPen(const LKPen& Pen) : _Pen(), _Destroy() {
