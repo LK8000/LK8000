@@ -35,8 +35,9 @@ LKBrush::LKBrush(const LKBrush& Brush) : _Brush(), _Destroy() {
     *this = Brush;
 }
 
-LKBrush::LKBrush(LKBrush&& Brush) : _Brush(), _Destroy() {
-    *this = Brush;
+LKBrush::LKBrush(LKBrush&& Brush) : _Brush(Brush._Brush), _Destroy(Brush._Destroy) {
+    Brush._Brush = nullptr;
+    Brush._Destroy = false;
 }
 
 LKBrush::LKBrush(const LKColor& Color) : _Brush(), _Destroy() {
