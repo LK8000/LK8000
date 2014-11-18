@@ -204,6 +204,7 @@ GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 
 ifeq ($(CONFIG_LINUX),y)
 CE_DEFS		:=-D__linux__
+CE_DEFS += -DUSE_MEMORY_CANVAS
 else
 ifeq ($(CONFIG_PC),y)
 CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
@@ -214,6 +215,7 @@ CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
 # UNIX like ressource work on all plarform, so no need.
 #WIN32_RESSOURCE := y 
 endif
+CE_DEFS += -DUSE_GDI
 endif
 
 ifeq ($(WIN32_RESSOURCE), y)
@@ -395,6 +397,7 @@ WINDOW := \
 	$(SRC_WINDOW)/Win32/WndProc.cpp\
 
 SCREEN := \
+	$(SRC_SCREEN)/Color.cpp \
 	$(SRC_SCREEN)/LKColor.cpp \
 	$(SRC_SCREEN)/LKPen.cpp \
 	$(SRC_SCREEN)/LKBitmap.cpp \
