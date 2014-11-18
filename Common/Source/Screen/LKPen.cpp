@@ -21,9 +21,9 @@
 
 #ifdef WIN32
 
-const LKPen LK_NULL_PEN((HPEN)GetStockObject(NULL_PEN));
-const LKPen LK_BLACK_PEN((HPEN)GetStockObject(BLACK_PEN));
-const LKPen LK_WHITE_PEN((HPEN)GetStockObject(WHITE_PEN));
+const LKPen LK_NULL_PEN = LKPen::MakeStock(NULL_PEN);
+const LKPen LK_BLACK_PEN = LKPen::MakeStock(BLACK_PEN);
+const LKPen LK_WHITE_PEN = LKPen::MakeStock(WHITE_PEN);
 
 
 LKPen::LKPen() : _Pen(), _Destroy() {
