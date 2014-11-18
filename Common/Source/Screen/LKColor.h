@@ -12,9 +12,9 @@
 #ifndef LKCOLOR_H
 #define	LKCOLOR_H
 
-#include <stdint.h>
+#include "Color.hpp"
 
-class LKColor {
+class LKColor : public Color {
 public:
     LKColor() = default;
 
@@ -22,33 +22,12 @@ public:
     LKColor ChangeBrightness(double fBrightFact) const;
     LKColor MixColors(const LKColor& Color2, double fFact1) const;
 
-#ifdef WIN32
-    constexpr LKColor(uint8_t r, uint8_t g, uint8_t b) : _Color(RGB(r,g,b)) {}
-    constexpr explicit LKColor(COLORREF Color) : _Color(Color) {}
+    constexpr LKColor(uint8_t r, uint8_t g, uint8_t b) : Color(r,g,b) {}
+    constexpr LKColor(Color _color) : Color(_color) {}
 
-    constexpr operator COLORREF() const { return _Color; }
-
-    constexpr uint8_t Red() const { return GetRValue(_Color); }
-    constexpr uint8_t Green() const { return GetGValue(_Color); }
-    constexpr uint8_t Blue() const { return GetBValue(_Color) ; }
-protected:
-    COLORREF _Color;
-#elif __linux__
-    constexpr LKColor(uint8_t r, uint8_t g, uint8_t b) : _Red(r), _Green(g), _Blue(b) {};
-    
-    constexpr uint8_t Red() const { return _Red; }
-    constexpr uint8_t Green() const { return _Green; };
-    constexpr uint8_t Blue() const { return _Blue; };
-    
-    constexpr bool operator==(const LKColor& Color) { return (Red() == Color.Red() && Green()==Color.Green() && Blue()==Color.Blue()); }
-    
-protected:
-    uint8_t _Red;
-    uint8_t _Green;
-    uint8_t _Blue;
-    
+#ifdef USE_GDI
+    constexpr explicit LKColor(COLORREF _color) : Color(_color) {}
 #endif
-
 };
 
 
