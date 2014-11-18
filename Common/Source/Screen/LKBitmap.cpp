@@ -29,8 +29,9 @@ LKBitmap::LKBitmap(const LKBitmap& Bitmap) : _Bitmap(), _Destroy() {
     *this = Bitmap;
 }
 
-LKBitmap::LKBitmap(LKBitmap&& Bitmap) : _Bitmap(), _Destroy() {
-    *this = Bitmap;
+LKBitmap::LKBitmap(LKBitmap&& Bitmap) : _Bitmap(Bitmap._Bitmap), _Destroy(Bitmap._Destroy) {
+    Bitmap._Bitmap = nullptr;
+    Bitmap._Destroy = false;
 }
 #endif
 
