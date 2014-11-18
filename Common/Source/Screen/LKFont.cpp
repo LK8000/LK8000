@@ -26,8 +26,10 @@
 LKFont::LKFont() : _Font(), _Destroy() {
     
 }
-LKFont::LKFont(LKFont&& Font) : _Font(), _Destroy() {
-    *this = Font;     
+
+LKFont::LKFont(LKFont&& Font) : _Font(Font._Font), _Destroy(Font._Destroy) {
+    Font._Font = nullptr;
+    Font._Destroy = false;
 }
 
 LKFont::LKFont(const LKFont& Font) : _Font(), _Destroy() {
