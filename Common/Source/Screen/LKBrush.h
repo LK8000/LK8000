@@ -40,6 +40,10 @@ public:
 public:
     explicit LKBrush(HBRUSH Brush) : _Brush(Brush), _Destroy(false) {}
 
+    static LKBrush MakeStock(int fnObject) {
+      return LKBrush((HBRUSH)GetStockObject(fnObject));
+    }
+
     operator HBRUSH() const { return _Brush; }
 
 protected:

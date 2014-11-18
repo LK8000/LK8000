@@ -17,18 +17,21 @@
 #include "LKPen.h"
 #include "LKColor.h"
 
+#include <utility>
+
 #ifdef WIN32
 
-const LKPen LK_NULL_PEN((HPEN)GetStockObject(NULL_PEN));
-const LKPen LK_BLACK_PEN((HPEN)GetStockObject(BLACK_PEN));
-const LKPen LK_WHITE_PEN((HPEN)GetStockObject(WHITE_PEN));
+const LKPen LK_NULL_PEN = LKPen::MakeStock(NULL_PEN);
+const LKPen LK_BLACK_PEN = LKPen::MakeStock(BLACK_PEN);
+const LKPen LK_WHITE_PEN = LKPen::MakeStock(WHITE_PEN);
 
 
 LKPen::LKPen() : _Pen(), _Destroy() {
 }
 
-LKPen::LKPen(LKPen&& Pen) : _Pen(), _Destroy() {
-    *this = Pen;
+LKPen::LKPen(LKPen&& Pen) : _Pen(Pen._Pen), _Destroy(Pen._Destroy) {
+    Pen._Pen = nullptr;
+    Pen._Destroy = false;
 }
 
 LKPen::LKPen(const LKPen& Pen) : _Pen(), _Destroy() {
@@ -59,14 +62,9 @@ LKPen::~LKPen() {
 }
 
 LKPen& LKPen::operator= (LKPen&& Pen) {
-    Release();
-
 #ifdef WIN32
-    _Pen = Pen._Pen;
-    _Destroy = Pen._Destroy;
-
-    Pen._Pen = NULL;
-    Pen._Destroy = false;
+    std::swap(_Pen, Pen._Pen);
+    std::swap(_Destroy, Pen._Destroy);
 #endif
     return (*this);
 }

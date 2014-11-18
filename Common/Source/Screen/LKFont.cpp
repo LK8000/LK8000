@@ -16,6 +16,8 @@
 #endif
 #include "LKFont.h"
 
+#include <utility>
+
 #ifndef WIN32
 #warning "TODO: need to implement"
 #endif
@@ -24,8 +26,10 @@
 LKFont::LKFont() : _Font(), _Destroy() {
     
 }
-LKFont::LKFont(LKFont&& Font) : _Font(), _Destroy() {
-    *this = Font;     
+
+LKFont::LKFont(LKFont&& Font) : _Font(Font._Font), _Destroy(Font._Destroy) {
+    Font._Font = nullptr;
+    Font._Destroy = false;
 }
 
 LKFont::LKFont(const LKFont& Font) : _Font(), _Destroy() {
@@ -38,13 +42,9 @@ LKFont::~LKFont() {
 }
 
 LKFont& LKFont::operator=(LKFont&& Font) {
-    Release();
 #ifdef WIN32
-    _Font = Font._Font;
-    _Destroy = Font._Destroy;
-    
-    Font._Font = NULL;
-    Font._Destroy = false;
+    std::swap(_Font, Font._Font);
+    std::swap(_Destroy, Font._Destroy);
 #endif
     return *this;
 }

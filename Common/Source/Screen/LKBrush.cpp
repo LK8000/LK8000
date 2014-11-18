@@ -16,15 +16,17 @@
 #include "LKBrush.h"
 #include "LKBitmap.h"
 
+#include <utility>
+
 #ifndef WIN32
 #warning "TODO: need to implement"
 #endif
 
 #ifdef WIN32
 
-const LKBrush  LK_WHITE_BRUSH((HBRUSH)GetStockObject(WHITE_BRUSH));
-const LKBrush  LK_BLACK_BRUSH((HBRUSH)GetStockObject(BLACK_BRUSH));
-const LKBrush  LK_HOLLOW_BRUSH((HBRUSH)GetStockObject(HOLLOW_BRUSH));
+const LKBrush LK_WHITE_BRUSH = LKBrush::MakeStock(WHITE_BRUSH);
+const LKBrush  LK_BLACK_BRUSH = LKBrush::MakeStock(BLACK_BRUSH);
+const LKBrush  LK_HOLLOW_BRUSH = LKBrush::MakeStock(HOLLOW_BRUSH);
 
 LKBrush::LKBrush() : _Brush(), _Destroy() {
 }
@@ -33,8 +35,9 @@ LKBrush::LKBrush(const LKBrush& Brush) : _Brush(), _Destroy() {
     *this = Brush;
 }
 
-LKBrush::LKBrush(LKBrush&& Brush) : _Brush(), _Destroy() {
-    *this = Brush;
+LKBrush::LKBrush(LKBrush&& Brush) : _Brush(Brush._Brush), _Destroy(Brush._Destroy) {
+    Brush._Brush = nullptr;
+    Brush._Destroy = false;
 }
 
 LKBrush::LKBrush(const LKColor& Color) : _Brush(), _Destroy() {
@@ -62,14 +65,9 @@ LKBrush& LKBrush::operator=(const LKBrush& Brush) {
 }
 
 LKBrush& LKBrush::operator= (LKBrush&& Brush) {
-    Release();
-    
 #ifdef WIN32
-    _Brush = Brush._Brush;
-    _Destroy = Brush._Destroy;
-
-    Brush._Brush = NULL;
-    Brush._Destroy = false;
+    std::swap(_Brush, Brush._Brush);
+    std::swap(_Destroy, Brush._Destroy);
 #endif    
     return *this;
 }

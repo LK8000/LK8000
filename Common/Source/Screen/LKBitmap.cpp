@@ -29,8 +29,9 @@ LKBitmap::LKBitmap(const LKBitmap& Bitmap) : _Bitmap(), _Destroy() {
     *this = Bitmap;
 }
 
-LKBitmap::LKBitmap(LKBitmap&& Bitmap) : _Bitmap(), _Destroy() {
-    *this = Bitmap;
+LKBitmap::LKBitmap(LKBitmap&& Bitmap) : _Bitmap(Bitmap._Bitmap), _Destroy(Bitmap._Destroy) {
+    Bitmap._Bitmap = nullptr;
+    Bitmap._Destroy = false;
 }
 #endif
 
@@ -47,13 +48,10 @@ LKBitmap& LKBitmap::operator=(const LKBitmap& Bitmap) {
     return * this;
 }
 
-LKBitmap& LKBitmap::operator=(LKBitmap&& Bitmap) {
-    Release();
+LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
 #ifdef WIN32
-    _Bitmap = Bitmap._Bitmap;
-    Bitmap._Bitmap = NULL;
-    _Destroy = Bitmap._Destroy; // tranfert ownership
-    Bitmap._Destroy = false;
+    std::swap(_Bitmap, Bitmap._Bitmap);
+    std::swap(_Destroy, Bitmap._Destroy);
 #endif
     
     return * this;

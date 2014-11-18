@@ -40,6 +40,10 @@ public:
 public:
 	explicit LKPen(HPEN Pen) : _Pen(Pen), _Destroy(false) {}
 
+    static LKPen MakeStock(int fnObject) {
+      return LKPen((HPEN)GetStockObject(fnObject));
+    }
+
 	operator HPEN() const { return _Pen; }
 	operator bool() const { return (_Pen != NULL); }
     
