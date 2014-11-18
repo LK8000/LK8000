@@ -16,6 +16,8 @@
 #include "LKBrush.h"
 #include "LKBitmap.h"
 
+#include <utility>
+
 #ifndef WIN32
 #warning "TODO: need to implement"
 #endif
@@ -62,14 +64,9 @@ LKBrush& LKBrush::operator=(const LKBrush& Brush) {
 }
 
 LKBrush& LKBrush::operator= (LKBrush&& Brush) {
-    Release();
-    
 #ifdef WIN32
-    _Brush = Brush._Brush;
-    _Destroy = Brush._Destroy;
-
-    Brush._Brush = NULL;
-    Brush._Destroy = false;
+    std::swap(_Brush, Brush._Brush);
+    std::swap(_Destroy, Brush._Destroy);
 #endif    
     return *this;
 }
