@@ -556,7 +556,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 
   const auto hpOld = Surface.SelectObject(hPen);
 
-  LKBrush hbOld;
+  LKSurface::OldBrush hbOld;
   if (hbBrush) {
     hbOld = Surface.SelectObject(hbBrush);
   }

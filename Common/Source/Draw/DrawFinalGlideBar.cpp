@@ -27,8 +27,8 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc)
   POINT GlideBar[6] = { {0,0},{9,-9},{18,0},{18,0},{9,0},{0,0} };
   POINT GlideBar0[6] = { {0,0},{9,-9},{18,0},{18,0},{9,0},{0,0} };
   
-  LKPen hpOld;
-  LKBrush hbOld;
+  LKSurface::OldPen hpOld;
+  LKSurface::OldBrush hbOld;
   
   TCHAR Value[10];
   

@@ -109,7 +109,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
 
   SIZE tsize;
   RECT brect;
-  LKFont oldFont;
+  LKSurface::OldFont oldFont;
   bool drawn=false;
 
   if ((x<clipRect->left-WPCIRCLESIZE) || 
@@ -183,7 +183,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
 
   
     if (!noOverlap || notoverlapping) {
-      LKPen oldPen;
+      LKSurface::OldPen oldPen;
       if (Mode->Border) {
         oldPen = Surface.SelectObject(LKPen_Black_N1);
       } else {

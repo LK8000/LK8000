@@ -19,9 +19,9 @@
 
 void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc )
 {
-  LKFont oldfont;
-  LKBrush	oldbrush;
-  LKPen		oldpen;
+  LKSurface::OldFont oldfont;
+  LKSurface::OldBrush oldbrush;
+  LKSurface::OldPen oldpen;
 
   SIZE TextSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
@@ -1006,7 +1006,7 @@ drawOverlay:
 	if (DerivedDrawInfo.AutoMacCready == true) {
 	  Surface.SelectObject(LK8TitleFont);
 
-	LKBrush ob;
+	LKSurface::OldBrush ob;
 	if (LKTextBlack) {
 		ob=Surface.SelectObject(LKBrush_White);
 	}

@@ -111,30 +111,27 @@ int LKSurface::SetBkMode(int mode) {
 #endif
 }
 
-LKFont LKSurface::SelectObject(const LKFont& Font) {
+LKSurface::OldFont LKSurface::SelectObject(const LKFont& Font) {
 #ifdef WIN32
-    LKFont OldFont((HFONT)::SelectObject(*this, (HFONT) Font));
-    return OldFont;
+    return (HFONT)::SelectObject(*this, (HFONT) Font);
 #else
-    return LKFont();
+    return OldFont();
 #endif
 }
 
-LKBrush LKSurface::SelectObject(const LKBrush& Brush) {
+LKSurface::OldBrush LKSurface::SelectObject(const LKBrush& Brush) {
 #ifdef WIN32
-    LKBrush OldBrush((HBRUSH)::SelectObject(*this, (HBRUSH) Brush));
-    return OldBrush;
+    return (HBRUSH)::SelectObject(*this, (HBRUSH) Brush);
 #else
-    return LKBrush();
+    return OldBrush();
 #endif
 }
 
-LKPen LKSurface::SelectObject(const LKPen& Pen) {
+LKSurface::OldPen LKSurface::SelectObject(const LKPen& Pen) {
 #ifdef WIN32
-    LKPen OldPen((HPEN)::SelectObject(*this, (HPEN) Pen));
-    return OldPen;
+    return (HPEN)::SelectObject(*this, (HPEN) Pen);
 #else
-    return LKPen();
+    return OldPen();
 #endif
 }
 

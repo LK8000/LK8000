@@ -350,7 +350,7 @@ if(fDistMin < FAI28_45Threshold)
    ********************************************************************/
   LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), RGB_GREEN);
   const auto hpOldPen = Surface.SelectObject(hpSectorPen);
-  LKBrush hpOldBrush;
+  LKSurface::OldBrush hpOldBrush;
   LKBrush hpSectorFill;
   if (fillcolor != 0)
   {
