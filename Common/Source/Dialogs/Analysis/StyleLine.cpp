@@ -22,7 +22,7 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
   line[0] = l1;
   line[1] = l2;
   LKPen mpen;
-  LKPen oldpen;
+  LKSurface::OldPen oldpen;
   LKColor COL;
   switch (Style) {
   case STYLE_BLUETHIN:

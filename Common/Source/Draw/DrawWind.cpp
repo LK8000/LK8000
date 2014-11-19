@@ -21,14 +21,14 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   
   if (tsize.cx == 0){
 
-    LKFont oldFont = Surface.SelectObject(MapWindowBoldFont);
+    const auto oldFont = Surface.SelectObject(MapWindowBoldFont);
     Surface.GetTextSize(TEXT("99"), 2, &tsize);
     Surface.SelectObject(oldFont);
     tsize.cx = tsize.cx/2;
   }
 
-  LKPen hpOld = Surface.SelectObject(LKPen_Black_N2);
-  LKBrush hbOld = Surface.SelectObject(LKBrush_Grey);
+  const auto hpOld = Surface.SelectObject(LKPen_Black_N2);
+  const auto hbOld = Surface.SelectObject(LKBrush_Grey);
   
   int wmag = iround(4.0*DerivedDrawInfo.WindSpeed);
   

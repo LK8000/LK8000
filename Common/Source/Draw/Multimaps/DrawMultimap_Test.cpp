@@ -84,8 +84,8 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
 
   DrawWaypointsNew(Surface,rct);
 
-  LKPen oldpen = Surface.SelectObject(LKPen_White_N1);
-  LKBrush oldbrush=Surface.SelectObject(LKBrush_LightGrey);
+  const auto oldpen = Surface.SelectObject(LKPen_White_N1);
+  const auto oldbrush = Surface.SelectObject(LKBrush_LightGrey);
 
   LKWriteBoxedText(Surface, rct, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
 

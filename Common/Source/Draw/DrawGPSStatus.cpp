@@ -15,7 +15,7 @@
 void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
 {
 
-  LKFont oldfont;
+  LKSurface::OldFont oldfont = LKSurface::OldFont();
   if ((MapSpaceMode==MSM_WELCOME)||(mode.AnyPan()) ) return; // 100210
 
   if (!LKLanguageReady) return;

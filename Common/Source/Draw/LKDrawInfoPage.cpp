@@ -25,7 +25,6 @@ void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y
 
 void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit )
 {
-  LKFont oldfont;
   //SIZE TextSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
   TCHAR BufferTitle[LKSIZEBUFFERTITLE];
@@ -42,7 +41,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
   if (forceinit) DoInit[MDI_DRAWINFOPAGE]=true;
 
-	oldfont = Surface.SelectObject(LKINFOFONT); // save font
+	const auto oldfont = Surface.SelectObject(LKINFOFONT); // save font
 
   if (DoInit[MDI_DRAWINFOPAGE]) {
 	DoInit[MDI_DRAWINFOPAGE]=false;

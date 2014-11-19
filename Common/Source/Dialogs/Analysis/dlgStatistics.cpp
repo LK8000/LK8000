@@ -84,7 +84,7 @@ static void SetCalcCaption(const TCHAR* caption) {
 static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
 
   const RECT& rcgfx = Sender->GetBoundRect();
-  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
+  const auto hfOld = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
     if(INVERTCOLORS)
     {

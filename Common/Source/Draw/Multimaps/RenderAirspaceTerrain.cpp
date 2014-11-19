@@ -47,8 +47,8 @@ int i,j;
      RenderSky(Surface, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
    else
    {
-	LKPen OldPen = Surface.SelectObject(LKPen_Black_N1);
-	LKBrush OldBrush =  Surface.SelectObject(MapWindow::hInvBackgroundBrush[BgMapColor]);
+	const auto OldPen = Surface.SelectObject(LKPen_Black_N1);
+	const auto OldBrush =  Surface.SelectObject(MapWindow::hInvBackgroundBrush[BgMapColor]);
 	Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
 	Surface.SelectObject(OldBrush);
 	Surface.SelectObject(OldPen);
@@ -161,7 +161,7 @@ int i,j;
   /**********************************************************************************
    * draw airspaces
    **********************************************************************************/
-  LKPen oldpen = Surface.SelectObject(LK_NULL_PEN);
+  const auto oldpen = Surface.SelectObject(LK_NULL_PEN);
   _TCHAR text [80];
   LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
   for (int m=0 ; m < Sideview_iNoHandeldSpaces; m++)
@@ -196,7 +196,7 @@ int i,j;
 	  fFrameColFact *= 1.2;
 	LKColor Color = FrameColor.ChangeBrightness(fFrameColFact);
 	LKPen mpen2(PEN_SOLID,FRAMEWIDTH,Color);
-	LKPen oldpen2 = Surface.SelectObject(mpen2);
+	const auto oldpen2 = Surface.SelectObject(mpen2);
 
 	if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
 	  Surface.Rectangle(rcd.left+1,rcd.top,rcd.right,rcd.bottom);
@@ -298,7 +298,7 @@ int i,j;
 		fFrameColFact *= 1.2;
 	  LKColor lColor = FrameColor.ChangeBrightness(fFrameColFact);
 	  LKPen mpen2(PEN_SOLID,FRAMEWIDTH,lColor);
-	  LKPen oldpen2 = Surface.SelectObject(mpen2);
+	  const auto oldpen2 = Surface.SelectObject(mpen2);
 
 	  if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
 	    Surface.Rectangle(rcd.left+1,rcd.top,rcd.right,rcd.bottom);
@@ -322,8 +322,8 @@ int i,j;
   *********************************************************************/
   LKPen hpHorizonGround(PEN_SOLID, IBLSCALE(1)+1, LKColor(126,62,50));
   LKBrush hbHorizonGround(GROUND_COLOUR);
-  LKPen oldPen = Surface.SelectObject(hpHorizonGround);
-  LKBrush oldBrush = Surface.SelectObject(hbHorizonGround);
+  const auto oldPen = Surface.SelectObject(hpHorizonGround);
+  const auto oldBrush = Surface.SelectObject(hbHorizonGround);
 
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
 	apTerrainPolygon[j].x = iround(j*dx1)+x0;

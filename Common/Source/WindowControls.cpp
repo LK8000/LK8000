@@ -1555,7 +1555,7 @@ void WindowControl::PaintBorder(LKSurface& Surface) {
     
   if (mBorderKind != 0){
 
-    LKPen oldPen = Surface.SelectObject(mhPenBorder);
+    const auto oldPen = Surface.SelectObject(mhPenBorder);
 
     if (mBorderKind & BORDERTOP){
       Surface.DrawLine(0,0, mWidth, 0);
@@ -1577,7 +1577,7 @@ void WindowControl::PaintBorder(LKSurface& Surface) {
 void WindowControl::PaintSelector(LKSurface& Surface){
 
   if (!mDontPaintSelector && mCanFocus && mHasFocus){
-    LKPen oldPen = Surface.SelectObject(hPenDefaultSelector);
+    const auto oldPen = Surface.SelectObject(hPenDefaultSelector);
 
     Surface.DrawLine(
 	      mWidth-SELECTORWIDTH-1, 0,
@@ -2196,9 +2196,9 @@ void WndForm::Paint(LKSurface& Surface){
         Surface.SetBkColor(mColorTitle);
         Surface.SetBkMode(TRANSPARENT);
         
-        const LKPen oldPen = Surface.SelectObject(GetBorderPen());
-        const LKBrush oldBrush = Surface.SelectObject(GetBackBrush());
-        const LKFont oldFont = Surface.SelectObject(mhTitleFont);
+        const auto oldPen = Surface.SelectObject(GetBorderPen());
+        const auto oldBrush = Surface.SelectObject(GetBackBrush());
+        const auto oldFont = Surface.SelectObject(mhTitleFont);
         
         Surface.GetTextSize(mCaption, _tcslen(mCaption), &tsize);
 
@@ -2521,7 +2521,7 @@ void WndButton::Paint(LKSurface& Surface){
     Surface.SetBkColor(GetBackColor());
     Surface.SetBkMode(TRANSPARENT);
 
-    LKFont oldFont = Surface.SelectObject(GetFont());
+    const auto oldFont = Surface.SelectObject(GetFont());
 
     rc = GetBoundRect();
     InflateRect(&rc, -2, -2); // todo border width
@@ -3022,7 +3022,7 @@ void WndProperty::Paint(LKSurface& Surface){
     Surface.SetBkColor(GetBackColor());
 #endif /* WINE */
   Surface.SetBkMode(TRANSPARENT);
-  LKFont oldFont = Surface.SelectObject(GetFont());
+  const auto oldFont = Surface.SelectObject(GetFont());
 
   Surface.GetTextSize(mCaption, _tcslen(mCaption), &tsize);
   if (_tcslen(mCaption)==0) tsize.cy=0; //@ 101115 BUGFIX
@@ -3114,7 +3114,7 @@ void WndOwnerDrawFrame::Paint(LKSurface& Surface){
 
   WndFrame::Paint(Surface);
 
-  LKFont oldFont = Surface.SelectObject(GetFont());
+  const auto oldFont = Surface.SelectObject(GetFont());
 
   if (mOnPaintCallback != NULL)
     (mOnPaintCallback)(this, Surface);
@@ -3162,7 +3162,7 @@ void WndFrame::Paint(LKSurface& Surface){
     Surface.SetBkColor(GetBackColor());
     Surface.SetBkMode(TRANSPARENT);
 
-    LKFont oldFont = Surface.SelectObject(GetFont());
+    const auto oldFont = Surface.SelectObject(GetFont());
 
     RECT rc = GetBoundRect();
     InflateRect(&rc, -2, -2); // todo border width
@@ -3276,7 +3276,7 @@ void WndListFrame::Paint(LKSurface& Surface) {
         LKBitmapSurface TmpSurface;
         TmpSurface.Create(Surface, mClients[0]->GetWidth(), mClients[0]->GetHeight());
 
-        LKFont oldFont = TmpSurface.SelectObject(mClients[0]->GetFont());
+        const auto oldFont = TmpSurface.SelectObject(mClients[0]->GetFont());
 
         for (i = 0; i < mListInfo.ItemInViewCount; i++) {
             if (mOnListCallback != NULL) {
@@ -3353,7 +3353,7 @@ void WndListFrame::DrawScrollBar(LKSurface& Surface) {
   }
 
   hP = LKPen_Black_N1;
-  LKPen oldPen = Surface.SelectObject(hP);
+  const auto oldPen = Surface.SelectObject(hP);
 
   
   // draw rectangle around entire scrollbar area

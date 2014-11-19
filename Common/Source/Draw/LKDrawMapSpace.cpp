@@ -25,7 +25,6 @@ extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
 //
 void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc ) {
 
-  LKFont oldfont;
   LKBrush hB;
 
   TextInBoxMode_t TextDisplayMode = {0};
@@ -48,7 +47,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc ) {
 	  hB=LKBrush_Mlight;
 
   }
-  oldfont = Surface.SelectObject(LKINFOFONT); // save font
+  const auto oldfont = Surface.SelectObject(LKINFOFONT); // save font
 
   if (MapSpaceMode!=MSM_WELCOME) Surface.FillRect(&rc, hB);
 

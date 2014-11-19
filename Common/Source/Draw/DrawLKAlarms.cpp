@@ -70,11 +70,9 @@ void MapWindow::DrawLKAlarms(LKSurface& Surface, const RECT& rc) {
 			break;
 	}
 
-	LKFont oldfont;
-	if (ScreenLandscape)
-		oldfont=Surface.SelectObject(LK8TargetFont);
-	else
-		oldfont=Surface.SelectObject(LK8MediumFont);
+	const auto oldfont = Surface.SelectObject(ScreenLandscape
+                                                  ? LK8TargetFont
+                                                  : LK8MediumFont);
 
 	TextInBoxMode_t TextInBoxMode = {0};
 	TextInBoxMode.Color = RGB_WHITE;

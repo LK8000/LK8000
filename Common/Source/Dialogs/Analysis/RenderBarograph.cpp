@@ -49,8 +49,8 @@ void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)
 
   LKPen hpHorizonGround(PEN_SOLID, IBLSCALE(1), GROUND_COLOUR);
   LKBrush hbHorizonGround(GROUND_COLOUR);
-  LKPen oldPen = Surface.SelectObject(hpHorizonGround);
-  LKBrush oldBrush = Surface.SelectObject(hbHorizonGround);
+  const auto oldPen = Surface.SelectObject(hpHorizonGround);
+  const auto oldBrush = Surface.SelectObject(hbHorizonGround);
 
   DrawFilledLineGraph(Surface, rc, &flightstats.Altitude_Terrain, GROUND_COLOUR);
 

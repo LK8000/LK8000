@@ -40,7 +40,7 @@ void MapWindow::DrawMulticolorDashLine(LKSurface& Surface, const int width,
   //Create a dot pen
   LKPen hpDash1(PEN_DASH, 1, cr1);
   LKPen hpDash2(PEN_DASH, 1, cr2);
-  LKPen hpOld = Surface.SelectObject(hpDash1);
+  const auto hpOld = Surface.SelectObject(hpDash1);
 
   #ifdef GTL2
   pt[0] = ptStart;

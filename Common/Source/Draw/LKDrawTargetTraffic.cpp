@@ -312,8 +312,8 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 
 	LKPen hp(PEN_SOLID, NIBLSCALE(2), planecolor);
 	LKBrush hb(planecolor);
-	LKPen hpOld = Surface.SelectObject(hp);
-	LKBrush hbOld = Surface.SelectObject(hb);
+	const auto hpOld = Surface.SelectObject(hp);
+	const auto hbOld = Surface.SelectObject(hb);
 
 	// does the glider exceed screen space on the right?
 	if (tangle>1) {

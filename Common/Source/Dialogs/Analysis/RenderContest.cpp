@@ -52,7 +52,7 @@ else
     ScaleXFromValue(rc, lon1);
   }
 
-  LKFont hfOldU = Surface.SelectObject(LK8PanelUnitFont);
+  const auto hfOldU = Surface.SelectObject(LK8PanelUnitFont);
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;
 
@@ -218,7 +218,7 @@ ResetScale();
   }
 
 
-  LKFont hfOldU = Surface.SelectObject(LK8PanelUnitFont);
+  const auto hfOldU = Surface.SelectObject(LK8PanelUnitFont);
   BOOL bFAITri =  CContestMgr::Instance().FAI();
   double fDist, fAngle;
   lat_c = (y_max+y_min)/2;

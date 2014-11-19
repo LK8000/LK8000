@@ -168,11 +168,9 @@ void Message::Resize() {
     SetWindowText(hWndMessageWindow, msgText);
 
     LKWindowSurface Surface(hWndMessageWindow);
-    LKFont oldfont;
-    if (ScreenLandscape )
-	oldfont=Surface.SelectObject(LK8InfoBigFont);
-    else
-	oldfont=Surface.SelectObject(MapWindowBoldFont);
+    const auto oldfont = Surface.SelectObject(ScreenLandscape
+                                              ? LK8InfoBigFont
+                                              : MapWindowBoldFont);
 
     Surface.GetTextSize(msgText, size, &tsize);
 

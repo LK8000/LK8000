@@ -104,7 +104,7 @@ void CreateProgressDialog(const TCHAR* text) {
 
     LKWindowSurface hStartupDC(hStartupWindow);
 
-    LKFont oldFont = hStartupDC.SelectObject(LKSTARTBOTTOMFONT);
+    const auto oldFont = hStartupDC.SelectObject(LKSTARTBOTTOMFONT);
 	SIZE TextSize;
     hStartupDC.GetTextSize(_T("X"),1, &TextSize);
     yFontSize = TextSize.cy;
@@ -133,7 +133,7 @@ void CreateProgressDialog(const TCHAR* text) {
 
   LKWindowSurface hStartupDC(hStartupWindow);
  
-  LKFont oldFont=hStartupDC.SelectObject(LKSTARTBOTTOMFONT);
+  const auto oldFont = hStartupDC.SelectObject(LKSTARTBOTTOMFONT);
 
   const LKBrush hB=LKBrush_Petrol;
   hStartupDC.FillRect(&PrintAreaR, hB);
@@ -142,8 +142,8 @@ void CreateProgressDialog(const TCHAR* text) {
 
   // we cannot use LKPen here because they are not still initialised for startup menu. no problem
   LKPen hP(PEN_SOLID,NIBLSCALE(1),RGB_GREEN);
-  LKPen ohP = hStartupDC.SelectObject(hP);
-  LKBrush ohB = hStartupDC.SelectObject(hB);
+  auto ohP = hStartupDC.SelectObject(hP);
+  const auto ohB = hStartupDC.SelectObject(hB);
   hStartupDC.Rectangle(PrintAreaR.left,PrintAreaR.top,PrintAreaR.right,PrintAreaR.bottom);
   hStartupDC.SelectObject(ohP);
   hP.Release();

@@ -46,9 +46,37 @@ public:
     LKSurface();
     virtual ~LKSurface();
 
-    LKFont SelectObject(const LKFont& Font);
-    LKBrush SelectObject(const LKBrush& Brush);
-    LKPen SelectObject(const LKPen& Pen);
+#ifdef WIN32
+    typedef HFONT OldFont;
+    typedef HBRUSH OldBrush;
+    typedef HPEN OldPen;
+#else
+    typedef int OldFont;
+    typedef int OldBrush;
+    typedef int OldPen;
+#endif
+
+    OldFont SelectObject(const LKFont& Font);
+    OldBrush SelectObject(const LKBrush& Brush);
+    OldPen SelectObject(const LKPen& Pen);
+
+    void SelectObject(OldFont o) {
+#ifdef WIN32
+      ::SelectObject(*this, o);
+#endif
+    }
+
+    void SelectObject(OldBrush o) {
+#ifdef WIN32
+      ::SelectObject(*this, o);
+#endif
+    }
+
+    void SelectObject(OldPen o) {
+#ifdef WIN32
+      ::SelectObject(*this, o);
+#endif
+    }
 
     LKColor SetTextColor(const LKColor& Color);
     LKColor SetBkColor(const LKColor& Color);

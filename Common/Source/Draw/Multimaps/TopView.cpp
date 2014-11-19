@@ -39,7 +39,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
   }
 
   double fOldScale  =  zoom.Scale();
-  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
+  const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
   if(zoom.AutoZoom())
 	zoom.AutoZoom(false);

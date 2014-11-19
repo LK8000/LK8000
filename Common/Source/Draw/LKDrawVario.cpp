@@ -22,8 +22,8 @@
 // Available only in fullscreen landscape mode
 void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
-  LKPen		oldPen;
-  LKBrush	oldBrush;
+  LKSurface::OldPen		oldPen;
+  LKSurface::OldBrush	oldBrush;
 
   static RECT	vrc, mrc, hrc, htrc, hbrc;
   static RECT	brc[NUMVBRICKS];

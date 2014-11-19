@@ -23,8 +23,6 @@ extern void ClearGTL2(void);
 //
 
 void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc) {
-  LKPen hpOld;
-
   //double h,dh;
   TCHAR hbuf[10];
   static bool doinit=true;
@@ -66,7 +64,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc) {
   }
   #endif
 
-  hpOld = Surface.SelectObject(hpTerrainLineBg); 
+  const auto hpOld = Surface.SelectObject(hpTerrainLineBg); 
 
   #ifdef GTL2
   // Draw the wide, solid part of the glide terrain line.

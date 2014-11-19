@@ -16,7 +16,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
   int airspace_type;
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
-  LKBrush oldBrush = Surface.SelectObject(LKBrush_Hollow);
+  const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
   
   CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
   //    for (it=airspaces_to_draw.end(); it != airspaces_to_draw.begin(); it--)

@@ -554,14 +554,14 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
   // We need to check also screen.
 
 
-  LKPen hpOld = Surface.SelectObject(hPen);
+  const auto hpOld = Surface.SelectObject(hPen);
 
-  LKBrush hbOld;
+  LKSurface::OldBrush hbOld;
   if (hbBrush) {
     hbOld = Surface.SelectObject(hbBrush);
   }
 
-  LKFont hfOld = Surface.SelectObject(MapLabelFont);
+  const auto hfOld = Surface.SelectObject(MapLabelFont);
 
   // get drawing info
   int iskip = 1;

@@ -155,8 +155,8 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
   StartupStore(_T("VG AREA LTRB: %d,%d %d,%d\n"),vrc.left,vrc.top,vrc.right,vrc.bottom);
   #endif
 
-  LKBrush oldBrush=Surface.SelectObject(LKBrush_White);
-  LKPen oldPen = Surface.SelectObject(LK_BLACK_PEN);
+  const auto oldBrush = Surface.SelectObject(LKBrush_White);
+  const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
 
   LKBrush brush_back;
   if (!INVERTCOLORS) {

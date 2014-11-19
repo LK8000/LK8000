@@ -16,8 +16,8 @@ void MapWindow::DrawStartEndSector(LKSurface& Surface, const RECT& rc,
         int Type, double Radius) {
 
     double tmp;
-    LKPen oldpen;
-    LKBrush oldbrush;
+    LKSurface::OldPen oldpen;
+    LKSurface::OldBrush oldbrush;
 
     switch (Type) {
         case 0: // CIRCLE

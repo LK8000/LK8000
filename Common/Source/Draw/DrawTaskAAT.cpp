@@ -18,9 +18,6 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     if (WayPointList.empty()) return;
     if (!AATEnabled) return;
 
-    LKPen oldpen;
-    LKBrush oldbrush;
-
     LockTaskData(); // protect from external task changes
     /**********************************************/
     /* Check if not Validated Waypoint is visible */
@@ -71,8 +68,8 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         LKColor whitecolor = RGB_WHITE;
         LKColor origcolor = hDCTempTask.SetTextColor(whitecolor);
 
-        oldpen = hDCTempTask.SelectObject(LK_WHITE_PEN);
-        oldbrush = hDCTempTask.SelectObject(LKBrush_White);
+        const auto oldpen = hDCTempTask.SelectObject(LK_WHITE_PEN);
+        const auto oldbrush = hDCTempTask.SelectObject(LKBrush_White);
         if(LKSurface::AlphaBlendSupported()) {
             // copy original bitmap into temp (for saving fully transparent areas)
             hDCTempTask.Copy(rcDraw.left, rcDraw.top,

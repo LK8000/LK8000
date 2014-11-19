@@ -12,9 +12,6 @@
 
 void MapWindow::DrawBestCruiseTrack(LKSurface& Surface, const POINT& Orig)
 {
-  LKPen hpOld;
-  LKBrush hbOld;
-
   if (OvertargetMode>OVT_TASK) return;
 
   if (!ValidTaskPoint(ActiveWayPoint)) return;
@@ -27,8 +24,8 @@ void MapWindow::DrawBestCruiseTrack(LKSurface& Surface, const POINT& Orig)
   } 
 
 
-  hpOld = Surface.SelectObject(LKPen_Blue_N1);
-  hbOld = Surface.SelectObject(LKBrush_Blue);
+  const auto hpOld = Surface.SelectObject(LKPen_Blue_N1);
+  const auto hbOld = Surface.SelectObject(LKBrush_Blue);
 
   if (Appearance.BestCruiseTrack == ctBestCruiseTrackDefault){
 

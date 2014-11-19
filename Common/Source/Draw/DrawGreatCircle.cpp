@@ -23,7 +23,7 @@ void MapWindow::DrawGreatCircle(LKSurface& Surface, double startLon, double star
   LatLon2Screen(targetLon, targetLat, pt[1]);
 
     if(LKGeom::ClipLine(rc, pt[0], pt[1])) {
-        LKPen hpOld = Surface.SelectObject(LKPen_GABRG);
+        const auto hpOld = Surface.SelectObject(LKPen_GABRG);
         Surface.Polyline(pt, 2);
         Surface.SelectObject(LK_BLACK_PEN);
         Surface.Polyline(pt, 2);

@@ -76,9 +76,9 @@ void MapWindow::DrawMultimap_Topleft(LKSurface& Surface, const RECT& rci)
 
   if (noaction) return;
 
-  LKFont oldFont = Surface.SelectObject(LK8TargetFont);
-  LKBrush oldBrush= Surface.SelectObject(LKBrush_Mdark);
-  LKPen oldPen = Surface.SelectObject(LK_WHITE_PEN);
+  const auto oldFont = Surface.SelectObject(LK8TargetFont);
+  const auto oldBrush = Surface.SelectObject(LKBrush_Mdark);
+  const auto oldPen = Surface.SelectObject(LK_WHITE_PEN);
 
   MapWindow::LKWriteText(Surface, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_SBLACK, true);
 
@@ -137,9 +137,9 @@ void MapWindow::DrawMultimap_Topright(LKSurface& Surface, const RECT& rci) {
 
   if (noaction) return;
 
-  LKFont  oldFont = Surface.SelectObject(MapWindowFont);
-  LKBrush oldBrush= Surface.SelectObject(LKBrush_Mdark);
-  LKPen oldPen = Surface.SelectObject(LK_WHITE_PEN);
+  const auto oldFont = Surface.SelectObject(MapWindowFont);
+  const auto oldBrush = Surface.SelectObject(LKBrush_Mdark);
+  const auto oldPen = Surface.SelectObject(LK_WHITE_PEN);
 
   LKWriteText(Surface, topright_txt, rci.right-RIGHTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, wcolor, true);
 
@@ -155,13 +155,9 @@ void MapWindow::DrawMultimap_DynaLabel(LKSurface& Surface, const RECT& rci)
 #if 0
   if (!IsMultimapOverlays()) return;
 
-  LKBrush oldBrush;
-  LKFont oldFont;
-
-  if (INVERTCOLORS)
-        oldBrush=Surface.SelectObject(LKBrush_Ndark);
-  else
-        oldBrush=Surface.SelectObject(LKBrush_LightGrey);
+  const auto oldBrush = Surface.SelectObject(INVERTCOLORS
+                                             ? LKBrush_Ndark
+                                             : LKBrush_LightGrey);
 
   extern double fSplitFact;
   SIZE textSize;
@@ -169,7 +165,7 @@ void MapWindow::DrawMultimap_DynaLabel(LKSurface& Surface, const RECT& rci)
   //int midsplit=Current_Multimap_TopRect.bottom;	// this SHOULD be ok, but in M3 the TopRect is updated 1s late
 
   //oldFont=(HFONT)Surface.SelectObject(LK8UnitFont);
-  oldFont=(HFONT)Surface.SelectObject(LK8PanelSmallFont);
+  const auto oldFont = Surface.SelectObject(LK8PanelSmallFont);
 
   GetTextExtentPoint(hdc, _T("Y"), 1, &textSize);
   // move the label on top view when the topview window is big enough

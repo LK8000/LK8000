@@ -23,14 +23,14 @@ void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc) {
 		LatLon2Screen(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude, screen);
 		DrawBitmapIn(Surface, screen, hBmpThermalSource,true);
 
-		LKBrush oldBrush = Surface.SelectObject(LKBrush_Hollow);
+		const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
 		double tradius;
 		if (ISPARAGLIDER)
 			tradius=50;
 		else
 			tradius=100;
 			
-		LKPen oldPen = Surface.SelectObject(LKPen_White_N3);
+		const auto oldPen = Surface.SelectObject(LKPen_White_N3);
 		Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
 		Surface.SelectObject(LKPen_Black_N1);
 		Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
@@ -91,14 +91,14 @@ void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& r
 
   //DrawBitmapIn(hdc, screen, hBmpThermalSource);
 
-  LKBrush oldBrush = Surface.SelectObject(LKBrush_Hollow);
+  const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
   double tradius;
   if (ISPARAGLIDER)
      tradius=100;
   else
      tradius=200;
 
-  LKPen oldPen= Surface.SelectObject(LKPen_White_N3);
+  const auto oldPen = Surface.SelectObject(LKPen_White_N3);
 
   Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
   Surface.SelectObject(LKPen_White_N2);

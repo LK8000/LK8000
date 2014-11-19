@@ -111,30 +111,27 @@ int LKSurface::SetBkMode(int mode) {
 #endif
 }
 
-LKFont LKSurface::SelectObject(const LKFont& Font) {
+LKSurface::OldFont LKSurface::SelectObject(const LKFont& Font) {
 #ifdef WIN32
-    LKFont OldFont((HFONT)::SelectObject(*this, (HFONT) Font));
-    return OldFont;
+    return (HFONT)::SelectObject(*this, (HFONT) Font);
 #else
-    return LKFont();
+    return OldFont();
 #endif
 }
 
-LKBrush LKSurface::SelectObject(const LKBrush& Brush) {
+LKSurface::OldBrush LKSurface::SelectObject(const LKBrush& Brush) {
 #ifdef WIN32
-    LKBrush OldBrush((HBRUSH)::SelectObject(*this, (HBRUSH) Brush));
-    return OldBrush;
+    return (HBRUSH)::SelectObject(*this, (HBRUSH) Brush);
 #else
-    return LKBrush();
+    return OldBrush();
 #endif
 }
 
-LKPen LKSurface::SelectObject(const LKPen& Pen) {
+LKSurface::OldPen LKSurface::SelectObject(const LKPen& Pen) {
 #ifdef WIN32
-    LKPen OldPen((HPEN)::SelectObject(*this, (HPEN) Pen));
-    return OldPen;
+    return (HPEN)::SelectObject(*this, (HPEN) Pen);
 #else
-    return LKPen();
+    return OldPen();
 #endif
 }
 
@@ -253,7 +250,7 @@ void LKSurface::DrawLine(int x1, int y1, int x2, int y2, int x3, int y3) {
 
 void LKSurface::DrawLine(enumType PenStyle, const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc) {
     LKPen Pen(PenStyle, width, cr);
-    LKPen OldPen = SelectObject(Pen);
+    const auto OldPen = SelectObject(Pen);
 
     const POINT pt[2] = {ptStart, ptEnd};
     Polyline(pt, 2, rc);
@@ -271,7 +268,7 @@ void LKSurface::DrawDashLine(const int width, const POINT& ptStart, const POINT&
 
     //Create a dot pen
     LKPen hpDash(PEN_DASH, 1, cr);
-    LKPen hpOld = SelectObject(hpDash);
+    const auto hpOld = SelectObject(hpDash);
 
     pt[0] = ptStart;
     pt[1] = ptEnd;
