@@ -31,7 +31,7 @@ LKWindowSurface::LKWindowSurface(HWND hWnd) : LKSurface(), _hWnd() {
     assert(hWnd);
     assert(::IsWindow(hWnd));
 
-    if(Attach(::GetDC(hWnd))) {
+    if(!Attach(::GetDC(hWnd))) {
         assert(false);
     }
 }
@@ -51,7 +51,7 @@ void LKWindowSurface::Create(Window& Wnd){
     assert(hWnd);
     assert(::IsWindow(hWnd));
 
-    if(Attach(::GetDC(hWnd))) {
+    if(!Attach(::GetDC(hWnd))) {
         assert(false);
     }
 #endif
@@ -83,7 +83,7 @@ LKPaintSurface::~LKPaintSurface() {
 
 void LKPaintSurface::Release() {
 #ifdef WIN32
-    assert(hWnd);
+    assert(_hWnd);
     Detach(); // avoid _OutputDC deleted twice and cleanup base class.
     ::EndPaint(_hWnd, &_ps);
     
