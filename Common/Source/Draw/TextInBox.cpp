@@ -109,7 +109,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
 
   SIZE tsize;
   RECT brect;
-  LKSurface::OldFont oldFont;
+  LKSurface::OldFont oldFont {};
   bool drawn=false;
 
   if ((x<clipRect->left-WPCIRCLESIZE) || 
@@ -353,7 +353,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
 
   }
  
-  if (!Mode->NoSetFont) Surface.SelectObject(oldFont); // VENTA5
+  if (oldFont) Surface.SelectObject(oldFont); // VENTA5
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);
 

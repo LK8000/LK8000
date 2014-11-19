@@ -125,6 +125,7 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
     ThermalProfile[numtherm+1].y = ThermalProfile[numtherm].y;
 
     Surface.Polygon(ThermalProfile,numtherm+2);
+    Surface.SelectObject(hpOld);
     Surface.SelectObject(hbOld);
   }
     

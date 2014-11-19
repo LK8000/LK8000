@@ -1006,7 +1006,7 @@ drawOverlay:
 	if (DerivedDrawInfo.AutoMacCready == true) {
 	  Surface.SelectObject(LK8TitleFont);
 
-	LKSurface::OldBrush ob;
+	LKSurface::OldBrush ob {}; 
 	if (LKTextBlack) {
 		ob=Surface.SelectObject(LKBrush_White);
 	}
