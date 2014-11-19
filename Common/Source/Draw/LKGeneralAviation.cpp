@@ -48,10 +48,8 @@ int MapWindow::DrawCompassArc(LKSurface& Surface, long x, long y, int radius, co
 		//HPEN hPenWhite = (HPEN)CreatePen(PEN_SOLID, (2), LKColor(0xff,0xff,0xff));
 		LKPen hPenBlack = LKPen_Black_N5;
 		LKPen hPenWhite = LKPen_White_N2;
-		LKFont oldfont;
-		LKPen oldpen;
 
-		oldpen=Surface.SelectObject(hPenBlack);
+		const auto oldpen=Surface.SelectObject(hPenBlack);
 		Surface.DrawArc(x, y,radius, rc, 300, 60);
 
 		int heading = (int)(bearing +0.5);
@@ -67,7 +65,7 @@ int MapWindow::DrawCompassArc(LKSurface& Surface, long x, long y, int radius, co
 		POINT pt[2];
 		int i;
 
-		oldfont=Surface.SelectObject(LK8MediumFont); // always remember to save object or we miss font
+		const auto oldfont = Surface.SelectObject(LK8MediumFont); // always remember to save object or we miss font
 
 		for(i = - 60; i<= 60;
 				i+=indicatorStep,screenAngle += indicatorStep,curHeading += indicatorStep)
@@ -148,9 +146,6 @@ int MapWindow::DrawCompassArc(LKSurface& Surface, long x, long y, int radius, co
 ////////////////////////////////////////////////////////////////////////////////////
 void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc )
 {
-	LKFont oldfont;
-	LKPen oldpen;
-
 	// short rcHeight = rc.bottom;
 	short rcx=rc.left+rc.right/2;
 	short rad=(rc.right/2) - (rcx/10);
@@ -172,7 +167,7 @@ void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc
 	LKPen hPenBlack = LKPen_Black_N3;
 	LKPen hPenWhite = LKPen_White_N2;
 
-	oldfont = Surface.SelectObject(LK8InfoNormalFont);
+	const auto oldfont = Surface.SelectObject(LK8InfoNormalFont);
 
 	//Draw current heading
 	///////////////////
@@ -208,7 +203,7 @@ void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc
 	pt[6].x = rcx + (brgSize.cx/2) +5;
 	pt[6].y = brgSize.cy - 5;
 
-	oldpen=Surface.SelectObject(hPenBlack);
+	const auto oldpen=Surface.SelectObject(hPenBlack);
 	Surface.Polyline(pt,7);
 	Surface.SelectObject(hPenWhite);
 	Surface.Polyline(pt,7);

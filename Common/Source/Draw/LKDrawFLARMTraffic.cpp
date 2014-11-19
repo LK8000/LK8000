@@ -64,7 +64,7 @@ static int	iRectangleSize = 4;
 
   TCHAR lbuffer[50];
 
-  LKPen hpold = Surface.SelectObject(LKPen_Black_N1);
+  const auto hpold = Surface.SelectObject(LKPen_Black_N1);
 
   int i;
   int painted=0;
@@ -82,7 +82,7 @@ static int	iRectangleSize = 4;
 
 
 
-  LKFont  oldfont = Surface.SelectObject(LK8MapFont);
+  const auto oldfont = Surface.SelectObject(LK8MapFont);
 
   for (i=0,painted=0; i<FLARM_MAX_TRAFFIC; i++) {
 

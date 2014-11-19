@@ -51,7 +51,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
     TCHAR Scale2[200];
     TCHAR TEMP[20];
 
-    LKPen hpOld = Surface.SelectObject(hpMapScale2);
+    const auto hpOld = Surface.SelectObject(hpMapScale2);
 
     Surface.DrawSolidLine(lineOneStart,lineOneEnd, rc);
     Surface.DrawSolidLine(lineTwoStart,lineTwoEnd, rc);
@@ -213,9 +213,9 @@ _skip2:
     SIZE tsize;
 
     Surface.SetBkMode(TRANSPARENT);
-    LKFont oldFont = Surface.SelectObject(MapWindowFont);
-    LKPen  oldPen = Surface.SelectObject(LK_BLACK_PEN);
-    LKBrush oldBrush = Surface.SelectObject(LKBrush_Black);
+    const auto oldFont = Surface.SelectObject(MapWindowFont);
+    const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
+    const auto oldBrush = Surface.SelectObject(LKBrush_Black);
 
     Surface.GetTextSize(Scale, _tcslen(Scale), &tsize);
 

@@ -253,7 +253,7 @@ void LKSurface::DrawLine(int x1, int y1, int x2, int y2, int x3, int y3) {
 
 void LKSurface::DrawLine(enumType PenStyle, const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc) {
     LKPen Pen(PenStyle, width, cr);
-    LKPen OldPen = SelectObject(Pen);
+    const auto OldPen = SelectObject(Pen);
 
     const POINT pt[2] = {ptStart, ptEnd};
     Polyline(pt, 2, rc);
@@ -271,7 +271,7 @@ void LKSurface::DrawDashLine(const int width, const POINT& ptStart, const POINT&
 
     //Create a dot pen
     LKPen hpDash(PEN_DASH, 1, cr);
-    LKPen hpOld = SelectObject(hpDash);
+    const auto hpOld = SelectObject(hpDash);
 
     pt[0] = ptStart;
     pt[1] = ptEnd;

@@ -25,7 +25,6 @@
 void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, double fScaleFact, BOOL picto)
 {
   int solid= false;
-  LKBrush  oldBrush ;
   bool bGlider = false;
   bool bOutland = false;
   bool bRunway = false;
@@ -145,8 +144,8 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   // if( !picto && (MapWindow::zoom.RealScale() > 3) ) 
   //	bGlider=false; 
 
-  LKPen oldPen = Surface.SelectObject(LK_BLACK_PEN);
-  oldBrush = Surface.SelectObject(LKBrush_Red);
+  const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
+  const auto oldBrush = Surface.SelectObject(LKBrush_Red);
 
   if( wp->Reachable == TRUE)
     Surface.SelectObject(LKBrush_Green);
@@ -224,12 +223,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   if( MapWindow::zoom.RealScale() <= scale_drawradio ) 
   {
 
-	LKFont hfOld;
-
-	if (MapWindow::zoom.RealScale() <= scale_bigfont) 
-		hfOld = Surface.SelectObject(LK8PanelUnitFont);
-	else
-		hfOld = Surface.SelectObject(LK8UnitFont);
+	const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
+                                                ? LK8PanelUnitFont
+                                                : LK8UnitFont);
 
 	if (INVERTCOLORS)
 		Surface.SelectObject(LKBrush_Petrol);

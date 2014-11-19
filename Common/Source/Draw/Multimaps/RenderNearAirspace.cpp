@@ -40,7 +40,7 @@ rct.bottom = rc.top ;
 // Expose the topview rect size in use..
 Current_Multimap_TopRect=rct;
 
-LKFont	 hfOldFnt = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
+auto hfOldFnt = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 
@@ -358,7 +358,7 @@ if(bValid)
 
   RenderAirspaceTerrain(Surface, GPSlat, GPSlon, iAS_Bearing, &sDia );
 
-  LKFont hfOld = Surface.SelectObject(LK8InfoNormalFont);
+  const auto hfOld = Surface.SelectObject(LK8InfoNormalFont);
   if(bValid) {
     LKASSERT(_tcslen(near_airspace.Name())<TBSIZE); // Diagnostic only in 3.1j, to be REMOVED
     LK_tcsncpy(Sideview_szNearAS, near_airspace.Name(), TBSIZE );
@@ -489,7 +489,7 @@ if(bValid)
    ****************************************************************************************************/
   Surface.SetTextColor(Sideview_TextColor);
   Surface.SetBkMode(OPAQUE);
-  LKFont hfOld2 = Surface.SelectObject(LK8InfoNormalFont);
+  const auto hfOld2 = Surface.SelectObject(LK8InfoNormalFont);
 
   //  DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right  - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
 
@@ -519,7 +519,7 @@ if(bValid)
 	 ****************************************************************************************************/
 	Surface.SetTextColor(Sideview_TextColor);
 	Surface.SetBkMode(OPAQUE);
-	LKFont hfOldU = Surface.SelectObject(LK8InfoNormalFont);
+	const auto hfOldU = Surface.SelectObject(LK8InfoNormalFont);
     // horizontal distance
     line[0].x = CalcDistanceCoordinat(0, &sDia);
     line[0].y = CalcHeightCoordinat(  GPSalt,  &sDia );

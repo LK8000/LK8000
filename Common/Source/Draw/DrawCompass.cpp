@@ -13,8 +13,6 @@
 void MapWindow::DrawCompass(LKSurface& Surface, const RECT& rc, const double angle)
 {
   POINT Start;
-  LKPen hpOld;
-  LKBrush hbOld; 
 
     static double lastDisplayAngle = 9999.9;
     static int lastRcRight = 0, lastRcTop = 0;
@@ -52,8 +50,8 @@ void MapWindow::DrawCompass(LKSurface& Surface, const RECT& rc, const double ang
       lastRcTop = rc.top;
     }
 
-    hpOld = Surface.SelectObject(LKPen_Black_N2);
-    hbOld = Surface.SelectObject(LKBrush_White);
+    const auto hpOld = Surface.SelectObject(LKPen_Black_N2);
+    const auto hbOld = Surface.SelectObject(LKBrush_White);
     Surface.Polygon(Arrow,5);
 
     Surface.SelectObject(LKPen_Black_N1);

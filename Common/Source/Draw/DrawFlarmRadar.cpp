@@ -439,12 +439,7 @@ void RenderFlarmPlaneSideview(LKSurface& Surface, const RECT& rc,double fDist, d
   Start.x =  MapWindow::DistanceToX(fDist,  psDia);
   Start.y =  MapWindow::HeightToY(fAltitude,  psDia);
 
-  LKPen oldPen ;
-
-  if(INVERTCOLORS)
-    oldPen = Surface.SelectObject(LKPen_Grey_N0);
-  else
-    oldPen = Surface.SelectObject(LKPen_Grey_N0);
+  const auto oldPen = Surface.SelectObject(LKPen_Grey_N0);
   PolygonRotateShift(AircraftWing, 13,  Start.x, Start.y,  0);
   PolygonRotateShift(AircraftSide, 8,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftTail, 5,   Start.x, Start.y,  0);
@@ -499,14 +494,12 @@ static RECT OwnPosSideView;
 int iTouchAreaSize = 45;
 LKPen   hOrangePen ;
 LKPen   hGreenPen ;
-LKPen   hOldPen;
-LKBrush hOldBrush;
 LKPen   hDrawPen ;
 LKBrush hDrawBrush;
 bool bSideview = true;
 
 
-LKFont hfOldFont = Surface.SelectObject(LK8PanelUnitFont);
+const auto hfOldFont = Surface.SelectObject(LK8PanelUnitFont);
 LKColor rgbGridColor = RGB_DARKGREEN;
 LKColor rgbDrawColor = RGB_GREEN;
 LKColor rgb_targetlinecol = RGB_RED;
@@ -544,8 +537,8 @@ else
 }
 
 Surface.SetTextColor(rgbDrawColor);
-hOldPen   = Surface.SelectObject(hDrawPen);
-hOldBrush = Surface.SelectObject(hDrawBrush);
+const auto hOldPen   = Surface.SelectObject(hDrawPen);
+const auto hOldBrush = Surface.SelectObject(hDrawBrush);
 
 /****************************************************************
  * clear background
@@ -1394,7 +1387,7 @@ if(iFlarmDirection == 2)
 	GPSbrg =0.0;
 }
 const LKBrush *pOldBrush =NULL;
-LKPen oldPen = Surface.SelectObject(LK_NULL_PEN);
+const auto oldPen = Surface.SelectObject(LK_NULL_PEN);
 
 int iStep =(int)  (fZoom *3.0 / (double)GC_TRACE_TIME_SKIP);
 if (iStep < 1)
@@ -1483,7 +1476,7 @@ static double zoomfact = (double)cy/NIBLSCALE(18);
     int iVarioIdx = (int)(2*fInteg30-0.5)+NO_VARIO_COLORS/2;
     if(iVarioIdx < 0) iVarioIdx =0;
     if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
-	LKBrush oldb = Surface.SelectObject(*variobrush[iVarioIdx]);
+	const auto oldb = Surface.SelectObject(*variobrush[iVarioIdx]);
 
 	    switch (pTraf->Status) { // 100321
 		  case LKT_GHOST:

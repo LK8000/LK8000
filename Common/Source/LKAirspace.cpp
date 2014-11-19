@@ -3061,10 +3061,10 @@ void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
 
         LKPen FramePen(PEN_SOLID, IBLSCALE(1), TypeColor());
 
-        LKColor oldColor = Surface.SetTextColor(TypeColor());
+        const auto oldColor = Surface.SetTextColor(TypeColor());
         
-        LKPen oldPen = Surface.SelectObject(FramePen);
-        LKBrush oldBrush = Surface.SelectObject(Enabled() ? TypeBrush() : LKBrush_Hollow);
+        const auto oldPen = Surface.SelectObject(FramePen);
+        const auto oldBrush = Surface.SelectObject(Enabled() ? TypeBrush() : LKBrush_Hollow);
 
         Surface.Polygon(ptOut, Length);
 

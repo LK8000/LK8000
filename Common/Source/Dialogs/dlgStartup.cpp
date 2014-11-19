@@ -51,7 +51,7 @@ static int OnTimerNotify(WindowControl *Sender)
 // lines are: 0 - 9
 // fsize 0 small 1 normal 2 big
 void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, const LKColor& rgbcolor,int wtmode) {
-   LKFont oldfont = Surface.SelectObject(MapWindowFont);
+   const auto oldfont = Surface.SelectObject(MapWindowFont);
    switch(fsize) {
 	case 0:
 		Surface.SelectObject(TitleWindowFont);

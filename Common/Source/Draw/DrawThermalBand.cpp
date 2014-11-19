@@ -103,13 +103,12 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
   }
   
   // drawing info
-  LKPen hpOld;
   
 
   // position of thermal band
   if (numtherm>1) {
-    hpOld = Surface.SelectObject(hpThermalBand);
-    LKBrush hbOld = Surface.SelectObject(LKBrush_Emerald);
+    const auto hpOld = Surface.SelectObject(hpThermalBand);
+    const auto hbOld = Surface.SelectObject(LKBrush_Emerald);
  
 
     POINT ThermalProfile[NUMTHERMALBUCKETS+2];
@@ -143,7 +142,7 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
   GliderBand[4].x = GliderBand[1].x-NIBLSCALE(4);
   GliderBand[4].y = GliderBand[0].y+NIBLSCALE(4);
 
-  hpOld = Surface.SelectObject(hpThermalBandGlider);
+  const auto hpOld = Surface.SelectObject(hpThermalBandGlider);
   
   Surface.Polyline(GliderBand, 2);
   Surface.Polyline(GliderBand+2, 3); // arrow head

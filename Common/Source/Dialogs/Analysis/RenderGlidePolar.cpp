@@ -104,7 +104,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
   else
     Surface.SetTextColor(RGB_WHITE);
 
-  LKFont hfOldU = Surface.SelectObject(LK8InfoNormalFont);
+  const auto hfOldU = Surface.SelectObject(LK8InfoNormalFont);
   extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
   LK_tsplitpath(szPolarFile, (TCHAR*) NULL, (TCHAR*) NULL, text, (TCHAR*) NULL);
 

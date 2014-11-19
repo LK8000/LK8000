@@ -349,7 +349,7 @@ if(fDistMin < FAI28_45Threshold)
    * draw polygon
    ********************************************************************/
   LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), RGB_GREEN);
-  LKPen hpOldPen = Surface.SelectObject(hpSectorPen);
+  const auto hpOldPen = Surface.SelectObject(hpSectorPen);
   LKBrush hpOldBrush;
   LKBrush hpSectorFill;
   if (fillcolor != 0)
@@ -387,7 +387,7 @@ if(fDistMin < FAI28_45Threshold)
   BOOL bFirstUnit = true;
   LKASSERT(fTic!=0);
   fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
-  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
+  const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
 int iCnt = 0;
 

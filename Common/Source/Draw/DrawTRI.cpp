@@ -26,8 +26,8 @@ void MapWindow::DrawAcceleration(LKSurface& Surface, const RECT& rc)
   Pos.y = (rc.bottom - rc.top)/2 - (int)((DrawInfo.AccelZ - 1) * ScaleY);
   const double radius = NIBLSCALE(15) + (int)(DrawInfo.AccelX * ScaleZ);
   
-  LKPen oldPen = Surface.SelectObject(LK_BLACK_PEN);
-  LKBrush oldBrush = Surface.SelectObject(LKBrush_Red);
+  const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
+  const auto oldBrush = Surface.SelectObject(LKBrush_Red);
   
   Surface.Circle(Pos.x, Pos.y - (int)(radius/2), (int)radius, rc, true, true);
   
@@ -54,8 +54,6 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   LKBrush	hbBlack;
   LKBrush	hbWhite;
   LKBrush	hbBorder;
-  LKPen   hpOld;
-  LKBrush hbOld;
 
   // gauge size radius
   static int radius = NIBLSCALE(65);
@@ -179,8 +177,8 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   hbWhite = LKBrush_White;
   hbBorder = LKBrush_Grey;
 
-  hpOld = Surface.SelectObject(LKPen_White_N1);
-  hbOld = Surface.SelectObject(hbWhite);
+  const auto hpOld = Surface.SelectObject(LKPen_White_N1);
+  const auto hbOld = Surface.SelectObject(hbWhite);
   Surface.Circle(Start.x, Start.y, radius, rc, false, true );
 
   if(DrawInfo.AccelerationAvailable)
@@ -273,8 +271,8 @@ void MapWindow::DrawCompassRose(LKSurface& Surface, const RECT& rc, double direc
 	Needle[3] = Needle[0];
 
 	PolygonRotateShift(Needle, 4,  Center.x-1, Center.y, (direction));
-	LKPen oldPen = Surface.SelectObject(LKPen_Red_N1);
-	LKBrush oldBrush = Surface.SelectObject(LKBrush_Red);
+	const auto oldPen = Surface.SelectObject(LKPen_Red_N1);
+	const auto oldBrush = Surface.SelectObject(LKBrush_Red);
 	Surface.Polygon(Needle  ,4 );
 
 
@@ -309,9 +307,6 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   LKBrush	hbWhite;
   LKBrush	hbBorder;
   
-  LKPen   hpOld;
-  LKBrush hbOld;
-
   // gauge size radius
   static int radius = NIBLSCALE(75);
   static int planesize = radius-NIBLSCALE(10);
@@ -447,8 +442,8 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   hbWhite =LKBrush_Lake;// LKBrush_White;
   hbBorder = LKBrush_Grey;
 
-  hpOld = Surface.SelectObject(LKPen_White_N1);
-  hbOld = Surface.SelectObject(hbWhite);
+  const auto hpOld = Surface.SelectObject(LKPen_White_N1);
+  const auto hbOld = Surface.SelectObject(hbWhite);
 
   Surface.Circle(Start.x, Start.y, radius, rc, false, true );
 /***************************************************************************************/
@@ -494,8 +489,8 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   /*********************************************************************************************/
     LKPen   hpHorizonGround(PEN_SOLID, IBLSCALE(1),RGB_BLACK);
     LKBrush hbHorizonGround(LKColor(255,140,0));
-    LKPen oldpen = Surface.SelectObject(hpHorizonGround);
-    LKBrush oldbrush = Surface.SelectObject(hbHorizonGround);
+    const auto oldpen = Surface.SelectObject(hpHorizonGround);
+    const auto oldbrush = Surface.SelectObject(hbHorizonGround);
 
     Surface.SelectObject(hpHorizonGround);
     Surface.SelectObject(hbHorizonGround);

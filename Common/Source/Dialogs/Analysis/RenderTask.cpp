@@ -65,7 +65,7 @@ double fXY_Scale = 1.5;
     ScaleYFromValue(rc, lat1);
     ScaleXFromValue(rc, lon1);
   }
-  LKFont hfOldU = Surface.SelectObject(LK8InfoNormalFont);
+  const auto hfOldU = Surface.SelectObject(LK8InfoNormalFont);
 
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;

@@ -27,10 +27,10 @@ int RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lo
 void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft)
 {
 
-  LKColor whitecolor = RGB_WHITE;
-  LKColor origcolor = Surface.SetTextColor(whitecolor);
-  LKPen oldpen = Surface.SelectObject(hpStartFinishThick);
-  LKBrush oldbrush = Surface.SelectObject(LKBrush_Hollow);
+  const auto whitecolor = RGB_WHITE;
+  const auto origcolor = Surface.SetTextColor(whitecolor);
+  const auto oldpen = Surface.SelectObject(hpStartFinishThick);
+  const auto oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
 
 /********************************************************************/
@@ -96,7 +96,7 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT
     if(ISPARAGLIDER && bFAI)
     {
       LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
-      LKPen hOldPen = Surface.SelectObject(hpSectorPen);
+      const auto hOldPen = Surface.SelectObject(hpSectorPen);
       POINT Pt1;
       MapWindow::LatLon2Screen(lon_CP, lat_CP,  Pt1);
       FindLatitudeLongitude(lat1, lon1, 0 , fFAIDistance* 0.20, &lat2, &lon2); /* 1000m destination circle */
@@ -448,8 +448,8 @@ if(fDistMin < FAI28_45Threshold)
    ********************************************************************/
   LKPen   hpSectorPen(PEN_SOLID, IBLSCALE(2),  fillcolor );
 
-  LKPen hpOldPen = Surface.SelectObject(hpSectorPen);
-  LKBrush hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
+  const auto hpOldPen = Surface.SelectObject(hpSectorPen);
+  const auto hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
 
   Surface.Polygon(apSectorPolygon,iPolyPtr,rc);
 
@@ -473,7 +473,7 @@ if(fDistMin < FAI28_45Threshold)
   BOOL bFirstUnit = true;
   LKASSERT(fTic!=0);
   fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
-  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
+  const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
 int iCnt = 0;
 

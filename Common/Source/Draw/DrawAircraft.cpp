@@ -25,7 +25,6 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig)
     };
 
     int pi;
-    LKPen hpPOld;
     LKBrush hbPAircraftSolid; 
     LKBrush hbPAircraftSolidBg;
 
@@ -37,8 +36,8 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig)
       hbPAircraftSolidBg = LKBrush_Grey;
     }
 
-    LKBrush hbPOld = Surface.SelectObject(hbPAircraftSolidBg);
-    hpPOld = Surface.SelectObject(LKPen_White_N3);
+    const auto hbPOld = Surface.SelectObject(hbPAircraftSolidBg);
+    const auto hpPOld = Surface.SelectObject(LKPen_White_N3);
   
     PolygonRotateShift(Para, NUMPARAPOINTS, Orig.x+1, Orig.y+1,
                        DisplayAircraftAngle+
@@ -87,15 +86,14 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig)
     };
 
     int i;
-    LKPen hpOld;
     LKBrush hbAircraftSolid; 
     LKBrush hbAircraftSolidBg;
 
     hbAircraftSolid = LKBrush_Black;
     hbAircraftSolidBg = LKBrush_White;
 
-    LKBrush hbOld = Surface.SelectObject(hbAircraftSolidBg);
-    hpOld = Surface.SelectObject(hpAircraft);
+    const auto hbOld = Surface.SelectObject(hbAircraftSolidBg);
+    const auto hpOld = Surface.SelectObject(hpAircraft);
   
     PolygonRotateShift(Aircraft, NUMAIRCRAFTPOINTS, Orig.x+1, Orig.y+1,
                        DisplayAircraftAngle+
@@ -151,10 +149,10 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig)
       PolygonRotateShift(Aircraft, n,
 			 Orig.x-1, Orig.y, angle);
 
-      LKPen oldPen = Surface.SelectObject(hpAircraft);
+      const auto oldPen = Surface.SelectObject(hpAircraft);
       Surface.Polygon(Aircraft, n);
 
-      LKBrush hbOld = Surface.SelectObject(LKBrush_Black);
+      const auto hbOld = Surface.SelectObject(LKBrush_Black);
       Surface.SelectObject(LKPen_White_N2);
       Surface.Polygon(Aircraft, n);
 

@@ -40,7 +40,7 @@ double MapWindow::LKDrawLongTrail( LKSurface& Surface, const POINT& Orig, const 
   // below this distance, no painting
   nearby=14;
 
-    LKPen oldPen = Surface.SelectObject(hSnailPens[3]); // blue color
+    const auto oldPen = Surface.SelectObject(hSnailPens[3]); // blue color
 
     // draw from oldest to newest point
     // the "+1" is the latest point in the snail trail, to connect the two trails

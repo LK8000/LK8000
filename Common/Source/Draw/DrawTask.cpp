@@ -26,14 +26,10 @@ int center_x = (rc.right-rc.left)/2;
 int center_y = (rc.bottom-rc.top)/2;
 int SecType = SectorType;
 int width = center_x-2;
-LKPen oldpen;
-LKBrush oldbrush;
-if(AATEnabled)
-  oldbrush = Surface.SelectObject(LKBrush_LightGrey);
-else
-  oldbrush = Surface.SelectObject(LKBrush_Hollow);
-
-oldpen = Surface.SelectObject(hpStartFinishThick);
+const auto oldbrush = Surface.SelectObject(AATEnabled
+                                           ? LKBrush_LightGrey
+                                           : LKBrush_Hollow);
+const auto oldpen = Surface.SelectObject(hpStartFinishThick);
 int finish=0;
 
 while( ValidTaskPoint(finish))
@@ -121,7 +117,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
 
                 int radius = width-2;
                 Surface.CircleNoCliping(center_x, center_y, radius, rc, true);
-                LKPen prevPen = Surface.SelectObject(hpTerrainLine);
+                const auto prevPen = Surface.SelectObject(hpTerrainLine);
                 for( int i = 1; i < 4 && radius > (width/5); ++i) {
                     Surface.CircleNoCliping(center_x, center_y, radius -= width/5, rc, true);
                 }
@@ -144,8 +140,6 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const POINT &Orig_A
 
     LKColor whitecolor = RGB_WHITE;
     LKColor origcolor = hDCTempTask.SetTextColor(whitecolor);
-    LKPen oldpen;
-    LKBrush oldbrush;
 
     static short size_tasklines=0;
 
@@ -166,8 +160,8 @@ DoInit[MDI_DRAWTASK]=false;
 
     if (WayPointList.empty()) return;
 
-    oldpen = Surface.SelectObject(hpStartFinishThick);
-    oldbrush = Surface.SelectObject(LKBrush_Hollow);
+    const auto oldpen = Surface.SelectObject(hpStartFinishThick);
+    const auto oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
     LockTaskData(); // protect from external task changes
 
@@ -243,7 +237,7 @@ DoInit[MDI_DRAWTASK]=false;
                     int center_x = WayPointList[Task[i].Index].Screen.x;
                     int center_y = WayPointList[Task[i].Index].Screen.y;
                     Surface.Circle(center_x, center_y, (int) tmp, rc, false, false);
-                    LKPen prevPen = Surface.SelectObject(hpTerrainLine);
+                    const auto prevPen = Surface.SelectObject(hpTerrainLine);
                     for( int j = 1; j < 5 && tmp > 0; ++j) {
                         Surface.Circle(center_x, center_y, tmp -= NIBLSCALE(5), rc, true, true);
                     }

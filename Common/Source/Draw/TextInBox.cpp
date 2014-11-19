@@ -125,8 +125,8 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     size = _tcslen(Value);
   }
   
-  LKBrush hbOld = Surface.SelectObject(LKBrush_White);
-  LKPen hpOld = Surface.SelectObject(LK_BLACK_PEN);
+  const auto hbOld = Surface.SelectObject(LKBrush_White);
+  const auto hpOld = Surface.SelectObject(LK_BLACK_PEN);
 
   if (Mode->Reachable){
     if (Appearance.IndLandable == wpLandableDefault){

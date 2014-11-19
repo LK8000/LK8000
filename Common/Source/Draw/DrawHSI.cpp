@@ -172,8 +172,8 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         DoInit[MDI_DRAWHSI]=false;
     }
 
-    LKPen hpOld = Surface.SelectObject(LKPen_Black_N1);
-    LKBrush hbOld = Surface.SelectObject(LKBrush_Black);
+    const auto hpOld = Surface.SelectObject(LKPen_Black_N1);
+    const auto hbOld = Surface.SelectObject(LKBrush_Black);
 
     //get the track bearing
     int angle = 360-(int)round(DrawInfo.TrackBearing);
@@ -452,8 +452,8 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             triangle[3].y=topY;
             LKPen PenViola(PEN_SOLID,NIBLSCALE(1),RGB_MAGENTA);
             LKBrush BrushViola(RGB_MAGENTA);
-            LKPen OldPen = Surface.SelectObject(PenViola);
-            LKBrush OldBrush = Surface.SelectObject(BrushViola);
+            const auto OldPen = Surface.SelectObject(PenViola);
+            const auto OldBrush = Surface.SelectObject(BrushViola);
             Surface.Polygon(triangle,4);
             Surface.SelectObject(OldPen);
             Surface.SelectObject(OldBrush);
@@ -519,7 +519,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             if(groundLevel>-VSIscaleInPixel) { //sky part
                 LKPen PenSky(PEN_SOLID,NIBLSCALE(1),LKColor(0,153,153));
                 LKBrush BrushSky(LKColor(0,153,153));
-                LKPen oldPen = Surface.SelectObject(PenSky);
+                const auto oldPen = Surface.SelectObject(PenSky);
                 Surface.SelectObject(BrushSky);
                 Surface.Rectangle(VSIleftBorder,centerY+groundLevel,VSIrightBorder,VSItopBorder);
                 Surface.SelectObject(oldPen);
@@ -527,7 +527,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             if(groundLevel<VSIscaleInPixel) { //ground part
                 LKPen PenGround(PEN_SOLID,NIBLSCALE(1),LKColor(204,102,0));
                 LKBrush BrushGround(LKColor(204,102,0));
-                LKPen oldPen = Surface.SelectObject(PenGround);
+                const auto oldPen = Surface.SelectObject(PenGround);
                 Surface.SelectObject(BrushGround);
                 Surface.Rectangle(VSIleftBorder,VSIbottomBorder,VSIrightBorder,centerY+groundLevel+1);
                 Surface.SelectObject(oldPen);

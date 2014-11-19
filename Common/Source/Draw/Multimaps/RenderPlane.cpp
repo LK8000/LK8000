@@ -108,8 +108,8 @@ void RenderPlaneSideview(LKSurface& Surface, double fDist, double fAltitude,doub
   Start.x = CalcDistanceCoordinat(fDist,  psDia);
   Start.y = CalcHeightCoordinat(fAltitude, psDia);
 
-  LKPen oldPen   = Surface.SelectObject(LK_BLACK_PEN);
-  LKBrush oldBrush = Surface.SelectObject(LKBrush_White);
+  const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
+  const auto oldBrush = Surface.SelectObject(LKBrush_White);
 
   PolygonRotateShift(AircraftWing, 13,  Start.x, Start.y,  0);
   PolygonRotateShift(AircraftSide, 8,   Start.x, Start.y,  0);

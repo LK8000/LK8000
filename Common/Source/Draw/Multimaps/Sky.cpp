@@ -29,8 +29,8 @@ double fTop;
 LKASSERT(iSteps!=0);
 
 /* just take something in order to store the old brush and pen for restoring them */
-LKPen OldPen = Surface.SelectObject(LK_WHITE_PEN);
-LKBrush OldBrush = Surface.SelectObject(LKBrush_Black);
+const auto OldPen = Surface.SelectObject(LK_WHITE_PEN);
+const auto OldBrush = Surface.SelectObject(LKBrush_Black);
 	rcd = rc;
 
 	fTop = (double)rcd.bottom-fdy;

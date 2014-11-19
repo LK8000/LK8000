@@ -16,7 +16,7 @@ void Statistics::RenderClimb(LKSurface& Surface, const RECT& rc)
     DrawNoData(Surface, rc);
     return;
   }
-  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
+  const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
   ResetScale();
   ScaleYFromData(rc, &flightstats.ThermalAverage);
   ScaleYFromValue(rc, (MACCREADY+1.0));

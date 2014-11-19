@@ -109,8 +109,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
   LKPen hpHorizon(PEN_SOLID, IBLSCALE(1), col);
   LKBrush hbHorizon(col);
-  LKPen OldPen = Surface.SelectObject(hpHorizon);
-  LKBrush OldBrush  = Surface.SelectObject(hbHorizon);
+  const auto OldPen = Surface.SelectObject(hpHorizon);
+  const auto OldBrush = Surface.SelectObject(hbHorizon);
 
 
   //bool bFound = false;
@@ -331,7 +331,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   }
 //  UnlockFlightData();
 
-  LKFont hfOld = Surface.SelectObject(LK8PanelUnitFont);
+  auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
   overindex = GetOvertargetIndex();
   wpt_brg = AngleLimit360( acb );
   wpt_dist         = 0.0;
@@ -942,7 +942,7 @@ _after_additionals:
   if ( Current_Multimap_SizeY<SIZE4)
   RenderPlaneSideview(Surface,  0.0f, DerivedDrawInfo.NavAltitude,wpt_brg, &sDia );
 
-  LKFont hfOld2 = Surface.SelectObject(LK8InfoNormalFont);
+  const auto hfOld2 = Surface.SelectObject(LK8InfoNormalFont);
   Surface.SetTextColor(Sideview_TextColor);
 
   Surface.SelectObject(hfOld2);

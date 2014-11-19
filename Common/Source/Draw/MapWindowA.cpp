@@ -146,7 +146,7 @@ DrawAirSpaceBorders(Surface, rc);
   // draw it again, just the outlines
   
   // we will be drawing directly into given hdc, so store original PEN object
-  LKPen hOrigPen = Surface.SelectObject(LK_WHITE_PEN);
+  const auto hOrigPen = Surface.SelectObject(LK_WHITE_PEN);
 #ifdef AIRSPACE_BORDER
   if(0)
 #endif
