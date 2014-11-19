@@ -74,6 +74,11 @@ BOOL Window::RegisterWindow(const WNDCLASS* wcx)
 		return TRUE;
 }
 
+void Window::SubClassWindow() {
+  SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
+  _OriginalWndProc = (WNDPROC)SetWindowLongPtr(_hWnd, GWLP_WNDPROC, (LONG_PTR) Window::stWinMsgHandler);
+}
+
 /*
 	You can not initialize the window class with a class method as the window 
 	procedure unless it is a static method, so the class also needs a static 
@@ -83,7 +88,7 @@ BOOL Window::RegisterWindow(const WNDCLASS* wcx)
 	See "http://www.gamedev.net/reference/articles/article1810.asp" for more info.
 */
 LRESULT CALLBACK Window::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    
+    Window* pWnd = NULL;
 /* 
  * A difference between a desktop version of Windows and the CE version is in the window creation process. 
  * On the desktop WM_NCCREATE is the first message so the this pointer should be captured during the its processing.
@@ -96,11 +101,14 @@ LRESULT CALLBACK Window::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 #endif        
 	{
 		// get the pointer to the window from lpCreateParams which was set in CreateWindow
-		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)((LPCREATESTRUCT(lParam))->lpCreateParams));
-	}
-
-	// get the pointer to the window
-	Window* pWnd = GetObjectFromWindow(hwnd);
+        pWnd = reinterpret_cast<Window *>(((LPCREATESTRUCT)lParam)->lpCreateParams);
+        ::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWnd));
+        
+        pWnd->SetHandle(hwnd); // this is need, otherwise _hWnd not already set inside OnCreate() ..
+	} else {
+    	// get the pointer to the window
+        pWnd = GetObjectFromWindow(hwnd);
+    }
 
 	// if we have the pointer, go to the message handler of the window
 	// else, use DefWindowProc
@@ -110,14 +118,23 @@ LRESULT CALLBACK Window::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-bool Window::Create(const RECT& rect)
+bool Window::Create(Window* pOwner, const RECT& rect)
 { 
 	// Create the window
 	
 	// send the this pointer as the window creation parameter
-	_hWnd = CreateWindow(_szClassName.c_str(), _szWindowText.c_str(), _dwStyles, rect.left, rect.top, 
-		rect.right - rect.left, rect.bottom - rect.top, NULL, NULL, _hInstance, 
+	HWND hwnd = CreateWindow(_szClassName.c_str(), _szWindowText.c_str(), _dwStyles, rect.left, rect.top, 
+		rect.right - rect.left, rect.bottom - rect.top, pOwner?pOwner->Handle():NULL, NULL, _hInstance, 
 		(void *)this);
+
+    assert(hwnd);
+
+    if(hwnd && !_hWnd) {
+        // if CreateWindow return valid HWND, this it's not custom window class, so, we need to set WNDPROC
+        _hWnd = hwnd;
+        SubClassWindow();
+    }
+
 
 	return (_hWnd != NULL);
 }
@@ -177,7 +194,10 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
         default:
             break;
     }
-    // TODO :  call original WNDPROC if subclass.
+    
+    if(_OriginalWndProc) {
+        return CallWindowProc(_OriginalWndProc, hWnd, uMsg, wParam, lParam);
+    }
     return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
     

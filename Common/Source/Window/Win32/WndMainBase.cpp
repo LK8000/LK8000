@@ -66,7 +66,7 @@ bool WndMainBase::Create(const RECT& rect) {
     _szWindowText = _T("LK8000");
     _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
 
-    return Window::Create(rect);
+    return Window::Create(NULL, rect);
 }
 
 bool WndMainBase::OnCreate(int x, int y, int cx, int cy) {

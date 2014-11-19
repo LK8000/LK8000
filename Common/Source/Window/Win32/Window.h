@@ -20,8 +20,6 @@
 #include "Screen/LKFont.h"
 #include "../WindowAbstract.h"
 
-class LKSurface;
-
 class Window : public WindowAbstrat {
 public:
     // many different ways to register
@@ -44,7 +42,7 @@ public:
         // else, Text is set by CreateWindow().
     }
 
-    virtual bool Create(const RECT& rect);
+    virtual bool Create(Window* pOwner, const RECT& rect);
 
     HWND Handle() {
         return _hWnd;
@@ -90,19 +88,31 @@ public:
         ::InvalidateRect(_hWnd, &Rect, FALSE);
     }
 
+    void SetTop() {
+        ::SetWindowPos(_hWnd, HWND_TOP, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE);
+    }
+
+
 
 protected:
     HWND _hWnd;
     DWORD _dwStyles;
     std::tstring _szClassName;
     std::tstring _szWindowText;
-
+    WNDPROC _OriginalWndProc;
+    
     //contructor
-    Window(CONST WNDCLASS* wcx = NULL) : _hWnd() {
+    Window(CONST WNDCLASS* wcx = NULL) : _hWnd(), _dwStyles(), _OriginalWndProc() {
         if (wcx != NULL) {
             RegisterWindow(wcx);
         }
     }
+    
+    void SetHandle(HWND hwnd) {
+        _hWnd = hwnd;
+    }    
+
+    void SubClassWindow();
 
     // the real message handler
     virtual LRESULT CALLBACK WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
