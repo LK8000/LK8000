@@ -805,7 +805,7 @@ Surface.GetTextSize(&BufferValue[len-1], 1, &tsize);
 				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0,
 					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 
-			if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
+			if (IsSafetyAltitudeInUse(index)) {
 				Surface.SelectObject(LK8SmallFont);
 				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
