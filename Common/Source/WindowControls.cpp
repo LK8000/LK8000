@@ -1731,8 +1731,6 @@ LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 //
 int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
-  LKBitmap Membitmap;
-  LKBitmap Oldbitmap;
   HWND hWnd;
   RECT Client_Rect;
   int win_width;

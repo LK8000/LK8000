@@ -159,37 +159,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
   }
 
   if (MapWindow::zoom.RealScale() <=20) for(i=0;i<WayPointList.size();i++) {
-    LKBitmap WptBmp;
-      
 	if (WayPointList[i].Visible != TRUE )	continue; // false may not be FALSE?
-
-	if (WayPointCalc[i].IsAirport) {
-		if (WayPointList[i].Reachable == FALSE)	{ 
-                    WptBmp = hBmpAirportUnReachable;
-		} else {
-                    WptBmp = hBmpAirportReachable;
-			if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) {
-				arrivalcutoff = (int)(WayPointList[i].AltArivalAGL);
-				bestwp=i; foundairport++;
-			}
-		}
-	} else {
-		if ( WayPointCalc[i].IsOutlanding ) {
-			// outlanding
-			if (WayPointList[i].Reachable == FALSE)
-                            WptBmp = hBmpFieldUnReachable;
-			else { 
-                            WptBmp = hBmpFieldReachable;
-				// get the outlanding as bestwp only if no other choice
-				if (foundairport == 0) { 
-					// do not set arrivalcutoff: any next reachable airport is better than an outlanding
-					if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) bestwp=i;  
-				}
-			}
-		} else {
-                    continue; // do not draw icons for normal turnpoints here
-                }
-	}
 
     if(Appearance.IndLandable == wpLandableDefault) 
     {
@@ -200,16 +170,45 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
       if(fScaleFact > 20000.0) fScaleFact = 20000.0; // limit to prevent huge airfiel symbols
       if(fScaleFact < 1600)   fScaleFact = 1600; // limit to prevent tiny airfiel symbols
 
-	if (decluttericons) {
-		if (WayPointCalc[i].IsAirport && (WayPointList[i].RunwayLen>minrunway || WayPointList[i].RunwayLen==0)) {
-  	  		DrawRunway(Surface,&WayPointList[i],rc, fScaleFact);
-		}
-
-	} else
-  	  DrawRunway(Surface,&WayPointList[i],rc, fScaleFact);
+      if (decluttericons) {
+        if (WayPointCalc[i].IsAirport && (WayPointList[i].RunwayLen>minrunway || WayPointList[i].RunwayLen==0)) {
+            DrawRunway(Surface,&WayPointList[i],rc, fScaleFact);
+        }
+      } else {
+        DrawRunway(Surface,&WayPointList[i],rc, fScaleFact);
+      }
     }
     else
     {
+        LKBitmap WptBmp;
+        if (WayPointCalc[i].IsAirport) {
+            if (WayPointList[i].Reachable == FALSE)	{
+                WptBmp = hBmpAirportUnReachable;
+            } else {
+                WptBmp = hBmpAirportReachable;
+                if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) {
+                    arrivalcutoff = (int)(WayPointList[i].AltArivalAGL);
+                    bestwp=i; foundairport++;
+                }
+            }
+        } else {
+            if ( WayPointCalc[i].IsOutlanding ) {
+                // outlanding
+                if (WayPointList[i].Reachable == FALSE)
+                    WptBmp = hBmpFieldUnReachable;
+                else {
+                    WptBmp = hBmpFieldReachable;
+                    // get the outlanding as bestwp only if no other choice
+                    if (foundairport == 0) {
+                        // do not set arrivalcutoff: any next reachable airport is better than an outlanding
+                        if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) bestwp=i;
+                    }
+                }
+            } else {
+                continue; // do not draw icons for normal turnpoints here
+            }
+        }
+
         Surface.DrawMaskedBitmap(WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, WptBmp, 20, 20);
     }
   } // for all waypoints
@@ -218,7 +217,6 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
 
   for(i=0;i<WayPointList.size();i++) {
-    LKBitmap WptBmp;
 
       if(WayPointList[i].Visible )
 	{
@@ -243,13 +241,11 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 	    irange = inrange;
 
 	    if(MapWindow::zoom.RealScale() > 20) { 
-                WptBmp = hInvSmall;
 	      irange=false;
 	      goto NiklausWirth; // with compliments
 	    } 
 	    if (decluttericons) {
 		if (! (WayPointCalc[i].IsAirport && (WayPointList[i].RunwayLen>minrunway || WayPointList[i].RunwayLen==0))) {
-		    WptBmp = hInvSmall;
 		      irange=false;
 		      goto NiklausWirth;
 		}
@@ -261,10 +257,6 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
 		TextDisplayMode.Reachable = 1;
 
-		if ( isairport )
-		    WptBmp = hBmpAirportReachable;
-		else
-                    WptBmp = hBmpFieldReachable;
 
 		if ((GetMultimap_Labels()<MAPLABELS_ALLOFF)||intask) { 
 
@@ -305,29 +297,8 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		}
 
 
-	      } else  // landable waypoint is unreachable
-		{
-		  dowrite=true; 
-		  if ( isairport ) {
-		    WptBmp = hBmpAirportUnReachable;
-		  } else {
-		    WptBmp = hBmpFieldUnReachable;
-		  }
-		}
-	    } else { // waypoint is an ordinary turnpoint
-	      if(MapWindow::zoom.RealScale() > 4) {
-		if (BlackScreen) 
-			WptBmp = hInvSmall;
-		else
-			WptBmp = hSmall;
-	      } else {
-		if (BlackScreen) 
-			WptBmp = hInvTurnPoint;
-		else
-			WptBmp = hTurnPoint;
 	      }
-
-	    } // end landable-not landable
+	    } 
 
 	  NiklausWirth:
 
@@ -547,19 +518,17 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
  
   std::sort( &SortedWaypointLabelList[0], &SortedWaypointLabelList[MapWaypointLabelListCount], MapWaypointLabelListCompare );
 
-  int j;
-
   // now draw task/landable waypoints in order of range (closest last)
   // writing unconditionally
 
-  for (j=MapWaypointLabelListCount-1; j>=0; j--){
-    LKBitmap WptBmp;
+  for (int j=MapWaypointLabelListCount-1; j>=0; j--){
 
     MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     // draws if they are in task unconditionally,
     // otherwise, does comparison
     if ( E->inTask || (E->isLandable && !E->isExcluded) ) { 
+    LKBitmap WptBmp;
 
 	TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), false);
 
@@ -584,11 +553,12 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
   // now draw normal waypoints in order of range (furthest away last)
   // without writing over each other (or the task ones)
-  for (j=0; j<MapWaypointLabelListCount; j++) {
-    LKBitmap WptBmp;
+  for (int j=0; j<MapWaypointLabelListCount; j++) {
     MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
+      LKBitmap WptBmp;
+
       if ( TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), true) == true) {
 
 	// If we are at low zoom, use a dot for icons, so we dont clutter the screen

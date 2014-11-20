@@ -27,8 +27,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 
   if (!DisableAutoLogger || LoggerActive) {
 	if (LoggerActive || flip) {
-            const LKBitmap& bmpLogger = LoggerActive?hLogger:hLoggerOff;
-            Surface.DrawMaskedBitmap( rc.right+IBLSCALE(-8), rc.bottom - BottomSize+NIBLSCALE(4), NIBLSCALE(7),NIBLSCALE(7), bmpLogger, 7,7);
+      Surface.DrawMaskedBitmap( rc.right+IBLSCALE(-8), rc.bottom - BottomSize+NIBLSCALE(4), NIBLSCALE(7),NIBLSCALE(7), LoggerActive?hLogger:hLoggerOff, 7,7);
 	}
   }
   
