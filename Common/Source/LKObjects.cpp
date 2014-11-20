@@ -25,11 +25,6 @@ void LKObjects_Create() {
   StartupStore(_T("... LKObjects_Create\n"));
   #endif
 
-  // STOCK BRUSHES
-  LKBrush_White = LK_WHITE_BRUSH;
-  LKBrush_Black = LK_BLACK_BRUSH;
-  LKBrush_Hollow = LK_HOLLOW_BRUSH;
-
   // CUSTOM BRUSHES
   LKBrush_Petrol.Create(RGB_PETROL);
   LKBrush_LightGreen.Create(RGB_LIGHTGREEN);

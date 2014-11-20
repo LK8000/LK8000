@@ -22,9 +22,9 @@
 #endif
 
 // Reusable objects for LK
-OEXTERN	LKBrush	LKBrush_White;
-OEXTERN	LKBrush	LKBrush_Black;
-OEXTERN	LKBrush	LKBrush_Hollow;
+#define LKBrush_White LK_WHITE_BRUSH
+#define LKBrush_Black LK_BLACK_BRUSH
+#define LKBrush_Hollow LK_HOLLOW_BRUSH
 
 OEXTERN	LKBrush	LKBrush_Petrol;
 OEXTERN	LKBrush	LKBrush_LightGreen;
