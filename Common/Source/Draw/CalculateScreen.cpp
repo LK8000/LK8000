@@ -217,6 +217,9 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
                       WayPointList[index].Screen);
         WayPointList[index].Visible = 
           PointVisible(WayPointList[index].Screen);
+       } else {
+       	 // No need to continue.
+         break;
       }      
     }
     if (EnableMultipleStartPoints) {
@@ -229,6 +232,9 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
                         WayPointList[index].Screen);
           WayPointList[index].Visible = 
             PointVisible(WayPointList[index].Screen);
+         } else {
+           // No Need to continue.
+           break;
         }
       }
     }
@@ -261,7 +267,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
   if (EnableMultipleStartPoints) {
     for(i=0;i<MAXSTARTPOINTS-1;i++) {
-      if (StartPoints[i].Active && ValidWayPoint(StartPoints[i].Index)) {
+      if (StartPoints[i].Active && ValidWayPointFast(StartPoints[i].Index)) {
         LatLon2Screen(StartPoints[i].SectorEndLon, 
                       StartPoints[i].SectorEndLat, StartPoints[i].End);
         LatLon2Screen(StartPoints[i].SectorStartLon, 
@@ -272,8 +278,8 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
   
   for(i=0;i<MAXTASKPOINTS-1;i++)
   {
-    bool this_valid = ValidTaskPoint(i);
-    bool next_valid = ValidTaskPoint(i+1);
+    bool this_valid = ValidTaskPointFast(i);
+    bool next_valid = ValidTaskPointFast(i+1);
     if (AATEnabled && this_valid) {
       LatLon2Screen(Task[i].AATTargetLon, Task[i].AATTargetLat, 
                     Task[i].Target);
@@ -283,7 +289,10 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
     {
       // finish
       LatLon2Screen(Task[i].SectorEndLon, Task[i].SectorEndLat, Task[i].End);
-      LatLon2Screen(Task[i].SectorStartLon, Task[i].SectorStartLat, Task[i].Start);      
+      LatLon2Screen(Task[i].SectorStartLon, Task[i].SectorStartLat, Task[i].Start);
+
+   	  // No need to continue.
+      break;
     }
     if(this_valid && next_valid)
     {

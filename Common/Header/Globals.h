@@ -930,5 +930,18 @@ GEXTERN bool LKSW_ForceLanding GEXTFALSE;
 GEXTERN bool LKSW_ResetTerrainRenderer GEXTFALSE;
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+// use this two inline form when we already lock Task Data...
+//  avoid recusive Lock overhead
+inline bool ValidWayPointFast(int i) {
+    return ((i>=0)&&(i<(int)WayPointList.size()));
+}
+
+inline bool ValidTaskPointFast(int i) {
+  return ((i>=0) && (i<MAXTASKPOINTS)) ? ValidWayPointFast(Task[i].Index):false;
+}
+////////////////////////////////////////////////////////////////////////////////
+
 #endif
 

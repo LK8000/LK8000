@@ -8,14 +8,10 @@
 
 #include "externs.h"
 
-
-
 bool ValidWayPoint(int i) {
   bool retval = true;
   LockTaskData();
-  if ((i<0)||(i>=(int)WayPointList.size())) {
-    retval = false;
-  }
+  retval = ValidWayPointFast(i);
   UnlockTaskData();
   return retval;
 }
@@ -45,12 +41,9 @@ bool ValidResWayPoint(int i) { // 091213
 }
 
 bool ValidTaskPoint(int i) {
-  bool retval = true;
+  bool retval = false;
   LockTaskData();
-  if ((i<0) || (i>= MAXTASKPOINTS)) 
-    retval = false;
-  else if (!ValidWayPoint(Task[i].Index)) 
-    retval = false;
+  retval = ValidTaskPointFast(Task[i].Index);
   UnlockTaskData();
   return retval;
 }
@@ -59,7 +52,7 @@ bool ValidStartPoint(size_t i) {
     bool retVal=false;
     LockTaskData();
     if(i<MAXSTARTPOINTS) {
-        retVal = ValidWayPoint(StartPoints[i].Index);
+        retVal = ValidWayPointFast(StartPoints[i].Index);
     } 
     UnlockTaskData();
     return retVal;
