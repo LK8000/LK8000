@@ -35,7 +35,7 @@ public:
     
 #ifdef WIN32
 public:
-    explicit LKBrush(HBRUSH Brush) : _Brush(Brush), _Destroy(false) {}
+    explicit LKBrush(HBRUSH Brush) : _Brush(Brush) {}
 
     static LKBrush MakeStock(int fnObject) {
       return LKBrush((HBRUSH)GetStockObject(fnObject));
@@ -45,7 +45,6 @@ public:
 
 protected:
     HBRUSH _Brush;
-    bool _Destroy;
 #endif
 
 };
