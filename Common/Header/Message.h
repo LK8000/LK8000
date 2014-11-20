@@ -16,8 +16,8 @@ enum {
 };
 
 
-struct singleMessage {
-  TCHAR text[1000];
+struct Message_t {
+  std::tstring text;
   int type;
   Poco::Timespan tstart; // time message was created
   Poco::Timespan texpiry; // time message will expire
@@ -44,17 +44,17 @@ class Message {
   static void Lock();
   static void Unlock();
 
-  static void CheckTouch(HWND wmControl);
-
   static void BlockRender(bool doblock);
 
  private:
-  static struct singleMessage messages[MAXMESSAGES];
+  typedef std::list<Message_t> messages_t;
+
+  static messages_t messages; // from older to newer
+  static messages_t messagesHistory; // from newer to older
   static RECT rcmsg; // maximum message size
   static WndMessage WndMsg;
-  static TCHAR msgText[2000];
+  static std::tstring msgText;
   static void Resize();
-  static unsigned GetEmptySlot();
   static bool hidden;
   static int nvisible;
   static int block_ref;

@@ -44,11 +44,14 @@ Poco::Mutex  CritSec_Messages;
 
 RECT Message::rcmsg;
 WndMessage Message::WndMsg;
-struct singleMessage Message::messages[MAXMESSAGES];
+
+Message::messages_t Message::messages; // from older to newer
+Message::messages_t Message::messagesHistory; // from newer to older
+
 bool Message::hidden=false;
 int Message::nvisible=0;
 
-TCHAR Message::msgText[2000];
+std::tstring Message::msgText;
 
 // Get start time to reduce overrun errors
 Poco::Timestamp startTime;
@@ -57,7 +60,7 @@ int Message::block_ref = 0;
 
 void Message::Initialize(RECT rc) {
 
-  block_ref = 0;
+    block_ref = 0;
     hidden = true;
     nvisible = 0;
     rcmsg = rc; // default; message window can be full size of screen
@@ -69,14 +72,6 @@ void Message::Initialize(RECT rc) {
     WndMsg.SetFont(ScreenLandscape ? LK8InfoBigFont : MapWindowBoldFont);
     WndMsg.SetTextColor(LKColor(0x00,0x00,0x00));
     WndMsg.SetBkColor(LKColor(0xFF,0xFF,0xFF));
-
-  for (unsigned i=0; i<MAXMESSAGES; i++) {
-    messages[i].text[0]= _T('\0');
-    messages[i].tstart = 0;
-    messages[i].texpiry = 0;
-    messages[i].type = 0;
-  }
-
 }
 
 
@@ -98,7 +93,7 @@ void Message::Unlock() {
 
 void Message::Resize() {
   SIZE tsize;
-  const int size = _tcslen(msgText);
+  const size_t size = msgText.size();
   RECT rthis;
   //  RECT mRc;
 
@@ -109,14 +104,14 @@ void Message::Resize() {
     hidden = true;
   } else {
     
-    WndMsg.SetText(msgText);
+    WndMsg.SetText(msgText.c_str());
 
     LKWindowSurface Surface(WndMsg);
     const auto oldfont = Surface.SelectObject(ScreenLandscape
                                               ? LK8InfoBigFont
                                               : MapWindowBoldFont);
 
-    Surface.GetTextSize(msgText, size, &tsize);
+    Surface.GetTextSize(msgText.c_str(), size, &tsize);
 
     Surface.SelectObject(oldfont); // 100215
 
@@ -159,162 +154,92 @@ void Message::BlockRender(bool doblock) {
   //Unlock();
 }
 
-
 bool Message::Render() {
-  if (!GlobalRunning) return false;
-  if (block_ref) return false;
+    if (!GlobalRunning) return false;
+    if (block_ref) return false;
 
-  Lock();
-  Poco::Timespan fpsTime = startTime.elapsed();
+    Lock();
+    Poco::Timespan fpsTime = startTime.elapsed();
 
-  // this has to be done quickly, since it happens in GUI thread
-  // at subsecond interval
+    // this has to be done quickly, since it happens in GUI thread
+    // at subsecond interval
+    msgText.clear();
+    nvisible = 0;
+    bool changed = false;
+    messages_t::iterator msgIt = messages.begin();
+    while (msgIt != messages.end()) {
+        if (msgIt->type == 0) {
+            // ignore unknown messages, remove it.
+            messages.erase(msgIt++);
+            changed = true;
+            continue;
+        }
 
-  // first loop through all messages, and determine which should be
-  // made invisible that were previously visible, or
-  // new messages
+        if (msgIt->texpiry < fpsTime && msgIt->texpiry > msgIt->tstart) {
+            // this message has expired, move to history list
+            messagesHistory.splice(messagesHistory.begin(), messages, msgIt++);
+            changed = true;
+            continue;
+        }
 
-  bool changed = false;
-  for (unsigned i=0; i<MAXMESSAGES; i++) {
-    if (messages[i].type==0) continue; // ignore unknown messages
+        if (msgIt->texpiry == msgIt->tstart) {
+            // new message has been added, set new expiry time.
+            msgIt->texpiry = fpsTime + msgIt->tshow;
+            changed = true;
+        }
 
-    if (
-	(messages[i].texpiry <= fpsTime)
-	&&(messages[i].texpiry> messages[i].tstart)
-	) {
-      // this message has expired for first time
-      changed = true;
-      continue;
+        if (nvisible > 0) {
+            msgText += TEXT("\r\n"); // add a line separator
+        }
+        msgText += msgIt->text; // Append Text
+
+        ++nvisible;
+        ++msgIt; // advance to next
+    }
+    if(messagesHistory.size() > 20) {
+        // don't save more than 20 message into history.
+        messagesHistory.erase(--messagesHistory.end());
     }
 
-    // new message has been added
-    if (messages[i].texpiry== messages[i].tstart) {
-      // set new expiry time.
-      messages[i].texpiry = fpsTime + messages[i].tshow;
-      // this is a new message..
-      changed = true;
+    if (changed || (!hidden && messages.empty())) {
+        Resize();
     }
-
-  }
-
-  static bool doresize= false;
-  
-  if (!changed) { 
-    if (doresize) {
-      doresize = false;
-      // do one extra resize after display so we are sure we get all
-      // the text (workaround bug in getlinecount)
-      Resize();
-    }
-    Unlock(); return false; 
-  }
-
-  // ok, we've changed the visible messages, so need to regenerate the
-  // text box
-
-  doresize = true;
-  msgText[0]= 0;
-  nvisible=0;
-  for (unsigned i=0; i<MAXMESSAGES; i++) {
-    if (messages[i].type==0) continue; // ignore unknown messages
-
-    if (messages[i].texpiry< fpsTime) {
-      messages[i].texpiry = messages[i].tstart-1; 
-      // reset expiry so we don't refresh
-      continue;
-    }
-    if(nvisible > 0) {
-        // this is a line separator
-        _tcscat(msgText, TEXT("\r\n"));
-    }
-
-    _tcscat(msgText, messages[i].text);
-    nvisible++;
-  }
-
-  Resize();
-
-  Unlock();
-  return true;
+    Unlock();
+    return changed;
 }
-
-
-
-unsigned Message::GetEmptySlot() {
-  // find oldest message that is no longer visible
-
-  // todo: make this more robust with respect to message types and if can't
-  // find anything to remove..
-  Poco::Timespan tmin=0;
-  unsigned imin=0;
-  for (unsigned i=0; i<MAXMESSAGES; i++) {
-    if ((i==0) || (messages[i].tstart<tmin)) {
-      tmin = messages[i].tstart;
-      imin = i; 
-    }
-  }
-  return imin;
-}
-
 
 void Message::AddMessage(DWORD tshow, int type, const TCHAR* Text) {
 
-  Lock();
+    Lock();
 
-  Poco::Timespan fpsTime = startTime.elapsed();
-  unsigned i = GetEmptySlot();
+    const Poco::Timespan fpsTime = startTime.elapsed();
+    messages.emplace_back((Message_t){Text, type, fpsTime, fpsTime, tshow*1000});
 
-  messages[i].type = type;
-  messages[i].tshow = tshow;
-  messages[i].tstart = fpsTime;
-  messages[i].texpiry = fpsTime;
-  _tcscpy(messages[i].text, Text);
-
-  Unlock();
-  //  Render(); // NO this causes crashes (don't know why..)
+    Unlock();
 }
 
 void Message::Repeat(int type) {
-  Poco::Timespan tmax=0;
-  int imax= -1;
+    Lock();
+    if (!messagesHistory.empty()) {
 
-  Lock();
+        // copy most recent message from history to active message.
+        messages_t::iterator It = messagesHistory.begin();
+        (*It).texpiry = (*It).tstart = startTime.elapsed();
 
-  Poco::Timespan fpsTime = startTime.elapsed();
-
-  // find most recent non-visible message
-
-  for (unsigned i=0; i<MAXMESSAGES; ++i) {
-
-    if (((messages[i].type == type)|| (type==0))
-            &&(messages[i].texpiry < fpsTime)
-            &&(messages[i].tstart > tmax)) {
-      imax = i;
-      tmax = messages[i].tstart;
+        messages.splice(messages.end(), messagesHistory, It);
     }
-
-  }
-
-  if (imax>=0) {
-    messages[imax].tstart = fpsTime;
-    messages[imax].texpiry = messages[imax].tstart;
-  }
-
-  Unlock();
+    Unlock();
 }
 
 bool Message::Acknowledge(int type) {
     Lock();
     bool ret = false; // Did we acknowledge?
-    const Poco::Timespan fpsTime = startTime.elapsed() - 1;
 
-    for (unsigned i = 0; i < MAXMESSAGES; i++) {
-        if (type == 0 || (type != messages[i].type)) {
-            if (messages[i].texpiry > messages[i].tstart) {
-                // message was previously visible, so make it expire now.
-                messages[i].texpiry = fpsTime - 1;
-                ret = true;
-            }
+    messages_t::iterator msgIt = messages.begin();
+    while (msgIt != messages.end()) {
+        if (type == 0 || msgIt->type == type) {
+            messagesHistory.splice(messagesHistory.begin(), messages, msgIt++);
+            ret = true;
         }
     }
 
