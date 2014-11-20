@@ -22,7 +22,7 @@ enum enumType {
 
 class LKPen {
 public:
-    LKPen();
+    LKPen():_Pen() {}
 
     LKPen(LKPen&& Pen);
     LKPen& operator= (LKPen&& Pen);

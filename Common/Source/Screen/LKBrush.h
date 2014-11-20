@@ -17,7 +17,7 @@ class LKBitmap;
 
 class LKBrush {
 public:
-    LKBrush();
+    LKBrush():_Brush() {}
 	
     LKBrush(LKBrush&& Brush); // tranfert ownership
     LKBrush& operator= (LKBrush&& Brush); // tranfert ownership

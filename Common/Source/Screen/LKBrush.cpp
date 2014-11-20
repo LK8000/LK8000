@@ -28,9 +28,6 @@ const LKBrush LK_WHITE_BRUSH = LKBrush::MakeStock(WHITE_BRUSH);
 const LKBrush  LK_BLACK_BRUSH = LKBrush::MakeStock(BLACK_BRUSH);
 const LKBrush  LK_HOLLOW_BRUSH = LKBrush::MakeStock(HOLLOW_BRUSH);
 
-LKBrush::LKBrush() : _Brush() {
-}
-
 LKBrush::LKBrush(LKBrush&& Brush) : _Brush(Brush._Brush) {
     Brush._Brush = nullptr;
 }

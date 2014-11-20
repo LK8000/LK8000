@@ -25,10 +25,6 @@ const LKPen LK_NULL_PEN = LKPen::MakeStock(NULL_PEN);
 const LKPen LK_BLACK_PEN = LKPen::MakeStock(BLACK_PEN);
 const LKPen LK_WHITE_PEN = LKPen::MakeStock(WHITE_PEN);
 
-
-LKPen::LKPen() : _Pen() {
-}
-
 LKPen::LKPen(LKPen&& Pen) : _Pen(Pen._Pen) {
     Pen._Pen = nullptr;
 }
