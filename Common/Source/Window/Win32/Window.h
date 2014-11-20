@@ -56,6 +56,18 @@ public:
         ::ShowWindow(_hWnd, Visible ? SW_SHOW : SW_HIDE);
     }
 
+    bool IsVisible() {
+        return ::IsWindowVisible(_hWnd);
+    }
+
+    void Enable(bool Enable) {
+        ::EnableWindow(_hWnd, Enable);
+    }
+
+    bool IsEnabled() {
+        return ::IsWindowEnabled(_hWnd);
+    }
+
     void SetToForeground() {
         ::ShowWindow(_hWnd, SW_SHOWNORMAL);
         ::BringWindowToTop(_hWnd);
@@ -74,6 +86,7 @@ public:
 
     void Destroy() {
         ::DestroyWindow(_hWnd);
+        _hWnd = NULL;
     }
 
     void SetFont(const LKFont& Font) {

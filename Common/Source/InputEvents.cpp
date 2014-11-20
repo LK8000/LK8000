@@ -656,12 +656,12 @@ bool InputEvents::processButton(int bindex) {
 		// 101212 moved here so that an internal resource played will not stop LKsound running
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 
-		if (!ButtonLabel::ButtonDisabled[bindex]) {
+		if (ButtonLabel::IsEnabled(bindex)) {
 			processGo(ModeLabel[thismode][i].event);
 		}
 
 		// update button text, macro may change the label
-		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && (ButtonLabel::ButtonVisible[bindex])){
+		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && (ButtonLabel::IsVisible(bindex))){
 			drawButtons(thismode);
 		}
 
@@ -761,12 +761,12 @@ bool InputEvents::processKey(int dWord) {
       }
     }
 
-    if ((bindex<0) || (!ButtonLabel::ButtonDisabled[bindex])) {
+    if ((bindex<0) || (ButtonLabel::IsEnabled(bindex))) {
       InputEvents::processGo(event_id);
     }
 
     // experimental: update button text, macro may change the value
-    if ((lastMode == getModeID()) && (bindex > 0) && (pLabelText != NULL) && ButtonLabel::ButtonVisible[bindex]) {
+    if ((lastMode == getModeID()) && (bindex > 0) && (pLabelText != NULL) && ButtonLabel::IsVisible(bindex)) {
       drawButtons(lastMode);
     }
 

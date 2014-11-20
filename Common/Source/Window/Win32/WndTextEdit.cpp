@@ -11,19 +11,12 @@
 
 #include "WndTextEdit.h"
 
-WndTextEdit::WndTextEdit() : Window(), _TextColor(0,0,0), _BkColor(0xFF, 0xFF, 0xFF)  {
+WndTextEdit::WndTextEdit() : WndText(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
     _dwStyles = WS_CHILD|ES_MULTILINE|ES_CENTER|WS_BORDER|ES_READONLY|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
     _szClassName = _T("EDIT");
     
-    _BkBrush.Create(_BkColor);
 }
 
 WndTextEdit::~WndTextEdit() {
-}
 
-HBRUSH WndTextEdit::OnCtlColor(HDC hdc) {
-    assert(hdc);
-    ::SetBkColor(hdc, _BkColor);
-    ::SetTextColor(hdc, _TextColor);
-    return _BkBrush;
 }

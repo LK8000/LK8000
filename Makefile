@@ -394,11 +394,14 @@ endif
 WINDOW := \
 	$(SRC_WINDOW)/WindowBase.cpp \
 	$(SRC_WINDOW)/WndMain.cpp \
+	\
 	$(SRC_WINDOW)/Win32/Window.cpp \
 	$(SRC_WINDOW)/Win32/WndMainBase.cpp \
 	$(SRC_WINDOW)/Win32/WndProc.cpp \
 	$(SRC_WINDOW)/Win32/WndPaint.cpp \
+	$(SRC_WINDOW)/Win32/WndText.cpp \
 	$(SRC_WINDOW)/Win32/WndTextEdit.cpp \
+	$(SRC_WINDOW)/Win32/WndTextLabel.cpp \
 	
 SCREEN := \
 	$(SRC_SCREEN)/Color.cpp \

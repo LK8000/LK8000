@@ -19,21 +19,6 @@
 #include "DoInits.h"
 
 
-extern LKBrush hBrushSelected;
-extern LKBrush hBrushUnselected;
-extern LKBrush hBrushButton;
-#ifdef LXMINIMAP
-extern LKBrush hBrushButtonHasFocus;
-#endif
-extern LKColor ColorSelected;
-extern LKColor ColorUnselected;
-extern LKColor ColorWarning;
-extern LKColor ColorOK;
-extern LKColor ColorButton;
-#ifdef LXMINIMAP
-extern LKColor ColorButtonHasFocus;
-#endif
-
 // windows
 WndMain MainWindow; // Main Window singleton
 
@@ -159,13 +144,6 @@ BOOL InitInstance()
   if(!MainWindow.Create(WindowSize)) {
       return FALSE;
   }
-
-  hBrushSelected.Create(ColorSelected);
-  hBrushUnselected.Create(ColorUnselected);
-  hBrushButton.Create(ColorButton);
-  #ifdef LXMINIMAP
-  hBrushButtonHasFocus.Create(ColorButtonHasFocus);
-  #endif
 
   RECT rc = MainWindow.GetClientRect();
 

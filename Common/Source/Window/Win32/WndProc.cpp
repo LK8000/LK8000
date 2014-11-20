@@ -20,31 +20,6 @@
 #include "LiveTracker.h"
 #include "Dialogs.h"
 
-LKBrush hBrushSelected;
-LKBrush hBrushUnselected;
-LKBrush hBrushButton;
-#ifdef LXMINIMAP
-LKBrush hBrushButtonHasFocus;
-#endif
-LKColor ColorSelected = LKColor(0xC0,0xC0,0xC0);
-LKColor ColorUnselected = RGB_WHITE;
-LKColor ColorWarning = RGB_RED;
-LKColor ColorOK = RGB_BLUE;
-LKColor ColorButton = RGB_BUTTONS;  
-#ifdef LXMINIMAP
-LKColor ColorButtonHasFocus=RGB_DARKYELLOW2;
-#endif
-
-#if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
-#define HAVE_ACTIVATE_INFO
-#include <aygshell.h>
-extern SHACTIVATEINFO s_sai;
-extern bool api_has_SHHandleWMActivate;
-extern bool api_has_SHHandleWMSettingChange;
-#endif
-
-extern bool MainMenu(HWND wmControl);
-
 extern void AfterStartup();
 extern void StartupLogFreeRamAndStorage();
 extern void SIMProcessTimer (void);
@@ -52,60 +27,10 @@ extern void ProcessTimer    (void);
 
 
 LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    long wdata;
-
     switch (uMsg) {
 
         case WM_ERASEBKGND:
             return 1; // JMW trying to reduce screen flicker
-            break;
-        case WM_COMMAND:
-            if(lParam ) {
-                MainMenu((HWND)lParam);
-            }
-        case WM_CTLCOLORSTATIC:
-            wdata = GetWindowLongPtr((HWND) lParam, GWLP_USERDATA);
-            switch (wdata) {
-                case 0:
-                    SetBkColor((HDC) wParam, ColorUnselected);
-                    SetTextColor((HDC) wParam, LKColor(0x00, 0x00, 0x00));
-                    return (LRESULT) (HBRUSH) hBrushUnselected;
-                case 1:
-                    SetBkColor((HDC) wParam, ColorSelected);
-                    SetTextColor((HDC) wParam, LKColor(0x00, 0x00, 0x00));
-                    return (LRESULT) (HBRUSH) hBrushSelected;
-                case 2:
-                    SetBkColor((HDC) wParam, ColorUnselected);
-                    SetTextColor((HDC) wParam, ColorWarning);
-                    return (LRESULT) (HBRUSH) hBrushUnselected;
-                case 3:
-                    SetBkColor((HDC) wParam, ColorUnselected);
-                    SetTextColor((HDC) wParam, ColorOK);
-                    return (LRESULT) (HBRUSH) hBrushUnselected;
-                case 4:
-                    // black on light green
-                    SetTextColor((HDC) wParam, RGB_BLACK);
-                    SetBkColor((HDC) wParam, ColorButton);
-                    return (LRESULT) (HBRUSH) hBrushButton;
-                case 5:
-                    // grey on light green
-                    SetBkColor((HDC) wParam, ColorButton);
-                    SetTextColor((HDC) wParam, LKColor(0x80, 0x80, 0x80));
-                    return (LRESULT) (HBRUSH) hBrushButton;
-#ifdef LXMINIMAP
-                case 6:
-                    // black on dark yellow
-                    SetTextColor((HDC) wParam, RGB_BLACK);
-                    SetBkColor((HDC) wParam, ColorButtonHasFocus);
-                    return (LRESULT) (HBRUSH) hBrushButtonHasFocus;
-                case 7:
-                    // grey on dark yellow
-                    SetTextColor((HDC) wParam, LKColor(0x80, 0x80, 0x80));
-                    SetBkColor((HDC) wParam, ColorButtonHasFocus);
-                    return (LRESULT) (HBRUSH) hBrushButtonHasFocus;
-#endif
-
-            }
             break;
         case WM_CREATE:
 #ifdef HAVE_ACTIVATE_INFO
@@ -369,9 +294,6 @@ void Shutdown(void) {
   
   // Kill graphics objects
 
-  hBrushSelected.Release();
-  hBrushUnselected.Release();
-  hBrushButton.Release();
   #ifdef LXMINIMAP
   hBrushButtonHasFocus.Release();
   #endif
@@ -428,22 +350,4 @@ void Shutdown(void) {
   StartupStore(foop);
 #endif
 }
-
-
-bool MainMenu(HWND wmControl)
-{
-  if(wmControl != NULL) {
-    if (ProgramStarted==psNormalOp) {
-
-      FullScreen();
-
-      if (ButtonLabel::CheckButtonPress(wmControl)) {
-        return true; // don't continue processing..
-      }
-
-    }
-  }
-  return false;
-}
-
 

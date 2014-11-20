@@ -7,19 +7,41 @@
 */
 #include "externs.h"
 #include "InfoBoxLayout.h"
-#ifdef LXMINIMAP
 #include "InputEvents.h"
-#endif
+#include "Window/WindowBase.h"
+#include "RGB.h"
+#include <array>
+#include <algorithm>
+#include <functional>
 
-extern HINSTANCE _hInstance;
+using std::placeholders::_1;
 
+class MenuButton : public WndTextLabel {
+public:
+    MenuButton() : _MenuId(~0), _EnableMenu() {
 
-HWND ButtonLabel::hWndButtonWindow[NUMBUTTONLABELS];
-bool ButtonLabel::ButtonVisible[NUMBUTTONLABELS];
-bool ButtonLabel::ButtonDisabled[NUMBUTTONLABELS];
+    }
 
+    void SetMenuId(unsigned MenuId) { _MenuId = MenuId; }
 
-void ButtonLabel::GetButtonPosition(int i, RECT rc,
+    void EnableMenu(bool Enable) { _EnableMenu = Enable; }
+    bool IsMenuEnabled() { return _EnableMenu; }
+
+protected:
+    unsigned _MenuId;
+    bool _EnableMenu;
+
+    virtual bool OnLButtonDown(const POINT& Pos) {
+        if(_EnableMenu) {
+            InputEvents::processButton(_MenuId);
+        }
+        return true;
+    }
+};
+
+static std::array<MenuButton, NUMBUTTONLABELS> MenuButtons;
+
+void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 				    int *x, int *y,
 				    int *sizex, int *sizey) {
 
@@ -221,122 +243,74 @@ void ButtonLabel::GetButtonPosition(int i, RECT rc,
 		break;
 
 	} 
-
-
-  };
-
+  }
 }
 
+void ButtonLabel::CreateButtonLabels(const RECT& rc) {
+    int x,y,cx,cy;
 
-void ButtonLabel::CreateButtonLabels(RECT rc) {
-  int x, y, xsize, ysize;
+    for (unsigned i = 0; i < MenuButtons.size(); ++i) {
+        GetButtonPosition(i, rc, &x, &y, &cx, &cy);
 
-  for (int i=0; i<NUMBUTTONLABELS; i++) {
-    GetButtonPosition(i, rc, &x, &y, &xsize, &ysize);
-
- 	hWndButtonWindow[i] = CreateWindow(TEXT("STATIC"), TEXT("\0"),
-			WS_CHILD|WS_TABSTOP	|SS_CENTER|SS_NOTIFY
-			|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
-			x, y, xsize, ysize, MainWindow.Handle(), NULL, _hInstance, NULL);
-
-
-    ButtonVisible[i]= false;
-    ButtonDisabled[i]= false;
-
-    SetWindowLongPtr(hWndButtonWindow[i], GWLP_USERDATA, 4);	  
-  }
+        if (MenuButtons[i].Create(&MainWindow, (RECT){ x, y, x + cx, y + cy })) {
+            MenuButtons[i].SetTextColor(RGB_BLACK);
+            MenuButtons[i].SetBkColor(RGB_BUTTONS);
+            MenuButtons[i].SetMenuId(i);
+        }
+    }
 }
 
 void ButtonLabel::SetFont(const LKFont& Font) {
-  int i;
-  for (i=0; i<NUMBUTTONLABELS; i++) {
-    SendMessage(hWndButtonWindow[i], WM_SETFONT, (WPARAM)(HFONT)Font, MAKELPARAM(TRUE,0));
-  }
+    std::for_each(MenuButtons.begin(), MenuButtons.end(), std::bind(&MenuButton::SetFont, _1, Font));
 }
-
 
 void ButtonLabel::Destroy() {
-  int i;
-  for (i=0; i<NUMBUTTONLABELS; i++) {
-    DestroyWindow(hWndButtonWindow[i]);
-
-    // prevent setting of button details if it's been destroyed
-    hWndButtonWindow[i] = NULL;
-    ButtonVisible[i]= false;
-    ButtonDisabled[i] = true;
-  }
+    std::for_each(MenuButtons.begin(), MenuButtons.end(), std::bind(&MenuButton::Destroy, _1));
 }
 
+void ButtonLabel::SetLabelText(unsigned idx, const TCHAR *text) {
 
-void ButtonLabel::SetLabelText(int index, const TCHAR *text) {
-  // error! TODO enhancement: Add debugging
-  if (index>= NUMBUTTONLABELS) 
-    return;
+    if (idx >= MenuButtons.size()) {
+        return;
+    }
+/*
+    // don't try to draw if window isn't initialised
+    if (hWndButtonWindow[index] == NULL) return;
+*/
 
-  // don't try to draw if window isn't initialised
-  if (hWndButtonWindow[index] == NULL) return;
-
-  if ((text==NULL) || (*text==_T('\0'))||(*text==_T(' '))) {
-    ShowWindow(hWndButtonWindow[index], SW_HIDE);
-    ButtonVisible[index]= false;
-  } else {
-
-    TCHAR s[100];
-
-    bool greyed = ExpandMacros(text, s, sizeof(s)/sizeof(s[0]));
-
-    if (greyed) {
-	#ifdef LXMINIMAP
-        if(InputEvents::getSelectedButtonIndex() == index)
-		SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 7);
-	else
-	#endif
-      SetWindowLongPtr(hWndButtonWindow[index], GWLP_USERDATA, 5);
-      ButtonDisabled[index]= true;
+    if ((text == NULL) || (*text == _T('\0')) || (*text == _T(' '))) {
+        MenuButtons[idx].Visible(false);
     } else {
-	#ifdef LXMINIMAP
-	if(InputEvents::getSelectedButtonIndex() == index)
-		SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 6);
-	else
-	#endif
-      SetWindowLongPtr(hWndButtonWindow[index], GWLP_USERDATA, 4);
-      ButtonDisabled[index]= false;
+#ifdef LXMINIMAP
+        if (InputEvents::getSelectedButtonIndex() == index) {
+            MenuButtons[index].SetBkColor(RGB_DARKYELLOW2);
+        }
+#endif
+
+        TCHAR s[100];
+        bool greyed = ExpandMacros(text, s, array_size(s));
+        if (greyed) {
+            MenuButtons[idx].SetTextColor(LKColor(0x80, 0x80, 0x80));
+            MenuButtons[idx].EnableMenu(false);
+        } else {
+            MenuButtons[idx].SetTextColor(RGB_BLACK);
+            MenuButtons[idx].EnableMenu(true);
+        }
+
+        if ((s[0]==_T('\0'))||(s[0]==_T(' '))) {
+            MenuButtons[idx].Visible(false);
+        } else {
+            MenuButtons[idx].SetText(gettext(s));
+            MenuButtons[idx].SetTop();
+            MenuButtons[idx].Visible(true);
+        }
     }
-
-    if ((s[0]==_T('\0'))||(s[0]==_T(' '))) {
-      ShowWindow(hWndButtonWindow[index], SW_HIDE);
-      ButtonVisible[index]= false;
-    } else {
-      
-      SetWindowText(hWndButtonWindow[index], gettext(s));
-      
-      SetWindowPos(hWndButtonWindow[index], HWND_TOP, 0,0,0,0,
-                   SWP_NOMOVE | SWP_NOSIZE);
-
-      ShowWindow(hWndButtonWindow[index], SW_SHOW);
-      ButtonVisible[index]= true;
-    }
-  }
-
 }
 
-#include "InputEvents.h"
-
-bool ButtonLabel::CheckButtonPress(HWND pressedwindow) {
-  int i;
-
-  for (i=0; i<NUMBUTTONLABELS; i++) {
-    if (hWndButtonWindow[i]== pressedwindow) {
-      if (!ButtonDisabled[i]) {
-        InputEvents::processButton(i);
-        return TRUE;
-      } else {
-        return FALSE;
-      }
-      return FALSE;
-    }
-  }
-  return FALSE;
+bool ButtonLabel::IsVisible(unsigned idx) {
+    return (idx < MenuButtons.size() ? MenuButtons[idx].IsVisible() : false);
 }
 
-
+bool ButtonLabel::IsEnabled(unsigned idx) {
+    return (idx < MenuButtons.size() ? MenuButtons[idx].IsMenuEnabled() : false);
+}

@@ -1,21 +1,20 @@
 #ifndef INFOBOXLAYOUT_H
 #define INFOBOXLAYOUT_H
 
+namespace ButtonLabel {
 
+    void CreateButtonLabels(const RECT& rc);
+    void SetFont(const LKFont& Font);
+    void Destroy();
 
-class ButtonLabel {
- public:
-  static HWND hWndButtonWindow[NUMBUTTONLABELS];
-  static bool ButtonVisible[NUMBUTTONLABELS];
-  static bool ButtonDisabled[NUMBUTTONLABELS];
-  static void CreateButtonLabels(RECT rc);
-  static void SetFont(const LKFont& Font);
-  static void Destroy();
-  static void SetLabelText(int index, const TCHAR *text);
-  static bool CheckButtonPress(HWND pressedwindow);
-  static void GetButtonPosition(int i, RECT rc, 
-				int *x, int *y,
-				int *sizex, int *sizey);
+    void SetLabelText(unsigned idx, const TCHAR *text);
+
+    bool IsVisible(unsigned idx);
+    bool IsEnabled(unsigned idx);
+
+    bool CheckButtonPress(HWND pressedwindow);
+
+    void GetButtonPosition(unsigned idw, const RECT& rc, int *x, int *y, int *sizex, int *sizey);
 };
 
 #endif
