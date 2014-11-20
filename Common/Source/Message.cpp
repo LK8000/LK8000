@@ -9,7 +9,18 @@
 #include "externs.h"
 #include "Message.h"
 #include "TraceThread.h"
+#include "Screen/LKSurface.h"
 
+class WndMessage : public WndTextEdit {
+public:
+    WndMessage() : WndTextEdit() { }
+    
+protected:
+    virtual bool OnLButtonUp(const POINT& Pos) {
+        Message::Acknowledge(0);
+        return false;
+    }
+};
 
 /*
 
@@ -31,10 +42,8 @@
 
 Poco::Mutex  CritSec_Messages;
 
-extern HINSTANCE _hInstance;      // The current instance
-
 RECT Message::rcmsg;
-HWND Message::hWndMessageWindow;
+WndMessage Message::WndMsg;
 struct singleMessage Message::messages[MAXMESSAGES];
 bool Message::hidden=false;
 int Message::nvisible=0;
@@ -44,88 +53,24 @@ TCHAR Message::msgText[2000];
 // Get start time to reduce overrun errors
 Poco::Timestamp startTime;
 
-// Intercept messages destined for the Status Message window
-LRESULT CALLBACK MessageWindowProc(HWND hwnd, UINT message, 
-				   WPARAM wParam, LPARAM lParam)
-{
-
-  POINT pt;
-  RECT  rc;
-  static bool capturedMouse = false;
-
-  SHOWTHREAD(_T("MessageWindowProc"));
-
-  switch (message) {
-  case WM_LBUTTONDOWN:
-
-    // Intercept mouse messages while stylus is being dragged
-    // This is necessary to simulate a WM_LBUTTONCLK event
-    SetCapture(hwnd);
-    capturedMouse = TRUE;
-
-    return 0;
-  case WM_LBUTTONUP :
-
-    ReleaseCapture();
-    if (!capturedMouse) return 0;
-    capturedMouse = FALSE;
-
-    // Is stylus still within this window?
-    pt.x = LOWORD(lParam);
-    pt.y = HIWORD(lParam);
-    GetClientRect(hwnd, &rc);
-
-    if (!PtInRect(&rc, pt)) return 0;
-
-    DestroyWindow(hwnd);
-    return 0;
-  }
-  return DefWindowProc(hwnd, message, wParam, lParam);
-}
-
-
 int Message::block_ref = 0;
 
 void Message::Initialize(RECT rc) {
 
   block_ref = 0;
+    hidden = true;
+    nvisible = 0;
+    rcmsg = rc; // default; message window can be full size of screen
 
-  rcmsg = rc; // default; message window can be full size of screen
+    WndMsg.Create(&MainWindow, rc);
 
-  hWndMessageWindow = CreateWindow( TEXT("EDIT"), TEXT(" "),
-				   WS_VISIBLE|WS_CHILD|ES_MULTILINE|ES_CENTER
-				   |WS_BORDER|ES_READONLY | WS_CLIPCHILDREN 
-				   | WS_CLIPSIBLINGS,
-				   0,0,0,0,MainWindow.Handle(),NULL,_hInstance,NULL);
+    // change message font for different resolutions
+    // Caution, remember to set font also in Resize..
+    WndMsg.SetFont(ScreenLandscape ? LK8InfoBigFont : MapWindowBoldFont);
+    WndMsg.SetTextColor(LKColor(0x00,0x00,0x00));
+    WndMsg.SetBkColor(LKColor(0xFF,0xFF,0xFF));
 
-  SetWindowPos(hWndMessageWindow, HWND_TOP,
-	       rcmsg.left, rcmsg.top, 
-	       rcmsg.right-rcmsg.left, rcmsg.bottom-rcmsg.top,
-	       SWP_SHOWWINDOW);
-  ShowWindow(hWndMessageWindow, SW_HIDE);
-
-  // change message font for different resolutions
-  // Caution, remember to set font also in Resize..
-  if (ScreenLandscape )
-	SendMessage(hWndMessageWindow, WM_SETFONT, (WPARAM)(HFONT)LK8InfoBigFont,MAKELPARAM(TRUE,0));
-  else
-	SendMessage(hWndMessageWindow, WM_SETFONT, (WPARAM)(HFONT)MapWindowBoldFont,MAKELPARAM(TRUE,0));
-
-  /*
-  SetWindowLong(hWndMessageWindow, GWL_WNDPROC, 
-		(LONG) MessageWindowProc);
-  EnableWindow(hWndMessageWindow, FALSE); // prevent window receiving
-					  // keyboard/mouse input
-  */
-
-  hidden = false;
-  nvisible = 0;
-  
-  //  for (x=0; TabStops[x] != 0 && x < 10; x++);
-  //  SendMessage(hWnd, EM_SETTABSTOPS, (WPARAM)x, (LPARAM)TabStops);
-
-  int i;
-  for (i=0; i<MAXMESSAGES; i++) {
+  for (unsigned i=0; i<MAXMESSAGES; i++) {
     messages[i].text[0]= _T('\0');
     messages[i].tstart = 0;
     messages[i].texpiry = 0;
@@ -137,7 +82,7 @@ void Message::Initialize(RECT rc) {
 
 void Message::Destroy() {
   // destroy window
-  DestroyWindow(hWndMessageWindow);
+    WndMsg.Destroy();
 }
 
 
@@ -153,21 +98,20 @@ void Message::Unlock() {
 
 void Message::Resize() {
   SIZE tsize;
-  int size = _tcslen(msgText);
+  const int size = _tcslen(msgText);
   RECT rthis;
   //  RECT mRc;
 
   if (size==0) {
     if (!hidden) {
-      ShowWindow(hWndMessageWindow, SW_HIDE);
-
-      MapWindow::RequestFastRefresh();      
+            WndMsg.Visible(false);
     }
     hidden = true;
   } else {
-    SetWindowText(hWndMessageWindow, msgText);
+    
+    WndMsg.SetText(msgText);
 
-    LKWindowSurface Surface(hWndMessageWindow);
+    LKWindowSurface Surface(WndMsg);
     const auto oldfont = Surface.SelectObject(ScreenLandscape
                                               ? LK8InfoBigFont
                                               : MapWindowBoldFont);
@@ -176,9 +120,7 @@ void Message::Resize() {
 
     Surface.SelectObject(oldfont); // 100215
 
-    int linecount = max(nvisible,max(1,
-			(int)SendMessage(hWndMessageWindow, 
-				    EM_GETLINECOUNT, 0, 0)));
+    const int linecount = max(nvisible, max(1, WndMsg.GetLineCount()));
 
     int width =// min((rcmsg.right-rcmsg.left)*0.8,tsize.cx);
       (int)((rcmsg.right-rcmsg.left)*0.9);
@@ -194,15 +136,11 @@ void Message::Resize() {
     rthis.top = midy-h1;
     rthis.bottom = midy+h2;
 
-    SetWindowPos(hWndMessageWindow, HWND_TOP,
-		 rthis.left, rthis.top,
-		 rthis.right-rthis.left, 
-		 rthis.bottom-rthis.top,
-		 SWP_SHOWWINDOW);
+    WndMsg.SetTop();
+    WndMsg.Move(rthis, true);
+    WndMsg.Visible(true);
     hidden = false;
-
-    // window has resized potentially, so redraw map to reduce artifacts
-    MapWindow::RequestFastRefresh();
+    
 
   }
 
@@ -365,24 +303,16 @@ void Message::Repeat(int type) {
   Unlock();
 }
 
-
-void Message::CheckTouch(HWND wmControl) {
-  if (wmControl == hWndMessageWindow) {
-    // acknowledge with click/touch
-    Acknowledge(0);
-  }
-}
-
 bool Message::Acknowledge(int type) {
     Lock();
     bool ret = false; // Did we acknowledge?
-    Poco::Timespan fpsTime = startTime.elapsed();
+    const Poco::Timespan fpsTime = startTime.elapsed() - 1;
 
     for (unsigned i = 0; i < MAXMESSAGES; i++) {
         if (type == 0 || (type != messages[i].type)) {
             if (messages[i].texpiry > messages[i].tstart) {
                 // message was previously visible, so make it expire now.
-                messages[i].texpiry = 0;
+                messages[i].texpiry = fpsTime - 1;
                 ret = true;
             }
         }

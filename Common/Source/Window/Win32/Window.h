@@ -92,8 +92,6 @@ public:
         ::SetWindowPos(_hWnd, HWND_TOP, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE);
     }
 
-
-
 protected:
     HWND _hWnd;
     DWORD _dwStyles;
@@ -122,6 +120,8 @@ protected:
     inline static Window *GetObjectFromWindow(HWND hWnd) {
         return (Window *) GetWindowLongPtr(hWnd, GWLP_USERDATA);
     }
+
+    virtual HBRUSH OnCtlColor(HDC hdc) { return NULL; }
 
 };
 

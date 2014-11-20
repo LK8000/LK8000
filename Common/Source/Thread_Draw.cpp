@@ -8,7 +8,6 @@
 
 #include "externs.h"
 
-#include <Message.h>
 #include "LKInterface.h"
 #include "Bitmaps.h"
 #include "RGB.h"

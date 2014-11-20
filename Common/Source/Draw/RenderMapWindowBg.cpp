@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include <Message.h>
+#include "Message.h"
 #include "Terrain.h"
 #include "RasterTerrain.h"
 #include "LKGeneralAviation.h"

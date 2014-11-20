@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include <Message.h>
 #include "Waypointparser.h"
 #include "InputEvents.h"
 #include "Dialogs.h"

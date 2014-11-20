@@ -12,7 +12,6 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "Sideview.h"
-#include "Message.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
 #include "Multimap.h"

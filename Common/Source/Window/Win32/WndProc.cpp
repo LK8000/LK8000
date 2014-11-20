@@ -106,7 +106,7 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
 #endif
 
             }
-            return 0;
+            break;
         case WM_CREATE:
 #ifdef HAVE_ACTIVATE_INFO
             memset(&s_sai, 0, sizeof (s_sai));
@@ -201,7 +201,7 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
         default:
             break;
     }
-    return Window::WinMsgHandler(hWnd, uMsg, wParam, lParam);
+    return WndPaint::WinMsgHandler(hWnd, uMsg, wParam, lParam);
 }
 
 
@@ -436,8 +436,6 @@ bool MainMenu(HWND wmControl)
     if (ProgramStarted==psNormalOp) {
 
       FullScreen();
-
-      Message::CheckTouch(wmControl);
 
       if (ButtonLabel::CheckButtonPress(wmControl)) {
         return true; // don't continue processing..

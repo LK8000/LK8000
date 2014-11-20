@@ -156,12 +156,6 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
         case WM_SIZE:
             if(OnSize(LOWORD(lParam), HIWORD(lParam))) return 0;
             break;
-        case WM_PAINT:
-            if(hWnd) {
-                LKPaintSurface Surface(hWnd);
-                if(OnPaint(Surface, Surface.GetRect())) return 0;
-            }
-            break;
         case WM_SYSKEYDOWN:
             /* 
              * http://msdn.microsoft.com/en-us/library/windows/desktop/ms646286(v=vs.85).aspx
@@ -190,6 +184,18 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
             break;
         case WM_KILLFOCUS:
             if(OnKillFocus()) return 0;
+            break;
+        case WM_CTLCOLORSTATIC:
+        case WM_CTLCOLOREDIT:
+            if(lParam) {
+                Window * pChildWnd = Window::GetObjectFromWindow((HWND)lParam);
+                if(pChildWnd) {
+                    HBRUSH hBrush = pChildWnd->OnCtlColor((HDC)wParam);
+                    if(hBrush) {
+                        return (LRESULT)hBrush;
+                    }
+                }
+            }
             break;
         default:
             break;

@@ -17,9 +17,9 @@
     #define HAVE_ACTIVATE_INFO
 #endif
 
-#include "Window.h"
+#include "WndPaint.h"
 
-class WndMainBase : public Window {
+class WndMainBase : public WndPaint {
 public:
     WndMainBase();
     virtual ~WndMainBase();

@@ -9,7 +9,6 @@
 
 #include "externs.h"
 #include "resource.h"
-#include "Message.h"
 #include "LKObjects.h"
 #include "RGB.h"
 

@@ -15,6 +15,8 @@
 #ifdef WIN32
 #include "Win32/Window.h"
 #include "Win32/WndMainBase.h"
+#include "Win32/WndPaint.h"
+#include "Win32/WndTextEdit.h"
 #endif
 
 #endif	/* WINDOWBASE_H */

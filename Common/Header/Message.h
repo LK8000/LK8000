@@ -24,6 +24,7 @@ struct singleMessage {
   Poco::Timespan tshow; // time message is visible for
 };
 
+class WndMessage;
 
 class Message {
  public:
@@ -50,7 +51,7 @@ class Message {
  private:
   static struct singleMessage messages[MAXMESSAGES];
   static RECT rcmsg; // maximum message size
-  static HWND hWndMessageWindow;
+  static WndMessage WndMsg;
   static TCHAR msgText[2000];
   static void Resize();
   static unsigned GetEmptySlot();
