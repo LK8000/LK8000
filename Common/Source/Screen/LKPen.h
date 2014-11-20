@@ -22,8 +22,7 @@ enum enumType {
 
 class LKPen {
 public:
-    LKPen();
-    LKPen(const LKPen& Pen);
+    LKPen():_Pen() {}
 
     LKPen(LKPen&& Pen);
     LKPen& operator= (LKPen&& Pen);
@@ -33,12 +32,10 @@ public:
 
     void Create(enumType Type, unsigned Size, const LKColor& Color);
     void Release();
-
-    LKPen& operator=(const LKPen&);
     
 #ifdef WIN32
 public:
-	explicit LKPen(HPEN Pen) : _Pen(Pen), _Destroy(false) {}
+	explicit LKPen(HPEN Pen) : _Pen(Pen) {}
 
     static LKPen MakeStock(int fnObject) {
       return LKPen((HPEN)GetStockObject(fnObject));
@@ -49,7 +46,6 @@ public:
     
 protected:
     HPEN _Pen;
-    bool _Destroy;
 #else
     operator bool() const;
 #endif

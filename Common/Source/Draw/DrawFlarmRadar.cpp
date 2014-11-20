@@ -20,6 +20,8 @@
 #include "Bitmaps.h"
 #include "Dialogs.h"
 #include "Poco/Timestamp.h"
+#include "Screen/PenReference.h"
+#include "Screen/BrushReference.h"
 
 extern POINT startScreen;
 
@@ -494,8 +496,8 @@ static RECT OwnPosSideView;
 int iTouchAreaSize = 45;
 LKPen   hOrangePen ;
 LKPen   hGreenPen ;
-LKPen   hDrawPen ;
-LKBrush hDrawBrush;
+PenReference hDrawPen;
+BrushReference hDrawBrush;
 bool bSideview = true;
 
 

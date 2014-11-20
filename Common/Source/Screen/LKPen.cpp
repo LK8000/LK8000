@@ -25,30 +25,17 @@ const LKPen LK_NULL_PEN = LKPen::MakeStock(NULL_PEN);
 const LKPen LK_BLACK_PEN = LKPen::MakeStock(BLACK_PEN);
 const LKPen LK_WHITE_PEN = LKPen::MakeStock(WHITE_PEN);
 
-
-LKPen::LKPen() : _Pen(), _Destroy() {
-}
-
-LKPen::LKPen(LKPen&& Pen) : _Pen(Pen._Pen), _Destroy(Pen._Destroy) {
+LKPen::LKPen(LKPen&& Pen) : _Pen(Pen._Pen) {
     Pen._Pen = nullptr;
-    Pen._Destroy = false;
 }
 
-LKPen::LKPen(const LKPen& Pen) : _Pen(), _Destroy() {
-    *this = Pen;
-}
-
-LKPen::LKPen(enumType Type, unsigned Size, const LKColor& Color) : _Pen(), _Destroy() {
+LKPen::LKPen(enumType Type, unsigned Size, const LKColor& Color) : _Pen() {
     Create(Type, Size, Color);
 }
 
 #else
 
 LKPen::LKPen(){
-}
-
-LKPen::LKPen(const LKPen& Pen) {
-    *this = Pen;
 }
 
 LKPen::LKPen(enumType Type, unsigned Size, const LKColor& Color) {
@@ -64,20 +51,8 @@ LKPen::~LKPen() {
 LKPen& LKPen::operator= (LKPen&& Pen) {
 #ifdef WIN32
     std::swap(_Pen, Pen._Pen);
-    std::swap(_Destroy, Pen._Destroy);
 #endif
     return (*this);
-}
-
-LKPen& LKPen::operator=(const LKPen& pen) {
-    Release();
-
-#ifdef WIN32
-    _Pen = (HPEN) pen;
-    _Destroy = false; // don't take ownership
-#endif
-    
-    return * this;
 }
 
 void LKPen::Create(enumType Type, unsigned Size, const LKColor& Color) {
@@ -85,13 +60,12 @@ void LKPen::Create(enumType Type, unsigned Size, const LKColor& Color) {
 
 #ifdef WIN32
     _Pen = CreatePen(Type, Size, Color);
-    _Destroy = true; // take ownership
 #endif
 }
 
 void LKPen::Release() {
 #ifdef WIN32
-    if (_Destroy && _Pen) {
+    if (_Pen) {
         ::DeleteObject(_Pen);
     }
     _Pen = NULL;

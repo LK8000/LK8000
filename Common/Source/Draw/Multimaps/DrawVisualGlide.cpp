@@ -158,7 +158,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
   const auto oldBrush = Surface.SelectObject(LKBrush_White);
   const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
 
-  LKBrush brush_back;
+  BrushReference brush_back;
   if (!INVERTCOLORS) {
     brush_back = LKBrush_Black;
   } else {

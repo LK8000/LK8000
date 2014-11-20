@@ -25,7 +25,7 @@ extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
 //
 void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc ) {
 
-  LKBrush hB;
+  BrushReference hB;
 
   TextInBoxMode_t TextDisplayMode = {0};
   TCHAR Buffer[LKSIZEBUFFERLARGE*2];

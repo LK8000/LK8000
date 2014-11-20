@@ -111,30 +111,6 @@ int LKSurface::SetBkMode(int mode) {
 #endif
 }
 
-LKSurface::OldFont LKSurface::SelectObject(const LKFont& Font) {
-#ifdef WIN32
-    return (HFONT)::SelectObject(*this, (HFONT) Font);
-#else
-    return OldFont();
-#endif
-}
-
-LKSurface::OldBrush LKSurface::SelectObject(const LKBrush& Brush) {
-#ifdef WIN32
-    return (HBRUSH)::SelectObject(*this, (HBRUSH) Brush);
-#else
-    return OldBrush();
-#endif
-}
-
-LKSurface::OldPen LKSurface::SelectObject(const LKPen& Pen) {
-#ifdef WIN32
-    return (HPEN)::SelectObject(*this, (HPEN) Pen);
-#else
-    return OldPen();
-#endif
-}
-
 void LKSurface::DrawMaskedBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc) {
 #ifdef WIN32
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
@@ -295,7 +271,7 @@ void LKSurface::DrawDashLine(const int width, const POINT& ptStart, const POINT&
     SelectObject(hpOld);
 }
 
-void LKSurface::FillRect(const RECT *lprc, const LKBrush& Brush) {
+void LKSurface::FillRect(const RECT *lprc, const BrushReference Brush) {
 #ifdef WIN32
     ::FillRect(*this, lprc, Brush);
 #endif    

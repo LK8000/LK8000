@@ -24,6 +24,7 @@
 #include "LKBrush.h"
 #include "LKBitmap.h"
 #include "LKFont.h"
+#include "BrushReference.h"
 
 #ifndef WIN32
 // DrawText Format.
@@ -46,37 +47,43 @@ public:
     LKSurface();
     virtual ~LKSurface();
 
-#ifdef WIN32
+#ifdef USE_GDI
     typedef HFONT OldFont;
     typedef HBRUSH OldBrush;
     typedef HPEN OldPen;
+
+    HFONT SelectObject(HFONT o) {
+      return (HFONT)::SelectObject(*this, o);
+    }
+
+    HBRUSH SelectObject(HBRUSH o) {
+      return (HBRUSH)::SelectObject(*this, o);
+    }
+
+    HPEN SelectObject(HPEN o) {
+      return (HPEN)::SelectObject(*this, o);
+    }
 #else
     typedef int OldFont;
     typedef int OldBrush;
     typedef int OldPen;
-#endif
 
-    OldFont SelectObject(const LKFont& Font);
-    OldBrush SelectObject(const LKBrush& Brush);
-    OldPen SelectObject(const LKPen& Pen);
-
-    void SelectObject(OldFont o) {
-#ifdef WIN32
-      ::SelectObject(*this, o);
-#endif
+    OldFont SelectObject(const LKFont &) {
+      return OldFont();
     }
 
-    void SelectObject(OldBrush o) {
-#ifdef WIN32
-      ::SelectObject(*this, o);
-#endif
+    OldBrush SelectObject(const LKBrush &) {
+      return OldBrush();
     }
 
-    void SelectObject(OldPen o) {
-#ifdef WIN32
-      ::SelectObject(*this, o);
-#endif
+    OldPen SelectObject(const LKPen &) {
+      return OldPen();
     }
+
+    void SelectObject(OldFont o) {}
+    void SelectObject(OldBrush o) {}
+    void SelectObject(OldPen o) {}
+#endif
 
     LKColor SetTextColor(const LKColor& Color);
     LKColor SetBkColor(const LKColor& Color);
@@ -113,7 +120,7 @@ public:
     int DrawArc(long x, long y, int radius, const RECT& rc, double start, double end);
 
 
-    void FillRect(const RECT *lprc, const LKBrush& Brush);
+    void FillRect(const RECT *lprc, BrushReference Brush);
     void Rectangle(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 
     void DrawPushButton(const RECT& rc, bool bPushed);

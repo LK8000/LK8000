@@ -10,8 +10,8 @@
 #include "externs.h"
 #include "LKObjects.h"
 #include "DoInits.h"
-
-
+#include "Screen/PenReference.h"
+#include "Screen/BrushReference.h"
 
 #define NUMVBRICKS 32	// MUST be an even number
 #define BOXTHICK   2	// caution, not used as deemed
@@ -27,13 +27,13 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
   static RECT	vrc, mrc, hrc, htrc, hbrc;
   static RECT	brc[NUMVBRICKS];
-  static LKPen	blackThickPen;
-  static LKPen	blackThinPen, whiteThinPen;
-  static LKBrush blackBrush, whiteBrush;
-  static LKBrush greenBrush, darkyellowBrush, orangeBrush, redBrush;
-  static LKBrush lakeBrush, blueBrush, indigoBrush;
-  static const LKBrush *positiveBrush[NUMVBRICKS/2];
-  static const LKBrush *negativeBrush[NUMVBRICKS/2];
+  static PenReference blackThickPen;
+  static PenReference blackThinPen, whiteThinPen;
+  static BrushReference blackBrush, whiteBrush;
+  static BrushReference greenBrush, darkyellowBrush, orangeBrush, redBrush;
+  static BrushReference lakeBrush, blueBrush, indigoBrush;
+  static BrushReference positiveBrush[NUMVBRICKS/2];
+  static BrushReference negativeBrush[NUMVBRICKS/2];
 
   static short startInitCounter=0;
   static bool dogaugeinit=true;
@@ -79,8 +79,8 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
   int variowidth=LKVarioSize;
 
 
-  blackThickPen =  LKPen_Black_N2;	// BOXTHICK
-  whiteThinPen =   LKPen_White_N0;
+  blackThickPen = LKPen_Black_N2;	// BOXTHICK
+  whiteThinPen = LKPen_White_N0;
   blackThinPen =   LKPen_Black_N0;
   blackBrush = LKBrush_Black;
   whiteBrush = LKBrush_White;
@@ -94,43 +94,43 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
   // set default background in case of missing values
   for (int i=0; i<(NUMVBRICKS/2); i++ )
-	positiveBrush[i]= &blackBrush;
+	positiveBrush[i]= blackBrush;
   for (int i=0; i<(NUMVBRICKS/2); i++ )
-	negativeBrush[i]= &blackBrush;
+	negativeBrush[i]= blackBrush;
 
-  positiveBrush[15]=&greenBrush;
-  positiveBrush[14]=&greenBrush;
-  positiveBrush[13]=&greenBrush;
-  positiveBrush[12]=&greenBrush;
-  positiveBrush[11]=&darkyellowBrush;
-  positiveBrush[10]=&darkyellowBrush;
-  positiveBrush[9]=&darkyellowBrush;
-  positiveBrush[8]=&darkyellowBrush;
-  positiveBrush[7]=&orangeBrush;
-  positiveBrush[6]=&orangeBrush;
-  positiveBrush[5]=&orangeBrush;
-  positiveBrush[4]=&orangeBrush;
-  positiveBrush[3]=&redBrush;
-  positiveBrush[2]=&redBrush;
-  positiveBrush[1]=&redBrush;
-  positiveBrush[0]=&redBrush;
+  positiveBrush[15]=greenBrush;
+  positiveBrush[14]=greenBrush;
+  positiveBrush[13]=greenBrush;
+  positiveBrush[12]=greenBrush;
+  positiveBrush[11]=darkyellowBrush;
+  positiveBrush[10]=darkyellowBrush;
+  positiveBrush[9]=darkyellowBrush;
+  positiveBrush[8]=darkyellowBrush;
+  positiveBrush[7]=orangeBrush;
+  positiveBrush[6]=orangeBrush;
+  positiveBrush[5]=orangeBrush;
+  positiveBrush[4]=orangeBrush;
+  positiveBrush[3]=redBrush;
+  positiveBrush[2]=redBrush;
+  positiveBrush[1]=redBrush;
+  positiveBrush[0]=redBrush;
 
-  negativeBrush[0]=&lakeBrush;
-  negativeBrush[1]=&lakeBrush;
-  negativeBrush[2]=&lakeBrush;
-  negativeBrush[3]=&lakeBrush;
-  negativeBrush[4]=&blueBrush;
-  negativeBrush[5]=&blueBrush;
-  negativeBrush[6]=&blueBrush;
-  negativeBrush[7]=&blueBrush;
-  negativeBrush[8]=&indigoBrush;
-  negativeBrush[9]=&indigoBrush;
-  negativeBrush[10]=&indigoBrush;
-  negativeBrush[11]=&indigoBrush;
-  negativeBrush[12]=&blackBrush;
-  negativeBrush[13]=&blackBrush;
-  negativeBrush[14]=&blackBrush;
-  negativeBrush[15]=&blackBrush;
+  negativeBrush[0]=lakeBrush;
+  negativeBrush[1]=lakeBrush;
+  negativeBrush[2]=lakeBrush;
+  negativeBrush[3]=lakeBrush;
+  negativeBrush[4]=blueBrush;
+  negativeBrush[5]=blueBrush;
+  negativeBrush[6]=blueBrush;
+  negativeBrush[7]=blueBrush;
+  negativeBrush[8]=indigoBrush;
+  negativeBrush[9]=indigoBrush;
+  negativeBrush[10]=indigoBrush;
+  negativeBrush[11]=indigoBrush;
+  negativeBrush[12]=blackBrush;
+  negativeBrush[13]=blackBrush;
+  negativeBrush[14]=blackBrush;
+  negativeBrush[15]=blackBrush;
 
 
   // vario paint area
@@ -320,11 +320,11 @@ _aftercar:
 		short j=NUMVBRICKS/2;
 		// Demo show all bricks
 		for (int i=0; i<j; i++)  {
-			Surface.SelectObject(*positiveBrush[i]);
+			Surface.SelectObject(positiveBrush[i]);
 			Surface.Rectangle(brc[i].left, brc[i].top, brc[i].right, brc[i].bottom);
 		}
 		for (int i=0; i<j; i++)  {
-			Surface.SelectObject(*negativeBrush[i]);
+			Surface.SelectObject(negativeBrush[i]);
 			Surface.Rectangle(brc[i+(NUMVBRICKS/2)].left, brc[i+(NUMVBRICKS/2)].top, brc[i+(NUMVBRICKS/2)].right, brc[i+(NUMVBRICKS/2)].bottom);
 		}
 		
@@ -361,7 +361,7 @@ _aftercar:
 		for (unsigned short i=15; i>=meter && i<NUMVBRICKS; i--) {
 			switch (lkvariobar) {
 				case vBarVarioColor:
-					Surface.SelectObject(*positiveBrush[i]);
+					Surface.SelectObject(positiveBrush[i]);
 					break;
 				case vBarVarioMono:
 					if (BgMapColor>POSCOLOR)
@@ -413,7 +413,7 @@ _aftercar:
 		for (unsigned short i=0; i<=meter && i<(NUMVBRICKS/2); i++) {
 			switch (lkvariobar) {
 				case vBarVarioColor:
-					Surface.SelectObject(*negativeBrush[i]);
+					Surface.SelectObject(negativeBrush[i]);
 					break;
 				case vBarVarioMono:
 					if (BgMapColor>POSCOLOR)

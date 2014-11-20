@@ -134,7 +134,7 @@ void CreateProgressDialog(const TCHAR* text) {
  
   const auto oldFont = hStartupDC.SelectObject(LKSTARTBOTTOMFONT);
 
-  const LKBrush hB=LKBrush_Petrol;
+  const LKBrush &hB = LKBrush_Petrol;
   hStartupDC.FillRect(&PrintAreaR, hB);
 
   // Create text area

@@ -49,7 +49,7 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
   // Vertical and horizontal spaces
   #define INTERRAW	1
   #define HEADRAW	NIBLSCALE(6)	
-  LKBrush sortbrush;
+  BrushReference sortbrush;
   RECT invsel;
 
   if (INVERTCOLORS) {

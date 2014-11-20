@@ -18,6 +18,8 @@
 #include "Poco/ThreadTarget.h"
 #include "Poco/Thread.h"
 #include "Poco/Timespan.h"
+#include "Screen/BrushReference.h"
+#include "Screen/PenReference.h"
 #include "Screen/LKBitmap.h"
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
@@ -679,9 +681,9 @@ private:
   static double GetDisplayAngle() { return DisplayAngle; }
   static void SetAutoOrientation(bool doreset);
 
-  static LKBrush hInvBackgroundBrush[LKMAXBACKGROUNDS]; // fixed number of backgrounds in MapWindow
+  static BrushReference hInvBackgroundBrush[LKMAXBACKGROUNDS]; // fixed number of backgrounds in MapWindow
 
-  static      LKPen hpAircraft;
+  static      PenReference hpAircraft;
   static      LKPen hpWind;
   static      LKPen hpWindThick;
   static      LKPen hpThermalCircle;

@@ -11,6 +11,8 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "DoInits.h"
+#include "Screen/PenReference.h"
+#include "Screen/BrushReference.h"
 
 #ifndef LKCOMPETITION
 //
@@ -50,10 +52,8 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
   Start.x = (rc.right - rc.left)/2;
 
-  LKPen		hpBlack;
-  LKBrush	hbBlack;
-  LKBrush	hbWhite;
-  LKBrush	hbBorder;
+  PenReference hpBlack;
+  BrushReference hbBlack;
 
   // gauge size radius
   static int radius = NIBLSCALE(65);
@@ -174,8 +174,8 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
         beta = DrawInfo.GyroscopeAvailable ? DrawInfo.Roll : DerivedDrawInfo.BankAngle;
   }
 
-  hbWhite = LKBrush_White;
-  hbBorder = LKBrush_Grey;
+  const BrushReference hbWhite = LKBrush_White;
+  const BrushReference hbBorder = LKBrush_Grey;
 
   const auto hpOld = Surface.SelectObject(LKPen_White_N1);
   const auto hbOld = Surface.SelectObject(hbWhite);
@@ -302,10 +302,8 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
   Start.x = (rc.right - rc.left)/2;
 
-  LKPen		hpBlack;
-  LKBrush	hbBlack;
-  LKBrush	hbWhite;
-  LKBrush	hbBorder;
+  PenReference hpBlack;
+  BrushReference hbBlack;
   
   // gauge size radius
   static int radius = NIBLSCALE(75);
@@ -439,8 +437,8 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   double beta_sine = fastsine(beta);
   double beta_cosine = fastcosine(beta);
 
-  hbWhite =LKBrush_Lake;// LKBrush_White;
-  hbBorder = LKBrush_Grey;
+  const BrushReference hbWhite =LKBrush_Lake;// LKBrush_White;
+  const BrushReference hbBorder = LKBrush_Grey;
 
   const auto hpOld = Surface.SelectObject(LKPen_White_N1);
   const auto hbOld = Surface.SelectObject(hbWhite);

@@ -25,8 +25,8 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig)
     };
 
     int pi;
-    LKBrush hbPAircraftSolid; 
-    LKBrush hbPAircraftSolidBg;
+    BrushReference hbPAircraftSolid; 
+    BrushReference hbPAircraftSolidBg;
 
     if (BlackScreen) {
       hbPAircraftSolid = LKBrush_LightCyan;
@@ -86,11 +86,9 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig)
     };
 
     int i;
-    LKBrush hbAircraftSolid; 
-    LKBrush hbAircraftSolidBg;
 
-    hbAircraftSolid = LKBrush_Black;
-    hbAircraftSolidBg = LKBrush_White;
+    BrushReference hbAircraftSolid = LKBrush_Black;
+    BrushReference hbAircraftSolidBg = LKBrush_White;
 
     const auto hbOld = Surface.SelectObject(hbAircraftSolidBg);
     const auto hpOld = Surface.SelectObject(hpAircraft);

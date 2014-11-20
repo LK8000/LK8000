@@ -97,7 +97,7 @@ LKPen MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
 LKPen MapWindow::hBigAirspacePens[AIRSPACECLASSCOUNT];
 LKPen MapWindow::hAirspaceBorderPen;
 
-LKBrush  MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
+BrushReference MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
 
 LKBrush  MapWindow::hAirspaceBrushes[NUMAIRSPACEBRUSHES];
 
@@ -112,7 +112,7 @@ LKColor MapWindow::Colours[NUMAIRSPACECOLORS] =
    LKColor(0x7F,0x7F,0x7F), LKColor(0x00,0x00,0x00)};
 
 
-LKPen MapWindow::hpAircraft;
+PenReference MapWindow::hpAircraft;
 LKPen MapWindow::hpWindThick;
 
 LKPen MapWindow::hpThermalBand;
