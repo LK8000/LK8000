@@ -31,10 +31,6 @@ const LKBrush  LK_HOLLOW_BRUSH = LKBrush::MakeStock(HOLLOW_BRUSH);
 LKBrush::LKBrush() : _Brush(), _Destroy() {
 }
 
-LKBrush::LKBrush(const LKBrush& Brush) : _Brush(), _Destroy() {
-    *this = Brush;
-}
-
 LKBrush::LKBrush(LKBrush&& Brush) : _Brush(Brush._Brush), _Destroy(Brush._Destroy) {
     Brush._Brush = nullptr;
     Brush._Destroy = false;
@@ -52,16 +48,6 @@ LKBrush::~LKBrush() {
     }
     _Brush = NULL;
 #endif    
-}
-
-LKBrush& LKBrush::operator=(const LKBrush& Brush) {
-    Release();
-    
-#ifdef WIN32
-    _Brush = Brush._Brush;
-    _Destroy = false;
-#endif    
-    return *this;
 }
 
 LKBrush& LKBrush::operator= (LKBrush&& Brush) {

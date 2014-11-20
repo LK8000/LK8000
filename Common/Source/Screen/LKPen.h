@@ -23,7 +23,6 @@ enum enumType {
 class LKPen {
 public:
     LKPen();
-    LKPen(const LKPen& Pen);
 
     LKPen(LKPen&& Pen);
     LKPen& operator= (LKPen&& Pen);
@@ -33,8 +32,6 @@ public:
 
     void Create(enumType Type, unsigned Size, const LKColor& Color);
     void Release();
-
-    LKPen& operator=(const LKPen&);
     
 #ifdef WIN32
 public:

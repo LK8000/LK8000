@@ -19,9 +19,6 @@ class LKBrush {
 public:
     LKBrush();
 	
-    LKBrush(const LKBrush& Brush);
-    LKBrush& operator=(const LKBrush& Brush);
-
     LKBrush(LKBrush&& Brush); // tranfert ownership
     LKBrush& operator= (LKBrush&& Brush); // tranfert ownership
 
