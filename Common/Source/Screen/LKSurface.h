@@ -24,6 +24,7 @@
 #include "LKBrush.h"
 #include "LKBitmap.h"
 #include "LKFont.h"
+#include "BrushReference.h"
 
 #ifndef WIN32
 // DrawText Format.
@@ -119,7 +120,7 @@ public:
     int DrawArc(long x, long y, int radius, const RECT& rc, double start, double end);
 
 
-    void FillRect(const RECT *lprc, const LKBrush& Brush);
+    void FillRect(const RECT *lprc, BrushReference Brush);
     void Rectangle(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 
     void DrawPushButton(const RECT& rc, bool bPushed);

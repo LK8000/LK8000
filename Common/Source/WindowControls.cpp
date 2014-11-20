@@ -1115,9 +1115,9 @@ LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg,
 static LKColor bkColor = RGB_WINBACKGROUND; // PETROL
 static LKColor fgColor = RGB_WINFOREGROUND; // WHITE
 int WindowControl::InstCount=0;
-LKBrush WindowControl::hBrushDefaultBk;
-LKPen WindowControl::hPenDefaultBorder;
-LKPen WindowControl::hPenDefaultSelector;
+BrushReference WindowControl::hBrushDefaultBk;
+PenReference WindowControl::hPenDefaultBorder;
+PenReference WindowControl::hPenDefaultSelector;
 
 WindowControl::WindowControl(WindowControl *Owner, 
 			     const TCHAR *Name, 
@@ -1541,7 +1541,8 @@ LKColor WindowControl::SetBackColor(const LKColor& Value){
   LKColor res = mColorBack;
   if (mColorBack != Value){
 	mColorBack = Value;
-	mhBrushBk.Create(mColorBack);
+	mBrushBk.Create(mColorBack);
+	mhBrushBk = mBrushBk;
 	if (mVisible){
     	RECT rc = {0,0,0,0};
     	GetClientRect(mHWnd, &rc);
@@ -1645,7 +1646,7 @@ void WindowControl::Paint(LKSurface& Surface){
 
   // JMW added highlighting, useful for lists
   if (!mDontPaintSelector && mCanFocus && mHasFocus){
-    LKBrush hB = LKBrush_DarkYellow2;
+    const auto &hB = LKBrush_DarkYellow2;
     rc.left += 0;
     rc.right -= 2;
     rc.top += 0;
@@ -3305,7 +3306,6 @@ void WndListFrame::Redraw(void){
 
 void WndListFrame::DrawScrollBar(LKSurface& Surface) {
   RECT rc;
-  LKPen hP, hP3;
   LKBitmap oldBmp;
 
 
@@ -3346,7 +3346,7 @@ void WndListFrame::DrawScrollBar(LKSurface& Surface) {
 	return;
   }
 
-  hP = LKPen_Black_N1;
+  const PenReference hP = LKPen_Black_N1;
   const auto oldPen = Surface.SelectObject(hP);
 
   
@@ -3391,7 +3391,7 @@ void WndListFrame::DrawScrollBar(LKSurface& Surface) {
 	}
 
 	// box around slider rect
-	hP3=LKPen_Black_N2;
+	const PenReference hP3=LKPen_Black_N2;
 	int iBorderOffset = 1;  // set to 1 if BORDERWIDTH >2, else 0
 	Surface.SelectObject(hP3);
 	// just left line of scrollbar

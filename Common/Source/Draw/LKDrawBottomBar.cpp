@@ -50,7 +50,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   static int splitoffset;
   static int splitoffset2; // second raw, which really is the first from top!
 
-  LKBrush brush_bar;
+  BrushReference brush_bar;
   if (INVERTCOLORS) {
     brush_bar = LKBrush_Black;
   } else {

@@ -10,6 +10,8 @@
 #define __WINDOWSCONTROL_H
 
 #include "Screen/LKWindowSurface.h"
+#include "Screen/BrushReference.h"
+#include "Screen/PenReference.h"
 #include "Poco/Timestamp.h"
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
@@ -529,9 +531,10 @@ class WindowControl {
     int  mBorderKind;
     LKColor mColorBack;
     LKColor mColorFore;
-    LKBrush mhBrushBk;
-    LKPen mhPenBorder;
-    LKPen mhPenSelector;
+    BrushReference mhBrushBk;
+    LKBrush mBrushBk;
+    PenReference mhPenBorder;
+    PenReference mhPenSelector;
     RECT mBoundRect;
     LKFont mhFont;
     TCHAR mName[64];
@@ -549,9 +552,9 @@ class WindowControl {
     WindowControl *mActiveClient;
 
     static int InstCount;
-    static LKBrush hBrushDefaultBk;
-    static LKPen hPenDefaultBorder;
-    static LKPen hPenDefaultSelector;
+    static BrushReference hBrushDefaultBk;
+    static PenReference hPenDefaultBorder;
+    static PenReference hPenDefaultSelector;
 
   protected:
 
@@ -647,12 +650,12 @@ class WindowControl {
     virtual LKColor SetBackColor(const LKColor& Value);
     const LKColor& GetBackColor(void) const {return(mColorBack);};
 
-    const LKBrush& GetBackBrush(void){return(mhBrushBk);};
+    const BrushReference GetBackBrush() const {return(mhBrushBk);};
 
-    const LKPen& GetBorderPen(void) const {return(mhPenBorder);};
+    PenReference GetBorderPen() const {return(mhPenBorder);};
     void SetBorderPen(const LKPen& Pen) { mhPenBorder = Pen;}
 
-    const LKPen& GetSelectorPen(void) const {return(mhPenSelector);};
+    PenReference GetSelectorPen(void) const {return(mhPenSelector);};
 
     virtual void SetCaption(const TCHAR *Value);
     void SetHelpText(const TCHAR *Value);
@@ -868,7 +871,7 @@ class WndForm:public WindowControl{
 
     int mModalResult;
     LKColor mColorTitle;
-    LKBrush mhBrushTitle;
+    BrushReference mhBrushTitle;
     LKFont mhTitleFont;
     WindowControl *mClientWindow;
     RECT mClientRect;

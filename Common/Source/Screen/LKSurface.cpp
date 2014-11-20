@@ -271,7 +271,7 @@ void LKSurface::DrawDashLine(const int width, const POINT& ptStart, const POINT&
     SelectObject(hpOld);
 }
 
-void LKSurface::FillRect(const RECT *lprc, const LKBrush& Brush) {
+void LKSurface::FillRect(const RECT *lprc, const BrushReference Brush) {
 #ifdef WIN32
     ::FillRect(*this, lprc, Brush);
 #endif    

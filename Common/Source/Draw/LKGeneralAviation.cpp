@@ -46,8 +46,8 @@ int MapWindow::DrawCompassArc(LKSurface& Surface, long x, long y, int radius, co
 		// Meanwhile, I have created LKObjects, so anytime we should use them . No need to delete them.
 		//HPEN hPenBlack = ::CreatePen(PEN_SOLID, (5), LKColor(0x00,0x0,0x0));  
 		//HPEN hPenWhite = (HPEN)CreatePen(PEN_SOLID, (2), LKColor(0xff,0xff,0xff));
-		LKPen hPenBlack = LKPen_Black_N5;
-		LKPen hPenWhite = LKPen_White_N2;
+		const PenReference hPenBlack = LKPen_Black_N5;
+		const PenReference hPenWhite = LKPen_White_N2;
 
 		const auto oldpen=Surface.SelectObject(hPenBlack);
 		Surface.DrawArc(x, y,radius, rc, 300, 60);
@@ -164,8 +164,8 @@ void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc
 	//XXXOREN - move to globals
 	//HPEN hPenBlack = ::CreatePen(PEN_SOLID, (5), LKColor(0x00,0x0,0x0));
 	//HPEN hPenWhite = (HPEN)CreatePen(PEN_SOLID, (2), LKColor(0xff,0xff,0xff));
-	LKPen hPenBlack = LKPen_Black_N3;
-	LKPen hPenWhite = LKPen_White_N2;
+	const PenReference hPenBlack = LKPen_Black_N3;
+	const PenReference hPenWhite = LKPen_White_N2;
 
 	const auto oldfont = Surface.SelectObject(LK8InfoNormalFont);
 
