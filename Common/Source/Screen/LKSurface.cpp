@@ -177,16 +177,35 @@ void LKSurface::Polyline(const POINT *apt, int cpt, const RECT& ClipRect) {
     if(cpt >= 2) {
         POINT Line[2];
         const POINT * It = apt;
+        const POINT * Start = NULL;
+        size_t n=0;
 
         LKGeom::clipper<POINT> Clipper((POINT) {ClipRect.left, ClipRect.top}, (POINT) {ClipRect.right, ClipRect.bottom});
         
         Line[0] = *(It++);
         while ( It < apt+cpt) {
-            Line[1] = *(It++);
-            if(Clipper.ClipLine(Line[0], Line[1])) {
-                Polyline(Line, 2);
+            Line[1] = *(It);
+            unsigned j = Clipper.ClipLine(Line[0], Line[1]);
+            if(j&LKGeom::clipper<POINT>::_SEGM) {
+                if(j&LKGeom::clipper<POINT>::_CLIP) {
+                    if(n > 1) {
+                        Polyline(Start, n);
+                        Start = NULL;
+                    }
+                    Polyline(Line, 2);
+                } else {
+                    if(!Start) {
+                        Start = It-1;
+                        n = 2;
+                    } else {
+                        ++n;
+                    }
+                }
             }
-            Line[0] = Line[1];
+            Line[0] = *(It++);
+        }
+        if(Start) {
+            Polyline(Start, n);
         }
     }
 }

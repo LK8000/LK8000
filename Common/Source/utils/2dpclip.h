@@ -57,6 +57,10 @@ namespace LKGeom {
             Clip_region[3].x = TopLeft.x - 1; // left
         }
 
+        static const unsigned _NOSEGM = 0; /* The line is rejected */
+        static const unsigned _SEGM = 1; /* The line is visible (even partially) */
+        static const unsigned _CLIP = 2; /* The line has been clipped */
+
     private:
         /* Region Code */
         static const unsigned _INSIDE = 0; // 0000
@@ -66,10 +70,6 @@ namespace LKGeom {
         static const unsigned _BOTTOM = 8; // 1000
 
         static const unsigned _TWOBITS = 0x0100; /* A flag to indicate a 2bit code. */
-
-        static const unsigned _NOSEGM = 0; /* The line is rejected */
-        static const unsigned _SEGM = 1; /* The line is visible (even partially) */
-        static const unsigned _CLIP = 2; /* The line has been clipped */
 
         Upoint Cp_start; /* The start point of the line */
         unsigned M_code;
@@ -176,19 +176,21 @@ namespace LKGeom {
 
     public:
         
-        bool ClipLine(Upoint& From, Upoint& To) {
+        unsigned ClipLine(Upoint& From, Upoint& To) {
             Cp_start = From;
             Cp_end = To; 
             
             M_code = CP_space_code(&Cp_start);
             D_code = CP_space_code(&Cp_end);
-            if(Cp_end_clip() != _NOSEGM) {
-                From = Cp_start;
-                To = Cp_end; 
-                
-                return true;
+            unsigned j = Cp_end_clip();
+
+            if(j & _SEGM) {
+                if(j & _CLIP) {
+                    From = Cp_start;
+                    To = Cp_end;
+                }
             }
-            return false;
+            return j;
         }
 
         template<typename polygon_in, typename polygon_out>
