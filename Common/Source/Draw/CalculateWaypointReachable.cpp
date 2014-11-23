@@ -53,7 +53,7 @@ void MapWindow::LKCalculateWaypointReachable(const bool forced)
   if (!forced) ONEHZLIMITER;
 
   static short multicalc_slot=0; // -1 (which becomes immediately 0) will force full loading on startup, but this is not good
-                                 // because currently we are not waiting for ProgramStarted=3
+                                 // because currently we are not waiting for ProgramStarted=psNormalOp
                                  // and the first scan is made while still initializing other things
 
   short numslots=1; // TODO assign numslots with a function, based also on available CPU time

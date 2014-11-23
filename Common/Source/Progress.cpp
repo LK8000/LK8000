@@ -25,7 +25,7 @@ static bool	doinitprogress=true;
 // New LK8000 Startup splash 
 #define LKSTARTBOTTOMFONT MapWindowBoldFont
 
-
+extern void LoadSplash(LKSurface& Surface,const TCHAR *splashfile);
 
 void CloseProgressDialog() {
    DestroyWindow(hStartupWindow);
@@ -55,69 +55,15 @@ void CreateProgressDialog(const TCHAR* text) {
 	ShowWindow(hStartupWindow,SW_SHOWNORMAL);
 	BringWindowToTop(hStartupWindow);
 
-	// Load welcome screen bitmap
-	LKBitmap hWelcomeBitmap;
-	TCHAR sDir[MAX_PATH];
-        TCHAR srcfile[MAX_PATH];
-        LocalPath(sDir,TEXT(LKD_BITMAPS));
-
-	// first look for lkstart_480x272.bmp for example
-	_stprintf(srcfile,_T("%s\\LKSTART_%s.BMP"),sDir, GetSizeSuffix() );
-
-     if ( !lk::filesystem::exist(srcfile) ) {
-		// no custom file, get a generic one
-		switch(ScreenSize) {
-			case ss800x480:
-			case ss640x480:
-			case ss720x408:
-			case ss896x672:
-				_stprintf(srcfile,_T("%s\\LKSTART_LB.BMP"),sDir);
-				break;
-
-			case ss480x272:
-			case ss480x234:
-			case ss400x240:
-			case ss320x240:
-				_stprintf(srcfile,_T("%s\\LKSTART_LS.BMP"),sDir);
-				break;
-
-			case ss480x640:
-			case ss480x800:
-				_stprintf(srcfile,_T("%s\\LKSTART_PB.BMP"),sDir);
-				break;
-
-			case ss240x320:
-			case ss272x480:
-				_stprintf(srcfile,_T("%s\\LKSTART_PS.BMP"),sDir);
-				break;
-
-			default:
-				_stprintf(srcfile,_T("%s\\LKSTART_DEFAULT.BMP"),sDir);
-				break;
-		}
-	}
-    if(!hWelcomeBitmap.LoadFromFile(srcfile)) {
-        // still nothing? use internal (poor man) resource
-        hWelcomeBitmap.LoadFromResource(MAKEINTRESOURCE(IDB_SWIFT));
-    }
-
     LKWindowSurface hStartupDC(hStartupWindow);
-
+    LoadSplash(hStartupDC, _T("LKSTART"));
+    
     const auto oldFont = hStartupDC.SelectObject(LKSTARTBOTTOMFONT);
 	SIZE TextSize;
     hStartupDC.GetTextSize(_T("X"),1, &TextSize);
     yFontSize = TextSize.cy;
     xFontSize = TextSize.cx;
 
-    hStartupDC.Blackness(0,0,ScreenSizeX,ScreenSizeY);
-    
-    const SIZE bmpSize = hWelcomeBitmap.GetSize();
-    
-	if ( (bmpSize.cx >ScreenSizeX)||(bmpSize.cy>ScreenSizeY)) {
-        hStartupDC.DrawBitmap(0,0, ScreenSizeX,ScreenSizeY-NIBLSCALE(2)-(yFontSize*2)-1, hWelcomeBitmap, bmpSize.cx, bmpSize.cy);
-	} else {
-		hStartupDC.DrawBitmap((ScreenSizeX-bmpSize.cx)/2,0,bmpSize.cx, bmpSize.cy, hWelcomeBitmap, bmpSize.cx, bmpSize.cy);
-	}
 	hStartupDC.SelectObject(oldFont);
   }
 

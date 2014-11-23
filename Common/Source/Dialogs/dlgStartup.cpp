@@ -80,16 +80,10 @@ void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, cons
 static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 
  TCHAR srcfile[MAX_PATH];
- TCHAR fprefix[20];
 
  if (RUN_MODE==RUN_SHUTDOWN) return;
 
- if (RUN_MODE==RUN_WELCOME) 
-	_tcscpy(fprefix,_T("LKSTART"));
- else
-	_tcscpy(fprefix,_T("LKPROFILE"));
-
- LoadSplash(Surface,fprefix);
+  LoadSplash(Surface,(RUN_MODE==RUN_WELCOME)?_T("LKSTART"):_T("LKPROFILE"));
 
   if (RUN_MODE==RUN_WELCOME) {
 	TCHAR mes[100];
