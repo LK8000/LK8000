@@ -122,7 +122,7 @@ if(first)
 }
 
 
-  TCHAR *Caption = Sender->GetCaption();
+  const TCHAR *Caption = Sender->GetCaption();
   PlayResource(TEXT("IDR_WAV_CLICK"));
   if (cursor < max_width-1)
     {

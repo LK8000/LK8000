@@ -333,11 +333,16 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #endif // non PNA
 
 // TODO until startup graphics are settled, no need to delay PC start
-  if ( AircraftCategory == (AircraftCategory_t)umParaglider )
-	// LKTOKEN _@M1210_ "PARAGLIDING MODE"
-	CreateProgressDialog(gettext(TEXT("_@M1210_"))); 
-	// LKTOKEN _@M1211_ "SIMULATION"
-  if (SIMMODE) CreateProgressDialog(gettext(TEXT("_@M1211_"))); 
+    if (AircraftCategory == (AircraftCategory_t) umParaglider) {
+        // LKTOKEN _@M1210_ "PARAGLIDING MODE"
+        CreateProgressDialog(gettext(TEXT("_@M1210_")));
+        Sleep(1000);
+    }
+    if (SIMMODE) {
+        // LKTOKEN _@M1211_ "SIMULATION"
+        CreateProgressDialog(gettext(TEXT("_@M1211_")));
+        Sleep(1000);
+    }
 
 #ifdef PNA
   if ( SetBacklight() == true ) 

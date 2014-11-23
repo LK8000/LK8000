@@ -819,6 +819,7 @@ DLGS	:=\
 	$(DLG)/Task/SwapWaypoint.cpp\
 	$(DLG)/dlgBluetooth.cpp\
 	$(DLG)/dlgIgcFile.cpp\
+	$(DLG)/dlgProgress.cpp \
 	
 SRC_FILES :=\
 	$(WINDOW) \

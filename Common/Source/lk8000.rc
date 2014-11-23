@@ -195,6 +195,8 @@ IDR_XML_IGCFILE_L	XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgIgcFile_L.xml"
 IDR_XML_BLUEFLYCONFIG_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig_L.xml"
 IDR_XML_BLUEFLYCONFIG XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig.xml"
 
+IDR_XML_PROGRESS    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress.xml"
+
 IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
 #endif
 

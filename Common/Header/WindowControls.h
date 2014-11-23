@@ -573,7 +573,7 @@ class WindowControl {
     bool HasFocus(void) { return mHasFocus; };
 
   public:
-    TCHAR* GetCaption(void) { return mCaption; };
+    const TCHAR* GetCaption(void) const { return mCaption; };
     int WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	// only Call by final contructor or overwrite
