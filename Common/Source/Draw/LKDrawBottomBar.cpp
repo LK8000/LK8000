@@ -146,12 +146,19 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 
 
     if (LKSurface::AlphaBlendSupported() && MapSpaceMode == MSM_MAP && BarOpacity < 100) {
+        ///////////////////////////////////////////////////////////////////
         // this need to be changed,otherwise is destroy to late.
+        static bool InitFirst = true;
         static LKBitmapSurface BckSurface;
         if (DoInit[MDI_LOOKABLEND]) {
-            BckSurface.Create(Surface, rc.right, rc.bottom);
-            DoInit[MDI_LOOKABLEND] = false;
+            if(InitFirst) {
+                BckSurface.Create(Surface, rc.right, rc.bottom);
+            } else {
+                BckSurface.Resize(rc.right, rc.bottom);
+            }
+            DoInit[MDI_LOOKABLEND] = InitFirst = false;
         }
+        ///////////////////////////////////////////////////////////////////
 
         if (BarOpacity == 0) {
             barTextColor = RGB_BLACK;

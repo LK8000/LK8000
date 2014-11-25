@@ -671,6 +671,8 @@ private:
   static BOOL THREADRUNNING;
   static BOOL THREADEXIT;
   
+  static Poco::FastMutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
+  
   static double LimitMapScale(double value);
 
   static void SetTargetPan(bool dopan, int task_index, DWORD dlgSize = 0);
