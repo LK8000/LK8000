@@ -25,6 +25,7 @@
 #include "LKBitmap.h"
 #include "LKFont.h"
 #include "BrushReference.h"
+#include "PenReference.h"
 
 #ifndef WIN32
 // DrawText Format.
@@ -64,9 +65,9 @@ public:
       return (HPEN)::SelectObject(*this, o);
     }
 #else
-    typedef int OldFont;
-    typedef int OldBrush;
-    typedef int OldPen;
+    typedef const LKFont* OldFont;
+    typedef BrushReference OldBrush;
+    typedef PenReference OldPen;
 
     OldFont SelectObject(const LKFont &) {
       return OldFont();
@@ -80,9 +81,16 @@ public:
       return OldPen();
     }
 
-    void SelectObject(OldFont o) {}
-    void SelectObject(OldBrush o) {}
-    void SelectObject(OldPen o) {}
+    OldFont SelectObject(OldFont o) { 
+        return OldFont(); 
+    }
+    OldBrush SelectObject(OldBrush o) { 
+        return OldBrush(); 
+    }
+    OldPen SelectObject(OldPen o) { 
+        return OldPen(); 
+    }
+
 #endif
 
     LKColor SetTextColor(const LKColor& Color);

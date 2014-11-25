@@ -350,15 +350,9 @@ if(fDistMin < FAI28_45Threshold)
    ********************************************************************/
   LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), RGB_GREEN);
   const auto hpOldPen = Surface.SelectObject(hpSectorPen);
-  LKSurface::OldBrush hpOldBrush;
-  LKBrush hpSectorFill;
-  if (fillcolor != 0)
-  {
-    hpSectorFill.Create(fillcolor);
-    hpOldBrush = Surface.SelectObject(hpSectorFill);
-  }
-  else
-    hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
+  LKBrush hbSectorFill;
+  hbSectorFill.Create(fillcolor);
+  const auto hbOldBrush = Surface.SelectObject(hbSectorFill);
 
 
   /********************************************/
@@ -366,7 +360,7 @@ if(fDistMin < FAI28_45Threshold)
   /********************************************/
 
   Surface.SelectObject(hpOldPen);
-  Surface.SelectObject(hpOldBrush);
+  Surface.SelectObject(hbOldBrush);
   hpSectorPen.Release();
 
 

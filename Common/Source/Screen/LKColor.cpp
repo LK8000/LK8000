@@ -9,13 +9,6 @@
  * Created on 15 octobre 2014, 20:16
  */
 
-
-#ifdef WIN32
-#include <windows.h>
-#else 
-#warning "TODO: need to implement"
-#endif
-
 #include <utility>
 #include "LKColor.h"
 #include "RGB.h"

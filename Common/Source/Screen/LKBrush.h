@@ -17,8 +17,6 @@ class LKBitmap;
 
 class LKBrush {
 public:
-    LKBrush():_Brush() {}
-	
     LKBrush(LKBrush&& Brush); // tranfert ownership
     LKBrush& operator= (LKBrush&& Brush); // tranfert ownership
 
@@ -35,6 +33,7 @@ public:
     
 #ifdef WIN32
 public:
+    LKBrush():_Brush() {}
     explicit LKBrush(HBRUSH Brush) : _Brush(Brush) {}
 
     static LKBrush MakeStock(int fnObject) {
