@@ -301,7 +301,7 @@ void ButtonLabel::SetLabelText(unsigned idx, const TCHAR *text) {
             MenuButtons[idx].Visible(false);
         } else {
             MenuButtons[idx].SetText(gettext(s));
-            MenuButtons[idx].SetTop();
+            MenuButtons[idx].SetTopWnd();
             MenuButtons[idx].Visible(true);
         }
     }

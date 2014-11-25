@@ -1806,7 +1806,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     break;
 
     case WM_LBUTTONDBLCLK:
-      TouchContext=TCX_PROC_DOUBLECLICK;
 	#if TRACE_WNDPROC
 	StartupStore(_T(".... WNDPROC> DOUBLECLICK\n"));
 	#endif
@@ -1820,7 +1819,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 	#if TRACE_WNDPROC
 	StartupStore(_T(".... WNDPROC> LBUTTONDOWN\n"));
 	#endif
-      TouchContext=TCX_PROC_DOWN;
       if (!OnLButtonDown((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
         return(0);
       }
@@ -1828,7 +1826,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     break;
 
     case WM_LBUTTONUP:
-      TouchContext=TCX_PROC_UP;
 	#if TRACE_WNDPROC
 	StartupStore(_T(".... WNDPROC> LBUTTONUP\n"));
 	#endif
@@ -1838,7 +1835,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     break;
 
     case WM_KEYDOWN:
-      TouchContext=TCX_PROC_KEYDOWN;
       KeyTimer(true, wParam & 0xffff);
 
       if (!OnKeyDown(wParam)) {
@@ -1847,7 +1843,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
       break;
 
     case WM_KEYUP:
-        TouchContext=TCX_PROC_KEYUP;
 	if (KeyTimer(false, wParam & 0xffff)) {
 	  // activate tool tips if hit return for long time
 	  if ((wParam & 0xffff) == VK_RETURN) {
@@ -1860,7 +1855,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
       break;
 
     case WM_MOUSEMOVE:
-      TouchContext=TCX_PROC_MOUSEMOVE;
       OnMouseMove((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)});
       return (0);
       break;
@@ -1892,7 +1886,6 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     // APPARENTLY THIS IS NEVER CALLED. Missing Close(), handled by Destroy() now
     case WM_QUIT:
     case WM_CLOSE:
-      TouchContext=TCX_PROC_CLOSE;
       Close();
     return(0);
 
@@ -2271,17 +2264,6 @@ LKFont WndForm::SetFont(const LKFont& Value){
   return(WindowControl::SetFont(Value));
 }
 
-// normal form stuff (nonmodal)
-
-bool WndForm::SetFocused(bool Value, HWND FromTo){
-
-  bool res = WindowControl::SetFocused(Value, FromTo);
-
-  return(res);
-
-}
-
-
 int WndForm::OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){ 
 
   MSG msg;
@@ -2404,7 +2386,6 @@ int WndButton::OnLButtonUp(const POINT& Pos){
   #if TRACE_WNDPROC
   StartupStore(_T(".... WndButton>  UP\n"));
   #endif
-  TouchContext=TCX_BUTTON_UP;
   mDown = false;
 
   RECT rc = {0,0,0,0};
@@ -2474,7 +2455,6 @@ int WndButton::OnLButtonDown(const POINT& Pos){
   #if TRACE_WNDPROC
   StartupStore(_T(".... WndButton>  DOWN\n"));
   #endif
-  TouchContext=TCX_BUTTON_DOWN;
   if (!GetFocused())
     SetFocus(GetHandle());
   else {
@@ -2486,7 +2466,6 @@ int WndButton::OnLButtonDown(const POINT& Pos){
 };
 
 int WndButton::OnLButtonDoubleClick(const POINT& Pos){
-  TouchContext=TCX_BUTTON_DOUBLECLICK;
   mDown = true;
   InvalidateRect(GetHandle(), &GetBoundRect(), false);
   UpdateWindow(GetHandle());

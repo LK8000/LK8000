@@ -12,8 +12,6 @@ namespace ButtonLabel {
     bool IsVisible(unsigned idx);
     bool IsEnabled(unsigned idx);
 
-    bool CheckButtonPress(HWND pressedwindow);
-
     void GetButtonPosition(unsigned idw, const RECT& rc, int *x, int *y, int *sizex, int *sizey);
 };
 

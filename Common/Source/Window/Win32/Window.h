@@ -101,7 +101,7 @@ public:
         ::InvalidateRect(_hWnd, &Rect, FALSE);
     }
 
-    void SetTop() {
+    void SetTopWnd() {
         ::SetWindowPos(_hWnd, HWND_TOP, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE);
     }
 

@@ -650,7 +650,7 @@ class WindowControl {
     virtual LKColor SetBackColor(const LKColor& Value);
     const LKColor& GetBackColor(void) const {return(mColorBack);};
 
-    const BrushReference GetBackBrush() const {return(mhBrushBk);};
+    BrushReference GetBackBrush() const {return(mhBrushBk);};
 
     PenReference GetBorderPen() const {return(mhPenBorder);};
     void SetBorderPen(const LKPen& Pen) { mhPenBorder = Pen;}
@@ -898,9 +898,6 @@ class WndForm:public WindowControl{
 	virtual WindowControl* GetTopOwner(void) {return(this);}
 
     void AddClient(WindowControl *Client);
-
-    virtual bool SetFocused(bool Value, HWND FromTo);
-
 
     int OnLButtonUp(const POINT& Pos){
       return(0);
