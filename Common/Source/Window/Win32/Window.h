@@ -18,9 +18,10 @@
 #include "utils/stl_utils.h"
 #include "utils/tstring.h"
 #include "Screen/LKFont.h"
-#include "../WindowAbstract.h"
 
-class Window : public WindowAbstrat {
+class LKSurface;
+
+class Window {
 public:
     // many different ways to register
     virtual BOOL RegisterWindow();
@@ -136,6 +137,26 @@ protected:
 
     virtual HBRUSH OnCtlColor(HDC hdc) { return NULL; }
 
+protected:
+    // Event Handling virtual function ( return true for ignore default process ) :
+    virtual bool OnCreate(int x, int y, int cx, int cy) { return false; }
+    virtual bool OnClose() { return false; }
+    virtual bool OnDestroy() { return false; }
+    virtual bool OnSize(int cx, int cy) { return false; }
+
+    virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) { return false; }
+
+    virtual bool OnKillFocus() { return false; }
+
+	virtual bool OnMouseMove(const POINT& Pos) { return false; }
+
+	virtual bool OnLButtonDown(const POINT& Pos) { return false; }
+    virtual bool OnLButtonUp(const POINT& Pos) { return false; }
+
+	virtual bool OnLButtonDblClick(const POINT& Pos) { return false; }
+
+    virtual bool OnKeyDown(unsigned KeyCode) { return false; }
+    
 };
 
 #endif
