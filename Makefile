@@ -170,11 +170,10 @@ endif
 
 ifeq ($(DEBUG),y)
 OUTPUTS 	:= LK8000-$(TARGET)_debug.exe
-OUTPUTS_NS	:= LK8000-$(TARGET)_debug_ns.exe	
-	
+OUTPUTS_NS	:= LK8000-$(TARGET)_debug-ns.exe	
 else
 OUTPUTS 	:= LK8000-$(TARGET).exe
-OUTPUTS_NS	:= LK8000-$(TARGET)_ns.exe	
+OUTPUTS_NS	:= LK8000-$(TARGET)-ns.exe	
 endif
 
 ######## tools
