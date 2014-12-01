@@ -43,7 +43,7 @@ bool ValidResWayPoint(int i) { // 091213
 bool ValidTaskPoint(int i) {
   bool retval = false;
   LockTaskData();
-  retval = ValidTaskPointFast(Task[i].Index);
+  retval = ValidTaskPointFast(i);
   UnlockTaskData();
   return retval;
 }
