@@ -3,11 +3,28 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 */
-
+#ifdef WIN32
 #ifdef PPC2002
 #include <winsock.h>
 #else
 #include <winsock2.h>
+#endif
+#endif
+
+#ifdef __linux__
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
+
+#define SOCKET int
+#define SOCKET_ERROR -1
+#define INVALID_SOCKET -1
+#define closesocket close
+
+
 #endif
 
 #include <stdlib.h>
@@ -173,9 +190,11 @@ void LiveTrackerShutdown()
     _Thread.join();
     StartupStore(TEXT(". LiveTracker closed.%s"),NEWLINE);
   }
+#ifdef WIN32
   if (_ws_inited) {
     WSACleanup();
   }
+#endif
 }
 
 // Update live tracker data, non blocking
@@ -229,6 +248,7 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
 bool InitWinsock()
 {
+#ifdef WIN32
   WSADATA wsaData;
   
   WORD version = MAKEWORD( 1, 1 );
@@ -243,6 +263,7 @@ bool InitWinsock()
       WSACleanup();
       return false;
   }
+#endif
   return true;
 }
 
