@@ -8,11 +8,12 @@
 
 #include "externs.h"
 #include "Modeltype.h"
+#ifdef WIN32
 #include <shlobj.h>
-
 #if defined(PNA) && defined(UNDER_CE)
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
+#endif
 #endif
 
 
@@ -21,38 +22,24 @@
 short InstallSystem() {
 
   TCHAR srcdir[MAX_PATH];
+  TCHAR srcfile[MAX_PATH];
+
+#ifdef WIN32
   TCHAR dstdir[MAX_PATH];
   TCHAR maindir[MAX_PATH];
-  TCHAR fontdir[MAX_PATH];
-  TCHAR srcfile[MAX_PATH];
   TCHAR dstfile[MAX_PATH];
   TCHAR tbuf[MAX_PATH*3];
-#if (0)
-  DWORD attrib;
+
+  dstdir[0]='\0';
+
 #endif
+
   bool failure=false;
 
   #if TESTBENCH
   StartupStore(_T(". Welcome to InstallSystem v1.2%s"),NEWLINE);
   #endif
   LocalPath(srcdir,TEXT(LKD_SYSTEM));
-
-  dstdir[0]='\0';
-
-  // search for the main system directory on the real device
-  // Remember that SHGetSpecialFolder works differently on CE platforms, and you cannot check for result.
-  // We need to verify if directory does really exist.
-
-//  SHGetSpecialFolderPath(MainWindow, dstdir, CSIDL_WINDOWS, false);
-  if ( _tcslen(dstdir) <6) {
-	_stprintf(tbuf,_T("------ InstallSystem PROBLEM: cannot locate the Windows folder, got string:<%s>%s"),dstdir,NEWLINE);
-	StartupStore(tbuf);
-	StartupStore(_T("------ InstallSystem attempting to use default \"\\Windows\" but no warranty!%s"),NEWLINE);
-	_stprintf(dstdir,TEXT("\\Windows")); // 091118
-  } else {
-	StartupStore(_T(". InstallSystem: Windows path reported from device is: <%s>%s"),dstdir,NEWLINE);
-  }
-  _tcscpy(maindir,dstdir);
 
 
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
@@ -151,8 +138,24 @@ short InstallSystem() {
 
   }
 
-  // we are shure that \Windows does exist already.
+#ifdef WIN32
+  // search for the main system directory on the real device
+  // Remember that SHGetSpecialFolder works differently on CE platforms, and you cannot check for result.
+  // We need to verify if directory does really exist.
 
+//  SHGetSpecialFolderPath(MainWindow, dstdir, CSIDL_WINDOWS, false);
+  if ( _tcslen(dstdir) <6) {
+	_stprintf(tbuf,_T("------ InstallSystem PROBLEM: cannot locate the Windows folder, got string:<%s>%s"),dstdir,NEWLINE);
+	StartupStore(tbuf);
+	StartupStore(_T("------ InstallSystem attempting to use default \"\\Windows\" but no warranty!%s"),NEWLINE);
+	_stprintf(dstdir,TEXT("\\Windows")); // 091118
+  } else {
+	StartupStore(_T(". InstallSystem: Windows path reported from device is: <%s>%s"),dstdir,NEWLINE);
+  }
+  _tcscpy(maindir,dstdir);
+
+  // we are shure that \Windows does exist already.
+  TCHAR fontdir[MAX_PATH];
   fontdir[0] = _T('\0');
   dstdir[0] = _T('\0');
   #ifdef PNA
@@ -230,7 +233,7 @@ short InstallSystem() {
 	} else
 		StartupStore(_T("... Font TAHOMABD.TTF installed on device%s"),NEWLINE);
   }
-
+#endif
   #if TESTBENCH
   StartupStore(_T(". InstallSystem completed OK%s"),NEWLINE);
   #endif
