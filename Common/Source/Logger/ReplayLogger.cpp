@@ -10,6 +10,7 @@
 #include "Logger.h"
 #include "InputEvents.h"
 #include "Dialogs.h"
+#include <time.h>
 
 extern int NumLoggerBuffered;
 
@@ -306,8 +307,11 @@ bool ReplayLogger::UpdateInternal(void) {
 
   static CatmullRomInterpolator cli;
 
-  SYSTEMTIME st;
-  GetLocalTime(&st);
+  time_t rawtime;
+  struct tm * timeinfo;
+  time (&rawtime);
+  timeinfo = localtime (&rawtime);
+
   static double time_lstart = 0;
 
   if (init) {
@@ -320,7 +324,7 @@ bool ReplayLogger::UpdateInternal(void) {
 
   double timelast = time;
 
-  time = (st.wHour*3600+st.wMinute*60+st.wSecond-time_lstart);
+  time = (timeinfo->tm_hour*3600+timeinfo->tm_min*60+timeinfo->tm_sec-time_lstart);
   deltatimereal = time-timelast;
 
   if (init) {
