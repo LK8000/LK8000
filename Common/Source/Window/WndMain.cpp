@@ -119,3 +119,9 @@ bool WndMain::OnTimer() {
     }
     return true; // we have processes this message;
 }
+
+void WndMain::RunModalLoop() {
+    while(_EventLoop.Wait()) {
+        _EventLoop.Dispatch();
+    }
+}

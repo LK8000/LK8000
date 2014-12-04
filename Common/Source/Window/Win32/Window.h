@@ -30,6 +30,7 @@
 class LKSurface;
 
 class Window {
+    friend class EventLoop;
 public:
     // many different ways to register
     virtual BOOL RegisterWindow();

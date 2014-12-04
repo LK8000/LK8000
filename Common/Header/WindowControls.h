@@ -915,11 +915,6 @@ protected:
     virtual bool OnTimer() {
         return (mOnTimerNotify && mOnTimerNotify());
     }
-
-    
-private:
-    static Poco::Timestamp timeAnyOpenClose; // when any dlg opens or child closes
-
 };
 
 class WndButton:public WindowControl{

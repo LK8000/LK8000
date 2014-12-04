@@ -31,7 +31,7 @@ protected:
     unsigned _MenuId;
     bool _EnableMenu;
 
-    virtual bool OnLButtonDown(const POINT& Pos) {
+    virtual bool OnLButtonUp(const POINT& Pos) {
         if(_EnableMenu) {
             InputEvents::processButton(_MenuId);
         }

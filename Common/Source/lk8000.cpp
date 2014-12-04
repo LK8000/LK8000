@@ -60,6 +60,7 @@
 
 #include "TraceThread.h"
 #include "Poco/NamedEvent.h"
+#include "Window/Win32/EventLoop.h"
 
 #ifdef INT_OVERFLOW
 	#include <signal.h>
@@ -117,10 +118,11 @@ int WINAPI WinMain(     HINSTANCE hInstance,
                         LPWSTR     lpCmdLine,
                         int       nCmdShow)
 #endif
-{   
+{
+    (void)hPrevInstance;
+    
     _hInstance = hInstance; // this need to be first, always !
     const TCHAR* szCmdLine = GetCommandLine();
-
 
 #ifdef INT_OVERFLOW
   SetErrorMode(SEM_NOGPFAULTERRORBOX|SEM_NOOPENFILEERRORBOX);
@@ -133,8 +135,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #endif
 #endif
 
-	MSG msg = {0};
-  (void)hPrevInstance;
+
   // use mutex to avoid multiple instances of lk8000 be running
   #if (!((WINDOWSPC>0) && TESTBENCH))
    if (!Mutex.tryLock()) {
@@ -502,32 +503,12 @@ int WINAPI WinMain(     HINSTANCE hInstance,
  //
  // Main message loop
  //
-
-  #if (1)
-  // Simple approach
-  BOOL bRet;
-  while ( (bRet = GetMessage(&msg, NULL, 0, 0)) != 0) {
-	LKASSERT(bRet!=-1);
-	TranslateMessage(&msg);
-	DispatchMessage(&msg);
-  }
-  #else
-  // This is an alternate approach.
-  bool bQuit=false;
-  do {
-	while ( PeekMessage(&msg, NULL, 0, 0,PM_REMOVE)) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-		if (msg.message == WM_QUIT) bQuit=true;
-	}
-	if (bQuit) break;
-  } while(1);
-  #endif
+  MainWindow.RunModalLoop();
 
 _Shutdown:
   CleanupForShutdown();
   #if TESTBENCH
-  StartupStore(_T(".... WinMain terminated, wParamreturn code=%d realexitforced=%d%s"),msg.wParam,realexitforced,NEWLINE);
+  StartupStore(_T(".... WinMain terminated, realexitforced=%d%s"),realexitforced,NEWLINE);
   #endif
 
   #if (WINDOWSPC>0)

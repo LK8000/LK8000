@@ -19,6 +19,8 @@ class WndMain : public WndMainBase, public MapWindow {
 public:
     WndMain();
     virtual ~WndMain();
+    
+    void RunModalLoop();
 
 protected:
     virtual bool OnCreate(int x, int y, int cx, int cy);
@@ -44,6 +46,7 @@ protected:
 
 private:
     bool _MouseButtonDown;
+    EventLoop _EventLoop;
 };
 
 #endif	/* WNDMAIN_H */

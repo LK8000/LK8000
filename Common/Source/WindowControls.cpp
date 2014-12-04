@@ -1598,8 +1598,6 @@ void InitWindowControlModule(void){
 
 }
 
-Poco::Timestamp WndForm::timeAnyOpenClose=0;
-
 WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption, 
                  int X, int Y, int Width, int Height):
   WindowControl(NULL, Name, X, Y, Width, Height, false) {
@@ -1680,46 +1678,19 @@ int WndForm::ShowModal(void) {
     Window* oldFocus = Window::GetObjectFromWindow(GetFocus());
     FocusNext(NULL);
 
-    bool hastimed = false;
-    WndForm::timeAnyOpenClose.update(); // when current dlg opens or child closes
-
-    MSG msg;
-    while ((mModalResult == 0) && GetMessage(&msg, NULL, 0, 0)) {
-        Poco::Timestamp timeMsg;
-
-        if ((msg.message == WM_KEYDOWN) && ((msg.wParam & 0xffff) == VK_ESCAPE)) {
+    EventLoop Loop;
+    while((mModalResult == 0) && Loop.Wait()) {
+        if(Loop.IsEscapeKey()) {
             mModalResult = mrCancle;
         }
         
-        if ((msg.message == WM_KEYDOWN || msg.message == WM_KEYUP || msg.message == WM_LBUTTONDOWN || msg.message == WM_LBUTTONUP || msg.message == WM_LBUTTONDBLCLK)// screen event
-                && msg.hwnd != Handle() && !IsChild(Handle(), msg.hwnd) // not current window or child
-                ) {
+        if(Loop.IsInputMsg() && Loop.Target() != this && !Loop.IsChildMsg(this)) {
+            // Input event and not current window or child
             continue; // make it modal
         }
-
-        TranslateMessage(&msg);
-        if (msg.message != WM_LBUTTONUP || ((timeMsg - WndForm::timeAnyOpenClose) > OPENCLOSESUPPRESSTIME)) // prevents child click from being repeat-handled by parent if buttons overlap
-        {
-            DispatchMessage(&msg);
-        } // timeMsg
-
-        // hack to stop exiting immediately
-        // TODO code: maybe this should block all key handlers to avoid
-        // accidental key presses
-        if (!hastimed) {
-#if defined(PNA) || !defined(UNDER_CE)
-            Poco::Timespan Elapsed(0, 400 * 1000); // 400ms
-#else
-            Poco::Timespan Elapsed(1); // 1s
-#endif
-            if (!enterTime.isElapsed(Elapsed.totalMicroseconds())) { // 091217
-                mModalResult = 0;
-            } else {
-                hastimed = true;
-            }
-        }
-    } // End Modal Loop
-    WndForm::timeAnyOpenClose.update(); // static.  this is current open/close or child open/close
+        
+        Loop.Dispatch();
+    }
 
     if(oldFocus) {
         oldFocus->SetFocus();
