@@ -17,6 +17,9 @@
 #define BOOL	bool
 #define LONG	long
 
+#define FALSE false
+#define TRUE true
+
 typedef unsigned long DWORD;
 typedef unsigned short WORD;
 typedef unsigned int UNINT32;
