@@ -136,6 +136,7 @@ TCHAR * GetSizeSuffix(void) {
 
 
 void LKRunStartEnd(bool start) {
+#ifdef WIN32
   if (start) {
 	LKRun(_T("PREROTATE1.EXE"),1,5000); 
 	LKRun(_T("PREROTATE2.EXE"),1,5000);
@@ -154,8 +155,10 @@ void LKRunStartEnd(bool start) {
 	LKRun(_T("ENDROTATE2.EXE"),1,5000);
 	LKRun(_T("ENDROTATE3.EXE"),1,5000);
 	LKRun(_T("ENDLOAD_99.EXE"),1,INFINITE);
-
   }
+#else
+#warning "LKRunStartEnd : not implemented"
+#endif
 }
 
 
