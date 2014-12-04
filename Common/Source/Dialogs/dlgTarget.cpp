@@ -27,9 +27,7 @@ static DWORD dlgSize = 0;
 
 bool TargetDialogOpen = false;
 
-
-static void OnOKClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnOKClicked(Window* pWnd) {
   wf->SetModalResult(mrOK);
 }
 
@@ -197,41 +195,39 @@ static void MoveTarget(double target_longitude, double target_latitude) {
   UnlockTaskData();
 }
 
-
-static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
-	(void)Sender;
-  switch(KeyCode & 0xffff){
-    case '2':
-      MoveTarget(0);
-    return(0);
-    case '3':
-      MoveTarget(180);
-    return(0);
-    case '6':
-      MoveTarget(270);
-    return(0);
-    case '7':
-      MoveTarget(90);
-    return(0);
-  }
-  if (TargetMoveMode) {
-    StartupStore(TEXT("... moving%s"),NEWLINE);
-    switch(KeyCode & 0xffff){
-    case VK_UP:
-      MoveTarget(0);
-      return(0);
-    case VK_DOWN:
-      MoveTarget(180);
-      return(0);
-    case VK_LEFT:
-      MoveTarget(270);
-      return(0);
-    case VK_RIGHT:
-      MoveTarget(90);
-      return(0);
+static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
+    switch (KeyCode & 0xffff) {
+        case '2':
+            MoveTarget(0);
+            return true;
+        case '3':
+            MoveTarget(180);
+            return true;
+        case '6':
+            MoveTarget(270);
+            return true;
+        case '7':
+            MoveTarget(90);
+            return true;
     }
-  }
-  return(1);
+    if (TargetMoveMode) {
+        StartupStore(TEXT("... moving%s"), NEWLINE);
+        switch (KeyCode & 0xffff) {
+            case VK_UP:
+                MoveTarget(0);
+                return true;
+            case VK_DOWN:
+                MoveTarget(180);
+                return true;
+            case VK_LEFT:
+                MoveTarget(270);
+                return true;
+            case VK_RIGHT:
+                MoveTarget(90);
+                return true;
+        }
+    }
+    return false;
 }
 
 
@@ -355,28 +351,20 @@ static void RefreshCalculator(void) {
 
 }
 
+static bool OnTimerNotify() {
+    double lon, lat;
 
-static int OnTimerNotify(WindowControl * Sender) {
-  (void)Sender;
-  double lon, lat;
-
-//  static short i=0;
-//  if(i++ % 2 == 0) return 0;
-// this update was too slow for adjusting the turnpoint
-
-  if (MapWindow::TargetMoved(lon, lat)) {
-    MoveTarget(lon, lat);
-  }
-  if (TargetModified) {
-    RefreshCalculator();
-    TargetModified = false;
-  }
-  return 0;
+    if (MapWindow::TargetMoved(lon, lat)) {
+        MoveTarget(lon, lat);
+    }
+    if (TargetModified) {
+        RefreshCalculator();
+        TargetModified = false;
+    }
+    return true;
 }
 
-
-static void OnMoveClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnMoveClicked(Window* pWnd) {
   TargetMoveMode = !TargetMoveMode;
   if (TargetMoveMode) {
     btnMove->SetCaption(TEXT("Cursor"));
@@ -617,9 +605,9 @@ void dlgTarget(int TaskPoint) {
 
   RefreshTargetPoint();
 
-  wf->SetTimerNotify(OnTimerNotify);
+  wf->SetTimerNotify(500, OnTimerNotify);
 
-  wf->ShowModal(true); // enable map
+  wf->ShowModal();
 
   MapWindow::SetTargetPan(false, 0);
 

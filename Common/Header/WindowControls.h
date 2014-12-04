@@ -514,7 +514,9 @@ typedef enum{
   bkLeft
 }BorderKind_t;
 
-class WindowControl {
+class WindowControl : public WndCtrlBase {
+    friend class WndForm;
+    friend class WndProperty;
  public:
     typedef void (*OnHelpCallback_t)(WindowControl * Sender);
 
@@ -535,21 +537,15 @@ class WindowControl {
     LKBrush mBrushBk;
     PenReference mhPenBorder;
     PenReference mhPenSelector;
-    RECT mBoundRect;
     LKFont mhFont;
-    TCHAR mName[64];
     TCHAR *mHelpText;
 
     OnHelpCallback_t mOnHelpCallback;
 
     int mTag;
     bool mReadOnly;
-    bool mHasFocus;
 
     int  mBorderSize;
-    bool mVisible;
-
-    WindowControl *mActiveClient;
 
     static int InstCount;
     static BrushReference hBrushDefaultBk;
@@ -558,23 +554,20 @@ class WindowControl {
 
   protected:
 
-    HWND mHWnd;
     bool mCanFocus;
-    TCHAR mCaption[MAXSETCAPTION+1]; // +1 just for safety!
     bool mDontPaintSelector;
 
-    WindowControl *mClients[50];
-    int mClientCount;
+    std::list<WindowControl*> mClients;
 
     virtual void PaintBorder(LKSurface& Surface);
     virtual void PaintSelector(LKSurface& Surface);
 
     void UpdatePosSize(void);
-    bool HasFocus(void) { return mHasFocus; };
+
+    virtual bool OnPaint(LKSurface& Surface, const RECT& Rect);
 
   public:
-    const TCHAR* GetCaption(void) const { return mCaption; };
-    int WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    const TCHAR* GetCaption(void) const { return GetWndText(); }
 
 	// only Call by final contructor or overwrite
     virtual void AddClient(WindowControl *Client);
@@ -583,34 +576,6 @@ class WindowControl {
 
     virtual int OnHelp();
 
-    virtual int OnLButtonDoubleClick(const POINT& Pos){
-		(void)Pos;
-      return(1);
-    };
-    virtual int OnLButtonDown(const POINT& Pos){
-		(void)Pos;
-      return(1);
-    };
-    virtual int OnLButtonUp(const POINT& Pos){
-		(void)Pos;
-      return(1);
-    };
-    virtual int OnKeyDown(unsigned KeyCode){
-		(void)KeyCode;
-      return(1);
-    };
-    virtual int OnKeyUp(unsigned KeyCode){
-		(void)KeyCode;
-      return(1);
-    };
-    virtual int OnMouseMove(const POINT& Pos){
-		(void)Pos;
-      return(1);
-    };
-    virtual int OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
-		(void)hwnd; (void)uMsg; (void)wParam; (void)lParam;
-      return(1);
-    };
     virtual void Close(void){
       SetVisible(false);
     };
@@ -622,27 +587,20 @@ class WindowControl {
       mOnHelpCallback = Function;
     }
 
-    const RECT& GetBoundRect(void) const {return(mBoundRect);}
-
     int GetWidth(void){return(mWidth);};
     int GetHeight(void){return(mHeight);};
 
-    virtual bool SetFocused(bool Value, HWND FromTo);
-    bool GetFocused(void);
     WindowControl *GetCanFocus(void);
     bool SetCanFocus(bool Value);
 
     bool GetReadOnly(void){return(mReadOnly);};
     bool SetReadOnly(bool Value);
 
-    bool SetVisible(bool Value);
-    bool GetVisible(void);
-
     int  GetBorderKind(void);
     int  SetBorderKind(int Value);
 
     const LKFont& GetFont(void) const {return(mhFont);};
-    virtual LKFont SetFont(const LKFont& Value);
+    virtual void SetFont(const LKFont& Value);
 
     virtual LKColor SetForeColor(const LKColor& Value);
     const LKColor& GetForeColor(void) const {return(mColorFore);};
@@ -661,7 +619,6 @@ class WindowControl {
     void SetHelpText(const TCHAR *Value);
 	const TCHAR* GetHelpText() const { return mHelpText; }
 
-    HWND GetHandle(void){return(mHWnd);}
     virtual WindowControl* GetClientArea(void) { return (this); }
 
     WindowControl *GetOwner(void) {return(mOwner);};
@@ -686,13 +643,25 @@ class WindowControl {
 
     virtual void Destroy(void);
 
-    virtual void Redraw(void);
-
     void PaintSelector(bool Value){mDontPaintSelector = Value;};
 
     WindowControl *FindByName(const TCHAR *Name);
 
     void FilterAdvanced(bool advanced);
+
+protected:
+
+    virtual bool OnSetFocus();
+    virtual bool OnKillFocus();
+
+    virtual bool OnDestroy() {
+        Close();
+        return false;
+    }
+    virtual bool OnClose() {
+        Close();
+        return true;
+    }
 
 };
 
@@ -716,16 +685,6 @@ class WndFrame:public WindowControl{
       | DT_WORDBREAK;
     };
 
-    virtual void Destroy(void);
-
-    virtual int OnMouseMove(const POINT& Pos){
-		(void)Pos;
-      return(1);
-    };
-
-    void SetCaption(const TCHAR *Value);
-    TCHAR *GetCaption(void){return(mCaption);};
-
     UINT GetCaptionStyle(void){return(mCaptionStyle);};
     UINT SetCaptionStyle(UINT Value);
 
@@ -734,19 +693,20 @@ class WndFrame:public WindowControl{
     void SetIsListItem(bool Value){mIsListItem = Value;};
 
 
-    int OnLButtonDown(const POINT& Pos);
-    int OnLButtonUp(const POINT& Pos);
+    virtual bool OnLButtonDown(const POINT& Pos);
+    virtual bool OnLButtonUp(const POINT& Pos);
+
+    virtual void Paint(LKSurface& Surface);
 
   protected:
 
-    int OnKeyDown(unsigned KeyCode);
+    virtual bool OnKeyDown(unsigned KeyCode);
 
     bool mIsListItem;
 
     int mLastDrawTextHeight;
     UINT mCaptionStyle;
 
-    virtual void Paint(LKSurface& Surface);
 
 };
 
@@ -773,10 +733,8 @@ class WndListFrame:public WndFrame{
                  void (*OnListCallback)(WindowControl * Sender, 
                                         ListInfo_t *ListInfo));
 
-    virtual void Destroy(void);
-    
-    int OnMouseMove(const POINT& Pos);
-    int OnItemKeyDown(WindowControl *Sender, unsigned KeyCode);
+    virtual bool OnMouseMove(const POINT& Pos);
+    bool OnItemKeyDown(WindowControl *Sender, unsigned KeyCode);
     int PrepareItemDraw(void);
     void ResetList(void);
 
@@ -787,7 +745,7 @@ class WndListFrame:public WndFrame{
 
     void RedrawScrolled(bool all);
     void DrawScrollBar(LKSurface& Surface);
-    int RecalculateIndices(bool bigscroll);
+    bool RecalculateIndices(bool bigscroll);
     void Redraw(void);
     int GetItemIndex(void){return(mListInfo.ItemIndex);}
     void SetItemIndexPos(int iValue);
@@ -801,6 +759,8 @@ class WndListFrame:public WndFrame{
     int ScrollbarTop;
     int ScrollbarWidth;
 
+    virtual void Paint(LKSurface& Surface);
+
   protected:
 #else
   protected:
@@ -809,15 +769,15 @@ class WndListFrame:public WndFrame{
     int ScrollbarWidth;
 #endif
 
-    int OnLButtonDown(const POINT& Pos);
-    int OnLButtonUp(const POINT& Pos);
+    virtual bool OnLButtonDown(const POINT& Pos);
+    virtual bool OnLButtonUp(const POINT& Pos);
 
     OnListCallback_t mOnListCallback;
     OnListCallback_t mOnListEnterCallback;
     ListInfo_t mListInfo;
-    virtual void Paint(LKSurface& Surface);
-	  RECT rcScrollBarButton;
-	  RECT rcScrollBar;
+
+    RECT rcScrollBarButton;
+    RECT rcScrollBar;
     int mMouseScrollBarYOffset; // where in the scrollbar button was mouse down at
     bool mMouseDown;
 
@@ -833,15 +793,12 @@ class WndOwnerDrawFrame:public WndFrame{
     WndOwnerDrawFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, int Width, int Height, OnPaintCallback_t OnPaintCallback):
       WndFrame(Owner, Name, X, Y, Width, Height)
     {
-      mCaption[0] = '\0';
       SetOnPaintNotify(OnPaintCallback);
 
       SetForeColor(GetOwner()->GetForeColor());
       SetBackColor(GetOwner()->GetBackColor());
 
     };
-
-    virtual void Destroy(void);
 
     void SetOnPaintNotify(OnPaintCallback_t OnPaintCallback){
       mOnPaintCallback = OnPaintCallback;
@@ -862,10 +819,10 @@ extern WindowControl *LastFocusControl;
 
 class WndForm:public WindowControl{
 
-    typedef int (*OnTimerNotify_t)(WindowControl * Sender);
-    typedef int (*OnKeyDownNotify_t)(WindowControl * Sender, unsigned KeyCode);
-    typedef int (*OnKeyUpNotify_t)(WindowControl * Sender, unsigned KeyCode);
-    typedef int (*OnLButtonUpNotify_t)(WindowControl * Sender, const POINT& Pos);
+    typedef bool (*OnTimerNotify_t)();
+    typedef bool (*OnKeyDownNotify_t)(Window* pWnd, unsigned KeyCode);
+    typedef bool (*OnKeyUpNotify_t)(Window* pWnd, unsigned KeyCode);
+    typedef bool (*OnLButtonUpNotify_t)(Window* pWnd, const POINT& Pos);
 
   protected:
 
@@ -882,10 +839,7 @@ class WndForm:public WindowControl{
     OnKeyUpNotify_t mOnKeyUpNotify;
     OnLButtonUpNotify_t mOnLButtonUpNotify;
 
-    int OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
     virtual void Paint(LKSurface& Surface);
-    int cbTimerID;
 
   public:
 
@@ -899,10 +853,6 @@ class WndForm:public WindowControl{
 
     void AddClient(WindowControl *Client);
 
-    int OnLButtonUp(const POINT& Pos){
-      return(0);
-    };
-
     void Close(void){
       WindowControl::Close();
       mModalResult = mrCancle;
@@ -910,23 +860,19 @@ class WndForm:public WindowControl{
 
     Poco::Timestamp enterTime;
 
-    void SetToForeground(void);
-
     int GetModalResult(void){return(mModalResult);};
     int SetModalResult(int Value){mModalResult = Value;return(Value);};
 
     LKFont SetTitleFont(const LKFont& Value);
 
-    int ShowModal(bool bEnableMap);
     int ShowModal(void);
     void Show(void);
 
     void SetCaption(const TCHAR *Value);
-    TCHAR *GetCaption(void){return(mCaption);};
 
     LKColor SetForeColor(const LKColor& Value);
     LKColor SetBackColor(const LKColor& Value);
-    LKFont SetFont(const LKFont& Value);
+    void SetFont(const LKFont& Value);
 
     void SetKeyDownNotify(OnKeyDownNotify_t KeyDownNotify) {
         mOnKeyDownNotify = KeyDownNotify;
@@ -940,10 +886,37 @@ class WndForm:public WindowControl{
         mOnLButtonUpNotify = LButtonUpNotify;
     }
 
-    void SetTimerNotify(OnTimerNotify_t OnTimerNotify) {
+    void SetTimerNotify(unsigned uTime, OnTimerNotify_t OnTimerNotify) {
         mOnTimerNotify = OnTimerNotify;
+        if(OnTimerNotify && uTime > 0) {
+            StartTimer(uTime);
+        } else {
+            StopTimer();
+        }
     }
 
+protected:
+    virtual bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode);
+
+    virtual bool OnKeyUpNotify(Window* pWnd, unsigned KeyCode) {
+        return (mOnKeyUpNotify && (mOnKeyUpNotify)(this, KeyCode));
+    }
+
+    virtual bool OnLButtonDownNotify(Window* pWnd, const POINT& Pos) {
+        bLButtonDown = true;
+        return false;
+    }
+
+    virtual bool OnLButtonUpNotify(Window* pWnd, const POINT& Pos) {
+        bLButtonDown=false;
+        return (mOnLButtonUpNotify && (mOnLButtonUpNotify)(this, Pos));
+    }
+
+    virtual bool OnTimer() {
+        return (mOnTimerNotify && mOnTimerNotify());
+    }
+
+    
 private:
     static Poco::Timestamp timeAnyOpenClose; // when any dlg opens or child closes
 
@@ -951,7 +924,7 @@ private:
 
 class WndButton:public WindowControl{
   public:
-    typedef void (*ClickNotifyCallback_t)(WindowControl * Sender);
+    typedef void (*ClickNotifyCallback_t)(Window* pWnd);
 
   private:
 
@@ -964,20 +937,17 @@ class WndButton:public WindowControl{
   public:
   
     WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, ClickNotifyCallback_t Function = NULL);
-    virtual void Destroy(void);
 
-    int OnLButtonUp(const POINT& Pos);
-    int OnLButtonDown(const POINT& Pos);
-    int OnLButtonDoubleClick(const POINT& Pos);
+    virtual bool OnLButtonDown(const POINT& Pos);
+    virtual bool OnLButtonUp(const POINT& Pos);
+    virtual bool OnLButtonDblClick(const POINT& Pos);
 
-    int OnKeyDown(unsigned KeyCode);
-    int OnKeyUp(unsigned KeyCode);
+    virtual bool OnKeyDown(unsigned KeyCode);
+    virtual bool OnKeyUp(unsigned KeyCode);
 
     void SetOnClickNotify(ClickNotifyCallback_t Function){
       mOnClickNotify = Function;
     }
-
-
 };
 
 
@@ -990,9 +960,8 @@ class WndProperty:public WindowControl{
     
   private:
 
-    HWND mhEdit;
-    POINT mEditSize;
-    POINT mEditPos;
+    RECT mEditRect;
+
     LKFont mhCaptionFont;
     LKFont mhValueFont;
     int  mBitmapSize;
@@ -1010,9 +979,9 @@ class WndProperty:public WindowControl{
     int CallSpecial(void);
     int IncValue(void);
     int DecValue(void);
-    WNDPROC mEditWindowProcedure;
 
     DataField *mDataField;
+    std::tstring mValue;
 
     void UpdateButtonData(int Value);
     bool mDialogStyle;
@@ -1023,27 +992,18 @@ class WndProperty:public WindowControl{
     ~WndProperty(void);
     virtual void Destroy(void);
 
-    int WndProcEditControl(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-    TCHAR *GetCaption(void){return(mCaption);};
-
-    bool SetFocused(bool Value, HWND FromTo);
-
     bool SetReadOnly(bool Value);
     bool SetUseKeyboard(bool Value);
 
     void RefreshDisplay(void);
 
-    LKFont SetFont(const LKFont& Value);
+    void SetFont(const LKFont& Value);
 
-    int OnKeyDown(unsigned KeyCode);
-    int OnEditKeyDown(unsigned KeyCode);
-    int OnLButtonDown(const POINT& Pos);
-    int OnLButtonUp(const POINT& Pos);
-    int OnLButtonDoubleClick(const POINT& Pos);
-
-//    int GetAsInteger(void){return(mValue);};
-//    int SetAsInteger(int Value);
+    bool OnKeyDown(unsigned KeyCode);
+    bool OnKeyUp(unsigned KeyCode);
+    bool OnLButtonDown(const POINT& Pos);
+    bool OnLButtonUp(const POINT& Pos);
+    bool OnLButtonDblClick(const POINT& Pos);
 
     DataField *GetDataField(void){return(mDataField);};
     DataField *SetDataField(DataField *Value);
@@ -1053,24 +1013,6 @@ class WndProperty:public WindowControl{
 };
 
 int dlgComboPicker(WndProperty* theProperty);
-
-typedef void (*webpt2Event)(const TCHAR *);
-
-class WndEventButton:public WndButton {
- public:
-  WndEventButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, 
-		 int X, int Y, int Width, int Height, 
-		 const TCHAR *ename,
-		 const TCHAR *eparameters);
-  ~WndEventButton();
- public:
-  void CallEvent(void);
- private:
-  webpt2Event inputEvent;
-  TCHAR *parameters;
-};
-
-
 
 #endif
 

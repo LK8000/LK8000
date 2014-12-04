@@ -239,8 +239,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
 
   LK8000GetOpts(szCmdLine);
-
-  InitCommonControls();
   InitSineTable();
 
   // Perform application initialization: also ScreenGeometry and LKIBLSCALE, and Objects
@@ -336,12 +334,12 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     if (AircraftCategory == (AircraftCategory_t) umParaglider) {
         // LKTOKEN _@M1210_ "PARAGLIDING MODE"
         CreateProgressDialog(gettext(TEXT("_@M1210_")));
-        Sleep(1000);
+        Poco::Thread::sleep(1000);
     }
     if (SIMMODE) {
         // LKTOKEN _@M1211_ "SIMULATION"
         CreateProgressDialog(gettext(TEXT("_@M1211_")));
-        Sleep(1000);
+        Poco::Thread::sleep(1000);
     }
 
 #ifdef PNA

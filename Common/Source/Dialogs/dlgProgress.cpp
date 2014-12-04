@@ -22,7 +22,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
 }
 
 static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
-  RECT PrintAreaR = Sender->GetBoundRect();
+  RECT PrintAreaR = Sender->GetClientRect();
     
   const auto oldFont = Surface.SelectObject(MapWindowBoldFont);
 

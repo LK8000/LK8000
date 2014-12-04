@@ -24,9 +24,11 @@ int DLGSCALE(int x) {
 }
 
 
-static void OnButtonClick(WindowControl * Sender){
-    if(Sender && Sender->GetTopOwner()) {
-        ((WndForm *)Sender->GetTopOwner())->SetModalResult(Sender->GetTag());
+static void OnButtonClick(Window* pWnd){
+    // Unsafe Cast ...
+    WindowControl* pCtrl = static_cast<WindowControl*>(pWnd);
+    if(pCtrl && pCtrl->GetTopOwner()) {
+        static_cast<WndForm*>(pCtrl->GetTopOwner())->SetModalResult(pCtrl->GetTag());
     }
 }
 
@@ -104,8 +106,7 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   if (uType == mbOk
       || uType == mbOkCancel)
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), TEXT("OK"), 
-                                          0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), TEXT("OK"), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdOk);
     ButtonCount++;
   }
@@ -114,12 +115,10 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
       || uType == mbYesNoCancel)
   {
 	// LKTOKEN  _@M827_ = "Yes" 
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M827_")), 
-                                          0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M827_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdYes);
     ButtonCount++;
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M890_")),  // No
-                                          0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M890_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdNo);
     ButtonCount++;
   }
@@ -127,10 +126,7 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   if (uType == mbAbortRetryIgnore
       || uType == mbRetryCancel)
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), 
-	// LKTOKEN  _@M566_ = "Retry" 
-                                          gettext(TEXT("_@M566_")), 
-                                          0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M566_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdRetry);
     ButtonCount++;
   }
@@ -139,26 +135,17 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
       || uType == mbRetryCancel
       || uType == mbYesNoCancel)
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), 
-	// LKTOKEN  _@M161_ = "Cancel" 
-                                          gettext(TEXT("_@M161_")), 
-                                          0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M161_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdCancel);
     ButtonCount++;
   }
 
   if (uType == mbAbortRetryIgnore) 
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), 
-	// LKTOKEN  _@M47_ = "Abort" 
-                                          gettext(TEXT("_@M47_")), 
-                                          0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M47_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdAbort);
     ButtonCount++;
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), 
-	// LKTOKEN  _@M349_ = "Ignore" 
-                                          gettext(TEXT("_@M349_")), 
-                                          0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M349_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdIgnore);
     ButtonCount++;
   }
@@ -678,30 +665,6 @@ void LoadChildsFromXML(WindowControl *Parent,
 
     }else
 
-
-
-    if (_tcscmp(childNode.getName(), TEXT("WndEventButton")) == 0){
-
-      TCHAR iename[100];
-      TCHAR ieparameters[100];
-      _tcscpy(iename, 
-              StringToStringDflt(childNode.
-                                 getAttribute(TEXT("InputEvent")), 
-                                 TEXT("")));
-      _tcscpy(ieparameters, 
-              StringToStringDflt(childNode.
-                                 getAttribute(TEXT("Parameters")), 
-                                 TEXT("")));
-
-      WC = new WndEventButton(Parent, Name, Caption, X, Y, Width, Height,
-                              iename, ieparameters);
-
-      Caption[0] = '\0';
-
-    }else
-
-
-
     if (_tcscmp(childNode.getName(), TEXT("WndOwnerDrawFrame")) == 0){
 
       TCHAR PaintCallback[128];
@@ -734,6 +697,8 @@ void LoadChildsFromXML(WindowControl *Parent,
 
       LoadChildsFromXML(WC, LookUpTable, &childNode, ParentFont);  // recursivly create dialog
 
+    } else {
+        assert(false); // unknow control.
     }
 
     if (WC != NULL){

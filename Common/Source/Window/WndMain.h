@@ -40,6 +40,8 @@ protected:
 
     virtual bool OnKeyDown(unsigned KeyCode);
 
+    virtual bool OnTimer();
+
 private:
     bool _MouseButtonDown;
 };

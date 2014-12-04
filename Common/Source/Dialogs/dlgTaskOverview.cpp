@@ -350,18 +350,13 @@ static void OnTaskListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
   }
 }
 
-
-
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  ItemIndex = -1; // to stop FormDown bringing up task details
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    ItemIndex = -1; // to stop FormDown bringing up task details
+    wf->SetModalResult(mrOK);
 }
 
 
-
-static void OnClearClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnClearClicked(Window* pWnd){
   if (MessageBoxX(
 	// LKTOKEN  _@M179_ = "Clear the task?" 
                   gettext(TEXT("_@M179_")),
@@ -377,9 +372,7 @@ static void OnClearClicked(WindowControl * Sender){
   }
 }
 
-static void OnCalcClicked(WindowControl * Sender){
-  (void)Sender;
-
+static void OnCalcClicked(Window* pWnd){
   wf->SetVisible(false);
   dlgTaskCalculatorShowModal();
   OverviewRefreshTask();
@@ -387,36 +380,29 @@ static void OnCalcClicked(WindowControl * Sender){
 }
 
 
-static void OnAnalysisClicked(WindowControl * Sender){
-  (void)Sender;
-
+static void OnAnalysisClicked(Window* pWnd){
   wf->SetVisible(false);
   dlgAnalysisShowModal(ANALYSIS_PAGE_TASK);
   wf->SetVisible(true);
 }
 
-static void OnTimegatesClicked(WindowControl * Sender){
-  (void)Sender;
-
+static void OnTimegatesClicked(Window* pWnd){
   wf->SetVisible(false);
   dlgTimeGatesShowModal();
   wf->SetVisible(true);
 }
 
-static void OnDeclareClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnDeclareClicked(Window* pWnd){
   RefreshTask();
 
   LoggerDeviceDeclare();
-
   // do something here.
 }
 
 
 
 
-static void OnSaveClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnSaveClicked(Window* pWnd){
 
   int file_index; 
   TCHAR task_name[MAX_PATH];
@@ -479,9 +465,7 @@ static void OnSaveClicked(WindowControl * Sender){
 
 
 
-static void OnLoadClicked(WindowControl * Sender){ // 091216
-  (void)Sender;
-
+static void OnLoadClicked(Window* pWnd){ // 091216
   TCHAR file_name[MAX_PATH];
 
   WndProperty* wp;
@@ -490,8 +474,8 @@ static void OnLoadClicked(WindowControl * Sender){ // 091216
   wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
   if (!wp) return;
 
-  HWND hwnd = wp->GetHandle();
-  SendMessage(hwnd,WM_LBUTTONDOWN,0,0);
+  wp->OnLButtonDown((POINT){0,0});
+  
   dfe = (DataFieldFileReader*) wp->GetDataField();
 
   int file_index = dfe->GetAsInteger();
@@ -536,8 +520,7 @@ static void OnLoadClicked(WindowControl * Sender){ // 091216
 }
 
 
-static void OnDeleteClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnDeleteClicked(Window* pWnd){
 
   TCHAR file_name[MAX_PATH];
 
@@ -547,8 +530,8 @@ static void OnDeleteClicked(WindowControl * Sender){
   wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
   if (!wp) return;
 
-  HWND hwnd = wp->GetHandle();
-  SendMessage(hwnd,WM_LBUTTONDOWN,0,0);
+  wp->OnLButtonDown((POINT){0,0});
+
   dfe = (DataFieldFileReader*) wp->GetDataField();
 
   int file_index = dfe->GetAsInteger();
@@ -573,8 +556,7 @@ static void OnDeleteClicked(WindowControl * Sender){
 
 
 
-static void OnAdvancedClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnAdvancedClicked(Window* Sender){
   showAdvanced = !showAdvanced;
   UpdateAdvanced();
 }
@@ -691,7 +673,7 @@ void dlgTaskOverviewShowModal(int Idx){
 
   wTaskList->SetItemIndexPos(Idx);
   wTaskList->Redraw();
-  wTaskListEntry->SetFocused(true,NULL);
+  wTaskListEntry->SetFocus();
 
   wf->ShowModal();
 

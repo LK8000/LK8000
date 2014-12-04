@@ -141,7 +141,7 @@ BOOL InitInstance()
   StartupStore(TEXT(". Create main window%s"),NEWLINE);
   #endif
 
-  if(!MainWindow.Create(WindowSize)) {
+  if(!MainWindow.Create(WindowSize, _T("WindowMain"))) {
       return FALSE;
   }
 
@@ -163,7 +163,7 @@ BOOL InitInstance()
 
   Message::Initialize(rc); // creates window, sets fonts
 
-  MainWindow.Visible(true);
+  MainWindow.SetVisible(true);
 
   // Since MapWindow is doing static inits, we want them to be recalculated at the end of
   // initializations, since some values in use might have been not available yet, for example BottomSize.

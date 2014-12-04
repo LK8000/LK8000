@@ -390,7 +390,7 @@ BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
 	GetFirmwareVersion(m_pDevice);
 
 	if(m_wf) {
-		m_wf->SetTimerNotify(OnTimer);
+		m_wf->SetTimerNotify(1000, OnTimer);
 		m_wf->ShowModal();
 
 		delete m_wf;
@@ -399,20 +399,18 @@ BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
 	return TRUE;
 }
 
-int CDevCProbe::OnTimer(WindowControl * Sender){
-  (void)Sender;
+bool CDevCProbe::OnTimer(){
   Update();
-
-  return 0;
+  return true;
 }
 
-void CDevCProbe::OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
+void CDevCProbe::OnCloseClicked(Window* pWnd){
+	(void)pWnd;
   m_wf->SetModalResult(mrOK);
 }
 
-void CDevCProbe::OnCompassCalClicked(WindowControl * Sender){
-	(void)Sender;
+void CDevCProbe::OnCompassCalClicked(Window* pWnd){
+	(void)pWnd;
 	if(m_pDevice) {
 		if(m_bCompassCalOn) {
 			SetCompassCalOff(m_pDevice);
@@ -426,15 +424,15 @@ void CDevCProbe::OnCompassCalClicked(WindowControl * Sender){
 	}
 }
 
-void CDevCProbe::OnCalGyroClicked(WindowControl * Sender) {
-	(void)Sender;
+void CDevCProbe::OnCalGyroClicked(Window* pWnd) {
+	(void)pWnd;
 	if(m_pDevice) {
 		SetCalGyro(m_pDevice);
 	}
 }
 
-void CDevCProbe::OnZeroDeltaPressClicked(WindowControl * Sender) {
-	(void)Sender;
+void CDevCProbe::OnZeroDeltaPressClicked(Window* pWnd) {
+	(void)pWnd;
 	if(m_pDevice) {
 		SetZeroDeltaPressure(m_pDevice);
 	}

@@ -31,18 +31,15 @@ void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, cons
 // LoadNewTask is called by event manager at start of normal run
 bool FullResetAsked=false;
 
-static int OnTimerNotify(WindowControl *Sender)
-{
-
-   // Do we have a premature shutdown request from system quit?
-   if (RUN_MODE==RUN_SHUTDOWN) {
-	#if TESTBENCH
-	StartupStore(_T("... dlGStartup shutdown requested\n"));
-	#endif
-	wf->SetModalResult(mrOK);
-   }
-
-   return 0;
+static bool OnTimerNotify() {
+    // Do we have a premature shutdown request from system quit?
+    if (RUN_MODE == RUN_SHUTDOWN) {
+#if TESTBENCH
+        StartupStore(_T("... dlGStartup shutdown requested\n"));
+#endif
+        wf->SetModalResult(mrOK);
+    }
+    return true;
 }
   
 
@@ -201,70 +198,68 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnCloseClicked(Window* pWnd) {
 
-  LKSound(_T("LK_SLIDE.WAV"));
-  switch(RUN_MODE) {
-	case RUN_DUALPROF:
-		RUN_MODE=RUN_WELCOME;
-		break;
-  }
-  wf->SetModalResult(mrOK);
-}
-
-static void OnSIMClicked(WindowControl * Sender){
-	(void)Sender;
-  RUN_MODE=RUN_SIM;
-  wf->SetModalResult(mrOK);
-}
-static void OnFLYClicked(WindowControl * Sender){
-	(void)Sender;
-  RUN_MODE=RUN_FLY;
-//  Removed 110605: we now run devInit on startup for all devices, and we dont want an immediate and useless reset.
-//  LKForceComPortReset=true; 
-  PortMonitorMessages=0;
-  wf->SetModalResult(mrOK);
-}
-static void OnDUALPROFILEClicked(WindowControl * Sender){
-	(void)Sender;
-  RUN_MODE=RUN_DUALPROF;
-  LKSound(_T("LK_SLIDE.WAV"));
-  wf->SetModalResult(mrOK);
-}
-static void OnEXITClicked(WindowControl * Sender){
-	(void)Sender;
-  RUN_MODE=RUN_EXIT;
-  wf->SetModalResult(mrOK);
-}
-static void OnPROFILEClicked(WindowControl * Sender){
-	(void)Sender;
-  RUN_MODE=RUN_PROFILE;
-  LKSound(_T("LK_SLIDE.WAV"));
-  wf->SetModalResult(mrOK);
-}
-static void OnAIRCRAFTClicked(WindowControl * Sender){
-	(void)Sender;
-  RUN_MODE=RUN_AIRCRAFT;
-  LKSound(_T("LK_SLIDE.WAV"));
-  wf->SetModalResult(mrOK);
-}
-static void OnDEVICEClicked(WindowControl * Sender){
-	(void)Sender;
-  RUN_MODE=RUN_DEVICE;
-  LKSound(_T("LK_SLIDE.WAV"));
-  wf->SetModalResult(mrOK);
-}
-static void OnPILOTClicked(WindowControl * Sender){
-	(void)Sender;
-  RUN_MODE=RUN_PILOT;
-  LKSound(_T("LK_SLIDE.WAV"));
-  wf->SetModalResult(mrOK);
+    LKSound(_T("LK_SLIDE.WAV"));
+    switch (RUN_MODE) {
+        case RUN_DUALPROF:
+            RUN_MODE = RUN_WELCOME;
+            break;
+    }
+    wf->SetModalResult(mrOK);
 }
 
-static CallBackTableEntry_t CallBackTable[]={
-  OnPaintCallbackEntry(OnSplashPaint),
-  EndCallBackEntry()
+static void OnSIMClicked(Window* pWnd) {
+    RUN_MODE = RUN_SIM;
+    wf->SetModalResult(mrOK);
+}
+
+static void OnFLYClicked(Window* pWnd) {
+    RUN_MODE = RUN_FLY;
+    //  Removed 110605: we now run devInit on startup for all devices, and we dont want an immediate and useless reset.
+    //  LKForceComPortReset=true;
+    PortMonitorMessages = 0;
+    wf->SetModalResult(mrOK);
+}
+
+static void OnDUALPROFILEClicked(Window* pWnd) {
+    RUN_MODE = RUN_DUALPROF;
+    LKSound(_T("LK_SLIDE.WAV"));
+    wf->SetModalResult(mrOK);
+}
+
+static void OnEXITClicked(Window* pWnd) {
+    RUN_MODE = RUN_EXIT;
+    wf->SetModalResult(mrOK);
+}
+
+static void OnPROFILEClicked(Window* pWnd) {
+    RUN_MODE = RUN_PROFILE;
+    LKSound(_T("LK_SLIDE.WAV"));
+    wf->SetModalResult(mrOK);
+}
+
+static void OnAIRCRAFTClicked(Window* pWnd) {
+    RUN_MODE = RUN_AIRCRAFT;
+    LKSound(_T("LK_SLIDE.WAV"));
+    wf->SetModalResult(mrOK);
+}
+
+static void OnDEVICEClicked(Window* pWnd) {
+    RUN_MODE = RUN_DEVICE;
+    LKSound(_T("LK_SLIDE.WAV"));
+    wf->SetModalResult(mrOK);
+}
+
+static void OnPILOTClicked(Window* pWnd) {
+    RUN_MODE = RUN_PILOT;
+    LKSound(_T("LK_SLIDE.WAV"));
+    wf->SetModalResult(mrOK);
+}
+
+static CallBackTableEntry_t CallBackTable[] = {
+    OnPaintCallbackEntry(OnSplashPaint),
+    EndCallBackEntry()
 };
 
 
@@ -635,7 +630,7 @@ short dlgStartupShowModal(void){
 
 
   // Standby for a system request to close the application during this phase.
-  wf->SetTimerNotify(OnTimerNotify);
+  wf->SetTimerNotify(500, OnTimerNotify);
 
   wf->ShowModal();
   if (RUN_MODE==RUN_SHUTDOWN) goto _exit;

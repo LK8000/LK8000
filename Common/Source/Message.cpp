@@ -65,7 +65,7 @@ void Message::Initialize(RECT rc) {
     nvisible = 0;
     rcmsg = rc; // default; message window can be full size of screen
 
-    WndMsg.Create(&MainWindow, rc);
+    WndMsg.Create(&MainWindow, rc, _T("WindowMessage"));
 
     // change message font for different resolutions
     // Caution, remember to set font also in Resize..
@@ -99,12 +99,12 @@ void Message::Resize() {
 
   if (size==0) {
     if (!hidden) {
-            WndMsg.Visible(false);
+        WndMsg.SetVisible(false);
     }
     hidden = true;
   } else {
     
-    WndMsg.SetText(msgText.c_str());
+    WndMsg.SetWndText(msgText.c_str());
 
     LKWindowSurface Surface(WndMsg);
     const auto oldfont = Surface.SelectObject(ScreenLandscape
@@ -133,7 +133,7 @@ void Message::Resize() {
 
     WndMsg.SetTopWnd();
     WndMsg.Move(rthis, true);
-    WndMsg.Visible(true);
+    WndMsg.SetVisible(true);
     hidden = false;
     
 

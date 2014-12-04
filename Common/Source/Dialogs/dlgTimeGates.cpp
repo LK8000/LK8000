@@ -33,9 +33,8 @@ static void OnTGActiveData(DataField *Sender, DataField::DataAccessKind_t Mode){
   }
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
 

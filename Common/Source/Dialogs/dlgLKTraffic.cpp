@@ -20,8 +20,7 @@ static void SetValues(int indexid);
 static int SelectedTraffic;
 static WndButton *buttonTarget=NULL;
 
-static void OnTargetClicked(WindowControl * Sender) {
-  (void)Sender;
+static void OnTargetClicked(Window* pWnd) {
 
   if (SelectedTraffic<0 || SelectedTraffic>MAXTRAFFIC) {
 	StartupStore(_T("--- Invalid traffic selected to Target, out of range%s"),NEWLINE);
@@ -93,8 +92,7 @@ static void OnTargetClicked(WindowControl * Sender) {
 
 }
 
-static void OnRenameClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnRenameClicked(Window* pWnd){
 
   if (SelectedTraffic<0 || SelectedTraffic>MAXTRAFFIC) {
 	StartupStore(_T("--- Invalid traffic selected to rename, out of range%s"),NEWLINE);
@@ -168,10 +166,8 @@ static void OnRenameClicked(WindowControl * Sender){
 
 }
 
-
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window * pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
 static CallBackTableEntry_t CallBackTable[]={

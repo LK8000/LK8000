@@ -472,7 +472,7 @@ static void FilterMode(bool direction) {
 }
 
 
-static void OnFilterNameButton(WindowControl *Sender) {
+static void OnFilterNameButton(Window* pWnd) {
 	 int SelectedWp=-1;
 	 int CursorPos=0;
   TCHAR newNameFilter[NAMEFILTERLEN+1];
@@ -513,7 +513,7 @@ static void OnFilterNameButton(WindowControl *Sender) {
   	    }
 	}
 
-    wWayPointListEntry->SetFocused(true,NULL);
+    wWayPointListEntry->SetFocus();
     wWayPointList->SetItemIndexPos(CursorPos);
     wWayPointList->Redraw();
   }
@@ -759,26 +759,18 @@ static void OnWpListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListI
   }
 }
 
-static void OnWPSSelectClicked(WindowControl * Sender){
-       (void)Sender;
-  OnWaypointListEnter(NULL, NULL);
+static void OnWPSSelectClicked(Window* pWnd) {
+    OnWaypointListEnter(NULL, NULL);
 }
 
-static void OnWPSCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  ItemIndex = -1;
-  wf->SetModalResult(mrCancle);
+static void OnWPSCloseClicked(Window* pWnd) {
+    ItemIndex = -1;
+    wf->SetModalResult(mrCancle);
 }
 
-static int OnTimerNotify(WindowControl * Sender) {
-  (void)Sender;
-
-  static short i=0;
-  if(i++ % 2 == 0) return 0;
-
+static bool OnTimerNotify() {
   if (DirectionFilterIdx == 1){
-    int a;
-    a = (lastHeading - iround(CALCULATED_INFO.Heading));
+    const int a = (lastHeading - iround(CALCULATED_INFO.Heading));
     if (abs(a) > 0){
       UpdateList();
       SetDirectionData(NULL);
@@ -786,15 +778,14 @@ static int OnTimerNotify(WindowControl * Sender) {
     }
   }
   wWayPointList->Redraw();
-  return 0;
+  return true;
 }
 
-static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
+static bool FormKeyDown(Window* pWnd, unsigned KeyCode){
 
   WndProperty* wp;
   unsigned NewIndex = TypeFilterIdx;
 
-  (void)Sender;
   wp = ((WndProperty *)wf->FindByName(TEXT("prpFltType")));
 
   switch(KeyCode & 0xffff){
@@ -817,7 +808,7 @@ static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
     wp->RefreshDisplay();
   }
 
-  return(1);
+  return false;
 }
 
 static CallBackTableEntry_t CallBackTable[]={
@@ -922,7 +913,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   PrepareData();
   if (WayPointSelectInfo==NULL) goto _return; // Will be null also if strindex was null
   UpdateList();
-  wf->SetTimerNotify(OnTimerNotify);
+  wf->SetTimerNotify(1000, OnTimerNotify);
 
   if ((wf->ShowModal() == mrOK) && (UpLimit - LowLimit > 0) && (ItemIndex >= 0) 
    && (ItemIndex < (UpLimit - LowLimit))) {

@@ -17,8 +17,8 @@
 static WndForm *wf=NULL;
 
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnCloseClicked(Window* pWnd){
+	(void)pWnd;
   wf->SetModalResult(mrOK);
 }
 

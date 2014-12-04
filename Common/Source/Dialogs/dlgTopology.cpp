@@ -39,15 +39,9 @@ static void OnTopoActiveData(DataField *Sender, DataField::DataAccessKind_t Mode
   }
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
-
-
-
-
-
 
 static void setVariables(void) {
   WndProperty *wp;
@@ -166,8 +160,7 @@ static void setVariables(void) {
 }
 
 
-static void OnResetTopologyClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnResetTopologyClicked(Window* pWnd){
 
   ChangeZoomTopology(1,1,4);
   setVariables();

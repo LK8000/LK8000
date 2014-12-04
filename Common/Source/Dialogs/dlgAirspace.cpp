@@ -129,14 +129,14 @@ static void OnAirspaceListInfo(WindowControl * Sender,
   }
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-    (void)Sender;
+static void OnCloseClicked(Window* pWnd){
+    (void)pWnd;
 	wf->SetModalResult(mrOK);
 }
 
 
-static void OnLookupClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnLookupClicked(Window* pWnd){
+  (void)pWnd;
   dlgAirspaceSelect();
 }
 

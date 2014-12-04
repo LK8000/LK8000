@@ -20,8 +20,7 @@ static void SetValues(int indexid);
 
 static int s_selected;
 
-static void OnSelectClicked(WindowControl * Sender) {
-  (void)Sender;
+static void OnSelectClicked(Window* pWnd) {
 
   if (s_selected<0 || s_selected>=MAXTHISTORY) {
 	StartupStore(_T("... Invalid thermal selected to multitarget, out of range:%d %s"),s_selected,NEWLINE);
@@ -59,9 +58,8 @@ static void OnSelectClicked(WindowControl * Sender) {
 
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
 static CallBackTableEntry_t CallBackTable[]={

@@ -15,24 +15,20 @@
 
 static WndForm *wf=NULL;
 
-static void OnYesClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(wpTerrainBoundsYes);
+static void OnYesClicked(Window* pWnd){
+    wf->SetModalResult(wpTerrainBoundsYes);
 }
 
-static void OnYesAllClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(wpTerrainBoundsYesAll);
+static void OnYesAllClicked(Window* pWnd){
+    wf->SetModalResult(wpTerrainBoundsYesAll);
 }
 
-static void OnNoClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(wpTerrainBoundsNo);
+static void OnNoClicked(Window* pWnd){
+    wf->SetModalResult(wpTerrainBoundsNo);
 }
 
-static void OnNoAllClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(wpTerrainBoundsNoAll);
+static void OnNoAllClicked(Window* pWnd){
+    wf->SetModalResult(wpTerrainBoundsNoAll);
 }
 
 

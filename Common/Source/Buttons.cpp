@@ -252,7 +252,7 @@ void ButtonLabel::CreateButtonLabels(const RECT& rc) {
     for (unsigned i = 0; i < MenuButtons.size(); ++i) {
         GetButtonPosition(i, rc, &x, &y, &cx, &cy);
 
-        if (MenuButtons[i].Create(&MainWindow, (RECT){ x, y, x + cx, y + cy })) {
+        if (MenuButtons[i].Create(&MainWindow, (RECT){ x, y, x + cx, y + cy }, _T("Menu"))) {
             MenuButtons[i].SetTextColor(RGB_BLACK);
             MenuButtons[i].SetBkColor(RGB_BUTTONS);
             MenuButtons[i].SetMenuId(i);
@@ -279,7 +279,7 @@ void ButtonLabel::SetLabelText(unsigned idx, const TCHAR *text) {
 */
 
     if ((text == NULL) || (*text == _T('\0')) || (*text == _T(' '))) {
-        MenuButtons[idx].Visible(false);
+        MenuButtons[idx].SetVisible(false);
     } else {
 #ifdef LXMINIMAP
         if (InputEvents::getSelectedButtonIndex() == index) {
@@ -298,11 +298,11 @@ void ButtonLabel::SetLabelText(unsigned idx, const TCHAR *text) {
         }
 
         if ((s[0]==_T('\0'))||(s[0]==_T(' '))) {
-            MenuButtons[idx].Visible(false);
+            MenuButtons[idx].SetVisible(false);
         } else {
-            MenuButtons[idx].SetText(gettext(s));
+            MenuButtons[idx].SetWndText(gettext(s));
             MenuButtons[idx].SetTopWnd();
-            MenuButtons[idx].Visible(true);
+            MenuButtons[idx].SetVisible(true);
         }
     }
 }

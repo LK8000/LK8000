@@ -22,15 +22,12 @@ extern double CRUISE_EFFICIENCY;
 static double emc= 0.0;
 static double cruise_efficiency= 1.0;
 
-
-static void OnCancelClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrCancle);
+static void OnCancelClicked(Window* pWnd) {
+    wf->SetModalResult(mrCancle);
 }
 
-static void OnOKClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnOKClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
 static double Range = 0;
@@ -204,8 +201,7 @@ static void DoOptimise(void) {
 }
 
 
-static void OnTargetClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnTargetClicked(Window* pWnd){
   wf->SetVisible(false);
   dlgTarget();
   // find start value for range (it may have changed)
@@ -291,12 +287,9 @@ static void OnCruiseEfficiencyData(DataField *Sender, DataField::DataAccessKind_
   }
 }
 
-
-
-static void OnOptimiseClicked(WindowControl * Sender){
-  DoOptimise();
+static void OnOptimiseClicked(Window* pWnd) {
+    DoOptimise();
 }
-
 
 static CallBackTableEntry_t CallBackTable[]={
   DataAccessCallbackEntry(OnMacCreadyData),

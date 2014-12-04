@@ -20,15 +20,15 @@ extern bool UpdateQNH(const double newqnh);
 
 // static bool BallastTimerActive = false;
 
-static void OnCloseClicked(WindowControl * Sender){
-(void)Sender;
-	wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    (void) pWnd;
+    wf->SetModalResult(mrOK);
 }
 
-static void OnBallastDump(WindowControl *Sender){
-(void)Sender;
-        BallastTimerActive=!BallastTimerActive;
-	wf->SetModalResult(mrOK);
+static void OnBallastDump(Window* pWnd) {
+    (void) pWnd;
+    BallastTimerActive = !BallastTimerActive;
+    wf->SetModalResult(mrOK);
 }
 
 
@@ -149,8 +149,7 @@ static void SetBallast(bool updateDevices) {
 
 //int BallastSecsToEmpty = 120;
 
-static int OnTimerNotify(WindowControl * Sender) {
-  (void)Sender;
+static bool OnTimerNotify() {
   // devices are updates by BallastDump() method when dumping water ballast
   SetBallast(false); 
 
@@ -181,7 +180,7 @@ static float  flastBugs=BUGS;
     }
   }
 
-  return 0;
+  return true;
 }
 
 
@@ -319,7 +318,7 @@ void dlgBasicSettingsShowModal(void){
 
   if (wf) {
 
-    wf->SetTimerNotify(OnTimerNotify);
+    wf->SetTimerNotify(500, OnTimerNotify);
 
     ((WndButton *)wf->FindByName(TEXT("buttonDumpBallast")))->SetVisible(!BallastTimerActive);
     ((WndButton *)wf->FindByName(TEXT("buttonStopDump")))->SetVisible(BallastTimerActive);

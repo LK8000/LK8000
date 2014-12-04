@@ -64,8 +64,8 @@ static void OnAirspacePatternsListInfo(WindowControl * Sender,
   }
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnCloseClicked(Window* pWnd){
+  (void)pWnd;
   ItemIndex = -1;
   wf->SetModalResult(mrOK);
 }

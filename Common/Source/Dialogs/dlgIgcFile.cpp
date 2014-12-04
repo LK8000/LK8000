@@ -43,13 +43,11 @@ namespace DlgIgcFile {
         std::sort(FileList.rbegin(), FileList.rend()); // sort in desc order.
     }
 
-    void OnClose(WindowControl * Sender) {
-        (void) Sender;
+    void OnClose(Window* pWnd) {
         wfDlg->SetModalResult(mrOK);
     }
 
-    void OnSend(WindowControl * Sender) {
-        (void) Sender;
+    void OnSend(Window* pWnd) {
         if(ItemIndex < FileList.size()) {
             StartHourglassCursor();
             
@@ -201,7 +199,7 @@ void dlgIgcFileShowModal() {
         }
     }
 
-    if (wfDlg->ShowModal(true)) {
+    if (wfDlg->ShowModal()) {
 
     }
 

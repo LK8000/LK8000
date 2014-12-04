@@ -401,6 +401,7 @@ WINDOW := \
 	$(SRC_WINDOW)/Win32/WndText.cpp \
 	$(SRC_WINDOW)/Win32/WndTextEdit.cpp \
 	$(SRC_WINDOW)/Win32/WndTextLabel.cpp \
+	$(SRC_WINDOW)/Win32/WndCtrlBase.cpp \
 	
 SCREEN := \
 	$(SRC_SCREEN)/Color.cpp \

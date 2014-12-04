@@ -70,12 +70,12 @@ private:
 
 // Config
 	static BOOL Config(PDeviceDescriptor_t d);
-	static void OnCloseClicked(WindowControl * Sender);
-	static void OnCompassCalClicked(WindowControl * Sender);
-	static void OnCalGyroClicked(WindowControl * Sender);
-	static void OnZeroDeltaPressClicked(WindowControl * Sender);
+	static void OnCloseClicked(Window* pWnd);
+	static void OnCompassCalClicked(Window* pWnd);
+	static void OnCalGyroClicked(Window* pWnd);
+	static void OnZeroDeltaPressClicked(Window* pWnd);
 
-	static int OnTimer(WindowControl * Sender);
+	static bool OnTimer();
 
 	static void Update();
 

@@ -56,18 +56,14 @@ static void UpdateButtons(void) {
   }
 }
 
-
-static void OnNameClicked(WindowControl *Sender) {
-	(void)Sender;
-  if (buttonName) {
-    dlgTextEntryShowModal(global_wpt->Name, NAME_SIZE);
-  }
-  UpdateButtons();
+static void OnNameClicked(Window* pWnd) {
+    if (buttonName) {
+        dlgTextEntryShowModal(global_wpt->Name, NAME_SIZE);
+    }
+    UpdateButtons();
 }
 
-
-static void OnCommentClicked(WindowControl *Sender) {
-	(void)Sender;
+static void OnCommentClicked(Window* pWnd) {
   if (buttonComment) {
 	//@ 101219
 	TCHAR comment[COMMENT_SIZE*2];
@@ -550,9 +546,8 @@ static void GetValues(void) {
 }
 
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd){
+    wf->SetModalResult(mrOK);
 }
 
 

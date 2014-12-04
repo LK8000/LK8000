@@ -458,23 +458,19 @@ static void NextPage(int Step){
 
 } // NextPage
 
+static void OnSetupDeviceAClicked(Window* pWnd) {
 
-
-static void OnSetupDeviceAClicked(WindowControl * Sender){
-  (void)Sender;
-
-  #if (ToDo)
+#if (ToDo)
     devA()->DoSetup();
     wf->FocusNext(NULL);
-  #endif
+#endif
 
-// this is a hack, devices dont jet support device dependant setup dialogs
-
-  if (!SIMMODE) {
-	if ((devA() == NULL) || (_tcscmp(devA()->Name,TEXT("Vega")) != 0)) {
-		return;
-	}
-  }
+    // this is a hack, devices dont jet support device dependant setup dialogs
+    if (!SIMMODE) {
+        if ((devA() == NULL) || (_tcscmp(devA()->Name, TEXT("Vega")) != 0)) {
+            return;
+        }
+    }
 
     // this is a hack to get the dialog to retain focus because
     // the progress dialog in the vario configuration somehow causes
@@ -482,21 +478,19 @@ static void OnSetupDeviceAClicked(WindowControl * Sender){
     wf->FocusNext(NULL);
 }
 
+static void OnSetupDeviceBClicked(Window* pWnd) {
 
-static void OnSetupDeviceBClicked(WindowControl * Sender){
-  (void)Sender;
-
-  #if (ToDo)
+#if (ToDo)
     devB()->DoSetup();
     wf->FocusNext(NULL);
-  #endif
+#endif
 
-// this is a hack, devices dont jet support device dependant setup dialogs
-  if (!SIMMODE) {
-	if ((devB() == NULL) || (_tcscmp(devB()->Name,TEXT("Vega")) != 0)) {
-		return;
-	}
-  }
+    // this is a hack, devices dont jet support device dependant setup dialogs
+    if (!SIMMODE) {
+        if ((devB() == NULL) || (_tcscmp(devB()->Name, TEXT("Vega")) != 0)) {
+            return;
+        }
+    }
 
     // this is a hack to get the dialog to retain focus because
     // the progress dialog in the vario configuration somehow causes
@@ -802,203 +796,173 @@ static void GetFontDescription(TCHAR Description[], const TCHAR * prpName, int i
   }
 }
 
-static void OnEditMapWindowFontClicked(WindowControl *Sender) {
-  TCHAR fontDesc[MAX_EDITFONT_DESC_LEN+1];
-  GetFontDescription(fontDesc, TEXT("prpMapWindowFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(fontDesc,
-                            szRegistryFontMapWindowFont, 
-                            autoMapWindowLogFont)) {
-    FontRegistryChanged=true;
-    RefreshFonts(); 
-  }
-}
-static void OnEditMapLabelFontClicked(WindowControl *Sender) {
-  TCHAR fontDesc[MAX_EDITFONT_DESC_LEN+1];
-  GetFontDescription(fontDesc, TEXT("prpMapLabelFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(fontDesc,
-                            szRegistryFontMapLabelFont, 
-                            autoMapLabelLogFont)) {
-    FontRegistryChanged=true;
-    RefreshFonts(); 
-  }
+static void OnEditMapWindowFontClicked(Window* pWnd) {
+    TCHAR fontDesc[MAX_EDITFONT_DESC_LEN + 1];
+    GetFontDescription(fontDesc, TEXT("prpMapWindowFont"), MAX_EDITFONT_DESC_LEN);
+    if (dlgFontEditShowModal(fontDesc,
+            szRegistryFontMapWindowFont,
+            autoMapWindowLogFont)) {
+        FontRegistryChanged = true;
+        RefreshFonts();
+    }
 }
 
-static void OnAircraftRegoClicked(WindowControl *Sender) {
-	(void)Sender;
-  TCHAR Temp[100];
-  if (buttonAircraftRego) {
-    _tcscpy(Temp,AircraftRego_Config);
-    dlgTextEntryShowModal(Temp,100);
-    _tcscpy(AircraftRego_Config,Temp);
-  }
-  UpdateButtons();
+static void OnEditMapLabelFontClicked(Window* pWnd) {
+    TCHAR fontDesc[MAX_EDITFONT_DESC_LEN + 1];
+    GetFontDescription(fontDesc, TEXT("prpMapLabelFont"), MAX_EDITFONT_DESC_LEN);
+    if (dlgFontEditShowModal(fontDesc, szRegistryFontMapLabelFont, autoMapLabelLogFont)) {
+        FontRegistryChanged = true;
+        RefreshFonts();
+    }
 }
 
-
-static void OnAircraftTypeClicked(WindowControl *Sender) {
-	(void)Sender;
-  TCHAR Temp[100];
-  if (buttonAircraftType) {
-    _tcscpy(Temp,AircraftType_Config);
-    dlgTextEntryShowModal(Temp,100);
-    _tcscpy(AircraftType_Config,Temp);
-  }
-  UpdateButtons();
+static void OnAircraftRegoClicked(Window* pWnd) {
+    TCHAR Temp[100];
+    if (buttonAircraftRego) {
+        _tcscpy(Temp, AircraftRego_Config);
+        dlgTextEntryShowModal(Temp, 100);
+        _tcscpy(AircraftRego_Config, Temp);
+    }
+    UpdateButtons();
 }
 
-
-static void OnPilotNameClicked(WindowControl *Sender) {
-	(void)Sender;
-  TCHAR Temp[100];
-  if (buttonPilotName) {
-    _tcscpy(Temp,PilotName_Config);
-    dlgTextEntryShowModal(Temp,100);
-    _tcscpy(PilotName_Config,Temp);
-  }
-  UpdateButtons();
+static void OnAircraftTypeClicked(Window* pWnd) {
+    TCHAR Temp[100];
+    if (buttonAircraftType) {
+        _tcscpy(Temp, AircraftType_Config);
+        dlgTextEntryShowModal(Temp, 100);
+        _tcscpy(AircraftType_Config, Temp);
+    }
+    UpdateButtons();
 }
 
-static void OnLiveTrackersrvClicked(WindowControl *Sender) {
-  (void)Sender;
-  TCHAR Temp[100];
-  if (buttonLiveTrackersrv) {
-    _tcscpy(Temp,LiveTrackersrv_Config);
-    dlgTextEntryShowModal(Temp,100);
-    _tcscpy(LiveTrackersrv_Config,Temp);
-  }
-  UpdateButtons();
+static void OnPilotNameClicked(Window* pWnd) {
+    TCHAR Temp[100];
+    if (buttonPilotName) {
+        _tcscpy(Temp, PilotName_Config);
+        dlgTextEntryShowModal(Temp, 100);
+        _tcscpy(PilotName_Config, Temp);
+    }
+    UpdateButtons();
 }
 
-static void OnLiveTrackerportClicked(WindowControl *Sender) {
-  (void)Sender;
-  TCHAR Temp[100];
-  if (buttonLiveTrackerport) {
-    _stprintf(Temp,_T("%d"), LiveTrackerport_Config);
-    dlgNumEntryShowModal(Temp,100,false);
-    TCHAR *sz=NULL;
-    LiveTrackerport_Config=_tcstol(Temp, &sz, 10);
-  }
-  UpdateButtons();
+static void OnLiveTrackersrvClicked(Window* pWnd) {
+    TCHAR Temp[100];
+    if (buttonLiveTrackersrv) {
+        _tcscpy(Temp, LiveTrackersrv_Config);
+        dlgTextEntryShowModal(Temp, 100);
+        _tcscpy(LiveTrackersrv_Config, Temp);
+    }
+    UpdateButtons();
 }
 
-static void OnLiveTrackerusrClicked(WindowControl *Sender) {
-  (void)Sender;
-  TCHAR Temp[100];
-  if (buttonLiveTrackerusr) {
-    _tcscpy(Temp,LiveTrackerusr_Config);
-    dlgTextEntryShowModal(Temp,100);
-    _tcscpy(LiveTrackerusr_Config,Temp);
-  }
-  UpdateButtons();
+static void OnLiveTrackerportClicked(Window* pWnd) {
+    TCHAR Temp[100];
+    if (buttonLiveTrackerport) {
+        _stprintf(Temp, _T("%d"), LiveTrackerport_Config);
+        dlgNumEntryShowModal(Temp, 100, false);
+        TCHAR *sz = NULL;
+        LiveTrackerport_Config = _tcstol(Temp, &sz, 10);
+    }
+    UpdateButtons();
 }
 
-static void OnLiveTrackerpwdClicked(WindowControl *Sender) {
-  (void)Sender;
-  TCHAR Temp[100];
-  if (buttonLiveTrackerpwd) {
-    _tcscpy(Temp,LiveTrackerpwd_Config);
-    dlgTextEntryShowModal(Temp,100);
-    _tcscpy(LiveTrackerpwd_Config,Temp);
-  }
-  UpdateButtons();
+static void OnLiveTrackerusrClicked(Window* pWnd) {
+    TCHAR Temp[100];
+    if (buttonLiveTrackerusr) {
+        _tcscpy(Temp, LiveTrackerusr_Config);
+        dlgTextEntryShowModal(Temp, 100);
+        _tcscpy(LiveTrackerusr_Config, Temp);
+    }
+    UpdateButtons();
 }
 
-static void OnCompetitionClassClicked(WindowControl *Sender)
-{
-  TCHAR Temp[100];
-  if (buttonCompetitionClass) {
-    _tcscpy(Temp,CompetitionClass_Config);
-    dlgTextEntryShowModal(Temp,100);
-    _tcscpy(CompetitionClass_Config,Temp);
-  }
-  UpdateButtons();
+static void OnLiveTrackerpwdClicked(Window* pWnd) {
+    TCHAR Temp[100];
+    if (buttonLiveTrackerpwd) {
+        _tcscpy(Temp, LiveTrackerpwd_Config);
+        dlgTextEntryShowModal(Temp, 100);
+        _tcscpy(LiveTrackerpwd_Config, Temp);
+    }
+    UpdateButtons();
 }
 
-
-static void OnCompetitionIDClicked(WindowControl *Sender)
-{
-  TCHAR Temp[100];
-  if (buttonCompetitionID) {
-    _tcscpy(Temp,CompetitionID_Config);
-    dlgTextEntryShowModal(Temp,100);
-    _tcscpy(CompetitionID_Config,Temp);
-  }
-  UpdateButtons();
+static void OnCompetitionClassClicked(Window* pWnd) {
+    TCHAR Temp[100];
+    if (buttonCompetitionClass) {
+        _tcscpy(Temp, CompetitionClass_Config);
+        dlgTextEntryShowModal(Temp, 100);
+        _tcscpy(CompetitionClass_Config, Temp);
+    }
+    UpdateButtons();
 }
 
-
-static void OnAirspaceColoursClicked(WindowControl * Sender){
-	(void)Sender;
-	bool retval;
-	retval = dlgAirspaceShowModal(true);
-	if (retval) {
-		requirerestart = true;
-	}
+static void OnCompetitionIDClicked(Window* pWnd) {
+    TCHAR Temp[100];
+    if (buttonCompetitionID) {
+        _tcscpy(Temp, CompetitionID_Config);
+        dlgTextEntryShowModal(Temp, 100);
+        _tcscpy(CompetitionID_Config, Temp);
+    }
+    UpdateButtons();
 }
 
-static void OnSetTopologyClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgTopologyShowModal();
-}
-/*
-static void OnResetTopologyClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgTopologyShowModal();
-}
-*/
-static void OnMultimapsClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgMultimapsShowModal();
-}
-static void OnSetCustomKeysClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgCustomKeysShowModal();
-}
-static void OnSetCustomMenuClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgCustomMenuShowModal();
+static void OnAirspaceColoursClicked(Window* pWnd) {
+    bool retval;
+    retval = dlgAirspaceShowModal(true);
+    if (retval) {
+        requirerestart = true;
+    }
 }
 
-static void OnSetBottomBarClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgBottomBarShowModal();
-}
-static void OnSetInfoPagesClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgInfoPagesShowModal();
-}
-static void OnTaskRulesClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgTaskRules();
+static void OnSetTopologyClicked(Window* pWnd) {
+    dlgTopologyShowModal();
 }
 
-static void OnAirspaceWarningParamsClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgAirspaceWarningParamsShowModal();
+static void OnMultimapsClicked(Window* pWnd) {
+    dlgMultimapsShowModal();
 }
 
-static void OnAirspaceModeClicked(WindowControl * Sender){
-	(void)Sender;
-	bool retval;
-	retval = dlgAirspaceShowModal(false);
-	if (retval) {
-		requirerestart = true;
-	}
+static void OnSetCustomKeysClicked(Window* pWnd) {
+    dlgCustomKeysShowModal();
 }
 
-static void OnNextClicked(WindowControl * Sender){
-	(void)Sender;
-  NextPage(+1);
+static void OnSetCustomMenuClicked(Window* pWnd) {
+    dlgCustomMenuShowModal();
 }
 
-static void OnPrevClicked(WindowControl * Sender){
-	(void)Sender;
-  NextPage(-1);
+static void OnSetBottomBarClicked(Window* pWnd) {
+    dlgBottomBarShowModal();
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnSetInfoPagesClicked(Window* pWnd) {
+    dlgInfoPagesShowModal();
+}
+
+static void OnTaskRulesClicked(Window* pWnd) {
+    dlgTaskRules();
+}
+
+static void OnAirspaceWarningParamsClicked(Window* pWnd) {
+    dlgAirspaceWarningParamsShowModal();
+}
+
+static void OnAirspaceModeClicked(Window* pWnd) {
+    if (dlgAirspaceShowModal(false)) {
+        requirerestart = true;
+    }
+}
+
+static void OnNextClicked(Window* pWnd) {
+    NextPage(+1);
+}
+
+static void OnPrevClicked(Window* pWnd) {
+    NextPage(-1);
+}
+
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
 static int cpyInfoBox[10];
@@ -1029,8 +993,7 @@ static void InfoBoxPropName(TCHAR *name, int item, int mode) {
   _tcscat(name,buf);
 }
 
-static void OnCopy(WindowControl *Sender) {
-  (void)Sender;
+static void OnCopy(Window* pWnd) {
   int mode = page2mode();
   TCHAR name[80];
   if ((mode<0)||(mode>3)) {
@@ -1047,8 +1010,7 @@ static void OnCopy(WindowControl *Sender) {
   }
 }
 
-static void OnPaste(WindowControl *Sender) {
-  (void)Sender;
+static void OnPaste(Window* pWnd) {
   int mode = page2mode();
   TCHAR name[80];
   if ((mode<0)||(mode>3)||(cpyInfoBox[0]<0)) {
@@ -1074,21 +1036,25 @@ static void OnPaste(WindowControl *Sender) {
   }
 }
 
-static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
-	(void)Sender;
-  switch(KeyCode & 0xffff){
-    case '6':
-      SetFocus(((WndButton *)wf->FindByName(TEXT("cmdPrev")))->GetHandle());
-      NextPage(-1);
-      //((WndButton *)wf->FindByName(TEXT("cmdPrev")))->SetFocused(true, NULL);
-    return(0);
-    case '7':
-      SetFocus(((WndButton *)wf->FindByName(TEXT("cmdNext")))->GetHandle());
-      NextPage(+1);
-      //((WndButton *)wf->FindByName(TEXT("cmdNext")))->SetFocused(true, NULL);
-    return(0);
-  }
-  return(1);
+static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
+    Window * pBtn = NULL;
+
+    switch (KeyCode & 0xffff) {
+        case '6':
+            pBtn = wf->FindByName(TEXT("cmdPrev"));
+            NextPage(-1);
+            break;
+        case '7':
+            pBtn = wf->FindByName(TEXT("cmdNext"));
+            NextPage(+1);
+            break;;
+    }
+    if (pBtn) {
+        pBtn->SetFocus();
+        return true;
+    }
+
+    return false;
 }
 
 static void SetLocalTime(void) {
@@ -1129,8 +1095,7 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 extern void OnInfoBoxHelp(WindowControl * Sender);
 
-static void OnWaypointNewClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnWaypointNewClicked(Window* pWnd){
 
   // Cannot save waypoint if no file
   if ( WayPointList.size()<=NUMRESWP) {
@@ -1200,9 +1165,9 @@ static void OnWaypointNewClicked(WindowControl * Sender){
 }
 
 
-static void OnWaypointEditClicked(WindowControl * Sender){
-	(void)Sender;
-  int res;
+static void OnWaypointEditClicked(Window* pWnd){
+
+    int res;
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
 	return;
@@ -1263,15 +1228,11 @@ static void AskWaypointSave(void) {
   waypointneedsave = false;
 }
 
-
-static void OnWaypointSaveClicked(WindowControl * Sender){
-  (void)Sender;
-
-  AskWaypointSave();
+static void OnWaypointSaveClicked(Window* pWnd) {
+    AskWaypointSave();
 }
 
-static void OnWaypointDeleteClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnWaypointDeleteClicked(Window* pWnd){
   int res;
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
@@ -1312,10 +1273,8 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
   }
 }
 #ifndef NO_BLUETOOTH
-static void OnBthDevice(WindowControl * Sender) {
-    (void) Sender;
+static void OnBthDevice(Window* pWnd) {
     DlgBluetooth::Show();
-
     
     TCHAR szPort[MAX_PATH];
     ReadPort1Settings(szPort, NULL, NULL);
@@ -1323,7 +1282,6 @@ static void OnBthDevice(WindowControl * Sender) {
 
     ReadPort2Settings(szPort, NULL, NULL);
     UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
-
 }
 #endif
 

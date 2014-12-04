@@ -26,7 +26,7 @@ static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
 
         WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmWaypointPicto")));
         if (wPicto) {
-            const RECT& rc = wPicto->GetBoundRect();
+            const RECT rc = wPicto->GetClientRect();
 
             MapWindow::DrawWaypointPictoBg(Surface, rc);
             LKASSERT(ValidWayPoint(SelectedWaypoint));
@@ -39,15 +39,13 @@ static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
     }
 }
 
-static void OnCancelClicked(WindowControl * Sender) {
-    (void) Sender;
+static void OnCancelClicked(Window* pWnd) {
     if (wf) {
         wf->SetModalResult(mrOK);
     }
 }
 
-static void OnSetAlt1Clicked(WindowControl * Sender){
-  (void)Sender;
+static void OnSetAlt1Clicked(Window* pWnd){
   LockTaskData();
   Alternate1 = SelectedWaypoint;
   RefreshTask();
@@ -58,8 +56,7 @@ static void OnSetAlt1Clicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnSetAlt2Clicked(WindowControl * Sender){
-  (void)Sender;
+static void OnSetAlt2Clicked(Window* pWnd){
   LockTaskData();
   Alternate2 = SelectedWaypoint;
   RefreshTask();
@@ -70,21 +67,18 @@ static void OnSetAlt2Clicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnGotoClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnGotoClicked(Window* pWnd){
   GotoWaypoint(SelectedWaypoint);
   retStatus=2;
   wf->SetModalResult(mrOK);
 }
 
-static void OnDetailsClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnDetailsClicked(Window* pWnd){
   retStatus=1;
   wf->SetModalResult(mrOK);
 }
 
-static void OnTaskClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnTaskClicked(Window* pWnd){
   retStatus=5;
   wf->SetModalResult(mrOK);
 }

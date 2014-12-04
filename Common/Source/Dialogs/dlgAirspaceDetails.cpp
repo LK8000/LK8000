@@ -27,7 +27,7 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
 
 	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
 	  LKASSERT(wPicto!=NULL);
-	  const RECT& rc = wPicto->GetBoundRect();
+	  const RECT rc = wPicto->GetClientRect();
 	  Surface.SelectObject(LKPen_Petrol_C2);
 
 	  Surface.SelectObject(LKBrush_Petrol);
@@ -44,72 +44,33 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
 	  airspace->DrawPicto(Surface, rc);
 }
 
-static void OnFlyClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnFlyClicked(Window* pWnd) {
+    (void) pWnd;
 
-  if (airspace == NULL) return;
-  if (wf == NULL) return;
+    if (airspace == NULL) return;
+    if (wf == NULL) return;
 
-  #if 0 // We dont ask for confirmation, but we might change our mind!
-  UINT answer;
-  if (airspace_copy.Flyzone()) {
-	// LKTOKEN _@M1273_ "Set as NOFLY zone?"
-	answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1273_")), mbYesNo);
-  } else {
-	// LKTOKEN _@M1272_ "Set as FLY zone?"
-	answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1272_")), mbYesNo);
-  }
-  if (answer == IdYes) {
-	CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
-	SetValues();
-	// wf->SetModalResult(mrOK);
-  }
-  #endif
-
-  CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
-  SetValues();
-  PlayResource(TEXT("IDR_WAV_CLICK"));
-
+    CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
+    SetValues();
+    PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
-static void OnSelectClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnSelectClicked(Window* pWnd) {
+    (void) pWnd;
 
-  if (airspace == NULL) return;
+    if (airspace == NULL) return;
 
-  CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
-  SetValues();
-  PlayResource(TEXT("IDR_WAV_CLICK"));
-
+    CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
+    SetValues();
+    PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
 
-static void OnAcknowledgeClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnAcknowledgeClicked(Window* pWnd){
+  (void)pWnd;
 
   if (airspace == NULL) return;
   if (wf == NULL) return;
-
-  #if 0  // We dont ask anymore to the user for enable/disable confirmation
-  UINT answer;
-  if (!airspace_copy.Enabled()) {
-  
-    // LKTOKEN  _@M1280_ "Enable this airspace?"
-    answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1280_")),  mbYesNo);
-    if (answer == IdYes) {
-      // this will cancel a daily ack
-      CAirspaceManager::Instance().AirspaceEnable(*airspace);
-      wf->SetModalResult(mrOK);
-    }
-  } else {
-    // LKTOKEN  _@M1284_ "Disable this airspace?" 
-    answer = MessageBoxX(airspace_copy.Name(), gettext(TEXT("_@M1284_")),	mbYesNo);
-    if (answer == IdYes) {
-      CAirspaceManager::Instance().AirspaceDisable(*airspace);
-      wf->SetModalResult(mrOK);
-    }
-  }
-  #endif
 
   if (airspace_copy.Enabled()) 
   {
@@ -129,20 +90,14 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
   PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnCloseClicked(Window* pWnd){
+	(void)pWnd;
   wf->SetModalResult(mrOK);
 }
 
-static int OnTimer(WindowControl * Sender){
-  (void)Sender;
-  
-  // Timer events comes at 500ms, we need every second
-  static bool timer_divider = false;
-  timer_divider = !timer_divider;
-  if (timer_divider) return 0;
+static bool OnTimer(){
   SetValues();
-  return 0;
+  return true;
 }
 
 
@@ -350,7 +305,7 @@ void dlgAirspaceDetails(CAirspace *airspace_to_show) {
 		      TEXT("IDR_XML_AIRSPACEDETAILS"));
 
   if (!wf) return;
-  wf->SetTimerNotify(OnTimer);
+  wf->SetTimerNotify(1000, OnTimer);
   
   airspace = airspace_to_show;
   SetValues();

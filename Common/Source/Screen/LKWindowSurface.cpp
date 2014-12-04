@@ -60,8 +60,9 @@ void LKWindowSurface::Create(Window& Wnd){
 void LKWindowSurface::Release() {
 #ifdef WIN32
     ReleaseTempDC();
-    assert(_OutputDC != NULL);
-    ::ReleaseDC(_hWnd, Detach());
+    if(_OutputDC && _hWnd) {
+        ::ReleaseDC(_hWnd, Detach());
+    }
 #endif
     LKSurface::Release();
 }

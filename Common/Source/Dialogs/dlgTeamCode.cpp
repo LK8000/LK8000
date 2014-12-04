@@ -87,7 +87,7 @@ static void Update()
 }
 
 
-static void OnCodeClicked(WindowControl *Sender) 
+static void OnCodeClicked(Window* pWnd)
 {
   TCHAR newTeammateCode[10];
   
@@ -113,19 +113,13 @@ static void OnCodeClicked(WindowControl *Sender)
   }
 }
 
-static void OnCloseClicked(WindowControl * Sender)
-{
-  (void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
-static int OnTimerNotify(WindowControl * Sender) {
-  (void)Sender;
-  static short i=0;
-  if(i++ % 2 == 0) return 0;
-
+static bool OnTimerNotify() {
   Update();
-  return 0;
+  return true;
 }
 
 static CallBackTableEntry_t CallBackTable[]={
@@ -183,7 +177,7 @@ void dlgTeamCodeShowModal(void)
 
   Update();
 
-  wf->SetTimerNotify(OnTimerNotify);
+  wf->SetTimerNotify(1000, OnTimerNotify);
 
   wf->ShowModal();
 

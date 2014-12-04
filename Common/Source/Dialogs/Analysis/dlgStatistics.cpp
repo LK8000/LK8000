@@ -25,7 +25,7 @@ bool   Statistics::unscaled_y;
 
 LKPen penThinSignal;
 
-int analysis_page=0;
+int analysis_page=ANALYSYS_PAGE_DEFAULT;
 WndForm *wfa=NULL;
 WndOwnerDrawFrame *waGrid=NULL;
 WndOwnerDrawFrame *waInfo=NULL;
@@ -50,16 +50,9 @@ void Statistics::Reset() {
   }
 }
 
-static int OnTimerNotify(WindowControl *Sender)
-{
-  static short i=0;
-
-  if(i++ < 5)
-    return 0;
-  i=0;
-   UpdateAnalysis();
-
-  return 0;
+static bool OnTimerNotify() {
+    UpdateAnalysis();
+    return true;
 }
 
 
@@ -83,7 +76,7 @@ static void SetCalcCaption(const TCHAR* caption) {
 
 static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
 
-  const RECT& rcgfx = Sender->GetBoundRect();
+  const RECT rcgfx = Sender->GetClientRect();
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
     if(INVERTCOLORS)
@@ -167,49 +160,45 @@ UnlockFlightData();
 }
 
 
-static void OnNextClicked(WindowControl * Sender){
-	(void)Sender;
-
-  NextPage(+1);
+static void OnNextClicked(Window* pWnd){
+    NextPage(+1);
 }
 
-static void OnPrevClicked(WindowControl * Sender){
-	(void)Sender;
-  NextPage(-1);
+static void OnPrevClicked(Window* pWnd){
+    NextPage(-1);
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-
-  wfa->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd){
+    wfa->SetModalResult(mrOK);
 }
 
+static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
+    if (waGrid->HasFocus())
+        return false;
 
-static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
-  (void)Sender;
+    Window * pBtn = NULL;
 
-  if (waGrid->GetFocused())
-    return(0);
-  
-  switch(KeyCode & 0xffff){
-    case VK_LEFT:
-    case '6':
-      SetFocus(((WndButton *)wfa->FindByName(TEXT("cmdPrev")))->GetHandle());
-      NextPage(-1);
-      //((WndButton *)wfa->FindByName(TEXT("cmdPrev")))->SetFocused(true, NULL);
-    return(0);
-    case VK_RIGHT:
-    case '7':
-      SetFocus(((WndButton *)wfa->FindByName(TEXT("cmdNext")))->GetHandle());
-      NextPage(+1);
-      //((WndButton *)wfa->FindByName(TEXT("cmdNext")))->SetFocused(true, NULL);
-    return(0);
-  }
-  return(1);
+    switch (KeyCode & 0xffff) {
+        case VK_LEFT:
+        case '6':
+            pBtn = wfa->FindByName(TEXT("cmdPrev"));
+            NextPage(-1);
+            break;
+        case VK_RIGHT:
+        case '7':
+            pBtn = wfa->FindByName(TEXT("cmdNext"));
+            NextPage(+1);
+            break;;
+    }
+    if (pBtn) {
+        pBtn->SetFocus();
+        return true;
+    }
+
+    return false;
 }
 
-static void OnCalcClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnCalcClicked(Window* pWnd){
   if (analysis_page==ANALYSIS_PAGE_BAROGRAPH) {
     dlgBasicSettingsShowModal();
   }
@@ -268,9 +257,7 @@ static void OnCalcClicked(WindowControl * Sender){
   UpdateAnalysis();
 }
 
-static void OnAspBearClicked(WindowControl * Sender){
-  (void)Sender;
-
+static void OnAspBearClicked(Window* pWnd){
     UpdateAnalysis();
 }
 
@@ -387,7 +374,7 @@ if (entered == true) /* prevent re entrance */
 
   waGrid->SetWidth( wfa->GetWidth() - waGrid->GetLeft()-6);
 
-  wfa->SetTimerNotify(OnTimerNotify);
+  wfa->SetTimerNotify(5000, OnTimerNotify);
 
 //  UpdateAnalysis();
 

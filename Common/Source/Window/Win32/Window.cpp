@@ -118,10 +118,11 @@ LRESULT CALLBACK Window::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-bool Window::Create(Window* pOwner, const RECT& rect)
-{ 
+bool Window::Create(Window* pOwner, const RECT& rect, const TCHAR* szName)
+{
+    _szWindowName = szName;
+
 	// Create the window
-	
 	// send the this pointer as the window creation parameter
 	HWND hwnd = CreateWindow(_szClassName.c_str(), _szWindowText.c_str(), _dwStyles, rect.left, rect.top, 
 		rect.right - rect.left, rect.bottom - rect.top, pOwner?pOwner->Handle():NULL, NULL, _hInstance, 
@@ -154,7 +155,7 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
             if(OnDestroy()) return 0;
             break;
         case WM_SIZE:
-            if(OnSize(LOWORD(lParam), HIWORD(lParam))) return 0;
+            if(OnSize(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))) return 0;
             break;
         case WM_SYSKEYDOWN:
             /* 
@@ -170,17 +171,23 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
         case WM_KEYDOWN:
             if(OnKeyDown(wParam)) return 0;
             break;
+        case WM_KEYUP:
+            if(OnKeyUp(wParam)) return 0;
+            break;
         case WM_LBUTTONDBLCLK:
-            if(OnLButtonDblClick((POINT){LOWORD(lParam), HIWORD(lParam)})) return 0;
+            if(OnLButtonDblClick((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) return 0;
             break;
         case WM_MOUSEMOVE:
-            if(OnMouseMove((POINT){LOWORD(lParam), HIWORD(lParam)})) return 0;
+            if(OnMouseMove((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) return 0;
             break;
         case WM_LBUTTONDOWN:
-            if(OnLButtonDown((POINT){LOWORD(lParam), HIWORD(lParam)})) return 0;
+            if(OnLButtonDown((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) return 0;
             break;
         case WM_LBUTTONUP:
-            if(OnLButtonUp((POINT){LOWORD(lParam), HIWORD(lParam)})) return 0;
+            if(OnLButtonUp((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) return 0;
+            break;
+        case WM_SETFOCUS:
+            if(OnSetFocus()) return 0;
             break;
         case WM_KILLFOCUS:
             if(OnKillFocus()) return 0;
@@ -197,8 +204,15 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
                 }
             }
             break;
+        case WM_TIMER:
+            if(OnTimer()) return 0;
+            break;
         default:
             break;
+    }
+    Window * pOwner = GetOwner();
+    if(pOwner && pOwner->Notify(this, uMsg, wParam, lParam)) {
+        return 0;
     }
     
     if(_OriginalWndProc) {
@@ -207,3 +221,26 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
     
+bool Window::Notify(Window* pWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch (uMsg) {
+        case WM_KEYDOWN:
+            if(OnKeyDownNotify(pWnd, wParam)) return true;
+            break;
+        case WM_KEYUP:
+            if(OnKeyUpNotify(pWnd, wParam)) return true;
+            break;
+        case WM_LBUTTONDOWN:
+            if(OnLButtonDownNotify(pWnd, (POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) return true;
+            break;
+        case WM_LBUTTONUP:
+            if(OnLButtonUpNotify(pWnd, (POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) return true;
+            break;
+        default:
+            break;
+    }
+    Window * pOwner = GetOwner();
+    if(pOwner && pOwner->Notify(pWnd, uMsg, wParam, lParam)) {
+        return true;
+    }    
+    return false;
+}

@@ -15,14 +15,11 @@
 
 static WndForm *wf=NULL;
 
-
-static void OnStopClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnStopClicked(Window* pWnd) {
   ReplayLogger::Stop();
 }
 
-static void OnStartClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnStartClicked(Window* pWnd) {
   WndProperty* wp;
   wp = (WndProperty*)wf->FindByName(TEXT("prpIGCFile"));
   if (wp) {
@@ -33,9 +30,7 @@ static void OnStartClicked(WindowControl * Sender){
   ReplayLogger::Start();
 }
 
-
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnCloseClicked(Window* pWnd) {
   wf->SetModalResult(mrOK);
 }
 

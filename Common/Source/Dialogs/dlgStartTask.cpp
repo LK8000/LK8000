@@ -18,20 +18,17 @@ static WndForm *wf=NULL;
 
 bool startIsValid = false;
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
 static void StartTaskAnyway(bool valid) {
   startIsValid = valid;
 }
 
-
-static void OnStartTaskAnywayClicked(WindowControl * Sender){
-	(void)Sender;
-        StartTaskAnyway(true);
-  wf->SetModalResult(mrOK);
+static void OnStartTaskAnywayClicked(Window* pWnd) {
+    StartTaskAnyway(true);
+    wf->SetModalResult(mrOK);
 }
 
 

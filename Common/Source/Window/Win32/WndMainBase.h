@@ -24,7 +24,7 @@ public:
     WndMainBase();
     virtual ~WndMainBase();
 
-    bool Create(const RECT& rect);
+    bool Create(const RECT& rect, const TCHAR* szName);
 
     void FullScreen();
 
@@ -32,9 +32,9 @@ protected:
 	virtual LRESULT CALLBACK WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     virtual bool OnCreate(int x, int y, int cx, int cy);
+    virtual bool OnDestroy();
 
 private:
-    int iTimerID;
     HWND _hWndFocus;
 
 #ifdef HAVE_ACTIVATE_INFO

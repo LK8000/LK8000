@@ -20,11 +20,7 @@
 #include "LiveTracker.h"
 #include "Dialogs.h"
 
-extern void AfterStartup();
 extern void StartupLogFreeRamAndStorage();
-extern void SIMProcessTimer (void);
-extern void ProcessTimer    (void);
-
 
 LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -37,10 +33,6 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
             memset(&s_sai, 0, sizeof (s_sai));
             s_sai.cbSize = sizeof (s_sai);
 #endif
-            if (iTimerID == 0) {
-                iTimerID = SetTimer(hWnd, 1000, 500, NULL); // 500ms  2 times per second
-            }
-
             break;
 
         case WM_ACTIVATE:
@@ -93,35 +85,6 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
         	}
         	_hWndFocus = NULL;
         	break; // process default.
-        case WM_KEYUP:
-            return 0; // we have processes this message;
-
-        case WM_TIMER:
-            // WM_TIMER is run at about 2hz.
-            LKHearthBeats++; // 100213
-            if (ProgramStarted > psInitInProgress) {
-                if (SIMMODE) {
-                    SIMProcessTimer();
-                } else {
-                    ProcessTimer();
-                }
-                if (ProgramStarted == psFirstDrawDone) {
-                    AfterStartup();
-                    ProgramStarted = psNormalOp;
-                    StartupStore(_T(". ProgramStarted=NormalOp %s%s"), WhatTimeIsIt(), NEWLINE);
-                    StartupLogFreeRamAndStorage();
-
-                }
-            }
-            return 0; // we have processes this message;
-
-        case WM_DESTROY:
-            if (iTimerID) {
-                KillTimer(hWnd, iTimerID);
-                iTimerID = 0;
-            }
-            PostQuitMessage(0);
-            return 0; // we have processes this message;
 
         default:
             break;

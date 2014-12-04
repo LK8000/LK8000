@@ -18,6 +18,7 @@
 #include "Win32/WndPaint.h"
 #include "Win32/WndTextEdit.h"
 #include "Win32/WndTextLabel.h"
+#include "Win32/WndCtrlBase.h"
 #endif
 
 #endif	/* WINDOWBASE_H */

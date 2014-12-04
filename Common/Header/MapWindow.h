@@ -471,10 +471,6 @@ class MapWindow {
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
   static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
 
-#ifdef WIN32
-  static LRESULT CALLBACK MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,LPARAM lParam);
-#endif
-
   static bool IsMapFullScreen();
   static bool ChangeDrawRect(const RECT rectarea);
 

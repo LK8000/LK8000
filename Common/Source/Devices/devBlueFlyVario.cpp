@@ -252,18 +252,18 @@ namespace dlgBlueFlyConfig {
         }
     }
 
-    void OnClose(WindowControl * Sender) {
-        (void)Sender;
+    void OnClose(Window* pWnd) {
+        (void)pWnd;
         wfDlg->SetModalResult(mrOK);
     }
 
-    void OnNextClicked(WindowControl * Sender) {
-        (void)Sender;
+    void OnNextClicked(Window* pWnd) {
+        (void)pWnd;
         NextPage(+1);
     }
 
-    void OnPrevClicked(WindowControl * Sender) {
-        (void)Sender;
+    void OnPrevClicked(Window* pWnd) {
+        (void)pWnd;
         NextPage(-1);
     }
 
@@ -400,7 +400,7 @@ namespace dlgBlueFlyConfig {
             std::for_each(HardwareParameters.begin(), HardwareParameters.end(), std::ptr_fun(FillProperty));
 
             Init = false;
-            if (wfDlg->ShowModal(true)) {
+            if (wfDlg->ShowModal()) {
                 nRet = IdOk;
             }
             AssocFieldParam.clear();

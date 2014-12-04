@@ -19,6 +19,14 @@
 #include "utils/tstring.h"
 #include "Screen/LKFont.h"
 
+#ifndef GET_X_LPARAM
+#define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
+#endif
+#ifndef GET_Y_LPARAM
+#define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
+#endif
+
+
 class LKSurface;
 
 class Window {
@@ -33,9 +41,8 @@ public:
 
     // just so you can change the window caption...
 
-    virtual void SetText(const TCHAR* lpszText) {
-        assert(lpszText);
-        _szWindowText = lpszText;
+    virtual void SetWndText(const TCHAR* lpszText) {
+        _szWindowText = lpszText?lpszText:_T("");
         if(_hWnd) {
             // already exist
             ::SetWindowText(_hWnd, _szWindowText.c_str());
@@ -43,22 +50,34 @@ public:
         // else, Text is set by CreateWindow().
     }
 
-    virtual bool Create(Window* pOwner, const RECT& rect);
+    const TCHAR* GetWndText() const { return _szWindowText.c_str(); }
+
+    virtual bool Create(Window* pOwner, const RECT& rect, const TCHAR* szName);
 
     HWND Handle() {
         return _hWnd;
+    }
+
+    Window* GetOwner() const {
+        return GetObjectFromWindow(::GetParent(_hWnd));
+    }
+    
+    const TCHAR* GetWndName() const {
+        return _szWindowName.c_str();
     }
 
     void Move(const RECT& rc, bool bRepaint) {
         ::MoveWindow(_hWnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, bRepaint);
     }
 
-    void Visible(bool Visible) {
+    void SetVisible(bool Visible) {
         ::ShowWindow(_hWnd, Visible ? SW_SHOW : SW_HIDE);
     }
 
     bool IsVisible() {
-        return ::IsWindowVisible(_hWnd);
+        // IsWindowVisible also test parent's, we don't want that
+        // return ::IsWindowVisible(_hWnd);
+        return (GetWindowLongPtr(_hWnd, GWL_STYLE) & WS_VISIBLE);
     }
 
     void Enable(bool Enable) {
@@ -98,19 +117,50 @@ public:
         ::SetFocus(_hWnd);
     }
 
+    bool HasFocus() {
+        return (::GetFocus() == _hWnd);
+    }
+
     void Redraw(const RECT& Rect) {
         ::InvalidateRect(_hWnd, &Rect, FALSE);
+        if(::GetCurrentThreadId() == ::GetWindowThreadProcessId(_hWnd, NULL)) {
+            // ::UpdateWindow() can'be called by another thread, otherwise, we can have deadlock with MsgPump
+            ::UpdateWindow(_hWnd);
+        }
+    }
+
+    void Redraw() {
+        ::InvalidateRect(_hWnd, NULL, FALSE);
+        if(::GetCurrentThreadId() == ::GetWindowThreadProcessId(_hWnd, NULL)) {
+            // ::UpdateWindow() can'be called by another thread, otherwise, we can have deadlock with MsgPump
+            ::UpdateWindow(_hWnd);
+        }
     }
 
     void SetTopWnd() {
         ::SetWindowPos(_hWnd, HWND_TOP, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE);
     }
 
+    void SetCapture() {
+        ::SetCapture(_hWnd);
+    }
+
+    void ReleaseCapture() {
+        ::ReleaseCapture();
+    }
+
+protected:
+
+    void StartTimer(unsigned uTime /*millisecond*/) { ::SetTimer(_hWnd, 1, uTime, NULL); }
+    void StopTimer() { ::KillTimer(_hWnd, 1); }
+
 protected:
     HWND _hWnd;
     DWORD _dwStyles;
     std::tstring _szClassName;
     std::tstring _szWindowText;
+    std::tstring _szWindowName;
+
     WNDPROC _OriginalWndProc;
     
     //contructor
@@ -128,9 +178,11 @@ protected:
 
     // the real message handler
     virtual LRESULT CALLBACK WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    
+    // process Message forwarded by child window.
+    virtual bool Notify(Window* pWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     // returns a pointer the window (stored as the WindowLong)
-
     inline static Window *GetObjectFromWindow(HWND hWnd) {
         return (Window *) GetWindowLongPtr(hWnd, GWLP_USERDATA);
     }
@@ -146,6 +198,7 @@ protected:
 
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) { return false; }
 
+    virtual bool OnSetFocus() { return false; }
     virtual bool OnKillFocus() { return false; }
 
 	virtual bool OnMouseMove(const POINT& Pos) { return false; }
@@ -156,7 +209,15 @@ protected:
 	virtual bool OnLButtonDblClick(const POINT& Pos) { return false; }
 
     virtual bool OnKeyDown(unsigned KeyCode) { return false; }
-    
+    virtual bool OnKeyUp(unsigned KeyCode) { return false; }
+
+    virtual bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode) { return false; }
+    virtual bool OnKeyUpNotify(Window* pWnd, unsigned KeyCode) { return false; }
+
+    virtual bool OnLButtonDownNotify(Window* pWnd, const POINT& Pos) { return false; }
+    virtual bool OnLButtonUpNotify(Window* pWnd, const POINT& Pos) { return false; }
+
+    virtual bool OnTimer() { return false; }
 };
 
 #endif

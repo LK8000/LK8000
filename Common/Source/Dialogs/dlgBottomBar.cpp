@@ -20,10 +20,9 @@
 static bool changed = false;
 static WndForm *wf=NULL;
 
-
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    (void) pWnd;
+    wf->SetModalResult(mrOK);
 }
 
 

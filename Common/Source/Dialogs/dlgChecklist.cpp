@@ -146,40 +146,42 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
   }
 }
 
-
-
-static void OnNextClicked(WindowControl * Sender){
-  (void)Sender;
-  NextPage(+1);
+static void OnNextClicked(Window* pWnd) {
+    (void) pWnd;
+    NextPage(+1);
 }
 
-static void OnPrevClicked(WindowControl * Sender){
-  (void)Sender;
-  NextPage(-1);
+static void OnPrevClicked(Window* pWnd) {
+    (void) pWnd;
+    NextPage(-1);
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    (void) pWnd;
+    wf->SetModalResult(mrOK);
 }
 
-static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
-	(void)Sender;
-  switch(KeyCode & 0xffff){
-    case VK_LEFT:
-    case '6':
-      SetFocus(((WndButton *)wf->FindByName(TEXT("cmdPrev")))->GetHandle());
-      NextPage(-1);
-      //((WndButton *)wf->FindByName(TEXT("cmdPrev")))->SetFocused(true, NULL);
-    return(0);
-    case VK_RIGHT:
-    case '7':
-      SetFocus(((WndButton *)wf->FindByName(TEXT("cmdNext")))->GetHandle());
-      NextPage(+1);
-      //((WndButton *)wf->FindByName(TEXT("cmdNext")))->SetFocused(true, NULL);
-    return(0);
-  }
-  return(1);
+static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
+    Window * pBtn = NULL;
+
+    switch (KeyCode & 0xffff) {
+        case VK_LEFT:
+        case '6':
+            pBtn = wf->FindByName(TEXT("cmdPrev"));
+            NextPage(-1);
+            break;
+        case VK_RIGHT:
+        case '7':
+            pBtn = wf->FindByName(TEXT("cmdNext"));
+            NextPage(+1);
+            break;;
+    }
+    if (pBtn) {
+        pBtn->SetFocus();
+        return true;
+    }
+
+    return false;
 }
 
 static CallBackTableEntry_t CallBackTable[]={

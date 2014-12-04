@@ -34,7 +34,7 @@ static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
     WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmWaypointPicto")));
     if(wPicto) {
 
-        const RECT& rc = wPicto->GetBoundRect();
+        const RECT rc = wPicto->GetClientRect();
 
         Surface.SetBkColor(RGB_LIGHTGREY);
 
@@ -138,43 +138,43 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
 
 
 
-static void OnNextClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnNextClicked(Window* pWnd){
   NextPage(+1);
 }
 
-static void OnPrevClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnPrevClicked(Window* pWnd){
   NextPage(-1);
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnCloseClicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
-static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
-  (void)Sender;
-  switch(KeyCode & 0xffff){
-    case VK_LEFT:
-    case '6':
-      SetFocus(((WndButton *)wf->FindByName(TEXT("cmdPrev")))->GetHandle());
-      NextPage(-1);
-      //((WndButton *)wf->FindByName(TEXT("cmdPrev")))->SetFocused(true, NULL);
-    return(0);
-    case VK_RIGHT:
-    case '7':
-      SetFocus(((WndButton *)wf->FindByName(TEXT("cmdNext")))->GetHandle());
-      NextPage(+1);
-      //((WndButton *)wf->FindByName(TEXT("cmdNext")))->SetFocused(true, NULL);
-    return(0);
-  }
-  return(1);
+static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
+    Window * pBtn = NULL;
+
+    switch (KeyCode & 0xffff) {
+        case VK_LEFT:
+        case '6':
+            pBtn = wf->FindByName(TEXT("cmdPrev"));
+            NextPage(-1);
+            break;
+        case VK_RIGHT:
+        case '7':
+            pBtn = wf->FindByName(TEXT("cmdNext"));
+            NextPage(+1);
+            break;;
+    }
+    if (pBtn) {
+        pBtn->SetFocus();
+        return true;
+    }
+
+    return false;
 }
 
 
-static void OnReplaceClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnReplaceClicked(Window* pWnd){
   LockTaskData();
 
   ReplaceWaypoint(SelectedWaypoint);
@@ -186,8 +186,7 @@ static void OnReplaceClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnNewHomeClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnNewHomeClicked(Window* pWnd){
   LockTaskData();
   HomeWaypoint = SelectedWaypoint;
   if (SIMMODE) {
@@ -214,15 +213,13 @@ static void OnNewHomeClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnTeamCodeClicked(WindowControl * Sender){
-	(void)Sender;
-  TeamCodeRefWaypoint = SelectedWaypoint;
-  wf->SetModalResult(mrOK);
+static void OnTeamCodeClicked(Window* pWnd){
+    TeamCodeRefWaypoint = SelectedWaypoint;
+    wf->SetModalResult(mrOK);
 }
 
 
-static void OnInserInTaskClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnInserInTaskClicked(Window* pWnd){
   LockTaskData();
   InsertWaypoint(SelectedWaypoint);
   RefreshTask();
@@ -230,8 +227,7 @@ static void OnInserInTaskClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnAppendInTask1Clicked(WindowControl * Sender){
-	(void)Sender;
+static void OnAppendInTask1Clicked(Window* pWnd){
   LockTaskData();
   InsertWaypoint(SelectedWaypoint, 1); // append before finish
   RefreshTask();
@@ -239,8 +235,7 @@ static void OnAppendInTask1Clicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnAppendInTask2Clicked(WindowControl * Sender){
-	(void)Sender;
+static void OnAppendInTask2Clicked(Window* pWnd){
   LockTaskData();
   InsertWaypoint(SelectedWaypoint, 2); // append after finish
   RefreshTask();
@@ -249,8 +244,7 @@ static void OnAppendInTask2Clicked(WindowControl * Sender){
 }
 
 
-static void OnRemoveFromTaskClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnRemoveFromTaskClicked(Window* pWnd){
   LockTaskData();
   RemoveWaypoint(SelectedWaypoint);
   RefreshTask();

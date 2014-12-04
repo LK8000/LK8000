@@ -14,8 +14,7 @@
 
 static WndForm *wf=NULL;
 
-static void OnCancelClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnCancelClicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
@@ -41,10 +40,9 @@ static void UpdateWind(bool set) {
 }
 
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-        UpdateWind(true);
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd){
+    UpdateWind(true);
+    wf->SetModalResult(mrOK);
 }
 
 

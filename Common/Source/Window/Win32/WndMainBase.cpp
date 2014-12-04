@@ -14,7 +14,7 @@
 
 extern HINSTANCE _hInstance; // Set by WinMain
 
-WndMainBase::WndMainBase() : WndPaint(NULL), iTimerID(), _hWndFocus()  {
+WndMainBase::WndMainBase() : WndPaint(NULL), _hWndFocus()  {
 
 #ifdef HAVE_ACTIVATE_INFO
     if(GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMActivate"))) {
@@ -30,7 +30,7 @@ WndMainBase::~WndMainBase() {
     
 }
 
-bool WndMainBase::Create(const RECT& rect) {
+bool WndMainBase::Create(const RECT& rect, const TCHAR* szName) {
 
     WNDCLASS wc;
     WNDCLASS dc;
@@ -66,7 +66,7 @@ bool WndMainBase::Create(const RECT& rect) {
     _szWindowText = _T("LK8000");
     _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
 
-    return WndPaint::Create(NULL, rect);
+    return WndPaint::Create(NULL, rect, szName);
 }
 
 bool WndMainBase::OnCreate(int x, int y, int cx, int cy) {
@@ -81,6 +81,12 @@ bool WndMainBase::OnCreate(int x, int y, int cx, int cy) {
 #endif
     
     return WndPaint::OnCreate(x, y, cx, cy);
+}
+
+bool WndMainBase::OnDestroy() {
+    WndPaint::OnDestroy();
+    PostQuitMessage(0);
+    return true;
 }
 
 void WndMainBase::FullScreen() {

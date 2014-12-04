@@ -561,38 +561,26 @@ static void OnWpListInfo(WindowControl * Sender,
 }
 
 
-static void OnWPSCloseClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnWPSCloseClicked(Window* pWnd){
+	(void)pWnd;
   ItemIndex = -1;
   wf->SetModalResult(mrCancle);
 }
 
-static int OnTimerNotify(WindowControl * Sender) {
-  (void)Sender;
-
-  static short i=0;
-  if(i++ % 2 == 0) return 0;
-
+static bool OnTimerNotify() {
   if (DirectionFilterIdx == 1){
-    int a;
-    a = (lastHeading - iround(CALCULATED_INFO.Heading));
+    const int a = (lastHeading - iround(CALCULATED_INFO.Heading));
     if (abs(a) > 0){
       UpdateList();
       SetDirectionData(NULL);
       wpDirection->RefreshDisplay();
     }
   }
-  return 0;
+  return true;
 }
 
-static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
-
-  WndProperty* wp;
+static bool FormKeyDown(Window* pWnd, unsigned KeyCode){
   unsigned NewIndex = TypeFilterIdx;
-
-  (void)Sender;
-
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpFltType")));
 
   switch(KeyCode & 0xffff){
     case VK_F1:
@@ -610,11 +598,16 @@ static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
     TypeFilterIdx = NewIndex;
     FilterMode(false);
     UpdateList();
-    wp->GetDataField()->SetAsString(CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx));
-    wp->RefreshDisplay();
+
+    WndProperty* wp = ((WndProperty *)wf->FindByName(TEXT("prpFltType")));
+    if(wp && wp->GetDataField()) {
+        wp->GetDataField()->SetAsString(CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx));
+        wp->RefreshDisplay();
+    }
+    return true;
   }
 
-  return(1);
+  return false;
 }
 
 static CallBackTableEntry_t CallBackTable[]={
@@ -696,7 +689,7 @@ void dlgAirspaceSelect(void) {
   }
   UpdateList();
 
-  wf->SetTimerNotify(OnTimerNotify);
+  wf->SetTimerNotify(1000, OnTimerNotify);
 
   StopHourglassCursor();
   wf->ShowModal();

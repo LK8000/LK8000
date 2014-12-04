@@ -74,8 +74,8 @@ static void OnHelpClicked(WindowControl * Sender){
   wComboPopupWndProperty->OnHelp();
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnCloseClicked(Window* pWnd){
+  (void)pWnd;
   wf->SetModalResult(mrOK);
 }
 
@@ -85,8 +85,8 @@ static void OnComboPopupListEnter(WindowControl * Sender, WndListFrame::ListInfo
   OnCloseClicked(Sender);
 }
 
-static void OnCancelClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnCancelClicked(Window* pWnd){
+	(void)pWnd;
   ComboListPopup->ComboPopupItemIndex= -1;
   wf->SetModalResult(mrCancle);
 }
@@ -153,7 +153,6 @@ int dlgComboPicker(WndProperty* theProperty){
     wComboPopupListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmComboPopupListEntry"));
     LKASSERT(wComboPopupListEntry!=NULL);
     wComboPopupListEntry->SetCanFocus(true);
-    wComboPopupListEntry->SetFocused(true, wComboPopupWndProperty->GetHandle());
 
     // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
     if ( wComboPopupListFrame->ScrollbarWidth == -1) {

@@ -19,8 +19,10 @@
 
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
+#include <functional>
 
-extern HINSTANCE _hInstance; // The current instance
+using std::placeholders::_1;
+
 
 #define ISCALE ScreenScale
 
@@ -163,7 +165,7 @@ const TCHAR* DataFieldFileReader::GetPathFile(void) const {
 
 bool DataFieldFileReader::checkFilter(const TCHAR *filename,
 				      const TCHAR *filter) {
-  TCHAR *ptr;
+  const TCHAR *ptr;
   TCHAR upfilter[MAX_PATH];
   // checks if the filename matches the filter exactly
 
@@ -1109,8 +1111,6 @@ WindowControl *LastFocusControl = NULL;
 
 
 void InitWindowControlModule(void);
-LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg, 
-                                      WPARAM wParam, LPARAM lParam);
 
 static LKColor bkColor = RGB_WINBACKGROUND; // PETROL
 static LKColor fgColor = RGB_WINFOREGROUND; // WHITE
@@ -1127,18 +1127,11 @@ WindowControl::WindowControl(WindowControl *Owner,
 
   mHelpText = NULL;
 
-  mHasFocus = false;
   mCanFocus = false;
 
   mReadOnly = false;
 
-  mClientCount = 0;
-
   mOnHelpCallback = NULL;
-
-  // todo
-
-  DWORD Style = 0;
 
   mX = X;
   mY = Y;
@@ -1151,14 +1144,7 @@ WindowControl::WindowControl(WindowControl *Owner,
     
   // todo
   mhFont = MapWindowFont;
-  mVisible = Visible;
-  mCaption[0] = '\0';
   mDontPaintSelector = false;
-
-  if (Name != NULL)
-    _tcscpy(mName, Name);  // todo size check
-  else
-    mName[0] = '\0';
 
   InitWindowControlModule();
 
@@ -1172,32 +1158,13 @@ WindowControl::WindowControl(WindowControl *Owner,
   }
   InstCount++;
 
-  Style = WS_CHILD | ES_MULTILINE | ES_CENTER
-    | ES_READONLY | WS_CLIPCHILDREN
-    | WS_CLIPSIBLINGS;
-
   // if Owner is Not provided, use MainWindow
-  HWND hWndOnwer = Owner?(Owner->GetClientArea()->GetHandle()):MainWindow.Handle();
-
-  mHWnd = CreateWindow(TEXT("STATIC"), TEXT("\0"),
-		     Style, mX, mY, mWidth, mHeight,
-		     hWndOnwer, NULL, _hInstance, NULL);
-
-  SetWindowPos(mHWnd, HWND_TOP,
-		     mX, mY,
-		     mWidth, mHeight,
-	       SWP_HIDEWINDOW);
-
+  Window* WndOnwer = Owner?(Window*)Owner->GetClientArea():&MainWindow;
+  Create(WndOnwer,(RECT){mX, mY, mX+mWidth, mY+mHeight}, Name?Name:_T("WindowControl"));
+  WndPaint::SetTopWnd();
+  
   if (mOwner != NULL)
     mOwner->AddClient(this);
-
-  mBoundRect.top = 0;
-  mBoundRect.left = 0;
-  mBoundRect.right = GetWidth();
-  mBoundRect.bottom = GetHeight();
-
-  SetWindowLongPtr(mHWnd, GWLP_USERDATA, (LONG_PTR)this);
-  SetWindowLongPtr(mHWnd, GWLP_WNDPROC, (LONG_PTR) WindowControlWndProc);
 
   mhBrushBk = hBrushDefaultBk;
   mhPenBorder = hPenDefaultBorder;
@@ -1206,9 +1173,9 @@ WindowControl::WindowControl(WindowControl *Owner,
 
   mBorderKind = 0; //BORDERRIGHT | BORDERBOTTOM;
 
-  if (mVisible)
-    ShowWindow(GetHandle(), SW_SHOW);
-
+  if (Visible) {
+    SetVisible(true);
+  }
 }
 
 WindowControl::~WindowControl(void){
@@ -1219,11 +1186,8 @@ WindowControl::~WindowControl(void){
 }
 
 void WindowControl::Destroy(void){
-  int i;
-  for (i=mClientCount-1; i>=0; i--){
-    mClients[i]->Destroy();
-    delete mClients[i];
-  }
+    std::for_each(mClients.begin(), mClients.end(), std::bind(&WindowControl::Destroy, _1));
+    mClients.clear();
 
   if (LastFocusControl == this)
     LastFocusControl = NULL;
@@ -1231,23 +1195,58 @@ void WindowControl::Destroy(void){
   if (ActiveControl == this)
     ActiveControl = NULL;
 
-  DestroyWindow(mHWnd);
+  WndPaint::Destroy();
 
   InstCount--;
 
 }
 
+bool WindowControl::OnSetFocus() {
+    Redraw();
+    ActiveControl = this;
+    LastFocusControl = this;    
+    return true;
+}
+
+bool WindowControl::OnKillFocus() {
+    Redraw();
+    ActiveControl = NULL;
+    return true;
+}
+
 void WindowControl::UpdatePosSize(void){
 
-  mBoundRect.top = 0;
-  mBoundRect.left = 0;
-  mBoundRect.right = GetWidth();
-  mBoundRect.bottom = GetHeight();
+  RECT WndRect = (RECT){0,0, GetWidth(),GetHeight()};
+  OffsetRect(&WndRect, mX, mY);
+  Move(WndRect, true);
+}
 
-  SetWindowPos(GetHandle(),0,
-     mX, mY,
-     mWidth, mHeight,
-     SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+bool WindowControl::OnPaint(LKSurface& Surface, const RECT& Rect) {
+    const RECT Client_Rect = GetClientRect();
+
+    int win_width = Client_Rect.right - Client_Rect.left;
+    int win_height = Client_Rect.bottom + Client_Rect.left;
+
+    LKBitmapSurface MemSurface(Surface, win_width, win_height);
+
+    Paint(MemSurface);
+
+#warning "TODO : Exclude client rect"
+/*
+    ptOffset.x = Client_Rect.left;
+    ptOffset.y = Client_Rect.top;
+    ClientToScreen(hWnd, &ptOffset);
+    if ((hChildWnd = GetWindow(hWnd, GW_CHILD)) != NULL) {
+        if (IsWindowVisible(hChildWnd)) {
+            GetWindowRect(hChildWnd, &Client_Rect);
+            OffsetRect(&Client_Rect, -ptOffset.x, -ptOffset.y);
+            PaintSurface.ExcludeClipRect(Client_Rect);
+        }
+    }
+*/
+    Surface.Copy(0, 0, win_width, win_height, MemSurface, 0, 0);
+
+    return true;
 }
 
 void WindowControl::SetTop(int Value){
@@ -1278,106 +1277,86 @@ void WindowControl::SetWidth(int Value){
   }
 }
 
-WindowControl *WindowControl::GetCanFocus(void){
-  if (mVisible && mCanFocus && !mReadOnly)
-    return(this);
-
-  if (!mVisible)
-    return(NULL);
-
-  for (int idx=0; idx<mClientCount; idx++){
-    WindowControl *w;
-    if ((w = mClients[idx]->GetCanFocus()) != NULL){
-      return(w);
+WindowControl *WindowControl::GetCanFocus(void) {
+    if (!IsVisible()) {
+        return NULL;
     }
-  }
-  return(NULL);
+    if (mCanFocus && !mReadOnly) {
+        return (this);
+    }
+
+    for (WindowControl *w : mClients) {
+        if (w && w->GetCanFocus()) {
+            return (w);
+        }
+    }
+    return (NULL);
 };
 
-void WindowControl::AddClient(WindowControl *Client){
-  mClients[mClientCount] = Client;
-  mClientCount++;
+void WindowControl::AddClient(WindowControl *Client) {
 
-  Client->SetFont(GetFont());
+    Client->SetFont(GetFont());
 
-  // TODO unify these checks once consolidated LKWINCONTROL
-  // use negative value to space down items
-  // -999 to stay on the same line
-  // -998 to advance one line with more space
-  // -997 to advance one line with twice more space
-  
-  if (Client->mY <0){
-	if (mClientCount > 1){
-		if (Client->mY==-999) //@ 101008 
-			Client->mY=mClients[mClientCount-2]->mY;
-		else 
-			if (Client->mY==-998) //@ 101115
-				Client->mY = mClients[mClientCount-2]->mY + mClients[mClientCount-2]->mHeight +NIBLSCALE(3);
-			else 
-				if (Client->mY==-997) //@ 101115
-					Client->mY = mClients[mClientCount-2]->mY + mClients[mClientCount-2]->mHeight +NIBLSCALE(6);
-				else
-					Client->mY = mClients[mClientCount-2]->mY - ((mClients[mClientCount-2]->mHeight)*Client->mY);
-		SetWindowPos(Client->GetHandle(), 0,
-			Client->mX, Client->mY,
-			0, 0,
-			SWP_NOSIZE | SWP_NOZORDER 
-			| SWP_NOACTIVATE | SWP_NOOWNERZORDER);
-	}
-  }
+    // TODO unify these checks once consolidated LKWINCONTROL
+    // use negative value to space down items
+    // -999 to stay on the same line
+    // -998 to advance one line with more space
+    // -997 to advance one line with twice more space
 
-  // Rescale to full horizontal width, good only for most-right windows
-  if (Client->mWidth<-1) {
-	// the magic rescaling to full width
-	if (ScreenLandscape)
-		Client->mWidth=ScreenSizeX-(int)((320*ScreenDScale)+Client->mWidth);
-	else
-		Client->mWidth=ScreenSizeX-(int)((240*ScreenDScale)+Client->mWidth);
-	// This is needed to update the geometry, otherwise we neet to issue a SetWidth()!
-	SetWindowPos(Client->GetHandle(), 0,
-		Client->mX, Client->mY,
-		Client->mWidth, Client->mHeight,
-		SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+    if (Client->GetTop() < 0 && !mClients.empty()) {
+        WindowControl * pPrev = mClients.back();
+        switch (Client->GetTop()) {
+            case -999: //@ 101008
+                Client->SetTop(pPrev->GetTop());
+                break;
+            case -998: //@ 101115
+                Client->SetTop(pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(3));
+                break;
+            case -997: //@ 101115
+                Client->SetTop(pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(6));
+                break;
+            default:
+                Client->SetTop(pPrev->GetTop() - ((pPrev->GetHeight()) * Client->mY));
+                break;
+        }
+    }
 
-  }
+    mClients.push_back(Client);
 
-#if 0
-  // THIS WAS WRONG
-  if (Client->mWidth<-1) {
-	int i=RescaleWidth(Client->mWidth);
-	Client->mWidth=i;
-	SetWindowPos(Client->GetHandle(), 0,
-		Client->mX, Client->mY,
-		Client->mWidth, Client->mHeight,
-		SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
-  }
-#endif
-	
+    // Rescale to full horizontal width, good only for most-right windows
+    if (Client->GetWidth()<-1) {
+        // the magic rescaling to full width
+        if (ScreenLandscape) {
+            Client->SetWidth(ScreenSizeX - (int) ((320 * ScreenDScale) + Client->GetWidth()));
+        } else {
+            Client->SetWidth(ScreenSizeX - (int) ((240 * ScreenDScale) + Client->GetWidth()));
+        }
+    }
 }
 
 // 110411 This is always set true because we don't use UserLevel anymore
-void WindowControl::FilterAdvanced(bool advanced){
-  if (_tcsstr(mCaption, TEXT("*")) != NULL) {
-    if (advanced) {
-      SetVisible(true);
-    } else {
-      SetVisible(false);
+
+void WindowControl::FilterAdvanced(bool advanced) {
+    if (_tcsstr(GetWndText(), TEXT("*")) != NULL) {
+        SetVisible(advanced);
     }
-  } 
-  for (int i=0; i<mClientCount; i++){
-    mClients[i]->FilterAdvanced(advanced);
-  }
+    for (WindowControl* w : mClients) {
+        w->FilterAdvanced(advanced);
+    }
 }
 
-WindowControl *WindowControl::FindByName(const TCHAR *Name){
-  if (_tcscmp(mName, Name)==0)
-    return(this);
-  for (int i=0; i<mClientCount; i++){
-    WindowControl *W = mClients[i]->FindByName(Name);
-    if (W != NULL)
-      return(W);
-  }
-  return(NULL);
+WindowControl *WindowControl::FindByName(const TCHAR *Name) {
+    if (_tcscmp(GetWndName(), Name) == 0) {
+        return (this);
+    }
+
+    for (WindowControl* w : mClients) {
+        WindowControl* res = w->FindByName(Name);
+        if (res) {
+            return (res);
+        }
+    }
+    return (NULL);
 }
 
 void WindowControl::SetHelpText(const TCHAR *Value) {  
@@ -1395,101 +1374,21 @@ void WindowControl::SetHelpText(const TCHAR *Value) {
   }
 }
 
-
-void WindowControl::SetCaption(const TCHAR *Value){
-
-  if (Value == NULL && mCaption[0] != '\0') {
-	mCaption[0] ='\0';
-	InvalidateRect(GetHandle(), &GetBoundRect(), false);
-	UpdateWindow(GetHandle());
-	return;
-  }
-
-  if (_tcscmp(mCaption, Value) != 0) {
-	LK_tcsncpy(mCaption, Value,MAXSETCAPTION); // destination already sized MAXSETCAPTION+1
-	InvalidateRect(GetHandle(), &GetBoundRect(), false);
-	UpdateWindow(GetHandle());
-  }
-
-}
-
-bool WindowControl::SetFocused(bool Value, HWND FromTo){
-  (void)FromTo;
-  bool res = mHasFocus;
-
-  if (mHasFocus != Value){
-    mHasFocus = Value;
-
-    if (mCanFocus){
-      RECT rc;
-      rc.left = 0;
-      rc.top = 0;
-      rc.right = GetWidth();
-      rc.bottom = GetHeight();
-      InvalidateRect(GetHandle(), &rc, false);
-      // todo, only paint the selector edges
-#ifndef WINE
-      UpdateWindow(GetHandle());
-#endif /* WINE */
-      // Paint(GetDeviceContext());
+void WindowControl::SetCaption(const TCHAR *Value) {
+    const TCHAR* szCaption = GetWndText();
+    if (Value == NULL && szCaption[0] != _T('\0')) {
+        SetWndText(_T(""));
+        Redraw();
+    } else if (_tcscmp(szCaption, Value) != 0) {
+        SetWndText(Value);
+        Redraw();
     }
-
-  }
-
-  if (Value){
-    if (mCanFocus){
-      ActiveControl = this;
-      LastFocusControl = this;
-    }
-  } else {
-    ActiveControl = NULL;
-    /*
-    if (FromTo == NULL){
-      SetFocus(GetParent());
-    }
-    */
-  }
-
-  return(res);
-
 }
 
 bool WindowControl::SetCanFocus(bool Value){
   bool res = mCanFocus;
   mCanFocus = Value;
   return(res);
-}
-
-bool WindowControl::GetFocused(void){
-  return(mHasFocus);
-}
-
-bool WindowControl::SetVisible(bool Value){
-  bool res = mVisible;
-  if (mVisible != Value){
-
-    mVisible = Value;
-
-    /*
-    for (int i=0; i<mClientCount; i++){
-      mClients[i]->SetVisible(mVisible);
-    }
-    */
-
-    if (mVisible){
-      InvalidateRect(GetHandle(), &GetBoundRect(), false);
-      UpdateWindow(GetHandle());
-      ShowWindow(GetHandle(), SW_SHOW);
-    } else {
-      ShowWindow(GetHandle(), SW_HIDE);
-    }
-
-  }
-  return(res);
-}
-
-bool WindowControl::GetVisible(void){
-  return(mVisible);
 }
 
 int WindowControl::GetBorderKind(void){
@@ -1500,16 +1399,13 @@ int WindowControl::SetBorderKind(int Value){
   int res = mBorderKind;
   if (mBorderKind != Value){
     mBorderKind = Value;
-    InvalidateRect(GetHandle(), &GetBoundRect(), false);
-    UpdateWindow(GetHandle());
+    Redraw();
   }
   return(res);
 }
 
-LKFont WindowControl::SetFont(const LKFont& Value){
-  const LKFont res = mhFont;
+void WindowControl::SetFont(const LKFont& Value){
   mhFont = Value;
-  return (res);
 }
 
 bool WindowControl::SetReadOnly(bool Value){
@@ -1517,24 +1413,20 @@ bool WindowControl::SetReadOnly(bool Value){
   if (mReadOnly != Value){
     mReadOnly = Value;
 
-   	RECT rc = {0,0,0,0};
-   	GetClientRect(mHWnd, &rc);
-   	InvalidateRect(mHWnd,&rc,false);
+    Window::Redraw();
   }
   return(res);
 }
 
-LKColor WindowControl::SetForeColor(const LKColor& Value){
-  LKColor res = mColorFore;
-  if (mColorFore != Value){
-    mColorFore = Value;
-    if (mVisible){
-    	RECT rc = {0,0,0,0};
-    	GetClientRect(mHWnd, &rc);
-    	InvalidateRect(mHWnd,&rc,false);
+LKColor WindowControl::SetForeColor(const LKColor& Value) {
+    LKColor res = mColorFore;
+    if (mColorFore != Value) {
+        mColorFore = Value;
+        if (IsVisible()) {
+            Redraw();
+        }
     }
-  }
-  return res;
+    return res;
 }
 
 LKColor WindowControl::SetBackColor(const LKColor& Value){
@@ -1543,10 +1435,8 @@ LKColor WindowControl::SetBackColor(const LKColor& Value){
 	mColorBack = Value;
 	mBrushBk.Create(mColorBack);
 	mhBrushBk = mBrushBk;
-	if (mVisible){
-    	RECT rc = {0,0,0,0};
-    	GetClientRect(mHWnd, &rc);
-    	InvalidateRect(mHWnd,&rc,false);
+	if (IsVisible()){
+        Redraw();
 	}
   }
   return res;
@@ -1577,7 +1467,7 @@ void WindowControl::PaintBorder(LKSurface& Surface) {
 
 void WindowControl::PaintSelector(LKSurface& Surface){
 
-  if (!mDontPaintSelector && mCanFocus && mHasFocus){
+  if (!mDontPaintSelector && mCanFocus && HasFocus()){
     const auto oldPen = Surface.SelectObject(hPenDefaultSelector);
 
     Surface.DrawLine(
@@ -1605,20 +1495,12 @@ void WindowControl::PaintSelector(LKSurface& Surface){
 
 }
 
-void WindowControl::Redraw(void){
-  if (GetVisible()){
-    InvalidateRect(GetHandle(), &GetBoundRect(), false);
-    UpdateWindow(GetHandle());
-  }
-}
-
-
 extern void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText);
 
 
 int WindowControl::OnHelp() {
     if (mHelpText) {
-      dlgHelpShowModal(mCaption, mHelpText);
+      dlgHelpShowModal(GetWndText(), mHelpText);
       return(1);
     } else {
       if (mOnHelpCallback) {
@@ -1630,278 +1512,78 @@ int WindowControl::OnHelp() {
     }
 };
 
-void WindowControl::Paint(LKSurface& Surface){
+void WindowControl::Paint(LKSurface& Surface) {
 
-  Surface.SetBkMode(TRANSPARENT);
-  RECT rc;
+    if (!IsVisible()) return;
 
-  rc.left = 0;
-  rc.top = 0;
-  rc.right = 0 + mWidth+2;
-  rc.bottom = 0 + mHeight+2;
+    Surface.SetBkMode(TRANSPARENT);
+    RECT rc = GetClientRect();
+    rc.right += 2;
+    rc.bottom += 2;
 
-  if (!mVisible) return;
+    Surface.FillRect(&rc, mhBrushBk);
 
-  Surface.FillRect(&rc, mhBrushBk);
-
-  // JMW added highlighting, useful for lists
-  if (!mDontPaintSelector && mCanFocus && mHasFocus){
-    const auto &hB = LKBrush_DarkYellow2;
-    rc.left += 0;
-    rc.right -= 2;
-    rc.top += 0;
-    rc.bottom -= 2;
-    Surface.FillRect(&rc, hB);
-
-  }
-  PaintBorder(Surface);
-  PaintSelector(Surface);
-
+    // JMW added highlighting, useful for lists
+    if (!mDontPaintSelector && mCanFocus && HasFocus()) {
+        rc.right -= 2;
+        rc.bottom -= 2;
+        Surface.FillRect(&rc, LKBrush_DarkYellow2);
+    }
+    PaintBorder(Surface);
+    PaintSelector(Surface);
 }
 
-WindowControl *WindowControl::FocusNext(WindowControl *Sender){
-  int idx;
-  WindowControl *W;
-
-  if (Sender != NULL){
-    for (idx=0; idx<mClientCount; idx++)
-      if (mClients[idx] == Sender) break;
-
-    idx++;
-  } else idx = 0;
-
-  for (; idx<mClientCount; idx++){
-    if ((W = mClients[idx]->GetCanFocus()) != NULL){
-      SetFocus(W->GetHandle());
-      return(W);
+WindowControl *WindowControl::FocusNext(WindowControl *Sender) {
+    WindowControl *W = NULL;
+    if (Sender != NULL) {
+        auto It = std::find(mClients.begin(), mClients.end(), Sender);
+        if(It != mClients.end()) {
+            ++It;
+        }
+        for( ; !W && It != mClients.end();  ++It) {
+            W = (*It)->GetCanFocus();
+        }
+    } else if(!mClients.empty()) {
+        W = mClients.front()->GetCanFocus();
     }
-  }
 
-  if (GetOwner() != NULL){
-    return(GetOwner()->FocusNext(this));
-  }
+    if (W) {
+        W->SetFocus();
+        return W;
+    }
 
-  return(NULL);
+    if (GetOwner() != NULL) {
+        return (GetOwner()->FocusNext(this));
+    }
 
+    return (NULL);
 }
 
 WindowControl *WindowControl::FocusPrev(WindowControl *Sender){
-  int idx;
-  WindowControl *W;
-
-  if (Sender != NULL){
-    for (idx=0; idx<mClientCount; idx++)
-      if (mClients[idx] == Sender) break;
-
-    idx--;
-  } else idx = mClientCount-1;
-
-  for (; idx>=0; idx--)
-    if ((W=mClients[idx]->GetCanFocus()) != NULL){
-      SetFocus(W->GetHandle());
-      return(W);
+    WindowControl *W = NULL;
+    if (Sender != NULL) {
+        auto It = std::find(mClients.rbegin(), mClients.rend(), Sender);
+        if (It != mClients.rend()) {
+            ++It;
+        }
+        for( ; !W && It != mClients.rend();  ++It) {
+            W = (*It)->GetCanFocus();
+        }
+    } else if(!mClients.empty()) {
+        W = mClients.back()->GetCanFocus();
     }
 
-  if (GetOwner() != NULL){
-    return(GetOwner()->FocusPrev(this));
-  }
+    if (W) {
+        W->SetFocus();
+        return W;
+    }
 
-  return(NULL);
+    if (GetOwner() != NULL) {
+        return (GetOwner()->FocusPrev(this));
+    }
+
+    return (NULL);
 }
-
-LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
-
-	WindowControl *w = (WindowControl *) GetWindowLongPtr(hwnd, GWLP_USERDATA);
-
-	if (w)
-		return (w->WndProc(hwnd, uMsg, wParam, lParam));
-	else
-		return (DefWindowProc(hwnd, uMsg, wParam, lParam));
-}
-
-#ifndef GET_X_LPARAM
-#define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
-#endif
-#ifndef GET_Y_LPARAM
-#define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
-#endif
-
-//#define TRACE_WNDPROC	1
-//
-// This function is called continously!
-//
-int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
-
-  HWND hWnd;
-  RECT Client_Rect;
-  int win_width;
-  int win_height;
-  
-  POINT ptOffset;
-  HWND hChildWnd;
-
-  switch (uMsg){
-    case WM_ERASEBKGND:
-	#if TRACE_WNDPROC
-	StartupStore(_T(".... WNDPROC> ERASEBKGND\n"));
-	#endif
-      // we don't need one, we just paint over the top
-    return TRUE;
-
-    case WM_PAINT:
-	#if TRACE_WNDPROC
-	StartupStore(_T(".... WNDPROC> PAINT\n"));
-	#endif
-    	hWnd = GetHandle();
-        if(hWnd) {
-            GetClientRect(hWnd, &Client_Rect);
-            win_width = Client_Rect.right - Client_Rect.left;
-            win_height = Client_Rect.bottom + Client_Rect.left;
-
-            LKPaintSurface PaintSurface(hWnd);
-            LKBitmapSurface MemSurface(PaintSurface, win_width, win_height);
-
-            Paint(MemSurface);
-
-            ptOffset.x = Client_Rect.left;
-            ptOffset.y = Client_Rect.top;
-            ClientToScreen(hWnd, &ptOffset);
-            if ((hChildWnd = GetWindow(hWnd, GW_CHILD)) != NULL) {
-                if (IsWindowVisible(hChildWnd)) {
-                    GetWindowRect(hChildWnd, &Client_Rect);
-                    OffsetRect(&Client_Rect, -ptOffset.x, -ptOffset.y);
-                    PaintSurface.ExcludeClipRect(Client_Rect);
-                }
-            }
-
-            PaintSurface.Copy(0, 0, win_width, win_height, MemSurface, 0, 0);
-        }
-    return(0);
-
-    case WM_WINDOWPOSCHANGED:
-	#if TRACE_WNDPROC
-	StartupStore(_T(".... WNDPROC> POSCHANGED\n"));
-	#endif
-      //ib = (WindowControl *)GetWindowLong(hwnd, GWL_USERDATA);
-      //ib->Paint(ib->GetDeviceContext());
-    return 0;
-
-    case WM_CREATE:
-	#if TRACE_WNDPROC
-	StartupStore(_T(".... WNDPROC> CREATE\n"));
-	#endif
-    break;
-
-    case WM_DESTROY:
-	#if TRACE_WNDPROC
-	StartupStore(_T(".... WNDPROC> DESTROY\n"));
-	#endif
-        // The Close() was missing, and when clicking on X to quit LK, if a dialog was pending it was not
-        // closed correctly: the modal dialog had previously stopped the message loop dispatcher, and
-        // as a result inside the main message loop in lk8000.cpp we were not getting the QUIT message.
-        // So the main thread was left running, as a ghost process. This could happen only on PC, so far,
-        // but was a pending problem for the cases when we have a full window where you can click an X to quit.
-	Close();
-
-    break;
-
-    case WM_LBUTTONDBLCLK:
-	#if TRACE_WNDPROC
-	StartupStore(_T(".... WNDPROC> DOUBLECLICK\n"));
-	#endif
-
-      if (!OnLButtonDoubleClick((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
-        return(0);
-      }
-    break;
-
-    case WM_LBUTTONDOWN:
-	#if TRACE_WNDPROC
-	StartupStore(_T(".... WNDPROC> LBUTTONDOWN\n"));
-	#endif
-      if (!OnLButtonDown((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
-        return(0);
-      }
-      // TODO enhancement: need to be able to focus list items here...
-    break;
-
-    case WM_LBUTTONUP:
-	#if TRACE_WNDPROC
-	StartupStore(_T(".... WNDPROC> LBUTTONUP\n"));
-	#endif
-      if (!OnLButtonUp((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
-        return(0);
-      }
-    break;
-
-    case WM_KEYDOWN:
-      KeyTimer(true, wParam & 0xffff);
-
-      if (!OnKeyDown(wParam)) {
-        return(0);
-      }
-      break;
-
-    case WM_KEYUP:
-	if (KeyTimer(false, wParam & 0xffff)) {
-	  // activate tool tips if hit return for long time
-	  if ((wParam & 0xffff) == VK_RETURN) {
-	    if (OnHelp()) return (0);
-	  }
-	} 
-        if (!OnKeyUp(wParam)) {
-          return(0);
-        }
-      break;
-
-    case WM_MOUSEMOVE:
-      OnMouseMove((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)});
-      return (0);
-      break;
-
-    case WM_SETFOCUS:
-	#if DEBUG_FOCUS
-	StartupStore(_T("............ WNDCONTROL HAS FOCUS\n"));
-	#endif
-      SetFocused(true, (HWND) wParam);
-    return(0);
-
-    case WM_KILLFOCUS:
-	#if DEBUG_FOCUS
-	StartupStore(_T("............ WNDCONTROL LOST FOCUS\n"));
-	#endif
-      SetFocused(false, (HWND) wParam);
-    return(0);
-
-    case WM_ACTIVATE:
-      /*
-      if (wParam == WA_ACTIVE){
-        if (LastFocusControl != NULL)
-          SetFocus(LastFocusControl->GetHandle());
-      }
-      return(0);
-      */
-    break;
-
-    // APPARENTLY THIS IS NEVER CALLED. Missing Close(), handled by Destroy() now
-    case WM_QUIT:
-    case WM_CLOSE:
-      Close();
-    return(0);
-
-  }
-
-  if (mTopOwner != NULL){
-    if (!mTopOwner->OnUnhandledMessage(hwnd, uMsg, wParam, lParam))
-     return(0);
-  } else {
-    if (OnUnhandledMessage(hwnd, uMsg, wParam, lParam))
-     return(0);
-  }
-
-  return (DefWindowProc (hwnd, uMsg, wParam, lParam));
-}
-
 
 void InitWindowControlModule(void){
 
@@ -1950,11 +1632,10 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
   mTitleRect.bottom=0;
   mTitleRect.right=Height;
 
-  cbTimerID = SetTimer(GetHandle(),1001,500,NULL);
-
   mModalResult = 0;
-  if (Caption != NULL)
-    _tcscpy(mCaption, Caption);
+  if (Caption != NULL) {
+    SetCaption(Caption);
+  }
 
 };
 
@@ -1962,19 +1643,11 @@ WndForm::~WndForm(void){
   Destroy();
 }
 
-
-
-void WndForm::Destroy(void){
-
-  // animation
-
-  if (mClientWindow)
-    mClientWindow->SetVisible(false);
-
-  KillTimer(GetHandle(),cbTimerID);
-
-  WindowControl::Destroy();  // delete all childs
-
+void WndForm::Destroy(void) {
+    if (mClientWindow) {
+        mClientWindow->SetVisible(false);
+    }
+    WindowControl::Destroy(); // delete all childs
 }
 
 void WndForm::AddClient(WindowControl *Client){      // add client window
@@ -1990,184 +1663,79 @@ LKFont WndForm::SetTitleFont(const LKFont& Value){
   return (res);
 }
 
-void WndForm::SetToForeground(void) 
-{
-  BringWindowToTop(GetHandle());
-  SetActiveWindow(GetHandle());
-}
-
-
-int WndForm::ShowModal(void){
-  return ShowModal(false);
-}
-
-int WndForm::ShowModal(bool bEnableMap) {
+int WndForm::ShowModal(void) {
 #define OPENCLOSESUPPRESSTIME Poco::Timespan(0,500*1000).totalMicroseconds()
-  MSG msg;
-  HWND oldFocusHwnd;
+    SHOWTHREAD(_T("ShowModal"));
 
-  SHOWTHREAD(_T("ShowModal"));
+    enterTime.update();
 
-  enterTime.update();
+    Message::BlockRender(true);
 
-  Message::BlockRender(true);
+    SetVisible(true);
 
-  RECT mRc;
-  GetWindowRect(GetHandle(), &mRc);
+    SetToForeground();
 
-  SetVisible(true);
+    mModalResult = 0;
 
-  SetToForeground();
+    Window* oldFocus = Window::GetObjectFromWindow(GetFocus());
+    FocusNext(NULL);
 
-  mModalResult = 0;
+    bool hastimed = false;
+    WndForm::timeAnyOpenClose.update(); // when current dlg opens or child closes
 
-  oldFocusHwnd = SetFocus(GetHandle());
+    MSG msg;
+    while ((mModalResult == 0) && GetMessage(&msg, NULL, 0, 0)) {
+        Poco::Timestamp timeMsg;
 
-  FocusNext(NULL);
-
-  bool hastimed = false;
-  WndForm::timeAnyOpenClose.update(); // when current dlg opens or child closes
-
-  while ((mModalResult == 0) && GetMessage(&msg, NULL, 0, 0)) {
-    Poco::Timestamp timeMsg;
-
-    if ((msg.message == WM_KEYDOWN) && ((msg.wParam & 0xffff) == VK_ESCAPE))
-      mModalResult = mrCancle;
-
-    if (
-        (msg.message == WM_KEYDOWN
-          || msg.message == WM_KEYUP
-	    || msg.message == WM_LBUTTONDOWN
-          || msg.message == WM_LBUTTONUP
-          || msg.message == WM_LBUTTONDBLCLK
-        )  // screen event
-        && msg.hwnd != GetHandle() && !IsChild(GetHandle(), msg.hwnd)  // not current window or child
-        &&  !( // exception
-              bEnableMap
-              && msg.hwnd == MainWindow.Handle()
-              && (
-                msg.message == WM_LBUTTONDOWN
-                || msg.message == WM_LBUTTONUP
-                || msg.message == WM_MOUSEMOVE
-              )
-         )
-    )
-      continue;   // make it modal
-
-      if (msg.message == WM_KEYUP){
-	/*
-	if (KeyTimer(false,msg.wParam & 0xffff)) {
-	  // activate tool tips
-	  1;
-	} else {
-	  // behave as if it was a key down event
-	  if (mOnKeyDownNotify != NULL)
-	    if (!(mOnKeyDownNotify)(this, msg.wParam, msg.lParam))
-	      continue;
-	}
-	*/
-      }
-
-      if (msg.message == WM_KEYDOWN){
-	//	KeyTimer(true,msg.wParam & 0xffff);
-
-/*
-        if (ActiveControl != NULL){
-          switch(msg.wParam & 0xffff){
-            case VK_UP:
-              if (ActiveControl->GetOwner() != NULL)
-                ActiveControl->GetOwner()->FocusPrev(ActiveControl);
-            continue;
-            case VK_DOWN:
-              if (ActiveControl->GetOwner() != NULL)
-                ActiveControl->GetOwner()->FocusNext(ActiveControl);
-            continue;
-          }
+        if ((msg.message == WM_KEYDOWN) && ((msg.wParam & 0xffff) == VK_ESCAPE)) {
+            mModalResult = mrCancle;
         }
-*/
-        if (mOnKeyDownNotify != NULL)
-          if (!(mOnKeyDownNotify)(this, msg.wParam))
-            continue;
-
-      }
-      if (msg.message == WM_KEYUP){
-        if (mOnKeyUpNotify != NULL)
-          if (!(mOnKeyUpNotify)(this, msg.wParam))
-            continue;
-      }
-      if (msg.message == WM_LBUTTONUP){
-        if (mOnLButtonUpNotify != NULL)
-          if (!(mOnLButtonUpNotify)(this, (POINT){GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam)}))
-            continue;
-
-      }
-      if (msg.message == WM_TIMER) {
-        if (msg.hwnd == GetHandle()) {
-          if (mOnTimerNotify) {
-            mOnTimerNotify(this);
-          }
-          continue;
+        
+        if ((msg.message == WM_KEYDOWN || msg.message == WM_KEYUP || msg.message == WM_LBUTTONDOWN || msg.message == WM_LBUTTONUP || msg.message == WM_LBUTTONDBLCLK)// screen event
+                && msg.hwnd != Handle() && !IsChild(Handle(), msg.hwnd) // not current window or child
+                ) {
+            continue; // make it modal
         }
-      }
 
-      TranslateMessage(&msg);
-      if (msg.message != WM_LBUTTONUP || ((timeMsg - WndForm::timeAnyOpenClose) > OPENCLOSESUPPRESSTIME) ) // prevents child click from being repeat-handled by parent if buttons overlap
-      {
-        if (DispatchMessage(&msg)){
+        TranslateMessage(&msg);
+        if (msg.message != WM_LBUTTONUP || ((timeMsg - WndForm::timeAnyOpenClose) > OPENCLOSESUPPRESSTIME)) // prevents child click from being repeat-handled by parent if buttons overlap
+        {
+            DispatchMessage(&msg);
+        } // timeMsg
 
-          /*
-          // navigation messages are moved to unhandled messages, duto nav events handling changes in event loop
-          if (msg.message == WM_KEYDOWN){
-            if (ActiveControl != NULL){
-              switch(msg.wParam & 0xffff){
-                case VK_UP:
-                  if (ActiveControl->GetOwner() != NULL)
-                    ActiveControl->GetOwner()->FocusPrev(ActiveControl);
-                continue;
-                case VK_DOWN:
-                  if (ActiveControl->GetOwner() != NULL)
-                    ActiveControl->GetOwner()->FocusNext(ActiveControl);
-                continue;
-              }
-            }
-          } */
-
-        } else {
-        } // DispatchMessage
-      } // timeMsg
-
-    // hack to stop exiting immediately
-    // TODO code: maybe this should block all key handlers to avoid 
-    // accidental key presses
-    if (!hastimed) {
-#if defined(PNA) || !defined(UNDER_CE) 
-        Poco::Timespan Elapsed(0, 400 * 1000); // 400ms
+        // hack to stop exiting immediately
+        // TODO code: maybe this should block all key handlers to avoid
+        // accidental key presses
+        if (!hastimed) {
+#if defined(PNA) || !defined(UNDER_CE)
+            Poco::Timespan Elapsed(0, 400 * 1000); // 400ms
 #else
-        Poco::Timespan Elapsed(1); // 1s
+            Poco::Timespan Elapsed(1); // 1s
 #endif
-        if (!enterTime.isElapsed(Elapsed.totalMicroseconds())) { // 091217
-            mModalResult = 0;
-        } else {
-            hastimed = true;
+            if (!enterTime.isElapsed(Elapsed.totalMicroseconds())) { // 091217
+                mModalResult = 0;
+            } else {
+                hastimed = true;
+            }
         }
+    } // End Modal Loop
+    WndForm::timeAnyOpenClose.update(); // static.  this is current open/close or child open/close
+
+    if(oldFocus) {
+        oldFocus->SetFocus();
     }
-  } // End Modal Loop
-  WndForm::timeAnyOpenClose.update(); // static.  this is current open/close or child open/close
 
-  SetFocus(oldFocusHwnd);
+    MapWindow::RequestFastRefresh();
+    Message::BlockRender(false);
 
-  MapWindow::RequestFastRefresh();
-  Message::BlockRender(false);
-
-  return(mModalResult);
-
+    return (mModalResult);
 }
 
 void WndForm::Paint(LKSurface& Surface){
 
-    if (!GetVisible()) return;
+    if (!IsVisible()) return;
 
-    RECT rcClient = GetBoundRect();
+    RECT rcClient = GetClientRect();
     if(GetBorderKind()&BORDERLEFT) {
         rcClient.left += 1;
     }
@@ -2177,8 +1745,9 @@ void WndForm::Paint(LKSurface& Surface){
     if(GetBorderKind()&BORDERBOTTOM) {
         rcClient.bottom -= 1;
     }
-    
-    size_t nChar = _tcslen(mCaption);
+
+    const TCHAR * szCaption = GetWndText();
+    size_t nChar = _tcslen(szCaption);
     if(nChar > 0) {
         SIZE tsize = {0,0};
 
@@ -2190,7 +1759,7 @@ void WndForm::Paint(LKSurface& Surface){
         const auto oldBrush = Surface.SelectObject(GetBackBrush());
         const auto oldFont = Surface.SelectObject(mhTitleFont);
         
-        Surface.GetTextSize(mCaption, _tcslen(mCaption), &tsize);
+        Surface.GetTextSize(szCaption, nChar, &tsize);
 
         mTitleRect = rcClient;
         mTitleRect.bottom = mTitleRect.top + tsize.cy;
@@ -2208,11 +1777,12 @@ void WndForm::Paint(LKSurface& Surface){
             rcClient.top = mTitleRect.bottom+NIBLSCALE(1)-1;
 
         if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
-            SetWindowPos(mClientWindow->GetHandle(), HWND_TOP, rcClient.left, rcClient.top, rcClient.right-rcClient.left, rcClient.bottom-rcClient.top, 0);
+            mClientWindow->Move(rcClient, true);
+            mClientWindow->SetTopWnd();
             mClientRect = rcClient;
         }
 
-        Surface.DrawText(mTitleRect.left, mTitleRect.top, mCaption, _tcslen(mCaption));
+        Surface.DrawText(mTitleRect.left, mTitleRect.top, szCaption, nChar);
 
         Surface.SelectObject(oldBrush);
         Surface.SelectObject(oldPen);
@@ -2222,7 +1792,8 @@ void WndForm::Paint(LKSurface& Surface){
             rcClient.top += 1;
         }
         if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
-            SetWindowPos(mClientWindow->GetHandle(), HWND_TOP, rcClient.left, rcClient.top, rcClient.right-rcClient.left, rcClient.bottom-rcClient.top, 0);
+            mClientWindow->Move(rcClient, true);
+            mClientWindow->SetTopWnd();
             mClientRect = rcClient;
         }
     }
@@ -2230,19 +1801,14 @@ void WndForm::Paint(LKSurface& Surface){
 }
 
 void WndForm::SetCaption(const TCHAR *Value) {
-
-  if (Value == NULL && mCaption[0] != '\0') {
-	mCaption[0] ='\0';
-	InvalidateRect(GetHandle(), &GetBoundRect(), false);
-	UpdateWindow(GetHandle());
-	return;
-  }
-
-  if (_tcscmp(mCaption, Value) != 0) {
-	LK_tcsncpy(mCaption, Value,MAXSETCAPTION); // destination already sized MAXSETCAPTION+1
-	InvalidateRect(GetHandle(), &mTitleRect, false);
-	UpdateWindow(GetHandle());
-  }
+    const TCHAR* szCaption = GetWndText();
+    if (Value == NULL && szCaption[0] != _T('\0')) {
+        SetWndText(_T(""));
+        Redraw();
+    } else if (_tcscmp(szCaption, Value) != 0) {
+        SetWndText(Value);
+        Redraw(mTitleRect);
+    }
 }
 
 
@@ -2258,99 +1824,37 @@ LKColor WndForm::SetBackColor(const LKColor& Value){
   return(WindowControl::SetBackColor(Value));
 }
 
-LKFont WndForm::SetFont(const LKFont& Value){
-  if (mClientWindow)
-    mClientWindow->SetFont(Value);
-  return(WindowControl::SetFont(Value));
+void WndForm::SetFont(const LKFont& Value){
+    if (mClientWindow) {
+        mClientWindow->SetFont(Value);
+    }
+    WindowControl::SetFont(Value);
 }
 
-int WndForm::OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){ 
-
-  MSG msg;
-  msg.hwnd = hwnd;
-  msg.message = uMsg;
-  msg.wParam = wParam;
-  msg.lParam = lParam;
-  msg.time = 0;
-  msg.pt.x = 0;
-  msg.pt.y = 0;
-
-  /*if (msg.message == WM_ACTIVATE){
-    msg.wParam = WA_ACTIVE;
-  }*/
-
-  if (msg.message == WM_KEYUP){
-  }
-  if (msg.message == WM_KEYDOWN){
-    if (mOnKeyDownNotify != NULL)
-      if (!(mOnKeyDownNotify)(this, msg.wParam))
-        return(0);
-
-  }
-  if (msg.message == WM_KEYUP){
-    if (mOnKeyUpNotify != NULL)
-      if (!(mOnKeyUpNotify)(this, msg.wParam))
-        return(0);
-  }
-  if (msg.message == WM_LBUTTONUP){
-    bLButtonDown=false;
-    if (mOnLButtonUpNotify != NULL)
-      if (!(mOnLButtonUpNotify)(this, (POINT){GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam)}))
-        return(0);
-
-  }
-  if (msg.message == WM_TIMER) {
-    if (msg.hwnd == GetHandle()) {
-      if (mOnTimerNotify) {
-        mOnTimerNotify(this);
-      }
-      return(1);
-    }
-  }
-
-  if (uMsg == WM_KEYDOWN){
-    if (ActiveControl != NULL){
-      switch(wParam & 0xffff){
-        case VK_UP:
-          if (ActiveControl->GetOwner() != NULL)
-            ActiveControl->GetOwner()->FocusPrev(ActiveControl);
-        return(0);
-        case VK_DOWN:
-          if (ActiveControl->GetOwner() != NULL)
-            ActiveControl->GetOwner()->FocusNext(ActiveControl);
-        return(0);
-      }
-    }
-  }
-  else if (uMsg == WM_LBUTTONDOWN){
-    bLButtonDown=true; 
-
-    /*
-
-    SetActiveWindow(hwnd);
-    SetFocus(hwnd);
-
-    if (!IsChild(GetHandle(), GetTopWindow(GetHandle()))){
-      Show();
-    }
-
-    */
-  }
-
-  return(1);
-
+void WndForm::Show(void) {
+    WindowControl::Show();
+    SetToForeground();
 }
 
-void WndForm::Show(void){
-
-  WindowControl::Show();
-
-  SetToForeground();
-
-//  SetFocus(GetTopWindow(GetHandle()));
-
-//  SetActiveWindow(GetHandle());
-
+bool WndForm::OnKeyDownNotify(Window* pWnd, unsigned KeyCode) {
+    if (mOnKeyDownNotify && (mOnKeyDownNotify) (this, KeyCode)) {
+        return true;
+    }
+    if (ActiveControl) {
+        WindowControl * pCtrl = ActiveControl->GetOwner();
+        if (pCtrl) {
+            switch (KeyCode & 0xffff) {
+                case VK_UP:
+                    pCtrl->FocusPrev(ActiveControl);
+                    break;
+                case VK_DOWN:
+                    pCtrl->FocusNext(ActiveControl);
+                    break;
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 //-----------------------------------------------------------
@@ -2368,119 +1872,79 @@ WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Capt
   SetForeColor(RGB_BUTTONFG);
   SetBackColor(GetOwner()->GetBackColor());
 
-  _tcscpy(mCaption, Caption);
-
+  if(Caption) {
+      SetCaption(Caption);
+  }
   mLastDrawTextHeight = -1;
-
-};
-
-void WndButton::Destroy(void){
-
-  WindowControl::Destroy();
-
 }
 
-
-int WndButton::OnLButtonUp(const POINT& Pos){
-
-  #if TRACE_WNDPROC
-  StartupStore(_T(".... WndButton>  UP\n"));
-  #endif
-  mDown = false;
-
-  RECT rc = {0,0,0,0};
-  GetClientRect(mHWnd, &rc);
-  InvalidateRect(mHWnd,&rc,false);
-
-  ReleaseCapture();
-
-  if (PtInRect(&GetBoundRect(), Pos)){
-    if (mOnClickNotify != NULL) {
-      RECT mRc;
-      GetWindowRect(GetHandle(), &mRc);
-
-      (mOnClickNotify)(this);
+bool WndButton::OnKeyDown(unsigned KeyCode) {
+    switch (KeyCode) {
+        case VK_RETURN:
+        case VK_SPACE:
+            if (!mDown) {
+                mDown = true;
+                Window::Redraw();
+                return true;
+            }
     }
-  }
-
-  return(1);
-};
-
-
-int WndButton::OnKeyDown(unsigned KeyCode){
-#ifdef VENTA_DEBUG_EVENT  
-	TCHAR ventabuffer[80];
-	_stprintf(ventabuffer,TEXT("ONKEYDOWN WPARAM %d"), wParam); // VENTA-
-	DoStatusMessage(ventabuffer);
-#endif
-  switch (KeyCode){
-    case VK_RETURN:
-    case VK_SPACE:
-      if (!mDown){
-        mDown = true;
-    	RECT rc = {0,0,0,0};
-    	GetClientRect(mHWnd, &rc);
-    	InvalidateRect(mHWnd,&rc,false);
-      }
-    return(0);
-  }
-  return(1);
+    return false;
 }
 
-int WndButton::OnKeyUp(unsigned KeyCode){
-  switch (KeyCode){
-    case VK_RETURN:
-    case VK_SPACE:
-      if (!Debounce()) return(1); // prevent false trigger
-      if (mDown){
-        mDown = false;
+bool WndButton::OnKeyUp(unsigned KeyCode) {
+    switch (KeyCode) {
+        case VK_RETURN:
+        case VK_SPACE:
+            if (!Debounce()) return (1); // prevent false trigger
+            if (mDown) {
+                mDown = false;
+                Window::Redraw();
+                if (mOnClickNotify != NULL) {
+                    (mOnClickNotify) (this);
+                    return true;
+                }
+            }
+    }
+    return false;
+}
 
-        RECT rc = {0,0,0,0};
-    	GetClientRect(mHWnd, &rc);
-    	InvalidateRect(mHWnd,&rc,false);
+bool WndButton::OnLButtonDown(const POINT& Pos) {
+    mDown = true;
+    SetCapture();
+    if (!HasFocus()) {
+        SetFocus();
+    } else {
+        Redraw();
+    }
+    return true;
+}
 
-    	if (mOnClickNotify != NULL) {
-          RECT mRc;
-          GetWindowRect(GetHandle(), &mRc);
-          (mOnClickNotify)(this);
+bool WndButton::OnLButtonUp(const POINT& Pos) {
+    mDown = false;
+    ReleaseCapture();
+    Redraw();
+    if (mOnClickNotify != NULL) {    
+        RECT rcClient = GetClientRect();
+        if (PtInRect(&rcClient, Pos)) {
+            (mOnClickNotify) (this);
         }
-      }
-    return(0);
-  }
-  return(1);
+    }
+    return true;
 }
 
-int WndButton::OnLButtonDown(const POINT& Pos){
-  mDown = true;
-  #if TRACE_WNDPROC
-  StartupStore(_T(".... WndButton>  DOWN\n"));
-  #endif
-  if (!GetFocused())
-    SetFocus(GetHandle());
-  else {
-    InvalidateRect(GetHandle(), &GetBoundRect(), false);
-    UpdateWindow(GetHandle());
-  }
-  SetCapture(GetHandle());
-  return(1);
-};
-
-int WndButton::OnLButtonDoubleClick(const POINT& Pos){
-  mDown = true;
-  InvalidateRect(GetHandle(), &GetBoundRect(), false);
-  UpdateWindow(GetHandle());
-  SetCapture(GetHandle());
-  return(1);
-};
-
+bool WndButton::OnLButtonDblClick(const POINT& Pos) {
+    mDown = true;
+    Redraw();
+    return true;
+}
 
 void WndButton::Paint(LKSurface& Surface){
 
-  if (!GetVisible()) return;
+  if (!IsVisible()) return;
 
   WindowControl::Paint(Surface);
 
-  RECT rc = GetBoundRect();
+  RECT rc = GetClientRect();
   InflateRect(&rc, -2, -2); // todo border width
 
   // JMW todo: add icons?
@@ -2490,7 +1954,9 @@ void WndButton::Paint(LKSurface& Surface){
     Surface.DrawPushButton(rc, mDown);
   }
 
-  if (mCaption != NULL && mCaption[0] != '\0'){
+  const TCHAR * szCaption = GetWndText();
+  const size_t nSize = _tcslen(szCaption);
+  if (nSize > 0) {
 
     Surface.SetTextColor(GetForeColor());
 
@@ -2498,8 +1964,8 @@ void WndButton::Paint(LKSurface& Surface){
     Surface.SetBkMode(TRANSPARENT);
 
     const auto oldFont = Surface.SelectObject(GetFont());
-
-    rc = GetBoundRect();
+    const RECT rcClient = GetClientRect();
+    rc = rcClient;
     InflateRect(&rc, -2, -2); // todo border width
 
     if (mDown)
@@ -2507,7 +1973,7 @@ void WndButton::Paint(LKSurface& Surface){
 
     if (mLastDrawTextHeight < 0){
 
-      Surface.DrawText(mCaption, _tcslen(mCaption), &rc,
+      Surface.DrawText(szCaption, nSize, &rc,
           DT_CALCRECT
         | DT_EXPANDTABS
         | DT_CENTER
@@ -2517,7 +1983,7 @@ void WndButton::Paint(LKSurface& Surface){
 
       mLastDrawTextHeight = rc.bottom - rc.top;
       // DoTo optimize
-      rc = GetBoundRect();
+      rc = rcClient;
       InflateRect(&rc, -2, -2); // todo border width
       if (mDown)
         OffsetRect(&rc, 2, 2);
@@ -2526,7 +1992,7 @@ void WndButton::Paint(LKSurface& Surface){
 
     rc.top += ((GetHeight()-4-mLastDrawTextHeight)/2);
 
-    Surface.DrawText(mCaption, _tcslen(mCaption), &rc,
+    Surface.DrawText(szCaption, nSize, &rc,
         DT_EXPANDTABS
       | DT_CENTER
       | DT_NOCLIP
@@ -2534,16 +2000,8 @@ void WndButton::Paint(LKSurface& Surface){
     );
 
     Surface.SelectObject(oldFont);
-
-
   }
-
-
 }
-
-
-LRESULT CALLBACK WndPropertyEditWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 
 WndProperty::WndProperty(WindowControl *Parent, 
 			 TCHAR *Name, 
@@ -2556,8 +2014,10 @@ WndProperty::WndProperty(WindowControl *Parent,
   WindowControl(Parent, Name, X, Y, Width, Height){
 
   mOnDataChangeNotify = DataChangeNotify;
-  _tcscpy(mCaption, Caption);
-  mhEdit = NULL;
+  if(Caption) {
+      SetCaption(Caption);
+  }
+
   mDataField = NULL;
   mDialogStyle=false; // this is set by ::SetDataField()
 
@@ -2572,36 +2032,13 @@ WndProperty::WndProperty(WindowControl *Parent,
 
   UpdateButtonData(mBitmapSize);
 
-    UINT uStyle =  WS_BORDER | WS_VISIBLE | WS_CHILD
-			  | ES_LEFT | WS_CLIPCHILDREN | WS_CLIPSIBLINGS
-			  | (MultiLine ? (WS_VSCROLL| ES_MULTILINE) : ES_AUTOHSCROLL);
-    
-    // VENTA3 better borders on PNA HP31X
-    UINT uStyleEx = (GlobalModelType == MODELTYPE_PNA_HP31X ) ?  WS_EX_CLIENTEDGE : 0;
-    
-    mhEdit = CreateWindowEx(uStyleEx,TEXT("EDIT"), TEXT("\0"), uStyle,
-          mEditPos.x, mEditPos.y,
-          mEditSize.x, mEditSize.y,
-          GetHandle(), NULL, _hInstance, NULL);
+    mCanFocus = true;
 
-  if(mEditSize.x <= 0) {
-	  ShowWindow(mhEdit, SW_HIDE);
-  }
+    SetForeColor(GetOwner()->GetForeColor());
+    SetBackColor(GetOwner()->GetBackColor());
 
-  SetWindowLongPtr(mhEdit, GWLP_USERDATA, (LONG_PTR)this);
-  mEditWindowProcedure = (WNDPROC)SetWindowLongPtr(mhEdit, GWLP_WNDPROC, (LONG_PTR) WndPropertyEditWndProc);
-
-  SendMessage(mhEdit, WM_SETFONT,
-		     (WPARAM)(HFONT)mhValueFont, MAKELPARAM(TRUE,0));
-
-
-  mCanFocus = true;
-
-  SetForeColor(GetOwner()->GetForeColor());
-  SetBackColor(GetOwner()->GetBackColor());
-
-  mDownDown = false;
-  mUpDown = false;
+    mDownDown = false;
+    mUpDown = false;
 
 };
 
@@ -2619,40 +2056,22 @@ void WndProperty::Destroy(void){
       //ASSERT(0);
     }
   }
-
-  SetWindowLongPtr(mhEdit, GWLP_WNDPROC, (LONG_PTR) mEditWindowProcedure);
-  SetWindowLongPtr(mhEdit, GWLP_USERDATA, (LONG_PTR)0);
-
-  DestroyWindow(mhEdit);
-
   WindowControl::Destroy();
-
 }
 
-
-
-void WndProperty::SetText(const TCHAR *Value){
-  SetWindowText(mhEdit, Value);
+void WndProperty::SetText(const TCHAR *Value) {
+    if ( !Value && mValue != _T("")) {
+        mValue.clear();
+        Redraw();
+    } else if (Value && mValue != Value) {
+        mValue = Value;
+        Redraw();
+    }
 }
 
-
-LRESULT CALLBACK WndPropertyEditWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
-
-	WndProperty *w = (WndProperty *) GetWindowLongPtr(hwnd, GWLP_USERDATA);
-	if (w)
-		return (w->WndProcEditControl(hwnd, uMsg, wParam, lParam));
-	else
-		return (DefWindowProc(hwnd, uMsg, wParam, lParam));
-}
-
-LKFont WndProperty::SetFont(const LKFont& Value){
-  LKFont res = GetFont();
-
-  WindowControl::SetFont(Value);
-
-  mhValueFont = Value;
-  SendMessage(mhEdit, WM_SETFONT, (WPARAM)(HFONT)mhValueFont, MAKELPARAM(TRUE,0));
-  return(res);
+void WndProperty::SetFont(const LKFont& Value) {
+    WindowControl::SetFont(Value);
+    mhValueFont = Value;
 }
 
 void WndProperty::UpdateButtonData(int Value){
@@ -2663,19 +2082,20 @@ void WndProperty::UpdateButtonData(int Value){
     mBitmapSize = DLGSCALE(32)/2;  
 
   if (mCaptionWidth != 0){
-    mEditSize.x = GetWidth()- mCaptionWidth - (DEFAULTBORDERPENWIDTH+1) - mBitmapSize;
-    mEditSize.y = GetHeight()-2*(DEFAULTBORDERPENWIDTH+1);
-    mEditPos.x = mCaptionWidth;
-    mEditPos.y = (DEFAULTBORDERPENWIDTH+1);
+    mEditRect.left = mCaptionWidth;
+    mEditRect.top = (DEFAULTBORDERPENWIDTH+1);
+
+    mEditRect.right = mEditRect.left + GetWidth()- mCaptionWidth - (DEFAULTBORDERPENWIDTH+1) - mBitmapSize;
+    mEditRect.bottom = mEditRect.top + GetHeight()-2*(DEFAULTBORDERPENWIDTH+1);
   } else {
-    mEditSize.x = GetWidth()- 2*((DEFAULTBORDERPENWIDTH+1)+mBitmapSize);
-    mEditSize.y = (GetHeight()/2);
-    mEditPos.x = mBitmapSize + (DEFAULTBORDERPENWIDTH+2);
-    mEditPos.y = (GetHeight()/2)-2*(DEFAULTBORDERPENWIDTH+1);
+    mEditRect.left = mBitmapSize + (DEFAULTBORDERPENWIDTH+2);
+    mEditRect.top = (GetHeight()/2)-2*(DEFAULTBORDERPENWIDTH+1);
+    mEditRect.right = mEditRect.left + GetWidth()- 2*((DEFAULTBORDERPENWIDTH+1)+mBitmapSize);
+    mEditRect.bottom = mEditRect.top + (GetHeight()/2);
   }
 
-  mHitRectDown.left = mEditPos.x-mBitmapSize;
-  mHitRectDown.top = mEditPos.y + (mEditSize.y)/2 - (mBitmapSize/2);
+  mHitRectDown.left = mEditRect.left-mBitmapSize;
+  mHitRectDown.top = mEditRect.top + (mEditRect.top)/2 - (mBitmapSize/2);
   mHitRectDown.right = mHitRectDown.left + mBitmapSize;
   mHitRectDown.bottom = mHitRectDown.top + mBitmapSize;
 
@@ -2694,189 +2114,63 @@ int WndProperty::SetButtonSize(int Value){
   int res = mBitmapSize;
 
   if (mBitmapSize != Value){
-
     UpdateButtonData(Value);
 
-    SetWindowPos(mhEdit, 0, mEditPos.x, mEditPos.y,
-      mEditSize.x, mEditSize.y,
-      /*SWP_NOMOVE |*/  SWP_NOREPOSITION | SWP_NOACTIVATE // need to MOVE to enlarge/shift left for combopicker (no arrows)
-                 | SWP_NOOWNERZORDER | SWP_NOZORDER
-    );
-
-    if (GetVisible()){
-      InvalidateRect(GetHandle(), &GetBoundRect(), false);
-      UpdateWindow(GetHandle());
+    if (IsVisible()){
+        Redraw();
     }
   }
   return(res);
 };
-
-
-int WndProperty::WndProcEditControl(HWND hwnd, UINT uMsg, 
-                                    WPARAM wParam, LPARAM lParam) {
-
-  switch (uMsg){
-
-    case WM_KEYDOWN:
-      if ((wParam & 0xffff) == VK_RETURN || (wParam & 0xffff) == VK_F23) { // Compaq uses VKF23
-        if (this->mDialogStyle) {
-          if (!OnLButtonDown((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
-            return(0);
-          }
-        } //end combopicker
-      }
-      // tmep hack, do not process nav keys
-      if (KeyTimer(true, wParam & 0xffff)) {
-	// activate tool tips if hit return for long time
-        if ((wParam & 0xffff) == VK_RETURN || (wParam & 0xffff) == VK_F23) { // Compaq uses VKF23
-	  if (OnHelp()) return (0);
-	}
-      } 
-
-      if (wParam == VK_UP || wParam == VK_DOWN){
-          if(GetClientArea()) {
-            // pass the message to the parent window;
-            PostMessage(GetClientArea()->GetHandle(), uMsg, wParam, lParam);
-            return(0);
-          }
-      }
-      if (!OnEditKeyDown(wParam))
-        return(1);
-    break;
-
-    case WM_KEYUP:
-	if (KeyTimer(false, wParam & 0xffff)) {
-	  // activate tool tips if hit return for long time
-    if ((wParam & 0xffff) == VK_RETURN || (wParam & 0xffff) == VK_F23) { // Compaq uses VKF23
-	    if (OnHelp()) return (0);
-	  }
-	} else if ((wParam & 0xffff) == VK_RETURN) {
-	  if (CallSpecial()) return (0);
-	}
-    break;
-
-    case WM_LBUTTONDOWN:
-      // if it's an Combopicker field, then call the combopicker routine
-      if (this->mDialogStyle) {
-        if (!OnLButtonDown((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) {
-          return(0);
-        }
-      } //end combopicker
-      break;
-
-    case WM_SETFOCUS:
-      KeyTimer(true, 0);
-      if (GetReadOnly()){
-        SetFocus((HWND)wParam);
-        return(0);
-      } else {
-        if ((HWND)wParam != GetHandle()){
-          SetFocused(true, (HWND) wParam);
-        }
-	else {
-		#if DEBUG_FOCUS
-		StartupStore(_T("............ WNDPROCEDIT HAS FOCUS\n"));
-		#endif
-	}
-      }
-    break;
-
-    case WM_KILLFOCUS:
-      KeyTimer(true, 0);
-	#if DEBUG_FOCUS
-	StartupStore(_T("............ WNDPROCEDIT LOST FOCUS\n"));
-	#endif
-      if ((HWND)wParam != GetHandle()){
-        SetFocused(false, (HWND) wParam);
-      }
-    break;
-  }
-
-  return(CallWindowProc(mEditWindowProcedure, hwnd, uMsg, wParam, lParam));
-
-}
 
 bool WndProperty::SetReadOnly(bool Value){
-
   bool res = GetReadOnly();
-
   if (GetReadOnly() != Value){
     WindowControl::SetReadOnly(Value);
-
-    SendMessage(mhEdit, EM_SETREADONLY, (WPARAM)(BOOL)Value, 0L);
-
   }
-
   return(res);
 }
 
-bool WndProperty::SetFocused(bool Value, HWND FromTo){
-
-  TCHAR sTmp[STRINGVALUESIZE];
-
-  if (Value && GetReadOnly()){  // keep focus on last control
-    if (FromTo != mhEdit)
-      SetFocus(FromTo);
-    return(false);
-  }
-
-  if (!Value && (FromTo == mhEdit))
-    Value = true;
-
-    if (Value != GetFocused()){
-      if (Value){
-        if (mDataField != NULL){
-          mDataField->GetData();
-          SetWindowText(mhEdit, mDataField->GetAsString());
-        }
-      } else {
-        if (mDataField != NULL){
-          GetWindowText(mhEdit, sTmp, (sizeof(sTmp)/sizeof(TCHAR))-1);
-          mDataField->SetAsString(sTmp);
-          mDataField->SetData();
-          SetWindowText(mhEdit, mDataField->GetAsDisplayString());
-      }
+bool WndProperty::OnKeyDown(unsigned KeyCode) {
+    switch (KeyCode) {
+        case VK_RIGHT:
+            IncValue();
+            return true;
+        case VK_LEFT:
+            DecValue();
+            return true;
+        case VK_RETURN:
+        case VK_F23:
+            if (this->mDialogStyle) {
+                if (OnLButtonDown((POINT) {0, 0})) {
+                    return true;
+                }
+            } else {
+                if (KeyTimer(true, KeyCode & 0xffff) && OnHelp()) {
+                    return true;
+                }
+            }
+        default:
+            break;
     }
-  }
-
-  if (FromTo != mhEdit)
-    WindowControl::SetFocused(Value, FromTo);
-  if (Value){
-    SetFocus(mhEdit);
-    PostMessage(mhEdit, EM_SETSEL, 0, -1);
-  }
-  return(0);
+    return false;
 }
 
-int WndProperty::OnEditKeyDown(unsigned KeyCode){
-  switch (KeyCode){
-    case VK_RIGHT:
-      IncValue();
-    return(0);
-    case VK_LEFT:
-      DecValue();
-    return(0);
-  }
-
-  return(1);
+bool WndProperty::OnKeyUp(unsigned KeyCode) {
+    if (KeyTimer(false, KeyCode&0xffff)) {
+        // activate tool tips if hit return for long time
+        if ((KeyCode&0xffff) == VK_RETURN || (KeyCode&0xffff) == VK_F23) { // Compaq uses VKF23
+            if (OnHelp()) return true;
+        }
+    } else if ((KeyCode&0xffff) == VK_RETURN) {
+        if (CallSpecial()) return true;
+    }
+    return false;
 }
-
-int WndProperty::OnKeyDown(unsigned KeyCode){
-  switch (KeyCode){
-    case VK_RIGHT:
-      IncValue();
-    return(0);
-    case VK_LEFT:
-      DecValue();
-    return(0);
-  }
-
-  return(1);
-};
 
 extern BOOL dlgKeyboard(WndProperty* theProperty);
 
-int WndProperty::OnLButtonDown(const POINT& Pos){
+bool WndProperty::OnLButtonDown(const POINT& Pos){
   if (mDialogStyle)
   {
     if (!GetReadOnly())  // when they click on the label
@@ -2893,74 +2187,61 @@ int WndProperty::OnLButtonDown(const POINT& Pos){
   else
   {
 
-    if (!GetFocused()){
-      SetFocus(GetHandle());
-      return(0);
+    if (!HasFocus()) {
+      SetFocus();
+    }  else {
+
+        mDownDown = (PtInRect(&mHitRectDown, Pos) != 0);
+
+        if (mDownDown) {
+          DecValue();
+          Redraw(mHitRectDown);
+        }
+
+        mUpDown = (PtInRect(&mHitRectUp, Pos) != 0);
+
+        if (mUpDown) {
+          IncValue();
+          Redraw(mHitRectUp);
+        }
     }
-
-    mDownDown = (PtInRect(&mHitRectDown, Pos) != 0);
-
-    if (mDownDown) {
-      DecValue();
-      InvalidateRect(GetHandle(), &mHitRectDown, false);
-      UpdateWindow(GetHandle());
-    }
-
-    mUpDown = (PtInRect(&mHitRectUp, Pos) != 0);
-
-    if (mUpDown) {
-      IncValue();
-      InvalidateRect(GetHandle(), &mHitRectUp, false);
-      UpdateWindow(GetHandle());
-    }
-    SetCapture(GetHandle()); 
   }
-  return(0);
+  return true;
 };
 
-int WndProperty::OnLButtonDoubleClick(const POINT& Pos){
+bool WndProperty::OnLButtonDblClick(const POINT& Pos){
 
   return (OnLButtonDown(Pos));
 
 }
 
-int WndProperty::OnLButtonUp(const POINT& Pos){
+bool WndProperty::OnLButtonUp(const POINT& Pos) {
 
-  if (mDialogStyle)
-  {
-  }
-  else
-  {
-  
-    if (mDownDown){
-      mDownDown = false;
-      InvalidateRect(GetHandle(), &mHitRectDown, false);
-      UpdateWindow(GetHandle());
+    if (!mDialogStyle) {
+        if (mDownDown) {
+            mDownDown = false;
+            Redraw(mHitRectDown);
+        }
+        if (mUpDown) {
+            mUpDown = false;
+            Redraw(mHitRectUp);
+        }
     }
-    if (mUpDown){
-      mUpDown = false;
-      InvalidateRect(GetHandle(), &mHitRectUp, false);
-      UpdateWindow(GetHandle());
-    }
-
-  }
-  ReleaseCapture(); 
-  return(0);
+    return true;
 }
 
-
-int WndProperty::CallSpecial(void){
-  if (mDataField != NULL){
-    mDataField->Special();
-    SetWindowText(mhEdit, mDataField->GetAsString());
-  }
-  return(0);
+int WndProperty::CallSpecial(void) {
+    if (mDataField != NULL) {
+        mDataField->Special();
+        SetText(mDataField->GetAsString());
+    }
+    return (0);
 }
 
 int WndProperty::IncValue(void){
   if (mDataField != NULL){
     mDataField->Inc();
-    SetWindowText(mhEdit, mDataField->GetAsString());
+    SetText(mDataField->GetAsString());
   }
   return(0);
 }
@@ -2968,7 +2249,7 @@ int WndProperty::IncValue(void){
 int WndProperty::DecValue(void){
   if (mDataField != NULL){
     mDataField->Dec();
-    SetWindowText(mhEdit, mDataField->GetAsString());
+    SetText(mDataField->GetAsString());
   }
   return(0);
 }
@@ -2980,7 +2261,7 @@ void WndProperty::Paint(LKSurface& Surface){
   SIZE tsize;
   POINT org;
 
-  if (!GetVisible()) return;
+  if (!IsVisible()) return;
 
   WindowControl::Paint(Surface);
 
@@ -2990,139 +2271,123 @@ void WndProperty::Paint(LKSurface& Surface){
   // r.bottom = GetHeight();
 
   Surface.SetTextColor(GetForeColor());
-#ifdef WINE
-  // JMW make it look nice on wine
-  if (!GetFocused())
+  // JMW make it look
+  if (!HasFocus()) {
     Surface.SetBkColor(GetBackColor());
-#endif /* WINE */
+  }
+
   Surface.SetBkMode(TRANSPARENT);
   const auto oldFont = Surface.SelectObject(GetFont());
 
-  Surface.GetTextSize(mCaption, _tcslen(mCaption), &tsize);
-  if (_tcslen(mCaption)==0) tsize.cy=0; //@ 101115 BUGFIX
+  const TCHAR * szCaption = GetWndText();
+  const size_t nSize = _tcslen(szCaption);
+  Surface.GetTextSize(szCaption, nSize, &tsize);
+  if (nSize==0) {
+      tsize.cy=0; //@ 101115 BUGFIX
+  }
 
   if (mCaptionWidth==0){
-	org.x = mEditPos.x;
-	org.y = mEditPos.y - tsize.cy;
+	org.x = mEditRect.left;
+	org.y = mEditRect.top - tsize.cy;
   } else {
 	org.x = mCaptionWidth - mBitmapSize - (tsize.cx + 1);
 	org.y = (GetHeight() - tsize.cy)/2;
   }
 
-  if (org.x < 1)
+  if (org.x < 1) {
 	org.x = 1;
+  }
 
-  Surface.DrawText(org.x, org.y, mCaption, _tcslen(mCaption));
+  Surface.DrawText(org.x, org.y, szCaption, nSize);
 
   // these are button left and right icons for waypoint select, for example
   if (mDialogStyle) // can't but dlgComboPicker here b/c it calls paint when combopicker closes too
   {     // so it calls dlgCombopicker on the click/focus handlers for the wndproperty & label
 	// opening a window, each subwindow goes here once
   } else {
-	if (GetFocused() && !GetReadOnly()) {
+	if (HasFocus() && !GetReadOnly()) {
         Surface.DrawMaskedBitmap(mHitRectDown.left, mHitRectDown.top, mBitmapSize, mBitmapSize, hBmpLeft32, 32, 32);
         Surface.DrawMaskedBitmap(mHitRectUp.left, mHitRectUp.top, mBitmapSize, mBitmapSize, hBmpRight32, 32, 32);
 	}
   }
+
+  if((mEditRect.right - mEditRect.left) > mBitmapSize) {
+    auto oldBrush = Surface.SelectObject(LKBrush_White);
+    auto oldPen = Surface.SelectObject(LKPen_Black_N1);
+    // Draw Text Bakground & Border
+    Surface.Rectangle(mEditRect.left, mEditRect.top, mEditRect.right, mEditRect.bottom);
+    // Draw Text Value
+    Surface.SelectObject(mhValueFont);
+    Surface.SetTextColor(RGB_BLACK);
+
+    RECT rcText = mEditRect;
+    InflateRect(&rcText, -NIBLSCALE(3), 0);
+    Surface.DrawText(mValue.c_str(), mValue.size(), &rcText, DT_EXPANDTABS|DT_WORDBREAK);
+
+    Surface.SelectObject(oldPen);
+    Surface.SelectObject(oldBrush);
+  }
   Surface.SelectObject(oldFont);
 }
-
 
 void WndProperty::RefreshDisplay() {
-  if (!mDataField) return;
-  if (GetFocused())
-    SetWindowText(mhEdit, mDataField->GetAsString());
-  else
-    SetWindowText(mhEdit, mDataField->GetAsDisplayString());
-}
-
-
-DataField *WndProperty::SetDataField(DataField *Value){
-  DataField *res = mDataField;
-
-  if (mDataField != Value){
-
-    if (mDataField!=NULL){
-
-      if (!mDataField->Unuse()){
-
-        delete(mDataField);
-
-        res = NULL;
-
-      }
-
+    if (!mDataField) return;
+    if (HasFocus()) {
+        SetText(mDataField->GetAsString());
+    } else {
+        SetText(mDataField->GetAsDisplayString());
     }
+    Redraw();
+}
 
-    Value->Use();
+DataField *WndProperty::SetDataField(DataField *Value) {
+    DataField *res = mDataField;
 
-    mDataField = Value;
+    if (mDataField != Value) {
+        if (mDataField && !mDataField->Unuse()) {
+            delete(mDataField);
+            res = NULL;
+        }
 
-    mDataField->GetData();
+        Value->Use();
+        mDataField = Value;
+        mDataField->GetData();
+        mDialogStyle = mDataField->SupportCombo;
 
-    mDialogStyle= mDataField->SupportCombo;
+        if (mDialogStyle) {
+            this->SetButtonSize(0);
+            this->SetCanFocus(true);
+        } else {
+            this->SetButtonSize(16);
+        }
 
-
-    if (mDialogStyle)
-    {
-      this->SetButtonSize(0);
-      this->SetCanFocus(true);
+        RefreshDisplay();
     }
-    else
-    {
-      this->SetButtonSize(16);
+    return (res);
+}
+
+void WndOwnerDrawFrame::Paint(LKSurface& Surface) {
+    if (IsVisible()) {
+
+        WndFrame::Paint(Surface);
+        const auto oldFont = Surface.SelectObject(GetFont());
+        if (mOnPaintCallback != NULL) {
+            (mOnPaintCallback) (this, Surface);
+        }
+        Surface.SelectObject(oldFont);
     }
-
-    RefreshDisplay();
-
-  }
-
-  return(res);
-
 }
 
-
-void WndOwnerDrawFrame::Paint(LKSurface& Surface){
-
-  if (!GetVisible()) return;
-
-  WndFrame::Paint(Surface);
-
-  const auto oldFont = Surface.SelectObject(GetFont());
-
-  if (mOnPaintCallback != NULL)
-    (mOnPaintCallback)(this, Surface);
-
-  Surface.SelectObject(oldFont);
-
-}
-
-void WndOwnerDrawFrame::Destroy(void){
-
-  WndFrame::Destroy();
-
-}
-
-
-void WndFrame::Destroy(void){
-
-  WindowControl::Destroy();
-
-}
-
-
-int WndFrame::OnKeyDown(unsigned KeyCode){
-  if (mIsListItem && GetOwner()!=NULL){
-    RECT mRc;
-    GetWindowRect(GetHandle(), &mRc);
-    return(((WndListFrame*)GetOwner())->OnItemKeyDown(this, KeyCode));
-  }
-  return(1);
+bool WndFrame::OnKeyDown(unsigned KeyCode) {
+    if (mIsListItem && GetOwner() != NULL) {
+        return (((WndListFrame*) GetOwner())->OnItemKeyDown(this, KeyCode));
+    }
+    return false;
 }
 
 void WndFrame::Paint(LKSurface& Surface){
 
-  if (!GetVisible()) return;
+  if (!IsVisible()) return;
 
   if (mIsListItem && GetOwner()!=NULL) {
     ((WndListFrame*)GetOwner())->PrepareItemDraw();
@@ -3130,7 +2395,9 @@ void WndFrame::Paint(LKSurface& Surface){
 
   WindowControl::Paint(Surface);
 
-  if (_tcslen(mCaption) > 0){
+  const TCHAR* szCaption = GetWndText();
+  const size_t nSize = _tcslen(szCaption);
+  if (nSize > 0){
 
     Surface.SetTextColor(GetForeColor());
     Surface.SetBkColor(GetBackColor());
@@ -3138,12 +2405,10 @@ void WndFrame::Paint(LKSurface& Surface){
 
     const auto oldFont = Surface.SelectObject(GetFont());
 
-    RECT rc = GetBoundRect();
+    RECT rc = GetClientRect();
     InflateRect(&rc, -2, -2); // todo border width
 
-//    h = rc.bottom - rc.top;
-
-    Surface.DrawText(mCaption, _tcslen(mCaption), &rc,mCaptionStyle /* | DT_CALCRECT*/ );
+    Surface.DrawText(szCaption, nSize, &rc,mCaptionStyle);
 
     mLastDrawTextHeight = rc.bottom - rc.top;
 
@@ -3152,35 +2417,13 @@ void WndFrame::Paint(LKSurface& Surface){
 
 }
 
-void WndFrame::SetCaption(const TCHAR *Value){
-
-  if (Value == NULL && mCaption[0] != '\0'){
-    mCaption[0] ='\0';
-    InvalidateRect(GetHandle(), &GetBoundRect(), false);
-    UpdateWindow(GetHandle());
-
-    return;
-
-  }
-
-  if (_tcscmp(mCaption, Value) != 0){
-    LK_tcsncpy(mCaption, Value,MAXSETCAPTION); // destination already sized MAXSETCAPTION+1
-    InvalidateRect(GetHandle(), &GetBoundRect(), false);
-    UpdateWindow(GetHandle());
-
-  }
-}
-
-UINT WndFrame::SetCaptionStyle(UINT Value){
-  UINT res = mCaptionStyle;
-  if (res != Value){
-    mCaptionStyle = Value;
-
-    InvalidateRect(GetHandle(), &GetBoundRect(), false);
-    UpdateWindow(GetHandle());
-
-  }
-  return(res);
+UINT WndFrame::SetCaptionStyle(UINT Value) {
+    UINT res = mCaptionStyle;
+    if (res != Value) {
+        mCaptionStyle = Value;
+        Redraw();
+    }
+    return (res);
 }
 
 
@@ -3195,11 +2438,9 @@ WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
   mListInfo.ItemInPageCount = 0;
   mListInfo.TopIndex = 0;
   mListInfo.BottomIndex = 0;
-//  mListInfo.SelectedIndex = 0;
   mListInfo.ItemCount = 0;
   mListInfo.ItemInViewCount = 0;
 
-  mCaption[0] = '\0';
   mOnListCallback = OnListCallback;
   mOnListEnterCallback = NULL;
   SetForeColor(RGB_LISTFG);
@@ -3221,38 +2462,24 @@ WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
   
 };
 
-
-void WndListFrame::Destroy(void){
-
-  WndFrame::Destroy();
-
-}
-
 void WndListFrame::Paint(LKSurface& Surface) {
-    int i;
 
-    if (mClientCount > 0) {
-        ((WndFrame *) mClients[0])->SetIsListItem(true);
-        //    ShowWindow(mClients[0]->GetHandle(), SW_HIDE);
-        /*
-            if (mOnListCallback != NULL){
-              mListInfo.DrawIndex = mListInfo.ItemIndex;
-              mOnListCallback(this, &mListInfo);
-              mClients[0]->SetTop(mClients[0]->GetHeight() * (mListInfo.ItemIndex-mListInfo.TopIndex));
-            }
-         */
+    WndFrame* pChildFrame = NULL;
+    if (!mClients.empty()) {
+        pChildFrame = (WndFrame*) mClients.front();
+        pChildFrame->SetIsListItem(true);
     }
 
     WndFrame::Paint(Surface);
 
-    if (mClientCount > 0) {
+    if (pChildFrame) {
 
         LKBitmapSurface TmpSurface;
-        TmpSurface.Create(Surface, mClients[0]->GetWidth(), mClients[0]->GetHeight());
+        TmpSurface.Create(Surface, pChildFrame->GetWidth(), pChildFrame->GetHeight());
 
-        const auto oldFont = TmpSurface.SelectObject(mClients[0]->GetFont());
+        const auto oldFont = TmpSurface.SelectObject(pChildFrame->GetFont());
 
-        for (i = 0; i < mListInfo.ItemInViewCount; i++) {
+        for (int i = 0; i < mListInfo.ItemInViewCount; i++) {
             if (mOnListCallback != NULL) {
                 mListInfo.DrawIndex = mListInfo.TopIndex + i;
                 if (mListInfo.DrawIndex == mListInfo.ItemIndex)
@@ -3260,13 +2487,13 @@ void WndListFrame::Paint(LKSurface& Surface) {
                 mOnListCallback(this, &mListInfo);
             }
 
-            mClients[0]->PaintSelector(true);
-            mClients[0]->Paint(TmpSurface);
-            mClients[0]->PaintSelector(false);
+            pChildFrame->PaintSelector(true);
+            pChildFrame->Paint(TmpSurface);
+            pChildFrame->PaintSelector(false);
 
             Surface.Copy(
-                    mClients[0]->GetLeft(), i * mClients[0]->GetHeight(),
-                    mClients[0]->GetWidth(), mClients[0]->GetHeight(),
+                    pChildFrame->GetLeft(), i * pChildFrame->GetHeight(),
+                    pChildFrame->GetWidth(), pChildFrame->GetHeight(),
                     TmpSurface, 0, 0);
         }
         TmpSurface.SelectObject(oldFont);
@@ -3277,16 +2504,16 @@ void WndListFrame::Paint(LKSurface& Surface) {
     }
 }
 
-void WndListFrame::Redraw(void){
-  WindowControl::Redraw();  // redraw all but not the current
-  mClients[0]->Redraw();    // redraw the current                                      
+void WndListFrame::Redraw(void) {
+    WindowControl::Redraw(); // redraw all but not the current
+    if (!mClients.empty()) {
+        mClients.front()->Redraw(); // redraw the current
+    }
 }
 
 
 void WndListFrame::DrawScrollBar(LKSurface& Surface) {
   RECT rc;
-  LKBitmap oldBmp;
-
 
   if ( ScrollbarWidth == -1) {  // resize height for each dialog so top button is below 1st item (to avoid initial highlighted overlap)
 
@@ -3298,8 +2525,8 @@ void WndListFrame::DrawScrollBar(LKSurface& Surface) {
 	#endif
 
 	ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);  
-	if (mClientCount > 0) {
-		ScrollbarTop = mClients[0]->GetHeight() + 2;
+	if (!mClients.empty()) {
+		ScrollbarTop = mClients.front()->GetHeight() + 2;
 	} else {
 		ScrollbarTop = (int)(18.0 * ScreenDScale + 2);
 	}
@@ -3390,37 +2617,23 @@ void WndListFrame::DrawScrollBar(LKSurface& Surface) {
 
 void WndListFrame::RedrawScrolled(bool all) {
 
-  int newTop;
-
-  /*       -> inefficient and flickering draws the list twice
-  if (all) {
-    int i;
-    for (i=0; i<= mListInfo.ItemInViewCount; i++) {
-      mListInfo.DrawIndex = mListInfo.TopIndex+i;
-      mOnListCallback(this, &mListInfo);
-      mClients[0]->SetTop(mClients[0]->GetHeight() * (i));
-      mClients[0]->Redraw();
-    }
-  }
-  */
-
   mListInfo.DrawIndex = mListInfo.ItemIndex;
   mOnListCallback(this, &mListInfo);
-  newTop = mClients[0]->GetHeight() * (mListInfo.ItemIndex - mListInfo.TopIndex);
-  if (newTop == mClients[0]->GetTop()){
-    Redraw();                     // non moving the helper window force redraw
-  } else {
-    mClients[0]->SetTop(newTop);  // moving the helper window invalidate the list window
-    mClients[0]->Redraw();
-
-    // to be optimized: after SetTop Paint redraw all list items
-
+  WindowControl * pChild = mClients.front();
+  if(pChild) {
+    int newTop = pChild->GetHeight() * (mListInfo.ItemIndex - mListInfo.TopIndex);
+    if (newTop == pChild->GetTop()){
+      Redraw();                     // non moving the helper window force redraw
+    } else {
+      pChild->SetTop(newTop);  // moving the helper window invalidate the list window
+      pChild->Redraw();
+      // to be optimized: after SetTop Paint redraw all list items
+    }
   }
-
 }
 
 
-int WndListFrame::RecalculateIndices(bool bigscroll) {
+bool WndListFrame::RecalculateIndices(bool bigscroll) {
 
 // scroll to smaller of current scroll or to last page
   mListInfo.ScrollIndex = max(0,min(mListInfo.ScrollIndex,
@@ -3432,7 +2645,7 @@ int WndListFrame::RecalculateIndices(bool bigscroll) {
     mListInfo.ScrollIndex = max(0,
 			      min(mListInfo.ScrollIndex,
 				  mListInfo.ItemCount-mListInfo.ItemIndex-1));
-    return(1);
+    return false;
   }
 
 // again, check to see if we're too far off end of list
@@ -3447,10 +2660,10 @@ int WndListFrame::RecalculateIndices(bool bigscroll) {
       mListInfo.ItemIndex = mListInfo.BottomIndex-1;
       // JMW scroll
       RedrawScrolled(true);
-      return(0);
+      return true;
     } else {
       mListInfo.ItemIndex = mListInfo.BottomIndex-1;
-      return(1);
+      return false;
     }
   }
   if (mListInfo.ItemIndex < 0){
@@ -3460,54 +2673,47 @@ int WndListFrame::RecalculateIndices(bool bigscroll) {
     if (mListInfo.ScrollIndex>0) {
       mListInfo.ScrollIndex--;
       RedrawScrolled(true);
-      return(0);
+      return true;
     } else {
       // only return if no more scrolling left to do
-      return(1);
+      return false;
     }
   }
   RedrawScrolled(bigscroll);
-  return (0);
+  return true;
 }
 
-
-int WndListFrame::OnItemKeyDown(WindowControl *Sender, unsigned KeyCode){
-	(void)Sender;
-
-   switch (KeyCode){
-  case VK_RETURN:
-    if (mOnListEnterCallback) {
-      mOnListEnterCallback(this, &mListInfo);
-      RedrawScrolled(false);
-      return(0);
-    } else 
-      return(1);
-  case VK_LEFT:
-    if ((mListInfo.ScrollIndex>0)
-	&&(mListInfo.ItemCount>mListInfo.ItemInPageCount)) {
-      mListInfo.ScrollIndex -= mListInfo.ItemInPageCount;
+bool WndListFrame::OnItemKeyDown(WindowControl *Sender, unsigned KeyCode) {
+    switch (KeyCode) {
+        case VK_RETURN:
+            if (mOnListEnterCallback) {
+                mOnListEnterCallback(this, &mListInfo);
+                RedrawScrolled(false);
+                return true;
+            }
+            return false;
+        case VK_LEFT:
+            if ((mListInfo.ScrollIndex > 0)
+                    &&(mListInfo.ItemCount > mListInfo.ItemInPageCount)) {
+                mListInfo.ScrollIndex -= mListInfo.ItemInPageCount;
+            }
+            return RecalculateIndices(true);
+        case VK_RIGHT:
+            if ((mListInfo.ItemIndex + mListInfo.ScrollIndex <
+                    mListInfo.ItemCount)
+                    &&(mListInfo.ItemCount > mListInfo.ItemInPageCount)) {
+                mListInfo.ScrollIndex += mListInfo.ItemInPageCount;
+            }
+            return RecalculateIndices(true);
+        case VK_DOWN:
+            mListInfo.ItemIndex++;
+            return RecalculateIndices(false);
+        case VK_UP:
+            mListInfo.ItemIndex--;
+            return RecalculateIndices(false);
     }
-    return RecalculateIndices(true);
-  case VK_RIGHT:
-    if ((mListInfo.ItemIndex+mListInfo.ScrollIndex<
-	 mListInfo.ItemCount)
-	&&(mListInfo.ItemCount>mListInfo.ItemInPageCount)) {
-      mListInfo.ScrollIndex += mListInfo.ItemInPageCount;
-    }
-    return RecalculateIndices(true);
-    //#endif
-  case VK_DOWN:
-
-	  
-    mListInfo.ItemIndex++;
-    return RecalculateIndices(false);
-  case VK_UP:
-    mListInfo.ItemIndex--;
-    return RecalculateIndices(false);
-  }
-  mMouseDown=false;
-  return(1);
-
+    mMouseDown = false;
+    return false;
 }
 
 void WndListFrame::ResetList(void){
@@ -3515,14 +2721,14 @@ void WndListFrame::ResetList(void){
   mListInfo.ScrollIndex = 0;
   mListInfo.ItemIndex = 0;
   mListInfo.DrawIndex = 0;
-  mListInfo.ItemInPageCount = ((GetHeight()+mClients[0]->GetHeight()-1)
-			       /mClients[0]->GetHeight())-1;
+
+  WindowControl * pChild = mClients.front();
+
+
+  mListInfo.ItemInViewCount = mListInfo.ItemInPageCount = (pChild ? (((GetHeight() + pChild->GetHeight() - 1) / pChild->GetHeight()) - 1) : 0);
   mListInfo.TopIndex = 0;
   mListInfo.BottomIndex = 0;
-//  mListInfo.SelectedIndex = 0;
   mListInfo.ItemCount = 0;
-  mListInfo.ItemInViewCount = (GetHeight()+mClients[0]->GetHeight()-1)
-    /mClients[0]->GetHeight()-1;
 
   if (mOnListCallback != NULL){
     mListInfo.DrawIndex = -1;                               // -1 -> initialize data
@@ -3538,8 +2744,10 @@ void WndListFrame::ResetList(void){
     }
   }
 
-  mClients[0]->SetTop(0);     // move item window to the top
-  mClients[0]->Redraw();
+  if(pChild) {
+    pChild->SetTop(0);     // move item window to the top
+    pChild->Redraw();
+  }
 }
 
 int WndListFrame::PrepareItemDraw(void){
@@ -3548,41 +2756,35 @@ int WndListFrame::PrepareItemDraw(void){
   return(1);
 }
 
-int WndListFrame::OnLButtonUp(const POINT& Pos) {
+bool WndListFrame::OnLButtonUp(const POINT& Pos) {
     mMouseDown=false;
-    return 1;
+    return true;
 }
 
 static bool isselect = false;
 
-int WndFrame::OnLButtonUp(const POINT& Pos) {
-  return 1;
+bool WndFrame::OnLButtonUp(const POINT& Pos) {
+  return false;
 }
 
 // JMW needed to support mouse/touchscreen
-int WndFrame::OnLButtonDown(const POINT& Pos) {
+bool WndFrame::OnLButtonDown(const POINT& Pos) {
 
   if (mIsListItem && GetOwner()!=NULL) {
-
-    LKASSERT(GetHandle()!=NULL);
  
-    if (!GetFocused()) {
-      SetFocus(GetHandle());  
-      //return(1);
-    } 
-    //else {  // always doing this allows selected item in list to remain selected.
-      InvalidateRect(GetHandle(), &GetBoundRect(), false);
-      UpdateWindow(GetHandle());
-    //}
-
+    if (!HasFocus()) {
+      SetFocus();  
+    }
+    Redraw();
     WndListFrame* wlf = ((WndListFrame*)GetOwner());
-    RECT mRc;
-    GetWindowRect(GetHandle(), &mRc);
-    LKASSERT(wlf!=NULL);
-    wlf->SelectItemFromScreen(Pos.x, Pos.y, &mRc);
+    if(wlf) {
+        RECT Rc = {};
+        wlf->SelectItemFromScreen(Pos.x, Pos.y, &Rc);
+    }
   }
   isselect = false;
-  return(1);
+
+  return true;
 }
 
 void WndListFrame::SetItemIndexPos(int iValue)
@@ -3627,41 +2829,31 @@ void WndListFrame::SetItemIndex(int iValue){
   RecalculateIndices(false);
 }
 
-void WndListFrame::SelectItemFromScreen(int xPos, int yPos,
-                                        RECT *rect) {
+void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect) {
   (void)xPos;
-/*  int w = GetWidth()- 4*SELECTORWIDTH;
-  int h = GetHeight()- SELECTORWIDTH;
+  WindowControl * pChild = NULL;
+  if(!mClients.empty()) {
+      pChild = mClients.front();
 
-  if ((xPos>= w) && (mListInfo.ItemCount > mListInfo.ItemInViewCount)
-      && (mListInfo.ItemCount>0)) {
-    // TODO code: scroll!
+    *rect = GetClientRect();
+    int index = yPos / pChild->GetHeight(); // yPos is offset within ListEntry item!
 
-    mListInfo.ScrollIndex = mListInfo.ItemCount*yPos/h;
-    RecalculateIndices(true);
-
-    return;
-  }
-*/
-  int index;
-  GetClientRect(GetHandle(), rect);
-  index = yPos/mClients[0]->GetHeight(); // yPos is offset within ListEntry item!
-
-  if ((index>=0)&&(index<mListInfo.BottomIndex)) {
-    if (!isselect) {
-      if (mOnListEnterCallback) {
-        mOnListEnterCallback(this, &mListInfo);
+    if ((index>=0)&&(index<mListInfo.BottomIndex)) {
+      if (!isselect) {
+        if (mOnListEnterCallback) {
+          mOnListEnterCallback(this, &mListInfo);
+        }
+        RedrawScrolled(false);
+      } else {
+        mListInfo.ItemIndex = index;
+        RecalculateIndices(false);
       }
-      RedrawScrolled(false);
-    } else {
-      mListInfo.ItemIndex = index;
-      RecalculateIndices(false);
     }
   }
 }
 
 
-int WndListFrame::OnMouseMove(const POINT& Pos) {
+bool WndListFrame::OnMouseMove(const POINT& Pos) {
 
   if ( Poco::Timestamp() >= LastMouseMoveTime )
   {
@@ -3684,10 +2876,10 @@ int WndListFrame::OnMouseMove(const POINT& Pos) {
     }
     LastMouseMoveTime.update();
   } // Tickcount
-  return(1);
+  return false;
 }
 
-int WndListFrame::OnLButtonDown(const POINT& Pos) {
+bool WndListFrame::OnLButtonDown(const POINT& Pos) {
 
   mMouseDown=false;
     
@@ -3714,15 +2906,14 @@ int WndListFrame::OnLButtonDown(const POINT& Pos) {
     
     Redraw();
     
-  }
-  else
-  if (mClientCount > 0)
+  } 
+  else if (!mClients.empty())
   {
     isselect = true;
-    ((WndFrame *)mClients[0])->OnLButtonDown(Pos);
+    ((WndFrame*)mClients.front())->OnLButtonDown(Pos);
   }
 
-  return(1);
+  return true;
 }
 
 inline int WndListFrame::GetScrollBarHeight (void)
@@ -3771,45 +2962,4 @@ inline int WndListFrame::GetScrollBarTopFromScrollIndex()
   }
   return iRetVal;
 }
-
-
-#include "InputEvents.h"
-
-void WndEventButton_OnClickNotify(WindowControl *Sender) {
-  WndEventButton *wb = (WndEventButton*)Sender;
-  LKASSERT(wb!=NULL);
-  wb->CallEvent();
-}
-
-void WndEventButton::CallEvent() {
-  if (inputEvent) {
-    inputEvent(parameters);
-  }
-}
-
-WndEventButton::~WndEventButton() {
-  if (parameters) {
-    free(parameters);
-    parameters=NULL;
-  }
-}
-
-
-WndEventButton::WndEventButton(WindowControl *Parent, const TCHAR *Name, 
-			       const TCHAR *Caption, 
-			       int X, int Y, int Width, int Height, 
-			       const TCHAR* ename,
-			       const TCHAR* theparameters):
-  WndButton(Parent,Name,Caption,X,Y,Width,Height,
-	    WndEventButton_OnClickNotify)
-{
-  inputEvent = InputEvents::findEvent(ename);
-  if (theparameters) {
-    parameters = _tcsdup(theparameters);
-  } else {
-    parameters = NULL;
-  }
-
-}
-
 

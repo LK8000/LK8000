@@ -91,17 +91,17 @@ static void UpdateTextboxProp(void)
   }
 }
 
-static int FormKeyDown(WindowControl * Sender, unsigned KeyCode) {
+static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
   switch(KeyCode & 0xffff){
     case VK_LEFT:
       if (cursor<1)
-        return(0); // min width
+        return true; // min width
       cursor--;
       edittext[cursor] = 0;
       UpdateTextboxProp();
-      return(0);
+      return true;
   }
-  return(1);
+  return false;
 }
 
 
@@ -113,7 +113,7 @@ static void ClearText(void)
   UpdateTextboxProp();
 }
 
-static void OnKey(WindowControl * Sender)
+static void OnKey(Window* pWnd)
 {
 if(first)
 {
@@ -122,7 +122,7 @@ if(first)
 }
 
 
-  const TCHAR *Caption = Sender->GetCaption();
+  const TCHAR *Caption = pWnd->GetWndText();
   PlayResource(TEXT("IDR_WAV_CLICK"));
   if (cursor < max_width-1)
     {
@@ -138,7 +138,7 @@ if(first)
 
 
 
-static void OnDel(WindowControl * Sender)
+static void OnDel(Window* pWnd)
 {
   first = false;
   PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -149,7 +149,7 @@ static void OnDel(WindowControl * Sender)
   UpdateTextboxProp();
 }
 
-static void OnTime(WindowControl * Sender)
+static void OnTime(Window* pWnd)
 {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   if ( (cursor+6)<(max_width-1) ) {
@@ -162,7 +162,7 @@ static void OnTime(WindowControl * Sender)
   UpdateTextboxProp();
 }
 
-static void OnDate(WindowControl * Sender)
+static void OnDate(Window* pWnd)
 {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   if ( (cursor+6)<(max_width-1) ) {
@@ -184,7 +184,7 @@ static void OnDate(WindowControl * Sender)
   UpdateTextboxProp();
 }
 
-static void OnOk(WindowControl * Sender)
+static void OnOk(Window* pWnd)
 {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   wf->SetModalResult(mrOK);
@@ -192,16 +192,14 @@ static void OnOk(WindowControl * Sender)
 
 
 
-static void OnClear(WindowControl * Sender)
+static void OnClear(Window* pWnd)
 {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   ClearText();
 }
 
-static void OnHelpClicked(WindowControl * Sender){
-  (void)Sender;
-
-  wKeyboardPopupWndProperty->OnHelp();
+static void OnHelpClicked(WindowControl* Sender){
+    wKeyboardPopupWndProperty->OnHelp();
 }
 
 static CallBackTableEntry_t CallBackTable[]={

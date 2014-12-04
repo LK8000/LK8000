@@ -20,6 +20,8 @@ LRESULT CALLBACK WndPaint::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LP
                 if(OnPaint(Surface, Surface.GetRect())) return 0;
             }
             break;
+        case WM_ERASEBKGND:
+            return 1;
         default:
             break;
     }

@@ -15,10 +15,8 @@ extern void AddCustomKeyList( DataFieldEnum* dfe);
 
 static WndForm *wf=NULL;
 
-
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
 
@@ -98,7 +96,7 @@ static void setVariables(void) {
 }
 
 
-static void OnResetClicked(WindowControl * Sender){
+static void OnResetClicked(Window* pWnd){
 
   WndProperty *wp;
   extern void Reset_CustomMenu(void);

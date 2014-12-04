@@ -88,41 +88,39 @@ static void NextPage(int Step){
 
 }
 
-
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
+static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
+    Window * pBtn = NULL;
 
-static int FormKeyDown(WindowControl * Sender, unsigned KeyCode){
-	(void)Sender;
+    switch (KeyCode & 0xffff) {
+        case VK_LEFT:
+        case '6':
+            pBtn = wf->FindByName(TEXT("cmdPrev"));
+            NextPage(-1);
+            break;
+        case VK_RIGHT:
+        case '7':
+            pBtn = wf->FindByName(TEXT("cmdNext"));
+            NextPage(+1);
+            break;;
+    }
+    if (pBtn) {
+        pBtn->SetFocus();
+        return true;
+    }
 
-  switch(KeyCode & 0xffff){
-    case VK_LEFT:
-    case '6':
-      SetFocus(((WndButton *)wf->FindByName(TEXT("cmdPrev")))->GetHandle());
-      NextPage(-1);
-      //((WndButton *)wf->FindByName(TEXT("cmdPrev")))->SetFocused(true, NULL);
-    return(0);
-    case VK_RIGHT:
-    case '7':
-      SetFocus(((WndButton *)wf->FindByName(TEXT("cmdNext")))->GetHandle());
-      NextPage(+1);
-      //((WndButton *)wf->FindByName(TEXT("cmdNext")))->SetFocused(true, NULL);
-    return(0);
-  }
-  return(1);
+    return false;
 }
 
-static void OnNextClicked(WindowControl * Sender){
-	(void)Sender;
-  NextPage(+1);
+static void OnNextClicked(Window* pWnd) {
+    NextPage(+1);
 }
 
-static void OnPrevClicked(WindowControl * Sender){
-	(void)Sender;
-  NextPage(-1);
+static void OnPrevClicked(Window* pWnd) {
+    NextPage(-1);
 }
 
 
@@ -709,17 +707,12 @@ static void UpdateValuesTask(void) {
   }
 }
 
+static bool OnTimerNotify() {
 
-static int OnTimerNotify(WindowControl * Sender) {
-  (void)Sender;
+    UpdateValuesSystem();
+    UpdateValuesFlight();
 
-  static short i=0;
-  if(i++ % 2 == 0) return 0;
-
-  UpdateValuesSystem();
-  UpdateValuesFlight();
-
-  return 0;
+    return true;
 }
 
 
@@ -761,7 +754,7 @@ void dlgStatusShowModal(int start_page){
   //ASSERT(wStatus4!=NULL);
   //ASSERT(wStatus5!=NULL);
 
-  wf->SetTimerNotify(OnTimerNotify);
+  wf->SetTimerNotify(1000, OnTimerNotify);
 
   if (!multi_page) {
     WndButton *wb;

@@ -36,60 +36,50 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface) {
          * original data are shared ressources !
          * for that we need to grant all called methods are thread safe
          ****************************************************************/
-        msg.originator->DrawPicto(Surface, wPicto->GetBoundRect());
+        msg.originator->DrawPicto(Surface, wPicto->GetClientRect());
     }
 }
 
-static void OnAckForTimeClicked(WindowControl * Sender)
-{
-  (void)Sender;
+static void OnAckForTimeClicked(Window* pWnd) {
+  (void)pWnd;
   if (dlg == NULL) return;
   if (msg.originator == NULL) return;
   CAirspaceManager::Instance().AirspaceSetAckLevel(*msg.originator, msg.warnlevel);
   dlg->SetModalResult(mrOK);
 }
 
-static void OnCloseClicked(WindowControl * Sender)
-{
-  (void)Sender;
+static void OnCloseClicked(Window* pWnd) {
+  (void)pWnd;
   if (dlg==NULL) return;
   dlg->SetModalResult(mrOK);
 }
 
-static int OnTimer(WindowControl * Sender){
-  (void)Sender;
-  
-  // Timer events comes at 500ms, we need every second
-  static bool timer_divider = false;
-  timer_divider = !timer_divider;
-  if (timer_divider) return 0;
-  
+static bool OnTimer(){
   // Auto close dialog after some time
   if (!(--timer_counter)) {
     dlg->SetModalResult(mrOK);
-    return 0;
+    return true;
   }
   
   //Get a new copy with current values from airspacemanager
-  if (msg.originator == NULL) return 0;
-  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
-  dlgLKAirspaceFill();
-  return(0);
+  if (msg.originator) {
+  	airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
+  	dlgLKAirspaceFill();
+  }
+  return true;
 }
 
-static int OnKeyDown(WindowControl * Sender, unsigned KeyCode)
-{
-    switch(KeyCode){
-    case VK_RETURN:
-      OnAckForTimeClicked(Sender);
-      return(0);
-    case VK_ESCAPE:
-      OnCloseClicked(Sender);
-      return(0);
-  }
+static bool OnKeyDown(Window* pWnd, unsigned KeyCode) {
+    switch (KeyCode) {
+        case VK_RETURN:
+            OnAckForTimeClicked(pWnd);
+            return true;
+        case VK_ESCAPE:
+            OnCloseClicked(pWnd);
+            return true;
+    }
 
-  return(1);
-  
+    return false;
 }
 
 
@@ -419,7 +409,7 @@ short ShowAirspaceWarningsToUser()
     }
     
     dlg->SetKeyDownNotify(OnKeyDown);
-    dlg->SetTimerNotify(OnTimer);
+    dlg->SetTimerNotify(1000, OnTimer);
     timer_counter = AirspaceWarningDlgTimeout;                    // Auto closing dialog in x secs
 
     WndButton *wb = (WndButton*)dlg->FindByName(TEXT("cmdAckForTime"));

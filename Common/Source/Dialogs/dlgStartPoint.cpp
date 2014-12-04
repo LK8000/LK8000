@@ -92,13 +92,11 @@ static void OnStartPointListInfo(WindowControl * Sender,
   }
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
 
-static void OnClearClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnClearClicked(Window* pWnd){
   LockTaskData();
   for (int i=0; i<MAXSTARTPOINTS; i++) {
     StartPoints[i].Index = -1;

@@ -41,7 +41,7 @@ static void UpdateList(void) {
     wMultiSelectListList->ResetList();
     wMultiSelectListList->Redraw();
 
-    wMultiSelectListListEntry->SetFocused(true, NULL);
+    wMultiSelectListListEntry->SetFocus();
 }
 
 static int DrawListIndex = 0;
@@ -49,19 +49,12 @@ static int DrawListIndex = 0;
 
 // Keep the dialog list updated every second
 
-static int OnTimer(WindowControl * Sender) {
-    (void) Sender;
-
-    // Timer events comes at 500ms, we need every second
-    static bool timer_divider = false;
-    timer_divider = !timer_divider;
-    if (timer_divider) return 0;
-
+static bool OnTimer() {
     wMultiSelectListList->Redraw();
-    return 0;
+    return true;
 }
 
-static void OnUpClicked(WindowControl * Sender) {
+static void OnUpClicked(Window* Sender) {
     if (ItemIndex > 0) {
         ItemIndex--;
     } else {
@@ -69,11 +62,11 @@ static void OnUpClicked(WindowControl * Sender) {
     }
     wMultiSelectListList->SetItemIndexPos(ItemIndex);
     wMultiSelectListList->Redraw();
-    wMultiSelectListListEntry->SetFocused(true, NULL);
+    wMultiSelectListListEntry->SetFocus();
 }
 
-static void OnDownClicked(WindowControl * Sender) {
-    (void) Sender;
+static void OnDownClicked(Window* pWnd) {
+    (void)pWnd;
 
     if (ItemIndex < (iNO_ELEMENTS - 1)) {
         ItemIndex++;
@@ -82,7 +75,7 @@ static void OnDownClicked(WindowControl * Sender) {
     }
     wMultiSelectListList->SetItemIndexPos(ItemIndex);
     wMultiSelectListList->Redraw();
-    wMultiSelectListListEntry->SetFocused(true, NULL);
+    wMultiSelectListListEntry->SetFocus();
 }
 
 void dlgAddMultiSelectListDetailsDialog(int Index) {
@@ -450,8 +443,8 @@ static void OnMultiSelectListListEnter(WindowControl * Sender,
 
 }
 
-static void OnEnterClicked(WindowControl * Sender) {
-    (void) Sender;
+static void OnEnterClicked(Window* pWnd) {
+    (void)pWnd;
 
     if (ItemIndex >= iNO_ELEMENTS) {
         ItemIndex = iNO_ELEMENTS - 1;
@@ -478,8 +471,8 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 
 }
 
-static void OnCloseClicked(WindowControl * Sender) {
-    (void) Sender;
+static void OnCloseClicked(Window* pWnd) {
+    (void) pWnd;
     ItemIndex = -1;
 
     wf->SetModalResult(mrCancle);
@@ -524,7 +517,7 @@ ListElement* dlgMultiSelectListShowModal(void) {
 
     if (!wf) return NULL;
 
-    wf->SetTimerNotify(OnTimer);
+    wf->SetTimerNotify(1000, OnTimer);
     wMultiSelectListList = (WndListFrame*) wf->FindByName(TEXT("frmMultiSelectListList"));
     LKASSERT(wMultiSelectListList != NULL);
     wMultiSelectListList->SetBorderKind(BORDERLEFT);

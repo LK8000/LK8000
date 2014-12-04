@@ -476,8 +476,7 @@ static void OnAATEnabled(DataField *Sender, DataField::DataAccessKind_t Mode) {
 
 
 
-static void OnSelectClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnSelectClicked(Window* pWnd){
   int res;
   res = dlgWayPointSelect();
   if (res != -1){
@@ -496,30 +495,21 @@ static void OnSelectClicked(WindowControl * Sender){
   };
 }
 
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-  wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd){
+    wf->SetModalResult(mrOK);
 }
 
-static void OnMoveClicked(WindowControl * Sender){
-	(void)Sender;
-
-	 wf->SetModalResult(mrOK);
-	PanTaskEdit = twItemIndex;
-
-
-
-
+static void OnMoveClicked(Window* pWnd){
+    wf->SetModalResult(mrOK);
+    PanTaskEdit = twItemIndex;
 }
 
-static void OnStartPointClicked(WindowControl * Sender){
-	(void)Sender;
-  dlgStartPointShowModal();
+static void OnStartPointClicked(Window* pWnd){
+    dlgStartPointShowModal();
 }
 
 
-static void OnMoveAfterClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnMoveAfterClicked(Window* pWnd){
   LockTaskData();
   SwapWaypoint(twItemIndex);
   SetWaypointValues();
@@ -527,8 +517,7 @@ static void OnMoveAfterClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnMoveBeforeClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnMoveBeforeClicked(Window* pWnd){
   LockTaskData();
   SwapWaypoint(twItemIndex-1);
   SetWaypointValues();
@@ -536,15 +525,13 @@ static void OnMoveBeforeClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnDetailsClicked(WindowControl * Sender){
-	(void)Sender;
+static void OnDetailsClicked(Window* pWnd){
   LKASSERT(twItemIndex>=0);
   SelectedWaypoint = Task[twItemIndex].Index;
   dlgWayPointDetailsShowModal(0);
 }
 
-static void OnRemoveClicked(WindowControl * Sender) {
-	(void)Sender;
+static void OnRemoveClicked(Window* pWnd) {
   LockTaskData();
   RemoveTaskPoint(twItemIndex);
   SetWaypointValues();
@@ -559,8 +546,7 @@ static void OnRemoveClicked(WindowControl * Sender) {
 }
 
 
-static void OnTaskRulesClicked(WindowControl * Sender){
-  (void)Sender;
+static void OnTaskRulesClicked(Window* pWnd){
   wf->SetVisible(false);
   if (dlgTaskRules()) {
     TaskModified = true;
@@ -581,7 +567,7 @@ static void OnTaskPointPicto(WindowControl * Sender, LKSurface& Surface) {
         //    CalculateAATTaskSectors();
         RefreshTask();
         /*******************/
-        const RECT& rc = wPicto->GetBoundRect();
+        const RECT rc = wPicto->GetClientRect();
 
         MapWindow::DrawWaypointPictoBg(Surface, rc);
         MapWindow::DrawTaskPicto(Surface, twItemIndex, rc, 2000);

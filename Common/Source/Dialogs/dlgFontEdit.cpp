@@ -28,19 +28,17 @@ static bool IsInitialized=false;
 
 void LoadGUI();
 
-static void OnCloseClicked(WindowControl * Sender){
-(void)Sender;
-	wf->SetModalResult(mrOK);
+static void OnCloseClicked(Window* pWnd) {
+    wf->SetModalResult(mrOK);
 }
-static void OnCancelClicked(WindowControl * Sender){
-(void)Sender;
-	wf->SetModalResult(mrCancle);
-}
-static void OnResetClicked(WindowControl * Sender){
-(void)Sender;
 
-  NewLogFont=resetLogFont;
-  LoadGUI();
+static void OnCancelClicked(Window* pWnd) {
+    wf->SetModalResult(mrCancle);
+}
+
+static void OnResetClicked(Window* pWnd) {
+    NewLogFont = resetLogFont;
+    LoadGUI();
 }
 
 

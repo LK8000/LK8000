@@ -26,7 +26,7 @@ short WaitToCallForce=0;
 //#define DEBUG_ORTIMER
 
 // Remember that this function is called at 2hz
-static int OnTimerNotify(WindowControl *Sender)
+static bool OnTimerNotify()
 {
   static short rezoom=0;
   static short limiter=0; // safe limiter
@@ -50,7 +50,7 @@ static int OnTimerNotify(WindowControl *Sender)
 		StartupStore(_T("..... WaitToCallForce\n"));
 	}
 	#endif
-	return 0;
+	return true;
   }
 
   // If the Nearest topology calculation is still running we wait
@@ -66,7 +66,7 @@ static int OnTimerNotify(WindowControl *Sender)
 	#ifdef DEBUG_ORTIMER
 	StartupStore(_T("..... Wait for ForceNearest done\n"));
 	#endif
-	return 0;
+	return true;
   }
 
   limiter=0; // probably useless
@@ -92,7 +92,7 @@ static int OnTimerNotify(WindowControl *Sender)
 	#endif
 	// rezoom once, then wait
 	rezoom--;
-	return 0;
+	return true;
   }
 
 _end:
@@ -100,7 +100,7 @@ _end:
   StartupStore(_T("..... LETS GO\n"));
   #endif
   // Dont come back here anymore!
-  wf->SetTimerNotify(NULL);
+  wf->SetTimerNotify(0, NULL);
 
   // Bell, and print results
   LKSound(TEXT("LK_GREEN.WAV"));
@@ -108,7 +108,7 @@ _end:
 
   // Remember to force exit from showmodal, because there is no Close button
   wf->SetModalResult(mrOK);
-  return 0;
+  return true;
 }
 
 
@@ -145,7 +145,7 @@ void dlgOracleShowModal(void){
   WaitToCallForce=2;
 
   // We must wait for data ready, so we shall do it  with timer notify.
-  wf->SetTimerNotify(OnTimerNotify);
+  wf->SetTimerNotify(500, OnTimerNotify);
   wf->ShowModal();
 
   delete wf;

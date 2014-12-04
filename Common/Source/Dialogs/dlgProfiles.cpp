@@ -21,8 +21,7 @@ extern void LKAircraftSave(const TCHAR *szFile);
 extern void LKPilotSave(const TCHAR *szFile);
 extern void LKDeviceSave(const TCHAR *szFile);
 
-static void OnSaveExistingClicked(WindowControl * Sender) {
-  (void)Sender;
+static void OnSaveExistingClicked(Window* pWnd) {
 
   int file_index; 
   TCHAR file_name[MAX_PATH];
@@ -37,8 +36,8 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
   if (!wp) return;
 
-  HWND hwnd = wp->GetHandle();
-  SendMessage(hwnd,WM_LBUTTONDOWN,0,0);
+  wp->OnLButtonDown((POINT){0,0});
+
   dfe = (DataFieldFileReader*) wp->GetDataField();
 
 
@@ -75,10 +74,7 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
   } 
 }
 
-
-
-static void OnSaveNewClicked(WindowControl * Sender) {
-  (void)Sender;
+static void OnSaveNewClicked(Window* pWnd) {
 
   int file_index; 
   TCHAR file_name[MAX_PATH];
@@ -187,10 +183,7 @@ static void OnSaveNewClicked(WindowControl * Sender) {
   }
 }
 
-
-
-static void OnCloseClicked(WindowControl * Sender){
-(void)Sender;
+static void OnCloseClicked(Window* pWnd) {
         wf->SetModalResult(mrOK);
 }
 
