@@ -48,6 +48,7 @@ protected:
 #else
     LKPen();
     operator bool() const;
+    operator const LKPen*() const { return this; }
 #endif
     
 

@@ -46,6 +46,7 @@ protected:
     HBRUSH _Brush;
 #else
     LKBrush() {}
+    operator const LKBrush*() const { return this; }
 
 #endif
 
