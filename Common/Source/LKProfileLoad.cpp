@@ -86,11 +86,15 @@ void SetProfileVariable(const char *curname, const char *curvalue, const char *l
 }
 void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, TCHAR *lookupvalue) {
   if (strcmp(curname,lookupname)) return;
+#ifdef UNICODE  
   utf2unicode(curvalue, lookupvalue, MAX_PATH);
   // REMEMBER TO CONVERT FROM UTF8 to UNICODE!!
   // char stmp[MAX_PATH];
   // unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
   // fprintf(pfp,"%S=\"%s\" (TCHAR)%s", varname, stmp ,PNEWLINE);
+#else
+  strncpy(lookupvalue, curvalue, MAX_PATH);
+#endif
   #if DEBUGPROF 
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> tchar=<%s>\n"),
   curname,curvalue,lookupname,lookupvalue);
