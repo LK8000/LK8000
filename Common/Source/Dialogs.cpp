@@ -72,23 +72,29 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound)
 }
 
 
-
+#ifdef WIN32
 static HCURSOR oldCursor = NULL;
+static unsigned CursorCount = 0;
+#endif
 
 void StartHourglassCursor(void) {
-  HCURSOR newc = LoadCursor(NULL, IDC_WAIT);
-  oldCursor = (HCURSOR)SetCursor(newc);
-  #if 0
-  SetCursorPos(160,120);
-  #endif
+#ifdef WIN32
+    if(CursorCount == 0) {
+        HCURSOR newc = LoadCursor(NULL, IDC_WAIT);
+        if (newc) {
+            oldCursor = (HCURSOR) SetCursor(newc);
+        }
+    }
+    ++CursorCount;
+#endif
 }
 
 void StopHourglassCursor(void) {
-  SetCursor(oldCursor);
-  #if 0
-  SetCursorPos(640,480);
-  #endif
-  oldCursor = NULL;
+#ifdef WIN32
+    --CursorCount;
+    if(CursorCount == 0) {
+        SetCursor(oldCursor);
+        oldCursor = NULL;
+    }
+#endif
 }
-
-
