@@ -44,6 +44,9 @@ public:
 
 protected:
     HBRUSH _Brush;
+#else
+    LKBrush() {}
+
 #endif
 
 };

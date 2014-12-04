@@ -8,6 +8,18 @@
 #include "externs.h"
 #include "LKProfiles.h"
 
+#ifndef DEFAULT_QUALITY
+#define DEFAULT_QUALITY 0
+#endif
+
+#ifndef NONANTIALIASED_QUALITY
+#define NONANTIALIASED_QUALITY 3
+#endif
+
+#ifndef ANTIALIASED_QUALITY
+#define ANTIALIASED_QUALITY 4
+#endif
+
 #define CLEARTYPE_COMPAT_QUALITY 	6
 int GetFontRenderer() { 
 

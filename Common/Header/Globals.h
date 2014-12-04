@@ -714,7 +714,7 @@ GEXTERN bool LKLanguageReady;
 
 GEXTERN int UseCustomFonts;
 
-#if (WINDOWSPC>0) 
+#if (WINDOWSPC>0) || defined(__linux__)
 GEXTERN int SCREENWIDTH;
 GEXTERN int SCREENHEIGHT;
 #endif

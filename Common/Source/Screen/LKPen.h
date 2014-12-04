@@ -22,8 +22,6 @@ enum enumType {
 
 class LKPen {
 public:
-    LKPen():_Pen() {}
-
     LKPen(LKPen&& Pen);
     LKPen& operator= (LKPen&& Pen);
     
@@ -35,6 +33,7 @@ public:
     
 #ifdef WIN32
 public:
+    LKPen():_Pen() {}
 	explicit LKPen(HPEN Pen) : _Pen(Pen) {}
 
     static LKPen MakeStock(int fnObject) {
@@ -47,6 +46,7 @@ public:
 protected:
     HPEN _Pen;
 #else
+    LKPen();
     operator bool() const;
 #endif
     

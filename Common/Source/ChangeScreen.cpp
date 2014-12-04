@@ -31,7 +31,7 @@ bool ScreenHasChanged(void) {
   int x=0,y=0;
 
   if (doinit) {
-	#if (WINDOWSPC>0)
+#if (WINDOWSPC>0) || defined(__linux__)
 	oldSCREENWIDTH=SCREENWIDTH;
 	oldSCREENHEIGHT=SCREENHEIGHT;
 	#else
@@ -43,7 +43,7 @@ bool ScreenHasChanged(void) {
   }
 
   // On PC, simply check for WIDTH and HEIGHT changed
-  #if (WINDOWSPC>0)
+  #if (WINDOWSPC>0) || defined(__linux__)
   x=SCREENWIDTH;
   y=SCREENHEIGHT;
   #else
@@ -86,7 +86,7 @@ void ReinitScreen(void) {
   //
   // Detect the current screen geometry
   //
-  #if (WINDOWSPC>0)
+#if (WINDOWSPC>0) || defined(__linux__)
   // For PC we assume that the desired resolution is in SCREENxx
   WindowSize.left = 0;
   WindowSize.top = 0;

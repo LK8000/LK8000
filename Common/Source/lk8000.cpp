@@ -104,7 +104,7 @@ void handler(int /*signal*/) {
 //  222 for normal program termination, with request to quit lkrun if running
 // 
 //  259 is reserved by OS (STILL_ACTIVE) status
-
+#ifdef WIN32
 HINSTANCE _hInstance;
 
 #ifndef UNDER_CE
@@ -123,6 +123,11 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     
     _hInstance = hInstance; // this need to be first, always !
     const TCHAR* szCmdLine = GetCommandLine();
+#else
+int main() {
+    const char * szCmdLine = "";
+
+#endif
 
 #ifdef INT_OVERFLOW
   SetErrorMode(SEM_NOGPFAULTERRORBOX|SEM_NOOPENFILEERRORBOX);
@@ -288,6 +293,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   GPS_INFO.SwitchState.VarioCircling = false;
   #endif
 
+#ifdef WIN32
   SYSTEMTIME pda_time;
   GetSystemTime(&pda_time);
   GPS_INFO.Time  = pda_time.wHour*3600+pda_time.wMinute*60+pda_time.wSecond;
@@ -297,6 +303,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   GPS_INFO.Hour  = pda_time.wHour;
   GPS_INFO.Minute = pda_time.wMinute;
   GPS_INFO.Second = pda_time.wSecond;
+#else
+#warning "TODO : Need to implement"
+#endif
 
   CalculateNewPolarCoef();
   #if TESTBENCH

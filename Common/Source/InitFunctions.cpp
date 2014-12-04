@@ -111,12 +111,19 @@ BOOL InitInstance()
   PreloadInitialisation(true);
 
   RECT WindowSize;
+#ifdef __linux__
+  WindowSize.left = 0;
+  WindowSize.top = 0;
+  WindowSize.right = SCREENWIDTH;
+  WindowSize.bottom = SCREENHEIGHT;
+#endif
 
+#ifdef UNDER_CE
   WindowSize.left = 0;
   WindowSize.top = 0;
   WindowSize.right = GetSystemMetrics(SM_CXSCREEN);
   WindowSize.bottom = GetSystemMetrics(SM_CYSCREEN);
-
+#endif
 
 #if (WINDOWSPC>0)
   WindowSize.right = SCREENWIDTH + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
