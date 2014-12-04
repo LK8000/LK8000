@@ -962,13 +962,9 @@ bool CheckDeclaration(void) {
 }
 
 
-FILETIME LogFileDate(const TCHAR* filename) {
-  FILETIME ft;
-  ft.dwLowDateTime = 0;
-  ft.dwHighDateTime = 0;
-
+time_t LogFileDate(const TCHAR* filename) {
   TCHAR asset[MAX_PATH+1];
-  SYSTEMTIME st;
+  struct tm st ={};
   unsigned short year, month, day, num;
   int matches;
   // scan for long filename
@@ -980,15 +976,13 @@ FILETIME LogFileDate(const TCHAR* filename) {
                     asset,
                     &num);
   if (matches==5) {
-    st.wYear = year;
-    st.wMonth = month;
-    st.wDay = day;
-    st.wHour = num;
-    st.wMinute = 0;
-    st.wSecond = 0;
-    st.wMilliseconds = 0;
-    SystemTimeToFileTime(&st,&ft);
-    return ft;
+    st.tm_year = year - 1900;
+    st.tm_mon = month;
+    st.tm_mday = day;
+    st.tm_hour = num;
+    st.tm_min = 0;
+    st.tm_sec = 0;
+    return mktime(&st);
   }
 
   TCHAR cyear, cmonth, cday, cflight;
@@ -1008,15 +1002,13 @@ FILETIME LogFileDate(const TCHAR* filename) {
     if (yearthis > iyear) {
       yearthis -= 10;
     }
-    st.wYear = yearthis;
-    st.wMonth = IGCCharToNum(cmonth);
-    st.wDay = IGCCharToNum(cday);
-    st.wHour = IGCCharToNum(cflight);
-    st.wMinute = 0;
-    st.wSecond = 0;
-    st.wMilliseconds = 0;
-    SystemTimeToFileTime(&st,&ft);
-    return ft;
+    st.tm_year = yearthis - 1900;
+    st.tm_mon = IGCCharToNum(cmonth);
+    st.tm_mday = IGCCharToNum(cday);
+    st.tm_hour = IGCCharToNum(cflight);
+    st.tm_min = 0;
+    st.tm_sec = 0;
+    return mktime(&st);
     /*
       YMDCXXXF.IGC
       Y: Year, 0 to 9 cycling every 10 years
@@ -1027,14 +1019,14 @@ FILETIME LogFileDate(const TCHAR* filename) {
       F: Flight of day, 1 to 9 then A through Z
     */
   }
-  return ft;
+  return 0;
 }
 
 
 bool LogFileIsOlder(const TCHAR *oldestname, const TCHAR *thisname) {
-  FILETIME ftold = LogFileDate(oldestname);
-  FILETIME ftnew = LogFileDate(thisname);
-  return (CompareFileTime(&ftold, &ftnew)>0);
+  time_t ftold = LogFileDate(oldestname);
+  time_t ftnew = LogFileDate(thisname);
+  return ftold > ftnew;
 }
 
 
