@@ -22,5 +22,17 @@
 #include "Win32/WndCtrlBase.h"
 #endif
 
+#ifdef __linux__
+#include "types.h"
+#include "KeyCode.h"
+#include "Linux/Window.h"
+#include "Linux/EventLoop.h"
+#include "Linux/WndMainBase.h"
+#include "Linux/WndPaint.h"
+#include "Linux/WndTextEdit.h"
+#include "Linux/WndTextLabel.h"
+#include "Linux/WndCtrlBase.h"
+#endif
+
 #endif	/* WINDOWBASE_H */
 

@@ -4,7 +4,7 @@
  * See CREDITS.TXT file for authors and copyrights
  *
  * File:   WndLabel.h
- * Author: Bruno de Lacheisserie
+ * Author: Bruno de Lacheisserie    
  *
  * Created on 20 novembre 2014, 21:50
  */
