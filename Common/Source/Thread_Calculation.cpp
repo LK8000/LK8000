@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Logger.h"
 #include "LiveTracker.h"
+#include "FlightDataRec.h"
 #include "TraceThread.h"
 
 // PulseEvent is unreliable. But it does not matter anymore, since we should
@@ -31,8 +32,6 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
     }
 }
 
-extern bool FlightDataRecorderActive;
-extern void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 class CalculationThread : public Poco::Runnable {
 public:
@@ -121,8 +120,12 @@ public:
             // update live tracker with new values
             // this is a nonblocking call, live tracker runs on different thread
             LiveTrackerUpdate(&tmpGPS, &tmpCALCULATED);
-
-            if (FlightDataRecorderActive) UpdateFlightDataRecorder(&tmpGPS, &tmpCALCULATED);
+            
+#ifdef NO_FLIGHTRECORDER
+            if (FlightDataRecorderActive) {
+                UpdateFlightDataRecorder(&tmpGPS, &tmpCALCULATED);
+            }
+#endif
         }
     }
 private:

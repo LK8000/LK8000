@@ -7,6 +7,9 @@
 */
 
 #include "externs.h"
+
+#ifndef NO_DATARECORDER
+
 #include "FlightDataRec.h"
 #include "utils/stringext.h"
 
@@ -436,3 +439,5 @@ void CloseFlightDataRecorder(void)
   iLogDelay=0;
   if (FlightDataRecorderFile) fclose(FlightDataRecorderFile);
 }
+
+#endif

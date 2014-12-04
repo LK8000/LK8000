@@ -60,7 +60,9 @@
 
 #include "TraceThread.h"
 #include "Poco/NamedEvent.h"
-#include "Window/Win32/EventLoop.h"
+
+#include "FlightDataRec.h"
+
 
 #ifdef INT_OVERFLOW
 	#include <signal.h>
@@ -463,8 +465,9 @@ int main() {
 
   LiveTrackerInit();
 
-  extern void InitFlightDataRecorder(void);
+#ifndef NO_DATARECORDER
   InitFlightDataRecorder();
+#endif
 
   // re-set polar in case devices need the data
   #if TESTBENCH
