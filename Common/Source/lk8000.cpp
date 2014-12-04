@@ -500,6 +500,36 @@ int WINAPI WinMain(     HINSTANCE hInstance,
                            // break on a memory leak
 #endif
 
+
+    if (WarningHomeDir) {
+        TCHAR nopath[MAX_PATH];
+        LocalPath(nopath, _T(""));
+        // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
+        MessageBoxX(nopath, gettext(TEXT("_@M1209_")), mbOk);
+        WarningHomeDir = false;
+    }
+#ifdef UNDER_CE
+    static bool checktickcountbug = true; // 100510
+    if (checktickcountbug) {
+        DWORD counts = GetTickCount();
+        if (counts > (unsigned) 2073600000l) {
+            // LKTOKEN  _@M527_ = "Please exit LK8000 and reset your device.\n"
+            MessageBoxX(gettext(TEXT("_@M527_")),
+                    TEXT("Device need reset!"),
+                    mbOk);
+        }
+        checktickcountbug = false;
+    }
+#endif
+    if (!ISPARAGLIDER && !ISCAR) { // 100925
+        if (SAFETYALTITUDEARRIVAL < 500) { // SAFETY is *10, so we check <50 really
+            // LKTOKEN  _@M155_ = "CHECK safety arrival altitude\n"
+            MessageBoxX(gettext(TEXT("_@M155_")),
+                    TEXT("Warning!"),
+                    mbOk);
+        }
+    }
+
  //
  // Main message loop
  //

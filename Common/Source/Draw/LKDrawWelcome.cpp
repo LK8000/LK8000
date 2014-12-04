@@ -103,38 +103,5 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   if (!LoggerGActive()) _tcscat(Buffer,_T(" (No GRecord)"));
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
   LKWriteText(Surface, Buffer, middlex, bottomlines-(textSize.cy*2)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
-
-  if (WarningHomeDir) {
-	TCHAR nopath[MAX_PATH];
-	LocalPath(nopath,_T(""));
-	// LKTOKEN _@M1209_ "CHECK INSTALLATION!"
-	MessageBoxX(nopath, gettext(TEXT("_@M1209_")), mbOk);
-	WarningHomeDir=false;
-  }
-#ifdef UNDER_CE
-  static bool checktickcountbug=true; // 100510
-  if (checktickcountbug) {
-	DWORD counts=GetTickCount();
-	if (counts >(unsigned)2073600000l) {
-	// LKTOKEN  _@M527_ = "Please exit LK8000 and reset your device.\n" 
-		MessageBoxX(gettext(TEXT("_@M527_")),
-                TEXT("Device need reset!"),
-                mbOk);
-	}
-	checktickcountbug=false;
-  }
-#endif
-  static bool checksafetyaltitude=true; // 100709
-  if (!ISPARAGLIDER && !ISCAR) // 100925
-  if (checksafetyaltitude) {
-	if (SAFETYALTITUDEARRIVAL<500) { // SAFETY is *10, so we check <50 really
-	// LKTOKEN  _@M155_ = "CHECK safety arrival altitude\n" 
-		MessageBoxX(gettext(TEXT("_@M155_")),
-                TEXT("Warning!"),
-                mbOk);
-	}
-	checksafetyaltitude=false;
-  }
-  return;
 }
 

@@ -120,6 +120,11 @@ LRESULT CALLBACK Window::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 
 bool Window::Create(Window* pOwner, const RECT& rect, const TCHAR* szName)
 {
+#ifndef NDEBUG
+    if(pOwner) {
+        assert(::GetCurrentThreadId() == ::GetWindowThreadProcessId(pOwner->Handle(), NULL));
+    }
+#endif
     _szWindowName = szName;
 
 	// Create the window
