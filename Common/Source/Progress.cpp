@@ -8,6 +8,7 @@
 */
 
 #include <tchar.h>
+#include <stddef.h>
 #include "Dialogs/dlgProgress.h"
 
 //
