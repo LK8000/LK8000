@@ -13,11 +13,6 @@
 #define int_fast8_t jas_int_fast8_t
 #endif
 
-
-#include "wcecompat/ts_string.h"
-
-
-
 void RasterMapRaw::SetFieldRounding(double xr, double yr) {
   RasterMap::SetFieldRounding(xr, yr);
   if (!isMapLoaded()) {
