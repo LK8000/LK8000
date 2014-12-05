@@ -150,6 +150,10 @@ public:
         ::ReleaseCapture();
     }
 
+    static Window* GetFocus() {
+        return Window::GetObjectFromWindow(::GetFocus());
+    }
+
 protected:
 
     void StartTimer(unsigned uTime /*millisecond*/) { ::SetTimer(_hWnd, 1, uTime, NULL); }

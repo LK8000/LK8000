@@ -56,6 +56,7 @@ public:
     void SetCapture();
     void ReleaseCapture();
 
+    static Window* GetFocus();
 protected:
 
     void StartTimer(unsigned uTime /*millisecond*/) { }

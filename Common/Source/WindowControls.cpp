@@ -1675,7 +1675,7 @@ int WndForm::ShowModal(void) {
 
     mModalResult = 0;
 
-    Window* oldFocus = Window::GetObjectFromWindow(GetFocus());
+    Window* oldFocus = Window::GetFocus();
     FocusNext(NULL);
 
     EventLoop Loop;
