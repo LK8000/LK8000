@@ -52,7 +52,7 @@ static void RedrawSampleFont(void)
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontName"));
   if(wp) {
-    LK_tcsncpy(NewLogFont.lfFaceName,wp->GetDataField()->GetAsString(), LF_FACESIZE-1); 
+    LK_tcsncpy(NewLogFont.lfFaceName,wp->GetDataField()->GetAsString(), array_size(NewLogFont.lfFaceName));
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontHeight"));
   if(wp) {
@@ -105,19 +105,12 @@ static void RedrawSampleFont(void)
   NewFont.Create(&NewLogFont);
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontSample"));
-
   if(wp) {
-    if (GetObjectType(NewFont) == OBJ_FONT) {
       wp->SetFont(NewFont);
       wp->SetCaption(TEXT("<AbCdEfGh1234>"));
       wp->SetVisible(false);
       wp->SetVisible(true);
       wp->RefreshDisplay();
-    }
-    else {
-      wp->SetCaption(TEXT("Error Creating Font!"));
-      wp->RefreshDisplay();
-    }
   }
 }
 
@@ -306,7 +299,7 @@ void LoadGUI()
 
       bool bFound=false;
       for (i=0 ;i < MAX_ENUM ; i++ ) {
-        if (_tcsncmp(dfe->GetAsString(), NewLogFont.lfFaceName, LF_FACESIZE) == 0) {
+        if (_tcsncmp(dfe->GetAsString(), NewLogFont.lfFaceName, array_size(NewLogFont.lfFaceName)) == 0) {
           bFound=true;
           break;
         }
@@ -318,7 +311,7 @@ void LoadGUI()
           dfe->Dec();
         } // rewind
         for (i=0 ;i < MAX_ENUM ; i++ ) {
-          if (_tcsncmp(dfe->GetAsString(), NewLogFont.lfFaceName,LF_FACESIZE) == 0) {
+          if (_tcsncmp(dfe->GetAsString(), NewLogFont.lfFaceName,array_size(NewLogFont.lfFaceName)) == 0) {
             break;
           }
           dfe->Inc();
