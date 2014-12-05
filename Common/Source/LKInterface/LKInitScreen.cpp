@@ -19,7 +19,7 @@ void InitLKScreen() {
 
   int iWidth=0, iHeight=0;
 
-  #if (WINDOWSPC>0)
+#if (WINDOWSPC>0) || defined(__linux__)
   iWidth=SCREENWIDTH;
   iHeight=SCREENHEIGHT;
   #else
