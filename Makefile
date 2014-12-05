@@ -393,7 +393,9 @@ endif
 WINDOW := \
 	$(SRC_WINDOW)/WindowBase.cpp \
 	$(SRC_WINDOW)/WndMain.cpp \
-	\
+
+
+WIN32 := \
 	$(SRC_WINDOW)/Win32/Window.cpp \
 	$(SRC_WINDOW)/Win32/WndMainBase.cpp \
 	$(SRC_WINDOW)/Win32/WndProc.cpp \
@@ -402,6 +404,14 @@ WINDOW := \
 	$(SRC_WINDOW)/Win32/WndTextEdit.cpp \
 	$(SRC_WINDOW)/Win32/WndTextLabel.cpp \
 	$(SRC_WINDOW)/Win32/WndCtrlBase.cpp \
+	$(SRC)/CpuLoad.cpp \
+	$(SRC)/Memory.cpp \
+	$(SRC)/RotateScreen.cpp\
+
+
+ifneq ($(CONFIG_LINUX),y)
+WINDOW += $(WIN32)
+endif
 	
 SCREEN := \
 	$(SRC_SCREEN)/Color.cpp \
@@ -833,7 +843,6 @@ SRC_FILES :=\
 	$(SRC)/ChangeScreen.cpp\
 	$(SRC)/CommandLine.cpp \
 	$(SRC)/ConditionMonitor.cpp \
-	$(SRC)/CpuLoad.cpp \
 	$(SRC)/DataOptions.cpp \
 	$(SRC)/Dialogs.cpp\
 	$(SRC)/DLL.cpp \
@@ -876,7 +885,6 @@ SRC_FILES :=\
 	$(SHP)/mapshape.cpp \
 	$(SHP)/maptree.cpp\
 	$(SHP)/mapxbase.cpp \
-	$(SRC)/Memory.cpp \
 	$(SRC)/Message.cpp \
 	$(SRC)/MessageLog.cpp	\
 	$(SRC)/Models.cpp\
@@ -885,7 +893,6 @@ SRC_FILES :=\
 	$(SRC)/Polar.cpp		\
 	$(SRC)/ProcessTimer.cpp \
 	$(SRC)/Progress.cpp\
-	$(SRC)/RotateScreen.cpp\
 	$(SRC)/SaveLoadTask/ClearTask.cpp\
 	$(SRC)/SaveLoadTask/DefaultTask.cpp\
 	$(SRC)/SaveLoadTask/LoadNewTask.cpp\
