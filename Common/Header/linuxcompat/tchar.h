@@ -45,11 +45,11 @@ typedef char	_TCHAR;
 #define	_tprintf	printf
 #define _ftprintf	fprintf
 #define	_stprintf	sprintf
-#define	_sntprintf	_snprintf
+#define	_sntprintf	snprintf
 #define	_vtprintf	vprintf
 #define	_vftprintf	vfprintf
 #define _vstprintf	vsprintf
-#define	_vsntprintf	_vsnprintf
+#define	_vsntprintf	vsnprintf
 #define	_tscanf		scanf
 #define	_ftscanf	fscanf
 #define	_stscanf	sscanf
