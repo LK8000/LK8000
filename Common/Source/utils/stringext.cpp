@@ -9,6 +9,8 @@
 
 #include "stringext.h"
 #include <math.h>
+#include <string.h>
+#include <algorithm>
 #include "utf8/unchecked.h"
 
 #include "utils/heapcheck.h"
@@ -620,7 +622,6 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
 //______________________________________________________________________________
 
 #ifndef SYS_UTF8_CONV
-#include <windows.h>
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Iterator for constant size arrays (helper for utf8::utf16to8 etc).
 template <class ItemType> class array_back_insert_iterator
@@ -666,7 +667,6 @@ template <class ItemType> class array_back_insert_iterator
     array_back_insert_iterator<ItemType>& operator++ (int)
       { return *this; }
 }; // array_back_insert_iterator
-
 #endif
 
 //______________________________________________________________________________
@@ -675,33 +675,25 @@ template <class ItemType> class array_back_insert_iterator
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts ASCII string encoded in system code page into Unicode string.
 /// \return Unicode string length, -1 on conversion error
-int ascii2unicode(const char* ascii, wchar_t* unicode, int maxChars)
-{
-  int res = MultiByteToWideChar(CP_ACP, 0, ascii, -1, unicode, maxChars);
+int ascii2unicode(const char* ascii, wchar_t* unicode, int maxChars) {
+    // The conversion from ASCII to Unicode and vice versa are quite trivial. By design, the first 128 Unicode
+    // values are the same as ASCII (in fact, the first 256 are equal to ISO-8859-1).
 
-  if (res > 0)
-    return(res - 1);
-
-  // for safety reasons, return empty string
-  if (maxChars >= 1)
-    unicode[0] = 0;
-  return(-1);
+    wchar_t* end = std::copy_n(ascii, std::max(maxChars-1, (int)strlen(ascii)), unicode);
+    *end = L'\0';
+    return std::distance(unicode, end);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts Unicode string into ASCII encoded in system code page.
 /// \return ASCII string length, -1 on conversion error (insufficient buffer e.g.)
-int unicode2ascii(const wchar_t* unicode, char* ascii, int maxChars)
-{
-  int res = WideCharToMultiByte(CP_ACP, 0, unicode, -1, ascii, maxChars, NULL, NULL);
+int unicode2ascii(const wchar_t* unicode, char* ascii, int maxChars) {
+    // The conversion from ASCII to Unicode and vice versa are quite trivial. By design, the first 128 Unicode
+    // values are the same as ASCII (in fact, the first 256 are equal to ISO-8859-1).
 
-  if (res > 0)
-    return(res - 1);
-
-  // for safety reasons, return empty string
-  if (maxChars >= 1)
-    ascii[0] = '\0';
-  return(-1);
+    char* end = std::copy_n(unicode, std::max(maxChars-1, (int)wcslen(unicode)), ascii);
+    *end = '\0';
+    return std::distance(ascii, end);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

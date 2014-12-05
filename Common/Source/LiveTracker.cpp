@@ -319,12 +319,6 @@ static int DoTransactionToServer(char *txbuf, unsigned int txbuflen, char *rxbuf
   char recvbuf[BUFSIZ];
   unsigned char cdata;
 
-  #ifdef LT_DEBUG
-  TCHAR utxbuf[500];
-  ascii2unicode(txbuf,utxbuf,400);
-  StartupStore(TEXT("Livetracker send: %s%s"), utxbuf, NEWLINE);
-  #endif
-  
   s = EstablishConnection(_server_name, _server_port);
   if ( s==INVALID_SOCKET ) return -1;
 
