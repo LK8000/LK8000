@@ -9,12 +9,6 @@
 #include "externs.h"
 #include "STScreenBuffer.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -24,6 +18,7 @@ int CSTScreenBuffer::CorrectedWidth(int nWidth)
 	return ( ( nWidth + 3 ) / 4 ) * 4;
 }
 
+#ifdef WIN32
 struct DIBINFO : public BITMAPINFO
 {
 	RGBQUAD	 arColors[255];    // Color table info - adds an extra 255 entries to palette
@@ -32,37 +27,19 @@ struct DIBINFO : public BITMAPINFO
 	operator LPBITMAPINFOHEADER()    { return &bmiHeader;          }
 	RGBQUAD* ColorTable()            { return bmiColors;           }
 };
-
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CSTScreenBuffer
+CSTScreenBuffer::CSTScreenBuffer() : m_pBuffer(NULL), m_pBufferTmp(NULL) {
 
-CSTScreenBuffer::CSTScreenBuffer()
-	: memDc(NULL),
-	  m_pBuffer(NULL),
-	  m_pBufferTmp(NULL),
-	  m_hBitmap(NULL),
-	  m_pDC(NULL)
-{
-#if (WINDOWSPC>0) && TESTBENCH
-StartupStore(_T(".... Init CSTScreenBuffer\n"));
-#endif
 }
 
-CSTScreenBuffer::~CSTScreenBuffer()
-{
-	#if (WINDOWSPC>0) && TESTBENCH
-	StartupStore(_T(".... Deinit CSTScreenBuffer\n"));
-	#endif
-	ReleaseDC();
-
-	if (m_pBufferTmp) {
-	  free(m_pBufferTmp);
-	  m_pBufferTmp=NULL;
-	}
-	if (memDc) {
-	  DeleteDC(memDc); memDc = NULL;
-	}
+CSTScreenBuffer::~CSTScreenBuffer() {
+    if (m_pBufferTmp) {
+        free(m_pBufferTmp);
+        m_pBufferTmp = NULL;
+    }
 }
 
 BOOL CSTScreenBuffer::CreateBitmap(int nWidth, int nHeight)
@@ -70,12 +47,13 @@ BOOL CSTScreenBuffer::CreateBitmap(int nWidth, int nHeight)
   LKASSERT(nWidth>0);
   LKASSERT(nHeight>0);
   
-  m_hBitmap.Release();
+  m_Bitmap.Release();
   
   m_nCorrectedWidth = CorrectedWidth(nWidth);
   m_nWidth = nWidth;
   m_nHeight = nHeight;
-  
+
+#ifdef WIN32
   DIBINFO  dibInfo;
   
   dibInfo.bmiHeader.biBitCount = 24;
@@ -97,213 +75,41 @@ BOOL CSTScreenBuffer::CreateBitmap(int nWidth, int nHeight)
   HDC hDC = ::GetDC(NULL);
   LKASSERT(hDC);
   BGRColor **pBuffer = &m_pBuffer;
-  m_hBitmap = LKBitmap(CreateDIBSection(hDC, (const BITMAPINFO*)dibInfo, DIB_RGB_COLORS, (void**)pBuffer, NULL, 0));
+  m_Bitmap = LKBitmap(CreateDIBSection(hDC, (const BITMAPINFO*)dibInfo, DIB_RGB_COLORS, (void**)pBuffer, NULL, 0));
   ::ReleaseDC(NULL, hDC);
-  LKASSERT(m_hBitmap);
+  LKASSERT(m_Bitmap);
+#endif
+
   LKASSERT(m_pBuffer);
   
   m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*m_nHeight*m_nCorrectedWidth);
   LKASSERT(m_pBufferTmp);
-  
+
   return TRUE;
 }
 
-void CSTScreenBuffer::Create(int nWidth, int nHeight)
-{
-	LKASSERT(nWidth>0);
-	LKASSERT(nHeight>0);
+void CSTScreenBuffer::Create(int nWidth, int nHeight, LKColor clr) {
+    LKASSERT(nWidth > 0);
+    LKASSERT(nHeight > 0);
 
-	CreateBitmap(nWidth, nHeight);
+    CreateBitmap(nWidth, nHeight);
+    std::fill_n(m_pBuffer, m_nHeight*m_nCorrectedWidth, BGRColor(clr.Blue(), clr.Green(), clr.Red()));
 }
 
-void CSTScreenBuffer::Create(int nWidth, int nHeight, LKColor clr)
-{
-	LKASSERT(nWidth>0);
-	LKASSERT(nHeight>0);
-
-	CreateBitmap(nWidth, nHeight);
-
-	BGRColor bgrColor = BGRColor(clr.Blue(), clr.Green(), clr.Red());
-	int nPosition = 0;
-
-	for (int y=0; y<nHeight; y++) {
-		nPosition = m_nCorrectedWidth*y;
-		for (int x=0; x<nWidth; x++) {
-			m_pBuffer[nPosition] = bgrColor;
-			nPosition++;
-		}
-	}
-}
-
-void CSTScreenBuffer::Create(const LKBitmap& hBitmap) {
-    SIZE bmSize = hBitmap.GetSize();
-    CreateBitmap(bmSize.cx, bmSize.cy);
-
-    HDC targetDc;
-    memDc = CreateCompatibleDC(NULL);
-    targetDc = CreateCompatibleDC(NULL);
-
-    LKBitmap hOldBitmap1((HBITMAP)::SelectObject(memDc, hBitmap));
-    LKBitmap hOldBitmap2((HBITMAP)::SelectObject(targetDc, m_hBitmap));
-
-    BitBlt(targetDc, 0, 0, bmSize.cx, bmSize.cy, memDc, 0, 0, SRCCOPY);
-
-    ::SelectObject(memDc, hOldBitmap1);
-    ::SelectObject(targetDc, hOldBitmap2);
-    DeleteDC(memDc);
-    memDc = NULL;
-    DeleteDC(targetDc);
-}
-
-void CSTScreenBuffer::Create(HDC *pDC, RECT rect)
-{
-  LKASSERT(m_pDC);
-
-  CreateBitmap(rect.right-rect.left, rect.bottom-rect.top);
-  BitBlt(m_pDC, 0,0, rect.right-rect.left, rect.bottom-rect.top, 
-	 *pDC, rect.left, rect.top, SRCCOPY);
-}
-
-void CSTScreenBuffer::CreateRGB(void *pData, int nWidth, int nHeight)
-{
-  LKASSERT(pData);
-  LKASSERT(nWidth>0);
-  LKASSERT(nHeight>0);
-  
-  CreateBitmap(nWidth, nHeight);
-  
-  byte *pByteData = (byte*)pData;
-  int nPosition = 0;
-  int nDataPosition = 0;
-  
-  for (int y=0; y<nHeight; y++) {
-    nPosition = m_nCorrectedWidth*(m_nHeight-y-1);
-    nDataPosition = nWidth*3*y;
-    for (int x=0; x<nWidth; x++) {
-      m_pBuffer[nPosition].m_R = pByteData[nDataPosition++];
-      m_pBuffer[nPosition].m_G = pByteData[nDataPosition++];
-      m_pBuffer[nPosition].m_B = pByteData[nDataPosition++];
-      nPosition++;
+void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest) {
+    LKASSERT(m_Bitmap);
+    const unsigned cx = rcDest.right - rcDest.left;
+    const unsigned cy = rcDest.bottom - rcDest.top;
+    int cropsize;
+    if ((cy < m_nWidth) || ScreenLandscape) {
+        cropsize = m_nHeight * cx / cy;
+    } else {
+        // NOT TESTED!
+        cropsize = m_nWidth;
     }
-  }
+
+    Surface.DrawBitmapCopy(rcDest.left, rcDest.top, cx, cy, m_Bitmap, cropsize, m_nHeight);
 }
-
-BOOL CSTScreenBuffer::Draw(HDC* pDC, POINT ptDest)
-{
-  LKASSERT(m_hBitmap);
-  ReleaseDC();
-  
-  POINT Origin = {0,0};
-  
-  BOOL bResult = FALSE;
-  
-  if (!memDc) {
-    memDc = CreateCompatibleDC(*pDC);
-  }
-  if (!memDc) {
-    return FALSE;
-  }
-  
-  LKBitmap hOldBitmap((HBITMAP)::SelectObject(memDc, m_hBitmap));
-  bResult = BitBlt(*pDC, ptDest.x, ptDest.y, 
-		   m_nWidth, m_nHeight, 
-		   memDc, 
-		   Origin.x, Origin.y, SRCCOPY);
-  ::SelectObject(memDc, hOldBitmap);
-  //  DeleteDC(memDc); memDc = NULL;
-  
-  return bResult;
-}
-
-BOOL CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest)
-{
-  POINT ptDest;
-  unsigned int cx;
-  unsigned int cy;
-
-  ptDest.x = rcDest.left;
-  ptDest.y = rcDest.top;
-  cx = rcDest.right-rcDest.left;
-  cy = rcDest.bottom-rcDest.top;
-  return DrawStretch(Surface, ptDest, cx, cy);
-}
-
-
-BOOL CSTScreenBuffer::DrawStretch(LKSurface& Surface, const POINT& ptDest,
-                                  unsigned int cx, 
-                                  unsigned int cy)
-{
-  LKASSERT(m_hBitmap);
-  ReleaseDC();
-  
-  POINT Origin = {0,0};
-  
-  if (!memDc) {
-    memDc = CreateCompatibleDC(Surface.GetAttribDC());
-  }
-  if (!memDc) {
-    return FALSE;
-  }
-
-  LKBitmap hOldBitmap((HBITMAP)::SelectObject(memDc, m_hBitmap));
-
-  int cropsize;
-  if ((cy<m_nWidth)||ScreenLandscape) {
-    cropsize = m_nHeight*cx/cy;
-  } else {
-    // NOT TESTED!
-    cropsize = m_nWidth;
-  }
-  
-  LKSurface Tmp;
-  Tmp.Attach(memDc);
-  BOOL bResult = Surface.StretchCopy(ptDest.x, ptDest.y, cx, cy, Tmp,Origin.x, Origin.y, cropsize, m_nHeight);
-  Tmp.Detach();
-
-  ::SelectObject(memDc, hOldBitmap);
-  
-  return bResult;
-}
-
-#if 0 // Unused
-HBITMAP CSTScreenBuffer::CreateBitmapByRGBArray(void *pData, int nWidth, int nHeight)
-{
-  HBITMAP hResult = NULL;	
-  CSTScreenBuffer sb;
-  
-  sb.CreateRGB(pData, nWidth, nHeight);
-  hResult = sb.m_hBitmap;
-  
-  sb.m_hBitmap = NULL;
-  sb.m_pBuffer = NULL;
-  
-  return hResult;
-}
-#endif
-
-HDC CSTScreenBuffer::GetDC()
-{
-  if (m_pDC) return m_pDC;
-
-  m_pDC = CreateCompatibleDC(NULL);
-  if (!m_pDC) {
-    return NULL;
-  }
-  
-  m_hSaveBitmap = (HBITMAP)SelectObject(m_pDC,GetHBitmap());
-  return m_pDC;
-}
-
-void CSTScreenBuffer::ReleaseDC()
-{
-  if (m_pDC) {
-    SelectObject(m_pDC, m_hSaveBitmap);
-    DeleteDC(m_pDC);
-    m_pDC = NULL;
-  }
-}
-
-
 
 void CSTScreenBuffer::Zoom(unsigned int step) {
   BGRColor* src = m_pBuffer;
@@ -335,7 +141,6 @@ void CSTScreenBuffer::Zoom(unsigned int step) {
 	 rowsize*m_nHeight);
 
 }
-
 
 void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
 

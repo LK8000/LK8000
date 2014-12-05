@@ -42,76 +42,21 @@ public:
 
 	virtual ~CSTScreenBuffer();
 
-	// Creates buffer with the given size. 
-	void Create(int nWidth, int nHeight);
-
 	// Creates buffer with the given size and fills it with 
 	// the given color
 	void Create(int nWidth, int nHeight, LKColor clr);
 
-	// Creates buffer with the same width andheight as
-	// the given bitmap and that contains the same picture.
-	void Create(const LKBitmap& hBitmap);
-
-	// Creates buffer that will contain picture from the given
- 	// area of the given device context.
-	void Create(HDC *pDC, RECT rect);
-
-	// Creates buffer with the given size and uses the given
-	// array as a source of pixels color information. The given
-	// array should contain 3 bytes per pixel (RGB). To the array
-	// size should be 3*nWidth*nHeight
-	void CreateRGB(void *pData, int nWidth, int nHeight);
-
-	// Draws buffer into the given device context starting from
-	// the given point (top left corner)
-	BOOL Draw(HDC *pDC, POINT ptDest);
-
-	// Draws buffer into the given device context starting from
-	// the given point (top left corner)
-	BOOL DrawStretch(LKSurface& Surface, const POINT& ptDest, unsigned int cx,
-                         unsigned int cy);
-
-	HDC memDc;
-
-	// Draws buffer into given device context within rectangle
-	BOOL DrawStretch(LKSurface& Surface, const RECT& rcDest);
-
-	// Sets color of the given point
-	inline void SetPoint(int nX, int nY, byte R, byte G, byte B) {
-	  // m_pBuffer[m_nCorrectedWidth*(m_nHeight-nY-1)+nX] = BGRColor(R,G,B);
-	  m_pBuffer[m_nCorrectedWidth*(nY)+nX] = BGRColor(R,G,B);
-	}
-
-	inline void SetPoint(int i, byte R, byte G, byte B) {
-	  m_pBuffer[i] = BGRColor(R,G,B);
-	}
-
-	inline void SetPoint(int i, const BGRColor& c) {
-	  m_pBuffer[i] = c;
-	}
-        BGRColor *GetBuffer(void) {
-          return m_pBuffer;
-        }
+    BGRColor *GetBuffer(void) {
+        return m_pBuffer;
+    }
 
 	void HorizontalBlur(unsigned int boxw);
 	void VerticalBlur(unsigned int boxh);
 	void Zoom(unsigned int step);
 
-	// Returns color of the given point
-	inline BGRColor GetPoint(int nX, int nY) {
-	  //		return m_pBuffer[m_nCorrectedWidth*(m_nHeight-nY-1)+nX];
-	  return m_pBuffer[m_nCorrectedWidth*(nY)+nX];
-	}
-
-	// Returns array that contains points color information. Each
-	// point is represented by 3 bytes in Blue, Green, Red order.
-	// Array contains CorrectedWidth*Height elements (Note! not 
-	// Width*Height).
-	BGRColor *GetPointsArray() {
-		return m_pBuffer;
-	}
-
+	// Draws buffer into given device context within rectangle
+	void DrawStretch(LKSurface& Surface, const RECT& rcDest);
+	
 	// Returns real width of the screen buffer. It could be slightly more then
 	// requested width. This paramater is important only when you work with
 	// points array directly (using GetPointsArray function).
@@ -129,42 +74,24 @@ public:
 		return m_nHeight;
 	}
 
-	// Returns handle of the encapsulated bitmap.
-	HBITMAP GetHBitmap() {
-		return m_hBitmap;
-	}
 
-	// Returns screen buffer device context. After drawing this
-	// device context should be closed (call ReleaseDC method). 
-	HDC GetDC();
 
-	// Closes bitmap device context previously opened by GetDC function.
-	void ReleaseDC();
-
-public:
-#if 0 // Unused
-	// Creates bitmap with the given sizes and the given array of colors.
-	static HBITMAP CreateBitmapByRGBArray(void *pData, int nWidth, int nHeight);
-#endif
+protected:
 	// Returns minimum width that is greater then the given width and
 	// that is acceptable as image width (not all numbers are acceptable)
 	static int CorrectedWidth(int nWidth);
 
-protected:
 	// Creates internal bitmap and image buffer. Assignes width and
 	// height properties
 	BOOL CreateBitmap(int nWidth, int nHeight);
+
 
 	unsigned int m_nWidth;
 	unsigned int m_nHeight;
 	unsigned int m_nCorrectedWidth;
 	BGRColor *m_pBuffer;
 	BGRColor *m_pBufferTmp;
-	LKBitmap m_hBitmap;
-
-	// Members related to device context
-	HDC m_pDC;
-	HBITMAP m_hSaveBitmap;
+    LKBitmap m_Bitmap;
 };
 
 #endif // !defined(AFX_STSCREENBUFFER_H__22D62F5D_32E2_4785_B3D9_2341C11F84A3__INCLUDED_)

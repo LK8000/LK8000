@@ -127,6 +127,20 @@ void LKSurface::DrawMaskedBitmap(const int x, const int y, const int cx, const i
 #endif
 }
 
+void LKSurface::DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc) {
+#ifdef WIN32
+    HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
+
+    if (cxSrc != cx || cySrc != cy) {
+        ::StretchBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, cxSrc, cySrc, SRCCOPY);
+    } else {
+        ::BitBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, SRCCOPY);
+    }
+
+    ::SelectObject(GetTempDC(), old);
+#endif
+}
+
 void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc) {
 #ifdef WIN32
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);

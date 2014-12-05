@@ -101,6 +101,7 @@ public:
     void Whiteness(const int x, const int y, const int cx, const int cy);
 
     void DrawMaskedBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc);
+    void DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc);
     void DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc);
     void DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
 
