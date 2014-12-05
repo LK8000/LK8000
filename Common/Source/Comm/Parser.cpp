@@ -684,7 +684,8 @@ force_advance:
 		pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
 	}
   } // gpsvalid 091108
-    
+
+#ifdef WIN32
   // As soon as we get a fix for the first time, set the
   // system clock to the GPS time.
   static bool sysTimeInitialised = false;
@@ -712,6 +713,9 @@ force_advance:
 		}
 	}
   }
+#else
+#warning "Set system clock to the GPS time not implemented."
+#endif
 
   if(RMZAvailable) {
 	UpdateBaroSource(pGPS, BARO__RMZ, NULL,  RMZAltitude);
