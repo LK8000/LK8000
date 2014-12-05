@@ -1342,7 +1342,7 @@ goto_bearing:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-#if (WINDOWSPC<1)
+#ifdef UNDER_CE
 			value = PDABatteryPercent;
                 	if (value<1||value>100)
 				_stprintf(BufferValue,_T("---"));

@@ -87,6 +87,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 
   Surface.DrawMaskedBitmap( rc.right+IBLSCALE(offset-1), rc.bottom+IBLSCALE(-IconSize.cx-1), IBLSCALE(IconSize.cx),IBLSCALE(IconSize.cy),	BmpFlightMode, IconSize.cx, IconSize.cy);
 
+#ifdef WIN32
   //
   // Battery indicator
   // 
@@ -150,4 +151,5 @@ _drawbattery:
       offset-=5;
   }
     Surface.DrawMaskedBitmap(rc.right+IBLSCALE(offset-1), rc.bottom - BottomSize + NIBLSCALE(2), IBLSCALE(22),IBLSCALE(11),BmpBattery, 22, 11);
+#endif
 }
