@@ -8,7 +8,7 @@
  * 
  * Created on 23 octobre 2014, 20:28
  */
-#ifdef WIN32
+#ifdef USE_GDI
 #include <windows.h>
 #endif
 
@@ -18,62 +18,35 @@
 
 #include <utility>
 
-#ifndef WIN32
-#warning "TODO: need to implement"
-#endif
-
-#ifdef WIN32
+#ifdef USE_GDI
 
 const LKBrush LK_WHITE_BRUSH = LKBrush::MakeStock(WHITE_BRUSH);
 const LKBrush  LK_BLACK_BRUSH = LKBrush::MakeStock(BLACK_BRUSH);
 const LKBrush  LK_HOLLOW_BRUSH = LKBrush::MakeStock(HOLLOW_BRUSH);
 
-LKBrush::LKBrush(LKBrush&& Brush) : _Brush(Brush._Brush) {
-    Brush._Brush = nullptr;
+LKBrush::LKBrush(LKBrush&& Brush) {
+    brush = Brush.brush;
+    Brush.brush = nullptr;
 }
 
-LKBrush::LKBrush(const LKColor& Color) : _Brush() {
-    Create(Color);
-}
+#else
+#warning "TODO : ..."
+const LKBrush  LK_WHITE_BRUSH;
+const LKBrush  LK_BLACK_BRUSH;
+const LKBrush  LK_HOLLOW_BRUSH;
+
 #endif
 
+
 LKBrush::~LKBrush() {
-#ifdef WIN32    
-    if(_Brush) {
-        ::DeleteObject(_Brush);
-    }
-    _Brush = NULL;
-#endif    
+
 }
 
 LKBrush& LKBrush::operator= (LKBrush&& Brush) {
-#ifdef WIN32
-    std::swap(_Brush, Brush._Brush);
+#ifdef USE_GDI
+    std::swap(brush, Brush.brush);
+#else
+    std::swap(color, Brush.color);
 #endif    
     return *this;
-}
-
-void LKBrush::Create(const LKColor& Color) {
-    Release();
-
-#ifdef WIN32
-    _Brush = CreateSolidBrush(Color);
-#endif
-}
-
-void LKBrush::Create(const LKBitmap& Bitmap) {
-    Release();
-
-#ifdef WIN32
-    _Brush = CreatePatternBrush(Bitmap);
-#endif
-}
-
-void LKBrush::Release() {
-#ifdef WIN32
-    if(_Brush) {
-        ::DeleteObject(_Brush);
-    }
-    _Brush = NULL;
-#endif
 }

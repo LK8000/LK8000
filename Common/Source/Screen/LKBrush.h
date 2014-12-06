@@ -11,39 +11,45 @@
 
 #ifndef LKBRUSH_H
 #define	LKBRUSH_H
+
+#include "Brush.hpp"
+
 class LKColor;
 class LKBitmap;
 
 
-class LKBrush {
+class LKBrush : public Brush {
 public:
     LKBrush(LKBrush&& Brush); // tranfert ownership
     LKBrush& operator= (LKBrush&& Brush); // tranfert ownership
 
-    explicit LKBrush(const LKColor& Color);
+    explicit LKBrush(const LKColor& Color) : Brush(Color) { }
     
     virtual ~LKBrush();
     
-    void Create(const LKColor& Color);
-    void Create(const LKBitmap& Bitmap);
-
-    void Release();
+    void Create(const LKColor& Color) { Set(Color); }
+#ifdef HAVE_HATCHED_BRUSH
+    void Create(const LKBitmap& Bitmap) { Set(Bitmap); }
+#endif
+    void Release() { Reset(); }
     
     operator bool() const;
     
-#ifdef WIN32
+#ifdef USE_GDI
 public:
-    LKBrush():_Brush() {}
-    explicit LKBrush(HBRUSH Brush) : _Brush(Brush) {}
+    LKBrush(): Brush() {}
+    explicit LKBrush(HBRUSH Brush) {
+        brush = Brush;
+    }
 
     static LKBrush MakeStock(int fnObject) {
       return LKBrush((HBRUSH)GetStockObject(fnObject));
     }
 
-    operator HBRUSH() const { return _Brush; }
+    operator HBRUSH() const { return brush; }
 
 protected:
-    HBRUSH _Brush;
+//    HBRUSH _Brush;
 #else
     LKBrush() {}
     operator const LKBrush*() const { return this; }
@@ -52,9 +58,7 @@ protected:
 
 };
 
-#ifdef WIN32
-inline LKBrush::operator bool() const { return (_Brush != NULL); }
-#endif
+inline LKBrush::operator bool() const { return IsDefined(); }
 
 extern const LKBrush  LK_WHITE_BRUSH;
 extern const LKBrush  LK_BLACK_BRUSH;

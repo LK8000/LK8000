@@ -9,10 +9,15 @@
   typedef enum 
   {
     asp_fill_border_only        = 0,  // airspace drawing using no filling
+#ifdef HAVE_HATCHED_BRUSH
     asp_fill_patterns_full      = 1,  // airspace drawing using patterns
     asp_fill_patterns_borders   = 2,  // airspace drawing using patterns, borders
     asp_fill_ablend_full        = 3,  // airspace drawing using alpha blend 
     asp_fill_ablend_borders     = 4,  // airspace drawing using alpha blend, borders
+#else
+    asp_fill_ablend_full        = 1,  // airspace drawing using alpha blend
+    asp_fill_ablend_borders     = 2,  // airspace drawing using alpha blend, borders
+#endif
   } EAirspaceFillType;
   
   // set airspace drawing type

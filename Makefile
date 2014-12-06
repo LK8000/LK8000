@@ -215,6 +215,7 @@ CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
 #WIN32_RESSOURCE := y 
 endif
 CE_DEFS += -DUSE_GDI
+#CE_DEFS += -DHAVE_HATCHED_BRUSH
 endif
 
 ifeq ($(WIN32_RESSOURCE), y)
@@ -396,6 +397,7 @@ WINDOW := \
 
 
 WIN32 := \
+	$(SRC_SCREEN)/GDI/Brush.cpp \
 	$(SRC_WINDOW)/Win32/Window.cpp \
 	$(SRC_WINDOW)/Win32/WndMainBase.cpp \
 	$(SRC_WINDOW)/Win32/WndProc.cpp \

@@ -384,15 +384,20 @@ class MapWindow {
   static const LKColor& GetAirspaceColour(int i) {
     return Colours[i];
   }
+
+#ifdef HAVE_HATCHED_BRUSH
   static const LKBrush& GetAirspaceBrush(int i) {
     return hAirspaceBrushes[i];
-  }
-  static const LKColor& GetAirspaceColourByClass(int i) {
-    return Colours[iAirspaceColour[i]];
   }
   static const LKBrush& GetAirspaceBrushByClass(int i) {
     return hAirspaceBrushes[iAirspaceBrush[i]];
   }
+#endif
+
+  static const LKColor& GetAirspaceColourByClass(int i) {
+    return Colours[iAirspaceColour[i]];
+  }
+
 
   // initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
   static void InitAirSpaceSldBrushes(const LKColor colours[]);
@@ -414,7 +419,11 @@ class MapWindow {
   static LKPen hAirspaceBorderPen;
   static LKPen hSnailPens[NUMSNAILCOLORS];
   static LKColor hSnailColours[NUMSNAILCOLORS];
+
+#ifdef HAVE_HATCHED_BRUSH
   static LKBrush hAirspaceBrushes[NUMAIRSPACEBRUSHES];
+#endif
+
   // solid brushes for airspace drawing (initialized in InitAirSpaceSldBrushes())
   static LKBrush hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
  

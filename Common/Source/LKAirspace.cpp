@@ -118,9 +118,11 @@ const LKColor& CAirspaceBase::TypeColor(void) const {
     return MapWindow::GetAirspaceColourByClass(_type);
 }
 
+#ifdef HAVE_HATCHED_BRUSH
 const LKBrush& CAirspaceBase::TypeBrush(void) const {
     return MapWindow::GetAirspaceBrushByClass(_type);
 }
+#endif
 
 void CAirspaceBase::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const {
     double base_out = _base.Altitude;
@@ -3064,11 +3066,18 @@ void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
         const auto oldColor = Surface.SetTextColor(TypeColor());
         
         const auto oldPen = Surface.SelectObject(FramePen);
+        
+#ifdef HAVE_HATCHED_BRUSH 
         const auto oldBrush = Surface.SelectObject(Enabled() ? TypeBrush() : LKBrush_Hollow);
+#else
+#warning "TODO : maybe we need solid brush or that !"
+#endif
 
         Surface.Polygon(ptOut, Length);
 
+#ifdef HAVE_HATCHED_BRUSH 
         Surface.SelectObject(oldBrush);
+#endif
         Surface.SelectObject(oldPen);
         Surface.SetTextColor(oldColor);
     }

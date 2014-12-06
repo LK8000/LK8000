@@ -27,7 +27,7 @@ void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
   hdcTempAsp.SelectObject(LKBrush_White);
 
   hdcTempAsp.FillRect(&rc, LKBrush_White);
-
+#ifdef HAVE_HATCHED_BRUSH
   if (GetAirSpaceFillType() == asp_fill_patterns_borders) {
     hdcbuffer.FillRect(&rc, LKBrush_White);
     hdcbuffer.SelectObject(LK_NULL_PEN);
@@ -36,6 +36,7 @@ void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
     hdcMask.SelectObject(hAirspaceBorderPen);
     hdcMask.SelectObject(LKBrush_Hollow);
   }
+#endif
 }
 
 
@@ -48,15 +49,20 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
   int airspace_type;
   bool found = false;
-  bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
-  bool outlined_only=(GetAirSpaceFillType()==asp_fill_border_only);
+#ifdef HAVE_HATCHED_BRUSH
+  const bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
+#else
+  const bool borders_only = false;
+#endif
+  const bool outlined_only=(GetAirSpaceFillType()==asp_fill_border_only);
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
   
   int nDC1 = hdcbuffer.SaveState();
   int nDC2 = hdcMask.SaveState();
   int nDC3 = hdcTempAsp.SaveState();
-  
+
+#ifdef HAVE_HATCHED_BRUSH    
   if (GetAirSpaceFillType() != asp_fill_border_only) {
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
@@ -98,8 +104,8 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
     }
     }
   }
+#endif
   // draw it again, just the outlines
-
   if (found) {
     if (borders_only) {
         hdcbuffer.SetTextColor(RGB_BLACK);

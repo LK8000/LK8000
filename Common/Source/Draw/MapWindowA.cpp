@@ -21,8 +21,11 @@ using std::placeholders::_1;
 
 // airspace drawing type
 //static 
+#ifdef HAVE_HATCHED_BRUSH
 MapWindow::EAirspaceFillType MapWindow::AirspaceFillType = MapWindow::asp_fill_patterns_full;
-
+#else
+MapWindow::EAirspaceFillType MapWindow::AirspaceFillType = MapWindow::asp_fill_ablend_borders;
+#endif
 // alpha blended airspace opacity (0..100)
 //static 
 BYTE MapWindow::AirspaceOpacity = 30;

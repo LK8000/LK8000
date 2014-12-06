@@ -1674,15 +1674,17 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFillType"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// TODOasp: transl 
-    dfe->addEnumText(gettext(TEXT("_@M941_")));
-    dfe->addEnumText(gettext(TEXT("_@M942_")));
-    dfe->addEnumText(gettext(TEXT("_@M945_")));
-    if (LKSurface::AlphaBlendSupported()) {
-      dfe->addEnumText(gettext(TEXT("_@M943_")));
-      dfe->addEnumText(gettext(TEXT("_@M946_")));
+    DataFieldEnum* dfe = (DataFieldEnum*)wp->GetDataField();
+    if(dfe) {
+        dfe->addEnumText(gettext(TEXT("_@M941_")));
+#ifdef HAVE_HATCHED_BRUSH
+        dfe->addEnumText(gettext(TEXT("_@M942_")));
+        dfe->addEnumText(gettext(TEXT("_@M945_")));
+#endif
+        if (LKSurface::AlphaBlendSupported()) {
+            dfe->addEnumText(gettext(TEXT("_@M943_")));
+            dfe->addEnumText(gettext(TEXT("_@M946_")));
+        }
     }
     dfe->Set((int)MapWindow::GetAirSpaceFillType());
     wp->RefreshDisplay();

@@ -80,8 +80,11 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         }
         
         hDCTempTask.SelectObject(LK_NULL_PEN);
+#ifdef HAVE_HATCHED_BRUSH          
         hDCTempTask.SelectObject(hAirspaceBrushes[iAirspaceBrush[AATASK]]);
-
+#else
+#warning "TODO : maybe we need solid brush or that !"
+#endif  
         // this color is used as the black bit
         hDCTempTask.SetTextColor(Colours[iAirspaceColour[AATASK]]);
         // this color is the transparent bit

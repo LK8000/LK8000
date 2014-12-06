@@ -81,6 +81,16 @@ HDC LKSurface::Detach() {
     _OutputDC = NULL;
     return hDC;
 }
+#else
+
+LKSurface::LKSurface() {
+    
+}
+
+void LKSurface::Release() {
+
+}
+
 #endif
 
 LKSurface::~LKSurface() {

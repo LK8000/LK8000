@@ -94,8 +94,11 @@ void LKProfileResetDefault(void) {
   for(i=0;i<AIRSPACECLASSCOUNT;i++) {
 	MapWindow::iAirspaceMode[i] = 3; // Display + Warning
   } 
-
+#ifdef HAVE_HATCHED_BRUSH
   MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_full);
+#else
+  MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_ablend_borders);
+#endif
   MapWindow::SetAirSpaceOpacity(30);
 
   TrailActive_Config = 1; // long

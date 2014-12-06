@@ -34,6 +34,9 @@ LKPen::LKPen(enumType Type, unsigned Size, const LKColor& Color) : _Pen() {
 }
 
 #else
+const LKPen LK_NULL_PEN;
+const LKPen LK_BLACK_PEN;
+const LKPen LK_WHITE_PEN;
 
 LKPen::LKPen(){
 }

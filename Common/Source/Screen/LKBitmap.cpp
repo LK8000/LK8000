@@ -33,6 +33,10 @@ LKBitmap::LKBitmap(LKBitmap&& Bitmap) : _Bitmap(Bitmap._Bitmap), _Destroy(Bitmap
     Bitmap._Bitmap = nullptr;
     Bitmap._Destroy = false;
 }
+#else
+LKBitmap::LKBitmap() {
+    
+}
 #endif
 
 LKBitmap::~LKBitmap() {

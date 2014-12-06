@@ -178,7 +178,11 @@ int i,j;
 	double fFrameColFact;
 	if(Sideview_pHandeled[iSizeIdx].bEnabled)
 	{
+#ifdef HAVE_HATCHED_BRUSH          
 	  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
+#else
+#warning "TODO : maybe we need solid brush or that !"
+#endif
 	  Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(type));
 	  fFrameColFact = 0.8;
       FrameColor =  MapWindow::GetAirspaceColourByClass(type);

@@ -40,7 +40,11 @@ _doit:
 
   hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
   hdcTempTerrainAbove.SetTextColor(graycolor);
+#ifdef HAVE_HATCHED_BRUSH 
   hdcTempTerrainAbove.SelectObject(hAboveTerrainBrush); // hAirspaceBrushes[3] or 6
+#else
+#warning "TODO : maybe we need solid brush or that !"
+#endif
   hdcTempTerrainAbove.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
 
   hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);

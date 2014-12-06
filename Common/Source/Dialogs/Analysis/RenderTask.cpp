@@ -162,7 +162,11 @@ double fXY_Scale = 1.5;
 		  x2 = (lon2-lon_c)*fastcosine(lat2);
 		  y2 = (lat2-lat_c);
 
+#ifdef HAVE_HATCHED_BRUSH 
 		  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(AATASK));
+#else
+#warning "TODO : maybe we need solid brush or that !"
+#endif
 		  Surface.SelectObject(LK_WHITE_PEN);
 		  if (Task[i].AATType == SECTOR)
 		  {
