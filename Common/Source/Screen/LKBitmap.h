@@ -27,12 +27,12 @@ class LKBitmap {
 public:
 	LKBitmap();
 	LKBitmap(LKBitmap&& orig);
-	LKBitmap(const LKBitmap& orig);
+	LKBitmap(const LKBitmap& orig) = delete;
 
 	virtual ~LKBitmap();
 
 	LKBitmap& operator=(LKBitmap&& );
-	LKBitmap& operator=(const LKBitmap& Bitmap);
+	LKBitmap& operator=(const LKBitmap& Bitmap) = delete;
 
 	void Release();
 
@@ -44,14 +44,13 @@ public:
 #ifdef WIN32
 public:
 
-	explicit LKBitmap(HBITMAP Bitmap) : _Bitmap(Bitmap), _Destroy(false) { }
+	explicit LKBitmap(HBITMAP Bitmap) : _Bitmap(Bitmap) { }
 
 	operator HBITMAP() const { return _Bitmap; }
 	operator bool() const { return (_Bitmap != NULL); }
 
 protected:
 	HBITMAP _Bitmap;
-	bool _Destroy;
 #else
     operator bool() const { return false; }
 #endif

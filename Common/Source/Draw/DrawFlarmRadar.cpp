@@ -1309,7 +1309,7 @@ if(bSideview)
   Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom+5);
 }
 
-  LKBitmap bmpTemp;
+  const LKBitmap* pBmpTemp = NULL;
 
   /********************************************************
    * draw trace icon
@@ -1317,13 +1317,12 @@ if(bSideview)
   switch(bTrace)
   {
     default:
-    case 0:  bmpTemp = hNoTrace; break; //  no trace
-    case 1:  bmpTemp = hFullTrace; break; //  climb/sink trace
-    case 2:  bmpTemp = hClimbTrace; break; //  climb trace
+    case 0:  pBmpTemp = &hNoTrace; break; //  no trace
+    case 1:  pBmpTemp = &hFullTrace; break; //  climb/sink trace
+    case 2:  pBmpTemp = &hClimbTrace; break; //  climb trace
   }
-  if(bmpTemp) {
-    Surface.DrawMaskedBitmap(rci.left+NIBLSCALE(5),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), bmpTemp, 22, 22);
-    bmpTemp.Release();
+  if(pBmpTemp) {
+    Surface.DrawMaskedBitmap(rci.left+NIBLSCALE(5),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), *pBmpTemp, 22, 22);
   }
           
 
@@ -1333,13 +1332,12 @@ if(bSideview)
   switch(iFlarmDirection)
   {
     default:
-    case 0:  bmpTemp = hHeadUp ; break; //     "Head Up"
-    case 1:  bmpTemp = hNorthUp; break; //      Head Right"
-    case 2:  bmpTemp = hHeadRight ; break; //     "Head Up"
+    case 0:  pBmpTemp = &hHeadUp ; break; //     "Head Up"
+    case 1:  pBmpTemp = &hNorthUp; break; //      Head Right"
+    case 2:  pBmpTemp = &hHeadRight ; break; //     "Head Up"
   }
-  if(bmpTemp) {
-    Surface.DrawMaskedBitmap(rci.left+NIBLSCALE(27),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), bmpTemp, 22, 22);
-    bmpTemp.Release();
+  if(pBmpTemp) {
+    Surface.DrawMaskedBitmap(rci.left+NIBLSCALE(27),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), *pBmpTemp, 22, 22);
   }
 
   if(bHeightScale)

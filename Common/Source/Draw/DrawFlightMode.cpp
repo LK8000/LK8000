@@ -35,58 +35,57 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   //
   // Flight mode Icon
   //
-  LKBitmap BmpFlightMode;
+  const LKBitmap* pBmpFlightMode = NULL;
 
   if (IsMultiMapNoMain()) {
 	short i=Get_Current_Multimap_Type()-1;
 	switch(i) {
 		case 1:
-			BmpFlightMode = hMM1;
+			pBmpFlightMode = &hMM1;
 			break;
 		case 2:
-			BmpFlightMode = hMM2;
+			pBmpFlightMode = &hMM2;
 			break;
 		case 3:
-			BmpFlightMode = hMM3;
+			pBmpFlightMode = &hMM3;
 			break;
 		case 4:
-			BmpFlightMode = hMM4;
+			pBmpFlightMode = &hMM4;
 			break;
 		case 5:
-			BmpFlightMode = hMM5;
+			pBmpFlightMode = &hMM5;
 			break;
 		case 6:
-			BmpFlightMode = hMM6;
+			pBmpFlightMode = &hMM6;
 			break;
 		case 7:
-			BmpFlightMode = hMM7;
+			pBmpFlightMode = &hMM7;
 			break;
 		case 8:
-			BmpFlightMode = hMM8;
+			pBmpFlightMode = &hMM8;
 			break;
 		default:
-			BmpFlightMode = hMM0;
+			pBmpFlightMode = &hMM0;
 			break;
 	}
   } else {
     if (mode.Is(Mode::MODE_CIRCLING)) {
-      BmpFlightMode = hClimb;
+      pBmpFlightMode = &hClimb;
     } else {
       if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
-          BmpFlightMode = hFinalGlide;
+          pBmpFlightMode = &hFinalGlide;
       } else {
-          BmpFlightMode = hCruise;
+          pBmpFlightMode = &hCruise;
       }
     }
   }
+  if(pBmpFlightMode) {
+    SIZE IconSize = pBmpFlightMode->GetSize();
+    IconSize.cx /= 2;
+    offset -= IconSize.cy;
 
-  SIZE IconSize = BmpFlightMode.GetSize();
-  IconSize.cx /= 2;
-
-  offset -= IconSize.cy;
-
-  Surface.DrawMaskedBitmap( rc.right+IBLSCALE(offset-1), rc.bottom+IBLSCALE(-IconSize.cx-1), IBLSCALE(IconSize.cx),IBLSCALE(IconSize.cy),	BmpFlightMode, IconSize.cx, IconSize.cy);
-
+    Surface.DrawMaskedBitmap( rc.right+IBLSCALE(offset-1), rc.bottom+IBLSCALE(-IconSize.cx-1), IBLSCALE(IconSize.cx),IBLSCALE(IconSize.cy),	*pBmpFlightMode, IconSize.cx, IconSize.cy);
+  }
 #ifdef WIN32
   //
   // Battery indicator
@@ -97,59 +96,61 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   if (SIMMODE && !(QUICKDRAW)) {; PDABatteryPercent-=1; if (PDABatteryPercent<0) PDABatteryPercent=100; }
   #endif
 
-  LKBitmap BmpBattery;
+  const LKBitmap* pBmpBattery = NULL;
   if ((PDABatteryPercent==0 || PDABatteryPercent>100) && PDABatteryStatus==AC_LINE_ONLINE && PDABatteryFlag!=BATTERY_FLAG_CHARGING) {
-	BmpBattery = hBatteryFullC;
+	pBmpBattery = &hBatteryFullC;
 	goto _drawbattery;
   }
 
   if (PDABatteryPercent<=6) {
 	if (flip) return;
-	BmpBattery = hBattery12;
+	pBmpBattery = &hBattery12;
 	goto _drawbattery;
   }
 
   if (PDABatteryPercent<=12) {
-	BmpBattery = hBattery12;
+	pBmpBattery = &hBattery12;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=24) {
-	BmpBattery = hBattery24;
+	pBmpBattery = &hBattery24;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=36) {
-	BmpBattery = hBattery36;
+	pBmpBattery = &hBattery36;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=48) {
-	BmpBattery = hBattery48;
+	pBmpBattery = &hBattery48;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=60) {
-	BmpBattery = hBattery60;
+	pBmpBattery = &hBattery60;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=72) {
-	BmpBattery = hBattery72;
+	pBmpBattery = &hBattery72;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=84) {
-	BmpBattery = hBattery84;
+	pBmpBattery = &hBattery84;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=96) {
-	BmpBattery = hBattery96;
+	pBmpBattery = &hBattery96;
 	goto _drawbattery;
   }
   if (PDABatteryStatus==AC_LINE_ONLINE)
-	BmpBattery = hBatteryFullC;
+	pBmpBattery = &hBatteryFullC;
   else
-	BmpBattery = hBatteryFull;
+	pBmpBattery = &hBatteryFull;
 
 _drawbattery:
   if (!DisableAutoLogger || LoggerActive) {
       offset-=5;
   }
-    Surface.DrawMaskedBitmap(rc.right+IBLSCALE(offset-1), rc.bottom - BottomSize + NIBLSCALE(2), IBLSCALE(22),IBLSCALE(11),BmpBattery, 22, 11);
+    if(pBmpBattery) {
+        Surface.DrawMaskedBitmap(rc.right+IBLSCALE(offset-1), rc.bottom - BottomSize + NIBLSCALE(2), IBLSCALE(22),IBLSCALE(11),*pBmpBattery, 22, 11);
+    }
 #endif
 }

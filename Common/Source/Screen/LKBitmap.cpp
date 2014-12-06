@@ -22,16 +22,11 @@
 extern HINSTANCE _hInstance;
 
 
-LKBitmap::LKBitmap() : _Bitmap(), _Destroy() {
+LKBitmap::LKBitmap() : _Bitmap() {
 }
 
-LKBitmap::LKBitmap(const LKBitmap& Bitmap) : _Bitmap(), _Destroy() {
-    *this = Bitmap;
-}
-
-LKBitmap::LKBitmap(LKBitmap&& Bitmap) : _Bitmap(Bitmap._Bitmap), _Destroy(Bitmap._Destroy) {
+LKBitmap::LKBitmap(LKBitmap&& Bitmap) : _Bitmap(Bitmap._Bitmap) {
     Bitmap._Bitmap = nullptr;
-    Bitmap._Destroy = false;
 }
 #else
 LKBitmap::LKBitmap() {
@@ -43,19 +38,9 @@ LKBitmap::~LKBitmap() {
     Release();
 }
 
-LKBitmap& LKBitmap::operator=(const LKBitmap& Bitmap) {
-    Release();
-#ifdef WIN32
-    _Bitmap = (HBITMAP) Bitmap;
-    _Destroy = false; // don't take ownership
-#endif
-    return * this;
-}
-
 LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
 #ifdef WIN32
     std::swap(_Bitmap, Bitmap._Bitmap);
-    std::swap(_Destroy, Bitmap._Destroy);
 #endif
     
     return * this;
@@ -63,7 +48,7 @@ LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
 
 void LKBitmap::Release() {
 #ifdef WIN32
-    if (_Destroy && _Bitmap) {
+    if (_Bitmap) {
         ::DeleteObject(_Bitmap);
     }
     _Bitmap = NULL;
@@ -79,7 +64,6 @@ bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
     _Bitmap = (HBITMAP) LoadImage(GetModuleHandle(NULL), FilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 #endif
     if (_Bitmap) {
-        _Destroy = true;
         return true;
     }
 #endif
@@ -91,7 +75,6 @@ bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
 #ifdef WIN32
     _Bitmap = LoadBitmap(_hInstance, ResourceName);
     if (_Bitmap) {
-        _Destroy = true;
         return true;
     }
 #endif

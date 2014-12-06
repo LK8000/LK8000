@@ -180,12 +180,12 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     }
     else
     {
-        LKBitmap WptBmp;
+        const LKBitmap* pWptBmp = NULL;
         if (WayPointCalc[i].IsAirport) {
             if (WayPointList[i].Reachable == FALSE)	{
-                WptBmp = hBmpAirportUnReachable;
+                pWptBmp = &hBmpAirportUnReachable;
             } else {
-                WptBmp = hBmpAirportReachable;
+                pWptBmp = &hBmpAirportReachable;
                 if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) {
                     arrivalcutoff = (int)(WayPointList[i].AltArivalAGL);
                     bestwp=i; foundairport++;
@@ -195,9 +195,9 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
             if ( WayPointCalc[i].IsOutlanding ) {
                 // outlanding
                 if (WayPointList[i].Reachable == FALSE)
-                    WptBmp = hBmpFieldUnReachable;
+                    pWptBmp = &hBmpFieldUnReachable;
                 else {
-                    WptBmp = hBmpFieldReachable;
+                    pWptBmp = &hBmpFieldReachable;
                     // get the outlanding as bestwp only if no other choice
                     if (foundairport == 0) {
                         // do not set arrivalcutoff: any next reachable airport is better than an outlanding
@@ -209,7 +209,9 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
             }
         }
 
-        Surface.DrawMaskedBitmap(WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, WptBmp, 20, 20);
+        if(pWptBmp) {
+            Surface.DrawMaskedBitmap(WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, *pWptBmp, 20, 20);
+        }
     }
   } // for all waypoints
 
@@ -528,7 +530,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     // draws if they are in task unconditionally,
     // otherwise, does comparison
     if ( E->inTask || (E->isLandable && !E->isExcluded) ) { 
-    LKBitmap WptBmp;
+    const LKBitmap* pWptBmp = NULL;
 
 	TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), false);
 
@@ -538,16 +540,18 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     // If we are at low zoom, use a dot for icons, so we dont clutter the screen
     if(MapWindow::zoom.RealScale() > 1) {
 	if (BlackScreen) 
- 		 WptBmp = hInvSmall;
+ 		pWptBmp = &hInvSmall;
 	else
- 		 WptBmp = hSmall;
+ 		pWptBmp = &hSmall;
     } else {
 	if (BlackScreen)
-		WptBmp = hInvTurnPoint;
+		pWptBmp = &hInvTurnPoint;
 	else
-		WptBmp = hTurnPoint;
+		pWptBmp = &hTurnPoint;
     }
-    Surface.DrawMaskedBitmap(E->Pos.x-10,E->Pos.y-10,20,20,WptBmp,20,20);
+    if(pWptBmp) {
+        Surface.DrawMaskedBitmap(E->Pos.x-10,E->Pos.y-10,20,20,*pWptBmp,20,20);
+    }
     } // wp in task
   } // for all waypoint, searching for those in task
 
@@ -557,16 +561,16 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
-      LKBitmap WptBmp;
+      const LKBitmap* pWptBmp = NULL;
 
       if ( TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), true) == true) {
 
 	// If we are at low zoom, use a dot for icons, so we dont clutter the screen
 	if(MapWindow::zoom.RealScale() > 4) {
 		if (BlackScreen) 
-	 		 WptBmp = hInvSmall;
+	 		pWptBmp = &hInvSmall;
 		else
-	 		 WptBmp = hSmall;
+	 		pWptBmp = &hSmall;
 	} else {
 		// We switch all styles in the correct order, to force a jump table by the compiler
 		// It would be much better to use an array of bitmaps, but no time to do it for 3.0
@@ -584,51 +588,51 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 				break;
 
 			case STYLE_MTPASS:
-				WptBmp = hMountpass;
+				pWptBmp = &hMountpass;
 				break;
 
 			case STYLE_MTTOP:
-				WptBmp = hMountop;
+				pWptBmp = &hMountop;
 				break;
 
 			case STYLE_SENDER:
-				WptBmp = hSender;
+				pWptBmp = &hSender;
 				break;
 
 			case STYLE_VOR:
-				WptBmp= hVor;
+				pWptBmp= &hVor;
 				break;
 
 			case STYLE_NDB:
-				WptBmp = hNdb;
+				pWptBmp = &hNdb;
 				break;
 
 			case STYLE_COOLTOWER:
-				WptBmp = hCoolTower;
+				pWptBmp = &hCoolTower;
 				break;
 
 			case STYLE_DAM:
-				WptBmp = hDam;
+				pWptBmp = &hDam;
 				break;
 
 			case STYLE_TUNNEL:
-				WptBmp = hTunnel;
+				pWptBmp = &hTunnel;
 				break;
 
 			case STYLE_BRIDGE:
-				WptBmp = hBridge;
+				pWptBmp = &hBridge;
 				break;
 
 			case STYLE_POWERPLANT:
-				WptBmp = hPowerPlant;
+				pWptBmp = &hPowerPlant;
 				break;
 
 			case STYLE_CASTLE:
-				WptBmp = hCastle;
+				pWptBmp = &hCastle;
 				break;
 
 			case STYLE_INTERSECTION:
-				WptBmp = hIntersect;
+				pWptBmp = &hIntersect;
 				break;
 
 			case STYLE_TRAFFIC:
@@ -636,22 +640,22 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 				break;
 			case STYLE_THERMAL:
                 if(E->AltArivalAGL>0) {
-                    WptBmp = hLKThermal;
+                    pWptBmp = &hLKThermal;
                 } else {
-                    WptBmp = hLKThermalRed;
+                    pWptBmp = &hLKThermalRed;
                 }
 				break;
 
 			case STYLE_MARKER:
-				WptBmp = hBmpMarker;
+				pWptBmp = &hBmpMarker;
 				break;
 
 			default:
 turnpoint:
 				if (BlackScreen)
-					WptBmp = hInvTurnPoint;
+					pWptBmp = &hInvTurnPoint;
 				else
-					WptBmp = hTurnPoint;
+					pWptBmp = &hTurnPoint;
 				break;
 
 		} // switch estyle
@@ -659,7 +663,9 @@ turnpoint:
 
 	// We dont do stretching here. We are using different bitmaps for hi res.
 	// The 20x20 size is large enough to make much bigger icons than the old ones.
-        Surface.DrawMaskedBitmap(E->Pos.x - 10, E->Pos.y - 10, 20, 20, WptBmp, 20, 20);
+    if(pWptBmp) {
+        Surface.DrawMaskedBitmap(E->Pos.x - 10, E->Pos.y - 10, 20, 20, *pWptBmp, 20, 20);
+    }
       }
     }
   }
@@ -692,7 +698,7 @@ void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
 
 void MapWindow::DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp)
 {
-    LKBitmap WptBmp;
+    const LKBitmap* pWptBmp = NULL;
     
 switch(wp->Style) {
 	case STYLE_NORMAL:
@@ -708,70 +714,70 @@ switch(wp->Style) {
 		break;
 
 	case STYLE_MTPASS:
-		WptBmp = hMountpass;
+		pWptBmp = &hMountpass;
 		break;
 
 	case STYLE_MTTOP:
-		WptBmp = hMountop;
+		pWptBmp = &hMountop;
 		break;
 
 	case STYLE_SENDER:
-		WptBmp = hSender;
+		pWptBmp = &hSender;
 		break;
 
 	case STYLE_VOR:
-		WptBmp = hVor;
+		pWptBmp = &hVor;
 		break;
 
 	case STYLE_NDB:
-		WptBmp = hNdb;
+		pWptBmp = &hNdb;
 		break;
 
 	case STYLE_COOLTOWER:
-		WptBmp = hCoolTower;
+		pWptBmp = &hCoolTower;
 		break;
 
 	case STYLE_DAM:
-		WptBmp = hDam;
+		pWptBmp = &hDam;
 		break;
 
 	case STYLE_TUNNEL:
-		WptBmp = hTunnel;
+		pWptBmp = &hTunnel;
 		break;
 
 	case STYLE_BRIDGE:
-		WptBmp = hBridge;
+		pWptBmp = &hBridge;
 		break;
 
 	case STYLE_POWERPLANT:
-		WptBmp = hPowerPlant;
+		pWptBmp = &hPowerPlant;
 		break;
 
 	case STYLE_CASTLE:
-		WptBmp = hCastle;
+		pWptBmp = &hCastle;
 		break;
 
 	case STYLE_INTERSECTION:
-		WptBmp = hIntersect;
+		pWptBmp = &hIntersect;
 		break;
 
 	case STYLE_TRAFFIC:
 		goto turnpoint;
 		break;
 	case STYLE_THERMAL:
-		WptBmp = hLKThermal;
+		pWptBmp = &hLKThermal;
 		break;
 
 	case STYLE_MARKER:
-		WptBmp = hBmpMarker;
+		pWptBmp = &hBmpMarker;
 		break;
 
 	default:
 turnpoint:
 		if (BlackScreen)
-			WptBmp = hInvTurnPoint;
+			pWptBmp = &hInvTurnPoint;
 		else
-			WptBmp = hTurnPoint;
+			pWptBmp = &hTurnPoint;
 		break;
 
 } // switch estyle
@@ -801,5 +807,7 @@ if(cx < 40)
      y = (cy/2);
   }
     }
-    Surface.DrawMaskedBitmap(x, y, scale?IBLSCALE(20):20, scale?IBLSCALE(20):20, WptBmp, 20, 20);
+    if (pWptBmp) {
+        Surface.DrawMaskedBitmap(x, y, scale ? IBLSCALE(20) : 20, scale ? IBLSCALE(20) : 20, *pWptBmp, 20, 20);
+    }
 }
