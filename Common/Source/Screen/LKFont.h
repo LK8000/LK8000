@@ -15,12 +15,12 @@
 class LKFont {
 public:
     LKFont();
-    LKFont(LKFont&& Font);
-    LKFont(const LKFont& Font);
+    LKFont(LKFont&& Font) = delete;
+    LKFont(const LKFont& Font) = delete;
     virtual ~LKFont();
 
-    LKFont& operator=(LKFont&& Font);
-    LKFont& operator=(const LKFont& Font);
+    LKFont& operator=(LKFont&& Font) = delete;
+    LKFont& operator=(const LKFont& Font) = delete;
 
     void Create(LOGFONT* pLogFont);
     void Release();
@@ -37,6 +37,7 @@ protected:
     bool _Destroy;
 #else
     operator bool() const;
+    operator const LKFont*() const { return this; }
     
 #endif
 };

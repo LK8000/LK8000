@@ -26,38 +26,12 @@
 LKFont::LKFont() : _Font(), _Destroy() {
     
 }
-
-LKFont::LKFont(LKFont&& Font) : _Font(Font._Font), _Destroy(Font._Destroy) {
-    Font._Font = nullptr;
-    Font._Destroy = false;
-}
-
-LKFont::LKFont(const LKFont& Font) : _Font(), _Destroy() {
-    *this = Font;
-}
 #endif
 
 LKFont::~LKFont() {
     Release();
 }
 
-LKFont& LKFont::operator=(LKFont&& Font) {
-#ifdef WIN32
-    std::swap(_Font, Font._Font);
-    std::swap(_Destroy, Font._Destroy);
-#endif
-    return *this;
-}
-
-LKFont& LKFont::operator=(const LKFont& Font) {
-    Release();
-#ifdef WIN32
-    _Font = Font._Font;
-    _Destroy = false;
-#endif
-    return *this;
-}
-    
 void LKFont::Release() {
 #ifdef WIN32
     if(_Destroy && _Font) {

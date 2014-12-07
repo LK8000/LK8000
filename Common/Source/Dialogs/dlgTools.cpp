@@ -226,7 +226,7 @@ void *CallBackLookup(CallBackTableEntry_t *LookUpTable, TCHAR *Name){
 void LoadChildsFromXML(WindowControl *Parent, CallBackTableEntry_t *LookUpTable, XMLNode *Node, int Font);
 
 // The Font=n in dialogs.  0-4, 4 unused kept for compat issue with very old code
-static LKFont FontMap[5];
+static FontReference FontMap[5];
 
 
 #include <stdio.h>

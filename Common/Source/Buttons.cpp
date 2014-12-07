@@ -261,7 +261,7 @@ void ButtonLabel::CreateButtonLabels(const RECT& rc) {
 }
 
 void ButtonLabel::SetFont(const LKFont& Font) {
-    std::for_each(MenuButtons.begin(), MenuButtons.end(), std::bind(&MenuButton::SetFont, _1, Font));
+    std::for_each(MenuButtons.begin(), MenuButtons.end(), std::bind(&MenuButton::SetFont, _1, std::ref(Font)));
 }
 
 void ButtonLabel::Destroy() {

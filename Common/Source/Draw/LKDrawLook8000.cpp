@@ -16,6 +16,7 @@
 #include "McReady.h"
 #include "Multimap.h"
 #include "Sideview.h"
+#include "Screen/FontReference.h"
 
 void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc )
 {
@@ -35,7 +36,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc )
   bool redwarning; // 091203
   int gatechrono=0;
 
-  LKFont bigFont, medFont;
+  FontReference bigFont, medFont;
 
   short leftmargin=0;
 

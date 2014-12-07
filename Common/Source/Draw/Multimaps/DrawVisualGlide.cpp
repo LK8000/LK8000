@@ -12,6 +12,7 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "LKStyle.h"
+#include "Screen/FontReference.h"
 
 extern short GetVisualGlidePoints(unsigned short numslots );
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
@@ -30,7 +31,7 @@ extern void ResetVisualGlideGlobals(void);
 // Size of the box, fixed for each waypoint at this resolution
 static unsigned int boxSizeX=0 ,boxSizeY=0;
 static int maxtSizeX=0;
-static LKFont line1Font, line2Font;
+static FontReference line1Font, line2Font;
 
 extern int slotWpIndex[MAXBSLOT+1];
 

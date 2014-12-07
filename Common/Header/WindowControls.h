@@ -12,6 +12,7 @@
 #include "Screen/LKWindowSurface.h"
 #include "Screen/BrushReference.h"
 #include "Screen/PenReference.h"
+#include "Screen/FontReference.h"
 #include "Poco/Timestamp.h"
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
@@ -537,7 +538,7 @@ class WindowControl : public WndCtrlBase {
     LKBrush mBrushBk;
     PenReference mhPenBorder;
     PenReference mhPenSelector;
-    LKFont mhFont;
+    FontReference mhFont;
     TCHAR *mHelpText;
 
     OnHelpCallback_t mOnHelpCallback;
@@ -599,8 +600,8 @@ class WindowControl : public WndCtrlBase {
     int  GetBorderKind(void);
     int  SetBorderKind(int Value);
 
-    const LKFont& GetFont(void) const {return(mhFont);};
-    virtual void SetFont(const LKFont& Value);
+    FontReference GetFont(void) const {return(mhFont);};
+    virtual void SetFont(FontReference Value);
 
     virtual LKColor SetForeColor(const LKColor& Value);
     const LKColor& GetForeColor(void) const {return(mColorFore);};
@@ -829,7 +830,7 @@ class WndForm:public WindowControl{
     int mModalResult;
     LKColor mColorTitle;
     BrushReference mhBrushTitle;
-    LKFont mhTitleFont;
+    FontReference mhTitleFont;
     WindowControl *mClientWindow;
     RECT mClientRect;
     RECT mTitleRect;
@@ -863,7 +864,7 @@ class WndForm:public WindowControl{
     int GetModalResult(void){return(mModalResult);};
     int SetModalResult(int Value){mModalResult = Value;return(Value);};
 
-    LKFont SetTitleFont(const LKFont& Value);
+    FontReference SetTitleFont(FontReference Value);
 
     int ShowModal(void);
     void Show(void);
@@ -872,7 +873,7 @@ class WndForm:public WindowControl{
 
     LKColor SetForeColor(const LKColor& Value);
     LKColor SetBackColor(const LKColor& Value);
-    void SetFont(const LKFont& Value);
+    void SetFont(FontReference Value);
 
     void SetKeyDownNotify(OnKeyDownNotify_t KeyDownNotify) {
         mOnKeyDownNotify = KeyDownNotify;
@@ -957,8 +958,8 @@ class WndProperty:public WindowControl{
 
     RECT mEditRect;
 
-    LKFont mhCaptionFont;
-    LKFont mhValueFont;
+    FontReference mhCaptionFont;
+    FontReference mhValueFont;
     int  mBitmapSize;
     int  mCaptionWidth;
     RECT mHitRectUp;
@@ -992,7 +993,7 @@ class WndProperty:public WindowControl{
 
     void RefreshDisplay(void);
 
-    void SetFont(const LKFont& Value);
+    void SetFont(FontReference Value);
 
     bool OnKeyDown(unsigned KeyCode);
     bool OnKeyUp(unsigned KeyCode);

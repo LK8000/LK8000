@@ -1404,7 +1404,7 @@ int WindowControl::SetBorderKind(int Value){
   return(res);
 }
 
-void WindowControl::SetFont(const LKFont& Value){
+void WindowControl::SetFont(FontReference Value){
   mhFont = Value;
 }
 
@@ -1655,8 +1655,8 @@ void WndForm::AddClient(WindowControl *Client){      // add client window
     WindowControl::AddClient(Client);
 }
 
-LKFont WndForm::SetTitleFont(const LKFont& Value){
-  const LKFont res = mhTitleFont;
+FontReference WndForm::SetTitleFont(FontReference Value){
+  FontReference res = mhTitleFont;
   mhTitleFont = Value;
   return (res);
 }
@@ -1795,7 +1795,7 @@ LKColor WndForm::SetBackColor(const LKColor& Value){
   return(WindowControl::SetBackColor(Value));
 }
 
-void WndForm::SetFont(const LKFont& Value){
+void WndForm::SetFont(FontReference Value){
     if (mClientWindow) {
         mClientWindow->SetFont(Value);
     }
@@ -2040,7 +2040,7 @@ void WndProperty::SetText(const TCHAR *Value) {
     }
 }
 
-void WndProperty::SetFont(const LKFont& Value) {
+void WndProperty::SetFont(FontReference Value) {
     WindowControl::SetFont(Value);
     mhValueFont = Value;
 }
