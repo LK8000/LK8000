@@ -28,6 +28,7 @@ public:
 
 protected:
     virtual HBRUSH OnCtlColor(HDC hdc);
+    virtual bool OnCreate(int x, int y, int cx, int cy);
 
 private:
     LKColor _TextColor;

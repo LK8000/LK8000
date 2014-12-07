@@ -25,8 +25,8 @@ Copyright_License {
 #define XCSOAR_SCREEN_PEN_HPP
 
 #include "Screen/Color.hpp"
-//#include "Screen/Features.hpp"
-//#include "Debug.hpp"
+#include "Screen/Features.hpp"
+#include "Debug.hpp"
 
 #include <assert.h>
 
@@ -228,7 +228,7 @@ public:
 inline void
 Pen::Reset()
 {
-//  assert(!IsDefined() || IsScreenInitialized());
+  assert(!IsDefined() || IsScreenInitialized());
 
 #ifndef NDEBUG
   width = 0;

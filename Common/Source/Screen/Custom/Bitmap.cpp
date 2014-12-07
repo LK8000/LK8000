@@ -22,7 +22,7 @@ Copyright_License {
 */
 
 #include "Screen/Bitmap.hpp"
-//#include "Screen/Debug.hpp"
+#include "Screen/Debug.hpp"
 #include "LibPNG.hpp"
 #include "LibJPEG.hpp"
 #include "UncompressedImage.hpp"

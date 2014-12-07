@@ -125,6 +125,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     
     _hInstance = hInstance; // this need to be first, always !
     const TCHAR* szCmdLine = GetCommandLine();
+    
+    ScreenInitialized(); // Temporary...
+
 #else
 int main() {
     const char * szCmdLine = "";

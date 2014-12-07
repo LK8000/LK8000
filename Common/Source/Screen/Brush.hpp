@@ -25,8 +25,8 @@ Copyright_License {
 #define XCSOAR_SCREEN_BRUSH_HPP
 
 #include "Screen/Color.hpp"
-//#include "Screen/Features.hpp"
-//#include "Debug.hpp"
+#include "Screen/Features.hpp"
+#include "Debug.hpp"
 #include "Compiler.h"
 
 #include <assert.h>
@@ -137,7 +137,7 @@ public:
 inline void
 Brush::Set(const Color c)
 {
-//  assert(IsScreenInitialized());
+  assert(IsScreenInitialized());
 
   color = c;
 }
@@ -145,7 +145,7 @@ Brush::Set(const Color c)
 inline void
 Brush::Reset()
 {
-//  assert(!IsDefined() || IsScreenInitialized());
+  assert(!IsDefined() || IsScreenInitialized());
 
   color = Color::Transparent();
 }

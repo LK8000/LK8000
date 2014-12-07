@@ -22,7 +22,7 @@ Copyright_License {
 */
 
 #include "Screen/Bitmap.hpp"
-//#include "Screen/Debug.hpp"
+#include "Screen/Debug.hpp"
 #include "Screen/Custom/UncompressedImage.hpp"
 #include "UncompressedImage.hpp"
 
@@ -31,7 +31,7 @@ Copyright_License {
 bool
 Bitmap::Load(const UncompressedImage &uncompressed, Type type)
 {
-//  assert(IsScreenInitialized());
+  assert(IsScreenInitialized());
   assert(uncompressed.IsVisible());
 
   Reset();
@@ -43,7 +43,7 @@ Bitmap::Load(const UncompressedImage &uncompressed, Type type)
 void
 Bitmap::Reset()
 {
-//  assert(!IsDefined() || IsScreenInitialized());
+  assert(!IsDefined() || IsScreenInitialized());
 
   buffer.Free();
 }

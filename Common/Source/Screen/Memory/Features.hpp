@@ -21,26 +21,17 @@ Copyright_License {
 }
 */
 
-#include "Screen/Pen.hpp"
-#include "Screen/Debug.hpp"
+#ifndef XCSOAR_SCREEN_MEMORY_FEATURES_HPP
+#define XCSOAR_SCREEN_MEMORY_FEATURES_HPP
 
-#include <assert.h>
+#define HAVE_TEXT_CACHE
 
-void
-Pen::Set(Style _style, unsigned _width, const Color c)
+#define HAVE_ALPHA_BLEND
+
+static constexpr inline bool
+AlphaBlendAvailable()
 {
-  assert(IsScreenInitialized());
+  return true;
+}
 
-  width = _width;
-  color = c;
-
-#if defined(USE_MEMORY_CANVAS) || (defined(ENABLE_OPENGL) && !defined(HAVE_GLES))
-  style = _style;
 #endif
-}
-
-void
-Pen::Set(unsigned width, const Color c)
-{
-  Set(SOLID, width, c);
-}

@@ -12,7 +12,7 @@
 #include "WndText.h"
 
 WndText::WndText(const LKColor& TextColor, const LKColor& BkColor) : Window(), _TextColor(TextColor), _BkColor(BkColor)  {
-    _BkBrush.Create(_BkColor);
+
 }
 
 WndText::~WndText() {
@@ -23,5 +23,10 @@ HBRUSH WndText::OnCtlColor(HDC hdc) {
     ::SetBkColor(hdc, _BkColor);
     ::SetTextColor(hdc, _TextColor);
     return _BkBrush;
+}
+
+bool WndText::OnCreate(int x, int y, int cx, int cy) {
+    _BkBrush.Create(_BkColor);
+    return OnCreate(x, y, cx, cy);
 }
 

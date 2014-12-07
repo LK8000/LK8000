@@ -22,7 +22,7 @@ Copyright_License {
 */
 
 #include "Screen/Bitmap.hpp"
-//#include "Screen/Debug.hpp"
+#include "Screen/Debug.hpp"
 
 #ifdef HAVE_AYGSHELL_DLL
 #include "OS/AYGShellDLL.hpp"
@@ -113,7 +113,7 @@ void
 Bitmap::Reset()
 {
   if (bitmap != nullptr) {
-//    assert(IsScreenInitialized());
+    assert(IsScreenInitialized());
 
 #ifndef NDEBUG
     bool success =

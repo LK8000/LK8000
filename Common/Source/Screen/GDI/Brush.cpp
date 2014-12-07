@@ -30,7 +30,7 @@ Copyright_License {
 void
 Brush::Set(const Color c)
 {
-//  assert(IsScreenInitialized());
+  assert(IsScreenInitialized());
 
   Reset();
   brush = ::CreateSolidBrush(c);
@@ -55,7 +55,7 @@ Brush::Set(const Bitmap &bitmap)
 void
 Brush::Reset()
 {
-//  assert(!IsDefined() || IsScreenInitialized());
+  assert(!IsDefined() || IsScreenInitialized());
 
   if (brush != nullptr) {
 #ifndef NDEBUG

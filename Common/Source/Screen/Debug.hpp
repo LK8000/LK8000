@@ -21,26 +21,38 @@ Copyright_License {
 }
 */
 
-#include "Screen/Pen.hpp"
-#include "Screen/Debug.hpp"
+#ifndef XCSOAR_SCREEN_DEBUG_HPP
+#define XCSOAR_SCREEN_DEBUG_HPP
 
-#include <assert.h>
+#ifdef NDEBUG
 
+static inline void
+ScreenInitialized() {}
+
+static inline void
+ScreenDeinitialized() {}
+
+#else
+
+/**
+ * Call this when the screen library has been initialized.
+ */
 void
-Pen::Set(Style _style, unsigned _width, const Color c)
-{
-  assert(IsScreenInitialized());
+ScreenInitialized();
 
-  width = _width;
-  color = c;
+/**
+ * Call this when the screen library has been deinitialized.
+ */
+void
+ScreenDeinitialized();
 
-#if defined(USE_MEMORY_CANVAS) || (defined(ENABLE_OPENGL) && !defined(HAVE_GLES))
-  style = _style;
+/**
+ * Determine if the screen library has been initialized and is
+ * available.
+ */
+bool
+IsScreenInitialized();
+
 #endif
-}
 
-void
-Pen::Set(unsigned width, const Color c)
-{
-  Set(SOLID, width, c);
-}
+#endif

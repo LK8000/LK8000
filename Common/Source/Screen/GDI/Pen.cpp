@@ -28,7 +28,7 @@ Copyright_License {
 void
 Pen::Set(Style Style, unsigned width, const Color c)
 {
-//  assert(IsScreenInitialized());
+  assert(IsScreenInitialized());
 
   Reset();
   pen = ::CreatePen(Style, width, c);
@@ -43,7 +43,7 @@ Pen::Set(unsigned width, const Color c)
 void
 Pen::Reset()
 {
-//  assert(!IsDefined() || IsScreenInitialized());
+  assert(!IsDefined() || IsScreenInitialized());
 
   if (pen != nullptr) {
 #ifndef NDEBUG

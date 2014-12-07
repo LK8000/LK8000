@@ -215,7 +215,6 @@ CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
 #WIN32_RESSOURCE := y 
 endif
 CE_DEFS += -DUSE_GDI
-CE_DEFS += -DHAVE_HATCHED_BRUSH
 endif
 
 ifeq ($(WIN32_RESSOURCE), y)
@@ -436,6 +435,7 @@ SCREEN := \
 	$(SRC_SCREEN)/LKSurface.cpp \
 	$(SRC_SCREEN)/LKWindowSurface.cpp \
 	$(SRC_SCREEN)/LKBitmapSurface.cpp \
+	$(SRC_SCREEN)/Debug.cpp \
 
 LIBRARY	:=\
 	$(LIB)/bsearch.cpp \

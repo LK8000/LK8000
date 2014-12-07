@@ -63,7 +63,6 @@ void LKBitmapSurface::Release() {
         _oldBitmap.Release();
     }
     if (_hBitmap) {
-        ::DeleteObject(_hBitmap);
         _hBitmap.Release();
     }
 #endif
@@ -88,7 +87,6 @@ void LKMaskBitmapSurface::Resize(unsigned width, unsigned height) {
         _oldBitmap.Release();
     }
     if (_hBitmap) {
-        ::DeleteObject(_hBitmap);
         _hBitmap.Release();
     }
 

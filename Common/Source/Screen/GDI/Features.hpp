@@ -21,26 +21,35 @@ Copyright_License {
 }
 */
 
-#include "Screen/Pen.hpp"
-#include "Screen/Debug.hpp"
+#ifndef XCSOAR_SCREEN_GDI_FEATURES_HPP
+#define XCSOAR_SCREEN_GDI_FEATURES_HPP
 
-#include <assert.h>
+/**
+ * This macro is defined when the Canvas implements clipping against
+ * its siblings and children.
+ */
+#define HAVE_CLIPPING
 
-void
-Pen::Set(Style _style, unsigned _width, const Color c)
-{
-  assert(IsScreenInitialized());
+#define HAVE_HATCHED_BRUSH
 
-  width = _width;
-  color = c;
+#ifdef _WIN32_WCE /* embedded Windows? */
 
-#if defined(USE_MEMORY_CANVAS) || (defined(ENABLE_OPENGL) && !defined(HAVE_GLES))
-  style = _style;
+/* AlphaBlend() is implemented since WM5, but we need to load it
+   dynamically from coredll.dll; importing the DLL symbol directly
+   fails on some hx4700 with WM5 */
+#if _WIN32_WCE >= 0x500
+#define HAVE_ALPHA_BLEND
+#define HAVE_DYNAMIC_ALPHA_BLEND
 #endif
-}
 
-void
-Pen::Set(unsigned width, const Color c)
-{
-  Set(SOLID, width, c);
-}
+#else /* !_WIN32_WCE */
+
+/* AlphaBlend() is implemented since Windows 2000 */
+#if _WIN32_WINDOWS >= 0x500
+#define HAVE_ALPHA_BLEND
+#define HAVE_BUILTIN_ALPHA_BLEND
+#endif
+
+#endif /* !_WIN32_WCE */
+
+#endif

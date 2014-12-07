@@ -21,26 +21,41 @@ Copyright_License {
 }
 */
 
-#include "Screen/Pen.hpp"
-#include "Screen/Debug.hpp"
+#ifndef XCSOAR_SCREEN_FEATURES_HPP
+#define XCSOAR_SCREEN_FEATURES_HPP
 
-#include <assert.h>
+#ifdef ANDROID
+#include "Screen/Android/Features.hpp"
+#endif
 
-void
-Pen::Set(Style _style, unsigned _width, const Color c)
+#ifdef USE_MEMORY_CANVAS
+#include "Screen/Memory/Features.hpp"
+#endif
+
+#ifdef ENABLE_OPENGL
+#include "Screen/OpenGL/Features.hpp"
+#endif
+
+#ifdef USE_GDI
+#include "Screen/GDI/Features.hpp"
+#endif
+
+#ifdef ENABLE_SDL
+#include "Screen/SDL/Features.hpp"
+#endif
+
+/**
+ * Return true when the Canvas implements clipping against its
+ * siblings and children.
+ */
+static constexpr inline bool
+HaveClipping()
 {
-  assert(IsScreenInitialized());
-
-  width = _width;
-  color = c;
-
-#if defined(USE_MEMORY_CANVAS) || (defined(ENABLE_OPENGL) && !defined(HAVE_GLES))
-  style = _style;
+#ifdef HAVE_CLIPPING
+  return true;
+#else
+  return false;
 #endif
 }
 
-void
-Pen::Set(unsigned width, const Color c)
-{
-  Set(SOLID, width, c);
-}
+#endif

@@ -21,26 +21,32 @@ Copyright_License {
 }
 */
 
-#include "Screen/Pen.hpp"
 #include "Screen/Debug.hpp"
+
+#ifndef NDEBUG
 
 #include <assert.h>
 
+static bool screen_initialized = false;
+
 void
-Pen::Set(Style _style, unsigned _width, const Color c)
+ScreenInitialized()
 {
-  assert(IsScreenInitialized());
+  assert(!screen_initialized);
+  screen_initialized = true;
+}
 
-  width = _width;
-  color = c;
+void
+ScreenDeinitialized()
+{
+  assert(screen_initialized);
+  screen_initialized = false;
+}
 
-#if defined(USE_MEMORY_CANVAS) || (defined(ENABLE_OPENGL) && !defined(HAVE_GLES))
-  style = _style;
+bool
+IsScreenInitialized()
+{
+  return screen_initialized;
+}
+
 #endif
-}
-
-void
-Pen::Set(unsigned width, const Color c)
-{
-  Set(SOLID, width, c);
-}
