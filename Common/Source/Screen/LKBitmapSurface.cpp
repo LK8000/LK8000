@@ -48,7 +48,6 @@ void LKBitmapSurface::Resize(unsigned width, unsigned height) {
         _oldBitmap.Release();
     }
     if (_hBitmap) {
-        ::DeleteObject(_hBitmap);
         _hBitmap.Release();
     }
 

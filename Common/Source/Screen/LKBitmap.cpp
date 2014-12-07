@@ -13,26 +13,18 @@
 #include "tchar.h"
 #include "LKBitmap.h"
 
-#ifndef WIN32
-#warning "TODO: need to implement"
-#endif
-
-#ifdef WIN32
-
-extern HINSTANCE _hInstance;
-
-
-LKBitmap::LKBitmap() : _Bitmap() {
-}
-
-LKBitmap::LKBitmap(LKBitmap&& Bitmap) : _Bitmap(Bitmap._Bitmap) {
-    Bitmap._Bitmap = nullptr;
-}
+LKBitmap::LKBitmap(LKBitmap&& Bitmap) {
+#ifdef WIN32    
+    bitmap = Bitmap.bitmap;
+    Bitmap.bitmap = nullptr;
 #else
+#warning "TODO: ..."
+#endif
+}
+
 LKBitmap::LKBitmap() {
     
 }
-#endif
 
 LKBitmap::~LKBitmap() {
     Release();
@@ -40,54 +32,41 @@ LKBitmap::~LKBitmap() {
 
 LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
 #ifdef WIN32
-    std::swap(_Bitmap, Bitmap._Bitmap);
+    std::swap(bitmap, Bitmap.bitmap);
+#else
+#warning "TODO: ..."    
 #endif
-    
     return * this;
 }
 
-void LKBitmap::Release() {
-#ifdef WIN32
-    if (_Bitmap) {
-        ::DeleteObject(_Bitmap);
-    }
-    _Bitmap = NULL;
-#endif
-}
-
 bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
-    Release();
+    Reset();
 #ifdef WIN32
 #ifdef UNDER_CE
     _Bitmap = (HBITMAP) SHLoadDIBitmap(FilePath);
 #else
-    _Bitmap = (HBITMAP) LoadImage(GetModuleHandle(NULL), FilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    bitmap = (HBITMAP) LoadImage(GetModuleHandle(NULL), FilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 #endif
-    if (_Bitmap) {
-        return true;
-    }
+    return IsDefined();
+#else 
+    return LoadFile(FilePath);
 #endif
     return false;
 }
 
+#ifdef WIN32
+    extern HINSTANCE _hInstance;
+#endif
+    
 bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
-    Release();
+    Reset();
 #ifdef WIN32
-    _Bitmap = LoadBitmap(_hInstance, ResourceName);
-    if (_Bitmap) {
+    bitmap = LoadBitmap(_hInstance, ResourceName);
+    if (bitmap) {
         return true;
     }
+#else
+#warning "TODO: ..."    
 #endif
     return false;
-}
-
-SIZE LKBitmap::GetSize() const {
-#ifdef WIN32
-    BITMAP bm;
-    GetObject(_Bitmap, sizeof (BITMAP), &bm);
-
-    return (SIZE){bm.bmWidth, bm.bmHeight};
-#else
-    return (SIZE){0,0};
-#endif
 }

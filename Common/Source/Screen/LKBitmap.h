@@ -12,18 +12,20 @@
 #ifndef LKBITMAP_H
 #define	LKBITMAP_H
 
+#include "Bitmap.hpp"
+
 #ifdef WIN32
 #include <windows.h>
 #endif
 #ifdef __linux__
-#include "linuxcompat/tchar.h"
-#include "linuxcompat/types.h"
+#include "tchar.h"
+#include "types.h"
 
 #define MAKEINTRESOURCE(i) (#i)
 
 #endif
 
-class LKBitmap {
+class LKBitmap : public Bitmap {
 public:
 	LKBitmap();
 	LKBitmap(LKBitmap&& orig);
@@ -34,27 +36,17 @@ public:
 	LKBitmap& operator=(LKBitmap&& );
 	LKBitmap& operator=(const LKBitmap& Bitmap) = delete;
 
-	void Release();
+	void Release() { Reset(); }
 
 	bool LoadFromFile(const TCHAR* FilePath);
 	bool LoadFromResource(const TCHAR* ResourceName);
 
-	SIZE GetSize() const;
+    operator bool() const { return IsDefined(); }
 
 #ifdef WIN32
-public:
-
-	explicit LKBitmap(HBITMAP Bitmap) : _Bitmap(Bitmap) { }
-
-	operator HBITMAP() const { return _Bitmap; }
-	operator bool() const { return (_Bitmap != NULL); }
-
-protected:
-	HBITMAP _Bitmap;
-#else
-    operator bool() const { return false; }
+	explicit LKBitmap(HBITMAP Bitmap) { bitmap = Bitmap; }
+	operator HBITMAP() const { return GetNative(); }
 #endif
-
 };
 
 #endif	/* LKBITMAP_H */

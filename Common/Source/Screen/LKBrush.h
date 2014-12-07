@@ -12,6 +12,7 @@
 #ifndef LKBRUSH_H
 #define	LKBRUSH_H
 
+#include "LKBitmap.h"
 #include "Brush.hpp"
 
 class LKColor;

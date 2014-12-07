@@ -215,7 +215,7 @@ CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
 #WIN32_RESSOURCE := y 
 endif
 CE_DEFS += -DUSE_GDI
-#CE_DEFS += -DHAVE_HATCHED_BRUSH
+CE_DEFS += -DHAVE_HATCHED_BRUSH
 endif
 
 ifeq ($(WIN32_RESSOURCE), y)
@@ -321,7 +321,7 @@ endif
 LDFLAGS		+=$(PROFILE) -Wl,-Map=output.map
 
 ifeq ($(CONFIG_LINUX),y)
-  LDLIBS		+= -lstdc++ -lzzip -pthread -march=native
+  LDLIBS		+= -lstdc++ -lzzip -pthread -march=native -lpng -ljpeg
 else
 ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lole32 -loleaut32 -luuid
@@ -398,6 +398,7 @@ WINDOW := \
 
 WIN32 := \
 	$(SRC_SCREEN)/GDI/Brush.cpp \
+	$(SRC_SCREEN)/GDI/Bitmap.cpp \
 	$(SRC_WINDOW)/Win32/Window.cpp \
 	$(SRC_WINDOW)/Win32/WndMainBase.cpp \
 	$(SRC_WINDOW)/Win32/WndProc.cpp \
@@ -410,9 +411,17 @@ WIN32 := \
 	$(SRC)/Memory.cpp \
 	$(SRC)/RotateScreen.cpp\
 
+LINUX := \
+	$(SRC_SCREEN)/Memory/Bitmap.cpp \
+	$(SRC_SCREEN)/Custom/Bitmap.cpp \
+	$(SRC_SCREEN)/Custom/LibPNG.cpp \
+	$(SRC_SCREEN)/Custom/LibJPEG.cpp \
+	
 
 ifneq ($(CONFIG_LINUX),y)
 WINDOW += $(WIN32)
+else
+WINDOW += $(LINUX)
 endif
 	
 SCREEN := \
