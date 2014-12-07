@@ -12,46 +12,34 @@
 #ifndef LKPEN_H
 #define	LKPEN_H
 
-class LKColor;
+#include "Pen.hpp"
+#include "LKColor.h"
 
-enum enumType {
-    PEN_SOLID = 0,
-    PEN_DASH = 1
-};
+#define PEN_SOLID Pen::SOLID
+#define PEN_DASH Pen::DASH
 
-
-class LKPen {
+class LKPen : public Pen {
 public:
-    LKPen(LKPen&& Pen);
-    LKPen& operator= (LKPen&& Pen);
-    
-    LKPen(enumType Type, unsigned Size, const LKColor& Color);
+    LKPen() = default;
+    LKPen(Style Style, unsigned width, const LKColor c) : Pen(Style, width, c) { }
+
+    LKPen(LKPen&& Pen) = delete;
+    LKPen& operator= (LKPen&& Pen) = delete;
+
     ~LKPen();
 
-    void Create(enumType Type, unsigned Size, const LKColor& Color);
-    void Release();
+    void Create(Style Type, unsigned Size, const LKColor& Color) { Set(Type, Size, Color); }
+    void Release() { Reset(); }
+
+	operator bool() const { return IsDefined(); }
     
-#ifdef WIN32
+#ifdef USE_GDI
 public:
-    LKPen():_Pen() {}
-	explicit LKPen(HPEN Pen) : _Pen(Pen) {}
-
-    static LKPen MakeStock(int fnObject) {
-      return LKPen((HPEN)GetStockObject(fnObject));
-    }
-
-	operator HPEN() const { return _Pen; }
-	operator bool() const { return (_Pen != NULL); }
-    
-protected:
-    HPEN _Pen;
+	explicit LKPen(HPEN Pen) { pen = Pen; }
+	operator HPEN() const { return Native(); }
 #else
-    LKPen();
-    operator bool() const;
     operator const LKPen*() const { return this; }
 #endif
-    
-
 };
 
 extern const LKPen LK_NULL_PEN;

@@ -19,60 +19,21 @@
 
 #include <utility>
 
-#ifdef WIN32
+#ifdef USE_GDI
 
-const LKPen LK_NULL_PEN = LKPen::MakeStock(NULL_PEN);
-const LKPen LK_BLACK_PEN = LKPen::MakeStock(BLACK_PEN);
-const LKPen LK_WHITE_PEN = LKPen::MakeStock(WHITE_PEN);
-
-LKPen::LKPen(LKPen&& Pen) : _Pen(Pen._Pen) {
-    Pen._Pen = nullptr;
-}
-
-LKPen::LKPen(enumType Type, unsigned Size, const LKColor& Color) : _Pen() {
-    Create(Type, Size, Color);
-}
+const LKPen LK_NULL_PEN((HPEN)GetStockObject(NULL_PEN));
+const LKPen LK_BLACK_PEN((HPEN)GetStockObject(BLACK_PEN));
+const LKPen LK_WHITE_PEN((HPEN)GetStockObject(WHITE_PEN));
 
 #else
-const LKPen LK_NULL_PEN;
-const LKPen LK_BLACK_PEN;
-const LKPen LK_WHITE_PEN;
 
-LKPen::LKPen(){
-}
-
-LKPen::LKPen(enumType Type, unsigned Size, const LKColor& Color) {
-    Create(Type, Size, Color);
-}
+const LKPen LK_NULL_PEN(Pen::BLANK, 1, COLOR_WHITE);
+const LKPen LK_BLACK_PEN(Pen::SOLID, 1, COLOR_BLACK);
+const LKPen LK_WHITE_PEN(Pen::SOLID, 1, COLOR_WHITE);
 
 #endif
 
 LKPen::~LKPen() {
     Release();
 }
-
-LKPen& LKPen::operator= (LKPen&& Pen) {
-#ifdef WIN32
-    std::swap(_Pen, Pen._Pen);
-#endif
-    return (*this);
-}
-
-void LKPen::Create(enumType Type, unsigned Size, const LKColor& Color) {
-    Release();
-
-#ifdef WIN32
-    _Pen = CreatePen(Type, Size, Color);
-#endif
-}
-
-void LKPen::Release() {
-#ifdef WIN32
-    if (_Pen) {
-        ::DeleteObject(_Pen);
-    }
-    _Pen = NULL;
-#endif
-}
-
 

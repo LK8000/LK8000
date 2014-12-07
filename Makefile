@@ -399,6 +399,7 @@ WINDOW := \
 WIN32 := \
 	$(SRC_SCREEN)/GDI/Brush.cpp \
 	$(SRC_SCREEN)/GDI/Bitmap.cpp \
+	$(SRC_SCREEN)/GDI/Pen.cpp \
 	$(SRC_WINDOW)/Win32/Window.cpp \
 	$(SRC_WINDOW)/Win32/WndMainBase.cpp \
 	$(SRC_WINDOW)/Win32/WndProc.cpp \
@@ -416,6 +417,7 @@ LINUX := \
 	$(SRC_SCREEN)/Custom/Bitmap.cpp \
 	$(SRC_SCREEN)/Custom/LibPNG.cpp \
 	$(SRC_SCREEN)/Custom/LibJPEG.cpp \
+	$(SRC_SCREEN)/Custom/Pen.cpp \
 	
 
 ifneq ($(CONFIG_LINUX),y)

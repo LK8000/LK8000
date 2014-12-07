@@ -120,7 +120,7 @@ public:
 
     void DrawLine(int x1, int y1, int x2, int y2);
     void DrawLine(int x1, int y1, int x2, int y2, int x3, int y3);
-    void DrawLine(enumType PenStyle, const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc);
+    void DrawLine(Pen::Style PenStyle, const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc);
 
     void DrawSolidLine(const POINT &ptStart, const POINT &ptEnd, const RECT& rc);
 

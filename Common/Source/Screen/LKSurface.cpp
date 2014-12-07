@@ -267,7 +267,7 @@ void LKSurface::DrawLine(int x1, int y1, int x2, int y2, int x3, int y3) {
     Polyline(pt, 3);
 }
 
-void LKSurface::DrawLine(enumType PenStyle, const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc) {
+void LKSurface::DrawLine(Pen::Style PenStyle, const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc) {
     LKPen Pen(PenStyle, width, cr);
     const auto OldPen = SelectObject(Pen);
 
