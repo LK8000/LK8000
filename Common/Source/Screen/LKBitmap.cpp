@@ -43,7 +43,7 @@ bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
     Reset();
 #ifdef WIN32
 #ifdef UNDER_CE
-    _Bitmap = (HBITMAP) SHLoadDIBitmap(FilePath);
+    bitmap = (HBITMAP) SHLoadDIBitmap(FilePath);
 #else
     bitmap = (HBITMAP) LoadImage(GetModuleHandle(NULL), FilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 #endif
