@@ -36,51 +36,51 @@ class GRECORD {
  public:
   GRECORD(FILE *ausgabedatei);
   void update(byte b);
-  void final (void);
+  void _final (void);
 
 };
 
 
 /*
 DATA-GCS:
-  - Binärblock beim Logger anfordern und im Speicher ablegen
-* - Binärblock ins IGC-Format konvertieren
+  - Binï¿½rblock beim Logger anfordern und im Speicher ablegen
+* - Binï¿½rblock ins IGC-Format konvertieren
 * - IGC-Datei abspeichern
-  - Binärblock im radix-64-Format als G-Records an IGC-Datei anhängen
+  - Binï¿½rblock im radix-64-Format als G-Records an IGC-Datei anhï¿½ngen
 
 VALI-GCS:
-  - IGC-Datei laden und ohne die nicht vom Logger stammenden Datensätze
+  - IGC-Datei laden und ohne die nicht vom Logger stammenden Datensï¿½tze
     und Whitespaces in temp1.igc abspeichern
-  - G-Records aus IGC-Datei laden von radix-64 in Binärblock umwandeln
-* - Binärblock ins IGC-Format konvertieren
+  - G-Records aus IGC-Datei laden von radix-64 in Binï¿½rblock umwandeln
+* - Binï¿½rblock ins IGC-Format konvertieren
 *   und speichern in Datei temp2.igc
   - Sicherheitscheck:
     Dateien temp1 und temp2 vergleichen
-    Signatur überprüfen
+    Signatur ï¿½berprï¿½fen
 
-* kann für DATA- und VALI-Programm genutzt werden
+* kann fï¿½r DATA- und VALI-Programm genutzt werden
 
 
 
-Benötigte Funktionen: (D=für DATA, V=für VALI, P=schon programmiert)
+Benï¿½tigte Funktionen: (D=fï¿½r DATA, V=fï¿½r VALI, P=schon programmiert)
 DV P
-x  x - Verzeichnis der Flüge auslesen
-x  x - Binärblock(Flug) vom Logger lesen
-xx   - Binärblock ins IGC-Format konvertieren dabei IGC-Datei abspeichern
+x  x - Verzeichnis der Flï¿½ge auslesen
+x  x - Binï¿½rblock(Flug) vom Logger lesen
+xx   - Binï¿½rblock ins IGC-Format konvertieren dabei IGC-Datei abspeichern
 x    - Dateiname nach IGC-Vorschrift generieren
 xx   - Datei kopieren
- x   - Signatur in Binärblock überprüfen
-x  x - Binärblock in GR64 konvertieren und anhängen
- x   - GR64 laden, in Binärblock umwandeln und im Speicher ablegen
-     - IGC-Datei laden und alle nicht vom Logger stammenden Datensätze
+ x   - Signatur in Binï¿½rblock ï¿½berprï¿½fen
+x  x - Binï¿½rblock in GR64 konvertieren und anhï¿½ngen
+ x   - GR64 laden, in Binï¿½rblock umwandeln und im Speicher ablegen
+     - IGC-Datei laden und alle nicht vom Logger stammenden Datensï¿½tze
        ausfiltern, die Datei dann wieder als temp-Datei abspeichern
 
 */
 
 
 /*
-Den Inhalt des Puffers *puffer mit der Länge puflen radix-64 kodieren
-und je 72 Datenworte als G-Datensatz an datei *dateiname anhängen
+Den Inhalt des Puffers *puffer mit der Lï¿½nge puflen radix-64 kodieren
+und je 72 Datenworte als G-Datensatz an datei *dateiname anhï¿½ngen
 */
 //void append_g_record(char *dateiname, byte huge *puffer, unsigned long puflen);
 
@@ -88,16 +88,16 @@ void print_g_record(FILE *datei, lpb puffer, int32 puflen);
 
 
 /*
-Aus Datei *dateiname die G-Records extrahieren (nur als zusammenhängender
-Block), von radix-64 in Binär umwandeln und in *puffer speichern.
-Pufferlänge puflen ist angegeben, um ein Überschreiben nicht zum Puffer
-gehörender Bereiche zu verhindern
+Aus Datei *dateiname die G-Records extrahieren (nur als zusammenhï¿½ngender
+Block), von radix-64 in Binï¿½r umwandeln und in *puffer speichern.
+Pufferlï¿½nge puflen ist angegeben, um ein ï¿½berschreiben nicht zum Puffer
+gehï¿½render Bereiche zu verhindern
 */
 int get_g_record(TCHAR *dateiname, lpb puffer, unsigned long puflen);
 
 
 // Eine IGC-Datei von allen Zeilen befreien, die vom Pilot oder OO legal zur
-// Datei hinzugefügt worden sein könnten
+// Datei hinzugefï¿½gt worden sein kï¿½nnten
 // Speichern der "cleanen" Datei
 void clean_igcfile(TCHAR *quelldateiname, TCHAR *zieldateiname);
 
