@@ -88,6 +88,7 @@ else
   endif
 endif
 
+include build/pkgconfig.mk
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC),y)
@@ -202,8 +203,12 @@ GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 ######## windows definitions
 
 ifeq ($(CONFIG_LINUX),y)
-CE_DEFS		:=-D__linux__
+CE_DEFS	:=-D__linux__
 CE_DEFS += -DUSE_MEMORY_CANVAS
+
+$(eval $(call pkg-config-library,FREETYPE,freetype2))
+CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
+CE_DEFS += -DUSE_FREETYPE
 else
 ifeq ($(CONFIG_PC),y)
 CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
@@ -309,7 +314,8 @@ CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 ####### linker configuration
 
 ifeq ($(CONFIG_LINUX),y)
-LDFLAGS =
+LDFLAGS = $(FREETYPE_LDLIBS)
+
 else
 LDFLAGS		:=-Wl,--major-subsystem-version=$(CE_MAJOR)
 LDFLAGS		+=-Wl,--minor-subsystem-version=$(CE_MINOR)
@@ -399,6 +405,8 @@ WIN32 := \
 	$(SRC_SCREEN)/GDI/Brush.cpp \
 	$(SRC_SCREEN)/GDI/Bitmap.cpp \
 	$(SRC_SCREEN)/GDI/Pen.cpp \
+	$(SRC_SCREEN)/GDI/Font.cpp \
+	\
 	$(SRC_WINDOW)/Win32/Window.cpp \
 	$(SRC_WINDOW)/Win32/WndMainBase.cpp \
 	$(SRC_WINDOW)/Win32/WndProc.cpp \
@@ -407,6 +415,7 @@ WIN32 := \
 	$(SRC_WINDOW)/Win32/WndTextEdit.cpp \
 	$(SRC_WINDOW)/Win32/WndTextLabel.cpp \
 	$(SRC_WINDOW)/Win32/WndCtrlBase.cpp \
+	\
 	$(SRC)/CpuLoad.cpp \
 	$(SRC)/Memory.cpp \
 	$(SRC)/RotateScreen.cpp\
@@ -417,6 +426,9 @@ LINUX := \
 	$(SRC_SCREEN)/Custom/LibPNG.cpp \
 	$(SRC_SCREEN)/Custom/LibJPEG.cpp \
 	$(SRC_SCREEN)/Custom/Pen.cpp \
+	$(SRC_SCREEN)/Custom/Files.cpp \
+	$(SRC_SCREEN)/FreeType/Font.cpp \
+	$(SRC_SCREEN)/FreeType/Init.cpp \
 	
 
 ifneq ($(CONFIG_LINUX),y)
@@ -431,7 +443,6 @@ SCREEN := \
 	$(SRC_SCREEN)/LKPen.cpp \
 	$(SRC_SCREEN)/LKBitmap.cpp \
 	$(SRC_SCREEN)/LKBrush.cpp \
-	$(SRC_SCREEN)/LKFont.cpp \
 	$(SRC_SCREEN)/LKSurface.cpp \
 	$(SRC_SCREEN)/LKWindowSurface.cpp \
 	$(SRC_SCREEN)/LKBitmapSurface.cpp \

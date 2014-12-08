@@ -12,6 +12,7 @@
 #include "tchar.h"
 #include "stdint.h"
 #include "ScreenCoordinate.h"
+#include "wingdi.h"
 
 #define	BYTE	int8_t
 #define BOOL	bool
@@ -30,21 +31,5 @@ typedef int INT;
 typedef char* LPTSTR, LPSTR;
 typedef const char* LPCTSTR;
 
-typedef struct tagLOGFONT {
-	long lfHeight;
-	long lfWidth;
-	long lfEscapement;
-	long lfOrientation;
-	long lfWeight;
-	uint8_t lfItalic;
-	uint8_t lfUnderline;
-	uint8_t lfStrikeOut;
-	uint8_t lfCharSet;
-	uint8_t lfOutPrecision;
-	uint8_t lfClipPrecision;
-	uint8_t lfQuality;
-	uint8_t lfPitchAndFamily;
-	char lfFaceName[32];
-} LOGFONT;
 #endif	
 

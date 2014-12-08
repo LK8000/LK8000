@@ -16,7 +16,7 @@
 #include <tchar.h>
 #include "utils/stl_utils.h"
 #include "utils/tstring.h"
-#include "Screen/LKFont.h"
+#include "Screen/FontReference.h"
 
 class LKSurface;
 
@@ -47,7 +47,7 @@ public:
     RECT GetClientRect() const;
     void Close();
     void Destroy();
-    void SetFont(const LKFont& Font);
+    void SetFont(FontReference Font);
     void SetFocus();
     bool HasFocus();
     void Redraw(const RECT& Rect);

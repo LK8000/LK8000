@@ -12,31 +12,29 @@
 #ifndef LKFONT_H
 #define	LKFONT_H
 
-class LKFont {
+#include "Font.hpp"
+
+class LKFont : public Font {
 public:
-    LKFont();
+    LKFont() {};
     LKFont(LKFont&& Font) = delete;
     LKFont(const LKFont& Font) = delete;
-    virtual ~LKFont();
+    virtual ~LKFont() {};
 
     LKFont& operator=(LKFont&& Font) = delete;
     LKFont& operator=(const LKFont& Font) = delete;
 
-    void Create(LOGFONT* pLogFont);
-    void Release();
+    void Create(LOGFONT* pLogFont) { Load(*pLogFont); }
+    void Release() { Destroy(); }
+
+    operator bool() const { return IsDefined(); }
     
 #ifdef WIN32        
 public:
-    explicit LKFont(HFONT Font) : _Font(Font), _Destroy(false) {}
+    explicit LKFont(HFONT Font) {  font = Font; }
     
-    operator HFONT() const { return _Font; } 
-	operator bool() const { return (_Font != NULL); }
-    
-protected:
-    HFONT _Font;
-    bool _Destroy;
+    operator HFONT() const { return Native(); }
 #else
-    operator bool() const;
     operator const LKFont*() const { return this; }
     
 #endif

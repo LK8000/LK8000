@@ -17,7 +17,7 @@
 #include <assert.h>
 #include "utils/stl_utils.h"
 #include "utils/tstring.h"
-#include "Screen/LKFont.h"
+#include "Screen/FontReference.h"
 
 #ifndef GET_X_LPARAM
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
@@ -110,7 +110,7 @@ public:
         _hWnd = NULL;
     }
 
-    void SetFont(const LKFont& Font) {
+    void SetFont(FontReference Font) {
         ::SendMessage(_hWnd, WM_SETFONT, (WPARAM)(HFONT)Font, MAKELPARAM(TRUE,0));
     }
 

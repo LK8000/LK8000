@@ -1,10 +1,12 @@
 #ifndef INFOBOXLAYOUT_H
 #define INFOBOXLAYOUT_H
 
+#include "Screen/FontReference.h"
+
 namespace ButtonLabel {
 
     void CreateButtonLabels(const RECT& rc);
-    void SetFont(const LKFont& Font);
+    void SetFont(FontReference Font);
     void Destroy();
 
     void SetLabelText(unsigned idx, const TCHAR *text);
