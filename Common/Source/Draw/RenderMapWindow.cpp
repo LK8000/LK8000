@@ -20,7 +20,9 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
   ONEHZLIMITER;
 
   DrawLKAlarms(Surface, rc);
+#ifndef NO_DATARECORDER  
   DrawFDRAlarms(Surface, rc);
+#endif
   #if (WINDOWSPC<1)
   LKBatteryManager();
   #endif
