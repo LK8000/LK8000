@@ -16,17 +16,14 @@
 
 class WndMainBase : public WndPaint {
 public:
-    WndMainBase();
-    virtual ~WndMainBase();
+    WndMainBase() { }
+    virtual ~WndMainBase() { }
 
-    bool Create(const RECT& rect, const TCHAR* szName);
+    bool Create(const RECT& rect, const TCHAR* szName) {
+        return WndPaint::Create(NULL, rect, szName);
+    }
 
-    void FullScreen();
-
-protected:
-
-    virtual bool OnCreate(int x, int y, int cx, int cy);
-    virtual bool OnDestroy();
+    void FullScreen() {};
 
 };
 

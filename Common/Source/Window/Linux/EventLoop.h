@@ -21,18 +21,18 @@ public:
     ~EventLoop() {}
     
 public:
-    bool Wait();
-    void Dispatch();
+    bool Wait() { return false; }
+    void Dispatch() { }
     
-    bool IsKeyboardMsg() const;
-    bool IsMouseMsg() const;
-    bool IsInputMsg() const;
+    bool IsKeyboardMsg() const { return false; }
+    bool IsMouseMsg() const { return false; }
+    bool IsInputMsg() const { return false; }
     
-    bool IsEscapeKey() const;
+    bool IsEscapeKey() const { return false; }
     
-    bool IsChildMsg(Window* pWnd) const;
+    bool IsChildMsg(Window* pWnd) const { return false; }
     
-    const Window* Target() const;
+    const Window* Target() const { return nullptr; }
     
 };
 

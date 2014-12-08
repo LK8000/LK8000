@@ -15,10 +15,10 @@
 
 class WndTextEdit : public WndText {
 public:
-    WndTextEdit();
-    virtual ~WndTextEdit();
+    WndTextEdit() : WndText(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {}
+    virtual ~WndTextEdit() {}
     
-    int GetLineCount();
+    int GetLineCount() { return 0; }
 
 };
 

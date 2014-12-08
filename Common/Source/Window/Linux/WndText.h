@@ -18,8 +18,8 @@
 
 class WndText : public Window {
 public:
-    WndText(const LKColor& TextColor, const LKColor& BkColor);
-    virtual ~WndText();
+    WndText(const LKColor& TextColor, const LKColor& BkColor) {};
+    virtual ~WndText() {};
 
     void SetTextColor(const LKColor& color) {
         _TextColor = color;

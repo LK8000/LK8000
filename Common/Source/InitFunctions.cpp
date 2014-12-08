@@ -18,6 +18,10 @@
 #include "LKObjects.h"
 #include "DoInits.h"
 
+#ifdef USE_FREETYPE
+#include "Screen/FreeType/Init.hpp"
+#endif
+
 
 // windows
 WndMain MainWindow; // Main Window singleton
@@ -106,6 +110,13 @@ void PreloadInitialisation(bool ask) {
 //
 BOOL InitInstance()
 {
+#ifdef USE_FREETYPE
+  FreeType::Initialise();
+  Font::Initialise();
+#endif
+  
+  ScreenInitialized();
+        
   InitLKScreen();
   InitLKFonts(); // causing problems with CreateButtonLabels?
   PreloadInitialisation(true);

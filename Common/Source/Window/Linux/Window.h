@@ -14,9 +14,11 @@
 
 #include <assert.h>
 #include <tchar.h>
+#include <list>
 #include "utils/stl_utils.h"
 #include "utils/tstring.h"
 #include "Screen/FontReference.h"
+#include "ScreenCoordinate.h"
 
 class LKSurface;
 
@@ -32,46 +34,65 @@ public:
 
     virtual bool Create(Window* pOwner, const RECT& rect, const TCHAR* szName);
 
-    Window* GetOwner() const;
+    Window* GetOwner() const { return _Owner; }
     
     const TCHAR* GetWndName() const {
         return _szWindowName.c_str();
     }
 
-    void Move(const RECT& rc, bool bRepaint);
-    void SetVisible(bool Visible);
-    bool IsVisible();
-    void Enable(bool Enable);
-    bool IsEnabled();
-    void SetToForeground();
-    RECT GetClientRect() const;
+    void Move(const RECT& rect, bool bRepaint);
+    
+    void SetVisible(bool Visible) { _bVisible = Visible; }
+    bool IsVisible() const { return _bVisible; }
+    
+    void Enable(bool Enable) { _bEnabled = Enable; }
+    bool IsEnabled() const { return _bEnabled; }
+    
+    RECT GetClientRect() const { return _ClientRect; }
+    
     void Close();
     void Destroy();
-    void SetFont(FontReference Font);
-    void SetFocus();
-    bool HasFocus();
+    void SetFont(FontReference Font) { _Font = Font; }
+    
+    void SetFocus() { _FocusedWindow = this; }
+    bool HasFocus() const { return _FocusedWindow == this; }
+    
     void Redraw(const RECT& Rect);
-    void Redraw();
+    void Redraw() { Redraw(GetClientRect()); }
+    
+    void SetToForeground();
     void SetTopWnd();
+    
     void SetCapture();
     void ReleaseCapture();
 
-    static Window* GetFocus();
-protected:
-
-    void StartTimer(unsigned uTime /*millisecond*/) { }
-    void StopTimer() { }
+    static Window* GetFocus() { return _FocusedWindow; }
 
 protected:
     std::tstring _szWindowText;
     std::tstring _szWindowName;
+    
+    bool _bVisible;
+    bool _bEnabled;
+    
+    POINT _Position;
+    RECT _ClientRect;
+    
+    FontReference _Font;
+    Window * _Owner;
+    std::list<Window*> _lstChild;
 
+    static Window* _FocusedWindow;
     
     //contructor
-    Window() {
+    Window();
 
-    }
-
+    void StartTimer(unsigned uTime /*millisecond*/);
+    void StopTimer();
+    
+    void AddChild(Window* pWnd);
+    void RemoveChild(Window* pWnd);
+    
 protected:
     // Event Handling virtual function ( return true for ignore default process ) :
     virtual bool OnCreate(int x, int y, int cx, int cy) { return false; }

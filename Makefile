@@ -416,9 +416,9 @@ WIN32 := \
 	$(SRC_WINDOW)/Win32/WndTextLabel.cpp \
 	$(SRC_WINDOW)/Win32/WndCtrlBase.cpp \
 	\
-	$(SRC)/CpuLoad.cpp \
-	$(SRC)/Memory.cpp \
-	$(SRC)/RotateScreen.cpp\
+	$(SRC)/OS/Win/CpuLoad.cpp \
+	$(SRC)/OS/Win/Memory.cpp \
+	$(SRC)/OS/Win/RotateScreen.cpp\
 
 LINUX := \
 	$(SRC_SCREEN)/Memory/Bitmap.cpp \
@@ -429,7 +429,13 @@ LINUX := \
 	$(SRC_SCREEN)/Custom/Files.cpp \
 	$(SRC_SCREEN)/FreeType/Font.cpp \
 	$(SRC_SCREEN)/FreeType/Init.cpp \
-	
+	\
+	$(SRC_WINDOW)/Linux/Window.cpp \
+	\
+	$(SRC)/OS/Linux/CpuLoad.cpp \
+	$(SRC)/OS/Linux/Memory.cpp \
+	$(SRC)/OS/Linux/RotateScreen.cpp\
+
 
 ifneq ($(CONFIG_LINUX),y)
 WINDOW += $(WIN32)

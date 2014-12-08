@@ -19,7 +19,6 @@ public:
 
 protected:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) = 0;
-
 };
 
 #endif	/* WNDPAINT_H */

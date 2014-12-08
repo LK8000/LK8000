@@ -16,8 +16,8 @@
 
 class WndTextLabel : public WndText {
 public:
-    WndTextLabel();
-    virtual ~WndTextLabel();
+    WndTextLabel(): WndText(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {};
+    virtual ~WndTextLabel() {};
 
 protected:
 

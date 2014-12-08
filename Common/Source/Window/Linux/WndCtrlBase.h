@@ -15,8 +15,8 @@
 
 class WndCtrlBase :public WndPaint {
 public:
-    WndCtrlBase();
-    virtual ~WndCtrlBase();
+    WndCtrlBase() {};
+    virtual ~WndCtrlBase() {};
 };
 
 #endif	/* WNDCTRLBASE_H */

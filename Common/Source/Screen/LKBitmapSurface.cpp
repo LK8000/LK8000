@@ -16,20 +16,24 @@
 #warning "TODO: need to implement"
 #endif
 
+LKBitmapSurface::LKBitmapSurface() : LKSurface()
 #ifdef WIN32
-LKBitmapSurface::LKBitmapSurface() : LKSurface(), _hBitmap(), _oldBitmap() {
-}
+    , _hBitmap(), _oldBitmap() 
 #endif
+{
+}
 
 LKBitmapSurface::~LKBitmapSurface() {
     Release();
 }
 
+LKBitmapSurface::LKBitmapSurface(LKSurface& Surface, unsigned width, unsigned height) : LKSurface() 
 #ifdef WIN32
-LKBitmapSurface::LKBitmapSurface(LKSurface& Surface, unsigned width, unsigned height) : LKSurface(), _hBitmap(), _oldBitmap() {
+    , _hBitmap(), _oldBitmap() 
+#endif
+{
     Create(Surface, width, height);
 }
-#endif
 
 void LKBitmapSurface::Create(const LKSurface& Surface, unsigned width, unsigned height) {
 #ifdef WIN32

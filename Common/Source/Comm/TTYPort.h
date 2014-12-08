@@ -26,7 +26,7 @@ public:
 
     virtual void Flush();
     virtual void Purge();
-    virtual void DirtyPurge();
+    virtual void DirtyPurge() { Purge(); }
     virtual void CancelWaitEvent();
 
     virtual int SetRxTimeout(int);

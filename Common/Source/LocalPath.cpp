@@ -63,7 +63,7 @@ const TCHAR * LKGetLocalPath(void) {
         }
     }
 
-    return localpath;
+    return _T("");
 }
 
 
