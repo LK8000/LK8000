@@ -816,7 +816,7 @@ extern WindowControl *ActiveControl;
 extern WindowControl *LastFocusControl;
 
 #define mrOK             2
-#define mrCancle         3
+#define mrCancel         3
 
 class WndForm:public WindowControl{
 
@@ -856,7 +856,7 @@ class WndForm:public WindowControl{
 
     void Close(void){
       WindowControl::Close();
-      mModalResult = mrCancle;
+      mModalResult = mrCancel;
     }
 
     Poco::Timestamp enterTime;

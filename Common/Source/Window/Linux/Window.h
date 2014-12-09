@@ -19,6 +19,8 @@
 #include "utils/tstring.h"
 #include "Screen/FontReference.h"
 #include "ScreenCoordinate.h"
+#include "Screen/Point.hpp"
+#include "Compiler.h"
 
 class LKSurface;
 
@@ -35,6 +37,7 @@ public:
     virtual bool Create(Window* pOwner, const RECT& rect, const TCHAR* szName);
 
     Window* GetOwner() const { return _Owner; }
+    bool IsDefined() const { return _bDefined; }
     
     const TCHAR* GetWndName() const {
         return _szWindowName.c_str();
@@ -63,11 +66,18 @@ public:
     void SetToForeground();
     void SetTopWnd();
     
-    void SetCapture();
-    void ReleaseCapture();
+    void SetCapture() { _Capture = true; }
+    void ReleaseCapture() { _Capture = false; }
 
     static Window* GetFocus() { return _FocusedWindow; }
 
+    /**
+     * Locates the child which should get a mouse event.  Prefers the
+     * captured child.
+     */
+    gcc_pure
+    Window *EventChildAt(PixelScalar x, PixelScalar y) const;
+    
 protected:
     std::tstring _szWindowText;
     std::tstring _szWindowName;
@@ -81,6 +91,9 @@ protected:
     FontReference _Font;
     Window * _Owner;
     std::list<Window*> _lstChild;
+    
+    bool _bDefined;
+    bool _Capture;
 
     static Window* _FocusedWindow;
     
@@ -93,7 +106,20 @@ protected:
     void AddChild(Window* pWnd);
     void RemoveChild(Window* pWnd);
     
-protected:
+    virtual bool OnUser(unsigned id);
+
+    
+public:
+    /**
+     * Checks if the window wishes to handle a special key, like cursor
+     * keys and tab.  This wraps the WIN32 message WM_GETDLGCODE.
+     *
+     * @return true if the window will handle they key, false if the
+     * dialog manager may use it
+     */
+    gcc_pure
+    virtual bool OnKeyCheck(unsigned key_code) const;    
+    
     // Event Handling virtual function ( return true for ignore default process ) :
     virtual bool OnCreate(int x, int y, int cx, int cy) { return false; }
     virtual bool OnClose() { return false; }
@@ -105,12 +131,12 @@ protected:
     virtual bool OnSetFocus() { return false; }
     virtual bool OnKillFocus() { return false; }
 
-	virtual bool OnMouseMove(const POINT& Pos) { return false; }
+    virtual bool OnMouseMove(const POINT& Pos) { return false; }
 
-	virtual bool OnLButtonDown(const POINT& Pos) { return false; }
+    virtual bool OnLButtonDown(const POINT& Pos) { return false; }
     virtual bool OnLButtonUp(const POINT& Pos) { return false; }
 
-	virtual bool OnLButtonDblClick(const POINT& Pos) { return false; }
+    virtual bool OnLButtonDblClick(const POINT& Pos) { return false; }
 
     virtual bool OnKeyDown(unsigned KeyCode) { return false; }
     virtual bool OnKeyUp(unsigned KeyCode) { return false; }

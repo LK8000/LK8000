@@ -475,7 +475,7 @@ static void OnCloseClicked(Window* pWnd) {
     (void) pWnd;
     ItemIndex = -1;
 
-    wf->SetModalResult(mrCancle);
+    wf->SetModalResult(mrCancel);
 
 }
 

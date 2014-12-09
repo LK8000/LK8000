@@ -58,6 +58,15 @@ public:
     HWND Handle() {
         return _hWnd;
     }
+    
+    bool IsDefined() const {
+        return _hWnd != NULL;
+    }
+
+    bool IdentifyDescendant(HWND h) const {
+        assert(IsDefined());
+        return h == _hWnd || ::IsChild(_hWnd, h);
+    }
 
     Window* GetOwner() const {
         return GetObjectFromWindow(::GetParent(_hWnd));

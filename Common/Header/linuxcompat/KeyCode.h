@@ -27,6 +27,7 @@
 #define VK_F8       0x77
 #define VK_F9       0x78
 #define VK_F10      0x79
+#define VK_F11      0x7A
 
 #define VK_F23      0x86
 

@@ -23,7 +23,7 @@ static double emc= 0.0;
 static double cruise_efficiency= 1.0;
 
 static void OnCancelClicked(Window* pWnd) {
-    wf->SetModalResult(mrCancle);
+    wf->SetModalResult(mrCancel);
 }
 
 static void OnOKClicked(Window* pWnd) {
@@ -332,7 +332,7 @@ void dlgTaskCalculatorShowModal(void){
     ((WndButton *)wf->FindByName(TEXT("Target")))->SetVisible(false);
   }
 
-  if (wf->ShowModal() == mrCancle) {
+  if (wf->ShowModal() == mrCancel) {
     // todo: restore task settings.
     CheckSetMACCREADY(MACCREADY_enter);
     CRUISE_EFFICIENCY = CRUISE_EFFICIENCY_enter;

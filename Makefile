@@ -209,6 +209,8 @@ CE_DEFS += -DUSE_MEMORY_CANVAS
 $(eval $(call pkg-config-library,FREETYPE,freetype2))
 CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
 CE_DEFS += -DUSE_FREETYPE
+CE_DEFS += -DUSE_CONSOLE
+CE_DEFS += -DHAVE_POSIX
 else
 ifeq ($(CONFIG_PC),y)
 CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
@@ -315,7 +317,7 @@ CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 
 ifeq ($(CONFIG_LINUX),y)
 LDFLAGS = $(FREETYPE_LDLIBS)
-
+LDFLAGS += -lrt
 else
 LDFLAGS		:=-Wl,--major-subsystem-version=$(CE_MAJOR)
 LDFLAGS		+=-Wl,--minor-subsystem-version=$(CE_MINOR)
@@ -399,6 +401,10 @@ endif
 WINDOW := \
 	$(SRC_WINDOW)/WindowBase.cpp \
 	$(SRC_WINDOW)/WndMain.cpp \
+	$(SRC)/Event/Globals.cpp\
+	$(SRC)/Event/Shared/TimerQueue.cpp\
+	$(SRC)/Event/Shared/Timer.cpp\
+	$(SRC)/OS/Clock.cpp\
 
 
 WIN32 := \
@@ -416,6 +422,10 @@ WIN32 := \
 	$(SRC_WINDOW)/Win32/WndTextLabel.cpp \
 	$(SRC_WINDOW)/Win32/WndCtrlBase.cpp \
 	\
+	$(SRC)/Event/GDI/Loop.cpp\
+	$(SRC)/Event/GDI/Queue.cpp\
+	$(SRC)/Event/GDI/Transcode.cpp\
+	\
 	$(SRC)/OS/Win/CpuLoad.cpp \
 	$(SRC)/OS/Win/Memory.cpp \
 	$(SRC)/OS/Win/RotateScreen.cpp\
@@ -431,10 +441,32 @@ LINUX := \
 	$(SRC_SCREEN)/FreeType/Init.cpp \
 	\
 	$(SRC_WINDOW)/Linux/Window.cpp \
+	$(SRC_WINDOW)/Linux/WndMainBase.cpp \
+	\
+	$(SRC)/Event/Console/Loop.cpp\
+	$(SRC)/Event/Console/Queue.cpp\
+	$(SRC)/Event/Linux/TTYKeyboard.cpp\
+	$(SRC)/Event/Linux/AllInput.cpp\
+	$(SRC)/Event/Linux/Input.cpp\
+	$(SRC)/Event/Linux/MergeMouse.cpp\
+	$(SRC)/Event/Linux/Mouse.cpp\
+	$(SRC)/Event/Linux/SignalListener.cpp\
+	$(SRC)/Event/Shared/TimerQueue.cpp\
+	$(SRC)/Event/Shared/Timer.cpp\
 	\
 	$(SRC)/OS/Linux/CpuLoad.cpp \
 	$(SRC)/OS/Linux/Memory.cpp \
 	$(SRC)/OS/Linux/RotateScreen.cpp\
+	$(SRC)/OS/EventPipe.cpp\
+	$(SRC)/OS/FileDescriptor.cpp\
+	$(SRC)/OS/Poll.cpp\
+	\
+	$(SRC)/Util/UTF8.cpp\
+	$(SRC)/Util/StaticString.cpp\
+	$(SRC)/Util/StringUtil.cpp\
+	\
+	$(SRC)/IO/Async/DiscardFileEventHandler.cpp\
+	$(SRC)/IO/Async/IOLoop.cpp\
 
 
 ifneq ($(CONFIG_LINUX),y)

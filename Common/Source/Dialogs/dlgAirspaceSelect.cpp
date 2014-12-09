@@ -72,7 +72,7 @@ static void OnAirspaceListEnter(WindowControl * Sender,
       }
     }
   } else {
-    wf->SetModalResult(mrCancle);
+    wf->SetModalResult(mrCancel);
   }
 }
 
@@ -564,7 +564,7 @@ static void OnWpListInfo(WindowControl * Sender,
 static void OnWPSCloseClicked(Window* pWnd){
 	(void)pWnd;
   ItemIndex = -1;
-  wf->SetModalResult(mrCancle);
+  wf->SetModalResult(mrCancel);
 }
 
 static bool OnTimerNotify() {

@@ -18,6 +18,9 @@
 #endif
 
 #include "WndPaint.h"
+#include "Compiler.h"
+
+class Event;
 
 class WndMainBase : public WndPaint {
 public:
@@ -28,8 +31,17 @@ public:
 
     void FullScreen();
 
+  /**
+   * Check if the specified event should be allowed.  An event may be
+   * rejected when a modal dialog is active, and the event should go
+   * to a window outside of the dialog.
+   */
+  gcc_pure
+  bool FilterEvent(const Event &event, Window *allowed) const;
+
+
 protected:
-	virtual LRESULT CALLBACK WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    virtual LRESULT CALLBACK WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     virtual bool OnCreate(int x, int y, int cx, int cy);
     virtual bool OnDestroy();

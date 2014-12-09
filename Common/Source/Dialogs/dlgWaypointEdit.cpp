@@ -595,7 +595,7 @@ void dlgWaypointEditShowModal(WAYPOINT *wpt) {
 
     SetValues();
 
-    wf->SetModalResult(mrCancle);
+    wf->SetModalResult(mrCancel);
 
     if (wf->ShowModal()==mrOK) {
 

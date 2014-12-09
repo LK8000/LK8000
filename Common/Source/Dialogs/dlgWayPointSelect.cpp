@@ -70,7 +70,7 @@ static void OnWaypointListEnter(WindowControl * Sender,
     wf->SetModalResult(mrOK);
   }
   else
-    wf->SetModalResult(mrCancle);
+    wf->SetModalResult(mrCancel);
 }
 
 
@@ -765,7 +765,7 @@ static void OnWPSSelectClicked(Window* pWnd) {
 
 static void OnWPSCloseClicked(Window* pWnd) {
     ItemIndex = -1;
-    wf->SetModalResult(mrCancle);
+    wf->SetModalResult(mrCancel);
 }
 
 static bool OnTimerNotify() {

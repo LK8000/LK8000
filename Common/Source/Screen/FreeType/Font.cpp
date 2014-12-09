@@ -32,7 +32,7 @@ Copyright_License {
 #endif
 
 #ifndef _UNICODE
-#include "UTF8.h"
+#include "Util/UTF8.hpp"
 #endif
 
 #if defined(__clang__) && defined(__arm__)

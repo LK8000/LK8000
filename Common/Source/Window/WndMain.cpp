@@ -28,6 +28,7 @@
 #include "LiveTracker.h"
 #include "FlightDataRec.h"
 
+#include "Event/Event.h"
 
 WndMain::WndMain() : WndMainBase(), _MouseButtonDown() {
 }
@@ -353,7 +354,10 @@ bool WndMain::OnTimer() {
 }
 
 void WndMain::RunModalLoop() {
-    while(_EventLoop.Wait()) {
-        _EventLoop.Dispatch();
+    assert(event_queue);
+    EventLoop loop(*event_queue);
+    Event event;
+    while (IsDefined() && loop.Get(event)) {
+        loop.Dispatch(event);
     }
 }

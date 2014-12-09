@@ -11,6 +11,7 @@
 
 #include "WndMainBase.h"
 #include "resource.h"
+#include "Event/Event.h"
 
 extern HINSTANCE _hInstance; // Set by WinMain
 
@@ -103,4 +104,17 @@ void WndMainBase::FullScreen() {
                  GetSystemMetrics(SM_CYSCREEN),
                  SWP_SHOWWINDOW);
 #endif
+}
+
+bool WndMainBase::FilterEvent(const Event &event, Window *allowed) const {
+    assert(allowed != nullptr);
+
+    if (event.IsUserInput()) {
+        if (allowed->IdentifyDescendant(event.msg.hwnd))
+            /* events to the current modal dialog are allowed */
+            return true;
+
+        return false;
+    } else
+        return true;
 }

@@ -88,7 +88,7 @@ static void OnComboPopupListEnter(WindowControl * Sender, WndListFrame::ListInfo
 static void OnCancelClicked(Window* pWnd){
 	(void)pWnd;
   ComboListPopup->ComboPopupItemIndex= -1;
-  wf->SetModalResult(mrCancle);
+  wf->SetModalResult(mrCancel);
 }
 
 

@@ -19,7 +19,10 @@
 
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
+
 #include <functional>
+
+#include "Event/Event.h"
 
 using std::placeholders::_1;
 
@@ -1663,6 +1666,48 @@ FontReference WndForm::SetTitleFont(FontReference Value){
   return (res);
 }
 
+static bool
+IsSpecialKey(unsigned key_code)
+{
+  return key_code == KEY_LEFT || key_code == KEY_RIGHT ||
+    key_code == KEY_UP || key_code == KEY_DOWN ||
+    key_code == KEY_TAB || key_code == KEY_RETURN || key_code == KEY_ESCAPE;
+}
+
+/**
+ * Is this key handled by the focused control? (bypassing the dialog
+ * manager)
+ */
+gcc_pure
+static bool
+CheckKey(Window *container, const Event &event)
+{
+#ifdef WIN32
+  const MSG &msg = event.msg;
+  LRESULT r = ::SendMessage(msg.hwnd, WM_GETDLGCODE, msg.wParam,
+                            (LPARAM)&msg);
+  return (r & DLGC_WANTMESSAGE) != 0;
+#else
+  Window *focused = container->GetFocus();
+  if (focused == NULL)
+    return false;
+
+  return focused->OnKeyCheck(event.GetKeyCode());
+#endif
+}
+
+/**
+ * Is this "special" key handled by the focused control? (bypassing
+ * the dialog manager)
+ */
+gcc_pure
+static bool
+CheckSpecialKey(Window *container, const Event &event)
+{
+  return IsSpecialKey(event.GetKeyCode()) && CheckKey(container, event);
+}
+
+
 int WndForm::ShowModal(void) {
 #define OPENCLOSESUPPRESSTIME Poco::Timespan(0,500*1000).totalMicroseconds()
     SHOWTHREAD(_T("ShowModal"));
@@ -1680,10 +1725,76 @@ int WndForm::ShowModal(void) {
     Window* oldFocus = Window::GetFocus();
     FocusNext(NULL);
 
+    assert(event_queue);
+#if defined(ANDROID) || defined(USE_CONSOLE) || defined(ENABLE_SDL) || defined(NON_INTERACTIVE)
+    EventLoop loop(*event_queue, MainWindow);
+#else
+    DialogEventLoop loop(*event_queue, Handle());
+#endif
+    Event event;
+    while (mModalResult == 0 && loop.Get(event)) {
+        if (!MainWindow.FilterEvent(event, this)) {
+            continue;
+        }
+
+        if (event.IsKeyDown()) {
+            if (
+#ifdef WIN32
+                    IdentifyDescendant(event.msg.hwnd) &&
+#endif
+                    !CheckSpecialKey(this, event))
+                continue;
+
+#ifdef ENABLE_SDL
+            if (event.GetKeyCode() == SDLK_TAB) {
+                /* the Tab key moves the keyboard focus */
+#if SDL_MAJOR_VERSION >= 2
+                const Uint8 *keystate = ::SDL_GetKeyboardState(NULL);
+                event.event.key.keysym.sym =
+                        keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT]
+                        ? SDLK_UP : SDLK_DOWN;
+#else
+                const Uint8 *keystate = ::SDL_GetKeyState(NULL);
+                event.event.key.keysym.sym =
+                        keystate[SDLK_LSHIFT] || keystate[SDLK_RSHIFT]
+                        ? SDLK_UP : SDLK_DOWN;
+#endif
+            }
+#endif
+
+#ifdef _WIN32_WCE
+            /* The Windows CE dialog manager does not handle KEY_ESCAPE and
+               so we have to do it by ourself */
+
+            // On Altair, the RemoteKey ("E" Button) shall also close the analyse-page
+            if (IsAltair()) {
+                if (event.GetKeyCode() == KEY_ESCAPE || event.GetKeyCode() == KEY_F15) {
+                    mModalResult = mrOK;
+                    continue;
+                }
+            } else 
+#endif                
+            if (event.GetKeyCode() == KEY_ESCAPE) {
+                mModalResult = mrCancel;
+                continue;
+            }
+
+#ifdef USE_LINUX_INPUT
+            if (event.GetKeyCode() == KEY_POWER) {
+                /* the Kobo power button closes the modal dialog */
+                OnAnyKeyDown = mrCancel;
+                continue;
+            }
+#endif
+        }
+
+        loop.Dispatch(event);
+    } // End Modal Loop
+/*    
     EventLoop Loop;
     while((mModalResult == 0) && Loop.Wait()) {
         if(Loop.IsEscapeKey()) {
-            mModalResult = mrCancle;
+            mModalResult = mrCancel;
         }
         
         if(Loop.IsInputMsg() && Loop.Target() != this && !Loop.IsChildMsg(this)) {
@@ -1693,7 +1804,7 @@ int WndForm::ShowModal(void) {
         
         Loop.Dispatch();
     }
-
+*/
     if(oldFocus) {
         oldFocus->SetFocus();
     }

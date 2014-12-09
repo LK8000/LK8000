@@ -13,6 +13,9 @@
 #define	WndMainBase_H
 
 #include "WndPaint.h"
+#include "DoubleClick.hpp"
+
+class Event;
 
 class WndMainBase : public WndPaint {
 public:
@@ -23,8 +26,24 @@ public:
         return WndPaint::Create(NULL, rect, szName);
     }
 
-    void FullScreen() {};
+    void FullScreen();
+    
+    void Refresh();
 
+    bool OnEvent(const Event &event);
+    
+    /**
+     * Check if the specified event should be allowed.  An event may be
+     * rejected when a modal dialog is active, and the event should go
+     * to a window outside of the dialog.
+     */
+    gcc_pure
+    bool FilterEvent(const Event &event, Window *allowed) const;
+    
+    bool FilterMouseEvent(RasterPoint pt, Window *allowed) const;
+    
+protected:
+    DoubleClick double_click;
 };
 
 #endif	/* WndMainBase_H */

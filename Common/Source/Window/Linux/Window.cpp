@@ -17,7 +17,7 @@ Window* Window::_FocusedWindow = nullptr;
 
 Window::Window() : _bVisible(false), _bEnabled(true), 
         _Position(), _ClientRect(), 
-        _Font(), _Owner() 
+        _Font(), _Owner(), _bDefined(), _Capture()
 {
 
 }
@@ -31,6 +31,8 @@ bool Window::Create(Window* pOwner, const RECT& rect, const TCHAR* szName) {
     if(_Owner) {
         _Owner->AddChild(this);
     }
+    
+    _bDefined = true;
     
     return true;
 }
@@ -47,6 +49,7 @@ void Window::Destroy() {
     if(_Owner) {
         _Owner->RemoveChild(this);
     }
+    _bDefined = false;
 }
 
 void Window::Close() {
@@ -73,14 +76,6 @@ void Window::SetTopWnd() {
 
 }
 
-void Window::SetCapture() {
-
-}
-
-void Window::ReleaseCapture() {
-
-}
-
 void Window::AddChild(Window* pWnd) {
     
     assert(pWnd && pWnd->GetOwner() == this);
@@ -94,4 +89,17 @@ void Window::RemoveChild(Window* pWnd) {
     if(It != _lstChild.end()) {
         _lstChild.erase(It);
     }
+}
+
+bool Window::OnUser(unsigned id) {
+    assert(false);
+    return false;
+}
+
+Window* Window::EventChildAt(PixelScalar x, PixelScalar y) const {
+    return nullptr;
+}
+
+bool Window::OnKeyCheck(unsigned key_code) const {
+    return nullptr;
 }

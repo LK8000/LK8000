@@ -14,7 +14,6 @@
 
 #ifdef WIN32
 #include "Win32/Window.h"
-#include "Win32/EventLoop.h"
 #include "Win32/WndMainBase.h"
 #include "Win32/WndPaint.h"
 #include "Win32/WndTextEdit.h"
@@ -26,7 +25,6 @@
 #include "types.h"
 #include "KeyCode.h"
 #include "Linux/Window.h"
-#include "Linux/EventLoop.h"
 #include "Linux/WndMainBase.h"
 #include "Linux/WndPaint.h"
 #include "Linux/WndTextEdit.h"

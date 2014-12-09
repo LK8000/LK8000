@@ -33,7 +33,7 @@ static void OnCloseClicked(Window* pWnd) {
 }
 
 static void OnCancelClicked(Window* pWnd) {
-    wf->SetModalResult(mrCancle);
+    wf->SetModalResult(mrCancel);
 }
 
 static void OnResetClicked(Window* pWnd) {

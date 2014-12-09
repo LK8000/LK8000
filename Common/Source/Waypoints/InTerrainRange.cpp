@@ -53,7 +53,7 @@ bool WaypointInTerrainRange(WAYPOINT *List) {
         WaypointOutOfTerrainRangeDontAskAgain = 1;
         // WaypointsOutOfRange = 1; // this would override user choice in configuration!
         return true;
-      case mrCancle: 
+      case mrCancel: 
       case wpTerrainBoundsNoAll: 
         WaypointOutOfTerrainRangeDontAskAgain = 2;
         // WaypointsOutOfRange = 2; // this would override user choice in configuration!

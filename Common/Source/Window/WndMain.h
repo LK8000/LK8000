@@ -46,7 +46,6 @@ protected:
 
 private:
     bool _MouseButtonDown;
-    EventLoop _EventLoop;
 };
 
 #endif	/* WNDMAIN_H */
