@@ -24,3 +24,5 @@ output.map
 /.cproject
 /.project
 /local.mk
+/LK8000-LINUX_debug-ns.exe
+/LK8000-LINUX_debug.exe
