@@ -21,6 +21,7 @@ static std::set<std::tstring> setMissingBitmap;
 
 LKBitmap LKLoadBitmap(const TCHAR *srcfile) {
     LKBitmap hBmp;
+#ifdef WIN32
     if (!hBmp.LoadFromFile(srcfile)) {
         auto ib = setMissingBitmap.insert(srcfile);
         if(ib.second) {
@@ -29,6 +30,9 @@ LKBitmap LKLoadBitmap(const TCHAR *srcfile) {
         hBmp.LoadFromResource(MAKEINTRESOURCE(IDB_EMPTY));
         ++Bitmaps_Errors;
     }
+#else
+#warning "TODO : Load Bitmap or replace Bitmap by other format like PNG ..."
+#endif
     return hBmp;
 }
 
