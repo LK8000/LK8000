@@ -57,7 +57,7 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
   if (ttype=='H') {
 	_tcscpy(suffix,_T("_HELP.TXT"));
 	LocalPath(sPath,_T(LKD_LANGUAGE));
-	_stprintf(sFile,_T("%s\\%s%s"),sPath,LKLangSuffix,suffix);
+	_stprintf(sFile,_T("%s%s%s%s"),sPath, _T(DIRSEP), LKLangSuffix, suffix);
 
 	// Help File, dynamically handled
 	#if DEBUG_GETTEXT
@@ -340,7 +340,7 @@ bool LKLoadMessages(bool fillup) {
 
   LocalPath(sPath,_T(LKD_LANGUAGE));
   _tcscpy(suffix,_T("_MSG.TXT"));
-  _stprintf(sFile,_T("%s\\%s%s"),sPath,LKLangSuffix,suffix);
+  _stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
 
   ZZIP_FILE *hFile = zzip_fopen(sFile, "rb");
 	if (hFile == NULL) {

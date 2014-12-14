@@ -30,7 +30,7 @@ namespace DlgIgcFile {
 		LocalPath(szPath, _T(LKD_LOGS));
         size_t nLen = _tcslen(szPath);
         if (szPath[nLen - 1] != _T('\\')) {
-            _tcscat(szPath, _T("\\"));
+            _tcscat(szPath, _T(DIRSEP));
         }
         _tcscat(szPath, _T("*.igc"));
 

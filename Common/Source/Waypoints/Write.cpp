@@ -234,7 +234,7 @@ void WaypointWriteFiles(void) {
   } else {
 
 	LocalPath(szFile1,_T(LKD_WAYPOINTS));
-	_tcscat(szFile1,_T("\\")); _tcscat(szFile1,_T(LKF_WAYPOINTS1)); // 091206
+	_tcscat(szFile1,_T(DIRSEP)); _tcscat(szFile1,_T(LKF_WAYPOINTS1)); // 091206
 
 	fp = _tfopen(szFile1, TEXT("wb"));
   }
@@ -253,12 +253,8 @@ void WaypointWriteFiles(void) {
     fp = _tfopen(szFile2, TEXT("wb"));
   } else {
 
-/* 091206
-	LocalPath(szFile2);
-	_tcscat(szFile2,TEXT("\\waypoints2.dat"));
-*/
 	LocalPath(szFile2,_T(LKD_WAYPOINTS));
-	_tcscat(szFile2,_T("\\")); _tcscat(szFile2,_T(LKF_WAYPOINTS2)); // 091206
+	_tcscat(szFile2,_T(DIRSEP)); _tcscat(szFile2,_T(LKF_WAYPOINTS2)); // 091206
 
 	fp = _tfopen(szFile2, TEXT("wb"));
   }

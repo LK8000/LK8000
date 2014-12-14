@@ -23,7 +23,7 @@ bool LoadRecentList() {
    unsigned int csum;
 
   LocalPath(buffer,TEXT(LKD_CONF));
-  _tcscat(buffer,TEXT("\\"));
+  _tcscat(buffer,TEXT(DIRSEP));
   _tcscat(buffer,_T(LKF_RECENTS)); // 091101
 
 
@@ -87,7 +87,7 @@ bool SaveRecentList() {
    int i;
 
   LocalPath(buffer,TEXT(LKD_CONF));
-  _tcscat(buffer,TEXT("\\"));
+  _tcscat(buffer,TEXT(DIRSEP));
   _tcscat(buffer,_T(LKF_RECENTS)); // 091101
 
    StartupStore(_T(". Save history to <%s>%s"),buffer,NEWLINE);  // 091122

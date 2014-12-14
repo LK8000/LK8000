@@ -23,6 +23,7 @@ const TCHAR * LKGetLocalPath(void) {
     if (lk::filesystem::getExePath(localpath, MAX_PATH)) {
         size_t nLen = _tcslen(localpath);
         _tcscat(localpath, _T(LKD_SYSTEM"\\_SYSTEM"));
+        lk::filesystem::fixPath(localpath);
         if (lk::filesystem::exist(localpath)) {
             // Yes, so we use the current path folder
             localpath[nLen] = _T('\0');
@@ -37,6 +38,7 @@ const TCHAR * LKGetLocalPath(void) {
 
         size_t nLen = _tcslen(localpath);
         _tcscat(localpath, _T(LKD_SYSTEM"\\_SYSTEM"));
+        lk::filesystem::fixPath(localpath);
         if (lk::filesystem::exist(localpath)) {
             // Yes, so we use the current path folder
             localpath[nLen] = _T('\0');
@@ -56,14 +58,15 @@ const TCHAR * LKGetLocalPath(void) {
 
         size_t nLen = _tcslen(localpath);
         _tcscat(localpath, _T(LKD_SYSTEM"\\_SYSTEM"));
+        lk::filesystem::fixPath(localpath);
         if (lk::filesystem::exist(localpath)) {
             // Yes, so we use the current path folder
             localpath[nLen] = _T('\0');
             return localpath;
         }
     }
-
-    return _T("");
+    localpath[0] = _T('\0');
+    return localpath;
 }
 
 
@@ -106,9 +109,12 @@ void LocalPath(TCHAR* buffer, const TCHAR* file) {
   }
 
   if (_tcslen(file)>0)
-	_stprintf(buffer,TEXT("%s%s"),LKGetLocalPath(),ptr2);
-  else
-	_tcscpy(buffer,LKGetLocalPath());
+    _stprintf(buffer,TEXT("%s%s"),LKGetLocalPath(),ptr2);
+  else {
+    _tcscpy(buffer,LKGetLocalPath());
+  }
+
+  lk::filesystem::fixPath(buffer);
 }
 
 // This is used by LoadFromXML function only
@@ -117,7 +123,7 @@ void LocalPathS(TCHAR *buffer, const TCHAR* file) {
   LocalPath(buffer, TEXT(LKD_DIALOGS));
   TCHAR* ptr = buffer + _tcslen(buffer) -1;
   if(*ptr != _T('\\')) {
-      _tcscat(buffer, _T("\\"));
+      _tcscat(buffer, _T(DIRSEP));
   }
 
   switch(AircraftCategory) {
@@ -143,6 +149,7 @@ void LocalPathS(TCHAR *buffer, const TCHAR* file) {
   }
 
   _tcscat(buffer,ptr2);
+  lk::filesystem::fixPath(buffer);  
 }
 
 
@@ -164,7 +171,7 @@ void ExpandLocalPath(TCHAR* filein) {
   ptr += _tcslen(code);
   TCHAR* ptr2 = lpath + _tcslen(lpath) -1;
   if(*ptr != _T('\\') && *ptr2 != _T('\\')) {
-      _tcscat(lpath, _T("\\"));
+      _tcscat(lpath, _T(DIRSEP));
   }
   if(*ptr == _T('\\') && *ptr2 == _T('\\')) {
       ++ptr;
@@ -174,6 +181,7 @@ void ExpandLocalPath(TCHAR* filein) {
     _stprintf(output,TEXT("%s%s"),lpath, ptr);
     _tcscpy(filein, output);
   }
+  lk::filesystem::fixPath(filein);  
 }
 
 

@@ -51,7 +51,7 @@ static bool wasWriting=false;
         TCHAR fpname[LKSIZEBUFFERPATH];
         TCHAR buffer[LKSIZEBUFFERPATH];
 	LocalPath(buffer,TEXT(LKD_LOGS));
-	_stprintf(fpname, _T("%s\\NMEA_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day,
+	_stprintf(fpname, _T("%s%sNMEA_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP), GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day,
 	GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 	logfp = _tfopen(fpname, _T("a"));
 	if (logfp == NULL) {
@@ -71,7 +71,7 @@ static bool wasWriting=false;
                 TCHAR fpname[LKSIZEBUFFERPATH];
                 TCHAR buffer[LKSIZEBUFFERPATH];
 		LocalPath(buffer,TEXT(LKD_LOGS));
-	    _stprintf(fpname, _T("%s\\NMEA_A_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+	    _stprintf(fpname, _T("%s%sNMEA_A_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP), GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 		logfp0 = _tfopen(fpname, _T("a"));
 		if (logfp0 == NULL) {
 		  DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE PORT A:"));
@@ -84,7 +84,7 @@ static bool wasWriting=false;
                 TCHAR fpname[LKSIZEBUFFERPATH];
                 TCHAR buffer[LKSIZEBUFFERPATH];
         LocalPath(buffer,TEXT(LKD_LOGS));
-		_stprintf(fpname, _T("%s\\NMEA_B_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+		_stprintf(fpname, _T("%s%sNMEA_B_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP), GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 		logfp1 = _tfopen(fpname, _T("a"));
 		if (logfp1 == NULL) {
 		  DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE PORT B:"));

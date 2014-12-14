@@ -93,6 +93,11 @@
 /*
  * Global defines
  */
+#ifdef WIN32
+#define DIRSEP          "\\"
+#else
+#define DIRSEP          "/"
+#endif
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"X"

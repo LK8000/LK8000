@@ -13,7 +13,7 @@ void SaveDefaultTask(void) {
   LockTaskData();
     TCHAR buffer[MAX_PATH];
   LocalPath(buffer,TEXT(LKD_TASKS));
-  _tcscat(buffer,TEXT("\\"));
+  _tcscat(buffer,TEXT(DIRSEP));
   _tcscat(buffer,_T(LKF_DEFAULTASK)); // 091101
     SaveTask(buffer);
   UnlockTaskData();

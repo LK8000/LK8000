@@ -39,7 +39,7 @@ void MarkLocation(const double lon, const double lat, const double altitude)
   bool dopreambol=false;
   TCHAR fname[MAX_PATH];
   LocalPath(fname,TEXT(LKD_WAYPOINTS));
-  _tcscat(fname,_T("\\")); 
+  _tcscat(fname,_T(DIRSEP)); 
   _stprintf(tstring,_T("LK%04d%02d%02d.cup"), GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day);
   _tcscat(fname,tstring);
 

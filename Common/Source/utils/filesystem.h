@@ -49,17 +49,21 @@ namespace lk {
         };
 
 
-		// name of current executable file
-		bool getExeName(TCHAR* szName, size_t MaxSize);
+        // name of current executable file
+        bool getExeName(TCHAR* szName, size_t MaxSize);
 
-		// full Path of current executable file, included trail path separator
-		bool getExePath(TCHAR* szPath, size_t MaxSize);
+        // full Path of current executable file, included trail path separator
+        bool getExePath(TCHAR* szPath, size_t MaxSize);
 
-		// root Path of current executable file name
-		bool getBasePath(TCHAR* szPath, size_t MaxSize);
+        // root Path of current executable file name
+        bool getBasePath(TCHAR* szPath, size_t MaxSize);
 
-		// user directory ( ".../MyDocument/" on Windows, "/home/username/" on linux )
-		bool getUserPath(TCHAR* szPath, size_t MaxSize);
+        // user directory ( ".../MyDocument/" on Windows, "/home/username/" on linux )
+        bool getUserPath(TCHAR* szPath, size_t MaxSize);
+        
+        // fix directory separator
+        void fixPath(TCHAR* szPath);
+        
 
     }
 }

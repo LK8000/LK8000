@@ -18,11 +18,11 @@ FlarmIdFile::FlarmIdFile(void)
 
   LocalPath(path);
 
-  _stprintf(flarmIdFileName, TEXT("%s\\%s\\%s"), path, TEXT(LKD_CONF), TEXT(LKF_FLARMNET));
+  _stprintf(flarmIdFileName, TEXT("%s%s%s%s%s"), path, _T(DIRSEP), TEXT(LKD_CONF), _T(DIRSEP), TEXT(LKF_FLARMNET));
 
   FILE*	hFile = _tfopen(flarmIdFileName, TEXT("rt"));
   if (hFile == NULL) {
-	_stprintf(flarmIdFileName, TEXT("%s\\%s\\data.fln"), path, TEXT(LKD_CONF));
+	_stprintf(flarmIdFileName, TEXT("%s%s%s%sdata.fln"), path, _T(DIRSEP), TEXT(LKD_CONF), _T(DIRSEP));
 	hFile = _tfopen(flarmIdFileName, TEXT("rt"));
 	if (hFile == NULL) return;
   }

@@ -88,7 +88,7 @@ bool LoadModelFromProfile()
   char  tmpbuf[MAX_PATH*2];
 
   LocalPath(tmpTbuf,_T(LKD_CONF));
-  _tcscat(tmpTbuf,_T("\\"));
+  _tcscat(tmpTbuf,_T(DIRSEP));
   _tcscat(tmpTbuf,_T(LKPROFILE));
 
   #if TESTBENCH

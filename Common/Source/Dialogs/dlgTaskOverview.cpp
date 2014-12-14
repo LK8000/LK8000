@@ -424,7 +424,7 @@ static void OnSaveClicked(Window* pWnd){
 
 	_tcscat(task_name, TEXT(LKS_TSK));
 	LocalPath(file_name,TEXT(LKD_TASKS));
-	_tcscat(file_name,TEXT("\\"));
+	_tcscat(file_name,TEXT(DIRSEP));
 	_tcscat(file_name,task_name); // 091101
 
 	dfe->Lookup(file_name);

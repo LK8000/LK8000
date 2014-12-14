@@ -239,13 +239,13 @@ int main() {
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
 
-  _stprintf(defaultProfileFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKPROFILE));
+  _stprintf(defaultProfileFile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKPROFILE));
   _tcscpy(startProfileFile, defaultProfileFile);
-  _stprintf(defaultAircraftFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKAIRCRAFT));
+  _stprintf(defaultAircraftFile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKAIRCRAFT));
   _tcscpy(startAircraftFile, defaultAircraftFile);
-  _stprintf(defaultPilotFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKPILOT));
+  _stprintf(defaultPilotFile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKPILOT));
   _tcscpy(startPilotFile, defaultPilotFile);
-  _stprintf(defaultDeviceFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKDEVICE));
+  _stprintf(defaultDeviceFile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKDEVICE));
   _tcscpy(startDeviceFile, defaultDeviceFile);
 
 

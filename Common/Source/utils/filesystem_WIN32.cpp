@@ -153,6 +153,8 @@ bool lk::filesystem::getExePath(TCHAR* szPath, size_t MaxSize) {
     TCHAR* szSep = _tcsrchr(szPath, _T('\\'));
     if (!szSep) {
         szSep = szPath;
+    } else {
+        (*szSep++) = '\\';
     }
     (*szSep) = _T('\0');
 
@@ -192,4 +194,12 @@ bool lk::filesystem::getUserPath(TCHAR* szPath, size_t MaxSize) {
         }
     }
     return false;
+}
+
+void lk::filesystem::fixPath(TCHAR* szPath) {
+    TCHAR * sz = _tcsstr(szPath, _T("/"));
+    while(sz) {
+        (*sz) = _T('\\');
+        sz = _tcsstr(sz, _T("\\"));
+    }
 }

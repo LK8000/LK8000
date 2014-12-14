@@ -95,7 +95,7 @@ static void OnSaveNewClicked(Window* pWnd) {
 
   _tcscat(profile_name, profilesuffix);
   LocalPath(file_name,TEXT(LKD_CONF));
-  _tcscat(file_name,TEXT("\\"));
+  _tcscat(file_name,TEXT(DIRSEP));
   _tcscat(file_name,profile_name);
 
   dfe->Lookup(file_name);

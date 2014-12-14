@@ -364,21 +364,21 @@ bool LoadChecklist(short checklistmode) {
 	// notepad
 	case 0:
 		LocalPath(filename, TEXT(LKD_CONF));
-		_tcscat(filename,_T("\\"));
+		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CHECKLIST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M878_")));  // notepad
     return LoadAsciiChecklist(filename);
 	// logbook TXT
 	case 1:
 		LocalPath(filename, TEXT(LKD_LOGS));
-		_tcscat(filename,_T("\\"));
+		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_LOGBOOKTXT));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
    		 return LoadUtfChecklist(filename);
 	// logbook LST
 	case 2:
 		LocalPath(filename, TEXT(LKD_LOGS));
-		_tcscat(filename,_T("\\"));
+		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_LOGBOOKLST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
 		return LoadUtfChecklist(filename);

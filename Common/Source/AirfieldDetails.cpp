@@ -29,7 +29,7 @@ void OpenAirfieldDetails() {
   } else {
 	#if 0
 	LocalPath(zfilename, _T(KD_WAYPOINTS));
-	_tcscat(zfilename, _T("\\")); 
+	_tcscat(zfilename, _T(DIRSEP)); 
 	_tcscat(zfilename, _T(LKF_AIRFIELDS));
 	#else
 	_tcscpy(zfilename, _T(""));

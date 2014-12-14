@@ -44,7 +44,7 @@ void OpenFLARMDetails() {
 
   TCHAR filename[MAX_PATH];
   LocalPath(filename,TEXT(LKD_CONF));
-  _tcscat(filename,_T("\\"));
+  _tcscat(filename,_T(DIRSEP));
   _tcscat(filename,_T(LKF_FLARMIDS));
 
   #if TESTBENCH  
@@ -86,7 +86,7 @@ void SaveFLARMDetails(void)
 {
   TCHAR filename[MAX_PATH];
   LocalPath(filename,TEXT(LKD_CONF)); // 091103
-  _tcscat(filename,_T("\\"));
+  _tcscat(filename,_T(DIRSEP));
   _tcscat(filename,_T(LKF_FLARMIDS));
   
   FILE * stream = _tfopen(filename,_T("wt"));

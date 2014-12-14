@@ -163,24 +163,24 @@ void InputEvents::readFile() {
 
 	switch(AircraftCategory) {
 		case umGlider:
-			_stprintf(xcifile,_T("%s\\MENU_GLIDER.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s%sMENU_GLIDER.TXT"), xcipath, _T(DIRSEP));
 			break;
 		case umParaglider:
-			_stprintf(xcifile,_T("%s\\MENU_PARAGLIDER.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s%sMENU_PARAGLIDER.TXT"), xcipath, _T(DIRSEP));
 			break;
 		case umCar:
-			_stprintf(xcifile,_T("%s\\MENU_CAR.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s%sMENU_CAR.TXT"), xcipath, _T(DIRSEP));
 			break;
 		case umGAaircraft:
-			_stprintf(xcifile,_T("%s\\MENU_GA.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s%sMENU_GA.TXT"), xcipath, _T(DIRSEP));
 			break;
 		default:
-			_stprintf(xcifile,_T("%s\\MENU_OTHER.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s%sMENU_OTHER.TXT"), xcipath, _T(DIRSEP));
 			break;
 	}
 	fp=zzip_fopen(xcifile, "rb");
 	if (fp == NULL) {
-		_stprintf(xcifile,_T("%s\\DEFAULT_MENU.TXT"), xcipath);
+		_stprintf(xcifile,_T("%s%sDEFAULT_MENU.TXT"), xcipath, _T(DIRSEP));
 		fp=zzip_fopen(xcifile, "rb");
 		if (fp == NULL) {
 			// This cannot happen
@@ -2475,7 +2475,7 @@ void InputEvents::eventTaskLoad(const TCHAR *misc) {
 	
     TCHAR szFileName[MAX_PATH];
 	LocalPath(szFileName,_T(LKD_TASKS));
-	_tcscat(szFileName,_T("\\"));
+	_tcscat(szFileName,_T(DIRSEP));
 	_tcscat(szFileName,misc);
     
     LPCTSTR wextension = _tcsrchr(szFileName, '.');
@@ -2501,7 +2501,7 @@ void InputEvents::eventTaskSave(const TCHAR *misc) {
   if (_tcslen(misc)>0) {
 	LockTaskData();
 	LocalPath(buffer,_T(LKD_TASKS));
-	_tcscat(buffer,_T("\\"));
+	_tcscat(buffer,_T(DIRSEP));
 	_tcscat(buffer,misc);
 	SaveTask(buffer);
 	UnlockTaskData();
@@ -2528,12 +2528,12 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 			return;
 		}
 		LocalPath(buffer,_T(LKD_SYSTEM)); // 100223
-		_tcscat(buffer,_T("\\"));
+		_tcscat(buffer,_T(DIRSEP));
 		_tcscat(buffer,_T("FACTORYPRF"));
 		factory=true;
 	} else {
 		LocalPath(buffer,_T(LKD_CONF)); // 100223
-		_tcscat(buffer,_T("\\"));
+		_tcscat(buffer,_T(DIRSEP));
 		_tcscat(buffer,misc);
 	}
 
@@ -2581,7 +2581,7 @@ void InputEvents::eventProfileSave(const TCHAR *misc) {
 	}
 
 	LocalPath(buffer,_T(LKD_CONF)); // 100223
-	_tcscat(buffer,_T("\\"));
+	_tcscat(buffer,_T(DIRSEP));
 	_tcscat(buffer,misc);
 	LKProfileSave(buffer);
 	_stprintf(buffer,_T("%s saved to _Configuration "),misc);

@@ -530,19 +530,19 @@ void StartLogger()
   if (TaskModified) {
     SaveDefaultTask();
   }
-  _stprintf(szLoggerFileName, TEXT("%s\\LOGGER_TMP.IGC"), path);
+  _stprintf(szLoggerFileName, TEXT("%s%sLOGGER_TMP.IGC"), path, _T(DIRSEP));
 
-  _stprintf(szSLoggerFileName, TEXT("%s\\LOGGER_SIG.IGC"), path);
+  _stprintf(szSLoggerFileName, TEXT("%s%sLOGGER_SIG.IGC"), path, _T(DIRSEP));
   TCHAR newfile[MAX_PATH+20];
   if (lk::filesystem::exist(szLoggerFileName)) {
 	StartupStore(_T("---- Logger recovery: Existing LOGGER_TMP.IGC found, renamed to LOST%s"),NEWLINE);
-	_stprintf(newfile, TEXT("%s\\LOST_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+	_stprintf(newfile, TEXT("%s%sLOST_%02d%02d%02d.IGC"), path, _T(DIRSEP), GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 	lk::filesystem::copyFile(szLoggerFileName,newfile,false);
 	lk::filesystem::deleteFile(szLoggerFileName);
   }
   if (lk::filesystem::exist(szSLoggerFileName)) {
 	StartupStore(_T("---- Logger recovery (G): Existing LOGGER_SIG.IGC found, renamed to LOSTG%s"),NEWLINE);
-	_stprintf(newfile, TEXT("%s\\LOSTG_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+	_stprintf(newfile, TEXT("%s%sLOSTG_%02d%02d%02d.IGC"), path, _T(DIRSEP), GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 	lk::filesystem::copyFile(szSLoggerFileName,newfile,false);
 	lk::filesystem::deleteFile(szSLoggerFileName);
   }
@@ -557,8 +557,8 @@ void StartLogger()
       if (!LoggerShortName) {
         // Long file name
         _stprintf(szFLoggerFileName,
-                 TEXT("%s\\%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
-                 path,
+                 TEXT("%s%s%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
+                 path, _T(DIRSEP),
                  GPS_INFO.Year,
                  GPS_INFO.Month,
                  GPS_INFO.Day,
@@ -569,8 +569,9 @@ void StartLogger()
                  i);
  
         _stprintf(szFLoggerFileNameRoot,
-                 TEXT("%s\\%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
+                 TEXT("%s%s%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
                  TEXT(""), // this creates it in root if MoveFile() fails
+                 _T(DIRSEP),
                  GPS_INFO.Year,
                  GPS_INFO.Month,
                  GPS_INFO.Day,
@@ -587,8 +588,8 @@ void StartLogger()
         cday = NumToIGCChar(GPS_INFO.Day);
         cflight = NumToIGCChar(i);
         _stprintf(szFLoggerFileName,
-                 TEXT("%s\\%c%c%cX%c%c%c%c.IGC"),
-                 path,
+                 TEXT("%s%s%c%c%cX%c%c%c%c.IGC"),
+                 path, _T(DIRSEP),
                  cyear,
                  cmonth,
                  cday,
@@ -598,8 +599,9 @@ void StartLogger()
                  cflight);
 
         _stprintf(szFLoggerFileNameRoot,
-                 TEXT("%s\\%c%c%cX%c%c%c%c.IGC"),
+                 TEXT("%s%s%c%c%cX%c%c%c%c.IGC"),
                  TEXT(""), // this creates it in root if MoveFile() fails
+                 _T(DIRSEP),
                  cyear,
                  cmonth,
                  cday,
@@ -1279,7 +1281,7 @@ int RunSignature() {
 void AdditionalHeaders(void) {
 
     TCHAR pathfilename[MAX_PATH + 1];
-    _stprintf(pathfilename, TEXT("%s\\%s\\%s"), LKGetLocalPath(), TEXT(LKD_LOGS), _T(EXTHFILE));
+    _stprintf(pathfilename, TEXT("%s%s%s%s"), LKGetLocalPath(), _T(LKD_LOGS), _T(DIRSEP), _T(EXTHFILE));
 
     if (!lk::filesystem::exist(pathfilename)) {
 #if DEBUGHFILE

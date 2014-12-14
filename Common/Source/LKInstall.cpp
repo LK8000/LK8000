@@ -45,7 +45,7 @@ short InstallSystem() {
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
   // because GetFileAttributes can be very slow or hang if checking a directory. In any case testing a file is 
   // much more faster.
-  _stprintf(srcfile,TEXT("%s\\_SYSTEM"),srcdir);
+  _stprintf(srcfile,TEXT("%s%s_SYSTEM"),srcdir, _T(DIRSEP));
   if ( !lk::filesystem::exist(srcfile) ) {
 	StartupStore(_T("------ InstallSystem ERROR could not find valid system directory <%s>%s"),srcdir,NEWLINE); // 091104
 	StartupStore(_T("------ Missing checkfile <%s>%s"),srcfile,NEWLINE);
@@ -255,7 +255,7 @@ bool CheckDataDir() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir,_T(LKD_SYSTEM));
-  _stprintf(srcfile,TEXT("%s\\_SYSTEM"),srcdir);
+  _stprintf(srcfile,TEXT("%s%s_SYSTEM"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
 
@@ -263,7 +263,7 @@ bool CheckLanguageDir() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_LANGUAGE));
-  _stprintf(srcfile,TEXT("%s\\_LANGUAGE"),srcdir);
+  _stprintf(srcfile,TEXT("%s%s_LANGUAGE"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
 
@@ -271,7 +271,7 @@ bool CheckLanguageEngMsg() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_LANGUAGE));
-  _stprintf(srcfile,TEXT("%s\\ENG_MSG.TXT"),srcdir);
+  _stprintf(srcfile,TEXT("%s%sENG_MSG.TXT"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
 
@@ -279,7 +279,7 @@ bool CheckSystemDefaultMenu() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_SYSTEM));
-  _stprintf(srcfile,TEXT("%s\\DEFAULT_MENU.TXT"),srcdir);
+  _stprintf(srcfile,TEXT("%s%sDEFAULT_MENU.TXT"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
 
@@ -288,22 +288,22 @@ bool CheckPolarsDir() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_POLARS));
-  _stprintf(srcfile,TEXT("%s\\_POLARS"),srcdir);
+  _stprintf(srcfile,TEXT("%s%s_POLARS"),srcdir, _T(DIRSEP));
   if ( !lk::filesystem::exist(srcfile) ) {
-	return false;
+    return false;
   }
 
   LocalPath(srcdir, _T(LKD_POLARS));
-  _stprintf(srcfile,TEXT("%s\\Default.plr"),srcdir);
+  _stprintf(srcfile,TEXT("%s%sDefault.plr"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
 
 bool CheckRegistryProfile() {
-	TCHAR srcpath[MAX_PATH];
-	TCHAR profilePath[MAX_PATH];
-	if ( GlobalModelType == MODELTYPE_PNA_HP31X ) return false;
-	LocalPath(srcpath,TEXT(LKD_CONF)); // 091101
-	_stprintf(profilePath,_T("%s\\%s"),srcpath,LKPROFILE); // 091101
+    TCHAR srcpath[MAX_PATH];
+    TCHAR profilePath[MAX_PATH];
+    if ( GlobalModelType == MODELTYPE_PNA_HP31X ) return false;
+    LocalPath(srcpath,TEXT(LKD_CONF)); // 091101
+    _stprintf(profilePath,_T("%s%s%s"),srcpath, _T(DIRSEP),LKPROFILE); // 091101
     return lk::filesystem::exist(profilePath);
 }
 
@@ -312,7 +312,7 @@ bool CheckSystemBitmaps() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_BITMAPS));
-  _stprintf(srcfile,TEXT("%s\\_BITMAPSH"),srcdir);
+  _stprintf(srcfile,TEXT("%s%s_BITMAPSH"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
 
@@ -320,7 +320,7 @@ bool CheckFilesystemWritable() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_SYSTEM));
-  _stprintf(srcfile,TEXT("%s\\EmptyTest.txt"),srcdir);
+  _stprintf(srcfile,TEXT("%s%sEmptyTest.txt"),srcdir, _T(DIRSEP));
 
   FILE *stream;
   stream=_tfopen(srcfile,_T("a"));

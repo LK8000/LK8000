@@ -84,7 +84,7 @@ void LKSound(const TCHAR *lpName) {
 	working=false;
 	TCHAR srcfile[MAX_PATH];
 	LocalPath(sDir,TEXT(LKD_SOUNDS));
-	_stprintf(srcfile,TEXT("%s\\_SOUNDS"),sDir);
+	_stprintf(srcfile,TEXT("%s%s_SOUNDS"), sDir, _T(DIRSEP));
 	if ( !lk::filesystem::exist(srcfile) ) {
 	    StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
 		StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
@@ -95,7 +95,7 @@ void LKSound(const TCHAR *lpName) {
 
   if (!working) return;
   TCHAR sndfile[MAX_PATH];
-  _stprintf(sndfile,_T("%s\\%s"),sDir,lpName);
+  _stprintf(sndfile,_T("%s%s%s"),sDir, _T(DIRSEP), lpName);
   sndPlaySound (sndfile, SND_ASYNC| SND_NODEFAULT );
 }
 

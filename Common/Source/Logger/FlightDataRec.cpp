@@ -47,7 +47,7 @@ void InitFlightDataRecorder(void)
   int i;
 
   LocalPath(path,TEXT(LKD_CONF));
-  _stprintf(szBatLogFileName, TEXT("%s\\FlightRecorder.CFG"), path);
+  _stprintf(szBatLogFileName, TEXT("%s%sFlightRecorder.CFG"), path, _T(DIRSEP));
   fpDataRecConfigFile = _tfopen(szBatLogFileName, TEXT("r"));
 
   if(fpDataRecConfigFile == NULL)
@@ -123,7 +123,7 @@ void InitFlightDataRecorder(void)
 
   // WE TRY TO OPEN THE LOGFILE, AND IF WE CANT WE PERMANENTLY DISABLE LOGGING
   LocalPath(path,TEXT(LKD_LOGS));
-  _stprintf(szBatLogFileName, TEXT("%s\\FlightRecorder.TXT"), path);
+  _stprintf(szBatLogFileName, TEXT("%s%sFlightRecorder.TXT"), path, _T(DIRSEP));
   FlightDataRecorderFile = _tfopen(szBatLogFileName, TEXT("a"));
 
   if (FlightDataRecorderFile==NULL) {

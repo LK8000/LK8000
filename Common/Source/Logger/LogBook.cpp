@@ -72,10 +72,10 @@ void ResetLogBook(void) {
   StartupStore(_T("... ResetLogBook <%s>\n"),filename);
   #endif
 
-  _stprintf(filename,_T("%s\\%s\\%s"), LKGetLocalPath(), _T(LKD_LOGS),_T(LKF_LOGBOOKTXT));
+  _stprintf(filename,_T("%s%s%s%s"), LKGetLocalPath(), _T(LKD_LOGS), _T(DIRSEP),_T(LKF_LOGBOOKTXT));
   lk::filesystem::deleteFile(filename);
 
-  _stprintf(filename,_T("%s\\%s\\%s"), LKGetLocalPath(), _T(LKD_LOGS),_T(LKF_LOGBOOKLST));
+  _stprintf(filename,_T("%s%s%s%s"), LKGetLocalPath(), _T(LKD_LOGS), _T(DIRSEP),_T(LKF_LOGBOOKLST));
   lk::filesystem::deleteFile(filename);
 }
 
@@ -89,7 +89,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   TCHAR line[300];
   int ivalue;
 
-  _stprintf(filename,_T("%s\\%s\\%s"), LKGetLocalPath(), _T(LKD_LOGS),_T(LKF_LOGBOOKTXT));
+  _stprintf(filename,_T("%s%s%s%s"), LKGetLocalPath(), _T(LKD_LOGS), _T(DIRSEP),_T(LKF_LOGBOOKTXT));
 
   #if TESTBENCH
   StartupStore(_T("... UpdateLogBookTXT <%s>\n"),filename);
@@ -257,7 +257,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   int ivalue;
   TCHAR stakeoff[20],stakeoffutc[20],slanding[20],slandingutc[20],sflighttime[20], solcdist[20];
 
-  _stprintf(filename,_T("%s\\%s\\%s"), LKGetLocalPath(), _T(LKD_LOGS),_T(LKF_LOGBOOKCSV));
+  _stprintf(filename,_T("%s%s%s%s"), LKGetLocalPath(), _T(LKD_LOGS), _T(DIRSEP),_T(LKF_LOGBOOKCSV));
 
   #if TESTBENCH
   StartupStore(_T("... UpdateLogBookCSV <%s>\n"),filename);
@@ -348,7 +348,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
   TCHAR stakeoff[20],stakeoffutc[20],slanding[20],slandingutc[20],sflighttime[20];
   TCHAR pilotname[100];
 
-  _stprintf(filename,_T("%s\\%s\\%s"), LKGetLocalPath(), _T(LKD_LOGS),_T(LKF_LOGBOOKLST));
+  _stprintf(filename,_T("%s%s%s%s"), LKGetLocalPath(), _T(LKD_LOGS), _T(DIRSEP),_T(LKF_LOGBOOKLST));
 
   #if TESTBENCH
   StartupStore(_T("... UpdateLogBookLST <%s>\n"),filename);

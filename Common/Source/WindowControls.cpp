@@ -96,8 +96,8 @@ void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* fil
   if (_tcslen(subdir)>0) {
     const TCHAR* ptr = subdir;
     const TCHAR* ptr2 = buffer + _tcslen(buffer) -1;
-    if(*ptr != _T('\\') && *ptr2 != _T('\\')) {
-         _tcscat(buffer, _T("\\"));
+    if((*ptr != _T('\\') || (*ptr != _T('/'))) && (*ptr2 != _T('\\') || (*ptr2 != _T('/')))) {
+         _tcscat(buffer, _T(DIRSEP));
      }
 	_tcscat(buffer,subdir);
   }
@@ -122,7 +122,9 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* filte
 
     _tcscat(DirPath, TEXT("\\"));
     _tcscat(FileName, TEXT("\\*"));
-
+    lk::filesystem::fixPath(DirPath);
+    lk::filesystem::fixPath(FileName);
+    
     for (lk::filesystem::directory_iterator It(FileName); It; ++It) {
         if (It.isDirectory()) {
             _tcscpy(FileName, DirPath);
