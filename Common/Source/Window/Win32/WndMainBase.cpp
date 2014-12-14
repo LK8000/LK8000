@@ -31,7 +31,7 @@ WndMainBase::~WndMainBase() {
     
 }
 
-bool WndMainBase::Create(const RECT& rect, const TCHAR* szName) {
+bool WndMainBase::Create(const RECT& rect) {
 
     WNDCLASS wc;
     WNDCLASS dc;
@@ -67,10 +67,10 @@ bool WndMainBase::Create(const RECT& rect, const TCHAR* szName) {
     _szWindowText = _T("LK8000");
     _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
 
-    return WndPaint::Create(NULL, rect, szName);
+    return WndPaint::Create(NULL, rect);
 }
 
-bool WndMainBase::OnCreate(int x, int y, int cx, int cy) {
+void WndMainBase::OnCreate() {
     
 #ifdef HAVE_ACTIVATE_INFO
     SHSetAppKeyWndAssoc(VK_APP1, _hWnd);
@@ -81,16 +81,15 @@ bool WndMainBase::OnCreate(int x, int y, int cx, int cy) {
     SHSetAppKeyWndAssoc(VK_APP6, _hWnd);
 #endif
     
-    return WndPaint::OnCreate(x, y, cx, cy);
+    WndPaint::OnCreate();
 }
 
-bool WndMainBase::OnDestroy() {
+void WndMainBase::OnDestroy() {
     WndPaint::OnDestroy();
     PostQuitMessage(0);
-    return true;
 }
 
-void WndMainBase::FullScreen() {
+void WndMainBase::Fullscreen() {
     SetForegroundWindow(_hWnd);
 #ifndef UNDER_CE
     SetWindowPos(_hWnd, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
@@ -117,4 +116,13 @@ bool WndMainBase::FilterEvent(const Event &event, Window *allowed) const {
         return false;
     } else
         return true;
+}
+
+void WndMainBase::RunModalLoop() {
+    assert(event_queue);
+    EventLoop loop(*event_queue);
+    Event event;
+    while (IsDefined() && loop.Get(event)) {
+        loop.Dispatch(event);
+    }
 }

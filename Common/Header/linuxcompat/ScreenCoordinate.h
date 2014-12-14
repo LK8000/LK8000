@@ -12,22 +12,11 @@
 #ifndef SCREENCOORDINATE_H
 #define	SCREENCOORDINATE_H
 
-typedef struct tagSIZE {
-  long cx;
-  long cy;
-} SIZE;
+#include "Screen/Point.hpp"
 
-typedef struct tagPOINT {
-  long x;
-  long y;
-} POINT;
-
-typedef struct tagRECT {
-  long left;
-  long top;
-  long right;
-  long bottom;
-} RECT;
+typedef RasterPoint POINT;
+typedef PixelSize SIZE;
+typedef PixelRect RECT;
 
 inline bool PtInRect( const RECT *rect, POINT pt )
 {

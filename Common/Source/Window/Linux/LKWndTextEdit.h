@@ -11,15 +11,22 @@
 
 #ifndef WNDTEXTEDIT_H
 #define	WNDTEXTEDIT_H
-#include "WndText.h"
+#include "LKWndText.h"
 
-class WndTextEdit : public WndText {
+template<class _Base>
+class LKWndTextEdit : public LKWndText<_Base> {
 public:
-    WndTextEdit() : WndText(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {}
-    virtual ~WndTextEdit() {}
+    LKWndTextEdit() : LKWndText<_Base>(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
+        
+    }
     
-    int GetLineCount() { return 0; }
+    int GetLineCount() {
+        return 1;
+    }
 
+    virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) {
+        return true;
+    }
 };
 
 #endif	/* WNDTEXTEDIT_H */

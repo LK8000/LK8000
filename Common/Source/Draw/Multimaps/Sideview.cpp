@@ -19,7 +19,7 @@ using std::max;
 
 int Sideview_asp_heading_task=0;
 int Sideview_iNoHandeldSpaces=0;
-AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS] = {{{0}}};
+AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 
 
@@ -111,7 +111,7 @@ void DrawWindRoseDirection(LKSurface& Surface, double fAngle, int x, int y) {
         default: text = TEXT("--");break;
     };
 
-    Surface.SetBkMode(TRANSPARENT);
+    Surface.SetBackgroundTransparent();
     if (bInvCol)
         Surface.SetTextColor(RGB_BLACK);
     else
@@ -127,7 +127,7 @@ void DrawWindRoseDirection(LKSurface& Surface, double fAngle, int x, int y) {
 
 void DrawSelectionFrame(LKSurface& Surface, const RECT& rc)
 {
-Surface.SetBkMode(TRANSPARENT);
+Surface.SetBackgroundTransparent();
 RECT rci = rc;
 #define SHRINK 1
 	rci.left +=1;

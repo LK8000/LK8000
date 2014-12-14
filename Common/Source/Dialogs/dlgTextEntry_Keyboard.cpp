@@ -113,25 +113,22 @@ static void ClearText(void)
   UpdateTextboxProp();
 }
 
-static void OnKey(Window* pWnd)
-{
-if(first)
-{
-    ClearText();
-    first = false;
-}
-
-
-  const TCHAR *Caption = pWnd->GetWndText();
-  PlayResource(TEXT("IDR_WAV_CLICK"));
-  if (cursor < max_width-1)
-    {
-      edittext[cursor++] = toupper(Caption[0]);
+static void OnKey(Window* pWnd) {
+    if (first) {
+        ClearText();
+        first = false;
     }
+    PlayResource(TEXT("IDR_WAV_CLICK"));
 
-
-
-  UpdateTextboxProp();
+#ifdef WIN32
+    const TCHAR *Caption = pWnd->GetWndText();
+    if (cursor < max_width - 1) {
+        edittext[cursor++] = toupper(Caption[0]);
+    }
+#else
+#warning "Not Implemented"    
+#endif
+    UpdateTextboxProp();
 }
 
 

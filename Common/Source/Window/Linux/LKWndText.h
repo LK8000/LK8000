@@ -12,14 +12,16 @@
 #ifndef WNDTEXT_H
 #define	WNDTEXT_H
 
-#include "Window.h"
+#include "LKWndPaint.h"
 #include "Screen/LKColor.h"
 #include "Screen/LKBrush.h"
 
-class WndText : public Window {
+template<class _Base>
+class LKWndText : public LKWndPaint<_Base> {
 public:
-    WndText(const LKColor& TextColor, const LKColor& BkColor) {};
-    virtual ~WndText() {};
+    LKWndText(const LKColor& TextColor, const LKColor& BkColor) : _TextColor(TextColor), _BkColor(BkColor), _BkBrush(BkColor) {
+        
+    }
 
     void SetTextColor(const LKColor& color) {
         _TextColor = color;
@@ -29,13 +31,25 @@ public:
         _BkColor = color;
         _BkBrush.Create(_BkColor);
     }
+    
+    const LKColor& GetBkColor() const {
+        return _BkColor;
+    }
+    
+    virtual void SetWndText(const TCHAR* lpszText) {
+        _Text = lpszText?lpszText:_T("");
+    }
 
-private:
+    virtual const TCHAR* GetWndText() const {
+        return _Text.c_str();
+    }
+
+protected:
     LKColor _TextColor;
     LKColor _BkColor;
     LKBrush _BkBrush;
 
+    std::tstring _Text;
 };
 
 #endif	/* WNDTEXT_H */
-

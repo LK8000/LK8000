@@ -44,7 +44,7 @@ static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
   Surface.Rectangle(PrintAreaR.left,PrintAreaR.top,PrintAreaR.right,PrintAreaR.bottom);
 
   Surface.SetTextColor(RGB_WHITE);
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
 
   InflateRect(&PrintAreaR, -NIBLSCALE(2), -NIBLSCALE(2));
   

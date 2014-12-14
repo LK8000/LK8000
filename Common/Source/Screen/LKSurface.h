@@ -27,23 +27,9 @@
 #include "BrushReference.h"
 #include "PenReference.h"
 
-#ifndef WIN32
-// DrawText Format.
-#define DT_LEFT         0x00000000
-#define DT_CENTER       0x00000001
-#define DT_VCENTER      0x00000004
-#define DT_WORDBREAK    0x00000010
-#define DT_SINGLELINE   0x00000020
-#define DT_EXPANDTABS   0x00000040
-#define DT_NOCLIP       0x00000100
-#define DT_CALCRECT     0x00000400
-
-// BckMode
-#define TRANSPARENT 1
-#define OPAQUE 2
-
+#ifndef USE_GDI
+#include "Screen/Canvas.hpp"
 #endif
-
 
 class LKSurface : public boost::noncopyable {
 public:
@@ -71,33 +57,62 @@ public:
     typedef BrushReference OldBrush;
     typedef PenReference OldPen;
 
-    OldFont SelectObject(const LKFont &) {
-      return OldFont();
+    OldFont SelectObject(const LKFont &obj) {
+        if(_pCanvas) {
+            _pCanvas->Select(obj);
+        }
+        return OldFont();
     }
 
-    OldBrush SelectObject(const LKBrush &) {
-      return OldBrush();
+    OldBrush SelectObject(const LKBrush &obj) {
+        if(_pCanvas) {
+            _pCanvas->Select(obj);
+        }
+        return OldBrush();
     }
 
-    OldPen SelectObject(const LKPen &) {
-      return OldPen();
+    OldPen SelectObject(const LKPen &obj) {
+        if(_pCanvas) {
+            _pCanvas->Select(obj);
+        }
+        return OldPen();
     }
 
     OldFont SelectObject(OldFont o) { 
+        if(_pCanvas && o) {
+            _pCanvas->Select(*o);
+        }
         return OldFont(); 
     }
     OldBrush SelectObject(OldBrush o) { 
+        if(_pCanvas && o) {
+            _pCanvas->Select(*o);
+        }
         return OldBrush(); 
     }
     OldPen SelectObject(OldPen o) { 
+        if(_pCanvas && o) {
+            _pCanvas->Select(*o);
+        }
         return OldPen(); 
     }
+    
+    bool Attach(Canvas* pCanvas);
+    Canvas* Detach();
+    
+    Canvas* _pCanvas;
 
+    operator Canvas&() const {
+        assert(_pCanvas);
+        return (*_pCanvas);
+    }    
 #endif
 
     LKColor SetTextColor(const LKColor& Color);
     LKColor SetBkColor(const LKColor& Color);
-    int SetBkMode(int mode);
+    
+    inline void SetBackgroundTransparent();
+    inline void SetBackgroundOpaque();
 
     void Blackness(const int x, const int y, const int cx, const int cy);
     void Whiteness(const int x, const int y, const int cx, const int cy);
@@ -138,7 +153,7 @@ public:
 
     bool Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc);
 	bool StretchCopy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc);
-    bool TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, const LKColor& crTransparent);
+    bool TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc);
 
     bool CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmap& bmpMask, int xMask, int yMask);
     
@@ -149,9 +164,9 @@ public:
     void DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount);
     int DrawText(const TCHAR* lpchText, int nCount, RECT *lpRect, UINT uFormat);
 
-	int GetTextWidth(const TCHAR *text);
-	int GetTextHeight(const TCHAR *text);
-	void DrawTextClip(int x, int y, const TCHAR *text, int width);
+    int GetTextWidth(const TCHAR *text);
+    int GetTextHeight(const TCHAR *text);
+    void DrawTextClip(int x, int y, const TCHAR *text, PixelScalar width);
 
 
     LKColor SetPixel(int X, int Y, const LKColor& Color);
@@ -217,6 +232,30 @@ static TAlphaBlendF AlphaBlendF;
 #endif
 
 };
+
+#ifndef USE_GDI
+#include "Screen/Canvas.hpp"
+#endif
+
+inline void LKSurface::SetBackgroundTransparent() {
+#ifdef USE_GDI
+    ::SetBkMode(*this, TRANSPARENT);
+#else
+    if(_pCanvas) {
+        _pCanvas->SetBackgroundTransparent();
+    }
+#endif
+}
+
+inline void LKSurface::SetBackgroundOpaque() {
+#ifdef USE_GDI
+    ::SetBkMode(*this, OPAQUE);
+#else
+    if(_pCanvas) {
+        _pCanvas->SetBackgroundOpaque();
+    }
+#endif
+}
 
 #endif	/* LKSURFACE_H */
 

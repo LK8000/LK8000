@@ -27,9 +27,10 @@ public:
     WndMainBase();
     virtual ~WndMainBase();
 
-    bool Create(const RECT& rect, const TCHAR* szName);
+    bool Create(const RECT& rect);
 
-    void FullScreen();
+    void Fullscreen();
+    void RunModalLoop();
 
   /**
    * Check if the specified event should be allowed.  An event may be
@@ -43,8 +44,8 @@ public:
 protected:
     virtual LRESULT CALLBACK WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    virtual bool OnCreate(int x, int y, int cx, int cy);
-    virtual bool OnDestroy();
+    virtual void OnCreate();
+    virtual void OnDestroy();
 
 private:
     HWND _hWndFocus;

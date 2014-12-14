@@ -28,11 +28,11 @@ Copyright_License {
 
 struct Event;
 class EventQueue;
-class WndMain;
+class TopWindow;
 
 class EventLoop : private boost::noncopyable {
   EventQueue &queue;
-  WndMain *top_window;
+  TopWindow *top_window;
 
   /**
    * True if working on a bulk of events.  At the end of that bulk,
@@ -41,7 +41,7 @@ class EventLoop : private boost::noncopyable {
   bool bulk;
 
 public:
-  EventLoop(EventQueue &_queue, WndMain &_top_window)
+  EventLoop(EventQueue &_queue, TopWindow&_top_window)
     :queue(_queue), top_window(&_top_window), bulk(true) {}
 
   EventLoop(EventQueue &_queue)

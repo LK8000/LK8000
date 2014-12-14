@@ -522,7 +522,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
     	txtCol = INV_GROUND_TEXT_COLOUR;
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
   Surface.SetTextColor(txtCol);
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
@@ -931,7 +931,7 @@ _after_additionals:
             Surface.DrawText(x, y, text, _tcslen(text));
           }
     }
-    Surface.SetBkMode(TRANSPARENT);
+    Surface.SetBackgroundTransparent();
     Surface.SelectObject(hfOld);
   } // IM_NEXT_WP with valid overindex
 

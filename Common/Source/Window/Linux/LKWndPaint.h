@@ -11,11 +11,14 @@
 
 #ifndef WNDPAINT_H
 #define	WNDPAINT_H
-#include "Window.h"
+#include "LKWindow.h"
 
-class WndPaint : public Window {
+class LKSurface;
+
+template<class _Base>
+class LKWndPaint : public LKWindow<_Base> {
 public:
-    WndPaint() : Window() { }
+    LKWndPaint() = default;
 
 protected:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) = 0;

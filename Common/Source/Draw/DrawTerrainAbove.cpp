@@ -34,7 +34,7 @@ _doit:
   LKColor graycolor = LKColor(0xf0,0xf0,0xf0);
   LKColor origcolor = hdcTempTerrainAbove.SetTextColor(whitecolor);
 
-  hdcTempTerrainAbove.SetBkMode(TRANSPARENT);
+  hdcTempTerrainAbove.SetBackgroundTransparent();
 
   hdcTempTerrainAbove.SetBkColor(whitecolor);
 
@@ -57,13 +57,11 @@ _doit:
           rc.left,rc.top,
           rc.right-rc.left,rc.bottom-rc.top,
           hdcTempTerrainAbove,
-          rc.left,rc.top,
-          rc.right-rc.left,rc.bottom-rc.top,
-          whitecolor);
+          rc.left,rc.top);
 
   // restore original color
   hdcTempTerrainAbove.SetTextColor(origcolor);
-  hdcTempTerrainAbove.SetBkMode(OPAQUE);
+  hdcTempTerrainAbove.SetBackgroundOpaque();
 
 }
 

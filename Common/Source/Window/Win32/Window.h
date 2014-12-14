@@ -53,7 +53,11 @@ public:
 
     const TCHAR* GetWndText() const { return _szWindowText.c_str(); }
 
-    virtual bool Create(Window* pOwner, const RECT& rect, const TCHAR* szName);
+    virtual bool Create(Window& Owner, const RECT& rect) {
+        return Create(&Owner, rect);
+    }
+    
+    virtual bool Create(Window* pOwner, const RECT& rect);
 
     HWND Handle() {
         return _hWnd;
@@ -68,14 +72,10 @@ public:
         return h == _hWnd || ::IsChild(_hWnd, h);
     }
 
-    Window* GetOwner() const {
+    Window* GetParent() const {
         return GetObjectFromWindow(::GetParent(_hWnd));
     }
     
-    const TCHAR* GetWndName() const {
-        return _szWindowName.c_str();
-    }
-
     void Move(const RECT& rc, bool bRepaint) {
         ::MoveWindow(_hWnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, bRepaint);
     }
@@ -108,6 +108,16 @@ public:
         RECT rc;
         ::GetClientRect(_hWnd, &rc);
         return rc;
+    }
+    
+    LONG GetWidth() const {
+        const RECT& rc = GetClientRect();
+        return rc.right - rc.left;
+    }
+
+    LONG GetHeight() const {
+        const RECT& rc = GetClientRect();
+        return rc.bottom - rc.top;
     }
 
     void Close() {
@@ -159,7 +169,7 @@ public:
         ::ReleaseCapture();
     }
 
-    static Window* GetFocus() {
+    static Window* GetFocusedWindow() {
         return Window::GetObjectFromWindow(::GetFocus());
     }
 
@@ -205,15 +215,15 @@ protected:
 
 protected:
     // Event Handling virtual function ( return true for ignore default process ) :
-    virtual bool OnCreate(int x, int y, int cx, int cy) { return false; }
+    virtual void OnCreate() { }
     virtual bool OnClose() { return false; }
-    virtual bool OnDestroy() { return false; }
+    virtual void OnDestroy() { }
     virtual bool OnSize(int cx, int cy) { return false; }
 
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) { return false; }
 
-    virtual bool OnSetFocus() { return false; }
-    virtual bool OnKillFocus() { return false; }
+    virtual void OnSetFocus() { }
+    virtual void OnKillFocus() { }
 
 	virtual bool OnMouseMove(const POINT& Pos) { return false; }
 
@@ -231,7 +241,7 @@ protected:
     virtual bool OnLButtonDownNotify(Window* pWnd, const POINT& Pos) { return false; }
     virtual bool OnLButtonUpNotify(Window* pWnd, const POINT& Pos) { return false; }
 
-    virtual bool OnTimer() { return false; }
+    virtual void OnTimer() { }
 };
 
 #endif

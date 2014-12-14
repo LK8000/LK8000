@@ -59,18 +59,20 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
     if(!hWelcomeBitmap.LoadFromFile(srcfile)) {
         hWelcomeBitmap.LoadFromResource(MAKEINTRESOURCE(IDB_SWIFT));
     }
+    
+    if(hWelcomeBitmap) {
+        const PixelSize bmSize = hWelcomeBitmap.GetSize();
 
-    const PixelSize bmSize = hWelcomeBitmap.GetSize();
+        Surface.Blackness(0,0,ScreenSizeX,ScreenSizeY);
 
-    Surface.Blackness(0,0,ScreenSizeX,ScreenSizeY);
-
-    if (fullsize) {
-        Surface.DrawBitmap(0,0,bmSize.cx,bmSize.cy,hWelcomeBitmap,bmSize.cx,bmSize.cy);
-    } else if ( (bmSize.cx > ScreenSizeX)||(bmSize.cy > ScreenSizeY)) {
-        Surface.DrawBitmap(0,0,ScreenSizeX,ScreenSizeY-NIBLSCALE(35),hWelcomeBitmap,bmSize.cx,bmSize.cy);
+        if (fullsize) {
+            Surface.DrawBitmap(0,0,bmSize.cx,bmSize.cy,hWelcomeBitmap,bmSize.cx,bmSize.cy);
+        } else if ( (bmSize.cx > ScreenSizeX)||(bmSize.cy > ScreenSizeY)) {
+            Surface.DrawBitmap(0,0,ScreenSizeX,ScreenSizeY-NIBLSCALE(35),hWelcomeBitmap,bmSize.cx,bmSize.cy);
 	} else if ( (bmSize.cx < ScreenSizeX)||(bmSize.cy < ScreenSizeY)) {
-        Surface.DrawBitmap(NIBLSCALE(20),0,ScreenSizeX-NIBLSCALE(40), ScreenSizeY-BottomSize-NIBLSCALE(20),hWelcomeBitmap,bmSize.cx,bmSize.cy);
+            Surface.DrawBitmap(NIBLSCALE(20),0,ScreenSizeX-NIBLSCALE(40), ScreenSizeY-BottomSize-NIBLSCALE(20),hWelcomeBitmap,bmSize.cx,bmSize.cy);
 	} else {
-        Surface.DrawBitmap((ScreenSizeX-bmSize.cx)/2,0,bmSize.cx,IBLSCALE(260),hWelcomeBitmap,bmSize.cx,bmSize.cy);
+            Surface.DrawBitmap((ScreenSizeX-bmSize.cx)/2,0,bmSize.cx,IBLSCALE(260),hWelcomeBitmap,bmSize.cx,bmSize.cy);
 	}
+    }
 }

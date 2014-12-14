@@ -125,19 +125,6 @@ void PreloadInitialisation(bool ask) {
 //
 BOOL InitInstance()
 {
-#ifdef USE_FREETYPE
-  FreeType::Initialise();
-  Font::Initialise();
-#endif
-  event_queue = new EventQueue();
-
-#ifdef KOBO
-  Display::Rotate(DisplayOrientation::DEFAULT);
-  event_queue->SetMouseRotation(DisplayOrientation::DEFAULT);
-#endif  
-  
-  ScreenInitialized();
-        
   InitLKScreen();
   InitLKFonts(); // causing problems with CreateButtonLabels?
   PreloadInitialisation(true);
@@ -180,7 +167,7 @@ BOOL InitInstance()
   StartupStore(TEXT(". Create main window%s"),NEWLINE);
   #endif
 
-  if(!MainWindow.Create(WindowSize, _T("WindowMain"))) {
+  if(!MainWindow.Create(WindowSize)) {
       return FALSE;
   }
 

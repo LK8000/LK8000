@@ -819,7 +819,7 @@ bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, bool retval) {
         return false;
     }
 
-	Surface.SetBkMode(TRANSPARENT);
+	Surface.SetBackgroundTransparent();
 
 	SIZE tsize;
 	RECT brect;

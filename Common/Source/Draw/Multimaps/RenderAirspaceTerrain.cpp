@@ -54,10 +54,10 @@ int i,j;
 	Surface.SelectObject(OldPen);
   }
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
-  POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X+4] = {{0}};
-  double d_lat[AIRSPACE_SCANSIZE_X] = {0};
-  double d_lon[AIRSPACE_SCANSIZE_X] = {0};
-  double d_h[AIRSPACE_SCANSIZE_X] = {0};
+  POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X+4] = {};
+  double d_lat[AIRSPACE_SCANSIZE_X] = {};
+  double d_lon[AIRSPACE_SCANSIZE_X] = {};
+  double d_h[AIRSPACE_SCANSIZE_X] = {};
 
 #define   FRAMEWIDTH 2
   RasterTerrain::Lock(); // want most accurate rounding here
@@ -217,8 +217,8 @@ int i,j;
     /***********************************************
      * build view overlap for centering text
      ***********************************************/
-    rcd.bottom = min(  rcd.bottom, (long)Sideview_pHandeled[iSizeIdx].iMaxBase  );
-    rcd.top    = max(  rcd.top   , (long)Sideview_pHandeled[iSizeIdx].iMinTop );
+    rcd.bottom = min(  rcd.bottom, Sideview_pHandeled[iSizeIdx].iMaxBase  );
+    rcd.top    = max(  rcd.top   , Sideview_pHandeled[iSizeIdx].iMinTop );
 
     rcd.left   = max(rcd.left   ,rc.left);
     rcd.right  = min(rcd.right  ,rc.right);

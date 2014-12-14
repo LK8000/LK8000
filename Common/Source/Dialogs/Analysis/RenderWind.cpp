@@ -115,7 +115,7 @@ void Statistics::RenderWind(LKSurface& Surface, const RECT& rc)
     Surface.SetTextColor(RGB_DARKGREEN);
   else
     Surface.SetTextColor(RGB_GREEN);
-  Surface.SetBkMode(OPAQUE);
+  Surface.SetBackgroundOpaque();
   TCHAR text[80];
   _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
   DrawXLabel(Surface, rc, text);

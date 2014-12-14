@@ -25,8 +25,14 @@ HBRUSH WndText::OnCtlColor(HDC hdc) {
     return _BkBrush;
 }
 
-bool WndText::OnCreate(int x, int y, int cx, int cy) {
+void WndText::Create(Window& Owner, const TCHAR* szText, const RECT& Rect) {
+    Window::Create(Owner, Rect);
+    SetWndText(szText);
+}
+
+
+void WndText::OnCreate() {
     _BkBrush.Create(_BkColor);
-    return OnCreate(x, y, cx, cy);
+    Window::OnCreate();
 }
 

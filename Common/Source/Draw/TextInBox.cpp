@@ -275,7 +275,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
 
 
     #ifdef WINE
-    Surface.SetBkMode(TRANSPARENT);
+    Surface.SetBackgroundTransparent();
     #endif
     // Simplified, shadowing better and faster
     // ETO_OPAQUE not necessary since we pass a NULL rect

@@ -30,11 +30,9 @@ LKBrush::LKBrush(LKBrush&& Brush) {
 }
 
 #else
-#warning "TODO : ..."
-const LKBrush  LK_WHITE_BRUSH;
-const LKBrush  LK_BLACK_BRUSH;
+const LKBrush  LK_WHITE_BRUSH(COLOR_WHITE);
+const LKBrush  LK_BLACK_BRUSH(COLOR_BLACK);
 const LKBrush  LK_HOLLOW_BRUSH;
-
 #endif
 
 

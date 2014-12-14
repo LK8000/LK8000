@@ -15,8 +15,15 @@
 
 class WndCtrlBase :public WndPaint {
 public:
-    WndCtrlBase();
+    WndCtrlBase(const TCHAR* szName);
     virtual ~WndCtrlBase();
+    
+    const TCHAR* GetWndName() const {
+        return _szWindowName.c_str();
+    }
+    
+protected:    
+    std::tstring _szWindowName;
 };
 
 #endif	/* WNDCTRLBASE_H */

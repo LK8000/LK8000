@@ -622,7 +622,7 @@ class WindowControl : public WndCtrlBase {
 
     virtual WindowControl* GetClientArea(void) { return (this); }
 
-    WindowControl *GetOwner(void) {return(mOwner);};
+    WindowControl *GetParent(void) {return(mOwner);};
     virtual WindowControl *GetTopOwner(void) {return(mTopOwner);}
 
     int GetTag(void){return(mTag);};
@@ -652,12 +652,12 @@ class WindowControl : public WndCtrlBase {
 
 protected:
 
-    virtual bool OnSetFocus();
-    virtual bool OnKillFocus();
+    virtual void OnSetFocus();
+    virtual void OnKillFocus();
 
-    virtual bool OnDestroy() {
+    virtual void OnDestroy() {
         Close();
-        return false;
+        WndCtrlBase::OnDestroy();
     }
     virtual bool OnClose() {
         Close();
@@ -678,8 +678,8 @@ class WndFrame:public WindowControl{
       mLastDrawTextHeight = 0;
       mIsListItem = false;
 
-      SetForeColor(GetOwner()->GetForeColor());
-      SetBackColor(GetOwner()->GetBackColor());
+      SetForeColor(GetParent()->GetForeColor());
+      SetBackColor(GetParent()->GetBackColor());
       mCaptionStyle = DT_EXPANDTABS
       | DT_LEFT
       | DT_NOCLIP
@@ -796,8 +796,8 @@ class WndOwnerDrawFrame:public WndFrame{
     {
       SetOnPaintNotify(OnPaintCallback);
 
-      SetForeColor(GetOwner()->GetForeColor());
-      SetBackColor(GetOwner()->GetBackColor());
+      SetForeColor(GetParent()->GetForeColor());
+      SetBackColor(GetParent()->GetBackColor());
 
     };
 
@@ -867,7 +867,7 @@ class WndForm:public WindowControl{
     FontReference SetTitleFont(FontReference Value);
 
     int ShowModal(void);
-    void Show(void);
+    void Show();
 
     void SetCaption(const TCHAR *Value);
 
@@ -913,8 +913,10 @@ protected:
         return (mOnLButtonUpNotify && (mOnLButtonUpNotify)(this, Pos));
     }
 
-    virtual bool OnTimer() {
-        return (mOnTimerNotify && mOnTimerNotify());
+    virtual void OnTimer() {
+        if(mOnTimerNotify) {
+            mOnTimerNotify();
+        }
     }
 };
 

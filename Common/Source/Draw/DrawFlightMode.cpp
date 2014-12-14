@@ -79,7 +79,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
       }
     }
   }
-  if(pBmpFlightMode) {
+  if(pBmpFlightMode && (*pBmpFlightMode)) {
     PixelSize IconSize = pBmpFlightMode->GetSize();
     IconSize.cx /= 2;
     offset -= IconSize.cy;

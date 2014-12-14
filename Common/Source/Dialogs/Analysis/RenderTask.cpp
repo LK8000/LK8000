@@ -245,7 +245,7 @@ double fXY_Scale = 1.5;
 		y2 = (lat2-lat_c);
 
 		DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_BLUETHIN);
-	    Surface.SetBkMode(OPAQUE);
+	    Surface.SetBackgroundOpaque();
 		TCHAR text[100];
 		 Surface.SetTextColor(RGB_BLUE);
 /*
@@ -312,7 +312,7 @@ double fXY_Scale = 1.5;
   lon1 = GPS_INFO.Longitude;
   x1 = (lon1-lon_c)*fastcosine(lat1);
   y1 = (lat1-lat_c);
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
   DrawLabel(Surface, rc, TEXT("+"), x1, y1);
 }
 

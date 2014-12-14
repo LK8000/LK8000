@@ -203,13 +203,25 @@ GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 ######## windows definitions
 
 ifeq ($(CONFIG_LINUX),y)
-CE_DEFS	:=-D__linux__
-CE_DEFS += -DUSE_MEMORY_CANVAS
+USE_SDL := y
+CE_DEFS	:= -D__linux__
+CE_DEFS += -DUSE_MEMORY_CANVAS	
+
+ifeq ($(USE_SDL),y)
+$(eval $(call pkg-config-library,SDL,sdl))
+CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_CPPFLAGS))
+CE_DEFS += -DENABLE_SDL
+
+else
+CE_DEFS += -DUSE_FB
+CE_DEFS += -DUSE_CONSOLE
+endif
+
 
 $(eval $(call pkg-config-library,FREETYPE,freetype2))
 CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
 CE_DEFS += -DUSE_FREETYPE
-CE_DEFS += -DUSE_CONSOLE
+
 CE_DEFS += -DHAVE_POSIX
 else
 ifeq ($(CONFIG_PC),y)
@@ -270,7 +282,7 @@ endif
 CPPFLAGS	+= -Wall -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations 
 #CPPFLAGS	+= -Winit-self -Wswitch -Wcast-qual -Wcast-align
-#CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
+CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
 #CPPFLAGS	+= -Wshadow
@@ -316,8 +328,9 @@ CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 ####### linker configuration
 
 ifeq ($(CONFIG_LINUX),y)
-LDFLAGS = $(FREETYPE_LDLIBS)
-LDFLAGS += -lrt
+LDLIBS :=
+LDFLAGS :=
+
 else
 LDFLAGS		:=-Wl,--major-subsystem-version=$(CE_MAJOR)
 LDFLAGS		+=-Wl,--minor-subsystem-version=$(CE_MINOR)
@@ -328,7 +341,11 @@ endif
 LDFLAGS		+=$(PROFILE) -Wl,-Map=output.map
 
 ifeq ($(CONFIG_LINUX),y)
-  LDLIBS		+= -lstdc++ -lzzip -pthread -march=native -lpng -ljpeg
+  LDLIBS		+= -lstdc++ -lzzip -pthread -march=native -lpng -ljpeg -lrt -lm $(FREETYPE_LDLIBS)
+
+    ifeq ($(USE_SDL), y)
+	LDLIBS += $(SDL_LDLIBS)
+    endif
 else
 ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lole32 -loleaut32 -luuid
@@ -397,22 +414,21 @@ ifeq ($(CONFIG_PC),n)
 #CPPFLAGS_Common_Source_ :=-Werror
 endif
 
+include build/xcs_screen.mk
+include build/xcs_event.mk
+include build/xcs_os.mk
+
 ####### sources
 WINDOW := \
 	$(SRC_WINDOW)/WindowBase.cpp \
 	$(SRC_WINDOW)/WndMain.cpp \
-	$(SRC)/Event/Globals.cpp\
-	$(SRC)/Event/Shared/TimerQueue.cpp\
-	$(SRC)/Event/Shared/Timer.cpp\
-	$(SRC)/OS/Clock.cpp\
+	$(XCS_OS) \
+	$(XCS_EVENT) \
+	$(XCS_SCREEN) \
 
 
-WIN32 := \
-	$(SRC_SCREEN)/GDI/Brush.cpp \
-	$(SRC_SCREEN)/GDI/Bitmap.cpp \
-	$(SRC_SCREEN)/GDI/Pen.cpp \
-	$(SRC_SCREEN)/GDI/Font.cpp \
-	\
+ifneq ($(CONFIG_LINUX),y)
+WINDOW += \
 	$(SRC_WINDOW)/Win32/Window.cpp \
 	$(SRC_WINDOW)/Win32/WndMainBase.cpp \
 	$(SRC_WINDOW)/Win32/WndProc.cpp \
@@ -422,57 +438,10 @@ WIN32 := \
 	$(SRC_WINDOW)/Win32/WndTextLabel.cpp \
 	$(SRC_WINDOW)/Win32/WndCtrlBase.cpp \
 	\
-	$(SRC)/Event/GDI/Loop.cpp\
-	$(SRC)/Event/GDI/Queue.cpp\
-	$(SRC)/Event/GDI/Transcode.cpp\
-	\
 	$(SRC)/OS/Win/CpuLoad.cpp \
 	$(SRC)/OS/Win/Memory.cpp \
 	$(SRC)/OS/Win/RotateScreen.cpp\
-
-LINUX := \
-	$(SRC_SCREEN)/Memory/Bitmap.cpp \
-	$(SRC_SCREEN)/Custom/Bitmap.cpp \
-	$(SRC_SCREEN)/Custom/LibPNG.cpp \
-	$(SRC_SCREEN)/Custom/LibJPEG.cpp \
-	$(SRC_SCREEN)/Custom/Pen.cpp \
-	$(SRC_SCREEN)/Custom/Files.cpp \
-	$(SRC_SCREEN)/FreeType/Font.cpp \
-	$(SRC_SCREEN)/FreeType/Init.cpp \
-	\
-	$(SRC_WINDOW)/Linux/Window.cpp \
-	$(SRC_WINDOW)/Linux/WndMainBase.cpp \
-	\
-	$(SRC)/Event/Console/Loop.cpp\
-	$(SRC)/Event/Console/Queue.cpp\
-	$(SRC)/Event/Linux/TTYKeyboard.cpp\
-	$(SRC)/Event/Linux/AllInput.cpp\
-	$(SRC)/Event/Linux/Input.cpp\
-	$(SRC)/Event/Linux/MergeMouse.cpp\
-	$(SRC)/Event/Linux/Mouse.cpp\
-	$(SRC)/Event/Linux/SignalListener.cpp\
-	$(SRC)/Event/Shared/TimerQueue.cpp\
-	$(SRC)/Event/Shared/Timer.cpp\
-	\
-	$(SRC)/OS/Linux/CpuLoad.cpp \
-	$(SRC)/OS/Linux/Memory.cpp \
-	$(SRC)/OS/Linux/RotateScreen.cpp\
-	$(SRC)/OS/EventPipe.cpp\
-	$(SRC)/OS/FileDescriptor.cpp\
-	$(SRC)/OS/Poll.cpp\
-	\
-	$(SRC)/Util/UTF8.cpp\
-	$(SRC)/Util/StaticString.cpp\
-	$(SRC)/Util/StringUtil.cpp\
-	\
-	$(SRC)/IO/Async/DiscardFileEventHandler.cpp\
-	$(SRC)/IO/Async/IOLoop.cpp\
-
-
-ifneq ($(CONFIG_LINUX),y)
-WINDOW += $(WIN32)
-else
-WINDOW += $(LINUX)
+	
 endif
 	
 SCREEN := \
@@ -485,7 +454,7 @@ SCREEN := \
 	$(SRC_SCREEN)/LKWindowSurface.cpp \
 	$(SRC_SCREEN)/LKBitmapSurface.cpp \
 	$(SRC_SCREEN)/Debug.cpp \
-
+	
 LIBRARY	:=\
 	$(LIB)/bsearch.cpp \
 	$(LIB)/Crc.cpp\
@@ -1126,7 +1095,7 @@ tags:
 	$(Q)$(EBROWSE) -s `find . -name *\\\.[ch] -or -name *\\\.cpp`
 
 cppcheck : 
-	$(Q)cppcheck --force --enable=warning -q -j4 $(SRC_FILES)
+	$(Q)cppcheck --force --enable=all -q -j4 $(SRC_FILES)
 #	$(Q)cppcheck --force --enable=warning -q -j4 $(ZZIPSRC)
 #	$(Q)cppcheck --force --enable=warning -q -j4 $(COMPAT)
 	

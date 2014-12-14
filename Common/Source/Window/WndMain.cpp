@@ -224,11 +224,10 @@ void Shutdown(void) {
 }
 
 
-bool WndMain::OnCreate(int x, int y, int cx, int cy) {
-    MapWindow::_OnCreate(*this, cx, cy);
-    bool bRet = WndMainBase::OnCreate(x, y, cx, cy);
+void WndMain::OnCreate() {
+    MapWindow::_OnCreate(*this, GetWidth(), GetHeight());
+    WndMainBase::OnCreate();
     StartTimer(500);
-    return bRet;
 }
 
 bool WndMain::OnClose() {
@@ -241,7 +240,7 @@ bool WndMain::OnClose() {
     return true;
 }
 
-bool WndMain::OnDestroy() {
+void WndMain::OnDestroy() {
     StopTimer();
     MapWindow::_OnDestroy();
     return WndMainBase::OnDestroy();
@@ -262,7 +261,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     return true;
 }
 
-bool WndMain::OnKillFocus() { 
+void WndMain::OnKillFocus() { 
     _MouseButtonDown = false;
     return  WndMainBase::OnKillFocus();
 }
@@ -334,7 +333,7 @@ void AfterStartup() {
 extern void SIMProcessTimer(void);
 extern void ProcessTimer(void);
 
-bool WndMain::OnTimer() {
+void WndMain::OnTimer() {
     // WM_TIMER is run at about 2hz.
     LKHearthBeats++; // 100213
     if (ProgramStarted > psInitInProgress) {
@@ -349,15 +348,5 @@ bool WndMain::OnTimer() {
             StartupStore(_T(". ProgramStarted=NormalOp %s%s"), WhatTimeIsIt(), NEWLINE);
             StartupLogFreeRamAndStorage();
         }
-    }
-    return true; // we have processes this message;
-}
-
-void WndMain::RunModalLoop() {
-    assert(event_queue);
-    EventLoop loop(*event_queue);
-    Event event;
-    while (IsDefined() && loop.Get(event)) {
-        loop.Dispatch(event);
     }
 }

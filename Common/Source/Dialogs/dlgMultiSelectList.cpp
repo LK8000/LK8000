@@ -409,7 +409,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         /********************
          * show text
          ********************/
-        Surface.SetBkMode(TRANSPARENT);
+        Surface.SetBackgroundTransparent();
         Surface.SetTextColor(RGB_BLACK);
         int iLen = _tcslen(text1);
         if (iLen > 100)

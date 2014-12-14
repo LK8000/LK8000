@@ -68,7 +68,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
   Surface.SelectObject(LK8UnitFont);
   if (ScreenSize==0) {
-	_stprintf(Buffer,TEXT("Screen %ldx%ld experimental"),rc.right,rc.bottom );
+	_stprintf(Buffer,TEXT("Screen %ldx%ld experimental"),(long int)rc.right,(long int)rc.bottom );
 	Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
 	LKWriteText(Surface, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);

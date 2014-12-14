@@ -60,7 +60,7 @@ void Statistics::RenderSpeed(LKSurface& Surface, const RECT& rc)
     Surface.SetTextColor(RGB_DARKGREEN);
   else
     Surface.SetTextColor(RGB_GREEN);
-  Surface.SetBkMode(OPAQUE);
+  Surface.SetBackgroundOpaque();
   TCHAR text[80];
   DrawXLabel(Surface, rc, TEXT(" t/h "));
   _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());

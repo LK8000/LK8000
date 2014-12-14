@@ -118,20 +118,18 @@ LRESULT CALLBACK Window::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-bool Window::Create(Window* pOwner, const RECT& rect, const TCHAR* szName)
-{
+bool Window::Create(Window* pOwner, const RECT& rect) {
 #ifndef NDEBUG
     if(pOwner) {
         assert(::GetCurrentThreadId() == ::GetWindowThreadProcessId(pOwner->Handle(), NULL));
     }
 #endif
-    _szWindowName = szName;
 
-	// Create the window
-	// send the this pointer as the window creation parameter
-	HWND hwnd = CreateWindow(_szClassName.c_str(), _szWindowText.c_str(), _dwStyles, rect.left, rect.top, 
-		rect.right - rect.left, rect.bottom - rect.top, pOwner?pOwner->Handle():NULL, NULL, _hInstance, 
-		(void *)this);
+    // Create the window
+    // send the this pointer as the window creation parameter
+    HWND hwnd = CreateWindow(_szClassName.c_str(), _szWindowText.c_str(), _dwStyles, rect.left, rect.top, 
+            rect.right - rect.left, rect.bottom - rect.top, pOwner?pOwner->Handle():NULL, NULL, _hInstance, 
+            (void *)this);
 
     assert(hwnd);
 
@@ -141,23 +139,20 @@ bool Window::Create(Window* pOwner, const RECT& rect, const TCHAR* szName)
         SubClassWindow();
     }
 
-
-	return (_hWnd != NULL);
+    if(_hWnd) {
+        OnCreate();
+    }
+    
+    return (_hWnd != NULL);
 }
 
 LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
-        case WM_CREATE:
-            if (lParam && OnCreate(((CREATESTRUCT*) lParam)->x, ((CREATESTRUCT*) lParam)->y,
-                                   ((CREATESTRUCT*) lParam)->cx, ((CREATESTRUCT*) lParam)->cy)) {
-                return 0;
-            }
-            break;
         case WM_CLOSE:
             if (OnClose()) return 0;
             break;
         case WM_DESTROY:
-            if(OnDestroy()) return 0;
+            OnDestroy();
             break;
         case WM_SIZE:
             if(OnSize(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))) return 0;
@@ -192,10 +187,10 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
             if(OnLButtonUp((POINT){GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)})) return 0;
             break;
         case WM_SETFOCUS:
-            if(OnSetFocus()) return 0;
+            OnSetFocus();
             break;
         case WM_KILLFOCUS:
-            if(OnKillFocus()) return 0;
+            OnKillFocus();
             break;
         case WM_CTLCOLORSTATIC:
         case WM_CTLCOLOREDIT:
@@ -210,12 +205,12 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
             }
             break;
         case WM_TIMER:
-            if(OnTimer()) return 0;
+            OnTimer();
             break;
         default:
             break;
     }
-    Window * pOwner = GetOwner();
+    Window * pOwner = GetParent();
     if(pOwner && pOwner->Notify(this, uMsg, wParam, lParam)) {
         return 0;
     }
@@ -243,7 +238,7 @@ bool Window::Notify(Window* pWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         default:
             break;
     }
-    Window * pOwner = GetOwner();
+    Window * pOwner = GetParent();
     if(pOwner && pOwner->Notify(pWnd, uMsg, wParam, lParam)) {
         return true;
     }    

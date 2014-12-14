@@ -212,7 +212,7 @@ _skip2:
 
     SIZE tsize;
 
-    Surface.SetBkMode(TRANSPARENT);
+    Surface.SetBackgroundTransparent();
     const auto oldFont = Surface.SelectObject(MapWindowFont);
     const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
     const auto oldBrush = Surface.SelectObject(LKBrush_Black);

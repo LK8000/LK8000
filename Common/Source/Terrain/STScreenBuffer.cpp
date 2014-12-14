@@ -93,7 +93,11 @@ void CSTScreenBuffer::Create(int nWidth, int nHeight, LKColor clr) {
     LKASSERT(nHeight > 0);
 
     CreateBitmap(nWidth, nHeight);
+#ifdef GREYSCALE
+#warning "not implemented"
+#else
     std::fill_n(m_pBuffer, m_nHeight*m_nCorrectedWidth, BGRColor(clr.Blue(), clr.Green(), clr.Red()));
+#endif
 }
 
 void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest) {

@@ -16,32 +16,32 @@
 
 class LKBitmapSurface : public LKSurface {
 public:
-	LKBitmapSurface();
-	virtual ~LKBitmapSurface();
+    LKBitmapSurface();
+    virtual ~LKBitmapSurface();
 
     LKBitmapSurface(LKSurface& Surface, unsigned width, unsigned height);
         
-	virtual void Create(const LKSurface& Surface, unsigned width, unsigned height);
-	virtual void Release();
+    virtual void Create(const LKSurface& Surface, unsigned width, unsigned height);
+    virtual void Release();
 
-	virtual void Resize(unsigned width, unsigned height);
+    virtual void Resize(unsigned width, unsigned height);
 
-	operator LKBitmap& () { return _hBitmap; }
+    operator LKBitmap& () { return _hBitmap; }
 
 #ifdef WIN32
-	operator HBITMAP () { return _hBitmap; }
+    operator HBITMAP () { return _hBitmap; }
 #endif
     
 protected:
-	LKBitmap _hBitmap;
-	LKBitmap _oldBitmap;
+    LKBitmap _hBitmap;
+    LKBitmap _oldBitmap;
 };
 
 class LKMaskBitmapSurface : public LKBitmapSurface {
 public:
 
-	virtual void Resize(unsigned width, unsigned height);
-	virtual void Create(const LKSurface& Surface, unsigned width, unsigned height);
+    virtual void Resize(unsigned width, unsigned height);
+    virtual void Create(const LKSurface& Surface, unsigned width, unsigned height);
 };
 
 #endif	/* LKBITMAPSURFACE_H */

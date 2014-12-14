@@ -3071,7 +3071,7 @@ void ShowMenu() {
 void FullScreen() {
     
   if (!MenuActive) {
-    MainWindow.FullScreen();
+    MainWindow.Fullscreen();
   }
   MapWindow::RequestFastRefresh();
 }

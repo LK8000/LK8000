@@ -49,7 +49,10 @@ bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
 #endif
     return IsDefined();
 #else 
+    #warning "TODO: ..."        
+#if 0    
     return LoadFile(FilePath);
+#endif
 #endif
     return false;
 }

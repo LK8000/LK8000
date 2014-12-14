@@ -369,7 +369,7 @@ if(bValid)
 	TxYPt.x = (rc.right-rc.left-tsize.cx)/2;
 	TxYPt.y = (rc.bottom-rc.top)/2;
 
-	Surface.SetBkMode(TRANSPARENT);
+	Surface.SetBackgroundTransparent();
 	Surface.DrawText(TxYPt.x, TxYPt.y-20, text, _tcslen(text));
 
 	_stprintf(Sideview_szNearAS,TEXT("%s"), text);
@@ -409,7 +409,7 @@ if(bValid)
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
     	txtCol = INV_GROUND_TEXT_COLOUR;
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
   Surface.SetTextColor(txtCol);
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
 
@@ -445,7 +445,7 @@ if(bValid)
 
 
   if(!bInvCol)
-    Surface.SetBkMode(OPAQUE);
+    Surface.SetBackgroundOpaque();
   /****************************************************************************************************
    * draw AGL
    ****************************************************************************************************/
@@ -463,7 +463,7 @@ if(bValid)
     }
   }
 
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
 
   /****************************************************************************************************
    * Print current Elevation
@@ -488,13 +488,13 @@ if(bValid)
    * draw side elements
    ****************************************************************************************************/
   Surface.SetTextColor(Sideview_TextColor);
-  Surface.SetBkMode(OPAQUE);
+  Surface.SetBackgroundOpaque();
   const auto hfOld2 = Surface.SelectObject(LK8InfoNormalFont);
 
   //  DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right  - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
 
   Surface.SelectObject(hfOld2);
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
 
   Surface.SelectObject(hfOld);
   Surface.SetTextColor(GROUND_TEXT_COLOUR);
@@ -518,7 +518,7 @@ if(bValid)
 	 * draw horizontal distance to next airspace
 	 ****************************************************************************************************/
 	Surface.SetTextColor(Sideview_TextColor);
-	Surface.SetBkMode(OPAQUE);
+	Surface.SetBackgroundOpaque();
 	const auto hfOldU = Surface.SelectObject(LK8InfoNormalFont);
     // horizontal distance
     line[0].x = CalcDistanceCoordinat(0, &sDia);
@@ -602,7 +602,7 @@ if(bValid)
 	DrawSelectionFrame(hdc,  rci);
 #endif
   Surface.SelectObject(hfOldFnt/* Sender->GetFont()*/);
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
   Surface.SelectObject(hfOldFnt/* Sender->GetFont()*/);
 }
 

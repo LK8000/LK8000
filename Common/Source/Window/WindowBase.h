@@ -19,17 +19,29 @@
 #include "Win32/WndTextEdit.h"
 #include "Win32/WndTextLabel.h"
 #include "Win32/WndCtrlBase.h"
+
+typedef Window ContainerWindow;
 #endif
 
 #ifdef __linux__
 #include "types.h"
 #include "KeyCode.h"
-#include "Linux/Window.h"
-#include "Linux/WndMainBase.h"
-#include "Linux/WndPaint.h"
-#include "Linux/WndTextEdit.h"
-#include "Linux/WndTextLabel.h"
-#include "Linux/WndCtrlBase.h"
+#include "Screen/Window.hpp"
+#include "Screen/TextWindow.hpp"
+#include "Screen/SingleWindow.hpp"
+#include "Linux/LKWindow.h"
+#include "Linux/LKWndMainBase.h"
+#include "Linux/LKWndPaint.h"
+#include "Linux/LKWndTextEdit.h"
+#include "Linux/LKWndTextLabel.h"
+#include "Linux/LKWndCtrlBase.h"
+
+
+typedef LKWndMainBase< SingleWindow > WndMainBase;
+typedef LKWndTextLabel< Window > WndTextLabel;
+typedef LKWndTextEdit< Window > WndTextEdit;
+typedef LKWndCtrlBase< ContainerWindow > WndCtrlBase;
+
 #endif
 
 #endif	/* WINDOWBASE_H */

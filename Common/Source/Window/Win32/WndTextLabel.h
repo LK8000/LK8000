@@ -18,7 +18,7 @@ class WndTextLabel : public WndText {
 public:
     WndTextLabel();
     virtual ~WndTextLabel();
-
+    
 protected:
 
 };

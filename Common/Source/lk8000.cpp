@@ -63,6 +63,7 @@
 
 #include "FlightDataRec.h"
 
+#include "Screen/Init.hpp"
 
 #ifdef INT_OVERFLOW
 	#include <signal.h>
@@ -153,6 +154,10 @@ int main() {
 	  return(-2);
   }
   #endif
+
+  ScreenGlobalInit InitScreen;
+
+        
   bool realexitforced=false;
 
   LKSound(_T("LK_CONNECT.WAV"));

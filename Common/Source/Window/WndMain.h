@@ -20,29 +20,27 @@ public:
     WndMain();
     virtual ~WndMain();
     
-    void RunModalLoop();
-
 protected:
-    virtual bool OnCreate(int x, int y, int cx, int cy);
+    virtual void OnCreate();
     virtual bool OnClose();
-    virtual bool OnDestroy();
+    virtual void OnDestroy();
 
     virtual bool OnSize(int cx, int cy);
 
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect);
 
-    virtual bool OnKillFocus();
+    virtual void OnKillFocus();
 
-	virtual bool OnMouseMove(const POINT& Pos);
+    virtual bool OnMouseMove(const POINT& Pos);
 
-	virtual bool OnLButtonDown(const POINT& Pos);
+    virtual bool OnLButtonDown(const POINT& Pos);
     virtual bool OnLButtonUp(const POINT& Pos);
 
-	virtual bool OnLButtonDblClick(const POINT& Pos);
+    virtual bool OnLButtonDblClick(const POINT& Pos);
 
     virtual bool OnKeyDown(unsigned KeyCode);
 
-    virtual bool OnTimer();
+    virtual void OnTimer();
 
 private:
     bool _MouseButtonDown;

@@ -13,8 +13,8 @@
 #include "RGB.h"
 #include "TraceThread.h"
 
-#if (WINDOWSPC>0)
-#include <wingdi.h>
+#ifndef USE_GDI
+#include "Screen/Canvas.hpp"
 #endif
 
 BOOL MapWindow::CLOSETHREAD = FALSE;
@@ -51,8 +51,8 @@ void MapWindow::DrawThread ()
   UpdateTimeStats(true);
 
   
-  hdcDrawWindow.SetBkMode(TRANSPARENT);
-  hdcMask.SetBkMode(OPAQUE);
+  hdcDrawWindow.SetBackgroundTransparent();
+  hdcMask.SetBackgroundOpaque();
 
   // paint draw window black to start
   hdcDrawWindow.SelectObject(LK_BLACK_PEN);
@@ -176,7 +176,7 @@ void MapWindow::DrawThread ()
 
 		// Now we can clear the flag. If it was off already, no problems.
 		OnFastPanning=false;
-        MainWindow.Redraw(MapRect);
+                MainWindow.Redraw(MapRect);
 		continue;
 
 	} else {

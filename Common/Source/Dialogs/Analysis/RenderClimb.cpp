@@ -53,7 +53,7 @@ void Statistics::RenderClimb(LKSurface& Surface, const RECT& rc)
   else
     Surface.SetTextColor(RGB_GREEN);
 
-  Surface.SetBkMode(OPAQUE);
+  Surface.SetBackgroundOpaque();
   TCHAR text[80];
 
   DrawXLabel(Surface, rc, TEXT("n"));

@@ -22,7 +22,7 @@ void Statistics::DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text
 
 
   Surface.DrawText(x, y, text, _tcslen(text));
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
 }
 
 
@@ -35,9 +35,9 @@ void Statistics::DrawNoData(LKSurface& Surface, const RECT& rc) {
   Surface.GetTextSize(text, _tcslen(text), &tsize);
   int x = (int)(rc.left+rc.right-tsize.cx)/2;
   int y = (int)(rc.top+rc.bottom-tsize.cy)/2;
-  Surface.SetBkMode(OPAQUE);
+  Surface.SetBackgroundOpaque();
   Surface.DrawText(x, y, text, _tcslen(text));
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
 }
 
 

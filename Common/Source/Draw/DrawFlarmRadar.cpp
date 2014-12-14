@@ -1097,7 +1097,7 @@ if(SPLITSCREEN_FACTOR >0)
 		   _stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*LKTraffic[i].Average30s);
 
 		    SIZE tsize;
-		    Surface.SetBkMode(TRANSPARENT);
+		    Surface.SetBackgroundTransparent();
 		    Surface.GetTextSize(lbuffer, _tcslen(lbuffer), &tsize);
 		    if (_tcslen(lbuffer)>0)
 			  TextInBox(Surface, &rct, lbuffer,x+tscaler, y+tsize.cy/4, 0, &displaymode, false);
@@ -1273,7 +1273,7 @@ if(bSideview)
 
 
 	  SIZE tsize;
-	  Surface.SetBkMode(TRANSPARENT);
+	  Surface.SetBackgroundTransparent();
 	  Surface.GetTextSize(lbuffer,  _tcslen(lbuffer), &tsize);
 	  if (_tcslen(lbuffer)>0)
 		TextInBox(Surface, &rc, lbuffer, x+tscaler,  hy+tsize.cy/4, 0, &displaymode, false);

@@ -63,7 +63,7 @@ void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, cons
 		Surface.SelectObject(LK8BigFont);
 		break;
    }
-   Surface.SetBkMode(TRANSPARENT);
+   Surface.SetBackgroundTransparent();
    SIZE tsize;
    Surface.GetTextSize(text, _tcslen(text), &tsize);
    int y;

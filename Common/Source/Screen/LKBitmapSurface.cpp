@@ -13,7 +13,7 @@
 #include <cassert>
 
 #ifndef WIN32
-#warning "TODO: need to implement"
+#include "Screen/VirtualCanvas.hpp"
 #endif
 
 LKBitmapSurface::LKBitmapSurface() : LKSurface()
@@ -42,6 +42,8 @@ void LKBitmapSurface::Create(const LKSurface& Surface, unsigned width, unsigned 
 
     _hBitmap = LKBitmap (::CreateCompatibleBitmap(GetAttribDC(), width, height));
     _oldBitmap = LKBitmap((HBITMAP)::SelectObject(_OutputDC, _hBitmap));
+#else
+    _pCanvas = new VirtualCanvas(Surface, {width, height});
 #endif    
 }
 
@@ -69,6 +71,9 @@ void LKBitmapSurface::Release() {
     if (_hBitmap) {
         _hBitmap.Release();
     }
+#else
+    delete _pCanvas;
+    _pCanvas = nullptr;
 #endif
     LKSurface::Release();
 }

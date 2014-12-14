@@ -58,5 +58,47 @@ IsOldWindowsCE()
 #endif
 }
 
+/**
+ * Returns whether the application is running on Android
+ */
+constexpr
+static inline bool
+IsAndroid()
+{
+#if defined(ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}
+
+/**
+ * Returns whether the application is running on Pocket PC / Windows
+ * CE / Windows Mobile.
+ */
+constexpr
+static inline bool
+IsWindowsCE()
+{
+#ifdef _WIN32_WCE
+  return true;
+#else
+  return false;
+#endif
+}
+
+
+/**
+ * Does this device have a touch screen?  This is useful to know for
+ * sizing controls, as a touch screen may require bigger areas.
+ */
+constexpr
+static inline bool
+HasTouchScreen()
+{
+  return IsAndroid() || (IsWindowsCE() && !IsAltair()) || IsKobo();
+}
+
+
 #endif	/* ASSET_HPP */
 

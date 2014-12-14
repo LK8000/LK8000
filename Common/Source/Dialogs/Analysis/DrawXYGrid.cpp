@@ -53,7 +53,7 @@ void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
 //	SetBkMode(hdc, OPAQUE);
 	Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
 	Surface.DrawText(xmin-tsize.cx/2, ymax-tsize.cy, unit_text, _tcslen(unit_text));
-	Surface.SetBkMode(TRANSPARENT);
+	Surface.SetBackgroundTransparent();
       }
     }
 
@@ -83,7 +83,7 @@ void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
 //	SetBkMode(hdc, OPAQUE);
 	Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
 	Surface.DrawText(xmin-tsize.cx/2, ymax-tsize.cy, unit_text, _tcslen(unit_text));
-	Surface.SetBkMode(TRANSPARENT);
+	Surface.SetBackgroundTransparent();
       }
     }
 

@@ -12,7 +12,7 @@
 #ifdef WIN32
 #include <windows.h>
 #else
-#warning "TODO: need to implement"
+#include "Screen/WindowCanvas.hpp"
 #endif
 
 #include <cassert>
@@ -54,6 +54,8 @@ void LKWindowSurface::Create(Window& Wnd){
     if(!Attach(::GetDC(hWnd))) {
         assert(false);
     }
+#else
+    _pCanvas = new WindowCanvas(Wnd);
 #endif
 }
 
@@ -63,6 +65,9 @@ void LKWindowSurface::Release() {
     if(_OutputDC && _hWnd) {
         ::ReleaseDC(_hWnd, Detach());
     }
+#else
+    delete _pCanvas;
+    _pCanvas = nullptr;
 #endif
     LKSurface::Release();
 }

@@ -21,7 +21,7 @@ void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
       LKColor whitecolor = LKColor(0xff,0xff,0xff);
 
   hdcTempAsp.SetTextColor(whitecolor);
-  hdcTempAsp.SetBkMode(TRANSPARENT);
+  hdcTempAsp.SetBackgroundTransparent();
   hdcTempAsp.SetBkColor(whitecolor);
   hdcTempAsp.SelectObject(LK_WHITE_PEN);
   hdcTempAsp.SelectObject(LKBrush_White);
@@ -43,7 +43,6 @@ void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
 // TODO code: optimise airspace drawing
 void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
 {
-  LKColor whitecolor = LKColor(0xff,0xff,0xff);
   CAirspaceList::const_iterator it;
   CAirspaceList::const_reverse_iterator itr;
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
@@ -147,14 +146,11 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
                    rc.left,rc.top,
                    rc.right-rc.left,rc.bottom-rc.top,
                    hdcTempAsp,
-                   rc.left,rc.top,
-                   rc.right-rc.left,rc.bottom-rc.top,
-                   whitecolor
-                   );
+                   rc.left,rc.top);
     
     // restore original color
     //    SetTextColor(hDCTemp, origcolor);
-    hdcTempAsp.SetBkMode(OPAQUE);
+    hdcTempAsp.SetBackgroundOpaque();
   }
   hdcbuffer.RestoreState(nDC1);
   hdcMask.RestoreState(nDC2);    

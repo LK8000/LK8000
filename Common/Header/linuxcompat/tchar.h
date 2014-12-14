@@ -97,7 +97,7 @@ typedef char	_TCHAR;
 #define _tcsspn		strspn
 #define	_tcsstr		strstr
 #define _tcstok		strtok
-#define	_tcsdup		_strdup
+#define	_tcsdup		strdup
 #define	_tcsicmp	strcasecmp
 #define	_tcsnicmp	strncasecmp
 #define	_tcsnset	_strnset

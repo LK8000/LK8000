@@ -232,7 +232,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 
 
 
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
 
   RECT trc;
   trc=vrc;

@@ -26,9 +26,11 @@ public:
         _BkBrush.Create(_BkColor);
     }
 
+    void Create(Window& Owner, const TCHAR* szText, const RECT& Rect);
+    
 protected:
     virtual HBRUSH OnCtlColor(HDC hdc);
-    virtual bool OnCreate(int x, int y, int cx, int cy);
+    virtual void OnCreate();
 
 private:
     LKColor _TextColor;

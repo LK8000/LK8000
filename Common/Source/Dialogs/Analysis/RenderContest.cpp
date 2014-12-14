@@ -161,7 +161,7 @@ double  yp = (lat_p-lat_c);
 
   Surface.SelectObject(hfOldU);
   Surface.SetTextColor(RGB_MAGENTA);
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
   DrawLabel(Surface, rc, TEXT("O"), xp, yp);
 }
 }
@@ -386,7 +386,7 @@ ResetScale();
 
 DrawXGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 DrawYGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
-Surface.SetBkMode(TRANSPARENT);
+Surface.SetBackgroundTransparent();
 Surface.SetTextColor(RGB_MAGENTA);
 DrawLabel(Surface, rc, TEXT("O"), xp, yp);
 Surface.SelectObject(hfOldU);

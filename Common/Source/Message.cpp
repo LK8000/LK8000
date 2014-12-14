@@ -65,7 +65,7 @@ void Message::Initialize(RECT rc) {
     nvisible = 0;
     rcmsg = rc; // default; message window can be full size of screen
 
-    WndMsg.Create(&MainWindow, rc, _T("WindowMessage"));
+    WndMsg.Create(&MainWindow, rc);
 
     // change message font for different resolutions
     // Caution, remember to set font also in Resize..

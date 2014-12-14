@@ -45,15 +45,15 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
             }
         }
 
-        LONG x = WayPointList[Task[maxTp].Index].Screen.x;
-        LONG y = WayPointList[Task[maxTp].Index].Screen.y;
+        PixelScalar x = WayPointList[Task[maxTp].Index].Screen.x;
+        PixelScalar y = WayPointList[Task[maxTp].Index].Screen.y;
         rectObj rect = (rectObj){x - tmp1, y - tmp1, x + tmp1, y + tmp1};
 
         if (msRectOverlap(&rect, &rcrect) == MS_TRUE) {
-            rcDraw.top = std::min((LONG) rect.miny, rcDraw.top);
-            rcDraw.bottom = std::max((LONG) rect.maxy, rcDraw.bottom);
-            rcDraw.left = std::min((LONG) rect.minx, rcDraw.left);
-            rcDraw.right = std::max((LONG) rect.maxx, rcDraw.right);
+            rcDraw.top = std::min((PixelScalar)rect.miny, rcDraw.top);
+            rcDraw.bottom = std::max((PixelScalar) rect.maxy, rcDraw.bottom);
+            rcDraw.left = std::min((PixelScalar) rect.minx, rcDraw.left);
+            rcDraw.right = std::max((PixelScalar) rect.maxx, rcDraw.right);
             bDraw = true;
         }
     }
@@ -128,10 +128,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
                     rcDraw.left, rcDraw.top,
                     rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top,
                     hDCTempTask,
-                    rcDraw.left, rcDraw.top,
-                    rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top,
-                    whitecolor
-                    );
+                    rcDraw.left, rcDraw.top);
         }
 	}
     {

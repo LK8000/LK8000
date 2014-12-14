@@ -125,7 +125,7 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String){
   if (_fgetts(String, Max, fp) != NULL){     // 20060512/sgi change 200 to max
 
     String[Max-1] = '\0';                    // 20060512/sgi added make shure the  string is terminated
-    TCHAR *pWC = &String[max(0U,_tcslen(String)-1)]; 
+    TCHAR *pWC = &String[max((size_t)0,_tcslen(String)-1)]; 
     // 20060512/sgi change add -1 to set pWC at the end of the string
 
     while (pWC > String && (*pWC == '\r' || *pWC == '\n')){

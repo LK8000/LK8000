@@ -316,8 +316,8 @@ typedef struct
   int iAreaSize;
   int aiLable;
   int iType;
-  int iMaxBase;
-  int iMinTop;
+  PixelScalar iMaxBase;
+  PixelScalar iMinTop;
   BOOL bRectAllowed;
   BOOL bEnabled;
   TCHAR szAS_Name[NAME_SIZE + 1];

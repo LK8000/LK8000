@@ -1124,11 +1124,10 @@ BrushReference WindowControl::hBrushDefaultBk;
 PenReference WindowControl::hPenDefaultBorder;
 PenReference WindowControl::hPenDefaultSelector;
 
-WindowControl::WindowControl(WindowControl *Owner, 
-			     const TCHAR *Name, 
-			     int X, int Y, 
-			     int Width, int Height, 
-			     bool Visible){
+WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name, 
+			     int X, int Y, int Width, int Height, bool Visible)
+                : WndCtrlBase(Name)
+{
 
   mHelpText = NULL;
 
@@ -1164,9 +1163,12 @@ WindowControl::WindowControl(WindowControl *Owner,
   InstCount++;
 
   // if Owner is Not provided, use MainWindow
-  Window* WndOnwer = Owner?(Window*)Owner->GetClientArea():&MainWindow;
-  Create(WndOnwer,(RECT){mX, mY, mX+mWidth, mY+mHeight}, Name?Name:_T("WindowControl"));
-  WndPaint::SetTopWnd();
+  ContainerWindow* WndOnwer = Owner
+          ?static_cast<ContainerWindow*>(Owner->GetClientArea())
+          :static_cast<ContainerWindow*>(&MainWindow);
+  
+  Create(WndOnwer,(RECT){mX, mY, mX+mWidth, mY+mHeight});
+  SetTopWnd();
   
   if (mOwner != NULL)
     mOwner->AddClient(this);
@@ -1200,23 +1202,21 @@ void WindowControl::Destroy(void){
   if (ActiveControl == this)
     ActiveControl = NULL;
 
-  WndPaint::Destroy();
+  WndCtrlBase::Destroy();
 
   InstCount--;
 
 }
 
-bool WindowControl::OnSetFocus() {
+void WindowControl::OnSetFocus() {
     Redraw();
     ActiveControl = this;
     LastFocusControl = this;    
-    return true;
 }
 
-bool WindowControl::OnKillFocus() {
+void WindowControl::OnKillFocus() {
     Redraw();
     ActiveControl = NULL;
-    return true;
 }
 
 void WindowControl::UpdatePosSize(void){
@@ -1233,7 +1233,6 @@ bool WindowControl::OnPaint(LKSurface& Surface, const RECT& Rect) {
     int win_height = Client_Rect.bottom + Client_Rect.left;
 
     LKBitmapSurface MemSurface(Surface, win_width, win_height);
-
     Paint(MemSurface);
 
 #warning "TODO : Exclude client rect"
@@ -1418,7 +1417,7 @@ bool WindowControl::SetReadOnly(bool Value){
   if (mReadOnly != Value){
     mReadOnly = Value;
 
-    Window::Redraw();
+    Redraw();
   }
   return(res);
 }
@@ -1521,7 +1520,7 @@ void WindowControl::Paint(LKSurface& Surface) {
 
     if (!IsVisible()) return;
 
-    Surface.SetBkMode(TRANSPARENT);
+    Surface.SetBackgroundTransparent();
     RECT rc = GetClientRect();
     rc.right += 2;
     rc.bottom += 2;
@@ -1557,8 +1556,8 @@ WindowControl *WindowControl::FocusNext(WindowControl *Sender) {
         return W;
     }
 
-    if (GetOwner() != NULL) {
-        return (GetOwner()->FocusNext(this));
+    if (GetParent() != NULL) {
+        return (GetParent()->FocusNext(this));
     }
 
     return (NULL);
@@ -1583,8 +1582,8 @@ WindowControl *WindowControl::FocusPrev(WindowControl *Sender){
         return W;
     }
 
-    if (GetOwner() != NULL) {
-        return (GetOwner()->FocusPrev(this));
+    if (GetParent() != NULL) {
+        return (GetParent()->FocusPrev(this));
     }
 
     return (NULL);
@@ -1688,7 +1687,7 @@ CheckKey(Window *container, const Event &event)
                             (LPARAM)&msg);
   return (r & DLGC_WANTMESSAGE) != 0;
 #else
-  Window *focused = container->GetFocus();
+  Window *focused = container->GetFocusedWindow();
   if (focused == NULL)
     return false;
 
@@ -1722,7 +1721,7 @@ int WndForm::ShowModal(void) {
 
     mModalResult = 0;
 
-    Window* oldFocus = Window::GetFocus();
+    Window* oldFocus = Window::GetFocusedWindow();
     FocusNext(NULL);
 
     assert(event_queue);
@@ -1790,21 +1789,7 @@ int WndForm::ShowModal(void) {
 
         loop.Dispatch(event);
     } // End Modal Loop
-/*    
-    EventLoop Loop;
-    while((mModalResult == 0) && Loop.Wait()) {
-        if(Loop.IsEscapeKey()) {
-            mModalResult = mrCancel;
-        }
-        
-        if(Loop.IsInputMsg() && Loop.Target() != this && !Loop.IsChildMsg(this)) {
-            // Input event and not current window or child
-            continue; // make it modal
-        }
-        
-        Loop.Dispatch();
-    }
-*/
+
     if(oldFocus) {
         oldFocus->SetFocus();
     }
@@ -1837,7 +1822,7 @@ void WndForm::Paint(LKSurface& Surface){
 
         Surface.SetTextColor(RGB_MENUTITLEFG);
         Surface.SetBkColor(mColorTitle);
-        Surface.SetBkMode(TRANSPARENT);
+        Surface.SetBackgroundTransparent();
         
         const auto oldPen = Surface.SelectObject(GetBorderPen());
         const auto oldBrush = Surface.SelectObject(GetBackBrush());
@@ -1915,7 +1900,7 @@ void WndForm::SetFont(FontReference Value){
     WindowControl::SetFont(Value);
 }
 
-void WndForm::Show(void) {
+void WndForm::Show() {
     WindowControl::Show();
     SetToForeground();
 }
@@ -1925,7 +1910,7 @@ bool WndForm::OnKeyDownNotify(Window* pWnd, unsigned KeyCode) {
         return true;
     }
     if (ActiveControl) {
-        WindowControl * pCtrl = ActiveControl->GetOwner();
+        WindowControl * pCtrl = ActiveControl->GetParent();
         if (pCtrl) {
             switch (KeyCode & 0xffff) {
                 case VK_UP:
@@ -1954,7 +1939,7 @@ WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Capt
   mCanFocus = true;
 
   SetForeColor(RGB_BUTTONFG);
-  SetBackColor(GetOwner()->GetBackColor());
+  SetBackColor(GetParent()->GetBackColor());
 
   if(Caption) {
       SetCaption(Caption);
@@ -1968,7 +1953,7 @@ bool WndButton::OnKeyDown(unsigned KeyCode) {
         case VK_SPACE:
             if (!mDown) {
                 mDown = true;
-                Window::Redraw();
+                Redraw();
                 return true;
             }
     }
@@ -1982,7 +1967,7 @@ bool WndButton::OnKeyUp(unsigned KeyCode) {
             if (!Debounce()) return (1); // prevent false trigger
             if (mDown) {
                 mDown = false;
-                Window::Redraw();
+                Redraw();
                 if (mOnClickNotify != NULL) {
                     (mOnClickNotify) (this);
                     return true;
@@ -2045,7 +2030,7 @@ void WndButton::Paint(LKSurface& Surface){
     Surface.SetTextColor(GetForeColor());
 
     Surface.SetBkColor(GetBackColor());
-    Surface.SetBkMode(TRANSPARENT);
+    Surface.SetBackgroundTransparent();
 
     const auto oldFont = Surface.SelectObject(GetFont());
     const RECT rcClient = GetClientRect();
@@ -2118,8 +2103,8 @@ WndProperty::WndProperty(WindowControl *Parent,
 
     mCanFocus = true;
 
-    SetForeColor(GetOwner()->GetForeColor());
-    SetBackColor(GetOwner()->GetBackColor());
+    SetForeColor(GetParent()->GetForeColor());
+    SetBackColor(GetParent()->GetBackColor());
 
     mDownDown = false;
     mUpDown = false;
@@ -2360,7 +2345,7 @@ void WndProperty::Paint(LKSurface& Surface){
     Surface.SetBkColor(GetBackColor());
   }
 
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
   const auto oldFont = Surface.SelectObject(GetFont());
 
   const TCHAR * szCaption = GetWndText();
@@ -2463,8 +2448,8 @@ void WndOwnerDrawFrame::Paint(LKSurface& Surface) {
 }
 
 bool WndFrame::OnKeyDown(unsigned KeyCode) {
-    if (mIsListItem && GetOwner() != NULL) {
-        return (((WndListFrame*) GetOwner())->OnItemKeyDown(this, KeyCode));
+    if (mIsListItem && GetParent() != NULL) {
+        return (((WndListFrame*) GetParent())->OnItemKeyDown(this, KeyCode));
     }
     return false;
 }
@@ -2473,8 +2458,8 @@ void WndFrame::Paint(LKSurface& Surface){
 
   if (!IsVisible()) return;
 
-  if (mIsListItem && GetOwner()!=NULL) {
-    ((WndListFrame*)GetOwner())->PrepareItemDraw();
+  if (mIsListItem && GetParent()!=NULL) {
+    ((WndListFrame*)GetParent())->PrepareItemDraw();
   }
 
   WindowControl::Paint(Surface);
@@ -2485,7 +2470,7 @@ void WndFrame::Paint(LKSurface& Surface){
 
     Surface.SetTextColor(GetForeColor());
     Surface.SetBkColor(GetBackColor());
-    Surface.SetBkMode(TRANSPARENT);
+    Surface.SetBackgroundTransparent();
 
     const auto oldFont = Surface.SelectObject(GetFont());
 
@@ -2854,13 +2839,13 @@ bool WndFrame::OnLButtonUp(const POINT& Pos) {
 // JMW needed to support mouse/touchscreen
 bool WndFrame::OnLButtonDown(const POINT& Pos) {
 
-  if (mIsListItem && GetOwner()!=NULL) {
+  if (mIsListItem && GetParent()!=NULL) {
  
     if (!HasFocus()) {
       SetFocus();  
     }
     Redraw();
-    WndListFrame* wlf = ((WndListFrame*)GetOwner());
+    WndListFrame* wlf = ((WndListFrame*)GetParent());
     if(wlf) {
         RECT Rc = {};
         wlf->SelectItemFromScreen(Pos.x, Pos.y, &Rc);

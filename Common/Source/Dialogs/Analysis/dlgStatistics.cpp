@@ -87,7 +87,7 @@ static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
     else
       Surface.SetTextColor(RGB_WHITE);
 
-  Surface.SetBkMode(TRANSPARENT);
+  Surface.SetBackgroundTransparent();
 //  SetTextColor(hDC, Sender->GetForeColor());
 //  SetTextColor(hDC, Sideview_TextColor);
 
