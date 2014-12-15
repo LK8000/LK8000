@@ -13,14 +13,29 @@
 #define	WNDLABEL_H
 #include "LKWndText.h"
 
+//this this used only as base class for MenuButton cf. Buttons.cpp
+
+class WndTextLabelStyle : public WindowStyle {
+public:
+    WndTextLabelStyle() {
+        text_style |= DT_WORDBREAK|DT_CENTER|DT_VCENTER;
+        Disable();
+        Hide();
+    }
+};
 
 template<class _Base>
 class LKWndTextLabel : public LKWndText<_Base> {
+    typedef LKWndText<_Base> __super;
 public:
     LKWndTextLabel() : LKWndText<_Base>(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
-        
+
     }
-    
+
+    virtual void Create(ContainerWindow* pOwner, const RECT& rect) {
+        __super::Create(pOwner, rect, WndTextLabelStyle());
+    }
+
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) {
         Canvas& canvas = Surface;
         
@@ -31,10 +46,10 @@ public:
 
         if (this->_Text.empty())
           return true;
-/*
-        const PixelScalar padding = Layout::GetTextPadding();
-        rc.Grow(-padding);
-*/
+
+//        const PixelScalar padding = Layout::GetTextPadding();
+        rc.Grow(-1);
+
         canvas.SetBackgroundTransparent();
         canvas.SetTextColor(this->_TextColor);
 

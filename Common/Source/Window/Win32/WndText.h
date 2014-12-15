@@ -26,8 +26,6 @@ public:
         _BkBrush.Create(_BkColor);
     }
 
-    void Create(Window& Owner, const TCHAR* szText, const RECT& Rect);
-    
 protected:
     virtual HBRUSH OnCtlColor(HDC hdc);
     virtual void OnCreate();

@@ -13,17 +13,9 @@
 #include <array>
 #include <algorithm>
 #include <functional>
+#include "Window/WndMain.h"
 
 using std::placeholders::_1;
-
-class MenuButtonStyle : public WindowStyle {
-public:
-    MenuButtonStyle() {
-        text_style |= DT_WORDBREAK|DT_CENTER|DT_VCENTER;
-        Disable();
-        Hide();
-    }
-};
 
 class MenuButton : public WndTextLabel {
 public:
@@ -261,7 +253,7 @@ void ButtonLabel::CreateButtonLabels(const RECT& rc) {
     for (unsigned i = 0; i < MenuButtons.size(); ++i) {
         GetButtonPosition(i, rc, &x, &y, &cx, &cy);
 
-        MenuButtons[i].Create(&MainWindow, (RECT){ x, y, x + cx, y + cy }, MenuButtonStyle());
+        MenuButtons[i].Create(&MainWindow, (RECT){ x, y, x + cx, y + cy });
         if(MenuButtons[i].IsDefined()) {
             MenuButtons[i].SetTextColor(RGB_BLACK);
             MenuButtons[i].SetBkColor(RGB_BUTTONS);

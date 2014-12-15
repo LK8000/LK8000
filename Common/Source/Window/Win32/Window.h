@@ -53,8 +53,8 @@ public:
 
     const TCHAR* GetWndText() const { return _szWindowText.c_str(); }
 
-    virtual bool Create(Window& Owner, const RECT& rect) {
-        return Create(&Owner, rect);
+    virtual void Create(Window& Owner, const RECT& rect) {
+        Create(&Owner, rect);
     }
     
     virtual bool Create(Window* pOwner, const RECT& rect);

@@ -13,12 +13,13 @@
 #define	WNDLABEL_H
 #include "WndText.h"
 
+//this this used only as base class for MenuButton cf. Buttons.cpp
 
 class WndTextLabel : public WndText {
 public:
     WndTextLabel();
     virtual ~WndTextLabel();
-    
+
 protected:
 
 };
