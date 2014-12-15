@@ -165,16 +165,21 @@ void ExpandLocalPath(TCHAR* filein) {
   TCHAR output[MAX_PATH];
   LocalPath(lpath);
 
-  TCHAR* ptr = _tcsstr(filein, code);
+  const TCHAR* ptr = _tcsstr(filein, code);
   if (!ptr) return;
 
   ptr += _tcslen(code);
-  TCHAR* ptr2 = lpath + _tcslen(lpath) -1;
-  if(*ptr != _T('\\') && *ptr2 != _T('\\')) {
-      _tcscat(lpath, _T(DIRSEP));
-  }
-  if(*ptr == _T('\\') && *ptr2 == _T('\\')) {
+   
+  const TCHAR* ptr2 = lpath + _tcslen(lpath) -1;
+
+  if( (*ptr2=='/')||(*ptr2=='\\') ) {
+    if( ((*ptr=='/')||( *ptr=='\\')) ) {
       ++ptr;
+    }
+  } else {
+    if( (*ptr!='/')||(*ptr!='\\') ) {
+      _tcscat(lpath, _T(DIRSEP));
+    }
   }
 
   if (_tcslen(ptr)>0) {
