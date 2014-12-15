@@ -99,10 +99,17 @@ void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* fil
   if (_tcslen(subdir)>0) {
     const TCHAR* ptr = subdir;
     const TCHAR* ptr2 = buffer + _tcslen(buffer) -1;
-    if((*ptr != _T('\\') || (*ptr != _T('/'))) && (*ptr2 != _T('\\') || (*ptr2 != _T('/')))) {
-         _tcscat(buffer, _T(DIRSEP));
-     }
-	_tcscat(buffer,subdir);
+
+    if( (*ptr2=='/')||(*ptr2=='\\') ) {
+        if( ((*ptr=='/')||(*ptr=='\\')) ) {
+            ++ptr;
+        }
+    } else {
+        if( (*ptr!='/')||(*ptr!='\\') ) {
+            _tcscat(buffer, _T(DIRSEP));
+        }
+    }
+	_tcscat(buffer,ptr);
   }
   ScanDirectories(buffer,filter);
   Sort();
