@@ -170,8 +170,6 @@ void Shutdown(void) {
   hBrushButtonHasFocus.Release();
   #endif
 
-  extern void DeInitialiseFonts(void);
-  DeInitialiseFonts();  
   CAirspaceManager::Instance().CloseAirspaces();
   #if TESTBENCH
   StartupStore(TEXT(".... Delete Critical Sections%s"),NEWLINE);
@@ -195,8 +193,6 @@ void Shutdown(void) {
   #if TESTBENCH
   StartupStore(TEXT(".... Close Windows%s"),NEWLINE);
   #endif
-
-  MainWindow.Destroy();
 
   #if TESTBENCH
   StartupLogFreeRamAndStorage();

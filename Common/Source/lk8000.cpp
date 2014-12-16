@@ -573,8 +573,11 @@ _Shutdown:
   else return 111;
 }
 
+extern void DeInitialiseFonts(void);
+
 void CleanupForShutdown(void) {
 
+  DeInitialiseFonts();  
   LKObjects_Delete();
   LKUnloadProfileBitmaps();
   LKUnloadFixedBitmaps();
