@@ -9,14 +9,13 @@
  * Created on 2 décembre 2014
  */
 
-#ifndef WNDCTRLBASE_H
-#define	WNDCTRLBASE_H
+#ifndef _LINUX_WNDCTRLBASE_H
+#define	_LINUX_WNDCTRLBASE_H
 #include "LKWindow.h"
 
-template<class _Base>
-class LKWndCtrlBase : public LKWindow<_Base> {
+class WndCtrlBase : public LKWindow<ContainerWindow> {
 public:
-    LKWndCtrlBase(const TCHAR * szName) {
+    WndCtrlBase(const TCHAR * szName) {
         _szWndName = szName?szName:_T("");
     }
     
@@ -42,5 +41,5 @@ protected:
         
 };
 
-#endif	/* WNDCTRLBASE_H */
+#endif	/* _LINUX_WNDCTRLBASE_H */
 

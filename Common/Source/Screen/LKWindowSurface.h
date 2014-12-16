@@ -13,7 +13,7 @@
 #define	LKWINDOWSURFACE_H
 
 #include "LKSurface.h"
-#include "Window/WindowBase.h"
+#include "Window/Window.h"
 
 class LKWindowSurface : public LKSurface {
 public:

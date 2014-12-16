@@ -9,8 +9,8 @@
  * Created on 20 novembre 2014, 21:50
  */
 
-#ifndef WNDLABEL_H
-#define	WNDLABEL_H
+#ifndef _WIN32_WNDTEXTLABEL_H
+#define	_WIN32_WNDTEXTLABEL_H
 #include "WndText.h"
 
 //this this used only as base class for MenuButton cf. Buttons.cpp
@@ -24,5 +24,5 @@ protected:
 
 };
 
-#endif	/* WNDLABEL_H */
+#endif	/* _WIN32_WNDTEXTLABEL_H */
 

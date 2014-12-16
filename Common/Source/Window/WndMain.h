@@ -12,7 +12,7 @@
 #ifndef WNDMAIN_H
 #define	WNDMAIN_H
 
-#include "WindowBase.h"
+#include "WndMainBase.h"
 #include "MapWindow.h"
 
 class WndMain : public WndMainBase, public MapWindow {

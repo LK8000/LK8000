@@ -33,8 +33,10 @@
 
 class LKSurface : public boost::noncopyable {
 protected:
+#ifndef USE_GDI
     Canvas* _pCanvas; // need to be first.
-        
+#endif
+    
 public:
     LKSurface();
     virtual ~LKSurface();

@@ -11,7 +11,8 @@
 
 #ifndef WNDLABEL_H
 #define	WNDLABEL_H
-#include "LKWndText.h"
+#include "Screen/Window.hpp"
+#include "WndText.h"
 
 //this this used only as base class for MenuButton cf. Buttons.cpp
 
@@ -24,11 +25,10 @@ public:
     }
 };
 
-template<class _Base>
-class LKWndTextLabel : public LKWndText<_Base> {
-    typedef LKWndText<_Base> __super;
+class WndTextLabel : public WndText<Window> {
+    typedef WndText<Window> __super;
 public:
-    LKWndTextLabel() : LKWndText<_Base>(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
+    WndTextLabel() : __super(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
 
     }
 

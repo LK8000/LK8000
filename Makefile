@@ -282,7 +282,7 @@ endif
 CPPFLAGS	+= -Wall -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations 
 #CPPFLAGS	+= -Winit-self -Wswitch -Wcast-qual -Wcast-align
-CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
+#CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
 #CPPFLAGS	+= -Wshadow
@@ -420,7 +420,6 @@ include build/xcs_os.mk
 
 ####### sources
 WINDOW := \
-	$(SRC_WINDOW)/WindowBase.cpp \
 	$(SRC_WINDOW)/WndMain.cpp \
 	$(XCS_OS) \
 	$(XCS_EVENT) \

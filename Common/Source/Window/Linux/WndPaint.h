@@ -16,9 +16,9 @@
 class LKSurface;
 
 template<class _Base>
-class LKWndPaint : public LKWindow<_Base> {
+class WndPaint : public LKWindow<_Base> {
 public:
-    LKWndPaint() = default;
+    WndPaint() = default;
 
 protected:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) = 0;

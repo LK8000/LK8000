@@ -9,8 +9,8 @@
  * Created on 18 novembre 2014, 00:08
  */
 
-#ifndef WNDTEXTEDIT_H
-#define	WNDTEXTEDIT_H
+#ifndef _WIN32_WNDTEXTEDIT_H
+#define	_WIN32_WNDTEXTEDIT_H
 #include "WndText.h"
 
 class WndTextEdit : public WndText {
@@ -24,5 +24,5 @@ public:
 
 };
 
-#endif	/* WNDTEXTEDIT_H */
+#endif	/* _WIN32_WNDTEXTEDIT_H */
 

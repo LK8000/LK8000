@@ -10,6 +10,7 @@
 #include "Message.h"
 #include "TraceThread.h"
 #include "Screen/LKSurface.h"
+#include "Window/WndTextEdit.h"
 
 class WndMessage : public WndTextEdit {
 public:

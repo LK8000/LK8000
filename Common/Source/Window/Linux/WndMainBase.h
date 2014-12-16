@@ -12,13 +12,13 @@
 #ifndef WndMainBase_H
 #define	WndMainBase_H
 
-#include "LKWndPaint.h"
+#include "Screen/SingleWindow.hpp"
+#include "WndPaint.h"
 
-template<class _Base>
-class LKWndMainBase : public virtual LKWndPaint<_Base> {
-    typedef LKWndPaint<_Base> __super;
+class WndMainBase : public virtual WndPaint<SingleWindow> {
+    typedef WndPaint<SingleWindow> __super;
 public:
-    LKWndMainBase() { }
+    WndMainBase() { }
 
     bool Create(const RECT& rect) {
         TopWindowStyle style;

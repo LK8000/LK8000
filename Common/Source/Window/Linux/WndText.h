@@ -12,14 +12,14 @@
 #ifndef WNDTEXT_H
 #define	WNDTEXT_H
 
-#include "LKWndPaint.h"
+#include "WndPaint.h"
 #include "Screen/LKColor.h"
 #include "Screen/LKBrush.h"
 
 template<class _Base>
-class LKWndText : public LKWndPaint<_Base> {
+class WndText : public WndPaint<_Base> {
 public:
-    LKWndText(const LKColor& TextColor, const LKColor& BkColor) : _TextColor(TextColor), _BkColor(BkColor), _BkBrush(BkColor) {
+    WndText(const LKColor& TextColor, const LKColor& BkColor) : _TextColor(TextColor), _BkColor(BkColor), _BkBrush(BkColor) {
         
     }
 

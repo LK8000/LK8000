@@ -9,8 +9,8 @@
  * Created on 9 novembre 2014, 14:49
  */
 
-#ifndef _WINDOW_H_
-#define _WINDOW_H_
+#ifndef _LINUX_WINDOW_H_
+#define _LINUX_WINDOW_H_
 
 #include <assert.h>
 #include <tchar.h>
@@ -125,7 +125,7 @@ public:
     virtual bool OnMouseUp(PixelScalar x, PixelScalar y) {
         return (!_Base::OnMouseUp(x,y)) && OnLButtonUp((POINT){x,y});
     }
-  
+
     virtual bool OnMouseMove(const POINT& Pos) { return false; }
     virtual bool OnLButtonDown(const POINT& Pos) { return false; }
     virtual bool OnLButtonUp(const POINT& Pos) { return false; }
@@ -137,4 +137,4 @@ private:
     std::tstring _szWndName;
 };
 
-#endif
+#endif // _LINUX_WINDOW_H_

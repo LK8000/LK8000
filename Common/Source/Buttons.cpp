@@ -8,13 +8,12 @@
 #include "externs.h"
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"
-#include "Window/WindowBase.h"
 #include "RGB.h"
 #include <array>
 #include <algorithm>
 #include <functional>
 #include "Window/WndMain.h"
-
+#include "Window/WndTextLabel.h"
 using std::placeholders::_1;
 
 class MenuButton : public WndTextLabel {

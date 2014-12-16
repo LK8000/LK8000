@@ -13,6 +13,7 @@
 #include "Screen/BrushReference.h"
 #include "Screen/PenReference.h"
 #include "Screen/FontReference.h"
+#include "Window/WndCtrlBase.h"
 #include "Poco/Timestamp.h"
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))

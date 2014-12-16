@@ -99,6 +99,28 @@ HasTouchScreen()
   return IsAndroid() || (IsWindowsCE() && !IsAltair()) || IsKobo();
 }
 
+/**
+ * Returns whether the application is running on an embedded platform.
+ * @return True if host hardware is an embedded platform, False otherwise
+ */
+constexpr
+static inline bool
+IsEmbedded()
+{
+  return IsAndroid() || IsWindowsCE() || IsKobo();
+}
+
+/**
+ * Does this device have a keyboard device?
+ * @return True if a keyboard is assumed for the hardware
+ * that XCSoar is running on, False if the hardware has no keyboard
+ */
+constexpr
+static inline bool
+HasKeyboard()
+{
+  return !IsEmbedded();
+}
 
 #endif	/* ASSET_HPP */
 

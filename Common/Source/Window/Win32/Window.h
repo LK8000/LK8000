@@ -244,4 +244,5 @@ protected:
     virtual void OnTimer() { }
 };
 
+typedef Window ContainerWindow;
 #endif

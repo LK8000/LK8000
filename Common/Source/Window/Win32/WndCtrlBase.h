@@ -9,8 +9,8 @@
  * Created on 2 décembre 2014
  */
 
-#ifndef WNDCTRLBASE_H
-#define	WNDCTRLBASE_H
+#ifndef _WIN32_WNDCTRLBASE_H
+#define	_WIN32_WNDCTRLBASE_H
 #include "WndPaint.h"
 
 class WndCtrlBase :public WndPaint {
@@ -26,5 +26,5 @@ protected:
     std::tstring _szWindowName;
 };
 
-#endif	/* WNDCTRLBASE_H */
+#endif	/* _WIN32_WNDCTRLBASE_H */
 

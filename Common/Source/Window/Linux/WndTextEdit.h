@@ -9,14 +9,13 @@
  * Created on 18 novembre 2014, 00:08
  */
 
-#ifndef WNDTEXTEDIT_H
-#define	WNDTEXTEDIT_H
-#include "LKWndText.h"
+#ifndef _LINUX_WNDTEXTEDIT_H
+#define	_LINUX_WNDTEXTEDIT_H
+#include "WndText.h"
 
-template<class _Base>
-class LKWndTextEdit : public LKWndText<_Base> {
+class WndTextEdit : public WndText<Window> {
 public:
-    LKWndTextEdit() : LKWndText<_Base>(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
+    WndTextEdit() : WndText<Window>(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
         
     }
     
@@ -29,5 +28,5 @@ public:
     }
 };
 
-#endif	/* WNDTEXTEDIT_H */
+#endif	/* _LINUX_WNDTEXTEDIT_H */
 
