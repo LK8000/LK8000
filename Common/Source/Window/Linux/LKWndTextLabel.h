@@ -48,7 +48,7 @@ public:
           return true;
 
 //        const PixelScalar padding = Layout::GetTextPadding();
-        rc.Grow(-1);
+//        rc.Grow(-1);
 
         canvas.SetBackgroundTransparent();
         canvas.SetTextColor(this->_TextColor);
