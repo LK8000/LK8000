@@ -32,6 +32,9 @@
 #endif
 
 class LKSurface : public boost::noncopyable {
+protected:
+    Canvas* _pCanvas; // need to be first.
+        
 public:
     LKSurface();
     virtual ~LKSurface();
@@ -100,12 +103,12 @@ public:
     bool Attach(Canvas* pCanvas);
     Canvas* Detach();
     
-    Canvas* _pCanvas;
-
     operator Canvas&() const {
         assert(_pCanvas);
         return (*_pCanvas);
-    }    
+    }
+    
+    bool IsDefined() const { return (_pCanvas && _pCanvas->IsDefined()); }
 #endif
 
     LKColor SetTextColor(const LKColor& Color);

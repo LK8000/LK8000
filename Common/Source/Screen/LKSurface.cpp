@@ -351,7 +351,7 @@ bool LKSurface::Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHe
 #ifdef WIN32
     return ::BitBlt(*this, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc, SRCCOPY);
 #else
-    if(_pCanvas) {
+    if(_pCanvas && Surface.IsDefined()) {
         _pCanvas->Copy(nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc);
         return true;
     }
@@ -363,7 +363,7 @@ bool LKSurface::StretchCopy(int nXOriginDest, int nYOriginDest, int nWidthDest, 
 #ifdef WIN32
     return ::StretchBlt(*this, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc, SRCCOPY);
 #else
-    if(_pCanvas) {
+    if(_pCanvas && Surface.IsDefined()) {
         _pCanvas->Stretch(nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
         return true;
     }
@@ -396,7 +396,7 @@ bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int
     return ::TransparentBlt(*this, xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc, wDest, hDest, COLOR_WHITE);
 #endif
 #else
-    if(_pCanvas) {
+    if(_pCanvas && Surface.IsDefined()) {
         _pCanvas->CopyTransparentWhite(xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc);
         return true;
     }
