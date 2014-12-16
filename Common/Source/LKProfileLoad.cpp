@@ -84,16 +84,17 @@ void SetProfileVariable(const char *curname, const char *curvalue, const char *l
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, TCHAR *lookupvalue) {
+
+void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, TCHAR* lookupvalue, size_t size) {
   if (strcmp(curname,lookupname)) return;
 #ifdef UNICODE  
-  utf2unicode(curvalue, lookupvalue, MAX_PATH);
+  utf2unicode(curvalue, lookupvalue, size);
   // REMEMBER TO CONVERT FROM UTF8 to UNICODE!!
   // char stmp[MAX_PATH];
   // unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
   // fprintf(pfp,"%S=\"%s\" (TCHAR)%s", varname, stmp ,PNEWLINE);
 #else
-  strncpy(lookupvalue, curvalue, MAX_PATH);
+  strncpy(lookupvalue, curvalue, size);
 #endif
   #if DEBUGPROF 
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> tchar=<%s>\n"),
@@ -218,13 +219,13 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 	AcknowledgementTime = max(10, AcknowledgementTime);
 	return;
   }
-  PREAD(sname,svalue,szRegistryAdditionalAirspaceFile, &*szAdditionalAirspaceFile);
-  PREAD(sname,svalue,szRegistryAdditionalWayPointFile, &*szAdditionalWaypointFile);
+  PREAD(sname,svalue,szRegistryAdditionalAirspaceFile, &*szAdditionalAirspaceFile, array_size(szAdditionalAirspaceFile));
+  PREAD(sname,svalue,szRegistryAdditionalWayPointFile, &*szAdditionalWaypointFile, array_size(szAdditionalWaypointFile));
   PREAD(sname,svalue,szRegistryAircraftCategory, &AircraftCategory);
-  PREAD(sname,svalue,szRegistryAircraftRego, &*AircraftRego_Config);
-  PREAD(sname,svalue,szRegistryAircraftType, &*AircraftType_Config);
-  PREAD(sname,svalue,szRegistryAirfieldFile, &*szAirfieldFile); 
-  PREAD(sname,svalue,szRegistryAirspaceFile, &*szAirspaceFile);
+  PREAD(sname,svalue,szRegistryAircraftRego, &*AircraftRego_Config, array_size(AircraftRego_Config));
+  PREAD(sname,svalue,szRegistryAircraftType, &*AircraftType_Config, array_size(AircraftType_Config));
+  PREAD(sname,svalue,szRegistryAirfieldFile, &*szAirfieldFile, array_size(szAirfieldFile)); 
+  PREAD(sname,svalue,szRegistryAirspaceFile, &*szAirspaceFile, array_size(szAirspaceFile));
   if (matchedstring) return; // every 10 or so PREADs we check for quick return
 
   // Special cases with no global variable and a function to access the private variable.
@@ -327,8 +328,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   PREAD(sname,svalue,szRegistryClipAlt,&ClipAltitude);
-  PREAD(sname,svalue,szRegistryCompetitionClass,&*CompetitionClass_Config);
-  PREAD(sname,svalue,szRegistryCompetitionID,&*CompetitionID_Config);
+  PREAD(sname,svalue,szRegistryCompetitionClass,&*CompetitionClass_Config, array_size(CompetitionClass_Config));
+  PREAD(sname,svalue,szRegistryCompetitionID,&*CompetitionID_Config, array_size(CompetitionID_Config));
   PREAD(sname,svalue,szRegistryConfBB0,&ConfBB0);
   PREAD(sname,svalue,szRegistryConfBB1,&ConfBB1);
   PREAD(sname,svalue,szRegistryConfBB2,&ConfBB2);
@@ -379,8 +380,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   PREAD(sname,svalue,szRegistryDebounceTimeout,&debounceTimeout);
   PREAD(sname,svalue,szRegistryDeclutterMode,&DeclutterMode);
-  PREAD(sname,svalue,szRegistryDeviceA,&*dwDeviceName1);
-  PREAD(sname,svalue,szRegistryDeviceB,&*dwDeviceName2);
+  PREAD(sname,svalue,szRegistryDeviceA,&*dwDeviceName1, array_size(dwDeviceName1));
+  PREAD(sname,svalue,szRegistryDeviceB,&*dwDeviceName2, array_size(dwDeviceName2));
   PREAD(sname,svalue,szRegistryDisableAutoLogger,&DisableAutoLogger);
   PREAD(sname,svalue,szRegistryLiveTrackerInterval,&LiveTrackerInterval);
   PREAD(sname,svalue,szRegistryDisplayText,&DisplayTextType);
@@ -396,8 +397,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryFinishMinHeight,&FinishMinHeight);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryFinishRadius,&FinishRadius);
-  PREAD(sname,svalue,szRegistryFontMapLabelFont,&*FontDesc_MapLabel);
-  PREAD(sname,svalue,szRegistryFontMapWindowFont,&*FontDesc_MapWindow);
+  PREAD(sname,svalue,szRegistryFontMapLabelFont,&*FontDesc_MapLabel, array_size(FontDesc_MapLabel));
+  PREAD(sname,svalue,szRegistryFontMapWindowFont,&*FontDesc_MapWindow, array_size(FontDesc_MapWindow));
   PREAD(sname,svalue,szRegistryFontRenderer,&FontRenderer);
   PREAD(sname,svalue,szRegistryGlideBarMode,&GlideBarMode);
   PREAD(sname,svalue,szRegistryGliderScreenPosition,&MapWindow::GliderScreenPosition);
@@ -413,7 +414,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryInputFile,&*szInputFile);
+  PREAD(sname,svalue,szRegistryInputFile,&*szInputFile, array_size(szInputFile));
   PREAD(sname,svalue,szRegistryIphoneGestures,&IphoneGestures);
   PREAD(sname,svalue,szRegistryLKMaxLabels,&LKMaxLabels);
 
@@ -444,7 +445,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) {; LKTopoZoomCat90/=1000; return;}
   PREAD(sname,svalue,szRegistryLKVarioBar,&LKVarioBar);
   PREAD(sname,svalue,szRegistryLKVarioVal,&LKVarioVal);
-  PREAD(sname,svalue,szRegistryLanguageFile,&*szLanguageFile);
+  PREAD(sname,svalue,szRegistryLanguageFile,&*szLanguageFile, array_size(szLanguageFile));
 
   if (!strcmp(szRegistryLatLonUnits,sname)) {
 	ival=strtol(svalue, NULL, 10);
@@ -459,7 +460,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryLoggerTimeStepCruise,&LoggerTimeStepCruise);
   PREAD(sname,svalue,szRegistryLook8000,&Look8000);
   PREAD(sname,svalue,szRegistryMapBox,&MapBox);
-  PREAD(sname,svalue,szRegistryMapFile,&*szMapFile);
+  PREAD(sname,svalue,szRegistryMapFile,&*szMapFile, array_size(szMapFile));
   PREAD(sname,svalue,szRegistryMcOverlay,&McOverlay);
   PREAD(sname,svalue,szRegistryMenuTimeout,&MenuTimeout_Config);
   if (matchedstring) return;
@@ -479,12 +480,12 @@ void LKParseProfileString(const char *sname, const char *svalue) {
  // PREAD(sname,svalue,szRegistryPGOpenTimeM,&PGOpenTimeM);
   PREAD(sname,svalue,szRegistryPGOptimizeRoute,&PGOptimizeRoute_Config);
  // PREAD(sname,svalue,szRegistryPGStartOut,&PGStartOut);
-  PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config);
-  PREAD(sname,svalue,szRegistryLiveTrackersrv,&*LiveTrackersrv_Config);
+  PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config, array_size(PilotName_Config));
+  PREAD(sname,svalue,szRegistryLiveTrackersrv,&*LiveTrackersrv_Config, array_size(LiveTrackersrv_Config));
   PREAD(sname,svalue,szRegistryLiveTrackerport,&LiveTrackerport_Config);
-  PREAD(sname,svalue,szRegistryLiveTrackerusr,&*LiveTrackerusr_Config);
-  PREAD(sname,svalue,szRegistryLiveTrackerpwd,&*LiveTrackerpwd_Config);
-  PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile);
+  PREAD(sname,svalue,szRegistryLiveTrackerusr,&*LiveTrackerusr_Config, array_size(LiveTrackerusr_Config));
+  PREAD(sname,svalue,szRegistryLiveTrackerpwd,&*LiveTrackerpwd_Config, array_size(LiveTrackerpwd_Config));
+  PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile, array_size(szPolarFile));
   PREAD(sname,svalue,szRegistryPollingMode,&PollingMode);
   if (matchedstring) return;
   
@@ -513,8 +514,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
         return;
     }
   /***************************************************/
-  PREAD(sname,svalue,szRegistryPort1Name,szPort1);
-  PREAD(sname,svalue,szRegistryPort2Name,szPort2);
+  PREAD(sname,svalue,szRegistryPort1Name,szPort1, array_size(szPort1));
+  PREAD(sname,svalue,szRegistryPort2Name,szPort2, array_size(szPort2));
     
   PREAD(sname,svalue,szRegistryPressureHg,&PressureHg);
   PREAD(sname,svalue,szRegistrySafetyAltitudeArrival,&SAFETYALTITUDEARRIVAL);
@@ -563,7 +564,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryTeamcodeRefWaypoint,&TeamCodeRefWaypoint);
   PREAD(sname,svalue,szRegistryTerrainBrightness,&TerrainBrightness);
   PREAD(sname,svalue,szRegistryTerrainContrast,&TerrainContrast);
-  PREAD(sname,svalue,szRegistryTerrainFile,&*szTerrainFile);
+  PREAD(sname,svalue,szRegistryTerrainFile,szTerrainFile, array_size(szTerrainFile));
   PREAD(sname,svalue,szRegistryTerrainRamp,&TerrainRamp_Config);
   PREAD(sname,svalue,szRegistryThermalBar,&ThermalBar);
   PREAD(sname,svalue,szRegistryThermalLocator,&EnableThermalLocator);
@@ -586,7 +587,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryUseTotalEnergy,&UseTotalEnergy_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryWarningTime,&WarningTime);
-  PREAD(sname,svalue,szRegistryWayPointFile,&*szWaypointFile);
+  PREAD(sname,svalue,szRegistryWayPointFile,szWaypointFile, array_size(szWaypointFile));
   PREAD(sname,svalue,szRegistryWaypointsOutOfRange,&WaypointsOutOfRange);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryWindCalcSpeed,&WindCalcSpeed);
@@ -600,11 +601,11 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   if (matchedstring) return;
   for(int i=0;i<AIRSPACECLASSCOUNT;i++) {
-	PREAD(sname,svalue,&*szRegistryAirspaceMode[i],&MapWindow::iAirspaceMode[i]);
+	PREAD(sname,svalue,szRegistryAirspaceMode[i],&MapWindow::iAirspaceMode[i]);
 	if (matchedstring) return;
-	PREAD(sname,svalue,&*szRegistryColour[i],&MapWindow::iAirspaceColour[i]);
+	PREAD(sname,svalue,szRegistryColour[i],&MapWindow::iAirspaceColour[i]);
 	if (matchedstring) return;
-	PREAD(sname,svalue,&*szRegistryBrush[i],&MapWindow::iAirspaceBrush[i]);
+	PREAD(sname,svalue,szRegistryBrush[i],&MapWindow::iAirspaceBrush[i]);
 	if (matchedstring) return;
   }
 
