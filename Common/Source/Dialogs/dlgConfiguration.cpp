@@ -1298,11 +1298,12 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
         { _T("prpComSpeed2"), _T("prpComBit2") }
     };
     
+    assert(szPortName);
     // check if all array have same size ( compil time check );
     static_assert(array_size(DeviceList) == array_size(PortPropName), "PortPropName array size need to be same of DeviceList array size");
     
     if(std::begin(PortPropName)+idx < std::end(PortPropName)) {
-        bool bHide = ((_tcsncmp(szPortName, _T("BT:"), 3) == 0) || DeviceList[idx].Disabled);
+        bool bHide =  (DeviceList[idx].Disabled || ((_tcslen(szPortName) > 3) && (_tcsncmp(szPortName, _T("BT:"), 3) == 0)));
         bHide = bHide || (_tcscmp(DeviceList[idx].Name, _T("Internal")) == 0);
         std::for_each(
             std::begin(PortPropName[idx]), 
@@ -2576,14 +2577,10 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpHideUnits"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
-	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(HideUnits);
+    DataField* dfe = wp->GetDataField();
+    if(dfe) {
+        dfe->Set(HideUnits);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2608,34 +2605,27 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBestWarning")); // 091122
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
-	// LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(BestWarning);
+    DataField* dfe = wp->GetDataField();
+    if(dfe) {
+        dfe->Set(BestWarning);
+    }
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseTotalEnergy"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("_@M239_"))); // disabled
-    dfe->addEnumText(gettext(TEXT("_@M259_"))); // enabled
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(UseTotalEnergy_Config);
+    DataField * dfe = wp->GetDataField();
+    if(dfe) {
+        dfe->Set(UseTotalEnergy_Config);
+    }
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseUngestures"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("_@M239_"))); // disabled
-    dfe->addEnumText(gettext(TEXT("_@M259_"))); // enabled
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(UseUngestures);
+    DataField* dfe = wp->GetDataField();
+    assert(dfe);
+    if(dfe) {
+        dfe->Set(UseUngestures);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2689,27 +2679,19 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
-	// LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(PGOptimizeRoute_Config);
+    DataField* dfe = wp->GetDataField();
+    if(dfe) {
+        dfe->Set(PGOptimizeRoute_Config);
+    }
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrackBar")); // 091122
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
-	// LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(TrackBar);
+    DataField* dfe = wp->GetDataField();
+    if(dfe) {
+        dfe->Set(TrackBar);
+    }
     wp->RefreshDisplay();
   }
 
