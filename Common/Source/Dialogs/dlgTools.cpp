@@ -203,8 +203,7 @@ void GetDefaultWindowControlProps(XMLNode *Node, TCHAR *Name, int *X, int *Y, in
   }
   *Font = StringToIntDflt(Node->getAttribute(TEXT("Font")), -1);
   _tcscpy(Name, StringToStringDflt(Node->getAttribute(TEXT("Name")), TEXT("")));
-  _tcscpy(Caption, StringToStringDflt(Node->getAttribute(TEXT("Caption")), TEXT("")));
-  _tcscpy(Caption,LKGetText(Caption));
+  _tcscpy(Caption,LKGetText(StringToStringDflt(Node->getAttribute(TEXT("Caption")), TEXT(""))));
 
 }
 
@@ -541,11 +540,7 @@ void LoadChildsFromXML(WindowControl *Parent,
               StringToStringDflt(childNode.getAttribute(TEXT("OnHelp")),
                                  TEXT("")));
 
-      _tcscpy(
-		  Caption, 
-			StringToStringDflt(childNode.getAttribute(TEXT("Caption")), TEXT(""))
-		);
-	  _tcscpy(Caption, LKGetText(Caption));
+	  _tcscpy(Caption, LKGetText(StringToStringDflt(childNode.getAttribute(TEXT("Caption")), TEXT(""))));
 
       WC = W = 
         new WndProperty(Parent, Name, Caption, X, Y, 
