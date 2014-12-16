@@ -30,12 +30,10 @@ public:
 
     virtual void Redraw(const RECT& Rect) { 
         __super::Redraw(Rect);
-        this->Refresh();
     }
 
     virtual void Redraw() {
         __super::Redraw();
-        this->Refresh();
     }
     
     virtual void SetWndText(const TCHAR* lpszText) { assert(false); }
