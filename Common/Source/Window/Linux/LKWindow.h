@@ -59,10 +59,6 @@ public:
         this->SetEnabled(Enable);
     }
     
-    void Close() {
-        this->Destroy();
-    };
-    
     void SetFont(FontReference Font) {
         assert(Font);
         if(Font && Font->IsDefined()) {

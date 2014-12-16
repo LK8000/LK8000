@@ -824,7 +824,6 @@ class WndForm:public WindowControl{
     typedef bool (*OnTimerNotify_t)();
     typedef bool (*OnKeyDownNotify_t)(Window* pWnd, unsigned KeyCode);
     typedef bool (*OnKeyUpNotify_t)(Window* pWnd, unsigned KeyCode);
-    typedef bool (*OnLButtonUpNotify_t)(Window* pWnd, const POINT& Pos);
 
   protected:
 
@@ -839,7 +838,6 @@ class WndForm:public WindowControl{
     OnTimerNotify_t mOnTimerNotify;
     OnKeyDownNotify_t mOnKeyDownNotify;
     OnKeyUpNotify_t mOnKeyUpNotify;
-    OnLButtonUpNotify_t mOnLButtonUpNotify;
 
     virtual void Paint(LKSurface& Surface);
 
@@ -884,10 +882,6 @@ class WndForm:public WindowControl{
         mOnKeyUpNotify = KeyUpNotify;
     }
 
-    void SetLButtonUpNotify(OnLButtonUpNotify_t LButtonUpNotify) {
-        mOnLButtonUpNotify = LButtonUpNotify;
-    }
-
     void SetTimerNotify(unsigned uTime, OnTimerNotify_t OnTimerNotify) {
         mOnTimerNotify = OnTimerNotify;
         if(OnTimerNotify && uTime > 0) {
@@ -902,16 +896,6 @@ protected:
 
     virtual bool OnKeyUpNotify(Window* pWnd, unsigned KeyCode) {
         return (mOnKeyUpNotify && (mOnKeyUpNotify)(this, KeyCode));
-    }
-
-    virtual bool OnLButtonDownNotify(Window* pWnd, const POINT& Pos) {
-        bLButtonDown = true;
-        return false;
-    }
-
-    virtual bool OnLButtonUpNotify(Window* pWnd, const POINT& Pos) {
-        bLButtonDown=false;
-        return (mOnLButtonUpNotify && (mOnLButtonUpNotify)(this, Pos));
     }
 
     virtual void OnTimer() {

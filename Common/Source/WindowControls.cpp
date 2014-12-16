@@ -1614,9 +1614,6 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
   WindowControl(NULL, Name, X, Y, Width, Height, false) {
 
   mClientWindow = NULL;
-  mOnKeyDownNotify = NULL;
-  mOnKeyUpNotify = NULL;
-  mOnLButtonUpNotify = NULL;
   mOnTimerNotify = NULL;
   bLButtonDown= false; 
 
