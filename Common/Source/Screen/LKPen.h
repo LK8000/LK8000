@@ -12,7 +12,7 @@
 #ifndef LKPEN_H
 #define	LKPEN_H
 
-#include "Pen.hpp"
+#include "Screen/Pen.hpp"
 #include "LKColor.h"
 
 #define PEN_SOLID Pen::SOLID

@@ -12,7 +12,7 @@
 #ifndef LKFONT_H
 #define	LKFONT_H
 
-#include "Font.hpp"
+#include "Screen/Font.hpp"
 
 class LKFont : public Font {
 public:

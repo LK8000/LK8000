@@ -26,7 +26,7 @@ Copyright_License {
 #include "LibPNG.hpp"
 #include "LibJPEG.hpp"
 #include "UncompressedImage.hpp"
-#include "utils/ConstBuffer.hpp"
+#include "Util/ConstBuffer.hpp"
 
 Bitmap::Bitmap(ConstBuffer<void> _buffer)
   :

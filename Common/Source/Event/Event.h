@@ -7,27 +7,27 @@
  * File:   Event.h
  * Author: Bruno de Lacheisserie
  *
- * Created on 10 décembre 2014, 00:05
+ * Created on 10 dï¿½cembre 2014, 00:05
  */
 
 #ifndef EVENT_H
 #define	EVENT_H
 
-#include "Globals.hpp"
+#include "Event/Globals.hpp"
 #ifdef ANDROID
-#include "Shared/Event.hpp"
-#include "Android/Loop.hpp"
+#include "Event/Shared/Event.hpp"
+#include "Event/Android/Loop.hpp"
 #elif defined(ENABLE_SDL)
-#include "SDL/Event.hpp"
-#include "SDL/Loop.hpp"
+#include "Event/SDL/Event.hpp"
+#include "Event/SDL/Loop.hpp"
 #elif defined(USE_CONSOLE) || defined(NON_INTERACTIVE)
-#include "Shared/Event.hpp"
-#include "Console/Loop.hpp"
+#include "Event/Shared/Event.hpp"
+#include "Event/Console/Loop.hpp"
 #elif defined(USE_GDI)
-#include "GDI/Event.hpp"
-#include "GDI/Loop.hpp"
+#include "Event/GDI/Event.hpp"
+#include "Event/GDI/Loop.hpp"
 #endif
-#include "Key.h"
+#include "Event/Key.h"
 #include "Compiler.h"
 
 

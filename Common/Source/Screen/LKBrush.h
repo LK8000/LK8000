@@ -13,7 +13,7 @@
 #define	LKBRUSH_H
 
 #include "LKBitmap.h"
-#include "Brush.hpp"
+#include "Screen/Brush.hpp"
 
 class LKColor;
 class LKBitmap;

@@ -12,7 +12,7 @@
 #ifndef LKCOLOR_H
 #define	LKCOLOR_H
 
-#include "Color.hpp"
+#include "Screen/Color.hpp"
 
 class LKColor : public Color {
 public:

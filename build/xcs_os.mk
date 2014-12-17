@@ -5,12 +5,12 @@ XCS_OS_LINUX := \
 	$(SRC)/OS/Linux/Memory.cpp \
 	$(SRC)/OS/Linux/RotateScreen.cpp\
 	\
-	$(SRC)/OS/EventPipe.cpp\
-	$(SRC)/OS/FileDescriptor.cpp\
-	$(SRC)/OS/Poll.cpp\
+	$(SRC)/xcs/OS/EventPipe.cpp\
+	$(SRC)/xcs/OS/FileDescriptor.cpp\
+	$(SRC)/xcs/OS/Poll.cpp\
 
 XCS_OS := \
-	$(SRC)/OS/Clock.cpp\
+	$(SRC)/xcs/OS/Clock.cpp\
 
 ifeq ($(CONFIG_LINUX),y) 
 # linux target

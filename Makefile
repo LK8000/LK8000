@@ -263,6 +263,7 @@ INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
 endif
 endif
 
+INCLUDES	+=  -I$(SRC)/xcs
 ######## compiler flags
 
 CPPFLAGS	:= $(INCLUDES) $(CE_DEFS)
@@ -444,7 +445,6 @@ WINDOW += \
 endif
 	
 SCREEN := \
-	$(SRC_SCREEN)/Color.cpp \
 	$(SRC_SCREEN)/LKColor.cpp \
 	$(SRC_SCREEN)/LKPen.cpp \
 	$(SRC_SCREEN)/LKBitmap.cpp \
@@ -452,7 +452,6 @@ SCREEN := \
 	$(SRC_SCREEN)/LKSurface.cpp \
 	$(SRC_SCREEN)/LKWindowSurface.cpp \
 	$(SRC_SCREEN)/LKBitmapSurface.cpp \
-	$(SRC_SCREEN)/Debug.cpp \
 	
 LIBRARY	:=\
 	$(LIB)/bsearch.cpp \

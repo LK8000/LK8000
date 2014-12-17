@@ -12,7 +12,7 @@
 #ifndef LKBITMAP_H
 #define	LKBITMAP_H
 
-#include "Bitmap.hpp"
+#include "Screen/Bitmap.hpp"
 
 #ifdef WIN32
 #include <windows.h>
