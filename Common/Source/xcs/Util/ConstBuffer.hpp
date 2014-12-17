@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Max Kellermann <max@duempel.org>
+ * Copyright (C) 2013-2014 Max Kellermann <max@duempel.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -86,6 +86,8 @@ struct ConstBuffer<void> {
 template<typename T>
 struct ConstBuffer {
   typedef size_t size_type;
+  typedef const T &reference_type;
+  typedef reference_type const_reference_type;
   typedef const T *pointer_type;
   typedef pointer_type const_pointer_type;
   typedef pointer_type iterator;
@@ -136,6 +138,16 @@ struct ConstBuffer {
     return size == 0;
   }
 
+  template<typename U>
+  gcc_pure
+  bool Contains(U &&u) const {
+    for (const auto &i : *this)
+      if (u == i)
+        return true;
+
+    return false;
+  }
+
   constexpr iterator begin() const {
     return data;
   }
@@ -155,12 +167,84 @@ struct ConstBuffer {
 #ifdef NDEBUG
   constexpr
 #endif
-  const T &operator[](size_type i) const {
+  reference_type operator[](size_type i) const {
 #ifndef NDEBUG
     assert(i < size);
 #endif
 
     return data[i];
+  }
+
+  /**
+   * Returns a reference to the first element.  Buffer must not
+   * be empty.
+   */
+#ifdef NDEBUG
+  constexpr
+#endif
+  reference_type front() const {
+#ifndef NDEBUG
+    assert(!IsEmpty());
+#endif
+    return data[0];
+  }
+
+  /**
+   * Returns a reference to the last element.  Buffer must not
+   * be empty.
+   */
+#ifdef NDEBUG
+  constexpr
+#endif
+  reference_type back() const {
+#ifndef NDEBUG
+    assert(!IsEmpty());
+#endif
+    return data[size - 1];
+  }
+
+  /**
+   * Remove the first element (by moving the head pointer, does
+   * not actually modify the buffer).  Buffer must not be empty.
+   */
+  void pop_front() {
+#ifndef NDEBUG
+    assert(!IsEmpty());
+#endif
+
+    ++data;
+    --size;
+  }
+
+  /**
+   * Remove the last element (by moving the tail pointer, does
+   * not actually modify the buffer).  Buffer must not be empty.
+   */
+  void pop_back() {
+#ifndef NDEBUG
+    assert(!IsEmpty());
+#endif
+
+    --size;
+  }
+
+  /**
+   * Remove the first element and return a reference to it.
+   * Buffer must not be empty.
+   */
+  reference_type shift() {
+    reference_type result = front();
+    pop_front();
+    return result;
+  }
+
+  void skip_front(size_type n) {
+#ifndef NDEBUG
+    assert(size >= n);
+#endif
+
+    data += n;
+    size -= n;
   }
 };
 
