@@ -25,7 +25,7 @@ Copyright_License {
 #include "Queue.hpp"
 #include "../Shared/Event.hpp"
 #include "../Timer.hpp"
-#include "Window/WndMain.h"
+#include "Screen/TopWindow.hpp"
 
 bool
 EventLoop::Get(Event &event)
