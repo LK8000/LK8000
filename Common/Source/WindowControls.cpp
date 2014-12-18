@@ -1615,7 +1615,11 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
   WindowControl(NULL, Name, X, Y, Width, Height, false) {
 
   mClientWindow = NULL;
+  
   mOnTimerNotify = NULL;
+  mOnKeyDownNotify = NULL;
+  mOnKeyUpNotify = NULL;
+
   bLButtonDown= false; 
 
   mColorTitle = RGB_MENUTITLEBG;
