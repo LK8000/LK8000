@@ -200,6 +200,7 @@ public:
     HDC Detach();
 
 protected:
+    friend class RawBitmap;
 
     operator HDC() const {
         return _OutputDC;

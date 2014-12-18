@@ -129,17 +129,28 @@ public:
 	return;
     }
 
-    #if USERASTERCACHE
+#if USERASTERCACHE
     if (!RasterTerrain::IsDirectAccess()) {
       dtquant = 6;
     } else {
 	dtquant = 2; 
     }
-    #else
-	dtquant = 2; 
-    #endif
-    blursize = max((unsigned int)0, (dtquant-1)/2);
-    oversampling = max(1,(blursize+1)/2+1);
+#else
+
+    // need at least 2Ghz singlecore CPU here for dtquant 1
+    dtquant=2;
+
+#if defined(_WIN32_WCE) || !defined(NDEBUG)
+    // scale dtquant so resolution is not too high on large displays
+    dtquant *= ScreenScale;  // lower resolution a bit.. (no need for CPU >800mHz)
+
+    if (ScreenSize!=ss640x480)
+	    if (dtquant>3) dtquant=3; // .. but not too much
+#endif
+
+#endif
+    blursize = max((unsigned int)0, (dtquant-1)/2); // always 0
+    oversampling = max(1,(blursize+1)/2+1); // always 1
     if (blursize==0) {
       oversampling = 1; // no point in oversampling, just let stretchblt do the scaling
     }
@@ -153,24 +164,13 @@ public:
        5    3    2    192    144     64  48     3072        27648
     */
 
-    #if ((WINDOWSPC>0) && !TESTBENCH)
-    // need at least 2Ghz singlecore CPU here for dtquant 1
-    dtquant=2;
-    #else
-    // scale dtquant so resolution is not too high on large displays
-    dtquant *= ScreenScale;  // lower resolution a bit.. (no need for CPU >800mHz)
-
-    if (ScreenSize!=ss640x480)
-	    if (dtquant>3) dtquant=3; // .. but not too much
-    #endif
 
     LKASSERT(ScreenScale!=0);
     int res_x = iround((rc.right-rc.left)*oversampling/dtquant);
     int res_y = iround((rc.bottom-rc.top)*oversampling/dtquant);
 
-    sbuf = new CSTScreenBuffer();
+    sbuf = new CSTScreenBuffer(res_x, res_y, RGB_WHITE);
     LKASSERT(sbuf!=NULL);
-    sbuf->Create(res_x, res_y, RGB_WHITE);
     ixs = sbuf->GetCorrectedWidth()/oversampling;
     iys = sbuf->GetHeight()/oversampling;
 
@@ -520,18 +520,13 @@ void Slope(const int sx, const int sy, const int sz) {
   unsigned short *thBuf = hBuf;
 
   const BGRColor* oColorBuf = colorBuf+64*256;
-  BGRColor* imageBuf = sbuf->GetBuffer();
-  if (!imageBuf) return;
+  if (!sbuf->GetBuffer()) return;
 
   unsigned short h;
 
-  #if TDEBUG
-  #if (WINDOWSPC>0)
-  unsigned short* hBufTop = hBuf+cixs*ciys;
-  #endif
-  #endif
+  BGRColor* RowBuf = sbuf->GetTopRow();
 
-  for (unsigned int y = 0; y< iys; y++) {
+  for (unsigned int y = 0; y< iys; ++y) {
 	const int itss_y = ciys-1-y;
 	const int itss_y_ixs = itss_y*cixs;
 	const int yixs = y*cixs;
@@ -554,13 +549,10 @@ void Slope(const int sx, const int sy, const int sz) {
 	}
 	p31s = p31*hscale;
 
-	for (unsigned int x = 0 ; x<cixs; x++, thBuf++, imageBuf++) {
+    BGRColor* imageBuf = RowBuf;
+    RowBuf = sbuf->GetNextRow(RowBuf);
 
-		#if TDEBUG
-		#if (WINDOWSPC>0)
-		LKASSERT(thBuf< hBufTop);
-		#endif
-		#endif
+	for (unsigned int x = 0 ; x<cixs; ++x, ++thBuf, ++imageBuf) {
 
 		// FIX here Netherland dutch terrain problem
 		// if >=0 then the sea disappears...
@@ -581,71 +573,30 @@ void Slope(const int sx, const int sy, const int sz) {
 				if (x<ixsright) {
 					p20= iepx;
 					p22= *(thBuf+iepx);
-					#if TDEBUG
-					#if (WINDOWSPC>0)
-					LKASSERT(thBuf+iepx< hBufTop);
-					#endif
-					#endif
 				} else {
 					int itss_x = cixs-x-2;
 					p20= itss_x;
 					p22= *(thBuf+itss_x);
-					#if TDEBUG
-					#if (WINDOWSPC>0)
-					LKASSERT(thBuf+itss_x< hBufTop);
-					LKASSERT(thBuf+itss_x>= hBuf);
-					#endif
-					#endif
 				} 
             
 				if (x >= (unsigned int)iepx) {
 					p20+= iepx;
 					p22-= *(thBuf-iepx);
-					#if TDEBUG
-					#if (WINDOWSPC>0)
-					LKASSERT(thBuf-iepx>= hBuf); 
-					#endif
-					#endif
 				} else {
 					p20+= x;
 					p22-= *(thBuf-x);
-					#if TDEBUG
-					#if (WINDOWSPC>0)
-					LKASSERT(thBuf-x>= hBuf);
-					#endif
-					#endif
 				}
             
 				if (ybottom) {
 					p32 = *(thBuf+ixsepx);
-					#if TDEBUG
-					#if (WINDOWSPC>0)
-					LKASSERT(thBuf+ixsepx<hBufTop);
-					#endif
-					#endif
 				} else {
 					p32 = *(thBuf+itss_y_ixs);
-					#if TDEBUG
-					#if (WINDOWSPC>0)
-					LKASSERT(thBuf+itss_y_ixs<hBufTop);
-					#endif
-					#endif
 				}
 
 				if (ytop) {
 					p32 -= *(thBuf-yixs);
-					#if TDEBUG
-					#if (WINDOWSPC>0)
-					LKASSERT(thBuf-yixs>=hBuf);
-					#endif
-					#endif
 				} else {
 					p32 -= *(thBuf-ixsepx);
-					#if TDEBUG
-					#if (WINDOWSPC>0)
-					LKASSERT(thBuf-ixsepx>=hBuf);
-					#endif
-					#endif
 				}
             
 				if ((p22==0) && (p32==0)) {
@@ -719,16 +670,11 @@ void ColorTable() {
 
   void Draw(LKSurface& Surface, const RECT& rc) {
 
-    sbuf->Zoom(oversampling);
-
     if (blursize>0) {
-
       sbuf->HorizontalBlur(blursize); 
       sbuf->VerticalBlur(blursize);
-
     }
-    sbuf->DrawStretch(Surface, rc);
-
+    sbuf->DrawStretch(Surface, rc, oversampling);
   }
 
 };

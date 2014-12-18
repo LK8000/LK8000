@@ -5,6 +5,7 @@ XCS_SCREEN_MEMORY := \
 	$(SRC)/xcs/Screen/Memory/SubCanvas.cpp \
 	$(SRC)/xcs/Screen/Memory/Canvas.cpp \
 	$(SRC)/xcs/Screen/Memory/VirtualCanvas.cpp \
+	$(SRC)/xcs/Screen/Memory/RawBitmap.cpp \
 
 XCS_SCREEN_FB := \
 	$(SRC)/xcs/Screen/FB/Window.cpp \
@@ -41,6 +42,7 @@ XCS_SCREEN_GDI := \
 	$(SRC)/xcs/Screen/GDI/Pen.cpp \
 	$(SRC)/xcs/Screen/GDI/Font.cpp \
 	$(SRC)/xcs/Screen/GDI/Init.cpp \
+	$(SRC)/xcs/Screen/GDI/RawBitmap.cpp \
 
 XCS_SCREEN_SDL:= \
 	$(SRC)/xcs/Screen/SDL/TopWindow.cpp \
