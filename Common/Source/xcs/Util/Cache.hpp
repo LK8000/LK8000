@@ -205,7 +205,13 @@ public:
     chronological_list.clear_and_dispose([this](Item *item){
 #ifndef NDEBUG
         assert(size > 0);
-        --size;
+        
+        /* workaround for gcc 4.7.2
+         * without "this->" compiler see size readonly, but not "unallocated_list" line 218, surprising ...
+         * this is the error : 
+         * Util/Cache.hpp:212:16: error: decrement of read-only location ‘this->Cache<Key, Data, capacity, Hash, Equal>::size’
+         */
+        --(this->size); 
 #endif
 
         item->Destruct();
