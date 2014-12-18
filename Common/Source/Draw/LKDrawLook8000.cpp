@@ -680,29 +680,33 @@ nextinit:
 					break;
 			}
 
-		  SIZE tsize;
-      TCHAR Tmp[150];
-int len = _tcslen(BufferValue);
-Surface.GetTextSize(&BufferValue[len-1], 1, &tsize);
-      tsize.cx = -tsize.cx;
-      _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
-      if(BufferValue[0] == Tmp[0])
-      {
-        Surface.GetTextSize(Tmp, 1, &tsize);
-      }
-      _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2182_")));
-		  if(BufferValue[0] == Tmp[0])
-		  {
-	      Surface.GetTextSize(Tmp, 1, &tsize);
-		  }
-		  _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2184_")));
-      if(BufferValue[0] == Tmp[0])
-      {
-        Surface.GetTextSize(Tmp, 1, &tsize);
-        _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
-    //    if(BufferValue[len-1] == Tmp[0])
-      //    tsize.cx =0;
-      }
+            SIZE tsize;
+            TCHAR Tmp[150];
+            int len = _tcslen(BufferValue);
+            if(len > 0) {
+                Surface.GetTextSize(&BufferValue[len-1], 1, &tsize);
+                tsize.cx = -tsize.cx;
+            } else {
+                tsize.cx = 0;
+            }
+            _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
+            if(BufferValue[0] == Tmp[0])
+            {
+                Surface.GetTextSize(Tmp, 1, &tsize);
+            }
+            _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2182_")));
+            if(BufferValue[0] == Tmp[0])
+            {
+                Surface.GetTextSize(Tmp, 1, &tsize);
+            }
+            _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2184_")));
+            if(BufferValue[0] == Tmp[0])
+            {
+                Surface.GetTextSize(Tmp, 1, &tsize);
+                _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
+        //    if(BufferValue[len-1] == Tmp[0])
+        //    tsize.cx =0;
+            }
 
 
 
