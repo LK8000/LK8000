@@ -646,13 +646,13 @@ void InitLKFonts()
   ApplyClearType(&logfontPanelUnit);
   ApplyFontSize(&logfontPanelUnit);
 
-  LK8TargetFont.Create(&logfontTarget); 
-  LK8BigFont.Create(&logfontBig);
-  LK8ValueFont.Create(&logfontValue);
+  LK8UnitFont.Create(&logfontUnit);
   LK8TitleFont.Create(&logfontTitle);
   LK8MapFont.Create(&logfontMap);
   LK8TitleNavboxFont.Create(&logfontTitleNavbox);
-  LK8UnitFont.Create(&logfontUnit);
+  LK8ValueFont.Create(&logfontValue);
+  LK8TargetFont.Create(&logfontTarget); 
+  LK8BigFont.Create(&logfontBig);
   LK8MediumFont.Create(&logfontMedium);
   LK8SmallFont.Create(&logfontSmall);
   LK8InfoBigFont.Create(&logfontInfoBig);

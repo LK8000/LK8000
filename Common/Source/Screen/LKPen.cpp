@@ -8,11 +8,6 @@
  * 
  * Created on 16 octobre 2014
  */
-#ifdef WIN32
-#include <windows.h>
-#else
-#warning "TODO: need to implement"
-#endif
 
 #include "LKPen.h"
 #include "LKColor.h"
@@ -20,7 +15,7 @@
 #include <utility>
 
 #ifdef USE_GDI
-
+    
 const LKPen LK_NULL_PEN((HPEN)GetStockObject(NULL_PEN));
 const LKPen LK_BLACK_PEN((HPEN)GetStockObject(BLACK_PEN));
 const LKPen LK_WHITE_PEN((HPEN)GetStockObject(WHITE_PEN));

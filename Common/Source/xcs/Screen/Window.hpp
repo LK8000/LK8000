@@ -305,7 +305,7 @@ protected:
 public:
   bool IsDefined() const {
 #ifndef USE_GDI
-    return true;
+    return size.cx > 0;
 #else
     return hWnd != nullptr;
 #endif

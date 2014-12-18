@@ -228,7 +228,7 @@ public:
 inline void
 Pen::Reset()
 {
-  assert(!IsDefined() || IsScreenInitialized());
+//  assert(!IsDefined() || IsScreenInitialized());
 
 #ifndef NDEBUG
   width = 0;

@@ -273,6 +273,24 @@ void DeInitialiseFonts(void) {
   MapLabelFont.Release();
   StatisticsFont.Release();
 
+  LK8UnitFont.Release();
+  LK8TitleFont.Release();
+  LK8MapFont.Release();
+  LK8TitleNavboxFont.Release();
+  LK8ValueFont.Release();
+  LK8TargetFont.Release();
+  LK8BigFont.Release();
+  LK8MediumFont.Release();
+  LK8SmallFont.Release();
+  LK8InfoBigFont.Release();
+  LK8InfoBigItalicFont.Release();
+  LK8InfoNormalFont.Release();
+  LK8InfoSmallFont.Release();
+  LK8PanelBigFont.Release();
+  LK8PanelMediumFont.Release();
+  LK8PanelSmallFont.Release();
+  LK8PanelUnitFont.Release();
+  
 }
 
 void InitialiseFonts(RECT rc)

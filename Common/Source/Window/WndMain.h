@@ -44,6 +44,7 @@ protected:
 
 private:
     bool _MouseButtonDown;
+    bool _isRunning;
 };
 
 #endif	/* WNDMAIN_H */

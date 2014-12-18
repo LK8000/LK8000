@@ -107,18 +107,16 @@ EventQueue::Purge(Uint32 event,
   int count = SDL_PeepEvents(events, 256, SDL_GETEVENT, SDL_EVENTMASK(event));
 #endif
   assert(count >= 0);
-  if(count>=0) {
-    SDL_Event *dest = events;
-    for (const SDL_Event *src = events, *end = src + count; src != end; ++src)
-      if (!match(*src, ctx))
-        *dest++ = *src;
+  SDL_Event *dest = events;
+  for (const SDL_Event *src = events, *end = src + count; src != end; ++src)
+    if (!match(*src, ctx))
+      *dest++ = *src;
 
 #if SDL_VERSION_ATLEAST(1,3,0)
-    SDL_PeepEvents(events, dest - events, SDL_ADDEVENT, event, event);
+  SDL_PeepEvents(events, dest - events, SDL_ADDEVENT, event, event);
 #else
-    SDL_PeepEvents(events, dest - events, SDL_ADDEVENT, SDL_EVENTMASK(event));
+  SDL_PeepEvents(events, dest - events, SDL_ADDEVENT, SDL_EVENTMASK(event));
 #endif
-  }
 }
 
 struct MatchCallbackData {

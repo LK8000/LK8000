@@ -30,7 +30,7 @@
 
 #include "Event/Event.h"
 
-WndMain::WndMain() : WndMainBase(), _MouseButtonDown() {
+WndMain::WndMain() : WndMainBase(), _MouseButtonDown(), _isRunning() {
 }
 
 WndMain::~WndMain() {
@@ -42,6 +42,8 @@ extern void StartupLogFreeRamAndStorage();
 void Shutdown(void) {
   int i;
 
+  MainWindow.Cancel();
+  
   LKSound(_T("LK_DISCONNECT.WAV")); Poco::Thread::sleep(500); // real WAV length is 410+ms
   if (!GlobalRunning) { // shutdown on startup (before sim/fly or clicking on the window X)
 	StartupStore(_T(". Quick shutdown requested before terminating startup%s"),NEWLINE);
@@ -217,6 +219,8 @@ void Shutdown(void) {
 	    );
   StartupStore(foop);
 #endif
+  StartupStore(_T("Destroy MainWindow"));
+  MainWindow.Destroy();
 }
 
 
@@ -224,9 +228,13 @@ void WndMain::OnCreate() {
     MapWindow::_OnCreate(*this, GetWidth(), GetHeight());
     WndMainBase::OnCreate();
     StartTimer(500);
+    _isRunning = true;
 }
 
 bool WndMain::OnClose() {
+    if(!_isRunning) {
+        return WndMainBase::OnClose();
+    }
     if (MessageBoxX(gettext(TEXT("_@M198_")), // LKTOKEN  _@M198_ = "Confirm Exit?"
                     TEXT("LK8000"),
                     mbYesNo) == IdYes) {
@@ -237,6 +245,7 @@ bool WndMain::OnClose() {
 }
 
 void WndMain::OnDestroy() {
+    _isRunning = false;
     StopTimer();
     MapWindow::_OnDestroy();
     return WndMainBase::OnDestroy();

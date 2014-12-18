@@ -152,7 +152,7 @@ TopWindow::OnEvent(const SDL_Event &event)
     return OnMouseUp(event.button.x, event.button.y);
 
   case SDL_QUIT:
-    return OnClose();
+     return OnClose();
 
 #if SDL_MAJOR_VERSION < 2
   case SDL_VIDEORESIZE:
