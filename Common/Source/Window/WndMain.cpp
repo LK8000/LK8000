@@ -42,8 +42,6 @@ extern void StartupLogFreeRamAndStorage();
 void Shutdown(void) {
   int i;
 
-  MainWindow.Cancel();
-  
   LKSound(_T("LK_DISCONNECT.WAV")); Poco::Thread::sleep(500); // real WAV length is 410+ms
   if (!GlobalRunning) { // shutdown on startup (before sim/fly or clicking on the window X)
 	StartupStore(_T(". Quick shutdown requested before terminating startup%s"),NEWLINE);

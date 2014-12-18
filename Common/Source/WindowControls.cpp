@@ -23,6 +23,7 @@
 #include <functional>
 
 #include "Event/Event.h"
+#include "Asset.hpp"
 
 using std::placeholders::_1;
 
@@ -1776,7 +1777,8 @@ int WndForm::ShowModal(void) {
                     continue;
                 }
             } else 
-#endif                
+#endif
+
             if (event.GetKeyCode() == KEY_ESCAPE) {
                 mModalResult = mrCancel;
                 continue;
