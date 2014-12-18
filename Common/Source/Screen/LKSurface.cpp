@@ -227,9 +227,10 @@ void LKSurface::Polyline(const POINT *apt, int cpt, const RECT& ClipRect) {
             unsigned j = Clipper.ClipLine(Line[0], Line[1]);
             if(j&LKGeom::clipper<POINT>::_SEGM) {
                 if(j&LKGeom::clipper<POINT>::_CLIP) {
-                    if(n > 1) {
+                    if(Start && n > 1) {
                         Polyline(Start, n);
                         Start = NULL;
+                        n=0;
                     }
                     Polyline(Line, 2);
                 } else {
@@ -421,7 +422,6 @@ LKSurface::TAlphaBlendF LKSurface::AlphaBlendF = NULL;
 // sets pointer to AlphaBlend function (AlphaBlendF) 
 // (returns false when AlphaBlending is not supported)
 bool LKSurface::AlphaBlendSupported() {
-#ifdef WIN32
 #ifdef UNDER_CE
     static bool bInit = false;
     if(!bInit) {
@@ -430,11 +430,9 @@ bool LKSurface::AlphaBlendSupported() {
     }
     return (AlphaBlendF != NULL);
 #else
-    // always supported on Windows PC
+    // always supported on all other platform.
     return true;
 #endif    
-#endif
-    return false;
 }
 
 bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity) {
@@ -477,6 +475,11 @@ bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const 
     return true; // always return true because always implemented on Windows PC
 #endif
 #else
+    if(_pCanvas) {
+        _pCanvas->AlphaBlend(dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
+                        Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, globalOpacity);
+        return true;
+    }
     return false;
 #endif    
 }
