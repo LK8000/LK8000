@@ -111,15 +111,27 @@ public:
     }
     
     virtual bool OnMouseMove(PixelScalar x, PixelScalar y, unsigned keys) {
-        return (!_Base::OnMouseMove(x,y,keys)) && OnMouseMove((POINT){x,y});
+        bool bRet = _Base::OnMouseMove(x,y,keys);
+        if(!bRet) {
+            bRet = OnMouseMove((POINT){x,y});
+        }
+        return bRet;
     }
     
     virtual bool OnMouseDown(PixelScalar x, PixelScalar y) {
-            return (!_Base::OnMouseDown(x,y)) && OnLButtonDown((POINT){x,y});
+        bool bRet = _Base::OnMouseDown(x,y);
+        if(!bRet) {
+            bRet = OnLButtonDown((POINT){x,y});
+        }
+        return bRet;
     }
     
     virtual bool OnMouseUp(PixelScalar x, PixelScalar y) {
-        return (!_Base::OnMouseUp(x,y)) && OnLButtonUp((POINT){x,y});
+        bool bRet = _Base::OnMouseUp(x,y);
+        if(!bRet) {
+            bRet = OnLButtonUp((POINT){x,y});
+        }
+        return bRet;
     }
 
     virtual bool OnMouseMove(const POINT& Pos) { return false; }
