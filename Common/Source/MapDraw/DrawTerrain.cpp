@@ -32,14 +32,14 @@ extern bool FastZoom;
 
 Topology* TopoStore[MAXTOPOLOGY];
 
-BYTE tshadow_r, tshadow_g, tshadow_b, tshadow_h;
-BYTE thighlight_r, thighlight_g, thighlight_b, thighlight_h;
+uint8_t tshadow_r, tshadow_g, tshadow_b, tshadow_h;
+uint8_t thighlight_r, thighlight_g, thighlight_b, thighlight_h;
 
 
 static const COLORRAMP* lastColorRamp = NULL;
 
 void ColorRampLookup(const short h, 
-                     BYTE &r, BYTE &g, BYTE &b,
+                     uint8_t &r, uint8_t &g, uint8_t &b,
 		     const COLORRAMP* ramp_colors, 
                      const int numramp,
                      const unsigned char interp_levels) {
@@ -77,10 +77,10 @@ void ColorRampLookup(const short h,
 }
 
 
-#define MIX(x,y,i) (BYTE)((x*i+y*((1<<7)-i))>>7)
+#define MIX(x,y,i) (uint8_t)((x*i+y*((1<<7)-i))>>7)
 
 
-inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
+inline void TerrainShading(const short illum, uint8_t &r, uint8_t &g, uint8_t &b)
 {
   char x;
   if (illum<0) {           // shadow to blue
@@ -652,7 +652,7 @@ void ColorTable() {
 
   for (int i=0; i<256; i++) {
 	for (int mag= -64; mag<64; mag++) {
-		BYTE r, g, b; 
+		uint8_t r, g, b; 
 		// i=255 means TERRAIN_INVALID. Water is colored in Slope
 		if (i == 255) {
 			colorBuf[i+(mag+64)*256] = BGRColor(194,223,197); // LCD green terrain invalid
