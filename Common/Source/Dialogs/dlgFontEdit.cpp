@@ -411,7 +411,7 @@ bool dlgFontEditShowModal(const TCHAR * FontDescription,
     delete wf;
   }
   wf = NULL;
-
+  NewFont.Release();
   return bRetVal;
 }
 

@@ -4557,6 +4557,11 @@ int ival;
   delete wf;
 
   wf = NULL;
+  
+    TempMapWindowFont.Release();
+    TempMapLabelFont.Release();
+    TempUseCustomFontsFont.Release();
+
 
 }
 
