@@ -18,7 +18,7 @@ using std::placeholders::_1;
 
 class MenuButton : public WndTextLabel {
 public:
-    MenuButton() : _MenuId(~0), _EnableMenu() {
+    MenuButton() : _MenuId(~0), _EnableMenu(), _LButtonDown() {
 
     }
 
@@ -30,11 +30,18 @@ public:
 protected:
     unsigned _MenuId;
     bool _EnableMenu;
+    bool _LButtonDown;
 
+    virtual bool OnLButtonDown(const POINT& Pos) {
+        _LButtonDown = true;
+        return true;
+    }
+    
     virtual bool OnLButtonUp(const POINT& Pos) {
-        if(_EnableMenu) {
+        if(_EnableMenu && _LButtonDown) {
             InputEvents::processButton(_MenuId);
         }
+        _LButtonDown = false;
         return true;
     }
 };
