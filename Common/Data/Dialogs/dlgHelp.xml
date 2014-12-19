@@ -2,6 +2,6 @@
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmHelp" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M336_" Font="2" >
     <WndButton   Caption="_@M186_"    X="2" Y="5" Width="60"  Height="44" Font="2" OnClickNotify="OnCloseClicked"/>
-    <WndProperty Name="prpHelpText"  Caption="" X="62" Y="5" Width="-255" Height="210" CaptionWidth="10" Font="2" ReadOnly="1" MultiLine="1"/>
+    <WndProperty Name="prpHelpText"  Caption="" X="62" Y="5" Width="-2" Height="210" CaptionWidth="10" Font="2" ReadOnly="1" MultiLine="1"/>
   </WndForm>
 </PMML>

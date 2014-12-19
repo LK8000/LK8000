@@ -1152,7 +1152,13 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
 
   mOwner = Owner?Owner->GetClientArea():NULL;
   // setup Master Window (the owner of all)
-  mTopOwner = Owner?Owner->GetTopOwner():NULL;
+  mTopOwner = NULL;
+  if(Owner) {
+    mTopOwner = Owner->GetTopOwner();
+  }
+  if(!mTopOwner) {
+    mTopOwner = Owner;
+  }
     
   // todo
   mhFont = MapWindowFont;
@@ -1175,11 +1181,15 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
           ?static_cast<ContainerWindow*>(Owner->GetClientArea())
           :static_cast<ContainerWindow*>(&MainWindow);
   
+  if(mOwner) {
+    mOwner->CalcChildRect(mX, mY, mWidth, mHeight);
+  }
+  
   Create(WndOnwer,(RECT){mX, mY, mX+mWidth, mY+mHeight});
   SetTopWnd();
-  
+
   if (mOwner != NULL)
-    mOwner->AddClient(this);
+    mOwner->AddClient(this);  
 
   mhBrushBk = hBrushDefaultBk;
   mhPenBorder = hPenDefaultBorder;
@@ -1305,45 +1315,45 @@ WindowControl *WindowControl::GetCanFocus(void) {
     return (NULL);
 };
 
-void WindowControl::AddClient(WindowControl *Client) {
-
-    Client->SetFont(GetFont());
-
-    // TODO unify these checks once consolidated LKWINCONTROL
+void WindowControl::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
+    
     // use negative value to space down items
     // -999 to stay on the same line
     // -998 to advance one line with more space
     // -997 to advance one line with twice more space
 
-    if (Client->GetTop() < 0 && !mClients.empty()) {
+    if (y < 0 && !mClients.empty()) {
         WindowControl * pPrev = mClients.back();
-        switch (Client->GetTop()) {
+        switch (y) {
             case -999: //@ 101008
-                Client->SetTop(pPrev->GetTop());
+                y = pPrev->GetTop();
                 break;
             case -998: //@ 101115
-                Client->SetTop(pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(3));
+                y = (pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(3));
                 break;
             case -997: //@ 101115
-                Client->SetTop(pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(6));
+                y = (pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(6));
                 break;
             default:
-                Client->SetTop(pPrev->GetTop() - ((pPrev->GetHeight()) * Client->mY));
+                y = (pPrev->GetTop() - ((pPrev->GetHeight()) * y));
                 break;
         }
+    }    
+    if(y<0) y = 0;
+    if(x<0) x = 0;
+    
+    // negative value for cx is right margin relative to parent;
+    if (cx<0) {
+        cx = GetWidth() - x + cx;
     }
+    assert(cx>0);
+    assert(cy>0);
+}
 
+void WindowControl::AddClient(WindowControl *Client) {
+
+    Client->SetFont(GetFont());
     mClients.push_back(Client);
-
-    // Rescale to full horizontal width, good only for most-right windows
-    if (Client->GetWidth()<-1) {
-        // the magic rescaling to full width
-        if (ScreenLandscape) {
-            Client->SetWidth(ScreenSizeX - (int) ((320 * ScreenDScale) + Client->GetWidth()));
-        } else {
-            Client->SetWidth(ScreenSizeX - (int) ((240 * ScreenDScale) + Client->GetWidth()));
-        }
-    }
 }
 
 // 110411 This is always set true because we don't use UserLevel anymore

@@ -7,8 +7,8 @@
  	<WndButton   Name="cmdEnter" Caption="_@M1654_"   X="120" Y="2" Width="55"  Height="60" Font="2" OnClickNotify="OnEnterClicked"/> 	
 	<WndButton   Name="cmdDown" Caption="_@M2102_"    X="180" Y="2" Width="55"  Height="60" Font="2" OnClickNotify="OnDownClicked"/> 	
 
-    <WndListFrame Name="frmMultiSelectListList" X="1" Y="-1" Width="240" Height="220" Font="2" OnListInfo="OnMultiSelectListListInfo">
-      <WndOwnerDrawFrame Name="frmMultiSelectListListEntry" X="2" Y="2" Width="-218" Height="36" Font="2"  OnPaint="OnMultiSelectListPaintListItem"/>
+    <WndListFrame Name="frmMultiSelectListList" X="1" Y="-1" Width="-1" Height="220" Font="2" OnListInfo="OnMultiSelectListListInfo">
+      <WndOwnerDrawFrame Name="frmMultiSelectListListEntry" X="2" Y="2" Width="-2" Height="36" Font="2"  OnPaint="OnMultiSelectListPaintListItem"/>
     </WndListFrame>	
   </WndForm>
 </PMML>

@@ -571,6 +571,8 @@ class WindowControl : public WndCtrlBase {
   public:
     const TCHAR* GetCaption(void) const { return GetWndText(); }
 
+    virtual void CalcChildRect(int& x, int& y, int& cx, int& cy) const;
+    
 	// only Call by final contructor or overwrite
     virtual void AddClient(WindowControl *Client);
 
@@ -589,8 +591,8 @@ class WindowControl : public WndCtrlBase {
       mOnHelpCallback = Function;
     }
 
-    int GetWidth(void){return(mWidth);};
-    int GetHeight(void){return(mHeight);};
+    int GetWidth(void) const {return(mWidth);}
+    int GetHeight(void) const {return(mHeight);}
 
     WindowControl *GetCanFocus(void);
     bool SetCanFocus(bool Value);
@@ -623,8 +625,8 @@ class WindowControl : public WndCtrlBase {
 
     virtual WindowControl* GetClientArea(void) { return (this); }
 
-    WindowControl *GetParent(void) {return(mOwner);};
-    virtual WindowControl *GetTopOwner(void) {return(mTopOwner);}
+    WindowControl *GetParent(void) const {return(mOwner);};
+    virtual WindowControl *GetTopOwner(void) const {return(mTopOwner);}
 
     int GetTag(void){return(mTag);};
     int SetTag(int Value){mTag = Value; return(mTag);};
