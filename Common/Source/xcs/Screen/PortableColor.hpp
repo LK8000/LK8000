@@ -178,6 +178,19 @@ public:
   constexpr uint16_t GetNativeValue() const {
     return value;
   }
+
+  constexpr uint8_t Red() const {
+    return (value&0x7C00)>>7;
+  }
+
+  constexpr uint8_t Green() const {
+    return (value&0x3E0)>>2;
+  }
+
+  constexpr uint8_t Blue() const {
+    return (value&0x1F)<<3;
+  }
+
 };
 
 /**
