@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "RasterTerrain.h"
+#include "utils/openzip.h"
 
 #ifdef __MINGW32__
 #define int_fast8_t jas_int_fast8_t
@@ -92,7 +93,7 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
   StartupStore(_T(". Terrain Open RasterMapRaw <%s>%s"),zfilename,NEWLINE);
   #endif
 
-  fpTerrain = zzip_fopen(zfilename, "rb");
+  fpTerrain = openzip(zfilename, "rb");
   if (fpTerrain == NULL) {
 	StartupStore(_T(". Terrain RasterMapRaw Open failed%s"),NEWLINE);
 	return false;

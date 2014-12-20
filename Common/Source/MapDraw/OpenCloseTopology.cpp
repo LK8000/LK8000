@@ -13,7 +13,7 @@
 #include "RGB.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-
+#include "utils/openzip.h"
 
 
 
@@ -56,7 +56,7 @@ void OpenTopology() {
 
 
   // Ready to open the file now..
-  ZZIP_FILE* zFile = zzip_fopen(szFile, "rt");
+  ZZIP_FILE* zFile = openzip(szFile, "rt");
   
   if (!zFile) {
     UnlockTerrainDataGraphics();

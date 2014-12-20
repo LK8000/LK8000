@@ -30,6 +30,7 @@
 #include "TraceThread.h"
 #include "CTaskFileHelper.h"
 #include "utils/stringext.h"
+#include "utils/openzip.h"
 
 // Sensible maximums 
 #define MAX_MODE 100
@@ -150,7 +151,7 @@ void InputEvents::readFile() {
   _tcscpy(szInputFile,_T("")); // disabled until verified valid
 
   if (_tcslen(szFile1)>0) {
-    fp=zzip_fopen(szFile1, "rb");
+    fp=openzip(szFile1, "rb");
   }
 
   TCHAR xcifile[MAX_PATH];
@@ -178,10 +179,10 @@ void InputEvents::readFile() {
 			_stprintf(xcifile,_T("%s%sMENU_OTHER.TXT"), xcipath, _T(DIRSEP));
 			break;
 	}
-	fp=zzip_fopen(xcifile, "rb");
+	fp=openzip(xcifile, "rt");
 	if (fp == NULL) {
 		_stprintf(xcifile,_T("%s%sDEFAULT_MENU.TXT"), xcipath, _T(DIRSEP));
-		fp=zzip_fopen(xcifile, "rb");
+		fp=openzip(xcifile, "rt");
 		if (fp == NULL) {
 			// This cannot happen
 			StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!\n"),xcifile);

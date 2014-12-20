@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
+#include "utils/openzip.h"
 
 int globalFileNum = 0;
 
@@ -35,7 +36,7 @@ void ReadWayPoints(void)
       
     if (_tcslen(szFile1)>0) {
       ExpandLocalPath(szFile1);
-      fp = zzip_fopen(szFile1, "rt");
+      fp = openzip(szFile1, "rt");
     } else {
     }
 
@@ -60,7 +61,7 @@ void ReadWayPoints(void)
 
     if (_tcslen(szFile2)>0){
       ExpandLocalPath(szFile2);
-      fp = zzip_fopen(szFile2, "rt");
+      fp = openzip(szFile2, "rt");
       if(fp != NULL){
         globalFileNum = 1;
         WpFileType[2]=ReadWayPointFile(fp, szFile2);

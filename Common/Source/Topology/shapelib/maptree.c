@@ -39,6 +39,7 @@
 #endif
 #include <stdbool.h>
 #include "utils/heapcheck.h"
+#include "utils/openzip.h"
 
 bool FileExists(const TCHAR *FileName){
   FILE *file = _tfopen(FileName, _T("r"));
@@ -142,7 +143,7 @@ SHPTreeHandle msSHPDiskTreeOpen(const TCHAR* pszTree, int debug)
     _stprintf( pszFullname, _T("%s%s"), pszBasename, _T(MS_INDEX_EXTENSION)); 
 
     if (FileExists(pszFullname))  // prevent codegurad warnings (open unexisting file for reading)
-      psTree->zfp = zzip_fopen(pszFullname, "rb" );
+      psTree->zfp = openzip(pszFullname, "rb" );
     else
       psTree->zfp = NULL;
 

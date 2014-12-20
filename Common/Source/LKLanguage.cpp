@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "DoInits.h"
 #include "utils/stl_utils.h"
+#include "utils/openzip.h"
 
 //#define DEBUG_GETTEXT	1
 #define LKD_LANGUAGE	"_Language"
@@ -67,7 +68,7 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	TCHAR sNum[10];
 	_stprintf(sNum,_T("%u"),inumber);
 
-  ZZIP_FILE *helpFile = zzip_fopen(sFile, "rb");
+  ZZIP_FILE *helpFile = openzip(sFile, "rb");
 	if (helpFile == NULL) {
 		StartupStore(_T("... Missing HELP FILE <%s>%s"),sFile,NEWLINE);
 		// we can only have one Help call at a time, from the user interface. Ok static sHelp.
@@ -244,7 +245,7 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
   ExpandLocalPath(szFile1);
   // SetRegistryString(szRegistryLanguageFile, TEXT("\0")); // ?
 
-  ZZIP_FILE *langFile = zzip_fopen(szFile1, "rb");
+  ZZIP_FILE *langFile = openzip(szFile1, "rt");
   if (langFile == NULL) {
 	if (english) {
 		StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
@@ -342,7 +343,7 @@ bool LKLoadMessages(bool fillup) {
   _tcscpy(suffix,_T("_MSG.TXT"));
   _stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
 
-  ZZIP_FILE *hFile = zzip_fopen(sFile, "rb");
+  ZZIP_FILE *hFile = openzip(sFile, "rt");
 	if (hFile == NULL) {
 	StartupStore(_T("... LoadText Missing Language File: <%s>%s"),sFile,NEWLINE);
 	return false;

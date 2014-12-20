@@ -10,6 +10,7 @@
 #include "externs.h"
 #include "Dialogs.h"
 #include "AirfieldDetails.h"
+#include "utils/openzip.h"
 
 ZZIP_FILE* zAirfieldDetails = NULL;
 
@@ -37,7 +38,7 @@ void OpenAirfieldDetails() {
   }
   if (_tcslen(zfilename)>0) {
     StartupStore(_T(". open AirfieldFile <%s> %s"), zfilename, NEWLINE);
-    zAirfieldDetails = zzip_fopen(zfilename, "rb");
+    zAirfieldDetails = openzip(zfilename, "rb");
   }
 };
 

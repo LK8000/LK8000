@@ -20,6 +20,7 @@
 
 #include "utils/2dpclip.h"
 #include "utils/stringext.h"
+#include "utils/openzip.h"
 
 #if TESTBENCH
 //#define DEBUG_NEAR_POINTS	1
@@ -1808,12 +1809,12 @@ void CAirspaceManager::ReadAirspaces() {
     ExpandLocalPath(szFile2);
 
     if (_tcslen(szFile1) > 0) {
-        fp = zzip_fopen(szFile1, "rt");
+        fp = openzip(szFile1, "rt");
     } else {
     }
 
     if (_tcslen(szFile2) > 0) {
-        fp2 = zzip_fopen(szFile2, "rt");
+        fp2 = openzip(szFile2, "rt");
     }
 
     _tcscpy(szAirspaceFile, _T(""));

@@ -33,6 +33,7 @@
 #include <math.h>
 #include <tchar.h>
 #include <zzip/lib.h>
+#include <utils/openzip.h>
 
 #include "options.h"
 #include "mapprimitive.h"
@@ -940,9 +941,7 @@ int msPolylineLabelPoint(shapeObj *p, pointObj *lp, int min_length, double *angl
   return(MS_SUCCESS);
 }
 
-#ifdef WIN32
 ZZIP_FILE *ppc_fopen(const TCHAR *filename, const char *mode)
 {
-  return zzip_fopen(filename, mode);
+  return openzip(filename, mode);
 }
-#endif
