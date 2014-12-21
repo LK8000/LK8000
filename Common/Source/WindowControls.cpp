@@ -1227,12 +1227,14 @@ void WindowControl::Destroy(void){
 }
 
 void WindowControl::OnSetFocus() {
+    WndCtrlBase::OnSetFocus();
     Redraw();
     ActiveControl = this;
     LastFocusControl = this;    
 }
 
 void WindowControl::OnKillFocus() {
+    WndCtrlBase::OnKillFocus();
     Redraw();
     ActiveControl = NULL;
 }
