@@ -38,6 +38,8 @@ static void OnPaintComboPopupListItem(WindowControl * Sender, LKSurface& Surface
 
 	w=Sender->GetWidth();
 
+    Surface.SetBackgroundTransparent();
+    Surface.SetTextColor(RGB_BLACK);
 	Surface.DrawTextClip(2*ScreenScale,
 		2*ScreenScale,
 		ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupDrawListIndex]->StringValueFormatted,
