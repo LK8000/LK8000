@@ -187,7 +187,7 @@ goto_inloop:
 			}
 
 			if (WaypointInTerrainRange(&new_waypoint)) { 
-				if(AddWaypoint(std::move(new_waypoint))) {
+				if(!AddWaypoint(std::move(new_waypoint))) {
 					return -1; // failed to allocate
 				}
 			}
@@ -202,7 +202,7 @@ goto_inloop:
 			}
 
 			if (WaypointInTerrainRange(&new_waypoint)) {
-                if(AddWaypoint(std::move(new_waypoint))) {
+                if(!AddWaypoint(std::move(new_waypoint))) {
 					return -1; // failed to allocate
 				}
 			}
