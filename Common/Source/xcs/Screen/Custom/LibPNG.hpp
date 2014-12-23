@@ -25,10 +25,14 @@ Copyright_License {
 #define XCSOAR_LIBPNG_HPP
 
 #include <stddef.h>
+#include <tchar.h>
 
 class UncompressedImage;
 
 UncompressedImage
 LoadPNG(const void *data, size_t size);
+
+UncompressedImage
+LoadPNGFile(const TCHAR *path);
 
 #endif

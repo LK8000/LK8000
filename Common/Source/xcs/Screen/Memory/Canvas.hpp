@@ -396,6 +396,17 @@ public:
 
   void StretchNot(const Bitmap &src);
 
+  void StretchOr(int dest_x, int dest_y,
+               unsigned dest_width, unsigned dest_height,
+               const Bitmap & src, 
+               int src_x, int src_y, unsigned src_width, unsigned src_height);
+
+  void StretchAnd(int dest_x, int dest_y,
+               unsigned dest_width, unsigned dest_height,
+               const Bitmap & src, 
+               int src_x, int src_y, unsigned src_width, unsigned src_height);
+  
+
   void Stretch(int dest_x, int dest_y,
                unsigned dest_width, unsigned dest_height,
                ConstImageBuffer src,

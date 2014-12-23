@@ -409,6 +409,44 @@ Canvas::StretchNot(const Bitmap &_src)
 }
 
 void
+Canvas::StretchOr(int dest_x, int dest_y,
+               unsigned dest_width, unsigned dest_height,
+               const Bitmap &src, 
+               int src_x, int src_y, unsigned src_width, unsigned src_height)
+{
+  assert(IsDefined());
+  assert(src.IsDefined());
+  
+  ConstImageBuffer srcImg = src.GetNative();  
+  
+  SDLRasterCanvas canvas(buffer);
+  BitOrPixelOperations<SDLPixelTraits> operations;
+  
+  canvas.ScaleRectangle<decltype(operations), SDLPixelTraits>(dest_x, dest_y, dest_width, dest_height,
+                       srcImg.At(src_x, src_y), srcImg.pitch, src_width, src_height,
+                       operations);
+}
+
+void
+Canvas::StretchAnd(int dest_x, int dest_y,
+               unsigned dest_width, unsigned dest_height,
+               const Bitmap &src, 
+               int src_x, int src_y, unsigned src_width, unsigned src_height)
+{
+  assert(IsDefined());
+  assert(src.IsDefined());
+  
+  ConstImageBuffer srcImg = src.GetNative();  
+  
+  SDLRasterCanvas canvas(buffer);
+  BitAndPixelOperations<SDLPixelTraits> operations;
+
+  canvas.ScaleRectangle(dest_x, dest_y, dest_width, dest_height,
+                       srcImg.At(src_x, src_y), srcImg.pitch, src_width, src_height,
+                       operations);
+}
+
+void
 Canvas::Stretch(int dest_x, int dest_y,
                 unsigned dest_width, unsigned dest_height,
                 ConstImageBuffer src,

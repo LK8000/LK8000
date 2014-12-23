@@ -141,6 +141,16 @@ void LKSurface::DrawMaskedBitmap(const int x, const int y, const int cx, const i
     }
 
     ::SelectObject(GetTempDC(), old);
+#else
+    if(_pCanvas && Bitmap.IsDefined()) {
+        if (cxSrc != cx || cySrc != cy) {
+            _pCanvas->StretchOr(x, y, cx, cy, Bitmap, 0, 0, cxSrc, cySrc);
+            _pCanvas->StretchAnd(x, y, cx, cy, Bitmap, cxSrc, 0, cxSrc, cySrc);
+        } else {
+            _pCanvas->CopyOr(x, y, cx, cy, Bitmap, 0, 0);
+            _pCanvas->CopyAnd(x, y, cx, cy, Bitmap, cxSrc, 0);
+        }
+    }
 #endif
 }
 
@@ -155,6 +165,14 @@ void LKSurface::DrawBitmapCopy(const int x, const int y, const int cx, const int
     }
 
     ::SelectObject(GetTempDC(), old);
+#else
+    if(_pCanvas && Bitmap.IsDefined()) {
+        if (cxSrc != cx || cySrc != cy) {
+            _pCanvas->Stretch(x, y, cx, cy, Bitmap, 0, 0, cxSrc, cySrc);
+        } else {
+            _pCanvas->Copy(x, y, cx, cy, Bitmap, 0, 0);
+        }
+    }    
 #endif
 }
 
@@ -169,6 +187,14 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
     }
 
     ::SelectObject(GetTempDC(), old);
+#else
+    if(_pCanvas && Bitmap.IsDefined()) {
+        if (cxSrc != cx || cySrc != cy) {
+            _pCanvas->StretchOr(x, y, cx, cy, Bitmap, 0, 0, cxSrc, cySrc);
+        } else {
+            _pCanvas->CopyOr(x, y, cx, cy, Bitmap, 0, 0);
+        }
+    }
 #endif    
 }
 
@@ -177,6 +203,11 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
     ::BitBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, SRCPAINT);
     ::SelectObject(GetTempDC(), old);
+#else
+    if(_pCanvas && Bitmap.IsDefined()) {
+        _pCanvas->CopyOr(x, y, cx, cy, Bitmap, 0, 0);
+    }
+    
 #endif    
 }
 

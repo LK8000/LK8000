@@ -55,3 +55,10 @@ Bitmap::LoadFile(const TCHAR *path)
   const UncompressedImage uncompressed = LoadJPEGFile(path);
   return Load(uncompressed);
 }
+
+bool
+Bitmap::LoadPNGFile(const TCHAR *path)
+{
+  const UncompressedImage uncompressed = ::LoadPNGFile(path);
+  return Load(uncompressed);
+}

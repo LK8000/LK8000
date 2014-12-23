@@ -72,7 +72,9 @@ BEXTMODE LKBitmap hBmpMarker;
 BEXTMODE LKBitmap hBmpTeammatePosition;
 BEXTMODE LKBitmap hAboveTerrainBitmap;
 
+#ifdef HAVE_HATCHED_BRUSH
 BEXTMODE LKBitmap hAirspaceBitmap[NUMAIRSPACEBRUSHES];
+#endif
 
 BEXTMODE LKBitmap hBmpLeft32;
 BEXTMODE LKBitmap hBmpRight32;

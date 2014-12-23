@@ -418,6 +418,7 @@ endif
 include build/xcs_screen.mk
 include build/xcs_event.mk
 include build/xcs_os.mk
+include build/bitmap2png.mk
 
 ####### sources
 WINDOW := \
@@ -1071,7 +1072,7 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 ####### targets
 .PHONY: FORCE all clean cleani tags rebuild cppcheck
 
-all:	$(OUTPUTS)
+all:	$(PNG) $(MASKED_PNG) $(OUTPUTS)
 	@$(NQ)echo "GCCVERSION : $(GCCVERSION)"
 	
 rebuild:
@@ -1115,7 +1116,7 @@ cppcheck :
 
 ####### rules
 
-$(OUTPUTS) : $(OUTPUTS_NS)
+$(OUTPUTS) : $(OUTPUTS_NS) 
 	@$(NQ)echo "  STRIP   $@"
 	$(Q)$(STRIP) $< -o $@
 	$(Q)$(SIZE) $@
@@ -1186,6 +1187,11 @@ $(BIN)/%.min.rc: $(SRC)/%.rc $(patsubst Common/Data/Dialogs/%.xml,$(BIN)/Data/Di
 $(BIN)/Data/Dialogs/%.min.xml: Common/Data/Dialogs/%.xml
 	@$(NQ)echo "  minimize $@"
 	$(Q)xsltproc --output $@ build/dialogtemplate.xsl $<
+
+$(PNG_TARGET)/%.PNG : $(BITMAP_DIR)/%.BMP
+	@$(NQ)echo "  Convert Image	  $@"
+	$(Q)$(MKDIR) $(dir $@)
+	$(Q)convert $^ $@
 
 .PRECIOUS: $(BIN)/Data/Dialogs/%.min.xml \
 	$(BIN)/lk8000.min.rc

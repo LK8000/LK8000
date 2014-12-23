@@ -17,8 +17,10 @@ LKBitmap::LKBitmap(LKBitmap&& Bitmap) {
 #ifdef WIN32    
     bitmap = Bitmap.bitmap;
     Bitmap.bitmap = nullptr;
+#elif defined(USE_MEMORY_CANVAS)
+    std::swap(buffer, Bitmap.buffer);
 #else
-#warning "TODO: ..."
+#error "Not Implemented"
 #endif
 }
 
@@ -31,10 +33,12 @@ LKBitmap::~LKBitmap() {
 }
 
 LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
-#ifdef WIN32
+#ifdef WIN32    
     std::swap(bitmap, Bitmap.bitmap);
+#elif defined(USE_MEMORY_CANVAS)
+    std::swap(buffer, Bitmap.buffer);
 #else
-#warning "TODO: ..."    
+#error "Not Implemented"
 #endif
     return * this;
 }
@@ -49,10 +53,7 @@ bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
 #endif
     return IsDefined();
 #else 
-    #warning "TODO: ..."        
-#if 0    
-    return LoadFile(FilePath);
-#endif
+    return LoadPNGFile(FilePath);
 #endif
     return false;
 }

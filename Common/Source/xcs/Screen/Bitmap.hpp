@@ -176,6 +176,7 @@ public:
   bool LoadStretch(ResourceId id, unsigned zoom);
 
   bool LoadFile(const TCHAR *path);
+  bool LoadPNGFile(const TCHAR *path);
 
   void Reset();
 
