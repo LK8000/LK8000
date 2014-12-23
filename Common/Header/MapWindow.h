@@ -551,7 +551,6 @@ class MapWindow {
   static void DrawAirSpace(LKSurface& Surface, const RECT& rc);
   static void DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc);
   static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
-  static void DrawWaypoints(LKSurface& Surface, const RECT& rc);
   static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc);
   static void DrawLook8000(LKSurface& Surface, const RECT& rc);
   static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
