@@ -174,7 +174,7 @@ public:
     void DrawTextClip(int x, int y, const TCHAR *text, PixelScalar width);
 
 
-    LKColor SetPixel(int X, int Y, const LKColor& Color);
+    void SetPixel(int X, int Y, const LKColor& Color);
 
     bool InvertRect(const RECT& rc);
     bool RoundRect(const RECT& rc, int nWidth, int nHeight);

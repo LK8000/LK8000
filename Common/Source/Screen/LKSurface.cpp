@@ -441,6 +441,7 @@ bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, co
 #ifdef WIN32
     return ::MaskBlt(*this, nXDest, nYDest, nWidth, nHeight, hdcSrc, nXSrc, nYSrc, bmpMask, xMask, yMask, MAKEROP4(SRCAND,  0x00AA0029));
 #else
+#warning "CopyWithMask not implemented, needed for Airspace transparent Border"
     return false;
 #endif
 }
@@ -588,11 +589,13 @@ int LKSurface::GetTextHeight(const TCHAR *text) {
     return tsize.cy;
 }
 
-LKColor LKSurface::SetPixel(int X, int Y, const LKColor& Color) {
+void LKSurface::SetPixel(int X, int Y, const LKColor& Color) {
 #ifdef WIN32
-    return LKColor(::SetPixel(*this, X, Y, Color));
+    ::SetPixel(*this, X, Y, Color);
 #else
-    return LKColor();
+    if(_pCanvas) {
+        _pCanvas->DrawFilledRectangle(X,Y,X+1,Y+1,Color);
+    }
 #endif
 }
 
@@ -610,6 +613,10 @@ bool LKSurface::InvertRect(const RECT& rc) {
 #ifdef WIN32
     return ::InvertRect(*this, &rc);
 #else
+    if(_pCanvas) {
+        _pCanvas->InvertRectangle(rc);
+        return true;
+    }
     return false;
 #endif
 }
@@ -618,6 +625,10 @@ bool LKSurface::RoundRect(const RECT& rc, int nWidth, int nHeight) {
 #ifdef WIN32
     return ::RoundRect(*this, rc.left, rc.top, rc.right, rc.bottom, nWidth, nHeight);
 #else
+    if(_pCanvas) {
+        _pCanvas->DrawRoundRectangle(rc.left, rc.top, rc.right, rc.bottom, nWidth, nHeight);
+        return true;
+    }
     return false;
 #endif
 }
@@ -625,6 +636,8 @@ bool LKSurface::RoundRect(const RECT& rc, int nWidth, int nHeight) {
 void LKSurface::ExcludeClipRect(const RECT& rc) {
 #ifdef WIN32
     ::ExcludeClipRect(*this, rc.left, rc.top, rc.right, rc.bottom);
+#else
+    // only used in WndForm, Not really needed...
 #endif
 }
 
@@ -632,6 +645,7 @@ int LKSurface::SaveState() {
 #ifdef WIN32
     return ::SaveDC(*this);
 #else
+    // Not Needed...
     return 0;
 #endif
 }
@@ -639,6 +653,8 @@ int LKSurface::SaveState() {
 void LKSurface::RestoreState(int nSaved) {
 #ifdef WIN32
     ::RestoreDC(*this, nSaved);
+#else
+    // Not Needed...
 #endif
 }
 
