@@ -29,7 +29,7 @@
 
 #ifdef __linux__
  // temporary disable, need to be port...
- #define DISABLEAUDIO
+//#define DISABLEAUDIO
  #define NO_DATARECORDER
 #endif
 
