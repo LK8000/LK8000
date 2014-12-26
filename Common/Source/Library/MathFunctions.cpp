@@ -332,8 +332,8 @@ double ScreenAngle(int x1, int y1, int x2, int y2)
 double COSTABLE[4096];
 double SINETABLE[4096];
 double INVCOSINETABLE[4096];
-int ISINETABLE[4096];
-int ICOSTABLE[4096];
+short ISINETABLE[4096];
+short ICOSTABLE[4096];
 
 void InitSineTable(void)
 {

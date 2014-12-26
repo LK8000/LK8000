@@ -48,8 +48,8 @@ void InitSineTable(void);
 extern double COSTABLE[4096];
 extern double SINETABLE[4096];
 extern double INVCOSINETABLE[4096];
-extern int ISINETABLE[4096];
-extern int ICOSTABLE[4096];
+extern short ISINETABLE[4096];
+extern short ICOSTABLE[4096];
 
 #define invfastcosine(x) INVCOSINETABLE[DEG_TO_INT(x)]
 #define ifastcosine(x) ICOSTABLE[DEG_TO_INT(x)]
