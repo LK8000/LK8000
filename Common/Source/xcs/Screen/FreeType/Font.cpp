@@ -147,7 +147,7 @@ Font::LoadFile(const char *file, UPixelScalar ptsize, bool bold, bool italic)
   if (new_face == nullptr)
     return false;
 
-  FT_Error error = ::FT_Set_Pixel_Sizes(new_face, 0, ptsize);
+  FT_Error error = ::FT_Set_Char_Size(new_face, 0, ptsize<<6, 0, 64);
   if (error) {
     ::FT_Done_Face(new_face);
     return false;
