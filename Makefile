@@ -418,8 +418,9 @@ endif
 include build/xcs_screen.mk
 include build/xcs_event.mk
 include build/xcs_os.mk
+ifeq ($(TARGET),LINUX)
 include build/bitmap2png.mk
-
+endif
 ####### sources
 WINDOW := \
 	$(SRC_WINDOW)/WndMain.cpp \
