@@ -11,9 +11,6 @@
 #include "Modeltype.h"
 #include "LKHolux.h"
 #endif
-#ifdef __linux__
-  #include <SDL/SDL_audio.h>
-#endif
 #include "DoInits.h"
 
 #ifdef DISABLEAUDIO
@@ -148,7 +145,9 @@ bool SetSoundVolume()
   return true;
 }
 #endif
-#else
+#elif defined(__linux__)
+#include <SDL/SDL_audio.h>
+
 SDL_AudioSpec spec;
 Uint32 sound_len;
 Uint8 *sound_buffer;
@@ -201,4 +200,4 @@ BOOL PlayResource (const TCHAR* lpName) {
 }
 
 #endif
-#endif // PNA
+#endif // __linux__
