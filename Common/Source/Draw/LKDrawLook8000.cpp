@@ -17,6 +17,9 @@
 #include "Multimap.h"
 #include "Sideview.h"
 #include "Screen/FontReference.h"
+#ifndef UNICODE
+#include "Util/UTF8.hpp"
+#endif
 
 void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc )
 {
@@ -682,9 +685,20 @@ nextinit:
 
             SIZE tsize;
             TCHAR Tmp[150];
+            
+#ifdef UNICODE
             int len = _tcslen(BufferValue);
             if(len > 0) {
-                Surface.GetTextSize(&BufferValue[len-1], 1, &tsize);
+                const TCHAR* last = &BufferValue[len-1];
+#else
+            size_t len = LengthUTF8(BufferValue);
+            if(len > 0) {
+                std::pair<unsigned, const char *> next = NextUTF8(BufferValue);
+                for (size_t i = 0; i < len-1; ++i)
+                  next = NextUTF8(next.second);
+                const TCHAR* last = next.second;
+#endif
+                Surface.GetTextSize(last, 1, &tsize);
                 tsize.cx = -tsize.cx;
             } else {
                 tsize.cx = 0;
@@ -692,17 +706,17 @@ nextinit:
             _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
             if(BufferValue[0] == Tmp[0])
             {
-                Surface.GetTextSize(Tmp, 1, &tsize);
+                Surface.GetTextSize(Tmp, _tcslen(Tmp), &tsize);
             }
             _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2182_")));
             if(BufferValue[0] == Tmp[0])
             {
-                Surface.GetTextSize(Tmp, 1, &tsize);
+                Surface.GetTextSize(Tmp, _tcslen(Tmp), &tsize);
             }
             _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2184_")));
             if(BufferValue[0] == Tmp[0])
             {
-                Surface.GetTextSize(Tmp, 1, &tsize);
+                Surface.GetTextSize(Tmp, _tcslen(Tmp), &tsize);
                 _stprintf(Tmp, TEXT("%s"), gettext(_T("_@M2185_")));
         //    if(BufferValue[len-1] == Tmp[0])
         //    tsize.cx =0;
