@@ -619,7 +619,7 @@ bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, si
     }
   }
 
-  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, GetUnitName(unFeet));
+  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, GetUnitName(UserDistanceUnit));
 
   if (_tcslen(sTmp) < size-1){
     _tcscpy(Buffer, sTmp);
