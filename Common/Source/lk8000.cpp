@@ -315,7 +315,17 @@ int main() {
   GPS_INFO.Minute = pda_time.wMinute;
   GPS_INFO.Second = pda_time.wSecond;
 #else
-#warning "TODO : Need to implement"
+  time_t  linux_time;
+  linux_time = time(0);
+  tm *pda_time;
+  pda_time = localtime( &linux_time);
+  GPS_INFO.Time  = pda_time->tm_hour*3600+pda_time->tm_min*60+pda_time->tm_sec;
+  GPS_INFO.Year  = pda_time->tm_year + 1900;
+  GPS_INFO.Month = pda_time->tm_mon + 1;
+  GPS_INFO.Day = pda_time->tm_mday;
+  GPS_INFO.Hour  = pda_time->tm_hour;
+  GPS_INFO.Minute = pda_time->tm_min;
+  GPS_INFO.Second = pda_time->tm_sec;  
 #endif
 
   CalculateNewPolarCoef();

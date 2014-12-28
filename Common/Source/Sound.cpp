@@ -11,6 +11,9 @@
 #include "Modeltype.h"
 #include "LKHolux.h"
 #endif
+#ifdef __linux__
+  #include <SDL/SDL_audio.h>
+#endif
 #include "DoInits.h"
 
 #ifdef DISABLEAUDIO
@@ -24,6 +27,7 @@ void LKSound(const TCHAR *lpName) {
 }
 
 #else
+#ifdef WIN32
 #include "mmsystem.h"
 
 extern HINSTANCE _hInstance; // The current instance
@@ -143,5 +147,58 @@ bool SetSoundVolume()
 
   return true;
 }
+#endif
+#else
+SDL_AudioSpec spec;
+Uint32 sound_len;
+Uint8 *sound_buffer;
+Uint32 sound_pos = 0;
+
+void Callback (void *userdata, Uint8 *stream, int len){
+  Uint8 *waveptr;
+  if (sound_pos + len > sound_len) {
+    return;
+  }
+   waveptr = sound_buffer + sound_pos;
+   SDL_MixAudio(stream, waveptr, len, SDL_MIX_MAXVOLUME);
+   sound_pos += len;
+}
+
+void LKSound(const TCHAR *lpName) {
+  
+  static bool working=false;
+  static TCHAR sDir[MAX_PATH];
+
+  if (DoInit[MDI_LKSOUND]) {
+	working=false;
+	TCHAR srcfile[MAX_PATH];
+	LocalPath(sDir,TEXT(LKD_SOUNDS));
+	_stprintf(srcfile,TEXT("%s%s_SOUNDS"), sDir, _T(DIRSEP));
+	if ( !lk::filesystem::exist(srcfile) ) {
+	    StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
+		StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
+    } else
+		working=true;
+	DoInit[MDI_LKSOUND]=false;
+  }
+
+  if (!working) return;
+  TCHAR sndfile[MAX_PATH];
+  _stprintf(sndfile,_T("%s%s%s"),sDir, _T(DIRSEP), lpName);
+      
+  if (SDL_LoadWAV (sndfile, &spec, &sound_buffer, &sound_len) == NULL) return;
+  spec.callback = Callback;   
+  if (SDL_OpenAudio (&spec, NULL) < 0)  {
+      //Error message 
+      return;
+    }
+  SDL_PauseAudio (0);    
+}
+
+
+BOOL PlayResource (const TCHAR* lpName) {
+    return false;
+}
+
 #endif
 #endif // PNA
