@@ -134,9 +134,20 @@ public:
         return bRet;
     }
 
+    virtual bool OnMouseDouble(PixelScalar x, PixelScalar y) {
+        bool bRet = _Base::OnMouseDouble(x,y);
+        if(!bRet) {
+            bRet = OnLButtonDblClick((POINT){x,y});
+        }
+        return bRet;
+    }
+    
     virtual bool OnMouseMove(const POINT& Pos) { return false; }
     virtual bool OnLButtonDown(const POINT& Pos) { return false; }
     virtual bool OnLButtonUp(const POINT& Pos) { return false; }
+    
+   	virtual bool OnLButtonDblClick(const POINT& Pos) { return false; }
+
   
 protected:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) { return false; }
