@@ -164,13 +164,13 @@ void MapWindow::LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const
 	case WTALIGN_LEFT:
 		vy=y+tsize.cy+NIBLSCALE(2)+1;
 		if (vy>=clipRect.bottom) return;
-		Surface.Rectangle(x+tsize.cx+NIBLSCALE(8), vy, x, y);
+		Surface.Rectangle(x, y, x+tsize.cx+NIBLSCALE(8), vy);
         x += NIBLSCALE(4);
 		break;
 	case WTALIGN_RIGHT:
 		vy=y+tsize.cy+NIBLSCALE(2)+1;
 		if (vy>=clipRect.bottom) return;
-        Surface.Rectangle(x-tsize.cx-NIBLSCALE(8), vy, x, y);
+        Surface.Rectangle(x-tsize.cx-NIBLSCALE(8), y, x, vy);
         x -= (tsize.cx+NIBLSCALE(4));
 		break;
 	case WTALIGN_CENTER:
