@@ -11,21 +11,35 @@
 
 #ifndef _LINUX_WNDTEXTEDIT_H
 #define	_LINUX_WNDTEXTEDIT_H
+#include "Screen/Window.hpp"
 #include "WndText.h"
 
+//this this used only as base class for WndMessage cf. Message.cpp
+
+class WndTextEditStyle : public WindowStyle {
+public:
+    WndTextEditStyle() {
+        text_style |= DT_WORDBREAK|DT_CENTER|DT_VCENTER;
+        Disable();
+        Hide();
+    }
+};
+
 class WndTextEdit : public WndText<Window> {
+    typedef WndText<Window> __super;
 public:
     WndTextEdit() : WndText<Window>(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
-        
+
     }
-    
+
+    virtual void Create(ContainerWindow* pOwner, const RECT& rect) {
+        __super::Create(pOwner, rect, WndTextEditStyle());
+    }
+
     int GetLineCount() {
         return 1;
     }
 
-    virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) {
-        return true;
-    }
 };
 
 #endif	/* _LINUX_WNDTEXTEDIT_H */

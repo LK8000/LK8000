@@ -101,6 +101,9 @@ void Message::Resize() {
   if (size==0) {
     if (!hidden) {
         WndMsg.SetVisible(false);
+#ifndef USE_GDI
+        MainWindow.Refresh();
+#endif        
     }
     hidden = true;
   } else {
@@ -137,6 +140,9 @@ void Message::Resize() {
     WndMsg.SetVisible(true);
     hidden = false;
     
+#ifndef USE_GDI
+    MainWindow.Refresh();
+#endif     
 
   }
 
