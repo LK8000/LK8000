@@ -192,13 +192,16 @@ public:
   }
 
   void DrawOutlineRectangle(int left, int top, int right, int bottom,
+                            const Pen& pen);
+  
+  void DrawOutlineRectangle(int left, int top, int right, int bottom,
                             Color color);
 
   void Rectangle(int left, int top, int right, int bottom) {
     DrawFilledRectangle(left, top, right, bottom, brush);
 
     if (IsPenOverBrush())
-      DrawOutlineRectangle(left, top, right, bottom, pen.GetColor());
+      DrawOutlineRectangle(left, top, right, bottom, pen);
   }
 
   void DrawFilledRectangle(int left, int top, int right, int bottom,
