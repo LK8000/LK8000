@@ -1745,6 +1745,10 @@ int WndForm::ShowModal(void) {
     Window* oldFocus = Window::GetFocusedWindow();
     FocusNext(NULL);
 
+#ifndef USE_GDI
+    MainWindow.Refresh();
+#endif    
+
     assert(event_queue);
 #if defined(ANDROID) || defined(USE_CONSOLE) || defined(ENABLE_SDL) || defined(NON_INTERACTIVE)
     EventLoop loop(*event_queue, MainWindow);
