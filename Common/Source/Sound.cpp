@@ -145,26 +145,33 @@ bool SetSoundVolume()
   return true;
 }
 #endif
-#elif defined(__linux__)
+#elif defined(ENABLE_SDL)
 #include <SDL/SDL_audio.h>
 
 SDL_AudioSpec spec;
 Uint32 sound_len;
 Uint8 *sound_buffer;
-Uint32 sound_pos = 0;
+Uint8 *sound_pos = 0;
 
 void Callback (void *userdata, Uint8 *stream, int len){
-  Uint8 *waveptr;
-  if (sound_pos + len > sound_len) {
-    return;
-  }
-   waveptr = sound_buffer + sound_pos;
-   SDL_MixAudio(stream, waveptr, len, SDL_MIX_MAXVOLUME);
-   sound_pos += len;
+    /* Only play if we have data left */
+    if ( sound_len == 0 )
+        return;
+
+    /* Mix as much data as possible */
+    len = std::min((Uint32)len,sound_len);
+    SDL_MixAudio(stream, sound_pos, (Uint32)len, SDL_MIX_MAXVOLUME);
+    sound_pos += len;
+    sound_len -= len;
 }
 
 void LKSound(const TCHAR *lpName) {
-  
+  if (IsKobo()) {
+      // SDL_Init is Called without SDL_INIT_AUDIO if we are on Kobo Device
+      // cf. "Sources/xcs/Screen/SDL/Init.cpp
+      return; 
+  }
+    
   static bool working=false;
   static TCHAR sDir[MAX_PATH];
 
@@ -186,12 +193,20 @@ void LKSound(const TCHAR *lpName) {
   _stprintf(sndfile,_T("%s%s%s"),sDir, _T(DIRSEP), lpName);
       
   if (SDL_LoadWAV (sndfile, &spec, &sound_buffer, &sound_len) == NULL) return;
-  spec.callback = Callback;   
+  spec.callback = Callback;
+  sound_pos = sound_buffer;
   if (SDL_OpenAudio (&spec, NULL) < 0)  {
       //Error message 
       return;
     }
   SDL_PauseAudio (0);    
+  
+  /* Wait for sound to complete */
+  while ( sound_len > 0 ) {
+    Poco::Thread::sleep(100);         /* Sleep 1/10 second */
+  }
+  SDL_CloseAudio();  
+  SDL_FreeWAV(sound_buffer);
 }
 
 
