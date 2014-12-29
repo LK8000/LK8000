@@ -56,14 +56,14 @@ static void UpdateButtons(void) {
   }
 }
 
-static void OnNameClicked(Window* pWnd) {
+static void OnNameClicked(WndButton* pWnd) {
     if (buttonName) {
         dlgTextEntryShowModal(global_wpt->Name, NAME_SIZE);
     }
     UpdateButtons();
 }
 
-static void OnCommentClicked(Window* pWnd) {
+static void OnCommentClicked(WndButton* pWnd) {
   if (buttonComment) {
 	//@ 101219
 	TCHAR comment[COMMENT_SIZE*2];
@@ -546,7 +546,7 @@ static void GetValues(void) {
 }
 
 
-static void OnCloseClicked(Window* pWnd){
+static void OnCloseClicked(WndButton* pWnd){
     wf->SetModalResult(mrOK);
 }
 

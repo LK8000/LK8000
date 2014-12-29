@@ -23,11 +23,11 @@ namespace DlgBluetooth {
     size_t DrawListIndex = 0;
     size_t ItemIndex = 0;
 
-    void OnClose(Window* pWnd) {
+    void OnClose(WndButton* pWnd) {
         wfBth->SetModalResult(mrOK);
     }
 
-    void OnPair(Window* pWnd) {
+    void OnPair(WndButton* pWnd) {
         CBtHandler* pBtHandler = CBtHandler::Get();
         if (pBtHandler) {
             CBtDevice * SelectedDevice = pBtHandler->GetDevice(ItemIndex);
@@ -51,7 +51,7 @@ namespace DlgBluetooth {
         }
     }
 
-    void OnUnpair(Window* pWnd) {
+    void OnUnpair(WndButton* pWnd) {
         CBtHandler* pBtHandler = CBtHandler::Get();
 
         if (pBtHandler) {
@@ -72,7 +72,7 @@ namespace DlgBluetooth {
         }
     }
 
-    void OnLookup(Window* pWnd) {
+    void OnLookup(WndButton* pWnd) {
         StartHourglassCursor();
         CBtHandler * pBtHandler = CBtHandler::Get();
         if (pBtHandler && pBtHandler->StartHW() && pBtHandler->LookupDevices()) {

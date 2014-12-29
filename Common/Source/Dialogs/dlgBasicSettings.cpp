@@ -20,12 +20,12 @@ extern bool UpdateQNH(const double newqnh);
 
 // static bool BallastTimerActive = false;
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     (void) pWnd;
     wf->SetModalResult(mrOK);
 }
 
-static void OnBallastDump(Window* pWnd) {
+static void OnBallastDump(WndButton* pWnd) {
     (void) pWnd;
     BallastTimerActive = !BallastTimerActive;
     wf->SetModalResult(mrOK);

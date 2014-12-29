@@ -76,7 +76,7 @@ static void OnHelpClicked(WindowControl * Sender){
   wComboPopupWndProperty->OnHelp();
 }
 
-static void OnCloseClicked(Window* pWnd){
+static void OnCloseClicked(WndButton* pWnd){
   (void)pWnd;
   wf->SetModalResult(mrOK);
 }
@@ -84,10 +84,10 @@ static void OnCloseClicked(Window* pWnd){
 static void OnComboPopupListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo)
 { // double-click on item -- NOT in callback table because added manually
   (void)Sender; 
-  OnCloseClicked(Sender);
+  wf->SetModalResult(mrOK);
 }
 
-static void OnCancelClicked(Window* pWnd){
+static void OnCancelClicked(WndButton* pWnd){
 	(void)pWnd;
   ComboListPopup->ComboPopupItemIndex= -1;
   wf->SetModalResult(mrCancel);

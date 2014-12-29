@@ -21,7 +21,7 @@ extern void LKAircraftSave(const TCHAR *szFile);
 extern void LKPilotSave(const TCHAR *szFile);
 extern void LKDeviceSave(const TCHAR *szFile);
 
-static void OnSaveExistingClicked(Window* pWnd) {
+static void OnSaveExistingClicked(WndButton* pWnd) {
 
   int file_index; 
   TCHAR file_name[MAX_PATH];
@@ -74,7 +74,7 @@ static void OnSaveExistingClicked(Window* pWnd) {
   } 
 }
 
-static void OnSaveNewClicked(Window* pWnd) {
+static void OnSaveNewClicked(WndButton* pWnd) {
 
   int file_index; 
   TCHAR file_name[MAX_PATH];
@@ -183,7 +183,7 @@ static void OnSaveNewClicked(Window* pWnd) {
   }
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
         wf->SetModalResult(mrOK);
 }
 

@@ -909,7 +909,7 @@ protected:
 
 class WndButton:public WindowControl{
   public:
-    typedef void (*ClickNotifyCallback_t)(Window* pWnd);
+    typedef void (*ClickNotifyCallback_t)(WndButton* pWnd);
 
   private:
 

@@ -13,7 +13,7 @@
 
 static WndForm *wf=NULL;
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 
@@ -77,7 +77,7 @@ static void setVariables(void) {
 // enum text to the selection list, each time we reset.
 // We simply set the value, because the enum text list is already set.
 //
-static void OnResetClicked(Window* pWnd){
+static void OnResetClicked(WndButton* pWnd){
 
   WndProperty *wp;
   extern void Reset_Multimap_Mode(void);

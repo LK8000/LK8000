@@ -22,11 +22,11 @@ extern double CRUISE_EFFICIENCY;
 static double emc= 0.0;
 static double cruise_efficiency= 1.0;
 
-static void OnCancelClicked(Window* pWnd) {
+static void OnCancelClicked(WndButton* pWnd) {
     wf->SetModalResult(mrCancel);
 }
 
-static void OnOKClicked(Window* pWnd) {
+static void OnOKClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 
@@ -201,7 +201,7 @@ static void DoOptimise(void) {
 }
 
 
-static void OnTargetClicked(Window* pWnd){
+static void OnTargetClicked(WndButton* pWnd){
   wf->SetVisible(false);
   dlgTarget();
   // find start value for range (it may have changed)
@@ -287,7 +287,7 @@ static void OnCruiseEfficiencyData(DataField *Sender, DataField::DataAccessKind_
   }
 }
 
-static void OnOptimiseClicked(Window* pWnd) {
+static void OnOptimiseClicked(WndButton* pWnd) {
     DoOptimise();
 }
 

@@ -28,15 +28,15 @@ static bool IsInitialized=false;
 
 void LoadGUI();
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 
-static void OnCancelClicked(Window* pWnd) {
+static void OnCancelClicked(WndButton* pWnd) {
     wf->SetModalResult(mrCancel);
 }
 
-static void OnResetClicked(Window* pWnd) {
+static void OnResetClicked(WndButton* pWnd) {
     NewLogFont = resetLogFont;
     LoadGUI();
 }

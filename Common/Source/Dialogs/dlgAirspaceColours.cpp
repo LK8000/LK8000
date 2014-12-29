@@ -72,7 +72,7 @@ static void OnAirspaceColoursListInfo(WindowControl * Sender,
   }
 }
 
-static void OnCloseClicked(Window* pWnd){
+static void OnCloseClicked(WndButton* pWnd){
   (void)pWnd;
   ItemIndex = -1;
   wf->SetModalResult(mrOK);

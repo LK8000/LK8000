@@ -43,11 +43,11 @@ namespace DlgIgcFile {
         std::sort(FileList.rbegin(), FileList.rend()); // sort in desc order.
     }
 
-    void OnClose(Window* pWnd) {
+    void OnClose(WndButton* pWnd) {
         wfDlg->SetModalResult(mrOK);
     }
 
-    void OnSend(Window* pWnd) {
+    void OnSend(WndButton* pWnd) {
         if(ItemIndex < FileList.size()) {
             StartHourglassCursor();
             

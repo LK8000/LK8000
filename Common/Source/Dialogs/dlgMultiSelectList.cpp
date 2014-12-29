@@ -54,7 +54,7 @@ static bool OnTimer() {
     return true;
 }
 
-static void OnUpClicked(Window* Sender) {
+static void OnUpClicked(WndButton* Sender) {
     if (ItemIndex > 0) {
         ItemIndex--;
     } else {
@@ -65,7 +65,7 @@ static void OnUpClicked(Window* Sender) {
     wMultiSelectListListEntry->SetFocus();
 }
 
-static void OnDownClicked(Window* pWnd) {
+static void OnDownClicked(WndButton* pWnd) {
     (void)pWnd;
 
     if (ItemIndex < (iNO_ELEMENTS - 1)) {
@@ -443,7 +443,7 @@ static void OnMultiSelectListListEnter(WindowControl * Sender,
 
 }
 
-static void OnEnterClicked(Window* pWnd) {
+static void OnEnterClicked(WndButton* pWnd) {
     (void)pWnd;
 
     if (ItemIndex >= iNO_ELEMENTS) {
@@ -471,7 +471,7 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     (void) pWnd;
     ItemIndex = -1;
 

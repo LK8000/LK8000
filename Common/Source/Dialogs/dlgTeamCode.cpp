@@ -87,7 +87,7 @@ static void Update()
 }
 
 
-static void OnCodeClicked(Window* pWnd)
+static void OnCodeClicked(WndButton* pWnd)
 {
   TCHAR newTeammateCode[10];
   
@@ -113,7 +113,7 @@ static void OnCodeClicked(Window* pWnd)
   }
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 

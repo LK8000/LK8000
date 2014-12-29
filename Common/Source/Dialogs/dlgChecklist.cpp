@@ -146,17 +146,17 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
   }
 }
 
-static void OnNextClicked(Window* pWnd) {
+static void OnNextClicked(WndButton* pWnd) {
     (void) pWnd;
     NextPage(+1);
 }
 
-static void OnPrevClicked(Window* pWnd) {
+static void OnPrevClicked(WndButton* pWnd) {
     (void) pWnd;
     NextPage(-1);
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     (void) pWnd;
     wf->SetModalResult(mrOK);
 }

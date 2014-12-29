@@ -476,7 +476,7 @@ static void OnAATEnabled(DataField *Sender, DataField::DataAccessKind_t Mode) {
 
 
 
-static void OnSelectClicked(Window* pWnd){
+static void OnSelectClicked(WndButton* pWnd){
   int res;
   res = dlgWayPointSelect();
   if (res != -1){
@@ -495,21 +495,21 @@ static void OnSelectClicked(Window* pWnd){
   };
 }
 
-static void OnCloseClicked(Window* pWnd){
+static void OnCloseClicked(WndButton* pWnd){
     wf->SetModalResult(mrOK);
 }
 
-static void OnMoveClicked(Window* pWnd){
+static void OnMoveClicked(WndButton* pWnd){
     wf->SetModalResult(mrOK);
     PanTaskEdit = twItemIndex;
 }
 
-static void OnStartPointClicked(Window* pWnd){
+static void OnStartPointClicked(WndButton* pWnd){
     dlgStartPointShowModal();
 }
 
 
-static void OnMoveAfterClicked(Window* pWnd){
+static void OnMoveAfterClicked(WndButton* pWnd){
   LockTaskData();
   SwapWaypoint(twItemIndex);
   SetWaypointValues();
@@ -517,7 +517,7 @@ static void OnMoveAfterClicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
-static void OnMoveBeforeClicked(Window* pWnd){
+static void OnMoveBeforeClicked(WndButton* pWnd){
   LockTaskData();
   SwapWaypoint(twItemIndex-1);
   SetWaypointValues();
@@ -525,13 +525,13 @@ static void OnMoveBeforeClicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
-static void OnDetailsClicked(Window* pWnd){
+static void OnDetailsClicked(WndButton* pWnd){
   LKASSERT(twItemIndex>=0);
   SelectedWaypoint = Task[twItemIndex].Index;
   dlgWayPointDetailsShowModal(0);
 }
 
-static void OnRemoveClicked(Window* pWnd) {
+static void OnRemoveClicked(WndButton* pWnd) {
   LockTaskData();
   RemoveTaskPoint(twItemIndex);
   SetWaypointValues();
@@ -546,7 +546,7 @@ static void OnRemoveClicked(Window* pWnd) {
 }
 
 
-static void OnTaskRulesClicked(Window* pWnd){
+static void OnTaskRulesClicked(WndButton* pWnd){
   wf->SetVisible(false);
   if (dlgTaskRules()) {
     TaskModified = true;

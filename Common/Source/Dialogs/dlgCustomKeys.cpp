@@ -34,7 +34,7 @@ static void OnCustomKeysActiveData(DataField *Sender, DataField::DataAccessKind_
   }
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 

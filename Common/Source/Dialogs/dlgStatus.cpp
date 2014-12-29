@@ -88,7 +88,7 @@ static void NextPage(int Step){
 
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 
@@ -115,11 +115,11 @@ static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
     return false;
 }
 
-static void OnNextClicked(Window* pWnd) {
+static void OnNextClicked(WndButton* pWnd) {
     NextPage(+1);
 }
 
-static void OnPrevClicked(Window* pWnd) {
+static void OnPrevClicked(WndButton* pWnd) {
     NextPage(-1);
 }
 

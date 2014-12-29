@@ -252,17 +252,17 @@ namespace dlgBlueFlyConfig {
         }
     }
 
-    void OnClose(Window* pWnd) {
+    void OnClose(WndButton* pWnd) {
         (void)pWnd;
         wfDlg->SetModalResult(mrOK);
     }
 
-    void OnNextClicked(Window* pWnd) {
+    void OnNextClicked(WndButton* pWnd) {
         (void)pWnd;
         NextPage(+1);
     }
 
-    void OnPrevClicked(Window* pWnd) {
+    void OnPrevClicked(WndButton* pWnd) {
         (void)pWnd;
         NextPage(-1);
     }

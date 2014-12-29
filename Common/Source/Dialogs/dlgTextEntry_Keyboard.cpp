@@ -113,21 +113,19 @@ static void ClearText(void)
   UpdateTextboxProp();
 }
 
-static void OnKey(Window* pWnd) {
+static void OnKey(WndButton* pWnd) {
+    assert(pWnd);
+    if(!pWnd) return;
+
     if (first) {
         ClearText();
         first = false;
     }
     PlayResource(TEXT("IDR_WAV_CLICK"));
-
-#ifdef WIN32
     const TCHAR *Caption = pWnd->GetWndText();
     if (cursor < max_width - 1) {
         edittext[cursor++] = toupper(Caption[0]);
     }
-#else
-#warning "Not Implemented"    
-#endif
     UpdateTextboxProp();
 }
 
@@ -135,7 +133,7 @@ static void OnKey(Window* pWnd) {
 
 
 
-static void OnDel(Window* pWnd)
+static void OnDel(WndButton* pWnd)
 {
   first = false;
   PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -146,7 +144,7 @@ static void OnDel(Window* pWnd)
   UpdateTextboxProp();
 }
 
-static void OnTime(Window* pWnd)
+static void OnTime(WndButton* pWnd)
 {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   if ( (cursor+6)<(max_width-1) ) {
@@ -159,7 +157,7 @@ static void OnTime(Window* pWnd)
   UpdateTextboxProp();
 }
 
-static void OnDate(Window* pWnd)
+static void OnDate(WndButton* pWnd)
 {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   if ( (cursor+6)<(max_width-1) ) {
@@ -181,7 +179,7 @@ static void OnDate(Window* pWnd)
   UpdateTextboxProp();
 }
 
-static void OnOk(Window* pWnd)
+static void OnOk(WndButton* pWnd)
 {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   wf->SetModalResult(mrOK);
@@ -189,7 +187,7 @@ static void OnOk(Window* pWnd)
 
 
 
-static void OnClear(Window* pWnd)
+static void OnClear(WndButton* pWnd)
 {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   ClearText();

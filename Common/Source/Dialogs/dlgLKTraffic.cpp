@@ -20,7 +20,7 @@ static void SetValues(int indexid);
 static int SelectedTraffic;
 static WndButton *buttonTarget=NULL;
 
-static void OnTargetClicked(Window* pWnd) {
+static void OnTargetClicked(WndButton* pWnd) {
 
   if (SelectedTraffic<0 || SelectedTraffic>MAXTRAFFIC) {
 	StartupStore(_T("--- Invalid traffic selected to Target, out of range%s"),NEWLINE);
@@ -92,7 +92,7 @@ static void OnTargetClicked(Window* pWnd) {
 
 }
 
-static void OnRenameClicked(Window* pWnd){
+static void OnRenameClicked(WndButton* pWnd){
 
   if (SelectedTraffic<0 || SelectedTraffic>MAXTRAFFIC) {
 	StartupStore(_T("--- Invalid traffic selected to rename, out of range%s"),NEWLINE);
@@ -166,7 +166,7 @@ static void OnRenameClicked(Window* pWnd){
 
 }
 
-static void OnCloseClicked(Window * pWnd) {
+static void OnCloseClicked(WndButton * pWnd) {
     wf->SetModalResult(mrOK);
 }
 

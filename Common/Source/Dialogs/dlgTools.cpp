@@ -24,11 +24,9 @@ int DLGSCALE(int x) {
 }
 
 
-static void OnButtonClick(Window* pWnd){
-    // Unsafe Cast ...
-    WindowControl* pCtrl = static_cast<WindowControl*>(pWnd);
-    if(pCtrl && pCtrl->GetTopOwner()) {
-        static_cast<WndForm*>(pCtrl->GetTopOwner())->SetModalResult(pCtrl->GetTag());
+static void OnButtonClick(WndButton* pWnd){
+    if(pWnd && pWnd->GetTopOwner()) {
+        static_cast<WndForm*>(pWnd->GetTopOwner())->SetModalResult(pWnd->GetTag());
     }
 }
 

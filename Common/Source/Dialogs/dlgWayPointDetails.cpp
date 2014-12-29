@@ -138,15 +138,15 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
 
 
 
-static void OnNextClicked(Window* pWnd){
+static void OnNextClicked(WndButton* pWnd){
   NextPage(+1);
 }
 
-static void OnPrevClicked(Window* pWnd){
+static void OnPrevClicked(WndButton* pWnd){
   NextPage(-1);
 }
 
-static void OnCloseClicked(Window* pWnd){
+static void OnCloseClicked(WndButton* pWnd){
   wf->SetModalResult(mrOK);
 }
 
@@ -174,7 +174,7 @@ static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
 }
 
 
-static void OnReplaceClicked(Window* pWnd){
+static void OnReplaceClicked(WndButton* pWnd){
   LockTaskData();
 
   ReplaceWaypoint(SelectedWaypoint);
@@ -186,7 +186,7 @@ static void OnReplaceClicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
-static void OnNewHomeClicked(Window* pWnd){
+static void OnNewHomeClicked(WndButton* pWnd){
   LockTaskData();
   HomeWaypoint = SelectedWaypoint;
   if (SIMMODE) {
@@ -213,13 +213,13 @@ static void OnNewHomeClicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
-static void OnTeamCodeClicked(Window* pWnd){
+static void OnTeamCodeClicked(WndButton* pWnd){
     TeamCodeRefWaypoint = SelectedWaypoint;
     wf->SetModalResult(mrOK);
 }
 
 
-static void OnInserInTaskClicked(Window* pWnd){
+static void OnInserInTaskClicked(WndButton* pWnd){
   LockTaskData();
   InsertWaypoint(SelectedWaypoint);
   RefreshTask();
@@ -227,7 +227,7 @@ static void OnInserInTaskClicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
-static void OnAppendInTask1Clicked(Window* pWnd){
+static void OnAppendInTask1Clicked(WndButton* pWnd){
   LockTaskData();
   InsertWaypoint(SelectedWaypoint, 1); // append before finish
   RefreshTask();
@@ -235,7 +235,7 @@ static void OnAppendInTask1Clicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
-static void OnAppendInTask2Clicked(Window* pWnd){
+static void OnAppendInTask2Clicked(WndButton* pWnd){
   LockTaskData();
   InsertWaypoint(SelectedWaypoint, 2); // append after finish
   RefreshTask();
@@ -244,7 +244,7 @@ static void OnAppendInTask2Clicked(Window* pWnd){
 }
 
 
-static void OnRemoveFromTaskClicked(Window* pWnd){
+static void OnRemoveFromTaskClicked(WndButton* pWnd){
   LockTaskData();
   RemoveWaypoint(SelectedWaypoint);
   RefreshTask();

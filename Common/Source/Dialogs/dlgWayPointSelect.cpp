@@ -472,7 +472,7 @@ static void FilterMode(bool direction) {
 }
 
 
-static void OnFilterNameButton(Window* pWnd) {
+static void OnFilterNameButton(WndButton* pWnd) {
 	 int SelectedWp=-1;
 	 int CursorPos=0;
   TCHAR newNameFilter[NAMEFILTERLEN+1];
@@ -759,11 +759,11 @@ static void OnWpListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListI
   }
 }
 
-static void OnWPSSelectClicked(Window* pWnd) {
+static void OnWPSSelectClicked(WndButton* pWnd) {
     OnWaypointListEnter(NULL, NULL);
 }
 
-static void OnWPSCloseClicked(Window* pWnd) {
+static void OnWPSCloseClicked(WndButton* pWnd) {
     ItemIndex = -1;
     wf->SetModalResult(mrCancel);
 }

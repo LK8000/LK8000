@@ -561,7 +561,7 @@ static void OnWpListInfo(WindowControl * Sender,
 }
 
 
-static void OnWPSCloseClicked(Window* pWnd){
+static void OnWPSCloseClicked(WndButton* pWnd){
 	(void)pWnd;
   ItemIndex = -1;
   wf->SetModalResult(mrCancel);

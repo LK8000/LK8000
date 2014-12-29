@@ -198,7 +198,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
 
     LKSound(_T("LK_SLIDE.WAV"));
     switch (RUN_MODE) {
@@ -209,12 +209,12 @@ static void OnCloseClicked(Window* pWnd) {
     wf->SetModalResult(mrOK);
 }
 
-static void OnSIMClicked(Window* pWnd) {
+static void OnSIMClicked(WndButton* pWnd) {
     RUN_MODE = RUN_SIM;
     wf->SetModalResult(mrOK);
 }
 
-static void OnFLYClicked(Window* pWnd) {
+static void OnFLYClicked(WndButton* pWnd) {
     RUN_MODE = RUN_FLY;
     //  Removed 110605: we now run devInit on startup for all devices, and we dont want an immediate and useless reset.
     //  LKForceComPortReset=true;
@@ -222,36 +222,36 @@ static void OnFLYClicked(Window* pWnd) {
     wf->SetModalResult(mrOK);
 }
 
-static void OnDUALPROFILEClicked(Window* pWnd) {
+static void OnDUALPROFILEClicked(WndButton* pWnd) {
     RUN_MODE = RUN_DUALPROF;
     LKSound(_T("LK_SLIDE.WAV"));
     wf->SetModalResult(mrOK);
 }
 
-static void OnEXITClicked(Window* pWnd) {
+static void OnEXITClicked(WndButton* pWnd) {
     RUN_MODE = RUN_EXIT;
     wf->SetModalResult(mrOK);
 }
 
-static void OnPROFILEClicked(Window* pWnd) {
+static void OnPROFILEClicked(WndButton* pWnd) {
     RUN_MODE = RUN_PROFILE;
     LKSound(_T("LK_SLIDE.WAV"));
     wf->SetModalResult(mrOK);
 }
 
-static void OnAIRCRAFTClicked(Window* pWnd) {
+static void OnAIRCRAFTClicked(WndButton* pWnd) {
     RUN_MODE = RUN_AIRCRAFT;
     LKSound(_T("LK_SLIDE.WAV"));
     wf->SetModalResult(mrOK);
 }
 
-static void OnDEVICEClicked(Window* pWnd) {
+static void OnDEVICEClicked(WndButton* pWnd) {
     RUN_MODE = RUN_DEVICE;
     LKSound(_T("LK_SLIDE.WAV"));
     wf->SetModalResult(mrOK);
 }
 
-static void OnPILOTClicked(Window* pWnd) {
+static void OnPILOTClicked(WndButton* pWnd) {
     RUN_MODE = RUN_PILOT;
     LKSound(_T("LK_SLIDE.WAV"));
     wf->SetModalResult(mrOK);

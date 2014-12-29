@@ -14,6 +14,7 @@
 #include "dlgTools.h"
 
 class WindowControl;
+class WndButton;
 
 class CDevCProbe : public DevBase
 {
@@ -70,10 +71,10 @@ private:
 
 // Config
 	static BOOL Config(PDeviceDescriptor_t d);
-	static void OnCloseClicked(Window* pWnd);
-	static void OnCompassCalClicked(Window* pWnd);
-	static void OnCalGyroClicked(Window* pWnd);
-	static void OnZeroDeltaPressClicked(Window* pWnd);
+	static void OnCloseClicked(WndButton* pWnd);
+	static void OnCompassCalClicked(WndButton* pWnd);
+	static void OnCalGyroClicked(WndButton* pWnd);
+	static void OnZeroDeltaPressClicked(WndButton* pWnd);
 
 	static bool OnTimer();
 

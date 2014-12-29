@@ -160,15 +160,15 @@ UnlockFlightData();
 }
 
 
-static void OnNextClicked(Window* pWnd){
+static void OnNextClicked(WndButton* pWnd){
     NextPage(+1);
 }
 
-static void OnPrevClicked(Window* pWnd){
+static void OnPrevClicked(WndButton* pWnd){
     NextPage(-1);
 }
 
-static void OnCloseClicked(Window* pWnd){
+static void OnCloseClicked(WndButton* pWnd){
     wfa->SetModalResult(mrOK);
 }
 
@@ -198,7 +198,7 @@ static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
     return false;
 }
 
-static void OnCalcClicked(Window* pWnd){
+static void OnCalcClicked(WndButton* pWnd){
   if (analysis_page==ANALYSIS_PAGE_BAROGRAPH) {
     dlgBasicSettingsShowModal();
   }
@@ -257,7 +257,7 @@ static void OnCalcClicked(Window* pWnd){
   UpdateAnalysis();
 }
 
-static void OnAspBearClicked(Window* pWnd){
+static void OnAspBearClicked(WndButton* pWnd){
     UpdateAnalysis();
 }
 

@@ -39,13 +39,13 @@ static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
     }
 }
 
-static void OnCancelClicked(Window* pWnd) {
+static void OnCancelClicked(WndButton* pWnd) {
     if (wf) {
         wf->SetModalResult(mrOK);
     }
 }
 
-static void OnSetAlt1Clicked(Window* pWnd){
+static void OnSetAlt1Clicked(WndButton* pWnd){
   LockTaskData();
   Alternate1 = SelectedWaypoint;
   RefreshTask();
@@ -56,7 +56,7 @@ static void OnSetAlt1Clicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
-static void OnSetAlt2Clicked(Window* pWnd){
+static void OnSetAlt2Clicked(WndButton* pWnd){
   LockTaskData();
   Alternate2 = SelectedWaypoint;
   RefreshTask();
@@ -67,18 +67,18 @@ static void OnSetAlt2Clicked(Window* pWnd){
   wf->SetModalResult(mrOK);
 }
 
-static void OnGotoClicked(Window* pWnd){
+static void OnGotoClicked(WndButton* pWnd){
   GotoWaypoint(SelectedWaypoint);
   retStatus=2;
   wf->SetModalResult(mrOK);
 }
 
-static void OnDetailsClicked(Window* pWnd){
+static void OnDetailsClicked(WndButton* pWnd){
   retStatus=1;
   wf->SetModalResult(mrOK);
 }
 
-static void OnTaskClicked(Window* pWnd){
+static void OnTaskClicked(WndButton* pWnd){
   retStatus=5;
   wf->SetModalResult(mrOK);
 }

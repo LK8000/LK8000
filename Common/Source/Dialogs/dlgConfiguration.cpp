@@ -458,7 +458,7 @@ static void NextPage(int Step){
 
 } // NextPage
 
-static void OnSetupDeviceAClicked(Window* pWnd) {
+static void OnSetupDeviceAClicked(WndButton* pWnd) {
 
 #if (ToDo)
     devA()->DoSetup();
@@ -478,7 +478,7 @@ static void OnSetupDeviceAClicked(Window* pWnd) {
     wf->FocusNext(NULL);
 }
 
-static void OnSetupDeviceBClicked(Window* pWnd) {
+static void OnSetupDeviceBClicked(WndButton* pWnd) {
 
 #if (ToDo)
     devB()->DoSetup();
@@ -796,7 +796,7 @@ static void GetFontDescription(TCHAR Description[], const TCHAR * prpName, int i
   }
 }
 
-static void OnEditMapWindowFontClicked(Window* pWnd) {
+static void OnEditMapWindowFontClicked(WndButton* pWnd) {
     TCHAR fontDesc[MAX_EDITFONT_DESC_LEN + 1];
     GetFontDescription(fontDesc, TEXT("prpMapWindowFont"), MAX_EDITFONT_DESC_LEN);
     if (dlgFontEditShowModal(fontDesc,
@@ -807,7 +807,7 @@ static void OnEditMapWindowFontClicked(Window* pWnd) {
     }
 }
 
-static void OnEditMapLabelFontClicked(Window* pWnd) {
+static void OnEditMapLabelFontClicked(WndButton* pWnd) {
     TCHAR fontDesc[MAX_EDITFONT_DESC_LEN + 1];
     GetFontDescription(fontDesc, TEXT("prpMapLabelFont"), MAX_EDITFONT_DESC_LEN);
     if (dlgFontEditShowModal(fontDesc, szRegistryFontMapLabelFont, autoMapLabelLogFont)) {
@@ -816,7 +816,7 @@ static void OnEditMapLabelFontClicked(Window* pWnd) {
     }
 }
 
-static void OnAircraftRegoClicked(Window* pWnd) {
+static void OnAircraftRegoClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonAircraftRego) {
         _tcscpy(Temp, AircraftRego_Config);
@@ -826,7 +826,7 @@ static void OnAircraftRegoClicked(Window* pWnd) {
     UpdateButtons();
 }
 
-static void OnAircraftTypeClicked(Window* pWnd) {
+static void OnAircraftTypeClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonAircraftType) {
         _tcscpy(Temp, AircraftType_Config);
@@ -836,7 +836,7 @@ static void OnAircraftTypeClicked(Window* pWnd) {
     UpdateButtons();
 }
 
-static void OnPilotNameClicked(Window* pWnd) {
+static void OnPilotNameClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonPilotName) {
         _tcscpy(Temp, PilotName_Config);
@@ -846,7 +846,7 @@ static void OnPilotNameClicked(Window* pWnd) {
     UpdateButtons();
 }
 
-static void OnLiveTrackersrvClicked(Window* pWnd) {
+static void OnLiveTrackersrvClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackersrv) {
         _tcscpy(Temp, LiveTrackersrv_Config);
@@ -856,7 +856,7 @@ static void OnLiveTrackersrvClicked(Window* pWnd) {
     UpdateButtons();
 }
 
-static void OnLiveTrackerportClicked(Window* pWnd) {
+static void OnLiveTrackerportClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerport) {
         _stprintf(Temp, _T("%d"), LiveTrackerport_Config);
@@ -867,7 +867,7 @@ static void OnLiveTrackerportClicked(Window* pWnd) {
     UpdateButtons();
 }
 
-static void OnLiveTrackerusrClicked(Window* pWnd) {
+static void OnLiveTrackerusrClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerusr) {
         _tcscpy(Temp, LiveTrackerusr_Config);
@@ -877,7 +877,7 @@ static void OnLiveTrackerusrClicked(Window* pWnd) {
     UpdateButtons();
 }
 
-static void OnLiveTrackerpwdClicked(Window* pWnd) {
+static void OnLiveTrackerpwdClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerpwd) {
         _tcscpy(Temp, LiveTrackerpwd_Config);
@@ -887,7 +887,7 @@ static void OnLiveTrackerpwdClicked(Window* pWnd) {
     UpdateButtons();
 }
 
-static void OnCompetitionClassClicked(Window* pWnd) {
+static void OnCompetitionClassClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonCompetitionClass) {
         _tcscpy(Temp, CompetitionClass_Config);
@@ -897,7 +897,7 @@ static void OnCompetitionClassClicked(Window* pWnd) {
     UpdateButtons();
 }
 
-static void OnCompetitionIDClicked(Window* pWnd) {
+static void OnCompetitionIDClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonCompetitionID) {
         _tcscpy(Temp, CompetitionID_Config);
@@ -907,7 +907,7 @@ static void OnCompetitionIDClicked(Window* pWnd) {
     UpdateButtons();
 }
 
-static void OnAirspaceColoursClicked(Window* pWnd) {
+static void OnAirspaceColoursClicked(WndButton* pWnd) {
     bool retval;
     retval = dlgAirspaceShowModal(true);
     if (retval) {
@@ -915,53 +915,53 @@ static void OnAirspaceColoursClicked(Window* pWnd) {
     }
 }
 
-static void OnSetTopologyClicked(Window* pWnd) {
+static void OnSetTopologyClicked(WndButton* pWnd) {
     dlgTopologyShowModal();
 }
 
-static void OnMultimapsClicked(Window* pWnd) {
+static void OnMultimapsClicked(WndButton* pWnd) {
     dlgMultimapsShowModal();
 }
 
-static void OnSetCustomKeysClicked(Window* pWnd) {
+static void OnSetCustomKeysClicked(WndButton* pWnd) {
     dlgCustomKeysShowModal();
 }
 
-static void OnSetCustomMenuClicked(Window* pWnd) {
+static void OnSetCustomMenuClicked(WndButton* pWnd) {
     dlgCustomMenuShowModal();
 }
 
-static void OnSetBottomBarClicked(Window* pWnd) {
+static void OnSetBottomBarClicked(WndButton* pWnd) {
     dlgBottomBarShowModal();
 }
 
-static void OnSetInfoPagesClicked(Window* pWnd) {
+static void OnSetInfoPagesClicked(WndButton* pWnd) {
     dlgInfoPagesShowModal();
 }
 
-static void OnTaskRulesClicked(Window* pWnd) {
+static void OnTaskRulesClicked(WndButton* pWnd) {
     dlgTaskRules();
 }
 
-static void OnAirspaceWarningParamsClicked(Window* pWnd) {
+static void OnAirspaceWarningParamsClicked(WndButton* pWnd) {
     dlgAirspaceWarningParamsShowModal();
 }
 
-static void OnAirspaceModeClicked(Window* pWnd) {
+static void OnAirspaceModeClicked(WndButton* pWnd) {
     if (dlgAirspaceShowModal(false)) {
         requirerestart = true;
     }
 }
 
-static void OnNextClicked(Window* pWnd) {
+static void OnNextClicked(WndButton* pWnd) {
     NextPage(+1);
 }
 
-static void OnPrevClicked(Window* pWnd) {
+static void OnPrevClicked(WndButton* pWnd) {
     NextPage(-1);
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 
@@ -993,7 +993,7 @@ static void InfoBoxPropName(TCHAR *name, int item, int mode) {
   _tcscat(name,buf);
 }
 
-static void OnCopy(Window* pWnd) {
+static void OnCopy(WndButton* pWnd) {
   int mode = page2mode();
   TCHAR name[80];
   if ((mode<0)||(mode>3)) {
@@ -1010,7 +1010,7 @@ static void OnCopy(Window* pWnd) {
   }
 }
 
-static void OnPaste(Window* pWnd) {
+static void OnPaste(WndButton* pWnd) {
   int mode = page2mode();
   TCHAR name[80];
   if ((mode<0)||(mode>3)||(cpyInfoBox[0]<0)) {
@@ -1095,7 +1095,7 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 extern void OnInfoBoxHelp(WindowControl * Sender);
 
-static void OnWaypointNewClicked(Window* pWnd){
+static void OnWaypointNewClicked(WndButton* pWnd){
 
   // Cannot save waypoint if no file
   if ( WayPointList.size()<=NUMRESWP) {
@@ -1165,7 +1165,7 @@ static void OnWaypointNewClicked(Window* pWnd){
 }
 
 
-static void OnWaypointEditClicked(Window* pWnd){
+static void OnWaypointEditClicked(WndButton* pWnd){
 
     int res;
   if (CheckClubVersion()) {
@@ -1228,11 +1228,11 @@ static void AskWaypointSave(void) {
   waypointneedsave = false;
 }
 
-static void OnWaypointSaveClicked(Window* pWnd) {
+static void OnWaypointSaveClicked(WndButton* pWnd) {
     AskWaypointSave();
 }
 
-static void OnWaypointDeleteClicked(Window* pWnd){
+static void OnWaypointDeleteClicked(WndButton* pWnd){
   int res;
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
@@ -1273,7 +1273,7 @@ static void OnWaypointDeleteClicked(Window* pWnd){
   }
 }
 #ifndef NO_BLUETOOTH
-static void OnBthDevice(Window* pWnd) {
+static void OnBthDevice(WndButton* pWnd) {
     DlgBluetooth::Show();
     
     TCHAR szPort[MAX_PATH];

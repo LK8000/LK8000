@@ -20,7 +20,7 @@ static void SetValues(int indexid);
 
 static int s_selected;
 
-static void OnSelectClicked(Window* pWnd) {
+static void OnSelectClicked(WndButton* pWnd) {
 
   if (s_selected<0 || s_selected>=MAXTHISTORY) {
 	StartupStore(_T("... Invalid thermal selected to multitarget, out of range:%d %s"),s_selected,NEWLINE);
@@ -58,7 +58,7 @@ static void OnSelectClicked(Window* pWnd) {
 
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 

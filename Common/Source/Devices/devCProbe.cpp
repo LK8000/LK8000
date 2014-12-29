@@ -404,12 +404,12 @@ bool CDevCProbe::OnTimer(){
   return true;
 }
 
-void CDevCProbe::OnCloseClicked(Window* pWnd){
+void CDevCProbe::OnCloseClicked(WndButton* pWnd){
 	(void)pWnd;
   m_wf->SetModalResult(mrOK);
 }
 
-void CDevCProbe::OnCompassCalClicked(Window* pWnd){
+void CDevCProbe::OnCompassCalClicked(WndButton* pWnd){
 	(void)pWnd;
 	if(m_pDevice) {
 		if(m_bCompassCalOn) {
@@ -424,14 +424,14 @@ void CDevCProbe::OnCompassCalClicked(Window* pWnd){
 	}
 }
 
-void CDevCProbe::OnCalGyroClicked(Window* pWnd) {
+void CDevCProbe::OnCalGyroClicked(WndButton* pWnd) {
 	(void)pWnd;
 	if(m_pDevice) {
 		SetCalGyro(m_pDevice);
 	}
 }
 
-void CDevCProbe::OnZeroDeltaPressClicked(Window* pWnd) {
+void CDevCProbe::OnZeroDeltaPressClicked(WndButton* pWnd) {
 	(void)pWnd;
 	if(m_pDevice) {
 		SetZeroDeltaPressure(m_pDevice);

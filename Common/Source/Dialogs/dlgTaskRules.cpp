@@ -36,7 +36,7 @@ static void OnRulesActiveData(DataField *Sender,
   }
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 

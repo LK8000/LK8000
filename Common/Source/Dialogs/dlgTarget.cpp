@@ -27,7 +27,7 @@ static DWORD dlgSize = 0;
 
 bool TargetDialogOpen = false;
 
-static void OnOKClicked(Window* pWnd) {
+static void OnOKClicked(WndButton* pWnd) {
   wf->SetModalResult(mrOK);
 }
 
@@ -364,7 +364,7 @@ static bool OnTimerNotify() {
     return true;
 }
 
-static void OnMoveClicked(Window* pWnd) {
+static void OnMoveClicked(WndButton* pWnd) {
   TargetMoveMode = !TargetMoveMode;
   if (TargetMoveMode) {
     btnMove->SetCaption(TEXT("Cursor"));

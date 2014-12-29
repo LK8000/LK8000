@@ -40,7 +40,7 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface) {
     }
 }
 
-static void OnAckForTimeClicked(Window* pWnd) {
+static void OnAckForTimeClicked(WndButton* pWnd) {
   (void)pWnd;
   if (dlg == NULL) return;
   if (msg.originator == NULL) return;
@@ -48,7 +48,7 @@ static void OnAckForTimeClicked(Window* pWnd) {
   dlg->SetModalResult(mrOK);
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
   (void)pWnd;
   if (dlg==NULL) return;
   dlg->SetModalResult(mrOK);
@@ -72,10 +72,10 @@ static bool OnTimer(){
 static bool OnKeyDown(Window* pWnd, unsigned KeyCode) {
     switch (KeyCode) {
         case VK_RETURN:
-            OnAckForTimeClicked(pWnd);
+            OnAckForTimeClicked(nullptr);
             return true;
         case VK_ESCAPE:
-            OnCloseClicked(pWnd);
+            OnCloseClicked(nullptr);
             return true;
     }
 

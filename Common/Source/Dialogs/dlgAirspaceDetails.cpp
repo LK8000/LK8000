@@ -44,7 +44,7 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
 	  airspace->DrawPicto(Surface, rc);
 }
 
-static void OnFlyClicked(Window* pWnd) {
+static void OnFlyClicked(WndButton* pWnd) {
     (void) pWnd;
 
     if (airspace == NULL) return;
@@ -55,7 +55,7 @@ static void OnFlyClicked(Window* pWnd) {
     PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
-static void OnSelectClicked(Window* pWnd) {
+static void OnSelectClicked(WndButton* pWnd) {
     (void) pWnd;
 
     if (airspace == NULL) return;
@@ -66,7 +66,7 @@ static void OnSelectClicked(Window* pWnd) {
 }
 
 
-static void OnAcknowledgeClicked(Window* pWnd){
+static void OnAcknowledgeClicked(WndButton* pWnd){
   (void)pWnd;
 
   if (airspace == NULL) return;
@@ -90,7 +90,7 @@ static void OnAcknowledgeClicked(Window* pWnd){
   PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
-static void OnCloseClicked(Window* pWnd){
+static void OnCloseClicked(WndButton* pWnd){
 	(void)pWnd;
   wf->SetModalResult(mrOK);
 }

@@ -350,13 +350,13 @@ static void OnTaskListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
   }
 }
 
-static void OnCloseClicked(Window* pWnd) {
+static void OnCloseClicked(WndButton* pWnd) {
     ItemIndex = -1; // to stop FormDown bringing up task details
     wf->SetModalResult(mrOK);
 }
 
 
-static void OnClearClicked(Window* pWnd){
+static void OnClearClicked(WndButton* pWnd){
   if (MessageBoxX(
 	// LKTOKEN  _@M179_ = "Clear the task?" 
                   gettext(TEXT("_@M179_")),
@@ -372,7 +372,7 @@ static void OnClearClicked(Window* pWnd){
   }
 }
 
-static void OnCalcClicked(Window* pWnd){
+static void OnCalcClicked(WndButton* pWnd){
   wf->SetVisible(false);
   dlgTaskCalculatorShowModal();
   OverviewRefreshTask();
@@ -380,19 +380,19 @@ static void OnCalcClicked(Window* pWnd){
 }
 
 
-static void OnAnalysisClicked(Window* pWnd){
+static void OnAnalysisClicked(WndButton* pWnd){
   wf->SetVisible(false);
   dlgAnalysisShowModal(ANALYSIS_PAGE_TASK);
   wf->SetVisible(true);
 }
 
-static void OnTimegatesClicked(Window* pWnd){
+static void OnTimegatesClicked(WndButton* pWnd){
   wf->SetVisible(false);
   dlgTimeGatesShowModal();
   wf->SetVisible(true);
 }
 
-static void OnDeclareClicked(Window* pWnd){
+static void OnDeclareClicked(WndButton* pWnd){
   RefreshTask();
 
   LoggerDeviceDeclare();
@@ -402,7 +402,7 @@ static void OnDeclareClicked(Window* pWnd){
 
 
 
-static void OnSaveClicked(Window* pWnd){
+static void OnSaveClicked(WndButton* pWnd){
 
   int file_index; 
   TCHAR task_name[MAX_PATH];
@@ -465,7 +465,7 @@ static void OnSaveClicked(Window* pWnd){
 
 
 
-static void OnLoadClicked(Window* pWnd){ // 091216
+static void OnLoadClicked(WndButton* pWnd){ // 091216
   TCHAR file_name[MAX_PATH];
 
   WndProperty* wp;
@@ -520,7 +520,7 @@ static void OnLoadClicked(Window* pWnd){ // 091216
 }
 
 
-static void OnDeleteClicked(Window* pWnd){
+static void OnDeleteClicked(WndButton* pWnd){
 
   TCHAR file_name[MAX_PATH];
 
@@ -556,7 +556,7 @@ static void OnDeleteClicked(Window* pWnd){
 
 
 
-static void OnAdvancedClicked(Window* Sender){
+static void OnAdvancedClicked(WndButton* Sender){
   showAdvanced = !showAdvanced;
   UpdateAdvanced();
 }
