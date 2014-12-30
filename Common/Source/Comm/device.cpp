@@ -14,6 +14,10 @@
 #include "Bluetooth/BthPort.h"
 #include "GpsIdPort.h"
 #include <functional>
+#ifdef __linux__
+  #include <dirent.h>
+  #include <unistd.h>
+#endif
 
 using namespace std::placeholders;
 
@@ -151,7 +155,32 @@ void RefreshComPortList() {
 #endif
     
 #ifdef __linux__
-#warning "TODO : enumerate TTY port"
+  
+  struct dirent **namelist;
+  int n;
+  if (IsKobo()) {
+    n = scandir("/dev", &namelist, 0, alphasort);//need test
+  } else {  
+    n = scandir("/sys/class/tty", &namelist, 0, alphasort); //which is faster than /dev/
+  }
+  if (n != -1){
+    for (int i = 0; i < n; ++i) {
+      if (memcmp(namelist[i]->d_name, "tty", 3) == 0) {
+        // filter out "/dev/tty0", ... (valid integer after "tty") 
+        char *endptr;
+        strtoul(namelist[i]->d_name + 3, &endptr, 10);
+        if (*endptr == 0) continue;
+      } else if (memcmp(namelist[i]->d_name, "rfcomm", 6) != 0)
+        continue;
+        char path[64];
+        snprintf(path, sizeof(path), "/dev/%s", namelist[i]->d_name);
+        if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
+          COMMPort.push_back(path);
+        }
+      } 
+     }    
+    free(namelist);
+  
 #endif
     
 #ifndef NO_BLUETOOTH

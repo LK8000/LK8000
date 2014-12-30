@@ -26,10 +26,14 @@
 
 
 // Disable internally generated sounds
+#if !defined(WIN32) && !defined(ENABLE_SDL)
+    // audio is only implemented for WIN32 && SDL Enabled TARGET
+    #define DISABLEAUDIO
+#endif
+
 
 #ifdef __linux__
  // temporary disable, need to be port...
-//#define DISABLEAUDIO
  #define NO_DATARECORDER
 #endif
 
