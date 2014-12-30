@@ -652,6 +652,7 @@ void dlgTaskOverviewShowModal(int Idx){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
   if (wp) {
+    wp->Hide();  
 	DataFieldFileReader* dfe;
 	dfe = (DataFieldFileReader*)wp->GetDataField();
 

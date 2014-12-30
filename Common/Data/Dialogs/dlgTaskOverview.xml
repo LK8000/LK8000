@@ -8,9 +8,6 @@
     </WndProperty>
     <WndButton  Name="cmdClear" Caption="_@M180_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnClearClicked"/>
     <WndButton  Name="cmdCalc"  Caption="_@M160_" X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnCalcClicked" Tag="4" />
-    <WndProperty Name="prpFile" Caption=""   X="2" Y="-1"  Width="0" Height="0" CaptionWidth="0" Font="2" Help="">
-      <DataField name="" DataType="filereader" Min="0" Max="200" Step="1"/>
-    </WndProperty>
     <WndButton  Name="cmdLoad" Caption="_@M398_"    X="2" Y="-1" Width="98"  Height="44" Font="2" OnClickNotify="OnLoadClicked"/>
     <WndButton  Name="cmdSave" Caption="_@M583_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnSaveClicked"/>
     <WndButton  Name="cmdDeclare" Caption="_@M222_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnDeclareClicked"/>
@@ -20,5 +17,10 @@
     <WndListFrame Name="frmTaskList" X="102" Y="0" Width="215" Height="222" Font="2" OnListInfo="OnTaskListInfo">
       <WndOwnerDrawFrame Name="frmTaskListEntry" X="2" Y="2" Width="211" Height="25" Font="2"  OnPaint="OnTaskPaintListItem"/>
     </WndListFrame>
+    <!-- Hidden -->
+    <WndProperty Name="prpFile" Caption=""   X="2" Y="-1"  Width="10" Height="10" CaptionWidth="0" Font="2" Help="">
+      <DataField name="" DataType="filereader" Min="0" Max="200" Step="1"/>
+    </WndProperty>
+    <!-- -->
   </WndForm>
 </PMML>
