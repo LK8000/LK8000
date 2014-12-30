@@ -2015,10 +2015,11 @@ bool WndButton::OnLButtonDown(const POINT& Pos) {
 }
 
 bool WndButton::OnLButtonUp(const POINT& Pos) {
+    bool bTmp = mDown;
     mDown = false;
     ReleaseCapture();
     Redraw();
-    if (mOnClickNotify != NULL) {    
+    if (bTmp && mOnClickNotify != NULL) {    
         RECT rcClient = GetClientRect();
         if (PtInRect(&rcClient, Pos)) {
             (mOnClickNotify) (this);
