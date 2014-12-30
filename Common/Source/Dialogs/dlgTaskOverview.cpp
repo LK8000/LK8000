@@ -118,6 +118,8 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
         _stprintf(sTmp, TEXT("%s"), wpName);
       }
 
+      Surface.SetBackgroundTransparent();
+      Surface.SetTextColor(RGB_BLACK);      
       Surface.DrawTextClip(Sender->GetHeight()+2*ScreenScale, TextMargin,
 		     sTmp, p1-4*ScreenScale);
 
