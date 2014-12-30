@@ -64,6 +64,7 @@
 #include "FlightDataRec.h"
 
 #include "Screen/Init.hpp"
+#include "Message.h"
 
 #ifdef INT_OVERFLOW
 	#include <signal.h>
@@ -586,6 +587,9 @@ _Shutdown:
 extern void DeInitialiseFonts(void);
 
 void CleanupForShutdown(void) {
+
+  MainWindow.Destroy();
+  Message::Destroy();
 
   DeInitialiseFonts();  
   LKObjects_Delete();
