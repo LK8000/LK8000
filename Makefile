@@ -204,6 +204,8 @@ GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 
 ifeq ($(CONFIG_LINUX),y)
 USE_SDL := y
+GREYSCALE := y
+	
 CE_DEFS	:= -D__linux__
 CE_DEFS += -DUSE_MEMORY_CANVAS	
 
@@ -217,6 +219,9 @@ CE_DEFS += -DUSE_FB
 CE_DEFS += -DUSE_CONSOLE
 endif
 
+ifeq ($(GREYSCALE),y)
+CE_DEFS += -DGREYSCALE
+endif
 
 $(eval $(call pkg-config-library,FREETYPE,freetype2))
 CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))

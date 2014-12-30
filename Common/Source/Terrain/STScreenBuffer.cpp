@@ -13,11 +13,12 @@
 // CSTScreenBuffer
 CSTScreenBuffer::CSTScreenBuffer(int nWidth, int nHeight, LKColor clr) : RawBitmap(nWidth, nHeight), m_pBufferTmp(NULL) {
 
-    m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*GetHeight()*GetCorrectedWidth());
  
 #ifdef GREYSCALE
-    #warning "not implemented"
+    #warning "not implemented for greyscale, check if need (also for non greyscale...)"
+    // m_pBufferTmp is only used by Blur method, so no need to alocate. ( blur is not implemented in GreyScale Mode )
 #else
+    m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*GetHeight()*GetCorrectedWidth());
     std::fill_n(GetBuffer(), GetHeight()*GetCorrectedWidth(), BGRColor(clr.Blue(), clr.Green(), clr.Red()));
 #endif
     
@@ -60,7 +61,7 @@ void ScaleLine(BGRColor *Target, BGRColor *Source, unsigned int SrcWidth, unsign
 }
 
 void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
-
+#ifndef GREYSCALE
     const unsigned int muli = (boxw * 2 + 1);
     BGRColor* src = GetBuffer();
     BGRColor* dst = m_pBufferTmp;
@@ -110,10 +111,13 @@ void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
 
     // copy it back to main buffer
     memcpy((char*) GetBuffer(), (char*) m_pBufferTmp, GetCorrectedWidth() * GetHeight() * sizeof (BGRColor));
+#else
+    #warning "HorizontalBlur ? not implemented for greyscale, Needed ?"
+#endif    
 }
 
 void CSTScreenBuffer::VerticalBlur(unsigned int boxh) {
-
+#ifndef GREYSCALE
     BGRColor* src = GetBuffer();
     BGRColor* dst = m_pBufferTmp;
     BGRColor *c, *d, *e;
@@ -164,4 +168,7 @@ void CSTScreenBuffer::VerticalBlur(unsigned int boxh) {
 
     // copy it back to main buffer
     memcpy((char*) GetBuffer(), (char*) m_pBufferTmp, GetCorrectedWidth() * GetHeight() * sizeof (BGRColor));
+#else
+    #warning "VerticalBlur : not implemented for greyscale, Needed ?"
+#endif       
 }
