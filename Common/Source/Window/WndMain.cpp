@@ -42,6 +42,9 @@ extern void StartupLogFreeRamAndStorage();
 void Shutdown(void) {
   int i;
 
+  // LKTOKEN _@M1219_ "Shutdown, please wait..."
+  CreateProgressDialog(gettext(TEXT("_@M1219_")));
+
   LKSound(_T("LK_DISCONNECT.WAV")); Poco::Thread::sleep(500); // real WAV length is 410+ms
   if (!GlobalRunning) { // shutdown on startup (before sim/fly or clicking on the window X)
 	StartupStore(_T(". Quick shutdown requested before terminating startup%s"),NEWLINE);
@@ -53,8 +56,6 @@ void Shutdown(void) {
 	LKRunStartEnd(false);
 	return;
   }
-  // LKTOKEN _@M1219_ "Shutdown, please wait..."
-  CreateProgressDialog(gettext(TEXT("_@M1219_")));
 
   StartupStore(_T(". Entering shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
   MapWindow::Event_Pan(0);  // return from PAN restores the Task in case of Turnpoint moving
