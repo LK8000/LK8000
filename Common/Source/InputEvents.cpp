@@ -2486,11 +2486,14 @@ void InputEvents::eventTaskLoad(const TCHAR *misc) {
             if(!helper.Load(szFileName)) {
                
             }
-        } else if (_tcscmp(wextension,_T(LKS_OLD_TSK))==0) {
+        } 
+#ifdef OLDTASK_COMPAT
+        else if (_tcscmp(wextension,_T(LKS_OLD_TSK))==0) {
             LockTaskData();
             LoadNewTask(szFileName);
             UnlockTaskData();
         }
+#endif
     }
   }
 }

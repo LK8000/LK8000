@@ -130,7 +130,6 @@
  * LK8000 suffixes - Do not change them, uncompleted work 091001
  */
 #define LKS_TSK		".lkt"
-#define LKS_OLD_TSK		".tsk"
 #define LKS_LOG		".log"
 #define LKS_TXT		".txt"
 #define LKS_PRF		".prf"
@@ -154,6 +153,10 @@
 #define LKS_LANGUAGE	".LNG"
 #define LKS_INPUT	".xci"
 #define LKS_IGC		".igc"
+
+#ifdef OLDTASK_COMPAT
+    #define LKS_OLD_TSK		".tsk"
+#endif
 
 
 /*

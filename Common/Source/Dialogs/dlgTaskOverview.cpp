@@ -500,10 +500,14 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
           if(_tcsicmp(wextension,_T(LKS_TSK))==0) {
               CTaskFileHelper helper;
               bOK = helper.Load(szFileName);
-          } else if (_tcsicmp(wextension,_T(LKS_OLD_TSK))==0) {
+          } 
+#ifdef OLDTASK_COMPAT
+          else if (_tcsicmp(wextension,_T(LKS_OLD_TSK))==0) {
               LoadNewTask(szFileName);
               bOK = true;
-          } else if (_tcsicmp(wextension,_T(LKS_WP_CUP))==0) {
+          } 
+#endif          
+          else if (_tcsicmp(wextension,_T(LKS_WP_CUP))==0) {
               bOK = LoadCupTask(szFileName);
           } else if (_tcsicmp(wextension,_T(LKS_WP_GPX))==0) {
               bOK = LoadGpxTask(szFileName);
@@ -654,8 +658,10 @@ void dlgTaskOverviewShowModal(int Idx){
 	TCHAR suff[10];
 	_stprintf(suff,_T("*%s"),_T(LKS_TSK));
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
+#ifdef OLDTASK_COMPAT
 	_stprintf(suff,_T("*%s"),_T(LKS_OLD_TSK));
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
+#endif
 	_stprintf(suff,_T("*%s"),_T(LKS_WP_CUP));
 	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
 	_stprintf(suff,_T("*%s"),_T(LKS_WP_GPX));

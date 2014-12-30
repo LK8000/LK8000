@@ -11,6 +11,11 @@
 #include "Waypointparser.h"
 
 
+#ifdef OLDTASK_COMPAT
+static_assert(sizeof(TCHAR) == 2, "incompatible TCHAR size");
+
+// WAYPOINT struct can't be readfrom binary file if TCHAR size is not 2 Byte !!
+
 extern bool FullResetAsked;
 
 
@@ -52,7 +57,6 @@ typedef struct _OLD_TASK_POINT
 #define OLD_MAXTASKPOINTS 20
 
 /*******************************************************/
-
 bool LoadTaskWaypoints(FILE* stream) {
   WAYPOINT read_waypoint;
   for(unsigned i=0;i<OLD_MAXTASKPOINTS;i++) {
@@ -314,3 +318,5 @@ goEnd:
   }
 
 }
+
+#endif

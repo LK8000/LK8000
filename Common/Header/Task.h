@@ -100,7 +100,10 @@ void guiStartLogger(bool noAsk = false);
 void guiStopLogger(bool noAsk = false);
 void guiToggleLogger(bool noAsk = false);
 
+#ifdef OLDTASK_COMPAT
 void LoadNewTask(LPCTSTR FileName);
+#endif
+
 bool LoadCupTask(LPCTSTR FileName);
 bool LoadGpxTask(LPCTSTR FileName);
 void SaveTask(const TCHAR *FileName);

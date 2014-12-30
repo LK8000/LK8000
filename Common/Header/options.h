@@ -22,6 +22,11 @@
 #define NO_IGCPLUGIN
 #endif
 
+#ifdef UNICODE
+// WAYPOINT struct can be read from binary file only if TCHAR size is 2 Byte !!
+    #define OLDTASK_COMPAT
+#endif
+
 #include "compatibility.h"
 
 
