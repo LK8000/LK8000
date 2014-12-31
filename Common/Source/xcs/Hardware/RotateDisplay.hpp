@@ -21,48 +21,32 @@ Copyright_License {
 }
 */
 
-#include "Screen/Init.hpp"
-#include "Event/Globals.hpp"
-#include "Event/Queue.hpp"
-#include "Screen/Debug.hpp"
-#include "Screen/Font.hpp"
-#include "DisplayOrientation.hpp"
-#include "Asset.hpp"
+#ifndef XCSOAR_HARDWARE_ROTATE_DISPLAY_HPP
+#define XCSOAR_HARDWARE_ROTATE_DISPLAY_HPP
 
-#ifdef KOBO
-#include "Hardware/RotateDisplay.hpp"
-#endif
+#include "Compiler.h"
 
-#ifdef USE_FREETYPE
-#include "Screen/FreeType/Init.hpp"
-#endif
+#include <stdint.h>
 
-ScreenGlobalInit::ScreenGlobalInit()
-{
-#ifdef USE_FREETYPE
-  FreeType::Initialise();
-#endif
+enum class DisplayOrientation_t : uint8_t;
 
-  Font::Initialise();
+namespace Display {
+  void RotateInitialize();
 
-  event_queue = new EventQueue();
+  gcc_const
+  bool RotateSupported();
 
-#ifdef KOBO
-  Display::Rotate(DisplayOrientation_t::DEFAULT);
-  event_queue->SetMouseRotation(DisplayOrientation_t::DEFAULT);
-#endif
+  /**
+   * Change the orientation of the screen.
+   */
+  bool
+  Rotate(DisplayOrientation_t orientation);
 
-  ScreenInitialized();
+  /**
+   * Restores the display rotation setting.
+   */
+  bool
+  RotateRestore();
 }
 
-ScreenGlobalInit::~ScreenGlobalInit()
-{
-  delete event_queue;
-  event_queue = nullptr;
-
-#ifdef USE_FREETYPE
-  FreeType::Deinitialise();
 #endif
-
-  ScreenDeinitialized();
-}

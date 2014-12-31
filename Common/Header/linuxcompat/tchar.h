@@ -148,7 +148,7 @@ typedef char	_TCHAR;
 #define _tfindfirst _findfirst
 #define _tfindnext  _findnext
 #define _tmktemp    _mktemp
-#define _topen      _open
+#define _topen      open
 #define _taccess    _access
 #define _tremove    remove
 #define _trename    rename

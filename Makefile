@@ -79,8 +79,16 @@ else
 		else
 		    ifeq ($(TARGET),PCX64)
 			CONFIG_PC:=y
+		    else
+		       ifeq ($(TARGET),KOBO)
+			    KOBO ?= /opt/kobo/arm-unknown-linux-gnueabi
+			    TARGET_IS_KOBO := y
+			    CONFIG_LINUX := y
+			    CONFIG_ANDROID := n
+			    MINIMAL       :=n
+			endif
 		    endif
-        endif
+		endif
 	  endif
 	endif
       endif
@@ -108,7 +116,11 @@ CPU		:=i586
 MCPU		:= -mcpu=$(CPU)
 else
 ifeq ($(CONFIG_LINUX),y)
+ifeq ($(TARGET_IS_KOBO),y)
+TCPATH		:= arm-unknown-linux-gnueabi-
+else
 TCPATH		:= 
+endif
 else
 TCPATH		:=arm-mingw32ce-
 endif
@@ -203,10 +215,18 @@ GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 ######## windows definitions
 
 ifeq ($(CONFIG_LINUX),y)
-USE_SDL := y
-GREYSCALE := y
-	
 CE_DEFS	:= -D__linux__
+
+ifeq ($(TARGET_IS_KOBO),y)
+USE_SDL := n
+GREYSCALE := y
+CE_DEFS += -DKOBO
+
+else
+USE_SDL := y
+GREYSCALE := n
+endif
+	
 CE_DEFS += -DUSE_MEMORY_CANVAS	
 
 ifeq ($(USE_SDL),y)
@@ -222,6 +242,9 @@ endif
 ifeq ($(GREYSCALE),y)
 CE_DEFS += -DGREYSCALE
 endif
+
+$(eval $(call pkg-config-library,ZZIP,zziplib))
+CE_DEFS += $(patsubst -I%,-isystem %,$(ZZIP_CPPFLAGS))
 
 $(eval $(call pkg-config-library,FREETYPE,freetype2))
 CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
@@ -347,11 +370,11 @@ endif
 LDFLAGS		+=$(PROFILE) -Wl,-Map=output.map
 
 ifeq ($(CONFIG_LINUX),y)
-  LDLIBS		+= -lstdc++ -lzzip -pthread -march=native -lpng -ljpeg -lrt -lm $(FREETYPE_LDLIBS)
-
-    ifeq ($(USE_SDL), y)
-	LDLIBS += $(SDL_LDLIBS)
-    endif
+  LDLIBS += -lstdc++ -pthread -march=native -lpng -ljpeg -lrt -lm $(FREETYPE_LDLIBS)  $(ZZIP_LDLIBS)
+  
+  ifeq ($(USE_SDL), y)
+    LDLIBS += $(SDL_LDLIBS)
+  endif
 else
 ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lole32 -loleaut32 -luuid
@@ -390,7 +413,7 @@ TARGET_ARCH	:=-mwin32 $(MCPU)
 ifeq ($(TARGET),PNA)
 TARGET_ARCH	:=-mwin32
 endif
-ifeq ($(TARGET),LINUX)
+ifeq ($(CONFIG_LINUX),y)
 TARGET_ARCH	:=
 endif
 

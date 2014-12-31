@@ -68,6 +68,7 @@ XCS_IO_ASYNC := \
 
 XCS_HARDWARE := \
 	$(SRC)/xcs/Hardware/CPU.cpp \
+	$(SRC)/xcs/Hardware/RotateDisplay.cpp \
 
 
 	
