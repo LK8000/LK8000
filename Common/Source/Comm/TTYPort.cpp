@@ -86,7 +86,7 @@ bool TTYPort::Initialize() {
     tcflush(_tty, TCIFLUSH);
     tcsetattr(_tty, TCSANOW, &newtio);
 
-    return true;
+    return ComPort::Initialize();
 
 failed:
     if (_tty >= 0) {

@@ -88,9 +88,11 @@ bool ComPort::StopRxThread() {
 #ifdef _DEBUG_STOP_RXTHREAD
     StartupStore(_T("... ComPort %d StopRxThread: Wait End of thread !%s"), GetPortIndex() + 1, NEWLINE);
 #endif
-    if (!ReadThread.tryJoin(20000)) {
-        StartupStore(_T("... ComPort %d StopRxThread: RX Thread forced to terminate!%s"), GetPortIndex() + 1, NEWLINE);
-        // TODO : Kill Thread ??
+    if (ReadThread.isRunning()) {
+        if(!ReadThread.tryJoin(20000)) {
+            StartupStore(_T("... ComPort %d StopRxThread: RX Thread forced to terminate!%s"), GetPortIndex() + 1, NEWLINE);
+            // TODO : Kill Thread ??
+        }
     }
     StopEvt.reset();
 
@@ -105,7 +107,7 @@ bool ComPort::StartRxThread() {
     ReadThread.start(*this);
     ReadThread.setPriority(Poco::Thread::PRIO_NORMAL); //THREAD_PRIORITY_ABOVE_NORMAL
 
-    if(ReadThread.isRunning()) {
+    if(!ReadThread.isRunning()) {
         // Could not create the read thread.
         StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
 
