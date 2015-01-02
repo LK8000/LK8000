@@ -193,6 +193,11 @@ void RefreshComPortList() {
         );
     }
 #endif
+    
+    if(COMMPort.empty()) {
+        // avoid segfault on device config  dialog if no comport detected.
+        COMMPort.push_back(_T("Null"));
+    }
 }
 
 void DeviceDescriptor_t::InitStruct(int i) {
