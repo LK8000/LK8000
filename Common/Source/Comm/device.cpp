@@ -170,16 +170,19 @@ void RefreshComPortList() {
         char *endptr;
         strtoul(namelist[i]->d_name + 3, &endptr, 10);
         if (*endptr == 0) continue;
-      } else if (memcmp(namelist[i]->d_name, "rfcomm", 6) != 0)
+      } else if ( (memcmp(namelist[i]->d_name, "rfcomm", 6) != 0) 
+                  && (memcmp(namelist[i]->d_name, "tnt", 3) != 0) ){
+        // '/dev/tntX' are tty0tty virtual port  
         continue;
-        char path[64];
-        snprintf(path, sizeof(path), "/dev/%s", namelist[i]->d_name);
-        if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
-          COMMPort.push_back(path);
-        }
-      } 
-     }    
-    free(namelist);
+      }
+      char path[64];
+      snprintf(path, sizeof(path), "/dev/%s", namelist[i]->d_name);
+      if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
+        COMMPort.push_back(path);
+      }
+    } 
+  }    
+  free(namelist);
   
 #endif
     
