@@ -62,11 +62,7 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
         }
     }
 
-    if(!hWelcomeBitmap.LoadFromFile(srcfile)) {
-        hWelcomeBitmap.LoadFromResource(MAKEINTRESOURCE(IDB_SWIFT));
-    }
-    
-    if(hWelcomeBitmap) {
+    if(hWelcomeBitmap.LoadFromFile(srcfile) && hWelcomeBitmap) {
         const PixelSize bmSize = hWelcomeBitmap.GetSize();
 
         Surface.Blackness(0,0,ScreenSizeX,ScreenSizeY);
