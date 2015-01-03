@@ -32,6 +32,12 @@ public:
     void Fullscreen();
     void RunModalLoop();
 
+    void Resize(int width, int height) {
+        ::SetWindowPos(_hWnd, nullptr, 0, 0, width, height,
+                   SWP_NOMOVE | SWP_NOZORDER |
+                   SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+    }
+    
   /**
    * Check if the specified event should be allowed.  An event may be
    * rejected when a modal dialog is active, and the event should go

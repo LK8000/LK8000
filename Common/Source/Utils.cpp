@@ -82,16 +82,6 @@ bool Debounce(int dtime) {
     }
 }
 
-//
-// Let's get rid of BOOOOls soon!!!
-
-bool BOOL2bool(BOOL a) {
-    if (a == TRUE) return true;
-    return false;
-}
-
-
-
 // Get the infobox type from configuration, selecting position i
 // From 1-8 auxiliaries
 //     0-16 dynamic page

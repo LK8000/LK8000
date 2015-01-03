@@ -11,6 +11,7 @@
 #include "Modeltype.h"
 #include "LKProfiles.h"
 #include "utils/stringext.h"
+#include "Asset.hpp"
 
 // #define DEBUGPROF	1
 void LKParseProfileString(const char *sname, const char *svalue);
@@ -113,9 +114,7 @@ void SetProfileVariable(const char *curname, const char *curvalue, const char *l
 
 int nMaxValueValueSize = MAX_PATH*2 + 6;	// max regkey name is 256 chars + " = "
 
-#if (WINDOWSPC>0)
 static bool isDefaultProfile=false; // needed to avoid screensize changes from custom profiles on PC
-#endif
 
 //
 // Returns true if at least one value was found,
@@ -127,14 +126,14 @@ bool LKProfileLoad(const TCHAR *szFile)
   StartupStore(_T("... LoadProfile <%s>%s"),szFile,NEWLINE);
   #endif
 
-  #if (WINDOWSPC>0)
-  if (_tcscmp(defaultProfileFile,szFile)==0) {
-     isDefaultProfile=true;
-  } else {
-     isDefaultProfile=false;
+  if(!IsEmbedded()) {
+    if (_tcscmp(defaultProfileFile,szFile)==0) {
+       isDefaultProfile=true;
+    } else {
+       isDefaultProfile=false;
+    }
   }
-  #endif
-
+  
   bool found = false;
   FILE *fp=NULL;
   int j;
@@ -735,30 +734,29 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) return;
 
 
-#if (WINDOWSPC>0)
-
-  extern bool CommandResolution;
-  // Do NOT load resolution from profile, if we have requested a resolution from command line
-  // And also, we can only load saved screen parameters from the default profile!
-  // It does not work from custom profiles.
-  if (!CommandResolution && isDefaultProfile) {
-      PREAD(sname,svalue,szRegistryScreenSize, &ScreenSize);
-      if (matchedstring) return;
-      PREAD(sname,svalue,szRegistryScreenSizeX, &ScreenSizeX);
-      if (matchedstring) {
-          SCREENWIDTH = ScreenSizeX;
-          return;
-      }
-      PREAD(sname,svalue,szRegistryScreenSizeY, &ScreenSizeY);
-      if (matchedstring) {
-          SCREENHEIGHT = ScreenSizeY;
-          // Do this here, because we save first ScreenSizeX and this is last parameter
-          extern bool InitLKScreen(void);
-          InitLKScreen();
-          return;
-      }
+  if(!IsEmbedded()) {
+    extern bool CommandResolution;
+    // Do NOT load resolution from profile, if we have requested a resolution from command line
+    // And also, we can only load saved screen parameters from the default profile!
+    // It does not work from custom profiles.
+    if (!CommandResolution && isDefaultProfile) {
+        PREAD(sname,svalue,szRegistryScreenSize, &ScreenSize);
+        if (matchedstring) return;
+        PREAD(sname,svalue,szRegistryScreenSizeX, &ScreenSizeX);
+        if (matchedstring) {
+            SCREENWIDTH = ScreenSizeX;
+            return;
+        }
+        PREAD(sname,svalue,szRegistryScreenSizeY, &ScreenSizeY);
+        if (matchedstring) {
+            SCREENHEIGHT = ScreenSizeY;
+            // Do this here, because we save first ScreenSizeX and this is last parameter
+            extern bool InitLKScreen(void);
+            InitLKScreen();
+            return;
+        }
+    }
   }
-#endif
 
   #if TESTBENCH
   if (!strcmp(sname,"LKVERSION") && !strcmp(sname,"PROFILEVERSION")) {

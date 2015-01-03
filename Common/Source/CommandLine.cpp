@@ -8,10 +8,8 @@
 
 #include "externs.h"
 
-#if (WINDOWSPC>0)
 // This is a quick solution to tell profiles not to override a command line choice, for v5
 bool CommandResolution=false;
-#endif
 
 void LK8000GetOpts(const TCHAR *MyCommandLine) {
 

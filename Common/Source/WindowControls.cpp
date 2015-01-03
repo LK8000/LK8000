@@ -1348,6 +1348,10 @@ void WindowControl::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
     if (cx<0) {
         cx = GetWidth() - x + cx;
     }
+    // negative value for cy is bottom margin relative to parent;
+    if (cy<0) {
+        cy = GetHeight() - y + cy;
+    }
     assert(cx>0);
     assert(cy>0);
 }

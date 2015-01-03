@@ -171,18 +171,17 @@ POINT targetScreen;
 
 
 void MapWindow::_OnSize(int cx, int cy) {
-    if (!MapWindow::IsDisplayRunning()) {
-        // this is Used for check Thread_Draw don't use surface object.
-        Poco::FastMutex::ScopedLock Lock(Surface_Mutex);
+    // this is Used for check Thread_Draw don't use surface object.
+    Poco::FastMutex::ScopedLock Lock(Surface_Mutex);
 
-        ScreenSurface.Resize(cx, cy);
-        hdcDrawWindow.Resize(cx, cy);
-        hDCTempTask.Resize(cx, cy);
-        hdcTempTerrainAbove.Resize(cx, cy);
-        hdcTempAsp.Resize(cx, cy);
-        hdcbuffer.Resize(cx, cy);
-        hdcMask.Resize(cx, cy);
-    }
+    ScreenSurface.Resize(cx, cy);
+    hdcDrawWindow.Resize(cx, cy);
+    hDCTempTask.Resize(cx, cy);
+    hdcTempTerrainAbove.Resize(cx, cy);
+    hdcTempAsp.Resize(cx, cy);
+    hdcbuffer.Resize(cx, cy);
+    hdcMask.Resize(cx, cy);
+
     UpdateActiveScreenZone(cx, cy);
 }
 

@@ -13,6 +13,9 @@
 #define	LKFONT_H
 
 #include "Screen/Font.hpp"
+#ifndef USE_GDI
+#include "Screen/Custom/Cache.hpp"
+#endif
 
 class LKFont : public Font {
 public:
@@ -25,7 +28,12 @@ public:
     LKFont& operator=(const LKFont& Font) = delete;
 
     void Create(LOGFONT* pLogFont) { Load(*pLogFont); }
-    void Release() { Destroy(); }
+    void Release() { 
+#ifndef USE_GDI
+        TextCache::Flush(); // for compat with resolution change
+#endif
+        Destroy(); 
+    }
 
     operator bool() const { return IsDefined(); }
     

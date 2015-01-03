@@ -75,10 +75,14 @@ public:
     }
     
     void SetToForeground() {
-        this->BringToTop();
+        if(this->GetParent()) {
+            this->BringToTop();
+        }
     }
     void SetTopWnd() {
-        this->BringToTop();
+        if(this->GetParent()) {
+            this->BringToTop();
+        }
     }
     
     static Window* GetFocus();
@@ -141,14 +145,19 @@ public:
         }
         return bRet;
     }
+    virtual void OnResize(PixelSize new_size) {
+        _Base::OnResize(new_size);
+        OnSize(new_size.cx, new_size.cy);
+    }
     
     virtual bool OnMouseMove(const POINT& Pos) { return false; }
     virtual bool OnLButtonDown(const POINT& Pos) { return false; }
     virtual bool OnLButtonUp(const POINT& Pos) { return false; }
     
-   	virtual bool OnLButtonDblClick(const POINT& Pos) { return false; }
+    virtual bool OnLButtonDblClick(const POINT& Pos) { return false; }
 
-  
+    virtual bool OnSize(int cx, int cy) { return false; }
+    
 protected:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) { return false; }
     

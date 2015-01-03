@@ -10,9 +10,8 @@
 #include "McReady.h"
 #include "Modeltype.h"
 #include "utils/stringext.h"
-
-
 #include "LKProfiles.h"
+#include "Asset.hpp"
 
 
 static FILE *pfp=NULL;
@@ -390,11 +389,11 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryBottomMode    ,BottomMode);
   rprintf(szRegistrySonarWarning    ,SonarWarning_Config);
 
-#if (WINDOWSPC>0)
-  rprintf(szRegistryScreenSize   ,ScreenSize);
-  rprintf(szRegistryScreenSizeX  ,ScreenSizeX);
-  rprintf(szRegistryScreenSizeY  ,ScreenSizeY);
-#endif
+  if(!IsEmbedded()) {
+    rprintf(szRegistryScreenSize   ,ScreenSize);
+    rprintf(szRegistryScreenSizeX  ,ScreenSizeX);
+    rprintf(szRegistryScreenSizeY  ,ScreenSizeY);
+  }
 
 
   fprintf(pfp,PNEWLINE); // end of file

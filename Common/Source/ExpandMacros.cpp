@@ -10,6 +10,7 @@
 #include "Logger.h"
 #include "LKInterface.h"
 #include "Multimap.h"
+#include "Asset.hpp"
 
 extern bool HaveGauges(void);
 
@@ -658,22 +659,22 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 
   if (_tcsstr(OutBuffer, TEXT("$(PCONLY)"))) {
-    #if (WINDOWSPC>0)
-    ReplaceInString(OutBuffer, TEXT("$(PCONLY)"), TEXT(""), Size);
-    #else
-    _tcscpy(OutBuffer,_T(""));
-    invalid = true;
-    #endif
+      if(IsEmbedded()) {
+        _tcscpy(OutBuffer,_T(""));
+        invalid = true;
+      } else {
+        ReplaceInString(OutBuffer, TEXT("$(PCONLY)"), TEXT(""), Size);
+      }
     if (--items<=0) goto label_ret;
   }
   if (_tcsstr(OutBuffer, TEXT("$(NOTPC)"))) {
-    #if (WINDOWSPC>0)
-    _tcscpy(OutBuffer,_T(""));
-    invalid = true;
-    #else
-    ReplaceInString(OutBuffer, TEXT("$(NOTPC)"), TEXT(""), Size);
-    #endif
-    if (--items<=0) goto label_ret;
+      if(IsEmbedded()) {
+        ReplaceInString(OutBuffer, TEXT("$(NOTPC)"), TEXT(""), Size);
+      } else {
+        _tcscpy(OutBuffer,_T(""));
+        invalid = true;
+      }
+      if (--items<=0) goto label_ret;
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(ONLYMAP)"))) {

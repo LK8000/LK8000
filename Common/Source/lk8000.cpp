@@ -132,8 +132,8 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 int main() {
     const char * szCmdLine = "";
     
-  SCREENWIDTH=800;
-  SCREENHEIGHT=480;    
+  SCREENWIDTH=480;
+  SCREENHEIGHT=272;    
 
 #endif
 

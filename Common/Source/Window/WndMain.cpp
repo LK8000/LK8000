@@ -30,6 +30,9 @@
 
 #include "Event/Event.h"
 
+extern bool ScreenHasChanged(void);
+extern void ReinitScreen(void);
+
 WndMain::WndMain() : WndMainBase(), _MouseButtonDown(), _isRunning() {
 }
 
@@ -252,6 +255,7 @@ void WndMain::OnDestroy() {
 
 bool WndMain::OnSize(int cx, int cy) {
     MapWindow::_OnSize(cx, cy);
+	if (ScreenHasChanged()) ReinitScreen();
     return true;
 }
 

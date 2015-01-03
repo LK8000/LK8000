@@ -59,6 +59,10 @@ void LKBitmapSurface::Resize(unsigned width, unsigned height) {
 
     _hBitmap = LKBitmap (::CreateCompatibleBitmap(GetAttribDC(), width, height));
     _oldBitmap = LKBitmap((HBITMAP)::SelectObject(_OutputDC, _hBitmap));
+#else
+    if(_pCanvas) {
+        ((VirtualCanvas*)_pCanvas)->Resize({width, height});
+    }
 #endif
 }
 

@@ -31,6 +31,7 @@
 #include "CTaskFileHelper.h"
 #include "utils/stringext.h"
 #include "utils/openzip.h"
+#include "Asset.hpp"
 
 // Sensible maximums 
 #define MAX_MODE 100
@@ -2099,58 +2100,56 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
-#if (WINDOWSPC>0)
-  if (_tcscmp(misc, TEXT("SS320x240")) == 0) {
-	SCREENWIDTH=320;
-	SCREENHEIGHT=240;
-	return;
+  if(!IsEmbedded()) {
+    if (_tcscmp(misc, TEXT("SS320x240")) == 0) {
+      SCREENWIDTH=320;
+      SCREENHEIGHT=240;
+      MainWindow.Resize(320, 240);
+      return;
+    }
+    if (_tcscmp(misc, TEXT("SS480x272")) == 0) {
+      SCREENWIDTH=480;
+      SCREENHEIGHT=272;
+      MainWindow.Resize(480, 272);
+      return;
+    }
+    if (_tcscmp(misc, TEXT("SS640x480")) == 0) {
+      SCREENWIDTH=640;
+      SCREENHEIGHT=480;
+      MainWindow.Resize(640, 480);
+      return;
+    }
+    if (_tcscmp(misc, TEXT("SS800x480")) == 0) {
+      SCREENWIDTH=800;
+      SCREENHEIGHT=480;
+      MainWindow.Resize(800, 480);
+      return;
+    }
+    if (_tcscmp(misc, TEXT("SS896x672")) == 0) {
+      SCREENWIDTH=896;
+      SCREENHEIGHT=672;
+      MainWindow.Resize(896, 672);
+      return;
+    }
+    if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
+      if (SCREENWIDTH==896) return;
+      int y=SCREENHEIGHT;
+      SCREENHEIGHT=SCREENWIDTH;
+      SCREENWIDTH=y;
+      MainWindow.Resize(SCREENWIDTH, SCREENHEIGHT);	
+      return;
+    }
+  } else {
+    if (_tcscmp(misc, TEXT("SSINV90")) == 0) {
+      RotateScreen(90);
+      return;
+    }
+    if (_tcscmp(misc, TEXT("SSINV180")) == 0) {
+      RotateScreen(180);
+      return;
+    }
   }
-  if (_tcscmp(misc, TEXT("SS480x272")) == 0) {
-	SCREENWIDTH=480;
-	SCREENHEIGHT=272;
-	return;
-  }
-  if (_tcscmp(misc, TEXT("SS640x480")) == 0) {
-	SCREENWIDTH=640;
-	SCREENHEIGHT=480;
-	return;
-  }
-  if (_tcscmp(misc, TEXT("SS800x480")) == 0) {
-	SCREENWIDTH=800;
-	SCREENHEIGHT=480;
-	return;
-  }
-  if (_tcscmp(misc, TEXT("SS896x672")) == 0) {
-	SCREENWIDTH=896;
-	SCREENHEIGHT=672;
-	return;
-  }
-#endif
-extern bool RotateScreen(short angle);
-  if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
-	#if (WINDOWSPC>0)
-	if (SCREENWIDTH==896) return;
-	int y=SCREENHEIGHT;
-	SCREENHEIGHT=SCREENWIDTH;
-	SCREENWIDTH=y;
-	#endif
-	return;
-  }
-  if (_tcscmp(misc, TEXT("SSINV90")) == 0) {
-	#if (WINDOWSPC>0)
-	#else
-	RotateScreen(90);
-	#endif
-	return;
-  }
-  if (_tcscmp(misc, TEXT("SSINV180")) == 0) {
-	#if (WINDOWSPC>0)
-	#else
-	RotateScreen(180);
-	#endif
-	return;
-  }
-
+  
   if (_tcscmp(misc, TEXT("SAVESYS")) == 0) {
 	dlgProfilesShowModal(0);
 	return;
