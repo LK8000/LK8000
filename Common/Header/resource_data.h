@@ -11,7 +11,9 @@
 #ifndef resource_data_h
 #define	resource_data_h
 
-// for avoid uneeded copy when data is string, all ressource are null termined!
+#include "Util/ConstBuffer.hpp"
+
+// for avoid uneeded copy when data is string, all resource are null termined!
 
 #define BIN_DATA(_NAME) \
     extern const unsigned char _NAME##_begin[]; \
@@ -19,6 +21,7 @@
     extern const unsigned int _NAME##_size;
 
 // XMLDIALOG
+#ifndef WIN32_RESOURCE
 
 BIN_DATA(IDR_XML_AIRSPACE)
 BIN_DATA(IDR_XML_AIRSPACECOLOURS)
@@ -121,14 +124,26 @@ BIN_DATA(IDR_XML_PROGRESS)
 
 BIN_DATA(IDR_RASTER_EGM96S)
 
+#endif
+
+#ifndef WIN32
+// on win32 platform, Bitmap can't be in unix style resource.
+BIN_DATA(IDB_EMPTY)
+BIN_DATA(IDB_TOWN)
+BIN_DATA(IDB_LKSMALLTOWN)
+BIN_DATA(IDB_LKVERYSMALLTOWN)
+#endif
+
 #include <tchar.h>
-#define NAMED_RESSOURCE(_NAME) { _TEXT(#_NAME) , _NAME##_begin, _NAME##_size }
+#include "resource.h"
+#define RESSOURCE_ID(_NAME)  #_NAME
+#define NAMED_RESSOURCE(_NAME) { _TEXT(RESSOURCE_ID(_NAME)) , ConstBuffer<void>(_NAME##_begin, _NAME##_size) }
 
 static const struct {
     const TCHAR * szName;
-    const unsigned char* szContent;
-    const size_t size;
+    ConstBuffer<void> data;
 } named_resources[] = {
+#ifndef WIN32_RESOURCE    
     NAMED_RESSOURCE(IDR_XML_AIRSPACE),
     NAMED_RESSOURCE(IDR_XML_AIRSPACECOLOURS),
     NAMED_RESSOURCE(IDR_XML_MULTISELECTLIST),
@@ -219,18 +234,31 @@ static const struct {
     NAMED_RESSOURCE(IDR_XML_BLUEFLYCONFIG_L),
     NAMED_RESSOURCE(IDR_XML_BLUEFLYCONFIG),
     NAMED_RESSOURCE(IDR_XML_PROGRESS),
-    { NULL, NULL, 0U }
+#endif
+
+#ifndef WIN32
+    // on win32 platform, Bitmap can't be in unix style resource.
+    NAMED_RESSOURCE(IDB_EMPTY),
+    NAMED_RESSOURCE(IDB_TOWN),
+    NAMED_RESSOURCE(IDB_LKSMALLTOWN),
+    NAMED_RESSOURCE(IDB_LKVERYSMALLTOWN),
+#endif
+
+    { NULL, ConstBuffer<void>::Null() }
 };
 
-#include "utils/stl_utils.h"
-
-inline const char* GetNamedResource(const TCHAR* szName) {
+inline ConstBuffer<void> GetNamedResource(const TCHAR* szName) {
     for (unsigned i = 0; named_resources[i].szName; ++i) {
         if (_tcscmp(named_resources[i].szName, szName) == 0) {
-            return (const char*) named_resources[i].szContent;
+            return named_resources[i].data;
         }
     }
-    return NULL;
+    assert(false); // ressource not found;
+    return ConstBuffer<void>::Null();
+}
+
+inline const char* GetNamedResourceString(const TCHAR* szName) {
+    return (const char*)GetNamedResource(szName).data;
 }
 
 

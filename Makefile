@@ -1066,7 +1066,10 @@ POCO :=\
 #endif
 
 DIALOG_XML = $(wildcard Common/Data/Dialogs/*.xml)
-
+BITMAP_RES = $(wildcard Common/Data/Bitmaps/*.bmp)
+ifeq ($(CONFIG_LINUX),y)
+BITMAP_RES_O := $(BIN)/Resource/resource_bmp.o
+endif
 ####### compilation outputs
 
 # Add JP2 library for JP2000 unsupported raster maps
@@ -1186,7 +1189,7 @@ $(BIN)/%.o: $(SRC)/%.cpp
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
 	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
-$(BIN)/resource.a: $(BIN)/Resource/resource_data.o $(BIN)/Resource/resource_xml.o
+$(BIN)/resource.a: $(BIN)/Resource/resource_data.o $(BIN)/Resource/resource_xml.o $(BITMAP_RES_O) 
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
@@ -1199,6 +1202,15 @@ $(BIN)/Resource/resource_data.o:  $(RSCSRC)/resource_data.S
 	@$(NQ)echo "  AS     $@"
 	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(AS) -I'$(dir $<)' $(OUTPUT_OPTION) $<
+
+$(BIN)/Resource/resource_bmp.o:  $(BIN)/Resource/resource_bmp.png.S
+	@$(NQ)echo "  AS     $@"
+	$(Q)$(MKDIR) $(dir $@)
+	$(Q)$(AS) -I'$(dir $<)' $(OUTPUT_OPTION) $<
+
+$(BIN)/Resource/resource_bmp.png.S : $(RSCSRC)/resource_bmp.S $(patsubst Common/Data/Bitmaps/%.bmp,$(BIN)/Data/Bitmaps/%.png,$(BITMAP_RES))
+	@$(NQ)echo "  update $@"
+	@sed -r 's|(^.*")\.\./\.\./(Data/Bitmaps[^"]+)(.bmp)".*$$|\1\.\./\.\./\.\./$(BIN)/\2.png"|g' $< > $@
 
 $(BIN)/Resource/resource_xml.min.S :  $(RSCSRC)/resource_xml.S $(patsubst Common/Data/Dialogs/%.xml,$(BIN)/Data/Dialogs/%.min.xml,$(DIALOG_XML))
 	@$(NQ)echo "  update $@"
@@ -1218,6 +1230,11 @@ $(BIN)/Data/Dialogs/%.min.xml: Common/Data/Dialogs/%.xml
 	$(Q)xsltproc --output $@ build/dialogtemplate.xsl $<
 
 $(PNG_TARGET)/%.PNG : $(BITMAP_DIR)/%.BMP
+	@$(NQ)echo "  Convert Image	  $@"
+	$(Q)$(MKDIR) $(dir $@)
+	$(Q)convert $^ $@
+
+$(BIN)/Data/Bitmaps/%.png: Common/Data/Bitmaps/%.bmp
 	@$(NQ)echo "  Convert Image	  $@"
 	$(Q)$(MKDIR) $(dir $@)
 	$(Q)convert $^ $@

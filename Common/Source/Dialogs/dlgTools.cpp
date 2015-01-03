@@ -276,7 +276,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName, LPCTSTR tag, XMLResults *pResul
     }
 
 #else
-    lpRes = GetNamedResource(lpName);
+    lpRes = GetNamedResourceString(lpName);
     if(lpRes) {
         l = strlen(lpRes);
     }

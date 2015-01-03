@@ -13,6 +13,10 @@
 #include "tchar.h"
 #include "LKBitmap.h"
 
+#ifndef WIN32
+#include "resource_data.h"
+#endif
+
 LKBitmap::LKBitmap(LKBitmap&& Bitmap) {
 #ifdef WIN32    
     bitmap = Bitmap.bitmap;
@@ -70,7 +74,16 @@ bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
         return true;
     }
 #else
-#warning "TODO: ..."    
+    const TCHAR* szID = ResourceName;
+    TCHAR szTmp[10] = {};
+    if(!(((unsigned)ResourceName)&0xFFFF0000)) {
+        // we have resource ID
+        _stprintf(szTmp, _T("%u"), (unsigned)ResourceName);
+        szID = szTmp;
+    }
+    if(szID) {
+        return Load(GetNamedResource(szID), Type::STANDARD);
+    }
 #endif
     return false;
 }

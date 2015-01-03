@@ -21,7 +21,7 @@
 #include "tchar.h"
 #include "types.h"
 
-#define MAKEINTRESOURCE(i) (#i)
+#define MAKEINTRESOURCE(i) (LPCTSTR)((DWORD)((WORD)(i)))
 
 #endif
 
