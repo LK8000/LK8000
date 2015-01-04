@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmProfiles" Type="Dialog" X="8" Y="8" Width="180" Height="180" Caption="_@M375_" Font="2" Popup="1" >
-    <WndProperty Name="prpFile" Caption="" X="2" Y="50"  Width="0" Height="0" CaptionWidth="0" Font="2" Help="">
-      <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
-    </WndProperty>
     <WndButton Name="cmdSaveExisting" Caption="_@M580_" X="12" Y="12" Width="150"  Height="45" Font="2" Tag="3" />
     <WndButton Name="cmdSaveNew" Caption="_@M582_" X="12" Y="-998" Width="150"  Height="45" Font="2" Tag="3" />
     <WndButton Name="cmdClose" Caption="_@M185_" X="12" Y="-998" Width="150"  Height="45" Font="2" Tag="3" />
+    <!-- Hidden Control -->
+    <WndProperty Name="prpFile" Caption="" X="2" Y="-998"  Width="150" Height="35" CaptionWidth="0" Font="2" Help="">
+      <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
+    </WndProperty>
+    <!-- -->
   </WndForm>
 </PMML>

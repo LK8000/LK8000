@@ -214,6 +214,7 @@ void dlgProfilesShowModal(short mode){
   WndProperty* wp;
   wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
   if (wp) {
+    wp->SetVisible(false);
 	DataFieldFileReader* dfe;
 	dfe = (DataFieldFileReader*)wp->GetDataField();
 
