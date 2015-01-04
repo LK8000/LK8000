@@ -244,13 +244,12 @@ static const struct {
     NAMED_RESSOURCE(IDB_LKVERYSMALLTOWN),
 #endif
 
-    { NULL, ConstBuffer<void>::Null() }
 };
 
 inline ConstBuffer<void> GetNamedResource(const TCHAR* szName) {
-    for (unsigned i = 0; named_resources[i].szName; ++i) {
-        if (_tcscmp(named_resources[i].szName, szName) == 0) {
-            return named_resources[i].data;
+    for (auto Resource : named_resources) {
+        if (_tcscmp(Resource.szName, szName) == 0) {
+            return Resource.data;
         }
     }
     assert(false); // ressource not found;
