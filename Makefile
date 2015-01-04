@@ -240,7 +240,7 @@ CE_DEFS += -DUSE_CONSOLE
 endif
 
 ifeq ($(GREYSCALE),y)
-CE_DEFS += -DGREYSCALE
+CE_DEFS += -DGREYSCALE -DDITHER
 endif
 
 $(eval $(call pkg-config-library,ZZIP,zziplib))

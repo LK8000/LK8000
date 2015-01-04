@@ -6,7 +6,8 @@ XCS_SCREEN_MEMORY := \
 	$(SRC)/xcs/Screen/Memory/Canvas.cpp \
 	$(SRC)/xcs/Screen/Memory/VirtualCanvas.cpp \
 	$(SRC)/xcs/Screen/Memory/RawBitmap.cpp \
-
+	$(SRC)/xcs/Screen/Memory/Dither.cpp \
+	
 XCS_SCREEN_FB := \
 	$(SRC)/xcs/Screen/FB/Window.cpp \
 	$(SRC)/xcs/Screen/FB/SingleWindow.cpp \
