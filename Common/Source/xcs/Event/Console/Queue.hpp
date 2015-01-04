@@ -142,7 +142,7 @@ public:
    */
   gcc_pure
   uint64_t ClockUS() const {
-    assert(thread->id() == Poco::Thread::current()->id());
+    assert(thread == Poco::Thread::current());
 
     return now_us;
   }
@@ -152,7 +152,7 @@ public:
   }
 
   void WakeUp() {
-    if (!thread->id() == Poco::Thread::current()->id())
+    if (thread != Poco::Thread::current())
       event_pipe.Signal();
   }
 
