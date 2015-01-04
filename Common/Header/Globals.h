@@ -714,9 +714,6 @@ GEXTERN bool LKLanguageReady;
 
 GEXTERN int UseCustomFonts;
 
-GEXTERN int SCREENWIDTH;
-GEXTERN int SCREENHEIGHT;
-
 GEXTERN short TerrainContrast;
 GEXTERN short TerrainBrightness;
 GEXTERN short TerrainRamp;

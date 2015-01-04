@@ -35,6 +35,7 @@
 
 #ifdef USE_FREETYPE
 #include "Screen/FreeType/Init.hpp"
+#include "Screen/Init.hpp"
 #endif
 
 
@@ -125,16 +126,14 @@ void PreloadInitialisation(bool ask) {
 //
 BOOL InitInstance()
 {
-  InitLKScreen();
-  InitLKFonts(); // causing problems with CreateButtonLabels?
   PreloadInitialisation(true);
 
   RECT WindowSize;
 #ifdef __linux__
   WindowSize.left = 0;
   WindowSize.top = 0;
-  WindowSize.right = SCREENWIDTH;
-  WindowSize.bottom = SCREENHEIGHT;
+  WindowSize.right = ScreenSizeX;
+  WindowSize.bottom = ScreenSizeY;
 #endif
 
 #ifdef UNDER_CE
@@ -170,8 +169,12 @@ BOOL InitInstance()
   if(!MainWindow.Create(WindowSize)) {
       return FALSE;
   }
-
   RECT rc = MainWindow.GetClientRect();
+  ScreenSizeX = rc.GetSize().cx;
+  ScreenSizeY = rc.GetSize().cy;
+  
+  InitLKScreen();
+  InitLKFonts(); // causing problems with CreateButtonLabels?
 
   LKLoadFixedBitmaps();
   LKLoadProfileBitmaps();

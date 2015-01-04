@@ -2102,41 +2102,29 @@ void InputEvents::eventService(const TCHAR *misc) {
 
   if(!IsEmbedded()) {
     if (_tcscmp(misc, TEXT("SS320x240")) == 0) {
-      SCREENWIDTH=320;
-      SCREENHEIGHT=240;
       MainWindow.Resize(320, 240);
       return;
     }
     if (_tcscmp(misc, TEXT("SS480x272")) == 0) {
-      SCREENWIDTH=480;
-      SCREENHEIGHT=272;
       MainWindow.Resize(480, 272);
       return;
     }
     if (_tcscmp(misc, TEXT("SS640x480")) == 0) {
-      SCREENWIDTH=640;
-      SCREENHEIGHT=480;
       MainWindow.Resize(640, 480);
       return;
     }
     if (_tcscmp(misc, TEXT("SS800x480")) == 0) {
-      SCREENWIDTH=800;
-      SCREENHEIGHT=480;
       MainWindow.Resize(800, 480);
       return;
     }
     if (_tcscmp(misc, TEXT("SS896x672")) == 0) {
-      SCREENWIDTH=896;
-      SCREENHEIGHT=672;
       MainWindow.Resize(896, 672);
       return;
     }
     if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
-      if (SCREENWIDTH==896) return;
-      int y=SCREENHEIGHT;
-      SCREENHEIGHT=SCREENWIDTH;
-      SCREENWIDTH=y;
-      MainWindow.Resize(SCREENWIDTH, SCREENHEIGHT);	
+        const RECT Rect = MainWindow.GetClientRect();
+      if (Rect.GetSize().cx==896) return;
+      MainWindow.Resize(Rect.GetSize().cy, Rect.GetSize().cx);	
       return;
     }
   } else {

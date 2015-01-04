@@ -30,22 +30,24 @@ bool ScreenHasChanged(void) {
   static bool doinit=true;
   int x=0,y=0;
 
+  const RECT rc = MainWindow.GetClientRect();
   if (doinit) {
+      
 #if (WINDOWSPC>0) || defined(__linux__)
-	oldSCREENWIDTH=SCREENWIDTH;
-	oldSCREENHEIGHT=SCREENHEIGHT;
-	#else
+	oldSCREENWIDTH=rc.GetSize().cx;
+	oldSCREENHEIGHT=rc.GetSize().cy;
+#else
 	oldSCREENWIDTH=GetSystemMetrics(SM_CXSCREEN);
 	oldSCREENHEIGHT=GetSystemMetrics(SM_CYSCREEN);
-	#endif
+#endif
 	doinit=false;
 	return false;
   }
 
   // On PC, simply check for WIDTH and HEIGHT changed
   #if (WINDOWSPC>0) || defined(__linux__)
-  x=SCREENWIDTH;
-  y=SCREENHEIGHT;
+  x=rc.GetSize().cx;
+  y=rc.GetSize().cy;
   #else
   x=GetSystemMetrics(SM_CXSCREEN);
   y=GetSystemMetrics(SM_CYSCREEN);
@@ -67,9 +69,6 @@ bool ScreenHasChanged(void) {
 //
 void ReinitScreen(void) {
 
-  static int oldSCREENWIDTH=0;
-  static int oldSCREENHEIGHT=0;
-
   RECT WindowSize;
 
   // This is needed to hide any menu currently on, as first thing.
@@ -87,95 +86,10 @@ void ReinitScreen(void) {
   //
   // Detect the current screen geometry
   //
-#if (WINDOWSPC>0) || defined(__linux__)
-  // For PC we assume that the desired resolution is in SCREENxx
-  WindowSize.left = 0;
-  WindowSize.top = 0;
-  WindowSize.right = SCREENWIDTH;
-  WindowSize.bottom = SCREENHEIGHT;
-  #else
-  WindowSize.left = 0;
-  WindowSize.top = 0;
-  WindowSize.right = GetSystemMetrics(SM_CXSCREEN);
-  WindowSize.bottom = GetSystemMetrics(SM_CYSCREEN);
-  #endif
-
-  // 
-  // ----------- DEVELOPMENT TESTBENCH OPTIONS -------------
-  //
-  #if 0
-  // Force a test resolution, for testing only!
-  // Using always the same resolution will not work when asking for the same resolution again.
-  // dont know why (yet)...
-  WindowSize.left = 0;
-  WindowSize.top = 0;
-  WindowSize.right = 480;	
-  WindowSize.bottom = 272;
-  #endif
-  #if 0
-  // Simulate changin one resolution to another
-  static bool vhflip=true;
-  if (vhflip) {
-	WindowSize.left = 0;
-	WindowSize.top = 0;
-	WindowSize.right = 480;
-	WindowSize.bottom = 272;
-	vhflip=false;
-  } else {
-	WindowSize.left = 0;
-	WindowSize.top = 0;
-	WindowSize.right = 800;
-	WindowSize.bottom = 480;
-	vhflip=true;;
-  }
-  #endif
-  #if 0
-  // Simulate Portrait<>Landscape flip/flop
-  WindowSize.left = 0;
-  WindowSize.top = 0;
-  WindowSize.right = SCREENHEIGHT;
-  WindowSize.bottom = SCREENWIDTH;
-  #endif
-  // 
-  // ---------------------------------------------------------
-  //
-
-  if (oldSCREENWIDTH!=WindowSize.right || oldSCREENHEIGHT!=WindowSize.bottom) {
-	#if TESTBENCH
-	StartupStore(_T(".... CHANGING RESOLUTION\n"));
-	#endif
-	#if (WINDOWSPC>0)
-	SCREENWIDTH = WindowSize.right;
-	SCREENHEIGHT= WindowSize.bottom;
-	#endif
-	oldSCREENWIDTH = WindowSize.right;
-	oldSCREENHEIGHT= WindowSize.bottom;
-  } else {
-	// THIS DOES NOT STILL WORK! NO EFFECT.
-	#if TESTBENCH
-	StartupStore(_T(".... CHANGE RESOLUTION, SAME SIZE, WM_SIZE FORCED\n"));
-	#endif
-	#if (WINDOWSPC>0)
-	SCREENWIDTH = WindowSize.right;
-	SCREENHEIGHT= WindowSize.bottom;
-	#endif
-  }
-
-#if (WINDOWSPC>0)
-  // We must consider the command bar size on PC window
-
-  WindowSize.right = SCREENWIDTH + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
-  WindowSize.left = (GetSystemMetrics(SM_CXSCREEN) - WindowSize.right) / 2;
-  WindowSize.right += WindowSize.left;
-  WindowSize.bottom = SCREENHEIGHT + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
-  WindowSize.top = (GetSystemMetrics(SM_CYSCREEN) - WindowSize.bottom) / 2;
-  WindowSize.bottom += WindowSize.top;
-#endif
-
-  MainWindow.Move(WindowSize, true);
-
   const RECT rc = MainWindow.GetClientRect();
-
+  ScreenSizeX = rc.GetSize().cx;
+  ScreenSizeY = rc.GetSize().cy;
+  
   InitLKScreen();
 
   LKSW_ReloadProfileBitmaps=true;

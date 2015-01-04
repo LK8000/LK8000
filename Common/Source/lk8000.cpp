@@ -131,10 +131,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #else
 int main() {
     const char * szCmdLine = "";
-    
-  SCREENWIDTH=480;
-  SCREENHEIGHT=272;    
-
 #endif
 
 #ifdef INT_OVERFLOW

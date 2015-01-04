@@ -12,6 +12,10 @@
 // return Path including trailing directory separator.
 const TCHAR * LKGetLocalPath(void) {
 
+    if(IsKobo()) {
+        return "/mnt/onboard/" LKDATADIR "/";
+    }
+    
     static TCHAR localpath[MAX_PATH + 1] = {0};
 
     if (!DoInit[MDI_GETLOCALPATH]) {

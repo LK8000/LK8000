@@ -17,15 +17,16 @@
 // Attention: after InitLKScreen, also InitLKFonts should be called. 
 void InitLKScreen() {
 
+  const RECT Rect = MainWindow.GetClientRect(); 
   int iWidth=0, iHeight=0;
 
 #if (WINDOWSPC>0) || defined(__linux__)
-  iWidth=SCREENWIDTH;
-  iHeight=SCREENHEIGHT;
-  #else
+  iWidth=Rect.GetSize().cx;
+  iHeight=Rect.GetSize().cy;
+#else
   iWidth=GetSystemMetrics(SM_CXSCREEN);
   iHeight=GetSystemMetrics(SM_CYSCREEN);
-  #endif
+#endif
 
   ScreenSizeX=iWidth;
   ScreenSizeY=iHeight;

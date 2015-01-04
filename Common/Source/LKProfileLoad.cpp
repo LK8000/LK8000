@@ -12,6 +12,7 @@
 #include "LKProfiles.h"
 #include "utils/stringext.h"
 #include "Asset.hpp"
+#include "Screen/Init.hpp"
 
 // #define DEBUGPROF	1
 void LKParseProfileString(const char *sname, const char *svalue);
@@ -744,15 +745,10 @@ void LKParseProfileString(const char *sname, const char *svalue) {
         if (matchedstring) return;
         PREAD(sname,svalue,szRegistryScreenSizeX, &ScreenSizeX);
         if (matchedstring) {
-            SCREENWIDTH = ScreenSizeX;
             return;
         }
         PREAD(sname,svalue,szRegistryScreenSizeY, &ScreenSizeY);
         if (matchedstring) {
-            SCREENHEIGHT = ScreenSizeY;
-            // Do this here, because we save first ScreenSizeX and this is last parameter
-            extern bool InitLKScreen(void);
-            InitLKScreen();
             return;
         }
     }
