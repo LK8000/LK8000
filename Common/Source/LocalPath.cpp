@@ -8,12 +8,13 @@
 
 #include "externs.h"
 #include "DoInits.h"
+#include "Asset.hpp"
 
 // return Path including trailing directory separator.
 const TCHAR * LKGetLocalPath(void) {
 
     if(IsKobo()) {
-        return "/mnt/onboard/" LKDATADIR "/";
+        return _T("/mnt/onboard/" LKDATADIR "/");
     }
     
     static TCHAR localpath[MAX_PATH + 1] = {0};

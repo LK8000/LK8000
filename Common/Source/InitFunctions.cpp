@@ -144,10 +144,10 @@ BOOL InitInstance()
 #endif
 
 #if (WINDOWSPC>0)
-  WindowSize.right = SCREENWIDTH + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
+  WindowSize.right = ScreenSizeX + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
   WindowSize.left = (GetSystemMetrics(SM_CXSCREEN) - WindowSize.right) / 2;
   WindowSize.right = WindowSize.right +WindowSize.left;
-  WindowSize.bottom = SCREENHEIGHT + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
+  WindowSize.bottom = ScreenSizeY + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
   WindowSize.top = (GetSystemMetrics(SM_CYSCREEN) - WindowSize.bottom) / 2;
   WindowSize.bottom = WindowSize.bottom +WindowSize.top;
   /*
@@ -169,7 +169,7 @@ BOOL InitInstance()
   if(!MainWindow.Create(WindowSize)) {
       return FALSE;
   }
-  RECT rc = MainWindow.GetClientRect();
+  const PixelRect rc(MainWindow.GetClientRect());
   ScreenSizeX = rc.GetSize().cx;
   ScreenSizeY = rc.GetSize().cy;
   

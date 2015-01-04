@@ -18,7 +18,7 @@
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "DoInits.h"
-
+#include "Screen/Point.hpp"
 
 //
 // Detect if screen resolution and/or orientation has changed
@@ -30,7 +30,7 @@ bool ScreenHasChanged(void) {
   static bool doinit=true;
   int x=0,y=0;
 
-  const RECT rc = MainWindow.GetClientRect();
+  const PixelRect rc(MainWindow.GetClientRect());
   if (doinit) {
       
 #if (WINDOWSPC>0) || defined(__linux__)
@@ -69,8 +69,6 @@ bool ScreenHasChanged(void) {
 //
 void ReinitScreen(void) {
 
-  RECT WindowSize;
-
   // This is needed to hide any menu currently on, as first thing.
   InputEvents::setMode(TEXT("default"));
 
@@ -86,7 +84,7 @@ void ReinitScreen(void) {
   //
   // Detect the current screen geometry
   //
-  const RECT rc = MainWindow.GetClientRect();
+  const PixelRect rc(MainWindow.GetClientRect());
   ScreenSizeX = rc.GetSize().cx;
   ScreenSizeY = rc.GetSize().cy;
   

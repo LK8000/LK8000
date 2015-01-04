@@ -17,7 +17,7 @@
 // Attention: after InitLKScreen, also InitLKFonts should be called. 
 void InitLKScreen() {
 
-  const RECT Rect = MainWindow.GetClientRect(); 
+  const PixelRect Rect(MainWindow.GetClientRect()); 
   int iWidth=0, iHeight=0;
 
 #if (WINDOWSPC>0) || defined(__linux__)

@@ -2122,7 +2122,7 @@ void InputEvents::eventService(const TCHAR *misc) {
       return;
     }
     if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
-        const RECT Rect = MainWindow.GetClientRect();
+        const PixelRect Rect(MainWindow.GetClientRect());
       if (Rect.GetSize().cx==896) return;
       MainWindow.Resize(Rect.GetSize().cy, Rect.GetSize().cx);	
       return;

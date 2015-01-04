@@ -308,11 +308,6 @@ void Globals_Init(void) {
 
   NumDataOptions = 0;
 
-  #if (WINDOWSPC>0)
-  SCREENWIDTH=800;
-  SCREENHEIGHT=400;
-  #endif
-
   debounceTimeout.assign(0, 250*1000); //250ms
 
   WarningHomeDir=false;

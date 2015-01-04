@@ -14,15 +14,6 @@ bool CommandResolution=false;
 void LK8000GetOpts(const TCHAR *MyCommandLine) {
 
 #if (WINDOWSPC>0) 
-  SCREENWIDTH=800;
-  SCREENHEIGHT=480;
-
-  #if defined(SCREENWIDTH_)
-  SCREENWIDTH=SCREENWIDTH_;
-  #endif
-  #if defined(SCREENHEIGHT_)
-  SCREENHEIGHT=SCREENHEIGHT_;
-  #endif
   CommandResolution=false;
 
   if (MyCommandLine != NULL){
@@ -85,8 +76,8 @@ void LK8000GetOpts(const TCHAR *MyCommandLine) {
 			int x=_ttoi(stx);
 			int y=_ttoi(sty);
 			if (x>100 && x<3000 && y>100 && y<3000) {
-				SCREENWIDTH=x;
-				SCREENHEIGHT=y;
+				ScreenSizeX=x;
+				ScreenSizeY=y;
                                 CommandResolution=true;
 			}
 		}
@@ -94,128 +85,128 @@ void LK8000GetOpts(const TCHAR *MyCommandLine) {
 
     pC = _tcsstr(MyCommandLine, TEXT("-640x480"));
     if (pC != NULL){
-      SCREENWIDTH=640;
-      SCREENHEIGHT=480;
+      ScreenSizeX=640;
+      ScreenSizeY=480;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-800x480"));
     if (pC != NULL){
-      SCREENWIDTH=800;
-      SCREENHEIGHT=480;
+      ScreenSizeX=800;
+      ScreenSizeY=480;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-720x408"));
     if (pC != NULL){
-      SCREENWIDTH=720;
-      SCREENHEIGHT=408;
+      ScreenSizeX=720;
+      ScreenSizeY=408;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-800x600"));
     if (pC != NULL){
-      SCREENWIDTH=800;
-      SCREENHEIGHT=600;
+      ScreenSizeX=800;
+      ScreenSizeY=600;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-896x672"));
     if (pC != NULL){
-      SCREENWIDTH=896;
-      SCREENHEIGHT=672;
+      ScreenSizeX=896;
+      ScreenSizeY=672;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-854x358"));
     if (pC != NULL){
-      SCREENWIDTH=854;
-      SCREENHEIGHT=358;
+      ScreenSizeX=854;
+      ScreenSizeY=358;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-big"));
     if (pC != NULL){
-      SCREENWIDTH=896;
-      SCREENHEIGHT=672;
+      ScreenSizeX=896;
+      ScreenSizeY=672;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-400x240"));
     if (pC != NULL){
-      SCREENWIDTH=400;
-      SCREENHEIGHT=240;
+      ScreenSizeX=400;
+      ScreenSizeY=240;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-480x272"));
     if (pC != NULL){
-      SCREENWIDTH=480;
-      SCREENHEIGHT=272;
+      ScreenSizeX=480;
+      ScreenSizeY=272;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-480x234"));
     if (pC != NULL){
-      SCREENWIDTH=480;
-      SCREENHEIGHT=234;
+      ScreenSizeX=480;
+      ScreenSizeY=234;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-480x800"));
     if (pC != NULL){
-      SCREENWIDTH=480;
-      SCREENHEIGHT=800;
+      ScreenSizeX=480;
+      ScreenSizeY=800;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-portrait"));
     if (pC != NULL){
-      SCREENWIDTH=480;
-      SCREENHEIGHT=640;
+      ScreenSizeX=480;
+      ScreenSizeY=640;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-480x640"));
     if (pC != NULL){
-      SCREENWIDTH=480;
-      SCREENHEIGHT=640;
+      ScreenSizeX=480;
+      ScreenSizeY=640;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-small"));
     if (pC != NULL){
-      SCREENWIDTH/= 2;
-      SCREENHEIGHT/= 2;
+      ScreenSizeX/= 2;
+      ScreenSizeY/= 2;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-320x240"));
     if (pC != NULL){
-      SCREENWIDTH=320;
-      SCREENHEIGHT=240;
+      ScreenSizeX=320;
+      ScreenSizeY=240;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-320x234"));
     if (pC != NULL){
-      SCREENWIDTH=320;
-      SCREENHEIGHT=234;
+      ScreenSizeX=320;
+      ScreenSizeY=234;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-240x320"));
     if (pC != NULL){
-      SCREENWIDTH=240;
-      SCREENHEIGHT=320;
+      ScreenSizeX=240;
+      ScreenSizeY=320;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-234x320"));
     if (pC != NULL){
-      SCREENWIDTH=234;
-      SCREENHEIGHT=320;
+      ScreenSizeX=234;
+      ScreenSizeY=320;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-240x400"));
     if (pC != NULL){
-      SCREENWIDTH=240;
-      SCREENHEIGHT=400;
+      ScreenSizeX=240;
+      ScreenSizeY=400;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-272x480"));
     if (pC != NULL){
-      SCREENWIDTH=272;
-      SCREENHEIGHT=480;
+      ScreenSizeX=272;
+      ScreenSizeY=480;
       CommandResolution=true;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-testmode"));
     if (pC != NULL){
-      SCREENWIDTH=1018;
-      SCREENHEIGHT=564;
+      ScreenSizeX=1018;
+      ScreenSizeY=564;
       CommandResolution=true;
     }
 
