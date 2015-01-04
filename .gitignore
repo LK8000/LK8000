@@ -29,3 +29,5 @@ output.map
 /Distrib/
 /LK8000-KOBO.exe
 /LK8000-LINUX.exe
+/LK8000-KOBO_debug-ns.exe
+/LK8000-KOBO_debug.exe
