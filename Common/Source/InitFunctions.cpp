@@ -127,6 +127,10 @@ void PreloadInitialisation(bool ask) {
 BOOL InitInstance()
 {
   PreloadInitialisation(true);
+  if(!IsEmbedded()) {
+      ScreenSizeX = 800;
+      ScreenSizeY = 480;
+  }
 
   RECT WindowSize;
 #ifdef __linux__
@@ -136,14 +140,13 @@ BOOL InitInstance()
   WindowSize.bottom = ScreenSizeY;
 #endif
 
+#ifdef WIN32
 #ifdef UNDER_CE
   WindowSize.left = 0;
   WindowSize.top = 0;
   WindowSize.right = GetSystemMetrics(SM_CXSCREEN);
   WindowSize.bottom = GetSystemMetrics(SM_CYSCREEN);
-#endif
-
-#if (WINDOWSPC>0)
+#else
   WindowSize.right = ScreenSizeX + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
   WindowSize.left = (GetSystemMetrics(SM_CXSCREEN) - WindowSize.right) / 2;
   WindowSize.right = WindowSize.right +WindowSize.left;
@@ -159,6 +162,7 @@ BOOL InitInstance()
   WindowSize.right = SCREENWIDTH + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
   WindowSize.bottom = SCREENHEIGHT + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
   */
+#endif
 #endif
 
   if (!goInstallSystem) Poco::Thread::sleep(50); // 091119
