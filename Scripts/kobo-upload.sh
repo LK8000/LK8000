@@ -19,7 +19,7 @@ user $USER $PASS
 cd /mnt/onboard/LK8000
 
 # Call4.  Here you will tell FTP to put or get the file.
-put LK8000-KOBO_debug-ns.exe
+put LK8000-KOBO_debug-ns
 
 # End FTP Connection
 bye

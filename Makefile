@@ -179,16 +179,6 @@ TARGET		:=WINE
 CONFIG_PC	:=y
 endif
 
-######## output files
-
-ifeq ($(DEBUG),y)
-OUTPUTS 	:= LK8000-$(TARGET)_debug.exe
-OUTPUTS_NS	:= LK8000-$(TARGET)_debug-ns.exe	
-else
-OUTPUTS 	:= LK8000-$(TARGET).exe
-OUTPUTS_NS	:= LK8000-$(TARGET)-ns.exe	
-endif
-
 ######## tools
 
 EXE		:=$(findstring .exe,$(MAKE))
@@ -211,6 +201,17 @@ ETAGS           :=etags
 EBROWSE         :=ebrowse
 
 GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
+
+######## output files
+
+ifeq ($(DEBUG),y)
+OUTPUTS 	:= LK8000-$(TARGET)_debug$(EXE)
+OUTPUTS_NS	:= LK8000-$(TARGET)_debug-ns$(EXE)	
+else
+OUTPUTS 	:= LK8000-$(TARGET)$(EXE)
+OUTPUTS_NS	:= LK8000-$(TARGET)-ns$(EXE)
+endif
+
 
 ######## windows definitions
 
