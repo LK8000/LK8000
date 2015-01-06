@@ -35,6 +35,7 @@ void LKObjects_Create() {
   LKBrush_Mlight.Create(RGB_MLIGHT);
   LKBrush_Red.Create(RGB_RED);
   LKBrush_Yellow.Create(RGB_YELLOW);
+  LKBrush_LightYellow.Create(RGB_LIGHTYELLOW);
   LKBrush_Green.Create(RGB_GREEN);
   LKBrush_DarkYellow2.Create(RGB_DARKYELLOW2);
   LKBrush_Orange.Create(RGB_ORANGE);

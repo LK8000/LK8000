@@ -35,6 +35,7 @@ OEXTERN	LKBrush	LKBrush_Mdark;
 OEXTERN	LKBrush  LKBrush_Mlight;
 OEXTERN	LKBrush	LKBrush_Red;
 OEXTERN	LKBrush	LKBrush_Yellow;
+OEXTERN	LKBrush	LKBrush_LightYellow;
 OEXTERN	LKBrush	LKBrush_Green;
 OEXTERN	LKBrush	LKBrush_DarkYellow2;
 OEXTERN	LKBrush	LKBrush_Orange;

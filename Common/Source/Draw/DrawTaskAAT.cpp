@@ -11,6 +11,13 @@
 #include "RGB.h"
 #include "LKObjects.h"
 
+#ifdef HAVE_HATCHED_BRUSH          
+    constexpr uint8_t AlphaLevel = 255*35/100;
+#else
+    constexpr uint8_t AlphaLevel = 255*17/100;
+#endif  
+        
+        
 void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     int i;
     double tmp1 = 0.0;
@@ -83,7 +90,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
 #ifdef HAVE_HATCHED_BRUSH          
         hDCTempTask.SelectObject(hAirspaceBrushes[iAirspaceBrush[AATASK]]);
 #else
-#warning "TODO : maybe we need solid brush or that !"
+        hDCTempTask.SelectObject(LKBrush_Yellow);
 #endif  
         // this color is used as the black bit
         hDCTempTask.SetTextColor(Colours[iAirspaceColour[AATASK]]);
@@ -122,7 +129,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         hDCTempTask.SelectObject(oldpen);
         hDCTempTask.SelectObject(oldbrush);
         
-        if(!Surface.AlphaBlend(rcDraw, hDCTempTask,rcDraw, 255*35/100)) {
+        if(!Surface.AlphaBlend(rcDraw, hDCTempTask,rcDraw, AlphaLevel)) {
             // if AlphaBlend is not supported, use TransparentBld
             Surface.TransparentCopy(
                     rcDraw.left, rcDraw.top,

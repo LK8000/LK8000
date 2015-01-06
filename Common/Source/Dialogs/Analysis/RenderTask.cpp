@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "LKObjects.h"
 
 
 void Statistics::RenderTask(LKSurface& Surface, const RECT& rc, const bool olcmode)
@@ -165,7 +165,7 @@ double fXY_Scale = 1.5;
 #ifdef HAVE_HATCHED_BRUSH 
 		  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(AATASK));
 #else
-#warning "TODO : maybe we need solid brush or that !"
+                  Surface.SelectObject(LKBrush_Yellow);
 #endif
 		  Surface.SelectObject(LK_WHITE_PEN);
 		  if (Task[i].AATType == SECTOR)
