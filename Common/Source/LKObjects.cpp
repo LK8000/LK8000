@@ -159,6 +159,8 @@ void LKObjects_Create() {
   }
 
   MapWindow::hAboveTerrainBrush.Create(hAboveTerrainBitmap);
+#else
+  MapWindow::hAboveTerrainBrush.Create(RGB_GREY);
 #endif
   
   if(LKSurface::AlphaBlendSupported()) {

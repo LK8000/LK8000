@@ -516,6 +516,15 @@ bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const 
 #endif    
 }
 
+#ifdef USE_MEMORY_CANVAS
+void LKSurface::AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity) {
+    if(_pCanvas) {
+        _pCanvas->AlphaBlendNotWhite(dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
+                        Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, globalOpacity);
+    }
+}
+#endif    
+
 bool LKSurface::GetTextSize(const TCHAR* lpString, int cbString, SIZE* lpSize) {
 #ifdef WIN32
     return ::GetTextExtentPoint(*this, lpString, cbString, lpSize);

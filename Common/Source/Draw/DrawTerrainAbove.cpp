@@ -26,7 +26,9 @@ void MapWindow::DrawTerrainAbove(LKSurface& Surface, const RECT& rc) {
   if (DerivedDrawInfo.Flying) goto _doit;
 
   return;
-
+#if !defined(USE_MEMORY_CANVAS) && !defined(HAVE_HATCHED_BRUSH) 
+#error "Shading Glide not supported"
+#endif
 
 _doit:
 
@@ -40,24 +42,23 @@ _doit:
 
   hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
   hdcTempTerrainAbove.SetTextColor(graycolor);
-#ifdef HAVE_HATCHED_BRUSH 
-  hdcTempTerrainAbove.SelectObject(hAboveTerrainBrush); // hAirspaceBrushes[3] or 6
-#else
-#warning "TODO : maybe we need solid brush or that !"
-#endif
+  hdcTempTerrainAbove.SelectObject(hAboveTerrainBrush);
   hdcTempTerrainAbove.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
-
   hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
   hdcTempTerrainAbove.SelectObject(LKBrush_White);
   hdcTempTerrainAbove.Polygon(Groundline,NUMTERRAINSWEEPS+1);
 
   // need to do this to prevent drawing of colored outline
   hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
+#ifdef HAVE_HATCHED_BRUSH
   Surface.TransparentCopy(
           rc.left,rc.top,
           rc.right-rc.left,rc.bottom-rc.top,
           hdcTempTerrainAbove,
           rc.left,rc.top);
+#else
+  Surface.AlphaBlendNotWhite(rc, hdcTempTerrainAbove, rc, 255/2);
+#endif
 
   // restore original color
   hdcTempTerrainAbove.SetTextColor(origcolor);

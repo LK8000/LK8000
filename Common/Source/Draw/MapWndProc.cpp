@@ -34,9 +34,7 @@ bool OnFastPanning=false;
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
 
-#ifdef HAVE_HATCHED_BRUSH
 LKBrush  MapWindow::hAboveTerrainBrush;
-#endif
 
 int MapWindow::SnailWidthScale = 16;
 int MapWindow::ScaleListCount = 0;
