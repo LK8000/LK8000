@@ -121,6 +121,7 @@ static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
       nlen--;
     }
     if (nlen>0) {
+      Surface.SetTextColor(RGB_BLACK);
       Surface.DrawText(2*ScreenScale, 2*ScreenScale, text+nstart, nlen);
     }
   }
