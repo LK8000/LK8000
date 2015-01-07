@@ -897,15 +897,15 @@ void XShapeLabel::setlabel(const char* src) {
     }
 #else
     // from Latin1 (ISO-8859-1) To Utf8
-    int size = strlen(src);
+    std::tstring Latin1String(src);
     std::tstring utf8String;
 
     Poco::Latin1Encoding Latin1Encoding;
     Poco::UTF8Encoding utf8Encoding;
 
     Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
-    converter.convert(src, (int) size * sizeof (char*), utf8String);
-    size = utf8String.size();
+    converter.convert(Latin1String, utf8String);
+    size_t size = utf8String.size();
     if(size) {
         label = (TCHAR*) malloc(size * sizeof (TCHAR) + 1);
         strcpy(label, utf8String.c_str());
