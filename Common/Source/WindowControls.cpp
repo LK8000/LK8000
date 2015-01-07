@@ -1250,6 +1250,9 @@ void WindowControl::UpdatePosSize(void){
 }
 
 bool WindowControl::OnPaint(LKSurface& Surface, const RECT& Rect) {
+#ifndef USE_GDI
+    Paint(Surface);
+#else
     const RECT Client_Rect = GetClientRect();
 
     int win_width = Client_Rect.right - Client_Rect.left;
@@ -1272,7 +1275,7 @@ bool WindowControl::OnPaint(LKSurface& Surface, const RECT& Rect) {
     }
 */
     Surface.Copy(0, 0, win_width, win_height, MemSurface, 0, 0);
-
+#endif
     return true;
 }
 
@@ -1959,6 +1962,14 @@ bool WndForm::OnKeyDownNotify(Window* pWnd, unsigned KeyCode) {
     return false;
 }
 
+#ifndef USE_GDI
+void WndForm::OnPaint(Canvas &canvas) {
+    // double buffering only for WndForm, Disabled in WindowControl
+    VirtualCanvas TempCanvas(canvas, GetClientRect().GetSize());
+    WndCtrlBase::OnPaint(TempCanvas);
+    canvas.Copy(TempCanvas);
+}
+#endif
 //-----------------------------------------------------------
 // WndButton
 //-----------------------------------------------------------
