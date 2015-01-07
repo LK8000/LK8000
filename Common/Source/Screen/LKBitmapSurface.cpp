@@ -61,7 +61,7 @@ void LKBitmapSurface::Resize(unsigned width, unsigned height) {
     _oldBitmap = LKBitmap((HBITMAP)::SelectObject(_OutputDC, _hBitmap));
 #else
     if(_pCanvas) {
-        ((VirtualCanvas*)_pCanvas)->Resize({width, height});
+        static_cast<VirtualCanvas*>(_pCanvas)->Resize({width, height});
     }
 #endif
 }
@@ -76,6 +76,9 @@ void LKBitmapSurface::Release() {
         _hBitmap.Release();
     }
 #else
+    if(_pCanvas) {
+        static_cast<VirtualCanvas*>(_pCanvas)->Destroy();
+    }
     delete _pCanvas;
     _pCanvas = nullptr;
 #endif
