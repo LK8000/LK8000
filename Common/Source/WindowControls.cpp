@@ -1211,7 +1211,10 @@ WindowControl::~WindowControl(void){
 }
 
 void WindowControl::Destroy(void){
-    std::for_each(mClients.begin(), mClients.end(), std::bind(&WindowControl::Destroy, _1));
+    for(WindowControl* pCtrl : mClients) {
+        pCtrl->Destroy();
+        delete pCtrl;
+    }
     mClients.clear();
 
   if (LastFocusControl == this)
