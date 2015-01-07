@@ -50,18 +50,21 @@ void MapWindow::DrawThread ()
 
   UpdateTimeStats(true);
 
+  { // // Begin Critical section
+    Poco::FastMutex::ScopedLock Lock(Surface_Mutex);
+
+    DrawSurface.SetBackgroundTransparent();
+    hdcMask.SetBackgroundOpaque();
+
+    // paint draw window black to start
+    DrawSurface.SelectObject(LK_BLACK_PEN);
+    DrawSurface.Rectangle(MapRect.left,MapRect.top, MapRect.right,MapRect.bottom);
+
+    BackBufferSurface.Copy(0, 0, MapRect.right-MapRect.left,
+           MapRect.bottom-MapRect.top, 
+           DrawSurface, 0, 0);
+  } // End Critical section
   
-  hdcDrawWindow.SetBackgroundTransparent();
-  hdcMask.SetBackgroundOpaque();
-
-  // paint draw window black to start
-  hdcDrawWindow.SelectObject(LK_BLACK_PEN);
-  hdcDrawWindow.Rectangle(MapRect.left,MapRect.top, MapRect.right,MapRect.bottom);
-
-  ScreenSurface.Copy(0, 0, MapRect.right-MapRect.left,
-         MapRect.bottom-MapRect.top, 
-         hdcDrawWindow, 0, 0);
-
   // This is just here to give fully rendered start screen
   UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
   MapDirty = true;
@@ -148,18 +151,18 @@ void MapWindow::DrawThread ()
 			const int fromX=startScreen.x-targetScreen.x;
 			const int fromY=startScreen.y-targetScreen.y;
 
-			ScreenSurface.Whiteness(0, 0,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
+			BackBufferSurface.Whiteness(0, 0,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 
-			ScreenSurface.Copy(0, 0,
+			BackBufferSurface.Copy(0, 0,
 				MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
-				hdcDrawWindow, 
+				DrawSurface, 
 				fromX,fromY);
 
 			POINT centerscreen;
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-			DrawMapScale(ScreenSurface,MapRect,false);
-			DrawCrossHairs(ScreenSurface, centerscreen, MapRect);
+			DrawMapScale(BackBufferSurface,MapRect,false);
+			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
 			lastdrawwasbitblitted=true;
 		} else {
 			// THIS IS NOT GOING TO HAPPEN!
@@ -167,9 +170,9 @@ void MapWindow::DrawThread ()
 			// The map was not dirty, and we are not in fastpanning mode.
 			// FastRefresh!  We simply redraw old bitmap. 
 			//
-			ScreenSurface.Copy(0, 0, MapRect.right-MapRect.left,
+			BackBufferSurface.Copy(0, 0, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
-				hdcDrawWindow, 0, 0);
+				DrawSurface, 0, 0);
 
 			lastdrawwasbitblitted=true;
 		}
@@ -198,14 +201,14 @@ void MapWindow::DrawThread ()
 				lasthere=LKHearthBeats;
 				goto _dontbitblt;
 			}
-			ScreenSurface.Copy(0, 0, MapRect.right-MapRect.left,
+			BackBufferSurface.Copy(0, 0, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
-				hdcDrawWindow, 0, 0);
+				DrawSurface, 0, 0);
 
 			POINT centerscreen;
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-			DrawMapScale(ScreenSurface,MapRect,false);
-			DrawCrossHairs(ScreenSurface, centerscreen, MapRect);
+			DrawMapScale(BackBufferSurface,MapRect,false);
+			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
             MainWindow.Redraw(MapRect);
 			continue;
 		} 
@@ -218,13 +221,13 @@ _dontbitblt:
 	lastdrawwasbitblitted=false;
 	MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
-	RenderMapWindow(MapRect);
+	RenderMapWindow(DrawSurface, MapRect);
     
 	if (!ForceRenderMap && !first_run) {
-		ScreenSurface.Copy(0, 0,
+		BackBufferSurface.Copy(0, 0,
 			MapRect.right-MapRect.left,
 			MapRect.bottom-MapRect.top, 
-			hdcDrawWindow, 0, 0);
+			DrawSurface, 0, 0);
 
 	}
 
@@ -233,9 +236,9 @@ _dontbitblt:
 	if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
 		POINT centerscreen;
 		centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-		DrawMapScale(ScreenSurface,MapRect,false);
-		DrawCompass(ScreenSurface, MapRect, DisplayAngle);
-		DrawCrossHairs(ScreenSurface, centerscreen, MapRect);
+		DrawMapScale(BackBufferSurface,MapRect,false);
+		DrawCompass(BackBufferSurface, MapRect, DisplayAngle);
+		DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
 	}
 
 	UpdateTimeStats(false);

@@ -262,7 +262,7 @@ bool WndMain::OnSize(int cx, int cy) {
 extern StartupState_t ProgramStarted;
 bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     if(ProgramStarted >= psFirstDrawDone) {
-        Surface.Copy(Rect.left, Rect.top, Rect.right - Rect.left, Rect.bottom - Rect.top, ScreenSurface, Rect.left, Rect.top);
+        Surface.Copy(Rect.left, Rect.top, Rect.right - Rect.left, Rect.bottom - Rect.top, BackBufferSurface, Rect.left, Rect.top);
     } else {
         
     }

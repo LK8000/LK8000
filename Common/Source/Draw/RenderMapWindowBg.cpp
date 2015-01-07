@@ -95,10 +95,10 @@ QuickRedraw:
 			if (LKVarioBar) LKDrawVario(Surface,rc);
 
 			if (IsThermalBarVisible()) {
-				DrawThermalBand(hdcDrawWindow, rc);
+				DrawThermalBand(Surface, rc);
 			}
 
-			DrawFinalGlide(hdcDrawWindow,rc);
+			DrawFinalGlide(Surface,rc);
 		}
 
 	} else {
@@ -335,7 +335,7 @@ _skip_2:
 
   if (NOTANYPAN) {
     if ( IsThermalBarVisible() ) {
-        DrawThermalBand(hdcDrawWindow, rc);
+        DrawThermalBand(Surface, rc);
     }
 
     if (IsMultimapOverlaysText()) DrawLook8000(Surface,rc);
@@ -369,11 +369,11 @@ _skip_2:
   if (ISGAAIRCRAFT && IsMultimapOverlaysGauges() && NOTANYPAN) DrawHSIarc(Surface,Orig,DrawRect);
 
   if (!INPAN) {
-	DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom
-	DrawCompass(hdcDrawWindow, rc, DisplayAngle);
+	DrawMapScale(Surface,rc, zoom.BigZoom()); // unused BigZoom
+	DrawCompass(Surface, rc, DisplayAngle);
   }
 
-  if (IsMultimapOverlaysGauges() && NOTANYPAN) DrawFinalGlide(hdcDrawWindow,rc);
+  if (IsMultimapOverlaysGauges() && NOTANYPAN) DrawFinalGlide(Surface,rc);
 
 
 #ifdef DRAWDEBUG

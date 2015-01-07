@@ -20,13 +20,13 @@
 void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
       LKColor whitecolor = LKColor(0xff,0xff,0xff);
 
-  hdcTempAsp.SetTextColor(whitecolor);
-  hdcTempAsp.SetBackgroundTransparent();
-  hdcTempAsp.SetBkColor(whitecolor);
-  hdcTempAsp.SelectObject(LK_WHITE_PEN);
-  hdcTempAsp.SelectObject(LKBrush_White);
+  TempSurface.SetTextColor(whitecolor);
+  TempSurface.SetBackgroundTransparent();
+  TempSurface.SetBkColor(whitecolor);
+  TempSurface.SelectObject(LK_WHITE_PEN);
+  TempSurface.SelectObject(LKBrush_White);
 
-  hdcTempAsp.FillRect(&rc, LKBrush_White);
+  TempSurface.FillRect(&rc, LKBrush_White);
 #ifdef HAVE_HATCHED_BRUSH
   if (GetAirSpaceFillType() == asp_fill_patterns_borders) {
     hdcbuffer.FillRect(&rc, LKBrush_White);
@@ -59,7 +59,7 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
   
   int nDC1 = hdcbuffer.SaveState();
   int nDC2 = hdcMask.SaveState();
-  int nDC3 = hdcTempAsp.SaveState();
+  int nDC3 = TempSurface.SaveState();
 
 #ifdef HAVE_HATCHED_BRUSH    
   if (GetAirSpaceFillType() != asp_fill_border_only) {
@@ -94,10 +94,10 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
               found = true;
             }
             // this color is used as the black bit
-            hdcTempAsp.SetTextColor(Colours[iAirspaceColour[airspace_type]]);
+            TempSurface.SetTextColor(Colours[iAirspaceColour[airspace_type]]);
             // get brush, can be solid or a 1bpp bitmap
-            hdcTempAsp.SelectObject(hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
-            (*it)->Draw(hdcTempAsp, rc, true);
+            TempSurface.SelectObject(hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+            (*it)->Draw(TempSurface, rc, true);
         }
       }//for
     }
@@ -108,14 +108,14 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
   if (found) {
     if (borders_only) {
         hdcbuffer.SetTextColor(RGB_BLACK);
-        hdcTempAsp.CopyWithMask(
+        TempSurface.CopyWithMask(
                 rc.left,rc.top,
                 rc.right-rc.left,rc.bottom-rc.top,
                 hdcbuffer,rc.left,rc.top,
                 hdcMask,rc.left,rc.top);
     }
-    hdcTempAsp.SelectObject(LKBrush_Hollow);
-    hdcTempAsp.SelectObject(LK_WHITE_PEN);
+    TempSurface.SelectObject(LKBrush_Hollow);
+    TempSurface.SelectObject(LK_WHITE_PEN);
   }
 
     if (1) {
@@ -128,33 +128,33 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
             found = true;
           }
           if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only)  ^ (asp_selected_flash && (*it)->Selected()) ) {
-            hdcTempAsp.SelectObject(LK_BLACK_PEN);
+            TempSurface.SelectObject(LK_BLACK_PEN);
           } else {
-            hdcTempAsp.SelectObject(hAirspacePens[airspace_type]);
+            TempSurface.SelectObject(hAirspacePens[airspace_type]);
           }
 		  if(((*it)->DrawStyle()==adsDisabled))
-		    hdcTempAsp.SelectObject(LKPen_Grey_N1);
-          (*it)->Draw(hdcTempAsp, rc, false);
+		    TempSurface.SelectObject(LKPen_Grey_N1);
+          (*it)->Draw(TempSurface, rc, false);
         }
       }//for
     }
 
   if (found) {
     // need to do this to prevent drawing of colored outline
-    hdcTempAsp.SelectObject(LK_WHITE_PEN);
+    TempSurface.SelectObject(LK_WHITE_PEN);
     Surface.TransparentCopy(
                    rc.left,rc.top,
                    rc.right-rc.left,rc.bottom-rc.top,
-                   hdcTempAsp,
+                   TempSurface,
                    rc.left,rc.top);
     
     // restore original color
     //    SetTextColor(hDCTemp, origcolor);
-    hdcTempAsp.SetBackgroundOpaque();
+    TempSurface.SetBackgroundOpaque();
   }
   hdcbuffer.RestoreState(nDC1);
   hdcMask.RestoreState(nDC2);    
-  hdcTempAsp.RestoreState(nDC3);    
+  TempSurface.RestoreState(nDC3);    
 }
 
 

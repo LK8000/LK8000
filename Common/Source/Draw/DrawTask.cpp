@@ -139,7 +139,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const POINT &Orig_A
     double tmp;
 
     LKColor whitecolor = RGB_WHITE;
-    LKColor origcolor = hDCTempTask.SetTextColor(whitecolor);
+    LKColor origcolor = Surface.SetTextColor(whitecolor);
 
     static short size_tasklines=0;
 
@@ -354,7 +354,7 @@ DoInit[MDI_DRAWTASK]=false;
     }
 
     // restore original color
-    hDCTempTask.SetTextColor(origcolor);
+    Surface.SetTextColor(origcolor);
     Surface.SelectObject(oldpen);
     Surface.SelectObject(oldbrush);
 }

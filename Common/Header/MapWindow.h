@@ -642,7 +642,7 @@ class MapWindow {
 
 
 protected:
-  static LKBitmapSurface ScreenSurface;
+  static LKBitmapSurface BackBufferSurface;
 
 private:
   static int iSnailNext;
@@ -650,13 +650,12 @@ private:
   static int iLongSnailNext;
 #endif
 
-  static LKWindowSurface TempSurface; // used as AttribDC for Bitmap Surface.
+  static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
 
-  static LKBitmapSurface hdcDrawWindow;
+  static LKBitmapSurface DrawSurface;
   
-  static LKBitmapSurface hDCTempTask;
-  static LKBitmapSurface hdcTempTerrainAbove;
-  static LKBitmapSurface hdcTempAsp; // Only used For Airspaces drawing
+  static LKBitmapSurface TempSurface;
+  
   static LKMaskBitmapSurface hdcMask; // Only used For Airspaces drawing "Transparent Border" or "Paterns Borders"
   static LKBitmapSurface hdcbuffer; // Used For aispaces
   
@@ -714,7 +713,7 @@ private:
 
   static Poco::ThreadTarget MapWindowThreadRun;
 
-  static void RenderMapWindow(const RECT& rc);
+  static void RenderMapWindow(LKSurface& Surface, const RECT& rc);
   static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
 				const POINT &Orig,
 				const POINT &Orig_Aircraft);

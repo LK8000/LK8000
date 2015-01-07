@@ -34,35 +34,35 @@ _doit:
 
   LKColor whitecolor = LKColor(0xff,0xff,0xff);
   LKColor graycolor = LKColor(0xf0,0xf0,0xf0);
-  LKColor origcolor = hdcTempTerrainAbove.SetTextColor(whitecolor);
+  LKColor origcolor = TempSurface.SetTextColor(whitecolor);
 
-  hdcTempTerrainAbove.SetBackgroundTransparent();
+  TempSurface.SetBackgroundTransparent();
 
-  hdcTempTerrainAbove.SetBkColor(whitecolor);
+  TempSurface.SetBkColor(whitecolor);
 
-  hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
-  hdcTempTerrainAbove.SetTextColor(graycolor);
-  hdcTempTerrainAbove.SelectObject(hAboveTerrainBrush);
-  hdcTempTerrainAbove.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
-  hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
-  hdcTempTerrainAbove.SelectObject(LKBrush_White);
-  hdcTempTerrainAbove.Polygon(Groundline,NUMTERRAINSWEEPS+1);
+  TempSurface.SelectObject(LK_WHITE_PEN);
+  TempSurface.SetTextColor(graycolor);
+  TempSurface.SelectObject(hAboveTerrainBrush);
+  TempSurface.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
+  TempSurface.SelectObject(LK_WHITE_PEN);
+  TempSurface.SelectObject(LKBrush_White);
+  TempSurface.Polygon(Groundline,NUMTERRAINSWEEPS+1);
 
   // need to do this to prevent drawing of colored outline
-  hdcTempTerrainAbove.SelectObject(LK_WHITE_PEN);
+  TempSurface.SelectObject(LK_WHITE_PEN);
 #ifdef HAVE_HATCHED_BRUSH
   Surface.TransparentCopy(
           rc.left,rc.top,
           rc.right-rc.left,rc.bottom-rc.top,
-          hdcTempTerrainAbove,
+          TempSurface,
           rc.left,rc.top);
 #else
-  Surface.AlphaBlendNotWhite(rc, hdcTempTerrainAbove, rc, 255/2);
+  Surface.AlphaBlendNotWhite(rc, TempSurface, rc, 255/2);
 #endif
 
   // restore original color
-  hdcTempTerrainAbove.SetTextColor(origcolor);
-  hdcTempTerrainAbove.SetBackgroundOpaque();
+  TempSurface.SetTextColor(origcolor);
+  TempSurface.SetBackgroundOpaque();
 
 }
 

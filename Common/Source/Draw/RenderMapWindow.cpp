@@ -42,7 +42,7 @@ bool FastZoom;
 //
 // CALLED BY THE DRAW_THREAD MAIN LOOP
 //
-void MapWindow::RenderMapWindow(const RECT& rc)
+void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 {
   // First of all we set the flag for DrawBottom. This is critical.
   if (NOTANYPAN)
@@ -110,19 +110,19 @@ void MapWindow::RenderMapWindow(const RECT& rc)
 	FastZoom=true;
   }
 
-  RenderMapWindowBg(hdcDrawWindow, rc, Orig, Orig_Aircraft);
+  RenderMapWindowBg(Surface, rc, Orig, Orig_Aircraft);
 
   // No reason to check for bigzoom here, because we are not drawing the map
   if (DONTDRAWTHEMAP) {
-  	DrawFlightMode(hdcDrawWindow, rc);
-  	DrawGPSStatus(hdcDrawWindow, rc);
-	DrawFunctions1HZ(hdcDrawWindow,rc);
+  	DrawFlightMode(Surface, rc);
+  	DrawGPSStatus(Surface, rc);
+	DrawFunctions1HZ(Surface,rc);
 	return;
   }
 
   // Logger indicator, flight indicator, battery indicator
   // Not while panning
-  if (!INPAN) DrawFlightMode(hdcDrawWindow, rc);
+  if (!INPAN) DrawFlightMode(Surface, rc);
 
   //
   // When fast zoom requested, do not loose time with frills
@@ -134,10 +134,10 @@ void MapWindow::RenderMapWindow(const RECT& rc)
   }
   
   // GPS FIX warnings
-  DrawGPSStatus(hdcDrawWindow, rc);
+  DrawGPSStatus(Surface, rc);
 
   // Alarms &C.
-  DrawFunctions1HZ(hdcDrawWindow,rc);
+  DrawFunctions1HZ(Surface,rc);
 
 }
 

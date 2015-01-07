@@ -46,16 +46,14 @@ POINT MapWindow::Orig_Screen;
 RECT MapWindow::MapRect; // the entire screen area in use
 RECT MapWindow::DrawRect; // the portion of MapRect for drawing terrain, topology etc. (the map)
 
-LKWindowSurface MapWindow::TempSurface;
+LKWindowSurface MapWindow::WindowSurface;
 
-LKBitmapSurface MapWindow::ScreenSurface;
+LKBitmapSurface MapWindow::BackBufferSurface;
 
-LKBitmapSurface MapWindow::hdcDrawWindow;
+LKBitmapSurface MapWindow::DrawSurface;
   
-LKBitmapSurface MapWindow::hDCTempTask;
-LKBitmapSurface MapWindow::hdcTempTerrainAbove;
+LKBitmapSurface MapWindow::TempSurface;
 
-LKBitmapSurface MapWindow::hdcTempAsp;
 LKMaskBitmapSurface MapWindow::hdcMask;
 LKBitmapSurface MapWindow::hdcbuffer;
 
@@ -172,11 +170,9 @@ void MapWindow::_OnSize(int cx, int cy) {
     // this is Used for check Thread_Draw don't use surface object.
     Poco::FastMutex::ScopedLock Lock(Surface_Mutex);
 
-    ScreenSurface.Resize(cx, cy);
-    hdcDrawWindow.Resize(cx, cy);
-    hDCTempTask.Resize(cx, cy);
-    hdcTempTerrainAbove.Resize(cx, cy);
-    hdcTempAsp.Resize(cx, cy);
+    BackBufferSurface.Resize(cx, cy);
+    DrawSurface.Resize(cx, cy);
+    TempSurface.Resize(cx, cy);
     hdcbuffer.Resize(cx, cy);
     hdcMask.Resize(cx, cy);
 
@@ -205,14 +201,12 @@ void MapWindow::UpdateActiveScreenZone(int cx, int cy) {
 }
 
 void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
-    TempSurface.Create(Wnd);
-    ScreenSurface.Create(TempSurface, cx, cy);
-    hdcDrawWindow.Create(TempSurface, cx, cy);
-    hDCTempTask.Create(TempSurface, cx, cy);
-    hdcTempTerrainAbove.Create(TempSurface, cx, cy);
-    hdcTempAsp.Create(TempSurface, cx, cy);
-    hdcbuffer.Create(TempSurface, cx, cy);
-    hdcMask.Create(TempSurface, cx, cy);
+    WindowSurface.Create(Wnd);
+    BackBufferSurface.Create(WindowSurface, cx, cy);
+    DrawSurface.Create(WindowSurface, cx, cy);
+    TempSurface.Create(WindowSurface, cx, cy);
+    hdcbuffer.Create(WindowSurface, cx, cy);
+    hdcMask.Create(WindowSurface, cx, cy);
 
     UpdateActiveScreenZone(cx, cy);
     
@@ -221,15 +215,13 @@ void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
 }
 
 void MapWindow::_OnDestroy() {
-    ScreenSurface.Release();
-    hdcDrawWindow.Release();
-    hDCTempTask.Release();
-    hdcTempTerrainAbove.Release();
-    hdcTempAsp.Release();
+    BackBufferSurface.Release();
+    DrawSurface.Release();
+    TempSurface.Release();
     hdcbuffer.Release();
     hdcMask.Release();
 
-    TempSurface.Release();
+    WindowSurface.Release();
 }
 
 /*

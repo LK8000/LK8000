@@ -51,7 +51,7 @@ void MapWindow::ClearTptAirSpace(LKSurface& Surface, const RECT& rc) {
   // copy original bitmap into temp (for saving fully transparent areas)
   int width  = rc.right - rc.left;
   int height = rc.bottom - rc.top;
-  hdcTempAsp.Copy(rc.left, rc.top, width, height, Surface, rc.left, rc.top);
+  TempSurface.Copy(rc.left, rc.top, width, height, Surface, rc.left, rc.top);
 
   if (GetAirSpaceFillType() == asp_fill_ablend_borders) {
     // Prepare layers
@@ -92,7 +92,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
    
   int nDC1 = hdcbuffer.SaveState();
   int nDC2 = hdcMask.SaveState();
-  int nDC3 = hdcTempAsp.SaveState();
+  int nDC3 = TempSurface.SaveState();
 #ifdef AIRSPACE_BORDER
 DrawAirSpaceBorders(Surface, rc);
 #endif
@@ -127,8 +127,8 @@ DrawAirSpaceBorders(Surface, rc);
                 ClearTptAirSpace(Surface, rc);
               }
               // set filling brush
-              hdcTempAsp.SelectObject(GetAirSpaceSldBrushByClass(airspace_type));
-              (*it)->Draw(hdcTempAsp, rc, true);
+              TempSurface.SelectObject(GetAirSpaceSldBrushByClass(airspace_type));
+              (*it)->Draw(TempSurface, rc, true);
             }
       }//for
     }//else borders_only
@@ -137,13 +137,13 @@ DrawAirSpaceBorders(Surface, rc);
   // alpha blending
   if (found) {
     if (borders_only) {
-        hdcTempAsp.CopyWithMask(
+        TempSurface.CopyWithMask(
                 rc.left,rc.top,
                 rc.right-rc.left,rc.bottom-rc.top,
                 hdcbuffer,rc.left,rc.top,
                 hdcMask,rc.left,rc.top);
     }
-    Surface.AlphaBlend(rc, hdcTempAsp, rc, (255 * GetAirSpaceOpacity()) / 100);
+    Surface.AlphaBlend(rc, TempSurface, rc, (255 * GetAirSpaceOpacity()) / 100);
   }
   
   // draw it again, just the outlines
@@ -182,5 +182,5 @@ if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_sel
   
   hdcbuffer.RestoreState(nDC1);
   hdcMask.RestoreState(nDC2);    
-  hdcTempAsp.RestoreState(nDC3);    
+  TempSurface.RestoreState(nDC3);    
 } // DrawTptAirSpace()
