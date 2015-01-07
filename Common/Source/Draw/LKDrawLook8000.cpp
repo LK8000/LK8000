@@ -693,12 +693,14 @@ nextinit:
 #else
             size_t len = LengthUTF8(BufferValue);
             if(len > 0) {
-                std::pair<unsigned, const char *> next = NextUTF8(BufferValue);
-                for (size_t i = 0; i < len-1; ++i)
-                  next = NextUTF8(next.second);
-                const TCHAR* last = next.second;
+                const char* last = BufferValue;
+                std::pair<unsigned, const char *> next = NextUTF8(last);
+                while(next.second && *(next.second)) {
+                    last = next.second;
+                    next = NextUTF8(last);
+                }
 #endif
-                Surface.GetTextSize(last, 1, &tsize);
+                Surface.GetTextSize(last, _tcslen(last), &tsize);
                 tsize.cx = -tsize.cx;
             } else {
                 tsize.cx = 0;

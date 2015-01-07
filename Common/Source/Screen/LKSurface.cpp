@@ -526,6 +526,7 @@ void LKSurface::AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface
 #endif    
 
 bool LKSurface::GetTextSize(const TCHAR* lpString, int cbString, SIZE* lpSize) {
+	assert(cbString <= (int)_tcslen(lpString));
 #ifdef WIN32
     return ::GetTextExtentPoint(*this, lpString, cbString, lpSize);
 #else
