@@ -18,6 +18,8 @@
 #include "Logger.h"
 #include "Dialogs.h"
 #include "Screen/LKBitmapSurface.h"
+#include "Event/Event.h"
+#include "Asset.hpp"
 
 #define KEYDEBOUNCE 100
 
@@ -778,112 +780,126 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
     }
 }
 
+extern void SimFastForward(void);
+
+// return true if Shift key is down
+static bool GetShiftKeyState() {
+
+#ifdef ENABLE_SDL
+#if SDL_MAJOR_VERSION >= 2
+    const Uint8 *keystate = ::SDL_GetKeyboardState(NULL);
+    return keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT];
+#else
+    const Uint8 *keystate = ::SDL_GetKeyState(NULL);
+    return (keystate[SDLK_LSHIFT] || keystate[SDLK_RSHIFT]);
+#endif
+#elif defined(WIN32)
+    short nVirtKey = GetKeyState(VK_SHIFT); 
+    return (nVirtKey & 0x8000);
+#else
+    return false;
+#endif
+}
+
+
+
 void MapWindow::_OnKeyDown(unsigned KeyCode) {
     if (!Debounce(50)) return;
 
     //
     // Special SIM mode keys for PC
     //
-#if (WINDOWSPC>0)
-    extern void SimFastForward(void);
-    if (SIMMODE && IsMultiMapShared() && (!ReplayLogger::IsEnabled())) {
-        short nn;
-        switch (KeyCode) {
-            case 0x21: // VK_PRIOR PAGE UP
-                nn = GetKeyState(VK_SHIFT);
-                if (nn < 0) {
-                    if (Units::GetUserAltitudeUnit() == unFeet)
-                        GPS_INFO.Altitude += 45.71999999 * 10;
-                    else
-                        GPS_INFO.Altitude += 10 * 10;
-                } else {
-                    if (Units::GetUserAltitudeUnit() == unFeet)
-                        GPS_INFO.Altitude += 45.71999999;
-                    else
-                        GPS_INFO.Altitude += 10;
-                }
-                TriggerGPSUpdate();
-                return;
-            case 0x22: // VK_NEXT PAGE DOWN
-                nn = GetKeyState(VK_SHIFT);
-                if (nn < 0) {
-                    if (Units::GetUserAltitudeUnit() == unFeet)
-                        GPS_INFO.Altitude -= 45.71999999 * 10;
-                    else
-                        GPS_INFO.Altitude -= 10 * 10;
-                } else {
-                    if (Units::GetUserAltitudeUnit() == unFeet)
-                        GPS_INFO.Altitude -= 45.71999999;
-                    else
-                        GPS_INFO.Altitude -= 10;
-                }
-                if (GPS_INFO.Altitude <= 0) GPS_INFO.Altitude = 0;
-                TriggerGPSUpdate();
-                return;
-            case 0x26: // VK_UP
-                nn = GetKeyState(VK_SHIFT);
-                if (nn < 0) {
-                    SimFastForward();
-                } else {
-                    InputEvents::eventChangeGS(_T("kup"));
-                }
-                TriggerGPSUpdate();
-                return;
-            case 0x28: // VK_DOWN
-                InputEvents::eventChangeGS(_T("kdown"));
-                TriggerGPSUpdate();
-                return;
-            case 0x25: // VK_LEFT
-                nn = GetKeyState(VK_SHIFT);
-                if (nn < 0) {
-                    GPS_INFO.TrackBearing -= 0.1;
+    if(HasKeyboard()) {
+        if (SIMMODE && IsMultiMapShared() && (!ReplayLogger::IsEnabled())) {
+            switch (KeyCode) {
+                case KEY_PRIOR: // VK_PRIOR PAGE UP
+                    if (GetShiftKeyState()) {
+                        if (Units::GetUserAltitudeUnit() == unFeet)
+                            GPS_INFO.Altitude += 45.71999999 * 10;
+                        else
+                            GPS_INFO.Altitude += 10 * 10;
+                    } else {
+                        if (Units::GetUserAltitudeUnit() == unFeet)
+                            GPS_INFO.Altitude += 45.71999999;
+                        else
+                            GPS_INFO.Altitude += 10;
+                    }
+                    TriggerGPSUpdate();
+                    return;
+                case KEY_NEXT: // VK_NEXT PAGE DOWN
+                    if (GetShiftKeyState()) {
+                        if (Units::GetUserAltitudeUnit() == unFeet)
+                            GPS_INFO.Altitude -= 45.71999999 * 10;
+                        else
+                            GPS_INFO.Altitude -= 10 * 10;
+                    } else {
+                        if (Units::GetUserAltitudeUnit() == unFeet)
+                            GPS_INFO.Altitude -= 45.71999999;
+                        else
+                            GPS_INFO.Altitude -= 10;
+                    }
+                    if (GPS_INFO.Altitude <= 0) GPS_INFO.Altitude = 0;
+                    TriggerGPSUpdate();
+                    return;
+                case KEY_UP: // VK_UP
+                    if (GetShiftKeyState()) {
+                        SimFastForward();
+                    } else {
+                        InputEvents::eventChangeGS(_T("kup"));
+                    }
+                    TriggerGPSUpdate();
+                    return;
+                case KEY_DOWN: // VK_DOWN
+                    InputEvents::eventChangeGS(_T("kdown"));
+                    TriggerGPSUpdate();
+                    return;
+                case KEY_LEFT: // VK_LEFT
+                    if (GetShiftKeyState()) {
+                        GPS_INFO.TrackBearing -= 0.1;
 
-                } else {
-                    GPS_INFO.TrackBearing -= 5;
-                }
-                if (GPS_INFO.TrackBearing < 0) GPS_INFO.TrackBearing += 360;
-                else if (GPS_INFO.TrackBearing > 359) GPS_INFO.TrackBearing -= 360;
+                    } else {
+                        GPS_INFO.TrackBearing -= 5;
+                    }
+                    if (GPS_INFO.TrackBearing < 0) GPS_INFO.TrackBearing += 360;
+                    else if (GPS_INFO.TrackBearing > 359) GPS_INFO.TrackBearing -= 360;
 
-                TriggerGPSUpdate();
-                return;
-            case 0x27: // VK_RIGHT
+                    TriggerGPSUpdate();
+                    return;
+                case KEY_RIGHT: // VK_RIGHT
+                    if (GetShiftKeyState()) {
+                        GPS_INFO.TrackBearing += 0.1;
+                    } else {
+                        GPS_INFO.TrackBearing += 5;
+                    }
+                    if (GPS_INFO.TrackBearing < 0) GPS_INFO.TrackBearing += 360;
+                    else if (GPS_INFO.TrackBearing > 359) GPS_INFO.TrackBearing -= 360;
 
-                nn = GetKeyState(VK_SHIFT);
-                if (nn < 0) {
-                    GPS_INFO.TrackBearing += 0.1;
-                } else {
-                    GPS_INFO.TrackBearing += 5;
-                }
-                if (GPS_INFO.TrackBearing < 0) GPS_INFO.TrackBearing += 360;
-                else if (GPS_INFO.TrackBearing > 359) GPS_INFO.TrackBearing -= 360;
+                    TriggerGPSUpdate();
+                    return;
+            }
+        }
 
-                TriggerGPSUpdate();
-                return;
+        extern double ReplayTime;
+        if (SIMMODE && IsMultiMapShared() && ReplayLogger::IsEnabled()) {
+            switch (KeyCode) {
+                case KEY_PRIOR: // VK_PRIOR PAGE UP
+                    ReplayTime += 300;
+                    return;
+                case KEY_UP: // VK_UP
+                    ReplayLogger::TimeScale++;
+                    return;
+                case KEY_DOWN: // VK_DOWN
+                    if (ReplayLogger::TimeScale > 0) ReplayLogger::TimeScale--;
+                    if (ReplayLogger::TimeScale < 0) ReplayLogger::TimeScale = 0; // to be safe
+                    return;
+                case KEY_RIGHT: // VK_RIGHT
+                    ReplayTime += 60;
+                    return;
+            }
         }
     }
 
-    extern double ReplayTime;
-    if (SIMMODE && IsMultiMapShared() && ReplayLogger::IsEnabled()) {
-        switch (KeyCode) {
-            case 0x21: // VK_PRIOR PAGE UP
-                ReplayTime += 300;
-                return;
-            case 0x26: // VK_UP
-                ReplayLogger::TimeScale++;
-                return;
-            case 0x28: // VK_DOWN
-                if (ReplayLogger::TimeScale > 0) ReplayLogger::TimeScale--;
-                if (ReplayLogger::TimeScale < 0) ReplayLogger::TimeScale = 0; // to be safe
-                return;
-            case 0x27: // VK_RIGHT
-                ReplayTime += 60;
-                return;
-        }
-    }
-
-#endif
-
-
+#ifdef UNDER_CE
     if (GlobalModelType == MODELTYPE_PNA_HP31X) {
         //		if (wParam == 0x7b) wParam=0xc1;  // VK_APP1 	
         if (KeyCode == 0x7b) KeyCode = 0x1b; // VK_ESCAPE
@@ -1034,7 +1050,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         }
     }
 #endif // not LXMINIMAP
-
+#endif // not UNDER_CE
     //
     // This is the handler for bluetooth keyboards
     //

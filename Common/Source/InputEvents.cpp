@@ -2803,18 +2803,18 @@ double step=0;
 	if (GPS_INFO.Speed <0) GPS_INFO.Speed=0;
 	return;
   }
-#if (WINDOWSPC>0)
-  // key action from PC is always fine-tuned
-  if (_tcscmp(misc, TEXT("kup")) == 0){
-	GPS_INFO.Speed += step;
-	return;
+  if(HasKeyboard()) {
+    // key action from PC is always fine-tuned
+    if (_tcscmp(misc, TEXT("kup")) == 0){
+      GPS_INFO.Speed += step;
+      return;
+    }
+    if (_tcscmp(misc, TEXT("kdown")) == 0){
+      GPS_INFO.Speed -= step;
+      if (GPS_INFO.Speed <0) GPS_INFO.Speed=0;
+      return;
+    }
   }
-  if (_tcscmp(misc, TEXT("kdown")) == 0){
-	GPS_INFO.Speed -= step;
-	if (GPS_INFO.Speed <0) GPS_INFO.Speed=0;
-	return;
-  }
-#endif
 }
 
 

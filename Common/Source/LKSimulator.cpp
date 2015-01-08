@@ -11,7 +11,7 @@
 #include "LKMapWindow.h"
 
 #include "McReady.h"
-
+#include "Asset.hpp"
 
 
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
@@ -254,18 +254,13 @@ void LKSimulator(void) {
 }
 
 
-#if (WINDOWSPC>0)
 void SimFastForward() {
-
-  double gs=GPS_INFO.Speed*10.0;
-  if (gs<100) gs=100;
-  FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
+    if(HasKeyboard()) {
+        double gs=GPS_INFO.Speed*10.0;
+        if (gs<100) gs=100;
+        FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
                           GPS_INFO.TrackBearing, gs,
                           &GPS_INFO.Latitude,
                           &GPS_INFO.Longitude);
-
+    }
 }
-
-
-#endif
-
