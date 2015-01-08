@@ -126,11 +126,12 @@ void PreloadInitialisation(bool ask) {
 //
 BOOL InitInstance()
 {
-  PreloadInitialisation(true);
   if(!IsEmbedded()) {
       ScreenSizeX = 800;
       ScreenSizeY = 480;
   }
+
+  PreloadInitialisation(true);
 
   RECT WindowSize;
 #ifdef __linux__
