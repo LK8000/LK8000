@@ -359,11 +359,15 @@ Font::TextSize(const TCHAR *text) const
   }
 
   if(glyph) {
-      // fix width for last glyph
-      x -= glyph->advance.x;
-      x += glyph->metrics.horiBearingX + glyph->metrics.width;
+      /* fix width for last glyph, horiBearingX+Width can be greater than advance, in most case for Oblique font.
+       * this fix need to be done only if advance is lower than horiBearingX+Width, otherwise, we broke right aligned text.
+       */
+      const FT_Pos offset = glyph->metrics.horiBearingX + glyph->metrics.width - glyph->advance.x;
+      if(offset > 0) {
+        x += offset;
+      }
   }
-  
+
   if(demibold) {
       // glyph are embolben by 32 (0.5 px), so for avoid rouding artefact, we need to had 1px to width;
       x += (1<<6);
