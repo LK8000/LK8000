@@ -203,13 +203,18 @@ EBROWSE         :=ebrowse
 GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 
 ######## output files
+ifeq ($(CONFIG_LINUX),y)
+    SUFFIX :=
+else
+    SUFFIX := .exe
+endif
 
 ifeq ($(DEBUG),y)
-OUTPUTS 	:= LK8000-$(TARGET)_debug$(EXE)
-OUTPUTS_NS	:= LK8000-$(TARGET)_debug-ns$(EXE)	
+OUTPUTS 	:= LK8000-$(TARGET)_debug$(SUFFIX)
+OUTPUTS_NS	:= LK8000-$(TARGET)_debug-ns$(SUFFIX)	
 else
-OUTPUTS 	:= LK8000-$(TARGET)$(EXE)
-OUTPUTS_NS	:= LK8000-$(TARGET)-ns$(EXE)
+OUTPUTS 	:= LK8000-$(TARGET)$(SUFFIX)
+OUTPUTS_NS	:= LK8000-$(TARGET)-ns$(SUFFIX)
 endif
 
 
