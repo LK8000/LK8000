@@ -17,7 +17,6 @@
 #include <malloc.h>
 
 #include "CharUpper.h"
-#include "KeyCode.h"
 
 #ifndef ASSERT
 #define ASSERT(x) assert(x)

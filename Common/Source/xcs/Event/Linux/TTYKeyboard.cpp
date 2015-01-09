@@ -23,7 +23,7 @@ Copyright_License {
 
 #include "TTYKeyboard.hpp"
 #include "Event/Queue.hpp"
-#include "KeyCode.h"
+#include "Event/Key.h"
 #include "Util/CharUtil.hpp"
 #include "IO/Async/IOLoop.hpp"
 
@@ -78,12 +78,12 @@ TTYKeyboard::HandleInputByte(char ch)
 
   case 0x0d:
     input_state = InputState::NONE;
-    queue.PushKeyPress(VK_RETURN);
+    queue.PushKeyPress(KEY_RETURN);
     return;
 
   case 0x1b:
     if (input_state == InputState::ESCAPE)
-      queue.PushKeyPress(VK_ESCAPE);
+      queue.PushKeyPress(KEY_ESCAPE);
     else
       input_state = InputState::ESCAPE;
     return;
@@ -104,19 +104,19 @@ TTYKeyboard::HandleInputByte(char ch)
     input_state = InputState::NONE;
     switch (ch) {
     case 'A':
-      queue.PushKeyPress(VK_UP);
+      queue.PushKeyPress(KEY_UP);
       break;
 
     case 'B':
-      queue.PushKeyPress(VK_DOWN);
+      queue.PushKeyPress(KEY_DOWN);
       break;
 
     case 'C':
-      queue.PushKeyPress(VK_RIGHT);
+      queue.PushKeyPress(KEY_RIGHT);
       break;
 
     case 'D':
-      queue.PushKeyPress(VK_LEFT);
+      queue.PushKeyPress(KEY_LEFT);
       break;
 
     case '[':
@@ -136,23 +136,23 @@ TTYKeyboard::HandleInputByte(char ch)
   case InputState::ESCAPE_BRACKET2:
     switch (ch) {
     case 'A':
-      queue.PushKeyPress(VK_F1);
+      queue.PushKeyPress(KEY_F1);
       break;
 
     case 'B':
-      queue.PushKeyPress(VK_F2);
+      queue.PushKeyPress(KEY_F2);
       break;
 
     case 'C':
-      queue.PushKeyPress(VK_F3);
+      queue.PushKeyPress(KEY_F3);
       break;
 
     case 'D':
-      queue.PushKeyPress(VK_F4);
+      queue.PushKeyPress(KEY_F4);
       break;
 
     case 'E':
-      queue.PushKeyPress(VK_F5);
+      queue.PushKeyPress(KEY_F5);
       break;
 
     default:
@@ -168,11 +168,11 @@ TTYKeyboard::HandleInputByte(char ch)
       input_state = InputState::NONE;
       if (ch == '~') {
         if (input_number >= 11 && input_number <= 16)
-          queue.PushKeyPress(VK_F1 + input_number - 11);
+          queue.PushKeyPress(KEY_F1 + input_number - 11);
         else if (input_number >= 17 && input_number <= 21)
-          queue.PushKeyPress(VK_F6 + input_number - 17);
+          queue.PushKeyPress(KEY_F6 + input_number - 17);
         else if (input_number >= 23 && input_number <= 24)
-          queue.PushKeyPress(VK_F11 + input_number - 23);
+          queue.PushKeyPress(KEY_F11 + input_number - 23);
       }
     }
 

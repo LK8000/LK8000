@@ -32,6 +32,7 @@
 #include "utils/stringext.h"
 #include "utils/openzip.h"
 #include "Asset.hpp"
+#include "Event/Event.h"
 
 // Sensible maximums 
 #define MAX_MODE 100
@@ -389,53 +390,52 @@ void InputEvents::UnloadString(){
 int InputEvents::findKey(const TCHAR *data) {
 
   if (_tcscmp(data, TEXT("APP1")) == 0)
-    return VK_APP1;
+    return KEY_APP1;
   else if (_tcscmp(data, TEXT("APP2")) == 0)
-    return VK_APP2;
+    return KEY_APP2;
   else if (_tcscmp(data, TEXT("APP3")) == 0)
-    return VK_APP3;
+    return KEY_APP3;
   else if (_tcscmp(data, TEXT("APP4")) == 0)
-    return VK_APP4;
+    return KEY_APP4;
   else if (_tcscmp(data, TEXT("APP5")) == 0)
-    return VK_APP5;
+    return KEY_APP5;
   else if (_tcscmp(data, TEXT("APP6")) == 0)
-    return VK_APP6;
+    return KEY_APP6;
   else if (_tcscmp(data, TEXT("F1")) == 0)
-    return VK_F1;
+    return KEY_F1;
   else if (_tcscmp(data, TEXT("F2")) == 0)
-    return VK_F2;
+    return KEY_F2;
   else if (_tcscmp(data, TEXT("F3")) == 0)
-    return VK_F3;
+    return KEY_F3;
   else if (_tcscmp(data, TEXT("F4")) == 0)
-    return VK_F4;
+    return KEY_F4;
   else if (_tcscmp(data, TEXT("F5")) == 0)
-    return VK_F5;
+    return KEY_F5;
   else if (_tcscmp(data, TEXT("F6")) == 0)
-    return VK_F6;
+    return KEY_F6;
   else if (_tcscmp(data, TEXT("F7")) == 0)
-    return VK_F7;
+    return KEY_F7;
   else if (_tcscmp(data, TEXT("F8")) == 0)
-    return VK_F8;
+    return KEY_F8;
   else if (_tcscmp(data, TEXT("F9")) == 0)
-    return VK_F9;
+    return KEY_F9;
   else if (_tcscmp(data, TEXT("F10")) == 0)
-    return VK_F10;
+    return KEY_F10;
   else if (_tcscmp(data, TEXT("LEFT")) == 0)
-    return VK_LEFT;
+    return KEY_LEFT;
   else if (_tcscmp(data, TEXT("RIGHT")) == 0)
-    return VK_RIGHT;
+    return KEY_RIGHT;
   else if (_tcscmp(data, TEXT("UP")) == 0)
-    return VK_UP;
-  else if (_tcscmp(data, TEXT("DOWN")) == 0) {
-    return VK_DOWN;
-		}
+    return KEY_UP;
+  else if (_tcscmp(data, TEXT("DOWN")) == 0)
+    return KEY_DOWN;
   else if (_tcscmp(data, TEXT("RETURN")) == 0)
-    return VK_RETURN;
+    return KEY_RETURN;
   else if (_tcscmp(data, TEXT("ESCAPE")) == 0)
-    return VK_ESCAPE;
+    return KEY_ESCAPE;
 #ifdef LXMINIMAP
   else if (_tcscmp(data, TEXT("SPACE")) == 0)
-    return VK_SPACE;
+    return KEY_SPACE;
 #endif
 
   else if (_tcslen(data) == 1)

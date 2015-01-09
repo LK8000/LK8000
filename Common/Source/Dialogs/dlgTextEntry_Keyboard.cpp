@@ -11,6 +11,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include <ctype.h>
+#include "Event/Event.h"
 
 static bool first= true;
 static WndForm *wf=NULL;
@@ -93,7 +94,7 @@ static void UpdateTextboxProp(void)
 
 static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
   switch(KeyCode & 0xffff){
-    case VK_LEFT:
+    case KEY_LEFT:
       if (cursor<1)
         return true; // min width
       cursor--;

@@ -12,7 +12,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "utils/fileext.h"
-
+#include "Event/Event.h"
 
 #define MAXNOTETITLE 200	// max number of characters in a title note
 #define MAXNOTEDETAILS 5000	// max size of each note details
@@ -165,12 +165,12 @@ static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
     Window * pBtn = NULL;
 
     switch (KeyCode & 0xffff) {
-        case VK_LEFT:
+        case KEY_LEFT:
         case '6':
             pBtn = wf->FindByName(TEXT("cmdPrev"));
             NextPage(-1);
             break;
-        case VK_RIGHT:
+        case KEY_RIGHT:
         case '7':
             pBtn = wf->FindByName(TEXT("cmdNext"));
             NextPage(+1);

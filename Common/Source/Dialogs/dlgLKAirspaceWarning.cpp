@@ -15,6 +15,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "RGB.h"
+#include "Event/Event.h"
 
 CAirspaceBase airspace_copy;
 AirspaceWarningMessage msg;
@@ -71,10 +72,10 @@ static bool OnTimer(){
 
 static bool OnKeyDown(Window* pWnd, unsigned KeyCode) {
     switch (KeyCode) {
-        case VK_RETURN:
+        case KEY_RETURN:
             OnAckForTimeClicked(nullptr);
             return true;
-        case VK_ESCAPE:
+        case KEY_ESCAPE:
             OnCloseClicked(nullptr);
             return true;
     }

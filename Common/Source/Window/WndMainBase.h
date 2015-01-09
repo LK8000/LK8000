@@ -17,7 +17,6 @@
 #endif
 
 #ifdef __linux__
-#include "KeyCode.h"
 #include "Linux/WndMainBase.h"
 #endif
 

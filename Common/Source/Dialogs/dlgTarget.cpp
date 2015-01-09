@@ -11,7 +11,7 @@
 #include "Calculations2.h"
 #include "Dialogs.h"
 #include "WindowControls.h"
-
+#include "Event/Event.h"
 
 static WndForm *wf=NULL;
 static WindowControl *btnMove = NULL;
@@ -213,16 +213,16 @@ static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
     if (TargetMoveMode) {
         StartupStore(TEXT("... moving%s"), NEWLINE);
         switch (KeyCode & 0xffff) {
-            case VK_UP:
+            case KEY_UP:
                 MoveTarget(0);
                 return true;
-            case VK_DOWN:
+            case KEY_DOWN:
                 MoveTarget(180);
                 return true;
-            case VK_LEFT:
+            case KEY_LEFT:
                 MoveTarget(270);
                 return true;
-            case VK_RIGHT:
+            case KEY_RIGHT:
                 MoveTarget(90);
                 return true;
         }

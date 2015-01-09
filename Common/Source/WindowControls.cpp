@@ -1949,10 +1949,10 @@ bool WndForm::OnKeyDownNotify(Window* pWnd, unsigned KeyCode) {
         WindowControl * pCtrl = ActiveControl->GetParent();
         if (pCtrl) {
             switch (KeyCode & 0xffff) {
-                case VK_UP:
+                case KEY_UP:
                     pCtrl->FocusPrev(ActiveControl);
                     break;
-                case VK_DOWN:
+                case KEY_DOWN:
                     pCtrl->FocusNext(ActiveControl);
                     break;
             }
@@ -1993,8 +1993,8 @@ WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Capt
 
 bool WndButton::OnKeyDown(unsigned KeyCode) {
     switch (KeyCode) {
-        case VK_RETURN:
-        case VK_SPACE:
+        case KEY_RETURN:
+        case KEY_SPACE:
             if (!mDown) {
                 mDown = true;
                 Redraw();
@@ -2006,8 +2006,8 @@ bool WndButton::OnKeyDown(unsigned KeyCode) {
 
 bool WndButton::OnKeyUp(unsigned KeyCode) {
     switch (KeyCode) {
-        case VK_RETURN:
-        case VK_SPACE:
+        case KEY_RETURN:
+        case KEY_SPACE:
             if (!Debounce()) return (1); // prevent false trigger
             if (mDown) {
                 mDown = false;
@@ -2247,14 +2247,13 @@ bool WndProperty::SetReadOnly(bool Value){
 
 bool WndProperty::OnKeyDown(unsigned KeyCode) {
     switch (KeyCode) {
-        case VK_RIGHT:
+        case KEY_RIGHT:
             IncValue();
             return true;
-        case VK_LEFT:
+        case KEY_LEFT:
             DecValue();
             return true;
-        case VK_RETURN:
-        case VK_F23:
+        case KEY_RETURN:
             if (this->mDialogStyle) {
                 if (OnLButtonDown((POINT) {0, 0})) {
                     return true;
@@ -2273,10 +2272,10 @@ bool WndProperty::OnKeyDown(unsigned KeyCode) {
 bool WndProperty::OnKeyUp(unsigned KeyCode) {
     if (KeyTimer(false, KeyCode&0xffff)) {
         // activate tool tips if hit return for long time
-        if ((KeyCode&0xffff) == VK_RETURN || (KeyCode&0xffff) == VK_F23) { // Compaq uses VKF23
+        if ((KeyCode&0xffff) == KEY_RETURN) {
             if (OnHelp()) return true;
         }
-    } else if ((KeyCode&0xffff) == VK_RETURN) {
+    } else if ((KeyCode&0xffff) == KEY_RETURN) {
         if (CallSpecial()) return true;
     }
     return false;
@@ -2799,30 +2798,30 @@ bool WndListFrame::RecalculateIndices(bool bigscroll) {
 
 bool WndListFrame::OnItemKeyDown(WindowControl *Sender, unsigned KeyCode) {
     switch (KeyCode) {
-        case VK_RETURN:
+        case KEY_RETURN:
             if (mOnListEnterCallback) {
                 mOnListEnterCallback(this, &mListInfo);
                 RedrawScrolled(false);
                 return true;
             }
             return false;
-        case VK_LEFT:
+        case KEY_LEFT:
             if ((mListInfo.ScrollIndex > 0)
                     &&(mListInfo.ItemCount > mListInfo.ItemInPageCount)) {
                 mListInfo.ScrollIndex -= mListInfo.ItemInPageCount;
             }
             return RecalculateIndices(true);
-        case VK_RIGHT:
+        case KEY_RIGHT:
             if ((mListInfo.ItemIndex + mListInfo.ScrollIndex <
                     mListInfo.ItemCount)
                     &&(mListInfo.ItemCount > mListInfo.ItemInPageCount)) {
                 mListInfo.ScrollIndex += mListInfo.ItemInPageCount;
             }
             return RecalculateIndices(true);
-        case VK_DOWN:
+        case KEY_DOWN:
             mListInfo.ItemIndex++;
             return RecalculateIndices(false);
-        case VK_UP:
+        case KEY_UP:
             mListInfo.ItemIndex--;
             return RecalculateIndices(false);
     }

@@ -13,7 +13,7 @@
 #include "Airspace.h"
 #include "AirspaceWarning.h"
 #include "Dialogs.h"
-
+#include "Event/Event.h"
 
 typedef struct{
   CAirspace *airspace;
@@ -583,13 +583,13 @@ static bool FormKeyDown(Window* pWnd, unsigned KeyCode){
   unsigned NewIndex = TypeFilterIdx;
 
   switch(KeyCode & 0xffff){
-    case VK_F1:
+    case KEY_F1:
       NewIndex = 0;
     break;
-    case VK_F2:
+    case KEY_F2:
       NewIndex = 2;
     break;
-    case VK_F3:
+    case KEY_F3:
       NewIndex = 3;
     break;
   }
