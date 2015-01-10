@@ -671,6 +671,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
   }
 #endif
 
+  Surface.SetTextColor(RGB_BLACK);
 
   if (DrawListIndex < n){
 

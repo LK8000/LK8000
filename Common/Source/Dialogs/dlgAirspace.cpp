@@ -49,6 +49,7 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
     w2 = Surface.GetTextWidth(gettext(TEXT("_@M241_")))+ScreenScale*10;
     x0 = w0-w1-w2;
 
+    Surface.SetTextColor(RGB_BLACK);
     Surface.DrawTextClip(2*ScreenScale, 2*ScreenScale,
                    label, x0-ScreenScale*10);
 

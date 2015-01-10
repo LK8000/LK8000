@@ -49,6 +49,7 @@ static void OnStartPointPaintListItem(WindowControl * Sender, LKSurface& Surface
         _tcscpy(label, TEXT(" "));
       }
     }
+    Surface.SetTextColor(RGB_BLACK);
     Surface.DrawText(2*ScreenScale, 2*ScreenScale, label, _tcslen(label));
   }
 }

@@ -494,6 +494,8 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
     int i = LowLimit + DrawListIndex;
 
+    Surface.SetTextColor(RGB_BLACK);
+
 // Poco::Thread::sleep(100);
 	const TCHAR *Name = NULL;
 	if (AirspaceSelectInfo[i].airspace) Name = AirspaceSelectInfo[i].airspace->Name();

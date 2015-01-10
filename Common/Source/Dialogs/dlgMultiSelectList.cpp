@@ -236,6 +236,8 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
 static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     (void) Sender;
 #define PICTO_WIDTH 50
+    
+    Surface.SetTextColor(RGB_BLACK);
     if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex >= 0)) {
         int j;
         static CAirspaceBase airspace_copy;
