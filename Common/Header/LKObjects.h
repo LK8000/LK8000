@@ -62,6 +62,9 @@ OEXTERN LKBrush	LKBrush_Vario_pos2 ;
 OEXTERN LKBrush	LKBrush_Vario_pos3 ;
 OEXTERN LKBrush	LKBrush_Vario_pos4 ;
 
+// Contextual LKBrush
+OEXTERN	LKBrush	LKBrush_Higlighted;
+
 OEXTERN	LKPen	LKPen_Black_N0;
 OEXTERN	LKPen	LKPen_Black_N1;
 OEXTERN	LKPen	LKPen_Black_N2;

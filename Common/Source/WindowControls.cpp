@@ -1561,7 +1561,7 @@ void WindowControl::Paint(LKSurface& Surface) {
     if (!mDontPaintSelector && mCanFocus && HasFocus()) {
         rc.right -= 2;
         rc.bottom -= 2;
-        Surface.FillRect(&rc, LKBrush_DarkYellow2);
+        Surface.FillRect(&rc, LKBrush_Higlighted);
     }
     PaintBorder(Surface);
     PaintSelector(Surface);
