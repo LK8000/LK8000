@@ -124,8 +124,16 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 			pos=18;
 			break;
 		default:
-			pos=11;
-			break;
+                    // customized definition
+                    if (ScreenSizeX>ScreenSizeY) {
+                        // Landscape
+                        pos = 11;
+                     } else {
+                        // Portrait
+                        // try to get a rule for text position...
+                        pos = 16 + (3*(ScreenSizeY-320)/480);
+                    }
+                    break;
 	}
 	if (FullResetAsked) {
 		_stprintf(mes,_T("*** %s ***"),gettext(_T("_@M1757_")));

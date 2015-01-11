@@ -31,6 +31,8 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
     _stprintf(srcfile,_T("%s" DIRSEP "%s_%s." IMG_EXT),sDir, fprefix,GetSizeSuffix() );
     if (!lk::filesystem::exist(srcfile)) {
         fullsize = false;
+        
+        // Get correct splash bitmap size and orientation
         switch (ScreenSize) {
             case ss800x480:
             case ss640x480:
@@ -57,7 +59,21 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
                 break;
 
             default:
-                _stprintf(srcfile, _T("%s" DIRSEP "%s_LS." IMG_EXT), sDir, fprefix);
+                // Screen undefined
+                
+                if (ScreenSizeX>ScreenSizeY) {
+                    // Landscape
+                    if (ScreenSizeY<400)
+                        _stprintf(srcfile, _T("%s" DIRSEP "%s_LS." IMG_EXT), sDir, fprefix);
+                    else
+                        _stprintf(srcfile, _T("%s" DIRSEP "%s_LB." IMG_EXT), sDir, fprefix);
+                } else {
+                    // Portrait
+                   if (ScreenSizeX<400)
+                        _stprintf(srcfile, _T("%s" DIRSEP "%s_PS." IMG_EXT), sDir, fprefix);
+                    else
+                        _stprintf(srcfile, _T("%s" DIRSEP "%s_PB." IMG_EXT), sDir, fprefix);
+                }
                 break;
         }
     }
@@ -73,7 +89,7 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
             Surface.DrawBitmap(0,0,ScreenSizeX,ScreenSizeY-NIBLSCALE(35),hWelcomeBitmap,bmSize.cx,bmSize.cy);
         } else if ( (bmSize.cx < ScreenSizeX)||(bmSize.cy < ScreenSizeY)) {
             Surface.DrawBitmap(NIBLSCALE(20),0,ScreenSizeX-NIBLSCALE(40), ScreenSizeY-BottomSize-NIBLSCALE(20),hWelcomeBitmap,bmSize.cx,bmSize.cy);
-        } else {
+         } else {
             Surface.DrawBitmap((ScreenSizeX-bmSize.cx)/2,0,bmSize.cx,IBLSCALE(260),hWelcomeBitmap,bmSize.cx,bmSize.cy);
         }
     }
