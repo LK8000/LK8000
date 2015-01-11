@@ -84,7 +84,12 @@
 // -------------  PROGRAM COLORS IN USE ---------------------
 // MessageBox 
 #define RGB_TASKLINECOL RGB_DGREEN1
+#ifdef GREYSCALE
+#define RGB_BUTTONS	RGB_WHITE
+#else
 #define RGB_BUTTONS	RGB_BUTTGREEN
+#endif
+
 
 // The box title background, originally yellow
 #define RGB_MENUTITLEBG	RGB_BLACK
