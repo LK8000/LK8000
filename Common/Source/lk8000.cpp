@@ -301,17 +301,6 @@ int main() {
   GPS_INFO.SwitchState.VarioCircling = false;
   #endif
 
-#ifdef WIN32
-  SYSTEMTIME pda_time;
-  GetSystemTime(&pda_time);
-  GPS_INFO.Time  = pda_time.wHour*3600+pda_time.wMinute*60+pda_time.wSecond;
-  GPS_INFO.Year  = pda_time.wYear;
-  GPS_INFO.Month = pda_time.wMonth;
-  GPS_INFO.Day	 = pda_time.wDay;
-  GPS_INFO.Hour  = pda_time.wHour;
-  GPS_INFO.Minute = pda_time.wMinute;
-  GPS_INFO.Second = pda_time.wSecond;
-#else
   time_t  linux_time;
   linux_time = time(0);
   struct tm *pda_time;
@@ -323,7 +312,6 @@ int main() {
   GPS_INFO.Hour  = pda_time->tm_hour;
   GPS_INFO.Minute = pda_time->tm_min;
   GPS_INFO.Second = pda_time->tm_sec;  
-#endif
 
   CalculateNewPolarCoef();
   #if TESTBENCH
