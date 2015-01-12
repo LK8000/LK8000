@@ -125,7 +125,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 			break;
 		default:
                     // customized definition
-                    if (ScreenSizeX>ScreenSizeY) {
+                    if (ScreenLandscape) {
                         // Landscape
                         pos = 11;
                      } else {

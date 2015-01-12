@@ -61,7 +61,7 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
             default:
                 // Screen undefined
                 
-                if (ScreenSizeX>ScreenSizeY) {
+                if (ScreenLandscape) {
                     // Landscape
                     if (ScreenSizeY<400)
                         _stprintf(srcfile, _T("%s" DIRSEP "%s_LS." IMG_EXT), sDir, fprefix);
