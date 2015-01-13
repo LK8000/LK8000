@@ -63,12 +63,8 @@ void LKObjects_Create() {
   LKBrush_Vario_pos4.Create(RGB_GREEN.ChangeBrightness(1.0));
   
   // Contextual LKBrush
-#ifdef GREYSCALE
-LKBrush_Higlighted.Create(RGB_WHITE);
-#else
-LKBrush_Higlighted.Create(RGB_YELLOW);
-#endif
-
+  LKBrush_Higlighted.Create(RGB_HIGHTLIGHT);
+  LKBrush_FormBackGround.Create(RGB_WINBACKGROUND);
   
   // CUSTOM PENS
   LKPen_Black_N0.Create(PEN_SOLID,0,RGB_BLACK);
@@ -248,6 +244,7 @@ void LKObjects_Delete() {
   LKBrush_Vario_pos4.Release();
   
   LKBrush_Higlighted.Release();
+  LKBrush_FormBackGround.Release();
 
 
   LKPen_Black_N0.Release();

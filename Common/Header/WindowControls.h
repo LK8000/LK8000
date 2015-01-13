@@ -15,6 +15,7 @@
 #include "Screen/FontReference.h"
 #include "Window/WndCtrlBase.h"
 #include "Poco/Timestamp.h"
+#include "LKObjects.h"
 
 #ifndef USE_GDI
 #include <Screen/VirtualCanvas.hpp>
@@ -535,14 +536,16 @@ class WindowControl : public WndCtrlBase {
 
     WindowControl *mOwner;
     WindowControl *mTopOwner;
-    LKBitmap mBmpMem;
+
     int  mBorderKind;
+
     LKColor mColorBack;
     LKColor mColorFore;
-    BrushReference mhBrushBk;
     LKBrush mBrushBk;
+
     PenReference mhPenBorder;
     PenReference mhPenSelector;
+
     FontReference mhFont;
     TCHAR *mHelpText;
 
@@ -554,7 +557,7 @@ class WindowControl : public WndCtrlBase {
     int  mBorderSize;
 
     static int InstCount;
-    static BrushReference hBrushDefaultBk;
+
     static PenReference hPenDefaultBorder;
     static PenReference hPenDefaultSelector;
 
@@ -616,7 +619,15 @@ class WindowControl : public WndCtrlBase {
     virtual LKColor SetBackColor(const LKColor& Value);
     const LKColor& GetBackColor(void) const {return(mColorBack);};
 
-    BrushReference GetBackBrush() const {return(mhBrushBk);};
+    BrushReference GetBackBrush() const {
+        if( mBrushBk) {
+            return mBrushBk;
+        } else if (GetParent()) {
+            return GetParent()-> GetBackBrush();
+        } else {
+            return LKBrush_FormBackGround;
+        }
+    }
 
     PenReference GetBorderPen() const {return(mhPenBorder);};
     void SetBorderPen(const LKPen& Pen) { mhPenBorder = Pen;}

@@ -64,6 +64,7 @@ OEXTERN LKBrush	LKBrush_Vario_pos4 ;
 
 // Contextual LKBrush
 OEXTERN	LKBrush	LKBrush_Higlighted;
+OEXTERN	LKBrush	LKBrush_FormBackGround; // default Form Background
 
 OEXTERN	LKPen	LKPen_Black_N0;
 OEXTERN	LKPen	LKPen_Black_N1;

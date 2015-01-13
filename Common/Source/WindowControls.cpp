@@ -1128,7 +1128,7 @@ void InitWindowControlModule(void);
 static LKColor bkColor = RGB_WINBACKGROUND; // PETROL
 static LKColor fgColor = RGB_WINFOREGROUND; // WHITE
 int WindowControl::InstCount=0;
-BrushReference WindowControl::hBrushDefaultBk;
+
 PenReference WindowControl::hPenDefaultBorder;
 PenReference WindowControl::hPenDefaultSelector;
 
@@ -1170,7 +1170,6 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   mColorFore = fgColor; // WHITE
 
   if (InstCount == 0){
-	hBrushDefaultBk = LKBrush_Petrol;
 	hPenDefaultBorder = LKPen_White_N1;
 	hPenDefaultSelector = LKPen_Petrol_C2;
   }
@@ -1191,7 +1190,6 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   if (mOwner != NULL)
     mOwner->AddClient(this);  
 
-  mhBrushBk = hBrushDefaultBk;
   mhPenBorder = hPenDefaultBorder;
   mhPenSelector = hPenDefaultSelector;
   mBorderSize = 1;
@@ -1468,7 +1466,6 @@ LKColor WindowControl::SetBackColor(const LKColor& Value){
   if (mColorBack != Value){
 	mColorBack = Value;
 	mBrushBk.Create(mColorBack);
-	mhBrushBk = mBrushBk;
 	if (IsVisible()){
         Redraw();
 	}
@@ -1555,7 +1552,7 @@ void WindowControl::Paint(LKSurface& Surface) {
     rc.right += 2;
     rc.bottom += 2;
 
-    Surface.FillRect(&rc, mhBrushBk);
+    Surface.FillRect(&rc, GetBackBrush());
 
     // JMW added highlighting, useful for lists
     if (!mDontPaintSelector && mCanFocus && HasFocus()) {
