@@ -192,7 +192,7 @@ bool CheckAlarms(unsigned short al);
 void MasterTimeReset(void);
 bool DoOptimizeRoute(void);
 TCHAR * WhatTimeIsIt(void);
-void OutOfMemory(const char *where, int line);
+void OutOfMemory(const TCHAR *where, int line);
 
 bool MatchesExtension(const TCHAR *filename, const TCHAR* extension);
 BOOL PlayResource (const TCHAR* lpName);

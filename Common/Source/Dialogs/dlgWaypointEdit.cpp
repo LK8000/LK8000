@@ -82,7 +82,7 @@ static void OnCommentClicked(WndButton* pWnd) {
 		// do we have a new comment?
 		global_wpt->Comment = (TCHAR*)malloc((_tcslen(comment)+2)*sizeof(TCHAR));
 		if (global_wpt->Comment == NULL) {
-			OutOfMemory(__FILE__,__LINE__);
+			OutOfMemory(_T(__FILE__),__LINE__);
 		} else {
 			_tcscpy(global_wpt->Comment,comment);
 		}

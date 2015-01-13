@@ -407,9 +407,9 @@ void TaskFinishMessage(void) {
 }
 
 extern void MSG_NotEnoughMemory(void);
-void OutOfMemory(const char *where, int line) {
+void OutOfMemory(const TCHAR *where, int line) {
 
-  StartupStore(_T(">>> OUT OF MEMORY in <%S> line %d%s"),where,line,NEWLINE);
+  StartupStore(_T(">>> OUT OF MEMORY in <%s> line %d%s"),where,line,NEWLINE);
   MSG_NotEnoughMemory();
 
 }

@@ -178,7 +178,7 @@ public:
 
     if (hBuf==NULL)  {
 	StartupStore(_T("------ TerrainRenderer: malloc(%d) failed!%s"),sizeof(unsigned short)*ixs*iys, NEWLINE);
-	OutOfMemory(__FILE__,__LINE__);
+	OutOfMemory(_T(__FILE__),__LINE__);
 	//
 	// We *must* disable terrain at this point.
 	//
@@ -196,7 +196,7 @@ public:
 
     colorBuf = (BGRColor*)malloc(256*128*sizeof(BGRColor));
     if (colorBuf==NULL)  {
-	OutOfMemory(__FILE__,__LINE__);
+	OutOfMemory(_T(__FILE__),__LINE__);
 	extern void ToggleMultimapTerrain(void);
 	ToggleMultimapTerrain();
 	delete sbuf;

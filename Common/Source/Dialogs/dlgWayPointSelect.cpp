@@ -196,14 +196,14 @@ static void PrepareData(void){
   SetWPNameCaption(TEXT("*"));
   WayPointSelectInfo = (WayPointSelectInfo_t*)malloc(sizeof(WayPointSelectInfo_t) * WayPointList.size());
   if (WayPointSelectInfo==NULL) {
-	OutOfMemory(__FILE__,__LINE__);
+	OutOfMemory(_T(__FILE__),__LINE__);
 	return;
   }
   memset(WayPointSelectInfo, 0, sizeof(WayPointSelectInfo_t) * WayPointList.size());
 
   StrIndex = (int*)malloc(sizeof(int)*(WayPointList.size()+1));
   if (StrIndex==NULL) {
-	OutOfMemory(__FILE__,__LINE__);
+	OutOfMemory(_T(__FILE__),__LINE__);
 	free(WayPointSelectInfo);
 	WayPointSelectInfo=NULL;
 	return;

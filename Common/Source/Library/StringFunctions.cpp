@@ -500,7 +500,7 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
 
   new_string = (TCHAR *)malloc((_tcslen(newbuffer)+1)*sizeof(TCHAR));
   if (new_string==NULL) {
-	OutOfMemory(__FILE__,__LINE__);
+	OutOfMemory(_T(__FILE__),__LINE__);
 	return NULL;
   }
   _tcscpy(new_string, newbuffer);
@@ -509,7 +509,7 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
 _notoken:
   new_string = (TCHAR *)malloc((_tcslen(buffer)+1)*sizeof(TCHAR));
   if (new_string==NULL) {
-	OutOfMemory(__FILE__,__LINE__);
+	OutOfMemory(_T(__FILE__),__LINE__);
 	return NULL;
   }
   _tcscpy(new_string, buffer);

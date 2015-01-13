@@ -130,7 +130,7 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
   }
     
   if (!TerrainMem) {
-    OutOfMemory(__FILE__,__LINE__);
+    OutOfMemory(_T(__FILE__),__LINE__);
     zzip_fclose(fpTerrain);
     terrain_valid = false;
   } else {

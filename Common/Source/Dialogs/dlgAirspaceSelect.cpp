@@ -151,7 +151,7 @@ static void PrepareData(void){
     malloc(sizeof(AirspaceSelectInfo_t) * NumberOfAirspaces);
 
   if (AirspaceSelectInfo==NULL) {
-	OutOfMemory(__FILE__,__LINE__);
+	OutOfMemory(_T(__FILE__),__LINE__);
 	return;
   }
 

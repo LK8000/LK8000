@@ -2980,7 +2980,7 @@ void CAirspaceManager::LoadSettings() {
         CCriticalSection::CGuard guard(_csairspaces);
         asp_data = (asp_data_struct*) malloc(sizeof (asp_data_struct) * _airspaces.size());
         if (asp_data == NULL) {
-            OutOfMemory(__FILE__, __LINE__);
+            OutOfMemory(_T(__FILE__), __LINE__);
             fclose(f);
             return;
         }
