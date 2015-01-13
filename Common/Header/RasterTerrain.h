@@ -11,8 +11,8 @@ typedef struct _TERRAIN_INFO
   double Top;
   double Bottom;
   double StepSize;
-  long Rows;
-  long Columns;
+  uint32_t Rows;
+  uint32_t Columns;
 } TERRAIN_INFO;
 
 

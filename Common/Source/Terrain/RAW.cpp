@@ -35,11 +35,11 @@ void RasterMapRaw::SetFieldRounding(double xr, double yr) {
 short RasterMapRaw::_GetFieldAtXY(unsigned int lx,
                                   unsigned int ly) {
 
-  unsigned int ix = CombinedDivAndMod(lx);
-  unsigned int iy = CombinedDivAndMod(ly);
+  uint32_t ix = CombinedDivAndMod(lx);
+  uint32_t iy = CombinedDivAndMod(ly);
   
-  if ((ly>=(unsigned int)TerrainInfo.Rows)
-      ||(lx>=(unsigned int)TerrainInfo.Columns)) {
+  if ((ly>=TerrainInfo.Rows)
+      ||(lx>=TerrainInfo.Columns)) {
     return TERRAIN_INVALID;
   } 
   
@@ -50,10 +50,10 @@ short RasterMapRaw::_GetFieldAtXY(unsigned int lx,
   if (!ix && !iy) {
     return h1;
   }
-  if (lx+1 >= (unsigned int)TerrainInfo.Columns) {
+  if (lx+1 >= TerrainInfo.Columns) {
     return h1;
   }
-  if (ly+1 >= (unsigned int)TerrainInfo.Rows) {
+  if (ly+1 >= TerrainInfo.Rows) {
     return h1;
   }
   int h3 = tm[TerrainInfo.Columns+1]; // (x+1, y+1)
@@ -108,7 +108,7 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
 	return false;
   }
     
-  long nsize = TerrainInfo.Rows*TerrainInfo.Columns;
+  size_t nsize = TerrainInfo.Rows*TerrainInfo.Columns;
   #ifdef HC_DMALLOC
   StartupStore(_T(". Terrain size is %ld, max hblock %lu %s"),
     (long)nsize*sizeof(short), CheckMaxHeapBlock(), NEWLINE);
@@ -135,7 +135,7 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
   } else {
     dwBytesRead = zzip_fread(TerrainMem, 1, nsize*sizeof(short), fpTerrain);
     
-    for (int i=0; i< nsize; i++) {
+    for (size_t i=0; i< nsize; ++i) {
       max_field_value = max(TerrainMem[i], max_field_value);
     }
     zzip_fclose(fpTerrain);
