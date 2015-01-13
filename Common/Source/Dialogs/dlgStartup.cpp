@@ -14,6 +14,7 @@
 #include "LKProfiles.h"
 #include "Dialogs.h"
 #include "dlgTools.h"
+#include "OS/Memory.h"
 
 
 extern void Shutdown(void);
@@ -160,11 +161,11 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 #endif
 	RawWrite(Surface,mes,1,1, RGB_LIGHTGREY,WTMODE_NORMAL);
 
-	unsigned long freeram = CheckFreeRam()/1024;
+	size_t freeram = CheckFreeRam()/1024;
 	TCHAR buffer[MAX_PATH];
 	LocalPath(buffer);
-	unsigned long freestorage = FindFreeSpace(buffer);
-	_stprintf(mes,_T("free ram %.1ldM  storage %.1ldM"), freeram/1024,freestorage/1024);
+	size_t freestorage = FindFreeSpace(buffer);
+	_stprintf(mes,_T("free ram %.1luM  storage %.1luM"), freeram/1024,freestorage/1024);
 	RawWrite(Surface,mes,3,0, RGB_LIGHTGREY,WTMODE_NORMAL);
 
 	if ( ScreenSize != ss320x240 && ScreenLandscape )

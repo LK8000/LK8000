@@ -9,13 +9,15 @@
  * Created on 8 décembre 2014
  */
 
+#include <stddef.h>
 
-unsigned long CheckFreeRam(void) {
-    return (~0);
+
+size_t CheckFreeRam(void) {
+    return ~((size_t)0);
 }
 
-unsigned long FindFreeSpace(const char *path) {
-    return (~0);
+size_t FindFreeSpace(const char *path) {
+    return ~((size_t)0);
 }
 
 void MyCompactHeaps() {

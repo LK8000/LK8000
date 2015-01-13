@@ -173,10 +173,6 @@ int HexStrToInt(TCHAR *Source);
 void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec = NULL);
 
 
-unsigned long CheckFreeRam(void);
-// check maximum allocatable heap block
-unsigned long CheckMaxHeapBlock(void);
-
 const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[]);
 bool UseContestEngine(void);
 int  GetWaypointFileFormatType(const TCHAR* wextension);
@@ -198,10 +194,6 @@ bool DoOptimizeRoute(void);
 TCHAR * WhatTimeIsIt(void);
 void OutOfMemory(const char *where, int line);
 
-void MemCheckPoint();
-void MemLeakCheck();
-void MyCompactHeaps();
-unsigned long FindFreeSpace(const TCHAR *path);
 bool MatchesExtension(const TCHAR *filename, const TCHAR* extension);
 BOOL PlayResource (const TCHAR* lpName);
 void CreateDirectoryIfAbsent(const TCHAR *filename);

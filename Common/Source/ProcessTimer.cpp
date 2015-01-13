@@ -10,6 +10,7 @@
 #include "Message.h"
 #include "InputEvents.h"
 #include "TraceThread.h"
+#include "OS/Memory.h"
 
 extern int ConnectionProcessTimer(int itimeout);
 extern void CommonProcessTimer(void);

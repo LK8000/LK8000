@@ -10,13 +10,14 @@
 #include <stdio.h>      /* printf */
 #include <stdarg.h>     /* va_list, va_start, va_arg, va_end */
 #include "utils/stringext.h"
+#include "OS/Memory.h"
 
 void StartupLogFreeRamAndStorage() {
-  unsigned long freeram = CheckFreeRam()/1024;
+  size_t freeram = CheckFreeRam()/1024;
   TCHAR buffer[MAX_PATH];
   LocalPath(buffer);
-  unsigned long freestorage = FindFreeSpace(buffer);
-  StartupStore(TEXT(". Free ram=%ld K  storage=%ld K%s"), freeram,freestorage,NEWLINE);
+  size_t freestorage = FindFreeSpace(buffer);
+  StartupStore(TEXT(". Free ram=%lu K  storage=%lu K%s"), freeram,freestorage,NEWLINE);
 }
 
 

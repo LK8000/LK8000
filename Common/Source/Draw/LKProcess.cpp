@@ -12,7 +12,7 @@
 #include "Logger.h"
 #include "LKProcess.h"
 #include "DoInits.h"
-
+#include "OS/Memory.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
@@ -1876,7 +1876,7 @@ goto_bearing:
 		// B88 B89
 		case LK_EXP1:
 			_stprintf(BufferTitle, TEXT("RAM"));
-			_stprintf(BufferValue, TEXT("%d"),(int)(CheckFreeRam()/1024));
+			_stprintf(BufferValue, TEXT("%lu"),(CheckFreeRam()/1024));
                         valid=true;
                         break;
 

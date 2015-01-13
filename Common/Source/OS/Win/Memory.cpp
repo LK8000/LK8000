@@ -9,7 +9,7 @@
 #include "externs.h"
 
 
-unsigned long CheckFreeRam(void) {
+size_t CheckFreeRam(void) {
   MEMORYSTATUS    memInfo;
   // Program memory
   memInfo.dwLength = sizeof(memInfo);

@@ -10,6 +10,7 @@
 #include <ctype.h> // needed for Wine
 #include "Topology.h"
 #include "Multimap.h"
+#include "OS/Memory.h"
 
 #include <Poco/Latin1Encoding.h>
 #include <Poco/UTF16Encoding.h>
@@ -183,8 +184,8 @@ void Topology::initCache()
   // Unfortunatelly I don't find a suitable algorithm to estimate the loaded
   // shapefile's memory footprint so we never choose mode2. KR
   // v5 note by Paolo: mode2 had a critical bug in delete, so good we did not use it
-  long free_size = CheckFreeRam();
-  long bounds_size = sizeof(rectObj)*shpfile.numshapes;
+  size_t free_size = CheckFreeRam();
+  size_t bounds_size = sizeof(rectObj)*shpfile.numshapes;
 
   //Cache mode selection based on available memory
   cache_mode = 0;
@@ -503,7 +504,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 #ifdef DEBUG_TFC
   long free_size = CheckFreeRam();
-  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%ldM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), Poco::Timespan(starttick.elapsed()).totalMilliseconds(),NEWLINE);
+  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%luM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), Poco::Timespan(starttick.elapsed()).totalMilliseconds(),NEWLINE);
 #endif
 }
 

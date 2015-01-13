@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "RasterTerrain.h"
 #include "utils/openzip.h"
+#include "OS/Memory.h"
 
 #ifdef __MINGW32__
 #define int_fast8_t jas_int_fast8_t
@@ -117,13 +118,13 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
     (long)nsize*sizeof(short), NEWLINE);
   #endif
 
-  if (CheckFreeRam()>(unsigned long)(nsize*sizeof(short)+5000000)) {
+  if (CheckFreeRam()>(nsize*sizeof(short)+5000000U)) {
     // make sure there is 5 meg of ram left after allocating space
     TerrainMem = (short*)malloc(sizeof(short)*nsize);
   } else {
     zzip_fclose(fpTerrain);
-    StartupStore(_T(".... Load Terrain FAILED: Not enough memory (free=%ld need=%ld+5M)!\n"),
-    CheckFreeRam(), (unsigned long)(nsize*sizeof(short)));
+    StartupStore(_T(".... Load Terrain FAILED: Not enough memory (free=%lu need=%lu+5M)!\n"),
+            CheckFreeRam(), (nsize*sizeof(short)));
     TerrainMem = NULL;
     return false;
   }

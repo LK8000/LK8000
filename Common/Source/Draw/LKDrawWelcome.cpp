@@ -11,7 +11,7 @@
 #include "Logger.h"
 #include "Dialogs.h"
 #include "RGB.h"
-
+#include "OS/Memory.h"
 
 void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
@@ -84,7 +84,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   Surface.SelectObject(LK8InfoSmallFont);
 
 #if TESTBENCH
-  _stprintf(Buffer, _T("%d WPs, %0.1fM free"),WayPointList.size()-NUMRESWP,freeram);
+  _stprintf(Buffer, _T("%lu WPs, %0.1fM free"),WayPointList.size()-NUMRESWP,freeram);
 #else
   _tcscpy(Buffer,_T(""));
 #endif

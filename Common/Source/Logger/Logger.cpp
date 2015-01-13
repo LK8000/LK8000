@@ -14,6 +14,7 @@
 #include <ctype.h>
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
+#include "OS/Memory.h"
 
 // #define DEBUG_LOGGER	1
 
@@ -1077,7 +1078,7 @@ TCHAR testtext7[] = TEXT("2008-01-05-XXX-AAA-01.IGC");
 
 bool LoggerClearFreeSpace(void) {
   bool found = true;
-  unsigned long kbfree=0;
+  size_t kbfree=0;
   TCHAR pathname[MAX_PATH+1];
   TCHAR subpathname[MAX_PATH+1];
   int numtries = 0;
