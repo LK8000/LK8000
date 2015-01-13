@@ -348,11 +348,6 @@ _skip_2:
     
   if (IsMultimapOverlaysGauges() && (LKVarioBar && NOTANYPAN)) 
 	LKDrawVario(Surface,rc);
-  
-  // Draw glider or paraglider
-  if (extGPSCONNECT) {
-    DrawAircraft(Surface, Orig_Aircraft);
-  }
 
   if (NOTANYPAN) {
 	if (TrackBar) {
@@ -360,6 +355,13 @@ _skip_2:
 	    if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, DrawRect);
 	}
   }
+
+  // Draw glider or paraglider
+  if (extGPSCONNECT) {
+    DrawAircraft(Surface, Orig_Aircraft);
+  }
+
+
 
   #if USETOPOMARKS
   // marks on top...
