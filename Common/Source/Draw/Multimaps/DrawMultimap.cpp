@@ -111,12 +111,12 @@ void MapWindow::DrawMultimap_Topright(LKSurface& Surface, const RECT& rci) {
 		// If there is no topview, there is also no ACTIVE choice!
 		//
 		if (Current_Multimap_TopRect.bottom==0) return;
-		_stprintf(topright_txt, MsgToken(2231));
+		_tcscpy(topright_txt, MsgToken(2231));
 			wcolor=MMCOLOR_DISABLED;
 		break;
 
 	case MSM_MAPASP:
-		_stprintf(topright_txt, MsgToken(1293));
+		_tcscpy(topright_txt, MsgToken(1293));
 		if(SonarWarning) {
 			if (flip)
 				wcolor=MMCOLOR_ENABLED_FLIP;

@@ -206,7 +206,7 @@ _afterautotrm:
 		break;
 	case BM_AUX:
 		if (ISCAR) {
-			_stprintf(BufferTitle, MsgToken(1809)); // Moving
+			_tcscpy(BufferTitle, MsgToken(1809)); // Moving
 			if (DerivedDrawInfo.Flying) {
                                 showunit=Units::TimeToTextDown(BufferValue, (int)Trip_Moving_Time);
 				if (showunit)
@@ -279,7 +279,7 @@ _afterautotrm:
 		break;
 	case BM_AUX:
 		if (ISCAR) {
-			_stprintf(BufferTitle, MsgToken(1810)); // Steady
+			_tcscpy(BufferTitle, MsgToken(1810)); // Steady
 			if (DerivedDrawInfo.Flying) {
                                 showunit=Units::TimeToTextDown(BufferValue, (int)Trip_Steady_Time);
 				if (showunit)
@@ -363,7 +363,7 @@ _afterautotrm:
 		break;
 	case BM_AUX:
 		if (ISCAR) {
-			_stprintf(BufferTitle, MsgToken(1811)); // Total
+			_tcscpy(BufferTitle, MsgToken(1811)); // Total
 			if (DerivedDrawInfo.Flying) {
                                 showunit=Units::TimeToTextDown(BufferValue, (int)(Trip_Steady_Time+Trip_Moving_Time));
 				if (showunit)
@@ -394,7 +394,7 @@ _afterautotrm:
   			_tcscpy(BufferUnit, TEXT(""));
 			if (SIMMODE) {
 				// LKTOKEN _@M1199_ "Sat"
-				_stprintf(BufferTitle, MsgToken(1199));
+				_tcscpy(BufferTitle, MsgToken(1199));
 				_stprintf(BufferValue,TEXT("SIM"));
 			} else {
 				Value=DrawInfo.SatellitesUsed;
@@ -487,14 +487,14 @@ _afterautotrm:
 		break;
 	case BM_SYS:
 		// LKTOKEN _@M1068_ "HBAR"
-  		_stprintf(BufferTitle, MsgToken(1068));
+  		_tcscpy(BufferTitle, MsgToken(1068));
 		if (DrawInfo.BaroAltitudeAvailable) {
 			if (EnableNavBaroAltitude)
 				// LKTOKEN _@M894_ "ON"
-				_stprintf(BufferValue,MsgToken(894));
+				_tcscpy(BufferValue,MsgToken(894));
 			else
 				// LKTOKEN _@M491_ "OFF"
-				_stprintf(BufferValue,MsgToken(491));
+				_tcscpy(BufferValue,MsgToken(491));
 		} else
 			_stprintf(BufferValue,TEXT("---"));
   		showunit=false;
@@ -584,7 +584,7 @@ _afterautotrm:
 			showunit=false;
 		}
  		// LKTOKEN _@M1200_ "Start"
-		_stprintf(BufferTitle, MsgToken(1200));
+		_tcscpy(BufferTitle, MsgToken(1200));
 		break;
 	case BM_ALT:
 		if (ScreenLandscape) {

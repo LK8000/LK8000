@@ -162,12 +162,12 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
   // Must have at least two, max 12 waypoints
   if(decl->num_waypoints < 2) {
     // LKTOKEN  _@M1412_ = "Not enough waypoints!" 
-    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1412_")));
+    _tcsncpy(errBuffer, gettext(_T("_@M1412_")), errBufferLen);
     return FALSE;
   }
   if(decl->num_waypoints > 12) {
     // LKTOKEN  _@M1413_ = "Too many waypoints!" 
-    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1413_")));
+    _tcsncpy(errBuffer, gettext(_T("_@M1413_")), errBufferLen);
     return FALSE;
   }
   
@@ -184,7 +184,7 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
   CreateProgressDialog(buffer);
   if (!EWMicroRecorderTryConnect(d)) {
     // LKTOKEN  _@M1411_ = "Device not connected!" 
-    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1411_")));
+    _tcsncpy(errBuffer, gettext(_T("_@M1411_")), errBufferLen);
     return FALSE;
   }
   
@@ -228,7 +228,7 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
   if (!ExpectStringWait(d, TEXT("uploaded successfully"))) {
     // error!
     // LKTOKEN  _@M1415_ = "Declaration not accepted!" 
-    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1415_")));
+    _tcsncpy(errBuffer, gettext(_T("_@M1415_")), errBufferLen);
     nDeclErrorCode = 1;
   }
 

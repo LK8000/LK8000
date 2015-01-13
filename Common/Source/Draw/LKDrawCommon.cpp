@@ -289,20 +289,20 @@ void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 
 
 	// LKTOKEN _@M1300_ "Dist"
-	 _stprintf(Buffer,gettext(TEXT("_@M1300_"))); 
+	 _tcscpy(Buffer,gettext(TEXT("_@M1300_"))); 
 	// always sorted manually here!
 	LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	// LKTOKEN _@M1301_ "Dir"
-	_stprintf(Buffer,gettext(TEXT("_@M1301_"))); 
+	_tcscpy(Buffer,gettext(TEXT("_@M1301_"))); 
 	LKWriteText(Surface, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	// LKTOKEN _@M1302_ "rEff"
-	_stprintf(Buffer,gettext(TEXT("_@M1302_"))); 
+	_tcscpy(Buffer,gettext(TEXT("_@M1302_"))); 
 	LKWriteText(Surface, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	// LKTOKEN _@M1303_ "AltA"
-	_stprintf(Buffer,gettext(TEXT("_@M1303_"))); 
+	_tcscpy(Buffer,gettext(TEXT("_@M1303_"))); 
 	LKWriteText(Surface, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 
@@ -323,19 +323,19 @@ void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 		LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 		// LKTOKEN _@M1300_ "Dist"
-		_stprintf(Buffer,gettext(TEXT("_@M1300_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1300_"))); 
 		LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1301_ "Dir"
-		_stprintf(Buffer,gettext(TEXT("_@M1301_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1301_"))); 
 		LKWriteText(Surface, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1302_ "rEff"
-		_stprintf(Buffer,gettext(TEXT("_@M1302_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1302_"))); 
 		LKWriteText(Surface, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1308_ "Arriv"
-		_stprintf(Buffer,gettext(TEXT("_@M1308_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1308_"))); 
 		LKWriteText(Surface, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	} else {
 		if (curmapspace==MSM_COMMON)
@@ -347,19 +347,19 @@ void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 		LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 		// LKTOKEN _@M1304_ "Distance"
-		_stprintf(Buffer,gettext(TEXT("_@M1304_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1304_"))); 
 		LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1305_ "Direction"
-		_stprintf(Buffer,gettext(TEXT("_@M1305_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1305_"))); 
 		LKWriteText(Surface, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1306_ "ReqEff"
-		_stprintf(Buffer,gettext(TEXT("_@M1306_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1306_"))); 
 		LKWriteText(Surface, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1307_ "AltArr"
-		_stprintf(Buffer,gettext(TEXT("_@M1307_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1307_"))); 
 		LKWriteText(Surface, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	}
 	

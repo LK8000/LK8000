@@ -200,7 +200,7 @@ const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
   }
   UnlockTaskData();
   
-  _sntprintf(buffer, bufferLen, name);
+  _tcsncpy(buffer, name, bufferLen);
   #if BUGSTOP
   LKASSERT(bufferLen>0);
   #endif

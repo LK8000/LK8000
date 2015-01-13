@@ -66,7 +66,7 @@ namespace {
   {
     if(!ExpectString(d, TEXT("cmd>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!" 
-      _sntprintf(errBuf, errBufSize, gettext(_T("_@M1414_")));
+      _tcsncpy(errBuf, gettext(_T("_@M1414_")), errBufSize);
       return false;
     }
     return true;
@@ -98,7 +98,7 @@ namespace {
   {
     if(!ExpectString(d, TEXT("up>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!" 
-      _sntprintf(errBuf, errBufSize, gettext(_T("_@M1414_")));
+      _tcsncpy(errBuf, gettext(_T("_@M1414_")), errBufSize);
       return false;
     }
     return true;
@@ -118,7 +118,7 @@ namespace {
   {
     if(!ExpectString(d, TEXT("dn>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!" 
-      _sntprintf(errBuf, errBufSize, gettext(_T("_@M1414_")));
+      _tcsncpy(errBuf, gettext(_T("_@M1414_")), errBufSize);
       return false;
     }
     return true;

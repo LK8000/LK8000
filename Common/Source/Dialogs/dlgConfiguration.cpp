@@ -196,7 +196,7 @@ static void UpdateButtons(void) {
     _tcscpy(val,PilotName_Config);
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
-      _stprintf(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, gettext(TEXT("_@M7_")));
     }
 	// LKTOKEN  _@M524_ = "Pilot name" 
     _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M524_")), val);
@@ -206,7 +206,7 @@ static void UpdateButtons(void) {
     _tcscpy(val,AircraftType_Config);
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
-      _stprintf(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, gettext(TEXT("_@M7_")));
     }
 	// LKTOKEN  _@M59_ = "Aircraft type" 
     _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M59_")), val);
@@ -216,7 +216,7 @@ static void UpdateButtons(void) {
     _tcscpy(val,AircraftRego_Config);
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
-      _stprintf(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, gettext(TEXT("_@M7_")));
     }
 	// LKTOKEN  _@M57_ = "Aircraft Reg" 
     _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M57_")), val);
@@ -226,7 +226,7 @@ static void UpdateButtons(void) {
     _tcscpy(val,CompetitionClass_Config);
     if (_tcslen(val)<=0) {
       // LKTOKEN  _@M7_ = "(blank)" 
-      _stprintf(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, gettext(TEXT("_@M7_")));
     }
 	// LKTOKEN  _@M936_ = "Competition Class" 
     _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M936_")), val);
@@ -236,7 +236,7 @@ static void UpdateButtons(void) {
     _tcscpy(val,CompetitionID_Config);
     if (_tcslen(val)<=0) {
       // LKTOKEN  _@M7_ = "(blank)" 
-      _stprintf(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, gettext(TEXT("_@M7_")));
     }
 	// LKTOKEN  _@M938_ = "Competition ID" 
     _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M938_")), val);

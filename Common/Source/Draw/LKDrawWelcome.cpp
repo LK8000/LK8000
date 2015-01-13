@@ -44,7 +44,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &headerSize);
   LKWriteText(Surface, Buffer, middlex, (headerSize.cy/2)+NIBLSCALE(2) , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
-  _stprintf(Buffer,gettext(TEXT("_@M904_"))); // Tactical Flight Computer
+  _tcscpy(Buffer,gettext(TEXT("_@M904_"))); // Tactical Flight Computer
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
   Surface.SelectObject(LK8MediumFont);
   LKWriteText(Surface, Buffer, middlex, (headerSize.cy/2)+(textSize.cy/2)+NIBLSCALE(4)+1 , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITENOREV, false);
@@ -61,7 +61,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   LKWriteText(Surface, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBERNOREV, false);
 
 
-  _stprintf(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
+  _tcscpy(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
   LKWriteText(Surface, Buffer, middlex, ((rc.bottom-rc.top)-textSize.cy)/2 , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 

@@ -225,24 +225,24 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				if ( index >=0 ) {
 					_tcscpy(Buffer, WayPointList[index].Name);
 				} else {
-					_stprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+					_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 					icolor=RGB_AMBER;
 				}
 			} else {
-				_stprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+				_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 				icolor=RGB_AMBER;
 			}
 			break;
 		case IM_TRI:
 #ifndef LKCOMPETITION
-			_stprintf(Buffer,gettext(TEXT("_@M913_"))); // Experimental
+			_tcscpy(Buffer,gettext(TEXT("_@M913_"))); // Experimental
 #else
-			_stprintf(Buffer,_T("---"));
+			_tcscpy(Buffer,_T("---"));
 #endif
 			break;
 		case IM_CONTEST:
 		case IM_HSI: //for the HSI the title text is computed in his section down
-			_stprintf(Buffer,gettext(TEXT("")));
+			_tcscpy(Buffer,gettext(TEXT("")));
 			break;
 		case IM_TRF+IM_TOP:
 		case IM_TARGET+IM_TOP:
@@ -266,7 +266,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				}
 
 			} else {
-				_stprintf(Buffer,gettext(TEXT("_@M914_"))); // [no target]
+				_tcscpy(Buffer,gettext(TEXT("_@M914_"))); // [no target]
 				icolor=RGB_AMBER;
 			}
 
@@ -886,13 +886,13 @@ label_TRI:
 	}
 #if 0
 	_stprintf(BufferValue,_T("%0.1f"),CALCULATED_INFO.TurnRate);
-	_stprintf(BufferTitle,_T("Rate"));
+	_tcscpy(BufferTitle,_T("Rate"));
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[9],&qrow[10],&qrow[8]);
 
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 #endif
-	_stprintf(BufferTitle, gettext(TEXT("_@M915_"))); // NOT FOR IFR USAGE
+	_tcscpy(BufferTitle, gettext(TEXT("_@M915_"))); // NOT FOR IFR USAGE
 	Surface.SelectObject(LK8PanelSmallFont);
 	LKWriteText(Surface,  BufferTitle, qcolumn[8],qrow[12], 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
 #endif // not in LKCOMPETITION 
@@ -928,11 +928,11 @@ label_HSI:
 		if(ValidTaskPoint(ActiveWayPoint)) {
 			if(Task[ActiveWayPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveWayPoint].Index].Name);
 			else {
-				_stprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+				_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 				icolor=RGB_AMBER;
 			}
 		} else {
-			_stprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+			_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 			icolor=RGB_AMBER;
 		}
 	}

@@ -1775,31 +1775,31 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	switch(resw) {
 		case WCALC_INVALID_SPEED:
 	// LKTOKEN  _@M369_ = "KEEP SPEED LONGER PLEASE" 
-			_stprintf(mbuf,gettext(TEXT("_@M369_")));
+			_tcscpy(mbuf,gettext(TEXT("_@M369_")));
 			reschedule=true;
 			break;
 		case WCALC_INVALID_TRACK:
 	// LKTOKEN  _@M367_ = "KEEP HEADING LONGER PLEASE" 
-			_stprintf(mbuf,gettext(TEXT("_@M367_")));
+			_tcscpy(mbuf,gettext(TEXT("_@M367_")));
 			reschedule=true;
 			break;
 		case WCALC_INVALID_ALL:
 	// LKTOKEN  _@M368_ = "KEEP SPEED AND HEADING LONGER PLEASE" 
-			_stprintf(mbuf,gettext(TEXT("_@M368_")));
+			_tcscpy(mbuf,gettext(TEXT("_@M368_")));
 			reschedule=true;
 			break;
 		case WCALC_INVALID_HEADING:
 	// LKTOKEN  _@M344_ = "INACCURATE HEADING OR TOO STRONG WIND" 
-			_stprintf(mbuf,gettext(TEXT("_@M344_")));
+			_tcscpy(mbuf,gettext(TEXT("_@M344_")));
 			break;
 		case WCALC_INVALID_IAS:
 	// LKTOKEN  _@M366_ = "KEEP AIRSPEED CONSTANT LONGER PLEASE" 
-			_stprintf(mbuf,gettext(TEXT("_@M366_")));
+			_tcscpy(mbuf,gettext(TEXT("_@M366_")));
 			reschedule=true;
 			break;
 		case WCALC_INVALID_NOIAS:
 	// LKTOKEN  _@M345_ = "INVALID AIRSPEED" 
-			_stprintf(mbuf,gettext(TEXT("_@M345_")));
+			_tcscpy(mbuf,gettext(TEXT("_@M345_")));
 			break;
 		default:
 			_stprintf(mbuf,_T("INVALID DATA CALCULATING WIND %d"), resw); 

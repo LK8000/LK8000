@@ -96,7 +96,7 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   CreateProgressDialog(buffer);
   if((err = vl.open(1, 20, 1, 38400L)) != VLA_ERR_NOERR) {
     // LKTOKEN  _@M1411_ = "Device not connected!" 
-    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1411_")));
+    _tcsncpy(errBuffer, gettext(_T("_@M1411_")), errBufferLen);
     return FALSE;
   }
   
@@ -106,7 +106,7 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   CreateProgressDialog(buffer);
   if((err = vl.read_info()) != VLA_ERR_NOERR) {
     // LKTOKEN  _@M1414_ = "Device not responsive!" 
-    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1414_")));
+    _tcsncpy(errBuffer, gettext(_T("_@M1414_")), errBufferLen);
     return FALSE;
   }
   
@@ -225,7 +225,7 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   CreateProgressDialog(buffer);
   if((err = vl.write_db_and_declaration()) != VLA_ERR_NOERR) {
     // LKTOKEN  _@M1415_ = "Declaration not accepted!" 
-    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1415_")));
+    _tcsncpy(errBuffer, gettext(_T("_@M1415_")), errBufferLen);
   }
   
   // LKTOKEN  _@M1400_ = "Task declaration" 

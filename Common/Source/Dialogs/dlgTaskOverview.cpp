@@ -144,7 +144,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
       if (!AATEnabled || ISPARAGLIDER) {
 	// LKTOKEN  _@M735_ = "Total:" 
-	_stprintf(sTmp, gettext(TEXT("_@M735_")));
+	_tcscpy(sTmp, gettext(TEXT("_@M735_")));
 	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp, _tcslen(sTmp));
       
 	if (fai_ok) {

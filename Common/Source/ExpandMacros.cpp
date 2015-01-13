@@ -419,28 +419,28 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		case 36: // 
 			// Order is:  ALL ON, TASK ONLY, FAI ONLY, ALL OFF
 			if (Flags_DrawTask&&Flags_DrawFAI) {
-				_stprintf(OutBuffer,MsgToken(2238)); // Draw Task
+				_tcscpy(OutBuffer,MsgToken(2238)); // Draw Task
 			} else {
 				if (Flags_DrawTask&&!Flags_DrawFAI) {
-					_stprintf(OutBuffer,MsgToken(2239)); // Draw FAI
+					_tcscpy(OutBuffer,MsgToken(2239)); // Draw FAI
 				} else {
 					if (!Flags_DrawTask&&Flags_DrawFAI) {
-						_stprintf(OutBuffer,MsgToken(2240)); // NoDraw TaskFAI
+						_tcscpy(OutBuffer,MsgToken(2240)); // NoDraw TaskFAI
 					} else {
-						_stprintf(OutBuffer,MsgToken(2241)); // Draw TaskFAI
+						_tcscpy(OutBuffer,MsgToken(2241)); // Draw TaskFAI
 					}
 				}
 			}
 			break;
 		case 37: //
 			if (SonarWarning)
-				_stprintf(OutBuffer,MsgToken(2243)); // Sonar OFF
+				_tcscpy(OutBuffer,MsgToken(2243)); // Sonar OFF
 			else
-				_stprintf(OutBuffer,MsgToken(2242)); // Sonar ON
+				_tcscpy(OutBuffer,MsgToken(2242)); // Sonar ON
 			break;
 		case 38: //
 			if (MapSpaceMode!=MSM_MAP) invalid=true;
-			_stprintf(OutBuffer,MsgToken(2081)); // Set Map
+			_tcscpy(OutBuffer,MsgToken(2081)); // Set Map
 			break;
 		case 39:
 			if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))) {
@@ -737,7 +737,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		// _stprintf(OutBuffer,_T("Key\n%d"),i);
 		 _tcscpy(OutBuffer,_T(""));	// make it invisible
 	} else {
-		_stprintf(OutBuffer,MsgToken( CustomKeyLabel[ckeymode] ));
+		_tcscpy(OutBuffer,MsgToken( CustomKeyLabel[ckeymode] ));
 	}
 
   } // MM

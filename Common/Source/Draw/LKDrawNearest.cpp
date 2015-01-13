@@ -305,28 +305,28 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 		LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 	// LKTOKEN _@M1300_ "Dist"
-	_stprintf(Buffer,gettext(TEXT("_@M1300_"))); 
+	_tcscpy(Buffer,gettext(TEXT("_@M1300_"))); 
 	if (cursortbox==1)
 		LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	// LKTOKEN _@M1301_ "Dir"
-	_stprintf(Buffer,gettext(TEXT("_@M1301_"))); 
+	_tcscpy(Buffer,gettext(TEXT("_@M1301_"))); 
 	if (cursortbox==2)
 		LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	// LKTOKEN _@M1302_ "rEff"
-	_stprintf(Buffer,gettext(TEXT("_@M1302_"))); 
+	_tcscpy(Buffer,gettext(TEXT("_@M1302_"))); 
 	if (cursortbox==3)
 		LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	// LKTOKEN _@M1303_ "AltA"
-	_stprintf(Buffer,gettext(TEXT("_@M1303_"))); 
+	_tcscpy(Buffer,gettext(TEXT("_@M1303_"))); 
 	if (cursortbox==4)
 		LKWriteText(Surface,  Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
@@ -364,28 +364,28 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 			LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 		// LKTOKEN _@M1300_ "Dist"
-		_stprintf(Buffer,gettext(TEXT("_@M1300_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1300_"))); 
 		if (cursortbox==1)
 			LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1301_ "Dir"
-		_stprintf(Buffer,gettext(TEXT("_@M1301_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1301_"))); 
 		if (cursortbox==2)
 			LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1302_ "rEff"
-		_stprintf(Buffer,gettext(TEXT("_@M1302_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1302_"))); 
 		if (cursortbox==3)
 			LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1308_ "Arriv"
-		_stprintf(Buffer,gettext(TEXT("_@M1308_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1308_"))); 
 		if (cursortbox==4)
 			LKWriteText(Surface,  Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
@@ -417,28 +417,28 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 			LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 		// LKTOKEN _@M1304_ "Distance"
-		_stprintf(Buffer,gettext(TEXT("_@M1304_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1304_"))); 
 		if (cursortbox==1)
 			LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1305_ "Direction"
-		_stprintf(Buffer,gettext(TEXT("_@M1305_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1305_"))); 
 		if (cursortbox==2)
 			LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1306_ "ReqEff"
-		_stprintf(Buffer,gettext(TEXT("_@M1306_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1306_"))); 
 		if (cursortbox==3)
 			LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1307_ "AltArr"
-		_stprintf(Buffer,gettext(TEXT("_@M1307_"))); 
+		_tcscpy(Buffer,gettext(TEXT("_@M1307_"))); 
 		if (cursortbox==4)
 			LKWriteText(Surface,  Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else

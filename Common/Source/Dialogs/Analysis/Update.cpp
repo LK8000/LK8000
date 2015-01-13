@@ -166,7 +166,7 @@ void UpdateAnalysis(void){
 
     if (!ValidTaskPoint(ActiveWayPoint)) {
 	// LKTOKEN  _@M476_ = "No task" 
-      _stprintf(sTmp, gettext(TEXT("_@M476_")));
+      _tcscpy(sTmp, gettext(TEXT("_@M476_")));
     } else {
       TCHAR timetext1[100];
       TCHAR timetext2[100];

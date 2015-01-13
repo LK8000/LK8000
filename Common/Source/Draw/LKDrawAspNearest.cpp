@@ -280,26 +280,26 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 	else
 		LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-	_stprintf(Buffer,gettext(TEXT("_@M752_"))); // Type
+	_tcscpy(Buffer,gettext(TEXT("_@M752_"))); // Type
 	if (cursortbox==1)
 		LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,gettext(TEXT("_@M1300_")));  // Dist
+	_tcscpy(Buffer,gettext(TEXT("_@M1300_")));  // Dist
 	if (cursortbox==2)
 		LKWriteText(Surface, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(Surface, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,gettext(TEXT("_@M1301_")));  // Dir
+	_tcscpy(Buffer,gettext(TEXT("_@M1301_")));  // Dir
 	if (cursortbox==3)
 		LKWriteText(Surface, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(Surface, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 	// Active mode
-	_stprintf(Buffer,TEXT("*")); 
+	_tcscpy(Buffer,TEXT("*")); 
 	if (cursortbox==4)
 		LKWriteText(Surface, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
@@ -321,19 +321,19 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 		else
 			LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		_stprintf(Buffer,gettext(TEXT("_@M752_"))); // Type
+		_tcscpy(Buffer,gettext(TEXT("_@M752_"))); // Type
 		if (cursortbox==1)
 			LKWriteText(Surface, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,gettext(TEXT("_@M1300_")));  // Dist
+		_tcscpy(Buffer,gettext(TEXT("_@M1300_")));  // Dist
 		if (cursortbox==2)
 			LKWriteText(Surface, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,gettext(TEXT("_@M1301_")));  // dir
+		_tcscpy(Buffer,gettext(TEXT("_@M1301_")));  // dir
 		if (cursortbox==3)
 			LKWriteText(Surface, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else

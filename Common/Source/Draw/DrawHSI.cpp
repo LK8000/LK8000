@@ -247,7 +247,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             const double varioFtMin=DerivedDrawInfo.Vario*TOFEETPERMINUTE; //Convert vertical speed to Ft/min
 
             //Print vertical speed in Ft/min
-            _stprintf(Buffer,gettext(TEXT("_@M784_"))); //"Vario"
+            _tcscpy(Buffer,gettext(TEXT("_@M784_"))); //"Vario"
             Surface.SelectObject(LK8PanelSmallFont);
             LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedLabelY,0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_LIGHTGREEN,false);
             _stprintf(Buffer, TEXT("%+.0f"),varioFtMin); //print the value
