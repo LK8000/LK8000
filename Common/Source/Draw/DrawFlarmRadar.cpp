@@ -795,9 +795,14 @@ DiagrammStruct sDia;
 		case ss720x408:
 		case ss480x234:
 		case ss400x240:
+                    bLandscape = true;
+                    break;
 		default:
-		  bLandscape = true;
-		break;
+                    if (ScreenLandscape)
+ 			bLandscape = true;
+                    else
+			bLandscape = false;
+                    break;
 	}
 
 

@@ -103,13 +103,22 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 			break;
 
 		default:
+                    if (ScreenLandscape) {
 			yRow2Value =  rc.bottom-(syValue*2);
 			yRow2Unit  =  rc.bottom-(syValue*2) - NIBLSCALE(2);
 			yRow2Title =  rc.bottom-(syValue*2) - syTitle;
 			yRow1Value =  rc.bottom-(syValue/2);
 			yRow1Unit  =  rc.bottom-(syValue/2) - NIBLSCALE(2);
 			yRow1Title =  rc.bottom-(syValue/2) - syTitle;
-			break;
+                    } else {
+ 			yRow2Value =  rc.bottom-(syValue*2);
+			yRow2Unit  =  yRow2Value;
+			yRow2Title =  yRow2Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);
+			yRow1Value =  rc.bottom-(syValue/2);
+			yRow1Unit  =  yRow1Value;
+			yRow1Title =  yRow1Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);                      
+                    }
+                    break;
 	}
 
 	
