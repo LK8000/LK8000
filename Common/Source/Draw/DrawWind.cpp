@@ -27,9 +27,6 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
     tsize.cx = tsize.cx/2;
   }
 
-  const auto hpOld = Surface.SelectObject(LKPen_Black_N2);
-  const auto hbOld = Surface.SelectObject(LKBrush_Grey);
-  
   int wmag = iround(4.0*DerivedDrawInfo.WindSpeed);
   
   Start.y = Orig.y;
@@ -77,8 +74,9 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
       TextInBox(Surface, &rc, sTmp, Arrow[6].x-kx, Arrow[6].y, 0, &TextInBoxMode);
     }
   }
+  const auto hpOld = Surface.SelectObject(LKPen_Black_N2);
+  const auto hbOld = Surface.SelectObject(LKBrush_Grey);
   Surface.Polygon(Arrow,5);
-
 
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);
