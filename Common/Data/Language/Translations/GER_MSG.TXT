@@ -5619,6 +5619,22 @@ _@M2176_ "Neigung"
 #_@M2177_ "Base"
 _@M2177_ "Basis"
 
+#_@M2178_ "Base Radius"
+_@M2178_ "Basis Radius"
+
+_@M2179_ "°"
+
+_@M2180_ "°C"
+
+_@M2181_ "°F"
+
+_@M2182_ "«"
+
+_@M2183_ "»"
+
+_@M2184_ "‹"
+
+_@M2185_ "›"
 
 
 # New CustomKey labels for Custom Menu
