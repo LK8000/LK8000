@@ -406,17 +406,16 @@ bool IsThermalBarVisible(void) {
 
     switch (ThermalBar) {
 
-        case 0:
+        case 0: // Disabled
             break;
-        case 1:
+        case 1: // in thermal
             return MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
             break;
-        case 2:
+        case 2: // in thermal and cruise
             return ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) ||
                     MapWindow::mode.Is(MapWindow::Mode::MODE_CRUISE));
             break;
-
-        case 3:
+        case 3: // Always
             return true;
             break;
         default:
