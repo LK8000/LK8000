@@ -118,6 +118,7 @@ else
 ifeq ($(CONFIG_LINUX),y)
 ifeq ($(TARGET_IS_KOBO),y)
 TCPATH		:= arm-unknown-linux-gnueabi-
+MCPU		:= -march=armv7-a -mfpu=neon -mfloat-abi=hard
 else
 TCPATH		:= 
 endif
@@ -128,9 +129,6 @@ endif
 ifeq ($(XSCALE),y)
 CPU		:=xscale
 MCPU		:= -mcpu=$(CPU)
-else
-CPU		:=
-MCPU		:=
 endif
 
 ifeq ($(TARGET),PNA)
@@ -420,7 +418,7 @@ ifeq ($(TARGET),PNA)
 TARGET_ARCH	:=-mwin32
 endif
 ifeq ($(CONFIG_LINUX),y)
-TARGET_ARCH	:=
+TARGET_ARCH	:= $(MCPU)
 endif
 
 endif

@@ -436,7 +436,7 @@ Canvas::StretchOr(int dest_x, int dest_y,
   ConstImageBuffer srcImg = src.GetNative();  
   
   SDLRasterCanvas canvas(buffer);
-  BitOrPixelOperations<SDLPixelTraits> operations;
+  PortableBitOrPixelOperations<SDLPixelTraits> operations;
   
   canvas.ScaleRectangle<decltype(operations), SDLPixelTraits>(dest_x, dest_y, dest_width, dest_height,
                        srcImg.At(src_x, src_y), srcImg.pitch, src_width, src_height,
