@@ -9,13 +9,13 @@
 #include "externs.h"
 #include "LKObjects.h"
 
-void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
+bool MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
 {
   POINT GliderBand[5] = { {0,0},{23,0},{22,0},{24,0},{0,0} };
   
   if ((DerivedDrawInfo.TaskAltitudeDifference>50)
       &&(mode.Is(Mode::MODE_FINAL_GLIDE))) {
-    return;
+    return false;
   }
 
   // JMW TODO accuracy: gather proper statistics
@@ -23,7 +23,7 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
   double mth = DerivedDrawInfo.MaxThermalHeight;
   // no thermalling has been done above safety altitude
   if (mth<=1) {
-    return;
+    return false;
   }
   
   double Wt[NUMTHERMALBUCKETS];
@@ -60,7 +60,7 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
   }
   
   if (maxh < minh) {
-    return;
+    return false;
   }
 
   // normalised heights
@@ -94,7 +94,7 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
   }
 
   if ((!draw_start_height) && (numtherm<=1)) {
-    return; // don't display if insufficient statistics
+    return false; // don't display if insufficient statistics
     // but do draw if start height needs to be drawn
   }
   
@@ -157,5 +157,7 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
 
   Surface.SelectObject(hpOld);
   Surface.SelectObject(hbOld);
+  
+  return true;
 }
 

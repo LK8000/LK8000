@@ -21,7 +21,13 @@
 #include "Util/UTF8.hpp"
 #endif
 
-void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc )
+/*
+ * Draw Text Overlay. 
+ * @Surface : surface to draw
+ * @rc : Rect to draw, Screen rect minus bottom bar height.
+ * @bThermaBar : true if place older for Thermal bar is needed ( use return value of #DrawThermalBand in most case).
+ */
+void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalBar)
 {
   LKSurface::OldFont oldfont;
   LKSurface::OldBrush oldbrush;
@@ -518,7 +524,7 @@ nextinit:
 	index = GetOvertargetIndex();
   }
  
-		if (IsThermalBarVisible()) { 
+		if (bThermalBar) { 
       		rcx=rc.left+leftmargin+NIBLSCALE(40);
   		} else {
    			rcx=rc.left+leftmargin+NIBLSCALE(1);

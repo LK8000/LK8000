@@ -552,7 +552,7 @@ class MapWindow {
   static void DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc);
   static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc);
-  static void DrawLook8000(LKSurface& Surface, const RECT& rc);
+  static void DrawLook8000(LKSurface& Surface, const RECT& rc, bool bThermalBar);
   static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
   static void DrawMapSpace(LKSurface& Surface, const RECT& rc);
   static void DrawNearest(LKSurface& Surface, const RECT& rc);
@@ -626,7 +626,7 @@ class MapWindow {
 			   const bool ScaleChangeFeedback);
   static void DrawMapScale2(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawFinalGlide(LKSurface& Surface, const RECT& rc);
-  static void DrawThermalBand(LKSurface& Surface, const RECT& rc);
+  static bool DrawThermalBand(LKSurface& Surface, const RECT& rc);
   static void DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc);
   static void DrawTerrainAbove(LKSurface& Surface, const RECT& rc);
   static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
