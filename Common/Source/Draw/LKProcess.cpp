@@ -1342,12 +1342,11 @@ goto_bearing:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-#ifdef UNDER_CE
 			value = PDABatteryPercent;
                 	if (value<1||value>100)
 				_stprintf(BufferValue,_T("---"));
                 	else {
-				if (PDABatteryFlag==BATTERY_FLAG_CHARGING || PDABatteryStatus==AC_LINE_ONLINE) {
+				if (PDABatteryFlag==Battery::CHARGING || PDABatteryStatus==Battery::ONLINE) {
 					_stprintf(BufferValue,TEXT("%2.0f%%C"), value);	 // 100228
 				} else {
 					_stprintf(BufferValue,TEXT("%2.0f%%D"), value);  // 100228
@@ -1355,7 +1354,6 @@ goto_bearing:
 
 				valid = true;
 			}
-#endif
 			break;
 
 
