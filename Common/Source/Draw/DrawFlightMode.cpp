@@ -86,7 +86,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 
     Surface.DrawMaskedBitmap( rc.right+IBLSCALE(offset-1), rc.bottom+IBLSCALE(-IconSize.cx-1), IBLSCALE(IconSize.cx),IBLSCALE(IconSize.cy),	*pBmpFlightMode, IconSize.cx, IconSize.cy);
   }
-#ifdef WIN32
+
   //
   // Battery indicator
   // 
@@ -97,7 +97,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   #endif
 
   const LKBitmap* pBmpBattery = NULL;
-  if ((PDABatteryPercent==0 || PDABatteryPercent>100) && PDABatteryStatus==AC_LINE_ONLINE && PDABatteryFlag!=BATTERY_FLAG_CHARGING) {
+  if ((PDABatteryPercent==0 || PDABatteryPercent>100) && PDABatteryStatus==Battery::ONLINE && PDABatteryFlag!=Battery::CHARGING) {
 	pBmpBattery = &hBatteryFullC;
 	goto _drawbattery;
   }
@@ -140,7 +140,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 	pBmpBattery = &hBattery96;
 	goto _drawbattery;
   }
-  if (PDABatteryStatus==AC_LINE_ONLINE)
+  if (PDABatteryStatus==Battery::ONLINE)
 	pBmpBattery = &hBatteryFullC;
   else
 	pBmpBattery = &hBatteryFull;
@@ -152,5 +152,5 @@ _drawbattery:
     if(pBmpBattery) {
         Surface.DrawMaskedBitmap(rc.right+IBLSCALE(offset-1), rc.bottom - BottomSize + NIBLSCALE(2), IBLSCALE(22),IBLSCALE(11),*pBmpBattery, 22, 11);
     }
-#endif
+
 }

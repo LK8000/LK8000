@@ -1,6 +1,7 @@
 #if defined(PNA) && defined(UNDER_CE)
 
 #include "externs.h"
+#include "lk8000.h"
 #include <iterator>
 
 
@@ -434,19 +435,19 @@ int GM130PowerStatus(void) {
   int pstatus = GM130_pwrGetStatus();
   switch (pstatus) {
 	case 0: 
-		return  AC_LINE_OFFLINE; // NOT_CHARGING
+		return  Battery::OFFLINE; // NOT_CHARGING
 	case 1:
-		return  AC_LINE_ONLINE;  // CHARGING
+		return  Battery::ONLINE;  // CHARGING
 	case 2:
-		return  AC_LINE_ONLINE;  // CHARGE_FINISHED
+		return  Battery::ONLINE;  // CHARGE_FINISHED
 	case 3:
-		return  AC_LINE_UNKNOWN; // NO_BATTERY
+		return  Battery::UNKNOWN; // NO_BATTERY
 	case 4:
-		return  AC_LINE_OFFLINE; // BAD_BATTERY
+		return  Battery::OFFLINE; // BAD_BATTERY
 	case 5:
-		return  AC_LINE_OFFLINE; // BATTERY_DROP
+		return  Battery::OFFLINE; // BATTERY_DROP
 	default:
-		return  AC_LINE_UNKNOWN; 
+		return  Battery::UNKNOWN; 
   }
 }
 
@@ -456,19 +457,19 @@ int GM130PowerFlag(void) {
   int pstatus = GM130_pwrGetStatus();
   switch (pstatus) {
 	case 0: 
-		return  BATTERY_FLAG_HIGH; // NOT_CHARGING
+		return  Battery::HIGH; // NOT_CHARGING;
 	case 1:
-		return  BATTERY_FLAG_CHARGING;  // CHARGING
+		return  Battery::CHARGING;  // CHARGING
 	case 2:
-		return  BATTERY_FLAG_HIGH;  //CHARGE_FINISHED
+		return  Battery::HIGH;  //CHARGE_FINISHED
 	case 3:
-		return  BATTERY_FLAG_NO_BATTERY; // NO_BATTERY
+		return  Battery::NO_BATTERY; // NO_BATTERY
 	case 4:
-		return  BATTERY_FLAG_CRITICAL; // BAD_BATTERY
+		return  Battery::CRITICAL; // BAD_BATTERY
 	case 5:
-		return  BATTERY_FLAG_LOW; // BATTERY_DROP
+		return  Battery::LOW; // BATTERY_DROP
 	default:
-		return  BATTERY_FLAG_UNKNOWN;
+		return  Battery::UNKNOWN;
   }
 }
 
