@@ -12,6 +12,9 @@
 #ifndef WndMainBase_H
 #define	WndMainBase_H
 
+#include "Event/Globals.hpp"
+#include "Event/Queue.hpp"
+#include "Event/Event.h"
 #include "Screen/SingleWindow.hpp"
 #include "WndPaint.h"
 
@@ -30,6 +33,11 @@ public:
 
     virtual void Redraw(const RECT& Rect) { 
         __super::Redraw(Rect);
+#ifdef ENABLE_SDL
+        SDL_Event event;
+        event.type = SDL_VIDEOEXPOSE;
+        ::SDL_PushEvent(&event);
+#endif
     }
 
     virtual void Redraw() {
