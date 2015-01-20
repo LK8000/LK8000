@@ -76,10 +76,10 @@ void LKSimulator(void) {
 
 	if (EnableFLARMMap) {
 		srand( Poco::Timestamp().epochTime());
-		SimFlarmTraffic(0xdd8951,22.0+(double)(rand()/1000.0));
-		SimFlarmTraffic(0xdd8944,31.0+(double)(rand()/1000.0));
-		SimFlarmTraffic(0xdd8a43,16.0+(double)(rand()/1000.0));
-		SimFlarmTraffic(0xdd8a42,41.0+(double)(rand()/1000.0));
+		SimFlarmTraffic(0xdd8951,22.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8944,31.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a43,16.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a42,41.0+(double)(rand() % 32));
 	}
 	doinit=false;
   }
@@ -99,10 +99,10 @@ void LKSimulator(void) {
 	if (!flarmwasinit) {
 		srand(Poco::Timestamp().epochTime());
 		// Add a poker of traffic for the boys
-		SimFlarmTraffic(0xdd8951,22.0+(double)(rand()/1000.0));
-		SimFlarmTraffic(0xdd8944,31.0+(double)(rand()/1000.0));
-		SimFlarmTraffic(0xdd8a43,16.0+(double)(rand()/1000.0));
-		SimFlarmTraffic(0xdd8a42,41.0+(double)(rand()/1000.0));
+		SimFlarmTraffic(0xdd8951,22.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8944,31.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a43,16.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a42,41.0+(double)(rand() % 32));
 		DoStatusMessage(gettext(TEXT("_@M279_"))); // FLARM DETECTED (in sim)
 		flarmwasinit=true;
 	} else {

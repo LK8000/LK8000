@@ -18,16 +18,16 @@ extern FlarmCalculations flarmCalculations;
 
 
 double SimNewCoordinate(const double coordinate,double offset) {
-  return (coordinate + ((double)(GPS_INFO.Second+offset)/1000.0)*(rand()>15000?1:-1));
+  return (coordinate + ((double)(GPS_INFO.Second+offset)/1000.0)*(rand()>(RAND_MAX/2)?1:-1));
 }
 
 double SimNewAltitude(const double altitude) {
-  return (altitude + rand()/100 +rand()/200 );
+  return (altitude + (rand() % 327) + (rand() % 163) );
 }
 
 double SimNewSpeed(const double speed) {
 
-  return (35 + rand()/9876);
+  return (35 + (rand() % 3));
 }
 
 //
@@ -81,7 +81,7 @@ void SimFlarmTraffic(long ID, double offset)
 	GPS_INFO.FLARM_Traffic[flarm_slot].Longitude = SimNewCoordinate(GPS_INFO.Longitude,offset);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Altitude = SimNewAltitude(GPS_INFO.Altitude);
 
-	GPS_INFO.FLARM_Traffic[flarm_slot].TrackBearing= (double) rand()/91.276;
+	GPS_INFO.FLARM_Traffic[flarm_slot].TrackBearing= (double) (rand()%358);
 	GPS_INFO.FLARM_Traffic[flarm_slot].AlarmLevel=0;
 	GPS_INFO.FLARM_Traffic[flarm_slot].ID=ID;
 	GPS_INFO.FLARM_Traffic[flarm_slot].TurnRate=0;
@@ -89,9 +89,11 @@ void SimFlarmTraffic(long ID, double offset)
 
 	GPS_INFO.FLARM_Traffic[flarm_slot].Status = LKT_REAL;
   } else {
-	GPS_INFO.FLARM_Traffic[flarm_slot].Latitude  += (double)(rand()/20000000.0)*(rand()>15000?1:-1);
-	GPS_INFO.FLARM_Traffic[flarm_slot].Longitude += (double)(rand()/20000000.0)*(rand()>15000?1:-1);
-	GPS_INFO.FLARM_Traffic[flarm_slot].Altitude += (double)(rand()/2200.0)*(rand()>15000?1:-1);
+      int n = rand()%16384;
+      
+	GPS_INFO.FLARM_Traffic[flarm_slot].Latitude  += (double)((rand()%16384)/10000000.0)*(rand()>(RAND_MAX/2)?1:-1);
+	GPS_INFO.FLARM_Traffic[flarm_slot].Longitude += (double)((rand()%16384)/10000000.0)*(rand()>(RAND_MAX/2)?1:-1);
+	GPS_INFO.FLARM_Traffic[flarm_slot].Altitude += (double)(rand()%14)*(rand()>(RAND_MAX/2)?1:-1);
   }
   GPS_INFO.FLARM_Traffic[flarm_slot].RelativeAltitude = GPS_INFO.FLARM_Traffic[flarm_slot].Altitude - GPS_INFO.Altitude;
 
