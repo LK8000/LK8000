@@ -17,9 +17,9 @@
 
 #include "DoInits.h"
 
-
+#ifdef WIN32
 #ifdef UNDER_CE
-DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
+bool GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 {
     // set default return value
     DWORD result = 0;
@@ -27,7 +27,7 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
     // check incoming pointer
     if(NULL == pBatteryInfo)
     {
-        return 0;
+        return false;
     }
 
     SYSTEM_POWER_STATUS_EX2 sps;
@@ -36,35 +36,48 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
     result = GetSystemPowerStatusEx2(&sps, sizeof(sps), TRUE);
 
     // only update the caller if the previous call succeeded
-    if(0 != result)
+    if(result)
     {
-        pBatteryInfo->acStatus = sps.ACLineStatus;
-        pBatteryInfo->chargeStatus = sps.BatteryFlag;
+        pBatteryInfo->acStatus = static_cast<Battery::battery_status>(sps.ACLineStatus);
+        pBatteryInfo->chargeStatus = static_cast<Battery::battery_charge_status>(sps.BatteryFlag);
         pBatteryInfo->BatteryLifePercent = sps.BatteryLifePercent;
-	pBatteryInfo->BatteryVoltage = sps.BatteryVoltage;
-	pBatteryInfo->BatteryAverageCurrent = sps.BatteryAverageCurrent;
-	pBatteryInfo->BatteryCurrent = sps.BatteryCurrent;
-	pBatteryInfo->BatterymAHourConsumed = sps.BatterymAHourConsumed;
-	pBatteryInfo->BatteryTemperature = sps.BatteryTemperature;
+        pBatteryInfo->BatteryVoltage = sps.BatteryVoltage;
+        pBatteryInfo->BatteryAverageCurrent = sps.BatteryAverageCurrent;
+        pBatteryInfo->BatteryCurrent = sps.BatteryCurrent;
+        pBatteryInfo->BatterymAHourConsumed = sps.BatterymAHourConsumed;
+        pBatteryInfo->BatteryTemperature = sps.BatteryTemperature;
     }
 
-    return result;
+    return (result != 0);
 }
+#else
+bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
+    // not implemented on Windows PC
+    if(!pBatteryInfo) {
+        return false;
+    }
+    pBatteryInfo->BatteryLifePercent = BATTERY_UNKNOWN;
+    pBatteryInfo->acStatus = Battery::UNKNOWN;
+    pBatteryInfo->chargeStatus = Battery::CHARGE_UNKNOWN;
+    
+    return false;
+}
+#endif
 #endif
 
 #ifdef KOBO
 #include "OS/FileUtil.hpp"
 
-DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
+bool GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 {
-    // set default return value
-    DWORD result = 0;
-
     // check incoming pointer
     if(NULL == pBatteryInfo)
     {
-        return 0;
+        return false;
     }
+
+    // set default return value
+    bool result = false;
 
     // assume failure at entry
     pBatteryInfo->BatteryLifePercent = BATTERY_UNKNOWN;
@@ -74,8 +87,9 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
     // code shamelessly copied from OS/SystemLoad.cpp
     char line[256];
     if (!File::ReadString("/sys/bus/platform/drivers/pmic_battery/pmic_battery.1/power_supply/mc13892_bat/uevent",
-            line, sizeof (line)))
-        return 0;
+            line, sizeof (line))) {
+        return false;
+    }
 
     char field[80], value[80];
     int n;
@@ -89,7 +103,7 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
                 pBatteryInfo->acStatus = Battery::OFFLINE;
             }
         } else if (!strcmp(field, "POWER_SUPPLY_CAPACITY")) {
-            result = 1;
+            result = true;
             int rem = atoi(value);
             pBatteryInfo->BatteryLifePercent = rem;
             if (pBatteryInfo->acStatus == Battery::OFFLINE) {
@@ -116,13 +130,11 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 #if (SDL_MAJOR_VERSION < 2)
 // For now, for linux ==> TODO !
 
-DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
-    // set default return value
-    DWORD result = 0;
+bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
 
     // check incoming pointer
     if (NULL == pBatteryInfo) {
-        return 0;
+        return false;
     }
 
     // assume failure at entry
@@ -130,8 +142,7 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
     pBatteryInfo->acStatus = Battery::UNKNOWN;
     pBatteryInfo->chargeStatus = Battery::CHARGE_UNKNOWN;
     
-    return result;
-
+    return false;
 }
 
 #else
@@ -139,14 +150,12 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
 
 #include <SDL_power.h>
 
-DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
-    int remaining_percent;
-    // set default return value
-    DWORD result = 0;
+bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
+    int remaining_percent = 0;
 
     // check incoming pointer
     if (NULL == pBatteryInfo) {
-        return 0;
+        return false;
     }
 
     // assume failure at entry
@@ -185,7 +194,7 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
             break;
     }
     
-    return result;
+    return true;
 }
 #endif
 #endif

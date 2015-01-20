@@ -126,7 +126,7 @@ typedef struct
 } BATTERYINFO;
 
 
-DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo);
+bool GetBatteryInfo(BATTERYINFO* pBatteryInfo);
 void UpdateBatteryInfos(void);      
 void SwitchToMapWindow(void);
 
