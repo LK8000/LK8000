@@ -165,7 +165,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 	TCHAR buffer[MAX_PATH];
 	LocalPath(buffer);
 	size_t freestorage = FindFreeSpace(buffer);
-	_stprintf(mes,_T("free ram %.1luM  storage %.1luM"), freeram/1024,freestorage/1024);
+	_stprintf(mes,_T("free ram %.1zuM  storage %.1zuM"), freeram/1024,freestorage/1024);
 	RawWrite(Surface,mes,3,0, RGB_LIGHTGREY,WTMODE_NORMAL);
 
 	if ( ScreenSize != ss320x240 && ScreenLandscape )
