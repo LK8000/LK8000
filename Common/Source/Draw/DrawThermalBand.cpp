@@ -11,7 +11,7 @@
 
 bool MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
 {
-  POINT GliderBand[5] = { {0,0},{23,0},{22,0},{24,0},{0,0} };
+  POINT GliderBand[6] = { {0,0},{23,0},{22,0},{24,0},{0,0}, {0,0} };
   
   if ((DerivedDrawInfo.TaskAltitudeDifference>50)
       &&(mode.Is(Mode::MODE_FINAL_GLIDE))) {
