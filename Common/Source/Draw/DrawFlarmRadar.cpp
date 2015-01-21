@@ -1353,8 +1353,6 @@ if(bSideview)
 #endif
 
 
-//DrawMultimap_Topleft(hdc, rci);
-
 Surface.SelectObject(hfOldFont);
 Surface.SelectObject(hOldPen);
 Surface.SelectObject(hOldBrush);

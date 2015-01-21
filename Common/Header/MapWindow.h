@@ -508,9 +508,6 @@ class MapWindow {
   static void LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rci);
   static void LKDrawMultimap_Radar(LKSurface& Surface, const RECT& rci);
 
-  static void DrawMultimap_Topleft(LKSurface& Surface, const RECT& rci);
-  static void DrawMultimap_Topright(LKSurface& Surface, const RECT& rci);
-  static void DrawMultimap_DynaLabel(LKSurface& Surface, const RECT& rci);
   static void DrawMultimap_SideTopSeparator(LKSurface& Surface, const RECT& rci);
 
 
