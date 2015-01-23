@@ -138,6 +138,11 @@ void MapWindow::CalculateScreenPositionsThermalSources() {
 
 void MapWindow::CalculateScreenPositionsAirspace(const RECT& rcDraw)
 {
+#ifndef HAVE_HATCHED_BRUSH
+  // iAirspaceBrush is not used and don't exist if we don't have Hatched Brush
+  // this is workarround for compatibility with #CalculateScreenPositionsAirspace
+  constexpr int iAirspaceBrush[AIRSPACECLASSCOUNT] = {}; 
+#endif
   CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, zoom.ResScaleOverDistanceModify());
 }
 

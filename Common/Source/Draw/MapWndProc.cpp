@@ -89,19 +89,19 @@ POINT MapWindow::Groundline2[NUMTERRAINSWEEPS+1];
 #endif
 
 // 16 is number of airspace types
-int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3};
 int      MapWindow::iAirspaceColour[AIRSPACECLASSCOUNT] = {5,0,0,10,0,0,10,2,0,10,9,3,7,7,7,10};
 int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] = {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0};
-
+#ifdef HAVE_HATCHED_BRUSH
+int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3};
+#endif
+    
 LKPen MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
 LKPen MapWindow::hBigAirspacePens[AIRSPACECLASSCOUNT];
 LKPen MapWindow::hAirspaceBorderPen;
 
 BrushReference MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
 
-#ifdef HAVE_HATCHED_BRUSH          
 LKBrush  MapWindow::hAirspaceBrushes[NUMAIRSPACEBRUSHES];
-#endif
 
 LKColor MapWindow::Colours[NUMAIRSPACECOLORS] =
   {LKColor(0xFF,0x00,0x00), LKColor(0x00,0xFF,0x00),

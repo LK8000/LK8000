@@ -157,13 +157,18 @@ void LKObjects_Create() {
   MapWindow::hSnailPens[13].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[13]);
   MapWindow::hSnailPens[14].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[14]);
 
-#ifdef HAVE_HATCHED_BRUSH
-  static_assert(array_size(MapWindow::hAirspaceBrushes) == array_size(hAirspaceBitmap), "Array Size error");
 
   for (unsigned i=0; i<array_size(MapWindow::hAirspaceBrushes); ++i) {
-	MapWindow::hAirspaceBrushes[i].Create(hAirspaceBitmap[i]);
+#ifdef HAVE_HATCHED_BRUSH
+      static_assert(array_size(MapWindow::hAirspaceBrushes) == array_size(hAirspaceBitmap), "Array Size error");
+      MapWindow::hAirspaceBrushes[i].Create(hAirspaceBitmap[i]);
+#else
+      static_assert(array_size(MapWindow::hAirspaceBrushes) == array_size(MapWindow::Colours), "Array Size error");
+      MapWindow::hAirspaceBrushes[i].Create(MapWindow::Colours[i].WithAlpha(0xFF/2));
+#endif
   }
 
+#ifdef HAVE_HATCHED_BRUSH
   MapWindow::hAboveTerrainBrush.Create(hAboveTerrainBitmap);
 #else
   MapWindow::hAboveTerrainBrush.Create(RGB_GREY);
@@ -278,11 +283,9 @@ void LKObjects_Delete() {
   std::for_each(std::begin(MapWindow::hBigAirspacePens), std::end(MapWindow::hBigAirspacePens), std::bind(&LKPen::Release, _1) );
   std::for_each(std::begin(MapWindow::hAirSpaceSldBrushes), std::end(MapWindow::hAirSpaceSldBrushes), std::bind(&LKBrush::Release, _1));
 
-#ifdef HAVE_HATCHED_BRUSH
   std::for_each(std::begin(MapWindow::hAirspaceBrushes), std::end(MapWindow::hAirspaceBrushes), std::bind(&LKBrush::Release, _1) );
   
   MapWindow::hAboveTerrainBrush.Release();
-#endif  
   
   MapWindow::hpStartFinishThick.Release();
   MapWindow::hpMapScale2.Release();

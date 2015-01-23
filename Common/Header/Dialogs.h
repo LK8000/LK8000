@@ -54,7 +54,9 @@ int dlgAirspaceColoursShowModal(void);
 ListElement* dlgMultiSelectListShowModal(void);
 void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance);
 int dlgGetNoElements(void);
+#ifdef HAVE_HATCHED_BRUSH
 int dlgAirspacePatternsShowModal(void);
+#endif
 bool dlgAirspaceShowModal(bool colored);
 void dlgBasicSettingsShowModal(void);
 void dlgBrightnessShowModal(void);

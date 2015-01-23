@@ -313,7 +313,9 @@ void LKProfileSave(const TCHAR *szFile)
   for(int i=0;i<AIRSPACECLASSCOUNT;i++) {
 	rprintf(szRegistryAirspaceMode[i],MapWindow::iAirspaceMode[i]);
 	rprintf(szRegistryColour[i],MapWindow::iAirspaceColour[i]);
+#ifdef HAVE_HATCHED_BRUSH
 	rprintf(szRegistryBrush[i],MapWindow::iAirspaceBrush[i]);
+#endif
   }
 
 

@@ -89,8 +89,6 @@ void SimFlarmTraffic(long ID, double offset)
 
 	GPS_INFO.FLARM_Traffic[flarm_slot].Status = LKT_REAL;
   } else {
-      int n = rand()%16384;
-      
 	GPS_INFO.FLARM_Traffic[flarm_slot].Latitude  += (double)((rand()%16384)/10000000.0)*(rand()>(RAND_MAX/2)?1:-1);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Longitude += (double)((rand()%16384)/10000000.0)*(rand()>(RAND_MAX/2)?1:-1);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Altitude += (double)(rand()%14)*(rand()>(RAND_MAX/2)?1:-1);

@@ -444,6 +444,8 @@ if(bValid)
   DrawYGrid(Surface, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
 
 
+  Surface.SetBkColor(RGB_WHITE);
+
   if(!bInvCol)
     Surface.SetBackgroundOpaque();
   /****************************************************************************************************

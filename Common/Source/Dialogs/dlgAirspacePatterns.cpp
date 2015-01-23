@@ -12,6 +12,8 @@
 #include "Dialogs.h"
 #include "LKObjects.h"
 
+#ifdef HAVE_HATCHED_BRUSH
+
 static WndForm *wf=NULL;
 static WndListFrame *wAirspacePatternsList=NULL;
 static WndOwnerDrawFrame *wAirspacePatternsListEntry = NULL;
@@ -26,7 +28,6 @@ static void UpdateList(void){
 
 static int DrawListIndex=0;
 
-#ifdef HAVE_HATCHED_BRUSH 
 static void OnAirspacePatternsPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     (void) Sender;
     if ((DrawListIndex < NUMAIRSPACEBRUSHES) &&(DrawListIndex >= 0)) {
@@ -39,8 +40,6 @@ static void OnAirspacePatternsPaintListItem(WindowControl * Sender, LKSurface& S
         Surface.Rectangle(100 * ScreenScale, 2 * ScreenScale, 180 * ScreenScale, 22 * ScreenScale);
     }
 }
-#endif
-
 
 static void OnAirspacePatternsListEnter(WindowControl * Sender, 
 				WndListFrame::ListInfo_t *ListInfo) {
@@ -128,3 +127,4 @@ int dlgAirspacePatternsShowModal(void){
   return ItemIndex;
 }
 
+#endif

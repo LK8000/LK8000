@@ -56,7 +56,7 @@ const char *szRegistryColour[] =     { "Colour0",
                   "Colour15"
 };
 
-
+#ifdef HAVE_HATCHED_BRUSH
 const char *szRegistryBrush[] =     {  "Brush0",
 				  "Brush1",
 				  "Brush2",
@@ -74,6 +74,7 @@ const char *szRegistryBrush[] =     {  "Brush0",
                   "Brush14",
                   "Brush15"
 };
+#endif
 
 const char *szRegistryAirspaceMode[] =     {  "AirspaceMode0",
 					       "AirspaceMode1",

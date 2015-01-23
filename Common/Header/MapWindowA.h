@@ -39,6 +39,15 @@
   static int GetAirSpaceOpacity(void) {
     return AirspaceOpacity;    
   }
+
+  static const LKBrush& GetAirspaceSldBrush(int i) {
+    return hAirSpaceSldBrushes[i];
+  }  
+  
+  static const LKBrush& GetAirSpaceSldBrushByClass(int i) {
+    return GetAirspaceSldBrush(iAirspaceColour[i]);
+  }
+
   
  private:
 
@@ -48,10 +57,6 @@
   // alpha blended airspace opacity (0..100)
   static BYTE AirspaceOpacity;
  
-  static const LKBrush& GetAirSpaceSldBrushByClass(int i) {
-    return hAirSpaceSldBrushes[iAirspaceColour[i]];
-  }
-
   // draw airspace using alpha blending
   static void ClearTptAirSpace(LKSurface& Surface, const RECT& rc);
   

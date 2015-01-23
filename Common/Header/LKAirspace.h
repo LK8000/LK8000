@@ -134,9 +134,7 @@ public:
 
   const TCHAR* TypeName(void) const;
   const LKColor& TypeColor(void) const;
-#ifdef HAVE_HATCHED_BRUSH
   const LKBrush& TypeBrush(void) const;
-#endif
 
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }

@@ -33,11 +33,7 @@ static void OnAirspaceColoursPaintListItem(WindowControl * Sender, LKSurface& Su
     Surface.SelectObject(LKBrush_White);
     Surface.SelectObject(LK_BLACK_PEN);
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-#ifdef HAVE_HATCHED_BRUSH          
     Surface.SelectObject(MapWindow::GetAirspaceBrush(1)); // this is the solid brush
-#else
-#warning "TODO : maybe we need solid brush or that !"
-#endif
     Surface.SetTextColor(MapWindow::GetAirspaceColour(i));
     Surface.Rectangle(
               100*ScreenScale, 

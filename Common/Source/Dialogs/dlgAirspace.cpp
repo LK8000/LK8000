@@ -21,7 +21,7 @@ static int ItemIndex = -1;
 static bool colormode = false;
 
 int dlgAirspaceColoursShowModal(void);
-int dlgAirspacePatternsShowModal(void);
+
 
 static void UpdateList(void){
   wAirspaceList->ResetList();
@@ -60,11 +60,7 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
       Surface.Rectangle(x0, 2*ScreenScale,w0, 22*ScreenScale);
       Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(i));
       Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-#ifdef HAVE_HATCHED_BRUSH          
       Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(i));
-#else
-#warning "TODO : maybe we need solid brush or that !"
-#endif
       Surface.Rectangle(x0, 2*ScreenScale,w0, 22*ScreenScale);
         
     } else {
@@ -108,11 +104,13 @@ static void OnAirspaceListEnter(WindowControl * Sender,
 	MapWindow::iAirspaceColour[ItemIndex] = c; 
 	changed = true;
       }
+#ifdef HAVE_HATCHED_BRUSH      
       int p = dlgAirspacePatternsShowModal();
       if (p>=0) {
 	MapWindow::iAirspaceBrush[ItemIndex] = p; 
 	changed = true;
       }
+#endif
     } else {
       int v = (MapWindow::iAirspaceMode[ItemIndex]+1)%4;
       MapWindow::iAirspaceMode[ItemIndex] = v;

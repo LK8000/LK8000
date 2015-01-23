@@ -605,8 +605,10 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 	if (matchedstring) return;
 	PREAD(sname,svalue,szRegistryColour[i],&MapWindow::iAirspaceColour[i]);
 	if (matchedstring) return;
+#ifdef HAVE_HATCHED_BRUSH
 	PREAD(sname,svalue,szRegistryBrush[i],&MapWindow::iAirspaceBrush[i]);
 	if (matchedstring) return;
+#endif
   }
 
   PREAD(sname, svalue, szRegistryUseWindRose, &UseWindRose);
