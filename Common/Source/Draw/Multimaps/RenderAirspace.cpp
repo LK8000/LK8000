@@ -178,7 +178,8 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 					if (PtInRect(&Sideview_VGBox[i], startScreen)) {
 						if (ValidWayPoint(Sideview_VGWpt[i])) {
 							// trigger details
-							SelectedWaypoint = Sideview_VGWpt[i];;
+							SelectedWaypoint = Sideview_VGWpt[i];
+ #warning "TODO FIX: we can't show dialog from Draw thread"
 							PopupWaypointDetails();
 						} 
 					}
@@ -192,17 +193,12 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			   {
 				 if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen))
 				 {
-#if 1	// MULTISELECT
 				   dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
-#else				   
-				   PlayResource(TEXT("IDR_WAV_BTONE4"));
-				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-#endif				   
 				   LKevent=LKEVENT_NONE; 
-
 				 }
 			   }
 		     }
+#warning "TODO FIX: we can't show dialog from Draw thread"            
 			 dlgMultiSelectListShowModal();
 
 #if 0

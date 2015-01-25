@@ -85,6 +85,7 @@ void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
 		double Xstart, Ystart;
 		SideviewScreen2LatLon(startScreen.x, startScreen.y, Xstart, Ystart);
 //		StartupStore(_T("...... LKDrawMultimap_Asp lon:%f  lat:%f  \n"),Xstart,Ystart);
+#warning "TODO FIX: we can't show dialog from Draw thread"
 		MapWindow::Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.RealScale(), false);
 	//	LKevent=LKEVENT_NONE;
 	  }

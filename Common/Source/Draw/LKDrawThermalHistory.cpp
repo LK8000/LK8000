@@ -204,6 +204,7 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 		LKevent=LKEVENT_NONE; 
 		// Do not update while in details mode, max 10m
 		LastDoThermalH=DrawInfo.Time+600;
+#warning "TODO FIX: we can't show dialog from Draw thread"
 		dlgThermalDetails(i);
 		LastDoThermalH=0;
 		break;

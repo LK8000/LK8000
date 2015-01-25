@@ -225,6 +225,7 @@ void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 		}
 		SelectedWaypoint=i;
 		LastDoCommon = DrawInfo.Time+NEARESTONHOLD; //@ 101003
+		#warning "TODO FIX: we can't show dialog from Draw thread"
 		PopupWaypointDetails();
 		LastDoCommon = 0; //@ 101003
 		// SetModeType(LKMODE_MAP, MP_MOVING); Experimental OFF 101219

@@ -119,16 +119,12 @@ static  bool bHeightScale = false;
 			   {
 				 if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen))
 				 {	
-				   #if 1 // MULTISELECT
-				     dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
-				   #else 	
-				     PlayResource(TEXT("IDR_WAV_BTONE4"));
-				     dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-                   #endif
+    			   dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
 				   LKevent=LKEVENT_NONE;
 				 }
 			   }
 			 }
+#warning "TODO FIX: we can't show dialog from Draw thread"
 			 dlgMultiSelectListShowModal();
 
 		     if ( LKevent != LKEVENT_NONE ) {

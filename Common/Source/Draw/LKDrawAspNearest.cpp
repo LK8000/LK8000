@@ -217,6 +217,7 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 		// LastDoAirspaces is NO MORE USED. CAN BE REMOVED ANYTIME. We use multicalc, but maybe
 		// we can combine both approaches for a softer calculation?
 		LastDoAirspaces = DrawInfo.Time+NEARESTONHOLD; 
+#warning "TODO FIX: we can't show dialog from Draw thread"        
 		dlgAirspaceDetails( LKAirspaces[i].Pointer );
 		LastDoAirspaces = 0; 
 		LKevent=LKEVENT_NONE; 

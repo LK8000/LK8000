@@ -515,6 +515,8 @@ CustomKeyLabel[57]=2246;	// Reset view
 CustomKeyLabel[58]=2038;	// Map Orientation
 CustomKeyLabel[59]=928;		// Restarting Comm Ports
 CustomKeyLabel[60]=2249;	// DspMode
+
+static_assert(60 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
 }
 
 

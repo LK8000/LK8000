@@ -169,6 +169,9 @@ Text2GCE[21] = TEXT("TEAM_POS_REACHED");
 Text2GCE[22] = TEXT("ARM_READY");
 Text2GCE[23] = TEXT("TASK_CONFIRMSTART");
 Text2GCE[24] = TEXT("COUNT");
+// Check no array overrun
+static_assert(GCE_COUNT < array_size(Text2GCE), "invalid Text2GCE array size");
+
 Text2NE[0] = TEXT("DOWN_IN_FLAP_POS");
 Text2NE[1] = TEXT("DOWN_IN_FLAP_ZERO");
 Text2NE[2] = TEXT("DOWN_IN_FLAP_NEG");
@@ -300,8 +303,7 @@ Text2NE[127] = TEXT("UNUSED_55");
 Text2NE[128] = TEXT("UNUSED_56");
 Text2NE[129] = TEXT("UNUSED_57");
 Text2NE[130] = TEXT("COUNT");
-Text2Event_count = 70;
+
 // Check no array overrun
-//ASSERT(130 <= NE_COUNT);
-// Check no array overrun
-//ASSERT(24 <= GCE_COUNT);
+static_assert(130 <= NE_COUNT, "invalid Text2NE array size");
+

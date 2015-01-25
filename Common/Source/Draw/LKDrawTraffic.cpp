@@ -202,6 +202,7 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 		LKevent=LKEVENT_NONE; 
 		// Do not update Traffic while in details mode, max 10m
 		LastDoTraffic=DrawInfo.Time+600;
+#warning "TODO FIX: we can't show dialog from Draw thread"
 		dlgLKTrafficDetails(i);
 		LastDoTraffic=0;
 		break;

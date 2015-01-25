@@ -225,7 +225,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 			break;
 		}
 		SelectedWaypoint=i;
-		LastDoNearest = DrawInfo.Time+NEARESTONHOLD; 
+		LastDoNearest = DrawInfo.Time+NEARESTONHOLD;
+		#warning "TODO FIX: we can't show dialog from Draw thread"
 		PopupWaypointDetails();
 		LastDoNearest = 0; 
 		// SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219

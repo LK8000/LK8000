@@ -608,6 +608,7 @@ switch(LKevent)
 		  }
 	    }
 #ifdef FLARM_MS
+#warning "TODO FIX: we can't show dialog from Draw thread"
 	dlgMultiSelectListShowModal();
 #endif
 	if(!bFound)
