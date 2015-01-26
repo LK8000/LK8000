@@ -87,7 +87,7 @@ void dlgAirspaceSelect(void);
 void dlgTarget(int TaskPoint = -1);
 bool dlgTaskRules(void);
 void dlgAirspaceDetails(CAirspace *airspace);
-bool dlgAirspaceWarningVisible(void);
+
 void dlgLKTrafficDetails(int indexid);
 void dlgThermalDetails(int indexid);
 void dlgTimeGatesShowModal(void);
