@@ -228,7 +228,6 @@ GEXTERN double  LastZoomTrigger;
 // traffic DoTraffic interval, also reset during key up and down to prevent wrong selections
 GEXTERN double  LastDoTraffic;
 
-GEXTERN double LastDoAirspaces;
 GEXTERN double LastDoNearest;
 GEXTERN double LastDoCommon;
 GEXTERN double LastDoThermalH;
@@ -276,7 +275,7 @@ GEXTERN int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
 GEXTERN int LKTargetIndex;
 GEXTERN int LKTargetType;
 
-// Copy of runtime airspaces for instant use
+// Copy of runtime airspaces for instant use (Shared Ressource, Lock is needed)
 GEXTERN LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
 
 // Number of asps (items) of existing airspaces updated from DoAirspaces

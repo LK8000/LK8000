@@ -112,16 +112,10 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
    // DoAirspaces is called from MapWindow, in real time. We have enough CPU power there now
    // Consider replay mode...
-   // Multicalc used below, we don't need this
-   //if (  LastDoAirspaces > Basic->Time ) LastDoAirspaces=Basic->Time;
-   //if ( Basic->Time < (LastDoAirspaces+PAGINGTIMEOUT) ) { 
-   //  return false;
-   //}
 
    // We need a valid GPS fix in FLY mode
    if (Basic->NAVWarning && !SIMMODE) return true;
 
-   LastDoAirspaces=Basic->Time;
    
    #ifdef DEBUG_LKT
    StartupStore(_T("... DoAirspaces step%d started\n"),step);

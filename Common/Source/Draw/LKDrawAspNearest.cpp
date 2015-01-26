@@ -209,27 +209,18 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 		LKevent=LKEVENT_NONE;
 		i=LKSortedAirspaces[SelectedRaw[curmapspace] + (curpage*AspNumraws)];
 
-		if ( !ValidAirspace(i)) {
-			// todo only if numairspace>0
-			// DoStatusMessage(_T("ERR-039 Invalid ASP selection")); 
-			break;
-		}
-		// LastDoAirspaces is NO MORE USED. CAN BE REMOVED ANYTIME. We use multicalc, but maybe
-		// we can combine both approaches for a softer calculation?
-		LastDoAirspaces = DrawInfo.Time+NEARESTONHOLD; 
+		if ( ValidAirspace(i)) {
 #warning "TODO FIX: we can't show dialog from Draw thread"        
-		dlgAirspaceDetails( LKAirspaces[i].Pointer );
-		LastDoAirspaces = 0; 
+			dlgAirspaceDetails( LKAirspaces[i].Pointer );
+        }
 		LKevent=LKEVENT_NONE; 
 		return;
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=AspNumraws) SelectedRaw[curmapspace]=0;
-		LastDoAirspaces=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_UP:
 		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=AspNumraws-1;
-		LastDoAirspaces=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_PAGEUP:
 		LKevent=LKEVENT_NONE;

@@ -300,7 +300,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 							break;
 				case MSM_AIRSPACES:
 							SortedMode[MapSpaceMode]=j;
-							LastDoAirspaces=0;
 							PlayResource(TEXT("IDR_WAV_CLICK"));
 							break;
 

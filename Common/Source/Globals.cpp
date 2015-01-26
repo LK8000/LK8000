@@ -332,8 +332,7 @@ void Globals_Init(void) {
   // traffic DoTraffic interval, also reset during key up and down to prevent wrong selections
   LastDoTraffic=0;
   LastDoNearest=0;
-  LastDoAirspaces=0;
-  LastDoCommon=0;
+   LastDoCommon=0;
   LastDoThermalH=0;
 
 
