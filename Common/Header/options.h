@@ -114,7 +114,7 @@
   #define BUTTONS_MS
   #define OWN_POS_MS
   #define OWN_FLARM_TRACES
-  #define FLARM_MS
+//  #define FLARM_MS    // not implemented inside Multiselect dialog.
   #define OUTLINE_2ND		// double outline airspaces
 #endif
 
@@ -130,8 +130,7 @@
   #define TEAM_CODE_MS		// button to trigger team code
   #define OWN_POS_MS		// button to trigger basic settings
   #define ORACLE_MS		// button to trigger oracle
-  #define FLARM_MS
-
+  
 // still to be tested in v5.0
   #define USE_AHRS
 

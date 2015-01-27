@@ -601,7 +601,6 @@ switch(LKevent)
 #ifdef FLARM_MS
 			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
 #else
-#error "never popup dialog outside MainThread"
 			    dlgLKTrafficDetails( j); // With no Multiselect
 #endif
 			    bFound = true;
@@ -1454,7 +1453,7 @@ return iCnt;
 
 
 #ifndef FLARM_MS
-void MapWindow::DrawFlarmPicto(HDC hDC, const RECT rc, FLARM_TRAFFIC* pTraf) {
+void MapWindow::DrawFlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf) {
 }
 #else
 //
