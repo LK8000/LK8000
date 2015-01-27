@@ -3697,6 +3697,6 @@ void InputEvents::eventModeType(const TCHAR *misc) {
     MapWindow::RefreshMap();
 }
 
-void InputEvents::eventShowMultiselect(char const*) {
+void InputEvents::eventShowMultiselect(const TCHAR*) {
     dlgMultiSelectListShowModal();
 }
