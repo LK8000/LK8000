@@ -1859,6 +1859,15 @@ void CAirspaceManager::CloseAirspaces() {
     if (_airspaces.size() == 0) return;
     SaveSettings();
 
+    _detail_queue.clear();
+    _detail_current = nullptr;
+    
+    // need to cleanup, otherwise "Item.Pointer" still not null but invalid
+    for (LKAirspace_Nearest_Item& Item : LKAirspaces) {
+        Item.Valid = false;
+        Item.Pointer = NULL;
+    }
+    
     // this is needed for avoid crash if airspaces configuration is changed
     // after Step 1 and before step 2 of multicalc inside AirspacesWarning
     CAirspace::ResetSideviewNearestInstance();
@@ -3050,6 +3059,33 @@ void CAirspaceManager::AirspaceDisableWaveSectors(void) {
 
 }
 #endif
+
+
+// queue new airspaces for popup details 
+void CAirspaceManager::PopupAirspaceDetail(CAirspace * pAsp) {
+    CCriticalSection::CGuard guard(_csairspaces);
+    _detail_queue.push_back(pAsp);
+}
+
+
+void dlgAirspaceDetails();
+
+// show details for each airspaces queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
+void CAirspaceManager::ProcessAirspaceDetailQueue() {
+
+    _csairspaces.lock();
+    while(!_detail_queue.empty()) {
+        _detail_current = _detail_queue.front();
+        _detail_queue.pop_front(); // remove Airspace from fifo
+        
+        _csairspaces.unlock(); 
+        dlgAirspaceDetails();
+        _csairspaces.lock();
+    }
+    _detail_current = nullptr;
+    _csairspaces.unlock();
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////////////

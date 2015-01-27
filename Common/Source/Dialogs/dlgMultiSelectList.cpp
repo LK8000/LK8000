@@ -87,7 +87,7 @@ void dlgAddMultiSelectListDetailsDialog(int Index) {
         switch (Elements[Index].type) {
         case IM_AIRSPACE:
             LKASSERT(Elements[Index].ptr);
-            dlgAirspaceDetails((CAirspace*) Elements[Index].ptr);
+            CAirspaceManager::Instance().PopupAirspaceDetail(static_cast<CAirspace*>(Elements[Index].ptr));
             break;
 
         case IM_WAYPOINT:

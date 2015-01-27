@@ -99,7 +99,7 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    bool ret = false;
    
    if (DoInit[MDI_DOAIRSPACES]) {
-	memset(LKAirspaces, 0, sizeof(LKAirspaces));
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	LKNumAirspaces=0;
 	memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
     for (int i=0; i<MAXNEARAIRSPACES; i++) {

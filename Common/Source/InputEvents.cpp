@@ -832,6 +832,9 @@ void InputEvents::DoQueuedEvents(void) {
   int NMEA_Queue_copy[MAX_NMEA_QUEUE];
   int i;
 
+  
+  CAirspaceManager::Instance().ProcessAirspaceDetailQueue();
+  
   if (blockqueue) return; 
   // prevent this being re-entered by gui thread while
   // still processing

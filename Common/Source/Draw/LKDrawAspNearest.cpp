@@ -210,8 +210,8 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 		i=LKSortedAirspaces[SelectedRaw[curmapspace] + (curpage*AspNumraws)];
 
 		if ( ValidAirspace(i)) {
-#warning "TODO FIX: we can't show dialog from Draw thread"        
-			dlgAirspaceDetails( LKAirspaces[i].Pointer );
+            CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+            CAirspaceManager::Instance().PopupAirspaceDetail(LKAirspaces[i].Pointer);
         }
 		LKevent=LKEVENT_NONE; 
 		return;

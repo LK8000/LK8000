@@ -86,7 +86,6 @@ void dlgWaypointEditShowModal(WAYPOINT *wpt);
 void dlgAirspaceSelect(void);
 void dlgTarget(int TaskPoint = -1);
 bool dlgTaskRules(void);
-void dlgAirspaceDetails(CAirspace *airspace);
 
 void dlgLKTrafficDetails(int indexid);
 void dlgThermalDetails(int indexid);

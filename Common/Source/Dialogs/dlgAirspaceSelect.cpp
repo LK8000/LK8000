@@ -68,7 +68,7 @@ static void OnAirspaceListEnter(WindowControl * Sender,
 
       CAirspace *airspace = AirspaceSelectInfo[LowLimit+ItemIndex].airspace;
       if (airspace) {
-          dlgAirspaceDetails(airspace);
+          CAirspaceManager::Instance().PopupAirspaceDetail(airspace);
       }
     }
   } else {

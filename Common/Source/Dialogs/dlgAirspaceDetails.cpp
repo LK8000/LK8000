@@ -16,7 +16,6 @@
 #include "TraceThread.h"
 #include "LKObjects.h"
 
-static CAirspace *airspace = NULL;
 static CAirspaceBase airspace_copy;
 static WndForm *wf=NULL;
 
@@ -41,16 +40,27 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
        * original data are shared ressources ! 
        * for that we need to grant all called methods are thread safe
        ****************************************************************/
-	  airspace->DrawPicto(Surface, rc);
+   {
+      CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+      CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+      if(airspace) {
+        airspace->DrawPicto(Surface, rc);
+      }
+   }
 }
 
 static void OnFlyClicked(WndButton* pWnd) {
     (void) pWnd;
 
-    if (airspace == NULL) return;
     if (wf == NULL) return;
-
-    CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
+    
+   {
+      CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+      CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+      if(airspace) {
+        CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
+      }
+   }
     SetValues();
     PlayResource(TEXT("IDR_WAV_CLICK"));
 }
@@ -58,9 +68,13 @@ static void OnFlyClicked(WndButton* pWnd) {
 static void OnSelectClicked(WndButton* pWnd) {
     (void) pWnd;
 
-    if (airspace == NULL) return;
-
-    CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
+   {
+      CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+      CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+      if(airspace) {
+        CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
+      }
+   }
     SetValues();
     PlayResource(TEXT("IDR_WAV_CLICK"));
 }
@@ -69,16 +83,18 @@ static void OnSelectClicked(WndButton* pWnd) {
 static void OnAcknowledgeClicked(WndButton* pWnd){
   (void)pWnd;
 
-  if (airspace == NULL) return;
   if (wf == NULL) return;
 
-  if (airspace_copy.Enabled()) 
   {
-    CAirspaceManager::Instance().AirspaceDisable(*airspace);
-  }
-  else
-  {
-    CAirspaceManager::Instance().AirspaceEnable(*airspace);
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    if(airspace) {
+      if (airspace_copy.Enabled()) {
+        CAirspaceManager::Instance().AirspaceDisable(*airspace);
+      } else {
+        CAirspaceManager::Instance().AirspaceEnable(*airspace);
+      }
+    }
   }
 
 
@@ -112,11 +128,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 static void SetValues(void) {
 
-  if (airspace==NULL) return;
-
-   // Get an object instance copy with actual values
-  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
-
+  
   WndProperty* wp;
   WndButton *wb;
   TCHAR buffer[80];
@@ -125,8 +137,22 @@ static void SetValues(void) {
   int bearing;
   int hdist;
   int vdist;
-  bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance( airspace, &hdist, &bearing, &vdist);
 
+  
+  bool inside = false;
+  {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    if(airspace) {
+        // Get an object instance copy with actual values
+        airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
+        inside = CAirspaceManager::Instance().AirspaceCalculateDistance( airspace, &hdist, &bearing, &vdist);
+    } else {
+        // error : CAirspaceManager are closed ?
+        return;
+    }
+  }
+  
   if (wf!=NULL) {
 	TCHAR capbuffer[250];
 	_stprintf(capbuffer,_T("%s ("),airspace_copy.Name());
@@ -289,14 +315,13 @@ static void SetValues(void) {
 
 }
 
+/*
+ * only called by #CAirspaceManager::ProcessAirspaceDetailQueue()
+ * for display AirspaceDetails, use #PopupAirspaceDetail
+ */
+void dlgAirspaceDetails() {
 
-void dlgAirspaceDetails(CAirspace *airspace_to_show) {
-
-  SHOWTHREAD(_T("dlgAirspaceDetails"))
-
-  if (airspace != NULL) {
-    return;
-  }
+  SHOWTHREAD(_T("dlgAirspaceDetails"));
 
   TCHAR filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgAirspaceDetails.xml"));
@@ -307,12 +332,10 @@ void dlgAirspaceDetails(CAirspace *airspace_to_show) {
   if (!wf) return;
   wf->SetTimerNotify(1000, OnTimer);
   
-  airspace = airspace_to_show;
   SetValues();
 
   wf->ShowModal();
 
-  airspace = NULL;
   delete wf;
   wf = NULL;
 
