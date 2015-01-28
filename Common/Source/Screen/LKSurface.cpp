@@ -20,7 +20,7 @@
 #include "MathFunctions.h"
 #include "utils/2dpclip.h"
 #include "utils/array_adaptor.h"
-
+#include "Screen/LKBitmapSurface.h"
 #ifdef WIN32
 
 LKSurface::LKSurface() : _OutputDC(), _AttribDC(), _TempDC() {
@@ -437,12 +437,14 @@ bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int
 }
 
 // for each white pixel in the mask, do nothing (NOP), and for each black pixel, do a Copy.
-bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmap& bmpMask, int xMask, int yMask) {
+bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmapSurface& bmpMask, int xMask, int yMask) {
 #ifdef WIN32
     return ::MaskBlt(*this, nXDest, nYDest, nWidth, nHeight, hdcSrc, nXSrc, nYSrc, bmpMask, xMask, yMask, MAKEROP4(SRCAND,  0x00AA0029));
 #else
-#warning "CopyWithMask not implemented, needed for Airspace transparent Border"
-    return false;
+    Canvas& buffer = hdcSrc;
+    buffer.CopyNotOr(nXDest, nYDest, nWidth, nHeight, bmpMask, xMask, yMask);
+    _pCanvas->Copy(nXDest, nYDest, nWidth, nHeight, buffer, nXSrc, nYSrc);
+    return true;
 #endif
 }
 

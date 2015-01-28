@@ -29,7 +29,7 @@ public:
     operator LKBitmap& () { return _hBitmap; }
 
 #ifdef WIN32
-    operator HBITMAP () { return _hBitmap; }
+    operator HBITMAP () const { return _hBitmap; }
 #endif
     
 protected:

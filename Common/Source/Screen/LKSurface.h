@@ -31,6 +31,8 @@
 #include "Screen/Canvas.hpp"
 #endif
 
+class LKBitmapSurface;
+
 class LKSurface : public boost::noncopyable {
 protected:
 #ifndef USE_GDI
@@ -160,7 +162,7 @@ public:
 	bool StretchCopy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc);
     bool TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc);
 
-    bool CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmap& bmpMask, int xMask, int yMask);
+    bool CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmapSurface& bmpMask, int xMask, int yMask);
     
     static bool AlphaBlendSupported();
     bool AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
