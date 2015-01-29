@@ -253,9 +253,8 @@ bool lk::filesystem::getBasePath(TCHAR* szPath, size_t MaxSize) {
 
     szTmp = strchr(szTmp, '/');
     if (szTmp) {
-        ++szTmp;
+        (*(++szTmp)) = '\0';
     }
-    (*szTmp) = '\0';
 
     return true;
 }
