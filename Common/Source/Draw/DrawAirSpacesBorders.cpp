@@ -11,49 +11,42 @@
 
 void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
 {
-  CAirspaceList::const_iterator it;
-  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
-  int airspace_type;
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
   const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
   
   CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
-  //    for (it=airspaces_to_draw.end(); it != airspaces_to_draw.begin(); it--)
-
+  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
+  
       /***********************************************************************
        * draw underlying aispaces first (reverse order) with bigger pen
        * *********************************************************************/
-      it=airspaces_to_draw.end();
-      if (it!=airspaces_to_draw.begin())
-      do
-      {
-	it--;
+      for (CAirspaceList::const_reverse_iterator it=airspaces_to_draw.rbegin(); it != airspaces_to_draw.rend(); ++it) {
         if ((*it)->DrawStyle()) {
-          airspace_type = (*it)->Type();
+
           if ( asp_selected_flash && (*it)->Selected() ) {
             Surface.SelectObject(LK_BLACK_PEN);
           } else {
-            Surface.SelectObject(hBigAirspacePens[airspace_type]);
+            Surface.SelectObject(hBigAirspacePens[(*it)->Type()]);
           }
-          if((*it)->DrawStyle()==adsDisabled)
+          if((*it)->DrawStyle()==adsDisabled) {
             Surface.SelectObject(LKPen_Grey_N2 );
+          }
 
           (*it)->Draw(Surface, rc, false);
         }
-      } while (it !=airspaces_to_draw.begin());
+      } // for
 
       /***********************************************************************
        * now draw aispaces on top (normal order) with thin pen
        ***********************************************************************/
 
-      for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+      for (CAirspaceList::const_iterator it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
-          airspace_type = (*it)->Type();
           if ( asp_selected_flash && (*it)->Selected() ) {
             Surface.SelectObject(LK_BLACK_PEN);
           } else {
-            Surface.SelectObject(hAirspacePens[airspace_type]);
+            Surface.SelectObject(hAirspacePens[(*it)->Type()]);
           }
           if((*it)->DrawStyle()==adsDisabled)
             Surface.SelectObject(LKPen_Black_N0 );
