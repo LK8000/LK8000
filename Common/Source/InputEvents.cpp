@@ -86,6 +86,14 @@ static int GCE_Queue[MAX_GCE_QUEUE];
 static int NMEA_Queue[MAX_NMEA_QUEUE];
 
 
+// popup object details event queue data.
+typedef struct {
+    InputEvents::PopupType type;
+    int index;
+} PopupEvent_t;
+typedef std::deque<PopupEvent_t> PopupEventQueue_t;
+PopupEventQueue_t PopupEventQueue;
+
 // -----------------------------------------------------------------------
 // Initialisation and Defaults
 // -----------------------------------------------------------------------
@@ -835,6 +843,8 @@ void InputEvents::DoQueuedEvents(void) {
   
   CAirspaceManager::Instance().ProcessAirspaceDetailQueue();
   
+  processPopupDetails_real();
+  
   if (blockqueue) return; 
   // prevent this being re-entered by gui thread while
   // still processing
@@ -894,6 +904,62 @@ bool InputEvents::processGlideComputer(int gce_id) {
   }
   UnlockEventQueue();
   return true; // ok.
+}
+
+void InputEvents::processPopupDetails(PopupType type, int index) {
+    LockEventQueue();
+    PopupEventQueue.push_back({type, index});
+    UnlockEventQueue();
+}
+
+// show details for each object queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
+void InputEvents::processPopupDetails_real() {
+    LockEventQueue();
+    while(!PopupEventQueue.empty()) {
+        PopupEvent_t event = PopupEventQueue.front();
+        PopupEventQueue.pop_front(); // remove object event from fifo
+        UnlockEventQueue();
+
+        switch(event.type) {
+            case PopupWaypoint:
+                // Do not update CommonList and Nearest Waypoint in details mode, max 60s 
+                LockFlightData();
+        		LastDoCommon = GPS_INFO.Time + NEARESTONHOLD; //@ 101003
+                UnlockFlightData();
+
+                SelectedWaypoint = event.index;
+                PopupWaypointDetails();
+
+                LastDoNearest = LastDoCommon = 0; //@ 101003
+                break;
+            case PopupThermal:
+                // Do not update while in details mode, max 10m
+                LockFlightData();
+        		LastDoThermalH = GPS_INFO.Time + 600;
+                UnlockFlightData();
+                
+                dlgThermalDetails(event.index);
+                
+                LastDoThermalH=0;
+                break;
+            case PopupTraffic:
+             	// Do not update Traffic while in details mode, max 10m
+                LockFlightData();
+        		LastDoTraffic = GPS_INFO.Time + 600;
+                UnlockFlightData();
+                
+                dlgLKTrafficDetails(event.index);
+ 
+                LastDoTraffic = 0;
+                break;
+            default: 
+                assert(false);
+                break;
+        } 
+        
+        LockEventQueue();
+    }
+    UnlockEventQueue();
 }
 
 /*
@@ -1391,9 +1457,6 @@ void InputEvents::eventAnalysis(const TCHAR *misc) {
 //         current: the current active waypoint
 //          select: brings up the waypoint selector, if the user then
 //                  selects a waypoint, then the details dialog is shown.
-//        selected: the current Selected Waypoint, ( "SelectedWaypoint" global variable )
-//                  event fired from CalcThread, DrawThread ...
-//
 //  See the waypoint dialog section of the reference manual
 // for more info.
 void InputEvents::eventWaypointDetails(const TCHAR *misc) {
@@ -1405,20 +1468,16 @@ void InputEvents::eventWaypointDetails(const TCHAR *misc) {
     if (SelectedWaypoint<0){
 	// LKTOKEN  _@M462_ = "No Active Waypoint!" 
       DoStatusMessage(gettext(TEXT("_@M462_")));
-    } else {
-      PopupWaypointDetails();
+      return;
     }
+    PopupWaypointDetails();
   } else {
-    int res = -1;
     if (_tcscmp(misc, TEXT("select")) == 0) {
-      res = dlgWayPointSelect();
-      if (res != -1){
-        SelectedWaypoint = res;
-        PopupWaypointDetails();
-      };
-    } else if (ValidWayPoint(SelectedWaypoint)) {
-      if (_tcscmp(misc, TEXT("selected")) == 0) {
-        PopupWaypointDetails();
+      int res = dlgWayPointSelect();
+
+      if (res != -1) {
+	    SelectedWaypoint = res;
+	    PopupWaypointDetails();
       }
     }
   }

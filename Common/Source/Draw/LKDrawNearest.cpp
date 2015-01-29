@@ -224,15 +224,11 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 			#endif
 			break;
 		}
-		SelectedWaypoint=i;
-		LastDoNearest = DrawInfo.Time+NEARESTONHOLD; 
         /*
          * we can't show dialog from Draw thread
          * instead, new event is queued, dialog will be popup by main thread 
          */
-        InputEvents::processGlideComputer(GCE_WAYPOINT_DETAILS_SELECTED);
-#warning "now this is noblocking, so LastDoCommon reset need to moved inside WayPointDetail Dialog"
-		LastDoNearest = 0; 
+        InputEvents::processPopupDetails(InputEvents::PopupWaypoint, i);
 		// SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
 		LKevent=LKEVENT_NONE; 
 		return;

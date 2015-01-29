@@ -12,7 +12,7 @@
 #include "Dialogs.h"
 #include "RGB.h"
 #include "DoInits.h"
-
+#include "InputEvents.h"
 
 void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 
@@ -200,11 +200,7 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 			break;
 		}
 		LKevent=LKEVENT_NONE; 
-		// Do not update Traffic while in details mode, max 10m
-		LastDoTraffic=DrawInfo.Time+600;
-#warning "TODO FIX: we can't show dialog from Draw thread"
-		dlgLKTrafficDetails(i);
-		LastDoTraffic=0;
+        InputEvents::processPopupDetails(InputEvents::PopupTraffic, i);
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=TrafficNumraws) SelectedRaw[curmapspace]=0;

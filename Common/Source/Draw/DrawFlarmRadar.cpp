@@ -601,7 +601,7 @@ switch(LKevent)
 #ifdef FLARM_MS
 			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
 #else
-			    dlgLKTrafficDetails( j); // With no Multiselect
+			    InputEvents::processPopupDetails(InputEvents::PopupTraffic, j); // With no Multiselect
 #endif
 			    bFound = true;
 			  }

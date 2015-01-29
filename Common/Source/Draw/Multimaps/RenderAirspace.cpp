@@ -176,22 +176,11 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 					if (Sideview_VGBox[i].right==0) continue;
 					if (PtInRect(&Sideview_VGBox[i], startScreen)) {
 						if (ValidWayPoint(Sideview_VGWpt[i])) {
-							/*
-                             *  waypoint id are forwarded to #PopupWaypointDetails() by #SelectedWaypoint global
-                             */
-							SelectedWaypoint = Sideview_VGWpt[i];
                             /*
                              * we can't show dialog from Draw thread
                              * instead, new event is queued, dialog will be popup by main thread 
                              */
-                            InputEvents::processGlideComputer(GCE_WAYPOINT_DETAILS_SELECTED);
-
-                            /*
-                             * exit loop, otherwise same waypoint can be displayed multiple time.
-                             * that never happen, waypoint box don't overlap
-                             * in all case no need to continue after.
-                             */
-                            break; 
+                            InputEvents::processPopupDetails(InputEvents::PopupWaypoint, Sideview_VGWpt[i]);
 						} 
 					}
 				}

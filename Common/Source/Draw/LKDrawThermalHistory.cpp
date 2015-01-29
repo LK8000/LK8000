@@ -12,7 +12,7 @@
 #include "RGB.h"
 #include "Dialogs.h"
 #include "DoInits.h"
-
+#include "InputEvents.h"
 
 
 void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
@@ -202,11 +202,7 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 			break;
 		}
 		LKevent=LKEVENT_NONE; 
-		// Do not update while in details mode, max 10m
-		LastDoThermalH=DrawInfo.Time+600;
-#warning "TODO FIX: we can't show dialog from Draw thread"
-		dlgThermalDetails(i);
-		LastDoThermalH=0;
+        InputEvents::processPopupDetails(InputEvents::PopupThermal, i);
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=thistoryNumraws) SelectedRaw[curmapspace]=0;

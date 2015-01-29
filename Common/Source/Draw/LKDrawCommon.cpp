@@ -215,23 +215,14 @@ void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 		// i=CommonIndex[SelectedRaw[curmapspace] + (curpage*CommonNumraws)]; OLD
 		i=pIndex[SelectedRaw[curmapspace] + (curpage*CommonNumraws)];
 
-		if ( !ValidWayPoint(i)) {
-			#if 0 // selection while waiting for data ready
-			// dont say error if empty list and an enter was pressed
-			if (*pNumber) 
-				DoStatusMessage(_T("ERR-018 Invalid selection"));
-			#endif
+		if (ValidWayPoint(i)) {
 			break;
 		}
-		SelectedWaypoint=i;
-		LastDoCommon = DrawInfo.Time+NEARESTONHOLD; //@ 101003
-        /*
+		/*
          * we can't show dialog from Draw thread
          * instead, new event is queued, dialog will be popup by main thread 
          */
-        InputEvents::processGlideComputer(GCE_WAYPOINT_DETAILS_SELECTED);
-#warning "now this is noblocking, so LastDoCommon reset need to moved inside WayPointDetail Dialog"
-		LastDoCommon = 0; //@ 101003
+        InputEvents::processPopupDetails(InputEvents::PopupWaypoint, i);
 		// SetModeType(LKMODE_MAP, MP_MOVING); Experimental OFF 101219
 		LKevent=LKEVENT_NONE;
 		return;
