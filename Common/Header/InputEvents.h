@@ -153,6 +153,7 @@ enum {
   GCE_TEAM_POS_REACHED,
   GCE_ARM_READY,
   GCE_TASK_CONFIRMSTART,
+  GCE_WAYPOINT_DETAILS_SELECTED,
   GCE_COUNT			// How many we have for arrays etc
 };
 

@@ -18,7 +18,7 @@
 #include "LKObjects.h"
 #include "Multimap.h"
 #include "Topology.h"
-#include "Dialogs.h"
+#include "InputEvents.h"
 
 extern	 int Sideview_iNoHandeldSpaces;
 extern	 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
@@ -179,8 +179,18 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 						if (ValidWayPoint(Sideview_VGWpt[i])) {
 							// trigger details
 							SelectedWaypoint = Sideview_VGWpt[i];
- #warning "TODO FIX: we can't show dialog from Draw thread"
-							PopupWaypointDetails();
+                            /*
+                             * we can't show dialog from Draw thread
+                             * instead, new event is queued, dialog will be popup by main thread 
+                             */
+                            InputEvents::processGlideComputer(GCE_WAYPOINT_DETAILS_SELECTED);
+                            
+                            /*
+                             * exit loop, otherwise same waypoint can be displayed multiple time.
+                             * that never happen, waypoint box don't overlapp
+                             * in all case no need to continue after.
+                             */
+                            break; 
 						} 
 					}
 				}

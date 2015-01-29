@@ -10,7 +10,7 @@
 #include "LKMapWindow.h"
 #include "RGB.h"
 #include "DoInits.h"
-
+#include "InputEvents.h"
 
 void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 
@@ -225,8 +225,12 @@ void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 		}
 		SelectedWaypoint=i;
 		LastDoCommon = DrawInfo.Time+NEARESTONHOLD; //@ 101003
-		#warning "TODO FIX: we can't show dialog from Draw thread"
-		PopupWaypointDetails();
+        /*
+         * we can't show dialog from Draw thread
+         * instead, new event is queued, dialog will be popup by main thread 
+         */
+        InputEvents::processGlideComputer(GCE_WAYPOINT_DETAILS_SELECTED);
+#warning "now this is noblocking, so LastDoCommon reset need to moved inside WayPointDetail Dialog"
 		LastDoCommon = 0; //@ 101003
 		// SetModeType(LKMODE_MAP, MP_MOVING); Experimental OFF 101219
 		LKevent=LKEVENT_NONE;

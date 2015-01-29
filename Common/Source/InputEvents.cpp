@@ -1387,6 +1387,9 @@ void InputEvents::eventAnalysis(const TCHAR *misc) {
 //         current: the current active waypoint
 //          select: brings up the waypoint selector, if the user then
 //                  selects a waypoint, then the details dialog is shown.
+//        selected: the current Selected Waypoint, ( "SelectedWaypoint" global variable )
+//                  event fired from CalcThread, DrawThread ...
+//
 //  See the waypoint dialog section of the reference manual
 // for more info.
 void InputEvents::eventWaypointDetails(const TCHAR *misc) {
@@ -1398,19 +1401,23 @@ void InputEvents::eventWaypointDetails(const TCHAR *misc) {
     if (SelectedWaypoint<0){
 	// LKTOKEN  _@M462_ = "No Active Waypoint!" 
       DoStatusMessage(gettext(TEXT("_@M462_")));
-      return;
+    } else {
+      PopupWaypointDetails();
     }
-    PopupWaypointDetails();
-  } else
+  } else {
+    int res = -1;
     if (_tcscmp(misc, TEXT("select")) == 0) {
-      int res = dlgWayPointSelect();
-
+      res = dlgWayPointSelect();
       if (res != -1){
-	SelectedWaypoint = res;
-	PopupWaypointDetails();
+        SelectedWaypoint = res;
+        PopupWaypointDetails();
       };
-
+    } else if (ValidWayPoint(SelectedWaypoint)) {
+      if (_tcscmp(misc, TEXT("selected")) == 0) {
+        PopupWaypointDetails();
+      }
     }
+  }
 }
 
 void InputEvents::eventTimeGates(const TCHAR *misc) {

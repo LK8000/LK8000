@@ -11,7 +11,7 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "DoInits.h"
-
+#include "InputEvents.h"
 
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
 
@@ -225,9 +225,13 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 			break;
 		}
 		SelectedWaypoint=i;
-		LastDoNearest = DrawInfo.Time+NEARESTONHOLD;
-		#warning "TODO FIX: we can't show dialog from Draw thread"
-		PopupWaypointDetails();
+		LastDoNearest = DrawInfo.Time+NEARESTONHOLD; 
+        /*
+         * we can't show dialog from Draw thread
+         * instead, new event is queued, dialog will be popup by main thread 
+         */
+        InputEvents::processGlideComputer(GCE_WAYPOINT_DETAILS_SELECTED);
+#warning "now this is noblocking, so LastDoCommon reset need to moved inside WayPointDetail Dialog"
 		LastDoNearest = 0; 
 		// SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
 		LKevent=LKEVENT_NONE; 

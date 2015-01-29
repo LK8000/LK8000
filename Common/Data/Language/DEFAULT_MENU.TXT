@@ -103,6 +103,10 @@ type=gce
 data=FLIGHTMODE_FINALGLIDE_TERRAIN
 event=StatusMessage ZYX934
 
+mode=default
+type=gce
+data=WAYPOINT_DETAILS_SELECTED
+event=WaypointDetails selected
 
 # ------------
 # mode=default
