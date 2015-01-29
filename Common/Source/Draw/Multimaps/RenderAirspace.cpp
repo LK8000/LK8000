@@ -27,7 +27,6 @@ double fSplitFact = 0.30;
 double fOffset = 0.0;
 using std::min;
 using std::max;
-int k;
 double fZOOMScale[NUMBER_OF_SHARED_MULTIMAPS] = {1.0,1.0,1.0,1.0};
 double fDelta = MIN_OFFSET;
 extern POINT startScreen;
@@ -161,7 +160,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 			break;
 
 		case LKEVENT_LONGCLICK:
-	//		ToggleMMNorthUp(getsideviewpage);
+
 			if (MapSpaceMode==MSM_VISUALGLIDE) {
 				LKevent=LKEVENT_NONE; 
 				if ( (fSplitFact*100)==SIZE4 ) { // TopView full screen?
@@ -177,59 +176,54 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 					if (Sideview_VGBox[i].right==0) continue;
 					if (PtInRect(&Sideview_VGBox[i], startScreen)) {
 						if (ValidWayPoint(Sideview_VGWpt[i])) {
-							// trigger details
+							/*
+                             *  waypoint id are forwarded to #PopupWaypointDetails() by #SelectedWaypoint global
+                             */
 							SelectedWaypoint = Sideview_VGWpt[i];
                             /*
                              * we can't show dialog from Draw thread
                              * instead, new event is queued, dialog will be popup by main thread 
                              */
                             InputEvents::processGlideComputer(GCE_WAYPOINT_DETAILS_SELECTED);
-                            
+
                             /*
                              * exit loop, otherwise same waypoint can be displayed multiple time.
-                             * that never happen, waypoint box don't overlapp
+                             * that never happen, waypoint box don't overlap
                              * in all case no need to continue after.
                              */
                             break; 
 						} 
 					}
 				}
-				break;
-			} 
+			} else {
+                bool bShow = false;
+                for (int k = 0; k <= Sideview_iNoHandeldSpaces; k++) {
+                    if (Sideview_pHandeled[k].psAS != NULL) {
+                        if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen)) {
+                            dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
+                            bShow = true;
+                        }
+                    }
+                }
+                if(bShow) {
+                    /*
+                     * we can't show dialog from Draw thread
+                     * instead, new event is queued, dialog will be popup by main thread 
+                     */
+                    InputEvents::processGlideComputer(GCE_POPUP_MULTISELECT);
 
-		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
-	             {
-			   if( Sideview_pHandeled[k].psAS != NULL)
-			   {
-				 if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen))
-				 {
-				   dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
-				   LKevent=LKEVENT_NONE; 
-				 }
-			   }
-		     }
-#warning "TODO FIX: we can't show dialog from Draw thread"            
-			 dlgMultiSelectListShowModal();
-
-#if 0
-		     // This is not working correctly because InteriorAirspaceDetails is finding
-		     // only the first airspace in the list, only one.
-		     if (LKevent!=LKEVENT_NONE) {
-			double xlat, ylon;
-			SideviewScreen2LatLon(XstartScreen,YstartScreen,xlat,ylon);
-			if (Event_InteriorAirspaceDetails(xlat, ylon))
-			{
-			        LKevent=LKEVENT_NONE; 
-			}
-	             }			
-#endif
-        	 if (LKevent!=LKEVENT_NONE) {
-			   if (PtInRect(&rc, startScreen))
-			     bHeightScale = !bHeightScale;
-			   if (PtInRect(&rct, startScreen))
-			     bHeightScale = false;
-		     }
-	     break;
+                    // reset event, otherwise Distance/height zoom mod are also triggered
+                    LKevent = LKEVENT_NONE;
+                }
+            }
+            if (LKevent != LKEVENT_NONE) {
+                if (PtInRect(&rc, startScreen)) {
+                    bHeightScale = !bHeightScale;
+                } else if (PtInRect(&rct, startScreen)) {
+                    bHeightScale = false;
+                }
+            }
+            break;
 
 		case LKEVENT_PAGEUP:
 #ifdef OFFSET_SETP

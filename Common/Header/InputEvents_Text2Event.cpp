@@ -143,7 +143,9 @@ Text2Event[68].text = TEXT("InfoPage");
 Text2Event[68].event = &eventInfoPage;
 Text2Event[69].text = TEXT("ModeType");
 Text2Event[69].event = &eventModeType;
-Text2Event_count = 70;
+Text2Event[70].text = TEXT("ShowMultiselect");
+Text2Event[70].event = &eventShowMultiselect;
+Text2Event_count = 71;
 
 Text2GCE[0] = TEXT("AIRSPACE_ENTER");
 Text2GCE[1] = TEXT("AIRSPACE_LEAVE");
@@ -170,6 +172,8 @@ Text2GCE[21] = TEXT("TEAM_POS_REACHED");
 Text2GCE[22] = TEXT("ARM_READY");
 Text2GCE[23] = TEXT("TASK_CONFIRMSTART");
 Text2GCE[GCE_WAYPOINT_DETAILS_SELECTED]  = TEXT("WAYPOINT_DETAILS_SELECTED");
+Text2GCE[GCE_POPUP_MULTISELECT]          = TEXT("POPUP_MULTISELECT");
+Text2GCE[GCE_WAYPOINT_DETAILS_SCREEN]    = TEXT("WAYPOINT_DETAILS_SCREEN");
 Text2GCE[GCE_COUNT]                      = TEXT("COUNT");
 // Check no array overrun
 static_assert(GCE_COUNT < array_size(Text2GCE), "invalid Text2GCE array size");

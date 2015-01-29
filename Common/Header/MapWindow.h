@@ -490,7 +490,7 @@ class MapWindow {
   static void Event_TerrainTopology(int vswitch);
   static void Event_PanCursor(int dx, int dy);
   static bool Event_InteriorAirspaceDetails(double lon, double lat);
-  static bool Event_NearestWaypointDetails(double lon, double lat, double range, bool pan);
+  static bool Event_NearestWaypointDetails(double lon, double lat);
 
   static void UpdateInfo(NMEA_INFO *nmea_info,
 			 DERIVED_INFO *derived_info);

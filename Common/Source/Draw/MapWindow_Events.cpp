@@ -11,25 +11,17 @@
 #include "InputEvents.h"
 #include "Dialogs.h"
 
-bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double range, bool pan) {
+bool MapWindow::Event_NearestWaypointDetails(double lon, double lat) {
 
     double Dist;
     unsigned int i;
-    double dyn_range = range*3.5;
+    const double range = zoom.RealScale()*500;  
+    double dyn_range = std::max(5000.0, range*3.5);
 
     //StartupStore(_T("RANGE=%f\n"),dyn_range);
     LKSound(TEXT("LK_BELL.WAV"));
 
-
-    if(pan && (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN))) {
-        lon = PanLongitude;
-        lat = PanLatitude;
-    }
-
-    if(dyn_range < 5000)
-        dyn_range = 5000;
-
-    start_search:
+start_search:
 
 #ifdef BUTTONS_MS
     LockFlightData();
@@ -50,7 +42,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
 #endif	// BUTTONS_MS
 
 
-    for(i=NUMRESWP;i<WayPointList.size();i++) {    // Consider only valid markers
+    for(size_t i=NUMRESWP;i<WayPointList.size();++i) {    // Consider only valid markers
         if ((WayPointCalc[i].WpType==WPT_AIRPORT)|| (WayPointCalc[i].WpType==WPT_OUTLANDING)) {
             DistanceBearing(lat,lon, WayPointList[i].Latitude, WayPointList[i].Longitude, &Dist, NULL);
             if(Dist < dyn_range) {
@@ -60,10 +52,10 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
     }
 
 #ifdef FLARM_MS
-    if(!pan) { /* do not look for FLARM objects in PAN mode  */
+    if((MapWindow::mode.Is(MapWindow::Mode::MODE_PAN) || MapWindow::mode.Is(MapWindow::Mode::MODE_TARGET_PAN))) {
         LastDoTraffic=0;
         DoTraffic(&DrawInfo,&DerivedDrawInfo);
-        for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
+        for (unsigned i=0; i<FLARM_MAX_TRAFFIC; ++i) {
 	    if (LKTraffic[i].Status != LKT_EMPTY) {
                 DistanceBearing(lat,lon, LKTraffic[i].Latitude, LKTraffic[i].Longitude, &Dist, NULL);
                 if(Dist < range) {
@@ -77,8 +69,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
     int  HorDist=0, Bearing=0, VertDist=0; 
     CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, (int)(dyn_range/2));
 
-    CAirspaceList::iterator it;
-    for (it = reslist.begin(); it != reslist.end(); ++it) {
+    for (CAirspaceList::const_iterator it = reslist.begin(); it != reslist.end(); ++it) {
         LKASSERT((*it));
         (*it)->CalculateDistance(&HorDist, &Bearing, &VertDist,lon, lat);
         dlgAddMultiSelectListItem((long*) (*it),0, IM_AIRSPACE, HorDist);
@@ -124,17 +115,17 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
     #endif
     if(dlgGetNoElements() ==0) { 
         if(dyn_range < 120000) {
-	    dyn_range *=2;
-	    goto start_search;
-	} else {
+            dyn_range *=2;
+            goto start_search;
+        } else {
             DoStatusMessage(gettext(TEXT("_@M2248_")));  // _@M2248_  "No Near Object found!"
         }
     } else {
         LKSound(TEXT("LK_GREEN.WAV"));
-	dlgMultiSelectListShowModal();
-	if(ValidTaskPoint(PanTaskEdit)) {
-    	    MapWindow::Event_Pan(1);
-	}
+        dlgMultiSelectListShowModal();
+        if(ValidTaskPoint(PanTaskEdit)) {
+            MapWindow::Event_Pan(1);
+        }
         return true;
     }
 
@@ -144,11 +135,9 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, double rang
 
 
 bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
-
-
-if(mode.Is(Mode::MODE_PAN))
-	return false;
-return Event_NearestWaypointDetails( lon,  lat,  500*zoom.RealScale(),false);
+    if(mode.Is(Mode::MODE_PAN))
+        return false;
+    return Event_NearestWaypointDetails( lon,  lat);
 }
 
 

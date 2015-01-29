@@ -109,6 +109,8 @@ class InputEvents {
   static void eventInfoStripe(const TCHAR *misc);
   static void eventInfoPage(const TCHAR *misc);
   static void eventModeType(const TCHAR *misc);
+  
+  static void eventShowMultiselect(const TCHAR *misc);
   // -------
 
   static void showErrors();
@@ -154,6 +156,8 @@ enum {
   GCE_ARM_READY,
   GCE_TASK_CONFIRMSTART,
   GCE_WAYPOINT_DETAILS_SELECTED,
+  GCE_POPUP_MULTISELECT,
+  GCE_WAYPOINT_DETAILS_SCREEN,
   GCE_COUNT			// How many we have for arrays etc
 };
 

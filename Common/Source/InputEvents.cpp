@@ -33,6 +33,7 @@
 #include "utils/openzip.h"
 #include "Asset.hpp"
 #include "Event/Event.h"
+#include "MapWindow.h"
 
 // Sensible maximums 
 #define MAX_MODE 100
@@ -2436,23 +2437,33 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
 
 }
 
+extern POINT startScreen;
 // NearestWaypointDetails
 // Displays the waypoint details dialog
-//  aircraft: the waypoint nearest the aircraft
-//  pan: the waypoint nearest to the pan cursor
+//  aircraft:   the waypoint nearest the aircraft
+//  pan:        the waypoint nearest to the pan cursor
+//  screen :    the waypoint nearest to "long click" event on MapSpace ( #startScreen global variable )
 void InputEvents::eventNearestWaypointDetails(const TCHAR *misc) {
-  if (_tcscmp(misc, TEXT("aircraft")) == 0) {
-    MapWindow::Event_NearestWaypointDetails(GPS_INFO.Longitude,
-					    GPS_INFO.Latitude,
-					    500*MapWindow::zoom.RealScale(),
-					    false); 
-  }
-  if (_tcscmp(misc, TEXT("pan")) == 0) {
-    MapWindow::Event_NearestWaypointDetails(GPS_INFO.Longitude,
-					    GPS_INFO.Latitude,
-					    500*MapWindow::zoom.RealScale(),
-					    true); 
-  }
+    bool bOK = false;
+    double lon = GPS_INFO.Longitude;
+    double lat = GPS_INFO.Latitude;
+    if (_tcscmp(misc, TEXT("aircraft")) == 0) {
+        bOK = true;
+    }
+    if (_tcscmp(misc, TEXT("pan")) == 0) {
+        bOK = true;
+        if((MapWindow::mode.Is(MapWindow::Mode::MODE_PAN) || MapWindow::mode.Is(MapWindow::Mode::MODE_TARGET_PAN))) {
+            lon = MapWindow::GetPanLongitude();
+            lat = MapWindow::GetPanLatitude();
+        }
+    }
+    if (_tcscmp(misc, TEXT("screen")) == 0) {
+        bOK = true;
+        MapWindow::SideviewScreen2LatLon(startScreen.x, startScreen.y, lon, lat);
+    }
+    if(bOK) {
+        MapWindow::Event_NearestWaypointDetails(lon, lat); 
+    }
 }
 
 // Null
@@ -3622,4 +3633,8 @@ void InputEvents::eventModeType(const TCHAR *misc) {
         PreviousModeType();
     }
     MapWindow::RefreshMap();
+}
+
+void InputEvents::eventShowMultiselect(char const*) {
+    dlgMultiSelectListShowModal();
 }

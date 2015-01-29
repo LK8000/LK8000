@@ -13,6 +13,7 @@
 #include "Multimap.h"
 #include "Dialogs.h"
 #include "LKObjects.h"
+#include "InputEvents.h"
 
 #define THICK_LINE 3
 
@@ -44,7 +45,6 @@ auto hfOldFnt = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
 int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
 
-int  k;
 static double fHeigtScaleFact = 1.0;
 
 
@@ -113,26 +113,35 @@ static  bool bHeightScale = false;
 			break;
 
 		case LKEVENT_LONGCLICK:
-		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
-			 {
-			   if( Sideview_pHandeled[k].psAS != NULL)
-			   {
-				 if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen))
-				 {	
-    			   dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
-				   LKevent=LKEVENT_NONE;
-				 }
-			   }
-			 }
-#warning "TODO FIX: we can't show dialog from Draw thread"
-			 dlgMultiSelectListShowModal();
+            if(Sideview_iNoHandeldSpaces) {
+                bool bShow = false;
+                for (int k = 0; k <= Sideview_iNoHandeldSpaces; k++) {
+                    if (Sideview_pHandeled[k].psAS != NULL) {
+                        if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen)) {
+                            dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
+                            bShow = true;
+                        }
+                    }
+                }
+                if(bShow) {
+                    /*
+                     * we can't show dialog from Draw thread
+                     * instead, new event is queued, dialog will be popup by main thread 
+                     */
+                    InputEvents::processGlideComputer(GCE_POPUP_MULTISELECT);
 
-		     if ( LKevent != LKEVENT_NONE ) {
-			 if (PtInRect(&rc, startScreen))
-			   bHeightScale = !bHeightScale;
-			 if (PtInRect(&rct, startScreen))
-			   bHeightScale = false;
-		     }
+                    // reset event, otherwise Distance/height zoom mod are also triggered
+                    LKevent = LKEVENT_NONE;
+                }            
+            }
+		    
+            if (LKevent != LKEVENT_NONE) {
+                if (PtInRect(&rc, startScreen)) {
+                    bHeightScale = !bHeightScale;
+                } else if (PtInRect(&rct, startScreen)) {
+                    bHeightScale = false;
+                }
+            }
 	     break;
 
 		case LKEVENT_PAGEUP:

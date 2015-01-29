@@ -108,6 +108,16 @@ type=gce
 data=WAYPOINT_DETAILS_SELECTED
 event=WaypointDetails selected
 
+mode=default
+type=gce
+data=POPUP_MULTISELECT
+event=ShowMultiselect
+
+mode=default
+type=gce
+data=WAYPOINT_DETAILS_SCREEN
+event=NearestWaypointDetails screen
+
 # ------------
 # mode=default
 # ------------

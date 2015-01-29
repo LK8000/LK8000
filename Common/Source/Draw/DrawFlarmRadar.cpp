@@ -22,6 +22,7 @@
 #include "Poco/Timestamp.h"
 #include "Screen/PenReference.h"
 #include "Screen/BrushReference.h"
+#include "InputEvents.h"
 
 extern POINT startScreen;
 
@@ -600,6 +601,7 @@ switch(LKevent)
 #ifdef FLARM_MS
 			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
 #else
+#error "never popup dialog outside MainThread"
 			    dlgLKTrafficDetails( j); // With no Multiselect
 #endif
 			    bFound = true;
@@ -607,9 +609,15 @@ switch(LKevent)
 		    }
 		  }
 	    }
+    
 #ifdef FLARM_MS
-#warning "TODO FIX: we can't show dialog from Draw thread"
-	dlgMultiSelectListShowModal();
+    if(bFound) {
+        /*
+         * we can't show dialog from Draw thread
+         * instead, new event is queued, dialog will be popup by main thread 
+         */
+        InputEvents::processGlideComputer(GCE_POPUP_MULTISELECT);
+    }
 #endif
 	if(!bFound)
 	  if( PtInRect(&rc, startScreen))
