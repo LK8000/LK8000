@@ -1350,7 +1350,7 @@ if(bSideview)
     case 2:  pBmpTemp = &hHeadRight ; break; //     "Head Up"
   }
   if(pBmpTemp) {
-    Surface.DrawMaskedBitmap(rci.left+NIBLSCALE(27),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), *pBmpTemp, 22, 22);
+     Surface.DrawMaskedBitmap(rci.right-NIBLSCALE(27),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), *pBmpTemp, 22, 22);
   }
 
   if(bHeightScale)
