@@ -540,11 +540,11 @@ bool Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
 bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){
 
   int prec;
-  double value;
   TCHAR sTmp[32];
-  UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
 
-  value = Distance * pU->ToUserFact; // + pU->ToUserOffset;
+  Units_t Unit = UserDistanceUnit;
+  UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
+  double value = Distance * pU->ToUserFact; // + pU->ToUserOffset;
 
   if (value >= 100)
     prec = 0;
@@ -556,24 +556,28 @@ bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){
     prec = 3;
     if (UserDistanceUnit == unKiloMeter){
       prec = 0;
+      Unit = unMeter;
       pU = &UnitDescriptors[unMeter];
       value = Distance * pU->ToUserFact;
     }
     if (UserDistanceUnit == unNauticalMiles 
-        || UserDistanceUnit == unStatuteMiles) {
+            || UserDistanceUnit == unStatuteMiles) {
+
+      Unit = unFeet;
       pU = &UnitDescriptors[unFeet];
       value = Distance * pU->ToUserFact;
       if (value<1000) {
         prec = 0;
       } else {
         prec = 1;
+        Unit = UserDistanceUnit;
         pU = &UnitDescriptors[UserDistanceUnit];
         value = Distance* pU->ToUserFact;
       }
     }
   }
 
-  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, GetUnitName(UserDistanceUnit));
+  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, GetUnitName(Unit));
 
   if (_tcslen(sTmp) < size-1){
     _tcscpy(Buffer, sTmp);
