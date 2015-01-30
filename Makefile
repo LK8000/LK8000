@@ -40,6 +40,7 @@ ifeq ($(GPROF),y)
     REMOVE_NS :=
 endif
 
+CONFIG_WIN32    :=n # y for all windows target
 CONFIG_PPC2002	:=n
 CONFIG_PPC2003	:=n
 CONFIG_PC	:=n
@@ -53,24 +54,30 @@ GTARGET		:=$(TARGET)
 
 ifeq ($(TARGET),PPC2002)
   CONFIG_PPC2002	:=y
+  CONFIG_WIN32 := y
 else
   ifeq ($(TARGET),PPC2003)
-    CONFIG_PPC2003	:=y
+    CONFIG_PPC2003	:=y 
+    CONFIG_WIN32 := y
   else
     ifeq ($(TARGET),PPC2003X)
       CONFIG_PPC2003	:=y
       XSCALE :=y
       GTARGET := PPC2003
+      CONFIG_WIN32 := y
     else
       ifeq ($(TARGET),PC)
         CONFIG_PC	:=y
+	CONFIG_WIN32 := y
       else
         ifeq ($(TARGET),WINE)
           CONFIG_WINE :=y
+	  CONFIG_WIN32 := y
         else
 	  ifeq ($(TARGET),PNA)
 	    CONFIG_PNA := y
 	    CONFIG_PPC2003 := y
+	    CONFIG_WIN32 := y
 	  else
 	    ifeq ($(TARGET),LINUX)
 	      CONFIG_LINUX := y
@@ -238,6 +245,9 @@ $(eval $(call pkg-config-library,SDL,sdl))
 CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_CPPFLAGS))
 CE_DEFS += -DENABLE_SDL
 
+$(eval $(call pkg-config-library,SDL_MIXER,SDL_mixer))
+CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_MIXER_CPPFLAGS))
+
 else
 CE_DEFS += -DUSE_FB
 CE_DEFS += -DUSE_CONSOLE
@@ -378,6 +388,7 @@ ifeq ($(CONFIG_LINUX),y)
   
   ifeq ($(USE_SDL), y)
     LDLIBS += $(SDL_LDLIBS)
+    LDLIBS += $(SDL_MIXER_LDLIBS)
   endif
 else
 ifeq ($(CONFIG_PC),y)
@@ -450,9 +461,11 @@ endif
 include build/xcs_screen.mk
 include build/xcs_event.mk
 include build/xcs_os.mk
-ifeq ($(TARGET),LINUX)
+
+ifneq ($(CONFIG_LINUX),y)
 include build/bitmap2png.mk
 endif
+
 ####### sources
 WINDOW := \
 	$(SRC_WINDOW)/WndMain.cpp \
@@ -475,7 +488,19 @@ WINDOW += \
 	$(SRC)/OS/Win/CpuLoad.cpp \
 	$(SRC)/OS/Win/Memory.cpp \
 	$(SRC)/OS/Win/RotateScreen.cpp\
+
+endif
 	
+ifeq ($(USE_SDL),y)	
+SOUND := \
+	$(SRC)/Sound/SDL/Sound.cpp \
+	
+endif
+
+ifeq ($(CONFIG_WIN32),y)
+SOUND := \
+	$(SRC)/Sound/Win32/Sound.cpp \
+
 endif
 	
 SCREEN := \
@@ -899,6 +924,7 @@ DLGS	:=\
 SRC_FILES :=\
 	$(WINDOW) \
 	$(SCREEN) \
+	$(SOUND) \
 	$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Alarms.cpp\
 	$(SRC)/Backlight.cpp 		\
@@ -967,7 +993,6 @@ SRC_FILES :=\
 	$(SRC)/SaveLoadTask/LoadCupTask.cpp\
 	$(SRC)/SaveLoadTask/LoadGpxTask.cpp\
 	$(SRC)/Settings.cpp\
-	$(SRC)/Sound.cpp \
 	$(SRC)/StatusFile.cpp \
 	$(SRC)/Thread_Calculation.cpp\
 	$(SRC)/Thread_Draw.cpp	\

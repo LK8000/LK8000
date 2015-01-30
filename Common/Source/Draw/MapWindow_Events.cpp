@@ -10,6 +10,7 @@
 #include "Waypointparser.h"
 #include "InputEvents.h"
 #include "Dialogs.h"
+#include "Sound/Sound.h"
 
 bool MapWindow::Event_NearestWaypointDetails(double lon, double lat) {
 

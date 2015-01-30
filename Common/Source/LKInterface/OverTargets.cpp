@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "LKInterface.h"
 #include "DoInits.h"
+#include "Sound/Sound.h"
 
 // return current overtarget waypoint index, or -1 if not available
 int GetOvertargetIndex(void) {

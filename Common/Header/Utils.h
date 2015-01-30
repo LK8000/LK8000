@@ -20,7 +20,6 @@ extern bool LoggerShortName;
 
 #if defined(PNA) && defined(UNDER_CE)
 bool SetBacklight();
-bool SetSoundVolume();
 #endif
 
 #ifdef PNA
@@ -179,7 +178,6 @@ int  GetWaypointFileFormatType(const TCHAR* wextension);
 
 // LK Utils
 void LKBatteryManager();
-void LKSound(const TCHAR *lpName);
 void ChangeWindCalcSpeed(const int newspeed);
 bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime);
 void GotoWaypoint(const int wpnum);
@@ -195,7 +193,6 @@ TCHAR * WhatTimeIsIt(void);
 void OutOfMemory(const TCHAR *where, int line);
 
 bool MatchesExtension(const TCHAR *filename, const TCHAR* extension);
-BOOL PlayResource (const TCHAR* lpName);
 void CreateDirectoryIfAbsent(const TCHAR *filename);
 
 bool RotateScreen(short angle);

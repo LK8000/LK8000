@@ -14,6 +14,7 @@
 #include "Modeltype.h"
 #include "Sideview.h"
 #include "Multimap.h"
+#include "Sound/Sound.h"
 
 extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
 

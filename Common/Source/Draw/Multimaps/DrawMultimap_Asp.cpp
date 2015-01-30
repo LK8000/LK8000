@@ -15,6 +15,7 @@
 #include "LKInterface.h"
 #include "InputEvents.h"
 #include "Multimap.h"
+#include "Sound/Sound.h"
 
 extern POINT startScreen;
 extern bool IsMultimapConfigShown;

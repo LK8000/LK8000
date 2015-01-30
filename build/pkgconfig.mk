@@ -34,6 +34,10 @@ endif
 #
 define pkg-config-library
 
+ifneq ($$(shell $$(PKG_CONFIG) --exists $(2) && echo ok),ok)
+$$(error library not found: $(2))
+endif
+
 $(1)_CPPFLAGS := $$(shell $$(PKG_CONFIG) --cflags $(2))
 $(1)_LDLIBS := $$(shell $$(PKG_CONFIG) --libs $(2))
 

@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Sideview.h"
+#include "Sound/Sound.h"
 
 extern bool HaveGauges(void);
 

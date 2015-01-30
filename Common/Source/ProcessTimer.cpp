@@ -11,6 +11,7 @@
 #include "InputEvents.h"
 #include "TraceThread.h"
 #include "OS/Memory.h"
+#include "Sound/Sound.h"
 
 extern int ConnectionProcessTimer(int itimeout);
 extern void CommonProcessTimer(void);

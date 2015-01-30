@@ -10,6 +10,7 @@
 #include "LKInterface.h"
 #include "InputEvents.h"
 #include "Multimap.h"
+#include "Sound/Sound.h"
 
 extern bool IsMultimapConfigShown;
 

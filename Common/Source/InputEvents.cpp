@@ -34,6 +34,7 @@
 #include "Asset.hpp"
 #include "Event/Event.h"
 #include "MapWindow.h"
+#include "Sound/Sound.h"
 
 // Sensible maximums 
 #define MAX_MODE 100

@@ -29,6 +29,7 @@
 #include "FlightDataRec.h"
 
 #include "Event/Event.h"
+#include "Sound/Sound.h"
 
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);

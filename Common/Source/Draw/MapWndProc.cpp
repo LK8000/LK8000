@@ -20,6 +20,7 @@
 #include "Screen/LKBitmapSurface.h"
 #include "Event/Event.h"
 #include "Asset.hpp"
+#include "Sound/Sound.h"
 
 #define KEYDEBOUNCE 100
 

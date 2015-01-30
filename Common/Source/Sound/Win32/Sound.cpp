@@ -6,36 +6,46 @@
    $Id: Utils.cpp,v 8.17 2010/12/19 16:42:53 root Exp root $
 */
 
+#include "../Sound.h"
 #include "externs.h"
 #if defined(PNA) && defined(UNDER_CE)
 #include "Modeltype.h"
 #include "LKHolux.h"
 #endif
-#include "DoInits.h"
 
-#ifdef DISABLEAUDIO
-
-BOOL PlayResource (const TCHAR* lpName) {
-    return false;
-}
-
-void LKSound(const TCHAR *lpName) {
-    
-}
-
-#else
-#ifdef WIN32
 #include "mmsystem.h"
+
+static bool bSoundFile = false; // this is true only if "_System/_Sounds" directory exists.
+static TCHAR szSoundPath[MAX_PATH] = {}; // path of Sound file, initialized by  #SoundGlobalInit end never change;
+
+SoundGlobalInit::SoundGlobalInit() {
+    TCHAR srcfile[MAX_PATH];
+    LocalPath(szSoundPath,TEXT(LKD_SOUNDS));
+    _stprintf(srcfile,TEXT("%s%s_SOUNDS"), szSoundPath, _T(DIRSEP));
+    if ( lk::filesystem::exist(srcfile) ) {
+        bSoundFile = true;
+    } else {
+        StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
+        StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
+    }    
+}
+  
+SoundGlobalInit::~SoundGlobalInit() {
+ 
+}
+
 
 extern HINSTANCE _hInstance; // The current instance
 
-BOOL PlayResource(const TCHAR* lpName) {
-    if(!EnableSoundModes) return true;
+void PlayResource(const TCHAR* lpName) {
+    if(!EnableSoundModes) {
+        return;
+    }
     
 #if defined(PNA) && defined(UNDER_CE)
     if (DeviceIsGM130) {
         MessageBeep(0xffffffff);
-        return true;
+        return;
     }
 #endif
     BOOL bRtn = false;
@@ -60,9 +70,8 @@ BOOL PlayResource(const TCHAR* lpName) {
         }
     }
     if (!bRtn) {
-        bRtn = MessageBeep(MB_ICONEXCLAMATION);
+        MessageBeep(MB_ICONEXCLAMATION);
     }
-    return bRtn;
 }
 
 
@@ -77,33 +86,16 @@ void LKSound(const TCHAR *lpName) {
 	return;
   }
   #endif   
-
-  static bool working=false;
-  static TCHAR sDir[MAX_PATH];
-
-  if (DoInit[MDI_LKSOUND]) {
-	working=false;
-	TCHAR srcfile[MAX_PATH];
-	LocalPath(sDir,TEXT(LKD_SOUNDS));
-	_stprintf(srcfile,TEXT("%s%s_SOUNDS"), sDir, _T(DIRSEP));
-	if ( !lk::filesystem::exist(srcfile) ) {
-	    StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
-		StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
-    } else
-		working=true;
-	DoInit[MDI_LKSOUND]=false;
-  }
-
-  if (!working) return;
+    
+  if (!bSoundFile) return;
   TCHAR sndfile[MAX_PATH];
-  _stprintf(sndfile,_T("%s%s%s"),sDir, _T(DIRSEP), lpName);
+  _stprintf(sndfile,_T("%s%s%s"),szSoundPath, _T(DIRSEP), lpName);
   sndPlaySound (sndfile, SND_ASYNC| SND_NODEFAULT );
 }
 
+bool SetSoundVolume() {
+    
 #if defined(PNA) && defined(UNDER_CE)
-bool SetSoundVolume()
-{
-
   if (EnableAutoSoundVolume == false ) return false;
 
   switch (GlobalModelType)
@@ -141,78 +133,8 @@ bool SetSoundVolume()
 		break;
   }
 
-
   return true;
-}
+#else
+  return false;
 #endif
-#elif defined(ENABLE_SDL)
-#include <SDL/SDL_audio.h>
-
-SDL_AudioSpec spec;
-Uint32 sound_len;
-Uint8 *sound_buffer;
-Uint8 *sound_pos = 0;
-
-void Callback (void *userdata, Uint8 *stream, int len){
-    /* Only play if we have data left */
-    if ( sound_len == 0 )
-        return;
-
-    /* Mix as much data as possible */
-    len = std::min((Uint32)len,sound_len);
-    SDL_MixAudio(stream, sound_pos, (Uint32)len, SDL_MIX_MAXVOLUME);
-    sound_pos += len;
-    sound_len -= len;
 }
-
-void LKSound(const TCHAR *lpName) {
-  if (IsKobo()) {
-      // SDL_Init is Called without SDL_INIT_AUDIO if we are on Kobo Device
-      // cf. "Sources/xcs/Screen/SDL/Init.cpp
-      return; 
-  }
-    
-  static bool working=false;
-  static TCHAR sDir[MAX_PATH];
-
-  if (DoInit[MDI_LKSOUND]) {
-	working=false;
-	TCHAR srcfile[MAX_PATH];
-	LocalPath(sDir,TEXT(LKD_SOUNDS));
-	_stprintf(srcfile,TEXT("%s%s_SOUNDS"), sDir, _T(DIRSEP));
-	if ( !lk::filesystem::exist(srcfile) ) {
-	    StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
-		StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
-    } else
-		working=true;
-	DoInit[MDI_LKSOUND]=false;
-  }
-
-  if (!working) return;
-  TCHAR sndfile[MAX_PATH];
-  _stprintf(sndfile,_T("%s%s%s"),sDir, _T(DIRSEP), lpName);
-      
-  if (SDL_LoadWAV (sndfile, &spec, &sound_buffer, &sound_len) == NULL) return;
-  spec.callback = Callback;
-  sound_pos = sound_buffer;
-  if (SDL_OpenAudio (&spec, NULL) < 0)  {
-      //Error message 
-      return;
-    }
-  SDL_PauseAudio (0);    
-  
-  /* Wait for sound to complete */
-  while ( sound_len > 0 ) {
-    Poco::Thread::sleep(100);         /* Sleep 1/10 second */
-  }
-  SDL_CloseAudio();  
-  SDL_FreeWAV(sound_buffer);
-}
-
-
-BOOL PlayResource (const TCHAR* lpName) {
-    return false;
-}
-
-#endif
-#endif // __linux__

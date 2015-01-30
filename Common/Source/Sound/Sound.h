@@ -1,0 +1,39 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File:   Sound.h
+ * Author: Bruno de Lacheisserie
+ *
+ * Created on January 29, 2015, 10:11 PM
+ */
+
+#ifndef SOUND_H
+#define	SOUND_H
+
+#include <tchar.h>
+
+class SoundGlobalInit {
+public:
+  SoundGlobalInit();
+  ~SoundGlobalInit();
+};
+
+bool SetSoundVolume();
+
+void LKSound(const TCHAR *lpName);
+void PlayResource (const TCHAR* lpName);
+
+#ifdef DISABLEAUDIO
+inline SoundGlobalInit::SoundGlobalInit() {}
+inline SoundGlobalInit::~SoundGlobalInit() {}
+
+inline bool SetSoundVolume() { return false; }
+
+inline void LKSound(const TCHAR *lpName) { }
+inline void PlayResource (const TCHAR* lpName) { }
+#endif
+
+#endif	/* SOUND_H */
+

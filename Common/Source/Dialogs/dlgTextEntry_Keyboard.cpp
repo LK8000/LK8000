@@ -12,6 +12,7 @@
 #include "WindowControls.h"
 #include <ctype.h>
 #include "Event/Event.h"
+#include "Sound/Sound.h"
 
 static bool first= true;
 static WndForm *wf=NULL;

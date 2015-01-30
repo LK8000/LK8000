@@ -9,7 +9,7 @@
 
 #include "externs.h"
 #include "FlarmRadar.h"
-
+#include "Sound/Sound.h"
 #include "FlarmCalculations.h"
 FlarmCalculations flarmCalculations;
 

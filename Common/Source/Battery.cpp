@@ -10,6 +10,7 @@
 */
 
 #include "externs.h"
+#include "Sound/Sound.h"
 
 #if defined(PNA) && defined(UNDER_CE)
 #include "LKHolux.h"

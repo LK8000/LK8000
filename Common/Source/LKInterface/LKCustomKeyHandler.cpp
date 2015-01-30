@@ -13,6 +13,7 @@
 #include "Multimap.h"
 #include "Dialogs.h"
 #include "Sideview.h"
+#include "Sound/Sound.h"
 
 extern void ShowMenu();
 

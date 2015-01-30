@@ -9,7 +9,7 @@
 
 #include "externs.h"
 #include "RGB.h"
-
+#include "Sound/Sound.h"
 //
 // Called by DrawThread
 //

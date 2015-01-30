@@ -65,6 +65,7 @@
 
 #include "Screen/Init.hpp"
 #include "Message.h"
+#include "Sound/Sound.h"
 
 #ifdef INT_OVERFLOW
 	#include <signal.h>
@@ -153,6 +154,7 @@ int main() {
   #endif
 
   ScreenGlobalInit InitScreen;
+  SoundGlobalInit InitSound;
 
         
   bool realexitforced=false;
@@ -365,7 +367,8 @@ int main() {
   else
 	// LKTOKEN _@M1213_ "NO BACKLIGHT CONTROL"
 	CreateProgressDialog(gettext(TEXT("_@M1213_")));
-
+#endif
+  
   // this should work ok for all pdas as well
   if ( SetSoundVolume() == true ) 
 	// LKTOKEN _@M1214_ "AUTOMATIC SOUND LEVEL CONTROL"
@@ -373,7 +376,7 @@ int main() {
   else
 	// LKTOKENS _@M1215_ "NO SOUND LEVEL CONTROL"
 	CreateProgressDialog(gettext(TEXT("_@M1215_")));
-#endif
+
 
   RasterTerrain::OpenTerrain();
 

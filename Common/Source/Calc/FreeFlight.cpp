@@ -10,6 +10,7 @@
 #include "Logger.h"
 #include "LKProcess.h"
 #include "DoInits.h"
+#include "Sound/Sound.h"
 
 /* 
  * Detect start of free flight (FF) for both towing and winching.

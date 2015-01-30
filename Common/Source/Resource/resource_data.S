@@ -39,3 +39,36 @@
     .section .rodata
 
     binfile IDR_RASTER_EGM96S "../../Data/Bitmaps/egm96s.dem"
+
+    binfile IDR_WAV_MM0 "../../Data/Sounds/MM0.WAV"
+    binfile IDR_WAV_MM1 "../../Data/Sounds/MM1.WAV"
+    binfile IDR_WAV_MM2 "../../Data/Sounds/MM2.WAV"
+    binfile IDR_WAV_MM3 "../../Data/Sounds/MM3.WAV"
+    binfile IDR_WAV_MM4 "../../Data/Sounds/MM4.WAV"
+    binfile IDR_WAV_MM5 "../../Data/Sounds/MM5.WAV"
+    binfile IDR_WAV_MM6 "../../Data/Sounds/MM6.WAV"
+    
+    binfile IDR_WAV_DRIP "../../Data/Sounds/LKbeep-drip.wav"
+    binfile IDR_WAV_CLICK "../../Data/Sounds/LK_SHORTERCLICKM.WAV"
+    binfile IDR_WAV_HIGHCLICK "../../Data/Sounds/LK_CLICKH.WAV"
+    
+    binfile IDR_WAV_TONE1 "../../Data/Sounds/LK_T1.WAV"
+    binfile IDR_WAV_TONE2 "../../Data/Sounds/LK_T2.WAV"
+    binfile IDR_WAV_TONE3 "../../Data/Sounds/LK_T3.WAV"
+    binfile IDR_WAV_TONE4 "../../Data/Sounds/LK_T4.WAV"
+    binfile IDR_WAV_TONE7 "../../Data/Sounds/LK_T8.WAV"
+    
+    binfile IDR_WAV_BTONE2 "../../Data/Sounds/LK_B2b.wav"
+    binfile IDR_WAV_BTONE4 "../../Data/Sounds/LK_B4.wav"
+    binfile IDR_WAV_BTONE5 "../../Data/Sounds/LK_B5.wav"
+    binfile IDR_WAV_BTONE6 "../../Data/Sounds/LK_B5b.wav"
+    binfile IDR_WAV_BTONE7 "../../Data/Sounds/LK_B8.wav"
+
+	binfile IDR_WAV_OVERTONE0 "../../Data/Sounds/LK_S0.WAV"
+    binfile IDR_WAV_OVERTONE1 "../../Data/Sounds/LK_S1.WAV"
+    binfile IDR_WAV_OVERTONE2 "../../Data/Sounds/LK_S2.WAV"
+    binfile IDR_WAV_OVERTONE3 "../../Data/Sounds/LK_S3.WAV"
+    binfile IDR_WAV_OVERTONE4 "../../Data/Sounds/LK_S4.WAV"
+    binfile IDR_WAV_OVERTONE5 "../../Data/Sounds/LK_S5.WAV"
+    binfile IDR_WAV_OVERTONE6 "../../Data/Sounds/LK_S6.WAV"
+    binfile IDR_WAV_OVERTONE7 "../../Data/Sounds/LK_S6b.WAV"

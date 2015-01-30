@@ -16,6 +16,7 @@
 #include "dlgTools.h"
 #include "RGB.h"
 #include "Event/Event.h"
+#include "Sound/Sound.h"
 
 CAirspaceBase airspace_copy;
 AirspaceWarningMessage msg;

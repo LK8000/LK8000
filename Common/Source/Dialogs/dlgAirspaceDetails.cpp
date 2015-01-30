@@ -15,6 +15,7 @@
 #include "Dialogs.h"
 #include "TraceThread.h"
 #include "LKObjects.h"
+#include "Sound/Sound.h"
 
 static CAirspaceBase airspace_copy;
 static WndForm *wf=NULL;

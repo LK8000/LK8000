@@ -15,7 +15,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "OS/Memory.h"
-
+#include "Sound/Sound.h"
 
 extern void Shutdown(void);
 extern void LoadSplash(LKSurface& Surface,const TCHAR *splashfile);

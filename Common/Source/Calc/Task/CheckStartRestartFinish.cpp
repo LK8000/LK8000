@@ -10,6 +10,7 @@
 #include "InputEvents.h"
 #include "AATDistance.h"
 #include "CalcTask.h"
+#include "Sound/Sound.h"
 
 extern AATDistance aatdistance;
 

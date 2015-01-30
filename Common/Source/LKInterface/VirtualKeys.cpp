@@ -15,6 +15,7 @@
 #endif
 #include "DoInits.h"
 #include "Multimap.h"
+#include "Sound/Sound.h"
 
 void BottomSounds();
 

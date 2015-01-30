@@ -10,7 +10,7 @@
 #include "externs.h"
 #include "resource.h"
 #include "Message.h"
-
+#include "Sound/Sound.h"
 
 bool forceDestroyStatusMessage = false;
 

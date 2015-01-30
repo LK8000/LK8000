@@ -12,7 +12,7 @@
 #include "RasterTerrain.h"
 #include "LKGeneralAviation.h"
 #include "Multimap.h"
-
+#include "Sound/Sound.h"
 
 extern bool FastZoom;
 extern bool TargetDialogOpen;

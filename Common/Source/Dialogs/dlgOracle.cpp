@@ -11,6 +11,7 @@
 #include "TraceThread.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
+#include "Sound/Sound.h"
 
 static WndForm *wf=NULL;
 extern void WhereAmI(void);

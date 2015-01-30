@@ -6,6 +6,7 @@
    $Id$
 */
 #include "externs.h"
+#include "Sound/Sound.h"
 
 #define GC_HORIZONTAL_TOLERANCE      100
 #define GC_HORIZONTAL_THRESHOLD     2500
