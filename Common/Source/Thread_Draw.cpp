@@ -153,11 +153,36 @@ void MapWindow::DrawThread ()
 
 			BackBufferSurface.Whiteness(0, 0,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 
-			BackBufferSurface.Copy(0, 0,
-				MapRect.right-MapRect.left,
-				MapRect.bottom-MapRect.top, 
-				DrawSurface, 
-				fromX,fromY);
+                        RECT  clipSourceArea;
+                        POINT clipDestPoint;
+
+                        if (fromX<0) {
+                            clipSourceArea.left=MapRect.left;
+                            clipSourceArea.right=MapRect.right+fromX; // negative fromX
+                            clipDestPoint.x=-fromX;
+                        } else {
+                            clipSourceArea.left=MapRect.left+fromX;
+                            clipSourceArea.right=MapRect.right;
+                            clipDestPoint.x=MapRect.left;
+                        }
+
+                        if (fromY<0) {
+                            clipSourceArea.top=MapRect.top;
+                            clipSourceArea.bottom=MapRect.bottom+fromY; // negative fromX
+                            clipDestPoint.y=-fromY;
+                        } else {
+                            clipSourceArea.top=MapRect.top+fromY;
+                            clipSourceArea.bottom=MapRect.bottom;
+                            clipDestPoint.y=MapRect.top;
+                        }
+
+
+                        BackBufferSurface.Copy(clipDestPoint.x,clipDestPoint.y,
+                            clipSourceArea.right-clipSourceArea.left,
+                            clipSourceArea.bottom-clipSourceArea.top,
+                            DrawSurface, 
+                            clipSourceArea.left,clipSourceArea.top);
+
 
 			POINT centerscreen;
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
