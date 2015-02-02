@@ -462,6 +462,8 @@ include build/xcs_screen.mk
 include build/xcs_event.mk
 include build/xcs_os.mk
 
+include build/lk_os.lk
+
 ifneq ($(CONFIG_LINUX),y)
 include build/bitmap2png.mk
 endif
@@ -472,6 +474,7 @@ WINDOW := \
 	$(XCS_OS) \
 	$(XCS_EVENT) \
 	$(XCS_SCREEN) \
+	$(LK_OS) \
 
 
 ifneq ($(CONFIG_LINUX),y)
