@@ -84,11 +84,6 @@
 #define FASTDOUBLECLICK DOUBLECLICKINTERVAL/2-30
 #define BESTALTERNATEINTERVAL 60.0 // interval in seconds between BA search (slow)
 
-#if (WINDOWSPC>0) && !TESTBENCH
-#define FASTPANNING 250
-#else
-#define FASTPANNING 700
-#endif
 
 /*
  * Global defines
