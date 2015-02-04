@@ -21,6 +21,7 @@
 #include "Event/Event.h"
 #include "Asset.hpp"
 #include "Sound/Sound.h"
+#include "TunedParameter.h"
 
 #define KEYDEBOUNCE 100
 
@@ -275,24 +276,7 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
                 // This was previously not working in v3 because ThreadCalculations was forcing MapDirty 
                 // in the background each second, and we were loosing control!
                 if (tsDownTime.isElapsed(
-			//
-			// Here we should introduce the usage of bogomips for both WIN and LINUX.
-			// The old FASTPANNING parameter was fixed at 700ms for non-PC versions,
-			// and 250ms for PC.
-			// While this is acceptable for up to 500mhz CPUs, we may reduce the lag on faster
-			// machines running at 800mhz or more such like V3, LX MiniMap, and most Linux hw.
-			//
-			#if (WINDOWSPC>0) && !TESTBENCH
-			#define FASTPANNING 250
-			#else
-			#define FASTPANNING 700
-			#endif
-
-			#ifdef __linux__
-                        Poco::Timespan(0, 1000 * 200).totalMicroseconds())) {
-			#else
-                        Poco::Timespan(0, 1000 * FASTPANNING).totalMicroseconds())) {
-			#endif
+                    Poco::Timespan(0, 1000 * TunedParameter_Fastpanning() ).totalMicroseconds())) {
                     tsDownTime.update();
                     OnFastPanning = false;
                     RefreshMap();

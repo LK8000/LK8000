@@ -1000,6 +1000,7 @@ SRC_FILES :=\
 	$(SRC)/Thread_Calculation.cpp\
 	$(SRC)/Thread_Draw.cpp	\
 	$(SRC)/TrueWind.cpp		\
+	$(SRC)/TunedParameter.cpp		\
 	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\
 	$(SRC)/WindowControls.cpp \
