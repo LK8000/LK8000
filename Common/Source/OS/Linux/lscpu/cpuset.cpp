@@ -151,12 +151,12 @@ char *cpulist_create(char *str, size_t len,
 	int entry_made = 0;
 	size_t max = cpuset_nbits(setsize);
 
-	for (i = 0; i < max; i++) {
+	for (i = 0; (unsigned)i < max; i++) {
 		if (CPU_ISSET_S(i, setsize, set)) {
 			int j, rlen;
 			int run = 0;
 			entry_made = 1;
-			for (j = i + 1; j < max; j++) {
+			for (j = i + 1; (unsigned)j < max; j++) {
 				if (CPU_ISSET_S(j, setsize, set))
 					run++;
 				else
@@ -171,7 +171,7 @@ char *cpulist_create(char *str, size_t len,
 				rlen = snprintf(ptr, len, "%d-%d,", i, i + run);
 				i += run;
 			}
-			if (rlen < 0 || rlen + 1 > len)
+			if (rlen < 0 || (unsigned)(rlen + 1) > len)
 				return NULL;
 			ptr += rlen;
 			len -= rlen;
@@ -196,7 +196,7 @@ char *cpumask_create(char *str, size_t len,
 	for (cpu = cpuset_nbits(setsize) - 4; cpu >= 0; cpu -= 4) {
 		char val = 0;
 
-		if (len == (ptr - str))
+		if (len == (unsigned)(ptr - str))
 			break;
 
 		if (CPU_ISSET_S(cpu, setsize, set))
