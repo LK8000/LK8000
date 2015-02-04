@@ -172,7 +172,7 @@ void InputEvents::readFile() {
 	// Remember: DEFAULT_MENU existance is already been checked upon startup.
 
 	TCHAR xcipath[MAX_PATH];
-	LocalPath(xcipath,_T(LKD_SYSTEM));
+	SystemPath(xcipath,_T(LKD_SYSTEM));
 
 	switch(AircraftCategory) {
 		case umGlider:
@@ -2599,7 +2599,7 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 			mbYesNo) == IdNo) {
 			return;
 		}
-		LocalPath(buffer,_T(LKD_SYSTEM)); // 100223
+		SystemPath(buffer,_T(LKD_SYSTEM)); // 100223
 		_tcscat(buffer,_T(DIRSEP));
 		_tcscat(buffer,_T("FACTORYPRF"));
 		factory=true;

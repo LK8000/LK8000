@@ -39,7 +39,7 @@ short InstallSystem() {
   #if TESTBENCH
   StartupStore(_T(". Welcome to InstallSystem v1.2%s"),NEWLINE);
   #endif
-  LocalPath(srcdir,TEXT(LKD_SYSTEM));
+  SystemPath(srcdir,TEXT(LKD_SYSTEM));
 
 
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
@@ -254,7 +254,7 @@ bool CheckRootDir() {
 bool CheckDataDir() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcdir,_T(LKD_SYSTEM));
+  SystemPath(srcdir,_T(LKD_SYSTEM));
   _stprintf(srcfile,TEXT("%s%s_SYSTEM"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
@@ -278,7 +278,7 @@ bool CheckLanguageEngMsg() {
 bool CheckSystemDefaultMenu() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcdir, _T(LKD_SYSTEM));
+  SystemPath(srcdir, _T(LKD_SYSTEM));
   _stprintf(srcfile,TEXT("%s%sDEFAULT_MENU.TXT"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
@@ -311,7 +311,7 @@ bool CheckRegistryProfile() {
 bool CheckSystemBitmaps() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcdir, _T(LKD_BITMAPS));
+  SystemPath(srcdir, _T(LKD_BITMAPS));
   _stprintf(srcfile,TEXT("%s%s_BITMAPSH"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
@@ -319,7 +319,7 @@ bool CheckSystemBitmaps() {
 bool CheckFilesystemWritable() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcdir, _T(LKD_SYSTEM));
+  SystemPath(srcdir, _T(LKD_SYSTEM));
   _stprintf(srcfile,TEXT("%s%sEmptyTest.txt"),srcdir, _T(DIRSEP));
 
   FILE *stream;

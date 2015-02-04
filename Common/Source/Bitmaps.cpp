@@ -57,7 +57,7 @@ void LKLoadFixedBitmaps(void) {
   TCHAR sDir[MAX_PATH];
   TCHAR hires_suffix[4];
 
-  LocalPath(sDir,TEXT(LKD_BITMAPS));
+  SystemPath(sDir,TEXT(LKD_BITMAPS));
   _tcscat(sDir, _T(DIRSEP));
   if (UseHiresBitmap)
 	_tcscpy(hires_suffix,_T("_H"));
@@ -319,7 +319,7 @@ void LKLoadProfileBitmaps(void) {
   TCHAR sDir[MAX_PATH];
   TCHAR hires_suffix[4];
 
-  LocalPath(sDir,TEXT(LKD_BITMAPS));
+  SystemPath(sDir,TEXT(LKD_BITMAPS));
   _tcscat(sDir, _T(DIRSEP));
         
   if (UseHiresBitmap)
