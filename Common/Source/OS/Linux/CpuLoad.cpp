@@ -4,12 +4,22 @@
  * See CREDITS.TXT file for authors and copyrights
  *
  * File:   CpuLoad.cpp
- * Author: Bruno de Lacheisserie
+ * Author: Paolo
  *
- * Created on 8 décembre 2014
  */
-
+#include "externs.h"
 
 int CpuSummary() {
-    return 0;
+
+    double monoload[3];
+    if ( getloadavg(monoload,3)<1) return INVALID_VALUE;
+
+    double numcpus=1;
+    if (HaveSystemInfo) numcpus=(double)SystemInfo_Cpus();
+    LKASSERT(numcpus>0);
+
+    int summary=(int)(monoload[1]*100/numcpus);
+
+    if (summary>999 || summary<0) summary=INVALID_VALUE;
+    return summary;
 }
