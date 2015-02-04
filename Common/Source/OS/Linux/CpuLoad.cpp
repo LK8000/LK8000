@@ -18,7 +18,7 @@ int CpuSummary() {
     if (HaveSystemInfo) numcpus=(double)SystemInfo_Cpus();
     LKASSERT(numcpus>0);
 
-    int summary=(int)(monoload[1]*100/numcpus);
+    int summary=(int)(monoload[0]*100/numcpus);
 
     if (summary>999 || summary<0) summary=INVALID_VALUE;
     return summary;
