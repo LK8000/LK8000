@@ -56,7 +56,7 @@ GEXTERN bool goInstallSystem GEXTFALSE;
 GEXTERN bool goCalculationThread GEXTFALSE;
 
 
-
+GEXTERN unsigned short HaveSystemInfo GEXTZERO; // Normally only on linux
 
 GEXTERN TCHAR LK8000_Version[256];
 

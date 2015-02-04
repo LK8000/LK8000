@@ -42,6 +42,7 @@
 #include "Globals.h"
 #include "LKLanguage.h"
 #include "Window/WndMain.h"
+#include "LKCpu.h"
 
 // Include header for heap allocation checking
 // #include "utils/heapcheck.h"

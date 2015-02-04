@@ -168,6 +168,9 @@ int main() {
   _stprintf(LK8000_Version,_T("%s v%s.%s "), _T(LKFORK), _T(LKVERSION),_T(LKRELEASE));
   _tcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
+  #ifdef __linux__
+  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
+  #else
   #ifdef PNA
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PNA"),NEWLINE);
   #else
@@ -175,6 +178,7 @@ int main() {
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PC"),NEWLINE);
   #else
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PDA"),NEWLINE);
+  #endif
   #endif
   #endif
 
@@ -193,6 +197,15 @@ int main() {
   Globals_Init();
 
   StartupLogFreeRamAndStorage();
+
+  lscpu_init();
+  if (HaveSystemInfo) {
+      StartupStore(_T(". Host: %s %s%s"),SystemInfo_Architecture(),SystemInfo_Vendor(),NEWLINE);
+      StartupStore(_T(". CPUs: #%d running at %d Mhz, %d bogoMips%s"),SystemInfo_Cpus(),
+          SystemInfo_Mhz(), SystemInfo_Bogomips(), NEWLINE);
+  } else {
+      StartupStore(_T(". Host and Cpu informations not available%s"),NEWLINE);
+  }
 
   // PRELOAD ANYTHING HERE
   LKRunStartEnd(true);

@@ -461,7 +461,6 @@ endif
 include build/xcs_screen.mk
 include build/xcs_event.mk
 include build/xcs_os.mk
-
 include build/lk_os.lk
 
 ifneq ($(CONFIG_LINUX),y)
@@ -491,6 +490,7 @@ WINDOW += \
 	$(SRC)/OS/Win/CpuLoad.cpp \
 	$(SRC)/OS/Win/Memory.cpp \
 	$(SRC)/OS/Win/RotateScreen.cpp\
+	$(SRC)/OS/Win/lscpu.cpp\
 
 endif
 	
