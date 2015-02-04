@@ -196,6 +196,7 @@ _afterautotrm:
    */
 
   showunit=true; // normally we do have a unit to show
+  int cpusummary=INVALID_VALUE;
 
 
   switch(BottomMode) {
@@ -605,12 +606,19 @@ _afterautotrm:
 		}
 		break;
 	case BM_SYS:
-		//showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
-		showunit=true;
+
 		extern int CpuSummary();
-		_stprintf(BufferValue,_T("%d"),CpuSummary());
+		cpusummary=CpuSummary();
 		_tcscpy(BufferTitle,_T("CPU"));
-		_tcscpy(BufferUnit,_T("%"));
+
+		if (cpusummary!=INVALID_VALUE) {
+		    showunit=true;
+		    _stprintf(BufferValue,_T("%d"),cpusummary);
+		    _tcscpy(BufferUnit,_T("%"));
+		} else {
+		    showunit=false;
+		    _tcscpy(BufferValue, TEXT("---"));
+		}
 		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CRUISE);

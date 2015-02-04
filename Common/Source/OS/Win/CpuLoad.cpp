@@ -149,7 +149,7 @@ int CpuSummary() {
         s=((Cpu_Draw+Cpu_Calc+Cpu_PortA+Cpu_PortB)/10);
   }
 #endif
-  if (s>999) s=999;
+  if (s<0 || s>999) s=INVALID_VALUE;
   return s;
 } 
 
