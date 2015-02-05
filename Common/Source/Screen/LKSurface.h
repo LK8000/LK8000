@@ -65,7 +65,8 @@ public:
     typedef PenReference OldPen;
 
     OldFont SelectObject(const LKFont &obj) {
-        if(_pCanvas) {
+        // we can't select invalid font, otherwise we have segfault when is used.
+        if(_pCanvas && obj.IsDefined()) {
             _pCanvas->Select(obj);
         }
         return OldFont();
@@ -86,7 +87,7 @@ public:
     }
 
     OldFont SelectObject(OldFont o) { 
-        if(_pCanvas && o) {
+        if(_pCanvas && o && o->IsDefined()) {
             _pCanvas->Select(*o);
         }
         return OldFont(); 

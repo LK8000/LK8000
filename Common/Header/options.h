@@ -8,6 +8,11 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
+#include "Compiler.h"
+#ifdef __cplusplus
+#include "Screen/Features.hpp"
+#endif
+
 #ifdef MSOFT
 #if !defined(WINDOWSPC)
 #define   WINDOWSPC             0
