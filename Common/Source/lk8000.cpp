@@ -200,7 +200,10 @@ int main() {
 
   lscpu_init();
   if (HaveSystemInfo) {
-      StartupStore(_T(". Host: %s %s%s"),SystemInfo_Architecture(),SystemInfo_Vendor(),NEWLINE);
+      StartupStore(_T(". Host: %s %s%s"),
+          SystemInfo_Architecture()==NULL?_T("Unknown"):SystemInfo_Architecture(),
+          SystemInfo_Vendor()==NULL?_T(""):SystemInfo_Vendor(),
+          NEWLINE);
       StartupStore(_T(". CPUs: #%d running at %d Mhz, %d bogoMips%s"),SystemInfo_Cpus(),
           SystemInfo_Mhz(), SystemInfo_Bogomips(), NEWLINE);
   } else {

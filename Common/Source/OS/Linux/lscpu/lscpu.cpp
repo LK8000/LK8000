@@ -540,7 +540,7 @@ void lscpu_init(void)
 	// Check data consistencies and set flag available for LK
 	// if needed. Todo.
 	extern unsigned short HaveSystemInfo;
-	HaveSystemInfo=1;
+	if ( atoi(SystemInfo.mhz) >100 ) HaveSystemInfo=1;
 	return; // should be false if no info available
 }
 
