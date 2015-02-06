@@ -222,7 +222,7 @@ void Shutdown(void) {
 	    );
   StartupStore(foop);
 #endif
-  StartupStore(_T("Destroy MainWindow"));
+  StartupStore(_T("Destroy MainWindow" NEWLINE));
   MainWindow.Destroy();
 }
 
