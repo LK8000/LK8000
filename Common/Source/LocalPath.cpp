@@ -10,9 +10,16 @@
 #include "DoInits.h"
 #include "Asset.hpp"
 
-// return Path including trailing directory separator.
-const TCHAR * LKGetLocalPath(void) {
+const TCHAR * LKGetSystemPath(void) {
+#ifdef __linux__
+    return _T("/opt/" LKDATADIR "/share/");
+#else
+    return LKGetLocalPath();
+#endif
+}
 
+const TCHAR * LKGetLocalPath(void) {
+    
     if(IsKobo()) {
         return _T("/mnt/onboard/" LKDATADIR "/");
     }
@@ -25,9 +32,16 @@ const TCHAR * LKGetLocalPath(void) {
 
     DoInit[MDI_GETLOCALPATH] = false;
 
-    if (lk::filesystem::getExePath(localpath, MAX_PATH)) {
+    const TCHAR *fileToSearch = _T(LKD_LANGUAGE"\\_LANGUAGE");
+    return LKGetPath(localpath, fileToSearch);
+}
+
+// return Path including trailing directory separator.
+const TCHAR * LKGetPath(TCHAR *localpath, TCHAR const *fileToSearch) {
+
+   if (lk::filesystem::getExePath(localpath, MAX_PATH)) {
         size_t nLen = _tcslen(localpath);
-        _tcscat(localpath, _T(LKD_SYSTEM"\\_SYSTEM"));
+        _tcscat(localpath, fileToSearch);
         lk::filesystem::fixPath(localpath);
         if (lk::filesystem::exist(localpath)) {
             // Yes, so we use the current path folder
@@ -42,7 +56,7 @@ const TCHAR * LKGetLocalPath(void) {
         _tcscat(localpath, TEXT(LKDATADIR"\\"));
 
         size_t nLen = _tcslen(localpath);
-        _tcscat(localpath, _T(LKD_SYSTEM"\\_SYSTEM"));
+        _tcscat(localpath, fileToSearch);
         lk::filesystem::fixPath(localpath);
         if (lk::filesystem::exist(localpath)) {
             // Yes, so we use the current path folder
@@ -62,7 +76,7 @@ const TCHAR * LKGetLocalPath(void) {
         _tcscat(localpath, TEXT(LKDATADIR"\\"));
 
         size_t nLen = _tcslen(localpath);
-        _tcscat(localpath, _T(LKD_SYSTEM"\\_SYSTEM"));
+        _tcscat(localpath, fileToSearch);
         lk::filesystem::fixPath(localpath);
         if (lk::filesystem::exist(localpath)) {
             // Yes, so we use the current path folder
@@ -105,8 +119,16 @@ BOOL GetFontPath(TCHAR *pPos)
 }
 #endif
 
+void SystemPath(TCHAR* buffer, const TCHAR* file) {
+    GetPath(buffer, file, LKGetSystemPath());
+}
+
 
 void LocalPath(TCHAR* buffer, const TCHAR* file) {
+    GetPath(buffer, file, LKGetLocalPath());
+}
+
+void GetPath(TCHAR* buffer, const TCHAR* file, const TCHAR* lkPath) {
   // remove leading directory separator from file.
   const TCHAR* ptr2 = file;
   while( (*ptr2) == _T('\\') && (*ptr2) ) {
@@ -114,9 +136,9 @@ void LocalPath(TCHAR* buffer, const TCHAR* file) {
   }
 
   if (_tcslen(file)>0)
-    _stprintf(buffer,TEXT("%s%s"),LKGetLocalPath(),ptr2);
+    _stprintf(buffer,TEXT("%s%s"),lkPath,ptr2);
   else {
-    _tcscpy(buffer,LKGetLocalPath());
+    _tcscpy(buffer,lkPath);
   }
 
   lk::filesystem::fixPath(buffer);
@@ -125,7 +147,7 @@ void LocalPath(TCHAR* buffer, const TCHAR* file) {
 // This is used by LoadFromXML function only
 void LocalPathS(TCHAR *buffer, const TCHAR* file) {
 
-  LocalPath(buffer, TEXT(LKD_DIALOGS));
+  SystemPath(buffer, TEXT(LKD_DIALOGS));
   TCHAR* ptr = buffer + _tcslen(buffer) -1;
   if(*ptr != _T('\\')) {
       _tcscat(buffer, _T(DIRSEP));

@@ -547,7 +547,7 @@ short dlgStartupShowModal(void){
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
 
-	LocalPath(mydir,_T(LKD_SYSTEM));
+	SystemPath(mydir,_T(LKD_SYSTEM));
 	_stprintf(mes,_T("%s"),mydir);
 	MessageBoxX(_T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), mbOk);
 	MessageBoxX(mes, _T("NO SYSTEM DIRECTORY"), mbOk, true);
@@ -585,7 +585,7 @@ short dlgStartupShowModal(void){
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
 	StartupStore(_T("... CHECK SYSTEM DEFAULT_MENU.TXT FAILED!%s"),NEWLINE);
-	LocalPath(mydir,_T(LKD_SYSTEM));
+	SystemPath(mydir,_T(LKD_SYSTEM));
 	_stprintf(mes,_T("%s/DEFAULT_MENU.TXT"),mydir);
 	MessageBoxX(_T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), mbOk);
 	MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
@@ -598,7 +598,7 @@ short dlgStartupShowModal(void){
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
 	StartupStore(_T("... CHECK SYSTEM _BITMAPSH FAILED!%s"),NEWLINE);
-	LocalPath(mydir,_T(LKD_BITMAPS));
+	SystemPath(mydir,_T(LKD_BITMAPS));
 	_stprintf(mes,_T("%s/_BITMAPSH"),mydir);
 	MessageBoxX(_T("_BITMAPSH MISSING in SYSTEM Bitmaps\nCheck System Install"), _T("FATAL ERROR 032"), mbOk);
 	MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);

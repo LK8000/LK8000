@@ -20,7 +20,7 @@ static TCHAR szSoundPath[MAX_PATH] = {}; // path of Sound file, initialized by  
 
 SoundGlobalInit::SoundGlobalInit() {
     TCHAR srcfile[MAX_PATH];
-    LocalPath(szSoundPath,TEXT(LKD_SOUNDS));
+    SystemPath(szSoundPath,TEXT(LKD_SOUNDS));
     _stprintf(srcfile,TEXT("%s%s_SOUNDS"), szSoundPath, _T(DIRSEP));
     if ( lk::filesystem::exist(srcfile) ) {
         bSoundFile = true;

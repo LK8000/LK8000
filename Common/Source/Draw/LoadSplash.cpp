@@ -25,7 +25,7 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
 
  _tcscpy(fprefix,splashfile);
 
- LocalPath(sDir,TEXT(LKD_BITMAPS));
+ SystemPath(sDir,TEXT(LKD_BITMAPS));
 
     // first look for lkstart_480x272.bmp for example
     _stprintf(srcfile,_T("%s" DIRSEP "%s_%s." IMG_EXT),sDir, fprefix,GetSizeSuffix() );
