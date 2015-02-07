@@ -120,6 +120,23 @@ bool ReadWinPilotPolar(void) {
     StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
 
     FILE * stream = _tfopen(szFile, _T("rt"));
+    if(!stream){
+        // polar file name can be an old name, convert to new name and retry.
+        bool bRetry = false;
+        std::tstring str (szPolarFile);
+        const TCHAR strReplace[] = _T(" ()");
+        for(std::size_t found = str.find_first_of(strReplace); found!=std::string::npos; found=str.find_first_of(strReplace,found+1)) {
+          str[found]=_T('_');
+          bRetry = true; // only retry if file name change.
+        }
+        
+        if(bRetry) {
+            _tcscpy(szFile,str.c_str());
+            ExpandLocalPath(szFile);
+         
+            stream = _tfopen(szFile, _T("rt"));
+        }
+    }
     if (stream){
 
         while(ReadStringX(stream,READLINE_LENGTH,TempString) && (!foundline)){
