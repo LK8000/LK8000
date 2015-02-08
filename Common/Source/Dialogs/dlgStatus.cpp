@@ -360,10 +360,10 @@ static void UpdateValuesSystem() {
   wp = (WndProperty*)wf->FindByName(TEXT("prpBattery"));
   if (wp) {
     _tcscpy(Temp,TEXT("\0"));
-#if (WINDOWSPC<1)
-    _stprintf(Temp2,TEXT("%d%% "), PDABatteryPercent);
-    _tcscat(Temp, Temp2);
-#endif
+    if (HaveBatteryInfo) {
+        _stprintf(Temp2,TEXT("%d%% "), PDABatteryPercent);
+        _tcscat(Temp, Temp2);
+    }
     if (GPS_INFO.SupplyBatteryVoltage == 0) {
       _tcscpy(Temp2,TEXT("\0"));
     } else {

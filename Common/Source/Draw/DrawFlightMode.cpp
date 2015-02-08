@@ -92,8 +92,11 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   // 
 
   #if TESTBENCH
-  // Battery test in Simmode
+  // Battery test in Simmode will be available in testbench mode only
   if (SIMMODE && !(QUICKDRAW)) {; PDABatteryPercent-=1; if (PDABatteryPercent<0) PDABatteryPercent=100; }
+  #else
+  // If we are not in testbench, no matter simmode is active we shall represent the real battery (as in v5).
+  if (!HaveBatteryInfo) return;
   #endif
 
   const LKBitmap* pBmpBattery = NULL;

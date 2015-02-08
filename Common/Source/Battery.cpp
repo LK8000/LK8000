@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
  * 
- * adapted from XCSoar original source code Battery.cpp
+ * linux code adapted from XCSoar original source code Battery.cpp
  * 
 
    $Id$
@@ -17,6 +17,7 @@
 #endif
 
 #include "DoInits.h"
+
 
 #ifdef WIN32
 #ifdef UNDER_CE
@@ -202,6 +203,12 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
 
 
 
+// 2015.02.07 
+// By default the global bool HaveBatteryInfo is always false.
+// We set it true, and use battery infos, only if we find a real battery.
+// Beware. If for any reason the battery no longer gives info we ought to 
+// clear the flag too.
+static bool battInitialized=false;
 
 void UpdateBatteryInfos(void) {
 
@@ -215,6 +222,7 @@ void UpdateBatteryInfos(void) {
 	PDABatteryFlag =    GM130PowerFlag();
 
 	PDABatteryTemperature = 0;
+	HaveBatteryInfo=true;
   } else 
   #endif
   if (GetBatteryInfo(&BatteryInfo)) {
@@ -222,6 +230,12 @@ void UpdateBatteryInfos(void) {
     PDABatteryTemperature = BatteryInfo.BatteryTemperature; 
     PDABatteryStatus=BatteryInfo.acStatus;
     PDABatteryFlag=BatteryInfo.chargeStatus;
+
+    #if TESTBENCH
+    if (HaveBatteryInfo==false)
+        StartupStore(_T("... LKBatteryManager: HaveBatteryInfo  ENABLED%s"),NEWLINE);
+    #endif
+    HaveBatteryInfo=true;
 
     // All you need to display extra Battery informations...
     //	TCHAR vtemp[1000];
@@ -231,7 +245,15 @@ void UpdateBatteryInfos(void) {
     //		BatteryInfo.BatterymAHourConsumed,
     //		BatteryInfo.BatteryTemperature, BatteryInfo.BatteryLifeTime, BatteryInfo.BatteryFullLifeTime);
     //	StartupStore( vtemp );
-  } 
+  } else {
+      #if TESTBENCH
+      if (HaveBatteryInfo==true)
+          StartupStore(_T("... LKBatteryManager: HaveBatteryInfo DISABLED%s"),NEWLINE);
+      #endif
+      HaveBatteryInfo=false;
+
+  }
+  battInitialized=true;
 }
 
 
@@ -245,7 +267,12 @@ void LKBatteryManager() {
   static double last_time=0, init_time=0;
   static int last_percent=0, last_status=0;
 
-
+  if (!battInitialized) {
+	#if TESTBENCH
+	StartupStore(_T("... LKBatteryManager waiting for first update%s"),NEWLINE);
+	#endif
+        return;
+  }
   if (invalid) return;
   if (DoInit[MDI_BATTERYMANAGER]) {
 
@@ -255,7 +282,7 @@ void LKBatteryManager() {
 	last_percent=0, last_status=0;
 	numwarn=0;
 
-	if (PDABatteryPercent<1 || PDABatteryPercent>100) {
+	if (!HaveBatteryInfo|| PDABatteryPercent<1 || PDABatteryPercent>100) {
 		StartupStore(_T("... LK BatteryManager V1: internal battery information not available, function disabled%s"), NEWLINE);
 		invalid=true;
 		DoInit[MDI_BATTERYMANAGER]=false; // just to be sure

@@ -1343,7 +1343,16 @@ goto_bearing:
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			value = PDABatteryPercent;
-                	if (value<1||value>100)
+			// We may choose this approach, but it is not as in V5.
+			/*
+			#if TESTBENCH
+                	if ( (!SIMMODE && !HaveBatteryInfo) || value<1||value>100)
+			#else
+                	if (!HaveBatteryInfo || value<1||value>100)
+			#endif
+			*/
+			// This is V5 compatible
+                	if (!HaveBatteryInfo || value<1||value>100)
 				_stprintf(BufferValue,_T("---"));
                 	else {
 				if (PDABatteryFlag==Battery::CHARGING || PDABatteryStatus==Battery::ONLINE) {

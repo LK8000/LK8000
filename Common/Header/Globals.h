@@ -57,6 +57,7 @@ GEXTERN bool goCalculationThread GEXTFALSE;
 
 
 GEXTERN unsigned short HaveSystemInfo GEXTZERO; // Normally only on linux
+GEXTERN bool HaveBatteryInfo GEXTFALSE;
 
 GEXTERN TCHAR LK8000_Version[256];
 
