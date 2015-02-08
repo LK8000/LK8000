@@ -95,8 +95,8 @@
 #endif
 
 #define LKFORK		"LK8000"
-#define LKVERSION	"X"
-#define LKRELEASE	"00"
+#define LKVERSION	"5"
+#define LKRELEASE	"3A1"
 
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
