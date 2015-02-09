@@ -976,6 +976,7 @@ class WndProperty:public WindowControl{
     bool mDownDown;
     bool mUpDown;
     bool mUseKeyboard;
+    bool mMultiLine;
 
     virtual void Paint(LKSurface& Surface);
 

@@ -2133,7 +2133,8 @@ WndProperty::WndProperty(WindowControl *Parent,
   mDialogStyle=false; // this is set by ::SetDataField()
 
   mUseKeyboard=false;
-
+  mMultiLine = MultiLine;
+          
   mhValueFont = GetFont();
   mCaptionWidth = CaptionWidth;
 
@@ -2432,7 +2433,7 @@ void WndProperty::Paint(LKSurface& Surface){
 
     RECT rcText = mEditRect;
     InflateRect(&rcText, -NIBLSCALE(3), 0);
-    Surface.DrawText(mValue.c_str(), mValue.size(), &rcText, DT_EXPANDTABS|DT_WORDBREAK);
+    Surface.DrawText(mValue.c_str(), mValue.size(), &rcText, DT_EXPANDTABS|(mMultiLine?DT_WORDBREAK:DT_SINGLELINE|DT_VCENTER));
 
     Surface.SelectObject(oldPen);
     Surface.SelectObject(oldBrush);
