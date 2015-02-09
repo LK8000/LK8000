@@ -67,6 +67,8 @@
 #include "Message.h"
 #include "Sound/Sound.h"
 
+#include "Kobo/System.hpp"
+
 #ifdef INT_OVERFLOW
 	#include <signal.h>
 #endif
@@ -153,6 +155,11 @@ int main() {
   }
   #endif
 
+#ifdef KOBO
+#warning "Temporary : remove when we have KoboMenu"
+  KoboExportUSBStorage();
+#endif  
+    
   ScreenGlobalInit InitScreen;
   SoundGlobalInit InitSound;
 
@@ -337,7 +344,12 @@ int main() {
   #endif
   GlidePolar::SetBallast();
 
-
+#ifdef KOBO
+#warning "Temporary : remove when we have KoboMenu"  
+  CreateProgressDialog(TEXT("Stop Usb MassStorage")); 
+  KoboUnexportUSBStorage();
+#endif
+  
 #ifdef PNA // VENTA-ADDON
     TCHAR sTmp[250];
 	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);
@@ -583,6 +595,11 @@ _Shutdown:
   #endif
   #endif
 
+#if (defined(KOBO) && defined(NDEBUG))
+#warning "Temporary : remove when we have KoboMenu"  
+  KoboExecNickel();
+#endif  
+  
   if (realexitforced) return 222;
   else return 111;
 }

@@ -550,19 +550,6 @@ int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines) {
   return nTextLines;
 }
 
-
-
-bool MatchesExtension(const TCHAR *filename, const TCHAR* extension) {
-  const TCHAR *ptr = _tcsstr(filename, extension);
-  if (ptr != filename+_tcslen(filename)-_tcslen(extension)) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-
-
 /* 
  * Implementation of the _splitpath runtime library function with wide character strings
  * Copyright 2000, 2004 Martin Fuchs -- GPL licensed - WINE project

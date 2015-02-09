@@ -30,6 +30,7 @@
 
 #include "Event/Event.h"
 #include "Sound/Sound.h"
+#include "Kobo/System.hpp"
 
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);

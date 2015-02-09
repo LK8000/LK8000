@@ -6,6 +6,9 @@ XCS_OS_LINUX := \
 	$(SRC)/xcs/OS/Poll.cpp\
 	$(SRC)/xcs/OS/FileUtil.cpp\
 	$(SRC)/xcs/OS/Poll.cpp\
+	$(SRC)/xcs/OS/Process.cpp\
+	$(SRC)/xcs/OS/PathName.cpp\
+
 
 XCS_OS := \
 	$(SRC)/xcs/OS/Clock.cpp\

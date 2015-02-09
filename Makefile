@@ -373,6 +373,15 @@ CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 ifeq ($(CONFIG_LINUX),y)
 LDLIBS :=
 LDFLAGS :=
+	
+ifeq ($(TARGET_IS_KOBO),y)
+
+# use our glibc version and its ld.so on the Kobo, not the one from
+# the stock Kobo firmware, as it may be incompatible
+LDFLAGS += -Wl,--dynamic-linker=/opt/LK8000/lib/ld-linux-armhf.so.3
+LDFLAGS += -Wl,--rpath=/opt/LK8000/lib
+
+endif
 
 else
 LDFLAGS		:=-Wl,--major-subsystem-version=$(CE_MAJOR)
@@ -1105,6 +1114,14 @@ BITMAP_RES_O := $(BIN)/Resource/resource_bmp.o
 endif
 ####### compilation outputs
 
+ifeq ($(TARGET_IS_KOBO), y)
+DISTRIB_OUTPUT := KoboRoot.tgz
+
+# temporary still we don't have kobo menu.	
+SRC_FILES += \
+	$(SRC)/xcs/Kobo/System.cpp
+
+endif
 # Add JP2 library for JP2000 unsupported raster maps
 # (BIN)/jasper.a \
 
@@ -1124,6 +1141,8 @@ endif
 
 IGNORE	:= \( -name .git \) -prune -o
 
+include build/distrib.mk
+include build/kobo.mk
 
 ####### dependency handling
 
@@ -1134,10 +1153,11 @@ cc-flags	=$(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET_AR
 cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET_ARCH)
 
 
+
 ####### targets
 .PHONY: FORCE all clean cleani tags rebuild cppcheck
 
-all:	$(PNG) $(MASKED_PNG) $(OUTPUTS)
+all:	$(DISTRIB_OUTPUT) $(PNG) $(MASKED_PNG) $(OUTPUTS)
 	@$(NQ)echo "GCCVERSION : $(GCCVERSION)"
 	
 rebuild:

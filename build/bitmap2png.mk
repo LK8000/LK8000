@@ -1,6 +1,6 @@
 
 BITMAP_DIR := Common/Distribution/LK8000/_System/_Bitmaps
-PNG_TARGET	  := Distrib/$(TARGET)/_System/_Bitmaps/
+PNG_TARGET	  := Distrib/$(TARGET)/_System/_Bitmaps
 
 
 MASKED_LOW := \

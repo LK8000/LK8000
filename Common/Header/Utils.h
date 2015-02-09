@@ -196,7 +196,6 @@ bool DoOptimizeRoute(void);
 TCHAR * WhatTimeIsIt(void);
 void OutOfMemory(const TCHAR *where, int line);
 
-bool MatchesExtension(const TCHAR *filename, const TCHAR* extension);
 void CreateDirectoryIfAbsent(const TCHAR *filename);
 
 bool RotateScreen(short angle);

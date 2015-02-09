@@ -47,9 +47,7 @@ static const char *const all_font_paths[] = {
   /* just for the experimental WINSDL target */
   "c:\\windows\\fonts\\arial.ttf",
 #elif defined(KOBO)
-  "/mnt/onboard/XCSoar/fonts/DejaVuSansCondensed.ttf",
-  "/mnt/onboard/fonts/Vera.ttf",
-  "/opt/xcsoar/share/fonts/Vera.ttf",
+  "/opt/LK8000/share/fonts/Vera.ttf",
 #else
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansCondensed.ttf",
   "/usr/share/fonts/TTF/dejavu/DejaVuSansCondensed.ttf",
@@ -86,9 +84,7 @@ static const char *const all_bold_font_paths[] = {
   "/Library/Fonts/Microsoft/Arial Bold.ttf",
 #endif
 #elif defined(KOBO)
-  "/mnt/onboard/XCSoar/fonts/DejaVuSansCondensed-Bold.ttf",
-  "/mnt/onboard/fonts/VeraBd.ttf",
-  "/opt/xcsoar/share/fonts/VeraBd.ttf",
+  "/opt/LK8000/share/fonts/VeraBd.ttf",
 #elif defined(HAVE_POSIX)
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansCondensed-Bold.ttf",
   "/usr/share/fonts/TTF/dejavu/DejaVuSansCondensed-Bold.ttf",
@@ -121,10 +117,7 @@ static const char *const all_italic_font_paths[] = {
   "/Library/Fonts/Arial Narrow Italic.ttf",
 #endif
 #elif defined(KOBO)
-  "/mnt/onboard/XCSoar/fonts/DejaVuSansCondensed-Oblique.ttf",
-  "/mnt/onboard/fonts/VeraIt.ttf",
-  "/mnt/onboard/XCSoar/fonts/VeraIt.ttf",
-  "/opt/xcsoar/share/fonts/VeraIt.ttf",
+  "/opt/LK8000/share/fonts/VeraIt.ttf",
 #elif defined(HAVE_POSIX)
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansCondensed-Oblique.ttf",
   "/usr/share/fonts/TTF/dejavu/DejaVuSansCondensed-Oblique.ttf",
@@ -152,10 +145,7 @@ static const char *const all_bold_italic_font_paths[] = {
   "/Library/Fonts/Arial Narrow Bold Italic.ttf",
 #endif
 #elif defined(KOBO)
-  "/mnt/onboard/XCSoar/fonts/DejaVuSansCondensed-BoldOblique.ttf",
-  "/mnt/onboard/fonts/VeraBI.ttf",
-  "/mnt/onboard/XCSoar/fonts/VeraBI.ttf",
-  "/opt/xcsoar/share/fonts/VeraBI.ttf",
+  "/opt/LK8000/share/fonts/VeraBI.ttf",
 #elif defined(HAVE_POSIX)
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansCondensed-BoldOblique.ttf",
   "/usr/share/fonts/TTF/dejavu/DejaVuSansCondensed-BoldOblique.ttf",
@@ -178,9 +168,7 @@ static const char *const all_monospace_font_paths[] = {
   "/Library/Fonts/Courier New.ttf",
 #endif
 #elif defined(KOBO)
-  "/mnt/onboard/XCSoar/fonts/DejaVuSansMono.ttf",
-  "/mnt/onboard/fonts/VeraMono.ttf",
-  "/opt/xcsoar/share/fonts/VeraMono.ttf",
+  "/opt/LK8000/share/fonts/VeraMono.ttf",
 #else
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf",
   "/usr/share/fonts/truetype/DejaVuSansMono.ttf",

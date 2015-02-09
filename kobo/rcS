@@ -1,0 +1,99 @@
+#!/bin/sh
+#
+#
+# LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+# Released under GNU/GPL License v.2
+# See CREDITS.TXT file for authors and copyrights
+# 
+# Author: Bruno de Lacheisserie
+# 
+
+# This Script is Adapted from XCSoar
+
+# This script is launched by /etc/inittab on boot.  It initialises the
+# Kobo Mini and launches LK8000.
+
+/bin/mount -o remount,noatime,nodiratime /dev/mmcblk0p1 /
+
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+umask 022
+
+# mount the data partition
+/bin/dosfsck -a -w /dev/mmcblk0p3
+/bin/mkdir -p /mnt/onboard
+/bin/mount -t vfat -o iocharset=utf8 /dev/mmcblk0p3 /mnt/onboard
+/bin/rm -rf /mnt/onboard/fsck* /mnt/onboard/FSCK*
+
+# launch the original Kobo init script if:
+# - there's a pending update
+# - Nickel start was scheduled
+# - the LK8000 installation is broken
+if [ -f /mnt/onboard/.kobo/Kobo.tgz -o -f /mnt/onboard/.kobo/KoboRoot.tgz \
+    -o -f /mnt/onboard/LK8000/kobo/start_nickel \
+    -o ! -x /opt/LK8000/bin/LK8000-KOBO ]; then
+
+    rm -f /mnt/onboard/LK8000/kobo/start_nickel
+    # launch user script before nickel start
+    if [ -f /mnt/onboard/LK8000/kobo/init_nickel.sh ]; then
+        source /mnt/onboard/LK8000/kobo/init_nickel.sh
+    fi
+    umount -l /mnt/onboard
+    exec /etc/init.d/rcS
+fi
+
+# prepare file system
+
+/bin/mkdir -p /proc /dev /root /tmp /sys /var/lib /var/log /var/run
+
+/bin/mount -t proc none /proc
+/bin/mount -t tmpfs none -o size=16m /tmp
+/bin/mount -t tmpfs none /dev
+/bin/mount -t tmpfs none -o size=16k /var/lib
+/bin/mount -t tmpfs none -o size=16k /var/log
+/bin/mount -t tmpfs none -o size=128k /var/run
+/bin/mount -t sysfs none -o size=500k /sys
+
+/bin/mknod /dev/null c 1 3
+/bin/mknod /dev/zero c 1 5
+/bin/mknod /dev/random c 1 8
+/bin/mknod /dev/urandom c 1 9
+/bin/mknod /dev/ptmx c 5 2
+/bin/mkdir /dev/input
+/bin/mknod /dev/input/event0 c 13 64
+/bin/mknod /dev/input/event1 c 13 65
+/bin/mknod /dev/fb0 c 29 0
+/bin/mknod /dev/ttyUSB0 c 188 0
+/bin/mknod /dev/ttymxc0 c 207 16
+/bin/mknod /dev/ttymxc1 c 207 17
+/bin/mknod /dev/ttymxc2 c 207 18
+/bin/mknod /dev/rtc0 c 254 0
+
+/bin/mknod /dev/mmcblk0 b 179 0
+/bin/mknod /dev/mmcblk0p1 b 179 1
+/bin/mknod /dev/mmcblk0p2 b 179 2
+/bin/mknod /dev/mmcblk0p3 b 179 3
+
+/sbin/hwclock -s -u
+
+# workaround for kernel crash "scheduling while atomic"
+echo -e '\000\000\000\000' > /proc/sys/kernel/hotplug
+
+# disable the flashing led
+echo "ch 3" > /sys/devices/platform/pmic_light.1/lit
+echo "cur 0" > /sys/devices/platform/pmic_light.1/lit
+echo "dc 0" > /sys/devices/platform/pmic_light.1/lit
+
+# launch user script
+if [ -f /mnt/onboard/LK8000/kobo/init.sh ]; then
+    source /mnt/onboard/LK8000/kobo/init.sh
+fi
+
+# workaround for Kobo Touch N905B kernel bug: the mxc_fb driver
+# crashes when KoboMenu tries to rotate the display too early after
+# boot
+if [ `dd if=/dev/mmcblk0 bs=8 count=1 skip=64` = "SN-N905B" ]; then
+    sleep 1
+fi
+
+# finally, launch LK8000-KOBO
+exec /opt/LK8000/bin/LK8000-KOBO
