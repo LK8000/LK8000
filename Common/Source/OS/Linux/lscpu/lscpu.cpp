@@ -35,7 +35,7 @@
 #include <stdarg.h>
 #include "bitops.h"
 #include "lscpu.h"
-
+#include "tchar.h"
 #include "nls.h"
 
 
@@ -548,11 +548,13 @@ void lscpu_init(void)
 	return; // should be false if no info available
 }
 
-char *SystemInfo_Architecture(void) {
+const TCHAR* SystemInfo_Architecture(void) {
+    static_assert(sizeof(TCHAR) == sizeof(*(SystemInfo.arch)), "Invalide type");
     return SystemInfo.arch;
 }
 
-char *SystemInfo_Vendor(void) {
+const TCHAR* SystemInfo_Vendor(void) {
+    static_assert(sizeof(TCHAR) == sizeof(*(SystemInfo.vendor)), "Invalide type");
     return SystemInfo.vendor;
 }
 

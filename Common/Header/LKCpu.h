@@ -10,8 +10,8 @@
 
   extern void lscpu_init(void);
 
-  extern char *SystemInfo_Architecture(void);
-  extern char *SystemInfo_Vendor(void);
+  extern const TCHAR* SystemInfo_Architecture(void);
+  extern const TCHAR* SystemInfo_Vendor(void);
 
   extern int SystemInfo_Cpus(void);
   extern unsigned int SystemInfo_Mhz(void);

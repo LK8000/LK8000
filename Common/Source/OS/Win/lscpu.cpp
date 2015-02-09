@@ -12,11 +12,11 @@ void lscpu_init(void) {
     HaveSystemInfo=0; // just to be sure
 };
 
-char *SystemInfo_Architecture(void) {
+const TCHAR* SystemInfo_Architecture(void) {
     return NULL;
 }
 
-char *SystemInfo_Vendor(void) {
+const TCHAR* SystemInfo_Vendor(void) {
     return NULL;
 }
 
