@@ -11,7 +11,7 @@
 #include "Asset.hpp"
 
 const TCHAR * LKGetSystemPath(void) {
-#ifdef __linux__
+#ifdef KOBO
     return _T("/opt/" LKDATADIR "/share/");
 #else
     return LKGetLocalPath();
@@ -19,10 +19,9 @@ const TCHAR * LKGetSystemPath(void) {
 }
 
 const TCHAR * LKGetLocalPath(void) {
-    
-    if(IsKobo()) {
-        return _T("/mnt/onboard/" LKDATADIR "/");
-    }
+#ifdef KOBO
+    return _T("/mnt/onboard/" LKDATADIR "/");
+#else
     
     static TCHAR localpath[MAX_PATH + 1] = {0};
 
@@ -34,6 +33,7 @@ const TCHAR * LKGetLocalPath(void) {
 
     const TCHAR *fileToSearch = _T(LKD_LANGUAGE"\\_LANGUAGE");
     return LKGetPath(localpath, fileToSearch);
+#endif
 }
 
 // return Path including trailing directory separator.
