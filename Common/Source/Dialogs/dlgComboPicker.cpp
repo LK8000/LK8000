@@ -29,22 +29,27 @@ static int iSavedInitialDataIndex=-1;
 
 static void OnPaintComboPopupListItem(WindowControl * Sender, LKSurface& Surface){
 
-  (void)Sender;
+  if(Sender) {
 
-  if ( ComboListPopup->ComboPopupDrawListIndex >= 0 && 
-        ComboListPopup->ComboPopupDrawListIndex < ComboListPopup->ComboPopupItemCount ) {
+    if ( ComboListPopup->ComboPopupDrawListIndex >= 0 && 
+            ComboListPopup->ComboPopupDrawListIndex < ComboListPopup->ComboPopupItemCount ) {
 
-	int w;
+        // Fill Background with Highlight color if Selected Item
+        if (!Sender->HasFocus() && ComboListPopup->ComboPopupItemIndex == ComboListPopup->ComboPopupDrawListIndex ) {
+            RECT rc = Sender->GetClientRect();
+            Surface.FillRect(&rc, LKBrush_Higlighted);
+        }    
 
-	w=Sender->GetWidth();
+        int w=Sender->GetWidth();
 
-    Surface.SetBackgroundTransparent();
-    Surface.SetTextColor(RGB_BLACK);
-	Surface.DrawTextClip(2*ScreenScale,
-		2*ScreenScale,
-		ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupDrawListIndex]->StringValueFormatted,
-		w-ScreenScale*5);
-  }
+        Surface.SetBackgroundTransparent();
+        Surface.SetTextColor(RGB_BLACK);
+        Surface.DrawTextClip(2*ScreenScale,
+                2*ScreenScale,
+                ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupDrawListIndex]->StringValueFormatted,
+                w-ScreenScale*5);
+        }
+    }
 }
 
 static void OnComboPopupListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo)
