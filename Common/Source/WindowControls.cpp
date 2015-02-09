@@ -2422,7 +2422,7 @@ void WndProperty::Paint(LKSurface& Surface){
   }
 
   if((mEditRect.right - mEditRect.left) > mBitmapSize) {
-    auto oldBrush = Surface.SelectObject(LKBrush_White);
+    auto oldBrush = Surface.SelectObject(GetReadOnly()?LKBrush_LightGrey:LKBrush_White);
     auto oldPen = Surface.SelectObject(LKPen_Black_N1);
     // Draw Text Bakground & Border
     Surface.Rectangle(mEditRect.left, mEditRect.top, mEditRect.right, mEditRect.bottom);
