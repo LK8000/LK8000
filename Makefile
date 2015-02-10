@@ -470,7 +470,7 @@ endif
 include build/xcs_screen.mk
 include build/xcs_event.mk
 include build/xcs_os.mk
-include build/lk_os.lk
+include build/lk_os.mk
 
 ifeq ($(CONFIG_LINUX),y)
 include build/bitmap2png.mk
