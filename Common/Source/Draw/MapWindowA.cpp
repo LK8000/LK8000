@@ -143,7 +143,11 @@ DrawAirSpaceBorders(Surface, rc);
                 hdcbuffer,rc.left,rc.top,
                 hdcMask,rc.left,rc.top);
     }
+#ifdef USE_MEMORY_CANVAS
+    Surface.AlphaBlendNotWhite(rc, TempSurface, rc, (255 * GetAirSpaceOpacity()) / 100);
+#else
     Surface.AlphaBlend(rc, TempSurface, rc, (255 * GetAirSpaceOpacity()) / 100);
+#endif
   }
   
   // draw it again, just the outlines
