@@ -91,8 +91,12 @@ Canvas::DrawFilledRectangle(int left, int top, int right, int bottom,
     return;
 
   SDLRasterCanvas canvas(buffer);
-  canvas.FillRectangle(left, top, right, bottom,
-                       canvas.Import(color));
+  const auto raster_color = canvas.Import(color);
+  if (color.IsOpaque())
+    canvas.FillRectangle(left, top, right, bottom, raster_color);
+  else
+    canvas.FillRectangle(left, top, right, bottom, raster_color, 
+                         AlphaPixelOperations<SDLPixelTraits>(color.Alpha()));
 }
 
 void
