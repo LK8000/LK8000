@@ -12,11 +12,6 @@
 #include "RGB.h"
 #include "DoInits.h"
 
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-
-
 void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col) {
     const POINT p0({ x1, y1 });
     const POINT p1({ x2, y2 });

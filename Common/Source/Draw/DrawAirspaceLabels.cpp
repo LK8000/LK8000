@@ -11,13 +11,6 @@
 #include "Bitmaps.h"
 #include "RGB.h"
 
-
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-
-
-
 void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft)
 {
   static short int label_sequencing_divider = 0;

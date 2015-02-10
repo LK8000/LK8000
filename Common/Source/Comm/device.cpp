@@ -139,7 +139,7 @@ void RefreshComPortList() {
         COMMPort.push_back(szPort);
     }
 
-#if (WINDOWSPC>0)
+#ifndef UNDER_CE
     for (unsigned i = 10; i < 41; ++i) {
         _stprintf(szPort, _T("COM%u"), i);
         COMMPort.push_back(szPort);

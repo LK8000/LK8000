@@ -99,12 +99,6 @@ void dlgAirspaceWarningParamsShowModal(void);
 void dlgMultimapsShowModal(void);
 void dlgIgcFileShowModal(void);
 
-#if (WINDOWSPC>0)
-#ifdef DEBUG
-#pragma warning( disable : 4786 ) 
-#endif
-#endif
-
 void WriteMissingTranslations(void);
 
 void dlgTextEntryKeyboardShowModal(TCHAR *text, int width=0);

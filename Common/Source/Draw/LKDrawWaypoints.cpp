@@ -14,11 +14,6 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "Multimap.h"
-
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-
 #include <string.h>
 
 MapWaypointLabel_t MapWaypointLabelList[200]; 
@@ -474,10 +469,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		}
 		break;
 
-	      default:
-#if (WINDOWSPC<1)
-		//ASSERT(0);
-#endif
+          default:
 		break;
 
 	      } // end intask/irange/dowrite

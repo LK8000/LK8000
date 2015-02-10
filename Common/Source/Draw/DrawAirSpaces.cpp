@@ -12,11 +12,6 @@
 #include "RGB.h"
 #include "LKObjects.h"
 
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-
-
 void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
       LKColor whitecolor = LKColor(0xff,0xff,0xff);
 

@@ -10,12 +10,6 @@
 #include "LKStyle.h"
 #include "DoInits.h"
 #include "LKObjects.h"
-
-
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-
 #include <string.h>
 
 
