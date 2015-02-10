@@ -50,14 +50,6 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   static int splitoffset;
   static int splitoffset2; // second raw, which really is the first from top!
 
-  BrushReference brush_bar;
-  if (INVERTCOLORS) {
-    brush_bar = LKBrush_Black;
-  } else {
-    brush_bar = LKBrush_Nlight;
-  }
-
-
   if (DoInit[MDI_DRAWBOTTOMBAR]) {
 
 	wascircling=false;
@@ -154,12 +146,19 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
     nrc.bottom=rc.bottom;
 
 
+    const LKBrush& brush_bar = INVERTCOLORS?LKBrush_Black:LKBrush_Nlight;
+
     if (LKSurface::AlphaBlendSupported() && MapSpaceMode == MSM_MAP && BarOpacity < 100) {
         if (BarOpacity == 0) {
             barTextColor = RGB_BLACK;
         } else {
-            TempSurface.FillRect(&nrc, brush_bar);
+#ifdef USE_GDI
+            TempSurface.FillRect(&nrc, AlphaBrush);
             Surface.AlphaBlend(nrc, TempSurface, nrc, BarOpacity * 255 / 100);
+#else
+            const LKBrush AlphaBrush(brush_bar.GetColor().WithAlpha(BarOpacity * 255 / 100));
+            Surface.FillRect(&nrc, AlphaBrush);
+#endif
             if (BarOpacity > 25) {
                 barTextColor = RGB_WHITE;
             } else {
