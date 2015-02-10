@@ -1959,14 +1959,6 @@ bool WndForm::OnKeyDownNotify(Window* pWnd, unsigned KeyCode) {
     return false;
 }
 
-#ifndef USE_GDI
-void WndForm::OnPaint(Canvas &canvas) {
-    // double buffering only for WndForm, Disabled in WindowControl
-    VirtualCanvas TempCanvas(canvas, GetClientRect().GetSize());
-    WndCtrlBase::OnPaint(TempCanvas);
-    canvas.Copy(TempCanvas);
-}
-#endif
 //-----------------------------------------------------------
 // WndButton
 //-----------------------------------------------------------

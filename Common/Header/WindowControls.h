@@ -17,10 +17,6 @@
 #include "Poco/Timestamp.h"
 #include "LKObjects.h"
 
-#ifndef USE_GDI
-#include <Screen/VirtualCanvas.hpp>
-#endif
-
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
 #define MAXSETCAPTION 254	// max chars in SetCaption, autolimited
@@ -920,11 +916,6 @@ protected:
             mOnTimerNotify();
         }
     }
-    
-#ifndef USE_GDI
-    virtual void OnPaint(Canvas &canvas);
-#endif    
-    
 };
 
 class WndButton:public WindowControl{
