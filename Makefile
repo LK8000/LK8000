@@ -469,7 +469,6 @@ endif
 
 include build/xcs_screen.mk
 include build/xcs_event.mk
-include build/xcs_os.mk
 include build/lk_os.mk
 
 ifeq ($(CONFIG_LINUX),y)
@@ -479,13 +478,12 @@ endif
 ####### sources
 WINDOW := \
 	$(SRC_WINDOW)/WndMain.cpp \
-	$(XCS_OS) \
 	$(XCS_EVENT) \
 	$(XCS_SCREEN) \
 	$(LK_OS) \
 
 
-ifneq ($(CONFIG_LINUX),y)
+ifeq ($(CONFIG_WIN32),y)
 WINDOW += \
 	$(SRC_WINDOW)/Win32/Window.cpp \
 	$(SRC_WINDOW)/Win32/WndMainBase.cpp \
@@ -495,11 +493,6 @@ WINDOW += \
 	$(SRC_WINDOW)/Win32/WndTextEdit.cpp \
 	$(SRC_WINDOW)/Win32/WndTextLabel.cpp \
 	$(SRC_WINDOW)/Win32/WndCtrlBase.cpp \
-	\
-	$(SRC)/OS/Win/CpuLoad.cpp \
-	$(SRC)/OS/Win/Memory.cpp \
-	$(SRC)/OS/Win/RotateScreen.cpp\
-	$(SRC)/OS/Win/lscpu.cpp\
 
 endif
 	
