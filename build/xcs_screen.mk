@@ -57,6 +57,7 @@ XCS_SCREEN := \
 	$(SRC)/xcs/Screen/SingleWindow.cpp \
 	$(SRC)/xcs/Screen/Color.cpp \
 	$(SRC)/xcs/Screen/Debug.cpp \
+	$(SRC)/xcs/Screen/BufferCanvas.cpp \
 
 XCS_UTILS := \
 	$(SRC)/xcs/Util/UTF8.cpp\
