@@ -61,15 +61,11 @@ void InitLKFonts()
   // AND IT WAS A LONG WORK, SO DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING
   // > ALSO UNUSED SPLITTER VALUES ARE FINE TUNED!
 
-  //
-  // BottomSize moved to InitLKScreen, beware
-  // 
   switch (ScreenSize) { 
 
 	// Landscape
 
 	// remember: changing values here may need cosmetic changes in InfoBoxLayout where
-	// BottomSize is set manually... *UPDATE> apparently no more since december 09
 	case (ScreenSize_t)ss800x480:		// PASSED DEV-1 090701 VENTA
 		splitter=6;
 		propGetFontSettingsFromString(TEXT("72,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);	// 64 600
@@ -663,20 +659,6 @@ void InitLKFonts()
   LK8PanelMediumFont.Create(&logfontPanelMedium);
   LK8PanelSmallFont.Create(&logfontPanelSmall);
   LK8PanelUnitFont.Create(&logfontPanelUnit);
-
-/* Old try
-  LONG mastersize=800/22; // should be equivalent to PNA best MapWindowFont 36
-   _tcscpy(logfontTarget.lfFaceName, _T("Tahoma"));
-  logfontTarget.lfPitchAndFamily = VARIABLE_PITCH | FF_DONTCARE  ;
-  logfontTarget.lfCharSet = ANSI_CHARSET;
-  logfontTarget.lfQuality = ANTIALIASED_QUALITY; 
-  logfontTarget.lfHeight = int (ceil(mastersize*1.33)); // eq Statistics 48
-  logfontTarget.lfWidth =  0;
-  logfontTarget.lfWeight = FW_NORMAL;
-  logfontTarget.lfItalic = FALSE;
-  LK8TargetFont.Create(&logfontTarget); 
-  BottomSize= int (ceil(mastersize*1.77 + mastersize));
-*/
 
 
 }
