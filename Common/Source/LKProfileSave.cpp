@@ -391,6 +391,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryBottomMode    ,BottomMode);
   rprintf(szRegistrySonarWarning    ,SonarWarning_Config);
 
+  extern bool CommandResolution;
   if(!IsEmbedded() && !CommandResolution) {
     rprintf(szRegistryScreenSize   ,ScreenSize);
     rprintf(szRegistryScreenSizeX  ,ScreenSizeX);
