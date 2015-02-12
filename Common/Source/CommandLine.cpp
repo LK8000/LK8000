@@ -11,9 +11,10 @@
 // This is a quick solution to tell profiles not to override a command line choice, for v5
 bool CommandResolution=false;
 
+#if (WINDOWSPC>0) 
+
 void LK8000GetOpts(const TCHAR *MyCommandLine) {
 
-#if (WINDOWSPC>0) 
   CommandResolution=false;
 
   if (MyCommandLine != NULL){
@@ -211,9 +212,44 @@ void LK8000GetOpts(const TCHAR *MyCommandLine) {
     }
 
   }
-#else
-  return;
-#endif
 
 }
+
+#else
+
+void LKCmdLineArguments(int argc, char *argv[]) {
+
+    if (argc<2) return;
+    char *p; 
+    int x=0,y=0;
+
+    // -x=123 -y=123  (minimum is 240)
+    if ( argc==3 && strlen(argv[1]) >= 6) {
+        if ( argv[1][0]=='-' && argv[1][1]=='x' && argv[1][2]=='=' ) {
+            p=&argv[1][3];
+            x=atoi(p);
+            if (x<240 || x>2000) return;
+
+            // -y=123  minimum is 240
+            if ( strlen(argv[2]) >= 6) {
+                if ( argv[2][0]=='-' && argv[2][1]=='y' && argv[2][2]=='=' ) {
+                    p=&argv[2][3];
+                    y=atoi(p);
+                    if (y<240 || y>2000) return;
+                }
+            } else return;
+        }
+        ScreenSizeX=x;
+        ScreenSizeY=y;
+        CommandResolution=true;
+        StartupStore(_T("... Command line request resolution to x=%d y=%d%s"),x,y,NEWLINE);
+        return;
+    }
+    
+
+
+}
+
+
+#endif
 

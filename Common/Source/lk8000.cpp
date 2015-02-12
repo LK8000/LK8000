@@ -132,8 +132,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     const TCHAR* szCmdLine = GetCommandLine();
     
 #else
-int main() {
-    const char * szCmdLine = "";
+int main(int argc, char *argv[]) {
 #endif
 
 #ifdef INT_OVERFLOW
@@ -276,8 +275,12 @@ int main() {
   _stprintf(defaultDeviceFile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKDEVICE));
   _tcscpy(startDeviceFile, defaultDeviceFile);
 
-
+  #ifdef __linux__
+  extern void LKCmdLineArguments(int argc, char *argv[]);
+  LKCmdLineArguments(argc,argv);
+  #else
   LK8000GetOpts(szCmdLine);
+  #endif
   InitSineTable();
 
   // Perform application initialization: also ScreenGeometry and LKIBLSCALE, and Objects

@@ -126,7 +126,8 @@ void PreloadInitialisation(bool ask) {
 //
 BOOL InitInstance()
 {
-  if(!IsEmbedded()) {
+  extern bool CommandResolution;
+  if(!IsEmbedded() && !CommandResolution) {
       ScreenSizeX = 800;
       ScreenSizeY = 480;
   }
