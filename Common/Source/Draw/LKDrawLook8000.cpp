@@ -21,6 +21,8 @@
 #include "Util/UTF8.hpp"
 #endif
 
+#define AUTORES 1
+
 /*
  * Draw Text Overlay. 
  * @Surface : surface to draw
@@ -55,6 +57,9 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
   short tlen;
   static int ySizeLK8BigFont;
   static int ySizeLK8MediumFont;
+  #ifdef AUTORES
+  static int ySizeLK8SmallFont;
+  #endif
   static int ySizeLK8TargetFont;
   static short tlenFullScreen;
 
@@ -112,6 +117,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	Surface.SelectObject(medFont);
 	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8TargetFont = TextSize.cy;
+
+	#ifdef AUTORES
+	Surface.SelectObject(LK8SmallFont);
+	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
+	ySizeLK8SmallFont = TextSize.cy;
+        #endif
 
 	Surface.SelectObject(LK8MediumFont);
 	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
@@ -403,6 +414,25 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	  else
 		yrightoffset=((rc.bottom + rc.top)/3)-NIBLSCALE(10);
 
+#ifdef AUTORES 
+	//
+	// Calculate the position of the SAFETY MACCREADY indicator
+	//
+	if (OverlaySize==0) { // BIG FONT overlays
+            if (ScreenLandscape) {
+                smacOffset = yrightoffset -(ySizeLK8BigFont)- (ySizeLK8BigFont/6)+NIBLSCALE(1);
+            } else {
+                smacOffset = yrightoffset -(ySizeLK8BigFont*2) - ySizeLK8SmallFont;
+            }
+        } else {
+            if (ScreenLandscape) {
+                smacOffset = yrightoffset -(ySizeLK8BigFont*2) - ySizeLK8SmallFont;
+            } else {
+                smacOffset = yrightoffset -(ySizeLK8BigFont*2) - ySizeLK8SmallFont;
+            }
+        }
+#else
+
 	// goto only to keep easy indentation.
 	if (OverlaySize!=0) goto smalloverlays;
 
@@ -464,6 +494,7 @@ smalloverlays:
 	}
 
 nextinit:
+#endif // no autores for safety maccready indicator
 
 	// Clock overlay position for portrait modes only: unfortunately, clock in this case will be positioned
 	// in different places, depending on screen resolution. If possible, on top right as usual.
@@ -832,11 +863,18 @@ nextinit:
 				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0,
 					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 
+			//
+			// SAFETY ALTITUDE INDICATOR
+			//
 			if (IsSafetyAltitudeInUse(index)) {
 				Surface.SelectObject(LK8SmallFont);
 				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
+				#ifdef AUTORES
+				LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)- TextSize.cy/6 - (ySizeLK8SmallFont/4), 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+				#else
 				LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+				#endif
 			}
 		}
 
@@ -1022,6 +1060,9 @@ drawOverlay:
 	rcx=rc.right-NIBLSCALE(10);
 	LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
+        //
+        // SAFETY MAC CREADY INDICATOR
+        //
 	extern bool IsSafetyMacCreadyInUse(int val);
 	if (IsSafetyMacCreadyInUse(GetOvertargetIndex()) && GlidePolar::SafetyMacCready>0) {
 		Surface.SelectObject(LK8SmallFont);
