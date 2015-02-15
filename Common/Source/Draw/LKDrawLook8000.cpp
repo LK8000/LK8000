@@ -74,7 +74,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
   static short writeY_AutoMc[ssSizeScreenSize];
 
   static int yrightoffset;
-  static short smacOffset; // the vertical offset for fine tuning positioning the safetyMc indicator
+  static short smacOffset=0; // the vertical offset for fine tuning positioning the safetyMc indicator
 
   static unsigned short yClockposition;
 
@@ -171,7 +171,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 		}
 	}
 
-	smacOffset=NIBLSCALE(2);
 
 	short ii;
 	// Set tuned positions for AutoMC indicator
