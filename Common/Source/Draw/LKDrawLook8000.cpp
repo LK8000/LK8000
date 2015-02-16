@@ -59,12 +59,15 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
   static int ySizeLK8MediumFont;
   #ifdef AUTORES
   static int ySizeLK8SmallFont;
+  static int ySizeLK8TitleFont;
+  static int xSizeLK8TitleFont;
   #endif
   static int ySizeLK8TargetFont;
   static short tlenFullScreen;
 
   #define ssSizeScreenSize 20
 
+  #ifndef AUTORES
   // position of AutoMC and Safety ALtitude indicators
   static short rectLeft_AutoMc[ssSizeScreenSize];
   static short rectRight_AutoMc[ssSizeScreenSize];
@@ -72,6 +75,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
   static short rectBottom_AutoMc[ssSizeScreenSize];
   static short writeX_AutoMc[ssSizeScreenSize];
   static short writeY_AutoMc[ssSizeScreenSize];
+  #endif
 
   static int yrightoffset;
   static short smacOffset=0; // the vertical offset for fine tuning positioning the safetyMc indicator
@@ -122,6 +126,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	Surface.SelectObject(LK8SmallFont);
 	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8SmallFont = TextSize.cy;
+	Surface.SelectObject(LK8TitleFont);
+	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
+	ySizeLK8TitleFont = TextSize.cy;
+	xSizeLK8TitleFont = TextSize.cx;
         #endif
 
 	Surface.SelectObject(LK8MediumFont);
@@ -171,7 +179,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 		}
 	}
 
-
+#ifndef AUTORES
 	short ii;
 	// Set tuned positions for AutoMC indicator
 	for (ii=0; ii<ssSizeScreenSize; ii++) {
@@ -407,6 +415,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	  writeY_AutoMc[ss480x272]=108;
 	  }
 	}
+#endif // NOT AUTORES
 
   	if (ScreenLandscape)
 		yrightoffset=((rc.bottom + rc.top)/2)-NIBLSCALE(10);
@@ -1056,7 +1065,11 @@ drawOverlay:
 	LKFormatValue(LK_MC, false, BufferValue, BufferUnit, BufferTitle);
 	// rcy=(rc.bottom + rc.top)/2 -ySizeLK8BigFont-NIBLSCALE(10)-ySizeLK8BigFont; VERTICAL CENTERED
 	rcy=yrightoffset -ySizeLK8BigFont-ySizeLK8BigFont;
+#if AUTORES
+	rcx=rc.right-xSizeLK8TitleFont-NIBLSCALE(4);
+#else
 	rcx=rc.right-NIBLSCALE(10);
+#endif
 	LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
         //
@@ -1070,6 +1083,9 @@ drawOverlay:
 		LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
 	}
 
+	//
+	// AUTO MC INDICATOR
+	//
 	if (DerivedDrawInfo.AutoMacCready == true) {
 	  Surface.SelectObject(LK8TitleFont);
 
@@ -1077,6 +1093,64 @@ drawOverlay:
 	if (LKTextBlack) {
 		ob=Surface.SelectObject(LKBrush_White);
 	}
+
+#if AUTORES
+	TCHAR amcmode[10];
+        switch(AutoMcMode) {
+            case amcFinalGlide:
+                _tcscpy(amcmode,MsgToken(1676));
+                break;
+            case amcAverageClimb:
+                _tcscpy(amcmode,MsgToken(1678));
+                break;
+            case amcFinalAndClimb:
+                if (DerivedDrawInfo.FinalGlide)
+                    _tcscpy(amcmode,MsgToken(1676));
+                else
+                     _tcscpy(amcmode,MsgToken(1678));
+                break;
+            case amcEquivalent:
+                _tcscpy(amcmode,MsgToken(1680));
+                break;
+            default:
+                _tcscpy(amcmode,_T("?"));
+                break;
+        }
+
+	if (OverlaySize==0) { // BIG FONT
+            //
+            // BIG FONT (overlaysize==0)
+            //
+	    int yoff=0; // on portrait set vertical center offset relative to big font MC value
+            if (!ScreenLandscape) yoff= (ySizeLK8BigFont- ySizeLK8TitleFont )/4 - NIBLSCALE(1); 
+
+	    Surface.Rectangle(
+	        rcx,rcy+ ySizeLK8BigFont/4+yoff,
+                rc.right, rcy+ySizeLK8MediumFont/2+yoff +ySizeLK8TitleFont);
+
+            if (LKTextBlack) Surface.SelectObject(ob);
+
+	    LKWriteText(Surface, amcmode, rc.right-NIBLSCALE(1),rcy+ySizeLK8BigFont/4+yoff, 
+                0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
+
+	} else { 
+            //
+            // SMALL FONT (overlaysize==1)
+            //
+	    int yoff=0;
+            if (!ScreenLandscape) yoff= (ySizeLK8BigFont- ySizeLK8TitleFont)/4 - NIBLSCALE(1); 
+
+	    Surface.Rectangle(
+	        rcx,rcy+ySizeLK8MediumFont/4+yoff,  
+                rc.right, rcy+ySizeLK8MediumFont/4+yoff +ySizeLK8TitleFont);
+
+            if (LKTextBlack) Surface.SelectObject(ob);
+
+            LKWriteText(Surface,  amcmode, rc.right-NIBLSCALE(1),rcy+ySizeLK8MediumFont/4+yoff, 
+                0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
+        }
+
+#else
 	  Surface.Rectangle(
 		rectLeft_AutoMc[ScreenSize],
 	  	rectTop_AutoMc[ScreenSize],
@@ -1112,6 +1186,8 @@ drawOverlay:
 	  LKWriteText(Surface,  amcmode, writeX_AutoMc[ScreenSize], writeY_AutoMc[ScreenSize],
 		0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
 
+#endif // NOT AUTORES
+
 	  // Sampling mode only - this will autoset positions, but still need fine tuning
 	  // Adding a resolution or changing fonts will require retuning for them.
 	  #if 0 
@@ -1131,7 +1207,7 @@ drawOverlay:
 	    LKWriteText(Surface,  _T("A"), rc.right,rcy+ySizeLK8MediumFont/4, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
 	  }
 	  #endif
-	} // AutoMacCready true
+	} // AutoMacCready true AUTO MC INDICATOR
 
   }
   if ( Look8000 == (Look8000_t)lxcNoOverlay ) goto Drawbottom;
