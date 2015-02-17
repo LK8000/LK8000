@@ -57,15 +57,15 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
   short tlen;
   static int ySizeLK8BigFont;
   static int ySizeLK8MediumFont;
-  #ifdef AUTORES
+#ifdef AUTORES
   static int ySizeLK8SmallFont;
   static int ySizeLK8TitleFont;
   static int xSizeLK8TitleFont;
-  #endif
+#endif
   static int ySizeLK8TargetFont;
   static short tlenFullScreen;
 
-  #ifndef AUTORES
+#ifndef AUTORES
   #define ssSizeScreenSize 20
   // position of AutoMC and Safety ALtitude indicators
   static short rectLeft_AutoMc[ssSizeScreenSize];
@@ -74,12 +74,14 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
   static short rectBottom_AutoMc[ssSizeScreenSize];
   static short writeX_AutoMc[ssSizeScreenSize];
   static short writeY_AutoMc[ssSizeScreenSize];
-  #endif
+#endif
 
   static int yrightoffset;
   static short smacOffset=0; // the vertical offset for fine tuning positioning the safetyMc indicator
 
+#ifndef AUTORES
   static unsigned short yClockposition;
+#endif
 
   // This is going to be the START 1/3  name replacing waypoint name when gates are running
   TCHAR StartGateName[12]; // 100506
@@ -121,7 +123,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8TargetFont = TextSize.cy;
 
-	#ifdef AUTORES
+#ifdef AUTORES
 	Surface.SelectObject(LK8SmallFont);
 	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8SmallFont = TextSize.cy;
@@ -129,7 +131,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8TitleFont = TextSize.cy;
 	xSizeLK8TitleFont = TextSize.cx;
-        #endif
+#endif
 
 	Surface.SelectObject(LK8MediumFont);
 	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
@@ -516,6 +518,7 @@ smalloverlays:
 nextinit:
 #endif // no autores for safety maccready indicator
 
+#ifndef AUTORES
 	// Clock overlay position for portrait modes only: unfortunately, clock in this case will be positioned
 	// in different places, depending on screen resolution. If possible, on top right as usual.
 	// Otherwise, after right side overlays, slightly lower than them.
@@ -535,6 +538,7 @@ nextinit:
 	// ss240x400 Not yet used, because 240x400 is set as ss240x320 temporarily
 	if (ScreenSizeX==240 && ScreenSizeY==400)
 		yClockposition=yrightoffset - ySizeLK8BigFont- (ySizeLK8MediumFont*4);
+#endif
 
 	DoInit[MDI_DRAWLOOK8000]=false; 
 
@@ -890,11 +894,11 @@ nextinit:
 				Surface.SelectObject(LK8SmallFont);
 				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
-				#ifdef AUTORES
+#ifdef AUTORES
 				LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)- TextSize.cy/6 - (ySizeLK8SmallFont/4), 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
-				#else
+#else
 				LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
-				#endif
+#endif
 			}
 		}
 
@@ -1200,25 +1204,6 @@ drawOverlay:
 
 #endif // NOT AUTORES
 
-	  // Sampling mode only - this will autoset positions, but still need fine tuning
-	  // Adding a resolution or changing fonts will require retuning for them.
-	  #if 0 
-	  if (OverlaySize==0) {
-	    Rectangle(hdc,rcx,rcy+ySizeLK8MediumFont/2-2,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/2);
-	    LKWriteText(Surface,  _T("A"), rc.right,rcy+ySizeLK8MediumFont/2, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
-		StartupStore(_T(".... Oversize0: rectleft=%d recttop=%d  rectright=%d rectbottom=%d\n"),
-		    rcx,rcy+ySizeLK8MediumFont/2-2,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/2);
-		StartupStore(_T(".... Oversize0: writex=%d writey=%d\n"),
-		    rc.right,rcy+ySizeLK8MediumFont/2);
-	  } else {
-	    Rectangle(hdc,rcx,rcy+ySizeLK8MediumFont/4,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/4);
-		StartupStore(_T(".... Oversize1: rectleft=%d recttop=%d  rectright=%d rectbottom=%d\n"),
-	    rcx,rcy+ySizeLK8MediumFont/4,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/4);
-		StartupStore(_T(".... Oversize1: writex=%d writey=%d\n"),
-	    rc.right,rcy+ySizeLK8MediumFont/4);
-	    LKWriteText(Surface,  _T("A"), rc.right,rcy+ySizeLK8MediumFont/4, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
-	  }
-	  #endif
 	} // AutoMacCready true AUTO MC INDICATOR
 
   }
@@ -1315,13 +1300,25 @@ drawOverlay:
 
 	if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
 		Surface.SelectObject(medFont);
-		if ( !ScreenLandscape )
+		if ( !ScreenLandscape ) {
+#if AUTORES
+		// Clock overlay position for portrait modes only: unfortunately, clock in this case will be positioned
+		// in different places, depending on screen resolution. If possible, on top right as usual.
+		// Otherwise, after right side overlays, slightly lower than them.
+			unsigned short yClockposition;
+			if ( (ScreenSizeY / (double)ScreenSizeX) > 1.5) {
+				yClockposition=yrightoffset - ySizeLK8BigFont- (ySizeLK8MediumFont*4);
+			} else {
+				yClockposition=yrightoffset +(ySizeLK8MediumFont*3+NIBLSCALE(4));
+			}
+#endif
 			LKWriteText(Surface,  BufferValue, rc.right-NIBLSCALE(10),
 				yClockposition,
 				0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
-		else // landscape
+	        } else { // landscape
 			LKWriteText(Surface,  BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0,
 				WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+                }
 	}
 
   }
