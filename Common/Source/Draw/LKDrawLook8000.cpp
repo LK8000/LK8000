@@ -65,9 +65,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
   static int ySizeLK8TargetFont;
   static short tlenFullScreen;
 
-  #define ssSizeScreenSize 20
-
   #ifndef AUTORES
+  #define ssSizeScreenSize 20
   // position of AutoMC and Safety ALtitude indicators
   static short rectLeft_AutoMc[ssSizeScreenSize];
   static short rectRight_AutoMc[ssSizeScreenSize];
@@ -136,6 +135,18 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8MediumFont = TextSize.cy;
 
+#ifdef AUTORES
+	//
+	// TIME GATES OFFSETS FOR PARAGLIDERS
+	//
+        if ( !ScreenLandscape ) {
+            _tcscpy(StartGateNameFS,_T("ST "));
+            tlenFullScreen=8;
+        } else {
+            _tcscpy(StartGateNameFS,_T("Start "));
+            tlenFullScreen=9;
+        }
+#else
 	if ( !ScreenLandscape ) {
 		switch (ScreenSize) {			// portrait fullscreen
 			case (ScreenSize_t)ss240x320:
@@ -178,6 +189,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 				break;
 		}
 	}
+#endif // NOT AUTORES
 
 #ifndef AUTORES
 	short ii;
