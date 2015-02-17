@@ -147,12 +147,12 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig)
       PolygonRotateShift(Aircraft, n,
 			 Orig.x-1, Orig.y, angle);
 
-      const auto oldPen = Surface.SelectObject(LKPen_Black_N1);
-      const auto hbOld = Surface.SelectObject(LK_HOLLOW_BRUSH);
+      const auto oldPen = Surface.SelectObject(hpAircraft); 
+      const auto hbOld = Surface.SelectObject(LK_WHITE_BRUSH);
       Surface.Polygon(Aircraft, n);
       
-      Surface.SelectObject(LKBrush_White);
-      Surface.SelectObject(LK_NULL_PEN);
+      Surface.SelectObject(LKBrush_Black);
+      Surface.SelectObject(LKPen_White_N1);
       
       Surface.Polygon(Aircraft, n);
 
