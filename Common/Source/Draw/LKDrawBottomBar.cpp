@@ -153,7 +153,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
             barTextColor = RGB_BLACK;
         } else {
 #ifdef USE_GDI
-            TempSurface.FillRect(&nrc, AlphaBrush);
+            TempSurface.FillRect(&nrc, brush_bar);
             Surface.AlphaBlend(nrc, TempSurface, nrc, BarOpacity * 255 / 100);
 #else
             const LKBrush AlphaBrush(brush_bar.GetColor().WithAlpha(BarOpacity * 255 / 100));
