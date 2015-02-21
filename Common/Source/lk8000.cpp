@@ -245,8 +245,8 @@ int main(int argc, char *argv[]) {
   #if TESTBENCH
   TCHAR szPath[MAX_PATH] = {0};
   lk::filesystem::getExePath(szPath, MAX_PATH);
-  StartupStore(_T(". Program execution path is <%s>\n"),szPath);
-  StartupStore(_T(". Program data directory is <%s>\n"),LKGetLocalPath());
+  StartupStore(_T(". Program execution path is <%s>") NEWLINE,szPath);
+  StartupStore(_T(". Program data directory is <%s>") NEWLINE,LKGetLocalPath());
   #endif
 
   #if ( WINDOWSPC==0 )

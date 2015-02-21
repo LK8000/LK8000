@@ -204,7 +204,7 @@ void InitModeTable() {
 
 	short i,j;
 	#if TESTBENCH
-	StartupStore(_T(". Init ModeTable for LK8000: "));
+	StartupStore(_T(". Init ModeTable for LK8000:") NEWLINE);
 	#endif
 
 	for (i=0; i<=LKMODE_TOP; i++)
@@ -288,7 +288,7 @@ void InitModeTable() {
 
 	SetInitialModeTypes();
 	#if TESTBENCH
-	StartupStore(_T("Ok%s"),NEWLINE);
+	StartupStore(_T(".. Ok") NEWLINE);
 	#endif
 }
 
