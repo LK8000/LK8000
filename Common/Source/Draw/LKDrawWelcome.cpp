@@ -84,7 +84,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   Surface.SelectObject(LK8InfoSmallFont);
 
 #if TESTBENCH
-  _stprintf(Buffer, _T("%zu WPs, %0.1fM free"),WayPointList.size()-NUMRESWP,freeram);
+  _stprintf(Buffer, _T("%u WPs, %0.1fM free"),(unsigned int)(WayPointList.size()-NUMRESWP),freeram);
 #else
   _tcscpy(Buffer,_T(""));
 #endif
