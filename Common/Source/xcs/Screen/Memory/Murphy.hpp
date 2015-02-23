@@ -251,7 +251,7 @@ public:
     }
 
     /* thickness threshold: used here for constant thickness line */
-    const int tk = int(4. * hypot(ptx - x1, pty - y1) * hypot(u, v));
+    const int tk = int(2. * width * hypot(u, v));
 
     if (miter == 0) {
       first1x = -32768;
@@ -266,7 +266,7 @@ public:
 
     /* outer loop, stepping perpendicular to line */
     int ml1x, ml1y, ml2x, ml2y, ml1bx, ml1by, ml2bx, ml2by;
-    for (unsigned q = 0; dd <= tk; q++) {
+    for (unsigned q = 0; dd < tk; q++) {
 
       /* call to inner loop - right edge */
       Paraline(ptx, pty, d1);
