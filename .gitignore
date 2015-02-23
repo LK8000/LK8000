@@ -12,6 +12,10 @@ LK8000-PC.exe
 LK8000-PNA.exe
 LK8000-PPC2002.exe
 LK8000-PPC2003.exe
+LK8000-PCX64.exe
+LK8000-PCX64-ns.exe
+LK8000-PCX64_debug.exe
+LK8000-PCX64_debug-ns.exe
 nbproject
 output.map
 /LK8000-PC-ns.exe
@@ -20,3 +24,12 @@ output.map
 /.cproject
 /.project
 /local.mk
+/LK8000-LINUX_debug-ns
+/LK8000-LINUX_debug
+/Distrib/
+/LK8000-KOBO
+/LK8000-LINUX
+/LK8000-KOBO_debug-ns
+/LK8000-KOBO_debug
+/KoboRoot.tgz
+
