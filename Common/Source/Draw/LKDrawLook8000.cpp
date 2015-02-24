@@ -910,7 +910,8 @@ nextinit:
 					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 
 			//
-			// SAFETY ALTITUDE INDICATOR
+			// SAFETY ALTITUDE INDICATOR (NOT FOR PARAGLIDERS)
+			// For PGs there is a separate drawing, although it should be identical right now.
 			//
 			if (IsSafetyAltitudeInUse(index)) {
 				Surface.SelectObject(LK8SmallFont);
@@ -1013,12 +1014,19 @@ nextinit:
 		else
 			LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 
+                //
+                // SAFETY ALTITUDE INDICATOR (FOR PARAGLIDERS)
+                // Should be identical to that for other aircrafts, normally.
+                //
 		if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
 			Surface.SelectObject(LK8SmallFont);
-			// LKWriteBoxedText(Surface, gettext(1694), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
 			_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
-			LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT,RGB_WHITE,RGB_BLACK);
+#ifdef AUTORES
+			LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)- TextSize.cy/6 - (ySizeLK8SmallFont/4), 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+#else
+			LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+#endif
 
 		}
 	} // end no UseGates()
