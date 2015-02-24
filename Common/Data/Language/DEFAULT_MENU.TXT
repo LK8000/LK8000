@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release  140519
+# Release  150224
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -2793,8 +2793,8 @@ mode=PCMODE
 type=key
 data=9
 label=
-label=896 x\n672$(PCONLY)
-event=Service SS896x672
+label=800 x\n600$(PCONLY)
+event=Service SS800x600
 event=Mode default
 location=8
 

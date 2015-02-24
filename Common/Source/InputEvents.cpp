@@ -2192,6 +2192,10 @@ void InputEvents::eventService(const TCHAR *misc) {
       MainWindow.Resize(896, 672);
       return;
     }
+    if (_tcscmp(misc, TEXT("SS800x600")) == 0) {
+      MainWindow.Resize(800, 600);
+      return;
+    }
     if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
         const PixelRect Rect(MainWindow.GetClientRect());
       if (Rect.GetSize().cx==896) return;
