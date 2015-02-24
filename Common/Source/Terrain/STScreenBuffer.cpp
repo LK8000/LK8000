@@ -44,22 +44,6 @@ void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int sc
     StretchTo(cropsize/scale, GetHeight()/scale, Surface , cx, cy);
 }
 
-void ScaleLine(BGRColor *Target, BGRColor *Source, unsigned int SrcWidth, unsigned int TgtWidth) {
-    unsigned int IntPart = SrcWidth / TgtWidth;
-    unsigned int FractPart = SrcWidth % TgtWidth;
-    unsigned int E = 0;
-
-    for (unsigned int x = TgtWidth; x--;) {
-        *Target++ = *Source;
-        Source += IntPart;
-        E += FractPart;
-        if (E >= TgtWidth) {
-            E -= TgtWidth;
-            Source++;
-        } /* if */
-    } /* for */
-}
-
 void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
 #ifndef GREYSCALE
     const unsigned int muli = (boxw * 2 + 1);
