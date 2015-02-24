@@ -91,12 +91,6 @@ void LKObjects_Create() {
   LKPen_Grey_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_GREY);
   LKPen_Grey_N2.Create(PEN_SOLID,NIBLSCALE(2),RGB_GREY);
 
-#ifdef __linux__
-
-  MapWindow::hpAircraft = LKPen_Black_N3; 
-  LKPen_GABRG.Create(PEN_SOLID,NIBLSCALE(3),RGB_MAGENTA);
-
-#else
   switch(ScreenSize) {
 	// portrait small screen
 	case ss240x320:
@@ -114,7 +108,6 @@ void LKObjects_Create() {
 		LKPen_GABRG.Create(PEN_SOLID,NIBLSCALE(3),RGB_MAGENTA);
 		break;
   }
-#endif
 
   //
   // MapWindow objects
