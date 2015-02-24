@@ -442,13 +442,35 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	//
 	if (OverlaySize==0) { // BIG FONT overlays
             if (ScreenLandscape) {
-                smacOffset = yrightoffset -(ySizeLK8BigFont)- (ySizeLK8BigFont/6)+NIBLSCALE(1);
+                /* 
+                   Currently we draw the safety MC indicator over the MC value, except
+                   for the 1.76 ratio (480x272) which requires fine tuning due to low res.
+                   Even if we have a low res in 480x272 we keep big fonts, at the cost of 
+                   using the space BELOW mv value to draw the mc safety. Since we cannot 
+                   split bits, and make the safety indicator smaller, this is a good choice.
+
+                   Fot information, common ratios are:
+                    PDA  640x480 1.33  
+                    PNA  800x480 1.66 
+                    PNA  480x272 1.76 
+                    KOBO 800x600 1.33
+
+                   Notice: font sizes still have to be calculated correctly at this stage, 
+                   as of 23rd february 2015. Then also 320x240 will be ok.
+                */
+                if ( (ScreenSizeX / (double)ScreenSizeY) > 1.70) { 
+                    // draw sMc below MC
+                    smacOffset = yrightoffset -(ySizeLK8BigFont)- (ySizeLK8BigFont/6);
+                } else {
+                    // draw sMc on top of MC
+                    smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6);
+                }
             } else {
                 smacOffset = yrightoffset -(ySizeLK8BigFont*2) - ySizeLK8SmallFont;
             }
         } else {
             if (ScreenLandscape) {
-                smacOffset = yrightoffset -(ySizeLK8BigFont*2) - ySizeLK8SmallFont;
+                smacOffset = yrightoffset -(ySizeLK8BigFont*2) - ySizeLK8SmallFont -NIBLSCALE(2);
             } else {
                 smacOffset = yrightoffset -(ySizeLK8BigFont*2) - ySizeLK8SmallFont;
             }
