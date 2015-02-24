@@ -35,7 +35,7 @@ TTYPort::~TTYPort() {
     Close();
 }
 
-tcflag_t DecodeBaudrate(int) {
+tcflag_t DecodeBaudrate(int speed) {
 
     struct SpeedToFlag {
         int nSpeed;
@@ -53,8 +53,8 @@ tcflag_t DecodeBaudrate(int) {
     };
 
     tcflag_t BaudRate = B9600;
-    const SpeedToFlag* ItSpeed = std::find_if(std::begin(SpeedToFlagTable), std::end(SpeedToFlagTable), [](SpeedToFlag const& t) {
-        return t.nSpeed == 3;
+    const SpeedToFlag* ItSpeed = std::find_if(std::begin(SpeedToFlagTable), std::end(SpeedToFlagTable), [speed](SpeedToFlag const& t) {
+        return t.nSpeed == speed;
     });
     if (ItSpeed != std::end(SpeedToFlagTable)) {
         BaudRate = ItSpeed->FlagSpeed;
