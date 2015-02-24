@@ -152,7 +152,7 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig)
       Surface.Polygon(Aircraft, n);
       
       Surface.SelectObject(LKBrush_Black);
-      Surface.SelectObject(LKPen_White_N1);
+      Surface.SelectObject(LKPen_White_N2);
       
       Surface.Polygon(Aircraft, n);
 
