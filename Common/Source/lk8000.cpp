@@ -129,7 +129,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     (void)hPrevInstance;
     
     _hInstance = hInstance; // this need to be first, always !
+    #if (WINDOWSPC >0)
     const TCHAR* szCmdLine = GetCommandLine();
+    #endif
     
 #else
 int main(int argc, char *argv[]) {
@@ -279,7 +281,9 @@ int main(int argc, char *argv[]) {
   extern void LKCmdLineArguments(int argc, char *argv[]);
   LKCmdLineArguments(argc,argv);
   #else
+  #if (WINDOWSPC >0)
   LK8000GetOpts(szCmdLine);
+  #endif
   #endif
   InitSineTable();
 
