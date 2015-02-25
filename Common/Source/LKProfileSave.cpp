@@ -391,13 +391,14 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryBottomMode    ,BottomMode);
   rprintf(szRegistrySonarWarning    ,SonarWarning_Config);
 
+  #if SAVESCREEN
   extern bool CommandResolution;
   if(!IsEmbedded() && !CommandResolution) {
     rprintf(szRegistryScreenSize   ,ScreenSize);
     rprintf(szRegistryScreenSizeX  ,ScreenSizeX);
     rprintf(szRegistryScreenSizeY  ,ScreenSizeY);
   }
-
+  #endif
 
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);

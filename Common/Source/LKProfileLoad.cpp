@@ -736,7 +736,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistrySonarWarning,&SonarWarning_Config);
   if (matchedstring) return;
 
-
+  #if SAVESCREEN
   if(!IsEmbedded()) {
     extern bool CommandResolution;
     // Do NOT load resolution from profile, if we have requested a resolution from command line
@@ -755,6 +755,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
         }
     }
   }
+  #endif
 
   #if TESTBENCH
   if (!strcmp(sname,"LKVERSION") && !strcmp(sname,"PROFILEVERSION")) {

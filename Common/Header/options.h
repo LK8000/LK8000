@@ -85,6 +85,7 @@
 // It is introducing a TIMER in event processed inside MapWndProc.
 //#define LONGCLICK_FEEDBACK
 
+// #define SAVESCREEN	1	// Save screen geometry to profile and load it on startup
 
 
 
