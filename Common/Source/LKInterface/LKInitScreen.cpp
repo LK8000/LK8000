@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "LKInterface.h"
 #include "DoInits.h"
-
+#include "ScreenGeometry.h"
 
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
 // or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
@@ -79,6 +79,10 @@ void InitLKScreen() {
 
   ScreenSize=0; // This is "ssnone"
 
+  // -----------------------------------------------------
+  // These are the embedded known resolutions, fine tuned.
+  // -----------------------------------------------------
+
   if (iWidth == 240 && iHeight == 320) ScreenSize=(ScreenSize_t)ss240x320; // QVGA      portrait
   if (iWidth == 234 && iHeight == 320) ScreenSize=(ScreenSize_t)ss240x320; // use the same config of 240x320
   if (iWidth == 272 && iHeight == 480) ScreenSize=(ScreenSize_t)ss272x480;
@@ -97,6 +101,11 @@ void InitLKScreen() {
   if (iWidth == 896 && iHeight == 672) ScreenSize=(ScreenSize_t)ss896x672; //  PC version only
   if (iWidth == 854 && iHeight == 358) ScreenSize=(ScreenSize_t)ss480x272; // use the same config 
 
+  ScreenGeometry=GetScreenGeometry(iWidth,iHeight);
+  #if TESTBENCH
+  StartupStore(_T("..... ScreenGeometry type: %d%s"),ScreenGeometry,NEWLINE);
+  #endif
+
   TCHAR tbuf[80];
   if (ScreenSize==0) {
         _stprintf(tbuf,_T(". InitLKScreen: AUTORES %dx%d%s"),iWidth,iHeight,NEWLINE);
@@ -104,11 +113,10 @@ void InitLKScreen() {
 
 	if (ScreenSizeX>=ScreenSizeY) {
 		ScreenLandscape=true;
-		Screen0Ratio=ScreenSizeY/272.0;
 	} else {
-		Screen0Ratio=ScreenSizeY/480.0;
 		ScreenLandscape=false;
 	}
+        Screen0Ratio=GetScreen0Ratio();
 	#if TESTBENCH
 	StartupStore(_T("..... Screen0Ratio=%f\n"),Screen0Ratio);
 	#endif
@@ -186,23 +194,13 @@ void InitLKScreen() {
 		BottomSize=80; // Title+Value-4  a bit bigger here
 		break;
 	default:
-		#if 0
-		GestureSize=50;
-		LKVarioSize=30;
-		BottomSize=38; // Title+Value-4
-		#endif
-		//double xyratio;
-		// we are using rescaled 480x272 or 272x480 fonts
+                // If we are using aspect ratio, BottomSize is precalculated by LKFonts.
 		if (ScreenLandscape) {
-			//xyratio=ScreenSizeY/272.0;
 			GestureSize=50;
-			LKVarioSize=(int)(30*Screen0Ratio);
-			BottomSize=(int)(48*Screen0Ratio); // Title+Value-4 plus something more
+			LKVarioSize=ScreenSizeX/16;
 		} else {
-			//xyratio=ScreenSizeY/480.0;
 			GestureSize=50;
-			LKVarioSize=(int)(30*Screen0Ratio);
-			BottomSize=(int)(80*Screen0Ratio); // Title+Value-4  a bit bigger here
+			LKVarioSize=ScreenSizeX/11;
 		}
 		break;
   }
@@ -211,5 +209,104 @@ void InitLKScreen() {
   CompassMenuSize=AircraftMenuSize+NIBLSCALE(17);
 
 } // End of LKInitScreen
+
+
+//
+// Inside LKFonts we support special resolutions at best possible tuned settings.
+// These resolutions are used as a base for resizing, considering their geometry ratio.
+// Most modern screens have a 1,777 ratio, so in any case there is no need to think
+// about dozens of geometries and we can take it easy with a simple approach here.
+//
+unsigned short GetScreenGeometry(unsigned int x, unsigned int y) {
+
+  #if TESTBENCH
+  LKASSERT(x<5000 && y<5000);
+  #endif
+  LKASSERT(x>0 && y>0);
+
+  double ratio= x>=y?x/(double)y:y/(double)x;
+
+  //
+  // Table of internally tuned ratios in LK8000
+  // 
+  // Ratio   Aspect     Examples 
+  // -----   ------     --------
+  // 1,333    4:3        320x240 640x480 800x600
+  // 1,666    5:3        800x480 
+  // 1,777    16:9       480x272 960x540 1280x720 1920x1080
+  // 2,05     2:1        480x234
+  //
+  // Aspect change thresholds:
+  //
+  // 1,000
+  //   1,166
+  // 1,333
+  //   1,500
+  // 1,666
+  //   1,721
+  // 1,777
+  //   1,888
+  // 2,000
+  //
+
+  // Here we decide which is the closest ratio
+  while(1) {
+      if ( ratio< 1.166) return SCREEN_GEOMETRY_21; // yet unsupported SCREEN_GEOMETRY_SQUARED!
+      if ( ratio< 1.500) return SCREEN_GEOMETRY_43; // 1,33
+      if ( ratio< 1.721) return SCREEN_GEOMETRY_53; // 1,66
+      if ( ratio< 1.888) return SCREEN_GEOMETRY_169;// 1,77
+      if ( ratio< 2.112) return SCREEN_GEOMETRY_21;
+      ratio/=2;
+  }
+}
+
+//
+// We calculate the correct scaling factor based on vertical extension.
+// That is because all fonts are rescaled by their height by the function
+// ApplyFontSize() using formula:  new_height=(old_height * Screen0Ratio)
+//
+double GetScreen0Ratio(void) {
+  double ratio=0;
+  if (ScreenLandscape) {
+      switch (ScreenGeometry) {
+          case SCREEN_GEOMETRY_43:
+              ratio=(double)ScreenSizeY/480.0;
+              break;
+          case SCREEN_GEOMETRY_53:
+              ratio=(double)ScreenSizeY/480.0;
+              break;
+          case SCREEN_GEOMETRY_169:
+              ratio=(double)ScreenSizeY/272.0;
+              break;
+          case SCREEN_GEOMETRY_21:
+              ratio=(double)ScreenSizeY/234.0;
+              break;
+          default:
+              ratio=(double)ScreenSizeY/272.0;
+              break;
+      }
+  } else {
+      switch (ScreenGeometry) {
+          case SCREEN_GEOMETRY_43:
+              ratio=(double)ScreenSizeY/640.0;
+              break;
+          case SCREEN_GEOMETRY_53:
+              ratio=(double)ScreenSizeY/800.0;
+              break;
+          case SCREEN_GEOMETRY_169:
+              ratio=(double)ScreenSizeY/480.0;
+              break;
+          case SCREEN_GEOMETRY_21:
+              ratio=(double)ScreenSizeY/480.0;
+              break;
+          default:
+              ratio=(double)ScreenSizeY/480.0;
+              break;
+      }
+  }
+  return ratio;
+}
+
+
 
 

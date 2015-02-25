@@ -426,6 +426,7 @@ GEXTERN double ScreenDScale;
 GEXTERN int ScreenScale;
 GEXTERN bool ScreenIntScale;
 GEXTERN double Screen0Ratio;
+GEXTERN short ScreenGeometry;
 
 GEXTERN int AircraftMenuSize;
 GEXTERN int CompassMenuSize;
