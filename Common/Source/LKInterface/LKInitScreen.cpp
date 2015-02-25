@@ -264,6 +264,7 @@ unsigned short GetScreenGeometry(unsigned int x, unsigned int y) {
 // We calculate the correct scaling factor based on vertical extension.
 // That is because all fonts are rescaled by their height by the function
 // ApplyFontSize() using formula:  new_height=(old_height * Screen0Ratio)
+// If we change this function, let's update also ScreenGeometry.h for memo.
 //
 double GetScreen0Ratio(void) {
   double ratio=0;
