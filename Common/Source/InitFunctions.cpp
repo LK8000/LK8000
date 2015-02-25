@@ -135,37 +135,18 @@ BOOL InitInstance()
   PreloadInitialisation(true);
 
   RECT WindowSize;
-#ifdef __linux__
-  WindowSize.left = 0;
-  WindowSize.top = 0;
-  WindowSize.right = ScreenSizeX;
-  WindowSize.bottom = ScreenSizeY;
-#endif
 
+#ifdef __linux__
+  WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);
+#endif
 #ifdef WIN32
 #ifdef UNDER_CE
-  WindowSize.left = 0;
-  WindowSize.top = 0;
-  WindowSize.right = GetSystemMetrics(SM_CXSCREEN);
-  WindowSize.bottom = GetSystemMetrics(SM_CYSCREEN);
+  WindowSize=WindowResize( GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 #else
-  WindowSize.right = ScreenSizeX + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
-  WindowSize.left = (GetSystemMetrics(SM_CXSCREEN) - WindowSize.right) / 2;
-  WindowSize.right = WindowSize.right +WindowSize.left;
-  WindowSize.bottom = ScreenSizeY + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
-  WindowSize.top = (GetSystemMetrics(SM_CYSCREEN) - WindowSize.bottom) / 2;
-  WindowSize.bottom = WindowSize.bottom +WindowSize.top;
-  /*
-  //
-  // Custom setup for positioning the window , ready to be used
-  //
-  WindowSize.top=768;	// top and left corner coords
-  WindowSize.left=1024;
-  WindowSize.right = SCREENWIDTH + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
-  WindowSize.bottom = SCREENHEIGHT + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
-  */
+  WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);
 #endif
 #endif
+
 
   if (!goInstallSystem) Poco::Thread::sleep(50); // 091119
   #if TESTBENCH

@@ -7,6 +7,7 @@ LK_OS := \
 	$(SRC)/OS/Linux/CpuLoad.cpp \
 	$(SRC)/OS/Linux/Memory.cpp \
 	$(SRC)/OS/Linux/RotateScreen.cpp\
+	$(SRC)/OS/Linux/WindowResize.cpp\
 	$(SRC)/OS/Linux/lscpu/lscpu.cpp\
 	$(SRC)/OS/Linux/lscpu/cpuset.cpp\
 	
@@ -18,6 +19,7 @@ LK_OS := \
 	$(SRC)/OS/Win/CpuLoad.cpp \
 	$(SRC)/OS/Win/Memory.cpp \
 	$(SRC)/OS/Win/RotateScreen.cpp\
+	$(SRC)/OS/Win/WindowResize.cpp\
 	$(SRC)/OS/Win/lscpu.cpp\
 
 endif

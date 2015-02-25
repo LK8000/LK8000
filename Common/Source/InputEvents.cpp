@@ -2173,33 +2173,40 @@ void InputEvents::eventService(const TCHAR *misc) {
 
   if(!IsEmbedded()) {
     if (_tcscmp(misc, TEXT("SS320x240")) == 0) {
-      MainWindow.Resize(320, 240);
+      RECT w=WindowResize(320,240);
+      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS480x272")) == 0) {
-      MainWindow.Resize(480, 272);
+      RECT w=WindowResize(480,272);
+      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS640x480")) == 0) {
-      MainWindow.Resize(640, 480);
+      RECT w=WindowResize(640,480);
+      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS800x480")) == 0) {
-      MainWindow.Resize(800, 480);
+      RECT w=WindowResize(800,480);
+      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS896x672")) == 0) {
-      MainWindow.Resize(896, 672);
+      RECT w=WindowResize(896,672);
+      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS800x600")) == 0) {
-      MainWindow.Resize(800, 600);
+      RECT w=WindowResize(800,600);
+      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
         const PixelRect Rect(MainWindow.GetClientRect());
       if (Rect.GetSize().cx==896) return;
-      MainWindow.Resize(Rect.GetSize().cy, Rect.GetSize().cx);	
+      RECT w=WindowResize(Rect.GetSize().cy, Rect.GetSize().cx);
+      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
   } else {
