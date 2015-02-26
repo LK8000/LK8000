@@ -105,8 +105,6 @@
 // In v5 this is practically unused. Should be removed asap.
 #define USEBIGZOOM	1	
 
-// Long trail size
-#define LONGSNAIL  1
 
 // ----------------------------------------------------------------------------------------
 //

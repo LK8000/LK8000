@@ -25,7 +25,6 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   // Interval is variable, for gliders is 1s in thermal, 5s in cruise.
   if (!Calculated->Flying) return;
 
-  #if LONGSNAIL
   static long lastLongSnailTime=0;
   static bool wascircling=false;
 
@@ -64,7 +63,6 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       }
   }
 _skipout:
-  #endif
 
   SnailTrail[SnailNext].Latitude = (float)(Basic->Latitude);
   SnailTrail[SnailNext].Longitude = (float)(Basic->Longitude);

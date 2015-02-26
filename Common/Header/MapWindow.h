@@ -156,7 +156,6 @@ typedef struct _SNAIL_POINT
   double DriftFactor;
 } SNAIL_POINT;
 
-#if LONGSNAIL
 typedef struct _LONG_SNAIL_POINT
 {
   float Latitude;
@@ -164,7 +163,6 @@ typedef struct _LONG_SNAIL_POINT
   POINT Screen;
   bool FarVisible;
 } LONG_SNAIL_POINT;
-#endif
 
 typedef struct {
     bool Border;
@@ -600,9 +598,7 @@ class MapWindow {
 
 
   static double LKDrawTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
-  #if LONGSNAIL
   static double LKDrawLongTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
-  #endif
   static void DrawTeammate(LKSurface& Surface, const RECT& rc);
   static void DrawOffTrackIndicator(LKSurface& Surface, const RECT& rc);
   static void DrawProjectedTrack(LKSurface& Surface, const RECT& rc, const POINT& Orig);
@@ -645,9 +641,7 @@ protected:
 
 private:
   static int iSnailNext;
-#if LONGSNAIL
   static int iLongSnailNext;
-#endif
 
   static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
 

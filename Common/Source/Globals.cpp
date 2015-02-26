@@ -421,9 +421,7 @@ void Globals_Init(void) {
   AirspaceAckAllSame = 0; 
 
   SnailNext = 0;
-  #if LONGSNAIL
   LongSnailNext = 0;
-  #endif
 
   // OLC COOKED VALUES
   //CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];

@@ -362,7 +362,5 @@ double MapWindow::LKDrawTrail( LKSurface& Surface, const POINT& Orig, const RECT
   return trailFirstTime;
 }
 
-#if LONGSNAIL
 #include "LKDrawLongTrail.cpp"
-#endif
 

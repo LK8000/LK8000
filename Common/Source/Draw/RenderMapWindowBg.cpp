@@ -239,9 +239,7 @@ QuickRedraw:
 #define  TRAIL_OVER_AIRFIELD
 #ifndef TRAIL_OVER_AIRFIELD
   if(TrailActive) {
-        #if LONGSNAIL
 	LKDrawLongTrail(hdc, Orig_Aircraft, DrawRect);
-        #endif
 	// NEED REWRITING
 	LKDrawTrail(hdc, Orig_Aircraft, DrawRect);
   }
@@ -277,9 +275,7 @@ _skip_stuff:
   }
 #ifdef TRAIL_OVER_AIRFIELD
   if(TrailActive) {
-        #if LONGSNAIL
 	LKDrawLongTrail(Surface, Orig_Aircraft, DrawRect);
-        #endif
 	// NEED REWRITING
 	LKDrawTrail(Surface, Orig_Aircraft, DrawRect);
   }

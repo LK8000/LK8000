@@ -302,9 +302,7 @@ int main(int argc, char *argv[]) {
   memset( &(GPS_INFO), 0, sizeof(GPS_INFO));
   memset( &(CALCULATED_INFO), 0,sizeof(CALCULATED_INFO));
   memset( &SnailTrail[0],0,TRAILSIZE*sizeof(SNAIL_POINT));
-  #if LONGSNAIL
   memset( &LongSnailTrail[0],0,(LONGTRAILSIZE+1)*sizeof(LONG_SNAIL_POINT));
-  #endif
 
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
