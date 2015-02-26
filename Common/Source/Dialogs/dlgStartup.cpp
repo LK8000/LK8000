@@ -714,6 +714,9 @@ short dlgStartupShowModal(void){
 	RUN_MODE=RUN_DUALPROF;
   }
   if (RUN_MODE==RUN_EXIT) {
+        #if __linux__
+	RUN_MODE=RUN_WELCOME;
+        #endif
 	LKSound(_T("LK_SLIDE.WAV"));
 	if (MessageBoxX(
 	// LKTOKEN  _@M198_ = "Confirm Exit?" 
