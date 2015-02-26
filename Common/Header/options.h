@@ -45,6 +45,10 @@
 #ifdef __linux__
  // temporary disable, need to be port...
  #define NO_DATARECORDER
+
+// Cpu load : use averaged number of processes in the system run queue instead of real cpu usage 
+// #define USE_LOADAVG_CPU
+
 #endif
 
 #ifdef PNA
