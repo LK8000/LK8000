@@ -755,8 +755,6 @@ DiagrammStruct sDia;
 		case ss896x672:
 		case ss800x480:
 		case ss640x480:
-			bLandscape = true;
-
 			iCircleSize = 9;
 			iTraceDotSize = 5;
 			iRectangleSize = 7;
@@ -773,12 +771,8 @@ DiagrammStruct sDia;
 			iTraceDotSize = 3;
 			iRectangleSize = 5;
 			tscaler=(NIBLSCALE(13)-2)      ;
-			bLandscape = false;
-
 			break;
 		default:
-			bLandscape = true;
-
 			iCircleSize = 7;
 			iTraceDotSize = 3;
 			iRectangleSize = 5;
@@ -788,30 +782,7 @@ DiagrammStruct sDia;
 
 
 
-	  switch (ScreenSize) {
-		case ss480x640:
-		case ss480x800:
-		case ss272x480:
-		case ss240x320:
-			bLandscape = false;
-		break;
-		case ss896x672:
-		case ss800x480:
-		case ss640x480:
-		case ss320x240:
-		case ss480x272:
-		case ss720x408:
-		case ss480x234:
-		case ss400x240:
-                    bLandscape = true;
-                    break;
-		default:
-                    if (ScreenLandscape)
- 			bLandscape = true;
-                    else
-			bLandscape = false;
-                    break;
-	}
+        bLandscape = ScreenLandscape;
 
 
 	if(   bLandscape)
