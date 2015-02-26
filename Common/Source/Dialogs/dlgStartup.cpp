@@ -16,6 +16,7 @@
 #include "dlgTools.h"
 #include "OS/Memory.h"
 #include "Sound/Sound.h"
+#include "ScreenGeometry.h"
 
 extern void Shutdown(void);
 extern void LoadSplash(LKSurface& Surface,const TCHAR *splashfile);
@@ -97,7 +98,11 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 			if (ScreenSizeX==854)
 				pos=14;
 			else
+				#ifdef __linux__
+				pos=10;
+				#else
 				pos=11;
+				#endif
 			break;
 		case ss640x480:
 			pos=12;
@@ -127,12 +132,42 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 		default:
                     // customized definition
                     if (ScreenLandscape) {
-                        // Landscape
-                        pos = 11;
+		        switch (ScreenGeometry) {
+			    case SCREEN_GEOMETRY_43:
+                                pos=12;
+		                 break;
+			    case SCREEN_GEOMETRY_53:
+                                pos=12;
+		                 break;
+			    case SCREEN_GEOMETRY_169:
+				#ifdef __linux__
+                                pos=10;
+				#else
+                                pos=11;
+				#endif
+				break;
+		            default:
+                                pos=11;
+		                break;
+                        }
                      } else {
                         // Portrait
                         // try to get a rule for text position...
-                        pos = 16 + (3*(ScreenSizeY-320)/480);
+		        switch (ScreenGeometry) {
+			    case SCREEN_GEOMETRY_43:
+                                pos = 16 + (3*(ScreenSizeY-320)/800);
+		                break;
+			    case SCREEN_GEOMETRY_53:
+                                pos = 16 + (3*(ScreenSizeY-320)/800);
+		                break;
+			    case SCREEN_GEOMETRY_169:
+                                pos = 16 + (3*(ScreenSizeY-320)/480);
+		                break;
+		            default:
+                                pos = 16 + (3*(ScreenSizeY-320)/480);
+		                break;
+			}
+
                     }
                     break;
 	}
@@ -337,54 +372,27 @@ short dlgStartupShowModal(void){
 	((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetOnClickNotify(OnEXITClicked);
 	if (ScreenLandscape) {
 		
-		PROFWIDTH=(ScreenSizeX-IBLSCALE(320))/3; 
+	    unsigned int lx;
+	    unsigned int w;
+	    unsigned int SPACEBORDER;
+	    PROFWIDTH=(ScreenSizeX-IBLSCALE(320))/3; 
+	    SPACEBORDER=NIBLSCALE(2);
+	    w= ( ScreenSizeX - (SPACEBORDER*5) ) /4;
 
+            ((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetWidth(w);
+            ((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(w);
+            ((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetWidth(w);
+            ((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetWidth(w);
 
-		switch(ScreenSize) {
-			case ss800x480:
-			case ss400x240:
-				((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetWidth(IBLSCALE(110));
-				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetWidth(IBLSCALE(110));
-				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(IBLSCALE(208)+PROFWIDTH*3);
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetLeft(IBLSCALE(88)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetWidth(IBLSCALE(92)+PROFWIDTH/6);
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(IBLSCALE(161)+PROFWIDTH*2);
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(IBLSCALE(65)+PROFWIDTH/5);
-				break;
-			case ss480x272:
-				((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetWidth(IBLSCALE(117));
-				((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetHeight(IBLSCALE(38));
-				((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetTop(IBLSCALE(197));
-				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetWidth(IBLSCALE(117));
-				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(IBLSCALE(201)+PROFWIDTH*3);
-				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetHeight(IBLSCALE(38));
-				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetTop(IBLSCALE(197));
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetLeft(IBLSCALE(88)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetWidth(IBLSCALE(99)+PROFWIDTH/6);
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetHeight(IBLSCALE(38));
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetTop(IBLSCALE(197));
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(IBLSCALE(161)+PROFWIDTH*2);
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(IBLSCALE(65)+PROFWIDTH/5);
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetHeight(IBLSCALE(38));
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetTop(IBLSCALE(197));
-				break;
-			case ss640x480:
-			case ss320x240:
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(IBLSCALE(166)+PROFWIDTH*2);
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(IBLSCALE(60)+PROFWIDTH/5);
-				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(IBLSCALE(228)+PROFWIDTH*3);
-				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetWidth(IBLSCALE(88));
-				break;
-			default:
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(IBLSCALE(166)+PROFWIDTH*2);
-				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(IBLSCALE(60)+PROFWIDTH/5);
-				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(IBLSCALE(228)+PROFWIDTH*3);
-				break;
-		}	
+            lx=SPACEBORDER-1; // count from 0
+            ((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetLeft(lx);
+            lx+=w+SPACEBORDER;
+            ((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetLeft(lx);
+            lx+=w+SPACEBORDER;
+            ((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(lx);
+            lx+=w+SPACEBORDER;
+            ((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(lx);
+
 	} else {
 		PROFWIDTH=IBLSCALE(236);
 		PROFACCEPTWIDTH=NIBLSCALE(45);
