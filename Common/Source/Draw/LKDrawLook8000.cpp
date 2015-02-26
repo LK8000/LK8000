@@ -455,8 +455,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
                     PNA  480x272 1.76 
                     KOBO 800x600 1.33
 
-                   Notice: font sizes still have to be calculated correctly at this stage, 
-                   as of 23rd february 2015. Then also 320x240 will be ok.
                 */
                 if ( (ScreenSizeX / (double)ScreenSizeY) > 1.70) { 
                     // draw sMc below MC

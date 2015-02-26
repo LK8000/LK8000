@@ -71,7 +71,10 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 			//case ss240x320:
 			//case ss272x480:
 			default:
-				psize=NIBLSCALE(1);
+				if (ScreenLandscape)
+				    psize=3;
+				else
+				    psize=NIBLSCALE(1);
 				break;
 		}
 		break;
@@ -95,7 +98,10 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 			//case ss240x320:
 			//case ss272x480:
 			default:
-				psize=NIBLSCALE(1);
+				if (ScreenLandscape)
+				    psize=3;
+				else
+				    psize=NIBLSCALE(1);
 				break;
 		}
 		break;
