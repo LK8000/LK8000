@@ -237,8 +237,9 @@ private:
   unsigned int dtquant;
   unsigned int epx; // step size used for slope calculations
 
+#if USERASTERCACHE
   RECT rect_visible;
-
+#endif
   CSTScreenBuffer *sbuf;
 
   double pixelsize_d;
@@ -288,10 +289,10 @@ public:
 
     double X, Y;
     int x, y; 
-    int X0 = (unsigned int)(dtquant/2); 
-    int Y0 = (unsigned int)(dtquant/2);
-    int X1 = (unsigned int)(X0+dtquant*ixs);
-    int Y1 = (unsigned int)(Y0+dtquant*iys);
+    const int X0 = (unsigned int)(dtquant/2); 
+    const int Y0 = (unsigned int)(dtquant/2);
+    const int X1 = (unsigned int)(X0+dtquant*ixs);
+    const int Y1 = (unsigned int)(Y0+dtquant*iys);
 
     unsigned int rfact=1;
 
@@ -385,11 +386,13 @@ public:
     }
 
     POINT orig = MapWindow::GetOrigScreen();
-
+#if USERASTERCACHE
     rect_visible.left = max((long)MapWindow::MapRect.left, (long)(MapWindow::MapRect.left-(long)epx*dtquant))-orig.x;
     rect_visible.right = min((long)MapWindow::MapRect.right, (long)(MapWindow::MapRect.right+(long)epx*dtquant))-orig.x;
     rect_visible.top = max((long)MapWindow::MapRect.top, (long)(MapWindow::MapRect.top-(long)epx*dtquant))-orig.y;
     rect_visible.bottom = min((long)MapWindow::MapRect.bottom, (long)(MapWindow::MapRect.bottom+(long)epx*dtquant))-orig.y;
+#endif
+
 
     FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
 
@@ -401,11 +404,9 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
     // fill the buffer
   LKASSERT(hBuf!=NULL);
   unsigned short* myhbuf = hBuf;
-  #if TDEBUG
-  #if (WINDOWSPC>0)
-  unsigned short* hBufTop = hBuf+ixs*iys;
-  #endif
-  #endif
+#ifndef NDEBUG
+  const unsigned short* hBufTop = hBuf+ixs*iys;
+#endif
 
   const double PanLatitude =  MapWindow::GetPanLatitude();
   const double PanLongitude = MapWindow::GetPanLongitude();
@@ -418,10 +419,6 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
   const double ac2 = sint*InvDrawScale;
   const double ac3 = cost*InvDrawScale;
 
-  #if USERASTERCACHE
-  #else
-  const RECT crect_visible = rect_visible;
-  #endif
   minalt=9999;
   for (int y = Y0; y<Y1; y+= dtquant) {
 	//int ycost = y*cost;  // REMOVE COMMENTED LINES AFTER DECEMBER 2012
@@ -432,22 +429,20 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 	double cc1= y * ac2;
 
 	for (int x = X0; x<X1; x+= dtquant, myhbuf++) {
-		#if USERASTERCACHE
+            assert(myhbuf<hBufTop);
+
+        #if USERASTERCACHE
 		if ((x>= rect_visible.left) &&
 			(x<= rect_visible.right) &&
 			(y>= rect_visible.top) &&
 			(y<= rect_visible.bottom)) {
 		#else
-		if ((x>= crect_visible.left) &&
-			(x<= crect_visible.right) &&
-			(y>= crect_visible.top) &&
-			(y<= crect_visible.bottom)) {
+		// No need to test, rect_visible are always wrong, 
+        //    if is biggers to Height buffer  -> test are always true so useless cpu overhead 
+        //       ( arround 4*height*with/dtquant integer compare, 260000 for 480*272 screen )
+        //    if is smaller -> drawing artefact on border of terrain.
+        // if one days someone try to anable RASTER_CACHE, don't forget to fix that.
 		#endif
-			#if TDEBUG
-			#if (WINDOWSPC>0)
-			LKASSERT(myhbuf<hBufTop);
-			#endif
-			#endif
 
 			//1: double Y = PanLatitude - (ycost+x*sint)*InvDrawScale;
 			//2: double Y = PanLatitude - (ycost*InvDrawScale) - (x*sint*InvDrawScale)
@@ -473,10 +468,12 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 				// if (*myhbuf>maxalt) maxalt=*myhbuf;
 				if (*myhbuf<minalt) minalt=*myhbuf;
 			}
+#ifdef USERASTERCACHE
 		} else {
 			// invisible terrain
 			*myhbuf = TERRAIN_INVALID;
 		}
+#endif
 
 	}
   }
