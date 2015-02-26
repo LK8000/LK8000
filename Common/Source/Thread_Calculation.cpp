@@ -59,6 +59,9 @@ public:
             if (dataTriggerEvent.tryWait(5000)) dataTriggerEvent.reset();
             if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
+#ifdef HAVE_CPU_FREQUENCY
+            const ScopeLockCPU cpu;
+#endif            
             // make local copy before editing...
             LockFlightData();
             FLARM_RefreshSlots(&GPS_INFO);

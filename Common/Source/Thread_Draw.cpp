@@ -90,6 +90,11 @@ void MapWindow::DrawThread ()
 		Poco::Thread::sleep(50);
 		continue;
 	}
+    
+#ifdef HAVE_CPU_FREQUENCY
+    const ScopeLockCPU cpu;
+#endif
+  
     Poco::FastMutex::ScopedLock Lock(Surface_Mutex);
 	// This is also occuring on resolution change
 	if (LKSW_ReloadProfileBitmaps) {
