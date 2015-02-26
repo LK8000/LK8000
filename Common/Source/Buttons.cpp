@@ -14,6 +14,7 @@
 #include <functional>
 #include "Window/WndMain.h"
 #include "Window/WndTextLabel.h"
+#include "ScreenGeometry.h"
 using std::placeholders::_1;
 
 class MenuButton : public WndTextLabel {
@@ -162,22 +163,40 @@ void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 						break;
 #endif
 					default:
-						*sizex = NIBLSCALE(77);
-						*sizey = NIBLSCALE(40);
-						voffset= (int)(26*Screen0Ratio);
-						hoffset=*sizex+5;
+						//
+						// AUTORES ACCOMPLISHED
+						//
+						LKASSERT(ScreenGeometry>0);
+						switch(ScreenGeometry) {
+						    case SCREEN_GEOMETRY_43:
+						        *sizex = NIBLSCALE(60);
+					      	        *sizey = (int)(70.0*Screen0Ratio);
+						        voffset= (int)(40.0*Screen0Ratio);
+						        hoffset=*sizex+3;
+							break;
+
+						    case SCREEN_GEOMETRY_53:
+						        *sizex = NIBLSCALE(75);
+					      	        *sizey = (int)(78.0*Screen0Ratio);
+						        voffset= (int)(40.0*Screen0Ratio);
+						        hoffset=*sizex+5;
+						        break;
+
+						    case SCREEN_GEOMETRY_169:
+						    default:
+						        *sizex = NIBLSCALE(77);
+					      	        *sizey = (int)(47.0*Screen0Ratio);
+						        voffset= (int)(26.0*Screen0Ratio);
+						        hoffset=*sizex+3;
+						        break;
+						}
 						break;
 				}
-				//*x = rc.right-3-*sizex;	
-				//*y = (rc.top+hheight*i-(*sizey)/2)-(*sizey/2);
 				*x = rc.right-3-hoffset;	
 				*y = (rc.top+hheight*i-(*sizey)/2)-voffset;
 			} else {
 				// BOTTOM MENUS
 
-				// warning, these values are a copy of those in Utils2, inside InitLKFonts.
-				// Since that function has not been called yet when we are here, we need to load them manually.
-				// In any case, even changing those values, only cosmetic issue is rised.
 				switch(ScreenSize) {
 					case ss800x480:
 						*sizex = NIBLSCALE(78);
@@ -232,10 +251,33 @@ void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 						break;
 #endif
 					default:
-						*sizex = NIBLSCALE(77);
-						*sizey = NIBLSCALE(40);
-						hoffset=2;
-						voffset=1;
+						//
+						// AUTORES ACCOMPLISHED
+						//
+						LKASSERT(ScreenGeometry>0);
+						switch(ScreenGeometry) {
+						    case SCREEN_GEOMETRY_43:
+						        *sizex = NIBLSCALE(62);
+					      	        *sizey = (int)(70.0*Screen0Ratio);
+						        voffset= 1;
+						        hoffset= 2;
+							break;
+
+						    case SCREEN_GEOMETRY_53:
+						        *sizex = NIBLSCALE(78);
+					      	        *sizey = (int)(78.0*Screen0Ratio);
+						        voffset= 1;
+						        hoffset= NIBLSCALE(1);
+						        break;
+
+						    case SCREEN_GEOMETRY_169:
+						    default:
+						        *sizex = NIBLSCALE(82);
+					      	        *sizey = (int)(47.0*Screen0Ratio);
+						        voffset= 2;
+						        hoffset= 1;
+						        break;
+						}
 						break;
 				}
 				if (i>=10) {
