@@ -105,6 +105,14 @@
 // In v5 this is practically unused. Should be removed asap.
 #define USEBIGZOOM	1	
 
+// Gyroscope based AHRS in TRI function - EXPERIMENTAL
+#define USE_AHRS
+
+// LAST_TASKPOINT_QUESTION
+#define LAST_TASKPOINT_QUESTION
+// remove question for last turnpoint is good idea, but don't work
+// Usability of task definition needed to be refactoring before remove that.
+
 
 // ----------------------------------------------------------------------------------------
 //
@@ -112,7 +120,7 @@
 //
 // ----------------------------------------------------------------------------------------
 
-#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
+//#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
   #define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
   #define BUTTONS_MS
@@ -130,13 +138,11 @@
 // They must be first enabled with BUTTONS_MS
 // WARNING THESE FUNCTIONS ARE NOT CHECKED FOR THREAD SAFETY AND CAN LEAD TO CRASHES
 //
-  #define BUTTONS_MS		// this is REQUIRED to enable one of the following:
-  #define TEAM_CODE_MS		// button to trigger team code
-  #define OWN_POS_MS		// button to trigger basic settings
-  #define ORACLE_MS		// button to trigger oracle
+//  #define BUTTONS_MS		// this is REQUIRED to enable one of the following:
+//  #define TEAM_CODE_MS		// button to trigger team code
+//  #define OWN_POS_MS		// button to trigger basic settings
+//  #define ORACLE_MS		// button to trigger oracle
   
-// still to be tested in v5.0
-  #define USE_AHRS
 
 // Use F Record in IGC log files- not needed really
 // #define LOGFRECORD	1
@@ -187,10 +193,6 @@
 // So there is no more instant view of what is happening, and for this reason the option is disabled.
 // #define LKASP_CALC_ON_CHANGE_ONLY		1
 
-// LAST_TASKPOINT_QUESTION
-#define LAST_TASKPOINT_QUESTION
-// remove question for last turnpoint is good idea, but don't work
-// Usability of task definition needed to be refactoring before remove that.
 
 #include "Debug.h"	// DEBUG OPTIONS FOR EVERYONE, depending also on TESTBENCH
 
