@@ -33,8 +33,7 @@ void RasterMapRaw::SetFieldRounding(double xr, double yr) {
 ////// Field access ////////////////////////////////////////////////////
 
 
-short RasterMapRaw::_GetFieldAtXY(unsigned int lx,
-                                  unsigned int ly) {
+short RasterMapRaw::_GetFieldAtXY(unsigned int lx, unsigned int ly) const {
 
   uint32_t ix = CombinedDivAndMod(lx);
   uint32_t iy = CombinedDivAndMod(ly);

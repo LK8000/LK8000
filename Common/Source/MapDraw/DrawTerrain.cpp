@@ -399,14 +399,19 @@ public:
     DisplayMap->Unlock();
 
   }
-
+/**
+ * Attention ! never call this without check if map is loaded.
+ */
 void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
     // fill the buffer
   LKASSERT(hBuf!=NULL);
+  assert(DisplayMap->isMapLoaded());
+
   unsigned short* myhbuf = hBuf;
 #ifndef NDEBUG
   const unsigned short* hBufTop = hBuf+ixs*iys;
 #endif
+  
 
   const double PanLatitude =  MapWindow::GetPanLatitude();
   const double PanLongitude = MapWindow::GetPanLongitude();
@@ -419,7 +424,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
   const double ac2 = sint*InvDrawScale;
   const double ac3 = cost*InvDrawScale;
 
-  minalt=9999;
+  minalt=TERRAIN_INVALID;
   for (int y = Y0; y<Y1; y+= dtquant) {
 	//int ycost = y*cost;  // REMOVE COMMENTED LINES AFTER DECEMBER 2012
 	//int ysint = y*sint;
@@ -464,9 +469,8 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 			// this is setting to 0 any negative terrain value and can be a problem for dutch people
 			// myhbuf cannot load negative values!
 			*myhbuf = max(0, (int)DisplayMap->GetField(Y,X));
-			if (*myhbuf!=TERRAIN_INVALID) {
-				// if (*myhbuf>maxalt) maxalt=*myhbuf;
-				if (*myhbuf<minalt) minalt=*myhbuf;
+			if (*myhbuf<minalt) {
+                minalt=*myhbuf;
 			}
 #ifdef USERASTERCACHE
 		} else {

@@ -36,7 +36,7 @@ class RasterMap {
   }
   virtual ~RasterMap() {};
 
-  inline bool isMapLoaded() {
+  inline bool isMapLoaded() const {
     return terrain_valid;
   }
 
@@ -59,8 +59,7 @@ class RasterMap {
   
   virtual void SetFieldRounding(double xr, double yr);
 
-  short GetField(const double &Latitude, 
-                 const double &Longitude);
+  inline short GetField(const double &Latitude, const double &Longitude) const;
 
   virtual bool Open(const TCHAR* filename) = 0;
   virtual void Close() = 0;
@@ -82,9 +81,29 @@ class RasterMap {
   double fXroundingFine, fYroundingFine;
   int Xrounding, Yrounding;
 
-  virtual short _GetFieldAtXY(unsigned int lx,
-                              unsigned int ly) = 0;
+  virtual short _GetFieldAtXY(unsigned int lx, unsigned int ly) const = 0;
 };
+/**
+ * JMW rounding further reduces data as required to speed up terrain display on low zoom levels
+ * 
+ * Attention ! allways check if Terrain IsValid before call this.
+ */
+short RasterMap::GetField(const double &Latitude, const double &Longitude) const {
+    if (DirectFine) {
+        return _GetFieldAtXY((int) (Longitude * fXroundingFine) - xlleft,
+                xlltop - (int) (Latitude * fYroundingFine));
+    } else {
+#if (WINDOWSPC>0)
+        const unsigned int ix = Real2Int((Longitude - TerrainInfo.Left) * fXrounding) * Xrounding;
+        const unsigned int iy = Real2Int((TerrainInfo.Top - Latitude) * fYrounding) * Yrounding;
+#else
+        const unsigned int ix = ((int) ((Longitude - TerrainInfo.Left) * fXrounding)) * Xrounding;
+        const unsigned int iy = ((int) ((TerrainInfo.Top - Latitude) * fYrounding)) * Yrounding;
+#endif
+
+        return _GetFieldAtXY(ix << 8, iy << 8);
+    }
+}
 
 #if RASTERCACHE
 class RasterMapCache: public RasterMap {
@@ -156,8 +175,7 @@ class RasterMapRaw: public RasterMap {
   void Lock();
   void Unlock();
  protected:
-  virtual short _GetFieldAtXY(unsigned int lx,
-                              unsigned int ly);
+  virtual short _GetFieldAtXY(unsigned int lx, unsigned int ly) const;
   Poco::Mutex  CritSec_TerrainFile;
 };
 
