@@ -107,35 +107,6 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
 ////////// Map general /////////////////////////////////////////////
 
 
-// JMW rounding further reduces data as required to speed up terrain
-// display on low zoom levels
-short RasterMap::GetField(const double &Latitude, 
-                          const double &Longitude)
-{
-  if(isMapLoaded()) {
-    if (DirectFine) {
-      return _GetFieldAtXY((int)(Longitude*fXroundingFine)-xlleft,
-                           xlltop- (int)(Latitude*fYroundingFine));
-    } else {
-	#if (WINDOWSPC>0)
-      unsigned int ix = 
-        Real2Int((Longitude-TerrainInfo.Left)*fXrounding)*Xrounding;
-      unsigned int iy = 
-        Real2Int((TerrainInfo.Top-Latitude)*fYrounding)*Yrounding;
-	#else
-      unsigned int ix = ((int)((Longitude-TerrainInfo.Left)*fXrounding)) *Xrounding;
-      unsigned int iy = ((int)((TerrainInfo.Top-Latitude)*fYrounding))*Yrounding;
-	#endif
-      
-      return _GetFieldAtXY(ix<<8, iy<<8);
-    }
-  } else {
-    return TERRAIN_INVALID;
-  }
-}
-
-
-
 void RasterTerrain::Lock(void) {
   if (TerrainMap) {
     TerrainMap->Lock();
@@ -150,7 +121,7 @@ void RasterTerrain::Unlock(void) {
 
 short RasterTerrain::GetTerrainHeight(const double &Latitude,
                                       const double &Longitude) {
-  if (TerrainMap) {
+  if (TerrainMap && TerrainMap->isMapLoaded()) {
     return TerrainMap->GetField(Latitude, Longitude);
   } else {
     return TERRAIN_INVALID;
