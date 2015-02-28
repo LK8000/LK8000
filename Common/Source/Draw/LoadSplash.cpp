@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "resource.h"
+#include "ScreenGeometry.h"
 
 #ifdef USE_GDI
 #define IMG_EXT "BMP"
@@ -32,6 +33,7 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
     if (!lk::filesystem::exist(srcfile)) {
         fullsize = false;
         
+#if 0 // REMOVE AFTER 31 MARCH 2015
         // Get correct splash bitmap size and orientation
         switch (ScreenSize) {
             case ss800x480:
@@ -76,6 +78,31 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
                 }
                 break;
         }
+#endif
+        switch(ScreenGeometry) {
+	    case SCREEN_GEOMETRY_43:
+		if (ScreenLandscape)
+    		_stprintf(srcfile,_T("%s" DIRSEP "%s_640x480." IMG_EXT),sDir, fprefix );
+		else
+    		_stprintf(srcfile,_T("%s" DIRSEP "%s_480x640." IMG_EXT),sDir, fprefix );
+	        break;
+	    case SCREEN_GEOMETRY_53:
+		if (ScreenLandscape)
+    		_stprintf(srcfile,_T("%s" DIRSEP "%s_800x480." IMG_EXT),sDir, fprefix );
+		else
+    		_stprintf(srcfile,_T("%s" DIRSEP "%s_480x800." IMG_EXT),sDir, fprefix );
+	        break;
+	    case SCREEN_GEOMETRY_169:
+		if (ScreenLandscape)
+    		_stprintf(srcfile,_T("%s" DIRSEP "%s_480x272." IMG_EXT),sDir, fprefix );
+		else
+    		_stprintf(srcfile,_T("%s" DIRSEP "%s_272x480." IMG_EXT),sDir, fprefix );
+	        break;
+	    default:
+	        break;
+	}
+
+
     }
 
     if(hWelcomeBitmap.LoadFromFile(srcfile) && hWelcomeBitmap) {
@@ -85,11 +112,21 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
 
         if (fullsize) {
             Surface.DrawBitmap(0,0,bmSize.cx,bmSize.cy,hWelcomeBitmap,bmSize.cx,bmSize.cy);
+
         } else if ( (bmSize.cx > ScreenSizeX)||(bmSize.cy > ScreenSizeY)) {
+
+            Surface.DrawBitmap(0,0,ScreenSizeX,ScreenSizeY,hWelcomeBitmap,bmSize.cx,bmSize.cy);
+        } else if ( (bmSize.cx < ScreenSizeX)||(bmSize.cy < ScreenSizeY)) {
+            Surface.DrawBitmap(0,0,ScreenSizeX, ScreenSizeY-BottomSize,hWelcomeBitmap,bmSize.cx,bmSize.cy);
+         } else {
+
+#if 0  // REMOVE AFTER 31 march 2015
             Surface.DrawBitmap(0,0,ScreenSizeX,ScreenSizeY-NIBLSCALE(35),hWelcomeBitmap,bmSize.cx,bmSize.cy);
         } else if ( (bmSize.cx < ScreenSizeX)||(bmSize.cy < ScreenSizeY)) {
             Surface.DrawBitmap(NIBLSCALE(20),0,ScreenSizeX-NIBLSCALE(40), ScreenSizeY-BottomSize-NIBLSCALE(20),hWelcomeBitmap,bmSize.cx,bmSize.cy);
          } else {
+#endif
+
             Surface.DrawBitmap((ScreenSizeX-bmSize.cx)/2,0,bmSize.cx,IBLSCALE(260),hWelcomeBitmap,bmSize.cx,bmSize.cy);
         }
     }
