@@ -11,6 +11,7 @@
 #include "LKMapWindow.h"
 #include "RGB.h"
 #include "DoInits.h"
+#include "ScreenGeometry.h"
 
 void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col) {
     const POINT p0({ x1, y1 });
@@ -1092,6 +1093,28 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
 			unitrowoffset=8;
 			break;
 		default:
+			switch(ScreenGeometry) {
+			    case SCREEN_GEOMETRY_43:
+				if (ScreenLandscape)
+			            unitrowoffset=(int)(5.0*Screen0Ratio);
+				else
+			            unitrowoffset=(int)(-8.0*Screen0Ratio);
+			        break;
+			    case SCREEN_GEOMETRY_53:
+				if (ScreenLandscape)
+			            unitrowoffset=(int)(10.0*Screen0Ratio);
+				else
+			            unitrowoffset=(int)(-19.0*Screen0Ratio);
+			        break;
+			    case SCREEN_GEOMETRY_169:
+				if (ScreenLandscape)
+			            unitrowoffset=(int)(5.0*Screen0Ratio);
+				else
+			            unitrowoffset=(int)(-14.0*Screen0Ratio);
+			        break;
+			    default:
+			        break;
+			}
 			break;
 	}
 	DoInit[MDI_WRITEINFO]=false;
