@@ -251,7 +251,11 @@ void LKProfileResetDefault(void) {
 
   AverEffTime = (AverEffTime_t)ae30seconds; 
 
-  BgMapColor_Config = 2;
+  #ifdef KOBO
+  BgMapColor_Config = 0; // white
+  #else
+  BgMapColor_Config = 2; // LCD green
+  #endif
 
   debounceTimeout.assign(0, 250*1000); // 250ms;
 
