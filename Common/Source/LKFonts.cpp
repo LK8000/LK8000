@@ -599,6 +599,7 @@ void InitLKFonts()
 		propGetFontSettingsFromString(TEXT("28,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelBig);
 		propGetFontSettingsFromString(TEXT("18,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelMedium);
 		propGetFontSettingsFromString(TEXT("16,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelSmall);
+		propGetFontSettingsFromString(TEXT("14,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelUnit); 
 	}
   }
 
@@ -627,6 +628,7 @@ void InitLKFonts()
       logfontPanelBig.lfOrientation = 1;
       logfontPanelMedium.lfOrientation = 1;
       logfontPanelSmall.lfOrientation = 1;
+      logfontPanelUnit.lfOrientation = 1;
 
       #define TIGHTOFFSET 0 // previously 4, but doubtly correct
       if (ScreenLandscape) {
