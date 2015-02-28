@@ -11,6 +11,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "InputEvents.h"
+#include "ScreenGeometry.h"
 
 void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 
@@ -309,55 +310,37 @@ void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 	LKWriteText(Surface, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 	Surface.SelectObject(LK8InfoNormalFont);
 
-	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240) || ScreenSize == ss896x672 ) {
-		if (curmapspace == MSM_COMMON )
-			// LKTOKEN _@M1309_ "COMN"
-			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1,CommonNumpages); 
-		else
-			// LKTOKEN _@M1310_ "HIST"
-			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1310_")), curpage+1,CommonNumpages); 
-		LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		// LKTOKEN _@M1300_ "Dist"
-		_tcscpy(Buffer,gettext(TEXT("_@M1300_"))); 
-		LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1301_ "Dir"
-		_tcscpy(Buffer,gettext(TEXT("_@M1301_"))); 
-		LKWriteText(Surface, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+        bool compact= (ScreenGeometry==SCREEN_GEOMETRY_43);
 
-		// LKTOKEN _@M1302_ "rEff"
-		_tcscpy(Buffer,gettext(TEXT("_@M1302_"))); 
-		LKWriteText(Surface, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+	if (curmapspace == MSM_COMMON )
+		// LKTOKEN _@M1309_ "COMN"
+		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1,CommonNumpages); 
+	else
+		// LKTOKEN _@M1310_ "HIST"
+		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1310_")), curpage+1,CommonNumpages); 
+	LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		// LKTOKEN _@M1308_ "Arriv"
-		_tcscpy(Buffer,gettext(TEXT("_@M1308_"))); 
-		LKWriteText(Surface, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-	} else {
-		if (curmapspace==MSM_COMMON)
-			// LKTOKEN _@M1309_ "COMN"
-			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1,CommonNumpages); 
-		else
-			// LKTOKEN _@M1310_ "HIST"
-			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1310_")), curpage+1,CommonNumpages); 
-		LKWriteText(Surface, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+	// LKTOKEN _@M1300_ "Dist"
+	// LKTOKEN _@M1304_ "Distance"
+	_tcscpy(Buffer,gettext(compact?TEXT("_@M1300_"):TEXT("_@M1304_"))); 
+	LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1304_ "Distance"
-		_tcscpy(Buffer,gettext(TEXT("_@M1304_"))); 
-		LKWriteText(Surface, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+	// LKTOKEN _@M1301_ "Dir"
+	// LKTOKEN _@M1305_ "Direction"
+	_tcscpy(Buffer,gettext(compact?TEXT("_@M1301_"):TEXT("_@M1305_"))); 
+	LKWriteText(Surface, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1305_ "Direction"
-		_tcscpy(Buffer,gettext(TEXT("_@M1305_"))); 
-		LKWriteText(Surface, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+	// LKTOKEN _@M1302_ "rEff"
+	// LKTOKEN _@M1306_ "ReqEff"
+	_tcscpy(Buffer,gettext(compact?TEXT("_@M1302_"):TEXT("_@M1306_"))); 
+	LKWriteText(Surface, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1306_ "ReqEff"
-		_tcscpy(Buffer,gettext(TEXT("_@M1306_"))); 
-		LKWriteText(Surface, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-
-		// LKTOKEN _@M1307_ "AltArr"
-		_tcscpy(Buffer,gettext(TEXT("_@M1307_"))); 
-		LKWriteText(Surface, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-	}
+	// LKTOKEN _@M1308_ "Arriv"
+	// LKTOKEN _@M1307_ "AltArr"
+	_tcscpy(Buffer,gettext(compact?TEXT("_@M1308_"):TEXT("_@M1307_"))); 
+	LKWriteText(Surface, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	
 
   } // landscape mode
