@@ -12,6 +12,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "InputEvents.h"
+#include "ScreenGeometry.h"
 
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
 
@@ -337,115 +338,65 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   } else {
 	Surface.FillRect(&s_sortBox[cursortbox], sortbrush);
 
-	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240) || (ScreenSize == ss896x672) ) {
+	bool compact= (ScreenGeometry==SCREEN_GEOMETRY_43);
 
-		_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
-  		Surface.SelectObject(LK8PanelMediumFont);
-		LKWriteText(Surface,  Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-  		Surface.SelectObject(LK8InfoNormalFont);
+	_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
+  	Surface.SelectObject(LK8PanelMediumFont);
+	LKWriteText(Surface,  Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+  	Surface.SelectObject(LK8InfoNormalFont);
 
-		switch(curmapspace) {
-			case MSM_LANDABLE:
-				// LKTOKEN _@M1312_ "LNDB"
-				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1312_")), curpage+1,Numpages); 
-				break;
-			case MSM_AIRPORTS:
-				// LKTOKEN _@M1314_ "APTS"
-				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1314_")), curpage+1, Numpages); 
-				break;
-			case MSM_NEARTPS:
-			default:
-				// LKTOKEN _@M1315_ "TPS"
-				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1315_")), curpage+1, Numpages); 
-				break;
-		}
-		if (cursortbox==0)
-			LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
-		else
-			LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+	switch(curmapspace) {
+		case MSM_LANDABLE:
+			// LKTOKEN _@M1312_ "LNDB"
+			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1312_")), curpage+1,Numpages); 
+			break;
+		case MSM_AIRPORTS:
+			// LKTOKEN _@M1314_ "APTS"
+			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1314_")), curpage+1, Numpages); 
+			break;
+		case MSM_NEARTPS:
+		default:
+			// LKTOKEN _@M1315_ "TPS"
+			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1315_")), curpage+1, Numpages); 
+			break;
+	}
+	if (cursortbox==0)
+		LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
+	else
+		LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+
 
 		// LKTOKEN _@M1300_ "Dist"
-		_tcscpy(Buffer,gettext(TEXT("_@M1300_"))); 
+		// LKTOKEN _@M1304_ "Distance"
+                _tcscpy(Buffer,gettext(compact?TEXT("_@M1300_"):TEXT("_@M1304_")));
 		if (cursortbox==1)
 			LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1301_ "Dir"
-		_tcscpy(Buffer,gettext(TEXT("_@M1301_"))); 
+		// LKTOKEN _@M1305_ "Direction"
+                _tcscpy(Buffer,gettext(compact?TEXT("_@M1301_"):TEXT("_@M1305_")));
 		if (cursortbox==2)
 			LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1302_ "rEff"
-		_tcscpy(Buffer,gettext(TEXT("_@M1302_"))); 
+		// LKTOKEN _@M1306_ "ReqEff"
+                _tcscpy(Buffer,gettext(compact?TEXT("_@M1302_"):TEXT("_@M1306_")));
 		if (cursortbox==3)
 			LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 		// LKTOKEN _@M1308_ "Arriv"
-		_tcscpy(Buffer,gettext(TEXT("_@M1308_"))); 
-		if (cursortbox==4)
-			LKWriteText(Surface,  Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
-		else
-			LKWriteText(Surface,  Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-	} else {
-		_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
-  		Surface.SelectObject(LK8PanelMediumFont);
-		LKWriteText(Surface,  Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-  		Surface.SelectObject(LK8InfoNormalFont);
-
-		switch(curmapspace) {
-			case MSM_LANDABLE:
-				// LKTOKEN _@M1312_ "LNDB"
-				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1312_")), curpage+1,Numpages); 
-				break;
-			case MSM_AIRPORTS:
-				// LKTOKEN _@M1314_ "APTS"
-				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1314_")), curpage+1, Numpages); 
-				break;
-			case MSM_NEARTPS:
-			default:
-				// LKTOKEN _@M1315_ "TPS"
-				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1315_")), curpage+1, Numpages); 
-				break;
-		}
-		if (cursortbox==0)
-			LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
-		else
-			LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-
-		// LKTOKEN _@M1304_ "Distance"
-		_tcscpy(Buffer,gettext(TEXT("_@M1304_"))); 
-		if (cursortbox==1)
-			LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
-		else
-			LKWriteText(Surface,  Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-
-		// LKTOKEN _@M1305_ "Direction"
-		_tcscpy(Buffer,gettext(TEXT("_@M1305_"))); 
-		if (cursortbox==2)
-			LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
-		else
-			LKWriteText(Surface,  Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-
-		// LKTOKEN _@M1306_ "ReqEff"
-		_tcscpy(Buffer,gettext(TEXT("_@M1306_"))); 
-		if (cursortbox==3)
-			LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
-		else
-			LKWriteText(Surface,  Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-
 		// LKTOKEN _@M1307_ "AltArr"
-		_tcscpy(Buffer,gettext(TEXT("_@M1307_"))); 
+                _tcscpy(Buffer,gettext(compact?TEXT("_@M1308_"):TEXT("_@M1307_")));
 		if (cursortbox==4)
 			LKWriteText(Surface,  Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(Surface,  Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-	}
-	
 
   } // landscape mode
 
