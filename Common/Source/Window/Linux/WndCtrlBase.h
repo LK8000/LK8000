@@ -12,6 +12,7 @@
 #ifndef _LINUX_WNDCTRLBASE_H
 #define	_LINUX_WNDCTRLBASE_H
 #include "LKWindow.h"
+#include "Screen/ContainerWindow.hpp"
 
 class WndCtrlBase : public LKWindow<ContainerWindow> {
 public:
