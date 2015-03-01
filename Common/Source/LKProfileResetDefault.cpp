@@ -10,7 +10,7 @@
 #include "McReady.h"
 #include "Modeltype.h"
 #include "LKInterface.h"
-
+#include "Asset.hpp"
 
 
 //
