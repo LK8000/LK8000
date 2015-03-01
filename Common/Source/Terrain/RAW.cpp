@@ -34,38 +34,33 @@ void RasterMapRaw::SetFieldRounding(double xr, double yr) {
 
 
 short RasterMapRaw::_GetFieldAtXY(unsigned int lx, unsigned int ly) const {
+    /* optimization : return invalid terrain for right&bottom line.
+     *  this avoid 2 conditional jumps.
+     */
 
-  uint32_t ix = CombinedDivAndMod(lx);
-  uint32_t iy = CombinedDivAndMod(ly);
-  
-  if ((ly>=TerrainInfo.Rows)
-      ||(lx>=TerrainInfo.Columns)) {
-    return TERRAIN_INVALID;
-  } 
-  
-  short *tm = TerrainMem+ly*TerrainInfo.Columns+lx;
-  // perform piecewise linear interpolation
-  int h1 = *tm; // (x,y)
-  
-  if (!ix && !iy) {
-    return h1;
-  }
-  if (lx+1 >= TerrainInfo.Columns) {
-    return h1;
-  }
-  if (ly+1 >= TerrainInfo.Rows) {
-    return h1;
-  }
-  int h3 = tm[TerrainInfo.Columns+1]; // (x+1, y+1)
-  if (ix>iy) {
-    // lower triangle 
-    int h2 = tm[1]; // (x+1,y)
-    return (short)(h1+((ix*(h2-h1)-iy*(h2-h3))>>8));
-  } else {
-    // upper triangle
-    int h4 = tm[TerrainInfo.Columns]; // (x,y+1)
-    return (short)(h1+((iy*(h4-h1)-ix*(h4-h3))>>8));
-  }
+    const unsigned ix = CombinedDivAndMod(lx);
+    if (lx + 1 >= TerrainInfo.Columns) {
+        return TERRAIN_INVALID;
+    }
+
+    const unsigned iy = CombinedDivAndMod(ly);
+    if (ly + 1 >= TerrainInfo.Rows) {
+        return TERRAIN_INVALID;
+    }
+
+    const short *tm = TerrainMem + ly * TerrainInfo.Columns + lx;
+    // perform piecewise linear interpolation
+    const short &h1 = tm[0]; // (x,y)
+    const short &h3 = tm[TerrainInfo.Columns]; // (x,y+1)
+    if (ix > iy) {
+        // lower triangle 
+        const short &h2 = tm[1]; // (x+1,y)
+        return (short) (h1 + ((ix * (h2 - h1) - iy * (h2 - h3)) >> 8));
+    } else {
+        // upper triangle
+        const short &h4 = tm[TerrainInfo.Columns]; // (x,y+1)
+        return (short) (h1 + ((iy * (h4 - h1) - ix * (h4 - h3)) >> 8));
+    }
 }
 
 
