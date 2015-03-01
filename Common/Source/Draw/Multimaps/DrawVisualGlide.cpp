@@ -94,7 +94,11 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 		line2Font=LK8InfoSmallFont;
 		break;
 	case ss640x480:
+		#ifdef __linux__
+		_tcscpy(tmpT,_T("MMMMMMM"));
+		#else
 		_tcscpy(tmpT,_T("MMMMMM"));
+		#endif
 		line1Font=CDIWindowFont;
 		line2Font=CDIWindowFont;
 		break;
