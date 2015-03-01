@@ -67,19 +67,12 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
 
   Surface.SelectObject(LK8UnitFont);
-  if (ScreenSize==0) {
-	_stprintf(Buffer,TEXT("Screen %ldx%ld experimental"),(long int)rc.right,(long int)rc.bottom );
-	Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
-	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
-	LKWriteText(Surface, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
-  } else {
-	_stprintf(Buffer,TEXT("%s"), LK8000_Version);
-	Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
-	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
-	LKWriteText(Surface, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);
-	_stprintf(Buffer,TEXT("HTTP://WWW.LK8000.IT  email:info@lk8000.it"));
-	LKWriteText(Surface, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
- }
+  _stprintf(Buffer,TEXT("%s"), LK8000_Version);
+  Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
+  bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
+  LKWriteText(Surface, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);
+  _stprintf(Buffer,TEXT("HTTP://WWW.LK8000.IT  email:info@lk8000.it"));
+  LKWriteText(Surface, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
   Surface.SelectObject(LK8InfoSmallFont);
 
