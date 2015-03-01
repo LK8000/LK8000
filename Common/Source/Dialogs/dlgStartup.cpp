@@ -155,16 +155,16 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
                         // try to get a rule for text position...
 		        switch (ScreenGeometry) {
 			    case SCREEN_GEOMETRY_43:
-                                pos = 16 + (3*(ScreenSizeY-320)/800);
+				pos=17;
 		                break;
 			    case SCREEN_GEOMETRY_53:
-                                pos = 16 + (3*(ScreenSizeY-320)/800);
+				pos=18;
 		                break;
 			    case SCREEN_GEOMETRY_169:
-                                pos = 16 + (3*(ScreenSizeY-320)/480);
+				pos=18;
 		                break;
 		            default:
-                                pos = 16 + (3*(ScreenSizeY-320)/480);
+				pos=18;
 		                break;
 			}
 
