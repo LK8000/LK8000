@@ -135,6 +135,14 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     
 #else
 int main(int argc, char *argv[]) {
+    
+#ifdef HAVE_CPU_FREQUENCY
+    // temporary for KOBO device. 
+    // solve some lag problem.
+    // remove when code are optimized.
+    const ScopeLockCPU cpu;
+#endif       
+    
 #endif
 
 #ifdef INT_OVERFLOW
