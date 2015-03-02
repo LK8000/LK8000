@@ -125,7 +125,7 @@ else
 ifeq ($(CONFIG_LINUX),y)
 ifeq ($(TARGET_IS_KOBO),y)
 TCPATH		:= arm-unknown-linux-gnueabi-
-MCPU		:= -march=armv7-a -mfpu=neon -mfloat-abi=hard
+MCPU		:= -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize
 else
 TCPATH		:= 
 endif
