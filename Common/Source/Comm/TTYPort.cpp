@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>
 
 
 using namespace std::tr1::placeholders;
@@ -148,17 +149,21 @@ void TTYPort::UpdateStatus() {
 }
 
 size_t TTYPort::Read(void *szString, size_t size) {
-    struct timeval timeout;
-    fd_set readfs;
+    struct timespec timeout;
     timeout.tv_sec = _Timeout / 1000;
-    timeout.tv_usec = _Timeout % 1000;
+    timeout.tv_nsec = (_Timeout % 1000)*1000;
 
-    int iResult = 0;
+    fd_set readfs;
     FD_ZERO(&readfs);
     FD_SET(_tty, &readfs);
 
+    sigset_t empty_mask;
+    sigemptyset(&empty_mask);
     // wait for received data
-    iResult = select(_tty + 1, &readfs, NULL, NULL, &timeout);
+    int iResult = pselect(_tty + 1, &readfs, NULL, NULL, &timeout, &empty_mask);
+    if (iResult == -1 && errno == EINTR) {
+        return 0U;
+    }
     if (iResult == 0) {
         return 0U; // timeout
     }
