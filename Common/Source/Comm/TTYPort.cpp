@@ -232,7 +232,7 @@ DWORD TTYPort::RxThread() {
     _Buff_t szString;
     Purge();
 
-    while (_tty && !StopEvt.tryWait(dwWaitTime)) {
+    while ((_tty != -1) && !StopEvt.tryWait(dwWaitTime)) {
 
         UpdateStatus();
 
