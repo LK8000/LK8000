@@ -163,8 +163,9 @@ int main(int argc, char *argv[]) {
     
   ScreenGlobalInit InitScreen;
   SoundGlobalInit InitSound;
-
-        
+  // This is needed otherwise LKSound will be silent until we init Globals.
+  EnableSoundModes=true;
+ 
   bool realexitforced=false;
 
   LKSound(_T("LK_CONNECT.WAV"));

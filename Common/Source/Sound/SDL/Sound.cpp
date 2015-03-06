@@ -61,6 +61,7 @@ SoundGlobalInit::~SoundGlobalInit() {
     if(bSoundInit) {
         Mix_CloseAudio();
     }
+    bSoundInit = false;
 }
 
 bool SetSoundVolume() {
@@ -70,7 +71,7 @@ bool SetSoundVolume() {
 
   
 void LKSound(const TCHAR *lpName) {
-    if(!bSoundInit && !EnableSoundModes) {
+    if(!bSoundInit || !EnableSoundModes) {
         return;
     }
     
@@ -93,7 +94,7 @@ void LKSound(const TCHAR *lpName) {
 void PlayResource (const TCHAR* lpName) {
     assert(lpName);
     
-    if(!lpName && !bSoundFile && !bSoundInit && !EnableSoundModes) {
+    if(!lpName || !bSoundFile || !bSoundInit || !EnableSoundModes) {
         return;
     }
     

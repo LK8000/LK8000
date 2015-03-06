@@ -428,7 +428,7 @@ void Globals_Init(void) {
 
   // user interface settings
   FinalGlideTerrain = 1;
-  EnableSoundModes = true;
+  EnableSoundModes = true; // this is init by main in v53
   OverlayClock = false;
   LKLanguageReady = false;
 
