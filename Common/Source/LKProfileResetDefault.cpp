@@ -10,7 +10,7 @@
 #include "McReady.h"
 #include "Modeltype.h"
 #include "LKInterface.h"
-
+#include "Asset.hpp"
 
 
 //
@@ -194,7 +194,7 @@ void LKProfileResetDefault(void) {
 
   // full size overlay by default
   OverlaySize = 0;
-  if (IsDithered)
+  if (IsDithered())
       BarOpacity = 100;
   else
       BarOpacity = 75;

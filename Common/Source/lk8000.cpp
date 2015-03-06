@@ -180,12 +180,12 @@ int main(int argc, char *argv[]) {
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
   #else
   #ifdef PNA
-  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PNA"),NEWLINE);
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PNA"),NEWLINE);
   #else
   #if (WINDOWSPC>0)
-  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PC"),NEWLINE);
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PC"),NEWLINE);
   #else
-  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PDA"),NEWLINE);
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PDA"),NEWLINE);
   #endif
   #endif
   #endif
