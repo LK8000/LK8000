@@ -1669,6 +1669,10 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         // TODO: adding airspace labels
                         continue;
 
+                    case _T('G'): // AG
+                        // ignore 
+                        continue;
+
                     default:
                         _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                         // LKTOKEN  _@M68_ = "Airspace" 
