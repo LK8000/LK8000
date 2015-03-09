@@ -32,7 +32,8 @@ typedef std::map<std::tstring, Mix_Chunk*> audioChunkCache_t;
 static audioChunkCache_t audioChunkCache; 
 
 SoundGlobalInit::SoundGlobalInit() {
-    if( Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096 ) != -1 ) {
+    // Consider using BogoMips to decide the buffer chunk size, shortest is fastest
+    if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 1, 1024 ) != -1 ) {
         bSoundInit = true;
     } else {
         StartupStore(_T("ERROR Failed to initialize Audio Mixer <%s>%s"),Mix_GetError(),NEWLINE);
