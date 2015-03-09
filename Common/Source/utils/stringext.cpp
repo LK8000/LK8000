@@ -853,11 +853,11 @@ int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
     } 
     // if error, return simple copy
     len = std::min(_tcslen(unicode), (size_t)maxChars);
-    _tcsncpy(utf, unicode, len);
+    _tcsncpy(utf, unicode, maxChars);
     return len;
 #else
     size_t len = std::min(_tcslen(unicode), (size_t)maxChars);
-    _tcsncpy(utf, unicode, len+1);
+    _tcsncpy(utf, unicode, maxChars);
     return len;   
 #endif 
 }

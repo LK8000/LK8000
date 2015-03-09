@@ -200,6 +200,6 @@ void lk::filesystem::fixPath(TCHAR* szPath) {
     TCHAR * sz = _tcsstr(szPath, _T("/"));
     while(sz) {
         (*sz) = _T('\\');
-        sz = _tcsstr(sz, _T("\\"));
+        sz = _tcsstr(sz, _T("/"));
     }
 }

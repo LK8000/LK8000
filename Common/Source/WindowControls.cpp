@@ -1873,10 +1873,7 @@ void WndForm::Paint(LKSurface& Surface){
         p2.x=mTitleRect.right; p2.y=mTitleRect.bottom;
         Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p1, p2, RGB_GREEN, mTitleRect);
 
-        if (ScreenLandscape && (ScreenSize!=ss800x480))
-            rcClient.top = mTitleRect.bottom+NIBLSCALE(1);
-        else
-            rcClient.top = mTitleRect.bottom+NIBLSCALE(1)-1;
+        rcClient.top = mTitleRect.bottom+NIBLSCALE(1)-1;
 
         if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
             mClientWindow->Move(rcClient, true);
@@ -2052,10 +2049,7 @@ void WndButton::Paint(LKSurface& Surface){
 
   // JMW todo: add icons?
 
-
-  if(GlobalModelType != MODELTYPE_PNA_MINIMAP || (GlobalModelType == MODELTYPE_PNA_MINIMAP && !HasFocus())) {
-    Surface.DrawPushButton(rc, mDown);
-  }
+  Surface.DrawPushButton(rc, mDown);
 
   const TCHAR * szCaption = GetWndText();
   const size_t nSize = _tcslen(szCaption);

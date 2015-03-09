@@ -755,12 +755,30 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	gpsValid = false;
   }
 
+    /*
+     * Fix quality : 
+     *  0 = invalid
+     *  1 = GPS fix (SPS)
+     *  2 = DGPS fix
+     *  3 = PPS fix
+     *  4 = Real Time Kinematic
+     *  5 = Float RTK
+     *  6 = estimated (dead reckoning) (2.3 feature)
+     *  7 = Manual input mode
+     *  8 = Simulation mode
+     */
+  
   double ggafix = StrToDouble(params[5],NULL);
   if ( ggafix==0 || ggafix>5 ) {
 	#ifdef DEBUG_GPS
 	if (ggafix>5) StartupStore(_T("------ GGA DEAD RECKON fix skipped%s"),NEWLINE);
 	#endif
+#ifndef NDEBUG
+    // in debug we need accept manual or simulated fix
+    gpsValid = (ggafix == 7 || ggafix == 8); 
+#else
 	gpsValid=false;
+#endif    
   } else {
 	gpsValid=true;
   }

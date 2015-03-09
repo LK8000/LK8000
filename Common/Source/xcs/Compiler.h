@@ -96,6 +96,7 @@ Copyright_License {
 #define gcc_visibility_default __attribute__((visibility("default")))
 
 #define gcc_always_inline __attribute__((always_inline))
+#define gcc_noinline __attribute__((noinline))
 
 #else
 

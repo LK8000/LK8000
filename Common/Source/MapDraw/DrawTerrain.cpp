@@ -402,6 +402,7 @@ public:
 /**
  * Attention ! never call this without check if map is loaded.
  */
+gcc_noinline  
 void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
     // fill the buffer
   LKASSERT(hBuf!=NULL);
@@ -504,7 +505,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 // grid for purposes of calculating slope, to avoid shading problems
 // (gridding of display) This is why epx is used instead of 1
 // previously.  for large zoom levels, epx=1
-
+gcc_noinline
 void Slope(const int sx, const int sy, const int sz) {
 
   LKASSERT(hBuf!=NULL);
