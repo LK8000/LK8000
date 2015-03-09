@@ -1707,6 +1707,10 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
             // ignore airspace labels
             // TODO: adding airspace labels
             continue;
+
+	  case _T('G'): // AG
+            // ignore
+            continue;
             
           default:
             wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
