@@ -47,6 +47,8 @@ public:
             total_tick = std::accumulate(std::begin(fields), std::end(fields), (uint64_t)0);
             idle = fields[3]; /* idle ticks index */
         }
+        
+        lastValue.update();
     }
 
     ~GetCpuLoad_Singleton() {
@@ -60,24 +62,29 @@ public:
         if (_fp == NULL) {
             return INVALID_VALUE;
         }
-
-        if (!read_fields()) {
-            return INVALID_VALUE;
-        }
         
-        total_tick_old = total_tick;
-        idle_old = idle;
+        const Poco::Timespan TimeOut(1, 0); // 1s 
+        // only calculate each 1s  
+        if(lastValue.isElapsed(TimeOut.totalMicroseconds())) {
+            lastValue.update();
 
-        if (!read_fields()) {
-            return INVALID_VALUE;
+            if (!read_fields()) {
+                return INVALID_VALUE;
+            }
+
+            total_tick_old = total_tick;
+            idle_old = idle;
+
+            if (!read_fields()) {
+                return INVALID_VALUE;
+            }
+
+            total_tick = std::accumulate(std::begin(fields), std::end(fields), (uint64_t)0);
+            idle = fields[3];
+
+            del_total_tick = total_tick - total_tick_old;
+            del_idle = idle - idle_old;
         }
-        
-        total_tick = std::accumulate(std::begin(fields), std::end(fields), (uint64_t)0);
-        idle = fields[3];
-
-        del_total_tick = total_tick - total_tick_old;
-        del_idle = idle - idle_old;
-
         return std::lrint(((del_total_tick - del_idle) / (double) del_total_tick) * 100);
     }
 
@@ -100,6 +107,8 @@ private:
     char buffer[BUF_MAX];
 
     uint64_t fields[10], total_tick, total_tick_old, idle, idle_old, del_total_tick, del_idle;
+    
+    Poco::Timestamp lastValue;
 };
 
 GetCpuLoad_Singleton GetGpuLoad;
