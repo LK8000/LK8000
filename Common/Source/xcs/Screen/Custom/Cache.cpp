@@ -192,7 +192,10 @@ struct RenderedText {
  * Without OpenGL, this library is accessed from DrawThread and UI
  * thread, therefore we need to protect it.
  */
-static Poco::Mutex text_cache_mutex;
+    static Poco::Mutex text_cache_mutex;
+    
+    void Lock() { text_cache_mutex.lock(); }
+    void Unlock() { text_cache_mutex.unlock(); }
 #endif
 
 static Cache<TextCacheKey, PixelSize, 1024u, TextCacheKey::Hash> size_cache;
