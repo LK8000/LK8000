@@ -105,12 +105,13 @@ class SunEphemeris {
 
     // JG Removed simulator conditional code, since GPS_INFO now set up
     // from system time.
-
+    LockFlightData();
     m = GPS_INFO.Month;
     y = GPS_INFO.Year;
     day = GPS_INFO.Day;
     h = ((int)GPS_INFO.Time)/3600;
     h = (h % 24);
+    UnlockFlightData();
 
     // TODO code: use TimeLocal function from Process here?
     tzone = GetUTCOffset()/3600.0;
