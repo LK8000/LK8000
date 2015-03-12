@@ -68,6 +68,7 @@
 #include "Sound/Sound.h"
 
 #include "Kobo/System.hpp"
+#include "Hardware/CPU.hpp"
 
 #ifdef INT_OVERFLOW
 	#include <signal.h>
