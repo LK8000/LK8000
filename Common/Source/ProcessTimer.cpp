@@ -107,8 +107,8 @@ void CommonProcessTimer()
   // are already in default mode. We can live with this solution.
   MenuTimeOut++;
 
-  // 1 Hz routines
-  if (cp_twohzcounter %2 == 0) {
+  // 0.5 Hz routines
+  if (cp_twohzcounter %4 == 0) {
 	UpdateBatteryInfos();
   }
 
