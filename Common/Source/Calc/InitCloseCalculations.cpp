@@ -14,10 +14,12 @@ extern void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 WindAnalyser *windanalyser = NULL;
 
 void CloseCalculations() {
+  LockFlightData();    
   if (windanalyser) {
     delete windanalyser;
     windanalyser = NULL;
   }
+  UnlockFlightData();
 }
 
 
