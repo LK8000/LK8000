@@ -2866,6 +2866,7 @@ lk_error:
 // wpvirtual true means virtual waypoint, and relative special checks
 
 void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
+  CScopeLock Lock(LockTaskData, UnlockTaskData);
 
   static int	index;
   static double value;
@@ -2875,7 +2876,7 @@ void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *Buf
   if (wpvirtual) {
 	if ( ValidResWayPoint(wpindex) ) index = wpindex;
   } else {
-	if ( ValidWayPoint(wpindex) ) index = wpindex;
+	if ( ValidWayPointFast(wpindex) ) index = wpindex;
   }
   if (index>=0) {
 	value=WayPointCalc[index].Distance*DISTANCEMODIFY;
@@ -2902,6 +2903,8 @@ void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *Buf
 // DO NOT use this for AAT values! 
 void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
+  CScopeLock Lock(LockTaskData, UnlockTaskData);
+    
   static int	index;
   static double value;
 
@@ -2910,7 +2913,7 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
   if (wpvirtual) {
 	if ( ValidResWayPoint(wpindex) ) index = wpindex;
   } else {
-	if ( ValidWayPoint(wpindex) ) index = wpindex;
+	if ( ValidWayPointFast(wpindex) ) index = wpindex;
   }
   _tcscpy(BufferValue,_T(NULLMEDIUM)); 
   _tcscpy(BufferUnit,_T(""));
@@ -2954,6 +2957,8 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
 
 void MapWindow::LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
+  CScopeLock Lock(LockTaskData, UnlockTaskData);
+    
   static int	index;
   static double value;
   static TCHAR	text[LKSIZEBUFFERVALUE];
@@ -2963,7 +2968,7 @@ void MapWindow::LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *Buffe
   if (wpvirtual) {
 	if ( ValidResWayPoint(wpindex) ) index = wpindex;
   } else {
-	if ( ValidWayPoint(wpindex) ) index = wpindex;
+	if ( ValidWayPointFast(wpindex) ) index = wpindex;
   }
   _tcscpy(BufferValue,_T(NULLMEDIUM)); 
   _tcscpy(BufferUnit,_T(""));
@@ -2986,6 +2991,8 @@ void MapWindow::LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *Buffe
 
 void MapWindow::LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
+  CScopeLock Lock(LockTaskData, UnlockTaskData);
+    
   static int	index;
   static double value;
   
@@ -2994,7 +3001,7 @@ void MapWindow::LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *
   if (wpvirtual) {
 	if ( ValidResWayPoint(wpindex) ) index = wpindex;
   } else {
-	if ( ValidWayPoint(wpindex) ) index = wpindex;
+	if ( ValidWayPointFast(wpindex) ) index = wpindex;
   }
   _tcscpy(BufferValue,_T(NULLMEDIUM)); 
   _stprintf(BufferUnit, _T("%s"),(Units::GetAltitudeName()));
