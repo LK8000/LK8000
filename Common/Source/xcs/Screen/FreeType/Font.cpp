@@ -236,8 +236,7 @@ Font::TextSize(const TCHAR *text) const
 #endif
 
   const FT_Face face = this->face;
-  //const bool use_kerning = FT_HAS_KERNING(face);
-  const bool use_kerning = false;
+  const bool use_kerning = FT_HAS_KERNING(face);
 
   int x = 0;
   unsigned prev_index = 0;
