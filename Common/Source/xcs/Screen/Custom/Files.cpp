@@ -25,6 +25,8 @@ Copyright_License {
 #include "utils/filesystem.h"
 #include "Compiler.h"
 
+//#define USE_TAHOMA  // only for compatibility checks in LK
+
 #ifdef __APPLE__
 #include <TargetConditionals.h>
 #endif
@@ -49,6 +51,11 @@ static const char *const all_font_paths[] = {
 #elif defined(KOBO)
   "/opt/LK8000/share/fonts/Vera.ttf",
 #else
+#ifdef USE_TAHOMA
+  "/usr/share/fonts/truetype/ms/TAHOMA.TTF",
+  "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf",
+#endif
+
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansCondensed.ttf",
   "/usr/share/fonts/TTF/dejavu/DejaVuSansCondensed.ttf",
   "/usr/share/fonts/truetype/DejaVuSansCondensed.ttf",
@@ -86,6 +93,10 @@ static const char *const all_bold_font_paths[] = {
 #elif defined(KOBO)
   "/opt/LK8000/share/fonts/VeraBd.ttf",
 #elif defined(HAVE_POSIX)
+#ifdef USE_TAHOMA
+  "/usr/share/fonts/truetype/ms/TAHOMABD.TTF",
+  "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans-Bold.ttf",
+#endif
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansCondensed-Bold.ttf",
   "/usr/share/fonts/TTF/dejavu/DejaVuSansCondensed-Bold.ttf",
   "/usr/share/fonts/truetype/DejaVuSansCondensed-Bold.ttf",
@@ -119,6 +130,11 @@ static const char *const all_italic_font_paths[] = {
 #elif defined(KOBO)
   "/opt/LK8000/share/fonts/VeraIt.ttf",
 #elif defined(HAVE_POSIX)
+#ifdef USE_TAHOMA
+  "/usr/share/fonts/truetype/ms/TAHOMA.TTF",
+  "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans-Oblique.ttf",
+#endif
+
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansCondensed-Oblique.ttf",
   "/usr/share/fonts/TTF/dejavu/DejaVuSansCondensed-Oblique.ttf",
   "/usr/share/fonts/truetype/DejaVuSansCondensed-Oblique.ttf",

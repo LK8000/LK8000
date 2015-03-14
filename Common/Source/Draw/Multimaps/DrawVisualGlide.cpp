@@ -83,15 +83,9 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 
   switch(ScreenSize) {
 	case ss800x480:
-		#ifdef __linux__
-		_tcscpy(tmpT,_T("MMMMMMMM")); // we use no boldness to MapLabel
-		line1Font=MapLabelFont;
-		line2Font=CDIWindowFont;
-		#else
 		_tcscpy(tmpT,_T("MMMMMMMMM"));
 		line1Font=MapLabelFont;
 		line2Font=CDIWindowFont;
-		#endif
 		break;
 	case ss480x272:
 	case ss320x240:
@@ -100,15 +94,9 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 		line2Font=LK8InfoSmallFont;
 		break;
 	case ss640x480:
-		#ifdef __linux__
-		_tcscpy(tmpT,_T("MMMMMMM"));
-		line1Font=CDIWindowFont;
-		line2Font=CDIWindowFont;
-		#else
 		_tcscpy(tmpT,_T("MMMMMM"));
 		line1Font=CDIWindowFont;
 		line2Font=CDIWindowFont;
-		#endif
 		break;
 
 	case ss272x480:

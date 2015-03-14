@@ -56,7 +56,7 @@ Copyright_License {
 static Poco::Mutex freetype_mutex;
 #endif
 
-static FT_Int32 load_flags = FT_LOAD_DEFAULT;
+static FT_Int32 load_flags = FT_LOAD_DEFAULT|FT_LOAD_NO_HINTING;
 static FT_Render_Mode render_mode = FT_RENDER_MODE_NORMAL;
 
 static const char *font_path;
@@ -236,9 +236,10 @@ Font::TextSize(const TCHAR *text) const
 #endif
 
   const FT_Face face = this->face;
-  const bool use_kerning = FT_HAS_KERNING(face);
+  //const bool use_kerning = FT_HAS_KERNING(face);
+  const bool use_kerning = false;
 
-  int x = 0, minx = 0, maxx = 0;
+  int x = 0;
   unsigned prev_index = 0;
 
 #ifndef ENABLE_OPENGL
@@ -264,33 +265,31 @@ Font::TextSize(const TCHAR *text) const
     const FT_GlyphSlot glyph = face->glyph;
     const FT_Glyph_Metrics &metrics = glyph->metrics;
 
-    const int glyph_minx = FT_FLOOR(metrics.horiBearingX);
-    const int glyph_maxx = minx + FT_CEIL(metrics.width);
-    const int glyph_advance = FT_CEIL(metrics.horiAdvance);
-
     if (use_kerning) {
-      if (prev_index != 0 && i != 0) {
+      if (prev_index != 0) {
         FT_Vector delta;
-        FT_Get_Kerning(face, prev_index, i, ft_kerning_default,
-                       &delta);
-        x += delta.x >> 6;
+        if ( FT_Get_Kerning(face, prev_index, i, ft_kerning_default,
+                       &delta)==0) {
+           x += delta.x >> 6;
+        } 
       }
 
       prev_index = i;
     }
+    if (x<0)
+      x  = 0;
 
-    int z = x + glyph_minx;
-    if (z < minx)
-      minx = z;
+    error = FT_Render_Glyph(glyph, render_mode);
+    if (error)
+       continue;
 
-    z = x + std::max(glyph_maxx, glyph_advance);
-    if (z > maxx)
-      maxx = z;
+    const int glyph_advance = glyph->bitmap.width == 0 ?
+        FT_CEIL(metrics.horiAdvance) - 1: glyph->bitmap.width;  // space
 
-    x += glyph_advance;
+    x += glyph_advance + 1;
   }
 
-  return PixelSize{unsigned(maxx - minx), height};
+  return PixelSize{unsigned(std::max(0, x - 1)), height};
 }
 
 static void
@@ -361,9 +360,6 @@ static void
 RenderGlyph(uint8_t *buffer, size_t width, size_t height,
             FT_GlyphSlot glyph, int x, int y)
 {
-  FT_Error error = FT_Render_Glyph(glyph, render_mode);
-  if (error)
-    return;
 
   if (IsMono()) {
     /* with anti-aliasing disabled, FreeType writes each pixel in one
@@ -390,7 +386,7 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
   const FT_Face face = this->face;
   const bool use_kerning = FT_HAS_KERNING(face);
 
-  int x = 0, minx = 0;
+  int x = 0;
   unsigned prev_index = 0;
 
 #ifndef ENABLE_OPENGL
@@ -415,9 +411,7 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
 
     const FT_GlyphSlot glyph = face->glyph;
     const FT_Glyph_Metrics &metrics = glyph->metrics;
-
-    const int glyph_minx = FT_FLOOR(metrics.horiBearingX);
-    const int glyph_advance = FT_CEIL(metrics.horiAdvance);
+    const int glyph_maxy = FT_FLOOR(metrics.horiBearingY);
 
     if (use_kerning) {
       if (prev_index != 0) {
@@ -429,16 +423,19 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
 
       prev_index = i;
     }
+    if (x < 0) 
+      x = 0;
 
-    int z = x + glyph_minx;
-    if (z < minx)
-      minx = z;
+    error = FT_Render_Glyph(glyph, render_mode);
+    if (error)
+      continue;
 
-    const int glyph_maxy = FT_FLOOR(metrics.horiBearingY);
+    const int glyph_advance = glyph->bitmap.width == 0 ?
+        FT_CEIL(metrics.horiAdvance) - 1: glyph->bitmap.width;
 
     RenderGlyph((uint8_t *)buffer, size.cx, size.cy,
-                glyph, x - minx, ascent_height - glyph_maxy);
+                glyph, x, ascent_height - glyph_maxy);
 
-    x += glyph_advance;
+    x += glyph_advance + 1;
   }
 }
