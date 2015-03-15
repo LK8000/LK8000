@@ -83,7 +83,11 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 
   switch(ScreenSize) {
 	case ss800x480:
+		#ifdef __linux__
+		_tcscpy(tmpT,_T("MMMMMMMM"));
+		#else
 		_tcscpy(tmpT,_T("MMMMMMMMM"));
+		#endif
 		line1Font=MapLabelFont;
 		line2Font=CDIWindowFont;
 		break;
