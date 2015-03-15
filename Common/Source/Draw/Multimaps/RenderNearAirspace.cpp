@@ -416,6 +416,7 @@ if(bValid)
     	txtCol = INV_GROUND_TEXT_COLOUR;
   Surface.SetBackgroundTransparent();
   Surface.SetTextColor(txtCol);
+  Surface.SelectObject(LK8PanelUnitFont);
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
 
   switch(GetMMNorthUp(getsideviewpage))
