@@ -33,7 +33,7 @@ KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libz.so.1
 KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(SYSTEM_FILES) $(BITMAP_FILES) $(SOUND_FILES) \
 	$(BITSTREAM_VERA_FILES) $(POLAR_FILES) $(LANGUAGE_FILES) \
-	kobo/inittab kobo/rcS
+	$(CONFIG_FILES)  kobo/inittab kobo/rcS
 	@$(NQ)echo "  TAR     $@"
 	$(Q)rm -rf $(BIN)/KoboRoot
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/etc
@@ -59,6 +59,7 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0644 $(SOUND_FILES) $(BIN)/KoboRoot/opt/LK8000/share/_System/_Sounds
 	$(Q)install -m 0644 $(POLAR_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Polars
 	$(Q)install -m 0644 $(LANGUAGE_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Language
+	$(Q)install -m 0644 $(CONFIG_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Configuration
 	$(Q)fakeroot tar czfC $@ $(BIN)/KoboRoot .
 
 endif
