@@ -1356,8 +1356,8 @@ void WindowControl::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
     if (cy<0) {
         cy = GetHeight() - y + cy;
     }
-    assert(cx>0);
-    assert(cy>0);
+    LKASSERT(cx>0);
+    LKASSERT(cy>0);
 }
 
 void WindowControl::AddClient(WindowControl *Client) {
