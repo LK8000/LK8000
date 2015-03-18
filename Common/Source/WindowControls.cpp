@@ -1183,6 +1183,7 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   if(mOwner) {
     mOwner->CalcChildRect(mX, mY, mWidth, mHeight);
   }
+  LKASSERT(mX+mWidth>0);
   
   Create(WndOnwer,(RECT){mX, mY, mX+mWidth, mY+mHeight});
   SetTopWnd();
@@ -1756,7 +1757,7 @@ int WndForm::ShowModal(void) {
     MainWindow.Refresh();
 #endif    
 
-    assert(event_queue);
+    LKASSERT(event_queue);
 #if defined(ANDROID) || defined(USE_CONSOLE) || defined(ENABLE_SDL) || defined(NON_INTERACTIVE)
     EventLoop loop(*event_queue, MainWindow);
 #else
