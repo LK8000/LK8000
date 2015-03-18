@@ -6,7 +6,7 @@
     <WndListFrame Name="frmIgcFileList" X="70" Y="3" Width="170" Height="230" OnListInfo="OnIgcFileListInfo">
       <WndOwnerDrawFrame Name="frmIgcFileListEntry" X="2" Y="2" Width="163" Height="25" Font="2" OnPaint="OnPaintIgcFileListItem"/>
     </WndListFrame>
-	<WndProperty Name="prpDeviceList" Caption="_@M2157_" X="0" Y="0"  Width="0" Height="0">
+	<WndProperty Name="prpDeviceList" Caption="_@M2157_" X="0" Y="0"  Width="1" Height="0">
 	  <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" />
 	</WndProperty>	
   </WndForm>
