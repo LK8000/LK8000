@@ -954,7 +954,7 @@ void InputEvents::processPopupDetails_real() {
                 LastDoTraffic = 0;
                 break;
             default: 
-                assert(false);
+                LKASSERT(false);
                 break;
         } 
         

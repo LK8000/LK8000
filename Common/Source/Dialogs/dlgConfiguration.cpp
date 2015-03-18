@@ -1298,7 +1298,7 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
         { _T("prpComSpeed2"), _T("prpComBit2") }
     };
     
-    assert(szPortName);
+    LKASSERT(szPortName);
     // check if all array have same size ( compil time check );
     static_assert(array_size(DeviceList) == array_size(PortPropName), "PortPropName array size need to be same of DeviceList array size");
     
@@ -2622,7 +2622,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseUngestures"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    assert(dfe);
+    LKASSERT(dfe);
     if(dfe) {
         dfe->Set(UseUngestures);
     }

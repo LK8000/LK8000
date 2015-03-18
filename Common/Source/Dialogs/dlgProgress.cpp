@@ -69,7 +69,7 @@ dlgProgress::dlgProgress() {
 	LocalPathS(filename, TEXT("dlgProgress.xml"));
     
     _WndForm = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_PROGRESS"));
-    assert(_WndForm);
+    LKASSERT(_WndForm);
     if(_WndForm) {
         WindowControl* wSplash = _WndForm->FindByName(TEXT("frmSplash")); 
         if(wSplash) {

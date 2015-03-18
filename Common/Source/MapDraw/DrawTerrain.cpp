@@ -406,7 +406,7 @@ gcc_noinline
 void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
     // fill the buffer
   LKASSERT(hBuf!=NULL);
-  assert(DisplayMap->isMapLoaded());
+  LKASSERT(DisplayMap->isMapLoaded());
 
   unsigned short* myhbuf = hBuf;
 #ifndef NDEBUG

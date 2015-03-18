@@ -14,6 +14,7 @@
 #include <map>
 #include "Util/ConstBuffer.hpp"
 #include "resource_data.h"
+#include "LKAssert.h"
 
 // libsdl-mixer1.2-dev package required
 
@@ -93,7 +94,7 @@ void LKSound(const TCHAR *lpName) {
 }
 
 void PlayResource (const TCHAR* lpName) {
-    assert(lpName);
+    LKASSERT(lpName);
     
     if(!lpName || !bSoundFile || !bSoundInit || !EnableSoundModes) {
         return;

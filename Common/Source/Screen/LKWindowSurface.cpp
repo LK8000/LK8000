@@ -15,8 +15,8 @@
 #include "Screen/WindowCanvas.hpp"
 #endif
 
-#include <cassert>
 #include "LKWindowSurface.h"
+#include "LKAssert.h"
 
 LKWindowSurface::LKWindowSurface() : LKSurface()
 #ifdef WIN32
@@ -28,11 +28,11 @@ LKWindowSurface::LKWindowSurface() : LKSurface()
 
 #ifdef WIN32
 LKWindowSurface::LKWindowSurface(HWND hWnd) : LKSurface(), _hWnd() {
-    assert(hWnd);
-    assert(::IsWindow(hWnd));
+    LKASSERT(hWnd);
+    LKASSERT(::IsWindow(hWnd));
 
     if(!Attach(::GetDC(hWnd))) {
-        assert(false);
+        LKASSERT(false);
     }
 }
 #endif
@@ -48,11 +48,11 @@ LKWindowSurface::LKWindowSurface(Window& Wnd){
 void LKWindowSurface::Create(Window& Wnd){
 #ifdef WIN32
     HWND hWnd = Wnd.Handle();
-    assert(hWnd);
-    assert(::IsWindow(hWnd));
+    LKASSERT(hWnd);
+    LKASSERT(::IsWindow(hWnd));
 
     if(!Attach(::GetDC(hWnd))) {
-        assert(false);
+        LKASSERT(false);
     }
 #else
     _pCanvas = new WindowCanvas(Wnd);
@@ -74,11 +74,11 @@ void LKWindowSurface::Release() {
 
 #ifdef WIN32
 LKPaintSurface::LKPaintSurface(HWND hWnd) : LKSurface(), _hWnd(hWnd) {
-    assert(hWnd);
-    assert(::IsWindow(hWnd));
+    LKASSERT(hWnd);
+    LKASSERT(::IsWindow(hWnd));
 
     if (!Attach(::BeginPaint(hWnd, &_ps))) {
-        assert(false);
+        LKASSERT(false);
     }
 }
 #endif
@@ -89,7 +89,7 @@ LKPaintSurface::~LKPaintSurface() {
 
 void LKPaintSurface::Release() {
 #ifdef WIN32
-    assert(_hWnd);
+    LKASSERT(_hWnd);
     Detach(); // avoid _OutputDC deleted twice and cleanup base class.
     ::EndPaint(_hWnd, &_ps);
     

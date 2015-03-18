@@ -691,7 +691,7 @@ void LoadChildsFromXML(WindowControl *Parent,
       LoadChildsFromXML(WC, LookUpTable, &childNode, ParentFont);  // recursivly create dialog
 
     } else {
-        assert(false); // unknow control.
+        LKASSERT(false); // unknow control.
     }
 
     if (WC != NULL){

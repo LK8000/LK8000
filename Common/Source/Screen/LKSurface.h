@@ -26,6 +26,7 @@
 #include "LKFont.h"
 #include "BrushReference.h"
 #include "PenReference.h"
+#include "LKAssert.h"
 
 #ifndef USE_GDI
 #include "Screen/Canvas.hpp"
@@ -109,7 +110,7 @@ public:
     Canvas* Detach();
     
     operator Canvas&() const {
-        assert(_pCanvas);
+        LKASSERT(_pCanvas);
         return (*_pCanvas);
     }
     

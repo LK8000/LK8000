@@ -21,6 +21,7 @@
 #include "utils/2dpclip.h"
 #include "utils/array_adaptor.h"
 #include "Screen/LKBitmapSurface.h"
+
 #ifdef WIN32
 
 LKSurface::LKSurface() : _OutputDC(), _AttribDC(), _TempDC() {
@@ -60,8 +61,8 @@ HDC LKSurface::GetTempDC() {
 }
 
 bool LKSurface::Attach(HDC hDC) {
-    assert(NULL == _OutputDC); // only attach once.
-    assert(NULL == _AttribDC);
+    LKASSERT(NULL == _OutputDC); // only attach once.
+    LKASSERT(NULL == _AttribDC);
     if (NULL == hDC) {
         return false;
     }
@@ -528,7 +529,7 @@ void LKSurface::AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface
 #endif    
 
 bool LKSurface::GetTextSize(const TCHAR* lpString, int cbString, SIZE* lpSize) {
-	assert(cbString <= (int)_tcslen(lpString));
+	LKASSERT(cbString <= (int)_tcslen(lpString));
 #ifdef WIN32
     return ::GetTextExtentPoint(*this, lpString, cbString, lpSize);
 #else

@@ -116,7 +116,7 @@ static void ClearText(void)
 }
 
 static void OnKey(WndButton* pWnd) {
-    assert(pWnd);
+    LKASSERT(pWnd);
     if(!pWnd) return;
 
     if (first) {
