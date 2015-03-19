@@ -368,7 +368,11 @@ bool LoadChecklist(short checklistmode) {
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CHECKLIST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M878_")));  // notepad
-    return LoadAsciiChecklist(filename);
+		#ifdef __linux__
+   		return LoadUtfChecklist(filename);
+		#else
+                return LoadAsciiChecklist(filename);
+		#endif
 	// logbook TXT
 	case 1:
 		LocalPath(filename, TEXT(LKD_LOGS));
