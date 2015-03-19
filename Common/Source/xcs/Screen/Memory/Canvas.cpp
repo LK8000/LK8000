@@ -284,27 +284,39 @@ Canvas::DrawText(int x, int y, const TCHAR *text)
   assert(ValidateUTF8(text));
 #endif
 
+#ifdef ENABLE_OPENGL
+  /*
+   * RenderText return buffer owned by TextCache, this can be delete by GUI Thread
+   *  lock is need for avoid to used alredy deleted buffer.
+   */
+  TextCache::Lock();
+#endif
+  
   auto s = RenderText(font, text);
-  if (s.data == nullptr)
-    return;
+  if (s.data != nullptr) {
 
-  SDLRasterCanvas canvas(buffer);
+    SDLRasterCanvas canvas(buffer);
 
-  if (background_mode == OPAQUE) {
-    OpaqueAlphaPixelOperations<SDLPixelTraits, GreyscalePixelTraits>
-      opaque(canvas.Import(background_color), canvas.Import(text_color));
-    canvas.CopyRectangle<decltype(opaque), GreyscalePixelTraits>
-      (x, y, s.width, s.height,
-       GreyscalePixelTraits::const_pointer_type(s.data),
-       s.pitch, opaque);
-  } else {
-    ColoredAlphaPixelOperations<SDLPixelTraits, GreyscalePixelTraits>
-      transparent(canvas.Import(text_color));
-    canvas.CopyRectangle<decltype(transparent), GreyscalePixelTraits>
-      (x, y, s.width, s.height,
-       GreyscalePixelTraits::const_pointer_type(s.data),
-       s.pitch, transparent);
+    if (background_mode == OPAQUE) {
+      OpaqueAlphaPixelOperations<SDLPixelTraits, GreyscalePixelTraits>
+        opaque(canvas.Import(background_color), canvas.Import(text_color));
+      canvas.CopyRectangle<decltype(opaque), GreyscalePixelTraits>
+        (x, y, s.width, s.height,
+         GreyscalePixelTraits::const_pointer_type(s.data),
+         s.pitch, opaque);
+    } else {
+      ColoredAlphaPixelOperations<SDLPixelTraits, GreyscalePixelTraits>
+        transparent(canvas.Import(text_color));
+      canvas.CopyRectangle<decltype(transparent), GreyscalePixelTraits>
+        (x, y, s.width, s.height,
+         GreyscalePixelTraits::const_pointer_type(s.data),
+         s.pitch, transparent);
+    }
   }
+
+#ifdef ENABLE_OPENGL  
+  TextCache::Unlock();
+#endif
 }
 
 void
@@ -315,17 +327,29 @@ Canvas::DrawTransparentText(int x, int y, const TCHAR *text)
   assert(ValidateUTF8(text));
 #endif
 
+#ifdef ENABLE_OPENGL
+  /*
+   * RenderText return buffer owned by TextCache, this can be delete by GUI Thread
+   *  lock is need for avoid to used alredy deleted buffer.
+   */
+  TextCache::Lock();
+#endif
+  
   auto s = RenderText(font, text);
-  if (s.data == nullptr)
-    return;
+  if (s.data != nullptr) {
 
-  SDLRasterCanvas canvas(buffer);
-  ColoredAlphaPixelOperations<SDLPixelTraits, GreyscalePixelTraits>
-    transparent(canvas.Import(text_color));
-  canvas.CopyRectangle<decltype(transparent), GreyscalePixelTraits>
-    (x, y, s.width, s.height,
-     GreyscalePixelTraits::const_pointer_type(s.data),
-     s.pitch, transparent);
+    SDLRasterCanvas canvas(buffer);
+    ColoredAlphaPixelOperations<SDLPixelTraits, GreyscalePixelTraits>
+      transparent(canvas.Import(text_color));
+    canvas.CopyRectangle<decltype(transparent), GreyscalePixelTraits>
+      (x, y, s.width, s.height,
+       GreyscalePixelTraits::const_pointer_type(s.data),
+       s.pitch, transparent);
+  }
+  
+#ifdef ENABLE_OPENGL  
+  TextCache::Unlock();
+#endif  
 }
 
 static bool

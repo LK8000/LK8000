@@ -11,6 +11,7 @@
 #include "LiveTracker.h"
 #include "FlightDataRec.h"
 #include "TraceThread.h"
+#include "Hardware/CPU.hpp"
 
 // PulseEvent is unreliable. But it does not matter anymore, since we should
 // change approach for compatibility with unix.

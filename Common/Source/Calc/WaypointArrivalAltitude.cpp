@@ -25,6 +25,8 @@ void simpleETE(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
 // This is also called by DoNearest and it is overwriting AltitudeRequired 
 double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
 
+  CScopeLock Lock(LockTaskData, UnlockTaskData);
+    
   double altReqd;
   double wDistance, wBearing;
   double wStartDistance=0, wStartBearing=0;

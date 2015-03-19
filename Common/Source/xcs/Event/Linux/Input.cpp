@@ -33,6 +33,7 @@ Copyright_License {
 #include <termios.h>
 #include <linux/input.h>
 #include <sys/ioctl.h>
+#include <string.h>
 
 #ifdef KEY_DOWN
 #undef KEY_DOWN
@@ -152,8 +153,10 @@ LinuxInputDevice::Read()
   const ssize_t nbytes = fd.Read(buffer, sizeof(buffer));
   if (nbytes < 0) {
     /* device has failed or was unplugged - bail out */
-    if (errno != EAGAIN && errno != EINTR)
+    if (errno != EAGAIN && errno != EINTR) {
+      fprintf(stderr, "device has failed or was unplugged <%s>\n", strerror(errno));
       Close();
+    }      
     return;
   }
 

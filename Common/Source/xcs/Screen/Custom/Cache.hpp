@@ -37,6 +37,9 @@ namespace TextCache {
 #ifdef ENABLE_OPENGL
   typedef GLTexture *Result;
 #else
+  void Lock();
+  void Unlock();
+  
   struct Result {
     const void *data;
     unsigned pitch, width, height;
