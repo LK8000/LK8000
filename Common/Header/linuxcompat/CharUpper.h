@@ -19,6 +19,14 @@ inline char* CharUpper(char* lpsz) {
     return lpsz;
 }
 
+inline char* CharLower(char* lpsz) {
+    if(lpsz) {
+        for(char* Char = &lpsz[0]; (*Char) != '\0'; ++Char) {
+            (*Char) = tolower(*Char);
+        }
+    }
+    return lpsz;
+}
 
 
 #endif	/* CHARUPPER_H */

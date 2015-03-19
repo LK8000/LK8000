@@ -13,6 +13,7 @@
 
 #include "utils/heapcheck.h"
 
+extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
 
 
 //______________________________________________________________________________
@@ -70,8 +71,56 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
   LK_tcsncpy(path, fileName, countof(path)-1);
 
   fp = _tfopen(fileName, fmode);
+  if (fp) return true;
 
-  return(fp != NULL);
+  // 
+  // Windows has case-insensitive file system. We try alternatives only for unix
+  //
+  #ifdef __linux__
+  TCHAR stmp[MAX_PATH+1], tdrive[255], tdir[255], tname[255], text[255];
+
+  _tcscpy(stmp,fileName); 
+  LK_tsplitpath(stmp, tdrive, tdir, tname, text);
+
+  // Try ???.EXT
+  CharUpper(text);
+  _stprintf(stmp,_T("%s%s%s%s"),tdrive,tdir,tname,text);
+  fp = _tfopen(stmp, fmode);
+  if (fp) {
+      LK_tcsncpy(path, stmp, countof(path)-1);
+      return(true);
+  }
+
+  // Try ???.ext
+  CharLower(text);
+  _stprintf(stmp,_T("%s%s%s%s"),tdrive,tdir,tname,text);
+  fp = _tfopen(stmp, fmode);
+  if (fp) {
+      LK_tcsncpy(path, stmp, countof(path)-1);
+      return(true);
+  }
+
+  // Try name.ext
+  CharLower(tname);
+  _stprintf(stmp,_T("%s%s%s%s"),tdrive,tdir,tname,text);
+  fp = _tfopen(stmp, fmode);
+  if (fp) {
+      LK_tcsncpy(path, stmp, countof(path)-1);
+      return(true);
+  }
+
+  // Try NAME.EXT
+  CharUpper(tname);
+  CharUpper(text);
+  _stprintf(stmp,_T("%s%s%s%s"),tdrive,tdir,tname,text);
+  fp = _tfopen(stmp, fmode);
+  if (fp) {
+      LK_tcsncpy(path, stmp, countof(path)-1);
+      return(true);
+  }
+#endif  
+
+  return(false);
 } // Open()
 
 
