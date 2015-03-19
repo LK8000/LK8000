@@ -2056,9 +2056,14 @@ void WndButton::Paint(LKSurface& Surface){
   const size_t nSize = _tcslen(szCaption);
   if (nSize > 0) {
 
-    Surface.SetTextColor(GetForeColor());
+    Surface.SetTextColor(IsDithered()?
+            (mDown ? RGB_WHITE : RGB_BLACK) : 
+            GetForeColor());
 
-    Surface.SetBkColor(GetBackColor());
+    Surface.SetBkColor(IsDithered()?
+            (mDown ? RGB_BLACK : RGB_WHITE) : 
+            GetBackColor());
+    
     Surface.SetBackgroundTransparent();
 
     const auto oldFont = Surface.SelectObject(GetFont());

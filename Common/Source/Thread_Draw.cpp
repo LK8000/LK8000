@@ -12,6 +12,7 @@
 #include "Bitmaps.h"
 #include "RGB.h"
 #include "TraceThread.h"
+#include "Hardware/CPU.hpp"
 
 #ifndef USE_GDI
 #include "Screen/Canvas.hpp"

@@ -103,6 +103,15 @@ CheckFreeRam(),SNEWLINE);
 #endif
 
 
+Poco::FastMutex  CritSec_StartupStore;
+
+void LockStartupStore() {
+	CritSec_StartupStore.lock();
+}
+
+void UnlockStartupStore() {
+	CritSec_StartupStore.unlock();
+}
 
 void StartupStore(const TCHAR *Str, ...)
 {

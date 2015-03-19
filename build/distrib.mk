@@ -18,3 +18,6 @@ LANGUAGE_FILES += Common/Data/Language/ENGLISH.LNG
 LANGUAGE_FILES += Common/Data/Language/ENG_MSG.TXT
 LANGUAGE_FILES += Common/Data/Language/ENG_HELP.TXT
 LANGUAGE_FILES += Common/Data/Language/_LANGUAGE
+
+CONFIG_FILES = Common/Distribution/LK8000/_Configuration/NOTEPAD.txt
+

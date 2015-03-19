@@ -14,8 +14,6 @@ Poco::Mutex  CritSec_TerrainDataGraphics;
 Poco::Mutex  CritSec_TerrainDataCalculations;
 Poco::Mutex  CritSec_Comm;
 Poco::Mutex  CritSec_TaskData;
-Poco::Mutex  CritSec_StartupStore;
-
 
 static int csCount_TaskData = 0;
 static int csCount_FlightData = 0;
@@ -95,12 +93,3 @@ void UnlockEventQueue() {
     csCount_EventQueue--;
   CritSec_EventQueue.unlock();
 }
-
-void LockStartupStore() {
-	CritSec_StartupStore.lock();
-}
-
-void UnlockStartupStore() {
-	CritSec_StartupStore.unlock();
-}
-

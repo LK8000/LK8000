@@ -1,0 +1,101 @@
+[Welcome]
+Welcome to the LK8000 NotePad
+This file is located inside the 
+directory :
+LK8000\_Configuration
+and it is called NOTEPAD.txt 
+You can add many pages to this file,
+each one with a different title. 
+Try moving to the next page for
+another example..
+
+
+[Radio Frequency]
+
+For example you can place here your
+friend's radio frequency that you never
+remember.
+
+- JACK 122.700
+- YELLOW 126.850
+- GhostTown Airport 123.450
+
+See next page for another example..
+
+[Checklist]
+
+You can create a Checklist title, 
+and place here all of your actions for
+a complete checklist. Example:
+
+- Batteries
+- Water
+- Logger on
+- Sandwiches
+- Gloves
+- Oxygen
+- Pulsemeter
+
+or you can create some notes for different 
+gliders, like... (see next page)
+
+[DG300 reminder]
+
+For each specific glider you can collect 
+takeoff and landing procedures. 
+Example for a DG300:
+
+- Takeoff with all trim forward
+- Landing gear down lock problem, check it twice!
+
+etc.etc.
+
+[Thank You]
+
+Thanks for reading this notepad example.
+You can now close this page, it is over.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I said it is over!
+
+

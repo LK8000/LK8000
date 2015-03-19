@@ -68,6 +68,11 @@
 #include "Sound/Sound.h"
 
 #include "Kobo/System.hpp"
+#include "Hardware/CPU.hpp"
+
+#ifdef __linux__
+#include <sys/utsname.h>
+#endif
 
 #ifdef INT_OVERFLOW
 	#include <signal.h>
@@ -187,6 +192,15 @@ int main(int argc, char *argv[]) {
   StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
   #ifdef __linux__
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
+  
+  struct utsname sysinfo = {};
+  if(uname(&sysinfo) == 0) {
+    StartupStore(". System Name:    %s" NEWLINE, sysinfo.sysname);
+    StartupStore(". Kernel Version: %s" NEWLINE, sysinfo.release);
+    StartupStore(". Kernel Build:   %s" NEWLINE, sysinfo.version);
+    StartupStore(". Machine Arch:   %s" NEWLINE, sysinfo.machine);
+  }
+  
   #else
   #ifdef PNA
   StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PNA"),NEWLINE);
@@ -203,11 +217,18 @@ int main(int argc, char *argv[]) {
     #ifdef _MSC_VER
       StartupStore(TEXT(". Built with MSVC ver : %d %s"), _MSC_VER, NEWLINE);
     #endif
-    #ifdef __MINGW32__
-      StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"), 
-              __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION, 
-              __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, 
-              NEWLINE);
+    #ifdef __GNUC__
+        #ifdef __MINGW32__
+          StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"), 
+                  __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION, 
+                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, 
+                  NEWLINE);
+        #else
+          StartupStore(TEXT(". Built with GCC %d.%d.%d %s"), 
+                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, 
+                  NEWLINE);
+
+        #endif
     #endif
   StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
