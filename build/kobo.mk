@@ -60,6 +60,7 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0644 $(POLAR_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Polars
 	$(Q)install -m 0644 $(LANGUAGE_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Language
 	$(Q)install -m 0644 $(CONFIG_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Configuration
+	$(Q)install -m 0644 $(WAYPOINT_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Waypoints
 	$(Q)fakeroot tar czfC $@ $(BIN)/KoboRoot .
 
 endif

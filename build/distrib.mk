@@ -21,3 +21,4 @@ LANGUAGE_FILES += Common/Data/Language/_LANGUAGE
 
 CONFIG_FILES = Common/Distribution/LK8000/_Configuration/NOTEPAD.txt
 
+WAYPOINT_FILES = Common/Distribution/LK8000/_Waypoints/WAYNOTES.txt

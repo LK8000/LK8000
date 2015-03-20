@@ -1,0 +1,44 @@
+# WAYNOTES.txt
+# For any waypoint, you can add additional full screen notes with long text descriptions.
+# The only constraint is that in order to be correlated to a waypoint, you need to specify
+# its name as-it-is in the waypoint file.  
+# When you enter waypoint details, then, scroll to the second page of details and these informations
+# will magically appear.
+# 
+# Example for a waypoint called "MyLanding Place" and for another waypoint called "JFKENNEDY"
+# 
+
+[MyLanding Place]
+
+Radio frequency 122.750 
+Any text can be put here, uppercase or lowercase, with carriage return to split lines as well.
+Many lines of text, 
+
+even separated by blank lines. It is just like an ordinary text note.
+This text note is related to the waypoint called MyLanding Place
+Notice that I have exactly used the same name I have in the waypoint file database, otherwise
+it wouldnt be recognized.
+
+This text note ends when a new one starts. Very easy. 
+
+[JFKENNEDY=PREF]
+
+This is the big Airport. Any text can be put here.
+Why have I put the =PREF  ? Because I want the Bestalternate search function to select this one before any other.
+I can have as many PREF waypoints as I want, but of course this applies only to landables waypoints, and I wouldnt
+set it for an outlanding place! 
+You normally want to set the =PREF option only for places you can be towed from, or winch launched...
+
+[LONDON=HOME]
+
+Now, if you have a waypoint named LONDON, and it is a landable place, setting the =HOME  flag will make it
+your home place automatically. Otherwise, as you know, you have to either set the home flah in the waypoint list,
+or elect as home a waypoint after selecting it, entering waypoint details, and going to the last page.
+
+Paragliders will not have to use it, because Home is automatically matched to the TAKEOFF place everytime.
+That's all for it.
+
+
+
+
+
