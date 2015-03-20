@@ -773,6 +773,7 @@ GEXTERN LKFont   MapWindowBoldFont;
 GEXTERN LKFont   CDIWindowFont;
 GEXTERN LKFont   MapLabelFont;
 GEXTERN LKFont   StatisticsFont;
+GEXTERN LKFont   MapWaypointFont;
 
 GEXTERN LKFont   LK8UnitFont;
 GEXTERN LKFont   LK8TitleFont;
@@ -794,6 +795,7 @@ GEXTERN LKFont   LK8PanelUnitFont;
 
 GEXTERN LOGFONT  autoTitleWindowLogFont;
 GEXTERN LOGFONT  autoMapWindowLogFont;
+GEXTERN LOGFONT  autoMapWaypointFont;
 GEXTERN LOGFONT  autoMapWindowBoldLogFont;
 GEXTERN LOGFONT  autoCDIWindowLogFont;
 GEXTERN LOGFONT  autoMapLabelLogFont;

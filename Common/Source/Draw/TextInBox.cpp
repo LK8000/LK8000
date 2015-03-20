@@ -142,7 +142,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     if (Mode->Border){
       oldFont = Surface.SelectObject(MapWindowBoldFont);
     } else {
-      oldFont = Surface.SelectObject(MapWindowFont);
+      oldFont = Surface.SelectObject(MapWaypointFont);
     }
   }
   

@@ -113,7 +113,8 @@ void InitialiseFontsHardCoded(RECT rc,
                         LOGFONT * ptrhardMapWindowBoldLogFont,
                         LOGFONT * ptrhardCDIWindowLogFont, // New
                         LOGFONT * ptrhardMapLabelLogFont,
-                        LOGFONT * ptrhardStatisticsLogFont) {
+                        LOGFONT * ptrhardStatisticsLogFont,
+                        LOGFONT * ptrhardMapWaypointFont) {
 
 
 
@@ -122,6 +123,7 @@ void InitialiseFontsHardCoded(RECT rc,
   memset ((char *)ptrhardMapWindowBoldLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrhardCDIWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrhardMapLabelLogFont, 0, sizeof (LOGFONT));
+  memset ((char *)ptrhardMapWaypointFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrhardStatisticsLogFont, 0, sizeof (LOGFONT));
 
 
@@ -132,6 +134,8 @@ void InitialiseFontsHardCoded(RECT rc,
  * MapLabelFont		= Stats, map labels
  * MapWindowFont	= text names on the map, zoom indicator
  * MapWindowBoldFont	= menu buttons, waypoint selection, messages, etc.
+ *
+ * MapWaypoint for waypoints only, on the map. 
  *
  * Only MapWindow and MapLabel can be customized as of october 2011
  */
@@ -348,6 +352,13 @@ void InitialiseFontsHardCoded(RECT rc,
     }
   }
 
+  // MapWaypoint font is created here.
+
+  memcpy ((char *)ptrhardMapWaypointFont, (char *)ptrhardMapWindowLogFont, sizeof (LOGFONT));
+  #ifdef __linux__
+  ptrhardMapWaypointFont->lfWeight = 400; // normal weight
+  #endif
+
   //
   // If our choice was based upon geometry criteria, and not on a custom supported resolution,
   // we must ask for dynamic resize. So we mark Orientation flag to 1 .
@@ -364,6 +375,7 @@ void InitialiseFontsHardCoded(RECT rc,
       ptrhardStatisticsLogFont->lfOrientation = 1;
       ptrhardMapWindowLogFont->lfOrientation = 1;
       ptrhardMapWindowBoldLogFont->lfOrientation = 1;
+      ptrhardMapWaypointFont->lfOrientation = 1;
   }
 
 
@@ -374,6 +386,7 @@ void DeInitialiseFonts(void) {
 
   TitleWindowFont.Release();
   MapWindowFont.Release();
+  MapWaypointFont.Release();
   MapWindowBoldFont.Release();
   CDIWindowFont.Release();
   MapLabelFont.Release();
@@ -404,6 +417,7 @@ void InitialiseFonts(RECT rc)
 
   TitleWindowFont.Release();
   MapWindowFont.Release();
+  MapWaypointFont.Release();
   MapWindowBoldFont.Release();
   CDIWindowFont.Release();
   MapLabelFont.Release();
@@ -411,6 +425,7 @@ void InitialiseFonts(RECT rc)
 
   LOGFONT hardTitleWindowLogFont;
   LOGFONT hardMapWindowLogFont;
+  LOGFONT hardMapWaypointFont;
   LOGFONT hardMapWindowBoldLogFont;
   LOGFONT hardCDIWindowLogFont; 
   LOGFONT hardMapLabelLogFont;
@@ -418,6 +433,7 @@ void InitialiseFonts(RECT rc)
 
   memset ((char *)&hardTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&hardMapWindowLogFont, 0, sizeof (LOGFONT));
+  memset ((char *)&hardMapWaypointFont, 0, sizeof (LOGFONT));
   memset ((char *)&hardMapWindowBoldLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&hardCDIWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&hardMapLabelLogFont, 0, sizeof (LOGFONT));
@@ -429,7 +445,8 @@ void InitialiseFonts(RECT rc)
                         &hardMapWindowBoldLogFont,
                         &hardCDIWindowLogFont, // New
                         &hardMapLabelLogFont,
-                        &hardStatisticsLogFont);
+                        &hardStatisticsLogFont,
+                        &hardMapWaypointFont);
 
   //
   // Merge the "hard" into the "auto" if one exists 
@@ -442,6 +459,8 @@ void InitialiseFonts(RECT rc)
   if (!IsNullLogFont(hardMapWindowLogFont))
     autoMapWindowLogFont = hardMapWindowLogFont;
 
+  if (!IsNullLogFont(hardMapWaypointFont))
+    autoMapWaypointFont = hardMapWaypointFont;
 
   if (!IsNullLogFont(hardMapWindowBoldLogFont))
     autoMapWindowBoldLogFont = hardMapWindowBoldLogFont;
@@ -479,6 +498,11 @@ void InitialiseFonts(RECT rc)
   InitializeOneFont (MapWindowFont, 
                         szRegistryFontMapWindowFont, 
                         autoMapWindowLogFont,
+                        NULL);
+
+  InitializeOneFont (MapWaypointFont, 
+                        NULL,
+                        autoMapWaypointFont,
                         NULL);
 
   InitializeOneFont (MapWindowBoldFont, 
