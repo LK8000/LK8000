@@ -275,6 +275,17 @@ static void NextPage(int Step){
 		else
 			config_page[configMode]=5;
 	}
+        #ifdef __linux__
+        // 2015: skip also page 12 (11 starting from 0)
+	if (config_page[configMode]==11) {
+		if (Step>0) 
+			config_page[configMode]=12;
+		else
+			config_page[configMode]=10;
+	}
+        #endif
+
+
   } else {
 	config_page[configMode]=0;
   }
