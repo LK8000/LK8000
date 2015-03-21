@@ -81,6 +81,8 @@
 using std::min;
 using std::max;
 
+#define MSGDELAY  200  // delay after printing each progress dialog info line
+#define ERRDELAY  3000  // delay after printing each progress dialog ERROR line
 
 
 // Developers dedicates!
@@ -195,7 +197,7 @@ int main(int argc, char *argv[]) {
   
   struct utsname sysinfo = {};
   if(uname(&sysinfo) == 0) {
-    StartupStore(". System Name:    %s" NEWLINE, sysinfo.sysname);
+    StartupStore(". System Name:    %s %s" NEWLINE, sysinfo.sysname, sysinfo.nodename);
     StartupStore(". Kernel Version: %s" NEWLINE, sysinfo.release);
     StartupStore(". Kernel Build:   %s" NEWLINE, sysinfo.version);
     StartupStore(". Machine Arch:   %s" NEWLINE, sysinfo.machine);
@@ -396,17 +398,17 @@ int main(int argc, char *argv[]) {
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
     CreateProgressDialog(gettext(TEXT("_@M1208_")));
-    Poco::Thread::sleep(3000);
+    Poco::Thread::sleep(ERRDELAY);
   }
 #endif
   _stprintf(sTmpB, TEXT("Conf=%s"),sTmpA);
   CreateProgressDialog(sTmpB); 
 #if ( WINDOWSPC==0 )
   if ( !datadir ) {
-    Poco::Thread::sleep(3000);
+    Poco::Thread::sleep(ERRDELAY);
     // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
 	CreateProgressDialog(gettext(TEXT("_@M1209_")));
-    Poco::Thread::sleep(3000);
+    Poco::Thread::sleep(ERRDELAY);
   }
 #endif
 #endif // non PNA
@@ -415,12 +417,12 @@ int main(int argc, char *argv[]) {
     if (AircraftCategory == (AircraftCategory_t) umParaglider) {
         // LKTOKEN _@M1210_ "PARAGLIDING MODE"
         CreateProgressDialog(gettext(TEXT("_@M1210_")));
-        Poco::Thread::sleep(1000);
+        Poco::Thread::sleep(MSGDELAY);
     }
     if (SIMMODE) {
         // LKTOKEN _@M1211_ "SIMULATION"
         CreateProgressDialog(gettext(TEXT("_@M1211_")));
-        Poco::Thread::sleep(1000);
+        Poco::Thread::sleep(MSGDELAY);
     }
 
 #ifdef PNA
