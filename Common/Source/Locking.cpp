@@ -12,25 +12,11 @@ Poco::Mutex  CritSec_FlightData;
 Poco::Mutex  CritSec_EventQueue;
 Poco::Mutex  CritSec_TerrainDataGraphics;
 Poco::Mutex  CritSec_TerrainDataCalculations;
-Poco::Mutex  CritSec_Comm;
 Poco::Mutex  CritSec_TaskData;
 
 static int csCount_TaskData = 0;
 static int csCount_FlightData = 0;
 static int csCount_EventQueue = 0;
-
-
-
-
-
-void LockComm() {
-  CritSec_Comm.lock();
-}
-
-void UnlockComm() {
-  CritSec_Comm.unlock();
-}
-
 
 void LockTaskData() {
   CritSec_TaskData.lock();

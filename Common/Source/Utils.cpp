@@ -18,35 +18,6 @@ long GetUTCOffset(void) {
     return UTCOffset;
 }
 
-void RestartCommPorts() {
-
-    StartupStore(TEXT(". RestartCommPorts begin @%s%s"), WhatTimeIsIt(), NEWLINE);
-
-    LockComm();
-    /* 29/10/2013 : 
-     * if RxThread wait for LockComm, It never can terminate -> Dead Lock
-     *  can appen at many time when reset comport is called ....
-     *    devRequestFlarmVersion called by NMEAParser::PFLAU is first exemple
-     * 
-     * in fact if it appens, devClose() kill RxThread after 20s timeout...
-     *  that solve the deadlock, but thread is not terminated correctly ...
-     * 
-     * Bruno.
-     */
-    devClose(devA());
-    devClose(devB());
-
-    NMEAParser::Reset();
-
-    devInit(TEXT(""));
-
-    UnlockComm();
-#if TESTBENCH
-    StartupStore(TEXT(". RestartCommPorts end @%s%s"), WhatTimeIsIt(), NEWLINE);
-#endif
-
-}
-
 void TriggerGPSUpdate() {
     dataTriggerEvent.set();
 }

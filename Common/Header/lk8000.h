@@ -21,8 +21,6 @@ typedef struct _DATAOPTIONS
 
 extern void UnlockEventQueue();
 extern void LockEventQueue();
-extern void UnlockComm();
-extern void LockComm();
 extern void UnlockFlightData();
 extern void CheckAndUnlockFlightData();
 extern void LockFlightData();
@@ -41,7 +39,6 @@ void FullScreen();
 
 extern void PopupWaypointDetails();
 extern void PopupAnalysis();
-extern void RestartCommPorts();
 
 #ifndef DEG_TO_RAD
 #define DEG_TO_RAD  (PI / 180)

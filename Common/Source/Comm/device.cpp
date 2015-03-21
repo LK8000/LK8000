@@ -32,6 +32,8 @@ using namespace std::placeholders;
 //  of deadlock.  So, FlightData must never be locked after Comm.  Ever.
 //  Thankfully WinCE "critical sections" are recursive locks.
 
+// this lock is used for protect DeviceList array.
+Poco::Mutex  CritSec_Comm;
 
 COMMPort_t COMMPort;
 
@@ -44,6 +46,14 @@ DeviceDescriptor_t *pDevPrimaryBaroSource=NULL;
 DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 
 int DeviceRegisterCount = 0;
+
+void LockComm() {
+  CritSec_Comm.lock();
+}
+
+void UnlockComm() {
+  CritSec_Comm.unlock();
+}
 
 static BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text);
@@ -255,6 +265,36 @@ bool ReadPortSettings(int idx, LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Inde
             return false;
     }
 }
+
+void RestartCommPorts() {
+
+    StartupStore(TEXT(". RestartCommPorts begin @%s%s"), WhatTimeIsIt(), NEWLINE);
+
+    LockComm();
+    /* 29/10/2013 : 
+     * if RxThread wait for LockComm, It never can terminate -> Dead Lock
+     *  can appen at many time when reset comport is called ....
+     *    devRequestFlarmVersion called by NMEAParser::PFLAU is first exemple
+     * 
+     * in fact if it appens, devClose() kill RxThread after 20s timeout...
+     *  that solve the deadlock, but thread is not terminated correctly ...
+     * 
+     * Bruno.
+     */
+    devClose(devA());
+    devClose(devB());
+
+    NMEAParser::Reset();
+
+    devInit(TEXT(""));
+
+    UnlockComm();
+#if TESTBENCH
+    StartupStore(TEXT(". RestartCommPorts end @%s%s"), WhatTimeIsIt(), NEWLINE);
+#endif
+
+}
+
 
 BOOL devInit(LPCTSTR CommandLine) {
     TCHAR DeviceName[DEVNAMESIZE + 1];
