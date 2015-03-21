@@ -9,6 +9,8 @@
 #if !defined(LKASSERT_H)
 #define LKASSERT_H
 
+#include "MessageLog.h"
+
 #if USELKASSERT
 
   extern void MSG_ASSERTION(int line, const TCHAR *filename);

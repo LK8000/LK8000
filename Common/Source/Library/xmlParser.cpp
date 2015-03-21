@@ -53,8 +53,6 @@
 
 
 
-void StartupStore(const TCHAR *Str, ...); // 100102
-
 bool XMLNode::GlobalError = false;
 
 XMLNode XMLNode::emptyXMLNode;

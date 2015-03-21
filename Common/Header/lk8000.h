@@ -69,12 +69,6 @@ extern void RestartCommPorts();
 #define BATTERY_FLAG_UNKNOWN 255
 #endif
 
-extern "C" {
-void DebugStore(const char *Str, ...);
-}
-
-void StartupStore(const TCHAR *Str, ...);
-
 namespace Battery {
 
 #define BATTERY_UNKNOWN 255
