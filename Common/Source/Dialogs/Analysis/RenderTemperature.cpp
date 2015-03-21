@@ -98,7 +98,9 @@ void Statistics::RenderTemperature(LKSurface& Surface, const RECT& rc)
     Surface.SetTextColor(RGB_DARKGREEN);
   else
     Surface.SetTextColor(RGB_GREEN);
+    #if (WINDOWSPC>0)
   Surface.SetBackgroundOpaque();
+    #endif
   TCHAR text[80];
   _stprintf(text,TEXT(" T/%sC "), gettext(_T("_@M2179_")));
   DrawXLabel(Surface, rc, text);

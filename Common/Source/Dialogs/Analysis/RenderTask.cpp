@@ -245,7 +245,9 @@ double fXY_Scale = 1.5;
 		y2 = (lat2-lat_c);
 
 		DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_BLUETHIN);
+                #if (WINDOWSPC>0)
 	    Surface.SetBackgroundOpaque();
+                #endif
 		TCHAR text[100];
 		 Surface.SetTextColor(RGB_BLUE);
 /*

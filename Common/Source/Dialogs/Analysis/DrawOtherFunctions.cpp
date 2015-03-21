@@ -35,7 +35,9 @@ void Statistics::DrawNoData(LKSurface& Surface, const RECT& rc) {
   Surface.GetTextSize(text, _tcslen(text), &tsize);
   int x = (int)(rc.left+rc.right-tsize.cx)/2;
   int y = (int)(rc.top+rc.bottom-tsize.cy)/2;
+  #if (WINDOWSPC>0)
   Surface.SetBackgroundOpaque();
+  #endif
   Surface.DrawText(x, y, text, _tcslen(text));
   Surface.SetBackgroundTransparent();
 }
