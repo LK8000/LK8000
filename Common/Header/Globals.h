@@ -772,7 +772,7 @@ GEXTERN LKFont   MapWindowFont;
 GEXTERN LKFont   MapWindowBoldFont;
 GEXTERN LKFont   CDIWindowFont;
 GEXTERN LKFont   MapLabelFont;
-GEXTERN LKFont   StatisticsFont;
+GEXTERN LKFont   Custom1Font;
 GEXTERN LKFont   MapWaypointFont;
 GEXTERN LKFont   MapTopologyFont;
 
@@ -800,7 +800,7 @@ GEXTERN LOGFONT  autoMapWaypointFont;
 GEXTERN LOGFONT  autoMapWindowBoldLogFont;
 GEXTERN LOGFONT  autoCDIWindowLogFont;
 GEXTERN LOGFONT  autoMapLabelLogFont;
-GEXTERN LOGFONT  autoStatisticsLogFont;
+GEXTERN LOGFONT  autoCustom1Font;
 GEXTERN LOGFONT  autoMapTopologyFont;
 
 //
