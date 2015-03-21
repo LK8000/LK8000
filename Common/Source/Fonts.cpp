@@ -75,7 +75,11 @@ bool IsNullLogFont(LOGFONT logfont) {
   return bRetVal;
 }
 
-
+//
+// TODO 2015: this is where we shall rescale fonts using 5 levels approach.
+// instead of saving the font string, we shall save a simple number, and use it here
+// in place of FontRegKey. 
+//
 void InitializeOneFont (LKFont& theFont, 
                                const char FontRegKey[] , 
                                LOGFONT autoLogFont, 
