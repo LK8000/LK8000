@@ -774,6 +774,7 @@ GEXTERN LKFont   CDIWindowFont;
 GEXTERN LKFont   MapLabelFont;
 GEXTERN LKFont   StatisticsFont;
 GEXTERN LKFont   MapWaypointFont;
+GEXTERN LKFont   MapTopologyFont;
 
 GEXTERN LKFont   LK8UnitFont;
 GEXTERN LKFont   LK8TitleFont;
@@ -800,6 +801,7 @@ GEXTERN LOGFONT  autoMapWindowBoldLogFont;
 GEXTERN LOGFONT  autoCDIWindowLogFont;
 GEXTERN LOGFONT  autoMapLabelLogFont;
 GEXTERN LOGFONT  autoStatisticsLogFont;
+GEXTERN LOGFONT  autoMapTopologyFont;
 
 //
 // File names and paths
@@ -837,8 +839,8 @@ GEXTERN DWORD LiftUnit_Config;
 GEXTERN DWORD AltitudeUnit_Config;
 
 // Editable fonts, verbose string
-GEXTERN TCHAR FontDesc_MapWindow[256];
-GEXTERN TCHAR FontDesc_MapLabel[256];
+GEXTERN TCHAR FontDesc_MapWaypoint[256];
+GEXTERN TCHAR FontDesc_MapTopology[256];
 
 // Logger
 GEXTERN TCHAR PilotName_Config[100];

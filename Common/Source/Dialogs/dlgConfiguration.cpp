@@ -39,8 +39,8 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName);
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
 
 
-static LKFont TempMapWindowFont;
-static LKFont TempMapLabelFont;
+static LKFont TempWaypointFont;
+static LKFont TempTopologyFont;
 static LKFont TempUseCustomFontsFont;
 
 extern void InitializeOneFont (LKFont& theFont, 
@@ -708,14 +708,14 @@ static void ResetFonts(bool bUseCustom) {
                         autoMapWindowLogFont,
                         NULL);
 
-  InitializeOneFont (TempMapWindowFont, 
-                        szRegistryFontMapWindowFont, 
-                        autoMapWindowLogFont,
+  InitializeOneFont (TempWaypointFont, 
+                        szRegistryFontWaypointFont, 
+                        autoMapWaypointFont,
                         NULL);
 
-  InitializeOneFont (TempMapLabelFont, 
-                        szRegistryFontMapLabelFont, 
-                        autoMapLabelLogFont,
+  InitializeOneFont (TempTopologyFont, 
+                        szRegistryFontTopologyFont, 
+                        autoMapTopologyFont,
                         NULL);
 
   UseCustomFonts=UseCustomFontsold;
@@ -752,14 +752,14 @@ static void RefreshFonts(void) {
 // now set SampleTexts on the Fonts frame
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapWindowFont"));
   if (wp) {
-    wp->SetFont(TempMapWindowFont);
+    wp->SetFont(TempWaypointFont);
     wp->SetVisible(false);
     wp->SetVisible(true);
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapLabelFont"));
   if (wp) {
-    wp->SetFont(TempMapLabelFont);
+    wp->SetFont(TempTopologyFont);
     wp->SetVisible(false);
     wp->SetVisible(true);
   }
@@ -800,8 +800,8 @@ static void OnEditMapWindowFontClicked(WndButton* pWnd) {
     TCHAR fontDesc[MAX_EDITFONT_DESC_LEN + 1];
     GetFontDescription(fontDesc, TEXT("prpMapWindowFont"), MAX_EDITFONT_DESC_LEN);
     if (dlgFontEditShowModal(fontDesc,
-            szRegistryFontMapWindowFont,
-            autoMapWindowLogFont)) {
+            szRegistryFontWaypointFont,
+            autoMapWaypointFont)) {
         FontRegistryChanged = true;
         RefreshFonts();
     }
@@ -810,7 +810,7 @@ static void OnEditMapWindowFontClicked(WndButton* pWnd) {
 static void OnEditMapLabelFontClicked(WndButton* pWnd) {
     TCHAR fontDesc[MAX_EDITFONT_DESC_LEN + 1];
     GetFontDescription(fontDesc, TEXT("prpMapLabelFont"), MAX_EDITFONT_DESC_LEN);
-    if (dlgFontEditShowModal(fontDesc, szRegistryFontMapLabelFont, autoMapLabelLogFont)) {
+    if (dlgFontEditShowModal(fontDesc, szRegistryFontTopologyFont, autoMapTopologyFont)) {
         FontRegistryChanged = true;
         RefreshFonts();
     }
@@ -4558,8 +4558,8 @@ int ival;
 
   wf = NULL;
   
-    TempMapWindowFont.Release();
-    TempMapLabelFont.Release();
+    TempWaypointFont.Release();
+    TempTopologyFont.Release();
     TempUseCustomFontsFont.Release();
 
 

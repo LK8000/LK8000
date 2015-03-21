@@ -574,8 +574,8 @@ void Globals_Init(void) {
   AltitudeUnit_Config = 1;	// default m
 
   // Editable fonts
-  FontDesc_MapWindow[0]=_T('\0');
-  FontDesc_MapLabel [0]=_T('\0');
+  FontDesc_MapWaypoint[0]=_T('\0');
+  FontDesc_MapTopology [0]=_T('\0');
 
   // Logger
   PilotName_Config[0]=_T('\0');

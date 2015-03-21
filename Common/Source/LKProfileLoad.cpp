@@ -397,8 +397,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryFinishMinHeight,&FinishMinHeight);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryFinishRadius,&FinishRadius);
-  PREAD(sname,svalue,szRegistryFontMapLabelFont,&*FontDesc_MapLabel, array_size(FontDesc_MapLabel));
-  PREAD(sname,svalue,szRegistryFontMapWindowFont,&*FontDesc_MapWindow, array_size(FontDesc_MapWindow));
+  PREAD(sname,svalue,szRegistryFontTopologyFont,&*FontDesc_MapTopology, array_size(FontDesc_MapTopology));
+  PREAD(sname,svalue,szRegistryFontWaypointFont,&*FontDesc_MapWaypoint, array_size(FontDesc_MapWaypoint));
   PREAD(sname,svalue,szRegistryFontRenderer,&FontRenderer);
   PREAD(sname,svalue,szRegistryGlideBarMode,&GlideBarMode);
   PREAD(sname,svalue,szRegistryGliderScreenPosition,&MapWindow::GliderScreenPosition);

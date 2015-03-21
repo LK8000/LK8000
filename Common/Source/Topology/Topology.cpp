@@ -568,7 +568,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
     hbOld = Surface.SelectObject(hbBrush);
   }
 
-  const auto hfOld = Surface.SelectObject(MapLabelFont);
+  const auto hfOld = Surface.SelectObject(MapTopologyFont);
 
   // get drawing info
   int iskip = 1;

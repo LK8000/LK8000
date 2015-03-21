@@ -206,8 +206,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryFinishLine,FinishLine);
   rprintf(szRegistryFinishMinHeight,FinishMinHeight); // saved *1000, /1000 when used
   rprintf(szRegistryFinishRadius,FinishRadius);
-  rprintf(szRegistryFontMapLabelFont,FontDesc_MapLabel);
-  rprintf(szRegistryFontMapWindowFont,FontDesc_MapWindow);
+  rprintf(szRegistryFontTopologyFont,FontDesc_MapTopology);
+  rprintf(szRegistryFontWaypointFont,FontDesc_MapWaypoint);
   rprintf(szRegistryFontRenderer,FontRenderer);
   rprintf(szRegistryGlideBarMode,GlideBarMode);
   rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);

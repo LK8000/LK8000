@@ -238,8 +238,8 @@ void SaveValues(const char * FontRegKey )
                         NewLogFont.lfQuality,
                         NewLogFont.lfPitchAndFamily,
                         NewLogFont.lfFaceName);
-  if (strcmp(FontRegKey,szRegistryFontMapWindowFont)==0) _tcscpy(FontDesc_MapWindow,sValue);
-  if (strcmp(FontRegKey,szRegistryFontMapLabelFont)==0) _tcscpy(FontDesc_MapLabel,sValue);
+  if (strcmp(FontRegKey,szRegistryFontWaypointFont)==0) _tcscpy(FontDesc_MapWaypoint,sValue);
+  if (strcmp(FontRegKey,szRegistryFontTopologyFont)==0) _tcscpy(FontDesc_MapTopology,sValue);
 }
 
 void InitGUI(const TCHAR * FontDescription)
