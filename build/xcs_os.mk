@@ -8,6 +8,11 @@ XCS_OS_LINUX := \
 	$(SRC)/xcs/OS/Poll.cpp\
 	$(SRC)/xcs/OS/Process.cpp\
 	$(SRC)/xcs/OS/PathName.cpp\
+	\
+	$(SRC)/xcs/IO/FileSource.cpp\
+	$(SRC)/xcs/IO/InflateLineReader.cpp \
+	$(SRC)/xcs/IO/InflateSource.cpp \
+	$(SRC)/xcs/IO/LineSplitter.cpp \
 
 
 XCS_OS := \

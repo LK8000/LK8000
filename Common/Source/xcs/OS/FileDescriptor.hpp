@@ -32,8 +32,6 @@
 
 #include "Compiler.h"
 
-#include <utility>
-
 #include <assert.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -47,33 +45,23 @@
 
 /**
  * An OO wrapper for a UNIX file descriptor.
+ *
+ * This class is unmanaged and trivial; for a managed version, see
+ * #UniqueFileDescriptor.
  */
 class FileDescriptor {
+protected:
   int fd;
 
 public:
-  FileDescriptor():fd(-1) {}
+  FileDescriptor() = default;
+  explicit constexpr FileDescriptor(int _fd):fd(_fd) {}
 
-protected:
-  explicit FileDescriptor(int _fd):fd(_fd) {
-    assert(IsDefined());
+  constexpr bool operator==(FileDescriptor other) const {
+    return fd == other.fd;
   }
 
-public:
-  FileDescriptor(FileDescriptor &&other):fd(other.fd) {
-    other.fd = -1;
-  }
-
-  ~FileDescriptor() {
-    Close();
-  }
-
-  FileDescriptor &operator=(FileDescriptor &&other) {
-    std::swap(fd, other.fd);
-    return *this;
-  }
-
-  bool IsDefined() const {
+  constexpr bool IsDefined() const {
     return fd >= 0;
   }
 
@@ -81,17 +69,11 @@ public:
    * Returns the file descriptor.  This may only be called if
    * IsDefined() returns true.
    */
-  int Get() const {
-    assert(IsDefined());
-
+  constexpr int Get() const {
     return fd;
   }
 
-protected:
   void Set(int _fd) {
-    assert(!IsDefined());
-    assert(_fd >= 0);
-
     fd = _fd;
   }
 
@@ -103,8 +85,15 @@ protected:
     return _fd;
   }
 
-public:
-  bool Open(const char *pathname, int flags);
+  void SetUndefined() {
+    fd = -1;
+  }
+
+  static constexpr FileDescriptor Undefined() {
+    return FileDescriptor(-1);
+  }
+
+  bool Open(const char *pathname, int flags, mode_t mode=0666);
   bool OpenReadOnly(const char *pathname);
 
 #ifdef HAVE_POSIX
@@ -147,11 +136,8 @@ public:
    * "undefined" object.  After this call, IsDefined() is guaranteed
    * to return false, and this object may be reused.
    */
-  void Close() {
-    if (IsDefined()) {
-      ::close(fd);
-      fd = -1;
-    }
+  bool Close() {
+    return ::close(Steal()) == 0;
   }
 
   /**

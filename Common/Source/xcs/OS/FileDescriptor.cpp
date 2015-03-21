@@ -61,18 +61,16 @@
 #endif
 
 bool
-FileDescriptor::Open(const char *pathname, int flags)
+FileDescriptor::Open(const char *pathname, int flags, mode_t mode)
 {
-  assert(!IsDefined());
-
-  fd = ::open(pathname, flags);
+  fd = ::open(pathname, flags | O_NOCTTY | O_CLOEXEC, mode);
   return IsDefined();
 }
 
 bool
 FileDescriptor::OpenReadOnly(const char *pathname)
 {
-  return Open(pathname, O_RDONLY | O_NOCTTY | O_CLOEXEC);
+  return Open(pathname, O_RDONLY);
 }
 
 #ifdef HAVE_POSIX
@@ -80,7 +78,7 @@ FileDescriptor::OpenReadOnly(const char *pathname)
 bool
 FileDescriptor::OpenNonBlocking(const char *pathname)
 {
-  return Open(pathname, O_RDWR | O_NOCTTY | O_CLOEXEC | O_NONBLOCK);
+  return Open(pathname, O_RDWR | O_NONBLOCK);
 }
 
 bool
@@ -134,8 +132,6 @@ FileDescriptor::SetBlocking()
 bool
 FileDescriptor::CreateEventFD(unsigned initval)
 {
-  assert(!IsDefined());
-
 #ifdef __BIONIC__
   /* Bionic provides the eventfd() function only since Android 2.3,
      therefore we must roll our own system call here */

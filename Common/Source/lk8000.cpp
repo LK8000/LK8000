@@ -68,6 +68,7 @@
 #include "Sound/Sound.h"
 
 #include "Kobo/System.hpp"
+#include "Kobo/Kernel.hpp"
 #include "Hardware/CPU.hpp"
 
 #ifdef __linux__
@@ -142,6 +143,14 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     
 #else
 int main(int argc, char *argv[]) {
+    
+#ifdef KOBO
+    if(lk::filesystem::exist("/mnt/onboard/LK8000/uImage")) {
+        KoboInstallKernel("/mnt/onboard/LK8000/uImage");
+        lk::filesystem::deleteFile("/mnt/onboard/LK8000/uImage");
+        KoboReboot();
+    }
+#endif
     
 #ifdef HAVE_CPU_FREQUENCY
     // temporary for KOBO device. 

@@ -260,6 +260,9 @@ endif
 $(eval $(call pkg-config-library,ZZIP,zziplib))
 CE_DEFS += $(patsubst -I%,-isystem %,$(ZZIP_CPPFLAGS))
 
+$(eval $(call pkg-config-library,ZLIB,zlib))
+CE_DEFS += $(patsubst -I%,-isystem %,$(ZLIB_CPPFLAGS))
+
 $(eval $(call pkg-config-library,FREETYPE,freetype2))
 CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
 CE_DEFS += -DUSE_FREETYPE
@@ -1112,7 +1115,9 @@ DISTRIB_OUTPUT := KoboRoot.tgz
 
 # temporary still we don't have kobo menu.	
 SRC_FILES += \
-	$(SRC)/xcs/Kobo/System.cpp
+	$(SRC)/xcs/Kobo/System.cpp \
+	$(SRC)/xcs/Kobo/Kernel.cpp
+	
 
 endif
 # Add JP2 library for JP2000 unsupported raster maps
