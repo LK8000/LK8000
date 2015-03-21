@@ -96,4 +96,4 @@ if [ `dd if=/dev/mmcblk0 bs=8 count=1 skip=64` = "SN-N905B" ]; then
 fi
 
 # finally, launch LK8000-KOBO
-exec /opt/LK8000/bin/LK8000-KOBO
+exec /opt/LK8000/bin/LK8000-KOBO >> /mnt/onboard/LK8000/Start.log 2>&1
