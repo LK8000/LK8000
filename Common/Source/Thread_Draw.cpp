@@ -341,7 +341,10 @@ void MapWindow::CloseDrawingThread(void)
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread waitforsingleobject\n"));
   #endif
-  drawTriggerEvent.reset();
+  #ifdef __linux__
+  #else
+  drawTriggerEvent.reset(); // on linux this is delaying 5000
+  #endif
   MapWindowThread.join();
           
   #if TESTBENCH
