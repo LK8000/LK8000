@@ -543,6 +543,11 @@ void InitialiseFonts(RECT rc)
                         autoMapWaypointFont,
                         NULL);
 
+  InitializeOneFont (MapWindowFont, 
+                        NULL,
+                        autoMapWindowLogFont,
+                        NULL);
+
   InitializeOneFont (MapWindowBoldFont, 
                         NULL,
                         autoMapWindowBoldLogFont,
