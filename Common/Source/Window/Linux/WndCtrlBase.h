@@ -36,6 +36,9 @@ public:
         _szWndName = szName?szName:_T("");
     }
     
+    virtual bool OnLButtonDown(const POINT& Pos) { return true; }
+    virtual bool OnLButtonUp(const POINT& Pos) { return true; }    
+    
 protected:
     std::tstring _szWndName;
     std::tstring _szWndText;
