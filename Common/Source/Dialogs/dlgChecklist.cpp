@@ -259,6 +259,7 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
 } // AddChecklistLine
 
 
+#ifndef __linux__
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads checklist from file encoded in system code page.
 ///
@@ -312,7 +313,7 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
   
   return(true);
 } // LoadAsciiChecklist 
-
+#endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads checklist from file encoded in UTF-8.
