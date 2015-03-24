@@ -20,6 +20,17 @@
 
 #endif
 
+#if BUGSTOP
+  #define BUGSTOP_LKASSERT(arg) LKASSERT(arg)
+#else
+  #define BUGSTOP_LKASSERT(arg) 
+#endif
+
+#if TESTBENCH
+  #define TESTBENCH_DO_ONLY(n,arg) {;static short rpt=n; if (rpt>0) {; rpt--; ;{;(arg); };};};
+#else
+  #define TESTBENCH_DO_ONLY(n,arg)
+#endif
 
 
 
