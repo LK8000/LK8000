@@ -180,11 +180,6 @@ int main(int argc, char *argv[]) {
   }
   #endif
 
-#ifdef KOBO
-#warning "Temporary : remove when we have KoboMenu"
-  KoboExportUSBStorage();
-#endif  
-    
   ScreenGlobalInit InitScreen;
   SoundGlobalInit InitSound;
   // This is needed otherwise LKSound will be silent until we init Globals.
@@ -390,12 +385,6 @@ int main(int argc, char *argv[]) {
   #endif
   GlidePolar::SetBallast();
 
-#ifdef KOBO
-#warning "Temporary : remove when we have KoboMenu"  
-  CreateProgressDialog(TEXT("Stop Usb MassStorage")); 
-  KoboUnexportUSBStorage();
-#endif
-  
 #ifdef PNA // VENTA-ADDON
     TCHAR sTmp[250];
 	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);
