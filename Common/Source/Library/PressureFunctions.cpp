@@ -20,9 +20,7 @@ double AirDensitySinkRate(double ias, double qnhaltitude) {
     sinkias=GlidePolar::SinkRate(ias)*AirDensityRatio(AltitudeToQNEAltitude(qnhaltitude));
 
     // this can actually happen with a bad polar file loaded!
-    #if BUGSTOP
-    LKASSERT(sinkias<=0);
-    #endif
+    BUGSTOP_LKASSERT(sinkias<=0);
     if (sinkias>0) sinkias=0;
     return sinkias;
 }
@@ -118,10 +116,13 @@ double AirDensity(double altitude) {
   if (altitude>44330){
       altitude=44330;
   }
+  if (altitude<-200) { // min altitude 
+      TESTBENCH_DO_ONLY(10,StartupStore(_T(".... INVALID ALTITUDE in AirDensity: %f%s"),altitude,NEWLINE));
+      altitude=-200;
+  }
+
   double rho = pow((44330.8-altitude)/42266.5,1.0/0.234969);
-  #if BUGSTOP
-  LKASSERT(rho>0);
-  #endif
+  BUGSTOP_LKASSERT(rho>0);
   if (rho<=0) rho=1; // we always give some pressure for the boys
   return rho;
 }
