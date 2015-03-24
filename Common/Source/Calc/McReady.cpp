@@ -88,10 +88,8 @@ void GlidePolar::SetBallast() {
       double thesinkrate 
         =  -SinkRate(polar_a,polar_b,polar_c,0,0,vtrack);
 
-      #if BUGSTOP
-      LKASSERT(thesinkrate!=0);
-      #endif
-      if (thesinkrate==0) thesinkrate=0.001;
+      BUGSTOP_LKASSERT(thesinkrate>0);
+      if (thesinkrate<=0) thesinkrate=0.001;
       double ld = vtrack/thesinkrate;
       if (ld>=bestld) {
         bestld = ld;
@@ -103,6 +101,11 @@ void GlidePolar::SetBallast() {
       }
       sinkratecache[i] = -thesinkrate;
 
+    }
+    BUGSTOP_LKASSERT(bestld>0);
+    if (bestld<=0) {
+        TESTBENCH_DO_ONLY(10, StartupStore(_T(".... SetBallast bestld=%f NOT FOUND! Polar error?%s"),bestld,NEWLINE));
+        bestld=1;
     }
   UnlockFlightData();
 
