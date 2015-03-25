@@ -49,12 +49,14 @@ Bitmap::Load(ConstBuffer<void> buffer, Type type)
   return (uncompressed.IsVisible() && Load(uncompressed, type));
 }
 
+#ifdef USE_LIBJPEG
 bool
 Bitmap::LoadFile(const TCHAR *path)
 {
   const UncompressedImage uncompressed = LoadJPEGFile(path);
   return (uncompressed.IsVisible() && Load(uncompressed));
 }
+#endif
 
 bool
 Bitmap::LoadPNGFile(const TCHAR *path)

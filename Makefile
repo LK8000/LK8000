@@ -396,7 +396,7 @@ endif
 LDFLAGS		+=$(PROFILE) -Wl,-Map=output.map
 
 ifeq ($(CONFIG_LINUX),y)
-  LDLIBS += -lstdc++ -pthread -march=native -lpng -ljpeg -lrt -lm $(FREETYPE_LDLIBS)  $(ZZIP_LDLIBS)
+  LDLIBS += -lstdc++ -pthread -march=native -lpng -lrt -lm $(FREETYPE_LDLIBS)  $(ZZIP_LDLIBS)
   
   ifeq ($(USE_SDL), y)
     LDLIBS += $(SDL_LDLIBS)

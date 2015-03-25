@@ -21,7 +21,6 @@ XCS_SCREEN_TTY := \
 XCS_SCREEN_CUSTOM := \
 	$(SRC)/xcs/Screen/Custom/Bitmap.cpp \
 	$(SRC)/xcs/Screen/Custom/LibPNG.cpp \
-	$(SRC)/xcs/Screen/Custom/LibJPEG.cpp \
 	$(SRC)/xcs/Screen/Custom/Pen.cpp \
 	$(SRC)/xcs/Screen/Custom/Files.cpp \
 	$(SRC)/xcs/Screen/Custom/WList.cpp \
