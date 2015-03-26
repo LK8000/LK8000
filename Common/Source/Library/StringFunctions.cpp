@@ -675,7 +675,7 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
 //
 
 #if USELKASSERT
-void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars, const unsigned int sizedest, const int line, const char *filename)
+void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars, const unsigned int sizedest, const int line, const TCHAR *filename)
 #else
 void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars)
 #endif
@@ -683,11 +683,7 @@ void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numof
 
   #if USELKASSERT
   if (dest == NULL || sizedest==0) {
-	#ifdef __linux__
-	StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %s line %d, sizedest=%d\n"), filename, line,sizedest);
-	#else
-	StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %S line %d, sizedest=%d\n"), filename, line,sizedest);
-	#endif
+	StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %s line %d, sizedest=%d") NEWLINE, filename, line,sizedest);
 	return;
 	//LKASSERT(false); // does not work during startup!
   }
@@ -696,11 +692,7 @@ void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numof
   // Notice> we cannot check sizeof of a pointer, so anything with an address size instead of an array size 
   // will be excluded. Better than nothing.
   if (  sizedest>sizeof(dest) && numofchars >= sizedest ) {
-	#ifdef __linux__
-	StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %s line %d dstsize=%d srcsize=%d\n"), filename, line,sizedest,numofchars);
-	#else
-	StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %S line %d dstsize=%d srcsize=%d\n"), filename, line,sizedest,numofchars);
-	#endif
+	StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %s line %d dstsize=%d srcsize=%d") NEWLINE, filename, line,sizedest,numofchars);
 	_tcsncpy(dest,src,sizedest-1);
 	dest[sizedest-1] = '\0';
 	return;

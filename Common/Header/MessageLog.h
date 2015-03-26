@@ -13,12 +13,13 @@
 #define	MESSAGELOG_H
 
 #include <tchar.h>
+#include "Compiler.h"
 
 extern "C" {
-void DebugStore(const char *Str, ...);
+void DebugStore(const char *Str, ...) gcc_printf(1,2);
 }
 
-void StartupStore(const TCHAR *Str, ...);
+void StartupStore(const TCHAR *Str, ...) gcc_printf(1,2);
 
 #endif	/* MESSAGELOG_H */
 

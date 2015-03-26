@@ -227,8 +227,8 @@ extern void ClubForbiddenMsg(void);
 
 #if USELKASSERT
 void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars,
-			const unsigned int sizedest, const int line = 0, const char *filename = NULL); 
-#define LK_tcsncpy(dest, src, numofchars) {;LK_tcsncpy_internal(dest, src, numofchars, sizeof(dest), __LINE__, __FILE__);}
+			const unsigned int sizedest, const int line = 0, const TCHAR *filename = NULL); 
+#define LK_tcsncpy(dest, src, numofchars) {;LK_tcsncpy_internal(dest, src, numofchars, sizeof(dest), __LINE__, _T(__FILE__));}
 #else
 void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars);
 #define LK_tcsncpy(dest, src, numofchars) LK_tcsncpy_internal(dest, src, numofchars)

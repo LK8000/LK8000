@@ -117,8 +117,8 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
     TerrainMem = (short*)malloc(sizeof(short)*nsize);
   } else {
     zzip_fclose(fpTerrain);
-    StartupStore(_T(".... Load Terrain FAILED: Not enough memory (free=%lu need=%lu+5M)!\n"),
-            CheckFreeRam(), (nsize*sizeof(short)));
+    StartupStore(_T(".... Load Terrain FAILED: Not enough memory (free=%u need=%u+5M)!\n"),
+            (unsigned int)CheckFreeRam(), (unsigned int)(nsize*sizeof(short)));
     TerrainMem = NULL;
     return false;
   }

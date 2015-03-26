@@ -17,7 +17,7 @@ void StartupLogFreeRamAndStorage() {
   TCHAR buffer[MAX_PATH];
   LocalPath(buffer);
   size_t freestorage = FindFreeSpace(buffer);
-  StartupStore(TEXT(". Free ram=%lu K  storage=%lu K%s"), freeram,freestorage,NEWLINE);
+  StartupStore(TEXT(". Free ram=%u K  storage=%u K") NEWLINE, (unsigned int)freeram,(unsigned int)freestorage);
 }
 
 
