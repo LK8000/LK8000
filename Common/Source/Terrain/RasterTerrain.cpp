@@ -20,7 +20,7 @@
 RasterMap* RasterTerrain::TerrainMap = NULL;
 
 
-bool RasterMap::GetMapCenter(double *lon, double *lat) {
+bool RasterMap::GetMapCenter(double *lon, double *lat) const {
   if(!isMapLoaded())
     return false;
 
@@ -30,7 +30,7 @@ bool RasterMap::GetMapCenter(double *lon, double *lat) {
 }
 
 
-float RasterMap::GetFieldStepSize() {
+float RasterMap::GetFieldStepSize() const {
   if (!isMapLoaded()) {
     return 0;
   }
@@ -42,7 +42,7 @@ float RasterMap::GetFieldStepSize() {
 
 // accurate method
 int RasterMap::GetEffectivePixelSize(double *pixel_D,
-                                     double latitude, double longitude)
+                                     double latitude, double longitude) const
 {
   double terrain_step_x, terrain_step_y;
   double step_size = TerrainInfo.StepSize*sqrt(2.0);
@@ -70,7 +70,7 @@ int RasterMap::GetEffectivePixelSize(double *pixel_D,
 }
 
 
-int RasterMap::GetEffectivePixelSize(double dist) {
+int RasterMap::GetEffectivePixelSize(double dist) const {
   int grounding;
   LKASSERT(dist!=0);
   grounding = iround(2.0*(GetFieldStepSize()/1000.0)/dist);

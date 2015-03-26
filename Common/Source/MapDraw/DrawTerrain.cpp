@@ -24,7 +24,7 @@
 #include "./ColorRamps.h"
 
 
-unsigned short minalt=9999;
+unsigned short minalt=TERRAIN_INVALID;
 
 static bool terrain_ready=false;
 
@@ -114,10 +114,10 @@ inline void TerrainShading(const short illum, uint8_t &r, uint8_t &g, uint8_t &b
 // Returning from constructor without setting terrain_ready will result in no draw terrain.
 //
 class TerrainRenderer {
-  TerrainRenderer(const TerrainRenderer &);             // disallowed
-  TerrainRenderer &operator=(const TerrainRenderer &);  // disallowed
+  TerrainRenderer(const TerrainRenderer &) = delete;             // disallowed
+  TerrainRenderer &operator=(const TerrainRenderer &) = delete;  // disallowed
 public:
-  TerrainRenderer(RECT rc) {
+  TerrainRenderer(const RECT& rc) {
 
     #if (WINDOWSPC>0) && TESTBENCH
     StartupStore(_T(".... Init TerrainRenderer area (%ld,%ld) (%ld,%ld)\n"),rc.left,rc.top,rc.right,rc.bottom);
@@ -425,14 +425,16 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
   const double ac2 = sint*InvDrawScale;
   const double ac3 = cost*InvDrawScale;
 
-  minalt=TERRAIN_INVALID;
+  if (!terrain_minalt[TerrainRamp]) {
+      minalt=0;	//@ 101110  
+  } else {
+    minalt=TERRAIN_INVALID;
+  }
+  
   for (int y = Y0; y<Y1; y+= dtquant) {
-	//int ycost = y*cost;  // REMOVE COMMENTED LINES AFTER DECEMBER 2012
-	//int ysint = y*sint;
-	//1: double ac1= PanLatitude- ycost*InvDrawScale;
-	//2: double ac1= PanLatitude- y*cost*InvDrawScale;
-	double ac1= PanLatitude- y*ac3;
-	double cc1= y * ac2;
+
+	const double ac1= PanLatitude- y*ac3;
+	const double cc1= y * ac2;
 
 	for (int x = X0; x<X1; x+= dtquant, myhbuf++) {
             assert(myhbuf<hBufTop);
@@ -450,29 +452,19 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
         // if one days someone try to anable RASTER_CACHE, don't forget to fix that.
 		#endif
 
-			//1: double Y = PanLatitude - (ycost+x*sint)*InvDrawScale;
-			//2: double Y = PanLatitude - (ycost*InvDrawScale) - (x*sint*InvDrawScale)
-			double Y = ac1 - x*ac2;
+		const double Y = ac1 - x*ac2;
 
-			//1: sums=2    mult=3
-			//1: double X = PanLongitude + (x*cost-ysint)*invfastcosine(Y)*InvDrawScale;
-			//2: double X = PanLongitude + (x*cost)*invfastcosine(Y)*InvDrawScale - ysint*invfastcosine(Y)*InvDrawScale;
-			//3: double X = PanLongitude + x*invfastcosine(Y)*cost*InvDrawScale - y*invfastcosine(Y)*sint*InvDrawScale;
-			//4: double X = PanLongitude + x*invfastcosine(Y)*ac3 - y*invfastcosine(Y)*ac2;
-			//   int bc1=invfastcosine(Y);
-			//5: double X = PanLongitude + x*bc1*ac3 - y*bc1*ac2;
-			//6: double X = PanLongitude + x*bc1*ac3 - cc1*bc1;
-			//7: double X = PanLongitude + bc1*(x*ac3) - bc1*(cc1);
-			//8: double X = PanLongitude + bc1* (x*ac3 - cc1);
-			double X = PanLongitude + ( invfastcosine(Y) * ((x*ac3)-cc1) );
-			
+		const double X = PanLongitude + ( invfastcosine(Y) * ((x*ac3)-cc1) );
 
-			// this is setting to 0 any negative terrain value and can be a problem for dutch people
-			// myhbuf cannot load negative values!
-			*myhbuf = max(0, (int)DisplayMap->GetField(Y,X));
-			if (*myhbuf<minalt) {
-                minalt=*myhbuf;
-			}
+        // this is setting to 0 any negative terrain value and can be a problem for dutch people
+        // myhbuf cannot load negative values!
+        *myhbuf = DisplayMap->GetField(Y,X);
+        if(*myhbuf<0) {
+           *myhbuf = 0; 
+        }
+        if (*myhbuf<minalt) {
+            minalt=*myhbuf;
+        }
 #ifdef USERASTERCACHE
 		} else {
 			// invisible terrain
@@ -483,7 +475,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 	}
   }
 
-  if (!terrain_minalt[TerrainRamp]) minalt=0;	//@ 101110
+
   if (TerrainRamp==13) {
 	if (!GPS_INFO.NAVWarning) {
 		if (CALCULATED_INFO.Flying) {

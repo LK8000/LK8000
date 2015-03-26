@@ -46,16 +46,16 @@ class RasterMap {
   virtual void SetViewCenter(const double &Latitude, 
                              const double &Longitude) {};
 
-  bool GetMapCenter(double *lon, double *lat);
+  bool GetMapCenter(double *lon, double *lat) const;
 
-  float GetFieldStepSize();
+  float GetFieldStepSize() const;
 
   // inaccurate method
-  int GetEffectivePixelSize(double pixelsize);
+  int GetEffectivePixelSize(double pixelsize) const;
 
   // accurate method
   int GetEffectivePixelSize(double *pixel_D, 
-                            double latitude, double longitude);
+                            double latitude, double longitude) const;
   
   virtual void SetFieldRounding(double xr, double yr);
 
@@ -67,8 +67,8 @@ class RasterMap {
   virtual void Unlock() = 0;
   virtual void ServiceCache() {};
   virtual void ServiceFullReload(double lat, double lon) {};
-  bool IsDirectAccess(void) { return DirectAccess; };
-  bool IsPaged(void) { return Paged; };
+  bool IsDirectAccess(void) const { return DirectAccess; };
+  bool IsPaged(void) const { return Paged; };
 
  protected:
   int xlleft;
