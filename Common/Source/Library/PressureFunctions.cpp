@@ -118,6 +118,7 @@ double AirDensity(double altitude) {
   if (altitude>44330){
       altitude=44330;
   }
+  if (altitude<-200) altitude=-200;
   double rho = pow((44330.8-altitude)/42266.5,1.0/0.234969);
   #if BUGSTOP
   LKASSERT(rho>0);
