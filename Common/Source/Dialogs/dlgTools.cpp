@@ -57,27 +57,31 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   Y = ((rc.bottom-rc.top) - Height)/2;
 
   if (wfullscreen) {
-	if (ScreenLandscape)
-		y = DLGSCALE(160);
-	else
-		y = DLGSCALE(200);
-  } else
+	dY=0;
+	y = DLGSCALE(ScreenLandscape?160:200);
+  } else {
+	dY = DLGSCALE(-40);
 	y = DLGSCALE(100);
+  }
   w = DLGSCALE(60);
   h = DLGSCALE(32);
+  
+  Height += dY;
 
   wf = new WndForm(TEXT("frmXcSoarMessageDlg"), 
                    lpCaption, X, Y, Width, Height);
   wf->SetFont(MapWindowBoldFont);
   wf->SetTitleFont(MapWindowBoldFont);
   wf->SetBackColor(RGB_WINBACKGROUND);
+  wf->SetBorderKind(BORDERTOP|BORDERRIGHT|BORDERBOTTOM|BORDERLEFT);
 
   wText = new WndFrame(wf, 
                        TEXT("frmMessageDlgText"), 
                        0, 
                        DLGSCALE(5), 
                        Width, 
-                       Height);
+                       Height - DLGSCALE(5));
+
   wText->SetCaption(lpText);
   wText->SetFont(MapWindowBoldFont);
   wText->SetCaptionStyle(
@@ -86,18 +90,6 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
       | DT_NOCLIP
       | DT_WORDBREAK
   );
-
-  /* TODO code: this doesnt work to set font height 
-  dY = wText->GetLastDrawTextHeight() - Height;
-  */
-  if (wfullscreen) {
-	dY=0;
-  } else {
-	dY = DLGSCALE(-40);
-    wf->SetBorderKind(BORDERTOP|BORDERRIGHT|BORDERBOTTOM|BORDERLEFT);
-  }
-  // wText->SetHeight(wText->GetLastDrawTextHeight()+5);
-  wf->SetHeight(wf->GetHeight() + dY);
 
   y += dY;
 

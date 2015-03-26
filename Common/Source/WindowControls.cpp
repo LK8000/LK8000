@@ -1359,6 +1359,9 @@ void WindowControl::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
     }
     LKASSERT(cx>0);
     LKASSERT(cy>0);
+    
+    LKASSERT(cx <= (GetWidth() - x));
+    LKASSERT(cy <= (GetHeight() - y));
 }
 
 void WindowControl::AddClient(WindowControl *Client) {
@@ -1649,7 +1652,7 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
 
   mhBrushTitle = LKBrush_Black; // 101204
 
-  mClientWindow = new WindowControl(this, TEXT(""), 20, 20, Width, Height);
+  mClientWindow = new WindowControl(this, TEXT(""), 0, 0, Width, Height);
   mClientWindow->SetBackColor(RGB_WINBACKGROUND);
   mClientWindow->SetCanFocus(false);
 
