@@ -70,6 +70,7 @@
 #include "Kobo/System.hpp"
 #include "Kobo/Kernel.hpp"
 #include "Hardware/CPU.hpp"
+#include "LKInterface/CScreenOrientation.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -182,6 +183,10 @@ int main(int argc, char *argv[]) {
 
   ScreenGlobalInit InitScreen;
   SoundGlobalInit InitSound;
+
+   CScreenOrientation SaveScreen(LKGetLocalPath());
+
+  
   // This is needed otherwise LKSound will be silent until we init Globals.
   EnableSoundModes=true;
  
