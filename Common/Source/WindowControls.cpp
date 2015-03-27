@@ -1359,9 +1359,6 @@ void WindowControl::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
     }
     LKASSERT(cx>0);
     LKASSERT(cy>0);
-    
-    LKASSERT(cx <= (GetWidth() - x));
-    LKASSERT(cy <= (GetHeight() - y));
 }
 
 void WindowControl::AddClient(WindowControl *Client) {
