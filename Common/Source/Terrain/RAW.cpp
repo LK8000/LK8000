@@ -84,9 +84,7 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
   if (_tcslen(zfilename)<=0) 
     return false;
 
-  #if TESTBENCH
   StartupStore(_T(". Terrain Open RasterMapRaw <%s>%s"),zfilename,NEWLINE);
-  #endif
 
   fpTerrain = openzip(zfilename, "rb");
   if (fpTerrain == NULL) {
