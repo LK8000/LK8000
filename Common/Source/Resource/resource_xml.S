@@ -55,7 +55,7 @@
     binfile IDR_XML_DUALPROFILE "../../Data/Dialogs/dlgDualProfile.xml"
     binfile IDR_XML_ORACLE "../../Data/Dialogs/dlgOracle.xml"
     binfile IDR_XML_ORACLE_L "../../Data/Dialogs/dlgOracle_L.xml"
-    binfile IDR_XML_FLYSIM "../../Data/Dialogs/dlgFlySim.xml"
+    binfile IDR_XML_FLYSIM_P "../../Data/Dialogs/dlgFlySim_P.xml"
     binfile IDR_XML_FLYSIM_L "../../Data/Dialogs/dlgFlySim_L.xml"
     binfile IDR_XML_STATUS "../../Data/Dialogs/dlgStatus.xml"
     binfile IDR_XML_TASKCALCULATOR "../../Data/Dialogs/dlgTaskCalculator.xml"

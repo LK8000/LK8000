@@ -323,12 +323,12 @@ short dlgStartupShowModal(void){
 
   // FLY SIM PROFILE EXIT
   if (RUN_MODE==RUN_WELCOME) {
-	if (!ScreenLandscape) {
+	if (ScreenLandscape) {
 		LocalPathS(filename, TEXT("dlgFlySim_L.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_FLYSIM_L"));
 	} else {
-		LocalPathS(filename, TEXT("dlgFlySim.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_FLYSIM"));
+		LocalPathS(filename, TEXT("dlgFlySim_P.xml"));
+		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_FLYSIM_P"));
 	}
 	if (!wf) {
 		return 0;
