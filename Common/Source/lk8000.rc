@@ -168,7 +168,7 @@ IDR_XML_COMBOPICKER     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgComboPicker.
 IDR_XML_PROFILES     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProfiles.xml"
 IDR_XML_AIRSPACEWARNINGPARAMS     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceWarningParams.xml"
 
-IDR_XML_CONFIGAIRCRAFT    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigAircraft.xml"
+IDR_XML_CONFIGAIRCRAFT_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigAircraft_P.xml"
 IDR_XML_CONFIGAIRCRAFT_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigAircraft_L.xml"
 IDR_XML_CONFIGPILOT       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigPilot.xml"
 IDR_XML_CONFIGPILOT_L     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigPilot_L.xml"

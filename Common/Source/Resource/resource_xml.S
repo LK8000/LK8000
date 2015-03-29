@@ -110,7 +110,7 @@
     binfile IDR_XML_PROFILES "../../Data/Dialogs/dlgProfiles.xml"
     binfile IDR_XML_AIRSPACEWARNINGPARAMS "../../Data/Dialogs/dlgAirspaceWarningParams.xml"
 
-    binfile IDR_XML_CONFIGAIRCRAFT "../../Data/Dialogs/dlgConfigAircraft.xml"
+    binfile IDR_XML_CONFIGAIRCRAFT_P "../../Data/Dialogs/dlgConfigAircraft_P.xml"
     binfile IDR_XML_CONFIGAIRCRAFT_L "../../Data/Dialogs/dlgConfigAircraft_L.xml"
     binfile IDR_XML_CONFIGPILOT "../../Data/Dialogs/dlgConfigPilot.xml"
     binfile IDR_XML_CONFIGPILOT_L "../../Data/Dialogs/dlgConfigPilot_L.xml"
