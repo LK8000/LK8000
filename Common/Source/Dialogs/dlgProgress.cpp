@@ -66,9 +66,9 @@ CallBackTableEntry_t CallBackTable[] = {
 dlgProgress::dlgProgress() {
     
 	TCHAR filename[MAX_PATH];
-	LocalPathS(filename, TEXT("dlgProgress.xml"));
+	LocalPathS(filename, ScreenLandscape?TEXT("dlgProgress_L.xml"):TEXT("dlgProgress_P.xml"));
     
-    _WndForm = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_PROGRESS"));
+    _WndForm = dlgLoadFromXML(CallBackTable, filename, ScreenLandscape?TEXT("IDR_XML_PROGRESS_L"):TEXT("IDR_XML_PROGRESS_P"));
     LKASSERT(_WndForm);
     if(_WndForm) {
         WindowControl* wSplash = _WndForm->FindByName(TEXT("frmSplash")); 
