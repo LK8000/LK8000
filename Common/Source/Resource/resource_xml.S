@@ -77,7 +77,6 @@
     binfile IDR_XML_TEXTENTRY_KEYBOARD "../../Data/Dialogs/dlgTextEntry_Keyboard.xml"
     binfile IDR_XML_TEXTENTRY_KEYBOARD_L "../../Data/Dialogs/dlgTextEntry_Keyboard_L.xml"
     binfile IDR_XML_TEAMCODE "../../Data/Dialogs/dlgTeamCode.xml"
-    binfile IDR_XML_TEAMCODE_L "../../Data/Dialogs/dlgTeamCode_L.xml"
     binfile IDR_XML_STARTPOINT "../../Data/Dialogs/dlgStartPoint.xml"
     binfile IDR_XML_WAYPOINTEDIT "../../Data/Dialogs/dlgWaypointEdit.xml"
     binfile IDR_XML_AIRSPACESELECT "../../Data/Dialogs/dlgAirspaceSelect.xml"

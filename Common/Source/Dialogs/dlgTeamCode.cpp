@@ -135,22 +135,11 @@ void dlgTeamCodeShowModal(void)
   WndButton *buttonCode = NULL;
   wf = NULL;
   TCHAR filename[MAX_PATH];
-  if (ScreenLandscape) 
-    {
-      LocalPathS(filename, TEXT("dlgTeamCode_L.xml"));
-      wf = dlgLoadFromXML(CallBackTable, 
-			  filename, 
-			  TEXT("IDR_XML_TEAMCODE_L"));
-      if (!wf) return;
-    }
-  else
-    {
-      LocalPathS(filename, TEXT("dlgTeamCode.xml"));
-      wf = dlgLoadFromXML(CallBackTable, 
-			  filename, 
-			  TEXT("IDR_XML_TEAMCODE"));
-      if (!wf) return;
-    }
+  LocalPathS(filename, TEXT("dlgTeamCode.xml"));
+  wf = dlgLoadFromXML(CallBackTable, 
+            filename, 
+            TEXT("IDR_XML_TEAMCODE"));
+  if (!wf) return;
 
   TCHAR sTmp[32] = { 0 };
   if( ValidWayPoint(TeamCodeRefWaypoint)) {
