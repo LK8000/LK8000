@@ -121,6 +121,7 @@ Canvas::DrawFormattedText(PixelRect *rc, const TCHAR *text, unsigned format)
   // simple wordbreak algorithm. looks for single spaces only, no tabs,
   // no grouping of multiple spaces
   if (format & DT_WORDBREAK) {
+    lines = 0;  // reset line count, this loop also count <cr> 
     for (size_t i = 0; i < len; i += _tcslen(duplicated + i) + 1) {
       PixelSize sz = CalcTextSize(duplicated + i);
       TCHAR *prev_p = nullptr;
@@ -135,11 +136,9 @@ Canvas::DrawFormattedText(PixelRect *rc, const TCHAR *text, unsigned format)
         sz = CalcTextSize(duplicated + i);
       }
 
-      if (prev_p) {
-        lines++;
-        if (lines >= max_lines)
-          break;
-      }
+      lines++;
+      if (lines >= max_lines)
+        break;
     }
   }
 
