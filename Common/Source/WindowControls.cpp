@@ -2360,6 +2360,12 @@ int WndProperty::DecValue(void){
 
 void WndProperty::Paint(LKSurface& Surface){
 
+    if((mBitmapSize > 0) && GetReadOnly()) {
+        SetButtonSize(0);
+    } else if (mDataField && !mDialogStyle ) {
+        SetButtonSize(16);
+    }
+    
   //  RECT r;
   SIZE tsize;
   POINT org;
