@@ -12,7 +12,7 @@
 #include "CScreenOrientation.h"
 #include "Hardware/RotateDisplay.hpp"
 
-#ifndef UNDER_CE
+#if !defined(UNDER_CE) && !defined(WIN32)
 #include "DisplayOrientation.hpp"
 #include "OS/FileUtil.hpp"
 #endif
