@@ -3213,70 +3213,34 @@ void dlgConfigurationShowModal(short mode){
 
   configMode=mode;
 
+  static const TCHAR* dlgTemplate_L [][2] = { 
+      { TEXT("dlgConfiguration_L.xml"),  TEXT("IDR_XML_CONFIGURATION_L") },
+      { TEXT("dlgConfigPilot_L.xml"), TEXT("IDR_XML_CONFIGPILOT_L") },
+      { TEXT("dlgConfigAircraft_L.xml"), TEXT("IDR_XML_CONFIGAIRCRAFT_L") },
+      { TEXT("dlgConfigDevice_L.xml"), TEXT("IDR_XML_CONFIGDEVICE_L") }
+  };
+  static const TCHAR* dlgTemplate_P [][2] = { 
+      { TEXT("dlgConfiguration_P.xml"),  TEXT("IDR_XML_CONFIGURATION_P") },
+      { TEXT("dlgConfigPilot_P.xml"), TEXT("IDR_XML_CONFIGPILOT_P") },
+      { TEXT("dlgConfigAircraft_P.xml"), TEXT("IDR_XML_CONFIGAIRCRAFT_P") },
+      { TEXT("dlgConfigDevice_P.xml"), TEXT("IDR_XML_CONFIGDEVICE_P") }
+  };
+  static_assert(array_size(dlgTemplate_L) == array_size(dlgTemplate_P), "check array size");
+  
   StartHourglassCursor(); 
 
-  if (!ScreenLandscape) {
-	TCHAR filename[MAX_PATH];
-	switch(configMode) {
-		case 0:
-			LocalPathS(filename, TEXT("dlgConfiguration_L.xml"));
-			wf = dlgLoadFromXML(CallBackTable, 
-				filename, 
-				TEXT("IDR_XML_CONFIGURATION_L"));
-			break;
-		case 1:
-			LocalPathS(filename, TEXT("dlgConfigPilot_L.xml"));
-			wf = dlgLoadFromXML(CallBackTable, 
-				filename, 
-				TEXT("IDR_XML_CONFIGPILOT_L"));
-			break;
-		case 2:
-			LocalPathS(filename, TEXT("dlgConfigAircraft_P.xml"));
-			wf = dlgLoadFromXML(CallBackTable, 
-				filename, 
-				TEXT("IDR_XML_CONFIGAIRCRAFT_P"));
-			break;
-		case 3:
-			LocalPathS(filename, TEXT("dlgConfigDevice_L.xml"));
-			wf = dlgLoadFromXML(CallBackTable, 
-				filename, 
-				TEXT("IDR_XML_CONFIGDEVICE_L"));
-			break;
-		default:
-			break;
-	}
+  if(configMode >= 0 && configMode < (int)array_size(dlgTemplate_L)) {
+    
+      auto dlgTemplate = ScreenLandscape ? dlgTemplate_L[configMode] : dlgTemplate_P[configMode];
+    TCHAR filename[MAX_PATH];
+  
+    LocalPathS(filename,  dlgTemplate[0]);
+    wf = dlgLoadFromXML(CallBackTable, filename, dlgTemplate[1]);
+    
   } else {
-	TCHAR filename[MAX_PATH];
-	switch(configMode) {
-		case 0:
-			LocalPathS(filename, TEXT("dlgConfiguration.xml"));
-			wf = dlgLoadFromXML(CallBackTable, 
-				filename, 
-				TEXT("IDR_XML_CONFIGURATION"));
-			break;
-		case 1:
-			LocalPathS(filename, TEXT("dlgConfigPilot.xml"));
-			wf = dlgLoadFromXML(CallBackTable, 
-				filename, 
-				TEXT("IDR_XML_CONFIGPILOT"));
-			break;
-		case 2:
-			LocalPathS(filename, TEXT("dlgConfigAircraft_L.xml"));
-			wf = dlgLoadFromXML(CallBackTable, 
-				filename, 
-				TEXT("IDR_XML_CONFIGAIRCRAFT_L"));
-			break;
-		case 3:
-			LocalPathS(filename, TEXT("dlgConfigDevice.xml"));
-			wf = dlgLoadFromXML(CallBackTable, 
-				filename, 
-				TEXT("IDR_XML_CONFIGDEVICE"));
-			break;
-		default:
-			break;
-	}
+      wf = nullptr;
   }
-
+  
   if (!wf) {
 	return;
   }
