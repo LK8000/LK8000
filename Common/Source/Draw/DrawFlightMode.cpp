@@ -91,7 +91,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   // Battery indicator
   // 
 
-  #if TESTBENCH
+#if TESTBENCH && !defined(KOBO)
   // Battery test in Simmode will be available in testbench mode only
   if (SIMMODE && !(QUICKDRAW)) {; PDABatteryPercent-=1; if (PDABatteryPercent<0) PDABatteryPercent=100; }
   #else
