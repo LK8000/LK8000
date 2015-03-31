@@ -779,7 +779,7 @@ int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
   #endif
 }
 
-
+#ifdef _UNICODE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts Unicode string into US-ASCII string (writing as much as possible
 /// characters into @p ascii). Output string will always be terminated by '\0'.
@@ -820,6 +820,7 @@ int unicode2usascii(const wchar_t* unicode, char* ascii, int outSize)
 
   return((uc == 0) ? 1 : -1);
 } // Wide2Ascii()
+#endif
 
 
 int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars) {
