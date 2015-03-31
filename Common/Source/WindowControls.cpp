@@ -1759,6 +1759,8 @@ int WndForm::ShowModal(void) {
 
 #ifndef USE_GDI
     MainWindow.Refresh();
+#else
+    Redraw();
 #endif    
 
     LKASSERT(event_queue);
