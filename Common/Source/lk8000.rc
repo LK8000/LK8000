@@ -200,12 +200,6 @@ IDR_XML_PROGRESS_L    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress_P.xml
 IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
 #endif
 
-STRINGTABLE DISCARDABLE 
-BEGIN
-    IDS_APP_TITLE           "LK8000"
-    IDC_LK8000              "LK8000"
-END
-
 #endif    // English (U.S.) resources
 
 
