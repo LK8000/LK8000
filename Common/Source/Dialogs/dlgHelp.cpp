@@ -17,20 +17,22 @@
 static WndForm *wf=NULL;
 static WndListFrame *wHelp=NULL;
 static WndOwnerDrawFrame *wHelpEntry = NULL;
-static TCHAR thisHelp[1000];
+
 static int DrawListIndex=0;
-static int LineOffsets[MAXLINES];
-static int nTextLines=0;
+
+TCHAR* szHelpText = nullptr;
+std::vector<const TCHAR*> aTextLine;
 
 static void InitHelp(void) {
   wf=(WndForm *)NULL;
   wHelp=(WndListFrame *)NULL;
   wHelpEntry = (WndOwnerDrawFrame *)NULL;
   DrawListIndex=0;
-  nTextLines=0;
-  _tcscpy(thisHelp,_T(""));
-  for (int i=0; i<MAXLINES; i++) {
-        LineOffsets[i]=0;
+  
+  aTextLine.clear();
+  if(szHelpText) {
+      free(szHelpText);
+      szHelpText = nullptr;
   }
 }
 
@@ -43,26 +45,10 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
-  if (DrawListIndex < nTextLines){
-    TCHAR* text = thisHelp; 
-    int nstart = LineOffsets[DrawListIndex];
-    int nlen;
-    if (DrawListIndex<nTextLines-1) {
-      nlen = LineOffsets[DrawListIndex+1]-LineOffsets[DrawListIndex]-1;
-      nlen--;
-    } else {
-      nlen = _tcslen(text+nstart);
-    }
-    while (_tcscmp(text+nstart+nlen-1,TEXT("\r"))==0) {
-      nlen--;
-    }
-    while (_tcscmp(text+nstart+nlen-1,TEXT("\n"))==0) {
-      nlen--;
-    }
-    if (nlen>0) {
+  if (DrawListIndex < (int)aTextLine.size()){
+      const TCHAR* szText = aTextLine[DrawListIndex];
       Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawText(2*ScreenScale, 2*ScreenScale, text+nstart, nlen);
-    }
+      Surface.DrawText(2*ScreenScale, 2*ScreenScale, szText, _tcslen(szText));
   }
 }
 
@@ -70,7 +56,7 @@ static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
 static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
         (void)Sender;
   if (ListInfo->DrawIndex == -1){
-    ListInfo->ItemCount = nTextLines-1;
+    ListInfo->ItemCount = aTextLine.size();
   } else {
     DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
   }
@@ -84,6 +70,48 @@ static CallBackTableEntry_t CallBackTable[]={
   OnListCallbackEntry(OnDetailsListInfo),
   EndCallBackEntry()
 };
+
+std::vector<const TCHAR*> SplitTextLine(LKSurface& Surface, int MaxWidth, const TCHAR* sText) {
+    std::vector<const TCHAR*> TextArray;
+    if(szHelpText) {
+        free(szHelpText);
+        szHelpText=nullptr;
+    }
+    
+    szHelpText = _tcsdup(sText);
+    
+    TCHAR* pStart = szHelpText;
+    TCHAR* pLast = szHelpText+_tcslen(szHelpText);
+    
+    while(pStart < pLast) {
+        TCHAR* pEnd = _tcschr(pStart, _T('\n'));
+        if(pEnd) { // explicit line break;
+            *pEnd = _T('\0');
+        } else {
+            pEnd = pStart+_tcslen(pStart);
+        }
+        
+        TCHAR* pPrevSpace = nullptr; 
+        while(Surface.GetTextWidth(pStart) > MaxWidth) {
+            pEnd = _tcsrchr(pStart, _T(' '));
+            if(pPrevSpace) {
+                *pPrevSpace = _T(' ');
+            }
+            pPrevSpace = pEnd;
+            *pEnd = _T('\0');
+        }
+        
+        TextArray.push_back(pStart); // new line
+        
+        pStart=pEnd;
+        pStart++;
+        if(!(*pStart)) {
+            pStart++;
+        }
+    }
+
+    return TextArray; 
+}
 
 
 void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
@@ -114,8 +142,6 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   wHelp = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
   wHelpEntry = (WndOwnerDrawFrame *)NULL;
   DrawListIndex=0;
-  nTextLines=0;
-  LK_tcsncpy(thisHelp,LKgethelptext(HelpText),sizeof(thisHelp)-1);
 
   LKASSERT(wHelp!=NULL);
   if (!wHelp) goto _getout;
@@ -128,8 +154,6 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   if (!wHelpEntry) goto _getout;
   wHelpEntry->SetCanFocus(true);
 
-  nTextLines = TextToLineOffsets(thisHelp, LineOffsets, MAXLINES);
-
   // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
   if ( wHelp->ScrollbarWidth == -1) {
     #if defined (PNA)
@@ -140,12 +164,22 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
     wHelp->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
   }
   wHelpEntry->SetWidth(wHelp->GetWidth() - wHelp->ScrollbarWidth - 5);
-
+  {
+    LKWindowSurface Surface(*wHelpEntry);
+    Surface.SelectObject(wHelpEntry->GetFont());
+    aTextLine = SplitTextLine(Surface, wHelpEntry->GetWidth(), LKgethelptext(HelpText));
+  }
 
   wHelp->ResetList();
   wHelp->Redraw();
   wf->ShowModal();
   delete wf;
+  
+  aTextLine.clear();
+  if(szHelpText) {
+      free(szHelpText);
+      szHelpText = nullptr;
+  }
   
 
 _getout:
