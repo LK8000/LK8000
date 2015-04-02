@@ -36,11 +36,11 @@ TTYPort::~TTYPort() {
     Close();
 }
 
-tcflag_t DecodeBaudrate(int speed) {
+speed_t DecodeBaudrate(int speed) {
 
     struct SpeedToFlag {
         int nSpeed;
-        tcflag_t FlagSpeed;
+        speed_t FlagSpeed;
     };
     static const SpeedToFlag SpeedToFlagTable[] = {
         {1200, B1200},
@@ -53,7 +53,7 @@ tcflag_t DecodeBaudrate(int speed) {
         {115200, B115200}
     };
 
-    tcflag_t BaudRate = B9600;
+    speed_t BaudRate = B9600;
     const SpeedToFlag* ItSpeed = std::find_if(std::begin(SpeedToFlagTable), std::end(SpeedToFlagTable), [speed](SpeedToFlag const& t) {
         return t.nSpeed == speed;
     });
@@ -66,23 +66,25 @@ tcflag_t DecodeBaudrate(int speed) {
 bool TTYPort::Initialize() {
 
     _tty = open(GetPortName(), O_RDWR | O_NOCTTY);
-    if (_tty < 0) {
+    if (_tty < 0 || !isatty(_tty)) {
+        // failed to open or not tty device.
         goto failed;
     }
+    
     struct termios newtio;
 
     tcgetattr(_tty, &_oldtio); // save current port settings
 
     bzero(&newtio, sizeof (newtio));
-    newtio.c_cflag = DecodeBaudrate(_dwPortSpeed) | CRTSCTS | CS8 | CLOCAL | CREAD;
-    newtio.c_iflag = IGNPAR;
-    newtio.c_oflag = 0;
 
-    // set input mode (non-canonical, no echo,...)
-    newtio.c_lflag = 0;
+    newtio.c_cflag = ((_dwPortBit == bit8N1) ? CS8 : CS7) | CLOCAL | CREAD;
+    newtio.c_iflag = IGNBRK | IGNPAR; // no break & no parity
+
+    cfsetospeed(&newtio, DecodeBaudrate(_dwPortSpeed));
+    cfsetispeed(&newtio, DecodeBaudrate(_dwPortSpeed));
 
     newtio.c_cc[VTIME] = _Timeout / 100; // inter-character timer ( 1/10sec unit)
-    newtio.c_cc[VMIN] = 1; // blocking read until 5 chars received
+    newtio.c_cc[VMIN] = 1; // blocking read until 1 chars received
 
     tcflush(_tty, TCIFLUSH);
     tcsetattr(_tty, TCSANOW, &newtio);
@@ -121,7 +123,8 @@ unsigned long TTYPort::SetBaudrate(unsigned long BaudRate) {
         struct termios newtio;
         bzero(&newtio, sizeof (newtio));
         tcgetattr(_tty, &newtio); // save current port settings
-        newtio.c_cflag = DecodeBaudrate(_dwPortSpeed) | (newtio.c_cflag & (~CBAUD));
+        cfsetospeed(&newtio, DecodeBaudrate(_dwPortSpeed));
+        cfsetispeed(&newtio, DecodeBaudrate(_dwPortSpeed));
         tcflush(_tty, TCIFLUSH);
         tcsetattr(_tty, TCSANOW, &newtio);
     }

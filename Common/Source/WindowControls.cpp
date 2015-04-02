@@ -25,6 +25,10 @@
 #include "Event/Event.h"
 #include "Asset.hpp"
 
+#ifndef USE_GDI
+#include "Screen/SubCanvas.hpp"
+#endif
+
 using std::placeholders::_1;
 
 
@@ -1649,7 +1653,7 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
 
   mhBrushTitle = LKBrush_Black; // 101204
 
-  mClientWindow = new WindowControl(this, TEXT(""), 20, 20, Width, Height);
+  mClientWindow = new WindowControl(this, TEXT(""), 0, 0, Width, Height);
   mClientWindow->SetBackColor(RGB_WINBACKGROUND);
   mClientWindow->SetCanFocus(false);
 
@@ -1755,6 +1759,8 @@ int WndForm::ShowModal(void) {
 
 #ifndef USE_GDI
     MainWindow.Refresh();
+#else
+    Redraw();
 #endif    
 
     LKASSERT(event_queue);
@@ -2360,6 +2366,12 @@ int WndProperty::DecValue(void){
 
 void WndProperty::Paint(LKSurface& Surface){
 
+    if((mBitmapSize > 0) && GetReadOnly()) {
+        SetButtonSize(0);
+    } else if (mDataField && !mDialogStyle ) {
+        SetButtonSize(16);
+    }
+    
   //  RECT r;
   SIZE tsize;
   POINT org;
@@ -2420,12 +2432,27 @@ void WndProperty::Paint(LKSurface& Surface){
     // Draw Text Bakground & Border
     Surface.Rectangle(mEditRect.left, mEditRect.top, mEditRect.right, mEditRect.bottom);
     // Draw Text Value
+
+    RECT rcText = mEditRect;
+    InflateRect(&rcText, -NIBLSCALE(3), -1);
+    
+#ifndef USE_GDI
+    // SubCanvas is used for clipping.
+    // TODO : OpenGL SubCanvas don't clip rect, need to be fixed...
+    SubCanvas ClipCanvas(Surface, rcText.GetOrigin(), rcText.GetSize() );
+    rcText.Offset(-rcText.left, -rcText.top);
+
+    ClipCanvas.Select(*mhValueFont);
+    ClipCanvas.SetTextColor(RGB_BLACK);
+    ClipCanvas.SetBackgroundTransparent();
+
+    ClipCanvas.DrawFormattedText(&rcText, mValue.c_str(), DT_EXPANDTABS|(mMultiLine?DT_WORDBREAK:DT_SINGLELINE|DT_VCENTER));
+#else
     Surface.SelectObject(mhValueFont);
     Surface.SetTextColor(RGB_BLACK);
 
-    RECT rcText = mEditRect;
-    InflateRect(&rcText, -NIBLSCALE(3), 0);
     Surface.DrawText(mValue.c_str(), mValue.size(), &rcText, DT_EXPANDTABS|(mMultiLine?DT_WORDBREAK:DT_SINGLELINE|DT_VCENTER));
+#endif
 
     Surface.SelectObject(oldPen);
     Surface.SelectObject(oldBrush);

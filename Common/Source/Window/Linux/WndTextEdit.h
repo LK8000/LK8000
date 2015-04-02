@@ -20,7 +20,6 @@ class WndTextEditStyle : public WindowStyle {
 public:
     WndTextEditStyle() {
         text_style |= DT_WORDBREAK|DT_CENTER|DT_VCENTER;
-        Disable();
         Hide();
     }
 };

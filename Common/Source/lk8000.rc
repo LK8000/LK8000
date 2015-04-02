@@ -104,14 +104,13 @@ IDR_XML_ANALYSIS        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAnalysis.xml
 IDR_XML_BASICSETTINGS   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBasicSettings.xml"
 IDR_XML_BASICSETTINGS_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBasicSettings_L.xml"
 IDR_XML_CHECKLIST       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgChecklist.xml"
-IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration.xml"
 IDR_XML_FONTEDIT        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFontEdit.xml"
 IDR_XML_LOGGERREPLAY    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLoggerReplay.xml"
 IDR_XML_STARTUP         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartup.xml"
 IDR_XML_DUALPROFILE     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgDualProfile.xml"
 IDR_XML_ORACLE         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgOracle.xml"
 IDR_XML_ORACLE_L       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgOracle_L.xml"
-IDR_XML_FLYSIM         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFlySim.xml"
+IDR_XML_FLYSIM_P         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFlySim_P.xml"
 IDR_XML_FLYSIM_L         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFlySim_L.xml"
 IDR_XML_STATUS          XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStatus.xml"
 IDR_XML_TASKCALCULATOR  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskCalculator.xml"
@@ -135,7 +134,6 @@ IDR_XML_HELP            XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgHelp.xml"
 IDR_XML_TEXTENTRY_KEYBOARD XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTextEntry_Keyboard.xml"
 IDR_XML_TEXTENTRY_KEYBOARD_L XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTextEntry_Keyboard_L.xml"
 IDR_XML_TEAMCODE        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTeamCode.xml"
-IDR_XML_TEAMCODE_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTeamCode_L.xml"
 IDR_XML_STARTPOINT      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartPoint.xml"
 IDR_XML_WAYPOINTEDIT    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWaypointEdit.xml"
 IDR_XML_AIRSPACESELECT  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceSelect.xml"
@@ -154,7 +152,6 @@ IDR_XML_AIRSPACE_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspace_L.x
 IDR_XML_AIRSPACECOLOURS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceColours_L.xml"
 IDR_XML_AIRSPACEPATTERNS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspacePatterns_L.xml"
 IDR_XML_STARTPOINT_L    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartPoint_L.xml"
-IDR_XML_CONFIGURATION_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_L.xml"
 IDR_XML_WAYPOINTSELECT_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointSelect_L.xml"
 IDR_XML_TASKOVERVIEW_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskOverview_L.xml"
 IDR_XML_TASKWAYPOINT_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskWaypoint_L.xml"
@@ -168,11 +165,13 @@ IDR_XML_COMBOPICKER     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgComboPicker.
 IDR_XML_PROFILES     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProfiles.xml"
 IDR_XML_AIRSPACEWARNINGPARAMS     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceWarningParams.xml"
 
-IDR_XML_CONFIGAIRCRAFT    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigAircraft.xml"
+IDR_XML_CONFIGURATION_P   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_P.xml"
+IDR_XML_CONFIGURATION_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_L.xml"
+IDR_XML_CONFIGAIRCRAFT_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigAircraft_P.xml"
 IDR_XML_CONFIGAIRCRAFT_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigAircraft_L.xml"
-IDR_XML_CONFIGPILOT       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigPilot.xml"
+IDR_XML_CONFIGPILOT_P       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigPilot_P.xml"
 IDR_XML_CONFIGPILOT_L     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigPilot_L.xml"
-IDR_XML_CONFIGDEVICE       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigDevice.xml"
+IDR_XML_CONFIGDEVICE_P       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigDevice_P.xml"
 IDR_XML_CONFIGDEVICE_L     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigDevice_L.xml"
 
 IDR_XML_NUMENTRY_KEYBOARD_L	XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgNumEntry_Keyboard_L.xml"
@@ -195,16 +194,11 @@ IDR_XML_IGCFILE_L	XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgIgcFile_L.xml"
 IDR_XML_BLUEFLYCONFIG_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig_L.xml"
 IDR_XML_BLUEFLYCONFIG XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig.xml"
 
-IDR_XML_PROGRESS    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress.xml"
+IDR_XML_PROGRESS_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress_L.xml"
+IDR_XML_PROGRESS_L    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress_P.xml"
 
 IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
 #endif
-
-STRINGTABLE DISCARDABLE 
-BEGIN
-    IDS_APP_TITLE           "LK8000"
-    IDC_LK8000              "LK8000"
-END
 
 #endif    // English (U.S.) resources
 

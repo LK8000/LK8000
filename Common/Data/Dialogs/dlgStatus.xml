@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Type="Dialog" X="5" Y="5" Width="240" Height="231" Caption="_@M660_" Popup="1" Font="2" >
+  <WndForm Type="Dialog" X="5" Y="5" Width="230" Height="230" Caption="_@M660_" Popup="1" Font="2" >
     <WndButton Name="cmdNext"  Caption="&gt;" X="157" Y="2" Width="55"  Height="28" Font="3" OnClickNotify="OnNextClicked" Tag="1" />
     <WndButton Name="cmdPrev"  Caption="&lt;" X="82" Y="2" Width="55"  Height="28" Font="3" OnClickNotify="OnPrevClicked" Tag="0"/>
     <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="2" Width="60"  Height="28" Font="2" Tag="3" />
-    <WndFrame Name="frmStatusFlight" X="0" Y="32" Width="236" Height="200" Font="2">
-      <WndProperty Name="prpCoordinate"  Caption="_@M2133_"  X="2" Y="-1" Width="250" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpAltitude"  Caption="_@M89_"  X="2" Y="-1" Width="250" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpMaxHeightGain"  Caption="_@M429_"  X="2" Y="-1" Width="250" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpNear"      Caption="_@M456_"      X="2" Y="-1" Width="250" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpBearing"   Caption="_@M138_"   X="2" Y="-1" Width="250" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpDistance"  Caption="_@M245_"   X="2" Y="-1" Width="250" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndFrame Name="frmStatusFlight" X="1" Y="31" Width="-1" Height="-1" Font="2">
+      <WndProperty Name="prpCoordinate"     Caption="_@M2133_"  X="1" Y="-1" Width="-1" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpAltitude"       Caption="_@M89_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpMaxHeightGain"  Caption="_@M429_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpNear"           Caption="_@M456_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpBearing"        Caption="_@M138_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpDistance"       Caption="_@M245_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
     </WndFrame>
-    <WndFrame Name="frmStatusSystem" X="0" Y="32" Width="230" Height="200" Font="2">
-      <WndProperty Name="prpGPS"       Caption="_@M319_"       X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpNumSat"    Caption="_@M578_"   X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpVario"     Caption="_@M784_"     X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpFLARM"       Caption="FLARM"       X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpLogger"    Caption="_@M409_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpDeclared"    Caption="_@M223_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpBattery"       Caption="_@M672_"       X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpVersion"       Caption="Software version"       X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndFrame Name="frmStatusSystem" X="1" Y="31" Width="-1" Height="-1" Font="2">
+      <WndProperty Name="prpGPS"        Caption="_@M319_"           X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpNumSat"     Caption="_@M578_"           X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpVario"      Caption="_@M784_"           X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpFLARM"      Caption="FLARM"             X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpLogger"     Caption="_@M409_"           X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpDeclared"   Caption="_@M223_"           X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpBattery"    Caption="_@M672_"           X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpVersion"    Caption="Software version"  X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
     </WndFrame>
-    <WndFrame Name="frmStatusTask" X="0" Y="32" Width="230" Height="200" Font="2">
-      <WndProperty Name="prpTaskTime" Caption="_@M101_" X="2" Y="-1"  Width="235" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpETETime"  Caption="_@M267_"  X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpRemainingTime"  Caption="_@M549_"  X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpTaskDistance"      Caption="_@M695_"      X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpRemainingDistance"      Caption="_@M548_"      X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpEstimatedSpeed"      Caption="_@M630_"      X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpAverageSpeed"      Caption="_@M629_"      X="2" Y="-1" Width="235" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+    <WndFrame Name="frmStatusTask" X="1" Y="31" Width="-1" Height="-1" Font="2">
+      <WndProperty Name="prpTaskTime"           Caption="_@M101_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpETETime"            Caption="_@M267_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpRemainingTime"      Caption="_@M549_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpTaskDistance"       Caption="_@M695_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpRemainingDistance"  Caption="_@M548_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpEstimatedSpeed"     Caption="_@M630_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpAverageSpeed"       Caption="_@M629_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
     </WndFrame>
-    <WndFrame Name="frmStatusRules" X="0" Y="32" Width="230" Height="200" Font="2">
-      <WndProperty Name="prpValidStart"      Caption="_@M777_"      X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpStartTime"    Caption="_@M654_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpStartHeight"      Caption="_@M638_"      X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpStartPoint"      Caption="_@M647_"      X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpStartSpeed"      Caption="_@M653_"      X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpFinishAlt" Caption="_@M291_" X="2" Y="-1"  Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpValidFinish"      Caption="_@M776_"      X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndFrame Name="frmStatusRules" X="1" Y="31" Width="-1" Height="-1" Font="2">
+      <WndProperty Name="prpValidStart"     Caption="_@M777_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpStartTime"      Caption="_@M654_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpStartHeight"    Caption="_@M638_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpStartPoint"     Caption="_@M647_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpStartSpeed"     Caption="_@M653_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpFinishAlt"      Caption="_@M291_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpValidFinish"    Caption="_@M776_"   X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
     </WndFrame>
-    <WndFrame Name="frmStatusTimes" X="0" Y="32" Width="230" Height="200" Font="2">
-      <WndProperty Name="prpLocalTime"    Caption="_@M402_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpFlightTime"    Caption="_@M306_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpTakeoffTime"    Caption="_@M680_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpLandingTime"    Caption="_@M386_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpSunset"    Caption="_@M671_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndFrame Name="frmStatusTimes" X="1" Y="31" Width="-1" Height="-1" Font="2">
+      <WndProperty Name="prpLocalTime"      Caption="_@M402_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpFlightTime"     Caption="_@M306_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpTakeoffTime"    Caption="_@M680_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpLandingTime"    Caption="_@M386_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpSunset"         Caption="_@M671_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
     </WndFrame>
-    <WndFrame Name="frmStatusExtDevice" X="0" Y="32" Width="230" Height="200" Font="2">
-      <WndProperty Name="prpBattBank"    Caption="_@M134_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpBatt1Volt"    Caption="_@M132_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpBatt2Volt"    Caption="_@M133_"    X="2" Y="-1" Width="235" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndFrame Name="frmStatusExtDevice" X="1" Y="31" Width="-1" Height="-1" Font="2">
+      <WndProperty Name="prpBattBank"   Caption="_@M134_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpBatt1Volt"  Caption="_@M132_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpBatt2Volt"  Caption="_@M133_"    X="2" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
     </WndFrame>
   </WndForm>
 </PMML>

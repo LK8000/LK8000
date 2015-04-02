@@ -48,14 +48,13 @@
     binfile IDR_XML_BASICSETTINGS "../../Data/Dialogs/dlgBasicSettings.xml"
     binfile IDR_XML_BASICSETTINGS_L "../../Data/Dialogs/dlgBasicSettings_L.xml"
     binfile IDR_XML_CHECKLIST "../../Data/Dialogs/dlgChecklist.xml"
-    binfile IDR_XML_CONFIGURATION "../../Data/Dialogs/dlgConfiguration.xml"
     binfile IDR_XML_FONTEDIT "../../Data/Dialogs/dlgFontEdit.xml"
     binfile IDR_XML_LOGGERREPLAY "../../Data/Dialogs/dlgLoggerReplay.xml"
     binfile IDR_XML_STARTUP "../../Data/Dialogs/dlgStartup.xml"
     binfile IDR_XML_DUALPROFILE "../../Data/Dialogs/dlgDualProfile.xml"
     binfile IDR_XML_ORACLE "../../Data/Dialogs/dlgOracle.xml"
     binfile IDR_XML_ORACLE_L "../../Data/Dialogs/dlgOracle_L.xml"
-    binfile IDR_XML_FLYSIM "../../Data/Dialogs/dlgFlySim.xml"
+    binfile IDR_XML_FLYSIM_P "../../Data/Dialogs/dlgFlySim_P.xml"
     binfile IDR_XML_FLYSIM_L "../../Data/Dialogs/dlgFlySim_L.xml"
     binfile IDR_XML_STATUS "../../Data/Dialogs/dlgStatus.xml"
     binfile IDR_XML_TASKCALCULATOR "../../Data/Dialogs/dlgTaskCalculator.xml"
@@ -78,7 +77,6 @@
     binfile IDR_XML_TEXTENTRY_KEYBOARD "../../Data/Dialogs/dlgTextEntry_Keyboard.xml"
     binfile IDR_XML_TEXTENTRY_KEYBOARD_L "../../Data/Dialogs/dlgTextEntry_Keyboard_L.xml"
     binfile IDR_XML_TEAMCODE "../../Data/Dialogs/dlgTeamCode.xml"
-    binfile IDR_XML_TEAMCODE_L "../../Data/Dialogs/dlgTeamCode_L.xml"
     binfile IDR_XML_STARTPOINT "../../Data/Dialogs/dlgStartPoint.xml"
     binfile IDR_XML_WAYPOINTEDIT "../../Data/Dialogs/dlgWaypointEdit.xml"
     binfile IDR_XML_AIRSPACESELECT "../../Data/Dialogs/dlgAirspaceSelect.xml"
@@ -96,7 +94,6 @@
     binfile IDR_XML_AIRSPACECOLOURS_L "../../Data/Dialogs/dlgAirspaceColours_L.xml"
     binfile IDR_XML_AIRSPACEPATTERNS_L "../../Data/Dialogs/dlgAirspacePatterns_L.xml"
     binfile IDR_XML_STARTPOINT_L "../../Data/Dialogs/dlgStartPoint_L.xml"
-    binfile IDR_XML_CONFIGURATION_L "../../Data/Dialogs/dlgConfiguration_L.xml"
     binfile IDR_XML_WAYPOINTSELECT_L "../../Data/Dialogs/dlgWayPointSelect_L.xml"
     binfile IDR_XML_TASKOVERVIEW_L "../../Data/Dialogs/dlgTaskOverview_L.xml"
     binfile IDR_XML_TASKWAYPOINT_L "../../Data/Dialogs/dlgTaskWaypoint_L.xml"
@@ -110,11 +107,16 @@
     binfile IDR_XML_PROFILES "../../Data/Dialogs/dlgProfiles.xml"
     binfile IDR_XML_AIRSPACEWARNINGPARAMS "../../Data/Dialogs/dlgAirspaceWarningParams.xml"
 
-    binfile IDR_XML_CONFIGAIRCRAFT "../../Data/Dialogs/dlgConfigAircraft.xml"
+    binfile IDR_XML_CONFIGURATION_P "../../Data/Dialogs/dlgConfiguration_P.xml"
+    binfile IDR_XML_CONFIGURATION_L "../../Data/Dialogs/dlgConfiguration_L.xml"
+
+    binfile IDR_XML_CONFIGAIRCRAFT_P "../../Data/Dialogs/dlgConfigAircraft_P.xml"
     binfile IDR_XML_CONFIGAIRCRAFT_L "../../Data/Dialogs/dlgConfigAircraft_L.xml"
-    binfile IDR_XML_CONFIGPILOT "../../Data/Dialogs/dlgConfigPilot.xml"
+
+    binfile IDR_XML_CONFIGPILOT_P "../../Data/Dialogs/dlgConfigPilot_P.xml"
     binfile IDR_XML_CONFIGPILOT_L "../../Data/Dialogs/dlgConfigPilot_L.xml"
-    binfile IDR_XML_CONFIGDEVICE "../../Data/Dialogs/dlgConfigDevice.xml"
+
+    binfile IDR_XML_CONFIGDEVICE_P "../../Data/Dialogs/dlgConfigDevice_P.xml"
     binfile IDR_XML_CONFIGDEVICE_L "../../Data/Dialogs/dlgConfigDevice_L.xml"
 
     binfile IDR_XML_NUMENTRY_KEYBOARD_L "../../Data/Dialogs/dlgNumEntry_Keyboard_L.xml"
@@ -137,4 +139,5 @@
     binfile IDR_XML_BLUEFLYCONFIG_L "../../Data/Dialogs/dlgBlueFlyConfig_L.xml"
     binfile IDR_XML_BLUEFLYCONFIG "../../Data/Dialogs/dlgBlueFlyConfig.xml"
 
-    binfile IDR_XML_PROGRESS "../../Data/Dialogs/dlgProgress.xml"
+    binfile IDR_XML_PROGRESS_P "../../Data/Dialogs/dlgProgress_P.xml"
+    binfile IDR_XML_PROGRESS_L "../../Data/Dialogs/dlgProgress_L.xml"

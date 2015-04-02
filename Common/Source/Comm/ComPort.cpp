@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "Poco/RunnableAdapter.h"
 
-ComPort::ComPort(int idx, const std::tstring& sName) : devIdx(idx), sPortName(sName) {
+ComPort::ComPort(int idx, const std::tstring& sName) : StopEvt(false), devIdx(idx), sPortName(sName) {
     pLastNmea = std::begin(_NmeaString);
 }
 
@@ -52,11 +52,15 @@ return;
     int size_needed = WideCharToMultiByte(CP_ACP, 0, Text, len+1, NULL, 0, NULL, NULL);
     char* szTmp = new char[size_needed];
     len = WideCharToMultiByte(CP_ACP, 0, Text, len+1, szTmp, size_needed, NULL, NULL);
+    if(len>0) {
+        // WideCharToMultiByte return size off Buffer, so trailling '\0' included...
+        --len;
+    }
 #else
     const char* szTmp = Text;
 #endif
     // don't write trailing '\0' to device
-    if (--len > 0) {
+    if (len > 0) {
         Write(szTmp, len);
     }
 #ifdef _UNICODE
