@@ -1653,10 +1653,6 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
 
   mhBrushTitle = LKBrush_Black; // 101204
 
-  mClientWindow = new WindowControl(this, TEXT(""), 0, 0, Width, Height);
-  mClientWindow->SetBackColor(RGB_WINBACKGROUND);
-  mClientWindow->SetCanFocus(false);
-
   mClientRect.top=0;
   mClientRect.left=0;
   mClientRect.bottom=Width;
@@ -1666,12 +1662,26 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
   mTitleRect.left=0;
   mTitleRect.bottom=0;
   mTitleRect.right=Height;
-
-  mModalResult = 0;
+  
   if (Caption != NULL) {
     SetCaption(Caption);
-  }
+    size_t nChar = _tcslen(Caption);
+    if(nChar > 0) {
+        SIZE tsize = {0,0};
+        LKWindowSurface Surface(*this);
+        Surface.SelectObject(mhTitleFont);
+        Surface.GetTextSize(Caption, nChar, &tsize);
 
+        mTitleRect.bottom = mTitleRect.top + tsize.cy;
+        mClientRect.top = mTitleRect.bottom+NIBLSCALE(1)-1;;
+    }
+  }  
+  
+  mClientWindow = new WindowControl(this, TEXT(""), mClientRect.top, 0, Width, Height-mClientRect.top);
+  mClientWindow->SetBackColor(RGB_WINBACKGROUND);
+  mClientWindow->SetCanFocus(false);
+
+  mModalResult = 0;
 };
 
 WndForm::~WndForm(void){
