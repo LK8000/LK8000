@@ -110,7 +110,9 @@
 #define LKD_HOME	LKDATADIR
 #define LKD_LOGS	"_Logger"
 #define LKD_SYSTEM	"_System"
+#ifndef DISABLEAUDIO
 #define LKD_SOUNDS	"_System\\_Sounds"
+#endif
 #define LKD_BITMAPS	"_System\\_Bitmaps"
 #define LKD_DIALOGS     "_System\\_Dialogs"
 #define LKD_CONF	"_Configuration"
