@@ -1888,7 +1888,7 @@ void WndForm::Paint(LKSurface& Surface){
             mClientRect = rcClient;
         }
 
-        Surface.DrawText(mTitleRect.left, mTitleRect.top, szCaption, nChar);
+        Surface.DrawText(mTitleRect.left+NIBLSCALE(2), mTitleRect.top, szCaption, nChar);
 
         Surface.SelectObject(oldBrush);
         Surface.SelectObject(oldPen);
