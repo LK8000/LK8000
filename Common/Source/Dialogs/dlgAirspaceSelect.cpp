@@ -635,7 +635,7 @@ void dlgAirspaceSelect(void) {
   Latitude = GPS_INFO.Latitude;
   Longitude = GPS_INFO.Longitude;
 
-  if (!ScreenLandscape) {
+  if (ScreenLandscape) {
     TCHAR filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceSelect_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
@@ -643,10 +643,10 @@ void dlgAirspaceSelect(void) {
                         TEXT("IDR_XML_AIRSPACESELECT_L"));
   } else {
     TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceSelect.xml"));
+    LocalPathS(filename, TEXT("dlgAirspaceSelect_P.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
                         filename, 
-                        TEXT("IDR_XML_AIRSPACESELECT"));
+                        TEXT("IDR_XML_AIRSPACESELECT_P"));
   }
 
   if (!wf) return;
