@@ -50,6 +50,8 @@ static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
 
         Surface.SetBkColor(RGB_LIGHTGREY);
 
+	LKASSERT(SelectedWaypoint>=0);
+
         if (WayPointCalc[SelectedWaypoint].IsLandable) {
             MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 7000, true);
         } else {
@@ -75,6 +77,7 @@ static void NextPage(int Step){
       page_ok = true;
       break;
     case 1:
+      LKASSERT(SelectedWaypoint>=0);
       if (!WayPointList[SelectedWaypoint].Details) {
         page += Step;
       } else {
@@ -117,7 +120,9 @@ static void NextPage(int Step){
 static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   if (DrawListIndex < nTextLines){
+    LKASSERT(SelectedWaypoint>=0);
     TCHAR* text = WayPointList[SelectedWaypoint].Details;
+    LKASSERT(DrawListIndex>=0);
     int nstart = LineOffsets[DrawListIndex];
     int nlen;
     if (DrawListIndex<nTextLines-1) {
@@ -155,6 +160,7 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
 static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   if (CommentDrawListIndex < (int)aTextLine.size()){
+      LKASSERT(CommentDrawListIndex>=0);
       const TCHAR* szText = aTextLine[CommentDrawListIndex];
       Surface.SetTextColor(RGB_BLACK);
       Surface.DrawText(2*ScreenScale, 2*ScreenScale, szText, _tcslen(szText));
@@ -350,6 +356,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   // CAPTION: top line in black
   //
+  LKASSERT(SelectedWaypoint>=0);
 
   // if SeeYou waypoint
   if (WPLSEL.Format == LKW_CUP) { 
