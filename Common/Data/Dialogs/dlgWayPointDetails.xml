@@ -1,36 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
-  <WndForm Name="frmWayPointInfo" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M796_" Font="2" >
-    <WndButton Name="cmdNext"  Caption="_@M460_" X="3" Y="4" Width="65"  Height="105" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
-    <WndButton Name="cmdPrev"  Caption="_@M6_" X="3" Y="126" Width="65"  Height="45" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
-    <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="113" Width="65"  Height="105" Font="2" Tag="3" />
-    <WndFrame Name="frmInfos" X="70" Y="0" Width="-1" Height="222" Font="2">
+  <WndForm Name="frmWayPointInfo" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M796_" Font="2" >
+    <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="240" Width="114"  Height="60" Font="2" Tag="3" />
+    <WndButton Name="cmdPrev"  Caption="_@M6_" X="84" Y="240" Width="72"  Height="60" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
+    <WndButton Name="cmdNext"  Caption="_@M460_" X="122" Y="240" Width="114"  Height="60" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
+    <WndFrame Name="frmInfos" X="0" Y="0" Width="-1" Height="240" Font="2">
 
-      <WndProperty Name="prpCoordinate"  Caption="_@M918_" X="2" Y="2" Width="-1" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpAltitude"  Caption="_@M255_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpSunset"    Caption="_@M671_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpDistance"  Caption="_@M245_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpBearing"   Caption="_@M138_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpMc0"       Caption="_@M83_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpMc2"       Caption="_@M84_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpWpComment" Caption="" X="2" Y="-1"  Width="-1" Height="64" CaptionWidth="5" Font="2" ReadOnly="1" MultiLine="1" />
-	  <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="50" Width="50" Height="50" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
+<WndListFrame Name="frmWpComment" X="2" Y="2" Width="-2" Height="80" Font="2" OnListInfo="OnWpCommentListInfo" >
+      <WndOwnerDrawFrame Name="frmWpCommentEntry" X="2" Y="2" Width="-2" Height="18" Font="2"  OnPaint="OnPaintWpCommentListItem"/>
+    </WndListFrame>
+
+      <WndProperty Name="prpCoordinate"  Caption="_@M919_"  X="2" Y="-1" Width="-2" Height="22" CaptionWidth="53" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpAltitude"  Caption="_@M255_"     X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpSunset"    Caption="_@M671_"        X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpDistance"  Caption="_@M245_"      X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpBearing"   Caption="_@M138_"       X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpMc0"       Caption="_@M83_" X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpMc2"       Caption="_@M84_" X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
+	  <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="125" Width="50" Height="50" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
     </WndFrame>
-    <WndListFrame Name="frmDetails" X="70" Y="0" Width="-1" Height="222" Font="3"    OnListInfo="OnDetailsListInfo">
+    <WndListFrame Name="frmDetails" X="0" Y="0" Width="-1" Height="220" Font="3" OnListInfo="OnDetailsListInfo">
       <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="-2" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
     </WndListFrame>
-    <WndFrame Name="frmCommands" X="70" Y="0" Width="-1" Height="222" Font="2" Visible="0">
+    <WndFrame Name="frmCommands" X="0" Y="0" Width="-1" Height="240" Font="2" Visible="0">
 
       <WndButton Name="cmdInserInTask" Caption="dynamic" X="4" Y="2" Width="9999"  Height="44" Font="2" />
-      <WndButton Name="cmdAppendInTask1" Caption="_@M1827_" X="4" Y="-1" Width="9999"  Height="44" Font="2" />
-      <WndButton Name="cmdAppendInTask2" Caption="_@M1828_" X="4" Y="-1" Width="9999"  Height="44" Font="2" />
-      <WndButton Name="cmdRemoveFromTask" Caption="_@M552_" X="4" Y="-1" Width="9999"  Height="44" Font="2" />
-      <WndButton Name="cmdReplace" Caption="dynamic" X="4" Y="-1" Width="9999"  Height="41" Font="2" />
+      <WndButton Name="cmdAppendInTask1" Caption="_@M1827_" X="4" Y="-998" Width="9999"  Height="44" Font="2" />
+      <WndButton Name="cmdAppendInTask2" Caption="_@M1828_" X="4" Y="-998" Width="9999"  Height="44" Font="2" />
+      <WndButton Name="cmdRemoveFromTask" Caption="_@M552_" X="4" Y="-998" Width="9999"  Height="44" Font="2" />
+      <WndButton Name="cmdReplace" Caption="dynamic" X="4" Y="-998" Width="9999"  Height="44" Font="2" />
     </WndFrame>
-    <WndFrame Name="frmSpecial" X="70" Y="0" Width="-1" Height="222" Font="2" Visible="0">
+    <WndFrame Name="frmSpecial" X="0" Y="0" Width="-1" Height="240" Font="2" Visible="0">
 
-      <WndButton Name="cmdNewHome"   Caption="_@M605_"  X="4" Y="4" Width="9999"  Height="51" Font="2" />
-      <WndButton Name="cmdTeamCode"  Caption="_@M604_"  X="4" Y="-997" Width="9999"  Height="51" Font="2" />
+      <WndButton Name="cmdNewHome"         Caption="_@M605_"  X="4" Y="2" Width="9999"  Height="44" Font="2" />
+      <WndButton Name="cmdTeamCode"        Caption="_@M604_"  X="4" Y="-998" Width="9999"  Height="44" Font="2" />
 
     </WndFrame>
   </WndForm>

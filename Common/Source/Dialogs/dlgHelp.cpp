@@ -20,6 +20,7 @@ static WndOwnerDrawFrame *wHelpEntry = NULL;
 
 static int DrawListIndex=0;
 
+// These are also used externally by other dialogs. This is why they are not static
 TCHAR* szHelpText = nullptr;
 std::vector<const TCHAR*> aTextLine;
 
@@ -71,12 +72,19 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
+
+//
+// This function is also used by other dialogs, together with szHelpText 
+//
 std::vector<const TCHAR*> SplitTextLine(LKSurface& Surface, int MaxWidth, const TCHAR* sText) {
     std::vector<const TCHAR*> TextArray;
     if(szHelpText) {
         free(szHelpText);
         szHelpText=nullptr;
     }
+
+    if (!sText) return TextArray;
+    LKASSERT(sText!=NULL);
     
     szHelpText = _tcsdup(sText);
     
