@@ -14,6 +14,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "Event/Event.h"
+#include "utils/TextWrapArray.h"
 
 static int page=0;
 static WndForm *wf=NULL;
@@ -34,11 +35,7 @@ static int nTextLines=0;
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
-// We are using dlgHelp wrapper
-extern TCHAR* szHelpText;
-extern std::vector<const TCHAR*> SplitTextLine(LKSurface& Surface, int MaxWidth, const TCHAR* sText);
-extern std::vector<const TCHAR*> aTextLine;
-
+static TextWrapArray aTextLine;
 
 
 static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
@@ -404,10 +401,6 @@ void dlgWayPointDetailsShowModal(short mypage){
   CommentDrawListIndex=0;
 
   aTextLine.clear();
-  if(szHelpText) {
-      free(szHelpText);
-      szHelpText = nullptr;
-  }
  
   wComment = (WndListFrame*)wf->FindByName(TEXT("frmWpComment"));
   LKASSERT(wComment!=NULL);
@@ -431,10 +424,11 @@ void dlgWayPointDetailsShowModal(short mypage){
   }
   wCommentEntry->SetWidth(wComment->GetWidth() - wComment->ScrollbarWidth - 5);
 
-  LKWindowSurface Surface(*wCommentEntry);
-  Surface.SelectObject(wCommentEntry->GetFont());
-  aTextLine = SplitTextLine(Surface, wCommentEntry->GetWidth(), WayPointList[SelectedWaypoint].Comment );
-
+  {
+    LKWindowSurface Surface(*wCommentEntry);
+    Surface.SelectObject(wCommentEntry->GetFont());
+    aTextLine.update(Surface, wCommentEntry->GetWidth(), WayPointList[SelectedWaypoint].Comment );
+  }
 
 
   //
@@ -670,11 +664,6 @@ void dlgWayPointDetailsShowModal(short mypage){
   delete wf;
 
   aTextLine.clear();
-  if(szHelpText) {
-      free(szHelpText);
-      szHelpText = nullptr;
-  }
-
 
   wf = NULL;
 

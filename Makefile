@@ -788,6 +788,7 @@ UTILS	:=\
 	$(SRC)/utils/md5.cpp \
 	$(SRC)/utils/filesystem.cpp \
 	$(SRC)/utils/openzip.cpp \
+	$(SRC)/utils/TextWrapArray.cpp \
 
 COMMS	:=\
 	$(CMM)/LKFlarm.cpp\
