@@ -33,7 +33,7 @@ KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libfreetype.so.6
 # /etc/init.d/rcS, extracted to / on each boot; we can use it to
 # install LK8000
 KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
-	$(SYSTEM_FILES) $(BITMAP_FILES) $(SOUND_FILES) \
+	$(SYSTEM_FILES) $(BITMAP_FILES) \
 	$(BITSTREAM_VERA_FILES) $(POLAR_FILES) $(LANGUAGE_FILES) \
 	$(CONFIG_FILES)  kobo/inittab kobo/rcS
 	@$(NQ)echo "  TAR     $@"
@@ -43,7 +43,6 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/lib/
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/share/fonts 
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/share/_System/_Bitmaps 
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/share/_System/_Sounds 
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Airspaces 
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Configuration 
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Language 
@@ -58,7 +57,6 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0644 $(BITSTREAM_VERA_FILES) $(BIN)/KoboRoot/opt/LK8000/share/fonts
 	$(Q)install -m 0644 $(SYSTEM_FILES) $(BIN)/KoboRoot/opt/LK8000/share/_System
 	$(Q)install -m 0644 $(BITMAP_FILES) $(BIN)/KoboRoot/opt/LK8000/share/_System/_Bitmaps
-	$(Q)install -m 0644 $(SOUND_FILES) $(BIN)/KoboRoot/opt/LK8000/share/_System/_Sounds
 	$(Q)install -m 0644 $(POLAR_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Polars
 	$(Q)install -m 0644 $(LANGUAGE_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Language
 	$(Q)install -m 0644 $(CONFIG_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Configuration

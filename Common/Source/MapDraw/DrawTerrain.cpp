@@ -607,12 +607,12 @@ void Slope(const int sx, const int sy, const int sz) {
 					int dd1 = p20*p32;
 					int dd2 = p20*p31s;
               
-					while (dd2>512) {
-						// prevent overflow of magnitude calculation
-						dd0 /= 2;
-						dd1 /= 2;
-						dd2 /= 2;
-					}
+                    // prevent overflow of magnitude calculation
+					const int scale = (dd2/512)+1;
+					dd0 /= scale;
+					dd1 /= scale;
+					dd2 /= scale;
+
 					int mag = (dd0*dd0+dd1*dd1+dd2*dd2);
 					if (mag>0) {
 						mag = (dd2*sz+dd0*sx+dd1*sy)/isqrt4(mag);
