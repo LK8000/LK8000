@@ -260,7 +260,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   // StartupStore(_T(".......fscale=%f *1600=%f realscale = %f\n"), fScaleFact, fScaleFact*1600, MapWindow::zoom.RealScale());
 
 
-  if( MapWindow::zoom.RealScale() <= scale_drawradio ) 
+  if( !picto && (MapWindow::zoom.RealScale() <= scale_drawradio)  ) 
   {
 
 	const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
@@ -273,7 +273,6 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 		Surface.SelectObject(LKBrush_LightCyan);
 
 	unsigned int offset = p + NIBLSCALE(1) ;
-	if( !picto)
 	{
 		if ( _tcslen(wp->Freq)>0 ) {
 			MapWindow::LKWriteBoxedText(Surface,DrawRect,wp->Freq, Center_x- offset, Center_y -offset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
