@@ -11,18 +11,16 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
+#include "utils/TextWrapArray.h"
 
 
-#define MAXLINES 100 // max number of lines for an help text
 static WndForm *wf=NULL;
 static WndListFrame *wHelp=NULL;
 static WndOwnerDrawFrame *wHelpEntry = NULL;
 
 static int DrawListIndex=0;
 
-// These are also used externally by other dialogs. This is why they are not static
-TCHAR* szHelpText = nullptr;
-std::vector<const TCHAR*> aTextLine;
+static TextWrapArray aTextLine;
 
 static void InitHelp(void) {
   wf=(WndForm *)NULL;
@@ -31,10 +29,6 @@ static void InitHelp(void) {
   DrawListIndex=0;
   
   aTextLine.clear();
-  if(szHelpText) {
-      free(szHelpText);
-      szHelpText = nullptr;
-  }
 }
 
 
@@ -72,55 +66,6 @@ static CallBackTableEntry_t CallBackTable[]={
   OnListCallbackEntry(OnDetailsListInfo),
   EndCallBackEntry()
 };
-
-
-//
-// This function is also used by other dialogs, together with szHelpText 
-//
-std::vector<const TCHAR*> SplitTextLine(LKSurface& Surface, int MaxWidth, const TCHAR* sText) {
-    std::vector<const TCHAR*> TextArray;
-    if(szHelpText) {
-        free(szHelpText);
-        szHelpText=nullptr;
-    }
-
-    if (!sText) return TextArray;
-    
-    szHelpText = _tcsdup(sText);
-    
-    TCHAR* pStart = szHelpText;
-    TCHAR* pLast = szHelpText+_tcslen(szHelpText);
-    
-    while(pStart < pLast) {
-        TCHAR* pEnd = _tcschr(pStart, _T('\n'));
-        if(pEnd) { // explicit line break;
-            *pEnd = _T('\0');
-        } else {
-            pEnd = pStart+_tcslen(pStart);
-        }
-        
-        TCHAR* pPrevSpace = nullptr; 
-        while(Surface.GetTextWidth(pStart) > MaxWidth) {
-            pEnd = _tcsrchr(pStart, _T(' '));
-            if(pPrevSpace) {
-                *pPrevSpace = _T(' ');
-            }
-            pPrevSpace = pEnd;
-            *pEnd = _T('\0');
-        }
-        
-        TextArray.push_back(pStart); // new line
-        
-        pStart=pEnd;
-        pStart++;
-        if(!(*pStart)) {
-            pStart++;
-        }
-    }
-
-    return TextArray; 
-}
-
 
 void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   if (!Caption || !HelpText) {
@@ -175,7 +120,7 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   {
     LKWindowSurface Surface(*wHelpEntry);
     Surface.SelectObject(wHelpEntry->GetFont());
-    aTextLine = SplitTextLine(Surface, wHelpEntry->GetWidth(), LKgethelptext(HelpText));
+    aTextLine.update(Surface, wHelpEntry->GetWidth(), LKgethelptext(HelpText));
   }
 
   wHelp->ResetList();
@@ -184,10 +129,6 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   delete wf;
   
   aTextLine.clear();
-  if(szHelpText) {
-      free(szHelpText);
-      szHelpText = nullptr;
-  }
   
 
 _getout:
