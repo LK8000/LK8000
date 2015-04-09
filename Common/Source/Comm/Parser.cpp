@@ -958,7 +958,7 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   double wnet,baralt,vtas;
 
   wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
-  baralt = max(0.0, (StrToDouble(params[2],NULL)-2000)/TOFEET);
+  baralt = (StrToDouble(params[2],NULL)-2000)/TOFEET;
   vtas = StrToDouble(params[3],NULL)/TOKNOTS;
   
   pGPS->AirspeedAvailable = TRUE;
