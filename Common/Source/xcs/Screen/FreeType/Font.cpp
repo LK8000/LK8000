@@ -267,10 +267,8 @@ Font::TextSize(const TCHAR *text) const
     if (use_kerning) {
       if (prev_index != 0) {
         FT_Vector delta;
-        if ( FT_Get_Kerning(face, prev_index, i, ft_kerning_default,
-                       &delta)==0) {
-           x += delta.x >> 6;
-        } 
+        FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
+        x += delta.x >> 6;
       }
 
       prev_index = i;
@@ -417,8 +415,7 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
     if (use_kerning) {
       if (prev_index != 0) {
         FT_Vector delta;
-        FT_Get_Kerning(face, prev_index, i, ft_kerning_default,
-                       &delta);
+        FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
         x += delta.x >> 6;
       }
 
