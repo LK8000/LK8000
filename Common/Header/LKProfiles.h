@@ -53,7 +53,8 @@ const char *szRegistryColour[] =     { "Colour0",
 				  "Colour12",
 				  "Colour13",
                   "Colour14",
-                  "Colour15"
+                  "Colour15",
+                  "Colour16"
 };
 
 #ifdef HAVE_HATCHED_BRUSH
@@ -72,7 +73,8 @@ const char *szRegistryBrush[] =     {  "Brush0",
 				  "Brush12",
 				  "Brush13",
                   "Brush14",
-                  "Brush15"
+                  "Brush15",
+                  "Brush16"
 };
 #endif
 
@@ -91,7 +93,8 @@ const char *szRegistryAirspaceMode[] =     {  "AirspaceMode0",
 					       "AirspaceMode12",
 					       "AirspaceMode13",
                            "AirspaceMode14",
-                           "AirspaceMode15"
+                           "AirspaceMode15",
+                           "AirspaceMode16"
 };
 
 char szRegistryAcknowledgementTime[]=	 "AcknowledgementTime1";
@@ -381,9 +384,9 @@ char szRegistryScreenSizeY[]      = "ScreenSizeY";
 //
 // ------------------------------------- externals ------------------------------------------
 //
-extern const char *szRegistryAirspaceMode[];	// 16
-extern const char *szRegistryBrush[];	// 16
-extern const char *szRegistryColour[];	// 16
+extern const char *szRegistryAirspaceMode[];	// 17
+extern const char *szRegistryBrush[];	// 17
+extern const char *szRegistryColour[];	// 17
 extern const char *szRegistryDisplayType[];	// MAXINFOWINDOWS
 extern const char szRegistryAcknowledgementTime[];
 extern const char szRegistryAdditionalAirspaceFile[];

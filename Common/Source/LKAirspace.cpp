@@ -28,7 +28,7 @@
 #endif
 
 
-static const int k_nAreaCount = 14;
+static const int k_nAreaCount = 15;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("R"),
     _T("Q"),
@@ -43,7 +43,8 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("E"),
     _T("F"),
     _T("G"),
-    _T("TMZ")
+    _T("TMZ"),
+    _T("RMZ")
 };
 static const int k_nAreaType[k_nAreaCount] = {
     RESTRICT,
@@ -59,7 +60,8 @@ static const int k_nAreaType[k_nAreaCount] = {
     CLASSE,
     CLASSF,
     CLASSG,
-    CLASSTMZ
+    CLASSTMZ,
+    CLASSRMZ
 };
 
 
@@ -1172,12 +1174,15 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
 //
 
 bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) const {
-    while (1) {
-        if (!(*LookFor)) return true;
+    if (!(*LookFor)) return true;
+    int count_look=_tcslen(LookFor);
+    do {
+        //if (!(*LookFor)) return true;
         if (*Text != *LookFor) return false;
         ++Text;
         ++LookFor;
-    }
+    } while (--count_look);
+    return true;
 }
 
 bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const {
@@ -2726,6 +2731,8 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
             return TEXT("AAT");
         case CLASSTMZ:
             return TEXT("TMZ");
+	case CLASSRMZ:
+	    return TEXT("RMZ");
         case OTHER:
             // LKTOKEN  _@M765_ = "Unknown" 
             return gettext(TEXT("_@M765_"));
@@ -2766,6 +2773,8 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const {
             return TEXT("Wav");
         case CLASSTMZ:
             return TEXT("TMZ");
+        case CLASSRMZ:
+            return TEXT("RMZ");
         default:
             return TEXT("?");
     }

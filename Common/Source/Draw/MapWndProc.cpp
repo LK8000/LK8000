@@ -90,11 +90,11 @@ POINT MapWindow::Groundline[NUMTERRAINSWEEPS+1];
 POINT MapWindow::Groundline2[NUMTERRAINSWEEPS+1];
 #endif
 
-// 16 is number of airspace types
-int      MapWindow::iAirspaceColour[AIRSPACECLASSCOUNT] = {5,0,0,10,0,0,10,2,0,10,9,3,7,7,7,10};
-int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] = {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0};
+// 17 is number of airspace types
+int      MapWindow::iAirspaceColour[AIRSPACECLASSCOUNT] = {5,0,0,10,0,0,10,2,0,10,9,3,7,7,7,10,10};
+int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] = {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0};
 #ifdef HAVE_HATCHED_BRUSH
-int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3};
+int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3,3};
 #endif
     
 LKPen MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
@@ -113,7 +113,8 @@ LKColor MapWindow::Colours[NUMAIRSPACECOLORS] =
    LKColor(0x00,0x00,0x7F), LKColor(0x7F,0x7F,0x00),
    LKColor(0x7F,0x00,0x7F), LKColor(0x00,0x7F,0x7F),
    LKColor(0xFF,0xFF,0xFF), LKColor(0xC0,0xC0,0xC0),
-   LKColor(0x7F,0x7F,0x7F), LKColor(0x00,0x00,0x00)};
+   LKColor(0x7F,0x7F,0x7F), LKColor(0x00,0x00,0x00)
+};
 
 
 PenReference MapWindow::hpAircraft;
