@@ -283,7 +283,9 @@ Font::TextSize(const TCHAR *text) const
        continue;
 
     const int glyph_advance = glyph->bitmap.width == 0 ?
-        FT_CEIL(metrics.horiAdvance) - 1: glyph->bitmap.width;  // space
+        FT_CEIL(metrics.horiAdvance) - 1:  // space
+        glyph->bitmap.width <= 3 ? glyph->bitmap.width + 1 : // . l i etc.
+            glyph->bitmap.width;
 
     x += glyph_advance + 1;
   }
@@ -430,7 +432,9 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
       continue;
 
     const int glyph_advance = glyph->bitmap.width == 0 ?
-        FT_CEIL(metrics.horiAdvance) - 1: glyph->bitmap.width;
+        FT_CEIL(metrics.horiAdvance) - 1:  // space
+        glyph->bitmap.width <= 3 ? glyph->bitmap.width + 1 : // . l i etc.
+            glyph->bitmap.width;
 
     RenderGlyph((uint8_t *)buffer, size.cx, size.cy,
                 glyph, x, ascent_height - glyph_maxy);
