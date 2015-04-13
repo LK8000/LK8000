@@ -27,6 +27,7 @@ Copyright_License {
 #include "Optimised.hpp"
 #include "RasterCanvas.hpp"
 #include "Screen/Custom/Cache.hpp"
+#include "Util/StringUtil.hpp"
 
 #ifdef __ARM_NEON__
 #include "NEON.hpp"
@@ -274,6 +275,47 @@ RenderText(const Font *font, const TCHAR *text)
   return TextCache::Get(*font, text);
 #endif
 #endif
+}
+
+
+void
+Canvas::DrawClippedText(int x, int y, unsigned max_width, const TCHAR *text)
+{
+  static TCHAR text_buffer[256];
+  assert(text != NULL);
+#ifndef UNICODE
+  assert(ValidateUTF8(text));
+#endif
+  const TCHAR *clipped_text = text;
+  unsigned width = Canvas::CalcTextWidth(text);
+  if (width > max_width) {
+    unsigned new_size;
+    fixed target_percent = fixed(max_width) / fixed(width);
+    new_size = fixed(StringLength(text)) * target_percent;
+    CopyString(text_buffer, text, std::min(new_size, 256u));
+    clipped_text = text_buffer;
+  }
+
+  auto s = RenderText(font, clipped_text);
+  if (s.data == nullptr)
+    return;
+
+  SDLRasterCanvas canvas(buffer);
+  if (background_mode == OPAQUE) {
+    OpaqueAlphaPixelOperations<SDLPixelTraits, GreyscalePixelTraits>
+      opaque(canvas.Import(background_color), canvas.Import(text_color));
+    canvas.CopyRectangle<decltype(opaque), GreyscalePixelTraits>
+      (x, y, s.width, s.height,
+       GreyscalePixelTraits::const_pointer_type(s.data),
+       s.pitch, opaque);
+  } else {
+    ColoredAlphaPixelOperations<SDLPixelTraits, GreyscalePixelTraits>
+      transparent(canvas.Import(text_color));
+    canvas.CopyRectangle<decltype(transparent), GreyscalePixelTraits>
+      (x, y, s.width, s.height,
+       GreyscalePixelTraits::const_pointer_type(s.data),
+       s.pitch, transparent);
+  }
 }
 
 void
