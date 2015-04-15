@@ -11,6 +11,8 @@
 
 #ifndef TEXTWRAPARRAY_H
 #define	TEXTWRAPARRAY_H
+
+#include "externs.h"
 #include "tchar.h"
 #include <vector>
 #include <stddef.h>
