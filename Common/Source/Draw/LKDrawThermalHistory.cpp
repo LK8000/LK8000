@@ -88,7 +88,7 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &HLTextSize);
 
   Surface.SelectObject(LK8PanelMediumFont);
-  _stprintf(Buffer,TEXT("1.1")); 
+  _stprintf(Buffer,TEXT("4.4")); 
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &MITextSize);
 
   short afterwpname=left+WPTextSize.cx+NIBLSCALE(5);
@@ -122,15 +122,23 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 
   // Thermal name
   s_sortBox[0].left=Column0; // FIX 090925 era solo 0
+  #ifdef WIN32
   if ( !ScreenLandscape ) s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(2);
+  #else
+  if ( !ScreenLandscape ) s_sortBox[0].right=left+WPTextSize.cx+NIBLSCALE(3);
+  #endif
   else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=2;
   s_sortBox[0].bottom=p1.y;
   SortBoxX[MSM_THERMALS][0]=s_sortBox[0].right;
 
   // Distance
+  #ifdef WIN32
   if ( !ScreenLandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
   else s_sortBox[1].left=Column1+afterwpname-INTERBOX-NIBLSCALE(2);
+  #else
+  s_sortBox[1].left=s_sortBox[0].right;
+  #endif
   s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=2;
   s_sortBox[1].bottom=p1.y;
