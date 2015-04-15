@@ -21,7 +21,9 @@
 #include "Util/UTF8.hpp"
 #endif
 
+#ifndef WIN32
 #define AUTORES 1
+#endif
 
 /*
  * Draw Text Overlay. 
