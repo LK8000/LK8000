@@ -17,7 +17,7 @@
 #include <vector>
 #include <stddef.h>
 
-class LKSurface;
+#include "Screen/LKSurface.h"
 
 class TextWrapArray final {
 public:

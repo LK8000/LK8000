@@ -10,7 +10,6 @@
  */
 
 #include "TextWrapArray.h"
-#include "Screen/LKSurface.h"
 #include <string.h>
 
 
