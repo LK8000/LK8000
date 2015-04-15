@@ -48,6 +48,8 @@ Copyright_License {
 
 #include <assert.h>
 
+#define USE_HINTING
+
 #ifndef ENABLE_OPENGL
 /**
  * libfreetype is not thread-safe; this global Mutex is used to
@@ -56,7 +58,11 @@ Copyright_License {
 static Poco::Mutex freetype_mutex;
 #endif
 
-static FT_Int32 load_flags = FT_LOAD_DEFAULT|FT_LOAD_NO_HINTING;
+#ifdef USE_HINTING
+static FT_Int32 load_flags = FT_LOAD_DEFAULT;
+#else
+static FT_Int32 load_flags = FT_LOAD_DEFAULT|FT_LOAD_NO_HINTING; 
+#endif
 static FT_Render_Mode render_mode = FT_RENDER_MODE_NORMAL;
 
 static const char *font_path;
@@ -240,6 +246,9 @@ Font::TextSize(const TCHAR *text) const
 
   int x = 0;
   unsigned prev_index = 0;
+#ifdef USE_HINTING
+  FT_Pos prev_rsb_delta=0;
+#endif
 
 #ifndef ENABLE_OPENGL
   const Poco::ScopedLock<Poco::Mutex> protect(freetype_mutex);
@@ -257,18 +266,14 @@ Font::TextSize(const TCHAR *text) const
     if (i == 0)
       continue;
 
-    FT_Error error = FT_Load_Glyph(face, i, load_flags);
-    if (error)
-      continue;
 
     const FT_GlyphSlot glyph = face->glyph;
-    const FT_Glyph_Metrics &metrics = glyph->metrics;
 
     if (use_kerning) {
       if (prev_index != 0) {
         FT_Vector delta;
         FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
-        x += delta.x >> 6;
+        x += delta.x;
       }
 
       prev_index = i;
@@ -276,19 +281,30 @@ Font::TextSize(const TCHAR *text) const
     if (x<0)
       x  = 0;
 
+    FT_Error error = FT_Load_Glyph(face, i, load_flags);
+    if (error)
+      continue;
+
+#ifdef USE_HINTING
+    if (prev_rsb_delta - glyph->lsb_delta >= 32 )
+        x -= 64;
+    else if ( prev_rsb_delta - glyph->lsb_delta < -32 )
+        x += 64;
+
+    prev_rsb_delta = glyph->rsb_delta;
+#endif
+
     error = FT_Render_Glyph(glyph, render_mode);
     if (error)
        continue;
 
-    const int glyph_advance = glyph->bitmap.width == 0 ?
-        FT_CEIL(metrics.horiAdvance) - 1:  // space
-        glyph->bitmap.width <= 3 ? glyph->bitmap.width + 1 : // . l i etc.
-            glyph->bitmap.width;
-
-    x += glyph_advance + 1;
+    const int glyph_advance = (glyph->bitmap.width *64) > glyph->advance.x ?
+        glyph->bitmap.width *64 : glyph->advance.x;
+        
+    x += glyph_advance;
   }
 
-  return PixelSize{unsigned(std::max(0, x - 1)), height};
+  return PixelSize{unsigned(std::max(0, x >> 6 )), height};
 }
 
 static void
@@ -387,6 +403,10 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
 
   int x = 0;
   unsigned prev_index = 0;
+#ifdef USE_HINTING
+  FT_Pos prev_rsb_delta=0;
+#endif
+
 
 #ifndef ENABLE_OPENGL
   const Poco::ScopedLock<Poco::Mutex> protect(freetype_mutex);
@@ -404,19 +424,11 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
     if (i == 0)
       continue;
 
-    FT_Error error = FT_Load_Glyph(face, i, load_flags);
-    if (error)
-      continue;
-
-    const FT_GlyphSlot glyph = face->glyph;
-    const FT_Glyph_Metrics &metrics = glyph->metrics;
-    const int glyph_maxy = FT_FLOOR(metrics.horiBearingY);
-
     if (use_kerning) {
       if (prev_index != 0) {
         FT_Vector delta;
         FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
-        x += delta.x >> 6;
+        x += delta.x;
       }
 
       prev_index = i;
@@ -424,18 +436,33 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
     if (x < 0) 
       x = 0;
 
+    FT_Error error = FT_Load_Glyph(face, i, load_flags);
+    if (error)
+      continue;
+
+#ifdef USE_HINTING
+    if (prev_rsb_delta - face->glyph->lsb_delta >= 32 )
+        x -= 64;// >> 6;
+    else if ( prev_rsb_delta - face->glyph->lsb_delta < -32 )
+        x += 64;// >> 6;
+
+    prev_rsb_delta = face->glyph->rsb_delta;
+#endif
+
+    const FT_GlyphSlot glyph = face->glyph;
+    const int glyph_maxy = FT_FLOOR(glyph->metrics.horiBearingY);
+
     error = FT_Render_Glyph(glyph, render_mode);
     if (error)
       continue;
 
-    const int glyph_advance = glyph->bitmap.width == 0 ?
-        FT_CEIL(metrics.horiAdvance) - 1:  // space
-        glyph->bitmap.width <= 3 ? glyph->bitmap.width + 1 : // . l i etc.
-            glyph->bitmap.width;
-
     RenderGlyph((uint8_t *)buffer, size.cx, size.cy,
-                glyph, x, ascent_height - glyph_maxy);
+                glyph, x >> 6 , ascent_height - glyph_maxy);
 
-    x += glyph_advance + 1;
+    const int glyph_advance = (glyph->bitmap.width *64) > glyph->advance.x ?
+        glyph->bitmap.width *64 : glyph->advance.x;
+
+
+    x += glyph_advance;
   }
 }
