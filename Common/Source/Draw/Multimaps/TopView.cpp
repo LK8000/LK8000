@@ -124,7 +124,10 @@ int MapWindow::SharedTopView(HDC hdc, DiagrammStruct* psDia , double fAS_Bearing
         LKTextBlack=false;
         BlackScreen=false;
 	LockTerrainDataGraphics();
-	DrawTerrain(hdc, rct, GetAzimuth(), 40.0);
+    /* workaround */
+    RECT rcTerrain = rct; 
+    rcTerrain.right+=rcTerrain.left;
+	DrawTerrain(hdc, rcTerrain, GetAzimuth(), 40.0);
 	UnlockTerrainDataGraphics();
 	terrainpainted=true;
   } else {

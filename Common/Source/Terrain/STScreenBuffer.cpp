@@ -225,7 +225,7 @@ BOOL CSTScreenBuffer::DrawStretch(HDC* pDC, RECT rcDest)
   unsigned int cx;
   unsigned int cy;
 
-  ptDest.x = rcDest.left;
+  ptDest.x = 0;
   ptDest.y = rcDest.top;
   cx = rcDest.right-rcDest.left;
   cy = rcDest.bottom-rcDest.top;
