@@ -657,7 +657,7 @@ class WindowControl {
 
     virtual void SetCaption(const TCHAR *Value);
     void SetHelpText(const TCHAR *Value);
-    const bool HasHelpText() const { return (mHelpText||mOnHelpCallback); }
+    bool HasHelpText() const { return (mHelpText||mOnHelpCallback); }
 
     HWND GetHandle(void){return(mHWnd);};
     virtual HWND GetClientAreaHandle(void){return(mHWnd);};
