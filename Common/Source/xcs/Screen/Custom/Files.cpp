@@ -49,7 +49,7 @@ static const char *const all_font_paths[] = {
   /* just for the experimental WINSDL target */
   "c:\\windows\\fonts\\arial.ttf",
 #elif defined(KOBO)
-  "/opt/LK8000/share/fonts/Vera.ttf",
+  "/opt/LK8000/share/fonts/DejaVuSansCondensed.ttf",
 #else
 #ifdef USE_TAHOMA
   "/usr/share/fonts/truetype/ms/TAHOMA.TTF",
@@ -91,7 +91,7 @@ static const char *const all_bold_font_paths[] = {
   "/Library/Fonts/Microsoft/Arial Bold.ttf",
 #endif
 #elif defined(KOBO)
-  "/opt/LK8000/share/fonts/VeraBd.ttf",
+  "/opt/LK8000/share/fonts/DejaVuSansCondensed-Bold.ttf",
 #elif defined(HAVE_POSIX)
 #ifdef USE_TAHOMA
   "/usr/share/fonts/truetype/ms/TAHOMABD.TTF",
@@ -128,7 +128,7 @@ static const char *const all_italic_font_paths[] = {
   "/Library/Fonts/Arial Narrow Italic.ttf",
 #endif
 #elif defined(KOBO)
-  "/opt/LK8000/share/fonts/VeraIt.ttf",
+  "/opt/LK8000/share/fonts/DejaVuSansCondensed-Oblique.ttf",
 #elif defined(HAVE_POSIX)
 #ifdef USE_TAHOMA
   "/usr/share/fonts/truetype/ms/TAHOMA.TTF",
@@ -161,7 +161,7 @@ static const char *const all_bold_italic_font_paths[] = {
   "/Library/Fonts/Arial Narrow Bold Italic.ttf",
 #endif
 #elif defined(KOBO)
-  "/opt/LK8000/share/fonts/VeraBI.ttf",
+  "/opt/LK8000/share/fonts/DejaVuSansCondensed-BoldOblique.ttf",
 #elif defined(HAVE_POSIX)
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansCondensed-BoldOblique.ttf",
   "/usr/share/fonts/TTF/dejavu/DejaVuSansCondensed-BoldOblique.ttf",
@@ -184,7 +184,7 @@ static const char *const all_monospace_font_paths[] = {
   "/Library/Fonts/Courier New.ttf",
 #endif
 #elif defined(KOBO)
-  "/opt/LK8000/share/fonts/VeraMono.ttf",
+  "/opt/LK8000/share/fonts/DejaVuSansMono.ttf",
 #else
   "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf",
   "/usr/share/fonts/truetype/DejaVuSansMono.ttf",

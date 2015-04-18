@@ -1,8 +1,13 @@
 ifeq ($(TARGET_IS_KOBO),y)
 
-BITSTREAM_VERA_DIR ?= Common/Data/Fonts
-BITSTREAM_VERA_NAMES = Vera VeraBd VeraIt VeraBI VeraMono
-BITSTREAM_VERA_FILES = $(patsubst %,$(BITSTREAM_VERA_DIR)/%.ttf,$(BITSTREAM_VERA_NAMES))
+FONTS_DIR ?= Common/Data/Fonts
+FONTS_NAMES =	DejaVuSansCondensed \
+		DejaVuSansCondensed-Bold \
+		DejaVuSansCondensed-Oblique \
+		DejaVuSansCondensed-BoldOblique \
+		DejaVuSansMono
+	
+FONTS_FILES = $(patsubst %,$(FONTS_DIR)/%.ttf,$(FONTS_NAMES))
 
 SYSROOT = $(shell $(CC) -print-sysroot)
 
@@ -34,7 +39,7 @@ KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libfreetype.so.6
 # install LK8000
 KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(SYSTEM_FILES) $(BITMAP_FILES) \
-	$(BITSTREAM_VERA_FILES) $(POLAR_FILES) $(LANGUAGE_FILES) \
+	$(FONTS_FILES) $(POLAR_FILES) $(LANGUAGE_FILES) \
 	$(CONFIG_FILES)  kobo/inittab kobo/rcS
 	@$(NQ)echo "  TAR     $@"
 	$(Q)rm -rf $(BIN)/KoboRoot
@@ -54,7 +59,7 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0644 kobo/inittab $(BIN)/KoboRoot/etc
 	$(Q)install -m 0755 $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) kobo/rcS $(BIN)/KoboRoot/opt/LK8000/bin
 	$(Q)install -m 0755 $(KOBO_SYS_LIB_PATHS) $(BIN)/KoboRoot/opt/LK8000/lib
-	$(Q)install -m 0644 $(BITSTREAM_VERA_FILES) $(BIN)/KoboRoot/opt/LK8000/share/fonts
+	$(Q)install -m 0644 $(FONTS_FILES) $(BIN)/KoboRoot/opt/LK8000/share/fonts
 	$(Q)install -m 0644 $(SYSTEM_FILES) $(BIN)/KoboRoot/opt/LK8000/share/_System
 	$(Q)install -m 0644 $(BITMAP_FILES) $(BIN)/KoboRoot/opt/LK8000/share/_System/_Bitmaps
 	$(Q)install -m 0644 $(POLAR_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Polars
