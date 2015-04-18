@@ -837,7 +837,7 @@ int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars) {
 #if defined(_UNICODE)
     return  unicode2ascii(unicode, ascii, maxChars);
 #else
-    size_t len = std::min(_tcslen(ascii), (size_t)maxChars);
+    size_t len = std::min(_tcslen(unicode), (size_t)maxChars);
     _tcsncpy(ascii, unicode, len);
     return len;
 #endif 
