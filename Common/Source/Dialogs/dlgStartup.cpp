@@ -99,7 +99,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 				pos=14;
 			else
 				#ifdef __linux__
-				pos=10;
+				pos=12;
 				#else
 				pos=11;
 				#endif
@@ -115,10 +115,18 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 			break;
 		// --------- portrait -------------
 		case ss240x320:
+			#ifdef __linux__
+			pos=19;
+			#else
 			pos=17;
+			#endif
 			break;
 		case ss480x640:
+			#ifdef __linux__
+			pos=18;
+			#else
 			pos=17;
+			#endif
 			break;
 		case ss272x480:
 			pos=18;
