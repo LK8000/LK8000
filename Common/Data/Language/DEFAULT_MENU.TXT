@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release  150224
+# Release  150420
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -1906,15 +1906,15 @@ location=7
 mode=FlarmStealth
 type=key
 data=9
-# label=_@M2023_$(DISABLED)
-label=$(AC03)
+event=SendNMEAPort1 PFLAC,S,NOTRACK,1
+label=Tracking\n_@M2094_
 location=8
 
 mode=FlarmStealth
 type=key
 data=0
-# label=_@M2023_$(DISABLED)
-label=$(AC03)
+event=SendNMEAPort1 PFLAC,S,NOTRACK,0
+label=Tracking\n_@M2093_
 location=9
 
 mode=FlarmStealth
