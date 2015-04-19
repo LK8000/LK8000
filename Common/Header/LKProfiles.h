@@ -53,7 +53,8 @@ const TCHAR *szRegistryColour[] =     { TEXT("Colour0"),
 				  TEXT("Colour12"),
 				  TEXT("Colour13"),
                   TEXT("Colour14"),
-                  TEXT("Colour15")
+                  TEXT("Colour15"),
+                  TEXT("Colour16")
 };
 
 
@@ -72,7 +73,8 @@ const TCHAR *szRegistryBrush[] =     {  TEXT("Brush0"),
 				  TEXT("Brush12"),
 				  TEXT("Brush13"),
                   TEXT("Brush14"),
-                  TEXT("Brush15")
+                  TEXT("Brush15"),
+                  TEXT("Brush16")
 };
 
 const TCHAR *szRegistryAirspaceMode[] =     {  TEXT("AirspaceMode0"),
@@ -90,7 +92,8 @@ const TCHAR *szRegistryAirspaceMode[] =     {  TEXT("AirspaceMode0"),
 					       TEXT("AirspaceMode12"),
 					       TEXT("AirspaceMode13"),
                            TEXT("AirspaceMode14"),
-                           TEXT("AirspaceMode15")
+                           TEXT("AirspaceMode15"),
+                           TEXT("AirspaceMode16")
 };
 
 TCHAR szRegistryAcknowledgementTime[]=	 TEXT("AcknowledgementTime1");
@@ -380,9 +383,9 @@ TCHAR szRegistryScreenSizeY[]      = _T("ScreenSizeY");
 //
 // ------------------------------------- externals ------------------------------------------
 //
-extern const TCHAR *szRegistryAirspaceMode[];	// 16
-extern const TCHAR *szRegistryBrush[];	// 16
-extern const TCHAR *szRegistryColour[];	// 16
+extern const TCHAR *szRegistryAirspaceMode[];	// 17
+extern const TCHAR *szRegistryBrush[];	// 17
+extern const TCHAR *szRegistryColour[];	// 17
 extern const TCHAR *szRegistryDisplayType[];	// MAXINFOWINDOWS
 extern const TCHAR szRegistryAcknowledgementTime[];
 extern const TCHAR szRegistryAdditionalAirspaceFile[];

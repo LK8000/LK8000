@@ -25,7 +25,7 @@
 #endif
 
 
-static const int k_nAreaCount = 14;
+static const int k_nAreaCount = 15;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
                     _T("R"),  
                     _T("Q"), 
@@ -40,7 +40,8 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
                     _T("E"), 
                     _T("F"),
                     _T("G"),
-                    _T("TMZ")
+                    _T("TMZ"),
+                    _T("RMZ")
 };
 static const int k_nAreaType[k_nAreaCount] = {
                     RESTRICT, 
@@ -56,7 +57,8 @@ static const int k_nAreaType[k_nAreaCount] = {
                     CLASSE, 
                     CLASSF,
                     CLASSG,
-                    CLASSTMZ};
+                    CLASSTMZ,
+                    CLASSRMZ};
 
 
 // CAirspaceManager class attributes
@@ -1197,11 +1199,14 @@ void CAirspace_Area::Draw(HDC hDCTemp, const RECT &rc, bool param1) const {
 
 bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) const
 {
-  while(1) {
-    if (!(*LookFor)) return true;
+  if (!(*LookFor)) return true;
+  int count_look=_tcslen(LookFor);
+  do {
     if (*Text != *LookFor) return false;
-    ++Text; ++LookFor;
-  }
+    ++Text; 
+    ++LookFor;
+  } while (--count_look);
+  return true;
 }
 
 bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const
@@ -2845,6 +2850,8 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
         return TEXT("AAT");
       case CLASSTMZ:
         return TEXT("TMZ");
+      case CLASSRMZ:
+        return TEXT("RMZ");
       case OTHER:
         // LKTOKEN  _@M765_ = "Unknown" 
         return gettext(TEXT("_@M765_"));
@@ -2885,6 +2892,8 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const
       return TEXT("Wav");
     case CLASSTMZ:
         return TEXT("TMZ");
+    case CLASSRMZ:
+        return TEXT("RMZ");
     default:
       return TEXT("?");
     }

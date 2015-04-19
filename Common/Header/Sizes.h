@@ -157,7 +157,7 @@
 // invalid value for terrain, we can store inside terrain altitude being unsigned short
 #define TERRAIN_INVALID 32767
 
-#define NUMAIRSPACECOLORS 16
+#define NUMAIRSPACECOLORS 17
 #define NUMAIRSPACEBRUSHES 8
 
 #define NUMBUTTONLABELS 16

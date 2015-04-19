@@ -20,8 +20,9 @@
 #define CLASSE				12
 #define CLASSF				13
 #define CLASSG				14
-#define CLASSTMZ            15
-#define AIRSPACECLASSCOUNT              16
+#define CLASSTMZ          		15
+#define CLASSRMZ          		16
+#define AIRSPACECLASSCOUNT              17
 
 #define ALLON 0
 #define CLIP 1
