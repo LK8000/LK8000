@@ -23,6 +23,7 @@ typedef enum{
   ss272x480,
   ss480x640,
   ss480x800,
+  ss600x800,
   sslandscape, //  <landscape=portrait modes, >landscape=landscape modes
   ss320x240, 
   ss400x240,
@@ -32,6 +33,7 @@ typedef enum{
   ss720x408,
   ss800x480,
   ss896x672
+  ss800x600,
 }ScreenSize_t;
 
 typedef enum{
