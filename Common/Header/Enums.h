@@ -32,8 +32,8 @@ typedef enum{
   ss640x480,
   ss720x408,
   ss800x480,
-  ss896x672
-  ss800x600,
+  ss896x672,
+  ss800x600
 }ScreenSize_t;
 
 typedef enum{
