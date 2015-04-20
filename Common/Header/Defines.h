@@ -173,6 +173,7 @@
 #define LKF_PERSIST	"Persist.log"
 #define LKF_FLARMNET	"flarmnet.fln"
 #define LKF_CHECKLIST	"NOTEPAD.txt"
+#define LKF_CREDITS	"CREDITS.txt"
 #define LKF_LOGBOOKTXT	"LOGBOOK.TXT"
 #define LKF_LOGBOOKCSV	"LOGBOOK.CSV"
 #define LKF_LOGBOOKLST	"LOGBOOK.LST"

@@ -389,6 +389,17 @@ bool LoadChecklist(short checklistmode) {
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
 		return LoadUtfChecklist(filename);
 		break;
+	case 3:
+		LocalPath(filename, TEXT(LKD_SYSTEM));
+		_tcscat(filename,_T(DIRSEP));
+		_tcscat(filename,_T(LKF_CREDITS));
+		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("Credits")));
+		#ifdef __linux__
+   		return LoadUtfChecklist(filename);
+		#else
+                return LoadAsciiChecklist(filename);
+		#endif
+		break;
   default:
     StartupStore(_T("... Invalid checklist mode (%d)%s"),checklistmode,NEWLINE);
     return false;

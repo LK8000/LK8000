@@ -1232,9 +1232,9 @@ location=7
 mode=Info2
 type=key
 data=9
+event=Service CREDITS
 event=Mode default
-# label=_@M2023_$(DISABLED)
-label=$(AC03)
+label=Credits
 location=8
 
 mode=Info2

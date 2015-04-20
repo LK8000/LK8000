@@ -2287,6 +2287,11 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
+  if (_tcscmp(misc, TEXT("CREDITS")) == 0) {
+      dlgChecklistShowModal(3); // 3 for Credits
+      return;
+  }
+
   if(_tcscmp(misc, TEXT("TASKREVERSE")) == 0) {
 	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
 		if (MessageBoxX(

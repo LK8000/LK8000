@@ -1,9 +1,8 @@
+[AUTHORS]
+WWW.LK8000.ORG
+2012.02.15
 
-  CREDITS FOR LK8000  www.lk8000.it 
-  Updated on 120215
-
-
-  Original concept, design and development of LK8000 Project by Paolo Ventafridda, Italy
+Original concept, design and development of LK8000 Project by Paolo Ventafridda, Italy
 
   LK8000 Project Copyrights (c) by:
 
@@ -45,7 +44,8 @@
 
 
   Other contributors may be missing from the old xcsoar file, and will be added on demand.
-  
+
+[GPL LICENCE]  
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
