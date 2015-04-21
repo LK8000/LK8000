@@ -94,6 +94,7 @@ void InitLKScreen() {
   if (iWidth == 320 && iHeight == 234) ScreenSize=(ScreenSize_t)ss320x240; //  QVGA
   if (iWidth == 720 && iHeight == 408) ScreenSize=(ScreenSize_t)ss720x408;
   if (iWidth == 480 && iHeight == 800) ScreenSize=(ScreenSize_t)ss480x800;
+  if (iWidth == 600 && iHeight == 800) ScreenSize=(ScreenSize_t)ss600x800;
   if (iWidth == 400 && iHeight == 240) ScreenSize=(ScreenSize_t)ss400x240; // landscape
   if (iWidth == 480 && iHeight == 272) ScreenSize=(ScreenSize_t)ss480x272; // WQVGA     landscape
   if (iWidth == 480 && iHeight == 234) ScreenSize=(ScreenSize_t)ss480x234; //   iGo
@@ -182,6 +183,11 @@ void InitLKScreen() {
 		GestureSize=50;
 		LKVarioSize=30;
 		BottomSize=135;
+		break;
+	case (ScreenSize_t)ss600x800:
+		GestureSize=50;
+		LKVarioSize=45;
+		BottomSize=176;
 		break;
 	case (ScreenSize_t)ss240x320:
 		GestureSize=50;

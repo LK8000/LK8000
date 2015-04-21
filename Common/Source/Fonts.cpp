@@ -142,6 +142,7 @@ void InitialiseFontsHardCoded(RECT rc,
  * CDIWindowFont	= Font=3 and Font=4 in dialogs
  * MapLabelFont		= Stats, map labels
  * MapWindowFont	= 
+ *
  * MapWindowBoldFont	= menu buttons, waypoint selection, messages, etc.
  * MapScale             = 3.5km AUX9 ..  on main map
  *
@@ -421,6 +422,19 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("30,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointBoldFont);
     propGetFontSettingsFromString(TEXT("30,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #endif
+  }
+  else if (ScreenSize==(ScreenSize_t)ss600x800 )
+  {
+    propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
+    propGetFontSettingsFromString(TEXT("33,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
+    propGetFontSettingsFromString(TEXT("29,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont);
+    propGetFontSettingsFromString(TEXT("26,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
+    propGetFontSettingsFromString(TEXT("25,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
+    propGetFontSettingsFromString(TEXT("28,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapScaleFont);
+    propGetFontSettingsFromString(TEXT("40,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
+    propGetFontSettingsFromString(TEXT("28,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointBoldFont);
+    propGetFontSettingsFromString(TEXT("36,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
   }
   //
   // ELSE WE DID NOT FIND A VALID CUSTOM RESOLUTION OR A VALID SCREEN GEOMETRY FOR THIS ORIENTATION!
