@@ -161,6 +161,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("16,0,0,0,600,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("19,0,0,0,400,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
     #else
     propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -169,6 +170,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("16,0,0,0,600,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
     #endif
   }
@@ -179,6 +181,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("23,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("30,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("33,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("33,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("30,0,0,0,700,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
   }
   else if ( ScreenSize==(ScreenSize_t)ss480x234 ||
@@ -190,6 +193,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("16,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont); 
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss800x480 ||
@@ -202,6 +206,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont); 
     propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("30,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("30,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #else
     propGetFontSettingsFromString(TEXT("20,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -210,6 +215,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont); 
     propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("30,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("30,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("32,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #endif
   }
@@ -220,6 +226,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("15,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss640x480 ||
@@ -232,6 +239,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("26,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #else
     propGetFontSettingsFromString(TEXT("19,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -240,6 +248,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("26,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #endif
   }
@@ -250,6 +259,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("32,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("44,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("44,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("39,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss320x240) { 
@@ -260,6 +270,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("14,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("17,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("17,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #else
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -268,6 +279,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("14,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("17,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("17,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #endif
   } 
@@ -282,6 +294,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("13,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont); 
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("16,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
     #else
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -290,6 +303,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("13,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont); 
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
     #endif
   }
@@ -303,6 +317,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("15,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont); 
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("18,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #else
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -311,6 +326,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("15,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont); 
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #endif
   }
@@ -324,6 +340,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("23,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont); 
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont); 
     propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
     #else
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -332,6 +349,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("23,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont); 
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont); 
     propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
     #endif
   }
@@ -345,6 +363,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("23,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("30,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #else
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -353,6 +372,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("23,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("30,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     #endif
   }
@@ -369,6 +389,7 @@ void InitialiseFontsHardCoded(RECT rc,
 	    propGetFontSettingsFromString(TEXT("16,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapTopologyFont);
 	    propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardCustom1Font);
 	    propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont);
+	    propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWaypointFont);
 	    propGetFontSettingsFromString(TEXT("19,0,0,0,400,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
     } else {
 	    propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
@@ -377,16 +398,10 @@ void InitialiseFontsHardCoded(RECT rc,
 	    propGetFontSettingsFromString(TEXT("15,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapTopologyFont); 
 	    propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCustom1Font);
 	    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+	    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
 	    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     }
   }
-
-  // MapWaypoint font is created here.
-
-  memcpy ((char *)ptrhardMapWaypointFont, (char *)ptrhardMapWindowLogFont, sizeof (LOGFONT));
-  #ifdef __linux__
-  ptrhardMapWaypointFont->lfWeight = 400; // normal weight
-  #endif
 
   //
   // If our choice was based upon geometry criteria, and not on a custom supported resolution,
