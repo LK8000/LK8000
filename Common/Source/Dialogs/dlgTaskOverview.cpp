@@ -134,6 +134,9 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
     }
 
   } else {
+      
+    Surface.SetTextColor(RGB_BLACK);      
+      
      // if (DrawListIndex==n) { // patchout 091126
      if (DrawListIndex==n && UpLimit < MAXTASKPOINTS) { // patch 091126
 
