@@ -143,12 +143,13 @@ void InitialiseFontsHardCoded(RECT rc,
  * MapLabelFont		= Stats, map labels
  * MapWindowFont	= 
  * MapWindowBoldFont	= menu buttons, waypoint selection, messages, etc.
+ * MapScale             = 3.5km AUX9 ..  on main map
  *
- * (SOON TODO) CUSTOMIZABLE FONTS
+ * (SOON TODO) CUSTOMIZABLE FONTS:
  * MapWaypoint      map waypoint names
  * MapWaypointBold  map waypoint names 
- * MapTopology  map topology names
- * Custom1Font	available, not yet used, to be made customizable yet
+ * MapTopology      map topology names
+ * Custom1Font	    available, not yet used
  *
  */
 
@@ -747,7 +748,7 @@ void propGetFontSettings(const char *Name, LOGFONT* lplf) {
  }
  if ( !strcmp(Name,"MapWaypointBoldFont") ) {
 	if (_tcslen(FontDesc_MapWaypointBold)>0)
-		propGetFontSettingsFromString(FontDesc_MapWaypoint, lplf);
+		propGetFontSettingsFromString(FontDesc_MapWaypointBold, lplf);
  }
 }
 
