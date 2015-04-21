@@ -575,6 +575,7 @@ void Globals_Init(void) {
 
   // Editable fonts
   FontDesc_MapWaypoint[0]=_T('\0');
+  FontDesc_MapWaypointBold[0]=_T('\0');
   FontDesc_MapTopology [0]=_T('\0');
 
   // Logger

@@ -208,6 +208,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryFinishRadius,FinishRadius);
   rprintf(szRegistryFontTopologyFont,FontDesc_MapTopology);
   rprintf(szRegistryFontWaypointFont,FontDesc_MapWaypoint);
+  rprintf(szRegistryFontWaypointBoldFont,FontDesc_MapWaypointBold);
   rprintf(szRegistryFontRenderer,FontRenderer);
   rprintf(szRegistryGlideBarMode,GlideBarMode);
   rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);

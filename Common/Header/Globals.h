@@ -772,8 +772,11 @@ GEXTERN LKFont   MapWindowFont;
 GEXTERN LKFont   MapWindowBoldFont;
 GEXTERN LKFont   CDIWindowFont;
 GEXTERN LKFont   MapLabelFont;
+
 GEXTERN LKFont   Custom1Font;
 GEXTERN LKFont   MapWaypointFont;
+GEXTERN LKFont   MapWaypointBoldFont;
+GEXTERN LKFont   MapScaleFont;
 GEXTERN LKFont   MapTopologyFont;
 
 GEXTERN LKFont   LK8UnitFont;
@@ -796,12 +799,16 @@ GEXTERN LKFont   LK8PanelUnitFont;
 
 GEXTERN LOGFONT  autoTitleWindowLogFont;
 GEXTERN LOGFONT  autoMapWindowLogFont;
+
 GEXTERN LOGFONT  autoMapWaypointFont;
+GEXTERN LOGFONT  autoMapWaypointBoldFont;
+GEXTERN LOGFONT  autoMapScaleFont;
+GEXTERN LOGFONT  autoMapTopologyFont;
+
 GEXTERN LOGFONT  autoMapWindowBoldLogFont;
 GEXTERN LOGFONT  autoCDIWindowLogFont;
 GEXTERN LOGFONT  autoMapLabelLogFont;
 GEXTERN LOGFONT  autoCustom1Font;
-GEXTERN LOGFONT  autoMapTopologyFont;
 
 //
 // File names and paths
@@ -840,6 +847,7 @@ GEXTERN DWORD AltitudeUnit_Config;
 
 // Editable fonts, verbose string
 GEXTERN TCHAR FontDesc_MapWaypoint[256];
+GEXTERN TCHAR FontDesc_MapWaypointBold[256];
 GEXTERN TCHAR FontDesc_MapTopology[256];
 
 // Logger

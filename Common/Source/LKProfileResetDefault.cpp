@@ -418,6 +418,7 @@ void LKProfileResetDefault(void) {
   dwBit2Index = (BitIndex_t)bit8N1;
 
   FontDesc_MapWaypoint[0]=_T('\0');
+  FontDesc_MapWaypointBold[0]=_T('\0');
   FontDesc_MapTopology [0]=_T('\0');
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));

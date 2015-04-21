@@ -40,6 +40,7 @@ void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
 
 
 static LKFont TempWaypointFont;
+static LKFont TempWaypointBoldFont;
 static LKFont TempTopologyFont;
 static LKFont TempUseCustomFontsFont;
 
@@ -724,6 +725,11 @@ static void ResetFonts(bool bUseCustom) {
                         autoMapWaypointFont,
                         NULL);
 
+  InitializeOneFont (TempWaypointBoldFont, 
+                        szRegistryFontWaypointBoldFont, 
+                        autoMapWaypointBoldFont,
+                        NULL);
+
   InitializeOneFont (TempTopologyFont, 
                         szRegistryFontTopologyFont, 
                         autoMapTopologyFont,
@@ -768,7 +774,14 @@ static void RefreshFonts(void) {
     wp->SetVisible(true);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMapLabelFont"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMapWindowBoldFont"));
+  if (wp) {
+    wp->SetFont(TempWaypointBoldFont);
+    wp->SetVisible(false);
+    wp->SetVisible(true);
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMapLabelFont")); // notice we still use prpMapLabel in xml
   if (wp) {
     wp->SetFont(TempTopologyFont);
     wp->SetVisible(false);
