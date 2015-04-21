@@ -289,21 +289,16 @@ Font::TextSize(const TCHAR *text) const
       continue;
 
     const FT_GlyphSlot glyph = face->glyph;
-    const FT_Glyph_Metrics metrics = glyph->metrics;
 
 #ifdef USE_KERNING
     if (use_kerning && x) {
       if (prev_index != 0) {
         FT_Vector delta;
         FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
-        if (-delta.x <= metrics.horiBearingX)
-            x += delta.x ;
-        else
-            x -= metrics.horiBearingX;
+        x += delta.x ;
       }
-
-      prev_index = i;
     }
+    prev_index = i;
 #endif
 
 
@@ -316,7 +311,7 @@ Font::TextSize(const TCHAR *text) const
     prev_rsb_delta = glyph->rsb_delta;
 #endif
 
-    x+= ((metrics.width) > (metrics.horiAdvance ) ?  metrics.width : (metrics.horiAdvance ));
+    x += glyph->advance.x;
 
   }
 
@@ -356,11 +351,11 @@ RenderGlyph(uint8_t *buffer, unsigned buffer_width, unsigned buffer_height,
     height = buffer_height - y;
 
   buffer += unsigned(y) * buffer_width + unsigned(x);
-  for (const uint8_t *end = src + height * pitch;
-       src != end; src += pitch, buffer += buffer_width)
-    // NOTICE by Paolo: copy requires that kerning is not exceeding horiBearingX.
-    // If we dont check, then we overlap glyphs. We should instead merge them.
-    std::copy(src, src + width, buffer);
+  for (const uint8_t *end = src + height * pitch; 
+          src != end; src += pitch, buffer += buffer_width) {
+    // with Kerning, Glyph can overlapp previous, so, we need merge bitmap.
+    std::transform(src, src + width, buffer, buffer, std::bit_or<uint8_t>());
+  }
 }
 
 static void
@@ -420,6 +415,7 @@ RenderGlyph(uint8_t *buffer, size_t width, size_t height,
 // I am not sure if all of this (long and complicated) work is correct or it is instead
 // a workaround for a more complex problem existing elsewhere.
 // However it does work for us, against all odds.
+// Update april 21st: merging instead of copying makes the kerning process working fine.
 //
 void
 Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
@@ -474,14 +470,10 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
       if (prev_index != 0) {
         FT_Vector delta;
         FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
-        if (-delta.x <= metrics.horiBearingX)
-            x += delta.x;
-        else
-            x -= metrics.horiBearingX;
+        x += delta.x;
       }
-
-      prev_index = i;
     }
+    prev_index = i;
 #endif
 
 
@@ -499,9 +491,9 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
       continue;
 
     RenderGlyph((uint8_t *)buffer, size.cx, size.cy,
-        glyph, (x + metrics.horiBearingX) >> 6 , ascent_height - FT_FLOOR(metrics.horiBearingY));
+        glyph, (x >> 6)+glyph->bitmap_left , ascent_height - FT_FLOOR(metrics.horiBearingY));
 
-    x += ((metrics.width) > (metrics.horiAdvance ) ?  metrics.width : (metrics.horiAdvance ));
+    x += glyph->advance.x; // equivalent to metrics.horiAdvance
 
   }
 }
