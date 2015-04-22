@@ -51,13 +51,28 @@ Copyright_License {
 
 #include <assert.h>
 
+/*
+ * LK8000 options
+ */
 
+// Kerning requires bitmap OR operation, which may result in slower speed.
+//
 #define USE_KERNING
+#ifdef USE_KERNING
+// Light kerning limits 64 subpixels regression into previous glyph
+// Notice that we can get a kerning delta equivalent to the horiBearingX, which means
+// the glyphs are very near, and may be in contact. 
+#define LIGHT_KERNING
+#endif
 
+// Assuming we are always in-grid we can avoid to do roundings to 64 before rendering.
+// For our case, metrics are returning 26.6 values always .
+//
 #define ALWAYS_GRIDDED
 #ifndef ALWAYS_GRIDDED
 #define FIX_HINTING
 #endif
+
 
 #ifndef ENABLE_OPENGL
 /**
@@ -289,13 +304,23 @@ Font::TextSize(const TCHAR *text) const
       continue;
 
     const FT_GlyphSlot glyph = face->glyph;
+    #if (defined LIGHT_KERNING) || !(defined USE_KERNING)
+    const FT_Glyph_Metrics metrics = glyph->metrics;
+    #endif
 
 #ifdef USE_KERNING
     if (use_kerning && x) {
       if (prev_index != 0) {
         FT_Vector delta;
         FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
+        #ifdef LIGHT_KERNING
+        if (-delta.x <= metrics.horiBearingX)
+            x += delta.x ;
+        else
+            x -= (metrics.horiBearingX +64);
+        #else
         x += delta.x ;
+        #endif
       }
     }
     prev_index = i;
@@ -311,7 +336,13 @@ Font::TextSize(const TCHAR *text) const
     prev_rsb_delta = glyph->rsb_delta;
 #endif
 
+
+#ifdef USE_KERNING
     x += glyph->advance.x;
+#else
+    x += (metrics.width > metrics.horiAdvance ? metrics.width : metrics.horiAdvance);
+#endif
+
 
   }
 
@@ -352,9 +383,13 @@ RenderGlyph(uint8_t *buffer, unsigned buffer_width, unsigned buffer_height,
 
   buffer += unsigned(y) * buffer_width + unsigned(x);
   for (const uint8_t *end = src + height * pitch; 
-          src != end; src += pitch, buffer += buffer_width) {
+      src != end; src += pitch, buffer += buffer_width) {
     // with Kerning, Glyph can overlapp previous, so, we need merge bitmap.
-    std::transform(src, src + width, buffer, buffer, std::bit_or<uint8_t>());
+#ifdef USE_KERNING
+      std::transform(src, src + width, buffer, buffer, std::bit_or<uint8_t>());
+#else
+      std::copy(src, src + width, buffer);
+#endif
   }
 }
 
@@ -470,7 +505,14 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
       if (prev_index != 0) {
         FT_Vector delta;
         FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
-        x += delta.x;
+        #ifdef LIGHT_KERNING
+        if (-delta.x <= metrics.horiBearingX)
+            x += delta.x ;
+        else
+            x -= (metrics.horiBearingX + 64);
+        #else
+            x += delta.x;
+        #endif
       }
     }
     prev_index = i;
@@ -491,9 +533,16 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
       continue;
 
     RenderGlyph((uint8_t *)buffer, size.cx, size.cy,
+#ifdef USE_KERNING
         glyph, (x >> 6)+glyph->bitmap_left , ascent_height - FT_FLOOR(metrics.horiBearingY));
 
     x += glyph->advance.x; // equivalent to metrics.horiAdvance
+#else
+        glyph, (x + metrics.horiBearingX ) >> 6 , ascent_height - FT_FLOOR(metrics.horiBearingY));
+
+    x += (metrics.width > metrics.horiAdvance ? metrics.width : metrics.horiAdvance);
+#endif
 
   }
 }
+
