@@ -187,11 +187,13 @@ int dlgComboPicker(WndProperty* theProperty){
       iSavedInitialDataIndex=ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemSavedIndex]->DataFieldIndex;
       ComboPopupDataField->CopyString(sSavedInitialValue,false);
     }
-    
+   
+#if 0 // NOT WORKING!
     WindowControl* pBtHelp = wf->FindByName(TEXT("cmdHelp"));
     if(pBtHelp) {
-        pBtHelp->SetVisible(wComboPopupWndProperty->GetHelpText() != NULL);
+       pBtHelp->SetVisible(wComboPopupWndProperty->GetHelpText() != NULL);
     }
+#endif
 
     wf->ShowModal();
 
