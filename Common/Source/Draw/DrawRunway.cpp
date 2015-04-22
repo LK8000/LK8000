@@ -58,6 +58,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
      case ss240x400: rwl = 9.0; rwb = 1.0;cir = 4.0; break; // 53
      case ss272x480: rwl = 9.0; rwb = 2.5;cir = 4.0; break; // 169
      case ss480x640: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
+     case ss600x800: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
      case ss480x800: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
      case sslandscape: rwl = 6.0; rwb = 1.0;cir = 5.0; break; // sslandscape is never assigned!
      case ss320x240: rwl = 9.0; rwb = 2.0;cir = 4.0; break; // 43
