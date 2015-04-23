@@ -632,7 +632,7 @@ class WindowControl : public WndCtrlBase {
 
     virtual void SetCaption(const TCHAR *Value);
     void SetHelpText(const TCHAR *Value);
-	const bool HasHelpText() const { return (mHelpText||mOnHelpCallback); }
+	bool HasHelpText() const { return (mHelpText||mOnHelpCallback); }
 
     virtual WindowControl* GetClientArea(void) { return (this); }
 
