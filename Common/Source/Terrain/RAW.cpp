@@ -51,7 +51,7 @@ short RasterMapRaw::_GetFieldAtXY(unsigned int lx, unsigned int ly) const {
     const short *tm = TerrainMem + ly * TerrainInfo.Columns + lx;
     // perform piecewise linear interpolation
     const short &h1 = tm[0]; // (x,y)
-    const short &h3 = tm[TerrainInfo.Columns]; // (x,y+1)
+    const short &h3 = tm[TerrainInfo.Columns+1]; // (x+1,y+1)
     if (ix > iy) {
         // lower triangle 
         const short &h2 = tm[1]; // (x+1,y)
