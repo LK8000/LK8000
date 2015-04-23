@@ -487,6 +487,7 @@ static void OnSelectClicked(WndButton* pWnd){
         LockTaskData();
         ResetTaskWaypoint(twItemIndex);
         Task[twItemIndex].Index = res;
+        Task[twItemIndex].PGConeBase = WayPointList[res].Altitude;
         TaskModified = true;
         UnlockTaskData();
       }
