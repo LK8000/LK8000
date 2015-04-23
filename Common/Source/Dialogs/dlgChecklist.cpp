@@ -390,7 +390,7 @@ bool LoadChecklist(short checklistmode) {
 		return LoadUtfChecklist(filename);
 		break;
 	case 3:
-		LocalPath(filename, TEXT(LKD_SYSTEM));
+		SystemPath(filename, TEXT(LKD_SYSTEM));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CREDITS));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("Credits")));

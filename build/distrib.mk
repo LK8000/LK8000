@@ -4,6 +4,7 @@ SOUND_FILES += Common/Distribution/LK8000/_System/_Sounds/_SOUNDS
 
 SYSTEM_FILES = $(wildcard Common/Distribution/LK8000/_Configuration/_System/*.TXT)
 SYSTEM_FILES += Common/Distribution/LK8000/_System/_SYSTEM
+SYSTEM_FILES += Common/Distribution/LK8000/_System/CREDITS.txt
 SYSTEM_FILES += Common/Data/Language/DEFAULT_MENU.TXT
 
 BITMAP_FILES = $(PNG) 
