@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT updated 140214
+# LK8000 ENG_HLP.TXT updated 150423
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -604,6 +604,11 @@ Working only in Full Overlay mode: localtime clock is shown.
 
 @238
 Size of overlay fonts.
+
+@239
+Enable this option if you want LK to save many runtime parameters on exit.
+For example: the current selected bottom bar, the overlay status on each multimap, etc.
+By default this is DISABLED.
 
 #
 # BASIC SETTINGS

@@ -276,6 +276,7 @@ void LKProfileSave(const TCHAR *szFile)
 //  rprintf(szRegistrySafteySpeed,SAFTEYSPEED*1000); // m/s x1000
   rprintf(szRegistrySectorRadius,SectorRadius);
   rprintf(szRegistrySetSystemTimeFromGPS,SetSystemTimeFromGPS);
+  rprintf(szRegistrySaveRuntime,SaveRuntime);
   rprintf(szRegistryShading,Shading_Config);
   rprintf(szRegistrySnailTrail,TrailActive_Config);
   rprintf(szRegistrySnailWidthScale,MapWindow::SnailWidthScale);
@@ -325,6 +326,8 @@ void LKProfileSave(const TCHAR *szFile)
   //
   // Multimaps added 121003
   //
+
+ if (SaveRuntime) {
   rprintf(szRegistryMultiTerr0,Multimap_Flags_Terrain[MP_MOVING]);
   rprintf(szRegistryMultiTerr1,Multimap_Flags_Terrain[MP_MAPTRK]);
   rprintf(szRegistryMultiTerr2,Multimap_Flags_Terrain[MP_MAPWPT]);
@@ -371,25 +374,30 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMultiSizeY2,Multimap_SizeY[MP_MAPWPT]);
   rprintf(szRegistryMultiSizeY3,Multimap_SizeY[MP_MAPASP]);
   rprintf(szRegistryMultiSizeY4,Multimap_SizeY[MP_VISUALGLIDE]);
+ }
 
   rprintf(szRegistryMultimap1,Multimap1);
   rprintf(szRegistryMultimap2,Multimap2);
   rprintf(szRegistryMultimap3,Multimap3);
   rprintf(szRegistryMultimap4,Multimap4);
 
+ if (SaveRuntime) {
   rprintf(szRegistryMMNorthUp1,MMNorthUp_Runtime[0]);
   rprintf(szRegistryMMNorthUp2,MMNorthUp_Runtime[1]);
   rprintf(szRegistryMMNorthUp3,MMNorthUp_Runtime[2]);
   rprintf(szRegistryMMNorthUp4,MMNorthUp_Runtime[3]);
+ }
 
   rprintf(szRegistryAspPermanent  ,AspPermanentChanged);
   rprintf(szRegistryFlarmDirection,iFlarmDirection);
+ if (SaveRuntime) {
   rprintf(szRegistryDrawTask      ,Flags_DrawTask);
   rprintf(szRegistryDrawFAI       ,Flags_DrawFAI);
+ }
   rprintf(szRegistryGearMode      ,GearWarningMode);
   rprintf(szRegistryGearAltitude  ,GearWarningAltitude);
   rprintf(szRegistryBigFAIThreshold,FAI28_45Threshold);
-  rprintf(szRegistryBottomMode    ,BottomMode);
+  if (SaveRuntime) rprintf(szRegistryBottomMode    ,BottomMode);
   rprintf(szRegistrySonarWarning    ,SonarWarning_Config);
 
   #if SAVESCREEN

@@ -458,7 +458,10 @@
       <WndButton Name="cmdWaypointDelete" Caption="_@M230_" X="50" Y="-1" Width="150"  Height="28" Font="2" Tag="4" OnClickNotify="OnWaypointDeleteClicked" />
     </WndFrame>
     <WndFrame Name="frmSpecials1" X="1" Y="0" Width="-1" Height="222" Font="2">
-      <WndProperty Name="prpSetSystemTimeFromGPS" Caption="_@M766_" X="-1" Y="1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H210_">
+      <WndProperty Name="prpSaveRuntime" Caption="_@M2305_" X="-1" Y="1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H239_">
+        <DataField Name="" DataType="boolean"/>
+      </WndProperty>
+      <WndProperty Name="prpSetSystemTimeFromGPS" Caption="_@M766_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H210_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
       <WndProperty Name="prpGPSAltitudeOffset" Caption="_@M318_" X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H159_">

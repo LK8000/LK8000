@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  140413
+# MASTER UPDATED:  150423
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -2151,3 +2151,5 @@ _@M2302_  "T"
 # F = Finish point
 _@M2303_  "F" 
 _@M2304_  "GEAR WARNING DISABLED NOW!" 
+_@M2305_  "Save runtime"
+

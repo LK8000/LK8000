@@ -479,6 +479,7 @@ void Globals_Init(void) {
   #else
   SetSystemTimeFromGPS = false;
   #endif
+  SaveRuntime = false;
 
   SelectedWaypoint = -1;
   TrailActive = 1; // long

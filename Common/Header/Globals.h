@@ -577,6 +577,7 @@ GEXTERN double QNH;
 GEXTERN int NettoSpeed;
 GEXTERN Poco::Timespan debounceTimeout;
 GEXTERN bool SetSystemTimeFromGPS;
+GEXTERN bool SaveRuntime;
 GEXTERN bool ForceFinalGlide;
 GEXTERN bool AutoForceFinalGlide;
 

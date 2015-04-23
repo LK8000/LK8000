@@ -2190,6 +2190,12 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpSaveRuntime"));
+  if (wp) {
+    wp->GetDataField()->Set(SaveRuntime);
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpDisableAutoLogger"));
   if (wp) {
     wp->GetDataField()->Set(!DisableAutoLogger);
@@ -3397,6 +3403,13 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if (SetSystemTimeFromGPS != wp->GetDataField()->GetAsBoolean()) {
       SetSystemTimeFromGPS = wp->GetDataField()->GetAsBoolean();
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpSaveRuntime"));
+  if (wp) {
+    if (SaveRuntime != wp->GetDataField()->GetAsBoolean()) {
+      SaveRuntime = wp->GetDataField()->GetAsBoolean();
     }
   }
 

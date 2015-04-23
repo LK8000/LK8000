@@ -312,6 +312,7 @@ void LKProfileResetDefault(void) {
   #else
   SetSystemTimeFromGPS = false;
   #endif
+  SaveRuntime = false;
 
   AutoForceFinalGlide = false;
 
