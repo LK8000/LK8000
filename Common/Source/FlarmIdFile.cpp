@@ -8,6 +8,7 @@
 #include "externs.h"
 #include "FlarmIdFile.h"
 #include "DoInits.h"
+#include "utils/stl_utils.h"
 
 
 FlarmIdFile::FlarmIdFile(void)
@@ -100,14 +101,14 @@ void FlarmIdFile::GetItem(FILE* hFile, FlarmId *flarmId)
 void FlarmIdFile::GetAsString(FILE* hFile, int charCount, TCHAR *res)
 {
   LKASSERT((charCount * 2)<=100);
-  int bytesToRead = std::min(charCount * 2, 100);
+  unsigned bytesToRead = std::min(charCount * 2, 100);
 
   char bytes[100];
 
   fread(bytes, 1, bytesToRead, (FILE*)hFile);
     	
   TCHAR *curChar = res;
-  for (int z = 0; z < bytesToRead; z += 2)
+  for (unsigned z = 0; z < bytesToRead && (z+1) < array_size(bytes) ; z += 2)
     {
       char tmp[3];
       tmp[0] = bytes[z];
