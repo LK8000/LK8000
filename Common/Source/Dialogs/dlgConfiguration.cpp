@@ -4547,6 +4547,7 @@ int ival;
   wf = NULL;
   
     TempWaypointFont.Release();
+    TempWaypointBoldFont.Release();
     TempTopologyFont.Release();
     TempUseCustomFontsFont.Release();
 
