@@ -186,7 +186,11 @@ void MapWindow::LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const
 		y -= (vy-y);
 		break;
   }
+  #ifdef __linux__
+  y += NIBLSCALE(1)+1; 
+  #else
   y += NIBLSCALE(1);
+  #endif
 
 
   Surface.DrawText(x, y, wText, maxsize);
