@@ -91,7 +91,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   _stprintf(Buffer,TEXT("+9999")); 
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &AATextSize);
 
-  Surface.SelectObject(LK8InfoNormalFont);
+  Surface.SelectObject(LK8InfoNearestFont);
   _stprintf(Buffer,TEXT("MMMM")); 
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &HLTextSize);
 
@@ -279,7 +279,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   else
 	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p1, p2, RGB_DARKGREEN, rc);
 
-  Surface.SelectObject(LK8InfoNormalFont); // Heading line
+  Surface.SelectObject(LK8InfoNearestFont); // Heading line
 
   short cursortbox=SortedMode[curmapspace];
 
@@ -290,7 +290,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   	Surface.SelectObject(LK8PanelMediumFont);
 
 	LKWriteText(Surface,  Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-  	Surface.SelectObject(LK8InfoNormalFont);
+  	Surface.SelectObject(LK8InfoNearestFont);
 
 	switch(curmapspace) {
 		case MSM_LANDABLE:
@@ -351,7 +351,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 	_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
   	Surface.SelectObject(LK8PanelMediumFont);
 	LKWriteText(Surface,  Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-  	Surface.SelectObject(LK8InfoNormalFont);
+  	Surface.SelectObject(LK8InfoNearestFont);
 
 	switch(curmapspace) {
 		case MSM_LANDABLE:
