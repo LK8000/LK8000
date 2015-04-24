@@ -78,6 +78,7 @@ dlgProgress::dlgProgress() {
         WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
         if(wText) {
             wText->SetWidth(_WndForm->GetWidth());
+            wText->SetTop(ScreenSizeY - IBLSCALE(35));
         }
         _WndForm->Show();
         _WndForm->Redraw();
