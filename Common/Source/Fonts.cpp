@@ -328,7 +328,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWaypointFont);
     propGetFontSettingsFromString(TEXT("16,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWaypointBoldFont);
-    propGetFontSettingsFromString(TEXT("16,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
+    propGetFontSettingsFromString(TEXT("16,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
     #else
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
