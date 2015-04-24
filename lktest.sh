@@ -28,7 +28,7 @@ echo
 echo "     (L)       GEOMETRY 16:9        (P)  "
 echo " 21 ..  480x272           26  ..  272x480"
 echo " 22 ..  960x544           "
-echo " 23 ..  720x408           28  ..  480x720"
+echo " 23 ..  720x408           28  ..  408x720"
 echo " 24 .. 1920x1080"
 echo
 echo -n "Select or Q to quit: "
@@ -63,7 +63,7 @@ case $a in
   24) $xeq -x=1920 -y=1080 ;;
 
   26) $xeq -x=272 -y=480 ;;
-  28) $xeq -x=480 -y=720 ;;
+  28) $xeq -x=408 -y=720 ;;
 
 
  x|q|X|Q) exit  ;;

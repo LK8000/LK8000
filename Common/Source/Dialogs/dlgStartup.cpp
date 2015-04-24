@@ -88,12 +88,6 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 	TCHAR mes[100];
 	int pos=0;
 	switch (ScreenSize) {
-		case ss800x480:
-			pos=12;
-			break;
-		case ss400x240:
-			pos=12;
-			break;
 		case ss480x272:
 			if (ScreenSizeX==854)
 				pos=14;
@@ -103,12 +97,6 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 				#else
 				pos=11;
 				#endif
-			break;
-		case ss640x480:
-			pos=12;
-			break;
-		case ss320x240:
-			pos=12;
 			break;
 		case ss896x672:
 			pos=14;
@@ -121,25 +109,6 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 			pos=17;
 			#endif
 			break;
-		case ss480x640:
-			#ifdef __linux__
-			pos=18;
-			#else
-			pos=17;
-			#endif
-			break;
-		case ss600x800:
-			pos=18;
-			break;
-		case ss272x480:
-			pos=18;
-			break;
-		case ss240x400:
-			pos=16;
-			break;
-		case ss480x800:
-			pos=18;
-			break;
 		default:
                     // customized definition
                     if (ScreenLandscape) {
@@ -151,11 +120,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
                                 pos=12;
 		                 break;
 			    case SCREEN_GEOMETRY_169:
-				#ifdef __linux__
-                                pos=10;
-				#else
                                 pos=11;
-				#endif
 				break;
 		            default:
                                 pos=11;
@@ -166,16 +131,24 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
                         // try to get a rule for text position...
 		        switch (ScreenGeometry) {
 			    case SCREEN_GEOMETRY_43:
+				#ifdef __linux__
+				pos=18;
+				#else
 				pos=17;
+				#endif
 		                break;
 			    case SCREEN_GEOMETRY_53:
-				pos=18;
+				pos=20;
 		                break;
 			    case SCREEN_GEOMETRY_169:
-				pos=18;
+				#ifdef __linux__
+				pos=22;
+				#else
+				pos=20;
+				#endif
 		                break;
 		            default:
-				pos=18;
+				pos=21;
 		                break;
 			}
 
