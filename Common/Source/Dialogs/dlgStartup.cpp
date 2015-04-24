@@ -372,6 +372,7 @@ short dlgStartupShowModal(void){
 
   wSplash = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmSplash")); 
   wSplash->SetWidth(ScreenSizeX);
+//  wSplash->SetHeight(ScreenSizeY);// - IBLSCALE(55));
 
 
   int  PROFWIDTH=0, PROFACCEPTWIDTH=0, PROFHEIGHT=0, PROFSEPARATOR=0;
@@ -409,6 +410,12 @@ short dlgStartupShowModal(void){
 		PROFACCEPTWIDTH=NIBLSCALE(45);
 		PROFHEIGHT=NIBLSCALE(25);
 		PROFSEPARATOR=NIBLSCALE(2);
+            int h=  ScreenSizeY - IBLSCALE(90); // 40+5+40+5
+            ((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetTop(h);
+            ((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetTop(h);
+            ((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetTop(h + IBLSCALE(45));
+            ((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetTop(h + IBLSCALE(45));
+
 	}
   }
 
@@ -475,6 +482,13 @@ short dlgStartupShowModal(void){
 		PROFACCEPTWIDTH=NIBLSCALE(45);
 		PROFHEIGHT=NIBLSCALE(25);
 		PROFSEPARATOR=NIBLSCALE(2);
+
+            int h=  ScreenSizeY - IBLSCALE(90); // 40+5+40+5
+            ((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetTop(h);
+            ((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetTop(h);
+            ((WndButton *)wf->FindByName(TEXT("cmdDEVICE"))) ->SetTop(h + IBLSCALE(45));
+            ((WndButton *)wf->FindByName(TEXT("cmdPILOT"))) ->SetTop(h + IBLSCALE(45));
+            ((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetTop(h + IBLSCALE(45));
 	}
   }
 
@@ -498,6 +512,12 @@ short dlgStartupShowModal(void){
 		PROFSEPARATOR=NIBLSCALE(2);
 		((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetWidth(ScreenSizeX-NIBLSCALE(6));
 		((WndButton *)wf->FindByName(TEXT("cmdClose"))) -> SetLeft(NIBLSCALE(2));
+
+            int h=  ScreenSizeY - IBLSCALE(65); // 
+            ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetTop(h);
+            wp = ((WndProperty *)wf->FindByName(TEXT("prpProfile")));
+            ((WndProperty *)wp->FindByName(TEXT("prpProfile"))) ->SetTop(h + IBLSCALE(35));
+
 	}
   }
 
