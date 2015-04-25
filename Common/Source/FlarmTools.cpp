@@ -73,8 +73,7 @@ void OpenFLARMDetails() {
   }
 
   if (NumberOfFLARMNames>0) {
-	_stprintf(filename,_T(". Local FLARM IDs found: %d%s"),NumberOfFLARMNames,NEWLINE);
-	StartupStore(filename);
+    StartupStore(_T(". Local FLARM IDs found: %d%s"),NumberOfFLARMNames,NEWLINE);
   }
 
   fclose(stream);

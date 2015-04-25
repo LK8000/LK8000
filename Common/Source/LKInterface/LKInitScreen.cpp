@@ -107,10 +107,8 @@ void InitLKScreen() {
   StartupStore(_T("..... ScreenGeometry type: %d%s"),ScreenGeometry,NEWLINE);
   #endif
 
-  TCHAR tbuf[80];
   if (ScreenSize==0) {
-        _stprintf(tbuf,_T(". InitLKScreen: AUTORES %dx%d%s"),iWidth,iHeight,NEWLINE);
-        StartupStore(tbuf);
+    StartupStore(_T(". InitLKScreen: AUTORES %dx%d%s"),iWidth,iHeight,NEWLINE);
 
 	if (ScreenSizeX>=ScreenSizeY) {
 		ScreenLandscape=true;
@@ -122,10 +120,9 @@ void InitLKScreen() {
 	StartupStore(_T("..... Screen0Ratio=%f\n"),Screen0Ratio);
 	#endif
   } else {
-        _stprintf(tbuf,_T(". InitLKScreen: %dx%d%s"),iWidth,iHeight,NEWLINE);
-        StartupStore(tbuf);
+    StartupStore(_T(". InitLKScreen: %dx%d%s"),iWidth,iHeight,NEWLINE);
 
-	if (ScreenSize > (ScreenSize_t)sslandscape) 
+    if (ScreenSize > (ScreenSize_t)sslandscape)
 		ScreenLandscape=true;
 	else
 		ScreenLandscape=false;
