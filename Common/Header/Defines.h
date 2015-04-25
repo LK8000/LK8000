@@ -103,6 +103,7 @@
 #define LKAIRCRAFT	"DEFAULT_AIRCRAFT.acf"
 #define LKPILOT		"DEFAULT_PILOT.plt"
 #define LKDEVICE	"DEFAULT_DEVICE.dvc"
+#define LKSOUNDTABLE    "SOUND_TABLE.TXT"
 
 /*
  * LK8000 directories

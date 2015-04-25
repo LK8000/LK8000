@@ -37,8 +37,7 @@ bool sound_table::init() {
     sound_code_t soundCode;
     TCHAR *ptrNmea;
     
-    SystemPath(szSsystemPath,TEXT(LKD_SYSTEM));
-    _stprintf(srcfile,TEXT("%s%sSOUND_TABLE.TXT"), szSsystemPath, _T(DIRSEP));
+    _stprintf(srcfile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKSOUNDTABLE));
     
     if ( (fp=_tfopen(srcfile, _T("r"))) == NULL ) {
 	StartupStore(_T("... Cannot load conversion sound table file: %s%s"),srcfile,NEWLINE);
