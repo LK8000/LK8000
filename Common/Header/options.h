@@ -41,6 +41,11 @@
     #define DISABLEAUDIO
 #endif
 
+// Disable externally generated sounds
+#if !defined(KOBO)
+    // audio can be also implemented for external device
+    #define DISABLEEXTAUDIO
+#endif
 
 #ifdef __linux__
  // temporary disable, need to be port...

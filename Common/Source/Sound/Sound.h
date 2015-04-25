@@ -25,7 +25,9 @@ bool SetSoundVolume();
 void LKSound(const TCHAR *lpName);
 void PlayResource (const TCHAR* lpName);
 
-#ifdef DISABLEAUDIO
+#if defined(DISABLEAUDIO) && defined(DISABLEEXTAUDIO)
+// For external device, sounds can be possible by NMEA sentences
+
 inline SoundGlobalInit::SoundGlobalInit() {}
 inline SoundGlobalInit::~SoundGlobalInit() {}
 
