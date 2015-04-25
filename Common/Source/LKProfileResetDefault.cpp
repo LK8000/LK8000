@@ -208,6 +208,8 @@ void LKProfileResetDefault(void) {
   GPSAltitudeOffset = 0;
 
   UseGeoidSeparation = true;
+  UseExtSound1 = false;
+  UseExtSound2 = false;
 
   PressureHg = 0;
 

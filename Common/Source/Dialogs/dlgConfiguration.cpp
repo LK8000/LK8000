@@ -1317,9 +1317,9 @@ void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
 }
 
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
-    const TCHAR* PortPropName[][2] = { 
-        { _T("prpComSpeed1"), _T("prpComBit1") }, 
-        { _T("prpComSpeed2"), _T("prpComBit2") }
+    const TCHAR* PortPropName[][3] = { 
+        { _T("prpComSpeed1"), _T("prpComBit1"), _T("prpExtSound1") }, 
+        { _T("prpComSpeed2"), _T("prpComBit2"), _T("prpExtSound2") }
     };
     
     LKASSERT(szPortName);
@@ -1611,6 +1611,11 @@ static void setVariables(void) {
     dfe->Set(dwBit1Index);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
+  if (wp) {
+    wp->GetDataField()->Set(UseExtSound1);
+    wp->RefreshDisplay();
+  }
 
   TCHAR deviceName1[MAX_PATH];
   TCHAR deviceName2[MAX_PATH];
@@ -1659,6 +1664,12 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("8bit"));
     dfe->addEnumText(TEXT("7bit"));
     dfe->Set(dwBit2Index);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound2"));
+  if (wp) {
+    wp->GetDataField()->Set(UseExtSound2);
     wp->RefreshDisplay();
   }
 
@@ -4440,6 +4451,13 @@ int ival;
       }
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
+  if (wp) {
+	if (UseExtSound1 != (wp->GetDataField()->GetAsInteger())) {
+		UseExtSound1 = (wp->GetDataField()->GetAsInteger());
+	}
+  }
+  
   wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
   if (wp) {
     if ((int)dwSpeedIndex1 != wp->GetDataField()->GetAsInteger()) {
@@ -4474,6 +4492,13 @@ int ival;
           _tcscpy(szPort2, It->GetName());
           COMPORTCHANGED = true;
       }
+  }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound2"));
+  if (wp) {
+	if (UseExtSound2 != (wp->GetDataField()->GetAsInteger())) {
+		UseExtSound2 = (wp->GetDataField()->GetAsInteger());
+	}
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed2"));

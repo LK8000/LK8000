@@ -232,10 +232,12 @@ ifeq ($(TARGET_IS_KOBO),y)
 USE_SDL := n
 GREYSCALE := y
 CE_DEFS += -DKOBO
+USE_SOUND_EXTDEV := y
 
 else
 USE_SDL := y
 GREYSCALE := n
+USE_SOUND_EXTDEV := n
 endif
 	
 CE_DEFS += -DUSE_MEMORY_CANVAS	
@@ -499,7 +501,13 @@ WINDOW += \
 
 endif
 	
-ifeq ($(USE_SDL),y)	
+
+ifeq ($(USE_SOUND_EXTDEV), y)	
+SOUND := \
+	$(SRC)/Sound/ExtDev/Sound.cpp \
+	$(SRC)/Sound/ExtDev/sound_table.cpp \
+
+else ifeq ($(USE_SDL), y)	
 SOUND := \
 	$(SRC)/Sound/SDL/Sound.cpp \
 	

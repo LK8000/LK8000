@@ -610,6 +610,11 @@ Enable this option if you want LK to save many runtime parameters on exit.
 For example: the current selected bottom bar, the overlay status on each multimap, etc.
 By default this is DISABLED.
 
+@240
+Allow to send sound to this external device, if the internal device doesn't manage sound
+Ask to your device dealer for more information
+
+
 #
 # BASIC SETTINGS
 #
