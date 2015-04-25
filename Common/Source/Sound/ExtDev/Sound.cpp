@@ -42,7 +42,7 @@ void LKSound(const TCHAR *lpName) {
     TCHAR soundFileStr[100];
     LKASSERT(lpName);
 
-    if(!lpName && !bSoundInit && !EnableSoundModes) {
+    if(!lpName || !bSoundInit || !EnableSoundModes || (!UseExtSound1 && !UseExtSound2)) {
         return;
     }
     
@@ -67,7 +67,12 @@ void LKSound(const TCHAR *lpName) {
     nmeaStr = sound_table::getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
-        devWriteNMEAString(devAll(), nmeaStr.data());
+        if (UseExtSound1) {
+            devWriteNMEAString(devA(), nmeaStr.data());
+        }
+        if (UseExtSound2) {
+            devWriteNMEAString(devB(), nmeaStr.data());
+        }
     }
         
 }
@@ -76,12 +81,12 @@ void PlayResource (const TCHAR* lpName) {
 
     LKASSERT(lpName);
 
-    if(!lpName && !bSoundInit && !EnableSoundModes) {
+    if(!lpName || !bSoundInit || !EnableSoundModes || (!UseExtSound1 && !UseExtSound2)) {
         return;
     }
 
     std::tstring nmeaStr;
-    resource_sound_t resource_sound;
+    resource_sound_t resource_sound = resource_sound_t::IDR_WAV_TONE1;
     sound_code_t sound_code = sound_code_t::DEFAULT;
     const bool bResult = EnumString<resource_sound_t>::To( resource_sound, lpName );
     
@@ -94,7 +99,12 @@ void PlayResource (const TCHAR* lpName) {
     nmeaStr = sound_table::getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
-        devWriteNMEAString(devAll(), nmeaStr.data());
+        if (UseExtSound1) {
+            devWriteNMEAString(devA(), nmeaStr.data());
+        }
+        if (UseExtSound2) {
+            devWriteNMEAString(devB(), nmeaStr.data());
+        }
     }
         
 }

@@ -2140,6 +2140,8 @@ _@M2248_  "No Near Object found!"
 # DO NOT TRANSLATE 2249
 _@M2249_  "DspMode"
 
+_@M2250_ "Ext. Sound"
+
 # MAX 2500! 
 # (Reserved for custom menus up to 2300!)
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2500)

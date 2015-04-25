@@ -136,6 +136,8 @@ GEXTERN bool  WarningHomeDir;
 
 // Specials
 GEXTERN bool UseGeoidSeparation;
+GEXTERN bool UseExtSound1;
+GEXTERN bool UseExtSound2;
 GEXTERN double GPSAltitudeOffset; 	// VENTA3
 GEXTERN bool PressureHg;
 //GEXTERN bool ShortcutIbox;

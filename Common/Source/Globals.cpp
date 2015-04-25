@@ -189,6 +189,8 @@ void Globals_Init(void) {
   ActiveAlternate = -1;
 
   GPSAltitudeOffset = 0;
+  UseExtSound1=false;
+  UseExtSound2=false;
   UseGeoidSeparation=false;
   PressureHg=false;
 
