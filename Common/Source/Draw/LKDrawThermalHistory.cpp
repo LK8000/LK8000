@@ -18,13 +18,14 @@
 void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 
   SIZE WPTextSize, DSTextSize, BETextSize, RETextSize, AATextSize, HLTextSize, MITextSize;
+  SIZE phdrTextSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
   static RECT s_sortBox[6]; 
   static TCHAR Buffer1[MAXTHISTORY][MAXTHISTORYNUMPAGES][24], Buffer2[MAXTHISTORY][MAXTHISTORYNUMPAGES][10];
   static TCHAR Buffer3[MAXTHISTORY][MAXTHISTORYNUMPAGES][10];
   static TCHAR Buffer4[MAXTHISTORY][MAXTHISTORYNUMPAGES][12], Buffer5[MAXTHISTORY][MAXTHISTORYNUMPAGES][12];
   static short s_maxnlname;
-  short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
+  short i, j, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
   LKColor rcolor;
 
@@ -33,6 +34,7 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
   static short Column1, Column2, Column3, Column4, Column5;
   static POINT p1, p2;
   static short s_rawspace;
+  static unsigned short lincr;
   // Printable area for live nearest values
   static short left,right,bottom;
   // one for each mapspace, no matter if 0 and 1 are unused
@@ -96,20 +98,33 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 
   Column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
   Column1=left;							// WP align left
-  Column2=afterwpname+DSTextSize.cx;						// DS align right
-  Column3=Column2+intercolumn+BETextSize.cx;			// BE align right
-  Column4=Column3+intercolumn+RETextSize.cx;			// RE align right
-  Column5=Column4+intercolumn+AATextSize.cx;			// AA align right
+
+  if (ScreenLandscape) {
+      Column2=afterwpname+DSTextSize.cx;                                // TY align right
+      Column3=Column2+intercolumn+BETextSize.cx;                        // DS align right
+      Column4=Column3+intercolumn+RETextSize.cx;                        // BE align right
+      Column5=Column4+intercolumn+AATextSize.cx;                        // AC align right
+  } else {
+      Surface.SelectObject(LK8PanelMediumFont);
+      Surface.GetTextSize(_T("2.4_ASP_3/3_"), 12, &phdrTextSize);
+      int s=(rc.right - phdrTextSize.cx)/4;
+      Column5= right - NIBLSCALE(2);
+      Column4= Column5 - s;
+      Column3= Column4 - s;
+      Column2= Column3 - s;
+  }
 
 
   if ( !ScreenLandscape ) {
-  	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
+        lincr=2;
+        TopSize=rc.top+HEADRAW*2+WPTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   	TopSize+=HEADRAW;
   	thistoryNumraws=(bottom - TopSize) / (WPTextSize.cy+(INTERRAW*2));
   	if (thistoryNumraws>MAXTHISTORY) thistoryNumraws=MAXTHISTORY;
   	s_rawspace=(WPTextSize.cy+INTERRAW);
   } else {
+        lincr=1;
   	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   	TopSize+=HEADRAW/2;
@@ -121,11 +136,11 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 #define INTERBOX intercolumn/2
 
   // Thermal name
-  s_sortBox[0].left=Column0; // FIX 090925 era solo 0
+  s_sortBox[0].left=Column0; 
   #ifdef WIN32
-  if ( !ScreenLandscape ) s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(2);
+  if ( !ScreenLandscape ) s_sortBox[0].right= phdrTextSize.cx;
   #else
-  if ( !ScreenLandscape ) s_sortBox[0].right=left+WPTextSize.cx+NIBLSCALE(3);
+  if ( !ScreenLandscape ) s_sortBox[0].right= phdrTextSize.cx;
   #endif
   else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=2;
@@ -134,41 +149,58 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 
   // Distance
   #ifdef WIN32
-  if ( !ScreenLandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
+  if ( !ScreenLandscape ) s_sortBox[1].left=s_sortBox[0].right;
   else s_sortBox[1].left=Column1+afterwpname-INTERBOX-NIBLSCALE(2);
   #else
   s_sortBox[1].left=s_sortBox[0].right;
   #endif
-  s_sortBox[1].right=Column2+INTERBOX;
+  if (!ScreenLandscape) s_sortBox[1].right=Column2+NIBLSCALE(2);
+  else s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=2;
   s_sortBox[1].bottom=p1.y;
   SortBoxX[MSM_THERMALS][1]=s_sortBox[1].right;
 
   // Bearing
-  s_sortBox[2].left=Column2+INTERBOX;
-  s_sortBox[2].right=Column3+INTERBOX;
+  if (!ScreenLandscape) {
+      s_sortBox[2].left=Column2+NIBLSCALE(2);
+      s_sortBox[2].right=Column3+NIBLSCALE(2);
+  } else {
+      s_sortBox[2].left=Column2+INTERBOX;
+      s_sortBox[2].right=Column3+INTERBOX;
+  }
   s_sortBox[2].top=2;
   s_sortBox[2].bottom=p1.y;
   SortBoxX[MSM_THERMALS][2]=s_sortBox[2].right;
 
   // Vario
-  s_sortBox[3].left=Column3+INTERBOX;
-  s_sortBox[3].right=Column4+INTERBOX;
+  if (!ScreenLandscape) {
+      s_sortBox[3].left=Column3+NIBLSCALE(2);
+      s_sortBox[3].right=Column4+NIBLSCALE(2);
+  } else {
+      s_sortBox[3].left=Column3+INTERBOX;
+      s_sortBox[3].right=Column4+INTERBOX;
+  }
   s_sortBox[3].top=2;
   s_sortBox[3].bottom=p1.y;
   SortBoxX[MSM_THERMALS][3]=s_sortBox[3].right;
 
   // Altitude
-  s_sortBox[4].left=Column4+INTERBOX;
-  //s_sortBox[4].right=Column5+INTERBOX;
-  s_sortBox[4].right=rc.right-1;
+  if (!ScreenLandscape) {
+      s_sortBox[4].left=Column4+NIBLSCALE(2);
+      s_sortBox[4].right=rc.right-1;
+  } else {
+      s_sortBox[4].left=Column4+INTERBOX;
+      s_sortBox[4].right=rc.right-1;
+  }
+
+
   s_sortBox[4].top=2;
   s_sortBox[4].bottom=p1.y;
   SortBoxX[MSM_THERMALS][4]=s_sortBox[4].right;
 
   SortBoxY[MSM_THERMALS]=p1.y;
 
-  THistoryNumpages=roundupdivision(MAXTHISTORY, thistoryNumraws);
+  THistoryNumpages=roundupdivision(MAXTHISTORY*lincr, thistoryNumraws);
   if (THistoryNumpages>MAXTHISTORYNUMPAGES) THistoryNumpages=MAXTHISTORYNUMPAGES;
   else if (THistoryNumpages<1) THistoryNumpages=1;
 
@@ -181,7 +213,7 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 
   DoThermalHistory(&DrawInfo,  &DerivedDrawInfo);
 
-  THistoryNumpages=roundupdivision(LKNumThermals, thistoryNumraws);
+  THistoryNumpages=roundupdivision(LKNumThermals*lincr, thistoryNumraws);
   if (THistoryNumpages>MAXTHISTORYNUMPAGES) THistoryNumpages=MAXTHISTORYNUMPAGES;
   else if (THistoryNumpages<1) THistoryNumpages=1;
 
@@ -200,7 +232,7 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 		break;
 	case LKEVENT_ENTER:
 		LKevent=LKEVENT_NONE;
-		i=LKSortedThermals[SelectedRaw[curmapspace]+(curpage*thistoryNumraws)];
+		i=LKSortedThermals[SelectedRaw[curmapspace]+(curpage*thistoryNumraws/lincr)];
 
 		if ( (i<0) || (i>=MAXTHISTORY) || (CopyThermalHistory[i].Valid != true) ) {
 			#if 0 // selection while waiting for data ready
@@ -357,9 +389,11 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
   StartupStore(v2buf);
   #endif
 
-  for (i=0, drawn_items_onpage=0; i<thistoryNumraws; i++) {
+  for (i=0, j=0, drawn_items_onpage=0; i<thistoryNumraws; j++, i+=lincr) {
 	iRaw=TopSize+(s_rawspace*i);
-	short curraw=(curpage*thistoryNumraws)+i;
+        short curraw=(curpage*thistoryNumraws);
+        if (!ScreenLandscape) curraw/=2;
+        curraw+=j;
 	if (curraw>=MAXTHISTORY) break;
 	rli=LKSortedThermals[curraw];
 
@@ -373,12 +407,16 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 		// Thermal name
 		wlen=_tcslen(CopyThermalHistory[rli].Name);
 
-                if (wlen>s_maxnlname) {
-                        LK_tcsncpy(Buffer, CopyThermalHistory[rli].Name, s_maxnlname);
-                }
-                else {
-                        LK_tcsncpy(Buffer, CopyThermalHistory[rli].Name, wlen);
-                }
+		if (!ScreenLandscape) {
+                        LK_tcsncpy(Buffer, CopyThermalHistory[rli].Name, 12);
+		} else {
+                	if (wlen>s_maxnlname) {
+                       		LK_tcsncpy(Buffer, CopyThermalHistory[rli].Name, s_maxnlname);
+                	}
+                	else {
+                       		LK_tcsncpy(Buffer, CopyThermalHistory[rli].Name, wlen);
+               		}
+		}
 		if (IsThermalMultitarget(rli)) {
 			TCHAR buffer2[40];
 			_stprintf(buffer2,_T(">%s"),Buffer);
@@ -390,7 +428,10 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 
 		// Distance
 		value=CopyThermalHistory[rli].Distance*DISTANCEMODIFY;
-         	_stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
+                if (!ScreenLandscape) 
+                    _stprintf(Buffer2[i][curpage],TEXT("%0.1lf %s"),value,Units::GetDistanceName());
+                else
+                    _stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
 
 		// relative bearing
 
@@ -427,8 +468,10 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 		value=ALTITUDEMODIFY*CopyThermalHistory[rli].Arrival;
 		if (value<-1000 || value >45000 )
 			_stprintf(Buffer5[i][curpage],_T("---"));
-		else
-			_stprintf(Buffer5[i][curpage],_T("%.0f"),value);
+		else {
+               		if (!ScreenLandscape) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"),value,Units::GetAltitudeName() );
+                	else _stprintf(Buffer5[i][curpage], TEXT("%.0f"),value);
+		}
 		
 
 	} else {
@@ -455,16 +498,22 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 	} else 
 		rcolor=RGB_GREY;
 
-	LKWriteText(Surface, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
-	
-  	Surface.SelectObject(LK8InfoBigFont); // Text font for Nearest
-	LKWriteText(Surface, Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+        if (ScreenLandscape) {
+            LKWriteText(Surface,  Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+            LKWriteText(Surface,  Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer4[i][curpage], Column4, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+        } else {
+            LKWriteText(Surface,  Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+            LKWriteText(Surface,  Buffer2[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            iRaw+=s_rawspace;
+            unsigned int iCol=ScreenSizeX/3;
+            LKWriteText(Surface,  Buffer3[i][curpage], iCol, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer4[i][curpage], iCol*2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer5[i][curpage], right-IBLSCALE(2), iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+        }
 
-	LKWriteText(Surface, Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-
-	LKWriteText(Surface, Buffer4[i][curpage], Column4, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-
-	LKWriteText(Surface, Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
 
   }  // for
 
@@ -490,8 +539,10 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
 	}
 	invsel.left=left;
 	invsel.right=right;
-	invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
-	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]+1))-NIBLSCALE(1);
+        if (!ScreenLandscape) invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace]*lincr);
+        else invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace]*lincr)+NIBLSCALE(2);
+        invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]*lincr+1))-NIBLSCALE(1);
+        if (!ScreenLandscape) invsel.bottom+=s_rawspace;
 	Surface.InvertRect(invsel);
 
   } 
