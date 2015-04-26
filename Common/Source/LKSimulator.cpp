@@ -80,6 +80,54 @@ void LKSimulator(void) {
 		SimFlarmTraffic(0xdd8944,31.0+(double)(rand() % 32));
 		SimFlarmTraffic(0xdd8a43,16.0+(double)(rand() % 32));
 		SimFlarmTraffic(0xdd8a42,41.0+(double)(rand() % 32));
+/*
+		SimFlarmTraffic(0xdd8a11,11.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a12,21.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a13,31.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a14,41.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a15,51.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a16,61.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a17,71.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a18,81.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a19,91.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a10,01.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a21,21.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a22,22.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a23,23.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a24,24.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a25,25.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a26,26.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a27,27.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a28,28.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a29,29.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a20,31.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a31,32.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a32,33.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a33,34.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a34,35.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a35,36.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a36,37.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a37,41.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a38,42.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a39,43.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a30,44.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a41,45.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a42,46.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a43,47.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a44,48.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a45,49.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a46,01.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a47,02.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a48,03.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a49,04.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a50,81.1+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a51,82.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a52,83.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a53,84.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a54,85.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a55,86.0+(double)(rand() % 32));
+		SimFlarmTraffic(0xdd8a56,87.0+(double)(rand() % 32));
+*/
 	}
 	doinit=false;
   }
