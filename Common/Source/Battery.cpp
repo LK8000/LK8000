@@ -188,11 +188,11 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
                     pBatteryInfo->chargeStatus = Battery::CRITICAL;
                 }
             } else {
-                pBatteryInfo->chargeStatus = Battery::UNKNOWN;
+                pBatteryInfo->chargeStatus = Battery::CHARGE_UNKNOWN;
             }
             break;
         default:
-            pBatteryInfo->chargeStatus = Battery::UNKNOWN;
+            pBatteryInfo->chargeStatus = Battery::CHARGE_UNKNOWN;
             break;
     }
     
