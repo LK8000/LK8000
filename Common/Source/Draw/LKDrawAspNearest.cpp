@@ -20,14 +20,15 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 
 
   SIZE ASPTextSize, DSTextSize, BETextSize, TYTextSize, ACTextSize, HLTextSize, MITextSize;
+  SIZE phdrTextSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
   static RECT s_sortBox[6]; 
   static TCHAR Buffer1[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][30], Buffer2[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][10];
-  static TCHAR Buffer3[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][10];
+  static TCHAR Buffer3[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][11];
   static TCHAR Buffer4[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][12], Buffer5[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][12];
   static short s_maxnlname;
   static TCHAR s_trailspace[3];
-  short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
+  short i, j, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
   LKColor rcolor;
 
@@ -36,6 +37,7 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
   static short Column1, Column2, Column3, Column4, Column5;
   static POINT p1, p2;
   static short s_rawspace;
+  static unsigned short lincr;
   // Printable area for live nearest values
   static short left,right,bottom;
   // one for each mapspace, no matter if 0 and 1 are unused
@@ -62,7 +64,7 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 
   // Set screen borders to avoid writing on extreme pixels
   if ( !ScreenLandscape ) {
-	// Portrait mode has tight horizontal margins...
+	// Portrait mode works on two rows
 	left=rc.left+NIBLSCALE(1);
 	right=rc.right-NIBLSCALE(1);
   	bottom=rc.bottom-BottomSize-NIBLSCALE(2);
@@ -116,14 +118,25 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
   // Col0 is where ASP 1/3 can be written, after ModeIndex:Curtype
   Column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
   Column1=left;							// WP align left
-  Column2=afterwpname+TYTextSize.cx;				// TY align right
-  Column3=Column2+intercolumn+DSTextSize.cx;			// DS align right
-  Column4=Column3+intercolumn+BETextSize.cx;			// BE align right
-  Column5=Column4+intercolumn+ACTextSize.cx;			// AC align right
 
+  if (ScreenLandscape) {
+      Column2=afterwpname+TYTextSize.cx;				// TY align right
+      Column3=Column2+intercolumn+DSTextSize.cx;			// DS align right
+      Column4=Column3+intercolumn+BETextSize.cx;			// BE align right
+      Column5=Column4+intercolumn+ACTextSize.cx;			// AC align right
+  } else {
+      Surface.SelectObject(LK8PanelMediumFont);
+      Surface.GetTextSize(_T("2.4_ASP_3/3_"), 12, &phdrTextSize);
+      int s=(rc.right - phdrTextSize.cx)/4;
+      Column5= right - NIBLSCALE(2);
+      Column4= Column5 - s;
+      Column3= Column4 - s;
+      Column2= Column3 - s;
+  }
 
   if ( !ScreenLandscape ) {
-  	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
+	lincr=2;
+  	TopSize=rc.top+HEADRAW*2+ASPTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   	TopSize+=HEADRAW;
   	AspNumraws=(bottom - TopSize) / (ASPTextSize.cy+(INTERRAW*2));
@@ -132,6 +145,7 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 	Column5=rc.right-NIBLSCALE(1)-1;
 	_tcscpy(s_trailspace,_T(""));
   } else {
+	lincr=1;
   	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   	TopSize+=HEADRAW/2;
@@ -144,40 +158,57 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 #define INTERBOX intercolumn/2
 
   s_sortBox[0].left=Column0; 
-  if ( !ScreenLandscape ) s_sortBox[0].right=left+ASPTextSize.cx-NIBLSCALE(2);
+  if ( !ScreenLandscape ) s_sortBox[0].right=phdrTextSize.cx;
   else s_sortBox[0].right=left+ASPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=2;
   s_sortBox[0].bottom=p1.y;
   SortBoxX[MSM_AIRSPACES][0]=s_sortBox[0].right;
 
-  if ( !ScreenLandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
+  if ( !ScreenLandscape ) s_sortBox[1].left=s_sortBox[0].right;
   else s_sortBox[1].left=Column1+afterwpname-INTERBOX-NIBLSCALE(2);
-  s_sortBox[1].right=Column2+INTERBOX;
+
+  if (!ScreenLandscape) s_sortBox[1].right=Column2+NIBLSCALE(2);
+  else s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=2;
   s_sortBox[1].bottom=p1.y;
   SortBoxX[MSM_AIRSPACES][1]=s_sortBox[1].right;
 
-  s_sortBox[2].left=Column2+INTERBOX;
-  s_sortBox[2].right=Column3+INTERBOX;
+  if (!ScreenLandscape) {
+      s_sortBox[2].left=Column2+NIBLSCALE(2);
+      s_sortBox[2].right=Column3+NIBLSCALE(2);
+  } else {
+      s_sortBox[2].left=Column2+INTERBOX;
+      s_sortBox[2].right=Column3+INTERBOX;
+  }
   s_sortBox[2].top=2;
   s_sortBox[2].bottom=p1.y;
   SortBoxX[MSM_AIRSPACES][2]=s_sortBox[2].right;
 
-  s_sortBox[3].left=Column3+INTERBOX;
-  s_sortBox[3].right=Column4+INTERBOX;
+  if (!ScreenLandscape) {
+      s_sortBox[3].left=Column3+NIBLSCALE(2);
+      s_sortBox[3].right=Column4+NIBLSCALE(2);
+  } else {
+      s_sortBox[3].left=Column3+INTERBOX;
+      s_sortBox[3].right=Column4+INTERBOX;
+  }
   s_sortBox[3].top=2;
   s_sortBox[3].bottom=p1.y;
   SortBoxX[MSM_AIRSPACES][3]=s_sortBox[3].right;
 
-  s_sortBox[4].left=Column4+INTERBOX;
-  s_sortBox[4].right=rc.right-1;
+  if (!ScreenLandscape) {
+      s_sortBox[4].left=Column4+NIBLSCALE(2);
+      s_sortBox[4].right=rc.right-1;
+  } else {
+      s_sortBox[4].left=Column4+INTERBOX;
+      s_sortBox[4].right=rc.right-1;
+  }
   s_sortBox[4].top=2;
   s_sortBox[4].bottom=p1.y;
   SortBoxX[MSM_AIRSPACES][4]=s_sortBox[4].right;
 
   SortBoxY[MSM_AIRSPACES]=p1.y;
 
-  AspNumpages=roundupdivision(MAXNEARAIRSPACES, AspNumraws);
+  AspNumpages=roundupdivision(MAXNEARAIRSPACES*lincr, AspNumraws);
   if (AspNumpages>MAXAIRSPACENUMPAGES) AspNumpages=MAXAIRSPACENUMPAGES;
   else if (AspNumpages<1) AspNumpages=1;
 
@@ -191,7 +222,7 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
   bool ndr;
   ndr=DoAirspaces(&DrawInfo, &DerivedDrawInfo);
 
-  AspNumpages=roundupdivision(LKNumAirspaces, AspNumraws);
+  AspNumpages=roundupdivision(LKNumAirspaces*lincr, AspNumraws);
   if (AspNumpages>MAXAIRSPACENUMPAGES) AspNumpages=MAXAIRSPACENUMPAGES;
   else if (AspNumpages<1) AspNumpages=1;
 
@@ -207,7 +238,7 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 		break;
 	case LKEVENT_ENTER:
 		LKevent=LKEVENT_NONE;
-		i=LKSortedAirspaces[SelectedRaw[curmapspace] + (curpage*AspNumraws)];
+		i=LKSortedAirspaces[SelectedRaw[curmapspace] + (curpage*AspNumraws/lincr)];
 
 		if ( ValidAirspace(i)) {
             CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
@@ -346,9 +377,11 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
   int *psortedindex;
   psortedindex=LKSortedAirspaces;
 
-  for (i=0, drawn_items_onpage=0; i<AspNumraws; i++) {
+  for (i=0, j=0, drawn_items_onpage=0; i<AspNumraws; j++, i+=lincr) {
 	iRaw=TopSize+(s_rawspace*i);
-	short curraw=(curpage*AspNumraws)+i;
+	short curraw=(curpage*AspNumraws);
+        if (!ScreenLandscape) curraw/=2;
+        curraw+=j;
 	if (curraw>=MAXNEARAIRSPACES) break;
 
 	rli=*(psortedindex+curraw);
@@ -362,11 +395,14 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 		// AIRSPACE NAME
 		//
 		wlen=_tcslen(LKAirspaces[rli].Name);
-		if (wlen>s_maxnlname) {
-			LK_tcsncpy(Buffer, LKAirspaces[rli].Name, s_maxnlname);
-		}
-		else {
-			LK_tcsncpy(Buffer, LKAirspaces[rli].Name, wlen);
+		if (!ScreenLandscape) {
+			LK_tcsncpy(Buffer, LKAirspaces[rli].Name, 15);
+		} else {
+			if (wlen>s_maxnlname) {
+				LK_tcsncpy(Buffer, LKAirspaces[rli].Name, s_maxnlname);
+			} else {
+				LK_tcsncpy(Buffer, LKAirspaces[rli].Name, wlen);
+			}
 		}
 		CharUpper(Buffer);
 		_tcscpy(Buffer1[i][curpage],Buffer); 
@@ -392,14 +428,14 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 		switch(LKAirspaces[rli].WarningLevel) {
 			case awYellow:
 				value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
-       				_stprintf(Buffer3[i][curpage],TEXT("%0.1lf!"),value);
+       				_stprintf(Buffer3[i][curpage],TEXT("%0.1lf%s!"),value,Units::GetDistanceName());
 				break;
 			case awRed:
        				_stprintf(Buffer3[i][curpage],TEXT("IN"));
 				break;
 			default:
 				value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
-       				_stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
+       				_stprintf(Buffer3[i][curpage],TEXT("%0.1lf%s"),value,Units::GetDistanceName());
 				break;
 		}
 
@@ -434,7 +470,8 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 			LKAirspaces[rli].Flyzone  ? _T("F") : _T("  "),
 			LKAirspaces[rli].Enabled  ? _T("E") : _T("D"), s_trailspace);
 
-		_stprintf(Buffer5[i][curpage], TEXT("%s"), aspflags);
+		if (!ScreenLandscape) _stprintf(Buffer5[i][curpage], TEXT("*%s"), aspflags);
+		else _stprintf(Buffer5[i][curpage], TEXT("%s"), aspflags);
 
 	} else {
 		_stprintf(Buffer1[i][curpage], _T("----------------------------"));  // max 30
@@ -471,15 +508,21 @@ KeepOldValues:
 		rcolor=RGB_GREY;
 	}
 
-	LKWriteText(Surface, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
-	
-	LKWriteText(Surface, Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-
-	LKWriteText(Surface, Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-
-	LKWriteText(Surface, Buffer4[i][curpage], Column4, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-
-	LKWriteText(Surface, Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+	if (ScreenLandscape) {
+		LKWriteText(Surface, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+		LKWriteText(Surface, Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+		LKWriteText(Surface, Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+		LKWriteText(Surface, Buffer4[i][curpage], Column4, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+		LKWriteText(Surface, Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+	} else {
+		LKWriteText(Surface, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+		LKWriteText(Surface, Buffer2[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+		iRaw+=s_rawspace;
+		unsigned int iCol=ScreenSizeX/3;
+		LKWriteText(Surface, Buffer3[i][curpage], iCol, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+		LKWriteText(Surface, Buffer4[i][curpage], iCol*2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+		LKWriteText(Surface, Buffer5[i][curpage], right-IBLSCALE(2), iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+	}
 
   } 
 
@@ -507,8 +550,11 @@ KeepOldValues:
 	
 	invsel.left=left;
 	invsel.right=right;
-	invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
-	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]+1))-NIBLSCALE(1);
+        if (!ScreenLandscape) invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace]*lincr);
+	else invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
+	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]*lincr+1))-NIBLSCALE(1);
+	if (!ScreenLandscape) invsel.bottom+=s_rawspace;
+
 	Surface.InvertRect(invsel);
 
   } 
