@@ -225,7 +225,7 @@ void MapWindow::DrawCommon(LKSurface& Surface, const RECT& rc) {
 		// i=CommonIndex[SelectedRaw[curmapspace] + (curpage*CommonNumraws)]; OLD
 		i=pIndex[SelectedRaw[curmapspace] + (curpage*CommonNumraws)];
 
-		if (ValidWayPoint(i)) {
+		if (!ValidWayPoint(i)) {
 			break;
 		}
 		/*
