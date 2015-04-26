@@ -18,13 +18,14 @@
 void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 
   SIZE WPTextSize, DSTextSize, BETextSize, RETextSize, AATextSize, HLTextSize, MITextSize;
+  SIZE phdrTextSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
   static RECT s_sortBox[6]; 
   static TCHAR Buffer1[MAXTRAFFIC][MAXTRAFFICNUMPAGES][24], Buffer2[MAXTRAFFIC][MAXTRAFFICNUMPAGES][10];
   static TCHAR Buffer3[MAXTRAFFIC][MAXTRAFFICNUMPAGES][10];
   static TCHAR Buffer4[MAXTRAFFIC][MAXTRAFFICNUMPAGES][12], Buffer5[MAXTRAFFIC][MAXTRAFFICNUMPAGES][12];
   static short s_maxnlname;
-  short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
+  short i, j, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
   LKColor rcolor;
 
@@ -33,6 +34,7 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
   static short Column1, Column2, Column3, Column4, Column5;
   static POINT p1, p2;
   static short s_rawspace;
+  static unsigned short lincr;
   // Printable area for live nearest values
   static short left,right,bottom;
   // one for each mapspace, no matter if 0 and 1 are unused
@@ -58,8 +60,8 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 	left=rc.left+NIBLSCALE(1);
 	right=rc.right-NIBLSCALE(1);
   	bottom=rc.bottom-BottomSize-NIBLSCALE(2);
-	s_maxnlname=MAXNLNAME-5; // 7 chars max, 8 sized
-  	_stprintf(Buffer,TEXT("MAKSJSMM"));  
+	s_maxnlname=MAXNLNAME-3; // 9 chars, sized 10
+  	_stprintf(Buffer,TEXT("ABCDEFGHMx")); 
   } else {
 	left=rc.left+NIBLSCALE(5);
 	right=rc.right-NIBLSCALE(5);
@@ -84,7 +86,7 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
   _stprintf(Buffer,TEXT("+9999")); 
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &AATextSize);
 
-  Surface.SelectObject(LK8InfoNormalFont); // Heading line  was MapWindow QUI
+  Surface.SelectObject(LK8InfoNormalFont); 
   _stprintf(Buffer,TEXT("MMMM")); 
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &HLTextSize);
 
@@ -97,20 +99,32 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 
   Column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
   Column1=left;							// WP align left
-  Column2=afterwpname+DSTextSize.cx;						// DS align right
-  Column3=Column2+intercolumn+BETextSize.cx;			// BE align right
-  Column4=Column3+intercolumn+RETextSize.cx;			// RE align right
-  Column5=Column4+intercolumn+AATextSize.cx;			// AA align right
 
+  if (ScreenLandscape) {
+      Column2=afterwpname+DSTextSize.cx;                // DS align right
+      Column3=Column2+intercolumn+BETextSize.cx;        // BE align right
+      Column4=Column3+intercolumn+RETextSize.cx;        // RE align right
+      Column5=Column4+intercolumn+AATextSize.cx;        // AA align right
+  } else {
+      Surface.SelectObject(LK8PanelMediumFont);
+      Surface.GetTextSize( _T("2.1_APT 3/3_"), 12, &phdrTextSize);
+      int s=(rc.right - phdrTextSize.cx) /4;
+      Column5= right - NIBLSCALE(2);
+      Column4= Column5 - s;
+      Column3= Column4 - s;
+      Column2= Column3 - s;
+  }
 
   if ( !ScreenLandscape ) {
-  	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
+        lincr=2; // line increment
+        TopSize=rc.top+HEADRAW*2+WPTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   	TopSize+=HEADRAW;
   	TrafficNumraws=(bottom - TopSize) / (WPTextSize.cy+(INTERRAW*2));
   	if (TrafficNumraws>MAXTRAFFIC) TrafficNumraws=MAXTRAFFIC;
   	s_rawspace=(WPTextSize.cy+INTERRAW);
   } else {
+	lincr=1;
   	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   	TopSize+=HEADRAW/2;
@@ -122,46 +136,63 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 #define INTERBOX intercolumn/2
 
   // Traffic name
-  s_sortBox[0].left=Column0; // FIX 090925 era solo 0
-  if ( !ScreenLandscape ) s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(2);
+  s_sortBox[0].left=Column0;
+
+  if ( !ScreenLandscape ) s_sortBox[0].right=phdrTextSize.cx;
   else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
+
   s_sortBox[0].top=2;
   s_sortBox[0].bottom=p1.y;
   SortBoxX[MSM_TRAFFIC][0]=s_sortBox[0].right;
 
   // Distance
-  if ( !ScreenLandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
+  if ( !ScreenLandscape ) s_sortBox[1].left=s_sortBox[0].right;
   else s_sortBox[1].left=Column1+afterwpname-INTERBOX-NIBLSCALE(2);
-  s_sortBox[1].right=Column2+INTERBOX;
+  if (!ScreenLandscape) s_sortBox[1].right=Column2+NIBLSCALE(2);
+  else s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=2;
   s_sortBox[1].bottom=p1.y;
   SortBoxX[MSM_TRAFFIC][1]=s_sortBox[1].right;
 
   // Bearing
-  s_sortBox[2].left=Column2+INTERBOX;
-  s_sortBox[2].right=Column3+INTERBOX;
+  if (!ScreenLandscape) {
+      s_sortBox[2].left=Column2+NIBLSCALE(2);
+      s_sortBox[2].right=Column3+NIBLSCALE(2);;
+  } else {
+      s_sortBox[2].left=Column2+INTERBOX;
+      s_sortBox[2].right=Column3+INTERBOX;
+  }
   s_sortBox[2].top=2;
   s_sortBox[2].bottom=p1.y;
   SortBoxX[MSM_TRAFFIC][2]=s_sortBox[2].right;
 
   // Vario
-  s_sortBox[3].left=Column3+INTERBOX;
-  s_sortBox[3].right=Column4+INTERBOX;
+  if (!ScreenLandscape) {
+      s_sortBox[3].left=Column3+NIBLSCALE(2);
+      s_sortBox[3].right=Column4+NIBLSCALE(2);
+  } else {
+      s_sortBox[3].left=Column3+INTERBOX;
+      s_sortBox[3].right=Column4+INTERBOX;
+  }
   s_sortBox[3].top=2;
   s_sortBox[3].bottom=p1.y;
   SortBoxX[MSM_TRAFFIC][3]=s_sortBox[3].right;
 
   // Altitude
-  s_sortBox[4].left=Column4+INTERBOX;
-  //s_sortBox[4].right=Column5+INTERBOX;
-  s_sortBox[4].right=rc.right-1;
+  if (!ScreenLandscape) {
+      s_sortBox[4].left=Column4+NIBLSCALE(2);
+      s_sortBox[4].right=rc.right-1;
+  } else {
+      s_sortBox[4].left=Column4+INTERBOX;
+      s_sortBox[4].right=rc.right-1;
+  }
   s_sortBox[4].top=2;
   s_sortBox[4].bottom=p1.y;
   SortBoxX[MSM_TRAFFIC][4]=s_sortBox[4].right;
 
   SortBoxY[MSM_TRAFFIC]=p1.y;
 
-  TrafficNumpages=roundupdivision(MAXTRAFFIC, TrafficNumraws);
+  TrafficNumpages=roundupdivision(MAXTRAFFIC*lincr, TrafficNumraws);
   if (TrafficNumpages>MAXTRAFFICNUMPAGES) TrafficNumpages=MAXTRAFFICNUMPAGES;
   else if (TrafficNumpages<1) TrafficNumpages=1;
 
@@ -174,7 +205,7 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 
   DoTraffic(&DrawInfo,  &DerivedDrawInfo);
 
-  TrafficNumpages=roundupdivision(LKNumTraffic, TrafficNumraws);
+  TrafficNumpages=roundupdivision(LKNumTraffic*lincr, TrafficNumraws);
   if (TrafficNumpages>MAXTRAFFICNUMPAGES) TrafficNumpages=MAXTRAFFICNUMPAGES;
   else if (TrafficNumpages<1) TrafficNumpages=1;
 
@@ -191,7 +222,7 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 		break;
 	case LKEVENT_ENTER:
 		LKevent=LKEVENT_NONE;
-		i=LKSortedTraffic[SelectedRaw[curmapspace]+(curpage*TrafficNumraws)];
+		i=LKSortedTraffic[SelectedRaw[curmapspace]+(curpage*TrafficNumraws/lincr)];
 
 		if ( (i<0) || (i>=MAXTRAFFIC) || (LKTraffic[i].ID<=0) ) {
 			#if 0 // selection while waiting for data ready
@@ -351,9 +382,11 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
   StartupStore(v2buf);
   #endif
 
-  for (i=0, drawn_items_onpage=0; i<TrafficNumraws; i++) {
+  for (i=0, j=0, drawn_items_onpage=0; i<TrafficNumraws; j++, i+=lincr) {
 	iRaw=TopSize+(s_rawspace*i);
-	short curraw=(curpage*TrafficNumraws)+i;
+        short curraw=(curpage*TrafficNumraws);
+        if (!ScreenLandscape) curraw/=2;
+	curraw+=j;
 	if (curraw>=MAXTRAFFIC) break;
 	rli=LKSortedTraffic[curraw];
 
@@ -406,7 +439,10 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 
 		// Distance
 		value=LKTraffic[rli].Distance*DISTANCEMODIFY;
-         	_stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
+               if (!ScreenLandscape) 
+                    _stprintf(Buffer2[i][curpage],TEXT("%0.1lf %s"),value,Units::GetDistanceName());
+                else
+                    _stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
 
 		// relative bearing
 
@@ -443,8 +479,11 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 		value=ALTITUDEMODIFY*LKTraffic[rli].Altitude;
 		if (value<-1000 || value >45000 )
 			_tcscpy(Buffer5[i][curpage],_T("---"));
-		else
-			_stprintf(Buffer5[i][curpage],_T("%.0f"),value);
+		else {
+                        if (!ScreenLandscape) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"),value,Units::GetAltitudeName() );
+                        else _stprintf(Buffer5[i][curpage], TEXT("%.0f"),value);
+                }
+
 
 	} else {
 		// Empty traffic, fill in all empty data and maybe break loop
@@ -472,16 +511,22 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 	} else 
 		rcolor=RGB_GREY;
 
-	LKWriteText(Surface, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
-	
-  	Surface.SelectObject(LK8InfoBigFont); // Text font for Nearest
-	LKWriteText(Surface, Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+        if (ScreenLandscape) {
+            LKWriteText(Surface,  Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+            LKWriteText(Surface,  Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer4[i][curpage], Column4, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+        } else {
+            LKWriteText(Surface,  Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+            LKWriteText(Surface,  Buffer2[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            iRaw+=s_rawspace;
+            unsigned int iCol=ScreenSizeX/3;
+            LKWriteText(Surface,  Buffer3[i][curpage], iCol, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer4[i][curpage], iCol*2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface,  Buffer5[i][curpage], right-IBLSCALE(2), iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+        }
 
-	LKWriteText(Surface, Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-
-	LKWriteText(Surface, Buffer4[i][curpage], Column4, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-
-	LKWriteText(Surface, Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
 
   }  // for
 
@@ -507,8 +552,10 @@ void MapWindow::DrawTraffic(LKSurface& Surface, const RECT& rc) {
 	}
 	invsel.left=left;
 	invsel.right=right;
-	invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
-	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]+1))-NIBLSCALE(1);
+        if (!ScreenLandscape) invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace]*lincr);
+        else invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace]*lincr)+NIBLSCALE(2);
+        invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]*lincr+1))-NIBLSCALE(1);
+        if (!ScreenLandscape) invsel.bottom+=s_rawspace;
 	Surface.InvertRect(invsel);
 
   } 
