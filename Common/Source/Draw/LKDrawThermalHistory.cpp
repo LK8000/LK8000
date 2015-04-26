@@ -21,8 +21,8 @@ void MapWindow::DrawThermalHistory(LKSurface& Surface, const RECT& rc) {
   SIZE phdrTextSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
   static RECT s_sortBox[6]; 
-  static TCHAR Buffer1[MAXTHISTORY][MAXTHISTORYNUMPAGES][24], Buffer2[MAXTHISTORY][MAXTHISTORYNUMPAGES][10];
-  static TCHAR Buffer3[MAXTHISTORY][MAXTHISTORYNUMPAGES][10];
+  static TCHAR Buffer1[MAXTHISTORY][MAXTHISTORYNUMPAGES][24], Buffer2[MAXTHISTORY][MAXTHISTORYNUMPAGES][12];
+  static TCHAR Buffer3[MAXTHISTORY][MAXTHISTORYNUMPAGES][12];
   static TCHAR Buffer4[MAXTHISTORY][MAXTHISTORYNUMPAGES][12], Buffer5[MAXTHISTORY][MAXTHISTORYNUMPAGES][12];
   static short s_maxnlname;
   short i, j, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
