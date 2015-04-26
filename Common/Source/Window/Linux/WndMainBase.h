@@ -35,10 +35,12 @@ public:
 
     virtual void Redraw(const RECT& Rect) { 
         __super::Redraw(Rect);
-#ifdef ENABLE_SDL
+#if defined(ENABLE_SDL)
+#if !(SDL_MAJOR_VERSION >= 2)
         SDL_Event event;
         event.type = SDL_VIDEOEXPOSE;
         ::SDL_PushEvent(&event);
+#endif
 #endif
     }
 

@@ -243,11 +243,25 @@ endif
 CE_DEFS += -DUSE_MEMORY_CANVAS	
 
 ifeq ($(USE_SDL),y)
-$(eval $(call pkg-config-library,SDL,sdl))
-CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_CPPFLAGS))
 CE_DEFS += -DENABLE_SDL
 
-$(eval $(call pkg-config-library,SDL_MIXER,SDL_mixer))
+USE_SDL2 = $(shell $(PKG_CONFIG) --exists sdl2 && echo y)
+ifeq ($(USE_SDL2),y)
+   USE_SDL2 = $(shell $(PKG_CONFIG) --exists SDL2_mixer && echo y)
+endif
+ifeq ($(USE_SDL2),y)
+    $(info build with SDL 2 Library)
+
+    $(eval $(call pkg-config-library,SDL,sdl2))
+    $(eval $(call pkg-config-library,SDL_MIXER,SDL2_mixer))
+else 
+    $(info build with SDL 1.2 Library)
+
+    $(eval $(call pkg-config-library,SDL,sdl))
+    $(eval $(call pkg-config-library,SDL_MIXER,SDL_mixer))
+endif
+
+CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_CPPFLAGS))
 CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_MIXER_CPPFLAGS))
 
 else
