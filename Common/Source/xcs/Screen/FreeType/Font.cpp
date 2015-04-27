@@ -3,8 +3,13 @@ Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
   Copyright (C) 2000-2014 The XCSoar Project
+  A detailed list of copyright holders can be found in the file "AUTHORS"
+  on XCSoar github.
+
+  LK8000 Tactical Flight Computer -  WWW.LK8000.ORG
   Copyright (C) 2015 The LK8000 Project
-  A detailed list of copyright holders can be found in the file "AUTHORS".
+  Released under GNU/GPL License v.2
+  See CREDITS.TXT file for authors and copyrights
 
 
   This program is free software; you can redistribute it and/or
@@ -46,7 +51,9 @@ Copyright_License {
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_BITMAP_H
 
+extern FT_Library ft_library;
 #include <algorithm>
 
 #include <assert.h>
@@ -183,6 +190,12 @@ Font::LoadFile(const char *file, UPixelScalar ptsize, bool bold, bool italic)
   if (new_face == nullptr)
     return false;
 
+  if (ptsize>1000) {
+      ptsize-=1000;
+      demibold=true;
+  } else
+      demibold=false;
+
   // Paolo: in order to get back desired ppts we must ask for 62, not 64
   FT_Error error = ::FT_Set_Char_Size(new_face, 0, ptsize<<6, 0, 62);
   if (error) {
@@ -199,8 +212,6 @@ Font::LoadFile(const char *file, UPixelScalar ptsize, bool bold, bool italic)
   if (capital_height == 0)
     capital_height = height;
   
-  // TODO: handle bold/italic
-
   face = new_face;
   return true;
 }
@@ -531,6 +542,10 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
     error = FT_Render_Glyph(glyph, render_mode);
     if (error)
       continue;
+    /* 
+     *  32,  0  = Microsoft GDI weight=600 (64=32)
+     */
+    if (demibold) FT_Bitmap_Embolden(ft_library,&glyph->bitmap, 32,0);
 
     RenderGlyph((uint8_t *)buffer, size.cx, size.cy,
 #ifdef USE_KERNING

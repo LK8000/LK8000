@@ -59,6 +59,9 @@ protected:
 #endif
 
   unsigned height, ascent_height, capital_height;
+#ifdef USE_FREETYPE
+  bool demibold;
+#endif
 
   void CalculateHeights();
 

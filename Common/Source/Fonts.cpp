@@ -49,6 +49,9 @@ int GetFontRenderer() {
 //
 void ApplyFontSize(LOGFONT *logfont) {
 
+  #ifdef USE_FREETYPE 
+  if (logfont->lfWeight == 600) logfont->lfHeight+=1000;
+  #endif
   if (logfont->lfOrientation == 0) return;
   logfont->lfOrientation = 0;
   logfont->lfHeight = (int)((double)logfont->lfHeight * Screen0Ratio);

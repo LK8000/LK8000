@@ -38,7 +38,7 @@ Copyright_License {
 bool FreeType::mono = true;
 #endif
 
-static FT_Library ft_library;
+FT_Library ft_library;
 
 void
 FreeType::Initialise()
