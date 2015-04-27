@@ -19,12 +19,12 @@
 #include "resource_sound.h"
 
 
-static bool bSoundInit = false; // this is true only if #SDL_Mixer is initialized.
+static bool bSoundInit = false;
 
 SoundGlobalInit::SoundGlobalInit() {
 
-    sound_table::init();
-    bSoundInit = true;
+    bSoundInit = sound_table::init();
+
 }
   
 SoundGlobalInit::~SoundGlobalInit() {
