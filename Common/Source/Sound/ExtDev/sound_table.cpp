@@ -13,9 +13,8 @@
 #include "externs.h"
 #include "sound_table.h"
 #include <array>
-
-// This array is loaded at init phase and contain association between enum sound code and nmea string
-static std::array<std::tstring, sound_code_t::last> table;
+#include <tr1/functional>
+using namespace std::tr1::placeholders;
 
 void sound_table::set(sound_code_t code, const TCHAR * nmeaStr) {
     table[code] = nmeaStr;
@@ -27,6 +26,8 @@ void sound_table::set(sound_code_t code, const TCHAR * nmeaStr) {
  * @return true if file is read
  */
 bool sound_table::init() {
+    
+    reset(); // useless still table is initialized only one time. no impact on perf, so is better to leave it...
 
     TCHAR srcfile[MAX_PATH] = {};
      _stprintf(srcfile,_T("%s" LKD_CONF DIRSEP LKSOUNDTABLE),LKGetLocalPath());
@@ -71,6 +72,14 @@ bool sound_table::init() {
     return true;
 }
 
-const std::tstring& sound_table::getNmeaStr(sound_code_t code) {
+void sound_table::reset() {
+    std::for_each(table.begin(), table.end(), std::bind(&std::tstring::clear, _1) );
+}
+
+const std::tstring& sound_table::getNmeaStr(sound_code_t code) const {
+    static const std::tstring empty;
+    if(code < table.size()) {
+        return empty;
+    }
     return table[code];
 }

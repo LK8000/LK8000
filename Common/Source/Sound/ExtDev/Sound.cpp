@@ -19,12 +19,12 @@
 #include "resource_sound.h"
 
 
+static sound_table _sound_table; // sound_table singleton
 static bool bSoundInit = false;
 
 SoundGlobalInit::SoundGlobalInit() {
-
-    bSoundInit = sound_table::init();
-
+    
+    bSoundInit = _sound_table.init();
 }
   
 SoundGlobalInit::~SoundGlobalInit() {
@@ -63,7 +63,7 @@ void LKSound(const TCHAR *lpName) {
         sound_code = sound_code_t::DEFAULT;
     }
     
-    const std::tstring& nmeaStr = sound_table::getNmeaStr(sound_code);
+    const std::tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
         if (UseExtSound1) {
@@ -94,7 +94,7 @@ void PlayResource (const TCHAR* lpName) {
         sound_code = static_cast<sound_code_t>(resource_sound);
     }
     
-    const std::tstring& nmeaStr = sound_table::getNmeaStr(sound_code);
+    const std::tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
         if (UseExtSound1) {
