@@ -49,13 +49,14 @@ int GetFontRenderer() {
 //
 void ApplyFontSize(LOGFONT *logfont) {
 
+  if (logfont->lfOrientation == 0) goto _skipout;
+  logfont->lfOrientation = 0;
+  logfont->lfHeight = (int)((double)logfont->lfHeight * Screen0Ratio);
+_skipout:
   #ifdef USE_FREETYPE 
   if (logfont->lfWeight == 600) logfont->lfHeight+=1000;
   #endif
-  if (logfont->lfOrientation == 0) return;
-  logfont->lfOrientation = 0;
-  logfont->lfHeight = (int)((double)logfont->lfHeight * Screen0Ratio);
-
+  return;
 }
 
 void ApplyClearType(LOGFONT *logfont) {
