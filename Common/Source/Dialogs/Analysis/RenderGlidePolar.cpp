@@ -53,7 +53,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
     DrawLine(Surface, rc,
              i, sinkrate0 , 
              i+1, sinkrate1, 
-             STYLE_DASHGREEN);
+             STYLE_GREENMEDIUM); // ex STYLE_DASHGREEN
 
     if (CALCULATED_INFO.AverageClimbRateN[i]>0) {
       v1= CALCULATED_INFO.AverageClimbRate[i]
