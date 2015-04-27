@@ -263,10 +263,10 @@ public:
 
 class sound_table {
 private:
-   static void set(sound_code_t code, const std::tstring& nmeaStr);
+   static void set(sound_code_t code, const TCHAR * nmeaStr);
 
 public:
-   static const std::tstring getNmeaStr(sound_code_t code);
+   static const std::tstring& getNmeaStr(sound_code_t code);
    static bool init();
 };
 #endif	/* SOUND_TABLE_H */

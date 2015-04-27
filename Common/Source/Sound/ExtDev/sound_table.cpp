@@ -17,7 +17,7 @@
 // This array is loaded at init phase and contain association between enum sound code and nmea string
 static std::array<sound_assoc_t, sound_code_t::last> table;
 
-void sound_table::set(sound_code_t code, const std::tstring& nmeaStr) {
+void sound_table::set(sound_code_t code, const TCHAR * nmeaStr) {
     
     table[code].code = code;
     table[code].nmeaStr = nmeaStr;
@@ -29,40 +29,42 @@ void sound_table::set(sound_code_t code, const std::tstring& nmeaStr) {
  * @return true if file is read
  */
 bool sound_table::init() {
+
+    TCHAR srcfile[MAX_PATH] = {};
+     _stprintf(srcfile,_T("%s" LKD_CONF DIRSEP LKSOUNDTABLE),LKGetLocalPath());
+    
     FILE *fp;
-    TCHAR srcfile[MAX_PATH];
-    TCHAR str[100];
-    TCHAR soundCodeStr[80];
-    sound_code_t soundCode;
-    TCHAR *ptrNmea;
-    
-    _stprintf(srcfile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKSOUNDTABLE));
-    
-    if ( (fp=_tfopen(srcfile, _T("r"))) == NULL ) {
-	StartupStore(_T("... Cannot load conversion sound table file: %s%s"),srcfile,NEWLINE);
-	return false;
+    if ( (fp=_tfopen(srcfile, _T("rt"))) == NULL ) {
+        StartupStore(_T("... Cannot load conversion sound table file: %s" ) NEWLINE ,srcfile);
+        return false;
     }
-    
-    while ( (_fgetts(str, 80, fp))!=NULL) {
-	if (str[0]==_T('#')) continue; // skip comments
+
+    TCHAR str[200]; // Nmea string can have max (200 - soundCodeSize - 1) 
+    str[array_size(str)-1] = _T('\0');  // added make sure the string is terminated
+    while ( (_fgetts(str, array_size(str)-1, fp))!=NULL) {
+        if (str[0]==_T('#')) continue; // skip comments
         
-        ptrNmea = _tcschr(str, '=');
+        TCHAR * ptrCode = str;
+        TCHAR * ptrNmea = _tcschr(str, _T('='));
         if (ptrNmea==NULL) {
-            StartupStore(_T("Malformed line: %s%s"),str,NEWLINE);
+            StartupStore(_T("Malformed line: %s") NEWLINE , str);
             continue;
         }
-        _tcsncpy(soundCodeStr, str, ptrNmea - str);
-        soundCodeStr[ptrNmea - str] = 0;
-        const bool bResult = EnumString<sound_code_t>::To(soundCode, soundCodeStr);
+        ptrNmea = _T('\0'); // replace '=' by '\0', now ptrCode are nts sound code
+        
+        sound_code_t soundCode;
+        const bool bResult = EnumString<sound_code_t>::To(soundCode, ptrCode);
         if (!bResult) {
             // sound code not found ==> skip
-            StartupStore(_T("... Cannot find sound: %s%s"),soundCodeStr,NEWLINE);
+            StartupStore(_T("... Cannot find sound: %s") NEWLINE , ptrCode);
             continue;
         }
 
-        ptrNmea++;
-        // remove end of line char
-        ptrNmea[_tcslen(ptrNmea)-1] = 0;
+        ptrNmea++; // advance to first Nmea string character
+        size_t last = _tcslen(ptrNmea) -1;
+        while(last > 0 && (ptrNmea[last]==_T('\n') || ptrNmea[last]==_T('\r'))) {
+            ptrNmea[last--] = _T('0'); // remove end of line char
+        }
         
         // Associate sound code and nmea sentence
         set(soundCode,ptrNmea);
@@ -71,6 +73,6 @@ bool sound_table::init() {
     return true;
 }
 
-const std::tstring sound_table::getNmeaStr(sound_code_t code) {
+const std::tstring& sound_table::getNmeaStr(sound_code_t code) {
     return table[code].nmeaStr;
 }
