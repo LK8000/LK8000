@@ -30,11 +30,11 @@ void InitLKFonts()
   LOGFONT logfontMedium;
   LOGFONT logfontInfoBig;	// infopages x.x  only
   LOGFONT logfontInfoBigItalic; // infopages x.x  only
-  LOGFONT logfontInfoNearest;   // infopages x.x LND 1.1 text only
+  LOGFONT logfontInfoNearest;   // infopages header "APTS 1.1 Distance .." 
   LOGFONT logfontInfoNormal;    // multimaps GA
   LOGFONT logfontInfoSmall;     // welcome  visualGlide  HSI
   LOGFONT logfontPanelBig;
-  LOGFONT logfontPanelMedium;   // infopages 2.x HSI
+  LOGFONT logfontPanelMedium;   // infopages header topleft number "2.x" and HSI
   LOGFONT logfontPanelSmall;
   LOGFONT logfontPanelUnit;
 
@@ -149,7 +149,7 @@ void InitLKFonts()
 	} else {
 	#endif
 		propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitle);
-		propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleNavbox);
+		propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleNavbox);
 		propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMap);
 		propGetFontSettingsFromString(TEXT("32,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontTarget);
 		propGetFontSettingsFromString(TEXT("30,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontValue);
@@ -158,12 +158,20 @@ void InitLKFonts()
 	propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoBig); 
 	propGetFontSettingsFromString(TEXT("28,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), &logfontInfoBigItalic); 
 	propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoNormal);
-	propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoNearest);
 	propGetFontSettingsFromString(TEXT("16,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoSmall);
+	#ifdef __linux__
+	propGetFontSettingsFromString(TEXT("36,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelBig); 
+	propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelMedium);
+	propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoNearest);
+	propGetFontSettingsFromString(TEXT("16,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelSmall);
+	propGetFontSettingsFromString(TEXT("14,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelUnit); 
+	#else
 	propGetFontSettingsFromString(TEXT("38,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelBig); 
 	propGetFontSettingsFromString(TEXT("26,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelMedium);
+	propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoNearest);
 	propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelSmall);
 	propGetFontSettingsFromString(TEXT("14,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelUnit); 
+	#endif
 
   }
   else if (ScreenSize==(ScreenSize_t)ss720x408) { // WQVGA  e.g. MIO
