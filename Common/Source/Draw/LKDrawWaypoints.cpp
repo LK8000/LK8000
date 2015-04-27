@@ -680,11 +680,11 @@ void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
     if (UseHiresBitmap) {
         x -= 100 / 2;
         y -= 100 / 2;
-        Surface.DrawBitmap(x, y, 100, 100, hLKPictori);
+        Surface.DrawBitmapCopy(x, y, 100, 100, hLKPictori);
     } else {
         x -= 45 / 2;
         y -= 45 / 2;
-        Surface.DrawBitmap(x, y, IBLSCALE(45), IBLSCALE(45), hLKPictori);
+        Surface.DrawBitmapCopy(x, y, IBLSCALE(45), IBLSCALE(45), hLKPictori);
     }
 }
 

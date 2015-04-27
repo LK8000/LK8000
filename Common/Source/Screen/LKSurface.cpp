@@ -199,6 +199,18 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
 #endif    
 }
 
+void LKSurface::DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap) {
+#ifdef WIN32
+    HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
+    ::BitBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, SRCCOPY);
+    ::SelectObject(GetTempDC(), old);
+#else
+    if(_pCanvas && Bitmap.IsDefined()) {
+        _pCanvas->Copy(x, y, cx, cy, Bitmap, 0, 0);
+    }
+#endif    
+}
+
 void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap) {
 #ifdef WIN32
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
@@ -208,7 +220,6 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
     if(_pCanvas && Bitmap.IsDefined()) {
         _pCanvas->CopyOr(x, y, cx, cy, Bitmap, 0, 0);
     }
-    
 #endif    
 }
 
