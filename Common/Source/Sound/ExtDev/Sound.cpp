@@ -68,10 +68,10 @@ void LKSound(const TCHAR *lpName) {
 
     if (!nmeaStr.empty()) {
         if (UseExtSound1) {
-            devWriteNMEAString(devA(), nmeaStr.data());
+            devWriteNMEAString(devA(), nmeaStr.c_str());
         }
         if (UseExtSound2) {
-            devWriteNMEAString(devB(), nmeaStr.data());
+            devWriteNMEAString(devB(), nmeaStr.c_str());
         }
     }
         
@@ -100,10 +100,10 @@ void PlayResource (const TCHAR* lpName) {
 
     if (!nmeaStr.empty()) {
         if (UseExtSound1) {
-            devWriteNMEAString(devA(), nmeaStr.data());
+            devWriteNMEAString(devA(), nmeaStr.c_str());
         }
         if (UseExtSound2) {
-            devWriteNMEAString(devB(), nmeaStr.data());
+            devWriteNMEAString(devB(), nmeaStr.c_str());
         }
     }
         
