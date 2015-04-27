@@ -30,7 +30,6 @@ void sound_table::set(sound_code_t code, const std::tstring& nmeaStr) {
  */
 bool sound_table::init() {
     FILE *fp;
-    TCHAR szSsystemPath[MAX_PATH] = {};
     TCHAR srcfile[MAX_PATH];
     TCHAR str[100];
     TCHAR soundCodeStr[80];
