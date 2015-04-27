@@ -217,8 +217,7 @@ void StopLogger(void) {
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
 		gettext(TEXT("_@M404_")), mbOk);
-      _tcsncat(szMessage,TEXT(SNEWLINE),MAX_PATH);
-      StartupStore(szMessage);
+      StartupStore(_T("%s") NEWLINE, szMessage);
       break;
 
     case 2: // NoMoveYesRename
@@ -228,8 +227,7 @@ void StopLogger(void) {
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
 		gettext(TEXT("_@M404_")), mbOk);
-      _tcsncat(szMessage,TEXT(SNEWLINE),MAX_PATH);
-      StartupStore(szMessage);
+      StartupStore(_T("%s") NEWLINE, szMessage);
       break;
 
     case 3: // Insufficient Storage.  NoRename
@@ -240,8 +238,7 @@ void StopLogger(void) {
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
 		gettext(TEXT("_@M404_")), mbOk);
-      _tcsncat(szMessage,TEXT(SNEWLINE),MAX_PATH);
-      StartupStore(szMessage);
+      StartupStore(_T("%s") NEWLINE, szMessage);
       break;
 
     case 4: // Insufficient Storage.  YesRename
@@ -251,8 +248,7 @@ void StopLogger(void) {
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
 		gettext(TEXT("_@M404_")), mbOk);
-      _tcsncat(szMessage,TEXT(SNEWLINE),MAX_PATH);
-      StartupStore(szMessage);
+      StartupStore(_T("%s") NEWLINE, szMessage);
       break;
 } // error handler
 

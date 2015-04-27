@@ -1286,12 +1286,12 @@ $(BIN)/Data/Dialogs/%.min.xml: Common/Data/Dialogs/%.xml
 $(PNG_TARGET)/%.PNG : $(BITMAP_DIR)/%.BMP
 	@$(NQ)echo "  Convert Image	  $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)convert $^ $@
+	$(Q)convert $^ PNG24:$@
 
 $(BIN)/Data/Bitmaps/%.png: Common/Data/Bitmaps/%.bmp
 	@$(NQ)echo "  Convert Image	  $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)convert $^ $@
+	$(Q)convert $^ PNG24:$@
 
 .PRECIOUS: $(BIN)/Data/Dialogs/%.min.xml \
 	$(BIN)/lk8000.min.rc

@@ -2434,11 +2434,7 @@ void InputEvents::eventAutoLogger(const TCHAR *misc) {
 void InputEvents::eventLogger(const TCHAR *misc) {
 
 #if TESTBENCH
-  TCHAR szMessage[MAX_PATH+1] = TEXT("\0");
-  LK_tcsncpy(szMessage, TEXT(". eventLogger: "),MAX_PATH);
-  _tcsncat(szMessage, misc,MAX_PATH);
-  _tcsncat(szMessage,TEXT("\r\n"),MAX_PATH);
-  StartupStore(szMessage);
+  StartupStore(_T(". eventLogger: %s") NEWLINE, misc );
 #endif
 
   if (_tcscmp(misc, TEXT("start ask")) == 0) {

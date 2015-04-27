@@ -2614,10 +2614,11 @@ void WndListFrame::Paint(LKSurface& Surface) {
 
     if (pChildFrame) {
 
+#ifdef USEGDI
         LKBitmapSurface TmpSurface;
         TmpSurface.Create(Surface, pChildFrame->GetWidth(), pChildFrame->GetHeight());
-
         const auto oldFont = TmpSurface.SelectObject(pChildFrame->GetFont());
+#endif
 
         for (int i = 0; i < mListInfo.ItemInViewCount; i++) {
             if (mOnListCallback != NULL) {
@@ -2627,16 +2628,30 @@ void WndListFrame::Paint(LKSurface& Surface) {
                 mOnListCallback(this, &mListInfo);
             }
 
+#ifndef USEGDI
+            const RasterPoint offset(pChildFrame->GetLeft(),  i * pChildFrame->GetHeight());
+            const PixelSize size(pChildFrame->GetWidth(), pChildFrame->GetHeight());
+            
+            SubCanvas TmpCanvas(Surface, offset, size);
+            LKSurface TmpSurface;
+            TmpSurface.Attach(&TmpCanvas);
+            TmpSurface.SelectObject(pChildFrame->GetFont());
+#endif            
+            
             pChildFrame->PaintSelector(true);
             pChildFrame->Paint(TmpSurface);
             pChildFrame->PaintSelector(false);
 
+#ifdef USEGDI
             Surface.Copy(
                     pChildFrame->GetLeft(), i * pChildFrame->GetHeight(),
                     pChildFrame->GetWidth(), pChildFrame->GetHeight(),
                     TmpSurface, 0, 0);
         }
         TmpSurface.SelectObject(oldFont);
+#else
+        }
+#endif
 
         mListInfo.DrawIndex = mListInfo.ItemIndex;
 

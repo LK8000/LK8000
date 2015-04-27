@@ -48,10 +48,8 @@ bool LoadRecentList() {
 	if (st[0]=='#') continue; // skip comments
 	nwp=atoi(st);
 	if (!ValidWayPoint(nwp)) {
-		_stprintf(buffer,_T("---- Loading history. Found an invalid wp: <%d>%s"),nwp,NEWLINE); // BUGFIX 091122
-		StartupStore(buffer);
-		_stprintf(buffer,_T("---- History file could be corrupted or wp file changed abruptly. Discarded!%s"),NEWLINE);
-		StartupStore(buffer);
+        StartupStore(_T("---- Loading history. Found an invalid wp: <%d>%s"),nwp,NEWLINE); // BUGFIX 091122
+        StartupStore(_T("---- History file could be corrupted or wp file changed abruptly. Discarded!%s"),NEWLINE);
 		break;
 	}
 	if (i >=(MAXCOMMON)) {
@@ -74,8 +72,7 @@ bool LoadRecentList() {
    }
    fclose(fp);
    RecentNumber=i;
-   _stprintf(buffer,_T(". LoadRecentList: loaded %d recent waypoints%s"),i,NEWLINE);
-   StartupStore(buffer);
+   StartupStore(_T(". LoadRecentList: loaded %d recent waypoints%s"),i,NEWLINE);
 
    return true;
 }
@@ -128,8 +125,7 @@ bool SaveRecentList() {
    }
    fclose(fp);
 
-   _stprintf(buffer,_T(". SaveRecentList: saved %d recent waypoints%s"),RecentNumber,NEWLINE);
-   StartupStore(buffer);
+   StartupStore(_T(". SaveRecentList: saved %d recent waypoints%s"),RecentNumber,NEWLINE);
    return true;
 }
 

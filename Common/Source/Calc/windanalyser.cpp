@@ -304,6 +304,9 @@ void WindAnalyser::_calcWind(NMEA_INFO *nmeaInfo,
     }
   }
   
+  if(jmin<0 || jmax<0) {
+      return;
+  }
   // jmax is the point where most wind samples are below
   // jmin is the point where most wind samples are above
 
