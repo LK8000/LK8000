@@ -25,6 +25,11 @@ static bool bSoundInit = false;
 SoundGlobalInit::SoundGlobalInit() {
     
     bSoundInit = _sound_table.init();
+    if(bSoundInit) {
+        // this 2 line are needed for guarantees internal map init at startup ( before start any other thread ).
+        std::string Init_resource_sound_Enum = EnumString<resource_sound_t>::From(resource_sound_t::IDR_WAV_CLICK);
+        std::string Init_sound_code_Enum = EnumString<sound_code_t>::From(sound_code_t::DEFAULT);
+    }    
 }
   
 SoundGlobalInit::~SoundGlobalInit() {
