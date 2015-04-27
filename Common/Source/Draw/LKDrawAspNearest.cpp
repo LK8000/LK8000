@@ -428,14 +428,20 @@ void MapWindow::DrawAspNearest(LKSurface& Surface, const RECT& rc) {
 		switch(LKAirspaces[rli].WarningLevel) {
 			case awYellow:
 				value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
-       				_stprintf(Buffer3[i][curpage],TEXT("%0.1lf%s!"),value,Units::GetDistanceName());
+				if (!ScreenLandscape) 
+       				    _stprintf(Buffer3[i][curpage],TEXT("%0.1lf%s!"),value,Units::GetDistanceName());
+				else
+       				    _stprintf(Buffer3[i][curpage],TEXT("%0.1lf!"),value);
 				break;
 			case awRed:
        				_stprintf(Buffer3[i][curpage],TEXT("IN"));
 				break;
 			default:
 				value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
-       				_stprintf(Buffer3[i][curpage],TEXT("%0.1lf%s"),value,Units::GetDistanceName());
+				if (!ScreenLandscape) 
+       				    _stprintf(Buffer3[i][curpage],TEXT("%0.1lf%s"),value,Units::GetDistanceName());
+				else
+       				    _stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
 				break;
 		}
 
