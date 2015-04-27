@@ -44,7 +44,7 @@ bool sound_table::init() {
     }
     
     while ( (_fgetts(str, 80, fp))!=NULL) {
-	if (str[0]=='#') continue; // skip comments
+	if (str[0]==_T('#')) continue; // skip comments
         
         ptrNmea = _tcschr(str, '=');
         if (ptrNmea==NULL) {
