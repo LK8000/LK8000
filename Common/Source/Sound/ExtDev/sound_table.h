@@ -255,12 +255,6 @@ Begin_Enum_String( sound_code )
 }
 End_Enum_String;
 
-class sound_assoc_t {
-public:
-    sound_code_t code;
-    std::tstring nmeaStr;
-};
-
 class sound_table {
 private:
    static void set(sound_code_t code, const TCHAR * nmeaStr);

@@ -15,12 +15,10 @@
 #include <array>
 
 // This array is loaded at init phase and contain association between enum sound code and nmea string
-static std::array<sound_assoc_t, sound_code_t::last> table;
+static std::array<std::tstring, sound_code_t::last> table;
 
 void sound_table::set(sound_code_t code, const TCHAR * nmeaStr) {
-    
-    table[code].code = code;
-    table[code].nmeaStr = nmeaStr;
+    table[code] = nmeaStr;
 }
 
 /**
@@ -74,5 +72,5 @@ bool sound_table::init() {
 }
 
 const std::tstring& sound_table::getNmeaStr(sound_code_t code) {
-    return table[code].nmeaStr;
+    return table[code];
 }
