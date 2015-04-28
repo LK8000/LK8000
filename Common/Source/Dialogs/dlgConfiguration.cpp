@@ -1317,11 +1317,17 @@ void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
 }
 
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
+#ifdef DISABLEEXTAUDIO
+    const TCHAR* PortPropName[][2] = { 
+        { _T("prpComSpeed1"), _T("prpComBit1") }, 
+        { _T("prpComSpeed2"), _T("prpComBit2") }
+    };
+#else
     const TCHAR* PortPropName[][3] = { 
         { _T("prpComSpeed1"), _T("prpComBit1"), _T("prpExtSound1") }, 
         { _T("prpComSpeed2"), _T("prpComBit2"), _T("prpExtSound2") }
     };
-    
+#endif    
     LKASSERT(szPortName);
     // check if all array have same size ( compil time check );
     static_assert(array_size(DeviceList) == array_size(PortPropName), "PortPropName array size need to be same of DeviceList array size");
@@ -3369,6 +3375,10 @@ void dlgConfigurationShowModal(short mode){
 	ReadDeviceSettings(1, deviceName2);
 	UpdateDeviceSetupButton(0, deviceName1);
 	UpdateDeviceSetupButton(1, deviceName2);
+#ifdef DISABLEEXTAUDIO
+        ShowWindowControl(wf, _T("prpExtSound1"), false);
+        ShowWindowControl(wf, _T("prpExtSound2"), false);
+#endif
   }
 
   NextPage(0);

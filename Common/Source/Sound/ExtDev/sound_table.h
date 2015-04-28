@@ -22,7 +22,7 @@
 #include "utils/tstring.h"
 #include "tchar.h"
 #include "utils/EnumString.h"
-
+#include <array>
 
 typedef enum sound_code {
     DEFAULT,

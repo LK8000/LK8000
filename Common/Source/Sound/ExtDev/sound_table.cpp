@@ -12,7 +12,6 @@
 
 #include "externs.h"
 #include "sound_table.h"
-#include <array>
 #include <tr1/functional>
 using namespace std::tr1::placeholders;
 
