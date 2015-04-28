@@ -525,6 +525,7 @@ void DeInitialiseFonts(void) {
   LK8InfoBigFont.Release();
   LK8InfoBigItalicFont.Release();
   LK8InfoNormalFont.Release();
+  LK8InfoNearestFont.Release();
   LK8InfoSmallFont.Release();
   LK8PanelBigFont.Release();
   LK8PanelMediumFont.Release();
