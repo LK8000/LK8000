@@ -19,12 +19,17 @@
 #include "resource_sound.h"
 
 
-static bool bSoundInit = false; // this is true only if #SDL_Mixer is initialized.
+static sound_table _sound_table; // sound_table singleton
+static bool bSoundInit = false;
 
 SoundGlobalInit::SoundGlobalInit() {
-
-    sound_table::init();
-    bSoundInit = true;
+    
+    bSoundInit = _sound_table.init();
+    if(bSoundInit) {
+        // this 2 line are needed for guarantees internal map init at startup ( before start any other thread ).
+        std::string Init_resource_sound_Enum = EnumString<resource_sound_t>::From(resource_sound_t::IDR_WAV_CLICK);
+        std::string Init_sound_code_Enum = EnumString<sound_code_t>::From(sound_code_t::DEFAULT);
+    }    
 }
   
 SoundGlobalInit::~SoundGlobalInit() {
@@ -55,7 +60,6 @@ void LKSound(const TCHAR *lpName) {
     }
     *ptrExt=0;
 
-    std::tstring nmeaStr;
     sound_code_t sound_code;
     const bool bResult = EnumString<sound_code_t>::To( sound_code, soundFileStr );
     
@@ -64,14 +68,14 @@ void LKSound(const TCHAR *lpName) {
         sound_code = sound_code_t::DEFAULT;
     }
     
-    nmeaStr = sound_table::getNmeaStr(sound_code);
+    const std::tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
         if (UseExtSound1) {
-            devWriteNMEAString(devA(), nmeaStr.data());
+            devWriteNMEAString(devA(), nmeaStr.c_str());
         }
         if (UseExtSound2) {
-            devWriteNMEAString(devB(), nmeaStr.data());
+            devWriteNMEAString(devB(), nmeaStr.c_str());
         }
     }
         
@@ -85,7 +89,6 @@ void PlayResource (const TCHAR* lpName) {
         return;
     }
 
-    std::tstring nmeaStr;
     resource_sound_t resource_sound = resource_sound_t::IDR_WAV_TONE1;
     sound_code_t sound_code = sound_code_t::DEFAULT;
     const bool bResult = EnumString<resource_sound_t>::To( resource_sound, lpName );
@@ -96,14 +99,14 @@ void PlayResource (const TCHAR* lpName) {
         sound_code = static_cast<sound_code_t>(resource_sound);
     }
     
-    nmeaStr = sound_table::getNmeaStr(sound_code);
+    const std::tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
         if (UseExtSound1) {
-            devWriteNMEAString(devA(), nmeaStr.data());
+            devWriteNMEAString(devA(), nmeaStr.c_str());
         }
         if (UseExtSound2) {
-            devWriteNMEAString(devB(), nmeaStr.data());
+            devWriteNMEAString(devB(), nmeaStr.c_str());
         }
     }
         

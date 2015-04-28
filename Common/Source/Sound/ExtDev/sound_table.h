@@ -255,19 +255,25 @@ Begin_Enum_String( sound_code )
 }
 End_Enum_String;
 
-class sound_assoc_t {
-public:
-    sound_code_t code;
-    std::tstring nmeaStr;
-};
-
-class sound_table {
+class sound_table final {
+    friend class SoundGlobalInit; 
 private:
-   static void set(sound_code_t code, const std::tstring& nmeaStr);
+    void set(sound_code_t code, const TCHAR * nmeaStr);
+   
+    // This array is loaded at init phase and contain association between enum sound code and nmea string
+    std::array<std::tstring, sound_code_t::last> table;
 
 public:
-   static const std::tstring getNmeaStr(sound_code_t code);
-   static bool init();
+    sound_table() {}
+    ~sound_table() {}
+
+    const std::tstring& getNmeaStr(sound_code_t code) const;
+
+protected:   
+    // this 2 method can only b used by SoundGlobalInit !
+    // SoundGlobalInit is called by main() before start of any thread, so no need to use lock
+    bool init();
+    void reset();
 };
 #endif	/* SOUND_TABLE_H */
 
