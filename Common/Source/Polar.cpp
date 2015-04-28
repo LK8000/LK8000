@@ -32,7 +32,10 @@ void WeightOffset(double wload) {
   // BALLAST is percentage of full ballast
   // new weight = (wingload * wingarea) - ballast
   calcweight=(wload*GlidePolar::WingArea) - (WEIGHTS[2]*BALLAST);
-  GlidePolar::WeightOffset = calcweight-(WEIGHTS[0]+WEIGHTS[1]);
+  // We set a min limit here, see SetBallast()
+  // Probably only UAV can have such low wing loadings
+  // Or a gnome on an RC glider, maybe.
+  GlidePolar::WeightOffset = std::max(calcweight-WEIGHTS[0]-WEIGHTS[1],(GlidePolar::WingArea - WEIGHTS[0] - WEIGHTS[1]));
 
   GlidePolar::SetBallast(); // BUGFIX 101002
 }

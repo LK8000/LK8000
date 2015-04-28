@@ -35,29 +35,38 @@ static int iSAFETYSPEED=0;
 
 // GetAUW is returning gross weight of glider, with pilot and current ballast. 
 // We now also add the offset to match chosen wing loading, just like a non-dumpable ballast
+//
+// 150428 limit wing loading minimum value to be 1.
+// BallastWeight/WingArea >= 1 which means BallastWeight must be >= WingArea 
+// BallastLitres + WEIGHTS[0] + WEIGHTS[1] + GlidePolar::WeightOffset > WingArea
+// BallastLitres + GlidePolar::WeightOffset  > (WingArea - WEIGHTS[0] - WEIGHTS[1])
+// ->  GlidePolar::WeightOffset  > (WingArea - WEIGHTS[0] - WEIGHTS[1])
+// and we use the above in the WeightOffset();
+
 double GlidePolar::GetAUW() {
   return BallastLitres + WEIGHTS[0] + WEIGHTS[1] + GlidePolar::WeightOffset;
 }
+
 
 void GlidePolar::SetBallast() {
   LockFlightData();
   double BallastWeight;
   BallastLitres = WEIGHTS[2] * BALLAST;
   BallastWeight = GetAUW();
+  // Always positive.  But sqrt requires a >=0 value and we do check anyway.
+  BUGSTOP_LKASSERT(BallastWeight>=0);
+  if (BallastWeight<0) {; UnlockFlightData(); return; } // <= ?
+   
   if (WingArea>0.1) {
     WingLoading = BallastWeight/WingArea; 
   } else {
     WingLoading = 0;
   }
   BallastWeight = (double)sqrt(BallastWeight);
-  #if BUGSTOP
-  LKASSERT(BUGS!=0);
-  #endif
+  BUGSTOP_LKASSERT(BUGS!=0);
   CheckSetBugs(BUGS);
   double bugfactor = 1.0/BUGS;
-  #if BUGSTOP
-  LKASSERT(BallastWeight!=0);
-  #endif
+  BUGSTOP_LKASSERT(BallastWeight!=0);
   if (BallastWeight==0) BallastWeight=1;
   polar_a = POLAR[0] / BallastWeight*bugfactor;
   polar_b = POLAR[1] * bugfactor;
