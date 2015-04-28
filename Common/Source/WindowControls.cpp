@@ -2614,7 +2614,7 @@ void WndListFrame::Paint(LKSurface& Surface) {
 
     if (pChildFrame) {
 
-#ifdef USEGDI
+#ifdef USE_GDI
         LKBitmapSurface TmpSurface;
         TmpSurface.Create(Surface, pChildFrame->GetWidth(), pChildFrame->GetHeight());
         const auto oldFont = TmpSurface.SelectObject(pChildFrame->GetFont());
@@ -2628,7 +2628,7 @@ void WndListFrame::Paint(LKSurface& Surface) {
                 mOnListCallback(this, &mListInfo);
             }
 
-#ifndef USEGDI
+#ifndef USE_GDI
             const RasterPoint offset(pChildFrame->GetLeft(),  i * pChildFrame->GetHeight());
             const PixelSize size(pChildFrame->GetWidth(), pChildFrame->GetHeight());
             
@@ -2642,7 +2642,7 @@ void WndListFrame::Paint(LKSurface& Surface) {
             pChildFrame->Paint(TmpSurface);
             pChildFrame->PaintSelector(false);
 
-#ifdef USEGDI
+#ifdef USE_GDI
             Surface.Copy(
                     pChildFrame->GetLeft(), i * pChildFrame->GetHeight(),
                     pChildFrame->GetWidth(), pChildFrame->GetHeight(),
