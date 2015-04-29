@@ -26,8 +26,10 @@ public:
     bool Create(const RECT& rect) {
         TopWindowStyle style;
         style.EnableDoubleClicks();
-        const SIZE size = rect.GetSize();
-        __super::Create(_T("LK8000"), size, style);
+#ifdef USE_FULLSCREEN
+        style.FullScreen();
+#endif
+        __super::Create(_T("LK8000"), rect.GetSize(), style);
         return this->IsDefined();
     }
 

@@ -21,6 +21,13 @@
 #include "Event/Queue.hpp"
 #endif
 
+bool CanRotateScreen() {
+#if defined(ENABLE_SDL) && !defined(USE_FULLSCREEN)
+    return true;
+#else
+    return Display::RotateSupported();
+#endif
+}
 
 bool RotateScreen(short angle) {
     
@@ -71,6 +78,5 @@ bool RotateScreen(short angle) {
     
     MainWindow.CheckResize();
     
-    
-    return false;
+    return true;
 }

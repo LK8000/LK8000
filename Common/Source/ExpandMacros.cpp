@@ -11,6 +11,7 @@
 #include "LKInterface.h"
 #include "Multimap.h"
 #include "Asset.hpp"
+#include "OS/RotateScreen.h"
 
 extern bool HaveGauges(void);
 
@@ -682,6 +683,16 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     ReplaceInString(OutBuffer, TEXT("$(ONLYMAP)"), TEXT(""), Size);
 
     if (--items<=0) goto label_ret;
+  }
+  
+  if (_tcsstr(OutBuffer, TEXT("$(SCREENROTATE)"))) {
+      if(CanRotateScreen()) {
+        ReplaceInString(OutBuffer, TEXT("$(SCREENROTATE)"), TEXT(""), Size);
+      } else {
+        _tcscpy(OutBuffer,_T(""));
+        invalid = true;
+      }
+      if (--items<=0) goto label_ret;
   }
 
   extern unsigned int CustomKeyLabel[];

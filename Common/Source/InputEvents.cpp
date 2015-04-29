@@ -35,6 +35,7 @@
 #include "Event/Event.h"
 #include "MapWindow.h"
 #include "Sound/Sound.h"
+#include "OS/RotateScreen.h"
 
 // Sensible maximums 
 #define MAX_MODE 100

@@ -56,6 +56,12 @@
 
 #endif
 
+#ifdef ENABLE_SDL
+//Use fullscreen for linux with SDL screen backend
+// careful : resolution change crash with SDL 2.0
+//    #define USE_FULLSCREEN
+#endif
+
 #ifdef PNA
 #define NOLINETO
 #endif

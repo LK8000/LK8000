@@ -107,7 +107,11 @@ constexpr
 static inline bool
 IsEmbedded()
 {
+#ifdef USE_FULLSCREEN
+  return true;
+#else
   return IsAndroid() || IsWindowsCE() || IsKobo();
+#endif
 }
 
 /**
@@ -119,8 +123,7 @@ constexpr
 static inline bool
 HasKeyboard()
 {
-  return !IsEmbedded();
+  return !(IsAndroid() || IsWindowsCE() || IsKobo());
 }
 
 #endif	/* ASSET_HPP */
-

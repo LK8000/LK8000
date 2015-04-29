@@ -8,6 +8,10 @@
 
 #include "externs.h"
 
+bool CanRotateScreen() {
+    return true;
+}
+
 // This is not working on PC because we are not rotating the whole desktop!
 // We return true only if we need to perform a ChangeScreen inside LK.
 bool RotateScreen(short angle) {

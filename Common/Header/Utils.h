@@ -198,7 +198,6 @@ void OutOfMemory(const TCHAR *where, int line);
 
 void CreateDirectoryIfAbsent(const TCHAR *filename);
 
-bool RotateScreen(short angle);
 RECT WindowResize(unsigned int x, unsigned int y);
 
 
