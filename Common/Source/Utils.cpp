@@ -286,11 +286,7 @@ void ToggleDrawTaskFAI(void) {
 #if TESTBENCH
 
 int Test_NIBLSCALE(short x, const int line, const TCHAR *file) {
-    if (x < 0 || x > MAXIBLSCALE) {
-        StartupStore(_T("[ASSERT FAILURE] in %s line %d\n"), _T(__FILE__), __LINE__);
-        MSG_ASSERTION(__LINE__, _T(__FILE__));
-        exit(0);
-    }
+    LKASSERT(x >= 0 && x <= MAXIBLSCALE);
     return LKIBLSCALE[x];
 }
 #endif

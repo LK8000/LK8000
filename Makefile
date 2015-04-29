@@ -57,7 +57,7 @@ ifeq ($(TARGET),PPC2002)
   CONFIG_WIN32 := y
 else
   ifeq ($(TARGET),PPC2003)
-    CONFIG_PPC2003	:=y 
+    CONFIG_PPC2003	:=y
     CONFIG_WIN32 := y
   else
     ifeq ($(TARGET),PPC2003X)
