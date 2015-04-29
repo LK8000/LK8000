@@ -48,7 +48,7 @@ bool sound_table::init() {
             StartupStore(_T("Malformed line: %s") NEWLINE , str);
             continue;
         }
-        ptrNmea = _T('\0'); // replace '=' by '\0', now ptrCode are nts sound code
+        *ptrNmea = _T('\0'); // replace '=' by '\0', now ptrCode are nts sound code
         
         sound_code_t soundCode;
         const bool bResult = EnumString<sound_code_t>::To(soundCode, ptrCode);
@@ -60,8 +60,8 @@ bool sound_table::init() {
 
         ptrNmea++; // advance to first Nmea string character
         size_t last = _tcslen(ptrNmea) -1;
-        while(last > 0 && (ptrNmea[last]==_T('\n') || ptrNmea[last]==_T('\r'))) {
-            ptrNmea[last--] = _T('0'); // remove end of line char
+        while(last >= 0 && (ptrNmea[last]==_T('\n') || ptrNmea[last]==_T('\r'))) {
+            ptrNmea[last--] = _T('\0'); // remove end of line char
         }
         
         // Associate sound code and nmea sentence
@@ -77,7 +77,7 @@ void sound_table::reset() {
 
 const std::tstring& sound_table::getNmeaStr(sound_code_t code) const {
     static const std::tstring empty;
-    if(code < table.size()) {
+    if(code > table.size()) {
         return empty;
     }
     return table[code];
