@@ -1,0 +1,84 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File:   sound_table.h
+ * Author: Jack
+ *
+ * Created on January 29, 2015, 10:11 PM
+ */
+
+
+#include "externs.h"
+#include "sound_table.h"
+#include <tr1/functional>
+using namespace std::tr1::placeholders;
+
+void sound_table::set(sound_code_t code, const TCHAR * nmeaStr) {
+    table[code] = nmeaStr;
+}
+
+/**
+ * Init sound table
+ * Read conversion sound table file (SOUND_TABLE.TXT): <root sound file name>=<Nmea sentence>
+ * @return true if file is read
+ */
+bool sound_table::init() {
+    
+    reset(); // useless still table is initialized only one time. no impact on perf, so is better to leave it...
+
+    TCHAR srcfile[MAX_PATH] = {};
+     _stprintf(srcfile,_T("%s" LKD_CONF DIRSEP LKSOUNDTABLE),LKGetLocalPath());
+    
+    FILE *fp;
+    if ( (fp=_tfopen(srcfile, _T("rt"))) == NULL ) {
+        StartupStore(_T("... Cannot load conversion sound table file: %s" ) NEWLINE ,srcfile);
+        return false;
+    }
+
+    TCHAR str[200]; // Nmea string can have max (200 - soundCodeSize - 1) 
+    str[array_size(str)-1] = _T('\0');  // added make sure the string is terminated
+    while ( (_fgetts(str, array_size(str)-1, fp))!=NULL) {
+        if (str[0]==_T('#')) continue; // skip comments
+        
+        TCHAR * ptrCode = str;
+        TCHAR * ptrNmea = _tcschr(str, _T('='));
+        if (ptrNmea==NULL) {
+            StartupStore(_T("Malformed line: %s") NEWLINE , str);
+            continue;
+        }
+        *ptrNmea = _T('\0'); // replace '=' by '\0', now ptrCode are nts sound code
+        
+        sound_code_t soundCode;
+        const bool bResult = EnumString<sound_code_t>::To(soundCode, ptrCode);
+        if (!bResult) {
+            // sound code not found ==> skip
+            StartupStore(_T("... Cannot find sound: %s") NEWLINE , ptrCode);
+            continue;
+        }
+
+        ptrNmea++; // advance to first Nmea string character
+        size_t last = _tcslen(ptrNmea) -1;
+        while(last >= 0 && (ptrNmea[last]==_T('\n') || ptrNmea[last]==_T('\r'))) {
+            ptrNmea[last--] = _T('\0'); // remove end of line char
+        }
+        
+        // Associate sound code and nmea sentence
+        set(soundCode,ptrNmea);
+    }
+
+    return true;
+}
+
+void sound_table::reset() {
+    std::for_each(table.begin(), table.end(), std::bind(&std::tstring::clear, _1) );
+}
+
+const std::tstring& sound_table::getNmeaStr(sound_code_t code) const {
+    static const std::tstring empty;
+    if(code > table.size()) {
+        return empty;
+    }
+    return table[code];
+}
