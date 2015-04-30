@@ -104,19 +104,6 @@ bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
   if (TerrainMap->Open(zfilename)) {
     return true;
   } 
-
-  #if RASTERCACHE
-  TerrainMap->Close();
-  delete TerrainMap;
-  TerrainMap = new RasterMapCache();
-  if (!TerrainMap) {
-    return false;
-  }
-  if (TerrainMap->Open(zfilename)) {
-    return true;
-  } 
-  #endif
-
   return false;
 }
 

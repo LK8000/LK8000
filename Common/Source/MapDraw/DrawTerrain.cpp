@@ -14,10 +14,6 @@
 
 // #define TDEBUG 1
 
-#if RASTERCACHE
-#define USERASTERCACHE 1
-#endif
-
 #define NUM_COLOR_RAMP_LEVELS 13
 // If you change NUMRAMPS, also change the InputEvent SERVICE TERRCOL 
 #define NUMRAMPS        14
@@ -129,14 +125,6 @@ public:
 	return;
     }
 
-#if USERASTERCACHE
-    if (!RasterTerrain::IsDirectAccess()) {
-      dtquant = 6;
-    } else {
-	dtquant = 2; 
-    }
-#else
-
     // need at least 2Ghz singlecore CPU here for dtquant 1
     dtquant=2;
 
@@ -148,7 +136,6 @@ public:
 	    if (dtquant>3) dtquant=3; // .. but not too much
 #endif
 
-#endif
     blursize = max((unsigned int)0, (dtquant-1)/2); // always 0
     oversampling = max(1,(blursize+1)/2+1); // always 1
     if (blursize==0) {
@@ -237,9 +224,6 @@ private:
   unsigned int dtquant;
   unsigned int epx; // step size used for slope calculations
 
-#if USERASTERCACHE
-  RECT rect_visible;
-#endif
   CSTScreenBuffer *sbuf;
 
   double pixelsize_d;
@@ -296,22 +280,6 @@ public:
 
     unsigned int rfact=1;
 
-#if 0
-    if (QUICKDRAW) {
-      #if USERASTERCACHE
-      // Raster map is always DirectAccess for LK
-      if (!RasterTerrain::IsDirectAccess()) {
-        // first time displaying this data, so do it at half resolution
-        // to avoid too many cache misses
-        rfact = 2;
-      }
-      #else
-      // reduce quantization for a fast refresh of the map
-      rfact = 4;
-      #endif
-    }
-#endif
-
     double pixelDX, pixelDY;
 
     x = (X0+X1)/2;
@@ -324,17 +292,11 @@ public:
     x = (X0+X1)/2+dd;
     y = (Y0+Y1)/2;
     MapWindow::Screen2LatLon(x, y, X, Y);
-    #if USERASTERCACHE
-    float Xrounding = (float)fabs(X-xmiddle);
-    #endif
     DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDX, NULL);
 
     x = (X0+X1)/2;
     y = (Y0+Y1)/2+dd;
     MapWindow::Screen2LatLon(x, y, X, Y);
-    #if USERASTERCACHE
-    float Yrounding = (float)fabs(Y-ymiddle);
-    #endif
     DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDY, NULL);
 
     pixelsize_d = sqrt((pixelDX*pixelDX+pixelDY*pixelDY)/2.0);
@@ -345,15 +307,7 @@ public:
 
     // set resolution
 
-    #if USERASTERCACHE
-    if (DisplayMap->IsDirectAccess()) {
-      DisplayMap->SetFieldRounding(0,0);
-    } else {
-      DisplayMap->SetFieldRounding(Xrounding,Yrounding);
-    }
-    #else
-      DisplayMap->SetFieldRounding(0,0);
-    #endif
+    DisplayMap->SetFieldRounding(0,0);
 
     epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d,
                                             ymiddle, xmiddle);
@@ -386,14 +340,6 @@ public:
     }
 
     POINT orig = MapWindow::GetOrigScreen();
-#if USERASTERCACHE
-    rect_visible.left = max((long)MapWindow::MapRect.left, (long)(MapWindow::MapRect.left-(long)epx*dtquant))-orig.x;
-    rect_visible.right = min((long)MapWindow::MapRect.right, (long)(MapWindow::MapRect.right+(long)epx*dtquant))-orig.x;
-    rect_visible.top = max((long)MapWindow::MapRect.top, (long)(MapWindow::MapRect.top-(long)epx*dtquant))-orig.y;
-    rect_visible.bottom = min((long)MapWindow::MapRect.bottom, (long)(MapWindow::MapRect.bottom+(long)epx*dtquant))-orig.y;
-#endif
-
-
     FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
 
     DisplayMap->Unlock();
@@ -437,23 +383,9 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 	const double cc1= y * ac2;
 
 	for (int x = X0; x<X1; x+= dtquant, myhbuf++) {
-            assert(myhbuf<hBufTop);
-
-        #if USERASTERCACHE
-		if ((x>= rect_visible.left) &&
-			(x<= rect_visible.right) &&
-			(y>= rect_visible.top) &&
-			(y<= rect_visible.bottom)) {
-		#else
-		// No need to test, rect_visible are always wrong, 
-        //    if is biggers to Height buffer  -> test are always true so useless cpu overhead 
-        //       ( arround 4*height*with/dtquant integer compare, 260000 for 480*272 screen )
-        //    if is smaller -> drawing artefact on border of terrain.
-        // if one days someone try to anable RASTER_CACHE, don't forget to fix that.
-		#endif
+        assert(myhbuf<hBufTop);
 
 		const double Y = ac1 - x*ac2;
-
 		const double X = PanLongitude + ( invfastcosine(Y) * ((x*ac3)-cc1) );
 
         // this is setting to 0 any negative terrain value and can be a problem for dutch people
@@ -465,13 +397,6 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
         if (*myhbuf<minalt) {
             minalt=*myhbuf;
         }
-#ifdef USERASTERCACHE
-		} else {
-			// invisible terrain
-			*myhbuf = TERRAIN_INVALID;
-		}
-#endif
-
 	}
   }
 

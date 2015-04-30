@@ -785,7 +785,6 @@ TASK	:=\
 	$(TSK)/PGTask/PGConeTaskPt.cpp\
 
 TERRAIN	:=\
-	$(TER)/Cache.cpp	\
 	$(TER)/OpenCreateClose.cpp	\
 	$(TER)/RasterTerrain.cpp	\
 	$(TER)/RAW.cpp	\

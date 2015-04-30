@@ -110,11 +110,6 @@
 
 #define MENUBUTTONWIDTHRATIO 0.6
 
-#if RASTERCACHE
-// size of terrain cache
-#define MAXTERRAINCACHE 4096 
-#endif
-
 // ratio of smoothed bitmap size to pixel grid
 #define OVS 2
 

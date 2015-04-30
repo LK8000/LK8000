@@ -16,15 +16,6 @@ typedef struct _TERRAIN_INFO
 } TERRAIN_INFO;
 
 
-#if RASTERCACHE
-typedef struct _TERRAIN_CACHE
-{
-  short h;
-  long index;
-  unsigned int recency;
-} TERRAIN_CACHE;
-#endif
-
 class RasterMap {
  public:
   RasterMap() {
@@ -104,61 +95,6 @@ short RasterMap::GetField(const double &Latitude, const double &Longitude) const
         return _GetFieldAtXY(ix << 8, iy << 8);
     }
 }
-
-#if RASTERCACHE
-class RasterMapCache: public RasterMap {
- public:
-  RasterMapCache() {
-    terraincacheefficiency=0;
-    terraincachehits = 1;
-    terraincachemisses = 1;
-    cachetime = 0;
-    DirectAccess = false;
-    if (ref_count==0) {
-      fpTerrain = NULL;
-      InitializeCriticalSection(&CritSec_TerrainFile);
-    }
-    ref_count++;
-  }
-
-  ~RasterMapCache() {
-    ref_count--;
-    if (ref_count==0) {
-      DeleteCriticalSection(&CritSec_TerrainFile);
-    }
-  }
-
-  // shared!
-  static ZZIP_FILE *fpTerrain;
-  static int ref_count;
-
-  void ServiceCache();
-
-  void SetCacheTime();
-  void ClearTerrainCache();
-  short LookupTerrainCache(const long &SeekPos);
-  short LookupTerrainCacheFile(const long &SeekPos);
-  void OptimizeCash(void);
-
-  virtual bool Open(const TCHAR* filename);
-  virtual void Close();
-  void Lock();
-  void Unlock();
- protected:
-  static Poco::Mutex CritSec_TerrainFile;
-  TERRAIN_CACHE TerrainCache[MAXTERRAINCACHE]; 
-
-  int terraincacheefficiency;
-  long terraincachehits;
-  long terraincachemisses;
-  unsigned int cachetime;
-  int SortThresold;
-
-  short _GetFieldAtXY(unsigned int lx,
-                      unsigned int ly);
-  //
-};
-#endif // RASTERCACHE
 
 class RasterMapRaw: public RasterMap {
  public:

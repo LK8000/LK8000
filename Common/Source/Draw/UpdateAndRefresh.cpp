@@ -48,10 +48,6 @@ void MapWindow::UpdateInfo(NMEA_INFO *nmea_info,
 void MapWindow::UpdateCaches(bool force) {
   // map was dirtied while we were drawing, so skip slow process
   // (unless we haven't done it for 2000 ms)
-  #if RASTERCACHE
-  DWORD fpsTimeThis;
-  static DWORD fpsTimeMapCenter = 0;
-  #endif
 
   if (MapWindow::ForceVisibilityScan) {
     force = true;
@@ -62,30 +58,6 @@ void MapWindow::UpdateCaches(bool force) {
   LockTerrainDataGraphics();
   SetTopologyBounds(DrawRect, force);
   UnlockTerrainDataGraphics();
-
-  #if RASTERCACHE
-  // JP2 no more supported, however if rastercache will ever be enabled..
-  // Must do this even if terrain is not displayed, because
-  // raster terrain is used by terrain footprint etc.
-
-  fpsTimeThis = ::GetTickCount(); // 100115
-  if (force || ( (fpsTimeThis - fpsTimeMapCenter) > 5000)) {
-
-    fpsTimeMapCenter=fpsTimeThis; 
-    RasterTerrain::ServiceTerrainCenter(DrawInfo.Latitude, 
-                                        DrawInfo.Longitude);
-  }
-  
-  fpsTimeThis = ::GetTickCount();
-  static DWORD fpsTimeLast_terrain=0;
-
-  if (EnableTerrain) {
-	if (RenderTimeAvailable() || ((fpsTimeThis-fpsTimeLast_terrain)>5000) || force) {
-		fpsTimeLast_terrain = fpsTimeThis;
-		RasterTerrain::ServiceCache();
-	}
-  }
-  #endif // RASTERCACHE
 }
 
 

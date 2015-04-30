@@ -188,9 +188,6 @@
 //
 // ----------------------------------------------------------------------------------------
 
-// #define RASTERCACHE		1	// fallback to cached dem if it does not fit in memory entirely. 
-					// Does not work. 
-
 
 // #define USESWITCHES	1	// External device switch support / to be completed because unused
 				// Do not remove, it can be worked out with no problems if we want to
