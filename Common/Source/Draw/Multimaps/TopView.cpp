@@ -294,26 +294,16 @@ _nomoredeclutter:
 
 void MapWindow::DrawHeadUpLine(LKSurface& Surface, const POINT& Orig, const RECT& rc, double fMin, double fMax  ) {
 
-  LKColor rgbCol = RGB_BLACK;
-  POINT p1, p2;
-  double tmp = fMax*zoom.ResScaleOverDistanceModify();
+  const double tmp = fMax*zoom.ResScaleOverDistanceModify();
+  const double trackbearing =  DisplayAircraftAngle+  (DerivedDrawInfo.Heading-DrawInfo.TrackBearing);
   
-  double trackbearing =  DisplayAircraftAngle+  (DerivedDrawInfo.Heading-DrawInfo.TrackBearing);
-  p2.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
-  p2.x= Orig.x + (int)(tmp*fastsine(trackbearing));
+  const POINT p2 = { Orig.x + (int)(tmp*fastsine(trackbearing)), Orig.y - (int)(tmp*fastcosine(trackbearing)) };
 
-  p1.y= Orig.y;
-  p1.x= Orig.x;
+  const LKColor rgbCol = BlackScreen?RGB_INVDRAW:RGB_BLACK;
 
-  if (BlackScreen)
-  rgbCol = RGB_INVDRAW;
-
-  ForcedClipping=true;
   // Reduce the rectangle for a better effect
-  RECT DrawRect = (RECT){rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p1, p2, rgbCol, DrawRect);
-  ForcedClipping=false;
-
+  const RECT ClipRect = {rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), Orig, p2, rgbCol, ClipRect);
 }
 
 
