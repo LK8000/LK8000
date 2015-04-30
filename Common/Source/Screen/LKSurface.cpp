@@ -728,18 +728,17 @@ bool LKSurface::Circle(long x, long y, int radius, const RECT& rc, bool clip, bo
     buildCircle((POINT){x,y}, radius, CirclePt);
       
     if (clip) {
-        std::vector<POINT> CirclePt_clipped;
-        CirclePt_clipped.reserve(CirclePt.size());
-
-        LKGeom::ClipPolygon(rc, CirclePt, CirclePt_clipped);
-
-        CirclePt = std::move(CirclePt_clipped);
-    }
-
-    if (fill) {
-        Polygon(CirclePt.data(), CirclePt.size());
+        if (fill) {
+            Polygon(CirclePt.data(), CirclePt.size(), rc);
+        } else {
+            Polyline(CirclePt.data(), CirclePt.size(), rc);
+        }
     } else {
-        Polyline(CirclePt.data(), CirclePt.size());
+        if (fill) {
+            Polygon(CirclePt.data(), CirclePt.size());
+        } else {
+            Polyline(CirclePt.data(), CirclePt.size());
+        }
     }
     return true;
 }
