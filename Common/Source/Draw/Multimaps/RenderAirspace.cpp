@@ -906,7 +906,7 @@ _after_additionals:
       } else {
 	SelectObject(hdc,LKBrush_Orange);
       }
-      MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  x, y, 0, WTALIGN_CENTER, RGB_BLACK, RGB_BLACK);
+      MapWindow::LKWriteBoxedText(hdc,&rc,text,  x, y, 0, WTALIGN_CENTER, RGB_BLACK, RGB_BLACK);
     }
     #endif
 
