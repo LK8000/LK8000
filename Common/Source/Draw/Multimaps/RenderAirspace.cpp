@@ -598,10 +598,6 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
  // if (speed>10.0)
   if ( Current_Multimap_SizeY<SIZE4 ) 
   {
-    //
-    // WE FORCE CLIPPING, BEING IN MULTIMAPS
-    //
-    ForcedClipping=true;
 
     if ( (getsideviewpage == IM_NEXT_WP) && (overindex>=0)) {
       double altarriv;
@@ -655,7 +651,6 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
 
       Surface.DrawDashLine(3, line[0], line[1],  RGB_BLUE, rc);
     }
-    ForcedClipping=false;
   }
 
 

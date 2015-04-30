@@ -30,7 +30,5 @@ void MapWindow::DrawHeading(LKSurface& Surface, const POINT& Orig, const RECT& r
     // Reduce the rectangle for a better effect
     RECT DrawRect = (RECT){rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
 
-    ForcedClipping=true;
     Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), Orig, p2, BlackScreen ? RGB_INVDRAW : RGB_BLACK, DrawRect); // 091109
-    ForcedClipping=false;
 }

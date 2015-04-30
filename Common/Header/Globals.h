@@ -157,7 +157,7 @@ GEXTERN bool WasFlying;
 
 GEXTERN double LastDoRangeWaypointListTime;
 GEXTERN bool DeviceNeedClipping;
-GEXTERN bool ForcedClipping;
+
 GEXTERN bool EnableAutoBacklight;
 GEXTERN bool EnableAutoSoundVolume;
 GEXTERN DWORD EnableFLARMMap;

@@ -532,9 +532,7 @@ int iCnt = 0;
 
       if(j> 0)
       {
-  		ForcedClipping=true;
   		Surface.DrawLine(PEN_DASH, NIBLSCALE(1), line[0] , line[1] , RGB_BLACK, rc);
-  		ForcedClipping=false;
       }
 
 

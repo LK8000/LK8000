@@ -26,7 +26,7 @@ void MapWindow::DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT&
         const RECT ClipRect = (RECT){rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
 
         POINT p1,p2;
-        ForcedClipping=true;
+
         if(!headUpLine && (DisplayOrientation==TRACKUP || DisplayOrientation==NORTHCIRCLE || DisplayOrientation==TRACKCIRCLE)) { //Track up map view
             p1.x=Orig.x-NIBLSCALE(4);
             p2.x=Orig.x+NIBLSCALE(4);
@@ -63,7 +63,6 @@ void MapWindow::DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT&
             p2.y=Orig.y-(int)round(distXcos-tickXsin);
             Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,ClipRect);
         }
-        ForcedClipping=false;
     }
 }
 

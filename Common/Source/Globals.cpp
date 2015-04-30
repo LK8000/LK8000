@@ -208,7 +208,7 @@ void Globals_Init(void) {
 
   LastDoRangeWaypointListTime=0;
   DeviceNeedClipping=false; // forcing extensive clipping 
-  ForcedClipping=false;	    // force clipping around
+
   EnableAutoBacklight=true;
   EnableAutoSoundVolume=true;
   AircraftCategory=0;
