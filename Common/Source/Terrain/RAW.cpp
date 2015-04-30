@@ -15,67 +15,10 @@
 #define int_fast8_t jas_int_fast8_t
 #endif
 
-void RasterMapRaw::SetFieldRounding(double xr, double yr) {
-  RasterMap::SetFieldRounding(xr, yr);
-  if (!isMapLoaded()) {
-    return;
-  }
-  if ((Xrounding==1)&&(Yrounding==1)) {
-    DirectFine = true;
-    xlleft = (int)(TerrainInfo.Left*fXroundingFine)+128;
-    xlltop  = (int)(TerrainInfo.Top*fYroundingFine)-128;
-  } else {
-    DirectFine = false;
-  }
-}
-
-
 ////// Field access ////////////////////////////////////////////////////
 
 
-short RasterMapRaw::_GetFieldAtXY(unsigned int lx, unsigned int ly) const {
-    /* optimization : return invalid terrain for right&bottom line.
-     *  this avoid 2 conditional jumps.
-     */
-
-    const unsigned ix = CombinedDivAndMod(lx);
-    if (lx + 1 >= TerrainInfo.Columns) {
-        return TERRAIN_INVALID;
-    }
-
-    const unsigned iy = CombinedDivAndMod(ly);
-    if (ly + 1 >= TerrainInfo.Rows) {
-        return TERRAIN_INVALID;
-    }
-
-    const short *tm = TerrainMem + ly * TerrainInfo.Columns + lx;
-    // perform piecewise linear interpolation
-    const short &h1 = tm[0]; // (x,y)
-    const short &h3 = tm[TerrainInfo.Columns+1]; // (x+1,y+1)
-    if (ix > iy) {
-        // lower triangle 
-        const short &h2 = tm[1]; // (x+1,y)
-        return (short) (h1 + ((ix * (h2 - h1) - iy * (h2 - h3)) >> 8));
-    } else {
-        // upper triangle
-        const short &h4 = tm[TerrainInfo.Columns]; // (x,y+1)
-        return (short) (h1 + ((iy * (h4 - h1) - ix * (h4 - h3)) >> 8));
-    }
-}
-
-
-
-void RasterMapRaw::Lock(void) {
-  CritSec_TerrainFile.lock();
-}
-
-void RasterMapRaw::Unlock(void) {
-  CritSec_TerrainFile.unlock();
-}
-
-
-
-bool RasterMapRaw::Open(const TCHAR* zfilename) {
+bool RasterMap::Open(const TCHAR* zfilename) {
   ZZIP_FILE *fpTerrain;
 
   max_field_value = 0;
@@ -145,7 +88,7 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
 }
 
 
-void RasterMapRaw::Close(void) {
+void RasterMap::Close(void) {
   terrain_valid = false;
   if (TerrainMem) {
     free(TerrainMem); TerrainMem = NULL;

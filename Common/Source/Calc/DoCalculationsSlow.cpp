@@ -24,13 +24,11 @@ extern double LowPassFilter(double y_last, double x_in, double fact);
 
 void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
-  static double LastOptimiseTime = 0;
   static double LastSearchBestTime = 0; 
   static bool	validHomeWaypoint=false;
   static bool	gotValidFix=false;
 
   if (DoInit[MDI_DOCALCULATIONSSLOW]) {
-	LastOptimiseTime = 0;
 	LastSearchBestTime = 0; 
 	validHomeWaypoint=false;
 	gotValidFix=false;
@@ -42,15 +40,10 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     CAirspaceManager::Instance().AirspaceWarning( Basic, Calculated);
 
 
-   if (FinalGlideTerrain)
-	TerrainFootprint(Basic, Calculated);
+    if (FinalGlideTerrain) {
+        TerrainFootprint(Basic, Calculated);
+    }
 
-   // moved from MapWindow.cpp
-   if(Basic->Time> LastOptimiseTime+0.0)
-   {
-	LastOptimiseTime = Basic->Time;
-	RasterTerrain::ServiceCache();
-   }
 	// If we started a replay, we need to reset last time
 	if (ReplayLogger::IsEnabled()) {
 		if ( (Basic->Time - LastDoRangeWaypointListTime) <0 ) LastDoRangeWaypointListTime=0;

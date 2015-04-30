@@ -16,16 +16,18 @@ typedef struct _TERRAIN_INFO
 } TERRAIN_INFO;
 
 
-class RasterMap {
+class RasterMap final {
  public:
   RasterMap() {
     terrain_valid = false;
     max_field_value = 0;
     DirectFine = false;
-    DirectAccess = false;
+    DirectAccess = true;
     Paged = false;
+    
+    TerrainMem = NULL;
   }
-  virtual ~RasterMap() {};
+  ~RasterMap() {};
 
   inline bool isMapLoaded() const {
     return terrain_valid;
@@ -33,9 +35,6 @@ class RasterMap {
 
   short max_field_value;
   TERRAIN_INFO TerrainInfo;
-
-  virtual void SetViewCenter(const double &Latitude, 
-                             const double &Longitude) {};
 
   bool GetMapCenter(double *lon, double *lat) const;
 
@@ -48,16 +47,16 @@ class RasterMap {
   int GetEffectivePixelSize(double *pixel_D, 
                             double latitude, double longitude) const;
   
-  virtual void SetFieldRounding(double xr, double yr);
+  void SetFieldRounding(double xr, double yr);
 
   inline short GetField(const double &Latitude, const double &Longitude) const;
 
-  virtual bool Open(const TCHAR* filename) = 0;
-  virtual void Close() = 0;
-  virtual void Lock() = 0;
-  virtual void Unlock() = 0;
-  virtual void ServiceCache() {};
-  virtual void ServiceFullReload(double lat, double lon) {};
+  bool Open(const TCHAR* filename);
+  void Close();
+  
+  void Lock() { CritSec_TerrainFile.lock(); }
+  void Unlock() { CritSec_TerrainFile.unlock(); }
+  
   bool IsDirectAccess(void) const { return DirectAccess; };
   bool IsPaged(void) const { return Paged; };
 
@@ -71,14 +70,19 @@ class RasterMap {
   double fXrounding, fYrounding;
   double fXroundingFine, fYroundingFine;
   int Xrounding, Yrounding;
+  
+  short *TerrainMem;
 
-  virtual short _GetFieldAtXY(unsigned int lx, unsigned int ly) const = 0;
+  Poco::Mutex  CritSec_TerrainFile;
+
+  inline short _GetFieldAtXY(unsigned int lx, unsigned int ly) const;
 };
 /**
  * JMW rounding further reduces data as required to speed up terrain display on low zoom levels
  * 
  * Attention ! allways check if Terrain IsValid before call this.
  */
+inline 
 short RasterMap::GetField(const double &Latitude, const double &Longitude) const {
     if (DirectFine) {
         return _GetFieldAtXY((int) (Longitude * fXroundingFine) - xlleft,
@@ -96,25 +100,37 @@ short RasterMap::GetField(const double &Latitude, const double &Longitude) const
     }
 }
 
-class RasterMapRaw: public RasterMap {
- public:
-  RasterMapRaw() {
-    TerrainMem = NULL;
-    DirectAccess = true;
-  }
-  ~RasterMapRaw() {
-  }
-  short *TerrainMem;
-  virtual void SetFieldRounding(double xr, double yr);
-  virtual bool Open(const TCHAR* filename);
-  virtual void Close();
-  void Lock();
-  void Unlock();
- protected:
-  virtual short _GetFieldAtXY(unsigned int lx, unsigned int ly) const;
-  Poco::Mutex  CritSec_TerrainFile;
-};
+/**
+ * @brief return terrain elevation with piecewise linear interpolation
+ * @optimization : return invalid terrain for right&bottom line.
+ */
+inline
+short RasterMap::_GetFieldAtXY(unsigned int lx, unsigned int ly) const {
 
+    const unsigned ix = CombinedDivAndMod(lx);
+    if (lx + 1 >= TerrainInfo.Columns) {
+        return TERRAIN_INVALID;
+    }
+
+    const unsigned iy = CombinedDivAndMod(ly);
+    if (ly + 1 >= TerrainInfo.Rows) {
+        return TERRAIN_INVALID;
+    }
+
+    const short *tm = TerrainMem + ly * TerrainInfo.Columns + lx;
+    // perform piecewise linear interpolation
+    const short &h1 = tm[0]; // (x,y)
+    const short &h3 = tm[TerrainInfo.Columns+1]; // (x+1,y+1)
+    if (ix > iy) {
+        // lower triangle 
+        const short &h2 = tm[1]; // (x+1,y)
+        return (short) (h1 + ((ix * (h2 - h1) - iy * (h2 - h3)) >> 8));
+    } else {
+        // upper triangle
+        const short &h4 = tm[TerrainInfo.Columns]; // (x,y+1)
+        return (short) (h1 + ((iy * (h4 - h1) - ix * (h4 - h3)) >> 8));
+    }
+}
 
 class RasterTerrain {
 public:
@@ -144,7 +160,6 @@ public:
   static void SetTerrainRounding(double x, double y);
   static void ServiceCache();
   static void ServiceTerrainCenter(double latitude, double longitude);
-  static void ServiceFullReload(double latitude, double longitude);
   static int GetEffectivePixelSize(double *pixel_D, 
                                    double latitude, double longitude);
   static bool WaypointIsInTerrainRange(double latitude, double longitude);

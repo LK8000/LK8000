@@ -459,9 +459,6 @@ int main(int argc, char *argv[]) {
   LKReadLanguageFile(szLanguageFile);
   LKLanguageReady=true;
 
-  RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, 
-                                   GPS_INFO.Longitude);
-
   CAirspaceManager::Instance().ReadAirspaces();
   CAirspaceManager::Instance().SortAirspaces();
   OpenTopology();

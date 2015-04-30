@@ -96,8 +96,9 @@ void RasterTerrain::OpenTerrain(void)
 
 
 bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
-
-  TerrainMap = new RasterMapRaw();
+  assert(!TerrainMap); // memory leak;
+  
+  TerrainMap = new RasterMap();
   if (!TerrainMap) {
     return false;
   }

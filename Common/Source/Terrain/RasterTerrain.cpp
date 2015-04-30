@@ -87,19 +87,26 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
 
   Xrounding = iround(xr/TerrainInfo.StepSize);
   Yrounding = iround(yr/TerrainInfo.StepSize);
-
   if (Xrounding<1) {
     Xrounding = 1;
-  } 
+  }
+  
   fXrounding = 1.0/(Xrounding*TerrainInfo.StepSize);
   fXroundingFine = fXrounding*256.0;
   if (Yrounding<1) {
     Yrounding = 1;
   }
+  
   fYrounding = 1.0/(Yrounding*TerrainInfo.StepSize);
   fYroundingFine = fYrounding*256.0;
 
-  DirectFine = false;
+  if ((Xrounding==1)&&(Yrounding==1)) {
+    DirectFine = true;
+    xlleft = (int)(TerrainInfo.Left*fXroundingFine)+128;
+    xlltop  = (int)(TerrainInfo.Top*fYroundingFine)-128;
+  } else {
+    DirectFine = false;
+  }
 }
 
 
@@ -145,44 +152,11 @@ bool RasterTerrain::IsPaged(void) {
   }
 }
 
-
-void RasterTerrain::ServiceCache(void) {
-  Lock();
-  if (TerrainMap) {
-    TerrainMap->ServiceCache();
-  }
-  Unlock();
-}
-
 void RasterTerrain::SetTerrainRounding(double x, double y) {
   if (TerrainMap) {
     TerrainMap->SetFieldRounding(x, y);
   }
 }
-
-void RasterTerrain::ServiceTerrainCenter(double lat, double lon) {
-  Lock();
-
-  if (TerrainMap) {
-    TerrainMap->SetViewCenter(lat, lon);
-  }
-  Unlock();
-}
-
-
-void RasterTerrain::ServiceFullReload(double lat, double lon) {
-
-  Lock();
-  if (TerrainMap) {
-    CreateProgressDialog(gettext(TEXT("_@M901_"))); // Loading terrain tiles...
-    #if TESTBENCH
-    StartupStore(_T(". Loading terrain tiles...%s"),NEWLINE);
-    #endif
-    TerrainMap->ServiceFullReload(lat, lon);
-  }
-  Unlock();
-}
-
 
 int RasterTerrain::GetEffectivePixelSize(double *pixel_D, 
                                          double latitude, double longitude) {
