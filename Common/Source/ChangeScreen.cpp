@@ -126,7 +126,6 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_PROCESSVIRTUALKEY);
   Reset_Single_DoInits(MDI_ONPAINTLISTITEM);
   Reset_Single_DoInits(MDI_DRAWMAPSCALE);
-  Reset_Single_DoInits(MDI_MAPWPLABELADD);
   Reset_Single_DoInits(MDI_CHECKLABELBLOCK);
   Reset_Single_DoInits(MDI_LKPROCESS);
   Reset_Single_DoInits(MDI_COMPASS);

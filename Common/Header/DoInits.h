@@ -51,7 +51,6 @@
 	MDI_PROCESSVIRTUALKEY,		// screen change
 	MDI_ONPAINTLISTITEM,		// screen change, font change
 	MDI_DRAWMAPSCALE,		// screen change
-	MDI_MAPWPLABELADD,		// screen change
 	MDI_CHECKLABELBLOCK,		// screen change
 	MDI_LKPROCESS,			// unit change
 	MDI_COMPASS,			// screen change
