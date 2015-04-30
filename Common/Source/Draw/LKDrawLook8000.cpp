@@ -918,9 +918,9 @@ nextinit:
 				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
 #ifdef AUTORES
-				LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)- TextSize.cy/6 - (ySizeLK8SmallFont/4), 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+				LKWriteBoxedText(Surface, rc,BufferValue, rcx,rcy+(TextSize.cy*2)- TextSize.cy/6 - (ySizeLK8SmallFont/4), 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
 #else
-				LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+				LKWriteBoxedText(Surface, rc,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
 #endif
 			}
 		}
@@ -1023,9 +1023,9 @@ nextinit:
 			_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL/10*ALTITUDEMODIFY,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
 #ifdef AUTORES
-			LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)- TextSize.cy/6 - (ySizeLK8SmallFont/4), 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+			LKWriteBoxedText(Surface, rc,BufferValue, rcx,rcy+(TextSize.cy*2)- TextSize.cy/6 - (ySizeLK8SmallFont/4), 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
 #else
-			LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
+			LKWriteBoxedText(Surface, rc,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT, RGB_WHITE,RGB_BLACK);
 #endif
 
 		}
@@ -1126,7 +1126,7 @@ drawOverlay:
 		Surface.SelectObject(LK8SmallFont);
 		_stprintf(BufferValue,_T(" %.1f %s "),GlidePolar::SafetyMacCready*LIFTMODIFY,
 		Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
-		LKWriteBoxedText(Surface, MapRect,BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+		LKWriteBoxedText(Surface, rc,BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
 	}
 
 	//
