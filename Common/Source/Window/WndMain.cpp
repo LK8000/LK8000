@@ -99,7 +99,6 @@ void Shutdown(void) {
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
  
-  StartupStore(TEXT(". CloseDrawingThread%s"),NEWLINE);
   // 100526 this is creating problem in SIM mode when quit is called from X button, and we are in waypoint details
   // or probably in other menu related screens. However it cannot happen from real PNA or PDA because we don't have
   // that X button.
