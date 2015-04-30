@@ -13,9 +13,18 @@
 #include <string.h>
 #include "ScreenGeometry.h"
 
-//
-// THIS FUNCTION is threadsafe only if called by dialogs using picto bool true
-//
+/**
+ * @brief Draw Runway on map
+ *
+ * @remarks THIS FUNCTION is threadsafe only if called by dialogs using picto bool true
+ * 
+ * @param Surface : Surface to Draw
+ * @param wp : Landable Waypoint 
+ * @param rc : Clipping Rect 
+ * @param fScaleFact : Scaling factor for runway symbol radius and runway length, use #MapWindow::zoom value for Moving Map or constant for waypoint Picto
+ * @param picto true for drawing Waypoint Picto ( don't draw radio info ) 
+ */
+
 void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, double fScaleFact, BOOL picto)
 {
   int solid= false;
@@ -276,7 +285,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 	unsigned int offset = p + NIBLSCALE(1) ;
 	{
 		if ( _tcslen(wp->Freq)>0 ) {
-			MapWindow::LKWriteBoxedText(Surface,DrawRect,wp->Freq, Center_x- offset, Center_y -offset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+			MapWindow::LKWriteBoxedText(Surface,rc,wp->Freq, Center_x- offset, Center_y -offset, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
 		}
 
 		//
@@ -284,13 +293,13 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 		//
 		if (MapWindow::zoom.RealScale() <=scale_fullinfos) {
 			if ( _tcslen(wp->Code)==4 ) {
-				MapWindow::LKWriteBoxedText(Surface,DrawRect,wp->Code,Center_x + offset, Center_y - offset, 0, WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
+				MapWindow::LKWriteBoxedText(Surface,rc,wp->Code,Center_x + offset, Center_y - offset, 0, WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
 			}
 
 			if (wp->Altitude >0) {
 				TCHAR tAlt[20];
 				_stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
-				MapWindow::LKWriteBoxedText(Surface,DrawRect,tAlt, Center_x + offset, Center_y + offset, 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+				MapWindow::LKWriteBoxedText(Surface,rc,tAlt, Center_x + offset, Center_y + offset, 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
 			}
 
 		}
