@@ -129,7 +129,7 @@ public:
         // need at least 2Ghz singlecore CPU here for dtquant 1
         dtquant = 2;
 
-#if defined(_WIN32_WCE) || !defined(NDEBUG)
+#if defined(_WIN32_WCE) || defined(__arm__) || !defined(NDEBUG)
         // scale dtquant so resolution is not too high on large displays
         dtquant *= ScreenScale; // lower resolution a bit.. (no need for CPU >800mHz)
 
