@@ -728,10 +728,13 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
     y = rc.top + 2*tsize.cy;
 
-    if (INVERTCOLORS)
+    
+    Surface.SelectObject(LK_BLACK_PEN);
+    if (INVERTCOLORS) {
         Surface.SelectObject(LKBrush_Petrol);
-    else
+    } else {
         Surface.SelectObject(LKBrush_LightCyan);
+    }
 
     MapWindow::LKWriteBoxedText(Surface, rc,text,  line[0].x, y-3, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
 
@@ -767,6 +770,7 @@ StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
     y = CalcHeightCoordinat  ( SAFETYALTITUDEARRIVAL/10+wpt_altarriv_mc0+wpt_altitude,  &sDia);
     y -= (int)(1.3*tsize.cy);
     // We don't know if there are obstacles for mc0
+    Surface.SelectObject(LK_BLACK_PEN);
     Surface.SelectObject(LKBrush_Nlight);
 
     MapWindow::LKWriteBoxedText(Surface, rc,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
@@ -789,7 +793,9 @@ if(SAFETYALTITUDEARRIVAL > 0)
       x = line[0].x -  NIBLSCALE(5);
 
       y = CalcHeightCoordinat( (SAFETYALTITUDEARRIVAL/10 + wpt_altitude + altarriv)*7/10 , &sDia );
+      Surface.SelectObject(LK_BLACK_PEN);
       Surface.SelectObject(LKBrush_Nlight);
+      
       MapWindow::LKWriteBoxedText(Surface, rc, text,  x, y, 0, WTALIGN_RIGHT, RGB_BLACK, RGB_BLACK);
     }
 }
@@ -807,10 +813,11 @@ if(SAFETYALTITUDEARRIVAL > 0)
       _tcscat(text, TEXT("---"));
     }
     Surface.GetTextSize(text, _tcslen(text), &tsize);
+    Surface.SelectObject(LK_BLACK_PEN);
     if(  ValidWayPoint(overindex) && WayPointList[overindex].Reachable) {
-	Surface.SelectObject(LKBrush_LightGreen);
+        Surface.SelectObject(LKBrush_LightGreen);
     } else {
-	Surface.SelectObject(LKBrush_Orange);
+        Surface.SelectObject(LKBrush_Orange);
     }
     x = line[0].x - tsize.cx - NIBLSCALE(5);
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
@@ -818,6 +825,7 @@ if(SAFETYALTITUDEARRIVAL > 0)
     y = CalcHeightCoordinat  ( SAFETYALTITUDEARRIVAL/10+wpt_altitude+wpt_altarriv,  &sDia);
     if (wpt_altarriv==wpt_altarriv_mc0)
       y -= tsize.cy/2;
+    
     MapWindow::LKWriteBoxedText(Surface, rc, text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
 /*
     y = CalcHeightCoordinat  ( SAFETYALTITUDEARRIVAL/10+wpt_altarriv_mc0,  &sDia)-2*tsize.cy;
@@ -875,8 +883,9 @@ if(SAFETYALTITUDEARRIVAL > 0)
     	y=yn;
     else
         y+= (int)(1.2*tsize.cy);
-//	y += tsize.cy+NIBLSCALE(3);
-	Surface.SelectObject(LKBrush_Nlight);
+      
+    Surface.SelectObject(LK_BLACK_PEN);
+    Surface.SelectObject(LKBrush_Nlight);
 
 	MapWindow::LKWriteBoxedText(Surface, rc,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
 
