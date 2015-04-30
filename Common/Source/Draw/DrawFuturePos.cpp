@@ -23,7 +23,7 @@ void MapWindow::DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT&
         const double dist10min=600*DrawInfo.Speed*zoom.ResScaleOverDistanceModify(); //10 min
         
         // Reduce the rectangle for a better effect
-        RECT DrawRect = (RECT){rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
+        const RECT ClipRect = (RECT){rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
 
         POINT p1,p2;
         ForcedClipping=true;
@@ -31,11 +31,11 @@ void MapWindow::DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT&
             p1.x=Orig.x-NIBLSCALE(4);
             p2.x=Orig.x+NIBLSCALE(4);
             p1.y=p2.y=Orig.y-(int)round(dist2min);
-            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,DrawRect);
+            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,ClipRect);
             p1.y=p2.y=Orig.y-(int)round(dist5min);
-            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,DrawRect);
+            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,ClipRect);
             p1.y=p2.y=Orig.y-(int)round(dist10min);
-            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,DrawRect);
+            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,ClipRect);
         } else { //North up map view
             const double sin=fastsine(trackBearing);
             const double cos=fastcosine(trackBearing);
@@ -47,21 +47,21 @@ void MapWindow::DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT&
             p1.y=Orig.y-(int)round(distXcos+tickXsin);
             p2.x=Orig.x+(int)round(distXsin+tickXcos);
             p2.y=Orig.y-(int)round(distXcos-tickXsin);
-            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,DrawRect);
+            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,ClipRect);
             distXsin=dist5min*sin;
             distXcos=dist5min*cos;
             p1.x=Orig.x+(int)round(distXsin-tickXcos);
             p1.y=Orig.y-(int)round(distXcos+tickXsin);
             p2.x=Orig.x+(int)round(distXsin+tickXcos);
             p2.y=Orig.y-(int)round(distXcos-tickXsin);
-            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,DrawRect);
+            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,ClipRect);
             distXsin=dist10min*sin;
             distXcos=dist10min*cos;
             p1.x=Orig.x+(int)round(distXsin-tickXcos);
             p1.y=Orig.y-(int)round(distXcos+tickXsin);
             p2.x=Orig.x+(int)round(distXsin+tickXcos);
             p2.y=Orig.y-(int)round(distXcos-tickXsin);
-            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,DrawRect);
+            Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),p1,p2,BlackScreen?RGB_INVDRAW:RGB_BLACK,ClipRect);
         }
         ForcedClipping=false;
     }
