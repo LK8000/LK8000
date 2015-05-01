@@ -565,7 +565,7 @@ void dlgTarget(int TaskPoint) {
     if (ScreenLandscape) 
     {// make flush right in landscape mode (at top in portrait mode)
       dlgSize = wf2->GetWidth();
-      wf->SetLeft(MapWindow::MapRect.right- dlgSize);
+      wf->SetLeft(MainWindow.GetRight() - dlgSize);
     }
     else {
       dlgSize = wf2->GetHeight();
