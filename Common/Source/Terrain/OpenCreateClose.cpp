@@ -102,10 +102,12 @@ bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
   if (!TerrainMap) {
     return false;
   }
-  if (TerrainMap->Open(zfilename)) {
-    return true;
+  if (!TerrainMap->Open(zfilename)) {
+    delete TerrainMap;
+    TerrainMap = nullptr;  
+    return false;
   } 
-  return false;
+  return true;
 }
 
 ///////// Specialised open/close routines /////////////////// 
