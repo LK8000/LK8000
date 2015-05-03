@@ -29,6 +29,7 @@
 #include <iterator>
 #include "BtHandler.h"
 #include <functional>
+#include "Sound/Sound.h"
 
 using namespace std::placeholders;
 
@@ -1317,29 +1318,40 @@ void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
 }
 
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
-#ifdef DISABLEEXTAUDIO
     const TCHAR* PortPropName[][2] = { 
         { _T("prpComSpeed1"), _T("prpComBit1") }, 
         { _T("prpComSpeed2"), _T("prpComBit2") }
     };
-#else
-    const TCHAR* PortPropName[][3] = { 
-        { _T("prpComSpeed1"), _T("prpComBit1"), _T("prpExtSound1") }, 
-        { _T("prpComSpeed2"), _T("prpComBit2"), _T("prpExtSound2") }
-    };
-#endif    
+    const TCHAR * prpExtSound[2] = {
+            _T("prpExtSound1"),
+            _T("prpExtSound2")
+        };
+
     LKASSERT(szPortName);
     // check if all array have same size ( compil time check );
     static_assert(array_size(DeviceList) == array_size(PortPropName), "PortPropName array size need to be same of DeviceList array size");
-    
-    if(std::begin(PortPropName)+idx < std::end(PortPropName)) {
-        bool bHide =  (DeviceList[idx].Disabled || ((_tcslen(szPortName) > 3) && (_tcsncmp(szPortName, _T("BT:"), 3) == 0)));
-        bHide = bHide || (_tcscmp(DeviceList[idx].Name, _T("Internal")) == 0);
+    static_assert(array_size(DeviceList) == array_size(prpExtSound), "prpExtSound array size need to be same of DeviceList array size");
+
+#ifdef DISABLEEXTAUDIO    
+    bool bManageExtAudio = false;
+#else
+    bool bManageExtAudio = true;
+#endif
+    bManageExtAudio &= IsSoundInit();
+    bool bHide = (DeviceList[idx].Disabled || (_tcscmp(DeviceList[idx].Name, _T("Internal")) == 0));
+    bool bBt = ((_tcslen(szPortName) > 3) && (_tcsncmp(szPortName, _T("BT:"), 3) == 0));
+
+    // For com port properties, hide them for disable, internal or Bluetooth, show otherwise
+    if (std::begin(PortPropName) + idx < std::end(PortPropName)) {
         std::for_each(
-            std::begin(PortPropName[idx]), 
-            std::end(PortPropName[idx]), 
-            std::bind(ShowWindowControl, wf, _1, !bHide)
-        );
+                std::begin(PortPropName[idx]),
+                std::end(PortPropName[idx]),
+                std::bind(ShowWindowControl, wf, _1, !(bHide || bBt))
+                );
+    }
+    // Manage external sounds only if necessary
+    if (bManageExtAudio) {
+        ShowWindowControl(wf, prpExtSound[idx], !bHide);
     }
 }
 
@@ -3375,9 +3387,15 @@ void dlgConfigurationShowModal(short mode){
 	ReadDeviceSettings(1, deviceName2);
 	UpdateDeviceSetupButton(0, deviceName1);
 	UpdateDeviceSetupButton(1, deviceName2);
+// Don't show external sound config if not compiled for this device or not used
 #ifdef DISABLEEXTAUDIO
         ShowWindowControl(wf, _T("prpExtSound1"), false);
         ShowWindowControl(wf, _T("prpExtSound2"), false);
+#else
+        if (!IsSoundInit()) {
+            ShowWindowControl(wf, _T("prpExtSound1"), false);
+            ShowWindowControl(wf, _T("prpExtSound2"), false);
+        }
 #endif
   }
 

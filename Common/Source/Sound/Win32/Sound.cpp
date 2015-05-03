@@ -34,6 +34,11 @@ SoundGlobalInit::~SoundGlobalInit() {
  
 }
 
+bool IsSoundInit() {
+    
+    return(bSoundFile);
+}
+
 
 extern HINSTANCE _hInstance; // The current instance
 

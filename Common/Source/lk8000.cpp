@@ -181,19 +181,6 @@ int main(int argc, char *argv[]) {
   }
   #endif
 
-  ScreenGlobalInit InitScreen;
-  SoundGlobalInit InitSound;
-
-   CScreenOrientation SaveScreen(LKGetLocalPath());
-
-  
-  // This is needed otherwise LKSound will be silent until we init Globals.
-  EnableSoundModes=true;
- 
-  bool realexitforced=false;
-
-  LKSound(_T("LK_CONNECT.WAV"));
-
   #if TRACETHREAD
   _THREADID_WINMAIN=GetCurrentThreadId();
   StartupStore(_T("##############  WINMAIN threadid=%d\n"),GetCurrentThreadId());
@@ -243,6 +230,20 @@ int main(int argc, char *argv[]) {
     #endif
   StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
+
+  ScreenGlobalInit InitScreen;
+  SoundGlobalInit InitSound;
+
+  CScreenOrientation SaveScreen(LKGetLocalPath());
+
+  
+  // This is needed otherwise LKSound will be silent until we init Globals.
+  EnableSoundModes=true;
+ 
+  bool realexitforced=false;
+
+  LKSound(_T("LK_CONNECT.WAV"));
+
   Globals_Init();
 
   StartupLogFreeRamAndStorage();
