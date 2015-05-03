@@ -66,6 +66,11 @@ SoundGlobalInit::~SoundGlobalInit() {
     bSoundInit = false;
 }
 
+bool IsSoundInit() {
+    
+    return(bSoundInit);
+}
+
 bool SetSoundVolume() {
     // TODO : need to implement ?
     return false;

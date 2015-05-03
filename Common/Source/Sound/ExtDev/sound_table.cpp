@@ -33,7 +33,7 @@ bool sound_table::init() {
     
     FILE *fp;
     if ( (fp=_tfopen(srcfile, _T("rt"))) == NULL ) {
-        StartupStore(_T("... Cannot load conversion sound table file: %s" ) NEWLINE ,srcfile);
+        StartupStore(_T("...Cannot load conversion sound table file for external sound : %s" ) NEWLINE ,srcfile);
         return false;
     }
 
@@ -45,7 +45,7 @@ bool sound_table::init() {
         TCHAR * ptrCode = str;
         TCHAR * ptrNmea = _tcschr(str, _T('='));
         if (ptrNmea==NULL) {
-            StartupStore(_T("Malformed line: %s") NEWLINE , str);
+            StartupStore(_T("...Malformed line: %s") NEWLINE , str);
             continue;
         }
         *ptrNmea = _T('\0'); // replace '=' by '\0', now ptrCode are nts sound code

@@ -20,6 +20,8 @@ public:
   ~SoundGlobalInit();
 };
 
+bool IsSoundInit();
+
 bool SetSoundVolume();
 
 void LKSound(const TCHAR *lpName);
