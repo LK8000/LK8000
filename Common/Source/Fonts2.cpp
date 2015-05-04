@@ -11,12 +11,15 @@
 
 extern void ApplyClearType(LOGFONT *logfont);
 extern void ApplyFontSize(LOGFONT *logfont);
+extern void InitializeOneFont (LKFont& theFont, LOGFONT logfont);
 
-// Called after InitLKScreen, normally
-void InitLKFonts()
+//
+// IF WE ADD A FONT, WE MUST ADD ALSO THE NEW DEINIT FOR IT , REMEMBER
+//
+void Init_Fonts_2(void)
 {
   #if TESTBENCH
-  StartupStore(_T(". InitLKFonts%s"),NEWLINE); // 091213
+  StartupStore(_T(". Init_Fonts_2%s"),NEWLINE);
   #endif
 
   LOGFONT logfontTarget;	// StatisticsWindow
@@ -50,8 +53,8 @@ void InitLKFonts()
   memset ((char *)&logfontMedium, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontInfoBig, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontInfoBigItalic, 0, sizeof (LOGFONT) );
-  memset ((char *)&logfontInfoNormal, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontInfoNearest, 0, sizeof (LOGFONT) );
+  memset ((char *)&logfontInfoNormal, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontInfoSmall, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontPanelBig, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontPanelMedium, 0, sizeof (LOGFONT) );
@@ -657,34 +660,12 @@ void InitLKFonts()
 	}
   }
 
-  //
-  // If our choice was based upon geometry criteria, and not on a custom supported resolution,
-  // we must ask for dynamic resize. So we mark Orientation flag to 1 .
-  // We use this flag to autogenerate fonts for unknown resolutions.
-  // We do the same in Fonts.cpp
-  if (ScreenSize==0) {
-      #if TESTBENCH
-      StartupStore(_T("... (LKFonts) Forcing font resize%s"),NEWLINE);
-      #endif
-      logfontBig.lfOrientation = 1;
-      logfontMedium.lfOrientation = 1;
-      logfontSmall.lfOrientation = 1;
-      logfontTitle.lfOrientation = 1;
-      logfontMap.lfOrientation = 1;
-      logfontTitleNavbox.lfOrientation = 1;
-      logfontTarget.lfOrientation = 1;
-      logfontValue.lfOrientation = 1;
-      logfontUnit.lfOrientation = 1;
-      logfontInfoBig.lfOrientation = 1;
-      logfontInfoBigItalic.lfOrientation = 1;
-      logfontInfoNormal.lfOrientation = 1;
-      logfontInfoNearest.lfOrientation = 1;
-      logfontInfoSmall.lfOrientation = 1;
-      logfontPanelBig.lfOrientation = 1;
-      logfontPanelMedium.lfOrientation = 1;
-      logfontPanelSmall.lfOrientation = 1;
-      logfontPanelUnit.lfOrientation = 1;
 
+  #if TESTBENCH
+  if (ScreenSize==0) StartupStore(_T("... (LKFonts) Forcing font resize%s"),NEWLINE);
+  #endif
+
+  if (ScreenSize==0) {
       #define TIGHTOFFSET 0 // previously 4, but doubtly correct
       if (ScreenLandscape) {
           BottomSize=(int) (((double)logfontTitle.lfHeight + logfontValue.lfHeight - TIGHTOFFSET)*Screen0Ratio);
@@ -693,63 +674,24 @@ void InitLKFonts()
       }
   }
 
-
-  ApplyClearType(&logfontTarget);
-  ApplyFontSize(&logfontTarget);
-  ApplyClearType(&logfontBig);
-  ApplyFontSize(&logfontBig);
-  ApplyClearType(&logfontValue);
-  ApplyFontSize(&logfontValue);
-  ApplyClearType(&logfontTitle);
-  ApplyFontSize(&logfontTitle);
-  ApplyClearType(&logfontMap);
-  ApplyFontSize(&logfontMap);
-  ApplyClearType(&logfontTitleNavbox);
-  ApplyFontSize(&logfontTitleNavbox);
-  ApplyClearType(&logfontUnit);
-  ApplyFontSize(&logfontUnit);
-  ApplyClearType(&logfontMedium);
-  ApplyFontSize(&logfontMedium);
-  ApplyClearType(&logfontSmall);
-  ApplyFontSize(&logfontSmall);
-  ApplyClearType(&logfontInfoBig);
-  ApplyFontSize(&logfontInfoBig);
-  ApplyClearType(&logfontInfoBigItalic);
-  ApplyFontSize(&logfontInfoBigItalic);
-  ApplyClearType(&logfontInfoNormal);
-  ApplyFontSize(&logfontInfoNormal);
-  ApplyClearType(&logfontInfoNearest);
-  ApplyFontSize(&logfontInfoNearest);
-  ApplyClearType(&logfontInfoSmall);
-  ApplyFontSize(&logfontInfoSmall);
-  ApplyClearType(&logfontPanelBig);
-  ApplyFontSize(&logfontPanelBig);
-  ApplyClearType(&logfontPanelMedium);
-  ApplyFontSize(&logfontPanelMedium);
-  ApplyClearType(&logfontPanelSmall);
-  ApplyFontSize(&logfontPanelSmall);
-  ApplyClearType(&logfontPanelUnit);
-  ApplyFontSize(&logfontPanelUnit);
-
-  LK8UnitFont.Create(&logfontUnit);
-  LK8TitleFont.Create(&logfontTitle);
-  LK8MapFont.Create(&logfontMap);
-  LK8TitleNavboxFont.Create(&logfontTitleNavbox);
-  LK8ValueFont.Create(&logfontValue);
-  LK8TargetFont.Create(&logfontTarget); 
-  LK8BigFont.Create(&logfontBig);
-  LK8MediumFont.Create(&logfontMedium);
-  LK8SmallFont.Create(&logfontSmall);
-  LK8InfoBigFont.Create(&logfontInfoBig);
-  LK8InfoBigItalicFont.Create(&logfontInfoBigItalic);
-  LK8InfoNormalFont.Create(&logfontInfoNormal);
-  LK8InfoNearestFont.Create(&logfontInfoNearest);
-  LK8InfoSmallFont.Create(&logfontInfoSmall);
-  LK8PanelBigFont.Create(&logfontPanelBig);
-  LK8PanelMediumFont.Create(&logfontPanelMedium);
-  LK8PanelSmallFont.Create(&logfontPanelSmall);
-  LK8PanelUnitFont.Create(&logfontPanelUnit);
-
+  InitializeOneFont(LK8UnitFont, logfontUnit);
+  InitializeOneFont(LK8TitleFont, logfontTitle);
+  InitializeOneFont(LK8MapFont, logfontMap);
+  InitializeOneFont(LK8TitleNavboxFont, logfontTitleNavbox);
+  InitializeOneFont(LK8ValueFont, logfontValue);
+  InitializeOneFont(LK8TargetFont, logfontTarget);
+  InitializeOneFont(LK8BigFont, logfontBig);
+  InitializeOneFont(LK8MediumFont, logfontMedium);
+  InitializeOneFont(LK8SmallFont, logfontSmall);
+  InitializeOneFont(LK8InfoBigFont, logfontInfoBig);
+  InitializeOneFont(LK8InfoBigItalicFont, logfontInfoBigItalic);
+  InitializeOneFont(LK8InfoNormalFont, logfontInfoNormal);
+  InitializeOneFont(LK8InfoNearestFont, logfontInfoNearest);
+  InitializeOneFont(LK8InfoSmallFont, logfontInfoSmall);
+  InitializeOneFont(LK8PanelBigFont, logfontPanelBig);
+  InitializeOneFont(LK8PanelMediumFont, logfontPanelMedium);
+  InitializeOneFont(LK8PanelSmallFont, logfontPanelSmall);
+  InitializeOneFont(LK8PanelUnitFont, logfontPanelUnit);
 
 }
 

@@ -642,14 +642,14 @@ _Shutdown:
   else return 111;
 }
 
-extern void DeInitialiseFonts(void);
+extern void DeInitLKFonts(void);
 
 void CleanupForShutdown(void) {
 
   MainWindow.Destroy();
   Message::Destroy();
 
-  DeInitialiseFonts();  
+  DeInitLKFonts();  
   LKObjects_Delete();
   LKUnloadProfileBitmaps();
   LKUnloadFixedBitmaps();

@@ -97,8 +97,7 @@ void ReinitScreen(void) {
   ButtonLabel::Destroy();
   ButtonLabel::CreateButtonLabels(rc);
 
-  extern void InitialiseFonts(RECT rc);
-  InitialiseFonts(rc);
+  extern void InitLKFonts();
   InitLKFonts();
   ButtonLabel::SetFont(MapWindowBoldFont);
   Message::Destroy();

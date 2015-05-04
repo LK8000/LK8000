@@ -186,9 +186,9 @@ BOOL InitInstance()
   ButtonLabel::CreateButtonLabels(rc);
   ButtonLabel::SetLabelText(0,TEXT("MODE"));
 
-  extern void InitialiseFonts(RECT rc);
-  InitialiseFonts(rc);
-  InitLKFonts();	// reload updating LK fonts after loading profile for fontquality
+  extern void InitLKFonts();
+  // reload updating LK fonts after loading profile for fontquality
+  InitLKFonts();	
 
   ButtonLabel::SetFont(MapWindowBoldFont);
 

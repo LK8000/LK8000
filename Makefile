@@ -972,7 +972,8 @@ SRC_FILES :=\
 	$(SRC)/ExpandMacros.cpp	\
 	$(SRC)/FlarmIdFile.cpp 		\
 	$(SRC)/FlarmTools.cpp		\
-	$(SRC)/Fonts.cpp \
+	$(SRC)/Fonts1.cpp \
+	$(SRC)/Fonts2.cpp		\
 	$(SRC)/Geoid.cpp \
 	$(SRC)/Globals.cpp	\
 	$(SRC)/InitFunctions.cpp\
@@ -980,7 +981,6 @@ SRC_FILES :=\
 	$(SRC)/lk8000.cpp\
 	$(SRC)/LiveTracker.cpp \
 	$(SRC)/LKAirspace.cpp	\
-	$(SRC)/LKFonts.cpp		\
 	$(SRC)/LKInstall.cpp 		\
 	$(SRC)/LKLanguage.cpp		\
 	$(SRC)/LKObjects.cpp \
