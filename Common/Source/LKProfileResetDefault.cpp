@@ -318,8 +318,6 @@ void LKProfileResetDefault(void) {
 
   AutoForceFinalGlide = false;
 
-  UseCustomFonts = 0;
-
   AlarmMaxAltitude1 = 0;
 
   AlarmMaxAltitude2 = 0;
@@ -419,10 +417,6 @@ void LKProfileResetDefault(void) {
   szPort2[0] = _T('\0');
   dwSpeedIndex2 = 2;
   dwBit2Index = (BitIndex_t)bit8N1;
-
-  FontDesc_MapWaypoint[0]=_T('\0');
-  FontDesc_MapWaypointBold[0]=_T('\0');
-  FontDesc_MapTopology [0]=_T('\0');
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
   _tcscpy(LiveTrackersrv_Config,_T("www.livetrack24.com"));

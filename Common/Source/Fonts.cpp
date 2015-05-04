@@ -94,15 +94,6 @@ void InitializeOneFont (LKFont& theFont,
   LOGFONT logfont;
   memset ((char *)&logfont, 0, sizeof (LOGFONT));
 
-  if (UseCustomFonts) {
-    propGetFontSettings(FontRegKey, &logfont);
-    if (!IsNullLogFont(logfont)) {
-      theFont.Create(&logfont);
-      if (LogFontUsed != NULL) {
-        *LogFontUsed = logfont; // RLD save for custom font GUI
-      }
-    }
-  }
 
   if (!IsNullLogFont(autoLogFont)) {
       ApplyClearType(&autoLogFont);
@@ -639,7 +630,7 @@ void InitialiseFonts(RECT rc)
                         NULL);
 
   InitializeOneFont (MapTopologyFont, 
-                        szRegistryFontTopologyFont, 
+                        NULL,
                         autoMapTopologyFont,
                         NULL);
 
@@ -649,12 +640,12 @@ void InitialiseFonts(RECT rc)
                         NULL);
 
   InitializeOneFont (MapWaypointFont, 
-                        szRegistryFontWaypointFont, 
+                        NULL,
                         autoMapWaypointFont,
                         NULL);
 
   InitializeOneFont (MapWaypointBoldFont, 
-                        szRegistryFontWaypointBoldFont, 
+                        NULL,
                         autoMapWaypointBoldFont,
                         NULL);
 
@@ -746,28 +737,5 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
   memcpy((void *)lplf, (void *)&lfTmp, sizeof (LOGFONT));
 
   return;
-}
-
-
-void propGetFontSettings(const char *Name, LOGFONT* lplf) {
- //
- // Load custom font settings from profile only if relative to
- // configurable fonts, of course.
- // 
- // NOTICE @april 2015 we do not yet allow to configure fonts from UI
- //
- if (Name==NULL || lplf==NULL) return;
- if ( !strcmp(Name,"MapTopologyFont") ) {
-	if (_tcslen(FontDesc_MapTopology)>0)
-		propGetFontSettingsFromString(FontDesc_MapTopology, lplf);
- }
- if ( !strcmp(Name,"MapWaypointFont") ) {
-	if (_tcslen(FontDesc_MapWaypoint)>0)
-		propGetFontSettingsFromString(FontDesc_MapWaypoint, lplf);
- }
- if ( !strcmp(Name,"MapWaypointBoldFont") ) {
-	if (_tcslen(FontDesc_MapWaypointBold)>0)
-		propGetFontSettingsFromString(FontDesc_MapWaypointBold, lplf);
- }
 }
 

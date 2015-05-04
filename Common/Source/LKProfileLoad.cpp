@@ -397,9 +397,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryFinishMinHeight,&FinishMinHeight);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryFinishRadius,&FinishRadius);
-  PREAD(sname,svalue,szRegistryFontTopologyFont,&*FontDesc_MapTopology, array_size(FontDesc_MapTopology));
-  PREAD(sname,svalue,szRegistryFontWaypointFont,&*FontDesc_MapWaypoint, array_size(FontDesc_MapWaypoint));
-  PREAD(sname,svalue,szRegistryFontWaypointBoldFont,&*FontDesc_MapWaypointBold, array_size(FontDesc_MapWaypointBold));
   PREAD(sname,svalue,szRegistryFontRenderer,&FontRenderer);
   PREAD(sname,svalue,szRegistryGlideBarMode,&GlideBarMode);
   PREAD(sname,svalue,szRegistryGliderScreenPosition,&MapWindow::GliderScreenPosition);
@@ -584,7 +581,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 	return;
   }
 
-  PREAD(sname,svalue,szRegistryUseCustomFonts,&UseCustomFonts);
   PREAD(sname,svalue,szRegistryUseGeoidSeparation,&UseGeoidSeparation);
   PREAD(sname,svalue,szRegistryUseExtSound1,&UseExtSound1);
   PREAD(sname,svalue,szRegistryUseExtSound2,&UseExtSound2);

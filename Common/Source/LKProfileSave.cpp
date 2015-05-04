@@ -206,9 +206,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryFinishLine,FinishLine);
   rprintf(szRegistryFinishMinHeight,FinishMinHeight); // saved *1000, /1000 when used
   rprintf(szRegistryFinishRadius,FinishRadius);
-  rprintf(szRegistryFontTopologyFont,FontDesc_MapTopology);
-  rprintf(szRegistryFontWaypointFont,FontDesc_MapWaypoint);
-  rprintf(szRegistryFontWaypointBoldFont,FontDesc_MapWaypointBold);
   rprintf(szRegistryFontRenderer,FontRenderer);
   rprintf(szRegistryGlideBarMode,GlideBarMode);
   rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);
@@ -302,7 +299,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryTrackBar,TrackBar);
   rprintf(szRegistryTrailDrift,EnableTrailDrift_Config);
   rprintf(szRegistryUTCOffset,UTCOffset);
-  rprintf(szRegistryUseCustomFonts,UseCustomFonts);
 //  rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
   rprintf(szRegistryUseUngestures,UseUngestures);
   rprintf(szRegistryUseTotalEnergy,UseTotalEnergy_Config);

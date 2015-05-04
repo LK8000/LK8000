@@ -576,11 +576,6 @@ void Globals_Init(void) {
   LiftUnit_Config = 1;		// default m/s
   AltitudeUnit_Config = 1;	// default m
 
-  // Editable fonts
-  FontDesc_MapWaypoint[0]=_T('\0');
-  FontDesc_MapWaypointBold[0]=_T('\0');
-  FontDesc_MapTopology [0]=_T('\0');
-
   // Logger
   PilotName_Config[0]=_T('\0');
   LiveTrackersrv_Config[0]=_T('\0');

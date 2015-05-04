@@ -714,8 +714,6 @@ GEXTERN int StatusMessageData_Size;
 
 GEXTERN bool LKLanguageReady;
 
-GEXTERN int UseCustomFonts;
-
 GEXTERN short TerrainContrast;
 GEXTERN short TerrainBrightness;
 GEXTERN short TerrainRamp;
@@ -848,11 +846,6 @@ GEXTERN DWORD TaskSpeedUnit_Config;
 GEXTERN DWORD DistanceUnit_Config;
 GEXTERN DWORD LiftUnit_Config;
 GEXTERN DWORD AltitudeUnit_Config;
-
-// Editable fonts, verbose string
-GEXTERN TCHAR FontDesc_MapWaypoint[256];
-GEXTERN TCHAR FontDesc_MapWaypointBold[256];
-GEXTERN TCHAR FontDesc_MapTopology[256];
 
 // Logger
 GEXTERN TCHAR PilotName_Config[100];

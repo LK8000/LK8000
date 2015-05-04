@@ -40,25 +40,10 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName);
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
 
 
-static LKFont TempWaypointFont;
-static LKFont TempWaypointBoldFont;
-static LKFont TempTopologyFont;
-static LKFont TempUseCustomFontsFont;
-
-extern void InitializeOneFont (LKFont& theFont, 
-                               const char FontRegKey[] , 
-                               LOGFONT autoLogFont, 
-                               LOGFONT * LogFontUsed);
-
-extern bool dlgFontEditShowModal(const TCHAR * FontDescription, 
-                          const char * FontRegKey, 
-                          LOGFONT autoLogFont);
-
 static bool taskchanged = false;
 static bool requirerestart = false;
 static bool utcchanged = false;
 static bool waypointneedsave = false;
-static bool FontRegistryChanged=false;
 
 short configMode=0;	// current configuration mode, 0=system 1=pilot 2=aircraft 3=device
 short config_page[4]={0,0,0,0}; // remember last page we were using, for each profile
@@ -277,8 +262,8 @@ static void NextPage(int Step){
 		else
 			config_page[configMode]=5;
 	}
-        #ifdef __linux__
-        // 2015: skip also page 12 (11 starting from 0)
+        #if 1
+        // Keep menu 12 ready for new font editor
 	if (config_page[configMode]==11) {
 		if (Step>0) 
 			config_page[configMode]=12;
@@ -349,7 +334,7 @@ static void NextPage(int Step){
     break;
   case 11:
 	// LKTOKEN  _@M13_ = "12 Fonts" 
-    wf->SetCaption(gettext(TEXT("_@M13_")));
+    wf->SetCaption(gettext(TEXT("_@M13_"))); // TODO in V6
     break;
   case 12:
 	// LKTOKEN  _@M14_ = "13 Map Overlays " 
@@ -708,138 +693,6 @@ static void OnLk8000ModeChange(DataField *Sender, DataField::DataAccessKind_t Mo
   }
 }
 
-static void ResetFonts(bool bUseCustom) {
-// resest fonts when UseCustomFonts is turned off
-
-  int UseCustomFontsold = UseCustomFonts;
-  UseCustomFonts=bUseCustom;
-
-
-
-  InitializeOneFont (TempUseCustomFontsFont, 
-                        "THIS FONT IS NOT CUSTOMIZABLE", 
-                        autoMapWindowLogFont,
-                        NULL);
-
-  InitializeOneFont (TempWaypointFont, 
-                        szRegistryFontWaypointFont, 
-                        autoMapWaypointFont,
-                        NULL);
-
-  InitializeOneFont (TempWaypointBoldFont, 
-                        szRegistryFontWaypointBoldFont, 
-                        autoMapWaypointBoldFont,
-                        NULL);
-
-  InitializeOneFont (TempTopologyFont, 
-                        szRegistryFontTopologyFont, 
-                        autoMapTopologyFont,
-                        NULL);
-
-  UseCustomFonts=UseCustomFontsold;
-}
-
-static void ShowFontEditButtons(bool bVisible) {
-  WndProperty * wp;
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdMapWindowFont"));
-  if (wp) {
-    wp->SetVisible(bVisible);
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdMapLabelFont"));
-  if (wp) {
-    wp->SetVisible(bVisible);
-  }
-}
-
-
-static void RefreshFonts(void) {
-
-  WndProperty * wp;
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpUseCustomFonts"));
-  if (wp) {
-    bool bUseCustomFonts= ((DataFieldBoolean*)(wp->GetDataField()))->GetAsBoolean();
-    ResetFonts(bUseCustomFonts);
-    wp->SetFont(TempUseCustomFontsFont); // this font is never customized
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-    ShowFontEditButtons(bUseCustomFonts);
-
-  }
-
-// now set SampleTexts on the Fonts frame
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMapWindowFont"));
-  if (wp) {
-    wp->SetFont(TempWaypointFont);
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMapWindowBoldFont"));
-  if (wp) {
-    wp->SetFont(TempWaypointBoldFont);
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMapLabelFont")); // notice we still use prpMapLabel in xml
-  if (wp) {
-    wp->SetFont(TempTopologyFont);
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-  }
-
-}
-
-
-
-static void OnUseCustomFontData(DataField *Sender, DataField::DataAccessKind_t Mode) {
-
-  switch(Mode){
-    case DataField::daGet:
-    break;
-
-    case DataField::daPut: 
-    break;
-
-    case DataField::daChange:
-      RefreshFonts();
-
-    break;
-	default: 
-		StartupStore(_T("........... DBG-904%s"),NEWLINE); // 091105
-		break;
-  }
-}
-
-static void GetFontDescription(TCHAR Description[], const TCHAR * prpName, int iMaxLen)
-{
-  WndProperty * wp;
-  wp = (WndProperty*)wf->FindByName(prpName);
-  if (wp) {
-    LK_tcsncpy(Description, wp->GetCaption(), iMaxLen-1);
-  }
-}
-
-static void OnEditMapWindowFontClicked(WndButton* pWnd) {
-    TCHAR fontDesc[MAX_EDITFONT_DESC_LEN + 1];
-    GetFontDescription(fontDesc, TEXT("prpMapWindowFont"), MAX_EDITFONT_DESC_LEN);
-    if (dlgFontEditShowModal(fontDesc,
-            szRegistryFontWaypointFont,
-            autoMapWaypointFont)) {
-        FontRegistryChanged = true;
-        RefreshFonts();
-    }
-}
-
-static void OnEditMapLabelFontClicked(WndButton* pWnd) {
-    TCHAR fontDesc[MAX_EDITFONT_DESC_LEN + 1];
-    GetFontDescription(fontDesc, TEXT("prpMapLabelFont"), MAX_EDITFONT_DESC_LEN);
-    if (dlgFontEditShowModal(fontDesc, szRegistryFontTopologyFont, autoMapTopologyFont)) {
-        FontRegistryChanged = true;
-        RefreshFonts();
-    }
-}
 
 static void OnAircraftRegoClicked(WndButton* pWnd) {
     TCHAR Temp[100];
@@ -1403,9 +1256,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DataAccessCallbackEntry(OnComPort1Data),
   DataAccessCallbackEntry(OnComPort2Data),
 
-  DataAccessCallbackEntry(OnUseCustomFontData),
-  ClickNotifyCallbackEntry(OnEditMapWindowFontClicked),
-  ClickNotifyCallbackEntry(OnEditMapLabelFontClicked),
 
   ClickNotifyCallbackEntry(OnSetTopologyClicked),
   ClickNotifyCallbackEntry(OnSetCustomKeysClicked),
@@ -2948,20 +2798,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
  }
 
-// Fonts
-  wp = (WndProperty*)wf->FindByName(TEXT("prpUseCustomFonts"));
-  if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
-    dfb->Set(UseCustomFonts);
-    ShowFontEditButtons(dfb->GetAsBoolean());
-    wp->RefreshDisplay();
-    RefreshFonts();
-  }
-  FontRegistryChanged=false;
-
-
-// end fonts
-
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndLandable"));
   if (wp) {
@@ -4304,19 +4140,6 @@ int ival;
   }
 //
 
-  //Fonts
-  int UseCustomFontsold = UseCustomFonts;
-  wp = (WndProperty*)wf->FindByName(TEXT("prpUseCustomFonts"));
-  if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
-    if (dfb) {
-      UseCustomFonts = dfb->GetAsInteger(); // global var
-    }
-  }
-  if ( (UseCustomFontsold != UseCustomFonts) ||
-    (UseCustomFonts && FontRegistryChanged) ) {
-      requirerestart = true;
-  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndLandable"));
   if (wp) {
@@ -4612,11 +4435,6 @@ int ival;
 
   wf = NULL;
   
-    TempWaypointFont.Release();
-    TempWaypointBoldFont.Release();
-    TempTopologyFont.Release();
-    TempUseCustomFontsFont.Release();
-
 
 }
 

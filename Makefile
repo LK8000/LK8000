@@ -896,7 +896,6 @@ DLGS	:=\
 	$(DLG)/dlgConfiguration2.cpp \
 	$(DLG)/dlgCustomKeys.cpp \
 	$(DLG)/dlgCustomMenu.cpp \
-	$(DLG)/dlgFontEdit.cpp \
 	$(DLG)/dlgHelp.cpp \
 	$(DLG)/dlgInfoPages.cpp \
 	$(DLG)/dlgLKAirspaceWarning.cpp \

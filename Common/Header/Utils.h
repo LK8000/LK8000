@@ -124,7 +124,6 @@ const TCHAR *LKGetPath(TCHAR *localpath, const TCHAR *fileToSearch);
 void ExpandLocalPath(TCHAR* filein);
 void ContractLocalPath(TCHAR* filein);
 
-void propGetFontSettings(const char* Name, LOGFONT* lplf);
 void propGetFontSettingsFromString(const TCHAR *Buffer, LOGFONT* lplf);
 #if 0
 int propGetScaleList(double *List, size_t Size);
