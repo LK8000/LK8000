@@ -1661,6 +1661,9 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M480_"))); // Normal
     dfe->addEnumText(gettext(TEXT("_@M479_"))); // None
     dfe->Set(FontRenderer);
+    #ifdef __linux__
+    wp->SetVisible(false);
+    #endif
     wp->RefreshDisplay();
   }
   
