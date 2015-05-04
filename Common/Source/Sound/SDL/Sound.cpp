@@ -34,7 +34,7 @@ static audioChunkCache_t audioChunkCache;
 
 SoundGlobalInit::SoundGlobalInit() {
     // Consider using BogoMips to decide the buffer chunk size, shortest is fastest
-    if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 1, 1024 ) != -1 ) {
+    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 1, 1024 ) != -1 ) {
         bSoundInit = true;
     } else {
         StartupStore(_T("ERROR Failed to initialize Audio Mixer <%s>%s"),Mix_GetError(),NEWLINE);
