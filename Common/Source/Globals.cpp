@@ -306,7 +306,6 @@ void Globals_Init(void) {
 
   GlideBarOffset=0;
   EngineeringMenu=false; // never saved to registry
-  splitter=1; 
 
   NumDataOptions = 0;
 

@@ -77,6 +77,8 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 	// The vertical align of fonts cannot be done using the TextSize metrics..
 	// because the reported height is considering also vertical spacing. 
 	// So this is a workaround. We cannot align perfectly.
+        // WARNING. Changing these settings will require also Fonts1.cpp sizing of BottomBar
+        // to be adjust as well!
 
  	yRow2Value =  rc.bottom-(syValue*2);
 	yRow2Title =  yRow2Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);

@@ -186,7 +186,6 @@ GEXTERN short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];
 GEXTERN short BottomGeom; // registry saved lk8000 navboxes geometry
 GEXTERN short GlideBarOffset; // offset to the right for drawing LK8000 with GB active
 GEXTERN bool  EngineeringMenu; // not saved in registry
-GEXTERN short splitter;	
 GEXTERN short DeclutterMode;
 
 GEXTERN int PGClimbZoom;

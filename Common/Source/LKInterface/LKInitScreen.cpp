@@ -128,83 +128,26 @@ void InitLKScreen() {
 		ScreenLandscape=false;
   }
 
-  // By default, h=v=size/6 and here we set it better
+  if (ScreenLandscape) {
+	GestureSize=50;
+	LKVarioSize=ScreenSizeX/16;
+  } else {
+	GestureSize=50;
+	LKVarioSize=ScreenSizeX/11;
+  }
+
+  // Override defaults for custom settings
   switch (ScreenSize) { 
-	case (ScreenSize_t)ss800x480:
-		GestureSize=50;
-		LKVarioSize=50;
-		BottomSize=80; // Title+Value-4
-		break;
-	case (ScreenSize_t)ss400x240:
-		GestureSize=50;
-		LKVarioSize=25;
-		BottomSize=40; // Title+Value-4
-		break;
-	case (ScreenSize_t)ss640x480:
-		GestureSize=50;
-		LKVarioSize=40;
-		BottomSize=72; // Title+Value-4
-		break;
-	case (ScreenSize_t)ss896x672:
-		GestureSize=50;
-		LKVarioSize=56;
-		BottomSize=78; // Title+Value-4
-		break;
-	case (ScreenSize_t)ss480x272:
-		GestureSize=50;
-		LKVarioSize=30;
-		BottomSize=48; // Title+Value-4 plus something more
-		break;
-	case (ScreenSize_t)ss720x408:
-		GestureSize=50;
-		LKVarioSize=45;
-		BottomSize=72; // Title+Value-4 plus something more
-		break;
-	case (ScreenSize_t)ss480x234:
-		GestureSize=50;
-		LKVarioSize=30;
-		BottomSize=41; // Title+Value-4
-		break;
-	case (ScreenSize_t)ss320x240:
-		GestureSize=50;
-		LKVarioSize=20;
-		BottomSize=38;
-		break;
-	// PORTRAIT MODES
-	case (ScreenSize_t)ss480x640:
-		GestureSize=50;
-		LKVarioSize=30;
-		BottomSize=135;
-		break;
-	case (ScreenSize_t)ss480x800:
-		GestureSize=50;
-		LKVarioSize=30;
-		BottomSize=135;
-		break;
 	case (ScreenSize_t)ss600x800:
-		GestureSize=50;
 		LKVarioSize=45;
-		BottomSize=176;
 		break;
 	case (ScreenSize_t)ss240x320:
-		GestureSize=50;
 		LKVarioSize=13;
-		BottomSize=68;
 		break;
 	case (ScreenSize_t)ss272x480:
-		GestureSize=50;
 		LKVarioSize=30;
-		BottomSize=80; // Title+Value-4  a bit bigger here
 		break;
 	default:
-                // If we are using aspect ratio, BottomSize is precalculated by LKFonts.
-		if (ScreenLandscape) {
-			GestureSize=50;
-			LKVarioSize=ScreenSizeX/16;
-		} else {
-			GestureSize=50;
-			LKVarioSize=ScreenSizeX/11;
-		}
 		break;
   }
 
