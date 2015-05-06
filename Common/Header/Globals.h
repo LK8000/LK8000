@@ -779,12 +779,13 @@ GEXTERN LKFont   MapWaypointBoldFont;
 GEXTERN LKFont   MapScaleFont;
 GEXTERN LKFont   MapTopologyFont;
 
-GEXTERN LKFont   LK8UnitFont;
 GEXTERN LKFont   LK8TitleFont;
 GEXTERN LKFont   LK8MapFont;
 GEXTERN LKFont   LK8GenericVar01Font;
+GEXTERN LKFont   LK8GenericVar02Font;
 GEXTERN LKFont   LK8BottomBarTitleFont;
 GEXTERN LKFont   LK8BottomBarValueFont;
+GEXTERN LKFont   LK8BottomBarUnitFont;
 GEXTERN LKFont   LK8TargetFont;
 GEXTERN LKFont   LK8BigFont;
 GEXTERN LKFont   LK8MediumFont;
@@ -798,19 +799,6 @@ GEXTERN LKFont   LK8PanelBigFont;
 GEXTERN LKFont   LK8PanelMediumFont;
 GEXTERN LKFont   LK8PanelSmallFont;
 GEXTERN LKFont   LK8PanelUnitFont;
-
-GEXTERN LOGFONT  autoTitleWindowLogFont;
-GEXTERN LOGFONT  autoMapWindowLogFont;
-
-GEXTERN LOGFONT  autoMapWaypointFont;
-GEXTERN LOGFONT  autoMapWaypointBoldFont;
-GEXTERN LOGFONT  autoMapScaleFont;
-GEXTERN LOGFONT  autoMapTopologyFont;
-
-GEXTERN LOGFONT  autoMapWindowBoldLogFont;
-GEXTERN LOGFONT  autoCDIWindowLogFont;
-GEXTERN LOGFONT  autoMapLabelLogFont;
-GEXTERN LOGFONT  autoCustom1Font;
 
 //
 // File names and paths

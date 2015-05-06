@@ -275,7 +275,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 
 	const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
                                                 ? LK8PanelUnitFont
-                                                : LK8UnitFont);
+                                                : LK8GenericVar02Font);
 
 	if (INVERTCOLORS)
 		Surface.SelectObject(LKBrush_Petrol);

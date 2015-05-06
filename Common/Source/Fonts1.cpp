@@ -562,11 +562,10 @@ void DeInitLKFonts(void) {
   MapScaleFont.Release();
   Custom1Font.Release();
 
-  LK8UnitFont.Release();
   LK8TitleFont.Release();
   LK8MapFont.Release();
   LK8GenericVar01Font.Release();
-  LK8BottomBarValueFont.Release();
+  LK8GenericVar02Font.Release();
   LK8TargetFont.Release();
   LK8BigFont.Release();
   LK8MediumFont.Release();
@@ -581,6 +580,8 @@ void DeInitLKFonts(void) {
   LK8PanelSmallFont.Release();
   LK8PanelUnitFont.Release();
   LK8BottomBarTitleFont.Release();
+  LK8BottomBarValueFont.Release();
+  LK8BottomBarUnitFont.Release();
   
 }
 

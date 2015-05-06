@@ -63,7 +63,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 	Surface.GetTextSize(_T("M"), 1, &TextSize);
 	int syTitle = TextSize.cy;
 
-	Surface.SelectObject(LK8UnitFont);
+	Surface.SelectObject(LK8BottomBarUnitFont);
 	// m for meters unit, f is shorter anyway
 	Surface.GetTextSize(_T("m"), 1, &TextSize); 
 	int sxUnit = TextSize.cx;

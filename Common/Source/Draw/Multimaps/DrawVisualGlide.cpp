@@ -122,8 +122,8 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 		//line1Font=LK8PanelSmallFont;
 		line1Font=LK8GenericVar01Font;
 		line2Font=LK8GenericVar01Font;
-		line1Font=LK8UnitFont;
-		line2Font=LK8UnitFont;
+		line1Font=LK8GenericVar02Font;
+		line2Font=LK8GenericVar02Font;
 		break;
 	default:
 		#ifdef __linux__
