@@ -59,7 +59,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 	wascircling=false;
 	OldBottomMode=BM_FIRST;
 
-	Surface.SelectObject(LK8TitleNavboxFont);
+	Surface.SelectObject(LK8BottomBarTitleFont);
 	Surface.GetTextSize(_T("M"), 1, &TextSize);
 	int syTitle = TextSize.cy;
 

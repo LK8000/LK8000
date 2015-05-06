@@ -15,6 +15,6 @@
 	Surface.SelectObject(LK8UnitFont);
 	LKWriteText(Surface, BufferUnit, rcx+(TextSize.cx/2)+NIBLSCALE(1), yRow1Unit , 0, WTMODE_NORMAL, WTALIGN_LEFT,barTextColor, false);
   }
-  Surface.SelectObject(LK8TitleNavboxFont);
+  Surface.SelectObject(LK8BottomBarTitleFont);
   rcy=yRow1Title;
 

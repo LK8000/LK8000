@@ -120,8 +120,8 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 	case ss600x800:
 		_tcscpy(tmpT,_T("MMMMMMMM"));
 		//line1Font=LK8PanelSmallFont;
-		line1Font=LK8TitleNavboxFont;
-		line2Font=LK8TitleNavboxFont;
+		line1Font=LK8GenericVar01Font;
+		line2Font=LK8GenericVar01Font;
 		line1Font=LK8UnitFont;
 		line2Font=LK8UnitFont;
 		break;
