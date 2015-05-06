@@ -20,6 +20,9 @@
 extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;
 
+// Approx.size of the bottom-right icon corner on the bottom bar
+#define BB_ICONSIZE NIBLSCALE(26)
+
 void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 {
 
@@ -47,6 +50,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   static short yRow1Value=0;
   static short yRow1Unit=0;
 
+  static int bbsplitter;   // how many items on a single row on the bottom bar
   static int splitoffset;
   static int splitoffset2; // second raw, which really is the first from top!
 
@@ -55,83 +59,52 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 	wascircling=false;
 	OldBottomMode=BM_FIRST;
 
-	TCHAR Tdummy[]=_T("T");
-	int iconsize;
-
-	// All these values are fine tuned for font/resolution/screenmode.
-	// there is no speed issue inside doinit. take your time.
 	Surface.SelectObject(LK8TitleNavboxFont);
-	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
+	Surface.GetTextSize(_T("M"), 1, &TextSize);
 	int syTitle = TextSize.cy;
+
+	Surface.SelectObject(LK8UnitFont);
+	// m for meters unit, f is shorter anyway
+	Surface.GetTextSize(_T("m"), 1, &TextSize); 
+	int sxUnit = TextSize.cx;
+
 	Surface.SelectObject(LK8ValueFont);
-	Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &TextSize);
+        // we need to be able to print 12345f with no problems
+	Surface.GetTextSize(_T("12345"), 5, &TextSize);
 	int syValue = TextSize.cy;
+	int sxValue = TextSize.cx + NIBLSCALE(2) + (HideUnits ? 0 : sxUnit);
 
-	switch (ScreenSize) {
-		// Row1 is the lower, Row2 is the top, for portrait
-		// WARNING, algos are wrong, need to check and recalculate for each resolution!!
-		// Changing font size in Utils2 does require checking and fixing here.
-		case ss480x640:
-		case ss480x800:
-		case ss240x320:
-		case ss272x480:
-			yRow2Value =  rc.bottom-(syValue*2);
-			yRow2Unit  =  yRow2Value;
-			yRow2Title =  yRow2Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);
-			yRow1Value =  rc.bottom-(syValue/2);
-			yRow1Unit  =  yRow1Value;
-			yRow1Title =  yRow1Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);
-			break;
-		
-		case ss800x480:
-		case ss640x480:
-		case ss400x240:
-			yRow2Value =  rc.bottom-(syValue*2);
-			yRow2Unit  =  rc.bottom-(syValue*2) - NIBLSCALE(2);
-			yRow2Title =  rc.bottom-(syValue*2) - syTitle;
-			yRow1Value =  rc.bottom-(syValue/2);
-			yRow1Unit  =  yRow1Value;
-			yRow1Title =  rc.bottom-(syValue/2) - syTitle;
-			break;
+	// The vertical align of fonts cannot be done using the TextSize metrics..
+	// because the reported height is considering also vertical spacing. 
+	// So this is a workaround. We cannot align perfectly.
 
-		default:
-                    if (ScreenLandscape) {
-			yRow2Value =  rc.bottom-(syValue*2);
-			yRow2Unit  =  rc.bottom-(syValue*2) - NIBLSCALE(2);
-			yRow2Title =  rc.bottom-(syValue*2) - syTitle;
-			yRow1Value =  rc.bottom-(syValue/2);
-			yRow1Unit  =  rc.bottom-(syValue/2) - NIBLSCALE(2);
-			yRow1Title =  rc.bottom-(syValue/2) - syTitle;
-                    } else {
- 			yRow2Value =  rc.bottom-(syValue*2);
-			yRow2Unit  =  yRow2Value;
-			yRow2Title =  yRow2Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);
-			yRow1Value =  rc.bottom-(syValue/2);
-			yRow1Unit  =  yRow1Value;
-			yRow1Title =  yRow1Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);                      
-                    }
-                    break;
-	}
+ 	yRow2Value =  rc.bottom-(syValue*2);
+	yRow2Title =  yRow2Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);
+	yRow2Unit  =  yRow2Value;
+
+	yRow1Value =  rc.bottom-(syValue/2);
+	yRow1Title =  yRow1Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);
+	yRow1Unit  =  yRow1Value;
+
+
+        if (ScreenLandscape) {
+		bbsplitter= (int) lround( (float) (ScreenSizeX-NIBLSCALE(26)) / (float)(sxValue) );
+		splitoffset= ((rc.right-BB_ICONSIZE)-rc.left)/bbsplitter;
+        } else {
+		bbsplitter= (int) lround( (float) (ScreenSizeX-NIBLSCALE(26)) / (float)(sxValue) );
+		splitoffset= ((rc.right-BB_ICONSIZE)-rc.left)/bbsplitter;
+		splitoffset2= splitoffset;
+        }
 
 	
-	if (ScreenLandscape) {
-		iconsize=NIBLSCALE(26);
-		splitoffset= ((rc.right-iconsize)-rc.left)/splitter;
-	} else {
-		iconsize=NIBLSCALE(26);
-		splitoffset= ((rc.right-iconsize)-rc.left)/splitter;
-		// splitoffset2= (rc.right-rc.left)/splitter;
-		splitoffset2= splitoffset;
-	}
-
 	short ii;
 	// set correct initial bottombar stripe, excluding TRM
 	if(!ConfBB[BottomMode])
 	{
-	  for (ii=BM_CRU; ii<=BM_LAST;ii++) {
-		if (ConfBB[ii]) break;
-	  }
-      BottomMode=ii;
+	    for (ii=BM_CRU; ii<=BM_LAST;ii++) {
+                if (ConfBB[ii]) break;
+	    }
+            BottomMode=ii;
 	}
 
 	DoInit[MDI_DRAWBOTTOMBAR]=false; 
@@ -357,6 +330,7 @@ _afterautotrm:
    *   THIRD VALUE
    */
 
+  if (ScreenLandscape && (bbsplitter<3)) goto EndOfNavboxes;
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -459,6 +433,7 @@ _afterautotrm:
    *   FOURTH VALUE
    */
 
+  if (ScreenLandscape && (bbsplitter<4)) goto EndOfNavboxes;
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -542,7 +517,7 @@ _afterautotrm:
   /*
    *   FIFTH VALUE
    */
-  if (ScreenLandscape && (splitter<5)) goto EndOfNavboxes;
+  if (ScreenLandscape && (bbsplitter<5)) goto EndOfNavboxes;
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -654,7 +629,7 @@ _afterautotrm:
   /*
    *   SIXTH VALUE
    */
-  if (ScreenLandscape && (splitter<6)) goto EndOfNavboxes;
+  if (ScreenLandscape && (bbsplitter<6)) goto EndOfNavboxes;
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
