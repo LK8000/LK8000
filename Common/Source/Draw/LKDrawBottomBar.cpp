@@ -68,7 +68,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 	Surface.GetTextSize(_T("m"), 1, &TextSize); 
 	int sxUnit = TextSize.cx;
 
-	Surface.SelectObject(LK8ValueFont);
+	Surface.SelectObject(LK8BottomBarValueFont);
         // we need to be able to print 12345f with no problems
 	Surface.GetTextSize(_T("12345"), 5, &TextSize);
 	int syValue = TextSize.cy;

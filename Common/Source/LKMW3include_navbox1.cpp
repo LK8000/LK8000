@@ -4,7 +4,7 @@
  */
 
 
-  Surface.SelectObject(LK8ValueFont);
+  Surface.SelectObject(LK8BottomBarValueFont);
   Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
   if (showunit==true)
 	LKWriteText(Surface, BufferValue, rcx, yRow1Value, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);

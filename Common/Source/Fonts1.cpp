@@ -566,7 +566,7 @@ void DeInitLKFonts(void) {
   LK8TitleFont.Release();
   LK8MapFont.Release();
   LK8GenericVar01Font.Release();
-  LK8ValueFont.Release();
+  LK8BottomBarValueFont.Release();
   LK8TargetFont.Release();
   LK8BigFont.Release();
   LK8MediumFont.Release();

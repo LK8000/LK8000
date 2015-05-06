@@ -784,7 +784,7 @@ GEXTERN LKFont   LK8TitleFont;
 GEXTERN LKFont   LK8MapFont;
 GEXTERN LKFont   LK8GenericVar01Font;
 GEXTERN LKFont   LK8BottomBarTitleFont;
-GEXTERN LKFont   LK8ValueFont;
+GEXTERN LKFont   LK8BottomBarValueFont;
 GEXTERN LKFont   LK8TargetFont;
 GEXTERN LKFont   LK8BigFont;
 GEXTERN LKFont   LK8MediumFont;
