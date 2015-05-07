@@ -31,7 +31,6 @@ static int	iRectangleSize = 4;
 	switch (ScreenSize) {
 		case ss480x640:
 		case ss480x800:
-		case ss896x672:
 		case ss800x480:
 		case ss640x480:
 			iCircleSize = 9;
@@ -42,7 +41,6 @@ static int	iRectangleSize = 4;
 		case ss272x480:
 		case ss320x240:
 		case ss480x272:
-		case ss720x408:
 		case ss480x234:
 		case ss400x240:
 			iCircleSize = 7;

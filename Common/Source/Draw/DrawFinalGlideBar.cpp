@@ -44,7 +44,6 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc)
   switch(ScreenSize) {
 	case (ScreenSize_t)ss480x234:
 	case (ScreenSize_t)ss480x272:
-	case (ScreenSize_t)ss720x408:
 		minBar=-40;
 		maxBar=40;
 		break;

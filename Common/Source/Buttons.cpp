@@ -148,20 +148,6 @@ void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 						voffset= 20;
 						hoffset=*sizex+2;
 						break;
-#if (WINDOWSPC>0)
-					case ss720x408:
-						*sizex = NIBLSCALE(77); // watch out MAXIBLSCALE
-						*sizey = 72-1;
-						voffset= 39;
-						hoffset=*sizex+3;
-						break;
-					case ss896x672:
-						*sizex = NIBLSCALE(60);
-						*sizey = 100-2;
-						voffset= 56;
-						hoffset=*sizex+4;
-						break;
-#endif
 					default:
 						//
 						// AUTORES ACCOMPLISHED
@@ -236,20 +222,6 @@ void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 						// distance from bottom
 						voffset=1;
 						break;
-#if (WINDOWSPC>0)
-					case ss720x408:
-						*sizex = NIBLSCALE(82);
-						*sizey = 72-1;
-						hoffset= 2;
-						voffset=1;
-						break;
-					case ss896x672:
-						*sizex = NIBLSCALE(62);
-						*sizey = 100-2;
-						hoffset= 2;
-						voffset=1;
-						break;
-#endif
 					default:
 						//
 						// AUTORES ACCOMPLISHED

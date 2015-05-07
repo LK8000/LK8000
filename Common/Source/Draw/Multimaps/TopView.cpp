@@ -49,15 +49,11 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
 
   switch(ScreenSize) {
 
-	case ss896x672:	fFact=0.938; break;
-
 	case ss800x480:	fFact=0.750; break;
-
 	case ss640x480:	fFact=0.938; break;
 	case ss480x272:	fFact=0.708; break;
 	case ss400x240:	fFact=0.750; break;
 	case ss320x240:	fFact=0.938; break;
-
 	case ss480x800:	fFact=1.250; break;
 	case ss480x640:	fFact=1.250; break;
 	case ss272x480:	fFact=1.250; break;

@@ -63,13 +63,6 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 			case ss480x800:
 				psize=2;
 				break;
-			case ss896x672:
-				psize=3;
-				break;
-			//case ss480x272:
-			//case ss480x234:
-			//case ss240x320:
-			//case ss272x480:
 			default:
 				if (ScreenLandscape)
 				    psize=3;
@@ -91,12 +84,6 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 			case ss480x800:
 				psize=2;
 				break;
-			case ss896x672:
-				psize=3;
-				break;
-			//case ss480x234:
-			//case ss240x320:
-			//case ss272x480:
 			default:
 				if (ScreenLandscape)
 				    psize=3;
@@ -116,14 +103,6 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 			case ss480x800:
 				psize=NIBLSCALE(1);
 				break;
-			case ss896x672:
-				psize=2;
-				break;
-			//case ss480x234:
-			//case ss400x240:
-			//case ss320x240:
-			//case ss240x320:
-			//case ss272x480:
 			default:
 				psize=NIBLSCALE(1);
 				break;
@@ -131,17 +110,6 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 		break;
 	case 60: // railroads
 		switch(ScreenSize) {
-			//case ss800x480:
-			//case ss640x480:
-			//case ss896x672:
-			//case ss480x272:
-			//case ss480x234:
-			//case ss400x240:
-			//case ss320x240:
-			//case ss480x640:
-			//case ss480x800:
-			//case ss240x320:
-			//case ss272x480:
 			default:
 				psize=1;
 		}

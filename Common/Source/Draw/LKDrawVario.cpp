@@ -179,9 +179,6 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
   // pixel height of each brick
   int bricksize=(htrc.bottom - htrc.top - ((vpixelseparate) * ((NUMVBRICKS/2)-1)  )) / (NUMVBRICKS/2);
-#if (WINDOWSPC>0)
-  if (ScreenSize==ss720x408) bricksize=13;
-#endif
   if (ScreenSize==ss480x272) bricksize=9;
   if (ScreenSize==ss480x234) bricksize=8;
  

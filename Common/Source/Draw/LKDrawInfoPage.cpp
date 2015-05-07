@@ -1055,9 +1055,6 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
   static short unitrowoffset=0;
   if (DoInit[MDI_WRITEINFO]) {
 	switch(ScreenSize) {
-		case ss896x672:
-			unitrowoffset=6;
-			break;
 		case ss800x480:
 			unitrowoffset=10;
 			break;
@@ -1088,9 +1085,6 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
 			break;
 		case ss480x800:
 			unitrowoffset=-19;
-			break;
-		case ss720x408:
-			unitrowoffset=8;
 			break;
 		default:
 			switch(ScreenGeometry) {

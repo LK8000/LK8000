@@ -168,7 +168,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 			case (ScreenSize_t)ss800x480:
 			case (ScreenSize_t)ss400x240:
 			case (ScreenSize_t)ss480x272:
-			case (ScreenSize_t)ss720x408:
 				// START 1/3
 				_tcscpy(StartGateNameFS,_T("Start "));
 				tlenFullScreen=9;
@@ -182,10 +181,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 				// STRT 1/3
 				_tcscpy(StartGateNameFS,_T("Start "));
 				tlenFullScreen=8;
-				break;
-			case (ScreenSize_t)ss896x672:
-				_tcscpy(StartGateNameFS,_T("Start "));
-				tlenFullScreen=9;
 				break;
 			default:
 				_tcscpy(StartGateNameFS,_T("Start "));
@@ -300,22 +295,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	  writeX_AutoMc[ss800x480]=800;
 	  writeY_AutoMc[ss800x480]=95;
 
-	  // ss896x672 OK
-	  rectLeft_AutoMc[ss896x672]=871;
-	  rectRight_AutoMc[ss896x672]=896;
-	  rectTop_AutoMc[ss896x672]=153;
-	  rectBottom_AutoMc[ss896x672]=200;
-	  writeX_AutoMc[ss896x672]=895;
-	  writeY_AutoMc[ss896x672]=155;
-
-	  // custom 854x358, preliminar
-	  if (ScreenSizeX==854 && ScreenSizeY==358) { 
-	  rectLeft_AutoMc[ss480x272]=843;
-	  rectRight_AutoMc[ss480x272]=854;
-	  rectTop_AutoMc[ss480x272]=80;
-	  rectBottom_AutoMc[ss480x272]=105;
-	  writeX_AutoMc[ss480x272]=854;
-	  writeY_AutoMc[ss480x272]=82;
 	  }
 
 	} else {
@@ -413,22 +392,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	  writeX_AutoMc[ss800x480]=800;
 	  writeY_AutoMc[ss800x480]=122;
 
-	  // ss896x672
-	  rectLeft_AutoMc[ss896x672]=869;
-	  rectRight_AutoMc[ss896x672]=896;
-	  rectTop_AutoMc[ss896x672]=196;
-	  rectBottom_AutoMc[ss896x672]=240;
-	  writeX_AutoMc[ss896x672]=896;
-	  writeY_AutoMc[ss896x672]=196;
-
-	  // custom 854x358, preliminar
-	  if (ScreenSizeX==854 && ScreenSizeY==358) { 
-	  rectLeft_AutoMc[ss480x272]=843;
-	  rectRight_AutoMc[ss480x272]=854;
-	  rectTop_AutoMc[ss480x272]=106;
-	  rectBottom_AutoMc[ss480x272]=131;
-	  writeX_AutoMc[ss480x272]=854;
-	  writeY_AutoMc[ss480x272]=108;
 	  }
 	}
 #endif // NOT AUTORES
@@ -499,7 +462,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)+NIBLSCALE(2);
 			break;
 		case ss480x234:
-		case ss896x672:
 			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)+NIBLSCALE(1);
 			break;
 		case ss480x272:
@@ -522,7 +484,6 @@ smalloverlays:
 		case ss480x800:
 		case ss480x234:
 		case ss480x272:
-		case ss896x672:
 			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)-NIBLSCALE(5);
 			break;
 		case ss240x320:

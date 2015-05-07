@@ -98,9 +98,6 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface){
 				pos=11;
 				#endif
 			break;
-		case ss896x672:
-			pos=14;
-			break;
 		// --------- portrait -------------
 		case ss240x320:
 			#ifdef __linux__
