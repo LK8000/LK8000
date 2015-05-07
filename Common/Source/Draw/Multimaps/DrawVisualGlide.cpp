@@ -88,13 +88,13 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 		#else
 		_tcscpy(tmpT,_T("MMMMMMMMM"));
 		#endif
-		line1Font=MapLabelFont;
+		line1Font=LK8GenericVar03Font;
 		line2Font=CDIWindowFont;
 		break;
 	case ss480x272:
 	case ss320x240:
 		_tcscpy(tmpT,_T("MMMMMMMM"));
-		line1Font=MapLabelFont;
+		line1Font=LK8GenericVar03Font;
 		line2Font=LK8InfoSmallFont;
 		break;
 	case ss640x480:
@@ -105,7 +105,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 
 	case ss272x480:
 		_tcscpy(tmpT,_T("MMMMMMMM"));
-		line1Font=MapLabelFont;
+		line1Font=LK8GenericVar03Font;
 		line2Font=LK8PanelSmallFont;
 		break;
 

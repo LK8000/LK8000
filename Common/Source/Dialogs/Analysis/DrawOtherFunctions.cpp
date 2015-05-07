@@ -46,7 +46,7 @@ void Statistics::DrawNoData(LKSurface& Surface, const RECT& rc) {
 
 void Statistics::DrawXLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text) {
   SIZE tsize;
-  const auto hfOld = Surface.SelectObject(MapLabelFont);
+  const auto hfOld = Surface.SelectObject(LK8GenericVar03Font);
   Surface.GetTextSize(text, _tcslen(text), &tsize);
   int x = rc.right-tsize.cx-IBLSCALE(3);
   int y = rc.bottom-tsize.cy;
@@ -60,7 +60,7 @@ void Statistics::DrawXLabel(LKSurface& Surface, const RECT& rc, const TCHAR *tex
 
 void Statistics::DrawYLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text) {
   SIZE tsize;
-  const auto hfOld = Surface.SelectObject(MapLabelFont);
+  const auto hfOld = Surface.SelectObject(LK8GenericVar03Font);
   Surface.GetTextSize(text, _tcslen(text), &tsize);
   int x = max(2,(int)rc.left-(int)tsize.cx);
   int y = rc.top;

@@ -1478,7 +1478,7 @@ void CleanRegistry()
    RegOpenKeyEx(HKEY_CURRENT_USER, szRegistryKey ,0,0,&tKey);
 
 	RegDeleteValue(tKey,_T("CDIWindowFont"));
-	RegDeleteValue(tKey,_T("MapLabelFont"));
+	RegDeleteValue(tKey,_T("LK8GenericVar03Font"));
 	RegDeleteValue(tKey,_T("MapWindowBoldFont"));
 	RegDeleteValue(tKey,_T("MapWindowFont"));
 	RegDeleteValue(tKey,_T("StatisticsFont"));

@@ -771,7 +771,7 @@ GEXTERN LKFont	TitleWindowFont;
 GEXTERN LKFont   MapWindowFont;
 GEXTERN LKFont   MapWindowBoldFont;
 GEXTERN LKFont   CDIWindowFont;
-GEXTERN LKFont   MapLabelFont;
+GEXTERN LKFont   LK8GenericVar03Font;
 
 GEXTERN LKFont   Custom1Font;
 GEXTERN LKFont   MapWaypointFont;
