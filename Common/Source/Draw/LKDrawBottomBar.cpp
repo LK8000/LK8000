@@ -698,6 +698,148 @@ _afterautotrm:
   #include "LKMW3include_navbox1.cpp"
   LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
+
+  /*
+   *   SEVENTH VALUE
+   */
+  if (ScreenLandscape && (bbsplitter<7)) goto EndOfNavboxes;
+  showunit=true;
+  switch(BottomMode) {
+	case BM_TRM:
+		index=GetInfoboxIndex(7,MapWindow::Mode::MODE_FLY_CIRCLING);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CRU:
+		if (ISCAR)
+			showunit=LKFormatValue(LK_TIME_LOCAL, false, BufferValue, BufferUnit, BufferTitle);
+		else
+			showunit=LKFormatValue(LK_LD_INST, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_HGH:
+		showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_AUX:
+		if (ISCAR)
+			showunit=LKFormatValue(LK_MAXALT, true, BufferValue, BufferUnit, BufferTitle);
+		else
+			showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		break;
+	case BM_TSK:
+		showunit=LKFormatValue(LK_SPEEDTASK_ACH, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_ALT:
+		showunit=LKFormatValue(LK_ALTERN2_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		if (ScreenLandscape)
+			_tcscpy(BufferTitle,_T("<<<"));
+		else
+			_tcscpy(BufferTitle,_T(""));
+		break;
+	case BM_SYS:
+		showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_CUS2:
+		index=GetInfoboxIndex(7,MapWindow::Mode::MODE_FLY_CRUISE);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+		
+	case BM_CUS3:
+		index=GetInfoboxIndex(7,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CUS:
+		index=GetInfoboxType(7);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+
+	default:
+		showunit=LKFormatValue(LK_ERROR, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+  }
+
+
+  if (ScreenLandscape) {
+	rcx+=splitoffset;
+  }else {
+	rcx+=splitoffset2;
+  }
+  #include "LKMW3include_navbox1.cpp"
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+
+
+  /*
+   *   EIGTH VALUE
+   */
+  if (ScreenLandscape && (bbsplitter<8)) goto EndOfNavboxes;
+  showunit=true;
+  switch(BottomMode) {
+	case BM_TRM:
+		index=GetInfoboxIndex(8,MapWindow::Mode::MODE_FLY_CIRCLING);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CRU:
+		if (ISCAR)
+			showunit=LKFormatValue(LK_TIME_LOCAL, false, BufferValue, BufferUnit, BufferTitle);
+		else
+			showunit=LKFormatValue(LK_LD_INST, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_HGH:
+		showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_AUX:
+		if (ISCAR)
+			showunit=LKFormatValue(LK_MAXALT, true, BufferValue, BufferUnit, BufferTitle);
+		else
+			showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		break;
+	case BM_TSK:
+		showunit=LKFormatValue(LK_SPEEDTASK_ACH, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_ALT:
+		showunit=LKFormatValue(LK_ALTERN2_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		if (ScreenLandscape)
+			_tcscpy(BufferTitle,_T("<<<"));
+		else
+			_tcscpy(BufferTitle,_T(""));
+		break;
+	case BM_SYS:
+		showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_CUS2:
+		index=GetInfoboxIndex(8,MapWindow::Mode::MODE_FLY_CRUISE);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+		
+	case BM_CUS3:
+		index=GetInfoboxIndex(8,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CUS:
+		index=GetInfoboxType(8);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+
+	default:
+		showunit=LKFormatValue(LK_ERROR, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+  }
+
+
+  if (ScreenLandscape) {
+	rcx+=splitoffset;
+  }else {
+	rcx+=splitoffset2;
+  }
+  #include "LKMW3include_navbox1.cpp"
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+
   /*
    *    CLEAN UP 
    */
