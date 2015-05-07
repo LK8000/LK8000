@@ -295,7 +295,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	  writeX_AutoMc[ss800x480]=800;
 	  writeY_AutoMc[ss800x480]=95;
 
-	  }
+	  
 
 	} else {
 	//
@@ -392,7 +392,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface,  const RECT& rc, bool bThermalB
 	  writeX_AutoMc[ss800x480]=800;
 	  writeY_AutoMc[ss800x480]=122;
 
-	  }
 	}
 #endif // NOT AUTORES
 
