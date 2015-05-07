@@ -34,14 +34,20 @@ void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y,
 			 const bool isExcluded,  const int index, const short style){
   MapWaypointLabel_t *E;
 
-  static int labelListSize;
+  static int xLeft,xRight,yTop,yBottom, labelListSize;
 
   if (DoInit[MDI_MAPWPLABELADD]) {
+	xLeft=MapWindow::MapRect.left-WPCIRCLESIZE;
+	xRight=MapWindow::MapRect.right+(WPCIRCLESIZE*3);
+	yTop=MapWindow::MapRect.top-WPCIRCLESIZE;
+	yBottom=MapWindow::MapRect.bottom+WPCIRCLESIZE;
 
 	labelListSize=(signed int)(sizeof(MapWaypointLabelList)/sizeof(MapWaypointLabel_t))-1;
 
 	DoInit[MDI_MAPWPLABELADD]=false;
   }
+
+  if ((X<xLeft) || (X>xRight) || (Y<yTop) || (Y>yBottom)) return;
 
   if (MapWaypointLabelListCount >= labelListSize) return;
 
@@ -206,12 +212,6 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
   if (foundairport==0 && bestwp>=0)  arrivalcutoff = (int)WayPointList[bestwp].AltArivalAGL;
 
-  const RECT ClipRect = {
-      rc.top-WPCIRCLESIZE,
-      rc.left-WPCIRCLESIZE,
-      rc.bottom+WPCIRCLESIZE,
-      rc.right+(WPCIRCLESIZE*3)
-  };
 
   for(i=0;i<WayPointList.size();i++) {
 
@@ -495,23 +495,15 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		}
 
 
-          if (dowrite) {
-            const POINT LabelPos = {
-                WayPointList[i].Screen.x + 5,
-                WayPointList[i].Screen.y
-            };
-
-            if (PtInRect(&ClipRect, LabelPos)) {
-
-                MapWaypointLabelAdd(
-                        Buffer,
-                        WayPointList[i].Screen.x + 5,
-                        WayPointList[i].Screen.y,
-                        &TextDisplayMode,
-                        (int) (WayPointList[i].AltArivalAGL * ALTITUDEMODIFY),
-                        intask, islandable, isairport, excluded, i, WayPointList[i].Style);
-            }
-          }
+	      if (dowrite) { 
+          MapWaypointLabelAdd(
+                  Buffer,
+                  WayPointList[i].Screen.x+5,
+                  WayPointList[i].Screen.y,
+                  &TextDisplayMode,
+                  (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
+                  intask,islandable,isairport,excluded,i,WayPointList[i].Style);
+	      }
 	    } // end if intask
       
 	     { ; }
