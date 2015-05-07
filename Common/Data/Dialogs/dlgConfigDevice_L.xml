@@ -8,16 +8,16 @@
         <WndProperty Name="prpComDevice1" Caption="_@M450_" X="60" Y="1" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H153_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnDeviceAData" />
         </WndProperty>
-        <WndProperty Name="prpComPort1" Caption="_@M530_" X="60" Y="-1" Width="180" Height="22" CaptionWidth="70" Font="2" Help="_@H154_">
+        <WndProperty Name="prpComPort1" Caption="_@M530_" X="60" Y="-1" Width="155" Height="22" CaptionWidth="70" Font="2" Help="_@H154_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnComPort1Data"/>
         </WndProperty>
-        <WndProperty Name="prpExtSound1" Caption="_@M2250_" X="242" Y="-999" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H240_">
+        <WndProperty Name="prpExtSound1" Caption="_@M2250_" X="215" Y="-999" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H240_">
           <DataField Name="" DataType="boolean"/>
         </WndProperty>
-        <WndProperty Name="prpComSpeed1" Caption="_@M135_"  X="60" Y="-1"  Width="180" Height="22" CaptionWidth="70" Font="2" Help="_@H155_">
+        <WndProperty Name="prpComSpeed1" Caption="_@M135_"  X="60" Y="-1"  Width="155" Height="22" CaptionWidth="70" Font="2" Help="_@H155_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" />
         </WndProperty>
-        <WndProperty Name="prpComBit1" Caption=" "  X="242" Y="-999"  Width="-1" Height="22" CaptionWidth="1" Font="2" Help="_@H156_">
+        <WndProperty Name="prpComBit1" Caption=" "  X="215" Y="-999"  Width="-1" Height="22" CaptionWidth="1" Font="2" Help="_@H156_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" />
         </WndProperty>
         <WndButton Name="cmdSetupDeviceA" Caption="_@M608_" X="1" Y="43" Width="70"  Height="24" Font="2" Tag="4" OnClickNotify="OnSetupDeviceAClicked" />
@@ -26,16 +26,16 @@
         <WndProperty Name="prpComDevice2" Caption="_@M450_" X="60" Y="1" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H157_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnDeviceBData"/>
         </WndProperty>
-        <WndProperty Name="prpComPort2" Caption="_@M530_"  X="60" Y="-1"  Width="180" Height="22" CaptionWidth="70" Font="2" Help="_@H154_">
+        <WndProperty Name="prpComPort2" Caption="_@M530_"  X="60" Y="-1"  Width="155" Height="22" CaptionWidth="70" Font="2" Help="_@H154_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnComPort2Data"/>
         </WndProperty>
-        <WndProperty Name="prpExtSound2" Caption="_@M2250_" X="242" Y="-999" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H240_">
+        <WndProperty Name="prpExtSound2" Caption="_@M2250_" X="215" Y="-999" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H240_">
           <DataField Name="" DataType="boolean"/>
         </WndProperty>
-        <WndProperty Name="prpComSpeed2" Caption="_@M135_"  X="60" Y="-1"  Width="180" Height="22" CaptionWidth="70" Font="2" Help="_@H155_">
+        <WndProperty Name="prpComSpeed2" Caption="_@M135_"  X="60" Y="-1"  Width="155" Height="22" CaptionWidth="70" Font="2" Help="_@H155_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1"/>
         </WndProperty>
-        <WndProperty Name="prpComBit2" Caption=" "  X="242" Y="-999" Width="-1" Height="22" CaptionWidth="1" Font="2" Help="_@H156_">
+        <WndProperty Name="prpComBit2" Caption=" "  X="215" Y="-999" Width="-1" Height="22" CaptionWidth="1" Font="2" Help="_@H156_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" />
         </WndProperty>
         <WndButton Name="cmdSetupDeviceB" Caption="_@M608_" X="1" Y="43" Width="70" Height="24" Font="2" Tag="4" OnClickNotify="OnSetupDeviceBClicked" />
