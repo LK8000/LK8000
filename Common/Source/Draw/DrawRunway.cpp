@@ -85,6 +85,8 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
          // can make it custom for any resolution.
          if (X 1024 && Y 768) {; rwl = 4.5; rwb = 2.5; cir = 5.0; } else
          if (X 1014 && Y 758) {; rwl = 4.5; rwb = 2.5; cir = 5.0; } else
+         if (X 720 && Y 408) {; rwl = 10.0; rwb = 6.0; cir = 5.0; } else
+         if (X 720 && Y 432) {; rwl = 10.0; rwb = 4.0; cir = 5.0; } else
 
          // .. and this is the rule of thumb, I could not find a better idea
          // I think it is easier to redesign the drawing approach and make it
@@ -122,16 +124,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     {
 
 	case ss480x272:
-		if (ScreenSizeX==854) {
-			scale_drawradio=3.6;
-			scale_bigfont=1.5;
-			scale_fullinfos=1.5;
-
-		} else {
-			scale_drawradio=2.6;
-			scale_bigfont=1.1;
-			scale_fullinfos=0.8;
-		}
+		scale_drawradio=2.6;
+		scale_bigfont=1.1;
+		scale_fullinfos=0.8;
 		break;
 	case ss800x480:
 		scale_drawradio=2.6;
