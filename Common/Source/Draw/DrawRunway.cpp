@@ -75,6 +75,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
      case ss480x234: rwl = 9.0; rwb = 1.0;cir = 4.0; break; // 21
      case ss480x272: rwl = 9.0; rwb = 2.5;cir = 4.0; break; // 169
      case ss640x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
+     case ss800x600: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
      case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
      case ssnone:
 

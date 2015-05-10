@@ -103,6 +103,29 @@ void Init_Fonts_2(void)
 	propGetFontSettingsFromString(TEXT("32,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelSmall); 
 	propGetFontSettingsFromString(TEXT("22,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelUnit); 
   } 
+  else if (ScreenSize==(ScreenSize_t)ss800x600)
+  {
+	propGetFontSettingsFromString(TEXT("80,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), &logfontBig);
+	propGetFontSettingsFromString(TEXT("40,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
+	propGetFontSettingsFromString(TEXT("17,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
+	propGetFontSettingsFromString(TEXT("40,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitle);
+	propGetFontSettingsFromString(TEXT("40,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMap);
+	propGetFontSettingsFromString(TEXT("40,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar01);
+	propGetFontSettingsFromString(TEXT("36,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontBottomBarTitle);
+	propGetFontSettingsFromString(TEXT("46,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontTarget);
+	propGetFontSettingsFromString(TEXT("54,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontBottomBarValue);
+	propGetFontSettingsFromString(TEXT("20,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontBottomBarUnit);
+	propGetFontSettingsFromString(TEXT("20,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar02);
+	propGetFontSettingsFromString(TEXT("47,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoBig);
+	propGetFontSettingsFromString(TEXT("47,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), &logfontInfoBigItalic);
+	propGetFontSettingsFromString(TEXT("42,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoNormal);
+	propGetFontSettingsFromString(TEXT("42,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoNearest);
+	propGetFontSettingsFromString(TEXT("27,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontInfoSmall);
+	propGetFontSettingsFromString(TEXT("70,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelBig);
+	propGetFontSettingsFromString(TEXT("55,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelMedium);
+	propGetFontSettingsFromString(TEXT("35,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelSmall);
+	propGetFontSettingsFromString(TEXT("25,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontPanelUnit); 
+  }
   else if (ScreenSize==(ScreenSize_t)ss400x240)
   {
 	propGetFontSettingsFromString(TEXT("36,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig); // v2.2

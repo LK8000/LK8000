@@ -97,6 +97,7 @@ void InitLKScreen() {
   if (iWidth == 480 && iHeight == 272) ScreenSize=(ScreenSize_t)ss480x272; // WQVGA     landscape
   if (iWidth == 480 && iHeight == 234) ScreenSize=(ScreenSize_t)ss480x234; //   iGo
   if (iWidth == 800 && iHeight == 480) ScreenSize=(ScreenSize_t)ss800x480; //  WVGA
+  if (iWidth == 800 && iHeight == 600) ScreenSize=(ScreenSize_t)ss800x600; //  WVGA
 
   ScreenGeometry=GetScreenGeometry(iWidth,iHeight);
   #if TESTBENCH
