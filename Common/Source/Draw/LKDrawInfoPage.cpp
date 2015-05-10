@@ -13,6 +13,12 @@
 #include "DoInits.h"
 #include "ScreenGeometry.h"
 
+#ifdef UNDITHER
+#define AMBERCOLOR RGB_WHITE
+#else
+#define AMBERCOLOR RGB_AMBER
+#endif
+
 void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col) {
     const POINT p0({ x1, y1 });
     const POINT p1({ x2, y2 });
@@ -222,11 +228,11 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 					_tcscpy(Buffer, WayPointList[index].Name);
 				} else {
 					_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
-					icolor=RGB_AMBER;
+					icolor=AMBERCOLOR;
 				}
 			} else {
 				_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
-				icolor=RGB_AMBER;
+				icolor=AMBERCOLOR;
 			}
 			break;
 		case IM_TRI:
@@ -263,13 +269,13 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 			} else {
 				_tcscpy(Buffer,gettext(TEXT("_@M914_"))); // [no target]
-				icolor=RGB_AMBER;
+				icolor=AMBERCOLOR;
 			}
 
 			break;
 		default:
 			_stprintf(Buffer,_T("error"));
-			icolor=RGB_AMBER;
+			icolor=AMBERCOLOR;
 			break;
 	}
         LKWriteText(Surface, Buffer, qcolumn[8],qrow[1], 0, WTMODE_NORMAL, WTALIGN_CENTER, icolor, false);
@@ -925,11 +931,11 @@ label_HSI:
 			if(Task[ActiveWayPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveWayPoint].Index].Name);
 			else {
 				_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
-				icolor=RGB_AMBER;
+				icolor=AMBERCOLOR;
 			}
 		} else {
 			_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
-			icolor=RGB_AMBER;
+			icolor=AMBERCOLOR;
 		}
 	}
 	Surface.SelectObject(LK8PanelMediumFont);
@@ -1118,7 +1124,7 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
   if (*showunit)
 	LKWriteText(Surface, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_WHITE, false);
   else
-	LKWriteText(Surface, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_AMBER, false);
+	LKWriteText(Surface, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, AMBERCOLOR, false);
 
   if (*showunit==true && !HideUnits) {
        	Surface.SelectObject(LK8PanelUnitFont); // 091230

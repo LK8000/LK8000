@@ -411,7 +411,11 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 			WayPointCalc[wp].Distance, WayPointCalc[wp].Bearing)) {
 				rgbcolor = RGB_LIGHTRED;
 			} else {
+				#ifdef UNDITHER
+				rgbcolor = RGB_WHITE;
+				#else
 				rgbcolor = RGB_LIGHTGREEN;
+				#endif
 			}
 		}
 		bcolor.Create(rgbcolor);
@@ -423,7 +427,11 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 		if ((ty-offset)<downYtop) ty=downYtop+offset;
 		if ((ty+offset)>downYbottom) ty=downYbottom-offset;
 		
+		#ifdef UNDITHER
+		rgbcolor = RGB_WHITE; // negative part, no need to render dark
+		#else
 		rgbcolor = RGB_LIGHTRED;
+		#endif
 		bcolor.Create(rgbcolor);
 	}
 

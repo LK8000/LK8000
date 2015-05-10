@@ -25,6 +25,8 @@
 #define AUTORES 1
 #endif
 
+#define AMBERCOLOR  RGB_AMBER
+
 /*
  * Draw Text Overlay. 
  * @Surface : surface to draw
@@ -628,7 +630,7 @@ nextinit:
 			if (CorrectSide() ) {
 				distcolor=overcolor;
 			} else {
-				distcolor=RGB_AMBER;
+				distcolor=AMBERCOLOR;
 			}
 		 	LKFormatValue(LK_START_DIST, false, BufferValue, BufferUnit, BufferTitle);
 		 } else {
@@ -825,7 +827,7 @@ nextinit:
 			rcy=yrightoffset -TextSize.cy; // 101112
 			rcx=rc.right-NIBLSCALE(10);
 			if (redwarning)  // 091203
-				LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true);
+				LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, AMBERCOLOR, true);
 			else
 				LKWriteText(Surface,  BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
@@ -864,7 +866,7 @@ nextinit:
 			}
 			if (redwarning) 
 				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0,
-					WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
+					WTMODE_OUTLINED,WTALIGN_RIGHT,AMBERCOLOR, true);
 			else
 				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0,
 					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
@@ -918,7 +920,7 @@ nextinit:
 			Value=WayPointCalc[DoOptimizeRoute()?RESWP_OPTIMIZED:Task[0].Index].NextETE-gatechrono;
 			Units::TimeToTextDown(BufferValue, (int)Value);
 			if (Value<=0) 
-				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
+				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,AMBERCOLOR, true);
 			else
 				LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 		}
@@ -970,7 +972,7 @@ nextinit:
 				break;
 		}
 		if (redwarning)
-			LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
+			LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,AMBERCOLOR, true);
 		else
 			LKWriteText(Surface,  BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 

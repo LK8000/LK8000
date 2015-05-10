@@ -56,6 +56,14 @@
 
 #endif
 
+//
+// Lite dithering: adjust lite color brushes to be white, etc. for better rendering on 
+// eink screens.
+//
+#ifdef DITHER
+#define UNDITHER 1
+#endif
+
 #ifdef ENABLE_SDL
 //Use fullscreen for linux with SDL screen backend
 // careful : resolution change crash with SDL 2.0
