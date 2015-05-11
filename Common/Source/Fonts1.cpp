@@ -198,7 +198,7 @@ void Init_Fonts_1(void)
 
 /* Work in progress... following not accurate
  * TitleWindowFont	= Font=0 in dialogs, used also in dlStartup rawwrite. Easily removable.
- * CDIWindowFont	= Font=3 and Font=4 in dialogs
+ * CDIWindowFont	= Font=3 and Font=4 in dialogs, Visualglide
  * LK8GenericVar03Font		= Stats, map labels
  * MapWindowFont	= 
  *
@@ -288,7 +288,7 @@ void Init_Fonts_1(void)
   else if (ScreenSize==(ScreenSize_t)ss800x600 )
   {
     propGetFontSettingsFromString(TEXT("24,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
-    propGetFontSettingsFromString(TEXT("30,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
+    propGetFontSettingsFromString(TEXT("30,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
     propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont);
     propGetFontSettingsFromString(TEXT("25,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCustom1Font);
