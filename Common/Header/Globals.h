@@ -645,6 +645,7 @@ GEXTERN unsigned short CustomMenu9;
 GEXTERN unsigned short CustomMenu10;
 
 GEXTERN bool OverlayClock;
+GEXTERN bool UseTwoLines;
 GEXTERN bool EnableSoundModes;
 GEXTERN int DisplayOrientation;
 GEXTERN int DisplayOrientation_Config;

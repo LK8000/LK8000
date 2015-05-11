@@ -252,6 +252,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryOutlinedTp,OutlinedTp_Config);
   rprintf(szRegistryOverColor,OverColor);
   rprintf(szRegistryOverlayClock,OverlayClock);
+  rprintf(szRegistryUseTwoLines,UseTwoLines);
   rprintf(szRegistryOverlaySize,OverlaySize);
   rprintf(szRegistryPGAutoZoomThreshold,PGAutoZoomThreshold);
   rprintf(szRegistryPGClimbZoom,PGClimbZoom);
