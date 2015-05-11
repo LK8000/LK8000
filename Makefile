@@ -86,6 +86,7 @@ else
 		else
 		    ifeq ($(TARGET),PCX64)
 			CONFIG_PC:=y
+			CONFIG_WIN32 := y
 		    else
 		       ifeq ($(TARGET),KOBO)
 			    KOBO ?= /opt/kobo/arm-unknown-linux-gnueabi
