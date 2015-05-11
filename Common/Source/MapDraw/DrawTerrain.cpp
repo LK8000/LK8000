@@ -474,8 +474,7 @@ public:
                 if ((h = *thBuf) != TERRAIN_INVALID) {
                     // if (h==0 && LKWaterThreshold==0) { // no LKM coasts, and water altitude
                     if (h == LKWaterThreshold) { // see above.. h cannot be -1000.. so only when LKW is 0 h can be equal
-                        //*imageBuf = BGRColor(85, 160, 255); // set water color #55 A0 FF
-                        *imageBuf = BGRColor(0, 0, 0); // set water color #55 A0 FF
+                        *imageBuf = BGRColor(85, 160, 255); // set water color #55 A0 FF
                         continue;
                     }
                     h = h - minalt + 1;
