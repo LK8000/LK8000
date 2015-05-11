@@ -1,4 +1,3 @@
-* LK8000 polar for: Para EN C-DHV2
+* LK8000 polar for: Para EN-C @ 95kg
 * MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
- 100,	0, 33.0, -1.1,	39.0,	-1.2,	56.0,	-2.30, 0
-
+95, 0, 29.0, -0.90, 38.0, -1.01, 56.0, -2.06, 25.7
