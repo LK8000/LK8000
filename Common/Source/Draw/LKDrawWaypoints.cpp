@@ -19,7 +19,7 @@
 MapWaypointLabel_t MapWaypointLabelList[200]; 
 MapWaypointLabel_t* SortedWaypointLabelList[200]; 
 
-int MapWaypointLabelListCount=0;
+size_t MapWaypointLabelListCount=0;
 
 
 inline bool MapWaypointLabelListCompare(const MapWaypointLabel_t* elem1, const MapWaypointLabel_t* elem2 ){
@@ -32,20 +32,10 @@ void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y,
 			 const TextInBoxMode_t *Mode, 
 			 const int AltArivalAGL, const bool inTask, const bool isLandable, const bool isAirport, 
 			 const bool isExcluded,  const int index, const short style){
-  MapWaypointLabel_t *E;
 
-  static int labelListSize;
+  if (MapWaypointLabelListCount >= array_size(MapWaypointLabelList)-1) return;
 
-  if (DoInit[MDI_MAPWPLABELADD]) {
-
-	labelListSize=(signed int)(sizeof(MapWaypointLabelList)/sizeof(MapWaypointLabel_t))-1;
-
-	DoInit[MDI_MAPWPLABELADD]=false;
-  }
-
-  if (MapWaypointLabelListCount >= labelListSize) return;
-
-  E = &MapWaypointLabelList[MapWaypointLabelListCount];
+  MapWaypointLabel_t* E = &MapWaypointLabelList[MapWaypointLabelListCount];
 
   _tcscpy(E->Name, Name);
   E->Pos.x = X;
