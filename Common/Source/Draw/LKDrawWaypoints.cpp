@@ -197,10 +197,10 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
   if (foundairport==0 && bestwp>=0)  arrivalcutoff = (int)WayPointList[bestwp].AltArivalAGL;
 
   const RECT ClipRect = {
-      rc.top-WPCIRCLESIZE,
       rc.left-WPCIRCLESIZE,
-      rc.bottom+WPCIRCLESIZE,
-      rc.right+(WPCIRCLESIZE*3)
+      rc.top-WPCIRCLESIZE,
+      rc.right+(WPCIRCLESIZE*3),
+      rc.bottom+WPCIRCLESIZE
   };
 
   for(i=0;i<WayPointList.size();i++) {
@@ -547,7 +547,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
   // now draw normal waypoints in order of range (furthest away last)
   // without writing over each other (or the task ones)
-  for (int j=0; j<MapWaypointLabelListCount; j++) {
+  for (size_t j=0; j<MapWaypointLabelListCount; j++) {
     MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
