@@ -431,7 +431,7 @@ void Globals_Init(void) {
   FinalGlideTerrain = 1;
   EnableSoundModes = true; // this is init by main in v53
   OverlayClock = false;
-  UseTwoLines = false;
+  UseTwoLines = false; // remember to switch on the nearest pages MDI_ when this is changed runtime
   LKLanguageReady = false;
 
 
