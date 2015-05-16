@@ -793,6 +793,8 @@ GEXTERN LKFont   LK8MediumFont;
 GEXTERN LKFont   LK8SmallFont;
 GEXTERN LKFont   LK8InfoBigFont;
 GEXTERN LKFont   LK8InfoBigItalicFont;
+GEXTERN LKFont   LK8InfoBig2LFont;
+GEXTERN LKFont   LK8InfoBigItalic2LFont;
 GEXTERN LKFont   LK8InfoNormalFont;
 GEXTERN LKFont   LK8InfoNearestFont;
 GEXTERN LKFont   LK8InfoSmallFont;

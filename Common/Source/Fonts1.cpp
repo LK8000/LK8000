@@ -204,13 +204,27 @@ void Init_Fonts_1(void)
  *
  * MapWindowBoldFont	= menu buttons, waypoint selection, messages, etc.
  * MapScale             = 3.5km AUX9 ..  on main map
- *
- * (SOON TODO) CUSTOMIZABLE FONTS:
- * MapWaypoint      map waypoint names
- * MapWaypointBold  map waypoint names 
- * MapTopology      map topology names
- * Custom1Font	    available, not yet used
- *
+
+
+   ------------------------------------------------------------------------------------
+    FOLLOWING FONTS ARE USER RESIZABLE. NOT WISE TO ADOPT THEM OUT OF THEIR ENVIRONMENT
+   ------------------------------------------------------------------------------------
+
+   MapWaypoint                map waypoint names
+   MapWaypointBold            map waypoint names 
+   MapTopology                map topology names
+   LK8InfoBigFont             nearest pages, values
+   LK8InfoBigItalicFont          "
+   LK8InfoBig2LFont             nearest pages, values for UseTwoLines
+   LK8InfoBigItalic2LFont          "
+
+   LK8BottomBarTitleFont      the bottom bar
+   LK8BottomBarValueFont
+   LK8BottomBarUnitFont
+ 
+   Custom1Font	    available, not yet used
+ 
+ 
  */
 
   //
@@ -561,6 +575,8 @@ void DeInitLKFonts(void) {
   LK8SmallFont.Release();
   LK8InfoBigFont.Release();
   LK8InfoBigItalicFont.Release();
+  LK8InfoBig2LFont.Release();
+  LK8InfoBigItalic2LFont.Release();
   LK8InfoNormalFont.Release();
   LK8InfoNearestFont.Release();
   LK8InfoSmallFont.Release();

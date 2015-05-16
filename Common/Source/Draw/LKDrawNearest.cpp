@@ -32,7 +32,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   static RECT s_sortBox[6]; 
   static POINT p1, p2;
   static unsigned short s_rawspace, s_maxnlname, lincr, left, right, bottom;
-  static FontReference bigFont;
+  static FontReference bigFont, bigItalicFont;
   static bool usetwolines=0;
 
   // Vertical and horizontal spaces
@@ -54,9 +54,11 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SIZE K1TextSize, K2TextSize, K3TextSize, K4TextSize;
   SIZE phdrTextSize;
 
-  usetwolines=ScreenLandscape?false:UseTwoLines;
+  usetwolines=(ScreenLandscape?false:UseTwoLines);
 
-  bigFont=(usetwolines?LK8InfoBigFont:LK8InfoBigFont);
+  bigFont=(usetwolines?LK8InfoBig2LFont:LK8InfoBigFont);
+
+  bigItalicFont=(usetwolines?LK8InfoBigItalic2LFont:LK8InfoBigItalicFont);
 
   // Set screen borders to avoid writing on extreme pixels
   if ( !ScreenLandscape ) {
@@ -535,7 +537,7 @@ KeepOldValues:
 
 		if (WayPointCalc[rli].IsOutlanding) {
 			rcolor=RGB_LIGHTYELLOW;
-  			Surface.SelectObject(LK8InfoBigItalicFont);
+  			Surface.SelectObject(bigItalicFont);
 		} else {
 			rcolor=RGB_WHITE;
   			Surface.SelectObject(bigFont);
