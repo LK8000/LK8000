@@ -336,16 +336,15 @@ shortcut_gesture:
 			case MSM_AIRPORTS:
 			case MSM_NEARTPS:
 						LKForceDoNearest=true;
-						numpages=Numpages; // TODO adopt Numpages[MapSpaceMode]
+						numpages=Numpages;
 						break;
 			case MSM_COMMON:
 						LKForceDoCommon=true;
-						// warning. Commons and Recents share the same variable!
-						numpages=CommonNumpages;
+						numpages=Numpages;
 						break;
 			case MSM_RECENT:
 						LKForceDoRecent=true;
-						numpages=CommonNumpages;
+						numpages=Numpages;
 						break;
 			case MSM_AIRSPACES:
 						numpages=AspNumpages;

@@ -34,6 +34,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   static unsigned short s_rawspace, s_maxnlname, lincr, left, right, bottom;
   static FontReference bigFont, bigItalicFont;
   static bool usetwolines=0;
+  static unsigned short numraws=0;
 
   // Vertical and horizontal spaces
   #define INTERRAW	1
@@ -181,24 +182,24 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   if ( !ScreenLandscape ) {
   	TopSize+=HEADRAW;
-  	Numraws=(bottom - TopSize) / (InfoTextSize.cy+(INTERRAW*2));
+  	numraws=(bottom - TopSize) / (InfoTextSize.cy+(INTERRAW*2));
   } else {
   	TopSize+=HEADRAW/2;
-  	Numraws=(bottom - TopSize) / (InfoTextSize.cy+INTERRAW);
+  	numraws=(bottom - TopSize) / (InfoTextSize.cy+INTERRAW);
   }
-  if (usetwolines) {; Numraws /=2; Numraws*=2; } // make it even number
-  if (Numraws>MAXNEAREST) Numraws=MAXNEAREST;
+  if (usetwolines) {; numraws /=2; numraws*=2; } // make it even number
+  if (numraws>MAXNEAREST) numraws=MAXNEAREST;
 
   s_rawspace=(InfoTextSize.cy+(ScreenLandscape?INTERRAW:INTERRAW*2));
 
   // center in available vertical space
-  int cs = (bottom-TopSize) - (Numraws*(InfoTextSize.cy+(ScreenLandscape?INTERRAW:INTERRAW*2)) +
+  int cs = (bottom-TopSize) - (numraws*(InfoTextSize.cy+(ScreenLandscape?INTERRAW:INTERRAW*2)) +
       (ScreenLandscape?INTERRAW:INTERRAW*2) );
 
-  if ( (cs>(Numraws-1) && (Numraws>1)) ) {
-      s_rawspace+= cs/(Numraws-1);
+  if ( (cs>(numraws-1) && (numraws>1)) ) {
+      s_rawspace+= cs/(numraws-1);
       s_rawspace-= NIBLSCALE(1); // adjust rounding errors
-      TopSize += (cs - ((cs/(Numraws-1))*(Numraws-1)))/2 -1;
+      TopSize += (cs - ((cs/(numraws-1))*(numraws-1)))/2 -1;
   } else {
       TopSize += cs/2 -1;
   }
@@ -218,9 +219,11 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   s_sortBox[0].right=Column0 + phdrTextSize.cx;
   s_sortBox[0].top=2;
   s_sortBox[0].bottom=p1.y-NIBLSCALE(1);;
-  SortBoxX[MSM_LANDABLE][0]=s_sortBox[0].right;
-  SortBoxX[MSM_AIRPORTS][0]=s_sortBox[0].right;
-  SortBoxX[MSM_NEARTPS][0]=s_sortBox[0].right;
+  SortBoxX[MSM_LANDABLE][0] =s_sortBox[0].right;
+  SortBoxX[MSM_AIRPORTS][0] =s_sortBox[0].right;
+  SortBoxX[MSM_NEARTPS][0]  =s_sortBox[0].right;
+  SortBoxX[MSM_COMMON][0]   =s_sortBox[0].right;
+  SortBoxX[MSM_RECENT][0]   =s_sortBox[0].right;
 
   int headerspacing= (right-s_sortBox[0].right)/4; // used only for monoline portrait
 
@@ -231,6 +234,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxX[MSM_LANDABLE][1]=s_sortBox[1].right;
   SortBoxX[MSM_AIRPORTS][1]=s_sortBox[1].right;
   SortBoxX[MSM_NEARTPS][1]=s_sortBox[1].right;
+  SortBoxX[MSM_COMMON][1]=s_sortBox[1].right;
+  SortBoxX[MSM_RECENT][1]=s_sortBox[1].right;
 
   s_sortBox[2].left=s_sortBox[1].right+HMARGIN; 
   s_sortBox[2].right=s_sortBox[1].right+headerspacing;
@@ -239,6 +244,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxX[MSM_LANDABLE][2]=s_sortBox[2].right;
   SortBoxX[MSM_AIRPORTS][2]=s_sortBox[2].right;
   SortBoxX[MSM_NEARTPS][2]=s_sortBox[2].right;
+  SortBoxX[MSM_COMMON][2]=s_sortBox[2].right;
+  SortBoxX[MSM_RECENT][2]=s_sortBox[2].right;
 
   s_sortBox[3].left=s_sortBox[2].right+HMARGIN;
   s_sortBox[3].right=s_sortBox[2].right+headerspacing;
@@ -247,6 +254,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxX[MSM_LANDABLE][3]=s_sortBox[3].right;
   SortBoxX[MSM_AIRPORTS][3]=s_sortBox[3].right;
   SortBoxX[MSM_NEARTPS][3]=s_sortBox[3].right;
+  SortBoxX[MSM_COMMON][3]=s_sortBox[3].right;
+  SortBoxX[MSM_RECENT][3]=s_sortBox[3].right;
 
   s_sortBox[4].left=s_sortBox[3].right+HMARGIN;
   s_sortBox[4].right=right;
@@ -255,18 +264,25 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxX[MSM_LANDABLE][4]=s_sortBox[4].right;
   SortBoxX[MSM_AIRPORTS][4]=s_sortBox[4].right;
   SortBoxX[MSM_NEARTPS][4]=s_sortBox[4].right;
+  SortBoxX[MSM_COMMON][4]=s_sortBox[4].right;
+  SortBoxX[MSM_RECENT][4]=s_sortBox[4].right;
 
   SortBoxY[MSM_LANDABLE]=p1.y;
   SortBoxY[MSM_AIRPORTS]=p1.y;
   SortBoxY[MSM_NEARTPS]=p1.y;
+  SortBoxY[MSM_COMMON]=p1.y;
+  SortBoxY[MSM_RECENT]=p1.y;
 
-  Numpages=roundupdivision(MAXNEAREST*lincr, Numraws);
+  Numpages=roundupdivision(MAXNEAREST*lincr, numraws);
 
   if (Numpages>MAXNUMPAGES) Numpages=MAXNUMPAGES;
   else if (Numpages<1) Numpages=1;
 
-  SelectedRaw[MSM_LANDABLE]=0; SelectedRaw[MSM_AIRPORTS]=0; SelectedRaw[MSM_NEARTPS]=0;
-  SelectedPage[MSM_LANDABLE]=0; SelectedPage[MSM_AIRPORTS]=0; SelectedPage[MSM_NEARTPS]=0;
+  SelectedRaw[MSM_AIRPORTS]=0; SelectedPage[MSM_AIRPORTS]=0; 
+  SelectedRaw[MSM_LANDABLE]=0; SelectedPage[MSM_LANDABLE]=0; 
+  SelectedRaw[MSM_NEARTPS]=0; SelectedPage[MSM_NEARTPS]=0;
+  SelectedRaw[MSM_COMMON]=0; SelectedPage[MSM_COMMON]=0;
+  SelectedRaw[MSM_RECENT]=0; SelectedPage[MSM_RECENT]=0;
 
   hColumn2=s_sortBox[1].right-NIBLSCALE(2); 
   hColumn3=s_sortBox[2].right-NIBLSCALE(2);
@@ -278,85 +294,126 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   } // doinit
 
 
+  
+  int *pSortedNumber;
+  int *pSortedIndex;
+  unsigned int pagenametoken;
+  double *pLastDoNearest;
+  bool *pNearestDataReady;
 
-  Numpages=roundupdivision(SortedNumber*lincr, Numraws);
+  switch(curmapspace) {
+      case MSM_LANDABLE:
+          pSortedIndex=SortedLandableIndex;
+          pSortedNumber=&SortedNumber;
+          pLastDoNearest=&LastDoNearest;
+          pNearestDataReady=&NearestDataReady;
+          pagenametoken= ScreenLandscape? 1312:1311; // LKTOKEN _@M1311_ "LND" _@M1312_ "LNDB"
+          break;
+      case MSM_AIRPORTS:
+          pSortedIndex=SortedAirportIndex;
+          pSortedNumber=&SortedNumber;
+          pLastDoNearest=&LastDoNearest;
+          pNearestDataReady=&NearestDataReady;
+          pagenametoken= ScreenLandscape? 1314:1313; // LKTOKEN _@M1313_ "APT"  _@M1314_ "APTS"
+          break;
+      case MSM_NEARTPS:
+          pSortedIndex=SortedTurnpointIndex;
+          pSortedNumber=&SortedNumber;
+          pLastDoNearest=&LastDoNearest;
+          pNearestDataReady=&NearestDataReady;
+          pagenametoken= 1315; // LKTOKEN _@M1315_ "TPS"
+          break;
+      case MSM_COMMON:
+          pSortedIndex=CommonIndex;
+          pSortedNumber=&CommonNumber;
+          pLastDoNearest=&LastDoCommon;
+          pNearestDataReady=&CommonDataReady;
+          pagenametoken= 1309; // LKTOKEN _@M1309_ "COMN"
+          break;
+      case MSM_RECENT:
+          pSortedIndex=RecentIndex;
+          pSortedNumber=&RecentNumber;
+          pLastDoNearest=&LastDoCommon;
+          pNearestDataReady=&RecentDataReady;
+          pagenametoken= 1310; // LKTOKEN _@M1310_ "HIST"
+          break;
+      default:
+          pSortedIndex=CommonIndex;
+          pSortedNumber=&CommonNumber;
+          pLastDoNearest=&LastDoCommon;
+          pNearestDataReady=&RecentDataReady;
+          pagenametoken= 266; // LKTOKEN _@M266_ "Error"
+          break;
+  }
+
+  Numpages=roundupdivision(*pSortedNumber*lincr, numraws);
   if (Numpages>MAXNUMPAGES) Numpages=MAXNUMPAGES;
   else if (Numpages<1) Numpages=1;
 
   curpage=SelectedPage[curmapspace];
   if (curpage<0||curpage>=MAXNUMPAGES) { // TODO also >Numpages
-	// DoStatusMessage(_T("ERR-091 curpage invalid!"));  // selection while waiting for data ready
-	SelectedPage[curmapspace]=0;
-	LKevent=LKEVENT_NONE;
-	return;
+      // DoStatusMessage(_T("ERR-091 curpage invalid!"));  // selection while waiting for data ready
+      SelectedPage[curmapspace]=0;
+      LKevent=LKEVENT_NONE;
+      return;
   }
 
   switch (LKevent) {
-	case LKEVENT_NONE:
-		break;
-	case LKEVENT_ENTER:
-		LKevent=LKEVENT_NONE;
-		switch(curmapspace) {
-			case MSM_LANDABLE:
-				i=SortedLandableIndex[SelectedRaw[curmapspace]+(curpage*Numraws/lincr)];
-				break;
-			case MSM_AIRPORTS:
-				i=SortedAirportIndex[SelectedRaw[curmapspace] + (curpage*Numraws/lincr)];
-				break;
-			case MSM_NEARTPS:
-			default:
-				i=SortedTurnpointIndex[SelectedRaw[curmapspace] + (curpage*Numraws/lincr)];
-				break;
-		}
+      case LKEVENT_NONE:
+          break;
+      case LKEVENT_ENTER:
+          LKevent=LKEVENT_NONE;
 
-		if ( !ValidWayPoint(i)) {
-			#if 0 // selection while waiting for data ready
-			if (SortedNumber>0)
-				DoStatusMessage(_T("ERR-019 Invalid selection")); 
-			#endif
-			break;
-		}
-        /*
-         * we can't show dialog from Draw thread
-         * instead, new event is queued, dialog will be popup by main thread 
-         */
-        InputEvents::processPopupDetails(InputEvents::PopupWaypoint, i);
-		// SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
-		LKevent=LKEVENT_NONE; 
-		return;
-		break;
-	case LKEVENT_DOWN:
-		SelectedRaw[curmapspace] += 1;
-		if (SelectedRaw[curmapspace] >=Numraws) SelectedRaw[curmapspace]=0;
-		LastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
-		break;
-	case LKEVENT_UP:
-		SelectedRaw[curmapspace] -= 1;//
-		if (SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=Numraws-1;
-		LastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
-		break;
-	case LKEVENT_PAGEUP:
-		LKevent=LKEVENT_NONE;
-		break;
-	case LKEVENT_PAGEDOWN:
-		LKevent=LKEVENT_NONE;
-		break;
-	case LKEVENT_NEWRUN:
-		for (i=0; i<MAXNEAREST; i++) {
-			for (k=0; k<MAXNUMPAGES; k++) {
-				_stprintf(Buffer1[i][k],_T("------------")); // 12 chars
-				_stprintf(Buffer2[i][k],_T("----"));
-				_stprintf(Buffer3[i][k],_T("----"));
-				_stprintf(Buffer4[i][k],_T("----"));
-				_stprintf(Buffer5[i][k],_T("----"));
-			}
-		}
-		break;
-	case LKEVENT_NEWPAGE:
-		break;
-	default:
-		LKevent=LKEVENT_NONE;
-		break;
+          i=pSortedIndex[SelectedRaw[curmapspace] + (curpage*numraws/lincr)];
+
+          if ( !ValidWayPoint(i)) {
+              #if 0 // selection while waiting for data ready
+              if (*pSortedNumber>0)
+                  DoStatusMessage(_T("ERR-019 Invalid selection")); 
+              #endif
+               break;
+          }
+         /*
+          * we can't show dialog from Draw thread
+          * instead, new event is queued, dialog will be popup by main thread 
+          */
+          InputEvents::processPopupDetails(InputEvents::PopupWaypoint, i);
+          // SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
+          LKevent=LKEVENT_NONE; 
+          return;
+          break;
+      case LKEVENT_DOWN:
+          SelectedRaw[curmapspace] += 1;
+          if (SelectedRaw[curmapspace] >=numraws) SelectedRaw[curmapspace]=0;
+          *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
+          break;
+      case LKEVENT_UP:
+          SelectedRaw[curmapspace] -= 1;//
+          if (SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=numraws-1;
+          *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
+          break;
+      case LKEVENT_PAGEUP:
+          LKevent=LKEVENT_NONE;
+          break;
+      case LKEVENT_PAGEDOWN:
+          LKevent=LKEVENT_NONE;
+          break;
+      case LKEVENT_NEWRUN:
+          for (i=0; i<MAXNEAREST; i++) {
+              for (k=0; k<MAXNUMPAGES; k++) {
+                  _stprintf(Buffer1[i][k],_T("------------")); // 12 chars
+                  _stprintf(Buffer2[i][k],_T("----"));
+                  _stprintf(Buffer3[i][k],_T("----"));
+                  _stprintf(Buffer4[i][k],_T("----"));
+                  _stprintf(Buffer5[i][k],_T("----"));
+              }
+          }
+          break;
+      case LKEVENT_NEWPAGE:
+          break;
+      default:
+          LKevent=LKEVENT_NONE;
+          break;
   }
 
   if (INVERTCOLORS)
@@ -366,13 +423,19 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
   Surface.SelectObject(LK8InfoNearestFont); // Heading line
 
-  short cursortbox=SortedMode[curmapspace];
 
   //
   // DRAW HEADER ROW WITH SORTBOXES
   // 
 
-  Surface.FillRect(&s_sortBox[cursortbox], INVERTCOLORS?LKBrush_LightGreen:LKBrush_DarkGreen);
+  short cursortbox;
+  // Highlighted header sorting selection. Not available for commons.
+  if (curmapspace==MSM_COMMON||curmapspace==MSM_RECENT) 
+      cursortbox=99; // hack
+  else {
+      cursortbox=SortedMode[curmapspace];
+      Surface.FillRect(&s_sortBox[cursortbox], INVERTCOLORS?LKBrush_LightGreen:LKBrush_DarkGreen);
+  }
 
   // PAGE INDEX, example: 2.1
   //
@@ -387,29 +450,10 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
   Surface.SelectObject(LK8InfoNearestFont);
 
-
-  // PAGE NAME, example: APT 
-  //
-  switch(curmapspace) {
-      case MSM_LANDABLE:
-          tmptoken= ScreenLandscape? 1312:1311; // LKTOKEN _@M1311_ "LND" _@M1312_ "LNDB"
-          break;
-      case MSM_AIRPORTS:
-          tmptoken= ScreenLandscape? 1314:1313; // LKTOKEN _@M1313_ "APT"  _@M1314_ "APTS"
-          break;
-      case MSM_NEARTPS:
-          tmptoken= 1315; // LKTOKEN _@M1315_ "TPS"
-          break;
-      default:
-          _stprintf(Buffer,TEXT("%s %d/%d"), MsgToken(1315), curpage+1, Numpages); 
-          // LKTOKEN _@M266_ "Error"
-          tmptoken= 266;
-          break;
-  }
-  _stprintf(Buffer,TEXT("%s %d/%d"), MsgToken(tmptoken), curpage+1, Numpages); 
-
+  _stprintf(Buffer,TEXT("%s %d/%d"), MsgToken(pagenametoken), curpage+1, Numpages); 
   tmpcolor= cursortbox==0?RGB_BLACK:RGB_LIGHTGREEN;
   LKWriteText(Surface,  Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, tmpcolor, false);
+  if (cursortbox==99) cursortbox=0; 
 
   tmptoken=compact?1300:1304; // LKTOKEN _@M1300_ "Dist"  _@M1304_ "Distance"
   _tcscpy(Buffer,MsgToken(tmptoken)); 
@@ -435,29 +479,16 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   tmpcolor= cursortbox==4?RGB_BLACK:RGB_WHITE;
   LKWriteText(Surface,  Buffer, hColumn5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
-
   Surface.SelectObject(bigFont); // Text font for Nearest
 
-  bool ndr=NearestDataReady;
-  NearestDataReady=false;
+  // try to reduce conflicts, as task thread could change it while we are using it here.
+  // so we copy it and clear it here once forever in this run
+  bool ndr=*pNearestDataReady;
+  *pNearestDataReady=false;
 
-  int *psortedindex;
-  switch(curmapspace) {
-	case MSM_LANDABLE:
-		psortedindex=SortedLandableIndex;
-		break;
-	case MSM_AIRPORTS:
-		psortedindex=SortedAirportIndex;
-		break;
-	case MSM_NEARTPS:
-	default:
-		psortedindex=SortedTurnpointIndex;
-		break;
-  }
-	
-  for (i=0, j=0, drawn_items_onpage=0; i<Numraws; j++, i+=lincr) {
+  for (i=0, j=0, drawn_items_onpage=0; i<numraws; j++, i+=lincr) {
 	iRaw=TopSize+(s_rawspace*i);
-	short curraw=(curpage*Numraws);
+	short curraw=(curpage*numraws);
         if (usetwolines) {
             curraw/=2;
             curraw+=j;
@@ -466,7 +497,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         }
 	if (curraw>=MAXNEAREST) break;
 
-	rli=*(psortedindex+curraw);
+	rli=*(pSortedIndex+curraw);
 
 	if (!ndr) {
 		goto KeepOldValues;
@@ -593,11 +624,16 @@ KeepOldValues:
 		return;
   }
 
+  // BOXOUT SELECTED ITEM
+  //
   if (drawn_items_onpage>0) {
 
-	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(Numraws-1)) {
+	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(numraws-1)) {
 		return;
 	}
+        // Avoid boxing and selecting nonexistent items
+        // selectedraw starts from 0, drawnitems from 1...
+        // In this case we set the first one, or last one, assuming we are rotating forward or backward
 	if (SelectedRaw[curmapspace] >= drawn_items_onpage) {
 		if (LKevent==LKEVENT_DOWN) SelectedRaw[curmapspace]=0;
 		else 
