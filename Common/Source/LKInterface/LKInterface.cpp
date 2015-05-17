@@ -231,25 +231,17 @@ void SelectMapSpace(short i) {
 			// force DoNearest to run at once
 			LKForceDoNearest=true;
 			LKevent=LKEVENT_NEWRUN;
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		case MSM_AIRSPACES:
 			LKevent=LKEVENT_NEWRUN;
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		case MSM_COMMON:
 			LKForceDoCommon=true;
 			LKevent=LKEVENT_NEWRUN;
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		case MSM_RECENT:
 			LKForceDoRecent=true;
 			LKevent=LKEVENT_NEWRUN;
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		case MSM_VISUALGLIDE:
 			// direction sorting! It is set by LKInit, also.
@@ -257,15 +249,16 @@ void SelectMapSpace(short i) {
 			SortedMode[MapSpaceMode]=2; 
 			LKForceDoNearest=true;
 			LKevent=LKEVENT_NEWRUN;
-			// These are not necessary, becasue they are used only by NEAR pages
-			// however we reset it for any case.
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		default:
 			LKevent=LKEVENT_NEWRUN;
 			break;
 	}
+	// Resetting Selected are needed if we want that each nearest page open
+	// with page 1 row 1. Otherwise it is remembered last status, which can be
+	// a problem maybe. Resetting Selected for non-nearest is not a problem.
+	SelectedPage[MapSpaceMode]=0;
+	SelectedRaw[MapSpaceMode]=0;
 	MapSpaceMode=i;
 
 	//
