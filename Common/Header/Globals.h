@@ -386,12 +386,7 @@ GEXTERN short SelectedRaw[MSM_TOP+1];
 // since it doesnt eat memory, it is also used for pages with currently no subpages
 GEXTERN short SelectedPage[MSM_TOP+1];
 
-GEXTERN short Numraws;
 GEXTERN short Numpages;
-GEXTERN short CommonNumraws;
-GEXTERN short CommonNumpages;
-// GEXTERN short TurnpointNumraws; 101222
-// GEXTERN short TurnpointNumpages;
 GEXTERN short TrafficNumpages;
 GEXTERN short AspNumpages;
 GEXTERN short THistoryNumpages;
