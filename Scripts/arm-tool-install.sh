@@ -47,7 +47,7 @@ sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
 cd ..
 
 # install libpng ( 1.6.16 - 2014-12-22 )
-wget http://switch.dl.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.gz
+wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.16/libpng-1.6.16.tar.gz
 tar xzf libpng-1.6.16.tar.gz
 mkdir libpng-build
 cd libpng-build

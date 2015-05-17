@@ -1,4 +1,4 @@
 * LK8000 polar for: Para EN B-DHV12
 * MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
- 100, 0, 29.5, -1.1,	37.0,	-1.2,	50.0,	-2.30, 0
+100, 0, 29.5, -1.1,	37.0, -1.2,	50.0,	-2.30, 28
 
