@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  150423
+# MASTER UPDATED:  150517
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -2085,6 +2085,7 @@ _@M2182_ "«"
 _@M2183_ "»"
 _@M2184_ "‹"
 _@M2185_ "›"
+_@M2186_ "*"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"

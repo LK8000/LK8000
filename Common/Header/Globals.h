@@ -388,7 +388,6 @@ GEXTERN short SelectedPage[MSM_TOP+1];
 
 GEXTERN short Numpages;
 GEXTERN short TrafficNumpages;
-GEXTERN short AspNumpages;
 GEXTERN short THistoryNumpages;
 GEXTERN short ModeIndex;
 

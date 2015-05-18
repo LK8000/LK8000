@@ -347,7 +347,7 @@ shortcut_gesture:
 						numpages=Numpages;
 						break;
 			case MSM_AIRSPACES:
-						numpages=AspNumpages;
+						numpages=Numpages;
 						break;
 			case MSM_TRAFFIC:
 						numpages=TrafficNumpages;

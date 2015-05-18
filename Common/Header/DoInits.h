@@ -35,8 +35,6 @@
 	MDI_GETLOCALPATH,		// system path change!
 	MDI_LKSOUND,			// localpath changed
 	MDI_DRAWTRI,			// screen change
-	MDI_DRAWASPNEAREST,		// screen change, font change
-	MDI_DRAWCOMMON,			// screen change, font change
 	MDI_DRAWFLARMTRAFFIC,		// screen change
 	MDI_DRAWINFOPAGE,		// screen change
 	MDI_WRITEINFO,			// screen change

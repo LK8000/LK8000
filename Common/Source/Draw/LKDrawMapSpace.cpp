@@ -159,17 +159,9 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 	case MSM_AIRPORTS:
 	case MSM_COMMON:
 	case MSM_RECENT:
+	case MSM_AIRSPACES:
 		DrawNearest(Surface, rc);
 		break;
-	case MSM_AIRSPACES:
-		DrawAspNearest(Surface, rc);
-		break;
-/* QUI
-	case MSM_COMMON:
-	case MSM_RECENT:
-		DrawCommon(Surface, rc);
-		break;
-*/
 	case MSM_MAP:
 		break;
 	case MSM_INFO_THERMAL:

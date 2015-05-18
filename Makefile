@@ -629,7 +629,6 @@ DRAW	:=\
 	$(DRW)/DrawThermalEstimate.cpp \
 	$(DRW)/DrawWind.cpp \
 	$(DRW)/Draw_Primitives.cpp \
-	$(DRW)/LKDrawAspNearest.cpp \
 	$(DRW)/LKDrawBottomBar.cpp \
 	$(DRW)/LKDrawCpuStatsDebug.cpp \
 	$(DRW)/LKDrawFLARMTraffic.cpp \
