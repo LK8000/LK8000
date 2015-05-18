@@ -353,7 +353,7 @@ shortcut_gesture:
 						numpages=TrafficNumpages;
 						break;
 			case MSM_THERMALS:
-						numpages=THistoryNumpages;
+						numpages=Numpages;
 						break;
 			default:
 						break;

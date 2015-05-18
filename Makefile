@@ -637,7 +637,6 @@ DRAW	:=\
 	$(DRW)/LKDrawMapSpace.cpp \
 	$(DRW)/LKDrawNearest.cpp \
 	$(DRW)/LKDrawTargetTraffic.cpp \
-	$(DRW)/LKDrawThermalHistory.cpp \
 	$(DRW)/LKDrawTrail.cpp \
 	$(DRW)/LKDrawTraffic.cpp \
 	$(DRW)/LKDrawVario.cpp \

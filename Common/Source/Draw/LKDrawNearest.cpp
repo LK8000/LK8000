@@ -21,6 +21,11 @@ bool ValidAirspace(int i) {
   return LKAirspaces[i].Valid;
 }
 
+// shortcuts
+#define MSMCOMMONS   (curmapspace==MSM_LANDABLE||curmapspace==MSM_AIRPORTS||curmapspace==MSM_NEARTPS|| \
+                      curmapspace==MSM_COMMON||curmapspace==MSM_RECENT) 
+#define MSMAIRSPACES (curmapspace==MSM_AIRSPACES)
+#define MSMTHERMALS  (curmapspace==MSM_THERMALS)
 
 
 void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
@@ -106,7 +111,6 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   //
   // SPECIAL TYPES, FIRST
   //
-  #define MSMAIRSPACES (curmapspace==MSM_AIRSPACES)
 
   #define LKASP_TYPE_LEN  4
   _stprintf(Buffer,TEXT("CTRA"));  // ASP TYPE
@@ -116,12 +120,13 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   _stprintf(Buffer,TEXT("SFE")); 
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K4TextSize[MSM_AIRSPACES]);
 
+  // Thermal average
+  _stprintf(Buffer,TEXT("+55.5")); 
+  Surface.GetTextSize( Buffer, _tcslen(Buffer), &K3TextSize[MSM_THERMALS]);
 
   //
   // COMMON TYPES (Distance, Bearing, Altitude Diff,  Efficiency)
   //
-  #define MSMCOMMONS (curmapspace==MSM_LANDABLE||curmapspace==MSM_AIRPORTS||curmapspace==MSM_NEARTPS|| \
-                      curmapspace==MSM_COMMON||curmapspace==MSM_RECENT) 
 
   // DISTANCE
   //
@@ -136,6 +141,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K1TextSize[MSM_COMMON]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K1TextSize[MSM_RECENT]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K2TextSize[MSM_AIRSPACES]);
+  Surface.GetTextSize( Buffer, _tcslen(Buffer), &K1TextSize[MSM_THERMALS]);
 
 
   // BEARING
@@ -147,6 +153,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K2TextSize[MSM_COMMON]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K2TextSize[MSM_RECENT]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K3TextSize[MSM_AIRSPACES]);
+  Surface.GetTextSize( Buffer, _tcslen(Buffer), &K2TextSize[MSM_THERMALS]);
 
 
   // REQUIRED EFFICIENCY (max 200)
@@ -174,6 +181,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K4TextSize[MSM_NEARTPS]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K4TextSize[MSM_COMMON]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K4TextSize[MSM_RECENT]);
+  Surface.GetTextSize( Buffer, _tcslen(Buffer), &K4TextSize[MSM_THERMALS]);
 
 
   Surface.SelectObject(LK8PanelMediumFont);
@@ -191,18 +199,21 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   Column0[MSM_COMMON]=Column0[MSM_LANDABLE];
   Column0[MSM_RECENT]=Column0[MSM_LANDABLE];
   Column0[MSM_AIRSPACES]=Column0[MSM_LANDABLE];
+  Column0[MSM_THERMALS]=Column0[MSM_LANDABLE];
 
   Column1[MSM_AIRPORTS]=Column1[MSM_LANDABLE];
   Column1[MSM_NEARTPS]=Column1[MSM_LANDABLE];
   Column1[MSM_COMMON]=Column1[MSM_LANDABLE];
   Column1[MSM_RECENT]=Column1[MSM_LANDABLE];
   Column1[MSM_AIRSPACES]=Column1[MSM_LANDABLE];
+  Column1[MSM_THERMALS]=Column1[MSM_LANDABLE];
 
   Column5[MSM_AIRPORTS]=Column5[MSM_LANDABLE];
   Column5[MSM_NEARTPS]=Column5[MSM_LANDABLE];
   Column5[MSM_COMMON]=Column5[MSM_LANDABLE];
   Column5[MSM_RECENT]=Column5[MSM_LANDABLE];
   Column5[MSM_AIRSPACES]=Column5[MSM_LANDABLE];
+  Column5[MSM_THERMALS]=Column5[MSM_LANDABLE];
   //
 
   max_name[MSM_LANDABLE]=MAXNLNAME;
@@ -210,6 +221,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   max_name[MSM_NEARTPS]=MAXNLNAME;
   max_name[MSM_COMMON]=MAXNLNAME;
   max_name[MSM_RECENT]=MAXNLNAME;
+  max_name[MSM_THERMALS]=8; // 7 is enough
   max_name[MSM_AIRSPACES]=18;
 
   // So, how long we want the name, minimally? The remaining space will be
@@ -221,6 +233,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   min_name[MSM_NEARTPS]= MINNAME_COMMON_CONDITION;
   min_name[MSM_COMMON]= MINNAME_COMMON_CONDITION;
   min_name[MSM_RECENT]= MINNAME_COMMON_CONDITION;
+  min_name[MSM_THERMALS]= MINNAME_COMMON_CONDITION;
   min_name[MSM_AIRSPACES]= (ScreenLandscape?15:6);
 
   ratio1_threshold[MSM_LANDABLE]=10;   //  if (size_name==9)ratio=3;
@@ -236,6 +249,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
        
   ratio1_threshold[MSM_AIRSPACES]=15;
   ratio2_threshold[MSM_AIRSPACES]=18;
+  ratio1_threshold[MSM_THERMALS]=8; // unused really
+  ratio2_threshold[MSM_THERMALS]=9;
 
 
   // CALCULATE THE BEST POSSIBLE SIZE FOR THE ITEM NAME
@@ -361,6 +376,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxX[MSM_COMMON][0]   =s_sortBox[0].right;
   SortBoxX[MSM_RECENT][0]   =s_sortBox[0].right;
   SortBoxX[MSM_AIRSPACES][0] =s_sortBox[0].right;
+  SortBoxX[MSM_THERMALS][0] =s_sortBox[0].right;
 
   int headerspacing= (right-s_sortBox[0].right)/4; // used only for monoline portrait
 
@@ -374,6 +390,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxX[MSM_COMMON][1]=s_sortBox[1].right;
   SortBoxX[MSM_RECENT][1]=s_sortBox[1].right;
   SortBoxX[MSM_AIRSPACES][1]   =s_sortBox[1].right;
+  SortBoxX[MSM_THERMALS][1]   =s_sortBox[1].right;
 
   s_sortBox[2].left=s_sortBox[1].right+HMARGIN; 
   s_sortBox[2].right=s_sortBox[1].right+headerspacing;
@@ -385,6 +402,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxX[MSM_COMMON][2]=s_sortBox[2].right;
   SortBoxX[MSM_RECENT][2]=s_sortBox[2].right;
   SortBoxX[MSM_AIRSPACES][2]   =s_sortBox[2].right;
+  SortBoxX[MSM_THERMALS][2]   =s_sortBox[2].right;
 
   s_sortBox[3].left=s_sortBox[2].right+HMARGIN;
   s_sortBox[3].right=s_sortBox[2].right+headerspacing;
@@ -396,6 +414,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxX[MSM_COMMON][3]=s_sortBox[3].right;
   SortBoxX[MSM_RECENT][3]=s_sortBox[3].right;
   SortBoxX[MSM_AIRSPACES][3]   =s_sortBox[3].right;
+  SortBoxX[MSM_THERMALS][3]   =s_sortBox[3].right;
 
   s_sortBox[4].left=s_sortBox[3].right+HMARGIN;
   s_sortBox[4].right=right;
@@ -407,6 +426,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxX[MSM_COMMON][4]=s_sortBox[4].right;
   SortBoxX[MSM_RECENT][4]=s_sortBox[4].right;
   SortBoxX[MSM_AIRSPACES][4]   =s_sortBox[4].right;
+  SortBoxX[MSM_THERMALS][4]   =s_sortBox[4].right;
 
   SortBoxY[MSM_LANDABLE]=p1.y;
   SortBoxY[MSM_AIRPORTS]=p1.y;
@@ -414,6 +434,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SortBoxY[MSM_COMMON]=p1.y;
   SortBoxY[MSM_RECENT]=p1.y;
   SortBoxY[MSM_AIRSPACES]=p1.y;
+  SortBoxY[MSM_THERMALS]=p1.y;
 
   Numpages=roundupdivision(MAXNEAREST*lincr, numraws);
 
@@ -426,6 +447,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   SelectedRaw[MSM_COMMON]=0; SelectedPage[MSM_COMMON]=0;
   SelectedRaw[MSM_RECENT]=0; SelectedPage[MSM_RECENT]=0;
   SelectedRaw[MSM_AIRSPACES]=0; SelectedPage[MSM_AIRSPACES]=0;
+  SelectedRaw[MSM_THERMALS]=0; SelectedPage[MSM_THERMALS]=0;
 
   hColumn2=s_sortBox[1].right-NIBLSCALE(2); 
   hColumn3=s_sortBox[2].right-NIBLSCALE(2);
@@ -513,6 +535,17 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
           headertoken[3]=1301;    // Dir
           headertoken[4]=2186;    // *
           break;
+      case MSM_THERMALS:
+          pSortedIndex=LKSortedThermals;
+          pSortedNumber=&LKNumThermals;
+          pLastDoNearest=&LastDoThermalH;
+          pNearestDataReady=NULL;
+          headertoken[0]= 1670; //  "THR"
+          headertoken[1]=compact_headers?1300:1304;
+          headertoken[2]=compact_headers?1301:1305;
+          headertoken[3]=1673; // Avg
+          headertoken[4]=compact_headers?1303:1307; 
+          break;
       default:
           pSortedIndex=CommonIndex;
           pSortedNumber=&CommonNumber;
@@ -525,6 +558,9 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
           headertoken[4]=compact_headers?1303:1307; 
           break;
   }
+
+  if (MSMTHERMALS) DoThermalHistory(&DrawInfo,  &DerivedDrawInfo);
+
 
   Numpages=roundupdivision(*pSortedNumber*lincr, numraws);
   if (Numpages>MAXNUMPAGES) Numpages=MAXNUMPAGES;
@@ -562,11 +598,21 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
               // SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
           }
           if (MSMAIRSPACES) {
-
               if ( ValidAirspace(i)) {
                   CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
                   CAirspaceManager::Instance().PopupAirspaceDetail(LKAirspaces[i].Pointer);
               }
+          }
+
+          if (MSMTHERMALS) {
+              if ( (i<0) || (i>=MAXTHISTORY) || (CopyThermalHistory[i].Valid != true) ) {
+                  #if 0 // selection while waiting for data ready
+                  if (LKNumThermals>0)
+                  DoStatusMessage(_T("ERR-045 Invalid selection")); 
+                  #endif
+                  break;
+              }
+              InputEvents::processPopupDetails(InputEvents::PopupThermal, i);
           }
           LKevent=LKEVENT_NONE; 
           return;
@@ -574,10 +620,12 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
       case LKEVENT_DOWN:
           if (++SelectedRaw[curmapspace] >=numraws) SelectedRaw[curmapspace]=0;
           if (MSMCOMMONS) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
+          if (MSMTHERMALS) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
           break;
       case LKEVENT_UP:
           if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=numraws-1;
           if (MSMCOMMONS) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
+          if (MSMTHERMALS) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
           break;
       case LKEVENT_PAGEUP:
           LKevent=LKEVENT_NONE;
@@ -891,6 +939,89 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 	}
       } // MSMAIRSPACES
 
+      if (MSMTHERMALS) {
+          if ( (rli>=0) && (CopyThermalHistory[rli].Valid==true) ) {
+
+              LK_tcsncpy(Buffer, CopyThermalHistory[rli].Name, s_maxnlname[curmapspace]);
+
+              if (IsThermalMultitarget(rli)) {
+                  TCHAR buffer2[40];
+                  _stprintf(buffer2,_T(">%s"),Buffer);
+                  _tcscpy(Buffer,buffer2);
+              }
+              CharUpper(Buffer);
+
+              _tcscpy(Buffer1[i][curpage],Buffer);
+
+              // Distance
+              value=CopyThermalHistory[rli].Distance*DISTANCEMODIFY;
+              if (!ScreenLandscape)
+                  _stprintf(Buffer2[i][curpage],TEXT("%0.1lf %s"),value,Units::GetDistanceName());
+                else
+                  _stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
+
+              // relative bearing
+
+              if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+                  value = CopyThermalHistory[rli].Bearing -  DrawInfo.TrackBearing;
+                  if (value < -180.0)
+                      value += 360.0;
+                  else
+                      if (value > 180.0)
+                          value -= 360.0;
+
+                  if (value > 1)
+                      _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")),gettext(_T("_@M2183_")));
+                  else
+                      if (value < -1)
+                          _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"),gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
+                      else
+                          _stprintf(Buffer3[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
+              } else {
+                  _stprintf(Buffer3[i][curpage], _T("%2.0f%s"), CopyThermalHistory[rli].Bearing, gettext(_T("_@M2179_")));
+              }
+
+
+                // Average lift
+                value=LIFTMODIFY*CopyThermalHistory[rli].Lift;
+                if (value<-99 || value>99)
+                        _stprintf(Buffer4[i][curpage],_T("---"));
+                else {
+                        _stprintf(Buffer4[i][curpage],_T("%+.1f"),value);
+                }
+
+                // Altitude
+                value=ALTITUDEMODIFY*CopyThermalHistory[rli].Arrival;
+                if (value<-1000 || value >45000 )
+                        _stprintf(Buffer5[i][curpage],_T("---"));
+                else {
+                        if (!ScreenLandscape) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"),value,Units::GetAltitudeName() );
+                        else _stprintf(Buffer5[i][curpage], TEXT("%.0f"),value);
+                }
+
+
+        } else {
+            // Empty thermals, fill in all empty data and maybe break loop
+            _stprintf(Buffer1[i][curpage],_T("------------"));
+            _stprintf(Buffer2[i][curpage],_T("---"));
+            _stprintf(Buffer3[i][curpage],_T("---"));
+            _stprintf(Buffer4[i][curpage],_T("---"));
+            _stprintf(Buffer5[i][curpage],_T("---"));
+        }
+
+        if ((rli>=0) && (CopyThermalHistory[rli].Valid==true)) {
+            drawn_items_onpage++;
+            if (CopyThermalHistory[rli].Arrival >=0) {
+                rcolor=RGB_WHITE;
+                Surface.SelectObject(LK8InfoBigFont);
+            } else {
+                rcolor=RGB_LIGHTRED;
+                Surface.SelectObject(LK8InfoBigItalicFont);
+            }
+        } else {
+            rcolor=RGB_GREY;
+        }
+      } // MSMTHERMALS
 
       Surface.SelectObject(bigFont); 
       if (!usetwolines) {
