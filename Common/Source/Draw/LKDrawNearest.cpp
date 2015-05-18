@@ -30,6 +30,7 @@ bool ValidAirspace(int i) {
 
 void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
+UseTwoLines=0;
   static TCHAR Buffer1[MAXNEAREST][MAXNUMPAGES][24];
   static TCHAR Buffer2[MAXNEAREST][MAXNUMPAGES][12];
   static TCHAR Buffer3[MAXNEAREST][MAXNUMPAGES][12];
@@ -233,7 +234,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   min_name[MSM_NEARTPS]= MINNAME_COMMON_CONDITION;
   min_name[MSM_COMMON]= MINNAME_COMMON_CONDITION;
   min_name[MSM_RECENT]= MINNAME_COMMON_CONDITION;
-  min_name[MSM_THERMALS]= MINNAME_COMMON_CONDITION;
+  min_name[MSM_THERMALS]= (ScreenLandscape?6:2);
   min_name[MSM_AIRSPACES]= (ScreenLandscape?15:6);
 
   ratio1_threshold[MSM_LANDABLE]=10;   //  if (size_name==9)ratio=3;
@@ -852,7 +853,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 		switch(LKAirspaces[rli].WarningLevel) {
 			case awYellow:
 				value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
-				if (!ScreenLandscape && usetwolines) 
+				if (usetwolines) 
        				    _stprintf(Buffer3[i][curpage],TEXT("%0.1lf%s!"),value,Units::GetDistanceName());
 				else
        				    _stprintf(Buffer3[i][curpage],TEXT("%0.1lf!"),value);
@@ -862,7 +863,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 				break;
 			default:
 				value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
-				if (!ScreenLandscape && usetwolines) 
+				if (usetwolines) 
        				    _stprintf(Buffer3[i][curpage],TEXT("%0.1lf%s"),value,Units::GetDistanceName());
 				else
        				    _stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
@@ -955,7 +956,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
               // Distance
               value=CopyThermalHistory[rli].Distance*DISTANCEMODIFY;
-              if (!ScreenLandscape)
+              if (usetwolines)
                   _stprintf(Buffer2[i][curpage],TEXT("%0.1lf %s"),value,Units::GetDistanceName());
                 else
                   _stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
@@ -995,7 +996,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                 if (value<-1000 || value >45000 )
                         _stprintf(Buffer5[i][curpage],_T("---"));
                 else {
-                        if (!ScreenLandscape) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"),value,Units::GetAltitudeName() );
+                        if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"),value,Units::GetAltitudeName() );
                         else _stprintf(Buffer5[i][curpage], TEXT("%.0f"),value);
                 }
 
