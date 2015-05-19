@@ -161,6 +161,7 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 	case MSM_RECENT:
 	case MSM_AIRSPACES:
 	case MSM_THERMALS:
+	case MSM_TRAFFIC:
 		DrawNearest(Surface, rc);
 		break;
 	case MSM_MAP:
@@ -175,9 +176,6 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 	case MSM_INFO_TARGET:
 	case MSM_INFO_CONTEST:
 		DrawInfoPage(Surface,rc, false);
-		break;
-	case MSM_TRAFFIC:
-		DrawTraffic(Surface,rc);
 		break;
 
   default:

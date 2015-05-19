@@ -638,7 +638,6 @@ DRAW	:=\
 	$(DRW)/LKDrawNearest.cpp \
 	$(DRW)/LKDrawTargetTraffic.cpp \
 	$(DRW)/LKDrawTrail.cpp \
-	$(DRW)/LKDrawTraffic.cpp \
 	$(DRW)/LKDrawVario.cpp \
 	$(DRW)/LKDrawWaypoints.cpp \
 	$(DRW)/LKDrawWelcome.cpp \

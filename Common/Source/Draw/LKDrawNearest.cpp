@@ -26,11 +26,11 @@ bool ValidAirspace(int i) {
                       curmapspace==MSM_COMMON||curmapspace==MSM_RECENT) 
 #define MSMAIRSPACES (curmapspace==MSM_AIRSPACES)
 #define MSMTHERMALS  (curmapspace==MSM_THERMALS)
+#define MSMTRAFFIC  (curmapspace==MSM_TRAFFIC)
 
 
 void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
-UseTwoLines=0;
   static TCHAR Buffer1[MAXNEAREST][MAXNUMPAGES][24];
   static TCHAR Buffer2[MAXNEAREST][MAXNUMPAGES][12];
   static TCHAR Buffer3[MAXNEAREST][MAXNUMPAGES][12];
@@ -124,6 +124,7 @@ UseTwoLines=0;
   // Thermal average
   _stprintf(Buffer,TEXT("+55.5")); 
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K3TextSize[MSM_THERMALS]);
+  Surface.GetTextSize( Buffer, _tcslen(Buffer), &K3TextSize[MSM_TRAFFIC]);
 
   //
   // COMMON TYPES (Distance, Bearing, Altitude Diff,  Efficiency)
@@ -143,6 +144,7 @@ UseTwoLines=0;
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K1TextSize[MSM_RECENT]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K2TextSize[MSM_AIRSPACES]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K1TextSize[MSM_THERMALS]);
+  Surface.GetTextSize( Buffer, _tcslen(Buffer), &K1TextSize[MSM_TRAFFIC]);
 
 
   // BEARING
@@ -155,6 +157,7 @@ UseTwoLines=0;
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K2TextSize[MSM_RECENT]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K3TextSize[MSM_AIRSPACES]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K2TextSize[MSM_THERMALS]);
+  Surface.GetTextSize( Buffer, _tcslen(Buffer), &K2TextSize[MSM_TRAFFIC]);
 
 
   // REQUIRED EFFICIENCY (max 200)
@@ -183,6 +186,7 @@ UseTwoLines=0;
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K4TextSize[MSM_COMMON]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K4TextSize[MSM_RECENT]);
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &K4TextSize[MSM_THERMALS]);
+  Surface.GetTextSize( Buffer, _tcslen(Buffer), &K4TextSize[MSM_TRAFFIC]); // we dont use +-
 
 
   Surface.SelectObject(LK8PanelMediumFont);
@@ -201,6 +205,7 @@ UseTwoLines=0;
   Column0[MSM_RECENT]=Column0[MSM_LANDABLE];
   Column0[MSM_AIRSPACES]=Column0[MSM_LANDABLE];
   Column0[MSM_THERMALS]=Column0[MSM_LANDABLE];
+  Column0[MSM_TRAFFIC]=Column0[MSM_LANDABLE];
 
   Column1[MSM_AIRPORTS]=Column1[MSM_LANDABLE];
   Column1[MSM_NEARTPS]=Column1[MSM_LANDABLE];
@@ -208,6 +213,7 @@ UseTwoLines=0;
   Column1[MSM_RECENT]=Column1[MSM_LANDABLE];
   Column1[MSM_AIRSPACES]=Column1[MSM_LANDABLE];
   Column1[MSM_THERMALS]=Column1[MSM_LANDABLE];
+  Column1[MSM_TRAFFIC]=Column1[MSM_LANDABLE];
 
   Column5[MSM_AIRPORTS]=Column5[MSM_LANDABLE];
   Column5[MSM_NEARTPS]=Column5[MSM_LANDABLE];
@@ -215,6 +221,7 @@ UseTwoLines=0;
   Column5[MSM_RECENT]=Column5[MSM_LANDABLE];
   Column5[MSM_AIRSPACES]=Column5[MSM_LANDABLE];
   Column5[MSM_THERMALS]=Column5[MSM_LANDABLE];
+  Column5[MSM_TRAFFIC]=Column5[MSM_LANDABLE];
   //
 
   max_name[MSM_LANDABLE]=MAXNLNAME;
@@ -222,8 +229,9 @@ UseTwoLines=0;
   max_name[MSM_NEARTPS]=MAXNLNAME;
   max_name[MSM_COMMON]=MAXNLNAME;
   max_name[MSM_RECENT]=MAXNLNAME;
-  max_name[MSM_THERMALS]=8; // 7 is enough
   max_name[MSM_AIRSPACES]=18;
+  max_name[MSM_THERMALS]=8; // 7 is enough
+  max_name[MSM_TRAFFIC]=MAXFLARMNAME;
 
   // So, how long we want the name, minimally? The remaining space will be
   // equally divided for spacing the other items on the row, and increasing
@@ -236,6 +244,7 @@ UseTwoLines=0;
   min_name[MSM_RECENT]= MINNAME_COMMON_CONDITION;
   min_name[MSM_THERMALS]= (ScreenLandscape?6:2);
   min_name[MSM_AIRSPACES]= (ScreenLandscape?15:6);
+  min_name[MSM_TRAFFIC]= (ScreenLandscape?6:2);
 
   ratio1_threshold[MSM_LANDABLE]=10;   //  if (size_name==9)ratio=3;
   ratio2_threshold[MSM_LANDABLE]=11;  //  if (size_name==11)ratio=4;
@@ -252,6 +261,8 @@ UseTwoLines=0;
   ratio2_threshold[MSM_AIRSPACES]=18;
   ratio1_threshold[MSM_THERMALS]=8; // unused really
   ratio2_threshold[MSM_THERMALS]=9;
+  ratio1_threshold[MSM_TRAFFIC]=8; // unused really
+  ratio2_threshold[MSM_TRAFFIC]=9;
 
 
   // CALCULATE THE BEST POSSIBLE SIZE FOR THE ITEM NAME
@@ -378,6 +389,7 @@ UseTwoLines=0;
   SortBoxX[MSM_RECENT][0]   =s_sortBox[0].right;
   SortBoxX[MSM_AIRSPACES][0] =s_sortBox[0].right;
   SortBoxX[MSM_THERMALS][0] =s_sortBox[0].right;
+  SortBoxX[MSM_TRAFFIC][0] =s_sortBox[0].right;
 
   int headerspacing= (right-s_sortBox[0].right)/4; // used only for monoline portrait
 
@@ -392,6 +404,7 @@ UseTwoLines=0;
   SortBoxX[MSM_RECENT][1]=s_sortBox[1].right;
   SortBoxX[MSM_AIRSPACES][1]   =s_sortBox[1].right;
   SortBoxX[MSM_THERMALS][1]   =s_sortBox[1].right;
+  SortBoxX[MSM_TRAFFIC][1] =s_sortBox[1].right;
 
   s_sortBox[2].left=s_sortBox[1].right+HMARGIN; 
   s_sortBox[2].right=s_sortBox[1].right+headerspacing;
@@ -404,6 +417,7 @@ UseTwoLines=0;
   SortBoxX[MSM_RECENT][2]=s_sortBox[2].right;
   SortBoxX[MSM_AIRSPACES][2]   =s_sortBox[2].right;
   SortBoxX[MSM_THERMALS][2]   =s_sortBox[2].right;
+  SortBoxX[MSM_TRAFFIC][2] =s_sortBox[2].right;
 
   s_sortBox[3].left=s_sortBox[2].right+HMARGIN;
   s_sortBox[3].right=s_sortBox[2].right+headerspacing;
@@ -416,6 +430,7 @@ UseTwoLines=0;
   SortBoxX[MSM_RECENT][3]=s_sortBox[3].right;
   SortBoxX[MSM_AIRSPACES][3]   =s_sortBox[3].right;
   SortBoxX[MSM_THERMALS][3]   =s_sortBox[3].right;
+  SortBoxX[MSM_TRAFFIC][3] =s_sortBox[3].right;
 
   s_sortBox[4].left=s_sortBox[3].right+HMARGIN;
   s_sortBox[4].right=right;
@@ -428,6 +443,7 @@ UseTwoLines=0;
   SortBoxX[MSM_RECENT][4]=s_sortBox[4].right;
   SortBoxX[MSM_AIRSPACES][4]   =s_sortBox[4].right;
   SortBoxX[MSM_THERMALS][4]   =s_sortBox[4].right;
+  SortBoxX[MSM_TRAFFIC][4] =s_sortBox[4].right;
 
   SortBoxY[MSM_LANDABLE]=p1.y;
   SortBoxY[MSM_AIRPORTS]=p1.y;
@@ -436,6 +452,7 @@ UseTwoLines=0;
   SortBoxY[MSM_RECENT]=p1.y;
   SortBoxY[MSM_AIRSPACES]=p1.y;
   SortBoxY[MSM_THERMALS]=p1.y;
+  SortBoxY[MSM_TRAFFIC]=p1.y;
 
   Numpages=roundupdivision(MAXNEAREST*lincr, numraws);
 
@@ -449,6 +466,7 @@ UseTwoLines=0;
   SelectedRaw[MSM_RECENT]=0; SelectedPage[MSM_RECENT]=0;
   SelectedRaw[MSM_AIRSPACES]=0; SelectedPage[MSM_AIRSPACES]=0;
   SelectedRaw[MSM_THERMALS]=0; SelectedPage[MSM_THERMALS]=0;
+  SelectedRaw[MSM_TRAFFIC]=0; SelectedPage[MSM_TRAFFIC]=0;
 
   hColumn2=s_sortBox[1].right-NIBLSCALE(2); 
   hColumn3=s_sortBox[2].right-NIBLSCALE(2);
@@ -547,6 +565,17 @@ UseTwoLines=0;
           headertoken[3]=1673; // Avg
           headertoken[4]=compact_headers?1303:1307; 
           break;
+      case MSM_TRAFFIC:
+          pSortedIndex=LKSortedTraffic;
+          pSortedNumber=&LKNumTraffic;
+          pLastDoNearest=&LastDoTraffic;
+          pNearestDataReady=NULL;
+          headertoken[0]= 1331; // TRF
+          headertoken[1]=compact_headers?1300:1304;
+          headertoken[2]=compact_headers?1301:1305;
+          headertoken[3]=1673; // Avg
+          headertoken[4]=1334; // Alt
+          break;
       default:
           pSortedIndex=CommonIndex;
           pSortedNumber=&CommonNumber;
@@ -561,7 +590,7 @@ UseTwoLines=0;
   }
 
   if (MSMTHERMALS) DoThermalHistory(&DrawInfo,  &DerivedDrawInfo);
-
+  if (MSMTRAFFIC)  DoTraffic(&DrawInfo,  &DerivedDrawInfo);
 
   Numpages=roundupdivision(*pSortedNumber*lincr, numraws);
   if (Numpages>MAXNUMPAGES) Numpages=MAXNUMPAGES;
@@ -615,6 +644,16 @@ UseTwoLines=0;
               }
               InputEvents::processPopupDetails(InputEvents::PopupThermal, i);
           }
+          if (MSMTRAFFIC) {
+              if ( (i<0) || (i>=MAXTRAFFIC) || (LKTraffic[i].ID<=0) ) {
+                   #if 0 // selection while waiting for data ready
+                   if (LKNumTraffic>0)
+                       DoStatusMessage(_T("ERR-045 Invalid selection")); 
+                   #endif
+                   break;
+              }
+              InputEvents::processPopupDetails(InputEvents::PopupTraffic, i);
+          }
           LKevent=LKEVENT_NONE; 
           return;
           break;
@@ -622,11 +661,13 @@ UseTwoLines=0;
           if (++SelectedRaw[curmapspace] >=numraws) SelectedRaw[curmapspace]=0;
           if (MSMCOMMONS) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
           if (MSMTHERMALS) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
+          if (MSMTRAFFIC) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
           break;
       case LKEVENT_UP:
           if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=numraws-1;
           if (MSMCOMMONS) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
           if (MSMTHERMALS) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
+          if (MSMTRAFFIC) *pLastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
           break;
       case LKEVENT_PAGEUP:
           LKevent=LKEVENT_NONE;
@@ -1023,6 +1064,125 @@ UseTwoLines=0;
             rcolor=RGB_GREY;
         }
       } // MSMTHERMALS
+
+      if (MSMTRAFFIC) {
+	if ( (rli>=0) && (LKTraffic[rli].ID>0) ) {
+
+		// Traffic name
+		int wlen=_tcslen(LKTraffic[rli].Name);
+
+		// if name is unknown then it is a '?'
+		if (wlen==1) { 
+			_stprintf(Buffer,_T("%06x"),(unsigned)LKTraffic[rli].ID);
+			Buffer[s_maxnlname[curmapspace]]='\0';
+		} else {
+			// if XY I-ABCD  doesnt fit..
+			if ( (wlen+3)>s_maxnlname[curmapspace]) {
+				LK_tcsncpy(Buffer, LKTraffic[rli].Name, s_maxnlname[curmapspace]);
+			}
+			else {
+				unsigned short cnlen=_tcslen(LKTraffic[rli].Cn);
+				// if cn is XY create XY I-ABCD
+				if (cnlen==1 || cnlen==2) {
+					_tcscpy(Buffer,LKTraffic[rli].Cn);
+					_tcscat(Buffer,_T(" "));
+					_tcscat(Buffer,LKTraffic[rli].Name);
+					// for safety
+					Buffer[s_maxnlname[curmapspace]]='\0';
+				} else {
+					// else use only long name
+					LK_tcsncpy(Buffer, LKTraffic[rli].Name, wlen);
+				}
+			}
+			CharUpper(Buffer);
+		}
+		if (LKTraffic[rli].Locked) {
+			TCHAR buf2[LKSIZEBUFFERLARGE];
+			_stprintf(buf2,_T("*%s"),Buffer);
+			buf2[s_maxnlname[curmapspace]]='\0';
+			_tcscpy(Buffer,buf2);
+		}
+		#ifdef DEBUG_LKT_DRAWTRAFFIC
+		StartupStore(_T(".. Traffic[%d] Name=<%s> Id=<%0x> Status=%d Named:<%s>\n"),rli,LKTraffic[rli].Name,
+			LKTraffic[rli].ID, LKTraffic[rli].Status,Buffer);
+		#endif
+		_tcscpy(Buffer1[i][curpage],Buffer); 
+
+		// Distance
+		value=LKTraffic[rli].Distance*DISTANCEMODIFY;
+               if (usetwolines) 
+                    _stprintf(Buffer2[i][curpage],TEXT("%0.1lf %s"),value,Units::GetDistanceName());
+                else
+                    _stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
+
+		// relative bearing
+
+		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+			value = LKTraffic[rli].Bearing -  DrawInfo.TrackBearing;
+
+			if (value < -180.0)
+				value += 360.0;
+			else
+				if (value > 180.0)
+					value -= 360.0;
+
+			if (value > 1)
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
+			else
+				if (value < -1)
+					_stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
+				else
+					_stprintf(Buffer3[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
+		} else {
+			_stprintf(Buffer3[i][curpage], _T("%2.0fxB0"), LKTraffic[rli].Bearing);
+		}
+			
+
+		// Vario
+		value=LIFTMODIFY*LKTraffic[rli].Average30s;
+		if (value<-6 || value>6) 
+			_tcscpy(Buffer4[i][curpage],_T("---"));
+		else {
+			_stprintf(Buffer4[i][curpage],_T("%+.1f"),value);
+		}
+
+		// Altitude
+		value=ALTITUDEMODIFY*LKTraffic[rli].Altitude;
+		if (value<-1000 || value >45000 )
+			_tcscpy(Buffer5[i][curpage],_T("---"));
+		else {
+                        if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"),value,Units::GetAltitudeName() );
+                        else _stprintf(Buffer5[i][curpage], TEXT("%.0f"),value);
+                }
+
+
+	} else {
+		// Empty traffic, fill in all empty data and maybe break loop
+		_tcscpy(Buffer1[i][curpage],_T("------------"));
+		_tcscpy(Buffer2[i][curpage],_T("---"));
+		_tcscpy(Buffer3[i][curpage],_T("---"));
+		_tcscpy(Buffer4[i][curpage],_T("---"));
+		_tcscpy(Buffer5[i][curpage],_T("---"));
+	}
+
+
+	if ((rli>=0) && (LKTraffic[rli].ID>0)) {
+		drawn_items_onpage++;
+		if (LKTraffic[rli].Status == LKT_REAL) {
+			rcolor=RGB_WHITE;
+  			Surface.SelectObject(LK8InfoBigFont);
+		} else {
+			if (LKTraffic[rli].Status == LKT_GHOST) {
+				rcolor=RGB_LIGHTYELLOW;
+			} else {
+				rcolor=RGB_LIGHTRED;
+			}
+  			Surface.SelectObject(LK8InfoBigItalicFont);
+		}
+	} else {
+		rcolor=RGB_GREY;
+        }
+      } // MSMTRAFFIC
 
       Surface.SelectObject(bigFont); 
       if (!usetwolines) {

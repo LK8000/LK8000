@@ -350,7 +350,7 @@ shortcut_gesture:
 						numpages=Numpages;
 						break;
 			case MSM_TRAFFIC:
-						numpages=TrafficNumpages;
+						numpages=Numpages;
 						break;
 			case MSM_THERMALS:
 						numpages=Numpages;

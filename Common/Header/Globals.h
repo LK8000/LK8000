@@ -387,18 +387,15 @@ GEXTERN short SelectedRaw[MSM_TOP+1];
 GEXTERN short SelectedPage[MSM_TOP+1];
 
 GEXTERN short Numpages;
-GEXTERN short TrafficNumpages;
 GEXTERN short ModeIndex;
 
 // LK8000 sync flags
 GEXTERN bool NearestDataReady;
 GEXTERN bool CommonDataReady;
 GEXTERN bool RecentDataReady;
-// GEXTERN bool NearestTurnpointDataReady; 101222
 GEXTERN bool LKForceDoNearest;
 GEXTERN bool LKForceDoCommon;
 GEXTERN bool LKForceDoRecent;
-// GEXTERN bool LKForceDoNearestTurnpoint; 101222
 GEXTERN short LKevent;
 GEXTERN bool LKForceComPortReset;
 GEXTERN bool LKDoNotResetComms;

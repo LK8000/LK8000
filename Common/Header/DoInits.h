@@ -42,7 +42,6 @@
 	MDI_DRAWMAPSPACE,		// screen change
 	MDI_DRAWNEAREST,		// screen change, font change
 	MDI_DRAWTARGET,			// screen change
-	MDI_DRAWTRAFFIC,		// screen change, font change
 	MDI_DRAWVARIO,			// screen change
 	MDI_GETOVERTARGETHEADER,	// language change
 	MDI_PROCESSVIRTUALKEY,		// screen change
