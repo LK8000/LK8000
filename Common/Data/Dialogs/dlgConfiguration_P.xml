@@ -377,15 +377,27 @@
       </WndProperty>
     </WndFrame>
     <WndFrame Name="frmFonts" X="1" Y="0" Width="-1" Height="222" Font="2">
-      <WndProperty Name="prpUseCustomFonts" Caption="_@M208_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H192_">
-        <DataField Name="" DataType="boolean" Min="0" Max="50" Step="1"  OnDataAccess="OnUseCustomFontData"/>
+      <WndProperty Name="prpOverlaySize" Caption="_@M1884_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H238_">
+        <DataField Name="" DataType="enum" Min="0" Max="10" Step="1" />
       </WndProperty>
-      <WndProperty Name="prpMapWindowFont" Caption="_@M424_" X="2" Y="-997"  Width="180" Height="22" CaptionWidth="180" Font="2" ReadOnly="1">
+      <WndProperty Name="prpFontMapWaypoint" Caption="_@M1880_" X="-1" Y="-998"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
+   <DataField Name="" DataType="enum"/>
       </WndProperty>
-      <WndButton   Name="cmdMapWindowFont" Caption="_@M252_" X="180" Y="-999" Width="50"  Height="22" Font="2" OnClickNotify="OnEditMapWindowFontClicked"/>
-      <WndProperty Name="prpMapLabelFont" Caption="_@M734_" X="2" Y="-997"  Width="180" Height="22" CaptionWidth="180" Font="2" ReadOnly="1">
+      <WndProperty Name="prpFontMapTopology" Caption="_@M1881_" X="-1" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
+   <DataField Name="" DataType="enum"/>
       </WndProperty>
-      <WndButton   Name="cmdMapLabelFont" Caption="_@M252_" X="180" Y="-999" Width="50"  Height="22" Font="2" OnClickNotify="OnEditMapLabelFontClicked"/>
+      <WndProperty Name="prpFontInfopage1L" Caption="_@M1882_" X="-1" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
+   <DataField Name="" DataType="enum"/>
+      </WndProperty>
+      <WndProperty Name="prpFontBottomBar" Caption="_@M1883_" X="-1" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
+   <DataField Name="" DataType="enum"/>
+      </WndProperty>
+      <WndProperty Name="prpUseTwoLines" Caption="_@M1885_" X="-1" Y="-997" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1292_">
+        <DataField Name="" DataType="boolean" />
+      </WndProperty>
+
+
+
     </WndFrame>
     <WndFrame Name="frmVarioAppearance" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpLook8000" Caption="_@M585_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H193_">

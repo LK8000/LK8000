@@ -11,6 +11,8 @@
 
 extern void ApplyClearType(LOGFONT *logfont);
 extern void ApplyFontSize(LOGFONT *logfont);
+extern void ApplyCustomResize(LOGFONT *logfont, short change);
+
 extern void InitializeOneFont (LKFont& theFont, LOGFONT logfont);
 
 //
@@ -493,20 +495,16 @@ void Init_Fonts_2(void)
   if (ScreenSize==0) StartupStore(_T("... (LKFonts) Forcing font resize%s"),NEWLINE);
   #endif
 
-  InitializeOneFont(LK8BottomBarUnitFont, logfontBottomBarUnit);
+  // CREATE STANDARD FONTS
+  //
   InitializeOneFont(LK8TitleFont, logfontTitle);
   InitializeOneFont(LK8MapFont, logfontMap);
   InitializeOneFont(LK8GenericVar01Font, logfontGenericVar01);
   InitializeOneFont(LK8GenericVar02Font, logfontGenericVar02);
-  InitializeOneFont(LK8BottomBarValueFont, logfontBottomBarValue);
   InitializeOneFont(LK8TargetFont, logfontTarget);
   InitializeOneFont(LK8BigFont, logfontBig);
   InitializeOneFont(LK8MediumFont, logfontMedium);
   InitializeOneFont(LK8SmallFont, logfontSmall);
-  InitializeOneFont(LK8InfoBigFont, logfontInfoBig);
-  InitializeOneFont(LK8InfoBigItalicFont, logfontInfoBigItalic);
-  InitializeOneFont(LK8InfoBig2LFont, logfontInfoBig2L);
-  InitializeOneFont(LK8InfoBigItalic2LFont, logfontInfoBigItalic2L);
   InitializeOneFont(LK8InfoNormalFont, logfontInfoNormal);
   InitializeOneFont(LK8InfoNearestFont, logfontInfoNearest);
   InitializeOneFont(LK8InfoSmallFont, logfontInfoSmall);
@@ -514,7 +512,24 @@ void Init_Fonts_2(void)
   InitializeOneFont(LK8PanelMediumFont, logfontPanelMedium);
   InitializeOneFont(LK8PanelSmallFont, logfontPanelSmall);
   InitializeOneFont(LK8PanelUnitFont, logfontPanelUnit);
+
+  // CREATE CUSTOM FONTS 
+  //
+  ApplyCustomResize(&logfontBottomBarTitle,FontBottomBar);
   InitializeOneFont(LK8BottomBarTitleFont, logfontBottomBarTitle);
+  ApplyCustomResize(&logfontBottomBarValue,FontBottomBar);
+  InitializeOneFont(LK8BottomBarValueFont, logfontBottomBarValue);
+  ApplyCustomResize(&logfontBottomBarUnit,FontBottomBar);
+  InitializeOneFont(LK8BottomBarUnitFont, logfontBottomBarUnit);
+  ApplyCustomResize(&logfontInfoBig,FontInfopage1L);
+  InitializeOneFont(LK8InfoBigFont, logfontInfoBig);
+  ApplyCustomResize(&logfontInfoBigItalic,FontInfopage1L);
+  InitializeOneFont(LK8InfoBigItalicFont, logfontInfoBigItalic);
+  ApplyCustomResize(&logfontInfoBig2L,FontInfopage1L);
+  InitializeOneFont(LK8InfoBig2LFont, logfontInfoBig2L);
+  ApplyCustomResize(&logfontInfoBigItalic2L,FontInfopage1L);
+  InitializeOneFont(LK8InfoBigItalic2LFont, logfontInfoBigItalic2L);
+
 
   //
   // CALCULATE BOTTOMSIZE HEIGHT

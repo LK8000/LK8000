@@ -201,6 +201,14 @@ char szRegistryFinishLine[]=		 "FinishLine";
 char szRegistryFinishMinHeight[]= "FinishMinHeight";
 char szRegistryFinishRadius[]=		 "FinishRadius";
 char szRegistryFontRenderer[]= "FontRenderer2";
+char szRegistryFontMapWaypoint[]= "FontMapWaypoint";
+char szRegistryFontMapTopology[]= "FontMapTopology";
+char szRegistryFontInfopage1L[]= "FontInfopage1L";
+char szRegistryFontInfopage2L[]= "FontInfopage2L";
+char szRegistryFontBottomBar[]= "FontBottomBar";
+char szRegistryFontCustom1[]= "FontCustom1";
+
+
 char szRegistryGlideBarMode[]= "GlideBarMode";
 char szRegistryGliderScreenPosition[] = "GliderScreenPosition";
 char szRegistryGpsAltitudeOffset[] = "GpsAltitudeOffset";
@@ -493,6 +501,12 @@ extern const char szRegistryFinishLine[];
 extern const char szRegistryFinishMinHeight[];
 extern const char szRegistryFinishRadius[];
 extern const char szRegistryFontRenderer[];
+extern const char szRegistryFontMapWaypoint[];
+extern const char szRegistryFontMapTopology[];
+extern const char szRegistryFontInfopage1L[];
+extern const char szRegistryFontInfopage2L[];
+extern const char szRegistryFontBottomBar[];
+extern const char szRegistryFontCustom1[];
 extern const char szRegistryGlideBarMode[];
 extern const char szRegistryGliderScreenPosition[];
 extern const char szRegistryGpsAltitudeOffset[];

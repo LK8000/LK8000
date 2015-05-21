@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT updated 150423
+# LK8000 ENG_HLP.TXT updated 150521
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -1837,6 +1837,12 @@ This configuration is used to set sonar mode on startup. Changing the sonar mode
 
 @1291
 [Conical ESS Base Radius]
+
+@1292
+[Use Two Lines]
+In portrait mode only: infopages 2.1 2.2 etc. print items on two lines, instead of one, to make it with bigger fonts.
+
+
 
 @9999
 No help available on this item!

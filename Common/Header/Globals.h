@@ -202,6 +202,14 @@ GEXTERN bool PGOptimizeRoute_Config;
 
 GEXTERN short OverlaySize;
 GEXTERN short BarOpacity;
+
+GEXTERN short FontMapWaypoint;
+GEXTERN short FontMapTopology;
+GEXTERN short FontInfopage1L;
+GEXTERN short FontInfopage2L;
+GEXTERN short FontBottomBar;
+GEXTERN short FontCustom1;
+
 GEXTERN short FontRenderer;
 GEXTERN bool LockModeStatus;
 

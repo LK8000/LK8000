@@ -395,9 +395,18 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryFinalGlideTerrain,&FinalGlideTerrain);
   PREAD(sname,svalue,szRegistryFinishLine,&FinishLine);
   PREAD(sname,svalue,szRegistryFinishMinHeight,&FinishMinHeight);
-  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryFinishRadius,&FinishRadius);
   PREAD(sname,svalue,szRegistryFontRenderer,&FontRenderer);
+  if (matchedstring) return;
+
+  PREAD(sname,svalue,szRegistryFontMapWaypoint,&FontMapWaypoint);
+  PREAD(sname,svalue,szRegistryFontMapTopology,&FontMapTopology);
+  PREAD(sname,svalue,szRegistryFontInfopage1L,&FontInfopage1L);
+  PREAD(sname,svalue,szRegistryFontInfopage2L,&FontInfopage2L);
+  PREAD(sname,svalue,szRegistryFontBottomBar,&FontBottomBar);
+  PREAD(sname,svalue,szRegistryFontCustom1,&FontCustom1);
+  if (matchedstring) return;
+
   PREAD(sname,svalue,szRegistryGlideBarMode,&GlideBarMode);
   PREAD(sname,svalue,szRegistryGliderScreenPosition,&MapWindow::GliderScreenPosition);
   PREAD(sname,svalue,szRegistryGpsAltitudeOffset,&GPSAltitudeOffset);

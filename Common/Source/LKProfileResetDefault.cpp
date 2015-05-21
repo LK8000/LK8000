@@ -457,6 +457,12 @@ void LKProfileResetDefault(void) {
   iFlarmDirection=0;
   AspPermanentChanged=0;
 
+  FontMapWaypoint=5;
+  FontMapTopology=5;
+  FontInfopage1L=5;
+  FontInfopage2L=5;
+  FontBottomBar=5;
+  FontCustom1=5;
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 

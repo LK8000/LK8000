@@ -58,10 +58,31 @@ void ApplyFontSize(LOGFONT *logfont) {
   if (ScreenSize==0) {
       logfont->lfHeight = (int)((double)logfont->lfHeight * Screen0Ratio);
   }
+
+
+
   #ifdef USE_FREETYPE 
   if (logfont->lfWeight == 600) logfont->lfHeight+=1000;
   #endif
   return;
+}
+
+
+void ApplyCustomResize(LOGFONT *logfont, short change) {
+
+  if (change!=5) {
+      int psign=1; short i;
+      //change goes from 0 to 4, 5 is neutral value, 6 to 10
+      if (change>5) {
+          psign=1;
+          i=change-5; // 6>>1 , 10>>5
+      } else {
+          psign=-1;
+          i=5-change; // 0>>5 , 4>>1
+      }
+      unsigned int u=  (double)(logfont->lfHeight*i) / 16.0;
+      logfont->lfHeight = logfont->lfHeight + (u*psign);
+  } 
 }
 
 
@@ -157,6 +178,7 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
 
 
 void InitLKFonts(void) {
+IMHERE
   Init_Fonts_1();
   Init_Fonts_2();
 }
@@ -533,16 +555,26 @@ void Init_Fonts_1(void)
   if (ScreenSize==0) StartupStore(_T("... (Fonts) Forcing font resize%s"),NEWLINE);
   #endif
 
+  // CREATE STANDARD FONTS
+  //
   InitializeOneFont (TitleWindowFont, logfontTitleWindowLogFont);
   InitializeOneFont (CDIWindowFont, logfontCDIWindowLogFont);
   InitializeOneFont (LK8GenericVar03Font, logfontGenericVar03Font);
-  InitializeOneFont (MapTopologyFont, logfontMapTopologyFont);
-  InitializeOneFont (Custom1Font, logfontCustom1Font);
-  InitializeOneFont (MapWaypointFont, logfontMapWaypointFont);
-  InitializeOneFont (MapWaypointBoldFont, logfontMapWaypointBoldFont);
   InitializeOneFont (MapScaleFont, logfontMapScaleFont);
   InitializeOneFont (MapWindowFont, logfontMapWindowLogFont);
   InitializeOneFont (MapWindowBoldFont, logfontMapWindowBoldLogFont);
+
+  // CREATE CUSTOM FONTS
+  //
+  ApplyCustomResize(&logfontMapWaypointFont,FontMapWaypoint);
+  InitializeOneFont (MapWaypointFont, logfontMapWaypointFont);
+  ApplyCustomResize(&logfontMapWaypointBoldFont,FontMapWaypoint);
+  InitializeOneFont (MapWaypointBoldFont, logfontMapWaypointBoldFont);
+  ApplyCustomResize(&logfontMapTopologyFont,FontMapTopology);
+  InitializeOneFont (MapTopologyFont, logfontMapTopologyFont);
+  ApplyCustomResize(&logfontCustom1Font,FontCustom1);
+  InitializeOneFont (Custom1Font, logfontCustom1Font);
+
 
   MainWindow.SetFont(MapWindowFont);
 }
