@@ -59,7 +59,7 @@ public:
     
     virtual bool Create(Window* pOwner, const RECT& rect);
 
-    HWND Handle() {
+    HWND Handle() const {
         return _hWnd;
     }
     
@@ -110,6 +110,17 @@ public:
         return rc;
     }
     
+    POINT GetPosition() const {
+        const RECT& rc = GetClientRect();
+        POINT pos = { rc.left, rc.top }; 
+        Window* Parent = GetParent();
+        if(Parent) {
+            ::ClientToScreen(Handle(), &pos);
+            ::ScreenToClient(Parent->Handle(), &pos);
+        }
+        return pos;
+    }
+    
     LONG GetWidth() const {
         const RECT& rc = GetClientRect();
         return rc.right - rc.left;
@@ -120,6 +131,22 @@ public:
         return rc.bottom - rc.top;
     }
 
+    LONG GetTop() const {
+        return GetPosition().y;
+    }
+
+    LONG GetLeft() const {
+        return GetPosition().x;
+    } 
+    
+    LONG GetRight() const {
+      return GetLeft() + GetWidth();
+    }
+
+    LONG GetBottom() const {
+      return GetTop() + GetHeight();
+    }    
+ 
     void Close() {
         ::SendMessage(_hWnd, WM_CLOSE, 0, 0);
     }
