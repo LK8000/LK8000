@@ -450,6 +450,7 @@ void Globals_Init(void) {
   POLARFILECHANGED = FALSE;
   LANGUAGEFILECHANGED = FALSE;
   INPUTFILECHANGED = FALSE;
+  FONTSCHANGED= false;
 
   ActiveWayPoint = -1;
   PanTaskEdit    = -1;

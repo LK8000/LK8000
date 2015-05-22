@@ -178,7 +178,6 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
 
 
 void InitLKFonts(void) {
-IMHERE
   Init_Fonts_1();
   Init_Fonts_2();
 }

@@ -4546,7 +4546,10 @@ int ival;
   }
 
   if (fontschanged) {
-
+      #if TESTBENCH
+      StartupStore(_T("..... dlgConfiguration: fontschanged requested\n"));
+      #endif
+      FONTSCHANGED=true;
   }
 
 #if (WINDOWSPC>0)

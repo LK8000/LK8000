@@ -674,6 +674,8 @@ short dlgStartupShowModal(void){
 					StartupStore(_T("... Selected new profile, preloading..\n"));
 					#endif
 					LKProfileLoad(startProfileFile);
+					extern void InitLKFonts();
+					InitLKFonts();
 					FullResetAsked=false;
 				}
 			}
