@@ -33,6 +33,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   int index=-1;
   double Value;
   short rcx, rcy;
+  short userow2=0;
 
   SIZE TextSize;
 
@@ -97,6 +98,9 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		splitoffset= ((rc.right-BB_ICONSIZE)-rc.left)/bbsplitter;
 		splitoffset2= splitoffset;
         }
+	#if TESTBENCH
+	StartupStore(_T("...... BottomBar splitter=%d\n"),bbsplitter);
+	#endif
 
 	
 	short ii;
@@ -332,7 +336,15 @@ _afterautotrm:
    *   THIRD VALUE
    */
 
-  if (ScreenLandscape && (bbsplitter<3)) goto EndOfNavboxes;
+///  if (ScreenLandscape && (bbsplitter<3)) goto EndOfNavboxes;
+  if (bbsplitter<3) {
+      if (ScreenLandscape) goto EndOfNavboxes;
+      userow2++;
+      rcx=rc.left+(splitoffset2/2);
+  }
+  else {
+      rcx+=splitoffset;
+  }
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -422,12 +434,10 @@ _afterautotrm:
 		showunit=LKFormatValue(LK_ERROR, true, BufferValue, BufferUnit, BufferTitle);
 		break;
   }
-
-  rcx+=splitoffset;
-  if (ScreenLandscape) {
-	#include "LKMW3include_navbox1.cpp"
+  if (ScreenLandscape|| userow2) {
+      #include "LKMW3include_navbox1.cpp"
   } else {
-	#include "LKMW3include_navbox2.cpp"
+      #include "LKMW3include_navbox2.cpp"
   }
   LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
@@ -435,6 +445,14 @@ _afterautotrm:
    *   FOURTH VALUE
    */
 
+  if (bbsplitter<4) {
+      if (ScreenLandscape) goto EndOfNavboxes;
+      if (++userow2 >bbsplitter) goto EndOfNavboxes;
+      rcx=rc.left+(splitoffset2/2)+((userow2-1)*splitoffset2);;
+  }
+  else {
+      rcx+=splitoffset;
+  }
   if (ScreenLandscape && (bbsplitter<4)) goto EndOfNavboxes;
   showunit=true;
   switch(BottomMode) {
@@ -507,19 +525,25 @@ _afterautotrm:
 		break;
   }
 
-
-  if (ScreenLandscape) {
-	rcx+=splitoffset;
-  }else {
-	rcx=rc.left+(splitoffset2/2);
+  if (ScreenLandscape|| userow2) {
+      #include "LKMW3include_navbox1.cpp"
+  } else {
+      #include "LKMW3include_navbox2.cpp"
   }
-  #include "LKMW3include_navbox1.cpp"
   LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   FIFTH VALUE
    */
-  if (ScreenLandscape && (bbsplitter<5)) goto EndOfNavboxes;
+  // if (ScreenLandscape && (bbsplitter<5)) goto EndOfNavboxes;
+  if (bbsplitter<5) {
+      if (ScreenLandscape) goto EndOfNavboxes;
+      if (++userow2 >bbsplitter) goto EndOfNavboxes;
+      rcx=rc.left+(splitoffset2/2)+((userow2-1)*splitoffset2);;
+  }
+  else {
+      rcx+=splitoffset;
+  }
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -618,20 +642,26 @@ _afterautotrm:
 		break;
   }
 
-
-  if (ScreenLandscape) {
-	rcx+=splitoffset;
-  }else {
-	rcx+=splitoffset2;
+  if (ScreenLandscape|| userow2) {
+      #include "LKMW3include_navbox1.cpp"
+  } else {
+      #include "LKMW3include_navbox2.cpp"
   }
-  #include "LKMW3include_navbox1.cpp"
 
   LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   SIXTH VALUE
    */
-  if (ScreenLandscape && (bbsplitter<6)) goto EndOfNavboxes;
+  // if (ScreenLandscape && (bbsplitter<6)) goto EndOfNavboxes;
+  if (bbsplitter<6) {
+      if (ScreenLandscape) goto EndOfNavboxes;
+      if (++userow2 >bbsplitter) goto EndOfNavboxes;
+      rcx=rc.left+(splitoffset2/2)+((userow2-1)*splitoffset2);;
+  }
+  else {
+      rcx+=splitoffset;
+  }
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -689,20 +719,26 @@ _afterautotrm:
 		break;
   }
 
-
-  if (ScreenLandscape) {
-	rcx+=splitoffset;
-  }else {
-	rcx+=splitoffset2;
+  if (ScreenLandscape|| userow2) {
+      #include "LKMW3include_navbox1.cpp"
+  } else {
+      #include "LKMW3include_navbox2.cpp"
   }
-  #include "LKMW3include_navbox1.cpp"
   LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
 
   /*
    *   SEVENTH VALUE
    */
-  if (ScreenLandscape && (bbsplitter<7)) goto EndOfNavboxes;
+  // if (ScreenLandscape && (bbsplitter<7)) goto EndOfNavboxes;
+  if (bbsplitter<7) {
+      if (ScreenLandscape) goto EndOfNavboxes;
+      if (++userow2 >bbsplitter) goto EndOfNavboxes;
+      rcx=rc.left+(splitoffset2/2)+((userow2-1)*splitoffset2);
+  }
+  else {
+      rcx+=splitoffset;
+  }
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -760,20 +796,26 @@ _afterautotrm:
 		break;
   }
 
-
-  if (ScreenLandscape) {
-	rcx+=splitoffset;
-  }else {
-	rcx+=splitoffset2;
+  if (ScreenLandscape|| userow2) {
+      #include "LKMW3include_navbox1.cpp"
+  } else {
+      #include "LKMW3include_navbox2.cpp"
   }
-  #include "LKMW3include_navbox1.cpp"
   LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
 
   /*
    *   EIGTH VALUE
    */
-  if (ScreenLandscape && (bbsplitter<8)) goto EndOfNavboxes;
+  ///if (ScreenLandscape && (bbsplitter<8)) goto EndOfNavboxes;
+  if (bbsplitter<8) {
+      if (ScreenLandscape) goto EndOfNavboxes;
+      if (++userow2 >bbsplitter) goto EndOfNavboxes;
+      rcx=rc.left+(splitoffset2/2)+((userow2-1)*splitoffset2);
+  }
+  else {
+      rcx+=splitoffset;
+  }
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -831,13 +873,11 @@ _afterautotrm:
 		break;
   }
 
-
-  if (ScreenLandscape) {
-	rcx+=splitoffset;
-  }else {
-	rcx+=splitoffset2;
+  if (ScreenLandscape|| userow2) {
+      #include "LKMW3include_navbox1.cpp"
+  } else {
+      #include "LKMW3include_navbox2.cpp"
   }
-  #include "LKMW3include_navbox1.cpp"
   LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
