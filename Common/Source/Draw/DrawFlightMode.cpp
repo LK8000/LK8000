@@ -7,10 +7,33 @@
 */
 
 #include "externs.h"
+#include "DoInits.h"
 #include "Bitmaps.h"
 #include "Multimap.h"
 
-extern bool FastZoom;
+extern bool FastZoom; // QUICKDRAW
+
+// locals
+static unsigned short use_rescale=0;
+static double newscale=1;
+
+static int rescale(int n) {
+  switch (use_rescale) {
+      case 0:
+          return n;
+          break;
+      case 1:
+          return IBLSCALE(n);
+          break;
+      case 2:
+          return (n*newscale);
+          break;
+      default:
+          break;
+  }
+  LKASSERT(0);
+  return n; // impossible
+}
 
 //
 // Bottom right corner indicators: Flight mode, Battery, Logger
@@ -18,80 +41,162 @@ extern bool FastZoom;
 void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 {
   static bool flip= true; 
-  int offset = -3;
+  static PixelSize loggerIconSize,mmIconSize, batteryIconSize;
+  static POINT loggerPoint, mmPoint, batteryPoint;
+  static PixelSize loggerNewSize, mmNewSize, batteryNewSize;
+  static int vsepar;
+
+  LKBitmap* ptmpBitmap = NULL;
+
+  if (DoInit[MDI_DRAWFLIGHTMODE]) {
+      DoInit[MDI_DRAWFLIGHTMODE]=false;
+
+      ptmpBitmap=&hLogger;
+      loggerIconSize = ptmpBitmap->GetSize();
+      loggerIconSize.cx /= 2;
+
+      ptmpBitmap=&hMM0;;
+      mmIconSize = ptmpBitmap->GetSize();
+      mmIconSize.cx /= 2;
+
+      ptmpBitmap=&hBattery12;;
+      batteryIconSize = ptmpBitmap->GetSize();
+      batteryIconSize.cx /= 2;
+
+      //
+      // determine if we can rescale. Preference is to keep standard rescale.
+      //
+      vsepar=NIBLSCALE(1);
+      #define HSEPAR NIBLSCALE(1)  // right border and items separator
+
+      use_rescale=1; // IBLSCALING
+      int minvsize= vsepar + rescale(mmIconSize.cy) + rescale(batteryIconSize.cy)+vsepar;
+      if (minvsize > BottomSize) {
+          use_rescale=0; // NO SCALING
+          minvsize= vsepar + rescale(mmIconSize.cy) + rescale(batteryIconSize.cy)+vsepar;
+          if (minvsize >= BottomSize) {
+              vsepar=0; // minimize interlines
+          } else {
+              // using unscaled bitmaps the BottomSize is taller than minvsize;
+              // lets see if we can enlarge them a bit. We cannot exceed the BB_ICONSIZE
+              newscale=BottomSize/(double)minvsize;
+              use_rescale=2;
+              int minhsize= rescale(batteryIconSize.cx) + HSEPAR + rescale(loggerIconSize.cx) + HSEPAR;
+              if (minhsize > (NIBLSCALE(26)+1)) { // BB_ICONSIZE! with tolerance 1
+                  for (; newscale>1; newscale-=0.1) {
+                      minhsize= rescale(batteryIconSize.cx) + HSEPAR + rescale(loggerIconSize.cx) + HSEPAR;
+                      if (minhsize<= (NIBLSCALE(26)+1)) break;
+                  }
+                  if (newscale <= 1) use_rescale=0; // give up, keep small bitmaps
+              }
+          }
+
+      }
+
+
+      //
+      // precalculate positions and sizes
+      //
+
+      loggerPoint.x=rc.right-rescale(loggerIconSize.cx)-HSEPAR; 
+      // center the logger icon in respect of battery icon which is bigger
+      loggerPoint.y=rc.bottom - BottomSize + rescale((batteryIconSize.cy-loggerIconSize.cy)/2) + vsepar;
+      loggerNewSize.cx= rescale(loggerIconSize.cx);
+      loggerNewSize.cy= rescale(loggerIconSize.cy);
+
+      batteryPoint.x= loggerPoint.x - rescale(batteryIconSize.cx) - HSEPAR;
+      batteryPoint.y= rc.bottom - BottomSize + vsepar;
+      batteryNewSize.cx= rescale(batteryIconSize.cx);
+      batteryNewSize.cy= rescale(batteryIconSize.cy);
+
+      mmPoint.x= rc.right - rescale(mmIconSize.cx) - HSEPAR;
+      mmPoint.x-=   (mmPoint.x - batteryPoint.x)/2;
+      mmPoint.y= rc.bottom - rescale(mmIconSize.cy)- vsepar;
+      mmNewSize.cx= rescale(mmIconSize.cx);
+      mmNewSize.cy= rescale(mmIconSize.cy);
+
+      // fine tuning for vertical spacing between items
+      int interline=  mmPoint.y - (batteryPoint.y+rescale(batteryIconSize.cy));
+      if (interline>4) {
+          loggerPoint.y += (interline/4);
+          batteryPoint.y += (interline/4);
+          mmPoint.y -= (interline/4);
+      }
+
+  } // endof doinit
+
 
   //
   // Logger indicator
   //
   flip = !flip;
 
-  if (!DisableAutoLogger || LoggerActive) {
-	if (LoggerActive || flip) {
-      Surface.DrawMaskedBitmap( rc.right+IBLSCALE(-8), rc.bottom - BottomSize+NIBLSCALE(4), NIBLSCALE(7),NIBLSCALE(7), LoggerActive?hLogger:hLoggerOff, 7,7);
-	}
-  }
-  
-
-  //
-  // Flight mode Icon
-  //
-  const LKBitmap* pBmpFlightMode = NULL;
-
-  if (IsMultiMapNoMain()) {
-	short i=Get_Current_Multimap_Type()-1;
-	switch(i) {
-		case 1:
-			pBmpFlightMode = &hMM1;
-			break;
-		case 2:
-			pBmpFlightMode = &hMM2;
-			break;
-		case 3:
-			pBmpFlightMode = &hMM3;
-			break;
-		case 4:
-			pBmpFlightMode = &hMM4;
-			break;
-		case 5:
-			pBmpFlightMode = &hMM5;
-			break;
-		case 6:
-			pBmpFlightMode = &hMM6;
-			break;
-		case 7:
-			pBmpFlightMode = &hMM7;
-			break;
-		case 8:
-			pBmpFlightMode = &hMM8;
-			break;
-		default:
-			pBmpFlightMode = &hMM0;
-			break;
-	}
+  if (DisableAutoLogger) {
+      ptmpBitmap = &hLoggerDisabled;
   } else {
-    if (mode.Is(Mode::MODE_CIRCLING)) {
-      pBmpFlightMode = &hClimb;
-    } else {
-      if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
-          pBmpFlightMode = &hFinalGlide;
+      if (LoggerActive) {
+          ptmpBitmap = &hLogger;
       } else {
-          pBmpFlightMode = &hCruise;
+          if (flip)
+              ptmpBitmap = &hLoggerOff;
+          else
+              ptmpBitmap = &hLoggerDisabled;
       }
-    }
   }
-  if(pBmpFlightMode && (*pBmpFlightMode)) {
-    PixelSize IconSize = pBmpFlightMode->GetSize();
-    IconSize.cx /= 2;
-    offset -= IconSize.cy;
+  if (ptmpBitmap)
+      Surface.DrawMaskedBitmap( loggerPoint.x, loggerPoint.y,
+          loggerNewSize.cx, loggerNewSize.cy, *ptmpBitmap, loggerIconSize.cx,loggerIconSize.cy);
+ 
+  //
+  // Big icon
+  //
 
-    Surface.DrawMaskedBitmap( rc.right+IBLSCALE(offset-1), rc.bottom+IBLSCALE(-IconSize.cx-1), IBLSCALE(IconSize.cx),IBLSCALE(IconSize.cy),	*pBmpFlightMode, IconSize.cx, IconSize.cy);
+  if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) {
+      ptmpBitmap = &hClimb;
+  } else {
+      short i=Get_Current_Multimap_Type()-1;
+      switch(i) {
+          case 0:
+              ptmpBitmap = &hMM0;
+              break;
+          case 1:
+              ptmpBitmap = &hMM1;
+              break;
+          case 2:
+              ptmpBitmap = &hMM2;
+              break;
+          case 3:
+              ptmpBitmap = &hMM3;
+              break;
+          case 4:
+              ptmpBitmap = &hMM4;
+              break;
+          case 5:
+              ptmpBitmap = &hMM5;
+              break;
+          case 6:
+              ptmpBitmap = &hMM6;
+              break;
+          case 7:
+              ptmpBitmap = &hMM7;
+              break;
+          case 8:
+              ptmpBitmap = &hMM8;
+              break;
+          default:
+              ptmpBitmap = &hMM0;
+              break;
+     }
   }
+
+  if(ptmpBitmap)
+      Surface.DrawMaskedBitmap( mmPoint.x, mmPoint.y, mmNewSize.cx,mmNewSize.cy, *ptmpBitmap, mmIconSize.cx, mmIconSize.cy);
 
   //
   // Battery indicator
   // 
 
-#if TESTBENCH && !defined(KOBO)
+  #if TESTBENCH && !defined(KOBO)
   // Battery test in Simmode will be available in testbench mode only
   if (SIMMODE && !(QUICKDRAW)) {; PDABatteryPercent-=1; if (PDABatteryPercent<0) PDABatteryPercent=100; }
   #else
@@ -99,61 +204,56 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   if (!HaveBatteryInfo) return;
   #endif
 
-  const LKBitmap* pBmpBattery = NULL;
   if ((PDABatteryPercent==0 || PDABatteryPercent>100) && PDABatteryStatus==Battery::ONLINE && PDABatteryFlag!=Battery::CHARGING) {
-	pBmpBattery = &hBatteryFullC;
+	ptmpBitmap = &hBatteryFullC;
 	goto _drawbattery;
   }
 
   if (PDABatteryPercent<=6) {
 	if (flip) return;
-	pBmpBattery = &hBattery12;
+	ptmpBitmap = &hBattery12;
 	goto _drawbattery;
   }
 
   if (PDABatteryPercent<=12) {
-	pBmpBattery = &hBattery12;
+	ptmpBitmap = &hBattery12;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=24) {
-	pBmpBattery = &hBattery24;
+	ptmpBitmap = &hBattery24;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=36) {
-	pBmpBattery = &hBattery36;
+	ptmpBitmap = &hBattery36;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=48) {
-	pBmpBattery = &hBattery48;
+	ptmpBitmap = &hBattery48;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=60) {
-	pBmpBattery = &hBattery60;
+	ptmpBitmap = &hBattery60;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=72) {
-	pBmpBattery = &hBattery72;
+	ptmpBitmap = &hBattery72;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=84) {
-	pBmpBattery = &hBattery84;
+	ptmpBitmap = &hBattery84;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=96) {
-	pBmpBattery = &hBattery96;
+	ptmpBitmap = &hBattery96;
 	goto _drawbattery;
   }
   if (PDABatteryStatus==Battery::ONLINE)
-	pBmpBattery = &hBatteryFullC;
+	ptmpBitmap = &hBatteryFullC;
   else
-	pBmpBattery = &hBatteryFull;
+	ptmpBitmap = &hBatteryFull;
 
 _drawbattery:
-  if (!DisableAutoLogger || LoggerActive) {
-      offset-=5;
-  }
-    if(pBmpBattery) {
-        Surface.DrawMaskedBitmap(rc.right+IBLSCALE(offset-1), rc.bottom - BottomSize + NIBLSCALE(2), IBLSCALE(22),IBLSCALE(11),*pBmpBattery, 22, 11);
-    }
+    if(ptmpBitmap) 
+        Surface.DrawMaskedBitmap(batteryPoint.x, batteryPoint.y, batteryNewSize.cx,batteryNewSize.cy,*ptmpBitmap, batteryIconSize.cx, batteryIconSize.cy);
 
 }

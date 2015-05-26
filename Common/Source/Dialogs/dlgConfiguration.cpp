@@ -4019,6 +4019,7 @@ int ival;
       if (HideUnits != (HideUnits_t) (wp->GetDataField()->GetAsInteger())) {
           HideUnits = (HideUnits_t) (wp->GetDataField()->GetAsInteger());
           Reset_Single_DoInits(MDI_DRAWBOTTOMBAR);
+          Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);
       }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpDeclutterMode")); // VENTA10

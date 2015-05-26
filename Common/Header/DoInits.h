@@ -58,6 +58,7 @@
 	MDI_MAPRADAR,			// screen change?
 	MDI_MAPTEST,			// testing purposes
 	MDI_DRAWBOTTOMBAR,		// screen change
+	MDI_DRAWFLIGHTMODE,		// screen change
 	MDI_DRAWTASK,			// screen change
 	MDI_CALCLOGGING,		// generic reset
 	MDI_DRAWHSI,			// screen change

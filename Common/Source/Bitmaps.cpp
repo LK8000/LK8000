@@ -155,6 +155,8 @@ void LKLoadFixedBitmaps(void) {
   hLogger=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%sLOGGER0." IMG_EXT),sDir);
   hLoggerOff=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sLOGGEROFF." IMG_EXT),sDir);
+  hLoggerDisabled=LKLoadBitmap(srcfile);
 
   // For low zooms, we use Small icon (a dot in fact)
   _stprintf(srcfile,_T("%sMOUNTOP%s." IMG_EXT),sDir,hires_suffix);
@@ -240,6 +242,7 @@ void LKUnloadFixedBitmaps(void) {
     hAirspaceWarning.Release();
     hLogger.Release();
     hLoggerOff.Release();
+    hLoggerDisabled.Release();
     hFLARMTraffic.Release();
     hBatteryFull.Release();
     hBatteryFullC.Release();

@@ -130,6 +130,7 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_MAPRADAR); // doing nothing reallt
   Reset_Single_DoInits(MDI_FLARMRADAR);
   Reset_Single_DoInits(MDI_DRAWBOTTOMBAR);
+  Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);
   Reset_Single_DoInits(MDI_DRAWTASK);
 
   #if TESTBENCH

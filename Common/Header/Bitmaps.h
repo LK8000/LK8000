@@ -36,6 +36,7 @@ BEXTMODE LKBitmap hTerrainWarning;
 BEXTMODE LKBitmap hAirspaceWarning;
 BEXTMODE LKBitmap hLogger;
 BEXTMODE LKBitmap hLoggerOff;
+BEXTMODE LKBitmap hLoggerDisabled;
 BEXTMODE LKBitmap hFLARMTraffic;
 BEXTMODE LKBitmap hBatteryFull;
 BEXTMODE LKBitmap hBatteryFullC;
