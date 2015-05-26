@@ -76,6 +76,11 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
           minvsize= vsepar + rescale(mmIconSize.cy) + rescale(batteryIconSize.cy)+vsepar;
           if (minvsize >= BottomSize) {
               vsepar=0; // minimize interlines
+              minvsize= rescale(mmIconSize.cy) + rescale(batteryIconSize.cy);
+              LKASSERT(minvsize>0);
+              if (minvsize<=1) minvsize=BottomSize; // recover impossible error
+              newscale=BottomSize/(double)minvsize;
+              use_rescale=2;
           } else {
               // using unscaled bitmaps the BottomSize is taller than minvsize;
               // lets see if we can enlarge them a bit. We cannot exceed the BB_ICONSIZE
