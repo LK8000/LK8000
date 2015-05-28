@@ -27,6 +27,10 @@
 
 #define AMBERCOLOR  RGB_AMBER
 
+// km for distance, kmh for speed etc.  in map overlay
+#define LKMAPFONT       LK8MapFont 
+
+
 /*
  * Draw Text Overlay. 
  * @Surface : surface to draw

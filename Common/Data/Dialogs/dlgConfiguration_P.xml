@@ -380,6 +380,12 @@
       <WndProperty Name="prpOverlaySize" Caption="_@M1884_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H238_">
         <DataField Name="" DataType="enum" Min="0" Max="10" Step="1" />
       </WndProperty>
+     <WndProperty Name="prpOverlayTarget" Caption="_@M1886_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
+   <DataField Name="" DataType="enum"/>
+      </WndProperty>
+      <WndProperty Name="prpOverlayValues" Caption="_@M1887_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
+   <DataField Name="" DataType="enum"/>
+      </WndProperty>
       <WndProperty Name="prpFontMapWaypoint" Caption="_@M1880_" X="-1" Y="-998"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
    <DataField Name="" DataType="enum"/>
       </WndProperty>

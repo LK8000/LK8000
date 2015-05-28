@@ -206,6 +206,8 @@ char szRegistryFontMapTopology[]= "FontMapTopology";
 char szRegistryFontInfopage1L[]= "FontInfopage1L";
 char szRegistryFontInfopage2L[]= "FontInfopage2L";
 char szRegistryFontBottomBar[]= "FontBottomBar";
+char szRegistryFontOverlayBig[]= "FontOverlayBig";
+char szRegistryFontOverlayMedium[]= "FontOverlayMedium";
 char szRegistryFontCustom1[]= "FontCustom1";
 
 
@@ -506,6 +508,8 @@ extern const char szRegistryFontMapTopology[];
 extern const char szRegistryFontInfopage1L[];
 extern const char szRegistryFontInfopage2L[];
 extern const char szRegistryFontBottomBar[];
+extern const char szRegistryFontOverlayBig[];
+extern const char szRegistryFontOverlayMedium[];
 extern const char szRegistryFontCustom1[];
 extern const char szRegistryGlideBarMode[];
 extern const char szRegistryGliderScreenPosition[];

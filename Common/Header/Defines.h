@@ -821,7 +821,8 @@
 
 #define LKINFOFONT      LK8SmallFont            // was InfoWindowFont
 // km for distance, kmh for speed etc.  in map overlay
-#define LKMAPFONT       LK8MapFont              // was MapWindowFont
+
+#define MAXFONTRESIZE 5 // -5 -4 -3 -2 -1 [0] +1 +2 +3 +4 +5
 
 // McReady
 

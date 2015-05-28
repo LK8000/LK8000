@@ -70,15 +70,15 @@ void ApplyFontSize(LOGFONT *logfont) {
 
 void ApplyCustomResize(LOGFONT *logfont, short change) {
 
-  if (change!=5) {
+  if (change!=MAXFONTRESIZE) {
       int psign=1; short i;
-      //change goes from 0 to 4, 5 is neutral value, 6 to 10
-      if (change>5) {
+      // when MAXFONTRESIZE is 5, change goes from 0 to 4, 5 is neutral value, 6 to 10
+      if (change>MAXFONTRESIZE) {
           psign=1;
-          i=change-5; // 6>>1 , 10>>5
+          i=change-MAXFONTRESIZE; // 6>>1 , 10>>5
       } else {
           psign=-1;
-          i=5-change; // 0>>5 , 4>>1
+          i=MAXFONTRESIZE-change; // 0>>5 , 4>>1
       }
       unsigned int u=  (double)(logfont->lfHeight*i) / 16.0;
       logfont->lfHeight = logfont->lfHeight + (u*psign);
@@ -222,28 +222,33 @@ void Init_Fonts_1(void)
  * CDIWindowFont	= Font=3 and Font=4 in dialogs, Visualglide
  * LK8GenericVar03Font		= Stats, map labels
  * MapWindowFont	= 
- *
  * MapWindowBoldFont	= menu buttons, waypoint selection, messages, etc.
- * MapScale             = 3.5km AUX9 ..  on main map
 
 
    ------------------------------------------------------------------------------------
-    FOLLOWING FONTS ARE USER RESIZABLE. NOT WISE TO ADOPT THEM OUT OF THEIR ENVIRONMENT
+    FOLLOWING FONTS ARE USER RESIZABLE. DO NOT USE - RESERVED FOR THEIR OWN PAGES
    ------------------------------------------------------------------------------------
 
    MapWaypoint                map waypoint names
    MapWaypointBold            map waypoint names 
    MapTopology                map topology names
+   MapScaleFont               map scale and ibox indicators 3.5km AUX9 .. overlay
    LK8InfoBigFont             nearest pages, values
    LK8InfoBigItalicFont          "
-   LK8InfoBig2LFont             nearest pages, values for UseTwoLines
-   LK8InfoBigItalic2LFont          "
+   LK8InfoBig2LFont           nearest pages, values for UseTwoLines
+   LK8InfoBigItalic2LFont        "
 
    LK8BottomBarTitleFont      the bottom bar
    LK8BottomBarValueFont
    LK8BottomBarUnitFont
+
+   LK8OverlayBigFont          map overlays
+   LK8OverlayMediumtFont
+   LK8OverlaySmallFont
+   LK8OverlayGatesFont
+   LK8OverlayMcModeFont
  
-   Custom1Font	    available, not yet used
+   Custom1Font	              available, not yet used
  
  
  */
@@ -618,6 +623,12 @@ void DeInitLKFonts(void) {
   LK8BottomBarTitleFont.Release();
   LK8BottomBarValueFont.Release();
   LK8BottomBarUnitFont.Release();
+
+  LK8OverlayBigFont.Release();
+  LK8OverlayMediumFont.Release();
+  LK8OverlaySmallFont.Release();
+  LK8OverlayGatesFont.Release();
+  LK8OverlayMcModeFont.Release();
   
 }
 
