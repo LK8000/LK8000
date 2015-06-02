@@ -157,6 +157,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc, bool bThermalBa
         yAltSafety= yrightoffset  - fixBigInterline + SizeBigFont.cy - fixBigInterline -1;
         yLeftWind =  rc.bottom - BottomSize - SizeMediumFont.cy - NIBLSCALE(2);
 
+        #ifndef linux
+        // TahomaBD need some adjustments
+        yMcSafety+=NIBLSCALE(2);
+        yAltSafety= yrightoffset  - fixBigInterline + SizeBigFont.cy - fixBigInterline -1 +NIBLSCALE(2);
+        #endif
+
         DoInit[MDI_DRAWLOOK8000] = false;
 
     } // end doinit
