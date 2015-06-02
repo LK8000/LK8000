@@ -151,7 +151,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc, bool bThermalBa
 
 
         yMcValue = yrightoffset - SizeBigFont.cy - SizeBigFont.cy + fixBigInterline;
-        yMcSafety=  yMcValue + fixBigInterline -1 - (SizeSmallFont.cy+BOXEDYMARGIN) , 
+        yMcSafety=  yMcValue + fixBigInterline -1 - (SizeSmallFont.cy+BOXEDYMARGIN);
         yMcMode  =  yMcValue + (SizeBigFont.cy -SizeMcModeFont.cy)/2;
         yDistUnit= topmargin + SizeMediumFont.cy + unitmediumoffset;
         yAltSafety= yrightoffset  - fixBigInterline + SizeBigFont.cy - fixBigInterline -1;
