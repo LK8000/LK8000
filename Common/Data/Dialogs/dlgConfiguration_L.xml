@@ -378,9 +378,6 @@
     </WndFrame>
 
     <WndFrame Name="frmFonts" X="70" Y="0" Width="-1" Height="222" Font="2">
-      <WndProperty Name="prpOverlaySize" Caption="_@M1884_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H238_">
-        <DataField Name="" DataType="enum" Min="0" Max="10" Step="1" />
-      </WndProperty>
       <WndProperty Name="prpOverlayTarget" Caption="_@M1886_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
    <DataField Name="" DataType="enum"/>
       </WndProperty>

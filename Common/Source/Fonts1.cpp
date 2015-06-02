@@ -564,7 +564,6 @@ void Init_Fonts_1(void)
   InitializeOneFont (TitleWindowFont, logfontTitleWindowLogFont);
   InitializeOneFont (CDIWindowFont, logfontCDIWindowLogFont);
   InitializeOneFont (LK8GenericVar03Font, logfontGenericVar03Font);
-  InitializeOneFont (MapScaleFont, logfontMapScaleFont);
   InitializeOneFont (MapWindowFont, logfontMapWindowLogFont);
   InitializeOneFont (MapWindowBoldFont, logfontMapWindowBoldLogFont);
 
@@ -576,6 +575,8 @@ void Init_Fonts_1(void)
   InitializeOneFont (MapWaypointBoldFont, logfontMapWaypointBoldFont);
   ApplyCustomResize(&logfontMapTopologyFont,FontMapTopology);
   InitializeOneFont (MapTopologyFont, logfontMapTopologyFont);
+  ApplyCustomResize(&logfontMapScaleFont,FontOverlayMedium); // follows OverlayMedium
+  InitializeOneFont (MapScaleFont, logfontMapScaleFont);
   ApplyCustomResize(&logfontCustom1Font,FontCustom1);
   InitializeOneFont (Custom1Font, logfontCustom1Font);
 

@@ -618,7 +618,7 @@ void Init_Fonts_2(void)
   InitializeOneFont(LK8OverlayBigFont, logfontOverlayBig);
   ApplyCustomResize(&logfontOverlayTitle,FontOverlayBig); // McMode follows Values
   InitializeOneFont(LK8OverlayMcModeFont, logfontOverlayTitle);
-  ApplyCustomResize(&logfontOverlayMedium,FontOverlayMedium);
+  ApplyCustomResize(&logfontOverlayTarget,FontOverlayMedium); // notice:also MapScale is scaled accordingly
   InitializeOneFont(LK8OverlayMediumFont, logfontOverlayTarget);
 
   InitializeOneFont(LK8OverlayGatesFont, logfontOverlayMedium);

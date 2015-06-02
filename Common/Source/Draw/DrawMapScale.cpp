@@ -14,26 +14,35 @@
 #include "LKObjects.h"
 #include "utils/stl_utils.h"
 
+//
+// SCALE SIZE: NIBLSCALE(42+4)
+//
+#define MAPSCALE_VSIZE  NIBLSCALE(42)
+#define MAPSCALE_HSIZE  NIBLSCALE(5)
+#define MAPSCALE_RIGHTMARGIN   (rc.right-NIBLSCALE(3))
+#define MAPSCALE_BOTTOMMARGIN  (rc.bottom-BottomSize-NIBLSCALE(4))
+
 void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*/, 
                              const bool ScaleChangeFeedback)
 {
     static short terrainwarning=0;
     static POINT lineOneStart, lineOneEnd,lineTwoStart,lineTwoEnd,lineThreeStart,lineThreeEnd;
     static POINT lineTwoStartB,lineThreeStartB;
+    static int   ytext;
     static bool flipflop=true;
 
     if (DoInit[MDI_DRAWMAPSCALE]) {
-	lineOneStart.x = rc.right-NIBLSCALE(6); 
-	lineOneEnd.x   = rc.right-NIBLSCALE(6);
-	lineOneStart.y = rc.bottom-BottomSize-NIBLSCALE(4);
-	lineOneEnd.y = lineOneStart.y - NIBLSCALE(42);
+	lineOneStart.x = MAPSCALE_RIGHTMARGIN;
+	lineOneEnd.x   = MAPSCALE_RIGHTMARGIN;
+	lineOneStart.y = MAPSCALE_BOTTOMMARGIN;
+	lineOneEnd.y = lineOneStart.y - MAPSCALE_VSIZE;
 
-	lineTwoStart.x = rc.right-NIBLSCALE(11); 
-	lineTwoEnd.x = rc.right-NIBLSCALE(6);
+	lineTwoStart.x = MAPSCALE_RIGHTMARGIN - MAPSCALE_HSIZE; 
+	lineTwoEnd.x = MAPSCALE_RIGHTMARGIN;
 	lineTwoEnd.y = lineOneStart.y;
 	lineTwoStart.y = lineOneStart.y;
 
-	lineThreeStart.y = lineTwoStart.y - NIBLSCALE(42);
+	lineThreeStart.y = lineTwoStart.y - MAPSCALE_VSIZE;
 	lineThreeEnd.y = lineThreeStart.y;
 	lineThreeStart.x = lineTwoStart.x;
 	lineThreeEnd.x = lineTwoEnd.x;
@@ -42,6 +51,13 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
 	lineTwoStartB.x++;
 	lineThreeStartB=lineThreeStart;
 	lineThreeStartB.x++;
+
+        SIZE tsize;
+        Surface.SelectObject(MapScaleFont);
+        Surface.GetTextSize(_T("M"),1,&tsize);
+        int ofs=(MAPSCALE_VSIZE - (tsize.cy + tsize.cy))/2;
+        ytext=lineThreeStart.y+ofs;
+
 
 	DoInit[MDI_DRAWMAPSCALE]=false;
     }
@@ -222,7 +238,7 @@ _skip2:
     LKColor mapscalecolor = OverColorRef;
     if (OverColorRef==RGB_SBLACK) mapscalecolor=RGB_WHITE;
 
-    LKWriteText(Surface, Scale, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3), 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+    LKWriteText(Surface, Scale, rc.right-NIBLSCALE(7)-tsize.cx, ytext, 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
 
     Surface.GetTextSize(Scale2, _tcslen(Scale2), &tsize);
 
@@ -230,7 +246,7 @@ _skip2:
 	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
     }
 
-    LKWriteText(Surface, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3)+tsize.cy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+    LKWriteText(Surface, Scale2, rc.right-NIBLSCALE(7)-tsize.cx, ytext+tsize.cy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
 
     Surface.SelectObject(oldPen);
     Surface.SelectObject(oldBrush);
