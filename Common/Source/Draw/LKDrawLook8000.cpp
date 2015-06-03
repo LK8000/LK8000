@@ -6,7 +6,7 @@
    $Id: LKDrawLook8000.cpp,v 1.11 2011/01/06 01:20:11 root Exp root $
    Rewritten in june 2015
 
- */
+*/
 
 #include "externs.h"
 #include "LKInterface.h"
@@ -54,7 +54,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc, bool bThermalBa
     int index = -1;
     double Value;
     short rcx, rcy;
-    short wlen;
     bool redwarning; 
     int gatechrono = 0;
 
@@ -147,7 +146,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc, bool bThermalBa
         } else {
             topbearing.cx= rc.right-COMPASS_SPACE-NIBLSCALE(2) -(SizeMediumFont.cx*2)-(SizeMediumFont.cx/2);
         }
-        name_xmax=topbearing.cx-SizeMediumFont.cx*2-SizeMediumFont.cx/2-NIBLSCALE(2);
+        name_xmax=topbearing.cx-SizeMediumFont.cx*2-SizeMediumFont.cx/2-NIBLSCALE(3);
 
 
         yMcValue = yrightoffset - SizeBigFont.cy - SizeBigFont.cy + fixBigInterline;
@@ -239,10 +238,15 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc, bool bThermalBa
         } else {
             TCHAR buffername[LKSIZEBUFFERLARGE];
             GetOvertargetName(buffername);
-            wlen= ((name_xmax-rcx)/SizeMediumFont.cx) -1;
-            if (wlen<2) wlen=2;
-            LK_tcsncpy(Buffer, buffername, wlen);
-            CharUpper(Buffer);
+            CharUpper(buffername);
+            const int space_avail=name_xmax-rcx;
+            int len=_tcslen(buffername);
+            do {
+                LK_tcsncpy(Buffer, buffername, len);
+                Surface.GetTextSize(Buffer,len,&TextSize);
+                if (TextSize.cx < space_avail) break;
+            } while ( --len>2 );
+
             LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         }
 
@@ -467,10 +471,15 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc, bool bThermalBa
         // normally, only the T>
         TCHAR buffername[LKSIZEBUFFERLARGE];
         GetOvertargetName(buffername);
-        wlen= ((name_xmax-rcx)/SizeMediumFont.cx) -1;
-        if (wlen<2) wlen=2;
-        LK_tcsncpy(Buffer, buffername, wlen);
-        CharUpper(Buffer);
+        CharUpper(buffername);
+        const int space_avail=name_xmax-rcx;
+        int len=_tcslen(buffername);
+        do {
+            LK_tcsncpy(Buffer, buffername, len);
+            Surface.GetTextSize(Buffer,len,&TextSize);
+            if (TextSize.cx < space_avail) break;
+        } while ( --len>2 );
+
         LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
     }
 
