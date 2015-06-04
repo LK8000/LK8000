@@ -6,6 +6,9 @@ PLACE=/lk/SAVED
 
 NOW=`date +%y%m%d_%H%M`
 
+echo "SAVING LK EXECUTABLES. Press Enter to continue."
+read a
+
 test -d $PLACE || {\
   echo
   echo -n "Folder $PLACE does not exist. Create [y/n]?  " 
