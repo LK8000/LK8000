@@ -253,20 +253,20 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
             if (((GlideBarMode == (GlideBarMode_t) gbFinish) && ValidTaskPoint(1))) {
                 if (ISPARAGLIDER && DerivedDrawInfo.TaskAltitudeDifference > 0.0) {
                     if ((ALTITUDEMODIFY * DerivedDrawInfo.TaskAltitudeArrival) < ALTDIFFLIMIT) //@ 091114
-                        _stprintf(Value, TEXT(" --- "));
+                        _stprintf(Value, TEXT("---"));
                     else
-                        _stprintf(Value, TEXT("%1.0f "), ALTITUDEMODIFY * DerivedDrawInfo.TaskAltitudeArrival);
+                        _stprintf(Value, TEXT("%1.0f"), ALTITUDEMODIFY * DerivedDrawInfo.TaskAltitudeArrival);
                 } else {
                     if ((ALTITUDEMODIFY * DerivedDrawInfo.TaskAltitudeDifference) < ALTDIFFLIMIT) //@ 091114
-                        _stprintf(Value, TEXT(" --- "));
+                        _stprintf(Value, TEXT("---"));
                     else
-                        _stprintf(Value, TEXT("%1.0f "), ALTITUDEMODIFY * DerivedDrawInfo.TaskAltitudeDifference);
+                        _stprintf(Value, TEXT("%1.0f"), ALTITUDEMODIFY * DerivedDrawInfo.TaskAltitudeDifference);
                 }
             } else {
                 if ((ALTITUDEMODIFY * WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
-                    _stprintf(Value, TEXT(" --- "));
+                    _stprintf(Value, TEXT("---"));
                 else
-                    _stprintf(Value, TEXT("%1.0f "), ALTITUDEMODIFY * WayPointCalc[barindex].AltArriv[AltArrivMode]);
+                    _stprintf(Value, TEXT("%1.0f"), ALTITUDEMODIFY * WayPointCalc[barindex].AltArriv[AltArrivMode]);
                 /*
                  * Well this was the reason why the glidebar value was out of sync with overlays
                 if ( (ALTITUDEMODIFY*DerivedDrawInfo.NextAltitudeDifference) < ALTDIFFLIMIT) //@ 091114
@@ -277,9 +277,9 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
             }
         } else {
             if ((ALTITUDEMODIFY * WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
-                _stprintf(Value, TEXT(" --- "));
+                _stprintf(Value, TEXT("---"));
             else
-                _stprintf(Value, TEXT("%1.0f "), ALTITUDEMODIFY * WayPointCalc[barindex].AltArriv[AltArrivMode]);
+                _stprintf(Value, TEXT("%1.0f"), ALTITUDEMODIFY * WayPointCalc[barindex].AltArriv[AltArrivMode]);
         }
 
 _skipout:
@@ -294,15 +294,14 @@ _skipout:
                 Offset = GlideBar[2].y + Offset - NIBLSCALE(15);
             }
         }
-        // VENTA10
+
         Surface.GetTextSize(Value, _tcslen(Value), &TextSize);
-        GlideBarOffset = max(NIBLSCALE(11), (int) TextSize.cx) - NIBLSCALE(2);
+        GlideBarOffset = max(NIBLSCALE(11), (int) TextSize.cx+NIBLSCALE(1))+1; 
 
         TextInBoxMode_t TextInBoxMode = {0};
         TextInBoxMode.Border = true; //={1|8};
-        TextInBoxMode.Reachable = true;
-        // boxed numbers are a bit too much on the left, so increase the offset
-        TextInBox(Surface, &rc, Value, lkVarioOffset + NIBLSCALE(1), (int) Offset, 0, &TextInBoxMode); //@ 091114
+        TextInBoxMode.Reachable = false;
+        TextInBox(Surface, &rc, Value, lkVarioOffset , (int) Offset, 0, &TextInBoxMode);
 
         Surface.SelectObject(hbOld);
         Surface.SelectObject(hpOld);
