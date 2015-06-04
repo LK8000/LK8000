@@ -298,11 +298,18 @@ bool MapWindow::TargetMoved(double &longitude, double &latitude) {
 // And also for customkey action.
 //
 bool HaveGauges(void) {
-
-
   // GA has always the big compass overlay active
   if (ISGAAIRCRAFT) return true;
-
   return (GlideBarMode||LKVarioBar||ThermalBar);
-
 }
+
+// 
+// Same as above, but we also look if the gauges were drawn in the current run.
+// Notice that we are assuming all gauges were drawn before calling this function.
+//
+bool HaveGaugesDrawn(void) {
+  // GA has always the big compass overlay active
+  if (ISGAAIRCRAFT) return true;
+  return (GlideBarMode||LKVarioBar||(ThermalBar&&MapWindow::ThermalBarDrawn));
+}
+

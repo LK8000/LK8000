@@ -9,21 +9,26 @@
 #include "externs.h"
 #include "LKObjects.h"
 
-bool MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
+void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
 {
+  ThermalBarDrawn=false;
   POINT GliderBand[6] = { {0,0},{23,0},{22,0},{24,0},{0,0}, {0,0} };
-  
+
+  #if 0  
+  // THIS IS CONFUSING TO PEOPLE. AND IN CASE WE USE ThermalBar 3 (always) it should be 
+  // in any case disabled.
   if ((DerivedDrawInfo.TaskAltitudeDifference>50)
       &&(mode.Is(Mode::MODE_FINAL_GLIDE))) {
-    return false;
+    return;
   }
+  #endif
 
   // JMW TODO accuracy: gather proper statistics
   // note these should/may also be relative to ground
   double mth = DerivedDrawInfo.MaxThermalHeight;
   // no thermalling has been done above safety altitude
   if (mth<=1) {
-    return false;
+    return;
   }
   
   double Wt[NUMTHERMALBUCKETS];
@@ -60,10 +65,11 @@ bool MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
   }
   
   if (maxh < minh) {
-    return false;
+    return;
   }
 
   // normalised heights
+  LKASSERT((maxh-minh)!=0);
   const double hglider = (h-minh)/(maxh-minh);
   hstart = (hstart-minh)/(maxh-minh);
 
@@ -94,7 +100,7 @@ bool MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
   }
 
   if ((!draw_start_height) && (numtherm<=1)) {
-    return false; // don't display if insufficient statistics
+    return; // don't display if insufficient statistics
     // but do draw if start height needs to be drawn
   }
   
@@ -158,6 +164,6 @@ bool MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
   Surface.SelectObject(hpOld);
   Surface.SelectObject(hbOld);
   
-  return true;
+  ThermalBarDrawn=true;
 }
 

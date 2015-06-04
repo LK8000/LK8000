@@ -88,14 +88,13 @@ QuickRedraw:
 	if (IsMultiMapShared()) { 
 		// Shared map, of course not MSN_MAP, since dontdrawthemap was checked
 		//
-        bool bThermalBarVisible = false;
         const bool bDrawGauges = IsMultimapOverlaysGauges();
         if (bDrawGauges && IsThermalBarVisible()) {
-            bThermalBarVisible = DrawThermalBand(Surface, rc);
+            DrawThermalBand(Surface, rc);
         }
 
 		if (IsMultimapOverlaysText()) {
-			DrawLook8000(Surface,rc,bThermalBarVisible);
+			DrawLook8000(Surface,rc);
 		}
 		if (bDrawGauges) {
 			if (LKVarioBar) {
@@ -333,13 +332,12 @@ _skip_stuff:
 _skip_2:
 
   if (NOTANYPAN) {
-    bool bThermalBarVisible = false;
-    if ( IsThermalBarVisible() ) {
-        bThermalBarVisible = DrawThermalBand(Surface, rc);
+    if ( IsThermalBarVisible() && IsMultimapOverlaysGauges() ) {
+        DrawThermalBand(Surface, rc);
     }
 
     if (IsMultimapOverlaysText()) {
-        DrawLook8000(Surface,rc, bThermalBarVisible);
+        DrawLook8000(Surface,rc);
     }
     DrawBottomBar(Surface,rc);
   }

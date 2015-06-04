@@ -134,6 +134,7 @@ bool MapWindow::MapDirty = true;
 bool PanRefreshed=false;
 
 bool MapWindow::ForceVisibilityScan = false;
+bool MapWindow::ThermalBarDrawn = false;
 
 NMEA_INFO MapWindow::DrawInfo;
 DERIVED_INFO MapWindow::DerivedDrawInfo;
