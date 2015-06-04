@@ -17,6 +17,9 @@ extern double LowPassFilter(double y_last, double x_in, double fact);
 
 static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
+// Leonardo Pro & Catesio
+static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+
 static BOOL DigiflyParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
@@ -30,9 +33,12 @@ static BOOL DigiflyParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pG
     {
       return PDGFTL1(d, &String[9], pGPS);
     } 
+  
+  if(_tcsncmp(TEXT("$D"), String, 2) == 0) {
+      return D(d, &String[3], pGPS);
+  }
 
   return FALSE;
-
 }
 
 /*
@@ -186,4 +192,69 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   return TRUE;
 }
 
+static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+/*
+ * 00 : vario ist           in dm/sec
+ * 01 : pressure            in cents of mB
+ * 02 : nettovario          in dm/sec
+ * 03 : anemometer          in km/h
+ * 04 : temperature         in °C
+ * 05 : trk compass (dis)   in °
+ * 06 : speed (dis)         in km/h
+ * 07 : mcr equ             in cm/sec
+ * 08 : wind speed          in km/h
+ * 09 : goto goal           in tenth of mt
+ * 10 : effic to ground     in tenth
+ * 11 : effic to goal       in tenth
+ *
+ *   $D,+0,100554,+25,18,+31,,0,-356,+25,+11,115,96*6A    
+ */
+    TCHAR ctemp[80];
 
+    // Vario
+    NMEAParser::ExtractParameter(String,ctemp,0);
+    if (ctemp[0] != '\0') {
+        pGPS->Vario = StrToDouble(ctemp,NULL)/100;
+        pGPS->VarioAvailable = TRUE;
+    } else {
+        pGPS->VarioAvailable = FALSE;
+    }
+    
+    // Pressure
+    NMEAParser::ExtractParameter(String,ctemp,1);
+    if (ctemp[0] != '\0') {
+        double abs_press = StrToDouble(ctemp,NULL);
+        UpdateBaroSource(pGPS, 0, d, StaticPressureToAltitude(abs_press));
+    }
+
+    // Netto Vario
+    NMEAParser::ExtractParameter(String,ctemp,2);
+    if (ctemp[0] != '\0') {
+        pGPS->NettoVario = StrToDouble(ctemp,NULL)/10;
+        pGPS->NettoVarioAvailable = TRUE;
+    } else {
+        pGPS->NettoVarioAvailable = FALSE;
+    }
+
+    // airspeed
+    NMEAParser::ExtractParameter(String,ctemp,3);
+    if (ctemp[0] != '\0') {
+        double tas = StrToDouble(ctemp,NULL) / 3600 * 1000;
+        pGPS->TrueAirspeed = StrToDouble(ctemp,NULL) / 3600 * 1000;
+        pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(pGPS->Altitude);
+    } else {
+        pGPS->TrueAirspeed = 0;
+        pGPS->IndicatedAirspeed = 0;
+    }
+
+    // temperature
+    NMEAParser::ExtractParameter(String,ctemp,4);
+    if (ctemp[0] != '\0') {
+        pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL);
+        pGPS->TemperatureAvailable = TRUE;
+    } else {
+        pGPS->TemperatureAvailable = FALSE;
+    }
+
+    return TRUE;
+}
