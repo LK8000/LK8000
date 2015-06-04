@@ -102,6 +102,11 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
   // if (!ConfIP[ModeIndex][CURTYPE]) NextModeType();
   switch (MapSpaceMode) {
 	case MSM_WELCOME:
+#if 0
+		SetModeType(LKMODE_MAP,MP_MOVING);
+		RefreshMap();
+		break;
+#endif
 #if (1)
 		if (!DrawInfo.NAVWarning) { 
 		static double firsttime=DrawInfo.Time;
