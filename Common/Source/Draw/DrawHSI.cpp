@@ -17,6 +17,8 @@
 #include "DoInits.h"
 #include "LKStyle.h"
 
+extern int InfoPageTopLineSeparator;
+
 HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
     static short centerX, centerY; //center coordinates of HSI gauge
     static short radius; //HSI gauge size radius
@@ -67,11 +69,14 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
     HSIreturnStruct returnStruct = {false, false, false};
 
     if(DoInit[MDI_DRAWHSI]) { //All the dimensions must be recalculated in case of screen resolution change
-        if(ScreenLandscape) radius=NIBLSCALE(80);
-        else radius=NIBLSCALE(70);
         short top=(((rc.bottom-BottomSize-(rc.top + TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)-(rc.top + TOPLIMITER);
-        centerX=(rc.right-rc.left)/2;
-        centerY=((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(12);
+        centerX=(rc.right+rc.left)/2;
+        centerY=(rc.bottom-BottomSize-InfoPageTopLineSeparator-TOPLIMITER)/2  +InfoPageTopLineSeparator+TOPLIMITER;
+        if (ScreenLandscape)
+            radius=centerY-InfoPageTopLineSeparator-NIBLSCALE(8);
+        else
+            radius=NIBLSCALE(70)-(rc.left+(ScreenSizeX-rc.right))/2;
+
         innerradius=radius-NIBLSCALE(10);
         labelsRadius=radius-NIBLSCALE(20);
         smallMarkRadius=radius-NIBLSCALE(6);

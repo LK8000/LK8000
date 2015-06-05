@@ -49,10 +49,10 @@ void MapWindow::DrawThread ()
 
   MapRect = MainWindow.GetClientRect();
   #ifdef TESTMAPRECT
-  MapRect.top+=20;
-  MapRect.left+=20;
-  MapRect.right-=20;
-  MapRect.bottom-=20;
+  MapRect.top+=25;
+  MapRect.left+=25;
+  MapRect.right-=25;
+  MapRect.bottom-=25;
   #endif
   // Default draw area is full screen, no opacity
   DrawRect=MapRect;
@@ -113,10 +113,10 @@ void MapWindow::DrawThread ()
 		// This is needed to update resolution change
 		MapRect = MainWindow.GetClientRect();
                 #ifdef TESTMAPRECT
-                MapRect.top+=20;
-                MapRect.left+=20;
-                MapRect.right-=20;
-                MapRect.bottom-=20;
+                MapRect.top+=25;
+                MapRect.left+=25;
+                MapRect.right-=25;
+                MapRect.bottom-=25;
                 #endif
 		DrawRect=MapRect;
 		FillScaleListForEngineeringUnits();

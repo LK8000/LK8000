@@ -19,6 +19,8 @@
 #define AMBERCOLOR RGB_AMBER
 #endif
 
+int InfoPageTopLineSeparator=0;
+
 void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col) {
     const POINT p0({ x1, y1 });
     const POINT p1({ x2, y2 });
@@ -124,6 +126,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	qrow[11]+=NIBLSCALE(6)*3;
 	qrow[12]+=NIBLSCALE(6)*3;
 	qrow[13]+=NIBLSCALE(6)*3;
+
+        InfoPageTopLineSeparator=qrow[2];
 
   } // doinit
 
