@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
+#include "Util/UTF8.hpp"
 
 #ifdef __MINGW32__
 #ifndef max
@@ -102,6 +103,7 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String)
   mbstowcs(String, sTmp, strlen(sTmp)+1);
 #else
   strncpy(String, sTmp, strlen(sTmp)+1);
+  assert(ValidateUTF8(String));
 #endif
   return (dwTotalNumBytesRead>0);
 }
@@ -132,6 +134,10 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String){
       *pWC = '\0';
       pWC--;
     }
+    
+#ifndef UNICODE
+    assert(ValidateUTF8(String));
+#endif
 
     return (1);
   }

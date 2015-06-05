@@ -508,6 +508,8 @@ NextUTF8(const char *p)
                           p);
   } else {
     assert(false);
-    gcc_unreachable();
+    // Invalid utf8 char, advance to next...
+    // that can happen only if user input, or external data loading are not checked
+    return NextUTF8(p);
   }
 }
