@@ -61,9 +61,9 @@ void MapWindow::DrawThread ()
     DrawSurface.SelectObject(LK_BLACK_PEN);
     DrawSurface.Rectangle(MapRect.left,MapRect.top, MapRect.right,MapRect.bottom);
 
-    BackBufferSurface.Copy(0, 0, MapRect.right-MapRect.left,
+    BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
            MapRect.bottom-MapRect.top, 
-           DrawSurface, 0, 0);
+           DrawSurface, MapRect.left, MapRect.top);
   } // End Critical section
   
   // This is just here to give fully rendered start screen
@@ -157,7 +157,7 @@ void MapWindow::DrawThread ()
 			const int fromX=startScreen.x-targetScreen.x;
 			const int fromY=startScreen.y-targetScreen.y;
 
-			BackBufferSurface.Whiteness(0, 0,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
+			BackBufferSurface.Whiteness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 
                         RECT  clipSourceArea;
                         POINT clipDestPoint;
@@ -201,9 +201,9 @@ void MapWindow::DrawThread ()
 			// The map was not dirty, and we are not in fastpanning mode.
 			// FastRefresh!  We simply redraw old bitmap. 
 			//
-			BackBufferSurface.Copy(0, 0, MapRect.right-MapRect.left,
+			BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
-				DrawSurface, 0, 0);
+				DrawSurface, MapRect.left, MapRect.top);
 
 			lastdrawwasbitblitted=true;
 		}
@@ -232,9 +232,9 @@ void MapWindow::DrawThread ()
 				lasthere=LKHearthBeats;
 				goto _dontbitblt;
 			}
-			BackBufferSurface.Copy(0, 0, MapRect.right-MapRect.left,
+			BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
-				DrawSurface, 0, 0);
+				DrawSurface, MapRect.left, MapRect.top);
 
 			POINT centerscreen;
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
@@ -255,10 +255,10 @@ _dontbitblt:
 	RenderMapWindow(DrawSurface, MapRect);
     
 	if (!ForceRenderMap && !first_run) {
-		BackBufferSurface.Copy(0, 0,
+		BackBufferSurface.Copy(MapRect.left, MapRect.top,
 			MapRect.right-MapRect.left,
 			MapRect.bottom-MapRect.top, 
-			DrawSurface, 0, 0);
+			DrawSurface, MapRect.left, MapRect.top);
 
 	}
 
