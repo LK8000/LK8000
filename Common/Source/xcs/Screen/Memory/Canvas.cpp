@@ -289,13 +289,18 @@ Canvas::DrawClippedText(int x, int y, unsigned max_width, const TCHAR *text)
   const TCHAR *clipped_text = text;
   unsigned width = Canvas::CalcTextWidth(text);
   if (width > max_width) {
+    // that wrong, does not handle multibyte char.
     unsigned new_size;
     fixed target_percent = fixed(max_width) / fixed(width);
     new_size = fixed(StringLength(text)) * target_percent;
     CopyString(text_buffer, text, std::min(new_size, 256u));
     clipped_text = text_buffer;
   }
-
+  
+#ifndef UNICODE
+  assert(ValidateUTF8(clipped_text));
+#endif
+  
   auto s = RenderText(font, clipped_text);
   if (s.data == nullptr)
     return;
