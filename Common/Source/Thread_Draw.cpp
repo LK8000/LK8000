@@ -25,6 +25,8 @@ BOOL MapWindow::Initialised = FALSE;
 
 Poco::FastMutex MapWindow::Surface_Mutex;
 
+//#define TESTMAPRECT 1
+
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
 
@@ -46,6 +48,12 @@ void MapWindow::DrawThread ()
   ResetLabelDeclutter();
 
   MapRect = MainWindow.GetClientRect();
+  #ifdef TESTMAPRECT
+  MapRect.top+=20;
+  MapRect.left+=20;
+  MapRect.right-=20;
+  MapRect.bottom-=20;
+  #endif
   // Default draw area is full screen, no opacity
   DrawRect=MapRect;
 
@@ -104,6 +112,12 @@ void MapWindow::DrawThread ()
 		#endif
 		// This is needed to update resolution change
 		MapRect = MainWindow.GetClientRect();
+                #ifdef TESTMAPRECT
+                MapRect.top+=20;
+                MapRect.left+=20;
+                MapRect.right-=20;
+                MapRect.bottom-=20;
+                #endif
 		DrawRect=MapRect;
 		FillScaleListForEngineeringUnits();
 		LKUnloadProfileBitmaps();
