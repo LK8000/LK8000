@@ -286,7 +286,8 @@ _takeit:
 #endif
         phase++;
         goto _tryagain;
-    }#if DEBUG_GVG
+    }
+#if DEBUG_GVG
     else {
         StartupStore(_T("PHASE %d  filled %d of %d slots\n"), phase, currentFilledNumber, numslots);
     }
@@ -354,7 +355,8 @@ _takeit:
 #if DEBUGSORT
             StartupStore(_T(".... FINAL for SLOT %d:  minim=%f g=%d\n"), nslot, minim, g);
 #endif
-        }#if DEBUGSORT
+        }
+#if DEBUGSORT
         else {
             StartupStore(_T(".... FINAL for SLOT %d:  no valid point\n"), nslot);
         }

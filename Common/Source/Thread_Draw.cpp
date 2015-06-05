@@ -25,7 +25,7 @@ BOOL MapWindow::Initialised = FALSE;
 
 Poco::FastMutex MapWindow::Surface_Mutex;
 
-#define TESTMAPRECT 1
+//#define TESTMAPRECT 1
 
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
