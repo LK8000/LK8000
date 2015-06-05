@@ -235,18 +235,11 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
             LKWriteText(Surface, Buffer, rcx , topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         } else {
-            TCHAR buffername[LKSIZEBUFFERLARGE];
-            GetOvertargetName(buffername);
-            CharUpper(buffername);
-            const int space_avail=name_xmax-rcx;
-            int len=_tcslen(buffername);
-            do {
-                LK_tcsncpy(Buffer, buffername, len);
-                Surface.GetTextSize(Buffer,len,&TextSize);
-                if (TextSize.cx < space_avail) break;
-            } while ( --len>2 );
-
-            LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+            GetOvertargetName(Buffer);
+            CharUpper(Buffer);
+            Surface.GetTextSize(Buffer,_tcslen(Buffer),&TextSize);
+            RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + TextSize.cy };
+            LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
         }
 
         //
@@ -468,18 +461,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     } else { 
         // no valid index for current overmode, but we print something nevertheless
         // normally, only the T>
-        TCHAR buffername[LKSIZEBUFFERLARGE];
-        GetOvertargetName(buffername);
-        CharUpper(buffername);
-        const int space_avail=name_xmax-rcx;
-        int len=_tcslen(buffername);
-        do {
-            LK_tcsncpy(Buffer, buffername, len);
-            Surface.GetTextSize(Buffer,len,&TextSize);
-            if (TextSize.cx < space_avail) break;
-        } while ( --len>2 );
-
-        LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+        
+        GetOvertargetName(Buffer);
+        CharUpper(Buffer);
+        Surface.GetTextSize(Buffer,_tcslen(Buffer),&TextSize);
+        RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + TextSize.cy };
+        LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
     }
 
     // moved out from task paragliders stuff - this is painted on the right
