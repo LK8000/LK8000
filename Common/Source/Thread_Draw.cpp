@@ -89,6 +89,7 @@ void MapWindow::DrawThread ()
   // 
   // Big LOOP
   //
+StartupStore(_T("SIZEOFTCHAR=%d\n"),sizeof(TCHAR));
 
   while (!CLOSETHREAD) 
   {
