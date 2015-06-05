@@ -194,7 +194,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   Surface.GetTextSize( Buffer, _tcslen(Buffer), &phdrTextSize);
 
   // Col0 is where APTS 1/3 can be written, after ModeIndex:Curtype
-  Column0[MSM_LANDABLE]= phdrTextSize.cx+LEFTLIMITER+NIBLSCALE(5);
+  Column0[MSM_LANDABLE]= rc.left+phdrTextSize.cx+LEFTLIMITER+NIBLSCALE(5);
   Column1[MSM_LANDABLE]= left;
   Column5[MSM_LANDABLE]= right;
 
@@ -342,7 +342,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   Surface.GetTextSize( _T("M"), 1, &phdrTextSize);
 
   TopSize=rc.top+HEADRAW*2+phdrTextSize.cy;
-  p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
+  p1.x=rc.left; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   if ( !ScreenLandscape ) {
   	TopSize+=HEADRAW;
   	numraws=(bottom - TopSize) / (InfoTextSize.cy+(INTERRAW*2));
@@ -380,7 +380,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
   s_sortBox[0].left=Column0[MSM_LANDABLE]-NIBLSCALE(1); 
   s_sortBox[0].right=Column0[MSM_LANDABLE] + phdrTextSize.cx;
-  s_sortBox[0].top=2;
+  s_sortBox[0].top=rc.top+2;
   s_sortBox[0].bottom=p1.y-NIBLSCALE(1);;
   SortBoxX[MSM_LANDABLE][0] =s_sortBox[0].right;
   SortBoxX[MSM_AIRPORTS][0] =s_sortBox[0].right;
@@ -395,7 +395,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
   s_sortBox[1].left=s_sortBox[0].right+HMARGIN;
   s_sortBox[1].right=s_sortBox[0].right+headerspacing-HMARGIN; 
-  s_sortBox[1].top=2;
+  s_sortBox[1].top=rc.top+2;
   s_sortBox[1].bottom=p1.y-NIBLSCALE(1);
   SortBoxX[MSM_LANDABLE][1]=s_sortBox[1].right;
   SortBoxX[MSM_AIRPORTS][1]=s_sortBox[1].right;
@@ -408,7 +408,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
   s_sortBox[2].left=s_sortBox[1].right+HMARGIN; 
   s_sortBox[2].right=s_sortBox[1].right+headerspacing;
-  s_sortBox[2].top=2;
+  s_sortBox[2].top=rc.top+2;
   s_sortBox[2].bottom=p1.y-NIBLSCALE(1);
   SortBoxX[MSM_LANDABLE][2]=s_sortBox[2].right;
   SortBoxX[MSM_AIRPORTS][2]=s_sortBox[2].right;
@@ -421,7 +421,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
   s_sortBox[3].left=s_sortBox[2].right+HMARGIN;
   s_sortBox[3].right=s_sortBox[2].right+headerspacing;
-  s_sortBox[3].top=2;
+  s_sortBox[3].top=rc.top+2;
   s_sortBox[3].bottom=p1.y-NIBLSCALE(1);
   SortBoxX[MSM_LANDABLE][3]=s_sortBox[3].right;
   SortBoxX[MSM_AIRPORTS][3]=s_sortBox[3].right;
@@ -434,7 +434,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
   s_sortBox[4].left=s_sortBox[3].right+HMARGIN;
   s_sortBox[4].right=right;
-  s_sortBox[4].top=2;
+  s_sortBox[4].top=rc.top+2;
   s_sortBox[4].bottom=p1.y-NIBLSCALE(1);
   SortBoxX[MSM_LANDABLE][4]=s_sortBox[4].right;
   SortBoxX[MSM_AIRPORTS][4]=s_sortBox[4].right;
@@ -714,8 +714,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
   // PAGE INDEX, example: 2.1
   //
   Surface.SelectObject(LK8PanelMediumFont);
-  _stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
-  LKWriteText(Surface,  Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+  _stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1); 
+  LKWriteText(Surface,  Buffer, rc.left+LEFTLIMITER, rc.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 
   LKColor  tmpcolor;
@@ -723,24 +723,24 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
   _stprintf(Buffer,TEXT("%s %d/%d"), MsgToken(headertoken[0]), curpage+1, Numpages); 
   tmpcolor= cursortbox==0?RGB_BLACK:RGB_LIGHTGREEN;
-  LKWriteText(Surface,  Buffer, Column0[curmapspace], HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, tmpcolor, false);
+  LKWriteText(Surface,  Buffer, Column0[curmapspace], rc.top+HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, tmpcolor, false);
   if (cursortbox==99) cursortbox=0; 
 
   _tcscpy(Buffer,MsgToken(headertoken[1])); 
   tmpcolor= cursortbox==1?RGB_BLACK:RGB_WHITE;
-  LKWriteText(Surface,  Buffer, hColumn2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+  LKWriteText(Surface,  Buffer, hColumn2, rc.top+HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
   _tcscpy(Buffer,MsgToken(headertoken[2])); 
   tmpcolor= cursortbox==2?RGB_BLACK:RGB_WHITE;
-  LKWriteText(Surface,  Buffer, hColumn3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+  LKWriteText(Surface,  Buffer, hColumn3, rc.top+HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
   _tcscpy(Buffer,MsgToken(headertoken[3])); 
   tmpcolor= cursortbox==3?RGB_BLACK:RGB_WHITE;
-  LKWriteText(Surface,  Buffer, hColumn4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+  LKWriteText(Surface,  Buffer, hColumn4, rc.top+HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
   _tcscpy(Buffer,MsgToken(headertoken[4])); 
   tmpcolor= cursortbox==4?RGB_BLACK:RGB_WHITE;
-  LKWriteText(Surface,  Buffer, hColumn5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+  LKWriteText(Surface,  Buffer, hColumn5, rc.top+HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
   Surface.SelectObject(bigFont); // Text font for Nearest
 
