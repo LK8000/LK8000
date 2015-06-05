@@ -47,7 +47,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
 
     if (LKVarioBar > 0 && LKVarioBar <= vBarVarioGR)
         if (IsMultimapOverlaysGauges())
-            rci.left = LKVarioSize;
+            rci.left += LKVarioSize;
     zoom.SetLimitMapScale(false);
     /****************************************************************/
     if (GetSideviewPage() == IM_NEAR_AS)
@@ -117,7 +117,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
     Surface.SelectObject(OldBrush);
 
     RECT rct = rc; /* rectangle for topview */
-    rc.top = (long) ((double) (rci.bottom - rci.top) * fSplitFact);
+    rc.top = (long) ((double) (rci.bottom - rci.top) * fSplitFact)+rci.top;
     rct.bottom = rc.top;
     // Expose the topview rect size in use..
     Current_Multimap_TopRect = rct;
@@ -267,7 +267,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
     if (Current_Multimap_SizeY != *iSplit) {
         Current_Multimap_SizeY = *iSplit;
         SetSplitScreenSize(*iSplit);
-        rc.top = (long) ((double) (rci.bottom - rci.top) * fSplitFact);
+        rc.top = (long) ((double) (rci.bottom - rci.top) * fSplitFact)+rci.top;
         rct.bottom = rc.top;
     }
 

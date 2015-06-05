@@ -1,4 +1,5 @@
 /*
+
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
@@ -151,8 +152,13 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSize);
     maxtSizeX = textSize.cx;
 
-    int a = ScreenSizeX / textSize.cx;
-    int b = ScreenSizeX - a * (textSize.cx)-(BOXINTERVAL * (a + 1));
+    int variooffset=0;
+    if (LKVarioBar > 0 && LKVarioBar <= vBarVarioGR)
+        if (IsMultimapOverlaysGauges())
+            variooffset = LKVarioSize;
+
+    int a = (MapRect.right-MapRect.left-variooffset) / textSize.cx;
+    int b = (MapRect.right-MapRect.left-variooffset) - a * (textSize.cx)-(BOXINTERVAL * (a + 1));
 
     boxSizeX = textSize.cx + (b / (a + 1));
     boxSizeY = textSize.cy + 1; // distance from bottombar
@@ -169,11 +175,11 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 #endif
 
     RECT vrc;
-    vrc.left = 0;
-    vrc.right = ScreenSizeX;
-    vrc.bottom = ScreenSizeY - BottomSize;
+    vrc.left = MapRect.left+variooffset;
+    vrc.right = MapRect.right;
+    vrc.bottom = MapRect.bottom - BottomSize;
     if (Current_Multimap_SizeY == SIZE0) // Full screen?
-        vrc.top = 0;
+        vrc.top = MapRect.top;
     else
         vrc.top = pDia->rc.bottom;
 
@@ -206,7 +212,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     if (numSlotX == 0) return;
 
     unsigned short boxInterval = ((vrc.right - vrc.left)-(boxSizeX * numSlotX)) / (numSlotX + 1);
-    unsigned short oddoffset = (ScreenSizeX - (boxSizeX * numSlotX) - boxInterval * (numSlotX + 1)) / 2;
+    unsigned short oddoffset = ( (MapRect.right-MapRect.left-variooffset) - (boxSizeX * numSlotX) - boxInterval * (numSlotX + 1)) / 2;
 
     /*
     #if BUGSTOP
@@ -224,7 +230,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     // The horizontal grid
     unsigned int slotCenterX[MAXBSLOT + 1];
     for (t = 0; t < numSlotX; t++) {
-        slotCenterX[t] = (t * boxSizeX) + boxInterval * (t + 1)+(boxSizeX / 2) + oddoffset;
+        slotCenterX[t] = (t * boxSizeX) + boxInterval * (t + 1)+(boxSizeX / 2) + oddoffset+MapRect.left+variooffset;
 #if DEBUG_SCR
         StartupStore(_T("slotCenterX[%d]=%d\n"), t, slotCenterX[t]);
 #endif
