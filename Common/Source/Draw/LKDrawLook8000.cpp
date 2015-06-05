@@ -56,7 +56,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     bool redwarning; 
     int gatechrono = 0;
 
-    short leftmargin = 0;
+    short leftmargin = rc.left;
 
     // Statics
     static short rightmargin = 0, topmargin=0;
@@ -170,9 +170,9 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     // First we draw flight related values such as instant efficiency, altitude, new infoboxes etc.
 
     if (IsMultimapOverlaysGauges() && (LKVarioBar && !mode.AnyPan())) {
-        leftmargin = (LKVarioSize + NIBLSCALE(3)); // VARIOWIDTH + middle separator right extension
+        leftmargin = rc.left+(LKVarioSize + NIBLSCALE(3)); // VARIOWIDTH + middle separator right extension
     } else {
-        leftmargin = LEFTMARGIN;
+        leftmargin = rc.left+LEFTMARGIN;
     }
 
     // no overlay - but we are still drawing MC and the wind on bottom left!

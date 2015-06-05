@@ -91,11 +91,11 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 
 
         if (ScreenLandscape) {
-		bbsplitter= (int) lround( (float) (ScreenSizeX-NIBLSCALE(26)) / (float)(sxValue) );
+		bbsplitter= (int) lround( (float) ((rc.right-rc.left)-NIBLSCALE(26)) / (float)(sxValue) );
                 if (bbsplitter>10) bbsplitter=10;
 		splitoffset= ((rc.right-BB_ICONSIZE)-rc.left)/bbsplitter;
         } else {
-		bbsplitter= (int) lround( (float) (ScreenSizeX-NIBLSCALE(26)) / (float)(sxValue) );
+		bbsplitter= (int) lround( (float) ((rc.right-rc.left)-NIBLSCALE(26)) / (float)(sxValue) );
                 if (bbsplitter>10) bbsplitter=10;
 		splitoffset= ((rc.right-BB_ICONSIZE)-rc.left)/bbsplitter;
 		splitoffset2= splitoffset;
