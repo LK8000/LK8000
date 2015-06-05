@@ -25,7 +25,15 @@ BOOL MapWindow::Initialised = FALSE;
 
 Poco::FastMutex MapWindow::Surface_Mutex;
 
-//#define TESTMAPRECT 1
+// #define TESTMAPRECT 1
+// Although we are capable of autoresizing, all fonts are tuned for the original screen geometry.
+// It is unlikely that we shall do sliding windows by changing MapRect like we do here, because
+// this would mean to force a ChangeScreen everytime.
+// It is although possible to use only a portion of the screen and leave the rest for example for
+// a realtime vario, or for menu buttons, or for text. In such cases, we can assume that the reserved
+// portion of screen will be limited to a -say- NIBLSCALE(25) and geometry will not change much.
+// Reducing MapRect like we do in the test is not useful, only for checking if we have pending problems.
+//
 
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
