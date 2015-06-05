@@ -25,7 +25,7 @@ BOOL MapWindow::Initialised = FALSE;
 
 Poco::FastMutex MapWindow::Surface_Mutex;
 
-//#define TESTMAPRECT 1
+#define TESTMAPRECT 1
 
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
@@ -216,6 +216,8 @@ StartupStore(_T("SIZEOFTCHAR=%d\n"),sizeof(TCHAR));
 			// The map was not dirty, and we are not in fastpanning mode.
 			// FastRefresh!  We simply redraw old bitmap. 
 			//
+			BUGSTOP_LKASSERT(0);
+                       
 			BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
 				DrawSurface, MapRect.left, MapRect.top);
