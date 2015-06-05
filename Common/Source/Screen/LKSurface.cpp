@@ -21,6 +21,7 @@
 #include "utils/2dpclip.h"
 #include "utils/array_adaptor.h"
 #include "Screen/LKBitmapSurface.h"
+#include "Screen/SubCanvas.hpp"
 
 #ifdef WIN32
 
@@ -552,12 +553,19 @@ bool LKSurface::GetTextSize(const TCHAR* lpString, int cbString, SIZE* lpSize) {
 #endif    
 }
 
-void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount) {
+void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount, RECT* ClipRect) {
 #ifdef WIN32
-    ::ExtTextOut(*this, X, Y, ETO_OPAQUE, NULL, lpString, cbCount, NULL);
+    ::ExtTextOut(*this, X, Y, ETO_OPAQUE | ClipRect?ETO_CLIPPED:NULL, ClipRect, lpString, cbCount, NULL);
 #else
     if(_pCanvas) {
-        _pCanvas->DrawText(X, Y, lpString, cbCount);
+        if(ClipRect) {
+            SubCanvas ClipCanvas(*_pCanvas, (*ClipRect).GetOrigin(), (*ClipRect).GetSize());
+            const RasterPoint offset = (*ClipRect).GetOrigin();
+            ClipCanvas.DrawText(X-offset.x, Y-offset.y, lpString, cbCount);
+
+        } else {
+            _pCanvas->DrawText(X, Y, lpString, cbCount);
+        }
     }    
 #endif    
 }
