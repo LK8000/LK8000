@@ -148,7 +148,8 @@ void ParseAirfieldDetails() {
   int i, n;
   unsigned int j;
 
-  while(ReadString(zAirfieldDetails,READLINE_LENGTH,TempString))
+  charset cs = charset::unknown;
+  while(ReadString(zAirfieldDetails,READLINE_LENGTH,TempString, cs))
     {
       if(TempString[0]=='[') { // Look for start
 

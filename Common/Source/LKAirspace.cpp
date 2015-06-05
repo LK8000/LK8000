@@ -1568,7 +1568,8 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
     StartupStore(TEXT(". Reading airspace file%s"), NEWLINE);
 
-    while (ReadString(fp, READLINE_LENGTH, Text)) {
+    charset cs = charset::unknown;
+    while (ReadString(fp, READLINE_LENGTH, Text, cs)) {
         ++linecount;
         p = Text;
         //Skip whitespaces

@@ -142,7 +142,8 @@ bool ReadWinPilotPolar(void) {
     }
     if (stream){
 
-        while(ReadStringX(stream,READLINE_LENGTH,TempString) && (!foundline)){
+        charset cs = charset::unknown;
+        while(ReadStringX(stream,READLINE_LENGTH,TempString, cs) && (!foundline)){
 
 		if (_tcslen(TempString) <10) continue;
 
@@ -240,7 +241,7 @@ bool ReadWinPilotPolar(void) {
            currentFlapsPos++;
            GlidePolar::FlapsPosCount = currentFlapsPos; 
 	   break;
-	} while(ReadStringX(stream,READLINE_LENGTH,TempString));
+	} while(ReadStringX(stream,READLINE_LENGTH,TempString, cs));
 
       {
 	fclose(stream);

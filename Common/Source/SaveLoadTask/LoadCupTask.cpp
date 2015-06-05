@@ -249,7 +249,8 @@ bool LoadCupTask(LPCTSTR szFileName) {
     } FileSection = none;
     FILE * stream = _tfopen(szFileName, _T("rt"));
     if (stream) {
-        while (ReadStringX(stream, READLINE_LENGTH, szString)) {
+        charset cs = charset::unknown;
+        while (ReadStringX(stream, READLINE_LENGTH, szString, cs)) {
 
             if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
                     (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {

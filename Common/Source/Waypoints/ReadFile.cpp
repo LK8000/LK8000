@@ -50,14 +50,15 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
   // check file format
   bool fempty=true;
   int  slen=0; // 100204 WIP
-  while ( ReadString(fp,READLINE_LENGTH,nTemp2String) ) {
+  charset cs = charset::unknown;
+  while ( ReadString(fp,READLINE_LENGTH,nTemp2String, cs) ) {
 	slen=_tcslen(nTemp2String);
 	if (slen<1) continue;
 	if ( _tcsncmp(_T("G  WGS 84"),nTemp2String,9) == 0 ||
 	   _tcsncmp(_T("G WGS 84"),nTemp2String,8) == 0 ||
 	   // consider UCS header, 3 bytes in fact. This is a workaround.
 	   _tcsncmp(_T("G  WGS 84"),&nTemp2String[3],9) == 0) {
-		if ( !ReadString(fp,READLINE_LENGTH,nTemp2String) ) {
+		if ( !ReadString(fp,READLINE_LENGTH,nTemp2String,cs) ) {
 			StartupStore(_T(". Waypoint file %d format: CompeGPS truncated, rejected%s"),globalFileNum+1,NEWLINE);
 			return -1;
 		}
@@ -139,7 +140,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 
-  while(ReadString(fp, READLINE_LENGTH, nTemp2String)){
+  while(ReadString(fp, READLINE_LENGTH, nTemp2String, cs)){
 goto_inloop:    
 	nLineNumber++;
 	nTemp2String[READLINE_LENGTH]=_T('\0');

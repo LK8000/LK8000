@@ -76,7 +76,8 @@ void OpenTopology() {
   int shapeIndex=0;
   LKWaterThreshold=0;
 
-  while(ReadString(zFile,READLINE_LENGTH,TempString)) {
+  charset cs = charset::unknown;
+  while(ReadString(zFile,READLINE_LENGTH,TempString,cs)) {
       
     if(_tcslen(TempString) > 0 && _tcsstr(TempString,TEXT("*")) != TempString) // Look For Comment
       {
