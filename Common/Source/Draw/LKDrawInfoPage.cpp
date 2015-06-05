@@ -48,10 +48,10 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
   if (DoInit[MDI_DRAWINFOPAGE]) {
 	DoInit[MDI_DRAWINFOPAGE]=false;
 	// function can only be called in fullscreen  and thus can be inited here
-	column[0]=LEFTLIMITER;
-	column[1]=((rc.right-RIGHTLIMITER-LEFTLIMITER)/PANELCOLUMNS)+LEFTLIMITER;
-	column[2]=column[1]*2-LEFTLIMITER;
-	column[3]=column[1]*3-LEFTLIMITER*2;
+	column[0]=rc.left+LEFTLIMITER;
+	column[1]=((rc.right-RIGHTLIMITER-LEFTLIMITER-rc.left)/PANELCOLUMNS)+LEFTLIMITER+rc.left;
+	column[2]=column[1]*2-LEFTLIMITER-rc.left;
+	column[3]=column[1]*3-LEFTLIMITER*2-rc.left;
 	column[PANELCOLUMNS]=rc.right-RIGHTLIMITER;
 	row[0]=rc.top+TOPLIMITER;
 	row[1]=((rc.bottom-BottomSize-row[0]-BOTTOMLIMITER)/PANELROWS)+row[0];
@@ -70,7 +70,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	hcolumn[8]=column[4];
 
 	hrow[0]=row[0];
-	hrow[1]=(row[1]-row[0])/2;
+	hrow[1]=(row[1]-row[0])/2+rc.top;
 	hrow[2]=row[1];
 	hrow[3]=(row[2]-row[1])/2+row[1];
 	hrow[4]=row[2];
