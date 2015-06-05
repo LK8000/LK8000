@@ -53,10 +53,10 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc ) {
   if (MapSpaceMode!=MSM_WELCOME) Surface.FillRect(&rc, hB);
 
   if (DoInit[MDI_DRAWMAPSPACE]) {
-	p[0].x=0; p[0].y=rc.bottom-BottomSize-NIBLSCALE(2); p[1].x=rc.right-1; p[1].y=p[0].y;
-	p[2].x=0; p[2].y=0; p[3].x=rc.right-1; p[3].y=0; // 091230 right-1
-	p[4].x=0; p[4].y=0; p[5].x=0; p[5].y=rc.bottom-BottomSize-NIBLSCALE(2);
-	p[6].x=rc.right-1; p[6].y=0; p[7].x=rc.right-1; p[7].y=rc.bottom-BottomSize-NIBLSCALE(2); // 091230 right-1
+	p[0].x=rc.left; p[0].y=rc.bottom-BottomSize-NIBLSCALE(2); p[1].x=rc.right-1; p[1].y=p[0].y;
+	p[2].x=rc.left; p[2].y=rc.top; p[3].x=rc.right-1; p[3].y=rc.top; // 091230 right-1
+	p[4].x=rc.left; p[4].y=rc.top; p[5].x=rc.left; p[5].y=rc.bottom-BottomSize-NIBLSCALE(2);
+	p[6].x=rc.right-1; p[6].y=rc.top; p[7].x=rc.right-1; p[7].y=rc.bottom-BottomSize-NIBLSCALE(2); // 091230 right-1
 
 //	p[8].x=0; p[8].y=rc.bottom-BottomSize-NIBLSCALE(2); p[9].x=rc.right; p[9].y=p[8].y;
 
@@ -190,7 +190,7 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
     TextDisplayMode.AlligneCenter = 1;
     Surface.SelectObject(LK8TargetFont);
     _stprintf(Buffer,TEXT("MapSpaceMode=%d"),MapSpaceMode);
-    TextInBox(Surface, &rc, Buffer, (rc.right-rc.left)/2, NIBLSCALE(50) , 0, &TextDisplayMode, false);
+    TextInBox(Surface, &rc, Buffer, (rc.right+rc.left)/2, NIBLSCALE(50) , 0, &TextDisplayMode, false);
     break;
   }
 #ifdef DRAWLKSTATUS
