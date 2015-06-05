@@ -49,7 +49,7 @@ static const Color2Outline_t ColorOutLine [] = {
 //
 
 void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y,
-        int maxsize, const bool lwmode, const short align, const LKColor& rgb_text, bool invertable) {
+        int maxsize, const bool lwmode, const short align, const LKColor& rgb_text, bool invertable, RECT* ClipRect) {
 
     SIZE tsize;
     if (maxsize == 0) maxsize = _tcslen(wText);
@@ -109,30 +109,30 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
             // Simplified, shadowing better and faster
             // ETO_OPAQUE not necessary since we pass a NULL rect
             //
-            Surface.DrawText(x - 1, y - 1, wText, maxsize);
-            Surface.DrawText(x - 1, y + 1, wText, maxsize);
-            Surface.DrawText(x + 1, y - 1, wText, maxsize);
-            Surface.DrawText(x + 1, y + 1, wText, maxsize);
+            Surface.DrawText(x - 1, y - 1, wText, maxsize, ClipRect);
+            Surface.DrawText(x - 1, y + 1, wText, maxsize, ClipRect);
+            Surface.DrawText(x + 1, y - 1, wText, maxsize, ClipRect);
+            Surface.DrawText(x + 1, y + 1, wText, maxsize, ClipRect);
 
             // SetTextColor(hDC,RGB_GREY);  // This would give an Emboss effect
             // Surface.DrawText(x, y+2, 0, wText, maxsize);
 
             if (moreoutline) {
-                Surface.DrawText(x - 2, y, wText, maxsize);
-                Surface.DrawText(x + 2, y, wText, maxsize);
-                Surface.DrawText(x, y - 2, wText, maxsize);
-                Surface.DrawText(x, y + 2, wText, maxsize);
+                Surface.DrawText(x - 2, y, wText, maxsize, ClipRect);
+                Surface.DrawText(x + 2, y, wText, maxsize, ClipRect);
+                Surface.DrawText(x, y - 2, wText, maxsize, ClipRect);
+                Surface.DrawText(x, y + 2, wText, maxsize, ClipRect);
             }
 
             Surface.SetTextColor(textColor);
-            Surface.DrawText(x, y, wText, maxsize);
+            Surface.DrawText(x, y, wText, maxsize, ClipRect);
             Surface.SetTextColor(RGB_BLACK);
             break;
         }
         case WTMODE_NORMAL:
 
             Surface.SetTextColor(textColor);
-            Surface.DrawText(x, y, wText, maxsize);
+            Surface.DrawText(x, y, wText, maxsize, ClipRect);
             Surface.SetTextColor(RGB_BLACK);
             break;
 

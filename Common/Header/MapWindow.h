@@ -476,7 +476,7 @@ class MapWindow {
   static void SuspendDrawingThread(void);
   static void ResumeDrawingThread(void);
   
-  static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, const LKColor& rgb_tex, bool invertable);
+  static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, const LKColor& rgb_tex, bool invertable, RECT* ClipRect = nullptr);
   static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
 
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
