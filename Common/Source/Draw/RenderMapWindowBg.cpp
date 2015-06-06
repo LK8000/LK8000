@@ -21,12 +21,14 @@ void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
         const POINT &Orig,
         const POINT &Orig_Aircraft) {
 
-    if ((LKSurface::AlphaBlendSupported() && BarOpacity < 100) || mode.AnyPan()) {
-        MapWindow::ChangeDrawRect(MapRect);
+    if ( (LKSurface::AlphaBlendSupported() && BarOpacity < 100) || mode.AnyPan() ) {
+        RECT newRect = {0, 0, ScreenSizeX, ScreenSizeY};
+        MapWindow::ChangeDrawRect(newRect);
     } else {
-        RECT newRect = {0, 0, ScreenSizeX, ScreenSizeY - BottomSize};
+        RECT newRect = {0, 0, ScreenSizeX, ScreenSizeY - BottomSize - (ScreenSizeY-MapRect.bottom)};
         MapWindow::ChangeDrawRect(newRect);
     }
+
 
     if (QUICKDRAW) {
         goto _skip_calcs;

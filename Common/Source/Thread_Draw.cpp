@@ -188,7 +188,7 @@ StartupStore(_T("SIZEOFTCHAR=%d\n"),sizeof(TCHAR));
                         if (fromX<0) {
                             clipSourceArea.left=MapRect.left;
                             clipSourceArea.right=MapRect.right+fromX; // negative fromX
-                            clipDestPoint.x=-fromX;
+                            clipDestPoint.x=MapRect.left-fromX;
                         } else {
                             clipSourceArea.left=MapRect.left+fromX;
                             clipSourceArea.right=MapRect.right;
@@ -198,7 +198,7 @@ StartupStore(_T("SIZEOFTCHAR=%d\n"),sizeof(TCHAR));
                         if (fromY<0) {
                             clipSourceArea.top=MapRect.top;
                             clipSourceArea.bottom=MapRect.bottom+fromY; // negative fromX
-                            clipDestPoint.y=-fromY;
+                            clipDestPoint.y=MapRect.top-fromY;
                         } else {
                             clipSourceArea.top=MapRect.top+fromY;
                             clipSourceArea.bottom=MapRect.bottom;
