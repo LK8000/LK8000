@@ -25,7 +25,7 @@ BOOL MapWindow::Initialised = FALSE;
 
 Poco::FastMutex MapWindow::Surface_Mutex;
 
-// #define TESTMAPRECT 1
+ #define TESTMAPRECT 1
 // Although we are capable of autoresizing, all fonts are tuned for the original screen geometry.
 // It is unlikely that we shall do sliding windows by changing MapRect like we do here, because
 // this would mean to force a ChangeScreen everytime.
@@ -34,6 +34,12 @@ Poco::FastMutex MapWindow::Surface_Mutex;
 // portion of screen will be limited to a -say- NIBLSCALE(25) and geometry will not change much.
 // Reducing MapRect like we do in the test is not useful, only for checking if we have pending problems.
 //
+//#ifdef TESTMAPRECT
+#define TM_T 45
+#define TM_B 45
+#define TM_L 30
+#define TM_R 20
+#endif
 
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
@@ -57,10 +63,10 @@ void MapWindow::DrawThread ()
 
   MapRect = MainWindow.GetClientRect();
   #ifdef TESTMAPRECT
-  MapRect.top+=25;
-  MapRect.left+=25;
-  MapRect.right-=25;
-  MapRect.bottom-=25;
+  MapRect.top+=TM_T;
+  MapRect.left+=TM_L;
+  MapRect.right-=TM_R;
+  MapRect.bottom-=TM_B;
   #endif
   // Default draw area is full screen, no opacity
   DrawRect=MapRect;
@@ -122,10 +128,10 @@ StartupStore(_T("SIZEOFTCHAR=%d\n"),sizeof(TCHAR));
 		// This is needed to update resolution change
 		MapRect = MainWindow.GetClientRect();
                 #ifdef TESTMAPRECT
-                MapRect.top+=25;
-                MapRect.left+=25;
-                MapRect.right-=25;
-                MapRect.bottom-=25;
+                MapRect.top+=TM_T;
+                MapRect.left+=TM_L;
+                MapRect.right-=TM_R;
+                MapRect.bottom-=TM_B;
                 #endif
 		DrawRect=MapRect;
 		FillScaleListForEngineeringUnits();
