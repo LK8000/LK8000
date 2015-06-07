@@ -25,7 +25,7 @@ BOOL MapWindow::Initialised = FALSE;
 
 Poco::FastMutex MapWindow::Surface_Mutex;
 
-// #define TESTMAPRECT 1
+ #define TESTMAPRECT 1
 // Although we are capable of autoresizing, all fonts are tuned for the original screen geometry.
 // It is unlikely that we shall do sliding windows by changing MapRect like we do here, because
 // this would mean to force a ChangeScreen everytime.
