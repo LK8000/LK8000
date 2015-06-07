@@ -68,6 +68,16 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
         if (X<MapWindow::MapRect.left||X>MapWindow::MapRect.right||Y<MapWindow::MapRect.top||Y>MapWindow::MapRect.bottom)
             return ProcessSubScreenVirtualKey(X,Y,keytime,vkmode);
 
+        if (MapSpaceMode==MSM_WELCOME) {
+            SetModeType(LKMODE_MAP, MP_MOVING);
+            LKevent=LKEVENT_NONE;
+            NextModeIndex();
+            PreviousModeIndex();
+            MapWindow::RefreshMap();
+            LKSound(_T("LK_BEEP0.WAV"));
+            return 0;
+        }
+
 
 	// 120602 fix
 	// TopSize is dynamically assigned by DrawNearest,Drawcommon, DrawXX etc. so we cannot make static yups
@@ -237,8 +247,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			// normally, we fall down here.
 			// If CustomKeyHandler returned false, back as well here (nothing configured in custom).
 			//
-			// If we are clicking on center bottom bar while still in welcome page, set map before nextmode.
-			if (MapSpaceMode==MSM_WELCOME)  SetModeType(LKMODE_MAP, MP_MOVING);
+			///// If we are clicking on center bottom bar while still in welcome page, set map before nextmode.
 			NextModeIndex();
 			MapWindow::RefreshMap();
 			SoundModeIndex();
@@ -508,14 +517,6 @@ gesture_left:
 
 	// no click for already clicked events
 
-	if (MapSpaceMode==MSM_WELCOME) {
-		SetModeType(LKMODE_MAP,MP_MOVING);
-		LKevent=LKEVENT_NONE;
-		MapWindow::RefreshMap();
-		LKSound(_T("LK_BEEP0.WAV"));
-		return 0;
-	}
-		
 
 		// If in mapspacemode process ENTER 
 		if ( (keytime>=(VKSHORTCLICK*2)) && dontdrawthemap && !IsMultiMap()) {
