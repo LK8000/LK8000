@@ -107,6 +107,9 @@ void ReinitScreen(void) {
   CloseTerrainRenderer();
   UnlockTerrainDataGraphics();
 
+  // DoInits will require new values (at least PROCESSVIRTUALKEYS)
+  MainWindow.UpdateActiveScreenZone(rc);
+
   Reset_Single_DoInits(MDI_DRAWLOOK8000);
   Reset_Single_DoInits(MDI_DRAWTRI);
   Reset_Single_DoInits(MDI_DRAWHSI);
@@ -137,10 +140,6 @@ void ReinitScreen(void) {
   StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));
   #endif
 
-  // Since MapWindow is doing static inits, we want them to be recalculated at the end of
-  // initializations, since some values in use might have been not available yet, for example BottomSize.
-  // maybe useless, already done by MainWindow::OnSize()
-  MainWindow.UpdateActiveScreenZone(rc.right - rc.left, rc.bottom - rc.top);
 
 
   MapWindow::ResumeDrawingThread();

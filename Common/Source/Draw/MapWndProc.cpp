@@ -24,6 +24,7 @@
 #include "TunedParameter.h"
 
 #define KEYDEBOUNCE 100
+extern int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode);
 
 // #define DEBUG_VIRTUALKEYS
 // #define DEBUG_MAPINPUT
@@ -183,28 +184,30 @@ void MapWindow::_OnSize(int cx, int cy) {
     hdcbuffer.Resize(cx, cy);
     hdcMask.Resize(cx, cy);
 
-    UpdateActiveScreenZone(cx, cy);
 }
 
-void MapWindow::UpdateActiveScreenZone(int cx, int cy) {
-    Y_BottomBar = cy - BottomSize;
+void MapWindow::UpdateActiveScreenZone(RECT rc) {
 
-    P_Doubleclick_bottomright.x = cx - BottomSize - NIBLSCALE(15);
-    P_Doubleclick_bottomright.y = cy - BottomSize - NIBLSCALE(15);
+    #if TESTBENCH
+    StartupStore(_T("... ** UpdateActiveScreenZone %d,%d,%d,%d\n"),rc.left,rc.top,rc.right,rc.bottom);
+    #endif
 
-    // These were all using MapRect
+    Y_BottomBar = rc.bottom - BottomSize;
+    P_Doubleclick_bottomright.x = rc.right - BottomSize - NIBLSCALE(15);
+    P_Doubleclick_bottomright.y = rc.bottom - BottomSize - NIBLSCALE(15);
     P_MenuIcon_DrawBottom.y = Y_BottomBar - 14;
-    P_MenuIcon_noDrawBottom.y = cy - AircraftMenuSize;
-    P_MenuIcon_DrawBottom.x = cx - AircraftMenuSize;
+    P_MenuIcon_noDrawBottom.y = rc.bottom - AircraftMenuSize;
+    P_MenuIcon_DrawBottom.x = rc.right - AircraftMenuSize;
     P_MenuIcon_noDrawBottom.x = P_MenuIcon_DrawBottom.x;
     P_UngestureLeft.x = CompassMenuSize;
     P_UngestureLeft.y = CompassMenuSize;
-    P_UngestureRight.x = cx - CompassMenuSize;
+    P_UngestureRight.x = rc.right - CompassMenuSize;
     P_UngestureRight.y = CompassMenuSize;
     Y_Up = Y_BottomBar / 2;
     Y_Down = Y_BottomBar - Y_Up;
-    X_Left = (cx / 2) - (cx / 3);
-    X_Right = (cx / 2) + (cx / 3);    
+    X_Left = (rc.right+rc.left)/2 - (rc.right-rc.left)/3;
+    X_Right = (rc.right+rc.left)/2 + (rc.right-rc.left)/3;    
+
 }
 
 void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
@@ -215,8 +218,6 @@ void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
     hdcbuffer.Create(WindowSurface, cx, cy);
     hdcMask.Create(WindowSurface, cx, cy);
 
-    UpdateActiveScreenZone(cx, cy);
-    
     // Signal that draw thread can run now
     Initialised = TRUE;
 }
@@ -427,6 +428,12 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         tsUpTime.update();
         DownUpInterval = tsUpTime - tsDownTime;
         tsDownTime = 0; // do it once forever
+
+        // LK v6: check we are not out of MapRect bounds.
+        if (Pos.x<MapWindow::MapRect.left||Pos.x>MapWindow::MapRect.right||Pos.y<MapWindow::MapRect.top||Pos.y>MapWindow::MapRect.bottom) {
+            ProcessSubScreenVirtualKey(Pos.x, Pos.y, DownUpInterval.totalMilliseconds(), LKGESTURE_NONE);
+            return;
+        }
 
         int gestDir = LKGESTURE_NONE;
         int gestDist = -1;

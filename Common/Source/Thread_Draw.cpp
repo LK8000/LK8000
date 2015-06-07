@@ -25,7 +25,7 @@ BOOL MapWindow::Initialised = FALSE;
 
 Poco::FastMutex MapWindow::Surface_Mutex;
 
- #define TESTMAPRECT 1
+// #define TESTMAPRECT 1
 // Although we are capable of autoresizing, all fonts are tuned for the original screen geometry.
 // It is unlikely that we shall do sliding windows by changing MapRect like we do here, because
 // this would mean to force a ChangeScreen everytime.
@@ -34,7 +34,7 @@ Poco::FastMutex MapWindow::Surface_Mutex;
 // portion of screen will be limited to a -say- NIBLSCALE(25) and geometry will not change much.
 // Reducing MapRect like we do in the test is not useful, only for checking if we have pending problems.
 //
-//#ifdef TESTMAPRECT
+#ifdef TESTMAPRECT
 #define TM_T 45
 #define TM_B 45
 #define TM_L 30
@@ -54,6 +54,9 @@ void MapWindow::DrawThread ()
   StartupStore(_T("##############  DRAW threadid=%d\n"),GetCurrentThreadId());
   #endif
 
+  #if TESTBENCH
+  StartupStore(_T("... DrawThread START%s"),NEWLINE);
+  #endif
 
   // THREADRUNNING = FALSE;
   THREADEXIT = FALSE;
@@ -70,6 +73,7 @@ void MapWindow::DrawThread ()
   #endif
   // Default draw area is full screen, no opacity
   DrawRect=MapRect;
+  UpdateActiveScreenZone(MapRect);
 
   UpdateTimeStats(true);
 
@@ -103,7 +107,6 @@ void MapWindow::DrawThread ()
   // 
   // Big LOOP
   //
-StartupStore(_T("SIZEOFTCHAR=%d\n"),sizeof(TCHAR));
 
   while (!CLOSETHREAD) 
   {
@@ -134,6 +137,7 @@ StartupStore(_T("SIZEOFTCHAR=%d\n"),sizeof(TCHAR));
                 MapRect.bottom-=TM_B;
                 #endif
 		DrawRect=MapRect;
+                UpdateActiveScreenZone(MapRect);
 		FillScaleListForEngineeringUnits();
 		LKUnloadProfileBitmaps();
 		LKLoadProfileBitmaps();

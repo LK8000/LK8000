@@ -196,11 +196,6 @@ BOOL InitInstance()
 
   MainWindow.SetVisible(true);
 
-  // Since MapWindow is doing static inits, we want them to be recalculated at the end of
-  // initializations, since some values in use might have been not available yet, for example BottomSize.
-  // maybe it's useless, already done by MainWindow::OnSize()
-  MainWindow.UpdateActiveScreenZone(rc.right - rc.left, rc.bottom - rc.top);
-   
   return TRUE;
 }
 
