@@ -107,7 +107,7 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		RefreshMap();
 		break;
 #endif
-#if (0)
+#if (1)
 		if (!DrawInfo.NAVWarning) { 
 		static double firsttime=DrawInfo.Time;
 		// delayed automatic exit from welcome mode
