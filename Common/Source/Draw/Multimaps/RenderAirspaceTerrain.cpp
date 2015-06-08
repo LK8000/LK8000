@@ -34,9 +34,13 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     double lat, lon;
     int i, j;
 
+    #ifndef UNDITHER
     if (IsMultimapTerrain())
         RenderSky(Surface, rc, SKY_HORIZON_COL, SKY_SPACE_COL, GC_NO_COLOR_STEPS);
     else {
+    #else
+    {
+    #endif
         const auto OldPen = Surface.SelectObject(LKPen_Black_N1);
         const auto OldBrush = Surface.SelectObject(MapWindow::hInvBackgroundBrush[BgMapColor]);
         Surface.Rectangle(rc.left, rc.top, rc.right, rc.bottom);
@@ -313,7 +317,11 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     // draw sea
     if (psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE) {
         RECT sea = {rc.left, rc.bottom, rc.right, rc.bottom + SV_BORDER_Y};
+        #ifndef UNDITHER
         RenderSky(Surface, sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE, 7);
+        #else
+        RenderSky(Surface, sea, RGB_BLACK, RGB_BLACK, 2);
+        #endif
     }
 #else
     if (psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)

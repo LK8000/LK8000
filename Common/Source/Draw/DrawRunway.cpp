@@ -214,10 +214,17 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 	};
 	if(!bOutland)
 	{
+            #ifndef UNDITHER
 	    if(solid)
 	  	  Surface.SelectObject(LKBrush_DarkGrey );
 	    else
 		  Surface.SelectObject(LKBrush_White);
+            #else
+	    if(solid)
+	  	  Surface.SelectObject(LKBrush_Black);
+	    else
+		  Surface.SelectObject(LKBrush_White);
+            #endif
 	}
 	if(picto) {
 	  threadsafePolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir);
@@ -270,11 +277,17 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 	const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
                                                 ? LK8PanelUnitFont
                                                 : LK8GenericVar02Font);
-
+        #ifndef UNDITHER
 	if (INVERTCOLORS)
 		Surface.SelectObject(LKBrush_Petrol);
 	else
 		Surface.SelectObject(LKBrush_LightCyan);
+        #else
+	if (INVERTCOLORS)
+		Surface.SelectObject(LKBrush_Black);
+	else
+		Surface.SelectObject(LKBrush_White);
+        #endif
 
 	unsigned int offset = p + NIBLSCALE(1) ;
 	{

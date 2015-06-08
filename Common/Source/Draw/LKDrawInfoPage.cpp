@@ -217,7 +217,12 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			_stprintf(Buffer,_T("error"));
 			break;
 	}
-        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], 0, WTMODE_NORMAL, WTALIGN_LEFT,
+            #ifndef UNDITHER
+            RGB_LIGHTGREEN, false);
+            #else
+            RGB_WHITE, false);
+            #endif
 
 	// R0 C1
 	icolor=RGB_WHITE;
@@ -923,11 +928,19 @@ label_HSI:
 	if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
 		if(showVFRlanding) {
 			_stprintf(Buffer,TEXT("VFR %s"),gettext(TEXT("_@M931_"))); //TODO: toupper()
+			#ifndef UNDITHER
 			icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
+			#else
+			icolor=RGB_WHITE;
+			#endif
 		}
 		if(showQFU) {
 			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir,gettext(_T("_@M2179_")));
+			#ifndef UNDITHER
 			icolor=RGB_GREEN;
+			#else
+			icolor=RGB_WHITE;
+			#endif
 		}
 	} else { //show next waypoint name
 		icolor=RGB_WHITE;
@@ -1135,7 +1148,11 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
         LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
   }
   Surface.SelectObject(LK8PanelSmallFont);
+  #ifndef UNDITHER
   LKWriteText(Surface, BufferTitle, *columntitle,*row3, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
+  #else
+  LKWriteText(Surface, BufferTitle, *columntitle,*row3, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+  #endif
 
 }
 

@@ -36,6 +36,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc ) {
 
   static POINT p[10];
 
+#ifndef UNDITHER
   if (MapSpaceMode==MSM_WELCOME) {
 	if (INVERTCOLORS)
 		hB=LKBrush_Petrol;
@@ -48,6 +49,13 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc ) {
 	  hB=LKBrush_Mlight;
 
   }
+#else
+  if (INVERTCOLORS)
+      hB=LKBrush_Black;
+  else
+      hB=LKBrush_White;
+#endif
+
   const auto oldfont = Surface.SelectObject(LKINFOFONT); // save font
 
   if (MapSpaceMode!=MSM_WELCOME) Surface.FillRect(&rc, hB);

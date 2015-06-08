@@ -273,11 +273,19 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     // Top part of visual rect, target is over us=unreachable=red
     trc.top = vrc.top;
     trc.bottom = center.y - 1;
+    #ifndef UNDITHER
     RenderSky(Surface, trc, RGB_WHITE, LKColor(150, 255, 150), GC_NO_COLOR_STEPS / 2);
+    #else
+    RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE, GC_NO_COLOR_STEPS / 2);
+    #endif
     // Bottom part, target is below us=reachable=green
     trc.top = center.y + 1;
     trc.bottom = vrc.bottom;
+    #ifndef UNDITHER
     RenderSky(Surface, trc, LKColor(255, 150, 150), RGB_WHITE, GC_NO_COLOR_STEPS / 2);
+    #else
+    RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE,GC_NO_COLOR_STEPS / 2);
+    #endif
 
     // Draw center line
     p1.x = vrc.left + 1;

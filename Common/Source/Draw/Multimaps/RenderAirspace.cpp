@@ -703,11 +703,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
 
 
         Surface.SelectObject(LK_BLACK_PEN);
-        if (INVERTCOLORS) {
-            Surface.SelectObject(LKBrush_Petrol);
-        } else {
-            Surface.SelectObject(LKBrush_LightCyan);
-        }
+        #ifndef UNDITHER
+        Surface.SelectObject(INVERTCOLORS?LKBrush_Petrol:LKBrush_LightCyan);
+        #else
+        Surface.SelectObject(INVERTCOLORS?LKBrush_Black:LKBrush_White);
+        #endif
 
         MapWindow::LKWriteBoxedText(Surface, rc, text, line[0].x, y - 3, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
 
@@ -743,7 +743,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
         y -= (int) (1.3 * tsize.cy);
         // We don't know if there are obstacles for mc0
         Surface.SelectObject(LK_BLACK_PEN);
+        #ifndef UNDITHER
         Surface.SelectObject(LKBrush_Nlight);
+        #else
+        Surface.SelectObject(LKBrush_White);
+        #endif
 
         MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
 
@@ -787,7 +791,11 @@ _skip_mc0:
         if (ValidWayPoint(overindex) && WayPointList[overindex].Reachable) {
             Surface.SelectObject(LKBrush_LightGreen);
         } else {
+            #ifndef UNDITHER
             Surface.SelectObject(LKBrush_Orange);
+            #else
+            Surface.SelectObject(LKBrush_White);
+            #endif
         }
         x = line[0].x - tsize.cx - NIBLSCALE(5);
         if (bDrawRightSide) x = line[0].x + NIBLSCALE(5); // Show on right side if left not possible
@@ -796,7 +804,11 @@ _skip_mc0:
         if (wpt_altarriv == wpt_altarriv_mc0)
             y -= tsize.cy / 2;
 
+        #ifndef UNDITHER
         MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
+        #else
+        MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
+        #endif
         /*
             y = CalcHeightCoordinat  ( SAFETYALTITUDEARRIVAL/10+wpt_altarriv_mc0,  &sDia)-2*tsize.cy;
             // We don't know if there are obstacles for mc0
@@ -855,7 +867,11 @@ _skip_mc0:
                 y += (int) (1.2 * tsize.cy);
 
             Surface.SelectObject(LK_BLACK_PEN);
+            #ifndef UNDITHER
             Surface.SelectObject(LKBrush_Nlight);
+            #else
+            Surface.SelectObject(LKBrush_White);
+            #endif
 
             MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
 
@@ -886,7 +902,11 @@ _after_additionals:
 
         // Print current AGL
         if (calc_altitudeagl - hmin > 0) {
+            #ifndef UNDITHER
             Surface.SetTextColor(LIGHTBLUE_COL);
+            #else
+            Surface.SetTextColor(RGB_BLACK);
+            #endif
             Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
             LK_tcsncpy(text, MsgToken(1742), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
