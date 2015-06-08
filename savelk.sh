@@ -26,6 +26,7 @@ test -d $PLACE || {\
   mkdir $PLACE/PC 
   mkdir $PLACE/PNA
   mkdir $PLACE/LINUX
+  mkdir %PLACE/KOBO
 
   echo "Folder <$PLACE> created."
 }
@@ -50,6 +51,13 @@ test -r LK8000-PNA.exe && {\
   }
   cp LK8000-PNA.exe $PLACE/PNA/${NOW}.exe
   echo "PNA executable saved as <$PLACE/PNA/${NOW}.exe>"
+}
+test -r LK8000-KOBO && {\
+  test -d $PLACE/KOBO || {\
+    echo "NO KOBO SUBFOLDER! ABORTED."; exit
+  }
+  cp LK8000-KOBO $PLACE/KOBO/${NOW}.exe
+  echo "KOBO executable saved as <$PLACE/KOBO/${NOW}.exe>"
 }
 
 echo All done. Goodbye.
