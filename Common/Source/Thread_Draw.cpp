@@ -41,11 +41,24 @@ Poco::FastMutex MapWindow::Surface_Mutex;
 #define TM_R 20
 #endif
 
+#ifdef UNGHOST
+// When we reach this level we apply the unghosting method.
+// Notice that each draw trigger has a default forward step of 10. 
+// Every second we redraw something, and we add or subtract 0 to 10.
+// So this is the number of "dirty" writes that require unghosting
+#define MAX_UNGHOST 180*10
+#endif
+
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
 
 void MapWindow::DrawThread ()
 {
+  #ifdef UNGHOST
+  static long long int unghost_lasttime=0;
+  static Poco::Timestamp StartTime;
+  #endif
+
   while ((!ProgramStarted) || (!Initialised)) {
 	Poco::Thread::sleep(50);
   }
@@ -114,6 +127,7 @@ void MapWindow::DrawThread ()
 	if (CLOSETHREAD) break; // drop out without drawing
 
 	if ((!THREADRUNNING) || (!GlobalRunning)) {
+                // When we are in dialogs, we are coming here every 5s
 		Poco::Thread::sleep(50);
 		continue;
 	}
@@ -288,12 +302,41 @@ _dontbitblt:
 	MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
 	RenderMapWindow(DrawSurface, MapRect);
+        #ifdef UNGHOST
+        // In info pages the ghosting effect is "10" times less important
+        if (MapSpaceMode>MSM_MAP && MapSpaceMode<MSM_TRAFFIC)
+            Unghost++;
+        else
+            // Otherwise, we add 10, the unit
+            Unghost+=10;
+        #endif
     
 	if (!ForceRenderMap && !first_run) {
-		BackBufferSurface.Copy(MapRect.left, MapRect.top,
-			MapRect.right-MapRect.left,
-			MapRect.bottom-MapRect.top, 
-			DrawSurface, MapRect.left, MapRect.top);
+
+            #ifdef UNGHOST
+            unsigned short elapsed= ((StartTime.elapsed() - unghost_lasttime)/1000000);
+            bool doit=false;
+            // Rules. If we have enough triggers requiring unghosting..
+            if (Unghost>=(MAX_UNGHOST) && elapsed>60) 
+                doit=true;  // max every minute
+            else
+                if (Unghost>=(5*10) && elapsed>180)
+                    doit=true;  // min every 3 minutes
+
+            if (doit) { 
+                BackBufferSurface.InvertRect(MapRect);
+                MainWindow.Redraw(MapRect);
+                Poco::Thread::sleep(550); // eink framebuffer latency
+                unghost_lasttime=StartTime.elapsed();
+                Unghost=0; // not thread safe, only if draw thread can change Unghost.
+            }
+
+            #endif
+
+
+            BackBufferSurface.Copy(MapRect.left, MapRect.top,
+                MapRect.right-MapRect.left, MapRect.bottom-MapRect.top, 
+                DrawSurface, MapRect.left, MapRect.top);
 
 	}
 
@@ -320,6 +363,10 @@ _dontbitblt:
 	if (ProgramStarted==psInitDone) {
 		ProgramStarted = psFirstDrawDone;
 	}
+    //
+    // We force framebuffer redraw, and immediately go back to the loop. We are assuming
+    // that the time taken for new map draw will be enough to let framebuffer refresh the
+    // screen. Otherwise, we should place after Redraw a delay.
     MainWindow.Redraw(MapRect);
 
   } // Big LOOP
