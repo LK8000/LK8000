@@ -21,7 +21,6 @@
 #include "utils/2dpclip.h"
 #include "utils/array_adaptor.h"
 #include "Screen/LKBitmapSurface.h"
-#include "Screen/SubCanvas.hpp"
 
 #ifdef WIN32
 
@@ -80,6 +79,9 @@ HDC LKSurface::Detach() {
     return hDC;
 }
 #else
+
+#include "Screen/SubCanvas.hpp"
+
 
 LKSurface::LKSurface() : _pCanvas() {
     
@@ -555,7 +557,7 @@ bool LKSurface::GetTextSize(const TCHAR* lpString, int cbString, SIZE* lpSize) {
 
 void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount, RECT* ClipRect) {
 #ifdef WIN32
-    ::ExtTextOut(*this, X, Y, ETO_OPAQUE | ClipRect?ETO_CLIPPED:NULL, ClipRect, lpString, cbCount, NULL);
+    ::ExtTextOut(*this, X, Y, ETO_OPAQUE | (ClipRect?ETO_CLIPPED:NULL), ClipRect, lpString, cbCount, NULL);
 #else
     if(_pCanvas) {
         if(ClipRect) {
