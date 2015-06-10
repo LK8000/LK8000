@@ -80,15 +80,9 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
     redwarning = false;
 
-    if (INVERTCOLORS) {
-        oldfont = Surface.SelectObject(LK8OverlaySmallFont);
-        oldbrush = Surface.SelectObject(LKBrush_Black);
-        oldpen = Surface.SelectObject(LKPen_Grey_N1);
-    } else {
-        oldfont = Surface.SelectObject(LK8OverlaySmallFont);
-        oldbrush = Surface.SelectObject(LKBrush_White);
-        oldpen = Surface.SelectObject(LKPen_Grey_N1);
-    }
+    oldfont = Surface.SelectObject(LK8OverlaySmallFont);
+    oldbrush = Surface.SelectObject(LKBrush_Black);
+    oldpen = Surface.SelectObject(LKPen_Grey_N1);
 
 
     if (++flipflopcount > 2) {
@@ -454,7 +448,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
                         Units::GetUnitName(Units::GetUserAltitudeUnit()));
                 LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety,
-                    0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+                    0, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
             }
         }
     // end of index>0
@@ -547,7 +541,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
                         Units::GetUnitName(Units::GetUserAltitudeUnit()));
                 LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety,
-                    0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+                    0, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
 
             }
         } // end no UseGates()
@@ -644,7 +638,7 @@ drawOverlay:
             Surface.SelectObject(LK8OverlaySmallFont);
             _stprintf(BufferValue, _T(" %.1f %s "), GlidePolar::SafetyMacCready*LIFTMODIFY,
                     Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
-            LKWriteBoxedText(Surface, rc, BufferValue, rightmargin, yMcSafety, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+            LKWriteBoxedText(Surface, rc, BufferValue, rightmargin, yMcSafety, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
         }
 
         //
@@ -652,11 +646,6 @@ drawOverlay:
         //
         if (DerivedDrawInfo.AutoMacCready == true) {
             Surface.SelectObject(LK8OverlayMcModeFont);
-
-            LKSurface::OldBrush ob{};
-            if (LKTextBlack) {
-                ob = Surface.SelectObject(LKBrush_White);
-            }
 
             TCHAR amcmode[10];
             switch (AutoMcMode) {
@@ -680,9 +669,9 @@ drawOverlay:
                     break;
             }
             Surface.Rectangle( rightmargin, yMcMode, rc.right, yMcMode + SizeMcModeFont.cy);
-            if (LKTextBlack) Surface.SelectObject(ob);
             LKWriteText(Surface, amcmode, rightmargin + NIBLSCALE(1), yMcMode,
-                    0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, true);
+                    // We paint white on black always here, but WriteText can invert them. So we reverse. 
+                    0, WTMODE_NORMAL, WTALIGN_LEFT, INVERTCOLORS?RGB_WHITE:RGB_BLACK, true);
 
         } // AutoMacCready true AUTO MC INDICATOR
 
