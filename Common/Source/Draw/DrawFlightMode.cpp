@@ -159,43 +159,81 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) {
       ptmpBitmap = &hClimb;
   } else {
-      short i=Get_Current_Multimap_Type()-1;
-      switch(i) {
-          case 0:
-              ptmpBitmap = &hMM0;
-              break;
-          case 1:
-              ptmpBitmap = &hMM1;
-              break;
-          case 2:
-              ptmpBitmap = &hMM2;
-              break;
-          case 3:
-              ptmpBitmap = &hMM3;
-              break;
-          case 4:
-              ptmpBitmap = &hMM4;
-              break;
-          case 5:
-              ptmpBitmap = &hMM5;
-              break;
-          case 6:
-              ptmpBitmap = &hMM6;
-              break;
-          case 7:
-              ptmpBitmap = &hMM7;
-              break;
-          case 8:
-              ptmpBitmap = &hMM8;
-              break;
-          default:
-              ptmpBitmap = &hMM0;
-              break;
-     }
+      //short i=Get_Current_Multimap_Type()-1;
+      short i=ModeType[LKMODE_MAP]-1;
+      if (i<0) i=0;
+      if (!IsMultiMap()) {
+          switch(i) {
+              case 0:
+                  ptmpBitmap = &hIMM0;
+                  break;
+              case 1:
+                  ptmpBitmap = &hIMM1;
+                  break;
+              case 2:
+                  ptmpBitmap = &hIMM2;
+                  break;
+              case 3:
+                  ptmpBitmap = &hIMM3;
+                  break;
+              case 4:
+                  ptmpBitmap = &hIMM4;
+                  break;
+              case 5:
+                  ptmpBitmap = &hIMM5;
+                  break;
+              case 6:
+                  ptmpBitmap = &hIMM6;
+                  break;
+              case 7:
+                  ptmpBitmap = &hIMM7;
+                  break;
+              case 8:
+                  ptmpBitmap = &hIMM8;
+                  break;
+              default:
+                  ptmpBitmap = &hIMM0;
+                  break;
+         }
+      } else {
+          switch(i) {
+              case 0:
+                  ptmpBitmap = &hMM0;
+                  break;
+              case 1:
+                  ptmpBitmap = &hMM1;
+                  break;
+              case 2:
+                  ptmpBitmap = &hMM2;
+                  break;
+              case 3:
+                  ptmpBitmap = &hMM3;
+                  break;
+              case 4:
+                  ptmpBitmap = &hMM4;
+                  break;
+              case 5:
+                  ptmpBitmap = &hMM5;
+                  break;
+              case 6:
+                  ptmpBitmap = &hMM6;
+                  break;
+              case 7:
+                  ptmpBitmap = &hMM7;
+                  break;
+              case 8:
+                  ptmpBitmap = &hMM8;
+                  break;
+              default:
+                  ptmpBitmap = &hMM0;
+                  break;
+         }
+      }
   }
 
-  if(ptmpBitmap)
+  if(ptmpBitmap ) {
       Surface.DrawMaskedBitmap( mmPoint.x, mmPoint.y, mmNewSize.cx,mmNewSize.cy, *ptmpBitmap, mmIconSize.cx, mmIconSize.cy);
+  }
 
   //
   // Battery indicator
