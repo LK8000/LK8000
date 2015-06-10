@@ -557,7 +557,7 @@ bool LKSurface::GetTextSize(const TCHAR* lpString, int cbString, SIZE* lpSize) {
 
 void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount, RECT* ClipRect) {
 #ifdef WIN32
-    ::ExtTextOut(*this, X, Y, ETO_OPAQUE | (ClipRect?ETO_CLIPPED:NULL), ClipRect, lpString, cbCount, NULL);
+    ::ExtTextOut(*this, X, Y,ETO_CLIPPED, ClipRect, lpString, cbCount, NULL);
 #else
     if(_pCanvas) {
         if(ClipRect) {
