@@ -27,7 +27,8 @@ const COLORRAMP terrain_shadow[NUMRAMPS] = {
   { 63, 16, 32, 32},
   { 63, 16, 32, 32},
   { 63, 60,60, 60},
-  { 63, 60,60, 60}
+  { 63, 60,60, 60},
+  { 63, 60, 10, 10} // LiteAlps
 };
 
 const COLORRAMP terrain_highlight[NUMRAMPS] = {
@@ -44,6 +45,7 @@ const COLORRAMP terrain_highlight[NUMRAMPS] = {
   { 255, 0,0,0},
   { 255, 0,0,0},
   { 63, 250, 250, 250},
+  { 255, 0,0,0},
   { 255, 0,0,0}
 };
 
@@ -62,7 +64,8 @@ const bool terrain_doshading[NUMRAMPS] = {
 	1,
 	1,	// YouSee Shaded
 	1, 	// YouSee HiContrast
-	0	// Obstacles
+	0,	// Obstacles
+        1
 };
 
 // LK Use minimal altitude normalizer for terrain modes
@@ -80,7 +83,8 @@ const bool terrain_minalt[NUMRAMPS] = {
 	1,
 	0,	// YouSee Default
 	1, 	// YouSee HiContrast
-	1 	// Obstacles
+	1, 	// Obstacles
+        1
 };
 
 const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = { 
@@ -357,6 +361,26 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {1100,    150,0,0},
     {1300,    120,0,0},
     {3500,    100,0,0}
+  },
+  {  // LiteAlps
+#ifdef UNDITHER
+    {0,           0xff, 0xff, 0xff},
+    {250,         0xff, 0xff, 0xff},
+#else
+    {0,           0xff, 0xff, 0xff},
+    {250,         0xca, 0xe7, 0xb9},
+#endif
+    {400,         0x3d, 0xb3, 0x8b},
+    {550,         0x7f, 0xc7, 0x5c},
+    {700,         0x37, 0xa0, 0x7d},
+    {850,        0xf4, 0xea, 0xaf},
+    {1250,        0xdc, 0xb2, 0x82},
+    {1500,        0xca, 0x8e, 0x72},
+    {1750,        0xde, 0xc8, 0xbd},
+    {2000,        0xe3, 0xe4, 0xe9},
+    {2300,        0xdb, 0xd9, 0xef},
+    {3000,        0xb7, 0xb9, 0xff},
+    {6000,        0xef, 0xef, 0xff},
   }
 };
 

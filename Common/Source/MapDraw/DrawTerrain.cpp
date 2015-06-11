@@ -17,7 +17,7 @@
 
 #define NUM_COLOR_RAMP_LEVELS 13
 // If you change NUMRAMPS, also change the InputEvent SERVICE TERRCOL 
-#define NUMRAMPS        14
+#define NUMRAMPS        15
 #include "./ColorRamps.h"
 
 
