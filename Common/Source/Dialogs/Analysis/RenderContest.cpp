@@ -160,7 +160,11 @@ double  yp = (lat_p-lat_c);
   DrawYGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 
   Surface.SelectObject(hfOldU);
+  #ifndef UNDITHER
   Surface.SetTextColor(RGB_MAGENTA);
+  #else
+  Surface.SetTextColor(RGB_BLACK);
+  #endif
   Surface.SetBackgroundTransparent();
   DrawLabel(Surface, rc, TEXT("O"), xp, yp);
 }
@@ -267,6 +271,7 @@ ResetScale();
       {
 		if(fDist > 5000)
 		{
+                  #ifndef UNDITHER
 		  LKColor rgbCol = RGB_BLUE;
 		  switch(ui)
 		  {
@@ -276,6 +281,17 @@ ResetScale();
 			default:
 			break;
 		  }
+                  #else
+                  LKColor rgbCol = RGB_DARKBLUE;
+                  switch(ui)
+                  {
+                      case 0: rgbCol = RGB_DARKGREY; break;
+                      case 1: rgbCol = RGB_RED  ; break;
+                      case 2: rgbCol = RGB_DARKGREEN ; break;
+                      default:
+                      break;
+                  }
+                  #endif
 		  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, rgbCol );
 		  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, rgbCol );
 		}
@@ -326,7 +342,11 @@ ResetScale();
 		  fTotalPercent -= fDist/result.Distance();
 		  _stprintf(text, TEXT("%3.1f%%"), (fDist/result.Distance()*100.0));
 		  Surface.GetTextSize(text, _tcslen(text), &tsize);
+                  #ifndef UNDITHER
 		  Surface.SetTextColor(RGB_BLUE);
+                  #else
+		  Surface.SetTextColor(RGB_BLACK);
+                  #endif
 	      Surface.DrawText(ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), text, _tcslen(text));
 	    }
 	#endif
@@ -368,7 +388,11 @@ ResetScale();
 	    SIZE tsize;
 	    _stprintf(text, TEXT("%3.1f%%"), (fTotalPercent*100.0));
 	    Surface.GetTextSize(text, _tcslen(text), &tsize);
+            #ifndef UNDITHER
 	    Surface.SetTextColor(RGB_LIGHTBLUE);
+            #else
+	    Surface.SetTextColor(RGB_RED);
+            #endif
 	    Surface.DrawText(ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), text, _tcslen(text));
 #endif
 
@@ -387,7 +411,11 @@ ResetScale();
 DrawXGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 DrawYGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 Surface.SetBackgroundTransparent();
+#ifndef UNDITHER
 Surface.SetTextColor(RGB_MAGENTA);
+#else
+Surface.SetTextColor(RGB_BLACK);
+#endif
 DrawLabel(Surface, rc, TEXT("O"), xp, yp);
 Surface.SelectObject(hfOldU);
 
