@@ -143,6 +143,7 @@ void LKObjects_Create() {
 
   int iwidth;
   iwidth=IBLSCALE(MapWindow::SnailWidthScale);
+  #ifndef UNDITHER
   MapWindow::hSnailColours[0] = RGB_BLACK;
   MapWindow::hSnailColours[1] = RGB_INDIGO;
   MapWindow::hSnailColours[2] = RGB_INDIGO;
@@ -174,6 +175,44 @@ void LKObjects_Create() {
   MapWindow::hSnailPens[12].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[12]);
   MapWindow::hSnailPens[13].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[13]);
   MapWindow::hSnailPens[14].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[14]);
+  #else
+  // DITHERED SNAIL TRAIL
+  MapWindow::hSnailColours[0] = RGB_LIGHTGREY;
+  MapWindow::hSnailColours[1] = RGB_LIGHTGREY;
+  MapWindow::hSnailColours[2] = RGB_LIGHTGREY;
+  MapWindow::hSnailColours[3] = RGB_LIGHTGREY;
+  MapWindow::hSnailColours[4] = RGB_LIGHTGREY;
+  MapWindow::hSnailColours[5] = RGB_LIGHTGREY;
+  MapWindow::hSnailColours[6] = RGB_LIGHTGREY;
+
+  MapWindow::hSnailColours[7] = RGB_WHITE;
+
+  MapWindow::hSnailColours[8] =  RGB_BLACK;
+  MapWindow::hSnailColours[9] =  RGB_RED;
+  MapWindow::hSnailColours[10] = RGB_RED;
+  MapWindow::hSnailColours[11] = RGB_RED;
+  MapWindow::hSnailColours[12] = RGB_BLACK;
+  MapWindow::hSnailColours[13] = RGB_BLACK;
+  MapWindow::hSnailColours[14] = RGB_BLACK;
+
+  MapWindow::hSnailPens[0].Create(PEN_DASH, iwidth/NIBLSCALE(1), MapWindow::hSnailColours[0]);
+  MapWindow::hSnailPens[1].Create(PEN_DASH, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[1]);
+  MapWindow::hSnailPens[2].Create(PEN_DASH, iwidth/NIBLSCALE(3), MapWindow::hSnailColours[2]);
+  MapWindow::hSnailPens[3].Create(PEN_DASH, iwidth/NIBLSCALE(4), MapWindow::hSnailColours[3]);
+  MapWindow::hSnailPens[4].Create(PEN_DASH,  iwidth/NIBLSCALE(5), MapWindow::hSnailColours[4]);
+  MapWindow::hSnailPens[5].Create(PEN_DASH,  iwidth/NIBLSCALE(6), MapWindow::hSnailColours[5]);
+  MapWindow::hSnailPens[6].Create(PEN_DASH,  iwidth/NIBLSCALE(7), MapWindow::hSnailColours[6]);
+
+  MapWindow::hSnailPens[7].Create(PEN_SOLID,  1, MapWindow::hSnailColours[7]); // white on white
+
+  MapWindow::hSnailPens[8].Create(PEN_SOLID,  iwidth/NIBLSCALE(7), MapWindow::hSnailColours[8]);
+  MapWindow::hSnailPens[9].Create(PEN_SOLID,  iwidth/NIBLSCALE(6), MapWindow::hSnailColours[9]);
+  MapWindow::hSnailPens[10].Create(PEN_SOLID, iwidth/NIBLSCALE(5), MapWindow::hSnailColours[10]);
+  MapWindow::hSnailPens[11].Create(PEN_SOLID, iwidth/NIBLSCALE(4), MapWindow::hSnailColours[11]);
+  MapWindow::hSnailPens[12].Create(PEN_SOLID, iwidth/NIBLSCALE(4), MapWindow::hSnailColours[12]);
+  MapWindow::hSnailPens[13].Create(PEN_SOLID, iwidth/NIBLSCALE(3), MapWindow::hSnailColours[13]);
+  MapWindow::hSnailPens[14].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[14]);
+  #endif
 
 
   for (unsigned i=0; i<array_size(MapWindow::hAirspaceBrushes); ++i) {
