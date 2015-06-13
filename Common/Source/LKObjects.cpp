@@ -177,13 +177,13 @@ void LKObjects_Create() {
   MapWindow::hSnailPens[14].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[14]);
   #else
   // DITHERED SNAIL TRAIL
-  MapWindow::hSnailColours[0] = RGB_LIGHTGREY;
-  MapWindow::hSnailColours[1] = RGB_LIGHTGREY;
-  MapWindow::hSnailColours[2] = RGB_LIGHTGREY;
-  MapWindow::hSnailColours[3] = RGB_LIGHTGREY;
-  MapWindow::hSnailColours[4] = RGB_LIGHTGREY;
-  MapWindow::hSnailColours[5] = RGB_LIGHTGREY;
-  MapWindow::hSnailColours[6] = RGB_LIGHTGREY;
+  MapWindow::hSnailColours[0] = RGB_GREY;
+  MapWindow::hSnailColours[1] = RGB_GREY;
+  MapWindow::hSnailColours[2] = RGB_GREY;
+  MapWindow::hSnailColours[3] = RGB_GREY;
+  MapWindow::hSnailColours[4] = RGB_GREY;
+  MapWindow::hSnailColours[5] = RGB_GREY;
+  MapWindow::hSnailColours[6] = RGB_GREY;
 
   MapWindow::hSnailColours[7] = RGB_WHITE;
 
