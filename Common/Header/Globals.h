@@ -202,6 +202,16 @@ GEXTERN bool PGOptimizeRoute_Config;
 
 GEXTERN short OverlaySize;
 GEXTERN short BarOpacity;
+
+GEXTERN short FontMapWaypoint;
+GEXTERN short FontMapTopology;
+GEXTERN short FontInfopage1L;
+GEXTERN short FontInfopage2L;
+GEXTERN short FontBottomBar;
+GEXTERN short FontCustom1;
+GEXTERN short FontOverlayBig;
+GEXTERN short FontOverlayMedium;
+
 GEXTERN short FontRenderer;
 GEXTERN bool LockModeStatus;
 
@@ -386,26 +396,16 @@ GEXTERN short SelectedRaw[MSM_TOP+1];
 // since it doesnt eat memory, it is also used for pages with currently no subpages
 GEXTERN short SelectedPage[MSM_TOP+1];
 
-GEXTERN short Numraws;
 GEXTERN short Numpages;
-GEXTERN short CommonNumraws;
-GEXTERN short CommonNumpages;
-// GEXTERN short TurnpointNumraws; 101222
-// GEXTERN short TurnpointNumpages;
-GEXTERN short TrafficNumpages;
-GEXTERN short AspNumpages;
-GEXTERN short THistoryNumpages;
 GEXTERN short ModeIndex;
 
 // LK8000 sync flags
 GEXTERN bool NearestDataReady;
 GEXTERN bool CommonDataReady;
 GEXTERN bool RecentDataReady;
-// GEXTERN bool NearestTurnpointDataReady; 101222
 GEXTERN bool LKForceDoNearest;
 GEXTERN bool LKForceDoCommon;
 GEXTERN bool LKForceDoRecent;
-// GEXTERN bool LKForceDoNearestTurnpoint; 101222
 GEXTERN short LKevent;
 GEXTERN bool LKForceComPortReset;
 GEXTERN bool LKDoNotResetComms;
@@ -645,6 +645,7 @@ GEXTERN unsigned short CustomMenu9;
 GEXTERN unsigned short CustomMenu10;
 
 GEXTERN bool OverlayClock;
+GEXTERN bool UseTwoLines;
 GEXTERN bool EnableSoundModes;
 GEXTERN int DisplayOrientation;
 GEXTERN int DisplayOrientation_Config;
@@ -672,6 +673,10 @@ GEXTERN bool AdvanceArmed;
 GEXTERN int MenuTimeout_Config;   // config
 GEXTERN int MenuTimeOut;      // runtime
 
+#ifdef UNGHOST
+// Counter of draw events that may require unghosting by Thread_Draw
+GEXTERN unsigned short Unghost GEXTZERO;
+#endif
 
 GEXTERN int EnableThermalLocator;
 
@@ -693,6 +698,7 @@ GEXTERN BOOL LANGUAGEFILECHANGED;
 GEXTERN BOOL INPUTFILECHANGED;
 GEXTERN BOOL MAPFILECHANGED;
 GEXTERN bool NEWWAYPOINTFILE;
+GEXTERN bool FONTSCHANGED;
 
 // Team code
 GEXTERN int TeamCodeRefWaypoint;
@@ -788,10 +794,17 @@ GEXTERN LKFont   LK8BottomBarValueFont;
 GEXTERN LKFont   LK8BottomBarUnitFont;
 GEXTERN LKFont   LK8TargetFont;
 GEXTERN LKFont   LK8BigFont;
+GEXTERN LKFont   LK8OverlayBigFont;
+GEXTERN LKFont   LK8OverlayMediumFont;
+GEXTERN LKFont   LK8OverlaySmallFont;
+GEXTERN LKFont   LK8OverlayGatesFont;
+GEXTERN LKFont   LK8OverlayMcModeFont;
 GEXTERN LKFont   LK8MediumFont;
 GEXTERN LKFont   LK8SmallFont;
 GEXTERN LKFont   LK8InfoBigFont;
 GEXTERN LKFont   LK8InfoBigItalicFont;
+GEXTERN LKFont   LK8InfoBig2LFont;
+GEXTERN LKFont   LK8InfoBigItalic2LFont;
 GEXTERN LKFont   LK8InfoNormalFont;
 GEXTERN LKFont   LK8InfoNearestFont;
 GEXTERN LKFont   LK8InfoSmallFont;

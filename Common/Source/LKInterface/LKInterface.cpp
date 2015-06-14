@@ -64,6 +64,9 @@ finish:
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();
 	// Multimaps can change zoom, and when we are back to moving map we may have missing topology items
 	if (MapSpaceMode==MSM_MAP) {
+                #ifdef UNGHOST
+                Unghost+=300; // 30 times more important
+		#endif
 		MapWindow::ForceVisibilityScan=true;
 		MapWindow::RefreshMap();
 	}
@@ -111,6 +114,9 @@ finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();
 	if (MapSpaceMode==MSM_MAP) {
+                #ifdef UNGHOST
+                Unghost+=300; // 30 times more important
+		#endif
 		MapWindow::ForceVisibilityScan=true;
 		MapWindow::RefreshMap();
 	}
@@ -231,25 +237,17 @@ void SelectMapSpace(short i) {
 			// force DoNearest to run at once
 			LKForceDoNearest=true;
 			LKevent=LKEVENT_NEWRUN;
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		case MSM_AIRSPACES:
 			LKevent=LKEVENT_NEWRUN;
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		case MSM_COMMON:
 			LKForceDoCommon=true;
 			LKevent=LKEVENT_NEWRUN;
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		case MSM_RECENT:
 			LKForceDoRecent=true;
 			LKevent=LKEVENT_NEWRUN;
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		case MSM_VISUALGLIDE:
 			// direction sorting! It is set by LKInit, also.
@@ -257,15 +255,16 @@ void SelectMapSpace(short i) {
 			SortedMode[MapSpaceMode]=2; 
 			LKForceDoNearest=true;
 			LKevent=LKEVENT_NEWRUN;
-			// These are not necessary, becasue they are used only by NEAR pages
-			// however we reset it for any case.
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
 			break;
 		default:
 			LKevent=LKEVENT_NEWRUN;
 			break;
 	}
+	// Resetting Selected are needed if we want that each nearest page open
+	// with page 1 row 1. Otherwise it is remembered last status, which can be
+	// a problem maybe. Resetting Selected for non-nearest is not a problem.
+	SelectedPage[MapSpaceMode]=0;
+	SelectedRaw[MapSpaceMode]=0;
 	MapSpaceMode=i;
 
 	//
@@ -284,6 +283,10 @@ void SelectMapSpace(short i) {
 // We assume that at least ConfBB[1] will be ON!
 // We cannot have all OFF!
 void BottomBarChange(bool advance) {
+
+  #ifdef UNGHOST
+  if (Unghost>10) Unghost-=10;
+  #endif
 
   short wanted;
   if (!advance) goto bbc_previous;

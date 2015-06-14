@@ -818,7 +818,11 @@ bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, bool retval) {
 		brect.left<=MapWindow::DrawRect.left ||
 		brect.right>=MapWindow::DrawRect.right) return false;
 
+        #ifdef UNDITHER
+	Surface.SetTextColor(LKColor(0,0,0));
+        #else
 	Surface.SetTextColor(LKColor(0,50,50)); // PETROL too light at 66
+        #endif
     
 	Surface.DrawText(x, y, label, size);
 	return true; // 101016

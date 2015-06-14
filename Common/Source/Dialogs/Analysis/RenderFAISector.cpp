@@ -348,7 +348,11 @@ if(fDistMin < FAI28_45Threshold)
   /********************************************************************
    * draw polygon
    ********************************************************************/
+  #ifndef UNDITHER
   LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), RGB_GREEN);
+  #else
+  LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), RGB_RED);
+  #endif
   const auto hpOldPen = Surface.SelectObject(hpSectorPen);
   LKBrush hbSectorFill;
   hbSectorFill.Create(fillcolor);
@@ -368,7 +372,11 @@ if(fDistMin < FAI28_45Threshold)
   /********************************************************************
    * calc round leg grid
    ********************************************************************/
+  #ifndef UNDITHER
   hpSectorPen.Create(PEN_SOLID, (1), RGB_GREY );
+  #else
+  hpSectorPen.Create(PEN_SOLID, (1), RGB_DARKGREY );
+  #endif
   Surface.SelectObject(hpSectorPen);
 
   double fTic= 1/DISTANCEMODIFY;
@@ -394,7 +402,11 @@ int iCnt = 0;
 	  _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
 	bFirstUnit = false;
 	Surface.GetTextSize(text, _tcslen(text), &tsize);
+        #ifndef UNDITHER
 	Surface.SetTextColor(RGB_GREY);
+        #else
+	Surface.SetTextColor(RGB_DARKGREY);
+        #endif
     int j=0;
 
 	if(fDistTri < FAI28_45Threshold)

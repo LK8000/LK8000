@@ -123,6 +123,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
     /* workaround */
     RECT rcTerrain = rct;
     rcTerrain.right+=rcTerrain.left;
+    rcTerrain.bottom+=rcTerrain.top;
     
 	DrawTerrain(Surface, rcTerrain, GetAzimuth(), 40.0);
 	UnlockTerrainDataGraphics();

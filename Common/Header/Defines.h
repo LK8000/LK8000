@@ -96,7 +96,7 @@
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"5"
-#define LKRELEASE	"3A2"
+#define LKRELEASE	"3b"
 
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
@@ -214,12 +214,12 @@
 // if we enlarge, resize also MAXNUMPAGES
 #define MAXNEAREST		50
 // Commons are both 1 page of commons and HISTORY as well! HISTORY is sized MAXCOMMON!
-#define MAXCOMMON		50
+#define MAXCOMMON		MAXNEAREST
 #define MAXTRAFFIC		FLARM_MAX_TRAFFIC
 // Max number of airspaces handled by 2.4 nearest airspace page. Basically, the 50 nearest.
-#define MAXNEARAIRSPACES	50
+#define MAXNEARAIRSPACES	MAXNEAREST
 // Max number of thermals in the Nearest Thermals page (out of MAX_THERMAL_HISTORY, normally much larger)
-#define MAXTHISTORY		50
+#define MAXTHISTORY		MAXNEAREST
 
 // Max number of pages in mapspacemode. 
 // Large enough to contain MAXNEAREST/numrows (numraws min 5 on some devices)
@@ -227,10 +227,10 @@
 // It only matters dimensional space, so you can enlarge at a memory cost. 
 // If it is too low, visible waypoints will be limited to this number automatically.
 #define MAXNUMPAGES		9	// the nearest
-#define MAXCOMMONNUMPAGES	9
-#define MAXTRAFFICNUMPAGES	9
-#define MAXAIRSPACENUMPAGES	9
-#define MAXTHISTORYNUMPAGES	9
+#define MAXCOMMONNUMPAGES	MAXNUMPAGES
+#define MAXTRAFFICNUMPAGES	MAXNUMPAGES
+#define MAXAIRSPACENUMPAGES	MAXNUMPAGES
+#define MAXTHISTORYNUMPAGES	MAXNUMPAGES
 
 // Nearest Update time: wait for some seconds before updating nearest pages with
 // new calculations. 5 seconds is far enough, could even be more..
@@ -821,7 +821,8 @@
 
 #define LKINFOFONT      LK8SmallFont            // was InfoWindowFont
 // km for distance, kmh for speed etc.  in map overlay
-#define LKMAPFONT       LK8MapFont              // was MapWindowFont
+
+#define MAXFONTRESIZE 5 // -5 -4 -3 -2 -1 [0] +1 +2 +3 +4 +5
 
 // McReady
 

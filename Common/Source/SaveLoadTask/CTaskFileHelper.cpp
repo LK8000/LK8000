@@ -17,6 +17,7 @@
 #include "utils/fileext.h"
 #include "utils/stringext.h"
 #include "Waypointparser.h"
+#include "Util/UTF8.hpp"
 
 
 extern void RenameIfVirtual(const unsigned int i);
@@ -189,9 +190,18 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
             return false;
         }
         fclose(stream);
+#ifdef UNICODE
         TCHAR * szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
         utf2TCHAR(buff, szXML, size + 1);
         free(buff);
+#else
+        TCHAR * szXML = buff;
+        if(!ValidateUTF8(szXML)) {
+            StartupStore(_T(".. error : Invalid file encoding") NEWLINE);
+            free(szXML);
+            return false;
+        }
+#endif
         XMLNode rootNode = XMLNode::parseString(szXML, _T("lk-task"));
 
         if (rootNode) {

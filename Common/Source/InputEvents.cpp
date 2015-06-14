@@ -2136,8 +2136,8 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("TERRCOL")) == 0) {
-	if (TerrainRamp+1>13)
-		TerrainRamp=0;  // 13 = NUMRAMPS -1
+	if (TerrainRamp+1>14)
+		TerrainRamp=0;  // 14 = NUMRAMPS -1
 	else
 		++TerrainRamp;
 	MapWindow::RefreshMap();
@@ -2145,7 +2145,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
   if (_tcscmp(misc, TEXT("TERRCOLBACK")) == 0) {
 	if (TerrainRamp-1<0)
-		TerrainRamp=13;  
+		TerrainRamp=14;  
 	else
 		--TerrainRamp;
 	MapWindow::RefreshMap();

@@ -74,6 +74,7 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT
 
       if(((fDist > FAI_MIN_DISTANCE_THRESHOLD) && (ui < 3) && !bFlat && (fDist/ fFAIDistance  > 0.05)) )
   	  {
+                #ifndef UNDITHER
   		LKColor rgbCol = RGB_BLUE;
   		switch(ui)
   		{
@@ -83,6 +84,17 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT
   		  default:
   		  break;
   		}
+                #else
+  		LKColor rgbCol = RGB_DARKBLUE;
+  		switch(ui)
+  		{
+  		  case 0: rgbCol = RGB_DARKGREY; break;
+  		  case 1: rgbCol = RGB_RED  ; break;
+  		  case 2: rgbCol = RGB_DARKGREEN ; break;
+  		  default:
+  		  break;
+  		}
+                #endif
   		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 1, rgbCol );
   		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 0, rgbCol );
   	  }

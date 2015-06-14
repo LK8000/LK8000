@@ -17,7 +17,7 @@
 
 #define NUM_COLOR_RAMP_LEVELS 13
 // If you change NUMRAMPS, also change the InputEvent SERVICE TERRCOL 
-#define NUMRAMPS        14
+#define NUMRAMPS        15
 #include "./ColorRamps.h"
 
 
@@ -474,7 +474,7 @@ public:
                 if ((h = *thBuf) != TERRAIN_INVALID) {
                     // if (h==0 && LKWaterThreshold==0) { // no LKM coasts, and water altitude
                     if (h == LKWaterThreshold) { // see above.. h cannot be -1000.. so only when LKW is 0 h can be equal
-                        *imageBuf = BGRColor(85, 160, 255); // set water color 
+                        *imageBuf = BGRColor(85, 160, 255); // set water color #55 A0 FF
                         continue;
                     }
                     h = h - minalt + 1;
@@ -568,7 +568,11 @@ public:
                 uint8_t r, g, b;
                 // i=255 means TERRAIN_INVALID. Water is colored in Slope
                 if (i == 255) {
+                    #ifdef UNDITHER
+                    colorBuf[i + (mag + 64)*256] = BGRColor(255, 255, 255); // LCD green terrain invalid
+                    #else
                     colorBuf[i + (mag + 64)*256] = BGRColor(194, 223, 197); // LCD green terrain invalid
+                    #endif
                 } else {
                     // height_scale, color_ramp interp_levels  used only for weather
                     // ColorRampLookup is preparing terrain color to pass to TerrainShading for mixing

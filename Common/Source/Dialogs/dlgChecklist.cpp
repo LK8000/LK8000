@@ -286,7 +286,8 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
   Name[0]= 0;
   TempString[0]=0;
 
-  while (ReadStringX(stream, MAXNOTETITLE, TempString)) {
+  charset cs = charset::unknown;  
+  while (ReadStringX(stream, MAXNOTETITLE, TempString, cs)) {
     size_t len = _tcslen(TempString);
     if (len > 0) {
       if (TempString[len - 1] == '\r') {

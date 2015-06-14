@@ -58,10 +58,31 @@ void ApplyFontSize(LOGFONT *logfont) {
   if (ScreenSize==0) {
       logfont->lfHeight = (int)((double)logfont->lfHeight * Screen0Ratio);
   }
+
+
+
   #ifdef USE_FREETYPE 
   if (logfont->lfWeight == 600) logfont->lfHeight+=1000;
   #endif
   return;
+}
+
+
+void ApplyCustomResize(LOGFONT *logfont, short change) {
+
+  if (change!=MAXFONTRESIZE) {
+      int psign=1; short i;
+      // when MAXFONTRESIZE is 5, change goes from 0 to 4, 5 is neutral value, 6 to 10
+      if (change>MAXFONTRESIZE) {
+          psign=1;
+          i=change-MAXFONTRESIZE; // 6>>1 , 10>>5
+      } else {
+          psign=-1;
+          i=MAXFONTRESIZE-change; // 0>>5 , 4>>1
+      }
+      unsigned int u=  (double)(logfont->lfHeight*i) / 16.0;
+      logfont->lfHeight = logfont->lfHeight + (u*psign);
+  } 
 }
 
 
@@ -198,19 +219,38 @@ void Init_Fonts_1(void)
 
 /* Work in progress... following not accurate
  * TitleWindowFont	= Font=0 in dialogs, used also in dlStartup rawwrite. Easily removable.
- * CDIWindowFont	= Font=3 and Font=4 in dialogs
+ * CDIWindowFont	= Font=3 and Font=4 in dialogs, Visualglide
  * LK8GenericVar03Font		= Stats, map labels
  * MapWindowFont	= 
- *
  * MapWindowBoldFont	= menu buttons, waypoint selection, messages, etc.
- * MapScale             = 3.5km AUX9 ..  on main map
- *
- * (SOON TODO) CUSTOMIZABLE FONTS:
- * MapWaypoint      map waypoint names
- * MapWaypointBold  map waypoint names 
- * MapTopology      map topology names
- * Custom1Font	    available, not yet used
- *
+
+
+   ------------------------------------------------------------------------------------
+    FOLLOWING FONTS ARE USER RESIZABLE. DO NOT USE - RESERVED FOR THEIR OWN PAGES
+   ------------------------------------------------------------------------------------
+
+   MapWaypoint                map waypoint names
+   MapWaypointBold            map waypoint names 
+   MapTopology                map topology names
+   MapScaleFont               map scale and ibox indicators 3.5km AUX9 .. overlay
+   LK8InfoBigFont             nearest pages, values
+   LK8InfoBigItalicFont          "
+   LK8InfoBig2LFont           nearest pages, values for UseTwoLines
+   LK8InfoBigItalic2LFont        "
+
+   LK8BottomBarTitleFont      the bottom bar
+   LK8BottomBarValueFont
+   LK8BottomBarUnitFont
+
+   LK8OverlayBigFont          map overlays
+   LK8OverlayMediumtFont
+   LK8OverlaySmallFont
+   LK8OverlayGatesFont
+   LK8OverlayMcModeFont
+ 
+   Custom1Font	              available, not yet used
+ 
+ 
  */
 
   //
@@ -284,6 +324,19 @@ void Init_Fonts_1(void)
     propGetFontSettingsFromString(TEXT("32,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointBoldFont);
     propGetFontSettingsFromString(TEXT("32,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowBoldLogFont);
     #endif
+  }
+  else if (ScreenSize==(ScreenSize_t)ss800x600 )
+  {
+    propGetFontSettingsFromString(TEXT("24,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
+    propGetFontSettingsFromString(TEXT("30,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
+    propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont);
+    propGetFontSettingsFromString(TEXT("25,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCustom1Font);
+    propGetFontSettingsFromString(TEXT("30,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapScaleFont);
+    propGetFontSettingsFromString(TEXT("40,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("34,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointFont);
+    propGetFontSettingsFromString(TEXT("32,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointBoldFont);
+    propGetFontSettingsFromString(TEXT("35,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss400x240) {
     propGetFontSettingsFromString(TEXT("10,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
@@ -506,16 +559,27 @@ void Init_Fonts_1(void)
   if (ScreenSize==0) StartupStore(_T("... (Fonts) Forcing font resize%s"),NEWLINE);
   #endif
 
+  // CREATE STANDARD FONTS
+  //
   InitializeOneFont (TitleWindowFont, logfontTitleWindowLogFont);
   InitializeOneFont (CDIWindowFont, logfontCDIWindowLogFont);
   InitializeOneFont (LK8GenericVar03Font, logfontGenericVar03Font);
-  InitializeOneFont (MapTopologyFont, logfontMapTopologyFont);
-  InitializeOneFont (Custom1Font, logfontCustom1Font);
-  InitializeOneFont (MapWaypointFont, logfontMapWaypointFont);
-  InitializeOneFont (MapWaypointBoldFont, logfontMapWaypointBoldFont);
-  InitializeOneFont (MapScaleFont, logfontMapScaleFont);
   InitializeOneFont (MapWindowFont, logfontMapWindowLogFont);
   InitializeOneFont (MapWindowBoldFont, logfontMapWindowBoldLogFont);
+
+  // CREATE CUSTOM FONTS
+  //
+  ApplyCustomResize(&logfontMapWaypointFont,FontMapWaypoint);
+  InitializeOneFont (MapWaypointFont, logfontMapWaypointFont);
+  ApplyCustomResize(&logfontMapWaypointBoldFont,FontMapWaypoint);
+  InitializeOneFont (MapWaypointBoldFont, logfontMapWaypointBoldFont);
+  ApplyCustomResize(&logfontMapTopologyFont,FontMapTopology);
+  InitializeOneFont (MapTopologyFont, logfontMapTopologyFont);
+  ApplyCustomResize(&logfontMapScaleFont,FontOverlayMedium); // follows OverlayMedium
+  InitializeOneFont (MapScaleFont, logfontMapScaleFont);
+  ApplyCustomResize(&logfontCustom1Font,FontCustom1);
+  InitializeOneFont (Custom1Font, logfontCustom1Font);
+
 
   MainWindow.SetFont(MapWindowFont);
 }
@@ -548,6 +612,8 @@ void DeInitLKFonts(void) {
   LK8SmallFont.Release();
   LK8InfoBigFont.Release();
   LK8InfoBigItalicFont.Release();
+  LK8InfoBig2LFont.Release();
+  LK8InfoBigItalic2LFont.Release();
   LK8InfoNormalFont.Release();
   LK8InfoNearestFont.Release();
   LK8InfoSmallFont.Release();
@@ -558,6 +624,12 @@ void DeInitLKFonts(void) {
   LK8BottomBarTitleFont.Release();
   LK8BottomBarValueFont.Release();
   LK8BottomBarUnitFont.Release();
+
+  LK8OverlayBigFont.Release();
+  LK8OverlayMediumFont.Release();
+  LK8OverlaySmallFont.Release();
+  LK8OverlayGatesFont.Release();
+  LK8OverlayMcModeFont.Release();
   
 }
 

@@ -347,6 +347,7 @@ void LKProfileResetDefault(void) {
   Orbiter_Config = 1;
   Shading_Config = 1;
   OverlayClock = 0;
+  UseTwoLines = 0;
   SonarWarning_Config = 1; // sonar enabled by default on reset
 
   // default BB and IP is all ON
@@ -456,6 +457,14 @@ void LKProfileResetDefault(void) {
   iFlarmDirection=0;
   AspPermanentChanged=0;
 
+  FontMapWaypoint=MAXFONTRESIZE;
+  FontMapTopology=MAXFONTRESIZE;
+  FontInfopage1L=MAXFONTRESIZE;
+  FontInfopage2L=MAXFONTRESIZE;
+  FontBottomBar=MAXFONTRESIZE;
+  FontCustom1=MAXFONTRESIZE;
+  FontOverlayBig=MAXFONTRESIZE;
+  FontOverlayMedium=MAXFONTRESIZE;
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 

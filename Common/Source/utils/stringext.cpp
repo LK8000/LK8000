@@ -11,9 +11,11 @@
 #include <math.h>
 #include <string.h>
 #include <algorithm>
+#include <assert.h>
 #include "utf8/unchecked.h"
 
 #include "utils/heapcheck.h"
+#include "Util/UTF8.hpp"
 
 //______________________________________________________________________________
 
@@ -872,6 +874,7 @@ int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars){
     utf2unicode(utf, temp, maxChars);
     return wcstombs(unicode, temp, maxChars);
 #else
+    assert(ValidateUTF8(utf));
     size_t len = std::min(_tcslen(utf), (size_t)maxChars);
     _tcsncpy(unicode, utf, len+1);
     return len;

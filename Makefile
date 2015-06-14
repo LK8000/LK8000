@@ -86,6 +86,7 @@ else
 		else
 		    ifeq ($(TARGET),PCX64)
 			CONFIG_PC:=y
+			CONFIG_WIN32 := y
 		    else
 		       ifeq ($(TARGET),KOBO)
 			    KOBO ?= /opt/kobo/arm-unknown-linux-gnueabi
@@ -270,7 +271,7 @@ CE_DEFS += -DUSE_CONSOLE
 endif
 
 ifeq ($(GREYSCALE),y)
-CE_DEFS += -DGREYSCALE -DDITHER
+CE_DEFS += -DGREYSCALE -DDITHER 
 endif
 
 $(eval $(call pkg-config-library,ZZIP,zziplib))
@@ -629,9 +630,7 @@ DRAW	:=\
 	$(DRW)/DrawThermalEstimate.cpp \
 	$(DRW)/DrawWind.cpp \
 	$(DRW)/Draw_Primitives.cpp \
-	$(DRW)/LKDrawAspNearest.cpp \
 	$(DRW)/LKDrawBottomBar.cpp \
-	$(DRW)/LKDrawCommon.cpp \
 	$(DRW)/LKDrawCpuStatsDebug.cpp \
 	$(DRW)/LKDrawFLARMTraffic.cpp \
 	$(DRW)/LKDrawInfoPage.cpp \
@@ -639,9 +638,7 @@ DRAW	:=\
 	$(DRW)/LKDrawMapSpace.cpp \
 	$(DRW)/LKDrawNearest.cpp \
 	$(DRW)/LKDrawTargetTraffic.cpp \
-	$(DRW)/LKDrawThermalHistory.cpp \
 	$(DRW)/LKDrawTrail.cpp \
-	$(DRW)/LKDrawTraffic.cpp \
 	$(DRW)/LKDrawVario.cpp \
 	$(DRW)/LKDrawWaypoints.cpp \
 	$(DRW)/LKDrawWelcome.cpp \

@@ -276,7 +276,12 @@ void ButtonLabel::CreateButtonLabels(const RECT& rc) {
         MenuButtons[i].Create(&MainWindow, (RECT){ x, y, x + cx, y + cy });
         if(MenuButtons[i].IsDefined()) {
             MenuButtons[i].SetTextColor(RGB_BLACK);
+            #ifdef UNDITHER
+            //MenuButtons[i].SetBkColor(RGB_LIGHTGREY); // not so bad
+            MenuButtons[i].SetBkColor(RGB_WHITE); // same as for GREYSCALE, for the time being
+            #else
             MenuButtons[i].SetBkColor(RGB_BUTTONS);
+            #endif
             MenuButtons[i].SetMenuId(i);
         }
     }

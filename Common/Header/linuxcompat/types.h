@@ -14,7 +14,7 @@
 #include "ScreenCoordinate.h"
 #include "wingdi.h"
 
-#define	BYTE	int8_t
+#define	BYTE	unsigned char
 #define BOOL	bool
 #define LONG	long
 

@@ -117,8 +117,13 @@ void RenderPlaneSideview(LKSurface& Surface, double fDist, double fAltitude,doub
   PolygonRotateShift(AircraftWingL, 7,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftWingR, 7,   Start.x, Start.y,  0);
 
+  #ifndef UNDITHER
   LKBrush GreenBrush(RGB_GREEN);
   LKBrush RedBrush(RGB_RED);
+  #else
+  LKBrush GreenBrush(RGB_WHITE);
+  LKBrush RedBrush(RGB_BLACK);
+  #endif
   if((brg < 180))
   {
     Surface.SelectObject(RedBrush);

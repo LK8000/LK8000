@@ -35,8 +35,6 @@
 	MDI_GETLOCALPATH,		// system path change!
 	MDI_LKSOUND,			// localpath changed
 	MDI_DRAWTRI,			// screen change
-	MDI_DRAWASPNEAREST,		// screen change, font change
-	MDI_DRAWCOMMON,			// screen change, font change
 	MDI_DRAWFLARMTRAFFIC,		// screen change
 	MDI_DRAWINFOPAGE,		// screen change
 	MDI_WRITEINFO,			// screen change
@@ -44,14 +42,11 @@
 	MDI_DRAWMAPSPACE,		// screen change
 	MDI_DRAWNEAREST,		// screen change, font change
 	MDI_DRAWTARGET,			// screen change
-	MDI_DRAWTHERMALHISTORY,		// screen change, font change
-	MDI_DRAWTRAFFIC,		// screen change, font change
 	MDI_DRAWVARIO,			// screen change
 	MDI_GETOVERTARGETHEADER,	// language change
 	MDI_PROCESSVIRTUALKEY,		// screen change
 	MDI_ONPAINTLISTITEM,		// screen change, font change
 	MDI_DRAWMAPSCALE,		// screen change
-	MDI_MAPWPLABELADD,		// screen change
 	MDI_CHECKLABELBLOCK,		// screen change
 	MDI_LKPROCESS,			// unit change
 	MDI_COMPASS,			// screen change
@@ -63,6 +58,7 @@
 	MDI_MAPRADAR,			// screen change?
 	MDI_MAPTEST,			// testing purposes
 	MDI_DRAWBOTTOMBAR,		// screen change
+	MDI_DRAWFLIGHTMODE,		// screen change
 	MDI_DRAWTASK,			// screen change
 	MDI_CALCLOGGING,		// generic reset
 	MDI_DRAWHSI,			// screen change

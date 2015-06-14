@@ -6,7 +6,7 @@
 #define MAXFLARMLOCALS	50
 
 // Max Simultaneous traffic aka MAXTRAFFIC
-#define FLARM_MAX_TRAFFIC	50
+#define FLARM_MAX_TRAFFIC	MAXNEAREST
 
 // These are always used +1 for safety
 #define	MAXFLARMNAME	10	// used by Local Ids

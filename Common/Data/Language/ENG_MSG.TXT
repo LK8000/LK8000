@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  150423
+# MASTER UPDATED:  150527
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1882,6 +1882,17 @@ _@M1860_ "HSI"
 
 _@M1870_ "Airspace Sonar "
 
+# Menu 12 font edit
+_@M1880_ "Map waypoints "
+_@M1881_ "Map topology "
+_@M1882_ "Info pages "
+_@M1883_ "Bottom bar "
+_@M1884_ "Overlay type "
+_@M1885_ "Info on 2 lines "
+_@M1886_ "Overlay target "
+_@M1887_ "Overlay values "
+
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
@@ -2085,6 +2096,7 @@ _@M2182_ "«"
 _@M2183_ "»"
 _@M2184_ "‹"
 _@M2185_ "›"
+_@M2186_ "*"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"

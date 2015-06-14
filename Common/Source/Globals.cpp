@@ -91,7 +91,6 @@ void Globals_Init(void) {
   MenuTimeout_Config = MENUTIMEOUTMAX;	// Config
   MenuTimeOut=0;			// Runtime
 
-
   // TODO check!!
   DisplayOrientation = TRACKUP;
   DisplayOrientation_Config = TRACKUP;
@@ -431,6 +430,7 @@ void Globals_Init(void) {
   FinalGlideTerrain = 1;
   EnableSoundModes = true; // this is init by main in v53
   OverlayClock = false;
+  UseTwoLines = false; // remember to switch on the nearest pages MDI_ when this is changed runtime
   LKLanguageReady = false;
 
 
@@ -449,6 +449,7 @@ void Globals_Init(void) {
   POLARFILECHANGED = FALSE;
   LANGUAGEFILECHANGED = FALSE;
   INPUTFILECHANGED = FALSE;
+  FONTSCHANGED= false;
 
   ActiveWayPoint = -1;
   PanTaskEdit    = -1;

@@ -18,7 +18,7 @@
 #include "Sound/Sound.h"
 
 void BottomSounds();
-
+extern int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode);
 long VKtime=0;
 
 // vkmode 0=normal 1=gesture up 2=gesture down
@@ -31,11 +31,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	short numpages=0;
 
 	static short s_xright=0, s_xleft=0;
-
-	// future common globals
-	static short X_Right=0, X_Left=0;
-	static short Y_BottomBar;
-
 
 	short shortpress_yup, shortpress_ydown;
 	short longpress_yup, longpress_ydown;
@@ -58,29 +53,39 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	if (DoInit[MDI_PROCESSVIRTUALKEY]) {
 
-		Y_BottomBar=ScreenSizeY-BottomSize;
-
 		// calculate left and right starting from center
-		s_xleft=(ScreenSizeX/2)-(ScreenSizeX/6);
-		s_xright=(ScreenSizeX/2)+(ScreenSizeX/6);
-
-		// used by ungesture fast click on infopages
-		X_Left=(ScreenSizeX/2)-(ScreenSizeX/3);
-		X_Right=(ScreenSizeX/2)+(ScreenSizeX/3);
+		s_xleft=(MapWindow::MapRect.right+MapWindow::MapRect.left)/2 -(MapWindow::MapRect.right-MapWindow::MapRect.left)/6;
+		s_xright=(MapWindow::MapRect.right+MapWindow::MapRect.left)/2 + (MapWindow::MapRect.right-MapWindow::MapRect.left)/6;
 
 		// same for bottom navboxes: they do not exist in infobox mode
-		s_bottomY=Y_BottomBar-NIBLSCALE(2);
+		s_bottomY=MapWindow::Y_BottomBar-NIBLSCALE(2);
 
 		DoInit[MDI_PROCESSVIRTUALKEY]=false;
 	}
 
+
+        // LK v6: check we are not out of MapRect bounds.
+        if (X<MapWindow::MapRect.left||X>MapWindow::MapRect.right||Y<MapWindow::MapRect.top||Y>MapWindow::MapRect.bottom)
+            return ProcessSubScreenVirtualKey(X,Y,keytime,vkmode);
+
+        if (MapSpaceMode==MSM_WELCOME) {
+            SetModeType(LKMODE_MAP, MP_MOVING);
+            LKevent=LKEVENT_NONE;
+            NextModeIndex();
+            PreviousModeIndex();
+            MapWindow::RefreshMap();
+            LKSound(_T("LK_BEEP0.WAV"));
+            return 0;
+        }
+
+
 	// 120602 fix
 	// TopSize is dynamically assigned by DrawNearest,Drawcommon, DrawXX etc. so we cannot make static yups
 	//
-	longpress_yup=(short)((Y_BottomBar-TopSize)/3.7)+TopSize;
-	longpress_ydown=(short)(Y_BottomBar-(Y_BottomBar/3.7));
-	shortpress_yup=(short)((Y_BottomBar-TopSize)/2.7)+TopSize;
-	shortpress_ydown=(short)(Y_BottomBar-(Y_BottomBar/2.7));
+	longpress_yup=(short)((MapWindow::Y_BottomBar-TopSize)/3.7)+TopSize;
+	longpress_ydown=(short)(MapWindow::Y_BottomBar-(MapWindow::Y_BottomBar/3.7));
+	shortpress_yup=(short)((MapWindow::Y_BottomBar-TopSize)/2.7)+TopSize;
+	shortpress_ydown=(short)(MapWindow::Y_BottomBar-(MapWindow::Y_BottomBar/2.7));
 	
 	// do not consider navboxes, they are processed separately
 	// These are coordinates for up down center VKs
@@ -125,7 +130,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 					if (CustomKeyHandler(CKI_BOTTOMRIGHT)) return 0;
 				}
 				#ifdef DEBUG_PROCVK
-				_stprintf(buf,_T("RIGHT in limit=%d"),Y_BottomBar-NIBLSCALE(20));
+				_stprintf(buf,_T("RIGHT in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(true); // advance
@@ -140,7 +145,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				}
 
 				#ifdef DEBUG_PROCVK
-				_stprintf(buf,_T("LEFT in limit=%d"),Y_BottomBar-NIBLSCALE(20));
+				_stprintf(buf,_T("LEFT in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(false); // backwards
@@ -149,7 +154,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				return 0;
 			}
 			#ifdef DEBUG_PROCVK
-			_stprintf(buf,_T("CENTER in limit=%d"),Y_BottomBar-NIBLSCALE(20));
+			_stprintf(buf,_T("CENTER in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
 			DoStatusMessage(buf);
 			#endif
 
@@ -242,8 +247,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			// normally, we fall down here.
 			// If CustomKeyHandler returned false, back as well here (nothing configured in custom).
 			//
-			// If we are clicking on center bottom bar while still in welcome page, set map before nextmode.
-			if (MapSpaceMode==MSM_WELCOME)  SetModeType(LKMODE_MAP, MP_MOVING);
+			///// If we are clicking on center bottom bar while still in welcome page, set map before nextmode.
 			NextModeIndex();
 			MapWindow::RefreshMap();
 			SoundModeIndex();
@@ -336,25 +340,24 @@ shortcut_gesture:
 			case MSM_AIRPORTS:
 			case MSM_NEARTPS:
 						LKForceDoNearest=true;
-						numpages=Numpages; // TODO adopt Numpages[MapSpaceMode]
+						numpages=Numpages;
 						break;
 			case MSM_COMMON:
 						LKForceDoCommon=true;
-						// warning. Commons and Recents share the same variable!
-						numpages=CommonNumpages;
+						numpages=Numpages;
 						break;
 			case MSM_RECENT:
 						LKForceDoRecent=true;
-						numpages=CommonNumpages;
+						numpages=Numpages;
 						break;
 			case MSM_AIRSPACES:
-						numpages=AspNumpages;
+						numpages=Numpages;
 						break;
 			case MSM_TRAFFIC:
-						numpages=TrafficNumpages;
+						numpages=Numpages;
 						break;
 			case MSM_THERMALS:
-						numpages=THistoryNumpages;
+						numpages=Numpages;
 						break;
 			default:
 						break;
@@ -455,8 +458,8 @@ gesture_left:
 	if (dontdrawthemap) {
 		if (Y>longpress_yup && Y<longpress_ydown) {
 			if (UseUngestures || !ISPARAGLIDER) {
-				if (X<=X_Left)  goto gesture_left;
-				if (X>=X_Right) goto gesture_right;
+				if (X<=MapWindow::X_Left)  goto gesture_left;
+				if (X>=MapWindow::X_Right) goto gesture_right;
 			}
 		}
 	}
@@ -514,14 +517,6 @@ gesture_left:
 
 	// no click for already clicked events
 
-	if (MapSpaceMode==MSM_WELCOME) {
-		SetModeType(LKMODE_MAP,MP_MOVING);
-		LKevent=LKEVENT_NONE;
-		MapWindow::RefreshMap();
-		LKSound(_T("LK_BEEP0.WAV"));
-		return 0;
-	}
-		
 
 		// If in mapspacemode process ENTER 
 		if ( (keytime>=(VKSHORTCLICK*2)) && dontdrawthemap && !IsMultiMap()) {
@@ -552,6 +547,23 @@ gesture_left:
 		}
 	DoStatusMessage(_T("VirtualKey Error")); 
 	return 0;
+}
+
+
+
+// 
+// LK v6 Keyclicks out of MapRect but inside DrawRect. What we call SubScreen area.
+//
+int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode) {
+
+    #if TESTBENCH
+    TCHAR buf[100];
+    _stprintf(buf,_T("SubScreen Key: X=%d Y=%d kt=%ld vk=%d"),X,Y,keytime,vkmode);
+    DoStatusMessage(buf);
+    #endif
+
+    return 0; // unmanaged keypress
+
 }
 
 

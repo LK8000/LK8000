@@ -107,11 +107,12 @@ void ReinitScreen(void) {
   CloseTerrainRenderer();
   UnlockTerrainDataGraphics();
 
+  // DoInits will require new values (at least PROCESSVIRTUALKEYS)
+  MainWindow.UpdateActiveScreenZone(rc);
+
   Reset_Single_DoInits(MDI_DRAWLOOK8000);
   Reset_Single_DoInits(MDI_DRAWTRI);
   Reset_Single_DoInits(MDI_DRAWHSI);
-  Reset_Single_DoInits(MDI_DRAWASPNEAREST);
-  Reset_Single_DoInits(MDI_DRAWCOMMON);
   Reset_Single_DoInits(MDI_DRAWFLARMTRAFFIC);
   Reset_Single_DoInits(MDI_DRAWINFOPAGE);
   Reset_Single_DoInits(MDI_WRITEINFO);
@@ -119,13 +120,10 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_DRAWMAPSPACE);
   Reset_Single_DoInits(MDI_DRAWNEAREST);
   Reset_Single_DoInits(MDI_DRAWTARGET);
-  Reset_Single_DoInits(MDI_DRAWTHERMALHISTORY);
-  Reset_Single_DoInits(MDI_DRAWTRAFFIC);
   Reset_Single_DoInits(MDI_DRAWVARIO);
   Reset_Single_DoInits(MDI_PROCESSVIRTUALKEY);
   Reset_Single_DoInits(MDI_ONPAINTLISTITEM);
   Reset_Single_DoInits(MDI_DRAWMAPSCALE);
-  Reset_Single_DoInits(MDI_MAPWPLABELADD);
   Reset_Single_DoInits(MDI_CHECKLABELBLOCK);
   Reset_Single_DoInits(MDI_LKPROCESS);
   Reset_Single_DoInits(MDI_COMPASS);
@@ -135,16 +133,13 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_MAPRADAR); // doing nothing reallt
   Reset_Single_DoInits(MDI_FLARMRADAR);
   Reset_Single_DoInits(MDI_DRAWBOTTOMBAR);
+  Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);
   Reset_Single_DoInits(MDI_DRAWTASK);
 
   #if TESTBENCH
   StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));
   #endif
 
-  // Since MapWindow is doing static inits, we want them to be recalculated at the end of
-  // initializations, since some values in use might have been not available yet, for example BottomSize.
-  // maybe useless, already done by MainWindow::OnSize()
-  MainWindow.UpdateActiveScreenZone(rc.right - rc.left, rc.bottom - rc.top);
 
 
   MapWindow::ResumeDrawingThread();

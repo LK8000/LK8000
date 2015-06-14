@@ -16,6 +16,12 @@
 #endif
 
 // options first, then all dependencies
+#include "Compiler.h"
+#ifdef __cplusplus
+#include "Screen/Features.hpp"
+#endif
+#include "compatibility.h"
+
 #include "options.h"
 #include "utils/filesystem.h"
 #include "Sizes.h"

@@ -205,8 +205,13 @@ double fXY_Scale = 1.5;
 	//	DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
 		if( ValidTaskPoint(4) && i <2)
 			goto skip_FAI;
+#ifndef UNDITHER
 		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
 	    RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
+#else
+		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_RED );
+	    RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_DARKGREY   );
+#endif
 	    skip_FAI:
 		DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
 		Surface.Segment((long)((x2-x_min)*xscale+rc.left+BORDER_X),(long)((y_max-y2)*yscale+rc.top),(long)(aatradius[i]*yscale),rc,	Task[i].AATStartRadial,	Task[i].AATFinishRadial);
@@ -219,8 +224,13 @@ double fXY_Scale = 1.5;
 	  lon1 = WayPointList[Task[3].Index].Longitude;
 	  lat2 = WayPointList[Task[1].Index].Latitude;
 	  lon2 = WayPointList[Task[1].Index].Longitude;
+          #ifndef UNDITHER
 	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
 	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
+          #else
+	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_RED );
+	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_DARKGREY   );
+          #endif
 	}
   }
 	// draw task lines and label

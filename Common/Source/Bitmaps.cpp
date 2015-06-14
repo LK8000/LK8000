@@ -128,6 +128,25 @@ void LKLoadFixedBitmaps(void) {
   _stprintf(srcfile,_T("%sMM8." IMG_EXT),sDir);
   hMM8=LKLoadBitmap(srcfile);
 
+  _stprintf(srcfile,_T("%sIMM0." IMG_EXT),sDir);
+  hIMM0=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sIMM1." IMG_EXT),sDir);
+  hIMM1=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sIMM2." IMG_EXT),sDir);
+  hIMM2=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sIMM3." IMG_EXT),sDir);
+  hIMM3=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sIMM4." IMG_EXT),sDir);
+  hIMM4=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sIMM5." IMG_EXT),sDir);
+  hIMM5=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sIMM6." IMG_EXT),sDir);
+  hIMM6=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sIMM7." IMG_EXT),sDir);
+  hIMM7=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sIMM8." IMG_EXT),sDir);
+  hIMM8=LKLoadBitmap(srcfile);
+
   _stprintf(srcfile,_T("%sBUTTONLEFT32." IMG_EXT),sDir);
   hBmpLeft32=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%sBUTTONRIGHT32." IMG_EXT),sDir);
@@ -155,6 +174,8 @@ void LKLoadFixedBitmaps(void) {
   hLogger=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%sLOGGER0." IMG_EXT),sDir);
   hLoggerOff=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sLOGGEROFF." IMG_EXT),sDir);
+  hLoggerDisabled=LKLoadBitmap(srcfile);
 
   // For low zooms, we use Small icon (a dot in fact)
   _stprintf(srcfile,_T("%sMOUNTOP%s." IMG_EXT),sDir,hires_suffix);
@@ -240,6 +261,7 @@ void LKUnloadFixedBitmaps(void) {
     hAirspaceWarning.Release();
     hLogger.Release();
     hLoggerOff.Release();
+    hLoggerDisabled.Release();
     hFLARMTraffic.Release();
     hBatteryFull.Release();
     hBatteryFullC.Release();
@@ -269,6 +291,15 @@ void LKUnloadFixedBitmaps(void) {
     hMM6.Release();
     hMM7.Release();
     hMM8.Release();
+    hIMM0.Release();
+    hIMM1.Release();
+    hIMM2.Release();
+    hIMM3.Release();
+    hIMM4.Release();
+    hIMM5.Release();
+    hIMM6.Release();
+    hIMM7.Release();
+    hIMM8.Release();
 
     hBmpThermalSource.Release();
     hBmpTarget.Release();

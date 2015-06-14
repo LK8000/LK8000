@@ -60,7 +60,9 @@ void OpenFLARMDetails() {
   }
 
   TCHAR line[READLINE_LENGTH];
-  while (ReadStringX(stream,READLINE_LENGTH, line)) {
+  charset cs = charset::unknown;
+
+  while (ReadStringX(stream,READLINE_LENGTH, line, cs)) {
     long id;
     TCHAR Name[MAX_PATH];
 

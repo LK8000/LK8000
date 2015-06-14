@@ -297,6 +297,7 @@ class MapWindow {
 
     bool GetPgClimbInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
     bool GetPgCruiseInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
+
   };
   
 
@@ -435,6 +436,7 @@ class MapWindow {
   static RECT MapRect;			// See explanation in MapWndProc
   static RECT DrawRect;
   static bool ForceVisibilityScan;
+  static bool ThermalBarDrawn;
 
   static bool MapDirty;
 
@@ -474,7 +476,7 @@ class MapWindow {
   static void SuspendDrawingThread(void);
   static void ResumeDrawingThread(void);
   
-  static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, const LKColor& rgb_tex, bool invertable);
+  static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, const LKColor& rgb_tex, bool invertable, RECT* ClipRect = nullptr);
   static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
 
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
@@ -549,7 +551,7 @@ class MapWindow {
   static void DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc);
   static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc);
-  static void DrawLook8000(LKSurface& Surface, const RECT& rc, bool bThermalBar);
+  static void DrawLook8000(LKSurface& Surface, const RECT& rc);
   static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
   static void DrawMapSpace(LKSurface& Surface, const RECT& rc);
   static void DrawNearest(LKSurface& Surface, const RECT& rc);
@@ -621,7 +623,7 @@ class MapWindow {
 			   const bool ScaleChangeFeedback);
   static void DrawMapScale2(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawFinalGlide(LKSurface& Surface, const RECT& rc);
-  static bool DrawThermalBand(LKSurface& Surface, const RECT& rc);
+  static void DrawThermalBand(LKSurface& Surface, const RECT& rc);
   static void DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc);
   static void DrawTerrainAbove(LKSurface& Surface, const RECT& rc);
   static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
@@ -663,6 +665,18 @@ private:
   static void RefreshMap(); // set public VENTA
 
   static rectObj screenbounds_latlon;
+
+  // this property is calculated by UpdateActiveScreenZone() on OnCreate(...) and OnSize(...) or user call
+  static short Y_BottomBar; // this is different from BottomBarY
+  static POINT P_Doubleclick_bottomright; // squared area for screen lock doubleclick, normally on right bottombar
+  static POINT P_MenuIcon_DrawBottom; // Menu icon area (topleft coord)
+  static POINT P_MenuIcon_noDrawBottom; // same, without bottombar drawn, forgot why it is different
+
+  static POINT P_UngestureLeft;
+  static POINT P_UngestureRight;
+
+  static short Y_Up, Y_Down; // Up and Down keys vertical limits, ex. for zoom in out on map
+  static short X_Left, X_Right; // Ungestured fast clicks on infopages (THE SAME AS IN: PROCESS_VIRTUALKEY)
   
   static BOOL THREADRUNNING;
   static BOOL THREADEXIT;
@@ -761,7 +775,7 @@ private:
   static bool TargetMoved(double &longitude, double &latitude);
 
     // Touch Screen Events Area
-    static void UpdateActiveScreenZone(int cx, int cy);
+    static void UpdateActiveScreenZone(RECT rc);
 
 protected:
 	static void _OnSize(int cx, int cy);
@@ -786,17 +800,6 @@ protected:
     static double Xlat, Ylat;
     static double distance;
 
-    // this property is calculated by UpdateActiveScreenZone() on OnCreate(...) and OnSize(...) or user call
-    static short Y_BottomBar; // this is different from BottomBarY
-    static POINT P_Doubleclick_bottomright; // squared area for screen lock doubleclick, normally on right bottombar
-    static POINT P_MenuIcon_DrawBottom; // Menu icon area (topleft coord)
-    static POINT P_MenuIcon_noDrawBottom; // same, without bottombar drawn, forgot why it is different
-
-    static POINT P_UngestureLeft;
-    static POINT P_UngestureRight;
-
-    static short Y_Up, Y_Down; // Up and Down keys vertical limits, ex. for zoom in out on map
-    static short X_Left, X_Right; // Ungestured fast clicks on infopages (THE SAME AS IN: PROCESS_VIRTUALKEY)
     
 /////////////////////////////////////////////////////    
     

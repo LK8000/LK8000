@@ -234,29 +234,15 @@ extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name
 int GetWaypointFileFormatType(const TCHAR* wfilename) {
 
   TCHAR wextension[MAX_PATH];
-  TCHAR wdrive[MAX_PATH];
-  TCHAR wdir[MAX_PATH];
-  TCHAR wname[MAX_PATH];
-  LK_tsplitpath(wfilename, wdrive,wdir,wname,wextension);
+  LK_tsplitpath(wfilename, nullptr,nullptr,nullptr,wextension);
 
-  //StartupStore(_T("... wdrive=%s\n"),wdrive);
-  //StartupStore(_T("... wdir=%s\n"),wdir);
-  //StartupStore(_T("... wname=%s\n"),wname);
-  //StartupStore(_T("... wext=%s\n"),wextension);
-
-  if ( _tcscmp(wextension,_T(".cup"))==0 ||
-    _tcscmp(wextension,_T(".CUP"))==0 ||
-    _tcscmp(wextension,_T(".Cup"))==0) {
+  if ( _tcsicmp(wextension,_T(".cup"))==0) {
        return LKW_CUP;
   }
-  if ( _tcscmp(wextension,_T(".dat"))==0 ||
-    _tcscmp(wextension,_T(".DAT"))==0 ||
-    _tcscmp(wextension,_T(".Dat"))==0) {
+  if ( _tcsicmp(wextension,_T(".dat"))==0 ) {
        return LKW_DAT;
   }
-  if ( _tcscmp(wextension,_T(".wpt"))==0 ||
-    _tcscmp(wextension,_T(".WPT"))==0 ||
-    _tcscmp(wextension,_T(".Wpt"))==0) {
+  if ( _tcsicmp(wextension,_T(".wpt"))==0 ) {
        return LKW_COMPE;
   }
 

@@ -44,6 +44,8 @@ static bool taskchanged = false;
 static bool requirerestart = false;
 static bool utcchanged = false;
 static bool waypointneedsave = false;
+static bool fontschanged= false;
+
 
 short configMode=0;	// current configuration mode, 0=system 1=pilot 2=aircraft 3=device
 short config_page[4]={0,0,0,0}; // remember last page we were using, for each profile
@@ -262,7 +264,7 @@ static void NextPage(int Step){
 		else
 			config_page[configMode]=5;
 	}
-        #if 1
+        #if 0
         // Keep menu 12 ready for new font editor
 	if (config_page[configMode]==11) {
 		if (Step>0) 
@@ -1651,6 +1653,131 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  //
+  // Font manager
+  //
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapWaypoint"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("-5"));
+    dfe->addEnumText(TEXT("-4"));
+    dfe->addEnumText(TEXT("-3"));
+    dfe->addEnumText(TEXT("-2"));
+    dfe->addEnumText(TEXT("-1"));
+    dfe->addEnumText(TEXT("0"));
+    dfe->addEnumText(TEXT("+1"));
+    dfe->addEnumText(TEXT("+2"));
+    dfe->addEnumText(TEXT("+3"));
+    dfe->addEnumText(TEXT("+4"));
+    dfe->addEnumText(TEXT("+5"));
+    dfe->Set(FontMapWaypoint);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapTopology"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("-5"));
+    dfe->addEnumText(TEXT("-4"));
+    dfe->addEnumText(TEXT("-3"));
+    dfe->addEnumText(TEXT("-2"));
+    dfe->addEnumText(TEXT("-1"));
+    dfe->addEnumText(TEXT("0"));
+    dfe->addEnumText(TEXT("+1"));
+    dfe->addEnumText(TEXT("+2"));
+    dfe->addEnumText(TEXT("+3"));
+    dfe->addEnumText(TEXT("+4"));
+    dfe->addEnumText(TEXT("+5"));
+    dfe->Set(FontMapTopology);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontInfopage1L"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("-5"));
+    dfe->addEnumText(TEXT("-4"));
+    dfe->addEnumText(TEXT("-3"));
+    dfe->addEnumText(TEXT("-2"));
+    dfe->addEnumText(TEXT("-1"));
+    dfe->addEnumText(TEXT("0"));
+    dfe->addEnumText(TEXT("+1"));
+    dfe->addEnumText(TEXT("+2"));
+    dfe->addEnumText(TEXT("+3"));
+    dfe->addEnumText(TEXT("+4"));
+    dfe->addEnumText(TEXT("+5"));
+    dfe->Set(FontInfopage1L);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontBottomBar"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("-5"));
+    dfe->addEnumText(TEXT("-4"));
+    dfe->addEnumText(TEXT("-3"));
+    dfe->addEnumText(TEXT("-2"));
+    dfe->addEnumText(TEXT("-1"));
+    dfe->addEnumText(TEXT("0"));
+    dfe->addEnumText(TEXT("+1"));
+    dfe->addEnumText(TEXT("+2"));
+    dfe->addEnumText(TEXT("+3"));
+    dfe->addEnumText(TEXT("+4"));
+    dfe->addEnumText(TEXT("+5"));
+    dfe->Set(FontBottomBar);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayTarget"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("-5"));
+    dfe->addEnumText(TEXT("-4"));
+    dfe->addEnumText(TEXT("-3"));
+    dfe->addEnumText(TEXT("-2"));
+    dfe->addEnumText(TEXT("-1"));
+    dfe->addEnumText(TEXT("0"));
+    dfe->addEnumText(TEXT("+1"));
+    dfe->addEnumText(TEXT("+2"));
+    dfe->addEnumText(TEXT("+3"));
+    dfe->addEnumText(TEXT("+4"));
+    dfe->addEnumText(TEXT("+5"));
+    dfe->Set(FontOverlayMedium);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayValues"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("-5"));
+    dfe->addEnumText(TEXT("-4"));
+    dfe->addEnumText(TEXT("-3"));
+    dfe->addEnumText(TEXT("-2"));
+    dfe->addEnumText(TEXT("-1"));
+    dfe->addEnumText(TEXT("0"));
+    dfe->addEnumText(TEXT("+1"));
+    dfe->addEnumText(TEXT("+2"));
+    dfe->addEnumText(TEXT("+3"));
+    dfe->addEnumText(TEXT("+4"));
+    dfe->addEnumText(TEXT("+5"));
+    dfe->Set(FontOverlayBig);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpUseTwoLines"));
+  if (wp) {
+    wp->GetDataField()->Set(UseTwoLines);
+    if (ScreenLandscape) wp->SetReadOnly(true);
+    wp->RefreshDisplay();
+  }
+
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontRenderer"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2874,6 +3001,7 @@ static void setVariables(void) {
 	// LKTOKEN  _@M340_ = "HighContrast" 
     dfe->addEnumText(gettext(TEXT("_@M340_")));
     dfe->addEnumText(TEXT("GA Relative"));
+    dfe->addEnumText(TEXT("LiteAlps"));
     dfe->Set(TerrainRamp_Config);
     wp->RefreshDisplay();
   }
@@ -3432,7 +3560,62 @@ double dval;
 	BarOpacity= wp->GetDataField()->GetAsInteger() * 5;
     }
   }
+
   
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapWaypoint"));
+  if (wp) {
+      if (FontMapWaypoint != wp->GetDataField()->GetAsInteger() ) {
+          FontMapWaypoint = wp->GetDataField()->GetAsInteger();
+          fontschanged=true;
+      }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapTopology"));
+  if (wp) {
+      if (FontMapTopology != wp->GetDataField()->GetAsInteger() ) {
+          FontMapTopology = wp->GetDataField()->GetAsInteger();
+          fontschanged=true;
+      }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontInfopage1L"));
+  if (wp) {
+      if (FontInfopage1L != wp->GetDataField()->GetAsInteger() ) {
+          FontInfopage1L = wp->GetDataField()->GetAsInteger();
+          fontschanged=true;
+      }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontBottomBar"));
+  if (wp) {
+      if (FontBottomBar != wp->GetDataField()->GetAsInteger() ) {
+          FontBottomBar = wp->GetDataField()->GetAsInteger();
+          fontschanged=true;
+      }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayTarget"));
+  if (wp) {
+      if (FontOverlayMedium != wp->GetDataField()->GetAsInteger() ) {
+          FontOverlayMedium = wp->GetDataField()->GetAsInteger();
+          fontschanged=true;
+      }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayValues"));
+  if (wp) {
+      if (FontOverlayBig != wp->GetDataField()->GetAsInteger() ) {
+          FontOverlayBig = wp->GetDataField()->GetAsInteger();
+          fontschanged=true;
+      }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpUseTwoLines"));
+  if (wp) {
+      if (UseTwoLines != wp->GetDataField()->GetAsBoolean()) {
+          UseTwoLines = wp->GetDataField()->GetAsBoolean();
+          Reset_Single_DoInits(MDI_DRAWNEAREST);
+    }
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontRenderer"));
   if (wp) {
     if (FontRenderer != wp->GetDataField()->GetAsInteger() ) 
@@ -3886,14 +4069,13 @@ int ival;
 	(wp->GetDataField()->GetAsInteger());
     }
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpHideUnits")); // VENTA6
+  wp = (WndProperty*)wf->FindByName(TEXT("prpHideUnits"));
   if (wp) {
-    if (HideUnits != (HideUnits_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      HideUnits = (HideUnits_t)
-	(wp->GetDataField()->GetAsInteger());
-      requirerestart = true;
-    }
+      if (HideUnits != (HideUnits_t) (wp->GetDataField()->GetAsInteger())) {
+          HideUnits = (HideUnits_t) (wp->GetDataField()->GetAsInteger());
+          Reset_Single_DoInits(MDI_DRAWBOTTOMBAR);
+          Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);
+      }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpDeclutterMode")); // VENTA10
   if (wp) {
@@ -4417,6 +4599,13 @@ int ival;
 
   if (taskchanged) {
     RefreshTask();
+  }
+
+  if (fontschanged) {
+      #if TESTBENCH
+      StartupStore(_T("..... dlgConfiguration: fontschanged requested\n"));
+      #endif
+      FONTSCHANGED=true;
   }
 
 #if (WINDOWSPC>0)

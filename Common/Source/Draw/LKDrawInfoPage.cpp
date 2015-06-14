@@ -13,6 +13,14 @@
 #include "DoInits.h"
 #include "ScreenGeometry.h"
 
+#ifdef UNDITHER
+#define AMBERCOLOR RGB_WHITE
+#else
+#define AMBERCOLOR RGB_AMBER
+#endif
+
+int InfoPageTopLineSeparator=0;
+
 void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col) {
     const POINT p0({ x1, y1 });
     const POINT p1({ x2, y2 });
@@ -42,10 +50,10 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
   if (DoInit[MDI_DRAWINFOPAGE]) {
 	DoInit[MDI_DRAWINFOPAGE]=false;
 	// function can only be called in fullscreen  and thus can be inited here
-	column[0]=LEFTLIMITER;
-	column[1]=((rc.right-RIGHTLIMITER-LEFTLIMITER)/PANELCOLUMNS)+LEFTLIMITER;
-	column[2]=column[1]*2-LEFTLIMITER;
-	column[3]=column[1]*3-LEFTLIMITER*2;
+	column[0]=rc.left+LEFTLIMITER;
+	column[1]=((rc.right-RIGHTLIMITER-LEFTLIMITER-rc.left)/PANELCOLUMNS)+LEFTLIMITER+rc.left;
+	column[2]=column[1]*2-LEFTLIMITER-rc.left;
+	column[3]=column[1]*3-LEFTLIMITER*2-rc.left;
 	column[PANELCOLUMNS]=rc.right-RIGHTLIMITER;
 	row[0]=rc.top+TOPLIMITER;
 	row[1]=((rc.bottom-BottomSize-row[0]-BOTTOMLIMITER)/PANELROWS)+row[0];
@@ -64,7 +72,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	hcolumn[8]=column[4];
 
 	hrow[0]=row[0];
-	hrow[1]=(row[1]-row[0])/2;
+	hrow[1]=(row[1]-row[0])/2+rc.top;
 	hrow[2]=row[1];
 	hrow[3]=(row[2]-row[1])/2+row[1];
 	hrow[4]=row[2];
@@ -118,6 +126,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	qrow[11]+=NIBLSCALE(6)*3;
 	qrow[12]+=NIBLSCALE(6)*3;
 	qrow[13]+=NIBLSCALE(6)*3;
+
+        InfoPageTopLineSeparator=qrow[2];
 
   } // doinit
 
@@ -207,7 +217,12 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			_stprintf(Buffer,_T("error"));
 			break;
 	}
-        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], 0, WTMODE_NORMAL, WTALIGN_LEFT,
+            #ifndef UNDITHER
+            RGB_LIGHTGREEN, false);
+            #else
+            RGB_WHITE, false);
+            #endif
 
 	// R0 C1
 	icolor=RGB_WHITE;
@@ -222,11 +237,11 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 					_tcscpy(Buffer, WayPointList[index].Name);
 				} else {
 					_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
-					icolor=RGB_AMBER;
+					icolor=AMBERCOLOR;
 				}
 			} else {
 				_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
-				icolor=RGB_AMBER;
+				icolor=AMBERCOLOR;
 			}
 			break;
 		case IM_TRI:
@@ -263,13 +278,13 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 			} else {
 				_tcscpy(Buffer,gettext(TEXT("_@M914_"))); // [no target]
-				icolor=RGB_AMBER;
+				icolor=AMBERCOLOR;
 			}
 
 			break;
 		default:
 			_stprintf(Buffer,_T("error"));
-			icolor=RGB_AMBER;
+			icolor=AMBERCOLOR;
 			break;
 	}
         LKWriteText(Surface, Buffer, qcolumn[8],qrow[1], 0, WTMODE_NORMAL, WTALIGN_CENTER, icolor, false);
@@ -913,11 +928,19 @@ label_HSI:
 	if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
 		if(showVFRlanding) {
 			_stprintf(Buffer,TEXT("VFR %s"),gettext(TEXT("_@M931_"))); //TODO: toupper()
+			#ifndef UNDITHER
 			icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
+			#else
+			icolor=RGB_WHITE;
+			#endif
 		}
 		if(showQFU) {
 			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir,gettext(_T("_@M2179_")));
+			#ifndef UNDITHER
 			icolor=RGB_GREEN;
+			#else
+			icolor=RGB_WHITE;
+			#endif
 		}
 	} else { //show next waypoint name
 		icolor=RGB_WHITE;
@@ -925,11 +948,11 @@ label_HSI:
 			if(Task[ActiveWayPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveWayPoint].Index].Name);
 			else {
 				_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
-				icolor=RGB_AMBER;
+				icolor=AMBERCOLOR;
 			}
 		} else {
 			_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
-			icolor=RGB_AMBER;
+			icolor=AMBERCOLOR;
 		}
 	}
 	Surface.SelectObject(LK8PanelMediumFont);
@@ -1118,14 +1141,18 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
   if (*showunit)
 	LKWriteText(Surface, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_WHITE, false);
   else
-	LKWriteText(Surface, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_AMBER, false);
+	LKWriteText(Surface, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, AMBERCOLOR, false);
 
   if (*showunit==true && !HideUnits) {
        	Surface.SelectObject(LK8PanelUnitFont); // 091230
         LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
   }
   Surface.SelectObject(LK8PanelSmallFont);
+  #ifndef UNDITHER
   LKWriteText(Surface, BufferTitle, *columntitle,*row3, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
+  #else
+  LKWriteText(Surface, BufferTitle, *columntitle,*row3, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+  #endif
 
 }
 

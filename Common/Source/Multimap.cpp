@@ -11,6 +11,7 @@
 #include "Sound/Sound.h"
 
 extern bool HaveGauges(void);
+extern bool HaveGaugesDrawn(void);
 
 //
 // It is IMPERATIVE that multimaps using a split screen keep these variables updated!
@@ -213,7 +214,7 @@ void ToggleMultimapWaypoints(void) {
 void ToggleMultimapOverlays(void) {
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
-  if (!HaveGauges()) {
+  if (!HaveGaugesDrawn()) {
 	Multimap_Flags_Overlays_Text[i] = !Multimap_Flags_Overlays_Text[i];
 	return;
   }

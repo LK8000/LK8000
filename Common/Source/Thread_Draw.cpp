@@ -25,11 +25,40 @@ BOOL MapWindow::Initialised = FALSE;
 
 Poco::FastMutex MapWindow::Surface_Mutex;
 
+// #define TESTMAPRECT 1
+// Although we are capable of autoresizing, all fonts are tuned for the original screen geometry.
+// It is unlikely that we shall do sliding windows by changing MapRect like we do here, because
+// this would mean to force a ChangeScreen everytime.
+// It is although possible to use only a portion of the screen and leave the rest for example for
+// a realtime vario, or for menu buttons, or for text. In such cases, we can assume that the reserved
+// portion of screen will be limited to a -say- NIBLSCALE(25) and geometry will not change much.
+// Reducing MapRect like we do in the test is not useful, only for checking if we have pending problems.
+//
+#ifdef TESTMAPRECT
+#define TM_T 45
+#define TM_B 45
+#define TM_L 30
+#define TM_R 20
+#endif
+
+#ifdef UNGHOST
+// When we reach this level we apply the unghosting method.
+// Notice that each draw trigger has a default forward step of 10. 
+// Every second we redraw something, and we add or subtract 0 to 10.
+// So this is the number of "dirty" writes that require unghosting
+#define MAX_UNGHOST 180*10
+#endif
+
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
 
 void MapWindow::DrawThread ()
 {
+  #ifdef UNGHOST
+  static long long int unghost_lasttime=0;
+  static Poco::Timestamp StartTime;
+  #endif
+
   while ((!ProgramStarted) || (!Initialised)) {
 	Poco::Thread::sleep(50);
   }
@@ -38,6 +67,9 @@ void MapWindow::DrawThread ()
   StartupStore(_T("##############  DRAW threadid=%d\n"),GetCurrentThreadId());
   #endif
 
+  #if TESTBENCH
+  StartupStore(_T("... DrawThread START%s"),NEWLINE);
+  #endif
 
   // THREADRUNNING = FALSE;
   THREADEXIT = FALSE;
@@ -46,8 +78,15 @@ void MapWindow::DrawThread ()
   ResetLabelDeclutter();
 
   MapRect = MainWindow.GetClientRect();
+  #ifdef TESTMAPRECT
+  MapRect.top+=TM_T;
+  MapRect.left+=TM_L;
+  MapRect.right-=TM_R;
+  MapRect.bottom-=TM_B;
+  #endif
   // Default draw area is full screen, no opacity
   DrawRect=MapRect;
+  UpdateActiveScreenZone(MapRect);
 
   UpdateTimeStats(true);
 
@@ -61,9 +100,9 @@ void MapWindow::DrawThread ()
     DrawSurface.SelectObject(LK_BLACK_PEN);
     DrawSurface.Rectangle(MapRect.left,MapRect.top, MapRect.right,MapRect.bottom);
 
-    BackBufferSurface.Copy(0, 0, MapRect.right-MapRect.left,
+    BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
            MapRect.bottom-MapRect.top, 
-           DrawSurface, 0, 0);
+           DrawSurface, MapRect.left, MapRect.top);
   } // End Critical section
   
   // This is just here to give fully rendered start screen
@@ -88,6 +127,7 @@ void MapWindow::DrawThread ()
 	if (CLOSETHREAD) break; // drop out without drawing
 
 	if ((!THREADRUNNING) || (!GlobalRunning)) {
+                // When we are in dialogs, we are coming here every 5s
 		Poco::Thread::sleep(50);
 		continue;
 	}
@@ -104,7 +144,14 @@ void MapWindow::DrawThread ()
 		#endif
 		// This is needed to update resolution change
 		MapRect = MainWindow.GetClientRect();
+                #ifdef TESTMAPRECT
+                MapRect.top+=TM_T;
+                MapRect.left+=TM_L;
+                MapRect.right-=TM_R;
+                MapRect.bottom-=TM_B;
+                #endif
 		DrawRect=MapRect;
+                UpdateActiveScreenZone(MapRect);
 		FillScaleListForEngineeringUnits();
 		LKUnloadProfileBitmaps();
 		LKLoadProfileBitmaps();
@@ -157,7 +204,7 @@ void MapWindow::DrawThread ()
 			const int fromX=startScreen.x-targetScreen.x;
 			const int fromY=startScreen.y-targetScreen.y;
 
-			BackBufferSurface.Whiteness(0, 0,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
+			BackBufferSurface.Whiteness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 
                         RECT  clipSourceArea;
                         POINT clipDestPoint;
@@ -165,7 +212,7 @@ void MapWindow::DrawThread ()
                         if (fromX<0) {
                             clipSourceArea.left=MapRect.left;
                             clipSourceArea.right=MapRect.right+fromX; // negative fromX
-                            clipDestPoint.x=-fromX;
+                            clipDestPoint.x=MapRect.left-fromX;
                         } else {
                             clipSourceArea.left=MapRect.left+fromX;
                             clipSourceArea.right=MapRect.right;
@@ -175,7 +222,7 @@ void MapWindow::DrawThread ()
                         if (fromY<0) {
                             clipSourceArea.top=MapRect.top;
                             clipSourceArea.bottom=MapRect.bottom+fromY; // negative fromX
-                            clipDestPoint.y=-fromY;
+                            clipDestPoint.y=MapRect.top-fromY;
                         } else {
                             clipSourceArea.top=MapRect.top+fromY;
                             clipSourceArea.bottom=MapRect.bottom;
@@ -201,9 +248,11 @@ void MapWindow::DrawThread ()
 			// The map was not dirty, and we are not in fastpanning mode.
 			// FastRefresh!  We simply redraw old bitmap. 
 			//
-			BackBufferSurface.Copy(0, 0, MapRect.right-MapRect.left,
+			BUGSTOP_LKASSERT(0);
+                       
+			BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
-				DrawSurface, 0, 0);
+				DrawSurface, MapRect.left, MapRect.top);
 
 			lastdrawwasbitblitted=true;
 		}
@@ -232,9 +281,9 @@ void MapWindow::DrawThread ()
 				lasthere=LKHearthBeats;
 				goto _dontbitblt;
 			}
-			BackBufferSurface.Copy(0, 0, MapRect.right-MapRect.left,
+			BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
 				MapRect.bottom-MapRect.top, 
-				DrawSurface, 0, 0);
+				DrawSurface, MapRect.left, MapRect.top);
 
 			POINT centerscreen;
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
@@ -253,12 +302,41 @@ _dontbitblt:
 	MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
 	RenderMapWindow(DrawSurface, MapRect);
+        #ifdef UNGHOST
+        // In info pages the ghosting effect is "10" times less important
+        if (MapSpaceMode>MSM_MAP && MapSpaceMode<MSM_TRAFFIC)
+            Unghost++;
+        else
+            // Otherwise, we add 10, the unit
+            Unghost+=10;
+        #endif
     
 	if (!ForceRenderMap && !first_run) {
-		BackBufferSurface.Copy(0, 0,
-			MapRect.right-MapRect.left,
-			MapRect.bottom-MapRect.top, 
-			DrawSurface, 0, 0);
+
+            #ifdef UNGHOST
+            unsigned short elapsed= ((StartTime.elapsed() - unghost_lasttime)/1000000);
+            bool doit=false;
+            // Rules. If we have enough triggers requiring unghosting..
+            if (Unghost>=(MAX_UNGHOST) && elapsed>30) 
+                doit=true;  // max every 30 seconds
+            else
+                if (Unghost>=(5*10) && elapsed>180)
+                    doit=true;  // min every 3 minutes
+
+            if (doit) { 
+                BackBufferSurface.InvertRect(MapRect);
+                MainWindow.Redraw(MapRect);
+                Poco::Thread::sleep(550); // eink framebuffer latency
+                unghost_lasttime=StartTime.elapsed();
+                Unghost=0; // not thread safe, only if draw thread can change Unghost.
+            }
+
+            #endif
+
+
+            BackBufferSurface.Copy(MapRect.left, MapRect.top,
+                MapRect.right-MapRect.left, MapRect.bottom-MapRect.top, 
+                DrawSurface, MapRect.left, MapRect.top);
 
 	}
 
@@ -285,6 +363,10 @@ _dontbitblt:
 	if (ProgramStarted==psInitDone) {
 		ProgramStarted = psFirstDrawDone;
 	}
+    //
+    // We force framebuffer redraw, and immediately go back to the loop. We are assuming
+    // that the time taken for new map draw will be enough to let framebuffer refresh the
+    // screen. Otherwise, we should place after Redraw a delay.
     MainWindow.Redraw(MapRect);
 
   } // Big LOOP
