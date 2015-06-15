@@ -441,7 +441,10 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
 
 
         if ((fSplitFact * 100) < SIZE4) { // TopView not full screen?
-            DrawVisualGlide(Surface, &sDia);
+            const RECT& oldRc = sDia.rc;
+            sDia.rc = rc;
+            DrawVisualGlide(Surface, sDia);
+            sDia.rc = oldRc;
             DrawMultimap_SideTopSeparator(Surface, rct);
         }
         zoom.SetLimitMapScale(true);
