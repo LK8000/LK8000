@@ -1751,6 +1751,8 @@ CheckSpecialKey(Window *container, const Event &event)
 
 
 int WndForm::ShowModal(void) {
+    MainWindow.UnGhost();
+
 #define OPENCLOSESUPPRESSTIME Poco::Timespan(0,500*1000).totalMicroseconds()
     SHOWTHREAD(_T("ShowModal"));
 
@@ -1843,6 +1845,7 @@ int WndForm::ShowModal(void) {
     if(oldFocus) {
         oldFocus->SetFocus();
     }
+    MainWindow.UnGhost();
 
     MapWindow::RequestFastRefresh();
     Message::BlockRender(false);
@@ -1948,6 +1951,8 @@ void WndForm::SetFont(FontReference Value){
 }
 
 void WndForm::Show() {
+    MainWindow.UnGhost();
+    
     WindowControl::Show();
     SetToForeground();
 }

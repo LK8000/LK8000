@@ -46,6 +46,7 @@ public:
   gcc_pure
   bool FilterEvent(const Event &event, Window *allowed) const;
 
+  inline void UnGhost() {}
 
 protected:
     virtual LRESULT CALLBACK WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

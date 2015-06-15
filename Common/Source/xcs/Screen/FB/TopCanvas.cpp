@@ -438,7 +438,15 @@ TopCanvas::Flip()
     TEMP_USE_AMBIENT,
     enable_dither ? EPDC_FLAG_FORCE_MONOCHROME : 0,
   };
-
+ 
+  if(unghost) {
+    unghost = false;
+    epd_update_data.flags |= EPDC_FLAG_ENABLE_INVERSION;
+    ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);
+    Wait();
+    epd_update_data.flags &= ~EPDC_FLAG_ENABLE_INVERSION;
+  }
+  
   ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);
 #endif
 

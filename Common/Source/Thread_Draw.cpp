@@ -324,9 +324,7 @@ _dontbitblt:
                     doit=true;  // min every 3 minutes
 
             if (doit) { 
-                BackBufferSurface.InvertRect(MapRect);
-                MainWindow.Redraw(MapRect);
-                Poco::Thread::sleep(550); // eink framebuffer latency
+                MainWindow.UnGhost();
                 unghost_lasttime=StartTime.elapsed();
                 Unghost=0; // not thread safe, only if draw thread can change Unghost.
             }
