@@ -237,7 +237,7 @@ USE_SOUND_EXTDEV := y
 
 else
 USE_SDL := y
-GREYSCALE := n
+GREYSCALE := y
 USE_SOUND_EXTDEV := n
 endif
 	
