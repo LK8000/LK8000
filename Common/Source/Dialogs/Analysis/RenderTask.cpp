@@ -209,7 +209,7 @@ double fXY_Scale = 1.5;
 		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
 	    RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
 #else
-		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHGREY );
+		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTGREY );
 	    RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_GREY   );
 #endif
 	    skip_FAI:
