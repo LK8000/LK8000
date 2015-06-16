@@ -287,7 +287,7 @@ ResetScale();
                   {
                       case 0: rgbCol = RGB_LIGHTGREY; break;
                       case 1: rgbCol = RGB_GREY  ; break;
-                      case 2: rgbCol = RGB_DARKGREY ; break;
+                      case 2: rgbCol = RGB_MIDDLEGREY ; break;
                       default:
                       break;
                   }
