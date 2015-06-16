@@ -134,10 +134,10 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
 
   // vario paint area
-  vrc.left=rc.left+NIBLSCALE(1);
-  vrc.top=rc.top+NIBLSCALE(1);
+  vrc.left=rc.left;
+  vrc.top=rc.top;
   vrc.right=vrc.left+variowidth;
-  vrc.bottom=rc.bottom - BottomSize - NIBLSCALE(1);;
+  vrc.bottom=rc.bottom - BottomSize;
 
   // meter area
   mrc.left=vrc.left+boxthick-hpixelseparate;
@@ -152,7 +152,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
   hrc.bottom = vrc.top+ vmiddle+NIBLSCALE(1);
   hrc.left= vrc.left;
   // MUST MATCH MapWindow DrawLook8000 leftmargin!!
-  hrc.right=vrc.right+NIBLSCALE(2);
+  hrc.right=vrc.right;
 
   // half top meter area
   htrc.left=mrc.left;

@@ -88,9 +88,9 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT
   		LKColor rgbCol = RGB_DARKBLUE;
   		switch(ui)
   		{
-  		  case 0: rgbCol = RGB_DARKGREY; break;
-  		  case 1: rgbCol = RGB_RED  ; break;
-  		  case 2: rgbCol = RGB_DARKGREEN ; break;
+  		  case 0: rgbCol = RGB_LIGHTGREY; break;
+  		  case 1: rgbCol = RGB_GREY  ; break;
+  		  case 2: rgbCol = RGB_MIDDLEGREY ; break;
   		  default:
   		  break;
   		}

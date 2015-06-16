@@ -502,7 +502,7 @@ class MapWindow {
   static void RenderNearAirspace(LKSurface& Surface, const RECT rci);
   static int SharedTopView(LKSurface& Surface,   DiagrammStruct* pDia, double iAS_Bearing, double wpt_brg);
   static void RenderAirspace(LKSurface& Surface, const RECT rc);
-  static void DrawVisualGlide (LKSurface& Surface, DiagrammStruct* pDia);
+  static void DrawVisualGlide (LKSurface& Surface, const DiagrammStruct& sDia);
   static short GetVisualGlidePoints(unsigned short numslots );
   static void LKDrawFlarmRadar(LKSurface& Surface, const RECT& rci);
   static void LKDrawMultimap_Example(LKSurface& Surface, const RECT& rci);

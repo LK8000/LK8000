@@ -162,6 +162,12 @@ class TopCanvas
    * some situations.
    */
   bool enable_dither;
+
+  /**
+   * Runtime flag for unghost eInk Screen
+   */
+  bool unghost;
+  
 #endif
 
 public:
@@ -174,6 +180,7 @@ public:
     fd(-1), map(nullptr)
 #ifdef KOBO
     , enable_dither(true)
+    , unghost(false)
 #endif
   {}
 #elif defined(USE_TTY)
@@ -265,6 +272,8 @@ public:
   void SetEnableDither(bool _enable_dither) {
     enable_dither = _enable_dither;
   }
+  
+  void UnGhost() { unghost = true; }
 #endif
 
 #ifdef SOFTWARE_ROTATE_DISPLAY

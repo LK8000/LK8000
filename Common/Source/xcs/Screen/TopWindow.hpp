@@ -32,6 +32,7 @@ Copyright_License {
 
 #ifndef USE_GDI
 #include "Screen/Custom/DoubleClick.hpp"
+#include "Custom/TopCanvas.hpp"
 #endif
 
 #ifdef ENABLE_OPENGL
@@ -279,6 +280,17 @@ public:
    * requests.
    */
   void Refresh();
+  
+  /**
+   * Set Flag for unghost eInk Screen on next refresh
+   */
+  void UnGhost() { 
+#ifdef KOBO
+      if(screen) {
+        screen->UnGhost(); 
+      }
+#endif
+  }
 
   void Close() {
     AssertNoneLocked();

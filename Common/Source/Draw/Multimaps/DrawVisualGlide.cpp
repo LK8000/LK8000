@@ -49,8 +49,10 @@ unsigned short Sideview_VGBox_Number = 0;
 // Use center middle line for scaling
 // #define MIDCENTER	1
 
-void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
+void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) {
 
+    const RECT& rci = sDia.rc;
+    
     unsigned short numboxrows = 1;
 
 #if BUGSTOP
@@ -152,13 +154,8 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSize);
     maxtSizeX = textSize.cx;
 
-    int variooffset=0;
-    if (LKVarioBar > 0 && LKVarioBar <= vBarVarioGR)
-        if (IsMultimapOverlaysGauges())
-            variooffset = LKVarioSize;
-
-    int a = (MapRect.right-MapRect.left-variooffset) / textSize.cx;
-    int b = (MapRect.right-MapRect.left-variooffset) - a * (textSize.cx)-(BOXINTERVAL * (a + 1));
+    int a = (rci.right-rci.left) / textSize.cx;
+    int b = (rci.right-rci.left) - a * (textSize.cx)-(BOXINTERVAL * (a + 1));
 
     boxSizeX = textSize.cx + (b / (a + 1));
     boxSizeY = textSize.cy + 1; // distance from bottombar
@@ -174,17 +171,8 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     StartupStore(_T("boxX=%d boxY=%d  \n"), boxSizeX, boxSizeY);
 #endif
 
-    RECT vrc;
-    vrc.left = MapRect.left+variooffset;
-    vrc.right = MapRect.right;
-    vrc.bottom = MapRect.bottom - BottomSize;
-    if (Current_Multimap_SizeY == SIZE0) // Full screen?
-        vrc.top = MapRect.top;
-    else
-        vrc.top = pDia->rc.bottom;
-
 #if DEBUG_SCR
-    StartupStore(_T("VG AREA LTRB: %d,%d %d,%d\n"), vrc.left, vrc.top, vrc.right, vrc.bottom);
+    StartupStore(_T("VG AREA LTRB: %d,%d %d,%d\n"), rci.left, rci.top, rci.right, rci.bottom);
 #endif
 
     const auto oldBrush = Surface.SelectObject(LKBrush_White);
@@ -197,22 +185,22 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
         brush_back = LKBrush_Nlight;
     }
 
-    Surface.FillRect(&vrc, brush_back);
+    Surface.FillRect(&rci, brush_back);
 
     POINT center, p1, p2;
-    center.y = vrc.top + (vrc.bottom - vrc.top) / 2;
-    center.x = vrc.left + (vrc.right - vrc.left) / 2;
+    center.y = rci.top + (rci.bottom - rci.top) / 2;
+    center.x = rci.left + (rci.right - rci.left) / 2;
 
     // numSlotX is the number items we can print horizontally.
-    unsigned short numSlotX = (vrc.right - vrc.left) / (boxSizeX + BOXINTERVAL);
+    unsigned short numSlotX = (rci.right - rci.left) / (boxSizeX + BOXINTERVAL);
     if (numSlotX > MAXBSLOT) numSlotX = MAXBSLOT;
 #if BUGSTOP
     LKASSERT(numSlotX > 0);
 #endif
     if (numSlotX == 0) return;
 
-    unsigned short boxInterval = ((vrc.right - vrc.left)-(boxSizeX * numSlotX)) / (numSlotX + 1);
-    unsigned short oddoffset = ( (MapRect.right-MapRect.left-variooffset) - (boxSizeX * numSlotX) - boxInterval * (numSlotX + 1)) / 2;
+    unsigned short boxInterval = ((rci.right - rci.left)-(boxSizeX * numSlotX)) / (numSlotX + 1);
+    unsigned short oddoffset = ( (rci.right-rci.left) - (boxSizeX * numSlotX) - boxInterval * (numSlotX + 1)) / 2;
 
     /*
     #if BUGSTOP
@@ -230,14 +218,14 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     // The horizontal grid
     unsigned int slotCenterX[MAXBSLOT + 1];
     for (t = 0; t < numSlotX; t++) {
-        slotCenterX[t] = (t * boxSizeX) + boxInterval * (t + 1)+(boxSizeX / 2) + oddoffset+MapRect.left+variooffset;
+        slotCenterX[t] = (t * boxSizeX) + boxInterval * (t + 1)+(boxSizeX / 2) + oddoffset+rci.left;
 #if DEBUG_SCR
         StartupStore(_T("slotCenterX[%d]=%d\n"), t, slotCenterX[t]);
 #endif
     }
 
     // Vertical coordinates of each up/down subwindow, excluding center line
-    int upYtop = vrc.top;
+    int upYtop = rci.top;
 #if MIDCENTER
     int upYbottom = center.y + (boxSizeY / 2);
     int downYtop = center.y - (boxSizeY / 2);
@@ -247,7 +235,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 #endif
     int upSizeY = upYbottom - upYtop - (boxSizeY);
     ;
-    int downYbottom = vrc.bottom;
+    int downYbottom = rci.bottom;
     int downSizeY = downYbottom - downYtop - (boxSizeY);
     ;
 
@@ -267,11 +255,10 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
 
     Surface.SetBackgroundTransparent();
 
-    RECT trc;
-    trc = vrc;
+    RECT trc = rci;
 
     // Top part of visual rect, target is over us=unreachable=red
-    trc.top = vrc.top;
+    trc.top = rci.top;
     trc.bottom = center.y - 1;
     #ifndef UNDITHER
     RenderSky(Surface, trc, RGB_WHITE, LKColor(150, 255, 150), GC_NO_COLOR_STEPS / 2);
@@ -280,7 +267,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     #endif
     // Bottom part, target is below us=reachable=green
     trc.top = center.y + 1;
-    trc.bottom = vrc.bottom;
+    trc.bottom = rci.bottom;
     #ifndef UNDITHER
     RenderSky(Surface, trc, LKColor(255, 150, 150), RGB_WHITE, GC_NO_COLOR_STEPS / 2);
     #else
@@ -288,12 +275,12 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     #endif
 
     // Draw center line
-    p1.x = vrc.left + 1;
+    p1.x = rci.left + 1;
     p1.y = center.y;
-    p2.x = vrc.right - 1;
+    p2.x = rci.right - 1;
     p2.y = center.y;
     Surface.SelectObject(LKPen_Black_N1);
-    Surface.DrawSolidLine(p1, p2, vrc);
+    Surface.DrawSolidLine(p1, p2, rci);
 
 #if DEBUG_SCR
     StartupStore(_T("... Center line: Y=%d\n"), center.y);
@@ -370,10 +357,10 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, DiagrammStruct* pDia) {
     }
     p2.x = p1.x;
 
-    p1.y = vrc.top + 1;
-    p2.y = vrc.bottom - 1;
+    p1.y = rci.top + 1;
+    p2.y = rci.bottom - 1;
     Surface.SelectObject(LKPen_Black_N1);
-    Surface.DrawSolidLine(p1, p2, vrc);
+    Surface.DrawSolidLine(p1, p2, rci);
 
 
 
