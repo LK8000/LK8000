@@ -1751,7 +1751,6 @@ CheckSpecialKey(Window *container, const Event &event)
 
 
 int WndForm::ShowModal(void) {
-    MainWindow.UnGhost();
 
 #define OPENCLOSESUPPRESSTIME Poco::Timespan(0,500*1000).totalMicroseconds()
     SHOWTHREAD(_T("ShowModal"));
