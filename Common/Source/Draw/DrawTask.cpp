@@ -117,7 +117,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
 
                 int radius = width-2;
                 Surface.CircleNoCliping(center_x, center_y, radius, rc, true);
-                const auto prevPen = Surface.SelectObject(hpTerrainLine);
+                const auto prevPen = Surface.SelectObject(LK_BLACK_PEN);
                 for( int i = 1; i < 4 && radius > (width/5); ++i) {
                     Surface.CircleNoCliping(center_x, center_y, radius -= width/5, rc, true);
                 }

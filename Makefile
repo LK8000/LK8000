@@ -542,6 +542,12 @@ SCREEN := \
 	$(SRC_SCREEN)/LKSurface.cpp \
 	$(SRC_SCREEN)/LKWindowSurface.cpp \
 	$(SRC_SCREEN)/LKBitmapSurface.cpp \
+
+ifeq ($(CONFIG_WIN32),y)
+SCREEN += \
+	$(SRC_SCREEN)/GDI/AlphaBlend.cpp \
+	
+endif
 	
 LIBRARY	:=\
 	$(LIB)/bsearch.cpp \

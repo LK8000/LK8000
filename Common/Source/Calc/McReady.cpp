@@ -9,14 +9,15 @@
 #include "externs.h"
 #include "McReady.h"
 #include "DoInits.h"
+#include "utils/stl_utils.h"
 
 
 double GlidePolar::polar_a;
 double GlidePolar::polar_b;
 double GlidePolar::polar_c;
-int GlidePolar::Vminsink = 2;
-int GlidePolar::Vbestld = 2;
-double GlidePolar::sinkratecache[MAXSPEED+1]; // this is in m/s !!
+unsigned GlidePolar::_Vminsink = 2;
+unsigned GlidePolar::_Vbestld = 2;
+double GlidePolar::_sinkratecache[(MAXSPEED+1)*2]; // this is in 0.5m/s !!
 double GlidePolar::bestld = 0.0;
 double GlidePolar::minsink = 10000.0;
 double GlidePolar::BallastLitres = 0.0;
@@ -31,7 +32,7 @@ double GlidePolar::FlapsMass = 0.0;
 
 double GlidePolar::SafetyMacCready= 0.5;
 
-static int iSAFETYSPEED=0;
+static unsigned iSAFETYSPEED=0;
 
 // GetAUW is returning gross weight of glider, with pilot and current ballast. 
 // We now also add the offset to match chosen wing loading, just like a non-dumpable ballast
@@ -80,7 +81,6 @@ void GlidePolar::SetBallast() {
 
   minsink = 10000.0;
   bestld = 0.0;
-  int i;
 
   // Rounding errors could make SAFTEYSPEED 0.00xx and not 0
   // Now below 3kmh we consider the speed wrong
@@ -88,12 +88,12 @@ void GlidePolar::SetBallast() {
   if ((SAFTEYSPEED<1)||(SAFTEYSPEED>=MAXSAFETYSPEED)) {
     SAFTEYSPEED=MAXSAFETYSPEED-1;
   }
-  iSAFETYSPEED=iround(SAFTEYSPEED);
+  iSAFETYSPEED=clamp(iround(SAFTEYSPEED*2), 8, (MAXSPEED*2));
 
-  // sinkratecache is an array for m/s values!! i is the speed in m/s
-  for(i=4;i<=MAXSPEED;i++)
+  // _sinkratecache is an array for 0.5 m/s values!! i = irount(speed * 2) speed in m/s
+  for(int _i=8;_i<=(MAXSPEED*2);_i++)
     {
-      double vtrack = (double)i; // TAS along bearing in cruise
+      double vtrack = ((double)_i)/2; // TAS along bearing in cruise
       double thesinkrate 
         =  -SinkRate(polar_a,polar_b,polar_c,0,0,vtrack);
 
@@ -102,13 +102,13 @@ void GlidePolar::SetBallast() {
       double ld = vtrack/thesinkrate;
       if (ld>=bestld) {
         bestld = ld;
-        Vbestld = i;
+        _Vbestld = _i;
       }
       if (thesinkrate<= minsink) {
         minsink = thesinkrate;
-        Vminsink = i;
+        _Vminsink = _i;
       }
-      sinkratecache[i] = -thesinkrate;
+      _sinkratecache[_i] = -thesinkrate;
 
     }
     BUGSTOP_LKASSERT(bestld>0);
@@ -120,17 +120,19 @@ void GlidePolar::SetBallast() {
 
 }
 
-
-inline double GlidePolar::_SinkRateFast(const double &MC, const int &v) {
-  #if BUGSTOP
-  LKASSERT(v>=0 && v<=MAXSPEED); // sized maxspeed+1 in fact
-  #endif
-  if (v>MAXSPEED || v<=0 ) return sinkratecache[MAXSPEED]-MC; // UNMANAGED REALLY
-  return sinkratecache[v]-MC;
+inline double GlidePolar::_SinkRateFast(const double &MC, const unsigned &v) {
+    if(iSAFETYSPEED >= array_size(_sinkratecache)){
+        iSAFETYSPEED = 0.; // avoid buffer overflow
+    }
+#if BUGSTOP
+    LKASSERT(iSAFETYSPEED > 8U);
+    LKASSERT(v >= 8U && v <= iSAFETYSPEED);
+#endif
+    return _sinkratecache[clamp(v, 8U, iSAFETYSPEED)] - MC;
 }
 
-double GlidePolar::SinkRateFast(const double &MC, const int &v) {
-  return _SinkRateFast(MC, max(4,min(iSAFETYSPEED, v)));
+double GlidePolar::SinkRateFast(const double &MC, const double &v) {
+  return _SinkRateFast(MC, iround(v*2));
 }
 
 
@@ -148,7 +150,7 @@ double GlidePolar::SinkRate(double V, double n) {
   double w0 = SinkRate(polar_a,polar_b,polar_c,0.0,0.0,V);
   n = max(0.1,fabs(n));
   //  double v1 = V/max(1,Vbestld);
-  double v2 = Vbestld/max((double)Vbestld/2,V);
+  double v2 = Vbestld()/max(Vbestld()/2.0,V);
   #if BUGSTOP
   LKASSERT(bestld>0);
   #endif
@@ -174,7 +176,6 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
                                             #endif
 {
 
-  int i;
   double BestSpeed, BestGlide, Glide;
   double BestSinkRate, TimeToDestCruise;
   static double HeadWind, CrossWind=0.0;
@@ -209,7 +210,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
   // - modify Vtrack for IAS
 
   //Calculate Best Glide Speed
-  BestSpeed = 2;
+  BestSpeed = 4; // 4 m/s is less speed for _sinkRatecache
   BestGlide = 10000;
   BestTime = 1e6;
 
@@ -233,8 +234,8 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
   bool SpeedFound = false;
   #endif
 
-  for(i=Vminsink;i<=iSAFETYSPEED;i++) {
-    double vtrack_real = ((double)i); // actual airspeed
+  for(unsigned _i=_Vminsink;_i<=iSAFETYSPEED;_i++) {
+    double vtrack_real = ((double)_i)/2.0; // actual airspeed
     double vtrack = vtrack_real*cruise_efficiency; 
     // TAS along bearing in cruise
 	    
@@ -244,14 +245,14 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
     // SinkRate function returns negative value for sink
 
     if (isFinalGlide) {
-      sinkrate = -_SinkRateFast(max(0.0,emcready), i);
+      sinkrate = -_SinkRateFast(max(0.0,emcready), _i);
       // tc=1 will make wind 0 and not taken into account
       tc = 1.0; // assume no circling, e.g. final glide at best LD
       // with no climbs
     } else {
 	// WE ARE REWRITING EMCREADY!
       emcready = max(MIN_MACCREADY,emcready);
-      sinkrate = -_SinkRateFast(0.0, i);
+      sinkrate = -_SinkRateFast(0.0, _i);
       #if BUGSTOP
       LKASSERT((sinkrate+emcready)!=0);
       #endif
@@ -533,13 +534,17 @@ double GlidePolar::SinkRate(double a,double b, double c,
 
 
 double GlidePolar::FindSpeedForSinkRate(double w) {
+  if(iSAFETYSPEED >= array_size(_sinkratecache)){
+      iSAFETYSPEED = 0.; // avoid buffer overflow
+      LKASSERT(FALSE); //
+  }
   // find the highest speed that provides a sink rate less than
   // the specified sink rate
-  double vbest= Vminsink;
-  for (int v=Vminsink; v<=iSAFETYSPEED; v++) {
-    double wthis = _SinkRateFast(0, v);
+  double vbest= ((double)_Vminsink)/2.0;
+  for (unsigned v=_Vminsink+1; v<=iSAFETYSPEED; v++) {
+    double wthis = _sinkratecache[v];
     if (wthis>w) {
-      vbest = v;
+      vbest = ((double)(v-1))/2.0;
     }
   }
   return vbest;
@@ -549,8 +554,8 @@ double GlidePolar::FindSpeedForSinkRate(double w) {
 double GlidePolar::FindSpeedForSinkRateAccurate(double w) {
   // find the highest speed that provides a sink rate less than
   // the specified sink rate
-  double vbest = Vminsink;
-  for (int v=(int)(Vminsink*TOKPH); v<iSAFETYSPEED*TOKPH; v++) {
+  double vbest= Vminsink();
+  for (int v=(int)(Vminsink()*TOKPH); v<SAFTEYSPEED*TOKPH; v++) {
     double vms = (double)v/TOKPH;
     double wthis = SinkRate(polar_a,polar_b,polar_c,0,0,vms);
     if (wthis>w) {
@@ -560,9 +565,26 @@ double GlidePolar::FindSpeedForSinkRateAccurate(double w) {
   return vbest;
 }
 
+double GlidePolar::FindSpeedForSlope(double s) {
+    if (polar_a != 0. && s != 0.) {
+        return -((polar_b * s + 1) / s / polar_a) * 1.0 / 2.0;
+    }
+    return Vminsink();
+}
+
 double GlidePolar::EquMC(double ias) {
     if (ias<1||ias>70) return -1;
     return polar_c-polar_a*ias*ias;
+}
+
+double GlidePolar::STF(double MC, double Vario, double HeadWind) {
+    if (polar_a != 0.) {
+        double dTmp = polar_a * (Vario - MC + polar_a * HeadWind * HeadWind + polar_b * HeadWind + polar_c);
+        if (dTmp > 0) {
+            return max(Vminsink(), HeadWind - (sqrt(dTmp) / polar_a)); // STF speed can't be less than min sink Speed.
+        }
+    }
+    return Vminsink();
 }
 
 double GlidePolar::MacCreadyAltitude_heightadjust(double emcready, 

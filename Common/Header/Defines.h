@@ -706,6 +706,7 @@
 
 #define LK_NEXT_CENTER_ALTDIFF 156  // Same As  LK_NEXT_ALTDIFF but always with Waypoint center
 #define LK_NEXT_CENTER_GR	157	// Same as LK_NEXT_GR but always with Waypoint center
+#define LK_START_SPEED		158	// Requiered speed for reach Start of task at Gate Time !
 
 
 // Service values

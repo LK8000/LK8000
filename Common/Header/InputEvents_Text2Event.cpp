@@ -145,7 +145,9 @@ Text2Event[69].text = TEXT("ModeType");
 Text2Event[69].event = &eventModeType;
 Text2Event[70].text = TEXT("ShowMultiselect");
 Text2Event[70].event = &eventShowMultiselect;
-Text2Event_count = 71;
+Text2Event[71].text = TEXT("ChangeNettoVario");
+Text2Event[71].event = &eventChangeNettoVario;
+Text2Event_count = 72;
 
 Text2GCE[0] = TEXT("AIRSPACE_ENTER");
 Text2GCE[1] = TEXT("AIRSPACE_LEAVE");

@@ -734,7 +734,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             //
             double newbearing;
             double oldbearing = DrawInfo.TrackBearing;
-            double minspeed = 1.1 * GlidePolar::Vminsink;
+            double minspeed = 1.1 * GlidePolar::Vminsink();
             DistanceBearing(Ystart, Xstart, Ylat, Xlat, NULL, &newbearing);
             if ((fabs(AngleLimit180(newbearing - oldbearing)) < 30) || (DrawInfo.Speed < minspeed)) {
                 // sink we shall be sinking, lets raise the altitude when using old simulator interface

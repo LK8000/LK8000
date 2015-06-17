@@ -27,7 +27,9 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
 	  *SecType = LINE;
 	if(StartLine ==2)
 	  *SecType = SECTOR;
-	*SecRadius = (double)StartRadius;
+
+    if(SecRadius)
+      *SecRadius = (double)StartRadius;
   }
   else
   {
@@ -40,7 +42,9 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
   		*SecType = LINE;
   	  if(FinishLine ==2)
      	*SecType = SECTOR;
-  	  *SecRadius  = (double)FinishRadius;
+
+      if(SecRadius)
+  	    *SecRadius  = (double)FinishRadius;
     }
     else
     {
@@ -48,7 +52,9 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
       {
         LKASSERT(ValidTaskPoint(TskIdx)); // could be -1
     	*SecType = Task[TskIdx].AATType;
-    	*SecRadius  = Task[TskIdx].AATCircleRadius;
+
+        if(SecRadius)
+    	  *SecRadius  = Task[TskIdx].AATCircleRadius;
 
         switch(Task[TskIdx].AATType) {
             case 0:
@@ -56,7 +62,8 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
                 break;
             case 1:
                 *SecType = SECTOR;
-                *SecRadius  = Task[TskIdx].AATSectorRadius;
+                if(SecRadius)
+                  *SecRadius  = Task[TskIdx].AATSectorRadius;
                 break;
             case 2:
                 *SecType = CONE;
@@ -75,8 +82,9 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
     	  *SecType = DAe;
     	if(SectorType ==3)
     	  *SecType = LINE;
-*/        
-    	*SecRadius = SectorRadius;
+*/
+        if(SecRadius)
+    	  *SecRadius = SectorRadius;
       }
     }
   }

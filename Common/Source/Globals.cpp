@@ -381,6 +381,7 @@ void Globals_Init(void) {
   ThLongitude=1;
   ThermalRadius=0;
   SinkRadius=0;
+  SimNettoVario=0.;
 
   // LK8000 sync flags
   NearestDataReady=false;

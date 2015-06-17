@@ -34,8 +34,6 @@ class GlidePolar {
   static double polar_a;
   static double polar_b;
   static double polar_c;
-  static int Vminsink; //@ int, because holding only integer m/s values
-  static int Vbestld;
   static double bestld;
   static double minsink;
   static double BallastLitres;
@@ -43,8 +41,6 @@ class GlidePolar {
   static double WingLoading;
   static double WeightOffset;
   
-  static double sinkratecache[MAXSPEED+1];
-
   static double FlapsPos[MAX_FLAPS];
   static TCHAR  FlapsName[MAX_FLAPS][MAXFLAPSNAME+1];
   static int FlapsPosCount;
@@ -57,13 +53,15 @@ class GlidePolar {
                          double MC, double HW, double V);
   static double FindSpeedForSinkRate(double w);
   static double FindSpeedForSinkRateAccurate(double w);
-  static double SinkRateFast(const double &MC, const int &v);
+  static double FindSpeedForSlope(double s);
+  static double SinkRateFast(const double &MC, const double &v);
 
   static double EquMC(double ias);
+  static double STF(double MC, double Vario, double HeadWind);
+
 
  private:
-  static double _SinkRateFast(const double &MC, const int &v);
-  static double MacCreadyAltitude_internal(double MCREADY, 
+  static double MacCreadyAltitude_internal(double MCREADY,
                                            double Distance, 
                                            const double Bearing, 
                                            const double WindSpeed, 
@@ -96,6 +94,25 @@ class GlidePolar {
 					       const double cruise_efficiency);
                                              #endif
 
+// SinkRate Cache
+public:
+	static double Vminsink() {
+		return ((double)_Vminsink)/2.0;
+	}
+	static double Vbestld() {
+		return ((double)_Vbestld)/2.0;
+	}
+    static double SinkRateBestLd() { 
+		return _sinkratecache[_Vbestld];
+	}
+
+private:
+	static double _SinkRateFast(const double &MC, const unsigned &v);
+
+	static double _sinkratecache[(MAXSPEED+1)*2]; // index = irount(speed * 2); // speed in m/s !!
+
+	static unsigned _Vminsink; //@ unsigned int, because is Array index of _sinkratecache (iRound(v*2)) integer m/s values
+	static unsigned _Vbestld;
 };
 
 #endif

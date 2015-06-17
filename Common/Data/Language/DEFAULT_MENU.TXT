@@ -2482,8 +2482,8 @@ location=9
 mode=SIMMENU
 type=key
 data=11
-label= 
-event=Null
+event=Mode SIMNETTO
+label=_@M1089_\n$(NETTO)
 location=10
 
 mode=SIMMENU
@@ -2559,11 +2559,88 @@ location=9
 mode=SIMALT
 type=key
 data=11
-label= 
-event=Null
+event=Mode SIMNETTO
+label=_@M1089_\n$(NETTO)
 location=10
 
 mode=SIMALT
+type=key
+data=12
+label= 
+event=Null
+location=11
+
+# -------------
+# mode=SIMNETTO
+# -------------
+
+mode=SIMNETTO
+type=key
+data=APP1
+label=
+location=1
+
+mode=SIMNETTO
+type=key
+data=APP2
+label=
+location=2
+
+mode=SIMNETTO
+type=key
+data=APP3
+label=
+location=3
+
+mode=SIMNETTO
+type=key
+data=APP4
+event=Mode default
+label=_@M2011_
+location=4
+
+mode=SIMNETTO
+type=key
+data=6
+event=Mode SIMMENU
+label=_@M2112_\n$(GS)
+location=5
+
+mode=SIMNETTO
+type=key
+data=7
+label=_@M2113_\n$(HGPS)
+location=6
+
+mode=SIMNETTO
+type=key
+data=8
+event=Mode SIMDIR
+label=_@M2114_\n$(TURN)°/s
+location=7
+
+mode=SIMNETTO
+type=key
+data=9
+event=ChangeNettoVario down
+label=\n-$(NotInReplay)&(OnlyInSim)
+location=8
+
+mode=SIMNETTO
+type=key
+data=0
+event=ChangeNettoVario up
+label=\n+$(NotInReplay)&(OnlyInSim)
+location=9
+
+mode=SIMNETTO
+type=key
+data=11
+event=Mode SIMNETTO
+label=>_@M1090_<\n$(NETTO)
+location=10
+
+mode=SIMNETTO
 type=key
 data=12
 label= 
@@ -2636,8 +2713,8 @@ location=9
 mode=SIMDIR
 type=key
 data=11
-label= 
-event=Null
+event=Mode SIMNETTO
+label=_@M1089_\n$(NETTO)
 location=10
 
 mode=SIMDIR

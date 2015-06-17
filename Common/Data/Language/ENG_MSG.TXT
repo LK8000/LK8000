@@ -2107,6 +2107,8 @@ _@M2183_ "»"
 _@M2184_ "‹"
 _@M2185_ "›"
 _@M2186_ "*"
+_@M2187_ "Speed Opt."
+_@M2188_ "Thermal Min"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"

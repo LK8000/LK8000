@@ -477,50 +477,64 @@ bool LKSurface::AlphaBlendSupported() {
         AlphaBlendF = (TAlphaBlendF) GetProcAddress(GetModuleHandle(TEXT("coredll.dll")), TEXT("AlphaBlend"));        
         bInit = true;
     }
-    return (AlphaBlendF != NULL);
-#else
-    // always supported on all other platform.
+#endif
+    // always supported on all.
     return true;
-#endif    
 }
 
 bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity) {
     if(!AlphaBlendSupported()) {
         return false;
     }
-    
-#ifdef WIN32
-  //BLENDFUNCTION bf = { AC_SRC_OVER, 0, globalOpacity, AC_SRC_ALPHA };
-  // we are not using per-pixel alpha, so do not use AC_SRC_ALPHA flag
-  BLENDFUNCTION bf = { AC_SRC_OVER, 0, globalOpacity, 0 };
-#ifdef UNDER_CE
-  static unsigned failedCount = 0;
-  static bool Success = false;
-  
-  bool bOK = AlphaBlendF(
-    *this, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
-    Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, bf);
-  
-  if(!Success) {
-      if(!bOK && dstRect.right - dstRect.left > 0 &&
-                 dstRect.bottom - dstRect.top > 0 &&
-                 srcRect.right - srcRect.left > 0 &&
-                 srcRect.bottom - srcRect.top > 0) {
 
-          // after more 10 consecutive failed, we assume AlphaBlend is not supported, don't use it anymore
-          ++failedCount;
-          if(failedCount>10) {
-              AlphaBlendF = NULL;
-          }
-       }
-       Success = bOK;
-  }
-  return bOK;
-  
+#ifdef WIN32
+#ifdef UNDER_CE
+
+    extern BOOL DoAlphaBlend_internal(HDC,int,int,int,int,HDC,int,int,int,int, DWORD);
+
+    static unsigned failedCount = 0;
+    static bool Success = false;
+
+    bool bOK = false;
+    if (AlphaBlendF) {
+        //BLENDFUNCTION bf = { AC_SRC_OVER, 0, globalOpacity, AC_SRC_ALPHA };
+        // we are not using per-pixel alpha, so do not use AC_SRC_ALPHA flag
+        BLENDFUNCTION bf = {AC_SRC_OVER, 0, globalOpacity, 0};
+        bOK = AlphaBlendF(
+                *this, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
+                Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, bf);
+
+        if (!Success) {
+            if (!bOK && dstRect.right - dstRect.left > 0 &&
+                    dstRect.bottom - dstRect.top > 0 &&
+                    srcRect.right - srcRect.left > 0 &&
+                    srcRect.bottom - srcRect.top > 0) {
+
+                // after more 10 consecutive failed, we assume AlphaBlend is not supported, don't use it anymore
+                ++failedCount;
+                if (failedCount > 10) {
+                    AlphaBlendF = NULL;
+                }
+            }
+            Success = bOK;
+        }
+    }
+
+    if (bOK) {
+        bOK = DoAlphaBlend_internal(
+                *this, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
+                Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, globalOpacity);
+    }
+
+    return bOK;
+
 #else
+    //BLENDFUNCTION bf = { AC_SRC_OVER, 0, globalOpacity, AC_SRC_ALPHA };
+    // we are not using per-pixel alpha, so do not use AC_SRC_ALPHA flag
+    BLENDFUNCTION bf = {AC_SRC_OVER, 0, globalOpacity, 0};
     ::AlphaBlend(*this, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
-                        Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, bf);          
-    
+            Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, bf);
+
     return true; // always return true because always implemented on Windows PC
 #endif
 #else
