@@ -322,8 +322,8 @@ _dontbitblt:
             unsigned short elapsed= ((StartTime.elapsed() - unghost_lasttime)/1000000);
             bool doit=false;
             // Rules. If we have enough triggers requiring unghosting..
-            if (Unghost>=(MAX_UNGHOST) && elapsed>30) 
-                doit=true;  // max every 30 seconds
+            if (Unghost>=(MAX_UNGHOST) && elapsed>60) 
+                doit=true;  // max every minute
             else
                 if (Unghost>=(5*10) && elapsed>180)
                     doit=true;  // min every 3 minutes
