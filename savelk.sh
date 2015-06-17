@@ -52,12 +52,12 @@ test -r LK8000-PNA.exe && {\
   cp LK8000-PNA.exe $PLACE/PNA/${NOW}.exe
   echo "PNA executable saved as <$PLACE/PNA/${NOW}.exe>"
 }
-test -r LK8000-KOBO && {\
+test -r KoboRoot.tgz && {\
   test -d $PLACE/KOBO || {\
     echo "NO KOBO SUBFOLDER! ABORTED."; exit
   }
-  cp LK8000-KOBO $PLACE/KOBO/${NOW}.exe
-  echo "KOBO executable saved as <$PLACE/KOBO/${NOW}.exe>"
+  cp KoboRoot.tgz $PLACE/KOBO/${NOW}.tgz
+  echo "KOBO tgz saved as <$PLACE/KOBO/${NOW}.tgz>"
 }
 
 echo All done. Goodbye.
