@@ -91,11 +91,13 @@
 #define RGB_WINBACKGROUND	RGB_WHITE // default BackGronud color for WndForm
 #define RGB_WINFOREGROUND	RGB_BLACK // default foreground color for WndForm (text color)
 #define RGB_HIGHTLIGHT      RGB_GREY // default color for Active Window
+#define RGB_LISTBG          RGB_WHITE
 #else
 #define RGB_BUTTONS	RGB_BUTTGREEN
 #define RGB_WINBACKGROUND	RGB_PETROL
 #define RGB_WINFOREGROUND	RGB_WHITE
 #define RGB_HIGHTLIGHT      RGB_YELLOW // default color for Active Window
+#define RGB_LISTBG          RGB_LCDGREEN
 #endif
 
 
@@ -108,7 +110,6 @@
 #define RGB_LISTHIGHLIGHTBG	LKColor(133,255,133)
 #define RGB_LISTHIGHLIGHTCORNER RGB_PETROL
 #define RGB_LISTFG		RGB_BLACK
-#define RGB_LISTBG		RGB_LCDGREEN
 // slider: borders and box
 #define RGB_SCROLLBARBORDER	RGB_BLACK
 #define RGB_SCROLLBARBOX	RGB_BLACK
