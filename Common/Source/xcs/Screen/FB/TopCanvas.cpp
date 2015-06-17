@@ -23,6 +23,7 @@ Copyright_License {
 
 #include "Screen/Custom/TopCanvas.hpp"
 #include "Screen/Canvas.hpp"
+#include "externs.h"
 
 #ifdef DITHER
 #include "../Memory/Dither.hpp"
@@ -440,11 +441,16 @@ TopCanvas::Flip()
   };
  
   if(unghost) {
-    unghost = false;
-    epd_update_data.flags |= EPDC_FLAG_ENABLE_INVERSION;
-    ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);
-    Wait();
-    epd_update_data.flags &= ~EPDC_FLAG_ENABLE_INVERSION;
+    static Poco::Timestamp StartTime;
+    unsigned short debounce_time= ((StartTime.elapsed() - last_unghost_request_time)/1000000);
+    if (debounce_time>2) {
+        unghost = false;
+        epd_update_data.flags |= EPDC_FLAG_ENABLE_INVERSION;
+        ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);
+        Wait();
+        epd_update_data.flags &= ~EPDC_FLAG_ENABLE_INVERSION;
+        Unghost=0; // draw_thread counter reset. We share the same framebuffer!
+    }
   }
   
   ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);

@@ -49,6 +49,8 @@ Copyright_License {
 
 #ifdef DITHER
 #include "../Memory/Dither.hpp"
+#include "Poco/Timestamp.h"
+#include "Poco/Timespan.h"
 #endif
 
 #include <stdint.h>
@@ -167,6 +169,7 @@ class TopCanvas
    * Runtime flag for unghost eInk Screen
    */
   bool unghost;
+  long long int last_unghost_request_time;
   
 #endif
 
@@ -272,8 +275,10 @@ public:
   void SetEnableDither(bool _enable_dither) {
     enable_dither = _enable_dither;
   }
-  
-  void UnGhost() { unghost = true; }
+
+
+  Poco::Timestamp unghostTime;
+  void UnGhost() { unghost = true; last_unghost_request_time=unghostTime.elapsed(); }
 #endif
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
