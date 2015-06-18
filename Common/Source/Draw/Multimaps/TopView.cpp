@@ -164,15 +164,7 @@ _nomoredeclutter:
 
 
   if (IsMultimapAirspace()) {
-	if ( (GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders) ) {
-		DrawTptAirSpace(Surface, rct);
-	} else {
-		if ( GetAirSpaceFillType() == asp_fill_border_only)
-			DrawAirSpaceBorders(Surface, rct); // full screen, to hide clipping effect on low border
-		else
-			DrawAirSpace(Surface, rct);   // full screen, to hide clipping effect on low border
-	}
-	// DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
+	DrawAirSpace(Surface, rct);   // full screen, to hide clipping effect on low border
   }
 
   if (Flags_DrawTask && MapSpaceMode!=MSM_MAPASP && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {

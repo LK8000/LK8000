@@ -739,21 +739,6 @@ void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &
     _flyzone = flyzone;
 }
 
-void CAirspace::ClipScreenPoint(const RECT& rcDraw) {
-    // add extra point for final point if it doesn't equal the first
-    // this is required to close some airspace areas that have missing
-    // final point
-    if ((_screenpoints[_screenpoints.size() - 1].x != _screenpoints[0].x) || (_screenpoints[_screenpoints.size() - 1].y != _screenpoints[0].y)) {
-        _screenpoints.push_back(_screenpoints[0]);
-    }
-
-    _screenpoints_clipped.clear();
-    _screenpoints_clipped.reserve(_screenpoints.size());
-
-    LKGeom::ClipPolygon(rcDraw, _screenpoints, _screenpoints_clipped);
-}
-
-
 //
 // CAIRSPACE_CIRCLE CLASS
 //
@@ -763,7 +748,6 @@ CAirspace(),
 _latcenter(Center_Latitude),
 _loncenter(Center_Longitude),
 _radius(Airspace_Radius) {
-    _screenpoints_clipped.reserve(65);
     _screenpoints.reserve(65);
     CalcBounds();
     AirspaceAGLLookup(Center_Latitude, Center_Longitude, &_base.Altitude, &_top.Altitude);
@@ -884,9 +868,6 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
                 _screenradius = iround(_radius * ResMapScaleOverDistanceModify);
 
                 LKSurface::buildCircle(_screencenter, _screenradius, _screenpoints);
-
-
-                ClipScreenPoint(rcDraw);
             }
         }
     }
@@ -895,16 +876,16 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
 // Draw airspace
 
 void CAirspace::Draw(LKSurface& Surface, const RECT &rc, bool param1) const {
-    size_t outLength = _screenpoints_clipped.size();
-    const POINT * clip_ptout = &(*_screenpoints_clipped.begin());
+    size_t outLength = _screenpoints.size();
+    const POINT * clip_ptout = &(*_screenpoints.begin());
 
     if (param1) {
         if (outLength > 2) {
-            Surface.Polygon(clip_ptout, outLength);
+            Surface.Polygon(clip_ptout, outLength, rc);
         }
     } else {
         if (outLength > 1) {
-            Surface.Polyline(clip_ptout, outLength);
+            Surface.Polyline(clip_ptout, outLength, rc);
         }
     }
 }
@@ -1159,8 +1140,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
                  * ULLI new code ends here
                  *******************************/
 #endif
-                ClipScreenPoint(rcDraw);
-                
+               
 #if DEBUG_NEAR_POINTS
                 StartupStore(_T("... area point geo %i screen %i\n"), _geopoints.size(), _screenpoints.size());
 #endif
