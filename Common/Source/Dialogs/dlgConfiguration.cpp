@@ -835,12 +835,10 @@ static void OnAirspaceModeClicked(WndButton* pWnd) {
 
 static void OnNextClicked(WndButton* pWnd) {
     NextPage(+1);
-    MainWindow.UnGhost();
 }
 
 static void OnPrevClicked(WndButton* pWnd) {
     NextPage(-1);
-    MainWindow.UnGhost();
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
@@ -3376,6 +3374,7 @@ void dlgConfigurationShowModal(short mode){
   waypointneedsave = false;
 
   StopHourglassCursor();
+  MainWindow.Unghost();
   wf->ShowModal();
 
 
@@ -4625,6 +4624,7 @@ int ival;
 		   TEXT("Configuration"), mbOk);
     }
 
+  MainWindow.Unghost();
   delete wf;
 
   wf = NULL;
