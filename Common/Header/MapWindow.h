@@ -494,7 +494,7 @@ class MapWindow {
 
   static void UpdateInfo(NMEA_INFO *nmea_info,
 			 DERIVED_INFO *derived_info);
-  static rectObj CalculateScreenBounds(double scale);
+  static rectObj CalculateScreenBounds(double scale, const RECT& rc);
   static void ScanVisibility(rectObj *bounds_active);
 
   static int HeightToY(double fHeight,  DiagrammStruct* psDia);
