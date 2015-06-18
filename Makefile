@@ -208,6 +208,8 @@ EBROWSE         :=ebrowse
 
 GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 
+$(info GCC VERSION : $(GCCVERSION))
+
 ######## output files
 ifeq ($(CONFIG_LINUX),y)
     SUFFIX :=
@@ -1183,7 +1185,6 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 .PHONY: FORCE all clean cleani tags rebuild cppcheck install
 
 all:	$(DISTRIB_OUTPUT) $(PNG) $(MASKED_PNG) $(OUTPUTS)
-	@$(NQ)echo "GCCVERSION : $(GCCVERSION)"
 	
 rebuild:
 	@$(MAKE) clean
