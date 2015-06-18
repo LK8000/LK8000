@@ -295,14 +295,17 @@ _skipout:
             }
         }
 
+        LKSurface::OldFont hfOld = Surface.SelectObject(MapWaypointBoldFont);
         Surface.GetTextSize(Value, _tcslen(Value), &TextSize);
         GlideBarOffset = max(NIBLSCALE(11), (int) TextSize.cx+NIBLSCALE(1))+1; 
 
         TextInBoxMode_t TextInBoxMode = {0};
         TextInBoxMode.Border = true; //={1|8};
         TextInBoxMode.Reachable = false;
+        TextInBoxMode.NoSetFont = true;
         TextInBox(Surface, &rc, Value, lkVarioOffset , (int) Offset, 0, &TextInBoxMode);
 
+        Surface.SelectObject(hfOld);
         Surface.SelectObject(hbOld);
         Surface.SelectObject(hpOld);
     } else GlideBarOffset = 0; // 091125 BUGFIX glidebaroffset is zero when no task point
