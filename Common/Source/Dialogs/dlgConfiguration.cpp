@@ -3374,7 +3374,7 @@ void dlgConfigurationShowModal(short mode){
   waypointneedsave = false;
 
   StopHourglassCursor();
-  MainWindow.Unghost();
+  MainWindow.UnGhost();
   wf->ShowModal();
 
 
@@ -4624,7 +4624,7 @@ int ival;
 		   TEXT("Configuration"), mbOk);
     }
 
-  MainWindow.Unghost();
+  MainWindow.UnGhost();
   delete wf;
 
   wf = NULL;
