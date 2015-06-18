@@ -154,15 +154,11 @@ _nomoredeclutter:
   if (IsMultimapTopology()) {
 	// Do not print topology labels, to be used with another config later!
 	// SaturateLabelDeclutter();
-	RECT rc_red = rct;
-	rc_red.bottom -= 3;
-	DrawTopology(Surface, rc_red);
+	DrawTopology(Surface, rct);
   } else {
 	// No topology is desired, but terrain requires water areas nevertheless
 	if (terrainpainted) {
-		RECT rc_red = rct;
-		rc_red.bottom -= 3;
-		DrawTopology(Surface, rc_red,true); // water only!
+		DrawTopology(Surface, rct,true); // water only!
 	}
   }
 
@@ -180,15 +176,15 @@ _nomoredeclutter:
   }
 
   if (Flags_DrawTask && MapSpaceMode!=MSM_MAPASP && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-    DrawTaskAAT(Surface, DrawRect);
-    DrawTask(Surface, DrawRect, Current_Multimap_TopOrig);
+    DrawTaskAAT(Surface, rct);
+    DrawTask(Surface, rct, Current_Multimap_TopOrig);
   }
 
   if (IsMultimapWaypoints()) {
-	DrawWaypointsNew(Surface,DrawRect);
+	DrawWaypointsNew(Surface,rct);
   }
   if (Flags_DrawFAI)
-	DrawFAIOptimizer(Surface, DrawRect, Current_Multimap_TopOrig);
+	DrawFAIOptimizer(Surface, rct, Current_Multimap_TopOrig);
 
   DeclutterMode=olddecluttermode; // set it back correctly
 
@@ -207,18 +203,18 @@ _nomoredeclutter:
   if (MapSpaceMode==MSM_MAPTRK) {
 	if(IsMultimapTerrain() || IsMultimapTopology() ) {
 		if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
-			DrawGlideThroughTerrain(Surface, DrawRect);
+			DrawGlideThroughTerrain(Surface, rct);
 	}
 	if (extGPSCONNECT)
 		DrawBearing(Surface, DrawRect);
 	// Wind arrow
 	if (IsMultimapOverlaysGauges())
-		DrawWindAtAircraft2(Surface, Current_Multimap_TopOrig, DrawRect);
+		DrawWindAtAircraft2(Surface, Current_Multimap_TopOrig, rct);
   }
 
   if (MapSpaceMode==MSM_MAPWPT) {
 	if (extGPSCONNECT)
-		DrawBearing(Surface, DrawRect);
+		DrawBearing(Surface, rct);
   }
 
   switch(GetMMNorthUp(getsideviewpage)) {
