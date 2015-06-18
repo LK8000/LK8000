@@ -41,7 +41,7 @@ void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int sc
         // NOT TESTED!
         cropsize = GetWidth();
     }
-    StretchTo(cropsize/scale, GetHeight()/scale, Surface , cx, cy);
+    StretchTo(cropsize/scale, GetHeight()/scale, Surface , rcDest.left, rcDest.top, cx, cy);
 }
 
 #if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
