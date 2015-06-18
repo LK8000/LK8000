@@ -560,7 +560,6 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
   rectObj screenRect = MapWindow::screenbounds_latlon;
 
   static POINT pt[MAXCLIPPOLYGON];
-  bool labelprinted=false;
 
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
     
@@ -587,10 +586,10 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
 				if (dobitmap) {
 					// bugfix 101212 missing case for scaleCategory 0 (markers)
-					if (scaleCategory==0||cshape->renderSpecial(Surface, sc.x, sc.y,labelprinted))
+					if (scaleCategory==0||cshape->renderSpecial(Surface, sc.x, sc.y, rc))
 						MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
 				} else {
-					cshape->renderSpecial(Surface, sc.x, sc.y,labelprinted);
+					cshape->renderSpecial(Surface, sc.x, sc.y, rc);
 				}
 			}
 		}
@@ -649,7 +648,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
             }
 	      }
           Surface.Polyline(pt, msize, rc);
-          cshape->renderSpecial(Surface,minx,miny,labelprinted);
+          cshape->renderSpecial(Surface,minx,miny,rc);
         }
       break;
       
@@ -685,7 +684,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 				}
 			}
 			Surface.Polygon(pt, msize, rc);
-			cshape->renderSpecial(Surface,minx,miny,labelprinted);
+			cshape->renderSpecial(Surface,minx,miny,rc);
 		}
 	}
 	break;
@@ -785,7 +784,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 }
 
 // Print topology labels
-bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, bool retval) {
+bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) {
   if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
 
     //Do not waste time with null labels
@@ -813,10 +812,10 @@ bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, bool retval) {
 	}
 
 	// Do not print outside boundaries of Draw area
-	if (brect.bottom>=MapWindow::DrawRect.bottom ||
-		brect.top<=MapWindow::DrawRect.top ||
-		brect.left<=MapWindow::DrawRect.left ||
-		brect.right>=MapWindow::DrawRect.right) return false;
+	if (brect.bottom>=ClipRect.bottom ||
+		brect.top<=ClipRect.top ||
+		brect.left<=ClipRect.left ||
+		brect.right>=ClipRect.right) return false;
 
         #ifdef UNDITHER
 	Surface.SetTextColor(LKColor(0,0,0));
