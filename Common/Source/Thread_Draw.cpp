@@ -45,8 +45,13 @@ Poco::FastMutex MapWindow::Surface_Mutex;
 // When we reach this level we apply the unghosting method.
 // Notice that each draw trigger has a default forward step of 10. 
 // Every second we redraw something, and we add or subtract 0 to 10.
-// So this is the number of "dirty" writes that require unghosting
-#define MAX_UNGHOST 180*10
+// So this is the number of "dirty" writes that require unghosting.
+// Important: changing multimaps will trigger unghosting without passing here.
+// And the dialogs are directly managing unghosting too.
+// To clean the map screen it is enough to switch back to it, so we only force a redraw
+// after a long time, if ever needed.
+// 
+#define MAX_UNGHOST 300*10
 #endif
 
 extern bool PanRefreshed;
