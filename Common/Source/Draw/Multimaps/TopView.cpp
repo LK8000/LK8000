@@ -19,7 +19,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
 {
   int iOldDisplayOrientation =  DisplayOrientation;
   DiagrammStruct m_Dia =	*psDia;
-  RECT rct = m_Dia.rc;
+  const RECT& rct = m_Dia.rc;
 
   unsigned short getsideviewpage=GetSideviewPage();
   LKASSERT(getsideviewpage<NUMBER_OF_SHARED_MULTIMAPS);
@@ -93,8 +93,11 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
   int iOldLocator = EnableThermalLocator;
   EnableThermalLocator =0;
 
+/*******/
+#warning "wrong place for do that, always bad idea to change layout inside drawing fonctions !"
   MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
-
+/*******/
+  
   zoom.ModifyMapScale();
   zoom.RequestedScale((m_Dia.fXMax -m_Dia.fXMin)  * fFact *  (DISTANCEMODIFY)/10.0f);
 
@@ -185,7 +188,7 @@ _nomoredeclutter:
     #ifdef GTL2
     if (((FinalGlideTerrain == 2) || (FinalGlideTerrain == 4)) &&
 	DerivedDrawInfo.TerrainValid)
-	DrawTerrainAbove(hdc, DrawRect);
+	DrawTerrainAbove(hdc, rct);
     #endif
   */
 
@@ -198,7 +201,7 @@ _nomoredeclutter:
 			DrawGlideThroughTerrain(Surface, rct);
 	}
 	if (extGPSCONNECT)
-		DrawBearing(Surface, DrawRect);
+		DrawBearing(Surface, rct);
 	// Wind arrow
 	if (IsMultimapOverlaysGauges())
 		DrawWindAtAircraft2(Surface, Current_Multimap_TopOrig, rct);
@@ -241,7 +244,7 @@ _nomoredeclutter:
 	} else {
 	    if (TrackBar) {
     	 	    DrawHeadUpLine(Surface, Orig, rct, psDia->fXMin ,psDia->fXMax);
-    	 	    if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, DrawRect, true);
+    	 	    if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, rct, true);
     	 	}
 	}
      break;
@@ -250,7 +253,7 @@ _nomoredeclutter:
      default:
 	if (TrackBar) {
 		DrawHeadUpLine(Surface, Orig, rct, psDia->fXMin ,psDia->fXMax);
-		if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, DrawRect, true);
+		if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, rct, true);
 	}
 	break;
   }
