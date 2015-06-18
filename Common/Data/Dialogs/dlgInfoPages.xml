@@ -3,48 +3,48 @@
   <WndForm Name="frmSetInfoPages" Type="Dialog" X="0" Y="0" Width="240" Height="240" Caption="_@M1606_" Font="2" >
     <WndButton   Caption="_@M186_"    X="2" Y="2" Width="60"  Height="22" Font="2" OnClickNotify="OnCloseClicked" Tag="1"/>
 
-    <WndProperty Name="prpIP11" Caption="_@M1610_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
+    <WndProperty Name="prpIP11" Caption="_@M1610_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
-    <WndProperty Name="prpIP14" Caption="_@M1613_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
+    <WndProperty Name="prpIP14" Caption="_@M1613_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
-    <WndProperty Name="prpIP12" Caption="_@M1611_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
+    <WndProperty Name="prpIP12" Caption="_@M1611_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
-    <WndProperty Name="prpIP15" Caption="_@M1614_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
+    <WndProperty Name="prpIP15" Caption="_@M1614_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
-    <WndProperty Name="prpIP13" Caption="_@M1612_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
+    <WndProperty Name="prpIP13" Caption="_@M1612_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
-    <WndProperty Name="prpIP16" Caption="_@M1615_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
-      <DataField Name="" DataType="boolean" />
-    </WndProperty>
-
-    <WndProperty Name="prpIP21" Caption="_@M1616_" X="0" Y="-997" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
-      <DataField Name="" DataType="boolean" />
-    </WndProperty>
-    <WndProperty Name="prpIP17" Caption="_@M1623_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
-      <DataField Name="" DataType="boolean" />
-    </WndProperty>
-    <WndProperty Name="prpIP22" Caption="_@M1617_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
-      <DataField Name="" DataType="boolean" />
-    </WndProperty>
-    <WndProperty Name="prpIP23" Caption="_@M1618_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
+    <WndProperty Name="prpIP16" Caption="_@M1615_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
 
-    <WndProperty Name="prpIP31" Caption="_@M1620_" X="0" Y="-997" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
+    <WndProperty Name="prpIP21" Caption="_@M1616_" X="0" Y="-997" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
-    <WndProperty Name="prpIP24" Caption="_@M1619_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_" >
+    <WndProperty Name="prpIP17" Caption="_@M1623_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
-    <WndProperty Name="prpIP32" Caption="_@M1621_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
+    <WndProperty Name="prpIP22" Caption="_@M1617_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
-    <WndProperty Name="prpIP33" Caption="_@M1622_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="3" Help="_@H1221_">
+    <WndProperty Name="prpIP23" Caption="_@M1618_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
+      <DataField Name="" DataType="boolean" />
+    </WndProperty>
+
+    <WndProperty Name="prpIP31" Caption="_@M1620_" X="0" Y="-997" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
+      <DataField Name="" DataType="boolean" />
+    </WndProperty>
+    <WndProperty Name="prpIP24" Caption="_@M1619_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_" >
+      <DataField Name="" DataType="boolean" />
+    </WndProperty>
+    <WndProperty Name="prpIP32" Caption="_@M1621_" X="0" Y="-1" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
+      <DataField Name="" DataType="boolean" />
+    </WndProperty>
+    <WndProperty Name="prpIP33" Caption="_@M1622_" X="119" Y="-999" Width="119" Height="22" CaptionWidth="70" Font="2" Help="_@H1221_">
       <DataField Name="" DataType="boolean" />
     </WndProperty>
 
