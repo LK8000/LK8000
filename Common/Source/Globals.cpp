@@ -91,6 +91,7 @@ void Globals_Init(void) {
   MenuTimeout_Config = MENUTIMEOUTMAX;	// Config
   MenuTimeOut=0;			// Runtime
 
+
   // TODO check!!
   DisplayOrientation = TRACKUP;
   DisplayOrientation_Config = TRACKUP;

@@ -684,10 +684,6 @@ GEXTERN bool AdvanceArmed;
 GEXTERN int MenuTimeout_Config;   // config
 GEXTERN int MenuTimeOut;      // runtime
 
-#ifdef UNGHOST
-// Counter of draw events that may require unghosting by Thread_Draw
-GEXTERN unsigned short Unghost GEXTZERO;
-#endif
 
 GEXTERN int EnableThermalLocator;
 
