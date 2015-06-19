@@ -407,6 +407,19 @@ void LKProfileSave(const TCHAR *szFile)
   if (SaveRuntime) rprintf(szRegistryBottomMode    ,BottomMode);
   rprintf(szRegistrySonarWarning    ,SonarWarning_Config);
 
+  rprintf(szRegistryOverlay_TopLeft, Overlay_TopLeft);
+  rprintf(szRegistryOverlay_TopMid, Overlay_TopMid);
+  rprintf(szRegistryOverlay_TopRight, Overlay_TopRight);
+  rprintf(szRegistryOverlay_TopDown, Overlay_TopDown);
+  rprintf(szRegistryOverlay_LeftTop, Overlay_LeftTop);
+  rprintf(szRegistryOverlay_LeftMid, Overlay_LeftMid);
+  rprintf(szRegistryOverlay_LeftBottom, Overlay_LeftBottom);
+  rprintf(szRegistryOverlay_LeftDown, Overlay_LeftDown);
+  rprintf(szRegistryOverlay_RightTop, Overlay_RightTop);
+  rprintf(szRegistryOverlay_RightMid, Overlay_RightMid);
+  rprintf(szRegistryOverlay_RightBottom, Overlay_RightBottom);
+
+
   #if SAVESCREEN
   extern bool CommandResolution;
   if(!IsEmbedded() && !CommandResolution) {

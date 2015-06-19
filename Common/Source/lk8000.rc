@@ -181,6 +181,7 @@ IDR_XML_WAYPOINTEDITUTM	XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgWaypointEditUT
 IDR_XML_WAYPOINTEDITUTM_L	XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgWaypointEditUTM_L.xml"
 
 IDR_XML_CUSTOMMENU     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgCustomMenu.xml"
+IDR_XML_OVERLAYS     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgOverlays.xml"
 IDR_XML_MULTIMAPS     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgMultimaps.xml"
 
 IDR_XML_DEVCPROBE	XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgDevCProbe.xml"

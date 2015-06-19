@@ -749,6 +749,30 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistrySonarWarning,&SonarWarning_Config);
   if (matchedstring) return;
 
+  PREAD(sname,svalue,szRegistryOverlay_TopLeft,&Overlay_TopLeft);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_TopMid,&Overlay_TopMid);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_TopRight,&Overlay_TopRight);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_TopDown,&Overlay_TopDown);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_LeftTop,&Overlay_LeftTop);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_LeftMid,&Overlay_LeftMid);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_LeftBottom,&Overlay_LeftBottom);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_LeftDown,&Overlay_LeftDown);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_RightTop,&Overlay_RightTop);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_RightMid,&Overlay_RightMid);
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryOverlay_RightBottom,&Overlay_RightBottom);
+  if (matchedstring) return;
+
+
   #if SAVESCREEN
   if(!IsEmbedded()) {
     extern bool CommandResolution;

@@ -126,6 +126,7 @@
     binfile IDR_XML_WAYPOINTEDITUTM_L "../../Data/Dialogs/dlgWaypointEditUTM_L.xml"
 
     binfile IDR_XML_CUSTOMMENU "../../Data/Dialogs/dlgCustomMenu.xml"
+    binfile IDR_XML_OVERLAYS "../../Data/Dialogs/dlgOverlays.xml"
     binfile IDR_XML_MULTIMAPS "../../Data/Dialogs/dlgMultimaps.xml"
 
     binfile IDR_XML_DEVCPROBE "../../Data/Dialogs/dlgDevCProbe.xml"

@@ -403,6 +403,8 @@
 
     </WndFrame>
     <WndFrame Name="frmVarioAppearance" X="1" Y="0" Width="-1" Height="222" Font="2">
+       <WndButton Name="cmdSetOverlays" Caption="_@M195_" X="70" Y="1" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetOverlaysClicked" />
+
       <WndProperty Name="prpLook8000" Caption="_@M585_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H193_">
         <DataField Name="" DataType="enum" OnDataAccess="OnLk8000ModeChange" />
       </WndProperty>

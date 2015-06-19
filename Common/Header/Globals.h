@@ -180,6 +180,19 @@ GEXTERN short BottomMode; // Stripe number
 GEXTERN short BottomSize; // Height of bottom stripe
 GEXTERN short TopSize;
 
+// Overlay config
+GEXTERN short Overlay_TopLeft;
+GEXTERN short Overlay_TopMid;
+GEXTERN short Overlay_TopRight;
+GEXTERN short Overlay_TopDown;
+GEXTERN short Overlay_LeftTop;
+GEXTERN short Overlay_LeftMid;
+GEXTERN short Overlay_LeftBottom;
+GEXTERN short Overlay_LeftDown;
+GEXTERN short Overlay_RightTop;
+GEXTERN short Overlay_RightMid;
+GEXTERN short Overlay_RightBottom;
+
 // coordinates of the sort boxes. Each mapspace can have a different layout
 GEXTERN short SortBoxY[MSM_TOP+1];
 GEXTERN short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];

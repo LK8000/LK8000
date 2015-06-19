@@ -819,6 +819,11 @@ static void OnSetInfoPagesClicked(WndButton* pWnd) {
     dlgInfoPagesShowModal();
 }
 
+static void OnSetOverlaysClicked(WndButton* pWnd) {
+    extern void dlgOverlaysShowModal(void);
+    dlgOverlaysShowModal();
+}
+
 static void OnTaskRulesClicked(WndButton* pWnd) {
     dlgTaskRules();
 }
@@ -1266,6 +1271,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnSetBottomBarClicked),
   ClickNotifyCallbackEntry(OnSetInfoPagesClicked),
   ClickNotifyCallbackEntry(OnTaskRulesClicked),
+  ClickNotifyCallbackEntry(OnSetOverlaysClicked),
   
   DataAccessCallbackEntry(OnAirspaceFillType),
   DataAccessCallbackEntry(OnAirspaceDisplay),

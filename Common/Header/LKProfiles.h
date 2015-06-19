@@ -388,6 +388,18 @@ char szRegistryScreenSize[]       = "ScreenSize";
 char szRegistryScreenSizeX[]      = "ScreenSizeX";
 char szRegistryScreenSizeY[]      = "ScreenSizeY";
 
+char szRegistryOverlay_TopLeft[]       = "Overlay_TopLeft";
+char szRegistryOverlay_TopMid[]       = "Overlay_TopMid";
+char szRegistryOverlay_TopRight[]       = "Overlay_TopRight";
+char szRegistryOverlay_TopDown[]       = "Overlay_TopDown";
+char szRegistryOverlay_LeftTop[]       = "Overlay_LeftTop";
+char szRegistryOverlay_LeftMid[]       = "Overlay_LeftMid";
+char szRegistryOverlay_LeftBottom[]       = "Overlay_LeftBottom";
+char szRegistryOverlay_LeftDown[]       = "Overlay_LeftDown";
+char szRegistryOverlay_RightTop[]       = "Overlay_RightTop";
+char szRegistryOverlay_RightMid[]       = "Overlay_RightMid";
+char szRegistryOverlay_RightBottom[]       = "Overlay_RightBottom";
+
 //
 //
 //
@@ -688,6 +700,18 @@ extern const char szRegistryBigFAIThreshold[];
 extern const char szRegistryScreenSize[];
 extern const char szRegistryScreenSizeX[];
 extern const char szRegistryScreenSizeY[];
+
+extern const char szRegistryOverlay_TopLeft[];
+extern const char szRegistryOverlay_TopMid[];
+extern const char szRegistryOverlay_TopRight[];
+extern const char szRegistryOverlay_TopDown[];
+extern const char szRegistryOverlay_LeftTop[];
+extern const char szRegistryOverlay_LeftMid[];
+extern const char szRegistryOverlay_LeftBottom[];
+extern const char szRegistryOverlay_LeftDown[];
+extern const char szRegistryOverlay_RightTop[];
+extern const char szRegistryOverlay_RightMid[];
+extern const char szRegistryOverlay_RightBottom[];
 
 //
 //

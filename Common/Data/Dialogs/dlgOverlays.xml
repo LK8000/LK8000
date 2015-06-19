@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Name="frmSetOverlays" Type="Dialog" X="0" Y="0" Width="240" Height="240" Caption="_@M2079_" Font="2" >
+    <WndButton   Caption="_@M186_"    X="2" Y="2" Width="60"  Height="22" Font="2" OnClickNotify="OnCloseClicked" Tag="1"/>
+    <WndProperty Name="prpTopLeft" Caption="1 " X="63" Y="-999" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpTopMid" Caption="2 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndButton  Caption="_@M560_" X="2" Y="-1" Width="60"  Height="22" Font="2" OnClickNotify="OnResetClicked" Tag="1"/>
+    <WndProperty Name="prpTopRight" Caption="3 " X="63" Y="-999" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpTopDown" Caption="4 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpLeftTop" Caption="5 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpLeftMid" Caption="6 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpLeftBottom" Caption="7 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpLeftDown" Caption="8 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpRightTop" Caption="9 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpRightMid" Caption="10 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpRightBottom" Caption="10 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1259_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+  </WndForm>
+</PMML>

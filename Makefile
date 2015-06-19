@@ -900,6 +900,7 @@ DLGS	:=\
 	$(DLG)/dlgLoggerReplay.cpp \
 	$(DLG)/dlgMultimaps.cpp\
 	$(DLG)/dlgOracle.cpp \
+	$(DLG)/dlgOverlays.cpp \
 	$(DLG)/dlgProfiles.cpp \
 	$(DLG)/dlgStartPoint.cpp \
 	$(DLG)/dlgStartTask.cpp \
