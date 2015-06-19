@@ -162,7 +162,6 @@ GEXTERN bool EnableAutoBacklight;
 GEXTERN bool EnableAutoSoundVolume;
 GEXTERN DWORD EnableFLARMMap;
 GEXTERN short AircraftCategory;
-GEXTERN short Look8000;
 GEXTERN bool CheckSum;
 GEXTERN bool HideUnits;
 GEXTERN short OutlinedTp;
@@ -261,7 +260,6 @@ GEXTERN bool PollingMode;
 
 GEXTERN bool BestWarning;
 GEXTERN unsigned int ThermalBar;
-GEXTERN bool McOverlay;
 GEXTERN bool TrackBar;
 GEXTERN double WindCalcSpeed;
 GEXTERN int WindCalcTime;

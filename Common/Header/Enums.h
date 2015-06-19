@@ -93,12 +93,6 @@ typedef enum{
 	amEnabled,
 } ActiveMap_t;
 
-typedef enum{
-	lxcDisabled=0,
-	lxcNoOverlay,
-	lxcStandard,
-	lxcAdvanced,
-} Look8000_t;
 // warning, this must follow the ALTA_ settings in utils2.h
 typedef enum{
 	aamMC=0,

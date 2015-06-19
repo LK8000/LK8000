@@ -467,10 +467,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryLoggerShort,&LoggerShortName);
   PREAD(sname,svalue,szRegistryLoggerTimeStepCircling,&LoggerTimeStepCircling);
   PREAD(sname,svalue,szRegistryLoggerTimeStepCruise,&LoggerTimeStepCruise);
-  PREAD(sname,svalue,szRegistryLook8000,&Look8000);
   PREAD(sname,svalue,szRegistryMapBox,&MapBox);
   PREAD(sname,svalue,szRegistryMapFile,&*szMapFile, array_size(szMapFile));
-  PREAD(sname,svalue,szRegistryMcOverlay,&McOverlay);
   PREAD(sname,svalue,szRegistryMenuTimeout,&MenuTimeout_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryNewMapDeclutter,&NewMapDeclutter);

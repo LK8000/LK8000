@@ -252,10 +252,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryLoggerShort,LoggerShortName);
   rprintf(szRegistryLoggerTimeStepCircling,LoggerTimeStepCircling);
   rprintf(szRegistryLoggerTimeStepCruise,LoggerTimeStepCruise);
-  rprintf(szRegistryLook8000,Look8000);
   rprintf(szRegistryMapBox,MapBox);
   rprintf(szRegistryMapFile,szMapFile);
-  rprintf(szRegistryMcOverlay,McOverlay);
   rprintf(szRegistryMenuTimeout,MenuTimeout_Config);
   rprintf(szRegistryNewMapDeclutter,NewMapDeclutter);
   rprintf(szRegistryOrbiter,Orbiter_Config);

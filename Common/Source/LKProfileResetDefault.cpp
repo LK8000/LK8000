@@ -139,11 +139,6 @@ void LKProfileResetDefault(void) {
 
   AATEnabled=FALSE;
 
-  if (ScreenLandscape)
-	Look8000 = (Look8000_t)lxcAdvanced;
-  else
-	Look8000 = (Look8000_t)lxcStandard;  
-
   CheckSum = 1;
 
   PGCruiseZoom=4;
@@ -238,8 +233,6 @@ void LKProfileResetDefault(void) {
   BestWarning=1;
 
   ThermalBar=0;
-
-  McOverlay=1;
 
   TrackBar=1;
 

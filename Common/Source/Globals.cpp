@@ -212,7 +212,6 @@ void Globals_Init(void) {
   EnableAutoSoundVolume=true;
   AircraftCategory=0;
 
-  Look8000=lxcAdvanced;
   HideUnits=false;
   CheckSum=true;
   OutlinedTp_Config=0;
@@ -266,7 +265,6 @@ void Globals_Init(void) {
   PGZoomTrigger=false;
   BestWarning=false;
   ThermalBar=0;
-  McOverlay=true;
   TrackBar=false;
   PGOptimizeRoute=true;
   PGOptimizeRoute_Config=true;
