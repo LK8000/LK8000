@@ -658,44 +658,6 @@ int ival;
 }
 
 
-static void OnLk8000ModeChange(DataField *Sender, DataField::DataAccessKind_t Mode){
-  WndProperty* wp;
-
-  switch(Mode){
-    case DataField::daGet:
-	break;
-    case DataField::daPut:
-    case DataField::daChange:
-	wp = (WndProperty*)wf->FindByName(TEXT("prpLook8000"));
-	if (wp) {
-		if (Look8000 != (Look8000_t) (wp->GetDataField()->GetAsInteger())) {
-			Look8000 = lxcStandard+(Look8000_t) (wp->GetDataField()->GetAsInteger());
-		}
-	}
-
-	wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayClock"));
-	if (wp) {
-		if (Look8000==lxcStandard)  {
-			wp->SetReadOnly(true);
-			OverlayClock=0;
-		} else {
-			wp->SetReadOnly(false);
-		}
-		// Update the OverlayClock selection, without changing of course the content of enumerated list
-		DataFieldEnum* dfe;
-		dfe = (DataFieldEnum*)wp->GetDataField();
-		dfe->Set(OverlayClock);
-    		wp->RefreshDisplay();
-	}
-
-	break;
-    default: 
-	StartupStore(_T("........... DBG-908%s"),NEWLINE); 
-	break;
-  }
-}
-
-
 static void OnAircraftRegoClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonAircraftRego) {
@@ -1276,7 +1238,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DataAccessCallbackEntry(OnAirspaceFillType),
   DataAccessCallbackEntry(OnAirspaceDisplay),
   DataAccessCallbackEntry(OnAspPermModified),
-  DataAccessCallbackEntry(OnLk8000ModeChange),
   DataAccessCallbackEntry(OnGearWarningModeChange),
 #ifndef NO_BLUETOOTH
   ClickNotifyCallbackEntry(OnBthDevice),
@@ -2507,18 +2468,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLook8000"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField(); 
-	// LKTOKEN  _@M333_ = "Half overlay" 
-     dfe->addEnumText(gettext(TEXT("_@M333_")));
-	// LKTOKEN  _@M311_ = "Full overlay" 
-    	dfe->addEnumText(gettext(TEXT("_@M311_")));
-     dfe = (DataFieldEnum*)wp->GetDataField(); // see above
-     dfe->Set(Look8000-lxcStandard);
-    wp->RefreshDisplay();
-  }
 
 #if (0)
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltArrivMode"));
@@ -2690,14 +2639,8 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  // This is updated also from DoLook8000ModeChange function
-  // These are only the initial startup values
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayClock"));
   if (wp) {
-    if (Look8000==lxcStandard) {
-	OverlayClock=0;	// Disable clock
-    	wp->SetReadOnly(true);
-    } 
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
     // LKTOKEN  _@M239_ = "Disabled" 
