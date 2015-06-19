@@ -169,11 +169,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         leftmargin = rc.left+LEFTMARGIN;
     }
 
-/*
-    // no overlay - but we are still drawing MC and the wind on bottom left!
-    if (Look8000 == (Look8000_t) lxcNoOverlay) goto drawOverlay;
-*/
-
     //
     // TARGET NAME
     //
@@ -290,7 +285,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             }
         }
 
-        ///if ((!OverlayClock || Look8000 == lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates()))) {
         if ( !OverlayClock && ScreenLandscape && (!(ISPARAGLIDER && UseGates()))) {
             _stprintf(BufferValue + _tcslen(BufferValue), _T(" %s"), BufferUnit);
             LKWriteText(Surface, BufferValue, compass.cx, topmargin, 
@@ -302,7 +296,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
         if (!HideUnits) {
             Surface.SelectObject(MapScaleFont); 
-            ///if ((!OverlayClock || Look8000 == lxcStandard) && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
             if ( !OverlayClock && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
 
             } else {
@@ -405,7 +398,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             }
 
             rcy = yrightoffset - SizeBigFont.cy;
-            ///rcx = rightmargin;
             color=redwarning?AMBERCOLOR:OverColorRef;
             LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true);
             _skip_glider_RightMid:
@@ -568,11 +560,9 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         } // end no UseGates()
     } // is paraglider
 
-///drawOverlay:
 
     //
     // TIME GATES:  in place of MC, print gate time
-    /// Even if lxcNoOverlay, we print start gates..
     //
     if (UseGates() && ActiveWayPoint == 0) {
         Surface.SelectObject(LK8OverlayGatesFont);
@@ -644,7 +634,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
     } else 
-    ///if (McOverlay && Look8000 > lxcNoOverlay && (ISGLIDER || ISPARAGLIDER) && Overlay_RightTop) {
     if (McOverlay && (ISGLIDER || ISPARAGLIDER) && Overlay_RightTop) {
         //
         // MAC CREADY VALUE
@@ -700,12 +689,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         } // AutoMacCready true AUTO MC INDICATOR
     } // overlay RighTop
 
-/*
-    if (Look8000 == (Look8000_t) lxcNoOverlay) goto Drawbottom;
-
-    if ((Look8000 == (Look8000_t) lxcAdvanced)) {
-*/
-
     short yoffset=0;
     if (ISPARAGLIDER || (IsMultimapOverlaysGauges() && LKVarioBar))
         if (OverlayClock && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
@@ -729,20 +712,13 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
         }
         Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
-/*
-        if (IsMultimapOverlaysGauges() && !mode.AnyPan())
-            rcx = leftmargin + GlideBarOffset;
-        else
-            rcx = leftmargin;
-*/
+
         //
         // CENTER THE LEFT OVERLAYS
         //
-        ///short yoffset=0;
         if (ISPARAGLIDER || (IsMultimapOverlaysGauges() && LKVarioBar)) {
 
             rcy = yMcValue;
-            ///if (OverlayClock && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
         } else {
             rcy = yMcValue+SizeBigFont.cy-fixBigInterline;
         }
@@ -774,9 +750,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                         break;
                 }
             }
-
-            ///short yoffset=0;
-            ///if (OverlayClock && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
 
             Surface.SelectObject(LK8OverlayBigFont);
             rcy = yrightoffset - SizeBigFont.cy +yoffset;
@@ -833,8 +806,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
     // } advanced overlays
 
-///Drawbottom:
-
     if (MapSpaceMode != MSM_MAP && Current_Multimap_SizeY != SIZE4) goto TheEnd;
 
 
@@ -842,8 +813,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     // LEFT DOWN (wind)
     //
     Surface.SelectObject(LK8OverlayMediumFont);
-
-    ///if (Look8000 == lxcNoOverlay) goto afterWind; // 100930
 
     if (Overlay_LeftDown) {
         if (ISCAR || ISGAAIRCRAFT) {
@@ -867,8 +836,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         }
     } // LeftDown
-
-///afterWind:
 
 
     TheEnd :
