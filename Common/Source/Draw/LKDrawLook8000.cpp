@@ -634,7 +634,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
     } else 
-    if (McOverlay && (ISGLIDER || ISPARAGLIDER) && Overlay_RightTop) {
+    if ( (ISGLIDER || ISPARAGLIDER) && Overlay_RightTop) {
         //
         // MAC CREADY VALUE
         //

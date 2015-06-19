@@ -2652,19 +2652,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMcOverlay")); // 091122
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
-	// LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(McOverlay);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
@@ -4065,12 +4052,6 @@ int ival;
   if (wp) {
     if (OverlayClock != (wp->GetDataField()->GetAsInteger())) {
       OverlayClock = (wp->GetDataField()->GetAsInteger());
-    }
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMcOverlay"));
-  if (wp) {
-    if (McOverlay != (wp->GetDataField()->GetAsInteger())) {
-      McOverlay = (wp->GetDataField()->GetAsInteger());
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrackBar"));
