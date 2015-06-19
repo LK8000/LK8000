@@ -136,77 +136,77 @@ static void OnResetClicked(WndButton* pWnd){
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_TopLeft);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_TopMid);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopRight"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_TopRight);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopDown"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_TopDown);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_LeftTop);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_LeftMid);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_LeftBottom);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_LeftDown);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_RightTop);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_RightMid);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	dfe->Set(Overlay_RightBottom);
+	dfe->Set(1);
 	wp->RefreshDisplay();
   }
 

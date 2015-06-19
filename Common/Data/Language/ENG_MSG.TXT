@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  150527
+# MASTER UPDATED:  150620
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1892,6 +1892,16 @@ _@M1885_ "Info on 2 lines "
 _@M1886_ "Overlay target "
 _@M1887_ "Overlay values "
 
+_@M1891_ "Top Left "
+_@M1892_ "Top Center "
+_@M1893_ "Top Right "
+_@M1894_ "Right Top "
+_@M1895_ "Right Center "
+_@M1896_ "Right Bottom "
+_@M1897_ "Left Top "
+_@M1898_ "Left Center "
+_@M1899_ "Left Bottom "
+_@M1900_ "Left Corner "
 
 ############################################################
 #                  - MENU MESSAGES - 

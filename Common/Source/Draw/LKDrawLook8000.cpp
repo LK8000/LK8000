@@ -169,8 +169,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         leftmargin = rc.left+LEFTMARGIN;
     }
 
+/*
     // no overlay - but we are still drawing MC and the wind on bottom left!
     if (Look8000 == (Look8000_t) lxcNoOverlay) goto drawOverlay;
+*/
 
     //
     // TARGET NAME
@@ -229,11 +231,13 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
             LKWriteText(Surface, Buffer, rcx , topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         } else {
-            GetOvertargetName(Buffer);
-            CharUpper(Buffer);
-            Surface.GetTextSize(Buffer,_tcslen(Buffer),&TextSize);
-            RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + TextSize.cy };
-            LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
+            if (Overlay_TopLeft) {
+                GetOvertargetName(Buffer);
+                CharUpper(Buffer);
+                Surface.GetTextSize(Buffer,_tcslen(Buffer),&TextSize);
+                RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + TextSize.cy };
+                LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
+            }
         }
 
         //
@@ -245,6 +249,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             if (!CorrectSide()) distcolor = AMBERCOLOR;
             LKFormatValue(LK_START_DIST, false, BufferValue, BufferUnit, BufferTitle);
         } else {
+            if (!Overlay_TopRight) goto _skip_TopRight;
             switch (OvertargetMode) {
                 case OVT_TASK:
                     // Using FormatDist will give PGs 3 decimal units on overlay only
@@ -285,7 +290,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             }
         }
 
-        if ((!OverlayClock || Look8000 == lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates()))) {
+        ///if ((!OverlayClock || Look8000 == lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates()))) {
+        if ( !OverlayClock && ScreenLandscape && (!(ISPARAGLIDER && UseGates()))) {
             _stprintf(BufferValue + _tcslen(BufferValue), _T(" %s"), BufferUnit);
             LKWriteText(Surface, BufferValue, compass.cx, topmargin, 
                 0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
@@ -296,16 +302,19 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
         if (!HideUnits) {
             Surface.SelectObject(MapScaleFont); 
-            if ((!OverlayClock || Look8000 == lxcStandard) && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
+            ///if ((!OverlayClock || Look8000 == lxcStandard) && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
+            if ( !OverlayClock && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
 
             } else {
                 LKWriteText(Surface, BufferUnit, rcx + TextSize.cx, yDistUnit, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
         }
+        _skip_TopRight:
 
         //
         // BEARING DIFFERENCE   displayed only when not circling
         //
+	if (!Overlay_TopMid) goto _skip_TopMid;
 
         // if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
         switch (OvertargetMode) {
@@ -348,6 +357,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             LKWriteText(Surface, BufferValue, topbearing.cx,  topbearing.cy, 0,
                 WTMODE_OUTLINED, WTALIGN_CENTER, OverColorRef, true);
         }
+        _skip_TopMid:
 
 
         // 
@@ -356,8 +366,11 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         //
 
         Surface.SelectObject(LK8OverlayBigFont); // use this font for big values
+        rcx = rightmargin;
 
         if (ISGLIDER) {
+
+	    if (!Overlay_RightMid) goto _skip_glider_RightMid;
             switch (OvertargetMode) {
                 case OVT_TASK:
                     LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
@@ -392,14 +405,16 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             }
 
             rcy = yrightoffset - SizeBigFont.cy;
-            rcx = rightmargin;
+            ///rcx = rightmargin;
             color=redwarning?AMBERCOLOR:OverColorRef;
             LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true);
+            _skip_glider_RightMid:
 
 
             //
-            // ALTITUDE DIFFERENCE  at current MC
+            // (GLIDERS) ALTITUDE DIFFERENCE  at current MC
             //
+	    if (!Overlay_RightBottom) goto _skip_glider_RightBottom;
 
             switch (OvertargetMode) {
                 case OVT_TASK:
@@ -437,9 +452,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, 0,
                 WTMODE_OUTLINED, WTALIGN_RIGHT, color, true); 
 
-
             //
-            // SAFETY ALTITUDE INDICATOR (NOT FOR PARAGLIDERS)
+            // (GLIDERS) SAFETY ALTITUDE INDICATOR 
             // For PGs there is a separate drawing, although it should be identical right now.
             //
 
@@ -450,17 +464,20 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety,
                     0, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
             }
-        }
+            _skip_glider_RightBottom: ;
+        } // ISGLIDER
     // end of index>0
     } else { 
         // no valid index for current overmode, but we print something nevertheless
         // normally, only the T>
         
-        GetOvertargetName(Buffer);
-        CharUpper(Buffer);
-        Surface.GetTextSize(Buffer,_tcslen(Buffer),&TextSize);
-        RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + TextSize.cy };
-        LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
+	if (Overlay_TopLeft) {
+            GetOvertargetName(Buffer);
+            CharUpper(Buffer);
+            Surface.GetTextSize(Buffer,_tcslen(Buffer),&TextSize);
+            RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + TextSize.cy };
+            LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
+        }
     }
 
     // moved out from task paragliders stuff - this is painted on the right
@@ -486,6 +503,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
         } else {
             Surface.SelectObject(LK8OverlayBigFont);
+	    if (!Overlay_RightMid) goto _skip_para_RightMid;
             if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
                 LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
             else
@@ -494,8 +512,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             rcy = yrightoffset - SizeBigFont.cy;
             rcx = rightmargin;
             LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+            _skip_para_RightMid:
 
             // Altitude difference with current MC
+	    if (!Overlay_RightBottom) goto _skip_para_RightBottom;
             switch (OvertargetMode) {
                 case OVT_TASK:
                     LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
@@ -544,12 +564,16 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     0, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
 
             }
+            _skip_para_RightBottom: ;
         } // end no UseGates()
     } // is paraglider
 
-drawOverlay:
-    // In place of MC, print gate time
-    // Even if lxcNoOverlay, we print startgates..
+///drawOverlay:
+
+    //
+    // TIME GATES:  in place of MC, print gate time
+    /// Even if lxcNoOverlay, we print start gates..
+    //
     if (UseGates() && ActiveWayPoint == 0) {
         Surface.SelectObject(LK8OverlayGatesFont);
 
@@ -619,12 +643,12 @@ drawOverlay:
         }
         LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
-    } else
-
+    } else 
+    ///if (McOverlay && Look8000 > lxcNoOverlay && (ISGLIDER || ISPARAGLIDER) && Overlay_RightTop) {
+    if (McOverlay && (ISGLIDER || ISPARAGLIDER) && Overlay_RightTop) {
         //
         // MAC CREADY VALUE
         //
-        if (McOverlay && Look8000 > lxcNoOverlay && (ISGLIDER || ISPARAGLIDER)) {
 
         Surface.SelectObject(LK8OverlayBigFont);
         LKFormatValue(LK_MC, false, BufferValue, BufferUnit, BufferTitle);
@@ -637,7 +661,7 @@ drawOverlay:
         if (IsSafetyMacCreadyInUse(GetOvertargetIndex()) && GlidePolar::SafetyMacCready > 0) {
             Surface.SelectObject(LK8OverlaySmallFont);
             _stprintf(BufferValue, _T(" %.1f %s "), GlidePolar::SafetyMacCready*LIFTMODIFY,
-                    Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
+                Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
             LKWriteBoxedText(Surface, rc, BufferValue, rightmargin, yMcSafety, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
         }
 
@@ -674,13 +698,27 @@ drawOverlay:
                     0, WTMODE_NORMAL, WTALIGN_LEFT, INVERTCOLORS?RGB_WHITE:RGB_BLACK, true);
 
         } // AutoMacCready true AUTO MC INDICATOR
+    } // overlay RighTop
 
-    }
+/*
     if (Look8000 == (Look8000_t) lxcNoOverlay) goto Drawbottom;
 
-
     if ((Look8000 == (Look8000_t) lxcAdvanced)) {
+*/
 
+    short yoffset=0;
+    if (ISPARAGLIDER || (IsMultimapOverlaysGauges() && LKVarioBar))
+        if (OverlayClock && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
+
+    if (IsMultimapOverlaysGauges() && !mode.AnyPan())
+        rcx = leftmargin + GlideBarOffset;
+    else
+        rcx = leftmargin;
+
+    //
+    // LEFT TOP
+    //
+    if (Overlay_LeftTop && (ISGLIDER||ISPARAGLIDER) ) {
         Surface.SelectObject(LK8OverlayBigFont);
         if (ISPARAGLIDER) {
             LKFormatValue(LK_HNAV, false, BufferValue, BufferUnit, BufferTitle); // 091115
@@ -691,18 +729,20 @@ drawOverlay:
                 LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
         }
         Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
+/*
         if (IsMultimapOverlaysGauges() && !mode.AnyPan())
             rcx = leftmargin + GlideBarOffset;
         else
             rcx = leftmargin;
+*/
         //
         // CENTER THE LEFT OVERLAYS
         //
-        short yoffset=0;
+        ///short yoffset=0;
         if (ISPARAGLIDER || (IsMultimapOverlaysGauges() && LKVarioBar)) {
 
             rcy = yMcValue;
-            if (OverlayClock && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
+            ///if (OverlayClock && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
         } else {
             rcy = yMcValue+SizeBigFont.cy-fixBigInterline;
         }
@@ -712,7 +752,12 @@ drawOverlay:
             LKWriteText(Surface, BufferUnit, rcx + TextSize.cx, rcy+yoffset+unitbigoffset, 
                 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         }
+   } // LeftTop
 
+   //
+   // LEFT MID
+   //
+   if (Overlay_LeftMid) {
         if (ISPARAGLIDER || ((IsMultimapOverlaysGauges() && LKVarioBar)&&!ISCAR)) {
             if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal == vValVarioVario) {
                 LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle);
@@ -730,6 +775,9 @@ drawOverlay:
                 }
             }
 
+            ///short yoffset=0;
+            ///if (OverlayClock && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
+
             Surface.SelectObject(LK8OverlayBigFont);
             rcy = yrightoffset - SizeBigFont.cy +yoffset;
 
@@ -740,6 +788,12 @@ drawOverlay:
                 LKWriteText(Surface, BufferUnit, rcx + TextSize.cx , rcy + unitbigoffset, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
         }
+    } // LeftMid
+
+    //
+    // LEFT BOTTOM
+    // 
+    if (Overlay_LeftBottom) {
         if (!ISGAAIRCRAFT && !ISCAR) {
             if (ISPARAGLIDER) {
                 LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
@@ -760,56 +814,61 @@ drawOverlay:
                     0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
         }
-
-        LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
-
-        if (OverlayClock || (ISPARAGLIDER && UseGates())) {
-            Surface.SelectObject(LK8OverlayMediumFont);
-            if (!ScreenLandscape) {
-                LKWriteText(Surface, BufferValue, rightmargin, compass.cy,
-                    0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
-            } else { 
-                LKWriteText(Surface, BufferValue, compass.cx, topmargin,
-                    0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
-            }
-        }
-
     }
 
-Drawbottom:
+    //
+    // CLOCK
+    //
+    if (OverlayClock || (ISPARAGLIDER && UseGates())) {
+        LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
+        Surface.SelectObject(LK8OverlayMediumFont);
+        if (!ScreenLandscape) {
+            LKWriteText(Surface, BufferValue, rightmargin, compass.cy,
+                0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+        } else { 
+            LKWriteText(Surface, BufferValue, compass.cx, topmargin,
+                0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+        }
+    }
+
+    // } advanced overlays
+
+///Drawbottom:
 
     if (MapSpaceMode != MSM_MAP && Current_Multimap_SizeY != SIZE4) goto TheEnd;
 
 
     //
-    // Draw wind 
+    // LEFT DOWN (wind)
     //
     Surface.SelectObject(LK8OverlayMediumFont);
 
-    if (Look8000 == lxcNoOverlay) goto afterWind; // 100930
+    ///if (Look8000 == lxcNoOverlay) goto afterWind; // 100930
 
-    if (ISCAR || ISGAAIRCRAFT) {
-        if (!HideUnits) {
-            LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
-            _stprintf(Buffer, _T("%s %s"), BufferValue, BufferUnit);
+    if (Overlay_LeftDown) {
+        if (ISCAR || ISGAAIRCRAFT) {
+            if (!HideUnits) {
+                LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
+                _stprintf(Buffer, _T("%s %s"), BufferValue, BufferUnit);
+            } else {
+                LKFormatValue(LK_GNDSPEED, false, Buffer, BufferUnit, BufferTitle);
+            }
         } else {
-            LKFormatValue(LK_GNDSPEED, false, Buffer, BufferUnit, BufferTitle);
+            LKFormatValue(LK_WIND, false, Buffer, BufferUnit, BufferTitle);
         }
-    } else {
-        LKFormatValue(LK_WIND, false, Buffer, BufferUnit, BufferTitle);
-    }
 
-    if (DrawBottom) {
-        LKWriteText(Surface, Buffer, leftmargin, yLeftWind,
-            0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true); 
-    } else {
-        // This is unused, we dont paint overlays in pan mode
-        LKWriteText(Surface, Buffer, leftmargin, 
-            rc.bottom - SizeMediumFont.cy - NIBLSCALE(5), 
-            0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
-    }
+        if (DrawBottom) {
+            LKWriteText(Surface, Buffer, leftmargin, yLeftWind,
+                0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true); 
+        } else {
+            // This is unused, we dont paint overlays in pan mode
+            LKWriteText(Surface, Buffer, leftmargin, 
+                rc.bottom - SizeMediumFont.cy - NIBLSCALE(5), 
+                0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+        }
+    } // LeftDown
 
-afterWind:
+///afterWind:
 
 
     TheEnd :
