@@ -66,6 +66,7 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(_T("AUX 4"));
 	dfe->Set(Overlay_LeftTop);
 	wp->RefreshDisplay();
   }
@@ -75,6 +76,7 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(_T("AUX 5"));
 	dfe->Set(Overlay_LeftMid);
 	wp->RefreshDisplay();
   }
@@ -84,6 +86,7 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(_T("AUX 6"));
 	dfe->Set(Overlay_LeftBottom);
 	wp->RefreshDisplay();
   }
@@ -93,6 +96,7 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(_T("AUX 7"));
 	dfe->Set(Overlay_LeftDown);
 	wp->RefreshDisplay();
   }
@@ -102,6 +106,7 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(_T("AUX 1"));
 	dfe->Set(Overlay_RightTop);
 	wp->RefreshDisplay();
   }
@@ -111,6 +116,7 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(_T("AUX 2"));
 	dfe->Set(Overlay_RightMid);
 	wp->RefreshDisplay();
   }
@@ -120,6 +126,7 @@ static void setVariables(void) {
 	dfe = (DataFieldEnum*)wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(_T("AUX 3"));
 	dfe->Set(Overlay_RightBottom);
 	wp->RefreshDisplay();
   }

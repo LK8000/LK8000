@@ -1844,7 +1844,14 @@ In portrait mode only: infopages 2.1 2.2 etc. print items on two lines, instead 
 
 @1293
 [Overlays]
-Enable/disable overlays.
+You can choose which values are shown on the screen when overlays are active.
+You can disable a single overlay, or enable using the default set (always the same as in LK v5).
+Or you can select an AUX value. In such case, the overlay will be using the correspondent auxiliary value.
+For example, if you choose AUX-4 for Top Left,  the overlay will be using the 4th choice in the Infobox auxiliary configuration page (system config page 19). 
+It is exactly the same as for the bottom bar stripe n. 9.
+Be careful that only left overlays can show the units, not those on the right.
+The first three overlays on top cannot be changed, only disabled.
+
 
 @9999
 No help available on this item!
