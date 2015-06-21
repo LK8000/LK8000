@@ -39,7 +39,6 @@
 	MDI_DRAWINFOPAGE,		// screen change
 	MDI_WRITEINFO,			// screen change
 	MDI_DRAWLOOK8000,		// screen change, font change
-	MDI_DRAWMAPSPACE,		// screen change
 	MDI_DRAWNEAREST,		// screen change, font change
 	MDI_DRAWTARGET,			// screen change
 	MDI_DRAWVARIO,			// screen change

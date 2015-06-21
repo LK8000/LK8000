@@ -117,7 +117,6 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_DRAWINFOPAGE);
   Reset_Single_DoInits(MDI_WRITEINFO);
   Reset_Single_DoInits(MDI_DRAWLOOK8000);
-  Reset_Single_DoInits(MDI_DRAWMAPSPACE);
   Reset_Single_DoInits(MDI_DRAWNEAREST);
   Reset_Single_DoInits(MDI_DRAWTARGET);
   Reset_Single_DoInits(MDI_DRAWVARIO);
