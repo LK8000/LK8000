@@ -78,7 +78,7 @@ ConfIP[LKMODE_NAV][0],ConfIP31,
 ConfIP[LKMODE_NAV][1],ConfIP32);
 */
 
-	if (MapSpaceMode==MSM_WELCOME) LoadSplash(Surface,_T("LKPROFILE"));
+	//if (MapSpaceMode==MSM_WELCOME) LoadSplash(Surface,_T("LKPROFILE"));
 	DoInit[MDI_DRAWMAPSPACE]=false; 
   }
 

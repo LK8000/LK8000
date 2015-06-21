@@ -15,13 +15,6 @@
 
 void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
-  SIZE textSize;
-  TCHAR Buffer[LKSIZEBUFFERLARGE];
-
-  short bottomlines;
-  short centerx=(rc.right+rc.left)/2;
-
-  static double freeram=CheckFreeRam()/1000000.0;
 
   switch (LKevent) {
 	case LKEVENT_NONE:
@@ -36,48 +29,74 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 		break;
   }
 
+  SIZE textSize;
+  TCHAR Buffer[LKSIZEBUFFERLARGE];
+
+  int x=rc.left+NIBLSCALE(4);
   int y=rc.top+NIBLSCALE(2);
-  Surface.SelectObject(LK8MediumFont);
+
+  static double freeram=CheckFreeRam()/1000000.0;
+
+  Surface.SelectObject(MapWindowBoldFont);
+
 
   #ifndef LKCOMPETITION
-  _stprintf(Buffer,TEXT("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
+  _stprintf(Buffer,TEXT("%s v%s.%s %s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
   #else
-  _stprintf(Buffer,TEXT("%sC v%s.%s COMPETITION"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
+  _stprintf(Buffer,TEXT("%sC v%s.%s %s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
   #endif
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
   y+=(textSize.cy)/2;
-  if (SIMMODE) _tcscat(Buffer,_T(" (Simulator)"));
-  LKWriteText(Surface, Buffer, centerx, y , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_WHITENOREV, false);
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
 
-  _tcscpy(Buffer,gettext(TEXT("_@M904_"))); // Tactical Flight Computer
+  #ifdef LKCOMPETITION
   y+=(textSize.cy);
-  LKWriteText(Surface, Buffer, centerx,y , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITENOREV, false);
-
-  Surface.SelectObject(LK8GenericVar02Font);
-  _stprintf(Buffer,TEXT("%s"), LK8000_Version);
-  Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
-  bottomlines=rc.bottom-BottomSize-(textSize.cy*2);
-  LKWriteText(Surface, Buffer, centerx, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);
-  _stprintf(Buffer,TEXT("HTTP://WWW.LK8000.ORG  email:info@lk8000.it"));
-  LKWriteText(Surface, Buffer, centerx, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
-
-  Surface.SelectObject(LK8InfoSmallFont);
-
-  _stprintf(Buffer, _T("%u WPs, %0.1fM free"),(unsigned int)(WayPointList.size()-NUMRESWP),freeram);
-  if (PGNumberOfGates>0) _tcscat(Buffer,_T(" (+Tsk Gates)"));
-  #ifndef NDEBUG
-  _tcscat(Buffer,_T(" (+debug)"));
+  _stprintf(Buffer,_T("COMPETITION VERSION"));
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
   #endif
-  Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
-  LKWriteText(Surface, Buffer, centerx, bottomlines-(textSize.cy)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
-  _tcscpy(Buffer, _T(""));
-  if (GPSAltitudeOffset != 0) _stprintf(Buffer, _T("(GpsOffset %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); // 100429 /1000
+  _tcscpy(Buffer,_T(""));
+  if (SIMMODE) _stprintf(Buffer,_T("(simul)"));
   #if TESTBENCH
-  _tcscat(Buffer,_T(" TESTBENCH! "));
+  _tcscat(Buffer,_T(" (test)"));
   #endif
-  if (!LoggerGActive()) _tcscat(Buffer,_T(" (No GRecord)"));
-  Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
-  LKWriteText(Surface, Buffer, centerx, bottomlines-(textSize.cy*2)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
+  #ifndef NDEBUG
+  _tcscat(Buffer,_T(" (debug)"));
+  #endif
+  #if BUGSTOP
+  _tcscat(Buffer,_T(" (bstop)"));
+  #endif
+  #if USELKASSERT
+  _tcscat(Buffer,_T(" (assert)"));
+  #endif
+  if (_tcslen(Buffer)>0) {
+      y+=(textSize.cy);
+      LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+  }
+
+  y+=(textSize.cy)/2; // spacing
+
+  _stprintf(Buffer, _T("Waypoints loaded: %u"), (unsigned int)(WayPointList.size()-NUMRESWP));
+  y+=(textSize.cy);
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+
+
+  _stprintf(Buffer, _T("Free RAM: %0.1fM"),freeram);
+  y+=(textSize.cy);
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+
+  y+=(textSize.cy)/2; // spacing
+
+  if (GPSAltitudeOffset != 0) {
+      _stprintf(Buffer, _T("Reminder: HGPS offset: %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); 
+      y+=(textSize.cy);
+      LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+  }
+
+  _stprintf(Buffer,TEXT("Click to continue"));
+  y= rc.bottom-BottomSize-textSize.cy-NIBLSCALE(2);
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+
+
 }
 
