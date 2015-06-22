@@ -47,12 +47,12 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   #endif
   Surface.GetTextSize(Buffer, _tcslen(Buffer), &textSize);
   y+=(textSize.cy)/2;
-  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
 
   #ifdef LKCOMPETITION
   y+=(textSize.cy);
   _stprintf(Buffer,_T("COMPETITION VERSION"));
-  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   #endif
 
   _tcscpy(Buffer,_T(""));
@@ -71,31 +71,31 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   #endif
   if (_tcslen(Buffer)>0) {
       y+=(textSize.cy);
-      LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+      LKWriteText(Surface, Buffer, x, y , 0, WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   }
 
   y+=(textSize.cy)/2; // spacing
 
   _stprintf(Buffer, _T("Waypoints loaded: %u"), (unsigned int)(WayPointList.size()-NUMRESWP));
   y+=(textSize.cy);
-  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
 
 
   _stprintf(Buffer, _T("Free RAM: %0.1fM"),freeram);
   y+=(textSize.cy);
-  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
 
   y+=(textSize.cy)/2; // spacing
 
   if (GPSAltitudeOffset != 0) {
       _stprintf(Buffer, _T("Reminder: HGPS offset: %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); 
       y+=(textSize.cy);
-      LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+      LKWriteText(Surface, Buffer, x, y , 0, WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   }
 
   _stprintf(Buffer,TEXT("Click to continue"));
   y= rc.bottom-BottomSize-textSize.cy-NIBLSCALE(2);
-  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_OUTLINED, WTALIGN_LEFT,RGB_WHITENOREV, false);
+  LKWriteText(Surface, Buffer, x, y , 0, WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
 
 
 }

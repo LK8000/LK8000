@@ -110,12 +110,12 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
   // if (!ConfIP[ModeIndex][CURTYPE]) NextModeType();
   switch (MapSpaceMode) {
 	case MSM_WELCOME:
-#if 0
+#if 1
 		SetModeType(LKMODE_MAP,MP_MOVING);
 		RefreshMap();
 		break;
 #endif
-#if (1)
+#if (0)
 		if (!DrawInfo.NAVWarning) { 
 		static double firsttime=DrawInfo.Time;
 		// delayed automatic exit from welcome mode
