@@ -74,5 +74,5 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
         default:
             break;
     }
-    return WndPaint::WinMsgHandler(hWnd, uMsg, wParam, lParam);
+    return Window::WinMsgHandler(hWnd, uMsg, wParam, lParam);
 }
