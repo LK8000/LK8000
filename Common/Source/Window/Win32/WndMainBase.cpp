@@ -16,7 +16,7 @@
 
 extern HINSTANCE _hInstance; // Set by WinMain
 
-WndMainBase::WndMainBase() : WndPaint(NULL), _hWndFocus()  {
+WndMainBase::WndMainBase() : _hWndFocus()  {
 
 #ifdef HAVE_ACTIVATE_INFO
     if(GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMActivate"))) {
@@ -76,7 +76,7 @@ bool WndMainBase::Create(const RECT& rect) {
     _szWindowText = _T("LK8000");
     _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
 
-    return WndPaint::Create(NULL, rect);
+    return Window::Create(NULL, rect);
 }
 
 void WndMainBase::OnCreate() {
@@ -90,11 +90,11 @@ void WndMainBase::OnCreate() {
     SHSetAppKeyWndAssoc(VK_APP6, _hWnd);
 #endif
     
-    WndPaint::OnCreate();
+    Window::OnCreate();
 }
 
 void WndMainBase::OnDestroy() {
-    WndPaint::OnDestroy();
+    Window::OnDestroy();
     PostQuitMessage(0);
 }
 

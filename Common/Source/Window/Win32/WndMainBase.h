@@ -17,12 +17,12 @@
     #define HAVE_ACTIVATE_INFO
 #endif
 
-#include "WndPaint.h"
+#include "Window.h"
 #include "Compiler.h"
 
 class Event;
 
-class WndMainBase : public WndPaint {
+class WndMainBase : public Window {
 public:
     WndMainBase();
     virtual ~WndMainBase();

@@ -51,9 +51,12 @@ POINT MapWindow::Orig_Screen;
 RECT MapWindow::MapRect; // the entire screen area in use
 RECT MapWindow::DrawRect; // the portion of MapRect for drawing terrain, topology etc. (the map)
 
+#ifdef USE_GDI
+LKWindowSurface MapWindow::BackBufferSurface;
+#else
 LKWindowSurface MapWindow::WindowSurface;
-
 LKBitmapSurface MapWindow::BackBufferSurface;
+#endif
 
 LKBitmapSurface MapWindow::DrawSurface;
   
@@ -178,7 +181,10 @@ void MapWindow::_OnSize(int cx, int cy) {
     // this is Used for check Thread_Draw don't use surface object.
     Poco::FastMutex::ScopedLock Lock(Surface_Mutex);
 
+#ifndef USE_GDI
     BackBufferSurface.Resize(cx, cy);
+#endif
+
     DrawSurface.Resize(cx, cy);
     TempSurface.Resize(cx, cy);
     hdcbuffer.Resize(cx, cy);
@@ -211,8 +217,13 @@ void MapWindow::UpdateActiveScreenZone(RECT rc) {
 }
 
 void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
+#ifdef USE_GDI
+    BackBufferSurface.Create(Wnd);
+    LKWindowSurface& WindowSurface = BackBufferSurface;
+#else
     WindowSurface.Create(Wnd);
     BackBufferSurface.Create(WindowSurface, cx, cy);
+#endif
     DrawSurface.Create(WindowSurface, cx, cy);
     TempSurface.Create(WindowSurface, cx, cy);
     hdcbuffer.Create(WindowSurface, cx, cy);
@@ -223,13 +234,16 @@ void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
 }
 
 void MapWindow::_OnDestroy() {
-    BackBufferSurface.Release();
     DrawSurface.Release();
     TempSurface.Release();
     hdcbuffer.Release();
     hdcMask.Release();
+    BackBufferSurface.Release();
 
-    WindowSurface.Release();
+#ifndef USE_GDI
+	WindowSurface.Release();
+#endif
+
 }
 
 /*

@@ -137,8 +137,12 @@ public:
             if (dtquant > 3) dtquant = 3; // .. but not too much
         }
 #endif
-
+#if defined(_WIN32_WCE)
+        // on 800*480 Blur add ~20% cpu usage, always disabled ( same as v5.0)
+        blursize = 0;
+#else
         blursize = max((unsigned int) 0, (dtquant - 1) / 2); // always 0
+#endif
         oversampling = max(1, (blursize + 1) / 2 + 1); // always 1
         if (blursize == 0) {
             oversampling = 1; // no point in oversampling, just let stretchblt do the scaling
@@ -586,11 +590,12 @@ public:
     }
 
     void Draw(LKSurface& Surface, const RECT& rc) {
-
+#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
         if (blursize > 0) {
             sbuf->HorizontalBlur(blursize);
             sbuf->VerticalBlur(blursize);
         }
+#endif
         sbuf->DrawStretch(Surface, rc, oversampling);
     }
 

@@ -639,13 +639,16 @@ class MapWindow {
 
 
 protected:
-  static LKBitmapSurface BackBufferSurface;
+#ifdef USE_GDI
+  static LKWindowSurface BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
+#else
+  static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
+  static LKBitmapSurface BackBufferSurface; 
+#endif
 
 private:
   static int iSnailNext;
   static int iLongSnailNext;
-
-  static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
 
   static LKBitmapSurface DrawSurface;
   
