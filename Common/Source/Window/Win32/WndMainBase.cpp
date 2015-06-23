@@ -12,6 +12,7 @@
 #include "WndMainBase.h"
 #include "resource.h"
 #include "Event/Event.h"
+#include "MessageLog.h"
 
 extern HINSTANCE _hInstance; // Set by WinMain
 
@@ -34,8 +35,6 @@ WndMainBase::~WndMainBase() {
 bool WndMainBase::Create(const RECT& rect) {
 
     WNDCLASS wc;
-    WNDCLASS dc;
-    GetClassInfo(_hInstance, TEXT("DIALOG"), &dc);
 
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
     wc.lpfnWndProc = Window::stWinMsgHandler;
@@ -56,13 +55,23 @@ bool WndMainBase::Create(const RECT& rect) {
  * lpszClassName member before registering. In all cases, the cbWndExtra member of WNDCLASS for a custom 
  * dialog box class must be set to at least DLGWINDOWEXTRA.
  */    
+
+#ifdef UNDER_CE
+    WNDCLASS dc;
+    GetClassInfo(_hInstance, TEXT("DIALOG"), &dc);
+    wc.cbWndExtra = dc.cbWndExtra;
+#else
     wc.cbWndExtra = DLGWINDOWEXTRA;
+#endif
     
     
     // Register the window class.
     _szClassName = wc.lpszClassName;
 
-    RegisterClass(&wc);
+    if(!RegisterClass(&wc)) {
+        StartupStore(_T("RegisterClass(%s) failed = <0x%x>\n"), wc.lpszClassName, GetLastError());
+    }
+    
 
     _szWindowText = _T("LK8000");
     _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;

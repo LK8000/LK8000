@@ -141,6 +141,8 @@ bool Window::Create(Window* pOwner, const RECT& rect) {
 
     if(_hWnd) {
         OnCreate();
+    } else {
+        StartupStore(_T("Window::Create error <0x%x>\n"), GetLastError());
     }
     
     return (_hWnd != NULL);
