@@ -169,6 +169,7 @@ BOOL InitInstance()
   #endif
 
   if(!MainWindow.Create(WindowSize)) {
+      StartupStore(TEXT(". FAILURE: Create main window%s"),NEWLINE);
       return FALSE;
   }
   const PixelRect rc(MainWindow.GetClientRect());
