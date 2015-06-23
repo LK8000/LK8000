@@ -1174,7 +1174,7 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 
 
 ####### targets
-.PHONY: FORCE all clean cleani tags rebuild cppcheck
+.PHONY: FORCE all clean cleani tags rebuild cppcheck install
 
 all:	$(DISTRIB_OUTPUT) $(PNG) $(MASKED_PNG) $(OUTPUTS)
 	@$(NQ)echo "GCCVERSION : $(GCCVERSION)"
@@ -1203,6 +1203,36 @@ cppcheck :
 #	$(Q)cppcheck --force --enable=warning -q -j4 $(ZZIPSRC)
 #	$(Q)cppcheck --force --enable=warning -q -j4 $(COMPAT)
 	
+ifeq ($(TARGET),LINUX)
+install : all
+	$(Q)install -p -m 0755 -d ~/LK8000/_System/_Bitmaps 
+	$(Q)install -p -m 0755 -d ~/LK8000/_System/_Sounds
+	$(Q)install -p -m 0755 -d ~/LK8000/_Airspaces 
+	$(Q)install -p -m 0755 -d ~/LK8000/_Configuration 
+	$(Q)install -p -m 0755 -d ~/LK8000/_Language 
+	$(Q)install -p -m 0755 -d ~/LK8000/_Logger 
+	$(Q)install -p -m 0755 -d ~/LK8000/_Maps
+	$(Q)install -p -m 0755 -d ~/LK8000/_Polars 
+	$(Q)install -p -m 0755 -d ~/LK8000/_Tasks
+	$(Q)install -p -m 0755 -d ~/LK8000/_Waypoints
+	@$(NQ)echo "  install $(OUTPUTS)"
+	$(Q)install -p -m 0755 $(OUTPUTS) ~/LK8000
+	@$(NQ)echo "  install _System"
+	$(Q)install -p -m 0644 $(SYSTEM_FILES) ~/LK8000/_System
+	@$(NQ)echo "  install _System/_Bitmaps"
+	$(Q)install -p -m 0644 $(BITMAP_FILES) ~/LK8000/_System/_Bitmaps
+	@$(NQ)echo "  install _System/_Sounds"
+	$(Q)install -p -m 0644 $(SOUND_FILES) ~/LK8000/_System/_Sounds
+	@$(NQ)echo "  install _Polars"
+	$(Q)install -p -m 0644 $(POLAR_FILES) ~/LK8000/_Polars
+	@$(NQ)echo "  install _Language"
+	$(Q)install -p -m 0644 $(LANGUAGE_FILES) ~/LK8000/_Language
+	@$(NQ)echo "  install _Configuration"
+	$(Q)install -p -m 0644 $(CONFIG_FILES) ~/LK8000/_Configuration
+	@$(NQ)echo "  install _Waypoints"
+	$(Q)install -p -m 0644 $(WAYPOINT_FILES) ~/LK8000/_Waypoints
+
+endif	
 
 #
 # Useful debugging targets - make preprocessed versions of the source
