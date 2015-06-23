@@ -44,8 +44,9 @@ void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int sc
     StretchTo(cropsize/scale, GetHeight()/scale, Surface , cx, cy);
 }
 
+#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
 void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
-#ifndef GREYSCALE
+
     const unsigned int muli = (boxw * 2 + 1);
     BGRColor* src = GetBuffer();
     BGRColor* dst = m_pBufferTmp;
@@ -95,13 +96,10 @@ void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
 
     // copy it back to main buffer
     memcpy((char*) GetBuffer(), (char*) m_pBufferTmp, GetCorrectedWidth() * GetHeight() * sizeof (BGRColor));
-#else
-    #warning "HorizontalBlur ? not implemented for greyscale, Needed ?"
-#endif    
 }
 
 void CSTScreenBuffer::VerticalBlur(unsigned int boxh) {
-#ifndef GREYSCALE
+
     BGRColor* src = GetBuffer();
     BGRColor* dst = m_pBufferTmp;
     BGRColor *c, *d, *e;
@@ -152,7 +150,5 @@ void CSTScreenBuffer::VerticalBlur(unsigned int boxh) {
 
     // copy it back to main buffer
     memcpy((char*) GetBuffer(), (char*) m_pBufferTmp, GetCorrectedWidth() * GetHeight() * sizeof (BGRColor));
-#else
-    #warning "VerticalBlur : not implemented for greyscale, Needed ?"
-#endif       
 }
+#endif       
