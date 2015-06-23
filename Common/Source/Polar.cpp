@@ -83,9 +83,11 @@ void PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]) {
   POLAR[2] = (double)(w3 - POLAR[0] *v3*v3 - POLAR[1]*v3);
 
   // now scale off weight
-  POLAR[0] = POLAR[0] * (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
-  POLAR[2] = POLAR[2] / (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
-
+  BUGSTOP_LKASSERT((WEIGHTS[0] + WEIGHTS[1])>=0);
+  if((WEIGHTS[0] + WEIGHTS[1])>=0) {
+      POLAR[0] = POLAR[0] * (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
+      POLAR[2] = POLAR[2] / (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
+  }
 }
 
 
@@ -175,21 +177,25 @@ bool ReadWinPilotPolar(void) {
               PExtractParameter(TempString, ctemp, 8);
 		if ( _tcscmp(ctemp,_T("")) != 0) {
               		GlidePolar::WingArea = StrToDouble(ctemp,NULL);
-			// StartupStore(_T(". Polar file has wing area=%f%s"),GlidePolar::WingArea,NEWLINE);
 		} else {
 	      		GlidePolar::WingArea = 0.0;
 		}
-		
+
+              #if TESTBENCH
+              StartupStore(_T("... Polar ww0=%.2f ww1=%.2f v0=%.2f,%.2f v1=%.2f,%f v2=%.2f,%.2f area=%.2f\n"),
+                  ww[0], ww[1], dPOLARV[0], dPOLARW[0], dPOLARV[1], 
+                  dPOLARW[1], dPOLARV[2], dPOLARW[2], GlidePolar::WingArea);
+              #endif
 
 		if (ww[0]<=0 || dPOLARV[0]==0 || dPOLARW[0]==0 || dPOLARV[1]==0 || dPOLARW[1]==0 || dPOLARV[2]==0 || dPOLARW[2]==0) {
 			// StartupStore(_T("... WARNING found invalid Polar line, skipping%s"),NEWLINE);
 			continue; // read another line searching for polar
 		} else {
 			foundline = true;
-			PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
 			if (GlidePolar::WingArea == 0) {
 				StartupStore(_T("... WARNING Polar file has NO wing area%s"),NEWLINE);
 			}
+			PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
 		}
             }
         }
@@ -260,7 +266,7 @@ bool ReadWinPilotPolar(void) {
 		dPOLARW[2]= -4.2;
               	GlidePolar::WingArea = 10.04;
 		PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
-		_tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Std Cirrus.plr"));
+		_tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Cirrus_Std.plr"));
 	} // !foundline
       }
     } 

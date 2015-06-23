@@ -520,6 +520,13 @@ double GlidePolar::SinkRate(double a,double b, double c,
   temp += b*(V+HW);
   temp += c-MC;
 
+  #if TESTBENCH
+  if (temp>=0) {
+      StartupStore(_T("... SinkRate error! a=%.2f b=%.2f c=%.2f MC=%.2f HW=%.2f V=%.2f = %.2f%s"),
+        a,b,c,MC,HW,V,temp,NEWLINE);
+  }
+  #endif
+
   return temp;
 }
 
