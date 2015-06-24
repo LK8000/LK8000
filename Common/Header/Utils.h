@@ -145,7 +145,7 @@ int propGetScaleList(double *List, size_t Size);
 #endif
 
 long GetUTCOffset(void);
-int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines);
+
 void RestoreRegistry(void);
 void StoreRegistry(void);
 void LK8000GetOpts(const TCHAR *MyCommandLine);
