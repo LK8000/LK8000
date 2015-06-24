@@ -322,6 +322,9 @@ endif
 
 CE_DEFS		+= -DPOCO_NO_UNWINDOWS
 
+ifeq ($(FULLSCREEN),y)
+CE_DEFS		+= -DUSE_FULLSCREEN
+endif
 
 ######## paths
 

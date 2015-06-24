@@ -47,6 +47,7 @@ BOOL	InitInstance    (int);
 
 extern void FillDataOptions(void);
 extern void StartupLogFreeRamAndStorage();
+extern bool ScreenHasChanged(void);
 
 void PreloadInitialisation(bool ask) {
   LKLanguageReady=false;
@@ -155,7 +156,7 @@ BOOL InitInstance()
   WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);
 #endif
 #ifdef WIN32
-#ifdef UNDER_CE
+#if defined(UNDER_CE) || defined(USE_FULLSCREEN)
   WindowSize=WindowResize( GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 #else
   WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);
@@ -171,10 +172,11 @@ BOOL InitInstance()
   if(!MainWindow.Create(WindowSize)) {
       StartupStore(TEXT(". FAILURE: Create main window%s"),NEWLINE);
       return FALSE;
-  }
+  } 
   const PixelRect rc(MainWindow.GetClientRect());
   ScreenSizeX = rc.GetSize().cx;
   ScreenSizeY = rc.GetSize().cy;
+  ScreenHasChanged();
   
   InitLKScreen();
   InitLKFonts(); // causing problems with CreateButtonLabels?

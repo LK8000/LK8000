@@ -547,13 +547,6 @@ int InputEvents::mode2int(const TCHAR *mode, bool create) {
     mode_map_count++;
     return mode_map_count - 1;
   }
-
-  // Should never reach this point
-  MessageBoxX(
-        _T("DEFAULT_PROFILE IS NOT CORRECT"),
-        _T("CONFIGURATION ERROR"),
-        mbOk);
-
   return -1;
 }
 

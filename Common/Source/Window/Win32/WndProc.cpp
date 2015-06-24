@@ -5,6 +5,7 @@
 
    $Id$
 */
+#include "options.h"
 #include "WndMainBase.h"
 
 LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -31,7 +32,19 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
                 SetWindowPos(_hWnd, HWND_TOP,
                         0, 0, 0, 0,
                         SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
-
+#if !defined(UNDER_CE) && defined(USE_FULLSCREEN)
+                DEVMODE fullscreenSettings;
+                EnumDisplaySettings(NULL, 0, &fullscreenSettings);
+                fullscreenSettings.dmPelsWidth = GetSystemMetrics(SM_CXSCREEN); 
+                fullscreenSettings.dmPelsHeight = GetSystemMetrics(SM_CYSCREEN);
+                
+                SetWindowLongPtr(_hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
+                SetWindowLongPtr(_hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+                SetWindowPos(_hWnd, HWND_TOPMOST, 0, 0, fullscreenSettings.dmPelsWidth, fullscreenSettings.dmPelsHeight, SWP_SHOWWINDOW);
+                ChangeDisplaySettings(&fullscreenSettings, CDS_FULLSCREEN);
+                ShowWindow(_hWnd, SW_MAXIMIZE);
+#endif      
+                
 #ifdef HAVE_ACTIVATE_INFO
                 SHFullScreen(_hWnd, SHFS_HIDETASKBAR | SHFS_HIDESIPBUTTON | SHFS_HIDESTARTICON);
 #endif
