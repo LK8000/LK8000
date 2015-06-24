@@ -11,24 +11,20 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CSTScreenBuffer
-CSTScreenBuffer::CSTScreenBuffer(int nWidth, int nHeight, LKColor clr) : RawBitmap(nWidth, nHeight), m_pBufferTmp(NULL) {
-
- 
-#ifdef GREYSCALE
-    #warning "not implemented for greyscale, check if need (also for non greyscale...)"
-    // m_pBufferTmp is only used by Blur method, so no need to alocate. ( blur is not implemented in GreyScale Mode )
-#else
+CSTScreenBuffer::CSTScreenBuffer(int nWidth, int nHeight, LKColor clr) : RawBitmap(nWidth, nHeight) {
+#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
     m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*GetHeight()*GetCorrectedWidth());
     std::fill_n(GetBuffer(), GetHeight()*GetCorrectedWidth(), BGRColor(clr.Blue(), clr.Green(), clr.Red()));
 #endif
-    
 }
 
 CSTScreenBuffer::~CSTScreenBuffer() {
+#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
     if (m_pBufferTmp) {
         free(m_pBufferTmp);
         m_pBufferTmp = NULL;
     }
+#endif
 }
 
 void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int scale) {
