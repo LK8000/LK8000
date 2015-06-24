@@ -67,10 +67,12 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     /**********************************************/
 
     if (bDraw) { // Draw Only if one is Visible
+#ifdef USE_GDI
         rcDraw.top = std::max(rc.top, rcDraw.top);
         rcDraw.bottom = std::min(rc.bottom, rcDraw.bottom);
         rcDraw.left = std::max(rc.left, rcDraw.left);
         rcDraw.right = std::min(rc.right, rcDraw.right);
+
 
         LKColor whitecolor = RGB_WHITE;
         LKColor origcolor = TempSurface.SetTextColor(whitecolor);
@@ -96,7 +98,12 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         TempSurface.SetTextColor(Colours[iAirspaceColour[AATASK]]);
         // this color is the transparent bit
         TempSurface.SetBkColor(whitecolor);
-
+        
+        LKSurface & AliasSurface = TempSurface;
+#else
+        LKSurface & AliasSurface = Surface;
+        Surface.SelectObject(LKBrush(LKColor(255U,255U,0U).WithAlpha(AlphaLevel)));
+#endif
         for (i = maxTp - 1; i > std::max(0, ActiveWayPoint - 1); i--) {
         if (ValidTaskPoint(i)) {
             int Type = 0;
@@ -107,14 +114,14 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
                 case CONE:
                 case CIRCLE:
                     tmp1 = Radius * zoom.ResScaleOverDistanceModify();
-                    TempSurface.Circle(
+                    AliasSurface.Circle(
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y,
                             (int) tmp1, rc, true, true);
                     break;
                 case SECTOR:
                     tmp1 = Radius * zoom.ResScaleOverDistanceModify();
-                    TempSurface.Segment(
+                    AliasSurface.Segment(
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y, (int) tmp1, rc,
                             Task[i].AATStartRadial - DisplayAngle,
@@ -123,7 +130,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
             }
         }
         }
-
+#ifdef USE_GDI
         // restore original color
         TempSurface.SetTextColor(origcolor);
         TempSurface.SelectObject(oldpen);
@@ -137,7 +144,9 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
                     TempSurface,
                     rcDraw.left, rcDraw.top);
         }
+#endif
 	}
+    
     {
         UnlockTaskData();
     }
