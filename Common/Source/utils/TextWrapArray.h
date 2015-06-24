@@ -15,8 +15,9 @@
 #include "tchar.h"
 #include <vector>
 #include <stddef.h>
+#include "Compiler.h"
 
-#include "Screen/LKSurface.h"
+class LKSurface;
 
 class TextWrapArray final {
 public:
