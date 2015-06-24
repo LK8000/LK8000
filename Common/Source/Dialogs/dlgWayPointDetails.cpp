@@ -26,17 +26,13 @@ static WndFrame *wSpecial=NULL;
 static WndListFrame *wComment=NULL;
 static WndOwnerDrawFrame *wCommentEntry = NULL;
 
-#define MAXLINES 100
-static int LineOffsets[MAXLINES];
-static int DrawListIndex=0;
-static int CommentDrawListIndex=0;
-static int nTextLines=0;
-
-
 #define WPLSEL WayPointList[SelectedWaypoint]
 
-static TextWrapArray aTextLine;
+static int DetailDrawListIndex=0;
+static TextWrapArray aDetailTextLine;
 
+static int CommentDrawListIndex=0;
+static TextWrapArray aCommentTextLine;
 
 static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
     (void) Sender;
@@ -116,28 +112,12 @@ static void NextPage(int Step){
 
 static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
-  if (DrawListIndex < nTextLines){
-    LKASSERT(SelectedWaypoint>=0);
-    TCHAR* text = WayPointList[SelectedWaypoint].Details;
-    LKASSERT(DrawListIndex>=0);
-    int nstart = LineOffsets[DrawListIndex];
-    int nlen;
-    if (DrawListIndex<nTextLines-1) {
-      nlen = LineOffsets[DrawListIndex+1]-LineOffsets[DrawListIndex]-1;
-      nlen--;
-    } else {
-      nlen = _tcslen(text+nstart);
-    }
-    while (_tcscmp(text+nstart+nlen-1,TEXT("\r"))==0) {
-      nlen--;
-    }
-    while (_tcscmp(text+nstart+nlen-1,TEXT("\n"))==0) {
-      nlen--;
-    }
-    if (nlen>0) {
+  
+  if (DetailDrawListIndex < (int)aDetailTextLine.size()){
+      LKASSERT(DetailDrawListIndex>=0);
+      const TCHAR* szText = aDetailTextLine[DetailDrawListIndex];
       Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawText(2*ScreenScale, 2*ScreenScale, text+nstart, nlen);
-    }
+      Surface.DrawText(2*ScreenScale, 2*ScreenScale, szText, _tcslen(szText));
   }
 }
 
@@ -145,9 +125,9 @@ static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
 static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender;
   if (ListInfo->DrawIndex == -1){
-    ListInfo->ItemCount = nTextLines-1;
+    ListInfo->ItemCount = aDetailTextLine.size();
   } else {
-    DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
+    DetailDrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
   }
 }
 
@@ -156,9 +136,9 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
 
 static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
-  if (CommentDrawListIndex < (int)aTextLine.size()){
+  if (CommentDrawListIndex < (int)aCommentTextLine.size()){
       LKASSERT(CommentDrawListIndex>=0);
-      const TCHAR* szText = aTextLine[CommentDrawListIndex];
+      const TCHAR* szText = aCommentTextLine[CommentDrawListIndex];
       Surface.SetTextColor(RGB_BLACK);
       Surface.DrawText(2*ScreenScale, 2*ScreenScale, szText, _tcslen(szText));
   }
@@ -167,7 +147,7 @@ static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface)
 static void OnWpCommentListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender;
   if (ListInfo->DrawIndex == -1){
-    ListInfo->ItemCount = aTextLine.size();
+    ListInfo->ItemCount = aCommentTextLine.size();
   } else {
     CommentDrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
   }
@@ -325,7 +305,6 @@ void dlgWayPointDetailsShowModal(short mypage){
                         filename, 
                         TEXT("IDR_XML_WAYPOINTDETAILS_L"));
   }
-  nTextLines = 0;
 
   if (!wf) return;
 
@@ -399,8 +378,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   wComment=(WndListFrame *)NULL;
   wCommentEntry = (WndOwnerDrawFrame *)NULL;
   CommentDrawListIndex=0;
-
-  aTextLine.clear();
+  aCommentTextLine.clear();
  
   wComment = (WndListFrame*)wf->FindByName(TEXT("frmWpComment"));
   LKASSERT(wComment!=NULL);
@@ -427,7 +405,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   {
     LKWindowSurface Surface(*wCommentEntry);
     Surface.SelectObject(wCommentEntry->GetFont());
-    aTextLine.update(Surface, wCommentEntry->GetWidth(), WayPointList[SelectedWaypoint].Comment );
+    aCommentTextLine.update(Surface, wCommentEntry->GetWidth(), WayPointList[SelectedWaypoint].Comment );
   }
 
 
@@ -558,13 +536,12 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   // Details (WAYNOTES) page
   //
+  DetailDrawListIndex=0;
+  aDetailTextLine.clear();
+ 
   wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
   LKASSERT(wDetailsEntry!=NULL);
   wDetailsEntry->SetCanFocus(true);
-
-  nTextLines = TextToLineOffsets(WayPointList[SelectedWaypoint].Details,
-				 LineOffsets,
-				 MAXLINES);
 
   // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
   if ( wDetails->ScrollbarWidth == -1) {
@@ -578,6 +555,12 @@ void dlgWayPointDetailsShowModal(short mypage){
   }
   wDetailsEntry->SetWidth(wDetails->GetWidth() - wDetails->ScrollbarWidth - 5);
 
+  {
+    LKWindowSurface Surface(*wDetailsEntry);
+    Surface.SelectObject(wDetailsEntry->GetFont());
+    aDetailTextLine.update(Surface, wDetailsEntry->GetWidth(), WayPointList[SelectedWaypoint].Details );
+  }
+  
   WndButton *wb;
 
   TCHAR captmp[200];
@@ -663,7 +646,7 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   delete wf;
 
-  aTextLine.clear();
+  aCommentTextLine.clear();
 
   wf = NULL;
 
