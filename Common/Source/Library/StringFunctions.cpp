@@ -167,7 +167,7 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String, charset& cs){
     TCHAR *pWC = &String[max((size_t)0,_tcslen(String)-1)]; 
     // 20060512/sgi change add -1 to set pWC at the end of the string
 
-    while (pWC > String && (*pWC == '\r' || *pWC == '\n')){
+    while (pWC >= String && (*pWC == '\r' || *pWC == '\n')){
       *pWC = '\0';
       pWC--;
     }
