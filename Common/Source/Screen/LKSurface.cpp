@@ -406,17 +406,6 @@ bool LKSurface::Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHe
 #endif
 }
 
-bool LKSurface::StretchCopy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc) {
-#ifdef WIN32
-    return ::StretchBlt(*this, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc, SRCCOPY);
-#else
-    if(_pCanvas && Surface.IsDefined()) {
-        _pCanvas->Stretch(nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
-        return true;
-    }
-    return false;
-#endif
-}
 
 #ifdef __MINGW32CE__
 #ifdef __cplusplus
