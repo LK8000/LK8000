@@ -509,7 +509,7 @@ bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const 
         }
     }
 
-    if (bOK) {
+    if (!bOK) {
         bOK = DoAlphaBlend_internal(
                 *this, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
                 Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, globalOpacity);
