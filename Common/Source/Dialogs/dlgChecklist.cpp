@@ -13,6 +13,7 @@
 #include "WindowControls.h"
 #include "utils/fileext.h"
 #include "Event/Event.h"
+#include "utils/TextWrapArray.h"
 
 #define MAXNOTETITLE 200	// max number of characters in a title note
 #define MAXNOTEDETAILS 5000	// max size of each note details
@@ -26,10 +27,12 @@ int page=0;
 WndForm *wf=NULL;
 WndListFrame *wDetails=NULL;
 WndOwnerDrawFrame *wDetailsEntry = NULL;
-int LineOffsets[MAXNOTELINES+1];
+
 int DrawListIndex=0;
-int nTextLines=0;
+static TextWrapArray aTextLine;
+
 int nLists=0;
+
 TCHAR *ChecklistText[MAXNOTES+1];
 TCHAR *ChecklistTitle[MAXNOTES+1];
 TCHAR NoteModeTitle[50];
@@ -40,14 +43,12 @@ static void InitNotepad(void) {
   wDetails=(WndListFrame *)NULL;
   wDetailsEntry = (WndOwnerDrawFrame *)NULL;
   DrawListIndex=0;
-  nTextLines=0;
+  aTextLine.clear();
+  
   nLists=0;
   for (int i=0; i<MAXNOTES; i++) {
 	ChecklistText[i]=(TCHAR *)NULL;
 	ChecklistTitle[i]=(TCHAR *)NULL;
-  }
-  for (int i=0; i<MAXNOTELINES; i++) {
-	LineOffsets[i]=0;
   }
 }
 
@@ -76,7 +77,9 @@ static void NextPage(int Step){
     page= nLists-1;
   }
 
-  nTextLines = TextToLineOffsets(ChecklistText[page], LineOffsets, MAXNOTELINES);
+  LKWindowSurface Surface(*wDetailsEntry);
+  Surface.SelectObject(wDetailsEntry->GetFont());
+  aTextLine.update(Surface, wDetailsEntry->GetWidth(), ChecklistText[page]);
 
   switch(nLists) {
 	case 0:
@@ -89,13 +92,6 @@ static void NextPage(int Step){
 		_stprintf(buffer, _T("%s %d/%d"),NoteModeTitle,page+1,nLists); 
 		break;
   }
-
-#if 0 // REMOVE
-  if (nLists>0)
-	_stprintf(buffer, _T("%s %d/%d"),NoteModeTitle,page+1,nLists); 
-  else
-	_stprintf(buffer, _T("%s %s"),NoteModeTitle,gettext(TEXT("_@M1750_"))); // empty
-#endif
 
   if (ChecklistTitle[page] &&
       (_tcslen(ChecklistTitle[page])>0) 
@@ -113,27 +109,11 @@ static void NextPage(int Step){
 
 static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
-  if (DrawListIndex < nTextLines){
-    TCHAR* text = ChecklistText[page];
-    if (!text) return;
-    int nstart = LineOffsets[DrawListIndex];
-    int nlen;
-    if (DrawListIndex<nTextLines-1) {
-      nlen = LineOffsets[DrawListIndex+1]-LineOffsets[DrawListIndex]-1;
-      nlen--;
-    } else {
-      nlen = _tcslen(text+nstart);
-    }
-    while (_tcscmp(text+nstart+nlen-1,TEXT("\r"))==0) {
-      nlen--;
-    }
-    while (_tcscmp(text+nstart+nlen-1,TEXT("\n"))==0) {
-      nlen--;
-    }
-    if (nlen>0) {
+  if (DrawListIndex < (int)aTextLine.size()){
+      LKASSERT(DrawListIndex>=0);
+      const TCHAR* szText = aTextLine[DrawListIndex];
       Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawText(2*ScreenScale, 2*ScreenScale, text+nstart, nlen);
-    }
+      Surface.DrawText(2*ScreenScale, 2*ScreenScale, szText, _tcslen(szText));
   }
 }
 
@@ -141,7 +121,7 @@ static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
 static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
   (void)Sender;
   if (ListInfo->DrawIndex == -1){
-    ListInfo->ItemCount = nTextLines-1;
+    ListInfo->ItemCount = aTextLine.size();
   } else {
     DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
   }
@@ -277,7 +257,7 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
   StartupStore(_T(". Loading notes <%s>%s"),fileName,NEWLINE);
   #endif
 
-  TCHAR TempString[MAXNOTETITLE+1];
+  TCHAR TempString[MAXNOTEDETAILS+1];
   TCHAR Details[MAXNOTEDETAILS+1];
   TCHAR Name[MAXNOTETITLE+1];
   bool inDetails = false;
@@ -427,7 +407,7 @@ void dlgChecklistShowModal(short checklistmode){
                         TEXT("IDR_XML_CHECKLIST"));
   }
 
-  nTextLines = 0;
+  aTextLine.clear();
 
   if (!wf) goto deinit;
 
