@@ -51,18 +51,11 @@
 
 //
 // Lite dithering: adjust lite color brushes to be white, etc. for better rendering on 
-// eink screens. If possible we use black and white colors. Greyscales sufferring of ghosting effect.
+// eink screens.
 //
 #ifdef DITHER
 #define UNDITHER 1
 #endif
-
-//
-// Use methods for unghosting the screen automatically
-#ifdef DITHER
-#define UNGHOST 1
-#endif
-
 
 #ifdef ENABLE_SDL
 //Use fullscreen for linux with SDL screen backend

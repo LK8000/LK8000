@@ -167,7 +167,7 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String, charset& cs){
     TCHAR *pWC = &String[max((size_t)0,_tcslen(String)-1)]; 
     // 20060512/sgi change add -1 to set pWC at the end of the string
 
-    while (pWC > String && (*pWC == '\r' || *pWC == '\n')){
+    while (pWC >= String && (*pWC == '\r' || *pWC == '\n')){
       *pWC = '\0';
       pWC--;
     }
@@ -557,40 +557,6 @@ _notoken:
   }
   _tcscpy(new_string, buffer);
   return new_string;
-}
-
-
-
-
-int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines) {
-  int nTextLines=0;
-  LineOffsets[0]= 0;
-  if (text) {
-    if (_tcslen(text)>0) {
-
-      int delta = 0;
-      int cumul = 0;
-      TCHAR* vind = text;
-
-      while (nTextLines<maxLines) {
-	delta = _tcscspn(vind+cumul, TEXT("\n"));
-	if (!delta) {
-	  break;
-	}
-	if (_tcslen(vind+cumul+delta)>0) {
-	  delta++;
-	} else {
-	  break;
-	}
-	cumul += delta;
-	nTextLines++;
-	LineOffsets[nTextLines]= cumul;
-      }
-      nTextLines++;
-
-    }
-  }
-  return nTextLines;
 }
 
 /* 

@@ -31,7 +31,7 @@ double AirDensitySinkRate(double ias, double qnhaltitude, double gload) {
     double w0 = GlidePolar::SinkRate(GlidePolar::polar_a,GlidePolar::polar_b,GlidePolar::polar_c,0.0,0.0,ias);
     w0 *= AirDensityRatio(AltitudeToQNEAltitude(qnhaltitude));
     gload = max(0.1,fabs(gload));
-    double v2 = GlidePolar::Vbestld/max((double)GlidePolar::Vbestld/2,ias);
+    double v2 = GlidePolar::Vbestld()/max((double)GlidePolar::Vbestld()/2,ias);
 
     LKASSERT(GlidePolar::bestld!=0);
     if (GlidePolar::bestld==0) return -1; // UNMANAGED

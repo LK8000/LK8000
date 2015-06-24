@@ -4,7 +4,7 @@
    See CREDITS.TXT file for authors and copyrights
 
    $Id$
-*/
+ */
 
 #include "externs.h"
 #include "McReady.h"
@@ -16,64 +16,55 @@ extern double CRUISE_EFFICIENCY;
 // Sollfarh / Dolphin Speed calculator
 //
 void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-  double n;
-  // get load factor
-  if (Basic->AccelerationAvailable) {
-    n = fabs(Basic->AccelZ);
-  } else {
-    n = fabs(Calculated->Gload);
-  }
 
-  double delta_mc;
-  double current_mc = MACCREADY;
 
-  delta_mc = current_mc-Calculated->NettoVario;
+    if (((AutoMcMode == amcFinalGlide) || (AutoMcMode == amcFinalAndClimb)) 
+            && DoOptimizeRoute() && Calculated->NextAltitude > 0.) {
 
-  // TODO FIX should we use this approach?
-  if (1 || (Calculated->Vario <= current_mc)) {
-    // airmass value is worse than mc threshold, so find opt cruise speed
-
-    double VOptnew;
-    
-    if (!ValidTaskPoint(ActiveWayPoint) || !Calculated->FinalGlide) {
-      // calculate speed as if cruising, wind has no effect on opt speed
-      GlidePolar::MacCreadyAltitude(delta_mc,
-                                    100.0, // dummy value
-                                    Basic->TrackBearing, 
-                                    0.0, 
-                                    0.0, 
-                                    NULL, 
-                                    &VOptnew, 
-                                    false, 
-                                    NULL, 0, CRUISE_EFFICIENCY);
-    } else {
-      GlidePolar::MacCreadyAltitude(delta_mc,
-                                    100.0, // dummy value
-                                    Basic->TrackBearing, 
-                                    Calculated->WindSpeed, 
-                                    Calculated->WindBearing, 
-                                    0, 
-                                    &VOptnew, 
-                                    true,
-                                    NULL, 1.0e6, CRUISE_EFFICIENCY);
+        // Special case for Conical end of Speed section
+        int Type = -1;
+        double ConeSlope = 0.0;
+        LockTaskData();
+        if (ValidTaskPoint(ActiveWayPoint)) {
+            GetTaskSectorParameter(ActiveWayPoint, &Type, NULL);
+            ConeSlope = Task[ActiveWayPoint].PGConeSlope;
+        }
+        UnlockTaskData();
+        if (Type == CONE && ConeSlope > 0.0) {
+            double VOpt = GlidePolar::FindSpeedForSlope(ConeSlope);
+            double eqMC = GlidePolar::EquMC(VOpt);
+            if(eqMC <= MACCREADY ) {
+                Calculated->VOpt = VOpt;
+                return;
+            }
+        }
     }
-    
-    // put low pass filter on VOpt so display doesn't jump around
-    // too much
-    if (Calculated->Vario <= current_mc) {
-      Calculated->VOpt = max(Calculated->VOpt,
-			     GlidePolar::Vminsink*sqrt(n));
-    } else {
-      Calculated->VOpt = max(Calculated->VOpt,
-			     (double)GlidePolar::Vminsink);
-    }
-    Calculated->VOpt = LowPassFilter(Calculated->VOpt,VOptnew, 0.6);
-    
-  } else {
-    // this air mass is better than maccready, so fly at minimum sink speed
-    // calculate speed of min sink adjusted for load factor 
-    Calculated->VOpt = GlidePolar::Vminsink*sqrt(n);
-  }
 
+    double HeadWind = 0;
+    if (Calculated->FinalGlide && ValidTaskPoint(ActiveWayPoint)) {
+        // according to MC theory STF take account of wind only if on final Glide
+        // TODO : for the future add config parameter for always use wind.
+        if (Calculated->HeadWind != -999) {
+            HeadWind = Calculated->HeadWind;
+        }
+    }
+
+    // this is IAS for best Ground Glide ratio acounting current air mass ( wind / Netto vario )
+    double VOptnew = GlidePolar::STF(MACCREADY, Calculated->NettoVario, HeadWind);
+
+    // apply cruises efficiency factor.
+    VOptnew *= CRUISE_EFFICIENCY;
+    
+    if (Calculated->NettoVario > MACCREADY) {
+        // this air mass is better than maccready, so don't fly at speed less than minimum sink speed adjusted for load factor
+        double n = fabs((Basic->AccelerationAvailable) ? Basic->AccelZ : Calculated->Gload);
+        VOptnew = max(VOptnew, GlidePolar::Vminsink() * sqrt(n));
+    } else {
+        // never fly at speed less than min sink speed
+        VOptnew = max(VOptnew, GlidePolar::Vminsink());
+    }
+
+    // use low pass filter for avoid big jump of value.
+    Calculated->VOpt = LowPassFilter(Calculated->VOpt, VOptnew, 0.6);
 }
 

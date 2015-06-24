@@ -273,7 +273,7 @@ double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calcul
 		// if qnh is correct, while gps is generally accurate for the purpose.
 		avertas=averias*AirDensityRatio(AltitudeToQNEAltitude(Basic->Altitude));
 		// This is just to be sure we are not using an impossible part of the polar
-		if (avertas>(GlidePolar::Vminsink-8.3) && (avertas>0)) { // minsink - 30km/h 
+		if (avertas>(GlidePolar::Vminsink()-8.3) && (avertas>0)) { // minsink - 30km/h 
 
             Calculated->EqMc = GlidePolar::EquMC(averias);
 
@@ -287,8 +287,8 @@ double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calcul
 		}
 		#if DEBUG_EQMC
 		StartupStore(_T(".. eMC=%.2f (=%.1f)  Averias=%f Avertas=%f kmh, sinktas=%.1f ms  sinkmc0=%.1f ms Vbestld=%.1f Vminsink=%.1f\n"),
-		Calculated->EqMc, Calculated->EqMc, averias*TOKPH, avertas*TOKPH,-1*GlidePolar::sinkratecache[(int)avertas], 
-		GlidePolar::sinkratecache[GlidePolar::Vbestld], GlidePolar::Vbestld*TOKPH, GlidePolar::Vminsink*TOKPH);
+		Calculated->EqMc, Calculated->EqMc, averias*TOKPH, avertas*TOKPH,-1*GlidePolar::SinkRateFast(0,avertas),
+		GlidePolar::SinkRateBestLd(), GlidePolar::Vbestld()*TOKPH, GlidePolar::Vminsink()*TOKPH);
 		#endif
 
 	} else {

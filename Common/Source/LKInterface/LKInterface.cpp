@@ -64,9 +64,6 @@ finish:
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();
 	// Multimaps can change zoom, and when we are back to moving map we may have missing topology items
 	if (MapSpaceMode==MSM_MAP) {
-                #ifdef UNGHOST
-                Unghost+=300; // 30 times more important
-		#endif
 		MapWindow::ForceVisibilityScan=true;
 		MapWindow::RefreshMap();
 	}
@@ -114,9 +111,6 @@ finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();
 	if (MapSpaceMode==MSM_MAP) {
-                #ifdef UNGHOST
-                Unghost+=300; // 30 times more important
-		#endif
 		MapWindow::ForceVisibilityScan=true;
 		MapWindow::RefreshMap();
 	}
@@ -284,10 +278,6 @@ void SelectMapSpace(short i) {
 // We assume that at least ConfBB[1] will be ON!
 // We cannot have all OFF!
 void BottomBarChange(bool advance) {
-
-  #ifdef UNGHOST
-  if (Unghost>10) Unghost-=10;
-  #endif
 
   short wanted;
   if (!advance) goto bbc_previous;

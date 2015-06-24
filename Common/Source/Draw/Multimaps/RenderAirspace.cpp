@@ -19,6 +19,7 @@
 #include "Multimap.h"
 #include "Topology.h"
 #include "InputEvents.h"
+#include "utils/2dpclip.h"
 
 extern int Sideview_iNoHandeldSpaces;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
@@ -544,9 +545,77 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
 
     // draw target symbolic line
 
+    bool bConicalFinal = false;
+    double Slope = 0.0, VOpt = 0.0, Sink = 0.0;
+    POINT BestReach = {0,0};
+
     if (overindex >= 0) {
         int iWpPos = CalcDistanceCoordinat(wpt_dist, &sDia);
         if ((getsideviewpage == IM_NEXT_WP) && (Current_Multimap_SizeY < SIZE4)) {
+
+            if( (OvertargetMode == OVT_TASK) && DoOptimizeRoute() ) {
+                if ( ValidTaskPoint(ActiveWayPoint)) {
+                    double AltBase = 0.0, Radius = 0.0;
+                    double baselon, baselat;
+                    LockTaskData();
+                    int Type;
+                    GetTaskSectorParameter(ActiveWayPoint, &Type, NULL);
+                    if(Type == CONE) {
+                        AltBase = Task[ActiveWayPoint].PGConeBase;
+                        Radius = Task[ActiveWayPoint].PGConeBaseRadius;
+                        Slope = Task[ActiveWayPoint].PGConeSlope;
+                        baselon = WayPointList[Task[ActiveWayPoint].Index].Longitude;
+                        baselat = WayPointList[Task[ActiveWayPoint].Index].Latitude;
+                        bConicalFinal = true;
+                    }
+                    UnlockTaskData();
+                    if(bConicalFinal && Slope > 0.) {
+                        double basedist = 0.;
+                        DistanceBearing(aclat, aclon, baselat, baselon, &basedist, NULL);
+                        VOpt = GlidePolar::FindSpeedForSlope(Slope);
+                        Sink = GlidePolar::SinkRate(VOpt);
+
+                        double ck = (basedist + Slope * AltBase - Radius) / Slope;
+                        double dOpt = (ck - DerivedDrawInfo.NavAltitude) / (VOpt + Sink * Slope) * Slope * VOpt;
+                        double AltOpt = DerivedDrawInfo.NavAltitude + dOpt/VOpt*Sink;
+                        double ConeBase = (Slope * AltBase - Radius) / Slope;
+
+                        line[1].x = CalcDistanceCoordinat( basedist,  &sDia);
+                        line[1].y = CalcHeightCoordinatOutbound(ConeBase, &sDia);
+                        line[0].x = CalcDistanceCoordinat( 0,  &sDia);
+                        line[0].y = CalcHeightCoordinatOutbound(ck, &sDia);
+
+                        if(AltOpt > ConeBase) {
+                            show_mc0 = false;
+
+                            line[2].x = CalcDistanceCoordinat( 0, &sDia);
+                            line[2].y = CalcHeightCoordinat ( DerivedDrawInfo.NavAltitude, &sDia );
+                            BestReach.x = CalcDistanceCoordinat( dOpt, &sDia);
+                            BestReach.y = CalcHeightCoordinatOutbound( AltOpt,  &sDia );
+
+                            Surface.DrawDashLine(3, line[2], BestReach,  RGB_BLUE, rc);
+                        } else {
+                            bConicalFinal = false;
+                        }
+
+                        if(LKGeom::ClipLine((RECT) {rc.left, rc.top, rc.right, rc.bottom}, line[0],  line[1])) {
+                            Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1],  RGB_DARKBLUE, rc);
+                        }
+
+
+                        line[1].x = CalcDistanceCoordinat( basedist,  &sDia);
+                        line[1].y = CalcHeightCoordinatOutbound((Slope * AltBase - Radius) / Slope, &sDia);
+                        line[0].x = CalcDistanceCoordinat( basedist*2,  &sDia);
+                        line[0].y = CalcHeightCoordinatOutbound((basedist + Slope * AltBase - Radius) / Slope, &sDia);
+
+                        if(LKGeom::ClipLine((RECT) {rc.left, rc.top, rc.right, rc.bottom}, line[0],  line[1])) {
+                            Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1],  RGB_DARKBLUE, rc);
+                        }
+                    }
+                }
+            }
+
+
             if (WayPointCalc[overindex].IsLandable == 0) {
                 // Not landable - Mark wpt with a vertical marker line
                 line[0].x = CalcDistanceCoordinat(wpt_dist, &sDia);
@@ -616,12 +685,12 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
         } else {
             //  double t = fDist/(speed!=0?speed:1);
             if (SIMMODE && !DerivedDrawInfo.Flying) {
-                calc_average30s = -GlidePolar::SinkRate((double) GlidePolar::Vbestld);
+                calc_average30s = -GlidePolar::SinkRateBestLd();
                 if (calc_average30s == 0) calc_average30s = 0.01; // should be impossible, but we must check
                 double t = fabs(DerivedDrawInfo.NavAltitude / calc_average30s);
                 line[0].x = CalcDistanceCoordinat(0, &sDia);
                 line[0].y = CalcHeightCoordinat(DerivedDrawInfo.NavAltitude, &sDia);
-                line[1].x = CalcDistanceCoordinat(GlidePolar::Vbestld * t, &sDia);
+                line[1].x = CalcDistanceCoordinat(GlidePolar::Vbestld() * t, &sDia);
                 line[1].y = CalcHeightCoordinat(0, &sDia);
             } else {
                 if (calc_average30s == 0) calc_average30s = 0.01; // limit the horizontal infinite
@@ -719,7 +788,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
         double altarriv = 0;
         if (fSplitFact >= ADDITIONAL_INFO_THRESHOLD) goto _after_additionals;
         if (wpt_altarriv == wpt_altarriv_mc0) goto _skip_mc0;
-
+        if(bConicalFinal) goto _skip_mc0;
 
         //
         // ALTITUDE ARRIVAL AT MACCREADY 0
@@ -823,6 +892,35 @@ _skip_mc0:
         //
         // FINAL GLIDE MACCREADY
         //
+  if(bConicalFinal) {
+    double mc = (Sink * Slope + VOpt) / Slope;
+    if( fabs(mc-MACCREADY) > 0.05 ) {
+      _stprintf(text, TEXT("Mc %3.1f @%.0f%s"),(LIFTMODIFY*mc), SPEEDMODIFY*VOpt, (Units::GetHorizontalSpeedName()));
+
+      x = BestReach.x - tsize.cx - NIBLSCALE(5);
+      if (bDrawRightSide) {
+          x = BestReach.x + NIBLSCALE(5);
+      }
+      Surface.GetTextSize(text, _tcslen(text), &tsize);
+      int yn = BestReach.y;
+      if(mc > MACCREADY) {
+        if(yn > y + tsize.cy) {
+          y=yn;
+        } else {
+          y+= (int)(1.2*tsize.cy);
+        }
+      } else {
+        if(yn-tsize.cy > y ) {
+          y=tsize.cy + y;
+        } else {
+          y-= (int)(1.2*tsize.cy);
+        }
+      }
+      Surface.SelectObject(LKBrush_Nlight);
+      MapWindow::LKWriteBoxedText(Surface, rc, text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
+     }
+  } else {
+
         if (wpt_altarriv_mc0 > 0) {
 
             LKASSERT((wpt_dist + 1) != 0);
@@ -879,7 +977,7 @@ _skip_mc0:
             MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
 
         }
-
+  }
 
 _after_additionals:
 

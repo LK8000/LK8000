@@ -215,7 +215,7 @@ int CalcHeightCoordinat(double fHeight, DiagrammStruct* psDia) {
 int CalcDistanceCoordinat(double fDist, DiagrammStruct* psDia) {
     RECT rc = psDia->rc;
     if (psDia->fXMax == psDia->fXMin) psDia->fXMax++; // RECOVER DIVISION BY ZERO!
-    double xscale = (double) (rc.right - rc.left) / (psDia->fXMax - psDia->fXMin);
+    double xscale = (double) (rc.right) / (psDia->fXMax - psDia->fXMin);
     int xPos = (int) ((fDist - psDia->fXMin) * xscale) + rc.left;
     return xPos;
 

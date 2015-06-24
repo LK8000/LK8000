@@ -84,19 +84,19 @@ RawBitmap::~RawBitmap()
 void
 RawBitmap::StretchTo(unsigned width, unsigned height,
                      LKSurface &dest_canvas,
-                     unsigned dest_width, unsigned dest_height) const
+                     unsigned dest_x, unsigned dest_y, unsigned dest_width, unsigned dest_height) const
 {
 #if defined(_WIN32_WCE) && _WIN32_WCE < 0x0400
   /* StretchDIBits() is bugged on PPC2002, workaround follows */
   HDC source_dc = ::CreateCompatibleDC(dest_canvas);
   ::SelectObject(source_dc, bitmap);
-  ::StretchBlt(dest_canvas, 0, 0,
+  ::StretchBlt(dest_canvas, dest_x, dest_y,
                dest_width, dest_height,
                source_dc, 0, 0, width, height,
                SRCCOPY);
   ::DeleteDC(source_dc);
 #else
-  ::StretchDIBits(dest_canvas, 0, 0,
+  ::StretchDIBits(dest_canvas, dest_x, dest_y,
                   dest_width, dest_height,
                   0, GetHeight() - height, width, height,
                   buffer, &bi, DIB_RGB_COLORS, SRCCOPY);

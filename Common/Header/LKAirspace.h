@@ -272,11 +272,8 @@ public:
     static CAirspace* GetSideviewNearestInstance() { return _sideview_nearest_instance; }
     
 protected:
-    void ClipScreenPoint(const RECT& rcDraw);
-    
-    // this 2 array is modified by DrawThread, never use it in another thread !!
+    // this array is modified by DrawThread, never use it in another thread !!
     POINTList _screenpoints;
-    POINTList _screenpoints_clipped;        // screen coordinates
     
     ////////////////////////////////////////////////////////////////////////////////
     // Draw Picto methods

@@ -202,10 +202,10 @@ public:
 
 #ifdef USE_GDI
   void StretchTo(unsigned width, unsigned height, LKSurface &dest_canvas,
-                 unsigned dest_width, unsigned dest_height) const;
+                 unsigned dest_x, unsigned dest_y, unsigned dest_width, unsigned dest_height) const;
 #else
   void StretchTo(unsigned width, unsigned height, Canvas &dest_canvas,
-                 unsigned dest_width, unsigned dest_height) const;
+                 unsigned dest_x, unsigned dest_y, unsigned dest_width, unsigned dest_height) const;
 #endif
   
 #ifdef ENABLE_OPENGL

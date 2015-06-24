@@ -6,20 +6,20 @@ Original concept, design and development of LK8000 Project by Paolo Ventafridda,
 
   LK8000 Project Copyrights (c) by:
 
-	Tobias Bieniek
-	Eric Carden
-	Oren Cohen
-	Jozef Hartinger
-	Ulli Heynen
-	Bruno de Lacheisserie
-	Kuba Kubrynski
-	Richard Pecl
-	Mateusz Pusz
-	Alberto Realis-Luc
-	Kalman Rozsahegyi
-	Karim Trojette
-	Paolo Ventafridda
-	John Wharington
+    Tobias Bieniek
+    Eric Carden
+    Oren Cohen
+    Jozef Hartinger
+    Ulli Heynen
+    Bruno de Lacheisserie
+    Kuba Kubrynski
+    Richard Pecl
+    Mateusz Pusz
+    Alberto Realis-Luc
+    Kalman Rozsahegyi
+    Karim Trojette
+    Paolo Ventafridda
+    John Wharington
 
   Graphics by Jiri Bergman
   Complete copyrights and contributors list is available on the main website.
@@ -28,37 +28,26 @@ Original concept, design and development of LK8000 Project by Paolo Ventafridda,
   LK8000 was forked off Xcsoar in year 2009.
   Copyright (C) 2000 - 2009 XCSoar Authors from the 5.2.2/5.2.3 version:
 
-  	M Roberts (original release)
-	Robin Birch
-	Samuel Gisiger
-	Jeff Goodenough
-	Alastair Harrison
-	Scott Penrose
-	John Wharington
-	Lars H
-	Rob Dunning
-	Russell King 
-	Paolo Ventafridda
-	Tobias Lohner
-	Simon Taylor
+    M Roberts (original release)
+    Robin Birch
+    Samuel Gisiger
+    Jeff Goodenough
+    Alastair Harrison
+    Scott Penrose
+    John Wharington
+    Lars H
+    Rob Dunning
+    Russell King 
+    Paolo Ventafridda
+    Tobias Lohner
+    Simon Taylor
 
 
   Other contributors may be missing from the old xcsoar file, and will be added on demand.
 
 [GPL LICENCE]  
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.

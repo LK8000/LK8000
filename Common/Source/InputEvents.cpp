@@ -2911,6 +2911,15 @@ double step=0;
   }
 }
 
+void InputEvents::eventChangeNettoVario(const TCHAR *misc) {
+  if (_tcscmp(misc, TEXT("up")) == 0){
+	SimNettoVario+=0.1;
+  }
+  if (_tcscmp(misc, TEXT("down")) == 0){
+	SimNettoVario-=0.1;
+  }
+}
+
 
 void InputEvents::eventMoveGlider(const TCHAR *misc) {
   int i;

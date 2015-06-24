@@ -41,8 +41,9 @@ protected:
 	// that is acceptable as image width (not all numbers are acceptable)
 	static int CorrectedWidth(int nWidth);
 
+#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
 	BGRColor *m_pBufferTmp;
-    LKBitmap m_Bitmap;
+#endif
 };
 
 #endif // !defined(AFX_STSCREENBUFFER_H__22D62F5D_32E2_4785_B3D9_2341C11F84A3__INCLUDED_)

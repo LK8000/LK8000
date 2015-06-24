@@ -42,7 +42,6 @@ void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
     LKCalculateWaypointReachable(false);
 
 _skip_calcs:
-    CalculateScreenPositionsAirspace(rc);
 
     CalculateScreenPositionsThermalSources();
 
@@ -218,14 +217,7 @@ QuickRedraw:
     }
 
     if (IsMultimapAirspace()) {
-        if ((GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders))
-            DrawTptAirSpace(Surface, rc);
-        else {
-            if (GetAirSpaceFillType() == asp_fill_border_only)
-                DrawAirSpaceBorders(Surface, rc); // full screen, to hide clipping effect on low border
-            else
-                DrawAirSpace(Surface, rc); // full screen, to hide clipping effect on low border
-        }
+        DrawAirSpace(Surface, rc);
     }
 
     if (DONTDRAWTHEMAP) {

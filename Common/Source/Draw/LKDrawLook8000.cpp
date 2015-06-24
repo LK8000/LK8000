@@ -487,18 +487,37 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             Surface.SelectObject(LK8OverlayBigFont);
 
             if (HaveGates()) {
+                // Time To Gate
                 gatechrono = GateTime(ActiveGate) - LocalTime(); // not always already set, update it ... 
 
                 Units::TimeToTextDown(BufferValue, gatechrono);
                 rcx= rc.right-RIGHTMARGIN;
-                rcy = yrightoffset - SizeBigFont.cy;
-                LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+                rcy = yrightoffset - SizeBigFont.cy-NIBLSCALE(6); // 101112
+                LKWriteText(Surface, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
 
+                // Gate ETE Diff 
                 Value = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].NextETE - gatechrono;
                 Units::TimeToTextDown(BufferValue, (int) Value);
+                rcy += SizeBigFont.cy-NIBLSCALE(2);
                 color=(Value<=0)?AMBERCOLOR:OverColorRef;
-                LKWriteText(Surface, BufferValue, rcx, yrightoffset - NIBLSCALE(2), 0, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true); 
+                LKWriteText(Surface, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED,WTALIGN_RIGHT,color, true);
 
+                // Req. Speed For reach Gate
+                if (LKFormatValue(LK_START_SPEED, false, BufferValue, BufferUnit, BufferTitle)) {
+                    Surface.SelectObject(LK8OverlayBigFont);
+                    Surface.GetTextSize(BufferUnit, _tcslen(BufferUnit), &TextSize);
+                    rcx -= TextSize.cx;
+                    Surface.SelectObject(LK8TargetFont);
+                    Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
+                    rcx -= (TextSize.cx + NIBLSCALE(2));
+                    rcy += TextSize.cy-NIBLSCALE(2);
+
+                    LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+
+                    Surface.SelectObject(LK8OverlayBigFont);
+                    LKWriteText(Surface, BufferUnit, rcx + TextSize.cx + NIBLSCALE(2), rcy + (TextSize.cy / 3), 0,
+                            WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                }
             }
 
         } else {

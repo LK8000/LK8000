@@ -12,10 +12,12 @@
 #include "MessageLog.h"
 
 #if USELKASSERT
-
+#ifdef NDEBUG
   extern void MSG_ASSERTION(int line, const TCHAR *filename);
   #define LKASSERT(arg) {;if (!(arg)) {; StartupStore(_T("[ASSERT FAILURE] in %s line %d\n"),_T(__FILE__),__LINE__); MSG_ASSERTION(__LINE__,_T(__FILE__)); exit(0);}}
-
+#else
+  #define LKASSERT(arg) assert(arg);
+#endif
 #else
 
   #define LKASSERT(arg)

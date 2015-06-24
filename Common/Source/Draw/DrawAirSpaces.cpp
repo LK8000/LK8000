@@ -36,7 +36,7 @@ void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
 
 
 // TODO code: optimise airspace drawing
-void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
+void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
 {
   CAirspaceList::const_iterator it;
   CAirspaceList::const_reverse_iterator itr;
@@ -153,3 +153,15 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc)
 }
 
 
+void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc) {
+    CalculateScreenPositionsAirspace(rc);
+    
+    if ((GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders))
+        DrawTptAirSpace(Surface, rc);
+    else {
+        if (GetAirSpaceFillType() == asp_fill_border_only)
+            DrawAirSpaceBorders(Surface, rc); // full screen, to hide clipping effect on low border
+        else
+            DrawAirSpacePattern(Surface, rc); // full screen, to hide clipping effect on low border
+    }    
+}

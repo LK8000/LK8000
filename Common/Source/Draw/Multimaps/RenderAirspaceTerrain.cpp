@@ -108,7 +108,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     /**********************************************************************************
      * transform into diagram coordinates
      **********************************************************************************/
-    double dx1 = (double) (rc.right - rc.left) / (double) (AIRSPACE_SCANSIZE_X - 1);
+    double dx1 = (double) (rc.right) / (double) (AIRSPACE_SCANSIZE_X - 1);
     int x0 = rc.left;
     LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
     for (i = 0; i < Sideview_iNoHandeldSpaces; i++) {

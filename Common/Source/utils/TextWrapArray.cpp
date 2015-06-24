@@ -11,6 +11,7 @@
 
 #include "TextWrapArray.h"
 #include <string.h>
+#include "Screen/LKSurface.h"
 
 
 TextWrapArray::TextWrapArray() : _szText(nullptr) {

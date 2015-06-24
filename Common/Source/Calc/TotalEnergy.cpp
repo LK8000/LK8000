@@ -39,7 +39,7 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		V_tas = Calculated->TrueAirspeedEstimated;
 		wastefactor=0.70;
 	}
-	double V_min_tas = ( GlidePolar::Vminsink + (GlidePolar::Vbestld - GlidePolar::Vminsink)/2)*ias_to_tas;
+	double V_min_tas = ( GlidePolar::Vminsink() + (GlidePolar::Vbestld() - GlidePolar::Vminsink())/2)*ias_to_tas;
 	V_tas = max(V_tas, V_min_tas);
 
 	Calculated->EnergyHeight = ( (V_tas*V_tas-V_min_tas*V_min_tas)/(9.81*2.0)*wastefactor);

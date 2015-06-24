@@ -108,7 +108,7 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
   double xval;
   if (psDia->fXMax == psDia->fXMin)
     psDia->fXMax++;
-  double xscale = (rc.right-rc.left) / (psDia->fXMax-psDia->fXMin);
+  double xscale = (rc.right) / (psDia->fXMax-psDia->fXMin);
   int xmin=0, ymin=0, xmax=0, ymax=0;
   double x_max = psDia->fXMax;
   double x_min = psDia->fXMin;

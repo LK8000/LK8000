@@ -19,7 +19,7 @@ class XShape {
 
   virtual void load(shapefileObj* shpfile, int i);
   virtual void clear();
-  virtual bool renderSpecial(LKSurface& Surface, int x, int y, bool RetVal) { (void)x; (void)y; (void)Surface; return(RetVal);};
+  virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) { (void)x; (void)y; (void)Surface; return false;};
   virtual bool nearestItem(int category, double lon, double lat) { (void)category; (void)lon; (void)lat; return(true);};
 
   bool hide;
@@ -36,7 +36,7 @@ class XShapeLabel: public XShape {
   virtual ~XShapeLabel();
   virtual void clear();
   void setlabel(const char* src);
-  virtual bool renderSpecial(LKSurface& Surface, int x, int y, bool RetVal);
+  virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect);
   virtual bool nearestItem(int category, double lon, double lat);
 protected:
   TCHAR *label;

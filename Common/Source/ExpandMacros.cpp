@@ -630,6 +630,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	ReplaceInString(OutBuffer, TEXT("$(TURN)"), tbuf, Size);
 	if (--items<=0) goto label_ret;
   }
+  if (_tcsstr(OutBuffer, TEXT("$(NETTO"))) {
+	TCHAR tbuf[10];
+	_stprintf(tbuf,_T("%.1f"),SimNettoVario);
+	ReplaceInString(OutBuffer, TEXT("$(NETTO)"), tbuf, Size);
+	if (--items<=0) goto label_ret;
+  }
 
 
   if (_tcsstr(OutBuffer, TEXT("$(LoggerActive)"))) {

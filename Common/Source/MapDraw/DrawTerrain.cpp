@@ -271,7 +271,11 @@ public:
         do_shading = (is_terrain && Shading && terrain_doshading[TerrainRamp]);
     }
 
-    void Height() {
+    /**
+     * Fill height Buffer with according to map projection
+     * @offset : {top, left} coordinate of Terrain Rendering Rect relative to DrawRect
+     */
+    void Height(const POINT& offset) {
 
         double X, Y;
 
@@ -338,7 +342,10 @@ public:
             //StartupStore(_T("..... Scale=%.3f RealScale=%.3f\n"),MapWindow::zoom.Scale(),MapWindow::zoom.RealScale());
         }
 
-        const POINT orig = MapWindow::GetOrigScreen();
+        POINT orig = MapWindow::GetOrigScreen();
+        orig.x -= offset.x;
+        orig.y -= offset.y;
+        
         FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y);
 
         DisplayMap->Unlock();
@@ -705,7 +712,7 @@ _redo:
     trenderer->ColorTable();
     // step 2: fill height buffer
 
-    trenderer->Height();
+    trenderer->Height({rc.left, rc.top});
 
     // step 3: calculate derivatives of height buffer
     // step 4: calculate illumination and colors
