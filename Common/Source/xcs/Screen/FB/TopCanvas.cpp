@@ -47,6 +47,10 @@ Copyright_License {
 #include <errno.h>
 #endif
 
+#ifdef KOBO  
+const Poco::Timespan TopCanvas::unghost_delay(1,0); // 1s + 0 to gps fix interval delay before do unghost
+#endif
+
 void
 TopCanvas::Destroy()
 {
@@ -441,15 +445,12 @@ TopCanvas::Flip()
   };
  
   if(unghost) {
-    static Poco::Timestamp StartTime;
-    unsigned short debounce_time= ((StartTime.elapsed() - last_unghost_request_time)/1000000);
-    if (debounce_time>2) {
+    if (unghost_request_time.isElapsed(unghost_delay.totalMicroseconds())) {
         unghost = false;
         epd_update_data.flags |= EPDC_FLAG_ENABLE_INVERSION;
         ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);
         Wait();
         epd_update_data.flags &= ~EPDC_FLAG_ENABLE_INVERSION;
-        Unghost=0; // draw_thread counter reset. We share the same framebuffer!
     }
   }
   
