@@ -169,6 +169,13 @@ CE_PLATFORM	:=400
 PCPU		:=ARMV4
 endif
 
+ifeq ($(CONFIG_PNA),y)
+# armv4i
+CE_MAJOR	:=5
+CE_MINOR	:=00
+CE_PLATFORM	:=500
+endif
+
 ifeq ($(CONFIG_PC),y)
 # armv4i
 CE_MAJOR	:=5
@@ -176,6 +183,7 @@ CE_MINOR	:=00
 CE_PLATFORM	:=500
 TARGET		:=PC
 endif
+
 ifeq ($(CONFIG_WINE),y)
 # armv4i
 CE_MAJOR	:=5
@@ -295,12 +303,12 @@ else
 CE_DEFS		:=-D_WIN32_WCE=$(CE_VERSION) -D_WIN32_IE=$(CE_VERSION)
 CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
 # UNIX like ressource work on all plarform, so no need.
-#WIN32_RESSOURCE := y 
+WIN32_RESOURCE := y
 endif
 CE_DEFS += -DUSE_GDI
 endif
 
-ifeq ($(WIN32_RESSOURCE), y)
+ifeq ($(WIN32_RESOURCE), y)
 CE_DEFS		+=-DWIN32_RESOURCE
 endif
 
@@ -1156,7 +1164,7 @@ OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
 	$(BIN)/poco.a 
 	
-ifneq ($(WIN32_RESSOURCE), y)	
+ifneq ($(WIN32_RESOURCE), y)	
 OBJS	+= $(BIN)/resource.a
 endif
 

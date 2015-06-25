@@ -179,12 +179,12 @@ BIN_DATA(IDB_LKVERYSMALLTOWN)
 #include "resource.h"
 #define RESSOURCE_ID(_NAME)  #_NAME
 #define NAMED_RESSOURCE(_NAME) { _TEXT(RESSOURCE_ID(_NAME)) , ConstBuffer<void>(_NAME##_begin, _NAME##_size) }
-
+#ifndef WIN32_RESOURCE 
 static const struct {
     const TCHAR * szName;
     ConstBuffer<void> data;
 } named_resources[] = {
-#ifndef WIN32_RESOURCE    
+   
     NAMED_RESSOURCE(IDR_XML_AIRSPACE),
     NAMED_RESSOURCE(IDR_XML_AIRSPACECOLOURS),
     NAMED_RESSOURCE(IDR_XML_MULTISELECTLIST),
@@ -280,7 +280,7 @@ static const struct {
     NAMED_RESSOURCE(IDR_XML_BLUEFLYCONFIG),
     NAMED_RESSOURCE(IDR_XML_PROGRESS_P),
     NAMED_RESSOURCE(IDR_XML_PROGRESS_L),
-#endif
+
 
 #ifndef WIN32
     // on win32 platform, Bitmap can't be in unix style resource.
@@ -328,6 +328,7 @@ static const struct {
 #endif
 
 };
+#endif
 
 inline ConstBuffer<void> GetNamedResource(const TCHAR* szName) {
     for (auto Resource : named_resources) {

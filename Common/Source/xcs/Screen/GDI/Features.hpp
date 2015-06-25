@@ -32,6 +32,8 @@ Copyright_License {
 
 #define HAVE_HATCHED_BRUSH
 
+#if 0
+/* LK8000 don't use GDI canvas no need !*/
 #ifdef _WIN32_WCE /* embedded Windows? */
 
 /* AlphaBlend() is implemented since WM5, but we need to load it
@@ -48,6 +50,7 @@ Copyright_License {
 #if _WIN32_WINDOWS >= 0x500
 #define HAVE_ALPHA_BLEND
 #define HAVE_BUILTIN_ALPHA_BLEND
+#endif
 #endif
 
 #endif /* !_WIN32_WCE */
