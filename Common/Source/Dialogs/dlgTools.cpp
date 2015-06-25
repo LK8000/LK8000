@@ -283,7 +283,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName, LPCTSTR tag, XMLResults *pResul
                 //StartupStore(_T("------ LoadFromRes malloc error%s"),NEWLINE); // 100101
                 goto _errmem;
             }
-            strncpy(buf, (char*) lpRes, l);
+            strncpy(buf, lpRes , l);
             buf[l] = 0; // need to explicitly null-terminate.
             buf[l + 1] = 0;
             lpRes = buf;
