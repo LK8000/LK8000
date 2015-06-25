@@ -22,10 +22,6 @@ bool RotateScreen(short angle) {
   // Change the orientation of the screen
   //
   DEVMODE DeviceMode;
-  // by default we shall ask for lk to be reset, unless it is 180 flip
-  // because in that case the OS will do the magic with no need to do anything else.
-  bool mustresetlk=true;
-
   memset(&DeviceMode, 0, sizeof(DeviceMode));
   DeviceMode.dmSize=sizeof(DeviceMode);
   DeviceMode.dmFields = DM_DISPLAYORIENTATION;
@@ -72,7 +68,6 @@ bool RotateScreen(short angle) {
 			#if TESTBENCH
 			StartupStore(_T("... CURRENT ORIENT=UNKNOWN\n"));
 			#endif
-			mustresetlk=false;
 			break;
 	}
   }  // angle 90
@@ -116,24 +111,13 @@ bool RotateScreen(short angle) {
 			#endif
 			break;
 	}
-	mustresetlk=false;
   } // angle 180
 
   DeviceMode.dmSize=sizeof(DeviceMode);
   DeviceMode.dmFields = DM_DISPLAYORIENTATION;
 
   if (DISP_CHANGE_SUCCESSFUL == ChangeDisplaySettingsEx(NULL, &DeviceMode, NULL, CDS_RESET, NULL)) {
-	if (mustresetlk) {
-		#if TESTBENCH
 		StartupStore(_T("... Screen Rotation successful, setting to %d x %d\n"),ScreenSizeY,ScreenSizeX);
-		#endif
-		SetWindowPos(MainWindow.Handle(),HWND_TOPMOST,0,0,ScreenSizeY,ScreenSizeX,SWP_SHOWWINDOW);
-	} else {
-		#if TESTBENCH
-		StartupStore(_T("... Screen Rotation successful, setting to %d x %d\n"),ScreenSizeX,ScreenSizeY);
-		#endif
-		SetWindowPos(MainWindow.Handle(),HWND_TOPMOST,0,0,ScreenSizeX,ScreenSizeY,SWP_SHOWWINDOW);
-	}
 
 	ShowWindow(MainWindow.Handle(), SW_SHOWNORMAL);
     BringWindowToTop(MainWindow.Handle());
@@ -144,7 +128,7 @@ bool RotateScreen(short angle) {
 
 //	UpdateWindow(MainWindow); No! No WM_PAINT please!
 
-	return mustresetlk;
+	return true;
   } else {
 	#if TESTBENCH
 	StartupStore(_T("... Screen Rotation failed!\n"));
