@@ -1,0 +1,6 @@
+#!/bin/sh
+test -e /lk/ptycom1 || echo "COM ports are not available, start them from lkmenu"
+test -e /lk/ptycom1 || exit
+
+cd /home/user/gpsfeed
+tclsh gpsfeed+.tcl &

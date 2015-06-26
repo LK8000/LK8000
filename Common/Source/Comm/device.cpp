@@ -199,6 +199,12 @@ void RefreshComPortList() {
     } 
   }    
   free(namelist);
+  #if TESTBENCH
+  COMMPort.push_back(_T("/lk/ptycom1"));
+  COMMPort.push_back(_T("/lk/ptycom2"));
+  COMMPort.push_back(_T("/lk/ptycom3"));
+  COMMPort.push_back(_T("/lk/ptycom4"));
+  #endif
   
 #endif
     

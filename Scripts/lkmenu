@@ -1,0 +1,120 @@
+#!/bin/sh
+# 20150626 venta
+
+echo "This is /usr/local/bin/lkmenu"
+id | grep root >/dev/null 2>&1 && echo "WARNING, you are running as root! This is bad! Be normal user."
+id | grep root >/dev/null 2>&1 && exit
+
+while true
+do
+tput clear
+
+echo "--------------------------------------"
+echo "          Welcome to lkmenu"
+echo "    (This is /usr/local/bin/lkmenu)"
+echo "--------------------------------------"
+echo
+echo "1 - Change keyboard language layout"
+echo "2 - Change timezone"
+echo "3 - Change screen resolution"
+echo "4 - Setup github access"
+echo
+echo -n "DropBox status: "
+dropbox.py status
+echo "D1 - Start dropbox syncing"
+echo "D0 - Stop dropbox syncing"
+echo
+echo -n "COM ports status: "
+pidof socat >/dev/null && echo "ACTIVE"
+pidof socat >/dev/null || echo "OFF"
+echo "C1 - start com ports for Linux lkcom1 lkcom2 etc"
+echo "C0 - stop  com ports"
+echo
+echo "CHAT - start irc chat on #LK8000 channel"
+echo "N - read Notes about nimbus system"
+echo "X - eXit quicker"
+echo
+echo -n "Select: "
+read choice
+if [ $choice = "1" ]
+then
+  echo "A complete list of valid choices is available in"
+  echo "/usr/share/X11/xkb/symbols"
+  echo "Another possible command for reconfiguring is"
+  echo "dpkg-reconfigure keyboard-configuration"
+  echo
+  echo -n "Choose [it fr de us cz hu ..] :"
+  read a
+  setxkbmap $a
+fi
+if [ $choice = "2" ]
+then
+  echo 
+  echo "This command need to be run by root.."
+  sudo dpkg-reconfigure tzdata
+fi
+if [ $choice = "3" ]
+then
+  lxrandr >/dev/null 2>&1
+fi
+if [ $choice = "4" ]
+then
+  echo
+  echo "WORK IN PROGRESS!"
+  echo "This has to be done yet"
+  sleep 2
+fi
+if [ $choice = "CHAT" ] || [ $choice = "chat" ]
+then
+echo
+echo "You are now entering xchat on irc channel #LK8000"
+echo "To change your username, click on the bottom line on the"
+echo "user_ text, and set your nickname".
+xchat &
+sleep 3
+fi
+if [ $choice = "D1" ] || [ $choice = "d1" ]
+then
+  #test -f /home/user/.dropbox/OK_LK || echo "FIRST TIME SETUP"
+  #test -f /home/user/.dropbox/OK_LK || /home/user/setup/lksetup_install
+  #test -f /home/user/.dropbox/OK_LK && dropbox.py start
+  dropbox.py start
+fi
+if [ $choice = "D0" ] || [ $choice = "d0" ]
+then
+  dropbox.py stop
+fi
+# WINE
+if [ $choice = "CW1" ] || [ $choice = "cw1" ]
+then
+  echo "STARTING com1<>com2  com3<>com4"
+  sleep 2
+   nohup socat -d -d PTY,link=/home/user/.wine/dosdevices/com1 PTY,link=/home/user/.wine/dosdevices/com2 >/dev/null 2>&1 &
+   nohup socat -d -d PTY,link=/home/user/.wine/dosdevices/com3 PTY,link=/home/user/.wine/dosdevices/com4 >/dev/null 2>&1 &
+fi
+# LINUX
+if [ $choice = "C1" ] || [ $choice = "c1" ]
+then
+  echo "STARTING com1<>com2  com3<>com4"
+  sleep 2
+   nohup socat -d -d PTY,link=/lk/ptycom1 PTY,link=/lk/ptycom2 >/dev/null 2>&1 &
+   nohup socat -d -d PTY,link=/lk/ptycom3 PTY,link=/lk/ptycom4 >/dev/null 2>&1 &
+fi
+if [ $choice = "C0" ] || [ $choice = "c0" ]
+then
+  pkill socat
+fi
+if [ $choice = "N" ] || [ $choice = "n" ]
+then
+  leafpad /lk/Dropbox/Docs/nimbus_notes.txt &
+fi
+
+if [ $choice = "X" ] || [ $choice = "x" ] || [ $choice = "q" ] || [ $choice = "Q" ]
+then
+ exit
+fi
+
+done
+
+
+
