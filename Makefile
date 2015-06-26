@@ -1200,9 +1200,11 @@ rebuild:
 
 clean: cleani
 	@$(NQ)echo "  CLEAN   $(BIN)"
-	$(Q)$(FIND) $(BIN) $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' -o -name '*.min.*' \) -type f -print | xargs -r $(RM)
+	$(Q)$(FIND) $(BIN) $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' -o -name '*.min.*'  -o -name '*.png' \) -type f -print | xargs -r $(RM)
 	$(Q)$(RM) $(OUTPUTS_NS)
 	$(Q)$(RM) $(OUTPUTS)
+	$(Q)$(RM) $(PNG)
+	$(Q)$(RM) $(MASKED_PNG)
 
 cleani:
 	@$(NQ)echo "  CLEANI"
