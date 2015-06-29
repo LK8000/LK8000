@@ -16,7 +16,7 @@
 #include "boost/noncopyable.hpp" 
 #include <list>
 
-class CObexPush : boost::noncopyable {
+class CObexPush : private boost::noncopyable {
 	typedef std::list<IObexDevice*> ObexDeviceList_t;
 public:
 	

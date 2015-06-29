@@ -16,7 +16,7 @@
 class Window;
 class WndForm;
 
-class dlgProgress : public boost::noncopyable  {
+class dlgProgress : private boost::noncopyable  {
 public:
     dlgProgress();
     ~dlgProgress();
