@@ -15,7 +15,7 @@
 #include "externs.h"
 
 #include "devCaiGpsNav.h"
-#include "Dialogs.h"
+#include "Dialogs/dlgProgress.h"
 #include "utils/stringext.h"
 #include <vector>
 #include <set>

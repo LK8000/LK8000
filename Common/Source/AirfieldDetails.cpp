@@ -8,7 +8,7 @@
 
 
 #include "externs.h"
-#include "Dialogs.h"
+#include "Dialogs/dlgProgress.h"
 #include "AirfieldDetails.h"
 #include "utils/openzip.h"
 

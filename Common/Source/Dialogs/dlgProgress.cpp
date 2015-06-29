@@ -63,6 +63,17 @@ CallBackTableEntry_t CallBackTable[] = {
     EndCallBackEntry()
 };
 
+class dlgProgress : private boost::noncopyable  {
+public:
+    dlgProgress();
+    ~dlgProgress();
+
+    void SetProgressText(const TCHAR* szText);
+
+private:
+    WndForm* _WndForm;
+};
+
 dlgProgress::dlgProgress() {
     
 	TCHAR filename[MAX_PATH];
@@ -97,5 +108,21 @@ void dlgProgress::SetProgressText(const TCHAR* szText) {
 #ifndef USE_GDI
         MainWindow.Refresh();
 #endif
+    }
+}
+
+static dlgProgress* pWndProgress = NULL;
+
+void CloseProgressDialog() {
+    delete pWndProgress;
+    pWndProgress = NULL;
+}
+
+void CreateProgressDialog(const TCHAR* text) {
+    if(!pWndProgress) {
+        pWndProgress = new dlgProgress();
+    } 
+    if(pWndProgress) {
+        pWndProgress->SetProgressText(text);
     }
 }

@@ -31,6 +31,7 @@
 #include "Event/Event.h"
 #include "Sound/Sound.h"
 #include "Kobo/System.hpp"
+#include "Dialogs/dlgProgress.h"
 
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);

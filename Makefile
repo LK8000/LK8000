@@ -1028,7 +1028,6 @@ SRC_FILES :=\
 	$(SRC)/Oracle.cpp\
 	$(SRC)/Polar.cpp		\
 	$(SRC)/ProcessTimer.cpp \
-	$(SRC)/Progress.cpp\
 	$(SRC)/SaveLoadTask/ClearTask.cpp\
 	$(SRC)/SaveLoadTask/DefaultTask.cpp\
 	$(SRC)/SaveLoadTask/LoadNewTask.cpp\

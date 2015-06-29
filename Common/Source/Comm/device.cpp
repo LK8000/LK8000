@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "Dialogs.h"
+#include "Dialogs/dlgProgress.h"
 #include "utils/stl_utils.h"
 #include "BtHandler.h"
 #include "SerialPort.h"

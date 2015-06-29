@@ -12,7 +12,7 @@
 #include "RasterTerrain.h"
 #include "RGB.h"
 #include "LKProfiles.h"
-#include "Dialogs.h"
+#include "Dialogs/dlgProgress.h"
 #include "utils/openzip.h"
 
 
