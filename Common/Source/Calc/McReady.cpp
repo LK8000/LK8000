@@ -499,7 +499,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
 
   #endif // BCT_ALT_FIX
 
-  BestSinkRate = SinkRateFast(0,(int)BestSpeed);
+  BestSinkRate = SinkRateFast(0,BestSpeed);
 
   if (TimeToGo) {
     *TimeToGo = TimeToDestTotal;
