@@ -25,6 +25,11 @@ static TCHAR tmps[100];
 
 #define INTERLINE NIBLSCALE(2);
 
+static bool OnTimerNotify() {
+    wTTYList->Redraw();
+    return true;
+}
+
 
 static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
@@ -80,6 +85,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 }
 
 
+static bool stopped=false;
 
 static void OnPort1Clicked(WndButton* pWnd) {
   // Name is available only in Fly mode, not inited in SIM mode because no devices, and not inited if disabled
@@ -88,6 +94,9 @@ static void OnPort1Clicked(WndButton* pWnd) {
   wf->SetCaption(tmps);
   ComCheck_ActivePort=0; // needed
   ComCheck_Reset=0;
+  wf->SetTimerNotify(500, OnTimerNotify);
+  ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
+  stopped=false;
 }
 
 static void OnPort2Clicked(WndButton* pWnd) {
@@ -96,18 +105,39 @@ static void OnPort2Clicked(WndButton* pWnd) {
   wf->SetCaption(tmps);
   ComCheck_ActivePort=1; // needed
   ComCheck_Reset=1;
+  wf->SetTimerNotify(500, OnTimerNotify);
+  ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
+  stopped=false;
 }
 
 static void OnStopClicked(WndButton* pWnd) {
-  _stprintf(tmps,_T("%s: "),MsgToken(1871));
-  _tcscat(tmps,MsgToken(670));
+  stopped=!stopped;
   wf->SetCaption(tmps);
-  ComCheck_ActivePort=-1;
+  if (stopped) {
+      _stprintf(tmps,_T("%s: %s %s"),MsgToken(1871), MsgToken(670),
+           ComCheck_ActivePort==0?MsgToken(232):MsgToken(233));
+      wf->SetCaption(tmps);
+      wf->SetTimerNotify(0, NULL);
+      ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(1200)); // Start
+  } else {
+      if (ComCheck_ActivePort==0) {
+          _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(232), 
+              _tcslen(DeviceList[0].Name)>0?DeviceList[0].Name:MsgToken(1600));
+
+      } else {
+          _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(233), 
+              _tcslen(DeviceList[1].Name)>0?DeviceList[1].Name:MsgToken(1600));
+      }
+      wf->SetCaption(tmps);
+      wf->SetTimerNotify(500, OnTimerNotify);
+      ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
+  }
 }
 
 static void OnTTYCloseClicked(WndButton* pWnd) {
 
-    wf->SetModalResult(mrCancel);
+  ComCheck_ActivePort=-1; 
+  wf->SetModalResult(mrCancel);
 }
 
 
@@ -162,8 +192,11 @@ void dlgTerminal(int portnumber) {
           break;
   }
 
+
+
   wf->ShowModal();
 
+  ComCheck_ActivePort=-1;
   delete wf;
   wf = NULL;
   return;
