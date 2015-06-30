@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  150620
+# MASTER UPDATED:  150630
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1881,6 +1881,8 @@ _@M1853_ "TASK REVERSED"
 _@M1860_ "HSI"
 
 _@M1870_ "Airspace Sonar "
+_@M1871_ "Terminal"
+_@M1872_ "NO DATA RECEIVED"
 
 # Menu 12 font edit
 _@M1880_ "Map waypoints "

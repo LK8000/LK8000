@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release  150420
+# Release  150627
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -193,6 +193,13 @@ data=12
 label= 
 event=Null
 location=11
+
+mode=default
+type=key
+data=13
+label= 
+event=Null
+location=12
 
 ###### pan mode ##########
 
@@ -1004,6 +1011,13 @@ data=12
 label= 
 event=Null
 location=11
+
+mode=Config2
+type=key
+data=13
+label= 
+event=Null
+location=12
 
 # -------------
 # mode=Config3
@@ -2976,6 +2990,7 @@ data=12
 label=_@M2245_
 event=Service SAVEDEV
 location=11
+
 
 # -------------
 # mode=MYMODE

@@ -827,6 +827,7 @@ UTILS	:=\
 COMMS	:=\
 	$(CMM)/LKFlarm.cpp\
 	$(CMM)/Parser.cpp\
+	$(CMM)/ComCheck.cpp\
 	$(CMM)/ComPort.cpp\
 	$(CMM)/GpsIdPort.cpp\
 	$(CMM)/lkgpsapi.cpp\
@@ -930,6 +931,7 @@ DLGS	:=\
 	$(DLG)/dlgTopology.cpp \
 	$(DLG)/dlgTaskWaypoint.cpp \
 	$(DLG)/dlgTeamCode.cpp \
+	$(DLG)/dlgTerminal.cpp \
 	$(DLG)/dlgTextEntry_Keyboard.cpp \
 	$(DLG)/dlgThermalDetails.cpp \
 	$(DLG)/dlgTools.cpp \

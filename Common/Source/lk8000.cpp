@@ -56,6 +56,7 @@
 #include "devCProbe.h"
 #include "devBlueFlyVario.h"
 #include "devLXV7easy.h"
+#include "ComCheck.h"
 
 
 #include "TraceThread.h"
@@ -520,6 +521,8 @@ int main(int argc, char *argv[]) {
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<
   // or you get an assertion error in device.cpp 
+
+  ComCheck_Init();
 
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!

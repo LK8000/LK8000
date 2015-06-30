@@ -140,5 +140,8 @@
     binfile IDR_XML_BLUEFLYCONFIG_L "../../Data/Dialogs/dlgBlueFlyConfig_L.xml"
     binfile IDR_XML_BLUEFLYCONFIG "../../Data/Dialogs/dlgBlueFlyConfig.xml"
 
+    binfile IDR_XML_TERMINAL_L  "../../Data/Dialogs/dlgTerminal_L.xml"
+    binfile IDR_XML_TERMINAL_P  "../../Data/Dialogs/dlgTerminal_P.xml"
+
     binfile IDR_XML_PROGRESS_P "../../Data/Dialogs/dlgProgress_P.xml"
     binfile IDR_XML_PROGRESS_L "../../Data/Dialogs/dlgProgress_L.xml"

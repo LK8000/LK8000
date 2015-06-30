@@ -2312,6 +2312,12 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
+  if (_tcscmp(misc, TEXT("TERMINAL")) == 0) {
+        extern void dlgTerminal(int portnumber);
+	dlgTerminal(0);
+	return;
+  }
+
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 

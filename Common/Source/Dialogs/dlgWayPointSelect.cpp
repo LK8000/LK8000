@@ -892,9 +892,6 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   wWayPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWayPointListEntry"));
   LKASSERT(wWayPointListEntry!=NULL);
 
-  wWayPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWayPointListEntry"));
-  LKASSERT(wWayPointListEntry!=NULL);
-
   wWayPointListEntry->SetCanFocus(true);
    // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
    if ( wWayPointList->ScrollbarWidth == -1) {  

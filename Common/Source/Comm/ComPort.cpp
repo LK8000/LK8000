@@ -18,6 +18,7 @@
 #include <stdarg.h> 
 #include <stdio.h>
 #include "Poco/RunnableAdapter.h"
+#include "ComCheck.h"
 
 ComPort::ComPort(int idx, const std::tstring& sName) : StopEvt(false), devIdx(idx), sPortName(sName) {
     pLastNmea = std::begin(_NmeaString);
@@ -140,9 +141,13 @@ void ComPort::ProcessChar(char c) {
             *(pLastNmea) = _T('\0'); // terminate string.
             // process only meaningful sentences, avoid processing a single \n \r etc.
             if (pLastNmea - std::begin(_NmeaString) > 5) {
+                if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort)
+                    ComCheck_AddLine(_NmeaString);
                 LockFlightData();
                 devParseNMEA(devIdx, _NmeaString, &GPS_INFO);
                 UnlockFlightData();
+                pLastNmea = std::begin(_NmeaString);
+                return;
             }
         } else {
             *(pLastNmea++) = c;
@@ -150,6 +155,10 @@ void ComPort::ProcessChar(char c) {
         }
     }
     // overflow, so reset buffer
+    if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort) {
+        *(pLastNmea-1)= _T('\0');
+        ComCheck_AddLine(_NmeaString);
+    }
     pLastNmea = std::begin(_NmeaString);
 }
 

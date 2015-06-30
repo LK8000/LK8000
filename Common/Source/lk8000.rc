@@ -195,6 +195,9 @@ IDR_XML_IGCFILE_L	XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgIgcFile_L.xml"
 IDR_XML_BLUEFLYCONFIG_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig_L.xml"
 IDR_XML_BLUEFLYCONFIG XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig.xml"
 
+IDR_XML_TERMINAL_L  XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTerminal_L.xml"
+IDR_XML_TERMINAL_P  XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTerminal_P.xml"
+
 IDR_XML_PROGRESS_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress_L.xml"
 IDR_XML_PROGRESS_L    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress_P.xml"
 

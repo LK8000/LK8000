@@ -678,6 +678,11 @@ static void OnAircraftTypeClicked(WndButton* pWnd) {
     UpdateButtons();
 }
 
+static void OnTerminalClicked(WndButton* pWnd) {
+    extern void dlgTerminal(int portnum);
+    dlgTerminal(0);
+}
+
 static void OnPilotNameClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonPilotName) {
@@ -1242,6 +1247,7 @@ static CallBackTableEntry_t CallBackTable[]={
 #ifndef NO_BLUETOOTH
   ClickNotifyCallbackEntry(OnBthDevice),
 #endif
+  ClickNotifyCallbackEntry(OnTerminalClicked),
   EndCallBackEntry()
 };
 
