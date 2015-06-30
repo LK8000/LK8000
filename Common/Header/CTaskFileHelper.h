@@ -17,7 +17,7 @@
 #include "xmlParser.h"
 #include "utils/tstring.h"
 
-class CTaskFileHelper : public boost::noncopyable {
+class CTaskFileHelper : private boost::noncopyable {
 public:
     CTaskFileHelper();
     virtual ~CTaskFileHelper();

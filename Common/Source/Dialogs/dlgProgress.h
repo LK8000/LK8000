@@ -11,20 +11,9 @@
 
 #ifndef DLGPROGRESS_H
 #define	DLGPROGRESS_H
-#include "boost/noncopyable.hpp"
 
-class Window;
-class WndForm;
+void CreateProgressDialog(const TCHAR *text);
+void CloseProgressDialog();
 
-class dlgProgress : public boost::noncopyable  {
-public:
-    dlgProgress();
-    ~dlgProgress();
-
-    void SetProgressText(const TCHAR* szText);
-
-private:
-    WndForm* _WndForm;
-};
 
 #endif	/* DLGPROGRESS_H */

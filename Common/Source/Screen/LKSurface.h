@@ -34,7 +34,7 @@
 
 class LKBitmapSurface;
 
-class LKSurface : public boost::noncopyable {
+class LKSurface : private boost::noncopyable {
 protected:
 #ifndef USE_GDI
     Canvas* _pCanvas; // need to be first.

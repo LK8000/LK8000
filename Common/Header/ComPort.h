@@ -18,7 +18,7 @@
 #include "Poco/Event.h"
 #include "Poco/Thread.h"
 
-class ComPort : public boost::noncopyable, Poco::Runnable {
+class ComPort : private boost::noncopyable, public Poco::Runnable {
 public:
     ComPort(int idx, const std::tstring& sName);
     virtual ~ComPort();

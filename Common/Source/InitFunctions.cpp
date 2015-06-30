@@ -12,6 +12,7 @@
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
+#include "Dialogs/dlgProgress.h"
 #include "InputEvents.h"
 #include "Message.h"
 #include "Bitmaps.h"

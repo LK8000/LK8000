@@ -74,7 +74,7 @@ protected:
 	virtual ~CBtHandlerWince();
 };
 
-class CBthDevice : public boost::noncopyable {
+class CBthDevice : private boost::noncopyable {
 public:
     // singleton accessor
     static CBthDevice* Instance();

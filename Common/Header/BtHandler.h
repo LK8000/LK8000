@@ -48,7 +48,7 @@ protected:
 
 typedef std::list<CBtDevice*> BtDeviceList_t;
 
-class CBtHandler : public boost::noncopyable {
+class CBtHandler : private boost::noncopyable {
 public:
 	static void Release();
     static CBtHandler * Get();  

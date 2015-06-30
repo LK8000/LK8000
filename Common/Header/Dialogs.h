@@ -15,8 +15,6 @@ void ClearStatusMessages(void);
 
 void StartupScreen();
 
-void CreateProgressDialog(const TCHAR *text);
-void CloseProgressDialog();
 void StartHourglassCursor();
 void StopHourglassCursor();
 

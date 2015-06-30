@@ -12,6 +12,7 @@
 #include "Logger.h"
 #include "McReady.h"
 #include "AirfieldDetails.h"
+#include "Dialogs/dlgProgress.h"
 #include "Dialogs.h"
 #include "Poco/NamedMutex.h"
 #include "Terrain.h"

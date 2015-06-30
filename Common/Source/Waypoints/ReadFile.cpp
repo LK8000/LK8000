@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
-#include "Dialogs.h"
+#include "Dialogs/dlgProgress.h"
 #include "resource.h"
 
 
