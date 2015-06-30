@@ -124,6 +124,12 @@ void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 						voffset= 40;
 						hoffset=*sizex+3;
 						break;
+					case ss800x600:
+						*sizex = NIBLSCALE(60);
+						*sizey = 84;
+						voffset= 40;
+						hoffset=*sizex+3;
+						break;
 					case ss480x272:
 						*sizex = NIBLSCALE(77);
 						*sizey = 48-1;
@@ -194,6 +200,12 @@ void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 					case ss640x480:
 						*sizex = NIBLSCALE(62);
 						*sizey = 72-2;
+						hoffset= 2;
+						voffset=1;
+						break;
+					case ss800x600:
+						*sizex = NIBLSCALE(62);
+						*sizey = 84;
 						hoffset= 2;
 						voffset=1;
 						break;
