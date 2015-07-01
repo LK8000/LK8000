@@ -208,6 +208,7 @@ char szRegistryFontInfopage2L[]= "FontInfopage2L";
 char szRegistryFontBottomBar[]= "FontBottomBar";
 char szRegistryFontOverlayBig[]= "FontOverlayBig";
 char szRegistryFontOverlayMedium[]= "FontOverlayMedium";
+char szRegistryFontVisualGlide[]= "FontVisualGlide";
 char szRegistryFontCustom1[]= "FontCustom1";
 
 
@@ -521,6 +522,7 @@ extern const char szRegistryFontBottomBar[];
 extern const char szRegistryFontOverlayBig[];
 extern const char szRegistryFontOverlayMedium[];
 extern const char szRegistryFontCustom1[];
+extern const char szRegistryFontVisualGlide[];
 extern const char szRegistryGlideBarMode[];
 extern const char szRegistryGliderScreenPosition[];
 extern const char szRegistryGpsAltitudeOffset[];

@@ -58,6 +58,11 @@ void Init_Fonts_2(void)
   LOGFONT logfontOverlayTitle;  // LK8OverlayMcModeFont
   LOGFONT logfontOverlayTarget;
 
+  // VisualGlide (MM4)  ONLY
+  //
+  LOGFONT logfontVisualTop;
+  LOGFONT logfontVisualBot;
+
   memset ((char *)&logfontTarget, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontBig, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontTitle, 0, sizeof (LOGFONT) );
@@ -85,6 +90,8 @@ void Init_Fonts_2(void)
   memset ((char *)&logfontOverlaySmall, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontOverlayTitle, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontOverlayTarget, 0, sizeof (LOGFONT) );
+  memset ((char *)&logfontVisualTop, 0, sizeof (LOGFONT) );
+  memset ((char *)&logfontVisualBot, 0, sizeof (LOGFONT) );
 
   //
   // PRESET RESOLUTIONS FOR LK8000
@@ -624,6 +631,10 @@ void Init_Fonts_2(void)
   InitializeOneFont(LK8OverlayGatesFont, logfontOverlayMedium);
   InitializeOneFont(LK8OverlaySmallFont, logfontOverlaySmall);
 
+  ApplyCustomResize(&logfontVisualTop,FontVisualGlide);
+  ApplyCustomResize(&logfontVisualBot,FontVisualGlide);
+  InitializeOneFont(LK8VisualTopFont, logfontVisualTop);
+  InitializeOneFont(LK8VisualBotFont, logfontVisualBot);
 
 
   //

@@ -407,6 +407,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryFontCustom1,&FontCustom1);
   PREAD(sname,svalue,szRegistryFontOverlayBig,&FontOverlayBig);
   PREAD(sname,svalue,szRegistryFontOverlayMedium,&FontOverlayMedium);
+  PREAD(sname,svalue,szRegistryFontVisualGlide,&FontVisualGlide);
   if (matchedstring) return;
 
   PREAD(sname,svalue,szRegistryGlideBarMode,&GlideBarMode);

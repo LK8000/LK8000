@@ -458,6 +458,7 @@ void LKProfileResetDefault(void) {
   FontCustom1=MAXFONTRESIZE;
   FontOverlayBig=MAXFONTRESIZE;
   FontOverlayMedium=MAXFONTRESIZE;
+  FontVisualGlide=MAXFONTRESIZE;
 
   // Overlay config
   Overlay_TopLeft=1;

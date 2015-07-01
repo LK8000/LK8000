@@ -1705,6 +1705,25 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontVisualGlide"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("-5"));
+    dfe->addEnumText(TEXT("-4"));
+    dfe->addEnumText(TEXT("-3"));
+    dfe->addEnumText(TEXT("-2"));
+    dfe->addEnumText(TEXT("-1"));
+    dfe->addEnumText(TEXT("0"));
+    dfe->addEnumText(TEXT("+1"));
+    dfe->addEnumText(TEXT("+2"));
+    dfe->addEnumText(TEXT("+3"));
+    dfe->addEnumText(TEXT("+4"));
+    dfe->addEnumText(TEXT("+5"));
+    dfe->Set(FontVisualGlide);
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayTarget"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -3530,6 +3549,14 @@ double dval;
   if (wp) {
       if (FontBottomBar != wp->GetDataField()->GetAsInteger() ) {
           FontBottomBar = wp->GetDataField()->GetAsInteger();
+          fontschanged=true;
+      }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontVisualGlide"));
+  if (wp) {
+      if (FontVisualGlide != wp->GetDataField()->GetAsInteger() ) {
+          FontVisualGlide = wp->GetDataField()->GetAsInteger();
           fontschanged=true;
       }
   }

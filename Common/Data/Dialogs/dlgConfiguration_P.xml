@@ -395,6 +395,9 @@
       <WndProperty Name="prpFontBottomBar" Caption="_@M1883_" X="-1" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
    <DataField Name="" DataType="enum"/>
       </WndProperty>
+      <WndProperty Name="prpFontVisualGlide" Caption="_@M1888_" X="-1" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
+   <DataField Name="" DataType="enum"/>
+      </WndProperty>
       <WndProperty Name="prpUseTwoLines" Caption="_@M1885_" X="-1" Y="-997" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1292_">
         <DataField Name="" DataType="boolean" />
       </WndProperty>

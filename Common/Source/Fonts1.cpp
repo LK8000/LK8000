@@ -247,6 +247,9 @@ void Init_Fonts_1(void)
    LK8OverlaySmallFont
    LK8OverlayGatesFont
    LK8OverlayMcModeFont
+
+   LK8VisualTop               visualglide
+   LK8VisualBot
  
    Custom1Font	              available, not yet used
  
@@ -631,5 +634,8 @@ void DeInitLKFonts(void) {
   LK8OverlayGatesFont.Release();
   LK8OverlayMcModeFont.Release();
   
+  LK8VisualTopFont.Release();
+  LK8VisualBotFont.Release();
+
 }
 

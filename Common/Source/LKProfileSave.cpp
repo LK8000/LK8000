@@ -216,6 +216,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryFontOverlayBig,FontOverlayBig);
   rprintf(szRegistryFontOverlayMedium,FontOverlayMedium);
   rprintf(szRegistryFontCustom1,FontCustom1);
+  rprintf(szRegistryFontVisualGlide,FontVisualGlide);
 
   rprintf(szRegistryGlideBarMode,GlideBarMode);
   rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);

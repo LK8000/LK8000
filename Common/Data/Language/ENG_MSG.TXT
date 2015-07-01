@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  150630
+# MASTER UPDATED:  150701
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1893,6 +1893,7 @@ _@M1884_ "Overlay type "
 _@M1885_ "Info on 2 lines "
 _@M1886_ "Overlay target "
 _@M1887_ "Overlay values "
+_@M1888_ "VisualGlide "
 
 _@M1891_ "Top Left "
 _@M1892_ "Top Center "

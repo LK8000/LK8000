@@ -223,6 +223,7 @@ GEXTERN short FontBottomBar;
 GEXTERN short FontCustom1;
 GEXTERN short FontOverlayBig;
 GEXTERN short FontOverlayMedium;
+GEXTERN short FontVisualGlide;
 
 GEXTERN short FontRenderer;
 GEXTERN bool LockModeStatus;
@@ -807,6 +808,8 @@ GEXTERN LKFont   LK8OverlayMediumFont;
 GEXTERN LKFont   LK8OverlaySmallFont;
 GEXTERN LKFont   LK8OverlayGatesFont;
 GEXTERN LKFont   LK8OverlayMcModeFont;
+GEXTERN LKFont   LK8VisualTopFont;
+GEXTERN LKFont   LK8VisualBotFont;
 GEXTERN LKFont   LK8MediumFont;
 GEXTERN LKFont   LK8SmallFont;
 GEXTERN LKFont   LK8InfoBigFont;
