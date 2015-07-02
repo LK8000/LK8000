@@ -585,6 +585,27 @@ void Init_Fonts_2(void)
   if (ScreenSize==0) StartupStore(_T("... (LKFonts) Forcing font resize%s"),NEWLINE);
   #endif
 
+  // BUILD UP ALL-RES AUTOMATIC FONTS
+  //
+
+
+  // VISUAL GLIDE
+  int calcsize= ScreenSizeX/(ScreenLandscape?30:22);
+  if (calcsize<10) calcsize=10;
+
+  propGetFontSettingsFromString(TEXT("1,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontVisualTop);
+  propGetFontSettingsFromString(TEXT("1,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontVisualBot);
+  logfontVisualBot.lfHeight = calcsize;
+
+  // Do not use demibold with tiny chars
+  if (calcsize<14) {
+      logfontVisualTop.lfHeight = calcsize+1;
+      logfontVisualTop.lfWeight=400;
+  } else {
+      logfontVisualTop.lfHeight = calcsize;
+      logfontVisualTop.lfWeight=600;
+  }
+
   // CREATE STANDARD FONTS
   //
   InitializeOneFont(LK8TitleFont, logfontTitle);

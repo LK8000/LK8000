@@ -558,9 +558,6 @@ void Init_Fonts_1(void)
     }
   }
 
-  #if TESTBENCH
-  if (ScreenSize==0) StartupStore(_T("... (Fonts) Forcing font resize%s"),NEWLINE);
-  #endif
 
   // CREATE STANDARD FONTS
   //

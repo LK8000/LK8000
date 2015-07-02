@@ -83,87 +83,28 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
 
     TCHAR tmpT[30];
 
-    switch (ScreenSize) {
-        case ss800x480:
-#ifdef __linux__
-            _tcscpy(tmpT, _T("MMMMMMMM"));
-#else
-            _tcscpy(tmpT, _T("MMMMMMMMM"));
-#endif
-            line1Font = LK8GenericVar03Font;
-            line2Font = CDIWindowFont;
-            break;
-        case ss480x272:
-        case ss320x240:
-            _tcscpy(tmpT, _T("MMMMMMMM"));
-            line1Font = LK8GenericVar03Font;
-            line2Font = LK8InfoSmallFont;
-            break;
-        case ss640x480:
-            _tcscpy(tmpT, _T("MMMMMM"));
-            line1Font = CDIWindowFont;
-            line2Font = CDIWindowFont;
-            break;
-
-        case ss272x480:
-            _tcscpy(tmpT, _T("MMMMMMMM"));
-            line1Font = LK8GenericVar03Font;
-            line2Font = LK8PanelSmallFont;
-            break;
-
-        case ss480x800:
-        case ss480x640:
-        case ss240x320:
-        case ss240x400:
-            _tcscpy(tmpT, _T("MMMMMMM"));
-            line1Font = LK8PanelSmallFont;
-            line2Font = LK8PanelSmallFont;
-            break;
-        case ss600x800:
-            _tcscpy(tmpT, _T("MMMMMMMM"));
-            line2Font = LK8GenericVar01Font;
-            line1Font = LK8GenericVar02Font;
-            break;
-        case ss800x600:
-            _tcscpy(tmpT, _T("MMMMMMMM"));
-            line1Font = CDIWindowFont;
-            line2Font = CDIWindowFont;
-            break;
-        default:
-#ifdef __linux__
-            if (!ScreenLandscape) {
-                _tcscpy(tmpT, _T("MMMMMMM"));
-                line1Font = LK8PanelSmallFont;
-                line2Font = LK8PanelSmallFont;
-            } else {
-                _tcscpy(tmpT, _T("MMMMMMM"));
-                line1Font = CDIWindowFont;
-                line2Font = CDIWindowFont;
-            }
-#else
-            _tcscpy(tmpT, _T("MMMMMMM"));
-            line1Font = LK8PanelSmallFont;
-            line2Font = LK8PanelSmallFont;
-#endif
-            break;
-    }
-
-
-    SIZE textSize;
+    line1Font = LK8VisualTopFont;
+    line2Font = LK8VisualBotFont;
+    SIZE textSizeTop, textSizeBot;
     Surface.SelectObject(line1Font);
-    Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSize);
-    maxtSizeX = textSize.cx;
+    _stprintf(tmpT, _T("MMMM"));
+    Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSizeTop);
+    Surface.SelectObject(line2Font);
+    _stprintf(tmpT, _T("55.5%s 79%s%s "), Units::GetDistanceName(), MsgToken(2179), MsgToken(2183));
+    Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSizeBot);
 
-    int a = (rci.right-rci.left) / textSize.cx;
-    int b = (rci.right-rci.left) - a * (textSize.cx)-(BOXINTERVAL * (a + 1));
+    // we can cut the waypoint name, but not the value data, so we use the second row of data
+    // to size the box for everything.
+    maxtSizeX = textSizeBot.cx; 
 
-    boxSizeX = textSize.cx + (b / (a + 1));
-    boxSizeY = textSize.cy + 1; // distance from bottombar
+    int a = (rci.right-rci.left) / (textSizeBot.cx+BOXINTERVAL);
+    int b = (rci.right-rci.left) - a * (textSizeBot.cx)-(BOXINTERVAL * (a + 1));
+
+    boxSizeX = textSizeBot.cx + (b / (a + 1));
+    boxSizeY = textSizeTop.cy + 1; // single line (wp name) + distance from bottombar
 
     if (numboxrows > 1) {
-        Surface.SelectObject(line2Font);
-        Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSize);
-        boxSizeY += (textSize.cy * (numboxrows - 1)) - NIBLSCALE(2);
+        boxSizeY += (textSizeBot.cy * (numboxrows - 1)) - NIBLSCALE(2);
         if (numboxrows > 2) boxSizeY -= NIBLSCALE(1);
     }
 
@@ -566,9 +507,9 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     Surface.SelectObject(bbrush);
     Surface.Rectangle(
             x - (boxSizeX / 2),
-            y - (boxSizeY / 2),
+            y - (boxSizeY / 2)-1,
             x + (boxSizeX / 2),
-            vy);
+            vy-1);
 
     Sideview_VGBox[nslot].top = y - (boxSizeY / 2);
     Sideview_VGBox[nslot].left = x - (boxSizeX / 2);
@@ -597,8 +538,7 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     tlen = _tcslen(wText2);
     Surface.GetTextSize(wText2, tlen, &tsize);
     tx = x - (tsize.cx / 2);
-    ty += tsize.cy - NIBLSCALE(2);
-    if ((line1fontYsize - tsize.cy) > 0) ty -= (line1fontYsize - tsize.cy);
+    ty += line1fontYsize - NIBLSCALE(2);
     Surface.DrawText(tx, ty, wText2, tlen);
 
     if (numlines == 2) goto _end;
@@ -614,7 +554,7 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     tlen = _tcslen(wText3);
     Surface.GetTextSize(wText3, tlen, &tsize);
     tx = x - (tsize.cx / 2);
-    ty += tsize.cy - NIBLSCALE(1);
+    ty += tsize.cy - NIBLSCALE(2);
     Surface.DrawText(tx, ty, wText3, tlen);
 
 _end:
