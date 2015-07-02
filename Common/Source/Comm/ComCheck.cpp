@@ -41,10 +41,9 @@ void ComCheck_AddChar(TCHAR c) {
         ComCheck_Init();
         ComCheck_ActivePort=ComCheck_Reset;
         ComCheck_Reset=-1;
-        return;
     }
     
-    if(lastChar != '\r' && c != '\n') {
+    if(lastChar != '\r' || c != '\n') {
 
         size_t nSize = _tcslen(ComCheckBuffer[ComCheck_LastLine]);
         ComCheckBuffer[ComCheck_LastLine][nSize+1] = ('\0');
