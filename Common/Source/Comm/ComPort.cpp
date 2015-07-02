@@ -131,6 +131,10 @@ void ComPort::run() {
 }
 
 void ComPort::ProcessChar(char c) {
+    if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort) {
+        ComCheck_AddChar(c);
+    }
+
     // last char need to be reserved for '\0' for avoid buffer overflow
     // in theory this should never happen because NMEA sentence can't have more than 82 char and _NmeaString size is 160.
     if (pLastNmea >= std::begin(_NmeaString) && (pLastNmea+1) < std::end(_NmeaString)) {
@@ -139,15 +143,11 @@ void ComPort::ProcessChar(char c) {
             // abcd\n , now closing the line also with \r
             *(pLastNmea++) = _T('\n');
             *(pLastNmea) = _T('\0'); // terminate string.
-            if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort)
-                ComCheck_AddLine(_NmeaString);
             // process only meaningful sentences, avoid processing a single \n \r etc.
             if (std::distance(std::begin(_NmeaString), pLastNmea) > 5) {
                 LockFlightData();
                 devParseNMEA(devIdx, _NmeaString, &GPS_INFO);
                 UnlockFlightData();
-                pLastNmea = std::begin(_NmeaString);
-                return;
             }
         } else {
             *(pLastNmea++) = c;
@@ -155,10 +155,6 @@ void ComPort::ProcessChar(char c) {
         }
     }
     // overflow, so reset buffer
-    if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort) {
-        *(pLastNmea-1)= _T('\0');
-        ComCheck_AddLine(_NmeaString);
-    }
     pLastNmea = std::begin(_NmeaString);
 }
 
