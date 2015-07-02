@@ -219,7 +219,7 @@ void Init_Fonts_1(void)
 
 /* Work in progress... following not accurate
  * TitleWindowFont	= Font=0 in dialogs, used also in dlStartup rawwrite. Easily removable.
- * CDIWindowFont	= Font=3 and Font=4 in dialogs, Visualglide
+ * CDIWindowFont	= Font=3 and Font=4 in dialogs
  * LK8GenericVar03Font		= Stats, map labels
  * MapWindowFont	= 
  * MapWindowBoldFont	= menu buttons, waypoint selection, messages, etc.
