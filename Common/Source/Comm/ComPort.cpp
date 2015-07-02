@@ -139,10 +139,10 @@ void ComPort::ProcessChar(char c) {
             // abcd\n , now closing the line also with \r
             *(pLastNmea++) = _T('\n');
             *(pLastNmea) = _T('\0'); // terminate string.
+            if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort)
+                ComCheck_AddLine(_NmeaString);
             // process only meaningful sentences, avoid processing a single \n \r etc.
             if (pLastNmea - std::begin(_NmeaString) > 5) {
-                if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort)
-                    ComCheck_AddLine(_NmeaString);
                 LockFlightData();
                 devParseNMEA(devIdx, _NmeaString, &GPS_INFO);
                 UnlockFlightData();
