@@ -10,12 +10,6 @@
 #include "externs.h"
 #include "ComCheck.h"
 
-extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
-extern double LastRMZHB;	 // common to both devA and devB, updated in Parser
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
-
-
 TCHAR ComCheckBuffer[CC_NUMBUFLINES][CC_BUFSIZE];
 unsigned int ComCheck_LastLine;
 short ComCheck_ActivePort=-1, ComCheck_Reset=-1;
