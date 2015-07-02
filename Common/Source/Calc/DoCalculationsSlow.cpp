@@ -11,14 +11,12 @@
 #include "InputEvents.h"
 #include "RasterTerrain.h"
 #include "DoInits.h"
-
+#include "MathFunctions.h"
 
 
 
 extern double SpeedHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-extern double LowPassFilter(double y_last, double x_in, double fact);
-
 
 
 
