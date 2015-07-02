@@ -20,7 +20,7 @@ extern short ComCheck_Reset;
 extern bool ComCheck_BufferFull;
 
 extern void ComCheck_Init(void);
-extern void ComCheck_AddLine(TCHAR *tline);
+extern void ComCheck_AddChar(TCHAR c);
 
 
 
