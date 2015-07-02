@@ -142,7 +142,7 @@ void ComPort::ProcessChar(char c) {
             if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort)
                 ComCheck_AddLine(_NmeaString);
             // process only meaningful sentences, avoid processing a single \n \r etc.
-            if (pLastNmea - std::begin(_NmeaString) > 5) {
+            if (std::distance(std::begin(_NmeaString), pLastNmea) > 5) {
                 LockFlightData();
                 devParseNMEA(devIdx, _NmeaString, &GPS_INFO);
                 UnlockFlightData();
