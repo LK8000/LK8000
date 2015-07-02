@@ -10,17 +10,11 @@
 #include "externs.h"
 #include "ComCheck.h"
 
-extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
-extern double LastRMZHB;	 // common to both devA and devB, updated in Parser
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
-
-
 TCHAR ComCheckBuffer[CC_NUMBUFLINES][CC_BUFSIZE];
 unsigned int ComCheck_LastLine;
 short ComCheck_ActivePort=-1, ComCheck_Reset=-1;
 bool ComCheck_BufferFull;
-
+TCHAR lastChar='\0';
 // Better to leave the buffers always allocated even if unused in SIM mode
 // This is why we dont use malloc.
 
@@ -36,33 +30,38 @@ void ComCheck_Init(void)
     ComCheck_LastLine=0;
     ComCheck_BufferFull=false;
     ComCheck_ActivePort=-1;
+    lastChar='\0';
 }
 
 //
 // We should lock this function
 // 
-void ComCheck_AddLine(TCHAR *tline) {
-
+void ComCheck_AddChar(TCHAR c) {
     if (ComCheck_Reset>=0) {
         ComCheck_Init();
         ComCheck_ActivePort=ComCheck_Reset;
         ComCheck_Reset=-1;
-        return;
     }
-    if ( _tcslen(tline)==0 ) {
-        return;
-    }
+    
+    if(lastChar != '\r' || c != '\n') {
 
-    int nextline;
-
-    if (ComCheck_LastLine>=(CC_NUMBUFLINES-1)) {
-        nextline=0;
-        ComCheck_BufferFull=true;
-    } else {
-        nextline=ComCheck_LastLine+1;
+        size_t nSize = _tcslen(ComCheckBuffer[ComCheck_LastLine]);
+        ComCheckBuffer[ComCheck_LastLine][nSize+1] = ('\0');
+        ComCheckBuffer[ComCheck_LastLine][nSize] = c;
+        
+        if(c == '\n' || c== '\r') {
+            ComCheckBuffer[ComCheck_LastLine][nSize] = _T('\n');
+            
+            if (ComCheck_LastLine>=(CC_NUMBUFLINES-1)) {
+                ComCheck_LastLine=0;
+                ComCheck_BufferFull=true;
+            } else {
+                ComCheck_LastLine++;
+            }
+            ComCheckBuffer[ComCheck_LastLine][0]=_T('\0');
+        }
     }
-    _tcscpy(ComCheckBuffer[nextline],tline);
-    ComCheck_LastLine=nextline;
+    lastChar = c;
 }
 
 
