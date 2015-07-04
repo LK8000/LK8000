@@ -150,9 +150,9 @@ extern void ShowMenu();
 bool MapWindow::pressed = false;
 double MapWindow::Xstart = 0.; 
 double MapWindow::Ystart = 0.;
-Poco::Timestamp MapWindow::tsDownTime = 0; 
-Poco::Timestamp MapWindow::tsUpTime = 0;
-Poco::Timespan MapWindow::DownUpInterval = 0;
+Poco::Timestamp MapWindow::tsDownTime = 0L; 
+DWORD dwInterval=0L;
+
 double MapWindow::Xlat = 0.; 
 double MapWindow::Ylat = 0.;
 double MapWindow::distance = 0.;
@@ -427,7 +427,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             OnFastPanning = false;
             ignorenext = false;
             RefreshMap();
-            tsDownTime = 0; // otherwise we shall get a fake click passthrough
+            tsDownTime = 0L; // otherwise we shall get a fake click passthrough
             return;
         }
         if (ignorenext || tsDownTime == 0) {
@@ -439,13 +439,12 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         // while processing a virtual key for example, and also for acceleration.
         bool dontdrawthemap = (DONTDRAWTHEMAP);
 
-        tsUpTime.update();
-        DownUpInterval = tsUpTime - tsDownTime;
-        tsDownTime = 0; // do it once forever
+        dwInterval = tsDownTime.elapsed()/1000;
+        tsDownTime = 0L; // do it once forever
 
         // LK v6: check we are not out of MapRect bounds.
         if (Pos.x<MapWindow::MapRect.left||Pos.x>MapWindow::MapRect.right||Pos.y<MapWindow::MapRect.top||Pos.y>MapWindow::MapRect.bottom) {
-            ProcessSubScreenVirtualKey(Pos.x, Pos.y, DownUpInterval.totalMilliseconds(), LKGESTURE_NONE);
+            ProcessSubScreenVirtualKey(Pos.x, Pos.y, dwInterval, LKGESTURE_NONE);
             return;
         }
 
@@ -512,14 +511,14 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
             // short click on aircraft icon
             //
-            if (DownUpInterval.totalMilliseconds() <= DOUBLECLICKINTERVAL) {
+            if (dwInterval <= DOUBLECLICKINTERVAL) {
 
                 ShowMenu();
                 return;
             } else {
                 // Long click on aircraft icon, toggle thermal mode
                 //
-                if (DownUpInterval.totalMilliseconds() >= VKLONGCLICK) { // in Defines.h
+                if (dwInterval >= VKLONGCLICK) { // in Defines.h
 #if 0
                     if (mode.Is(Mode::MODE_CIRCLING)) {
                         mode.UserForcedMode(Mode::MODE_FLY_CRUISE);
@@ -537,7 +536,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 #endif
                 } else {
                     // We are here in any case only when dwInterval is <VKLONGCLICK
-                    if (DownUpInterval.totalMilliseconds() >= CustomKeyTime) {
+                    if (dwInterval >= (unsigned) CustomKeyTime) {
                         if (!CustomKeyHandler(CKI_BOTTOMICON)) {
                             ShowMenu();
                         }
@@ -551,7 +550,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
         // MultiMap custom specials, we use same geometry of MSM_MAP
 
-        if ((DownUpInterval.totalMilliseconds() < AIRSPACECLICK) || ISPARAGLIDER) {
+        if ((dwInterval < (unsigned) AIRSPACECLICK) || ISPARAGLIDER) {
             if (NOTANYPAN && IsMultiMapCustom()) {
                 if ((Pos.x <= P_UngestureLeft.x) && (Pos.y <= P_UngestureLeft.y)) {
 
@@ -591,7 +590,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 // Use the compass to pullup UTM informations to paragliders
                 if ((Pos.x > P_UngestureRight.x) && (Pos.y <= P_UngestureRight.y)) {
 
-                    if (DownUpInterval.totalMilliseconds() >= DOUBLECLICKINTERVAL) {
+                    if (dwInterval >= DOUBLECLICKINTERVAL) {
 
                         // if we are running a real task, with gates, and we could still start
                         // if only 1 time gate, and we passed valid start, no reason to resettask
@@ -642,11 +641,11 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         if (dontdrawthemap || (NOTANYPAN && IsMultiMapShared())) {
 
             if (gestDir == LKGESTURE_LEFT) {
-                ProcessVirtualKey(Pos.x, Pos.y, DownUpInterval.totalMilliseconds(), LKGESTURE_LEFT);
+                ProcessVirtualKey(Pos.x, Pos.y, dwInterval, LKGESTURE_LEFT);
                 return;
             }
             if (gestDir == LKGESTURE_RIGHT) {
-                ProcessVirtualKey(Pos.x, Pos.y, DownUpInterval.totalMilliseconds(), LKGESTURE_RIGHT);
+                ProcessVirtualKey(Pos.x, Pos.y, dwInterval, LKGESTURE_RIGHT);
                 return;
             }
 
@@ -654,17 +653,17 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             // In SIM mode, gestDir are not detected because we manage simulation movements
             if (MapSpaceMode != MSM_MAP) {
                 if (gestDir == LKGESTURE_UP) {
-                    ProcessVirtualKey(Pos.x, Pos.y, DownUpInterval.totalMilliseconds(), LKGESTURE_UP);
+                    ProcessVirtualKey(Pos.x, Pos.y, dwInterval, LKGESTURE_UP);
                     return;
                 }
                 if (gestDir == LKGESTURE_DOWN) {
-                    ProcessVirtualKey(Pos.x, Pos.y, DownUpInterval.totalMilliseconds(), LKGESTURE_DOWN);
+                    ProcessVirtualKey(Pos.x, Pos.y, dwInterval, LKGESTURE_DOWN);
                     return;
                 }
 
                 // We are here when lk8000, and NO moving map displayed: virtual enter, virtual up/down, or 
                 // navbox operations including center key.
-                int wParam = ProcessVirtualKey(Pos.x, Pos.y, DownUpInterval.totalMilliseconds(), LKGESTURE_NONE);
+                int wParam = ProcessVirtualKey(Pos.x, Pos.y, dwInterval, LKGESTURE_NONE);
 #ifdef DEBUG_MAPINPUT
                 DoStatusMessage(_T("DBG-035 navboxes"));
 #endif
@@ -681,7 +680,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         // maybe check LK8000 active?
         // This point is selected when in MapSpaceMode==MSM_MAP, i.e. lk8000 with moving map on.
         if (DrawBottom && (Pos.y >= Y_BottomBar) && !mode.AnyPan()) {
-            int wParam = ProcessVirtualKey(Pos.x, Pos.y, DownUpInterval.totalMilliseconds(), LKGESTURE_NONE);
+            int wParam = ProcessVirtualKey(Pos.x, Pos.y, dwInterval, LKGESTURE_NONE);
 
             if (wParam != 0) {
                 DoStatusMessage(_T("ERR-034 Invalid Virtual Key"));
@@ -690,7 +689,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         }
 
 
-        if (DownUpInterval == 0) {
+        if (dwInterval == 0) {
             return; // should be impossible
         }
 
@@ -713,9 +712,9 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             // do not process virtual key if it is timed as a DBLCLK
             // we want users to get used to double clicking only on infoboxes
             // and avoid triggering unwanted waypoints details
-            if (DownUpInterval.totalMilliseconds() >= FASTDOUBLECLICK) { // fast dblclk required here.
+            if (dwInterval >= FASTDOUBLECLICK) { // fast dblclk required here.
 
-                ProcessVirtualKey(Pos.x, Pos.y, DownUpInterval.totalMilliseconds(), LKGESTURE_NONE);
+                ProcessVirtualKey(Pos.x, Pos.y, dwInterval, LKGESTURE_NONE);
 
                 return;
             }
@@ -758,7 +757,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             //
             // Finally process normally a click on the moving map.
             //
-            if (DownUpInterval.totalMilliseconds() < AIRSPACECLICK) { // original and untouched interval
+            if (dwInterval < (unsigned) AIRSPACECLICK) { // original and untouched interval
                 {
                     if (!mode.AnyPan() && (UseUngestures || !ISPARAGLIDER)) {
                         if (Pos.x <= X_Left) {
@@ -792,7 +791,8 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 }
             } else {
 
-                // Select airspace on moving map only if they are visible
+                // Event_NearestWaypointDetails , really. Before multiselect we were using the long click
+                // to select airspaces, hence the name.
                 // 120526 moved out of anypan, buggy because we want airspace selection with priority
                 if (/*IsMultimapAirspace() &&*/ Event_InteriorAirspaceDetails(Xstart, Ystart))
                     return;
