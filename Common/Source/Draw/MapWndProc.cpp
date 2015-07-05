@@ -150,7 +150,11 @@ extern void ShowMenu();
 bool MapWindow::pressed = false;
 double MapWindow::Xstart = 0.; 
 double MapWindow::Ystart = 0.;
+#ifdef __linux__
 Poco::Timestamp MapWindow::tsDownTime = 0L; 
+#else
+DWORD dwDownTime=0L, dwUpTime=0L;
+#endif
 DWORD dwInterval=0L;
 
 double MapWindow::Xlat = 0.; 
@@ -293,9 +297,14 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
                 // If time has passed  then force a MapDirty and redraw the whole screen.
                 // This was previously not working in v3 because ThreadCalculations was forcing MapDirty 
                 // in the background each second, and we were loosing control!
+                #ifdef __linux__
                 if (tsDownTime.isElapsed(
                     Poco::Timespan(0, 1000 * TunedParameter_Fastpanning() ).totalMicroseconds())) {
                     tsDownTime.update();
+                #else
+                if ((GetTickCount()-dwDownTime)>TunedParameter_Fastpanning()) {
+                    dwDownTime=GetTickCount();
+                #endif
                     OnFastPanning = false;
                     RefreshMap();
                 } else {
@@ -354,7 +363,11 @@ void MapWindow::_OnLButtonDown(const POINT& Pos) {
 
     if (!LockModeStatus) {
         pressed = true;
+        #ifdef __linux__
         tsDownTime.update();
+        #else
+        dwDownTime=GetTickCount();
+        #endif
 #ifdef LONGCLICK_FEEDBACK
         if (!mode.Is(Mode::MODE_PAN)) {
             SetTimer(hWnd, WM_USER_LONGTIME_CLICK_TIMER, AIRSPACECLICK, NULL);
@@ -395,7 +408,11 @@ void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
         _OnLButtonDown(Pos);
     } else {
 
+        #ifdef __linux__
         tsDownTime.update();
+        #else
+        dwDownTime=GetTickCount();
+        #endif
         startScreen = Pos;
 
         ignorenext = true; // do not interpret the second click of the doubleclick as a real click.
@@ -427,10 +444,18 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             OnFastPanning = false;
             ignorenext = false;
             RefreshMap();
+            #ifdef __linux__
             tsDownTime = 0L; // otherwise we shall get a fake click passthrough
+            #else
+            dwDownTime=0L;
+            #endif
             return;
         }
+        #ifdef __linux__
         if (ignorenext || tsDownTime == 0) {
+        #else
+        if (ignorenext || dwDownTime == 0) {
+        #endif
             ignorenext = false;
             return;
         }
@@ -439,8 +464,14 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         // while processing a virtual key for example, and also for acceleration.
         bool dontdrawthemap = (DONTDRAWTHEMAP);
 
+        #ifdef __linux__
         dwInterval = tsDownTime.elapsed()/1000;
         tsDownTime = 0L; // do it once forever
+        #else
+        dwUpTime=GetTickCount();
+        dwInterval = dwUpTime-dwDownTime;
+        dwDownTime = 0L; // do it once forever
+        #endif
 
         // LK v6: check we are not out of MapRect bounds.
         if (Pos.x<MapWindow::MapRect.left||Pos.x>MapWindow::MapRect.right||Pos.y<MapWindow::MapRect.top||Pos.y>MapWindow::MapRect.bottom) {
@@ -785,8 +816,11 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                             return;
                         }
                     }
+                    #ifdef __linux__
                     tsDownTime = 0L;
-
+                    #else
+                    dwDownTime=0L;
+                    #endif
                     return;
                 }
             } else {
@@ -1084,6 +1118,12 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // Keyboard type 1.
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1) {
+        #ifndef __linux__
+        #if (WINDOWSPC<1)
+        if (!Debounce(KEYDEBOUNCE)) return;
+        dwDownTime=0L;
+        #endif
+        #endif
         switch (KeyCode) {
                 //
                 // THE BOTTOM BAR
@@ -1222,6 +1262,12 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // Keyboard type 2.
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK2) {
+        #ifndef __linux__
+        #if (WINDOWSPC<1)
+        if (!Debounce(KEYDEBOUNCE)) return;
+        dwDownTime=0L;
+        #endif
+        #endif
         switch (KeyCode) {
                 //
                 // THE BOTTOM BAR
@@ -1358,6 +1404,12 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // Keyboard type 3.
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK3) {
+        #ifndef __linux__
+        #if (WINDOWSPC<1)
+        if (!Debounce(KEYDEBOUNCE)) return;
+        dwDownTime=0L;
+        #endif
+        #endif
         switch (KeyCode) {
                 //
                 // THE BOTTOM BAR
@@ -1496,6 +1548,12 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // universal Keyboard type
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKA) {
+        #ifndef __linux__
+        #if (WINDOWSPC<1)
+        if (!Debounce(KEYDEBOUNCE)) return;
+        dwDownTime=0L;
+        #endif
+        #endif
         switch (KeyCode) {
             case '1':
                 CustomKeyHandler(CustomMenu1 + 1000);
@@ -1537,7 +1595,12 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // universal Keyboard type
     //
     if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKB) {
-
+        #ifndef __linux__
+        #if (WINDOWSPC<1)
+        if (!Debounce(KEYDEBOUNCE)) return;
+        dwDownTime=0L;
+        #endif
+        #endif
         switch (KeyCode) {
             case '1':
             case '2':
@@ -1630,7 +1693,13 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         }
     }
 
+    #ifndef __linux__
+    dwDownTime=0L;
+    #endif
     InputEvents::processKey(KeyCode);
+    #ifndef __linux__
+    dwDownTime=0L;
+    #endif
 }
 
 static bool isListPage(void) {
