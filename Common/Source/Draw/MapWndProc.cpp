@@ -758,7 +758,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         }
 
         Screen2LatLon(Pos.x, Pos.y, Xlat, Ylat);
-        if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && (distance > NIBLSCALE(36)))) {
+        if (SIMMODE && NOTANYPAN && (distance > NIBLSCALE(36))) {
             // This drag moves the aircraft (changes speed and direction)
             //
             // Notice: Parser is not active because there is no real gps. We can use GPS_INFO.
