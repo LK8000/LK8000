@@ -399,8 +399,9 @@ void MapWindow::_OnLButtonDown(const POINT& Pos) {
  *   otherwise, call OnLButtonDown ( this is probably useless )
  */
 void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
-
-    // Attention please: a DBLCLK is followed by a simple BUTTONUP with NO buttondown.
+    // WINDOWS: Attention please: a DBLCLK is followed by a simple BUTTONUP with NO buttondown.
+    // LINUX: a DBLCLK is preceded by buttondown-up (two times), then DblClick. 
+    //        Sometimes a single down-up, dlblclk, down-up
     //
     // 111110 there is no need to process buttondblclick if the map is unlocked.
     // So we go directly to buttondown, simulating a non-doubleclick.
