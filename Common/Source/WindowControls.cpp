@@ -2147,7 +2147,7 @@ WndProperty::WndProperty(WindowControl *Parent,
   if (mDialogStyle)
     mBitmapSize = 0;
 
-  UpdateButtonData(mBitmapSize);
+  UpdateButtonData();
 
     mCanFocus = true;
 
@@ -2191,12 +2191,7 @@ void WndProperty::SetFont(FontReference Value) {
     mhValueFont = Value;
 }
 
-void WndProperty::UpdateButtonData(int Value){
-
-  if (Value == 0) // if combo is enabled
-    mBitmapSize = 0;
-  else
-    mBitmapSize = DLGSCALE(32)/2;  
+void WndProperty::UpdateButtonData(){
 
   if (mCaptionWidth != 0){
     mEditRect.left = mCaptionWidth;
@@ -2231,7 +2226,8 @@ int WndProperty::SetButtonSize(int Value){
   int res = mBitmapSize;
 
   if (mBitmapSize != Value){
-    UpdateButtonData(Value);
+    mBitmapSize = Value;
+    UpdateButtonData();
 
     if (IsVisible()){
         Redraw();
@@ -2240,12 +2236,18 @@ int WndProperty::SetButtonSize(int Value){
   return(res);
 };
 
-bool WndProperty::SetReadOnly(bool Value){
-  bool res = GetReadOnly();
-  if (GetReadOnly() != Value){
-    WindowControl::SetReadOnly(Value);
-  }
-  return(res);
+bool WndProperty::SetReadOnly(bool Value) {
+    bool Res = WindowControl::SetReadOnly(Value);
+    if(Value) {
+        SetButtonSize(0);
+        SetCanFocus(true);
+    } else if (mDataField && !mDialogStyle ) {
+        SetButtonSize(DLGSCALE(32)/2);
+    }
+    if(Res != Value) {
+       Redraw();
+    }
+    return Res;
 }
 
 bool WndProperty::OnKeyDown(unsigned KeyCode) {
@@ -2373,12 +2375,6 @@ int WndProperty::DecValue(void){
 
 void WndProperty::Paint(LKSurface& Surface){
 
-    if((mBitmapSize > 0) && GetReadOnly()) {
-        SetButtonSize(0);
-    } else if (mDataField && !mDialogStyle ) {
-        SetButtonSize(16);
-    }
-    
   //  RECT r;
   SIZE tsize;
   POINT org;
@@ -2491,11 +2487,12 @@ DataField *WndProperty::SetDataField(DataField *Value) {
         mDataField->GetData();
         mDialogStyle = mDataField->SupportCombo;
 
-        if (mDialogStyle) {
-            this->SetButtonSize(0);
+
+        if(GetReadOnly() || mDialogStyle) {
+            SetButtonSize(0);
             this->SetCanFocus(true);
-        } else {
-            this->SetButtonSize(16);
+        } else if (mDataField && !mDialogStyle ) {
+            SetButtonSize(DLGSCALE(32)/2);
         }
 
         RefreshDisplay();

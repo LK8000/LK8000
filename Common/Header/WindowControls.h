@@ -598,7 +598,7 @@ class WindowControl : public WndCtrlBase {
     bool SetCanFocus(bool Value);
 
     bool GetReadOnly(void){return(mReadOnly);};
-    bool SetReadOnly(bool Value);
+    virtual bool SetReadOnly(bool Value);
 
     int  GetBorderKind(void);
     virtual int  SetBorderKind(int Value);
@@ -978,7 +978,7 @@ class WndProperty:public WindowControl{
     DataField *mDataField;
     std::tstring mValue;
 
-    void UpdateButtonData(int Value);
+    void UpdateButtonData();
     bool mDialogStyle;
 
   public:
