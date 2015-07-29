@@ -538,8 +538,8 @@ class WindowControl : public WndCtrlBase {
     LKColor mColorBack;
     LKColor mColorFore;
     LKBrush mBrushBk;
+    LKBrush mBrushBorder;
 
-    PenReference mhPenBorder;
     PenReference mhPenSelector;
 
     FontReference mhFont;
@@ -550,11 +550,8 @@ class WindowControl : public WndCtrlBase {
     int mTag;
     bool mReadOnly;
 
-    int  mBorderSize;
-
     static int InstCount;
 
-    static PenReference hPenDefaultBorder;
     static PenReference hPenDefaultSelector;
 
   protected:
@@ -601,10 +598,10 @@ class WindowControl : public WndCtrlBase {
     bool SetCanFocus(bool Value);
 
     bool GetReadOnly(void){return(mReadOnly);};
-    bool SetReadOnly(bool Value);
+    virtual bool SetReadOnly(bool Value);
 
     int  GetBorderKind(void);
-    int  SetBorderKind(int Value);
+    virtual int  SetBorderKind(int Value);
 
     FontReference GetFont(void) const {return(mhFont);};
     virtual void SetFont(FontReference Value);
@@ -625,8 +622,7 @@ class WindowControl : public WndCtrlBase {
         }
     }
 
-    PenReference GetBorderPen() const {return(mhPenBorder);};
-    void SetBorderPen(const LKPen& Pen) { mhPenBorder = Pen;}
+    void SetBorderColor(const LKColor& Color) { mBrushBorder.Create(Color);}
 
     PenReference GetSelectorPen(void) const {return(mhPenSelector);};
 
@@ -883,6 +879,8 @@ class WndForm:public WindowControl{
 
     void SetCaption(const TCHAR *Value);
 
+    int  SetBorderKind(int Value);
+
     LKColor SetForeColor(const LKColor& Value);
     LKColor SetBackColor(const LKColor& Value);
     void SetFont(FontReference Value);
@@ -980,7 +978,7 @@ class WndProperty:public WindowControl{
     DataField *mDataField;
     std::tstring mValue;
 
-    void UpdateButtonData(int Value);
+    void UpdateButtonData();
     bool mDialogStyle;
 
   public:

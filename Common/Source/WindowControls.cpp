@@ -1133,7 +1133,6 @@ static LKColor bkColor = RGB_WINBACKGROUND; // PETROL
 static LKColor fgColor = RGB_WINFOREGROUND; // WHITE
 int WindowControl::InstCount=0;
 
-PenReference WindowControl::hPenDefaultBorder;
 PenReference WindowControl::hPenDefaultSelector;
 
 WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name, 
@@ -1174,7 +1173,6 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   mColorFore = fgColor; // WHITE
 
   if (InstCount == 0){
-	hPenDefaultBorder = LKPen_White_N1;
 	hPenDefaultSelector = LKPen_Petrol_C2;
   }
   InstCount++;
@@ -1195,10 +1193,9 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   if (mOwner != NULL)
     mOwner->AddClient(this);  
 
-  mhPenBorder = hPenDefaultBorder;
   mhPenSelector = hPenDefaultSelector;
-  mBorderSize = 1;
 
+  SetBorderColor(RGB_BLACK);
   mBorderKind = 0; //BORDERRIGHT | BORDERBOTTOM;
 
   if (Visible) {
@@ -1479,26 +1476,28 @@ LKColor WindowControl::SetBackColor(const LKColor& Value){
 }
 
 void WindowControl::PaintBorder(LKSurface& Surface) {
-    
-  if (mBorderKind != 0){
 
-    const auto oldPen = Surface.SelectObject(mhPenBorder);
+    if (mBorderKind != 0) {
 
-    if (mBorderKind & BORDERTOP){
-      Surface.DrawLine(0,0, mWidth, 0);
+        const RECT rcClient = GetClientRect();
+
+        if (mBorderKind & BORDERTOP) {
+            const RECT rcLine = { rcClient.left, rcClient.top, rcClient.right, rcClient.top + NIBLSCALE(1) };
+            Surface.FillRect(&rcLine, mBrushBorder);
+        }
+        if (mBorderKind & BORDERRIGHT) {
+            const RECT rcLine = { rcClient.right - NIBLSCALE(1), rcClient.top, rcClient.right, rcClient.bottom };
+            Surface.FillRect(&rcLine, mBrushBorder);
+        }
+        if (mBorderKind & BORDERBOTTOM) {
+            const RECT rcLine = { rcClient.left, rcClient.bottom - NIBLSCALE(1), rcClient.right, rcClient.bottom };
+            Surface.FillRect(&rcLine, mBrushBorder);
+        }
+        if (mBorderKind & BORDERLEFT) {
+            const RECT rcLine = { rcClient.left, rcClient.top, rcClient.left + NIBLSCALE(1), rcClient.bottom };
+            Surface.FillRect(&rcLine, mBrushBorder);
+        }
     }
-    if (mBorderKind & BORDERRIGHT){
-      Surface.DrawLine(mWidth-1, 0, mWidth-1, mHeight);
-    }
-    if (mBorderKind & BORDERBOTTOM){
-      Surface.DrawLine(mWidth-1, mHeight-1, -1, mHeight-1);
-    }
-    if (mBorderKind & BORDERLEFT){
-      Surface.DrawLine(0, mHeight-1, 0, -1);
-    }
-    
-    Surface.SelectObject(oldPen);
-  }
 }
 
 void WindowControl::PaintSelector(LKSurface& Surface){
@@ -1648,39 +1647,26 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
 
   mColorTitle = RGB_MENUTITLEBG;
 
-  SetBorderPen(LKPen_Black_N1);
   mhTitleFont = GetFont();
 
   mhBrushTitle = LKBrush_Black; // 101204
 
-  mClientRect.top=0;
-  mClientRect.left=0;
-  mClientRect.bottom=Width;
-  mClientRect.right=Height;
+  mClientRect.top = (mBorderKind & BORDERTOP) ? NIBLSCALE(1) : 0;
+  mClientRect.left = (mBorderKind & BORDERLEFT) ? NIBLSCALE(1) : 0;
+  mClientRect.bottom = Height - ((mBorderKind & BORDERBOTTOM) ? NIBLSCALE(1) : 0);
+  mClientRect.right = Width - ((mBorderKind & BORDERRIGHT) ? NIBLSCALE(1) : 0);
 
-  mTitleRect.top=0;
-  mTitleRect.left=0;
-  mTitleRect.bottom=0;
-  mTitleRect.right=Height;
-  
-  if (Caption != NULL) {
-    SetCaption(Caption);
-    size_t nChar = _tcslen(Caption);
-    if(nChar > 0) {
-        SIZE tsize = {0,0};
-        LKWindowSurface Surface(*this);
-        Surface.SelectObject(mhTitleFont);
-        Surface.GetTextSize(Caption, nChar, &tsize);
+  mTitleRect.top = 0;
+  mTitleRect.left = 0;
+  mTitleRect.bottom = 0;
+  mTitleRect.right = Width;
 
-        mTitleRect.bottom = mTitleRect.top + tsize.cy;
-        mClientRect.top = mTitleRect.bottom+NIBLSCALE(1)-1;;
-    }
-  }  
-  
-  mClientWindow = new WindowControl(this, TEXT(""), mClientRect.top, 0, Width, Height-mClientRect.top);
+  mClientWindow = new WindowControl(this, TEXT(""), mClientRect.top, mClientRect.left, mClientRect.right - mClientRect.left, mClientRect.bottom - mClientRect.top);
   mClientWindow->SetBackColor(RGB_WINBACKGROUND);
   mClientWindow->SetCanFocus(false);
 
+  SetCaption(Caption);
+  
   mModalResult = 0;
 };
 
@@ -1855,65 +1841,28 @@ void WndForm::Paint(LKSurface& Surface){
 
     if (!IsVisible()) return;
 
-    RECT rcClient = GetClientRect();
-    if(GetBorderKind()&BORDERLEFT) {
-        rcClient.left += 1;
-    }
-    if(GetBorderKind()&BORDERRIGHT) {
-        rcClient.right -= 1;
-    }
-    if(GetBorderKind()&BORDERBOTTOM) {
-        rcClient.bottom -= 1;
-    }
-
     const TCHAR * szCaption = GetWndText();
     size_t nChar = _tcslen(szCaption);
     if(nChar > 0) {
-        SIZE tsize = {0,0};
 
         Surface.SetTextColor(RGB_MENUTITLEFG);
         Surface.SetBkColor(mColorTitle);
         Surface.SetBackgroundTransparent();
-        
-        const auto oldPen = Surface.SelectObject(GetBorderPen());
-        const auto oldBrush = Surface.SelectObject(GetBackBrush());
-        const auto oldFont = Surface.SelectObject(mhTitleFont);
-        
-        Surface.GetTextSize(szCaption, nChar, &tsize);
 
-        mTitleRect = rcClient;
-        mTitleRect.bottom = mTitleRect.top + tsize.cy;
+        const auto oldFont = Surface.SelectObject(mhTitleFont);
 
         Surface.FillRect(&mTitleRect, mhBrushTitle);
+
+        RECT rcLine = GetClientRect();
+        rcLine.top = mTitleRect.bottom;
+        rcLine.bottom = mClientRect.top;
         
-        POINT p1, p2;
-        p1.x=0; p1.y=mTitleRect.bottom;
-        p2.x=mTitleRect.right; p2.y=mTitleRect.bottom;
-        Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p1, p2, RGB_GREEN, mTitleRect);
-
-        rcClient.top = mTitleRect.bottom+NIBLSCALE(1)-1;
-
-        if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
-            mClientWindow->Move(rcClient, true);
-            mClientWindow->SetTopWnd();
-            mClientRect = rcClient;
-        }
+        Surface.FillRect(&rcLine, LKBrush_Green);
 
         Surface.DrawText(mTitleRect.left+NIBLSCALE(2), mTitleRect.top, szCaption, nChar);
 
-        Surface.SelectObject(oldBrush);
-        Surface.SelectObject(oldPen);
         Surface.SelectObject(oldFont);
-    } else {
-        if(GetBorderKind()&BORDERTOP) {
-            rcClient.top += 1;
-        }
-        if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
-            mClientWindow->Move(rcClient, true);
-            mClientWindow->SetTopWnd();
-            mClientRect = rcClient;
-        }
-    }
+    } 
     PaintBorder(Surface);
 }
 
@@ -1921,13 +1870,58 @@ void WndForm::SetCaption(const TCHAR *Value) {
     const TCHAR* szCaption = GetWndText();
     if (Value == NULL && szCaption[0] != _T('\0')) {
         SetWndText(_T(""));
-        Redraw();
     } else if (_tcscmp(szCaption, Value) != 0) {
         SetWndText(Value);
-        Redraw(mTitleRect);
     }
+
+    RECT rcClient = mClientRect;
+    
+    size_t nChar = Value?_tcslen(Value):0;
+    if(nChar > 0) {
+        SIZE tsize = {0,0};
+        LKWindowSurface Surface(*this);
+        Surface.SelectObject(mhTitleFont);
+        Surface.GetTextSize(Value, nChar, &tsize);
+        
+        mTitleRect.bottom = mTitleRect.top + tsize.cy;
+        rcClient.top = mTitleRect.bottom+NIBLSCALE(1);
+    } else {
+        mTitleRect.bottom = 0;
+        rcClient.top = (mBorderKind & BORDERTOP) ? NIBLSCALE(1) : 0;
+    }
+
+    if (!EqualRect(&mClientRect, &rcClient)){
+        mClientRect = rcClient;
+        if(mClientWindow) {
+            mClientWindow->Move(mClientRect, false);
+            mClientWindow->SetTopWnd();
+        }
+        Redraw();
+    }    
 }
 
+int  WndForm::SetBorderKind(int Value) {
+    
+    RECT rcClient = GetClientRect();
+
+    if(mTitleRect.bottom > 0) {
+        rcClient.top = mTitleRect.bottom+NIBLSCALE(1);
+    } else {
+        rcClient.top += (Value & BORDERTOP) ? NIBLSCALE(1) : 0;
+    }    
+    rcClient.left += (Value & BORDERLEFT) ? NIBLSCALE(1) : 0;
+    rcClient.bottom -= (Value & BORDERBOTTOM) ? NIBLSCALE(1) : 0;
+    rcClient.right -= (Value & BORDERRIGHT) ? NIBLSCALE(1) : 0;
+    
+    if (!EqualRect(&mClientRect, &rcClient)){
+        mClientRect = rcClient;
+        if(mClientWindow) {
+            mClientWindow->Move(mClientRect, false);
+            mClientWindow->SetTopWnd();
+        }
+    }
+    return WindowControl::SetBorderKind(Value);
+}
 
 LKColor WndForm::SetForeColor(const LKColor& Value){
   if (mClientWindow)
@@ -2153,7 +2147,7 @@ WndProperty::WndProperty(WindowControl *Parent,
   if (mDialogStyle)
     mBitmapSize = 0;
 
-  UpdateButtonData(mBitmapSize);
+  UpdateButtonData();
 
     mCanFocus = true;
 
@@ -2197,12 +2191,7 @@ void WndProperty::SetFont(FontReference Value) {
     mhValueFont = Value;
 }
 
-void WndProperty::UpdateButtonData(int Value){
-
-  if (Value == 0) // if combo is enabled
-    mBitmapSize = 0;
-  else
-    mBitmapSize = DLGSCALE(32)/2;  
+void WndProperty::UpdateButtonData(){
 
   if (mCaptionWidth != 0){
     mEditRect.left = mCaptionWidth;
@@ -2237,7 +2226,8 @@ int WndProperty::SetButtonSize(int Value){
   int res = mBitmapSize;
 
   if (mBitmapSize != Value){
-    UpdateButtonData(Value);
+    mBitmapSize = Value;
+    UpdateButtonData();
 
     if (IsVisible()){
         Redraw();
@@ -2246,12 +2236,18 @@ int WndProperty::SetButtonSize(int Value){
   return(res);
 };
 
-bool WndProperty::SetReadOnly(bool Value){
-  bool res = GetReadOnly();
-  if (GetReadOnly() != Value){
-    WindowControl::SetReadOnly(Value);
-  }
-  return(res);
+bool WndProperty::SetReadOnly(bool Value) {
+    bool Res = WindowControl::SetReadOnly(Value);
+    if(Value) {
+        SetButtonSize(0);
+        SetCanFocus(true);
+    } else if (mDataField && !mDialogStyle ) {
+        SetButtonSize(DLGSCALE(32)/2);
+    }
+    if(Res != Value) {
+       Redraw();
+    }
+    return Res;
 }
 
 bool WndProperty::OnKeyDown(unsigned KeyCode) {
@@ -2379,12 +2375,6 @@ int WndProperty::DecValue(void){
 
 void WndProperty::Paint(LKSurface& Surface){
 
-    if((mBitmapSize > 0) && GetReadOnly()) {
-        SetButtonSize(0);
-    } else if (mDataField && !mDialogStyle ) {
-        SetButtonSize(16);
-    }
-    
   //  RECT r;
   SIZE tsize;
   POINT org;
@@ -2497,11 +2487,12 @@ DataField *WndProperty::SetDataField(DataField *Value) {
         mDataField->GetData();
         mDialogStyle = mDataField->SupportCombo;
 
-        if (mDialogStyle) {
-            this->SetButtonSize(0);
+
+        if(GetReadOnly() || mDialogStyle) {
+            SetButtonSize(0);
             this->SetCanFocus(true);
-        } else {
-            this->SetButtonSize(16);
+        } else if (mDataField && !mDialogStyle ) {
+            SetButtonSize(DLGSCALE(32)/2);
         }
 
         RefreshDisplay();

@@ -77,7 +77,7 @@ public:
     }
     
     void Move(const RECT& rc, bool bRepaint) {
-        ::MoveWindow(_hWnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, bRepaint);
+        ::SetWindowPos(_hWnd, NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER);
     }
 
     void SetVisible(bool Visible) {
