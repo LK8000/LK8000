@@ -396,10 +396,8 @@ public:
 
                 // this is setting to 0 any negative terrain value and can be a problem for dutch people
                 // myhbuf cannot load negative values!
-                *myhbuf = DisplayMap->GetField(Y, X);
-                if (*myhbuf < 0) {
-                    *myhbuf = 0;
-                }
+                *myhbuf = std::max(DisplayMap->GetField(Y, X),(short)0);
+
                 if (*myhbuf < minalt) {
                     minalt = *myhbuf;
                 }
