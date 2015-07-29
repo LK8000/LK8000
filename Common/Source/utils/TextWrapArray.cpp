@@ -31,9 +31,17 @@ void TextWrapArray::update(LKSurface& Surface, int MaxWidth, const TCHAR* sText)
     while(pStart < pLast) {
         TCHAR* pEnd = _tcschr(pStart, _T('\n'));
         if(pEnd) { // explicit line break;
-            *pEnd = _T('\0');
+            if(*(pEnd-1) == _T('\r')) {
+                *(pEnd-1) = _T('\0'); // windows <cr><lf> 
+            }
+            *pEnd = _T('\0'); // unix <lf>
         } else {
-            pEnd = pStart+_tcslen(pStart);
+            pEnd = _tcschr(pStart, _T('\r'));
+            if(pEnd) {
+                *pEnd = _T('\0'); // mac <cr>
+            } else {
+                pEnd = pStart+_tcslen(pStart);
+            }
         }
         
         TCHAR* pPrevSpace = nullptr; 
