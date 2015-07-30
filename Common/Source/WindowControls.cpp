@@ -1868,10 +1868,13 @@ void WndForm::Paint(LKSurface& Surface){
 
 void WndForm::SetCaption(const TCHAR *Value) {
     const TCHAR* szCaption = GetWndText();
+    bool bRedraw = false;
     if (Value == NULL && szCaption[0] != _T('\0')) {
         SetWndText(_T(""));
+        bRedraw = true;
     } else if (_tcscmp(szCaption, Value) != 0) {
         SetWndText(Value);
+        bRedraw = true;
     }
 
     RECT rcClient = mClientRect;
@@ -1896,8 +1899,11 @@ void WndForm::SetCaption(const TCHAR *Value) {
             mClientWindow->Move(mClientRect, false);
             mClientWindow->SetTopWnd();
         }
-        Redraw();
+        bRedraw = true;
     }    
+    if(bRedraw) {
+        Redraw();
+    }
 }
 
 int  WndForm::SetBorderKind(int Value) {
