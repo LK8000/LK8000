@@ -1148,11 +1148,6 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
 
   mOnHelpCallback = NULL;
 
-  mX = X;
-  mY = Y;
-  mWidth = Width;
-  mHeight = Height;
-
   mOwner = Owner?Owner->GetClientArea():NULL;
   // setup Master Window (the owner of all)
   mTopOwner = NULL;
@@ -1183,11 +1178,11 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
           :static_cast<ContainerWindow*>(&MainWindow);
   
   if(mOwner) {
-    mOwner->CalcChildRect(mX, mY, mWidth, mHeight);
+    mOwner->CalcChildRect(X, Y, Width, Height);
   }
-  LKASSERT(mX+mWidth>0);
+  LKASSERT(X+Width>0);
   
-  Create(WndOnwer,(RECT){mX, mY, mX+mWidth, mY+mHeight});
+  Create(WndOnwer,(RECT){X, Y, X+Width, Y+Height});
   SetTopWnd();
 
   if (mOwner != NULL)
@@ -1242,13 +1237,6 @@ void WindowControl::OnKillFocus() {
     ActiveControl = NULL;
 }
 
-void WindowControl::UpdatePosSize(void){
-
-  RECT WndRect = (RECT){0,0, GetWidth(),GetHeight()};
-  OffsetRect(&WndRect, mX, mY);
-  Move(WndRect, true);
-}
-
 bool WindowControl::OnPaint(LKSurface& Surface, const RECT& Rect) {
 #ifndef USE_GDI
     Paint(Surface);
@@ -1280,31 +1268,27 @@ bool WindowControl::OnPaint(LKSurface& Surface, const RECT& Rect) {
 }
 
 void WindowControl::SetTop(int Value){
-  if (mY != Value){
-    mY = Value;
-    UpdatePosSize();
-  }
+    if(GetTop() != Value) {
+        Move(GetLeft(), Value);
+    }
 }
 
 void WindowControl::SetLeft(int Value){
-  if (mX != Value){
-    mX = Value;
-    UpdatePosSize();
-  }
+    if(GetLeft() != Value) {
+        Move(Value, GetTop());
+    }
 }
 
-void WindowControl::SetHeight(int Value){
-  if (mHeight != Value){
-    mHeight = Value;
-    UpdatePosSize();
-  }
+void WindowControl::SetHeight(unsigned int Value){
+    if(GetHeight() != Value) {
+        Resize(GetWidth(), Value);
+    }
 }
 
-void WindowControl::SetWidth(int Value){
-  if (mWidth != Value){
-    mWidth = Value;
-    UpdatePosSize();
-  }
+void WindowControl::SetWidth(unsigned int Value){
+    if(GetWidth() != Value) {
+        Resize(Value, GetHeight());
+    }
 }
 
 WindowControl *WindowControl::GetCanFocus(void) {
@@ -1505,20 +1489,23 @@ void WindowControl::PaintSelector(LKSurface& Surface){
   if (!mDontPaintSelector && mCanFocus && HasFocus()){
     const auto oldPen = Surface.SelectObject(hPenDefaultSelector);
 
-    Surface.DrawLine(
-	      mWidth-SELECTORWIDTH-1, 0,
-	      mWidth-1, 0,
-	      mWidth-1, SELECTORWIDTH+1);
+    const int Width = GetWidth();
+    const int Height = GetHeight();
 
     Surface.DrawLine(
-	      mWidth-1, mHeight-SELECTORWIDTH-2,
-	      mWidth-1, mHeight-1,
-	      mWidth-SELECTORWIDTH-1, mHeight-1);
+	      Width-SELECTORWIDTH-1, 0,
+	      Width-1, 0,
+	      Width-1, SELECTORWIDTH+1);
 
     Surface.DrawLine(
-	      SELECTORWIDTH+1, mHeight-1, 
-	      0, mHeight-1,
-	      0, mHeight-SELECTORWIDTH-2);
+	      Width-1, Height-SELECTORWIDTH-2,
+	      Width-1, Height-1,
+	      Width-SELECTORWIDTH-1, Height-1);
+
+    Surface.DrawLine(
+	      SELECTORWIDTH+1, Height-1, 
+	      0, Height-1,
+	      0, Height-SELECTORWIDTH-2);
 
     Surface.DrawLine(
 	      0, SELECTORWIDTH+1,
@@ -1896,7 +1883,7 @@ void WndForm::SetCaption(const TCHAR *Value) {
     if (!EqualRect(&mClientRect, &rcClient)){
         mClientRect = rcClient;
         if(mClientWindow) {
-            mClientWindow->Move(mClientRect, false);
+            mClientWindow->FastMove(mClientRect);
             mClientWindow->SetTopWnd();
         }
         bRedraw = true;
@@ -1922,7 +1909,7 @@ int  WndForm::SetBorderKind(int Value) {
     if (!EqualRect(&mClientRect, &rcClient)){
         mClientRect = rcClient;
         if(mClientWindow) {
-            mClientWindow->Move(mClientRect, false);
+            mClientWindow->FastMove(mClientRect);
             mClientWindow->SetTopWnd();
         }
     }
@@ -2721,9 +2708,9 @@ void WndListFrame::DrawScrollBar(LKSurface& Surface) {
   rc.right = w + (ScrollbarWidth) - 1; // -2 if use 3x pen.  -1 if 2x pen
   rc.bottom = rc.top + GetScrollBarHeight()+2;  // +2 for 3x pen, +1 for 2x pen
 
-  if (rc.bottom >= GetHeight() - ScrollbarWidth){
+  if (rc.bottom >= GetBottom() - ScrollbarWidth){
 	int d;
-	d= (GetHeight() - ScrollbarWidth - rc.bottom) - 1;
+	d= (GetBottom() - ScrollbarWidth - rc.bottom) - 1;
 	rc.bottom += d;
 	rc.top += d;
   }

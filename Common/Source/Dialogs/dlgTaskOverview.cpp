@@ -90,7 +90,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
   int p1 = w0-w1-w2- Sender->GetHeight()-2;
   int p2 = w0-w2- Sender->GetHeight()-2;
-  RECT rc = {0*ScreenScale,  0*ScreenScale, Sender->GetHeight(), Sender->GetHeight()};
+  RECT rc = {0*ScreenScale,  0*ScreenScale, (int)Sender->GetHeight(), (int)Sender->GetHeight()};
   if (DrawListIndex < n){
     int i = LowLimit + DrawListIndex;
 //    if ((WayPointList[Task[i].Index].Flags & LANDPOINT) >0)

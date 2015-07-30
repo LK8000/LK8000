@@ -525,11 +525,6 @@ class WindowControl : public WndCtrlBase {
 
   private:
 
-    int mX;
-    int mY;
-    int mWidth;
-    int mHeight;
-
     WindowControl *mOwner;
     WindowControl *mTopOwner;
 
@@ -564,8 +559,6 @@ class WindowControl : public WndCtrlBase {
     virtual void PaintBorder(LKSurface& Surface);
     virtual void PaintSelector(LKSurface& Surface);
 
-    void UpdatePosSize(void);
-
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect);
 
   public:
@@ -590,9 +583,6 @@ class WindowControl : public WndCtrlBase {
     void SetOnHelpCallback(OnHelpCallback_t Function){
       mOnHelpCallback = Function;
     }
-
-    int GetWidth(void) const {return(mWidth);}
-    int GetHeight(void) const {return(mHeight);}
 
     WindowControl *GetCanFocus(void);
     bool SetCanFocus(bool Value);
@@ -640,11 +630,8 @@ class WindowControl : public WndCtrlBase {
 
     void SetTop(int Value);
     void SetLeft(int Value);
-    void SetWidth(int Value);
-    void SetHeight(int Value);
-
-    int GetTop(void){return(mY);};
-    int GetLeft(void){return(mX);};
+    void SetWidth(unsigned int Value);
+    void SetHeight(unsigned int Value);
 
     WindowControl *FocusNext(WindowControl *Sender);
     WindowControl *FocusPrev(WindowControl *Sender);

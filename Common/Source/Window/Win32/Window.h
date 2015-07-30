@@ -76,8 +76,20 @@ public:
         return GetObjectFromWindow(::GetParent(_hWnd));
     }
     
-    void Move(const RECT& rc, bool bRepaint) {
-        ::SetWindowPos(_hWnd, NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER);
+    void Move(const RECT& rc) {
+        ::SetWindowPos(_hWnd, NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+    }
+
+    void FastMove(const RECT& rc) { 
+        Move(rc); 
+    }
+
+    void Move(LONG left, LONG top) {
+        ::SetWindowPos(_hWnd, NULL, left, top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+    }
+
+    void Resize(LONG width, LONG height) {
+        ::SetWindowPos(_hWnd, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
     }
 
     void SetVisible(bool Visible) {
@@ -121,12 +133,12 @@ public:
         return pos;
     }
     
-    LONG GetWidth() const {
+    ULONG GetWidth() const {
         const RECT& rc = GetClientRect();
         return rc.right - rc.left;
     }
 
-    LONG GetHeight() const {
+    ULONG GetHeight() const {
         const RECT& rc = GetClientRect();
         return rc.bottom - rc.top;
     }

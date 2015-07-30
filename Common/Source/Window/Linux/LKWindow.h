@@ -39,14 +39,6 @@ public:
     virtual void SetWndText(const TCHAR* lpszText) = 0;
     virtual const TCHAR* GetWndText() const = 0;
     
-    
-    void Move(const RECT& rect, bool bRepaint) {
-        _Base::Move(rect);
-        if(bRepaint) {
-            this->Invalidate();
-        }
-    }
-    
     void SetVisible(bool Visible) { 
         if(Visible) {
             this->Show(); 

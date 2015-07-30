@@ -136,7 +136,7 @@ void Message::Resize() {
     rthis.bottom = midy+h2;
 
     WndMsg.SetTopWnd();
-    WndMsg.Move(rthis, true);
+    WndMsg.Move(rthis);
     WndMsg.SetVisible(true);
     hidden = false;
     
