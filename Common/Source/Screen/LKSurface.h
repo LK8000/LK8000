@@ -205,9 +205,6 @@ public:
     bool Attach(HDC hDC);
     HDC Detach();
 
-protected:
-    friend class RawBitmap;
-
     operator HDC() const {
         return _OutputDC;
     }

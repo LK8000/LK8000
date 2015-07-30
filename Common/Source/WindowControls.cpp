@@ -1241,27 +1241,26 @@ bool WindowControl::OnPaint(LKSurface& Surface, const RECT& Rect) {
 #ifndef USE_GDI
     Paint(Surface);
 #else
-    const RECT Client_Rect = GetClientRect();
-
-    int win_width = Client_Rect.right - Client_Rect.left;
-    int win_height = Client_Rect.bottom + Client_Rect.left;
+    const int win_width = GetWidth();
+    const int win_height = GetHeight();
 
     LKBitmapSurface MemSurface(Surface, win_width, win_height);
     Paint(MemSurface);
 
-#warning "TODO : Exclude client rect"
-/*
-    ptOffset.x = Client_Rect.left;
-    ptOffset.y = Client_Rect.top;
-    ClientToScreen(hWnd, &ptOffset);
-    if ((hChildWnd = GetWindow(hWnd, GW_CHILD)) != NULL) {
-        if (IsWindowVisible(hChildWnd)) {
-            GetWindowRect(hChildWnd, &Client_Rect);
-            OffsetRect(&Client_Rect, -ptOffset.x, -ptOffset.y);
-            PaintSurface.ExcludeClipRect(Client_Rect);
+    POINT ptOffset = {GetLeft(), GetTop() };
+    ClientToScreen(_hWnd, &ptOffset);
+    HWND hChildWnd = NULL;
+    if ((hChildWnd = GetWindow(_hWnd, GW_CHILD)) != NULL) {
+        while ((hChildWnd = GetWindow(hChildWnd, GW_HWNDNEXT)) != NULL) {
+            if (::IsWindowVisible(hChildWnd)) {
+                RECT Client_Rect;
+                GetWindowRect(hChildWnd, &Client_Rect);
+                OffsetRect(&Client_Rect, -ptOffset.x, -ptOffset.y);
+                ::ExcludeClipRect(MemSurface, Client_Rect.left, Client_Rect.top, Client_Rect.right, Client_Rect.bottom );
+            }
         }
     }
-*/
+
     Surface.Copy(0, 0, win_width, win_height, MemSurface, 0, 0);
 #endif
     return true;
