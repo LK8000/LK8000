@@ -827,11 +827,11 @@ static int page2mode(void) {
 static void InfoBoxPropName(TCHAR *name, int item, int mode) {
   _tcscpy(name,TEXT("prpInfoBox"));
   switch (mode) {
-  case 1:
-    _tcscat(name,TEXT("Circling"));
-    break;
   case 0:
     _tcscat(name,TEXT("Cruise"));
+    break;
+  case 1:
+    _tcscat(name,TEXT("Circling"));
     break;
   case 2:
     _tcscat(name,TEXT("FinalGlide"));
@@ -1271,11 +1271,11 @@ static void SetInfoBoxSelector(int item, int mode)
     int it=0;
     
     switch(mode) {
-    case 1: // climb
-      it = (InfoType[item])& 0xff;
-      break;
     case 0: // cruise
       it = (InfoType[item]>>8)& 0xff;
+      break;
+    case 1: // climb
+      it = (InfoType[item])& 0xff;
       break;
     case 2: // final glide
       it = (InfoType[item]>>16)& 0xff;
@@ -1301,11 +1301,11 @@ static void GetInfoBoxSelector(int item, int mode)
     int it=0;
     
     switch(mode) {
-    case 1: // climb
-      it = (InfoType[item])& 0xff;
-      break;
     case 0: // cruise
       it = (InfoType[item]>>8)& 0xff;
+      break;
+    case 1: // climb
+      it = (InfoType[item])& 0xff;
       break;
     case 2: // final glide
       it = (InfoType[item]>>16)& 0xff;
