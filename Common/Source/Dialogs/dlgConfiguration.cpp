@@ -827,10 +827,10 @@ static int page2mode(void) {
 static void InfoBoxPropName(TCHAR *name, int item, int mode) {
   _tcscpy(name,TEXT("prpInfoBox"));
   switch (mode) {
-  case 0:
+  case 1:
     _tcscat(name,TEXT("Circling"));
     break;
-  case 1:
+  case 0:
     _tcscat(name,TEXT("Cruise"));
     break;
   case 2:
@@ -3245,8 +3245,8 @@ void dlgConfigurationShowModal(short mode){
 	wConfig13    = ((WndFrame *)wf->FindByName(TEXT("frmVarioAppearance")));
 	wConfig14    = ((WndFrame *)wf->FindByName(TEXT("frmTask")));
 	wConfig15    = ((WndFrame *)wf->FindByName(TEXT("frmAlarms")));
-	wConfig16    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxCircling")));
-	wConfig17    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxCruise")));
+	wConfig16    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxCruise")));
+	wConfig17    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxCircling")));
 	wConfig18    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxFinalGlide")));
 	wConfig19    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxAuxiliary")));
 	wConfig20    = ((WndFrame *)wf->FindByName(TEXT("frmLogger")));
