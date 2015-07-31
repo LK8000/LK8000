@@ -798,8 +798,6 @@ protected:
     static bool pressed;
     static double Xstart, Ystart;
     static PeriodClock tsDownTime;
-    static PeriodClock tsUpTime;
-    static PeriodClock DownUpInterval;
     static double Xlat, Ylat;
     static double distance;
 
