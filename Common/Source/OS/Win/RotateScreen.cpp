@@ -122,9 +122,16 @@ bool RotateScreen(short angle) {
 	ShowWindow(MainWindow.Handle(), SW_SHOWNORMAL);
     BringWindowToTop(MainWindow.Handle());
 
-	#ifdef HAVE_ACTIVATE_INFO
+#ifdef HAVE_ACTIVATE_INFO
 	SHFullScreen(MainWindow.Handle(),SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
-	#endif
+#endif
+#ifdef UNDER_CE
+    SetWindowPos(MainWindow.Handle(), HWND_TOP,
+                 0, 0,
+                 GetSystemMetrics(SM_CXSCREEN),
+                 GetSystemMetrics(SM_CYSCREEN),
+                 SWP_SHOWWINDOW);
+#endif
 
 //	UpdateWindow(MainWindow); No! No WM_PAINT please!
 
