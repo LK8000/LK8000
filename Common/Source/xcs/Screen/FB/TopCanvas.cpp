@@ -430,6 +430,7 @@ TopCanvas::Flip()
 
 
 #ifdef KOBO
+  Wait();
   epd_update_marker++;
 
   struct mxcfb_update_data epd_update_data = {
