@@ -126,7 +126,6 @@ void StartupStore(const TCHAR *Str, ...)
 
   FILE *startupStoreFile = NULL;
   static TCHAR szFileName[MAX_PATH];
-  static Poco::Timestamp StartTime;
   static bool initialised = false;
   if (!initialised) {
 	LocalPath(szFileName, TEXT(LKF_RUNLOG));
@@ -142,7 +141,7 @@ void StartupStore(const TCHAR *Str, ...)
     if (i > 0) {
       if (sbuf[i - 1] == 0x0a && (i == 1 || (i > 1 && sbuf[i-2] != 0x0d)))
         sprintf(sbuf + i - 1, SNEWLINE);
-      fprintf(startupStoreFile, "[%09u] %s", (unsigned int)StartTime.elapsed()/1000, sbuf);
+      fprintf(startupStoreFile, "[%09u] %s", MonotonicClockMS(), sbuf);
     }
     fclose(startupStoreFile);
   }

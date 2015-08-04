@@ -73,6 +73,7 @@
 #include "Kobo/Kernel.hpp"
 #include "Hardware/CPU.hpp"
 #include "LKInterface/CScreenOrientation.h"
+#include <time.h>
 
 #ifdef __linux__
 #include <sys/utsname.h>

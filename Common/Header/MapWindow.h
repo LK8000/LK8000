@@ -17,12 +17,12 @@
 #include "mapprimitive.h"
 #include "Poco/ThreadTarget.h"
 #include "Poco/Thread.h"
-#include "Poco/Timespan.h"
 #include "Screen/BrushReference.h"
 #include "Screen/PenReference.h"
 #include "Screen/LKBitmap.h"
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
+#include "Time/PeriodClock.hpp"
 
 #define NORTHSMART 5
 #define NORTHTRACK 4
@@ -64,7 +64,6 @@
 
 
 #include "RGB.h"
-#include "Poco/Timestamp.h"
 
 // NOT USED ANYMORE, USE RGB_xxx as color definition
 // Used by MapWindow::TextColor 
@@ -410,7 +409,7 @@ class MapWindow {
 
   static BOOL Initialised;
   static bool GliderCenter;
-  static Poco::Timestamp timestamp_newdata;
+  static PeriodClock timestamp_newdata;
   static bool LandableReachable;
 
  public:
@@ -798,9 +797,9 @@ protected:
     // Values to be remembered
     static bool pressed;
     static double Xstart, Ystart;
-    static Poco::Timestamp tsDownTime; 
-    static Poco::Timestamp tsUpTime;
-    static Poco::Timespan DownUpInterval;
+    static PeriodClock tsDownTime;
+    static PeriodClock tsUpTime;
+    static PeriodClock DownUpInterval;
     static double Xlat, Ylat;
     static double distance;
 

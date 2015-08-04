@@ -19,7 +19,6 @@
 #include "Multimap.h"
 #include "Bitmaps.h"
 #include "Dialogs.h"
-#include "Poco/Timestamp.h"
 #include "Screen/PenReference.h"
 #include "Screen/BrushReference.h"
 #include "InputEvents.h"
@@ -1374,7 +1373,8 @@ if (iStep < 1)
   iStep = 1;
 iStep = 1;
 
-    Poco::Timestamp StartTime;
+    PeriodClock StartTime;
+    StartTime.Update();
 
 	for(i= 0; i < iTo; i=i+iStep)
 	{
@@ -1408,8 +1408,7 @@ iStep = 1;
       /************************************************************************
        * check drawing timeout (350m)
        */
-      const Poco::Timespan TimeOut(0, 350*1000);
-	  if(StartTime.isElapsed(TimeOut.totalMicroseconds())) {
+	  if(StartTime.Check(350)) {
         /* drawing still took less than 350ms */
         /* fast exit on timeout               */
         i = iTo;

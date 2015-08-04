@@ -1850,7 +1850,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpDebounceTimeout"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(debounceTimeout.totalMilliseconds());
+    wp->GetDataField()->SetAsFloat(debounceTimeout);
     wp->RefreshDisplay();
   }
 
@@ -3496,7 +3496,7 @@ double dval;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpDebounceTimeout"));
   if (wp) {
-    if (debounceTimeout != wp->GetDataField()->GetAsInteger()) {
+    if (debounceTimeout != (unsigned)wp->GetDataField()->GetAsInteger()) {
       debounceTimeout = wp->GetDataField()->GetAsInteger();
     }
   }

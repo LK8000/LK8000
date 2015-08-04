@@ -46,9 +46,6 @@ void LKWriteToProfile(const char *varname, TCHAR *varvalue) {
   fprintf(pfp,"%s=\"%s\"%s", varname, varvalue ,PNEWLINE);
 #endif
 }
-void LKWriteToProfile(const char *varname, const Poco::Timespan& varvalue) {
-  fprintf(pfp,"%s=%d%s", varname, (int)varvalue.totalMilliseconds(),PNEWLINE);
-}
 
 
 

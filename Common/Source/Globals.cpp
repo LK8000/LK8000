@@ -307,7 +307,7 @@ void Globals_Init(void) {
 
   NumDataOptions = 0;
 
-  debounceTimeout.assign(0, 250*1000); //250ms
+  debounceTimeout = 250; //250ms
 
   WarningHomeDir=false;
 

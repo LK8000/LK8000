@@ -32,9 +32,9 @@ extern bool UpdateQNH(const double newqnh);
 /// @retval false device cannot be registered
 ///
 //static
-Poco::Timestamp		  TICKER = 0;
-Poco::Timestamp		  TICKER_PFLX4 = 0;
-Poco::Timestamp		  AlttimeOutTicker = 0;
+PeriodClock		  TICKER;
+PeriodClock		  TICKER_PFLX4;
+PeriodClock		  AlttimeOutTicker;
 bool AltTimeoutWait = false;
 
 
@@ -122,7 +122,7 @@ BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t *d, double NewQNH){
 	double xy = QNHAltitudeToQNEAltitude(1000.0);
 	AltOffset = 1000.0 - xy;
 	AltTimeoutWait = true;
-	AlttimeOutTicker.update();
+	AlttimeOutTicker.Update();
 
 
 
@@ -197,12 +197,10 @@ BOOL DevLXMiniMap::SendPFLX4(DeviceDescriptor_t *d)
 
 
 BOOL DevLXMiniMap::LXMiniMapOnSysTicker(DeviceDescriptor_t *d) {
-    if (TICKER_PFLX4.elapsed() > Poco::Timespan(2, 0).totalMicroseconds()) {
-        TICKER_PFLX4.update();
+    if (TICKER_PFLX4.CheckUpdate(2*1000)) {
         SendPFLX4(d);
 
-        if (TICKER.elapsed() > Poco::Timespan(20, 0).totalMicroseconds()) {
-            TICKER.update();
+        if (TICKER.CheckUpdate(20*1000)) {
             TCHAR mcbuf[100];
             _stprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"), 4);
             devWriteNMEAString(d, mcbuf);
@@ -297,7 +295,7 @@ bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   // e.g.:
   // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
 
-  TICKER.update();
+  TICKER.Update();
 
   double alt, airspeed;
 
@@ -484,7 +482,7 @@ bool DevLXMiniMap::LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
 	if(AltTimeoutWait)
 	{
-        if (AlttimeOutTicker.elapsed() > Poco::Timespan(4, 0).totalMicroseconds()) {
+        if (AlttimeOutTicker.Check(4*1000)) {
 			AltTimeoutWait = false;
 		}
 	}

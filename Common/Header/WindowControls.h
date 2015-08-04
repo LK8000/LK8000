@@ -14,7 +14,6 @@
 #include "Screen/PenReference.h"
 #include "Screen/FontReference.h"
 #include "Window/WndCtrlBase.h"
-#include "Poco/Timestamp.h"
 #include "LKObjects.h"
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
@@ -375,7 +374,7 @@ class DataFieldInteger:public DataField{
     int mMin;
     int mMax;
     int mStep;
-    Poco::Timestamp mTmLastStep;
+    PeriodClock mTmLastStep;
     int mSpeedup;
     TCHAR mOutBuf[OUTBUFFERSIZE+1];
 
@@ -427,7 +426,7 @@ class DataFieldFloat:public DataField{
     double mMin;
     double mMax;
     double mStep;
-    Poco::Timestamp mTmLastStep;
+    PeriodClock mTmLastStep;
     int mSpeedup;
     int mFine;
     TCHAR mOutBuf[OUTBUFFERSIZE+1];
@@ -779,7 +778,7 @@ class WndListFrame:public WndFrame{
     int mMouseScrollBarYOffset; // where in the scrollbar button was mouse down at
     bool mMouseDown;
 
-    Poco::Timestamp LastMouseMoveTime;
+    PeriodClock LastMouseMoveTime;
 };
 
 class WndOwnerDrawFrame:public WndFrame{
@@ -854,7 +853,7 @@ class WndForm:public WindowControl{
       mModalResult = mrCancel;
     }
 
-    Poco::Timestamp enterTime;
+    PeriodClock enterTime;
 
     int GetModalResult(void){return(mModalResult);};
     int SetModalResult(int Value){mModalResult = Value;return(Value);};

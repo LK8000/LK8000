@@ -1,10 +1,6 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-#include "Poco/Timespan.h"
-
-
-
 #define MAXMESSAGES 20
 
 enum {
@@ -19,9 +15,9 @@ enum {
 struct Message_t {
   std::tstring text;
   int type;
-  Poco::Timespan tstart; // time message was created
-  Poco::Timespan texpiry; // time message will expire
-  Poco::Timespan tshow; // time message is visible for
+  unsigned tstart; // time message was created
+  unsigned texpiry; // time message will expire
+  unsigned tshow; // time message is visible for
 };
 
 class WndMessage;

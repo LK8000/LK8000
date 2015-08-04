@@ -76,7 +76,7 @@ void LKSimulator(void) {
 	ThLongitude=GPS_INFO.Longitude-0.033;
 
 	if (EnableFLARMMap) {
-		srand( Poco::Timestamp().epochTime());
+		srand(MonotonicClockMS());
 		SimFlarmTraffic(0xdd8951,22.0+(double)(rand() % 32));
 		SimFlarmTraffic(0xdd8944,31.0+(double)(rand() % 32));
 		SimFlarmTraffic(0xdd8a43,16.0+(double)(rand() % 32));
@@ -146,7 +146,7 @@ void LKSimulator(void) {
   // and it must work all the way the same in order not to confuse users.
   if (EnableFLARMMap) {
 	if (!flarmwasinit) {
-		srand(Poco::Timestamp().epochTime());
+		srand(MonotonicClockMS());
 		// Add a poker of traffic for the boys
 		SimFlarmTraffic(0xdd8951,22.0+(double)(rand() % 32));
 		SimFlarmTraffic(0xdd8944,31.0+(double)(rand() % 32));

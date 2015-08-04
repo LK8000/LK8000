@@ -557,9 +557,9 @@ const CDevIMI::TMsg *CDevIMI::Receive(PDeviceDescriptor_t d, unsigned errBufSize
   
   // wait for the message
   const TMsg *msg = 0;
-  Poco::Timespan LoopTime(0, 1000 * timeout);
-  Poco::Timestamp timeNow;
-  while( !timeNow.isElapsed(LoopTime.totalMicroseconds()) ) {
+  PeriodClock timeNow;
+  timeNow.Update();
+  while( !timeNow.Check(timeout) ) {
     // read message
     IMIBYTE buffer[64];
     IMIDWORD bytesRead = d->Com->Read(buffer, sizeof(buffer));

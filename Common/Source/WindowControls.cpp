@@ -46,12 +46,10 @@ using std::placeholders::_1;
 // returns true if it is a long press,
 // otherwise returns false
 static bool KeyTimer(bool isdown, DWORD thekey) {
-  static Poco::Timestamp fpsTimeDown = 0;
+  static PeriodClock fpsTimeDown;
   static DWORD savedKey=0;
 
-  Poco::Timespan dT = fpsTimeDown.elapsed();
-  if ((dT.totalMilliseconds()>2000)&&(thekey==savedKey)) {
-    fpsTimeDown.update();
+  if ((thekey==savedKey) && fpsTimeDown.CheckUpdate(2000)) {
     savedKey = 0;
     return true;
   }
@@ -61,7 +59,7 @@ static bool KeyTimer(bool isdown, DWORD thekey) {
   } else {
     // key is lowered
     if (thekey != savedKey) {
-      fpsTimeDown.update();
+      fpsTimeDown.Update();
       savedKey = thekey;
     }
   }
@@ -838,25 +836,24 @@ int DataFieldInteger::SpeedUp(bool keyup){
   if (keyup != DataFieldKeyUp) {
     mSpeedup = 0;
     DataFieldKeyUp = keyup;
-    mTmLastStep.update();
+    mTmLastStep.Update();
     return 1;
   }
 
-  if (!mTmLastStep.isElapsed(Poco::Timespan(0,200*1000).totalMicroseconds())){
+  if (!mTmLastStep.Check(200)) {
     mSpeedup++;
 
     if (mSpeedup > 5){
       res = 10;
 
-      mTmLastStep.update(); // now + 350ms
-      mTmLastStep += Poco::Timespan(0, 350*1000).totalMicroseconds();
+      mTmLastStep.UpdateWithOffset(350); // now + 350ms
       return(res);
 
     }
   } else
     mSpeedup = 0;
 
-  mTmLastStep.update();
+  mTmLastStep.Update();
 
   return(res);
 }
@@ -976,25 +973,24 @@ double DataFieldFloat::SpeedUp(bool keyup){
   if (keyup != DataFieldKeyUp) {
     mSpeedup = 0;
     DataFieldKeyUp = keyup;
-    mTmLastStep.update();
+    mTmLastStep.Update();
     return 1.0;
   }
 
-  if (!mTmLastStep.isElapsed(Poco::Timespan(0,200*1000).totalMicroseconds())){
+  if (!mTmLastStep.Check(200)){
     mSpeedup++;
 
     if (mSpeedup > 5){
       res = 10;
 
-      mTmLastStep.update(); // now + 350ms
-      mTmLastStep += Poco::Timespan(0, 350*1000).totalMicroseconds();
+      mTmLastStep.UpdateWithOffset(350); // now + 350ms
       return(res);
 
     }
   } else
     mSpeedup = 0;
 
-  mTmLastStep.update();
+  mTmLastStep.Update();
 
   return(res);
 }
@@ -1726,7 +1722,7 @@ int WndForm::ShowModal(void) {
 
     SHOWTHREAD(_T("ShowModal"));
 
-    enterTime.update();
+    enterTime.Update();
 
     Message::BlockRender(true);
 
@@ -2572,7 +2568,6 @@ WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
   SetForeColor(RGB_LISTFG);
   SetBackColor(RGB_LISTBG);
   mMouseDown = false;
-  LastMouseMoveTime=0;
   ScrollbarWidth=-1;
   ScrollbarTop=-1;
 
@@ -2996,7 +2991,7 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect) {
 
 bool WndListFrame::OnMouseMove(const POINT& Pos) {
 
-  if ( Poco::Timestamp() >= LastMouseMoveTime )
+  if ( LastMouseMoveTime.Check(0) )
   {
     if (mMouseDown && PtInRect(&rcScrollBar, Pos))
     {
@@ -3015,7 +3010,7 @@ bool WndListFrame::OnMouseMove(const POINT& Pos) {
     {
       mMouseDown = false; // force re-click of scroll bar
     }
-    LastMouseMoveTime.update();
+    LastMouseMoveTime.Update();
   } // Tickcount
   return false;
 }

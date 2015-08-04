@@ -48,7 +48,7 @@ public:
             idle = fields[3]; /* idle ticks index */
         }
         
-        lastValue.update();
+        lastValue.Update();
     }
 
     ~GetCpuLoad_Singleton() {
@@ -63,11 +63,8 @@ public:
             return INVALID_VALUE;
         }
         
-        const Poco::Timespan TimeOut(1, 0); // 1s 
         // only calculate each 1s  
-        if(lastValue.isElapsed(TimeOut.totalMicroseconds())) {
-            lastValue.update();
-
+        if(lastValue.CheckUpdate(1*1000)) {
             if (!read_fields()) {
                 return INVALID_VALUE;
             }
@@ -108,7 +105,7 @@ private:
 
     uint64_t fields[10], total_tick, total_tick_old, idle, idle_old, del_total_tick, del_idle;
     
-    Poco::Timestamp lastValue;
+    PeriodClock lastValue;
 };
 
 GetCpuLoad_Singleton GetGpuLoad;

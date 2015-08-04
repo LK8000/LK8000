@@ -12,7 +12,6 @@
 #include "Modeltype.h"
 #include "Dialogs.h"
 #include "TraceThread.h"
-#include "Poco/Timestamp.h"
 
 long GetUTCOffset(void) {
     return UTCOffset;
@@ -32,25 +31,14 @@ void TriggerVarioUpdate() {
 // Possible undebounced triggers could be issued> to check in WindowControls and many parts.
 // No complaints so far, but this should be fixed. Otherwise the debounceTimeout was UNUSED
 // and the simple Debounce(void) call was always true!!
-static Poco::Timestamp fpsTimeLast(0);
+static PeriodClock fpsTimeLast;
 
 bool Debounce(void) {
-    if (fpsTimeLast.isElapsed(debounceTimeout.totalMicroseconds())) {
-        fpsTimeLast.update();
-        return true;
-    } else {
-        return false;
-    }
+    return fpsTimeLast.CheckUpdate(debounceTimeout);
 }
 
 bool Debounce(int dtime) {
-    const Poco::Timespan TimeOut(0, 1000*dtime);
-    if (fpsTimeLast.isElapsed(TimeOut.totalMicroseconds())) {
-        fpsTimeLast.update();
-        return true;
-    } else {
-        return false;
-    }
+    return fpsTimeLast.CheckUpdate(dtime);
 }
 
 // Get the infobox type from configuration, selecting position i

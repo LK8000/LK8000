@@ -15,7 +15,7 @@
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
 #include "OS/Memory.h"
-
+#include <time.h>
 // #define DEBUG_LOGGER	1
 
 #ifdef _UNICODE

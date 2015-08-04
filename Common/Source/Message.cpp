@@ -55,12 +55,14 @@ int Message::nvisible=0;
 std::tstring Message::msgText;
 
 // Get start time to reduce overrun errors
-Poco::Timestamp startTime;
+PeriodClock startTime;
 
 int Message::block_ref = 0;
 
 void Message::Initialize(RECT rc) {
 
+    startTime.Update();
+    
     block_ref = 0;
     hidden = true;
     nvisible = 0;
@@ -166,7 +168,7 @@ bool Message::Render() {
     if (block_ref) return false;
 
     Lock();
-    Poco::Timespan fpsTime = startTime.elapsed();
+    unsigned fpsTime = startTime.Elapsed();
 
     // this has to be done quickly, since it happens in GUI thread
     // at subsecond interval
@@ -219,8 +221,8 @@ void Message::AddMessage(DWORD tshow, int type, const TCHAR* Text) {
 
     Lock();
 
-    const Poco::Timespan fpsTime = startTime.elapsed();
-    messages.emplace_back((Message_t){Text, type, fpsTime, fpsTime, tshow*1000});
+    unsigned fpsTime = startTime.Elapsed();
+    messages.emplace_back((Message_t){Text, type, fpsTime, fpsTime, tshow});
 
     Unlock();
 }
@@ -231,7 +233,7 @@ void Message::Repeat(int type) {
 
         // copy most recent message from history to active message.
         messages_t::iterator It = messagesHistory.begin();
-        (*It).texpiry = (*It).tstart = startTime.elapsed();
+        (*It).texpiry = (*It).tstart = startTime.Elapsed();
 
         messages.splice(messages.end(), messagesHistory, It);
     }

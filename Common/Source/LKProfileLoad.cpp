@@ -105,14 +105,6 @@ void SetProfileVariable(const char *curname, const char *curvalue, const char *l
   matchedstring=true;
 }
 
-void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, Poco::Timespan* lookupvalue) {
-  if (strcmp(curname,lookupname)) return;
-  int ival= strtol(curvalue, NULL, 10);
- 
-  (*lookupvalue).assign(0, 1000*ival);
-  matchedstring=true;
-}
-
 int nMaxValueValueSize = MAX_PATH*2 + 6;	// max regkey name is 256 chars + " = "
 
 static bool isDefaultProfile=false; // needed to avoid screensize changes from custom profiles on PC
