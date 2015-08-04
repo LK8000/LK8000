@@ -48,6 +48,21 @@ class LinuxInputDevice final : private FileEventHandler {
   int min_x, max_x, min_y, max_y;
 
   /**
+   * The current slot number of multitouch event
+   */
+  int mt_current_slot;
+  
+  /**
+   * the id of current multitouch event
+   */
+  int mt_current_tracking_id;
+
+  /**
+   * the id of current multitouch event
+   */
+  int mt_first_tracking_id;  
+
+  /**
    * The position being edited.  Upon EV_SYN, it will be copied to
    * #moved_position if #moving is true.
    */

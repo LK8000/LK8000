@@ -238,6 +238,33 @@ LinuxInputDevice::Read()
       case ABS_Y:
         edit_position.y = e.value;
         break;
+
+      case ABS_MT_SLOT:
+        mt_current_slot = e.value;
+        break;
+
+      case ABS_MT_TRACKING_ID:
+        if(mt_current_slot == 0) {
+          if(mt_current_tracking_id == -1) {
+            pressing = true;
+          }
+          if(e.value == -1) {
+            releasing = false;  
+          }
+          mt_current_tracking_id = e.value;
+        }
+        break;
+
+      case ABS_MT_POSITION_X:
+          if(mt_current_slot == 0) {
+            edit_position.x = e.value;
+          }
+
+      case ABS_MT_POSITION_Y:
+          if(mt_current_slot == 0) {
+            edit_position.y = e.value;
+          }
+          break;
       }
 
       break;
