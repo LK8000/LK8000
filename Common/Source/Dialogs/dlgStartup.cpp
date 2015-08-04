@@ -649,8 +649,9 @@ short dlgStartupShowModal(void){
 
   // Standby for a system request to close the application during this phase.
   wf->SetTimerNotify(500, OnTimerNotify);
-
-  wf->ShowModal();
+  if(wf->ShowModal()==mrCancel) {
+      RUN_MODE=RUN_EXIT;
+  }
   if (RUN_MODE==RUN_SHUTDOWN) goto _exit;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpProfile"));

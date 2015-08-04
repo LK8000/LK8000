@@ -817,8 +817,8 @@ extern WindowControl *LastFocusControl;
 class WndForm:public WindowControl{
 
     typedef bool (*OnTimerNotify_t)();
-    typedef bool (*OnKeyDownNotify_t)(Window* pWnd, unsigned KeyCode);
-    typedef bool (*OnKeyUpNotify_t)(Window* pWnd, unsigned KeyCode);
+    typedef bool (*OnKeyDownNotify_t)(WndForm* pWnd, unsigned KeyCode);
+    typedef bool (*OnKeyUpNotify_t)(WndForm* pWnd, unsigned KeyCode);
 
   protected:
 

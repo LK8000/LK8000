@@ -581,7 +581,7 @@ static bool OnTimerNotify() {
   return true;
 }
 
-static bool FormKeyDown(Window* pWnd, unsigned KeyCode){
+static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode){
   unsigned NewIndex = TypeFilterIdx;
 
   switch(KeyCode & 0xffff){

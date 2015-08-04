@@ -783,34 +783,32 @@ static bool OnTimerNotify() {
   return true;
 }
 
-static bool FormKeyDown(Window* pWnd, unsigned KeyCode){
+static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
 
-  WndProperty* wp;
-  unsigned NewIndex = TypeFilterIdx;
+    WndProperty* wp = ((WndProperty *) pWnd->FindByName(TEXT("prpFltType")));
+    if(wp) {
+       unsigned NewIndex = TypeFilterIdx;
+       switch (KeyCode & 0xffff) {
+            case KEY_F1:
+                NewIndex = 0;
+                break;
+            case KEY_F2:
+                NewIndex = 2;
+                break;
+            case KEY_F3:
+                NewIndex = 3;
+                break;
+       }
 
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpFltType")));
-
-  switch(KeyCode & 0xffff){
-    case KEY_F1:
-      NewIndex = 0;
-    break;
-    case KEY_F2:
-      NewIndex = 2;
-    break;
-    case KEY_F3:
-      NewIndex = 3;
-    break;
-  }
-
-  if (TypeFilterIdx != NewIndex){
-    TypeFilterIdx = NewIndex;
-    FilterMode(false);
-    UpdateList();
-    wp->GetDataField()->SetAsString(TypeFilter[TypeFilterIdx]);
-    wp->RefreshDisplay();
-  }
-
-  return false;
+        if (TypeFilterIdx != NewIndex) {
+           TypeFilterIdx = NewIndex;
+           FilterMode(false);
+           UpdateList();
+           wp->GetDataField()->SetAsString(TypeFilter[TypeFilterIdx]);
+           wp->RefreshDisplay();
+        }
+    }
+    return false;
 }
 
 static CallBackTableEntry_t CallBackTable[]={

@@ -195,7 +195,7 @@ static void MoveTarget(double target_longitude, double target_latitude) {
   UnlockTaskData();
 }
 
-static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
+static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
     switch (KeyCode & 0xffff) {
         case '2':
             MoveTarget(0);

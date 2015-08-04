@@ -16,6 +16,11 @@
 #include "utils/stringext.h"
 #include "utils/stl_utils.h"
 #include "LKInterface.h"
+#include "Event/Event.h"
+
+#ifdef KOBO
+    #include <linux/input.h>
+#endif
 
 int DLGSCALE(int x) {
   int iRetVal = x;
@@ -28,6 +33,30 @@ static void OnButtonClick(WndButton* pWnd){
     if(pWnd && pWnd->GetTopOwner()) {
         static_cast<WndForm*>(pWnd->GetTopOwner())->SetModalResult(pWnd->GetTag());
     }
+}
+
+static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode){
+
+    WindowControl* pBt = nullptr;
+    switch(KeyCode) {
+#ifdef KOBO
+        case KEY_POWER:
+#endif            
+        case KEY_ESCAPE:
+            pBt = pWnd->FindByName(_T("CANCEL"));
+            if(pBt) {
+                // if no "CANCEL" button find "OK"
+                break;
+            }
+       case KEY_RETURN:
+            pBt = pWnd->FindByName(_T("OK"));
+            break;
+    }
+    if(pBt) {
+        pWnd->SetModalResult(pBt->GetTag());
+        return true;
+    }
+    return false;
 }
 
 MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen){
@@ -96,7 +125,7 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   if (uType == mbOk
       || uType == mbOkCancel)
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), TEXT("OK"), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), TEXT("OK"), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdOk);
     ButtonCount++;
   }
@@ -105,10 +134,10 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
       || uType == mbYesNoCancel)
   {
 	// LKTOKEN  _@M827_ = "Yes" 
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M827_")), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), gettext(TEXT("_@M827_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdYes);
     ButtonCount++;
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M890_")), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), gettext(TEXT("_@M890_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdNo);
     ButtonCount++;
   }
@@ -116,7 +145,7 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   if (uType == mbAbortRetryIgnore
       || uType == mbRetryCancel)
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M566_")), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), gettext(TEXT("_@M566_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdRetry);
     ButtonCount++;
   }
@@ -125,14 +154,14 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
       || uType == mbRetryCancel
       || uType == mbYesNoCancel)
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M161_")), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), gettext(TEXT("_@M161_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdCancel);
     ButtonCount++;
   }
 
   if (uType == mbAbortRetryIgnore) 
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M47_")), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), gettext(TEXT("_@M47_")), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdAbort);
     ButtonCount++;
     wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("_@M349_")), 0, y, w, h, OnButtonClick);
@@ -148,6 +177,8 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
     wButtons[i]->SetLeft(x);
     x += d;
   }
+  
+  wf->SetKeyDownNotify(FormKeyDown);
 
   res = static_cast<MsgReturn_t>(wf->ShowModal());
 

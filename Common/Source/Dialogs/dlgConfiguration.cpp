@@ -888,16 +888,16 @@ static void OnPaste(WndButton* pWnd) {
   }
 }
 
-static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
+static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
     Window * pBtn = NULL;
 
     switch (KeyCode & 0xffff) {
         case '6':
-            pBtn = wf->FindByName(TEXT("cmdPrev"));
+            pBtn = pWnd->FindByName(TEXT("cmdPrev"));
             NextPage(-1);
             break;
         case '7':
-            pBtn = wf->FindByName(TEXT("cmdNext"));
+            pBtn = pWnd->FindByName(TEXT("cmdNext"));
             NextPage(+1);
             break;;
     }

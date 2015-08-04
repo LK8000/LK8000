@@ -173,8 +173,9 @@ static void OnCloseClicked(WndButton* pWnd){
     wfa->SetModalResult(mrOK);
 }
 
-static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
-    if (waGrid->HasFocus())
+static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
+    WindowControl* pGrid = wfa->FindByName(TEXT("frmGrid"));
+    if (pGrid->HasFocus())
         return false;
 
     Window * pBtn = NULL;
@@ -182,12 +183,12 @@ static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
     switch (KeyCode & 0xffff) {
         case KEY_LEFT:
         case '6':
-            pBtn = wfa->FindByName(TEXT("cmdPrev"));
+            pBtn = pWnd->FindByName(TEXT("cmdPrev"));
             NextPage(-1);
             break;
         case KEY_RIGHT:
         case '7':
-            pBtn = wfa->FindByName(TEXT("cmdNext"));
+            pBtn = pWnd->FindByName(TEXT("cmdNext"));
             NextPage(+1);
             break;;
     }

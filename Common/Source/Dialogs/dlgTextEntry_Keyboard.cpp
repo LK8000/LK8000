@@ -93,7 +93,7 @@ static void UpdateTextboxProp(void)
   }
 }
 
-static bool FormKeyDown(Window* pWnd, unsigned KeyCode) {
+static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
   switch(KeyCode & 0xffff){
     case KEY_LEFT:
       if (cursor<1)

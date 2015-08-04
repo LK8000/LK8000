@@ -71,7 +71,7 @@ static bool OnTimer(){
   return true;
 }
 
-static bool OnKeyDown(Window* pWnd, unsigned KeyCode) {
+static bool OnKeyDown(WndForm* pWnd, unsigned KeyCode) {
     switch (KeyCode) {
         case KEY_RETURN:
             OnAckForTimeClicked(nullptr);
