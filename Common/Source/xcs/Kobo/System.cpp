@@ -120,8 +120,8 @@ KoboExportUSBStorage()
   RmMod("g_ether");
   RmMod("g_file_storage");
 
-  InsMod("/drivers/ntx508/usb/gadget/arcotg_udc.ko");
-  return InsMod("/drivers/ntx508/usb/gadget/g_file_storage.ko",
+  InsMod("/drivers/current/usb/gadget/arcotg_udc.ko");
+  return InsMod("/drivers/current/usb/gadget/g_file_storage.ko",
                 "file=/dev/mmcblk0p3", "stall=0");
 #else
   return true;
@@ -152,8 +152,8 @@ bool
 KoboWifiOn()
 {
 #ifdef KOBO
-  InsMod("/drivers/ntx508/wifi/sdio_wifi_pwr.ko");
-  InsMod("/drivers/ntx508/wifi/dhd.ko");
+  InsMod("/drivers/current/wifi/sdio_wifi_pwr.ko");
+  InsMod("/drivers/current/wifi/dhd.ko");
 
   Sleep(2000);
 

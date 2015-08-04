@@ -11,7 +11,7 @@
 # This Script is Adapted from XCSoar
 
 # This script is launched by /etc/inittab on boot.  It initialises the
-# Kobo Mini and launches LK8000.
+# Kobo device and launches LK8000.
 
 /bin/mount -o remount,noatime,nodiratime /dev/mmcblk0p1 /
 
@@ -28,7 +28,8 @@ umask 022
 # - there's a pending update
 # - Nickel start was scheduled
 # - the LK8000 installation is broken
-if [ -f /mnt/onboard/.kobo/Kobo.tgz -o -f /mnt/onboard/.kobo/KoboRoot.tgz \
+if [ -f /mnt/onboard/.kobo/Kobo.tgz \
+    -o -f /mnt/onboard/.kobo/KoboRoot.tgz \
     -o -f /mnt/onboard/LK8000/kobo/start_nickel \
     -o ! -x /opt/LK8000/bin/LK8000-KOBO ]; then
 
@@ -40,6 +41,54 @@ if [ -f /mnt/onboard/.kobo/Kobo.tgz -o -f /mnt/onboard/.kobo/KoboRoot.tgz \
     umount -l /mnt/onboard
     exec /etc/init.d/rcS
 fi
+
+# PLATFORM is used for the path to the WiFi & Usb drivers
+if [ ! -n "${PLATFORM}" ] ; then
+	PLATFORM="freescale"
+	if dd if="/dev/mmcblk0" bs=512 skip=1024 count=1 | grep -q "HW CONFIG" ; then
+		CPU="$(ntx_hwconfig -s -p /dev/mmcblk0 CPU)"
+		PLATFORM="${CPU}-ntx"
+	fi
+
+	if [ "${PLATFORM}" == "freescale" ] ; then
+		if [ ! -s "/lib/firmware/imx/epdc_E60_V220.fw" ] ; then
+			mkdir -p "/lib/firmware/imx"
+			dd if="/dev/mmcblk0" bs=512K skip=10 count=1 | zcat > "/lib/firmware/imx/epdc_E60_V220.fw"
+			sync
+		fi
+	elif [ ! -e "/etc/u-boot/${PLATFORM}/u-boot.mmc" ] ; then
+		PLATFORM="ntx508"
+	fi
+
+    if [ $CPU ]; then
+        PCB="$(ntx_hwconfig -s -p /dev/mmcblk0 PCB)"
+        RAM="$(ntx_hwconfig -s -p /dev/mmcblk0 RAMType)"
+        RAM_SIZE="$(ntx_hwconfig -s -p /dev/mmcblk0 RamSize)"
+        RAM_SIZE="$(echo $RAM_SIZE | awk '{print $RAM_SIZE-MB}')"
+    
+        echo "${CPU}" > /mnt/onboard/LK8000/kobo/CPU
+        echo "${PCB}" > /mnt/onboard/LK8000/kobo/PCB
+        echo "${RAM}" > /mnt/onboard/LK8000/kobo/RAM
+        echo "${RAM_SIZE}" > /mnt/onboard/LK8000/kobo/RAM_SIZE
+    fi
+fi
+# end of value check of PLATFORM
+
+echo "${PLATFORM}" > /mnt/onboard/LK8000/kobo/PLATFORM
+
+# create symbolic link for usb & wifi module
+if [ -d "/drivers/${PLATFORM}" ] ; then
+    if [ -L "/drivers/current" ]; then
+        rm "/drivers/current"
+    fi
+    ln -s "/drivers/${PLATFORM}" "/drivers/current"
+fi
+
+
+# extract Model for debug facility
+MODEL=`dd if=/dev/mmcblk0 bs=8 count=1 skip=64`
+echo "${MODEL}" > /mnt/onboard/LK8000/kobo/MODEL
+#
 
 # prepare file system
 
