@@ -1155,7 +1155,8 @@ DISTRIB_OUTPUT := KoboRoot.tgz
 # temporary still we don't have kobo menu.	
 SRC_FILES += \
 	$(SRC)/xcs/Kobo/System.cpp \
-	$(SRC)/xcs/Kobo/Kernel.cpp
+	$(SRC)/xcs/Kobo/Kernel.cpp \
+	$(SRC)/xcs/Kobo/Model.cpp
 	
 
 endif
