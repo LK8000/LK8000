@@ -57,6 +57,7 @@ static constexpr struct {
 } kobo_model_ids[] = {
   { "SN-N705", KoboModel::MINI },
   { "SN-N905", KoboModel::TOUCH },
+  { "SN-N4375", KoboModel::GLOHD },
 };
 
 static KoboModel
