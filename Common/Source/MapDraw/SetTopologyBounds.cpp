@@ -155,32 +155,29 @@ void SetTopologyBounds(const RECT& rcin, const bool force) {
     topo_marks->updateCache(bounds_active);
   }
   #endif
-  
-  if (IsMultimapTopology()) {
+
     // check if any needs to have cache updates because wasnt 
     // visible previously when bounds moved
-    bool sneaked= false;
+    bool sneaked = false;
     bool rta;
 
     // we will make sure we update at least one cache per call
     // to make sure eventually everything gets refreshed
 
     int total_shapes_visible = 0;
-    for (int z=0; z<MAXTOPOLOGY; z++) {
-      if (TopoStore[z]) {
-	rta = MapWindow::RenderTimeAvailable() || force || !sneaked;
-	if (TopoStore[z]->triggerUpdateCache) {
-	  sneaked = true;
-	}
-	TopoStore[z]->updateCache(bounds_active, !rta);
-	total_shapes_visible += TopoStore[z]->shapes_visible_count;
-      }
+    for (int z = 0; z < MAXTOPOLOGY; z++) {
+        if (TopoStore[z]) {
+            rta = MapWindow::RenderTimeAvailable() || force || !sneaked;
+            if (TopoStore[z]->triggerUpdateCache) {
+                sneaked = true;
+            }
+            TopoStore[z]->updateCache(bounds_active, !rta);
+            total_shapes_visible += TopoStore[z]->shapes_visible_count;
+        }
     }
 #ifdef DEBUG_GRAPHICS
     DebugStore("%d # shapes\n", total_shapes_visible);
 #endif
-
-  }
 }
 
 
