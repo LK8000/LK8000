@@ -707,6 +707,7 @@ GEXTERN BOOL INPUTFILECHANGED;
 GEXTERN BOOL MAPFILECHANGED;
 GEXTERN bool NEWWAYPOINTFILE;
 GEXTERN bool FONTSCHANGED;
+GEXTERN bool AIRCRAFTTYPECHANGED;
 
 // Team code
 GEXTERN int TeamCodeRefWaypoint;
@@ -916,10 +917,6 @@ GEXTERN bool SonarWarning_Config;
 // Once the action is performed, they are automatically cleared.
 // ---------------------------------------------------------------------------
 //
-
-// Tell Draw thread to reload bitmaps that are affected by some 
-// changes in profile, such as aircraft icons.
-GEXTERN bool LKSW_ReloadProfileBitmaps GEXTFALSE;
 
 // This will calculate nearest topology without painting it, for 1s only.
 // It will be automatically cleared by Terrain  DrawTopology()

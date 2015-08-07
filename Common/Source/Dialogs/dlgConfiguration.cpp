@@ -4610,7 +4610,7 @@ void UpdateAircraftConfig(void){
       AircraftCategory = (AircraftCategory_t)
         (wp->GetDataField()->GetAsInteger());
       requirerestart = true;
-	LKSW_ReloadProfileBitmaps=true;
+      AIRCRAFTTYPECHANGED=true;
 
         if (ISPARAGLIDER) AATEnabled=TRUE; // NOT SURE THIS IS NEEDED ANYMORE. 
     }

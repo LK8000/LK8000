@@ -101,7 +101,6 @@ void PreloadInitialisation(bool ask) {
 	}
 	LKProfileLoad(startProfileFile); // this is calling adjust and InitRuntime itself
     }
-    LKSW_ReloadProfileBitmaps=true;
 
     // LKTOKEN _@M1206_ "Initialising..."
 	CreateProgressDialog(gettext(TEXT("_@M1206_"))); 

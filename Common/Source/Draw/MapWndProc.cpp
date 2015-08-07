@@ -180,7 +180,7 @@ POINT targetScreen;
 
 void MapWindow::_OnSize(int cx, int cy) {
     // this is Used for check Thread_Draw don't use surface object.
-    Poco::FastMutex::ScopedLock Lock(Surface_Mutex);
+    Poco::Mutex::ScopedLock Lock(Surface_Mutex);
 
 #ifndef USE_GDI
     BackBufferSurface.Resize(cx, cy);
@@ -229,9 +229,6 @@ void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
     TempSurface.Create(WindowSurface, cx, cy);
     hdcbuffer.Create(WindowSurface, cx, cy);
     hdcMask.Create(WindowSurface, cx, cy);
-
-    // Signal that draw thread can run now
-    Initialised = TRUE;
 }
 
 void MapWindow::_OnDestroy() {

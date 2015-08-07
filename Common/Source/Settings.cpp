@@ -35,6 +35,7 @@ void SettingsEnter() {
   INPUTFILECHANGED = FALSE;
   COMPORTCHANGED = FALSE;
   FONTSCHANGED = false;
+  AIRCRAFTTYPECHANGED = false;
 }
 
 
@@ -145,7 +146,7 @@ void SettingsLeave() {
   }
 
   extern void ReinitScreen(void);
-  if (FONTSCHANGED) {
+  if (FONTSCHANGED || AIRCRAFTTYPECHANGED) {
       ReinitScreen();
   }
   

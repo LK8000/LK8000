@@ -23,7 +23,7 @@ BOOL MapWindow::THREADRUNNING = TRUE;
 BOOL MapWindow::THREADEXIT = FALSE;
 BOOL MapWindow::Initialised = FALSE;
 
-Poco::FastMutex MapWindow::Surface_Mutex;
+Poco::Mutex MapWindow::Surface_Mutex;
 
 // #define TESTMAPRECT 1
 // Although we are capable of autoresizing, all fonts are tuned for the original screen geometry.
@@ -43,6 +43,55 @@ Poco::FastMutex MapWindow::Surface_Mutex;
 
 extern bool PanRefreshed;
 bool ForceRenderMap=true;
+bool first_run=true;
+
+void MapWindow::Initialize() {
+    Poco::Mutex::ScopedLock Lock(Surface_Mutex);
+    
+    // Reset common topology and waypoint label declutter, first init. Done also in other places.
+    ResetLabelDeclutter();
+
+    // Default draw area is full screen, no opacity
+    MapRect = MainWindow.GetClientRect();
+    DrawRect = MapRect;
+    UpdateActiveScreenZone(MapRect);
+
+    UpdateTimeStats(true);
+
+    // paint draw window black to start
+    DrawSurface.SetBackgroundTransparent();
+	DrawSurface.Blackness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
+
+    hdcMask.SetBackgroundOpaque();
+    BackBufferSurface.Blackness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
+
+    // This is just here to give fully rendered start screen
+    UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
+    MapDirty = true;
+
+    FillScaleListForEngineeringUnits();
+    zoom.RequestedScale(zoom.Scale());
+    zoom.ModifyMapScale();
+    
+    LKUnloadFixedBitmaps();
+    LKUnloadProfileBitmaps();
+    
+	LKLoadFixedBitmaps();
+	LKLoadProfileBitmaps();
+
+	// This will reset the function for the new ScreenScale
+	PolygonRotateShift((POINT*)NULL,0,0,0,DisplayAngle+1);
+
+	// Restart from moving map
+	if (MapSpaceMode!=MSM_WELCOME) SetModeType(LKMODE_MAP, MP_MOVING);
+
+	// These should be better checked. first_run is forcing also cache update for topo.
+	ForceRenderMap=true;
+	first_run=true;
+    // Signal that draw thread can run now
+    Initialised = TRUE;
+    drawTriggerEvent.set();
+}
 
 void MapWindow::DrawThread ()
 {
@@ -60,104 +109,29 @@ void MapWindow::DrawThread ()
 
   // THREADRUNNING = FALSE;
   THREADEXIT = FALSE;
-
-  // Reset common topology and waypoint label declutter, first init. Done also in other places.
-  ResetLabelDeclutter();
-
-  MapRect = MainWindow.GetClientRect();
-  #ifdef TESTMAPRECT
-  MapRect.top+=TM_T;
-  MapRect.left+=TM_L;
-  MapRect.right-=TM_R;
-  MapRect.bottom-=TM_B;
-  #endif
-  // Default draw area is full screen, no opacity
-  DrawRect=MapRect;
-  UpdateActiveScreenZone(MapRect);
-
-  UpdateTimeStats(true);
-
-  { // // Begin Critical section
-    Poco::FastMutex::ScopedLock Lock(Surface_Mutex);
-
-    DrawSurface.SetBackgroundTransparent();
-    hdcMask.SetBackgroundOpaque();
-
-    // paint draw window black to start
-    DrawSurface.SelectObject(LK_BLACK_PEN);
-    DrawSurface.Rectangle(MapRect.left,MapRect.top, MapRect.right,MapRect.bottom);
-
-    BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
-           MapRect.bottom-MapRect.top, 
-           DrawSurface, MapRect.left, MapRect.top);
-  } // End Critical section
-  
-  // This is just here to give fully rendered start screen
-  UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
-  MapDirty = true;
-  UpdateTimeStats(true);
-
-  zoom.RequestedScale(zoom.Scale());
-  zoom.ModifyMapScale();
-  FillScaleListForEngineeringUnits();
   
   bool lastdrawwasbitblitted=false;
-  bool first_run=true;
-
+  
   // 
   // Big LOOP
   //
 
   while (!CLOSETHREAD) 
   {
-	if(drawTriggerEvent.tryWait(5000)) drawTriggerEvent.reset();
+	if(drawTriggerEvent.tryWait(5000))
 	if (CLOSETHREAD) break; // drop out without drawing
 
 	if ((!THREADRUNNING) || (!GlobalRunning)) {
-		Poco::Thread::sleep(50);
+        Poco::Thread::sleep(50);
 		continue;
 	}
+    drawTriggerEvent.reset();
     
 #ifdef HAVE_CPU_FREQUENCY
     const ScopeLockCPU cpu;
 #endif
   
-    Poco::FastMutex::ScopedLock Lock(Surface_Mutex);
-	// This is also occuring on resolution change
-	if (LKSW_ReloadProfileBitmaps) {
-		#if TESTBENCH
-		StartupStore(_T(".... SWITCH: ReloadProfileBitmaps detected\n"));
-		#endif
-		// This is needed to update resolution change
-		MapRect = MainWindow.GetClientRect();
-                #ifdef TESTMAPRECT
-                MapRect.top+=TM_T;
-                MapRect.left+=TM_L;
-                MapRect.right-=TM_R;
-                MapRect.bottom-=TM_B;
-                #endif
-		DrawRect=MapRect;
-                UpdateActiveScreenZone(MapRect);
-		FillScaleListForEngineeringUnits();
-		LKUnloadProfileBitmaps();
-		LKLoadProfileBitmaps();
-		LKUnloadFixedBitmaps();
-		LKLoadFixedBitmaps();
-		MapWindow::zoom.Reset();
-
-		// This will reset the function for the new ScreenScale
-		PolygonRotateShift((POINT*)NULL,0,0,0,DisplayAngle+1);
-
-		// Restart from moving map
-		if (MapSpaceMode!=MSM_WELCOME) SetModeType(LKMODE_MAP, MP_MOVING);
-
-		LKSW_ReloadProfileBitmaps=false;
-		// These should be better checked. first_run is forcing also cache update for topo.
-		ForceRenderMap=true;
-		first_run=true;
-	}
-
-
+    Poco::Mutex::ScopedLock Lock(Surface_Mutex);
 
 	// Until MapDirty is set true again, we shall only repaint the screen. No Render, no calculations, no updates.
 	// This is intended for very fast immediate screen refresh.
@@ -336,6 +310,8 @@ Poco::Thread MapWindowThread;
 
 void MapWindow::CreateDrawingThread(void)
 {
+  Initialize();
+
   CLOSETHREAD = FALSE;
   THREADEXIT = FALSE;
   MapWindowThread.start(MapWindowThreadRun);
@@ -369,9 +345,7 @@ void MapWindow::CloseDrawingThread(void)
   #endif
   CLOSETHREAD = TRUE;
   drawTriggerEvent.set(); // wake self up
-  LockTerrainDataGraphics();
   SuspendDrawingThread();
-  UnlockTerrainDataGraphics();
   
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread waitforsingleobject\n"));

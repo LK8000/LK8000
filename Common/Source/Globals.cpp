@@ -450,6 +450,7 @@ void Globals_Init(void) {
   LANGUAGEFILECHANGED = FALSE;
   INPUTFILECHANGED = FALSE;
   FONTSCHANGED= false;
+  AIRCRAFTTYPECHANGED = false;
 
   ActiveWayPoint = -1;
   PanTaskEdit    = -1;
