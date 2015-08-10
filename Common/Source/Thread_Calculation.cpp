@@ -23,13 +23,15 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
     if (MapWindow::IsDisplayRunning()) {
         // 121028 Do not set MapDirty when we are fast panning, otherwise we shall overpass the
         // timeout (700ms) there, resulting in messy refreshes.
+        
 #if (WINDOWSPC>0) && !TESTBENCH
+        MapWindow::RequestFastRefresh();
 #else
         if (!INPAN)
+            MapWindow::RefreshMap();
+        else
+            MapWindow::RequestFastRefresh();
 #endif
-            MapWindow::MapDirty = true;
-
-        drawTriggerEvent.set();
     }
 }
 

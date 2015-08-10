@@ -23,7 +23,19 @@ BOOL MapWindow::THREADRUNNING = TRUE;
 BOOL MapWindow::THREADEXIT = FALSE;
 BOOL MapWindow::Initialised = FALSE;
 
+
+#ifndef ENABLE_OPENGL
 Poco::Mutex MapWindow::Surface_Mutex;
+Poco::Event MapWindow::drawTriggerEvent;
+
+#ifdef USE_GDI
+ LKWindowSurface BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
+#else
+LKBitmapSurface MapWindow::BackBufferSurface;
+LKBitmapSurface MapWindow::DrawSurface;
+#endif
+
+#endif
 
 // #define TESTMAPRECT 1
 // Although we are capable of autoresizing, all fonts are tuned for the original screen geometry.
@@ -46,8 +58,9 @@ bool ForceRenderMap=true;
 bool first_run=true;
 
 void MapWindow::Initialize() {
+#ifndef ENABLE_OPENGL
     Poco::Mutex::ScopedLock Lock(Surface_Mutex);
-    
+#endif
     // Reset common topology and waypoint label declutter, first init. Done also in other places.
     ResetLabelDeclutter();
 
@@ -58,13 +71,15 @@ void MapWindow::Initialize() {
 
     UpdateTimeStats(true);
 
+#ifndef ENABLE_OPENGL
     // paint draw window black to start
     DrawSurface.SetBackgroundTransparent();
 	DrawSurface.Blackness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 
     hdcMask.SetBackgroundOpaque();
     BackBufferSurface.Blackness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
-
+#endif
+    
     // This is just here to give fully rendered start screen
     UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
     MapDirty = true;
@@ -90,10 +105,13 @@ void MapWindow::Initialize() {
 	first_run=true;
     // Signal that draw thread can run now
     Initialised = TRUE;
+#ifndef ENABLE_OPENGL
     drawTriggerEvent.set();
+#endif
 }
 
 #ifndef ENABLE_OPENGL
+
 void MapWindow::DrawThread ()
 {
   while ((!ProgramStarted) || (!Initialised)) {
@@ -295,9 +313,7 @@ _dontbitblt:
   THREADEXIT = TRUE;
 
 }
-#endif
 
-#ifndef ENABLE_OPENGL
 Poco::ThreadTarget MapWindow::MapWindowThreadRun(MapWindow::DrawThread);
 Poco::Thread MapWindowThread;
 #endif
@@ -309,11 +325,11 @@ void MapWindow::CreateDrawingThread(void)
   CLOSETHREAD = FALSE;
   THREADEXIT = FALSE;
 
-    
 #ifndef ENABLE_OPENGL  
   MapWindowThread.start(MapWindowThreadRun);
   MapWindowThread.setPriority(Poco::Thread::PRIO_NORMAL);
 #else
+#warning "need to be removed"
   ProgramStarted = psFirstDrawDone;
 #endif
 }

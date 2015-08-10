@@ -739,9 +739,6 @@ GEXTERN bool InverseInfoBox_Config;
 GEXTERN BOOL extGPSCONNECT;
 GEXTERN bool DialogActive;
 
-GEXTERN Poco::Event drawTriggerEvent;
-
-
 #if  (LK_CACHECALC && LK_CACHECALC_MCA_STAT)
 GEXTERN int  Cache_Calls_MCA GEXTZERO;
 GEXTERN int  Cache_Hits_MCA  GEXTZERO;

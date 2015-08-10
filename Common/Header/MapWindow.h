@@ -15,8 +15,6 @@
 #include "Parser.h"
 #include "Calculations.h"
 #include "mapprimitive.h"
-#include "Poco/ThreadTarget.h"
-#include "Poco/Thread.h"
 #include "Screen/BrushReference.h"
 #include "Screen/PenReference.h"
 #include "Screen/LKBitmap.h"
@@ -24,6 +22,12 @@
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
 #include "Time/PeriodClock.hpp"
+
+#ifndef ENABLE_OPENGL
+#include "Poco/ThreadTarget.h"
+#include "Poco/Thread.h"
+#include "Poco/Event.h"
+#endif
 
 #define NORTHSMART 5
 #define NORTHTRACK 4
@@ -640,6 +644,17 @@ class MapWindow {
   static bool WaypointInTask(int ind);
 
 
+#ifndef ENABLE_OPENGL
+private:
+  static void DrawThread ();
+  static Poco::ThreadTarget MapWindowThreadRun;
+  static Poco::Event drawTriggerEvent;
+
+  static LKBitmapSurface DrawSurface;
+
+public:
+  static Poco::Mutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
+
 protected:
 #ifdef USE_GDI
   static LKWindowSurface BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
@@ -647,13 +662,15 @@ protected:
   static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
   static LKBitmapSurface BackBufferSurface; 
 #endif
+#else
+private:
+  static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
 
+#endif
 private:
   static int iSnailNext;
   static int iLongSnailNext;
 
-  static LKBitmapSurface DrawSurface;
-  
   static LKBitmapSurface TempSurface;
   
   static LKMaskBitmapSurface hdcMask; // Only used For Airspaces drawing "Transparent Border" or "Paterns Borders"
@@ -685,8 +702,6 @@ private:
   
   static BOOL THREADRUNNING;
   static BOOL THREADEXIT;
-  
-  static Poco::Mutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
   
   static double LimitMapScale(double value);
 
@@ -720,16 +735,15 @@ private:
 
   static void CalculateOrigin(const RECT& rc, POINT *Orig);
 
-#ifndef ENABLE_OPENGL
-  static void DrawThread ();
-  static Poco::ThreadTarget MapWindowThreadRun;
-#endif
-  
+
+protected:
   static void RenderMapWindow(LKSurface& Surface, const RECT& rc);
+  static void UpdateCaches(bool force=false);
+
+private:  
   static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
 				const POINT &Orig,
 				const POINT &Orig_Aircraft);
-  static void UpdateCaches(bool force=false);
   static double findMapScaleBarSize(const RECT& rc);
 
   #define SCALELISTSIZE  30

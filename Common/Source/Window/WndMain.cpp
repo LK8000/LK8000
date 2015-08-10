@@ -107,7 +107,6 @@ void Shutdown(void) {
 
   // Stop calculating too (wake up)
   dataTriggerEvent.set();
-  drawTriggerEvent.set();
 
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
@@ -271,6 +270,19 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     if(ProgramStarted >= psFirstDrawDone) {
         Surface.Whiteness(Rect.left, Rect.right, Rect.GetSize().cx, Rect.GetSize().cy);
     }
+    if(ProgramStarted >= psNormalOp) {
+        UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
+        RenderMapWindow(Surface, Rect);
+
+        UpdateTimeStats(false);
+
+        // we do caching after screen update, to minimise perceived delay
+        // UpdateCaches is updating topology bounds when either forced (only here)
+        // or because MapWindow::ForceVisibilityScan  is set true.
+        static bool first_run = true;
+        UpdateCaches(first_run);
+        first_run=false;
+    }
 #else
     if(ProgramStarted >= psFirstDrawDone) {
         BackBufferSurface.CopyTo(Surface);
@@ -345,10 +357,9 @@ void AfterStartup() {
   DefaultTask();
 
   // Trigger first redraw
-  MapWindow::MapDirty = true;
   MapWindow::zoom.Reset(); 
   FullScreen();
-  drawTriggerEvent.set();
+  MapWindow::RefreshMap();
 }
 
 
