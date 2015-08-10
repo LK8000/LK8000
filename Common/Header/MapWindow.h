@@ -432,8 +432,12 @@ class MapWindow {
   // solid brushes for airspace drawing (initialized in InitAirSpaceSldBrushes())
   static LKBrush hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
  
+#ifdef ENABLE_OPENGL
+  static LKColor AboveTerrainColor;
+#else
   static LKBrush hAboveTerrainBrush;
-
+#endif
+  
   static Zoom zoom;
   static Mode mode;
 

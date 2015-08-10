@@ -39,7 +39,11 @@ bool OnFastPanning=false;
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
 
+#ifdef ENABLE_OPENGL
+LKColor MapWindow::AboveTerrainColor;
+#else
 LKBrush  MapWindow::hAboveTerrainBrush;
+#endif
 
 int MapWindow::SnailWidthScale = 16;
 int MapWindow::ScaleListCount = 0;

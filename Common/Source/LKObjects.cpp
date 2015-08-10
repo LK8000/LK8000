@@ -225,10 +225,14 @@ void LKObjects_Create() {
 #endif
   }
 
+#ifdef ENABLE_OPENGL
+  MapWindow::AboveTerrainColor = RGB_GREY.WithAlpha(0xFF/2);
+#else
 #ifdef HAVE_HATCHED_BRUSH
   MapWindow::hAboveTerrainBrush.Create(hAboveTerrainBitmap);
 #else
   MapWindow::hAboveTerrainBrush.Create(RGB_GREY);
+#endif
 #endif
   
   if(LKSurface::AlphaBlendSupported()) {
@@ -342,7 +346,9 @@ void LKObjects_Delete() {
 
   std::for_each(std::begin(MapWindow::hAirspaceBrushes), std::end(MapWindow::hAirspaceBrushes), std::bind(&LKBrush::Release, _1) );
   
+#ifndef ENABLE_OPENGL  
   MapWindow::hAboveTerrainBrush.Release();
+#endif
   
   MapWindow::hpStartFinishThick.Release();
   MapWindow::hpMapScale2.Release();

@@ -8,6 +8,9 @@
 
 #include "externs.h"
 #include "LKObjects.h"
+#ifdef ENABLE_OPENGL
+#include "Screen/OpenGL/Scope.hpp"
+#endif
 //
 // Draw the reachable SHADED terrain glide amoeba
 // This is not the outlined perimeter
@@ -54,7 +57,7 @@ _doit:
           rc.right-rc.left,rc.bottom-rc.top,
           TempSurface,
           rc.left,rc.top);
-#elif !defined(ENABLE_OPENGL)
+#else
   Surface.AlphaBlendNotWhite(rc, TempSurface, rc, 255/2);
 #endif
 
@@ -63,8 +66,30 @@ _doit:
   TempSurface.SetTextColor(origcolor);
   TempSurface.SetBackgroundOpaque();
 #else
-  #warning "Shading Glide not supported"  
-    return;
+
+    Canvas& canvas = Surface;
+  
+    const GLEnable<GL_STENCIL_TEST> stencil;
+    
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glDepthMask(GL_FALSE);
+    glStencilFunc(GL_NEVER, 1, 0xFF);
+    glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);  // draw 1s on test fail (always)
+
+    // draw stencil pattern
+    glStencilMask(0xFF);
+    glClear(GL_STENCIL_BUFFER_BIT);  // needs mask=0xFF
+
+    canvas.DrawPolygon(Groundline,NUMTERRAINSWEEPS+1);
+
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glDepthMask(GL_TRUE);
+    glStencilMask(0x00);
+    // draw where stencil's value is 0
+    glStencilFunc(GL_EQUAL, 0, 0xFF);
+
+    canvas.DrawFilledRectangle(rc.left,rc.top,rc.right,rc.bottom, AboveTerrainColor);
+
 #endif  
 
 }
