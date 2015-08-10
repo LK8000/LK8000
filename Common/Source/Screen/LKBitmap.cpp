@@ -24,6 +24,10 @@ LKBitmap::LKBitmap(LKBitmap&& Bitmap) {
     Bitmap.bitmap = nullptr;
 #elif defined(USE_MEMORY_CANVAS)
     std::swap(buffer, Bitmap.buffer);
+#elif defined(ENABLE_OPENGL)
+  std::swap(texture, Bitmap.texture);
+  std::swap(size, Bitmap.size);
+  std::swap(interpolation, Bitmap.interpolation);
 #else
 #warning "Not Implemented"
 #endif
@@ -42,7 +46,11 @@ LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
     std::swap(bitmap, Bitmap.bitmap);
 #elif defined(USE_MEMORY_CANVAS)
     std::swap(buffer, Bitmap.buffer);
-#else
+#elif defined(ENABLE_OPENGL)
+  std::swap(texture, Bitmap.texture);
+  std::swap(size, Bitmap.size);
+  std::swap(interpolation, Bitmap.interpolation);
+#else    
 #warning "Not Implemented"
 #endif
     return * this;
