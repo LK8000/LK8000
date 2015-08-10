@@ -33,7 +33,10 @@ SubCanvas::SubCanvas(Canvas &canvas, RasterPoint _offset, PixelSize _size)
 {
   assert(canvas.offset == OpenGL::translate);
   offset = canvas.offset + _offset;
-  size = _size;
+  
+  /* sub canvas bottom right limits can't be outside "parent" canvas. */
+  size.cx = std::min(_size.cx, canvas.GetSize().cx - _offset.x) ;
+  size.cy = std::min(_size.cy, canvas.GetSize().cy - _offset.y) ;
 
   if (relative.x != 0 || relative.y != 0) {
     OpenGL::translate += _offset;
@@ -50,6 +53,14 @@ SubCanvas::SubCanvas(Canvas &canvas, RasterPoint _offset, PixelSize _size)
 #endif
 #endif /* !USE_GLSL */
   }
+  
+  if ((relative.x + size.cx < canvas.GetSize().cx) 
+          || (relative.y + size.cy < canvas.GetSize().cy)) {
+
+    /* Enable Clipping */
+    push_scissor = std::make_unique<GLPushScissor>();
+    scissor = std::make_unique<GLCanvasScissor>(*this);
+  }
 }
 
 SubCanvas::~SubCanvas()
@@ -65,5 +76,10 @@ SubCanvas::~SubCanvas()
 #else
     glPopMatrix();
 #endif
+  }
+  
+  if(scissor) {
+    scissor = nullptr;
+    push_scissor = nullptr;
   }
 }

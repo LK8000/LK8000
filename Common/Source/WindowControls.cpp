@@ -2380,7 +2380,6 @@ void WndProperty::Paint(LKSurface& Surface){
     
 #ifndef USE_GDI
     // SubCanvas is used for clipping.
-    // TODO : OpenGL SubCanvas don't clip rect, need to be fixed...
     SubCanvas ClipCanvas(Surface, rcText.GetOrigin(), rcText.GetSize() );
     rcText.Offset(-rcText.left, -rcText.top);
 

@@ -28,6 +28,8 @@ Copyright_License {
 
 #ifdef ENABLE_OPENGL
 #include "Screen/Point.hpp"
+#include "OpenGL/Scissor.hpp"
+#include <utils/make_unique.h>
 #endif
 
 /**
@@ -37,6 +39,8 @@ Copyright_License {
 class SubCanvas : public Canvas {
 #ifdef ENABLE_OPENGL
   RasterPoint relative;
+  std::unique_ptr<GLCanvasScissor> scissor;
+  std::unique_ptr<GLPushScissor> push_scissor;
 #endif
 
 public:
