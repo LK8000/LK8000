@@ -553,7 +553,9 @@ class MapWindow {
 
   static void DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   static void DrawAirSpace(LKSurface& Surface, const RECT& rc);
+#ifdef HAVE_HATCHED_BRUSH
   static void DrawAirSpacePattern(LKSurface& Surface, const RECT& rc);
+#endif
   static void DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc);
   static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc);
@@ -659,22 +661,19 @@ protected:
 #ifdef USE_GDI
   static LKWindowSurface BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
 #else
-  static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
   static LKBitmapSurface BackBufferSurface; 
 #endif
-#else
-private:
-  static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
-
 #endif
 private:
   static int iSnailNext;
   static int iLongSnailNext;
 
+#ifndef ENABLE_OPENGL
   static LKBitmapSurface TempSurface;
   
   static LKMaskBitmapSurface hdcMask; // Only used For Airspaces drawing "Transparent Border" or "Paterns Borders"
   static LKBitmapSurface hdcbuffer; // Used For aispaces
+#endif
   
   static double PanLatitude;
   static double PanLongitude;

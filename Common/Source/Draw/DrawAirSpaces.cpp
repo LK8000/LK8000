@@ -13,8 +13,8 @@
 #include "LKObjects.h"
 
 void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
-      LKColor whitecolor = LKColor(0xff,0xff,0xff);
-
+#ifndef ENABLE_OPENGL
+  const LKColor whitecolor = LKColor(0xff,0xff,0xff);
   TempSurface.SetTextColor(whitecolor);
   TempSurface.SetBackgroundTransparent();
   TempSurface.SetBkColor(whitecolor);
@@ -32,9 +32,13 @@ void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
     hdcMask.SelectObject(LKBrush_Hollow);
   }
 #endif
+#endif
 }
 
-
+#ifdef HAVE_HATCHED_BRUSH
+#ifdef ENABLE_OPENGL
+#error "airspace pattern not supported with OpenGL"
+#endif
 // TODO code: optimise airspace drawing
 void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
 {
@@ -43,11 +47,8 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
   int airspace_type;
   bool found = false;
-#ifdef HAVE_HATCHED_BRUSH
   const bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
-#else
-  const bool borders_only = false;
-#endif
+
   const bool outlined_only=(GetAirSpaceFillType()==asp_fill_border_only);
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
@@ -56,7 +57,6 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
   int nDC2 = hdcMask.SaveState();
   int nDC3 = TempSurface.SaveState();
 
-#ifdef HAVE_HATCHED_BRUSH    
   if (GetAirSpaceFillType() != asp_fill_border_only) {
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
@@ -98,7 +98,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
     }
     }
   }
-#endif
+
   // draw it again, just the outlines
   if (found) {
     if (borders_only) {
@@ -151,7 +151,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
   hdcMask.RestoreState(nDC2);    
   TempSurface.RestoreState(nDC3);    
 }
-
+#endif
 
 void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc) {
     CalculateScreenPositionsAirspace(rc);
@@ -161,7 +161,13 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc) {
     else {
         if (GetAirSpaceFillType() == asp_fill_border_only)
             DrawAirSpaceBorders(Surface, rc); // full screen, to hide clipping effect on low border
-        else
+        else {
+#ifdef HAVE_HATCHED_BRUSH   
             DrawAirSpacePattern(Surface, rc); // full screen, to hide clipping effect on low border
+#else
+            DrawAirSpaceBorders(Surface, rc); // full screen, to hide clipping effect on low border
+#endif
+            
+        }
     }    
 }

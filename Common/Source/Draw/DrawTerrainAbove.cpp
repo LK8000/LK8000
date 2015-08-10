@@ -29,6 +29,7 @@ void MapWindow::DrawTerrainAbove(LKSurface& Surface, const RECT& rc) {
 
 _doit:
 
+#ifndef ENABLE_OPENGL
   LKColor whitecolor = LKColor(0xff,0xff,0xff);
   LKColor graycolor = LKColor(0xf0,0xf0,0xf0);
   LKColor origcolor = TempSurface.SetTextColor(whitecolor);
@@ -55,13 +56,16 @@ _doit:
           rc.left,rc.top);
 #elif !defined(ENABLE_OPENGL)
   Surface.AlphaBlendNotWhite(rc, TempSurface, rc, 255/2);
-#else
-#warning "Shading Glide not supported"  
 #endif
+
 
   // restore original color
   TempSurface.SetTextColor(origcolor);
   TempSurface.SetBackgroundOpaque();
+#else
+  #warning "Shading Glide not supported"  
+    return;
+#endif  
 
 }
 

@@ -29,12 +29,11 @@ Poco::Mutex MapWindow::Surface_Mutex;
 Poco::Event MapWindow::drawTriggerEvent;
 
 #ifdef USE_GDI
- LKWindowSurface BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
+LKWindowSurface MapWindow::BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
 #else
 LKBitmapSurface MapWindow::BackBufferSurface;
-LKBitmapSurface MapWindow::DrawSurface;
 #endif
-
+LKBitmapSurface MapWindow::DrawSurface;
 #endif
 
 // #define TESTMAPRECT 1

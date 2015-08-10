@@ -44,7 +44,7 @@ void MapWindow::InitAirSpaceSldBrushes(const LKColor colours[]) {
 } // InitAirSpaceSldBrushes()
 
 
-
+#ifndef ENABLE_OPENGL
 // draw airspace using alpha blending
 //static 
 void MapWindow::ClearTptAirSpace(LKSurface& Surface, const RECT& rc) {
@@ -188,3 +188,8 @@ if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_sel
   hdcMask.RestoreState(nDC2);    
   TempSurface.RestoreState(nDC3);    
 } // DrawTptAirSpace()
+#else
+void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {  
+  #warning "TODO: DrawTptAirSpace()"
+}
+#endif

@@ -53,23 +53,11 @@ RECT MapWindow::DrawRect; // the portion of MapRect for drawing terrain, topolog
 
 
 #ifndef ENABLE_OPENGL
-#ifdef USE_GDI
-LKWindowSurface MapWindow::BackBufferSurface;
-#else
-LKWindowSurface MapWindow::WindowSurface;
-LKBitmapSurface MapWindow::BackBufferSurface;
-#endif
-
-LKBitmapSurface MapWindow::DrawSurface;
-#else
-LKWindowSurface MapWindow::WindowSurface;
-#endif
-
-
 LKBitmapSurface MapWindow::TempSurface;
 
 LKMaskBitmapSurface MapWindow::hdcMask;
 LKBitmapSurface MapWindow::hdcbuffer;
+#endif
 
 double MapWindow::PanLatitude = 0.0;
 double MapWindow::PanLongitude = 0.0;
@@ -194,12 +182,12 @@ void MapWindow::_OnSize(int cx, int cy) {
 #endif
 
     DrawSurface.Resize(cx, cy);
-#endif
 
     TempSurface.Resize(cx, cy);
     hdcbuffer.Resize(cx, cy);
     hdcMask.Resize(cx, cy);
 
+#endif    
 }
 
 void MapWindow::UpdateActiveScreenZone(RECT rc) {
@@ -232,32 +220,25 @@ void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
     BackBufferSurface.Create(Wnd);
     LKWindowSurface& WindowSurface = BackBufferSurface;
 #else
-    WindowSurface.Create(Wnd);
+    LKWindowSurface WindowSurface(Wnd);
     BackBufferSurface.Create(WindowSurface, cx, cy);
 #endif
     DrawSurface.Create(WindowSurface, cx, cy);
-#endif
     TempSurface.Create(WindowSurface, cx, cy);
     hdcbuffer.Create(WindowSurface, cx, cy);
     hdcMask.Create(WindowSurface, cx, cy);
-
-    // Signal that draw thread can run now
-    Initialised = TRUE;
+#endif
 }
 
 void MapWindow::_OnDestroy() {
 #ifndef ENABLE_OPENGL
     BackBufferSurface.Release();
     DrawSurface.Release();
-#endif
+
     TempSurface.Release();
     hdcbuffer.Release();
     hdcMask.Release();
-    
-#ifndef USE_GDI
-	WindowSurface.Release();
-#endif
-
+#endif    
 }
 
 /*
