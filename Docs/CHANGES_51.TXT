@@ -24,3 +24,32 @@ Simulator :
  
 Auto Zoom : 
   - Now autozoom is calcuated using "optimized turnpoint" (or AAT Target point) instead of center previously.
+  
+  :: FIXES ::
+
+- 604.plr and SZD 50 polars
+- $PTAS1 NMEA sentences parsing : baro alt can be negative on low and with high atmospheric pressure
+- Airspace AG token to be ignored
+- RxThread Hang in Win32 platform
+
+:: CHANGES ::
+
+- Permanent LONGSNAIL, no more in options
+- Update battery info only at 0.5Hz
+- New icon, resized for better layout on all screen resolutions
+- Portrait mode: Infopages 2.x, 3.x and 4.x with two lines per element
+- Save Runtime parameters on exit (LK8000 Setup > System Setup > 22 System > Save Runtime)
+- New Font size options for Map Overlays, Waypoints, Info pages and bottom bar (System Setup > 12 Fonts)
+
+:: ADDED ::
+
+- FLARM buttons for TRACKING option
+- RMZ airspace zone Radio Mandatory Zone
+- "Credits" (Info 2/3 > Credits)
+
+:: KOBO ::
+
+- Notification alarms for GoFly Instruments V4
+- Use DejaVu font instead of Vera
+- Removed Sound file from KoboRoot.tgz
+- Removed Battery test in Sim & Testbench mode
