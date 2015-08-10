@@ -274,7 +274,16 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
         UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
         RenderMapWindow(Surface, Rect);
 
+        // Draw cross sight for pan mode, in the screen center, 
+        if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
+            POINT centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
+            DrawMapScale(Surface,Rect,false);
+            DrawCompass(Surface, Rect, GetDisplayAngle());
+            DrawCrossHairs(Surface, centerscreen, Rect);
+        }
+        
         UpdateTimeStats(false);
+
 
         // we do caching after screen update, to minimise perceived delay
         // UpdateCaches is updating topology bounds when either forced (only here)

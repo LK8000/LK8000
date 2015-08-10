@@ -547,10 +547,8 @@ class MapWindow {
 			  const rectObj &bounds);
 
 
-  static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   static void DrawHeading(LKSurface& Surface, const POINT& Orig, const RECT& rc); // VENTA10
   static void DrawBestCruiseTrack(LKSurface& Surface, const POINT& Orig);
-  static void DrawCompass(LKSurface& Surface, const RECT& rc,const double angle);
   static void DrawTRI(LKSurface&, const RECT& rc);
   static void DrawAcceleration(LKSurface& Surface, const RECT& rc);
   static void DrawTarget(LKSurface& Surface, const RECT& rc,int ttop,int tbottom,int tleft,int tright);
@@ -630,9 +628,13 @@ class MapWindow {
                               double lon_start, double lat_start,
                               double lon_end, double lat_end,
 			      const RECT& rc);
+protected:
+  static void DrawMapScale(LKSurface& Surface, const RECT& rc, const bool ScaleChangeFeedback);
+  static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
+  static void DrawCompass(LKSurface& Surface, const RECT& rc,const double angle);
 
-  static void DrawMapScale(LKSurface& Surface, const RECT& rc, 
-			   const bool ScaleChangeFeedback);
+  
+private:  
   static void DrawMapScale2(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawFinalGlide(LKSurface& Surface, const RECT& rc);
   static void DrawThermalBand(LKSurface& Surface, const RECT& rc);
