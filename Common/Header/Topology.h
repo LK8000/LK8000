@@ -112,7 +112,7 @@ class Topology {
   bool in_scale;
   LKPen hPen;
   LKBrush hbBrush;
-  LKBitmap hBitmap;
+  LKIcon hBitmap;
   shapefileObj shpfile;
   bool shapefileopen;
   void initCache();

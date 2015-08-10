@@ -20,6 +20,7 @@
 #include "Screen/BrushReference.h"
 #include "Screen/PenReference.h"
 #include "Screen/LKBitmap.h"
+#include "Screen/LKIcon.h"
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
 #include "Time/PeriodClock.hpp"
@@ -453,7 +454,7 @@ class MapWindow {
 			   const LKColor& , const LKColor&,
 			   const RECT&);
 
-  static void DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKBitmap& h, const bool autostretch);
+  static void DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKIcon& Icon, const bool autostretch);
 
   // ...
   static void RequestToggleFullScreen();

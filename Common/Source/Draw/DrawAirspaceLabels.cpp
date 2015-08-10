@@ -39,7 +39,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POI
           if (distances_ready && (hlabeldrawstyle > awsHidden) && PointVisible(lon, lat)) {
 
               LatLon2Screen(lon, lat, sc);
-              Surface.DrawMaskedBitmap(sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10), hAirspaceWarning, 10, 10);              
+              hAirspaceWarning.Draw(Surface, sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10));              
               
               Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
               _tcscpy(hbuf, (*it)->Name());

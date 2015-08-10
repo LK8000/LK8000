@@ -1290,7 +1290,7 @@ if(bSideview)
   Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom+5);
 }
 
-  const LKBitmap* pBmpTemp = NULL;
+  const LKIcon* pBmpTemp = NULL;
 
   /********************************************************
    * draw trace icon
@@ -1303,7 +1303,7 @@ if(bSideview)
     case 2:  pBmpTemp = &hClimbTrace; break; //  climb trace
   }
   if(pBmpTemp) {
-    Surface.DrawMaskedBitmap(rci.left+NIBLSCALE(5),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), *pBmpTemp, 22, 22);
+    pBmpTemp->Draw(Surface, rci.left+NIBLSCALE(5),rci.top+TOPLIMITER, NIBLSCALE(22), NIBLSCALE(22));
   }
           
 
@@ -1318,7 +1318,7 @@ if(bSideview)
     case 2:  pBmpTemp = &hHeadRight ; break; //     "Head Up"
   }
   if(pBmpTemp) {
-     Surface.DrawMaskedBitmap(rci.right-NIBLSCALE(27),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22), *pBmpTemp, 22, 22);
+     pBmpTemp->Draw(Surface, rci.right-NIBLSCALE(27),	rci.top+TOPLIMITER,	NIBLSCALE(22), NIBLSCALE(22));
   }
 
   if(bHeightScale)

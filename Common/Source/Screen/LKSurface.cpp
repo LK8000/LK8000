@@ -144,45 +144,6 @@ LKColor LKSurface::SetBkColor(const LKColor& Color) {
 #endif
 }
 
-void LKSurface::DrawMaskedBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc) {
-#ifdef WIN32
-    HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
-
-    if (cxSrc != cx || cySrc != cy) {
-        ::StretchBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, cxSrc, cySrc, SRCPAINT);
-        ::StretchBlt(*this, x, y, cx, cy, GetTempDC(), cxSrc, 0, cxSrc, cySrc, SRCAND);
-    } else {
-        ::BitBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, SRCPAINT);
-        ::BitBlt(*this, x, y, cx, cy, GetTempDC(), cxSrc, 0, SRCAND);
-    }
-
-    ::SelectObject(GetTempDC(), old);
-#elif defined(ENABLE_OPENGL)
-#ifdef USE_GLSL
-  OpenGL::texture_shader->Use();
-#else
-  const GLEnable<GL_TEXTURE_2D> scope;
-  OpenGL::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-#endif
-  const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  GLTexture &texture = *Bitmap.GetNative();
-  texture.Bind();
-  texture.Draw(x, y, cx, cy,  0, 0, cxSrc, cySrc);
-
-#else
-    if(_pCanvas && Bitmap.IsDefined()) {
-        if (cxSrc != cx || cySrc != cy) {
-            _pCanvas->StretchOr(x, y, cx, cy, Bitmap, 0, 0, cxSrc, cySrc);
-            _pCanvas->StretchAnd(x, y, cx, cy, Bitmap, cxSrc, 0, cxSrc, cySrc);
-        } else {
-            _pCanvas->CopyOr(x, y, cx, cy, Bitmap, 0, 0);
-            _pCanvas->CopyAnd(x, y, cx, cy, Bitmap, cxSrc, 0);
-        }
-    }
-#endif
-}
-
 void LKSurface::DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc) {
 #ifdef WIN32
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);

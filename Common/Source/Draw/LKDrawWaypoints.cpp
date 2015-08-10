@@ -159,7 +159,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     }
     else
     {
-        const LKBitmap* pWptBmp = NULL;
+        const LKIcon* pWptBmp = NULL;
         if (WayPointCalc[i].IsAirport) {
             if (WayPointList[i].Reachable == FALSE)	{
                 pWptBmp = &hBmpAirportUnReachable;
@@ -189,7 +189,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
         }
 
         if(pWptBmp) {
-            Surface.DrawMaskedBitmap(WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, *pWptBmp, 20, 20);
+            pWptBmp->Draw(Surface, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20);
         }
     }
   } // for all waypoints
@@ -520,7 +520,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     // draws if they are in task unconditionally,
     // otherwise, does comparison
     if ( E->inTask || (E->isLandable && !E->isExcluded) ) { 
-    const LKBitmap* pWptBmp = NULL;
+    const LKIcon* pWptBmp = NULL;
 
 	TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), false);
 
@@ -540,7 +540,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		pWptBmp = &hTurnPoint;
     }
     if(pWptBmp) {
-        Surface.DrawMaskedBitmap(E->Pos.x-10,E->Pos.y-10,20,20,*pWptBmp,20,20);
+        pWptBmp->Draw(Surface, E->Pos.x-10,E->Pos.y-10,20,20);
     }
     } // wp in task
   } // for all waypoint, searching for those in task
@@ -551,7 +551,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
-      const LKBitmap* pWptBmp = NULL;
+      const LKIcon* pWptBmp = NULL;
 
       if ( TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), true) == true) {
 
@@ -654,7 +654,7 @@ turnpoint:
 	// We dont do stretching here. We are using different bitmaps for hi res.
 	// The 20x20 size is large enough to make much bigger icons than the old ones.
     if(pWptBmp) {
-        Surface.DrawMaskedBitmap(E->Pos.x - 10, E->Pos.y - 10, 20, 20, *pWptBmp, 20, 20);
+        pWptBmp->Draw(Surface, E->Pos.x - 10, E->Pos.y - 10, 20, 20);
     }
       }
     }
@@ -688,7 +688,7 @@ void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
 
 void MapWindow::DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp)
 {
-    const LKBitmap* pWptBmp = NULL;
+    const LKIcon* pWptBmp = NULL;
     
 switch(wp->Style) {
 	case STYLE_NORMAL:
@@ -798,6 +798,6 @@ if(cx < 40)
   }
     }
     if (pWptBmp) {
-        Surface.DrawMaskedBitmap(x, y, scale ? IBLSCALE(20) : 20, scale ? IBLSCALE(20) : 20, *pWptBmp, 20, 20);
+        pWptBmp->Draw(Surface, x, y, scale ? IBLSCALE(20) : 20, scale ? IBLSCALE(20) : 20);
     }
 }

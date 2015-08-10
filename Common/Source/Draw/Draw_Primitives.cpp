@@ -10,14 +10,17 @@
 #include "Topology.h"
 
 
-void MapWindow::DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKBitmap& h, const bool autostretch) {
-    if (!h) return; // don't draw Bitmap if no bitmap
+void MapWindow::DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKIcon& Icon, const bool autostretch) {
+    if (!Icon) return; // don't draw Bitmap if no bitmap
     if (!PointVisible(sc)) return;
 
+    assert(Icon.GetSize().cx == 10);
+    assert(Icon.GetSize().cy == 10);
+    
     if (autostretch) {
-        Surface.DrawMaskedBitmap(sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10), h, 10, 10);
+        Icon.Draw(Surface, sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10));
     } else {
-        Surface.DrawMaskedBitmap(sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), 10, 10, h, 10, 10);
+        Icon.Draw(Surface, sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), 10, 10);
     }
 }
 

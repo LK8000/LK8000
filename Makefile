@@ -256,7 +256,6 @@ ifeq ($(CONFIG_LINUX),y)
 	USE_SOUND_EXTDEV := n
 	OPENGL := y
 	
-	CE_DEFS += -DENABLE_OPENGL -DGL_GLEXT_PROTOTYPES
     endif
 
 
@@ -269,19 +268,20 @@ ifeq ($(CONFIG_LINUX),y)
 	    # if libSDL2 exist check for libSDL2_mixer
 	    USE_SDL2 = $(shell $(PKG_CONFIG) --exists SDL2_mixer && echo y)
 	endif
-	ifeq ($(USE_SDL2),y)
-	    # use libSDL2 & libSDL2_mixer if exist
-	    $(info build with SDL 2 Library)
 
-	    $(eval $(call pkg-config-library,SDL,sdl2))
-	    $(eval $(call pkg-config-library,SDL_MIXER,SDL2_mixer))
-	else 
-	    # otherwise use libSDL1.2 & libSDL1.2_mixer
-	    $(info build with SDL 1.2 Library)
+    ifeq ($(USE_SDL2),y)
+    # use libSDL2 & libSDL2_mixer if exist
+    $(info build with SDL 2 Library)
 
-	    $(eval $(call pkg-config-library,SDL,sdl))
-	    $(eval $(call pkg-config-library,SDL_MIXER,SDL_mixer))
-	endif
+    $(eval $(call pkg-config-library,SDL,sdl2))
+    $(eval $(call pkg-config-library,SDL_MIXER,SDL2_mixer))
+    else 
+    # otherwise use libSDL1.2 & libSDL1.2_mixer
+    $(info build with SDL 1.2 Library)
+
+    $(eval $(call pkg-config-library,SDL,sdl))
+    $(eval $(call pkg-config-library,SDL_MIXER,SDL_mixer))
+    endif
 
 	CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_CPPFLAGS))
 	CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_MIXER_CPPFLAGS))
@@ -295,6 +295,12 @@ ifeq ($(CONFIG_LINUX),y)
 	    CE_DEFS += -DUSE_LINUX_INPUT
 
 	endif
+    endif
+
+    ifeq ($(OPENGL),y)
+	CE_DEFS += -DENABLE_OPENGL -DGL_GLEXT_PROTOTYPES
+    else
+	CE_DEFS += -DUSE_MEMORY_CANVAS
     endif
 
     ifeq ($(GREYSCALE),y)
@@ -580,6 +586,7 @@ SCREEN := \
 	$(SRC_SCREEN)/LKSurface.cpp \
 	$(SRC_SCREEN)/LKWindowSurface.cpp \
 	$(SRC_SCREEN)/LKBitmapSurface.cpp \
+	$(SRC_SCREEN)/LKIcon.cpp \
 
 ifeq ($(CONFIG_WIN32),y)
 SCREEN += \
@@ -1378,15 +1385,28 @@ $(BIN)/Data/Dialogs/%.min.xml: Common/Data/Dialogs/%.xml
 	@$(NQ)echo "  minimize $@"
 	$(Q)xsltproc --output $@ build/dialogtemplate.xsl $<
 
-$(PNG_TARGET)/%.PNG : $(BITMAP_DIR)/%.BMP
+$(MASKED_PNG) : $(patsubst $(PNG_TARGET)/%.PNG, $(BITMAP_DIR)/%.BMP, $@)
 	@$(NQ)echo "  Convert Image	  $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)convert $^ PNG24:$@
+ifeq ($(OPENGL),y)	
+	$(Q)convert -crop 50%x100% +repage $(patsubst $(PNG_TARGET)/%.PNG, $(BITMAP_DIR)/%.BMP, $@) +swap -alpha Off -compose CopyOpacity -composite PNG32:$@	
+else
+	$(Q)convert $(patsubst $(PNG_TARGET)/%.PNG, $(BITMAP_DIR)/%.BMP, $@) PNG24:$@	
+endif
+
+$(PNG) : $(patsubst $(PNG_TARGET)/%.PNG, $(BITMAP_DIR)/%.BMP, $@)
+	@$(NQ)echo "  Convert Image	  $@"
+	$(Q)$(MKDIR) $(dir $@)
+	$(Q)convert $(patsubst $(PNG_TARGET)/%.PNG, $(BITMAP_DIR)/%.BMP, $@) PNG24:$@	
 
 $(BIN)/Data/Bitmaps/%.png: Common/Data/Bitmaps/%.bmp
 	@$(NQ)echo "  Convert Image	  $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)convert $^ PNG24:$@
+ifeq ($(OPENGL),y)	
+	$(Q)convert -crop 50%x100% +repage $^ +swap -alpha Off -compose CopyOpacity -composite PNG32:$@	
+else
+	$(Q)convert $^ PNG24:$@	
+endif
 
 .PRECIOUS: $(BIN)/Data/Dialogs/%.min.xml \
 	$(BIN)/lk8000.min.rc

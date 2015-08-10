@@ -2363,8 +2363,8 @@ void WndProperty::Paint(LKSurface& Surface){
 	// opening a window, each subwindow goes here once
   } else {
 	if (HasFocus() && !GetReadOnly()) {
-        Surface.DrawMaskedBitmap(mHitRectDown.left, mHitRectDown.top, mBitmapSize, mBitmapSize, hBmpLeft32, 32, 32);
-        Surface.DrawMaskedBitmap(mHitRectUp.left, mHitRectUp.top, mBitmapSize, mBitmapSize, hBmpRight32, 32, 32);
+        hBmpLeft32.Draw(Surface, mHitRectDown.left, mHitRectDown.top, mBitmapSize, mBitmapSize);
+        hBmpRight32.Draw(Surface, mHitRectUp.left, mHitRectUp.top, mBitmapSize, mBitmapSize);
 	}
   }
 
@@ -2661,15 +2661,15 @@ void WndListFrame::DrawScrollBar(LKSurface& Surface) {
 
   // TOP Dn Button 32x32
   // BOT Up Button 32x32
-  Surface.DrawMaskedBitmap(w, ScrollbarTop, ScrollbarWidth, ScrollbarWidth, hScrollBarBitmapTop, SCROLLBARWIDTH_INITIAL, SCROLLBARWIDTH_INITIAL);
-  Surface.DrawMaskedBitmap(w, h-(ScrollbarWidth)+ScrollbarTop, ScrollbarWidth, ScrollbarWidth, hScrollBarBitmapBot, SCROLLBARWIDTH_INITIAL, SCROLLBARWIDTH_INITIAL);
+  hScrollBarBitmapTop.Draw(Surface, w, ScrollbarTop, ScrollbarWidth, ScrollbarWidth);
+  hScrollBarBitmapBot.Draw(Surface, w, h-(ScrollbarWidth)+ScrollbarTop, ScrollbarWidth, ScrollbarWidth);
 
   // Middle Slider Button 30x28
   if (mListInfo.ItemCount > mListInfo.ItemInViewCount) {
     
 	// handle on slider
 	if (ScrollbarWidth == SCROLLBARWIDTH_INITIAL) {
-		Surface.DrawMaskedBitmap(w+1, rc.top + GetScrollBarHeight()/2 - 14, 30, 28, hScrollBarBitmapMid, 30, 28);
+		hScrollBarBitmapMid.Draw(Surface, w+1, rc.top + GetScrollBarHeight()/2 - 14, 30, 28);
 	} else {
 		static int SCButtonW = -1;
 		static int SCButtonH = -1;
@@ -2679,7 +2679,7 @@ void WndListFrame::DrawScrollBar(LKSurface& Surface) {
 			SCButtonH = (int) (28.0 * (float)ScrollbarWidth / (float)SCROLLBARWIDTH_INITIAL);
 			SCButtonY = (int) (14.0 * (float)ScrollbarWidth / (float)SCROLLBARWIDTH_INITIAL);
 		}
-		Surface.DrawMaskedBitmap(w+1, rc.top + GetScrollBarHeight()/2 - SCButtonY, SCButtonW, SCButtonH, hScrollBarBitmapMid, 30, 28);
+		hScrollBarBitmapMid.Draw(Surface, w+1, rc.top + GetScrollBarHeight()/2 - SCButtonY, SCButtonW, SCButtonH);
 	}
 
 	// box around slider rect

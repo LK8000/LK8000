@@ -15,8 +15,7 @@ void MapWindow::DrawTeammate(LKSurface& Surface, const RECT& rc) {
     if (TeammateCodeValid) {
         if (PointVisible(TeammateLongitude, TeammateLatitude)) {
             LatLon2Screen(TeammateLongitude, TeammateLatitude, point);
-            Surface.DrawMaskedBitmap(point.x - NIBLSCALE(10), point.y - NIBLSCALE(10), IBLSCALE(20), IBLSCALE(20), hBmpTeammatePosition, 20, 20);
+            hBmpTeammatePosition.Draw(Surface, point.x - NIBLSCALE(10), point.y - NIBLSCALE(10), IBLSCALE(20), IBLSCALE(20));
         }
     }
 }
-
