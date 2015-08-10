@@ -14,6 +14,11 @@
 #include <functional>
 #include <utils/stl_utils.h>
 
+#ifdef ENABLE_OPENGL
+#include "Screen/OpenGL/Scope.hpp"
+#include "utils/make_unique.h"
+#endif
+
 using std::placeholders::_1;
 
 #define AIRSPACE_BORDER        // switch for new airspace orders
@@ -39,7 +44,11 @@ LKBrush MapWindow::hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
 void MapWindow::InitAirSpaceSldBrushes(const LKColor colours[]) {
   // initialize solid color brushes for airspace drawing
   for (int i = 0; i < NUMAIRSPACECOLORS; i++) {
+#ifdef ENABLE_OPENGL
+    hAirSpaceSldBrushes[i].Create(colours[i].WithAlpha(0xFF*100/AirspaceOpacity));
+#else
     hAirSpaceSldBrushes[i].Create(colours[i]);
+#endif
   }
 } // InitAirSpaceSldBrushes()
 
@@ -190,6 +199,58 @@ if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_sel
 } // DrawTptAirSpace()
 #else
 void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {  
-  #warning "TODO: DrawTptAirSpace()"
+    
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
+
+    const bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
+
+    static bool asp_selected_flash = false;
+    asp_selected_flash = !asp_selected_flash;    
+    
+    for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+        const int airspace_type = (*it)->Type();
+
+        std::unique_ptr<const GLEnable<GL_STENCIL_TEST>> stencil; 
+        if(borders_only) {
+            stencil = std::make_unique<const GLEnable<GL_STENCIL_TEST>>();
+
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+            glDepthMask(GL_FALSE);
+            glStencilFunc(GL_NEVER, 1, 0xFF);
+            glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);  // draw 1s on test fail (always)
+                        glStencilMask(0xFF);
+            glClear(GL_STENCIL_BUFFER_BIT);  // needs mask=0xFF
+
+            // Fill Stencil
+            Surface.SelectObject(hAirspaceBorderPen);
+            Surface.SelectObject(LKBrush_Hollow);
+            (*it)->Draw(Surface, rc, true);
+
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+            glDepthMask(GL_TRUE);
+            glStencilMask(0x00);
+            // draw where stencil's value is not 0
+            glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
+        }            
+
+        // Draw Airspaces
+
+        if ( (((*it)->DrawStyle()==adsFilled)&&!borders_only) ^ (asp_selected_flash && (*it)->Selected()) ) {
+            Surface.SelectObject(LK_BLACK_PEN);
+        } else if(  (*it)->DrawStyle()==adsDisabled)   {
+            Surface.SelectObject(LKPen_Grey_N2);
+        } else {
+            Surface.SelectObject(hAirspacePens[airspace_type]);
+        }            
+
+
+        if ((*it)->DrawStyle() == adsFilled) {
+            Surface.SelectObject(GetAirSpaceSldBrushByClass(airspace_type));
+        } else {
+            Surface.SelectObject(LKBrush_Hollow);
+        }
+        (*it)->Draw(Surface, rc, true);
+    }//for
 }
 #endif
