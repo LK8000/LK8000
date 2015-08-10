@@ -160,13 +160,17 @@ public:
 
     void DrawPushButton(const RECT& rc, bool bPushed);
 
+    static bool AlphaBlendSupported();
+
+ #ifndef ENABLE_OPENGL
     bool Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc);
     bool TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc);
 
     bool CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmapSurface& bmpMask, int xMask, int yMask);
     
-    static bool AlphaBlendSupported();
     bool AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
+#endif
+    
 #ifdef USE_MEMORY_CANVAS
     void AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
 #endif    

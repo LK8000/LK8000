@@ -394,20 +394,19 @@ void LKSurface::FillRect(const RECT *lprc, const BrushReference Brush) {
 #endif    
 }
 
+#ifndef ENABLE_OPENGL
 bool LKSurface::Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc) {
 #ifdef WIN32
     return ::BitBlt(*this, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc, SRCCOPY);
-#elif !defined(ENABLE_OPENGL)
+#else
     if(_pCanvas && Surface.IsDefined()) {
         _pCanvas->Copy(nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc);
         return true;
     }
     return false;
-#else
-#warning "not implemented"
-    return false;
 #endif
 }
+#endif
 
 
 #ifdef __MINGW32CE__
@@ -427,6 +426,7 @@ TransparentImage is not defined in arm-mingw32ce
 #endif
 #endif
 
+#ifndef ENABLE_OPENGL
 bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc) {
 #ifdef WIN32
 #ifdef UNDER_CE
@@ -434,14 +434,11 @@ bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int
 #else
     return ::TransparentBlt(*this, xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc, wDest, hDest, COLOR_WHITE);
 #endif
-#elif !defined(ENABLE_OPENGL)
+#else
     if(_pCanvas && Surface.IsDefined()) {
         _pCanvas->CopyTransparentWhite(xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc);
         return true;
     }
-    return false;
-#else
-#warning "Not Implemented"
     return false;
 #endif
 }
@@ -450,21 +447,18 @@ bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int
 bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmapSurface& bmpMask, int xMask, int yMask) {
 #ifdef WIN32
     return ::MaskBlt(*this, nXDest, nYDest, nWidth, nHeight, hdcSrc, nXSrc, nYSrc, bmpMask, xMask, yMask, MAKEROP4(SRCAND,  0x00AA0029));
-#elif !defined(ENABLE_OPENGL)
+#else
     Canvas& buffer = hdcSrc;
     buffer.CopyNotOr(nXDest, nYDest, nWidth, nHeight, bmpMask, xMask, yMask);
     _pCanvas->Copy(nXDest, nYDest, nWidth, nHeight, buffer, nXSrc, nYSrc);
     return true;
-#else
-#warning "Not Implemented"
-    return false;
 #endif
 }
 
 #ifdef UNDER_CE
 LKSurface::TAlphaBlendF LKSurface::AlphaBlendF = NULL;
 #endif
-
+#endif
 // tries to locate AlphaBlend() function
 // sets pointer to AlphaBlend function (AlphaBlendF) 
 // (returns false when AlphaBlending is not supported)
@@ -480,6 +474,7 @@ bool LKSurface::AlphaBlendSupported() {
     return true;
 }
 
+#ifndef ENABLE_OPENGL
 bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity) {
     if(!AlphaBlendSupported()) {
         return false;
@@ -535,18 +530,16 @@ bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const 
 
     return true; // always return true because always implemented on Windows PC
 #endif
-#elif !defined(ENABLE_OPENGL)
+#else
     if(_pCanvas) {
         _pCanvas->AlphaBlend(dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
                         Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, globalOpacity);
         return true;
     }
     return false;
-#else
-#warning "Not Implmented"
-    return false;
 #endif    
 }
+#endif
 
 #ifdef USE_MEMORY_CANVAS
 void LKSurface::AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity) {
