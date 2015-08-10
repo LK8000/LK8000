@@ -595,7 +595,7 @@ public:
     }
 
     void Draw(LKSurface& Surface, const RECT& rc) {
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
+#if (!defined(GREYSCALE) && !defined(_WIN32_WCE) && !defined(ENABLE_OPENGL))
         if (blursize > 0) {
             sbuf->HorizontalBlur(blursize);
             sbuf->VerticalBlur(blursize);
@@ -603,7 +603,6 @@ public:
 #endif
         sbuf->DrawStretch(Surface, rc, oversampling);
     }
-
 };
 
 
