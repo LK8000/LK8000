@@ -179,8 +179,10 @@ POINT targetScreen;
 
 
 void MapWindow::_OnSize(int cx, int cy) {
+#ifndef ENABLE_OPENGL
     // this is Used for check Thread_Draw don't use surface object.
     Poco::Mutex::ScopedLock Lock(Surface_Mutex);
+#endif
 
 #ifndef USE_GDI
     BackBufferSurface.Resize(cx, cy);

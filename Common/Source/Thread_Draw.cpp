@@ -209,11 +209,7 @@ void MapWindow::DrawThread ()
 			// The map was not dirty, and we are not in fastpanning mode.
 			// FastRefresh!  We simply redraw old bitmap. 
 			//
-			BUGSTOP_LKASSERT(0);
-                       
-			BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
-				MapRect.bottom-MapRect.top, 
-				DrawSurface, MapRect.left, MapRect.top);
+            DrawSurface.CopyTo(BackBufferSurface);
 
 			lastdrawwasbitblitted=true;
 		}
@@ -242,9 +238,7 @@ void MapWindow::DrawThread ()
 				lasthere=LKHearthBeats;
 				goto _dontbitblt;
 			}
-			BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
-				MapRect.bottom-MapRect.top, 
-				DrawSurface, MapRect.left, MapRect.top);
+            DrawSurface.CopyTo(DrawSurface);
 
 			POINT centerscreen;
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
@@ -265,10 +259,7 @@ _dontbitblt:
 	RenderMapWindow(DrawSurface, MapRect);
     
 	if (!ForceRenderMap && !first_run) {
-            BackBufferSurface.Copy(MapRect.left, MapRect.top,
-                MapRect.right-MapRect.left, MapRect.bottom-MapRect.top, 
-                DrawSurface, MapRect.left, MapRect.top);
-
+            DrawSurface.CopyTo(BackBufferSurface);
 	}
 
 	// Draw cross sight for pan mode, in the screen center, 

@@ -26,6 +26,8 @@ public:
 
     virtual void Resize(unsigned width, unsigned height);
 
+    void CopyTo(LKSurface &other);
+    
 #ifdef WIN32
     operator LKBitmap& () { return _hBitmap; }
 
@@ -34,6 +36,7 @@ public:
 protected:
     LKBitmap _hBitmap;
     LKBitmap _oldBitmap;
+    SIZE _Size;
 #endif
 };
 

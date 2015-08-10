@@ -27,8 +27,10 @@ protected:
 
     virtual bool OnSize(int cx, int cy);
 
+#ifndef USE_GDI
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect);
-
+#endif
+    
     virtual void OnKillFocus();
 
     virtual bool OnMouseMove(const POINT& Pos);

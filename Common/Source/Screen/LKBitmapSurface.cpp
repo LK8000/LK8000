@@ -40,6 +40,7 @@ void LKBitmapSurface::Create(const LKSurface& Surface, unsigned width, unsigned 
     Attach(::CreateCompatibleDC(Surface.GetAttribDC()));
     SetAttribDC(Surface.GetAttribDC());
 
+    _Size = { width, height };
     _hBitmap = LKBitmap (::CreateCompatibleBitmap(GetAttribDC(), width, height));
     _oldBitmap = LKBitmap((HBITMAP)::SelectObject(_OutputDC, _hBitmap));
 #else
@@ -57,6 +58,7 @@ void LKBitmapSurface::Resize(unsigned width, unsigned height) {
         _hBitmap.Release();
     }
 
+    _Size = { (LONG)width, (LONG)height };
     _hBitmap = LKBitmap (::CreateCompatibleBitmap(GetAttribDC(), width, height));
     _oldBitmap = LKBitmap((HBITMAP)::SelectObject(_OutputDC, _hBitmap));
 #else
@@ -80,6 +82,25 @@ void LKBitmapSurface::Release() {
     _pCanvas = nullptr;
 #endif
     LKSurface::Release();
+}
+
+void LKBitmapSurface::CopyTo(LKSurface &other) {
+#ifdef USE_GDI
+    other.Copy(0,0, _Size.cx, _Size.cy, *this, 0, 0);
+#else
+    
+    if(IsDefined() && other.IsDefined()) {
+    
+#if defined(ENABLE_OPENGL)
+        static_cast<BufferCanvas*>(_pCanvas)->CopyTo(other);
+#else
+        Canvas& dst = other;
+        dst.Copy(*_pCanvas);
+#endif
+
+    }
+
+#endif
 }
 
 
