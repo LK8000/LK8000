@@ -134,6 +134,12 @@ namespace OpenGL {
 #ifdef USE_GLSL
   extern glm::mat4 projection_matrix;
 #endif
+  
+  /**
+   * maximum supported depth of the attribute stack
+   * used for secure call of #glPushAttrib 
+   */
+  extern GLint max_attrib_stack_depth;
 };
 
 #endif

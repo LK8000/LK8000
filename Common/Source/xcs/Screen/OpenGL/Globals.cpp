@@ -63,4 +63,7 @@ namespace OpenGL {
 #ifndef NDEBUG
   pthread_t thread;
 #endif
+  
+  GLint max_attrib_stack_depth;
+ 
 };

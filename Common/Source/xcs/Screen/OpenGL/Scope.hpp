@@ -26,6 +26,7 @@ Copyright_License {
 
 #include "Features.hpp"
 #include "System.hpp"
+#include "Globals.hpp"
 
 /**
  * Enables and auto-disables an OpenGL capability.
@@ -62,5 +63,42 @@ public:
     ::glScissor(x, y, width, height);
   }
 };
+
+/**
+ * Save and auto-restore an OpenGL attributes state
+ * see #glPushAttrib() documentation for list of attributes
+ */
+template<GLbitfield mask>
+class GLPushAttrib {
+public:
+    GLPushAttrib() {
+        GLint depth;  
+        ::glGetIntegerv(GL_ATTRIB_STACK_DEPTH, &depth);
+        assert(depth < OpenGL::max_attrib_stack_depth); // Error GL_ATTRIB_STACK is full !!
+
+        if(depth < OpenGL::max_attrib_stack_depth) {
+            ::glPushAttrib(mask); 
+            stack = true;
+        }
+    }
+
+    ~GLPushAttrib() {
+        if(stack) {
+#ifndef NDEBUG
+            GLint depth; 
+            ::glGetIntegerv(GL_ATTRIB_STACK_DEPTH, &depth);
+            assert(depth < OpenGL::max_attrib_stack_depth); // Error GL_ATTRIB_STACK is empty !!
+#endif
+            ::glPopAttrib();
+        }
+    }
+private:
+    bool stack;
+};
+
+/**
+ * Save and auto-restore an OpenGL scissor state 
+ */
+typedef GLPushAttrib<GL_SCISSOR_BIT> GLPushScissor;
 
 #endif
