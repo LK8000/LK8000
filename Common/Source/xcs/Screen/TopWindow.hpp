@@ -58,7 +58,7 @@ union SDL_Event;
 #endif
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
-enum class DisplayOrientation : uint8_t;
+enum class DisplayOrientation_t : uint8_t;
 #endif
 
 #ifndef USE_GDI
@@ -388,7 +388,7 @@ public:
 #endif
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
-  void SetDisplayOrientation(DisplayOrientation orientation);
+  void SetDisplayOrientation(DisplayOrientation_t orientation);
 #endif
 
 protected:

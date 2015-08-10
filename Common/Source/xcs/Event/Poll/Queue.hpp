@@ -45,7 +45,7 @@ Copyright_License {
 
 #include <queue>
 
-enum class DisplayOrientation : uint8_t;
+enum class DisplayOrientation_t : uint8_t;
 class Window;
 class Timer;
 

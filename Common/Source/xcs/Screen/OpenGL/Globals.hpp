@@ -40,7 +40,7 @@ Copyright_License {
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
 #include <stdint.h>
-enum class DisplayOrientation : uint8_t;
+enum class DisplayOrientation_t : uint8_t;
 #endif
 
 template<typename T> struct Point2D;
@@ -123,7 +123,7 @@ namespace OpenGL {
   extern Point2D<unsigned> viewport_size;
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
-  extern DisplayOrientation display_orientation;
+  extern DisplayOrientation_t display_orientation;
 #endif
 
   /**

@@ -15,6 +15,8 @@
 #include "Screen/FontReference.h"
 #include "Window/WndCtrlBase.h"
 #include "LKObjects.h"
+#include <tchar.h>
+#include <string.h>
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 

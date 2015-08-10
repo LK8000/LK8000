@@ -41,25 +41,25 @@ OpenGL::ToViewport(PixelRect &rc)
   rc.bottom += translate.y;
 
   switch (display_orientation) {
-  case DisplayOrientation::DEFAULT:
-  case DisplayOrientation::LANDSCAPE:
+  case DisplayOrientation_t::DEFAULT:
+  case DisplayOrientation_t::LANDSCAPE:
     rc.top = viewport_size.y - rc.top;
     rc.bottom = viewport_size.y - rc.bottom;
     std::swap(rc.top, rc.bottom);
     break;
 
-  case DisplayOrientation::PORTRAIT:
+  case DisplayOrientation_t::PORTRAIT:
     std::swap(rc.left, rc.top);
     std::swap(rc.right, rc.bottom);
     break;
 
-  case DisplayOrientation::REVERSE_LANDSCAPE:
+  case DisplayOrientation_t::REVERSE_LANDSCAPE:
     rc.left = viewport_size.x - rc.left;
     rc.right = viewport_size.x - rc.right;
     std::swap(rc.left, rc.right);
     break;
 
-  case DisplayOrientation::REVERSE_PORTRAIT:
+  case DisplayOrientation_t::REVERSE_PORTRAIT:
     rc.top = viewport_size.y - rc.top;
     rc.bottom = viewport_size.y - rc.bottom;
     rc.left = viewport_size.x - rc.left;

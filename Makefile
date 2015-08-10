@@ -51,57 +51,60 @@ CONFIG_ANDROID	:=n
 MINIMAL		:=n
 XSCALE		:=n
 GTARGET		:=$(TARGET)
+	
+OPENGL := n
+	
 
 ifeq ($(TARGET),PPC2002)
   CONFIG_PPC2002	:=y
   CONFIG_WIN32 := y
-else
-  ifeq ($(TARGET),PPC2003)
-    CONFIG_PPC2003	:=y
+endif
+
+ifeq ($(TARGET),PPC2003)
+  CONFIG_PPC2003	:=y
+  CONFIG_WIN32 := y
+endif
+
+ifeq ($(TARGET),PPC2003X)
+  CONFIG_PPC2003	:=y
+  XSCALE :=y
+  GTARGET := PPC2003
+  CONFIG_WIN32 := y
+endif
+
+ifeq ($(TARGET),PC)
+  CONFIG_PC	:=y
+  CONFIG_WIN32 := y
+endif
+
+ifeq ($(TARGET),PCX64)
+    CONFIG_PC:=y
     CONFIG_WIN32 := y
-  else
-    ifeq ($(TARGET),PPC2003X)
-      CONFIG_PPC2003	:=y
-      XSCALE :=y
-      GTARGET := PPC2003
-      CONFIG_WIN32 := y
-    else
-      ifeq ($(TARGET),PC)
-        CONFIG_PC	:=y
-	CONFIG_WIN32 := y
-      else
-        ifeq ($(TARGET),WINE)
-          CONFIG_WINE :=y
-	  CONFIG_WIN32 := y
-        else
-	  ifeq ($(TARGET),PNA)
-	    CONFIG_PNA := y
-	    CONFIG_PPC2003 := y
-	    CONFIG_WIN32 := y
-	  else
-	    ifeq ($(TARGET),LINUX)
-	      CONFIG_LINUX := y
-	      CONFIG_ANDROID := n
-	      MINIMAL       :=n
-		else
-		    ifeq ($(TARGET),PCX64)
-			CONFIG_PC:=y
-			CONFIG_WIN32 := y
-		    else
-		       ifeq ($(TARGET),KOBO)
-			    KOBO ?= /opt/kobo/arm-unknown-linux-gnueabi
-			    TARGET_IS_KOBO := y
-			    CONFIG_LINUX := y
-			    CONFIG_ANDROID := n
-			    MINIMAL       :=n
-			endif
-		    endif
-		endif
-	  endif
-	endif
-      endif
-    endif
-  endif
+endif
+
+ifeq ($(TARGET),WINE)
+  CONFIG_WINE :=y
+  CONFIG_WIN32 := y
+endif
+
+ifeq ($(TARGET),PNA)
+  CONFIG_PNA := y
+  CONFIG_PPC2003 := y
+  CONFIG_WIN32 := y
+endif
+
+ifeq ($(TARGET),LINUX)
+  CONFIG_LINUX := y
+  CONFIG_ANDROID := n
+  MINIMAL       :=n
+endif
+
+ifeq ($(TARGET),KOBO)
+     KOBO ?= /opt/kobo/arm-unknown-linux-gnueabi
+     TARGET_IS_KOBO := y
+     CONFIG_LINUX := y
+     CONFIG_ANDROID := n
+     MINIMAL       :=n
 endif
 
 include build/pkgconfig.mk
@@ -162,6 +165,7 @@ CE_PLATFORM	:=310
 TARGET		:=PPC2002
 PCPU		:=ARM
 endif
+
 ifeq ($(CONFIG_PPC2003),y)
 CE_MAJOR	:=4
 CE_MINOR	:=00
@@ -237,67 +241,75 @@ endif
 ######## windows definitions
 
 ifeq ($(CONFIG_LINUX),y)
-CE_DEFS	:= -D__linux__
+    CE_DEFS	:= -D__linux__
+    CE_DEFS += -DHAVE_POSIX
 
-ifeq ($(TARGET_IS_KOBO),y)
-USE_SDL := n
-GREYSCALE := y
-CE_DEFS += -DKOBO
-USE_SOUND_EXTDEV := y
-CE_DEFS += -DUSE_MEMORY_CANVAS	
-else
-USE_SDL := y
-GREYSCALE := n
-USE_SOUND_EXTDEV := n
-OPENGL := y
+    ifeq ($(TARGET_IS_KOBO),y)
+	USE_SDL := n
+	GREYSCALE := y
+	CE_DEFS += -DKOBO
+	USE_SOUND_EXTDEV := y
+	CE_DEFS += -DUSE_MEMORY_CANVAS	
+    else
+	USE_SDL := n
+	GREYSCALE := n
+	USE_SOUND_EXTDEV := n
+	OPENGL := y
 	
-CE_DEFS += -DENABLE_OPENGL -DGL_GLEXT_PROTOTYPES
-
-endif
-
+	CE_DEFS += -DENABLE_OPENGL -DGL_GLEXT_PROTOTYPES
+    endif
 
 
-ifeq ($(USE_SDL),y)
-CE_DEFS += -DENABLE_SDL
+    ifeq ($(USE_SDL),y)
+	CE_DEFS += -DENABLE_SDL
+    
+	# check if libSDL2 exist
+	USE_SDL2 = $(shell $(PKG_CONFIG) --exists sdl2 && echo y)
+	ifeq ($(USE_SDL2),y)
+	    # if libSDL2 exist check for libSDL2_mixer
+	    USE_SDL2 = $(shell $(PKG_CONFIG) --exists SDL2_mixer && echo y)
+	endif
+	ifeq ($(USE_SDL2),y)
+	    # use libSDL2 & libSDL2_mixer if exist
+	    $(info build with SDL 2 Library)
 
-USE_SDL2 = $(shell $(PKG_CONFIG) --exists sdl2 && echo y)
-ifeq ($(USE_SDL2),y)
-   USE_SDL2 = $(shell $(PKG_CONFIG) --exists SDL2_mixer && echo y)
-endif
-ifeq ($(USE_SDL2),y)
-    $(info build with SDL 2 Library)
+	    $(eval $(call pkg-config-library,SDL,sdl2))
+	    $(eval $(call pkg-config-library,SDL_MIXER,SDL2_mixer))
+	else 
+	    # otherwise use libSDL1.2 & libSDL1.2_mixer
+	    $(info build with SDL 1.2 Library)
 
-    $(eval $(call pkg-config-library,SDL,sdl2))
-    $(eval $(call pkg-config-library,SDL_MIXER,SDL2_mixer))
-else 
-    $(info build with SDL 1.2 Library)
+	    $(eval $(call pkg-config-library,SDL,sdl))
+	    $(eval $(call pkg-config-library,SDL_MIXER,SDL_mixer))
+	endif
 
-    $(eval $(call pkg-config-library,SDL,sdl))
-    $(eval $(call pkg-config-library,SDL_MIXER,SDL_mixer))
-endif
+	CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_CPPFLAGS))
+	CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_MIXER_CPPFLAGS))
 
-CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_CPPFLAGS))
-CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_MIXER_CPPFLAGS))
+    else 
+    CE_DEFS += -DUSE_POLL_EVENT
+	ifeq ($(OPENGL),y)
+	    CE_DEFS += -DUSE_EGL -DUSE_X11
+	else
+	    CE_DEFS += -DUSE_FB
+	    CE_DEFS += -DUSE_LINUX_INPUT
 
-else
-CE_DEFS += -DUSE_FB
-CE_DEFS += -DUSE_POLL_EVENT
-CE_DEFS += -DUSE_LINUX_INPUT
-endif
+	endif
+    endif
 
-ifeq ($(GREYSCALE),y)
-CE_DEFS += -DGREYSCALE -DDITHER 
-endif
+    ifeq ($(GREYSCALE),y)
+	CE_DEFS += -DGREYSCALE -DDITHER 
+    endif
 
-$(eval $(call pkg-config-library,ZZIP,zziplib))
-CE_DEFS += $(patsubst -I%,-isystem %,$(ZZIP_CPPFLAGS))
+    $(eval $(call pkg-config-library,ZZIP,zziplib))
+    CE_DEFS += $(patsubst -I%,-isystem %,$(ZZIP_CPPFLAGS))
 
-$(eval $(call pkg-config-library,ZLIB,zlib))
-CE_DEFS += $(patsubst -I%,-isystem %,$(ZLIB_CPPFLAGS))
+    $(eval $(call pkg-config-library,ZLIB,zlib))
+    CE_DEFS += $(patsubst -I%,-isystem %,$(ZLIB_CPPFLAGS))
 
-$(eval $(call pkg-config-library,FREETYPE,freetype2))
-CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
-CE_DEFS += -DUSE_FREETYPE
+    $(eval $(call pkg-config-library,FREETYPE,freetype2))
+    CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
+    CE_DEFS += -DUSE_FREETYPE
 
 CE_DEFS += -DHAVE_POSIX
 else
@@ -435,6 +447,9 @@ ifeq ($(CONFIG_LINUX),y)
   
   ifeq ($(OPENGL),y)
     LDLIBS += -lGL
+    ifneq ($(USE_SDL), y)
+        LDLIBS += -lX11 -lEGL
+    endif
   endif
 
   ifeq ($(USE_SDL), y)
@@ -523,6 +538,7 @@ WINDOW := \
 	$(XCS_EVENT) \
 	$(XCS_SCREEN) \
 	$(LK_OS) \
+	$(SRC)/UIGlobals.cpp \
 
 
 ifeq ($(CONFIG_WIN32),y)

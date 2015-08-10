@@ -43,7 +43,7 @@ Copyright_License {
 
 #include <stdint.h>
 
-enum class DisplayOrientation : uint8_t;
+enum class DisplayOrientation_t : uint8_t;
 class IOLoop;
 class EventQueue;
 struct Event;

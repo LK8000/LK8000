@@ -13,6 +13,7 @@
 #include "tchar.h"
 #include "LKBitmap.h"
 #include <limits>
+#include <stdio.h>
 
 #ifndef WIN32
 #include "resource_data.h"

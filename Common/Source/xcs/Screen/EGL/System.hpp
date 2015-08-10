@@ -21,49 +21,43 @@ Copyright_License {
 }
 */
 
-#include "Screen/OpenGL/Globals.hpp"
-#include "Screen/OpenGL/Debug.hpp"
-#include "Point.hpp"
+#ifndef XCSOAR_SCREEN_EGL_SYSTEM_HPP
+#define XCSOAR_SCREEN_EGL_SYSTEM_HPP
 
-namespace OpenGL {
-#ifdef HAVE_DYNAMIC_EGL
-  bool egl;
+#ifdef USE_WAYLAND
+#include <wayland-egl.h>
 #endif
 
-  bool texture_non_power_of_two;
-
-#ifdef HAVE_OES_DRAW_TEXTURE
-  bool oes_draw_texture;
+#ifdef USE_X11
+/* kludges to work around namespace collisions with X11 headers */
+#define Font X11Font
+#define Window X11Window
+#define Display X11Display
 #endif
 
-#ifdef ANDROID
-  bool vertex_buffer_object;
+#ifdef MESA_KMS
+#include <gbm.h>
 #endif
 
-#ifdef HAVE_OES_MAPBUFFER
-  bool mapbuffer;
+#include <EGL/egl.h>
+
+#ifdef USE_X11
+#undef Font
+#undef Window
+#undef Display
+#undef Status
+
+#ifdef Expose
+#undef Expose
 #endif
 
-  bool frame_buffer_object;
-
-  GLenum render_buffer_depth_stencil, render_buffer_stencil;
-
-  Point2D<unsigned> window_size, viewport_size;
-
-#ifdef SOFTWARE_ROTATE_DISPLAY
-  DisplayOrientation_t display_orientation;
+#ifdef NoValue
+#undef NoValue
 #endif
 
-  RasterPoint translate;
-
-#ifdef USE_GLSL
-  glm::mat4 projection_matrix;
+#ifdef None
+#undef None
+#endif
 #endif
 
-#ifndef NDEBUG
-  pthread_t thread;
 #endif
-  
-  GLint max_attrib_stack_depth;
- 
-};

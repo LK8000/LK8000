@@ -21,49 +21,42 @@ Copyright_License {
 }
 */
 
-#include "Screen/OpenGL/Globals.hpp"
-#include "Screen/OpenGL/Debug.hpp"
-#include "Point.hpp"
+#include "Screen/Init.hpp"
+#include "Event/Globals.hpp"
+#include "Event/Queue.hpp"
+#include "Screen/Debug.hpp"
+#include "Screen/Font.hpp"
+#include "Screen/OpenGL/Init.hpp"
+#include "Screen/FreeType/Init.hpp"
 
-namespace OpenGL {
-#ifdef HAVE_DYNAMIC_EGL
-  bool egl;
+#ifdef USE_VIDEOCORE
+#include "bcm_host.h"
 #endif
 
-  bool texture_non_power_of_two;
-
-#ifdef HAVE_OES_DRAW_TEXTURE
-  bool oes_draw_texture;
+ScreenGlobalInit::ScreenGlobalInit()
+{
+#ifdef USE_VIDEOCORE
+  bcm_host_init();
 #endif
 
-#ifdef ANDROID
-  bool vertex_buffer_object;
-#endif
+  OpenGL::Initialise();
 
-#ifdef HAVE_OES_MAPBUFFER
-  bool mapbuffer;
-#endif
+  FreeType::Initialise();
+  Font::Initialise();
 
-  bool frame_buffer_object;
+  event_queue = new EventQueue();
 
-  GLenum render_buffer_depth_stencil, render_buffer_stencil;
+  ScreenInitialized();
+}
 
-  Point2D<unsigned> window_size, viewport_size;
+ScreenGlobalInit::~ScreenGlobalInit()
+{
+  delete event_queue;
+  event_queue = nullptr;
 
-#ifdef SOFTWARE_ROTATE_DISPLAY
-  DisplayOrientation_t display_orientation;
-#endif
+  OpenGL::Deinitialise();
 
-  RasterPoint translate;
+  FreeType::Deinitialise();
 
-#ifdef USE_GLSL
-  glm::mat4 projection_matrix;
-#endif
-
-#ifndef NDEBUG
-  pthread_t thread;
-#endif
-  
-  GLint max_attrib_stack_depth;
- 
-};
+  ScreenDeinitialized();
+}

@@ -67,6 +67,7 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
 #endif
 #endif
 
+#if defined(__linux__)
 #ifdef KOBO
 #include "OS/FileUtil.hpp"
 
@@ -124,31 +125,8 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 
     return result;
 }
-#endif
 
-
-#if defined(ENABLE_SDL) 
-
-#if (SDL_MAJOR_VERSION < 2)
-// For now, for linux ==> TODO !
-
-bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
-
-    // check incoming pointer
-    if (NULL == pBatteryInfo) {
-        return false;
-    }
-
-    // assume failure at entry
-    pBatteryInfo->BatteryLifePercent = BATTERY_UNKNOWN;
-    pBatteryInfo->acStatus = Battery::UNKNOWN;
-    pBatteryInfo->chargeStatus = Battery::CHARGE_UNKNOWN;
-    
-    return false;
-}
-
-#else
-// define SDL_MAJOR_VERSION >= 2
+#elif defined(ENABLE_SDL) && (SDL_MAJOR_VERSION >= 2)
 
 #include <SDL_power.h>
 
@@ -198,6 +176,23 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
     
     return true;
 }
+#else
+// For now, for linux ==> TODO !
+bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
+
+    // check incoming pointer
+    if (NULL == pBatteryInfo) {
+        return false;
+    }
+
+    // assume failure at entry
+    pBatteryInfo->BatteryLifePercent = BATTERY_UNKNOWN;
+    pBatteryInfo->acStatus = Battery::UNKNOWN;
+    pBatteryInfo->chargeStatus = Battery::CHARGE_UNKNOWN;
+    
+    return false;
+}
+
 #endif
 #endif
 

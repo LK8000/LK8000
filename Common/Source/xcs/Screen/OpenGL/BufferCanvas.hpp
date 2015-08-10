@@ -31,7 +31,7 @@ Copyright_License {
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
 #include <stdint.h>
-enum class DisplayOrientation : uint8_t;
+enum class DisplayOrientation_t : uint8_t;
 #endif
 
 class GLTexture;
@@ -60,7 +60,7 @@ class BufferCanvas : public Canvas, private GLSurfaceListener {
   Point2D<unsigned> old_size;
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
-  DisplayOrientation old_orientation;
+  DisplayOrientation_t old_orientation;
 #endif
 
   DebugFlag active;

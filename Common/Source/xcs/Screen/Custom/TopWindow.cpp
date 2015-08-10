@@ -82,7 +82,7 @@ TopWindow::Create(const TCHAR *text, PixelSize size,
 #ifdef SOFTWARE_ROTATE_DISPLAY
 
 void
-TopWindow::SetDisplayOrientation(DisplayOrientation orientation)
+TopWindow::SetDisplayOrientation(DisplayOrientation_t orientation)
 {
   assert(screen != nullptr);
   assert(screen->IsDefined());

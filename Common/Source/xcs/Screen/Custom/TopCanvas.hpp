@@ -292,7 +292,7 @@ public:
 #endif
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
-  void SetDisplayOrientation(DisplayOrientation orientation);
+  void SetDisplayOrientation(DisplayOrientation_t orientation);
 #endif
 
 private:

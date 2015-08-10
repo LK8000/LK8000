@@ -33,6 +33,8 @@ void PlayResource (const TCHAR* lpName);
 inline SoundGlobalInit::SoundGlobalInit() {}
 inline SoundGlobalInit::~SoundGlobalInit() {}
 
+inline bool IsSoundInit() { return false; }
+
 inline bool SetSoundVolume() { return false; }
 
 inline void LKSound(const TCHAR *lpName) { }

@@ -1,15 +1,17 @@
 # Event Library imported from xcsoar
 
-XCS_EVENT_CONSOLE := \
+XCS_EVENT_POLL := \
         $(SRC)/xcs/Event/Poll/Loop.cpp \
 	$(SRC)/xcs/Event/Poll/Queue.cpp \
+	$(SRC)/xcs/Event/Poll/Linux/SignalListener.cpp \
+	
+XCS_EVENT_CONSOLE := \
 	$(SRC)/xcs/Event/Poll/InputQueue.cpp \
 
 XCS_EVENT_LINUX := \
 	$(SRC)/xcs/Event/Poll/Linux/AllInput.cpp \
 	$(SRC)/xcs/Event/Poll/Linux/Input.cpp \
 	$(SRC)/xcs/Event/Poll/Linux/MergeMouse.cpp \
-	$(SRC)/xcs/Event/Poll/Linux/SignalListener.cpp \
 
 unused = \
 	$(SRC)/xcs/Event/Poll/Linux/TTYKeyboard.cpp \
@@ -27,6 +29,9 @@ XCS_EVENT_GDI := \
 XCS_EVENT_SDL := \
 	$(SRC)/xcs/Event/SDL/Loop.cpp \
 	$(SRC)/xcs/Event/SDL/Queue.cpp \
+
+XCS_EVENT_X11 := \
+	$(SRC)/xcs/Event/Poll/X11Queue.cpp \
 	
 
 XCS_EVENT := \
@@ -40,20 +45,28 @@ ifeq ($(CONFIG_LINUX),y)
 XCS_EVENT += \
 	
 
-ifeq ($(USE_SDL),y)
-# linux target with SDL Event
-XCS_EVENT += \
-	$(XCS_EVENT_SDL) \
+    ifeq ($(USE_SDL),y)
+	# linux target with SDL Event
+	XCS_EVENT += \
+	    $(XCS_EVENT_SDL) \
 
-else
-# linux target with console event
-
-
-XCS_EVENT += \
-	$(XCS_EVENT_CONSOLE) \
-	$(XCS_EVENT_LINUX) \
+    else
+	XCS_EVENT += \
+	    $(XCS_EVENT_LINUX) \
+	    $(XCS_EVENT_POLL) \
 	
-endif
+        ifeq ($(OPENGL), y)
+	    # linux target with X11 event
+	    XCS_EVENT += \
+		$(XCS_EVENT_X11) \
+	
+	else
+	    # linux target with console event
+	    XCS_EVENT += \
+		$(XCS_EVENT_CONSOLE) \
+	
+	endif
+    endif
 
 else
 # win32

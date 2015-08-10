@@ -157,7 +157,7 @@ BufferCanvas::Begin(Canvas &other)
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
     old_orientation = OpenGL::display_orientation;
-    OpenGL::display_orientation = DisplayOrientation::DEFAULT;
+    OpenGL::display_orientation = DisplayOrientation_t::DEFAULT;
 #endif
 
     /* configure a new viewport */

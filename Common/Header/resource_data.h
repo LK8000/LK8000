@@ -12,6 +12,7 @@
 #define	resource_data_h
 
 #include "Util/ConstBuffer.hpp"
+#include <string.h>
 
 // for avoid uneeded copy when data is string, all resource are null termined!
 
