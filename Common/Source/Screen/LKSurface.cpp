@@ -232,12 +232,18 @@ void LKSurface::Polygon(const POINT *apt, int cpt) {
 
 void LKSurface::Polygon(const POINT *apt, int cpt, const RECT& ClipRect) {
     if(cpt>=3) {
+#ifdef ENABLE_OPENGL
+        const GLPushScissor push_scissor();
+        const GLCanvasScissor scissor(ClipRect);
+        Polygon(apt, cpt);
+#else
         std::vector<POINT> Clipped;
         Clipped.reserve(cpt);
         LKGeom::ClipPolygon(ClipRect, const_array_adaptor<POINT>(apt, cpt), Clipped);
         if(Clipped.size() >= 3) {
             Polygon(Clipped.data(), Clipped.size());
         }
+#endif
     }
 }
 
