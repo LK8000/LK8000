@@ -111,6 +111,10 @@ public:
     return color.IsTransparent();
   }
 
+  constexpr bool IsOpaque() const {
+    return color.IsOpaque();
+  }
+
   const Color GetColor() const { return color; }
 #else
   /**

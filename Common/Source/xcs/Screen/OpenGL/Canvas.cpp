@@ -55,6 +55,7 @@ Copyright_License {
 #include "Util/UTF8.hpp"
 #endif
 
+#include "utils/make_unique.h"
 #include <assert.h>
 
 AllocatedArray<RasterPoint> Canvas::vertex_buffer;
@@ -68,6 +69,11 @@ Canvas::DrawFilledRectangle(int left, int top, int right, int bottom,
 #endif
 
   color.Bind();
+
+  std::unique_ptr<const GLBlend> blend; 
+  if(!color.IsOpaque()) {
+      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
 
 #ifdef HAVE_GLES
   const RasterPoint vertices[] = {
@@ -162,7 +168,12 @@ Canvas::DrawPolygon(const RasterPoint *points, unsigned num_points)
 
   if (!brush.IsHollow() && num_points >= 3) {
     brush.Bind();
-
+    
+    std::unique_ptr<const GLBlend> blend; 
+    if(!brush.IsOpaque()) {
+      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+    
     static AllocatedArray<GLushort> triangle_buffer;
     unsigned idx_count = PolygonToTriangles(points, num_points,
                                             triangle_buffer);
