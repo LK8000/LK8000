@@ -160,3 +160,29 @@ TopWindow::OnClose()
   Destroy();
   return true;
 }
+
+void
+TopWindow::OnDestroy() {
+  
+#ifdef KOBO
+  /* clear the screen before exiting XCSoar */
+  Canvas canvas = screen->Lock();
+  if (canvas.IsDefined()) {
+    canvas.Clear(COLOR_BLACK);
+    screen->Flip();
+    screen->Wait();
+
+    canvas.ClearWhite();
+    screen->Unlock();
+    screen->Flip();
+  }
+#endif
+
+#ifndef USE_GDI    
+  delete screen;
+  screen = nullptr;
+#endif
+  
+  ContainerWindow::OnDestroy();
+}
+

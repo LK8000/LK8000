@@ -283,10 +283,14 @@ TopCanvas::CreateEGL(EGLNativeDisplayType native_display,
 void
 TopCanvas::Destroy()
 {
-  eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-  eglDestroySurface(display, surface);
-  eglDestroyContext(display, context);
-  eglTerminate(display);
+  if(display != EGL_NO_DISPLAY) {
+    eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglDestroySurface(display, surface);
+    eglDestroyContext(display, context);
+    eglTerminate(display);
+    
+    display = EGL_NO_DISPLAY;
+  }
 
 #ifdef USE_TTY
   DeinitialiseTTY();

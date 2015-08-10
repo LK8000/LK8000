@@ -56,26 +56,6 @@ TopWindow::Invalidate()
   invalidated = true;
 }
 
-#ifdef KOBO
-void
-TopWindow::OnDestroy()
-{
-  /* clear the screen before exiting XCSoar */
-  Canvas canvas = screen->Lock();
-  if (canvas.IsDefined()) {
-    canvas.Clear(COLOR_BLACK);
-    screen->Flip();
-    screen->Wait();
-
-    canvas.ClearWhite();
-    screen->Unlock();
-    screen->Flip();
-  }
-
-  ContainerWindow::OnDestroy();
-}
-#endif
-
 void
 TopWindow::OnResize(PixelSize new_size)
 {

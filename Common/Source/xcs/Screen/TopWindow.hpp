@@ -396,10 +396,8 @@ protected:
   virtual bool OnDeactivate();
 
   virtual bool OnClose();
-
-#ifdef KOBO
+  
   virtual void OnDestroy() override;
-#endif
 
 #ifdef DRAW_MOUSE_CURSOR
   virtual void OnPaint(Canvas &canvas) override;
