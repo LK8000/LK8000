@@ -75,9 +75,11 @@ void ReinitScreen(void) {
   #if TESTBENCH
   StartupStore(_T("... ChangeScreen suspending Draw Thread\n"));
   #endif
+
+#ifndef ENABLE_OPENGL  
   MapWindow::SuspendDrawingThread();
   Poco::Mutex::ScopedLock Lock(MapWindow::Surface_Mutex);
-
+#endif
 
   // MapWndProc will get a WM_SIZE 
 

@@ -93,6 +93,7 @@ void MapWindow::Initialize() {
     drawTriggerEvent.set();
 }
 
+#ifndef ENABLE_OPENGL
 void MapWindow::DrawThread ()
 {
   while ((!ProgramStarted) || (!Initialised)) {
@@ -264,10 +265,9 @@ _dontbitblt:
 	RenderMapWindow(DrawSurface, MapRect);
     
 	if (!ForceRenderMap && !first_run) {
-		BackBufferSurface.Copy(MapRect.left, MapRect.top,
-			MapRect.right-MapRect.left,
-			MapRect.bottom-MapRect.top, 
-			DrawSurface, MapRect.left, MapRect.top);
+            BackBufferSurface.Copy(MapRect.left, MapRect.top,
+                MapRect.right-MapRect.left, MapRect.bottom-MapRect.top, 
+                DrawSurface, MapRect.left, MapRect.top);
 
 	}
 
@@ -304,9 +304,12 @@ _dontbitblt:
   THREADEXIT = TRUE;
 
 }
+#endif
 
+#ifndef ENABLE_OPENGL
 Poco::ThreadTarget MapWindow::MapWindowThreadRun(MapWindow::DrawThread);
 Poco::Thread MapWindowThread;
+#endif
 
 void MapWindow::CreateDrawingThread(void)
 {
@@ -314,32 +317,43 @@ void MapWindow::CreateDrawingThread(void)
 
   CLOSETHREAD = FALSE;
   THREADEXIT = FALSE;
+
+    
+#ifndef ENABLE_OPENGL  
   MapWindowThread.start(MapWindowThreadRun);
   MapWindowThread.setPriority(Poco::Thread::PRIO_NORMAL);
+#else
+  ProgramStarted = psFirstDrawDone;
+#endif
 }
 
 void MapWindow::SuspendDrawingThread(void)
 {
+#ifndef ENABLE_OPENGL    
   LockTerrainDataGraphics();
   THREADRUNNING = FALSE;
   UnlockTerrainDataGraphics();
   //  SuspendThread(hDrawThread);
+#endif  
 }
 
 
 
 void MapWindow::ResumeDrawingThread(void)
 {
+#ifndef ENABLE_OPENGL    
   LockTerrainDataGraphics();
   THREADRUNNING = TRUE;
   UnlockTerrainDataGraphics();
   //  ResumeThread(hDrawThread);
+#endif
 }
 
 
 
 void MapWindow::CloseDrawingThread(void)
 {
+#ifndef ENABLE_OPENGL    
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread started\n"));
   #endif
@@ -363,6 +377,10 @@ void MapWindow::CloseDrawingThread(void)
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread finished\n"));
   #endif
+#else
+  CLOSETHREAD = TRUE;
+  THREADEXIT = TRUE;
+#endif
 }
 
 //

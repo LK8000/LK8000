@@ -263,11 +263,21 @@ bool WndMain::OnSize(int cx, int cy) {
 
 extern StartupState_t ProgramStarted;
 bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
+#ifdef ENABLE_OPENGL
+    if (ProgramStarted==psInitDone) {
+        ProgramStarted = psFirstDrawDone;
+    }
+    if(ProgramStarted >= psFirstDrawDone) {
+        Surface.Whiteness(Rect.left, Rect.right, Rect.GetSize().cx, Rect.GetSize().cy);
+    }
+#else
     if(ProgramStarted >= psFirstDrawDone) {
         Surface.Copy(Rect.left, Rect.top, Rect.right - Rect.left, Rect.bottom - Rect.top, BackBufferSurface, Rect.left, Rect.top);
     } else {
-        
-    }
+
+	}
+
+#endif
     return true;
 }
 

@@ -719,11 +719,11 @@ private:
 
   static void CalculateOrigin(const RECT& rc, POINT *Orig);
 
-
+#ifndef ENABLE_OPENGL
   static void DrawThread ();
-
   static Poco::ThreadTarget MapWindowThreadRun;
-
+#endif
+  
   static void RenderMapWindow(LKSurface& Surface, const RECT& rc);
   static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
 				const POINT &Orig,
