@@ -244,14 +244,18 @@ USE_SDL := n
 GREYSCALE := y
 CE_DEFS += -DKOBO
 USE_SOUND_EXTDEV := y
-
+CE_DEFS += -DUSE_MEMORY_CANVAS	
 else
 USE_SDL := y
 GREYSCALE := n
 USE_SOUND_EXTDEV := n
-endif
+OPENGL := y
 	
-CE_DEFS += -DUSE_MEMORY_CANVAS	
+CE_DEFS += -DENABLE_OPENGL -DGL_GLEXT_PROTOTYPES
+
+endif
+
+
 
 ifeq ($(USE_SDL),y)
 CE_DEFS += -DENABLE_SDL
@@ -429,6 +433,10 @@ LDFLAGS		+=$(PROFILE) -Wl,-Map=output.map
 ifeq ($(CONFIG_LINUX),y)
   LDLIBS += -lstdc++ -pthread -march=native -lpng -lrt -lm $(FREETYPE_LDLIBS)  $(ZZIP_LDLIBS)
   
+  ifeq ($(OPENGL),y)
+    LDLIBS += -lGL
+  endif
+
   ifeq ($(USE_SDL), y)
     LDLIBS += $(SDL_LDLIBS)
     LDLIBS += $(SDL_MIXER_LDLIBS)

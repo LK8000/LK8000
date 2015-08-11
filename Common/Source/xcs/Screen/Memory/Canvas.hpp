@@ -43,20 +43,6 @@ Copyright_License {
 #undef TRANSPARENT
 #endif
 
-#ifndef WIN32
-// DrawText Format.
-#define DT_LEFT         0x00000000
-#define DT_CENTER       0x00000001
-#define DT_RIGHT        0x00000002
-#define DT_VCENTER      0x00000004
-#define DT_WORDBREAK    0x00000010
-#define DT_SINGLELINE   0x00000020
-#define DT_EXPANDTABS   0x00000040
-#define DT_NOCLIP       0x00000100
-#define DT_CALCRECT     0x00000400
-#define DT_UNDERLINE    0x00000800
-#endif
-
 class Angle;
 class Bitmap;
 

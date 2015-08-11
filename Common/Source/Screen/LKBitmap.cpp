@@ -12,6 +12,7 @@
 #include <utility>
 #include "tchar.h"
 #include "LKBitmap.h"
+#include <limits>
 
 #ifndef WIN32
 #include "resource_data.h"
@@ -24,7 +25,7 @@ LKBitmap::LKBitmap(LKBitmap&& Bitmap) {
 #elif defined(USE_MEMORY_CANVAS)
     std::swap(buffer, Bitmap.buffer);
 #else
-#error "Not Implemented"
+#warning "Not Implemented"
 #endif
 }
 
@@ -42,7 +43,7 @@ LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
 #elif defined(USE_MEMORY_CANVAS)
     std::swap(buffer, Bitmap.buffer);
 #else
-#error "Not Implemented"
+#warning "Not Implemented"
 #endif
     return * this;
 }

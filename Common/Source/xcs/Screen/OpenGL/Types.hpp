@@ -21,31 +21,48 @@ Copyright_License {
 }
 */
 
-#ifndef XCSOAR_SCREEN_CANVAS_HPP
-#define XCSOAR_SCREEN_CANVAS_HPP
+#ifndef XCSOAR_SCREEN_OPENGL_TYPES_HPP
+#define XCSOAR_SCREEN_OPENGL_TYPES_HPP
 
-#ifndef WIN32
-// DrawText Format.
-#define DT_LEFT         0x00000000
-#define DT_CENTER       0x00000001
-#define DT_RIGHT        0x00000002
-#define DT_VCENTER      0x00000004
-#define DT_WORDBREAK    0x00000010
-#define DT_SINGLELINE   0x00000020
-#define DT_EXPANDTABS   0x00000040
-#define DT_NOCLIP       0x00000100
-#define DT_CALCRECT     0x00000400
-#define DT_UNDERLINE    0x00000800
-#endif
+#include "Features.hpp"
+#include "System.hpp"
 
-#ifdef ENABLE_OPENGL
-#include "Screen/OpenGL/Canvas.hpp"
-#elif defined(USE_MEMORY_CANVAS)
-#include "Screen/Memory/Canvas.hpp"
-#elif defined(USE_GDI)
-#include "Screen/GDI/Canvas.hpp"
+#ifdef HAVE_GLES
+
+/**
+ * A position component in the OpenGL surface.
+ */
+typedef GLshort GLvalue;
+typedef GLushort GLuvalue;
+static constexpr GLenum GL_VALUE = GL_SHORT;
+
+typedef GLfixed GLexact;
+static constexpr GLenum GL_EXACT = GL_FIXED;
+
+constexpr static inline GLexact
+ToGLexact(GLvalue value)
+{
+  return (GLexact(value) << 16) + 0x8000;
+}
+
 #else
-#error No Canvas implementation
+
+/**
+ * A position component in the OpenGL surface.
+ */
+typedef GLint GLvalue;
+typedef GLuint GLuvalue;
+static constexpr GLenum GL_VALUE = GL_INT;
+
+typedef GLfloat GLexact;
+static constexpr GLenum GL_EXACT = GL_FLOAT;
+
+constexpr static inline GLexact
+ToGLexact(GLvalue value)
+{
+  return GLexact(value) + 0.5;
+}
+
 #endif
 
 #endif

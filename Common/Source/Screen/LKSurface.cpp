@@ -22,6 +22,18 @@
 #include "utils/array_adaptor.h"
 #include "Screen/LKBitmapSurface.h"
 
+#ifdef ENABLE_OPENGL
+#include "Screen/OpenGL/Texture.hpp"
+#include "Screen/OpenGL/Scope.hpp"
+
+#ifdef USE_GLSL
+#include "Screen/OpenGL/Shaders.hpp"
+#include "Screen/OpenGL/Program.hpp"
+#else
+#include "Screen/OpenGL/Compatibility.hpp"
+#endif
+#endif
+
 #ifdef WIN32
 
 LKSurface::LKSurface() : _OutputDC(), _AttribDC(), _TempDC() {
@@ -145,6 +157,19 @@ void LKSurface::DrawMaskedBitmap(const int x, const int y, const int cx, const i
     }
 
     ::SelectObject(GetTempDC(), old);
+#elif defined(ENABLE_OPENGL)
+#ifdef USE_GLSL
+  OpenGL::texture_shader->Use();
+#else
+  const GLEnable<GL_TEXTURE_2D> scope;
+  OpenGL::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+#endif
+  const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  GLTexture &texture = *Bitmap.GetNative();
+  texture.Bind();
+  texture.Draw(x, y, cx, cy,  0, 0, cxSrc, cySrc);
+
 #else
     if(_pCanvas && Bitmap.IsDefined()) {
         if (cxSrc != cx || cySrc != cy) {
@@ -191,6 +216,10 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
     }
 
     ::SelectObject(GetTempDC(), old);
+#elif defined(ENABLE_OPENGL)
+    if(_pCanvas && Bitmap.IsDefined()) {
+        _pCanvas->Stretch(x, y, cx, cy, Bitmap, 0, 0, cxSrc, cySrc);
+    }
 #else
     if(_pCanvas && Bitmap.IsDefined()) {
         if (cxSrc != cx || cySrc != cy) {
@@ -219,6 +248,10 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
     ::BitBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, SRCPAINT);
     ::SelectObject(GetTempDC(), old);
+#elif defined(ENABLE_OPENGL)
+    if(_pCanvas && Bitmap.IsDefined()) {
+        _pCanvas->Stretch(x, y, cx, cy, Bitmap, 0, 0, cx, cy);
+    }
 #else
     if(_pCanvas && Bitmap.IsDefined()) {
         _pCanvas->CopyOr(x, y, cx, cy, Bitmap, 0, 0);
@@ -397,11 +430,14 @@ void LKSurface::FillRect(const RECT *lprc, const BrushReference Brush) {
 bool LKSurface::Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc) {
 #ifdef WIN32
     return ::BitBlt(*this, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc, SRCCOPY);
-#else
+#elif !defined(ENABLE_OPENGL)
     if(_pCanvas && Surface.IsDefined()) {
         _pCanvas->Copy(nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc);
         return true;
     }
+    return false;
+#else
+#warning "not implemented"
     return false;
 #endif
 }
@@ -431,11 +467,14 @@ bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int
 #else
     return ::TransparentBlt(*this, xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc, wDest, hDest, COLOR_WHITE);
 #endif
-#else
+#elif !defined(ENABLE_OPENGL)
     if(_pCanvas && Surface.IsDefined()) {
         _pCanvas->CopyTransparentWhite(xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc);
         return true;
     }
+    return false;
+#else
+#warning "Not Implemented"
     return false;
 #endif
 }
@@ -444,11 +483,14 @@ bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int
 bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmapSurface& bmpMask, int xMask, int yMask) {
 #ifdef WIN32
     return ::MaskBlt(*this, nXDest, nYDest, nWidth, nHeight, hdcSrc, nXSrc, nYSrc, bmpMask, xMask, yMask, MAKEROP4(SRCAND,  0x00AA0029));
-#else
+#elif !defined(ENABLE_OPENGL)
     Canvas& buffer = hdcSrc;
     buffer.CopyNotOr(nXDest, nYDest, nWidth, nHeight, bmpMask, xMask, yMask);
     _pCanvas->Copy(nXDest, nYDest, nWidth, nHeight, buffer, nXSrc, nYSrc);
     return true;
+#else
+#warning "Not Implemented"
+    return false;
 #endif
 }
 
@@ -526,12 +568,15 @@ bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const 
 
     return true; // always return true because always implemented on Windows PC
 #endif
-#else
+#elif !defined(ENABLE_OPENGL)
     if(_pCanvas) {
         _pCanvas->AlphaBlend(dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
                         Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, globalOpacity);
         return true;
     }
+    return false;
+#else
+#warning "Not Implmented"
     return false;
 #endif    
 }
@@ -649,11 +694,14 @@ void LKSurface::Rectangle(int nLeftRect, int nTopRect, int nRightRect, int nBott
 bool LKSurface::InvertRect(const RECT& rc) {
 #ifdef WIN32
     return ::InvertRect(*this, &rc);
-#else
+#elif !defined(ENABLE_OPENGL)
     if(_pCanvas) {
         _pCanvas->InvertRectangle(rc);
         return true;
     }
+    return false;
+#else
+#warning "Not Implemented"
     return false;
 #endif
 }

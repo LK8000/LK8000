@@ -48,6 +48,25 @@ XCS_SCREEN_SDL:= \
 	$(SRC)/xcs/Screen/SDL/TopCanvas.cpp \
 	$(SRC)/xcs/Screen/SDL/SingleWindow.cpp \
 	$(SRC)/xcs/Screen/SDL/Init.cpp \
+	
+XCS_SCREEN_OPENGL := \
+	$(SRC)/xcs/Screen/OpenGL/Bitmap.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Buffer.cpp \
+	$(SRC)/xcs/Screen/OpenGL/BufferCanvas.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Canvas.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Extension.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Globals.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Init.cpp \
+	$(SRC)/xcs/Screen/OpenGL/RawBitmap.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Shapes.cpp \
+	$(SRC)/xcs/Screen/OpenGL/SubCanvas.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Surface.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Texture.cpp \
+	$(SRC)/xcs/Screen/OpenGL/UncompressedImage.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Triangulate.cpp \
+	$(SRC)/xcs/Screen/OpenGL/VertexArray.cpp \
+	\
+	$(SRC)/xcs/Math/Angle.cpp \
 
 XCS_SCREEN := \
 	$(SRC)/xcs/Screen/Util.cpp \
@@ -78,7 +97,6 @@ ifeq ($(CONFIG_LINUX),y)
 
 XCS_SCREEN += \
 	$(XCS_SCREEN_FREETYPE) \
-	$(XCS_SCREEN_MEMORY) \
 	$(XCS_SCREEN_TTY) \
 	$(XCS_SCREEN_CUSTOM) \
 	\
@@ -87,7 +105,9 @@ XCS_SCREEN += \
 	$(XCS_UTILS) \
 	$(XCS_IO_ASYNC) \
 	$(XCS_HARDWARE) \
-
+	$(SRC)/xcs/Screen/Debug.cpp \
+	$(SRC)/xcs/Thread/Debug.cpp \
+	
 
 
 ifeq ($(USE_SDL),y)
@@ -102,11 +122,21 @@ XCS_SCREEN += \
 	$(XCS_SCREEN_FB) \
 
 endif
+
+ifeq ($(OPENGL),y)
+XCS_SCREEN += \
+	$(XCS_SCREEN_OPENGL) \
+
+else
+XCS_SCREEN += \
+	$(XCS_SCREEN_MEMORY) \
+	
+endif
 	
 else
 #win32
 
-XCS_SCREEN := \
+XCS_SCREEN = \
     $(XCS_SCREEN_GDI) \
     $(SRC)/xcs/Screen/Debug.cpp \
     $(SRC)/xcs/Thread/Debug.cpp \

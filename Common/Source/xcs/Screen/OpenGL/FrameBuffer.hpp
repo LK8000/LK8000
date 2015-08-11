@@ -21,31 +21,43 @@ Copyright_License {
 }
 */
 
-#ifndef XCSOAR_SCREEN_CANVAS_HPP
-#define XCSOAR_SCREEN_CANVAS_HPP
+#ifndef XCSOAR_OPENGL_FRAME_BUFFER_HPP
+#define XCSOAR_OPENGL_FRAME_BUFFER_HPP
 
-#ifndef WIN32
-// DrawText Format.
-#define DT_LEFT         0x00000000
-#define DT_CENTER       0x00000001
-#define DT_RIGHT        0x00000002
-#define DT_VCENTER      0x00000004
-#define DT_WORDBREAK    0x00000010
-#define DT_SINGLELINE   0x00000020
-#define DT_EXPANDTABS   0x00000040
-#define DT_NOCLIP       0x00000100
-#define DT_CALCRECT     0x00000400
-#define DT_UNDERLINE    0x00000800
-#endif
+#include "FBO.hpp"
 
-#ifdef ENABLE_OPENGL
-#include "Screen/OpenGL/Canvas.hpp"
-#elif defined(USE_MEMORY_CANVAS)
-#include "Screen/Memory/Canvas.hpp"
-#elif defined(USE_GDI)
-#include "Screen/GDI/Canvas.hpp"
-#else
-#error No Canvas implementation
-#endif
+/**
+ * Wrapper for an OpenGL framebuffer object.  You must check
+ * OpenGL::frame_buffer_object before using this class.
+ */
+class GLFrameBuffer {
+  GLuint id;
+
+public:
+  GLFrameBuffer() {
+    Gen();
+  }
+
+  ~GLFrameBuffer() {
+    Delete();
+  }
+
+  void Bind() {
+    FBO::BindFramebuffer(FBO::FRAMEBUFFER, id);
+  }
+
+  static void Unbind() {
+    FBO::BindFramebuffer(FBO::FRAMEBUFFER, 0);
+  }
+
+protected:
+  void Gen() {
+    FBO::GenFramebuffers(1, &id);
+  }
+
+  void Delete() {
+    FBO::DeleteFramebuffers(1, &id);
+  }
+};
 
 #endif

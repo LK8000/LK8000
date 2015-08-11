@@ -21,31 +21,24 @@ Copyright_License {
 }
 */
 
-#ifndef XCSOAR_SCREEN_CANVAS_HPP
-#define XCSOAR_SCREEN_CANVAS_HPP
+#ifndef XCSOAR_SCREEN_OPENGL_POINT_HPP
+#define XCSOAR_SCREEN_OPENGL_POINT_HPP
 
-#ifndef WIN32
-// DrawText Format.
-#define DT_LEFT         0x00000000
-#define DT_CENTER       0x00000001
-#define DT_RIGHT        0x00000002
-#define DT_VCENTER      0x00000004
-#define DT_WORDBREAK    0x00000010
-#define DT_SINGLELINE   0x00000020
-#define DT_EXPANDTABS   0x00000040
-#define DT_NOCLIP       0x00000100
-#define DT_CALCRECT     0x00000400
-#define DT_UNDERLINE    0x00000800
-#endif
+#include "Screen/OpenGL/Types.hpp"
 
-#ifdef ENABLE_OPENGL
-#include "Screen/OpenGL/Canvas.hpp"
-#elif defined(USE_MEMORY_CANVAS)
-#include "Screen/Memory/Canvas.hpp"
-#elif defined(USE_GDI)
-#include "Screen/GDI/Canvas.hpp"
-#else
-#error No Canvas implementation
-#endif
+typedef GLvalue PixelScalar;
+typedef GLuvalue UPixelScalar;
+
+#include "Screen/Custom/Point.hpp"
+
+struct ExactRasterPoint : Point2D<GLexact> {
+  ExactRasterPoint() = default;
+
+  constexpr ExactRasterPoint(GLexact _x, GLexact _y)
+    :Point2D<GLexact>(_x, _y) {}
+
+  constexpr ExactRasterPoint(RasterPoint p)
+    :Point2D<GLexact>(ToGLexact(p.x), ToGLexact(p.y)) {}
+};
 
 #endif

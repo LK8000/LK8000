@@ -21,31 +21,46 @@ Copyright_License {
 }
 */
 
-#ifndef XCSOAR_SCREEN_CANVAS_HPP
-#define XCSOAR_SCREEN_CANVAS_HPP
+#include "Screen/OpenGL/Globals.hpp"
+#include "Screen/OpenGL/Debug.hpp"
+#include "Point.hpp"
 
-#ifndef WIN32
-// DrawText Format.
-#define DT_LEFT         0x00000000
-#define DT_CENTER       0x00000001
-#define DT_RIGHT        0x00000002
-#define DT_VCENTER      0x00000004
-#define DT_WORDBREAK    0x00000010
-#define DT_SINGLELINE   0x00000020
-#define DT_EXPANDTABS   0x00000040
-#define DT_NOCLIP       0x00000100
-#define DT_CALCRECT     0x00000400
-#define DT_UNDERLINE    0x00000800
+namespace OpenGL {
+#ifdef HAVE_DYNAMIC_EGL
+  bool egl;
 #endif
 
-#ifdef ENABLE_OPENGL
-#include "Screen/OpenGL/Canvas.hpp"
-#elif defined(USE_MEMORY_CANVAS)
-#include "Screen/Memory/Canvas.hpp"
-#elif defined(USE_GDI)
-#include "Screen/GDI/Canvas.hpp"
-#else
-#error No Canvas implementation
+  bool texture_non_power_of_two;
+
+#ifdef HAVE_OES_DRAW_TEXTURE
+  bool oes_draw_texture;
 #endif
 
+#ifdef ANDROID
+  bool vertex_buffer_object;
 #endif
+
+#ifdef HAVE_OES_MAPBUFFER
+  bool mapbuffer;
+#endif
+
+  bool frame_buffer_object;
+
+  GLenum render_buffer_depth_stencil, render_buffer_stencil;
+
+  Point2D<unsigned> window_size, viewport_size;
+
+#ifdef SOFTWARE_ROTATE_DISPLAY
+  DisplayOrientation display_orientation;
+#endif
+
+  RasterPoint translate;
+
+#ifdef USE_GLSL
+  glm::mat4 projection_matrix;
+#endif
+
+#ifndef NDEBUG
+  pthread_t thread;
+#endif
+};

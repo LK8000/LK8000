@@ -26,9 +26,6 @@ void MapWindow::DrawTerrainAbove(LKSurface& Surface, const RECT& rc) {
   if (DerivedDrawInfo.Flying) goto _doit;
 
   return;
-#if !defined(USE_MEMORY_CANVAS) && !defined(HAVE_HATCHED_BRUSH) 
-#error "Shading Glide not supported"
-#endif
 
 _doit:
 
@@ -56,8 +53,10 @@ _doit:
           rc.right-rc.left,rc.bottom-rc.top,
           TempSurface,
           rc.left,rc.top);
-#else
+#elif !defined(ENABLE_OPENGL)
   Surface.AlphaBlendNotWhite(rc, TempSurface, rc, 255/2);
+#else
+#warning "Shading Glide not supported"  
 #endif
 
   // restore original color

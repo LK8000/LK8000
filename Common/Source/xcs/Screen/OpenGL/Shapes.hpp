@@ -1,7 +1,7 @@
 /*
 Copyright_License {
 
-  XCSoar Glide Computer - http://www.xcsoar.org/
+  XCSoar Glide Compute5r - http://www.xcsoar.org/
   Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
@@ -21,31 +21,19 @@ Copyright_License {
 }
 */
 
-#ifndef XCSOAR_SCREEN_CANVAS_HPP
-#define XCSOAR_SCREEN_CANVAS_HPP
+#ifndef XCSOAR_SCREEN_OPENGL_SHAPES_HPP
+#define XCSOAR_SCREEN_OPENGL_SHAPES_HPP
 
-#ifndef WIN32
-// DrawText Format.
-#define DT_LEFT         0x00000000
-#define DT_CENTER       0x00000001
-#define DT_RIGHT        0x00000002
-#define DT_VCENTER      0x00000004
-#define DT_WORDBREAK    0x00000010
-#define DT_SINGLELINE   0x00000020
-#define DT_EXPANDTABS   0x00000040
-#define DT_NOCLIP       0x00000100
-#define DT_CALCRECT     0x00000400
-#define DT_UNDERLINE    0x00000800
-#endif
+class GLFallbackArrayBuffer;
 
-#ifdef ENABLE_OPENGL
-#include "Screen/OpenGL/Canvas.hpp"
-#elif defined(USE_MEMORY_CANVAS)
-#include "Screen/Memory/Canvas.hpp"
-#elif defined(USE_GDI)
-#include "Screen/GDI/Canvas.hpp"
-#else
-#error No Canvas implementation
-#endif
+namespace OpenGL {
+  static constexpr unsigned CIRCLE_SIZE = 32;
+  static constexpr unsigned SMALL_CIRCLE_SIZE = 8;
+
+  extern GLFallbackArrayBuffer *circle_buffer, *small_circle_buffer;
+
+  void InitShapes();
+  void DeinitShapes();
+};
 
 #endif
