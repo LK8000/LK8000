@@ -93,6 +93,8 @@ public:
   Canvas(const Canvas &other) = delete;
   Canvas &operator=(const Canvas &other) = delete;
 
+  virtual ~Canvas() { }
+  
   void Create(PixelSize _size) {
     size = _size;
   }
@@ -224,7 +226,7 @@ public:
 
   void DrawOutlineRectangle(int left, int top, int right, int bottom) {
     pen.Bind();
-    OutlineRectangleGL(left, top, right, bottom);
+    OutlineRectangleGL(left, top, right-pen.GetWidth(), bottom-pen.GetWidth());
     pen.Unbind();
   }
 

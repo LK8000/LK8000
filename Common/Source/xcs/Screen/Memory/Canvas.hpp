@@ -78,6 +78,8 @@ public:
   void Create(WritableImageBuffer<ActivePixelTraits> _buffer) {
     buffer = _buffer;
   }
+  
+  virtual ~Canvas() { }
 
 protected:
   /**
