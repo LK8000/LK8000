@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -27,90 +27,29 @@ Copyright_License {
 
 EventQueue::EventQueue()
   :SignalListener(io_loop),
-   thread(Poco::Thread::current()),
+   thread(ThreadHandle::GetCurrent()),
    now_us(MonotonicClockUS()),
 #ifndef NON_INTERACTIVE
-#ifdef USE_LIBINPUT
-   libinput_handler(io_loop, *this),
-#else
-#ifdef KOBO
-   keyboard(io_loop, *this, merge_mouse),
-#elif !defined(USE_LINUX_INPUT)
-   keyboard(*this, io_loop),
+   input_queue(io_loop, *this),
 #endif
-#ifdef KOBO
-   mouse(io_loop, *this, merge_mouse),
-#elif defined(USE_LINUX_INPUT)
-   all_input(io_loop, *this, merge_mouse),
-#else
-   mouse(io_loop, merge_mouse),
-#endif
-#endif
-#endif
-   running(true)
+   quit(false)
 {
   SignalListener::Create(SIGINT, SIGTERM);
 
   event_pipe.Create();
   io_loop.Add(event_pipe.GetReadFD(), io_loop.READ, discard);
-
-#ifndef NON_INTERACTIVE
-#ifdef USE_LIBINPUT
-  libinput_handler.Open();
-#else
-#ifdef KOBO
-  /* power button */
-  keyboard.Open("/dev/input/event0");
-
-  /* Kobo touch screen */
-  mouse.Open("/dev/input/event1");
-#elif defined(USE_LINUX_INPUT)
-  all_input.Open();
-#else
-  mouse.Open();
-#endif
-#endif
-#endif
 }
 
 EventQueue::~EventQueue()
 {
+  io_loop.Remove(event_pipe.GetReadFD());
+  SignalListener::Destroy();
 }
-
-#if !defined(NON_INTERACTIVE) && !defined(USE_LIBINPUT)
-
-void
-EventQueue::SetMouseRotation(DisplayOrientation_t orientation)
-{
-  switch (orientation) {
-  case DisplayOrientation_t::DEFAULT:
-  case DisplayOrientation_t::PORTRAIT:
-    SetMouseRotation(true, true, false);
-    break;
-
-  case DisplayOrientation_t::LANDSCAPE:
-    SetMouseRotation(false, false, false);
-    break;
-
-  case DisplayOrientation_t::REVERSE_PORTRAIT:
-    SetMouseRotation(true, false, true);
-    break;
-
-  case DisplayOrientation_t::REVERSE_LANDSCAPE:
-    SetMouseRotation(false, true, true);
-    break;
-  }
-}
-
-#endif
 
 void
 EventQueue::Push(const Event &event)
 {
-  Poco::ScopedLock<Poco::Mutex> protect(mutex);
-  if (!running)
-    return;
-
+  ScopeLock protect(mutex);
   events.push(event);
   WakeUp();
 }
@@ -152,9 +91,8 @@ EventQueue::Generate(Event &event)
     return true;
   }
 
-#if !defined(NON_INTERACTIVE) && !defined(USE_LIBINPUT)
-  event = merge_mouse.Generate();
-  if (event.type != Event::Type::NOP)
+#ifndef NON_INTERACTIVE
+  if (input_queue.Generate(event))
     return true;
 #endif
 
@@ -164,8 +102,11 @@ EventQueue::Generate(Event &event)
 bool
 EventQueue::Pop(Event &event)
 {
-  Poco::ScopedLock<Poco::Mutex> protect(mutex);
-  if (!running || events.empty())
+  if (quit)
+    return false;
+
+  ScopeLock protect(mutex);
+  if (events.empty())
     return false;
 
   if (events.empty()) {
@@ -176,30 +117,27 @@ EventQueue::Pop(Event &event)
   event = events.front();
   events.pop();
 
-  if (event.type == Event::QUIT)
-    Quit();
-
   return true;
 }
 
 bool
 EventQueue::Wait(Event &event)
 {
-  Poco::ScopedLock<Poco::Mutex> protect(mutex);
-  if (!running)
+  if (quit)
     return false;
+
+  ScopeLock protect(mutex);
 
   if (events.empty()) {
     if (Generate(event))
       return true;
 
     while (events.empty()) {
-      if (!running)
-        return false;
-
-      mutex.unlock();
+      mutex.Unlock();
       Poll();
-      mutex.lock();
+      mutex.Lock();
+      if (quit)
+        return false;
 
       if (Generate(event))
         return true;
@@ -209,16 +147,13 @@ EventQueue::Wait(Event &event)
   event = events.front();
   events.pop();
 
-  if (event.type == Event::QUIT)
-    Quit();
-
   return true;
 }
 
 void
 EventQueue::Purge(bool (*match)(const Event &event, void *ctx), void *ctx)
 {
-  Poco::ScopedLock<Poco::Mutex> protect(mutex);
+  ScopeLock protect(mutex);
   size_t n = events.size();
   while (n-- > 0) {
     if (!match(events.front(), ctx))
@@ -270,10 +205,10 @@ EventQueue::Purge(Window &window)
 void
 EventQueue::AddTimer(Timer &timer, unsigned ms)
 {
-  Poco::ScopedLock<Poco::Mutex> protect(mutex);
+  ScopeLock protect(mutex);
 
   const uint64_t due_us = MonotonicClockUS() + ms * 1000;
-  timers.Add(timer, MonotonicClockUS() + ms * 1000);
+  timers.Add(timer, due_us);
 
   if (timers.IsBefore(due_us))
     WakeUp();
@@ -282,7 +217,7 @@ EventQueue::AddTimer(Timer &timer, unsigned ms)
 void
 EventQueue::CancelTimer(Timer &timer)
 {
-  Poco::ScopedLock<Poco::Mutex> protect(mutex);
+  ScopeLock protect(mutex);
 
   timers.Cancel(timer);
 }

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -44,6 +44,10 @@ TopWindow::Create(const TCHAR *text, PixelSize size,
 {
   invalidated = true;
 
+#if defined(USE_X11) || defined(USE_WAYLAND)
+  CreateNative(text, size, style);
+#endif
+
   delete screen;
   screen = new TopCanvas();
 
@@ -54,6 +58,10 @@ TopWindow::Create(const TCHAR *text, PixelSize size,
   const char* text2 = text;
 #endif
   screen->Create(text2, size, style.GetFullScreen(), style.GetResizable());
+#elif defined(USE_X11)
+  screen->Create(x_display, x_window);
+#elif defined(USE_WAYLAND)
+  screen->Create(native_display, native_window);
 #else
   screen->Create(size, style.GetFullScreen(), style.GetResizable());
 #endif
@@ -92,12 +100,6 @@ TopWindow::CancelMode()
 }
 
 void
-TopWindow::Fullscreen()
-{
-  screen->Fullscreen();
-}
-
-void
 TopWindow::Expose()
 {
 #ifdef HAVE_CPU_FREQUENCY
@@ -124,6 +126,13 @@ TopWindow::Refresh()
     /* the application is paused/suspended, and we don't have an
        OpenGL surface - ignore all drawing requests */
     return;
+
+#ifdef USE_X11
+  if (!IsVisible())
+    /* don't bother to invoke the renderer if we're not visible on the
+       X11 display */
+    return;
+#endif
 
   if (!invalidated)
     return;

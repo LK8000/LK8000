@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -45,7 +45,7 @@ AllLinuxInputDevices::Open()
     return false;
   }
 
-  io_loop.Add(inotify_fd.Get(), io_loop.READ, *this);
+  io_loop.Add(inotify_fd, io_loop.READ, *this);
 #endif
 
   DIR *dir = opendir("/dev/input");
@@ -66,8 +66,8 @@ AllLinuxInputDevices::Close()
   devices.clear();
 
 #ifdef HAVE_INOTIFY
-  if (!inotify_fd.IsDefined()) {
-    io_loop.Remove(inotify_fd.Get());
+  if (inotify_fd.IsDefined()) {
+    io_loop.Remove(inotify_fd);
     inotify_fd.Close();
   }
 #endif
@@ -153,7 +153,7 @@ AllLinuxInputDevices::Read()
 }
 
 bool
-AllLinuxInputDevices::OnFileEvent(int fd, unsigned mask)
+AllLinuxInputDevices::OnFileEvent(FileDescriptor fd, unsigned mask)
 {
   Read();
 

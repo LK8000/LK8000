@@ -30,7 +30,7 @@
 #ifndef XCSOAR_EVENT_PIPE_HPP
 #define XCSOAR_EVENT_PIPE_HPP
 
-#include "FileDescriptor.hpp"
+#include "UniqueFileDescriptor.hpp"
 
 #include <assert.h>
 
@@ -39,10 +39,10 @@
  * poll().
  */
 class EventPipe {
-  FileDescriptor r;
+  UniqueFileDescriptor r;
 
 #ifndef HAVE_EVENTFD
-  FileDescriptor w;
+  UniqueFileDescriptor w;
 #endif
 
 public:
@@ -60,8 +60,8 @@ public:
   /**
    * Returns the file descriptor that should be polled on.
    */
-  int GetReadFD() const {
-    return r.Get();
+  FileDescriptor GetReadFD() const {
+    return r.ToFileDescriptor();
   }
 
   /**

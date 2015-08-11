@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -68,7 +68,11 @@ class AllLinuxInputDevices final
 public:
   explicit AllLinuxInputDevices(IOLoop &_io_loop, EventQueue &_queue,
                                 MergeMouse &_merge)
-    :io_loop(_io_loop), queue(_queue), merge(_merge) {}
+    :io_loop(_io_loop), queue(_queue), merge(_merge)
+#ifdef HAVE_INOTIFY
+    , inotify_fd(FileDescriptor::Undefined())
+#endif
+    {}
 
   ~AllLinuxInputDevices() {
     Close();
@@ -91,7 +95,7 @@ private:
   void Read();
 
   /* virtual methods from FileEventHandler */
-  virtual bool OnFileEvent(int fd, unsigned mask) override;
+  bool OnFileEvent(FileDescriptor fd, unsigned mask) override;
 #endif
 };
 

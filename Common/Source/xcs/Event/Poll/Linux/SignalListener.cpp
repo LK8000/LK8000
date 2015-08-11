@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -21,34 +21,42 @@ Copyright_License {
 }
 */
 
-#ifndef XCSOAR_EVENT_CONSOLE_LOOP_HPP
-#define XCSOAR_EVENT_CONSOLE_LOOP_HPP
+#include "SignalListener.hpp"
+#include "IO/Async/IOLoop.hpp"
 
-#include "boost/noncopyable.hpp"
+#include <sys/signalfd.h>
 
-struct Event;
-class EventQueue;
-class TopWindow;
+bool
+SignalListener::InternalCreate(const sigset_t &mask)
+{
+  if (!fd.CreateSignalFD(&mask))
+    return false;
 
-class EventLoop : private boost::noncopyable {
-  EventQueue &queue;
-  TopWindow *top_window;
+  if (sigprocmask(SIG_BLOCK, &mask, nullptr) < 0) {
+    fd.Close();
+    return false;
+  }
 
-  /**
-   * True if working on a bulk of events.  At the end of that bulk,
-   * TopWindow::validate() gets called.
-   */
-  bool bulk;
+  io_loop.Add(fd.ToFileDescriptor(), io_loop.READ, *this);
+  return true;
+}
 
-public:
-  EventLoop(EventQueue &_queue, TopWindow&_top_window)
-    :queue(_queue), top_window(&_top_window), bulk(true) {}
+void
+SignalListener::Destroy()
+{
+  if (!fd.IsDefined())
+    return;
 
-  EventLoop(EventQueue &_queue)
-    :queue(_queue), top_window(nullptr), bulk(true) {}
+  io_loop.Remove(fd.ToFileDescriptor());
+  fd.Close();
+}
 
-  bool Get(Event &event);
-  void Dispatch(const Event &event);
-};
+bool
+SignalListener::OnFileEvent(FileDescriptor _fd, unsigned mask)
+{
+  signalfd_siginfo info;
+  while (fd.Read(&info, sizeof(info)) > 0)
+    OnSignal(info.ssi_signo);
 
-#endif
+  return true;
+}

@@ -1,16 +1,19 @@
 # Event Library imported from xcsoar
 
 XCS_EVENT_CONSOLE := \
-        $(SRC)/xcs/Event/Console/Loop.cpp \
-	$(SRC)/xcs/Event/Console/Queue.cpp \
+        $(SRC)/xcs/Event/Poll/Loop.cpp \
+	$(SRC)/xcs/Event/Poll/Queue.cpp \
+	$(SRC)/xcs/Event/Poll/InputQueue.cpp \
 
 XCS_EVENT_LINUX := \
-	$(SRC)/xcs/Event/Linux/TTYKeyboard.cpp \
-	$(SRC)/xcs/Event/Linux/AllInput.cpp \
-	$(SRC)/xcs/Event/Linux/Input.cpp \
-	$(SRC)/xcs/Event/Linux/MergeMouse.cpp \
-	$(SRC)/xcs/Event/Linux/Mouse.cpp \
-	$(SRC)/xcs/Event/Linux/SignalListener.cpp \
+	$(SRC)/xcs/Event/Poll/Linux/AllInput.cpp \
+	$(SRC)/xcs/Event/Poll/Linux/Input.cpp \
+	$(SRC)/xcs/Event/Poll/Linux/MergeMouse.cpp \
+	$(SRC)/xcs/Event/Poll/Linux/SignalListener.cpp \
+
+unused = \
+	$(SRC)/xcs/Event/Poll/Linux/TTYKeyboard.cpp \
+	$(SRC)/xcs/Event/Poll/Linux/Mouse.cpp \
 
 XCS_EVENT_SHARED := \
 	$(SRC)/xcs/Event/Shared/TimerQueue.cpp \

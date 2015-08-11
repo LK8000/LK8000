@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -21,48 +21,45 @@ Copyright_License {
 }
 */
 
-#ifndef XCSOAR_SIGNAL_LISTENER_HPP
-#define XCSOAR_SIGNAL_LISTENER_HPP
+#ifndef XCSOAR_EVENT_LINUX_MOUSE_HPP
+#define XCSOAR_EVENT_LINUX_MOUSE_HPP
 
-#include "IO/Async/FileEventHandler.hpp"
 #include "OS/FileDescriptor.hpp"
+#include "IO/Async/FileEventHandler.hpp"
 
 class IOLoop;
+class MergeMouse;
 
-class SignalListener : private FileEventHandler {
+/**
+ * A driver for the Linux mouse (/dev/input/mouse*, /dev/input/mice).
+ */
+class LinuxMouse final : private FileEventHandler {
   IOLoop &io_loop;
+
+  MergeMouse &merge;
+
   FileDescriptor fd;
 
 public:
-  explicit SignalListener(IOLoop &_io_loop)
-    :io_loop(_io_loop) {}
+  explicit LinuxMouse(IOLoop &_io_loop, MergeMouse &_merge)
+    :io_loop(_io_loop), merge(_merge), fd(FileDescriptor::Undefined()) {}
 
-private:
-  bool InternalCreate(const sigset_t &mask);
-
-  template<typename... Args>
-  bool InternalCreate(sigset_t &mask, unsigned signo,
-                      Args&&... args) {
-    sigaddset(&mask, signo);
-    return InternalCreate(mask, args...);
+  ~LinuxMouse() {
+    Close();
   }
 
-public:
-  template<typename... Args>
-  bool Create(unsigned signo, Args&&... args) {
-    sigset_t mask;
-    sigemptyset(&mask);
-    return InternalCreate(mask, signo, args...);
+  bool Open(const char *path="/dev/input/mice");
+  void Close();
+
+  bool IsOpen() const {
+    return fd.IsDefined();
   }
 
-  void Destroy();
-
-protected:
-  virtual void OnSignal(int signo) = 0;
-
 private:
+  void Read();
+
   /* virtual methods from FileEventHandler */
-  virtual bool OnFileEvent(int fd, unsigned mask) override;
+  bool OnFileEvent(FileDescriptor fd, unsigned mask) override;
 };
 
 #endif

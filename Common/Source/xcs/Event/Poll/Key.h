@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -21,53 +21,19 @@ Copyright_License {
 }
 */
 
-#include "Mouse.hpp"
-#include "MergeMouse.hpp"
-#include "IO/Async/IOLoop.hpp"
+#ifndef XCSOAR_SCREEN_KEY_H
+#define XCSOAR_SCREEN_KEY_H
 
-bool
-LinuxMouse::Open(const char *path)
-{
-  if (!fd.OpenReadOnly(path))
-    return false;
+#ifdef ANDROID
+#include "Screen/Android/Key.h"
+#elif defined(USE_X11)
+#include "Screen/X11/Key.h"
+#elif defined(USE_POLL_EVENT)
+#include "Screen/FB/Key.h"
+#elif defined(ENABLE_SDL)
+#include "Screen/SDL/Key.h"
+#else
+#include "Screen/GDI/Key.h"
+#endif
 
-  fd.SetNonBlocking();
-  io_loop.Add(fd.Get(), io_loop.READ, *this);
-
-  merge.AddPointer();
-
-  return true;
-}
-
-void
-LinuxMouse::Close()
-{
-  if (!IsOpen())
-    return;
-
-  merge.RemovePointer();
-
-  io_loop.Remove(fd.Get());
-  fd.Close();
-}
-
-void
-LinuxMouse::Read()
-{
-  int8_t mb[3];
-  while (fd.Read(mb, sizeof(mb)) == sizeof(mb)) {
-    const bool down = (mb[0] & 0x7) != 0;
-    merge.SetDown(down);
-
-    const int dx = mb[1], dy = -mb[2];
-    merge.MoveRelative(dx, dy);
-  }
-}
-
-bool
-LinuxMouse::OnFileEvent(int fd, unsigned mask)
-{
-  Read();
-
-  return true;
-}
+#endif

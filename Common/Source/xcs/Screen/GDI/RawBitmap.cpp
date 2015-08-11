@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -22,9 +22,11 @@ Copyright_License {
 */
 
 #include "../RawBitmap.hpp"
-//#include "Canvas.hpp"
+#ifdef USE_GDI
 #include "Screen/LKSurface.h"
-
+#else
+#include "Canvas.hpp"
+#endif
 #include <assert.h>
 
 /**
@@ -83,7 +85,7 @@ RawBitmap::~RawBitmap()
 
 void
 RawBitmap::StretchTo(unsigned width, unsigned height,
-                     LKSurface &dest_canvas,
+                     Canvas &dest_canvas,
                      unsigned dest_x, unsigned dest_y, unsigned dest_width, unsigned dest_height) const
 {
 #if defined(_WIN32_WCE) && _WIN32_WCE < 0x0400

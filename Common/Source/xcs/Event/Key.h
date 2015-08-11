@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -25,13 +25,15 @@ Copyright_License {
 #define XCSOAR_SCREEN_KEY_H
 
 #ifdef ANDROID
-#include "Android/Key.h"
-#elif defined(USE_CONSOLE) || defined(NON_INTERACTIVE)
-#include "Console/Key.h"
+#include "Screen/Android/Key.h"
+#elif defined(USE_X11)
+#include "Screen/X11/Key.h"
+#elif defined(USE_POLL_EVENT)
+#include "Screen/FB/Key.h"
 #elif defined(ENABLE_SDL)
-#include "SDL/Key.h"
+#include "Screen/SDL/Key.h"
 #else
-#include "GDI/Key.h"
+#include "Screen/GDI/Key.h"
 #endif
 
 #endif

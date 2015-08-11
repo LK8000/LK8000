@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -386,7 +386,10 @@ FindLeading(gcc_unused char *const begin, char *i)
 void
 CropIncompleteUTF8(char *const p)
 {
+#if !CLANG_CHECK_VERSION(3,6)
+  /* disabled on clang due to -Wtautological-pointer-compare */
   assert(p != nullptr);
+#endif
 
   char *const end = FindTerminator(p);
   if (end == p)
@@ -436,7 +439,10 @@ CropIncompleteUTF8(char *const p)
 std::pair<unsigned, const char *>
 NextUTF8(const char *p)
 {
+#if !CLANG_CHECK_VERSION(3,6)
+  /* disabled on clang due to -Wtautological-pointer-compare */
   assert(p != nullptr);
+#endif
 
   unsigned char a = *p++;
   if (a == 0)

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -21,45 +21,36 @@ Copyright_License {
 }
 */
 
-#ifndef XCSOAR_EVENT_CONSOLE_QUEUE_HPP
-#define XCSOAR_EVENT_CONSOLE_QUEUE_HPP
+#ifndef XCSOAR_EVENT_POLL_QUEUE_HPP
+#define XCSOAR_EVENT_POLL_QUEUE_HPP
 
-#include "Poco/Thread.h"
+#include "Thread/Handle.hpp"
 #include "../Shared/TimerQueue.hpp"
 #include "../Shared/Event.hpp"
-#include "Poco/Mutex.h"
+#include "Thread/Mutex.hpp"
 #include "OS/EventPipe.hpp"
 #include "IO/Async/IOLoop.hpp"
 #include "IO/Async/DiscardFileEventHandler.hpp"
-#include "../Linux/SignalListener.hpp"
+#include "Linux/SignalListener.hpp"
 
-#ifndef NON_INTERACTIVE
-#ifdef USE_LIBINPUT
-#include "../LibInput/LibInputHandler.hpp"
-#else
-#include "../Linux/MergeMouse.hpp"
-#ifdef KOBO
-#include "../Linux/Input.hpp"
-#elif defined(USE_LINUX_INPUT)
-#include "../Linux/AllInput.hpp"
-#else
-#include "../Linux/TTYKeyboard.hpp"
-#include "../Linux/Mouse.hpp"
-#endif
-#endif
+#ifdef USE_X11
+#include "X11Queue.hpp"
+#elif defined(USE_WAYLAND)
+#include "WaylandQueue.hpp"
+#elif !defined(NON_INTERACTIVE)
+#include "InputQueue.hpp"
 #endif
 
 #include <stdint.h>
 
 #include <queue>
-#include <set>
 
-enum class DisplayOrientation_t : uint8_t;
+enum class DisplayOrientation : uint8_t;
 class Window;
 class Timer;
 
 class EventQueue final : private SignalListener {
-  const Poco::Thread* thread;
+  const ThreadHandle thread;
 
   /**
    * The current time after the event thread returned from sleeping.
@@ -68,27 +59,15 @@ class EventQueue final : private SignalListener {
 
   IOLoop io_loop;
 
-#ifndef NON_INTERACTIVE
-#ifdef USE_LIBINPUT
-  LibInputHandler libinput_handler;
-#else
-  MergeMouse merge_mouse;
-#ifdef KOBO
-  LinuxInputDevice keyboard;
-  LinuxInputDevice mouse;
-#else
-#ifdef USE_LINUX_INPUT
-  AllLinuxInputDevices all_input;
-#else
-  TTYKeyboard keyboard;
-  LinuxMouse mouse;
+#ifdef USE_X11
+  X11EventQueue input_queue;
+#elif defined(USE_WAYLAND)
+  WaylandEventQueue input_queue;
+#elif !defined(NON_INTERACTIVE)
+  InputEventQueue input_queue;
 #endif
 
-#endif
-#endif
-#endif
-
-  Poco::Mutex mutex;
+  Mutex mutex;
 
   std::queue<Event> events;
 
@@ -97,41 +76,64 @@ class EventQueue final : private SignalListener {
   EventPipe event_pipe;
   DiscardFileEventHandler discard;
 
-  bool running;
+  bool quit;
 
 public:
   EventQueue();
   ~EventQueue();
 
-#ifndef NON_INTERACTIVE
+#ifdef USE_X11
+  _XDisplay *GetDisplay() const {
+    return input_queue.GetDisplay();
+  }
+
+  bool WasCtrlClick() const {
+    return input_queue.WasCtrlClick();
+  }
+#endif
+
+#ifdef USE_WAYLAND
+  struct wl_display *GetDisplay() {
+    return input_queue.GetDisplay();
+  }
+
+  struct wl_compositor *GetCompositor() {
+    return input_queue.GetCompositor();
+  }
+
+  struct wl_shell *GetShell() {
+    return input_queue.GetShell();
+  }
+#endif
+
+#if defined(USE_X11) || defined(USE_WAYLAND)
+  bool IsVisible() const {
+    return input_queue.IsVisible();
+  }
+#endif
+
+#if !defined(NON_INTERACTIVE) && !defined(USE_X11) && !defined(USE_WAYLAND)
 
   void SetScreenSize(unsigned width, unsigned height) {
-  #ifdef USE_LIBINPUT
-    libinput_handler.SetScreenSize(width, height);
-  #else
-    merge_mouse.SetScreenSize(width, height);
-  #endif
+    input_queue.SetScreenSize(width, height);
   }
 
 #ifndef USE_LIBINPUT
   void SetMouseRotation(bool swap, bool invert_x, bool invert_y) {
-    merge_mouse.SetSwap(swap);
-    merge_mouse.SetInvert(invert_x, invert_y);
+    input_queue.SetMouseRotation(swap, invert_x, invert_y);
   }
 
-  void SetMouseRotation(DisplayOrientation_t orientation);
+  void SetMouseRotation(DisplayOrientation_t orientation) {
+    input_queue.SetMouseRotation(orientation);
+  }
 
   bool HasPointer() const {
-    return merge_mouse.HasPointer();
+    return input_queue.HasPointer();
   }
 #endif
 
   RasterPoint GetMousePosition() const {
-#ifdef USE_LIBINPUT
-    return { int(libinput_handler.GetX()), int(libinput_handler.GetY()) };
-#else
-    return { int(merge_mouse.GetX()), int(merge_mouse.GetY()) };
-#endif
+    return input_queue.GetMousePosition();
   }
 
 #endif /* !NON_INTERACTIVE */
@@ -142,17 +144,21 @@ public:
    */
   gcc_pure
   uint64_t ClockUS() const {
-    assert(thread == Poco::Thread::current());
+    assert(thread.IsInside());
 
     return now_us;
   }
 
+  bool IsQuit() const {
+    return quit;
+  }
+
   void Quit() {
-    running = false;
+    quit = true;
   }
 
   void WakeUp() {
-    if (thread != Poco::Thread::current())
+    if (!thread.IsInside())
       event_pipe.Signal();
   }
 

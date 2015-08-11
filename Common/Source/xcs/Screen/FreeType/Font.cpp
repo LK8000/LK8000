@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS"
   on XCSoar github.
 
@@ -33,10 +33,9 @@ Copyright_License {
 #include "Screen/Custom/Files.hpp"
 #include "Init.hpp"
 #include "Asset.hpp"
-#include "externs.h"
 
 #ifndef ENABLE_OPENGL
-#include "Poco/Mutex.h"
+#include "Thread/Mutex.hpp"
 #endif
 
 #ifndef _UNICODE
@@ -86,7 +85,7 @@ extern FT_Library ft_library;
  * libfreetype is not thread-safe; this global Mutex is used to
  * protect libfreetype from multi-threaded access.
  */
-static Poco::Mutex freetype_mutex;
+static Mutex freetype_mutex;
 #endif
 
 static FT_Int32 load_flags = FT_LOAD_DEFAULT;
@@ -165,7 +164,7 @@ static unsigned
 GetCapitalHeight(FT_Face face)
 {
 #ifndef ENABLE_OPENGL
-  const Poco::ScopedLock<Poco::Mutex> protect(freetype_mutex);
+  const ScopeLock protect(freetype_mutex);
 #endif
 
   FT_UInt i = FT_Get_Char_Index(face, 'M');
@@ -295,7 +294,7 @@ Font::TextSize(const TCHAR *text) const
 #endif
 
 #ifndef ENABLE_OPENGL
-  const Poco::ScopedLock<Poco::Mutex> protect(freetype_mutex);
+  const ScopeLock protect(freetype_mutex);
 #endif
 
   while (true) {
@@ -393,8 +392,8 @@ RenderGlyph(uint8_t *buffer, unsigned buffer_width, unsigned buffer_height,
     height = buffer_height - y;
 
   buffer += unsigned(y) * buffer_width + unsigned(x);
-  for (const uint8_t *end = src + height * pitch; 
-      src != end; src += pitch, buffer += buffer_width) {
+  for (const uint8_t *end = src + height * pitch;
+       src != end; src += pitch, buffer += buffer_width) {
     // with Kerning, Glyph can overlapp previous, so, we need merge bitmap.
 #ifdef USE_KERNING
       std::transform(src, src + width, buffer, buffer, std::bit_or<uint8_t>());
@@ -489,7 +488,7 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
 
 
 #ifndef ENABLE_OPENGL
-  const Poco::ScopedLock<Poco::Mutex> protect(freetype_mutex);
+  const ScopeLock protect(freetype_mutex);
 #endif
 
 

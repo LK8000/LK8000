@@ -3186,7 +3186,9 @@ void ShowMenu() {
 void FullScreen() {
     
   if (!MenuActive) {
+#ifdef USE_GDI
     MainWindow.Fullscreen();
+#endif
   }
   MapWindow::RequestFastRefresh();
 }

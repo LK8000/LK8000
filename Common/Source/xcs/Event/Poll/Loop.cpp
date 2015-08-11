@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -30,9 +30,12 @@ Copyright_License {
 bool
 EventLoop::Get(Event &event)
 {
+  if (queue.IsQuit())
+    return false;
+
   if (bulk) {
     if (queue.Pop(event))
-      return event.type != Event::QUIT;
+      return true;
 
     /* that was the last event for now, refresh the screen now */
     if (top_window != nullptr)
@@ -43,7 +46,7 @@ EventLoop::Get(Event &event)
 
   if (queue.Wait(event)) {
     bulk = true;
-    return event.type != Event::QUIT;
+    return true;
   }
 
   return false;

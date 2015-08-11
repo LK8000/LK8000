@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -345,7 +345,7 @@ public:
     DrawHLine(x1, x2, y1, c, operations);
     DrawHLine(x1, x2, y2 - 1, c, operations);
     DrawVLine(x1, y1 + 1, y2 - 1, c, operations);
-    DrawVLine(x2-1, y1 + 1, y2 - 1, c, operations);
+    DrawVLine(x2, y1 + 1, y2 - 1, c, operations);
   }
 
   void DrawRectangle(int x1, int y1, int x2, int y2, color_type c) {

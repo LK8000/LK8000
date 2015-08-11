@@ -28,7 +28,6 @@ XCS_SCREEN_CUSTOM := \
 	$(SRC)/xcs/Screen/Custom/SingleWindow.cpp \
 	$(SRC)/xcs/Screen/Custom/TopWindow.cpp \
 	$(SRC)/xcs/Screen/Custom/ContainerWindow.cpp \
-	$(SRC)/xcs/Screen/Custom/TextWindow.cpp \
 	$(SRC)/xcs/Screen/Custom/Cache.cpp \
 	$(SRC)/xcs/Screen/Custom/MoreCanvas.cpp \
 
@@ -57,6 +56,7 @@ XCS_SCREEN := \
 	$(SRC)/xcs/Screen/Color.cpp \
 	$(SRC)/xcs/Screen/Debug.cpp \
 	$(SRC)/xcs/Screen/BufferCanvas.cpp \
+	$(SRC)/xcs/Thread/Debug.cpp \
 
 XCS_UTILS := \
 	$(SRC)/xcs/Util/UTF8.cpp\
@@ -109,5 +109,6 @@ else
 XCS_SCREEN := \
     $(XCS_SCREEN_GDI) \
     $(SRC)/xcs/Screen/Debug.cpp \
+    $(SRC)/xcs/Thread/Debug.cpp \
 
 endif

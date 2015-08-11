@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -26,6 +26,7 @@ Copyright_License {
 #include "Event/SDL/Event.hpp"
 #include "Event/SDL/Loop.hpp"
 #include "Event/Globals.hpp"
+#include "Event/Queue.hpp"
 #include "Screen/Custom/TopCanvas.hpp"
 #include "Util/ConvertString.hpp"
 
@@ -152,7 +153,7 @@ TopWindow::OnEvent(const SDL_Event &event)
     return OnMouseUp(event.button.x, event.button.y);
 
   case SDL_QUIT:
-     return OnClose();
+    return OnClose();
 
 #if SDL_MAJOR_VERSION < 2
   case SDL_VIDEORESIZE:
@@ -216,9 +217,7 @@ TopWindow::RunEventLoop()
 void
 TopWindow::PostQuit()
 {
-  SDL_Event event;
-  event.type = SDL_QUIT;
-  ::SDL_PushEvent(&event);
+  event_queue->Quit();
 }
 
 void

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -70,6 +70,14 @@ RasterPoint::operator+(PixelSize size) const {
   return { x + size.cx, y + size.cy };
 }
 
+/**
+ * @brief PixelRect structure and operations
+ *
+ * Provides support for creating and manipulating PixelRect structures
+ *
+ * @note This structure follows the GDI convention of the {right, bottom} coordinates being
+ * immediately outside the rectangle being specified.
+ */
 struct PixelRect {
   PixelScalar left, top, right, bottom;
 

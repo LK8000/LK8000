@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ Copyright_License {
 #include "Screen/OpenGL/Texture.hpp"
 #include "Screen/OpenGL/Debug.hpp"
 #else
-#include "Poco/Mutex.h"
+#include "Thread/Mutex.hpp"
 #endif
 
 #ifdef UNICODE
@@ -192,7 +192,7 @@ struct RenderedText {
  * Without OpenGL, this library is accessed from DrawThread and UI
  * thread, therefore we need to protect it.
  */
-    static Poco::Mutex text_cache_mutex;
+static Mutex text_cache_mutex;
     
     void Lock() { text_cache_mutex.lock(); }
     void Unlock() { text_cache_mutex.unlock(); }
@@ -205,7 +205,7 @@ PixelSize
 TextCache::GetSize(const Font &font, const char *text)
 {
 #ifndef ENABLE_OPENGL
-  const Poco::ScopedLock<Poco::Mutex> protect(text_cache_mutex);
+  const ScopeLock protect(text_cache_mutex);
 #endif
 
   TextCacheKey key(font, text);
@@ -228,7 +228,7 @@ PixelSize
 TextCache::LookupSize(const Font &font, const char *text)
 {
 #ifndef ENABLE_OPENGL
-  const Poco::ScopedLock<Poco::Mutex> protect(text_cache_mutex);
+  const ScopeLock protect(text_cache_mutex);
 #endif
 
   PixelSize size = { 0, 0 };
@@ -270,7 +270,7 @@ TextCache::Get(const Font &font, const char *text)
   /* look it up */
 
 #ifndef ENABLE_OPENGL
-  const Poco::ScopedLock<Poco::Mutex> protect(text_cache_mutex);
+  const ScopeLock protect(text_cache_mutex);
 #endif
 
   const RenderedText *cached = text_cache.Get(key);
@@ -339,7 +339,7 @@ TextCache::Flush()
 #endif
 
 #ifndef ENABLE_OPENGL
-  const Poco::ScopedLock<Poco::Mutex> protect(text_cache_mutex);
+  const ScopeLock protect(text_cache_mutex);
 #endif
 
   size_cache.Clear();

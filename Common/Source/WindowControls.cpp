@@ -1700,7 +1700,7 @@ int WndForm::ShowModal(void) {
 #endif    
 
     LKASSERT(event_queue);
-#if defined(ANDROID) || defined(USE_CONSOLE) || defined(ENABLE_SDL) || defined(NON_INTERACTIVE)
+#if defined(ANDROID) || defined(USE_POLL_EVENT) || defined(ENABLE_SDL) || defined(NON_INTERACTIVE)
     EventLoop loop(*event_queue, MainWindow);
 #else
     EventLoop loop(*event_queue);

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@ Copyright_License {
 
 #include "Compiler.h"
 
-#if defined(CLANG_VERSION) && CLANG_VERSION >= 30300
+#if CLANG_CHECK_VERSION(3,3)
 /* no thanks, constexpr without const is fine -
    WritableImageBuffer::At() returns a writable buffer; the pointer
    itself is constexpr, but the result may modify the buffer object */

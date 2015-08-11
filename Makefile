@@ -277,7 +277,7 @@ CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_MIXER_CPPFLAGS))
 
 else
 CE_DEFS += -DUSE_FB
-CE_DEFS += -DUSE_CONSOLE
+CE_DEFS += -DUSE_POLL_EVENT
 CE_DEFS += -DUSE_LINUX_INPUT
 endif
 

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ Copyright_License {
 */
 
 #include "Transcode.hpp"
-#include "Key.h"
+#include "Screen/GDI/Key.h"
 #include "Asset.hpp"
 
 #include "Modeltype.h"
@@ -118,6 +118,7 @@ TranscodeKey(unsigned key_code)
     seen_return = true;
   else if (key_code == VK_F23 && !seen_return)
     return VK_RETURN;
+
 #endif
 
 
@@ -142,4 +143,5 @@ TranscodeKey(unsigned key_code)
         default:
             return key_code;
     }
+
 }

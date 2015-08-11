@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -24,13 +24,11 @@ Copyright_License {
 #ifndef XCSOAR_EVENT_SDL_LOOP_HPP
 #define XCSOAR_EVENT_SDL_LOOP_HPP
 
-#include "boost/noncopyable.hpp"
-
 class TopWindow;
 struct Event;
 class EventQueue;
 
-class EventLoop : private boost::noncopyable {
+class EventLoop {
   EventQueue &queue;
   TopWindow *top_window;
 
@@ -46,8 +44,10 @@ public:
   EventLoop(EventQueue &_queue, TopWindow &_top_window)
     :queue(_queue), top_window(&_top_window), bulk(true) {}
 
-  EventLoop(EventQueue &_queue)
+  explicit EventLoop(EventQueue &_queue)
     :queue(_queue), top_window(nullptr), bulk(true) {}
+
+  EventLoop(const EventLoop &) = delete;
 
   bool Get(Event &event);
   void Dispatch(const Event &event);

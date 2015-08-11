@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -20,22 +20,30 @@ Copyright_License {
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 }
 */
-#include <assert.h>
+
 #include "IOLoop.hpp"
 #include "FileEventHandler.hpp"
 
-void
-IOLoop::Add(int fd, unsigned mask, FileEventHandler &handler)
+IOLoop::~IOLoop()
 {
-  assert(fd >= 0);
+  files.clear_and_dispose(File::Dispose);
+}
+
+void
+IOLoop::Add(FileDescriptor fd, unsigned mask, FileEventHandler &handler)
+{
+  assert(fd.IsDefined());
   assert(mask != 0);
 
-  auto i = files.insert(std::make_pair(fd, File(fd, mask, handler)));
-  File &file = i.first->second;
-
-  if (!i.second) {
+  FileSet::insert_commit_data hint;
+  auto result = files.insert_check(fd, File::Compare(), hint);
+  if (result.second) {
+    File *file = new File(fd, mask, handler);
+    files.insert_commit(*file, hint);
+  } else {
     /* already exists; update it */
 
+    File &file = *result.first;
     assert(file.mask == 0 || file.handler == &handler);
 
     if (file.mask == mask)
@@ -45,26 +53,23 @@ IOLoop::Add(int fd, unsigned mask, FileEventHandler &handler)
     file.mask = mask;
     file.ready_mask &= mask;
     file.handler = &handler;
+    file.modified = true;
   }
-
-  file.modified = true;
 
   /* schedule an Update() call */
   modified = true;
 }
 
 void
-IOLoop::Remove(int fd)
+IOLoop::Remove(FileDescriptor fd)
 {
-  assert(fd >= 0);
+  assert(fd.IsDefined());
 
-  auto i = files.find(fd);
+  auto i = files.find(fd, File::Compare());
   if (i == files.end())
     return;
 
-  assert(i->first == fd);
-
-  File &file = i->second;
+  File &file = *i;
   assert(file.fd == fd);
 
   if (file.mask != 0) {
@@ -79,8 +84,7 @@ void
 IOLoop::Update()
 {
   for (auto i = files.begin(), end = files.end(); i != end;) {
-    File &file = i->second;
-    assert(file.fd == i->first);
+    File &file = *i;
 
     if (!file.modified) {
       ++i;
@@ -89,9 +93,9 @@ IOLoop::Update()
 
     file.modified = false;
 
-    poll.SetMask(file.fd, file.mask);
+    poll.SetMask(file.fd.Get(), file.mask);
     if (file.mask == 0)
-      i = files.erase(i);
+      i = files.erase_and_dispose(i, File::Dispose);
     else
       ++i;
   }
@@ -100,16 +104,16 @@ IOLoop::Update()
 IOLoop::File *
 IOLoop::CollectReady()
 {
-  File *ready = NULL;
+  File *ready = nullptr;
   for (auto i = poll.begin(), end = poll.end(); i != end; ++i) {
-    const int fd = *i;
+    const FileDescriptor fd(*i);
     const unsigned mask = i.GetMask();
     assert(mask != 0);
 
-    auto j = files.find(fd);
+    auto j = files.find(fd, File::Compare());
     assert(j != files.end());
 
-    File &file = j->second;
+    File &file = *j;
     assert(file.fd == fd);
 
     file.ready_mask = mask;
@@ -123,7 +127,7 @@ IOLoop::CollectReady()
 void
 IOLoop::HandleReady(File *ready)
 {
-  if (ready == NULL)
+  if (ready == nullptr)
     return;
 
   /* set the "running" flag so other threads calling LockRemove() know
@@ -142,9 +146,9 @@ IOLoop::HandleReady(File *ready)
 
     const auto handler = ready->handler;
 
-    mutex.unlock();
+    mutex.Unlock();
     bool result = ready->handler->OnFileEvent(ready->fd, mask);
-    mutex.lock();
+    mutex.Lock();
 
     if (!result && ready->mask != 0 && ready->handler == handler) {
       ready->mask = 0;
@@ -153,12 +157,12 @@ IOLoop::HandleReady(File *ready)
     }
 
     ready = ready->next_ready;
-  } while (ready != NULL);
+  } while (ready != nullptr);
 
   /* clear the "running" flag and wake up threads waiting inside
      LockRemove() */
   running = false;
-  cond.set();
+  cond.Broadcast();
 }
 
 void
@@ -169,9 +173,9 @@ IOLoop::Wait(int timeout_ms)
     Update();
   }
 
-  mutex.unlock();
+  mutex.Unlock();
   poll.Wait(timeout_ms);
-  mutex.lock();
+  mutex.Lock();
 }
 
 void

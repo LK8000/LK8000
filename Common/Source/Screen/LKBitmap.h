@@ -25,7 +25,7 @@
 
 #endif
 
-class LKBitmap : public Bitmap {
+class LKBitmap final : public Bitmap {
 public:
 	LKBitmap();
 	LKBitmap(LKBitmap&& orig);

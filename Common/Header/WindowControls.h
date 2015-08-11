@@ -887,6 +887,8 @@ class WndForm:public WindowControl{
             StopTimer();
         }
     }
+    
+    void ReinitialiseLayout(const RECT& Rect) { }
 
 protected:
     virtual bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode);
