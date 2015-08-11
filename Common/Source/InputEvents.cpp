@@ -842,16 +842,16 @@ void InputEvents::DoQueuedEvents(void) {
   int NMEA_Queue_copy[MAX_NMEA_QUEUE];
   int i;
 
-  
-  CAirspaceManager::Instance().ProcessAirspaceDetailQueue();
-  
-  processPopupDetails_real();
-  
   if (blockqueue) return; 
   // prevent this being re-entered by gui thread while
   // still processing
 
   blockqueue = true;
+  
+  CAirspaceManager::Instance().ProcessAirspaceDetailQueue();
+  
+  processPopupDetails_real();
+  
   if (RepeatWindCalc>0) { // 100203
 	RepeatWindCalc=0;
 	InputEvents::eventCalcWind(_T("AUTO"));
