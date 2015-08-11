@@ -44,8 +44,11 @@ Copyright_License {
 
 BufferCanvas::BufferCanvas(const Canvas &canvas, PixelSize new_size)
   :Canvas(new_size),
-   texture(new GLTexture(new_size.cx, new_size.cy))
+   texture(nullptr),
+   frame_buffer(nullptr), 
+   stencil_buffer(nullptr)
 {
+  Create(new_size);
   assert(canvas.IsDefined());
 }
 
