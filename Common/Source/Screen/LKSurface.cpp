@@ -651,6 +651,7 @@ void LKSurface::Rectangle(int nLeftRect, int nTopRect, int nRightRect, int nBott
 #endif
 }
 
+#ifndef ENABLE_OPENGL
 bool LKSurface::InvertRect(const RECT& rc) {
 #ifdef WIN32
     return ::InvertRect(*this, &rc);
@@ -665,6 +666,7 @@ bool LKSurface::InvertRect(const RECT& rc) {
     return false;
 #endif
 }
+#endif
 
 bool LKSurface::RoundRect(const RECT& rc, int nWidth, int nHeight) {
 #ifdef WIN32

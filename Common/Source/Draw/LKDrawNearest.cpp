@@ -1278,7 +1278,14 @@ _KeepOldAirspacesValues:
         invsel.bottom -= NIBLSCALE(1); // interline
 #endif
 
+#ifdef ENABLE_OPENGL
+        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN));
+        Surface.SelectObject(SelectBorder);
+        Surface.SelectObject(LK_HOLLOW_BRUSH);
+        Surface.RoundRect(invsel, 5, 5);
+#else
         Surface.InvertRect(invsel);
+#endif
 
     }
 

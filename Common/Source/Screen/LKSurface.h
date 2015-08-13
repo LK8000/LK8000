@@ -169,6 +169,8 @@ public:
     bool CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmapSurface& bmpMask, int xMask, int yMask);
     
     bool AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
+
+    bool InvertRect(const RECT& rc);
 #endif
     
 #ifdef USE_MEMORY_CANVAS
@@ -185,7 +187,6 @@ public:
 
     void SetPixel(int X, int Y, const LKColor& Color);
 
-    bool InvertRect(const RECT& rc);
     bool RoundRect(const RECT& rc, int nWidth, int nHeight);
 
     static void buildCircle(const POINT& center, int radius, std::vector<POINT>& list);
