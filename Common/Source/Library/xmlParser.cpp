@@ -1296,6 +1296,10 @@ XMLNode XMLNode::parseString(LPTSTR lpszXML, LPCTSTR tag,
 
 XMLNode XMLNode::parseFile(const TCHAR *filename, LPCTSTR tag, XMLResults *pResults)
 {
+    if(!filename) {
+        return emptyXMLNode;
+    }
+    
     FILE *f=_tfopen(filename, _T("rb"));
     if (f==NULL)
     {
