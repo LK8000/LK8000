@@ -1865,8 +1865,9 @@ void WndForm::SetCaption(const TCHAR *Value) {
     if(nChar > 0) {
         SIZE tsize = {0,0};
         LKWindowSurface Surface(*this);
-        Surface.SelectObject(mhTitleFont);
+        const auto oldFont = Surface.SelectObject(mhTitleFont);
         Surface.GetTextSize(Value, nChar, &tsize);
+        Surface.SelectObject(oldFont);
         
         mTitleRect.bottom = mTitleRect.top + tsize.cy;
         rcClient.top = mTitleRect.bottom+NIBLSCALE(1);

@@ -28,9 +28,9 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
 	  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
 	  LKASSERT(wPicto!=NULL);
 	  const RECT rc = wPicto->GetClientRect();
-	  Surface.SelectObject(LKPen_Petrol_C2);
+	  const auto oldPen = Surface.SelectObject(LKPen_Petrol_C2);
+	  const auto oldBrush = Surface.SelectObject(LKBrush_Petrol);
 
-	  Surface.SelectObject(LKBrush_Petrol);
 	  Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
 
 
@@ -48,6 +48,9 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
         airspace->DrawPicto(Surface, rc);
       }
    }
+    Surface.SelectObject(oldPen);
+    Surface.SelectObject(oldBrush);
+
 }
 
 static void OnFlyClicked(WndButton* pWnd) {

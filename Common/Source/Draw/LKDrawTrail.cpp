@@ -151,6 +151,7 @@ double MapWindow::LKDrawTrail( LKSurface& Surface, const POINT& Orig, const RECT
   unsigned int numsum=0;
   #endif
 
+  const auto oldPen = Surface.SelectObject(LK_NULL_PEN);
   // 
   // Main loop
   //
@@ -354,6 +355,8 @@ double MapWindow::LKDrawTrail( LKSurface& Surface, const POINT& Orig, const RECT
   if (last_visible) {
     Surface.DrawSolidLine(Orig, point_lastdrawn, rc);
   }
+
+  Surface.SelectObject(oldPen);
 
   #if DEBUG_DRAWTRAIL
   StartupStore(_T("....zoom=%.3f trail max=%d nearby=%d  processed=%d empty=%d painted=%d skipped=%d toonear=%d toofar=%d notvisible=%d \n"), MapWindow::zoom.Scale(), num_trail_max, nearby, processed, empty, painted,skipped, toonear, toofar,notvisible);

@@ -653,7 +653,7 @@ void Init_Fonts_2(void)
   LKBitmapSurface tmpSurface;
   tmpSurface.Create(windowSurface, 1, 1);
   SIZE TextSize = {0,0};
-  tmpSurface.SelectObject(LK8BottomBarTitleFont);
+  const auto oldFont = tmpSurface.SelectObject(LK8BottomBarTitleFont);
   tmpSurface.GetTextSize(_T("M"), 1, &TextSize);
   int syTitle = TextSize.cy;
   tmpSurface.SelectObject(LK8BottomBarValueFont);
@@ -666,6 +666,7 @@ void Init_Fonts_2(void)
       BottomSize = (syValue*2) + (syValue/2) + syTitle;
 
   BottomSize += NIBLSCALE(1);
+  tmpSurface.SelectObject(oldFont);
   tmpSurface.Release();
 
 

@@ -27,11 +27,11 @@ LKWindowSurface::LKWindowSurface() : LKSurface()
 }
 
 #ifdef WIN32
-LKWindowSurface::LKWindowSurface(HWND hWnd) : LKSurface(), _hWnd() {
-    LKASSERT(hWnd);
-    LKASSERT(::IsWindow(hWnd));
+LKWindowSurface::LKWindowSurface(HWND hWnd) : LKSurface(), _hWnd(hWnd) {
+    LKASSERT(_hWnd);
+    LKASSERT(::IsWindow(_hWnd));
 
-    if(!Attach(::GetDC(hWnd))) {
+    if(!Attach(::GetDC(_hWnd))) {
         LKASSERT(false);
     }
 }
@@ -47,11 +47,11 @@ LKWindowSurface::LKWindowSurface(Window& Wnd){
 
 void LKWindowSurface::Create(Window& Wnd){
 #ifdef WIN32
-    HWND hWnd = Wnd.Handle();
-    LKASSERT(hWnd);
-    LKASSERT(::IsWindow(hWnd));
+    _hWnd = Wnd.Handle();
+    LKASSERT(_hWnd);
+    LKASSERT(::IsWindow(_hWnd));
 
-    if(!Attach(::GetDC(hWnd))) {
+    if(!Attach(::GetDC(_hWnd))) {
         LKASSERT(false);
     }
 #else
