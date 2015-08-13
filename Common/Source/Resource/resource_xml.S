@@ -72,7 +72,6 @@
     binfile IDR_XML_BOTTOMBAR "../../Data/Dialogs/dlgBottomBar.xml"
     binfile IDR_XML_INFOPAGES "../../Data/Dialogs/dlgInfoPages.xml"
     binfile IDR_XML_WAYPOINTTERRAIN "../../Data/Dialogs/dlgWaypointOutOfTerrain.xml"
-    binfile IDR_XML_LKAIRSPACEWARNING "../../Data/Dialogs/dlgLKAirspaceWarning.xml"
     binfile IDR_XML_HELP "../../Data/Dialogs/dlgHelp.xml"
     binfile IDR_XML_TEXTENTRY_KEYBOARD "../../Data/Dialogs/dlgTextEntry_Keyboard.xml"
     binfile IDR_XML_TEXTENTRY_KEYBOARD_L "../../Data/Dialogs/dlgTextEntry_Keyboard_L.xml"
@@ -87,7 +86,10 @@
     binfile IDR_XML_CHECKLIST_L "../../Data/Dialogs/dlgChecklist_L.xml"
     binfile IDR_XML_WAYPOINTDETAILS_L "../../Data/Dialogs/dlgWayPointDetails_L.xml"
     binfile IDR_XML_ANALYSIS_L "../../Data/Dialogs/dlgAnalysis_L.xml"
+
     binfile IDR_XML_LKAIRSPACEWARNING_L "../../Data/Dialogs/dlgLKAirspaceWarning_L.xml"
+    binfile IDR_XML_LKAIRSPACEWARNING_P "../../Data/Dialogs/dlgLKAirspaceWarning_P.xml"
+
     binfile IDR_XML_HELP_L "../../Data/Dialogs/dlgHelp_L.xml"
     binfile IDR_XML_AIRSPACE_L "../../Data/Dialogs/dlgAirspace_L.xml"
     binfile IDR_XML_AIRSPACECOLOURS_L "../../Data/Dialogs/dlgAirspaceColours_L.xml"

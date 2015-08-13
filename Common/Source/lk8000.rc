@@ -129,7 +129,8 @@ IDR_XML_BOTTOMBAR       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBottomBar.xm
 IDR_XML_INFOPAGES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgInfoPages.xml"
 //IDR_XML_FILESELECT      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFileSelect.xml"
 IDR_XML_WAYPOINTTERRAIN XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWaypointOutOfTerrain.xml"
-IDR_XML_LKAIRSPACEWARNING XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKAirspaceWarning.xml"
+IDR_XML_LKAIRSPACEWARNING_P XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKAirspaceWarning_P.xml"
+IDR_XML_LKAIRSPACEWARNING_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKAirspaceWarning_L.xml"
 IDR_XML_HELP            XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgHelp.xml"
 IDR_XML_TEXTENTRY_KEYBOARD XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTextEntry_Keyboard.xml"
 IDR_XML_TEXTENTRY_KEYBOARD_L XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTextEntry_Keyboard_L.xml"
@@ -145,7 +146,7 @@ IDR_XML_THERMALDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgThermalDetail
 IDR_XML_CHECKLIST_L     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgChecklist_L.xml"
 IDR_XML_WAYPOINTDETAILS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointDetails_L.xml"
 IDR_XML_ANALYSIS_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAnalysis_L.xml"
-IDR_XML_LKAIRSPACEWARNING_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKAirspaceWarning_L.xml"
+
 IDR_XML_HELP_L          XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgHelp_L.xml"
 IDR_XML_AIRSPACE_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspace_L.xml"
 IDR_XML_AIRSPACECOLOURS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceColours_L.xml"

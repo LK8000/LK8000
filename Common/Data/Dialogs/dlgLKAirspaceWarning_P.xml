@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+    <WndForm Name="frmAirspaceWarning" Type="Dialog" X="1" Y="1" Width="238" Height="242" Caption="_@M66_" Popup="1" Font="2" >
+        <WndOwnerDrawFrame Name="frmAirspacePicto"           X="2"   Y="50"  Width="60" Height="80" Font="2"  OnPaint="OnPaintAirspacePicto"/>    
+        <WndProperty Name="prpReason"     Caption=" "        X="2"   Y="2"   Width="-2" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+        <WndProperty Name="prpType"       Caption="_@M752_"  X="62"  Y="-1"  Width="-2" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />		
+        <WndProperty Name="prpHDist"      Caption="_@M1264_" X="62"  Y="-1"  Width="-2" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />
+        <WndProperty Name="prpVDist"      Caption="_@M1265_" X="62"  Y="-1"  Width="-2" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />
+        <WndProperty Name="prpTopAlt"     Caption="_@M729_"  X="62"  Y="-1"  Width="-2" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />
+        <WndProperty Name="prpBaseAlt"    Caption="_@M128_"  X="62"  Y="-1"  Width="-2" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" />
+        <WndButton   Name="cmdAckForTime" Caption="_@M46_"   X="4"   Y="175" Width="110" height="45" Font="2" OnClickNotify="OnAckForTimeClicked"/>
+        <WndButton   Name="cmdClose"      Caption="_@M186_"  X="124" Y="175" Width="110" height="45" Font="2" OnClickNotify="OnCloseClicked"/>
+    </WndForm>
+</PMML>
