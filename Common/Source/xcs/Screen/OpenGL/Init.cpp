@@ -308,7 +308,9 @@ OpenGL::SetupContext()
   InitShaders();
 #endif
 
+#ifndef HAVE_GLES
   ::glGetIntegerv(GL_MAX_ATTRIB_STACK_DEPTH, &max_attrib_stack_depth);
+#endif
 }
 
 void

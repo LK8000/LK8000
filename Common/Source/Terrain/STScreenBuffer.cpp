@@ -41,7 +41,7 @@ void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int sc
     StretchTo(cropsize/scale, GetHeight()/scale, Surface , rcDest.left, rcDest.top, cx, cy);
 }
 
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
+#if (!defined(GREYSCALE) && !defined(_WIN32_WCE) && !defined(ENABLE_OPENGL))
 void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
 
     const unsigned int muli = (boxw * 2 + 1);

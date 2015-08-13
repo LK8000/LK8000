@@ -64,6 +64,8 @@ public:
   }
 };
 
+#ifndef HAVE_GLES
+
 /**
  * Save and auto-restore an OpenGL attributes state
  * see #glPushAttrib() documentation for list of attributes
@@ -100,5 +102,26 @@ private:
  * Save and auto-restore an OpenGL scissor state 
  */
 typedef GLPushAttrib<GL_SCISSOR_BIT> GLPushScissor;
+#else
+
+class GLPushScissor {
+public:
+    GLPushScissor() {
+        ::glGetIntegerv(GL_SCISSOR_BOX, scissor_box);
+        ::glGetBooleanv(GL_SCISSOR_TEST, &enabled);
+    }
+    ~GLPushScissor() {
+        if(enabled) {
+            ::glEnable(GL_SCISSOR_TEST);
+        } else {
+            ::glDisable(GL_SCISSOR_TEST);
+        }
+        ::glScissor(scissor_box[0],scissor_box[1],scissor_box[2],scissor_box[3]);
+    }
+private:
+    GLint scissor_box[4];
+    GLboolean enabled;
+};
+#endif
 
 #endif

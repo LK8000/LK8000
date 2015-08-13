@@ -28,7 +28,7 @@ public:
 	// the given color
 	void Create(int nWidth, int nHeight, LKColor clr);
 
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
+#if (!defined(GREYSCALE) && !defined(_WIN32_WCE) && !defined(ENABLE_OPENGL))
 	void HorizontalBlur(unsigned int boxw);
 	void VerticalBlur(unsigned int boxh);
 #endif

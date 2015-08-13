@@ -252,27 +252,37 @@ ifeq ($(CONFIG_LINUX),y)
 	CE_DEFS += -DUSE_MEMORY_CANVAS	
     else
 	USE_SDL ?= n
-	OPENGL := $(shell $(PKG_CONFIG) --exists gl && echo y)
+	GLES2 ?= n
 
-    ifeq ($(OPENGL), y)
-    $(info build with OpenGL $(shell $(PKG_CONFIG) --modversion gl) Library)
+  ifeq ($(GLES2),y)
+    GLES2 := $(shell $(PKG_CONFIG) --exists glesv2 && echo y)
+    ifeq ($(GLES2),y)
+       $(info build with GLESv2 $(shell $(PKG_CONFIG) --modversion glesv2) Library)
+       OPENGL := y
     endif
+  else
+    OPENGL := $(shell $(PKG_CONFIG) --exists gl && echo y)
+    ifeq ($(OPENGL), y)
+      $(info build with OpenGL $(shell $(PKG_CONFIG) --modversion gl) Library)
+    endif
+  endif
 
-	USE_EGL := $(shell $(PKG_CONFIG) --exists egl && echo y)
-	USE_X11 := $(shell $(PKG_CONFIG) --exists x11 && echo y)
+  ifneq ($(USE_SDL), y)
+    USE_EGL := $(shell $(PKG_CONFIG) --exists egl && echo y)
+    USE_X11 := $(shell $(PKG_CONFIG) --exists x11 && echo y)
+  endif
 
-    ifneq ($(USE_EGL)$(USE_X11)$(OPENGL), yyy)
-	USE_SDL := y
-    else
+  ifneq ($(USE_EGL)$(USE_X11)$(OPENGL), yyy)
+    USE_SDL := y
+  else
     $(info build with EGL $(shell $(PKG_CONFIG) --modversion egl) Library)
     $(info build with X11 $(shell $(PKG_CONFIG) --modversion x11) Library)
+  endif
 
-    endif
-
-	GREYSCALE := n
-	USE_SOUND_EXTDEV := n
+  GREYSCALE := n
+  USE_SOUND_EXTDEV := n
 	
-    endif
+endif
 
 
     ifeq ($(USE_SDL),y)
@@ -315,7 +325,13 @@ ifeq ($(CONFIG_LINUX),y)
     endif
 
     ifeq ($(OPENGL),y)
-	CE_DEFS += -DENABLE_OPENGL -DGL_GLEXT_PROTOTYPES
+     CE_DEFS += -DENABLE_OPENGL
+     ifeq ($(GLES2),y)
+      CE_DEFS += -DHAVE_GLES -DHAVE_GLES2 -DUSE_GLSL
+      $(eval $(call pkg-config-library,GLES2,glesv2))
+      CE_DEFS += $(patsubst -I%,-isystem %,$(GLES2_CPPFLAGS))
+     endif
+     CE_DEFS += -DGL_GLEXT_PROTOTYPES
     else
 	CE_DEFS += -DUSE_MEMORY_CANVAS
     endif
@@ -469,7 +485,11 @@ ifeq ($(CONFIG_LINUX),y)
   LDLIBS += -lstdc++ -pthread -march=native -lpng -lrt -lm $(FREETYPE_LDLIBS)  $(ZZIP_LDLIBS)
   
   ifeq ($(OPENGL),y)
-    LDLIBS += -lGL
+    ifeq ($(GLES2),y)
+        LDLIBS += $(GLES2_LDLIBS) -ldl
+    else
+        LDLIBS += -lGL
+    endif
     ifneq ($(USE_SDL), y)
         LDLIBS += -lX11 -lEGL
     endif

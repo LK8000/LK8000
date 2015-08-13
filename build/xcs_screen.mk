@@ -66,8 +66,16 @@ XCS_SCREEN_OPENGL := \
 	$(SRC)/xcs/Screen/OpenGL/Triangulate.cpp \
 	$(SRC)/xcs/Screen/OpenGL/VertexArray.cpp \
 	$(SRC)/xcs/Screen/OpenGL/Rotate.cpp \
-	\
+    $(SRC)/xcs/Screen/OpenGL/FBO.cpp \
+    $(SRC)/xcs/Screen/OpenGL/Dynamic.cpp \
+    \
 	$(SRC)/xcs/Math/Angle.cpp \
+
+ifeq ($(GLES2),y)	
+XCS_SCREEN_OPENGL += \
+    $(SRC)/xcs/Screen/OpenGL/Shaders.cpp \
+
+endif
 
 XCS_SCREEN_EGL := \
 	$(SRC)/xcs/Screen/EGL/Init.cpp \
