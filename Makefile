@@ -30,7 +30,7 @@ REMOVE_NS   := y
 
 ifeq ($(DEBUG),y)
     OPTIMIZE := -O0
-    OPTIMIZE += -g3 -gdwarf-2
+    OPTIMIZE += -g3 -ggdb
     REMOVE_NS :=
     BIN=Bin/$(TARGET)_debug
 endif
@@ -251,10 +251,26 @@ ifeq ($(CONFIG_LINUX),y)
 	USE_SOUND_EXTDEV := y
 	CE_DEFS += -DUSE_MEMORY_CANVAS	
     else
-	USE_SDL := n
+	USE_SDL ?= n
+	OPENGL := $(shell $(PKG_CONFIG) --exists gl && echo y)
+
+    ifeq ($(OPENGL), y)
+    $(info build with OpenGL $(shell $(PKG_CONFIG) --modversion gl) Library)
+    endif
+
+	USE_EGL := $(shell $(PKG_CONFIG) --exists egl && echo y)
+	USE_X11 := $(shell $(PKG_CONFIG) --exists x11 && echo y)
+
+    ifneq ($(USE_EGL)$(USE_X11)$(OPENGL), yyy)
+	USE_SDL := y
+    else
+    $(info build with EGL $(shell $(PKG_CONFIG) --modversion egl) Library)
+    $(info build with X11 $(shell $(PKG_CONFIG) --modversion x11) Library)
+
+    endif
+
 	GREYSCALE := n
 	USE_SOUND_EXTDEV := n
-	OPENGL := y
 	
     endif
 
@@ -288,7 +304,8 @@ ifeq ($(CONFIG_LINUX),y)
 
     else 
     CE_DEFS += -DUSE_POLL_EVENT
-	ifeq ($(OPENGL),y)
+
+	ifeq ($(USE_EGL)$(USE_X11)$(OPENGL), yyy)
 	    CE_DEFS += -DUSE_EGL -DUSE_X11
 	else
 	    CE_DEFS += -DUSE_FB
