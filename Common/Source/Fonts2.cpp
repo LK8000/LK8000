@@ -575,6 +575,8 @@ void Init_Fonts_2(void)
 
   // VISUAL GLIDE
   int calcsize= ScreenSizeX/(ScreenLandscape?30:22);
+  // since applyfontsize will multiply, and we dont want to, we first divide to compensate.
+  if (ScreenSize==0) calcsize/= Screen0Ratio;
   if (calcsize<10) calcsize=10;
 
   propGetFontSettingsFromString(TEXT("1,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontVisualTop);
