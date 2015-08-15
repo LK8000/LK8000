@@ -45,4 +45,6 @@ ifeq ($$($(1)_CPPFLAGS)$$($(1)_LDLIBS),)
 $$(error library not found: $(2))
 endif
 
+$$(info build with $$(shell $$(PKG_CONFIG) --print-provides $(2)) Library)
+
 endef
