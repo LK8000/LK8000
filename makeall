@@ -5,6 +5,8 @@ make -j 2 TARGET=PPC2002
 make -j 2 TARGET=PPC2003
 make -j 2 TARGET=PNA
 make -j 2 TARGET=PC
+make -j 2 TARGET=LINUX
+make -j 2 TARGET=KOBO
 
 echo "DONE -----------"
 echo "started $start"
