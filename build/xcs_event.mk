@@ -33,7 +33,9 @@ XCS_EVENT_SDL := \
 XCS_EVENT_X11 := \
 	$(SRC)/xcs/Event/Poll/X11Queue.cpp \
 	
-
+XCS_EVENT_WAYLAND := \
+	$(SRC)/xcs/Event/Poll/WaylandQueue.cpp \
+	
 XCS_EVENT := \
 	$(SRC)/xcs/Event/Globals.cpp \
 	$(SRC)/xcs/Event/Idle.cpp \
@@ -55,11 +57,12 @@ XCS_EVENT += \
 	    $(XCS_EVENT_LINUX) \
 	    $(XCS_EVENT_POLL) \
 	
-        ifeq ($(OPENGL), y)
+        ifeq ($(USE_X11), y)
 	    # linux target with X11 event
-	    XCS_EVENT += \
-		$(XCS_EVENT_X11) \
-	
+	    XCS_EVENT += $(XCS_EVENT_X11) 
+	else ifeq ($(USE_WAYLAND),y)
+	    # linux target with X11 event
+	    XCS_EVENT += $(XCS_EVENT_WAYLAND) 
 	else
 	    # linux target with console event
 	    XCS_EVENT += \

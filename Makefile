@@ -282,8 +282,17 @@ ifeq ($(CONFIG_LINUX),y)
   USE_SDL ?=n
  endif
 
+ ifeq ($(USE_WAYLAND),y)
+  $(eval $(call pkg-config-library,WAYLAND,wayland-client))
+  CE_DEFS += $(WAYLAND_CPPFLAGS) -DUSE_WAYLAND
+  WAYLAND_LDLIBS += -lwayland-egl
+  # no X11 if wayland enabled
+  USE_X11 :=n
+ endif
+
  ifeq ($(USE_X11), y)
   $(eval $(call pkg-config-library,X11,x11))
+  CE_DEFS += $(X11_CPPFLAGS) -DUSE_X11
  endif
 
  ifeq ($(USE_SDL),y)
@@ -314,8 +323,8 @@ ifeq ($(CONFIG_LINUX),y)
  else
   CE_DEFS += -DUSE_POLL_EVENT
 
-  ifeq ($(USE_EGL)$(USE_X11)$(OPENGL), yyy)
-   CE_DEFS += -DUSE_EGL -DUSE_X11
+  ifeq ($(USE_EGL),y)
+   CE_DEFS += -DUSE_EGL
   else
    CE_DEFS += -DUSE_FB
    CE_DEFS += -DUSE_LINUX_INPUT
@@ -481,6 +490,7 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(GL_LDLIBS)
  LDLIBS += $(EGL_LDLIBS)
  LDLIBS += $(X11_LDLIBS)
+ LDLIBS += $(WAYLAND_LDLIBS)
  LDLIBS += $(SDL_LDLIBS)
  LDLIBS += $(SDL_MIXER_LDLIBS)
 

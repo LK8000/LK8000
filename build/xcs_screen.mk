@@ -87,6 +87,8 @@ XCS_SCREEN_EGL := \
 XCS_SCREEN_X11 := \
 	$(SRC)/xcs/Screen/X11/TopWindow.cpp \
 
+XCS_SCREEN_WAYLAND += \
+	$(SRC)/xcs/Screen/Wayland/TopWindow.cpp\
 
 XCS_SCREEN := \
 	$(SRC)/xcs/Screen/Util.cpp \
@@ -154,14 +156,21 @@ XCS_SCREEN += \
 	
     endif
 
-    ifeq ($(USE_SDL)$(OPENGL),ny)
-	# linux target with OpenGL & X11
-	XCS_SCREEN += \
-	    $(XCS_SCREEN_EGL) \
-	    $(XCS_SCREEN_X11) \
-	
+    ifeq ($(USE_EGL),y)
+	# linux target with EGL
+	XCS_SCREEN += $(XCS_SCREEN_EGL) 
     endif
-	
+
+    ifeq ($(USE_X11),y)
+	# linux target with X11
+	XCS_SCREEN += $(XCS_SCREEN_X11) 
+    endif
+
+    ifeq ($(USE_WAYLAND),y)
+	# linux target with Wayland
+	XCS_SCREEN += $(XCS_SCREEN_WAYLAND) 
+    endif
+
 else
 #win32
 
