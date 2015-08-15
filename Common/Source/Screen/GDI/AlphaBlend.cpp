@@ -160,7 +160,7 @@ BOOL DoAlphaBlend_internal(
   DWORD dwSourceWeight)        // Source weighting (between 0 and 255).
 {
     if(pfnSetStretchBltMode) {
-#ifdef PNA
+#ifdef UNDER_CE
         pfnSetStretchBltMode = (pfnSetStretchBltMode_t) GetProcAddress(GetModuleHandle(TEXT("coredll.dll")), TEXT("SetStretchBltMode"));
 #else
         pfnSetStretchBltMode = SetStretchBltMode;
