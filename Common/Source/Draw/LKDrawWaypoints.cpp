@@ -670,20 +670,21 @@ turnpoint:
 void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
     if (!hLKPictori)
         return;
-    int cx = rc.right - rc.left;
-    int cy = rc.bottom - rc.top;
-    int x = cx / 2;
-    int y = cy / 2;
+    const int cx = rc.right - rc.left;
+    const int cy = rc.bottom - rc.top;
+    const int x = rc.left;
+    const int y = rc.top;
 
-    if (UseHiresBitmap) {
-        x -= 100 / 2;
-        y -= 100 / 2;
-        Surface.DrawBitmapCopy(x, y, 100, 100, hLKPictori);
-    } else {
-        x -= 45 / 2;
-        y -= 45 / 2;
-        Surface.DrawBitmapCopy(x, y, IBLSCALE(45), IBLSCALE(45), hLKPictori);
-    }
+#ifdef USE_GDI
+// TODO : replace by real size of Bitmap
+    const int cxSrc = UseHiresBitmap?100:45;
+    const int cySrc = UseHiresBitmap?100:45;
+#else
+    const int cxSrc = hLKPictori.GetWidth();
+    const int cySrc = hLKPictori.GetHeight();
+#endif
+    
+    Surface.DrawBitmapCopy(x, y, cx, cy, hLKPictori, cxSrc, cySrc);
 }
 
 void MapWindow::DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp)
@@ -772,32 +773,21 @@ turnpoint:
 
 } // switch estyle
 
-int cx = rc.right - rc.left;
-int cy = rc.bottom - rc.top;
-
-int d=1;
-if(!UseHiresBitmap)
-  d=2;
-
-bool scale = true;
-
-int x = (cx/2)-20/d;
-int y = (cy/2)-20/d;
-if(cx < 40)
-{
-  scale = false;
-  if(UseHiresBitmap)
-  {
-	x = (cx/2)+5;
-	y = (cy/2)+10;
-  }
-  else
-  {
-     x = (cx/2)-3;
-     y = (cy/2);
-  }
-    }
     if (pWptBmp) {
-        pWptBmp->Draw(Surface, x, y, scale ? IBLSCALE(20) : 20, scale ? IBLSCALE(20) : 20);
+
+        int cx = rc.right - rc.left;
+        int cy = rc.bottom - rc.top;
+        int x = rc.left + (cx / 2);
+        int y= rc.top + (cy / 2);
+
+        if(cx < 40) {
+            cy = cx = 20;
+        } else {
+            cy = cx = IBLSCALE(20);
+        }
+        x -= cx/2;
+        y -= cy/2;
+
+        pWptBmp->Draw(Surface, x, y, cx ,cy);
     }
 }

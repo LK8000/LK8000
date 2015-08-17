@@ -21,21 +21,18 @@ static WndForm *wf=NULL;
 static short retStatus;
 
 static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
-    (void) Sender;
-    if (wf) {
+    if (Sender) {
+        const RECT rc = Sender->GetClientRect();
 
-        WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmWaypointPicto")));
-        if (wPicto) {
-            const RECT rc = wPicto->GetClientRect();
-
-            MapWindow::DrawWaypointPictoBg(Surface, rc);
-            LKASSERT(ValidWayPoint(SelectedWaypoint));
-            if (WayPointCalc[SelectedWaypoint].IsLandable) {
-                MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 4000, true);
-            } else {
-                MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
-            }
+        MapWindow::DrawWaypointPictoBg(Surface, rc);
+        LockTaskData();
+        LKASSERT(ValidWayPointFast(SelectedWaypoint));
+        if (WayPointCalc[SelectedWaypoint].IsLandable) {
+            MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 4000, true);
+        } else {
+            MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
         }
+        UnlockTaskData();
     }
 }
 

@@ -660,6 +660,10 @@ static unsigned int DrawListIndex=0;
 // Painting elements after init
 static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
+  if(!Sender) {
+      return;
+  }
+  
   unsigned int n = UpLimit - LowLimit;
   TCHAR sTmp[12];
 #if 100124
@@ -692,10 +696,8 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
     
 
     int w1, w2, w3, x1, x2, x3;
-    WndListFrame *wlf = (WndListFrame *)wf->FindByName(TEXT("frmWayPointList"));
-    if (wlf) {
-   	 w0=wlf->GetWidth() - wlf->ScrollbarWidth - 20;
-    }
+   	
+    w0=Sender->GetWidth() - 20;
 
     w1 = Surface.GetTextWidth(TEXT("XXX"));
     w2 = Surface.GetTextWidth(TEXT(" 000km"));
@@ -714,14 +716,11 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
     RECT rc = {0,  0, (int)(PICTO_OFFSET*1)*ScreenScale,   20*ScreenScale};
     int idx = WayPointSelectInfo[i].Index;
-     if (WayPointCalc[idx].IsLandable )
+    if (WayPointCalc[idx].IsLandable ) {
   	  MapWindow::DrawRunway(Surface,&WayPointList[idx],  rc, 3000, true);
-     else
-     {   rc.right = rc.right/2;
-   //  rc.top += (rc.bottom)/2;
-     rc.bottom = 5;
+    } else {
        MapWindow::DrawWaypointPicto(Surface,  rc, &WayPointList[idx]);
-     }
+    }
     // left justified
     Surface.DrawText(x1, 2*ScreenScale, sTmp, _tcslen(sTmp));
 

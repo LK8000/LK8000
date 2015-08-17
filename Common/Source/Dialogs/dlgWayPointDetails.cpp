@@ -35,22 +35,18 @@ static int CommentDrawListIndex=0;
 static TextWrapArray aCommentTextLine;
 
 static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
-    (void) Sender;
-    WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmWaypointPicto")));
-    if(wPicto) {
+    if (Sender) {
+        const RECT rc = Sender->GetClientRect();
 
-        const RECT rc = wPicto->GetClientRect();
-
-        Surface.SetBkColor(RGB_LIGHTGREY);
-
-	LKASSERT(SelectedWaypoint>=0);
-
+        LockTaskData();
+        LKASSERT(ValidWayPointFast(SelectedWaypoint));
         if (WayPointCalc[SelectedWaypoint].IsLandable) {
             MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 7000, true);
         } else {
             MapWindow::DrawWaypointPictoBg(Surface, rc);
             MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
         }
+        UnlockTaskData();
     }
 }
 
