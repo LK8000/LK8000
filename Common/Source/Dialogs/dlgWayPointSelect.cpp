@@ -658,96 +658,68 @@ static void OnFilterType(DataField *Sender, DataField::DataAccessKind_t Mode){
 static unsigned int DrawListIndex=0;
 
 // Painting elements after init
-static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
-  (void)Sender;
-  if(!Sender) {
-      return;
-  }
-  
-  unsigned int n = UpLimit - LowLimit;
-  TCHAR sTmp[12];
-#if 100124
-  static int w0;
 
-  if (DoInit[MDI_ONPAINTLISTITEM]) {
-        w0=wWayPointList->GetWidth() - wWayPointList->ScrollbarWidth - 4;
-	DoInit[MDI_ONPAINTLISTITEM]=false;
-  }
-#endif
+static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
+    if (!Sender) {
+        return;
+    }
 
-  Surface.SetTextColor(RGB_BLACK);
+    unsigned int n = UpLimit - LowLimit;
+    TCHAR sTmp[12];
 
-  if (DrawListIndex < n){
+    Surface.SetTextColor(RGB_BLACK);
 
-    unsigned int i;
-    if (FullFlag) {
-	i = StrIndex[DrawListIndex];	// 100502
-/*
-	StartupStore(_T("UpLimit=%d LowLimit=%d n=%d DrawListIndex=%d StrIndex[%d]=i=%d Index=%d <%s>\n"),
-	UpLimit,LowLimit,n, DrawListIndex, DrawListIndex, i, WayPointSelectInfo[i].Index,
-	WayPointList[WayPointSelectInfo[i].Index].Name);
-*/
-    }else
-	i = LowLimit + DrawListIndex;
+    const int LineHeight = Sender->GetHeight();
+    const int TextHeight = Surface.GetTextHeight(_T("dp"));
 
-// Poco::Thread::sleep(100);
-
-    LKASSERT(i < WayPointList.size());
+    const int TextPos = (LineHeight - TextHeight) / 2; // offset for text vertical center
     
+    if (DrawListIndex < n) {
 
-    int w1, w2, w3, x1, x2, x3;
-   	
-    w0=Sender->GetWidth() - 20;
+        const size_t i = (FullFlag) ? StrIndex[DrawListIndex] : (LowLimit + DrawListIndex);
 
-    w1 = Surface.GetTextWidth(TEXT("XXX"));
-    w2 = Surface.GetTextWidth(TEXT(" 000km"));
-    _stprintf(sTmp, _T(" 000%s"),gettext(_T("_@M2179_")));
-    w3 = Surface.GetTextWidth(sTmp);
+        // Poco::Thread::sleep(100);
 
-    x1 = w0-w1-w2-w3;
+        LKASSERT(i < WayPointList.size());
 
-    Surface.DrawTextClip((int)(PICTO_OFFSET+4)*ScreenScale, 2*ScreenScale,
-                   WayPointList[WayPointSelectInfo[i].Index].Name,
-                   x1-ScreenScale*10);
+        const int width = Sender->GetWidth(); // total width 
 
-    sTmp[0] = '\0';
-    sTmp[1] = '\0';
-    sTmp[2] = '\0';
+        const int w0 = LineHeight; // Picto Width
+        const int w2 = Surface.GetTextWidth(TEXT(" 000km")); // distance Width
+        _stprintf(sTmp, _T(" 000%s "), gettext(_T("_@M2179_")));
+        const int w3 = Surface.GetTextWidth(sTmp); // bearing width
 
-    RECT rc = {0,  0, (int)(PICTO_OFFSET*1)*ScreenScale,   20*ScreenScale};
-    int idx = WayPointSelectInfo[i].Index;
-    if (WayPointCalc[idx].IsLandable ) {
-  	  MapWindow::DrawRunway(Surface,&WayPointList[idx],  rc, 3000, true);
+        const int w1 = width - w0 - w2 - w3; // Max Name width
+
+        // Draw Picto
+        int idx = WayPointSelectInfo[i].Index;
+        if (WayPointCalc[idx].IsLandable) {
+            const RECT PictoRect = {2, 2, w0-4, LineHeight-4};
+            MapWindow::DrawRunway(Surface, &WayPointList[idx], PictoRect, 3000, true);
+        } else {
+            const RECT PictoRect = {0, 0, w0, LineHeight};
+            MapWindow::DrawWaypointPicto(Surface, PictoRect, &WayPointList[idx]);
+        }
+
+        // Draw Name
+        Surface.DrawTextClip(w0, TextPos, WayPointList[WayPointSelectInfo[i].Index].Name, w1);
+
+        // Draw Distance : right justified after waypoint Name
+        _stprintf(sTmp, TEXT("%.0f%s"), WayPointSelectInfo[i].Distance, Units::GetDistanceName());
+        const int x2 = width - w3 - Surface.GetTextWidth(sTmp);
+        Surface.DrawText(x2, TextPos, sTmp, _tcslen(sTmp));
+
+        // Draw Bearing right justified after distance
+        _stprintf(sTmp, TEXT("%d%s"), iround(WayPointSelectInfo[i].Direction), gettext(_T("_@M2179_")));
+        const int x3 = width - Surface.GetTextWidth(sTmp);
+        Surface.DrawText(x3, TextPos, sTmp, _tcslen(sTmp));
     } else {
-       MapWindow::DrawWaypointPicto(Surface,  rc, &WayPointList[idx]);
+        if (DrawListIndex == 0) {
+            // LKTOKEN  _@M466_ = "No Match!" 
+            _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
+            Surface.DrawText(IBLSCALE(2), TextPos, sTmp, _tcslen(sTmp));
+        }
     }
-    // left justified
-    Surface.DrawText(x1, 2*ScreenScale, sTmp, _tcslen(sTmp));
-
-    // right justified after waypoint flags
-    _stprintf(sTmp, TEXT("%.0f%s"), 
-              WayPointSelectInfo[i].Distance,
-              Units::GetDistanceName());
-    x2 = w0-w3-Surface.GetTextWidth(sTmp);
-    Surface.DrawText(x2, 2*ScreenScale, sTmp, _tcslen(sTmp));
-
-    // right justified after distance
-    _stprintf(sTmp, TEXT("%d%s"), iround(WayPointSelectInfo[i].Direction), gettext(_T("_@M2179_")));
-    x3 = w0-Surface.GetTextWidth(sTmp);
-    Surface.DrawText(x3, 2*ScreenScale, sTmp, _tcslen(sTmp));
-  } else {
-    if (DrawListIndex == 0){
-	// LKTOKEN  _@M466_ = "No Match!" 
-      _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
-      Surface.DrawText(2*ScreenScale, 2*ScreenScale, sTmp, _tcslen(sTmp));
-    }
-
-
-
-  }
-
-
-
 }
 
 static void OnWpListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
@@ -898,9 +870,17 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
    #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
    #endif
    wWayPointList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
+   
 
    }
-  wWayPointListEntry->SetWidth(wWayPointList->GetWidth() - wWayPointList->ScrollbarWidth - 5);
+  
+   const int EntryWidth = ( wWayPointList->GetWidth()
+                       - wWayPointList->ScrollbarWidth 
+                       - (wWayPointListEntry->GetLeft() * 2 )
+                       - ((wWayPointList->GetBorderKind()&BORDERLEFT)?NIBLSCALE(1):0));
+  
+  
+  wWayPointListEntry->SetWidth(EntryWidth);
 
   wpDistance = (WndProperty*)wf->FindByName(TEXT("prpFltDistance"));
   wpDirection = (WndProperty*)wf->FindByName(TEXT("prpFltDirection"));
