@@ -14,6 +14,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "Message.h"
+#include "resource.h"
 
 #ifndef NO_BLUETOOTH
 
@@ -124,16 +125,10 @@ namespace DlgBluetooth {
     };
 
     void Show() {
-        TCHAR filename[MAX_PATH];
-        const TCHAR *resName = NULL;
-        if (!ScreenLandscape) {
-            LocalPathS(filename, TEXT("dlgBluetooth_L.xml"));
-            resName = TEXT("IDR_XML_BLUETOOTH_L");
-        } else {
-            LocalPathS(filename, TEXT("dlgBluetooth.xml"));
-            resName = TEXT("IDR_XML_BLUETOOTH");
-        }
-        wfBth = dlgLoadFromXML(CallBackTable, filename, resName);
+
+        wfBth = dlgLoadFromXML(CallBackTable, 
+                ScreenLandscape ? TEXT("dlgBluetooth_L.xml") : TEXT("dlgBluetooth_P.xml"),
+                ScreenLandscape ? IDR_XML_BLUETOOTH_L : IDR_XML_BLUETOOTH_P);
         if (wfBth) {
 
             WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));

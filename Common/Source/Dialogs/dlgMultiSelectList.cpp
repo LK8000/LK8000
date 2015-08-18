@@ -11,6 +11,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "Multimap.h"
+#include "resource.h"
 
 #define MAX_LIST_ITEMS 50
 ListElement* pResult = NULL;
@@ -503,19 +504,9 @@ ListElement* dlgMultiSelectListShowModal(void) {
         return NULL;
     }
 
-    if (!ScreenLandscape) {
-        TCHAR filename[MAX_PATH];
-        LocalPathS(filename, TEXT("dlgMultiSelectList_L.xml"));
-        wf = dlgLoadFromXML(CallBackTable,
-                            filename,
-                            TEXT("IDR_XML_MULTISELECTLIST_L"));
-    } else {
-        TCHAR filename[MAX_PATH];
-        LocalPathS(filename, TEXT("dlgMultiSelectList.xml"));
-        wf = dlgLoadFromXML(CallBackTable,
-                            filename,
-                            TEXT("IDR_XML_MULTISELECTLIST"));
-    }
+    wf = dlgLoadFromXML(CallBackTable,
+                            ScreenLandscape ? TEXT("dlgMultiSelectList_L.xml") : TEXT("dlgMultiSelectList_P.xml"),
+                            ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
     if (!wf) return NULL;
 

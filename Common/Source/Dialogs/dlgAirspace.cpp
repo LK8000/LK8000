@@ -11,7 +11,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "LKObjects.h"
-
+#include "resource.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wAirspaceList=NULL;
@@ -159,19 +159,9 @@ bool dlgAirspaceShowModal(bool coloredit){
 
   ItemIndex = -1;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspace_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACE_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspace.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACE"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgAirspace_L.xml") : TEXT("dlgAirspace_P.xml"), 
+                        ScreenLandscape ? IDR_XML_AIRSPACE_L : IDR_XML_AIRSPACE_P);
   if (!wf) return false;
 
   wAirspaceList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceList"));

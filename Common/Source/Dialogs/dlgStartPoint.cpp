@@ -10,6 +10,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
+#include "resource.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wStartPointList=NULL;
@@ -151,19 +152,9 @@ void dlgStartPointShowModal(void) {
 
   ItemIndex = -1;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgStartPoint_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename,
-                        TEXT("IDR_XML_STARTPOINT_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgStartPoint.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_STARTPOINT"));
-  }
+   wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgStartPoint_L.xml") : TEXT("dlgStartPoint_P.xml"),
+                        ScreenLandscape ? IDR_XML_STARTPOINT_L : IDR_XML_STARTPOINT_P);
   if (!wf) return;
 
   //ASSERT(wf!=NULL);

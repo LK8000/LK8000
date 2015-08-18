@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
+#include "resource.h"
 
 
 static WndForm *wf=NULL;
@@ -40,11 +41,9 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double Altitude){
 
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgStartTask.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
-                      filename, 
-		      TEXT("IDR_XML_STARTTASK"));
+                    TEXT("dlgStartTask.xml"), 
+                    IDR_XML_STARTTASK);
 
   if (wf) {
     WndProperty* wp;

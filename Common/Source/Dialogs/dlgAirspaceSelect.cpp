@@ -14,6 +14,7 @@
 #include "AirspaceWarning.h"
 #include "Dialogs.h"
 #include "Event/Event.h"
+#include "resource.h"
 
 typedef struct{
   CAirspace *airspace;
@@ -635,19 +636,9 @@ void dlgAirspaceSelect(void) {
   Latitude = GPS_INFO.Latitude;
   Longitude = GPS_INFO.Longitude;
 
-  if (ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceSelect_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACESELECT_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceSelect_P.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACESELECT_P"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgAirspaceSelect_L.xml") :  TEXT("dlgAirspaceSelect_P.xml"), 
+                        ScreenLandscape ? IDR_XML_AIRSPACESELECT_L : IDR_XML_AIRSPACESELECT_P);
 
   if (!wf) return;
 

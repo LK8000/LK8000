@@ -10,6 +10,7 @@
  */
 #include "LKIcon.h"
 #include "LKSurface.h"
+#include "resource_data.h"
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Texture.hpp"

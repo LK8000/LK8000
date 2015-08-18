@@ -13,6 +13,7 @@
 #include "dlgTools.h"
 #include "Dialogs.h"
 #include "TraceThread.h"
+#include "resource.h"
 
 static WndForm *wf=NULL;
 
@@ -300,19 +301,12 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 void dlgBasicSettingsShowModal(void){
+    WndProperty* wp = nullptr;
 
-  SHOWTHREAD(_T("dlgBasicSettingsShowModal"));
+    wf = dlgLoadFromXML(CallBackTable, 
+            ScreenLandscape ? TEXT("dlgBasicSettings_L.xml") : TEXT("dlgBasicSettings_P.xml"),
+            ScreenLandscape ? IDR_XML_BASICSETTINGS_L : IDR_XML_BASICSETTINGS_P);
 
-  TCHAR filename[MAX_PATH];
-  if (!ScreenLandscape) {
-	LocalPathS(filename, TEXT("dlgBasicSettings_L.xml"));
-	wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_BASICSETTINGS_L"));
-  } else {
-	LocalPathS(filename, TEXT("dlgBasicSettings.xml"));
-	wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_BASICSETTINGS"));
-  }
-
-  WndProperty* wp;
 
 //  BallastTimerActive = false;
 

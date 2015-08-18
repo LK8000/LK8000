@@ -14,6 +14,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "LKObjects.h"
+#include "resource.h"
 
 extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
 
@@ -77,10 +78,9 @@ private:
 
 dlgProgress::dlgProgress() {
     
-	TCHAR filename[MAX_PATH];
-	LocalPathS(filename, ScreenLandscape?TEXT("dlgProgress_L.xml"):TEXT("dlgProgress_P.xml"));
-    
-    _WndForm = dlgLoadFromXML(CallBackTable, filename, ScreenLandscape?TEXT("IDR_XML_PROGRESS_L"):TEXT("IDR_XML_PROGRESS_P"));
+    _WndForm = dlgLoadFromXML(CallBackTable, 
+            ScreenLandscape ? TEXT("dlgProgress_L.xml") : TEXT("dlgProgress_P.xml"),
+            ScreenLandscape ? IDR_XML_PROGRESS_L : IDR_XML_PROGRESS_P);
     LKASSERT(_WndForm);
     if(_WndForm) {
         WindowControl* wSplash = _WndForm->FindByName(TEXT("frmSplash")); 

@@ -11,6 +11,7 @@
 #include "dlgTools.h"
 #include "Dialogs.h"
 #include "LKObjects.h"
+#include "resource.h"
 
 #ifdef HAVE_HATCHED_BRUSH
 
@@ -86,19 +87,9 @@ int dlgAirspacePatternsShowModal(void){
 
   ItemIndex = -1;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspacePatterns_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACEPATTERNS_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspacePatterns.xml"));
-    wf = dlgLoadFromXML(CallBackTable,                      
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACEPATTERNS"));
-  }
+                        ScreenLandscape ? TEXT("dlgAirspacePatterns_L.xml") : TEXT("dlgAirspacePatterns_P.xml"), 
+                        ScreenLandscape ? IDR_XML_AIRSPACEPATTERNS_L : IDR_XML_AIRSPACEPATTERNS_P);
 
   if (!wf) return -1;
 

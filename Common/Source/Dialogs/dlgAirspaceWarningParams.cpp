@@ -11,7 +11,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
-
+#include "resource.h"
 
 
 static WndForm *wf=NULL;
@@ -131,13 +131,11 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgAirspaceWarningParamsShowModal(void){
 
   WndProperty *wp;
-  TCHAR filename[MAX_PATH];
   int ival;
   
-  LocalPathS(filename, TEXT("dlgAirspaceWarningParams.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
-		      filename, 
-		      TEXT("IDR_XML_AIRSPACEWARNINGPARAMS"));
+		      TEXT("dlgAirspaceWarningParams.xml"), 
+		      IDR_XML_AIRSPACEWARNINGPARAMS);
 
   if (!wf) return;
 

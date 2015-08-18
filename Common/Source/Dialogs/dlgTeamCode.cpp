@@ -10,7 +10,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
-
+#include "resource.h"
 
 static WndForm *wf=NULL;
      
@@ -133,12 +133,10 @@ void dlgTeamCodeShowModal(void)
 {
   WndProperty* wp = NULL;
   WndButton *buttonCode = NULL;
-  wf = NULL;
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgTeamCode.xml"));
+
   wf = dlgLoadFromXML(CallBackTable, 
-            filename, 
-            TEXT("IDR_XML_TEAMCODE"));
+            TEXT("dlgTeamCode.xml"), 
+            IDR_XML_TEAMCODE);
   if (!wf) return;
 
   TCHAR sTmp[32] = { 0 };

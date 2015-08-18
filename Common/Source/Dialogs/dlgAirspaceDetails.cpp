@@ -16,6 +16,7 @@
 #include "TraceThread.h"
 #include "LKObjects.h"
 #include "Sound/Sound.h"
+#include "resource.h"
 
 static CAirspaceBase airspace_copy;
 static WndForm *wf=NULL;
@@ -325,13 +326,9 @@ static void SetValues(void) {
  */
 void dlgAirspaceDetails() {
 
-  SHOWTHREAD(_T("dlgAirspaceDetails"));
-
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgAirspaceDetails.xml"));
   wf = dlgLoadFromXML(CallBackTable,
-		      filename, 
-		      TEXT("IDR_XML_AIRSPACEDETAILS"));
+		      TEXT("dlgAirspaceDetails.xml"), 
+		      IDR_XML_AIRSPACEDETAILS);
 
   if (!wf) return;
   wf->SetTimerNotify(1000, OnTimer);

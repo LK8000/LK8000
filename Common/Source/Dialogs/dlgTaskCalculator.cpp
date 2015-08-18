@@ -10,9 +10,8 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
-
-
 #include "Calculations2.h"
+#include "resource.h"
 
 
 static WndForm *wf=NULL;
@@ -305,12 +304,8 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgTaskCalculatorShowModal(void){
 
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgTaskCalculator.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
-                      filename, 
-		      TEXT("IDR_XML_TASKCALCULATOR"));
-
+                      TEXT("dlgTaskCalculator.xml"), IDR_XML_TASKCALCULATOR);
   if (!wf) return;
 
   double MACCREADY_enter = MACCREADY;

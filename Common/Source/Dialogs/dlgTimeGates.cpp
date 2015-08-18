@@ -13,7 +13,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
-
+#include "resource.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;
@@ -108,11 +108,7 @@ static void setVariables(void) {
 void dlgTimeGatesShowModal(void){
 
   WndProperty *wp;
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgTimeGates.xml"));
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      filename, 
-		      TEXT("IDR_XML_TIMEGATES"));
+  wf = dlgLoadFromXML(CallBackTable, TEXT("dlgTimeGates.xml"),  IDR_XML_TIMEGATES);
 
   if (!wf) return;
   

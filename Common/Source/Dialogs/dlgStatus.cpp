@@ -16,6 +16,7 @@
 #include "device.h"
 #include "dlgTools.h"
 #include "Event/Event.h"
+#include "resource.h"
 
 extern BOOL extGPSCONNECT;
 extern NMEAParser nmeaParser1;
@@ -729,11 +730,7 @@ void dlgStatusShowModal(int start_page){
 
   first = true;
 
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgStatus.xml"));
-  wf = dlgLoadFromXML(CallBackTable, 
-                      filename, 
-		      TEXT("IDR_XML_STATUS"));
+  wf = dlgLoadFromXML(CallBackTable, TEXT("dlgStatus.xml"), IDR_XML_STATUS);
 
   if (!wf) return;
 

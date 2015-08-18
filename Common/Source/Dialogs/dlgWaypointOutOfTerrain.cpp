@@ -11,6 +11,7 @@
 #include "WindowControls.h"
 #include "Waypointparser.h"
 #include "dlgTools.h"
+#include "resource.h"
 
 
 static WndForm *wf=NULL;
@@ -45,11 +46,9 @@ int dlgWaypointOutOfTerrain(TCHAR *Message){
   WndFrame* wfrm;
   int res = 0;
 
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgWaypointOutOfTerrain.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-		        TEXT("IDR_XML_WAYPOINTTERRAIN"));
+                        TEXT("dlgWaypointOutOfTerrain.xml"), 
+                        IDR_XML_WAYPOINTTERRAIN);
 
     if (wf) {
 

@@ -13,6 +13,8 @@
 #include <ctype.h>
 #include "Event/Event.h"
 #include "Sound/Sound.h"
+#include "resource.h"
+
 
 static bool first= true;
 static WndForm *wf=NULL;
@@ -210,7 +212,7 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, const TCHAR* szResource)
+void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, unsigned ResID)
 {
 
   first = true;
@@ -223,7 +225,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
     LocalPathS(filename, szFile);
     wf = dlgLoadFromXML(CallBackTable,
 			filename,
-			szResource);
+			ResID);
   if (!wf) return;
 
   cursor = 0;
@@ -245,25 +247,21 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
   wf=NULL;
 }
 
- int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
+int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 {
 	WaypointKeyRed = WPKeyRed;
-	if (ScreenLandscape)  {
-		dlgTextEntryKeyboardShowModal(text, width, TEXT("frmTextEntry_Keyboard_L.xml"), TEXT("IDR_XML_TEXTENTRY_KEYBOARD_L"));
-	} else {
-		dlgTextEntryKeyboardShowModal(text, width, TEXT("frmTextEntry_Keyboard.xml"), TEXT("IDR_XML_TEXTENTRY_KEYBOARD"));
-	}
+	dlgTextEntryKeyboardShowModal(text, width, 
+                ScreenLandscape ? TEXT("frmTextEntry_Keyboard_L.xml") : TEXT("frmTextEntry_Keyboard_P.xml"), 
+                ScreenLandscape ? IDR_XML_TEXTENTRY_KEYBOARD_L : IDR_XML_TEXTENTRY_KEYBOARD_P);
 	return IdenticalIndex;
 }
 
 void dlgNumEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 {
 	WaypointKeyRed = WPKeyRed;
-	if (ScreenLandscape)  {
-		dlgTextEntryKeyboardShowModal(text, width, TEXT("frmNumEntry_Keyboard_L.xml"), TEXT("IDR_XML_NUMENTRY_KEYBOARD_L"));
-	} else {
-		dlgTextEntryKeyboardShowModal(text, width, TEXT("frmNumEntry_Keyboard.xml"), TEXT("IDR_XML_NUMENTRY_KEYBOARD"));
-	}
+	dlgTextEntryKeyboardShowModal(text, width, 
+                ScreenLandscape ? TEXT("frmNumEntry_Keyboard_L.xml") : TEXT("frmNumEntry_Keyboard_P.xml"), 
+                ScreenLandscape ? IDR_XML_NUMENTRY_KEYBOARD_L : IDR_XML_NUMENTRY_KEYBOARD_P);
 }
 
 BOOL dlgKeyboard(WndProperty* theProperty){

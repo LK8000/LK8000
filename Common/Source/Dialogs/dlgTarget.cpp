@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "Event/Event.h"
+#include "resource.h"
 
 static WndForm *wf=NULL;
 static WindowControl *btnMove = NULL;
@@ -541,19 +542,9 @@ void dlgTarget(int TaskPoint) {
   }
   target_point = TaskPoint;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTarget_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TARGET_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTarget.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TARGET"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgTarget_L.xml") : TEXT("dlgTarget_P.xml"), 
+                        ScreenLandscape ? IDR_XML_TARGET_L : IDR_XML_TARGET_P);
 
   if (!wf) return;
 

@@ -14,9 +14,7 @@
 #include <ctype.h>
 #include "dlgTools.h"
 #include "Event/Event.h"
-
-  #define PICTO_OFFSET 28
-
+#include "resource.h"
 
 
 typedef struct{
@@ -830,19 +828,9 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
     DistanceFilterIdx = 1;
   }
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgWayPointSelect_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_WAYPOINTSELECT_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgWayPointSelect.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_WAYPOINTSELECT"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgWayPointSelect_L.xml") : TEXT("dlgWayPointSelect_P.xml"), 
+                        ScreenLandscape ? IDR_XML_WAYPOINTSELECT_L : IDR_XML_WAYPOINTSELECT_P);
 
   if (!wf) return -1;
 

@@ -10,7 +10,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "LKObjects.h"
-
+#include "resource.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wAirspaceColoursList=NULL;
@@ -87,20 +87,10 @@ int dlgAirspaceColoursShowModal(void){
 
   ItemIndex = -1;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceColours_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACECOLOURS_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceColours.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACECOLOURS"));
-  }
-
+                       ScreenLandscape ? TEXT("dlgAirspaceColours_L.xml") : TEXT("dlgAirspaceColours_P.xml"), 
+                       ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P);
+  
   if (!wf) return -1;
 
   wAirspaceColoursList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceColoursList"));

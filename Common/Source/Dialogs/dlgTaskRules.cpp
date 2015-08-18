@@ -12,7 +12,7 @@
 #include "LKProfiles.h"
 #include "Dialogs.h"
 #include "WindowControls.h"
-
+#include "resource.h"
 
 
 static bool changed = false;
@@ -123,11 +123,9 @@ bool dlgTaskRules(void){
 
   WndProperty *wp;
 
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgTaskRules.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
-		      filename, 
-		      TEXT("IDR_XML_TASKRULES"));
+		      TEXT("dlgTaskRules.xml"), 
+		      IDR_XML_TASKRULES);
 
   if (!wf) return false;
   

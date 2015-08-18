@@ -14,17 +14,6 @@
 
 #include "Screen/Bitmap.hpp"
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-#ifdef __linux__
-#include "tchar.h"
-#include "types.h"
-
-#define MAKEINTRESOURCE(i) (LPCTSTR)((DWORD)((WORD)(i)))
-
-#endif
-
 class LKBitmap final : public Bitmap {
 public:
 	LKBitmap();

@@ -29,6 +29,7 @@
 #include "LKAssert.h"
 
 #ifndef USE_GDI
+#include "types.h"
 #include "Screen/Canvas.hpp"
 #endif
 

@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmTarget" Type="Dialog" X="1" Y="1" Width="240" Height="145" Caption="_@M684_" Font="2"  Popup="1" >
-    <WndButton  Name="btnOK" Caption="OK" X="2" Y="2" Width="50"  Height="22" Font="2" OnClickNotify="OnOKClicked" Tag="1"/>
-    <WndProperty Name="prpTaskPoint" Caption="_@M689_" X="55" Y="2"   Width="180" Height="22" CaptionWidth="60" Font="2" Help="_@H460_">
+  <WndForm Name="frmTarget" Type="Dialog" X="200" Y="0" Width="119" Height="240" Caption="_@M684_" Font="2" Popup="1" >
+    <WndButton  Name="btnOK" Caption="OK"    X="2" Y="2" Width="50"  Height="22" Font="2" OnClickNotify="OnOKClicked" Tag="1"/>
+    <WndProperty Name="prpTaskPoint" Caption="Tp" X="2" Y="-1"   Width="115" Height="24" CaptionWidth="30" Font="2" Help="_@H460_">
       <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnTaskPointData"/>
     </WndProperty>
-	
-    <WndProperty Name="prpRange" Caption="_@M543_" X="2" Y="25" Width="115" Height="22" CaptionWidth="50" Font="2" Help="_@H461_">
-      <DataField Name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min="-100" Max="100" Step="5" OnDataAccess="OnRangeData"/>
+    <WndButton  Name="btnMove" Caption="_@M444_"    X="34" Y="-1" Width="50"  Height="22" Font="2" OnClickNotify="OnMoveClicked" Tag="1"/>
+    <WndProperty Name="prpRange" Caption="_@M543_"      X="2" Y="-1"   Width="115" Height="22" CaptionWidth="60" Font="2" Help="_@H461_">
+      <DataField Name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min="-100" Max="100" Step="2" OnDataAccess="OnRangeData"/>
     </WndProperty>
-    <WndProperty Name="prpRadial" Caption="_@M541_" X="120" Y="25" Width="115" Height="22" CaptionWidth="50" Font="2" Help="_@H462_">
-      <DataField Name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min="-92" Max="92" Step="5" OnDataAccess="OnRadialData"/>
+    <WndProperty Name="prpRadial" Caption="_@M541_"      X="2" Y="-1"   Width="115" Height="22" CaptionWidth="60" Font="2" Help="_@H462_">
+      <DataField Name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min="-92" Max="92" Step="2" OnDataAccess="OnRadialData"/>
     </WndProperty>
-	<WndProperty Name="prpAATEst" Caption="_@M247_" X="2" Y="50"  Width="115" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" Min="0" Max="600" Step="10">
+    <WndProperty Name="prpAATEst" Caption="_@M247_" X="2" Y="-1"  Width="115" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" Min="0" Max="600" Step="10">
       <DataField Name="" DataType="double" DisplayFormat="%.0f min" EditFormat="%.0f" ReadOnly="1"/>
     </WndProperty>
-    <WndProperty Name="prpAATDelta" Caption="delta T" X="120" Y="50"  Width="115" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" Min="0" Max="600" Step="10">
+    <WndProperty Name="prpAATDelta" Caption="delta T" X="2" Y="-1"  Width="115" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" Min="0" Max="600" Step="10">
       <DataField Name="" DataType="double" DisplayFormat="%.0f min" EditFormat="%.0f" ReadOnly="1"/>
     </WndProperty>
-    <WndProperty Name="prpSpeedRemaining" Caption="_@M773_" X="2" Y="75"  Width="115" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" Min="0" Max="2000" Step="10" >
+    <WndProperty Name="prpSpeedRemaining" Caption="_@M773_" X="2" Y="-1"  Width="115" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" Min="0" Max="2000" Step="10" >
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.1f" ReadOnly="1"/>
     </WndProperty>
-    <WndProperty Name="prpSpeedAchieved" Caption="_@M772_" X="120" Y="75"  Width="115" Height="22" CaptionWidth="50" Font="2" ReadOnly="1" Min="0" Max="2000" Step="10" >
+    <WndProperty Name="prpSpeedAchieved" Caption="_@M772_" X="2" Y="-1"  Width="115" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" Min="0" Max="2000" Step="10" >
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.1f" ReadOnly="1"/>
     </WndProperty>
-	<WndButton  Name="btnMove" Caption="_@M444_"    X="2" Y="100" Width="50"  Height="22" Font="2" OnClickNotify="OnMoveClicked" Tag="1"/>
-    <WndProperty Name="prpAATTargetLocked" Caption="_@M683_" X="90" Y="100"  Width="145" Height="22" CaptionWidth="80" Font="2" ReadOnly="0" Help="_@H463_">
+    <WndProperty Name="prpAATTargetLocked" Caption="_@M403_" X="2" Y="-1"  Width="115" Height="22" CaptionWidth="60" Font="2" ReadOnly="0" Help="_@H463_">
       <DataField Name="" DataType="boolean" ReadOnly="0" OnDataAccess="OnLockedData"/>
     </WndProperty>
   </WndForm>

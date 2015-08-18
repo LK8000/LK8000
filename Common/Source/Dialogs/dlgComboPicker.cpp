@@ -11,6 +11,7 @@
 #include "WindowControls.h"
 #include "Dialogs.h"
 #include "dlgTools.h"
+#include "resource.h"
 
 
 static WndForm *wf=NULL;
@@ -133,19 +134,9 @@ int dlgComboPicker(WndProperty* theProperty){
     LKASSERT(theProperty!=NULL);
     wComboPopupWndProperty = theProperty;
 
-    if (!ScreenLandscape) {
-      TCHAR filename[MAX_PATH]; 
-      LocalPathS(filename, TEXT("dlgComboPicker_L.xml"));
-      wf = dlgLoadFromXML(CallBackTable, 
-                          filename, 
-                          TEXT("IDR_XML_COMBOPICKER_L"));
-    } else {
-      TCHAR filename[MAX_PATH];
-      LocalPathS(filename, TEXT("dlgComboPicker.xml"));
-      wf = dlgLoadFromXML(CallBackTable, 
-                          filename, 
-                          TEXT("IDR_XML_COMBOPICKER"));
-    }
+    wf = dlgLoadFromXML(CallBackTable, 
+                          ScreenLandscape ? TEXT("dlgComboPicker_L.xml") : TEXT("dlgComboPicker_P.xml"),
+                          ScreenLandscape ? IDR_XML_COMBOPICKER_L : IDR_XML_COMBOPICKER_P);
 
     if (!wf) return -1;
 

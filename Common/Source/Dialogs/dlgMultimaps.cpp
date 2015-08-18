@@ -10,6 +10,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
+#include "resource.h"
 
 static WndForm *wf=NULL;
 
@@ -124,11 +125,10 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgMultimapsShowModal(void){
   WndProperty *wp;
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgMultimaps.xml"));
+
   wf = dlgLoadFromXML(CallBackTable,                        
-		      filename, 
-		      TEXT("IDR_XML_MULTIMAPS"));
+		      TEXT("dlgMultimaps.xml"), 
+		      IDR_XML_MULTIMAPS);
 
   if (!wf) return;
 

@@ -13,6 +13,7 @@
 #include "ContestMgr.h"
 #include "dlgTools.h"
 #include "Event/Event.h"
+#include "resource.h"
 
 double Statistics::yscale;
 double Statistics::xscale;
@@ -289,20 +290,11 @@ if (entered == true) /* prevent re entrance */
   waGrid=NULL;
   waInfo=NULL;
   wCalc=NULL;
- entered = true;
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAnalysis_L.xml"));
-    wfa = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_ANALYSIS_L"));
-  } else  {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAnalysis.xml"));
-    wfa = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_ANALYSIS"));
-  }
+  entered = true;
+
+  wfa = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgAnalysis_L.xml") : TEXT("dlgAnalysis_P.xml"), 
+                        ScreenLandscape ? IDR_XML_ANALYSIS_L : IDR_XML_ANALYSIS_P);
 
   if (!wfa) return;
 

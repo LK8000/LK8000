@@ -11,10 +11,9 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "LKProcess.h"
-
 #include "Terrain.h"
 #include "LKProfiles.h"
-
+#include "resource.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;
@@ -193,11 +192,9 @@ void dlgTopologyShowModal(void){
   }
 
   WndProperty *wp;
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgTopology.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
-		      filename, 
-		      TEXT("IDR_XML_TOPOLOGY"));
+		      TEXT("dlgTopology.xml"), 
+		      IDR_XML_TOPOLOGY);
 
   if (!wf) return;
 

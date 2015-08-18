@@ -11,7 +11,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "Logger.h"
-
+#include "resource.h"
 
 static WndForm *wf=NULL;
 
@@ -66,11 +66,9 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgLoggerReplayShowModal(void){
 
   TCHAR tsuf[10];
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgLoggerReplay.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
-                      filename, 
-		      TEXT("IDR_XML_LOGGERREPLAY"));
+                    TEXT("dlgLoggerReplay.xml"), 
+                    IDR_XML_LOGGERREPLAY);
 
   WndProperty* wp;
 

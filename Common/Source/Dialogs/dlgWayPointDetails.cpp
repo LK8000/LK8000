@@ -15,6 +15,7 @@
 #include "dlgTools.h"
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
+#include "resource.h"
 
 static int page=0;
 static WndForm *wf=NULL;
@@ -287,20 +288,10 @@ void dlgWayPointDetailsShowModal(short mypage){
   int sunsetmins;
   WndProperty *wp;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgWayPointDetails.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_WAYPOINTDETAILS"));
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgWayPointDetails_L.xml") : TEXT("dlgWayPointDetails_P.xml"), 
+                        ScreenLandscape ? IDR_XML_WAYPOINTDETAILS_L : IDR_XML_WAYPOINTDETAILS_P);
 
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgWayPointDetails_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_WAYPOINTDETAILS_L"));
-  }
 
   if (!wf) return;
 

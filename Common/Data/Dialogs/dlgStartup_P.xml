@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Name="frmStartup" Type="Dialog" X="0" Y="0" Width="240" Height="320" BackColor="0" Font="2" >
+    <WndOwnerDrawFrame Name="frmSplash" X="0" Y="0" Width="240" Height="265" Font="0" OnPaint="OnSplashPaint" />
+    <WndButton Name="cmdClose" Caption="_@M48_" X="2" Y="268" Width="230"  Height="30" Font="2" Tag="3" />
+    <WndProperty Name="prpProfile" Caption="_@M532_" X="2" Y="293" Width="235" Height="25" CaptionWidth="58" Font="2">
+      <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
+    </WndProperty>
+  </WndForm>
+</PMML>

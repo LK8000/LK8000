@@ -13,6 +13,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "InputEvents.h"
+#include "resource.h"
 
 extern void ResetTaskWaypoint(int j);
 
@@ -597,21 +598,10 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Moveallowed){
-  wf = NULL;
- 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTaskWaypoint_L.xml"));
+
     wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TASKWAYPOINT_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTaskWaypoint.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TASKWAYPOINT"));    
-  }
+                        ScreenLandscape ? TEXT("dlgTaskWaypoint_L.xml") : TEXT("dlgTaskWaypoint_P.xml"), 
+                        ScreenLandscape ? IDR_XML_TASKWAYPOINT_L : IDR_XML_TASKWAYPOINT_P);
 
   if (ISPARAGLIDER) {
     if(DoOptimizeRoute()) 

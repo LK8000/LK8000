@@ -16,6 +16,7 @@
 #include "Message.h"
 #include <iterator>
 #include "utils/stl_utils.h"
+#include "resource.h"
 
 namespace DlgIgcFile {
     WndForm *wfDlg = NULL;
@@ -175,16 +176,10 @@ namespace DlgIgcFile {
 using DlgIgcFile::wfDlg;
 
 void dlgIgcFileShowModal() {
-    TCHAR filename[MAX_PATH];
-    const TCHAR *resName = NULL;
-    if (!ScreenLandscape) {
-        LocalPathS(filename, TEXT("dlgIgcFile.xml"));
-        resName = TEXT("IDR_XML_IGCFILE");
-    } else {
-        LocalPathS(filename, TEXT("dlgIgcFile_L.xml"));
-        resName = TEXT("IDR_XML_IGCFILE_L");
-    }
-    wfDlg = dlgLoadFromXML(DlgIgcFile::CallBackTable, filename, resName);
+
+    wfDlg = dlgLoadFromXML(DlgIgcFile::CallBackTable, 
+            ScreenLandscape ? TEXT("dlgIgcFile_L.xml") : TEXT("dlgIgcFile_P.xml"), 
+            ScreenLandscape ? IDR_XML_IGCFILE_L : IDR_XML_IGCFILE_P);
     if (wfDlg) {
 
         WndListFrame* wndFileList = (WndListFrame*) wfDlg->FindByName(TEXT("frmIgcFileList"));

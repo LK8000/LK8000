@@ -27,6 +27,6 @@ typedef struct{
   void *Ptr;
 }CallBackTableEntry_t;
 
-WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *FileName, const TCHAR *resource=NULL);
+WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *FileName, unsigned resID);
 
 #endif

@@ -14,6 +14,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "CTaskFileHelper.h"
+#include "resource.h"
 
 extern void ResetTaskWaypoint(int j);
 
@@ -598,21 +599,9 @@ void dlgTaskOverviewShowModal(int Idx){
 
   showAdvanced = false;
 
-  wf = NULL;
-
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTaskOverview_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TASKOVERVIEW_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTaskOverview.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TASKOVERVIEW"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgTaskOverview_L.xml") : TEXT("dlgTaskOverview_P.xml"), 
+                        ScreenLandscape ? IDR_XML_TASKOVERVIEW_L : IDR_XML_TASKOVERVIEW_P);
 
   if (!wf) return;
 

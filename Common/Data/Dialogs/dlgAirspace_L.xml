@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
-  <WndForm Name="frmAirspace" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M68_" Font="2" >
-    <WndFrame X="0" Y="0" Width="230" Height="20" Font="2" />
-    <WndButton   Name="cmdClose" Caption="_@M186_"    X="5" Y="270" Width="60"  Height="28" Font="2" OnClickNotify="OnCloseClicked"/>
-    <WndButton   Name="cmdLookup" Caption="_@M411_"    X="85" Y="270" Width="60"  Height="28" Font="2" OnClickNotify="OnLookupClicked"/>
-    <WndListFrame Name="frmAirspaceList" X="0" Y="0" Width="-2" Height="250" Font="2" OnListInfo="OnAirspaceListInfo">
+  <WndForm Name="frmAirspace" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M68_" Font="2"  >
+    <WndFrame X="0" Y="0" Width="100" Height="20" Font="2" />
+    <WndButton   Name="cmdClose" Caption="_@M186_"    X="2" Y="2" Width="98"  Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
+    <WndButton   Name="cmdLookup" Caption="_@M411_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnLookupClicked"/>
+    <WndListFrame Name="frmAirspaceList" X="102" Y="0" Width="-2" Height="222" Font="2" OnListInfo="OnAirspaceListInfo">
       <WndOwnerDrawFrame Name="frmAirspaceListEntry" X="2" Y="2" Width="-2" Height="18" Font="2"  OnPaint="OnAirspacePaintListItem"/>
     </WndListFrame>
   </WndForm>

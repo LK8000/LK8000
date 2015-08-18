@@ -11,6 +11,7 @@
 #include "Topology.h"
 #include "Multimap.h"
 #include "OS/Memory.h"
+#include "resource_data.h"
 
 #include <Poco/Latin1Encoding.h>
 #include <Poco/UTF16Encoding.h>

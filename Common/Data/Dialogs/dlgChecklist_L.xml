@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmChecklist" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M796_" Font="2" >
-    <WndButton Name="cmdPrev"  Caption="_@M6_" X="2" Y="224" Width="116"  Height="42" Font="3" OnClickNotify="OnPrevClicked" Tag="0"/>
-    <WndButton Name="cmdNext"  Caption="_@M460_" X="121" Y="224" Width="116"  Height="42" Font="3" OnClickNotify="OnNextClicked" Tag="1" />
-    <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="269" Width="235"  Height="34" Font="2" Tag="3" />
-    <WndListFrame Name="frmDetails" X="0" Y="0" Width="240" Height="220" Font="3" OnListInfo="OnDetailsListInfo">
+  <WndForm Name="frmChecklist" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M796_" Font="2" >
+    <WndButton Name="cmdNext"  Caption="_@M460_" X="2" Y="80" Width="66"  Height="38" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
+    <WndButton Name="cmdPrev"  Caption="_@M6_" X="2" Y="120" Width="66"  Height="38" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
+    <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="180" Width="66"  Height="38" Font="2" Tag="3" />
+    <WndListFrame Name="frmDetails" X="70" Y="0" Width="246" Height="222" Font="3" OnListInfo="OnDetailsListInfo">
       <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="235" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
     </WndListFrame>
   </WndForm>

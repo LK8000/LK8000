@@ -11,6 +11,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
+#include "resource.h"
 
 
 static WndForm *wf=NULL;
@@ -200,9 +201,7 @@ void dlgProfilesShowModal(short mode){
   wf = NULL;
   profilemode=mode;
 
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgProfiles.xml"));
-  wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_PROFILES"));
+  wf = dlgLoadFromXML(CallBackTable, TEXT("dlgProfiles.xml"), IDR_XML_PROFILES);
 
   if (!wf) return;
 

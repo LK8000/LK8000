@@ -14,6 +14,7 @@
 #include "utils/fileext.h"
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
+#include "resource.h"
 
 #define MAXNOTETITLE 200	// max number of characters in a title note
 #define MAXNOTEDETAILS 5000	// max size of each note details
@@ -393,19 +394,9 @@ void dlgChecklistShowModal(short checklistmode){
   InitNotepad();
   LoadChecklist(checklistmode); // check if loaded really something
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgChecklist_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_CHECKLIST_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgChecklist.xml"));
-    wf = dlgLoadFromXML(CallBackTable,                        
-                        filename, 
-                        TEXT("IDR_XML_CHECKLIST"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgChecklist_L.xml") : TEXT("dlgChecklist_P.xml"), 
+                        ScreenLandscape ? IDR_XML_CHECKLIST_L : IDR_XML_CHECKLIST_P);
 
   aTextLine.clear();
 

@@ -13,7 +13,7 @@
 #include <ctype.h>
 #include "dlgTools.h"
 #include "ComCheck.h"
-
+#include "resource.h"
 
 
 static WndForm *wf=NULL;
@@ -151,19 +151,9 @@ void dlgTerminal(int portnumber) {
 
   SHOWTHREAD(_T("dlgTerminal"));
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTerminal_P.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TERMINAL_P"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTerminal_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TERMINAL_L"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgTerminal_L.xml") : TEXT("dlgTerminal_P.xml"), 
+                        ScreenLandscape ? IDR_XML_TERMINAL_L : IDR_XML_TERMINAL_P);
 
   if (!wf) return;
 

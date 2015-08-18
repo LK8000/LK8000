@@ -84,15 +84,8 @@ bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
         return true;
     }
 #else
-    const TCHAR* szID = ResourceName;
-    TCHAR szTmp[10] = {};
-    if((ptrdiff_t)ResourceName < (ptrdiff_t)std::numeric_limits<unsigned short>::max()) {
-        // we have resource ID
-        _stprintf(szTmp, _T("%u"), (unsigned short)(ptrdiff_t)ResourceName);        
-        szID = szTmp;
-    }
-    if(szID) {
-        return Load(GetNamedResource(szID), Type::STANDARD);
+    if(ResourceName) {
+        return Load(GetNamedResource(ResourceName), Type::STANDARD);
     }
 #endif
     return false;

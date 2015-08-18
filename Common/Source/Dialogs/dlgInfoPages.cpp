@@ -13,6 +13,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
+#include "resource.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;
@@ -122,11 +123,9 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgInfoPagesShowModal(void){
 
   WndProperty *wp;
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgInfoPages.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
-		      filename, 
-		      TEXT("IDR_XML_INFOPAGES"));
+		      TEXT("dlgInfoPages.xml"), 
+		      IDR_XML_INFOPAGES);
 
   if (!wf) return;
 

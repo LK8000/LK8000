@@ -13,6 +13,8 @@
 #include <functional>
 #define STATIC_BITMAPS
 #include "Bitmaps.h"
+#include "resource_data.h"
+
 
 using std::placeholders::_1;
 

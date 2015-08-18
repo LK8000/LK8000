@@ -304,40 +304,32 @@ short dlgStartupShowModal(void){
 
   // FLY SIM PROFILE EXIT
   if (RUN_MODE==RUN_WELCOME) {
-	if (ScreenLandscape) {
-		LocalPathS(filename, TEXT("dlgFlySim_L.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_FLYSIM_L"));
-	} else {
-		LocalPathS(filename, TEXT("dlgFlySim_P.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_FLYSIM_P"));
-	}
-	if (!wf) {
-		return 0;
-	}
+	
+      wf = dlgLoadFromXML(CallBackTable, 
+                ScreenLandscape ? TEXT("dlgFlySim_L.xml") : TEXT("dlgFlySim_P.xml"), 
+                ScreenLandscape ? IDR_XML_FLYSIM_L : IDR_XML_FLYSIM_P);
+	
+      if (!wf) return 0;
   }
 
   //  PROFILE AIRCRAFT  CLOSE
   if (RUN_MODE==RUN_DUALPROF) {
-	if (!ScreenLandscape) {
-		LocalPathS(filename, TEXT("dlgDualProfile_L.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_DUALPROFILE_L"));
-	} else {
-		LocalPathS(filename, TEXT("dlgDualProfile.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_DUALPROFILE"));
-	}
-	if (!wf) return 0;
+	
+      wf = dlgLoadFromXML(CallBackTable, 
+                ScreenLandscape ? TEXT("dlgDualProfile_L.xml") : TEXT("dlgDualProfile_P.xml"), 
+                ScreenLandscape ? IDR_XML_DUALPROFILE_L : IDR_XML_DUALPROFILE_P);
+	
+      if (!wf) return 0;
   }
 
   // CHOOSE PROFILE
   if (RUN_MODE==RUN_PROFILE || RUN_MODE==RUN_AIRCRAFT || RUN_MODE==RUN_PILOT || RUN_MODE==RUN_DEVICE) {
-	if (!ScreenLandscape) {
-		LocalPathS(filename, TEXT("dlgStartup_L.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_STARTUP_L"));
-	} else {
-		LocalPathS(filename, TEXT("dlgStartup.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_STARTUP"));
-	}
-	if (!wf) return 0;
+
+      wf = dlgLoadFromXML(CallBackTable, 
+                ScreenLandscape ? TEXT("dlgStartup_L.xml") : TEXT("dlgStartup_P.xml"), 
+                ScreenLandscape ? IDR_XML_STARTUP_L : IDR_XML_STARTUP_P);
+	
+      if (!wf) return 0;
   }
 
   wSplash = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmSplash")); 

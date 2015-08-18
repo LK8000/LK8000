@@ -12,7 +12,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "utils/TextWrapArray.h"
-
+#include "resource.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wHelp=NULL;
@@ -72,19 +72,11 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
     return;
   }
   InitHelp();
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgHelp_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename,
-                        TEXT("IDR_XML_HELP_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgHelp.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_HELP"));
-  }
+
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgHelp_L.xml") : TEXT("dlgHelp_P.xml"),
+                        ScreenLandscape ? IDR_XML_HELP_L : IDR_XML_HELP_P);
+
   LKASSERT(wf);
   if (!wf) goto _getout;
 
