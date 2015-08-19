@@ -26,7 +26,7 @@ test -d $PLACE || {\
   mkdir $PLACE/PC 
   mkdir $PLACE/PNA
   mkdir $PLACE/LINUX
-  mkdir %PLACE/KOBO
+  mkdir $PLACE/KOBO
 
   echo "Folder <$PLACE> created."
 }
