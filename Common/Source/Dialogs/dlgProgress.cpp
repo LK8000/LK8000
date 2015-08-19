@@ -40,6 +40,7 @@ static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
 
   hP.Create(PEN_SOLID,NIBLSCALE(1),RGB_BLACK);
   ohP = Surface.SelectObject(hP);
+  Surface.SelectObject(LK_HOLLOW_BRUSH);
   InflateRect(&PrintAreaR, -NIBLSCALE(2), -NIBLSCALE(2));
   Surface.Rectangle(PrintAreaR.left,PrintAreaR.top,PrintAreaR.right,PrintAreaR.bottom);
 
