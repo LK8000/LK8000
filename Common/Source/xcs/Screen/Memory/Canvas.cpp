@@ -75,8 +75,8 @@ Canvas::DrawOutlineRectangle(int left, int top, int right, int bottom,
   SDLRasterCanvas canvas(buffer);
   const int x1 = left+pen.GetWidth()/2;
   const int y1 = top+pen.GetWidth()/2;
-  const int x2 = right-pen.GetWidth()/2;
-  const int y2 = bottom-pen.GetWidth()/2;
+  const int x2 = right-(pen.GetWidth()+1)/2;
+  const int y2 = bottom-(pen.GetWidth()+1)/2;
   
   canvas.DrawThickLine(x1, y1, x2, y1, pen.GetWidth(), canvas.Import(pen.GetColor()), pen.GetMask());
   canvas.DrawThickLine(x1, y2, x2, y2, pen.GetWidth(), canvas.Import(pen.GetColor()), pen.GetMask());
