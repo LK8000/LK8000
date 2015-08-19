@@ -272,11 +272,13 @@ ifeq ($(CONFIG_LINUX),y)
   $(eval $(call pkg-config-library,GL,gl))
  endif
 
- ifneq ($(USE_SDL), y)
-  USE_EGL ?= $(shell $(PKG_CONFIG) --exists egl && echo y)
+ ifneq ($(USE_SDL),y)
+  ifeq ($(OPENGL),y)
+   USE_EGL ?= $(shell $(PKG_CONFIG) --exists egl && echo y)
+  endif
  endif
 
- ifeq ($(USE_EGL), y)
+ ifeq ($(OPENGL)$(USE_EGL),yy)
   $(eval $(call pkg-config-library,EGL,egl))
   USE_X11 ?= $(shell $(PKG_CONFIG) --exists x11 && echo y)
   USE_SDL ?=n
@@ -288,12 +290,16 @@ ifeq ($(CONFIG_LINUX),y)
   WAYLAND_LDLIBS += -lwayland-egl
   # no X11 if wayland enabled
   USE_X11 :=n
+  USE_SDL :=n
  endif
 
  ifeq ($(USE_X11), y)
   $(eval $(call pkg-config-library,X11,x11))
   CE_DEFS += $(X11_CPPFLAGS) -DUSE_X11
  endif
+
+# Use SDL if not explicitly disabled or disabled by another FLAG ... 
+ USE_SDL ?=y
 
  ifeq ($(USE_SDL),y)
   CE_DEFS += -DENABLE_SDL
