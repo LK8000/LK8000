@@ -152,18 +152,6 @@ int dlgComboPicker(WndProperty* theProperty){
     LKASSERT(wComboPopupListEntry!=NULL);
     wComboPopupListEntry->SetCanFocus(true);
 
-    // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-    if ( wComboPopupListFrame->ScrollbarWidth == -1) {
-      #if defined (PNA)
-      #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-      #else
-      #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-      #endif
-      wComboPopupListFrame->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-    }
-    wComboPopupListEntry->SetWidth(wComboPopupListFrame->GetWidth() - wComboPopupListFrame->ScrollbarWidth - 5);
-
-
     ComboPopupDataField = wComboPopupWndProperty->GetDataField();
     ComboListPopup = ComboPopupDataField->GetCombo();
     LKASSERT(ComboPopupDataField!=NULL);

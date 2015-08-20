@@ -844,31 +844,11 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   LKASSERT(wWayPointList!=NULL);
   wWayPointList->SetBorderKind(BORDERLEFT);
   wWayPointList->SetEnterCallback(OnWaypointListEnter);
-  wWayPointList->SetWidth(wf->GetWidth() - wWayPointList->GetLeft()-2);
 
   wWayPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWayPointListEntry"));
   LKASSERT(wWayPointListEntry!=NULL);
 
   wWayPointListEntry->SetCanFocus(true);
-   // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-   if ( wWayPointList->ScrollbarWidth == -1) {  
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wWayPointList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-   
-
-   }
-  
-   const int EntryWidth = ( wWayPointList->GetWidth()
-                       - wWayPointList->ScrollbarWidth 
-                       - (wWayPointListEntry->GetLeft() * 2 )
-                       - ((wWayPointList->GetBorderKind()&BORDERLEFT)?NIBLSCALE(1):0));
-  
-  
-  wWayPointListEntry->SetWidth(EntryWidth);
 
   wpDistance = (WndProperty*)wf->FindByName(TEXT("prpFltDistance"));
   wpDirection = (WndProperty*)wf->FindByName(TEXT("prpFltDirection"));

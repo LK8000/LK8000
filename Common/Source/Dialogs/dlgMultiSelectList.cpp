@@ -515,23 +515,10 @@ ListElement* dlgMultiSelectListShowModal(void) {
     LKASSERT(wMultiSelectListList != NULL);
     wMultiSelectListList->SetBorderKind(BORDERLEFT);
     wMultiSelectListList->SetEnterCallback(OnMultiSelectListListEnter);
-    wMultiSelectListList->SetWidth(wf->GetWidth() - wMultiSelectListList->GetLeft() - 2);
 
     wMultiSelectListListEntry = (WndOwnerDrawFrame*) wf->FindByName(TEXT("frmMultiSelectListListEntry"));
     LKASSERT(wMultiSelectListListEntry != NULL);
     wMultiSelectListListEntry->SetCanFocus(true);
-
-    // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-    if (wMultiSelectListList->ScrollbarWidth == -1) {
-#if defined (PNA)
-#define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-#else
-#define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-#endif
-        wMultiSelectListList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-    }
-
-    wMultiSelectListListEntry->SetWidth(wMultiSelectListList->GetWidth() - wMultiSelectListList->ScrollbarWidth - 5);
 
     UpdateList();
 

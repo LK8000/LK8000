@@ -2511,7 +2511,6 @@ WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
   mListInfo.TopIndex = 0;
   mListInfo.BottomIndex = 0;
   mListInfo.ItemCount = 0;
-  mListInfo.ItemInViewCount = 0;
 
   mOnListCallback = OnListCallback;
   mOnListEnterCallback = NULL;
@@ -2519,7 +2518,6 @@ WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
   SetBackColor(RGB_LISTBG);
   mMouseDown = false;
   ScrollbarWidth=-1;
-  ScrollbarTop=-1;
 
   rcScrollBarButton.top=0; // make sure this rect is initialized so we don't "loose" random lbuttondown events if scrollbar not drawn
   rcScrollBarButton.bottom=0;
@@ -2532,6 +2530,13 @@ WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
   rcScrollBar.bottom=0;
   
 };
+
+void WndListFrame::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
+    if(cx < 0) {
+        cx -= const_cast<WndListFrame*>(this)->GetScrollBarWidth();
+    }
+    WndFrame::CalcChildRect(x, y, cx, cy);
+}
 
 void WndListFrame::Paint(LKSurface& Surface) {
 
@@ -2551,7 +2556,7 @@ void WndListFrame::Paint(LKSurface& Surface) {
         const auto oldFont = TmpSurface.SelectObject(pChildFrame->GetFont());
 #endif
 
-        for (int i = 0; i < mListInfo.ItemInViewCount; i++) {
+        for (int i = 0; i < mListInfo.ItemInPageCount; i++) {
             if (mOnListCallback != NULL) {
                 mListInfo.DrawIndex = mListInfo.TopIndex + i;
                 if (mListInfo.DrawIndex == mListInfo.ItemIndex)
@@ -2559,9 +2564,10 @@ void WndListFrame::Paint(LKSurface& Surface) {
                 mOnListCallback(this, &mListInfo);
             }
 
-#ifndef USE_GDI
-            const RasterPoint offset(pChildFrame->GetLeft(),  i * pChildFrame->GetHeight());
+            const RasterPoint offset(pChildFrame->GetLeft(),  i * pChildFrame->GetHeight() + ((GetBorderKind()&BORDERTOP) ? NIBLSCALE(1) : 0));
             const PixelSize size(pChildFrame->GetWidth(), pChildFrame->GetHeight());
+
+#ifndef USE_GDI
             
             SubCanvas TmpCanvas(Surface, offset, size);
             LKSurface TmpSurface;
@@ -2575,8 +2581,8 @@ void WndListFrame::Paint(LKSurface& Surface) {
 
 #ifdef USE_GDI
             Surface.Copy(
-                    pChildFrame->GetLeft(), i * pChildFrame->GetHeight(),
-                    pChildFrame->GetWidth(), pChildFrame->GetHeight(),
+                    offset.x, offset.y,
+                    size.cx, size.cy,
                     TmpSurface, 0, 0);
         }
         TmpSurface.SelectObject(oldFont);
@@ -2597,108 +2603,61 @@ void WndListFrame::Redraw(void) {
     }
 }
 
+int WndListFrame::GetScrollBarWidth() {
+    if ( ScrollbarWidth == -1) {
+        // use fat Scroll on Embedded platform for allow usage on touch screen with fat finger ;-)
+        constexpr double scale = HasTouchScreen() ? 1.0 : 0.75; 
+        ScrollbarWidth = ScrollbarWidthInitial * ScreenDScale * scale;
+    }
+    return ScrollbarWidth;
+}
 
 void WndListFrame::DrawScrollBar(LKSurface& Surface) {
-  RECT rc;
+    if (mListInfo.BottomIndex == mListInfo.ItemCount) { // don't need scroll bar if one page only
+        return;
+    }
 
-  if ( ScrollbarWidth == -1) {  // resize height for each dialog so top button is below 1st item (to avoid initial highlighted overlap)
+    // ENTIRE SCROLLBAR AREA
+    // also used for mouse events
+    rcScrollBar = { (int)(GetWidth()- GetScrollBarWidth()), 0, (int)GetWidth(), (int)GetHeight() };
 
-	// shrink width factor.  Range .1 to 1 where 1 is very "fat"
-	#if defined (PNA)
-	#define SHRINKSBFACTOR 1.0 
-	#else
-	#define SHRINKSBFACTOR 0.75 
-	#endif
+    const auto oldPen = Surface.SelectObject(LKPen_Black_N1);
+    const auto oldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
 
-	ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);  
-	if (!mClients.empty()) {
-		ScrollbarTop = mClients.front()->GetHeight() + 2;
-	} else {
-		ScrollbarTop = (int)(18.0 * ScreenDScale + 2);
-	}
-  }
+    // draw rectangle around entire scrollbar area
+    Surface.Rectangle(rcScrollBar.left, rcScrollBar.top, rcScrollBar.right, rcScrollBar.bottom);
 
+    // Just Scroll Bar Slider button
+    rcScrollBarButton = {
+        rcScrollBar.left,
+        GetScrollBarTopFromScrollIndex(),
+        rcScrollBar.right,
+        GetScrollBarTopFromScrollIndex() + GetScrollBarHeight() + 2, // +2 for 3x pen, +1 for 2x pen
+    };
 
-  int w = GetWidth()- (ScrollbarWidth);
-  int h = GetHeight() - ScrollbarTop;
+    // TOP Dn Button 32x32
+    // BOT Up Button 32x32
+    hScrollBarBitmapTop.Draw(Surface, rcScrollBar.left, rcScrollBar.top, ScrollbarWidth, ScrollbarWidth);
+    hScrollBarBitmapBot.Draw(Surface, rcScrollBar.left, rcScrollBar.bottom - ScrollbarWidth, ScrollbarWidth, ScrollbarWidth);
 
-  // ENTIRE SCROLLBAR AREA
-  rc.left = w;
-  rc.top = ScrollbarTop;
-  rc.right = w + (ScrollbarWidth) - 1;
-  rc.bottom = h + ScrollbarTop;
+    if (mListInfo.ItemCount > mListInfo.ItemInPageCount) {
 
-  // save scrollbar size for mouse events
-  rcScrollBar.left=rc.left;
-  rcScrollBar.right=rc.right;
-  rcScrollBar.top=rc.top;
-  rcScrollBar.bottom=rc.bottom;
+        // Middle Slider Button 30x28
+        // handle on slider
+        const int SCButtonW = (int) (30.0 * (float) ScrollbarWidth / (float) ScrollbarWidthInitial);
+        const int SCButtonH = (int) (28.0 * (float) ScrollbarWidth / (float) ScrollbarWidthInitial);
+        const int SCButtonY = (int) (14.0 * (float) ScrollbarWidth / (float) ScrollbarWidthInitial);
+        hScrollBarBitmapMid.Draw(Surface, rcScrollBar.left, rcScrollBarButton.top + GetScrollBarHeight() / 2 - SCButtonY, SCButtonW, SCButtonH);
 
-  if (mListInfo.BottomIndex == mListInfo.ItemCount) { // don't need scroll bar if one page only
-	return;
-  }
+        // box around slider rect
+        Surface.SelectObject(LKPen_Black_N2);
+        // just left line of scrollbar
+        Surface.Rectangle(rcScrollBarButton.left, rcScrollBarButton.top, rcScrollBarButton.right, rcScrollBarButton.bottom);
 
-  const PenReference hP = LKPen_Black_N1;
-  const auto oldPen = Surface.SelectObject(hP);
+    } // more items than fit on screen
 
-  
-  // draw rectangle around entire scrollbar area
-  Surface.DrawLine(rc.left, rc.top, rc.left, rc.bottom, rc.right, rc.bottom); 
-  Surface.DrawLine(rc.right, rc.bottom, rc.right, rc.top, rc.left, rc.top); 
-
-  // Just Scroll Bar Slider button
-  rc.left = w;
-  rc.top = GetScrollBarTopFromScrollIndex()-1;
-  rc.right = w + (ScrollbarWidth) - 1; // -2 if use 3x pen.  -1 if 2x pen
-  rc.bottom = rc.top + GetScrollBarHeight()+2;  // +2 for 3x pen, +1 for 2x pen
-
-  if (rc.bottom >= GetBottom() - ScrollbarWidth){
-	int d;
-	d= (GetBottom() - ScrollbarWidth - rc.bottom) - 1;
-	rc.bottom += d;
-	rc.top += d;
-  }
-
-  // TOP Dn Button 32x32
-  // BOT Up Button 32x32
-  hScrollBarBitmapTop.Draw(Surface, w, ScrollbarTop, ScrollbarWidth, ScrollbarWidth);
-  hScrollBarBitmapBot.Draw(Surface, w, h-(ScrollbarWidth)+ScrollbarTop, ScrollbarWidth, ScrollbarWidth);
-
-  // Middle Slider Button 30x28
-  if (mListInfo.ItemCount > mListInfo.ItemInViewCount) {
-    
-	// handle on slider
-	if (ScrollbarWidth == SCROLLBARWIDTH_INITIAL) {
-		hScrollBarBitmapMid.Draw(Surface, w+1, rc.top + GetScrollBarHeight()/2 - 14, 30, 28);
-	} else {
-		static int SCButtonW = -1;
-		static int SCButtonH = -1;
-		static int SCButtonY = -1;
-		if (SCButtonW == -1) {
-			SCButtonW = (int) (30.0 * (float)ScrollbarWidth / (float)SCROLLBARWIDTH_INITIAL);
-			SCButtonH = (int) (28.0 * (float)ScrollbarWidth / (float)SCROLLBARWIDTH_INITIAL);
-			SCButtonY = (int) (14.0 * (float)ScrollbarWidth / (float)SCROLLBARWIDTH_INITIAL);
-		}
-		hScrollBarBitmapMid.Draw(Surface, w+1, rc.top + GetScrollBarHeight()/2 - SCButtonY, SCButtonW, SCButtonH);
-	}
-
-	// box around slider rect
-	const PenReference hP3=LKPen_Black_N2;
-	int iBorderOffset = 1;  // set to 1 if BORDERWIDTH >2, else 0
-	Surface.SelectObject(hP3);
-	// just left line of scrollbar
-	Surface.DrawLine(rc.left+iBorderOffset, rc.top, rc.left+iBorderOffset, rc.bottom, rc.right, rc.bottom); 
-	Surface.DrawLine(rc.right, rc.bottom, rc.right, rc.top, rc.left+iBorderOffset, rc.top); // just left line of scrollbar
-
-  } // more items than fit on screen
-
-  Surface.SelectObject(oldPen);
-  
-  rcScrollBarButton.left=rc.left;
-  rcScrollBarButton.right=rc.right;
-  rcScrollBarButton.top=rc.top;
-  rcScrollBarButton.bottom=rc.bottom;
-
+    Surface.SelectObject(oldPen);
+    Surface.SelectObject(oldBrush);
 }
 
 void WndListFrame::RedrawScrolled(bool all) {
@@ -2707,7 +2666,7 @@ void WndListFrame::RedrawScrolled(bool all) {
   mOnListCallback(this, &mListInfo);
   WindowControl * pChild = mClients.front();
   if(pChild) {
-    int newTop = pChild->GetHeight() * (mListInfo.ItemIndex - mListInfo.TopIndex);
+    const int newTop = pChild->GetHeight() * (mListInfo.ItemIndex - mListInfo.TopIndex) + ((GetBorderKind()&BORDERTOP) ? NIBLSCALE(1) : 0);
     if (newTop == pChild->GetTop()){
       Redraw();                     // non moving the helper window force redraw
     } else {
@@ -2811,7 +2770,7 @@ void WndListFrame::ResetList(void){
   WindowControl * pChild = mClients.front();
 
 
-  mListInfo.ItemInViewCount = mListInfo.ItemInPageCount = (pChild ? (((GetHeight() + pChild->GetHeight() - 1) / pChild->GetHeight()) - 1) : 0);
+  mListInfo.ItemInPageCount = (pChild ? (((GetHeight() + pChild->GetHeight() - 1) / pChild->GetHeight()) - 1) : 0);
   mListInfo.TopIndex = 0;
   mListInfo.BottomIndex = 0;
   mListInfo.ItemCount = 0;
@@ -2825,8 +2784,8 @@ void WndListFrame::ResetList(void){
 
   if (mListInfo.BottomIndex  == 0){                         // calc bounds
     mListInfo.BottomIndex  = mListInfo.ItemCount;
-    if (mListInfo.BottomIndex > mListInfo.ItemInViewCount){
-      mListInfo.BottomIndex = mListInfo.ItemInViewCount;
+    if (mListInfo.BottomIndex > mListInfo.ItemInPageCount){
+      mListInfo.BottomIndex = mListInfo.ItemInPageCount;
     }
   }
 
@@ -2981,14 +2940,14 @@ bool WndListFrame::OnLButtonDown(const POINT& Pos) {
       mListInfo.ScrollIndex = max(0, mListInfo.ScrollIndex- 1);
       
     else if (rcScrollBar.bottom -Pos.y < (ScrollbarWidth)  ) //down arrow
-      mListInfo.ScrollIndex = max(0,min(mListInfo.ItemCount- mListInfo.ItemInViewCount, mListInfo.ScrollIndex+ 1));
+      mListInfo.ScrollIndex = max(0,min(mListInfo.ItemCount- mListInfo.ItemInPageCount, mListInfo.ScrollIndex+ 1));
 
     else if (Pos.y < rcScrollBarButton.top) // page up
-      mListInfo.ScrollIndex = max(0, mListInfo.ScrollIndex- mListInfo.ItemInViewCount);
+      mListInfo.ScrollIndex = max(0, mListInfo.ScrollIndex- mListInfo.ItemInPageCount);
 
     else // page down
-      if (mListInfo.ItemCount > mListInfo.ScrollIndex+ mListInfo.ItemInViewCount)
-          mListInfo.ScrollIndex = min ( mListInfo.ItemCount- mListInfo.ItemInViewCount, mListInfo.ScrollIndex +mListInfo.ItemInViewCount);
+      if (mListInfo.ItemCount > mListInfo.ScrollIndex+ mListInfo.ItemInPageCount)
+          mListInfo.ScrollIndex = min ( mListInfo.ItemCount- mListInfo.ItemInPageCount, mListInfo.ScrollIndex +mListInfo.ItemInPageCount);
     
     Redraw();
     
@@ -3004,46 +2963,44 @@ bool WndListFrame::OnLButtonDown(const POINT& Pos) {
 
 inline int WndListFrame::GetScrollBarHeight (void)
 {
-  int h = GetHeight() - ScrollbarTop;
-  if(mListInfo.ItemCount ==0)
-    return h-2*ScrollbarWidth;
-  else {
-    LKASSERT(mListInfo.ItemCount>0);
-    return max(ScrollbarWidth,((h-2*ScrollbarWidth)*mListInfo.ItemInViewCount)/mListInfo.ItemCount);
+  const int h = GetHeight() - 2 * GetScrollBarTop();
+  if(mListInfo.ItemCount ==0) {
+    return h;
+  } else {
+    return max(ScrollbarWidth, MulDiv(h, mListInfo.ItemInPageCount, mListInfo.ItemCount));
   }
 }
 
-inline int WndListFrame::GetScrollIndexFromScrollBarTop(int iScrollBarTop)
-{
-  int h = GetHeight() - ScrollbarTop;
-  if (h-2*(ScrollbarWidth) - GetScrollBarHeight() == 0)
-    return 0;
-  else
+inline int WndListFrame::GetScrollIndexFromScrollBarTop(int iScrollBarTop) {
+    const int h = GetHeight() - 2 * GetScrollBarTop();
+    if ((h - GetScrollBarHeight()) == 0) {
+        return 0;
+    }
+
+    // Number of item excluding first Page
+    const int NbHidden = mListInfo.ItemCount - mListInfo.ItemInPageCount;
+
+
 
     return max(0,
-              min(mListInfo.ItemCount - mListInfo.ItemInPageCount,
-              max(0, 
-                  ( 0 + 
-                    (mListInfo.ItemCount-mListInfo.ItemInViewCount) 
-                    * (iScrollBarTop - (ScrollbarWidth)-ScrollbarTop) 
-                  ) 
-                    / ( h-2*(ScrollbarWidth) - GetScrollBarHeight() ) /*-ScrollbarTop(*/
-              )
-           ));
+            min(NbHidden,
+                max(0, ((NbHidden * (iScrollBarTop - GetScrollBarTop())) / (h - GetScrollBarHeight())))
+            )
+        );
 }
 
 inline int WndListFrame::GetScrollBarTopFromScrollIndex()
 {
   int iRetVal=0;
-  int h = GetHeight() - ScrollbarTop;
-  if (mListInfo.ItemCount - mListInfo.ItemInViewCount ==0) {
-    iRetVal= h + (ScrollbarWidth);
+  int h = GetHeight() - 2 * GetScrollBarTop();
+  if (mListInfo.ItemCount - mListInfo.ItemInPageCount ==0) {
+    iRetVal = h;
   }
   else {
     iRetVal = 
-      ( (ScrollbarWidth)+ScrollbarTop + 
-        (mListInfo.ScrollIndex) *(h-2*(ScrollbarWidth)-GetScrollBarHeight() ) /*-ScrollbarTop*/
-      /(mListInfo.ItemCount - mListInfo.ItemInViewCount)
+      ( GetScrollBarTop() + 
+        (mListInfo.ScrollIndex) * ( h-GetScrollBarHeight() )
+      /(mListInfo.ItemCount - mListInfo.ItemInPageCount)
       );
   }
   return iRetVal;

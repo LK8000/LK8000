@@ -371,23 +371,10 @@ void dlgWayPointDetailsShowModal(short mypage){
   LKASSERT(wComment!=NULL);
 
   wComment->SetBorderKind(BORDERLEFT);
-  wComment->SetWidth(wInfo->GetWidth() - wComment->GetLeft()-2);
 
   wCommentEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWpCommentEntry"));
   LKASSERT(wCommentEntry);
   wCommentEntry->SetCanFocus(true);
-
-
-  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wComment->ScrollbarWidth == -1) {
-    #if defined (PNA)
-    #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-    #else
-    #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-    #endif
-    wComment->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-  }
-  wCommentEntry->SetWidth(wComment->GetWidth() - wComment->ScrollbarWidth - 5);
 
   {
     LKWindowSurface Surface(*wCommentEntry);
@@ -529,18 +516,6 @@ void dlgWayPointDetailsShowModal(short mypage){
   wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
   LKASSERT(wDetailsEntry!=NULL);
   wDetailsEntry->SetCanFocus(true);
-
-  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wDetails->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wDetails->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-
-  }
-  wDetailsEntry->SetWidth(wDetails->GetWidth() - wDetails->ScrollbarWidth - 5);
 
   {
     LKWindowSurface Surface(*wDetailsEntry);

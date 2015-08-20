@@ -5,8 +5,8 @@
     <WndButton Name="btPair" Caption="_@M1837_" X="2" Y="-1" Height="40" Width="65" OnClickNotify="OnPair"/>
     <WndButton Name="btUnpair" Caption="_@M1838_" X="2" Y="-1" Height="40" Width="65" OnClickNotify="OnUnpair"/>
     <WndButton Name="btClose" Caption="_@M186_" X="2" Y="180" Height="40" Width="65" OnClickNotify="OnClose"/>
-    <WndListFrame Name="frmBthList" X="70" Y="0" Width="220" Height="220" Font="2" OnListInfo="OnListInfo">
-      <WndOwnerDrawFrame Name="frmBthListEntry" X="2" Y="2" Width="203" Height="24" Font="2"  OnPaint="OnPaintListItem"/>
+    <WndListFrame Name="frmBthList" X="70" Y="0" Width="-2" Height="-2" Font="2" OnListInfo="OnListInfo">
+      <WndOwnerDrawFrame Name="frmBthListEntry" X="2" Y="2" Width="-2" Height="24" Font="2"  OnPaint="OnPaintListItem"/>
     </WndListFrame>
   </WndForm>
 </PMML>

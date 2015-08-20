@@ -92,23 +92,12 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   if (!wHelp) goto _getout;
 
   wHelp->SetBorderKind(BORDERLEFT);
-  wHelp->SetWidth(wf->GetWidth() - wHelp->GetLeft()-2);
-
+  
   wHelpEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
   LKASSERT(wHelpEntry);
   if (!wHelpEntry) goto _getout;
   wHelpEntry->SetCanFocus(true);
 
-  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wHelp->ScrollbarWidth == -1) {
-    #if defined (PNA)
-    #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-    #else
-    #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-    #endif
-    wHelp->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-  }
-  wHelpEntry->SetWidth(wHelp->GetWidth() - wHelp->ScrollbarWidth - 5);
   {
     LKWindowSurface Surface(*wHelpEntry);
     Surface.SelectObject(wHelpEntry->GetFont());

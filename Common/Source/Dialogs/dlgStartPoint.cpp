@@ -165,18 +165,8 @@ void dlgStartPointShowModal(void) {
   //ASSERT(wStartPointList!=NULL);
   wStartPointList->SetBorderKind(BORDERLEFT);
   wStartPointList->SetEnterCallback(OnStartPointListEnter);
-  wStartPointList->SetWidth(wf->GetWidth() - wStartPointList->GetLeft()-2);
 
   wStartPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStartPointListEntry"));
-  if ( wStartPointList->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wStartPointList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-  }
-  wStartPointListEntry->SetWidth(wStartPointList->GetWidth() - wStartPointList->ScrollbarWidth - 5);
 
   //ASSERT(wStartPointListEntry!=NULL);
   wStartPointListEntry->SetCanFocus(true);

@@ -658,19 +658,6 @@ void dlgAirspaceSelect(void) {
   LKASSERT(wAirspaceListEntry!=NULL);
   wAirspaceListEntry->SetCanFocus(true);
 
-  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wAirspaceList->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wAirspaceList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-
-  }
-  wAirspaceListEntry->SetWidth(wAirspaceList->GetWidth() - wAirspaceList->ScrollbarWidth - 5);
-
-
   wpName = (WndProperty*)wf->FindByName(TEXT("prpFltName"));
   wpDistance = (WndProperty*)wf->FindByName(TEXT("prpFltDistance"));
   wpDirection = (WndProperty*)wf->FindByName(TEXT("prpFltDirection"));

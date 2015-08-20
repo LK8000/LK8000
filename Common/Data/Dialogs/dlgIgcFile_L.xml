@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmIgc" Type="Dialog" X="0" Y="0" Width="236" Height="240" Caption="_@M2156_" Font="2" >
-    <WndListFrame Name="frmIgcFileList" X="2" Y="2" Width="236" Height="202" OnListInfo="OnIgcFileListInfo">
-      <WndOwnerDrawFrame Name="frmIgcFileListEntry" X="2" Y="2" Width="163" Height="25" Font="2" OnPaint="OnPaintIgcFileListItem"/>
+    <WndListFrame Name="frmIgcFileList" X="2" Y="2" Width="-2" Height="202" OnListInfo="OnIgcFileListInfo">
+      <WndOwnerDrawFrame Name="frmIgcFileListEntry" X="2" Y="2" Width="-2" Height="25" Font="2" OnPaint="OnPaintIgcFileListItem"/>
     </WndListFrame>
     <WndButton Name="btClose" Caption="_@M186_" X="2" Y="205" Height="40" Width="116" OnClickNotify="OnClose"/>
     <WndButton Name="btSend" Caption="_@M2155_" X="119" Y="205" Height="40" Width="116" OnClickNotify="OnSend"/>

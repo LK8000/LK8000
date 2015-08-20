@@ -185,18 +185,10 @@ void dlgIgcFileShowModal() {
         WndListFrame* wndFileList = (WndListFrame*) wfDlg->FindByName(TEXT("frmIgcFileList"));
         if (wndFileList) {
             wndFileList->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT | BORDERBOTTOM);
-            wndFileList->SetWidth(wfDlg->GetWidth() - wndFileList->GetLeft() - IBLSCALE(4));
-
-            // Bug : we need ClientHeight, but Cleint Rect is Calculated by OnPaint
-            // wndFileList->SetHeight(wfDlg->GetHeight() - wndFileList->GetTop() - 2);
-            if (wndFileList->ScrollbarWidth == -1) {
-                wndFileList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale);
-            }
 
             WndOwnerDrawFrame* FileListEntry = (WndOwnerDrawFrame*) wfDlg->FindByName(TEXT("frmIgcFileListEntry"));
             if (FileListEntry) {
                 FileListEntry->SetCanFocus(true);
-                FileListEntry->SetWidth(wndFileList->GetWidth() - wndFileList->ScrollbarWidth - 5);
             }
 
             DlgIgcFile::ScanFile();

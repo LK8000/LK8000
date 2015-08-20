@@ -14,7 +14,7 @@
       <WndProperty Name="prpMc0"       Caption="_@M83_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc2"       Caption="_@M84_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
 
-<WndListFrame Name="frmWpComment" X="2" Y="-1" Width="-1" Height="64" Font="2" OnListInfo="OnWpCommentListInfo" >
+	<WndListFrame Name="frmWpComment" X="2" Y="-1" Width="-1" Height="64" Font="2" OnListInfo="OnWpCommentListInfo" >
       <WndOwnerDrawFrame Name="frmWpCommentEntry" X="2" Y="-1" Width="-1" Height="18" Font="2"  OnPaint="OnPaintWpCommentListItem"/>
     </WndListFrame>
 

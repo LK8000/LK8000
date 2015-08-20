@@ -134,18 +134,10 @@ namespace DlgBluetooth {
             WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));
             if (BthList) {
                 BthList->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT | BORDERBOTTOM);
-                BthList->SetWidth(wfBth->GetWidth() - BthList->GetLeft() - IBLSCALE(4));
-
-                // Bug : we need ClientHeight, but Cleint Rect is Calculated by OnPaint
-                // BthList->SetHeight(wfBth->GetHeight() - BthList->GetTop() - 2);
-                if (BthList->ScrollbarWidth == -1) {
-                    BthList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale);
-                }
 
                 WndOwnerDrawFrame* BthListEntry = (WndOwnerDrawFrame*) wfBth->FindByName(TEXT("frmBthListEntry"));
                 if (BthListEntry) {
                     BthListEntry->SetCanFocus(true);
-                    BthListEntry->SetWidth(BthList->GetWidth() - BthList->ScrollbarWidth - 5);
                 }
 
                 BthList->ResetList();
