@@ -82,6 +82,13 @@ public:
   bool IsActive() const {
     return enabled.load(std::memory_order_relaxed);
   }
+  
+  /**
+   * Timer period in ms;
+   */
+  unsigned GetPeriod() const {
+    return ms;
+  }
 
   /**
    * Schedule the timer.  Cancels the previous setting if there was

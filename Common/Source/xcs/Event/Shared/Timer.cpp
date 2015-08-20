@@ -55,12 +55,5 @@ Timer::Cancel()
 void
 Timer::Invoke()
 {
-  if (!queued.exchange(false))
-    /* was cancelled by another thread */
-    return;
-
   OnTimer();
-
-  if (enabled.load() && !queued.exchange(true))
-    event_queue->AddTimer(*this, ms);
 }

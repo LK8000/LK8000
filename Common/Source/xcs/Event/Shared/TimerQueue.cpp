@@ -22,6 +22,7 @@ Copyright_License {
 */
 
 #include "TimerQueue.hpp"
+#include "Event/Timer.hpp"
 
 int64_t
 TimerQueue::GetTimeoutUS(uint64_t now_us) const
@@ -41,13 +42,21 @@ TimerQueue::GetTimeoutUS(uint64_t now_us) const
 Timer *
 TimerQueue::Pop(uint64_t now_us)
 {
+  Timer *timer = nullptr;
+    
   auto t = timers.begin();
   if (t != timers.end() && t->IsDue(now_us)) {
-    Timer *timer = t->timer;
+    timer = t->timer;
+    if (timer->IsActive()) {
+      /* not cancelled by another thread */
+      Add(*timer, t->due_us + timer->GetPeriod()*1000);
+    } else {
+      timer = nullptr;
+    }
+    
     timers.erase(t);
-    return timer;
-  } else
-    return nullptr;
+  }
+  return timer;
 }
 
 void
