@@ -19,8 +19,8 @@
 
 //#define DEBUG_TFC 
 
-XShape::XShape() {
-  hide=false;
+XShape::XShape() : hide(false) {
+  msInitShape(&shape);
 }
 
 
@@ -35,7 +35,6 @@ void XShape::clear() {
 
 
 void XShape::load(shapefileObj* shpfile, int i) {
-  msInitShape(&shape);
   msSHPReadShape(shpfile->hSHP, i, &shape);
 }
 
@@ -501,7 +500,7 @@ void Topology::removeShape(const int i) {
 
 // This is checking boundaries based on lat/lon values. 
 // It is not enough for screen overlapping verification.
-bool Topology::checkVisible(shapeObj& shape, rectObj &screenRect) {
+bool Topology::checkVisible(const shapeObj& shape, rectObj &screenRect) {
   return (msRectOverlap(&shape.bounds, &screenRect) == MS_TRUE);
 }
 
@@ -659,14 +658,8 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 	if ( nolabels ) {
 		if (checkVisible(*shape, screenRect)) {
 			for (int tt = 0; tt < shape->numlines; ++tt) {
-				int minx = rc.right;
 				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
 				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
-				for (int jj=0; jj< msize; ++jj) {
-					if (pt[jj].x<=minx) {
-						minx = pt[jj].x;
-					}
-				}
 				Surface.Polygon(pt, msize, rc);
 			}
 		}
@@ -991,24 +984,21 @@ void Topology::SearchNearest(RECT rc) {
 
   if (!shapefileopen) return;
 
-  int iskip = 1;
   rectObj screenRect = MapWindow::screenbounds_latlon;
-  static POINT pt[MAXCLIPPOLYGON];
-
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
     
 	XShape *cshape = shpCache[ixshp];
-	if (!cshape || cshape->hide) continue;    
-	shapeObj *shape = &(cshape->shape);
+	if (!cshape || cshape->hide || !cshape->HasLabel()) continue;    
+	const shapeObj& shape = cshape->shape;
 
-	switch(shape->type) {
+	switch(shape.type) {
 
 	   case(MS_SHAPE_POINT):
 
-		if (checkVisible(*shape, screenRect)) {
-			for (int tt = 0; tt < shape->numlines; tt++) {
-				for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
-					cshape->nearestItem(scaleCategory, shape->line[tt].point[jj].x, shape->line[tt].point[jj].y);
+		if (checkVisible(shape, screenRect)) {
+			for (int tt = 0; tt < shape.numlines; tt++) {
+				for (int jj=0; jj< shape.line[tt].numpoints; jj++) {
+					cshape->nearestItem(scaleCategory, shape.line[tt].point[jj].x, shape.line[tt].point[jj].y);
 				}
 			}
 		}
@@ -1039,20 +1029,13 @@ void Topology::SearchNearest(RECT rc) {
       
 	   case(MS_SHAPE_POLYGON):
 
-		if (checkVisible(*shape, screenRect)) {
-			for (int tt = 0; tt < shape->numlines; tt ++) {
-				int minx = rc.right;
-				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
-
-				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
-
-				for (int jj=0; jj< msize; jj++) {
-					if (pt[jj].x<=minx) {
-						minx = pt[jj].x;
-					}
-				}
-
-	  			cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y);
+		if (checkVisible(shape, screenRect)) {
+			for (int tt = 0; tt < shape.numlines; tt ++) {
+                // TODO : check if that is good 
+                //  it's surprising distance to Polygon are not distance to first point but
+                //  distance to nearest vertex.
+                //  right implementation is in #msDistancePointToShape, but this don't use great circle ditance.
+	  			cshape->nearestItem(scaleCategory, shape.line[tt].point[0].x, shape.line[tt].point[0].y);
 			}
 		}
 		break;

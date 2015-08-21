@@ -17,27 +17,45 @@ class XShape {
   XShape();
   virtual ~XShape();
 
+  // no copy
+  XShape(const XShape&) = delete;
+  XShape& operator=(const XShape&) = delete;
+  // no move
+  XShape(XShape&&) = delete;
+  XShape& operator=( XShape&& ) = delete;
+
+  /**
+   * return true if shape have label ( XShapeLabel object without empty label )
+   */
+  virtual bool HasLabel() const { return false; }
+
   virtual void load(shapefileObj* shpfile, int i);
   virtual void clear();
+
   virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) { (void)x; (void)y; (void)Surface; return false;};
   virtual bool nearestItem(int category, double lon, double lat) { (void)category; (void)lon; (void)lat; return(true);};
 
   bool hide;
   shapeObj shape;
-
 };
 
 
 class XShapeLabel: public XShape {
  public:
-  XShapeLabel() {
-    label= NULL;
-  }
+  XShapeLabel() : label() { }
   virtual ~XShapeLabel();
+  
+  virtual bool HasLabel() const { 
+      return ( label && ( label[0] != TEXT('\0'))); 
+  }
+
   virtual void clear();
   void setlabel(const char* src);
+  
   virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect);
   virtual bool nearestItem(int category, double lon, double lat);
+
+
 protected:
   TCHAR *label;
 };
@@ -74,7 +92,7 @@ class Topology {
 
   XShape** shpCache;
 
-  bool checkVisible(shapeObj& shape, rectObj &screenRect);
+  bool checkVisible(const shapeObj& shape, rectObj &screenRect);
 
   void loadBitmap(const int);
   void loadPenBrush(const LKColor thecolor);
