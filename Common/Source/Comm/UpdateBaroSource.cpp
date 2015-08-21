@@ -33,9 +33,9 @@ bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescr
   //static double	lastBaroHB=0;		// updated only when baro is assigned as valid
   static bool notifyErr=true;
 
-  static double lastRMZfromFlarmHB=0;
+  static unsigned lastRMZfromFlarmHB=0;
   static bool	havePrimaryBaroSource=false;
-  static double lastPrimaryBaroSourceHB=0;
+  static unsigned lastPrimaryBaroSourceHB=0;
 
 
   #if DEBUGBARO

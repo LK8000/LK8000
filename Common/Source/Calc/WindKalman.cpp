@@ -246,7 +246,7 @@ static bool airspeedreset=true;
   EKWIND.Correction(dynamic_pressure, gps_vel);
 
   #if BASIC_FILTER
-  static double validHBtime=0;
+  static unsigned validHBtime=0;
   // we are using the internal beats counter, not the gps time
   if (derived->Circling) {
 	validHBtime=LKHearthBeats+20; // 2hz,  means 10 seconds
@@ -314,7 +314,7 @@ static bool airspeedreset=true;
 	if (derived->Circling)
 		StartupStore(_T(".... (WAITING while circling, not updating the wind\n"));
 	else
-		StartupStore(_T(".... (WAITING thermal timeout time, %.0f seconds to go\n"),(validHBtime-LKHearthBeats)/2);
+		StartupStore(_T(".... (WAITING thermal timeout time, %u seconds to go\n"),(validHBtime-LKHearthBeats)/2);
   	const float* x = EKWIND.get_state();
   	double speed   = sqrt((x[0]*x[0])+(x[1]*x[1]));
   	double bearing = atan2(-x[0], -x[1])*RAD_TO_DEG;

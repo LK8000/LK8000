@@ -88,7 +88,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
 #if DEBOUNCE_SCANVISIBILITY
   static rectObj oldbounds={0,0,0,0};
   static float oldzoomscale=0;
-  static double lasthere=0;
+  static unsigned lasthere=0;
 
   if (oldbounds.minx==0) goto _normal_run; // careful, bounds can be negative
 

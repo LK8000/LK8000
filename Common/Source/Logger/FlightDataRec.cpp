@@ -222,7 +222,7 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   static unsigned int iCallCnt = 0;
 
-  static double nextHB=0;
+  static unsigned nextHB=0;
   if (LKHearthBeats < nextHB) return;
   nextHB=LKHearthBeats+2;       // 2hz to 1hz
 

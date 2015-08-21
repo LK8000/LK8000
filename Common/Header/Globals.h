@@ -279,7 +279,7 @@ GEXTERN TCHAR TAKEOFFWP_Name[NAME_SIZE+1];
 GEXTERN TCHAR LANDINGWP_Name[NAME_SIZE+1];
 
 // LK8000 Hearth beats at 2Hz
-GEXTERN double LKHearthBeats;
+GEXTERN unsigned LKHearthBeats;
 // number of reporting messages from Portmonitor.
 GEXTERN int PortMonitorMessages;
 
@@ -457,7 +457,7 @@ GEXTERN long ComPortTx[NUMDEV+1];
 GEXTERN long ComPortErrTx[NUMDEV+1];
 GEXTERN long ComPortErrors[NUMDEV+1];
 // Com ports hearth beats, based on LKHearthBeats
-GEXTERN double ComPortHB[NUMDEV+1];
+GEXTERN unsigned ComPortHB[NUMDEV+1];
 
 // Cpu stats
 GEXTERN int Cpu_Draw;

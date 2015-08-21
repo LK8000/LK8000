@@ -229,7 +229,7 @@ void MapWindow::DrawThread ()
 		//
 
 		#if 1 // --------------------- EXPERIMENTAL, CHECK ZOOM IS WORKING IN PNA
-		static double lasthere=0;
+		static unsigned lasthere=0;
 		// Only for special case: PAN mode, map not dirty (including requests for zooms!)
 		// not in the ForceRenderMap run and last time was a real rendering. THEN, at these conditions,
 		// we simply redraw old bitmap, for the scope of accelerating touch response.

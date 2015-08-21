@@ -27,7 +27,7 @@ extern double trackbearingminspeed; // minimal speed to use gps bearing, init by
 void CheckBackTarget(int flarmslot);
 
 
-double LastRMZHB=0;	 // common to both devA and devB.
+unsigned LastRMZHB=0;	 // common to both devA and devB.
 NMEAParser nmeaParser1;
 NMEAParser nmeaParser2;
 int NMEAParser::StartDay = -1;

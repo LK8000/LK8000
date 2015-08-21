@@ -10,7 +10,7 @@
 #include "externs.h"
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
-extern double LastRMZHB;	 // common to both devA and devB, updated in Parser
+extern unsigned LastRMZHB;	 // common to both devA and devB, updated in Parser
 extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;
 
@@ -116,7 +116,7 @@ void NMEAParser::UpdateMonitor(void)
   // Check Port 1 with no serial activity in last seconds
   if ( (LKHearthBeats-ComPortHB[0])>10 ) {
 	#ifdef DEBUGNPM
-	StartupStore(_T("... GPS Port 1 : no activity LKHB=%.0f CBHB=%.0f %s"),LKHearthBeats, ComPortHB[0],NEWLINE);
+	StartupStore(_T("... GPS Port 1 : no activity LKHB=%u CBHB=%u %s"),LKHearthBeats, ComPortHB[0],NEWLINE);
 	#endif
 	// if this is active and supposed to have a valid fix.., but no HB..
 	if ( (active==1) && (nmeaParser1.gpsValid) ) {
@@ -152,7 +152,7 @@ void NMEAParser::UpdateMonitor(void)
   // now check also port 2
   if ( (LKHearthBeats-ComPortHB[1])>10 ) {
 	#ifdef DEBUGNPM
-	StartupStore(_T("... GPS Port 2 : no activity LKHB=%.0f CBHB=%.0f %s"),LKHearthBeats, ComPortHB[1],NEWLINE);
+	StartupStore(_T("... GPS Port 2 : no activity LKHB=%u CBHB=%u %s"),LKHearthBeats, ComPortHB[1],NEWLINE);
 	#endif
 	if ( (active==2) && (nmeaParser2.gpsValid) ) {
 		StartupStore(_T("... GPS port 2 no hearthbeats, but still gpsValid: forced invalid  %s%s"),WhatTimeIsIt(),NEWLINE);
