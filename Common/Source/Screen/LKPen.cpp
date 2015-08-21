@@ -27,8 +27,3 @@ const LKPen LK_BLACK_PEN(Pen::SOLID, 1, COLOR_BLACK);
 const LKPen LK_WHITE_PEN(Pen::SOLID, 1, COLOR_WHITE);
 
 #endif
-
-LKPen::~LKPen() {
-    Release();
-}
-

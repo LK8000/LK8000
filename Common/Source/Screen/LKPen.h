@@ -26,7 +26,7 @@ public:
     LKPen(LKPen&& Pen) = delete;
     LKPen& operator= (LKPen&& Pen) = delete;
 
-    ~LKPen();
+    ~LKPen() {}
 
     void Create(Style Type, unsigned Size, const LKColor& Color) { Set(Type, Size, Color); }
     void Release() { Reset(); }
