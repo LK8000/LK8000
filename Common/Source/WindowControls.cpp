@@ -1359,14 +1359,16 @@ void WindowControl::FilterAdvanced(bool advanced) {
 }
 
 WindowControl *WindowControl::FindByName(const TCHAR *Name) {
-    if (_tcscmp(GetWndName(), Name) == 0) {
-        return (this);
-    }
+    if(Name) {
+        if (_tcscmp(GetWndName(), Name) == 0) {
+            return (this);
+        }
 
-    for (WindowControl* w : mClients) {
-        WindowControl* res = w->FindByName(Name);
-        if (res) {
-            return (res);
+        for (WindowControl* w : mClients) {
+            WindowControl* res = w->FindByName(Name);
+            if (res) {
+                return (res);
+            }
         }
     }
     return (NULL);
