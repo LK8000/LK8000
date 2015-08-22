@@ -10,6 +10,7 @@
 #define TOPOLOGY_H
 
 #include "mapshape.h"
+#include "Poco/Thread.h"
 
 
 class XShape {
@@ -146,5 +147,40 @@ class TopologyLabel: public Topology {
   int field;
 
 };
+
+/**
+ * Thread class used by "Oracle" for find Topology Item nearest to current position.
+ */
+class WhereAmI : public Poco::Runnable {
+public:
+    WhereAmI() {
+        toracle[0] = _T('\0');
+    }
+
+    ~WhereAmI() {}
+
+
+    const TCHAR* getText() const {
+        return toracle;
+    }
+
+    void Start() {
+        toracle[0] = _T('\0');
+        Thread.start(*this);
+    }
+
+    bool IsDone() {
+        return !Thread.isRunning();
+    }
+
+protected:
+    void run();
+
+    TCHAR toracle[1000];
+
+    Poco::Thread Thread;
+
+};
+
 
 #endif

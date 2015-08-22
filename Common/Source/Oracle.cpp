@@ -10,6 +10,8 @@
 #include "LKProcess.h"
 #include "Waypointparser.h"
 #include "Dialogs.h"
+#include "Topology.h"
+#include "Terrain.h"
 
 
 const TCHAR *DegreesToText(double brg) {
@@ -89,14 +91,36 @@ TCHAR *OracleFormatDistance(const TCHAR *name,const TCHAR *ntype,const double di
 }
 
 
+extern Topology* TopoStore[MAXTOPOLOGY];
+
+inline void WhereAmI::run(void) {
+
+    StartupStore(_T("Oracle : start to find position") NEWLINE);
+
+    PeriodClock _time;
+    _time.Update();
 
 
-// This is called by the Draw thread 
-// This is still a draft, to find out what's best to tell and how.
-// It should be recoded once the rules are clear.
-void WhereAmI(void) {
+  MapWindow::SuspendDrawingThread();
+  LockTerrainDataGraphics();
+  // Since the topology search is made in the cache, and the cache has only items that
+  // are ok to be printed for the current scale, and we want also items for high zoom,
+  // we force high zoom and refresh. First we save current scale, of course.
+  double oldzoom=MapWindow::zoom.Scale();
+  // set a zoom level for topology visibility scan
+  MapWindow::zoom.EventSetZoom(3);
+  SetTopologyBounds(MapWindow::DrawRect, true);
 
-  TCHAR toracle[500];
+  for (int z=0; z<MAXTOPOLOGY; z++) {
+    if (TopoStore[z]) {
+      // See also CheckScale for category checks! We should use a function in fact.
+      if ( TopoStore[z]->scaleCategory == 10 ||
+        (TopoStore[z]->scaleCategory >= 70 && TopoStore[z]->scaleCategory <=100)) {
+        TopoStore[z]->SearchNearest(MapWindow::DrawRect);
+      }
+    }
+  }
+
   TCHAR ttmp[100];
   double dist,wpdist,brg;
   NearestTopoItem *item=NULL;
@@ -332,8 +356,14 @@ _dowp:
   secondwpdone=true;
   goto _dowp;
 
-
 _end:
+
+  MapWindow::zoom.EventSetZoom(oldzoom);
+  SetTopologyBounds(MapWindow::DrawRect, true);
+  UnlockTerrainDataGraphics();
+  MapWindow::ResumeDrawingThread();
+
+
 #ifdef ULLIS_PRIVATE_FEATURES
 	_stprintf(ttmp,_T("\n\nin %i ft (MSL)"),  (int)( GPS_INFO.Altitude*TOFEET)); // in height
 	_tcscat(toracle,ttmp);
@@ -342,7 +372,8 @@ _end:
   if (!found) _stprintf(toracle,_T("\n\n%s\n\n%s"), gettext(_T("_@M1725_")),gettext(_T("_@M1726_")));
 
   CharUpper(toracle);
-  MessageBoxX(toracle, gettext(_T("_@M1690_")), mbOk, true);
 
+
+  StartupStore(_T("Oracle : Result found in %d ms") NEWLINE, _time.Elapsed());
 }
 
