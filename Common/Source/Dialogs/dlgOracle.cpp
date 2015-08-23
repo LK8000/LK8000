@@ -18,7 +18,13 @@ static WndForm *wf=NULL;
 
 extern void ResetNearestTopology();
 
+static void OnCloseClicked(WndButton* pWnd){
+    (void)pWnd;
+	wf->SetModalResult(mrOK);
+}
+
 static CallBackTableEntry_t CallBackTable[]={
+  ClickNotifyCallbackEntry(OnCloseClicked),
   EndCallBackEntry()
 };
 
@@ -28,21 +34,30 @@ short WaitToCallForce=0;
 
 WhereAmI _WhereAmI;
 
-// Remember that this function is called at 2hz
-static bool OnTimerNotify()
-{
-    if(!_WhereAmI.IsDone()) {
-        return false;
-    }
+// Remember that this function is called at 10hz
+static bool OnTimerNotify() {
+
+  if(!_WhereAmI.IsDone()) {
+    return false;
+  }
 
   wf->SetTimerNotify(0, NULL);
 
   // Bell, and print results
   LKSound(TEXT("LK_GREEN.WAV"));
-  MessageBoxX(_WhereAmI.getText(), gettext(_T("_@M1690_")), mbOk, true);
+  wf->SetBackColor(RGB_WINBACKGROUND);
 
-  // Remember to force exit from showmodal, because there is no Close button
-  wf->SetModalResult(mrOK);
+  WindowControl* pWndClose = wf->FindByName(_T("cmdClose"));
+  if(pWndClose) {
+    pWndClose->SetVisible(true);
+    pWndClose->SetFocus();
+  }
+  WndFrame* pWndText = static_cast<WndFrame*>(wf->FindByName(_T("WndText")));
+  if (pWndText) {
+    pWndText->SetBackColor(RGB_WINBACKGROUND);
+    pWndText->SetCaption(_WhereAmI.getText());
+  }
+
   return true;
 }
 
@@ -64,9 +79,20 @@ void dlgOracleShowModal(void){
   }
 
   if (!wf) return;
-
   _WhereAmI.Start();
-  
+
+  WindowControl* pWndClose = wf->FindByName(_T("cmdClose"));
+  if (pWndClose) {
+    pWndClose->SetVisible(false);
+  }
+  WndFrame* pWndText = static_cast<WndFrame*>(wf->FindByName(_T("WndText")));
+  if (pWndText) {
+    pWndText->SetFont(MapWindowBoldFont);
+    pWndText->SetCaptionStyle(DT_EXPANDTABS | DT_CENTER | DT_NOCLIP | DT_WORDBREAK);
+    TCHAR szText[200] = {};
+    _stprintf(szText, _T("\n\n%s\n\n%s"), gettext(_T("_@M1691_")), gettext(_T("_@M1692_")));
+    pWndText->SetCaption(szText);
+  }
 
   // We must wait for data ready, so we shall do it  with timer notify.
   wf->SetTimerNotify(100, OnTimerNotify);
@@ -75,5 +101,3 @@ void dlgOracleShowModal(void){
   delete wf;
   wf = NULL;
 }
-
-

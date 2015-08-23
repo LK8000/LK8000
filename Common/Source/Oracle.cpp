@@ -357,7 +357,10 @@ _dowp:
   goto _dowp;
 
 _end:
-
+            
+#ifndef NDEBUG
+  Poco::Thread::sleep(2000);
+#endif
   MapWindow::zoom.EventSetZoom(oldzoom);
   SetTopologyBounds(MapWindow::DrawRect, true);
   UnlockTerrainDataGraphics();
