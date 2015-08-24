@@ -21,7 +21,7 @@ struct safe_delete {
 	void operator()(T*& p) {
 		if( p) {
 			delete p;
-			p = 0;
+			p = nullptr;
 		}
 	}
 
@@ -29,7 +29,7 @@ struct safe_delete {
 	void operator()(std::pair<K,T*>& p) {
 		if( p.second ) {
 			delete p.second;
-			p.second = 0;
+			p.second = nullptr;
 		}
 	}
 };
@@ -39,7 +39,7 @@ struct safe_delete_array {
 	void operator()(T*& p) {
 		if( p) {
 			delete[] p;
-			p = 0;
+			p = nullptr;
 		}
 	}
 };
@@ -50,7 +50,7 @@ struct safe_free {
 	void operator()(T*& p) {
 		if( p) {
 			free(p);
-			p = 0;
+			p = nullptr;
 		}
 	}
 };
