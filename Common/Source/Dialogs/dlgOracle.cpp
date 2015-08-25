@@ -16,8 +16,6 @@
 
 static WndForm *wf=NULL;
 
-extern void ResetNearestTopology();
-
 static void OnCloseClicked(WndButton* pWnd){
     (void)pWnd;
 	wf->SetModalResult(mrOK);

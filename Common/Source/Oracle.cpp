@@ -93,6 +93,8 @@ TCHAR *OracleFormatDistance(const TCHAR *name,const TCHAR *ntype,const double di
 
 extern Topology* TopoStore[MAXTOPOLOGY];
 
+extern void ResetNearestTopology();
+
 inline void WhereAmI::run(void) {
 
     StartupStore(_T("Oracle : start to find position") NEWLINE);
@@ -100,6 +102,7 @@ inline void WhereAmI::run(void) {
     PeriodClock _time;
     _time.Update();
 
+  ResetNearestTopology();
 
   MapWindow::SuspendDrawingThread();
   LockTerrainDataGraphics();
