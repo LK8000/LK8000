@@ -264,6 +264,8 @@ bool WndMain::OnSize(int cx, int cy) {
 extern StartupState_t ProgramStarted;
 bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
 #ifdef ENABLE_OPENGL
+    UpdateTimeStats(true);
+
     if (ProgramStarted==psInitDone) {
         ProgramStarted = psFirstDrawDone;
     }
@@ -282,8 +284,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
             DrawCrossHairs(Surface, centerscreen, Rect);
         }
         
-        UpdateTimeStats(false);
-
+        MapDirty = false;
 
         // we do caching after screen update, to minimise perceived delay
         // UpdateCaches is updating topology bounds when either forced (only here)
@@ -292,6 +293,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
         UpdateCaches(first_run);
         first_run=false;
     }
+    UpdateTimeStats(false);
 #else
     if(ProgramStarted >= psFirstDrawDone) {
         BackBufferSurface.CopyTo(Surface);

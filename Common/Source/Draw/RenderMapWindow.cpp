@@ -34,6 +34,8 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
 void MapWindow::UpdateTimeStats(bool start) {
   if (start) {
     timestamp_newdata.Update();
+  } else {
+//    printf("DrawTime : %d ms \n", timestamp_newdata.Elapsed());      
   }
 }
 
