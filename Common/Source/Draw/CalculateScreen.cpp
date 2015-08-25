@@ -29,20 +29,21 @@ rectObj MapWindow::CalculateScreenBounds(double scale, const RECT& rc) {
     sb.minx = sb.maxx = PanLongitude;
     sb.miny = sb.maxy = PanLatitude;
     
-    int dx, dy;
+    unsigned int dx, dy;
     unsigned int maxsc=0;
     dx = screen_center.x-rc.right;
     dy = screen_center.y-rc.top;
-    maxsc = max(maxsc, isqrt4(dx*dx+dy*dy));
+    maxsc = max(maxsc, dx*dx+dy*dy);
     dx = screen_center.x-rc.left;
     dy = screen_center.y-rc.top;
-    maxsc = max(maxsc, isqrt4(dx*dx+dy*dy));
+    maxsc = max(maxsc, dx*dx+dy*dy);
     dx = screen_center.x-rc.left;
     dy = screen_center.y-rc.bottom;
-    maxsc = max(maxsc, isqrt4(dx*dx+dy*dy));
+    maxsc = max(maxsc, dx*dx+dy*dy);
     dx = screen_center.x-rc.right;
     dy = screen_center.y-rc.bottom;
-    maxsc = max(maxsc, isqrt4(dx*dx+dy*dy));
+    maxsc = max(maxsc, dx*dx+dy*dy);
+    maxsc = isqrt4(maxsc);
     
     for (int i=0; i<10; i++) {
       double ang = i*360.0/10;
