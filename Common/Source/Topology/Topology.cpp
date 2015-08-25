@@ -326,7 +326,8 @@ void Topology::TriggerIfScaleNowVisible(void) {
 void Topology::flushCache() {
 #ifdef DEBUG_TFC
   StartupStore(TEXT("---flushCache() starts%s"),NEWLINE);
-  Poco::Timestamp starttick;;
+  PeriodClock starttick;
+  starttick.Update();
 #endif
   switch (cache_mode) {
 	case 0:  // Original
@@ -343,7 +344,7 @@ void Topology::flushCache() {
   }//sw		
   shapes_visible_count = 0;
 #ifdef DEBUG_TFC
-  StartupStore(TEXT("   flushCache() ends (%dms)%s"),Poco::Timespan(starttick.elapsed()).totalMilliseconds(),NEWLINE);
+  StartupStore(TEXT("   flushCache() ends (%dms)%s"),starttick.Elapsed(),NEWLINE);
 #endif
 }
 
@@ -372,7 +373,8 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 #ifdef DEBUG_TFC
   StartupStore(TEXT("---UpdateCache() starts, mode%d%s"),cache_mode,NEWLINE);
-  Poco::Timestamp starttick;
+  PeriodClock starttick;
+  starttick.Update();
 #endif
 
   if(msRectOverlap(&shpfile.bounds, &thebounds) != MS_TRUE) {
@@ -478,7 +480,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 #ifdef DEBUG_TFC
   long free_size = CheckFreeRam();
-  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%luM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), Poco::Timespan(starttick.elapsed()).totalMilliseconds(),NEWLINE);
+  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%luM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), starttick.Elapsed(),NEWLINE);
 #endif
 }
 
