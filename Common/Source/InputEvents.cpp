@@ -52,8 +52,13 @@ static TCHAR mode_current[MAX_MODE_STRING] = TEXT("default");	// Current mode
 static TCHAR mode_map[MAX_MODE][MAX_MODE_STRING];		// Map mode to location
 static int mode_map_count = 0;
 
-// Key map to Event - Keys (per mode) mapped to events
-static int Key2Event[MAX_MODE][MAX_KEY];		// Points to Events location
+// Key to Event - Keys (per mode) mapped to events
+#ifndef USE_GDI
+// Some linux keycode are defined on 4 Byte, use map instead array. 
+static std::map<int,int> Key2Event[MAX_MODE];
+#else
+static int Key2Event[MAX_MODE][MAX_KEY];
+#endif
 
 // Glide Computer Events
 static int GC2Event[MAX_MODE][GCE_COUNT];
@@ -238,7 +243,11 @@ void InputEvents::readFile() {
 
     // if the first line is "#CLEAR" then the whole default config is cleared and can be overwritten by file  
     if ((line == 1) && (_tcsstr(buffer, TEXT("#CLEAR")))){
+#ifndef USE_GDI
+      for(auto Item : Key2Event) Item.clear();
+#else
       memset(&Key2Event, 0, sizeof(Key2Event));
+#endif
       memset(&GC2Event, 0, sizeof(GC2Event));
       memset(&Events, 0, sizeof(Events));
       memset(&ModeLabel, 0, sizeof(ModeLabel));
@@ -278,6 +287,7 @@ void InputEvents::readFile() {
 	  // All modes are valid at this point
 	  int mode_id = mode2int(token, true);
 	  LKASSERT(mode_id >= 0);
+          assert(mode_id < (int)array_size(Key2Event));
 			  
 	  // Make label event
 	  // TODO code: Consider Reuse existing entries...
@@ -294,6 +304,9 @@ void InputEvents::readFile() {
 	  // Make key (Keyboard input)
 	  if (_tcscmp(d_type, TEXT("key")) == 0)	{	// key - Hardware key or keyboard
 	    int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
+#ifdef USE_GDI
+            assert(ikey < (int)array_size(Key2Event[mode_id]));
+#endif
 	    if (ikey > 0)
 	      Key2Event[mode_id][ikey] = event_id;
 			    
@@ -693,34 +706,43 @@ bool InputEvents::processButton(int bindex) {
   Future will also allow for long and double click presses...
   Return = We had a valid key (even if nothing happens because of Bounce)
 */
-bool InputEvents::processKey(int dWord) {
+bool InputEvents::processKey(int KeyID) {
   if (!(ProgramStarted==psNormalOp)) return false;
 
-  int event_id;
-
-  // Valid input ?
-  if ((dWord < 0) || (dWord > MAX_KEY))
-    return false;
+  int event_id = 0;
 
   // get current mode
   int mode = InputEvents::getModeID();
   
+#ifndef USE_GDI
 
-
-  // Which key - can be defined locally or at default (fall back to default)
-  event_id = Key2Event[mode][dWord];
-
-// VENTA- DEBUG HARDWARE KEY PRESSED   
-#ifdef VENTA_DEBUG_KEY
-	TCHAR ventabuffer[80];
-	_stprintf(ventabuffer,TEXT("PRCKEY %d MODE %d EVENT %d"), dWord, mode,event_id);
-	DoStatusMessage(ventabuffer);
-#endif
-  if (event_id == 0) {
-    // go with default key..
-    event_id = Key2Event[0][dWord];
+  auto It = Key2Event[mode].find(KeyID);
+  if(It != Key2Event[mode].end()) {
+    event_id = It->second;
   }
 
+  if (event_id == 0) {
+    It = Key2Event[0].find(KeyID);
+    if(It != Key2Event[0].end()) {
+      event_id = It->second;
+    }      
+  }  
+  
+#else
+
+  // Valid input ?
+  if ((KeyID < 0) || (KeyID > MAX_KEY))
+    return false;
+  
+  // Which key - can be defined locally or at default (fall back to default)
+  event_id = Key2Event[mode][KeyID];
+  if (event_id == 0) {
+    // go with default key..
+    event_id = Key2Event[0][KeyID];
+  }
+  
+#endif
+  
   if (event_id > 0) {
 
     int bindex = -1;
@@ -737,7 +759,7 @@ bool InputEvents::processKey(int dWord) {
     // We do this only for the case of zoom in/out virtual key pressed.
     // The fastzoom process is triggered by BigZoom set.
     // To get oldstyle zoom simply skip all of this.
-    if (dWord==38||dWord==40) {
+    if (KeyID==KEY_UP||KeyID==KEY_DOWN) {
 	#if (WINDOWSPC>0)
 	if (!Debounce(100)) return true;
 	  #if TESTBENCH
