@@ -27,7 +27,7 @@ static bool terrain_ready = false;
 
 extern bool FastZoom;
 
-Topology* TopoStore[MAXTOPOLOGY];
+Topology* TopoStore[MAXTOPOLOGY] = {};
 
 uint8_t tshadow_r, tshadow_g, tshadow_b, tshadow_h;
 uint8_t thighlight_r, thighlight_g, thighlight_b, thighlight_h;

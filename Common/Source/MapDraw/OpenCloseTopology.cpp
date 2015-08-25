@@ -34,9 +34,7 @@ void OpenTopology() {
 
   LockTerrainDataGraphics();
 
-  for (int z=0; z<MAXTOPOLOGY; z++) {
-    TopoStore[z] = 0;
-  }
+  std::fill(std::begin(TopoStore), std::end(TopoStore), nullptr);
 
      // Topology is inside the LKM map file
      TCHAR  szmapFile[MAX_PATH] = TEXT("\0");
@@ -298,10 +296,6 @@ void CloseTopology() {
   #endif
 
   LockTerrainDataGraphics();
-  for (int z=0; z<MAXTOPOLOGY; z++) {
-    if (TopoStore[z]) {
-      delete TopoStore[z];
-    }
-  }
+  std::for_each(std::begin(TopoStore), std::end(TopoStore), safe_delete());
   UnlockTerrainDataGraphics();
 }
