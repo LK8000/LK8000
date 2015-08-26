@@ -33,7 +33,7 @@ class XShape {
   virtual void load(shapefileObj* shpfile, int i);
   virtual void clear();
 
-  virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) { (void)x; (void)y; (void)Surface; return false;};
+  virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) const { (void)x; (void)y; (void)Surface; return false;};
   virtual bool nearestItem(int category, double lon, double lat) { (void)category; (void)lon; (void)lat; return(true);};
 
   bool hide;
@@ -53,7 +53,7 @@ class XShapeLabel: public XShape {
   virtual void clear();
   void setlabel(const char* src);
   
-  virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect);
+  virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) const;
   virtual bool nearestItem(int category, double lon, double lat);
 
 
@@ -157,7 +157,7 @@ public:
         toracle[0] = _T('\0');
     }
 
-    ~WhereAmI() {}
+    ~WhereAmI() { }
 
 
     const TCHAR* getText() const {

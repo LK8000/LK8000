@@ -227,6 +227,8 @@ endif
 
 CE_DEFS :=
 
+USE_GLU :=n
+
 ######## target depends definitions
 ifeq ($(TARGET_IS_KOBO),y)
  USE_SDL   :=n
@@ -350,6 +352,17 @@ ifeq ($(CONFIG_LINUX),y)
    CE_DEFS += -DHAVE_GLES -DHAVE_GLES2 -DUSE_GLSL
    CE_DEFS += $(patsubst -I%,-isystem %,$(GLES2_CPPFLAGS))
   endif
+
+  USE_GLU :=$(shell $(PKG_CONFIG) --exists glu && echo y)
+  ifeq ($(GLES)$(GLES2)$(USE_GLU),nny)
+   CE_DEFS += -DUSE_GLU
+   $(eval $(call pkg-config-library,GLU,glu))
+   CE_DEFS += $(patsubst -I%,-isystem %,$(GLU_CPPFLAGS))
+  else
+   $(info # warning : libglu not supported on this platform, possible huge drawing artefact on topology)
+   USE_GLU :=n	
+  endif
+
  else
   CE_DEFS += -DUSE_MEMORY_CANVAS
  endif
@@ -499,6 +512,7 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(WAYLAND_LDLIBS)
  LDLIBS += $(SDL_LDLIBS)
  LDLIBS += $(SDL_MIXER_LDLIBS)
+ LDLIBS += $(GLU_LDLIBS)
 
  ifeq ($(GLES),y)
   LDLIBS += -ldl
@@ -886,7 +900,12 @@ TERRAIN	:=\
 	$(TER)/STScreenBuffer.cpp \
 
 TOPOL	:=\
-	$(TOP)/Topology.cpp		\
+	$(TOP)/Topology.cpp
+	
+ifeq ($(USE_GLU),y)
+TOPOL	+=\
+	$(TOP)/OpenGL/GLShapeRenderer.cpp 
+endif
 
 MAPDRAW	:=\
 	$(MAP)/DrawTerrain.cpp		\

@@ -18,6 +18,10 @@
 #include <Poco/UTF8Encoding.h>
 #include <Poco/TextConverter.h>
 
+#ifdef USE_GLU
+#include "OpenGL/GLShapeRenderer.h"
+#endif
+
 //#define DEBUG_TFC 
 
 XShape::XShape() : hide(false) {
@@ -525,6 +529,13 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
   } else 
   if (MapWindow::zoom.RealScale() > scaleThreshold) return;
 
+#ifdef USE_GLU
+  static GLShapeRenderer renderer;
+  renderer.setClipRect(rc);
+  renderer.setNoLabel(nolabels);
+#endif
+  
+  
   // TODO code: only draw inside screen!
   // this will save time with rendering pixmaps especially
   // checkVisible does only check lat lon , not screen pixels..
@@ -540,6 +551,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 
   const auto hfOld = Surface.SelectObject(MapTopologyFont);
 
+#ifndef USE_GLU  
   // get drawing info
   int iskip = 1;
  
@@ -547,16 +559,17 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
   // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
   // != 5 and != 10
   if (scaleCategory>10) { 
-  if (MapWindow::zoom.RealScale()>0.25*scaleThreshold) {
-    iskip = 2;
-  } 
-  if (MapWindow::zoom.RealScale()>0.5*scaleThreshold) {
-    iskip = 3;
+    if (MapWindow::zoom.RealScale()>0.25*scaleThreshold) {
+      iskip = 2;
+    } 
+    if (MapWindow::zoom.RealScale()>0.5*scaleThreshold) {
+      iskip = 3;
+    }
+    if (MapWindow::zoom.RealScale()>0.75*scaleThreshold) {
+      iskip = 4;
+    }
   }
-  if (MapWindow::zoom.RealScale()>0.75*scaleThreshold) {
-    iskip = 4;
-  }
-  }
+#endif
 
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
   rectObj screenRect = MapWindow::screenbounds_latlon;
@@ -656,6 +669,9 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
       break;
       
     case(MS_SHAPE_POLYGON):
+#ifdef USE_GLU
+      renderer.renderPolygon(Surface, *cshape, hbBrush);
+#else
 
 	// if it's a water area (nolabels), print shape up to defaultShape, but print
 	// labels only up to custom label levels
@@ -684,6 +700,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 			cshape->renderSpecial(Surface,minx,miny,rc);
 		}
 	}
+#endif
 	break;
       
     default:
@@ -781,7 +798,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 }
 
 // Print topology labels
-bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) {
+bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) const {
   if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
 
     //Do not waste time with null labels
