@@ -95,7 +95,7 @@ extern Topology* TopoStore[MAXTOPOLOGY];
 
 extern void ResetNearestTopology();
 
-inline void WhereAmI::run(void) {
+void WhereAmI::run(void) {
 
     StartupStore(_T("Oracle : start to find position") NEWLINE);
 
