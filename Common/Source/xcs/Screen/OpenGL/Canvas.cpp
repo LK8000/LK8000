@@ -147,9 +147,18 @@ Canvas::DrawPolyline(const RasterPoint *points, unsigned num_points)
 #endif
 
   pen.Bind();
-
-  const ScopeVertexPointer vp(points);
-  glDrawArrays(GL_LINE_STRIP, 0, num_points);
+  
+  if (pen.GetWidth() <= 2) {
+    const ScopeVertexPointer vp(points);
+    glDrawArrays(GL_LINE_STRIP, 0, num_points);
+  } else {
+    const unsigned vertices = LineToTriangles(points, num_points, vertex_buffer,
+                                        pen.GetWidth(), false);
+    if (vertices > 0) {
+      const ScopeVertexPointer vp(vertex_buffer.begin());        
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices);
+    }
+  }
 
   pen.Unbind();
 }
