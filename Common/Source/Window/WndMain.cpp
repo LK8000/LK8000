@@ -272,7 +272,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     if(ProgramStarted >= psFirstDrawDone) {
         Surface.Whiteness(Rect.left, Rect.right, Rect.GetSize().cx, Rect.GetSize().cy);
     }
-    if(ProgramStarted >= psNormalOp) {
+    if(ProgramStarted >= psNormalOp && THREADRUNNING) {
         UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
         RenderMapWindow(Surface, Rect);
 

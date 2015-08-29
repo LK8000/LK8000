@@ -72,6 +72,7 @@ void dlgOracleShowModal(void){
             ScreenLandscape ? IDR_XML_ORACLE_L : IDR_XML_ORACLE_P);
 
   if (!wf) return;
+  MapWindow::SuspendDrawingThread();  
   _WhereAmI.Start();
 
   WindowControl* pWndClose = wf->FindByName(_T("cmdClose"));
@@ -90,6 +91,7 @@ void dlgOracleShowModal(void){
   // We must wait for data ready, so we shall do it  with timer notify.
   wf->SetTimerNotify(100, OnTimerNotify);
   wf->ShowModal();
+  MapWindow::ResumeDrawingThread();
 
   delete wf;
   wf = NULL;

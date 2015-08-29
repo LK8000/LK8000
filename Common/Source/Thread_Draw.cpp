@@ -335,24 +335,18 @@ void MapWindow::CreateDrawingThread(void)
 
 void MapWindow::SuspendDrawingThread(void)
 {
-#ifndef ENABLE_OPENGL    
   LockTerrainDataGraphics();
   THREADRUNNING = FALSE;
   UnlockTerrainDataGraphics();
-  //  SuspendThread(hDrawThread);
-#endif  
 }
 
 
 
 void MapWindow::ResumeDrawingThread(void)
 {
-#ifndef ENABLE_OPENGL    
   LockTerrainDataGraphics();
   THREADRUNNING = TRUE;
   UnlockTerrainDataGraphics();
-  //  ResumeThread(hDrawThread);
-#endif
 }
 
 
