@@ -18,7 +18,7 @@
 #include <Poco/UTF8Encoding.h>
 #include <Poco/TextConverter.h>
 
-#ifdef USE_GLU
+#ifdef ENABLE_OPENGL
 #include "OpenGL/GLShapeRenderer.h"
 #endif
 
@@ -529,7 +529,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
   } else 
   if (MapWindow::zoom.RealScale() > scaleThreshold) return;
 
-#ifdef USE_GLU
+#ifdef ENABLE_OPENGL
   static GLShapeRenderer renderer;
   renderer.setClipRect(rc);
   renderer.setNoLabel(nolabels);
@@ -551,7 +551,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 
   const auto hfOld = Surface.SelectObject(MapTopologyFont);
 
-#ifndef USE_GLU  
+#ifndef ENABLE_OPENGL
   // get drawing info
   int iskip = 1;
  
@@ -669,7 +669,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
       break;
       
     case(MS_SHAPE_POLYGON):
-#ifdef USE_GLU
+#ifdef ENABLE_OPENGL
       renderer.renderPolygon(Surface, *cshape, hbBrush);
 #else
 

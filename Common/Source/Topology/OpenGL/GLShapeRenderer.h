@@ -7,11 +7,8 @@
 
 #ifndef GLSHAPERENDERER_H
 #define	GLSHAPERENDERER_H
-#if defined(HAVE_GLES) || defined(HAVE_GLES2)
-#error "GLU not supported on OpenGL|ES"
-#else
-#include <GL/glu.h>
-#endif
+
+#include "Library/glutess/glutess.h"
 #include <list>
 #include <array>
 #include <vector>

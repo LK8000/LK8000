@@ -227,8 +227,6 @@ endif
 
 CE_DEFS :=
 
-USE_GLU :=n
-
 ######## target depends definitions
 ifeq ($(TARGET_IS_KOBO),y)
  USE_SDL   :=n
@@ -352,17 +350,6 @@ ifeq ($(CONFIG_LINUX),y)
    CE_DEFS += -DHAVE_GLES -DHAVE_GLES2 -DUSE_GLSL
    CE_DEFS += $(patsubst -I%,-isystem %,$(GLES2_CPPFLAGS))
   endif
-
-  USE_GLU :=$(shell $(PKG_CONFIG) --exists glu && echo y)
-  ifeq ($(GLES)$(GLES2)$(USE_GLU),nny)
-   CE_DEFS += -DUSE_GLU
-   $(eval $(call pkg-config-library,GLU,glu))
-   CE_DEFS += $(patsubst -I%,-isystem %,$(GLU_CPPFLAGS))
-  else
-   $(info # warning : libglu not supported on this platform, possible huge drawing artefact on topology)
-   USE_GLU :=n	
-  endif
-
  else
   CE_DEFS += -DUSE_MEMORY_CANVAS
  endif
@@ -512,7 +499,6 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(WAYLAND_LDLIBS)
  LDLIBS += $(SDL_LDLIBS)
  LDLIBS += $(SDL_MIXER_LDLIBS)
- LDLIBS += $(GLU_LDLIBS)
 
  ifeq ($(GLES),y)
   LDLIBS += -ldl
@@ -900,11 +886,12 @@ TERRAIN	:=\
 	$(TER)/STScreenBuffer.cpp \
 
 TOPOL	:=\
-	$(TOP)/Topology.cpp
+	$(TOP)/Topology.cpp		\
 	
-ifeq ($(USE_GLU),y)
+ifeq ($(OPENGL),y)
 TOPOL	+=\
-	$(TOP)/OpenGL/GLShapeRenderer.cpp 
+	$(TOP)/OpenGL/GLShapeRenderer.cpp  \
+	
 endif
 
 MAPDRAW	:=\
@@ -1236,6 +1223,20 @@ POCO :=\
      $(POCOSRC)/AtomicCounter.cpp \
      $(POCOSRC)/RefCountedObject.cpp \
 
+GLUSRC:=$(LIB)/glutess
+GLU :=\
+    $(GLUSRC)/dict.c \
+    $(GLUSRC)/geom.c \
+    $(GLUSRC)/memalloc.c \
+    $(GLUSRC)/mesh.c \
+    $(GLUSRC)/normal.c \
+    $(GLUSRC)/priorityq.c \
+    $(GLUSRC)/priorityq-heap.c \
+    $(GLUSRC)/render.c \
+    $(GLUSRC)/sweep.c \
+    $(GLUSRC)/tess.c \
+    $(GLUSRC)/tessellate.c \
+    $(GLUSRC)/tessmono.c 
 
 #ifneq ($(CONFIG_PC),y)
 #COMPAT	:=$(COMPAT) \
@@ -1275,6 +1276,10 @@ ifneq ($(CONFIG_LINUX),y)
 OBJS	+= $(BIN)/zzip.a 
 OBJS	+= $(BIN)/compat.a
 OBJS	+= $(BIN)/lk8000.rsc
+endif
+
+ifeq ($(OPENGL),y)
+OBJS	+= $(BIN)/glutess.a 
 endif
 
 IGNORE	:= \( -name .git \) -prune -o
@@ -1382,6 +1387,10 @@ endif
 $(OUTPUTS_NS): $(OBJS)
 	@$(NQ)echo "  LINK    $@"
 	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+$(BIN)/glutess.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(GLU)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(GLU))
+	@$(NQ)echo "  AR      $@"
+	$(Q)$(AR) $(ARFLAGS) $@ $^
 
 $(BIN)/zzip.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(ZZIP)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(ZZIP))
 	@$(NQ)echo "  AR      $@"

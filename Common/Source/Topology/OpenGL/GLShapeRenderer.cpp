@@ -45,9 +45,8 @@ GLvoid GLAPIENTRY vertexCallback(GLdouble *vertex, void* polygon_data) {
 }
 
 GLvoid GLAPIENTRY errorCallback(GLenum errorCode) {
-  const GLubyte *estring;
-  estring = gluErrorString(errorCode);
-  fprintf(stderr, "Tessellation Error: %d %s\n", errorCode, estring);
+  fprintf(stderr, "Tessellation Error: %d\n", errorCode);
+  assert(false);
 }
 
 GLShapeRenderer::GLShapeRenderer() {
@@ -62,8 +61,6 @@ GLShapeRenderer::GLShapeRenderer() {
 }
 
 GLShapeRenderer::~GLShapeRenderer() {
-
-    glPopMatrix();
     gluDeleteTess(tess);
 }
 
@@ -96,7 +93,7 @@ void GLShapeRenderer::renderPolygon(LKSurface& Surface, const XShape& shape, Bru
       if (!noLabel &&  (pt.x<=curr_LabelPos.x)) {
         curr_LabelPos = pt;
       }  
-      vertex_t& vertex = *(pointers.insert(pointers.end(), vertex_t({(GLdouble)pt.x, (GLdouble)pt.y, 0.0})));
+      vertex_t& vertex = *(pointers.insert(pointers.end(), vertex_t({{(GLdouble)pt.x, (GLdouble)pt.y, 0.}})));
       gluTessVertex(tess, vertex.data(), vertex.data());
     }
     gluTessEndContour(tess);
@@ -120,7 +117,7 @@ void GLShapeRenderer::polygonVertex(GLdouble *vertex) {
 }
 
 void GLShapeRenderer::polygonCombine(GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4], void **outData) {  
-  auto It = pointers.insert(pointers.end(), vertex_t({coords[0], coords[1], coords[2]}));
+  auto It = pointers.insert(pointers.end(), vertex_t({{coords[0], coords[1], coords[2]}}));
   *outData = It->data();
 }
 
