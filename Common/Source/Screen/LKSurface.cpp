@@ -569,10 +569,7 @@ void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount, RECT
 #else
     if(_pCanvas) {
         if(ClipRect) {
-            SubCanvas ClipCanvas(*_pCanvas, (*ClipRect).GetOrigin(), (*ClipRect).GetSize());
-            const RasterPoint offset = (*ClipRect).GetOrigin();
-            ClipCanvas.DrawText(X-offset.x, Y-offset.y, lpString, cbCount);
-
+            _pCanvas->DrawClippedText(X, Y, *ClipRect, lpString);
         } else {
             _pCanvas->DrawText(X, Y, lpString, cbCount);
         }
