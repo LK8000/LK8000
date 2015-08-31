@@ -226,7 +226,7 @@ public:
 
   void DrawOutlineRectangle(int left, int top, int right, int bottom) {
     pen.Bind();
-    OutlineRectangleGL(left, top, right-pen.GetWidth(), bottom-pen.GetWidth());
+    OutlineRectangleGL(left, top, right, bottom);
     pen.Unbind();
   }
 

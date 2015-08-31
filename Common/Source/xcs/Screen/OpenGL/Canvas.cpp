@@ -57,6 +57,7 @@ Copyright_License {
 
 #include "utils/make_unique.h"
 #include <assert.h>
+#include "utils/stl_utils.h"
 
 AllocatedArray<RasterPoint> Canvas::vertex_buffer;
 
@@ -93,15 +94,42 @@ Canvas::DrawFilledRectangle(int left, int top, int right, int bottom,
 void
 Canvas::OutlineRectangleGL(int left, int top, int right, int bottom)
 {
-  const ExactRasterPoint vertices[] = {
-    RasterPoint{left, top},
-    RasterPoint{right, top},
-    RasterPoint{right, bottom},
-    RasterPoint{left, bottom},
-  };
+    const GLexact penWidth = std::max(1U,pen.GetWidth());
+    
+    if(penWidth <= 1) {
+        // use line loop only for line with = 1, otherwise few pixel are missing on each corner.
+        const ExactRasterPoint vertices[] = {
+            RasterPoint{left, top},
+            RasterPoint{right-1, top},
+            RasterPoint{right-1, bottom-1},
+            RasterPoint{left, bottom-1},
+        };
 
-  const ScopeVertexPointer vp(vertices);
-  glDrawArrays(GL_LINE_LOOP, 0, 4);
+        const ScopeVertexPointer vp(vertices);
+        glDrawArrays(GL_LINE_LOOP, 0, array_size(vertices));
+    } else {
+
+#if defined(HAVE_GLES) && !defined(HAVE_GLES2)
+        glLineWidthx(1 << 16);
+#else
+        glLineWidth(1);
+#endif
+        const ExactRasterPoint vertices[] = {
+            RasterPoint{left, top},
+            RasterPoint{left + penWidth, top + penWidth},
+            RasterPoint{right, top},
+            RasterPoint{right - penWidth, top + penWidth},
+            RasterPoint{right, bottom},
+            RasterPoint{right- penWidth, bottom - penWidth},
+            RasterPoint{left, bottom},
+            RasterPoint{left + penWidth, bottom - penWidth},
+            RasterPoint{left, top},
+            RasterPoint{left + penWidth, top + penWidth}
+        };
+
+        const ScopeVertexPointer vp(vertices);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, array_size(vertices));        
+    }
 }
 
 void
