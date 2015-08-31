@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmTextEntry_Keyboard" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M251_" Font="2" >
-    <WndProperty Name="prpText" Caption="_@M711_" X="2" Y="1" Width="224" Height="30" CaptionWidth="65" Font="2" ReadOnly="1" />
-    <WndProperty Name="prpUnit" Caption=""   X="210" Y="-999" Width="40" Height="30" CaptionWidth="40" Font="2" ReadOnly="1" />
-    <WndButton   Caption="_@M228_" X="250" Y="-999" Width="66"  Height="30" Font="2" OnClickNotify="OnDel"/>
+    <WndProperty Name="prpText" Caption="_@M711_" X="0" Y="1" Width="224" Height="30" CaptionWidth="50" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpUnit" Caption=""   X="224" Y="-999" Width="30" Height="30" CaptionWidth="30" Font="2" ReadOnly="1" />
+    <WndButton   Caption="_@M228_" X="260" Y="-999" Width="60"  Height="30" Font="2" OnClickNotify="OnDel"/>
 
     <WndButton   Caption="1"    X="1"   Y="-1"   Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
     <WndButton   Caption="2"    X="80"  Y="-999" Width="78"  Height="52" Font="2" OnClickNotify="OnKey"/>
