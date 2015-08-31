@@ -12,14 +12,14 @@
 /////////////////////////////////////////////////////////////////////////////
 // CSTScreenBuffer
 CSTScreenBuffer::CSTScreenBuffer(int nWidth, int nHeight, LKColor clr) : RawBitmap(nWidth, nHeight) {
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
+#ifdef USE_TERRAIN_BLUR
     m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*GetHeight()*GetCorrectedWidth());
-    std::fill_n(GetBuffer(), GetHeight()*GetCorrectedWidth(), BGRColor(clr.Blue(), clr.Green(), clr.Red()));
 #endif
+    std::fill_n(GetBuffer(), GetHeight()*GetCorrectedWidth(), BGRColor(clr.Blue(), clr.Green(), clr.Red()));
 }
 
 CSTScreenBuffer::~CSTScreenBuffer() {
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
+#ifdef USE_TERRAIN_BLUR
     if (m_pBufferTmp) {
         free(m_pBufferTmp);
         m_pBufferTmp = NULL;
@@ -41,7 +41,7 @@ void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int sc
     StretchTo(cropsize/scale, GetHeight()/scale, Surface , rcDest.left, rcDest.top, cx, cy);
 }
 
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE) && !defined(ENABLE_OPENGL))
+#ifdef USE_TERRAIN_BLUR
 void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
 
     const unsigned int muli = (boxw * 2 + 1);
