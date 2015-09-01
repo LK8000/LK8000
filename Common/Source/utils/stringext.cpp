@@ -830,7 +830,8 @@ int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars) {
     return  ascii2unicode(ascii, unicode, maxChars);
 #else
     size_t len = std::min(_tcslen(ascii), (size_t)maxChars);
-    _tcsncpy(unicode, ascii, len+1);
+    _tcsncpy(unicode, ascii, maxChars);
+    unicode[maxChars-1] = '\0';
     return len;
 #endif 
 }
@@ -840,7 +841,9 @@ int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars) {
     return  unicode2ascii(unicode, ascii, maxChars);
 #else
     size_t len = std::min(_tcslen(unicode), (size_t)maxChars);
-    _tcsncpy(ascii, unicode, len);
+    _tcsncpy(ascii, unicode, maxChars);
+    ascii[maxChars-1] = '\0';
+    
     return len;
 #endif 
 }
@@ -859,8 +862,10 @@ int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
     _tcsncpy(utf, unicode, maxChars);
     return len;
 #else
-    size_t len = std::min(_tcslen(unicode), (size_t)maxChars);
+    size_t len = std::min(_tcslen(unicode), (size_t)maxChars-1);
     _tcsncpy(utf, unicode, maxChars);
+    utf[maxChars-1] = '\0';
+    
     return len;   
 #endif 
 }
@@ -876,7 +881,8 @@ int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars){
 #else
     assert(ValidateUTF8(utf));
     size_t len = std::min(_tcslen(utf), (size_t)maxChars);
-    _tcsncpy(unicode, utf, len+1);
+    _tcsncpy(unicode, utf, maxChars);
+    unicode[maxChars-1] = '\0';
     return len;
 #endif 
 }
@@ -896,7 +902,8 @@ int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize) {
     return len;
 #else
     size_t len = std::min(_tcslen(unicode), (size_t)outSize);
-    _tcsncpy(ascii, unicode, len+1);
+    _tcsncpy(ascii, unicode, outSize);
+    ascii[outSize-1] = '\0';
     return len;
 #endif 
 }
