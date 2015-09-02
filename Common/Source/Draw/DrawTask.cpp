@@ -285,6 +285,7 @@ DoInit[MDI_DRAWTASK]=false;
         }
     }
     
+    LKPen ArrowPen(PEN_SOLID, size_tasklines-NIBLSCALE(1), taskcolor);
     for (i = 0; ValidTaskPoint(i + 1); i++) {
         int imin = min(Task[i].Index, Task[i + 1].Index);
         int imax = max(Task[i].Index, Task[i + 1].Index);
@@ -324,16 +325,17 @@ DoInit[MDI_DRAWTASK]=false;
                 
                 // draw small arrow along task direction
                 POINT p_p;
-                POINT Arrow[2] = {
+                POINT Arrow[] = {
                     {6, 6},
+                    {0, 0},
                     {-6, 6}
                 };
-                ScreenClosestPoint(sct1, sct2,
-                        Orig_Aircraft, &p_p, NIBLSCALE(25));
-                threadsafePolygonRotateShift(Arrow, 2, p_p.x, p_p.y, bearing - DisplayAngle);
+                ScreenClosestPoint(sct1, sct2, Orig_Aircraft, &p_p, NIBLSCALE(25));
+                PolygonRotateShift(Arrow, array_size(Arrow), p_p.x, p_p.y, bearing - DisplayAngle);
 
-                Surface.DrawLine(PEN_SOLID, size_tasklines-NIBLSCALE(1), Arrow[0], p_p, taskcolor, rc);
-                Surface.DrawLine(PEN_SOLID, size_tasklines-NIBLSCALE(1), Arrow[1], p_p, taskcolor, rc);
+                const auto OldPen = Surface.SelectObject(ArrowPen);
+                Surface.Polyline(Arrow, array_size(Arrow), rc);
+                Surface.SelectObject(OldPen);                
             }
         }
     }
