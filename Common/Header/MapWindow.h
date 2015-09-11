@@ -686,7 +686,7 @@ private:
 
   static double DisplayAngle;
   static double DisplayAircraftAngle;
-  static DWORD targetPanSize;
+  static unsigned targetPanSize;
   
  public:
   static void RefreshMap(); // set public VENTA
@@ -710,7 +710,7 @@ private:
   
   static double LimitMapScale(double value);
 
-  static void SetTargetPan(bool dopan, int task_index, DWORD dlgSize = 0);
+  static void SetTargetPan(bool dopan, int task_index, unsigned dlgSize = 0);
 
   static double GetPanLatitude() { return PanLatitude; }
   static double GetPanLongitude() { return PanLongitude; }
@@ -736,7 +736,7 @@ private:
   
  private:
 
-  static DWORD fpsTime0;
+  static unsigned fpsTime0;
 
   static void CalculateOrigin(const RECT& rc, POINT *Orig);
 

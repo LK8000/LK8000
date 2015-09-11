@@ -217,7 +217,7 @@ bool Message::Render() {
     return changed;
 }
 
-void Message::AddMessage(DWORD tshow, int type, const TCHAR* Text) {
+void Message::AddMessage(unsigned tshow, int type, const TCHAR* Text) {
 
     Lock();
 

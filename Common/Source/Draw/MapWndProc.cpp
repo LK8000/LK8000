@@ -80,7 +80,7 @@ int MapWindow::GliderScreenPositionY = 40;
 double MapWindow::DisplayAngle = 0.0;
 double MapWindow::DisplayAircraftAngle = 0.0;
 
-DWORD MapWindow::targetPanSize = 0;
+unsigned MapWindow::targetPanSize = 0;
 
 bool MapWindow::LandableReachable = false;
 
@@ -150,7 +150,6 @@ double MapWindow::Xstart = 0.;
 double MapWindow::Ystart = 0.;
 
 PeriodClock MapWindow::tsDownTime;
-DWORD dwInterval=0L;
 
 double MapWindow::Xlat = 0.; 
 double MapWindow::Ylat = 0.;
@@ -436,7 +435,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         // while processing a virtual key for example, and also for acceleration.
         bool dontdrawthemap = (DONTDRAWTHEMAP);
 
-        dwInterval = tsDownTime.Elapsed();
+        int dwInterval = tsDownTime.Elapsed();
         tsDownTime.Reset(); // do it once forever
 
         // LK v6: check we are not out of MapRect bounds.
@@ -533,7 +532,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 #endif
                 } else {
                     // We are here in any case only when dwInterval is <VKLONGCLICK
-                    if (dwInterval >= (unsigned) CustomKeyTime) {
+                    if (dwInterval >= CustomKeyTime) {
                         if (!CustomKeyHandler(CKI_BOTTOMICON)) {
                             ShowMenu();
                         }
@@ -547,7 +546,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
         // MultiMap custom specials, we use same geometry of MSM_MAP
 
-        if ((dwInterval < (unsigned) AIRSPACECLICK) || ISPARAGLIDER) {
+        if ((dwInterval < AIRSPACECLICK) || ISPARAGLIDER) {
             if (NOTANYPAN && IsMultiMapCustom()) {
                 if ((Pos.x <= P_UngestureLeft.x) && (Pos.y <= P_UngestureLeft.y)) {
 
@@ -754,7 +753,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             //
             // Finally process normally a click on the moving map.
             //
-            if (dwInterval < (unsigned) AIRSPACECLICK) { // original and untouched interval
+            if (dwInterval < AIRSPACECLICK) { // original and untouched interval
                 {
                     if (!mode.AnyPan() && (UseUngestures || !ISPARAGLIDER)) {
                         if (Pos.x <= X_Left) {

@@ -6,7 +6,7 @@
  * File:   NullComPort.h
  * Author: Bruno de Lacheisserie
  *
- * Created on 10 août 2014, 13:56
+ * Created on 10 aoï¿½t 2014, 13:56
  */
 
 #ifndef NULLCOMPORT_H
@@ -30,7 +30,7 @@ public:
     virtual bool Write(const void *data, size_t length)  { return true; };
     virtual size_t Read(void *szString, size_t size)  { return 0U; };
 protected:
-    virtual DWORD RxThread() { StopEvt.wait(); return 0U; }
+    virtual unsigned RxThread() { StopEvt.wait(); return 0U; }
 };
 
 

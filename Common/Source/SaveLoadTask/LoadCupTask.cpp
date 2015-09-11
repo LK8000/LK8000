@@ -35,10 +35,10 @@ public:
         if (mA1 == 180.0) {
             if (mIdx == 0) {
                 StartLine = 0;
-                StartRadius = (DWORD)mR1;
+                StartRadius = mR1;
             } else if (mIdx == (size_t) getFinalWaypoint()) {
                 FinishLine = 0;
-                FinishRadius = (DWORD)mR1;
+                FinishRadius = mR1;
             } else {
                 Task[mIdx].AATType = CIRCLE;
                 Task[mIdx].AATCircleRadius = mR1;
@@ -107,10 +107,10 @@ public:
     void UpdateFixedSector() {
         if (mIdx == 0) {
             StartLine = 2;
-            StartRadius = (DWORD)mR1;
+            StartRadius = mR1;
         } else if (mIdx == (size_t) getFinalWaypoint()) {
             FinishLine = 2;
-            FinishRadius = (DWORD)mR1;
+            FinishRadius = mR1;
         } else {
             Task[mIdx].AATType = SECTOR;
             Task[mIdx].AATSectorRadius = mR1;
@@ -122,10 +122,10 @@ public:
     void UpdateSymLine() {
         if (mIdx == 0) {
             StartLine = 1;
-            StartRadius = (DWORD)mR1;
+            StartRadius = mR1;
         } else if (mIdx == (size_t) getFinalWaypoint()) {
             FinishLine = 1;
-            FinishRadius = (DWORD)mR1;
+            FinishRadius = mR1;
         } else {
             StartupStore(_T("..Cup Task : LINE Turnpoint is only supported for Start or Finish%s"), NEWLINE);
             mA1 = 90.0;

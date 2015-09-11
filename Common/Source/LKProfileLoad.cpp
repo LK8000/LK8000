@@ -41,15 +41,6 @@ void SetProfileVariable(const char *curname, const char *curvalue, const char *l
   #endif
   matchedstring=true;
 }
-void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, DWORD *lookupvalue) {
-  if (strcmp(curname,lookupname)) return;
-  *lookupvalue=(int) strtoul(curvalue, NULL, 10);
-  #if DEBUGPROF
-  StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> DWORD=%d\n"),
-  curname,curvalue,lookupname,*lookupvalue);
-  #endif
-  matchedstring=true;
-}
 void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, int *lookupvalue) {
   if (strcmp(curname,lookupname)) return;
   *lookupvalue=(int)strtol(curvalue, NULL, 10);
@@ -492,7 +483,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   
   /***************************************************/
   /* for compatibilty with old file                  */
-  DWORD dwIdxPort;
+  unsigned dwIdxPort;
   PREAD(sname,svalue,szRegistryPort1Index,&dwIdxPort);
     if(matchedstring) {
         if(COMMPort.size() == 0) {
@@ -803,7 +794,7 @@ void ReadDeviceSettings(const int devIdx, TCHAR *Name){
   if (_tcslen(Name)==0) _tcscpy(Name,_T(DEV_DISABLED_NAME));
 }
 
-void ReadPort1Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index) {
+void ReadPort1Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
     if (szPort) {
         _tcscpy(szPort, szPort1);
     }
@@ -811,11 +802,11 @@ void ReadPort1Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index) {
         *SpeedIndex = dwSpeedIndex1;
     }
     if (Bit1Index) {
-        *Bit1Index = dwBit1Index;
+        *Bit1Index = static_cast<BitIndex_t>(dwBit1Index);
     }
 }
 
-void ReadPort2Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index) {
+void ReadPort2Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
     if (szPort) {
         _tcscpy(szPort, szPort2);
     }
@@ -823,7 +814,7 @@ void ReadPort2Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index) {
         *SpeedIndex = dwSpeedIndex2;
     }
     if (Bit1Index) {
-        *Bit1Index = dwBit2Index;
+        *Bit1Index = static_cast<BitIndex_t>(dwBit2Index);
     }
 }
 

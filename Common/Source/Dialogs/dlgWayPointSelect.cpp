@@ -226,10 +226,10 @@ static void PrepareData(void){
     CharUpper(sTmp);
 
     WayPointSelectInfo[numvalidwp].FourChars =
-                    (((DWORD)sTmp[0] & 0xff) << 24)
-                  + (((DWORD)sTmp[1] & 0xff) << 16)
-                  + (((DWORD)sTmp[2] & 0xff) << 8)
-                  + (((DWORD)sTmp[3] & 0xff) );
+                    (((unsigned)sTmp[0] & 0xff) << 24)
+                  + (((unsigned)sTmp[1] & 0xff) << 16)
+                  + (((unsigned)sTmp[2] & 0xff) << 8)
+                  + (((unsigned)sTmp[3] & 0xff) );
 
     WayPointSelectInfo[numvalidwp].Type = WayPointList[i].Flags;
 

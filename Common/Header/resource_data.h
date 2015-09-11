@@ -348,7 +348,7 @@ static const struct {
 #include "tchar.h"
 #include "types.h"
 
-#define MAKEINTRESOURCE(i) (LPCTSTR)((DWORD)((WORD)(i)))
+#define MAKEINTRESOURCE(i) (const char*)((unsigned long)((uint16_t)(i)))
 
 #endif
 

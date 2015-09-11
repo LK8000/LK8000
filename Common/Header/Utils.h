@@ -40,20 +40,15 @@ void FindLatitudeLongitude(double Lat, double Lon,
                            double *lat_out, double *lon_out);
 void ConvertFlightLevels(void);
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc);
-void ReadPort1Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index);
-void ReadPort2Settings(LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit2Index);
+void ReadPort1Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index);
+void ReadPort2Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit2Index);
 //void ReadPort3Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit3Index);
-void WritePort1Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index);
-void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit2Index);
-//void WritePort3Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit3Index);
-
 
 
 void ReadAssetNumber(void);
 void WriteProfile(const TCHAR *szFile);
 void ReadProfile(const TCHAR *szFile);
 bool SetModelType();
-bool SetModelName(DWORD Temp);
 void ReadUUID(void);
 void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top, TCHAR *szMessageBuffer, TCHAR *TileBuffer );
 
@@ -197,7 +192,6 @@ int  GetWaypointFileFormatType(const TCHAR* wextension);
 // LK Utils
 void LKBatteryManager();
 void ChangeWindCalcSpeed(const int newspeed);
-bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime);
 void GotoWaypoint(const int wpnum);
 void ToggleBaroAltitude(void);
 bool ReducedMapSize(void);

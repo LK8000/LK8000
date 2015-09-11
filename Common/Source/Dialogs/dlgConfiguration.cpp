@@ -4371,10 +4371,9 @@ int ival;
     }
 
   }
-  DWORD tmp;
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));
   if (wp) {
-	  tmp = lround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+	  unsigned tmp = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
     if (GearWarningAltitude != tmp)
     {
     	GearWarningAltitude = tmp;

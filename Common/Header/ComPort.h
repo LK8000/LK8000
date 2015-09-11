@@ -64,14 +64,14 @@ protected:
 
     void StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *fmt, ...);
 
-    void AddStatRx(DWORD dwBytes);
-    void AddStatErrRx(DWORD dwBytes);
-    void AddStatTx(DWORD dwBytes);
-    void AddStatErrTx(DWORD dwBytes);
-    void AddStatErrors(DWORD dwBytes);
+    void AddStatRx(unsigned dwBytes);
+    void AddStatErrRx(unsigned dwBytes);
+    void AddStatTx(unsigned dwBytes);
+    void AddStatErrTx(unsigned dwBytes);
+    void AddStatErrors(unsigned dwBytes);
     void SetPortStatus(int Status);
 
-    virtual DWORD RxThread() = 0;
+    virtual unsigned RxThread() = 0;
 
     void ProcessChar(char c);
 

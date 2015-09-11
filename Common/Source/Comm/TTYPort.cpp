@@ -25,7 +25,7 @@
 
 using namespace std::tr1::placeholders;
 
-TTYPort::TTYPort(int idx, const std::tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) :
+TTYPort::TTYPort(int idx, const std::tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling) :
         ComPort(idx, sName),
         _dwPortSpeed(dwSpeed),
         _dwPortBit(BitSize),
@@ -255,8 +255,8 @@ bool TTYPort::Write(const void *data, size_t length) {
     return true;
 }
 
-DWORD TTYPort::RxThread() {
-    DWORD dwWaitTime = 0;
+unsigned TTYPort::RxThread() {
+    long dwWaitTime = 0;
     _Buff_t szString;
     Purge();
 

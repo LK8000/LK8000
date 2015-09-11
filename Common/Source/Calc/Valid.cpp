@@ -60,7 +60,7 @@ bool ValidStartPoint(size_t i) {
 
 
 
-bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, DWORD Margin) {
+bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, unsigned Margin) {
   bool valid = true;
   if (StartMaxSpeed!=0) {
     if (Basic->AirspeedAvailable) {

@@ -40,7 +40,7 @@ void LKBitmapSurface::Create(const LKSurface& Surface, unsigned width, unsigned 
     Attach(::CreateCompatibleDC(Surface.GetAttribDC()));
     SetAttribDC(Surface.GetAttribDC());
 
-    _Size = { width, height };
+    _Size = { (LONG)width, (LONG)height };
     _hBitmap = LKBitmap (::CreateCompatibleBitmap(GetAttribDC(), width, height));
     _oldBitmap = LKBitmap((HBITMAP)::SelectObject(_OutputDC, _hBitmap));
 #else

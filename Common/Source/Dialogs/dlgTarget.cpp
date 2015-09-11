@@ -24,7 +24,7 @@ static double Radial = 0;
 static int target_point = 0;
 static bool TargetMoveMode = false;
 
-static DWORD dlgSize = 0;
+static unsigned dlgSize = 0;
 
 bool TargetDialogOpen = false;
 

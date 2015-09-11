@@ -402,7 +402,7 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
       imiWp.oz.A1 = 450;
       break;
     }
-    imiWp.oz.R1 = std::min((DWORD)250000, StartRadius);
+    imiWp.oz.R1 = std::min(250000., StartRadius);
   }
   else if(imiIdx == (unsigned)decl.num_waypoints) {
     // FINISH
@@ -418,7 +418,7 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
       imiWp.oz.A1 = 450;
       break;
     }
-    imiWp.oz.R1 = std::min((DWORD)250000, FinishRadius);
+    imiWp.oz.R1 = std::min(250000., FinishRadius);
   }
   else {
     // TPs
@@ -427,12 +427,12 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
       switch(Task[idx].AATType) {
       case CIRCLE:
         imiWp.oz.A1 = 1800;
-        imiWp.oz.R1 = std::min(250000, (int)Task[idx].AATCircleRadius);
+        imiWp.oz.R1 = std::min(250000., Task[idx].AATCircleRadius);
         break;
       case SECTOR:
         imiWp.oz.A1 = ((int)(360 + Task[idx].AATFinishRadial - Task[idx].AATStartRadial) % 360) * 10 / 2;
         imiWp.oz.A12 = ((int)(Task[idx].AATStartRadial * 10) + 1800 + imiWp.oz.A1) % 3600;
-        imiWp.oz.R1 = std::min(250000, (int)Task[idx].AATSectorRadius);
+        imiWp.oz.R1 = std::min(250000., Task[idx].AATSectorRadius);
         break;
       }
     }
@@ -441,11 +441,11 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
       switch(SectorType) {
       case 0: // cylinder
         imiWp.oz.A1 = 1800;
-        imiWp.oz.R1 = std::min((DWORD)250000, SectorRadius);
+        imiWp.oz.R1 = std::min(250000., SectorRadius);
         break;
       case 1: // sector
         imiWp.oz.A1 = 450;
-        imiWp.oz.R1 = std::min((DWORD)250000, SectorRadius);
+        imiWp.oz.R1 = std::min(250000., SectorRadius);
         break;
       case 2: // German DAe 0.5/10
         imiWp.oz.A1 = 450;

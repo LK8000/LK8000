@@ -10,6 +10,7 @@
 #define LK8000_LK8000_H
 
 #include "Sizes.h"
+#include <stdint.h>
 
 typedef struct _DATAOPTIONS
 {
@@ -100,16 +101,16 @@ typedef struct
   // 8 charging
   // 128 no system battery
   // 255 unknown
-  BYTE BatteryLifePercent;
+  uint8_t BatteryLifePercent;
   // 0-100 or 255 if unknown
   // VENTA-TEST BATTERY
-  DWORD BatteryVoltage;
-  DWORD BatteryCurrent;
-  DWORD BatteryAverageCurrent;
-  DWORD BatterymAHourConsumed;
-  DWORD BatteryTemperature;
-  DWORD BatteryLifeTime;
-  DWORD BatteryFullLifeTime;
+  uint32_t BatteryVoltage;
+  uint32_t BatteryCurrent;
+  uint32_t BatteryAverageCurrent;
+  uint32_t BatterymAHourConsumed;
+  uint32_t BatteryTemperature;
+  uint32_t BatteryLifeTime;
+  uint32_t BatteryFullLifeTime;
 // END VENTA-TEST
 
 } BATTERYINFO;

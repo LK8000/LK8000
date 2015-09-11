@@ -405,9 +405,7 @@ static void ReadValues(void) {
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishRadius"));
   if (wp) {
-    CHECK_CHANGED(FinishRadius,
-                  (DWORD)iround(wp->GetDataField()->GetAsFloat()
-				/DISTANCEMODIFY));
+    CHECK_CHANGED(FinishRadius, wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY);
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
@@ -418,9 +416,7 @@ static void ReadValues(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartRadius"));
   if (wp) {
-    CHECK_CHANGED(StartRadius,
-                  (DWORD)iround(wp->GetDataField()->GetAsFloat()
-				/DISTANCEMODIFY));
+    CHECK_CHANGED(StartRadius, wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY);
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
@@ -432,7 +428,7 @@ static void ReadValues(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskSectorRadius"));
   if (wp) {
     CHECK_CHANGED(SectorRadius,
-                  (DWORD)iround(wp->GetDataField()->GetAsFloat()
+                  (unsigned)iround(wp->GetDataField()->GetAsFloat()
 				/DISTANCEMODIFY));
   }
 

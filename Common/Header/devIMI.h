@@ -24,9 +24,9 @@ class CDevIMI : public DevBase
   typedef char IMICHAR;                         // 8bit text character
   typedef unsigned char IMIBYTE;                // 8bit unsigned
   typedef unsigned short IMIWORD;               // 16bit unsigned
-  typedef unsigned long IMIDWORD;               // 32bit unsigned
+  typedef uint32_t IMIDWORD;                    // 32bit unsigned
   typedef short IMISWORD;                       // 16bit unsigned
-  typedef unsigned long IMIDATETIMESEC;         // 32bit unsigned
+  typedef uint32_t IMIDATETIMESEC;              // 32bit unsigned
   
   enum TMsgType {
     MSG_ACK_SUCCESS      = 0x00,

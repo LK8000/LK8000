@@ -194,7 +194,7 @@ bool BthPort::Write(const void *data, size_t length) {
 
 extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 
-DWORD BthPort::RxThread() {
+unsigned BthPort::RxThread() {
     DWORD dwWaitTime = 0;
     _Buff_t szString;
     Purge();

@@ -10,7 +10,7 @@
 
 
 
-bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, DWORD Margin) {
+bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, unsigned Margin) {
   bool valid = true;
   if ((StartMaxHeight!=0)&&(Calculated->TerrainValid)) {
     if (StartHeightRef == 0) {

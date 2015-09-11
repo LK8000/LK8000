@@ -38,7 +38,7 @@ public:
     virtual size_t Read(void *szString, size_t size);
 
 protected:
-    virtual DWORD RxThread();
+    virtual unsigned RxThread();
 
     HANDLE _hGPS;  // GPS device
     HANDLE _hLoc;  // signals GPS locaton arrival

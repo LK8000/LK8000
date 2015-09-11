@@ -45,9 +45,9 @@ using std::placeholders::_1;
 
 // returns true if it is a long press,
 // otherwise returns false
-static bool KeyTimer(bool isdown, DWORD thekey) {
+static bool KeyTimer(bool isdown, unsigned thekey) {
   static PeriodClock fpsTimeDown;
-  static DWORD savedKey=0;
+  static unsigned savedKey=0;
 
   if ((thekey==savedKey) && fpsTimeDown.CheckUpdate(2000)) {
     savedKey = 0;

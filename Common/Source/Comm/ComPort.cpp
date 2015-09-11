@@ -158,29 +158,29 @@ void ComPort::ProcessChar(char c) {
     pLastNmea = std::begin(_NmeaString);
 }
 
-void ComPort::AddStatRx(DWORD dwBytes) {
+void ComPort::AddStatRx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV)
         ComPortRx[GetPortIndex()] += dwBytes;
 }
 
-void ComPort::AddStatErrRx(DWORD dwBytes) {
+void ComPort::AddStatErrRx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV)
         ComPortErrRx[GetPortIndex()] += dwBytes;
 }
 
-void ComPort::AddStatTx(DWORD dwBytes) {
+void ComPort::AddStatTx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
         ComPortTx[GetPortIndex()] += dwBytes;
     }
 }
 
-void ComPort::AddStatErrTx(DWORD dwBytes) {
+void ComPort::AddStatErrTx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
         ComPortErrTx[GetPortIndex()] += dwBytes;
     }
 }
 
-void ComPort::AddStatErrors(DWORD dwBytes) {
+void ComPort::AddStatErrors(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
         ComPortErrors[GetPortIndex()] += dwBytes;
     }
