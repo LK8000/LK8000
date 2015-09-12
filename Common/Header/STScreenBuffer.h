@@ -23,13 +23,9 @@ class CSTScreenBuffer : public RawBitmap
 public:
 	// Creates uninitialized buffer. Call Create or CreateRGB to
 	// initialize the buffer.
-	CSTScreenBuffer(int nWidth, int nHeight, LKColor clr);
+	CSTScreenBuffer(int nWidth, int nHeight);
 
 	virtual ~CSTScreenBuffer();
-
-	// Creates buffer with the given size and fills it with 
-	// the given color
-	void Create(int nWidth, int nHeight, LKColor clr);
 
 #ifdef USE_TERRAIN_BLUR
 	void HorizontalBlur(unsigned int boxw);

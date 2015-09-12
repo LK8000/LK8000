@@ -159,7 +159,7 @@ public:
         const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
         const int res_y = iround((rc.bottom - rc.top) * oversampling / dtquant);
 
-        sbuf = new CSTScreenBuffer(res_x, res_y, RGB_WHITE);
+        sbuf = new CSTScreenBuffer(res_x, res_y);
         if(!sbuf) {
             OutOfMemory(_T(__FILE__), __LINE__);
             ToggleMultimapTerrain();

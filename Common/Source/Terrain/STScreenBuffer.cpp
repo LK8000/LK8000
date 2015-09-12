@@ -11,11 +11,11 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CSTScreenBuffer
-CSTScreenBuffer::CSTScreenBuffer(int nWidth, int nHeight, LKColor clr) : RawBitmap(nWidth, nHeight) {
+CSTScreenBuffer::CSTScreenBuffer(int nWidth, int nHeight) : RawBitmap(nWidth, nHeight) {
 #ifdef USE_TERRAIN_BLUR
     m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*GetHeight()*GetCorrectedWidth());
 #endif
-    std::fill_n(GetBuffer(), GetHeight()*GetCorrectedWidth(), BGRColor(clr.Blue(), clr.Green(), clr.Red()));
+    std::fill_n(GetBuffer(), GetHeight()*GetCorrectedWidth(), BGRColor(255, 255, 255));
 }
 
 CSTScreenBuffer::~CSTScreenBuffer() {
