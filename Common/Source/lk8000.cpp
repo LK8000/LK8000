@@ -463,6 +463,7 @@ int main(int argc, char *argv[]) {
   LKReadLanguageFile(szLanguageFile);
   LKLanguageReady=true;
 
+  CreateProgressDialog(gettext(TEXT("_@M399_")));
   CAirspaceManager::Instance().ReadAirspaces();
   CAirspaceManager::Instance().SortAirspaces();
   OpenTopology();
