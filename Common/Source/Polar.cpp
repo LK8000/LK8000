@@ -266,7 +266,7 @@ bool ReadWinPilotPolar(void) {
 		dPOLARW[2]= -4.2;
               	GlidePolar::WingArea = 10.04;
 		PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
-		_tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Cirrus_Std.plr"));
+		_tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
 	} // !foundline
       }
     } 
