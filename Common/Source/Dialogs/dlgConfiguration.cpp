@@ -119,6 +119,35 @@ void reset_wConfig(void) {
  wConfig25=NULL; 
 }
 
+void FontSetEnums( DataFieldEnum* dfe) {
+
+    dfe->addEnumText(TEXT("-10"));
+    dfe->addEnumText(TEXT("-9"));
+    dfe->addEnumText(TEXT("-8"));
+    dfe->addEnumText(TEXT("-7"));
+    dfe->addEnumText(TEXT("-6"));
+    dfe->addEnumText(TEXT("-5"));
+    dfe->addEnumText(TEXT("-4"));
+    dfe->addEnumText(TEXT("-3"));
+    dfe->addEnumText(TEXT("-2"));
+    dfe->addEnumText(TEXT("-1"));
+    dfe->addEnumText(TEXT("0"));
+    dfe->addEnumText(TEXT("+1"));
+    dfe->addEnumText(TEXT("+2"));
+    dfe->addEnumText(TEXT("+3"));
+    dfe->addEnumText(TEXT("+4"));
+    dfe->addEnumText(TEXT("+5"));
+    dfe->addEnumText(TEXT("+6"));
+    dfe->addEnumText(TEXT("+7"));
+    dfe->addEnumText(TEXT("+8"));
+    dfe->addEnumText(TEXT("+9"));
+    dfe->addEnumText(TEXT("+10"));
+}
+/*
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("-5"));
+*/
+
 int GlobalToBoxType(int i) {
 	int iTmp;
 	switch (i) {
@@ -1633,17 +1662,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(TEXT("-5"));
-    dfe->addEnumText(TEXT("-4"));
-    dfe->addEnumText(TEXT("-3"));
-    dfe->addEnumText(TEXT("-2"));
-    dfe->addEnumText(TEXT("-1"));
-    dfe->addEnumText(TEXT("0"));
-    dfe->addEnumText(TEXT("+1"));
-    dfe->addEnumText(TEXT("+2"));
-    dfe->addEnumText(TEXT("+3"));
-    dfe->addEnumText(TEXT("+4"));
-    dfe->addEnumText(TEXT("+5"));
+    FontSetEnums(dfe);
     dfe->Set(FontMapWaypoint);
     wp->RefreshDisplay();
   }
@@ -1652,17 +1671,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(TEXT("-5"));
-    dfe->addEnumText(TEXT("-4"));
-    dfe->addEnumText(TEXT("-3"));
-    dfe->addEnumText(TEXT("-2"));
-    dfe->addEnumText(TEXT("-1"));
-    dfe->addEnumText(TEXT("0"));
-    dfe->addEnumText(TEXT("+1"));
-    dfe->addEnumText(TEXT("+2"));
-    dfe->addEnumText(TEXT("+3"));
-    dfe->addEnumText(TEXT("+4"));
-    dfe->addEnumText(TEXT("+5"));
+    FontSetEnums(dfe);
     dfe->Set(FontMapTopology);
     wp->RefreshDisplay();
   }
@@ -1671,17 +1680,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(TEXT("-5"));
-    dfe->addEnumText(TEXT("-4"));
-    dfe->addEnumText(TEXT("-3"));
-    dfe->addEnumText(TEXT("-2"));
-    dfe->addEnumText(TEXT("-1"));
-    dfe->addEnumText(TEXT("0"));
-    dfe->addEnumText(TEXT("+1"));
-    dfe->addEnumText(TEXT("+2"));
-    dfe->addEnumText(TEXT("+3"));
-    dfe->addEnumText(TEXT("+4"));
-    dfe->addEnumText(TEXT("+5"));
+    FontSetEnums(dfe);
     dfe->Set(FontInfopage1L);
     wp->RefreshDisplay();
   }
@@ -1690,17 +1689,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(TEXT("-5"));
-    dfe->addEnumText(TEXT("-4"));
-    dfe->addEnumText(TEXT("-3"));
-    dfe->addEnumText(TEXT("-2"));
-    dfe->addEnumText(TEXT("-1"));
-    dfe->addEnumText(TEXT("0"));
-    dfe->addEnumText(TEXT("+1"));
-    dfe->addEnumText(TEXT("+2"));
-    dfe->addEnumText(TEXT("+3"));
-    dfe->addEnumText(TEXT("+4"));
-    dfe->addEnumText(TEXT("+5"));
+    FontSetEnums(dfe);
     dfe->Set(FontBottomBar);
     wp->RefreshDisplay();
   }
@@ -1709,17 +1698,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(TEXT("-5"));
-    dfe->addEnumText(TEXT("-4"));
-    dfe->addEnumText(TEXT("-3"));
-    dfe->addEnumText(TEXT("-2"));
-    dfe->addEnumText(TEXT("-1"));
-    dfe->addEnumText(TEXT("0"));
-    dfe->addEnumText(TEXT("+1"));
-    dfe->addEnumText(TEXT("+2"));
-    dfe->addEnumText(TEXT("+3"));
-    dfe->addEnumText(TEXT("+4"));
-    dfe->addEnumText(TEXT("+5"));
+    FontSetEnums(dfe);
     dfe->Set(FontVisualGlide);
     wp->RefreshDisplay();
   }
@@ -1728,17 +1707,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(TEXT("-5"));
-    dfe->addEnumText(TEXT("-4"));
-    dfe->addEnumText(TEXT("-3"));
-    dfe->addEnumText(TEXT("-2"));
-    dfe->addEnumText(TEXT("-1"));
-    dfe->addEnumText(TEXT("0"));
-    dfe->addEnumText(TEXT("+1"));
-    dfe->addEnumText(TEXT("+2"));
-    dfe->addEnumText(TEXT("+3"));
-    dfe->addEnumText(TEXT("+4"));
-    dfe->addEnumText(TEXT("+5"));
+    FontSetEnums(dfe);
     dfe->Set(FontOverlayMedium);
     wp->RefreshDisplay();
   }
@@ -1747,17 +1716,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(TEXT("-5"));
-    dfe->addEnumText(TEXT("-4"));
-    dfe->addEnumText(TEXT("-3"));
-    dfe->addEnumText(TEXT("-2"));
-    dfe->addEnumText(TEXT("-1"));
-    dfe->addEnumText(TEXT("0"));
-    dfe->addEnumText(TEXT("+1"));
-    dfe->addEnumText(TEXT("+2"));
-    dfe->addEnumText(TEXT("+3"));
-    dfe->addEnumText(TEXT("+4"));
-    dfe->addEnumText(TEXT("+5"));
+    FontSetEnums(dfe);
     dfe->Set(FontOverlayBig);
     wp->RefreshDisplay();
   }

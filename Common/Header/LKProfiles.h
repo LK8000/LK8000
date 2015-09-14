@@ -201,15 +201,15 @@ char szRegistryFinishLine[]=		 "FinishLine";
 char szRegistryFinishMinHeight[]= "FinishMinHeight";
 char szRegistryFinishRadius[]=		 "FinishRadius";
 char szRegistryFontRenderer[]= "FontRenderer2";
-char szRegistryFontMapWaypoint[]= "FontMapWaypoint";
-char szRegistryFontMapTopology[]= "FontMapTopology";
-char szRegistryFontInfopage1L[]= "FontInfopage1L";
-char szRegistryFontInfopage2L[]= "FontInfopage2L";
-char szRegistryFontBottomBar[]= "FontBottomBar";
-char szRegistryFontOverlayBig[]= "FontOverlayBig";
-char szRegistryFontOverlayMedium[]= "FontOverlayMedium";
-char szRegistryFontVisualGlide[]= "FontVisualGlide";
-char szRegistryFontCustom1[]= "FontCustom1";
+char szRegistryFontMapWaypoint[]= "FontMapWaypointB";
+char szRegistryFontMapTopology[]= "FontMapTopologyB";
+char szRegistryFontInfopage1L[]= "FontInfopage1LB";
+char szRegistryFontInfopage2L[]= "FontInfopage2LB";
+char szRegistryFontBottomBar[]= "FontBottomBarB";
+char szRegistryFontOverlayBig[]= "FontOverlayBigB";
+char szRegistryFontOverlayMedium[]= "FontOverlayMediumB";
+char szRegistryFontVisualGlide[]= "FontVisualGlideB";
+char szRegistryFontCustom1[]= "FontCustom1B";
 
 
 char szRegistryGlideBarMode[]= "GlideBarMode";
