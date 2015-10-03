@@ -111,12 +111,7 @@ echo "${MODEL}" > /mnt/onboard/LK8000/kobo/MODEL
 /bin/mknod /dev/input/event0 c 13 64
 /bin/mknod /dev/input/event1 c 13 65
 /bin/mknod /dev/fb0 c 29 0
-/bin/mknod /dev/ttyUSB0 c 188 0
-/bin/mknod /dev/ttymxc0 c 207 16
-/bin/mknod /dev/ttymxc1 c 207 17
-/bin/mknod /dev/ttymxc2 c 207 18
 /bin/mknod /dev/rtc0 c 254 0
-
 /bin/mknod /dev/mmcblk0 b 179 0
 /bin/mknod /dev/mmcblk0p1 b 179 1
 /bin/mknod /dev/mmcblk0p2 b 179 2
@@ -131,6 +126,10 @@ echo -e '\000\000\000\000' > /proc/sys/kernel/hotplug
 echo "ch 3" > /sys/devices/platform/pmic_light.1/lit
 echo "cur 0" > /sys/devices/platform/pmic_light.1/lit
 echo "dc 0" > /sys/devices/platform/pmic_light.1/lit
+
+#start udev deamon & trigger
+/sbin/udevd -d
+/sbin/udevadm trigger 
 
 # launch user script
 if [ -f /mnt/onboard/LK8000/kobo/init.sh ]; then

@@ -66,4 +66,13 @@ KoboRunTelnetd();
 void
 KoboRunFtpd();
 
+bool
+KoboExportSerialAvailable();
+
+bool
+KoboExportSerial();
+
+void
+KoboUnexportSerial();
+
 #endif

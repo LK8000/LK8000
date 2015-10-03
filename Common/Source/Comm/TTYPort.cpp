@@ -18,6 +18,10 @@
 #include <string.h>
 #include <signal.h>
 
+#ifdef KOBO
+#include "Kobo/System.hpp"
+#endif
+
 
 using namespace std::tr1::placeholders;
 
@@ -64,10 +68,18 @@ speed_t DecodeBaudrate(int speed) {
 }
 
 bool TTYPort::Initialize() {
+    StartupStore(_T(". ComPort %u Initialize <%s> speed=%u bit=%u %s"),GetPortIndex()+1,GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
+
+#ifdef KOBO
+    if (_tcscmp(GetPortName(), _T("/dev/ttyGS0")) == 0) {
+        KoboExportSerial();
+    }
+#endif
 
     _tty = open(GetPortName(), O_RDWR | O_NOCTTY);
     if (_tty < 0 || !isatty(_tty)) {
-        // failed to open or not tty device.
+        StartupStore(_T("... ComPort %u Init failed, error=%u%s"), GetPortIndex() + 1, errno, NEWLINE); // 091117
+        StatusMessage(mbOk, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
         goto failed;
     }
     
@@ -89,8 +101,10 @@ bool TTYPort::Initialize() {
     tcflush(_tty, TCIFLUSH);
     tcsetattr(_tty, TCSANOW, &newtio);
 
+    StartupStore(_T(". ComPort %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+    
     return ComPort::Initialize();
-
+    
 failed:
     if (_tty >= 0) {
         tcsetattr(_tty, TCSANOW, &_oldtio);
@@ -195,6 +209,12 @@ bool TTYPort::Close() {
         close(_tty);
         _tty = -1;
     }
+#ifdef KOBO
+    if (_tcscmp(GetPortName(), _T("/dev/ttyGS0")) == 0) {
+        KoboUnexportSerial();
+    }
+#endif
+  
     return true;
 }
 

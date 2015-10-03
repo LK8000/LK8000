@@ -43,6 +43,17 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(CONFIG_FILES)  kobo/inittab kobo/rcS
 	@$(NQ)echo "  TAR     $@"
 	$(Q)rm -rf $(BIN)/KoboRoot
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers	
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers/mx6sl-ntx
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers/mx6sl-ntx/usb
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers/mx6sl-ntx/usb/gadget
+	$(Q)install -m 0644 kobo/modules/mx6sl-ntx/usb/gadget/g_serial.ko $(BIN)/KoboRoot/drivers/mx6sl-ntx/usb/gadget
+
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers/mx50-ntx
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers/mx50-ntx/usb
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers/mx50-ntx/usb/gadget
+	$(Q)install -m 0644 kobo/modules/mx50-ntx/usb/gadget/g_serial.ko $(BIN)/KoboRoot/drivers/mx50-ntx/usb/gadget
+
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/etc
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/bin 
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/lib/

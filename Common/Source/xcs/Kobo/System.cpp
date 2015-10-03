@@ -242,3 +242,41 @@ KoboRunFtpd()
   Start("/usr/bin/tcpsvd", "-E", "0.0.0.0", "21", "ftpd", "-w", "/mnt/onboard");
 #endif
 }
+
+
+bool
+KoboExportSerialAvailable()
+{
+    return File::Exists("/drivers/current/usb/gadget/g_serial.ko");
+}
+
+bool
+KoboExportSerial()
+{
+#ifdef KOBO
+  RmMod("g_ether");
+  RmMod("g_file_storage");
+
+  InsMod("/drivers/current/usb/gadget/arcotg_udc.ko");
+  if(InsMod("/drivers/current/usb/gadget/g_serial.ko")) {
+    for(unsigned i = 0; i < 5; ++i ) {
+      if(File::Exists("/dev/ttyGS0")) {
+        return true;
+      }
+      Sleep(100);
+    }
+  }
+      return false;
+#else
+  return true;
+#endif
+}
+
+void
+KoboUnexportSerial()
+{
+#ifdef KOBO
+  RmMod("g_serial");
+  RmMod("arcotg_udc");
+#endif
+}

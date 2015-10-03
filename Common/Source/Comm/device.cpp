@@ -17,7 +17,12 @@
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
-#endif
+
+#ifdef KOBO
+  #include "Kobo/System.hpp"
+#endif // KOBO
+
+#endif // __linux__
 
 using namespace std::placeholders;
 
@@ -199,13 +204,21 @@ void RefreshComPortList() {
     } 
   }    
   free(namelist);
-  #if TESTBENCH
+
+#ifdef KOBO
+  if(KoboExportSerialAvailable()) {
+    if(std::find_if(COMMPort.begin(), COMMPort.end(), std::bind(&COMMPortItem_t::IsSamePort, _1, _T("/dev/ttyGS0"))) == COMMPort.end()) {
+      COMMPort.push_back(_T("/dev/ttyGS0"));
+    }
+  }
+
+#elif TESTBENCH
   COMMPort.push_back(_T("/lk/ptycom1"));
   COMMPort.push_back(_T("/lk/ptycom2"));
   COMMPort.push_back(_T("/lk/ptycom3"));
   COMMPort.push_back(_T("/lk/ptycom4"));
-  #endif
-  
+#endif
+
 #endif
     
 #ifndef NO_BLUETOOTH
