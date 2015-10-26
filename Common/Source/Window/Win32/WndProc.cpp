@@ -6,6 +6,9 @@
    $Id$
 */
 #include "options.h"
+#include "MessageLog.h"
+#include "math.h"
+#include "Defines.h"
 #include "WndMainBase.h"
 
 LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
