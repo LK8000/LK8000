@@ -57,6 +57,7 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/etc
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/bin 
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/lib/
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/lib/kernel
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/share/fonts 
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/share/_System/_Bitmaps 
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Airspaces 
@@ -77,6 +78,13 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0644 $(LANGUAGE_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Language
 	$(Q)install -m 0644 $(CONFIG_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Configuration
 	$(Q)install -m 0644 $(WAYPOINT_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Waypoints
+	
+ifeq ($(KERNEL),y)
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/kobo
+	$(Q)install -m 0644 kobo/kernel/uImage-mx50-ntx $(BIN)/KoboRoot/mnt/onboard/LK8000/kobo
+	$(Q)install -m 0644 kobo/kernel/uImage-mx6sl-ntx $(BIN)/KoboRoot/mnt/onboard/LK8000/kobo
+endif
+
 	$(Q)fakeroot tar czfC $@ $(BIN)/KoboRoot .
 
 endif

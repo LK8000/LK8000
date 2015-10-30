@@ -148,14 +148,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #else
 int main(int argc, char *argv[]) {
     
-#ifdef KOBO
-    if(lk::filesystem::exist("/mnt/onboard/LK8000/uImage")) {
-        KoboInstallKernel("/mnt/onboard/LK8000/uImage");
-        lk::filesystem::deleteFile("/mnt/onboard/LK8000/uImage");
-        KoboReboot();
-    }
-#endif
-    
 #ifdef HAVE_CPU_FREQUENCY
     // temporary for KOBO device. 
     // solve some lag problem.

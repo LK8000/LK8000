@@ -24,6 +24,20 @@ umask 022
 /bin/mount -t vfat -o iocharset=utf8 /dev/mmcblk0p3 /mnt/onboard
 /bin/rm -rf /mnt/onboard/fsck* /mnt/onboard/FSCK*
 
+
+# check the kernel
+#TODO : check CONFIG_USB_EHCI_ARC_OTG is valid for GloHD ???
+/bin/mkdir -p /proc /dev
+/bin/mount -t proc none /proc
+if zcat /proc/config.gz |grep -q ^CONFIG_USB_EHCI_ARC_OTG=y; then
+	# this is the USB-OTG kernel
+	OTG_kernel=Y
+else
+	# this is the KoboLabs kernel
+	OTG_kernel=N
+fi
+umount /proc
+
 # launch the original Kobo init script if:
 # - there's a pending update
 # - Nickel start was scheduled
@@ -32,7 +46,20 @@ if [ -f /mnt/onboard/.kobo/Kobo.tgz \
     -o -f /mnt/onboard/.kobo/KoboRoot.tgz \
     -o -f /mnt/onboard/LK8000/kobo/start_nickel \
     -o ! -x /opt/LK8000/bin/LK8000-KOBO ]; then
+	
+	if [ "${OTG_kernel}" == "Y" -a -f /opt/LK8000/lib/kernel/uImage.kobo ]; then	
+            # this is the USB-OTG kernel, but Nickel should better have
+            # the original Kobo kernel; install it and reboot
+						
+            rm -f /mnt/onboard/LK8000/kobo/reboot
 
+            /bin/mount -t tmpfs none /dev
+            /bin/mknod /dev/mmcblk0 b 179 0
+            dd if=/opt/LK8000/lib/kernel/uImage.kobo of=/dev/mmcblk0 bs=512 seek=2048 
+            sync 
+            exec reboot
+    fi	
+	
     rm -f /mnt/onboard/LK8000/kobo/start_nickel
     # launch user script before nickel start
     if [ -f /mnt/onboard/LK8000/kobo/init_nickel.sh ]; then
@@ -88,7 +115,21 @@ fi
 # extract Model for debug facility
 MODEL=`dd if=/dev/mmcblk0 bs=8 count=1 skip=64`
 echo "${MODEL}" > /mnt/onboard/LK8000/kobo/MODEL
-#
+
+# install OTG_kernel if available and not already installed.
+if [ "${OTG_kernel}" == "N" -a -f /mnt/onboard/LK8000/kobo/uImage-${PLATFORM} ]; then
+    /bin/mount -t tmpfs none /dev
+    /bin/mknod /dev/mmcblk0 b 179 0
+
+    # save original kernel as uImage.kobo
+    rm -f /opt/LK8000/lib/kernel/uImage.kobo
+    dd if=/dev/mmcblk0 bs=512 skip=2048 count=6000 of=/opt/LK8000/lib/kernel/uImage.kobo
+	
+    # "Switch to OTG_kernel and reboot"
+    dd if=/mnt/onboard/LK8000/kobo/uImage-${PLATFORM} of=/dev/mmcblk0 bs=512 seek=2048 
+    sync 
+    exec reboot
+fi
 
 # prepare file system
 
@@ -144,4 +185,4 @@ if [ `dd if=/dev/mmcblk0 bs=8 count=1 skip=64` = "SN-N905B" ]; then
 fi
 
 # finally, launch LK8000-KOBO
-exec /opt/LK8000/bin/LK8000-KOBO >> /mnt/onboard/LK8000/Start.log 2>&1
+exec /opt/LK8000/bin/LK8000-KOBO >> /mnt/onboard/LK8000/error.log 2>&1
