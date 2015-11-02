@@ -1,0 +1,32 @@
+=======================================
+information about kobo usb host support
+=======================================
+
+kobo usb don't work in dual role, so we need custom kernel for usb host.
+if usb host kernel is used, usb device mode don't work, so PC connection can work only after reboot to Nickel.
+
+for had custom kernel to koboroot.tgz, add 'KERNEL=y' to LK8000 make command line.
+
+!! Carefull : never install LK8000 with usb host support if your device already have custom kernel (installed by XCSoar or TopHat) !!
+
+
+=======================================
+Kernel build instruction
+=======================================
+
+Kernel need to be build using gcc 4.4
+    this can be found in kobolabs repository : 
+    https://github.com/kobolabs/Kobo-Reader/blob/master/toolchain/gcc-codesourcery-2010q1-202.bin
+
+kernel source for Kobo Mini (mx507 based kobo device) : 
+        https://github.com/brunotl/kernel-kobo-mx50-ntx
+    
+kernel source for Kobo GloHD (mx6sl based kobo device): 
+        https://github.com/brunotl/kernel-kobo-mx6sl-ntx
+
+Kernel build :
+    $make CROSS_COMPILE=arm-none-linux-gnueabi- ARCH=arm uImage
+
+modules build :
+    $make CROSS_COMPILE=arm-none-linux-gnueabi- ARCH=arm modules
+    $make CROSS_COMPILE=arm-none-linux-gnueabi- ARCH=arm INSTALL_MOD_PATH=../kobo-fs/ modules_install
