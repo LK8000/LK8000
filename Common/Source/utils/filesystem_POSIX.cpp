@@ -76,7 +76,7 @@ bool lk::filesystem::copyFile(const TCHAR* szSrc, const TCHAR* szDst, bool overw
     struct stat stat_source = {0};
     fstat(source, &stat_source);
 
-    int dest = open(szDst, O_WRONLY | O_CREAT | (overwrite ? O_TRUNC : NULL), stat_source.st_mode);
+    int dest = open(szDst, O_WRONLY | O_CREAT | (overwrite ? O_TRUNC : 0), stat_source.st_mode);
     if (dest == -1) {
         // dest can't be write;
         close(source);

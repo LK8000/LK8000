@@ -451,7 +451,7 @@ int main(int argc, char *argv[]) {
   RasterTerrain::OpenTerrain();
 
   ReadWayPoints();
-  StartupStore(_T(". LOADED %d WAYPOINTS + %d virtuals%s"),WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
+  StartupStore(_T(". LOADED %d WAYPOINTS + %u virtuals%s"),(unsigned)WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
   InitLDRotary(&rotaryLD); 
   InitWindRotary(&rotaryWind); // 100103
   MapWindow::zoom.Reset();

@@ -450,6 +450,9 @@ ifeq ($(CONFIG_PC),y)
  ifeq ($(GCCVERSION), 4.8.3)
     CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
  endif
+ifeq ($(GCCVERSION), 4.9.1)
+    CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
+ endif
 endif
 
 ifeq ($(DMALLOC),y)

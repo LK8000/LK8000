@@ -31,6 +31,9 @@ int CpuSummary() {
 #include <stdio.h>
 #include <unistd.h>
 
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
 /* Show overall CPU utilization of the system 
  * http://phoxis.org/2013/09/05/finding-overall-and-per-core-cpu-utilization
  */
@@ -91,7 +94,7 @@ private:
         fseek(_fp, 0, SEEK_SET);
         fflush(_fp);
         if (fgets(buffer, BUF_MAX, _fp)) {
-            int retval = sscanf(buffer, "cpu %Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu",
+            int retval = sscanf(buffer, "cpu %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64,
                     &fields[0], &fields[1], &fields[2], &fields[3], &fields[4],
                     &fields[5], &fields[6], &fields[7], &fields[8], &fields[9]);
 

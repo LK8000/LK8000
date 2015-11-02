@@ -171,7 +171,7 @@ public:
 
         hBuf = (unsigned short*) malloc(sizeof (unsigned short)*ixs * iys);
         if (!hBuf) {
-            StartupStore(_T("------ TerrainRenderer: malloc(%d) failed!%s"), sizeof (unsigned short)*ixs*iys, NEWLINE);
+            StartupStore(_T("------ TerrainRenderer: malloc(%u) failed!%s"), (unsigned)(sizeof(unsigned short)*ixs*iys), NEWLINE);
             OutOfMemory(_T(__FILE__), __LINE__);
             //
             // We *must* disable terrain at this point.

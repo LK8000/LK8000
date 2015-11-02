@@ -30,7 +30,7 @@ ComPort::~ComPort() {
 
 bool ComPort::Initialize() {
     if(!StartRxThread()) {
-        StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+        StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), (unsigned)(GetPortIndex() + 1), GetPortName(), NEWLINE);
         return false;
     }
     return true;
@@ -86,16 +86,16 @@ bool ComPort::StopRxThread() {
     StopEvt.set();
 
 #ifdef _DEBUG_STOP_RXTHREAD
-    StartupStore(_T("... ComPort %d StopRxThread: Cancel Wait Event !%s"), GetPortIndex() + 1, NEWLINE);
+    StartupStore(_T("... ComPort %u StopRxThread: Cancel Wait Event !%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
 #endif
     CancelWaitEvent();
 
 #ifdef _DEBUG_STOP_RXTHREAD
-    StartupStore(_T("... ComPort %d StopRxThread: Wait End of thread !%s"), GetPortIndex() + 1, NEWLINE);
+    StartupStore(_T("... ComPort %u StopRxThread: Wait End of thread !%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
 #endif
     if (ReadThread.isRunning()) {
         if(!ReadThread.tryJoin(20000)) {
-            StartupStore(_T("... ComPort %d StopRxThread: RX Thread forced to terminate!%s"), GetPortIndex() + 1, NEWLINE);
+            StartupStore(_T("... ComPort %u StopRxThread: RX Thread forced to terminate!%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
             // TODO : Kill Thread ??
         }
     }
@@ -114,7 +114,7 @@ bool ComPort::StartRxThread() {
 
     if(!ReadThread.isRunning()) {
         // Could not create the read thread.
-        StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+        StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), (unsigned)(GetPortIndex() + 1), GetPortName(), NEWLINE);
 
         // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
         StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M761_")), GetPortName());
@@ -125,9 +125,9 @@ bool ComPort::StartRxThread() {
 }
 
 void ComPort::run() {
-    StartupStore(_T(". ComPort %d ReadThread : started%s"), GetPortIndex() + 1, NEWLINE);
+    StartupStore(_T(". ComPort %u ReadThread : started%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
     RxThread();
-    StartupStore(_T(". ComPort %d ReadThread : terminated%s"), GetPortIndex() + 1, NEWLINE);
+    StartupStore(_T(". ComPort %u ReadThread : terminated%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
 }
 
 void ComPort::ProcessChar(char c) {

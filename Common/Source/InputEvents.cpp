@@ -3072,7 +3072,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
     edit_waypoint.Flags += LANDPOINT;
   }
   edit_waypoint.Comment = NULL;
-  _stprintf(edit_waypoint.Name,TEXT("_%u"), tmpWaypointNum);
+  _stprintf(edit_waypoint.Name,TEXT("_%u"), (unsigned)tmpWaypointNum);
   edit_waypoint.Details = 0;
   edit_waypoint.Number = WayPointList.size();
   
