@@ -36,7 +36,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc) {
   }
 
   #ifdef GTL2
-  bool ValidTP = ValidTaskPoint(ActiveWayPoint);
+  bool ValidTP = ValidTaskPoint(ActiveTaskPoint);
 
   // draw glide terrain line around next WP
   bool DrawGTL2 = ValidTP && (FinalGlideTerrain > 2);
@@ -102,7 +102,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc) {
   #ifdef GTL2
   if ((OvertargetMode == OVT_TASK) && DerivedDrawInfo.Flying && ValidTP)
   #else
-  if ( (OvertargetMode==OVT_TASK) && DerivedDrawInfo.Flying && ValidTaskPoint(ActiveWayPoint))
+  if ( (OvertargetMode==OVT_TASK) && DerivedDrawInfo.Flying && ValidTaskPoint(ActiveTaskPoint))
   #endif
   if (WayPointCalc[TASKINDEX].AltArriv[AltArrivMode] >0) { 
 

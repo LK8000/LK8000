@@ -14,7 +14,7 @@ void DefaultTask(void) {
   LockTaskData();
   TaskModified = true;
   TargetModified = true;
-  if ((Task[0].Index == -1)||(ActiveWayPoint==-1)) {
+  if ((Task[0].Index == -1)||(ActiveTaskPoint==-1)) {
 
 	if (HomeWaypoint >= 0) {
 		if ( HomeWaypoint == 0 )  // 091213
@@ -22,7 +22,7 @@ void DefaultTask(void) {
 		else
 		StartupStore(_T(". DefaultTask assigning Home (wp=%d) as default destination%s"),HomeWaypoint,NEWLINE); // 091213
 		Task[0].Index = HomeWaypoint;
-		ActiveWayPoint = 0;
+		ActiveTaskPoint = 0;
 	} else
 		StartupStore(_T(". DefaultTask: no task, no active waypoint and no Home%s"),NEWLINE); // 091112
   }

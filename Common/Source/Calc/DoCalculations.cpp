@@ -140,7 +140,7 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   // reminder: Paragliders have AAT always on
   CalculateOptimizedTargetPos(Basic,Calculated);
 
-  if (ValidTaskPoint(ActiveWayPoint)) {
+  if (ValidTaskPoint(ActiveTaskPoint)) {
 	// only if running a real task
 	if (ValidTaskPoint(1)) InSector(Basic, Calculated);
 	DoAutoMacCready(Basic, Calculated);

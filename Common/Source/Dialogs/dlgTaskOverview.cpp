@@ -163,7 +163,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
       } else {
 
       double d1 = CALCULATED_INFO.TaskDistanceToGo;
-      if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) && (ActiveWayPoint>0)) {
+      if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) && (ActiveTaskPoint>0)) {
                    d1 += CALCULATED_INFO.TaskDistanceCovered;
       }
 
@@ -226,7 +226,7 @@ static void OverviewRefreshTask(void) {
   if (wp) {
     double dd = CALCULATED_INFO.TaskTimeToGo;
 //    if ((CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying)) { patchout 091126
-    if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) { // patch 091126
+    if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) &&(ActiveTaskPoint>0)) { // patch 091126
 
 
 
@@ -487,7 +487,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
 
   int file_index = dfe->GetAsInteger();
   if (file_index>0) {
-	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+	if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 		_stprintf(file_name, TEXT("%s '%s' ?"), gettext(TEXT("_@M891_")), dfe->GetAsString()); // Clear old task and load
 		if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
 			return;

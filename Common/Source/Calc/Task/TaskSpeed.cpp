@@ -55,7 +55,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
   static double LastTimeStats = 0;
   double TotalTime=0, TotalDistance=0, Vfinal=0;
 
-  if (!ValidTaskPoint(ActiveWayPoint)) return;
+  if (!ValidTaskPoint(ActiveTaskPoint)) return;
   if (Calculated->ValidFinish) return;
   if (!Calculated->Flying) return;
 
@@ -63,7 +63,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
   Calculated->TaskSpeedAchieved = 0;
   Calculated->TaskSpeed = 0;
 
-  if (ActiveWayPoint<=0) { // no task speed before start
+  if (ActiveTaskPoint<=0) { // no task speed before start
     Calculated->TaskSpeedInstantaneous = 0;
     return;
   }
@@ -287,7 +287,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
         static int lastActiveWayPoint = 0;
 	static double tsi_av = 0;
 	static int n_av = 0;
-        if ((ActiveWayPoint==lastActiveWayPoint) 
+        if ((ActiveTaskPoint==lastActiveWayPoint) 
 	    && (Calculated->LegDistanceToGo>1000.0) 
 	    && (Calculated->LegDistanceCovered>1000.0)) {
           
@@ -322,7 +322,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
 	  tsi_av = 0;
 	  n_av = 0;
 	}
-        lastActiveWayPoint = ActiveWayPoint;
+        lastActiveWayPoint = ActiveTaskPoint;
       }
     }
   }

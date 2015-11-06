@@ -60,7 +60,7 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // after reaching the next task waypoint.  First, let's make sure
   // we're flying a task.
   
-  if ((FinalGlideTerrain > 2) && ValidTaskPoint(ActiveWayPoint)) {
+  if ((FinalGlideTerrain > 2) && ValidTaskPoint(ActiveTaskPoint)) {
     // Only bother calculating the footprint, if
     // we can reach the next waypoint.
     
@@ -77,8 +77,8 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       // active WP.
       DoAlternates(Basic, Calculated, RESWP_OPTIMIZED);
       wp_index = RESWP_OPTIMIZED;
-      lat_wp   = Task[ActiveWayPoint].AATTargetLat;
-      lon_wp   = Task[ActiveWayPoint].AATTargetLon;
+      lat_wp   = Task[ActiveTaskPoint].AATTargetLat;
+      lon_wp   = Task[ActiveTaskPoint].AATTargetLon;
     } else {
       wp_index = TASKINDEX;
       lat_wp   = WayPointList[TASKINDEX].Latitude;

@@ -100,7 +100,7 @@ static void RefreshCalculator(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
   if (wp) {
     wp->RefreshDisplay();
-    if (!AATEnabled || !ValidTaskPoint(ActiveWayPoint+1)) {
+    if (!AATEnabled || !ValidTaskPoint(ActiveTaskPoint+1)) {
       wp->SetVisible(false);
     } else {
       wp->SetVisible(true);
@@ -320,10 +320,10 @@ void dlgTaskCalculatorShowModal(void){
 
   RefreshCalculator();
 
-  if (!AATEnabled || !ValidTaskPoint(ActiveWayPoint+1)) {
+  if (!AATEnabled || !ValidTaskPoint(ActiveTaskPoint+1)) {
     ((WndButton *)wf->FindByName(TEXT("Optimise")))->SetVisible(false);
   }
-  if (!ValidTaskPoint(ActiveWayPoint)) {
+  if (!ValidTaskPoint(ActiveTaskPoint)) {
     ((WndButton *)wf->FindByName(TEXT("Target")))->SetVisible(false);
   }
 

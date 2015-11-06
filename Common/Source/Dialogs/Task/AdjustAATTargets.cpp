@@ -14,7 +14,7 @@
 double AdjustAATTargets(double desired) {
   int i, istart, inum;
   double av=0;
-  istart = max(1,ActiveWayPoint);
+  istart = max(1,ActiveTaskPoint);
   inum=0;
 
   LockTaskData();

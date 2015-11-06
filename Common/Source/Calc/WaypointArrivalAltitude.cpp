@@ -56,7 +56,7 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 	// then calculate ETE for reaching the cylinder. Also working when we are 
 	// in the wrong side of cylinder
 	if (UseGates() && !DoOptimizeRoute()) {
-		if (ActiveWayPoint==0 && i==Task[0].Index ) { 
+		if (ActiveTaskPoint==0 && i==Task[0].Index ) { 
 			if (PGStartOut) {
 				if (CorrectSide()) {
 					// start out,  from outside cylinder

@@ -246,7 +246,7 @@ void PGTaskMgr::AddCone(int TskIdx) {
 }
 
 void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-    if (((size_t) ActiveWayPoint) >= m_Task.size()) {
+    if (((size_t) ActiveTaskPoint) >= m_Task.size()) {
         return;
     }
     
@@ -257,7 +257,7 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     LatLon2Grid(deg2rad(w0lat), deg2rad(w0lon), PrevPos.m_Y, PrevPos.m_X);
     
     double NextAltitude = Basic->Altitude;
-    for (size_t i = ActiveWayPoint; i < m_Task.size(); ++i) {
+    for (size_t i = ActiveTaskPoint; i < m_Task.size(); ++i) {
         
         // Calc Arrival Altitude
         double w1lat, w1lon;

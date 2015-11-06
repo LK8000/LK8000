@@ -40,7 +40,7 @@ void ResetTask(bool showConfirmMsg) {
   CALCULATED_INFO.LegStartTime = 0;
 
 
-  ActiveWayPoint=0;
+  ActiveTaskPoint=0;
   if (UseGates()) {
 	int i;
 	i=NextGate();
@@ -179,7 +179,7 @@ bool IsSafetyMacCreadyInUse(const int wpindex) {
 // If no task, it is returning -1. Always to be checked!
 int getFinalWaypoint() {
   int i;
-  i=max(-1,min(MAXTASKPOINTS,ActiveWayPoint));
+  i=max(-1,min(MAXTASKPOINTS,ActiveTaskPoint));
 
   i++;
   LockTaskData();
@@ -193,14 +193,14 @@ int getFinalWaypoint() {
 
 // Attention: if no task, this is true!
 bool ActiveIsFinalWaypoint() {
-  return (ActiveWayPoint == getFinalWaypoint());
+  return (ActiveTaskPoint == getFinalWaypoint());
 }
 
 
 bool IsFinalWaypoint(void) {
   bool retval;
   LockTaskData();
-  if (ValidTaskPoint(ActiveWayPoint) && (Task[ActiveWayPoint+1].Index >= 0)) {
+  if (ValidTaskPoint(ActiveTaskPoint) && (Task[ActiveTaskPoint+1].Index >= 0)) {
     retval = false;
   } else {
     retval = true;

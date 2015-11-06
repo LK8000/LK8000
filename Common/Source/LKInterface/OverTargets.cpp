@@ -16,19 +16,19 @@ int GetOvertargetIndex(void) {
   int index;
   switch (OvertargetMode) {
 	case OVT_TASK: // task 
-		if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+		if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 			if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())
 				index=RESWP_OPTIMIZED;
 			else {
-				index = Task[ActiveWayPoint].Index;
+				index = Task[ActiveTaskPoint].Index;
 			}
 			if ( index >=0 ) return index;
 		}
 		return -1;
 		break;
 	case OVT_TASKCENTER: // task Center
-		if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-            return Task[ActiveWayPoint].Index;
+		if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
+            return Task[ActiveTaskPoint].Index;
         }
 		return -1;
 		break;

@@ -291,7 +291,7 @@ goEnd:
   RefreshTask();
   
   if (!ValidTaskPoint(0)) {
-    ActiveWayPoint = 0;
+    ActiveTaskPoint = 0;
   }
 
   UnlockTaskData();

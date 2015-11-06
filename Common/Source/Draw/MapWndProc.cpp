@@ -593,7 +593,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         int acceptreset = 2;
                         if (PGNumberOfGates == 1) acceptreset = 1;
 
-                        if (UseGates() && ValidTaskPoint(1) && ActiveWayPoint < acceptreset) { // 100507 101110
+                        if (UseGates() && ValidTaskPoint(1) && ActiveTaskPoint < acceptreset) { // 100507 101110
                             //
                             // Reset task
                             //

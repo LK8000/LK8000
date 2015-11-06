@@ -533,12 +533,12 @@ void dlgWayPointDetailsShowModal(short mypage){
     wb->SetOnClickNotify(OnInserInTaskClicked);
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
 
-    if ((ActiveWayPoint<0) || !ValidTaskPoint(0)) {
-	// this is going to be the first tp (ActiveWayPoint 0)
+    if ((ActiveTaskPoint<0) || !ValidTaskPoint(0)) {
+	// this is going to be the first tp (ActiveTaskPoint 0)
 	_stprintf(captmp,_T("%s"),MsgToken(1824)); // insert as START
     } else {
-	LKASSERT(ActiveWayPoint>=0 && ValidTaskPoint(0));
-	int indexInsert = max(ActiveWayPoint,0); // safe check
+	LKASSERT(ActiveTaskPoint>=0 && ValidTaskPoint(0));
+	int indexInsert = max(ActiveTaskPoint,0); // safe check
 	if (indexInsert==0) {
 		_stprintf(captmp,_T("%s"),MsgToken(1824)); // insert as START
 	} else {
@@ -572,8 +572,8 @@ void dlgWayPointDetailsShowModal(short mypage){
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
 
     int tmpIdx =  -1;
-    if (ValidTaskPoint(ActiveWayPoint))
-      tmpIdx = Task[ActiveWayPoint].Index;
+    if (ValidTaskPoint(ActiveTaskPoint))
+      tmpIdx = Task[ActiveTaskPoint].Index;
     if(  ValidTaskPoint(PanTaskEdit))
      tmpIdx = RealActiveWaypoint;
     if(tmpIdx != -1)

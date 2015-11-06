@@ -27,11 +27,11 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         gPGTask.UpdateTaskPoint(i, Task[i]);
 	}
 		
-	int stdwp=Task[ActiveWayPoint].Index;
+	int stdwp=Task[ActiveTaskPoint].Index;
 
-	WayPointList[RESWP_OPTIMIZED].Latitude = Task[ActiveWayPoint].AATTargetLat;
-	WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveWayPoint].AATTargetLon;
-	WayPointList[RESWP_OPTIMIZED].Altitude = Task[ActiveWayPoint].AATTargetAltitude;
+	WayPointList[RESWP_OPTIMIZED].Latitude = Task[ActiveTaskPoint].AATTargetLat;
+	WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveTaskPoint].AATTargetLon;
+	WayPointList[RESWP_OPTIMIZED].Altitude = Task[ActiveTaskPoint].AATTargetAltitude;
 
 	_stprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[stdwp].Name);
 

@@ -915,10 +915,10 @@ extern int Test_NIBLSCALE(short x, const int line, const TCHAR *file);
 // Once set, MapSpaceMode becomes CURMODE
 #define CURMODE ModeTable[ModeIndex][CURTYPE]
 #define INVERTCOLORS  (Appearance.InverseInfoBox)
-#define TASKINDEX       Task[ActiveWayPoint].Index
+#define TASKINDEX       Task[ActiveTaskPoint].Index
 #ifdef GTL2
-#define ACTIVE_WP_IS_AAT_AREA (AATEnabled && (ActiveWayPoint > 0) \
-                              && ValidTaskPoint(ActiveWayPoint + 1))
+#define ACTIVE_WP_IS_AAT_AREA (AATEnabled && (ActiveTaskPoint > 0) \
+                              && ValidTaskPoint(ActiveTaskPoint + 1))
 #endif
 
 #define DONTDRAWTHEMAP  (!MapWindow::mode.AnyPan()&&MapSpaceMode!=MSM_MAP)

@@ -21,8 +21,8 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                     const double this_maccready)
 {
 
-  if (!ValidTaskPoint(ActiveWayPoint) || 
-      ((ActiveWayPoint>0) && !ValidTaskPoint(ActiveWayPoint-1))) {
+  if (!ValidTaskPoint(ActiveTaskPoint) || 
+      ((ActiveTaskPoint>0) && !ValidTaskPoint(ActiveTaskPoint-1))) {
 
 
     Calculated->LegSpeed = 0;
@@ -86,12 +86,12 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   double w0lat;
   double w0lon;
   
-  if (AATEnabled && (ActiveWayPoint>0) && (ValidTaskPoint(ActiveWayPoint))) {
-    w1lat = Task[ActiveWayPoint].AATTargetLat;
-    w1lon = Task[ActiveWayPoint].AATTargetLon;
+  if (AATEnabled && (ActiveTaskPoint>0) && (ValidTaskPoint(ActiveTaskPoint))) {
+    w1lat = Task[ActiveTaskPoint].AATTargetLat;
+    w1lon = Task[ActiveTaskPoint].AATTargetLon;
   } else {
-    LKASSERT(ValidTaskPoint(ActiveWayPoint));
-    if (!ValidTaskPoint(ActiveWayPoint)) {
+    LKASSERT(ValidTaskPoint(ActiveTaskPoint));
+    if (!ValidTaskPoint(ActiveTaskPoint)) {
         UnlockTaskData(); return;
     }
     w1lat = WayPointList[TASKINDEX].Latitude;
@@ -104,30 +104,30 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                   w1lon, 
                   &LegToGo, &LegBearing);
 
-  if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)
+  if (AATEnabled && (ActiveTaskPoint>0) && ValidTaskPoint(ActiveTaskPoint+1)
       && Calculated->IsInSector && (this_maccready>0.1) ) {
     calc_turning_now = true;
   } else {
     calc_turning_now = false;
   }
 
-  if (ActiveWayPoint<1) {
+  if (ActiveTaskPoint<1) {
     LegCovered = 0;
     LegCurrentCourse=LegBearing;
-    if (ValidTaskPoint(ActiveWayPoint+1)) {  // BUGFIX 091221
+    if (ValidTaskPoint(ActiveTaskPoint+1)) {  // BUGFIX 091221
       LegToGo=0;
     }
    } else {
     if (AATEnabled) {
-      LKASSERT((ActiveWayPoint-1)>=0);
+      LKASSERT((ActiveTaskPoint-1)>=0);
       // TODO accuracy: Get best range point to here...
-      w0lat = Task[ActiveWayPoint-1].AATTargetLat;
-      w0lon = Task[ActiveWayPoint-1].AATTargetLon;
+      w0lat = Task[ActiveTaskPoint-1].AATTargetLat;
+      w0lon = Task[ActiveTaskPoint-1].AATTargetLon;
     } else {
-      LKASSERT((ActiveWayPoint-1)>=0);
-      LKASSERT(ValidTaskPoint(ActiveWayPoint-1));
-      w0lat = WayPointList[Task[ActiveWayPoint-1].Index].Latitude;
-      w0lon = WayPointList[Task[ActiveWayPoint-1].Index].Longitude;
+      LKASSERT((ActiveTaskPoint-1)>=0);
+      LKASSERT(ValidTaskPoint(ActiveTaskPoint-1));
+      w0lat = WayPointList[Task[ActiveTaskPoint-1].Index].Latitude;
+      w0lon = WayPointList[Task[ActiveTaskPoint-1].Index].Longitude;
     }
     
     DistanceBearing(w1lat, 
@@ -142,7 +142,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                    Basic->Latitude,
                                    &LegXTD, &LegCurrentCourse);
 
-    if ((StartLine==0) && (ActiveWayPoint==1)) {
+    if ((StartLine==0) && (ActiveTaskPoint==1)) {
       // Correct speed calculations for radius
       // JMW TODO accuracy: legcovered replace this with more accurate version
       // LegDistance -= StartRadius;
@@ -157,8 +157,8 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   Calculated->TaskDistanceCovered = LegCovered;
   
   if (Basic->Time > Calculated->LegStartTime) {
-    if (flightstats.LegStartTime[ActiveWayPoint]<0) {
-      flightstats.LegStartTime[ActiveWayPoint] = Basic->Time;
+    if (flightstats.LegStartTime[ActiveTaskPoint]<0) {
+      flightstats.LegStartTime[ActiveTaskPoint] = Basic->Time;
     }
     Calculated->LegSpeed = Calculated->LegDistanceCovered
       / (Basic->Time - Calculated->LegStartTime); 
@@ -167,7 +167,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   // Now add distances for start to previous waypoint
  
     if (!AATEnabled) {
-      for(int i=0;i< ActiveWayPoint-1; i++)
+      for(int i=0;i< ActiveTaskPoint-1; i++)
         {
           if (!ValidTaskPoint(i) || !ValidTaskPoint(i+1)) continue;
           
@@ -183,12 +183,12 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                           &LegDistance, NULL);                      
           Calculated->TaskDistanceCovered += LegDistance;
         }
-    } else if (ActiveWayPoint>0) {
+    } else if (ActiveTaskPoint>0) {
       // JMW added correction for distance covered
       Calculated->TaskDistanceCovered = 
         aatdistance.DistanceCovered(Basic->Longitude,
                                     Basic->Latitude,
-                                    ActiveWayPoint);
+                                    ActiveTaskPoint);
     }
 
   CheckTransitionFinalGlide(Basic, Calculated);
@@ -223,7 +223,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   double StartBestCruiseTrack = -1; 
 
-    while ((task_index>ActiveWayPoint) && (ValidTaskPoint(task_index))) {
+    while ((task_index>ActiveTaskPoint) && (ValidTaskPoint(task_index))) {
       double this_LegTimeToGo;
       bool this_is_final = (task_index==FinalWayPoint)
 	|| ForceFinalGlide;
@@ -300,7 +300,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 	}
 
       if (calc_turning_now) {
-	if (task_index == ActiveWayPoint+1) {
+	if (task_index == ActiveTaskPoint+1) {
 	  
 	  double NextLegDistanceTurningNow, NextLegBearingTurningNow;
 	  double this_LegTimeToGo_turningnow=0;
@@ -336,7 +336,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   // current waypoint, do this last!
 
-  if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1) && Calculated->IsInSector) {
+  if (AATEnabled && (ActiveTaskPoint>0) && ValidTaskPoint(ActiveTaskPoint+1) && Calculated->IsInSector) {
 	if (Calculated->WaypointDistance<AATCloseDistance()*3.0) {
 		LegBearing = AATCloseBearing(Basic, Calculated);
 	}
@@ -381,7 +381,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 #ifndef BCT_ALT_FIX
   // fix problem of blue arrow wrong in task sector
   if (StartBestCruiseTrack>=0)  // use it only if assigned, workaround
-	if (Calculated->IsInSector && (ActiveWayPoint==0)) {
+	if (Calculated->IsInSector && (ActiveTaskPoint==0)) {
 		// set best cruise track to first leg bearing when in start sector
 		Calculated->BestCruiseTrack = StartBestCruiseTrack;
 	} 
@@ -457,7 +457,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   // fix problem of blue arrow wrong in task sector
   if (StartBestCruiseTrack>=0)  // use it only if assigned, workaround
-    if (Calculated->IsInSector && (ActiveWayPoint==0)) {
+    if (Calculated->IsInSector && (ActiveTaskPoint==0)) {
       // set best cruise track to first leg bearing when in start sector
       Calculated->BestCruiseTrack = StartBestCruiseTrack;
     } 

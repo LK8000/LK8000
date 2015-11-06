@@ -499,7 +499,7 @@ extern std::vector<WPCALC> WayPointCalc;
 
 GEXTERN int PanTaskEdit;
 GEXTERN int RealActiveWaypoint;
-GEXTERN int ActiveWayPoint;
+GEXTERN int ActiveTaskPoint;
 GEXTERN bool TaskAborted;
 GEXTERN int SelectedWaypoint;
 GEXTERN int SectorType;

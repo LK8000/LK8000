@@ -554,18 +554,18 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
         if ((getsideviewpage == IM_NEXT_WP) && (Current_Multimap_SizeY < SIZE4)) {
 
             if( (OvertargetMode == OVT_TASK) && DoOptimizeRoute() ) {
-                if ( ValidTaskPoint(ActiveWayPoint)) {
+                if ( ValidTaskPoint(ActiveTaskPoint)) {
                     double AltBase = 0.0, Radius = 0.0;
                     double baselon, baselat;
                     LockTaskData();
                     int Type;
-                    GetTaskSectorParameter(ActiveWayPoint, &Type, NULL);
+                    GetTaskSectorParameter(ActiveTaskPoint, &Type, NULL);
                     if(Type == CONE) {
-                        AltBase = Task[ActiveWayPoint].PGConeBase;
-                        Radius = Task[ActiveWayPoint].PGConeBaseRadius;
-                        Slope = Task[ActiveWayPoint].PGConeSlope;
-                        baselon = WayPointList[Task[ActiveWayPoint].Index].Longitude;
-                        baselat = WayPointList[Task[ActiveWayPoint].Index].Latitude;
+                        AltBase = Task[ActiveTaskPoint].PGConeBase;
+                        Radius = Task[ActiveTaskPoint].PGConeBaseRadius;
+                        Slope = Task[ActiveTaskPoint].PGConeSlope;
+                        baselon = WayPointList[Task[ActiveTaskPoint].Index].Longitude;
+                        baselat = WayPointList[Task[ActiveTaskPoint].Index].Latitude;
                         bConicalFinal = true;
                     }
                     UnlockTaskData();

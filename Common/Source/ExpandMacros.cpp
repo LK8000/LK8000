@@ -132,8 +132,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 6: // WaypointNext
-			invalid = !ValidTaskPoint(ActiveWayPoint+1);
-			if (!ValidTaskPoint(ActiveWayPoint+2))
+			invalid = !ValidTaskPoint(ActiveTaskPoint+1);
+			if (!ValidTaskPoint(ActiveTaskPoint+2))
 				_tcscpy(OutBuffer,MsgToken(801)); // Waypoint Finish
 			else
 				_tcscpy(OutBuffer,MsgToken(802)); // Waypoint Next
@@ -141,25 +141,25 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 7: // WaypointPrevious
 
-			if (ActiveWayPoint==1) {
-				invalid = !ValidTaskPoint(ActiveWayPoint-1);
+			if (ActiveTaskPoint==1) {
+				invalid = !ValidTaskPoint(ActiveTaskPoint-1);
 				_tcscpy(OutBuffer,MsgToken(804)); // Waypoint Start
 			} else if (EnableMultipleStartPoints) {
 				invalid = !ValidTaskPoint(0);
 
-				if (ActiveWayPoint==0)
+				if (ActiveTaskPoint==0)
 					_tcscpy(OutBuffer,_T("StartPnt\nCycle"));
 				else
 					_tcscpy(OutBuffer,MsgToken(803)); // Waypoint Previous
 			} else {
-				invalid = (ActiveWayPoint<=0);
+				invalid = (ActiveTaskPoint<=0);
 				_tcscpy(OutBuffer,MsgToken(803)); // Waypoint Previous
 			}
 			break;
 
 		case 8: // RealTask  check for Task reset
 
-			if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))) {
+			if (! (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1))) {
 				invalid=true;
 			}
 
@@ -444,7 +444,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			_tcscpy(OutBuffer,MsgToken(2081)); // Set Map
 			break;
 		case 39:
-			if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))) {
+			if (! (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1))) {
 				invalid=true;
 			}
 
@@ -481,8 +481,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       invalid = true;
       break;
     case 2:
-      if (ActiveWayPoint>0) {
-        if (ValidTaskPoint(ActiveWayPoint+1)) {
+      if (ActiveTaskPoint>0) {
+        if (ValidTaskPoint(ActiveTaskPoint+1)) {
           CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
 		MsgToken(161),  // Cancel
 		MsgToken(678), Size); // TURN
@@ -497,11 +497,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       }
       break;
     case 3:
-      if (ActiveWayPoint==0) {
+      if (ActiveTaskPoint==0) {
         CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
 		MsgToken(161),  // Cancel
 		MsgToken(571), Size); // START
-      } else if (ActiveWayPoint==1) {
+      } else if (ActiveTaskPoint==1) {
         CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
 		MsgToken(161),  // Cancel
 		MsgToken(539), Size); // RESTART
@@ -512,8 +512,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       break;
       // TODO bug: no need to arm finish
     case 4:
-      if (ActiveWayPoint>0) {
-        if (ValidTaskPoint(ActiveWayPoint+1)) {
+      if (ActiveTaskPoint>0) {
+        if (ValidTaskPoint(ActiveTaskPoint+1)) {
           CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
 		MsgToken(161),  // Cancel
 		MsgToken(678), Size); // TURN
@@ -565,7 +565,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(CheckTask)"))) {
-    if (!ValidTaskPoint(ActiveWayPoint)) {
+    if (!ValidTaskPoint(ActiveTaskPoint)) {
       invalid = true;
     }
     ReplaceInString(OutBuffer, TEXT("$(CheckTask)"), TEXT(""), Size);

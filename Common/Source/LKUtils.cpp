@@ -91,7 +91,7 @@ void GotoWaypoint(const int wpnum) {
 	DoStatusMessage(_T("ERR-639 INVALID GOTO WPT"));
 	return;
   }
-  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+  if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 	TCHAR wpname[NAME_SIZE+1];
 	_tcscpy(wpname,WayPointList[wpnum].Name);
 	wpname[10] = '\0';
@@ -315,7 +315,7 @@ bool DoOptimizeRoute() {
   if (!PGOptimizeRoute) return false;
 
   if (!ValidTaskPoint(0) || !ValidTaskPoint(1)) return false;
-  if (!ValidTaskPoint(ActiveWayPoint)) return false;
+  if (!ValidTaskPoint(ActiveTaskPoint)) return false;
 
   return true;
 

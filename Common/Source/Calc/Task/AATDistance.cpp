@@ -141,7 +141,7 @@ void AATDistance::AddPoint(double longitude, double latitude,
       for (int i= taskwaypoint; i<MAXTASKPOINTS-1; i++) {
         UpdateSearch(i);
       }
-      if (taskwaypoint == ActiveWayPoint) {
+      if (taskwaypoint == ActiveTaskPoint) {
         DistanceCovered_internal(longitude, latitude, true);
       }
     }
@@ -386,7 +386,7 @@ double AATDistance::DistanceCovered_internal(double longitude,
                                              double latitude, 
                                              bool insector) {
   double achieved;
-  if (!ValidTaskPoint(ActiveWayPoint) || (ActiveWayPoint==0)) {
+  if (!ValidTaskPoint(ActiveTaskPoint) || (ActiveTaskPoint==0)) {
     //   max_achieved_distance = 0;
     return 0.0;
   }
@@ -406,7 +406,7 @@ double AATDistance::DistanceCovered_internal(double longitude,
 double AATDistance::DistanceCovered_inside(double longitude, 
                                            double latitude) {
 
-  int taskwaypoint = ActiveWayPoint;
+  int taskwaypoint = ActiveTaskPoint;
 
   double best_achieved_distance = 0;
 
@@ -460,11 +460,11 @@ double AATDistance::distance_achieved(int taskwaypoint, int jbest,
 
 double AATDistance::DistanceCovered_outside(double longitude, 
                                             double latitude) {
-  if (ActiveWayPoint<=0) {
+  if (ActiveTaskPoint<=0) {
     return 0.0;
   }
 
-  int taskwaypoint = ActiveWayPoint;
+  int taskwaypoint = ActiveTaskPoint;
 
   int nlast = num_points[taskwaypoint-1];
   int nstart = 0;

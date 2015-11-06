@@ -272,7 +272,7 @@ double fXY_Scale = 1.5;
 		  DrawLabel(Surface, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
 		}
 
-		if ((i==ActiveWayPoint)&&(!AATEnabled))
+		if ((i==ActiveTaskPoint)&&(!AATEnabled))
 		{
 		  lat1 = GPS_INFO.Latitude;
 		  lon1 = GPS_INFO.Longitude;

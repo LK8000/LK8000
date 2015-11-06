@@ -21,7 +21,7 @@ void FlyDirectTo(int index) {
 
   ClearTask();
   Task[0].Index = index;
-  ActiveWayPoint = 0;
+  ActiveTaskPoint = 0;
   RefreshTask();
   UnlockTaskData();
 }

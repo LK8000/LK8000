@@ -17,7 +17,7 @@ void InSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   static int LastStartSector = -1;
 
-  if (ActiveWayPoint<0) return;
+  if (ActiveTaskPoint<0) return;
   LockTaskData();
 
 // Paragliders task system
@@ -30,16 +30,16 @@ void InSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   // by default, we are not in the sector
   Calculated->IsInSector = false;
 
-  if(ActiveWayPoint == 0) {
+  if(ActiveTaskPoint == 0) {
 	CheckStart(Basic, Calculated, &LastStartSector);
   } else {
 	if(IsFinalWaypoint()) {
 		LastStartSector = -1;
-		AddAATPoint(Basic, Calculated, ActiveWayPoint-1);
+		AddAATPoint(Basic, Calculated, ActiveTaskPoint-1);
 		CheckFinish(Basic, Calculated);
 	} else {
 		if (!UseGates()) CheckRestart(Basic, Calculated, &LastStartSector); // 100507
-		if (ActiveWayPoint>0) {
+		if (ActiveTaskPoint>0) {
 			CheckInSector(Basic, Calculated);
 			LastStartSector = -1;
 		}

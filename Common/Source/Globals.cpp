@@ -452,7 +452,7 @@ void Globals_Init(void) {
   FONTSCHANGED= false;
   AIRCRAFTTYPECHANGED = false;
 
-  ActiveWayPoint = -1;
+  ActiveTaskPoint = -1;
   PanTaskEdit    = -1;
   RealActiveWaypoint = -1;
   // Assigned Area Task

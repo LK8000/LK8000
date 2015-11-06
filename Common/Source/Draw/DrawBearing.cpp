@@ -31,17 +31,17 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
     DrawGreatCircle(Surface, startLon, startLat, targetLon, targetLat, rc);
   }
   else {
-    if (!ValidTaskPoint(ActiveWayPoint)) {
+    if (!ValidTaskPoint(ActiveTaskPoint)) {
       return; 
     }
     LockTaskData();
 
-    if (AATEnabled && ( DoOptimizeRoute() || ((ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1))) ) {
-      targetLat = Task[ActiveWayPoint].AATTargetLat;
-      targetLon = Task[ActiveWayPoint].AATTargetLon; 
+    if (AATEnabled && ( DoOptimizeRoute() || ((ActiveTaskPoint>0) && ValidTaskPoint(ActiveTaskPoint+1))) ) {
+      targetLat = Task[ActiveTaskPoint].AATTargetLat;
+      targetLon = Task[ActiveTaskPoint].AATTargetLon; 
     } else {
-      targetLat = WayPointList[Task[ActiveWayPoint].Index].Latitude;
-      targetLon = WayPointList[Task[ActiveWayPoint].Index].Longitude; 
+      targetLat = WayPointList[Task[ActiveTaskPoint].Index].Latitude;
+      targetLon = WayPointList[Task[ActiveTaskPoint].Index].Longitude; 
     }
     UnlockTaskData();
 
@@ -53,7 +53,7 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
       startLon = targetLon;
 
       LockTaskData();
-      for (int i=ActiveWayPoint+1; i<MAXTASKPOINTS; i++) {
+      for (int i=ActiveTaskPoint+1; i<MAXTASKPOINTS; i++) {
         if (ValidTaskPoint(i)) {
 
           if (AATEnabled && ValidTaskPoint(i+1)) {
@@ -79,9 +79,9 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
     // draw symbol at target, makes it easier to see
     LockTaskData();
     if(mode.Is(Mode::MODE_TARGET_PAN)) {
-      for(int i=ActiveWayPoint+1; i<MAXTASKPOINTS; i++) {
+      for(int i=ActiveTaskPoint+1; i<MAXTASKPOINTS; i++) {
         if(ValidTaskPoint(i) && ValidTaskPoint(i+1)) {
-          if(i>= ActiveWayPoint) {
+          if(i>= ActiveTaskPoint) {
             POINT sct;
             LatLon2Screen(Task[i].AATTargetLon, 
                           Task[i].AATTargetLat, 
@@ -91,10 +91,10 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
         }
       }
     }
-    if(ValidTaskPoint(ActiveWayPoint+1) && (DoOptimizeRoute() || (ActiveWayPoint>0)) ) {
+    if(ValidTaskPoint(ActiveTaskPoint+1) && (DoOptimizeRoute() || (ActiveTaskPoint>0)) ) {
       POINT sct;
-      LatLon2Screen(Task[ActiveWayPoint].AATTargetLon, 
-                    Task[ActiveWayPoint].AATTargetLat, 
+      LatLon2Screen(Task[ActiveTaskPoint].AATTargetLon, 
+                    Task[ActiveTaskPoint].AATTargetLat, 
                     sct);
       DrawBitmapIn(Surface, sct, hBmpTarget,true);
     }

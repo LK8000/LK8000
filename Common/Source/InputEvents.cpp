@@ -1369,7 +1369,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
       }
       break;
     case 3:
-      if (ActiveWayPoint<2) { // past start (but can re-start)
+      if (ActiveTaskPoint<2) { // past start (but can re-start)
         if (AdvanceArmed) {
 	// LKTOKEN  _@M102_ = "Auto Advance: ARMED" 
           DoStatusMessage(gettext(TEXT("_@M102_")));
@@ -1383,7 +1383,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
       }
       break;    
     case 4:
-      if (ActiveWayPoint==0) { // past start (but can re-start)
+      if (ActiveTaskPoint==0) { // past start (but can re-start)
 	// LKTOKEN  _@M103_ = "Auto Advance: Automatic" 
         DoStatusMessage(gettext(TEXT("_@M103_")));
       }
@@ -1479,8 +1479,8 @@ void InputEvents::eventAnalysis(const TCHAR *misc) {
 void InputEvents::eventWaypointDetails(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("current")) == 0) {
-    if (ValidTaskPoint(ActiveWayPoint)) { // BUGFIX 091116
-      SelectedWaypoint = Task[ActiveWayPoint].Index;
+    if (ValidTaskPoint(ActiveTaskPoint)) { // BUGFIX 091116
+      SelectedWaypoint = Task[ActiveTaskPoint].Index;
     }
     if (SelectedWaypoint<0){
 	// LKTOKEN  _@M462_ = "No Active Waypoint!" 
@@ -1678,7 +1678,7 @@ void InputEvents::eventFlightMode(const TCHAR *misc) {
       DoStatusMessage(gettext(TEXT("_@M288_")));
     }
   }
-  if (ForceFinalGlide && ActiveWayPoint == -1){
+  if (ForceFinalGlide && ActiveTaskPoint == -1){
 	// LKTOKEN  _@M462_ = "No Active Waypoint!" 
     DoStatusMessage(gettext(TEXT("_@M462_")));
   }
@@ -1790,7 +1790,7 @@ void InputEvents::eventAdjustWaypoint(const TCHAR *misc) {
 // There is no more Suspend task 091216, eventAbortTask changed
 void InputEvents::eventAbortTask(const TCHAR *misc) {
 
-  if (ValidTaskPoint(ActiveWayPoint)) {
+  if (ValidTaskPoint(ActiveTaskPoint)) {
 	if (MessageBoxX(
 	// LKTOKEN  _@M179_ = "Clear the task?" 
 		gettext(TEXT("_@M179_")), 
@@ -1952,7 +1952,7 @@ void InputEvents::eventInvertColor(const TCHAR *misc) { // 100114
 
 void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 
-  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+  if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 	if (MessageBoxX(
 	// LKTOKEN  _@M563_ = "Restart task?" 
 		gettext(TEXT("_@M563_")), 
@@ -2069,7 +2069,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 		CALCULATED_INFO.TaskStartSpeed,
 		CALCULATED_INFO.TaskStartAltitude);
 	if (startTaskAnyway) {
-		ActiveWayPoint=0; 
+		ActiveTaskPoint=0; 
 		StartTask(&GPS_INFO,&CALCULATED_INFO, true, true);
 		// GCE_TASK_START does not work here, why?
 		InputEvents::eventService(_T("TASKSTART"));
@@ -2309,7 +2309,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if(_tcscmp(misc, TEXT("TASKREVERSE")) == 0) {
-	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+	if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 		if (MessageBoxX(
 			gettext(TEXT("_@M1852_")), // LKTOKEN  _@M1852_ = "Reverse task?"
 			gettext(TEXT("_@M1851_")), // LKTOKEN  _@M1851_ = "Reverse task"
@@ -3327,7 +3327,7 @@ void	MacCreadyProcessing(int UpDown)
 void NextUpDown(int UpDown)
 {
 
-  if (!ValidTaskPoint(ActiveWayPoint)) {	// BUGFIX 091116
+  if (!ValidTaskPoint(ActiveTaskPoint)) {	// BUGFIX 091116
 	StartupStore(_T(". DBG-801 activewaypoint%s"),NEWLINE);
 	return;
   }
@@ -3336,10 +3336,10 @@ void NextUpDown(int UpDown)
 
   if(UpDown>0) {
     // this was a bug. checking if AWP was < 0 assuming AWP if inactive was -1; actually it can also be 0, a bug is around
-    if(ActiveWayPoint < MAXTASKPOINTS) {
+    if(ActiveTaskPoint < MAXTASKPOINTS) {
       // Increment Waypoint
-      if(Task[ActiveWayPoint+1].Index >= 0) {
-	if(ActiveWayPoint == 0)	{
+      if(Task[ActiveTaskPoint+1].Index >= 0) {
+	if(ActiveTaskPoint == 0)	{
 	  // manual start
 	  // TODO bug: allow restart
 	  // TODO bug: make this work only for manual
@@ -3347,20 +3347,20 @@ void NextUpDown(int UpDown)
 	    CALCULATED_INFO.TaskStartTime = GPS_INFO.Time;
 	  }
 	}
-	ActiveWayPoint ++;
-        LKASSERT(ValidTaskPoint(ActiveWayPoint));
-        if (ValidTaskPoint(ActiveWayPoint)) {
+	ActiveTaskPoint ++;
+        LKASSERT(ValidTaskPoint(ActiveTaskPoint));
+        if (ValidTaskPoint(ActiveTaskPoint)) {
 	    AdvanceArmed = false;
 	    CALCULATED_INFO.LegStartTime = GPS_INFO.Time ;
         } else {
-	    ActiveWayPoint--;
+	    ActiveTaskPoint--;
         }
       }
       // No more, try first
       else 
         if((UpDown == 2) && (Task[0].Index >= 0)) {
           /* ****DISABLED****
-          if(ActiveWayPoint == 0)	{
+          if(ActiveTaskPoint == 0)	{
             // TODO bug: allow restart
             // TODO bug: make this work only for manual
             
@@ -3372,22 +3372,22 @@ void NextUpDown(int UpDown)
           }
           */
           AdvanceArmed = false;
-          ActiveWayPoint = 0;
+          ActiveTaskPoint = 0;
           CALCULATED_INFO.LegStartTime = GPS_INFO.Time ;
         }
     }
   }
   else if (UpDown<0){
-    if(ActiveWayPoint >0) {
+    if(ActiveTaskPoint >0) {
 
-      ActiveWayPoint --;
+      ActiveTaskPoint --;
       /*
 	XXX How do we know what the last one is?
 	} else if (UpDown == -2) {
-	ActiveWayPoint = MAXTASKPOINTS;
+	ActiveTaskPoint = MAXTASKPOINTS;
       */
     } else {
-      if (ActiveWayPoint==0) {
+      if (ActiveTaskPoint==0) {
 
         RotateStartPoints();
 
@@ -3395,19 +3395,19 @@ void NextUpDown(int UpDown)
 	//	TODO bug: not required? CALCULATED_INFO.TaskStartTime = 0;
       }
     }
-    aatdistance.ResetEnterTrigger(ActiveWayPoint);    
+    aatdistance.ResetEnterTrigger(ActiveTaskPoint);    
   } 
   else if (UpDown==0) {
     #if BUGSTOP
-    LKASSERT(ActiveWayPoint>=0);
+    LKASSERT(ActiveTaskPoint>=0);
     #endif
-    if (ActiveWayPoint>=0) {
-        SelectedWaypoint = Task[ActiveWayPoint].Index;
+    if (ActiveTaskPoint>=0) {
+        SelectedWaypoint = Task[ActiveTaskPoint].Index;
         PopupWaypointDetails();
     }
   }
-  if (ActiveWayPoint>=0) {
-    SelectedWaypoint = Task[ActiveWayPoint].Index;
+  if (ActiveTaskPoint>=0) {
+    SelectedWaypoint = Task[ActiveTaskPoint].Index;
   }
   UnlockTaskData();
 }

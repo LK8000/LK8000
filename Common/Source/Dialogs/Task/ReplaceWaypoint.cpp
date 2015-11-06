@@ -17,7 +17,7 @@ void ReplaceWaypoint(int index) {
     return;
 
   LockTaskData();
-  int waypoint = ActiveWayPoint;
+  int waypoint = ActiveTaskPoint;
   if(  ValidTaskPoint(PanTaskEdit))
 	  waypoint = PanTaskEdit;
 
@@ -26,7 +26,7 @@ void ReplaceWaypoint(int index) {
 
   // ARH 26/06/05 Fixed array out-of-bounds bug
   if (waypoint>=0 && waypoint < MAXTASKPOINTS) {
-//   ResetTaskWaypoint(ActiveWayPoint);
+//   ResetTaskWaypoint(ActiveTaskPoint);
     Task[waypoint].Index = index;
   } else {
 	// 130206 this is no more called, normally, because we filter out this condition
@@ -34,7 +34,7 @@ void ReplaceWaypoint(int index) {
     
     // Insert a new waypoint since there's
     // nothing to replace
-    ActiveWayPoint=0;
+    ActiveTaskPoint=0;
     ResetTaskWaypoint(waypoint);
     Task[waypoint].Index = index;
   }

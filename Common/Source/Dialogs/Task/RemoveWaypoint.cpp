@@ -22,7 +22,7 @@ void RemoveWaypoint(int index) {
   if (!CheckDeclaration())
     return;
   
-  if (ActiveWayPoint<0) {
+  if (ActiveTaskPoint<0) {
     return; // No waypoint to remove
   }
   
@@ -41,7 +41,7 @@ void RemoveWaypoint(int index) {
   TargetModified = true;
 
   // Search forward first
-  i = ActiveWayPoint;
+  i = ActiveTaskPoint;
   while ((i < MAXTASKPOINTS) && (Task[i].Index != index)) {
     ++i;
   }
@@ -50,16 +50,16 @@ void RemoveWaypoint(int index) {
     // Found WP, so remove it
     RemoveTaskPoint(i);
     
-    if (Task[ActiveWayPoint].Index == -1) {
+    if (Task[ActiveTaskPoint].Index == -1) {
       // We've just removed the last task point and it was
       // active at the time
-      ActiveWayPoint--;
+      ActiveTaskPoint--;
     }
     
   } else {
     // Didn't find WP, so search backwards
     
-    i = ActiveWayPoint;
+    i = ActiveTaskPoint;
     do {
       --i;
     } while (i >= 0 && Task[i].Index != index);
@@ -67,7 +67,7 @@ void RemoveWaypoint(int index) {
     if (i >= 0) {
       // Found WP, so remove it
       RemoveTaskPoint(i);
-      ActiveWayPoint--;
+      ActiveTaskPoint--;
       
     } else {
       // WP not found, so ask user if they want to
@@ -89,11 +89,11 @@ void RemoveWaypoint(int index) {
       LockTaskData();
       
       if (ret == IdYes) {
-        RemoveTaskPoint(ActiveWayPoint);
-        if (Task[ActiveWayPoint].Index == -1) {
+        RemoveTaskPoint(ActiveTaskPoint);
+        if (Task[ActiveTaskPoint].Index == -1) {
           // Active WayPoint was last in the list so is currently
           // invalid.
-          ActiveWayPoint--;
+          ActiveTaskPoint--;
         }
       }
     }

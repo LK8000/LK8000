@@ -15,8 +15,8 @@ void RefreshTask(void) {
   int i;
 
   LockTaskData();
-  if ((ActiveWayPoint<0)&&(Task[0].Index>=0)) {
-    ActiveWayPoint=0;
+  if ((ActiveTaskPoint<0)&&(Task[0].Index>=0)) {
+    ActiveTaskPoint=0;
   }
 
   // Only need to refresh info where the removal happened

@@ -25,9 +25,9 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         int Type = -1;
         double ConeSlope = 0.0;
         LockTaskData();
-        if (ValidTaskPoint(ActiveWayPoint)) {
-            GetTaskSectorParameter(ActiveWayPoint, &Type, NULL);
-            ConeSlope = Task[ActiveWayPoint].PGConeSlope;
+        if (ValidTaskPoint(ActiveTaskPoint)) {
+            GetTaskSectorParameter(ActiveTaskPoint, &Type, NULL);
+            ConeSlope = Task[ActiveTaskPoint].PGConeSlope;
         }
         UnlockTaskData();
         if (Type == CONE && ConeSlope > 0.0) {
@@ -41,7 +41,7 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
 
     double HeadWind = 0;
-    if (Calculated->FinalGlide && ValidTaskPoint(ActiveWayPoint)) {
+    if (Calculated->FinalGlide && ValidTaskPoint(ActiveTaskPoint)) {
         // according to MC theory STF take account of wind only if on final Glide
         // TODO : for the future add config parameter for always use wind.
         if (Calculated->HeadWind != -999) {

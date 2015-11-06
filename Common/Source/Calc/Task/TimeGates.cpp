@@ -168,7 +168,7 @@ StartupStore(_T("CorrectSide: PGstartout=%d InSector=%d\n"),PGStartOut,CALCULATE
 #endif
 
   LockTaskData();
-  bool ExitWpt = ((ActiveWayPoint > 0) ? (Task[ActiveWayPoint].OutCircle) : !PGStartOut);
+  bool ExitWpt = ((ActiveTaskPoint > 0) ? (Task[ActiveTaskPoint].OutCircle) : !PGStartOut);
   UnlockTaskData();
 
   if (!ExitWpt && CALCULATED_INFO.IsInSector)

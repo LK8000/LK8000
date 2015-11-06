@@ -19,10 +19,10 @@ void AltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   //  LockFlightData();
   (void)Basic;
   LockTaskData();
-  if(ValidTaskPoint(ActiveWayPoint))
+  if(ValidTaskPoint(ActiveTaskPoint))
     {
  	int index;
-      double wp_alt = FAIFinishHeight(Basic, Calculated, ActiveWayPoint); 
+      double wp_alt = FAIFinishHeight(Basic, Calculated, ActiveTaskPoint); 
       double height_above_wp = Calculated->NavAltitude + Calculated->EnergyHeight - wp_alt;
 
       Calculated->NextAltitudeRequired = GlidePolar::MacCreadyAltitude(this_maccready,

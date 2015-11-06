@@ -20,7 +20,7 @@ void ClearTask(void) {
   TargetModified = true;
   if (ISPARAGLIDER) PGOptimizeRoute = PGOptimizeRoute_Config;
   LastTaskFileName[0] = _T('\0');
-  ActiveWayPoint = -1;
+  ActiveTaskPoint = -1;
 
   EnableMultipleStartPoints = false;
 

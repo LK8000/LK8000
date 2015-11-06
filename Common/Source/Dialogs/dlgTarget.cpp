@@ -37,7 +37,7 @@ static void MoveTarget(double adjust_angle) {
   if (target_point==0) return;
   if (!ValidTaskPoint(target_point)) return;
   if (!ValidTaskPoint(target_point+1)) return;
-  if (target_point < ActiveWayPoint) return;
+  if (target_point < ActiveTaskPoint) return;
 
   LockTaskData();
 
@@ -59,7 +59,7 @@ static void MoveTarget(double adjust_angle) {
                          &target_longitude);
 
   if (InAATTurnSector(target_longitude, target_latitude, target_point, 0)) {
-    if (CALCULATED_INFO.IsInSector && (target_point == ActiveWayPoint)) {
+    if (CALCULATED_INFO.IsInSector && (target_point == ActiveTaskPoint)) {
       // set range/radial for inside sector
       double course_bearing, target_bearing;
       DistanceBearing(Task[target_point-1].AATTargetLat,
@@ -127,14 +127,14 @@ static void MoveTarget(double target_longitude, double target_latitude) {
   if (target_point==0) return;
   if (!ValidTaskPoint(target_point)) return;
   if (!ValidTaskPoint(target_point+1)) return;
-  if (target_point < ActiveWayPoint) return;
+  if (target_point < ActiveTaskPoint) return;
 
   LockTaskData();
 
   double distance, bearing;
 
   if (InAATTurnSector(target_longitude, target_latitude, target_point, 0)) {
-    if (CALCULATED_INFO.IsInSector && (target_point == ActiveWayPoint)) {
+    if (CALCULATED_INFO.IsInSector && (target_point == ActiveTaskPoint)) {
       // set range/radial for inside sector
       double course_bearing, target_bearing;
       DistanceBearing(Task[target_point-1].AATTargetLat,
@@ -238,7 +238,7 @@ static void RefreshCalculator(void) {
 
   RefreshTask();
   RefreshTaskStatistics();
-  target_point = max(target_point,ActiveWayPoint);
+  target_point = max(target_point,ActiveTaskPoint);
 
   bool nodisplay = !AATEnabled 
     || (target_point==0) 
@@ -386,7 +386,7 @@ static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode) {
     case DataField::daPut: 
     case DataField::daChange:
       LockTaskData();
-      if (target_point>=ActiveWayPoint) {
+      if (target_point>=ActiveTaskPoint) {
         RangeNew = Sender->GetAsFloat()/100.0;
         if (RangeNew != Range) {
           Task[target_point].AATTargetOffsetRadius = RangeNew;
@@ -420,8 +420,8 @@ static void OnRadialData(DataField *Sender, DataField::DataAccessKind_t Mode) {
     case DataField::daPut: 
     case DataField::daChange:
       LockTaskData();
-      if (target_point>=ActiveWayPoint) {
-        if (!CALCULATED_INFO.IsInSector || (target_point != ActiveWayPoint)) {
+      if (target_point>=ActiveTaskPoint) {
+        if (!CALCULATED_INFO.IsInSector || (target_point != ActiveTaskPoint)) {
           dowrap = true;
         }
         RadialNew = Sender->GetAsFloat();
@@ -461,7 +461,7 @@ static void OnRadialData(DataField *Sender, DataField::DataAccessKind_t Mode) {
 
 static void RefreshTargetPoint(void) {
   LockTaskData();
-  target_point = max(target_point, ActiveWayPoint);
+  target_point = max(target_point, ActiveTaskPoint);
   if (ValidTaskPoint(target_point)) {
     MapWindow::SetTargetPan(true, target_point, dlgSize);
     Range = Task[target_point].AATTargetOffsetRadius;
@@ -509,7 +509,7 @@ static void OnTaskPointData(DataField *Sender, DataField::DataAccessKind_t Mode)
     case DataField::daPut: 
     case DataField::daChange:
       target_point = Sender->GetAsInteger() + ActiveWayPointOnEntry;
-      target_point = max(target_point,ActiveWayPoint);
+      target_point = max(target_point,ActiveTaskPoint);
       if (target_point != old_target_point) {
         RefreshTargetPoint();
       }
@@ -536,7 +536,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgTarget(int TaskPoint) {
 
   if(TaskPoint == -1)
-	  TaskPoint =  ActiveWayPoint;
+	  TaskPoint =  ActiveTaskPoint;
   if (!ValidTaskPoint(TaskPoint)) {
     return;
   }

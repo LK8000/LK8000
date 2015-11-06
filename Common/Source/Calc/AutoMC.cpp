@@ -45,7 +45,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
 
     // otherwise, if AutoMc for finalglide or "both", return if no goto
-    if (ValidTaskPoint(ActiveWayPoint)) {
+    if (ValidTaskPoint(ActiveTaskPoint)) {
         if (Calculated->FinalGlide && ActiveIsFinalWaypoint()) {
             is_final_glide = true;
         } else {
@@ -55,8 +55,8 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         if (DoOptimizeRoute() && Calculated->NextAltitude > 0.) {
             // Special case for Conical end of Speed section
             int Type = -1;
-            GetTaskSectorParameter(ActiveWayPoint, &Type, NULL);
-            ConeSlope = Task[ActiveWayPoint].PGConeSlope;
+            GetTaskSectorParameter(ActiveTaskPoint, &Type, NULL);
+            ConeSlope = Task[ActiveTaskPoint].PGConeSlope;
             if (Type == CONE && ConeSlope > 0.0) {
                 is_final_glide = true;
                 is_conical_ess = true;
@@ -85,7 +85,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         av_thermal = Calculated->AverageThermal;
     }
 
-    if (!ValidTaskPoint(ActiveWayPoint)) {
+    if (!ValidTaskPoint(ActiveTaskPoint)) {
         if (av_thermal > 0) {
             mc_new = av_thermal;
         } else {
@@ -105,7 +105,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             if (Calculated->WaypointDistance < 0) Calculated->WaypointDistance = 0; // temporary but ok
             double slope =
                     (Calculated->NavAltitude + Calculated->EnergyHeight
-                    - FAIFinishHeight(Basic, Calculated, ActiveWayPoint)) /
+                    - FAIFinishHeight(Basic, Calculated, ActiveTaskPoint)) /
                     (Calculated->WaypointDistance + 1);
 
             double mc_pirker = PirkerAnalysis(Basic, Calculated,

@@ -26,10 +26,10 @@ void InsertWaypoint(int index, unsigned short append) {
   TaskModified = true;
   TargetModified = true;
 
-  if ((ActiveWayPoint<0) || !ValidTaskPoint(0)) {
-    ActiveWayPoint = 0;
-    ResetTaskWaypoint(ActiveWayPoint);
-    Task[ActiveWayPoint].Index = index;
+  if ((ActiveTaskPoint<0) || !ValidTaskPoint(0)) {
+    ActiveTaskPoint = 0;
+    ResetTaskWaypoint(ActiveTaskPoint);
+    Task[ActiveTaskPoint].Index = index;
 
     UnlockTaskData();
     return;
@@ -48,7 +48,7 @@ void InsertWaypoint(int index, unsigned short append) {
     return;
   }
 
-  int indexInsert = max(ActiveWayPoint,0);
+  int indexInsert = max(ActiveTaskPoint,0);
 
   switch(append) {
 	// append 0 = insert in current position

@@ -16,7 +16,7 @@ extern void ResetTaskWaypoint(int j);
 // in the Task[] array - NOT a waypoint index.
 //
 // If you call this function, you MUST deal with
-// correctly setting ActiveWayPoint yourself!
+// correctly setting ActiveTaskPoint yourself!
 void RemoveTaskPoint(int index) {
   if (!CheckDeclaration())
     return;

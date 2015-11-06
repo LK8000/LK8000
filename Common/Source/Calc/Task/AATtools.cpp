@@ -23,7 +23,7 @@ void AddAATPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int taskwaypoint) {
       insector = InTurnSector(Basic, Calculated, taskwaypoint);
     }
     if(insector) {
-      if (taskwaypoint == ActiveWayPoint) {
+      if (taskwaypoint == ActiveTaskPoint) {
         Calculated->IsInSector = true;
       }
       aatdistance.AddPoint(Basic->Longitude,
@@ -36,13 +36,13 @@ void AddAATPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int taskwaypoint) {
 double AATCloseBearing(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // ensure waypoint goes in direction of track if very close
   double course_bearing;
-  DistanceBearing(Task[ActiveWayPoint-1].AATTargetLat,
-		  Task[ActiveWayPoint-1].AATTargetLon,
+  DistanceBearing(Task[ActiveTaskPoint-1].AATTargetLat,
+		  Task[ActiveTaskPoint-1].AATTargetLon,
 		  Basic->Latitude,
 		  Basic->Longitude,
 		  NULL, &course_bearing);
   
   course_bearing = AngleLimit360(course_bearing+
-				 Task[ActiveWayPoint].AATTargetOffsetRadial);
+				 Task[ActiveTaskPoint].AATTargetOffsetRadial);
   return course_bearing;
 }
