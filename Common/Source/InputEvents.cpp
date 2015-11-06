@@ -37,6 +37,9 @@
 #include "Sound/Sound.h"
 #include "OS/RotateScreen.h"
 
+// uncomment for show all menu button with id as Label.
+//#define TEST_MENU_LAYOUT
+
 // Sensible maximums 
 #define MAX_MODE 100
 #define MAX_MODE_STRING 25
@@ -54,7 +57,7 @@ static int mode_map_count = 0;
 
 // Key to Event - Keys (per mode) mapped to events
 #ifndef USE_GDI
-// Some linux keycode are defined on 4 Byte, use map instead array. 
+// Some linux keycode are defined on 4 Byte, use map instead of array. 
 static std::map<int,int> Key2Event[MAX_MODE];
 #else
 static int Key2Event[MAX_MODE][MAX_KEY];
@@ -123,7 +126,7 @@ typedef struct {
   pt2Event event;
 } Text2EventSTRUCT;
 Text2EventSTRUCT Text2Event[256];  // why 256?
-int Text2Event_count;
+size_t Text2Event_count;
 
 // Mapping text names of events to the real thing
 const TCHAR *Text2GCE[GCE_COUNT+1];
@@ -140,13 +143,8 @@ void InputEvents::readFile() {
 
   // clear the GCE and NMEA queues
   LockEventQueue();
-  int i;
-  for (i=0; i<MAX_GCE_QUEUE; i++) {
-    GCE_Queue[i]= -1;
-  }
-  for (i=0; i<MAX_NMEA_QUEUE; i++) {
-    NMEA_Queue[i]= -1;
-  }
+  std::fill(std::begin(GCE_Queue), std::end(GCE_Queue), -1);
+  std::fill(std::begin(NMEA_Queue), std::end(NMEA_Queue), -1);
   UnlockEventQueue();
 
   // Get defaults 
@@ -156,6 +154,7 @@ void InputEvents::readFile() {
     InitONCE = true;
   }
 
+#ifndef TEST_MENU_LAYOUT
   // Read in user defined configuration file
 	
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
@@ -287,7 +286,7 @@ void InputEvents::readFile() {
 	  // All modes are valid at this point
 	  int mode_id = mode2int(token, true);
 	  LKASSERT(mode_id >= 0);
-          assert(mode_id < (int)array_size(Key2Event));
+      assert(mode_id < (int)array_size(Key2Event));
 			  
 	  // Make label event
 	  // TODO code: Consider Reuse existing entries...
@@ -303,13 +302,20 @@ void InputEvents::readFile() {
 
 	  // Make key (Keyboard input)
 	  if (_tcscmp(d_type, TEXT("key")) == 0)	{	// key - Hardware key or keyboard
-	    int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
+	    const int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
+	    if (ikey > 0) {
 #ifdef USE_GDI
             assert(ikey < (int)array_size(Key2Event[mode_id]));
+            Key2Event[mode_id][ikey] = event_id;
+#else
+            if(event_id > 0) {
+                Key2Event[mode_id][ikey] = event_id;
+            } else {
+                Key2Event[mode_id].erase(ikey);
+            }
 #endif
-	    if (ikey > 0)
-	      Key2Event[mode_id][ikey] = event_id;
-			    
+
+        }
 	    // Make gce (Glide Computer Event)
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
 	    int iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
@@ -401,6 +407,7 @@ void InputEvents::readFile() {
   _tcscpy(szInputFile,szFile1);
 
   zzip_fclose(fp);
+#endif
 }
 
 void InputEvents::UnloadString(){
@@ -470,8 +477,7 @@ int InputEvents::findKey(const TCHAR *data) {
 }
 
 pt2Event InputEvents::findEvent(const TCHAR *data) {
-  int i;
-  for (i = 0; i < Text2Event_count; i++) {
+  for (size_t i = 0; i < Text2Event_count; i++) {
     if (_tcscmp(data, Text2Event[i].text) == 0)
       return Text2Event[i].event;
   }
@@ -518,6 +524,8 @@ int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int 
 // without taking up more data - but when loading from file must copy string
 void InputEvents::makeLabel(int mode_id, const TCHAR* label, int location, int event_id) {
 
+  assert(location < NUMBUTTONLABELS);
+    
   if ((mode_id >= 0) && (mode_id < MAX_MODE) && (ModeLabel_count[mode_id] < MAX_LABEL)) {
     ModeLabel[mode_id][ModeLabel_count[mode_id]].label = label;
     ModeLabel[mode_id][ModeLabel_count[mode_id]].location = location;
@@ -705,7 +713,7 @@ bool InputEvents::processKey(int KeyID) {
   int event_id = 0;
 
   // get current mode
-  int mode = InputEvents::getModeID();
+  const int mode = InputEvents::getModeID();
   
 #ifndef USE_GDI
 

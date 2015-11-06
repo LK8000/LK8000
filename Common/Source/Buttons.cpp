@@ -53,8 +53,6 @@ void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 				    int *x, int *y,
 				    int *sizex, int *sizey) {
 
-  if (1) {	// always calculate positions in LK 2.4
-
     int hwidth = (rc.right-rc.left)/4;
     int hheight = (rc.bottom-rc.top)/4;
 
@@ -87,7 +85,7 @@ void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 				*x = rc.right-(*sizex);
 				int k = rc.bottom-rc.top-NIBLSCALE(46); 
 
-				*y = (rc.top+(i-5)*k/6+(*sizey/2+NIBLSCALE(3)));
+				*y = (rc.top+(i-5)*k/6+NIBLSCALE(46)+NIBLSCALE(2));
 			}
 		}
 		break;
@@ -276,7 +274,6 @@ void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
 		break;
 
 	} 
-  }
 }
 
 void ButtonLabel::CreateButtonLabels(const RECT& rc) {
