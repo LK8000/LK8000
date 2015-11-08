@@ -24,6 +24,8 @@
 bool CanRotateScreen() {
 #if defined(ENABLE_SDL) && !defined(USE_FULLSCREEN)
     return true;
+#elif defined(USE_EGL) && !defined(USE_FULLSCREEN)
+    return false;
 #else
     return Display::RotateSupported();
 #endif
