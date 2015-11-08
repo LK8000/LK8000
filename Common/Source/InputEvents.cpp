@@ -524,8 +524,6 @@ int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int 
 // without taking up more data - but when loading from file must copy string
 void InputEvents::makeLabel(int mode_id, const TCHAR* label, int location, int event_id) {
 
-  assert(location < NUMBUTTONLABELS);
-    
   if ((mode_id >= 0) && (mode_id < MAX_MODE) && (ModeLabel_count[mode_id] < MAX_LABEL)) {
     ModeLabel[mode_id][ModeLabel_count[mode_id]].label = label;
     ModeLabel[mode_id][ModeLabel_count[mode_id]].location = location;
@@ -610,8 +608,6 @@ void InputEvents::setMode(const TCHAR *mode) {
   if (_tcscmp(mode, TEXT("MMCONF")) != 0) {
 	IsMultimapConfigShown=false;
   }
-
-  ButtonLabel::SetLabelText(0,NULL);
 
   drawButtons(thismode);
 

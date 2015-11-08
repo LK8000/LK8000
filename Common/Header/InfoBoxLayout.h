@@ -5,16 +5,15 @@
 
 namespace ButtonLabel {
 
-    void CreateButtonLabels(const RECT& rc);
+    void CreateButtonLabels(const PixelRect& rcScreen);
     void SetFont(FontReference Font);
     void Destroy();
 
-    void SetLabelText(unsigned idx, const TCHAR *text);
+    void SetLabelText(unsigned MenuID, const TCHAR *text);
 
-    bool IsVisible(unsigned idx);
-    bool IsEnabled(unsigned idx);
+    bool IsVisible(unsigned MenuID);
+    bool IsEnabled(unsigned MenuID);
 
-    void GetButtonPosition(unsigned idw, const RECT& rc, int *x, int *y, int *sizex, int *sizey);
 };
 
 #endif
