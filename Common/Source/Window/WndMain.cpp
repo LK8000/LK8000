@@ -171,11 +171,7 @@ void Shutdown(void) {
   
   // Kill graphics objects
 
-  #ifdef LXMINIMAP
-  hBrushButtonHasFocus.Release();
-  #endif
-
-  CAirspaceManager::Instance().CloseAirspaces();
+   CAirspaceManager::Instance().CloseAirspaces();
   #if TESTBENCH
   StartupStore(TEXT(".... Delete Critical Sections%s"),NEWLINE);
   #endif

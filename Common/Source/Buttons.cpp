@@ -164,7 +164,11 @@ void ButtonLabel::Destroy() {
 void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
 
     unsigned idx = MenuID - 1;
-    assert(idx < MenuButtons.size());
+    if(idx >= MenuButtons.size()) {
+        assert(false);
+        return;
+    }
+
 
     MenuButton& currentButton = MenuButtons[idx];
 
@@ -173,7 +177,7 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
         currentButton.Enable(false);
     } else {
 #ifdef LXMINIMAP
-        if (InputEvents::getSelectedButtonIndex() == index) {
+        if (InputEvents::getSelectedButtonId() == MenuID) {
             currentButton.SetBkColor(RGB_DARKYELLOW2);
         }
 #endif
@@ -202,14 +206,18 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
 
 bool ButtonLabel::IsVisible(unsigned MenuID) {
     unsigned i = MenuID - 1;
-    assert(i < MenuButtons.size());
-    
-    return MenuButtons[i].IsVisible();
+    if(i < MenuButtons.size()) {
+        return MenuButtons[i].IsVisible();
+    }
+    assert(false);
+    return false;
 }
 
 bool ButtonLabel::IsEnabled(unsigned MenuID) {
     unsigned i = MenuID - 1;
-    assert(i < MenuButtons.size());
-    
-    return MenuButtons[i].IsMenuEnabled();
+    if(i < MenuButtons.size()) {
+        return MenuButtons[i].IsMenuEnabled();
+    }
+    assert(false);
+    return false;
 }

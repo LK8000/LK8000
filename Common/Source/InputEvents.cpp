@@ -82,12 +82,11 @@ static int Events_count;				// How many have we defined
 // Labels - defined per mode
 typedef struct {
   const TCHAR *label;
-  int location;
+  unsigned MenuId;
   int event;
 } ModeLabelSTRUCT;
 
 static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
-static int ModeLabel_count[MAX_MODE];	       // Where are we up to in this mode...
 std::list<TCHAR*> LabelGarbage;
 
 #define MAX_GCE_QUEUE 10
@@ -110,11 +109,11 @@ PopupEventQueue_t PopupEventQueue;
 
 bool InitONCE = false;
 #ifdef LXMINIMAP
-int SelectedButtonIndex=0;
+unsigned SelectedButtonId=0;
 bool IsMenuShown = false;
 //bool SelectMode = false;
 
-Poco::Timestamp LastActiveSelectMode = 0;
+PeriodClock LastActiveSelectMode;
 #endif
 
 // This is set when multimaps are calling MMCONF menu.
@@ -250,7 +249,6 @@ void InputEvents::readFile() {
       memset(&GC2Event, 0, sizeof(GC2Event));
       memset(&Events, 0, sizeof(Events));
       memset(&ModeLabel, 0, sizeof(ModeLabel));
-      memset(&ModeLabel_count, 0, sizeof(ModeLabel_count));
       Events_count = 0;
     }
 
@@ -270,7 +268,7 @@ void InputEvents::readFile() {
 
 	// General errors - these should be true
 	LKASSERT(d_location >= 0);
-	LKASSERT(d_location < 1024);
+	LKASSERT(d_location <= MAX_LABEL);
 	LKASSERT(event_id >= 0);
 	LKASSERT(d_mode != NULL);
 	LKASSERT(d_type != NULL);
@@ -393,9 +391,9 @@ void InputEvents::readFile() {
 	  }
 	}
       } else if (_tcscmp(key, TEXT("label")) == 0) {
-	_tcscpy(d_label, value);				
+        _tcscpy(d_label, value);
       } else if (_tcscmp(key, TEXT("location")) == 0) {
-	_stscanf(value, TEXT("%d"), &d_location);
+        _stscanf(value, TEXT("%d"), &d_location);
 	
       }
     }
@@ -411,7 +409,6 @@ void InputEvents::readFile() {
 }
 
 void InputEvents::UnloadString(){
-	memset(&ModeLabel_count, 0, sizeof(ModeLabel_count));
 	memset(&ModeLabel, 0, sizeof(ModeLabel));
 
 	std::for_each(LabelGarbage.begin(),LabelGarbage.end(), safe_free());
@@ -522,16 +519,26 @@ int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int 
 // Make a new label (add to the end each time)
 // NOTE: String must already be copied (allows us to use literals
 // without taking up more data - but when loading from file must copy string
-void InputEvents::makeLabel(int mode_id, const TCHAR* label, int location, int event_id) {
+void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, int event_id) {
 
-  if ((mode_id >= 0) && (mode_id < MAX_MODE) && (ModeLabel_count[mode_id] < MAX_LABEL)) {
-    ModeLabel[mode_id][ModeLabel_count[mode_id]].label = label;
-    ModeLabel[mode_id][ModeLabel_count[mode_id]].location = location;
-    ModeLabel[mode_id][ModeLabel_count[mode_id]].event = event_id;
-    ModeLabel_count[mode_id]++;
-  } else {
-	LKASSERT(0);
-  }
+    static_assert(MAX_MODE == array_size(ModeLabel), "wrong array size" );
+    static_assert(MAX_LABEL == array_size(ModeLabel[0]), "wrong array size" );
+    
+    unsigned LabelIdx = MenuId -1;
+ 
+    if ((mode_id >= 0) && (mode_id < MAX_MODE) && (LabelIdx < MAX_LABEL)) {
+
+        if(ModeLabel[mode_id][LabelIdx].label != nullptr && ModeLabel[mode_id][LabelIdx].label[0] != _T('\0')){
+            StartupStore(_T("Menu \"%s\" override Menu \"%s\"" NEWLINE), label, ModeLabel[mode_id][LabelIdx].label);
+            assert(false);
+        }
+        
+        ModeLabel[mode_id][LabelIdx].label = label;
+        ModeLabel[mode_id][LabelIdx].MenuId = MenuId;
+        ModeLabel[mode_id][LabelIdx].event = event_id;
+    } else {
+        LKASSERT(0);
+    }
 }
 
 // Return 0 for anything else - should probably return -1 !
@@ -562,17 +569,14 @@ void InputEvents::setMode(const TCHAR *mode) {
   int thismode;
 
 #ifdef LXMINIMAP
- if(GlobalModelType==MODELTYPE_PNA_MINIMAP)
-    {
+    if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
 
 
-               if(_tcscmp(mode, TEXT("default")) == 0)
-               {
-                       IsMenuShown=false;
-                       SelectedButtonIndex = 1;
-               }
-               else
-                       IsMenuShown=true;
+        if (_tcscmp(mode, TEXT("default")) == 0) {
+            IsMenuShown = false;
+            SelectedButtonId = 1;
+        } else
+            IsMenuShown = true;
 
     }
 #endif
@@ -615,23 +619,20 @@ void InputEvents::setMode(const TCHAR *mode) {
 
 }
 
-void InputEvents::drawButtons(int Mode){
-  int i;
+void InputEvents::drawButtons(int Mode) {
+    if (!(ProgramStarted == psNormalOp)) return;
 
-  if (!(ProgramStarted==psNormalOp)) return;
+    for (unsigned i = 0; i < array_size(ModeLabel[Mode]); i++) {
+        if ((ModeLabel[Mode][i].MenuId > 0)) {
+            assert(i == (ModeLabel[Mode][i].MenuId - 1));
 
-  for (i = 0; i < ModeLabel_count[Mode]; i++) {
-    if ((ModeLabel[Mode][i].location > 0)) {
-
-      ButtonLabel::SetLabelText(
-        ModeLabel[Mode][i].location,
-        ModeLabel[Mode][i].label
-      );
-
+            ButtonLabel::SetLabelText(
+                    ModeLabel[Mode][i].MenuId,
+                    ModeLabel[Mode][i].label );
+        }
     }
-  }
 
-  MapWindow::RequestFastRefresh();
+    MapWindow::RequestFastRefresh();
 
 }
 
@@ -649,51 +650,43 @@ int InputEvents::getModeID() {
 
 
 // Input is a via the user touching the label on a touch screen / mouse
-bool InputEvents::processButton(int bindex) {
-  if (!(ProgramStarted==psNormalOp)) return false;
+bool InputEvents::processButton(unsigned MenuId) {
+    if (!(ProgramStarted==psNormalOp)) return false;
 
-  #if TESTBENCH
-  LKASSERT(bindex>=0);
-  #else
-  if (bindex<0) return false;
-  #endif
+#if TESTBENCH
+    LKASSERT(MenuId > 0);
+#else
+    if (MenuId < 1) return false;
+#endif
 
-  #ifdef LXMINIMAP
-  SelectedButtonIndex= bindex;
-  #endif
-  int thismode = getModeID();
+#ifdef LXMINIMAP
+    SelectedButtonId = MenuId;
+#endif
+    int thismode = getModeID();
+    unsigned i = MenuId - 1;
+    assert(i < array_size(ModeLabel[thismode])); // Invalid MenuId
+    assert(ModeLabel[thismode][i].MenuId == MenuId); // Invalid ModeLabel
 
-  int i;
-  // Note - reverse order - last one wins
-  for (i = ModeLabel_count[thismode]; i >= 0; i--) {
-	if ((ModeLabel[thismode][i].location == bindex) ) {
+    int lastMode = thismode;
 
-		int lastMode = thismode;
+    // JMW need a debounce method here..
+#if (WINDOWSPC>0)
+#else
+    if (!Debounce()) return true;
+#endif
 
-		// JMW need a debounce method here..
-		#if (WINDOWSPC>0)
-		#else
-		if (!Debounce()) return true;
-		#endif
+    // 101212 moved here so that an internal resource played will not stop LKsound running
+	PlayResource(TEXT("IDR_WAV_CLICK"));
 
-		// 101212 moved here so that an internal resource played will not stop LKsound running
-		PlayResource(TEXT("IDR_WAV_CLICK"));
-
-		if (ButtonLabel::IsEnabled(bindex)) {
-			processGo(ModeLabel[thismode][i].event);
-		}
-
-		// update button text, macro may change the label
-		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && (ButtonLabel::IsVisible(bindex))){
-			drawButtons(thismode);
-		}
-
-
-		return true;
+	if (ButtonLabel::IsEnabled(MenuId)) {
+		processGo(ModeLabel[thismode][i].event);
 	}
-  }
 
-  return false;
+	// update button text, macro may change the label
+	if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && (ButtonLabel::IsVisible(MenuId))){
+		drawButtons(thismode);
+	}
+    return true;
 }
 
 
@@ -742,7 +735,7 @@ bool InputEvents::processKey(int KeyID) {
   
   if (event_id > 0) {
 
-    int bindex = -1;
+    unsigned MenuId = 0;
     int lastMode = mode;
     const TCHAR *pLabelText = NULL;
 
@@ -782,23 +775,22 @@ bool InputEvents::processKey(int KeyID) {
 	#endif
     }
 
-    int i;
-    for (i = ModeLabel_count[mode]; i >= 0; i--) {
+    for (unsigned i = 0; i < array_size(ModeLabel[mode]); ++i) {
       if ((ModeLabel[mode][i].event == event_id)) {
-        bindex = ModeLabel[mode][i].location;
+        MenuId = ModeLabel[mode][i].MenuId;
 #ifdef LXMINIMAP
-        SelectedButtonIndex = bindex;
+        SelectedButtonId = MenuId;
 #endif
         pLabelText = ModeLabel[mode][i].label;
       }
     }
 
-    if ((bindex<0) || (ButtonLabel::IsEnabled(bindex))) {
+    if (MenuId == 0 || ButtonLabel::IsEnabled(MenuId)) {
       InputEvents::processGo(event_id);
     }
 
     // experimental: update button text, macro may change the value
-    if ((lastMode == getModeID()) && (bindex > 0) && (pLabelText != NULL) && ButtonLabel::IsVisible(bindex)) {
+    if ((lastMode == getModeID()) && (MenuId > 1) && (pLabelText != NULL) && ButtonLabel::IsVisible(MenuId)) {
       drawButtons(lastMode);
     }
 
@@ -3423,9 +3415,9 @@ void NextUpDown(int UpDown)
 
 #ifdef LXMINIMAP
 
-int InputEvents::getSelectedButtonIndex()
+unsigned InputEvents::getSelectedButtonId()
 {
-	return SelectedButtonIndex;
+	return SelectedButtonId;
 }
 
 
@@ -3487,10 +3479,9 @@ void InputEvents::eventChangeSorting(const TCHAR *misc)
 
 bool InputEvents::isSelectMode()
 {
-    Poco::Timespan TimeLimit(5,0);
-	if(!LastActiveSelectMode.isElapsed(TimeLimit.totalMicroseconds()))
+	if(!LastActiveSelectMode.Check(5000))
 	{
-		 LastActiveSelectMode.update();
+		 LastActiveSelectMode.Update();
 		return true;
 	}
 	else return false;
@@ -3516,7 +3507,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
       {
 		if(isSelectMode())
 		{
-			 LastActiveSelectMode = 0;
+			LastActiveSelectMode.Reset();
 			eventStatusMessage(_T("Select deactive!"));
 		}
 		else if(ModeIndex == 0)
@@ -3525,7 +3516,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		}
 		else
 		{
-			 LastActiveSelectMode.update();
+			 LastActiveSelectMode.Update();
 			 eventStatusMessage(_T("Select active!"));
 		}
 
@@ -3545,27 +3536,27 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 			  short retry = 0;
 			  do
 			  {
-			  switch (SelectedButtonIndex)
+			  switch (SelectedButtonId)
 			                {
 			                    case 1:
 			                    case 2:
-			                    case 3: SelectedButtonIndex++; break;
-			                    case 4: SelectedButtonIndex = 9; break;
-			                    case 5: SelectedButtonIndex = 10; break;
+			                    case 3: SelectedButtonId++; break;
+			                    case 4: SelectedButtonId = 9; break;
+			                    case 5: SelectedButtonId = 10; break;
 			                    case 6:
 			                    case 7:
 			                    case 8:
-			                    case 9: SelectedButtonIndex--; break;
+			                    case 9: SelectedButtonId--; break;
 			                    case 10:
 			                    case 11:
-			                    case 12: SelectedButtonIndex++; break;
-			                    case 13: SelectedButtonIndex=1; break;
+			                    case 12: SelectedButtonId++; break;
+			                    case 13: SelectedButtonId=1; break;
 			                    default:
-			                    	SelectedButtonIndex = 1;
+			                    	SelectedButtonId = 1;
 			                        break;
 			                }
 			  retry++;
-			 }while(ButtonLabel::ButtonVisible[SelectedButtonIndex] == false && retry < NUMBUTTONLABELS);
+			 }while(!ButtonLabel::IsVisible(SelectedButtonId) && retry < NUMBUTTONLABELS);
 
 			          int thismode = getModeID();
 					  drawButtons(thismode);
@@ -3592,27 +3583,27 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 
 			 do
 			 {
-			  switch (SelectedButtonIndex)
+			  switch (SelectedButtonId)
 			  {
-			                    case 1: SelectedButtonIndex = 13; break;
+			                    case 1: SelectedButtonId = 13; break;
 			                    case 2:
 			                    case 3:
-			                    case 4: SelectedButtonIndex--; break;
+			                    case 4: SelectedButtonId--; break;
 			                    case 5:
 			                    case 6:
 			                    case 7:
-			                    case 8: SelectedButtonIndex++; break;
-			                    case 9: SelectedButtonIndex = 4; break;
-			                    case 10: SelectedButtonIndex = 5; break;
+			                    case 8: SelectedButtonId++; break;
+			                    case 9: SelectedButtonId = 4; break;
+			                    case 10: SelectedButtonId = 5; break;
 			                    case 11:
 			                    case 12:
-			                    case 13: SelectedButtonIndex--; break;
+			                    case 13: SelectedButtonId--; break;
 			                    default:
-			                    	SelectedButtonIndex = 1;
+			                    	SelectedButtonId = 1;
 			                        break;
 			  }
 			  retry++;
-			 }while(ButtonLabel::ButtonVisible[SelectedButtonIndex] == false && retry < NUMBUTTONLABELS);
+			 }while(ButtonLabel::IsVisible(SelectedButtonId) && retry < NUMBUTTONLABELS);
 
 
 			  int thismode = getModeID();
@@ -3678,22 +3669,22 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		  int thismode = getModeID();
 
 		   int i;
-		   int bindex = SelectedButtonIndex;
+		   unsigned MenuId = SelectedButtonId;
 		   // Note - reverse order - last one wins
 		   for (i = ModeLabel_count[thismode]; i >= 0; i--) {
-		 	if ((ModeLabel[thismode][i].location == bindex && bindex>=0) ) {
+		 	if ((ModeLabel[thismode][i].location == MenuId && MenuId>0) ) {
 
 		 		int lastMode = thismode;
 		 		// JMW need a debounce method here..
 
-		 		if (!ButtonLabel::ButtonDisabled[bindex]) {
+		 		if (ButtonLabel::IsEnabled(MenuId)) {
 
 
 		 			processGo(ModeLabel[thismode][i].event);
 		 		}
 
 		 		// update button text, macro may change the label
-		 		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && (ButtonLabel::ButtonVisible[bindex])){
+		 		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && ButtonLabel::IsVisible(MenuId)){
 		 			drawButtons(thismode);
 		 		}
 		 		break;

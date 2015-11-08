@@ -35,13 +35,13 @@ class InputEvents {
   static pt2Event findEvent(const TCHAR *);
   static bool processKey(int key);
   static bool processNmea(int key);
-  static bool processButton(int bindex);
+  static bool processButton(unsigned MenuId);
   static bool processGlideComputer(int);
   static void processPopupDetails(PopupType type, int index);
   static void DoQueuedEvents(void);
   static void processGo(int event_id);
   static int  makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int next = 0);
-  static void makeLabel(int mode_id, const TCHAR *label, int location, int event_id);
+  static void makeLabel(int mode_id, const TCHAR *label, unsigned MenuId, int event_id);
 
   static void drawButtons(int Mode);
 
@@ -126,7 +126,7 @@ class InputEvents {
   static void showErrors();
 
 #ifdef LXMINIMAP
-  static int getSelectedButtonIndex();
+  static unsigned getSelectedButtonId();
   static void eventChangeSorting(const TCHAR *misc);
   static bool isSelectMode();
 #endif

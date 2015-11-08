@@ -250,8 +250,8 @@ GEXTERN bool PGZoomTrigger;
 GEXTERN double  LastZoomTrigger;
 
 // traffic DoTraffic interval, also reset during key up and down to prevent wrong selections
-GEXTERN double  LastDoTraffic;
-
+GEXTERN double LastDoTraffic;
+GEXTERN double LastDoAirspaces;
 GEXTERN double LastDoNearest;
 GEXTERN double LastDoCommon;
 GEXTERN double LastDoThermalH;
