@@ -825,8 +825,6 @@ static bool GetShiftKeyState() {
 
 
 void MapWindow::_OnKeyDown(unsigned KeyCode) {
-    if (!Debounce(50)) return;
-
     //
     // Special SIM mode keys for PC
     //
