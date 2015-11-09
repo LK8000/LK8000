@@ -265,16 +265,13 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     if (ProgramStarted==psInitDone) {
         ProgramStarted = psFirstDrawDone;
     }
-    if(ProgramStarted >= psFirstDrawDone) {
-        Surface.Whiteness(Rect.left, Rect.right, Rect.GetSize().cx, Rect.GetSize().cy);
-    }
     if(ProgramStarted >= psNormalOp && THREADRUNNING) {
         UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
         RenderMapWindow(Surface, Rect);
 
         // Draw cross sight for pan mode, in the screen center, 
         if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
-            POINT centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
+            const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
             DrawMapScale(Surface,Rect,false);
             DrawCompass(Surface, Rect, GetDisplayAngle());
             DrawCrossHairs(Surface, centerscreen, Rect);
@@ -292,6 +289,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     UpdateTimeStats(false);
 #else
     if(ProgramStarted >= psFirstDrawDone) {
+        Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
         BackBufferSurface.CopyTo(Surface);
     } else {
 
@@ -310,6 +308,7 @@ void WndMain::OnKillFocus() {
 
 bool WndMain::OnMouseMove(const POINT& Pos) {
     if(_MouseButtonDown) {
+        SetCapture();
         MapWindow::_OnDragMove(Pos);
     }
     return true;
@@ -322,6 +321,7 @@ bool WndMain::OnLButtonDown(const POINT& Pos) {
 }
 
 bool WndMain::OnLButtonUp(const POINT& Pos) {
+    ReleaseCapture();
     _MouseButtonDown = false;
     MapWindow::_OnLButtonUp(Pos);
     return true;

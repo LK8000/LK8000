@@ -668,6 +668,7 @@ protected:
   static LKWindowSurface BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
 #else
   static LKBitmapSurface BackBufferSurface; 
+  static Poco::Mutex BackBuffer_Mutex;
 #endif
 #endif
 private:
