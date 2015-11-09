@@ -114,6 +114,10 @@ struct PixelRect : public tagRECT {
     Grow(d, d);
   }
 
+  constexpr RasterPoint GetOrigin() const {
+    return { left, top };
+  }
+
   constexpr PixelSize GetSize() const {
     return { right - left, bottom - top };
   }
