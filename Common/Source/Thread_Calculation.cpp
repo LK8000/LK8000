@@ -13,25 +13,24 @@
 #include "TraceThread.h"
 #include "Hardware/CPU.hpp"
 
+
+extern bool OnFastPanning;
 // PulseEvent is unreliable. But it does not matter anymore, since we should
 // change approach for compatibility with unix.
 
 void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
     (void) nmea_info;
     (void) derived_info;
-
+    
     if (MapWindow::IsDisplayRunning()) {
         // 121028 Do not set MapDirty when we are fast panning, otherwise we shall overpass the
         // timeout (700ms) there, resulting in messy refreshes.
         
-#if (WINDOWSPC>0) && !TESTBENCH
-        MapWindow::RequestFastRefresh();
-#else
-        if (!INPAN)
-            MapWindow::RefreshMap();
-        else
+        if (OnFastPanning) {
             MapWindow::RequestFastRefresh();
-#endif
+        } else {
+            MapWindow::RefreshMap();
+        }
     }
 }
 
