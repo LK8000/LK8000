@@ -255,7 +255,7 @@ void MapWindow::DrawThread ()
 				lasthere=LKHearthBeats;
 				goto _dontbitblt;
 			}
-            DrawSurface.CopyTo(DrawSurface);
+            DrawSurface.CopyTo(BackBufferSurface);
 
 			POINT centerscreen;
 			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;

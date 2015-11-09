@@ -85,6 +85,7 @@ void LKBitmapSurface::Release() {
 }
 
 void LKBitmapSurface::CopyTo(LKSurface &other) {
+    assert(this != &other);
 #ifdef USE_GDI
     other.Copy(0,0, _Size.cx, _Size.cy, *this, 0, 0);
 #else
