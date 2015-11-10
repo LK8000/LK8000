@@ -118,22 +118,22 @@ PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
     
     assert(i < MenuButtons.size());
     
-    const int row   = ScreenLandscape ? LandscapeLayout[i].row : PortraitLayout[i].row;
-    const int col   = ScreenLandscape ? LandscapeLayout[i].col :PortraitLayout[i].col;
-    const int nbRow = ScreenLandscape ? 5 : 7;
-    const int nbCol = ScreenLandscape ? 5 : 4;
+    const PixelScalar row   = ScreenLandscape ? LandscapeLayout[i].row : PortraitLayout[i].row;
+    const PixelScalar col   = ScreenLandscape ? LandscapeLayout[i].col :PortraitLayout[i].col;
+    const PixelScalar nbRow = ScreenLandscape ? 5 : 7;
+    const PixelScalar nbCol = ScreenLandscape ? 5 : 4;
 
     const PixelSize size = {
-        std::min((rc.GetSize().cx-(nbCol-1))/nbCol, (PixelScalar)NIBLSCALE(80)), 
-        std::min((rc.GetSize().cy-nbRow-1)/nbRow, (PixelScalar)NIBLSCALE(40))
+        std::min((rc.GetSize().cx-(nbCol-1))/nbCol, NIBLSCALE(80)), 
+        std::min((rc.GetSize().cy-nbRow-1)/nbRow, NIBLSCALE(40))
     };
     
     const double x_interval = (rc.GetSize().cx - size.cx * nbCol) / (nbCol-1);
     const double y_interval = (rc.GetSize().cy - size.cy * nbRow) / (nbRow-1);
 
     const RasterPoint origin = {
-        rc.left + (PixelScalar)(col * (size.cx + x_interval)),
-        rc.top + (PixelScalar)(row * (size.cy + y_interval))
+        rc.left + (col * (size.cx + x_interval)),
+        rc.top + (row * (size.cy + y_interval))
     };
 
     return PixelRect(origin, size);
