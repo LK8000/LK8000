@@ -739,42 +739,6 @@ bool InputEvents::processKey(int KeyID) {
     int lastMode = mode;
     const TCHAR *pLabelText = NULL;
 
-    //
-    // A note for LK v5:  this stuff is obsoleted and 38 and 40 codes are no more getting here.
-    // This is just a reminder TODO: remove this stuff and get rid of BigZoom.
-    // The Debounce here was needed for touch buttons on old PNAs that were very responsive.
-    // We do Debounce also in MapWndProc in any case now. --paolo
-    //
-    // Accelerate zoom in/out shortening the debounce time
-    // We do this only for the case of zoom in/out virtual key pressed.
-    // The fastzoom process is triggered by BigZoom set.
-    // To get oldstyle zoom simply skip all of this.
-    if (KeyID==KEY_UP||KeyID==KEY_DOWN) {
-	#if (WINDOWSPC>0)
-	if (!Debounce(100)) return true;
-	  #if TESTBENCH
-	  // Calling BigZoom here will trigger fast redraw several times in a loop,
-	  // until the fastzoomStart time in RenderMapWindow has passed.
-	  // For PC this is not needed, because it is fast enough to redraw everything.
-	  // However in TESTBENCH mode we keep the standard PNA/PPC behaviour
-	   #if USEBIGZOOM
-	   MapWindow::zoom.BigZoom(true);
-	   #endif
-	  #endif
-	#else
-	if (!Debounce(100)) return true;
-	#if USEBIGZOOM
-	MapWindow::zoom.BigZoom(true);
-	#endif
-	#endif
-	MapWindow::RefreshMap();
-    } else {
-	#if (WINDOWSPC>0)
-	#else
-	if (!Debounce()) return true;
-	#endif
-    }
-
     for (unsigned i = 0; i < array_size(ModeLabel[mode]); ++i) {
       if ((ModeLabel[mode][i].event == event_id)) {
         MenuId = ModeLabel[mode][i].MenuId;
