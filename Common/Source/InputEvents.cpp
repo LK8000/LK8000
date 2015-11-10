@@ -833,13 +833,15 @@ void InputEvents::DoQueuedEvents(void) {
 	//dlgBasicSettingsShowModal();
   }
 
-  // copy the queue first, blocking
+  // copy and flush the queue first, blocking
   LockEventQueue();
   for (i=0; i<MAX_GCE_QUEUE; i++) {
     GCE_Queue_copy[i]= GCE_Queue[i];
+    GCE_Queue[i]= -1;
   }
   for (i=0; i<MAX_NMEA_QUEUE; i++) {
     NMEA_Queue_copy[i]= NMEA_Queue[i];
+    NMEA_Queue[i]= -1;
   }
   UnlockEventQueue();
 
@@ -855,18 +857,7 @@ void InputEvents::DoQueuedEvents(void) {
     }
   }
 
-  // now flush the queue, again blocking
-  LockEventQueue();
-  for (i=0; i<MAX_GCE_QUEUE; i++) {
-    GCE_Queue[i]= -1;
-  }
-  for (i=0; i<MAX_NMEA_QUEUE; i++) {
-    NMEA_Queue[i]= -1;
-  }
-  UnlockEventQueue();
-
   blockqueue = false; // ok, ready to go on.
-
 }
 
 
