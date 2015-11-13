@@ -14,6 +14,7 @@
 #include "WindowControls.h"
 #include <iterator>
 #include <functional>
+#include "resource.h"
 
 using namespace std::placeholders;
 
@@ -565,17 +566,15 @@ void dlgWaypointEditShowModal(WAYPOINT *wpt) {
 
   global_wpt = wpt;
 
-  const TCHAR* szXmlFileName = !ScreenLandscape?TEXT("dlgWaypointEdit_L.xml"):TEXT("dlgWaypointEdit.xml");
-  const TCHAR* szXmlResName = !ScreenLandscape?TEXT("IDR_XML_WAYPOINTEDIT_L"):TEXT("IDR_XML_WAYPOINTEDIT");
+  const TCHAR* szXmlFileName = ScreenLandscape?TEXT("dlgWaypointEdit_L.xml"):TEXT("dlgWaypointEdit_P.xml");
+  unsigned XmlResID = ScreenLandscape?IDR_XML_WAYPOINTEDIT_L:IDR_XML_WAYPOINTEDIT_P;
 
   if(Units::CoordinateFormat == cfUTM) {
-	  szXmlFileName = !ScreenLandscape?TEXT("dlgWaypointEditUTM_L.xml"):TEXT("dlgWaypointEditUTM.xml");
-	  szXmlResName = !ScreenLandscape?TEXT("IDR_XML_WAYPOINTEDITUTM_L"):TEXT("IDR_XML_WAYPOINTEDITUTM");
+	  szXmlFileName = ScreenLandscape?TEXT("dlgWaypointEditUTM_L.xml"):TEXT("dlgWaypointEditUTM_P.xml");
+	  XmlResID = ScreenLandscape?IDR_XML_WAYPOINTEDITUTM_L:IDR_XML_WAYPOINTEDITUTM_P;
   }
 
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, szXmlFileName);
-    wf = dlgLoadFromXML(CallBackTable, filename, szXmlResName);
+  wf = dlgLoadFromXML(CallBackTable, szXmlFileName, XmlResID);
 
   if (wf) {
 

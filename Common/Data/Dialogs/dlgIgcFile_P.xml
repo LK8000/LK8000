@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Name="frmIgc" Type="Dialog" X="0" Y="0" Width="240" Height="240" Caption="_@M2156_" Font="2" >
+    <WndButton Name="btClose" Caption="_@M186_" X="2" Y="2" Height="40" Width="65" OnClickNotify="OnClose"/>
+    <WndButton Name="btSend" Caption="_@M2155_" X="2" Y="44" Height="40" Width="65" OnClickNotify="OnSend"/>
+    <WndListFrame Name="frmIgcFileList" X="70" Y="3" Width="-2" Height="230" OnListInfo="OnIgcFileListInfo">
+      <WndOwnerDrawFrame Name="frmIgcFileListEntry" X="2" Y="2" Width="-2" Height="25" Font="2" OnPaint="OnPaintIgcFileListItem"/>
+    </WndListFrame>
+	<WndProperty Name="prpDeviceList" Caption="_@M2157_" X="0" Y="0"  Width="1" Height="1">
+	  <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" />
+	</WndProperty>	
+  </WndForm>
+</PMML>

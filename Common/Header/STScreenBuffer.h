@@ -12,6 +12,9 @@
 
 #include "Screen/RawBitmap.hpp"
 
+#if (!defined(GREYSCALE) && !defined(_WIN32_WCE) && !defined(ENABLE_OPENGL))
+#define USE_TERRAIN_BLUR
+#endif
 /////////////////////////////////////////////////////////////////////////////
 // CSTScreenBuffer class provides fast drawing methods and offscreen buffer.
 
@@ -20,15 +23,11 @@ class CSTScreenBuffer : public RawBitmap
 public:
 	// Creates uninitialized buffer. Call Create or CreateRGB to
 	// initialize the buffer.
-	CSTScreenBuffer(int nWidth, int nHeight, LKColor clr);
+	CSTScreenBuffer(int nWidth, int nHeight);
 
 	virtual ~CSTScreenBuffer();
 
-	// Creates buffer with the given size and fills it with 
-	// the given color
-	void Create(int nWidth, int nHeight, LKColor clr);
-
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
+#ifdef USE_TERRAIN_BLUR
 	void HorizontalBlur(unsigned int boxw);
 	void VerticalBlur(unsigned int boxh);
 #endif
@@ -41,7 +40,7 @@ protected:
 	// that is acceptable as image width (not all numbers are acceptable)
 	static int CorrectedWidth(int nWidth);
 
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
+#ifdef USE_TERRAIN_BLUR
 	BGRColor *m_pBufferTmp;
 #endif
 };

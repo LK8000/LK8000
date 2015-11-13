@@ -14,6 +14,7 @@
 #include "utils/fileext.h"
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
+#include "resource.h"
 
 #define MAXNOTETITLE 200	// max number of characters in a title note
 #define MAXNOTEDETAILS 5000	// max size of each note details
@@ -393,19 +394,9 @@ void dlgChecklistShowModal(short checklistmode){
   InitNotepad();
   LoadChecklist(checklistmode); // check if loaded really something
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgChecklist_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_CHECKLIST_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgChecklist.xml"));
-    wf = dlgLoadFromXML(CallBackTable,                        
-                        filename, 
-                        TEXT("IDR_XML_CHECKLIST"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgChecklist_L.xml") : TEXT("dlgChecklist_P.xml"), 
+                        ScreenLandscape ? IDR_XML_CHECKLIST_L : IDR_XML_CHECKLIST_P);
 
   aTextLine.clear();
 
@@ -422,7 +413,6 @@ void dlgChecklistShowModal(short checklistmode){
 	goto deinit;
   }
   wDetails->SetBorderKind(BORDERLEFT);
-  wDetails->SetWidth(wf->GetWidth() - wDetails->GetLeft()-2);
 
   wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
   //ASSERT(wDetailsEntry!=NULL);
@@ -431,17 +421,6 @@ void dlgChecklistShowModal(short checklistmode){
 	goto deinit;
   }
   wDetailsEntry->SetCanFocus(true);
-   // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-   if ( wDetails->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wDetails->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-
-   }
-  wDetailsEntry->SetWidth(wDetails->GetWidth() - wDetails->ScrollbarWidth - 5);
 
   page = 0;
   NextPage(0);

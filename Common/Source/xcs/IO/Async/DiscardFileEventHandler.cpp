@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -22,13 +22,12 @@ Copyright_License {
 */
 
 #include "DiscardFileEventHandler.hpp"
-
-#include <unistd.h>
+#include "OS/FileDescriptor.hpp"
 
 bool
-DiscardFileEventHandler::OnFileEvent(int fd, unsigned mask)
+DiscardFileEventHandler::OnFileEvent(FileDescriptor fd, unsigned mask)
 {
   char buffer[256];
-  ssize_t nbytes = read(fd, buffer, sizeof(buffer));
+  ssize_t nbytes = fd.Read(buffer, sizeof(buffer));
   return nbytes > 0;
 }

@@ -14,6 +14,7 @@
 #include "AirspaceWarning.h"
 #include "Dialogs.h"
 #include "Event/Event.h"
+#include "resource.h"
 
 typedef struct{
   CAirspace *airspace;
@@ -172,10 +173,10 @@ static void PrepareData(void){
     CharUpper(sTmp);
 
     AirspaceSelectInfo[index].FourChars =
-                    (((DWORD)sTmp[0] & 0xff) << 24)
-                  + (((DWORD)sTmp[1] & 0xff) << 16)
-                  + (((DWORD)sTmp[2] & 0xff) << 8)
-                  + (((DWORD)sTmp[3] & 0xff) );
+                    (((unsigned)sTmp[0] & 0xff) << 24)
+                  + (((unsigned)sTmp[1] & 0xff) << 16)
+                  + (((unsigned)sTmp[2] & 0xff) << 8)
+                  + (((unsigned)sTmp[3] & 0xff) );
 
     AirspaceSelectInfo[index].Type = (*it)->Type();
 
@@ -635,19 +636,9 @@ void dlgAirspaceSelect(void) {
   Latitude = GPS_INFO.Latitude;
   Longitude = GPS_INFO.Longitude;
 
-  if (ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceSelect_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACESELECT_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceSelect_P.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACESELECT_P"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgAirspaceSelect_L.xml") :  TEXT("dlgAirspaceSelect_P.xml"), 
+                        ScreenLandscape ? IDR_XML_AIRSPACESELECT_L : IDR_XML_AIRSPACESELECT_P);
 
   if (!wf) return;
 
@@ -666,19 +657,6 @@ void dlgAirspaceSelect(void) {
   wAirspaceListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceListEntry"));
   LKASSERT(wAirspaceListEntry!=NULL);
   wAirspaceListEntry->SetCanFocus(true);
-
-  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wAirspaceList->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wAirspaceList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-
-  }
-  wAirspaceListEntry->SetWidth(wAirspaceList->GetWidth() - wAirspaceList->ScrollbarWidth - 5);
-
 
   wpName = (WndProperty*)wf->FindByName(TEXT("prpFltName"));
   wpDistance = (WndProperty*)wf->FindByName(TEXT("prpFltDistance"));

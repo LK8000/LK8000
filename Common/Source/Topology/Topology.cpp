@@ -11,11 +11,16 @@
 #include "Topology.h"
 #include "Multimap.h"
 #include "OS/Memory.h"
+#include "resource_data.h"
 
 #include <Poco/Latin1Encoding.h>
 #include <Poco/UTF16Encoding.h>
 #include <Poco/UTF8Encoding.h>
 #include <Poco/TextConverter.h>
+
+#ifdef ENABLE_OPENGL
+#include "OpenGL/GLShapeRenderer.h"
+#endif
 
 //#define DEBUG_TFC 
 
@@ -325,7 +330,8 @@ void Topology::TriggerIfScaleNowVisible(void) {
 void Topology::flushCache() {
 #ifdef DEBUG_TFC
   StartupStore(TEXT("---flushCache() starts%s"),NEWLINE);
-  Poco::Timestamp starttick;;
+  PeriodClock starttick;
+  starttick.Update();
 #endif
   switch (cache_mode) {
 	case 0:  // Original
@@ -342,7 +348,7 @@ void Topology::flushCache() {
   }//sw		
   shapes_visible_count = 0;
 #ifdef DEBUG_TFC
-  StartupStore(TEXT("   flushCache() ends (%dms)%s"),Poco::Timespan(starttick.elapsed()).totalMilliseconds(),NEWLINE);
+  StartupStore(TEXT("   flushCache() ends (%dms)%s"),starttick.Elapsed(),NEWLINE);
 #endif
 }
 
@@ -371,7 +377,8 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 #ifdef DEBUG_TFC
   StartupStore(TEXT("---UpdateCache() starts, mode%d%s"),cache_mode,NEWLINE);
-  Poco::Timestamp starttick;
+  PeriodClock starttick;
+  starttick.Update();
 #endif
 
   if(msRectOverlap(&shpfile.bounds, &thebounds) != MS_TRUE) {
@@ -477,7 +484,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 #ifdef DEBUG_TFC
   long free_size = CheckFreeRam();
-  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%luM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), Poco::Timespan(starttick.elapsed()).totalMilliseconds(),NEWLINE);
+  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%luM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), starttick.Elapsed(),NEWLINE);
 #endif
 }
 
@@ -522,6 +529,13 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
   } else 
   if (MapWindow::zoom.RealScale() > scaleThreshold) return;
 
+#ifdef ENABLE_OPENGL
+  static GLShapeRenderer renderer;
+  renderer.setClipRect(rc);
+  renderer.setNoLabel(nolabels);
+#endif
+  
+  
   // TODO code: only draw inside screen!
   // this will save time with rendering pixmaps especially
   // checkVisible does only check lat lon , not screen pixels..
@@ -537,6 +551,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 
   const auto hfOld = Surface.SelectObject(MapTopologyFont);
 
+#ifndef ENABLE_OPENGL
   // get drawing info
   int iskip = 1;
  
@@ -544,16 +559,17 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
   // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
   // != 5 and != 10
   if (scaleCategory>10) { 
-  if (MapWindow::zoom.RealScale()>0.25*scaleThreshold) {
-    iskip = 2;
-  } 
-  if (MapWindow::zoom.RealScale()>0.5*scaleThreshold) {
-    iskip = 3;
+    if (MapWindow::zoom.RealScale()>0.25*scaleThreshold) {
+      iskip = 2;
+    } 
+    if (MapWindow::zoom.RealScale()>0.5*scaleThreshold) {
+      iskip = 3;
+    }
+    if (MapWindow::zoom.RealScale()>0.75*scaleThreshold) {
+      iskip = 4;
+    }
   }
-  if (MapWindow::zoom.RealScale()>0.75*scaleThreshold) {
-    iskip = 4;
-  }
-  }
+#endif
 
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
   rectObj screenRect = MapWindow::screenbounds_latlon;
@@ -585,8 +601,9 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
 				if (dobitmap) {
 					// bugfix 101212 missing case for scaleCategory 0 (markers)
-					if (scaleCategory==0||cshape->renderSpecial(Surface, sc.x, sc.y, rc))
+					if (scaleCategory==0||cshape->renderSpecial(Surface, sc.x, sc.y, rc)) {
 						MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
+                    }
 				} else {
 					cshape->renderSpecial(Surface, sc.x, sc.y, rc);
 				}
@@ -652,6 +669,9 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
       break;
       
     case(MS_SHAPE_POLYGON):
+#ifdef ENABLE_OPENGL
+      renderer.renderPolygon(Surface, *cshape, hbBrush);
+#else
 
 	// if it's a water area (nolabels), print shape up to defaultShape, but print
 	// labels only up to custom label levels
@@ -680,6 +700,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 			cshape->renderSpecial(Surface,minx,miny,rc);
 		}
 	}
+#endif
 	break;
       
     default:
@@ -777,7 +798,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 }
 
 // Print topology labels
-bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) {
+bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) const {
   if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
 
     //Do not waste time with null labels

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -31,6 +31,7 @@ Copyright_License {
 #include "Point.hpp"
 #include "PixelTraits.hpp"
 #include "Buffer.hpp"
+#include "ActivePixelTraits.hpp"
 #include "Compiler.h"
 
 #include <tchar.h>
@@ -42,28 +43,8 @@ Copyright_License {
 #undef TRANSPARENT
 #endif
 
-#ifndef WIN32
-// DrawText Format.
-#define DT_LEFT         0x00000000
-#define DT_CENTER       0x00000001
-#define DT_RIGHT        0x00000002
-#define DT_VCENTER      0x00000004
-#define DT_WORDBREAK    0x00000010
-#define DT_SINGLELINE   0x00000020
-#define DT_EXPANDTABS   0x00000040
-#define DT_NOCLIP       0x00000100
-#define DT_CALCRECT     0x00000400
-#define DT_UNDERLINE    0x00000800
-#endif
-
 class Angle;
 class Bitmap;
-
-#ifdef GREYSCALE
-using SDLPixelTraits = GreyscalePixelTraits;
-#else
-using SDLPixelTraits = BGRAPixelTraits;
-#endif
 
 /**
  * Base drawable canvas class
@@ -72,10 +53,10 @@ class Canvas {
   friend class WindowCanvas;
   friend class SubCanvas;
 
-  using ConstImageBuffer = ::ConstImageBuffer<SDLPixelTraits>;
+  using ConstImageBuffer = ::ConstImageBuffer<ActivePixelTraits>;
 
 protected:
-  WritableImageBuffer<SDLPixelTraits> buffer;
+  WritableImageBuffer<ActivePixelTraits> buffer;
 
   Pen pen;
   Brush brush;
@@ -87,16 +68,18 @@ protected:
 
 public:
   Canvas()
-    :buffer(WritableImageBuffer<SDLPixelTraits>::Empty()),
+    :buffer(WritableImageBuffer<ActivePixelTraits>::Empty()),
      font(nullptr), background_mode(OPAQUE) {}
 
-  explicit Canvas(WritableImageBuffer<SDLPixelTraits> _buffer)
+  explicit Canvas(WritableImageBuffer<ActivePixelTraits> _buffer)
     :buffer(_buffer),
      font(nullptr), background_mode(OPAQUE) {}
 
-  void Create(WritableImageBuffer<SDLPixelTraits> _buffer) {
+  void Create(WritableImageBuffer<ActivePixelTraits> _buffer) {
     buffer = _buffer;
   }
+  
+  virtual ~Canvas() { }
 
 protected:
   /**

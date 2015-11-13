@@ -10,6 +10,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
+#include "resource.h"
 
 extern void AddCustomKeyList( DataFieldEnum* dfe);
 
@@ -186,11 +187,9 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgCustomMenuShowModal(void){
 
   WndProperty *wp;
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgCustomMenu.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
-		      filename, 
-		      TEXT("IDR_XML_CUSTOMMENU"));
+		      TEXT("dlgCustomMenu.xml"), 
+		      IDR_XML_CUSTOMMENU);
 
   if (!wf) return;
 

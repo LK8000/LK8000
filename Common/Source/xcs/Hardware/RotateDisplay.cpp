@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -193,8 +193,8 @@ Display::Rotate(DisplayOrientation_t orientation)
 
   case DisplayOrientation_t::REVERSE_LANDSCAPE:
     android_orientation = IsGalaxyTab22() ?
-                          NativeView::ScreenOrientation_t::REVERSE_LANDSCAPE_GT :
-                          NativeView::ScreenOrientation_t::REVERSE_LANDSCAPE;
+                          NativeView::ScreenOrientation::REVERSE_LANDSCAPE_GT :
+                          NativeView::ScreenOrientation::REVERSE_LANDSCAPE;
     break;
 
   default:
@@ -228,7 +228,7 @@ Display::Rotate(DisplayOrientation_t orientation)
   if (!RotateSupported())
     return false;
 
-  UIGlobals::GetMainWindow().SetDisplayOrientation_t(orientation);
+  UIGlobals::GetMainWindow().SetDisplayOrientation(orientation);
   return true;
 #else
   return false;
@@ -243,7 +243,7 @@ Display::RotateRestore()
   memset(&dm, 0, sizeof(dm));
   dm.dmSize = sizeof(dm);
   dm.dmFields = DM_DISPLAYORIENTATION;
-  dm.dmDisplayOrientation_t = initial_orientation;
+  dm.dmDisplayOrientation = initial_orientation;
 
   return ChangeDisplaySettingsEx(nullptr, &dm, nullptr,
                                  CDS_RESET, nullptr) == DISP_CHANGE_SUCCESSFUL;

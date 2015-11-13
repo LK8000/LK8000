@@ -30,6 +30,7 @@
 #include "BtHandler.h"
 #include <functional>
 #include "Sound/Sound.h"
+#include "resource.h"
 
 using namespace std::placeholders;
 
@@ -51,31 +52,62 @@ short configMode=0;	// current configuration mode, 0=system 1=pilot 2=aircraft 3
 short config_page[4]={0,0,0,0}; // remember last page we were using, for each profile
 
 static WndForm *wf=NULL;
-static WndFrame *wConfig1=NULL;
-static WndFrame *wConfig2=NULL;
-static WndFrame *wConfig3=NULL;
-static WndFrame *wConfig4=NULL;
-static WndFrame *wConfig5=NULL;
-static WndFrame *wConfig6=NULL;
-static WndFrame *wConfig7=NULL;
-static WndFrame *wConfig8=NULL;
-static WndFrame *wConfig9=NULL;
-static WndFrame *wConfig10=NULL;
-static WndFrame *wConfig11=NULL;
-static WndFrame *wConfig12=NULL;
-static WndFrame *wConfig13=NULL;
-static WndFrame *wConfig14=NULL;
-static WndFrame *wConfig15=NULL;
-static WndFrame *wConfig16=NULL;
-static WndFrame *wConfig17=NULL;
-static WndFrame *wConfig18=NULL;
-static WndFrame *wConfig19=NULL;
-static WndFrame *wConfig20=NULL;
-static WndFrame *wConfig21=NULL;
-static WndFrame *wConfig22=NULL; 
-static WndFrame *wConfig23=NULL; 
-static WndFrame *wConfig24=NULL; 
-static WndFrame *wConfig25=NULL; 
+
+
+static WndFrame *wConfig[25]={};
+
+typedef struct {
+    const TCHAR* szName;
+    const TCHAR* szCpation;
+    bool CopyPaste;
+} ConfigPageNames_t;
+
+const ConfigPageNames_t ConfigPageNames[4][25] = {
+    { // config system
+        { _T("frmSite"),                _T("_@M10_"), false }, // "1 Site"
+        { _T("frmAirspace"),            _T("_@M22_"), false }, // "2 Airspace"
+        { _T("frmDisplay"),             _T("_@M28_"), false }, // "3 Map Display" 
+        { _T("frmTerrain"),             _T("_@M32_"), false },	// "4 Terrain Display" 
+        { _T("frmFinalGlide"),          _T("_@M33_"), false }, // "5 Glide Computer" 
+        { _T("frmSafety"),              _T("_@M34_"), false },	// "6 Safety factors" 
+        { _T("frmUnits"),               _T("_@M38_"), false },	// "9 Units" 
+        { _T("frmInterface"),           _T("_@M11_"), false },	// "10 Interface" 
+        { _T("frmAppearance"),          _T("_@M12_"), false },	// "11 Appearance" 
+        { _T("frmFonts"),               _T("_@M13_"), false },	// "12 Fonts" 
+        { _T("frmVarioAppearance"),     _T("_@M14_"), false },	// "13 Map Overlays " 
+        { _T("frmTask"),                _T("_@M15_"), false },	// "14 Task" 
+        { _T("frmAlarms"),              _T("_@M1646_"), false },//"15 Alarms"
+        { _T("frmInfoBoxCruise"),       _T("_@M18_"), true }, // "16 InfoBox Cruise" 
+        { _T("frmInfoBoxCircling"),     _T("_@M19_"), true }, // "17 InfoBox Thermal" 
+        { _T("frmInfoBoxFinalGlide"),   _T("_@M20_"), true },	// "18 InfoBox Final Glide" 
+        { _T("frmInfoBoxAuxiliary"),    _T("_@M21_"), true },	// "19 InfoBox Auxiliary" 
+        { _T("frmLogger"),              _T("_@M24_"), false },	// "20 Logger" 
+        { _T("frmWaypointEdit"),        _T("_@M25_"), false },	// "21 Waypoint Edit" 
+        { _T("frmSpecials1"),           _T("_@M26_"), false }, // "22 System" 
+        { _T("frmSpecials2"),           _T("_@M27_"), false },	// "23 Paragliders/Delta specials" 
+        { _T("frmEngineering1"),        _T("24 Engineering Menu 1"), false },
+        { _T("frmEngineering2"),        _T("25 Engineering Menu 1"), false },
+    }, 
+    { // config Pilot
+    	{ _T("frmPilot"),                _T("_@M1785_"), false }, // pilot configuration
+        {},
+    }, 
+    { // config aircraft
+    	{ _T("frmPolar"),                _T("_@M1786_"), false }, // aircraft configuration
+        {},
+    },
+    { // config device
+    	{ _T("frmComm"),                _T("_@M1820_"), false }, // // device configuration
+        {},
+    },
+};
+
+static_assert(array_size(config_page) == array_size(ConfigPageNames), "invalid array size");
+static_assert(array_size(wConfig) == array_size(ConfigPageNames[0]), "invalid array size");
+static_assert(array_size(wConfig) == array_size(ConfigPageNames[1]), "invalid array size");
+static_assert(array_size(wConfig) == array_size(ConfigPageNames[2]), "invalid array size");
+static_assert(array_size(wConfig) == array_size(ConfigPageNames[2]), "invalid array size");
+
 
 static WndButton *buttonPilotName=NULL;
 static WndButton *buttonLiveTrackersrv=NULL;
@@ -92,31 +124,8 @@ static WndButton *buttonPaste=NULL;
 short numPages=0;
 
 void reset_wConfig(void) {
- wConfig1=NULL;
- wConfig2=NULL;
- wConfig3=NULL;
- wConfig4=NULL;
- wConfig5=NULL;
- wConfig6=NULL;
- wConfig7=NULL;
- wConfig8=NULL;
- wConfig9=NULL;
- wConfig10=NULL;
- wConfig11=NULL;
- wConfig12=NULL;
- wConfig13=NULL;
- wConfig14=NULL;
- wConfig15=NULL;
- wConfig16=NULL;
- wConfig17=NULL;
- wConfig18=NULL;
- wConfig19=NULL;
- wConfig20=NULL;
- wConfig21=NULL;
- wConfig22=NULL; 
- wConfig23=NULL; 
- wConfig24=NULL; 
- wConfig25=NULL; 
+    numPages = 0;
+    std::fill(std::begin(wConfig), std::end(wConfig), nullptr);
 }
 
 void FontSetEnums( DataFieldEnum* dfe) {
@@ -275,216 +284,38 @@ static void UpdateButtons(void) {
 
 
 static void NextPage(int Step){
-  LKASSERT((unsigned int)configMode<sizeof(config_page));
-  config_page[configMode] += Step;
+    LKASSERT((size_t)configMode<array_size(config_page));
+    config_page[configMode] += Step;
 
-  if (configMode==0) {
-	if (!EngineeringMenu) { 
-		if (config_page[configMode]>=(numPages-2)) { config_page[configMode]=0; }
-		if (config_page[configMode]<0) { config_page[configMode]=numPages-3; } 
-	} else {
-		if (config_page[configMode]>=numPages) { config_page[configMode]=0; }
-		if (config_page[configMode]<0) { config_page[configMode]=numPages-1; }
-	}
-	// temporary skip page 7 and 8, old aircraft/polar/comm setup
-	if (config_page[configMode]==6 || config_page[configMode]==7) {
-		if (Step>0) 
-			config_page[configMode]=8;
-		else
-			config_page[configMode]=5;
-	}
-        #if 0
-        // Keep menu 12 ready for new font editor
-	if (config_page[configMode]==11) {
-		if (Step>0) 
-			config_page[configMode]=12;
-		else
-			config_page[configMode]=10;
-	}
-        #endif
-
-
-  } else {
-	config_page[configMode]=0;
-  }
-  
-  switch(config_page[configMode]) {
-  case 0:
-    if (configMode==0) {
-	wf->SetCaption(MsgToken(10)); // LKTOKEN  _@M10_ = "1 Site" 
+    if (configMode==0 && !EngineeringMenu) { 
+        if (config_page[configMode]>=(numPages-2)) { config_page[configMode]=0; }
+        if (config_page[configMode]<0) { config_page[configMode]=numPages-3; } 
+    } else {
+        if (config_page[configMode]>=numPages) { config_page[configMode]=0; }
+        if (config_page[configMode]<0) { config_page[configMode]=numPages-1; }
     }
-    if (configMode==1) {
-	wf->SetCaption(MsgToken(1785)); // pilot configuration
+
+    assert((size_t)configMode < array_size(ConfigPageNames));
+    assert((size_t)config_page[configMode] < array_size(ConfigPageNames[0]));
+    
+    const ConfigPageNames_t* current = ConfigPageNames[configMode];
+    const TCHAR* szCaption = gettext(current[config_page[configMode]].szCpation);
+    if (!szCaption || (_tcslen(szCaption) <= 0)) {
+        szCaption = current[config_page[configMode]].szCpation;
     }
-    if (configMode==2) {
-	wf->SetCaption(MsgToken(1786)); // aircraft configuration
+    wf->SetCaption(szCaption);
+    if (buttonCopy) {
+        buttonCopy->SetVisible(current[config_page[configMode]].CopyPaste);
     }
-    if (configMode==3) {
-	wf->SetCaption(MsgToken(1820)); // device configuration
+    if (buttonPaste) {
+        buttonPaste->SetVisible(current[config_page[configMode]].CopyPaste);
     }
-    break;
-  case 1:
-	// LKTOKEN  _@M22_ = "2 Airspace" 
-    wf->SetCaption(gettext(TEXT("_@M22_")));
-    break;
-  case 2:
-	// LKTOKEN  _@M28_ = "3 Map Display" 
-    wf->SetCaption(gettext(TEXT("_@M28_")));
-    break;
-  case 3:
-	// LKTOKEN  _@M32_ = "4 Terrain Display" 
-    wf->SetCaption(gettext(TEXT("_@M32_")));
-    break;
-  case 4:
-	// LKTOKEN  _@M33_ = "5 Glide Computer" 
-    wf->SetCaption(gettext(TEXT("_@M33_")));
-    break;
-  case 5:
-	// LKTOKEN  _@M34_ = "6 Safety factors" 
-    wf->SetCaption(gettext(TEXT("_@M34_")));
-    break;
-  case 6:
-	// LKTOKEN  _@M36_ = "7 Aircraft" 
-    wf->SetCaption(gettext(TEXT("_@M36_")));	// UNUSED
-    break;
-  case 7:
-	// LKTOKEN  _@M37_ = "8 Devices" 
-    wf->SetCaption(gettext(TEXT("_@M37_")));	// UNUSED
-    break;
-  case 8:
-	// LKTOKEN  _@M38_ = "9 Units" 
-    wf->SetCaption(gettext(TEXT("_@M38_")));
-    break;
-  case 9:
-	// LKTOKEN  _@M11_ = "10 Interface" 
-    wf->SetCaption(gettext(TEXT("_@M11_")));
-    break;
-  case 10:
-	// LKTOKEN  _@M12_ = "11 Appearance" 
-    wf->SetCaption(gettext(TEXT("_@M12_")));
-    break;
-  case 11:
-	// LKTOKEN  _@M13_ = "12 Fonts" 
-    wf->SetCaption(gettext(TEXT("_@M13_"))); // TODO in V6
-    break;
-  case 12:
-	// LKTOKEN  _@M14_ = "13 Map Overlays " 
-    wf->SetCaption(gettext(TEXT("_@M14_")));
-    break;
-  case 13:
-	// LKTOKEN  _@M15_ = "14 Task" 
-    wf->SetCaption(gettext(TEXT("_@M15_")));
-    break;
-  case 14:
-    wf->SetCaption(gettext(TEXT("_@M1646_"))); // 15 Alarms
-    break;
-  case 15:
-	// LKTOKEN  _@M18_ = "16 InfoBox Cruise" 
-    wf->SetCaption(gettext(TEXT("_@M18_")));
-    break;
-  case 16:
-	// LKTOKEN  _@M19_ = "17 InfoBox Thermal" 
-    wf->SetCaption(gettext(TEXT("_@M19_")));
-    break;
-  case 17:
-	// LKTOKEN  _@M20_ = "18 InfoBox Final Glide" 
-    wf->SetCaption(gettext(TEXT("_@M20_")));
-    break;
-  case 18:
-	// LKTOKEN  _@M21_ = "19 InfoBox Auxiliary" 
-    wf->SetCaption(gettext(TEXT("_@M21_")));
-    break;
-  case 19:
-	// LKTOKEN  _@M24_ = "20 Logger" 
-    wf->SetCaption(gettext(TEXT("_@M24_")));
-    break;
-  case 20:
-	// LKTOKEN  _@M25_ = "21 Waypoint Edit" 
-    wf->SetCaption(gettext(TEXT("_@M25_")));
-    break;
-  case 21:
-	// LKTOKEN  _@M26_ = "22 System" 
-    wf->SetCaption(gettext(TEXT("_@M26_")));
-    break;
-  case 22:
-	// LKTOKEN  _@M27_ = "23 Paragliders/Delta specials" 
-    wf->SetCaption(gettext(TEXT("_@M27_")));
-    break;
-  case 23:
-    wf->SetCaption(TEXT("24 Engineering Menu 1"));
-    break;
-  case 24:
-    wf->SetCaption(TEXT("25 Engineering Menu 2"));
-    break;
-  } 
 
-	  if ((config_page[configMode]>=15) && (config_page[configMode]<=18)) {
-	    if (buttonCopy) {
-	      buttonCopy->SetVisible(true);
-	    }
-	    if (buttonPaste) {
-	      buttonPaste->SetVisible(true);
-	    }
-	  } else {
-	    if (buttonCopy) {
-	      buttonCopy->SetVisible(false);
-	    }
-	    if (buttonPaste) {
-	      buttonPaste->SetVisible(false);
-	    }
-  	  }
-
-
-  wConfig1->SetVisible(config_page[configMode] == 0);
-  if (wConfig2)
-  wConfig2->SetVisible(config_page[configMode] == 1); 
-  if (wConfig3)
-  wConfig3->SetVisible(config_page[configMode] == 2); 
-  if (wConfig4)
-  wConfig4->SetVisible(config_page[configMode] == 3); 
-  if (wConfig5)
-  wConfig5->SetVisible(config_page[configMode] == 4); 
-  if (wConfig6)
-  wConfig6->SetVisible(config_page[configMode] == 5); 
-  if (wConfig7)
-  wConfig7->SetVisible(config_page[configMode] == 6); 
-  if (wConfig8)
-  wConfig8->SetVisible(config_page[configMode] == 7); 
-  if (wConfig9)
-  wConfig9->SetVisible(config_page[configMode] == 8); 
-  if (wConfig10)
-  wConfig10->SetVisible(config_page[configMode] == 9); 
-  if (wConfig11)
-  wConfig11->SetVisible(config_page[configMode] == 10); 
-  if (wConfig12)
-  wConfig12->SetVisible(config_page[configMode] == 11); 
-  if (wConfig13)
-  wConfig13->SetVisible(config_page[configMode] == 12); 
-  if (wConfig14)
-  wConfig14->SetVisible(config_page[configMode] == 13); 
-  if (wConfig15)
-  wConfig15->SetVisible(config_page[configMode] == 14); 
-  if (wConfig16)
-  wConfig16->SetVisible(config_page[configMode] == 15); 
-  if (wConfig17)
-  wConfig17->SetVisible(config_page[configMode] == 16); 
-  if (wConfig18)
-  wConfig18->SetVisible(config_page[configMode] == 17); 
-  if (wConfig19)
-  wConfig19->SetVisible(config_page[configMode] == 18); 
-  if (wConfig20)
-  wConfig20->SetVisible(config_page[configMode] == 19); 
-  if (wConfig21)
-  wConfig21->SetVisible(config_page[configMode] == 20); 
-  if (wConfig22)
-  wConfig22->SetVisible(config_page[configMode] == 21);  
-  if (wConfig23)
-  wConfig23->SetVisible(config_page[configMode] == 22);  
-  if (wConfig24)
-  wConfig24->SetVisible(config_page[configMode] == 23);  
-  if (wConfig25)
-  wConfig25->SetVisible(config_page[configMode] == 24);  
-
+    for (short i = 0; i < (short)array_size(wConfig); ++i) {
+        if (wConfig[i]) {
+            wConfig[i]->SetVisible(config_page[configMode] == i);
+        }
+    }
 } // NextPage
 
 static void OnSetupDeviceAClicked(WndButton* pWnd) {
@@ -3148,29 +2979,34 @@ void dlgConfigurationShowModal(short mode){
 
   configMode=mode;
 
-  static const TCHAR* dlgTemplate_L [][2] = { 
-      { TEXT("dlgConfiguration_L.xml"),  TEXT("IDR_XML_CONFIGURATION_L") },
-      { TEXT("dlgConfigPilot_L.xml"), TEXT("IDR_XML_CONFIGPILOT_L") },
-      { TEXT("dlgConfigAircraft_L.xml"), TEXT("IDR_XML_CONFIGAIRCRAFT_L") },
-      { TEXT("dlgConfigDevice_L.xml"), TEXT("IDR_XML_CONFIGDEVICE_L") }
+  typedef struct {
+      const TCHAR * filename;
+      const unsigned resid;
+  }  dlgTemplate_t;
+  
+  static const dlgTemplate_t dlgTemplate_L [] = { 
+      { TEXT("dlgConfiguration_L.xml"),  IDR_XML_CONFIGURATION_L },
+      { TEXT("dlgConfigPilot_L.xml"), IDR_XML_CONFIGPILOT_L },
+      { TEXT("dlgConfigAircraft_L.xml"), IDR_XML_CONFIGAIRCRAFT_L },
+      { TEXT("dlgConfigDevice_L.xml"), IDR_XML_CONFIGDEVICE_L }
   };
-  static const TCHAR* dlgTemplate_P [][2] = { 
-      { TEXT("dlgConfiguration_P.xml"),  TEXT("IDR_XML_CONFIGURATION_P") },
-      { TEXT("dlgConfigPilot_P.xml"), TEXT("IDR_XML_CONFIGPILOT_P") },
-      { TEXT("dlgConfigAircraft_P.xml"), TEXT("IDR_XML_CONFIGAIRCRAFT_P") },
-      { TEXT("dlgConfigDevice_P.xml"), TEXT("IDR_XML_CONFIGDEVICE_P") }
+  
+  static const dlgTemplate_t dlgTemplate_P [] = { 
+      { TEXT("dlgConfiguration_P.xml"),  IDR_XML_CONFIGURATION_P },
+      { TEXT("dlgConfigPilot_P.xml"), IDR_XML_CONFIGPILOT_P },
+      { TEXT("dlgConfigAircraft_P.xml"), IDR_XML_CONFIGAIRCRAFT_P },
+      { TEXT("dlgConfigDevice_P.xml"), IDR_XML_CONFIGDEVICE_P }
   };
+  
   static_assert(array_size(dlgTemplate_L) == array_size(dlgTemplate_P), "check array size");
   
   StartHourglassCursor(); 
 
   if(configMode >= 0 && configMode < (int)array_size(dlgTemplate_L)) {
     
-      auto dlgTemplate = ScreenLandscape ? dlgTemplate_L[configMode] : dlgTemplate_P[configMode];
-    TCHAR filename[MAX_PATH];
+    auto dlgTemplate = (ScreenLandscape ? dlgTemplate_L[configMode] : dlgTemplate_P[configMode]);
   
-    LocalPathS(filename,  dlgTemplate[0]);
-    wf = dlgLoadFromXML(CallBackTable, filename, dlgTemplate[1]);
+    wf = dlgLoadFromXML(CallBackTable, dlgTemplate.filename, dlgTemplate.resid);
     
   } else {
       wf = nullptr;
@@ -3187,81 +3023,11 @@ void dlgConfigurationShowModal(short mode){
 
   reset_wConfig();
 
-  if (configMode==0) {
-
-	wConfig1    = ((WndFrame *)wf->FindByName(TEXT("frmSite")));
-	wConfig2    = ((WndFrame *)wf->FindByName(TEXT("frmAirspace")));
-	wConfig3    = ((WndFrame *)wf->FindByName(TEXT("frmDisplay")));
-	wConfig4    = ((WndFrame *)wf->FindByName(TEXT("frmTerrain")));
-	wConfig5    = ((WndFrame *)wf->FindByName(TEXT("frmFinalGlide")));
-	wConfig6    = ((WndFrame *)wf->FindByName(TEXT("frmSafety")));
-	wConfig7    = ((WndFrame *)wf->FindByName(TEXT("frmEmpty")));
-	wConfig8    = ((WndFrame *)wf->FindByName(TEXT("frmEmpty")));
-	wConfig9    = ((WndFrame *)wf->FindByName(TEXT("frmUnits")));
-	wConfig10    = ((WndFrame *)wf->FindByName(TEXT("frmInterface")));
-	wConfig11    = ((WndFrame *)wf->FindByName(TEXT("frmAppearance")));
-	wConfig12    = ((WndFrame *)wf->FindByName(TEXT("frmFonts")));
-	wConfig13    = ((WndFrame *)wf->FindByName(TEXT("frmVarioAppearance")));
-	wConfig14    = ((WndFrame *)wf->FindByName(TEXT("frmTask")));
-	wConfig15    = ((WndFrame *)wf->FindByName(TEXT("frmAlarms")));
-	wConfig16    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxCruise")));
-	wConfig17    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxCircling")));
-	wConfig18    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxFinalGlide")));
-	wConfig19    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxAuxiliary")));
-	wConfig20    = ((WndFrame *)wf->FindByName(TEXT("frmLogger")));
-	wConfig21    = ((WndFrame *)wf->FindByName(TEXT("frmWaypointEdit")));
-	wConfig22    = ((WndFrame *)wf->FindByName(TEXT("frmSpecials1")));
-	wConfig23    = ((WndFrame *)wf->FindByName(TEXT("frmSpecials2")));
-	wConfig24    = ((WndFrame *)wf->FindByName(TEXT("frmEngineering1")));
-	wConfig25    = ((WndFrame *)wf->FindByName(TEXT("frmEngineering2")));
-
-	LKASSERT(wConfig1);
-	LKASSERT(wConfig2);
-	LKASSERT(wConfig3);
-	LKASSERT(wConfig4);
-	LKASSERT(wConfig5);
-	LKASSERT(wConfig6);
-	LKASSERT(wConfig7);
-	LKASSERT(wConfig8);
-	LKASSERT(wConfig9);
-	LKASSERT(wConfig10);
-	LKASSERT(wConfig11);
-	LKASSERT(wConfig12);
-	LKASSERT(wConfig13);
-	LKASSERT(wConfig14);
-	LKASSERT(wConfig15);
-	LKASSERT(wConfig16);
-	LKASSERT(wConfig17);
-	LKASSERT(wConfig18);
-	LKASSERT(wConfig19);
-	LKASSERT(wConfig20);
-	LKASSERT(wConfig21);
-	LKASSERT(wConfig22);
-	LKASSERT(wConfig23);
-	LKASSERT(wConfig24);
-	LKASSERT(wConfig25);
-
-	numPages=25;
-
-	for (int item=0; item<10; item++) {
-		cpyInfoBox[item] = -1;
-	}
+  for(size_t i = 0; i < array_size(ConfigPageNames[configMode]); i++) {
+      wConfig[i]    = (WndFrame *)wf->FindByName(ConfigPageNames[configMode][i].szName);
+      numPages += wConfig[i]?1:0;
   }
-  if (configMode==1) {
-	wConfig1 = ((WndFrame *)wf->FindByName(TEXT("frmPilot")));
-	numPages=1;
-	LKASSERT(wConfig1);
-  }
-  if (configMode==2) {
-	wConfig1 = ((WndFrame *)wf->FindByName(TEXT("frmPolar")));
-	numPages=1;
-	LKASSERT(wConfig1);
-  }
-  if (configMode==3) {
-	wConfig1 = ((WndFrame *)wf->FindByName(TEXT("frmComm")));
-	numPages=1;
-	LKASSERT(wConfig1);
-  }
+  std::fill(std::begin(cpyInfoBox), std::end(cpyInfoBox), -1);
 
   wf->FilterAdvanced(1); // useless, we dont use advanced options anymore TODO remove
 
@@ -4365,10 +4131,9 @@ int ival;
     }
 
   }
-  DWORD tmp;
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));
   if (wp) {
-	  tmp = lround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+	  unsigned tmp = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
     if (GearWarningAltitude != tmp)
     {
     	GearWarningAltitude = tmp;

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -25,11 +25,14 @@ Copyright_License {
 #define XCSOAR_IO_LOOP_HPP
 
 #include "OS/Poll.hpp"
-#include "Poco/Mutex.h"
-#include "Poco/Event.h"
+#include "OS/FileDescriptor.hpp"
+#include "Thread/Mutex.hpp"
+#include "Thread/Cond.hpp"
 #include "FileEventHandler.hpp"
 
-#include <map>
+#include <boost/intrusive/set.hpp>
+
+#include <assert.h>
 
 class FileEventHandler;
 
@@ -37,10 +40,12 @@ class FileEventHandler;
  * A thread that is used for asynchronous (non-blocking) I/O.
  */
 class IOLoop final {
-  struct File {
+  struct File
+    : boost::intrusive::set_base_hook<boost::intrusive::link_mode<boost::intrusive::normal_link>> {
+
     File *next_ready;
 
-    const int fd;
+    const FileDescriptor fd;
 
     unsigned mask, ready_mask;
 
@@ -52,28 +57,45 @@ class IOLoop final {
      */
     bool modified;
 
-    File(int fd):fd(fd) {}
-
-    File(int fd, unsigned mask, FileEventHandler &handler)
+    File(FileDescriptor fd, unsigned mask, FileEventHandler &handler)
       :fd(fd), mask(mask), ready_mask(0),
-       handler(&handler), modified(false) {}
+       handler(&handler), modified(true) {}
 
-    bool operator<(const File &other) const {
-      return fd < other.fd;
+    ~File() {
+      assert(mask == 0);
+    }
+
+    struct Compare {
+      gcc_pure
+      bool operator()(FileDescriptor a, const File &b) const {
+        return a.Get() < b.fd.Get();
+      }
+
+      gcc_pure
+      bool operator()(const File &a, FileDescriptor b) const {
+        return a.fd.Get() < b.Get();
+      }
+    };
+
+    static void Dispose(File *f) {
+      delete f;
     }
   };
 
   Poll poll;
 
-  Poco::Mutex mutex;
+  Mutex mutex;
 
   /**
    * Used to synchronise removal.  The calling thread waits for this
    * condition, which is triggered when #running becomes false.
    */
-  Poco::Event cond;
+  Cond cond;
 
-  std::map<int, File> files;
+  typedef boost::intrusive::set<File,
+                                boost::intrusive::compare<File::Compare>,
+                                boost::intrusive::constant_time_size<false>> FileSet;
+  FileSet files;
 
   bool modified, running;
 
@@ -82,6 +104,7 @@ public:
   static constexpr unsigned WRITE = Poll::WRITE;
 
   IOLoop():modified(false), running(false) {}
+  ~IOLoop();
 
   gcc_pure
   bool IsEmpty() const {
@@ -98,7 +121,7 @@ public:
    * This method is not thread-safe, it may only be called from within
    * the thread.
    */
-  void Add(int fd, unsigned mask, FileEventHandler &handler);
+  void Add(FileDescriptor fd, unsigned mask, FileEventHandler &handler);
 
   /**
    * Remove a file descriptor from the I/O loop.
@@ -106,9 +129,9 @@ public:
    * This method is not thread-safe, it may only be called from within
    * the thread.
    */
-  void Remove(int fd);
+  void Remove(FileDescriptor fd);
 
-  void Set(int fd, unsigned mask, FileEventHandler &handler) {
+  void Set(FileDescriptor fd, unsigned mask, FileEventHandler &handler) {
     if (mask != 0)
       Add(fd, mask, handler);
     else
@@ -116,16 +139,16 @@ public:
   }
 
   void Lock() {
-    mutex.lock();
+    mutex.Lock();
   }
 
   void Unlock() {
-    mutex.unlock();
+    mutex.Unlock();
   }
 
   void WaitUntilNotRunning() {
     while (running)
-      cond.wait();
+      cond.Wait(mutex);
   }
 
   void Wait(int timeout_ms=-1);

@@ -11,6 +11,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "Multimap.h"
+#include "resource.h"
 
 #define MAX_LIST_ITEMS 50
 ListElement* pResult = NULL;
@@ -503,19 +504,9 @@ ListElement* dlgMultiSelectListShowModal(void) {
         return NULL;
     }
 
-    if (!ScreenLandscape) {
-        TCHAR filename[MAX_PATH];
-        LocalPathS(filename, TEXT("dlgMultiSelectList_L.xml"));
-        wf = dlgLoadFromXML(CallBackTable,
-                            filename,
-                            TEXT("IDR_XML_MULTISELECTLIST_L"));
-    } else {
-        TCHAR filename[MAX_PATH];
-        LocalPathS(filename, TEXT("dlgMultiSelectList.xml"));
-        wf = dlgLoadFromXML(CallBackTable,
-                            filename,
-                            TEXT("IDR_XML_MULTISELECTLIST"));
-    }
+    wf = dlgLoadFromXML(CallBackTable,
+                            ScreenLandscape ? TEXT("dlgMultiSelectList_L.xml") : TEXT("dlgMultiSelectList_P.xml"),
+                            ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
     if (!wf) return NULL;
 
@@ -524,23 +515,10 @@ ListElement* dlgMultiSelectListShowModal(void) {
     LKASSERT(wMultiSelectListList != NULL);
     wMultiSelectListList->SetBorderKind(BORDERLEFT);
     wMultiSelectListList->SetEnterCallback(OnMultiSelectListListEnter);
-    wMultiSelectListList->SetWidth(wf->GetWidth() - wMultiSelectListList->GetLeft() - 2);
 
     wMultiSelectListListEntry = (WndOwnerDrawFrame*) wf->FindByName(TEXT("frmMultiSelectListListEntry"));
     LKASSERT(wMultiSelectListListEntry != NULL);
     wMultiSelectListListEntry->SetCanFocus(true);
-
-    // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-    if (wMultiSelectListList->ScrollbarWidth == -1) {
-#if defined (PNA)
-#define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-#else
-#define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-#endif
-        wMultiSelectListList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-    }
-
-    wMultiSelectListListEntry->SetWidth(wMultiSelectListList->GetWidth() - wMultiSelectListList->ScrollbarWidth - 5);
 
     UpdateList();
 

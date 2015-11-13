@@ -15,6 +15,8 @@
 #include "Screen/FontReference.h"
 #include "Window/WndCtrlBase.h"
 #include "LKObjects.h"
+#include <tchar.h>
+#include <string.h>
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
@@ -719,7 +721,6 @@ class WndListFrame:public WndFrame{
 //      int SelectedIndex;
       int ScrollIndex;
       int ItemCount;
-      int ItemInViewCount;
       int ItemInPageCount;
     }ListInfo_t;
 
@@ -741,34 +742,37 @@ class WndListFrame:public WndFrame{
 
 
     void RedrawScrolled(bool all);
-    void DrawScrollBar(LKSurface& Surface);
     bool RecalculateIndices(bool bigscroll);
     void Redraw(void);
     int GetItemIndex(void){return(mListInfo.ItemIndex);}
     void SetItemIndexPos(int iValue);
     void SetItemIndex(int iValue);
     void SelectItemFromScreen(int xPos, int yPos, RECT *rect);
+    
+    void CalcChildRect(int& x, int& y, int& cx, int& cy) const;
+    
+protected:    
+    int GetScrollBarWidth();
     int GetScrollBarHeight (void);
+
+    int GetScrollBarTop() { return GetScrollBarWidth(); }
+    
     int GetScrollIndexFromScrollBarTop(int iScrollBarTop);
     int GetScrollBarTopFromScrollIndex();
-#if 100124
-#define SCROLLBARWIDTH_INITIAL 32
-    int ScrollbarTop;
-    int ScrollbarWidth;
+    
 
+    void DrawScrollBar(LKSurface& Surface);
+    
     virtual void Paint(LKSurface& Surface);
-
-  protected:
-#else
-  protected:
-#define SCROLLBARWIDTH_INITIAL 32
-    int ScrollbarTop;
-    int ScrollbarWidth;
-#endif
 
     virtual bool OnLButtonDown(const POINT& Pos);
     virtual bool OnLButtonUp(const POINT& Pos);
 
+private:
+    constexpr static int ScrollbarWidthInitial = 32;
+    int ScrollbarWidth;
+    
+    
     OnListCallback_t mOnListCallback;
     OnListCallback_t mOnListEnterCallback;
     ListInfo_t mListInfo;
@@ -887,6 +891,8 @@ class WndForm:public WindowControl{
             StopTimer();
         }
     }
+    
+    void ReinitialiseLayout(const RECT& Rect) { }
 
 protected:
     virtual bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode);

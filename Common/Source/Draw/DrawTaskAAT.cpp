@@ -33,7 +33,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     rectObj rcrect = (rectObj){(double) rc.left, (double) rc.top, (double) rc.right, (double) rc.bottom};
     RECT rcDraw = (RECT){rc.right, rc.bottom, rc.left, rc.top};
 
-    for (maxTp = std::max(1, ActiveWayPoint); ValidTaskPoint(maxTp + 1); ++maxTp) {
+    for (maxTp = std::max(1, ActiveTaskPoint); ValidTaskPoint(maxTp + 1); ++maxTp) {
         if (ValidTaskPoint(maxTp)) {
             int Type = 0;
             double Radius = 0.;
@@ -104,7 +104,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         LKSurface & AliasSurface = Surface;
         Surface.SelectObject(LKBrush(LKColor(255U,255U,0U).WithAlpha(AlphaLevel)));
 #endif
-        for (i = maxTp - 1; i > std::max(0, ActiveWayPoint - 1); i--) {
+        for (i = maxTp - 1; i > std::max(0, ActiveTaskPoint - 1); i--) {
         if (ValidTaskPoint(i)) {
             int Type = 0;
             double Radius = 0.;

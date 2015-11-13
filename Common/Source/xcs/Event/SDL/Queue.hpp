@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@ Copyright_License {
 
 #include "Loop.hpp"
 #include "../Shared/TimerQueue.hpp"
-#include "Poco/Mutex.h"
+#include "Thread/Mutex.hpp"
 
 #include <SDL_version.h>
 #include <SDL_events.h>
@@ -39,8 +39,10 @@ class EventQueue {
    */
   uint64_t now_us;
 
-  Poco::Mutex mutex;
+  Mutex mutex;
   TimerQueue timers;
+
+  bool quit;
 
 public:
   EventQueue();
@@ -52,6 +54,14 @@ public:
   gcc_pure
   uint64_t ClockUS() const {
     return now_us;
+  }
+
+  bool IsQuit() const {
+    return quit;
+  }
+
+  void Quit() {
+    quit = true;
   }
 
   void Push(EventLoop::Callback callback, void *ctx);

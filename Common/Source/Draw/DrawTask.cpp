@@ -167,7 +167,7 @@ DoInit[MDI_DRAWTASK]=false;
 
     for (i = 1; ValidTaskPoint(i); i++) {
         if (!ValidTaskPoint(i + 1)) { // final waypoint
-            if (ActiveWayPoint > 1 || !ValidTaskPoint(2)) {
+            if (ActiveTaskPoint > 1 || !ValidTaskPoint(2)) {
                 // only draw finish line when past the first
                 // waypoint. FIXED 110307: or if task is with only 2 tps
                 DrawStartEndSector(Surface, rc, Task[i].Start, Task[i].End, Task[i].Index, FinishLine, FinishRadius);
@@ -248,7 +248,7 @@ DoInit[MDI_DRAWTASK]=false;
             if (AATEnabled && !DoOptimizeRoute()) {
                 // ELSE HERE IS *** AAT ***
                 // JMW added iso lines
-                if ((i == ActiveWayPoint) || (mode.Is(Mode::MODE_TARGET_PAN) && (i == TargetPanIndex))) {
+                if ((i == ActiveTaskPoint) || (mode.Is(Mode::MODE_TARGET_PAN) && (i == TargetPanIndex))) {
                     // JMW 20080616 flash arc line if very close to target
                     static bool flip = false;
 
@@ -273,7 +273,7 @@ DoInit[MDI_DRAWTASK]=false;
         }
     }
 
-    if ((ActiveWayPoint < 2) && ValidTaskPoint(0) && ValidTaskPoint(1)) {
+    if ((ActiveTaskPoint < 2) && ValidTaskPoint(0) && ValidTaskPoint(1)) {
         DrawStartEndSector(Surface, rc, Task[0].Start, Task[0].End, Task[0].Index, StartLine, StartRadius);
         if (EnableMultipleStartPoints) {
             for (i = 0; i < MAXSTARTPOINTS; i++) {
@@ -285,6 +285,7 @@ DoInit[MDI_DRAWTASK]=false;
         }
     }
     
+    LKPen ArrowPen(PEN_SOLID, size_tasklines-NIBLSCALE(1), taskcolor);
     for (i = 0; ValidTaskPoint(i + 1); i++) {
         int imin = min(Task[i].Index, Task[i + 1].Index);
         int imax = max(Task[i].Index, Task[i + 1].Index);
@@ -314,7 +315,7 @@ DoInit[MDI_DRAWTASK]=false;
             sct2 = WayPointList[imax].Screen;
         }
 
-        if ((i >= ActiveWayPoint && DoOptimizeRoute()) || !DoOptimizeRoute()) {
+        if ((i >= ActiveTaskPoint && DoOptimizeRoute()) || !DoOptimizeRoute()) {
             POINT ClipPt1 = sct1, ClipPt2 = sct2;
             if(LKGeom::ClipLine(rc, ClipPt1, ClipPt2)) {
                 DrawMulticolorDashLine(Surface, size_tasklines,
@@ -324,27 +325,28 @@ DoInit[MDI_DRAWTASK]=false;
                 
                 // draw small arrow along task direction
                 POINT p_p;
-                POINT Arrow[2] = {
+                POINT Arrow[] = {
                     {6, 6},
+                    {0, 0},
                     {-6, 6}
                 };
-                ScreenClosestPoint(sct1, sct2,
-                        Orig_Aircraft, &p_p, NIBLSCALE(25));
-                threadsafePolygonRotateShift(Arrow, 2, p_p.x, p_p.y, bearing - DisplayAngle);
+                ScreenClosestPoint(sct1, sct2, Orig_Aircraft, &p_p, NIBLSCALE(25));
+                PolygonRotateShift(Arrow, array_size(Arrow), p_p.x, p_p.y, bearing - DisplayAngle);
 
-                Surface.DrawLine(PEN_SOLID, size_tasklines-NIBLSCALE(1), Arrow[0], p_p, taskcolor, rc);
-                Surface.DrawLine(PEN_SOLID, size_tasklines-NIBLSCALE(1), Arrow[1], p_p, taskcolor, rc);
+                const auto OldPen = Surface.SelectObject(ArrowPen);
+                Surface.Polyline(Arrow, array_size(Arrow), rc);
+                Surface.SelectObject(OldPen);                
             }
         }
     }
     
     // Draw DashLine From current position to Active TurnPoint center
-    if(ValidTaskPoint(ActiveWayPoint)) {
+    if(ValidTaskPoint(ActiveTaskPoint)) {
         POINT ptStart;
         LatLon2Screen(DrawInfo.Longitude, DrawInfo.Latitude, ptStart);
         Surface.DrawDashLine(NIBLSCALE(1),
                     ptStart,
-                    WayPointList[Task[ActiveWayPoint].Index].Screen,
+                    WayPointList[Task[ActiveTaskPoint].Index].Screen,
                     taskcolor, rc);
 
     }
@@ -363,7 +365,7 @@ DoInit[MDI_DRAWTASK]=false;
 
 
 void MapWindow::DrawTaskSectors(LKSurface& Surface, const RECT& rc) {
-int Active = ActiveWayPoint;
+int Active = ActiveTaskPoint;
 if(ValidTaskPoint(PanTaskEdit))
 Active = PanTaskEdit;
 

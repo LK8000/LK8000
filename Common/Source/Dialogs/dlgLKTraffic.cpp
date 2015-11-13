@@ -12,6 +12,8 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "FlarmIdFile.h"
+#include "resource.h"
+
 extern FlarmIdFile *file;
 
 static WndForm *wf=NULL;
@@ -331,11 +333,9 @@ static void SetValues(int indexid) {
 void dlgLKTrafficDetails(int indexid) {
 
   TCHAR status[80], tpas[30];
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgLKTraffic.xml"));
   wf = dlgLoadFromXML(CallBackTable,
-		      filename, 
-		      TEXT("IDR_XML_LKTRAFFICDETAILS"));
+		      TEXT("dlgLKTraffic.xml"), 
+		      IDR_XML_LKTRAFFICDETAILS);
 
   if (!wf) return;
 

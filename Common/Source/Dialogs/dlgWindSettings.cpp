@@ -11,6 +11,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
+#include "resource.h"
 
 static WndForm *wf=NULL;
 
@@ -97,11 +98,9 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgWindSettingsShowModal(void){
 
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgWindSettings.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
-                      filename, 
-		      TEXT("IDR_XML_WINDSETTINGS"));
+                    TEXT("dlgWindSettings.xml"), 
+                    IDR_XML_WINDSETTINGS);
 
   if (wf) {
     WndProperty* wp;

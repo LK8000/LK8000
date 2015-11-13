@@ -17,13 +17,22 @@
 // an old bitmap image of the screen.
 void MapWindow::RequestFastRefresh() {
   MapDirty = false;
+
+#ifdef ENABLE_OPENGL
+  MainWindow.Invalidate();
+#else
   drawTriggerEvent.set();
+#endif  
 }
 
 
 void MapWindow::RefreshMap() {
   MapDirty = true;
+#ifdef ENABLE_OPENGL
+  MainWindow.Invalidate();
+#else
   drawTriggerEvent.set();
+#endif  
 }
 
 

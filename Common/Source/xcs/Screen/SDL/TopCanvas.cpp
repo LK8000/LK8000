@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -287,14 +287,6 @@ TopCanvas::OnResize(PixelSize new_size)
 #endif
 }
 
-void
-TopCanvas::Fullscreen()
-{
-#if 0 /* disabled for now, for easier development */
-  ::SDL_WM_ToggleFullScreen(surface);
-#endif
-}
-
 #ifdef GREYSCALE
 
 #ifdef DITHER
@@ -337,7 +329,7 @@ CopyGreyscaleToRGB565(RGB565Color *gcc_restrict dest,
 
 #endif
 
-#if defined(__clang__) || GCC_VERSION >= 40800
+#if CLANG_OR_GCC_VERSION(4,8)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-align"
 #endif
@@ -428,7 +420,7 @@ CopyFromGreyscale(
 #endif
 }
 
-#if defined(__clang__) || GCC_VERSION >= 40800
+#if CLANG_OR_GCC_VERSION(4,8)
 #pragma GCC diagnostic pop
 #endif
 
@@ -441,13 +433,13 @@ TopCanvas::Lock()
 {
 #ifndef GREYSCALE
 #if SDL_MAJOR_VERSION >= 2
-  WritableImageBuffer<SDLPixelTraits> buffer;
+  WritableImageBuffer<ActivePixelTraits> buffer;
   void* pixels;
   int pitch, width, height;
   SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
   if (SDL_LockTexture(texture, nullptr, &pixels, &pitch) != 0)
     return Canvas();
-  buffer.data = (SDLPixelTraits::pointer_type)pixels;
+  buffer.data = (ActivePixelTraits::pointer_type)pixels;
   buffer.pitch = (unsigned) pitch;
   buffer.width = (unsigned) width;
   buffer.height = (unsigned) height;
@@ -455,8 +447,8 @@ TopCanvas::Lock()
   if (SDL_LockSurface(surface) != 0)
     return Canvas();
 
-  WritableImageBuffer<SDLPixelTraits> buffer;
-  buffer.data = (SDLPixelTraits::pointer_type)surface->pixels;
+  WritableImageBuffer<ActivePixelTraits> buffer;
+  buffer.data = (ActivePixelTraits::pointer_type)surface->pixels;
   buffer.pitch = surface->pitch;
   buffer.width = surface->w;
   buffer.height = surface->h;

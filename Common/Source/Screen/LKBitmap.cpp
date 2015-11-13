@@ -12,6 +12,8 @@
 #include <utility>
 #include "tchar.h"
 #include "LKBitmap.h"
+#include <limits>
+#include <stdio.h>
 
 #ifndef WIN32
 #include "resource_data.h"
@@ -23,8 +25,12 @@ LKBitmap::LKBitmap(LKBitmap&& Bitmap) {
     Bitmap.bitmap = nullptr;
 #elif defined(USE_MEMORY_CANVAS)
     std::swap(buffer, Bitmap.buffer);
+#elif defined(ENABLE_OPENGL)
+  std::swap(texture, Bitmap.texture);
+  std::swap(size, Bitmap.size);
+  std::swap(interpolation, Bitmap.interpolation);
 #else
-#error "Not Implemented"
+#warning "Not Implemented"
 #endif
 }
 
@@ -41,8 +47,12 @@ LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
     std::swap(bitmap, Bitmap.bitmap);
 #elif defined(USE_MEMORY_CANVAS)
     std::swap(buffer, Bitmap.buffer);
-#else
-#error "Not Implemented"
+#elif defined(ENABLE_OPENGL)
+  std::swap(texture, Bitmap.texture);
+  std::swap(size, Bitmap.size);
+  std::swap(interpolation, Bitmap.interpolation);
+#else    
+#warning "Not Implemented"
 #endif
     return * this;
 }
@@ -74,15 +84,8 @@ bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
         return true;
     }
 #else
-    const TCHAR* szID = ResourceName;
-    TCHAR szTmp[10] = {};
-    if((ptrdiff_t)ResourceName < (ptrdiff_t)std::numeric_limits<unsigned short>::max()) {
-        // we have resource ID
-        _stprintf(szTmp, _T("%u"), (unsigned short)(ptrdiff_t)ResourceName);        
-        szID = szTmp;
-    }
-    if(szID) {
-        return Load(GetNamedResource(szID), Type::STANDARD);
+    if(ResourceName) {
+        return Load(GetNamedResource(ResourceName), Type::STANDARD);
     }
 #endif
     return false;

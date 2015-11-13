@@ -39,7 +39,11 @@ bool OnFastPanning=false;
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
 
+#ifdef ENABLE_OPENGL
+LKColor MapWindow::AboveTerrainColor;
+#else
 LKBrush  MapWindow::hAboveTerrainBrush;
+#endif
 
 int MapWindow::SnailWidthScale = 16;
 int MapWindow::ScaleListCount = 0;
@@ -51,19 +55,13 @@ POINT MapWindow::Orig_Screen;
 RECT MapWindow::MapRect; // the entire screen area in use
 RECT MapWindow::DrawRect; // the portion of MapRect for drawing terrain, topology etc. (the map)
 
-#ifdef USE_GDI
-LKWindowSurface MapWindow::BackBufferSurface;
-#else
-LKWindowSurface MapWindow::WindowSurface;
-LKBitmapSurface MapWindow::BackBufferSurface;
-#endif
 
-LKBitmapSurface MapWindow::DrawSurface;
-  
+#ifndef ENABLE_OPENGL
 LKBitmapSurface MapWindow::TempSurface;
 
 LKMaskBitmapSurface MapWindow::hdcMask;
 LKBitmapSurface MapWindow::hdcbuffer;
+#endif
 
 double MapWindow::PanLatitude = 0.0;
 double MapWindow::PanLongitude = 0.0;
@@ -82,7 +80,7 @@ int MapWindow::GliderScreenPositionY = 40;
 double MapWindow::DisplayAngle = 0.0;
 double MapWindow::DisplayAircraftAngle = 0.0;
 
-DWORD MapWindow::targetPanSize = 0;
+unsigned MapWindow::targetPanSize = 0;
 
 bool MapWindow::LandableReachable = false;
 
@@ -152,7 +150,6 @@ double MapWindow::Xstart = 0.;
 double MapWindow::Ystart = 0.;
 
 PeriodClock MapWindow::tsDownTime;
-DWORD dwInterval=0L;
 
 double MapWindow::Xlat = 0.; 
 double MapWindow::Ylat = 0.;
@@ -179,6 +176,7 @@ POINT targetScreen;
 
 
 void MapWindow::_OnSize(int cx, int cy) {
+#ifndef ENABLE_OPENGL
     // this is Used for check Thread_Draw don't use surface object.
     Poco::Mutex::ScopedLock Lock(Surface_Mutex);
 
@@ -187,10 +185,12 @@ void MapWindow::_OnSize(int cx, int cy) {
 #endif
 
     DrawSurface.Resize(cx, cy);
+
     TempSurface.Resize(cx, cy);
     hdcbuffer.Resize(cx, cy);
     hdcMask.Resize(cx, cy);
 
+#endif    
 }
 
 void MapWindow::UpdateActiveScreenZone(RECT rc) {
@@ -218,30 +218,30 @@ void MapWindow::UpdateActiveScreenZone(RECT rc) {
 }
 
 void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
+#ifndef ENABLE_OPENGL
 #ifdef USE_GDI
     BackBufferSurface.Create(Wnd);
     LKWindowSurface& WindowSurface = BackBufferSurface;
 #else
-    WindowSurface.Create(Wnd);
+    LKWindowSurface WindowSurface(Wnd);
     BackBufferSurface.Create(WindowSurface, cx, cy);
 #endif
     DrawSurface.Create(WindowSurface, cx, cy);
     TempSurface.Create(WindowSurface, cx, cy);
     hdcbuffer.Create(WindowSurface, cx, cy);
     hdcMask.Create(WindowSurface, cx, cy);
+#endif
 }
 
 void MapWindow::_OnDestroy() {
+#ifndef ENABLE_OPENGL
+    BackBufferSurface.Release();
     DrawSurface.Release();
+
     TempSurface.Release();
     hdcbuffer.Release();
     hdcMask.Release();
-    BackBufferSurface.Release();
-
-#ifndef USE_GDI
-	WindowSurface.Release();
-#endif
-
+#endif    
 }
 
 /*
@@ -435,7 +435,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         // while processing a virtual key for example, and also for acceleration.
         bool dontdrawthemap = (DONTDRAWTHEMAP);
 
-        dwInterval = tsDownTime.Elapsed();
+        int dwInterval = tsDownTime.Elapsed();
         tsDownTime.Reset(); // do it once forever
 
         // LK v6: check we are not out of MapRect bounds.
@@ -532,7 +532,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 #endif
                 } else {
                     // We are here in any case only when dwInterval is <VKLONGCLICK
-                    if (dwInterval >= (unsigned) CustomKeyTime) {
+                    if (dwInterval >= CustomKeyTime) {
                         if (!CustomKeyHandler(CKI_BOTTOMICON)) {
                             ShowMenu();
                         }
@@ -546,7 +546,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
         // MultiMap custom specials, we use same geometry of MSM_MAP
 
-        if ((dwInterval < (unsigned) AIRSPACECLICK) || ISPARAGLIDER) {
+        if ((dwInterval < AIRSPACECLICK) || ISPARAGLIDER) {
             if (NOTANYPAN && IsMultiMapCustom()) {
                 if ((Pos.x <= P_UngestureLeft.x) && (Pos.y <= P_UngestureLeft.y)) {
 
@@ -593,7 +593,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         int acceptreset = 2;
                         if (PGNumberOfGates == 1) acceptreset = 1;
 
-                        if (UseGates() && ValidTaskPoint(1) && ActiveWayPoint < acceptreset) { // 100507 101110
+                        if (UseGates() && ValidTaskPoint(1) && ActiveTaskPoint < acceptreset) { // 100507 101110
                             //
                             // Reset task
                             //
@@ -753,7 +753,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             //
             // Finally process normally a click on the moving map.
             //
-            if (dwInterval < (unsigned) AIRSPACECLICK) { // original and untouched interval
+            if (dwInterval < AIRSPACECLICK) { // original and untouched interval
                 {
                     if (!mode.AnyPan() && (UseUngestures || !ISPARAGLIDER)) {
                         if (Pos.x <= X_Left) {
@@ -825,8 +825,6 @@ static bool GetShiftKeyState() {
 
 
 void MapWindow::_OnKeyDown(unsigned KeyCode) {
-    if (!Debounce(50)) return;
-
     //
     // Special SIM mode keys for PC
     //

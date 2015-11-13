@@ -13,6 +13,7 @@
 #include "Bitmaps.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
+#include "resource.h"
 
 static WndForm *wf=NULL;
 #define WPLSEL WayPointList[SelectedWaypoint]
@@ -21,21 +22,18 @@ static WndForm *wf=NULL;
 static short retStatus;
 
 static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
-    (void) Sender;
-    if (wf) {
+    if (Sender) {
+        const RECT rc = Sender->GetClientRect();
 
-        WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmWaypointPicto")));
-        if (wPicto) {
-            const RECT rc = wPicto->GetClientRect();
-
-            MapWindow::DrawWaypointPictoBg(Surface, rc);
-            LKASSERT(ValidWayPoint(SelectedWaypoint));
-            if (WayPointCalc[SelectedWaypoint].IsLandable) {
-                MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 4000, true);
-            } else {
-                MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
-            }
+        MapWindow::DrawWaypointPictoBg(Surface, rc);
+        LockTaskData();
+        LKASSERT(ValidWayPointFast(SelectedWaypoint));
+        if (WayPointCalc[SelectedWaypoint].IsLandable) {
+            MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 4000, true);
+        } else {
+            MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
         }
+        UnlockTaskData();
     }
 }
 
@@ -96,18 +94,11 @@ static CallBackTableEntry_t CallBackTable[]={
 // Will return 0 if cancel or error, 1 if details needed, 2 if goto, 3 if alt1, 4 if alt2
 short dlgWayQuickShowModal(void){
 
-  wf = NULL;
-
-  TCHAR filename[MAX_PATH];
   TCHAR sTmp[128];
 
-  if (ScreenLandscape) {
-	LocalPathS(filename, TEXT("dlgWayQuick.xml"));
-	wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_WAYPOINTQUICK"));
-  } else {
-	LocalPathS(filename, TEXT("dlgWayQuick_P.xml"));
-	wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_WAYPOINTQUICK_P"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+            ScreenLandscape ? TEXT("dlgWayQuick_L.xml") : TEXT("dlgWayQuick_P.xml"),
+            ScreenLandscape ? IDR_XML_WAYPOINTQUICK_L : IDR_XML_WAYPOINTQUICK_P);
 
   if (!wf) return 0;
 

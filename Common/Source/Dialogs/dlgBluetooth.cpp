@@ -14,6 +14,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "Message.h"
+#include "resource.h"
 
 #ifndef NO_BLUETOOTH
 
@@ -124,33 +125,19 @@ namespace DlgBluetooth {
     };
 
     void Show() {
-        TCHAR filename[MAX_PATH];
-        const TCHAR *resName = NULL;
-        if (!ScreenLandscape) {
-            LocalPathS(filename, TEXT("dlgBluetooth_L.xml"));
-            resName = TEXT("IDR_XML_BLUETOOTH_L");
-        } else {
-            LocalPathS(filename, TEXT("dlgBluetooth.xml"));
-            resName = TEXT("IDR_XML_BLUETOOTH");
-        }
-        wfBth = dlgLoadFromXML(CallBackTable, filename, resName);
+
+        wfBth = dlgLoadFromXML(CallBackTable, 
+                ScreenLandscape ? TEXT("dlgBluetooth_L.xml") : TEXT("dlgBluetooth_P.xml"),
+                ScreenLandscape ? IDR_XML_BLUETOOTH_L : IDR_XML_BLUETOOTH_P);
         if (wfBth) {
 
             WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));
             if (BthList) {
                 BthList->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT | BORDERBOTTOM);
-                BthList->SetWidth(wfBth->GetWidth() - BthList->GetLeft() - IBLSCALE(4));
-
-                // Bug : we need ClientHeight, but Cleint Rect is Calculated by OnPaint
-                // BthList->SetHeight(wfBth->GetHeight() - BthList->GetTop() - 2);
-                if (BthList->ScrollbarWidth == -1) {
-                    BthList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale);
-                }
 
                 WndOwnerDrawFrame* BthListEntry = (WndOwnerDrawFrame*) wfBth->FindByName(TEXT("frmBthListEntry"));
                 if (BthListEntry) {
                     BthListEntry->SetCanFocus(true);
-                    BthListEntry->SetWidth(BthList->GetWidth() - BthList->ScrollbarWidth - 5);
                 }
 
                 BthList->ResetList();

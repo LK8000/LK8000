@@ -193,7 +193,7 @@ passthrough:
 	case ckGoHome:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (ValidWayPoint(HomeWaypoint)) {
-			if ( (ValidTaskPoint(ActiveWayPoint)) && (Task[ActiveWayPoint].Index == HomeWaypoint )) {
+			if ( (ValidTaskPoint(ActiveTaskPoint)) && (Task[ActiveTaskPoint].Index == HomeWaypoint )) {
 	// LKTOKEN  _@M82_ = "Already going home" 
 				DoStatusMessage(gettext(TEXT("_@M82_")));
 			} else {

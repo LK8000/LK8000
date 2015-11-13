@@ -200,7 +200,7 @@ _normal_run:
 // A note about this function. We are changing map drawing parameters here, but we paint from the winmain thread.
 // We are NOT using this from drawthread! the dialog target pan is sort of an hack, and not a good example.
 // Do not consider emulating the target dialog, because it should be moved to draw thread somehow.
-void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0 */)
+void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* = 0 */)
 {
   static double old_latitude;
   static double old_longitude;

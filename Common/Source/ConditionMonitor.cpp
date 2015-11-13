@@ -143,14 +143,14 @@ public:
 protected:
 
   bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
-    if (!Calculated->Flying || !ValidTaskPoint(ActiveWayPoint)) {
+    if (!Calculated->Flying || !ValidTaskPoint(ActiveTaskPoint)) {
       return false;
     }
 
     tad = Calculated->TaskAltitudeDifference*0.2+0.8*tad;
 
     bool BeforeFinalGlide = 
-      (ValidTaskPoint(ActiveWayPoint+1) && !Calculated->FinalGlide);
+      (ValidTaskPoint(ActiveTaskPoint+1) && !Calculated->FinalGlide);
 
     if (BeforeFinalGlide) {
       Interval_Notification = 60*5;
@@ -204,15 +204,15 @@ public:
 protected:
 
   bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
-    if (!ValidTaskPoint(ActiveWayPoint) || !Calculated->Flying) {
+    if (!ValidTaskPoint(ActiveTaskPoint) || !Calculated->Flying) {
       return false;
     }
 
     // THIS IS BUGGY IN NORTHERN EMISPHERE, TODO DISCOVER WHY
     double sunsettime
       = DoSunEphemeris(
-                       WayPointList[Task[ActiveWayPoint].Index].Longitude,
-                       WayPointList[Task[ActiveWayPoint].Index].Latitude);
+                       WayPointList[Task[ActiveTaskPoint].Index].Longitude,
+                       WayPointList[Task[ActiveTaskPoint].Index].Latitude);
     double d1 = (Calculated->TaskTimeToGo+DetectCurrentTime())/3600;
     double d0 = (DetectCurrentTime())/3600;
 
@@ -244,12 +244,12 @@ public:
 protected:
 
   bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
-    if (DoOptimizeRoute() || !AATEnabled || !ValidTaskPoint(ActiveWayPoint) 
+    if (DoOptimizeRoute() || !AATEnabled || !ValidTaskPoint(ActiveTaskPoint) 
         || !(Calculated->ValidStart && !Calculated->ValidFinish)
         || !Calculated->Flying) {
       return false;
     }
-    bool OnFinalWaypoint = !ValidTaskPoint(ActiveWayPoint);
+    bool OnFinalWaypoint = !ValidTaskPoint(ActiveTaskPoint);
     if (OnFinalWaypoint) {
       // can't do much about it now, so don't give a warning
       return false;
@@ -280,8 +280,8 @@ public:
 protected:
 
   bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
-    if (!ValidTaskPoint(ActiveWayPoint) || !Calculated->Flying
-        || (ActiveWayPoint>0) || !ValidTaskPoint(ActiveWayPoint+1)) {
+    if (!ValidTaskPoint(ActiveTaskPoint) || !Calculated->Flying
+        || (ActiveTaskPoint>0) || !ValidTaskPoint(ActiveTaskPoint+1)) {
       return false;
     }
     if (Calculated->LegDistanceToGo>StartRadius) {
@@ -322,7 +322,7 @@ public:
 protected:
 
   bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
-    if (!Calculated->Flying || !ValidTaskPoint(ActiveWayPoint)) {
+    if (!Calculated->Flying || !ValidTaskPoint(ActiveTaskPoint)) {
       return false;
     }
 

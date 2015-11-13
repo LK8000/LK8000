@@ -12,7 +12,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "utils/TextWrapArray.h"
-
+#include "resource.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wHelp=NULL;
@@ -72,19 +72,11 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
     return;
   }
   InitHelp();
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgHelp_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename,
-                        TEXT("IDR_XML_HELP_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgHelp.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_HELP"));
-  }
+
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgHelp_L.xml") : TEXT("dlgHelp_P.xml"),
+                        ScreenLandscape ? IDR_XML_HELP_L : IDR_XML_HELP_P);
+
   LKASSERT(wf);
   if (!wf) goto _getout;
 
@@ -100,23 +92,12 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   if (!wHelp) goto _getout;
 
   wHelp->SetBorderKind(BORDERLEFT);
-  wHelp->SetWidth(wf->GetWidth() - wHelp->GetLeft()-2);
-
+  
   wHelpEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
   LKASSERT(wHelpEntry);
   if (!wHelpEntry) goto _getout;
   wHelpEntry->SetCanFocus(true);
 
-  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wHelp->ScrollbarWidth == -1) {
-    #if defined (PNA)
-    #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-    #else
-    #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-    #endif
-    wHelp->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-  }
-  wHelpEntry->SetWidth(wHelp->GetWidth() - wHelp->ScrollbarWidth - 5);
   {
     LKWindowSurface Surface(*wHelpEntry);
     Surface.SelectObject(wHelpEntry->GetFont());

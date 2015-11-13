@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -31,9 +31,8 @@ Copyright_License {
 struct Event {
   enum Type {
     NOP,
-    QUIT,
 
-#ifdef USE_CONSOLE
+#ifdef USE_POLL_EVENT
     CLOSE,
 #endif
 
@@ -76,6 +75,18 @@ struct Event {
      */
     RESUME,
 #endif
+
+#ifdef USE_X11
+    /**
+     * The X11 window was resized.
+     */
+    RESIZE,
+
+    /**
+     * Redraw the screen.
+     */
+    EXPOSE,
+#endif
   };
 
   typedef void (*Callback)(void *ctx);
@@ -89,6 +100,10 @@ struct Event {
   Callback callback;
 
   RasterPoint point;
+
+#ifdef USE_X11
+  unsigned ch;
+#endif
 
   Event() = default;
   Event(Type _type):type(_type) {}
@@ -116,12 +131,23 @@ struct Event {
   }
 
   size_t GetCharacterCount() const {
+#ifdef USE_X11
+    return type == KEY_DOWN && ch != 0;
+#else
     return 0;
+#endif
   }
 
   unsigned GetCharacter(size_t characterIdx) const {
+#ifdef USE_X11
+    assert(characterIdx == 0);
+    assert(ch != 0);
+
+    return ch;
+#else
     assert(false);
     return 0;
+#endif
   }
 
   bool IsMouseDown() const {

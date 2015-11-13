@@ -40,7 +40,7 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
   double hoffset = DerivedDrawInfo.TerrainBase;
   double h = DerivedDrawInfo.NavAltitude-hoffset;
 
-  const bool draw_start_height = ((ActiveWayPoint==0) && (ValidTaskPoint(0)) 
+  const bool draw_start_height = ((ActiveTaskPoint==0) && (ValidTaskPoint(0)) 
 			    && (StartMaxHeight!=0)
 			    && (DerivedDrawInfo.TerrainValid));
   double hstart=0;

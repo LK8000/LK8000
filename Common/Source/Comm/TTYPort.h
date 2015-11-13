@@ -18,7 +18,7 @@
 
 class TTYPort : public ComPort {
 public:
-    TTYPort(int idx, const std::tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling);
+    TTYPort(int idx, const std::tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling);
     virtual ~TTYPort();
 
     virtual bool Initialize();
@@ -39,12 +39,12 @@ public:
     virtual bool Write(const void *data, size_t length);
 
 protected:
-    virtual DWORD RxThread();
+    virtual unsigned RxThread();
 
 private:
     void signal_handler_IO(int status);
 
-    DWORD _dwPortSpeed;
+    unsigned _dwPortSpeed;
     BitIndex_t _dwPortBit;
     unsigned short valid_frames;
 

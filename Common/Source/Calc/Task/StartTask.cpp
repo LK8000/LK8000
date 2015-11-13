@@ -50,7 +50,7 @@ void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     AnnounceWayPointSwitch(Calculated, do_advance);
   } else {
     if (do_advance) {
-      ActiveWayPoint=1;
+      ActiveTaskPoint=1;
       SelectedWaypoint = TASKINDEX; 
     }
   }

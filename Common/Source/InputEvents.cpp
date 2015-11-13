@@ -37,6 +37,9 @@
 #include "Sound/Sound.h"
 #include "OS/RotateScreen.h"
 
+// uncomment for show all menu button with id as Label.
+//#define TEST_MENU_LAYOUT
+
 // Sensible maximums 
 #define MAX_MODE 100
 #define MAX_MODE_STRING 25
@@ -54,7 +57,7 @@ static int mode_map_count = 0;
 
 // Key to Event - Keys (per mode) mapped to events
 #ifndef USE_GDI
-// Some linux keycode are defined on 4 Byte, use map instead array. 
+// Some linux keycode are defined on 4 Byte, use map instead of array. 
 static std::map<int,int> Key2Event[MAX_MODE];
 #else
 static int Key2Event[MAX_MODE][MAX_KEY];
@@ -79,12 +82,11 @@ static int Events_count;				// How many have we defined
 // Labels - defined per mode
 typedef struct {
   const TCHAR *label;
-  int location;
+  unsigned MenuId;
   int event;
 } ModeLabelSTRUCT;
 
 static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
-static int ModeLabel_count[MAX_MODE];	       // Where are we up to in this mode...
 std::list<TCHAR*> LabelGarbage;
 
 #define MAX_GCE_QUEUE 10
@@ -107,11 +109,11 @@ PopupEventQueue_t PopupEventQueue;
 
 bool InitONCE = false;
 #ifdef LXMINIMAP
-int SelectedButtonIndex=0;
+unsigned SelectedButtonId=0;
 bool IsMenuShown = false;
 //bool SelectMode = false;
 
-Poco::Timestamp LastActiveSelectMode = 0;
+PeriodClock LastActiveSelectMode;
 #endif
 
 // This is set when multimaps are calling MMCONF menu.
@@ -123,7 +125,7 @@ typedef struct {
   pt2Event event;
 } Text2EventSTRUCT;
 Text2EventSTRUCT Text2Event[256];  // why 256?
-int Text2Event_count;
+size_t Text2Event_count;
 
 // Mapping text names of events to the real thing
 const TCHAR *Text2GCE[GCE_COUNT+1];
@@ -140,13 +142,8 @@ void InputEvents::readFile() {
 
   // clear the GCE and NMEA queues
   LockEventQueue();
-  int i;
-  for (i=0; i<MAX_GCE_QUEUE; i++) {
-    GCE_Queue[i]= -1;
-  }
-  for (i=0; i<MAX_NMEA_QUEUE; i++) {
-    NMEA_Queue[i]= -1;
-  }
+  std::fill(std::begin(GCE_Queue), std::end(GCE_Queue), -1);
+  std::fill(std::begin(NMEA_Queue), std::end(NMEA_Queue), -1);
   UnlockEventQueue();
 
   // Get defaults 
@@ -156,6 +153,7 @@ void InputEvents::readFile() {
     InitONCE = true;
   }
 
+#ifndef TEST_MENU_LAYOUT
   // Read in user defined configuration file
 	
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
@@ -251,7 +249,6 @@ void InputEvents::readFile() {
       memset(&GC2Event, 0, sizeof(GC2Event));
       memset(&Events, 0, sizeof(Events));
       memset(&ModeLabel, 0, sizeof(ModeLabel));
-      memset(&ModeLabel_count, 0, sizeof(ModeLabel_count));
       Events_count = 0;
     }
 
@@ -271,7 +268,7 @@ void InputEvents::readFile() {
 
 	// General errors - these should be true
 	LKASSERT(d_location >= 0);
-	LKASSERT(d_location < 1024);
+	LKASSERT(d_location <= MAX_LABEL);
 	LKASSERT(event_id >= 0);
 	LKASSERT(d_mode != NULL);
 	LKASSERT(d_type != NULL);
@@ -287,7 +284,7 @@ void InputEvents::readFile() {
 	  // All modes are valid at this point
 	  int mode_id = mode2int(token, true);
 	  LKASSERT(mode_id >= 0);
-          assert(mode_id < (int)array_size(Key2Event));
+      assert(mode_id < (int)array_size(Key2Event));
 			  
 	  // Make label event
 	  // TODO code: Consider Reuse existing entries...
@@ -303,13 +300,20 @@ void InputEvents::readFile() {
 
 	  // Make key (Keyboard input)
 	  if (_tcscmp(d_type, TEXT("key")) == 0)	{	// key - Hardware key or keyboard
-	    int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
+	    const int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
+	    if (ikey > 0) {
 #ifdef USE_GDI
             assert(ikey < (int)array_size(Key2Event[mode_id]));
+            Key2Event[mode_id][ikey] = event_id;
+#else
+            if(event_id > 0) {
+                Key2Event[mode_id][ikey] = event_id;
+            } else {
+                Key2Event[mode_id].erase(ikey);
+            }
 #endif
-	    if (ikey > 0)
-	      Key2Event[mode_id][ikey] = event_id;
-			    
+
+        }
 	    // Make gce (Glide Computer Event)
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
 	    int iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
@@ -387,9 +391,9 @@ void InputEvents::readFile() {
 	  }
 	}
       } else if (_tcscmp(key, TEXT("label")) == 0) {
-	_tcscpy(d_label, value);				
+        _tcscpy(d_label, value);
       } else if (_tcscmp(key, TEXT("location")) == 0) {
-	_stscanf(value, TEXT("%d"), &d_location);
+        _stscanf(value, TEXT("%d"), &d_location);
 	
       }
     }
@@ -401,10 +405,10 @@ void InputEvents::readFile() {
   _tcscpy(szInputFile,szFile1);
 
   zzip_fclose(fp);
+#endif
 }
 
 void InputEvents::UnloadString(){
-	memset(&ModeLabel_count, 0, sizeof(ModeLabel_count));
 	memset(&ModeLabel, 0, sizeof(ModeLabel));
 
 	std::for_each(LabelGarbage.begin(),LabelGarbage.end(), safe_free());
@@ -470,8 +474,7 @@ int InputEvents::findKey(const TCHAR *data) {
 }
 
 pt2Event InputEvents::findEvent(const TCHAR *data) {
-  int i;
-  for (i = 0; i < Text2Event_count; i++) {
+  for (size_t i = 0; i < Text2Event_count; i++) {
     if (_tcscmp(data, Text2Event[i].text) == 0)
       return Text2Event[i].event;
   }
@@ -516,16 +519,26 @@ int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int 
 // Make a new label (add to the end each time)
 // NOTE: String must already be copied (allows us to use literals
 // without taking up more data - but when loading from file must copy string
-void InputEvents::makeLabel(int mode_id, const TCHAR* label, int location, int event_id) {
+void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, int event_id) {
 
-  if ((mode_id >= 0) && (mode_id < MAX_MODE) && (ModeLabel_count[mode_id] < MAX_LABEL)) {
-    ModeLabel[mode_id][ModeLabel_count[mode_id]].label = label;
-    ModeLabel[mode_id][ModeLabel_count[mode_id]].location = location;
-    ModeLabel[mode_id][ModeLabel_count[mode_id]].event = event_id;
-    ModeLabel_count[mode_id]++;
-  } else {
-	LKASSERT(0);
-  }
+    static_assert(MAX_MODE == array_size(ModeLabel), "wrong array size" );
+    static_assert(MAX_LABEL == array_size(ModeLabel[0]), "wrong array size" );
+    
+    unsigned LabelIdx = MenuId -1;
+ 
+    if ((mode_id >= 0) && (mode_id < MAX_MODE) && (LabelIdx < MAX_LABEL)) {
+
+        if(ModeLabel[mode_id][LabelIdx].label != nullptr && ModeLabel[mode_id][LabelIdx].label[0] != _T('\0')){
+            StartupStore(_T("Menu \"%s\" override Menu \"%s\"" NEWLINE), label, ModeLabel[mode_id][LabelIdx].label);
+            assert(false);
+        }
+        
+        ModeLabel[mode_id][LabelIdx].label = label;
+        ModeLabel[mode_id][LabelIdx].MenuId = MenuId;
+        ModeLabel[mode_id][LabelIdx].event = event_id;
+    } else {
+        LKASSERT(0);
+    }
 }
 
 // Return 0 for anything else - should probably return -1 !
@@ -556,17 +569,14 @@ void InputEvents::setMode(const TCHAR *mode) {
   int thismode;
 
 #ifdef LXMINIMAP
- if(GlobalModelType==MODELTYPE_PNA_MINIMAP)
-    {
+    if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
 
 
-               if(_tcscmp(mode, TEXT("default")) == 0)
-               {
-                       IsMenuShown=false;
-                       SelectedButtonIndex = 1;
-               }
-               else
-                       IsMenuShown=true;
+        if (_tcscmp(mode, TEXT("default")) == 0) {
+            IsMenuShown = false;
+            SelectedButtonId = 1;
+        } else
+            IsMenuShown = true;
 
     }
 #endif
@@ -603,31 +613,26 @@ void InputEvents::setMode(const TCHAR *mode) {
 	IsMultimapConfigShown=false;
   }
 
-  ButtonLabel::SetLabelText(0,NULL);
-
   drawButtons(thismode);
 
   lastmode = thismode;
 
 }
 
-void InputEvents::drawButtons(int Mode){
-  int i;
+void InputEvents::drawButtons(int Mode) {
+    if (!(ProgramStarted == psNormalOp)) return;
 
-  if (!(ProgramStarted==psNormalOp)) return;
+    for (unsigned i = 0; i < array_size(ModeLabel[Mode]); i++) {
+        if ((ModeLabel[Mode][i].MenuId > 0)) {
+            assert(i == (ModeLabel[Mode][i].MenuId - 1));
 
-  for (i = 0; i < ModeLabel_count[Mode]; i++) {
-    if ((ModeLabel[Mode][i].location > 0)) {
-
-      ButtonLabel::SetLabelText(
-        ModeLabel[Mode][i].location,
-        ModeLabel[Mode][i].label
-      );
-
+            ButtonLabel::SetLabelText(
+                    ModeLabel[Mode][i].MenuId,
+                    ModeLabel[Mode][i].label );
+        }
     }
-  }
 
-  MapWindow::RequestFastRefresh();
+    MapWindow::RequestFastRefresh();
 
 }
 
@@ -645,51 +650,43 @@ int InputEvents::getModeID() {
 
 
 // Input is a via the user touching the label on a touch screen / mouse
-bool InputEvents::processButton(int bindex) {
-  if (!(ProgramStarted==psNormalOp)) return false;
+bool InputEvents::processButton(unsigned MenuId) {
+    if (!(ProgramStarted==psNormalOp)) return false;
 
-  #if TESTBENCH
-  LKASSERT(bindex>=0);
-  #else
-  if (bindex<0) return false;
-  #endif
+#if TESTBENCH
+    LKASSERT(MenuId > 0);
+#else
+    if (MenuId < 1) return false;
+#endif
 
-  #ifdef LXMINIMAP
-  SelectedButtonIndex= bindex;
-  #endif
-  int thismode = getModeID();
+#ifdef LXMINIMAP
+    SelectedButtonId = MenuId;
+#endif
+    int thismode = getModeID();
+    unsigned i = MenuId - 1;
+    assert(i < array_size(ModeLabel[thismode])); // Invalid MenuId
+    assert(ModeLabel[thismode][i].MenuId == MenuId); // Invalid ModeLabel
 
-  int i;
-  // Note - reverse order - last one wins
-  for (i = ModeLabel_count[thismode]; i >= 0; i--) {
-	if ((ModeLabel[thismode][i].location == bindex) ) {
+    int lastMode = thismode;
 
-		int lastMode = thismode;
+    // JMW need a debounce method here..
+#if (WINDOWSPC>0)
+#else
+    if (!Debounce()) return true;
+#endif
 
-		// JMW need a debounce method here..
-		#if (WINDOWSPC>0)
-		#else
-		if (!Debounce()) return true;
-		#endif
+    // 101212 moved here so that an internal resource played will not stop LKsound running
+	PlayResource(TEXT("IDR_WAV_CLICK"));
 
-		// 101212 moved here so that an internal resource played will not stop LKsound running
-		PlayResource(TEXT("IDR_WAV_CLICK"));
-
-		if (ButtonLabel::IsEnabled(bindex)) {
-			processGo(ModeLabel[thismode][i].event);
-		}
-
-		// update button text, macro may change the label
-		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && (ButtonLabel::IsVisible(bindex))){
-			drawButtons(thismode);
-		}
-
-
-		return true;
+	if (ButtonLabel::IsEnabled(MenuId)) {
+		processGo(ModeLabel[thismode][i].event);
 	}
-  }
 
-  return false;
+	// update button text, macro may change the label
+	if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && (ButtonLabel::IsVisible(MenuId))){
+		drawButtons(thismode);
+	}
+    return true;
 }
 
 
@@ -705,7 +702,7 @@ bool InputEvents::processKey(int KeyID) {
   int event_id = 0;
 
   // get current mode
-  int mode = InputEvents::getModeID();
+  const int mode = InputEvents::getModeID();
   
 #ifndef USE_GDI
 
@@ -738,63 +735,26 @@ bool InputEvents::processKey(int KeyID) {
   
   if (event_id > 0) {
 
-    int bindex = -1;
+    unsigned MenuId = 0;
     int lastMode = mode;
     const TCHAR *pLabelText = NULL;
 
-    //
-    // A note for LK v5:  this stuff is obsoleted and 38 and 40 codes are no more getting here.
-    // This is just a reminder TODO: remove this stuff and get rid of BigZoom.
-    // The Debounce here was needed for touch buttons on old PNAs that were very responsive.
-    // We do Debounce also in MapWndProc in any case now. --paolo
-    //
-    // Accelerate zoom in/out shortening the debounce time
-    // We do this only for the case of zoom in/out virtual key pressed.
-    // The fastzoom process is triggered by BigZoom set.
-    // To get oldstyle zoom simply skip all of this.
-    if (KeyID==KEY_UP||KeyID==KEY_DOWN) {
-	#if (WINDOWSPC>0)
-	if (!Debounce(100)) return true;
-	  #if TESTBENCH
-	  // Calling BigZoom here will trigger fast redraw several times in a loop,
-	  // until the fastzoomStart time in RenderMapWindow has passed.
-	  // For PC this is not needed, because it is fast enough to redraw everything.
-	  // However in TESTBENCH mode we keep the standard PNA/PPC behaviour
-	   #if USEBIGZOOM
-	   MapWindow::zoom.BigZoom(true);
-	   #endif
-	  #endif
-	#else
-	if (!Debounce(100)) return true;
-	#if USEBIGZOOM
-	MapWindow::zoom.BigZoom(true);
-	#endif
-	#endif
-	MapWindow::RefreshMap();
-    } else {
-	#if (WINDOWSPC>0)
-	#else
-	if (!Debounce()) return true;
-	#endif
-    }
-
-    int i;
-    for (i = ModeLabel_count[mode]; i >= 0; i--) {
+    for (unsigned i = 0; i < array_size(ModeLabel[mode]); ++i) {
       if ((ModeLabel[mode][i].event == event_id)) {
-        bindex = ModeLabel[mode][i].location;
+        MenuId = ModeLabel[mode][i].MenuId;
 #ifdef LXMINIMAP
-        SelectedButtonIndex = bindex;
+        SelectedButtonId = MenuId;
 #endif
         pLabelText = ModeLabel[mode][i].label;
       }
     }
 
-    if ((bindex<0) || (ButtonLabel::IsEnabled(bindex))) {
+    if (MenuId == 0 || ButtonLabel::IsEnabled(MenuId)) {
       InputEvents::processGo(event_id);
     }
 
     // experimental: update button text, macro may change the value
-    if ((lastMode == getModeID()) && (bindex > 0) && (pLabelText != NULL) && ButtonLabel::IsVisible(bindex)) {
+    if ((lastMode == getModeID()) && (MenuId > 1) && (pLabelText != NULL) && ButtonLabel::IsVisible(MenuId)) {
       drawButtons(lastMode);
     }
 
@@ -873,13 +833,15 @@ void InputEvents::DoQueuedEvents(void) {
 	//dlgBasicSettingsShowModal();
   }
 
-  // copy the queue first, blocking
+  // copy and flush the queue first, blocking
   LockEventQueue();
   for (i=0; i<MAX_GCE_QUEUE; i++) {
     GCE_Queue_copy[i]= GCE_Queue[i];
+    GCE_Queue[i]= -1;
   }
   for (i=0; i<MAX_NMEA_QUEUE; i++) {
     NMEA_Queue_copy[i]= NMEA_Queue[i];
+    NMEA_Queue[i]= -1;
   }
   UnlockEventQueue();
 
@@ -895,18 +857,7 @@ void InputEvents::DoQueuedEvents(void) {
     }
   }
 
-  // now flush the queue, again blocking
-  LockEventQueue();
-  for (i=0; i<MAX_GCE_QUEUE; i++) {
-    GCE_Queue[i]= -1;
-  }
-  for (i=0; i<MAX_NMEA_QUEUE; i++) {
-    NMEA_Queue[i]= -1;
-  }
-  UnlockEventQueue();
-
   blockqueue = false; // ok, ready to go on.
-
 }
 
 
@@ -1369,7 +1320,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
       }
       break;
     case 3:
-      if (ActiveWayPoint<2) { // past start (but can re-start)
+      if (ActiveTaskPoint<2) { // past start (but can re-start)
         if (AdvanceArmed) {
 	// LKTOKEN  _@M102_ = "Auto Advance: ARMED" 
           DoStatusMessage(gettext(TEXT("_@M102_")));
@@ -1383,7 +1334,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
       }
       break;    
     case 4:
-      if (ActiveWayPoint==0) { // past start (but can re-start)
+      if (ActiveTaskPoint==0) { // past start (but can re-start)
 	// LKTOKEN  _@M103_ = "Auto Advance: Automatic" 
         DoStatusMessage(gettext(TEXT("_@M103_")));
       }
@@ -1479,8 +1430,8 @@ void InputEvents::eventAnalysis(const TCHAR *misc) {
 void InputEvents::eventWaypointDetails(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("current")) == 0) {
-    if (ValidTaskPoint(ActiveWayPoint)) { // BUGFIX 091116
-      SelectedWaypoint = Task[ActiveWayPoint].Index;
+    if (ValidTaskPoint(ActiveTaskPoint)) { // BUGFIX 091116
+      SelectedWaypoint = Task[ActiveTaskPoint].Index;
     }
     if (SelectedWaypoint<0){
 	// LKTOKEN  _@M462_ = "No Active Waypoint!" 
@@ -1678,7 +1629,7 @@ void InputEvents::eventFlightMode(const TCHAR *misc) {
       DoStatusMessage(gettext(TEXT("_@M288_")));
     }
   }
-  if (ForceFinalGlide && ActiveWayPoint == -1){
+  if (ForceFinalGlide && ActiveTaskPoint == -1){
 	// LKTOKEN  _@M462_ = "No Active Waypoint!" 
     DoStatusMessage(gettext(TEXT("_@M462_")));
   }
@@ -1790,7 +1741,7 @@ void InputEvents::eventAdjustWaypoint(const TCHAR *misc) {
 // There is no more Suspend task 091216, eventAbortTask changed
 void InputEvents::eventAbortTask(const TCHAR *misc) {
 
-  if (ValidTaskPoint(ActiveWayPoint)) {
+  if (ValidTaskPoint(ActiveTaskPoint)) {
 	if (MessageBoxX(
 	// LKTOKEN  _@M179_ = "Clear the task?" 
 		gettext(TEXT("_@M179_")), 
@@ -1952,7 +1903,7 @@ void InputEvents::eventInvertColor(const TCHAR *misc) { // 100114
 
 void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 
-  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+  if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 	if (MessageBoxX(
 	// LKTOKEN  _@M563_ = "Restart task?" 
 		gettext(TEXT("_@M563_")), 
@@ -2069,7 +2020,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 		CALCULATED_INFO.TaskStartSpeed,
 		CALCULATED_INFO.TaskStartAltitude);
 	if (startTaskAnyway) {
-		ActiveWayPoint=0; 
+		ActiveTaskPoint=0; 
 		StartTask(&GPS_INFO,&CALCULATED_INFO, true, true);
 		// GCE_TASK_START does not work here, why?
 		InputEvents::eventService(_T("TASKSTART"));
@@ -2309,7 +2260,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if(_tcscmp(misc, TEXT("TASKREVERSE")) == 0) {
-	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+	if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 		if (MessageBoxX(
 			gettext(TEXT("_@M1852_")), // LKTOKEN  _@M1852_ = "Reverse task?"
 			gettext(TEXT("_@M1851_")), // LKTOKEN  _@M1851_ = "Reverse task"
@@ -3072,7 +3023,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
     edit_waypoint.Flags += LANDPOINT;
   }
   edit_waypoint.Comment = NULL;
-  _stprintf(edit_waypoint.Name,TEXT("_%u"), tmpWaypointNum);
+  _stprintf(edit_waypoint.Name,TEXT("_%u"), (unsigned)tmpWaypointNum);
   edit_waypoint.Details = 0;
   edit_waypoint.Number = WayPointList.size();
   
@@ -3186,7 +3137,9 @@ void ShowMenu() {
 void FullScreen() {
     
   if (!MenuActive) {
+#ifdef USE_GDI
     MainWindow.Fullscreen();
+#endif
   }
   MapWindow::RequestFastRefresh();
 }
@@ -3325,7 +3278,7 @@ void	MacCreadyProcessing(int UpDown)
 void NextUpDown(int UpDown)
 {
 
-  if (!ValidTaskPoint(ActiveWayPoint)) {	// BUGFIX 091116
+  if (!ValidTaskPoint(ActiveTaskPoint)) {	// BUGFIX 091116
 	StartupStore(_T(". DBG-801 activewaypoint%s"),NEWLINE);
 	return;
   }
@@ -3334,10 +3287,10 @@ void NextUpDown(int UpDown)
 
   if(UpDown>0) {
     // this was a bug. checking if AWP was < 0 assuming AWP if inactive was -1; actually it can also be 0, a bug is around
-    if(ActiveWayPoint < MAXTASKPOINTS) {
+    if(ActiveTaskPoint < MAXTASKPOINTS) {
       // Increment Waypoint
-      if(Task[ActiveWayPoint+1].Index >= 0) {
-	if(ActiveWayPoint == 0)	{
+      if(Task[ActiveTaskPoint+1].Index >= 0) {
+	if(ActiveTaskPoint == 0)	{
 	  // manual start
 	  // TODO bug: allow restart
 	  // TODO bug: make this work only for manual
@@ -3345,20 +3298,20 @@ void NextUpDown(int UpDown)
 	    CALCULATED_INFO.TaskStartTime = GPS_INFO.Time;
 	  }
 	}
-	ActiveWayPoint ++;
-        LKASSERT(ValidTaskPoint(ActiveWayPoint));
-        if (ValidTaskPoint(ActiveWayPoint)) {
+	ActiveTaskPoint ++;
+        LKASSERT(ValidTaskPoint(ActiveTaskPoint));
+        if (ValidTaskPoint(ActiveTaskPoint)) {
 	    AdvanceArmed = false;
 	    CALCULATED_INFO.LegStartTime = GPS_INFO.Time ;
         } else {
-	    ActiveWayPoint--;
+	    ActiveTaskPoint--;
         }
       }
       // No more, try first
       else 
         if((UpDown == 2) && (Task[0].Index >= 0)) {
           /* ****DISABLED****
-          if(ActiveWayPoint == 0)	{
+          if(ActiveTaskPoint == 0)	{
             // TODO bug: allow restart
             // TODO bug: make this work only for manual
             
@@ -3370,22 +3323,22 @@ void NextUpDown(int UpDown)
           }
           */
           AdvanceArmed = false;
-          ActiveWayPoint = 0;
+          ActiveTaskPoint = 0;
           CALCULATED_INFO.LegStartTime = GPS_INFO.Time ;
         }
     }
   }
   else if (UpDown<0){
-    if(ActiveWayPoint >0) {
+    if(ActiveTaskPoint >0) {
 
-      ActiveWayPoint --;
+      ActiveTaskPoint --;
       /*
 	XXX How do we know what the last one is?
 	} else if (UpDown == -2) {
-	ActiveWayPoint = MAXTASKPOINTS;
+	ActiveTaskPoint = MAXTASKPOINTS;
       */
     } else {
-      if (ActiveWayPoint==0) {
+      if (ActiveTaskPoint==0) {
 
         RotateStartPoints();
 
@@ -3393,19 +3346,19 @@ void NextUpDown(int UpDown)
 	//	TODO bug: not required? CALCULATED_INFO.TaskStartTime = 0;
       }
     }
-    aatdistance.ResetEnterTrigger(ActiveWayPoint);    
+    aatdistance.ResetEnterTrigger(ActiveTaskPoint);    
   } 
   else if (UpDown==0) {
     #if BUGSTOP
-    LKASSERT(ActiveWayPoint>=0);
+    LKASSERT(ActiveTaskPoint>=0);
     #endif
-    if (ActiveWayPoint>=0) {
-        SelectedWaypoint = Task[ActiveWayPoint].Index;
+    if (ActiveTaskPoint>=0) {
+        SelectedWaypoint = Task[ActiveTaskPoint].Index;
         PopupWaypointDetails();
     }
   }
-  if (ActiveWayPoint>=0) {
-    SelectedWaypoint = Task[ActiveWayPoint].Index;
+  if (ActiveTaskPoint>=0) {
+    SelectedWaypoint = Task[ActiveTaskPoint].Index;
   }
   UnlockTaskData();
 }
@@ -3417,9 +3370,9 @@ void NextUpDown(int UpDown)
 
 #ifdef LXMINIMAP
 
-int InputEvents::getSelectedButtonIndex()
+unsigned InputEvents::getSelectedButtonId()
 {
-	return SelectedButtonIndex;
+	return SelectedButtonId;
 }
 
 
@@ -3481,10 +3434,9 @@ void InputEvents::eventChangeSorting(const TCHAR *misc)
 
 bool InputEvents::isSelectMode()
 {
-    Poco::Timespan TimeLimit(5,0);
-	if(!LastActiveSelectMode.isElapsed(TimeLimit.totalMicroseconds()))
+	if(!LastActiveSelectMode.Check(5000))
 	{
-		 LastActiveSelectMode.update();
+		 LastActiveSelectMode.Update();
 		return true;
 	}
 	else return false;
@@ -3510,7 +3462,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
       {
 		if(isSelectMode())
 		{
-			 LastActiveSelectMode = 0;
+			LastActiveSelectMode.Reset();
 			eventStatusMessage(_T("Select deactive!"));
 		}
 		else if(ModeIndex == 0)
@@ -3519,7 +3471,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		}
 		else
 		{
-			 LastActiveSelectMode.update();
+			 LastActiveSelectMode.Update();
 			 eventStatusMessage(_T("Select active!"));
 		}
 
@@ -3539,27 +3491,27 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 			  short retry = 0;
 			  do
 			  {
-			  switch (SelectedButtonIndex)
+			  switch (SelectedButtonId)
 			                {
 			                    case 1:
 			                    case 2:
-			                    case 3: SelectedButtonIndex++; break;
-			                    case 4: SelectedButtonIndex = 9; break;
-			                    case 5: SelectedButtonIndex = 10; break;
+			                    case 3: SelectedButtonId++; break;
+			                    case 4: SelectedButtonId = 9; break;
+			                    case 5: SelectedButtonId = 10; break;
 			                    case 6:
 			                    case 7:
 			                    case 8:
-			                    case 9: SelectedButtonIndex--; break;
+			                    case 9: SelectedButtonId--; break;
 			                    case 10:
 			                    case 11:
-			                    case 12: SelectedButtonIndex++; break;
-			                    case 13: SelectedButtonIndex=1; break;
+			                    case 12: SelectedButtonId++; break;
+			                    case 13: SelectedButtonId=1; break;
 			                    default:
-			                    	SelectedButtonIndex = 1;
+			                    	SelectedButtonId = 1;
 			                        break;
 			                }
 			  retry++;
-			 }while(ButtonLabel::ButtonVisible[SelectedButtonIndex] == false && retry < NUMBUTTONLABELS);
+			 }while(!ButtonLabel::IsVisible(SelectedButtonId) && retry < NUMBUTTONLABELS);
 
 			          int thismode = getModeID();
 					  drawButtons(thismode);
@@ -3586,27 +3538,27 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 
 			 do
 			 {
-			  switch (SelectedButtonIndex)
+			  switch (SelectedButtonId)
 			  {
-			                    case 1: SelectedButtonIndex = 13; break;
+			                    case 1: SelectedButtonId = 13; break;
 			                    case 2:
 			                    case 3:
-			                    case 4: SelectedButtonIndex--; break;
+			                    case 4: SelectedButtonId--; break;
 			                    case 5:
 			                    case 6:
 			                    case 7:
-			                    case 8: SelectedButtonIndex++; break;
-			                    case 9: SelectedButtonIndex = 4; break;
-			                    case 10: SelectedButtonIndex = 5; break;
+			                    case 8: SelectedButtonId++; break;
+			                    case 9: SelectedButtonId = 4; break;
+			                    case 10: SelectedButtonId = 5; break;
 			                    case 11:
 			                    case 12:
-			                    case 13: SelectedButtonIndex--; break;
+			                    case 13: SelectedButtonId--; break;
 			                    default:
-			                    	SelectedButtonIndex = 1;
+			                    	SelectedButtonId = 1;
 			                        break;
 			  }
 			  retry++;
-			 }while(ButtonLabel::ButtonVisible[SelectedButtonIndex] == false && retry < NUMBUTTONLABELS);
+			 }while(ButtonLabel::IsVisible(SelectedButtonId) && retry < NUMBUTTONLABELS);
 
 
 			  int thismode = getModeID();
@@ -3672,22 +3624,22 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		  int thismode = getModeID();
 
 		   int i;
-		   int bindex = SelectedButtonIndex;
+		   unsigned MenuId = SelectedButtonId;
 		   // Note - reverse order - last one wins
 		   for (i = ModeLabel_count[thismode]; i >= 0; i--) {
-		 	if ((ModeLabel[thismode][i].location == bindex && bindex>=0) ) {
+		 	if ((ModeLabel[thismode][i].location == MenuId && MenuId>0) ) {
 
 		 		int lastMode = thismode;
 		 		// JMW need a debounce method here..
 
-		 		if (!ButtonLabel::ButtonDisabled[bindex]) {
+		 		if (ButtonLabel::IsEnabled(MenuId)) {
 
 
 		 			processGo(ModeLabel[thismode][i].event);
 		 		}
 
 		 		// update button text, macro may change the label
-		 		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && (ButtonLabel::ButtonVisible[bindex])){
+		 		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && ButtonLabel::IsVisible(MenuId)){
 		 			drawButtons(thismode);
 		 		}
 		 		break;

@@ -133,29 +133,29 @@ public:
         return pos;
     }
     
-    ULONG GetWidth() const {
+    unsigned GetWidth() const {
         const RECT& rc = GetClientRect();
         return rc.right - rc.left;
     }
 
-    ULONG GetHeight() const {
+    unsigned GetHeight() const {
         const RECT& rc = GetClientRect();
         return rc.bottom - rc.top;
     }
 
-    LONG GetTop() const {
+    int GetTop() const {
         return GetPosition().y;
     }
 
-    LONG GetLeft() const {
+    int GetLeft() const {
         return GetPosition().x;
     } 
     
-    LONG GetRight() const {
+    int GetRight() const {
       return GetLeft() + GetWidth();
     }
 
-    LONG GetBottom() const {
+    int GetBottom() const {
       return GetTop() + GetHeight();
     }    
  

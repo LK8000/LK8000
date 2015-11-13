@@ -61,9 +61,9 @@
 #endif
 
 bool
-FileDescriptor::Open(const char *pathname, int flags, mode_t mode)
+FileDescriptor::Open(const char *pathname, int flags)
 {
-  fd = ::open(pathname, flags | O_NOCTTY | O_CLOEXEC, mode);
+  fd = ::open(pathname, flags | O_NOCTTY | O_CLOEXEC);
   return IsDefined();
 }
 

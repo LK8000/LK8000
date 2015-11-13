@@ -19,7 +19,7 @@ DERIVED_INFO Finish_Derived_Info;
 
 
 
-// this is called only when ActiveWayPoint is 0, still waiting for start
+// this is called only when ActiveTaskPoint is 0, still waiting for start
 void CheckStart(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int *LastStartSector) {
   BOOL StartCrossed= false;
 
@@ -135,7 +135,7 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 	
 	if(ISGAAIRCRAFT) {
 		Calculated->ValidStart = true;
-		ActiveWayPoint=0; // enforce this since it may be 1
+		ActiveTaskPoint=0; // enforce this since it may be 1
 		StartTask(Basic,Calculated, true, false);
 		return;
 	}
@@ -148,7 +148,7 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
       Calculated->ValidStart = true;
 
       if (ReadyToAdvance(Calculated, true, true)) {
-        ActiveWayPoint=0; // enforce this since it may be 1
+        ActiveTaskPoint=0; // enforce this since it may be 1
         StartTask(Basic,Calculated, true, true);
       }
       if (Calculated->Flying) {
@@ -164,7 +164,7 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
     // ToLo: If speed and height are outside the rules they must be within the margin...
     } else {
     
-      if ((ActiveWayPoint<=1) 
+      if ((ActiveTaskPoint<=1) 
           && !IsFinalWaypoint()
           && (Calculated->ValidStart==false)
           && (Calculated->Flying)) {
@@ -184,7 +184,7 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
                                 Calculated->TaskStartSpeed,
                                 Calculated->TaskStartAltitude);
           if (startTaskAnyway) {
-            ActiveWayPoint=0; // enforce this since it may be 1
+            ActiveTaskPoint=0; // enforce this since it may be 1
             StartTask(Basic,Calculated, true, true);
           }
         }
@@ -208,7 +208,7 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 
 BOOL CheckRestart(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int *LastStartSector) {
   if((Basic->Time - Calculated->TaskStartTime < 3600)
-     &&(ActiveWayPoint<=1)) {
+     &&(ActiveTaskPoint<=1)) {
 
     CheckStart(Basic, Calculated, LastStartSector);
   }
@@ -217,11 +217,11 @@ BOOL CheckRestart(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int *LastStartSect
 
 
 void CheckFinish(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-  if (InFinishSector(Basic,Calculated, ActiveWayPoint)) {
+  if (InFinishSector(Basic,Calculated, ActiveTaskPoint)) {
     Calculated->IsInSector = true;
     aatdistance.AddPoint(Basic->Longitude,
                          Basic->Latitude,
-                         ActiveWayPoint);
+                         ActiveTaskPoint);
     if (!Calculated->ValidFinish) {
       Calculated->ValidFinish = true;
       if(!ISGAAIRCRAFT) AnnounceWayPointSwitch(Calculated, false);

@@ -93,7 +93,7 @@ public:
     return FileDescriptor(-1);
   }
 
-  bool Open(const char *pathname, int flags, mode_t mode=0666);
+  bool Open(const char *pathname, int flags);
   bool OpenReadOnly(const char *pathname);
 
 #ifdef HAVE_POSIX
@@ -136,8 +136,8 @@ public:
    * "undefined" object.  After this call, IsDefined() is guaranteed
    * to return false, and this object may be reused.
    */
-  bool Close() {
-    return ::close(Steal()) == 0;
+  void Close() {
+    ::close(Steal());
   }
 
   /**

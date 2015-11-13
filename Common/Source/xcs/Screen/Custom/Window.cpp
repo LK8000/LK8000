@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -31,9 +31,9 @@ Window::Create(ContainerWindow *parent, PixelRect rc,
                const WindowStyle window_style)
 {
   assert(IsScreenInitialized());
-  //assert(rc.left <= rc.right);
+  assert(rc.left <= rc.right);
   assert(rc.right - rc.left < 0x8000);
-  //assert(rc.top <= rc.bottom);
+  assert(rc.top <= rc.bottom);
   assert(rc.bottom - rc.top < 0x8000);
 
   double_clicks = window_style.double_clicks;
@@ -152,6 +152,8 @@ Window::SetCapture()
 
   if (parent != nullptr)
     parent->SetChildCapture(this);
+  else
+    EnableCapture();
 
   capture = true;
 }
@@ -166,6 +168,8 @@ Window::ReleaseCapture()
 
   if (parent != nullptr)
     parent->ReleaseChildCapture(this);
+  else
+    DisableCapture();
 }
 
 void

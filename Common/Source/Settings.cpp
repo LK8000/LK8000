@@ -84,7 +84,7 @@ void SettingsLeave() {
 	SaveDefaultTask(); //@ 101020 BUGFIX
 	ClearTask();
 	ReadWayPoints();
-	StartupStore(_T(". RELOADED %d WAYPOINTS + %d virtuals%s"),WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
+	StartupStore(_T(". RELOADED %d WAYPOINTS + %u virtuals%s"),(unsigned)WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
 	SetHome(true); // force home reload
 
 	if (WAYPOINTFILECHANGED) {

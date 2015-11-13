@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
-  <WndForm Name="frmWayPointSelect" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M592_" Font="2" >
-    <WndFrame X="0" Y="0" Width="100" Height="20" Font="2" Caption="" />
-    <WndButton Name="cmdSelect" Caption="_@M595_" X="2" Y="2" Width="80"  Height="28" Font="2" Tag="3" />
-    <WndButton Name="cmdClose" Caption="_@M186_" X="100" Y="2" Width="80"  Height="28" Font="2" Tag="3" />
-    <WndFrame X="20" Y="33" Width="80" Height="18" Font="2" Caption="_@M451_" />
-    <WndButton Name="cmdName" Caption="*" X="20" Y="48" Width="65"  Height="22" Font="2" />
-    <WndProperty Name="prpFltType" Caption="_@M752_" X="100" Y="32"  Width="98" Height="40" CaptionWidth="0" Font="2" >
-      <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnFilterType"/>
-    </WndProperty>
-    <WndProperty Name="prpFltDistance"  Caption="_@M245_"  X="2" Y="74"  Width="98" Height="40" CaptionWidth="0" Font="2" >
+  <WndForm Name="frmWayPointSelect" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M592_" Font="2" >
+    <WndFrame X="0" Y="0" Width="95" Height="2" Font="2" Caption="" />
+    <WndFrame X="20" Y="0" Width="91" Height="22" Font="2" Caption="_@M451_" />
+    <WndButton Name="cmdName" Caption="*" X="2" Y="17" Width="93"  Height="22" Font="2" />
+    <WndProperty Name="prpFltDistance"  Caption="_@M245_"  X="2" Y="-1"  Width="93" Height="38" CaptionWidth="0" Font="2" >
       <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnFilterDistance"/>
     </WndProperty>
-    <WndProperty Name="prpFltDirection" Caption="_@M238_" X="100" Y="74"  Width="98" Height="40" CaptionWidth="0" Font="2" >
+    <WndProperty Name="prpFltDirection" Caption="_@M238_" X="2" Y="-1"  Width="93" Height="38" CaptionWidth="0" Font="2" >
       <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnFilterDirection"/>
     </WndProperty>
-    <WndListFrame Name="frmWayPointList" X="0" Y="116" Width="238" Height="190" Font="2" OnListInfo="OnWpListInfo">
-      <WndOwnerDrawFrame Name="frmWayPointListEntry" X="2" Y="2" Width="226" Height="18" Font="2"  OnPaint="OnPaintListItem"/>
+    <WndProperty Name="prpFltType" Caption="_@M752_" X="2" Y="-1"  Width="93" Height="38" CaptionWidth="0" Font="2" >
+      <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnFilterType"/>
+    </WndProperty>
+    <WndButton Name="cmdSelect" Caption="_@M595_" X="2" Y="160" Width="93"  Height="28" Font="2" Tag="3" />
+    <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="192" Width="93"  Height="28" Font="2" Tag="3" />
+    <WndListFrame Name="frmWayPointList" X="97" Y="1" Width="-2" Height="-1" Font="2" OnListInfo="OnWpListInfo">
+      <WndOwnerDrawFrame Name="frmWayPointListEntry" X="2" Y="2" Width="-2" Height="24" Font="2"  OnPaint="OnPaintListItem"/>
     </WndListFrame>
   </WndForm>
 </PMML>

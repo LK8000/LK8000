@@ -104,7 +104,6 @@ void WhereAmI::run(void) {
 
   ResetNearestTopology();
 
-  MapWindow::SuspendDrawingThread();
   LockTerrainDataGraphics();
   // Since the topology search is made in the cache, and the cache has only items that
   // are ok to be printed for the current scale, and we want also items for high zoom,
@@ -367,8 +366,6 @@ _end:
   MapWindow::zoom.EventSetZoom(oldzoom);
   SetTopologyBounds(MapWindow::DrawRect, true);
   UnlockTerrainDataGraphics();
-  MapWindow::ResumeDrawingThread();
-
 
 #ifdef ULLIS_PRIVATE_FEATURES
 	_stprintf(ttmp,_T("\n\nin %i ft (MSL)"),  (int)( GPS_INFO.Altitude*TOFEET)); // in height

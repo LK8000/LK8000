@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -28,7 +28,8 @@ Copyright_License {
 #include "OS/Clock.hpp"
 
 EventQueue::EventQueue()
-  :now_us(MonotonicClockUS()) {}
+  :now_us(MonotonicClockUS()),
+   quit(false) {}
 
 void
 EventQueue::Push(EventLoop::Callback callback, void *ctx)
@@ -64,7 +65,7 @@ EventQueue::Generate(Event &event)
 bool
 EventQueue::Pop(Event &event)
 {
-  return Generate(event) || ::SDL_PollEvent(&event.event);
+  return !quit && (Generate(event) || ::SDL_PollEvent(&event.event));
 }
 
 bool
@@ -73,6 +74,9 @@ EventQueue::Wait(Event &event)
   /* this busy loop is ugly, and I wish we could do better than that,
      but SDL_WaitEvent() is just as bad; however copying this busy
      loop allows us to plug in more event sources */
+
+  if (quit)
+    return false;
 
   while (true) {
     if (Generate(event))
@@ -107,6 +111,7 @@ EventQueue::Purge(Uint32 event,
   int count = SDL_PeepEvents(events, 256, SDL_GETEVENT, SDL_EVENTMASK(event));
 #endif
   assert(count >= 0);
+
   SDL_Event *dest = events;
   for (const SDL_Event *src = events, *end = src + count; src != end; ++src)
     if (!match(*src, ctx))
@@ -155,7 +160,7 @@ EventQueue::Purge(Window &window)
 void
 EventQueue::AddTimer(Timer &timer, unsigned ms)
 {
-  Poco::ScopedLock<Poco::Mutex> protect(mutex);
+  ScopeLock protect(mutex);
 
   timers.Add(timer, MonotonicClockUS() + ms * 1000);
 }
@@ -163,7 +168,7 @@ EventQueue::AddTimer(Timer &timer, unsigned ms)
 void
 EventQueue::CancelTimer(Timer &timer)
 {
-  Poco::ScopedLock<Poco::Mutex> protect(mutex);
+  ScopeLock protect(mutex);
 
   timers.Cancel(timer);
 }

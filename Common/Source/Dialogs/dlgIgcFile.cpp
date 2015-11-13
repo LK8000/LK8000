@@ -16,6 +16,7 @@
 #include "Message.h"
 #include <iterator>
 #include "utils/stl_utils.h"
+#include "resource.h"
 
 namespace DlgIgcFile {
     WndForm *wfDlg = NULL;
@@ -175,33 +176,19 @@ namespace DlgIgcFile {
 using DlgIgcFile::wfDlg;
 
 void dlgIgcFileShowModal() {
-    TCHAR filename[MAX_PATH];
-    const TCHAR *resName = NULL;
-    if (!ScreenLandscape) {
-        LocalPathS(filename, TEXT("dlgIgcFile.xml"));
-        resName = TEXT("IDR_XML_IGCFILE");
-    } else {
-        LocalPathS(filename, TEXT("dlgIgcFile_L.xml"));
-        resName = TEXT("IDR_XML_IGCFILE_L");
-    }
-    wfDlg = dlgLoadFromXML(DlgIgcFile::CallBackTable, filename, resName);
+
+    wfDlg = dlgLoadFromXML(DlgIgcFile::CallBackTable, 
+            ScreenLandscape ? TEXT("dlgIgcFile_L.xml") : TEXT("dlgIgcFile_P.xml"), 
+            ScreenLandscape ? IDR_XML_IGCFILE_L : IDR_XML_IGCFILE_P);
     if (wfDlg) {
 
         WndListFrame* wndFileList = (WndListFrame*) wfDlg->FindByName(TEXT("frmIgcFileList"));
         if (wndFileList) {
             wndFileList->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT | BORDERBOTTOM);
-            wndFileList->SetWidth(wfDlg->GetWidth() - wndFileList->GetLeft() - IBLSCALE(4));
-
-            // Bug : we need ClientHeight, but Cleint Rect is Calculated by OnPaint
-            // wndFileList->SetHeight(wfDlg->GetHeight() - wndFileList->GetTop() - 2);
-            if (wndFileList->ScrollbarWidth == -1) {
-                wndFileList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale);
-            }
 
             WndOwnerDrawFrame* FileListEntry = (WndOwnerDrawFrame*) wfDlg->FindByName(TEXT("frmIgcFileListEntry"));
             if (FileListEntry) {
                 FileListEntry->SetCanFocus(true);
-                FileListEntry->SetWidth(wndFileList->GetWidth() - wndFileList->ScrollbarWidth - 5);
             }
 
             DlgIgcFile::ScanFile();

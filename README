@@ -12,3 +12,51 @@ HISTORY OF MASTER BRANCH
 5.3d    Jul  4, 2015
 5.3e    Aug 26, 2015
 5.3f    Nov 13, 2015
+
+================================================================================
+= Build Target                                                                 =
+================================================================================
+
+TARGET=[PPC2002|PPC2003|PNA|PC|PCX64|LINUX|KOBO]
+
+for Linux build, if "install" is added to command lin, LK8000-LINUX and all file 
+needed for run software are installed into $HOME/LK8000
+
+================================================================================
+= Build Option                                                                 =
+================================================================================
+
+All Target :
+
+    DEBUG=[y|n]  
+        default = "n"
+        if y is specified, no optimzation is made and debug info are include.
+
+--------------------------------------------------------------------------------
+LINUX Target :
+
+    OPENGL=[y|n]
+       default = "y" if libgl is available
+       if "n" is is specified, libSDL with Memory rendering is used.
+
+    USE_EGL=[y|n]
+       default = "y" if "libgl" and "libegl" are available
+
+    GLES=[y|n]
+       default = "n"
+
+    GLES2=[y|n]
+       default = "n"
+
+    USE_SDL=[y|n]
+       default = "y" if "libegl" not available or OPENGL=n
+
+    USE_SDL2=[y|n]
+        "y" by default if USE_SDL=y or OPENGL=n or USE_EGL=n and libSDL2 are available. 
+
+--------------------------------------------------------------------------------
+Desktop Target ( LINUX or PC ) :
+
+    FULLSCREEN=[y|n]
+        default = "n"
+

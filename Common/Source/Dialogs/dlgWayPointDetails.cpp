@@ -15,6 +15,7 @@
 #include "dlgTools.h"
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
+#include "resource.h"
 
 static int page=0;
 static WndForm *wf=NULL;
@@ -35,22 +36,18 @@ static int CommentDrawListIndex=0;
 static TextWrapArray aCommentTextLine;
 
 static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
-    (void) Sender;
-    WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmWaypointPicto")));
-    if(wPicto) {
+    if (Sender) {
+        const RECT rc = Sender->GetClientRect();
 
-        const RECT rc = wPicto->GetClientRect();
-
-        Surface.SetBkColor(RGB_LIGHTGREY);
-
-	LKASSERT(SelectedWaypoint>=0);
-
+        LockTaskData();
+        LKASSERT(ValidWayPointFast(SelectedWaypoint));
         if (WayPointCalc[SelectedWaypoint].IsLandable) {
             MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 7000, true);
         } else {
             MapWindow::DrawWaypointPictoBg(Surface, rc);
             MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
         }
+        UnlockTaskData();
     }
 }
 
@@ -291,20 +288,10 @@ void dlgWayPointDetailsShowModal(short mypage){
   int sunsetmins;
   WndProperty *wp;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgWayPointDetails.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_WAYPOINTDETAILS"));
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgWayPointDetails_L.xml") : TEXT("dlgWayPointDetails_P.xml"), 
+                        ScreenLandscape ? IDR_XML_WAYPOINTDETAILS_L : IDR_XML_WAYPOINTDETAILS_P);
 
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgWayPointDetails_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_WAYPOINTDETAILS_L"));
-  }
 
   if (!wf) return;
 
@@ -384,23 +371,10 @@ void dlgWayPointDetailsShowModal(short mypage){
   LKASSERT(wComment!=NULL);
 
   wComment->SetBorderKind(BORDERLEFT);
-  wComment->SetWidth(wInfo->GetWidth() - wComment->GetLeft()-2);
 
   wCommentEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWpCommentEntry"));
   LKASSERT(wCommentEntry);
   wCommentEntry->SetCanFocus(true);
-
-
-  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wComment->ScrollbarWidth == -1) {
-    #if defined (PNA)
-    #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-    #else
-    #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-    #endif
-    wComment->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-  }
-  wCommentEntry->SetWidth(wComment->GetWidth() - wComment->ScrollbarWidth - 5);
 
   {
     LKWindowSurface Surface(*wCommentEntry);
@@ -543,18 +517,6 @@ void dlgWayPointDetailsShowModal(short mypage){
   LKASSERT(wDetailsEntry!=NULL);
   wDetailsEntry->SetCanFocus(true);
 
-  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wDetails->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wDetails->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-
-  }
-  wDetailsEntry->SetWidth(wDetails->GetWidth() - wDetails->ScrollbarWidth - 5);
-
   {
     LKWindowSurface Surface(*wDetailsEntry);
     Surface.SelectObject(wDetailsEntry->GetFont());
@@ -571,12 +533,12 @@ void dlgWayPointDetailsShowModal(short mypage){
     wb->SetOnClickNotify(OnInserInTaskClicked);
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
 
-    if ((ActiveWayPoint<0) || !ValidTaskPoint(0)) {
-	// this is going to be the first tp (ActiveWayPoint 0)
+    if ((ActiveTaskPoint<0) || !ValidTaskPoint(0)) {
+	// this is going to be the first tp (ActiveTaskPoint 0)
 	_stprintf(captmp,_T("%s"),MsgToken(1824)); // insert as START
     } else {
-	LKASSERT(ActiveWayPoint>=0 && ValidTaskPoint(0));
-	int indexInsert = max(ActiveWayPoint,0); // safe check
+	LKASSERT(ActiveTaskPoint>=0 && ValidTaskPoint(0));
+	int indexInsert = max(ActiveTaskPoint,0); // safe check
 	if (indexInsert==0) {
 		_stprintf(captmp,_T("%s"),MsgToken(1824)); // insert as START
 	} else {
@@ -610,8 +572,8 @@ void dlgWayPointDetailsShowModal(short mypage){
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
 
     int tmpIdx =  -1;
-    if (ValidTaskPoint(ActiveWayPoint))
-      tmpIdx = Task[ActiveWayPoint].Index;
+    if (ValidTaskPoint(ActiveTaskPoint))
+      tmpIdx = Task[ActiveTaskPoint].Index;
     if(  ValidTaskPoint(PanTaskEdit))
      tmpIdx = RealActiveWaypoint;
     if(tmpIdx != -1)

@@ -11,7 +11,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "LKObjects.h"
-
+#include "resource.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wAirspaceList=NULL;
@@ -159,19 +159,9 @@ bool dlgAirspaceShowModal(bool coloredit){
 
   ItemIndex = -1;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspace_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACE_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspace.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACE"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgAirspace_L.xml") : TEXT("dlgAirspace_P.xml"), 
+                        ScreenLandscape ? IDR_XML_AIRSPACE_L : IDR_XML_AIRSPACE_P);
   if (!wf) return false;
 
   wAirspaceList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceList"));
@@ -183,19 +173,6 @@ bool dlgAirspaceShowModal(bool coloredit){
   FindByName(TEXT("frmAirspaceListEntry"));
   LKASSERT(wAirspaceListEntry!=NULL);
   wAirspaceListEntry->SetCanFocus(true);
-
-  // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wAirspaceList->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wAirspaceList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-
-  }
-  wAirspaceListEntry->SetWidth(wAirspaceList->GetWidth() - wAirspaceList->ScrollbarWidth - 5);
-
 
   UpdateList();
 

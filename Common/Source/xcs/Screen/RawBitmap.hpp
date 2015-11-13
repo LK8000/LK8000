@@ -12,6 +12,7 @@
 #define XCSOAR_SCREEN_RAW_BITMAP_HPP
 
 #include "PortableColor.hpp"
+#include "OS/ByteOrder.hpp"
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Surface.hpp"
@@ -19,10 +20,10 @@
 #endif
 
 #ifdef USE_GDI
-class LKSurface;
-
 #include <windef.h>
 #include <wingdi.h>
+class LKSurface;
+#define Canvas LKSurface
 #else
 class Canvas;
 #endif
@@ -56,22 +57,23 @@ struct BGRColor
   constexpr BGRColor(uint8_t R, uint8_t G, uint8_t B)
     :value(R, G, B) {}
 
-#elif defined(USE_MEMORY_CANVAS) || defined(ENABLE_SDL)
+#elif defined(USE_MEMORY_CANVAS) || defined(ENABLE_SDL) || defined(USE_EGL)
 
-#if !defined(__i386__) && !defined(__x86_64__) && !defined(__ARMEL__)
+#if IS_BIG_ENDIAN
   /* big-endian */
   uint8_t dummy;
   RGB8Color value;
 
   constexpr BGRColor(uint8_t R, uint8_t G, uint8_t B)
     :dummy(), value(R, G, B) {}
-#else /* little endian */
+#else
+  /* little-endian */
   BGR8Color value;
   uint8_t dummy;
 
   constexpr BGRColor(uint8_t R, uint8_t G, uint8_t B)
     :value(R, G, B), dummy() {}
-#endif /* little endian */
+#endif
 
 #else /* !SDL */
 
@@ -200,14 +202,9 @@ public:
   GLTexture &BindAndGetTexture() const;
 #endif
 
-#ifdef USE_GDI
-  void StretchTo(unsigned width, unsigned height, LKSurface &dest_canvas,
-                 unsigned dest_x, unsigned dest_y, unsigned dest_width, unsigned dest_height) const;
-#else
   void StretchTo(unsigned width, unsigned height, Canvas &dest_canvas,
                  unsigned dest_x, unsigned dest_y, unsigned dest_width, unsigned dest_height) const;
-#endif
-  
+
 #ifdef ENABLE_OPENGL
 private:
   /* from GLSurfaceListener */

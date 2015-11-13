@@ -159,7 +159,7 @@ GEXTERN bool DeviceNeedClipping;
 
 GEXTERN bool EnableAutoBacklight;
 GEXTERN bool EnableAutoSoundVolume;
-GEXTERN DWORD EnableFLARMMap;
+GEXTERN unsigned EnableFLARMMap;
 GEXTERN short AircraftCategory;
 GEXTERN bool CheckSum;
 GEXTERN bool HideUnits;
@@ -250,8 +250,8 @@ GEXTERN bool PGZoomTrigger;
 GEXTERN double  LastZoomTrigger;
 
 // traffic DoTraffic interval, also reset during key up and down to prevent wrong selections
-GEXTERN double  LastDoTraffic;
-
+GEXTERN double LastDoTraffic;
+GEXTERN double LastDoAirspaces;
 GEXTERN double LastDoNearest;
 GEXTERN double LastDoCommon;
 GEXTERN double LastDoThermalH;
@@ -499,33 +499,33 @@ extern std::vector<WPCALC> WayPointCalc;
 
 GEXTERN int PanTaskEdit;
 GEXTERN int RealActiveWaypoint;
-GEXTERN int ActiveWayPoint;
+GEXTERN int ActiveTaskPoint;
 GEXTERN bool TaskAborted;
 GEXTERN int SelectedWaypoint;
 GEXTERN int SectorType;
-GEXTERN DWORD SectorRadius;
+GEXTERN double SectorRadius;
 
 GEXTERN bool EnableMultipleStartPoints;
 GEXTERN int StartLine;
-GEXTERN DWORD StartRadius;
+GEXTERN double StartRadius;
 GEXTERN int FinishLine;
-GEXTERN DWORD FinishRadius;
+GEXTERN double FinishRadius;
 GEXTERN double AATTaskLength;
 GEXTERN BOOL AATEnabled;
 GEXTERN bool EnableFAIFinishHeight;
-GEXTERN DWORD FinishMinHeight;
-GEXTERN DWORD StartMaxHeight;
-GEXTERN DWORD StartMaxHeightMargin;
-GEXTERN DWORD StartMaxSpeed;
-GEXTERN DWORD StartMaxSpeedMargin;
+GEXTERN unsigned FinishMinHeight;
+GEXTERN unsigned StartMaxHeight;
+GEXTERN unsigned StartMaxHeightMargin;
+GEXTERN unsigned StartMaxSpeed;
+GEXTERN unsigned StartMaxSpeedMargin;
 GEXTERN int StartHeightRef;
-GEXTERN DWORD FAI28_45Threshold;
+GEXTERN unsigned FAI28_45Threshold;
 
-GEXTERN DWORD AlarmMaxAltitude1;
-GEXTERN DWORD AlarmMaxAltitude2;
-GEXTERN DWORD AlarmMaxAltitude3;
-GEXTERN DWORD AlarmTakeoffSafety;
-GEXTERN DWORD GearWarningAltitude;
+GEXTERN unsigned AlarmMaxAltitude1;
+GEXTERN unsigned AlarmMaxAltitude2;
+GEXTERN unsigned AlarmMaxAltitude3;
+GEXTERN unsigned AlarmTakeoffSafety;
+GEXTERN unsigned GearWarningAltitude;
 GEXTERN int GearWarningMode;
 
 // master flight data
@@ -739,9 +739,6 @@ GEXTERN bool InverseInfoBox_Config;
 GEXTERN BOOL extGPSCONNECT;
 GEXTERN bool DialogActive;
 
-GEXTERN Poco::Event drawTriggerEvent;
-
-
 #if  (LK_CACHECALC && LK_CACHECALC_MCA_STAT)
 GEXTERN int  Cache_Calls_MCA GEXTZERO;
 GEXTERN int  Cache_Hits_MCA  GEXTZERO;
@@ -841,11 +838,11 @@ GEXTERN TCHAR szMapFile[MAX_PATH];
 // Ports and devices
 
 GEXTERN TCHAR szPort1[MAX_PATH];
-GEXTERN DWORD dwSpeedIndex1;
-GEXTERN DWORD dwBit1Index;
+GEXTERN unsigned dwSpeedIndex1;
+GEXTERN unsigned dwBit1Index;
 GEXTERN TCHAR szPort2[MAX_PATH];
-GEXTERN DWORD dwSpeedIndex2;
-GEXTERN DWORD dwBit2Index;
+GEXTERN unsigned dwSpeedIndex2;
+GEXTERN unsigned dwBit2Index;
 GEXTERN TCHAR dwDeviceName1[DEVNAMESIZE+1];
 GEXTERN TCHAR dwDeviceName2[DEVNAMESIZE+1];
 GEXTERN double LastFlarmCommandTime;
@@ -853,11 +850,11 @@ GEXTERN bool  DevIsCondor;
 
 // Units , configurable only in system config
 
-GEXTERN DWORD SpeedUnit_Config;
-GEXTERN DWORD TaskSpeedUnit_Config;
-GEXTERN DWORD DistanceUnit_Config;
-GEXTERN DWORD LiftUnit_Config;
-GEXTERN DWORD AltitudeUnit_Config;
+GEXTERN unsigned SpeedUnit_Config;
+GEXTERN unsigned TaskSpeedUnit_Config;
+GEXTERN unsigned DistanceUnit_Config;
+GEXTERN unsigned LiftUnit_Config;
+GEXTERN unsigned AltitudeUnit_Config;
 
 // Logger
 GEXTERN TCHAR PilotName_Config[100];

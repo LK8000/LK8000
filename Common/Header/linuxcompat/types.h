@@ -21,7 +21,7 @@
 #define FALSE false
 #define TRUE true
 
-typedef unsigned long DWORD;
+//typedef unsigned long DWORD;
 typedef unsigned short WORD;
 typedef unsigned int UNINT32;
 typedef unsigned int UINT;

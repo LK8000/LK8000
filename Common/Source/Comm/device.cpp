@@ -42,7 +42,7 @@ Poco::Mutex  CritSec_Comm;
 
 COMMPort_t COMMPort;
 
-static  const DWORD   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200};
+static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200};
 
 DeviceRegister_t   DeviceRegister[NUMREGDEV];
 DeviceDescriptor_t DeviceList[NUMDEV];
@@ -272,7 +272,7 @@ bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
     return (_tcscmp(dev.Name, DeviceName) == 0);
 }
 
-bool ReadPortSettings(int idx, LPTSTR szPort, DWORD *SpeedIndex, DWORD *Bit1Index) {
+bool ReadPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
     switch (idx) {
         case 0:
             ReadPort1Settings(szPort, SpeedIndex, Bit1Index);
@@ -320,8 +320,8 @@ BOOL devInit(LPCTSTR CommandLine) {
     PDeviceDescriptor_t pDevNmeaOut = NULL;
 
     TCHAR Port[MAX_PATH] = {_T('\0')};
-    DWORD SpeedIndex = 2;
-    DWORD BitIndex = (BitIndex_t) bit8N1;
+    unsigned SpeedIndex = 2U;
+    BitIndex_t BitIndex = bit8N1;
 
     static bool doinit = true;
 
@@ -366,8 +366,8 @@ BOOL devInit(LPCTSTR CommandLine) {
             _tcscpy(Port, _T("GPSID"));
         } else { 
             Port[0] = _T('\0');
-            SpeedIndex = 2;
-            BitIndex = (BitIndex_t) bit8N1;
+            SpeedIndex = 2U;
+            BitIndex = bit8N1;
             ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
         }
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
@@ -401,7 +401,7 @@ BOOL devInit(LPCTSTR CommandLine) {
         } else if (_tcscmp(Port, _T("GPSID")) == 0) {
             Com = new GpsIdPort(i, Port);
         } else {
-            Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], (BitIndex_t)BitIndex, PollingMode);
+            Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
         }
 
         if (Com && Com->Initialize()) {

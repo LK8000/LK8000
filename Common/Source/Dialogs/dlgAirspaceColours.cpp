@@ -10,7 +10,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "LKObjects.h"
-
+#include "resource.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wAirspaceColoursList=NULL;
@@ -87,44 +87,20 @@ int dlgAirspaceColoursShowModal(void){
 
   ItemIndex = -1;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceColours_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACECOLOURS_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceColours.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_AIRSPACECOLOURS"));
-  }
-
+                       ScreenLandscape ? TEXT("dlgAirspaceColours_L.xml") : TEXT("dlgAirspaceColours_P.xml"), 
+                       ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P);
+  
   if (!wf) return -1;
 
   wAirspaceColoursList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceColoursList"));
   LKASSERT(wAirspaceColoursList!=NULL);
   wAirspaceColoursList->SetBorderKind(BORDERLEFT);
   wAirspaceColoursList->SetEnterCallback(OnAirspaceColoursListEnter);
-  wAirspaceColoursList->SetWidth(wf->GetWidth() - wAirspaceColoursList->GetLeft()-2);
 
   wAirspaceColoursListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceColoursListEntry"));
   LKASSERT(wAirspaceColoursListEntry!=NULL);
   wAirspaceColoursListEntry->SetCanFocus(true);
-
-   // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wAirspaceColoursList->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wAirspaceColoursList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-
-  }
-  wAirspaceColoursListEntry->SetWidth(wAirspaceColoursList->GetWidth() - wAirspaceColoursList->ScrollbarWidth - 5);
-
 
   UpdateList();
 

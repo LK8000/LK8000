@@ -17,7 +17,7 @@ extern bool TargetDialogOpen;
 void CalculateAATTaskSectors()
 {
   int i;
-  int awp = ActiveWayPoint;
+  int awp = ActiveTaskPoint;
 
   if(AATEnabled == FALSE || DoOptimizeRoute())
     return;

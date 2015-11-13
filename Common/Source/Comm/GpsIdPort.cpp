@@ -71,7 +71,7 @@ void GpsIdPort::UpdateStatus() {
 
 }
 
-DWORD GpsIdPort::RxThread() {
+unsigned GpsIdPort::RxThread() {
     DWORD rc = 0;
     const int nh = 2;
     HANDLE handles[nh] = {0};

@@ -28,7 +28,7 @@ class Message {
   static void Destroy();
   static bool Render(); // returns true if messages have changed
 
-  static void AddMessage(DWORD tshow, int type, const TCHAR *Text);
+  static void AddMessage(unsigned tshow, int type, const TCHAR *Text);
 
   // repeats last non-visible message of specified type (or any message
   // type=0)

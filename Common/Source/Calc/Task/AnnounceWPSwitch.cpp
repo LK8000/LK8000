@@ -15,7 +15,7 @@
 extern int FastLogNum; // number of points to log at high rate
 
 void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance) {
-  if (ActiveWayPoint == 0) {
+  if (ActiveTaskPoint == 0) {
     InputEvents::processGlideComputer(GCE_TASK_START); // 101014
 
   } else if (Calculated->ValidFinish && IsFinalWaypoint()) {
@@ -25,8 +25,8 @@ void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance) {
   }
 
   if (do_advance) {
-    LKASSERT(ValidTaskPoint(ActiveWayPoint+1));
-    if (ValidTaskPoint(ActiveWayPoint+1)) ActiveWayPoint++;
+    LKASSERT(ValidTaskPoint(ActiveTaskPoint+1));
+    if (ValidTaskPoint(ActiveTaskPoint+1)) ActiveTaskPoint++;
 
   }
 

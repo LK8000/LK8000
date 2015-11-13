@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -24,12 +24,9 @@ Copyright_License {
 #include "OS/FileUtil.hpp"
 #include "Util/StringUtil.hpp"
 #include "Util/ConvertString.hpp"
-//#include "Compatibility/path.h"
+#include "Compatibility/path.h"
 
 //#include <windef.h> /* for MAX_PATH */
-#ifndef MAX_PATH
-#define MAX_PATH 260
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>

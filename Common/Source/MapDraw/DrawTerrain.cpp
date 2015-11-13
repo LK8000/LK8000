@@ -137,16 +137,13 @@ public:
             if (dtquant > 3) dtquant = 3; // .. but not too much
         }
 #endif
-#if defined(_WIN32_WCE)
-        // on 800*480 Blur add ~20% cpu usage, always disabled ( same as v5.0)
-        blursize = 0;
-#else
+#ifdef USE_TERRAIN_BLUR
         blursize = max((unsigned int) 0, (dtquant - 1) / 2); // always 0
-#endif
         oversampling = max(1, (blursize + 1) / 2 + 1); // always 1
         if (blursize == 0) {
             oversampling = 1; // no point in oversampling, just let stretchblt do the scaling
         }
+#endif
 
         /*
           dtq  ovs  blur  res_x  res_y   sx  sy  terrain_loads  pixels
@@ -162,7 +159,7 @@ public:
         const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
         const int res_y = iround((rc.bottom - rc.top) * oversampling / dtquant);
 
-        sbuf = new CSTScreenBuffer(res_x, res_y, RGB_WHITE);
+        sbuf = new CSTScreenBuffer(res_x, res_y);
         if(!sbuf) {
             OutOfMemory(_T(__FILE__), __LINE__);
             ToggleMultimapTerrain();
@@ -174,7 +171,7 @@ public:
 
         hBuf = (unsigned short*) malloc(sizeof (unsigned short)*ixs * iys);
         if (!hBuf) {
-            StartupStore(_T("------ TerrainRenderer: malloc(%d) failed!%s"), sizeof (unsigned short)*ixs*iys, NEWLINE);
+            StartupStore(_T("------ TerrainRenderer: malloc(%u) failed!%s"), (unsigned)(sizeof(unsigned short)*ixs*iys), NEWLINE);
             OutOfMemory(_T(__FILE__), __LINE__);
             //
             // We *must* disable terrain at this point.
@@ -236,25 +233,28 @@ private:
 
     double pixelsize_d;
 
-    int oversampling;
+#ifdef USE_TERRAIN_BLUR
+// only used if blur...    
     int blursize;
+    int oversampling; 
+#else
+    static constexpr int oversampling = 1; //no oversampling if no "Blur"
+#endif
 
     unsigned short *hBuf;
     BGRColor *colorBuf;
     bool do_shading;
     RasterMap *DisplayMap;
     bool is_terrain;
-    int interp_levels;
+    static constexpr int interp_levels = 2;
     const COLORRAMP* color_ramp;
-    unsigned int height_scale;
-
+    static constexpr unsigned int height_scale = 4;
+   
 public:
 
     bool SetMap() {
         if (hBuf == NULL || colorBuf == NULL) return false;
-        interp_levels = 2;
         is_terrain = true;
-        height_scale = 4;
         DisplayMap = RasterTerrain::TerrainMap;
         color_ramp = &terrain_colors[TerrainRamp][0];
 
@@ -327,19 +327,12 @@ public:
         if (epx > min(ixs, iys) / 4) {
             do_shading = false;
         } else {
-#ifdef TESTBENCH
+
+#ifdef UNDER_CE
             if (MapWindow::zoom.RealScale() > 5.4) do_shading = false;
 #else
-
-#if (WINDOWSPC>0)
             if (MapWindow::zoom.RealScale() > 7.2) do_shading = false;
-#else
-            if (MapWindow::zoom.RealScale() > 5.4) do_shading = false;
 #endif
-
-#endif
-
-            //StartupStore(_T("..... Scale=%.3f RealScale=%.3f\n"),MapWindow::zoom.Scale(),MapWindow::zoom.RealScale());
         }
 
         POINT orig = MapWindow::GetOrigScreen();
@@ -595,7 +588,7 @@ public:
     }
 
     void Draw(LKSurface& Surface, const RECT& rc) {
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE))
+#ifdef USE_TERRAIN_BLUR
         if (blursize > 0) {
             sbuf->HorizontalBlur(blursize);
             sbuf->VerticalBlur(blursize);
@@ -603,7 +596,6 @@ public:
 #endif
         sbuf->DrawStretch(Surface, rc, oversampling);
     }
-
 };
 
 

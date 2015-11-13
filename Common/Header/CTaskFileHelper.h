@@ -61,7 +61,7 @@ protected:
 private:
     std::set<size_t> mWayPointToSave;
     std::map<std::tstring, size_t> mWayPointLoaded;
-    unsigned long mFinishIndex;
+    unsigned mFinishIndex;
 };
 
 #endif	/* CTASKFILEHELPER_H */

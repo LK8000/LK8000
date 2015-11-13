@@ -163,9 +163,9 @@ BOOL DevLXMiniMap::SendPFLX4(DeviceDescriptor_t *d)
 
 			double finalGlide = 0;
 		//	double distance = 0;
-			if ( ValidTaskPoint(ActiveWayPoint) != false )
+			if ( ValidTaskPoint(ActiveTaskPoint) != false )
 			{
-				int index = Task[ActiveWayPoint].Index;
+				int index = Task[ActiveTaskPoint].Index;
 				if (index>=0)
 				{
 						// don't use current MC...

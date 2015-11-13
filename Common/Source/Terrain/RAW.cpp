@@ -35,8 +35,7 @@ bool RasterMap::Open(const TCHAR* zfilename) {
 	return false;
   }
 
-  DWORD dwBytesRead;
-  dwBytesRead = zzip_fread(&TerrainInfo, 1, sizeof(TERRAIN_INFO), fpTerrain);
+  zzip_size_t dwBytesRead = zzip_fread(&TerrainInfo, 1, sizeof(TERRAIN_INFO), fpTerrain);
     
   if (dwBytesRead != sizeof(TERRAIN_INFO)) {
 	StartupStore(_T("------ Terrain read first failed, invalid header%s"),NEWLINE);

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -75,6 +75,14 @@ struct PixelSize : public tagSIZE {
 
 static_assert(sizeof(PixelSize) == sizeof(SIZE), "not same size");
 
+/**
+ * @brief PixelRect structure and operations
+ *
+ * Provides support for creating and manipulating PixelRect structures
+ *
+ * @note This structure follows the GDI convention of the {right, bottom} coordinates being
+ * immediately outside the rectangle being specified.
+ */
 struct PixelRect : public tagRECT {
   PixelRect() = default;
 
@@ -104,6 +112,10 @@ struct PixelRect : public tagRECT {
 
   void Grow(int d) {
     Grow(d, d);
+  }
+
+  constexpr RasterPoint GetOrigin() const {
+    return { left, top };
   }
 
   constexpr PixelSize GetSize() const {

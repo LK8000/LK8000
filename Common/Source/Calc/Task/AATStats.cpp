@@ -21,7 +21,7 @@ void AATStats_Time(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double aat_tasklength_seconds = AATTaskLength*60;
   #endif
 
-  if (ActiveWayPoint==0) {
+  if (ActiveTaskPoint==0) {
     // BUG fixed in dlgTaskWaypoint: changing AATTaskLength had no effect until restart
     // because AATTimeToGo was reset only once.
     if (Calculated->AATTimeToGo==0) {
@@ -33,7 +33,7 @@ void AATStats_Time(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				  - aat_tasktime_elapsed);
   }
 
-  if(ValidTaskPoint(ActiveWayPoint) && (Calculated->AATTimeToGo>0)) {
+  if(ValidTaskPoint(ActiveTaskPoint) && (Calculated->AATTimeToGo>0)) {
     Calculated->AATMaxSpeed = 
       Calculated->AATMaxDistance / Calculated->AATTimeToGo;
     Calculated->AATMinSpeed = 
@@ -54,9 +54,9 @@ void AATStats_Distance(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   MaxDistance = 0; MinDistance = 0; TargetDistance = 0;
   // Calculate Task Distances
 
-  if(ValidTaskPoint(ActiveWayPoint)) 
+  if(ValidTaskPoint(ActiveTaskPoint)) 
     {
-      i=ActiveWayPoint;
+      i=ActiveTaskPoint;
 
       double LegToGo=0, TargetLegToGo=0;
 
@@ -104,7 +104,7 @@ void AATStats_Distance(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	MaxDistance += LegDistance;
 	MinDistance += LegDistance;
 	
-	if(Task[ActiveWayPoint].AATType == CIRCLE) {
+	if(Task[ActiveTaskPoint].AATType == CIRCLE) {
 	  // breaking out single Areas increases accuracy for start
 	  // and finish
 	  

@@ -382,7 +382,7 @@ bool SerialPort::Write(const void *data, size_t length) {
 
 extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 
-DWORD SerialPort::RxThread() {
+unsigned SerialPort::RxThread() {
 #if ( (WINDOWSPC == 0)) && !NEWCOMM	// 100222
     DWORD dwCommModemStatus = 0;
     // Specify a set of events to be monitored for the port.

@@ -38,7 +38,7 @@ public:
     virtual bool Write(const void *data, size_t length);
 
 protected:
-    virtual DWORD RxThread();
+    virtual unsigned RxThread();
     
 private:
     HANDLE hPort;

@@ -322,8 +322,8 @@ int overmode  = OvertargetMode;
 
 bool bTaskpresent = false; //ValidTaskPoint(0);
 if(bTaskpresent)
-  if(ValidTaskPoint(ActiveWayPoint))
-    overindex = Task[ActiveWayPoint].Index;
+  if(ValidTaskPoint(ActiveTaskPoint))
+    overindex = Task[ActiveTaskPoint].Index;
 
 
 #define SEND_ON_CHANGE_ONLY

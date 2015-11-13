@@ -35,10 +35,10 @@ void ChangeWindCalcSpeed(const int newspeed) {
 
 }
 
+#ifdef _WIN32
 // runmode 0: exec inside LocalPath home of LK8000
 // runmode 1: exec inside 
 bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
-#ifdef _WIN32
   if (_tcslen(prog) <5) {
 	StartupStore(_T("... LKRun failure: invalid exec path <%s>%s"),prog,NEWLINE);
 	return false;
@@ -80,18 +80,18 @@ bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
 	StartupStore(_T(". LKRun exec terminated%s"),NEWLINE);
 	return true;
   }
+  return false;
+}
 #else
   #warning "LKRun : Not implemented for this platform"
 #endif
-  return false;
-}
 
 void GotoWaypoint(const int wpnum) {
   if (!ValidWayPoint(wpnum)) {
 	DoStatusMessage(_T("ERR-639 INVALID GOTO WPT"));
 	return;
   }
-  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+  if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 	TCHAR wpname[NAME_SIZE+1];
 	_tcscpy(wpname,WayPointList[wpnum].Name);
 	wpname[10] = '\0';
@@ -315,7 +315,7 @@ bool DoOptimizeRoute() {
   if (!PGOptimizeRoute) return false;
 
   if (!ValidTaskPoint(0) || !ValidTaskPoint(1)) return false;
-  if (!ValidTaskPoint(ActiveWayPoint)) return false;
+  if (!ValidTaskPoint(ActiveTaskPoint)) return false;
 
   return true;
 

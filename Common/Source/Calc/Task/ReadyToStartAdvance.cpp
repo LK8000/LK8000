@@ -72,7 +72,7 @@ bool ReadyToAdvance(DERIVED_INFO *Calculated, bool reset=true, bool restart=fals
     }
   }
   if (AutoAdvance== AUTOADVANCE_ARMSTART) { 
-    if ((ActiveWayPoint == 0) || restart) {
+    if ((ActiveTaskPoint == 0) || restart) {
       if (!AdvanceArmed) {
         say_ready = true;
       } else if (reset) { 
@@ -81,14 +81,14 @@ bool ReadyToAdvance(DERIVED_INFO *Calculated, bool reset=true, bool restart=fals
       }
     } else {
       // JMW fixed 20070528
-      if (ActiveWayPoint>0) {
+      if (ActiveTaskPoint>0) {
         if (reset) AdvanceArmed = false;
         return true;
       }
     }
   }
   if (AutoAdvance== AUTOADVANCE_ARMTPS) { 
-    if ((ActiveWayPoint == 0) || restart) {
+    if ((ActiveTaskPoint == 0) || restart) {
       if (reset)
         AdvanceArmed = false;
       return true;
@@ -104,15 +104,15 @@ bool ReadyToAdvance(DERIVED_INFO *Calculated, bool reset=true, bool restart=fals
   }
 
   // see if we've gone back a waypoint (e.g. restart)
-  if (ActiveWayPoint < lastActive) {
+  if (ActiveTaskPoint < lastActive) {
     lastReady = -1;
   }
-  lastActive = ActiveWayPoint;
+  lastActive = ActiveTaskPoint;
 
   if (say_ready) {
-    if (ActiveWayPoint != lastReady) {
+    if (ActiveTaskPoint != lastReady) {
       InputEvents::processGlideComputer(GCE_ARM_READY);
-      lastReady = ActiveWayPoint;
+      lastReady = ActiveTaskPoint;
     }
   }
   return false;

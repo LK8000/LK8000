@@ -8,6 +8,7 @@ SYSTEM_FILES += Common/Distribution/LK8000/_System/CREDITS.txt
 SYSTEM_FILES += Common/Data/Language/DEFAULT_MENU.TXT
 
 BITMAP_FILES = $(PNG) 
+BITMAP_FILES += $(MASKED_PNG) 
 BITMAP_FILES += Common/Distribution/LK8000/_System/_Bitmaps/_BITMAPSH
 
 POLAR_FILES = $(wildcard Common/Distribution/LK8000/_Polars/*.plr)

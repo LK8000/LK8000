@@ -70,14 +70,14 @@ void MapWindow::Zoom::CalculateAutoZoom()
   LockTaskData();  // protect from external task changes
     // if we aren't looking at a waypoint, see if we are now
     if(autoMapScaleTaskIndex == -1) {
-      if(ValidTaskPoint(ActiveWayPoint))
-        autoMapScaleTaskIndex = ActiveWayPoint;
+      if(ValidTaskPoint(ActiveTaskPoint))
+        autoMapScaleTaskIndex = ActiveTaskPoint;
     }
     
-    if(ValidTaskPoint(ActiveWayPoint)) {
+    if(ValidTaskPoint(ActiveTaskPoint)) {
       // if the current zoom focused waypoint has changed...
-      if(autoMapScaleTaskIndex != ActiveWayPoint) {
-        autoMapScaleTaskIndex = ActiveWayPoint;
+      if(autoMapScaleTaskIndex != ActiveTaskPoint) {
+        autoMapScaleTaskIndex = ActiveTaskPoint;
         wait_for_new_wpt_distance = 3;
         // zoom back out to where we were before
         _modeScale[SCALE_CRUISE] = _modeScale[SCALE_AUTO_ZOOM];

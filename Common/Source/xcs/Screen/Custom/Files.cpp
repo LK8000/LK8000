@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ Copyright_License {
 */
 
 #include "Files.hpp"
-#include "utils/filesystem.h"
+#include "OS/FileUtil.hpp"
 #include "Compiler.h"
 
 //#define USE_TAHOMA  // only for compatibility checks in LK
@@ -205,7 +205,7 @@ static const char *
 FindFile(const char *const*list)
 {
   for (const char *const* i = list; *i != nullptr; ++i)
-    if (lk::filesystem::exist(*i))
+    if (File::Exists(*i))
       return *i;
 
   return nullptr;

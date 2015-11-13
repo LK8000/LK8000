@@ -23,7 +23,19 @@ BOOL MapWindow::THREADRUNNING = TRUE;
 BOOL MapWindow::THREADEXIT = FALSE;
 BOOL MapWindow::Initialised = FALSE;
 
+
+#ifndef ENABLE_OPENGL
 Poco::Mutex MapWindow::Surface_Mutex;
+Poco::Event MapWindow::drawTriggerEvent;
+
+#ifdef USE_GDI
+LKWindowSurface MapWindow::BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
+#else
+LKBitmapSurface MapWindow::BackBufferSurface;
+Poco::Mutex MapWindow::BackBuffer_Mutex;
+#endif
+LKBitmapSurface MapWindow::DrawSurface;
+#endif
 
 // #define TESTMAPRECT 1
 // Although we are capable of autoresizing, all fonts are tuned for the original screen geometry.
@@ -46,8 +58,9 @@ bool ForceRenderMap=true;
 bool first_run=true;
 
 void MapWindow::Initialize() {
+#ifndef ENABLE_OPENGL
     Poco::Mutex::ScopedLock Lock(Surface_Mutex);
-    
+#endif
     // Reset common topology and waypoint label declutter, first init. Done also in other places.
     ResetLabelDeclutter();
 
@@ -58,13 +71,15 @@ void MapWindow::Initialize() {
 
     UpdateTimeStats(true);
 
+#ifndef ENABLE_OPENGL
     // paint draw window black to start
     DrawSurface.SetBackgroundTransparent();
 	DrawSurface.Blackness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 
     hdcMask.SetBackgroundOpaque();
     BackBufferSurface.Blackness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
-
+#endif
+    
     // This is just here to give fully rendered start screen
     UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
     MapDirty = true;
@@ -90,8 +105,12 @@ void MapWindow::Initialize() {
 	first_run=true;
     // Signal that draw thread can run now
     Initialised = TRUE;
+#ifndef ENABLE_OPENGL
     drawTriggerEvent.set();
+#endif
 }
+
+#ifndef ENABLE_OPENGL
 
 void MapWindow::DrawThread ()
 {
@@ -164,41 +183,45 @@ void MapWindow::DrawThread ()
 			const int fromX=startScreen.x-targetScreen.x;
 			const int fromY=startScreen.y-targetScreen.y;
 
-			BackBufferSurface.Whiteness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
+            PixelRect  clipSourceArea(MapRect); // Source Rectangle 
+            RasterPoint clipDestPoint(clipSourceArea.GetOrigin()); // destination origin position
+            PixelRect  WhiteRectV(MapRect); // vertical White band (left or right)
+            PixelRect  WhiteRectH(MapRect); // horizontal White band (top or bottom)
 
-                        RECT  clipSourceArea;
-                        POINT clipDestPoint;
+            if (fromX<0) {
+                clipSourceArea.right += fromX; // negative fromX
+                clipDestPoint.x -= fromX;
+                WhiteRectV.right = WhiteRectV.left - fromX;
+                WhiteRectH.left = WhiteRectV.right;
+            } else {
+                clipSourceArea.left += fromX;
+                WhiteRectV.left = WhiteRectV.right - fromX;
+                WhiteRectH.right = WhiteRectV.left;
+            }
 
-                        if (fromX<0) {
-                            clipSourceArea.left=MapRect.left;
-                            clipSourceArea.right=MapRect.right+fromX; // negative fromX
-                            clipDestPoint.x=MapRect.left-fromX;
-                        } else {
-                            clipSourceArea.left=MapRect.left+fromX;
-                            clipSourceArea.right=MapRect.right;
-                            clipDestPoint.x=MapRect.left;
-                        }
+            if (fromY<0) {
+                clipSourceArea.bottom += fromY; // negative fromX
+                clipDestPoint.y -= fromY;
+                WhiteRectH.bottom = WhiteRectH.top - fromY;
+            } else {
+                clipSourceArea.top += fromY;
+                WhiteRectH.top = WhiteRectH.bottom - fromY;
+            }
 
-                        if (fromY<0) {
-                            clipSourceArea.top=MapRect.top;
-                            clipSourceArea.bottom=MapRect.bottom+fromY; // negative fromX
-                            clipDestPoint.y=MapRect.top-fromY;
-                        } else {
-                            clipSourceArea.top=MapRect.top+fromY;
-                            clipSourceArea.bottom=MapRect.bottom;
-                            clipDestPoint.y=MapRect.top;
-                        }
+#ifndef USE_GDI
+            Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+#endif
 
-
-                        BackBufferSurface.Copy(clipDestPoint.x,clipDestPoint.y,
-                            clipSourceArea.right-clipSourceArea.left,
-                            clipSourceArea.bottom-clipSourceArea.top,
-                            DrawSurface, 
-                            clipSourceArea.left,clipSourceArea.top);
+            BackBufferSurface.Whiteness(WhiteRectV.left, WhiteRectV.top, WhiteRectV.GetSize().cx, WhiteRectV.GetSize().cy);
+            BackBufferSurface.Whiteness(WhiteRectH.left, WhiteRectH.top, WhiteRectH.GetSize().cx, WhiteRectH.GetSize().cy);
+            BackBufferSurface.Copy(clipDestPoint.x,clipDestPoint.y,
+                clipSourceArea.GetSize().cx,
+                clipSourceArea.GetSize().cy,
+                DrawSurface, 
+                clipSourceArea.left,clipSourceArea.top);
 
 
-			POINT centerscreen;
-			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
+			const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
 			DrawMapScale(BackBufferSurface,MapRect,false);
 			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
 			lastdrawwasbitblitted=true;
@@ -208,18 +231,17 @@ void MapWindow::DrawThread ()
 			// The map was not dirty, and we are not in fastpanning mode.
 			// FastRefresh!  We simply redraw old bitmap. 
 			//
-			BUGSTOP_LKASSERT(0);
-                       
-			BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
-				MapRect.bottom-MapRect.top, 
-				DrawSurface, MapRect.left, MapRect.top);
+#ifndef USE_GDI
+            Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+#endif
+            DrawSurface.CopyTo(BackBufferSurface);
 
 			lastdrawwasbitblitted=true;
 		}
 
 		// Now we can clear the flag. If it was off already, no problems.
-		OnFastPanning=false;
-                MainWindow.Redraw(MapRect);
+//		OnFastPanning=false;
+        MainWindow.Redraw(MapRect);
 		continue;
 
 	} else {
@@ -241,12 +263,12 @@ void MapWindow::DrawThread ()
 				lasthere=LKHearthBeats;
 				goto _dontbitblt;
 			}
-			BackBufferSurface.Copy(MapRect.left, MapRect.top, MapRect.right-MapRect.left,
-				MapRect.bottom-MapRect.top, 
-				DrawSurface, MapRect.left, MapRect.top);
+#ifndef USE_GDI
+            Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+#endif
+            DrawSurface.CopyTo(BackBufferSurface);
 
-			POINT centerscreen;
-			centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
+			const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
 			DrawMapScale(BackBufferSurface,MapRect,false);
 			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
             MainWindow.Redraw(MapRect);
@@ -262,24 +284,25 @@ _dontbitblt:
 	MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
 	RenderMapWindow(DrawSurface, MapRect);
-    
-	if (!ForceRenderMap && !first_run) {
-		BackBufferSurface.Copy(MapRect.left, MapRect.top,
-			MapRect.right-MapRect.left,
-			MapRect.bottom-MapRect.top, 
-			DrawSurface, MapRect.left, MapRect.top);
 
-	}
+    {
+#ifndef USE_GDI
+        Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+#endif
+        if (!ForceRenderMap && !first_run) {
+            DrawSurface.CopyTo(BackBufferSurface);
+        }
 
-	// Draw cross sight for pan mode, in the screen center, 
-	// after a full repaint while not fastpanning
-	if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
-		POINT centerscreen;
-		centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-		DrawMapScale(BackBufferSurface,MapRect,false);
-		DrawCompass(BackBufferSurface, MapRect, DisplayAngle);
-		DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
-	}
+        // Draw cross sight for pan mode, in the screen center, 
+        // after a full repaint while not fastpanning
+        if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
+            POINT centerscreen;
+            centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
+            DrawMapScale(BackBufferSurface,MapRect,false);
+            DrawCompass(BackBufferSurface, MapRect, DisplayAngle);
+            DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
+        }
+    }
 
 	UpdateTimeStats(false);
 
@@ -307,6 +330,7 @@ _dontbitblt:
 
 Poco::ThreadTarget MapWindow::MapWindowThreadRun(MapWindow::DrawThread);
 Poco::Thread MapWindowThread;
+#endif
 
 void MapWindow::CreateDrawingThread(void)
 {
@@ -314,8 +338,11 @@ void MapWindow::CreateDrawingThread(void)
 
   CLOSETHREAD = FALSE;
   THREADEXIT = FALSE;
+
+#ifndef ENABLE_OPENGL  
   MapWindowThread.start(MapWindowThreadRun);
   MapWindowThread.setPriority(Poco::Thread::PRIO_NORMAL);
+#endif
 }
 
 void MapWindow::SuspendDrawingThread(void)
@@ -323,7 +350,6 @@ void MapWindow::SuspendDrawingThread(void)
   LockTerrainDataGraphics();
   THREADRUNNING = FALSE;
   UnlockTerrainDataGraphics();
-  //  SuspendThread(hDrawThread);
 }
 
 
@@ -333,13 +359,13 @@ void MapWindow::ResumeDrawingThread(void)
   LockTerrainDataGraphics();
   THREADRUNNING = TRUE;
   UnlockTerrainDataGraphics();
-  //  ResumeThread(hDrawThread);
 }
 
 
 
 void MapWindow::CloseDrawingThread(void)
 {
+#ifndef ENABLE_OPENGL    
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread started\n"));
   #endif
@@ -363,6 +389,10 @@ void MapWindow::CloseDrawingThread(void)
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread finished\n"));
   #endif
+#else
+  CLOSETHREAD = TRUE;
+  THREADEXIT = TRUE;
+#endif
 }
 
 //

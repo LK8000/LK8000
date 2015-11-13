@@ -58,7 +58,7 @@ LPTSTR AllocFormat(LPCTSTR fmt, ...) {
     }
 }
 
-inline LPTSTR ToString(unsigned long ulong) {
+inline LPTSTR ToString(unsigned ulong) {
     return AllocFormat(_T("%u"), ulong);
 }
 
@@ -78,7 +78,7 @@ inline LPTSTR ToString(bool bVal) {
     return AllocFormat(_T("%s"), bVal ? _T("true") : _T("false"));
 }
 
-inline void FromString(LPCTSTR szVal, unsigned long& ulong) {
+inline void FromString(LPCTSTR szVal, unsigned& ulong) {
     TCHAR * sz = NULL;
     if (szVal) {
         ulong = _tcstoul(szVal, &sz, 10);
@@ -123,7 +123,7 @@ bool getFirstTaskWayPointName(XMLNode node, TCHAR *firstWPname) {
     if(node) {
         XMLNode WPnode = node.getChildNode(_T("point"),0);
         if(WPnode) {
-            unsigned long idx = MAXTASKPOINTS;
+            unsigned idx = MAXTASKPOINTS;
             GetAttribute(WPnode, _T("idx"), idx);
             if(idx==0) {
                 LPCTSTR first=NULL;
@@ -146,7 +146,7 @@ bool getLastTaskWayPointName(XMLNode node, TCHAR *lastWPname) {
         if(numOfWPs>=2) {
             XMLNode WPnode = node.getChildNode(_T("point"),numOfWPs-1);
             if(WPnode) {
-                unsigned long idx = MAXTASKPOINTS;
+                unsigned idx = MAXTASKPOINTS;
                 GetAttribute(WPnode, _T("idx"), idx);
                 if(idx==(unsigned long)(numOfWPs-1)) {
                     LPCTSTR last=NULL;
@@ -409,15 +409,15 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
         if (ValidTaskPoint(mFinishIndex)) {
             switch (Task[mFinishIndex].AATType) {
                 case CIRCLE:
-                    FinishRadius = (DWORD)Task[mFinishIndex].AATCircleRadius;
+                    FinishRadius = Task[mFinishIndex].AATCircleRadius;
                     FinishLine = 0;
                     break;
                 case LINE:
-                    FinishRadius = (DWORD)Task[mFinishIndex].AATCircleRadius;
+                    FinishRadius = Task[mFinishIndex].AATCircleRadius;
                     FinishLine = 1;
                     break;
                 case SECTOR:
-                    FinishRadius = (DWORD)Task[mFinishIndex].AATSectorRadius;
+                    FinishRadius = Task[mFinishIndex].AATSectorRadius;
                     FinishLine = 2;
                     break;
             }
@@ -425,16 +425,16 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
         if (ValidTaskPoint(0)) {
             switch (Task[0].AATType) {
                 case CIRCLE:
-                    StartRadius = (DWORD)Task[0].AATCircleRadius;
+                    StartRadius = Task[0].AATCircleRadius;
                     StartLine = 0;
                     PGStartOut = !Task[0].OutCircle;
                     break;
                 case LINE:
-                    StartRadius = (DWORD)Task[0].AATCircleRadius;
+                    StartRadius = Task[0].AATCircleRadius;
                     StartLine = 1;
                     break;
                 case SECTOR:
-                    StartRadius = (DWORD)Task[0].AATSectorRadius;
+                    StartRadius = Task[0].AATSectorRadius;
                     StartLine = 2;
                     break;
             }
@@ -488,7 +488,7 @@ void CTaskFileHelper::LoadWayPointList(XMLNode node, TCHAR *firstWPname, TCHAR *
 
 bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
     if (node) {
-        unsigned long idx = MAXTASKPOINTS;
+        unsigned idx = MAXTASKPOINTS;
         GetAttribute(node, _T("idx"), idx);
         LPCTSTR szName = NULL;
         GetAttribute(node, _T("name"), szName);
@@ -544,7 +544,7 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
 
 bool CTaskFileHelper::LoadStartPoint(XMLNode node) {
     if (node) {
-        unsigned long idx = MAXSTARTPOINTS;
+        unsigned idx = MAXSTARTPOINTS;
         GetAttribute(node, _T("idx"), idx);
         LPCTSTR szName = NULL;
         GetAttribute(node, _T("name"), szName);
@@ -878,7 +878,7 @@ bool CTaskFileHelper::SaveTaskPointList(XMLNode node) {
         return false;
     }
 
-    for (unsigned long i = 0; ValidTaskPoint(i); ++i) {
+    for (unsigned i = 0; ValidTaskPoint(i); ++i) {
         XMLNode PointNode = node.AddChild(ToString(_T("point")), false);
         if (!PointNode) {
             return false;
@@ -899,7 +899,7 @@ bool CTaskFileHelper::SaveStartPointList(XMLNode node) {
     if (!node) {
         return false;
     }
-    for (unsigned long i = 0; ValidStartPoint(i); ++i) {
+    for (unsigned i = 0; ValidStartPoint(i); ++i) {
         XMLNode PointNode = node.AddChild(ToString(_T("point")), false);
         if (!PointNode) {
             return false;

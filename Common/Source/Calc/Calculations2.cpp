@@ -208,12 +208,12 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
 					  bool cruise_efficiency_mode) {
 
   if (Calculated->ValidFinish) return 0;
-  if (ActiveWayPoint<=0) return 0; // no e mc before start
+  if (ActiveTaskPoint<=0) return 0; // no e mc before start
   if (!Calculated->ValidStart) return 0;
   if (Calculated->TaskStartTime<0) return 0;
 
-  if (!ValidTaskPoint(ActiveWayPoint) 
-      || !ValidTaskPoint(ActiveWayPoint-1)) return 0;
+  if (!ValidTaskPoint(ActiveTaskPoint) 
+      || !ValidTaskPoint(ActiveTaskPoint-1)) return 0;
   if (Calculated->TaskDistanceToGo<=0) {
     return 0;
   }
@@ -233,7 +233,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
   double LegDistances[MAXTASKPOINTS];
   double LegBearings[MAXTASKPOINTS];
 
-  for (int i=0; i<ActiveWayPoint; i++) {
+  for (int i=0; i<ActiveTaskPoint; i++) {
     double w1lat = WayPointList[Task[i+1].Index].Latitude;
     double w1lon = WayPointList[Task[i+1].Index].Longitude;
     double w0lat = WayPointList[Task[i].Index].Latitude;
@@ -254,7 +254,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
                     w1lon,
                     &LegDistances[i], &LegBearings[i]);
 
-    if (i==ActiveWayPoint-1) {
+    if (i==ActiveTaskPoint-1) {
     
       double leg_covered = ProjectedDistance(w0lon, w0lat,
                                              w1lon, w1lat,
@@ -306,7 +306,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
     // allowing for final glide where possible if aircraft height is below
     // start
     
-    for(int i=ActiveWayPoint-1;i>=0; i--) {
+    for(int i=ActiveTaskPoint-1;i>=0; i--) {
 
       LKASSERT(i>=0);
       if (i<0) break; // UNMANAGED

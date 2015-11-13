@@ -11,6 +11,7 @@
 #include "WindowControls.h"
 #include "Dialogs.h"
 #include "dlgTools.h"
+#include "resource.h"
 
 
 static WndForm *wf=NULL;
@@ -133,19 +134,9 @@ int dlgComboPicker(WndProperty* theProperty){
     LKASSERT(theProperty!=NULL);
     wComboPopupWndProperty = theProperty;
 
-    if (!ScreenLandscape) {
-      TCHAR filename[MAX_PATH]; 
-      LocalPathS(filename, TEXT("dlgComboPicker_L.xml"));
-      wf = dlgLoadFromXML(CallBackTable, 
-                          filename, 
-                          TEXT("IDR_XML_COMBOPICKER_L"));
-    } else {
-      TCHAR filename[MAX_PATH];
-      LocalPathS(filename, TEXT("dlgComboPicker.xml"));
-      wf = dlgLoadFromXML(CallBackTable, 
-                          filename, 
-                          TEXT("IDR_XML_COMBOPICKER"));
-    }
+    wf = dlgLoadFromXML(CallBackTable, 
+                          ScreenLandscape ? TEXT("dlgComboPicker_L.xml") : TEXT("dlgComboPicker_P.xml"),
+                          ScreenLandscape ? IDR_XML_COMBOPICKER_L : IDR_XML_COMBOPICKER_P);
 
     if (!wf) return -1;
 
@@ -160,18 +151,6 @@ int dlgComboPicker(WndProperty* theProperty){
     wComboPopupListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmComboPopupListEntry"));
     LKASSERT(wComboPopupListEntry!=NULL);
     wComboPopupListEntry->SetCanFocus(true);
-
-    // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-    if ( wComboPopupListFrame->ScrollbarWidth == -1) {
-      #if defined (PNA)
-      #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-      #else
-      #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-      #endif
-      wComboPopupListFrame->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-    }
-    wComboPopupListEntry->SetWidth(wComboPopupListFrame->GetWidth() - wComboPopupListFrame->ScrollbarWidth - 5);
-
 
     ComboPopupDataField = wComboPopupWndProperty->GetDataField();
     ComboListPopup = ComboPopupDataField->GetCombo();

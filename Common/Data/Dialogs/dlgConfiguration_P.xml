@@ -279,8 +279,6 @@
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
     </WndFrame>
-    <WndFrame Name="frmEmpty" X="1" Y="0" Width="-1" Height="222" Font="2">
-    </WndFrame>
     <WndFrame Name="frmAlarms" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpAlarmMaxAltitude1" Caption="_@M1647_" X="2" Y="-1" Width="233" Height="22" CaptionWidth="150" Font="2" Help="_@H1253_" Keyboard="1">
         <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="30000" Step="1"/>

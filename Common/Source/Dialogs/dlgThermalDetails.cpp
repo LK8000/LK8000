@@ -13,6 +13,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
+#include "resource.h"
 
 
 static WndForm *wf=NULL;
@@ -138,11 +139,9 @@ static void SetValues(int indexid) {
 
 void dlgThermalDetails(int indexid) {
 
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgThermalDetails.xml"));
   wf = dlgLoadFromXML(CallBackTable,
-		      filename, 
-		      TEXT("IDR_XML_THERMALDETAILS"));
+		      TEXT("dlgThermalDetails.xml"), 
+		      IDR_XML_THERMALDETAILS);
 
   if (!wf) return;
 

@@ -14,6 +14,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "CTaskFileHelper.h"
+#include "resource.h"
 
 extern void ResetTaskWaypoint(int j);
 
@@ -162,7 +163,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
       } else {
 
       double d1 = CALCULATED_INFO.TaskDistanceToGo;
-      if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) && (ActiveWayPoint>0)) {
+      if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) && (ActiveTaskPoint>0)) {
                    d1 += CALCULATED_INFO.TaskDistanceCovered;
       }
 
@@ -225,7 +226,7 @@ static void OverviewRefreshTask(void) {
   if (wp) {
     double dd = CALCULATED_INFO.TaskTimeToGo;
 //    if ((CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying)) { patchout 091126
-    if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) { // patch 091126
+    if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) &&(ActiveTaskPoint>0)) { // patch 091126
 
 
 
@@ -486,7 +487,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
 
   int file_index = dfe->GetAsInteger();
   if (file_index>0) {
-	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+	if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 		_stprintf(file_name, TEXT("%s '%s' ?"), gettext(TEXT("_@M891_")), dfe->GetAsString()); // Clear old task and load
 		if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
 			return;
@@ -598,21 +599,9 @@ void dlgTaskOverviewShowModal(int Idx){
 
   showAdvanced = false;
 
-  wf = NULL;
-
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTaskOverview_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TASKOVERVIEW_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTaskOverview.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TASKOVERVIEW"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgTaskOverview_L.xml") : TEXT("dlgTaskOverview_P.xml"), 
+                        ScreenLandscape ? IDR_XML_TASKOVERVIEW_L : IDR_XML_TASKOVERVIEW_P);
 
   if (!wf) return;
 
@@ -635,23 +624,7 @@ void dlgTaskOverviewShowModal(int Idx){
   wTaskList->SetBorderKind(BORDERLEFT);
   wTaskList->SetEnterCallback(OnTaskListEnter);
 
-  wTaskList->SetWidth(wf->GetWidth() - wTaskList->GetLeft()-2);
-
   wTaskListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmTaskListEntry"));
-
-   // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
-  if ( wTaskList->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wTaskList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-  }
-  wTaskListEntry->SetWidth(wTaskList->GetWidth() - wTaskList->ScrollbarWidth - 5);
-
-  wTaskListEntry = (WndOwnerDrawFrame*)wf-> FindByName(TEXT("frmTaskListEntry"));
-
   wTaskListEntry->SetCanFocus(true);
 
   WndProperty* wp;

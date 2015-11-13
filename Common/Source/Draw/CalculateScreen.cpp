@@ -306,7 +306,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
         LatLon2Screen(Task[i].AATStartLon, Task[i].AATStartLat, Task[i].AATStart);
         LatLon2Screen(Task[i].AATFinishLon, Task[i].AATFinishLat, Task[i].AATFinish);
       }
-      if (AATEnabled && (((int)i==ActiveWayPoint) || 
+      if (AATEnabled && (((int)i==ActiveTaskPoint) || 
 			 (mode.Is(Mode::MODE_TARGET_PAN) && ((int)i==TargetPanIndex)))) {
 
 	for (int j=0; j<MAXISOLINES; j++) {

@@ -164,7 +164,7 @@ void UpdateAnalysis(void){
 
     RefreshTaskStatistics();
 
-    if (!ValidTaskPoint(ActiveWayPoint)) {
+    if (!ValidTaskPoint(ActiveTaskPoint)) {
 	// LKTOKEN  _@M476_ = "No task" 
       _tcscpy(sTmp, gettext(TEXT("_@M476_")));
     } else {

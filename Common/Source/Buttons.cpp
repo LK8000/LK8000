@@ -47,249 +47,108 @@ protected:
     }
 };
 
+
+/*
+ * 
+ * 
+ * Landscape :
+ * 
+ *                     0      1      2      3      4
+ *                 +------+------+------+------+------+
+ *               0 |  10  |  11  |  12  |  13  |   1  |
+ *                 +------+------+------+------+------+
+ *               1 |  14  |                    |   2  |
+ *                 +------+                    +------+
+ *               2 |  15  |                    |   3  |
+ *                 +------+                    +------+
+ *               3 |  16  |                    |   4  |
+ *                 +------+------+------+------+------+
+ *               4 |   5  |   6  |   7  |   8  |   9  |
+ *                 +------+------+------+------+------+
+ */
 static std::array<MenuButton, NUMBUTTONLABELS> MenuButtons;
+const struct {
+    int row;
+    int col;
+} LandscapeLayout[] {
+    {0,4},{1,4},{2,4},{3,4},
+    {4,0},{4,1},{4,2},{4,3},
+    {4,4},{0,0},{0,1},{0,2},
+    {0,3},{1,0},{2,0},{3,0}
+};
+static_assert(NUMBUTTONLABELS == array_size(LandscapeLayout), "Check array size");
 
-void ButtonLabel::GetButtonPosition(unsigned i, const RECT& rc,
-				    int *x, int *y,
-				    int *sizex, int *sizey) {
+/* Portrait :
+ * 
+ *                         0      1      2      3
+ *                     +------+------+------+------+
+ *                   0 |  10  |  11  |  12  |  13  |
+ *                     +------+------+------+------+
+ *                   1 |  14  |             |   5  |
+ *                     +------+             +------+
+ *                   2 |  15  |             |   6  |
+ *                     +------+             +------+
+ *                   3 |  16  |             |   7  |
+ *                     +------+             +------+
+ *                   4 |                    |   8  |
+ *                     +                    +------+
+ *                   5 |                    |   9  |
+ *                     +------+------+------+------+
+ *                   6 |   1  |   2  |   3  |   4  |
+ *                     +------+------+------+------+
+ * 
+ */
+const struct {
+    int row;
+    int col;
+} PortraitLayout[] {
+    {6,0},{6,1},{6,2},{6,3},
+    {1,3},{2,3},{3,3},{4,3},
+    {5,3},{0,0},{0,1},{0,2},
+    {0,3},{1,0},{2,0},{3,0}
+};
+static_assert(NUMBUTTONLABELS == array_size(PortraitLayout), "Check array size");
 
-  if (1) {	// always calculate positions in LK 2.4
 
-    int hwidth = (rc.right-rc.left)/4;
-    int hheight = (rc.bottom-rc.top)/4;
+PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
+    PixelRect rc = rcScreen;
+    rc.Grow(-1); // remove Margin
 
-    switch (ScreenLandscape) {
+    unsigned i = MenuID - 1;
+    
+    assert(i < MenuButtons.size());
+    
+    const PixelScalar row   = ScreenLandscape ? LandscapeLayout[i].row : PortraitLayout[i].row;
+    const PixelScalar col   = ScreenLandscape ? LandscapeLayout[i].col :PortraitLayout[i].col;
+    const PixelScalar nbRow = ScreenLandscape ? 5 : 7;
+    const PixelScalar nbCol = ScreenLandscape ? 5 : 4;
 
-	case 0: // PORTRAIT MODE ONLY
+    const PixelSize size = {
+        std::min<PixelScalar>((rc.GetSize().cx-(nbCol-1))/nbCol, NIBLSCALE(80)), 
+        std::min<PixelScalar>((rc.GetSize().cy-nbRow-1)/nbRow, NIBLSCALE(40))
+    };
+    
+    const double x_interval = (rc.GetSize().cx - size.cx * nbCol) / (nbCol-1);
+    const double y_interval = (rc.GetSize().cy - size.cy * nbRow) / (nbRow-1);
 
-		if (i==0) {
-			*sizex = NIBLSCALE(52);
-			*sizey = NIBLSCALE(37);
-			*x = rc.left-(*sizex); // JMW make it offscreen for now
-			*y = (rc.bottom-(*sizey));
-		} else if (i>=10) {
-				*sizex = NIBLSCALE(57);
-				*sizey = NIBLSCALE(45);
-				*x = rc.left+2+hwidth*(i-10);
-				*y = rc.top+NIBLSCALE(2);
-		} else {
-			if (i<5) {
-				// BOTTOM MENU NAV INFO CONFIG DISPLAY
-				//*sizex = NIBLSCALE(52);
-				//*sizey = NIBLSCALE(40);
-				*sizex = NIBLSCALE(57);
-				*sizey = NIBLSCALE(45);
-				*x = rc.left+2+hwidth*(i-1);
-				*y = (rc.bottom-(*sizey)-NIBLSCALE(2));
-			} else {
-				*sizex = NIBLSCALE(80);
-				*sizey = NIBLSCALE(40);
-				*x = rc.right-(*sizex);
-				int k = rc.bottom-rc.top-NIBLSCALE(46); 
+    const RasterPoint origin = {
+        rc.left + (PixelScalar)(col * (size.cx + x_interval)),
+        rc.top + (PixelScalar)(row * (size.cy + y_interval))
+    };
 
-				*y = (rc.top+(i-5)*k/6+(*sizey/2+NIBLSCALE(3)));
-			}
-		}
-		break;
-
-	case 1: // LANDSCAPE MODE ONLY
-
-		hwidth = (rc.right-rc.left)/5;
-		hheight = (rc.bottom-rc.top)/(5);
-
-		int hoffset, voffset;
-
-		// menu buttons 0-4
-		// LEFT menu 0 is unused
-		if (i==0) {
-			*sizex = NIBLSCALE(52);
-			*sizey = NIBLSCALE(20);
-			*x = rc.left-(*sizex); // JMW make it offscreen for now
-			*y = (rc.top);
-		} else {
-			if (i<5) {
-				// RIGHT menu items ( NAV DISPLAY CONFIG INFO ... )
-				// new buttons landscape on the right 
-				switch(ScreenSize) {
-					case ss800x480:
-						*sizex = NIBLSCALE(75);
-						*sizey = 78;
-						voffset= 40;
-						// offset distance from right margin
-						hoffset=*sizex+5;
-						break;
-					case ss640x480:
-						*sizex = NIBLSCALE(60);
-						*sizey = 72-2;
-						voffset= 40;
-						hoffset=*sizex+3;
-						break;
-					case ss800x600:
-						*sizex = NIBLSCALE(60);
-						*sizey = 84;
-						voffset= 40;
-						hoffset=*sizex+3;
-						break;
-					case ss480x272:
-						*sizex = NIBLSCALE(77);
-						*sizey = 48-1;
-						voffset= 26; 
-						hoffset=*sizex+3;
-						break;
-					case ss480x234:
-						*sizex = NIBLSCALE(82);
-						*sizey = 41-1;
-						voffset= 20;
-						hoffset=*sizex+5;
-						break;
-					case ss320x240:
-						*sizex = NIBLSCALE(58);
-						*sizey = 34-1;
-						voffset= 16;
-						hoffset=*sizex+1;
-						break;
-					case ss400x240:
-						*sizex = NIBLSCALE(75);
-						*sizey = 39;
-						voffset= 20;
-						hoffset=*sizex+2;
-						break;
-					default:
-						//
-						// AUTORES ACCOMPLISHED
-						//
-						LKASSERT(ScreenGeometry>0);
-						switch(ScreenGeometry) {
-						    case SCREEN_GEOMETRY_43:
-						        *sizex = NIBLSCALE(60);
-					      	        *sizey = (int)(70.0*Screen0Ratio);
-						        voffset= (int)(40.0*Screen0Ratio);
-						        hoffset=*sizex+3;
-							break;
-
-						    case SCREEN_GEOMETRY_53:
-						        *sizex = NIBLSCALE(75);
-					      	        *sizey = (int)(78.0*Screen0Ratio);
-						        voffset= (int)(40.0*Screen0Ratio);
-						        hoffset=*sizex+5;
-						        break;
-
-						    case SCREEN_GEOMETRY_169:
-						    default:
-						        *sizex = NIBLSCALE(77);
-					      	        *sizey = (int)(47.0*Screen0Ratio);
-						        voffset= (int)(26.0*Screen0Ratio);
-						        hoffset=*sizex+3;
-						        break;
-						}
-						break;
-				}
-				*x = rc.right-3-hoffset;	
-				*y = (rc.top+hheight*i-(*sizey)/2)-voffset;
-			} else {
-				// BOTTOM MENUS
-
-				switch(ScreenSize) {
-					case ss800x480:
-						*sizex = NIBLSCALE(78);
-						*sizey = 80-2;
-						hoffset=NIBLSCALE(1);
-						// distance from bottom
-						voffset=1;
-						break;
-					case ss640x480:
-						*sizex = NIBLSCALE(62);
-						*sizey = 72-2;
-						hoffset= 2;
-						voffset=1;
-						break;
-					case ss800x600:
-						*sizex = NIBLSCALE(62);
-						*sizey = 84;
-						hoffset= 2;
-						voffset=1;
-						break;
-					case ss480x272:
-						*sizex = NIBLSCALE(82);
-						*sizey = 48-1;
-						hoffset= 2;
-						voffset=1;
-						break;
-					case ss480x234:
-						*sizex = NIBLSCALE(86);
-						*sizey = 41-1;
-						hoffset= 5;
-						voffset=1;
-						break;
-					case ss320x240:
-						*sizex = NIBLSCALE(60);
-						*sizey = 34-1;
-						hoffset= 2;
-						voffset=1;
-						break;
-					case ss400x240:
-						*sizex = NIBLSCALE(78);
-						*sizey = 40-1;
-						hoffset=NIBLSCALE(1);
-						// distance from bottom
-						voffset=1;
-						break;
-					default:
-						//
-						// AUTORES ACCOMPLISHED
-						//
-						LKASSERT(ScreenGeometry>0);
-						switch(ScreenGeometry) {
-						    case SCREEN_GEOMETRY_43:
-						        *sizex = NIBLSCALE(62);
-					      	        *sizey = (int)(70.0*Screen0Ratio);
-						        voffset= 1;
-						        hoffset= 2;
-							break;
-
-						    case SCREEN_GEOMETRY_53:
-						        *sizex = NIBLSCALE(78);
-					      	        *sizey = (int)(78.0*Screen0Ratio);
-						        voffset= 1;
-						        hoffset= NIBLSCALE(1);
-						        break;
-
-						    case SCREEN_GEOMETRY_169:
-						    default:
-						        *sizex = NIBLSCALE(82);
-					      	        *sizey = (int)(47.0*Screen0Ratio);
-						        voffset= 2;
-						        hoffset= 1;
-						        break;
-						}
-						break;
-				}
-				if (i>=10) {
-					*x = rc.left+hoffset+hwidth*(i-10);
-					*y = rc.top+NIBLSCALE(1);
-				} else {
-					*x = rc.left+hwidth*(i-5)+ hoffset;
-					*y = (rc.bottom-(*sizey))- voffset; 
-				}
-			}
-		}
-		break;
-
-	} 
-  }
+    return PixelRect(origin, size);
 }
 
-void ButtonLabel::CreateButtonLabels(const RECT& rc) {
-    int x,y,cx,cy;
-
+void ButtonLabel::CreateButtonLabels(const PixelRect& rcScreen) {
     for (unsigned i = 0; i < MenuButtons.size(); ++i) {
-        GetButtonPosition(i, rc, &x, &y, &cx, &cy);
+        
+        MenuButton& currentButton = MenuButtons[i];
 
-        MenuButtons[i].Create(&MainWindow, (RECT){ x, y, x + cx, y + cy });
-        if(MenuButtons[i].IsDefined()) {
-            MenuButtons[i].SetTextColor(RGB_BLACK);
-            MenuButtons[i].SetBkColor(RGB_BUTTONS);
-            MenuButtons[i].SetMenuId(i);
+        currentButton.Create(&MainWindow, GetButtonPosition(i+1, rcScreen));
+        if(currentButton.IsDefined()) {
+            currentButton.SetTextColor(RGB_BLACK);
+            currentButton.SetBkColor(RGB_BUTTONS);
+            currentButton.SetMenuId(i+1);
         }
     }
 }
@@ -302,52 +161,63 @@ void ButtonLabel::Destroy() {
     std::for_each(MenuButtons.begin(), MenuButtons.end(), std::bind(&MenuButton::Destroy, _1));
 }
 
-void ButtonLabel::SetLabelText(unsigned idx, const TCHAR *text) {
+void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
 
-    if (idx >= MenuButtons.size()) {
+    unsigned idx = MenuID - 1;
+    if(idx >= MenuButtons.size()) {
+        assert(false);
         return;
     }
-/*
-    // don't try to draw if window isn't initialised
-    if (hWndButtonWindow[index] == NULL) return;
-*/
+
+
+    MenuButton& currentButton = MenuButtons[idx];
 
     if ((text == NULL) || (*text == _T('\0')) || (*text == _T(' '))) {
-        MenuButtons[idx].SetVisible(false);
-        MenuButtons[idx].Enable(false);
+        currentButton.SetVisible(false);
+        currentButton.Enable(false);
     } else {
 #ifdef LXMINIMAP
-        if (InputEvents::getSelectedButtonIndex() == index) {
-            MenuButtons[index].SetBkColor(RGB_DARKYELLOW2);
+        if (InputEvents::getSelectedButtonId() == MenuID) {
+            currentButton.SetBkColor(RGB_DARKYELLOW2);
         }
 #endif
 
         TCHAR s[100];
         bool greyed = ExpandMacros(text, s, array_size(s));
         if (greyed) {
-            MenuButtons[idx].SetTextColor(LKColor(0x80, 0x80, 0x80));
-            MenuButtons[idx].EnableMenu(false);
+            currentButton.SetTextColor(LKColor(0x80, 0x80, 0x80));
+            currentButton.EnableMenu(false);
         } else {
-            MenuButtons[idx].SetTextColor(RGB_BLACK);
-            MenuButtons[idx].EnableMenu(true);
+            currentButton.SetTextColor(RGB_BLACK);
+            currentButton.EnableMenu(true);
         }
 
         if ((s[0]==_T('\0'))||(s[0]==_T(' '))) {
-            MenuButtons[idx].SetVisible(false);
-            MenuButtons[idx].Enable(false);
+            currentButton.SetVisible(false);
+            currentButton.Enable(false);
         } else {
-            MenuButtons[idx].SetWndText(gettext(s));
-            MenuButtons[idx].SetTopWnd();
-            MenuButtons[idx].SetVisible(true);
-            MenuButtons[idx].Enable(true);
+            currentButton.SetWndText(gettext(s));
+            currentButton.SetTopWnd();
+            currentButton.SetVisible(true);
+            currentButton.Enable(true);
         }
     }
 }
 
-bool ButtonLabel::IsVisible(unsigned idx) {
-    return (idx < MenuButtons.size() ? MenuButtons[idx].IsVisible() : false);
+bool ButtonLabel::IsVisible(unsigned MenuID) {
+    unsigned i = MenuID - 1;
+    if(i < MenuButtons.size()) {
+        return MenuButtons[i].IsVisible();
+    }
+    assert(false);
+    return false;
 }
 
-bool ButtonLabel::IsEnabled(unsigned idx) {
-    return (idx < MenuButtons.size() ? MenuButtons[idx].IsMenuEnabled() : false);
+bool ButtonLabel::IsEnabled(unsigned MenuID) {
+    unsigned i = MenuID - 1;
+    if(i < MenuButtons.size()) {
+        return MenuButtons[i].IsMenuEnabled();
+    }
+    assert(false);
+    return false;
 }

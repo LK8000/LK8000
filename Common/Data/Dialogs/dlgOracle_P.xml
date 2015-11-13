@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Name="frmOracle" Type="Dialog" Caption="_@M1690_" X="0" Y="0" Width="240" Height="320" BackColor="0" Font="2"  >
+    <WndFrame Name="WndText" X="1" Y="0" Width="-1" Height="260"/>
+    <WndButton Name="cmdClose" Caption="_@M186_" X="90" Y="-1" Width="-90"  Height="32" Font="2" OnClickNotify="OnCloseClicked"/>
+  </WndForm>
+</PMML>

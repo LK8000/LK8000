@@ -125,8 +125,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_tcscpy(BufferTitle, MsgToken(1008));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 goto_bearing:
 					// we could use only waypointbearing, but lets keep them separated anyway
@@ -285,7 +285,7 @@ goto_bearing:
 
 		// B11
 		case LK_NEXT_DIST:
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 			   if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) {
 				value=WayPointCalc[RESWP_OPTIMIZED].Distance*DISTANCEMODIFY;
 				valid=true;
@@ -302,7 +302,7 @@ goto_bearing:
 					}
 				}
 			   } else {
-				index = Task[ActiveWayPoint].Index;
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value=DerivedDrawInfo.WaypointDistance*DISTANCEMODIFY;
 					valid=true;
@@ -343,9 +343,9 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
             LockTaskData();
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-				else index = Task[ActiveWayPoint].Index;
+				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					// don't use current MC...
 					value=ALTITUDEMODIFY*WayPointCalc[index].AltArriv[AltArrivMode];
@@ -369,9 +369,9 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
             LockTaskData();
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-				else index = Task[ActiveWayPoint].Index;
+				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*WayPointCalc[index].AltReqd[AltArrivMode];
 					if (value<10000 && value >-10000) {
@@ -398,9 +398,9 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
             LockTaskData();
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-				else index = Task[ActiveWayPoint].Index;
+				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
                     if(ISPARAGLIDER && DerivedDrawInfo.TaskAltitudeDifference > 0.0) {
                         value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeArrival;
@@ -426,8 +426,8 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
             LockTaskData();
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeRequired;
 					if (value<10000 && value >-10000) {
@@ -448,8 +448,8 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value=0;
-			if ( ActiveWayPoint >=1) {
-				if ( ValidTaskPoint(ActiveWayPoint) ) {
+			if ( ActiveTaskPoint >=1) {
+				if ( ValidTaskPoint(ActiveTaskPoint) ) {
 					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeed;
 					if (value<=0||value>999) value=0; else valid=true;
 					if (value<99)
@@ -464,8 +464,8 @@ goto_bearing:
 
 		// B18
 		case LK_FIN_DIST:
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if (DerivedDrawInfo.ValidFinish) {
 						value = DISTANCEMODIFY*DerivedDrawInfo.WaypointDistance;
@@ -622,9 +622,9 @@ goto_bearing:
 
 #if (0)
 			double dd;
-			if (AATEnabled && ValidTaskPoint(ActiveWayPoint)) {
+			if (AATEnabled && ValidTaskPoint(ActiveTaskPoint)) {
 				dd = DerivedDrawInfo.TaskTimeToGo;
-				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveWayPoint>0)) {
+				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveTaskPoint>0)) {
 					dd += DrawInfo.Time-DerivedDrawInfo.TaskStartTime;
 				}
 				dd= max(0,min(24.0*3600.0,dd))-AATTaskLength*60;
@@ -642,7 +642,7 @@ goto_bearing:
 				status = 0; // black
 			}
 #endif
-			if (ValidTaskPoint(ActiveWayPoint) && AATEnabled && (DerivedDrawInfo.AATTimeToGo< 0.9*ERROR_TIME)) {
+			if (ValidTaskPoint(ActiveTaskPoint) && AATEnabled && (DerivedDrawInfo.AATTimeToGo< 0.9*ERROR_TIME)) {
 
 				Units::TimeToText(BufferValue, (int)DerivedDrawInfo.AATTimeToGo);
 				valid=true;
@@ -655,8 +655,8 @@ goto_bearing:
 		case LK_AA_DISTMAX:
 		// B29
 		case LK_AA_DISTMIN:
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && AATEnabled ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_DISTMAX )
 						value = DISTANCEMODIFY*DerivedDrawInfo.AATMaxDistance ;
@@ -682,8 +682,8 @@ goto_bearing:
 		case LK_AA_SPEEDMAX:
 		// B31
 		case LK_AA_SPEEDMIN:
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_SPEEDMAX )
 						value = TASKSPEEDMODIFY*DerivedDrawInfo.AATMaxSpeed;
@@ -841,8 +841,8 @@ goto_bearing:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
             LockTaskData();
-			index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())?RESWP_OPTIMIZED:Task[ActiveWayPoint].Index;
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
+			index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())?RESWP_OPTIMIZED:Task[ActiveTaskPoint].Index;
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
 
 				if (WayPointCalc[index].NextETE > 0) {
 					valid=true;
@@ -887,7 +887,7 @@ goto_bearing:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			if (ISCAR || ISGAAIRCRAFT) {
-			    if ( ValidTaskPoint(ActiveWayPoint) && DerivedDrawInfo.ValidStart ) {
+			    if ( ValidTaskPoint(ActiveTaskPoint) && DerivedDrawInfo.ValidStart ) {
 				if (DerivedDrawInfo.LKTaskETE > 0) {
 					valid=true;
 					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LKTaskETE+DetectCurrentTime());
@@ -895,7 +895,7 @@ goto_bearing:
 					_stprintf(BufferValue, TEXT(NULLTIME));
 			    }
 			} else {
-			    if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
+			    if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
 				if (DerivedDrawInfo.TaskTimeToGo > 0) {
 					valid=true;
 					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo+DetectCurrentTime());
@@ -918,8 +918,8 @@ goto_bearing:
 
 			if(ISPARAGLIDER) {
                                 LockTaskData();
-				index = DoOptimizeRoute()?RESWP_OPTIMIZED:Task[ActiveWayPoint].Index;
-				if ( (ValidTaskPoint(ActiveWayPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
+				index = DoOptimizeRoute()?RESWP_OPTIMIZED:Task[ActiveTaskPoint].Index;
+				if ( (ValidTaskPoint(ActiveTaskPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
 					if (WayPointCalc[index].NextETE > 0) {
 						valid=true;
 						Units::TimeToText(BufferValue, (int)(WayPointCalc[index].NextETE+DetectCurrentTime()));
@@ -931,7 +931,7 @@ goto_bearing:
 			} 
                         if (ISCAR || ISGAAIRCRAFT) { 
                             LockTaskData();
-			    if ( ValidTaskPoint(ActiveWayPoint) && (WayPointCalc[TASKINDEX].NextETE< 0.9*ERROR_TIME)) {
+			    if ( ValidTaskPoint(ActiveTaskPoint) && (WayPointCalc[TASKINDEX].NextETE< 0.9*ERROR_TIME)) {
 				if (WayPointCalc[TASKINDEX].NextETE > 0) {
 					valid=true;
 					Units::TimeToText(BufferValue, (int)(WayPointCalc[TASKINDEX].NextETE+DetectCurrentTime()));
@@ -942,7 +942,7 @@ goto_bearing:
                             break;
 			}
 
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
 				if (DerivedDrawInfo.LegTimeToGo > 0) {
 					valid=true;
 					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LegTimeToGo+DetectCurrentTime());
@@ -958,9 +958,9 @@ goto_bearing:
 				_tcscpy(BufferTitle, MsgToken(1096));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-				else index = Task[ActiveWayPoint].Index;
+				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					// THIS WOULD SET BEARING while circling
 					// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
@@ -1026,8 +1026,8 @@ goto_bearing:
 
 		// B51
 		case LK_AA_TARG_DIST:
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && AATEnabled ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value = DISTANCEMODIFY*DerivedDrawInfo.AATTargetDistance ;
 					valid=true;
@@ -1048,8 +1048,8 @@ goto_bearing:
 
 		// B52
 		case LK_AA_TARG_SPEED:
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value = TASKSPEEDMODIFY*DerivedDrawInfo.AATTargetSpeed;
 					valid=true;
@@ -1212,8 +1212,8 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value=0;
-			if ( ActiveWayPoint >=1) {
-				if ( ValidTaskPoint(ActiveWayPoint) ) {
+			if ( ActiveTaskPoint >=1) {
+				if ( ValidTaskPoint(ActiveTaskPoint) ) {
 					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeedInstantaneous;
 					if (value<=0||value>999) value=0; else valid=true;
 					if (value<99)
@@ -1258,8 +1258,8 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value=0;
-			if ( ActiveWayPoint >=1) {
-				if ( ValidTaskPoint(ActiveWayPoint) ) {
+			if ( ActiveTaskPoint >=1) {
+				if ( ValidTaskPoint(ActiveTaskPoint) ) {
 					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeedAchieved;
 					if (value<0||value>999) value=0; else valid=true;
 					if (value<99)
@@ -1279,9 +1279,9 @@ goto_bearing:
 			_stprintf(BufferUnit,_T("h"));
 			// TODO This is in the wrong place, should be moved to calc thread! 090916
 			double dd;
-			if (AATEnabled && ValidTaskPoint(ActiveWayPoint)) {
+			if (AATEnabled && ValidTaskPoint(ActiveTaskPoint)) {
 				dd = DerivedDrawInfo.TaskTimeToGo;
-				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveWayPoint>0)) {
+				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveTaskPoint>0)) {
 					dd += DrawInfo.Time-DerivedDrawInfo.TaskStartTime;
 				}
 				dd= max(0.0,min(24.0*3600.0,dd))-AATTaskLength*60;
@@ -1374,8 +1374,8 @@ goto_bearing:
 				_tcscpy(BufferTitle, MsgToken(1134));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					// the ValidFinish() seem to return FALSE when is actually valid.
 					// In any case we do not use it for the vanilla GR
@@ -1535,9 +1535,9 @@ goto_bearing:
 				_tcscpy(BufferTitle, MsgToken(1146));
             
             LockTaskData();
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-				else index = Task[ActiveWayPoint].Index;
+				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value=WayPointCalc[index].GR;
 					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
@@ -1588,7 +1588,7 @@ goto_bearing:
 
 		// B74
 		case LK_TASK_DISTCOV:
-			if ( (ActiveWayPoint >=1) && ( ValidTaskPoint(ActiveWayPoint) )) {
+			if ( (ActiveTaskPoint >=1) && ( ValidTaskPoint(ActiveTaskPoint) )) {
 				value = DISTANCEMODIFY*DerivedDrawInfo.TaskDistanceCovered;
 				valid=true;
 				_stprintf(BufferValue, TEXT("%.0f"),value); // l o f?? TODO CHECK
@@ -2392,8 +2392,8 @@ olc_score:
 			else
 				// LKTOKEN  _@M1191_ = "TskArr0"
 				_tcscpy(BufferTitle, MsgToken(1191));
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference0;
 					if ( value > ALTDIFFLIMIT ) {
@@ -2418,14 +2418,14 @@ lkfin_ete:
 
 			if (ISCAR || ISGAAIRCRAFT) {
                 LockTaskData();
-			    if ( ValidTaskPoint(ActiveWayPoint)) {
+			    if ( ValidTaskPoint(ActiveTaskPoint)) {
 				if (DerivedDrawInfo.LKTaskETE > 0) { 
 					valid=true;
 					if ( Units::TimeToTextDown(BufferValue, (int)DerivedDrawInfo.LKTaskETE)) {
 						_stprintf(BufferUnit, TEXT("h"));
                     }
 				} else {
-					index = Task[ActiveWayPoint].Index;
+					index = Task[ActiveTaskPoint].Index;
 					if ( WayPointCalc[index].NextETE > 0) { // single waypoint? uhm
 						valid=true;
 						if (Units::TimeToTextDown(BufferValue, (int)WayPointCalc[index].NextETE)) {
@@ -2440,14 +2440,14 @@ lkfin_ete:
 			}
 
             LockTaskData();
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				if (DerivedDrawInfo.TaskTimeToGo > 0) { 
 					valid=true;
 					if ( Units::TimeToTextDown(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo)) {
 						_stprintf(BufferUnit, TEXT("h"));
                     }
 				} else {
-					index = Task[ActiveWayPoint].Index;
+					index = Task[ActiveTaskPoint].Index;
 					if ( (WayPointCalc[index].NextETE > 0) && !ValidTaskPoint(1) ) {
 						valid=true;
 						if (Units::TimeToTextDown(BufferValue, (int)WayPointCalc[index].NextETE)) {
@@ -2468,9 +2468,9 @@ lkfin_ete:
 			// LKTOKEN  _@M1190_ = "ArrMc0"
 			_tcscpy(BufferTitle, MsgToken(1190));
 
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-				else index = Task[ActiveWayPoint].Index;
+				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.NextAltitudeDifference0;
 					if ( value > ALTDIFFLIMIT ) {
@@ -2730,7 +2730,7 @@ lkfin_ete:
 		// B147 Distance from the start sector, always available also after start
 		case LK_START_DIST:
 			if ( ValidTaskPoint(0) && ValidTaskPoint(1) ) { // if real task
-				if((ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())&& ActiveWayPoint == 0) {
+				if((ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())&& ActiveTaskPoint == 0) {
 					value=WayPointCalc[RESWP_OPTIMIZED].Distance*DISTANCEMODIFY;
 					if (value>99 || value==0)
 						_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -2777,8 +2777,8 @@ lkfin_ete:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_NEXT_ALTDIFF].Title );
             
             LockTaskData();
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					// don't use current MC...
 					value=ALTITUDEMODIFY*WayPointCalc[index].AltArriv[AltArrivMode];
@@ -2802,8 +2802,8 @@ lkfin_ete:
 				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
 				_tcscpy(BufferTitle, MsgToken(1146));
             LockTaskData();
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
+				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value=WayPointCalc[index].GR;
 					if (value <1 || value >=ALTERNATE_MAXVALIDGR )

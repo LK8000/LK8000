@@ -10,6 +10,7 @@
 #include "dlgTools.h"
 #include "Dialogs.h"
 #include "WindowControls.h"
+#include "resource.h"
 
 #define BARO__CPROBE		7
 extern bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
@@ -364,9 +365,7 @@ BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
 		return FALSE;
 	}
 
-	TCHAR filename[MAX_PATH];
-	LocalPathS(filename, TEXT("dlgDevCProbe.xml"));
-	m_wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_DEVCPROBE"));
+	m_wf = dlgLoadFromXML(CallBackTable, TEXT("dlgDevCProbe.xml"), IDR_XML_DEVCPROBE);
 
     WndButton *wBt = NULL;
             

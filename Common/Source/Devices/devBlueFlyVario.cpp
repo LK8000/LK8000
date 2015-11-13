@@ -23,6 +23,7 @@
 #include "WindowControls.h"
 #include <iterator>
 #include <functional>
+#include "resource.h"
 
 using std::placeholders::_1;
 
@@ -247,7 +248,7 @@ namespace dlgBlueFlyConfig {
             }
 
             TCHAR szTmp[50] = {0};
-            _stprintf(szTmp, _T("BlueFlyVario %d/%d"), CurrentPage+1, lstPageWnd.size());
+            _stprintf(szTmp, _T("BlueFlyVario %u/%u"), CurrentPage+1, (unsigned)lstPageWnd.size());
             wfDlg->SetCaption(szTmp);
         }
     }
@@ -351,20 +352,14 @@ namespace dlgBlueFlyConfig {
 
     int Show(DeviceDescriptor_t *d) {
         int nRet = IdCancel;
-        TCHAR filename[MAX_PATH];
-        const TCHAR *resName = NULL;
+
         pDevice = d;
         Init = true;
 
-        if (ScreenLandscape) {
-            LocalPathS(filename, TEXT("dlgBlueFlyConfig.xml"));
-            resName = TEXT("IDR_XML_BLUEFLYCONFIG");
-        } else {
-            LocalPathS(filename, TEXT("dlgBlueFlyConfig_L.xml"));
-            resName = TEXT("IDR_XML_BLUEFLYCONFIG_L");
-        }
-
-        wfDlg = dlgLoadFromXML(CallBackTable, filename, resName);
+        wfDlg = dlgLoadFromXML(CallBackTable, 
+                ScreenLandscape ? TEXT("dlgBlueFlyConfig_L.xml") : TEXT("dlgBlueFlyConfig_P.xml"), 
+                ScreenLandscape ? IDR_XML_BLUEFLYCONFIG_L : IDR_XML_BLUEFLYCONFIG_P);
+        
         if (wfDlg) {
             // build list of page WindowConrol*
             lstPageWnd.clear();

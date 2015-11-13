@@ -231,8 +231,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 		case IM_CRUISE:
 		case IM_TASK:
 		case IM_AUX:
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
+				index = Task[ActiveTaskPoint].Index;
 				if ( index >=0 ) {
 					_tcscpy(Buffer, WayPointList[index].Name);
 				} else {
@@ -935,7 +935,7 @@ label_HSI:
 			#endif
 		}
 		if(showQFU) {
-			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveWayPoint].Index].RunwayDir,gettext(_T("_@M2179_")));
+			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,gettext(_T("_@M2179_")));
 			#ifndef UNDITHER
 			icolor=RGB_GREEN;
 			#else
@@ -944,8 +944,8 @@ label_HSI:
 		}
 	} else { //show next waypoint name
 		icolor=RGB_WHITE;
-		if(ValidTaskPoint(ActiveWayPoint)) {
-			if(Task[ActiveWayPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveWayPoint].Index].Name);
+		if(ValidTaskPoint(ActiveTaskPoint)) {
+			if(Task[ActiveTaskPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveTaskPoint].Index].Name);
 			else {
 				_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 				icolor=AMBERCOLOR;

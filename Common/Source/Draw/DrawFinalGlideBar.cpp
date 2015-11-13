@@ -80,7 +80,7 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
     barindex = GetOvertargetIndex();
     if (barindex >= 0) {
 #else
-    if (ValidTaskPoint(ActiveWayPoint)) {
+    if (ValidTaskPoint(ActiveTaskPoint)) {
 #endif
 
         const int y0 = ((rc.bottom - rc.top) / 2) + rc.top;

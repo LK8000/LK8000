@@ -31,7 +31,7 @@
 #define CHAR_UTIL_HPP
 
 #ifdef _UNICODE
-#include <tchar.h>
+#include "TCharUtil.hpp"
 #endif
 
 constexpr
@@ -48,42 +48,32 @@ IsASCII(const char ch)
   return IsASCII((unsigned char)ch);
 }
 
-#ifdef _UNICODE
 constexpr
-static inline bool
-IsASCII(const TCHAR ch)
-{
-  return (ch & ~0x7f) == 0;
-}
-#endif
-
 static inline bool
 IsWhitespaceOrNull(const char ch)
 {
   return (unsigned char)ch <= 0x20;
 }
 
+constexpr
 static inline bool
 IsWhitespaceNotNull(const char ch)
 {
   return ch > 0 && ch <= 0x20;
 }
 
-#ifdef _UNICODE
-
+/**
+ * Is the given character whitespace?  This calls the faster one of
+ * IsWhitespaceOrNull() or IsWhitespaceNotNull().  Use this if you
+ * want the fastest implementation, and you don't care if a null byte
+ * matches.
+ */
+constexpr
 static inline bool
-IsWhitespaceOrNull(const TCHAR ch)
+IsWhitespaceFast(const char ch)
 {
-  return (unsigned)ch <= 0x20;
+  return IsWhitespaceOrNull(ch);
 }
-
-static inline bool
-IsWhitespaceNotNull(const TCHAR ch)
-{
-  return ch > 0 && ch <= 0x20;
-}
-
-#endif /* _UNICODE */
 
 constexpr
 static inline bool
@@ -91,15 +81,6 @@ IsPrintableASCII(char ch)
 {
   return (signed char)ch >= 0x20;
 }
-
-#ifdef _UNICODE
-constexpr
-static inline bool
-IsPrintableASCII(TCHAR ch)
-{
-  return IsASCII(ch) && ch >= 0x20;
-}
-#endif
 
 constexpr
 static inline bool
@@ -136,45 +117,6 @@ IsAlphaNumericASCII(char ch)
   return IsAlphaASCII(ch) || IsDigitASCII(ch);
 }
 
-#ifdef _UNICODE
-
-constexpr
-static inline bool
-IsDigitASCII(TCHAR ch)
-{
-  return ch >= _T('0') && ch <= _T('9');
-}
-
-constexpr
-static inline bool
-IsUpperAlphaASCII(TCHAR ch)
-{
-  return ch >= _T('A') && ch <= _T('Z');
-}
-
-constexpr
-static inline bool
-IsLowerAlphaASCII(TCHAR ch)
-{
-  return ch >= _T('a') && ch <= _T('z');
-}
-
-constexpr
-static inline bool
-IsAlphaASCII(TCHAR ch)
-{
-  return IsUpperAlphaASCII(ch) || IsLowerAlphaASCII(ch);
-}
-
-constexpr
-static inline bool
-IsAlphaNumericASCII(TCHAR ch)
-{
-  return IsAlphaASCII(ch) || IsDigitASCII(ch);
-}
-
-#endif
-
 /**
  * Convert the specified ASCII character (0x00..0x7f) to upper case.
  * Unlike toupper(), it ignores the system locale.
@@ -185,6 +127,19 @@ ToUpperASCII(char ch)
 {
   return ch >= 'a' && ch <= 'z'
     ? (ch - ('a' - 'A'))
+    : ch;
+}
+
+/**
+ * Convert the specified ASCII character (0x00..0x7f) to lower case.
+ * Unlike tolower(), it ignores the system locale.
+ */
+constexpr
+static inline char
+ToLowerASCII(char ch)
+{
+  return ch >= 'A' && ch <= 'Z'
+    ? (ch + ('a' - 'A'))
     : ch;
 }
 

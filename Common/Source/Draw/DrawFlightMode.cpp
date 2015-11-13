@@ -46,22 +46,19 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   static PixelSize loggerNewSize, mmNewSize, batteryNewSize;
   static int vsepar;
 
-  LKBitmap* ptmpBitmap = NULL;
+  LKIcon* ptmpBitmap = NULL;
 
   if (DoInit[MDI_DRAWFLIGHTMODE]) {
       DoInit[MDI_DRAWFLIGHTMODE]=false;
 
       ptmpBitmap=&hLogger;
       loggerIconSize = ptmpBitmap->GetSize();
-      loggerIconSize.cx /= 2;
 
       ptmpBitmap=&hMM0;;
       mmIconSize = ptmpBitmap->GetSize();
-      mmIconSize.cx /= 2;
 
       ptmpBitmap=&hBattery12;;
       batteryIconSize = ptmpBitmap->GetSize();
-      batteryIconSize.cx /= 2;
 
       //
       // determine if we can rescale. Preference is to keep standard rescale.
@@ -149,13 +146,12 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
       }
   }
   if (ptmpBitmap)
-      Surface.DrawMaskedBitmap( loggerPoint.x, loggerPoint.y,
-          loggerNewSize.cx, loggerNewSize.cy, *ptmpBitmap, loggerIconSize.cx,loggerIconSize.cy);
+      ptmpBitmap->Draw(Surface, loggerPoint.x, loggerPoint.y, loggerNewSize.cx, loggerNewSize.cy);
  
-  //
+  // 
   // Big icon
   //
-
+ 
   if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) {
       ptmpBitmap = &hClimb;
   } else {
@@ -232,7 +228,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   }
 
   if(ptmpBitmap ) {
-      Surface.DrawMaskedBitmap( mmPoint.x, mmPoint.y, mmNewSize.cx,mmNewSize.cy, *ptmpBitmap, mmIconSize.cx, mmIconSize.cy);
+      ptmpBitmap->Draw(Surface, mmPoint.x, mmPoint.y, mmNewSize.cx,mmNewSize.cy);
   }
 
   //
@@ -296,7 +292,8 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 	ptmpBitmap = &hBatteryFull;
 
 _drawbattery:
-    if(ptmpBitmap) 
-        Surface.DrawMaskedBitmap(batteryPoint.x, batteryPoint.y, batteryNewSize.cx,batteryNewSize.cy,*ptmpBitmap, batteryIconSize.cx, batteryIconSize.cy);
+    if(ptmpBitmap) {
+        ptmpBitmap->Draw(Surface, batteryPoint.x, batteryPoint.y, batteryNewSize.cx, batteryNewSize.cy);
+    }
 
 }

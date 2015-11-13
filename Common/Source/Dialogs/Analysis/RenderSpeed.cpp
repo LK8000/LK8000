@@ -13,7 +13,7 @@ void Statistics::RenderSpeed(LKSurface& Surface, const RECT& rc)
 {
 
   if ((flightstats.Task_Speed.sum_n<2)
-      || !ValidTaskPoint(ActiveWayPoint)) {
+      || !ValidTaskPoint(ActiveTaskPoint)) {
     DrawNoData(Surface, rc);
     return;
   }

@@ -232,20 +232,20 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
 
     //Critical section: copy the needed data from Task and WayPoint list
     LockTaskData(); // protect Task & WayPointList
-    if(ValidTaskPoint(ActiveWayPoint)) { //if valid task
-        if(Task[ActiveWayPoint].Index>=0) { //if valid WP
+    if(ValidTaskPoint(ActiveTaskPoint)) { //if valid task
+        if(Task[ActiveTaskPoint].Index>=0) { //if valid WP
             validActiveWP=true;
-            currentWP=ActiveWayPoint;
+            currentWP=ActiveTaskPoint;
             finalWP=getFinalWaypoint();
-            WPstyle=WayPointList[Task[ActiveWayPoint].Index].Style;
-            RunwayLen=WayPointList[Task[ActiveWayPoint].Index].RunwayLen;
-            WPaltitude= WayPointList[Task[ActiveWayPoint].Index].Altitude;
-            QFU=WayPointList[Task[ActiveWayPoint].Index].RunwayDir; //get runaway orientation
-            if(ActiveWayPoint>0) { //if we have a previous WP
-                if(Task[ActiveWayPoint-1].Index>=0) {
+            WPstyle=WayPointList[Task[ActiveTaskPoint].Index].Style;
+            RunwayLen=WayPointList[Task[ActiveTaskPoint].Index].RunwayLen;
+            WPaltitude= WayPointList[Task[ActiveTaskPoint].Index].Altitude;
+            QFU=WayPointList[Task[ActiveTaskPoint].Index].RunwayDir; //get runaway orientation
+            if(ActiveTaskPoint>0) { //if we have a previous WP
+                if(Task[ActiveTaskPoint-1].Index>=0) {
                     validPreviousWP=true;
-                    WPleg=Task[ActiveWayPoint].Leg;
-                    prevWPaltitude=WayPointList[Task[ActiveWayPoint-1].Index].Altitude;
+                    WPleg=Task[ActiveTaskPoint].Leg;
+                    prevWPaltitude=WayPointList[Task[ActiveTaskPoint-1].Index].Altitude;
                 }
             }
         }

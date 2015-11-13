@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmBluetooth" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="Bluetooth" Font="2" >
-    <WndListFrame Name="frmBthList" X="2" Y="2" Width="220" Height="220" Font="2" OnListInfo="OnListInfo">
-      <WndOwnerDrawFrame Name="frmBthListEntry" X="2" Y="2" Width="203" Height="24" Font="2"  OnPaint="OnPaintListItem"/>
+  <WndForm Name="frmBluetooth" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="Bluetooth" Font="2" >
+    <WndButton Name="btLookup" Caption="_@M1836_" X="2" Y="3" Height="40" Width="65" OnClickNotify="OnLookup"/>
+    <WndButton Name="btPair" Caption="_@M1837_" X="2" Y="-1" Height="40" Width="65" OnClickNotify="OnPair"/>
+    <WndButton Name="btUnpair" Caption="_@M1838_" X="2" Y="-1" Height="40" Width="65" OnClickNotify="OnUnpair"/>
+    <WndButton Name="btClose" Caption="_@M186_" X="2" Y="180" Height="40" Width="65" OnClickNotify="OnClose"/>
+    <WndListFrame Name="frmBthList" X="70" Y="0" Width="-2" Height="-2" Font="2" OnListInfo="OnListInfo">
+      <WndOwnerDrawFrame Name="frmBthListEntry" X="2" Y="2" Width="-2" Height="24" Font="2"  OnPaint="OnPaintListItem"/>
     </WndListFrame>
-    <WndButton Name="btLookup" Caption="_@M1836_" X="2" Y="-1" Height="35" Width="77" OnClickNotify="OnLookup"/>
-    <WndButton Name="btPair" Caption="_@M1837_" X="79" Y="-999" Height="35" Width="77" OnClickNotify="OnPair"/>
-    <WndButton Name="btUnpair" Caption="_@M1838_" X="158" Y="-999" Height="35" Width="77" OnClickNotify="OnUnpair"/>
-    <WndButton Name="btClose" Caption="_@M186_" X="2" Y="-1" Height="35" Width="234" OnClickNotify="OnClose"/>
   </WndForm>
 </PMML>
 

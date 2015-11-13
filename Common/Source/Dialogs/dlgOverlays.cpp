@@ -10,6 +10,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
+#include "resource.h"
 
 extern void AddCustomKeyList( DataFieldEnum* dfe);
 
@@ -230,11 +231,9 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgOverlaysShowModal(void){
 
   WndProperty *wp;
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgOverlays.xml"));
   wf = dlgLoadFromXML(CallBackTable,                        
-		      filename, 
-		      TEXT("IDR_XML_OVERLAYS"));
+		      TEXT("dlgOverlays.xml"), 
+		      IDR_XML_OVERLAYS);
 
   if (!wf) return;
 

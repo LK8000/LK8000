@@ -15,14 +15,19 @@
 #include "Parser.h"
 #include "Calculations.h"
 #include "mapprimitive.h"
-#include "Poco/ThreadTarget.h"
-#include "Poco/Thread.h"
 #include "Screen/BrushReference.h"
 #include "Screen/PenReference.h"
 #include "Screen/LKBitmap.h"
+#include "Screen/LKIcon.h"
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
 #include "Time/PeriodClock.hpp"
+
+#ifndef ENABLE_OPENGL
+#include "Poco/ThreadTarget.h"
+#include "Poco/Thread.h"
+#include "Poco/Event.h"
+#endif
 
 #define NORTHSMART 5
 #define NORTHTRACK 4
@@ -427,8 +432,12 @@ class MapWindow {
   // solid brushes for airspace drawing (initialized in InitAirSpaceSldBrushes())
   static LKBrush hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
  
+#ifdef ENABLE_OPENGL
+  static LKColor AboveTerrainColor;
+#else
   static LKBrush hAboveTerrainBrush;
-
+#endif
+  
   static Zoom zoom;
   static Mode mode;
 
@@ -453,7 +462,7 @@ class MapWindow {
 			   const LKColor& , const LKColor&,
 			   const RECT&);
 
-  static void DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKBitmap& h, const bool autostretch);
+  static void DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKIcon& Icon, const bool autostretch);
 
   // ...
   static void RequestToggleFullScreen();
@@ -538,17 +547,17 @@ class MapWindow {
 			  const rectObj &bounds);
 
 
-  static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   static void DrawHeading(LKSurface& Surface, const POINT& Orig, const RECT& rc); // VENTA10
   static void DrawBestCruiseTrack(LKSurface& Surface, const POINT& Orig);
-  static void DrawCompass(LKSurface& Surface, const RECT& rc,const double angle);
   static void DrawTRI(LKSurface&, const RECT& rc);
   static void DrawAcceleration(LKSurface& Surface, const RECT& rc);
   static void DrawTarget(LKSurface& Surface, const RECT& rc,int ttop,int tbottom,int tleft,int tright);
 
   static void DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   static void DrawAirSpace(LKSurface& Surface, const RECT& rc);
+#ifdef HAVE_HATCHED_BRUSH
   static void DrawAirSpacePattern(LKSurface& Surface, const RECT& rc);
+#endif
   static void DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc);
   static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc);
@@ -619,9 +628,13 @@ class MapWindow {
                               double lon_start, double lat_start,
                               double lon_end, double lat_end,
 			      const RECT& rc);
+protected:
+  static void DrawMapScale(LKSurface& Surface, const RECT& rc, const bool ScaleChangeFeedback);
+  static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
+  static void DrawCompass(LKSurface& Surface, const RECT& rc,const double angle);
 
-  static void DrawMapScale(LKSurface& Surface, const RECT& rc, 
-			   const bool ScaleChangeFeedback);
+  
+private:  
   static void DrawMapScale2(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawFinalGlide(LKSurface& Surface, const RECT& rc);
   static void DrawThermalBand(LKSurface& Surface, const RECT& rc);
@@ -639,31 +652,42 @@ class MapWindow {
   static bool WaypointInTask(int ind);
 
 
+#ifndef ENABLE_OPENGL
+private:
+  static void DrawThread ();
+  static Poco::ThreadTarget MapWindowThreadRun;
+  static Poco::Event drawTriggerEvent;
+
+  static LKBitmapSurface DrawSurface;
+
+public:
+  static Poco::Mutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
+
 protected:
 #ifdef USE_GDI
   static LKWindowSurface BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
 #else
-  static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
   static LKBitmapSurface BackBufferSurface; 
+  static Poco::Mutex BackBuffer_Mutex;
 #endif
-
+#endif
 private:
   static int iSnailNext;
   static int iLongSnailNext;
 
-  static LKBitmapSurface DrawSurface;
-  
+#ifndef ENABLE_OPENGL
   static LKBitmapSurface TempSurface;
   
   static LKMaskBitmapSurface hdcMask; // Only used For Airspaces drawing "Transparent Border" or "Paterns Borders"
   static LKBitmapSurface hdcbuffer; // Used For aispaces
+#endif
   
   static double PanLatitude;
   static double PanLongitude;
 
   static double DisplayAngle;
   static double DisplayAircraftAngle;
-  static DWORD targetPanSize;
+  static unsigned targetPanSize;
   
  public:
   static void RefreshMap(); // set public VENTA
@@ -685,11 +709,9 @@ private:
   static BOOL THREADRUNNING;
   static BOOL THREADEXIT;
   
-  static Poco::Mutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
-  
   static double LimitMapScale(double value);
 
-  static void SetTargetPan(bool dopan, int task_index, DWORD dlgSize = 0);
+  static void SetTargetPan(bool dopan, int task_index, unsigned dlgSize = 0);
 
   static double GetPanLatitude() { return PanLatitude; }
   static double GetPanLongitude() { return PanLongitude; }
@@ -715,20 +737,19 @@ private:
   
  private:
 
-  static DWORD fpsTime0;
+  static unsigned fpsTime0;
 
   static void CalculateOrigin(const RECT& rc, POINT *Orig);
 
 
-  static void DrawThread ();
-
-  static Poco::ThreadTarget MapWindowThreadRun;
-
+protected:
   static void RenderMapWindow(LKSurface& Surface, const RECT& rc);
+  static void UpdateCaches(bool force=false);
+
+private:  
   static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
 				const POINT &Orig,
 				const POINT &Orig_Aircraft);
-  static void UpdateCaches(bool force=false);
   static double findMapScaleBarSize(const RECT& rc);
 
   #define SCALELISTSIZE  30

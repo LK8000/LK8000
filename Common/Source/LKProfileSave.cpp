@@ -31,9 +31,6 @@ void LKWriteToProfile(const char *varname, int varvalue) {
 void LKWriteToProfile(const char *varname, unsigned int varvalue) {
   fprintf(pfp,"%s=%u%s", varname, varvalue,PNEWLINE);
 }
-void LKWriteToProfile(const char *varname, DWORD varvalue) {
-  fprintf(pfp,"%s=%u%s", varname, (unsigned int) varvalue,PNEWLINE);
-}
 void LKWriteToProfile(const char *varname, double varvalue) {
   fprintf(pfp,"%s=%.0f%s", varname, varvalue,PNEWLINE);
 }
@@ -436,17 +433,6 @@ void WriteDeviceSettings(const int devIdx, const TCHAR *Name){
   if (devIdx == 0) _tcscpy(dwDeviceName1,Name);
   if (devIdx == 1) _tcscpy(dwDeviceName2,Name);
 }
-void WritePort1Settings(LPCTSTR szPort, DWORD SpeedIndex, DWORD Bit1Index) {
-  _tcscpy(szPort1, szPort);
-  dwSpeedIndex1 = SpeedIndex;
-  dwBit1Index	= Bit1Index;
-}
-void WritePort2Settings(LPCTSTR szPort, DWORD SpeedIndex, DWORD Bit1Index) {
-  _tcscpy(szPort2, szPort);
-  dwSpeedIndex2 = SpeedIndex;
-  dwBit2Index	= Bit1Index;
-}
-
 
 //
 // Save only Aircraft related parameters

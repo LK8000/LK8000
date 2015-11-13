@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -23,7 +23,6 @@ Copyright_License {
 
 #include "Screen/Font.hpp"
 #include "Screen/Debug.hpp"
-
 #ifdef USE_FONTSIZE
 #include "Screen/BufferCanvas.hpp"
 #include "Screen/AnyCanvas.hpp"
@@ -65,7 +64,7 @@ Font::Load(const LOGFONT &log_font)
     Destroy();
     return false;
   }
-  
+
 #ifdef USE_FONTSIZE
   CalculateHeights();
 #endif
@@ -132,7 +131,6 @@ Font::CalculateHeights()
   }
 }
 #endif
-
 void
 Font::Destroy()
 {

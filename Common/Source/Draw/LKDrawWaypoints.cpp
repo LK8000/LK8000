@@ -159,7 +159,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     }
     else
     {
-        const LKBitmap* pWptBmp = NULL;
+        const LKIcon* pWptBmp = NULL;
         if (WayPointCalc[i].IsAirport) {
             if (WayPointList[i].Reachable == FALSE)	{
                 pWptBmp = &hBmpAirportUnReachable;
@@ -189,7 +189,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
         }
 
         if(pWptBmp) {
-            Surface.DrawMaskedBitmap(WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, *pWptBmp, 20, 20);
+            pWptBmp->Draw(Surface, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20);
         }
     }
   } // for all waypoints
@@ -520,7 +520,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     // draws if they are in task unconditionally,
     // otherwise, does comparison
     if ( E->inTask || (E->isLandable && !E->isExcluded) ) { 
-    const LKBitmap* pWptBmp = NULL;
+    const LKIcon* pWptBmp = NULL;
 
 	TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), false);
 
@@ -540,7 +540,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		pWptBmp = &hTurnPoint;
     }
     if(pWptBmp) {
-        Surface.DrawMaskedBitmap(E->Pos.x-10,E->Pos.y-10,20,20,*pWptBmp,20,20);
+        pWptBmp->Draw(Surface, E->Pos.x-10,E->Pos.y-10,20,20);
     }
     } // wp in task
   } // for all waypoint, searching for those in task
@@ -551,7 +551,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
-      const LKBitmap* pWptBmp = NULL;
+      const LKIcon* pWptBmp = NULL;
 
       if ( TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), true) == true) {
 
@@ -654,7 +654,7 @@ turnpoint:
 	// We dont do stretching here. We are using different bitmaps for hi res.
 	// The 20x20 size is large enough to make much bigger icons than the old ones.
     if(pWptBmp) {
-        Surface.DrawMaskedBitmap(E->Pos.x - 10, E->Pos.y - 10, 20, 20, *pWptBmp, 20, 20);
+        pWptBmp->Draw(Surface, E->Pos.x - 10, E->Pos.y - 10, 20, 20);
     }
       }
     }
@@ -670,25 +670,26 @@ turnpoint:
 void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
     if (!hLKPictori)
         return;
-    int cx = rc.right - rc.left;
-    int cy = rc.bottom - rc.top;
-    int x = cx / 2;
-    int y = cy / 2;
+    const int cx = rc.right - rc.left;
+    const int cy = rc.bottom - rc.top;
+    const int x = rc.left;
+    const int y = rc.top;
 
-    if (UseHiresBitmap) {
-        x -= 100 / 2;
-        y -= 100 / 2;
-        Surface.DrawBitmapCopy(x, y, 100, 100, hLKPictori);
-    } else {
-        x -= 45 / 2;
-        y -= 45 / 2;
-        Surface.DrawBitmapCopy(x, y, IBLSCALE(45), IBLSCALE(45), hLKPictori);
-    }
+#ifdef USE_GDI
+// TODO : replace by real size of Bitmap
+    const int cxSrc = UseHiresBitmap?100:45;
+    const int cySrc = UseHiresBitmap?100:45;
+#else
+    const int cxSrc = hLKPictori.GetWidth();
+    const int cySrc = hLKPictori.GetHeight();
+#endif
+    
+    Surface.DrawBitmapCopy(x, y, cx, cy, hLKPictori, cxSrc, cySrc);
 }
 
 void MapWindow::DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp)
 {
-    const LKBitmap* pWptBmp = NULL;
+    const LKIcon* pWptBmp = NULL;
     
 switch(wp->Style) {
 	case STYLE_NORMAL:
@@ -772,32 +773,21 @@ turnpoint:
 
 } // switch estyle
 
-int cx = rc.right - rc.left;
-int cy = rc.bottom - rc.top;
-
-int d=1;
-if(!UseHiresBitmap)
-  d=2;
-
-bool scale = true;
-
-int x = (cx/2)-20/d;
-int y = (cy/2)-20/d;
-if(cx < 40)
-{
-  scale = false;
-  if(UseHiresBitmap)
-  {
-	x = (cx/2)+5;
-	y = (cy/2)+10;
-  }
-  else
-  {
-     x = (cx/2)-3;
-     y = (cy/2);
-  }
-    }
     if (pWptBmp) {
-        Surface.DrawMaskedBitmap(x, y, scale ? IBLSCALE(20) : 20, scale ? IBLSCALE(20) : 20, *pWptBmp, 20, 20);
+
+        int cx = rc.right - rc.left;
+        int cy = rc.bottom - rc.top;
+        int x = rc.left + (cx / 2);
+        int y= rc.top + (cy / 2);
+
+        if(cx < 40) {
+            cy = cx = 20;
+        } else {
+            cy = cx = IBLSCALE(20);
+        }
+        x -= cx/2;
+        y -= cy/2;
+
+        pWptBmp->Draw(Surface, x, y, cx ,cy);
     }
 }

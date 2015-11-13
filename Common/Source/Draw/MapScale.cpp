@@ -23,7 +23,7 @@ double MapWindow::LimitMapScale(double value) {
       minreasonable = 100.0;
       if ( ISPARAGLIDER || ISCAR ) minreasonable = 10.0;
       if (zoom.AutoZoom()) {
-	if (AATEnabled && (ActiveWayPoint>0)) {
+	if (AATEnabled && (ActiveTaskPoint>0)) {
 	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 1200.0;
 	} else {
 	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 600.0; 

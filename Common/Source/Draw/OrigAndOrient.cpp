@@ -52,7 +52,7 @@ void MapWindow::CalculateOrientationTargetPan(void) {
   // Target pan mode, show target up when looking at current task point,
   // otherwise north up.
   GliderCenter = true;
-  if ((ActiveWayPoint==TargetPanIndex)
+  if ((ActiveTaskPoint==TargetPanIndex)
       &&(DisplayOrientation != NORTHUP)
       &&(DisplayOrientation != NORTHSMART) // 100419
       &&(DisplayOrientation != NORTHTRACK)) {

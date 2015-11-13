@@ -207,7 +207,7 @@ QuickRedraw:
     // Reset for topology labels decluttering engine occurs also in another place here!
     ResetLabelDeclutter();
 
-    if ((Flags_DrawTask || TargetDialogOpen) && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+    if ((Flags_DrawTask || TargetDialogOpen) && ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
         DrawTaskAAT(Surface, DrawRect);
     }
 
@@ -273,7 +273,7 @@ _skip_stuff:
         goto QuickRedraw;
     }
 
-    if ((Flags_DrawTask || TargetDialogOpen) && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+    if ((Flags_DrawTask || TargetDialogOpen) && ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
         DrawTask(Surface, DrawRect, Orig_Aircraft);
 
     }
@@ -281,7 +281,7 @@ _skip_stuff:
         if (MapWindow::DerivedDrawInfo.Flying) { // FAI optimizer does not depend on tasks, being based on trace
             DrawFAIOptimizer(Surface, DrawRect, Orig_Aircraft);
         } else { // not flying => show FAI sectors for the task
-            if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+            if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
                 DrawTaskSectors(Surface, DrawRect);
             }
         }

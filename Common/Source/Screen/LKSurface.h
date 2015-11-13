@@ -29,6 +29,7 @@
 #include "LKAssert.h"
 
 #ifndef USE_GDI
+#include "types.h"
 #include "Screen/Canvas.hpp"
 #endif
 
@@ -126,7 +127,6 @@ public:
     void Blackness(const int x, const int y, const int cx, const int cy);
     void Whiteness(const int x, const int y, const int cx, const int cy);
 
-    void DrawMaskedBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc);
     void DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc);
     void DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc);
     void DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
@@ -161,13 +161,19 @@ public:
 
     void DrawPushButton(const RECT& rc, bool bPushed);
 
+    static bool AlphaBlendSupported();
+
+ #ifndef ENABLE_OPENGL
     bool Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc);
     bool TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc);
 
     bool CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmapSurface& bmpMask, int xMask, int yMask);
     
-    static bool AlphaBlendSupported();
     bool AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
+
+    bool InvertRect(const RECT& rc);
+#endif
+    
 #ifdef USE_MEMORY_CANVAS
     void AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
 #endif    
@@ -182,7 +188,6 @@ public:
 
     void SetPixel(int X, int Y, const LKColor& Color);
 
-    bool InvertRect(const RECT& rc);
     bool RoundRect(const RECT& rc, int nWidth, int nHeight);
 
     static void buildCircle(const POINT& center, int radius, std::vector<POINT>& list);
@@ -219,7 +224,8 @@ public:
     }
 	
 protected:
-
+    friend class LKIcon;
+    
     HDC GetTempDC();
 
     HDC _OutputDC; // Drawing Surface

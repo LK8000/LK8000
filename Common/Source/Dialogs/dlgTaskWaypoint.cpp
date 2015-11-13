@@ -13,6 +13,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "InputEvents.h"
+#include "resource.h"
 
 extern void ResetTaskWaypoint(int j);
 
@@ -404,9 +405,7 @@ static void ReadValues(void) {
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishRadius"));
   if (wp) {
-    CHECK_CHANGED(FinishRadius,
-                  (DWORD)iround(wp->GetDataField()->GetAsFloat()
-				/DISTANCEMODIFY));
+    CHECK_CHANGED(FinishRadius, wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY);
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
@@ -417,9 +416,7 @@ static void ReadValues(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartRadius"));
   if (wp) {
-    CHECK_CHANGED(StartRadius,
-                  (DWORD)iround(wp->GetDataField()->GetAsFloat()
-				/DISTANCEMODIFY));
+    CHECK_CHANGED(StartRadius, wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY);
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
@@ -431,7 +428,7 @@ static void ReadValues(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskSectorRadius"));
   if (wp) {
     CHECK_CHANGED(SectorRadius,
-                  (DWORD)iround(wp->GetDataField()->GetAsFloat()
+                  (unsigned)iround(wp->GetDataField()->GetAsFloat()
 				/DISTANCEMODIFY));
   }
 
@@ -536,11 +533,11 @@ static void OnRemoveClicked(WndButton* pWnd) {
   LockTaskData();
   RemoveTaskPoint(twItemIndex);
   SetWaypointValues();
-  if (ActiveWayPoint>=twItemIndex) {
-    ActiveWayPoint--;
+  if (ActiveTaskPoint>=twItemIndex) {
+    ActiveTaskPoint--;
   }
-  if (ActiveWayPoint<0) {
-    ActiveWayPoint= -1;
+  if (ActiveTaskPoint<0) {
+    ActiveTaskPoint= -1;
   }
   UnlockTaskData();
   wf->SetModalResult(mrOK);
@@ -597,21 +594,10 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Moveallowed){
-  wf = NULL;
- 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTaskWaypoint_L.xml"));
+
     wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TASKWAYPOINT_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgTaskWaypoint.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_TASKWAYPOINT"));    
-  }
+                        ScreenLandscape ? TEXT("dlgTaskWaypoint_L.xml") : TEXT("dlgTaskWaypoint_P.xml"), 
+                        ScreenLandscape ? IDR_XML_TASKWAYPOINT_L : IDR_XML_TASKWAYPOINT_P);
 
   if (ISPARAGLIDER) {
     if(DoOptimizeRoute()) 

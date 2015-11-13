@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -23,6 +23,20 @@ Copyright_License {
 
 #ifndef XCSOAR_SCREEN_CANVAS_HPP
 #define XCSOAR_SCREEN_CANVAS_HPP
+
+#ifndef WIN32
+// DrawText Format.
+#define DT_LEFT         0x00000000
+#define DT_CENTER       0x00000001
+#define DT_RIGHT        0x00000002
+#define DT_VCENTER      0x00000004
+#define DT_WORDBREAK    0x00000010
+#define DT_SINGLELINE   0x00000020
+#define DT_EXPANDTABS   0x00000040
+#define DT_NOCLIP       0x00000100
+#define DT_CALCRECT     0x00000400
+#define DT_UNDERLINE    0x00000800
+#endif
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Canvas.hpp"

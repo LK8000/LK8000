@@ -22,7 +22,6 @@ static TCHAR nTemp2String[READLINE_LENGTH*2];
 int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 {
   WAYPOINT new_waypoint {};
-  DWORD fPos=0;
   int nLineNumber=0;
   short fileformat=LKW_DAT;
 
@@ -132,7 +131,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
   }
 
   // SetFilePointer(hFile,0,NULL,FILE_BEGIN);
-  fPos = 0;
+  size_t fPos = 0;
 
   // a real shame, too lazy to change into do while loop
   // Skip already read lines containing header, unless we are using DAT, which has no header

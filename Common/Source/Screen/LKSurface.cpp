@@ -22,6 +22,18 @@
 #include "utils/array_adaptor.h"
 #include "Screen/LKBitmapSurface.h"
 
+#ifdef ENABLE_OPENGL
+#include "Screen/OpenGL/Texture.hpp"
+#include "Screen/OpenGL/Scope.hpp"
+
+#ifdef USE_GLSL
+#include "Screen/OpenGL/Shaders.hpp"
+#include "Screen/OpenGL/Program.hpp"
+#else
+#include "Screen/OpenGL/Compatibility.hpp"
+#endif
+#endif
+
 #ifdef WIN32
 
 LKSurface::LKSurface() : _OutputDC(), _AttribDC(), _TempDC() {
@@ -132,32 +144,6 @@ LKColor LKSurface::SetBkColor(const LKColor& Color) {
 #endif
 }
 
-void LKSurface::DrawMaskedBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc) {
-#ifdef WIN32
-    HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
-
-    if (cxSrc != cx || cySrc != cy) {
-        ::StretchBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, cxSrc, cySrc, SRCPAINT);
-        ::StretchBlt(*this, x, y, cx, cy, GetTempDC(), cxSrc, 0, cxSrc, cySrc, SRCAND);
-    } else {
-        ::BitBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, SRCPAINT);
-        ::BitBlt(*this, x, y, cx, cy, GetTempDC(), cxSrc, 0, SRCAND);
-    }
-
-    ::SelectObject(GetTempDC(), old);
-#else
-    if(_pCanvas && Bitmap.IsDefined()) {
-        if (cxSrc != cx || cySrc != cy) {
-            _pCanvas->StretchOr(x, y, cx, cy, Bitmap, 0, 0, cxSrc, cySrc);
-            _pCanvas->StretchAnd(x, y, cx, cy, Bitmap, cxSrc, 0, cxSrc, cySrc);
-        } else {
-            _pCanvas->CopyOr(x, y, cx, cy, Bitmap, 0, 0);
-            _pCanvas->CopyAnd(x, y, cx, cy, Bitmap, cxSrc, 0);
-        }
-    }
-#endif
-}
-
 void LKSurface::DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc) {
 #ifdef WIN32
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
@@ -191,6 +177,10 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
     }
 
     ::SelectObject(GetTempDC(), old);
+#elif defined(ENABLE_OPENGL)
+    if(_pCanvas && Bitmap.IsDefined()) {
+        _pCanvas->Stretch(x, y, cx, cy, Bitmap, 0, 0, cxSrc, cySrc);
+    }
 #else
     if(_pCanvas && Bitmap.IsDefined()) {
         if (cxSrc != cx || cySrc != cy) {
@@ -219,6 +209,10 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
     ::BitBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, SRCPAINT);
     ::SelectObject(GetTempDC(), old);
+#elif defined(ENABLE_OPENGL)
+    if(_pCanvas && Bitmap.IsDefined()) {
+        _pCanvas->Stretch(x, y, cx, cy, Bitmap, 0, 0, cx, cy);
+    }
 #else
     if(_pCanvas && Bitmap.IsDefined()) {
         _pCanvas->CopyOr(x, y, cx, cy, Bitmap, 0, 0);
@@ -238,12 +232,18 @@ void LKSurface::Polygon(const POINT *apt, int cpt) {
 
 void LKSurface::Polygon(const POINT *apt, int cpt, const RECT& ClipRect) {
     if(cpt>=3) {
+#ifdef ENABLE_OPENGL
+        const GLPushScissor push_scissor();
+        const GLCanvasScissor scissor(ClipRect);
+        Polygon(apt, cpt);
+#else
         std::vector<POINT> Clipped;
         Clipped.reserve(cpt);
         LKGeom::ClipPolygon(ClipRect, const_array_adaptor<POINT>(apt, cpt), Clipped);
         if(Clipped.size() >= 3) {
             Polygon(Clipped.data(), Clipped.size());
         }
+#endif
     }
 }
 
@@ -394,6 +394,7 @@ void LKSurface::FillRect(const RECT *lprc, const BrushReference Brush) {
 #endif    
 }
 
+#ifndef ENABLE_OPENGL
 bool LKSurface::Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc) {
 #ifdef WIN32
     return ::BitBlt(*this, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc, SRCCOPY);
@@ -405,6 +406,7 @@ bool LKSurface::Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHe
     return false;
 #endif
 }
+#endif
 
 
 #ifdef __MINGW32CE__
@@ -424,6 +426,7 @@ TransparentImage is not defined in arm-mingw32ce
 #endif
 #endif
 
+#ifndef ENABLE_OPENGL
 bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc) {
 #ifdef WIN32
 #ifdef UNDER_CE
@@ -455,7 +458,7 @@ bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, co
 #ifdef UNDER_CE
 LKSurface::TAlphaBlendF LKSurface::AlphaBlendF = NULL;
 #endif
-
+#endif
 // tries to locate AlphaBlend() function
 // sets pointer to AlphaBlend function (AlphaBlendF) 
 // (returns false when AlphaBlending is not supported)
@@ -471,6 +474,7 @@ bool LKSurface::AlphaBlendSupported() {
     return true;
 }
 
+#ifndef ENABLE_OPENGL
 bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity) {
     if(!AlphaBlendSupported()) {
         return false;
@@ -535,6 +539,7 @@ bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const 
     return false;
 #endif    
 }
+#endif
 
 #ifdef USE_MEMORY_CANVAS
 void LKSurface::AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity) {
@@ -564,10 +569,7 @@ void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount, RECT
 #else
     if(_pCanvas) {
         if(ClipRect) {
-            SubCanvas ClipCanvas(*_pCanvas, (*ClipRect).GetOrigin(), (*ClipRect).GetSize());
-            const RasterPoint offset = (*ClipRect).GetOrigin();
-            ClipCanvas.DrawText(X-offset.x, Y-offset.y, lpString, cbCount);
-
+            _pCanvas->DrawClippedText(X, Y, *ClipRect, lpString);
         } else {
             _pCanvas->DrawText(X, Y, lpString, cbCount);
         }
@@ -646,17 +648,22 @@ void LKSurface::Rectangle(int nLeftRect, int nTopRect, int nRightRect, int nBott
 #endif
 }
 
+#ifndef ENABLE_OPENGL
 bool LKSurface::InvertRect(const RECT& rc) {
 #ifdef WIN32
     return ::InvertRect(*this, &rc);
-#else
+#elif !defined(ENABLE_OPENGL)
     if(_pCanvas) {
         _pCanvas->InvertRectangle(rc);
         return true;
     }
     return false;
+#else
+#warning "Not Implemented"
+    return false;
 #endif
 }
+#endif
 
 bool LKSurface::RoundRect(const RECT& rc, int nWidth, int nHeight) {
 #ifdef WIN32

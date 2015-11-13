@@ -14,7 +14,7 @@ void MapWindow::DrawBestCruiseTrack(LKSurface& Surface, const POINT& Orig)
 {
   if (OvertargetMode>OVT_TASK) return;
 
-  if (!ValidTaskPoint(ActiveWayPoint)) return;
+  if (!ValidTaskPoint(ActiveTaskPoint)) return;
 
   if (DerivedDrawInfo.WaypointDistance < 0.010) return;
 

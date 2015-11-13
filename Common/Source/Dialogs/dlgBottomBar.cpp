@@ -13,9 +13,8 @@
 #include "WindowControls.h"
 #include "Terrain.h"
 #include "LKMapWindow.h"
-
-
 #include "LKInterface.h"
+#include "resource.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;
@@ -108,11 +107,10 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgBottomBarShowModal(void){
 
   WndProperty *wp;
-  TCHAR filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgBottomBar.xml"));
+  
   wf = dlgLoadFromXML(CallBackTable,                        
-		      filename, 
-		      TEXT("IDR_XML_BOTTOMBAR"));
+		      TEXT("dlgBottomBar.xml"), 
+		      IDR_XML_BOTTOMBAR);
 
   if (!wf) return;
 

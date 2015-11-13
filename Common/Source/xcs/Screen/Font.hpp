@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -63,8 +63,10 @@ protected:
   bool demibold;
 #endif
 
+#ifdef USE_FONTSIZE  
   void CalculateHeights();
-
+#endif
+  
 public:
 #ifdef USE_FREETYPE
   Font():face(nullptr) {}
@@ -108,7 +110,7 @@ public:
 
   gcc_pure
   PixelSize TextSize(const TCHAR *text) const;
-
+  
 #ifdef USE_FREETYPE
   gcc_const
   static size_t BufferSize(const PixelSize size) {
@@ -134,7 +136,7 @@ public:
   UPixelScalar GetCapitalHeight() const {
     return capital_height;
   }
-  
+
 #ifdef USE_FREETYPE
   UPixelScalar GetLineSpacing() const {
     return height;
@@ -144,7 +146,6 @@ public:
     return line_spacing;
   }
 #endif
-
 };
 
 #endif

@@ -75,9 +75,11 @@ void ReinitScreen(void) {
   #if TESTBENCH
   StartupStore(_T("... ChangeScreen suspending Draw Thread\n"));
   #endif
+
+#ifndef ENABLE_OPENGL  
   MapWindow::SuspendDrawingThread();
   Poco::Mutex::ScopedLock Lock(MapWindow::Surface_Mutex);
-
+#endif
 
   // MapWndProc will get a WM_SIZE 
 
@@ -120,7 +122,6 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_DRAWTARGET);
   Reset_Single_DoInits(MDI_DRAWVARIO);
   Reset_Single_DoInits(MDI_PROCESSVIRTUALKEY);
-  Reset_Single_DoInits(MDI_ONPAINTLISTITEM);
   Reset_Single_DoInits(MDI_DRAWMAPSCALE);
   Reset_Single_DoInits(MDI_CHECKLABELBLOCK);
   Reset_Single_DoInits(MDI_LKPROCESS);

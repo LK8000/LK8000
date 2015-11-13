@@ -170,7 +170,7 @@ _nomoredeclutter:
 	DrawAirSpace(Surface, rct);   // full screen, to hide clipping effect on low border
   }
 
-  if (Flags_DrawTask && MapSpaceMode!=MSM_MAPASP && ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
+  if (Flags_DrawTask && MapSpaceMode!=MSM_MAPASP && ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
     DrawTaskAAT(Surface, rct);
     DrawTask(Surface, rct, Current_Multimap_TopOrig);
   }

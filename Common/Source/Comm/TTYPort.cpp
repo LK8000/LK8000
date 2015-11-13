@@ -25,7 +25,7 @@
 
 using namespace std::tr1::placeholders;
 
-TTYPort::TTYPort(int idx, const std::tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) :
+TTYPort::TTYPort(int idx, const std::tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling) :
         ComPort(idx, sName),
         _dwPortSpeed(dwSpeed),
         _dwPortBit(BitSize),
@@ -68,7 +68,7 @@ speed_t DecodeBaudrate(int speed) {
 }
 
 bool TTYPort::Initialize() {
-    StartupStore(_T(". ComPort %u Initialize <%s> speed=%u bit=%u %s"),GetPortIndex()+1,GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
+    StartupStore(_T(". ComPort %u Initialize <%s> speed=%u bit=%u %s"), (unsigned)(GetPortIndex() + 1),GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
 
 #ifdef KOBO
     if (_tcscmp(GetPortName(), _T("/dev/ttyGS0")) == 0) {
@@ -78,7 +78,7 @@ bool TTYPort::Initialize() {
 
     _tty = open(GetPortName(), O_RDWR | O_NOCTTY);
     if (_tty < 0 || !isatty(_tty)) {
-        StartupStore(_T("... ComPort %u Init failed, error=%u%s"), GetPortIndex() + 1, errno, NEWLINE); // 091117
+        StartupStore(_T("... ComPort %u Init failed, error=%u%s"), (unsigned)(GetPortIndex() + 1), errno, NEWLINE); // 091117
         StatusMessage(mbOk, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
         goto failed;
     }
@@ -101,7 +101,7 @@ bool TTYPort::Initialize() {
     tcflush(_tty, TCIFLUSH);
     tcsetattr(_tty, TCSANOW, &newtio);
 
-    StartupStore(_T(". ComPort %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
+    StartupStore(_T(". ComPort %u Init <%s> end OK%s"), (unsigned)(GetPortIndex() + 1), GetPortName(), NEWLINE);
     
     return ComPort::Initialize();
     
@@ -255,8 +255,8 @@ bool TTYPort::Write(const void *data, size_t length) {
     return true;
 }
 
-DWORD TTYPort::RxThread() {
-    DWORD dwWaitTime = 0;
+unsigned TTYPort::RxThread() {
+    long dwWaitTime = 0;
     _Buff_t szString;
     Purge();
 

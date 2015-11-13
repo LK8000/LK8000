@@ -107,7 +107,6 @@ void Shutdown(void) {
 
   // Stop calculating too (wake up)
   dataTriggerEvent.set();
-  drawTriggerEvent.set();
 
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
@@ -124,7 +123,7 @@ void Shutdown(void) {
   #endif
 
   LockTaskData();
-  Task[0].Index = -1;  ActiveWayPoint = -1; 
+  Task[0].Index = -1;  ActiveTaskPoint = -1; 
   AATEnabled = FALSE;
   CloseWayPoints();
   UnlockTaskData();
@@ -172,11 +171,7 @@ void Shutdown(void) {
   
   // Kill graphics objects
 
-  #ifdef LXMINIMAP
-  hBrushButtonHasFocus.Release();
-  #endif
-
-  CAirspaceManager::Instance().CloseAirspaces();
+   CAirspaceManager::Instance().CloseAirspaces();
   #if TESTBENCH
   StartupStore(TEXT(".... Delete Critical Sections%s"),NEWLINE);
   #endif
@@ -261,15 +256,49 @@ bool WndMain::OnSize(int cx, int cy) {
     return true;
 }
 
+#ifndef USE_GDI
 extern StartupState_t ProgramStarted;
 bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
-    if(ProgramStarted >= psFirstDrawDone) {
-        Surface.Copy(Rect.left, Rect.top, Rect.right - Rect.left, Rect.bottom - Rect.top, BackBufferSurface, Rect.left, Rect.top);
-    } else {
-        
+#ifdef ENABLE_OPENGL
+    UpdateTimeStats(true);
+
+    if (ProgramStarted==psInitDone) {
+        ProgramStarted = psFirstDrawDone;
     }
+    if(ProgramStarted >= psNormalOp && THREADRUNNING) {
+        UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
+        RenderMapWindow(Surface, Rect);
+
+        // Draw cross sight for pan mode, in the screen center, 
+        if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
+            const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
+            DrawMapScale(Surface,Rect,false);
+            DrawCompass(Surface, Rect, GetDisplayAngle());
+            DrawCrossHairs(Surface, centerscreen, Rect);
+        }
+        
+        MapDirty = false;
+
+        // we do caching after screen update, to minimise perceived delay
+        // UpdateCaches is updating topology bounds when either forced (only here)
+        // or because MapWindow::ForceVisibilityScan  is set true.
+        static bool first_run = true;
+        UpdateCaches(first_run);
+        first_run=false;
+    }
+    UpdateTimeStats(false);
+#else
+    if(ProgramStarted >= psFirstDrawDone) {
+        Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+        BackBufferSurface.CopyTo(Surface);
+    } else {
+
+	}
+
+#endif
     return true;
 }
+#endif
 
 void WndMain::OnKillFocus() { 
     _MouseButtonDown = false;
@@ -279,6 +308,7 @@ void WndMain::OnKillFocus() {
 
 bool WndMain::OnMouseMove(const POINT& Pos) {
     if(_MouseButtonDown) {
+        SetCapture();
         MapWindow::_OnDragMove(Pos);
     }
     return true;
@@ -291,6 +321,7 @@ bool WndMain::OnLButtonDown(const POINT& Pos) {
 }
 
 bool WndMain::OnLButtonUp(const POINT& Pos) {
+    ReleaseCapture();
     _MouseButtonDown = false;
     MapWindow::_OnLButtonUp(Pos);
     return true;
@@ -333,10 +364,9 @@ void AfterStartup() {
   DefaultTask();
 
   // Trigger first redraw
-  MapWindow::MapDirty = true;
   MapWindow::zoom.Reset(); 
   FullScreen();
-  drawTriggerEvent.set();
+  MapWindow::RefreshMap();
 }
 
 

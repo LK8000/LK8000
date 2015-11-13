@@ -504,6 +504,10 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
       }
     }
   };
+  // right trim string
+  while(used > 0 && buffer[used-1] == _T(' ')) {
+    buffer[--used] = _T('\0');
+  }  
   buffer[used++] =_T('\0');
 
   TCHAR *pstart;

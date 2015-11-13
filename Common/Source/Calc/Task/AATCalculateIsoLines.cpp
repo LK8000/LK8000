@@ -12,7 +12,7 @@
 
 void CalculateAATIsoLines(void) {
   int i;
-  int awp = ActiveWayPoint;
+  int awp = ActiveTaskPoint;
   double stepsize = 25.0;
 
   if(AATEnabled == FALSE)
@@ -54,7 +54,7 @@ void CalculateAATIsoLines(void) {
 
       /*
       double distance_glider=0;
-      if ((i==ActiveWayPoint) && (CALCULATED_INFO.IsInSector)) {
+      if ((i==ActiveTaskPoint) && (CALCULATED_INFO.IsInSector)) {
         distance_glider = DoubleLegDistance(i, GPS_INFO.Longitude, GPS_INFO.Latitude);
       }
       */

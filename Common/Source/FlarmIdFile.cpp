@@ -28,15 +28,13 @@ FlarmIdFile::FlarmIdFile(void)
 	if (hFile == NULL) return;
   }
 
-  DWORD fileLength;
-	
   fseek (hFile , 0 , SEEK_END);
-  fileLength = ftell (hFile);
+  long int fileLength = ftell (hFile);
   fseek (hFile , 7 , SEEK_SET);
 
   int itemCount = 0;
 
-  while( ( (signed)fileLength - ftell(hFile)) > 87) {
+  while( ( fileLength - ftell(hFile)) > 87) {
 	FlarmId *flarmId = new FlarmId;
 
 	_tcscpy(flarmId->id,_T(""));

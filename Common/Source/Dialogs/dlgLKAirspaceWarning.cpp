@@ -17,6 +17,7 @@
 #include "RGB.h"
 #include "Event/Event.h"
 #include "Sound/Sound.h"
+#include "resource.h"
 
 CAirspaceBase airspace_copy;
 AirspaceWarningMessage msg;
@@ -400,7 +401,7 @@ short ShowAirspaceWarningsToUser()
 
   // show dialog to user if needed
   if (ackdialog_required && (airspace_copy.WarningLevel() == msg.warnlevel)) {
-    dlg = dlgLoadFromXML(CallBackTable, NULL, ScreenLandscape ? TEXT("IDR_XML_LKAIRSPACEWARNING_L") : TEXT("IDR_XML_LKAIRSPACEWARNING_P"));
+    dlg = dlgLoadFromXML(CallBackTable, NULL, ScreenLandscape ? IDR_XML_LKAIRSPACEWARNING_L : IDR_XML_LKAIRSPACEWARNING_P);
     if (dlg==NULL) {
       StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"),NEWLINE); //@ 101027
       return 0;

@@ -13,6 +13,7 @@
 #include "dlgTools.h"
 #include "Sound/Sound.h"
 #include "Topology.h"
+#include "resource.h"
 
 static WndForm *wf=NULL;
 
@@ -66,17 +67,12 @@ void dlgOracleShowModal(void){
 
   wf=NULL;
  
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgOracle_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_ORACLE_L"));
-  } else  {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgOracle.xml"));
-    wf = dlgLoadFromXML(CallBackTable, filename, TEXT("IDR_XML_ORACLE"));
-  }
+  wf = dlgLoadFromXML(CallBackTable, 
+            ScreenLandscape ? TEXT("dlgOracle_L.xml") : TEXT("dlgOracle_P.xml"),
+            ScreenLandscape ? IDR_XML_ORACLE_L : IDR_XML_ORACLE_P);
 
   if (!wf) return;
+  MapWindow::SuspendDrawingThread();  
   _WhereAmI.Start();
 
   WindowControl* pWndClose = wf->FindByName(_T("cmdClose"));
@@ -95,6 +91,7 @@ void dlgOracleShowModal(void){
   // We must wait for data ready, so we shall do it  with timer notify.
   wf->SetTimerNotify(100, OnTimerNotify);
   wf->ShowModal();
+  MapWindow::ResumeDrawingThread();
 
   delete wf;
   wf = NULL;

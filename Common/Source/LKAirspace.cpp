@@ -1810,7 +1810,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     }
 
     CCriticalSection::CGuard guard(_csairspaces);
-    StartupStore(TEXT(". Now we have %d airspaces%s"), _airspaces.size(), NEWLINE);
+    StartupStore(TEXT(". Now we have %u airspaces%s"), (unsigned)_airspaces.size(), NEWLINE);
     // For debugging, dump all readed airspaces to runtime.log
     //CAirspaceList::iterator it;
     //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
@@ -2984,7 +2984,7 @@ void CAirspaceManager::SaveSettings() const {
             //Newline
             fprintf(f, "\n");
         }
-        StartupStore(TEXT(". Settings for %d airspaces saved to file <%s>%s"), _airspaces.size(), szFileName, NEWLINE);
+        StartupStore(TEXT(". Settings for %u airspaces saved to file <%s>%s"), (unsigned)_airspaces.size(), szFileName, NEWLINE);
         fclose(f);
     } else StartupStore(TEXT("Failed to save airspace settings to file <%s>%s"), szFileName, NEWLINE);
 }
@@ -3054,7 +3054,7 @@ void CAirspaceManager::LoadSettings() {
         }
 
         if (asp_data) free(asp_data);
-        StartupStore(TEXT(". Settings for %d of %d airspaces loaded from file <%s>%s"), airspaces_restored, _airspaces.size(), szFileName, NEWLINE);
+        StartupStore(TEXT(". Settings for %d of %u airspaces loaded from file <%s>%s"), airspaces_restored, (unsigned)_airspaces.size(), szFileName, NEWLINE);
         fclose(f);
     } else StartupStore(TEXT(". Failed to load airspace settings from file <%s>%s"), szFileName, NEWLINE);
 }

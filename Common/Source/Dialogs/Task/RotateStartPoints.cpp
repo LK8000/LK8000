@@ -11,7 +11,7 @@
 
 
 void RotateStartPoints(void) {
-  if (ActiveWayPoint>0) return;
+  if (ActiveTaskPoint>0) return;
   if (!EnableMultipleStartPoints) return;
 
   LockTaskData();

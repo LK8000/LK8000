@@ -10,6 +10,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
+#include "resource.h"
 
 static WndForm *wf=NULL;
 static WndListFrame *wStartPointList=NULL;
@@ -151,19 +152,9 @@ void dlgStartPointShowModal(void) {
 
   ItemIndex = -1;
 
-  if (!ScreenLandscape) {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgStartPoint_L.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename,
-                        TEXT("IDR_XML_STARTPOINT_L"));
-  } else {
-    TCHAR filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgStartPoint.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-                        filename, 
-                        TEXT("IDR_XML_STARTPOINT"));
-  }
+   wf = dlgLoadFromXML(CallBackTable, 
+                        ScreenLandscape ? TEXT("dlgStartPoint_L.xml") : TEXT("dlgStartPoint_P.xml"),
+                        ScreenLandscape ? IDR_XML_STARTPOINT_L : IDR_XML_STARTPOINT_P);
   if (!wf) return;
 
   //ASSERT(wf!=NULL);
@@ -174,18 +165,8 @@ void dlgStartPointShowModal(void) {
   //ASSERT(wStartPointList!=NULL);
   wStartPointList->SetBorderKind(BORDERLEFT);
   wStartPointList->SetEnterCallback(OnStartPointListEnter);
-  wStartPointList->SetWidth(wf->GetWidth() - wStartPointList->GetLeft()-2);
 
   wStartPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStartPointListEntry"));
-  if ( wStartPointList->ScrollbarWidth == -1) {
-   #if defined (PNA)
-   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #else
-   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
-   #endif
-   wStartPointList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-  }
-  wStartPointListEntry->SetWidth(wStartPointList->GetWidth() - wStartPointList->ScrollbarWidth - 5);
 
   //ASSERT(wStartPointListEntry!=NULL);
   wStartPointListEntry->SetCanFocus(true);

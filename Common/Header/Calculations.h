@@ -331,8 +331,8 @@ double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int wp);
 int getFinalWaypoint(void);
 bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, DWORD Margin);
-bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, DWORD Margin);
+bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, unsigned Margin);
+bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, unsigned Margin);
 
 void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThBase,double ThTop, double ThAvg);
 void InitThermalHistory(void);

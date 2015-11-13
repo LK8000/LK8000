@@ -34,6 +34,7 @@
 #include "LiveTracker.h"
 #include "utils/stringext.h"
 #include "Poco/Event.h"
+#include "Poco/ThreadTarget.h"
 
 //Use to log transactions to the startupstore
 //#define LT_DEBUG  1

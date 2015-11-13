@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ Copyright_License {
 #include "Screen/Window.hpp"
 
 #ifndef USE_GDI
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 #include <algorithm>
 #endif
 
@@ -68,7 +68,7 @@ public:
  */
 class TextWindow : public Window {
 #ifndef USE_GDI
-  std::tstring text;
+  tstring text;
 #endif
 
 public:
@@ -91,10 +91,6 @@ public:
   }
 
 #ifndef USE_GDI
-  const std::tstring& get_text() const {
-      return text;
-  }
-  
 protected:
   virtual void OnPaint(Canvas &canvas) override;
 #endif /* !USE_GDI */

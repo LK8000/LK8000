@@ -11,8 +11,10 @@
 
 #ifdef WIN32
 #include <windows.h>
-#else
+#elif !defined(ENABLE_OPENGL)
 #include "Screen/WindowCanvas.hpp"
+#else
+#include "Screen/BufferCanvas.hpp"
 #endif
 
 #include "LKWindowSurface.h"
@@ -54,8 +56,11 @@ void LKWindowSurface::Create(Window& Wnd){
     if(!Attach(::GetDC(_hWnd))) {
         LKASSERT(false);
     }
-#else
+#elif !defined(ENABLE_OPENGL)
     _pCanvas = new WindowCanvas(Wnd);
+#else
+    _pCanvas = new BufferCanvas();
+    _pCanvas->Create(Wnd.GetSize());
 #endif
 }
 

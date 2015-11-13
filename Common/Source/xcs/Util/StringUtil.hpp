@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2014 The XCSoar Project
+  Copyright (C) 2000-2015 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ Copyright_License {
 #include <assert.h>
 
 #ifdef _UNICODE
-#include <tchar.h>
+#include "WStringUtil.hpp"
 #endif
 
 static inline bool
@@ -40,29 +40,12 @@ StringIsEmpty(const char *string)
   return *string == 0;
 }
 
-#ifdef _UNICODE
-static inline bool
-StringIsEmpty(const TCHAR *string)
-{
-  return *string == 0;
-}
-#endif
-
 gcc_pure
 static inline size_t
 StringLength(const char *p)
 {
   return strlen(p);
 }
-
-#ifdef _UNICODE
-gcc_pure
-static inline size_t
-StringLength(const TCHAR *p)
-{
-  return _tcslen(p);
-}
-#endif
 
 gcc_pure
 static inline bool
@@ -79,25 +62,6 @@ gcc_pure
 bool
 StringEndsWithIgnoreCase(const char *haystack, const char *needle);
 
-#ifdef _UNICODE
-
-gcc_pure
-static inline bool
-StringStartsWith(const TCHAR *haystack, const TCHAR *needle)
-{
-  return memcmp(haystack, needle, StringLength(needle) * sizeof(needle[0])) == 0;
-}
-
-gcc_pure
-bool
-StringEndsWith(const TCHAR *haystack, const TCHAR *needle);
-
-gcc_pure
-bool
-StringEndsWithIgnoreCase(const TCHAR *haystack, const TCHAR *needle);
-
-#endif
-
 gcc_pure
 static inline const char *
 StringFind(const char *haystack, const char *needle)
@@ -105,28 +69,11 @@ StringFind(const char *haystack, const char *needle)
   return strstr(haystack, needle);
 }
 
-#ifdef _UNICODE
-gcc_pure
-static inline const TCHAR *
-StringFind(const TCHAR *haystack, const TCHAR *needle)
-{
-  return _tcsstr(haystack, needle);
-}
-#endif
-
 static inline char *
 StringToken(char *str, const char *delim)
 {
   return strtok(str, delim);
 }
-
-#ifdef _UNICODE
-static inline TCHAR *
-StringToken(TCHAR *str, const TCHAR *delim)
-{
-  return _tcstok(str, delim);
-}
-#endif
 
 template<typename... Args>
 static inline void
@@ -141,37 +88,6 @@ StringFormatUnsafe(char *buffer, const char *fmt, Args&&... args)
 {
   sprintf(buffer, fmt, args...);
 }
-
-#ifdef _UNICODE
-template<typename... Args>
-static inline void
-StringFormat(TCHAR *buffer, size_t
- size, const TCHAR *fmt, Args&&... args)
-{
-  /* unlike snprintf(), _sntprintf() does not guarantee that the
-     destination buffer is terminated */
-
-  /* usually, it would be enough to clear the last byte in the output
-     buffer after the _sntprintf() call, but unfortunately WINE 1.4.1
-     has a bug that applies the wrong limit in the overflow branch
-     (confuses number of characters with number of bytes), therefore
-     we must clear the whole buffer and pass an even number of
-     characters; this terminates the string at half the buffer size,
-     but is better than exposing undefined bytes */
-  size &= ~decltype(size)(sizeof(TCHAR) - 1);
-  memset(buffer, 0, size * sizeof(TCHAR));
-  --size;
-
-  _sntprintf(buffer, size, fmt, args...);
-}
-
-template<typename... Args>
-static inline void
-StringFormatUnsafe(TCHAR *buffer, const TCHAR *fmt, Args&&... args)
-{
-  _stprintf(buffer, fmt, args...);
-}
-#endif
 
 /**
  * Returns the portion of the string after a prefix.  If the string
@@ -192,40 +108,11 @@ gcc_nonnull_all
 const char *
 StringAfterPrefixCI(const char *string, const char *prefix);
 
-#ifdef _UNICODE
-/**
- * Returns the portion of the string after a prefix.  If the string
- * does not begin with the specified prefix, this function returns
- * nullptr.
- */
-gcc_nonnull_all
-const TCHAR *
-StringAfterPrefix(const TCHAR *string, const TCHAR *prefix);
-
-/**
- * Returns the portion of the string after a prefix.  If the string
- * does not begin with the specified prefix, this function returns
- * nullptr.
- * This function is case-independent.
- */
-gcc_nonnull_all
-const TCHAR *
-StringAfterPrefixCI(const TCHAR *string, const TCHAR *prefix);
-#endif
-
 static inline void
 UnsafeCopyString(char *dest, const char *src)
 {
   strcpy(dest, src);
 }
-
-#ifdef _UNICODE
-static inline void
-UnsafeCopyString(TCHAR *dest, const TCHAR *src)
-{
-  _tcscpy(dest, src);
-}
-#endif
 
 /**
  * Copy a string.  If the buffer is too small, then the string is
@@ -238,20 +125,6 @@ UnsafeCopyString(TCHAR *dest, const TCHAR *src)
 gcc_nonnull_all
 char *
 CopyString(char *dest, const char *src, size_t size);
-
-#ifdef _UNICODE
-/**
- * Copy a string.  If the buffer is too small, then the string is
- * truncated.  This is a safer version of strncpy().
- *
- * @param size the size of the destination buffer (including the null
- * terminator)
- * @return a pointer to the null terminator
- */
-gcc_nonnull_all
-TCHAR *
-CopyString(TCHAR *dest, const TCHAR *src, size_t size);
-#endif
 
 /**
  * Copy all ASCII characters to the destination string
@@ -276,44 +149,12 @@ gcc_nonnull_all
 char *
 CopyASCII(char *dest, size_t dest_size, const char *src, const char *src_end);
 
-#ifdef _UNICODE
-gcc_nonnull_all
-void
-CopyASCII(TCHAR *dest, const TCHAR *src);
-
-gcc_nonnull_all
-TCHAR *
-CopyASCII(TCHAR *dest, size_t dest_size,
-          const TCHAR *src, const TCHAR *src_end);
-
-gcc_nonnull_all
-void
-CopyASCII(TCHAR *dest, const char *src);
-
-gcc_nonnull_all
-TCHAR *
-CopyASCII(TCHAR *dest, size_t dest_size, const char *src, const char *src_end);
-
-gcc_nonnull_all
-char *
-CopyASCII(char *dest, size_t dest_size, const TCHAR *src, const TCHAR *src_end);
-
-#endif
-
 /**
  * Like CopyUpper(), but convert all letters to upper-case.
  */
 gcc_nonnull_all
 void
 CopyASCIIUpper(char *dest, const char *src);
-
-#ifdef _UNICODE
-
-gcc_nonnull_all
-void
-CopyASCIIUpper(char *dest, const TCHAR *src);
-
-#endif
 
 /**
  * Skips whitespace at the beginning of the string, and returns the
@@ -323,26 +164,40 @@ CopyASCIIUpper(char *dest, const TCHAR *src);
  */
 gcc_pure gcc_nonnull_all
 const char *
-TrimLeft(const char *p);
+StripLeft(const char *p);
 
-#ifdef _UNICODE
-gcc_pure gcc_nonnull_all
-const TCHAR *
-TrimLeft(const TCHAR *p);
-#endif
+/**
+ * Determine the string's end as if it was stripped on the right side.
+ */
+gcc_pure
+const char *
+StripRight(const char *p, const char *end);
+
+/**
+ * Determine the string's end as if it was stripped on the right side.
+ */
+gcc_pure
+static inline char *
+StripRight(char *p, char *end)
+{
+  return const_cast<char *>(StripRight((const char *)p,
+                                       (const char *)end));
+}
+
+/**
+ * Determine the string's length as if it was stripped on the right
+ * side.
+ */
+gcc_pure
+size_t
+StripRight(const char *p, size_t length);
 
 /**
  * Strips trailing whitespace.
  */
 gcc_nonnull_all
 void
-TrimRight(char *p);
-
-#ifdef _UNICODE
-gcc_nonnull_all
-void
-TrimRight(TCHAR *p);
-#endif
+StripRight(char *p);
 
 /**
  * Normalize a string for searching.  This strips all characters
@@ -358,12 +213,6 @@ gcc_nonnull_all
 char *
 NormalizeSearchString(char *dest, const char *src);
 
-#ifdef _UNICODE
-gcc_nonnull_all
-TCHAR *
-NormalizeSearchString(TCHAR *dest, const TCHAR *src);
-#endif
-
 /**
  * Checks whether str1 and str2 are equal.
  * @param str1 String 1
@@ -378,23 +227,6 @@ StringIsEqual(const char *str1, const char *str2)
 
   return strcmp(str1, str2) == 0;
 }
-
-#ifdef _UNICODE
-/**
- * Checks whether str1 and str2 are equal.
- * @param str1 String 1
- * @param str2 String 2
- * @return True if equal, False otherwise
- */
-static inline bool
-StringIsEqual(const TCHAR *str1, const TCHAR *str2)
-{
-  assert(str1 != nullptr);
-  assert(str2 != nullptr);
-
-  return _tcscmp(str1, str2) == 0;
-}
-#endif
 
 static inline bool
 StringIsEqualIgnoreCase(const char *a, const char *b)
@@ -414,26 +246,6 @@ StringIsEqualIgnoreCase(const char *a, const char *b, size_t size)
   return strncasecmp(a, b, size) == 0;
 }
 
-#ifdef _UNICODE
-static inline bool
-StringIsEqualIgnoreCase(const TCHAR *a, const TCHAR *b)
-{
-  assert(a != nullptr);
-  assert(b != nullptr);
-
-  return _tcsicmp(a, b) == 0;
-}
-
-static inline bool
-StringIsEqualIgnoreCase(const TCHAR *a, const TCHAR *b, size_t size)
-{
-  assert(a != nullptr);
-  assert(b != nullptr);
-
-  return _tcsnicmp(a, b, size) == 0;
-}
-#endif
-
 gcc_pure
 static inline bool
 StringStartsWithIgnoreCase(const char *haystack, const char *needle)
@@ -441,16 +253,6 @@ StringStartsWithIgnoreCase(const char *haystack, const char *needle)
   return StringIsEqualIgnoreCase(haystack, needle,
                                  StringLength(needle) * sizeof(needle[0]));
 }
-
-#ifdef _UNICODE
-gcc_pure
-static inline bool
-StringStartsWithIgnoreCase(const TCHAR *haystack, const TCHAR *needle)
-{
-  return StringIsEqualIgnoreCase(haystack, needle,
-                                 StringLength(needle) * sizeof(needle[0]));
-}
-#endif
 
 /**
  * Copy the string to a new allocation.  The return value must be
@@ -472,20 +274,5 @@ DuplicateString(const char *p)
 gcc_malloc gcc_nonnull_all
 char *
 DuplicateString(const char *p, size_t length);
-
-#ifdef _UNICODE
-
-gcc_malloc
-static inline TCHAR *
-DuplicateString(const TCHAR *p)
-{
-  return _tcsdup(p);
-}
-
-gcc_malloc gcc_nonnull_all
-TCHAR *
-DuplicateString(const TCHAR *p, size_t length);
-
-#endif
 
 #endif

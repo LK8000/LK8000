@@ -16,9 +16,9 @@ void CheckTransitionFinalGlide(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (!ValidTaskPoint(FinalWayPoint)) return;
 
   // update final glide mode status
-  if (((ActiveWayPoint == FinalWayPoint)
+  if (((ActiveTaskPoint == FinalWayPoint)
        ||(ForceFinalGlide)) 
-      && (ValidTaskPoint(ActiveWayPoint))) {
+      && (ValidTaskPoint(ActiveTaskPoint))) {
     
     if (Calculated->FinalGlide == false)
       InputEvents::processGlideComputer(GCE_FLIGHTMODE_FINALGLIDE);

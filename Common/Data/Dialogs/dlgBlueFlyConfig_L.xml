@@ -1,64 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmBlueFly" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="BlueFlyVario" Font="2" >
-	<WndButton Name="cmdNext"  Caption="_@M460_" X="115" Y="238" Width="105"  Height="30" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
-    <WndButton Name="cmdPrev"  Caption="_@M6_" X="5" Y="238" Width="105"  Height="30" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
-    <WndButton Name="cmdClose" Caption="_@M186_" X="5" Y="270" Width="105"  Height="30" Font="2" OnClickNotify="OnClose" Tag="2" />
-
-    <WndFrame Name="1" X="0" Y="0" Width="235" Height="222">
-	  <WndProperty Name="BQH" Caption="_@M2158_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1271_" Keyboard="1">
+  <WndForm Name="frmBlueFly" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="BlueFlyVario" Font="2" >
+    <WndButton Name="cmdNext"  Caption="_@M460_" X="3" Y="94" Width="62" Height="42" OnClickNotify="OnNextClicked"/>
+    <WndButton Name="cmdPrev"  Caption="_@M6_" X="3" Y="-1" Width="62" Height="42" OnClickNotify="OnPrevClicked"/>
+	<WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="-1" Width="62" Height="42" OnClickNotify="OnClose"/>
+    <WndFrame Name="1" X="70" Y="0" Width="-2" Height="222">
+	  <WndProperty Name="BQH" Caption="_@M2158_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1271_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.0f Pa" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BFL" Caption="_@M2159_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1272_" Keyboard="1">
+      <WndProperty Name="BFL" Caption="_@M2159_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1272_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.02f m/s" EditFormat="%.02f" Step="0.01" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BOL" Caption="_@M2160_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1273_" Keyboard="1">
+      <WndProperty Name="BOL" Caption="_@M2160_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1273_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.02f m/s" EditFormat="%.02f" Step="0.01" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BFS" Caption="_@M2161_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1274_" Keyboard="1">
-		<DataField DataType="double" DisplayFormat="%.02f m/s" EditFormat="%.02f" Step="0.01" OnDataAccess="OnParamData"/>
+      <WndProperty Name="BFS" Caption="_@M2161_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1274_" Keyboard="1">
+		<DataField DataType="double" DisplayFormat="-%.02f m/s" EditFormat="-%.02f" Step="0.01" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BOS" Caption="_@M2162_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1275_" Keyboard="1">
-		<DataField DataType="double" DisplayFormat="-%.02f m/s" EditFormat="%.02f" Step="0.01" OnDataAccess="OnParamData"/>
+      <WndProperty Name="BOS" Caption="_@M2162_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1275_" Keyboard="1">
+		<DataField DataType="double" DisplayFormat="-%.02f m/s" EditFormat="-%.02f" Step="0.01" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BFK" Caption="_@M2163_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1276_" Keyboard="1">
+      <WndProperty Name="BFK" Caption="_@M2163_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1276_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.02f" EditFormat="%.02f" Step="0.01" OnDataAccess="OnParamData"/>
 	  </WndProperty>
 	</WndFrame>
-	<WndFrame Name="2" X="0" Y="0" Width="235" Height="222">
-      <WndProperty Name="BFQ" Caption="_@M2164_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1277_" Keyboard="1">
+	<WndFrame Name="2" X="70" Y="0" Width="-2" Height="222">
+      <WndProperty Name="BFQ" Caption="_@M2164_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1277_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.0f Hz" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BFI" Caption="_@M2165_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1278_" Keyboard="1">
+      <WndProperty Name="BFI" Caption="_@M2165_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1278_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.0f Hz" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BSQ" Caption="_@M2166_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1279_" Keyboard="1">
+      <WndProperty Name="BSQ" Caption="_@M2166_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1279_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.0f Hz" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BSI" Caption="_@M2167_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1280_" Keyboard="1">
+      <WndProperty Name="BSI" Caption="_@M2167_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1280_">
 		<DataField DataType="double" DisplayFormat="%.0f Hz" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BVL" Caption="_@M2168_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1281_" Keyboard="1">
+      <WndProperty Name="BVL" Caption="_@M2168_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1281_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.02f" EditFormat="%.02f" Step="0.01" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BRM" Caption="_@M2169_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1282_" Keyboard="1">
+      <WndProperty Name="BRM" Caption="_@M2169_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1282_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.02f" EditFormat="%.02f" Step="0.01" OnDataAccess="OnParamData"/>
 	  </WndProperty>
 	</WndFrame>
-	<WndFrame Name="3" X="0" Y="0" Width="235" Height="222">
-	  <WndProperty Name="BAC" Caption="_@M2170_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1283_">
+	<WndFrame Name="3" X="70" Y="0" Width="-2" Height="222">
+	  <WndProperty Name="BAC" Caption="_@M2170_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1283_">
 		<DataField DataType="boolean" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-	  <WndProperty Name="BAD" Caption="_@M2171_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1284_">
+	  <WndProperty Name="BAD" Caption="_@M2171_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1284_">
 		<DataField DataType="boolean" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BTH" Caption="_@M2172_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1285_" Keyboard="1">
+      <WndProperty Name="BTH" Caption="_@M2172_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1285_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BOM" Caption="_@M2173_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1286_">
+      <WndProperty Name="BOM" Caption="_@M2173_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1286_">
 		<DataField DataType="enum" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BOF" Caption="_@M2174_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1287_" Keyboard="1">
+      <WndProperty Name="BOF" Caption="_@M2174_" CaptionWidth="170" X="2" Y="-1" Width="-2" Height="22" Help="_@H1287_" Keyboard="1">
 		<DataField DataType="double" DisplayFormat="%.0f ms" EditFormat="%.0f" Step="20" OnDataAccess="OnParamData"/>
 	  </WndProperty>
 	</WndFrame>

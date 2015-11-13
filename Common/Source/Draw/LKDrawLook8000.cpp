@@ -177,13 +177,13 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     // TARGET NAME
     //
 
-    if (ISPARAGLIDER && UseGates() && ActiveWayPoint == 0) {
+    if (ISPARAGLIDER && UseGates() && ActiveTaskPoint == 0) {
         // if running a task, use the task index normally
-        if (ValidTaskPoint(ActiveWayPoint) != false) {
+        if (ValidTaskPoint(ActiveTaskPoint) != false) {
             if (DoOptimizeRoute())
                 index = RESWP_OPTIMIZED;
             else
-                index = Task[ActiveWayPoint].Index;
+                index = Task[ActiveTaskPoint].Index;
         } else
             index = -1;
     } else {
@@ -211,7 +211,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         }
 
         int gateinuse = -2;
-        if (UseGates() && ActiveWayPoint == 0) {
+        if (UseGates() && ActiveTaskPoint == 0) {
             gateinuse = ActiveGate;
         }
         if (flipflop && (gateinuse != -2)) {
@@ -483,7 +483,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     // moved out from task paragliders stuff - this is painted on the right
     if (ISPARAGLIDER) {
 
-        if (UseGates() && ActiveWayPoint == 0) {
+        if (UseGates() && ActiveTaskPoint == 0) {
             Surface.SelectObject(LK8OverlayBigFont);
 
             if (HaveGates()) {
@@ -598,7 +598,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     //
     // TIME GATES:  in place of MC, print gate time
     //
-    if (UseGates() && ActiveWayPoint == 0) {
+    if (UseGates() && ActiveTaskPoint == 0) {
         Surface.SelectObject(LK8OverlayGatesFont);
 
         if (HaveGates()) {

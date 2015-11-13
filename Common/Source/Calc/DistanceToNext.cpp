@@ -17,14 +17,14 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   //  LockFlightData();
   LockTaskData();
 
-  if(ValidTaskPoint(ActiveWayPoint))
+  if(ValidTaskPoint(ActiveTaskPoint))
     {
       double w1lat, w1lon;
       double w0lat, w0lon;
 
       if(DoOptimizeRoute()) {
-        w0lat = Task[ActiveWayPoint].AATTargetLat;
-        w0lon = Task[ActiveWayPoint].AATTargetLon;
+        w0lat = Task[ActiveTaskPoint].AATTargetLat;
+        w0lon = Task[ActiveTaskPoint].AATTargetLon;
       } else {
         w0lat = WayPointList[TASKINDEX].Latitude;
         w0lon = WayPointList[TASKINDEX].Longitude;
@@ -38,11 +38,11 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       Calculated->ZoomDistance = Calculated->WaypointDistance;
 
       if (AATEnabled
-	  && (ActiveWayPoint>0) && 
-          ValidTaskPoint(ActiveWayPoint+1)) {
+	  && (ActiveTaskPoint>0) && 
+          ValidTaskPoint(ActiveTaskPoint+1)) {
 
-        w1lat = Task[ActiveWayPoint].AATTargetLat;
-        w1lon = Task[ActiveWayPoint].AATTargetLon;
+        w1lat = Task[ActiveTaskPoint].AATTargetLat;
+        w1lon = Task[ActiveTaskPoint].AATTargetLon;
 
         DistanceBearing(Basic->Latitude, Basic->Longitude,
                         w1lat, w1lon,
@@ -56,17 +56,17 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	  Calculated->WaypointBearing = AATCloseBearing(Basic, Calculated);
         }
 
-      } else if ((ActiveWayPoint==0) && (ValidTaskPoint(ActiveWayPoint+1))
+      } else if ((ActiveTaskPoint==0) && (ValidTaskPoint(ActiveTaskPoint+1))
                  && (Calculated->IsInSector) ) {
 
         // JMW set waypoint bearing to start direction if in start sector
 
         if (AATEnabled) {
-          w1lat = Task[ActiveWayPoint+1].AATTargetLat;
-          w1lon = Task[ActiveWayPoint+1].AATTargetLon;
+          w1lat = Task[ActiveTaskPoint+1].AATTargetLat;
+          w1lon = Task[ActiveTaskPoint+1].AATTargetLon;
         } else {
-          w1lat = WayPointList[Task[ActiveWayPoint+1].Index].Latitude; 
-          w1lon = WayPointList[Task[ActiveWayPoint+1].Index].Longitude;
+          w1lat = WayPointList[Task[ActiveTaskPoint+1].Index].Latitude; 
+          w1lon = WayPointList[Task[ActiveTaskPoint+1].Index].Longitude;
         }
 
         DistanceBearing(Basic->Latitude, Basic->Longitude,
