@@ -297,6 +297,8 @@ Font::TextSize(const TCHAR *text) const
   const ScopeLock protect(freetype_mutex);
 #endif
 
+  FT_GlyphSlot glyph = nullptr;
+
   while (true) {
     const auto n = NextChar(text);
     if (n.first == 0)
@@ -313,7 +315,7 @@ Font::TextSize(const TCHAR *text) const
     if (error)
       continue;
 
-    const FT_GlyphSlot glyph = face->glyph;
+    glyph = face->glyph;
     #if (defined LIGHT_KERNING) || !(defined USE_KERNING)
     const FT_Glyph_Metrics metrics = glyph->metrics;
     #endif
@@ -354,6 +356,12 @@ Font::TextSize(const TCHAR *text) const
 #endif
 
 
+  }
+
+  if(glyph) {
+      // fix width for last glyph
+      x -= glyph->advance.x;
+      x += glyph->metrics.horiBearingX + glyph->metrics.width;
   }
 
   return PixelSize{unsigned(std::max(0, x >> 6 )), height};
