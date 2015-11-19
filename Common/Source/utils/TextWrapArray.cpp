@@ -31,7 +31,7 @@ void TextWrapArray::update(LKSurface& Surface, int MaxWidth, const TCHAR* sText)
     while(pStart < pLast) {
         TCHAR* pEnd = _tcschr(pStart, _T('\n'));
         if(pEnd) { // explicit line break;
-            if(*(pEnd-1) == _T('\r')) {
+            if((pEnd>pStart) && (*(pEnd-1) == _T('\r'))) {
                 *(pEnd-1) = _T('\0'); // windows <cr><lf> 
             }
             *pEnd = _T('\0'); // unix <lf>
@@ -47,17 +47,20 @@ void TextWrapArray::update(LKSurface& Surface, int MaxWidth, const TCHAR* sText)
         TCHAR* pPrevSpace = nullptr; 
         while(Surface.GetTextWidth(pStart) > MaxWidth) {
             pEnd = _tcsrchr(pStart, _T(' '));
-            if(pPrevSpace) {
-                *pPrevSpace = _T(' ');
+            if(pEnd) {
+                if(pPrevSpace) {
+                    *pPrevSpace = _T(' ');
+                }
+                pPrevSpace = pEnd;
+                *pEnd = _T('\0');
+            } else {
+                break; // first word is to large, wrap to first space.
             }
-            pPrevSpace = pEnd;
-            *pEnd = _T('\0');
         }
         
         _array.push_back(pStart); // new line
         
-        pStart=pEnd;
-        pStart++;
+        pStart+=_tcslen(pStart);
         if(!(*pStart)) {
             pStart++;
         }
