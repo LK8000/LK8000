@@ -730,7 +730,6 @@ private:
   static      LKPen hpThermalBandGlider;
   static      LKPen hpFinalGlideAbove;
   static      LKPen hpFinalGlideBelow;
-  static      LKPen hpMapScale2;
   static      LKPen hpTerrainLine;
   static      LKPen hpTerrainLineBg;
   static      LKPen hpStartFinishThick;

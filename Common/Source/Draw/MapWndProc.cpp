@@ -127,7 +127,6 @@ LKPen MapWindow::hpThermalBand;
 LKPen MapWindow::hpThermalBandGlider;
 LKPen MapWindow::hpFinalGlideAbove;
 LKPen MapWindow::hpFinalGlideBelow;
-LKPen MapWindow::hpMapScale2;
 LKPen MapWindow::hpTerrainLine;
 LKPen MapWindow::hpTerrainLineBg;
 LKPen MapWindow::hpStartFinishThick;

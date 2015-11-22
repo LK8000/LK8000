@@ -20,46 +20,47 @@
 #define MAPSCALE_VSIZE  NIBLSCALE(42)
 #define MAPSCALE_HSIZE  NIBLSCALE(5)
 #define MAPSCALE_RIGHTMARGIN   (rc.right-NIBLSCALE(3))
-#define MAPSCALE_BOTTOMMARGIN  (rc.bottom-BottomSize-NIBLSCALE(4))
+#define MAPSCALE_BOTTOMMARGIN  (rc.bottom-NIBLSCALE(4) - (inpanmode?0:BottomSize))
 
 void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*/, 
                              const bool ScaleChangeFeedback)
 {
     static short terrainwarning=0;
-    static POINT lineOneStart, lineOneEnd,lineTwoStart,lineTwoEnd,lineThreeStart,lineThreeEnd;
-    static POINT lineTwoStartB,lineThreeStartB;
+    
+    static RasterPoint ScaleLine[4];
     static int   ytext;
     static bool flipflop=true;
 
-    if (DoInit[MDI_DRAWMAPSCALE]) {
-	lineOneStart.x = MAPSCALE_RIGHTMARGIN;
-	lineOneEnd.x   = MAPSCALE_RIGHTMARGIN;
-	lineOneStart.y = MAPSCALE_BOTTOMMARGIN;
-	lineOneEnd.y = lineOneStart.y - MAPSCALE_VSIZE;
+    bool inpanmode= (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN));
+    static bool prevmode = inpanmode;
 
-	lineTwoStart.x = MAPSCALE_RIGHTMARGIN - MAPSCALE_HSIZE; 
-	lineTwoEnd.x = MAPSCALE_RIGHTMARGIN;
-	lineTwoEnd.y = lineOneStart.y;
-	lineTwoStart.y = lineOneStart.y;
-
-	lineThreeStart.y = lineTwoStart.y - MAPSCALE_VSIZE;
-	lineThreeEnd.y = lineThreeStart.y;
-	lineThreeStart.x = lineTwoStart.x;
-	lineThreeEnd.x = lineTwoEnd.x;
-
-	lineTwoStartB=lineTwoStart;
-	lineTwoStartB.x++;
-	lineThreeStartB=lineThreeStart;
-	lineThreeStartB.x++;
+    if (DoInit[MDI_DRAWMAPSCALE] || prevmode != inpanmode) {
+        ScaleLine[0] = { 
+            MAPSCALE_RIGHTMARGIN - MAPSCALE_HSIZE, 
+            MAPSCALE_BOTTOMMARGIN - MAPSCALE_VSIZE 
+        };
+        ScaleLine[1] = { 
+            MAPSCALE_RIGHTMARGIN, 
+            MAPSCALE_BOTTOMMARGIN - MAPSCALE_VSIZE
+        };
+        ScaleLine[2] = { 
+            MAPSCALE_RIGHTMARGIN, 
+            MAPSCALE_BOTTOMMARGIN 
+        };
+        ScaleLine[3] = { 
+            MAPSCALE_RIGHTMARGIN - MAPSCALE_HSIZE, 
+            MAPSCALE_BOTTOMMARGIN 
+        };
 
         SIZE tsize;
         Surface.SelectObject(MapScaleFont);
         Surface.GetTextSize(_T("M"),1,&tsize);
         int ofs=(MAPSCALE_VSIZE - (tsize.cy + tsize.cy))/2;
-        ytext=lineThreeStart.y+ofs;
+        ytext=ScaleLine[0].y+ofs;
 
 
-	DoInit[MDI_DRAWMAPSCALE]=false;
+        prevmode = inpanmode;
+    	DoInit[MDI_DRAWMAPSCALE]=false;
     }
 
     TCHAR Scale[200];
@@ -67,24 +68,23 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
     TCHAR Scale2[200];
     TCHAR TEMP[20];
 
-    const auto hpOld = Surface.SelectObject(hpMapScale2);
+    const auto hbOld = Surface.SelectObject(LKBrush_Black);
+    const auto hpOld = Surface.SelectObject(LK_NULL_PEN);
 
-    Surface.DrawSolidLine(lineOneStart,lineOneEnd, rc);
-    Surface.DrawSolidLine(lineTwoStart,lineTwoEnd, rc);
-    Surface.DrawSolidLine(lineThreeStart,lineThreeEnd, rc);
-
+    Surface.Rectangle(ScaleLine[0].x-1, ScaleLine[0].y - 1, ScaleLine[1].x+2, ScaleLine[1].y + 2);
+    Surface.Rectangle(ScaleLine[1].x-1, ScaleLine[1].y - 1, ScaleLine[2].x+2, ScaleLine[2].y + 2);
+    Surface.Rectangle(ScaleLine[3].x-1, ScaleLine[3].y - 1, ScaleLine[2].x+2, ScaleLine[2].y + 2);
+    
     Surface.SelectObject(LKPen_White_N0);
-    Surface.DrawSolidLine(lineOneStart,lineOneEnd, rc);
-    Surface.DrawSolidLine(lineTwoStartB,lineTwoEnd, rc);
-    Surface.DrawSolidLine(lineThreeStartB,lineThreeEnd, rc);
+    Surface.Polyline(ScaleLine, array_size(ScaleLine));
+
 
     Surface.SelectObject(hpOld);
+    Surface.SelectObject(hbOld);
 
     flipflop=!flipflop;
 
     _tcscpy(Scale2,TEXT(""));
-
-    bool inpanmode= (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN));
 
     if (inpanmode) {
 	if (DerivedDrawInfo.TerrainValid) {
