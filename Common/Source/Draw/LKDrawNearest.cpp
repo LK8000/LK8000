@@ -93,16 +93,9 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         bigItalicFont = (usetwolines ? LK8InfoBigItalic2LFont : LK8InfoBigItalicFont);
 
         // Set screen borders to avoid writing on extreme pixels
-        if (!ScreenLandscape) {
-            left = rc.left + NIBLSCALE(1);
-            right = rc.right - NIBLSCALE(1);
-            bottom = rc.bottom - BottomSize - NIBLSCALE(2);
-        } else {
-            left = rc.left + NIBLSCALE(5);
-            right = rc.right - NIBLSCALE(5);
-            bottom = rc.bottom - BottomSize;
-        }
-
+        left = rc.left + NIBLSCALE(4);
+        right = rc.right - NIBLSCALE(4);
+        bottom = rc.bottom - BottomSize;
 
         Surface.SelectObject(bigFont);
 
@@ -365,11 +358,10 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         } // make it even number
         if (numraws > MAXNEAREST) numraws = MAXNEAREST;
 
-        s_rawspace = (InfoTextSize.cy + (ScreenLandscape ? INTERRAW : INTERRAW * 2));
+        s_rawspace = (InfoTextSize.cy + INTERRAW);
 
         // center in available vertical space
-        int cs = (bottom - TopSize) - (numraws * (InfoTextSize.cy + (ScreenLandscape ? INTERRAW : INTERRAW * 2)) +
-                (ScreenLandscape ? INTERRAW : INTERRAW * 2));
+        int cs = (bottom - TopSize) - (numraws * (InfoTextSize.cy + INTERRAW) + INTERRAW);
 
         if ((cs > (numraws - 1) && (numraws > 1))) {
             s_rawspace += cs / (numraws - 1);
@@ -998,16 +990,16 @@ _KeepOldAirspacesValues:
                 switch (LKAirspaces[rli].WarningLevel) {
                     case awYellow:
                         rcolor = RGB_LIGHTYELLOW;
-                        Surface.SelectObject(LK8InfoBigItalicFont);
+                        Surface.SelectObject(bigItalicFont);
                         break;
                     case awRed:
                         rcolor = RGB_LIGHTRED;
-                        Surface.SelectObject(LK8InfoBigItalicFont);
+                        Surface.SelectObject(bigItalicFont);
                         break;
                     case awNone:
                     default:
                         rcolor = RGB_WHITE;
-                        Surface.SelectObject(LK8InfoBigFont);
+                        Surface.SelectObject(bigFont);
                         break;
                 }
             } else {
@@ -1089,10 +1081,10 @@ _KeepOldAirspacesValues:
                 drawn_items_onpage++;
                 if (CopyThermalHistory[rli].Arrival >= 0) {
                     rcolor = RGB_WHITE;
-                    Surface.SelectObject(LK8InfoBigFont);
+                    Surface.SelectObject(bigFont);
                 } else {
                     rcolor = RGB_LIGHTRED;
-                    Surface.SelectObject(LK8InfoBigItalicFont);
+                    Surface.SelectObject(bigItalicFont);
                 }
             } else {
                 rcolor = RGB_GREY;
@@ -1203,21 +1195,20 @@ _KeepOldAirspacesValues:
                 drawn_items_onpage++;
                 if (LKTraffic[rli].Status == LKT_REAL) {
                     rcolor = RGB_WHITE;
-                    Surface.SelectObject(LK8InfoBigFont);
+                    Surface.SelectObject(bigFont);
                 } else {
                     if (LKTraffic[rli].Status == LKT_GHOST) {
                         rcolor = RGB_LIGHTYELLOW;
                     } else {
                         rcolor = RGB_LIGHTRED;
                     }
-                    Surface.SelectObject(LK8InfoBigItalicFont);
+                    Surface.SelectObject(bigItalicFont);
                 }
             } else {
                 rcolor = RGB_GREY;
             }
         } // MSMTRAFFIC
 
-        Surface.SelectObject(bigFont);
         if (!usetwolines) {
             LKWriteText(Surface, Buffer1[i][curpage], Column1[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
             LKWriteText(Surface, Buffer2[i][curpage], Column2[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
@@ -1278,15 +1269,11 @@ _KeepOldAirspacesValues:
         invsel.bottom -= NIBLSCALE(1); // interline
 #endif
 
-#ifdef ENABLE_OPENGL
         LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN));
         Surface.SelectObject(SelectBorder);
         Surface.SelectObject(LK_HOLLOW_BRUSH);
+        invsel.left -= NIBLSCALE(2); invsel.right += NIBLSCALE(2);
         Surface.RoundRect(invsel, 5, 5);
-#else
-        Surface.InvertRect(invsel);
-#endif
-
     }
 
     LKevent = LKEVENT_NONE;
