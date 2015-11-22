@@ -1659,9 +1659,6 @@ WndForm::~WndForm(void){
 }
 
 void WndForm::Destroy(void) {
-    if (mClientWindow) {
-        mClientWindow->SetVisible(false);
-    }
     WindowControl::Destroy(); // delete all childs
 }
 
