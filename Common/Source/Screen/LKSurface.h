@@ -171,7 +171,6 @@ public:
     
     bool AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
 
-    bool InvertRect(const RECT& rc);
 #endif
     
 #ifdef USE_MEMORY_CANVAS
