@@ -189,7 +189,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
       } else {
         oldPen = Surface.SelectObject(LK_WHITE_PEN);
       }
-      Surface.RoundRect(brect, NIBLSCALE(8), NIBLSCALE(8));
+      Surface.RoundRect(brect, NIBLSCALE(4), NIBLSCALE(4));
       Surface.SelectObject(oldPen);
       if (Mode->SetTextColor) Surface.SetTextColor(Mode->Color); else Surface.SetTextColor(RGB_BLACK);
       Surface.DrawText(x, y, Value, size);
