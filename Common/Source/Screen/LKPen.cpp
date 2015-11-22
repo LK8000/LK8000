@@ -22,7 +22,7 @@ const LKPen LK_WHITE_PEN((HPEN)GetStockObject(WHITE_PEN));
 
 #else
 
-const LKPen LK_NULL_PEN(Pen::BLANK, 1, COLOR_WHITE);
+const LKPen LK_NULL_PEN(Pen::BLANK, 0, COLOR_WHITE);
 const LKPen LK_BLACK_PEN(Pen::SOLID, 1, COLOR_BLACK);
 const LKPen LK_WHITE_PEN(Pen::SOLID, 1, COLOR_WHITE);
 
