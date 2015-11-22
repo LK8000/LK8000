@@ -366,8 +366,6 @@ if (entered == true) /* prevent re entrance */
   }
   */
 
-  waGrid->SetWidth( wfa->GetWidth() - waGrid->GetLeft()-6);
-
   wfa->SetTimerNotify(5000, OnTimerNotify);
 
 //  UpdateAnalysis();

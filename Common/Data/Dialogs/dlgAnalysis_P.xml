@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M93_" Font="2" >
-    <WndOwnerDrawFrame Name="frmGrid" X="0" Y="2" Width="235" Height="200" Font="0" OnPaint="OnAnalysisPaint" />
-    <WndOwnerDrawFrame Name="frmInfo" X="90" Y="205" Width="130" Height="100" Font="2" />
+    <WndOwnerDrawFrame Name="frmGrid" X="1" Y="1" Width="-1" Height="200" Font="0" OnPaint="OnAnalysisPaint" />
+    <WndOwnerDrawFrame Name="frmInfo" X="90" Y="205" Width="-1" Height="-1" Font="2" />
     <WndButton Name="cmdCalc"  Caption="_@M160_" X="1" Y="206" Width="82"  Height="28" Font="2" OnClickNotify="OnCalcClicked" />
     <WndButton Name="cmdNext"  Caption="&gt;" X="42" Y="240" Width="41"  Height="28" Font="3" OnClickNotify="OnNextClicked" Tag="1" />
     <WndButton Name="cmdPrev"  Caption="&lt;" X="1" Y="240" Width="41"  Height="28" Font="3" OnClickNotify="OnPrevClicked" Tag="0"/>

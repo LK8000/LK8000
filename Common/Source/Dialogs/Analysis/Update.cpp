@@ -306,8 +306,6 @@ void UpdateAnalysis(void){
 
   }
 
-  waGrid->SetVisible(analysis_page<MAXPAGE+1);
-
   if (waGrid != NULL)
     waGrid->Redraw();
 
