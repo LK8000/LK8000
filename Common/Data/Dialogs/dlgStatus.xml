@@ -50,7 +50,7 @@
     <WndFrame Name="frmStatusExtDevice" X="1" Y="31" Width="-1" Height="-1" Font="2">
       <WndProperty Name="prpBattBank"   Caption="_@M134_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
       <WndProperty Name="prpBatt1Volt"  Caption="_@M132_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
-      <WndProperty Name="prpBatt2Volt"  Caption="_@M133_"    X="2" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpBatt2Volt"  Caption="_@M133_"    X="1" Y="-1" Width="-1" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
     </WndFrame>
   </WndForm>
 </PMML>
