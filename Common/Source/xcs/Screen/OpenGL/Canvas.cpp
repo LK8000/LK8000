@@ -171,6 +171,19 @@ void
 Canvas::DrawPolyline(const RasterPoint *points, unsigned num_points)
 {
 #ifdef USE_GLSL
+    glm::mat4 matrix = glm::translate(glm::mat4(),glm::vec3(1, 1, 0));
+    glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE, glm::value_ptr(matrix));
+#else
+    glPushMatrix();
+
+#ifdef HAVE_GLES
+    glTranslatex((GLfixed)1 << 16, (GLfixed)1 << 16, 0);
+#else
+    glTranslatef(1, 1, 0.);
+#endif
+#endif
+    
+#ifdef USE_GLSL
   OpenGL::solid_shader->Use();
 #endif
 
@@ -189,6 +202,14 @@ Canvas::DrawPolyline(const RasterPoint *points, unsigned num_points)
   }
 
   pen.Unbind();
+  
+#ifdef USE_GLSL
+    glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE,
+                       glm::value_ptr(glm::mat4()));
+#else
+    glPopMatrix();
+#endif
+    
 }
 
 void
