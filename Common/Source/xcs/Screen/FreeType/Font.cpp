@@ -363,7 +363,11 @@ Font::TextSize(const TCHAR *text) const
       x -= glyph->advance.x;
       x += glyph->metrics.horiBearingX + glyph->metrics.width;
   }
-
+  
+  if(demibold) {
+      // glyph are embolben by 32 (0.5 px), so for avoid rouding artefact, we need to had 1px to width;
+      x += (1<<6);
+  }
   return PixelSize{unsigned(std::max(0, x >> 6 )), height};
 }
 
