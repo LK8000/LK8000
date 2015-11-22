@@ -33,7 +33,7 @@ static void OnAirspaceColoursPaintListItem(WindowControl * Sender, LKSurface& Su
     Surface.SelectObject(LKBrush_White);
     Surface.SelectObject(LK_BLACK_PEN);
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-    Surface.SelectObject(MapWindow::GetAirspaceBrush(1)); // this is the solid brush
+    Surface.SelectObject(MapWindow::GetAirspaceBrush(i)); // this is the solid brush
     Surface.SetTextColor(MapWindow::GetAirspaceColour(i));
     Surface.Rectangle(
               100*ScreenScale, 
@@ -94,13 +94,14 @@ int dlgAirspaceColoursShowModal(void){
   if (!wf) return -1;
 
   wAirspaceColoursList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceColoursList"));
-  LKASSERT(wAirspaceColoursList!=NULL);
-  wAirspaceColoursList->SetBorderKind(BORDERLEFT);
-  wAirspaceColoursList->SetEnterCallback(OnAirspaceColoursListEnter);
+  if(wAirspaceColoursList) {
+    wAirspaceColoursList->SetEnterCallback(OnAirspaceColoursListEnter);
+  }
 
   wAirspaceColoursListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceColoursListEntry"));
-  LKASSERT(wAirspaceColoursListEntry!=NULL);
-  wAirspaceColoursListEntry->SetCanFocus(true);
+  if(wAirspaceColoursListEntry) {
+    wAirspaceColoursListEntry->SetCanFocus(true);
+  }
 
   UpdateList();
 
