@@ -372,6 +372,9 @@ ifeq ($(CONFIG_LINUX),y)
  $(eval $(call pkg-config-library,FREETYPE,freetype2))
  CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
  CE_DEFS += -DUSE_FREETYPE
+
+ $(eval $(call pkg-config-library,PNG,libpng))
+ CE_DEFS += $(patsubst -I%,-isystem %,$(PNG_CPPFLAGS))
 endif
 
 ifeq ($(CONFIG_WIN32),y)
@@ -492,7 +495,8 @@ endif
 LDFLAGS		+=$(PROFILE)
 
 ifeq ($(CONFIG_LINUX),y)
- LDLIBS += -lstdc++ -pthread -march=native -lpng -lrt -lm
+ LDLIBS += -lstdc++ -pthread -march=native -lrt -lm
+ LDLIBS += $(PNG_LDLIBS)
  LDLIBS += $(FREETYPE_LDLIBS)
  LDLIBS += $(ZZIP_LDLIBS)
  LDLIBS += $(GLES_LDLIBS)
