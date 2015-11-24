@@ -1365,8 +1365,6 @@ if(iFlarmDirection == 2)
 	//Planebrg = GPSbrg;
 	GPSbrg =0.0;
 }
-const LKBrush *pOldBrush =NULL;
-const auto oldPen = Surface.SelectObject(LK_NULL_PEN);
 
 int iStep =(int)  (fZoom *3.0 / (double)GC_TRACE_TIME_SKIP);
 if (iStep < 1)
@@ -1392,12 +1390,17 @@ iStep = 1;
         else
         {
           LKASSERT(DrawInfo.FLARM_RingBuf[iIdx].iColorIdx>=0 && DrawInfo.FLARM_RingBuf[iIdx].iColorIdx<NO_VARIO_COLORS);
-          if(variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx]!= pOldBrush)
-          {
-            pOldBrush  = variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx];
-            Surface.SelectObject(*pOldBrush);
-          }
-          Surface.Rectangle(Pnt.x-iTraceDotSize, Pnt.y-iTraceDotSize,Pnt.x+iTraceDotSize, Pnt.y+iTraceDotSize);
+
+          const LKBrush* pBrush = variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx];
+          
+          const PixelRect rcDot = {
+              Pnt.x-iTraceDotSize,
+              Pnt.y-iTraceDotSize,
+              Pnt.x+iTraceDotSize, 
+              Pnt.y+iTraceDotSize
+          };
+          
+          Surface.FillRect(&rcDot, *pBrush);
           iCnt++;
         }
 	  }
@@ -1415,7 +1418,6 @@ iStep = 1;
       }
 	}
 
-Surface.SelectObject(oldPen);
 return iCnt;
 }
 
