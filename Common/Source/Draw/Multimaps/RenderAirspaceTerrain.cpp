@@ -13,6 +13,7 @@
 #include "Sideview.h"
 #include "Multimap.h"
 #include "LKObjects.h"
+#include "Asset.hpp"
 
 using std::min;
 using std::max;
@@ -34,18 +35,10 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     double lat, lon;
     int i, j;
 
-    #ifndef UNDITHER
-    if (IsMultimapTerrain())
+    if (!IsDithered() && IsMultimapTerrain()) {
         RenderSky(Surface, rc, SKY_HORIZON_COL, SKY_SPACE_COL, GC_NO_COLOR_STEPS);
-    else {
-    #else
-    {
-    #endif
-        const auto OldPen = Surface.SelectObject(LKPen_Black_N1);
-        const auto OldBrush = Surface.SelectObject(MapWindow::hInvBackgroundBrush[BgMapColor]);
-        Surface.Rectangle(rc.left, rc.top, rc.right, rc.bottom);
-        Surface.SelectObject(OldBrush);
-        Surface.SelectObject(OldPen);
+    } else {
+        Surface.FillRect(&rc, MapWindow::hInvBackgroundBrush[BgMapColor]);
     }
     FindLatitudeLongitude(PosLat, PosLon, brg, psDiag->fXMin, &lat, &lon);
     POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X + 4] = {};
