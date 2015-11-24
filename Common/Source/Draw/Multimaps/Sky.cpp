@@ -9,49 +9,32 @@
 #include "externs.h"
 #include "Sideview.h"
 #include "LKObjects.h"
+#include "Screen/Point.hpp"
 
+void RenderSky(LKSurface& Surface, const RECT& rci, const LKColor& Col1, const LKColor& Col2, int iSteps) {
 
-void RenderSky(LKSurface& Surface, const RECT& rci, const LKColor& Col1, const LKColor& Col2 , int iSteps)
-{
-	RECT rc = rci;
+    RECT rcd = rci;
+    if (iSteps == 1) {
+        iSteps++;
+    }
+    double fdy = (double) (rci.top - rci.bottom) / (double) (iSteps - 1);
 
-RECT rcd=rc;
-int i;
+    double fTop = (double) rcd.bottom - fdy;
+    for (int i = 0; i < iSteps; i++) {
+        rcd.bottom = rcd.top;
+        fTop += fdy;
+        rcd.top = (PixelScalar)fTop;
 
-#if BUGSTOP
-LKASSERT(iSteps >=2)
-#endif
-if(iSteps == 1) iSteps++;
-double fdy = (double)(rc.top - rc.bottom)/(double)(iSteps-1);
+        LKBrush hbHorizon(Col2.MixColors(Col1, (double) i / (double) iSteps));
 
-LKColor Col;
-double fTop;
-LKASSERT(iSteps!=0);
-
-/* just take something in order to store the old brush and pen for restoring them */
-const auto OldPen = Surface.SelectObject(LK_WHITE_PEN);
-const auto OldBrush = Surface.SelectObject(LKBrush_Black);
-	rcd = rc;
-
-	fTop = (double)rcd.bottom-fdy;
-	for(i=0 ; i < iSteps ; i++)
-	{
-	  rcd.bottom  = rcd.top ;
-	  fTop += fdy;
-	  rcd.top     = (long)fTop;
-
-	  Col = Col2.MixColors(Col1,  (double) i / (double) iSteps);
-
-	  LKPen hpHorizon(PEN_SOLID, (1), Col);
-	  LKBrush hbHorizon(Col);
-	  Surface.SelectObject(hpHorizon);
-	  Surface.SelectObject(hbHorizon);
-
-	  Surface.Rectangle(rcd.left,rcd.top,rcd.right,rcd.bottom);
-
-	  Surface.SelectObject(OldPen);
-	  Surface.SelectObject(OldBrush);
-   }
+        Surface.FillRect(&rcd, hbHorizon);
+    }
+    if(rcd.top != rci.top) {
+        rcd.bottom = rcd.top;
+        rcd.top = rci.top;
+        LKBrush hbHorizon(Col2);
+        Surface.FillRect(&rcd, hbHorizon);
+    }
 }
 
 
