@@ -142,8 +142,6 @@
   #define OUTLINE_2ND		// double outline airspaces
 #endif
 
-
-
 /*
  * MULTISELECT OPTIONS 
  */
