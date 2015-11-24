@@ -118,12 +118,8 @@ QuickRedraw:
     // When no terrain is painted, set a background0
     // Remember that in this case we have plenty of cpu time to spend for best result
     if (!IsMultimapTerrain() || !DerivedDrawInfo.TerrainValid || !RasterTerrain::isTerrainLoaded()) {
-
-        // display border and fill background..
-        Surface.SelectObject(hInvBackgroundBrush[BgMapColor]);
-        Surface.SelectObject(LK_WHITE_PEN);
-
-        Surface.Rectangle(rc.left, rc.top, rc.right, rc.bottom);
+        // fill background..
+        Surface.FillRect(&rc, hInvBackgroundBrush[BgMapColor]);
         // We force LK painting black values on screen depending on the background color in use
         // TODO make it an array once settled
         // blackscreen would force everything to be painted white, instead
