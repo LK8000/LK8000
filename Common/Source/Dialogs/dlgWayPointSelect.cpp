@@ -825,7 +825,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
     TypeFilterIdx = type;
   }
   if (FilterNear){
-    DistanceFilterIdx = 1;
+    DistanceFilterIdx = FilterNear;
   }
 
   wf = dlgLoadFromXML(CallBackTable, 

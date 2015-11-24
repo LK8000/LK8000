@@ -201,6 +201,8 @@ IDR_XML_TERMINAL_P  XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTerminal_P.xml"
 IDR_XML_PROGRESS_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress_L.xml"
 IDR_XML_PROGRESS_L    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress_P.xml"
 
+IDR_XML_RADIOSETTINGS    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgRadioSettings.xml"
+
 IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
 #endif
 

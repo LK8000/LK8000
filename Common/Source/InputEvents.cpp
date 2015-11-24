@@ -2668,6 +2668,9 @@ void InputEvents::eventSetup(const TCHAR *misc) {
     dlgWindSettingsShowModal();
   } else if (_tcscmp(misc,TEXT("System"))==0){
     SystemConfiguration(0);
+  } else if (_tcscmp(misc,TEXT("Radio"))==0){
+      if(RadioPara.Enabled)
+    dlgRadioSettingsShowModal();        
   } else if (_tcscmp(misc,TEXT("Aircraft"))==0){
     SystemConfiguration(2);
   } else if (_tcscmp(misc,TEXT("Pilot"))==0){

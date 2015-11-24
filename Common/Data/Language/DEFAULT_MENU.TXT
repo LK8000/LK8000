@@ -889,12 +889,21 @@ event=Mode default
 label=_@M2043_
 location=6
 
+#mode=Config1
+#type=key
+#data=8
+#event=Setup Radio
+#event=Mode default
+## label=_@M2023_$(DISABLED)
+#label=_@M2307_
+#location=7
+
 mode=Config1
 type=key
 data=8
-event=Mode default
+event=Setup Radio
 # label=_@M2023_$(DISABLED)
-label=$(AC03)
+label=_@M2306_ 
 location=7
 
 mode=Config1
