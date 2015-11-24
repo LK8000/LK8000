@@ -242,6 +242,7 @@ endif
 ifeq ($(CONFIG_LINUX),y)
  CE_DEFS += -D__linux__
  CE_DEFS += -DHAVE_POSIX
+ CE_DEFS += -D__STDC_FORMAT_MACROS
 
  GREYSCALE ?= n
  USE_SOUND_EXTDEV ?= n

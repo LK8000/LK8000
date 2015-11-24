@@ -31,7 +31,6 @@ int CpuSummary() {
 #include <stdio.h>
 #include <unistd.h>
 
-#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 /* Show overall CPU utilization of the system 
