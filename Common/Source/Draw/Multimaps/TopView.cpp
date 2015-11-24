@@ -128,11 +128,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
 	terrainpainted=true;
   } else {
 	// We fill up the background wity chosen empty map color
-
-	// display border and fill background..
-        Surface.SelectObject(hInvBackgroundBrush[BgMapColor]);
-        Surface.SelectObject(LK_WHITE_PEN);
-        Surface.Rectangle(rct.left,rct.top,rct.right,rct.bottom);
+        Surface.FillRect(&rct, hInvBackgroundBrush[BgMapColor]);
         // We force LK painting black values on screen depending on the background color in use
         // blackscreen would force everything to be painted white, instead
         LKTextBlack=BgMapColorTextBlack[BgMapColor];
