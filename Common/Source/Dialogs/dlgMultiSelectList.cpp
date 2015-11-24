@@ -510,7 +510,7 @@ ListElement* dlgMultiSelectListShowModal(void) {
 
     if (!wf) return NULL;
 
-    wf->SetTimerNotify(1000, OnTimer);
+
     wMultiSelectListList = (WndListFrame*) wf->FindByName(TEXT("frmMultiSelectListList"));
     LKASSERT(wMultiSelectListList != NULL);
     wMultiSelectListList->SetBorderKind(BORDERLEFT);
@@ -535,6 +535,6 @@ ListElement* dlgMultiSelectListShowModal(void) {
     NoWaypoints = 0;
     NoAirspace = 0;
     NoTaskPoints = 0;
-
+    wf->SetTimerNotify(1000, OnTimer);
     return pResult;
 }

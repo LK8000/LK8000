@@ -7,6 +7,7 @@
     <WndButton Name="cmdSetAlt2" Caption="_@M598_" X="3" Y="-998" Width="232"  Height="48" Font="2" Tag="3" />
     <WndButton Name="cmdDetails" Caption="_@M231_" X="3" Y="-998" Width="232"  Height="48" Font="2" Tag="3" />
     <WndButton Name="cmdTask" Caption="_@M699_" X="3" Y="-998" Width="232"  Height="48" Font="2" Tag="3" />
+    <WndButton Name="cmdRadioFreq" Caption="_@M2174_" X="3" Y="-998" Width="232"  Height="42" Font="2" Tag="3"  />
     <WndButton Name="cmdCancel" Caption="_@M161_" X="3" Y="-998" Width="232"  Height="44" Font="2" Tag="3" />
   </WndForm>
 </PMML>

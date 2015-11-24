@@ -123,6 +123,8 @@
 // remove question for last turnpoint is good idea, but don't work
 // Usability of task definition needed to be refactoring before remove that.
 
+#define COM_DISCARD 0
+// en-/disable Com Port discard for Testbench on PC 
 
 // ----------------------------------------------------------------------------------------
 //
@@ -139,6 +141,8 @@
 //  #define FLARM_MS    // not implemented inside Multiselect dialog.
   #define OUTLINE_2ND		// double outline airspaces
 #endif
+
+
 
 /*
  * MULTISELECT OPTIONS 

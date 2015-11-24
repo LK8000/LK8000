@@ -13,6 +13,7 @@
 #include "SerialPort.h"
 #include "Bluetooth/BthPort.h"
 #include "GpsIdPort.h"
+#include "devPVCOM.h"
 #include <functional>
 #ifdef __linux__
   #include <dirent.h>
@@ -51,6 +52,22 @@ DeviceDescriptor_t *pDevPrimaryBaroSource=NULL;
 DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 
 int DeviceRegisterCount = 0;
+
+
+bool devDriverActivated( const TCHAR *DeviceName) {
+        
+ //  if(0)  
+    if(    (_tcscmp(dwDeviceName1, DeviceName) == 0) ||  (_tcscmp(dwDeviceName2, DeviceName) == 0))
+    {
+      if( _tcscmp(szPort1, szPort2) == 0)                   
+      {
+         StartupStore(_T(". devDriverActivated  true %s"),  NEWLINE);        
+          return true;
+      }
+    }
+    StartupStore(_T(". devDriverActivated  false %s"),  NEWLINE);                     
+    return false;
+}
 
 void LockComm() {
   CritSec_Comm.lock();
@@ -362,6 +379,8 @@ BOOL devInit(LPCTSTR CommandLine) {
             StartupStore(_T(". Device %c : invalide drivers name <%s>%s"), (_T('A') + i), DeviceName, NEWLINE);
             continue;
         }
+     
+        
         if(_tcscmp(pDev->Name,TEXT("Internal")) == 0) {
             _tcscpy(Port, _T("GPSID"));
         } else { 
@@ -374,6 +393,8 @@ BOOL devInit(LPCTSTR CommandLine) {
 
         if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
             StartupStore(_T(". Port <%s> Already used, Device %c Disabled ! %s"), Port, (_T('A') + i), NEWLINE);
+
+              
             continue;
         }
         UsedPort.insert(Port);
@@ -464,6 +485,29 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port){
   }
   return(NULL);
 }
+
+ // devParseStream(devIdx, c, &GPS_INFO);
+BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS){
+  
+  PDeviceDescriptor_t d;
+  d = devGetDeviceOnPort(portNum);
+  if (d->ParseStream != NULL)
+  {
+  //   StartupStore(_T(". devParseStream %s"), NEWLINE);
+    if (portNum>=0 && portNum<=1) {
+      ComPortHB[portNum]=LKHearthBeats;
+    }
+      if (d->ParseStream(d, stream, length, pGPS)) {
+	//GPSCONNECT  = TRUE; // NO! 121126
+
+      }
+      return(TRUE);        
+  }
+  else
+   return(FALSE);    
+
+}    
+
 
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
@@ -590,8 +634,11 @@ BOOL devOpen(PDeviceDescriptor_t d, int Port){
     res = d->Open(d, Port);
 
   if (res == TRUE)
+  {
     d->Port = Port;
-
+    if( devIsRadio(d))
+      RadioPara.Enabled = true;
+  }       
   return res;
 }
 
@@ -829,6 +876,7 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 }
 
 
+
 BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
 {
   BOOL result = TRUE;
@@ -836,40 +884,152 @@ BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
   if (SIMMODE)
     return TRUE;
   LockComm();
-  if (d != NULL && d->PutVolume != NULL)
-    result = d->PutVolume(d, Volume);
+
+
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+      if (d->Com)
+      {
+        if(d->PutVolume != NULL)
+          result = d->PutVolume(d, Volume);
+
+        if (devDriverActivated(TEXT("PVCOM")))
+          PVCOMPutVolume(d, Volume);
+      }
+  }
+
   UnlockComm();
 
   return result;
 }
 
-BOOL devPutFreqActive(PDeviceDescriptor_t d, double Freq)
+
+BOOL devPutSquelch(PDeviceDescriptor_t d, int Squelch)
 {
   BOOL result = TRUE;
 
   if (SIMMODE)
     return TRUE;
   LockComm();
-  if (d != NULL && d->PutFreqActive != NULL)
-    result = d->PutFreqActive(d, Freq);
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+      if (d->Com)
+      {
+        if(d->PutSquelch != NULL)
+          result = d->PutSquelch(d, Squelch);
+    
+        if (devDriverActivated(TEXT("PVCOM")))
+          PVCOMPutSquelch(d, Squelch);
+      }
+  }
   UnlockComm();
 
   return result;
 }
 
-BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq)
+
+BOOL devPutRadioMode(PDeviceDescriptor_t d, int mode)
+{
+BOOL result = TRUE;
+
+  LockComm();
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+      if (d->Com)
+      {
+        if(d->RadioMode != NULL)
+          result = d->RadioMode(d,mode);
+
+        if (devDriverActivated(TEXT("PVCOM")))
+          PVCOMRadioMode(d,mode);
+      }
+  }
+  UnlockComm();
+ return result;
+}
+
+BOOL devPutFreqSwap(PDeviceDescriptor_t d)
+{
+BOOL result = TRUE;
+
+      LockComm();
+
+      if (d != NULL)
+      {
+        if(!d->Disabled)
+          if (d->Com)
+          {
+            if(d->StationSwap != NULL)
+              result = d->StationSwap(d);
+            if (devDriverActivated(TEXT("PVCOM")))
+              PVCOMStationSwap(d);
+          }
+      }
+      UnlockComm();
+ return result;
+}  
+
+
+
+
+BOOL devPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[])
+{
+BOOL result = TRUE;
+
+  if (SIMMODE)
+    return TRUE;
+
+  LockComm();
+
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+   {
+      if (d->Com)
+      {
+        if(d->PutFreqActive != NULL)
+          result = d->PutFreqActive(d, Freq,StationName);
+
+         if (devDriverActivated(TEXT("PVCOM")))
+            PVCOMPutFreqActive(d, Freq,StationName);
+      }
+    }
+  }
+
+  UnlockComm();
+
+  return result;
+}
+
+
+BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq,TCHAR  StationName[])
 {
   BOOL result = TRUE;
 
   if (SIMMODE)
     return TRUE;
   LockComm();
-  if (d != NULL && d->PutFreqStandby != NULL)
-    result = d->PutFreqStandby(d, Freq);
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+      if (d->Com)
+      {
+        if(d->PutFreqStandby != NULL)
+          result = d->PutFreqStandby(d, Freq,StationName);
+
+         if (devDriverActivated(TEXT("PVCOM")))
+           PVCOMPutFreqStandby(d, Freq,StationName);
+      }
+  }
   UnlockComm();
 
   return result;
 }
+
+  
 
 
 static BOOL 
@@ -887,7 +1047,7 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
   for(int i=0; i < 20; i++) /* try to get expected answer max 20 times*/
   {
     if (ExpectString(d, Buffer))
-	  return true;
+     return true;
     Poco::Thread::sleep(20);
   }
 

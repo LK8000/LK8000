@@ -121,12 +121,61 @@ static bool OnTimer(){
   return true;
 }
 
+double  ExtractFrequency(TCHAR *text)
+{
+    if(text == NULL)
+        return 0.0;
+ double fFreq = 0.0;
+ int iTxtlen = (int)_tcslen(text);
+ int i,Mhz=0,kHz=0;
+ for (i=0; i < iTxtlen; i++)
+ {
+   if (text[i] == '1')
+   {
+     Mhz  = _ttoi(&text[i]);
+	 if(Mhz >= 118)
+	   if(Mhz <= 138)
+	         if((i+3) < iTxtlen)
+	         {
+		       if((text[i+3] == '.') || (text[i+3] == ','))
+		       {
+		         kHz = _ttoi(&text[i+4]);
+		         if(kHz > 0)
+		           while (kHz < 100)
+		    	     kHz *=10;
+		       }
+		       fFreq = (double) Mhz+ (double)kHz/1000.0f;
+		       return fFreq;
+	         }
+	   }
+   }
+
+ return fFreq;
+}
+
+static void OnSetFrequency(WndButton* pWnd){
+(void)pWnd;
+TCHAR Tmp[255];
+ if(RadioPara.Enabled)
+ {
+   double ASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
+    if((ASFrequency >= 118) && (ASFrequency <= 138))
+    {
+      _stprintf(Tmp,_T("%7.3fMHz"),ASFrequency);
+      devPutFreqActive(devA(), ASFrequency, (TCHAR*)airspace_copy.Name());
+      devPutFreqActive(devB(), ASFrequency,(TCHAR*)airspace_copy.Name());
+        DoStatusMessage(_T("RADIO:"), Tmp );
+    }
+  }
+wf->SetModalResult(mrOK);
+} 
 
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnAcknowledgeClicked),
   ClickNotifyCallbackEntry(OnFlyClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnSelectClicked),
+  ClickNotifyCallbackEntry(OnSetFrequency),
   OnPaintCallbackEntry(OnPaintAirspacePicto),
   EndCallBackEntry()
 };
@@ -143,6 +192,7 @@ static void SetValues(void) {
   int hdist;
   int vdist;
 
+//    ((WndButton *)wf->FindByName(TEXT("mdSFrequency"))) ->SetOnClickNotify(OnSetFrequency);
   
   bool inside = false;
   {
@@ -191,6 +241,7 @@ static void SetValues(void) {
     wp->RefreshDisplay();
   }
   
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpTop"));
   if (wp) {
 	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Top());
@@ -222,6 +273,27 @@ static void SetValues(void) {
     wp->SetText(buffer2);
     wp->RefreshDisplay();
   }
+
+  if(RadioPara.Enabled)
+  {
+    double fASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
+    if(fASFrequency >0)
+    {
+      wb = (WndButton*)wf->FindByName(TEXT("cmdSFrequency"));
+      if (wb)
+      {
+       ((WndButton *)wf->FindByName(TEXT("cmdSFrequency"))) ->SetLeft(IBLSCALE(3));
+       ((WndButton *)wf->FindByName(TEXT("cmdSFrequency"))) ->SetWidth(IBLSCALE(110));
+
+        ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetLeft(IBLSCALE(115));
+        ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetWidth(IBLSCALE(120));
+
+        _stprintf(buffer2,_T("%7.3fMHz"),fASFrequency);
+        wb->SetCaption(buffer2);
+        wb->Redraw();
+      }
+    }
+  }   
   
   // ONLY for DIAGNOSTICS- ENABLE ALSO XML
   #if 0
@@ -319,6 +391,8 @@ static void SetValues(void) {
   }
 
 }
+
+
 
 /*
  * only called by #CAirspaceManager::ProcessAirspaceDetailQueue()
