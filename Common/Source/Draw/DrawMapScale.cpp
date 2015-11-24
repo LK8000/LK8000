@@ -28,6 +28,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
     static short terrainwarning=0;
     
     static RasterPoint ScaleLine[4];
+    static PixelRect   ScaleLineBck[3];
     static int   ytext;
     static bool flipflop=true;
 
@@ -52,6 +53,25 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
             MAPSCALE_BOTTOMMARGIN 
         };
 
+        ScaleLineBck[0] = {
+            ScaleLine[0].x - 1, 
+            ScaleLine[0].y - 1, 
+            ScaleLine[1].x + 2, 
+            ScaleLine[1].y + 2
+        };
+        ScaleLineBck[1] = {
+            ScaleLine[1].x - 1, 
+            ScaleLine[1].y - 1, 
+            ScaleLine[2].x + 2, 
+            ScaleLine[2].y + 2
+        };
+        ScaleLineBck[2] = {
+            ScaleLine[3].x - 1, 
+            ScaleLine[3].y - 1, 
+            ScaleLine[2].x + 2, 
+            ScaleLine[2].y + 2
+        }; 
+        
         SIZE tsize;
         Surface.SelectObject(MapScaleFont);
         Surface.GetTextSize(_T("M"),1,&tsize);
@@ -68,19 +88,13 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
     TCHAR Scale2[200];
     TCHAR TEMP[20];
 
-    const auto hbOld = Surface.SelectObject(LKBrush_Black);
-    const auto hpOld = Surface.SelectObject(LK_NULL_PEN);
-
-    Surface.Rectangle(ScaleLine[0].x-1, ScaleLine[0].y - 1, ScaleLine[1].x+2, ScaleLine[1].y + 2);
-    Surface.Rectangle(ScaleLine[1].x-1, ScaleLine[1].y - 1, ScaleLine[2].x+2, ScaleLine[2].y + 2);
-    Surface.Rectangle(ScaleLine[3].x-1, ScaleLine[3].y - 1, ScaleLine[2].x+2, ScaleLine[2].y + 2);
-    
-    Surface.SelectObject(LKPen_White_N0);
+    Surface.FillRect(&ScaleLineBck[0], LKBrush_Black);
+    Surface.FillRect(&ScaleLineBck[1], LKBrush_Black);
+    Surface.FillRect(&ScaleLineBck[2], LKBrush_Black);
+   
+    const auto hpOld = Surface.SelectObject(LKPen_White_N0);
     Surface.Polyline(ScaleLine, array_size(ScaleLine));
-
-
     Surface.SelectObject(hpOld);
-    Surface.SelectObject(hbOld);
 
     flipflop=!flipflop;
 
