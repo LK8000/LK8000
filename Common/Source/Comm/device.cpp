@@ -327,7 +327,9 @@ BOOL devInit(LPCTSTR CommandLine) {
     TCHAR Port[MAX_PATH] = {_T('\0')};
     unsigned SpeedIndex = 2U;
     BitIndex_t BitIndex = bit8N1;
-
+#ifdef RADIO_ACTIVE    
+     RadioPara.Enabled = false;
+#endif     
     static bool doinit = true;
 
     pDevPrimaryBaroSource = NULL;

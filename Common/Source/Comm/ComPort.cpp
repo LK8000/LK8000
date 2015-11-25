@@ -140,26 +140,18 @@ void ComPort::ProcessChar(char c) {
     if (pLastNmea >= std::begin(_NmeaString) && (pLastNmea+1) < std::end(_NmeaString)) {
 
 #ifdef RADIO_ACTIVE        
-#define      BUFLEN 80    
-static  char Stream[BUFLEN]; 
+
 bool bStreamed = false;
-static int cnt =0;         
 
-
-      PDeviceDescriptor_t d;
-      d = devGetDeviceOnPort(devIdx);
-  
-
+      if(RadioPara.Enabled)
+      {
+         PDeviceDescriptor_t d;
+         d = devGetDeviceOnPort(devIdx);
          if( d->ParseStream != NULL)
-        {             
-          LKASSERT (cnt < BUFLEN);                    
-          Stream[cnt++] = c;
-          if (cnt >0)
-          {
-            bStreamed =  devParseStream(devIdx, Stream, cnt, &GPS_INFO);               
-            cnt =0;
-          }
+        {              
+          bStreamed =  devParseStream(devIdx, &c, 1, &GPS_INFO);               
         }
+      }
 
       if(!bStreamed) 
 #endif     // RADIO_ACTIVE             
