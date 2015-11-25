@@ -103,6 +103,11 @@ void SetHome(bool reset)
 	GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;
 	GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
 	GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
+    RasterTerrain::SetTerrainRounding(0,0);
+    const short Alt = RasterTerrain::GetTerrainHeight(GPS_INFO.Latitude, GPS_INFO.Longitude);
+    if(Alt!=TERRAIN_INVALID) { // terrain invalid is now positive  ex. 32767
+      CALCULATED_INFO.TerrainValid = true;
+    }
 	// Update memory HomeWaypoint
 	WpHome_Lat=WayPointList[HomeWaypoint].Latitude; // 100213
 	WpHome_Lon=WayPointList[HomeWaypoint].Longitude;
@@ -113,12 +118,12 @@ void SetHome(bool reset)
     // no home at all, so set it from center of terrain if available
     double lon, lat;
     if (RasterTerrain::GetTerrainCenter(&lat, &lon)) {
-	GPS_INFO.Latitude = lat;
-	GPS_INFO.Longitude = lon;
-	GPS_INFO.Altitude = 0;
-	StartupStore(_T("...... No HomeWaypoint, default position set to terrain center%s"),NEWLINE);
+      GPS_INFO.Latitude = lat;
+	  GPS_INFO.Longitude = lon;
+	  GPS_INFO.Altitude = 0;
+      CALCULATED_INFO.TerrainValid = true;
+	  StartupStore(_T("...... No HomeWaypoint, default position set to terrain center%s"),NEWLINE);
     } else
-	StartupStore(_T("...... HomeWaypoint NOT SET%s"),NEWLINE);
+	  StartupStore(_T("...... HomeWaypoint NOT SET%s"),NEWLINE);
   }
-
 }
