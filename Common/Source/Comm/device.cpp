@@ -481,6 +481,7 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
     PDeviceDescriptor_t d;
     d = devGetDeviceOnPort(portNum);
     if(stream != NULL)
+    {
       if (d->ParseStream != NULL) {
          //   StartupStore(_T(". devParseStream %s"), NEWLINE);
           if (portNum >= 0 && portNum <= 1) {
@@ -491,8 +492,9 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
 
         }
         return (TRUE);
-    } else
-        return (FALSE);
+      } 
+    }
+    return (FALSE);
 
 }
 
