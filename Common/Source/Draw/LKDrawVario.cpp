@@ -12,6 +12,7 @@
 #include "DoInits.h"
 #include "Screen/PenReference.h"
 #include "Screen/BrushReference.h"
+#include "Bitmaps.h"
 
 #define BOXTHICK 1
 #define PIXELSEPARATE 1
@@ -19,7 +20,7 @@
 
 void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
-    static RECT vrc, mrc, hrc, htrc, hbrc;
+    static PixelRect vrc, mrc, hrc, htrc, hbrc;
 
     static BrushReference greenBrush, darkyellowBrush, orangeBrush, redBrush;
     static BrushReference lakeBrush, blueBrush, indigoBrush;
@@ -35,7 +36,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
     static const unsigned positive_brick_count = array_size(positive_vario_step);
 
     static BrushReference positiveBrush[positive_brick_count];
-    static RECT positiveBricks[positive_brick_count];
+    static PixelRect positiveBricks[positive_brick_count];
 
     /* 
      * this array define vario Value for each brick, ( negative value )
@@ -45,7 +46,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
     static const unsigned negative_brick_count = array_size(negative_vario_step);
 
     static BrushReference negativeBrush[negative_brick_count];
-    static RECT negativeBricks[negative_brick_count];
+    static PixelRect negativeBricks[negative_brick_count];
 
     static short startInitCounter = 0;
     static bool dogaugeinit = true;
@@ -210,6 +211,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
     } // END of INIT
 
     double vario_value = 0; // can be vario, vario netto or STF offset, depending of config and map mode
+    double mc_value = 0; // current MacCready value, used only for Vario or VarioNetto.
 
     if (ISCAR && DrawInfo.Speed > 0) {
         // Heading is setting Gload, but Heading is not calculated while steady!
@@ -248,11 +250,14 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         } else {
             vario_value = DerivedDrawInfo.Vario;
         }
+        mc_value = MACCREADY;
     } else {
         switch (LKVarioVal) {
             default:
             case vValVarioNetto:
                 vario_value = DerivedDrawInfo.NettoVario;
+                // simple hack for avoid to used polar curve : glider_sink_rate = Vario - NettoVario;
+                mc_value = MACCREADY + (DerivedDrawInfo.Vario - DerivedDrawInfo.NettoVario);
                 break;
             case vValVarioSoll:
                 double ias;
@@ -320,6 +325,25 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
             const RECT& brc = negativeBricks[i];
             Surface.SelectObject(negativeBrush[i]);
             Surface.Rectangle(brc.left, brc.top, brc.right, brc.bottom);
+        }
+
+        // Draw MacCready Indicator
+        const auto step_iterator = std::upper_bound(std::begin(positive_vario_step), std::end(positive_vario_step), mc_value);
+        size_t mc_brick_idx = std::distance(std::begin(positive_vario_step), step_iterator);
+        if (mc_brick_idx > 1) {
+            const PixelRect& brc_next = positiveBricks[mc_brick_idx];
+            const PixelRect& brc_Prev = positiveBricks[mc_brick_idx-1];
+            
+            const PixelSize IconSize = hMcVario.GetSize();
+            const PixelSize DrawSize = {
+                vrc.GetSize().cx,
+                IconSize.cy * vrc.GetSize().cx / IconSize.cx
+            };
+            const RasterPoint DrawPos = {
+                vrc.left,
+                brc_Prev.top + ((brc_next.bottom - brc_Prev.top) / 2) + (IconSize.cy / 2)
+            };
+            hMcVario.Draw(Surface, DrawPos.x, DrawPos.y, DrawSize.cx, DrawSize.cy);
         }
     }
     // cleanup

@@ -121,4 +121,5 @@ BEXTMODE LKBitmap hCruise;
 BEXTMODE LKIcon hClimb;
 BEXTMODE LKBitmap hFinalGlide;
 
+BEXTMODE LKIcon hMcVario;
 #endif

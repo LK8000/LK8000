@@ -241,6 +241,9 @@ void LKLoadFixedBitmaps(void) {
 
   _stprintf(srcfile,_T("%sPICTORI%s." IMG_EXT),sDir,hires_suffix);
   hLKPictori=LKLoadBitmap(srcfile);
+  
+  _stprintf(srcfile,_T("%sMC_VARIO_TICK%s." IMG_EXT),sDir,hires_suffix);
+  hMcVario=LKLoadBitmap(srcfile);
 }
 
 
@@ -335,6 +338,7 @@ void LKUnloadFixedBitmaps(void) {
     hLKThermalRed.Release();
     hLKPictori.Release();
 
+    hMcVario.Release();
 }
 
 
