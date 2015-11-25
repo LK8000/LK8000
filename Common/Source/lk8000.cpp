@@ -339,9 +339,6 @@ int main(int argc, char *argv[]) {
   RadioPara.Squelch = 3;
   RadioPara.Vox = 5;
    RadioPara.Enabled = false; //devIsRadio(devA()) || devIsRadio(devB());
-#if TESTBENCH
-  RadioPara.Enabled = TRUE;
-#endif  
 #endif  // RADIO_ACTIVE        
   
   // Initialise main blackboard data
