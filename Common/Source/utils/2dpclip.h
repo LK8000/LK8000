@@ -44,17 +44,17 @@ namespace LKGeom {
     public:
 
         inline clipper(const Upoint& TopLeft, const Upoint& BottomRight) {
-            Clip_region[0].y = TopLeft.y - 1; //lower
-            Clip_region[0].x = TopLeft.x - 1; //left
+            Clip_region[0].y = TopLeft.y; //lower
+            Clip_region[0].x = TopLeft.x; //left
 
-            Clip_region[1].y = TopLeft.y - 1; //lower
-            Clip_region[1].x = BottomRight.x + 1; //right
+            Clip_region[1].y = TopLeft.y; //lower
+            Clip_region[1].x = BottomRight.x; //right
 
-            Clip_region[2].y = BottomRight.y + 1; // upper
-            Clip_region[2].x = BottomRight.x + 1; // right
+            Clip_region[2].y = BottomRight.y; // upper
+            Clip_region[2].x = BottomRight.x; // right
 
-            Clip_region[3].y = BottomRight.y + 1; // upper
-            Clip_region[3].x = TopLeft.x - 1; // left
+            Clip_region[3].y = BottomRight.y; // upper
+            Clip_region[3].x = TopLeft.x; // left
         }
 
         static const unsigned _NOSEGM = 0; /* The line is rejected */
