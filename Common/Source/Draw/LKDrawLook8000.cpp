@@ -232,7 +232,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         } else {
             if (Overlay_TopLeft) {
                 GetOvertargetName(Buffer);
-                CharUpper(Buffer);
                 RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + SizeMediumFont.cy };
                 LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
             }
