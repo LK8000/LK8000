@@ -480,9 +480,10 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
 
     PDeviceDescriptor_t d;
     d = devGetDeviceOnPort(portNum);
-    if (d->ParseStream != NULL) {
-        //   StartupStore(_T(". devParseStream %s"), NEWLINE);
-        if (portNum >= 0 && portNum <= 1) {
+    if(stream != NULL)
+      if (d->ParseStream != NULL) {
+         //   StartupStore(_T(". devParseStream %s"), NEWLINE);
+          if (portNum >= 0 && portNum <= 1) {
             ComPortHB[portNum] = LKHearthBeats;
         }
         if (d->ParseStream(d, stream, length, pGPS)) {
