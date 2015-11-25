@@ -295,9 +295,18 @@ _skipout:
             }
         }
 
+        GlideBarOffset = 0;
+        for (auto pt : GlideBar){
+            GlideBarOffset = std::max<int>(GlideBarOffset, pt.x);
+        }
+        for (auto pt : GlideBar0) {
+            GlideBarOffset = std::max<int>(GlideBarOffset, pt.x);
+        }
+        GlideBarOffset -= LKVarioSize;
+
         LKSurface::OldFont hfOld = Surface.SelectObject(MapWaypointBoldFont);
         Surface.GetTextSize(Value, _tcslen(Value), &TextSize);
-        GlideBarOffset = max(NIBLSCALE(11), (int) TextSize.cx+NIBLSCALE(1))+1; 
+        GlideBarOffset = std::max<int>(GlideBarOffset, TextSize.cx+NIBLSCALE(1))+1; 
 
         TextInBoxMode_t TextInBoxMode = {0};
         TextInBoxMode.Border = true; //={1|8};
@@ -308,7 +317,9 @@ _skipout:
         Surface.SelectObject(hfOld);
         Surface.SelectObject(hbOld);
         Surface.SelectObject(hpOld);
-    } else GlideBarOffset = 0; // 091125 BUGFIX glidebaroffset is zero when no task point
+    } else {
+        GlideBarOffset = 0; // 091125 BUGFIX glidebaroffset is zero when no task point
+    } 
     {
         UnlockTaskData();
     }
