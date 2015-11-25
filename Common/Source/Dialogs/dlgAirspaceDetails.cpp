@@ -144,6 +144,7 @@ double  ExtractFrequency(TCHAR *text)
 
 static void OnSetFrequency(WndButton* pWnd){
 (void)pWnd;
+#ifdef RADIO_ACTIVE
 TCHAR Tmp[255];
  if(RadioPara.Enabled)
  {
@@ -156,6 +157,7 @@ TCHAR Tmp[255];
         DoStatusMessage(_T("RADIO:"), Tmp );
     }
   }
+#endif  // RADIO_ACTIVE        
 wf->SetModalResult(mrOK);
 } 
 
@@ -262,7 +264,7 @@ static void SetValues(void) {
     wp->SetText(buffer2);
     wp->RefreshDisplay();
   }
-
+#ifdef  RADIO_ACTIVE
   if(RadioPara.Enabled)
   {
     double fASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
@@ -283,7 +285,7 @@ static void SetValues(void) {
       }
     }
   }   
-  
+#endif  // RADIO_ACTIVE        
   // ONLY for DIAGNOSTICS- ENABLE ALSO XML
   #if 0
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarnLevel"));
