@@ -83,7 +83,7 @@ static void OnTaskClicked(WndButton* pWnd){
 
 
 static void OnRadioFrequencyClicked(WndButton* pWnd){
-
+#ifdef RADIO_ACTIVE
 
   TCHAR szFreq[300];
 
@@ -101,6 +101,7 @@ static void OnRadioFrequencyClicked(WndButton* pWnd){
   DoStatusMessage(_T("RADIO:"), szFreq );
   retStatus=3;
   wf->SetModalResult(mrOK);
+#endif  // RADIO_ACTIVE        
 }
 
 
@@ -131,7 +132,9 @@ short dlgWayQuickShowModal(void){
   ((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetOnClickNotify(OnSetAlt2Clicked);
   ((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetOnClickNotify(OnDetailsClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetOnClickNotify(OnTaskClicked);
+#ifdef RADIO_ACTIVE  
   ((WndButton *)wf->FindByName(TEXT("cmdRadioFreq"))) ->SetOnClickNotify(OnRadioFrequencyClicked);
+#endif  // RADIO_ACTIVE        
   ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetOnClickNotify(OnCancelClicked);
 
   retStatus=0;
@@ -189,7 +192,7 @@ short dlgWayQuickShowModal(void){
 
 	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(NIBLSCALE(3));
 	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetWidth((ScreenSizeX)-NIBLSCALE(8));
-        
+#ifdef RADIO_ACTIVE    
 	if((_ttoi(WayPointList[SelectedWaypoint].Freq) > 0) && RadioPara.Enabled)
 	{
 	  ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
@@ -199,6 +202,7 @@ short dlgWayQuickShowModal(void){
 	  ((WndButton *)wf->FindByName(TEXT("cmdRadioFreq"))) ->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
 	}
 	else
+#endif  // RADIO_ACTIVE        
 	{
 	  ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(NIBLSCALE(3));
  	  ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetWidth((ScreenSizeX)-NIBLSCALE(8));

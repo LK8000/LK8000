@@ -6,6 +6,7 @@
    $Id: dlgWindSettings.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
 */
 
+
 #include "externs.h"
 #include "Dialogs.h"
 #include "TraceThread.h"
@@ -17,6 +18,7 @@
 #include "Dialogs.h"
 #include "resource.h"
 
+#ifdef RADIO_ACTIVE    
 //extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
@@ -630,3 +632,4 @@ void dlgRadioSettingsShowModal(void){
   return ;
 }
 
+#endif  // RADIO_ACTIVE        

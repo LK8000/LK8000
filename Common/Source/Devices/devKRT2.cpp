@@ -11,7 +11,8 @@
 #include "Globals.h"
 #include "devKRT2.h"
 #include "device.h"
- 
+
+#ifdef RADIO_ACTIVE     
 
  #define min(X,Y) ((X) < (Y) ? : (X) : (Y))
 
@@ -48,7 +49,6 @@ BOOL KRT2Install(PDeviceDescriptor_t d){
   d->ParseNMEA    = NULL;
   d->ParseStream   = KRT2ParseString;
   d->RadioMode    = KRT2RadioMode;
-  StartupStore(_T(". KRT2Install %s%s"), WhatTimeIsIt(),NEWLINE);
   return(TRUE);
 
 }
@@ -221,7 +221,7 @@ BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) 
         if(StationName != NULL)        
           _stprintf(RadioPara.ActiveName,_T("%s"),StationName) ;       
    
-         StartupStore(_T(". RADIO Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+         StartupStore(_T(". KRT2 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
       }
   return(TRUE);
 }
@@ -244,7 +244,7 @@ BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]
         if(StationName != NULL)
           _stprintf(RadioPara.PassiveName  ,_T("%s"),StationName) ;       
             
-         StartupStore(_T(". RADIO Stanby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+         StartupStore(_T(". KRT2 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
       }
   return(TRUE);
 }
@@ -261,7 +261,7 @@ BOOL KRT2StationSwap(PDeviceDescriptor_t d) {
           _stprintf(szTmp, _T("%cC"), STX);
           for (i=0; i < 2; i++)
             d->Com->PutChar(szTmp[i]);
-           StartupStore(_T(". KRT2  swap %s"), NEWLINE);
+           StartupStore(_T(". KRT2  station swap %s"), NEWLINE);
       }
   return(TRUE);
 }
@@ -371,7 +371,7 @@ int processed=0;
 static int iDetected = 0;
 static bool bFound = false;
 static int iInvalidCount =0;
-static int iReSendCount =0;
+
 
 int i;
 LKASSERT(szCommand !=NULL);   
@@ -395,13 +395,11 @@ LKASSERT(d !=NULL);
          //   bFound = false;
         }
       processed++;
-      iReSendCount =0;
     }
     else
     if(szCommand[0] == ACK)
     {
       processed++;
-      iReSendCount =0;
     }
     else
     if(szCommand[0] == NAK)
@@ -430,7 +428,6 @@ LKASSERT(d !=NULL);
       if(len > 1)
       {
       processed++;
-      iReSendCount =0;
       iInvalidCount =0;
       switch (szCommand[1])
       {
@@ -587,7 +584,7 @@ LKASSERT(d !=NULL);
       }
       else
       {             /* try up to 30 times this is getting a valid command */
-        iReSendCount =0;
+
  // processed=0;        
         if( iInvalidCount++ < 30)
           processed=0;
@@ -601,20 +598,24 @@ LKASSERT(d !=NULL);
     }
     else
     {
-      iReSendCount =0;
       processed++; // skip invalid char
       #ifdef  DEBUG_OUTPUT
          _stprintf(szTempStr,_T("ERR,UNKNOWN CHARACTER 0x%X"),(int)szCommand[0]);
       #endif
     }
 
+
 if(processed> 0)
 {    
-          _stprintf(szMessage,_T("%s:%s "),gettext(TEXT("_@M2309_")),szTempStr);
+        _stprintf(szMessage,_T("%s:%s "),gettext(TEXT("_@M2309_")),szTempStr);
+        StartupStore(_T(" %s %s%s"), szMessage,WhatTimeIsIt(),NEWLINE);
+#ifdef TESTBENCH            
         DoStatusMessage(szMessage); 
-}   
+#endif        
+}
+
  //   if(processed > 0) /* if a valid Answer:  */
 
     return processed;  /* return the number of converted characters */
 }
- 
+#endif  // RADIO_ACTIVE        

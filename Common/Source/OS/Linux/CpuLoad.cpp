@@ -94,11 +94,11 @@ private:
         fseek(_fp, 0, SEEK_SET);
         fflush(_fp);
         if (fgets(buffer, BUF_MAX, _fp)) {
-            int retval = sscanf(buffer, "cpu %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64,
-                    &fields[0], &fields[1], &fields[2], &fields[3], &fields[4],
-                    &fields[5], &fields[6], &fields[7], &fields[8], &fields[9]);
+//            int retval = sscanf(buffer, "cpu %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64,
+ //                   &fields[0], &fields[1], &fields[2], &fields[3], &fields[4],
+  //                  &fields[5], &fields[6], &fields[7], &fields[8], &fields[9]);
 
-            return (retval >= 4); /* Atleast 4 fields is to be read */
+   //         return (retval >= 4); /* Atleast 4 fields is to be read */
         }
         return false;
     }

@@ -11,7 +11,8 @@
 #include "Globals.h"
 #include "devPVCOM.h"
 #include "device.h"
- 
+
+#ifdef RADIO_ACTIVE    
 BOOL PVCOMInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("PVCOM"));
@@ -297,4 +298,4 @@ return  RadioPara.Changed;
 
 }
 
-
+#endif  // RADIO_ACTIVE        

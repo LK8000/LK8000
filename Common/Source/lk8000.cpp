@@ -332,7 +332,8 @@ int main(int argc, char *argv[]) {
 	StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
 	return -1;
     }
-
+  
+#ifdef RADIO_ACTIVE
   memset( &(RadioPara), 0, sizeof(Radio_t));
   RadioPara.Volume = 6;
   RadioPara.Squelch = 3;
@@ -340,7 +341,8 @@ int main(int argc, char *argv[]) {
    RadioPara.Enabled = false; //devIsRadio(devA()) || devIsRadio(devB());
 #if TESTBENCH
   RadioPara.Enabled = TRUE;
-#endif      
+#endif  
+#endif  // RADIO_ACTIVE        
   
   // Initialise main blackboard data
 
@@ -531,8 +533,10 @@ int main(int argc, char *argv[]) {
   CDevCProbe::Register();
   BlueFlyRegister();
   LXV7easyRegister();
+#ifdef RADIO_ACTIVE  
   PVCOMRegister();
   KRT2Register();
+#endif  // RADIO_ACTIVE        
     
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST

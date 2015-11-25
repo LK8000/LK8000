@@ -131,6 +131,7 @@
 // OPTIONALs not in use within official LK versions, but still available for custom version
 //
 // ----------------------------------------------------------------------------------------
+#define RADIO_ACTIVE
 
 //#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
