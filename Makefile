@@ -451,10 +451,8 @@ endif
 ifeq ($(CONFIG_PC),y)
  CPPFLAGS	+= -D_WINDOWS -DWIN32 -DCECORE $(UNICODE)
 
- ifeq ($(GCCVERSION), 4.8.3)
-    CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
- endif
-ifeq ($(GCCVERSION), 4.9.1)
+GCC_GTEQ_480 := $(shell expr `gcc -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 40800)
+ifeq ($(GCC_GTEQ_480),1)
     CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
  endif
 endif
