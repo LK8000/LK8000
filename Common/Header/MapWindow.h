@@ -746,6 +746,7 @@ protected:
   static void UpdateCaches(bool force=false);
 
 private:  
+  static void RenderOverlayGauges(LKSurface& Surface, const RECT& rc);
   static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
 				const POINT &Orig,
 				const POINT &Orig_Aircraft);

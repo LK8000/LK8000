@@ -17,6 +17,16 @@
 extern bool FastZoom;
 extern bool TargetDialogOpen;
 
+void MapWindow::RenderOverlayGauges(LKSurface& Surface, const RECT& rc) {
+    if (IsThermalBarVisible()) {
+        DrawThermalBand(Surface, rc);
+    }
+    if(LKVarioBar > vBarDisabled) {
+        LKDrawVario(Surface, rc);
+    }
+    DrawFinalGlide(Surface, rc);
+}
+
 void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
         const POINT &Orig,
         const POINT &Orig_Aircraft) {
@@ -81,24 +91,17 @@ _skip_calcs:
 QuickRedraw:
     //
     if (DONTDRAWTHEMAP) {
+        const bool isMultimap = IsMultiMapShared(); // DrawMapSpace can change "MapSpaceMode", get this before. 
         DrawMapSpace(Surface, rc);
         // Is this a "shared map" environment? 
-        if (IsMultiMapShared()) {
+        if (isMultimap) {
             // Shared map, of course not MSN_MAP, since dontdrawthemap was checked
             //
-            const bool bDrawGauges = IsMultimapOverlaysGauges();
-            if (bDrawGauges && IsThermalBarVisible()) {
-                DrawThermalBand(Surface, rc);
+            if (IsMultimapOverlaysGauges()) {
+                RenderOverlayGauges(Surface, rc);
             }
-
             if (IsMultimapOverlaysText()) {
                 DrawLook8000(Surface, rc);
-            }
-            if (bDrawGauges) {
-                if (LKVarioBar) {
-                    LKDrawVario(Surface, rc);
-                }
-                DrawFinalGlide(Surface, rc);
             }
 
         } else {
@@ -317,9 +320,21 @@ _skip_stuff:
 _skip_2:
 
     if (NOTANYPAN) {
-        if (IsThermalBarVisible() && IsMultimapOverlaysGauges()) {
-            DrawThermalBand(Surface, rc);
+
+        if (IsMultimapOverlaysGauges()) {
+            RenderOverlayGauges(Surface, rc);
         }
+        
+        if (TrackBar) {
+            DrawHeading(Surface, Orig, DrawRect);
+            if (ISGAAIRCRAFT) {
+                DrawFuturePos(Surface, Orig, DrawRect);
+            }
+        }
+        
+        if (ISGAAIRCRAFT) {
+            DrawHSIarc(Surface, Orig, DrawRect);
+        }        
 
         if (IsMultimapOverlaysText()) {
             DrawLook8000(Surface, rc);
@@ -329,16 +344,6 @@ _skip_2:
 
     if (DONTDRAWTHEMAP) {
         goto QuickRedraw;
-    }
-
-    if (IsMultimapOverlaysGauges() && (LKVarioBar && NOTANYPAN))
-        LKDrawVario(Surface, rc);
-
-    if (NOTANYPAN) {
-        if (TrackBar) {
-            DrawHeading(Surface, Orig, DrawRect);
-            if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, DrawRect);
-        }
     }
 
     // Draw glider or paraglider
@@ -353,15 +358,10 @@ _skip_2:
     DrawMarks(hdc, rc);
 #endif
 
-    if (ISGAAIRCRAFT && IsMultimapOverlaysGauges() && NOTANYPAN) DrawHSIarc(Surface, Orig, DrawRect);
-
     if (!INPAN) {
         DrawMapScale(Surface, rc, zoom.BigZoom()); // unused BigZoom
         DrawCompass(Surface, rc, DisplayAngle);
     }
-
-    if (IsMultimapOverlaysGauges() && NOTANYPAN) DrawFinalGlide(Surface, rc);
-
 
 #ifdef DRAWDEBUG
     DrawDebug(hdc, rc);
