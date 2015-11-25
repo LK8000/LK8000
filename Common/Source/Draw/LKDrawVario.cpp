@@ -13,28 +13,39 @@
 #include "Screen/PenReference.h"
 #include "Screen/BrushReference.h"
 
-#define NUMVBRICKS 32	// MUST be an even number
-#define BOXTHICK   2	// caution, not used as deemed
+#define BOXTHICK 1
 #define PIXELSEPARATE 1
 #define POSCOLOR 6
 
-
-// Available only in fullscreen landscape mode
-
 void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
-    LKSurface::OldPen oldPen;
-    LKSurface::OldBrush oldBrush;
-
     static RECT vrc, mrc, hrc, htrc, hbrc;
-    static RECT brc[NUMVBRICKS];
-    static PenReference blackThickPen;
-    static PenReference blackThinPen, whiteThinPen;
-    static BrushReference blackBrush, whiteBrush;
+
     static BrushReference greenBrush, darkyellowBrush, orangeBrush, redBrush;
     static BrushReference lakeBrush, blueBrush, indigoBrush;
-    static BrushReference positiveBrush[NUMVBRICKS / 2];
-    static BrushReference negativeBrush[NUMVBRICKS / 2];
+
+    static PenReference borderPen; // Pen for border of vario bar and vario bricks ( white or black)
+    static BrushReference forgroundBrush; // Brush used for draw middle thick or monochrome brick ( same color of borderPen )
+
+    /* 
+     * this array define vario Value for each brick, ( positive value )
+     *  Number of brick for positive value is defined by this array size.
+     */
+    static double positive_vario_step[] = {0.05, 0.25, 0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00, 3.50, 4.50, 5.00, 6.00, 7.00};
+    static const unsigned positive_brick_count = array_size(positive_vario_step);
+
+    static BrushReference positiveBrush[positive_brick_count];
+    static RECT positiveBricks[positive_brick_count];
+
+    /* 
+     * this array define vario Value for each brick, ( negative value )
+     *  Number of brick for negative value is defined by this array size.
+     */
+    static double negative_vario_step[] = {-0.05, -0.25, -0.50, -0.75, -1.00, -1.25, -1.50, -1.75, -2.00, -2.50, -3.00, -3.50, -4.50, -5.00, -6.00, -7.00};
+    static const unsigned negative_brick_count = array_size(negative_vario_step);
+
+    static BrushReference negativeBrush[negative_brick_count];
+    static RECT negativeBricks[negative_brick_count];
 
     static short startInitCounter = 0;
     static bool dogaugeinit = true;
@@ -43,9 +54,10 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
     if (DoInit[MDI_DRAWVARIO]) {
 
-        int boxthick;
-        int hpixelseparate;
-        int vpixelseparate;
+        const int boxthick = IBLSCALE(BOXTHICK);
+        const int hpixelseparate = (LKVarioBar > vBarVarioGR) ? 0 : IBLSCALE(PIXELSEPARATE);
+        const int vpixelseparate = (LKVarioBar > vBarVarioGR) ? 0 : IBLSCALE(PIXELSEPARATE);
+        const int variowidth = LKVarioSize;
 
         startInitCounter = 0;
         dogaugeinit = true;
@@ -55,36 +67,10 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         max_positiveGload = 0.1;
         max_negativeGload = -0.1;
 
-        // A dirty hack for an impossible division solution
-        // lowres devices should have 8 bricks, and not 16 as asked by users!
-        switch (ScreenSize) {
-            case ss320x240:
-            case ss400x240:
-                hpixelseparate = 0;
-                vpixelseparate = -1;
-                boxthick = 0;
-                break;
-            case ss480x272:
-            case ss480x234:
-                hpixelseparate = 0;
-                vpixelseparate = -2;
-                boxthick = 0;
-                break;
-            default:
-                hpixelseparate = PIXELSEPARATE;
-                vpixelseparate = PIXELSEPARATE;
-                boxthick = IBLSCALE(BOXTHICK);
-                break;
-        }
 
-        int variowidth = LKVarioSize;
-
-
-        blackThickPen = LKPen_Black_N2; // BOXTHICK
-        whiteThinPen = LKPen_White_N0;
-        blackThinPen = LKPen_Black_N0;
-        blackBrush = LKBrush_Black;
-        whiteBrush = LKBrush_White;
+        borderPen = (BgMapColor > POSCOLOR) ? LKPen_White_N0 : LKPen_Black_N0;
+        forgroundBrush = (BgMapColor > POSCOLOR) ? LKBrush_White : LKBrush_Black;
+        
         greenBrush = LKBrush_Green;
         darkyellowBrush = LKBrush_DarkYellow2;
         orangeBrush = LKBrush_Orange;
@@ -93,46 +79,69 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         blueBrush = LKBrush_Blue;
         indigoBrush = LKBrush_Indigo;
 
-        // set default background in case of missing values
-        for (int i = 0; i < (NUMVBRICKS / 2); i++)
-            positiveBrush[i] = blackBrush;
-        for (int i = 0; i < (NUMVBRICKS / 2); i++)
-            negativeBrush[i] = blackBrush;
 
-        positiveBrush[15] = greenBrush;
-        positiveBrush[14] = greenBrush;
-        positiveBrush[13] = greenBrush;
-        positiveBrush[12] = greenBrush;
-        positiveBrush[11] = darkyellowBrush;
-        positiveBrush[10] = darkyellowBrush;
-        positiveBrush[9] = darkyellowBrush;
-        positiveBrush[8] = darkyellowBrush;
-        positiveBrush[7] = orangeBrush;
-        positiveBrush[6] = orangeBrush;
-        positiveBrush[5] = orangeBrush;
-        positiveBrush[4] = orangeBrush;
-        positiveBrush[3] = redBrush;
-        positiveBrush[2] = redBrush;
-        positiveBrush[1] = redBrush;
-        positiveBrush[0] = redBrush;
+        const short lkvariobar = (LKVarioBar > vBarVarioGR) ? LKVarioBar - vBarVarioGR : LKVarioBar;
+        switch (lkvariobar) {
+            default:
+                assert(false); // wrong config value or disabled, in any case, it's BUG
+                // no break; for avoid to have unitialized Brush array.
+            case vBarVarioColor:
+                // set default background in case of missing values
+                std::fill(std::begin(positiveBrush), std::end(positiveBrush), forgroundBrush);
+                std::fill(std::begin(negativeBrush), std::end(negativeBrush), forgroundBrush);
+                
+                static_assert(array_size(positiveBrush)> 15, "\"positiveBrush\" size must be greater than 15, check \"positive_vario_step\" size");
+                
+                positiveBrush[15] = redBrush;
+                positiveBrush[14] = redBrush;
+                positiveBrush[13] = redBrush;
+                positiveBrush[12] = redBrush;
+                positiveBrush[11] = orangeBrush;
+                positiveBrush[10] = orangeBrush;
+                positiveBrush[9] = orangeBrush;
+                positiveBrush[8] = orangeBrush;
+                positiveBrush[7] = darkyellowBrush;
+                positiveBrush[6] = darkyellowBrush;
+                positiveBrush[5] = darkyellowBrush;
+                positiveBrush[4] = darkyellowBrush;
+                positiveBrush[3] = greenBrush;
+                positiveBrush[2] = greenBrush;
+                positiveBrush[1] = greenBrush;
+                positiveBrush[0] = greenBrush;
 
-        negativeBrush[0] = lakeBrush;
-        negativeBrush[1] = lakeBrush;
-        negativeBrush[2] = lakeBrush;
-        negativeBrush[3] = lakeBrush;
-        negativeBrush[4] = blueBrush;
-        negativeBrush[5] = blueBrush;
-        negativeBrush[6] = blueBrush;
-        negativeBrush[7] = blueBrush;
-        negativeBrush[8] = indigoBrush;
-        negativeBrush[9] = indigoBrush;
-        negativeBrush[10] = indigoBrush;
-        negativeBrush[11] = indigoBrush;
-        negativeBrush[12] = blackBrush;
-        negativeBrush[13] = blackBrush;
-        negativeBrush[14] = blackBrush;
-        negativeBrush[15] = blackBrush;
+                negativeBrush[0] = lakeBrush;
+                negativeBrush[1] = lakeBrush;
+                negativeBrush[2] = lakeBrush;
+                negativeBrush[3] = lakeBrush;
+                negativeBrush[4] = blueBrush;
+                negativeBrush[5] = blueBrush;
+                negativeBrush[6] = blueBrush;
+                negativeBrush[7] = blueBrush;
+                negativeBrush[8] = indigoBrush;
+                negativeBrush[9] = indigoBrush;
+                negativeBrush[10] = indigoBrush;
+                negativeBrush[11] = indigoBrush;
+                negativeBrush[12] = forgroundBrush;
+                negativeBrush[13] = forgroundBrush;
+                negativeBrush[14] = forgroundBrush;
+                negativeBrush[15] = forgroundBrush;
 
+                static_assert(array_size(negativeBrush)> 15, "\"negativeBrush\" size must be greater than 15, check \"negative_vario_step\" size");
+
+                break;
+            case vBarVarioMono:
+                std::fill(std::begin(positiveBrush), std::end(positiveBrush), forgroundBrush);
+                std::fill(std::begin(negativeBrush), std::end(negativeBrush), forgroundBrush);
+                break;
+            case vBarVarioRB:
+                std::fill(std::begin(positiveBrush), std::end(positiveBrush), redBrush);
+                std::fill(std::begin(negativeBrush), std::end(negativeBrush), blueBrush);
+                break;
+            case vBarVarioGR:
+                std::fill(std::begin(positiveBrush), std::end(positiveBrush), greenBrush);
+                std::fill(std::begin(negativeBrush), std::end(negativeBrush), redBrush);
+                break;
+        }
 
         // vario paint area
         vrc.left = rc.left;
@@ -141,105 +150,66 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         vrc.bottom = rc.bottom - BottomSize;
 
         // meter area
-        mrc.left = vrc.left + boxthick - hpixelseparate;
-        mrc.top = vrc.top + boxthick - vpixelseparate;
-        ;
-        mrc.right = vrc.right - boxthick;
-        mrc.bottom = vrc.bottom - boxthick;
-
-        int vmiddle = ((mrc.bottom - mrc.top) / 2) + mrc.top;
+        mrc.left = vrc.left + hpixelseparate;
+        mrc.top = vrc.top + vpixelseparate;
+        mrc.right = vrc.right - hpixelseparate;
+        mrc.bottom = vrc.bottom - vpixelseparate;
 
         // half vario separator for positive and negative values
-        hrc.top = vrc.top + vmiddle - NIBLSCALE(1);
-        hrc.bottom = vrc.top + vmiddle + NIBLSCALE(1);
+        const double vmiddle_height = NIBLSCALE(2) - ((mrc.bottom - mrc.top) % 2);
+        const double vmiddle = ((mrc.bottom - mrc.top) / 2.0) + mrc.top;
+
+        hrc.top = vrc.top + vmiddle - (vmiddle_height / 2);
+        hrc.bottom = vrc.top + vmiddle + (vmiddle_height / 2);
         hrc.left = vrc.left;
-        // MUST MATCH MapWindow DrawLook8000 leftmargin!!
         hrc.right = vrc.right;
 
         // half top meter area
         htrc.left = mrc.left;
         htrc.right = mrc.right;
-        htrc.top = mrc.top;
-
-        switch (ScreenSize) {
-            case ss320x240:
-            case ss480x234:
-            case ss480x272:
-                htrc.bottom = hrc.top - vpixelseparate;
-                hbrc.top = hrc.bottom + vpixelseparate;
-                break;
-            default:
-                htrc.bottom = hrc.top - vpixelseparate - 1;
-                hbrc.top = hrc.bottom + vpixelseparate + 1;
-                break;
-        }
+        htrc.bottom = hrc.top - vpixelseparate;
+        htrc.top = mrc.top + vpixelseparate;
 
         // half bottom meter area
         hbrc.left = mrc.left;
         hbrc.right = mrc.right;
-        hbrc.bottom = mrc.bottom;
+        hbrc.top = hrc.bottom + vpixelseparate;
+        hbrc.bottom = mrc.bottom - vpixelseparate;
 
-        // pixel height of each brick
-        int bricksize = (htrc.bottom - htrc.top - ((vpixelseparate) * ((NUMVBRICKS / 2) - 1))) / (NUMVBRICKS / 2);
-        if (ScreenSize == ss480x272) bricksize = 9;
-        if (ScreenSize == ss480x234) bricksize = 8;
+        // pixel height of each positive brick
+        const int positive_brick_size = (htrc.bottom - htrc.top - (boxthick * (positive_brick_count - 1))) / positive_brick_count;
+        const int positive_brick_advance = positive_brick_size + boxthick;
 
         // Pre-calculate brick positions for half top
-        for (int i = 0; i < (NUMVBRICKS / 2); i++) {
-            brc[i].top = htrc.top + (bricksize * i)+(i * (vpixelseparate));
-            // make the last one rounded since bricksize could be slighlty smaller due to division round
-            if (i == ((NUMVBRICKS / 2) - 1))
-                brc[i].bottom = htrc.bottom;
-            else
-                brc[i].bottom = brc[i].top + bricksize;
-            brc[i].left = htrc.left;
-            brc[i].right = htrc.right;
+        for (unsigned i = 0; i < positive_brick_count; ++i) {
+            RECT& brc = positiveBricks[i];
+            brc.left = htrc.left;
+            brc.right = htrc.right;
+            brc.bottom = htrc.bottom - (i * positive_brick_advance);
+            brc.top = brc.bottom - positive_brick_size;
         }
-        // Pre-calculate brick positions for half bottom
-        for (int i = ((NUMVBRICKS / 2) - 1); i >= 0; i--) {
-            brc[ (NUMVBRICKS / 2) + i].bottom = hbrc.bottom - (bricksize * (((NUMVBRICKS / 2) - 1) - i)) -
-                    ((((NUMVBRICKS / 2) - 1) - i) * vpixelseparate);
-            if (i == 0)
-                brc[ (NUMVBRICKS / 2) + i].top = hbrc.top;
-            else
-                brc[ (NUMVBRICKS / 2) + i].top = brc[ (NUMVBRICKS / 2) + i].bottom - bricksize;
-            brc[ (NUMVBRICKS / 2) + i].left = hbrc.left;
-            brc[ (NUMVBRICKS / 2) + i].right = hbrc.right;
-        }
+        // update last box for hide rounding artefact 
+        positiveBricks[positive_brick_count - 1].top = htrc.top;
 
+        // pixel height of each negative brick
+        const int negative_brick_size = (hbrc.bottom - hbrc.top - (boxthick * (negative_brick_count - 1))) / negative_brick_count;
+        const int negative_brick_advance = negative_brick_size + boxthick;
+
+        // Pre-calculate brick positions for half bottom
+        for (unsigned i = 0; i < negative_brick_count; ++i) {
+            RECT& brc = negativeBricks[i];
+            brc.left = hbrc.left;
+            brc.right = hbrc.right;
+            brc.top = hbrc.top + (i * negative_brick_advance);
+            brc.bottom = brc.top + negative_brick_size;
+        }
+        // update last box for hide rounding artefact 
+        negativeBricks[negative_brick_count - 1].bottom = hbrc.bottom;
 
         DoInit[MDI_DRAWVARIO] = false;
     } // END of INIT
 
-
-
-
-    // draw external box
-    if (BgMapColor > POSCOLOR)
-        oldPen = Surface.SelectObject(whiteThinPen);
-    else
-        oldPen = Surface.SelectObject(blackThickPen);
-
-    if (LKVarioBar > vBarVarioGR) {
-        oldBrush = Surface.SelectObject(LKBrush_Hollow);
-    } else {
-        oldBrush = Surface.SelectObject(hInvBackgroundBrush[BgMapColor]);
-        Surface.Rectangle(vrc.left, vrc.top, vrc.right, vrc.bottom);
-    }
-
-
-    // draw middle separator for 0 scale indicator
-    if (BgMapColor > POSCOLOR)
-        Surface.FillRect(&hrc, whiteBrush);
-    else
-        Surface.FillRect(&hrc, blackBrush);
-
-    if (BgMapColor > POSCOLOR)
-        Surface.SelectObject(whiteThinPen);
-    else
-        Surface.SelectObject(blackThinPen);
-
-    double vario_value = 0;
+    double vario_value = 0; // can be vario, vario netto or STF offset, depending of config and map mode
 
     if (ISCAR && DrawInfo.Speed > 0) {
         // Heading is setting Gload, but Heading is not calculated while steady!
@@ -270,10 +240,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
             //StartupStore(_T("Speed=%f G=%f max=%f val=%f\n"),DrawInfo.Speed, DerivedDrawInfo.Gload, max_negativeGload,vario_value);
         }
 
-        goto _aftercar;
-    }
-
-    if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal == vValVarioVario) {
+    } else if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal == vValVarioVario) {
         if (DrawInfo.VarioAvailable) {
             // UHM. I think we are not painting values correctly for knots &c.
             //vario_value = LIFTMODIFY*DrawInfo.Vario;
@@ -283,6 +250,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         }
     } else {
         switch (LKVarioVal) {
+            default:
             case vValVarioNetto:
                 vario_value = DerivedDrawInfo.NettoVario;
                 break;
@@ -293,160 +261,68 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                 else
                     ias = DerivedDrawInfo.IndicatedAirspeedEstimated;
 
-                vario_value = DerivedDrawInfo.VOpt - ias;
                 // m/s 0-nnn autolimit to 20m/s full scale (72kmh diff)
-                if (vario_value > 20) vario_value = 20;
-                if (vario_value<-20) vario_value = -20;
+                vario_value = clamp(DerivedDrawInfo.VOpt - ias, -20., 20.);
                 vario_value /= 3.3333; // 0-20  -> 0-6
                 vario_value *= -1; // if up, push down
-                break;
-
-            default:
-                vario_value = DerivedDrawInfo.NettoVario;
                 break;
         }
     }
 
-_aftercar:
 
+    // Backup selected Brush & Pen
+    LKSurface::OldPen oldPen = Surface.SelectObject(LK_NULL_PEN);
+    LKSurface::OldBrush oldBrush = Surface.SelectObject(LKBrush_Hollow);
+    
+    // draw Vario box ( only if not transparent )
+    if (LKVarioBar <= vBarVarioGR) {
+        Surface.SelectObject(borderPen);
+        Surface.SelectObject(hInvBackgroundBrush[BgMapColor]);
+        Surface.Rectangle(vrc.left, vrc.top, vrc.right, vrc.bottom);
+    }
+    // draw middle separator for 0 scale indicator
+    Surface.FillRect(&hrc, forgroundBrush);
+
+    Surface.SelectObject(borderPen);
     if (dogaugeinit) {
 
         // this is causing problems on emulators and condor and most of the times when the gps has no valid date
         // so we don't use seconds, but loop counter
         if (startInitCounter++ > 2) {
             dogaugeinit = false;
-        } else {
-            short j = NUMVBRICKS / 2;
-            // Demo show all bricks
-            for (int i = 0; i < j; i++) {
-                Surface.SelectObject(positiveBrush[i]);
-                Surface.Rectangle(brc[i].left, brc[i].top, brc[i].right, brc[i].bottom);
-            }
-            for (int i = 0; i < j; i++) {
-                Surface.SelectObject(negativeBrush[i]);
-                Surface.Rectangle(brc[i + (NUMVBRICKS / 2)].left, brc[i + (NUMVBRICKS / 2)].top, brc[i + (NUMVBRICKS / 2)].right, brc[i + (NUMVBRICKS / 2)].bottom);
-            }
+        }
 
-            Surface.SelectObject(oldPen);
-            Surface.SelectObject(oldBrush);
-            return;
+        // Demo show all bricks
+        for (unsigned i = 0; i < positive_brick_count; ++i) {
+            const RECT& brc = positiveBricks[i];
+            Surface.SelectObject(positiveBrush[i]);
+            Surface.Rectangle(brc.left, brc.top, brc.right, brc.bottom);
+        }
 
+        for (unsigned i = 0; i < negative_brick_count; ++i) {
+            const RECT& brc = negativeBricks[i];
+            Surface.SelectObject(negativeBrush[i]);
+            Surface.Rectangle(brc.left, brc.top, brc.right, brc.bottom);
+        }
+
+    } else {
+        // Draw Real Vario Data
+
+        // Draw Positive Brick 
+        for (unsigned i = 0; i < positive_brick_count && vario_value >= positive_vario_step[i]; ++i) {
+            const RECT& brc = positiveBricks[i];
+            Surface.SelectObject(positiveBrush[i]);
+            Surface.Rectangle(brc.left, brc.top, brc.right, brc.bottom);
+        }
+
+        // Draw Negative Brick 
+        for (unsigned i = 0; i < negative_brick_count && vario_value <= negative_vario_step[i]; ++i) {
+            const RECT& brc = negativeBricks[i];
+            Surface.SelectObject(negativeBrush[i]);
+            Surface.Rectangle(brc.left, brc.top, brc.right, brc.bottom);
         }
     }
-
-    short lkvariobar = LKVarioBar;
-    if (lkvariobar > vBarVarioGR) lkvariobar -= vBarVarioGR;
-    short meter = -1;
-    if (vario_value > 0) {
-
-        if (vario_value >= 0.05) meter = 15;
-        if (vario_value >= 0.25) meter = 14;
-        if (vario_value >= 0.50) meter = 13;
-        if (vario_value >= 0.75) meter = 12;
-        if (vario_value >= 1.00) meter = 11;
-        if (vario_value >= 1.25) meter = 10;
-        if (vario_value >= 1.50) meter = 9;
-        if (vario_value >= 1.75) meter = 8;
-        if (vario_value >= 2.00) meter = 7;
-        if (vario_value >= 2.50) meter = 6;
-        if (vario_value >= 3.00) meter = 5;
-        if (vario_value >= 3.50) meter = 4;
-        if (vario_value >= 4.00) meter = 3;
-        if (vario_value >= 4.50) meter = 2;
-        if (vario_value >= 5.00) meter = 1;
-        if (vario_value >= 6.00) meter = 0;
-
-        if (meter >= 0) {
-            for (unsigned short i = 15; i >= meter && i < NUMVBRICKS; i--) {
-                switch (lkvariobar) {
-                    case vBarVarioColor:
-                        Surface.SelectObject(positiveBrush[i]);
-                        break;
-                    case vBarVarioMono:
-                        if (BgMapColor > POSCOLOR)
-                            Surface.SelectObject(whiteBrush);
-                        else
-                            Surface.SelectObject(blackBrush);
-                        break;
-                    case vBarVarioRB:
-                        Surface.SelectObject(redBrush);
-                        break;
-                    case vBarVarioGR:
-                    default:
-                        Surface.SelectObject(greenBrush);
-                        break;
-                }
-                /*
-                            if (LKVarioBar == vBarVarioColor) 
-                                Surface.SelectObject(*positiveBrush[i]);
-                            else {
-                                if (BgMapColor>POSCOLOR)
-                                    Surface.SelectObject(whiteBrush);
-                                else
-                                    Surface.SelectObject(blackBrush);
-                            }
-                 */
-                Surface.Rectangle(brc[i].left, brc[i].top, brc[i].right, brc[i].bottom);
-            }
-        }
-    } else if (vario_value < 0) {
-        vario_value *= -1;
-        if (vario_value >= 0.05) meter = 0;
-        if (vario_value >= 0.25) meter = 1;
-        if (vario_value >= 0.50) meter = 2;
-        if (vario_value >= 0.75) meter = 3;
-        if (vario_value >= 1.00) meter = 4;
-        if (vario_value >= 1.25) meter = 5;
-        if (vario_value >= 1.50) meter = 6;
-        if (vario_value >= 1.75) meter = 7;
-        if (vario_value >= 2.00) meter = 8;
-        if (vario_value >= 2.50) meter = 9;
-        if (vario_value >= 3.00) meter = 10;
-        if (vario_value >= 3.50) meter = 11;
-        if (vario_value >= 4.00) meter = 12;
-        if (vario_value >= 4.50) meter = 13;
-        if (vario_value >= 5.00) meter = 14;
-        if (vario_value >= 6.00) meter = 15;
-
-        if (meter >= 0) {
-            for (unsigned short i = 0; i <= meter && i < (NUMVBRICKS / 2); i++) {
-                switch (lkvariobar) {
-                    case vBarVarioColor:
-                        Surface.SelectObject(negativeBrush[i]);
-                        break;
-                    case vBarVarioMono:
-                        if (BgMapColor > POSCOLOR)
-                            Surface.SelectObject(whiteBrush);
-                        else
-                            Surface.SelectObject(blackBrush);
-                        break;
-                    case vBarVarioRB:
-                        Surface.SelectObject(blueBrush);
-                        break;
-                    case vBarVarioGR:
-                    default:
-                        Surface.SelectObject(redBrush);
-                        break;
-                }
-                /*
-                            if (LKVarioBar == vBarVarioColor) 
-                                Surface.SelectObject(*negativeBrush[i]);
-                            else {
-                                if (BgMapColor>POSCOLOR)
-                                    Surface.SelectObject(whiteBrush);
-                                else
-                                    Surface.SelectObject(blackBrush);
-                            }
-                 */
-                Surface.Rectangle(brc[i + (NUMVBRICKS / 2)].left, brc[i + (NUMVBRICKS / 2)].top, brc[i + (NUMVBRICKS / 2)].right, brc[i + (NUMVBRICKS / 2)].bottom);
-            }
-        }
-
-    }
-
-    // cleanup and return 
+    // cleanup
     Surface.SelectObject(oldPen);
     Surface.SelectObject(oldBrush);
-    return;
-
 }
