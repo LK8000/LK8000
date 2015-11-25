@@ -477,11 +477,10 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port) {
 // devParseStream(devIdx, c, &GPS_INFO);
 
 BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
-
-    PDeviceDescriptor_t d;
-    d = devGetDeviceOnPort(portNum);
     if(stream != NULL)
     {
+      PDeviceDescriptor_t d;
+      d = devGetDeviceOnPort(portNum);        
       if (d->ParseStream != NULL) {
          //   StartupStore(_T(". devParseStream %s"), NEWLINE);
           if (portNum >= 0 && portNum <= 1) {
@@ -489,7 +488,6 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
         }
         if (d->ParseStream(d, stream, length, pGPS)) {
             //GPSCONNECT  = TRUE; // NO! 121126
-
         }
         return (TRUE);
       } 

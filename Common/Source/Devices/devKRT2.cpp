@@ -67,7 +67,6 @@ BOOL KRT2Register(void){
 
 BOOL KRT2IsRadio(PDeviceDescriptor_t d){
   (void)d;
-   KRT2StationSwap( d) ;
   return(TRUE); 
 }
 
