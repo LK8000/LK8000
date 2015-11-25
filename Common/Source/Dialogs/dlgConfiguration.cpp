@@ -3749,10 +3749,10 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioBar")); 
   if (wp) {
-    if (LKVarioBar != (LKVarioBar_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      LKVarioBar = (LKVarioBar_t)
-	(wp->GetDataField()->GetAsInteger());
+    const LKVarioBar_t tmpValue = static_cast<LKVarioBar_t>(wp->GetDataField()->GetAsInteger());
+    if (LKVarioBar != tmpValue) {
+      LKVarioBar = tmpValue;
+      Reset_Single_DoInits(MDI_DRAWVARIO);
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioVal")); 
