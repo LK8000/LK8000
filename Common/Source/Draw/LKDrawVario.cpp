@@ -239,11 +239,11 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
     else
         Surface.SelectObject(blackThinPen);
 
-    double value = 0;
+    double vario_value = 0;
 
     if (ISCAR && DrawInfo.Speed > 0) {
         // Heading is setting Gload, but Heading is not calculated while steady!
-        // For this case, we force value to 0.
+        // For this case, we force vario_value to 0.
         //
         // Since we use currently a scale 0-6 for vario, we can use 0-2 for cars.
         // This accounts for an acceleration topscale of 0-100kmh in 13.9 seconds.
@@ -257,8 +257,8 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                 StartupStore(_T("..... NEW MAXPOSITIVE G=%f\n"), max_positiveGload);
             }
             LKASSERT(max_positiveGload > 0);
-            value = (DerivedDrawInfo.Gload / max_positiveGload)*6;
-            //StartupStore(_T("Speed=%f G=%f max=%f val=%f\n"),DrawInfo.Speed, DerivedDrawInfo.Gload, max_positiveGload,value);
+            vario_value = (DerivedDrawInfo.Gload / max_positiveGload)*6;
+            //StartupStore(_T("Speed=%f G=%f max=%f val=%f\n"),DrawInfo.Speed, DerivedDrawInfo.Gload, max_positiveGload,vario_value);
         }
         if (DerivedDrawInfo.Gload < 0) {
             if (DerivedDrawInfo.Gload < max_negativeGload) {
@@ -266,8 +266,8 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                 StartupStore(_T("..... NEW MAXNEGATIVE G=%f\n"), max_negativeGload);
             }
             LKASSERT(max_negativeGload < 0);
-            value = (DerivedDrawInfo.Gload / max_negativeGload)*-6;
-            //StartupStore(_T("Speed=%f G=%f max=%f val=%f\n"),DrawInfo.Speed, DerivedDrawInfo.Gload, max_negativeGload,value);
+            vario_value = (DerivedDrawInfo.Gload / max_negativeGload)*-6;
+            //StartupStore(_T("Speed=%f G=%f max=%f val=%f\n"),DrawInfo.Speed, DerivedDrawInfo.Gload, max_negativeGload,vario_value);
         }
 
         goto _aftercar;
@@ -276,15 +276,15 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
     if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal == vValVarioVario) {
         if (DrawInfo.VarioAvailable) {
             // UHM. I think we are not painting values correctly for knots &c.
-            //value = LIFTMODIFY*DrawInfo.Vario;
-            value = DrawInfo.Vario;
+            //vario_value = LIFTMODIFY*DrawInfo.Vario;
+            vario_value = DrawInfo.Vario;
         } else {
-            value = DerivedDrawInfo.Vario;
+            vario_value = DerivedDrawInfo.Vario;
         }
     } else {
         switch (LKVarioVal) {
             case vValVarioNetto:
-                value = DerivedDrawInfo.NettoVario;
+                vario_value = DerivedDrawInfo.NettoVario;
                 break;
             case vValVarioSoll:
                 double ias;
@@ -293,16 +293,16 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                 else
                     ias = DerivedDrawInfo.IndicatedAirspeedEstimated;
 
-                value = DerivedDrawInfo.VOpt - ias;
+                vario_value = DerivedDrawInfo.VOpt - ias;
                 // m/s 0-nnn autolimit to 20m/s full scale (72kmh diff)
-                if (value > 20) value = 20;
-                if (value<-20) value = -20;
-                value /= 3.3333; // 0-20  -> 0-6
-                value *= -1; // if up, push down
+                if (vario_value > 20) vario_value = 20;
+                if (vario_value<-20) vario_value = -20;
+                vario_value /= 3.3333; // 0-20  -> 0-6
+                vario_value *= -1; // if up, push down
                 break;
 
             default:
-                value = DerivedDrawInfo.NettoVario;
+                vario_value = DerivedDrawInfo.NettoVario;
                 break;
         }
     }
@@ -337,24 +337,24 @@ _aftercar:
     short lkvariobar = LKVarioBar;
     if (lkvariobar > vBarVarioGR) lkvariobar -= vBarVarioGR;
     short meter = -1;
-    if (value > 0) {
+    if (vario_value > 0) {
 
-        if (value >= 0.05) meter = 15;
-        if (value >= 0.25) meter = 14;
-        if (value >= 0.50) meter = 13;
-        if (value >= 0.75) meter = 12;
-        if (value >= 1.00) meter = 11;
-        if (value >= 1.25) meter = 10;
-        if (value >= 1.50) meter = 9;
-        if (value >= 1.75) meter = 8;
-        if (value >= 2.00) meter = 7;
-        if (value >= 2.50) meter = 6;
-        if (value >= 3.00) meter = 5;
-        if (value >= 3.50) meter = 4;
-        if (value >= 4.00) meter = 3;
-        if (value >= 4.50) meter = 2;
-        if (value >= 5.00) meter = 1;
-        if (value >= 6.00) meter = 0;
+        if (vario_value >= 0.05) meter = 15;
+        if (vario_value >= 0.25) meter = 14;
+        if (vario_value >= 0.50) meter = 13;
+        if (vario_value >= 0.75) meter = 12;
+        if (vario_value >= 1.00) meter = 11;
+        if (vario_value >= 1.25) meter = 10;
+        if (vario_value >= 1.50) meter = 9;
+        if (vario_value >= 1.75) meter = 8;
+        if (vario_value >= 2.00) meter = 7;
+        if (vario_value >= 2.50) meter = 6;
+        if (vario_value >= 3.00) meter = 5;
+        if (vario_value >= 3.50) meter = 4;
+        if (vario_value >= 4.00) meter = 3;
+        if (vario_value >= 4.50) meter = 2;
+        if (vario_value >= 5.00) meter = 1;
+        if (vario_value >= 6.00) meter = 0;
 
         if (meter >= 0) {
             for (unsigned short i = 15; i >= meter && i < NUMVBRICKS; i--) {
@@ -389,24 +389,24 @@ _aftercar:
                 Surface.Rectangle(brc[i].left, brc[i].top, brc[i].right, brc[i].bottom);
             }
         }
-    } else if (value < 0) {
-        value *= -1;
-        if (value >= 0.05) meter = 0;
-        if (value >= 0.25) meter = 1;
-        if (value >= 0.50) meter = 2;
-        if (value >= 0.75) meter = 3;
-        if (value >= 1.00) meter = 4;
-        if (value >= 1.25) meter = 5;
-        if (value >= 1.50) meter = 6;
-        if (value >= 1.75) meter = 7;
-        if (value >= 2.00) meter = 8;
-        if (value >= 2.50) meter = 9;
-        if (value >= 3.00) meter = 10;
-        if (value >= 3.50) meter = 11;
-        if (value >= 4.00) meter = 12;
-        if (value >= 4.50) meter = 13;
-        if (value >= 5.00) meter = 14;
-        if (value >= 6.00) meter = 15;
+    } else if (vario_value < 0) {
+        vario_value *= -1;
+        if (vario_value >= 0.05) meter = 0;
+        if (vario_value >= 0.25) meter = 1;
+        if (vario_value >= 0.50) meter = 2;
+        if (vario_value >= 0.75) meter = 3;
+        if (vario_value >= 1.00) meter = 4;
+        if (vario_value >= 1.25) meter = 5;
+        if (vario_value >= 1.50) meter = 6;
+        if (vario_value >= 1.75) meter = 7;
+        if (vario_value >= 2.00) meter = 8;
+        if (vario_value >= 2.50) meter = 9;
+        if (vario_value >= 3.00) meter = 10;
+        if (vario_value >= 3.50) meter = 11;
+        if (vario_value >= 4.00) meter = 12;
+        if (vario_value >= 4.50) meter = 13;
+        if (vario_value >= 5.00) meter = 14;
+        if (vario_value >= 6.00) meter = 15;
 
         if (meter >= 0) {
             for (unsigned short i = 0; i <= meter && i < (NUMVBRICKS / 2); i++) {
