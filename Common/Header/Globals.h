@@ -890,6 +890,7 @@ GEXTERN int  Multimap_SizeY[MP_TOP+1];
 // Global, not saved to profile
 GEXTERN bool Flags_DrawTask;
 GEXTERN bool Flags_DrawFAI;
+GEXTERN unsigned int FAI_OptimizerMode;
 
 GEXTERN unsigned int Trip_Moving_Time;
 GEXTERN unsigned int Trip_Steady_Time;

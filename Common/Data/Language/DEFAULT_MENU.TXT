@@ -815,10 +815,9 @@ location=7
 mode=Display2
 type=key
 data=9
-event=Null
-label=$(AC03)
+event=Service OPTIMODE
+label=_@M2251_
 location=8
-
 
 mode=Display2
 type=key

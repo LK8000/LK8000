@@ -18,8 +18,15 @@ CContestMgr::TType contestType = CContestMgr::TYPE_OLC_CLASSIC;
  ****************************************************************/
 void Statistics::RenderContest(LKSurface& Surface, const RECT& rc)
 {
-if(contestType == CContestMgr::TYPE_FAI_TRIANGLE)
-   RenderFAIOptimizer(Surface, rc);
+if((contestType == CContestMgr::TYPE_FAI_TRIANGLE)
+   || (contestType == CContestMgr::TYPE_FAI_TRIANGLE4)
+#ifdef  FIVEPOINT_OPTIMIZER
+   || (contestType == CContestMgr::TYPE_FAI_TRIANGLE5)
+#endif
+  )
+{
+    RenderFAIOptimizer(Surface, rc);
+}
 else
 {
   unsigned int ui;
@@ -203,9 +210,9 @@ double fTotalPercent = 1.0;
 ResetScale();
 
 
-  CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, true);
+  CContestMgr::CResult result = CContestMgr::Instance().Result( CContestMgr::TYPE_FAI_TRIANGLE, true);
   const CPointGPSArray &points = result.PointArray();
-  if(contestType == CContestMgr::TYPE_FAI_TRIANGLE)
+//  if(contestType == CContestMgr::TYPE_FAI_TRIANGLE)
      fXY_Scale = 1.5;
 
   // find center
@@ -252,7 +259,7 @@ ResetScale();
 
   ScaleMakeSquare(rc);
 
-  if(result.Type() == contestType)
+  if(result.Type() ==  CContestMgr::TYPE_FAI_TRIANGLE)
   {
     for(ui=0; ui<points.size()-1; ui++)
     {

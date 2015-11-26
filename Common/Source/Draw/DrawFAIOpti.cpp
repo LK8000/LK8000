@@ -32,14 +32,12 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT
   const auto oldpen = Surface.SelectObject(hpStartFinishThick);
   const auto oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
-
 /********************************************************************/
   unsigned int ui;
   double lat1 = 0;
   double lon1 = 0;
   double lat2 = 0;
   double lon2 = 0;
-  BOOL bFlat = false;
   BOOL bFAI = false;
   double fDist, fAngle;
   LockTaskData(); // protect from external task changes
@@ -53,30 +51,63 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT
     double lon_CP = CContestMgr::Instance().GetClosingPoint().Longitude();
     double fFAIDistance = result.Distance();
   UnlockTaskData(); // protect from external task changes
-  if((sType ==  CContestMgr::TYPE_FAI_TRIANGLE) && iSize>0)
+
+  typedef struct
+  {
+	int    LegIdx;
+	double LegDist;
+	double LegAngle;
+  } legtype;
+  legtype  Legs[10];
+
+
+  for(int i=0; i< 10;  i++)
+  {
+    Legs[i].LegIdx  =0;
+    Legs[i].LegDist =0.0;
+  }
+int numlegs=0;
+  if(((sType ==  CContestMgr::TYPE_FAI_TRIANGLE)
+	 || (sType ==  CContestMgr::TYPE_FAI_TRIANGLE4)
+#ifdef  FIVEPOINT_OPTIMIZER
+	 || (sType ==  CContestMgr::TYPE_FAI_TRIANGLE5)
+#endif
+	 ) && (iSize>0))
   {
     LKASSERT(iSize<100);
-    for(ui=0; ui< iSize-1; ui++)
+    LockTaskData(); // protect from external task changes
+    for(ui=0; ui< iSize-2; ui++)
     {
-      LockTaskData(); // protect from external task changes
       lat1 = points[ui].Latitude();
       lon1 = points[ui].Longitude();
       lat2 = points[ui+1].Latitude();
       lon2 = points[ui+1].Longitude();
-      UnlockTaskData();
-
       DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
+      Legs[numlegs].LegIdx   = ui;
+      Legs[numlegs].LegDist  = fDist;
 
-      #if BUGSTOP
-      LKASSERT(fFAIDistance!=0);
-      #endif
-      if (fFAIDistance==0) fFAIDistance=0.1;
+      if(numlegs < 10)
+        numlegs ++;
+      LKASSERT (numlegs <10);
+    }
 
-      if(((fDist > FAI_MIN_DISTANCE_THRESHOLD) && (ui < 3) && !bFlat && (fDist/ fFAIDistance  > 0.05)) )
-  	  {
-                #ifndef UNDITHER
+    double ftmp;
+    int itmp, i ,j ;
+    for( i = 0; i < numlegs; i++)  {
+      for(  j = 0; j < i; j++)  {
+    	if( Legs[j].LegDist < Legs[i].LegDist) 	{
+    	  itmp = Legs[j].LegIdx  ; Legs[j].LegIdx   = Legs[i].LegIdx  ; Legs[i].LegIdx   = itmp;
+    	  ftmp = Legs[j].LegDist ; Legs[j].LegDist  = Legs[i].LegDist ; Legs[i].LegDist  = ftmp;
+    	}
+      }
+    }
+
+
+    for(i= 0 ; i < min(numlegs,2); i++)
+    {
+        #ifndef UNDITHER
   		LKColor rgbCol = RGB_BLUE;
-  		switch(ui)
+  		switch(i)
   		{
   		  case 0: rgbCol = RGB_YELLOW; break;
   		  case 1: rgbCol = RGB_CYAN  ; break;
@@ -94,14 +125,23 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT
   		  default:
   		  break;
   		}
-                #endif
+#endif
+      lat1 = points[Legs[i].LegIdx].Latitude();
+      lon1 = points[Legs[i].LegIdx].Longitude();
+      lat2 = points[Legs[i].LegIdx+1].Latitude();
+      lon2 = points[Legs[i].LegIdx+1].Longitude();
+      DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
+      if(fDist > FAI_MIN_DISTANCE_THRESHOLD)
+      {
   		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 1, rgbCol );
   		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 0, rgbCol );
-  	  }
-      if (fFAIDistance > 0)  /* check if triangle is too flat for second sector */
-        if(fDist/ fFAIDistance  > 0.45)
-    	  bFlat = true;
+      }
+
+
     }
+
+      UnlockTaskData();
+
 /*********************************************************/
 
 

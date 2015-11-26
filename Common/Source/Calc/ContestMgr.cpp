@@ -35,11 +35,18 @@ const TCHAR *CContestMgr::TypeToString(TType type)
     _T("OLC-League"),
     _T("FAI 3 TPs"),
     _T("FAI 3 TPs (P)"),
-    _T("FAI triangle (P)"),
+ //   _T("FAI start on turnpoint (P)"),
+ //   _T("FAI start on leg (P)"),
+ //   _T("FAI mercedes star (P)"),
+    MsgToken(1297) ,   //    _@M1297_ "FAI Start on turnpoint"
+    MsgToken(1298)  ,  //    _@M1298_ "FAI Start on leg"
+    MsgToken(1299)  ,  //    _@M1299_ "FAI Mercedes star"
+    _T("FAI Mercedes star (P)"),
     _T("[invalid]") 
   };
   return typeStr[type];
 }
+
 
 
 
@@ -286,6 +293,18 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
 }
 
 
+void CContestMgr::RefreshFAIOptimizer(void)
+{
+      CCriticalSection::CGuard guard(_mainCS);
+      {
+        CCriticalSection::CGuard Traceguard(_traceCS);
+        _trace->Compress();
+      }
+    SolvePoints(*_trace, false, true);
+    SolveOLCPlus(true);
+
+}
+
 /** 
  * @brief Solve point based contest
  * 
@@ -372,7 +391,7 @@ else*/
 
     PointsResult(predicted ? TYPE_FAI_3_TPS_PREDICTED : TYPE_FAI_3_TPS, traceResult);
 
-    traceResult.Compress(3);
+    traceResult.Compress(FAI_OptimizerMode);
     if(predicted)
     {
       // do it just in a case if predicted trace is worst than the current one

@@ -2249,6 +2249,13 @@ void InputEvents::eventService(const TCHAR *misc) {
 	ToggleDrawTaskFAI();
 	return;
   }
+  
+  if (_tcscmp(misc, TEXT("OPTIMODE")) == 0) {
+	  CustomKeyHandler(ckOtimizerPointsToggle+1000); // passthrough mode
+	return;
+  }
+
+  
   if (_tcscmp(misc, TEXT("SONAR")) == 0) {
 	CustomKeyHandler(ckSonarToggle+1000); // passthrough mode
 	return;
