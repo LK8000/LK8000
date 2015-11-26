@@ -336,6 +336,9 @@ ifeq ($(CONFIG_LINUX),y)
    CE_DEFS += -DUSE_FB
    CE_DEFS += -DUSE_LINUX_INPUT
   endif
+
+  SNDFILE := $(shell $(PKG_CONFIG) --exists sndfile && echo y)
+  ALSA := $(shell $(PKG_CONFIG) --exists alsa && echo y)
  endif
 
  ifeq ($(OPENGL),y)
@@ -361,6 +364,17 @@ ifeq ($(CONFIG_LINUX),y)
 
  ifeq ($(DITHER),y)
   CE_DEFS += -DDITHER
+ endif
+
+ ifeq ($(SNDFILE)$(ALSA),yy)
+  CE_DEFS += -DUSE_ALSA
+
+  $(eval $(call pkg-config-library,SNDFILE,sndfile))
+  CE_DEFS += $(patsubst -I%,-isystem %,$(SNDFILE_CPPFLAGS))
+  
+  $(eval $(call pkg-config-library,ALSA,alsa))
+  CE_DEFS += $(patsubst -I%,-isystem %,$(ALSA_CPPFLAGS))
+
  endif
 
  $(eval $(call pkg-config-library,ZZIP,zziplib))
@@ -505,6 +519,8 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(WAYLAND_LDLIBS)
  LDLIBS += $(SDL_LDLIBS)
  LDLIBS += $(SDL_MIXER_LDLIBS)
+ LDLIBS += $(ALSA_LDLIBS)
+ LDLIBS += $(SNDFILE_LDLIBS)
 
  ifeq ($(GLES),y)
   LDLIBS += -ldl
@@ -622,6 +638,10 @@ SOUND := \
 else ifeq ($(USE_SDL), y)	
 SOUND := \
 	$(SRC)/Sound/SDL/Sound.cpp \
+	
+else ifeq ($(SNDFILE)$(ALSA),yy)
+SOUND := \
+	$(SRC)/Sound/alsa/Sound.cpp \
 	
 endif
 
