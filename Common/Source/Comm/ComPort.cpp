@@ -135,27 +135,17 @@ void ComPort::ProcessChar(char c) {
         ComCheck_AddChar(c);
     }
 
+#ifdef RADIO_ACTIVE
+    if(RadioPara.Enabled && devParseStream(devIdx, &c, 1, &GPS_INFO)) {
+        // if this port is used for stream device, leave immediately.
+        return;
+    }
+#endif // RADIO_ACTIVE
+
     // last char need to be reserved for '\0' for avoid buffer overflow
     // in theory this should never happen because NMEA sentence can't have more than 82 char and _NmeaString size is 160.
     if (pLastNmea >= std::begin(_NmeaString) && (pLastNmea+1) < std::end(_NmeaString)) {
-
-#ifdef RADIO_ACTIVE        
-
-bool bStreamed = false;
-
-      if(RadioPara.Enabled)
-      {
-         PDeviceDescriptor_t d;
-         d = devGetDeviceOnPort(devIdx);
-         if( d->ParseStream != NULL)
-        {              
-          bStreamed =  devParseStream(devIdx, &c, 1, &GPS_INFO);               
-        }
-      }
-
-      if(!bStreamed) 
-#endif     // RADIO_ACTIVE             
-      {        
+        
         if (c == '\n' || c == '\r') {
             // abcd\n , now closing the line also with \r
             *(pLastNmea++) = _T('\n');
@@ -173,7 +163,6 @@ bool bStreamed = false;
     }
     // overflow, so reset buffer
     pLastNmea = std::begin(_NmeaString);
-    }
 }
 
 void ComPort::AddStatRx(unsigned dwBytes) {
