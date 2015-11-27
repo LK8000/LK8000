@@ -477,21 +477,16 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port) {
 // devParseStream(devIdx, c, &GPS_INFO);
 
 BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
-    if(stream != NULL)
-    {
-      PDeviceDescriptor_t d;
-      d = devGetDeviceOnPort(portNum);        
-      if (d->ParseStream != NULL) {
-         //   StartupStore(_T(". devParseStream %s"), NEWLINE);
+      PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);        
+      if (d && d->ParseStream != NULL) {
           if (portNum >= 0 && portNum <= 1) {
             ComPortHB[portNum] = LKHearthBeats;
         }
         if (d->ParseStream(d, stream, length, pGPS)) {
-            //GPSCONNECT  = TRUE; // NO! 121126
+            ;
         }
         return (TRUE);
       } 
-    }
     return (FALSE);
 
 }
