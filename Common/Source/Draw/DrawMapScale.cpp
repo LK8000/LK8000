@@ -95,18 +95,21 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
 	}
 	double pandistance, panbearing;
 
+                  _stprintf(Scale1, _T(""));
+                  	  DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
     if(ValidTaskPoint(PanTaskEdit))
     {double Dist = DerivedDrawInfo.TaskTotalDistance;
     	if( DerivedDrawInfo.TaskFAI)
     	{
     	  Dist = DerivedDrawInfo.TaskFAIDistance;
+                  _stprintf(Scale1, _T("FAI"));
     	}
 
-    	_stprintf(Scale2, _T("%s Task %.1f%s"), Scale1, Dist*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,gettext(_T("_@M2179_")) );
+    	_stprintf(Scale2, _T("%s Task %.1f%s  %.1f%s  %.0f%s"), Scale1, Dist*DISTANCEMODIFY, Units::GetDistanceName(),pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,gettext(_T("_@M2179_")) );
     }
     else
     {
-	  DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
+
 	  _stprintf(Scale2, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing, gettext(_T("_@M2179_")) );
     }
 
