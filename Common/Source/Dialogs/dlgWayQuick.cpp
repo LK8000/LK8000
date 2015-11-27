@@ -81,12 +81,37 @@ static void OnTaskClicked(WndButton* pWnd){
   wf->SetModalResult(mrOK);
 }
 
+
+static void OnRadioFrequencyClicked(WndButton* pWnd){
+#ifdef RADIO_ACTIVE
+
+  TCHAR szFreq[300];
+
+  double Ferquency;
+  LKASSERT(SelectedWaypoint>=0);
+  LKASSERT(ValidWayPointFast(SelectedWaypoint));
+  Ferquency = StrToDouble(WayPointList[SelectedWaypoint].Freq,NULL);
+
+  devPutFreqActive(devA(), Ferquency, WayPointList[SelectedWaypoint].Name);
+  devPutFreqActive(devB(), Ferquency, WayPointList[SelectedWaypoint].Name);
+
+  _stprintf(szFreq,_T(" %6.3fMHz ") ,Ferquency);
+
+  DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );  
+  DoStatusMessage(_T("RADIO:"), szFreq );
+  retStatus=3;
+  wf->SetModalResult(mrOK);
+#endif  // RADIO_ACTIVE        
+}
+
+
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnGotoClicked),
   ClickNotifyCallbackEntry(OnSetAlt1Clicked),
   ClickNotifyCallbackEntry(OnSetAlt2Clicked),
   ClickNotifyCallbackEntry(OnTaskClicked),
   ClickNotifyCallbackEntry(OnCancelClicked),
+  ClickNotifyCallbackEntry(OnRadioFrequencyClicked),
   OnPaintCallbackEntry(OnPaintWaypointPicto),
   EndCallBackEntry()
 };
@@ -107,6 +132,9 @@ short dlgWayQuickShowModal(void){
   ((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetOnClickNotify(OnSetAlt2Clicked);
   ((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetOnClickNotify(OnDetailsClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetOnClickNotify(OnTaskClicked);
+#ifdef RADIO_ACTIVE  
+  ((WndButton *)wf->FindByName(TEXT("cmdRadioFreq"))) ->SetOnClickNotify(OnRadioFrequencyClicked);
+#endif  // RADIO_ACTIVE        
   ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetOnClickNotify(OnCancelClicked);
 
   retStatus=0;
@@ -164,6 +192,25 @@ short dlgWayQuickShowModal(void){
 
 	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(NIBLSCALE(3));
 	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetWidth((ScreenSizeX)-NIBLSCALE(8));
+#ifdef RADIO_ACTIVE    
+	if((_ttoi(WayPointList[SelectedWaypoint].Freq) > 0) && RadioPara.Enabled)
+	{
+	  ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
+	  ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(NIBLSCALE(3));
+
+	  ((WndButton *)wf->FindByName(TEXT("cmdRadioFreq"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
+	  ((WndButton *)wf->FindByName(TEXT("cmdRadioFreq"))) ->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+	}
+	else
+#endif  // RADIO_ACTIVE        
+	{
+	  ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(NIBLSCALE(3));
+ 	  ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetWidth((ScreenSizeX)-NIBLSCALE(8));
+
+	  ((WndButton *)wf->FindByName(TEXT("cmdRadioFreq"))) ->SetWidth(0);
+	  ((WndButton *)wf->FindByName(TEXT("cmdRadioFreq"))) ->SetLeft(0);
+	}
+        
   } 
 
   wf->ShowModal();

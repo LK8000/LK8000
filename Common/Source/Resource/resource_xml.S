@@ -147,7 +147,7 @@
 
     binfile IDR_XML_PROGRESS_L "../../Data/Dialogs/dlgProgress_L.xml"
     binfile IDR_XML_PROGRESS_P "../../Data/Dialogs/dlgProgress_P.xml"
-
+   binfile IDR_XML_RADIOSETTINGS  "../../Data/Dialogs/dlgRadioSettings.xml"
     binfile IDR_XML_LOGGERREPLAY "../../Data/Dialogs/dlgLoggerReplay.xml"
     binfile IDR_XML_STATUS "../../Data/Dialogs/dlgStatus.xml"
     binfile IDR_XML_TASKCALCULATOR "../../Data/Dialogs/dlgTaskCalculator.xml"

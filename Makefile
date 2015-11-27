@@ -974,8 +974,9 @@ DEVS	:=\
 	$(DEV)/LKRoyaltek3200.cpp	\
 	$(DEV)/devFlyNet.cpp \
 	$(DEV)/devCProbe.cpp \
-	$(DEV)/devBlueFlyVario.cpp
-		
+	$(DEV)/devBlueFlyVario.cpp\
+	$(DEV)/devPVCOM.cpp \
+	$(DEV)/devKRT2.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
@@ -1013,6 +1014,7 @@ DLGS	:=\
 	$(DLG)/dlgOracle.cpp \
 	$(DLG)/dlgOverlays.cpp \
 	$(DLG)/dlgProfiles.cpp \
+	$(DLG)/dlgRadioSettings.cpp \
 	$(DLG)/dlgStartPoint.cpp \
 	$(DLG)/dlgStartTask.cpp \
 	$(DLG)/dlgStartup.cpp \

@@ -377,3 +377,7 @@ _@M1842_ "Alternate2 radial"
 #Glide Polar (Need PG optimized task with Conical ESS Turnpoint)
 _@M2187_ "Speed Opt."
 _@M2188_ "Thermal Min"
+
+#radio strings
+_@M2306_  "Setup\nRadio"
+_@M2307_  "Radio Settings"

@@ -44,7 +44,7 @@ bool ComPort::Close() {
 // this is used by all functions to send data out
 // it is called internally from thread for each device
 void ComPort::WriteString(const TCHAR * Text) {
-#if TESTBENCH && (WINDOWSPC>0)
+#if TESTBENCH && (WINDOWSPC>0) && COM_DISCARD
 StartupStore(_T("... ComPort write discarded: <%s>\n"),Text);
 return;
 #else
@@ -139,6 +139,23 @@ void ComPort::ProcessChar(char c) {
     // in theory this should never happen because NMEA sentence can't have more than 82 char and _NmeaString size is 160.
     if (pLastNmea >= std::begin(_NmeaString) && (pLastNmea+1) < std::end(_NmeaString)) {
 
+#ifdef RADIO_ACTIVE        
+
+bool bStreamed = false;
+
+      if(RadioPara.Enabled)
+      {
+         PDeviceDescriptor_t d;
+         d = devGetDeviceOnPort(devIdx);
+         if( d->ParseStream != NULL)
+        {              
+          bStreamed =  devParseStream(devIdx, &c, 1, &GPS_INFO);               
+        }
+      }
+
+      if(!bStreamed) 
+#endif     // RADIO_ACTIVE             
+      {        
         if (c == '\n' || c == '\r') {
             // abcd\n , now closing the line also with \r
             *(pLastNmea++) = _T('\n');
@@ -156,6 +173,7 @@ void ComPort::ProcessChar(char c) {
     }
     // overflow, so reset buffer
     pLastNmea = std::begin(_NmeaString);
+    }
 }
 
 void ComPort::AddStatRx(unsigned dwBytes) {
