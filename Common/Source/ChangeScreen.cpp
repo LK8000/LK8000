@@ -78,7 +78,7 @@ void ReinitScreen(void) {
 
 #ifndef ENABLE_OPENGL  
   MapWindow::SuspendDrawingThread();
-  Poco::Mutex::ScopedLock Lock(MapWindow::Surface_Mutex);
+  ScopeLock Lock(MapWindow::Surface_Mutex);
 #endif
 
   // MapWndProc will get a WM_SIZE 

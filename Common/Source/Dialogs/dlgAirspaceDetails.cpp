@@ -35,7 +35,7 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
        * for that we need to grant all called methods are thread safe
        ****************************************************************/
    {
-      CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
       if(airspace) {
         airspace->DrawPicto(Surface, rc);
@@ -49,7 +49,7 @@ static void OnFlyClicked(WndButton* pWnd) {
     if (wf == NULL) return;
     
    {
-      CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
       if(airspace) {
         CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
@@ -63,7 +63,7 @@ static void OnSelectClicked(WndButton* pWnd) {
     (void) pWnd;
 
    {
-      CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
       if(airspace) {
         CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
@@ -80,7 +80,7 @@ static void OnAcknowledgeClicked(WndButton* pWnd){
   if (wf == NULL) return;
 
   {
-    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
       if (airspace_copy.Enabled()) {
@@ -186,7 +186,7 @@ static void SetValues(void) {
   
   bool inside = false;
   {
-    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
         // Get an object instance copy with actual values

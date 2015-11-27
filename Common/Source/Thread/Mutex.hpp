@@ -10,10 +10,18 @@
 
 #include "Poco/Mutex.h"
 
-class Mutex : public Poco::Mutex {
+class Mutex : protected Poco::Mutex {
+    friend class Poco::ScopedLock<Mutex>;
 public:
-    void Lock() { Poco::Mutex::lock(); }
-    void Unlock() { Poco::Mutex::unlock(); }
+    Mutex() {} 
+
+    inline void Lock() { 
+        Poco::Mutex::lock(); 
+    }
+    
+    inline void Unlock() { 
+        Poco::Mutex::unlock(); 
+    }
 };
 
 class ScopeLock : public Poco::ScopedLock<Mutex> {

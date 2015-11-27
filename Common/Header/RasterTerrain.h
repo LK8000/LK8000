@@ -54,8 +54,8 @@ class RasterMap final {
   bool Open(const TCHAR* filename);
   void Close();
   
-  void Lock() { CritSec_TerrainFile.lock(); }
-  void Unlock() { CritSec_TerrainFile.unlock(); }
+  void Lock() { CritSec_TerrainFile.Lock(); }
+  void Unlock() { CritSec_TerrainFile.Unlock(); }
   
   bool IsDirectAccess(void) const { return DirectAccess; };
   bool IsPaged(void) const { return Paged; };
@@ -73,7 +73,7 @@ class RasterMap final {
   
   short *TerrainMem;
 
-  Poco::Mutex  CritSec_TerrainFile;
+  Mutex  CritSec_TerrainFile;
 
   inline short _GetFieldAtXY(unsigned int lx, unsigned int ly) const;
 };

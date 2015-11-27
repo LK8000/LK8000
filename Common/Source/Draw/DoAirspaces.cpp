@@ -99,7 +99,7 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    bool ret = false;
    
    if (DoInit[MDI_DOAIRSPACES]) {
-    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
 	LKNumAirspaces=0;
 	memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
     for (int i=0; i<MAXNEARAIRSPACES; i++) {
@@ -139,7 +139,7 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
      // MULTICALC STEP2 - Sort by different keys, and fill up result struct array
      case 2:
         // Lock airspace instances externally
-        CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+        ScopeLock guard(CAirspaceManager::Instance().MutexRef());
         // Get selected list from airspacemanager
         CAirspaceList airspaces = CAirspaceManager::Instance().GetAirspacesForPage24();
         // Sort selected airspaces by distance first

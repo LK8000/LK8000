@@ -5,8 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-
-#include "CriticalSection.h"
+#include "Thread/Mutex.hpp"
 #include "Point2D.h"
 
 #include <tchar.h>
@@ -500,10 +499,10 @@ public:
   CAirspace* GetNearestAirspaceForSideview() { return _sideview_nearest; }     // Get nearest instace for sideview drawing (use instance ptr as key only to asp manager (mutex!))
   
   //Attributes
-  unsigned int NumberofAirspaces() { CCriticalSection::CGuard guard(_csairspaces); return _airspaces.size(); }
+  unsigned int NumberofAirspaces() { ScopeLock guard(_csairspaces); return _airspaces.size(); }
 
   //Locking
-  CCriticalSection& MutexRef() const { return _csairspaces; }
+  Mutex& MutexRef() const { return _csairspaces; }
   
   // Airspaces detail system accessor
   void PopupAirspaceDetail(CAirspace * pAsp);
@@ -518,7 +517,7 @@ private:
   ~CAirspaceManager() { CloseAirspaces(); }
   
   // Airspaces data
-  mutable CCriticalSection _csairspaces;
+  mutable Mutex _csairspaces;
   CAirspaceList _airspaces;             // ALL
   CAirspaceList _airspaces_near;        // Near, in reachable range for warnings
   CAirspaceList _airspaces_page24;      // Airspaces for nearest 2.4 page

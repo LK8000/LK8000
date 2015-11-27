@@ -41,7 +41,7 @@ protected:
 
 */
 
-Poco::Mutex  CritSec_Messages;
+Mutex  CritSec_Messages;
 
 RECT Message::rcmsg;
 WndMessage Message::WndMsg;
@@ -85,11 +85,11 @@ void Message::Destroy() {
 
 
 void Message::Lock() {
-  CritSec_Messages.lock();
+  CritSec_Messages.Lock();
 }
 
 void Message::Unlock() {
-  CritSec_Messages.unlock();
+  CritSec_Messages.Unlock();
 }
 
 

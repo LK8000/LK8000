@@ -39,7 +39,7 @@ using namespace std::placeholders;
 //  Thankfully WinCE "critical sections" are recursive locks.
 
 // this lock is used for protect DeviceList array.
-Poco::Mutex  CritSec_Comm;
+Mutex  CritSec_Comm;
 
 COMMPort_t COMMPort;
 
@@ -54,11 +54,11 @@ DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 int DeviceRegisterCount = 0;
 
 void LockComm() {
-  CritSec_Comm.lock();
+  CritSec_Comm.Lock();
 }
 
 void UnlockComm() {
-  CritSec_Comm.unlock();
+  CritSec_Comm.Unlock();
 }
 
 static BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);

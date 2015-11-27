@@ -59,7 +59,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
 
   if (GetAirSpaceFillType() != asp_fill_border_only) {
     if (1) {
-    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     if (borders_only) {
        // Draw in reverse order!
        // The idea behind this, is lower top level airspaces are smaller. (statistically)
@@ -114,7 +114,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
   }
 
     if (1) {
-    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
           airspace_type = (*it)->Type();

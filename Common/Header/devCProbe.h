@@ -64,7 +64,7 @@ private:
 
 	static TCHAR m_szVersion[15];
 
-	static Poco::Mutex* m_pCritSec_DeviceData;
+	static Mutex* m_pCritSec_DeviceData;
 
 	static void LockDeviceData();
 	static void UnlockDeviceData();

@@ -21,7 +21,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POI
 
   // Draw warning position and label on top of all airspaces
   if (1) {
-  CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+  ScopeLock guard(CAirspaceManager::Instance().MutexRef());
   for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->WarningLevel() > awNone) {
           POINT sc;

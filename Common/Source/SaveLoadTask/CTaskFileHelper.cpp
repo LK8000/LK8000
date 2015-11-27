@@ -18,6 +18,7 @@
 #include "utils/stringext.h"
 #include "Waypointparser.h"
 #include "Util/UTF8.hpp"
+#include "CriticalSection.h"
 
 
 extern void RenameIfVirtual(const unsigned int i);

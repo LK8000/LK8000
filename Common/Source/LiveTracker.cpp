@@ -61,7 +61,7 @@ typedef struct {
 typedef std::deque<livetracker_point_t> PointQueue;
 
 //Protected thread storage
-static CCriticalSection _t_mutex;       // Mutex
+static Mutex _t_mutex;                  // Mutex
 static bool _t_run = false;             // Thread run
 static bool _t_end = false;             // Thread end
 static PointQueue _t_points;            // Point FIFO
@@ -209,7 +209,7 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   static int logtime = 0;
 
   
-  CCriticalSection::CGuard guard(_t_mutex);
+  ScopeLock guard(_t_mutex);
 
   //Check if sending needed (time interval)
   if (Basic->Time >= logtime) { 
@@ -273,7 +273,7 @@ static bool InterruptibleSleep(int msecs)
   int secs = msecs / 1000;
   do {
     if (1) {
-      CCriticalSection::CGuard guard(_t_mutex);
+      ScopeLock guard(_t_mutex);
       if (!_t_run) return true;
     }
     Poco::Thread::sleep(1000);
@@ -417,7 +417,7 @@ static int GetUserIDFromServer()
 //   int rxlen;
 //   
 //   if (1) {
-//     CCriticalSection::CGuard guard(_t_mutex);
+//     ScopeLock guard(_t_mutex);
 //     unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
 //     UrlEncode(txbuf, username, sizeof(username));
 //     unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
@@ -454,7 +454,7 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
   int rnd;
   
   if (1) {
-    CCriticalSection::CGuard guard(_t_mutex);
+    ScopeLock guard(_t_mutex);
     // START OF TRACK PACKET
     // /track.php?leolive=2&sid=42664778&pid=1&client=YourProgramName&v=1&user=yourusername&pass=yourpass&phone=Nokia 2600c&gps=BT GPS&trk1=4&vtype=16388&vname=vehicle name and model
     // PARAMETERS          
@@ -548,7 +548,7 @@ static bool SendEndOfTrackPacket(unsigned int *packet_id, unsigned int *session_
   int rxlen;
   
   if (1) {
-    CCriticalSection::CGuard guard(_t_mutex);
+    ScopeLock guard(_t_mutex);
     // END OF TRACK PACKET
     //  /track.php?leolive=3&sid=42664778&pid=453&prid=0
     // PARAMETERS
@@ -581,7 +581,7 @@ static bool SendGPSPointPacket(unsigned int *packet_id, unsigned int *session_id
   int rxlen;
   
   if (1) {
-    CCriticalSection::CGuard guard(_t_mutex);
+    ScopeLock guard(_t_mutex);
     // GPS POINT PACKET
     //  /track.php?leolive=4&sid=42664778&pid=321&lat=22.3&lon=40.2&alt=23&sog=40&cog=160&tm=1241422845
     // PARAMETERS
@@ -638,7 +638,7 @@ static void LiveTrackerThread()
     do {
       if (1) {
         sendpoint_valid = false;
-        CCriticalSection::CGuard guard(_t_mutex);
+        ScopeLock guard(_t_mutex);
         if (!_t_points.empty()) {
           sendpoint = _t_points.front();
           sendpoint_valid = true;
@@ -684,7 +684,7 @@ static void LiveTrackerThread()
                 }
                 //Connection established to server
                 if (!sendpoint_processed_old && sendpoint_processed) {
-                  CCriticalSection::CGuard guard(_t_mutex);
+                  ScopeLock guard(_t_mutex);
                   int queue_size = _t_points.size();
                   StartupStore(TEXT(". Livetracker connection to server established, start sending %d queued packets.%s"), queue_size, NEWLINE);
                 }
@@ -706,7 +706,7 @@ static void LiveTrackerThread()
             }// sw
             
             if (sendpoint_processed) {
-              CCriticalSection::CGuard guard(_t_mutex);
+              ScopeLock guard(_t_mutex);
               _t_points.pop_front();
             } else InterruptibleSleep(2500);
             sendpoint_processed_old = sendpoint_processed;

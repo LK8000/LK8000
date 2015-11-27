@@ -71,7 +71,7 @@ CContestMgr::CContestMgr():
 	  _uiFAIDist  =0;
 	  _bFAI              =false;
 
-  CCriticalSection::CGuard guard(_resultsCS);
+  ScopeLock guard(_resultsCS);
   for(unsigned i=0; i<TYPE_NUM; i++)
     _resultArray.push_back(CResult());
 }
@@ -84,10 +84,10 @@ CContestMgr::CContestMgr():
  */
 void CContestMgr::Reset(unsigned handicap)
 {
-  CCriticalSection::CGuard guard(_mainCS);
+  ScopeLock guard(_mainCS);
   _handicap = handicap;
   {
-    CCriticalSection::CGuard TraceGuard(_traceCS);
+    ScopeLock TraceGuard(_traceCS);
     _trace.reset(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
   }
   _traceSprint.reset(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM));
@@ -101,7 +101,7 @@ void CContestMgr::Reset(unsigned handicap)
   _fTogo     = 0;
   _fBestTogo = 0;
   {
-    CCriticalSection::CGuard Resultguard(_resultsCS);
+    ScopeLock Resultguard(_resultsCS);
     for(unsigned i=0; i<TYPE_NUM; i++)
       _resultArray[i] = CResult();
   }
@@ -287,7 +287,7 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
       score = 0;
     }
     bool predicted = pointArray.back().TimeDelta(_trace->Back()->GPS()) > 0;
-    CCriticalSection::CGuard guard(_resultsCS);
+    ScopeLock guard(_resultsCS);
     _resultArray[type] = CResult(type, predicted, distance, score, pointArray);
   }
 }
@@ -295,9 +295,9 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
 
 void CContestMgr::RefreshFAIOptimizer(void)
 {
-      CCriticalSection::CGuard guard(_mainCS);
+      ScopeLock guard(_mainCS);
       {
-        CCriticalSection::CGuard Traceguard(_traceCS);
+        ScopeLock Traceguard(_traceCS);
         _trace->Compress();
       }
     SolvePoints(*_trace, false, true);
@@ -369,7 +369,7 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
   TType type = sprint ? TYPE_OLC_LEAGUE : (predicted ? TYPE_OLC_CLASSIC_PREDICTED : TYPE_OLC_CLASSIC);
   if(predicted) {
     // do it just in a case if predicted trace is worst than the current one
-    CCriticalSection::CGuard guard(_resultsCS);
+    ScopeLock guard(_resultsCS);
     _resultArray[TYPE_OLC_CLASSIC_PREDICTED] = CResult(TYPE_OLC_CLASSIC_PREDICTED, _resultArray[TYPE_OLC_CLASSIC]);
   }
   PointsResult(type, traceResult);
@@ -385,7 +385,7 @@ else*/
     // store result
     if(predicted) {
       // do it just in a case if predicted trace is worst than the current one
-      CCriticalSection::CGuard guard(_resultsCS);
+      ScopeLock guard(_resultsCS);
       _resultArray[TYPE_FAI_3_TPS_PREDICTED] = CResult(TYPE_FAI_3_TPS_PREDICTED, _resultArray[TYPE_FAI_3_TPS]);
     }
 
@@ -395,7 +395,7 @@ else*/
     if(predicted)
     {
       // do it just in a case if predicted trace is worst than the current one
-      CCriticalSection::CGuard guard(_resultsCS);
+      ScopeLock guard(_resultsCS);
       _resultArray[TYPE_FAI_TRIANGLE] = CResult(TYPE_FAI_TRIANGLE, _resultArray[TYPE_OLC_FAI_PREDICTED]);
     }
 
@@ -633,13 +633,13 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
       time %= CPointGPS::DAY_SECONDS;
     }
     
-    CCriticalSection::CGuard guard(_resultsCS);
+    ScopeLock guard(_resultsCS);
     bestResult._pointArray[4] = CPointGPS(time, start.Latitude(), start.Longitude(), start.Altitude());
     bestResult.Update();
   }
   
   if(bestResult.Type() != TYPE_INVALID) {
-    CCriticalSection::CGuard guard(_resultsCS);
+    ScopeLock guard(_resultsCS);
     _resultArray[type] = bestResult;
   }
 }
@@ -654,7 +654,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
  */
 void CContestMgr::SolveOLCPlus(bool predicted)
 {
-  CCriticalSection::CGuard guard(_resultsCS);
+  ScopeLock guard(_resultsCS);
   CResult &classic = _resultArray[predicted ? TYPE_OLC_CLASSIC_PREDICTED : TYPE_OLC_CLASSIC];
   CResult &fai = _resultArray[predicted ? TYPE_OLC_FAI_PREDICTED : TYPE_OLC_FAI];
   _resultArray[predicted ? TYPE_OLC_PLUS_PREDICTED : TYPE_OLC_PLUS] =
@@ -680,10 +680,10 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
     return;
   lastGps = *gps;
   
-  CCriticalSection::CGuard guard(_mainCS);
+  ScopeLock guard(_mainCS);
   {
     // Update main trace
-    CCriticalSection::CGuard Traceguard(_traceCS);
+    ScopeLock Traceguard(_traceCS);
     _trace->Push(gps);
     _trace->Compress();
   }
@@ -752,7 +752,7 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
  */
 void CContestMgr::Trace(CPointGPSArray &array) const
 {
-  CCriticalSection::CGuard guard(_traceCS);
+  ScopeLock guard(_traceCS);
   array.clear();
   array.reserve(_trace->Size());
   const CTrace::CPoint *point = _trace->Front();

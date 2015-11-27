@@ -9,12 +9,7 @@
 #ifndef __CRITICALSECTION_H__
 #define __CRITICALSECTION_H__
 
-#include "Poco/Mutex.h"
-
-class CCriticalSection : public Poco::Mutex {
-public:
-    typedef Poco::ScopedLock<CCriticalSection> CGuard;
-};
+#include "Thread/Mutex.hpp"
 
 class CScopeLock {
 

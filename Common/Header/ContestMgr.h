@@ -10,7 +10,6 @@
 #define __CONTESTMGR_H__
 
 #include "Trace.h"
-#include "CriticalSection.h"
 #include <map>
 #include <memory>
 
@@ -142,9 +141,9 @@ private:
   BOOL   _bFAI;                                /**< @brief Is FAI triangle? */
 
 
-  mutable CCriticalSection _mainCS;               /**< @brief Main critical section that prevents Reset() and Add() at the same time */
-  mutable CCriticalSection _traceCS;              /**< @brief Main trace critical section for returning _trace points */
-  mutable CCriticalSection _resultsCS;            /**< @brief Contests results critical section for returning results */
+  mutable Mutex _mainCS;               /**< @brief Main critical section that prevents Reset() and Add() at the same time */
+  mutable Mutex _traceCS;              /**< @brief Main trace critical section for returning _trace points */
+  mutable Mutex _resultsCS;            /**< @brief Contests results critical section for returning results */
   
   bool BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
   bool BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut, bool predicted) const;
@@ -259,7 +258,7 @@ inline void CContestMgr::CResult::Update()
  */
 inline CContestMgr::CResult CContestMgr::Result(TType type, bool fillArray) const
 {
-  CCriticalSection::CGuard guard(_resultsCS);
+  ScopeLock guard(_resultsCS);
   return CResult(_resultArray[type], fillArray);
 }
 

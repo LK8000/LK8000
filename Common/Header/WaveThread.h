@@ -72,7 +72,7 @@ protected:
    BOOL              m_bInitialized;
    DWORD             m_threadId;
    HANDLE            m_thread;
-   Poco::Mutex  m_critSecRtp;
+   Mutex  m_critSecRtp;
    HANDLE            m_hEventKill;
    DWORD             m_dwActiveThreadPriority;
    WORD              m_wBufferCount;
@@ -126,7 +126,7 @@ protected:
    BOOL              m_bInitialized;
    DWORD             m_threadId;
    HANDLE            m_thread;
-   Poco::Mutex  m_critSecRtp;
+   Mutex  m_critSecRtp;
    HANDLE            m_hEventKill;
    DWORD             m_dwActiveThreadPriority;
    WORD              m_wBufferCount;

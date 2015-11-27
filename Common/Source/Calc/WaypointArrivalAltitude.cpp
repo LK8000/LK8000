@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "McReady.h"
+#include "CriticalSection.h"
 
 void simpleETE(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
    if (Basic->Speed <1 || !Calculated->Flying || Calculated->Circling) {

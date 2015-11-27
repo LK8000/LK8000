@@ -107,7 +107,7 @@ DrawAirSpaceBorders(Surface, rc);
 #endif
   // Draw airspace area
     if (1) {
-    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     if (borders_only) {
        // Draw in reverse order!
        // The idea behind this, is lower top level airspaces are smaller. (statistically)
@@ -167,7 +167,7 @@ DrawAirSpaceBorders(Surface, rc);
   if(0)
 #endif
     if (1) {
-    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
@@ -200,7 +200,7 @@ if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_sel
 #else
 void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {  
     
-    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
 
     const bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);

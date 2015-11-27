@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "CriticalSection.h"
 #ifdef GTL2
 #include "Waypointparser.h"
 #endif

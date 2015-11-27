@@ -1597,7 +1597,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                 newairspace->Init(Name, Type, Base, Top, flyzone);
 
                                 if (1) {
-                                    CCriticalSection::CGuard guard(_csairspaces);
+                                    ScopeLock guard(_csairspaces);
                                     _airspaces.push_back(newairspace);
                                 }
                             }
@@ -1805,11 +1805,11 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
             newairspace = new CAirspace_Area(std::move(points));
         }
         newairspace->Init(Name, Type, Base, Top, flyzone);
-        CCriticalSection::CGuard guard(_csairspaces);
+        ScopeLock guard(_csairspaces);
         _airspaces.push_back(newairspace);
     }
 
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     StartupStore(TEXT(". Now we have %u airspaces%s"), (unsigned)_airspaces.size(), NEWLINE);
     // For debugging, dump all readed airspaces to runtime.log
     //CAirspaceList::iterator it;
@@ -1871,7 +1871,7 @@ void CAirspaceManager::ReadAirspaces() {
 
 void CAirspaceManager::CloseAirspaces() {
     CAirspaceList::iterator it;
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     if (_airspaces.size() == 0) return;
     SaveSettings();
 
@@ -1905,7 +1905,7 @@ void CAirspaceManager::QnhChangeNotify(const double &newQNH) {
 
     if ((newQNH != lastQNH) || first) {
         CAirspaceList::iterator i;
-        CCriticalSection::CGuard guard(_csairspaces);
+        ScopeLock guard(_csairspaces);
 
         for (i = _airspaces.begin(); i != _airspaces.end(); ++i) (*i)->QnhChangeNotify();
 
@@ -1921,7 +1921,7 @@ int CAirspaceManager::ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], dou
     unsigned int iSelAS = 0; // current selected airspace for processing
     unsigned int i; // loop variable
     CAirspaceList::const_iterator it;
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
 
     airspacetype[0].psAS = NULL;
     for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
@@ -2082,7 +2082,7 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
     UnlockFlightData();
 
     CAirspaceList::const_iterator it;
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
 
     for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
         if ((*it)->Enabled()) {
@@ -2148,12 +2148,12 @@ void CAirspaceManager::SortAirspaces(void) {
 #endif
 
     // Sort by top altitude for drawing
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     std::sort(_airspaces.begin(), _airspaces.end(), airspace_sorter);
 }
 
 bool CAirspaceManager::ValidAirspaces(void) const {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     bool res = _airspaces.size() > 0;
     return res;
 }
@@ -2181,7 +2181,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
     static double lon = 0;
     static double lat = 0;
 
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
 
     if (_airspaces.empty()) {
         return; // no airspaces no nothing to do
@@ -2344,7 +2344,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const {
     CAirspaceList res;
     CAirspaceList::const_iterator it;
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
         if ((*it)->DrawStyle()) {
             if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
@@ -2357,7 +2357,7 @@ CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const
     int HorDist, Bearing, VertDist;
     CAirspaceList res;
     CAirspaceList::const_iterator it;
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
         if ((*it)->DrawStyle()) {
             (*it)->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
@@ -2375,7 +2375,7 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
     int iCnt = 0;
     StartupStore(_T("... enter SetFarVisible\n"));
 #endif
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     _airspaces_near.clear();
     for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
         // Check if airspace overlaps given bounds
@@ -2396,7 +2396,7 @@ void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbou
     CAirspaceList::iterator it;
     //#define LKASP_CALC_ON_CHANGE_ONLY
 #ifndef LKASP_CALC_ON_CHANGE_ONLY
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
         (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, ResMapScaleOverDistanceModify);
     }
@@ -2448,7 +2448,7 @@ void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbou
         oldPt2 = Pt2;
         oldDistMod = ResMapScaleOverDistanceModify;
         old_screenbounds_latlon = screenbounds_latlon;
-        CCriticalSection::CGuard guard(_csairspaces);
+        ScopeLock guard(_csairspaces);
         for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
             (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, ResMapScaleOverDistanceModify);
         }
@@ -2462,7 +2462,7 @@ const CAirspaceList& CAirspaceManager::GetNearAirspacesRef() const {
 }
 
 const CAirspaceList CAirspaceManager::GetAllAirspaces() const {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     return _airspaces;
 }
 
@@ -2475,7 +2475,7 @@ inline bool airspace_label_priority_sorter(const CAirspace *a, const CAirspace *
 // Get airspaces list for label drawing
 
 const CAirspaceList& CAirspaceManager::GetAirspacesForWarningLabels() {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     if (_airspaces_of_interest.size() > 1) std::sort(_airspaces_of_interest.begin(), _airspaces_of_interest.end(), airspace_label_priority_sorter);
     return _airspaces_of_interest;
 }
@@ -2483,7 +2483,7 @@ const CAirspaceList& CAirspaceManager::GetAirspacesForWarningLabels() {
 // Feedback from mapwindow DrawAirspaceLabels to set a round-robin priority
 
 void CAirspaceManager::AirspaceWarningLabelPrinted(CAirspace &airspace, bool success) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     if (success) airspace.LabelPriorityZero();
     else airspace.LabelPriorityInc();
 }
@@ -2492,7 +2492,7 @@ void CAirspaceManager::AirspaceWarningLabelPrinted(CAirspace &airspace, bool suc
 
 CAirspaceList CAirspaceManager::GetAirspacesInWarning() const {
     CAirspaceList res;
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     for (CAirspaceList::const_iterator it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
         if ((*it)->WarningLevel() > awNone || (*it)->WarningAckLevel() > awNone) res.push_back(*it);
     }
@@ -2506,7 +2506,7 @@ CAirspaceList CAirspaceManager::GetAirspacesInWarning() const {
 
 CAirspaceBase CAirspaceManager::GetAirspaceCopy(const CAirspaceBase* airspace) const {
     LKASSERT(airspace != NULL);
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     return *airspace;
 }
 
@@ -2514,7 +2514,7 @@ CAirspaceBase CAirspaceManager::GetAirspaceCopy(const CAirspaceBase* airspace) c
 
 bool CAirspaceManager::AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance) {
     LKASSERT(airspace != NULL);
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     return airspace->CalculateDistance(hDistance, Bearing, vDistance);
 }
 
@@ -2527,14 +2527,14 @@ inline bool warning_queue_sorter(const AirspaceWarningMessage& a, const Airspace
 
 bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
     /*  CAirspace *res = NULL;
-      CCriticalSection::CGuard guard(_csairspaces);
+      ScopeLock guard(_csairspaces);
       if (_user_warning_queue.size() == 0) return NULL;
       res = _user_warning_queue.front();
       _user_warning_queue.pop_front();            // remove message from fifo
       return res;*/
 
     if (msg == NULL) return false;
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     int size;
 
     //Sort warning messages
@@ -2552,7 +2552,7 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
 // Ack an airspace for a given ack level and acknowledgement time
 
 void CAirspaceManager::AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningLevel_t ackstate) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     CAirspaceList::const_iterator it;
 
     if (!AirspaceAckAllSame) {
@@ -2574,7 +2574,7 @@ void CAirspaceManager::AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningL
 // Ack an airspace for a current level
 
 void CAirspaceManager::AirspaceAckWarn(CAirspace &airspace) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     CAirspaceList::const_iterator it;
 
     if (!AirspaceAckAllSame) {
@@ -2596,7 +2596,7 @@ void CAirspaceManager::AirspaceAckWarn(CAirspace &airspace) {
 // Ack an airspace for all future warnings
 
 void CAirspaceManager::AirspaceAckSpace(CAirspace &airspace) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     CAirspaceList::const_iterator it;
 
     if (!AirspaceAckAllSame) {
@@ -2616,7 +2616,7 @@ void CAirspaceManager::AirspaceAckSpace(CAirspace &airspace) {
 // Disable an airspace 
 
 void CAirspaceManager::AirspaceDisable(CAirspace &airspace) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     CAirspaceList::const_iterator it;
 
     if (!AirspaceAckAllSame) {
@@ -2636,7 +2636,7 @@ void CAirspaceManager::AirspaceDisable(CAirspace &airspace) {
 // Enable an airspace
 
 void CAirspaceManager::AirspaceEnable(CAirspace &airspace) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     CAirspaceList::const_iterator it;
 
     if (!AirspaceAckAllSame) {
@@ -2656,7 +2656,7 @@ void CAirspaceManager::AirspaceEnable(CAirspace &airspace) {
 // Toggle flyzone on an airspace
 
 void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     CAirspaceList::const_iterator it;
 
     if (!AirspaceAckAllSame) {
@@ -2859,7 +2859,7 @@ void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const dou
     double lon, lat, bearing;
     rectObj bounds;
 
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     if (_airspaces.size() < 1) return;
 
     // Calculate area of interest
@@ -2918,21 +2918,21 @@ void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const dou
 }
 
 void CAirspaceManager::CalculateDistancesForPage24() {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     for (CAirspaceList::iterator it = _airspaces_page24.begin(); it != _airspaces_page24.end(); ++it) {
         (*it)->CalculateDistance(NULL, NULL, NULL);
     }
 }
 
 CAirspaceList CAirspaceManager::GetAirspacesForPage24() {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     return _airspaces_page24;
 }
 
 // Set or change or deselect selected airspace
 
 void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     // Deselect if we get the same asp
     if (_selected_airspace == &airspace) {
         _selected_airspace->Selected(false);
@@ -2961,7 +2961,7 @@ void CAirspaceManager::SaveSettings() const {
         fprintf(f, "# LK8000 AIRSPACE SETTINGS\n");
         fprintf(f, "# THIS FILE IS GENERATED AUTOMATICALLY ON LK SHUTDOWN - DO NOT ALTER BY HAND, DO NOT COPY BEETWEEN DEVICES!\n");
 
-        CCriticalSection::CGuard guard(_csairspaces);
+        ScopeLock guard(_csairspaces);
         for (CAirspaceList::const_iterator it = _airspaces.begin(); it != _airspaces.end(); ++it) {
             (*it)->Hash(hashbuf, 33);
             //Asp hash
@@ -3010,7 +3010,7 @@ void CAirspaceManager::LoadSettings() {
     f = _tfopen(szFileName, TEXT("r"));
     if (f != NULL) {
         // Generate hash map on loaded airspaces
-        CCriticalSection::CGuard guard(_csairspaces);
+        ScopeLock guard(_csairspaces);
         asp_data = (asp_data_struct*) malloc(sizeof (asp_data_struct) * _airspaces.size());
         if (asp_data == NULL) {
             OutOfMemory(_T(__FILE__), __LINE__);
@@ -3063,7 +3063,7 @@ void CAirspaceManager::LoadSettings() {
 #if ASPWAVEOFF
 
 void CAirspaceManager::AirspaceDisableWaveSectors(void) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     CAirspaceList::const_iterator it;
 
 
@@ -3083,7 +3083,7 @@ void CAirspaceManager::AirspaceDisableWaveSectors(void) {
 
 // queue new airspaces for popup details 
 void CAirspaceManager::PopupAirspaceDetail(CAirspace * pAsp) {
-    CCriticalSection::CGuard guard(_csairspaces);
+    ScopeLock guard(_csairspaces);
     _detail_queue.push_back(pAsp);
 }
 
@@ -3093,17 +3093,17 @@ void dlgAirspaceDetails();
 // show details for each airspaces queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
 void CAirspaceManager::ProcessAirspaceDetailQueue() {
 
-    _csairspaces.lock();
+    _csairspaces.Lock();
     while(!_detail_queue.empty()) {
         _detail_current = _detail_queue.front();
         _detail_queue.pop_front(); // remove Airspace from fifo
         
-        _csairspaces.unlock(); 
+        _csairspaces.Unlock(); 
         dlgAirspaceDetails();
-        _csairspaces.lock();
+        _csairspaces.Lock();
     }
     _detail_current = nullptr;
-    _csairspaces.unlock();
+    _csairspaces.Unlock();
 }
 
 

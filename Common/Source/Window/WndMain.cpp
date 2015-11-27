@@ -289,7 +289,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     UpdateTimeStats(false);
 #else
     if(ProgramStarted >= psFirstDrawDone) {
-        Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+        ScopeLock Lock(BackBuffer_Mutex);
         BackBufferSurface.CopyTo(Surface);
     } else {
 

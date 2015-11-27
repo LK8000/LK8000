@@ -18,7 +18,7 @@ extern bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDevi
 PDeviceDescriptor_t CDevCProbe::m_pDevice=NULL;
 BOOL CDevCProbe::m_bCompassCalOn=FALSE;
 WndForm *CDevCProbe::m_wf=NULL;
-Poco::Mutex* CDevCProbe::m_pCritSec_DeviceData=NULL;
+Mutex* CDevCProbe::m_pCritSec_DeviceData=NULL;
 double CDevCProbe::m_abs_press=0.0;
 double CDevCProbe::m_delta_press=0.0;
 
@@ -50,7 +50,7 @@ BOOL CDevCProbe::Install( PDeviceDescriptor_t d ) {
 BOOL CDevCProbe::Open( PDeviceDescriptor_t d, int Port ) {
 	m_pDevice = d;
 
-	m_pCritSec_DeviceData = new Poco::Mutex;
+	m_pCritSec_DeviceData = new Mutex();
 
 	return TRUE;
 }
@@ -78,13 +78,13 @@ inline double int24toDouble(int v) {
 
 void CDevCProbe::LockDeviceData(){
 	if(m_pCritSec_DeviceData) {
-		m_pCritSec_DeviceData->lock();
+		m_pCritSec_DeviceData->Lock();
 	}
 }
 
 void CDevCProbe::UnlockDeviceData(){
 	if(m_pCritSec_DeviceData) {
-		m_pCritSec_DeviceData->unlock();
+		m_pCritSec_DeviceData->Unlock();
 	}
 }
 

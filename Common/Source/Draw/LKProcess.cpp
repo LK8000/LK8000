@@ -13,6 +13,7 @@
 #include "LKProcess.h"
 #include "DoInits.h"
 #include "OS/Memory.h"
+#include "CriticalSection.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"

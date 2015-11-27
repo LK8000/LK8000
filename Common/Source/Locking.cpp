@@ -8,25 +8,18 @@
 #include "externs.h"
 
 
-Poco::Mutex  CritSec_FlightData;
-Poco::Mutex  CritSec_EventQueue;
-Poco::Mutex  CritSec_TerrainDataGraphics;
-Poco::Mutex  CritSec_TerrainDataCalculations;
-Poco::Mutex  CritSec_TaskData;
-
-static int csCount_TaskData = 0;
-static int csCount_FlightData = 0;
-static int csCount_EventQueue = 0;
+Mutex  CritSec_FlightData;
+Mutex  CritSec_EventQueue;
+Mutex  CritSec_TerrainDataGraphics;
+Mutex  CritSec_TerrainDataCalculations;
+Mutex  CritSec_TaskData;
 
 void LockTaskData() {
-  CritSec_TaskData.lock();
-  csCount_TaskData++;
+  CritSec_TaskData.Lock();
 }
 
 void UnlockTaskData() {
-  if (csCount_TaskData) 
-    csCount_TaskData--;
-  CritSec_TaskData.unlock();
+  CritSec_TaskData.Unlock();
 }
 
 /*
@@ -34,14 +27,11 @@ void UnlockTaskData() {
  * and FLARM data inside GPS_INFO of course
  */
 void LockFlightData() {
-  CritSec_FlightData.lock();
-  csCount_FlightData++;
+  CritSec_FlightData.Lock();
 }
 
 void UnlockFlightData() {
-  if (csCount_FlightData)
-    csCount_FlightData--;
-  CritSec_FlightData.unlock();
+  CritSec_FlightData.Unlock();
 }
 
 void CheckAndLockFlightData() {
@@ -53,29 +43,26 @@ void CheckAndUnlockFlightData() {
 
 
 void LockTerrainDataCalculations() {
-  CritSec_TerrainDataCalculations.lock();
+  CritSec_TerrainDataCalculations.Lock();
 }
 
 void UnlockTerrainDataCalculations() {
-  CritSec_TerrainDataCalculations.unlock();
+  CritSec_TerrainDataCalculations.Unlock();
 }
 
 void LockTerrainDataGraphics() {
-  CritSec_TerrainDataGraphics.lock();
+  CritSec_TerrainDataGraphics.Lock();
 }
 
 void UnlockTerrainDataGraphics() {
-  CritSec_TerrainDataGraphics.unlock();
+  CritSec_TerrainDataGraphics.Unlock();
 }
 
 
 void LockEventQueue() {
-  CritSec_EventQueue.lock();
-  csCount_EventQueue++;
+  CritSec_EventQueue.Lock();
 }
 
 void UnlockEventQueue() {
-  if (csCount_EventQueue) 
-    csCount_EventQueue--;
-  CritSec_EventQueue.unlock();
+  CritSec_EventQueue.Unlock();
 }

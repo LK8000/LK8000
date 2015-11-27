@@ -25,14 +25,14 @@ BOOL MapWindow::Initialised = FALSE;
 
 
 #ifndef ENABLE_OPENGL
-Poco::Mutex MapWindow::Surface_Mutex;
+Mutex MapWindow::Surface_Mutex;
 Poco::Event MapWindow::drawTriggerEvent;
 
 #ifdef USE_GDI
 LKWindowSurface MapWindow::BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
 #else
 LKBitmapSurface MapWindow::BackBufferSurface;
-Poco::Mutex MapWindow::BackBuffer_Mutex;
+Mutex MapWindow::BackBuffer_Mutex;
 #endif
 LKBitmapSurface MapWindow::DrawSurface;
 #endif
@@ -59,7 +59,7 @@ bool first_run=true;
 
 void MapWindow::Initialize() {
 #ifndef ENABLE_OPENGL
-    Poco::Mutex::ScopedLock Lock(Surface_Mutex);
+    ScopeLock Lock(Surface_Mutex);
 #endif
     // Reset common topology and waypoint label declutter, first init. Done also in other places.
     ResetLabelDeclutter();
@@ -150,7 +150,7 @@ void MapWindow::DrawThread ()
     const ScopeLockCPU cpu;
 #endif
   
-    Poco::Mutex::ScopedLock Lock(Surface_Mutex);
+    ScopeLock Lock(Surface_Mutex);
 
 	// Until MapDirty is set true again, we shall only repaint the screen. No Render, no calculations, no updates.
 	// This is intended for very fast immediate screen refresh.
@@ -209,7 +209,7 @@ void MapWindow::DrawThread ()
             }
 
 #ifndef USE_GDI
-            Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+            ScopeLock Lock(BackBuffer_Mutex);
 #endif
 
             BackBufferSurface.Whiteness(WhiteRectV.left, WhiteRectV.top, WhiteRectV.GetSize().cx, WhiteRectV.GetSize().cy);
@@ -232,7 +232,7 @@ void MapWindow::DrawThread ()
 			// FastRefresh!  We simply redraw old bitmap. 
 			//
 #ifndef USE_GDI
-            Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+            ScopeLock Lock(BackBuffer_Mutex);
 #endif
             DrawSurface.CopyTo(BackBufferSurface);
 
@@ -264,7 +264,7 @@ void MapWindow::DrawThread ()
 				goto _dontbitblt;
 			}
 #ifndef USE_GDI
-            Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+            ScopeLock Lock(BackBuffer_Mutex);
 #endif
             DrawSurface.CopyTo(BackBufferSurface);
 
@@ -287,7 +287,7 @@ _dontbitblt:
 
     {
 #ifndef USE_GDI
-        Poco::Mutex::ScopedLock Lock(BackBuffer_Mutex);
+        ScopeLock Lock(BackBuffer_Mutex);
 #endif
         if (!ForceRenderMap && !first_run) {
             DrawSurface.CopyTo(BackBufferSurface);

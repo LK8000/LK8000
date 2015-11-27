@@ -13,6 +13,7 @@ $Id$
 #include "RGB.h"
 #include "LKObjects.h"
 #include "utils/2dpclip.h"
+#include "CriticalSection.h"
 
 extern int RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
 extern LKColor taskcolor;

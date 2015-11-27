@@ -661,14 +661,14 @@ private:
   static LKBitmapSurface DrawSurface;
 
 public:
-  static Poco::Mutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
+  static Mutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
 
 protected:
 #ifdef USE_GDI
   static LKWindowSurface BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
 #else
   static LKBitmapSurface BackBufferSurface; 
-  static Poco::Mutex BackBuffer_Mutex;
+  static Mutex BackBuffer_Mutex;
 #endif
 #endif
 private:
