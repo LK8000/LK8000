@@ -99,22 +99,17 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
     {double Dist = DerivedDrawInfo.TaskTotalDistance;
     	if( DerivedDrawInfo.TaskFAI)
     	{
-    	  _tcscpy(Scale1,TEXT("FAI"));
     	  Dist = DerivedDrawInfo.TaskFAIDistance;
     	}
-    	else
-    	   _tcscpy(Scale1,TEXT(""));
 
-    	_stprintf(Scale2, _T("%s Task %.1f%s"), Scale1, Dist*DISTANCEMODIFY, Units::GetDistanceName()/*, panbearing,_T(DEG)*/ );
+    	_stprintf(Scale2, _T("%s Task %.1f%s"), Scale1, Dist*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,gettext(_T("_@M2179_")) );
     }
     else
     {
 	  DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
-	  _stprintf(Scale, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing, gettext(_T("_@M2179_")) );
+	  _stprintf(Scale2, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing, gettext(_T("_@M2179_")) );
     }
 
-
-	_tcscat(Scale2,Scale);
 	goto _skip1;
     }
 
