@@ -57,7 +57,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
         const int boxthick = IBLSCALE(BOXTHICK);
         const int hpixelseparate = (LKVarioBar > vBarVarioGR) ? 0 : IBLSCALE(PIXELSEPARATE);
-        const int vpixelseparate = (LKVarioBar > vBarVarioGR) ? 0 : IBLSCALE(PIXELSEPARATE);
+        const int vpixelseparate = IBLSCALE(PIXELSEPARATE);
         const int variowidth = LKVarioSize;
 
         startInitCounter = 0;
@@ -185,7 +185,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         for (unsigned i = 0; i < positive_brick_count; ++i) {
             RECT& brc = positiveBricks[i];
             brc.left = htrc.left;
-            brc.right = htrc.right;
+            brc.right = htrc.right - NIBLSCALE(4);
             brc.bottom = htrc.bottom - (i * positive_brick_advance);
             brc.top = brc.bottom - positive_brick_size;
         }
@@ -200,7 +200,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         for (unsigned i = 0; i < negative_brick_count; ++i) {
             RECT& brc = negativeBricks[i];
             brc.left = hbrc.left;
-            brc.right = hbrc.right;
+            brc.right = hbrc.right - NIBLSCALE(4);
             brc.top = hbrc.top + (i * negative_brick_advance);
             brc.bottom = brc.top + negative_brick_size;
         }
