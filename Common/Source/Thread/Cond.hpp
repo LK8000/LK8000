@@ -11,12 +11,13 @@
 
 #ifndef COND_HPP
 #define	COND_HPP
-#include "Poco/Event.h"
 
-class Cond : public Poco::Event {
+/// Exists only for avoids to change xcs original code...
+// unimplemented, never used so no linker error
+class Cond {
 public:
     void Wait(Mutex &mutex);
-    void Broadcast() { set(); }
+    void Broadcast() {}
 };
 
 
