@@ -155,19 +155,29 @@ void UpdateAnalysis(void){
     waInfo->SetCaption(TEXT(""));
     break;
   case ANALYSIS_PAGE_TASK:
-    _stprintf(sTmp, TEXT("%s: %s"), 
+      TCHAR FAI[10];
+      if(CALCULATED_INFO.TaskFAI)
+    	_stprintf(FAI, TEXT("FAI"));
+      else
+    	_stprintf(FAI, TEXT(""));
+
+    _stprintf(sTmp, TEXT("%s: %s %.0f%s %s"),
 	// LKTOKEN  _@M93_ = "Analysis" 
               gettext(TEXT("_@M93_")),
 	// LKTOKEN  _@M699_ = "Task" 
-              gettext(TEXT("_@M699_")));
+              gettext(TEXT("_@M699_")),
+       		  DISTANCEMODIFY*CALCULATED_INFO.TaskTotalDistance,
+        	  Units::GetDistanceName(),
+        	  FAI);
     wfa->SetCaption(sTmp);
 
     RefreshTaskStatistics();
 
     if (!ValidTaskPoint(ActiveTaskPoint)) {
 	// LKTOKEN  _@M476_ = "No task" 
-      _tcscpy(sTmp, gettext(TEXT("_@M476_")));
-    } else {
+      _stprintf(sTmp, gettext(TEXT("_@M476_")));
+    } else 
+   {
       TCHAR timetext1[100];
       TCHAR timetext2[100];
       if (AATEnabled) {
@@ -194,7 +204,7 @@ void UpdateAnalysis(void){
                     );
         } else {
           _stprintf(sTmp, 
-                    TEXT("%s: %s\r\n%s: %s\r\n%s: %5.0f %s\r\n%s: %5.0f %s\r\n"),
+                    TEXT("%s: %s\r\n%s: %s\r\n%s: %5.0f %s\r\n%s: %5.0f %s \r\n"),
 	// LKTOKEN  _@M698_ = "Task to go" 
                     gettext(TEXT("_@M698_")),
                     timetext1,
@@ -213,18 +223,23 @@ void UpdateAnalysis(void){
         }
       } else {
         Units::TimeToText(timetext1, (int)CALCULATED_INFO.TaskTimeToGo);
-        _stprintf(sTmp, TEXT("%s: %s\r\n%s: %5.0f %s\r\n"),
+        _stprintf(sTmp, TEXT("%.0f%s %s\r\n\r\n%s: %s\r\n%s: %.0f%s\r\n"),
+        		  DISTANCEMODIFY*CALCULATED_INFO.TaskTotalDistance,
+        		  Units::GetDistanceName(),
+        		  FAI ,
 	// LKTOKEN  _@M698_ = "Task to go" 
                   gettext(TEXT("_@M698_")),
                   timetext1,
 	// LKTOKEN  _@M242_ = "Dist to go" 
                   gettext(TEXT("_@M242_")),
                   DISTANCEMODIFY*CALCULATED_INFO.TaskDistanceToGo,
-                  Units::GetDistanceName());
+                  Units::GetDistanceName()
+        );
       }
     } 
     waInfo->SetCaption(sTmp);
     break;
+
   case ANALYSIS_PAGE_CONTEST:
     _stprintf(sTmp, TEXT("%s: %s - %s"), 
               // LKTOKEN  _@M93_ = "Analysis" 
