@@ -377,7 +377,8 @@ LKASSERT(szCommand !=NULL);
 LKASSERT(d !=NULL);   
 
     if(szCommand[0] == 'S')
-    { 
+    {
+        d->Com->WriteString(_T("x"));        
         if(bFound == false)
         {
           bFound = true;
@@ -387,7 +388,7 @@ LKASSERT(d !=NULL);
           else
               if(iDetected == 10)
                  DoStatusMessage(gettext(TEXT("Radio Message disabled"))); 
-           d->Com->WriteString(_T("x"));
+   
         }
         else
         {            
