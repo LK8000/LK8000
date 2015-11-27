@@ -20,8 +20,6 @@ typedef struct _DATAOPTIONS
 } DATAOPTIONS;
 
 
-extern void UnlockEventQueue();
-extern void LockEventQueue();
 extern void UnlockFlightData();
 extern void LockFlightData();
 extern void UnlockTaskData();

@@ -9,7 +9,6 @@
 
 
 Mutex  CritSec_FlightData;
-Mutex  CritSec_EventQueue;
 Mutex  CritSec_TerrainDataGraphics;
 Mutex  CritSec_TerrainDataCalculations;
 Mutex  CritSec_TaskData;
@@ -58,11 +57,3 @@ void UnlockTerrainDataGraphics() {
   CritSec_TerrainDataGraphics.Unlock();
 }
 
-
-void LockEventQueue() {
-  CritSec_EventQueue.Lock();
-}
-
-void UnlockEventQueue() {
-  CritSec_EventQueue.Unlock();
-}

@@ -133,6 +133,8 @@ const TCHAR *Text2GCE[GCE_COUNT+1];
 // Mapping text names of events to the real thing
 const TCHAR *Text2NE[NE_COUNT+1];
 
+static Mutex  CritSec_EventQueue;
+
 
 // Read the data files
 void InputEvents::readFile() {
@@ -140,12 +142,12 @@ void InputEvents::readFile() {
   StartupStore(TEXT("... Loading input events file%s"),NEWLINE);
   #endif
 
-  // clear the GCE and NMEA queues
-  LockEventQueue();
-  std::fill(std::begin(GCE_Queue), std::end(GCE_Queue), -1);
-  std::fill(std::begin(NMEA_Queue), std::end(NMEA_Queue), -1);
-  UnlockEventQueue();
-
+  {
+    ScopeLock Lock(CritSec_EventQueue);
+    // clear the GCE and NMEA queues
+    std::fill(std::begin(GCE_Queue), std::end(GCE_Queue), -1);
+    std::fill(std::begin(NMEA_Queue), std::end(NMEA_Queue), -1);
+  }
   // Get defaults 
   if (!InitONCE) {
 	#include "InputEvents_LK8000.cpp"  
@@ -767,14 +769,14 @@ bool InputEvents::processKey(int KeyID) {
 
 bool InputEvents::processNmea(int ne_id) {
   // add an event to the bottom of the queue
-  LockEventQueue();
+  ScopeLock Lock(CritSec_EventQueue);
   for (int i=0; i< MAX_NMEA_QUEUE; i++) {
     if (NMEA_Queue[i]== -1) {
       NMEA_Queue[i]= ne_id;
       break;
     }
   }
-  UnlockEventQueue();
+
   return true; // ok.
 }
 
@@ -833,18 +835,20 @@ void InputEvents::DoQueuedEvents(void) {
 	//dlgBasicSettingsShowModal();
   }
 
-  // copy and flush the queue first, blocking
-  LockEventQueue();
-  for (i=0; i<MAX_GCE_QUEUE; i++) {
-    GCE_Queue_copy[i]= GCE_Queue[i];
-    GCE_Queue[i]= -1;
-  }
-  for (i=0; i<MAX_NMEA_QUEUE; i++) {
-    NMEA_Queue_copy[i]= NMEA_Queue[i];
-    NMEA_Queue[i]= -1;
-  }
-  UnlockEventQueue();
+  { // Begin Lock
+    // copy and flush the queue first, blocking      
+    ScopeLock Lock(CritSec_EventQueue);
 
+    for (i=0; i<MAX_GCE_QUEUE; i++) {
+      GCE_Queue_copy[i]= GCE_Queue[i];
+      GCE_Queue[i]= -1;
+    }
+    for (i=0; i<MAX_NMEA_QUEUE; i++) {
+      NMEA_Queue_copy[i]= NMEA_Queue[i];
+      NMEA_Queue[i]= -1;
+    }
+  } // End Lock
+  
   // process each item in the queue
   for (i=0; i< MAX_GCE_QUEUE; i++) {
     if (GCE_Queue_copy[i]!= -1) {
@@ -863,31 +867,36 @@ void InputEvents::DoQueuedEvents(void) {
 
 bool InputEvents::processGlideComputer(int gce_id) {
   // add an event to the bottom of the queue
-  LockEventQueue();
+  ScopeLock Lock(CritSec_EventQueue);
   for (int i=0; i< MAX_GCE_QUEUE; i++) {
     if (GCE_Queue[i]== -1) {
       GCE_Queue[i]= gce_id;
       break;
     }
   }
-  UnlockEventQueue();
   return true; // ok.
 }
 
 void InputEvents::processPopupDetails(PopupType type, int index) {
-    LockEventQueue();
+    ScopeLock Lock(CritSec_EventQueue);
     PopupEventQueue.push_back({type, index});
-    UnlockEventQueue();
 }
 
 // show details for each object queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
 void InputEvents::processPopupDetails_real() {
-    LockEventQueue();
-    while(!PopupEventQueue.empty()) {
-        PopupEvent_t event = PopupEventQueue.front();
-        PopupEventQueue.pop_front(); // remove object event from fifo
-        UnlockEventQueue();
-
+    
+    while(1) {
+        PopupEvent_t event;
+        { // Begin Lock
+            ScopeLock Lock(CritSec_EventQueue);
+            if(!PopupEventQueue.empty()) {
+                event = PopupEventQueue.front();
+                PopupEventQueue.pop_front(); // remove object event from fifo
+            } else {
+                break; // no more queued event, out from loop.
+            }
+        } // End Lock
+        
         switch(event.type) {
             case PopupWaypoint:
                 // Do not update CommonList and Nearest Waypoint in details mode, max 60s 
@@ -924,10 +933,7 @@ void InputEvents::processPopupDetails_real() {
                 LKASSERT(false);
                 break;
         } 
-        
-        LockEventQueue();
     }
-    UnlockEventQueue();
 }
 
 /*
