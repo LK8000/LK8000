@@ -93,6 +93,7 @@ void FlyDirectTo(int index);
 double AdjustAATTargets(double desired);
 void RefreshTaskWaypoint(int i);
 void RefreshTask(void);
+BOOL CheckFAILeg(double leg, double total);
 void CalculateTaskSectors(void);
 void CalculateAATTaskSectors(void);
 
