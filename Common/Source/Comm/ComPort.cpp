@@ -145,7 +145,7 @@ void ComPort::ProcessChar(char c) {
     // last char need to be reserved for '\0' for avoid buffer overflow
     // in theory this should never happen because NMEA sentence can't have more than 82 char and _NmeaString size is 160.
     if (pLastNmea >= std::begin(_NmeaString) && (pLastNmea+1) < std::end(_NmeaString)) {
-        
+
         if (c == '\n' || c == '\r') {
             // abcd\n , now closing the line also with \r
             *(pLastNmea++) = _T('\n');

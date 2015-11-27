@@ -353,8 +353,6 @@ int main(int argc, char *argv[]) {
 
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
-  
- 
   OpenGeoid();
 
   PreloadInitialisation(false); // calls dlgStartup
@@ -541,10 +539,7 @@ int main(int argc, char *argv[]) {
   // or you get an assertion error in device.cpp 
 
   ComCheck_Init();
-    
 
-
-  
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
 

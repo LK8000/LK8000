@@ -183,7 +183,6 @@ static void SetValues(void) {
   int hdist;
   int vdist;
 
-//    ((WndButton *)wf->FindByName(TEXT("mdSFrequency"))) ->SetOnClickNotify(OnSetFrequency);
   
   bool inside = false;
   {
@@ -232,7 +231,6 @@ static void SetValues(void) {
     wp->RefreshDisplay();
   }
   
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpTop"));
   if (wp) {
 	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Top());
@@ -382,8 +380,6 @@ static void SetValues(void) {
   }
 
 }
-
-
 
 /*
  * only called by #CAirspaceManager::ProcessAirspaceDetailQueue()

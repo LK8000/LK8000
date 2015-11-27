@@ -74,8 +74,6 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*PutBugs)(DeviceDescriptor_t *d, double	Bugs);
   BOOL (*PutBallast)(DeviceDescriptor_t	*d,	double Ballast);
   BOOL (*PutVolume)(DeviceDescriptor_t	*d,	int Volume);
-//  BOOL (*PutFreqActive)(DeviceDescriptor_t	*d,	double Freq);
-//  BOOL (*PutFreqStandby)(DeviceDescriptor_t	*d,	double Standby);
   BOOL (*RadioMode)(DeviceDescriptor_t	*d,	int mode);
   BOOL (*PutSquelch)(DeviceDescriptor_t	*d,	int Squelch);
   BOOL (*PutFreqActive)(DeviceDescriptor_t	*d,	double Freq, TCHAR StationName[]);
@@ -152,13 +150,10 @@ BOOL devRequestFlarmVersion(PDeviceDescriptor_t d);
 BOOL devPutBugs(PDeviceDescriptor_t	d, double	Bugs);
 BOOL devPutBallast(PDeviceDescriptor_t d,	double Ballast);
 BOOL devPutVolume(PDeviceDescriptor_t	d, int Volume);
-
 BOOL devPutFreqSwap(PDeviceDescriptor_t	d);
 BOOL devPutRadioMode(PDeviceDescriptor_t	d, int Mode);
 BOOL devPutVolume(PDeviceDescriptor_t	d, int Volume);
 BOOL devPutSquelch(PDeviceDescriptor_t d, int Volume);
-//BOOL devPutFreqActive(PDeviceDescriptor_t d,	double Freq);
-// BOOL devPutFreqStandby(PDeviceDescriptor_t d,	double Freq);
 BOOL devPutFreqActive(PDeviceDescriptor_t d,	double Freq, TCHAR StationName[]);
 BOOL devPutFreqStandby(PDeviceDescriptor_t d,	double Freq, TCHAR StationName[]);
 BOOL devOpen(PDeviceDescriptor_t d,	int	Port);
