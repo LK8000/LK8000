@@ -82,7 +82,13 @@ struct mxcfb_rect {
 #define UPDATE_MODE_PARTIAL			0x0
 #define UPDATE_MODE_FULL			0x1
 
-#define WAVEFORM_MODE_AUTO			257
+#define WAVEFORM_MODE_INIT	0x0	/* Screen goes to white (clears) */
+#define WAVEFORM_MODE_DU	0x1	/* Grey->white/grey->black */
+#define WAVEFORM_MODE_GC16	0x2	/* High fidelity (flashing) */
+#define WAVEFORM_MODE_GC4	0x3	/* Lower fidelity */
+#define WAVEFORM_MODE_A2	0x4	/* Fast black/white animation */
+
+#define WAVEFORM_MODE_AUTO	257U
 
 #define TEMP_USE_AMBIENT			0x1000
 
