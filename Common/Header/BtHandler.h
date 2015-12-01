@@ -14,7 +14,6 @@
 #ifndef NO_BLUETOOTH
 #include <list>
 #include "bthapi.h"
-#include "boost/noncopyable.hpp"
 #include "utils/tstring.h"
 
 #define BDSRC_LOOKUP 1
@@ -48,7 +47,7 @@ protected:
 
 typedef std::list<CBtDevice*> BtDeviceList_t;
 
-class CBtHandler : private boost::noncopyable {
+class CBtHandler {
 public:
 	static void Release();
     static CBtHandler * Get();  
@@ -84,10 +83,13 @@ protected:
     int m_iSavedHWState;
     BYTE m_bSavedScanMask;
 
-	CBtHandler();
-	virtual ~CBtHandler();
+    CBtHandler();
+    virtual ~CBtHandler();
+    
+    CBtHandler( const CBtHandler& ) = delete;
+    CBtHandler& operator=( const CBtHandler& ) = delete;    
 
-	static CBtHandler* m_pBtHandler;
+    static CBtHandler* m_pBtHandler;
 };
 
 #endif

@@ -65,10 +65,13 @@ CallBackTableEntry_t CallBackTable[] = {
     EndCallBackEntry()
 };
 
-class dlgProgress : private boost::noncopyable  {
+class dlgProgress final  {
 public:
     dlgProgress();
     ~dlgProgress();
+    
+    dlgProgress( const dlgProgress& ) = delete;
+    dlgProgress& operator=( const dlgProgress& ) = delete;    
 
     void SetProgressText(const TCHAR* szText);
 

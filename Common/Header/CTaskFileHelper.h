@@ -13,14 +13,16 @@
 #define	CTASKFILEHELPER_H
 
 #include "externs.h"
-#include "boost/noncopyable.hpp"
 #include "xmlParser.h"
 #include "utils/tstring.h"
 
-class CTaskFileHelper : private boost::noncopyable {
+class CTaskFileHelper final {
 public:
     CTaskFileHelper();
-    virtual ~CTaskFileHelper();
+    ~CTaskFileHelper();
+    
+    CTaskFileHelper( const CTaskFileHelper& ) = delete;
+    CTaskFileHelper& operator=( const CTaskFileHelper& ) = delete;    
 
     bool Load(const TCHAR* szFileName);
     bool Save(const TCHAR* szFileName);

@@ -18,7 +18,6 @@
 #include <windows.h>
 #include <string>
 #include <list>
-#include "boost/noncopyable.hpp" 
 #include "BtHandler.h"
 
 typedef void (APIENTRY* BTOnOffProc)(void);
@@ -36,9 +35,9 @@ typedef int (APIENTRY* BthSetModeProc) (DWORD dwMode);
 
 class CBtHandlerWince : public CBtHandler {
 public:
-	static CBtHandler* Instance();
+    static CBtHandler* Instance();
 
-	virtual bool StartHW();
+    virtual bool StartHW();
     virtual bool StopHW();
     virtual int GetHWState();
     virtual bool IsOk();
@@ -53,7 +52,7 @@ public:
     virtual void RestorePowerState(int &iSavedHWState, BYTE &bSavedMask);
 
 protected:
-	HINSTANCE m_hLibBtDrv;
+    HINSTANCE m_hLibBtDrv;
     BTOnOffProc m_StartBlueTooth, m_StopBlueTooth;
 
     HINSTANCE m_hLibBthUtil;
@@ -70,11 +69,11 @@ protected:
     BTCreateACLConnectionProc m_BthCreateACLConnection;
     BTCloseConnectionProc m_BthCloseConnection;
 
-	CBtHandlerWince();
-	virtual ~CBtHandlerWince();
+    CBtHandlerWince();
+    virtual ~CBtHandlerWince();
 };
 
-class CBthDevice : private boost::noncopyable {
+class CBthDevice {
 public:
     // singleton accessor
     static CBthDevice* Instance();
@@ -82,7 +81,10 @@ public:
 
 protected:
     CBthDevice();
-    virtual ~CBthDevice();
+    ~CBthDevice();
+    
+    CBthDevice( const CBthDevice& ) = delete;
+    CBthDevice& operator=( const CBthDevice& ) = delete;    
 
 private:
     static CBthDevice* m_pInstance;

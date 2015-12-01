@@ -16,7 +16,6 @@
 #include <windows.h>
 #endif
 
-#include "boost/noncopyable.hpp"
 #include <vector>
 
 #include "LKColor.h"
@@ -35,7 +34,7 @@
 
 class LKBitmapSurface;
 
-class LKSurface : private boost::noncopyable {
+class LKSurface {
 protected:
 #ifndef USE_GDI
     Canvas* _pCanvas; // need to be first.
@@ -44,6 +43,9 @@ protected:
 public:
     LKSurface();
     virtual ~LKSurface();
+
+    LKSurface( const LKSurface& ) = delete;
+    LKSurface& operator=( const LKSurface& ) = delete;
 
 #ifdef USE_GDI
     typedef HFONT OldFont;

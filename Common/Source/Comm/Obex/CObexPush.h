@@ -13,16 +13,18 @@
 
 #ifdef UNDER_CE
 #include "win32_obex.h"
-#include "boost/noncopyable.hpp" 
 #include <list>
 
-class CObexPush : private boost::noncopyable {
+class CObexPush final {
 	typedef std::list<IObexDevice*> ObexDeviceList_t;
 public:
 	
 	CObexPush();
-	virtual ~CObexPush();
+	~CObexPush();
 	
+    CObexPush( const CObexPush& ) = delete;
+    CObexPush& operator=( const CObexPush& ) = delete;
+        
 	bool Startup();
 	void Shutdown();
 	

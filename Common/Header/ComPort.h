@@ -13,15 +13,17 @@
 #define	COMPORT_H
 
 #include "Sizes.h"
-#include "boost/noncopyable.hpp"
 #include "utils/tstring.h"
 #include "Poco/Event.h"
 #include "Poco/Thread.h"
 
-class ComPort : private boost::noncopyable, public Poco::Runnable {
+class ComPort : public Poco::Runnable {
 public:
     ComPort(int idx, const std::tstring& sName);
     virtual ~ComPort();
+    
+    ComPort( const ComPort& ) = delete;
+    ComPort& operator=( const ComPort& ) = delete;    
 
     bool StopRxThread();
     bool StartRxThread();
