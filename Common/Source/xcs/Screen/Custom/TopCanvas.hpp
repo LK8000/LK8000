@@ -173,6 +173,12 @@ class TopCanvas
   bool enable_dither;
 
   /**
+   * some kobo Device don't need to wait eInk update complet before send new update cmd
+   * this flag can be set true for don't wait eInk Update complete for faster responce time.
+   */
+  bool frame_sync;
+
+  /**
    * Runtime flag for unghost eInk Screen
    */
   bool unghost;
@@ -192,6 +198,7 @@ public:
     fd(-1), map(nullptr)
 #ifdef KOBO
     , enable_dither(true)
+    , frame_sync(true)
     , unghost(false)
 #endif
   {}

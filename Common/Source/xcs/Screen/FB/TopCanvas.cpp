@@ -31,6 +31,7 @@ Copyright_License {
 
 #if defined(KOBO) && defined(USE_FB)
 #include "mxcfb.h"
+#include "Kobo/Model.hpp"
 #endif
 
 #include <algorithm>
@@ -179,6 +180,25 @@ TopCanvas::Create(PixelSize new_size,
       fprintf(stderr, "Couldn't set update_scheme: %s\n",
             strerror(errno));
   }
+  KoboModel model = DetectKoboModel();
+  switch(model) {
+      case KoboModel::UNKNOWN:
+        frame_sync = true;
+        break;
+      case KoboModel::MINI:
+      case KoboModel::TOUCH:
+      case KoboModel::GLO:
+        frame_sync = false;
+        break;
+      case KoboModel::GLOHD:
+        frame_sync = true;
+        break;
+      default:
+        frame_sync = true;
+        break;
+  };
+  
+  
 #endif
 
   const unsigned width = vinfo.xres, height = vinfo.yres;
@@ -425,7 +445,11 @@ TopCanvas::Flip()
 
 
 #ifdef KOBO
-  Wait();
+  
+  if(frame_sync) {
+    Wait();
+  }
+  
   epd_update_marker++;
 
   struct mxcfb_update_data epd_update_data = {
