@@ -240,31 +240,34 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     if(bGlider)
     {
 	    int iScale = (int)(fScaleFact*2.0);
+            	    double fFact = 0.04*fScaleFact/1.5;
             if(iScale==0) iScale=1;
-            POINT WhiteWing [15]  = {
-                  { 0 * iScale, 0 * iScale },   // 1
-                  { 1 * iScale,-1 * iScale },   // 2
-                  { 2 * iScale,-1 * iScale },   // 3
-                  { 3 * iScale, 0 * iScale },   // 4
-                  { 3 * iScale, 1 * iScale },   // 5
-                  { 2 * iScale, 0 * iScale },   // 6
-                  { 1 * iScale, 0 * iScale },   // 7
-                  { 0 * iScale, 1 * iScale },   // 8
-                  {-1 * iScale, 0 * iScale },   // 9
-                  {-2 * iScale, 0 * iScale },   // 10
-                  {-3 * iScale, 1 * iScale },   // 11
-                  {-3 * iScale, 0 * iScale },   // 12
-                  {-2 * iScale,-1 * iScale },   // 13
-                  {-1 * iScale,-1 * iScale },   // 14
-                  { 0 * iScale, 0 * iScale }    // 15
-            };
+	    POINT WhiteWing [17]  = {
+		  { (long)(-228  * fFact ) , (long)(13  * fFact)}, //1
+		  { (long) (-221 * fFact ) , (long)(-5  * fFact)}, //2
+		  { (long) (-102 * fFact ) , (long)(-50 * fFact)}, //3
+		  { (long) (8	 * fFact ) , (long)( 5  * fFact)}, //4
+		  { (long) (149  * fFact ) , (long)(-55 * fFact)}, //5
+		  { (long) (270  * fFact ) , (long)(-12 * fFact)}, //6
+		  { (long) (280  * fFact ) , (long)( 5  * fFact)}, //7
+		  { (long) (152  * fFact ) , (long)(-30 * fFact)}, //8
+		  { (long) (48	 * fFact ) , (long)( 27 * fFact)}, //9
+		  { (long) (37	 * fFact ) , (long)( 44 * fFact)}, //10
+		  { (long)(-20	 * fFact ) , (long)( 65 * fFact)}, //11
+		  { (long)(-29	 * fFact ) , (long)( 80 * fFact)}, //12
+		  { (long)(-56	 * fFact ) , (long)( 83 * fFact)}, //13
+		  { (long)(-50	 * fFact ) , (long)( 40 * fFact)}, //14
+		  { (long)(-30	 * fFact ) , (long)( 27 * fFact)}, //15
+		  { (long)(-103  * fFact ) , (long)(-26 * fFact)}, //16
+		  { (long)(-228  * fFact ) , (long)( 13 * fFact)}  //17
+	    };
 
 	    if (picto)
-	       threadsafePolygonRotateShift(WhiteWing, 15,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
+	       threadsafePolygonRotateShift(WhiteWing, 17,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
 	    else
-	       PolygonRotateShift(WhiteWing, 15,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
+	       PolygonRotateShift(WhiteWing, 17,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
 
-	    Surface.Polygon(WhiteWing ,15 );
+	    Surface.Polygon(WhiteWing ,17 );
     }
   }
 
