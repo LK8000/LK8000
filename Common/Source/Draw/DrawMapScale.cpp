@@ -109,10 +109,11 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
 	}
 	double pandistance, panbearing;
 
-                  _stprintf(Scale1, _T(""));
-                  	  DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
+    _tcscpy(Scale1, _T(""));
+    DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
     if(ValidTaskPoint(PanTaskEdit))
-    {double Dist = DerivedDrawInfo.TaskTotalDistance;
+    {
+        double Dist = DerivedDrawInfo.TaskTotalDistance;
     	if( DerivedDrawInfo.TaskFAI)
     	{
     	  Dist = DerivedDrawInfo.TaskFAIDistance;

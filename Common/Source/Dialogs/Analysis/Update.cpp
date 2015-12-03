@@ -159,7 +159,7 @@ void UpdateAnalysis(void){
       if(CALCULATED_INFO.TaskFAI)
     	_stprintf(FAI, TEXT("FAI"));
       else
-    	_stprintf(FAI, TEXT(""));
+    	_tcscpy(FAI, TEXT(""));
 
     _stprintf(sTmp, TEXT("%s: %s %.0f%s %s"),
 	// LKTOKEN  _@M93_ = "Analysis" 
