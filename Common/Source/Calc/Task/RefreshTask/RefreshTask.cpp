@@ -28,6 +28,97 @@ if(total > 0.0)
 return fai;
 }
 
+
+BOOL CheckFAILeg(double leg, double total)
+{
+BOOL fai = true;
+if(total > 0.0)
+{
+  double lrat = leg/total;
+  if(total < FAI28_45Threshold)
+  {
+    if(lrat <= FAI_NORMAL_PERCENTAGE)  fai = false;
+  }
+  else
+  {
+    if(lrat <= FAI_BIG_PERCENTAGE)     fai = false;
+    if(lrat >= FAI_BIG_MAX_PERCENTAGE) fai = false;
+  }
+} else fai = false;
+return fai;
+}
+
+
+BOOL IsFAI_Task(void)
+{
+BOOL fai = true;
+double Leg, Bear;
+int i, from=1,to, TaskPoints =0;
+double TaskTotalDistance =0;
+CALCULATED_INFO.TaskFAI = false;
+//if(AATEnabled)
+	//return false;
+while(ValidTaskPoint(TaskPoints))
+{
+  TaskTotalDistance += Task[TaskPoints].Leg;
+  TaskPoints++;
+}
+
+if(TaskPoints < 2)
+  fai = false;
+if(TaskPoints > 5)
+  fai = false;
+CALCULATED_INFO.TaskTotalDistance = TaskTotalDistance;
+CALCULATED_INFO.TaskFAIDistance   = TaskTotalDistance;
+if(TaskPoints == 5)
+{
+  if(Task[0].Index != Task[4].Index)  /* closed task ? */
+	fai = false;
+  else
+  {
+    from = 2;
+    to = 4;
+
+    double lat1 = WayPointList[Task[1].Index].Latitude;  //calculate the resulting triangle leg
+    double lon1 = WayPointList[Task[1].Index].Longitude;
+    double lat2 = WayPointList[Task[3].Index].Latitude;
+    double lon2 = WayPointList[Task[3].Index].Longitude;
+    DistanceBearing(lat1, lon1,  lat2,  lon2, &Leg, &Bear);
+
+    TaskTotalDistance -= Task[1].Leg;  // remove the two short legs to starting point
+    TaskTotalDistance -= Task[4].Leg;
+    TaskTotalDistance += Leg;          // add the direct leg instead
+    CALCULATED_INFO.TaskFAIDistance   = TaskTotalDistance;
+    fai = CheckFAILeg( Leg , TaskTotalDistance);
+  }
+}
+else
+{
+  if(Task[0].Index != Task[3].Index)  /* closed task ? */
+	fai = false;
+  from = 1;
+  to = TaskPoints;
+}
+
+
+if(fai)
+{
+  if ((TaskTotalDistance > 0))
+  {
+    for (i=from; i<to; i++) {
+	  if (fai)
+      {
+	    fai = CheckFAILeg( Task[i].Leg, TaskTotalDistance);
+      }
+    }
+   } else {
+    fai = false;
+  }
+}
+CALCULATED_INFO.TaskFAI = fai;
+return fai;
+}
+
 void RefreshTask(void) {
   double lengthtotal = 0.0;
   int i;
@@ -89,7 +180,8 @@ void RefreshTask(void) {
   CalculateTaskSectors();
   CalculateAATTaskSectors();
   UnlockTaskData();
-
+  IsFAI_Task();
   ClearOptimizedTargetPos();
 }
+
 

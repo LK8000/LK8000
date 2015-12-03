@@ -238,6 +238,9 @@ typedef struct _DERIVED_INFO
 			// point, which is always a final glide.
 			
   double TaskAltitudeArrival; // this is estimated task arrival height above ground
+  BOOL   TaskFAI;             // Ist Task FAI ?
+  double TaskTotalDistance;   // total Task Distance
+  double TaskFAIDistance;     // FAI Task distance if Task is FAI (can be different to Total when start on leg)
 
   double Experimental;
   // JMW note, new items should go at the bottom of this struct before experimental!
