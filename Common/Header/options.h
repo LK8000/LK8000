@@ -123,12 +123,15 @@
 // remove question for last turnpoint is good idea, but don't work
 // Usability of task definition needed to be refactoring before remove that.
 
+#define COM_DISCARD 0
+// en-/disable Com Port discard for Testbench on PC 
 
 // ----------------------------------------------------------------------------------------
 //
 // OPTIONALs not in use within official LK versions, but still available for custom version
 //
 // ----------------------------------------------------------------------------------------
+#define RADIO_ACTIVE
 
 //#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES

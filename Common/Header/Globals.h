@@ -46,6 +46,29 @@
 GEXTERN pointObj GlideFootPrint2[NUMTERRAINSWEEPS+1];
 #endif
 
+#ifdef RADIO_ACTIVE
+typedef struct _Radio_t
+{
+	double ActiveFrequency;    //active station frequency
+	double PassiveFrequency;   // passive (or standby) station frequency
+	TCHAR PassiveName[30] ;    // passive (or standby) station name
+	TCHAR ActiveName[30] ;     //active station name
+	int Volume ;               // Radio Volume
+	int Squelch ;              // Radio Squelch
+	int Vox ;                  // Radio Intercom Volume
+	BOOL Changed;              // Parameter Changed Flag            (TRUE = parameter changed)
+	BOOL Enabled;              // Radio Installed d Flag            (TRUE = Radio found)
+	BOOL Dual;                 // Dual Channel mode active flag     (TRUE = on)
+	BOOL Enabled8_33;          // 8,33kHz Radio enabled             (TRUE = 8,33kHz)
+	BOOL RX;                   // Radio reception active            (TRUE = reception)
+	BOOL TX;                   // Radio transmission active         (TRUE = transmission)
+	BOOL RX_active;            // Radio reception on active station (TRUE = reception)
+	BOOL RX_standy;            // Radio reception on passive        (standby) station
+	BOOL lowBAT;               // Battery low flag                  (TRUE = Batt low)
+	BOOL TXtimeout;            // Timeout while transmission (2Min)
+}Radio_t;
+#endif  // RADIO_ACTIVE        
+
 GEXTERN bool MenuActive GEXTFALSE;
 GEXTERN Poco::Event dataTriggerEvent;
 
@@ -481,6 +504,9 @@ GEXTERN double Experimental2;
 // task data
 Start_t StartPoints;
 TaskStats_t TaskStats;
+#ifdef RADIO_ACTIVE
+Radio_t RadioPara ;
+#endif  // RADIO_ACTIVE        
 Task_t Task = {{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0
 ,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0}};
 
@@ -492,7 +518,9 @@ std::vector<WPCALC> WayPointCalc;
 extern Start_t StartPoints;
 extern Task_t Task;
 extern TaskStats_t TaskStats;
-
+#ifdef RADIO_ACTIVE
+extern Radio_t RadioPara ;
+#endif  // RADIO_ACTIVE        
 extern std::vector<WAYPOINT> WayPointList;
 extern std::vector<WPCALC> WayPointCalc;
 #endif

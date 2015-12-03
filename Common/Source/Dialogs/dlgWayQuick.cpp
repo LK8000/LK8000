@@ -81,12 +81,38 @@ static void OnTaskClicked(WndButton* pWnd){
   wf->SetModalResult(mrOK);
 }
 
+
+static void OnRadioFrequencyClicked(WndButton* pWnd){
+#ifdef RADIO_ACTIVE
+
+  TCHAR szFreq[300];
+
+  double Ferquency;
+  LKASSERT(SelectedWaypoint>=0);
+  LKASSERT(ValidWayPointFast(SelectedWaypoint));
+  Ferquency = StrToDouble(WayPointList[SelectedWaypoint].Freq,NULL);
+
+  devPutFreqActive(devA(), Ferquency, WayPointList[SelectedWaypoint].Name);
+  devPutFreqActive(devB(), Ferquency, WayPointList[SelectedWaypoint].Name);
+
+  _stprintf(szFreq,_T(" %6.3fMHz ") ,Ferquency);
+
+  DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );  
+  DoStatusMessage(_T("RADIO:"), szFreq );
+  retStatus=3;
+  wf->SetModalResult(mrOK);
+#endif  // RADIO_ACTIVE        
+}
+
+
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnGotoClicked),
   ClickNotifyCallbackEntry(OnSetAlt1Clicked),
   ClickNotifyCallbackEntry(OnSetAlt2Clicked),
   ClickNotifyCallbackEntry(OnTaskClicked),
   ClickNotifyCallbackEntry(OnCancelClicked),
+  ClickNotifyCallbackEntry(OnDetailsClicked),
+  ClickNotifyCallbackEntry(OnRadioFrequencyClicked),
   OnPaintCallbackEntry(OnPaintWaypointPicto),
   EndCallBackEntry()
 };
@@ -101,13 +127,6 @@ short dlgWayQuickShowModal(void){
             ScreenLandscape ? IDR_XML_WAYPOINTQUICK_L : IDR_XML_WAYPOINTQUICK_P);
 
   if (!wf) return 0;
-
-  ((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetOnClickNotify(OnGotoClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetOnClickNotify(OnSetAlt1Clicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetOnClickNotify(OnSetAlt2Clicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetOnClickNotify(OnDetailsClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetOnClickNotify(OnTaskClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetOnClickNotify(OnCancelClicked);
 
   retStatus=0;
   if (WPLSEL.Format == LKW_CUP) {
@@ -144,26 +163,79 @@ short dlgWayQuickShowModal(void){
   }
   wf->SetCaption(sTmp);
 
+#ifdef RADIO_ACTIVE
+    const bool bRadioFreq = (_ttoi(WayPointList[SelectedWaypoint].Freq) > 0) && RadioPara.Enabled;
+#else
+    const bool bRadioFreq = false;
+#endif // RADIO_ACTIVE       
+  
   if (ScreenLandscape) {
-//	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetLeft(NIBLSCALE(3));
-	  int left = ((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->GetLeft();
-	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetWidth(ScreenSizeX-NIBLSCALE(5)-left);
+    PixelScalar left = 0;
+    WindowControl* pWnd = wf->FindByName(TEXT("cmdGoto"));
+    if(pWnd) {
+      left = pWnd->GetLeft();
+      pWnd->SetWidth(ScreenSizeX-NIBLSCALE(5)-left);
+    }
 
-	((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
-	((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetLeft(NIBLSCALE(3));
+	pWnd = wf->FindByName(TEXT("cmdSetAlt1"));
+    if(pWnd) {
+      pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
+	  pWnd->SetLeft(NIBLSCALE(3));
+    }
 
-	((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
-	((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+	pWnd = wf->FindByName(TEXT("cmdSetAlt2"));
+    if(pWnd) {
+      pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
+	  pWnd->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+    }
+	pWnd = wf->FindByName(TEXT("cmdDetails"));
+    if(pWnd) {
+      pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
+	  pWnd->SetLeft(NIBLSCALE(3));
+    }
+	pWnd = wf->FindByName(TEXT("cmdTask"));
+    if(pWnd) {
+      pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
+	  pWnd->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+    }
 
+	if(bRadioFreq) {
+	  pWnd = wf->FindByName(TEXT("cmdCancel"));
+      if(pWnd) {
+        pWnd->SetLeft(NIBLSCALE(3));
+	    pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
+      }
 
-	((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
-	((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetLeft(NIBLSCALE(3));
+	  pWnd = wf->FindByName(TEXT("cmdRadioFreq"));
+      if(pWnd) {
+        pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
+	    pWnd->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+      }
+	} else {
+      pWnd = wf->FindByName(TEXT("cmdCancel"));
+      if(pWnd) {
+        pWnd->SetLeft(NIBLSCALE(3));
+        pWnd->SetWidth((ScreenSizeX)-NIBLSCALE(8));
+      }
+    }
 
-	((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
-	((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
-
-	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(NIBLSCALE(3));
-	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetWidth((ScreenSizeX)-NIBLSCALE(8));
+	pWnd = wf->FindByName(TEXT("cmdRadioFreq"));
+    if(pWnd) {
+        pWnd->SetVisible(false);
+	}
+  } else {
+	if(bRadioFreq) {
+#warning "TODO : don't work on 4/3 Portrait mode"
+    } else {
+      WindowControl* pWndCancel = wf->FindByName(TEXT("cmdCancel"));
+      WindowControl* pWndFreq = wf->FindByName(TEXT("cmdRadioFreq"));
+      if(pWndCancel && pWndFreq) {
+        pWndCancel->SetTop(pWndFreq->GetTop());
+      }
+      if(pWndFreq) {
+          pWndFreq->SetVisible(false);
+      }
+    }
   } 
 
   wf->ShowModal();

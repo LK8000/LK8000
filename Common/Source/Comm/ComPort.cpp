@@ -44,7 +44,7 @@ bool ComPort::Close() {
 // this is used by all functions to send data out
 // it is called internally from thread for each device
 void ComPort::WriteString(const TCHAR * Text) {
-#if TESTBENCH && (WINDOWSPC>0)
+#if TESTBENCH && (WINDOWSPC>0) && COM_DISCARD
 StartupStore(_T("... ComPort write discarded: <%s>\n"),Text);
 return;
 #else
@@ -134,6 +134,13 @@ void ComPort::ProcessChar(char c) {
     if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort) {
         ComCheck_AddChar(c);
     }
+
+#ifdef RADIO_ACTIVE
+    if(RadioPara.Enabled && devParseStream(devIdx, &c, 1, &GPS_INFO)) {
+        // if this port is used for stream device, leave immediately.
+        return;
+    }
+#endif // RADIO_ACTIVE
 
     // last char need to be reserved for '\0' for avoid buffer overflow
     // in theory this should never happen because NMEA sentence can't have more than 82 char and _NmeaString size is 160.

@@ -27,7 +27,7 @@ static BOOL XCOM760PutVolume(PDeviceDescriptor_t d, int Volume) {
 }
 
 
-static BOOL XCOM760PutFreqActive(PDeviceDescriptor_t d, double Freq) {
+static BOOL XCOM760PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
   TCHAR  szTmp[32];
   _stprintf(szTmp, TEXT("$TXAF=%.3f\r\n"), Freq);
   d->Com->WriteString(szTmp);
@@ -35,7 +35,7 @@ static BOOL XCOM760PutFreqActive(PDeviceDescriptor_t d, double Freq) {
 }
 
 
-static BOOL XCOM760PutFreqStandby(PDeviceDescriptor_t d, double Freq) {
+static BOOL XCOM760PutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
   TCHAR  szTmp[32];
   _stprintf(szTmp, TEXT("$TXSF=%.3f\r\n"), Freq);
   d->Com->WriteString(szTmp);

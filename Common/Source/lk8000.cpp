@@ -40,6 +40,7 @@
 #include "devLK8EX1.h"
 #include "devDigifly.h"
 #include "devXCOM760.h"
+#include "devPVCOM.h"
 #include "devCondor.h"
 #include "devIlec.h"
 #include "devDSX.h"
@@ -47,6 +48,7 @@
 #include "devEye.h"
 #include "devWesterboer.h"
 #include "devFlyNet.h"
+#include "devKRT2.h"
 #include "InputEvents.h"
 #include "Geoid.h"
 #include "RasterTerrain.h"
@@ -330,7 +332,15 @@ int main(int argc, char *argv[]) {
 	StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
 	return -1;
     }
-
+  
+#ifdef RADIO_ACTIVE
+  memset( &(RadioPara), 0, sizeof(Radio_t));
+  RadioPara.Volume = 6;
+  RadioPara.Squelch = 3;
+  RadioPara.Vox = 5;
+   RadioPara.Enabled = false; //devIsRadio(devA()) || devIsRadio(devB());
+#endif  // RADIO_ACTIVE        
+  
   // Initialise main blackboard data
 
   memset( &(Task), 0, sizeof(Task_t));
@@ -518,6 +528,11 @@ int main(int argc, char *argv[]) {
   CDevCProbe::Register();
   BlueFlyRegister();
   LXV7easyRegister();
+#ifdef RADIO_ACTIVE  
+  PVCOMRegister();
+  KRT2Register();
+#endif  // RADIO_ACTIVE        
+    
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<

@@ -13,6 +13,7 @@
 #include "SerialPort.h"
 #include "Bluetooth/BthPort.h"
 #include "GpsIdPort.h"
+#include "devPVCOM.h"
 #include <functional>
 #ifdef __linux__
   #include <dirent.h>
@@ -322,7 +323,9 @@ BOOL devInit(LPCTSTR CommandLine) {
     TCHAR Port[MAX_PATH] = {_T('\0')};
     unsigned SpeedIndex = 2U;
     BitIndex_t BitIndex = bit8N1;
-
+#ifdef RADIO_ACTIVE    
+     RadioPara.Enabled = false;
+#endif     
     static bool doinit = true;
 
     pDevPrimaryBaroSource = NULL;
@@ -465,6 +468,24 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port){
   return(NULL);
 }
 
+ // devParseStream(devIdx, c, &GPS_INFO);
+BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS){
+  
+  PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
+  if (d && d->ParseStream) {
+    if (portNum>=0 && portNum<=1) {
+      ComPortHB[portNum]=LKHearthBeats;
+    }
+    if (d->ParseStream(d, stream, length, pGPS)) {
+          
+    }
+    return(TRUE);        
+  }
+
+  return(FALSE);    
+}    
+
+
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
 BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
@@ -589,9 +610,13 @@ BOOL devOpen(PDeviceDescriptor_t d, int Port){
   if (d != NULL && d->Open != NULL)
     res = d->Open(d, Port);
 
-  if (res == TRUE)
+  if (res == TRUE) {
     d->Port = Port;
-
+#ifdef RADIO_ACTIVE
+    if( devIsRadio(d))
+      RadioPara.Enabled = true;
+#endif        
+  }       
   return res;
 }
 
@@ -829,6 +854,18 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 }
 
 
+#ifdef RADIO_ACTIVE
+
+bool devDriverActivated(const TCHAR *DeviceName) {
+    if ((_tcscmp(dwDeviceName1, DeviceName) == 0) || (_tcscmp(dwDeviceName2, DeviceName) == 0)) {
+        if (_tcscmp(szPort1, szPort2) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
 {
   BOOL result = TRUE;
@@ -836,40 +873,151 @@ BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
   if (SIMMODE)
     return TRUE;
   LockComm();
-  if (d != NULL && d->PutVolume != NULL)
-    result = d->PutVolume(d, Volume);
+
+
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+      if (d->Com)
+      {
+        if(d->PutVolume != NULL)
+          result = d->PutVolume(d, Volume);
+
+        if (devDriverActivated(TEXT("PVCOM")))
+          PVCOMPutVolume(d, Volume);
+      }
+  }
+
   UnlockComm();
 
   return result;
 }
 
-BOOL devPutFreqActive(PDeviceDescriptor_t d, double Freq)
+
+BOOL devPutSquelch(PDeviceDescriptor_t d, int Squelch)
 {
   BOOL result = TRUE;
 
   if (SIMMODE)
     return TRUE;
   LockComm();
-  if (d != NULL && d->PutFreqActive != NULL)
-    result = d->PutFreqActive(d, Freq);
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+      if (d->Com)
+      {
+        if(d->PutSquelch != NULL)
+          result = d->PutSquelch(d, Squelch);
+    
+        if (devDriverActivated(TEXT("PVCOM")))
+          PVCOMPutSquelch(d, Squelch);
+      }
+  }
   UnlockComm();
 
   return result;
 }
 
-BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq)
+
+BOOL devPutRadioMode(PDeviceDescriptor_t d, int mode)
+{
+BOOL result = TRUE;
+
+  LockComm();
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+      if (d->Com)
+      {
+        if(d->RadioMode != NULL)
+          result = d->RadioMode(d,mode);
+
+        if (devDriverActivated(TEXT("PVCOM")))
+          PVCOMRadioMode(d,mode);
+      }
+  }
+  UnlockComm();
+ return result;
+}
+
+BOOL devPutFreqSwap(PDeviceDescriptor_t d)
+{
+BOOL result = TRUE;
+
+      LockComm();
+
+      if (d != NULL)
+      {
+        if(!d->Disabled)
+          if (d->Com)
+          {
+            if(d->StationSwap != NULL)
+              result = d->StationSwap(d);
+            if (devDriverActivated(TEXT("PVCOM")))
+              PVCOMStationSwap(d);
+          }
+      }
+      UnlockComm();
+ return result;
+}  
+
+
+
+
+BOOL devPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[])
+{
+BOOL result = TRUE;
+
+  if (SIMMODE)
+    return TRUE;
+
+  LockComm();
+
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+   {
+      if (d->Com)
+      {
+        if(d->PutFreqActive != NULL)
+          result = d->PutFreqActive(d, Freq,StationName);
+
+         if (devDriverActivated(TEXT("PVCOM")))
+            PVCOMPutFreqActive(d, Freq,StationName);
+      }
+    }
+  }
+
+  UnlockComm();
+
+  return result;
+}
+
+
+BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq,TCHAR  StationName[])
 {
   BOOL result = TRUE;
 
   if (SIMMODE)
     return TRUE;
   LockComm();
-  if (d != NULL && d->PutFreqStandby != NULL)
-    result = d->PutFreqStandby(d, Freq);
+  if (d != NULL)
+  {
+    if(!d->Disabled)
+      if (d->Com)
+      {
+        if(d->PutFreqStandby != NULL)
+          result = d->PutFreqStandby(d, Freq,StationName);
+
+         if (devDriverActivated(TEXT("PVCOM")))
+           PVCOMPutFreqStandby(d, Freq,StationName);
+      }
+  }
   UnlockComm();
 
   return result;
 }
+#endif  // RADIO_ACTIVE        
 
 
 static BOOL 
