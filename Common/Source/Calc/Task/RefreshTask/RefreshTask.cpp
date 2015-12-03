@@ -29,26 +29,6 @@ return fai;
 }
 
 
-BOOL CheckFAILeg(double leg, double total)
-{
-BOOL fai = true;
-if(total > 0.0)
-{
-  double lrat = leg/total;
-  if(total < FAI28_45Threshold)
-  {
-    if(lrat <= FAI_NORMAL_PERCENTAGE)  fai = false;
-  }
-  else
-  {
-    if(lrat <= FAI_BIG_PERCENTAGE)     fai = false;
-    if(lrat >= FAI_BIG_MAX_PERCENTAGE) fai = false;
-  }
-} else fai = false;
-return fai;
-}
-
-
 BOOL IsFAI_Task(void)
 {
 BOOL fai = true;
