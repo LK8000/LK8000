@@ -1360,6 +1360,10 @@ _@M1293_ "SONAR"
 #1294 REMOVED UNUSED
 _@M1294_ "Sonar OFF"
 _@M1295_ "Sideview"
+_@M1296_ "Optimizer"
+_@M1297_ "FAI Start on turnpoint"
+_@M1298_ "FAI Start on leg"
+_@M1299_ "FAI Mercedes star"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -2168,6 +2172,8 @@ _@M2248_  "No Near Object found!"
 _@M2249_  "DspMode"
 
 _@M2250_ "Ext. Sound"
+_@M2251_  "Optimizer\nmode"
+
 
 # MAX 2500! 
 # (Reserved for custom menus up to 2300!)

@@ -225,7 +225,7 @@ void UpdateAnalysis(void){
     } 
     waInfo->SetCaption(sTmp);
     break;
-  case ANALYSIS_PAGE_CONTEST:
+case ANALYSIS_PAGE_CONTEST:
     _stprintf(sTmp, TEXT("%s: %s - %s"), 
               // LKTOKEN  _@M93_ = "Analysis" 
               gettext(TEXT("_@M93_")),
@@ -235,11 +235,30 @@ void UpdateAnalysis(void){
     wfa->SetCaption(sTmp);
     
     {
+      bool typeFAITriangle = false;
+
       CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, false);
-      if(result.Type() == contestType) {
+
+      switch (contestType)
+      {
+        case CContestMgr::TYPE_FAI_TRIANGLE:  typeFAITriangle = true; FAI_OptimizerMode =3; break;
+        case CContestMgr::TYPE_FAI_TRIANGLE4: typeFAITriangle = true; FAI_OptimizerMode =4; break;
+#ifdef  FIVEPOINT_OPTIMIZER
+        case CContestMgr::TYPE_FAI_TRIANGLE5: typeFAITriangle = true; FAI_OptimizerMode =5;	break;
+#endif
+        default: break;
+      }
+
+      if(typeFAITriangle)
+	  {
+		 result = CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false);
+		 CContestMgr::Instance().RefreshFAIOptimizer();
+	  }
+      if ((result.Type() == contestType) || typeFAITriangle)
+      {
         BOOL bFAI = CContestMgr::Instance().FAI();
         double  fDist     = result.Distance();
-        if(!bFAI && (result.Type() == CContestMgr::TYPE_FAI_TRIANGLE))  // was only !bFAI
+        if(!bFAI && ( typeFAITriangle))  // was only !bFAI
         	fDist /=2.0;
         double  fCPDist   = CContestMgr::Instance().GetClosingPointDist();
         double  fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
@@ -249,12 +268,12 @@ void UpdateAnalysis(void){
 
 
         TCHAR distStr[50];  TCHAR speedStr[50];
-        if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && bFAI)
+        if(typeFAITriangle && bFAI)
           _stprintf(distStr, _T("%.1f %s FAI\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
         else
           _stprintf(distStr, _T("%.1f %s\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
 
-        if((result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && bFAI )
+        if(typeFAITriangle && bFAI )
           _stprintf(speedStr, _T("%s%-.1f %s\r\n(%.1f %%)\r\n"),gettext(TEXT("_@M1508_")),  DISTANCEMODIFY * fCPDist, Units::GetDistanceName(),fCPDist/fDist*100.0);
         else
           _stprintf(speedStr, TEXT("%.1f %s\r\n"),TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
@@ -262,7 +281,7 @@ void UpdateAnalysis(void){
         Units::TimeToText(timeTempStr, result.Duration());
         TCHAR timeStr[50];
 
-        if( (result.Type() == CContestMgr::TYPE_FAI_TRIANGLE) && bFAI && ISPARAGLIDER)
+        if( typeFAITriangle && bFAI && ISPARAGLIDER)
           _stprintf(timeStr, _T("\r\n%s%-.1f %s\r\n(%.1f %%)\r\n"),gettext(TEXT("_@M1511_")), DISTANCEMODIFY * fB_CPDist, Units::GetDistanceName(), fB_CPDist/fDist*100.0); //_@M1511_ = "B:"
         else
           _stprintf(timeStr, _T("%s\r\n"), timeTempStr);
@@ -270,6 +289,10 @@ void UpdateAnalysis(void){
         TCHAR scoreStr[50] = _T("");
         if(result.Type() != CContestMgr::TYPE_FAI_3_TPS &&
            result.Type() != CContestMgr::TYPE_FAI_TRIANGLE &&
+           result.Type() != CContestMgr::TYPE_FAI_TRIANGLE4 &&
+#ifdef  FIVEPOINT_OPTIMIZER
+           result.Type() != CContestMgr::TYPE_FAI_TRIANGLE5 &&
+#endif
            result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED)
           _stprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
         

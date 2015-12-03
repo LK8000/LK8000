@@ -138,7 +138,9 @@
   #define OWN_FLARM_TRACES
 //  #define FLARM_MS    // not implemented inside Multiselect dialog.
   #define OUTLINE_2ND		// double outline airspaces
+//  #define FIVEPOINT_OPTIMIZER
 #endif
+
 
 /*
  * MULTISELECT OPTIONS 

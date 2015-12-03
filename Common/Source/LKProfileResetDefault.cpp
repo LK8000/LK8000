@@ -342,7 +342,7 @@ void LKProfileResetDefault(void) {
   OverlayClock = 0;
   UseTwoLines = 0;
   SonarWarning_Config = 1; // sonar enabled by default on reset
-
+  FAI_OptimizerMode = 5;
   // default BB and IP is all ON
   ConfBB0 = 0; // TRM is off by default on v4
   ConfBB1 = 1;

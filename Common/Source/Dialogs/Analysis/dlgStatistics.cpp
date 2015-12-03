@@ -230,9 +230,25 @@ static void OnCalcClicked(WndButton* pWnd){
     case CContestMgr::TYPE_OLC_CLASSIC:
       contestType = CContestMgr::TYPE_FAI_TRIANGLE;
       break;
+      
     case CContestMgr::TYPE_FAI_TRIANGLE:
+      contestType = CContestMgr::TYPE_FAI_TRIANGLE4;
+      FAI_OptimizerMode = 4;
+      CContestMgr::Instance().RefreshFAIOptimizer();
+      break;
+    case CContestMgr::TYPE_FAI_TRIANGLE4:
+#ifdef  FIVEPOINT_OPTIMIZER
+      contestType = CContestMgr::TYPE_FAI_TRIANGLE5;
+      FAI_OptimizerMode = 5;
+
+      CContestMgr::Instance().RefreshFAIOptimizer();
+      break;
+
+    case CContestMgr::TYPE_FAI_TRIANGLE5:
+#endif
       contestType = CContestMgr::TYPE_OLC_FAI;
       break;
+      
     case CContestMgr::TYPE_OLC_FAI:
       contestType = CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
       break;

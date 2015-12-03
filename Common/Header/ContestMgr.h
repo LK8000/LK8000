@@ -51,6 +51,10 @@ public:
     TYPE_FAI_3_TPS,                               /**< @brief FAI with 3 turnpoints */
     TYPE_FAI_3_TPS_PREDICTED,                     /**< @brief FAI with 3 turnpoints predicted for returning to start */
     TYPE_FAI_TRIANGLE,                            /**< @brief FAI triangle 2 turnpoints predicted for returning to start */
+    TYPE_FAI_TRIANGLE4,                            /**< @brief FAI triangle 3 turnpoints predicted for returning to start "Start On Leg" */
+#ifdef   FIVEPOINT_OPTIMIZER
+    TYPE_FAI_TRIANGLE5,                            /**< @brief FAI triangle 2 turnpoints predicted for returning to start */
+#endif
     TYPE_NUM,                                     /**< @brief Do not use it! */
     TYPE_INVALID = TYPE_NUM
   };
@@ -154,7 +158,7 @@ private:
 
 public:
 
-
+  void RefreshFAIOptimizer(void);
   static CContestMgr &Instance() { return _instance; }
   static const TCHAR *TypeToString(TType type);
   
