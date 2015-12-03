@@ -27,10 +27,14 @@ static TCHAR szSoundPath[MAX_PATH] = {}; // path of Sound file, initialized by  
  * we use map for store sound when is used for first play
  * no need to load for next play.
  * all sound a free at shutdown.
- * for free before, we need to detect when sound ply is end.
+ * for free before, we need to detect when sound play is end.
  */
 typedef std::map<std::tstring, Mix_Chunk*> audioChunkCache_t;
 static audioChunkCache_t audioChunkCache; 
+/*
+ * Sound can be play from more than one thread, so we need use mutex for protect audioChunkCache.
+ */
+static Mutex mutex_sound;
 
 SoundGlobalInit::SoundGlobalInit() {
     // Consider using BogoMips to decide the buffer chunk size, shortest is fastest
@@ -82,6 +86,8 @@ void LKSound(const TCHAR *lpName) {
         return;
     }
     
+    ScopeLock Lock(mutex_sound);
+    
     // Check if AudioChunk is already loaded.
     auto ib = audioChunkCache.insert(std::make_pair(lpName, nullptr));
     if(ib.second) {
@@ -104,7 +110,9 @@ void PlayResource (const TCHAR* lpName) {
     if(!lpName || !bSoundFile || !bSoundInit || !EnableSoundModes) {
         return;
     }
-    
+
+    ScopeLock Lock(mutex_sound);
+
     // Check if AudioChunk is already loaded.
     auto ib = audioChunkCache.insert(std::make_pair(lpName, nullptr));
     if(ib.second) {
