@@ -164,7 +164,7 @@ short dlgWayQuickShowModal(void){
   wf->SetCaption(sTmp);
 
 #ifdef RADIO_ACTIVE
-    const bool bRadioFreq = (_ttoi(WayPointList[SelectedWaypoint].Freq) > 0) && RadioPara.Enabled;
+    const bool bRadioFreq = (_tcstol(WayPointList[SelectedWaypoint].Freq, nullptr, 10) > 0) && RadioPara.Enabled;
 #else
     const bool bRadioFreq = false;
 #endif // RADIO_ACTIVE       

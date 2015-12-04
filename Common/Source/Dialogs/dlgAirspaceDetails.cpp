@@ -121,14 +121,14 @@ double  ExtractFrequency(TCHAR *text)
  {
    if (text[i] == '1')
    {
-     Mhz  = _ttoi(&text[i]);
+     Mhz  = _tcstol(&text[i], nullptr, 10);
 	 if(Mhz >= 118)
 	   if(Mhz <= 138)
 	         if((i+3) < iTxtlen)
 	         {
 		       if((text[i+3] == '.') || (text[i+3] == ','))
 		       {
-		         kHz = _ttoi(&text[i+4]);
+		         kHz = _tcstol(&text[i+4], nullptr, 10);
 		         if(kHz > 0)
 		           while (kHz < 100)
 		    	     kHz *=10;
