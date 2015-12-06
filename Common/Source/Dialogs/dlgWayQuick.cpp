@@ -221,7 +221,7 @@ short dlgWayQuickShowModal(void){
 
 	pWnd = wf->FindByName(TEXT("cmdRadioFreq"));
     if(pWnd) {
-        pWnd->SetVisible(false);
+        pWnd->SetVisible(true);
 	}
   } else {
 	if(bRadioFreq) {

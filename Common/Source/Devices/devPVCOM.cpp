@@ -63,7 +63,7 @@ LKASSERT(szStrg != NULL);
 
 BOOL PVCOMIsRadio(PDeviceDescriptor_t d){
   (void)d;
-   PVCOMStationSwap( d) ;
+
   return(TRUE); 
 }
 
@@ -143,7 +143,7 @@ BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[
 
 BOOL PVCOMStationSwap(PDeviceDescriptor_t d) {
   TCHAR  szTmp[255];
-   StartupStore(_T(". RADIO Stanby swap %s"), NEWLINE);
+   StartupStore(_T(". RADIO Station swap %s"), NEWLINE);
   _stprintf(szTmp, TEXT("$PVCOM,S,CHG"));
   PVCOMNMEAddCheckSumStrg(szTmp);
   if(d != NULL)

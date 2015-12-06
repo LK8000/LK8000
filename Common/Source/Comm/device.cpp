@@ -25,6 +25,11 @@
 
 #endif // __linux__
 
+
+#ifdef RADIO_ACTIVE
+bool devDriverActivated(const TCHAR *DeviceName) ;
+#endif    
+    
 using namespace std::placeholders;
 
 // A note about locking.
@@ -431,6 +436,18 @@ BOOL devInit(LPCTSTR CommandLine) {
             delete Com;
             ComPortStatus[i] = CPS_OPENKO;
         }
+#ifdef RADIO_ACTIVE    
+       if(devIsRadio(&DeviceList[i]))
+       {       
+          RadioPara.Enabled = true;         
+          StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
+       }
+       if(devDriverActivated(TEXT("PVCOM")))
+       {       
+          RadioPara.Enabled = true;         
+          StartupStore(_T(".  RADIO  %c  PVCOM over  shared <%s>%s"), (_T('A') + i),  Port, NEWLINE);
+       }        
+#endif          
     }
 
     if (pDevNmeaOut != NULL) {
@@ -505,7 +522,9 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 	// TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
 	d->pDevPipeTo->Com->WriteString(String);
     }
-
+    if (devDriverActivated(TEXT("PVCOM")))
+      PVCOMParseString(d, String, pGPS);
+  
     if (d->ParseNMEA != NULL)
 	if ((d->ParseNMEA)(d, String, pGPS)) {
 		//GPSCONNECT  = TRUE; // NO! 121126
@@ -612,10 +631,7 @@ BOOL devOpen(PDeviceDescriptor_t d, int Port){
 
   if (res == TRUE) {
     d->Port = Port;
-#ifdef RADIO_ACTIVE
-    if( devIsRadio(d))
-      RadioPara.Enabled = true;
-#endif        
+    
   }       
   return res;
 }
