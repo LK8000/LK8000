@@ -418,6 +418,8 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
 		      fDist_a -= fDelta_Dist;
 		      fDist_b += fDelta_Dist;
 		    }
+		    LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
+		    apSectorPolygon[iPolyPtr++]   =  apSectorPolygon[0];
 		    /********************************************/
                                         Surface.Polygon(apSectorPolygon,iPolyPtr);
 		    /********************************************/

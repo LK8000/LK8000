@@ -24,6 +24,9 @@ extern LKColor taskcolor;
 int RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
 extern BOOL CheckFAILeg(double leg, double total);
 
+
+//#define   FILL_FAI_SECTORS
+
 void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft)
 {
 
@@ -507,8 +510,11 @@ if (iOpposite >0)
   const auto hpOldPen = Surface.SelectObject(hpSectorPen);
   const auto hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
 
+#ifdef FILL_FAI_SECTORS
   Surface.Polygon(apSectorPolygon,iPolyPtr,rc);
-
+#else
+  Surface.Polyline(apSectorPolygon,iPolyPtr,rc);
+#endif
 
 
 
@@ -558,10 +564,14 @@ if (iOpposite >0)
 		      fDist_a += fDelta_Dist;
 		      fDist_b -= fDelta_Dist;
 		    }
-		    /********************************************/
-		    /********************************************/
+                                        LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
+                                        apSectorPolygon[iPolyPtr++] = apSectorPolygon[0] ; // close the polygon
+		    /********************************************/                                        
+                                        #ifdef FILL_FAI_SECTORS
 		    Surface.Polygon(apSectorPolygon,iPolyPtr,rc);
-		    /********************************************/
+                                       #else
+                                       Surface.Polyline(apSectorPolygon,iPolyPtr,rc);
+                                       #endif
 		    /********************************************/
   }
 
