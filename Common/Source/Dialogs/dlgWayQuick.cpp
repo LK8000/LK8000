@@ -217,12 +217,12 @@ short dlgWayQuickShowModal(void){
         pWnd->SetLeft(NIBLSCALE(3));
         pWnd->SetWidth((ScreenSizeX)-NIBLSCALE(8));
       }
-    }
 
-	pWnd = wf->FindByName(TEXT("cmdRadioFreq"));
-    if(pWnd) {
-        pWnd->SetVisible(true);
-	}
+	  pWnd = wf->FindByName(TEXT("cmdRadioFreq"));
+      if(pWnd) {
+        pWnd->SetVisible(false);
+	  }
+    }
   } else {
 	if(bRadioFreq) {
 #warning "TODO : don't work on 4/3 Portrait mode"
