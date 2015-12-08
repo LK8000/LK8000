@@ -44,6 +44,18 @@ struct RasterPoint : public tagPOINT {
   constexpr RasterPoint operator-(RasterPoint other) const {
     return { x - other.x, y - other.y };
   }
+  
+  RasterPoint &operator+=(const RasterPoint& other) {
+    x += other.x;
+    y += other.y;
+    return *this;
+  }
+
+  RasterPoint &operator-=(const RasterPoint& other) {
+    x -= other.x;
+    y -= other.y;
+    return *this;
+  }  
 };
 
 static_assert(sizeof(RasterPoint) == sizeof(POINT), "not same size");
