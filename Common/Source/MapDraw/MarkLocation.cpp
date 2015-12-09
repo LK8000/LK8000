@@ -97,8 +97,10 @@ void MarkLocation(const double lon, const double lat, const double altitude)
     #if BUGSTOP
     LKASSERT(WayPointList[j].Comment!=NULL);
     #endif
-    if (WayPointList[j].Comment!=NULL)
-	    _stprintf(WayPointList[j].Comment,_T("Near: %s"),snear);
+    if (WayPointList[j].Comment!=NULL) {
+        ascii2TCHAR(snear, tstring, 50);
+	    _stprintf(WayPointList[j].Comment,_T("Near: %s"),tstring);
+    }
 
 	WayPointCalc[j].WpType=WPT_TURNPOINT;
 
