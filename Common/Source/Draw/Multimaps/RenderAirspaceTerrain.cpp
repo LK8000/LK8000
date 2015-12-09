@@ -298,7 +298,10 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
 
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 1].x = iround(0 * dx1) + x0; //iround(j*dx1)+x0;
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 1].y = CalcHeightCoordinat(0, psDiag); //iBottom;
-    Surface.Polygon(apTerrainPolygon, AIRSPACE_SCANSIZE_X + 2);
+    apTerrainPolygon[AIRSPACE_SCANSIZE_X + 2] = apTerrainPolygon[0];
+    
+    static_assert(array_size(apTerrainPolygon) >= AIRSPACE_SCANSIZE_X + 3, "wrong array size");
+    Surface.Polygon(apTerrainPolygon, AIRSPACE_SCANSIZE_X + 3);
 
     Surface.SelectObject(oldPen);
     Surface.SelectObject(oldBrush);
