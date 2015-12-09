@@ -114,7 +114,11 @@
 #define OVS 2
 
 // number of radials to do range footprint calculation on
+#ifndef UNDER_CE
+#define NUMTERRAINSWEEPS 40
+#else
 #define NUMTERRAINSWEEPS 20
+#endif
 
 // number of points along final glide to scan for terrain
 #define NUMFINALGLIDETERRAIN 30
