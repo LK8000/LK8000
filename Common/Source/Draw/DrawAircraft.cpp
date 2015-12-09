@@ -19,12 +19,14 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
         POINT AircraftInner[] = {
             { 0, -5},
             {5, 9},
-            {-5, 9}
+            {-5, 9},
+            { 0, -5}
         };
         POINT AircraftOuter[] = {
             { 0, -6},
             {6, 10},
-            {-6, 10}
+            {-6, 10},
+            { 0, -6}
         };
         
         BrushReference hbPAircraftSolid; 
@@ -70,7 +72,9 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
             {-15, 2},
             {-15, 0},
             {-2, -1},
-            {-1, -6}
+            {-1, -6},
+            { 1, -6}
+
         };
 
         BrushReference hbAircraftSolid = LKBrush_Black;
