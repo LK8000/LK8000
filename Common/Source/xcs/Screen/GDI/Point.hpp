@@ -58,6 +58,14 @@ struct RasterPoint : public tagPOINT {
   }  
 };
 
+inline bool operator==(const tagPOINT &first, const tagPOINT &second) {
+  return first.x == second.x && first.y == second.y;
+}
+
+inline bool operator!=(const tagPOINT &first, const tagPOINT &second) {
+  return !(first == second);
+}
+
 static_assert(sizeof(RasterPoint) == sizeof(POINT), "not same size");
 
 struct PixelSize : public tagSIZE {
