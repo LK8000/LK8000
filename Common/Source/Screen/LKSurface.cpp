@@ -221,6 +221,7 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
 }
 
 void LKSurface::Polygon(const POINT *apt, int cpt) {
+    assert(apt[0] == apt[cpt-1]);
 #ifdef WIN32
     ::Polygon(*this, apt, cpt);
 #else
@@ -231,6 +232,7 @@ void LKSurface::Polygon(const POINT *apt, int cpt) {
 }
 
 void LKSurface::Polygon(const POINT *apt, int cpt, const RECT& ClipRect) {
+    assert(apt[0] == apt[cpt-1]);
     if(cpt>=3) {
 #ifdef ENABLE_OPENGL
         const GLPushScissor push_scissor();
