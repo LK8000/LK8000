@@ -381,3 +381,6 @@ _@M2188_ "Thermal Min"
 #radio strings
 _@M2306_  "Setup\nRadio"
 _@M2307_  "Radio Settings"
+
+#statup poweroff button label for kobo
+_@M1901_ "POWER OFF"

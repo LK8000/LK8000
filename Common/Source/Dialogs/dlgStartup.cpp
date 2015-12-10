@@ -17,6 +17,11 @@
 #include "OS/Memory.h"
 #include "Sound/Sound.h"
 #include "ScreenGeometry.h"
+#include "Asset.hpp"
+
+#ifdef KOBO
+bool RestartToNickel = false;
+#endif
 
 extern void Shutdown(void);
 extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
@@ -253,6 +258,9 @@ static void OnDUALPROFILEClicked(WndButton* pWnd) {
 
 static void OnEXITClicked(WndButton* pWnd) {
     RUN_MODE = RUN_EXIT;
+#ifdef KOBO
+    RestartToNickel = false;
+#endif
     wf->SetModalResult(mrOK);
 }
 
@@ -280,6 +288,16 @@ static void OnPILOTClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 
+#ifdef KOBO
+static void OnNickelClick(WndButton* pWnd) {
+    RUN_MODE = RUN_EXIT;
+    RestartToNickel = true;
+    LKSound(_T("LK_SLIDE.WAV"));
+    wf->SetModalResult(mrOK);
+}
+#endif
+
+
 static CallBackTableEntry_t CallBackTable[] = {
     OnPaintCallbackEntry(OnSplashPaint),
     ClickNotifyCallbackEntry(OnPILOTClicked),
@@ -305,8 +323,14 @@ static WndForm* InitFlySim() {
         WindowControl * pWnd = nullptr;
 
         if (ScreenLandscape) {
+            
+#ifdef KOBO
+            const unsigned int SPACEBORDER = 1;
+            const unsigned int w = (ScreenSizeX - (SPACEBORDER * 6)) / 5;
+#else
             const unsigned int SPACEBORDER = NIBLSCALE(2);
             const unsigned int w = (ScreenSizeX - (SPACEBORDER * 5)) / 4;
+#endif                        
             unsigned int lx = SPACEBORDER - 1; // count from 0
 
             pWnd = pWndForm->FindByName(TEXT("cmdFLY"));
@@ -315,6 +339,13 @@ static WndForm* InitFlySim() {
                 pWnd->SetLeft(lx);
             }
 
+#ifdef KOBO
+            lx += w + SPACEBORDER;
+            WndButton* pWndNickel = new WndButton(pWndForm, _T("cmdNICKEL"), _T("NICKEL"), lx , IBLSCALE(205), w, IBLSCALE(30), &OnNickelClick );
+            if(pWndNickel) {
+                
+            }
+#endif            
             lx += w + SPACEBORDER;
             pWnd = pWndForm->FindByName(TEXT("cmdDUALPROFILE"));
             if(pWnd) {
@@ -327,6 +358,9 @@ static WndForm* InitFlySim() {
             if(pWnd) {
                 pWnd->SetWidth(w);
                 pWnd->SetLeft(lx);
+#ifdef KOBO
+                pWnd->SetCaption(gettext(_T("_@M1901_"))); // POWER OFF
+#endif
             }
 
             lx += w + SPACEBORDER;
@@ -335,32 +369,65 @@ static WndForm* InitFlySim() {
                 pWnd->SetWidth(w);
                 pWnd->SetLeft(lx);
             }
-
         } else {
-            const int h = ScreenSizeY - IBLSCALE(90); // 40+5+40+5
+            const unsigned SPACEBORDER = NIBLSCALE(2);
+            unsigned w = (ScreenSizeX - (SPACEBORDER * 3)) / 2;
+            int h = ScreenSizeY - IBLSCALE(90); // 40+5+40+5
+
+            int lx = SPACEBORDER - 1; // count from 0
             pWnd = pWndForm->FindByName(TEXT("cmdFLY"));
             if(pWnd) {
                 pWnd->SetTop(h + IBLSCALE(45));
+                pWnd->SetLeft(lx);
                 pWnd->SetHeight(IBLSCALE(40));
+                pWnd->SetWidth(w);
             }
-
-            pWnd = pWndForm->FindByName(TEXT("cmdDUALPROFILE"));
-            if(pWnd) {
-                pWnd->SetTop(h);
-                pWnd->SetHeight(IBLSCALE(40));
-            }
-
-            pWnd = pWndForm->FindByName(TEXT("cmdEXIT"));
-            if(pWnd) {
-                pWnd->SetTop(h);
-                pWnd->SetHeight(IBLSCALE(40));
-            }
-
+            
+            lx += w + SPACEBORDER;
             pWnd = pWndForm->FindByName(TEXT("cmdSIM"));
             if(pWnd) {
                 pWnd->SetTop(h + IBLSCALE(45));
+                pWnd->SetLeft(lx);
                 pWnd->SetHeight(IBLSCALE(40));
-            }            
+                pWnd->SetWidth(w);
+            }
+
+            
+#ifdef KOBO
+            lx = SPACEBORDER - 1; // count from 0
+            
+            WndButton* pWndNickel = new WndButton(pWndForm, _T("cmdNICKEL"), _T("NICKEL"), lx , h, w, IBLSCALE(40), &OnNickelClick );
+            if(pWndNickel) {
+                w = (ScreenSizeX - (SPACEBORDER * 4)) / 3;
+                pWndNickel->SetTop(h);
+                pWndNickel->SetLeft(lx);
+                pWndNickel->SetHeight(IBLSCALE(40));
+                pWndNickel->SetWidth(w);
+            }
+ 
+            lx += w + SPACEBORDER;
+#else
+            lx = SPACEBORDER - 1; // count from 0
+#endif            
+            pWnd = pWndForm->FindByName(TEXT("cmdDUALPROFILE"));
+            if(pWnd) {
+                pWnd->SetTop(h);
+                pWnd->SetLeft(lx);
+                pWnd->SetHeight(IBLSCALE(40));
+                pWnd->SetWidth(w);
+            }
+            
+            lx += w + SPACEBORDER;
+            pWnd = pWndForm->FindByName(TEXT("cmdEXIT"));
+            if(pWnd) {
+                pWnd->SetTop(h);
+                pWnd->SetLeft(lx);
+                pWnd->SetHeight(IBLSCALE(40));
+                pWnd->SetWidth(w);
+#ifdef KOBO
+                pWnd->SetCaption(gettext(_T("_@M1901_"))); // POWER OFF
+#endif
+            }
         }
     }    
     return pWndForm;
@@ -777,8 +844,9 @@ short dlgStartupShowModal(void) {
                 gettext(TEXT("_@M198_")),
                 TEXT("LK8000"), mbYesNo) == IdYes) {
             Shutdown();
-        } else
+        } else {
             RUN_MODE = RUN_WELCOME;
+        }
     }
 
 

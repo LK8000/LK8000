@@ -358,12 +358,6 @@ int main(int argc, char *argv[]) {
   PreloadInitialisation(false); // calls dlgStartup
   if(RUN_MODE == RUN_EXIT || RUN_MODE == RUN_SHUTDOWN) {
 	realexitforced=true;
-    
-#if (defined(KOBO) && defined(NDEBUG))
-#warning "Temporary : remove when we have KoboMenu"  
-    KoboExecNickel();
-#endif  
-    
 	goto _Shutdown;
   }
 
@@ -652,9 +646,16 @@ _Shutdown:
   #endif
   #endif
 
-#if (defined(KOBO) && defined(NDEBUG))
+#ifdef KOBO
+  extern bool RestartToNickel;
 #warning "Temporary : remove when we have KoboMenu"  
-  KoboPowerOff();
+  if(RestartToNickel) {
+    KoboExecNickel();
+  } else {
+#ifdef NDEBUG
+    KoboPowerOff();
+#endif
+  }
 #endif  
   
   if (realexitforced) return 222;
