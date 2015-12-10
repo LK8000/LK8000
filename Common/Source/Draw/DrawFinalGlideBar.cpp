@@ -24,22 +24,16 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
         return;
     }
 
-    POINT GlideBar[6] = {
+    RasterPoint GlideBar[7] = {
         {0, 0},
-        {9, -9},
-        {18, 0},
-        {18, 0},
-        {9, 0},
+        {IBLSCALE(9), IBLSCALE(-9)},
+        {IBLSCALE(18), 0},
+        {IBLSCALE(18), 0},
+        {IBLSCALE(9), 0},
+        {0, 0},
         {0, 0}
     };
-    POINT GlideBar0[6] = {
-        {0, 0},
-        {9, -9},
-        {18, 0},
-        {18, 0},
-        {9, 0},
-        {0, 0}
-    };
+    RasterPoint GlideBar0[7] = GlideBar;
 
     LKSurface::OldPen hpOld;
     LKSurface::OldBrush hbOld;
@@ -48,7 +42,6 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
 
     int Offset;
     int Offset0;
-    int i;
     int lkVarioOffset = 0, minBar, maxBar;
 
     if (LKVarioBar)
@@ -83,7 +76,10 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
     if (ValidTaskPoint(ActiveTaskPoint)) {
 #endif
 
-        const int y0 = ((rc.bottom - rc.top) / 2) + rc.top;
+        const RasterPoint Origin = {
+            rc.left + lkVarioOffset, 
+            rc.top + ((rc.bottom - rc.top) / 2)
+        };
 
 #if 110609
         if (ValidTaskPoint(1) && OvertargetMode == OVT_TASK && GlideBarMode == (GlideBarMode_t) gbFinish) {
@@ -123,29 +119,26 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
         if (Offset > maxBar) Offset = maxBar;
         if (Offset < minBar) Offset = minBar;
         Offset = IBLSCALE(Offset);
-        if (Offset < 0) {
-            GlideBar[1].y = NIBLSCALE(9);
+        if (Offset <= 0) {
+            GlideBar[1].y *= -1;
         }
 
         if (Offset0 > maxBar) Offset0 = maxBar;
         if (Offset0 < minBar) Offset0 = minBar;
         Offset0 = IBLSCALE(Offset0);
-        if (Offset0 < 0) {
-            GlideBar0[1].y = NIBLSCALE(9);
+        if (Offset0 <= 0) {
+            GlideBar0[1].y *= -1;
         }
 
-        for (i = 0; i < 6; i++) {
-            GlideBar[i].y += y0;
-            // if vario activated
-            GlideBar[i].x = IBLSCALE(GlideBar[i].x) + rc.left + lkVarioOffset; //@ 091114
+        for (RasterPoint &pt : GlideBar){
+            pt += Origin;
         }
         GlideBar[0].y -= Offset;
         GlideBar[1].y -= Offset;
         GlideBar[2].y -= Offset;
 
-        for (i = 0; i < 6; i++) {
-            GlideBar0[i].y += y0;
-            GlideBar0[i].x = IBLSCALE(GlideBar0[i].x) + rc.left + lkVarioOffset; //@ 091114
+        for (RasterPoint &pt : GlideBar0){
+            pt += Origin;
         }
         GlideBar0[0].y -= Offset0;
         GlideBar0[1].y -= Offset0;
@@ -177,6 +170,8 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
                 Offset = Offset0;
             }
         }
+        GlideBar[6] = GlideBar[0]; // Close Polygon
+        GlideBar0[6] = GlideBar0[0]; // Close Polygon
 
         // draw actual glide bar
 
@@ -187,7 +182,7 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
             hpOld = Surface.SelectObject(hpFinalGlideAbove);
             hbOld = Surface.SelectObject(LKBrush_Green);
         }
-        Surface.Polygon(GlideBar, 6);
+        Surface.Polygon(GlideBar, array_size(GlideBar));
 
         // in case of invalid bar because finish mode with real task but no valid start, we skip
         if (invalidbar) {
@@ -206,7 +201,7 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
                 Surface.SelectObject(LKBrush_Hollow);
             }
             if (Offset != Offset0) {
-                Surface.Polygon(GlideBar0, 6);
+                Surface.Polygon(GlideBar0, array_size(GlideBar0));
             }
 
 
@@ -215,15 +210,15 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
                 if ((DerivedDrawInfo.TaskTimeToGo > 0.9 * ERROR_TIME) ||
                         ((MACCREADY < 0.01) && (DerivedDrawInfo.TaskAltitudeDifference < 0))) {
                     Surface.SelectObject(LKPen_White_N2);
-                    POINT Cross[4] = {
-                        {-5, -5},
-                        { 5, 5},
-                        {-5, 5},
-                        { 5, -5}
+                    RasterPoint Cross[4] = {
+                        { IBLSCALE(-5 + 9), IBLSCALE(-5 + 9)},
+                        { IBLSCALE(5 + 9), IBLSCALE(5 + 9)},
+                        { IBLSCALE(-5 + 9), IBLSCALE(5 + 9)},
+                        { IBLSCALE(5 + 9), IBLSCALE(-5 + 9)},
                     };
-                    for (i = 0; i < 4; i++) {
-                        Cross[i].x = IBLSCALE(Cross[i].x + 9) + lkVarioOffset; //@ 091114
-                        Cross[i].y = IBLSCALE(Cross[i].y + 9) + y0;
+                    
+                    for (RasterPoint &pt : Cross){
+                        pt += Origin;
                     }
                     Surface.Polyline(&Cross[0], 2);
                     Surface.Polyline(&Cross[2], 2);
@@ -231,15 +226,14 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
             } else {
                 if ((MACCREADY < 0.01) && (DerivedDrawInfo.NextAltitudeDifference < 0)) {
                     Surface.SelectObject(LKPen_White_N2);
-                    POINT Cross[4] = {
-                        {-5, -5},
-                        { 5, 5},
-                        {-5, 5},
-                        { 5, -5}
+                    RasterPoint Cross[4] = {
+                        { IBLSCALE(-5 + 9), IBLSCALE(-5 + 9)},
+                        { IBLSCALE(5 + 9), IBLSCALE(5 + 9)},
+                        { IBLSCALE(-5 + 9), IBLSCALE(5 + 9)},
+                        { IBLSCALE(5 + 9), IBLSCALE(-5 + 9)},
                     };
-                    for (i = 0; i < 4; i++) {
-                        Cross[i].x = IBLSCALE(Cross[i].x + 9) + lkVarioOffset;
-                        Cross[i].y = IBLSCALE(Cross[i].y + 9) + y0;
+                    for (RasterPoint &pt : Cross){
+                        pt += Origin;
                     }
                     Surface.Polyline(&Cross[0], 2);
                     Surface.Polyline(&Cross[2], 2);

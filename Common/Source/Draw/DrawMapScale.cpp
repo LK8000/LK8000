@@ -20,7 +20,17 @@
 #define MAPSCALE_VSIZE  NIBLSCALE(42)
 #define MAPSCALE_HSIZE  NIBLSCALE(5)
 #define MAPSCALE_RIGHTMARGIN   (rc.right-NIBLSCALE(3))
-#define MAPSCALE_BOTTOMMARGIN  (rc.bottom-NIBLSCALE(4) - (inpanmode?0:BottomSize))
+
+/* in Landscape mode, we need to draw Scale upper for avoid menu overlap
+ * this define are crap, but i don't have better way for do that now.
+ * TODO : find right way for have menu size and visibility.
+ * Bruno.
+ */
+#define MAPSCALE_BOTTOMMARGIN  (rc.bottom-NIBLSCALE(4) - (inpanmode? \
+                                                                ( ScreenLandscape? \
+                                                                    std::min<PixelScalar>(((rc.bottom-rc.top)-4)/5, NIBLSCALE(40)) \
+                                                                    : 0) \
+                                                                : BottomSize))
 
 void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*/, 
                              const bool ScaleChangeFeedback)
