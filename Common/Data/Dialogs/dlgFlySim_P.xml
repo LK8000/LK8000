@@ -2,9 +2,9 @@
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmFlySim" Type="Dialog" X="0" Y="0" Width="240" Height="320" BackColor="0" Font="2"  >
     <WndOwnerDrawFrame Name="frmSplash" X="0" Y="0" Width="240" Height="260" Font="0" OnPaint="OnSplashPaint" />
-    <WndButton Name="cmdFLY" Caption="_@M281_" X="2" Y="275" Width="115"  Height="40" Font="2" Tag="3" />
-    <WndButton Name="cmdDUALPROFILE" Caption="_@M516_" X="2" Y="230" Width="115"  Height="40" Font="2" Tag="3" />
-    <WndButton Name="cmdEXIT" Caption="_@M248_" X="123" Y="230" Width="115"  Height="40" Font="2" Tag="3" />
-    <WndButton Name="cmdSIM" Caption="_@M569_" X="123" Y="275" Width="115"  Height="40" Font="2" Tag="3" />
+    <WndButton Name="cmdFLY"         Caption="_@M281_" X="2"   Y="275" Width="115"  Height="40" Font="2" Tag="3" OnClickNotify="OnFLYClicked" />
+    <WndButton Name="cmdDUALPROFILE" Caption="_@M516_" X="2"   Y="230" Width="115"  Height="40" Font="2" Tag="3" OnClickNotify="OnDUALPROFILEClicked" />
+    <WndButton Name="cmdEXIT"        Caption="_@M248_" X="123" Y="230" Width="115"  Height="40" Font="2" Tag="3" OnClickNotify="OnEXITClicked" />
+    <WndButton Name="cmdSIM"         Caption="_@M569_" X="123" Y="275" Width="115"  Height="40" Font="2" Tag="3" OnClickNotify="OnSIMClicked" />
   </WndForm>
 </PMML>

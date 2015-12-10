@@ -2,10 +2,10 @@
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmDual" Type="Dialog" X="0" Y="0" Width="320" Height="240" Font="2" BackColor="0" Caption="" >
     <WndOwnerDrawFrame Name="frmSplash" X="0" Y="0" Width="318" Height="210" Font="0" OnPaint="OnSplashPaint" />
-    <WndButton Name="cmdAIRCRAFT" Caption="_@M1745_" X="1" Y="205" Width="67"  Height="30" Font="2" Tag="3" />
-    <WndButton Name="cmdPROFILE" Caption="_@M1746_" X="93" Y="205" Width="67"  Height="30" Font="2" Tag="3" />
-    <WndButton Name="cmdDEVICE" Caption="_@M1818_" X="93" Y="205" Width="67"  Height="30" Font="2" Tag="3" />
-    <WndButton Name="cmdPILOT" Caption="_@M1756_" X="166" Y="205" Width="59"  Height="30" Font="2" Tag="3" />
-    <WndButton Name="cmdCLOSE" Caption="_@M156_" X="228" Y="205" Width="59"  Height="30" Font="2" Tag="3" />
+    <WndButton Name="cmdAIRCRAFT" Caption="_@M1745_" X="1"   Y="205" Width="67"  Height="30" Font="2" Tag="3" OnClickNotify="OnAIRCRAFTClicked" />
+    <WndButton Name="cmdPROFILE"  Caption="_@M1746_" X="93"  Y="205" Width="67"  Height="30" Font="2" Tag="3" OnClickNotify="OnPROFILEClicked" />
+    <WndButton Name="cmdDEVICE"   Caption="_@M1818_" X="93"  Y="205" Width="67"  Height="30" Font="2" Tag="3" OnClickNotify="OnDEVICEClicked"  />
+    <WndButton Name="cmdPILOT"    Caption="_@M1756_" X="166" Y="205" Width="59"  Height="30" Font="2" Tag="3" OnClickNotify="OnPILOTClicked" />
+    <WndButton Name="cmdCLOSE"    Caption="_@M156_"  X="228" Y="205" Width="59"  Height="30" Font="2" Tag="3" OnClickNotify="OnCloseClicked" />
   </WndForm>
 </PMML>
