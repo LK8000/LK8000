@@ -35,8 +35,8 @@ SubCanvas::SubCanvas(Canvas &canvas, RasterPoint _offset, PixelSize _size)
   offset = canvas.offset + _offset;
   
   /* sub canvas bottom right limits can't be outside "parent" canvas. */
-  size.cx = std::min((int)_size.cx, canvas.GetSize().cx - _offset.x) ;
-  size.cy = std::min((int)_size.cy, canvas.GetSize().cy - _offset.y) ;
+  size.cx = std::min<PixelScalar>(_size.cx, canvas.GetSize().cx - _offset.x) ;
+  size.cy = std::min<PixelScalar>(_size.cy, canvas.GetSize().cy - _offset.y) ;
 
   if (relative.x != 0 || relative.y != 0) {
     OpenGL::translate += _offset;
