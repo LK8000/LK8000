@@ -1692,11 +1692,7 @@ int WndForm::ShowModal(void) {
     Window* oldFocus = Window::GetFocusedWindow();
     FocusNext(NULL);
 
-#ifndef USE_GDI
-    MainWindow.Refresh();
-#else
     Redraw();
-#endif    
 
     LKASSERT(event_queue);
 #if defined(ANDROID) || defined(USE_POLL_EVENT) || defined(ENABLE_SDL) || defined(NON_INTERACTIVE)
