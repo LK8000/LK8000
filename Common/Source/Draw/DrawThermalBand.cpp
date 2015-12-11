@@ -25,7 +25,7 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
 
   // JMW TODO accuracy: gather proper statistics
   // note these should/may also be relative to ground
-  double mth = DerivedDrawInfo.MaxThermalHeight;
+  const double mth = DerivedDrawInfo.MaxThermalHeight;
   // no thermalling has been done above safety altitude
   if (mth<=1) {
     return;
@@ -37,8 +37,8 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
 #define TBSCALEX 20
   
   // calculate height above safety altitude
-  double hoffset = DerivedDrawInfo.TerrainBase;
-  double h = DerivedDrawInfo.NavAltitude-hoffset;
+  const double hoffset = DerivedDrawInfo.TerrainBase;
+  const double h = DerivedDrawInfo.NavAltitude-hoffset;
 
   const bool draw_start_height = ((ActiveTaskPoint==0) && (ValidTaskPoint(0)) 
 			    && (StartMaxHeight!=0)
@@ -112,7 +112,7 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
     const auto hpOld = Surface.SelectObject(hpThermalBand);
     const auto hbOld = Surface.SelectObject(LKBrush_Emerald);
  
-    POINT ThermalProfile[NUMTHERMALBUCKETS+2];
+    POINT ThermalProfile[NUMTHERMALBUCKETS+3];
     for (unsigned i=0; i<numtherm; ++i) {    
         ThermalProfile[1+i].x = 
               (iround((Wt[i]/Wmax)*IBLSCALE(TBSCALEX)))+lkvariooffset; //@ 091118
@@ -124,8 +124,9 @@ void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
     ThermalProfile[0].y = ThermalProfile[1].y;
     ThermalProfile[numtherm+1].x = lkvariooffset; //@ 091118
     ThermalProfile[numtherm+1].y = ThermalProfile[numtherm].y;
+    ThermalProfile[numtherm+2] = ThermalProfile[0];
 
-    Surface.Polygon(ThermalProfile,numtherm+2);
+    Surface.Polygon(ThermalProfile,numtherm+3);
     Surface.SelectObject(hpOld);
     Surface.SelectObject(hbOld);
   }
