@@ -76,6 +76,7 @@ Text2Event[Text2Event_count++] = { TEXT("InfoPage"), &eventInfoPage };
 Text2Event[Text2Event_count++] = { TEXT("ModeType"), &eventModeType };
 Text2Event[Text2Event_count++] = { TEXT("ShowMultiselect"), &eventShowMultiselect };
 Text2Event[Text2Event_count++] = { TEXT("ChangeNettoVario"), &eventChangeNettoVario };
+Text2Event[Text2Event_count++] = { TEXT("Wifi"), &eventWifi };
 assert(Text2Event_count < array_size(Text2Event));
 
 

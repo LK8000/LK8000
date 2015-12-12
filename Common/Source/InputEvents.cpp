@@ -2394,6 +2394,7 @@ void InputEvents::eventBallast(const TCHAR *misc) {
 
 #include "Task.h"
 #include "Logger.h"
+#include "Kobo/System.hpp"
 
 
 void InputEvents::eventAutoLogger(const TCHAR *misc) {
@@ -2910,6 +2911,17 @@ void InputEvents::eventChangeNettoVario(const TCHAR *misc) {
   }
 }
 
+void InputEvents::eventWifi(const TCHAR *misc) {
+  if (_tcscmp(misc, TEXT("toggle")) == 0){
+#ifdef KOBO
+      if(IsKoboWifiOn()) {
+          KoboWifiOff();
+      } else {
+          KoboWifiOn();
+      }
+#endif
+  }
+}
 
 void InputEvents::eventMoveGlider(const TCHAR *misc) {
   int i;

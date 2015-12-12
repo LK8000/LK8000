@@ -13,6 +13,10 @@
 #include "Asset.hpp"
 #include "OS/RotateScreen.h"
 
+#ifdef KOBO
+#include "Kobo/System.hpp"
+#endif
+
 extern bool HaveGauges(void);
 
 static void ReplaceInString(TCHAR *String, const TCHAR *ToReplace, 
@@ -59,9 +63,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (a != NULL) {
 	TCHAR tbuf[20];
 	short i;
-	i= (*(a+4)-48)*10;
-	i+= *(a+5)-48;
-	LKASSERT(i>=0 && i<40);
+	i= (*(a+4)-'0')*10;
+	i+= *(a+5)-'0';
+	LKASSERT(i>=0 && i<41);
 
 	switch(i) {
 		case 0:	// LOCKMODE
@@ -450,7 +454,19 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 			_tcscpy(OutBuffer,MsgToken(1850)); // Task reverse
 			break;
-
+        case 40:
+            if(IsKobo()) {
+#ifdef KOBO
+                if(IsKoboWifiOn()) {
+                    _tcscpy(OutBuffer,_T("Wifi\nOff"));
+                } else {
+                    _tcscpy(OutBuffer,_T("Wifi\nOn"));
+                }
+#endif
+            } else {
+                _tcscpy(OutBuffer,_T(""));
+            }
+            break;
 		default:
 			_stprintf(OutBuffer, _T("INVALID\n%d"),i);
 			break;

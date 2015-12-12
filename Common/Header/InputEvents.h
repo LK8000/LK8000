@@ -115,6 +115,7 @@ class InputEvents {
   static void eventChangeTurn(const TCHAR *misc);
   static void eventChangeNettoVario(const TCHAR *misc);
   static void eventService(const TCHAR *misc);
+  static void eventWifi(const TCHAR *misc);
   
   static void eventInfoStripe(const TCHAR *misc);
   static void eventInfoPage(const TCHAR *misc);

@@ -924,8 +924,8 @@ location=10
 mode=Config1
 type=key
 data=12
-label= 
-event=Null
+event=Wifi toggle
+label=$(AC40)
 location=11
 
 # -------------
