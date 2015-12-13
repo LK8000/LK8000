@@ -43,14 +43,18 @@ if(center_y < width)
 POINT startfinishline[2] = {{0,-width/ScreenScale},
                             {0,width/ScreenScale}};
 
-POINT track[3] = {{0,-width/5/ScreenScale},
-                  {width/2/ScreenScale,0},
-                  {0,width/5/ScreenScale}};
+POINT track[] = {
+    {0,-width/5/ScreenScale},
+    {width/2/ScreenScale,0},
+    {0,width/5/ScreenScale},
+    {0,-width/5/ScreenScale}
+};
 if(TaskIdx == finish)
 {
   track[0].x = -width/2/ScreenScale; track[0].y= -width/5/ScreenScale;
   track[1].x = 0 ; track[1].y= 0;
   track[2].x = -width/2/ScreenScale ; track[2].y= width/5/ScreenScale;
+  track[3] = track[0];
 }
 
 LockTaskData(); // protect from external task changes
@@ -109,8 +113,8 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
             threadsafePolygonRotateShift(startfinishline, 2, center_x, center_y, LineBrg);
             Surface.Polyline(startfinishline, 2);
             if ((TaskIdx == 0) || (TaskIdx == finish)) {
-                threadsafePolygonRotateShift(track, 3, center_x, center_y, LineBrg);
-                Surface.Polygon(track, 3);
+                threadsafePolygonRotateShift(track, array_size(track), center_x, center_y, LineBrg);
+                Surface.Polygon(track, array_size(track));
             }
        break;
         case CONE:
