@@ -63,8 +63,15 @@ public:
         Poco::Mutex::unlock(); 
     }    
 };
+
+class DeviceScopeLock : public Poco::ScopedLock<DeviceMutex> {
+public:
+    DeviceScopeLock(DeviceMutex& m) : Poco::ScopedLock<DeviceMutex>(m) { }
+
+};
 #else
 typedef Mutex DeviceMutex;
+typdefef ScopeLock DeviceScopeLock;
 #endif
 static DeviceMutex  CritSec_Comm;        
 
@@ -715,18 +722,29 @@ BOOL devPutBugs(PDeviceDescriptor_t d, double Bugs)
   return result;
 }
 
-BOOL devPutBallast(PDeviceDescriptor_t d, double Ballast)
-{
-  BOOL result = TRUE;
-
-  if (SIMMODE)
+/**
+ * Send Ballast % to all connected device.
+ * @param Ballast [0.0 - 1.0]
+ * @return FALSE if error on one device.
+ * 
+ * TODO : report witch device failed (useless still return value are never used).
+ */
+BOOL devPutBallast(double Ballast) {
+  if (SIMMODE) {
     return TRUE;
-  LockComm();
-  if (d != NULL && d->PutBallast != NULL)
-    result = d->PutBallast(d, Ballast);
-  UnlockComm();
+  }
 
-  return result;
+  unsigned nbDeviceFailed = 0;
+
+  DeviceScopeLock Lock(CritSec_Comm);
+  
+  for( DeviceDescriptor_t& d : DeviceList) {
+    if (d.PutBallast != NULL) {
+        nbDeviceFailed +=  d.PutBallast(&d, Ballast) ? 0 : 1;
+    }
+  }
+  
+  return (nbDeviceFailed > 0);
 }
 
 BOOL devLinkTimeout(PDeviceDescriptor_t d)

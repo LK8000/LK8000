@@ -116,8 +116,7 @@ static void SetBallast(bool updateDevices) {
 
   GlidePolar::SetBallast();
   if (updateDevices) {
-	devPutBallast(devA(), BALLAST);
-	devPutBallast(devB(), BALLAST);
+	devPutBallast(BALLAST);
   }
 	static double foldBallast = BALLAST;
 	if(fabs (foldBallast - BALLAST) > 0.01) /* update on change only */

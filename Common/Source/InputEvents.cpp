@@ -41,12 +41,12 @@
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
 
-// Sensible maximums
+// Sensible maximums 
 #define MAX_MODE 100
 #define MAX_MODE_STRING 25
 #define MAX_KEY 255
 #define MAX_EVENTS 2048  // max number of menu events items
-#define MAX_TEXT2EVENTS_COUNT  256
+#define MAX_TEXT2EVENTS_COUNT  256 
 #define MAX_LABEL NUMBUTTONLABELS
 
 extern AATDistance aatdistance;
@@ -59,7 +59,7 @@ static int mode_map_count = 0;
 
 // Key to Event - Keys (per mode) mapped to events
 #ifndef USE_GDI
-// Some linux keycode are defined on 4 Byte, use map instead of array.
+// Some linux keycode are defined on 4 Byte, use map instead of array. 
 static std::map<int,int> Key2Event[MAX_MODE];
 #else
 static int Key2Event[MAX_MODE][MAX_KEY];
@@ -152,9 +152,9 @@ void InputEvents::readFile() {
     std::fill(std::begin(GCE_Queue), std::end(GCE_Queue), -1);
     std::fill(std::begin(NMEA_Queue), std::end(NMEA_Queue), -1);
   }
-  // Get defaults
+  // Get defaults 
   if (!InitONCE) {
-	#include "InputEvents_LK8000.cpp"
+	#include "InputEvents_LK8000.cpp"  
 	#include "InputEvents_Text2Event.cpp"
         #ifdef TESTBENCH
         StartupStore(_T("... Loaded %d Text2Event (max is %u)%s"),(unsigned)Text2Event_count,MAX_TEXT2EVENTS_COUNT,NEWLINE);
@@ -164,7 +164,7 @@ void InputEvents::readFile() {
 
 #ifndef TEST_MENU_LAYOUT
   // Read in user defined configuration file
-
+	
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
   ZZIP_FILE *fp=NULL;
 
@@ -212,7 +212,7 @@ void InputEvents::readFile() {
 			// This cannot happen
 			StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!\n"),xcifile);
 			return;
-		}
+		} 
 	} else {
 		StartupStore(_T(". Loaded menu <%s>\n"),xcifile);
 	}
@@ -222,7 +222,7 @@ void InputEvents::readFile() {
   TCHAR buffer[2049];	// Buffer for all
   TCHAR key[2049];	// key from scanf
   TCHAR value[2049];	// value from scanf
-  TCHAR *new_label = NULL;
+  TCHAR *new_label = NULL;		
   int found = 0;
 
   // Init first entry
@@ -248,7 +248,7 @@ void InputEvents::readFile() {
   ) {
     line++;
 
-    // if the first line is "#CLEAR" then the whole default config is cleared and can be overwritten by file
+    // if the first line is "#CLEAR" then the whole default config is cleared and can be overwritten by file  
     if ((line == 1) && (_tcsstr(buffer, TEXT("#CLEAR")))){
 #ifndef USE_GDI
       for(auto Item : Key2Event) Item.clear();
@@ -293,7 +293,7 @@ void InputEvents::readFile() {
 	  int mode_id = mode2int(token, true);
 	  LKASSERT(mode_id >= 0);
           LKASSERT(mode_id < (int)array_size(Key2Event));
-
+			  
 	  // Make label event
 	  // TODO code: Consider Reuse existing entries...
 	  if (d_location > 0) {
@@ -304,7 +304,7 @@ void InputEvents::readFile() {
 	    }
 	    LKASSERT(new_label!=NULL);
 	    InputEvents::makeLabel(mode_id, new_label, d_location, event_id);
-	  }
+	  } 
 
 	  // Make key (Keyboard input)
 	  if (_tcscmp(d_type, TEXT("key")) == 0)	{	// key - Hardware key or keyboard
@@ -327,7 +327,7 @@ void InputEvents::readFile() {
 	    int iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
 	    if (iikey >= 0)
 	      GC2Event[mode_id][iikey] = event_id;
-
+			    
 	    // Make ne (NMEA Event)
 	  } else if (_tcscmp(d_type, TEXT("ne")) == 0) { 		// NE - NMEA Event
 	    int iiikey = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
@@ -335,14 +335,14 @@ void InputEvents::readFile() {
 	      N2Event[mode_id][iiikey] = event_id;
 	  } else if (_tcscmp(d_type, TEXT("label")) == 0)	{	// label only - no key associated (label can still be touch screen)
 	    // Nothing to do here...
-
+			    
 	  }
-
+			  
 	  token = _tcstok( NULL, TEXT(" "));
 	}
-
+			
       }
-
+		
       // Clear all data.
       some_data = false;
       _tcscpy(d_mode, TEXT(""));
@@ -362,14 +362,14 @@ void InputEvents::readFile() {
       if (_tcscmp(key, TEXT("mode")) == 0) {
 	if (_tcslen(value) < 1024) {
 	  some_data = true;	// Success, we have a real entry
-	  _tcscpy(d_mode, value);
+	  _tcscpy(d_mode, value);				
 	}
       } else if (_tcscmp(key, TEXT("type")) == 0) {
 	if (_tcslen(value) < 256)
-	  _tcscpy(d_type, value);
+	  _tcscpy(d_type, value);				
       } else if (_tcscmp(key, TEXT("data")) == 0) {
 	if (_tcslen(value) < 256)
-	  _tcscpy(d_data, value);
+	  _tcscpy(d_data, value);				
       } else if (_tcscmp(key, TEXT("event")) == 0) {
 	if (_tcslen(value) < 256) {
 	  _tcscpy(d_event, TEXT(""));
@@ -380,16 +380,16 @@ void InputEvents::readFile() {
 	  // TODO code: Can't use token here - breaks
 	  // other token - damn C - how about
 	  // C++ String class ?
-
+	
 	  // TCHAR *eventtoken;
 	  // eventtoken = _tcstok(value, TEXT(" "));
 	  // d_event = token;
 	  // eventtoken = _tcstok(value, TEXT(" "));
 
 	  if ((ef == 1) || (ef == 2)) {
-
+	  
 	    // TODO code: Consider reusing existing identical events
-
+	  
 	    pt2Event event = findEvent(d_event);
 	    if (event) {
 		  TCHAR* szString = StringMallocParse(d_misc);
@@ -402,10 +402,10 @@ void InputEvents::readFile() {
         _tcscpy(d_label, value);
       } else if (_tcscmp(key, TEXT("location")) == 0) {
         _stscanf(value, TEXT("%d"), &d_location);
-
+	
       }
     }
-
+	
   } // end while
   #ifdef TESTBENCH
   StartupStore(_T("... Loaded %d Menu Events (Max is %d)%s"),Events_count,MAX_EVENTS,NEWLINE);
@@ -481,7 +481,7 @@ int InputEvents::findKey(const TCHAR *data) {
     return _totupper(data[0]);
   else
     return 0;
-
+  
 }
 
 pt2Event InputEvents::findEvent(const TCHAR *data) {
@@ -523,7 +523,7 @@ int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int 
   Events[Events_count].event = event;
   Events[Events_count].misc = misc;
   Events[Events_count].next = next;
-
+  
   return Events_count;
 }
 
@@ -535,16 +535,16 @@ void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, in
 
     static_assert(MAX_MODE == array_size(ModeLabel), "wrong array size" );
     static_assert(MAX_LABEL == array_size(ModeLabel[0]), "wrong array size" );
-
+    
     unsigned LabelIdx = MenuId -1;
-
+ 
     if ((mode_id >= 0) && (mode_id < MAX_MODE) && (LabelIdx < MAX_LABEL)) {
 
         if(ModeLabel[mode_id][LabelIdx].label != nullptr && ModeLabel[mode_id][LabelIdx].label[0] != _T('\0')){
             StartupStore(_T("Menu \"%s\" override Menu \"%s\"" NEWLINE), label, ModeLabel[mode_id][LabelIdx].label);
             BUGSTOP_LKASSERT(false);
         }
-
+        
         ModeLabel[mode_id][LabelIdx].label = label;
         ModeLabel[mode_id][LabelIdx].MenuId = MenuId;
         ModeLabel[mode_id][LabelIdx].event = event_id;
@@ -556,16 +556,16 @@ void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, in
 // Return 0 for anything else - should probably return -1 !
 int InputEvents::mode2int(const TCHAR *mode, bool create) {
   int i = 0;
-
+  
   // Better checks !
   if (mode == NULL)
     return -1;
-
+  
   for (i = 0; i < mode_map_count; i++) {
     if (_tcscmp(mode, mode_map[i]) == 0)
       return i;
   }
-
+  
   if (create) {
     // Keep a copy
     LK_tcsncpy(mode_map[mode_map_count], mode, MAX_MODE_STRING-1);
@@ -713,7 +713,7 @@ bool InputEvents::processKey(int KeyID) {
 
   // get current mode
   const int mode = InputEvents::getModeID();
-
+  
 #ifndef USE_GDI
 
   auto It = Key2Event[mode].find(KeyID);
@@ -725,24 +725,24 @@ bool InputEvents::processKey(int KeyID) {
     It = Key2Event[0].find(KeyID);
     if(It != Key2Event[0].end()) {
       event_id = It->second;
-    }
-  }
-
+    }      
+  }  
+  
 #else
 
   // Valid input ?
   if ((KeyID < 0) || (KeyID > MAX_KEY))
     return false;
-
+  
   // Which key - can be defined locally or at default (fall back to default)
   event_id = Key2Event[mode][KeyID];
   if (event_id == 0) {
     // go with default key..
     event_id = Key2Event[0][KeyID];
   }
-
+  
 #endif
-
+  
   if (event_id > 0) {
 
     unsigned MenuId = 0;
@@ -776,7 +776,7 @@ bool InputEvents::processKey(int KeyID) {
 
     return true;
   }
-
+  
   return false;
 }
 
@@ -809,7 +809,7 @@ bool InputEvents::processNmea_real(int ne_id) {
 
   // get current mode
   int mode = InputEvents::getModeID();
-
+  
   // Which key - can be defined locally or at default (fall back to default)
   event_id = N2Event[mode][ne_id];
   if (event_id == 0) {
@@ -821,7 +821,7 @@ bool InputEvents::processNmea_real(int ne_id) {
     InputEvents::processGo(event_id);
     return true;
   }
-
+  
   return false;
 }
 
@@ -833,16 +833,16 @@ void InputEvents::DoQueuedEvents(void) {
   int NMEA_Queue_copy[MAX_NMEA_QUEUE];
   int i;
 
-  if (blockqueue) return;
+  if (blockqueue) return; 
   // prevent this being re-entered by gui thread while
   // still processing
 
   blockqueue = true;
-
+  
   CAirspaceManager::Instance().ProcessAirspaceDetailQueue();
-
+  
   processPopupDetails_real();
-
+  
   if (RepeatWindCalc>0) { // 100203
 	RepeatWindCalc=0;
 	InputEvents::eventCalcWind(_T("AUTO"));
@@ -850,7 +850,7 @@ void InputEvents::DoQueuedEvents(void) {
   }
 
   { // Begin Lock
-    // copy and flush the queue first, blocking
+    // copy and flush the queue first, blocking      
     ScopeLock Lock(CritSec_EventQueue);
 
     for (i=0; i<MAX_GCE_QUEUE; i++) {
@@ -862,7 +862,7 @@ void InputEvents::DoQueuedEvents(void) {
       NMEA_Queue[i]= -1;
     }
   } // End Lock
-
+  
   // process each item in the queue
   for (i=0; i< MAX_GCE_QUEUE; i++) {
     if (GCE_Queue_copy[i]!= -1) {
@@ -898,7 +898,7 @@ void InputEvents::processPopupDetails(PopupType type, int index) {
 
 // show details for each object queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
 void InputEvents::processPopupDetails_real() {
-
+    
     while(1) {
         PopupEvent_t event;
         { // Begin Lock
@@ -910,12 +910,12 @@ void InputEvents::processPopupDetails_real() {
                 break; // no more queued event, out from loop.
             }
         } // End Lock
-
+        
         switch(event.type) {
             case PopupWaypoint:
-                // Do not update CommonList and Nearest Waypoint in details mode, max 60s
+                // Do not update CommonList and Nearest Waypoint in details mode, max 60s 
                 LockFlightData();
-			LastDoCommon = GPS_INFO.Time + NEARESTONHOLD; //@ 101003
+        		LastDoCommon = GPS_INFO.Time + NEARESTONHOLD; //@ 101003
                 UnlockFlightData();
 
                 SelectedWaypoint = event.index;
@@ -926,27 +926,27 @@ void InputEvents::processPopupDetails_real() {
             case PopupThermal:
                 // Do not update while in details mode, max 10m
                 LockFlightData();
-			LastDoThermalH = GPS_INFO.Time + 600;
+        		LastDoThermalH = GPS_INFO.Time + 600;
                 UnlockFlightData();
-
+                
                 dlgThermalDetails(event.index);
-
+                
                 LastDoThermalH=0;
                 break;
             case PopupTraffic:
-		// Do not update Traffic while in details mode, max 10m
+             	// Do not update Traffic while in details mode, max 10m
                 LockFlightData();
-			LastDoTraffic = GPS_INFO.Time + 600;
+        		LastDoTraffic = GPS_INFO.Time + 600;
                 UnlockFlightData();
-
+                
                 dlgLKTrafficDetails(event.index);
-
+ 
                 LastDoTraffic = 0;
                 break;
-            default:
+            default: 
                 LKASSERT(false);
                 break;
-        }
+        } 
     }
 }
 
@@ -966,7 +966,7 @@ bool InputEvents::processGlideComputer_real(int gce_id) {
 
   // get current mode
   int mode = InputEvents::getModeID();
-
+  
   // Which key - can be defined locally or at default (fall back to default)
   event_id = GC2Event[mode][gce_id];
   if (event_id == 0) {
@@ -978,7 +978,7 @@ bool InputEvents::processGlideComputer_real(int gce_id) {
     InputEvents::processGo(event_id);
     return true;
   }
-
+  
   return false;
 }
 
@@ -1014,19 +1014,19 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	#endif
 	LockTaskData();
 	for (short i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
-		WayPointList[i].Latitude=RESWP_INVALIDNUMBER;
-		WayPointList[i].Longitude=RESWP_INVALIDNUMBER;
-		WayPointList[i].Altitude=RESWP_INVALIDNUMBER;
+        	WayPointList[i].Latitude=RESWP_INVALIDNUMBER;
+        	WayPointList[i].Longitude=RESWP_INVALIDNUMBER;
+        	WayPointList[i].Altitude=RESWP_INVALIDNUMBER;
 	        WayPointList[i].Visible=FALSE;
 	        WayPointList[i].FarVisible=FALSE;
 	        WayPointCalc[i].WpType = WPT_UNKNOWN;
 	}
 	UnlockTaskData();
 	return;
-  }
+  } 
 
   LKSound(TEXT("DROPMARKER.WAV"));
-
+  
   LockFlightData();
 
   if (_tcscmp(misc, TEXT("pan")) == 0) {
@@ -1047,7 +1047,7 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 }
 
 void InputEvents::eventSounds(const TCHAR *misc) {
-
+  
   if (_tcscmp(misc, TEXT("toggle")) == 0)
     EnableSoundModes = !EnableSoundModes;
   else if (_tcscmp(misc, TEXT("on")) == 0)
@@ -1056,16 +1056,16 @@ void InputEvents::eventSounds(const TCHAR *misc) {
     EnableSoundModes = false;
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (EnableSoundModes)
-	// LKTOKEN  _@M625_ = "Sounds ON"
+	// LKTOKEN  _@M625_ = "Sounds ON" 
       DoStatusMessage(MsgToken(625));
     else
-	// LKTOKEN  _@M624_ = "Sounds OFF"
-      DoStatusMessage(MsgToken(624));
+	// LKTOKEN  _@M624_ = "Sounds OFF" 
+      DoStatusMessage(MsgToken(624));  
   }
 }
 
 void InputEvents::eventBaroAltitude(const TCHAR *misc) {
-
+  
   if (_tcscmp(misc, TEXT("toggle")) == 0)
     EnableNavBaroAltitude = !EnableNavBaroAltitude;
   else if (_tcscmp(misc, TEXT("on")) == 0)
@@ -1083,7 +1083,7 @@ void InputEvents::eventBaroAltitude(const TCHAR *misc) {
 void InputEvents::eventSnailTrail(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
-      // We dont change in 5.0 the order OFF-LONG-SHORT-FULL but we
+      // We dont change in 5.0 the order OFF-LONG-SHORT-FULL but we 
       // want it to become nevertheless OFF-SHORT-LONG-FULL correctly
       // So this is the trick, for the trail button
       switch(TrailActive) {
@@ -1100,7 +1100,7 @@ void InputEvents::eventSnailTrail(const TCHAR *misc) {
               TrailActive=0; // off
               break;
       }
-  }
+  } 
   else if (_tcscmp(misc, TEXT("off")) == 0)
     TrailActive = 0;
   else if (_tcscmp(misc, TEXT("long")) == 0)
@@ -1112,18 +1112,18 @@ void InputEvents::eventSnailTrail(const TCHAR *misc) {
 
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (TrailActive==0)
-	// LKTOKEN  _@M620_ = "SnailTrail OFF"
+	// LKTOKEN  _@M620_ = "SnailTrail OFF" 
       DoStatusMessage(MsgToken(620));
-    if (TrailActive==1)
-	// LKTOKEN  _@M622_ = "SnailTrail ON Long"
+    if (TrailActive==1) 
+	// LKTOKEN  _@M622_ = "SnailTrail ON Long" 
       DoStatusMessage(MsgToken(622));
-    if (TrailActive==2)
-	// LKTOKEN  _@M623_ = "SnailTrail ON Short"
+    if (TrailActive==2) 
+	// LKTOKEN  _@M623_ = "SnailTrail ON Short" 
       DoStatusMessage(MsgToken(623));
-    if (TrailActive==3)
-	// LKTOKEN  _@M621_ = "SnailTrail ON Full"
+    if (TrailActive==3) 
+	// LKTOKEN  _@M621_ = "SnailTrail ON Full" 
       DoStatusMessage(MsgToken(621));
-  }
+  }  
 }
 
 
@@ -1147,7 +1147,7 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
 		LKSound(TEXT("LK_TONEUP.WAV"));
 	else
 		LKSound(TEXT("LK_TONEDOWN.WAV"));
-  }
+  } 
   else if (_tcscmp(misc, TEXT("off")) == 0) {
     ActiveMap=false;
     LKSound(TEXT("LK_TONEDOWN.WAV"));
@@ -1218,7 +1218,7 @@ void InputEvents::eventZoom(const TCHAR* misc) {
     MapWindow::zoom.EventScaleZoom(1);
   else if (_tcscmp(misc, TEXT("--")) == 0)
     MapWindow::zoom.EventScaleZoom(-2);
-  else if (_tcscmp(misc, TEXT("++")) == 0)
+  else if (_tcscmp(misc, TEXT("++")) == 0) 
     MapWindow::zoom.EventScaleZoom(2);
   else if (_stscanf(misc, TEXT("%f"), &zoom) == 1)
     MapWindow::zoom.EventSetZoom((double)zoom);
@@ -1231,10 +1231,10 @@ void InputEvents::eventZoom(const TCHAR* misc) {
     MapWindow::zoom.CircleZoom(false);
   } else if (_tcscmp(misc, TEXT("circlezoom show")) == 0) {
     if (MapWindow::zoom.CircleZoom())
-	// LKTOKEN  _@M173_ = "Circling Zoom ON"
+	// LKTOKEN  _@M173_ = "Circling Zoom ON" 
       DoStatusMessage(MsgToken(173));
     else
-	// LKTOKEN  _@M172_ = "Circling Zoom OFF"
+	// LKTOKEN  _@M172_ = "Circling Zoom OFF" 
       DoStatusMessage(MsgToken(172));
   }
 }
@@ -1254,9 +1254,9 @@ void InputEvents::eventPan(const TCHAR *misc) {
     MapWindow::Event_Pan(-1);
   else if (_tcscmp(misc, TEXT("supertoggle")) == 0)
     MapWindow::Event_Pan(-2);
-  else if (_tcscmp(misc, TEXT("on")) == 0)
+  else if (_tcscmp(misc, TEXT("on")) == 0) 
     MapWindow::Event_Pan(1);
-  else if (_tcscmp(misc, TEXT("off")) == 0)
+  else if (_tcscmp(misc, TEXT("off")) == 0) 
     MapWindow::Event_Pan(0);
 
   else if (_tcscmp(misc, TEXT("up")) == 0 || _tcscmp(misc, TEXT("zoomin")) == 0)
@@ -1314,51 +1314,51 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("show")) == 0) {
     switch (AutoAdvance) {
     case 0:
-	// LKTOKEN  _@M105_ = "Auto Advance: Manual"
+	// LKTOKEN  _@M105_ = "Auto Advance: Manual" 
       DoStatusMessage(MsgToken(105));
       break;
     case 1:
-	// LKTOKEN  _@M103_ = "Auto Advance: Automatic"
+	// LKTOKEN  _@M103_ = "Auto Advance: Automatic" 
       DoStatusMessage(MsgToken(103));
       break;
     case 2:
       if (AdvanceArmed) {
-	// LKTOKEN  _@M102_ = "Auto Advance: ARMED"
+	// LKTOKEN  _@M102_ = "Auto Advance: ARMED" 
         DoStatusMessage(MsgToken(102));
       } else {
-	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED"
+	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED" 
         DoStatusMessage(MsgToken(104));
       }
       break;
     case 3:
       if (ActiveTaskPoint<2) { // past start (but can re-start)
         if (AdvanceArmed) {
-	// LKTOKEN  _@M102_ = "Auto Advance: ARMED"
+	// LKTOKEN  _@M102_ = "Auto Advance: ARMED" 
           DoStatusMessage(MsgToken(102));
         } else {
-	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED"
+	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED" 
           DoStatusMessage(MsgToken(104));
         }
       } else {
-	// LKTOKEN  _@M103_ = "Auto Advance: Automatic"
+	// LKTOKEN  _@M103_ = "Auto Advance: Automatic" 
         DoStatusMessage(MsgToken(103));
       }
-      break;
+      break;    
     case 4:
       if (ActiveTaskPoint==0) { // past start (but can re-start)
-	// LKTOKEN  _@M103_ = "Auto Advance: Automatic"
+	// LKTOKEN  _@M103_ = "Auto Advance: Automatic" 
         DoStatusMessage(MsgToken(103));
       }
       else {
         if (AdvanceArmed) {
-	// LKTOKEN  _@M102_ = "Auto Advance: ARMED"
+	// LKTOKEN  _@M102_ = "Auto Advance: ARMED" 
           DoStatusMessage(MsgToken(102));
         } else {
-	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED"
+	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED" 
           DoStatusMessage(MsgToken(104));
         }
       }
-      break;
+      break;    
     default:
       break;
     }
@@ -1367,12 +1367,12 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
 
 // Mode
 // Sets the current event mode.
-//  The argument is the label of the mode to activate.
+//  The argument is the label of the mode to activate. 
 //  This is used to activate menus/submenus of buttons
 void InputEvents::eventMode(const TCHAR *misc) {
   LKASSERT(misc != NULL);
   InputEvents::setMode(misc);
-
+  
 #ifdef USE_GDI
   // trigger redraw of screen to reduce blank area under windows
   MapWindow::RequestFastRefresh();
@@ -1447,7 +1447,7 @@ void InputEvents::eventWaypointDetails(const TCHAR *misc) {
       SelectedWaypoint = Task[ActiveTaskPoint].Index;
     }
     if (SelectedWaypoint<0){
-	// LKTOKEN  _@M462_ = "No Active Waypoint!"
+	// LKTOKEN  _@M462_ = "No Active Waypoint!" 
       DoStatusMessage(MsgToken(462));
       return;
     }
@@ -1517,7 +1517,7 @@ void InputEvents::eventMyMenu(const TCHAR *misc) {
 
 
 // StatusMessage
-// Displays a user defined status message.
+// Displays a user defined status message. 
 //    The argument is the text to be displayed.
 //    No punctuation characters are allowed.
 void InputEvents::eventStatusMessage(const TCHAR *misc) {
@@ -1531,7 +1531,7 @@ void InputEvents::eventStatusMessage(const TCHAR *misc) {
 		DoStatusMessage(LKGetText(nmisc));
 		return;
 	}
-  }
+  } 
   DoStatusMessage(misc);
 }
 
@@ -1635,15 +1635,15 @@ void InputEvents::eventFlightMode(const TCHAR *misc) {
   }
   if (_tcscmp(misc, TEXT("show")) == 0) {
     if (ForceFinalGlide) {
-	// LKTOKEN  _@M289_ = "Final glide forced ON"
+	// LKTOKEN  _@M289_ = "Final glide forced ON" 
       DoStatusMessage(MsgToken(289));
     } else {
-	// LKTOKEN  _@M288_ = "Final glide automatic"
+	// LKTOKEN  _@M288_ = "Final glide automatic" 
       DoStatusMessage(MsgToken(288));
     }
   }
   if (ForceFinalGlide && ActiveTaskPoint == -1){
-	// LKTOKEN  _@M462_ = "No Active Waypoint!"
+	// LKTOKEN  _@M462_ = "No Active Waypoint!" 
     DoStatusMessage(MsgToken(462));
   }
 }
@@ -1699,7 +1699,7 @@ void InputEvents::eventSendNMEA(const TCHAR *misc) {
   // But since we only manage FLARM buttons in v5, no reason to complicate life.
   // if ( strncmp  misc PF ..)
   short flarmfoundonport=-1;
-  if (nmeaParser2.isFlarm) flarmfoundonport=2;
+  if (nmeaParser2.isFlarm) flarmfoundonport=2; 
   if (nmeaParser1.isFlarm) flarmfoundonport=1; // priority on lowest port
   if (flarmfoundonport==-1) {
       DoStatusMessage(_T("NO FLARM"));
@@ -1733,7 +1733,7 @@ void InputEvents::eventSendNMEAPort2(const TCHAR *misc) {
 
 
 // AdjustWaypoint
-// Adjusts the active waypoint of the task
+// Adjusts the active waypoint of the task  
 //  next: selects the next waypoint, stops at final waypoint
 //  previous: selects the previous waypoint, stops at start waypoint
 //  nextwrap: selects the next waypoint, wrapping back to start after final
@@ -1756,20 +1756,20 @@ void InputEvents::eventAbortTask(const TCHAR *misc) {
 
   if (ValidTaskPoint(ActiveTaskPoint)) {
 	if (MessageBoxX(
-	// LKTOKEN  _@M179_ = "Clear the task?"
-		MsgToken(179),
-	// LKTOKEN  _@M178_ = "Clear task"
-		MsgToken(178),
+	// LKTOKEN  _@M179_ = "Clear the task?" 
+		MsgToken(179), 
+	// LKTOKEN  _@M178_ = "Clear task" 
+		MsgToken(178), 
 		mbYesNo) == IdYes) {
 		// clear task is locking taskdata already
 		ClearTask();
 	}
   } else {
 	MessageBoxX(
-	// LKTOKEN  _@M468_ = "No Task"
-		MsgToken(468),
-	// LKTOKEN  _@M178_ = "Clear task"
-		MsgToken(178),
+	// LKTOKEN  _@M468_ = "No Task" 
+		MsgToken(468), 
+	// LKTOKEN  _@M178_ = "Clear task" 
+		MsgToken(178), 
 		mbOk);
   }
 }
@@ -1801,14 +1801,14 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
   if (misc) {
 	if (_tcscmp(misc,_T("C0")) == 0) {
 		wmode=0;
-	}
+	} 
 	if (_tcscmp(misc,_T("C1")) == 0) {
 		wmode=1;
 	}
 	if (_tcscmp(misc,_T("C2")) == 0) {
 		wmode=2;
 	}
-  }
+  } 
 
   // if not automode, prepare for next automode retries
   if (misc && _tcscmp(misc,_T("AUTO"))==0) {
@@ -1817,7 +1817,7 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	RepeatWindCalc=0;
 	retry=RESCHEDTIME;
   }
-
+  
 
   // IAS if available is used automatically and in this case WindCalcSpeed is ignored
   resw=CalculateWindRotary(&rotaryWind,WindCalcSpeed, &wfrom, &wspeed,WindCalcTime, wmode);
@@ -1825,39 +1825,39 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
   if (resw<=0) {
 	switch(resw) {
 		case WCALC_INVALID_SPEED:
-	// LKTOKEN  _@M369_ = "KEEP SPEED LONGER PLEASE"
+	// LKTOKEN  _@M369_ = "KEEP SPEED LONGER PLEASE" 
 			_tcscpy(mbuf,MsgToken(369));
 			reschedule=true;
 			break;
 		case WCALC_INVALID_TRACK:
-	// LKTOKEN  _@M367_ = "KEEP HEADING LONGER PLEASE"
+	// LKTOKEN  _@M367_ = "KEEP HEADING LONGER PLEASE" 
 			_tcscpy(mbuf,MsgToken(367));
 			reschedule=true;
 			break;
 		case WCALC_INVALID_ALL:
-	// LKTOKEN  _@M368_ = "KEEP SPEED AND HEADING LONGER PLEASE"
+	// LKTOKEN  _@M368_ = "KEEP SPEED AND HEADING LONGER PLEASE" 
 			_tcscpy(mbuf,MsgToken(368));
 			reschedule=true;
 			break;
 		case WCALC_INVALID_HEADING:
-	// LKTOKEN  _@M344_ = "INACCURATE HEADING OR TOO STRONG WIND"
+	// LKTOKEN  _@M344_ = "INACCURATE HEADING OR TOO STRONG WIND" 
 			_tcscpy(mbuf,MsgToken(344));
 			break;
 		case WCALC_INVALID_IAS:
-	// LKTOKEN  _@M366_ = "KEEP AIRSPEED CONSTANT LONGER PLEASE"
+	// LKTOKEN  _@M366_ = "KEEP AIRSPEED CONSTANT LONGER PLEASE" 
 			_tcscpy(mbuf,MsgToken(366));
 			reschedule=true;
 			break;
 		case WCALC_INVALID_NOIAS:
-	// LKTOKEN  _@M345_ = "INVALID AIRSPEED"
+	// LKTOKEN  _@M345_ = "INVALID AIRSPEED" 
 			_tcscpy(mbuf,MsgToken(345));
 			break;
 		default:
-			_stprintf(mbuf,_T("INVALID DATA CALCULATING WIND %d"), resw);
+			_stprintf(mbuf,_T("INVALID DATA CALCULATING WIND %d"), resw); 
 			break;
 	}
 	if (automode==true) {
-		if (reschedule && --retry>0)
+		if (reschedule && --retry>0) 
 			RepeatWindCalc=1;
 		else
 			// be sure that we dont enter a loop here!
@@ -1874,7 +1874,7 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	return;
   }
 
-  _stprintf(mbuf,_T("%.0f%s from %.0f%s\n\nAccept and save?"),
+  _stprintf(mbuf,_T("%.0f%s from %.0f%s\n\nAccept and save?"), 
 	wspeed/3.6*SPEEDMODIFY, Units::GetHorizontalSpeedName(), wfrom, MsgToken(2179));
 
 #if 0
@@ -1892,7 +1892,7 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	CALCULATED_INFO.WindSpeed=wspeed/3.6;
 	CALCULATED_INFO.WindBearing=wfrom;
 
-	// LKTOKEN  _@M746_ = "TrueWind updated!"
+	// LKTOKEN  _@M746_ = "TrueWind updated!" 
 	DoStatusMessage(MsgToken(746));
   }
 }
@@ -1918,10 +1918,10 @@ void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 
   if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 	if (MessageBoxX(
-	// LKTOKEN  _@M563_ = "Restart task?"
-		MsgToken(563),
-	// LKTOKEN  _@M562_ = "Restart task"
-		MsgToken(562),
+	// LKTOKEN  _@M563_ = "Restart task?" 
+		MsgToken(563), 
+	// LKTOKEN  _@M562_ = "Restart task" 
+		MsgToken(562), 
 		mbYesNo) == IdYes) {
 		LockTaskData();
 		ResetTask(true);
@@ -1929,10 +1929,10 @@ void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 	}
   } else {
 	MessageBoxX(
-	// LKTOKEN  _@M468_ = "No Task"
-		MsgToken(468),
-	// LKTOKEN  _@M562_ = "Restart task"
-		MsgToken(562),
+	// LKTOKEN  _@M468_ = "No Task" 
+		MsgToken(468), 
+	// LKTOKEN  _@M562_ = "Restart task" 
+		MsgToken(562), 
 		mbOk);
   }
 
@@ -1940,10 +1940,10 @@ void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 
 void InputEvents::eventResetQFE(const TCHAR *misc) { // 100211
 	if (MessageBoxX(
-	// LKTOKEN  _@M557_ = "Reset QFE?"
-		MsgToken(557),
-	// LKTOKEN  _@M559_ = "Reset zero QFE"
-		MsgToken(559),
+	// LKTOKEN  _@M557_ = "Reset QFE?" 
+		MsgToken(557), 
+	// LKTOKEN  _@M559_ = "Reset zero QFE" 
+		MsgToken(559), 
 		mbYesNo) == IdYes) {
 			QFEAltitudeOffset=ALTITUDEMODIFY*CALCULATED_INFO.NavAltitude; // 100211
 	}
@@ -1952,10 +1952,10 @@ void InputEvents::eventResetQFE(const TCHAR *misc) { // 100211
 
 void InputEvents::eventRestartCommPorts(const TCHAR *misc) { // 100211
 	if (MessageBoxX(
-	// LKTOKEN  _@M558_ = "Reset and restart COM Ports?"
-		MsgToken(558),
-	// LKTOKEN  _@M538_ = "RESET ALL COMM PORTS"
-		MsgToken(538),
+	// LKTOKEN  _@M558_ = "Reset and restart COM Ports?" 
+		MsgToken(558), 
+	// LKTOKEN  _@M538_ = "RESET ALL COMM PORTS" 
+		MsgToken(538), 
 		mbYesNo) == IdYes) {
 			LKForceComPortReset=true;
 			// also reset warnings
@@ -1963,8 +1963,8 @@ void InputEvents::eventRestartCommPorts(const TCHAR *misc) { // 100211
 	}
 }
 
-// Simple events with no arguments.
-// USE SERVICE EVENTS INSTEAD OF CREATING NEW EVENTS!
+// Simple events with no arguments. 
+// USE SERVICE EVENTS INSTEAD OF CREATING NEW EVENTS!  
 void InputEvents::eventService(const TCHAR *misc) {
   #if TRACETHREAD
   TCHAR myevent[80];
@@ -2010,7 +2010,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("TASKNEXTWAYPOINT")) == 0) {
-	// LKTOKEN  _@M461_ = "Next turnpoint"
+	// LKTOKEN  _@M461_ = "Next turnpoint" 
 	DoStatusMessage(MsgToken(461));
 	LKSound(_T("LK_TASKPOINT.WAV"));
 	return;
@@ -2028,12 +2028,12 @@ void InputEvents::eventService(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("TASKCONFIRMSTART")) == 0) {
 	bool startTaskAnyway = false;
         LKSound(_T("LK_TASKSTART.WAV"));
-	dlgStartTaskShowModal(&startTaskAnyway,
+	dlgStartTaskShowModal(&startTaskAnyway, 
 		CALCULATED_INFO.TaskStartTime,
 		CALCULATED_INFO.TaskStartSpeed,
 		CALCULATED_INFO.TaskStartAltitude);
 	if (startTaskAnyway) {
-		ActiveTaskPoint=0;
+		ActiveTaskPoint=0; 
 		StartTask(&GPS_INFO,&CALCULATED_INFO, true, true);
 		// GCE_TASK_START does not work here, why?
 		InputEvents::eventService(_T("TASKSTART"));
@@ -2054,10 +2054,10 @@ void InputEvents::eventService(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("LOCKMODE")) == 0) {
 	TCHAR mtext[80];
 	if (LockMode(1)) {
-		// LKTOKEN  _@M960_ = "CONFIRM SCREEN UNLOCK?"
+		// LKTOKEN  _@M960_ = "CONFIRM SCREEN UNLOCK?" 
 		_tcscpy(mtext, MsgToken(960));
 	} else {
-		// LKTOKEN  _@M961_ = "CONFIRM SCREEN LOCK?"
+		// LKTOKEN  _@M961_ = "CONFIRM SCREEN LOCK?" 
 		_tcscpy(mtext, MsgToken(961));
 	}
 	if (MessageBoxX(
@@ -2124,7 +2124,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
   if (_tcscmp(misc, TEXT("TERRCOLBACK")) == 0) {
 	if (TerrainRamp-1<0)
-		TerrainRamp=NUMRAMPS-1;
+		TerrainRamp=NUMRAMPS-1;  
 	else
 		--TerrainRamp;
 	MapWindow::RefreshMap();
@@ -2199,7 +2199,7 @@ void InputEvents::eventService(const TCHAR *misc) {
       return;
     }
   }
-
+  
   if (_tcscmp(misc, TEXT("SAVESYS")) == 0) {
 	dlgProfilesShowModal(0);
 	return;
@@ -2262,13 +2262,13 @@ void InputEvents::eventService(const TCHAR *misc) {
 	ToggleDrawTaskFAI();
 	return;
   }
-
+  
   if (_tcscmp(misc, TEXT("OPTIMODE")) == 0) {
 	  CustomKeyHandler(ckOtimizerPointsToggle+1000); // passthrough mode
 	return;
   }
 
-
+  
   if (_tcscmp(misc, TEXT("SONAR")) == 0) {
 	CustomKeyHandler(ckSonarToggle+1000); // passthrough mode
 	return;
@@ -2338,7 +2338,7 @@ void InputEvents::eventBugs(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("up")) == 0) {
     CheckSetBugs(iround(BUGS*100+10) / 100.0);
-  }
+  } 
   if (_tcscmp(misc, TEXT("down")) == 0) {
     CheckSetBugs(iround(BUGS*100-10) / 100.0);
   }
@@ -2351,11 +2351,11 @@ void InputEvents::eventBugs(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
     _stprintf(Temp,TEXT("%d"), iround(BUGS*100));
-    DoStatusMessage(TEXT("Bugs Performance"), Temp);
-  }
+    DoStatusMessage(TEXT("Bugs Performance"), Temp);    
+  } 
   if (BUGS != oldBugs) {
     CheckSetBugs(min(1.0,max(0.5,BUGS)));
-
+    
     devPutBugs(devA(), BUGS);
     devPutBugs(devB(), BUGS);
     GlidePolar::SetBallast();
@@ -2365,7 +2365,7 @@ void InputEvents::eventBugs(const TCHAR *misc) {
 
 // Ballast
 // Adjusts the ballast setting of the glider
-// up: increases ballast by 10%
+// up: increases ballast by 10% 
 // down: decreases ballast by 10%
 // max: selects 100% ballast
 // min: selects 0% ballast
@@ -2375,25 +2375,24 @@ void InputEvents::eventBallast(const TCHAR *misc) {
   LockFlightData();
   if (_tcscmp(misc, TEXT("up")) == 0) {
     CheckSetBallast(iround(BALLAST*100.0+10) / 100.0);
-  }
+  } 
   if (_tcscmp(misc, TEXT("down")) == 0) {
     CheckSetBallast(iround(BALLAST*100.0-10) / 100.0);
-  }
+  } 
   if (_tcscmp(misc, TEXT("max")) == 0) {
     CheckSetBallast(1.0);
-  }
+  } 
   if (_tcscmp(misc, TEXT("min")) == 0) {
     CheckSetBallast(0.0);
-  }
+  } 
   if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
     _stprintf(Temp,TEXT("%d"),iround(BALLAST*100));
     DoStatusMessage(TEXT("Ballast %"), Temp);
-  }
+  } 
   if (BALLAST != oldBallast) {
-    CheckSetBallast(min(1.0,max(0.0,BALLAST)));
-    devPutBallast(devA(), BALLAST);
-    devPutBallast(devB(), BALLAST);
+    CheckSetBallast(BALLAST);
+    devPutBallast(BALLAST);
     GlidePolar::SetBallast();
   }
   UnlockFlightData();
@@ -2417,7 +2416,7 @@ void InputEvents::eventAutoLogger(const TCHAR *misc) {
 
 // Logger
 // Activates the internal IGC logger
-//  start: starts the logger
+//  start: starts the logger 
 // start ask: starts the logger after asking the user to confirm
 // stop: stops the logger
 // stop ask: stops the logger after asking the user to confirm
@@ -2487,7 +2486,7 @@ void InputEvents::eventRepeatStatusMessage(const TCHAR *misc) {
 }
 
 // NearestAirspaceDetails
-// Displays details of the nearest airspace to the aircraft in a
+// Displays details of the nearest airspace to the aircraft in a 
 // status message.  This does nothing if there is no airspace within
 // 100km of the aircraft.
 // If the aircraft is within airspace, this displays the distance and bearing
@@ -2533,7 +2532,7 @@ void InputEvents::eventNearestWaypointDetails(const TCHAR *misc) {
         _Proj.Screen2LonLat(startScreen, lon, lat);
     }
     if(bOK) {
-        MapWindow::Event_NearestWaypointDetails(lon, lat);
+        MapWindow::Event_NearestWaypointDetails(lon, lat); 
     }
 }
 
@@ -2549,20 +2548,20 @@ void InputEvents::eventNull(const TCHAR *misc) {
 // Loads the task of the specified filename
 void InputEvents::eventTaskLoad(const TCHAR *misc) {
   if (misc && (_tcslen(misc)>0)) {
-
+	
     TCHAR szFileName[MAX_PATH];
 	LocalPath(szFileName,_T(LKD_TASKS));
 	_tcscat(szFileName,_T(DIRSEP));
 	_tcscat(szFileName,misc);
-
+    
     LPCTSTR wextension = _tcsrchr(szFileName, '.');
     if(wextension) {
         if(_tcscmp(wextension,_T(LKS_TSK))==0) {
             CTaskFileHelper helper;
             if(!helper.Load(szFileName)) {
-
+               
             }
-        }
+        } 
 #ifdef OLDTASK_COMPAT
         else if (_tcscmp(wextension,_T(LKS_OLD_TSK))==0) {
             LockTaskData();
@@ -2602,8 +2601,8 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 
 	if (_tcscmp(misc,_T("Factory")) == 0) {
 		if (MessageBoxX(
-			_T("This will reset configuration to factory default. Confirm ?"),
-			_T("Reset Factory Profile"),
+			_T("This will reset configuration to factory default. Confirm ?"), 
+			_T("Reset Factory Profile"), 
 			mbYesNo) == IdNo) {
 			return;
 		}
@@ -2633,7 +2632,7 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 		_stprintf(buffer2,_T("Confirm loading \"%s\" from _Configuration ?"),misc);
 		if (MessageBoxX(
 			buffer2,
-			_T("Load Profile"),
+			_T("Load Profile"), 
 			mbYesNo) == IdNo) {
 			return;
 		}
@@ -2652,10 +2651,10 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 void InputEvents::eventProfileSave(const TCHAR *misc) {
   TCHAR buffer[MAX_PATH];
   if (_tcslen(misc)>0) {
-	_stprintf(buffer,_T("Confirm saving \"%s\" to _Configuration ?"),misc);
+	_stprintf(buffer,_T("Confirm saving \"%s\" to _Configuration ?"),misc); 
 	if (MessageBoxX(
-		buffer,
-		_T("Save Profile"),
+		buffer, 
+		_T("Save Profile"), 
 		mbYesNo) == IdNo) {
 		return;
 	}
@@ -2692,10 +2691,10 @@ void InputEvents::eventSetup(const TCHAR *misc) {
   } else if (_tcscmp(misc,TEXT("System"))==0){
     SystemConfiguration(0);
   } else if (_tcscmp(misc,TEXT("Radio"))==0){
-#ifdef RADIO_ACTIVE
+#ifdef RADIO_ACTIVE      
       if(RadioPara.Enabled)
-    dlgRadioSettingsShowModal();
-#endif  // RADIO_ACTIVE
+    dlgRadioSettingsShowModal();        
+#endif  // RADIO_ACTIVE        
   } else if (_tcscmp(misc,TEXT("Aircraft"))==0){
     SystemConfiguration(2);
   } else if (_tcscmp(misc,TEXT("Pilot"))==0){
@@ -2780,10 +2779,10 @@ void InputEvents::eventRun(const TCHAR *misc) {
   si.wShowWindow= SW_SHOWNORMAL;
   si.dwFlags = STARTF_USESHOWWINDOW;
   // example if (!::CreateProcess(_T("C:\\WINDOWS\\notepad.exe"),_T(""), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
-
+  
   /*cf. http://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
-   * The Unicode version of this function, CreateProcessW, can modify the contents of this string. Therefore, this
-   * parameter cannot be a pointer to read-only memory (such as a const variable or a literal string). If this parameter
+   * The Unicode version of this function, CreateProcessW, can modify the contents of this string. Therefore, this 
+   * parameter cannot be a pointer to read-only memory (such as a const variable or a literal string). If this parameter 
    * is a constant string, the function may cause an access violation.
    * */
   if (!::CreateProcess(path,NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
@@ -2881,17 +2880,17 @@ static int upCount = 0;
 static int downCount = 0;
 
 if (_tcscmp(misc, TEXT("up")) == 0 || (HasKeyboard()&&(_tcscmp(misc, TEXT("kup")) == 0))){
-    step = getIncStep(step, &upCount, &downCount);
+    step = getIncStep(step, &upCount, &downCount);	
 } else if (_tcscmp(misc, TEXT("down")) == 0 || (HasKeyboard()&&(_tcscmp(misc, TEXT("kdown")) == 0))){
     step = getIncStep(step, &downCount, &upCount);
 }
 return step;
 }
-
+    
 double InputEvents::getIncStep(double step, int *count, int *otherCount) {
 
     *otherCount = 0;
-
+    
     if (!myPeriodClock.CheckAlwaysUpdate(300)) {
         (*count) ++;
     } else {
@@ -2899,8 +2898,8 @@ double InputEvents::getIncStep(double step, int *count, int *otherCount) {
     }
     if (*count >= 20) {
         step = step *10;
-    }
-
+    }   
+    
     return step;
 }
 
@@ -2974,20 +2973,20 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
 	MapWindow::GliderScreenPositionX=50;
 	MapWindow::GliderScreenPositionY=MapWindow::GliderScreenPosition;
   } else if (_tcscmp(misc, TEXT("down")) == 0){
-	i=MapWindow::GliderScreenPositionY - 10;
+	i=MapWindow::GliderScreenPositionY - 10; 
 	// 20 is 20%, to avoid positioning on the bottom bar
 	if (i <20) i=90;
 	MapWindow::GliderScreenPositionY=i;
   } else if (_tcscmp(misc, TEXT("up")) == 0){
-	i=MapWindow::GliderScreenPositionY + 10;
+	i=MapWindow::GliderScreenPositionY + 10; 
 	if (i >90) i=20;
 	MapWindow::GliderScreenPositionY=i;
   } else if (_tcscmp(misc, TEXT("left")) == 0){
-	i=MapWindow::GliderScreenPositionX - 10;
+	i=MapWindow::GliderScreenPositionX - 10; 
 	if (i <10) i=90;
 	MapWindow::GliderScreenPositionX=i;
   } else if (_tcscmp(misc, TEXT("right")) == 0){
-	i=MapWindow::GliderScreenPositionX + 10;
+	i=MapWindow::GliderScreenPositionX + 10; 
 	if (i >90) i=10;
 	MapWindow::GliderScreenPositionX=i;
   }
@@ -3018,7 +3017,7 @@ void InputEvents::eventUserDisplayModeForce(const TCHAR *misc){
   }
   #if 0
   else if (_tcscmp(misc, TEXT("show")) == 0){ // UNUSED
-    // DoStatusMessage(TEXT(""));
+    // DoStatusMessage(TEXT("")); 
   }
   #endif
   DoStatusMessage(tmode);
@@ -3031,27 +3030,27 @@ void InputEvents::eventAirspaceDisplayMode(const TCHAR *misc){
     if (++AltitudeMode >ALLOFF) AltitudeMode=ALLON;
 	switch(AltitudeMode) {
 		case 0:
-	// LKTOKEN  _@M71_ = "Airspaces: ALL ON"
+	// LKTOKEN  _@M71_ = "Airspaces: ALL ON" 
 			DoStatusMessage(MsgToken(71));
 			break;
 		case 1:
-	// LKTOKEN  _@M73_ = "Airspaces: CLIPPED"
+	// LKTOKEN  _@M73_ = "Airspaces: CLIPPED" 
 			DoStatusMessage(MsgToken(73));
 			break;
 		case 2:
-	// LKTOKEN  _@M72_ = "Airspaces: AUTO"
+	// LKTOKEN  _@M72_ = "Airspaces: AUTO" 
 			DoStatusMessage(MsgToken(72));
 			break;
 		case 3:
-	// LKTOKEN  _@M69_ = "Airspaces: ALL BELOW"
+	// LKTOKEN  _@M69_ = "Airspaces: ALL BELOW" 
 			DoStatusMessage(MsgToken(69));
 			break;
 		case 4:
-	// LKTOKEN  _@M74_ = "Airspaces: INSIDE"
+	// LKTOKEN  _@M74_ = "Airspaces: INSIDE" 
 			DoStatusMessage(MsgToken(74));
 			break;
 		case 5:
-	// LKTOKEN  _@M70_ = "Airspaces: ALL OFF"
+	// LKTOKEN  _@M70_ = "Airspaces: ALL OFF" 
 			DoStatusMessage(MsgToken(70));
 			break;
 		default:
@@ -3093,7 +3092,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   _stprintf(edit_waypoint.Name,TEXT("_%u"), (unsigned)tmpWaypointNum);
   edit_waypoint.Details = 0;
   edit_waypoint.Number = WayPointList.size();
-
+  
   AddWaypoint(edit_waypoint);
 
   UnlockTaskData();
@@ -3122,7 +3121,7 @@ int iOrientation = DisplayOrientation ;
   else if (_tcscmp(misc, TEXT("northsmart")) == 0){ // 100417
 	iOrientation = NORTHSMART;
 	/*
-	if (InfoBoxLayout::landscape)
+	if (InfoBoxLayout::landscape) 
 		DisplayOrientation = NORTHSMART;
 	else
 		DisplayOrientation = NORTHUP;
@@ -3132,7 +3131,7 @@ int iOrientation = DisplayOrientation ;
 //  if(IsMultiMap())
     if  (MapSpaceMode==MSM_MAP)
     {
-	  DisplayOrientation = iOrientation;
+  	  DisplayOrientation = iOrientation;
       MapWindow::SetAutoOrientation(true); // 101008 reset it
     }
     else
@@ -3194,7 +3193,7 @@ void HideMenu() {
 }
 
 void ShowMenu() {
-  PlayResource(TEXT("IDR_WAV_CLICK"));
+  PlayResource(TEXT("IDR_WAV_CLICK"));    
   InputEvents::setMode(TEXT("Menu"));
   MenuTimeOut = 0;
 }
@@ -3202,7 +3201,7 @@ void ShowMenu() {
 
 
 void FullScreen() {
-
+    
   if (!MenuActive) {
 #ifdef USE_GDI
     MainWindow.Fullscreen();
@@ -3214,7 +3213,7 @@ void FullScreen() {
 #if KEYPAD_WIND // LXMINIMAP TODO CHECK IF NEEDED
 void	WindDirectionProcessing(int UpDown)
 {
-
+	
 	if(UpDown==1)
 	{
 		CALCULATED_INFO.WindBearing  += 5;
@@ -3247,7 +3246,7 @@ void	WindSpeedProcessing(int UpDown)
 		CALCULATED_INFO.WindSpeed -= (1/SPEEDMODIFY);
 		if(CALCULATED_INFO.WindSpeed < 0)
 			CALCULATED_INFO.WindSpeed = 0;
-	}
+	} 
 	// JMW added faster way of changing wind direction
 	else if (UpDown== -2) {
 		WindDirectionProcessing(-1);
@@ -3267,7 +3266,7 @@ void	MacCreadyProcessing(int UpDown)
   if(UpDown==1) {
 	CALCULATED_INFO.AutoMacCready=false;  // 091214 disable AutoMacCready when changing MC values
     MACCREADY += (double)0.1/LIFTMODIFY; // BUGFIX 100102
-
+    
     if (MACCREADY>12.0) MACCREADY=12.0;
   }
   else if(UpDown==-1)
@@ -3281,32 +3280,32 @@ void	MacCreadyProcessing(int UpDown)
 
   } else if (UpDown==0)
     {
-      CALCULATED_INFO.AutoMacCready = !CALCULATED_INFO.AutoMacCready;
+      CALCULATED_INFO.AutoMacCready = !CALCULATED_INFO.AutoMacCready; 
       // JMW toggle automacready
-	}
+	} 
   else if (UpDown==-2)
     {
       CALCULATED_INFO.AutoMacCready = false;  // SDP on auto maccready
-
+      
     }
   else if (UpDown==+2)
     {
       CALCULATED_INFO.AutoMacCready = true;	// SDP off auto maccready
-
+      
     }
   else if (UpDown==3)
     {
 	CALCULATED_INFO.AutoMacCready=false;  // 091214 disable AutoMacCready when changing MC values
 	MACCREADY += (double)0.5/LIFTMODIFY; // 100102
-	if (MACCREADY>12.0) MACCREADY=12.0;
-
+	if (MACCREADY>12.0) MACCREADY=12.0; 
+      
     }
   else if (UpDown==-3)
     {
 	CALCULATED_INFO.AutoMacCready=false;  // 091214 disable AutoMacCready when changing MC values
 	MACCREADY -= (double)0.5/LIFTMODIFY; // 100102
-	if (MACCREADY<0) MACCREADY=0;
-
+	if (MACCREADY<0) MACCREADY=0; 
+      
     }
   else if (UpDown==-5)
     {
@@ -3328,10 +3327,10 @@ void	MacCreadyProcessing(int UpDown)
       CALCULATED_INFO.AutoMacCready = true;
       AutoMcMode=amcFinalAndClimb;
     }
-
-  devPutMacCready(devA(), MACCREADY);
+  
+  devPutMacCready(devA(), MACCREADY); 
   devPutMacCready(devB(), MACCREADY);
-
+  
   return;
 }
 
@@ -3375,18 +3374,18 @@ void NextUpDown(int UpDown)
         }
       }
       // No more, try first
-      else
+      else 
         if((UpDown == 2) && (Task[0].Index >= 0)) {
           /* ****DISABLED****
           if(ActiveTaskPoint == 0)	{
             // TODO bug: allow restart
             // TODO bug: make this work only for manual
-
-            // TODO bug: This should trigger reset of flight stats, but
+            
+            // TODO bug: This should trigger reset of flight stats, but 
             // should ask first...
             if (CALCULATED_INFO.TaskStartTime==0) {
               CALCULATED_INFO.TaskStartTime = GPS_INFO.Time ;
-            }
+            }            
           }
           */
           AdvanceArmed = false;
@@ -3413,8 +3412,8 @@ void NextUpDown(int UpDown)
 	//	TODO bug: not required? CALCULATED_INFO.TaskStartTime = 0;
       }
     }
-    aatdistance.ResetEnterTrigger(ActiveTaskPoint);
-  }
+    aatdistance.ResetEnterTrigger(ActiveTaskPoint);    
+  } 
   else if (UpDown==0) {
     #if BUGSTOP
     LKASSERT(ActiveTaskPoint>=0);
@@ -3449,10 +3448,10 @@ void InputEvents::eventChangeSorting(const TCHAR *misc)
 
 	  if (_tcscmp(misc, TEXT("PREVIOUS")) == 0)
 	  {
-			  if(j==0)
-				  j = 4;
-			  else
-				  j--;
+		  	  if(j==0)
+		  		  j = 4;
+		  	  else
+		  		  j--;
 
 	  }
 	  else
@@ -3464,38 +3463,38 @@ void InputEvents::eventChangeSorting(const TCHAR *misc)
 	  }
 
 	  switch(MapSpaceMode) {
-			case MSM_LANDABLE:
-			case MSM_AIRPORTS:
-			case MSM_NEARTPS:
-						SortedMode[MapSpaceMode]=j;
-						LKForceDoNearest=true;
-						PlayResource(TEXT("IDR_WAV_CLICK"));
-						break;
-			case MSM_TRAFFIC:
-						SortedMode[MapSpaceMode]=j;
-						// force immediate resorting
-						LastDoTraffic=0;
-						PlayResource(TEXT("IDR_WAV_CLICK"));
-						break;
-			case MSM_AIRSPACES:
-						SortedMode[MapSpaceMode]=j;
-						LastDoAirspaces=0;
-						PlayResource(TEXT("IDR_WAV_CLICK"));
-						break;
+	  		case MSM_LANDABLE:
+	  		case MSM_AIRPORTS:
+	  		case MSM_NEARTPS:
+	  					SortedMode[MapSpaceMode]=j;
+	  					LKForceDoNearest=true;
+	  					PlayResource(TEXT("IDR_WAV_CLICK"));
+	  					break;
+	  		case MSM_TRAFFIC:
+	  					SortedMode[MapSpaceMode]=j;
+	  					// force immediate resorting
+	  					LastDoTraffic=0;
+	  					PlayResource(TEXT("IDR_WAV_CLICK"));
+	  					break;
+	  		case MSM_AIRSPACES:
+	  					SortedMode[MapSpaceMode]=j;
+	  					LastDoAirspaces=0;
+	  					PlayResource(TEXT("IDR_WAV_CLICK"));
+	  					break;
 
-			case MSM_THERMALS:
-						SortedMode[MapSpaceMode]=j;
-						// force immediate resorting
-						LastDoThermalH=0;
-						PlayResource(TEXT("IDR_WAV_CLICK"));
-						break;
-			default:
-					//	DoStatusMessage(_T("ERR-022 UNKNOWN MSM in VK"));
-						break;
-		}
-		SelectedPage[MapSpaceMode]=0;
-		SelectedRaw[MapSpaceMode]=0;
-		MapWindow::RefreshMap();
+	  		case MSM_THERMALS:
+	  					SortedMode[MapSpaceMode]=j;
+	  					// force immediate resorting
+	  					LastDoThermalH=0;
+	  					PlayResource(TEXT("IDR_WAV_CLICK"));
+	  					break;
+	  		default:
+	  				//	DoStatusMessage(_T("ERR-022 UNKNOWN MSM in VK"));
+	  					break;
+	  	}
+	  	SelectedPage[MapSpaceMode]=0;
+	  	SelectedRaw[MapSpaceMode]=0;
+	  	MapWindow::RefreshMap();
 
 }
 
@@ -3523,7 +3522,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 	 else if (_tcscmp(misc, TEXT("K")) == 0)
 	 {
 		    PlayResource(TEXT("IDR_WAV_CLICK"));
-			eventZoom(_T("in"));
+		 	eventZoom(_T("in"));
 	 }
 	 else if (_tcscmp(misc, TEXT("SELECTMODE")) == 0)
       {
@@ -3550,7 +3549,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		  {
 
 			  LKevent=LKEVENT_DOWN;
-						 MapWindow::RefreshMap();
+			 			 MapWindow::RefreshMap();
 		  }
 		  else if(IsMenuShown)
 		  {
@@ -3574,7 +3573,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 			                    case 12: SelectedButtonId++; break;
 			                    case 13: SelectedButtonId=1; break;
 			                    default:
-						SelectedButtonId = 1;
+			                    	SelectedButtonId = 1;
 			                        break;
 			                }
 			  retry++;
@@ -3596,7 +3595,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		   if(isSelectMode())
 		   {
 			              LKevent=LKEVENT_UP;
-						 MapWindow::RefreshMap();
+			  			 MapWindow::RefreshMap();
 		   }
 		   else if(IsMenuShown)
 		   {
@@ -3621,7 +3620,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 			                    case 12:
 			                    case 13: SelectedButtonId--; break;
 			                    default:
-						SelectedButtonId = 1;
+			                    	SelectedButtonId = 1;
 			                        break;
 			  }
 			  retry++;
@@ -3634,9 +3633,9 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		   }
 		   else
 		  {
-					  PreviousModeIndex();
-					  MapWindow::RefreshMap();
-					  SoundModeIndex();
+		  			  PreviousModeIndex();
+		  			  MapWindow::RefreshMap();
+		  			  SoundModeIndex();
 		  }
 
 	  }
@@ -3648,35 +3647,35 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 			 eventChangeSorting(_T("PREVIOUS"));
 		 }
 		 else if(ModeIndex == 0) //tukaj preverjam kateri mode je	in ce je pravi potem menjavam poglede
-			{
+		  	{
 
-				BottomBarChange(false);
-				MapWindow::RefreshMap();
-				PlayResource(TEXT("IDR_WAV_BTONE2"));
+			  	BottomBarChange(false);
+			  	MapWindow::RefreshMap();
+			  	PlayResource(TEXT("IDR_WAV_BTONE2"));
 
-			}
-			else
-			{
-				ProcessVirtualKey(100, 100,0 , LKGESTURE_LEFT);
-			}
+		  	}
+		  	else
+		  	{
+		  		ProcessVirtualKey(100, 100,0 , LKGESTURE_LEFT);
+		  	}
 	   }
 	  else if(_tcscmp(misc, TEXT("RIGHT")) == 0)
 	   {
 
 		    if( isSelectMode())
 		    {
-					 eventChangeSorting(_T("NEXT"));
+		 			 eventChangeSorting(_T("NEXT"));
 		    }
 		    else if(ModeIndex == 0) //tukaj preverjam kateri mode je	in ce je pravi potem menjavam poglede
-			{
+		  	{
 			    BottomBarChange(true);
-				MapWindow::RefreshMap();
-				PlayResource(TEXT("IDR_WAV_BTONE2"));
-			}
-			else
-			{
-			ProcessVirtualKey(100, 100,0 , LKGESTURE_RIGHT);
-			}
+		  		MapWindow::RefreshMap();
+		  		PlayResource(TEXT("IDR_WAV_BTONE2"));
+		  	}
+		  	else
+		  	{
+		  	ProcessVirtualKey(100, 100,0 , LKGESTURE_RIGHT);
+		  	}
 	   }
 	  else if(_tcscmp(misc, TEXT("RETURN")) == 0)
 	   {
@@ -3686,7 +3685,7 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 			 MapWindow::RefreshMap();
 		 }
 		 else if(IsMenuShown)
-	  {
+     	  {
 			   PlayResource(TEXT("IDR_WAV_CLICK"));
 		  int thismode = getModeID();
 
@@ -3694,26 +3693,26 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 		   unsigned MenuId = SelectedButtonId;
 		   // Note - reverse order - last one wins
 		   for (i = ModeLabel_count[thismode]; i >= 0; i--) {
-			if ((ModeLabel[thismode][i].location == MenuId && MenuId>0) ) {
+		 	if ((ModeLabel[thismode][i].location == MenuId && MenuId>0) ) {
 
-				int lastMode = thismode;
-				// JMW need a debounce method here..
+		 		int lastMode = thismode;
+		 		// JMW need a debounce method here..
 
-				if (ButtonLabel::IsEnabled(MenuId)) {
+		 		if (ButtonLabel::IsEnabled(MenuId)) {
 
 
-					processGo(ModeLabel[thismode][i].event);
-				}
+		 			processGo(ModeLabel[thismode][i].event);
+		 		}
 
-				// update button text, macro may change the label
-				if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && ButtonLabel::IsVisible(MenuId)){
-					drawButtons(thismode);
-				}
-				break;
-			}
+		 		// update button text, macro may change the label
+		 		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && ButtonLabel::IsVisible(MenuId)){
+		 			drawButtons(thismode);
+		 		}
+		 		break;
+		 	}
 
 		   }
-	  }
+     	  }
 		  else
 		  {
 			  PlayResource(TEXT("IDR_WAV_CLICK"));
