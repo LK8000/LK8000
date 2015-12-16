@@ -12,7 +12,7 @@
 class tnmeastring
 {
 public:
-	inline tnmeastring(TCHAR* szString) : m_szString(szString) {
+	inline tnmeastring(TCHAR* szString) : m_szString(szString), m_Char() {
 	}
 
 	~tnmeastring(void) {
