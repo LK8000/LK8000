@@ -121,7 +121,7 @@ typedef struct {
 
 
 // Parse string (new lines etc) and malloc the string
-TCHAR* StringMallocParse(TCHAR* old_string);
+TCHAR* StringMallocParse(const TCHAR* old_string);
 
 void LocalPath(TCHAR* buf, const TCHAR* file = TEXT(""));
 void SystemPath(TCHAR* buf, const TCHAR* file = TEXT(""));

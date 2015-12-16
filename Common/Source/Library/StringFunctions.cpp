@@ -477,13 +477,13 @@ TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
 
 
 
-TCHAR* StringMallocParse(TCHAR* old_string) {
+TCHAR* StringMallocParse(const TCHAR* old_string) {
   TCHAR buffer[2048];	// Note - max size of any string we cope with here !
   TCHAR* new_string;
   unsigned int used = 0;
   unsigned int i;
 
-  // Transcode special characters 
+  // Transcode special characters
   for (i = 0; i < _tcslen(old_string); i++) {
     if (used < 2045) {
       if (old_string[i] == '\\' ) {
@@ -500,57 +500,48 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
           buffer[used++] = old_string[i];
         }
       } else {
-	buffer[used++] = old_string[i];
+        buffer[used++] = old_string[i];
       }
     }
   };
   // right trim string
   while(used > 0 && buffer[used-1] == _T(' ')) {
-    buffer[--used] = _T('\0');
+    --used;
   }  
   buffer[used++] =_T('\0');
 
-  TCHAR *pstart;
-  pstart = _tcsstr(buffer, _T("_@M"));
+  TCHAR *pstart = _tcsstr(buffer, _T("_@M"));
   if (pstart==NULL) {
 	goto _notoken;
   }
-
-  TCHAR *pend, *ptmp;
-
-  ptmp=pstart;
-  pend=NULL;
-  while (++ptmp != NULL) {
-	if (*ptmp != _T('_')) continue;
-	pend=ptmp;
-	break;
+  
+  // find end of token
+  TCHAR *pnext;
+  pnext = std::find(pstart+3, &buffer[used], _T('_'));
+  if(pnext == &buffer[used]) {
+    StartupStore(_T("...... Menu Label incorrect, invalid token: <%s>" NEWLINE),buffer);
+    goto _notoken; // invalid token
   }
-  if (pend==NULL) {
-	StartupStore(_T("...... Menu Label incorrect, no pend: <%s>%s"),buffer,NEWLINE);
+  if(std::distance(pstart, pnext) > 9) {
+	StartupStore(_T("...... Menu Label incorrect, token too big: <%s>" NEWLINE),buffer);
 	goto _notoken;
   }
-  if ((pend-pstart)>9) {
-	StartupStore(_T("...... Menu Label incorrect, token too big: <%s>%s"),buffer,NEWLINE);
-	goto _notoken;
-  }
-
+  ++pnext; 
+  
   TCHAR lktoken[10];
-  ptmp=pstart;
-  i=0;
-  while (ptmp<=pend) {
-	lktoken[i++]=*ptmp++;
-  }
-  lktoken[i]='\0';
-  *pstart='\0';
-  TCHAR newbuffer[2048];
-  _stprintf(newbuffer,_T("%s%s%s"), buffer, gettext(lktoken), pend+1);
-
-  new_string = (TCHAR *)malloc((_tcslen(newbuffer)+1)*sizeof(TCHAR));
+  *std::copy(pstart, pnext, lktoken) = _T('\0');
+  *pstart = _T('\0');
+  
+  const TCHAR *tokentext;
+  tokentext = gettext(lktoken);
+  size_t new_len;
+  new_len = _tcslen(buffer) + _tcslen(tokentext) + _tcslen(pnext);
+  new_string = (TCHAR *)malloc((new_len+1)*sizeof(TCHAR));
   if (new_string==NULL) {
 	OutOfMemory(_T(__FILE__),__LINE__);
 	return NULL;
   }
-  _tcscpy(new_string, newbuffer);
+  _stprintf(new_string,_T("%s%s%s"), buffer, tokentext, pnext);
   return new_string;
 
 _notoken:
