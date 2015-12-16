@@ -997,6 +997,7 @@ DEVS	:=\
 	$(DEV)/devBlueFlyVario.cpp\
 	$(DEV)/devPVCOM.cpp \
 	$(DEV)/devKRT2.cpp \
+	$(DEV)/devLXNano3.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
