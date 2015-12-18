@@ -893,7 +893,8 @@ type=key
 data=8
 event=Setup Radio
 # label=_@M2023_$(DISABLED)
-label=_@M2306_ 
+#label=_@M2306_ 
+label=$(AC16)
 location=7
 
 mode=Config1

@@ -226,10 +226,20 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2055),MsgToken(894)); // ON
 			break;
 
-		case 16: // ActiveMap no more used
-			invalid=true;
+		case 16: // ActiveMap no more used now Radio Button
+                        #ifdef RADIO_ACTIVE  
+			if (RadioPara.Enabled) {
+			   _stprintf(OutBuffer,_T("%s\n"),MsgToken(2306)); // TEXT
+			   invalid=false;
+			} else {
+			  _stprintf(OutBuffer,_T("%s\n"),MsgToken(2306)); // TEXT
+			  invalid=true;
+			}
+				
+                        #else
+                                invalid=true;
+                        #endif
 			break;
-
 		case 17:
 			// Order is:  ALL ON, TEXT ONLY, GAUGES ONLY, ALL OFF
 			if (!HaveGauges()) {
