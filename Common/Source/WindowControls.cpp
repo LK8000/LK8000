@@ -2342,7 +2342,7 @@ void WndProperty::Paint(LKSurface& Surface){
 	org.x = mEditRect.left;
 	org.y = mEditRect.top - tsize.cy;
   } else {
-	org.x = mCaptionWidth - mBitmapSize - (tsize.cx + 1);
+	org.x = mCaptionWidth - mBitmapSize - (tsize.cx + NIBLSCALE(2));
 	org.y = (GetHeight() - tsize.cy)/2;
   }
 
