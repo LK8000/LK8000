@@ -30,13 +30,18 @@ SoundGlobalInit::SoundGlobalInit() {
     if (lk::filesystem::exist(srcfile)) {
         bSoundFile = true;
     } else {
-        StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"), srcfile, NEWLINE);
-        StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"), NEWLINE);
+        StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>") NEWLINE, srcfile);
     }
 
     /* Open the PCM device in playback mode */
-    if (snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0) < 0) {
+    int pcmrc = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0);
+    if (pcmrc < 0) {
+        StartupStore(_T("failed to open PCM device <%s>") NEWLINE, snd_strerror(pcmrc));
         pcm_handle = nullptr;
+    }
+    
+    if(!pcm_handle) {
+        StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!") NEWLINE);
     }
 }
 
@@ -79,7 +84,7 @@ void alsa_play(SNDFILE* infile, SF_INFO& sfinfo) {
 
         int pcmrc = snd_pcm_writei(pcm_handle, buf.get(), readcount);
         if (pcmrc == -EPIPE) {
-            fprintf(stderr, "Underrun!\n");
+            fprintf(stderr, "PCM write underrun!\n");
             snd_pcm_prepare(pcm_handle);
         } else if (pcmrc < 0) {
             fprintf(stderr, "Error writing to PCM device: %s\n", snd_strerror(pcmrc));
