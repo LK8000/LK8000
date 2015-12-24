@@ -479,7 +479,6 @@ RECT rc  = rci; /* rectangle for sideview */
 RECT rct = rc;  /* rectangle for topview */
 rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview */
 rc.top     = rct.bottom;
-int i,j;
 static double fScaleFact = 5.0;
 static int iCircleSize    = 4  * ScreenScale ;
 static int iRectangleSize = 4  * ScreenScale ;
@@ -586,14 +585,14 @@ switch(LKevent)
 	}
 	else
 	#endif // OWNPOS
-	    for (i=0; i < nEntrys; i++)
+	    for (int i=0; i < nEntrys; i++)
 		{
 		  LKASSERT(i<FLARM_MAX_TRAFFIC);
 		  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 		  if( PtInRect(&PositionTopView[aiSortArray[i]], startScreen) ||
 		      PtInRect(&PositionSideView[aiSortArray[i]], startScreen) )
 		  {
-		    for (j = 0; j < FLARM_MAX_TRAFFIC; j++ ) {
+		    for (int j = 0; j < FLARM_MAX_TRAFFIC; j++ ) {
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 			  if(LKTraffic[aiSortArray[i]].ID == LKTraffic[j].ID)
 			  {
@@ -664,8 +663,8 @@ static double oldSplit = 0;
 
 
 
-#define NUMAIRCRAFTPTS 16
-POINT AircraftTop[NUMAIRCRAFTPTS] = {
+#define NUMAIRCRAFTPTS (array_size(AircraftTop))
+POINT AircraftTop[] = {
   { 1,-6},
   {2,-1},
   {15,0},
@@ -681,14 +680,15 @@ POINT AircraftTop[NUMAIRCRAFTPTS] = {
   {-15,2},
   {-15,0},
   {-2,-1},
-  {-1,-6}
+  {-1,-6},
+  { 1,-6}
 };
 
 
-for(i=0; i < NUMAIRCRAFTPTS; i++)
+for(unsigned i=0; i < NUMAIRCRAFTPTS; i++)
 {
-  AircraftTop[i].x =  (long)( AircraftTop[i].x * fOwnTopPlaneSize);
-  AircraftTop[i].y =  (long)( AircraftTop[i].y * fOwnTopPlaneSize);
+  AircraftTop[i].x =  ( AircraftTop[i].x * fOwnTopPlaneSize);
+  AircraftTop[i].y =  ( AircraftTop[i].y * fOwnTopPlaneSize);
 }
 
 
@@ -882,7 +882,7 @@ double scl = xtick;
 	  sDia.fXMax= sDia.fXMin+1.0;
 	LKASSERT( sDia.fXMax !=sDia.fXMin )
 	double fCScale =(double)( rct.right-rct.left)/((sDia.fXMax-sDia.fXMin ));
-	for ( i = 0; i < (sDia.fXMax /scl); i++)
+	for ( int i = 0; i < (sDia.fXMax /scl); i++)
 	{
 	  iCircleRadius =(int) (fRing* fCScale / (DISTANCEMODIFY*1000.0f));
 	  Surface.Circle(x_middle, y_middle, iCircleRadius, rcc, true, false );
@@ -895,7 +895,7 @@ double scl = xtick;
 	Surface.SelectObject(hOrangePen);
 	fRing = xtick/2;
 	if((sDia.fXMax /xtick)  < 3)
-	  for ( i = 0; i < (sDia.fXMax /xtick); i++)
+	  for (int i = 0; i < (sDia.fXMax /xtick); i++)
 	  {
 	    iCircleRadius = (int) (fRing * fCScale / (DISTANCEMODIFY*1000.0f));
 	    Surface.Circle(x_middle, y_middle, iCircleRadius, rcc, true, false );
@@ -925,7 +925,7 @@ double scl = xtick;
 		Planebrg = GPSbrg;
 		GPSbrg =0.0;
 	}
-	for (i=0; i<FLARM_MAX_TRAFFIC; i++)
+	for (int i=0; i<FLARM_MAX_TRAFFIC; i++)
 	{
 	  if (LKTraffic[i].Status != LKT_EMPTY)
 	  {
@@ -971,9 +971,9 @@ double scl = xtick;
 
 	}
 
-    for (i=0; i < nEntrys; i++)
+    for (int i=0; i < nEntrys; i++)
     {
-      for(j=i+1; j < nEntrys; j++)
+      for(int j=i+1; j < nEntrys; j++)
       {
 	    LKASSERT(i<FLARM_MAX_TRAFFIC);
 		LKASSERT(aiSortArray>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
@@ -1001,9 +1001,9 @@ bool bCenter = false;
 Surface.SelectObject(hDrawPen);
 if(SPLITSCREEN_FACTOR >0)
 {
-  for (j=0; j<nEntrys; j++)
+  for (int j=0; j<nEntrys; j++)
   {
-    i = aiSortArray[j];
+    int i = aiSortArray[j];
     LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
     {
 	  /*************************************************************************
@@ -1131,7 +1131,7 @@ if(SPLITSCREEN_FACTOR >0)
   else
 	fMaxHeight = GPSalt;
   fMinHeight = GPSalt;
-  for (i=0; i<FLARM_MAX_TRAFFIC; i++)
+  for (int i=0; i<FLARM_MAX_TRAFFIC; i++)
     if(LKTraffic[i].Status != LKT_EMPTY)
     {
   	  fMaxHeight = max (fMaxHeight, LKTraffic[i].Altitude);
@@ -1174,8 +1174,8 @@ if(SPLITSCREEN_FACTOR >0)
 /*************************************************************************
  * sideview
  *************************************************************************/
-  for (i=0; i < nEntrys; i++){
-    for(j=i+1; j < nEntrys; j++) {
+  for (int i=0; i < nEntrys; i++){
+    for(int j=i+1; j < nEntrys; j++) {
 	  LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
 	  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 	  if(asFLARMPos[aiSortArray[i]].fy  < asFLARMPos[aiSortArray[j]].fy )
@@ -1193,10 +1193,10 @@ if(SPLITSCREEN_FACTOR >0)
 if(bSideview)
 {
   bCenter = false;
-  for (j=0; j<nEntrys; j++)
+  for (int j=0; j<nEntrys; j++)
   {
     LKASSERT(j<FLARM_MAX_TRAFFIC);
-    i = aiSortArray[j];
+    int i = aiSortArray[j];
     LKASSERT(i>=0 && i<FLARM_MAX_TRAFFIC);
 
 	/*************************************************************************
