@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <sys/sysinfo.h>
+#include <sys/statvfs.h>
 
 
 size_t CheckFreeRam(void) {
@@ -22,6 +23,10 @@ size_t CheckFreeRam(void) {
 }
 
 size_t FindFreeSpace(const char *path) {
+    struct statvfs info = {};
+    if(statvfs(path, &info) == 0) {
+        return (info.f_bfree * info.f_bsize) /1024;
+    }
     return ~((size_t)0);
 }
 
