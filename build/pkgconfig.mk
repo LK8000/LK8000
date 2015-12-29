@@ -13,7 +13,7 @@ ifeq ($(TARGET_IS_KOBO),y)
 endif
 
 ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
-  PKG_CONFIG := PKG_CONFIG_LIBDIR=$(PI)/usr/lib/arm-linux-gnueabihf/pkgconfig $(PKG_CONFIG) --define-variable=prefix=$(PI)/usr
+  PKG_CONFIG := PKG_CONFIG_LIBDIR=$(PI)/usr/lib/arm-linux-gnueabihf/pkgconfig:$(PI)/usr/lib/pkgconfig:$(PI)/usr/share/pkgconfig $(PKG_CONFIG) --define-variable=prefix=$(PI)/usr
 endif
 
 ifeq ($(HOST_IS_ARM)$(TARGET_HAS_MALI),ny)

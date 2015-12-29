@@ -32,7 +32,7 @@ LinuxMouse::Open(const char *path)
     return false;
 
   fd.SetNonBlocking();
-  io_loop.Add(fd.Get(), io_loop.READ, *this);
+  io_loop.Add(fd, io_loop.READ, *this);
 
   merge.AddPointer();
 
@@ -47,7 +47,7 @@ LinuxMouse::Close()
 
   merge.RemovePointer();
 
-  io_loop.Remove(fd.Get());
+  io_loop.Remove(fd);
   fd.Close();
 }
 

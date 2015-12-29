@@ -51,12 +51,12 @@ TTYKeyboard::TTYKeyboard(EventQueue &_queue, IOLoop &_io_loop)
     tcsetattr(STDIN_FILENO, TCSANOW, &attr);
   }
 
-  io_loop.Add(STDIN_FILENO, io_loop.READ, *this);
+  io_loop.Add(FileDescriptor(STDIN_FILENO), io_loop.READ, *this);
 }
 
 TTYKeyboard::~TTYKeyboard()
 {
-  io_loop.Remove(STDIN_FILENO);
+  io_loop.Remove(FileDescriptor(STDIN_FILENO));
 
   tcsetattr(STDIN_FILENO, TCSANOW, &restore_attr);
 }

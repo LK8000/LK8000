@@ -19,11 +19,6 @@ extern "C" {
 #endif
 
 /*____________________________________________________________________________*/
-  
-// return number of elements in the array
-#define countof(array) (sizeof(array)/sizeof(array[0]))
-
-/*____________________________________________________________________________*/
 
 int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars);
 int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars);

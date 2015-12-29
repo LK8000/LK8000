@@ -105,6 +105,14 @@ ifeq ($(TARGET),KOBO)
   MINIMAL        :=n
 endif
 
+ifeq ($(TARGET),PI)
+  HOST_IS_PI     :=n
+  TARGET_IS_PI   :=y
+  CONFIG_LINUX   :=y
+  CONFIG_ANDROID :=n
+  MINIMAL        :=n
+endif
+
 include build/pkgconfig.mk
 ############# build and CPU info
 
@@ -123,6 +131,9 @@ else ifeq ($(CONFIG_WINE),y)
 else ifeq ($(TARGET_IS_KOBO),y)
  TCPATH := arm-unknown-linux-gnueabi-
  MCPU   := -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize
+else ifeq ($(TARGET_IS_PI),y)
+ TCPATH := arm-linux-gnueabihf-
+ MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize
 else ifeq ($(CONFIG_LINUX),y)
  TCPATH :=
 else
@@ -239,6 +250,24 @@ ifeq ($(TARGET_IS_KOBO),y)
  CE_DEFS += -DUSE_MEMORY_CANVAS
 endif
 
+
+ifeq ($(TARGET_IS_PI),y)
+ USE_EGL :=y
+ OPENGL	 :=y
+ GLES    :=y
+ GLES2   :=n
+ USE_SDL :=n
+ USE_X11 :=n
+
+ CE_DEFS += -DUSE_VIDEOCORE
+ CE_DEFS += -isystem $(PI)/opt/vc/include -isystem $(PI)/opt/vc/include/interface/vcos/pthreads
+ CE_DEFS += -isystem $(PI)/opt/vc/include/interface/vmcs_host/linux
+ USE_CONSOLE = y	
+
+ CE_DEFS += --sysroot=$(PI) -isystem $(PI)/usr/include/arm-linux-gnueabihf -isystem $(PI)/usr/include
+
+endif
+
 ifeq ($(CONFIG_LINUX),y)
  CE_DEFS += -D__linux__
  CE_DEFS += -DHAVE_POSIX
@@ -257,15 +286,6 @@ ifeq ($(CONFIG_LINUX),y)
   USE_X11 ?=n
  endif
 
- ifeq ($(GLES2),y)
-  GLES    :=n
-  $(eval $(call pkg-config-library,GLES2,glesv2))
- endif
-
- ifeq ($(GLES),y)
-  $(eval $(call pkg-config-library,GLES,glesv1_cm))
- endif
-
  GLES2 ?=n
  GLES ?=n
 
@@ -280,9 +300,13 @@ ifeq ($(CONFIG_LINUX),y)
  endif
 
  ifeq ($(OPENGL)$(USE_EGL),yy)
-  $(eval $(call pkg-config-library,EGL,egl))
-  USE_X11 ?= $(shell $(PKG_CONFIG) --exists x11 && echo y)
+  EGL_LDLIBS += -lEGL
+  USE_X11 ?=$(shell $(PKG_CONFIG) --exists x11 && echo y)
   USE_SDL ?=n
+ endif
+
+ ifeq ($(TARGET_IS_PI),y)
+ EGL_LDLIBS += -L$(PI)/opt/vc/lib -lvchostif -lvchiq_arm -lvcos -lbcm_host
  endif
 
  ifeq ($(USE_WAYLAND),y)
@@ -297,6 +321,10 @@ ifeq ($(CONFIG_LINUX),y)
  ifeq ($(USE_X11), y)
   $(eval $(call pkg-config-library,X11,x11))
   CE_DEFS += $(X11_CPPFLAGS) -DUSE_X11
+ endif
+
+ ifeq ($(USE_CONSOLE),y)
+  CE_DEFS += -DUSE_CONSOLE
  endif
 
 # Use SDL if not explicitly disabled or disabled by another FLAG ... 
@@ -345,15 +373,16 @@ ifeq ($(CONFIG_LINUX),y)
   CE_DEFS += -DENABLE_OPENGL
   CE_DEFS += -DGL_GLEXT_PROTOTYPES
 
-  ifeq ($(GLES),y)
-   CE_DEFS += -DHAVE_GLES
-   CE_DEFS += $(patsubst -I%,-isystem %,$(GLES_CPPFLAGS))
-  endif
-
   ifeq ($(GLES2),y)
    CE_DEFS += -DHAVE_GLES -DHAVE_GLES2 -DUSE_GLSL
-   CE_DEFS += $(patsubst -I%,-isystem %,$(GLES2_CPPFLAGS))
+   OPENGL_LDLIBS = -lGLESv2 -ldl
+  else ifeq ($(GLES),y)
+   CE_DEFS += -DHAVE_GLES
+   OPENGL_LDLIBS = -lGLESv1_CM -ldl
+  else
+   OPENGL_LDLIBS = -lGL
   endif
+
  else
   CE_DEFS += -DUSE_MEMORY_CANVAS
  endif
@@ -495,6 +524,10 @@ ifeq ($(TARGET_IS_KOBO),y)
  LDFLAGS += -Wl,--rpath=/opt/LK8000/lib
 endif
 
+ifeq ($(TARGET_IS_PI),y)
+ LDFLAGS		+= --sysroot=$(PI) -L$(PI)/usr/lib/arm-linux-gnueabihf
+endif
+
 ifeq ($(CONFIG_WIN32),y)
  LDFLAGS		+=-Wl,--major-subsystem-version=$(CE_MAJOR)
  LDFLAGS		+=-Wl,--minor-subsystem-version=$(CE_MINOR)
@@ -511,9 +544,7 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(PNG_LDLIBS)
  LDLIBS += $(FREETYPE_LDLIBS)
  LDLIBS += $(ZZIP_LDLIBS)
- LDLIBS += $(GLES_LDLIBS)
- LDLIBS += $(GLES2_LDLIBS)
- LDLIBS += $(GL_LDLIBS)
+ LDLIBS += $(OPENGL_LDLIBS)
  LDLIBS += $(EGL_LDLIBS)
  LDLIBS += $(X11_LDLIBS)
  LDLIBS += $(WAYLAND_LDLIBS)
@@ -522,12 +553,6 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(ALSA_LDLIBS)
  LDLIBS += $(SNDFILE_LDLIBS)
 
- ifeq ($(GLES),y)
-  LDLIBS += -ldl
- endif
- ifeq ($(GLES2),y)
-  LDLIBS += -ldl
- endif
 endif
 
 

@@ -550,6 +550,8 @@ zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE *file)
  * This function returns a new zzip-handle (use => zzip_close to return
  * it). On error this function will return null setting => errno(3).
  */
+#define countof(array) (sizeof(array)/sizeof(array[0]))
+
 ZZIP_FILE*
 zzip_fopen(const TCHAR* filename, zzip_char_t* mode)
 {

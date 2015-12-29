@@ -1,6 +1,10 @@
 #ifndef MAPPRIMITIVE_H
 #define MAPPRIMITIVE_H
 
+#include <stdlib.h> 
+#include <zzip/lib.h>
+#include <tchar.h>
+
 #include <stddef.h>
 #define MS_VERSION "4.0.1"
 
@@ -130,8 +134,6 @@ void msFree(void *p);
 void msFreeCharArray(char **array, int num_items);
 
 
-#include <zzip/lib.h>
-#include <tchar.h>
 ZZIP_FILE *ppc_fopen(const TCHAR *filename, const char *mode);
 
 #ifdef __cplusplus

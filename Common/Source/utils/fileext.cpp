@@ -49,7 +49,9 @@ void Utf8File::Close()
   }
 } // Close()
 
-
+#ifndef countof
+    #define countof(array) (sizeof(array)/sizeof(array[0]))
+#endif
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Opens existing UTF-8 encoded file.
 ///

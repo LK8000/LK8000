@@ -119,7 +119,7 @@ void StartupStore(const TCHAR *Str, ...)
   va_list ap;
 
   va_start(ap, Str);
-  _vsntprintf(buf, countof(buf), Str, ap);
+  _vsntprintf(buf, array_size(buf), Str, ap);
   va_end(ap);
 
   LockStartupStore();

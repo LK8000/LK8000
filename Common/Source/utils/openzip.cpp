@@ -8,7 +8,7 @@
  *
  * Created on December 20, 2014, 3:28 PM
  */
-
+#include <stdlib.h> 
 #include <zzip/lib.h>
 #include <tchar.h>
 

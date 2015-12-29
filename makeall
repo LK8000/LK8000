@@ -1,12 +1,13 @@
 #!/bin/sh
 start=`date`
 make clean
-make -j 2 TARGET=PPC2002
-make -j 2 TARGET=PPC2003
-make -j 2 TARGET=PNA
-make -j 2 TARGET=PC
-make -j 2 TARGET=LINUX
-make -j 2 TARGET=KOBO
+make -j 4 TARGET=PPC2002
+make -j 4 TARGET=PPC2003
+make -j 4 TARGET=PNA
+make -j 4 TARGET=PC
+make -j 4 TARGET=LINUX
+make -j 4 TARGET=KOBO
+make -j 4 TARGET=PI PI=$HOME/x-tools/raspberrypi-rootfs
 
 echo "DONE -----------"
 echo "started $start"

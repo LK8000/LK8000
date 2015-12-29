@@ -236,7 +236,7 @@ void InputEvents::readFile() {
   //		Better way is to separate the check for # and the scanf
   // ! _stscanf works differently on WinPC and WinCE (on WinCE it returns EOF on empty string)
 
-  while (ReadULine(fp, buffer, countof(buffer)) && (buffer[0] == '\0' ||
+  while (ReadULine(fp, buffer, array_size(buffer)) && (buffer[0] == '\0' ||
 	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF))
   ) {
     line++;

@@ -28,11 +28,10 @@
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
-#include "options.h"
 #include "mapprimitive.h"
+#include "options.h"
 #include <math.h>
 #include "utils/heapcheck.h"
-
 #if 0 // UNUSED
 #define LASTVERT(v,n)  ((v) == 0 ? n-2 : v-1)
 #define NEXTVERT(v,n)  ((v) == n-2 ? 0 : v+1)

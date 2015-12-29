@@ -7,15 +7,13 @@ XCS_EVENT_POLL := \
 	
 XCS_EVENT_CONSOLE := \
 	$(SRC)/xcs/Event/Poll/InputQueue.cpp \
+	$(SRC)/xcs/Event/Poll/Linux/TTYKeyboard.cpp \
+	$(SRC)/xcs/Event/Poll/Linux/Mouse.cpp \
 
 XCS_EVENT_LINUX := \
 	$(SRC)/xcs/Event/Poll/Linux/AllInput.cpp \
 	$(SRC)/xcs/Event/Poll/Linux/Input.cpp \
 	$(SRC)/xcs/Event/Poll/Linux/MergeMouse.cpp \
-
-unused = \
-	$(SRC)/xcs/Event/Poll/Linux/TTYKeyboard.cpp \
-	$(SRC)/xcs/Event/Poll/Linux/Mouse.cpp \
 
 XCS_EVENT_SHARED := \
 	$(SRC)/xcs/Event/Shared/TimerQueue.cpp \

@@ -39,6 +39,9 @@
 #include "Screen/Init.hpp"
 #endif
 
+#ifdef USE_VIDEOCORE
+#include <bcm_host.h>
+#endif
 
 // windows
 WndMain MainWindow; // Main Window singleton
@@ -153,6 +156,13 @@ BOOL InitInstance()
   RECT WindowSize;
 
 #ifdef __linux__
+#ifdef USE_VIDEOCORE
+  uint32_t iWidth, iHeight;
+  if(graphics_get_display_size(0, &iWidth, &iHeight) >= 0) {
+    ScreenSizeX=iWidth;
+    ScreenSizeY=iHeight;
+  }
+#endif  
   WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);
 #endif
 #ifdef WIN32
