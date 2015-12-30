@@ -67,7 +67,6 @@ _skipout:
   SnailTrail[SnailNext].Latitude = (float)(Basic->Latitude);
   SnailTrail[SnailNext].Longitude = (float)(Basic->Longitude);
   SnailTrail[SnailNext].Time = Basic->Time;
-  SnailTrail[SnailNext].FarVisible = true; // hasn't been filtered out yet.
   if (Calculated->TerrainValid) {
 	double hr = max(0.0, Calculated->AltitudeAGL)/100.0;
 	SnailTrail[SnailNext].DriftFactor = 2.0/(1.0+exp(-hr))-1.0;

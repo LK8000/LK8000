@@ -150,18 +150,6 @@ _normal_run:
   oldzoomscale=MapWindow::zoom.Scale();
 #endif // DEBOUNCE_SCANVISIBILITY
 
-  // far visibility for snail trail
-
-  SNAIL_POINT *sv= SnailTrail;
-  const SNAIL_POINT *se = sv+TRAILSIZE;
-  while (sv<se) {
-    sv->FarVisible = ((sv->Longitude> bounds.minx) &&
-		      (sv->Longitude< bounds.maxx) &&
-		      (sv->Latitude> bounds.miny) &&
-		      (sv->Latitude< bounds.maxy));
-    sv++;
-  }
-
   // far visibility for long snail trail
 
   LONG_SNAIL_POINT *lsv= LongSnailTrail;

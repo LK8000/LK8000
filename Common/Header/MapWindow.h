@@ -153,10 +153,8 @@ typedef struct _SNAIL_POINT
   float Latitude;
   float Longitude;
   double Time;
-  POINT Screen;
-  short Colour;
+  unsigned short Colour;
   BOOL Circling;
-  bool FarVisible;
   double DriftFactor;
 } SNAIL_POINT;
 
@@ -609,7 +607,7 @@ class MapWindow {
                         const LKColor& color, DiagrammStruct *psDia,  const TCHAR *pLable=NULL);
 
 
-  static double LKDrawTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
+  static void LKDrawTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   static double LKDrawLongTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   static void DrawTeammate(LKSurface& Surface, const RECT& rc);
   static void DrawOffTrackIndicator(LKSurface& Surface, const RECT& rc);
