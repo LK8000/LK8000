@@ -894,7 +894,7 @@ void CAirspace::Draw(LKSurface& Surface, const RECT &rc, bool param1) const {
 //
 // CAIRSPACE AREA CLASS
 //
-CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace(), _geopoints(Area_Points) {
+CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace(), _geopoints(std::move(Area_Points)) {
     CalcBounds();
     AirspaceAGLLookup((_bounds.miny + _bounds.maxy) / 2.0, (_bounds.minx + _bounds.maxx) / 2.0, &_base.Altitude, &_top.Altitude);
 }
