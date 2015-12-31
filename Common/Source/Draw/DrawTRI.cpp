@@ -31,7 +31,7 @@ void MapWindow::DrawAcceleration(LKSurface& Surface, const RECT& rc)
   const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
   const auto oldBrush = Surface.SelectObject(LKBrush_Red);
   
-  Surface.Circle(Pos.x, Pos.y - (int)(radius/2), (int)radius, rc, true, true);
+  Surface.DrawCircle(Pos.x, Pos.y - static_cast<PixelScalar>(radius/2), static_cast<PixelScalar>(radius), rc, true);
   
   Surface.SelectObject(oldBrush);
   Surface.SelectObject(oldPen);
@@ -179,18 +179,18 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
 
   const auto hpOld = Surface.SelectObject(LKPen_White_N1);
   const auto hbOld = Surface.SelectObject(hbWhite);
-  Surface.Circle(Start.x, Start.y, radius, rc, false, true );
+  Surface.DrawCircle(Start.x, Start.y, radius, true );
 
   if(DrawInfo.AccelerationAvailable)
     DrawAcceleration(Surface, rc);
 
   Surface.SelectObject(LKPen_Grey_N2);
   Surface.SelectObject(hbBorder);
-  Surface.Circle(Start.x, Start.y, radius+NIBLSCALE(2), rc, false, false );
+  Surface.DrawCircle(Start.x, Start.y, radius+NIBLSCALE(2), false );
 
   Surface.SelectObject(hpBlack);
   Surface.SelectObject(hbBlack);
-  Surface.Circle(Start.x, Start.y, planeradius, rc, false, true );
+  Surface.DrawCircle(Start.x, Start.y, planeradius, true );
 
   Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d00[0][0], d00[1][0], RGB_BLUE,rc);
   Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d00[0][1], d00[1][1], RGB_BLUE,rc);
@@ -443,7 +443,7 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   const auto hpOld = Surface.SelectObject(LKPen_White_N1);
   const auto hbOld = Surface.SelectObject(hbWhite);
 
-  Surface.Circle(Start.x, Start.y, radius, rc, false, true );
+  Surface.DrawCircle(Start.x, Start.y, radius, true );
 /***************************************************************************************/
 
   POINT earth[GC_NO_CIRCLE_PTS+2];
@@ -504,7 +504,7 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
 
   Surface.SelectObject(LKPen_Grey_N2);
   Surface.SelectObject(hbBorder);
-  Surface.Circle(Start.x, Start.y, radius+NIBLSCALE(2), rc, false, false);
+  Surface.DrawCircle(Start.x, Start.y, radius+NIBLSCALE(2), false);
 
 
   Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d00[0][0], d00[1][0], RGB_BLUE,rc);
@@ -591,7 +591,7 @@ double vscale = 0.25;
        Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
 
 
-     Surface.Circle(Start.x, Start.y, NIBLSCALE(2), rc, false, true );
+     Surface.DrawCircle(Start.x, Start.y, NIBLSCALE(2), true );
 /*
   a1.x = Start.x;
   a1.y = Start.y;

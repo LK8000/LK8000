@@ -31,10 +31,10 @@ void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc) {
 			tradius=100;
 			
 		const auto oldPen = Surface.SelectObject(LKPen_White_N3);
-		Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+		Surface.DrawCircle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc, true);
 		Surface.SelectObject(LKPen_Black_N1);
-		Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
-		Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+		Surface.DrawCircle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc, true);
+		Surface.DrawCircle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc, true);
 
 		/* 101219 This would display circles around the simulated thermal, but people is confused.
 		if (SIMMODE && (ThLatitude>1 && ThLongitude>1)) { // there's a thermal to show
@@ -91,7 +91,6 @@ void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& r
 
   //DrawBitmapIn(hdc, screen, hBmpThermalSource);
 
-  const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
   double tradius;
   if (ISPARAGLIDER)
      tradius=100;
@@ -100,14 +99,10 @@ void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& r
 
   const auto oldPen = Surface.SelectObject(LKPen_White_N3);
 
-  Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+  Surface.DrawCircle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc, false);
   Surface.SelectObject(LKPen_White_N2);
-  Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
-  Surface.Circle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+  Surface.DrawCircle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc, false);
+  Surface.DrawCircle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc, false);
 
   Surface.SelectObject(oldPen);
-  Surface.SelectObject(oldBrush);
-
 }
-
-

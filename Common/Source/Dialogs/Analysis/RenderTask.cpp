@@ -174,7 +174,7 @@ double fXY_Scale = 1.5;
 		  }
 		  else
 		  {
-	        Surface.Circle((long)((x2-x_min)*xscale+rc.left+BORDER_X), (long)((y_max-y2)*yscale+rc.top),  (long)(aatradius[i]*yscale), rc);
+	        Surface.DrawCircle((long)((x2-x_min)*xscale+rc.left+BORDER_X), (long)((y_max-y2)*yscale+rc.top),  (long)(aatradius[i]*yscale), true);
 	      }
         }
       }

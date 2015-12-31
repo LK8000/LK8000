@@ -446,16 +446,16 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                 for(int i=1;i<=3;i++) {
                     long tickXiXsin=(long)(smallScaleTick*i*sin);
                     long tickXiXcos=(long)(smallScaleTick*i*cos);
-                    Surface.Circle(centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
-                    Surface.Circle(centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
+                    Surface.DrawCircle(centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),false);
+                    Surface.DrawCircle(centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),false);
                 }
                 dev=-(int)(round((cdiFullScale*deviation)/smallCDIscale));
             } else { // use big scale of 5 NM
                 for(int i=1;i<=5;i++) {
                     long tickXiXsin=(long)(bigScaleTick*i*sin);
                     long tickXiXcos=(long)(bigScaleTick*i*cos);
-                    Surface.Circle(centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
-                    Surface.Circle(centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
+                    Surface.DrawCircle(centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),false);
+                    Surface.DrawCircle(centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),false);
                 }
                 if(deviation>fiveNauticalMiles) { //The larger CDI scale is of 5 nautical miles
                     dev=-cdiFullScale;
@@ -549,8 +549,8 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                 const int tickXi=smallScaleTick*i;
                 const int tickXiXsin=(int)round(tickXi*sin);
                 const int tickXiXcos=(int)round(tickXi*cos);
-                Surface.Circle(centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),rc,false,false);
-                Surface.Circle(centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),rc,false,false);
+                Surface.DrawCircle(centerX+tickXiXcos,centerY+tickXiXsin,NIBLSCALE(1),false);
+                Surface.DrawCircle(centerX-tickXiXcos,centerY-tickXiXsin,NIBLSCALE(1),false);
             }
 
             //draw CDI in the center as part of the course direction arrow (same color)
@@ -642,7 +642,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         external.y=VSIairplaneSymTail;
         Surface.DrawLine(PEN_SOLID,1,internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
         Surface.SelectObject(INVERTCOLORS?LKPen_White_N1:LKPen_Black_N1);
-        Surface.Circle(internal.x,centerY,NIBLSCALE(1),rc,false,false);
+        Surface.DrawCircle(internal.x,centerY,NIBLSCALE(1),false);
 
         //Print +scale and -scale at top and bottom of VSI
         Surface.SelectObject(LK8SmallFont);

@@ -339,7 +339,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 		leftwingsize=TWINGSIZE;
 	}
 
-	Surface.Circle(tcenter.x, tcenter.y, NIBLSCALE(6), rc, false, true );
+	Surface.DrawCircle(tcenter.x, tcenter.y, NIBLSCALE(6), true );
 
 	POINT a1, a2;
 

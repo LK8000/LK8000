@@ -154,10 +154,10 @@ int numlegs=0;
       MapWindow::LatLon2Screen(lon_CP, lat_CP,  Pt1);
       FindLatitudeLongitude(lat1, lon1, 0 , fFAIDistance* 0.20, &lat2, &lon2); /* 1000m destination circle */
       int iRadius = (int)((lat2-lat1)*zoom.DrawScale());
-      Surface.Circle(Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
+      Surface.DrawCircle(Pt1.x, Pt1.y, iRadius  , rc, false);
       FindLatitudeLongitude(lat1, lon1, 0 , 500, &lat2, &lon2); /* 1000m destination circle */
       iRadius = (int)((lat2-lat1)*zoom.DrawScale());
-      Surface.Circle(Pt1.x, Pt1.y, iRadius  , rc, true ,  false);
+      Surface.DrawCircle(Pt1.x, Pt1.y, iRadius  , rc, false);
       Surface.SelectObject (hOldPen);
     }
 

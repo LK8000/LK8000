@@ -24,11 +24,11 @@ void MapWindow::DrawStartEndSector(LKSurface& Surface, const RECT& rc,
             tmp = Radius * zoom.ResScaleOverDistanceModify();
             oldpen = Surface.SelectObject(hpStartFinishThick);
             oldbrush = Surface.SelectObject(LKBrush_Hollow);
-            Surface.Circle(WayPointList[Index].Screen.x,
-                    WayPointList[Index].Screen.y, (int) tmp, rc, false, false);
+            Surface.DrawCircle(WayPointList[Index].Screen.x,
+                    WayPointList[Index].Screen.y, (int) tmp, false);
             Surface.SelectObject(LKPen_Red_N1);
-            Surface.Circle(WayPointList[Index].Screen.x,
-                    WayPointList[Index].Screen.y, (int) tmp, rc, false, false);
+            Surface.DrawCircle(WayPointList[Index].Screen.x,
+                    WayPointList[Index].Screen.y, (int) tmp, false);
 
             Surface.SelectObject(oldpen);
             Surface.SelectObject(oldbrush);

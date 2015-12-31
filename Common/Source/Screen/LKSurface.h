@@ -142,8 +142,15 @@ public:
 
     void DrawDashPoly(const int width, const LKColor& color, const POINT* pt, const unsigned npoints, const RECT& rc);
 
-    bool Circle(long x, long y, int radius, const RECT& rc, bool clip = false, bool fill = true);
-    bool CircleNoCliping(long x, long y, int radius, const RECT& rc, bool fill);
+    /**
+     * this is used only by DrawThread, not thread safe
+     */
+    void DrawCircle(long x, long y, int radius, const RECT& rc, bool fill);
+    /**
+     * this is used by DrawThread and MainThread for waypoint Picto and Statistics::RenderTask
+     *   !! need to be thread safe on platform other than OpenGL
+     */
+    void DrawCircle(long x, long y, int radius, bool fill);
 
     void DrawLine(int x1, int y1, int x2, int y2);
     void DrawLine(int x1, int y1, int x2, int y2, int x3, int y3);
@@ -236,10 +243,6 @@ private:
     HDC _TempDC; // used for Draw Bitmap.
 
 #endif
-
-
-    static const double xcoords[];
-    static const double ycoords[];
 
 #ifdef UNDER_CE
 // pointer to AlphaBlend() function (initialized by first call of AlphaBlendSupported())

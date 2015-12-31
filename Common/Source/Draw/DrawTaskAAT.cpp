@@ -114,10 +114,10 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
                 case CONE:
                 case CIRCLE:
                     tmp1 = Radius * zoom.ResScaleOverDistanceModify();
-                    AliasSurface.Circle(
+                    AliasSurface.DrawCircle(
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y,
-                            (int) tmp1, rc, true, true);
+                            (int) tmp1, rc, true);
                     break;
                 case SECTOR:
                     tmp1 = Radius * zoom.ResScaleOverDistanceModify();

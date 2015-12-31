@@ -885,7 +885,7 @@ double scl = xtick;
 	for ( int i = 0; i < (sDia.fXMax /scl); i++)
 	{
 	  iCircleRadius =(int) (fRing* fCScale / (DISTANCEMODIFY*1000.0f));
-	  Surface.Circle(x_middle, y_middle, iCircleRadius, rcc, true, false );
+	  Surface.DrawCircle(x_middle, y_middle, iCircleRadius, rcc, false );
 	  fRing = fRing + scl;
 	}
 
@@ -898,7 +898,7 @@ double scl = xtick;
 	  for (int i = 0; i < (sDia.fXMax /xtick); i++)
 	  {
 	    iCircleRadius = (int) (fRing * fCScale / (DISTANCEMODIFY*1000.0f));
-	    Surface.Circle(x_middle, y_middle, iCircleRadius, rcc, true, false );
+	    Surface.DrawCircle(x_middle, y_middle, iCircleRadius, rcc, false);
 	    fRing = fRing + xtick;
 	  }
 
@@ -1065,7 +1065,7 @@ if(SPLITSCREEN_FACTOR >0)
 			Surface.Rectangle(x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
 			break;
 		  case LKT_ZOMBIE:
-			Surface.Circle(x, y, iCircleSize, rct, true, true );
+			Surface.DrawCircle(x, y, iCircleSize, rct, true );
 			break;
 		  default:
 	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
@@ -1241,7 +1241,7 @@ if(bSideview)
 			Surface.Rectangle(x-iRectangleSize,hy-iRectangleSize,x+iRectangleSize,hy+iRectangleSize);
 			break;
 		case LKT_ZOMBIE:
-			Surface.Circle(x, hy, iCircleSize, rc, true, true );
+			Surface.DrawCircle(x, hy, iCircleSize, rc, true );
 			break;
 		default:
 			RenderFlarmPlaneSideview(Surface,   rc, fx,  fFlarmAlt, asFLARMPos[i].fFlarmBearing , &sDia , fPlaneSize/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
@@ -1464,7 +1464,7 @@ static double zoomfact = (double)cy/NIBLSCALE(18);
 			Surface.Rectangle(x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
 			break;
 		  case LKT_ZOMBIE:
-			Surface.Circle(x, y, iCircleSize, rc, true, true );
+			Surface.DrawCircle(x, y, iCircleSize, rc, true, true );
 			break;
 		  default:
 	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};

@@ -74,10 +74,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
     switch (SecType)
     {
         case CIRCLE:
-            Surface.CircleNoCliping(
-             center_x,
-             center_y,
-             width-2, rc, true);
+            Surface.DrawCircle(center_x, center_y, width-2, true);
             break;
         case SECTOR:
             Surface.Segment(
@@ -89,10 +86,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
         case DAe:
             if (!AATEnabled) { // this Type exist only if not AAT task
                 // JMW added german rules
-                Surface.CircleNoCliping(
-                 center_x,
-                 center_y,
-                 width/8, rc, true);
+                Surface.DrawCircle(center_x, center_y, width/8, true);
 
                 Surface.Segment(
                  center_x,
@@ -121,10 +115,10 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
             if (DoOptimizeRoute()) {
 
                 int radius = width-2;
-                Surface.CircleNoCliping(center_x, center_y, radius, rc, true);
+                Surface.DrawCircle(center_x, center_y, radius, true);
                 const auto prevPen = Surface.SelectObject(LK_BLACK_PEN);
                 for( int i = 1; i < 4 && radius > (width/5); ++i) {
-                    Surface.CircleNoCliping(center_x, center_y, radius -= width/5, rc, true);
+                    Surface.DrawCircle(center_x, center_y, radius -= width/5, false);
                 }
                 Surface.SelectObject(prevPen);
             }
@@ -191,10 +185,10 @@ DoInit[MDI_DRAWTASK]=false;
             switch (Type) {
                 case CIRCLE:
                     tmp = Radius * zoom.ResScaleOverDistanceModify();
-                    Surface.Circle(
+                    Surface.DrawCircle(
                             WayPointList[Task[i].Index].Screen.x,
                             WayPointList[Task[i].Index].Screen.y,
-                            (int) tmp, rc, false, false);
+                            (int) tmp, false);
                     break;
                 case SECTOR:
                     tmp = Radius * zoom.ResScaleOverDistanceModify();
@@ -208,10 +202,10 @@ DoInit[MDI_DRAWTASK]=false;
                     if (!AATEnabled) { // this Type exist only if not AAT task
                         // JMW added german rules
                         tmp = 500 * zoom.ResScaleOverDistanceModify();
-                        Surface.Circle(
+                        Surface.DrawCircle(
                                 WayPointList[Task[i].Index].Screen.x,
                                 WayPointList[Task[i].Index].Screen.y,
-                                (int) tmp, rc, false, false);
+                                (int) tmp, false);
 
                         tmp = 10e3 * zoom.ResScaleOverDistanceModify();
 
@@ -241,10 +235,10 @@ DoInit[MDI_DRAWTASK]=false;
                     tmp = Radius * zoom.ResScaleOverDistanceModify();
                     int center_x = WayPointList[Task[i].Index].Screen.x;
                     int center_y = WayPointList[Task[i].Index].Screen.y;
-                    Surface.Circle(center_x, center_y, (int) tmp, rc, false, false);
+                    Surface.DrawCircle(center_x, center_y, (int) tmp, false);
                     const auto prevPen = Surface.SelectObject(hpTerrainLine);
                     for( int j = 1; j < 5 && tmp > 0; ++j) {
-                        Surface.Circle(center_x, center_y, tmp -= NIBLSCALE(5), rc, true, true);
+                        Surface.DrawCircle(center_x, center_y, tmp -= NIBLSCALE(5), rc, true);
                     }
                     Surface.SelectObject(prevPen);
                     break;

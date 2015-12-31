@@ -198,9 +198,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   if(!bOutland)
   {
 	if (picto)
-		Surface.CircleNoCliping(Center_x, Center_y, p,  rc,true);
+		Surface.DrawCircle(Center_x, Center_y, p, true);
 	else
-		Surface.Circle(Center_x, Center_y, p,  rc, true, true);
+		Surface.DrawCircle(Center_x, Center_y, p,  rc, true);
   }
 
   if(bRunway)
