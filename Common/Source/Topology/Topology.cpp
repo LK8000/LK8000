@@ -654,9 +654,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
           
           int minx = rc.right;
           int miny = rc.bottom;
-          int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
-
-          MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize, 1);
+          int msize = MapWindow::LatLon2Screen(shape->line[tt].point, shape->line[tt].numpoints, pt, MAXCLIPPOLYGON, 1);
           for (int jj=0; jj< msize; ++jj) {
             if (pt[jj].x<=minx) {
               minx = pt[jj].x;
@@ -678,8 +676,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 	if ( nolabels ) {
 		if (checkVisible(*shape, screenRect)) {
 			for (int tt = 0; tt < shape->numlines; ++tt) {
-				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
-				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
+				int msize = MapWindow::LatLon2Screen(shape->line[tt].point, shape->line[tt].numpoints, pt, MAXCLIPPOLYGON, iskip);
 				Surface.Polygon(pt, msize, rc);
 			}
 		}
@@ -688,8 +685,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 		for (int tt = 0; tt < shape->numlines; ++tt) {
 			int minx = rc.right;
 			int miny = rc.bottom;
-			int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
-			MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
+			int msize = MapWindow::LatLon2Screen(shape->line[tt].point, shape->line[tt].numpoints, pt, MAXCLIPPOLYGON, iskip);
 			for (int jj=0; jj< msize; ++jj) {
 				if (pt[jj].x<=minx) {
 					minx = pt[jj].x;

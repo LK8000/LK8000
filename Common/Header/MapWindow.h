@@ -473,9 +473,8 @@ class MapWindow {
   static void SideviewScreen2LatLon(const int &x, const int &y, double &X, double &Y);
 
   static void LatLon2Screen(const double &lon, const double &lat, POINT &sc);
-  static void LatLon2Screen(pointObj *ptin, POINT *ptout, const int n,
-			    const int skip);
-  static void LatLon2ScreenMultimap(pointObj *ptin, POINT *ptout, const int n, const int skip);
+  static int LatLon2Screen(const pointObj *ptin, int nIn, POINT *ptout, int nOut, int skip);
+  static int LatLon2ScreenMultimap(const pointObj *ptin, int nIn, POINT *ptout, int nOut, int skip);
 
   static void Initialize();
   static void CloseDrawingThread(void);
