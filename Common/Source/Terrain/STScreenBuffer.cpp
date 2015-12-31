@@ -42,11 +42,13 @@ void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int sc
 }
 
 #ifdef USE_TERRAIN_BLUR
-void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
+void CSTScreenBuffer::Blur(unsigned int boxw) {
+    HorizontalBlur(boxw, GetBuffer(), m_pBufferTmp);
+    VerticalBlur(boxw, m_pBufferTmp, GetBuffer());
+}
 
+void CSTScreenBuffer::HorizontalBlur(unsigned int boxw, BGRColor* src, BGRColor* dst) {
     const unsigned int muli = (boxw * 2 + 1);
-    BGRColor* src = GetBuffer();
-    BGRColor* dst = m_pBufferTmp;
     BGRColor *c;
 
     const unsigned int off1 = boxw + 1;
@@ -90,15 +92,10 @@ void CSTScreenBuffer::HorizontalBlur(unsigned int boxw) {
             dst++;
         }
     }
-
-    // copy it back to main buffer
-    memcpy((char*) GetBuffer(), (char*) m_pBufferTmp, GetCorrectedWidth() * GetHeight() * sizeof (BGRColor));
 }
 
-void CSTScreenBuffer::VerticalBlur(unsigned int boxh) {
+void CSTScreenBuffer::VerticalBlur(unsigned int boxh, BGRColor* src, BGRColor* dst) {
 
-    BGRColor* src = GetBuffer();
-    BGRColor* dst = m_pBufferTmp;
     BGRColor *c, *d, *e;
 
     const unsigned int muli = (boxh * 2 + 1);
@@ -144,8 +141,5 @@ void CSTScreenBuffer::VerticalBlur(unsigned int boxh) {
             e += GetCorrectedWidth();
         }
     }
-
-    // copy it back to main buffer
-    memcpy((char*) GetBuffer(), (char*) m_pBufferTmp, GetCorrectedWidth() * GetHeight() * sizeof (BGRColor));
 }
 #endif       

@@ -587,8 +587,7 @@ public:
     void Draw(LKSurface& Surface, const RECT& rc) {
 #ifdef USE_TERRAIN_BLUR
         if (blursize > 0) {
-            sbuf->HorizontalBlur(blursize);
-            sbuf->VerticalBlur(blursize);
+            sbuf->Blur(blursize);
         }
 #endif
         sbuf->DrawStretch(Surface, rc, oversampling);
