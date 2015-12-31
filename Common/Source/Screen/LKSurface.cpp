@@ -16,6 +16,7 @@
 #include <utility>
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm>
 #include "LKSurface.h"
 #include "MathFunctions.h"
 #include "utils/2dpclip.h"
@@ -263,16 +264,18 @@ void LKSurface::Polyline(const POINT *apt, int cpt) {
 void LKSurface::Polyline(const POINT *apt, int cpt, const RECT& ClipRect) {
     if(cpt >= 2) {
         POINT Line[2];
-        const POINT * It = apt;
         const POINT * Start = NULL;
         size_t n=0;
 
         LKGeom::clipper<POINT> Clipper((POINT) {ClipRect.left, ClipRect.top}, (POINT) {ClipRect.right, ClipRect.bottom});
         
-        Line[0] = *(It++);
-        while ( It < apt+cpt) {
+        const POINT * const ItFirst = std::next(apt);
+        const POINT * const ItLast = std::next(apt, cpt);
+
+        Line[0] = *(apt);
+        for(const POINT * It = ItFirst; It != ItLast; ++It) {
             Line[1] = *(It);
-            unsigned j = Clipper.ClipLine(Line[0], Line[1]);
+            const unsigned j = Clipper.ClipLine(Line[0], Line[1]);
             if(j&LKGeom::clipper<POINT>::_SEGM) {
                 if(j&LKGeom::clipper<POINT>::_CLIP) {
                     if(Start && n > 1) {
@@ -283,14 +286,14 @@ void LKSurface::Polyline(const POINT *apt, int cpt, const RECT& ClipRect) {
                     Polyline(Line, 2);
                 } else {
                     if(!Start) {
-                        Start = It-1;
+                        Start = std::prev(It);
                         n = 2;
                     } else {
                         ++n;
                     }
                 }
             }
-            Line[0] = *(It++);
+            Line[0] = *(It);
         }
         if(Start) {
             Polyline(Start, n);
