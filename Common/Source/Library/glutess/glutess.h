@@ -65,8 +65,12 @@ typedef unsigned char GLboolean;
 //typedef int GLboolean;
 typedef void GLvoid;
 
+#ifndef GL_FALSE
 #define GL_FALSE				0x0
+#endif
+#ifndef GL_TRUE
 #define GL_TRUE					0x1
+#endif
 
 #define GL_LINE_LOOP                      0x0002
 #define GL_LINE_STRIP                     0x0003
