@@ -8,6 +8,9 @@
 
 #include "externs.h"
 #include "Multimap.h"
+#include "ScreenProjection.h"
+
+using std::placeholders::_1;
 
 int MapWindow::iSnailNext=0;
 int MapWindow::iLongSnailNext=0;
@@ -16,16 +19,13 @@ rectObj MapWindow::screenbounds_latlon;
 
 
 
-rectObj MapWindow::CalculateScreenBounds(double scale, const RECT& rc) {
+rectObj MapWindow::CalculateScreenBounds(double scale, const RECT& rc, const ScreenProjection& _Proj) {
   // compute lat lon extents of visible screen
   rectObj sb;
 
   if (scale>= 1.0) {
-    POINT screen_center;
-    LatLon2Screen(PanLongitude, 
-                  PanLatitude,
-                  screen_center);
-    
+    const POINT screen_center = _Proj.LonLat2Screen(PanLongitude, PanLatitude);
+
     sb.minx = sb.maxx = PanLongitude;
     sb.miny = sb.maxy = PanLatitude;
     
@@ -47,11 +47,12 @@ rectObj MapWindow::CalculateScreenBounds(double scale, const RECT& rc) {
     
     for (int i=0; i<10; i++) {
       double ang = i*360.0/10;
-      POINT p;
       double X, Y;
-      p.x = screen_center.x + iround(fastcosine(ang)*maxsc*scale);
-      p.y = screen_center.y + iround(fastsine(ang)*maxsc*scale);
-      Screen2LatLon(p.x, p.y, X, Y);
+      const RasterPoint p {
+        screen_center.x + iround(fastcosine(ang)*maxsc*scale),
+        screen_center.y + iround(fastsine(ang)*maxsc*scale)
+      };
+      _Proj.Screen2LonLat(p, X, Y);
       sb.minx = min(X, sb.minx);
       sb.miny = min(Y, sb.miny);
       sb.maxx = max(X, sb.maxx);
@@ -60,40 +61,24 @@ rectObj MapWindow::CalculateScreenBounds(double scale, const RECT& rc) {
 
   } else {
 
-    double xmin, xmax, ymin, ymax;
-    int x, y;
+    const PixelRect ScreenRect(rc);
     double X, Y;
     
-    x = rc.left; 
-    y = rc.top; 
-    Screen2LatLon(x, y, X, Y);
-    xmin = X; xmax = X;
-    ymin = Y; ymax = Y;
+    _Proj.Screen2LonLat(ScreenRect.GetTopLeft(), X, Y);
+    sb.minx = sb.maxx = X;
+    sb.miny = sb.maxy = Y;
 
-    x = rc.right; 
-    y = rc.top; 
-    Screen2LatLon(x, y, X, Y);
-    xmin = min(xmin, X); xmax = max(xmax, X);
-    ymin = min(ymin, Y); ymax = max(ymax, Y);
+    _Proj.Screen2LonLat(ScreenRect.GetTopRight(), X, Y);
+    sb.minx = min(sb.minx, X); sb.maxx = max(sb.maxx, X);
+    sb.miny = min(sb.miny, Y); sb.maxy = max(sb.maxy, Y);
   
-    x = rc.right; 
-    y = rc.bottom; 
-    Screen2LatLon(x, y, X, Y);
-    xmin = min(xmin, X); xmax = max(xmax, X);
-    ymin = min(ymin, Y); ymax = max(ymax, Y);
+    _Proj.Screen2LonLat(ScreenRect.GetBottomRight(), X, Y);
+    sb.minx = min(sb.minx, X); sb.maxx = max(sb.maxx, X);
+    sb.miny = min(sb.miny, Y); sb.maxy = max(sb.maxy, Y);
   
-    x = rc.left; 
-    y = rc.bottom; 
-    Screen2LatLon(x, y, X, Y);
-    xmin = min(xmin, X); xmax = max(xmax, X);
-    ymin = min(ymin, Y); ymax = max(ymax, Y);
-  
-
-    sb.minx = xmin;
-    sb.maxx = xmax;
-    sb.miny = ymin;
-    sb.maxy = ymax;
-
+    _Proj.Screen2LonLat(ScreenRect.GetBottomLeft(), X, Y);
+    sb.minx = min(sb.minx, X); sb.maxx = max(sb.maxx, X);
+    sb.miny = min(sb.miny, Y); sb.maxy = max(sb.maxy, Y);
   }
 
   return sb;
@@ -101,7 +86,7 @@ rectObj MapWindow::CalculateScreenBounds(double scale, const RECT& rc) {
 
 
 
-void MapWindow::CalculateScreenPositionsThermalSources() {
+void MapWindow::CalculateScreenPositionsThermalSources(const ScreenProjection& _Proj) {
   for (int i=0; i<MAX_THERMAL_SOURCES; i++) {
     if (DerivedDrawInfo.ThermalSources[i].LiftRate>0) {
       double dh = DerivedDrawInfo.NavAltitude
@@ -119,9 +104,7 @@ void MapWindow::CalculateScreenPositionsThermalSources() {
                             -DerivedDrawInfo.WindSpeed*t,
                             &lat, &lon);
       if (PointVisible(lon,lat)) {
-        LatLon2Screen(lon, 
-                      lat, 
-                      DerivedDrawInfo.ThermalSources[i].Screen);
+        DerivedDrawInfo.ThermalSources[i].Screen = _Proj.LonLat2Screen(lon, lat);
         DerivedDrawInfo.ThermalSources[i].Visible = 
           PointVisible(DerivedDrawInfo.ThermalSources[i].Screen);
       } else {
@@ -135,21 +118,20 @@ void MapWindow::CalculateScreenPositionsThermalSources() {
 
 
 
-void MapWindow::CalculateScreenPositionsAirspace(const RECT& rcDraw)
+void MapWindow::CalculateScreenPositionsAirspace(const RECT& rcDraw, const ScreenProjection& _Proj)
 {
 #ifndef HAVE_HATCHED_BRUSH
   // iAirspaceBrush is not used and don't exist if we don't have Hatched Brush
   // this is workarround for compatibility with #CalculateScreenPositionsAirspace
   constexpr int iAirspaceBrush[AIRSPACECLASSCOUNT] = {}; 
 #endif
-  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, zoom.ResScaleOverDistanceModify());
+  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, _Proj, zoom.ResScaleOverDistanceModify());
 }
 
 
 
 
-void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc, 
-                                         POINT *Orig_Aircraft)
+ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RECT& rc, POINT *Orig_Aircraft )
 {
 
   unsigned int i;
@@ -168,14 +150,10 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
         // TODO enhancement: only pan if distance of center to
         // aircraft is smaller than one third screen width
 
-        POINT screen;
-        LatLon2Screen(PanLongitude, 
-                      PanLatitude, 
-                      screen);
-
-        LatLon2Screen(DrawInfo.Longitude, 
-                      DrawInfo.Latitude, 
-                      *Orig_Aircraft);
+        const ScreenProjection _Proj;
+        *Orig_Aircraft = _Proj.LonLat2Screen(DrawInfo.Longitude, DrawInfo.Latitude);
+        const POINT screen = _Proj.LonLat2Screen(PanLongitude, PanLatitude);
+        
         if ((fabs((double)Orig_Aircraft->x-screen.x)<(rc.right-rc.left)/3)
             && (fabs((double)Orig_Aircraft->y-screen.y)<(rc.bottom-rc.top)/3)) {
           
@@ -195,13 +173,15 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
     }
   }
 
-  LatLon2Screen(DrawInfo.Longitude, 
-                DrawInfo.Latitude, 
-                *Orig_Aircraft);
+  const ScreenProjection _Proj;
+  *Orig_Aircraft = _Proj.LonLat2Screen(DrawInfo.Longitude, DrawInfo.Latitude);
 
   // very important
-  screenbounds_latlon = CalculateScreenBounds(0.0, rc);
+  screenbounds_latlon = CalculateScreenBounds(0.0, rc, _Proj);
 
+  CalculateScreenPositionsThermalSources(_Proj);
+  CalculateScreenPositionsGroundline(_Proj);
+  
   // Old note obsoleted 121111: 
   // preserve this calculation for 0.0 until next round!
   // This is already done since screenbounds_latlon is global. Beware that DrawTrail will change it later on
@@ -216,9 +196,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
       unsigned index = Task[i].Index;
       if (index < WayPointList.size()) {
         
-        LatLon2Screen(WayPointList[index].Longitude, 
-                      WayPointList[index].Latitude, 
-                      WayPointList[index].Screen);
+        WayPointList[index].Screen = _Proj.LonLat2Screen(WayPointList[index].Longitude, WayPointList[index].Latitude);
         WayPointList[index].Visible = 
           PointVisible(WayPointList[index].Screen);
        } else {
@@ -231,9 +209,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
         unsigned index = StartPoints[i].Index;
         if (StartPoints[i].Active && (index < WayPointList.size())) {
 
-          LatLon2Screen(WayPointList[index].Longitude, 
-                        WayPointList[index].Latitude, 
-                        WayPointList[index].Screen);
+          WayPointList[index].Screen = _Proj.LonLat2Screen(WayPointList[index].Longitude, WayPointList[index].Latitude);
           WayPointList[index].Visible = 
             PointVisible(WayPointList[index].Screen);
          } else {
@@ -252,8 +228,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
         if (!WayPointList[i].FarVisible) continue;
         if(PointVisible(WayPointList[i].Longitude, WayPointList[i].Latitude) )
           {
-            LatLon2Screen(WayPointList[i].Longitude, WayPointList[i].Latitude,
-                          WayPointList[i].Screen);
+            WayPointList[i].Screen = _Proj.LonLat2Screen(WayPointList[i].Longitude, WayPointList[i].Latitude);
             WayPointList[i].Visible = PointVisible(WayPointList[i].Screen);
           }
       }
@@ -270,10 +245,8 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
   if (EnableMultipleStartPoints) {
     for(i=0;i<MAXSTARTPOINTS-1;i++) {
       if (StartPoints[i].Active && ValidWayPointFast(StartPoints[i].Index)) {
-        LatLon2Screen(StartPoints[i].SectorEndLon, 
-                      StartPoints[i].SectorEndLat, StartPoints[i].End);
-        LatLon2Screen(StartPoints[i].SectorStartLon, 
-                      StartPoints[i].SectorStartLat, StartPoints[i].Start);
+        StartPoints[i].End = _Proj.LonLat2Screen(StartPoints[i].SectorEndLon, StartPoints[i].SectorEndLat);
+        StartPoints[i].Start = _Proj.LonLat2Screen(StartPoints[i].SectorStartLon, StartPoints[i].SectorStartLat);
       }
     }
   }
@@ -283,37 +256,34 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
     bool this_valid = ValidTaskPointFast(i);
     bool next_valid = ValidTaskPointFast(i+1);
     if (AATEnabled && this_valid) {
-      LatLon2Screen(Task[i].AATTargetLon, Task[i].AATTargetLat, 
-                    Task[i].Target);
+      Task[i].Target = _Proj.LonLat2Screen(Task[i].AATTargetLon, Task[i].AATTargetLat);
     }
 
     if(this_valid && !next_valid)
     {
       // finish
-      LatLon2Screen(Task[i].SectorEndLon, Task[i].SectorEndLat, Task[i].End);
-      LatLon2Screen(Task[i].SectorStartLon, Task[i].SectorStartLat, Task[i].Start);
+      Task[i].End = _Proj.LonLat2Screen(Task[i].SectorEndLon, Task[i].SectorEndLat);
+      Task[i].Start = _Proj.LonLat2Screen(Task[i].SectorStartLon, Task[i].SectorStartLat);
 
    	  // No need to continue.
       break;
     }
     if(this_valid && next_valid)
     {
-      LatLon2Screen(Task[i].SectorEndLon, Task[i].SectorEndLat, Task[i].End);
-      LatLon2Screen(Task[i].SectorStartLon, Task[i].SectorStartLat, Task[i].Start);
+      Task[i].End = _Proj.LonLat2Screen(Task[i].SectorEndLon, Task[i].SectorEndLat);
+      Task[i].Start = _Proj.LonLat2Screen(Task[i].SectorStartLon, Task[i].SectorStartLat);
 
       if((AATEnabled) && (Task[i].AATType == SECTOR))
       {
-        LatLon2Screen(Task[i].AATStartLon, Task[i].AATStartLat, Task[i].AATStart);
-        LatLon2Screen(Task[i].AATFinishLon, Task[i].AATFinishLat, Task[i].AATFinish);
+        Task[i].AATStart = _Proj.LonLat2Screen(Task[i].AATStartLon, Task[i].AATStartLat);
+        Task[i].AATFinish = _Proj.LonLat2Screen(Task[i].AATFinishLon, Task[i].AATFinishLat);
       }
       if (AATEnabled && (((int)i==ActiveTaskPoint) || 
 			 (mode.Is(Mode::MODE_TARGET_PAN) && ((int)i==TargetPanIndex)))) {
 
 	for (int j=0; j<MAXISOLINES; j++) {
 	  if (TaskStats[i].IsoLine_valid[j]) {
-	    LatLon2Screen(TaskStats[i].IsoLine_Longitude[j], 
-			  TaskStats[i].IsoLine_Latitude[j], 
-			  TaskStats[i].IsoLine_Screen[j]);
+	    TaskStats[i].IsoLine_Screen[j] = _Proj.LonLat2Screen(TaskStats[i].IsoLine_Longitude[j], TaskStats[i].IsoLine_Latitude[j]);
 	  }
 	}
       }
@@ -322,34 +292,35 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
   UnlockTaskData();
 
+  return _Proj;
 }
 
+void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj) {
+    static_assert(array_size(Groundline) == array_size(DerivedDrawInfo.GlideFootPrint), "wrong array size");
 
+    if (FinalGlideTerrain) {
+        std::transform(
+                std::begin(DerivedDrawInfo.GlideFootPrint),
+                std::end(DerivedDrawInfo.GlideFootPrint),
+                std::begin(Groundline),
+                [&_Proj](const pointObj & pt) {
+                    return _Proj.LonLat2Screen(pt);
+                });
 
+    }
+#ifdef GTL2
+    static_assert(array_size(Groundline2) == array_size(GlideFootPrint2), "wrong array size");
 
-void MapWindow::CalculateScreenPositionsGroundline(void) {
-  bool mm=IsMultiMapSharedNoMain();
-  if (FinalGlideTerrain) {
-	if (mm) {
-		LatLon2ScreenMultimap(DerivedDrawInfo.GlideFootPrint, array_size(DerivedDrawInfo.GlideFootPrint), 
-                              Groundline, array_size(Groundline), 1);
-	} else {
-		LatLon2Screen(DerivedDrawInfo.GlideFootPrint, array_size(DerivedDrawInfo.GlideFootPrint),
-                              Groundline, array_size(Groundline), 1);        
-	}
-	#ifdef GTL2
-	if (FinalGlideTerrain > 2) {// show next-WP line
-        
-        if (mm) {
-            LatLon2ScreenMultimap(GlideFootPrint2, array_size(GlideFootPrint2), 
-                                  Groundline, array_size(Groundline), 1);
-        } else {
-            LatLon2Screen(GlideFootPrint2, array_size(GlideFootPrint2),
-                                  Groundline2, array_size(Groundline2), 1);        
-        }        
-	}
-	#endif
-  }
+    if (FinalGlideTerrain > 2) {// show next-WP line
+        std::transform(
+                std::begin(GlideFootPrint2),
+                std::end(GlideFootPrint2),
+                std::begin(Groundline2),
+                [&_Proj](const pointObj & pt) {
+                    return _Proj.LonLat2Screen(pt);
+                });
+    }
+#endif
 }
 
 

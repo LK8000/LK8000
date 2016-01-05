@@ -22,6 +22,7 @@
 #include "Asset.hpp"
 #include "Sound/Sound.h"
 #include "TunedParameter.h"
+#include "ScreenProjection.h"
 
 #define KEYDEBOUNCE 100
 extern int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode);
@@ -250,12 +251,13 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
     // Consider only pure PAN mode, ignore the rest of cases here
     if (mode.Is(Mode::MODE_PAN) && !mode.Is(Mode::MODE_TARGET_PAN)) {
 
+        const ScreenProjection _Proj;
         if (PanRefreshed) {
             // if map was redrawn, we update our position as well. just like
             // we just clicked on mouse from here, like in BUTTONDOWN
             startScreen = Pos;
 
-            Screen2LatLon(startScreen.x, startScreen.y, Xstart, Ystart);
+            _Proj.Screen2LonLat(startScreen, Xstart, Ystart);
             PanRefreshed = false;
             // NO! This is causing false clicks passing underneath CANCEL button!
             // dwDownTime.update();
@@ -263,7 +265,7 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
             // set a min mouse move to trigger panning
             if ((abs(startScreen.x - Pos.x) + abs(startScreen.y - Pos.y))
                     > (ScreenScale + 1)) {
-                Screen2LatLon(Pos.x, Pos.y, Xlat, Ylat);
+                _Proj.Screen2LonLat(Pos, Xlat, Ylat);
                 PanLongitude += (Xstart - Xlat);
                 PanLatitude += (Ystart - Ylat);
 
@@ -368,7 +370,8 @@ void MapWindow::_OnLButtonDown(const POINT& Pos) {
 
             // TODO VNT move Screen2LatLon in LBUTTONUP after making sure we really need Xstart and Ystart
             // so we save precious milliseconds waiting for BUTTONUP GetTickCount
-            Screen2LatLon(startScreen.x, startScreen.y, Xstart, Ystart);
+            const ScreenProjection _Proj;
+            _Proj.Screen2LonLat(startScreen, Xstart, Ystart);
 
             LKevent = LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
         }
@@ -414,6 +417,9 @@ void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
 
 void MapWindow::_OnLButtonUp(const POINT& Pos) {
     if (!LockModeStatus && pressed) {
+        
+        const ScreenProjection _Proj;
+        
         pressed = false;
         // Mouse released DURING panning, full redraw requested.
         // Otherwise process virtual keys etc. as usual
@@ -485,7 +491,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
         if (mode.Is(Mode::MODE_TARGET_PAN)) {
             if (AATEnabled) {
-                Screen2LatLon(Pos.x, Pos.y, Xlat, Ylat);
+                _Proj.Screen2LonLat(Pos, Xlat, Ylat);
                 LockTaskData();
                 targetMoved = true;
                 targetMovedLat = Ylat;
@@ -720,7 +726,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             return;
         }
 
-        Screen2LatLon(Pos.x, Pos.y, Xlat, Ylat);
+        _Proj.Screen2LonLat(Pos, Xlat, Ylat);
         if (SIMMODE && NOTANYPAN && (distance > NIBLSCALE(36))) {
             // This drag moves the aircraft (changes speed and direction)
             //

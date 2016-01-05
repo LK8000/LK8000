@@ -9,18 +9,17 @@
 #include "externs.h"
 #include "Bitmaps.h"
 #include "LKObjects.h"
-
+#include "ScreenProjection.h"
 
 //
 // Draw circles and gadgets for thermals
 //
-void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc) {
-  POINT screen;
+void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
   if (!EnableThermalLocator) return;
 
   if (mode.Is(Mode::MODE_CIRCLING)) {
 	if (DerivedDrawInfo.ThermalEstimate_R>0) {
-		LatLon2Screen(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude, screen);
+		const POINT screen = _Proj.LonLat2Screen(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude);
 		DrawBitmapIn(Surface, screen, hBmpThermalSource,true);
 
 		const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
@@ -35,19 +34,6 @@ void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc) {
 		Surface.SelectObject(LKPen_Black_N1);
 		Surface.DrawCircle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc, true);
 		Surface.DrawCircle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc, true);
-
-		/* 101219 This would display circles around the simulated thermal, but people is confused.
-		if (SIMMODE && (ThLatitude>1 && ThLongitude>1)) { // there's a thermal to show
-			if ((counter==5 || counter==6|| counter==7)) {
-				LatLon2Screen(ThLongitude, ThLatitude, screen);
-				Surface.SelectObject(hSnailPens[7]);  
-				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*zoom.ResScaleOverDistanceModify()), rc); 
-				Surface.SelectObject(hSnailPens[7]); 
-				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*zoom.ResScaleOverDistanceModify()), rc); 
-			}
-			if (++counter>=60) counter=0;
-		}
- 		*/
 
 		Surface.SelectObject(oldPen);
         Surface.SelectObject(oldBrush);
@@ -69,9 +55,7 @@ void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc) {
 // Paint a circle around thermal multitarget
 // Called only during map mode L>
 //
-void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& rc) {
-
-  POINT screen;
+void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
 
   int idx=0;
 
@@ -87,9 +71,7 @@ void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& r
   if (idx <0)
     return; 
 
-  LatLon2Screen( ThermalHistory[idx].Longitude, ThermalHistory[idx].Latitude, screen);
-
-  //DrawBitmapIn(hdc, screen, hBmpThermalSource);
+  const POINT screen = _Proj.LonLat2Screen( ThermalHistory[idx].Longitude, ThermalHistory[idx].Latitude);
 
   double tradius;
   if (ISPARAGLIDER)

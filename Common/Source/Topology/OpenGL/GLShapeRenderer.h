@@ -1,6 +1,10 @@
-/* 
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
  * File:   GLShapeRenderer.h
- * Author: bruno
+ * Author: Bruno de Lacheisserie
  *
  * Created on August 26, 2015, 7:37 PM
  */
@@ -18,6 +22,7 @@
 
 class Brush;
 class XShape;
+class ScreenProjection;
 
 class GLShapeRenderer final {
 public:
@@ -32,7 +37,7 @@ public:
         noLabel = b;
     }
     
-    void renderPolygon(LKSurface& Surface, const XShape& shape, Brush& brush);
+    void renderPolygon(LKSurface& Surface, const XShape& shape, Brush& brush, const ScreenProjection& _Proj);
     
 private:
     GLUtesselator* tess;

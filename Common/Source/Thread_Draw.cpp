@@ -13,7 +13,7 @@
 #include "RGB.h"
 #include "TraceThread.h"
 #include "Hardware/CPU.hpp"
-
+#include "Draw/ScreenProjection.h"
 #ifndef USE_GDI
 #include "Screen/Canvas.hpp"
 #endif
@@ -282,7 +282,6 @@ _dontbitblt:
 
 	lastdrawwasbitblitted=false;
 	MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
-
 	RenderMapWindow(DrawSurface, MapRect);
 
     {
@@ -309,7 +308,8 @@ _dontbitblt:
 	// we do caching after screen update, to minimise perceived delay
 	// UpdateCaches is updating topology bounds when either forced (only here)
 	// or because MapWindow::ForceVisibilityScan  is set true.
-	UpdateCaches(first_run);
+    const ScreenProjection _Proj;
+	UpdateCaches(_Proj, first_run);
 	first_run=false;
 
 	ForceRenderMap = false;

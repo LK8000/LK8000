@@ -18,6 +18,8 @@
 #include <Poco/UTF8Encoding.h>
 #include <Poco/TextConverter.h>
 
+#include "../Draw/ScreenProjection.h"
+
 #ifdef ENABLE_OPENGL
 #include "OpenGL/GLShapeRenderer.h"
 #endif
@@ -511,10 +513,33 @@ bool Topology::checkVisible(const shapeObj& shape, rectObj &screenRect) {
   return (msRectOverlap(&shape.bounds, &screenRect) == MS_TRUE);
 }
 
-
+static RasterPoint shape2Screen(const lineObj& line, int iskip, const ScreenProjection& _Proj, std::vector<RasterPoint>& points) {
+    
+  RasterPoint leftPoint = {
+    std::numeric_limits<PixelScalar>::max(),
+    std::numeric_limits<PixelScalar>::max()
+  };
+  const int last = line.numpoints-1;
+  points.clear();
+  points.reserve((line.numpoints/iskip)+1);
+  for(int i = 0; i < last; i+=iskip) {
+    const RasterPoint pt = _Proj.LonLat2Screen(line.point[i]);
+    if (pt.x<=leftPoint.x) {
+      leftPoint = pt;
+    }
+    points.push_back(std::move(pt));
+  }
+  const RasterPoint pt = _Proj.LonLat2Screen(line.point[last]);
+  if (pt.x<=leftPoint.x) {
+    leftPoint = pt;
+  }
+  points.push_back(std::move(pt));
+  
+  return leftPoint;
+}
 // Paint a single topology element
 
-void Topology::Paint(LKSurface& Surface, const RECT& rc) {
+void Topology::Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
 
   if (!shapefileopen) return;
   bool nolabels=false;
@@ -574,7 +599,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
   rectObj screenRect = MapWindow::screenbounds_latlon;
 
-  static POINT pt[MAXCLIPPOLYGON];
+  static std::vector<RasterPoint> points;
 
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
     
@@ -589,113 +614,53 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
 
       case(MS_SHAPE_POINT):{
 
-	#if 101016
-	// -------------------------- NOT PRINTING ICONS ---------------------------------------------
-	bool dobitmap=false;
-	if (scaleCategory<90 || (MapWindow::zoom.RealScale()<2)) dobitmap=true;
-	// first a latlon overlap check, only approximated because of fastcosine in latlon2screen
-	if (checkVisible(*shape, screenRect))
-		for (int tt = 0; tt < shape->numlines; tt++) {
+        bool dobitmap=false;
+        if (scaleCategory<90 || (MapWindow::zoom.RealScale()<2)) dobitmap=true;
+        // first a latlon overlap check, only approximated because of fastcosine in latlon2screen
+        if (checkVisible(*shape, screenRect))
+          for (int tt = 0; tt < shape->numlines; tt++) {
 			for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
-				POINT sc;
-				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
+				const POINT sc = _Proj.LonLat2Screen(shape->line[tt].point[jj]);
 				if (dobitmap) {
 					// bugfix 101212 missing case for scaleCategory 0 (markers)
 					if (scaleCategory==0||cshape->renderSpecial(Surface, sc.x, sc.y, rc)) {
 						MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
-                    }
+					}
 				} else {
 					cshape->renderSpecial(Surface, sc.x, sc.y, rc);
 				}
 			}
 		}
-	}
-
-	#else
-	// -------------------------- PRINTING ICONS ---------------------------------------------
-	// no bitmaps for small town over a certain zoom level and no bitmap if no label at all levels
-	bool nobitmap=false, noiconwithnolabel=false;
-	if (scaleCategory==90 || scaleCategory==100) {
-		noiconwithnolabel=true;
-		if (MapWindow::MapScale>4) nobitmap=true;
-	}
-
-	if (checkVisible(*shape, screenRect))
-		for (int tt = 0; tt < shape->numlines; tt++) {
-			for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
-				POINT sc;
-				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
-	
-				if (!nobitmap)
-				#if 101016
-				// only paint icon if label is printed too
-				if (noiconwithnolabel) {
-					if (cshape->renderSpecial(Surface, sc.x, sc.y,labelprinted))
-						MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
-				} else {
-					MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
-					cshape->renderSpecial(Surface, sc.x, sc.y,labelprinted);
-				}
-				#else
-				MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
-				cshape->renderSpecial(Surface, sc.x, sc.y);
-				#endif
-			}
-		}
-
-	}
-	#endif // Use optimized point icons 1.23e
-	break;
+	  }
+	  break;
 
     case(MS_SHAPE_LINE):
 
       if (checkVisible(*shape, screenRect))
         for (int tt = 0; tt < shape->numlines; ++tt) {
-          
-          int minx = rc.right;
-          int miny = rc.bottom;
-          int msize = MapWindow::LatLon2Screen(shape->line[tt].point, shape->line[tt].numpoints, pt, MAXCLIPPOLYGON, 1);
-          for (int jj=0; jj< msize; ++jj) {
-            if (pt[jj].x<=minx) {
-              minx = pt[jj].x;
-              miny = pt[jj].y;
-            }
-	      }
-          Surface.Polyline(pt, msize, rc);
-          cshape->renderSpecial(Surface,minx,miny,rc);
+          const RasterPoint ptLabel = shape2Screen(shape->line[tt], 1, _Proj, points);
+          Surface.Polyline(points.data(), points.size(), rc);
+          cshape->renderSpecial(Surface,ptLabel.x,ptLabel.y,rc);
         }
       break;
       
     case(MS_SHAPE_POLYGON):
 #ifdef ENABLE_OPENGL
-      renderer.renderPolygon(Surface, *cshape, hbBrush);
+      renderer.renderPolygon(Surface, *cshape, hbBrush, _Proj);
 #else
 
-	// if it's a water area (nolabels), print shape up to defaultShape, but print
-	// labels only up to custom label levels
-	if ( nolabels ) {
-		if (checkVisible(*shape, screenRect)) {
-			for (int tt = 0; tt < shape->numlines; ++tt) {
-				int msize = MapWindow::LatLon2Screen(shape->line[tt].point, shape->line[tt].numpoints, pt, MAXCLIPPOLYGON, iskip);
-				Surface.Polygon(pt, msize, rc);
-			}
-		}
-	} else 
-	if (checkVisible(*shape, screenRect)) {
-		for (int tt = 0; tt < shape->numlines; ++tt) {
-			int minx = rc.right;
-			int miny = rc.bottom;
-			int msize = MapWindow::LatLon2Screen(shape->line[tt].point, shape->line[tt].numpoints, pt, MAXCLIPPOLYGON, iskip);
-			for (int jj=0; jj< msize; ++jj) {
-				if (pt[jj].x<=minx) {
-					minx = pt[jj].x;
-					miny = pt[jj].y;
-				}
-			}
-			Surface.Polygon(pt, msize, rc);
-			cshape->renderSpecial(Surface,minx,miny,rc);
-		}
-	}
+	  // if it's a water area (nolabels), print shape up to defaultShape, but print
+	  // labels only up to custom label levels
+      if (checkVisible(*shape, screenRect)) {
+        for (int tt = 0; tt < shape->numlines; ++tt) {
+          const RasterPoint ptLabel = shape2Screen(shape->line[tt], iskip, _Proj, points);
+          Surface.Polygon(points.data(), points.size(), rc);
+          if (!nolabels ) {
+            cshape->renderSpecial(Surface,ptLabel.x,ptLabel.y,rc);
+          }
+        }
+      }
+
 #endif
 	break;
       
@@ -708,10 +673,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc) {
   }
   Surface.SelectObject(hpOld);
   Surface.SelectObject(hfOld);
-
 }
-
-
 
 TopologyLabel::TopologyLabel(const TCHAR* shpname, int field1):Topology(shpname) 
 {

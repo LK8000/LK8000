@@ -31,7 +31,7 @@ extern double fZOOMScale[];
 
 TCHAR Sideview_szNearAS[TBSIZE + 1];
 
-void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT rci) {
+void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     RECT rc = rci; /* rectangle for sideview */
     RECT rct = rc; /* rectangle for topview */
 

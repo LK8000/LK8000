@@ -10,17 +10,18 @@
 #include "Terrain.h"
 #include "LKObjects.h"
 #include "utils/2dpclip.h"
-
+#include "ScreenProjection.h"
 //
 // Draw bearing line to target
 //
-void MapWindow::DrawGreatCircle(LKSurface& Surface, double startLon, double startLat, double targetLon, double targetLat,
-				const RECT& rc) {
+void MapWindow::DrawGreatCircle(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, 
+        double startLon, double startLat, double targetLon, double targetLat) {
 
-  POINT pt[2];
+    POINT pt[2] = {
+        _Proj.LonLat2Screen(startLon, startLat),
+        _Proj.LonLat2Screen(targetLon, targetLat)
+    };
 
-  LatLon2Screen(startLon, startLat, pt[0]);
-  LatLon2Screen(targetLon, targetLat, pt[1]);
 
     if(LKGeom::ClipLine(rc, pt[0], pt[1])) {
         const auto hpOld = Surface.SelectObject(LKPen_GABRG);

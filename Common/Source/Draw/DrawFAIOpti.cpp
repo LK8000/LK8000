@@ -13,6 +13,7 @@
 #include "Defines.h"
 #include "Topology.h"
 #include "LKObjects.h"
+#include "ScreenProjection.h"
 
 #ifdef PNA
   #define FAI_SECTOR_STEPS 11
@@ -21,13 +22,13 @@
 #endif
 #define MAX_FAI_SECTOR_PTS (8*FAI_SECTOR_STEPS)
 extern LKColor taskcolor;
-int RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
+int RenderFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
 extern BOOL CheckFAILeg(double leg, double total);
 
 
 //#define   FILL_FAI_SECTORS
 
-void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft)
+void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft)
 {
 
   const auto whitecolor = RGB_WHITE;
@@ -136,8 +137,8 @@ int numlegs=0;
       DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
       if(fDist > FAI_MIN_DISTANCE_THRESHOLD)
       {
-        RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 1, rgbCol );
-        RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 0, rgbCol );
+        RenderFAISector ( Surface, rc, _Proj, lat1, lon1, lat2, lon2, 1, rgbCol );
+        RenderFAISector ( Surface, rc, _Proj, lat1, lon1, lat2, lon2, 0, rgbCol );
       }
     }
 
@@ -150,8 +151,7 @@ int numlegs=0;
     {
       LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
       const auto hOldPen = Surface.SelectObject(hpSectorPen);
-      POINT Pt1;
-      MapWindow::LatLon2Screen(lon_CP, lat_CP,  Pt1);
+      const POINT Pt1 = _Proj.LonLat2Screen(lon_CP, lat_CP);
       FindLatitudeLongitude(lat1, lon1, 0 , fFAIDistance* 0.20, &lat2, &lon2); /* 1000m destination circle */
       int iRadius = (int)((lat2-lat1)*zoom.DrawScale());
       Surface.DrawCircle(Pt1.x, Pt1.y, iRadius  , rc, false);
@@ -175,11 +175,8 @@ int numlegs=0;
 
 
 
-int RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor)
+int RenderFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor)
 {
-
-POINT Pt1;
-
 double fDist_a, fDist_b, fDist_c, fAngle;
 int i;
 
@@ -256,9 +253,8 @@ if (iOpposite >0)
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-      MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
       LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-      apSectorPolygon[iPolyPtr++] = Pt1;
+      apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);
 
 
       fDistTri += fDelta_Dist;
@@ -287,9 +283,9 @@ if (iOpposite >0)
       cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-      MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
+
       LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-      apSectorPolygon[iPolyPtr++] = Pt1;
+      apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);
 
       fDist_a += fDelta_Dist;
     }
@@ -327,9 +323,8 @@ if (iOpposite >0)
         cos_alpha = ( fDist_a*fDist_a + fDist_c*fDist_c - fDist_b*fDist_b )/(2.0*fDist_c*fDist_a);
         alpha = acos(cos_alpha)*180/PI * dir;
         FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_a, &lat_d, &lon_d);
-            MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
-            LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-        apSectorPolygon[iPolyPtr++] = Pt1;
+        LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
+        apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);;
 
 
         fDistTri += fDelta_Dist;
@@ -352,10 +347,8 @@ if (iOpposite >0)
     cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
     alpha = acos(cos_alpha)*180/PI * dir;
     FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-
-    MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
     LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-    apSectorPolygon[iPolyPtr++] = Pt1;
+    apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);;
 
 
     fDist_a -= fDelta_Dist;
@@ -399,9 +392,8 @@ if (iOpposite >0)
         cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
         alpha = acos(cos_alpha)*180/PI * dir;
         FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-            MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
-            LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-        apSectorPolygon[iPolyPtr++] = Pt1;
+        LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
+        apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);;
 
 
         fDistTri -= fDelta_Dist;
@@ -432,9 +424,8 @@ if (iOpposite >0)
       cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-      MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
       LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-      apSectorPolygon[iPolyPtr++] = Pt1;
+      apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);;
 
       fDist_b += fDelta_Dist;
     }
@@ -464,9 +455,8 @@ if (iOpposite >0)
       cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-      MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
       LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-      apSectorPolygon[iPolyPtr++] = Pt1;
+      apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);;
       fDistTri -= fDelta_Dist;
     }
   }
@@ -486,9 +476,8 @@ if (iOpposite >0)
         cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
         alpha = acos(cos_alpha)*180/PI * dir;
         FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-        MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
         LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-       apSectorPolygon[iPolyPtr++] = Pt1;
+        apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);;
 
         fDist_a += fDelta_Dist;
         fDist_b -= fDelta_Dist;
@@ -530,9 +519,8 @@ if (iOpposite >0)
             cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
             alpha = acos(cos_alpha)*180/PI * dir;
             FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-            MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
             LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-            apSectorPolygon[iPolyPtr++] = Pt1;
+            apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);
 
             fDist_a -= fDelta_Dist;
             fDist_b += fDelta_Dist;
@@ -551,9 +539,8 @@ if (iOpposite >0)
               cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
               alpha = acos(cos_alpha)*180/PI * dir;
               FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-              MapWindow::LatLon2Screen(lon_d, lat_d,  Pt1);
               LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-              apSectorPolygon[iPolyPtr++] = Pt1;
+              apSectorPolygon[iPolyPtr++] = _Proj.LonLat2Screen(lon_d, lat_d);
           fDist_a += fDelta_Dist;
           fDist_b -= fDelta_Dist;
         }
@@ -645,7 +632,7 @@ int iCnt = 0;
       cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-      MapWindow::LatLon2Screen(lon_d, lat_d,  line[0]);
+      line[0] = _Proj.LonLat2Screen(lon_d, lat_d);
 
       if(j> 0)
       {

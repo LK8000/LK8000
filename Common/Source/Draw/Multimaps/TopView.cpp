@@ -11,6 +11,7 @@
 #include "Multimap.h"
 #include "Terrain.h"
 #include "RasterTerrain.h"
+#include "../ScreenProjection.h"
 
 extern LKColor  Sideview_TextColor;
 
@@ -98,7 +99,6 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
   MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
 /*******/
   
-  zoom.ModifyMapScale();
   zoom.RequestedScale((m_Dia.fXMax -m_Dia.fXMin)  * fFact *  (DISTANCEMODIFY)/10.0f);
 
   POINT Orig           =  { CalcDistanceCoordinat(0.0,  (DiagrammStruct*) &m_Dia),(rct.bottom-rct.top)/2};
@@ -107,15 +107,9 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
   zoom.ModifyMapScale();
   zoom.UpdateMapScale();
 
-  CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
-  CalculateScreenPositionsAirspace(rct);
-
-  // 
-  // Expose variables in use for topview drawing
-  // 
-  Current_Multimap_TopOrig=Orig_Aircraft;
-  Current_Multimap_TopZoom=GetInvDrawScale();
-  Current_Multimap_TopAngle=DisplayAngle;
+  const ScreenProjection _Proj = CalculateScreenPositions( Orig, rct, &Orig_Aircraft);
+  
+  CalculateScreenPositionsAirspace(rct, _Proj);
 
   bool terrainpainted=false;
 
@@ -123,7 +117,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
         LKTextBlack=false;
         BlackScreen=false;
 	LockTerrainDataGraphics();
-	DrawTerrain(Surface, rct, GetAzimuth(), 40.0);
+	DrawTerrain(Surface, rct, _Proj, GetAzimuth(), 40.0);
 	UnlockTerrainDataGraphics();
 	terrainpainted=true;
   } else {
@@ -153,29 +147,29 @@ _nomoredeclutter:
   if (IsMultimapTopology()) {
 	// Do not print topology labels, to be used with another config later!
 	// SaturateLabelDeclutter();
-	DrawTopology(Surface, rct);
+	DrawTopology(Surface, rct, _Proj);
   } else {
 	// No topology is desired, but terrain requires water areas nevertheless
 	if (terrainpainted) {
-		DrawTopology(Surface, rct,true); // water only!
+		DrawTopology(Surface, rct, _Proj, true); // water only!
 	}
   }
 
 
   if (IsMultimapAirspace()) {
-	DrawAirSpace(Surface, rct);   // full screen, to hide clipping effect on low border
+	DrawAirSpace(Surface, rct, _Proj);   // full screen, to hide clipping effect on low border
   }
 
   if (Flags_DrawTask && MapSpaceMode!=MSM_MAPASP && ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
     DrawTaskAAT(Surface, rct);
-    DrawTask(Surface, rct, Current_Multimap_TopOrig);
+    DrawTask(Surface, rct, _Proj, Orig_Aircraft);
   }
 
   if (IsMultimapWaypoints()) {
 	DrawWaypointsNew(Surface,rct);
   }
   if (Flags_DrawFAI)
-	DrawFAIOptimizer(Surface, rct, Current_Multimap_TopOrig);
+	DrawFAIOptimizer(Surface, rct, _Proj, Orig_Aircraft);
 
   DeclutterMode=olddecluttermode; // set it back correctly
 
@@ -194,18 +188,18 @@ _nomoredeclutter:
   if (MapSpaceMode==MSM_MAPTRK) {
 	if(IsMultimapTerrain() || IsMultimapTopology() ) {
 		if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
-			DrawGlideThroughTerrain(Surface, rct);
+			DrawGlideThroughTerrain(Surface, rct, _Proj);
 	}
 	if (extGPSCONNECT)
-		DrawBearing(Surface, rct);
+		DrawBearing(Surface, rct, _Proj);
 	// Wind arrow
 	if (IsMultimapOverlaysGauges())
-		DrawWindAtAircraft2(Surface, Current_Multimap_TopOrig, rct);
+		DrawWindAtAircraft2(Surface, Orig_Aircraft, rct);
   }
 
   if (MapSpaceMode==MSM_MAPWPT) {
 	if (extGPSCONNECT)
-		DrawBearing(Surface, rct);
+		DrawBearing(Surface, rct, _Proj);
   }
 
   switch(GetMMNorthUp(getsideviewpage)) {

@@ -17,7 +17,7 @@
 extern Topology* TopoStore[MAXTOPOLOGY];
 
 
-void DrawTopology(LKSurface& Surface, const RECT& rc, const bool wateronly)
+void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const bool wateronly)
 {
     LockTerrainDataGraphics();
 
@@ -28,14 +28,14 @@ void DrawTopology(LKSurface& Surface, const RECT& rc, const bool wateronly)
 			     		TopoStore[z]->scaleCategory == 10 ||
 			     		TopoStore[z]->scaleCategory == 20 
 				) {
-					TopoStore[z]->Paint(Surface,rc);
+					TopoStore[z]->Paint(Surface,rc, _Proj);
 				}
 			}
 		}
 	} else {
 		for (int z=0; z<MAXTOPOLOGY; z++) {
 			if (TopoStore[z]) {
-				TopoStore[z]->Paint(Surface,rc);
+				TopoStore[z]->Paint(Surface,rc, _Proj);
 			}
 		}
 	}

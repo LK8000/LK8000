@@ -10,10 +10,10 @@
 #include "LKInterface.h"
 #include "Terrain.h"
 #include "Bitmaps.h"
+#include "ScreenProjection.h"
 
 
-
-void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
+void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj)
 {
   int overindex=GetOvertargetIndex();
   if (overindex<0) return;
@@ -28,7 +28,7 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
     targetLat = WayPointList[overindex].Latitude;
     targetLon = WayPointList[overindex].Longitude;
     UnlockTaskData();
-    DrawGreatCircle(Surface, startLon, startLat, targetLon, targetLat, rc);
+    DrawGreatCircle(Surface, rc, _Proj, startLon, startLat, targetLon, targetLat);
   }
   else {
     if (!ValidTaskPoint(ActiveTaskPoint)) {
@@ -45,7 +45,7 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
     }
     UnlockTaskData();
 
-    DrawGreatCircle(Surface, startLon, startLat, targetLon, targetLat, rc);
+    DrawGreatCircle(Surface, rc, _Proj, startLon, startLat, targetLon, targetLat);
 
     if (mode.Is(Mode::MODE_TARGET_PAN)) {
       // Draw all of task if in target pan mode
@@ -64,8 +64,8 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
             targetLon = WayPointList[Task[i].Index].Longitude; 
           }
        
-          DrawGreatCircle(Surface, startLon, startLat,
-                          targetLon, targetLat, rc);
+          DrawGreatCircle(Surface, rc, _Proj, startLon, startLat,
+                          targetLon, targetLat);
 
           startLat = targetLat;
           startLon = targetLon;
@@ -82,20 +82,14 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc)
       for(int i=ActiveTaskPoint+1; i<MAXTASKPOINTS; i++) {
         if(ValidTaskPoint(i) && ValidTaskPoint(i+1)) {
           if(i>= ActiveTaskPoint) {
-            POINT sct;
-            LatLon2Screen(Task[i].AATTargetLon, 
-                          Task[i].AATTargetLat, 
-                          sct);
+            const POINT sct = _Proj.LonLat2Screen(Task[i].AATTargetLon, Task[i].AATTargetLat);
             DrawBitmapIn(Surface, sct, hBmpTarget,true);
           }
         }
       }
     }
     if(ValidTaskPoint(ActiveTaskPoint+1) && (DoOptimizeRoute() || (ActiveTaskPoint>0)) ) {
-      POINT sct;
-      LatLon2Screen(Task[ActiveTaskPoint].AATTargetLon, 
-                    Task[ActiveTaskPoint].AATTargetLat, 
-                    sct);
+      const POINT sct = _Proj.LonLat2Screen(Task[ActiveTaskPoint].AATTargetLon, Task[ActiveTaskPoint].AATTargetLat);
       DrawBitmapIn(Surface, sct, hBmpTarget,true);
     }
     UnlockTaskData();

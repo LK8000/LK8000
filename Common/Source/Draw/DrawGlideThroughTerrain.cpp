@@ -15,14 +15,14 @@
 extern void ClearGTL2(void);
 #include "LKObjects.h"
 #endif
-
+#include "ScreenProjection.h"
 //
 // Glide through terrain will paint a cross over the first and last obstacle to
 // the destination.
 // It will also draw the perimeter, even if a shaded area was painted previously
 //
 
-void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc) {
+void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
   //double h,dh;
   TCHAR hbuf[10];
   static bool doinit=true;
@@ -106,14 +106,13 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc) {
   #endif
   if (WayPointCalc[TASKINDEX].AltArriv[AltArrivMode] >0) { 
 
-	POINT sc;
 	// If calculations detected an obstacle...
 	if ((DerivedDrawInfo.TerrainWarningLatitude != 0.0) &&(DerivedDrawInfo.TerrainWarningLongitude != 0.0)) {
 
 		// only if valid position, and visible
 		if (DerivedDrawInfo.FarObstacle_Lon >0) 
 		if (PointVisible(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat)) {
-			LatLon2Screen(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat, sc);
+			const POINT sc = _Proj.LonLat2Screen(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat);
 			DrawBitmapIn(Surface, sc, hTerrainWarning,true);
 
 			if (DerivedDrawInfo.FarObstacle_AltArriv <=-50 ||  DerivedDrawInfo.FarObstacle_Dist<5000 ) {
@@ -124,7 +123,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc) {
 		} // visible far obstacle
 
 		if (PointVisible(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude)) {
-			LatLon2Screen(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude, sc);
+			const POINT sc = _Proj.LonLat2Screen(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude);
 			DrawBitmapIn(Surface, sc, hTerrainWarning,true);
 #if 0
 			// 091203 add obstacle altitude on moving map

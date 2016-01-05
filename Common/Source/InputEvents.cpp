@@ -2395,6 +2395,7 @@ void InputEvents::eventBallast(const TCHAR *misc) {
 #include "Task.h"
 #include "Logger.h"
 #include "Kobo/System.hpp"
+#include "Draw/ScreenProjection.h"
 
 
 void InputEvents::eventAutoLogger(const TCHAR *misc) {
@@ -2521,7 +2522,8 @@ void InputEvents::eventNearestWaypointDetails(const TCHAR *misc) {
     }
     if (_tcscmp(misc, TEXT("screen")) == 0) {
         bOK = true;
-        MapWindow::SideviewScreen2LatLon(startScreen.x, startScreen.y, lon, lat);
+        const ScreenProjection _Proj;
+        _Proj.Screen2LonLat(startScreen, lon, lat);
     }
     if(bOK) {
         MapWindow::Event_NearestWaypointDetails(lon, lat); 

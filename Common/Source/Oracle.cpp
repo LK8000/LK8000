@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include "Topology.h"
 #include "Terrain.h"
+#include "Draw/ScreenProjection.h"
 
 
 const TCHAR *DegreesToText(double brg) {
@@ -111,7 +112,8 @@ void WhereAmI::run(void) {
   double oldzoom=MapWindow::zoom.Scale();
   // set a zoom level for topology visibility scan
   MapWindow::zoom.EventSetZoom(3);
-  SetTopologyBounds(MapWindow::DrawRect, true);
+  const ScreenProjection _Proj;
+  SetTopologyBounds(MapWindow::DrawRect, _Proj, true);
 
   for (int z=0; z<MAXTOPOLOGY; z++) {
     if (TopoStore[z]) {
@@ -364,7 +366,7 @@ _end:
   Poco::Thread::sleep(2000);
 #endif
   MapWindow::zoom.EventSetZoom(oldzoom);
-  SetTopologyBounds(MapWindow::DrawRect, true);
+  SetTopologyBounds(MapWindow::DrawRect, _Proj, true);
   UnlockTerrainDataGraphics();
 
 #ifdef ULLIS_PRIVATE_FEATURES

@@ -32,6 +32,7 @@
 #include "Sound/Sound.h"
 #include "Kobo/System.hpp"
 #include "Dialogs/dlgProgress.h"
+#include "Draw/ScreenProjection.h"
 
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);
@@ -283,7 +284,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
         // UpdateCaches is updating topology bounds when either forced (only here)
         // or because MapWindow::ForceVisibilityScan  is set true.
         static bool first_run = true;
-        UpdateCaches(first_run);
+        UpdateCaches(ScreenProjection(), first_run);
         first_run=false;
     }
     UpdateTimeStats(false);

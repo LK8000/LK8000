@@ -12,11 +12,12 @@
 #include "Bitmaps.h"
 #include "DoInits.h"
 #include "FlarmRadar.h"
+#include "ScreenProjection.h"
 
 extern const LKBrush * variobrush[NO_VARIO_COLORS];
 
 // This is painting traffic icons on the screen.
-void MapWindow::LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft) {
+void MapWindow::LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft) {
 
   if (!EnableFLARMMap) return;
 
@@ -112,7 +113,7 @@ static int	iRectangleSize = 4;
 		#endif
       
 		POINT sc, sc_name, sc_av;
-		LatLon2Screen(target_lon, target_lat, sc);
+		sc = _Proj.LonLat2Screen(target_lon, target_lat);
 
 		sc_name = sc;
 

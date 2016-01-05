@@ -153,8 +153,8 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
 }
 #endif
 
-void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc) {
-    CalculateScreenPositionsAirspace(rc);
+void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
+    CalculateScreenPositionsAirspace(rc, _Proj);
     
     if ((GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders))
         DrawTptAirSpace(Surface, rc);

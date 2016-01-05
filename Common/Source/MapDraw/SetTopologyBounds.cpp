@@ -33,14 +33,14 @@ bool RectangleIsInside(rectObj r_exterior, rectObj r_interior) {
 //
 // This is called FORCED when changing multimap
 //
-void SetTopologyBounds(const RECT& rcin, const bool force) {
+void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bool force) {
   static rectObj bounds_active;
   static double range_active = 1.0;
   bool unchanged=false;
   static double oldmapscale=0;
   static short runnext=0;
   
-  rectObj bounds_screen = MapWindow::CalculateScreenBounds(1.0, rcin);
+  rectObj bounds_screen = MapWindow::CalculateScreenBounds(1.0, rcin, _Proj);
 
   if (!force) {
 	if (oldmapscale!=MapWindow::zoom.Scale()) {
@@ -95,7 +95,7 @@ void SetTopologyBounds(const RECT& rcin, const bool force) {
     }
     #endif
 
-    bounds_active = MapWindow::CalculateScreenBounds(scale, rcin);
+    bounds_active = MapWindow::CalculateScreenBounds(scale, rcin, _Proj);
 
     range_active = max((bounds_active.maxx-bounds_active.minx), 
 		       (bounds_active.maxy-bounds_active.miny));

@@ -89,10 +89,7 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 
   if (LockModeStatus) LockMode(9); // check if unlock is now possible 
   
-  POINT Orig, Orig_Aircraft;
-
   SetAutoOrientation(false); // false for no reset Old values
-  CalculateOrigin(rc, &Orig);
 
   //
   // When BigZoom trigger, we shall not calculate waypoints and olc.
@@ -103,14 +100,12 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
     // CalculateWayPointReachable new, setting values for visible wps!
     // This is also calculating CalculateScreenBounds 0.0  and placing it inside MapWindow::screenbounds_latlon
     //
-    CalculateScreenPositions(Orig, rc, &Orig_Aircraft);
     LKUpdateOlc();
   } else {
-	CalculateScreenPositions(Orig, rc, &Orig_Aircraft);
 	FastZoom=true;
   }
 
-  RenderMapWindowBg(Surface, rc, Orig, Orig_Aircraft);
+  RenderMapWindowBg(Surface, rc);
 
   // No reason to check for bigzoom here, because we are not drawing the map
   if (DONTDRAWTHEMAP) {

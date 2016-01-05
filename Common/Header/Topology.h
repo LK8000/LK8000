@@ -78,7 +78,7 @@ class Topology {
   void Close();
 
   void updateCache(rectObj thebounds, bool purgeonly=false);
-  void Paint(LKSurface& Surface, const RECT& rc);
+  void Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   void SearchNearest(RECT rc);
 
   double scaleThreshold;

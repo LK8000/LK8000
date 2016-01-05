@@ -13,6 +13,7 @@
 #include "LKGeneralAviation.h"
 #include "Multimap.h"
 #include "Sound/Sound.h"
+#include "ScreenProjection.h"
 
 extern bool FastZoom;
 extern bool TargetDialogOpen;
@@ -27,9 +28,7 @@ void MapWindow::RenderOverlayGauges(LKSurface& Surface, const RECT& rc) {
     DrawFinalGlide(Surface, rc);
 }
 
-void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
-        const POINT &Orig,
-        const POINT &Orig_Aircraft) {
+void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc) {
 
     if ( (LKSurface::AlphaBlendSupported() && BarOpacity < 100) || mode.AnyPan() ) {
         RECT newRect = {0, 0, ScreenSizeX, ScreenSizeY};
@@ -38,7 +37,6 @@ void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
         RECT newRect = {0, 0, ScreenSizeX, ScreenSizeY - BottomSize - (ScreenSizeY-MapRect.bottom)};
         MapWindow::ChangeDrawRect(newRect);
     }
-
 
     if (QUICKDRAW) {
         goto _skip_calcs;
@@ -52,12 +50,6 @@ void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
     LKCalculateWaypointReachable(false);
 
 _skip_calcs:
-
-    CalculateScreenPositionsThermalSources();
-
-    // Make the glide amoeba out of the latlon points, converting them to screen
-    // (This function is updated for supporting multimaps )
-    CalculateScreenPositionsGroundline();
 
     if (PGZoomTrigger) {
         if (!mode.Is(Mode::MODE_PANORAMA)) {
@@ -118,6 +110,10 @@ QuickRedraw:
         return;
     }
 
+    POINT Orig, Orig_Aircraft;
+    CalculateOrigin(rc, &Orig);
+    const ScreenProjection _Proj = CalculateScreenPositions(Orig, rc, &Orig_Aircraft);
+
     // When no terrain is painted, set a background0
     // Remember that in this case we have plenty of cpu time to spend for best result
     if (!IsMultimapTerrain() || !DerivedDrawInfo.TerrainValid || !RasterTerrain::isTerrainLoaded()) {
@@ -159,7 +155,7 @@ QuickRedraw:
             UnlockTerrainDataGraphics();
             goto QuickRedraw;
         }
-        DrawTerrain(Surface, DrawRect, sunazimuth, sunelevation);
+        DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation);
         terrainpainted = true;
         if (DONTDRAWTHEMAP) {
             UnlockTerrainDataGraphics();
@@ -190,10 +186,10 @@ QuickRedraw:
     }
 
     if (IsMultimapTopology()) {
-        DrawTopology(Surface, DrawRect);
+        DrawTopology(Surface, DrawRect, _Proj);
     } else {
         // If no topology wanted, but terrain painted, we paint only water stuff
-        if (terrainpainted) DrawTopology(Surface, DrawRect, true);
+        if (terrainpainted) DrawTopology(Surface, DrawRect, _Proj, true);
     }
 #if 0
     StartupStore(_T("... Experimental1=%.0f\n"), Experimental1);
@@ -216,7 +212,7 @@ QuickRedraw:
     }
 
     if (IsMultimapAirspace()) {
-        DrawAirSpace(Surface, rc);
+        DrawAirSpace(Surface, rc, _Proj);
     }
 
     if (DONTDRAWTHEMAP) {
@@ -224,25 +220,16 @@ QuickRedraw:
     }
 
     // In QUICKDRAW dont draw trail, thermals, glide terrain
-    if (QUICKDRAW) goto _skip_stuff;
-#define  TRAIL_OVER_AIRFIELD
-#ifndef TRAIL_OVER_AIRFIELD
-    if (TrailActive) {
-        LKDrawLongTrail(hdc, Orig_Aircraft, DrawRect);
-        // NEED REWRITING
-        LKDrawTrail(hdc, Orig_Aircraft, DrawRect);
-    }
-#endif
-    if (DONTDRAWTHEMAP) {
-        goto QuickRedraw;
+    if (QUICKDRAW) {
+        goto _skip_stuff;
     }
 
-    DrawThermalEstimate(Surface, DrawRect);
-    if (OvertargetMode == OVT_THER) DrawThermalEstimateMultitarget(Surface, DrawRect);
+    DrawThermalEstimate(Surface, DrawRect, _Proj);
+    if (OvertargetMode == OVT_THER) DrawThermalEstimateMultitarget(Surface, DrawRect, _Proj);
 
     // draw red cross on glide through terrain marker
     if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid) {
-        DrawGlideThroughTerrain(Surface, DrawRect);
+        DrawGlideThroughTerrain(Surface, DrawRect, _Proj);
     }
 
     if (DONTDRAWTHEMAP) {
@@ -252,7 +239,7 @@ QuickRedraw:
 _skip_stuff:
 
     if (IsMultimapAirspace() && AirspaceWarningMapLabels) {
-        DrawAirspaceLabels(Surface, DrawRect, Orig_Aircraft);
+        DrawAirspaceLabels(Surface, DrawRect, _Proj, Orig_Aircraft);
         if (DONTDRAWTHEMAP) { // 100319
             goto QuickRedraw;
         }
@@ -261,27 +248,25 @@ _skip_stuff:
     if (IsMultimapWaypoints()) {
         DrawWaypointsNew(Surface, DrawRect);
     }
-#ifdef TRAIL_OVER_AIRFIELD
     if (TrailActive) {
         LKDrawLongTrail(Surface, Orig_Aircraft, DrawRect);
         // NEED REWRITING
-        LKDrawTrail(Surface, Orig_Aircraft, DrawRect);
+        LKDrawTrail(Surface, DrawRect, _Proj);
     }
-#endif
     if (DONTDRAWTHEMAP) {
         goto QuickRedraw;
     }
 
     if ((Flags_DrawTask || TargetDialogOpen) && ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
-        DrawTask(Surface, DrawRect, Orig_Aircraft);
+        DrawTask(Surface, DrawRect, _Proj, Orig_Aircraft);
 
     }
     if (Flags_DrawFAI) {
         if (MapWindow::DerivedDrawInfo.Flying) { // FAI optimizer does not depend on tasks, being based on trace
-            DrawFAIOptimizer(Surface, DrawRect, Orig_Aircraft);
+            DrawFAIOptimizer(Surface, DrawRect, _Proj, Orig_Aircraft);
         } else { // not flying => show FAI sectors for the task
             if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
-                DrawTaskSectors(Surface, DrawRect);
+                DrawTaskSectors(Surface, DrawRect, _Proj);
             }
         }
     }
@@ -289,17 +274,17 @@ _skip_stuff:
 
     // In QUICKDRAW do not paint other useless stuff
     if (QUICKDRAW) {
-        if (extGPSCONNECT) DrawBearing(Surface, DrawRect);
+        if (extGPSCONNECT) DrawBearing(Surface, DrawRect, _Proj);
         goto _skip_2;
     }
 
     // ---------------------------------------------------
 
-    DrawTeammate(Surface, rc);
+    DrawTeammate(Surface, rc, _Proj);
 
     if (extGPSCONNECT) {
         DrawBestCruiseTrack(Surface, Orig_Aircraft);
-        DrawBearing(Surface, DrawRect);
+        DrawBearing(Surface, DrawRect, _Proj);
     }
 
     // draw wind vector at aircraft
@@ -314,7 +299,7 @@ _skip_stuff:
     }
 
     // Draw traffic and other specifix LK gauges
-    LKDrawFLARMTraffic(Surface, DrawRect, Orig_Aircraft);
+    LKDrawFLARMTraffic(Surface, DrawRect, _Proj, Orig_Aircraft);
 
     // ---------------------------------------------------
 _skip_2:

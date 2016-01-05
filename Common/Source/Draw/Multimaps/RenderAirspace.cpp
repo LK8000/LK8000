@@ -42,7 +42,7 @@ double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double t
 //#define USE_TCOLORS 1
 //#define SHOWLD	// optional 
 
-void MapWindow::RenderAirspace(LKSurface& Surface, const RECT rc_input) {
+void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
     RECT rci = rc_input;
 

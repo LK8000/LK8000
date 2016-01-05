@@ -1,6 +1,10 @@
-/* 
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
  * File:   GLShapeRenderer.cpp
- * Author: bruno
+ * Author: Bruno de Lacheisserie
  * 
  * Created on August 26, 2015, 7:37 PM
  */
@@ -20,6 +24,7 @@
 #include "externs.h"
 #include "MapWindow.h"
 #include "Topology.h"
+#include "../Draw/ScreenProjection.h"
 
 
 #ifdef USE_GLSL
@@ -64,7 +69,7 @@ GLShapeRenderer::~GLShapeRenderer() {
     gluDeleteTess(tess);
 }
 
-void GLShapeRenderer::renderPolygon(LKSurface& Surface, const XShape& shape, Brush& brush) {
+void GLShapeRenderer::renderPolygon(LKSurface& Surface, const XShape& shape, Brush& brush, const ScreenProjection& _Proj) {
   /*
    OpenGL cannot draw complex polygons so we need to use a Tessallator to draw the polygon using a GL_TRIANGLE_FAN
    */  
@@ -83,13 +88,11 @@ void GLShapeRenderer::renderPolygon(LKSurface& Surface, const XShape& shape, Bru
   
   const shapeObj& shp = shape.shape;
 
-  static RasterPoint pt;
-  
   gluTessBeginPolygon(tess, this );
   for (int j = 0; j < shp.numlines; j++) {
     gluTessBeginContour(tess);
     for (int i = 0; i < shp.line[j].numpoints; i++) {
-      MapWindow::LatLon2Screen(shp.line[j].point[i].x, shp.line[j].point[i].y, pt);
+      const RasterPoint pt = _Proj.LonLat2Screen(shp.line[j].point[i]);
       if (!noLabel &&  (pt.x<=curr_LabelPos.x)) {
         curr_LabelPos = pt;
       }  

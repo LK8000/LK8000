@@ -52,7 +52,7 @@ void MapWindow::UpdateInfo(NMEA_INFO *nmea_info,
 
 
 
-void MapWindow::UpdateCaches(bool force) {
+void MapWindow::UpdateCaches(const ScreenProjection& _Proj, bool force) {
   // map was dirtied while we were drawing, so skip slow process
   // (unless we haven't done it for 2000 ms)
 
@@ -63,7 +63,7 @@ void MapWindow::UpdateCaches(bool force) {
 
   // have some time, do shape file cache update if necessary
   LockTerrainDataGraphics();
-  SetTopologyBounds(DrawRect, force);
+  SetTopologyBounds(DrawRect, _Proj, force);
   UnlockTerrainDataGraphics();
 }
 

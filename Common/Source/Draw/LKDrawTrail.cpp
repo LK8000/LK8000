@@ -8,21 +8,15 @@
 
 
 #include "externs.h"
+#include "ScreenProjection.h"
 
-void MapWindow::LKDrawTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc) {
+void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
     static RasterPoint snail_polyline[array_size(SnailTrail)];
     
     if (!TrailActive) return;
     if (iSnailNext < 2 ) return; // no snail trail 
 
-    const int deg = DEG_TO_INT(AngleLimit360(DisplayAngle));
-    const int cost = ICOSTABLE[deg];
-    const int sint = ISINETABLE[deg];
-    const int xxs = Orig_Screen.x * 1024 - 512;
-    const int yys = Orig_Screen.y * 1024 + 512;
-    const double mDrawScale = zoom.DrawScale();
-    const double mPanLongitude = PanLongitude;
-    const double mPanLatitude = PanLatitude;
+    
 
     const double display_time = DrawInfo.Time;
     const bool use_colors = (MapWindow::zoom.RealScale() < 2); // 1.5 is also quite good;
@@ -71,11 +65,7 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const POINT& Orig, const RECT& r
             this_lon += traildrift_lon * dt;
         }
         
-        int Y = Real2Int((mPanLatitude - this_lat) * mDrawScale);
-        int X = Real2Int((mPanLongitude - this_lon) * fastcosine(this_lat) * mDrawScale);
-
-        polyline_iterator->x = (xxs - X * cost + Y * sint) / 1024;
-        polyline_iterator->y = (Y * cost + X * sint + yys) / 1024;
+        (*polyline_iterator) = _Proj.LonLat2Screen(this_lon, this_lat);
 
         if(use_colors && prev_color != cur_iterator->Colour) {
             // draw polyline before change color.

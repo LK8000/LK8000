@@ -146,6 +146,22 @@ struct PixelRect : public tagRECT {
     return { (left + right) / 2, (top + bottom) / 2 };
   }
 
+  constexpr RasterPoint GetTopLeft() const {
+    return { left, top };
+  }
+
+  constexpr RasterPoint GetTopRight() const {
+    return { right, top };
+  }
+
+  constexpr RasterPoint GetBottomLeft() const {
+    return { left, bottom };
+  }
+
+  constexpr RasterPoint GetBottomRight() const {
+    return { right, bottom };
+  }
+  
   bool IsInside(RasterPoint pt) const {
     return ::PtInRect(this, pt);
   }

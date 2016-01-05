@@ -14,8 +14,9 @@ $Id$
 #include "LKObjects.h"
 #include "utils/2dpclip.h"
 #include "CriticalSection.h"
+#include "ScreenProjection.h"
 
-extern int RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
+extern int RenderFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
 extern LKColor taskcolor;
 
 //
@@ -133,7 +134,7 @@ Surface.SelectObject(oldbrush);
 
 
 
-void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft) {
+void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft) {
     int i;
     double tmp;
 
@@ -292,12 +293,8 @@ DoInit[MDI_DRAWTASK]=false;
         double bearing = Task[i].OutBound;
         POINT sct1, sct2;
         if (AATEnabled) {
-            LatLon2Screen(Task[i].AATTargetLon,
-                    Task[i].AATTargetLat,
-                    sct1);
-            LatLon2Screen(Task[i + 1].AATTargetLon,
-                    Task[i + 1].AATTargetLat,
-                    sct2);
+            sct1 = _Proj.LonLat2Screen(Task[i].AATTargetLon, Task[i].AATTargetLat);
+            sct2 = _Proj.LonLat2Screen(Task[i + 1].AATTargetLon,Task[i + 1].AATTargetLat);
             DistanceBearing(Task[i].AATTargetLat,
                     Task[i].AATTargetLon,
                     Task[i + 1].AATTargetLat,
@@ -341,8 +338,7 @@ DoInit[MDI_DRAWTASK]=false;
     
     // Draw DashLine From current position to Active TurnPoint center
     if(ValidTaskPoint(ActiveTaskPoint)) {
-        POINT ptStart;
-        LatLon2Screen(DrawInfo.Longitude, DrawInfo.Latitude, ptStart);
+        const POINT ptStart = _Proj.LonLat2Screen(DrawInfo.Longitude, DrawInfo.Latitude);
         Surface.DrawDashLine(NIBLSCALE(1),
                     ptStart,
                     WayPointList[Task[ActiveTaskPoint].Index].Screen,
@@ -363,7 +359,7 @@ DoInit[MDI_DRAWTASK]=false;
 
 
 
-void MapWindow::DrawTaskSectors(LKSurface& Surface, const RECT& rc) {
+void MapWindow::DrawTaskSectors(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
 int Active = ActiveTaskPoint;
 if(ValidTaskPoint(PanTaskEdit))
 Active = PanTaskEdit;
@@ -420,8 +416,8 @@ double	lon1 = WayPointList[Task[a].Index].Longitude;
 double	lat2 = WayPointList[Task[b].Index].Latitude;
 double	lon2 = WayPointList[Task[b].Index].Longitude;
 
-RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 1, RGB_YELLOW );
-RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, 0, RGB_CYAN );
+RenderFAISector ( Surface, rc, _Proj, lat1, lon1, lat2, lon2, 1, RGB_YELLOW );
+RenderFAISector ( Surface, rc, _Proj, lat1, lon1, lat2, lon2, 0, RGB_CYAN );
 
 
 

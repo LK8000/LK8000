@@ -12,6 +12,7 @@
 #include "STScreenBuffer.h"
 #include "RGB.h"
 #include "Multimap.h"
+#include "../Draw/ScreenProjection.h"
 
 // #define TDEBUG 1
 
@@ -272,7 +273,7 @@ public:
      * Fill height Buffer with according to map projection
      * @offset : {top, left} coordinate of Terrain Rendering Rect relative to DrawRect
      */
-    void Height(const POINT& offset) {
+    void Height(const POINT& offset, const ScreenProjection& _Proj) {
 
         double X, Y;
 
@@ -285,21 +286,23 @@ public:
 
         double pixelDX, pixelDY;
 
-        int x = (X0 + X1) / 2;
-        int y = (Y0 + Y1) / 2;
-        MapWindow::Screen2LatLon(x, y, X, Y);
+        RasterPoint Pt = {
+            (X0 + X1) / 2,
+            (Y0 + Y1) / 2
+        };
+        _Proj.Screen2LonLat(Pt, X, Y);
         double xmiddle = X;
         double ymiddle = Y;
         int dd = (int) lround(dtquant * rfact);
 
-        x = (X0 + X1) / 2 + dd;
-        y = (Y0 + Y1) / 2;
-        MapWindow::Screen2LatLon(x, y, X, Y);
+        Pt.x = (X0 + X1) / 2 + dd;
+        Pt.y = (Y0 + Y1) / 2;
+        _Proj.Screen2LonLat(Pt, X, Y);
         DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDX, NULL);
 
-        x = (X0 + X1) / 2;
-        y = (Y0 + Y1) / 2 + dd;
-        MapWindow::Screen2LatLon(x, y, X, Y);
+        Pt.x = (X0 + X1) / 2;
+        Pt.y = (Y0 + Y1) / 2 + dd;
+        _Proj.Screen2LonLat(Pt, X, Y);
         DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDY, NULL);
 
         pixelsize_d = sqrt((pixelDX * pixelDX + pixelDY * pixelDY) / 2.0);
@@ -610,7 +613,7 @@ void CloseTerrainRenderer() {
     }
 }
 
-void DrawTerrain(LKSurface& Surface, const RECT& rc,
+void DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
         const double sunazimuth, const double sunelevation) {
     (void) sunelevation; // TODO feature: sun-based rendering option
     (void) rc;
@@ -698,7 +701,7 @@ _redo:
     trenderer->ColorTable();
     // step 2: fill height buffer
 
-    trenderer->Height({rc.left, rc.top});
+    trenderer->Height({rc.left, rc.top}, _Proj);
 
     // step 3: calculate derivatives of height buffer
     // step 4: calculate illumination and colors

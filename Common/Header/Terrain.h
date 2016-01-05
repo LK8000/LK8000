@@ -23,7 +23,7 @@ void ColorRampLookup(short h, BYTE &r, BYTE &g, BYTE &b,
                      const int numramp,
                      const unsigned char interp_bits=6);
 
-void SetTopologyBounds(const RECT& rcin, const bool force=false);
+void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj,  const bool force=false);
 #if USETOPOMARKS
 void TopologyInitialiseMarks();
 void TopologyCloseMarks();
@@ -33,8 +33,8 @@ void CloseTopology();
 void ChangeZoomTopology(int iCategory, double newScale, short cztmode);
 double ReadZoomTopology(int iCategory);
 bool HaveZoomTopology(int iCategory);
-void DrawTopology(LKSurface& Surface, const RECT& rc, const bool wateronly=false);
-void DrawTerrain(LKSurface& Surface, const RECT& rc, const double sunazimuth, const double sunelevation);
+void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const bool wateronly=false);
+void DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const double sunazimuth, const double sunelevation);
 
 #if USETOPOMARKS
 void DrawMarks(const HDC hdc, const RECT rc);

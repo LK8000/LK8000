@@ -11,10 +11,6 @@
 
 extern int	Current_Multimap_SizeY;
 extern RECT	Current_Multimap_TopRect;
-extern double	Current_Multimap_TopAngle;
-extern double	Current_Multimap_TopZoom;
-extern POINT	Current_Multimap_TopOrig;
-extern bool	Current_Multimap_IsActive;
 
 bool IsMultiMap(void);
 bool IsMultiMapNoMain(void);

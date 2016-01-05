@@ -11,6 +11,7 @@
 #include "InputEvents.h"
 #include "Dialogs.h"
 #include "Sound/Sound.h"
+#include "ScreenProjection.h"
 
 bool MapWindow::Event_NearestWaypointDetails(double lon, double lat) {
 
@@ -144,15 +145,18 @@ bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
 
 
 void MapWindow::Event_PanCursor(int dx, int dy) {
-  int X= (MapRect.right+MapRect.left)/2;
-  int Y= (MapRect.bottom+MapRect.top)/2;
+  const ScreenProjection _Proj;
+  RasterPoint pt = {
+    (MapRect.right+MapRect.left)/2,
+    (MapRect.bottom+MapRect.top)/2
+  };
   double Xstart, Ystart, Xnew, Ynew;
 
-  Screen2LatLon(X, Y, Xstart, Ystart);
+  _Proj.Screen2LonLat(pt, Xstart, Ystart);
 
-  X+= (MapRect.right-MapRect.left)*dx/4;
-  Y+= (MapRect.bottom-MapRect.top)*dy/4;
-  Screen2LatLon(X, Y, Xnew, Ynew);
+  pt.x += (MapRect.right-MapRect.left)*dx/4;
+  pt.y += (MapRect.bottom-MapRect.top)*dy/4;
+  _Proj.Screen2LonLat(pt, Xnew, Ynew);
 
   if(mode.AnyPan()) {
     PanLongitude += Xstart-Xnew;

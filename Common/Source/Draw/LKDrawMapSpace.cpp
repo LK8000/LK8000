@@ -24,7 +24,7 @@ extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
 // Normally there is plenty of cpu available because the map is not even calculated.
 // This is why we bring to the Draw thread, in the nearest pages case, also calculations.
 //
-void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc ) {
+void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
 
   BrushReference hB;
 

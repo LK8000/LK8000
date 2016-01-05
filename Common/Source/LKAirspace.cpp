@@ -21,6 +21,7 @@
 #include "utils/2dpclip.h"
 #include "utils/stringext.h"
 #include "utils/openzip.h"
+#include "Draw/ScreenProjection.h"
 
 #if TESTBENCH
 //#define DEBUG_NEAR_POINTS	1
@@ -844,7 +845,7 @@ void CAirspace_Circle::CalcBounds() {
 
 // Calculate screen coordinates for drawing
 
-void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) {
+void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
     _drawstyle = adsHidden;
     //  if (!_enabled) return;
 
@@ -864,7 +865,7 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
                 if (!_enabled)
                     _drawstyle = adsDisabled;
 
-                MapWindow::LatLon2Screen(_loncenter, _latcenter, _screencenter);
+                _screencenter = _Proj.LonLat2Screen(_loncenter, _latcenter);
                 _screenradius = iround(_radius * ResMapScaleOverDistanceModify);
 
                 LKSurface::buildCircle(_screencenter, _screenradius, _screenpoints);
@@ -1087,7 +1088,7 @@ void CAirspace_Area::CalcBounds() {
 
 // Calculate screen coordinates for drawing
 
-void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) {
+void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
 
 
     _drawstyle = adsHidden;
@@ -1110,36 +1111,12 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
                 if (!_enabled)
                     _drawstyle = adsDisabled;
 
-                CPoint2DArray::iterator it;
-                /******************************
-                 * ULLI remove unneeded points
-                 ****************************/
-#ifndef LKASP_REMOVE_NEAR_POINTS
+                CPoint2DArray::const_iterator it;
                 _screenpoints.resize(_geopoints.size());
                 POINTList::iterator itr = _screenpoints.begin();
                 for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
-                    MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), *itr);
+                    *itr = _Proj.LonLat2Screen(it->Longitude(), it->Latitude());
                 }
-#else
-                POINT tmpPnt, lastPt = {0, 0};
-                _screenpoints.clear();
-                for (it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-                    MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), tmpPnt);
-
-                    if (_screenpoints.size() == 0) {
-                        _screenpoints.push_back(tmpPnt);
-                        lastPt = tmpPnt;
-                    } else {
-                        if ((abs(lastPt.x - tmpPnt.x) > 5) || (abs(lastPt.y - tmpPnt.y) > 5)) {
-                            _screenpoints.push_back(tmpPnt);
-                            lastPt = tmpPnt;
-                        }
-                    }
-                }
-                /*******************************
-                 * ULLI new code ends here
-                 *******************************/
-#endif
                
 #if DEBUG_NEAR_POINTS
                 StartupStore(_T("... area point geo %i screen %i\n"), _geopoints.size(), _screenpoints.size());
@@ -2392,69 +2369,12 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
 #endif
 }
 
-void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const double &ResMapScaleOverDistanceModify) {
+void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
     CAirspaceList::iterator it;
-    //#define LKASP_CALC_ON_CHANGE_ONLY
-#ifndef LKASP_CALC_ON_CHANGE_ONLY
     ScopeLock guard(_csairspaces);
     for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-        (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, ResMapScaleOverDistanceModify);
+        (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, _Proj, ResMapScaleOverDistanceModify);
     }
-
-#else
-
-    BOOL bChange = false;
-    static double oldDistMod = -1;
-    static rectObj old_screenbounds_latlon;
-    POINT Pt1, Pt2;
-    static POINT oldPt1 = {0, 0};
-    static POINT oldPt2 = {0, 0};
-    static RECT oldrcDraw = {0, 0, 0, 0};
-    MapWindow::LatLon2Screen(old_screenbounds_latlon.maxx, old_screenbounds_latlon.maxy, Pt1);
-    MapWindow::LatLon2Screen(old_screenbounds_latlon.minx, old_screenbounds_latlon.miny, Pt2);
-
-    if (abs(Pt1.x - oldPt1.x) > 2)
-        bChange = true;
-    if (abs(Pt1.y - oldPt1.y) > 2)
-        bChange = true;
-    if (abs(Pt2.x - oldPt2.x) > 2)
-        bChange = true;
-    if (abs(Pt2.y - oldPt2.y) > 2)
-        bChange = true;
-
-    if (oldDistMod != ResMapScaleOverDistanceModify)
-        bChange = true;
-
-    if (oldrcDraw.bottom != rcDraw.bottom)
-        bChange = true;
-    if (oldrcDraw.top != rcDraw.top)
-        bChange = true;
-    if (oldrcDraw.left != rcDraw.left)
-        bChange = true;
-    if (oldrcDraw.right != rcDraw.right)
-        bChange = true;
-
-    if (!bChange) {
-#if DEBUG_NEAR_POINTS
-        //	  StartupStore(_T("... skip CalculateScreenPositionsAirspace\n"));
-#endif
-    } else {
-
-        //#if DEBUG_NEAR_POINTS
-        //StartupStore(_T("... CalculateScreenPositionsAirspace\n"));
-        //#endif
-        oldrcDraw = rcDraw;
-        oldPt1 = Pt1;
-        oldPt2 = Pt2;
-        oldDistMod = ResMapScaleOverDistanceModify;
-        old_screenbounds_latlon = screenbounds_latlon;
-        ScopeLock guard(_csairspaces);
-        for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-            (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, ResMapScaleOverDistanceModify);
-        }
-        //StartupStore(_T("... Ready CalculateScreenPositionsAirspace\n"));
-    }
-#endif
 }
 
 const CAirspaceList& CAirspaceManager::GetNearAirspacesRef() const {

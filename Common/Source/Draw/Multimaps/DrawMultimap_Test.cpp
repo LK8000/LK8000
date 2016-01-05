@@ -13,6 +13,7 @@
 #include "DoInits.h"
 #include "Terrain.h"
 #include "Multimap.h"
+#include "../ScreenProjection.h"
 extern POINT startScreen;
 extern long VKtime;
 
@@ -62,22 +63,22 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
   //zoom.ModifyMapScale();
   //zoom.UpdateMapScale();
 
-  CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
-  CalculateScreenPositionsAirspace(rct);
+  const ScreenProjection _Proj = CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
+  CalculateScreenPositionsAirspace(rct, _Proj);
 
   double sunelevation = 40.0;
   double sunazimuth=GetAzimuth();
   if (IsMultimapTerrain() && DerivedDrawInfo.TerrainValid) {
 	LockTerrainDataGraphics();
-	DrawTerrain(Surface, rct, sunazimuth, sunelevation);
+	DrawTerrain(Surface, rct, _Proj, sunazimuth, sunelevation);
 	UnlockTerrainDataGraphics();
   }
 
   ResetLabelDeclutter();	// This is needed to reset at each run the declutter, for topology and waypoints!
   // SaturateLabelDeclutter();	// Use this to force no labels be printed, from now on.
 
-  DrawTopology(Surface, rct);
-  DrawAirSpace(Surface, rct);
+  DrawTopology(Surface, rct, _Proj);
+  DrawAirSpace(Surface, rct, _Proj);
 
   // ResetLabelDeclutter();	// If you saturated labels for topology, now you can reset the declutter to allow
 				// printing only waypoints, 

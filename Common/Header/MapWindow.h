@@ -208,6 +208,7 @@ typedef struct
 	bool landing;
 } HSIreturnStruct;
 
+class ScreenProjection;
 
 
 class MapWindow {
@@ -467,15 +468,6 @@ class MapWindow {
   static void RequestOnFullScreen();
   static void RequestOffFullScreen();
 
-  static void OrigScreen2LatLon(const int &x, const int &y, 
-                                double &X, double &Y);
-  static void Screen2LatLon(const int &x, const int &y, double &X, double &Y);
-  static void SideviewScreen2LatLon(const int &x, const int &y, double &X, double &Y);
-
-  static void LatLon2Screen(const double &lon, const double &lat, POINT &sc);
-  static int LatLon2Screen(const pointObj *ptin, int nIn, POINT *ptout, int nOut, int skip);
-  static int LatLon2ScreenMultimap(const pointObj *ptin, int nIn, POINT *ptout, int nOut, int skip);
-
   static void Initialize();
   static void CloseDrawingThread(void);
   static void CreateDrawingThread(void);
@@ -500,14 +492,14 @@ class MapWindow {
 
   static void UpdateInfo(NMEA_INFO *nmea_info,
 			 DERIVED_INFO *derived_info);
-  static rectObj CalculateScreenBounds(double scale, const RECT& rc);
+  static rectObj CalculateScreenBounds(double scale, const RECT& rc, const ScreenProjection& _Proj);
   static void ScanVisibility(rectObj *bounds_active);
 
   static int HeightToY(double fHeight,  DiagrammStruct* psDia);
   static int DistanceToX(double fDist,  DiagrammStruct* psDia)  ;
-  static void RenderNearAirspace(LKSurface& Surface, const RECT rci);
-  static int SharedTopView(LKSurface& Surface,   DiagrammStruct* pDia, double iAS_Bearing, double wpt_brg);
-  static void RenderAirspace(LKSurface& Surface, const RECT rc);
+  static void RenderNearAirspace(LKSurface& Surface, const RECT& rci);
+  static int SharedTopView(LKSurface& Surface, DiagrammStruct* pDia, double iAS_Bearing, double wpt_brg);
+  static void RenderAirspace(LKSurface& Surface, const RECT& rc);
   static void DrawVisualGlide (LKSurface& Surface, const DiagrammStruct& sDia);
   static short GetVisualGlidePoints(unsigned short numslots );
   static void LKDrawFlarmRadar(LKSurface& Surface, const RECT& rci);
@@ -531,11 +523,10 @@ class MapWindow {
  private:
   static void DrawAHRS(LKSurface& Surface, const RECT& rc);
   static void DrawCompassRose(LKSurface& Surface, const RECT& rc, double direction);
-  static void CalculateScreenPositions(POINT Orig, RECT rc, 
-                                       POINT *Orig_Aircraft);
-  static void CalculateScreenPositionsGroundline();
-  static void CalculateScreenPositionsAirspace(const RECT& rcDraw);
-  static void CalculateScreenPositionsThermalSources();
+  static ScreenProjection CalculateScreenPositions(const POINT& Orig, const RECT& rc, POINT *Orig_Aircraft);
+  static void CalculateScreenPositionsGroundline(const ScreenProjection& _Proj);
+  static void CalculateScreenPositionsAirspace(const RECT& rcDraw, const ScreenProjection& _Proj);
+  static void CalculateScreenPositionsThermalSources(const ScreenProjection& _Proj);
   static void LKCalculateWaypointReachable(const bool forced);
   
   static bool PointVisible(const POINT &P);
@@ -551,12 +542,12 @@ class MapWindow {
   static void DrawTarget(LKSurface& Surface, const RECT& rc,int ttop,int tbottom,int tleft,int tright);
 
   static void DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const RECT& rc);
-  static void DrawAirSpace(LKSurface& Surface, const RECT& rc);
+  static void DrawAirSpace(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
 #ifdef HAVE_HATCHED_BRUSH
   static void DrawAirSpacePattern(LKSurface& Surface, const RECT& rc);
 #endif
   static void DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc);
-  static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
+  static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
   static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc);
   static void DrawLook8000(LKSurface& Surface, const RECT& rc);
   static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
@@ -606,25 +597,24 @@ class MapWindow {
                         const LKColor& color, DiagrammStruct *psDia,  const TCHAR *pLable=NULL);
 
 
-  static void LKDrawTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
+  static void LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static double LKDrawLongTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
-  static void DrawTeammate(LKSurface& Surface, const RECT& rc);
+  static void DrawTeammate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawOffTrackIndicator(LKSurface& Surface, const RECT& rc);
   static void DrawProjectedTrack(LKSurface& Surface, const RECT& rc, const POINT& Orig);
   static void DrawStartEndSector(LKSurface& Surface, const RECT& rc, 
                                     const POINT &Start, const POINT &End, int Index, 
                                     int Type, double Radius);
-  static void DrawTask(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft);
-  static void DrawTaskSectors(LKSurface& Surface, const RECT& rc ) ;
-  static void DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const POINT &Orig_Aircraft) ;
-  static void DrawThermalEstimate(LKSurface& Surface, const RECT& rc);
-  static void DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& rc);
+  static void DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft);
+  static void DrawTaskSectors(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) ;
+  static void DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft) ;
+  static void DrawThermalEstimate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
+  static void DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawTaskAAT(LKSurface& Surface, const RECT& rc);
-  static void DrawBearing(LKSurface& Surface, const RECT& rc);
-  static void DrawGreatCircle(LKSurface& Surface,
+  static void DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
+  static void DrawGreatCircle(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
                               double lon_start, double lat_start,
-                              double lon_end, double lat_end,
-			      const RECT& rc);
+                              double lon_end, double lat_end);
 protected:
   static void DrawMapScale(LKSurface& Surface, const RECT& rc, const bool ScaleChangeFeedback);
   static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
@@ -635,9 +625,9 @@ private:
   static void DrawMapScale2(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawFinalGlide(LKSurface& Surface, const RECT& rc);
   static void DrawThermalBand(LKSurface& Surface, const RECT& rc);
-  static void DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc);
+  static void DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawTerrainAbove(LKSurface& Surface, const RECT& rc);
-  static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
+  static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
   static void LKDrawVario(LKSurface& Surface, const RECT& rc);
 
 
@@ -713,6 +703,7 @@ private:
   static double GetPanLatitude() { return PanLatitude; }
   static double GetPanLongitude() { return PanLongitude; }
   static double GetInvDrawScale() { return zoom.InvDrawScale(); }
+  static double GetDrawScale() { return zoom.DrawScale(); }
   static double GetDisplayAngle() { return DisplayAngle; }
   static void SetAutoOrientation(bool doreset);
 
@@ -740,13 +731,11 @@ private:
 
 protected:
   static void RenderMapWindow(LKSurface& Surface, const RECT& rc);
-  static void UpdateCaches(bool force=false);
+  static void UpdateCaches(const ScreenProjection& _Proj, bool force=false);
 
 private:  
   static void RenderOverlayGauges(LKSurface& Surface, const RECT& rc);
-  static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc,
-				const POINT &Orig,
-				const POINT &Orig_Aircraft);
+  static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc);
   static double findMapScaleBarSize(const RECT& rc);
 
   #define SCALELISTSIZE  30

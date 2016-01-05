@@ -8,13 +8,12 @@
 
 #include "externs.h"
 #include "Bitmaps.h"
+#include "ScreenProjection.h"
 
-void MapWindow::DrawTeammate(LKSurface& Surface, const RECT& rc) {
-    POINT point;
-
+void MapWindow::DrawTeammate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
     if (TeammateCodeValid) {
         if (PointVisible(TeammateLongitude, TeammateLatitude)) {
-            LatLon2Screen(TeammateLongitude, TeammateLatitude, point);
+            const POINT point = _Proj.LonLat2Screen(TeammateLongitude, TeammateLatitude);
             hBmpTeammatePosition.Draw(Surface, point.x - NIBLSCALE(10), point.y - NIBLSCALE(10), IBLSCALE(20), IBLSCALE(20));
         }
     }

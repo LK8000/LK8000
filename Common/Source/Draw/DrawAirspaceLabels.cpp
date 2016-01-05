@@ -10,8 +10,9 @@
 
 #include "Bitmaps.h"
 #include "RGB.h"
+#include "ScreenProjection.h"
 
-void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft)
+void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft)
 {
   static short int label_sequencing_divider = 0;
   CAirspaceList::const_iterator it;
@@ -24,7 +25,6 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POI
   ScopeLock guard(CAirspaceManager::Instance().MutexRef());
   for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->WarningLevel() > awNone) {
-          POINT sc;
           double lon;
           double lat;
           int vdist;
@@ -38,7 +38,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const POI
           // Horizontal warning point
           if (distances_ready && (hlabeldrawstyle > awsHidden) && PointVisible(lon, lat)) {
 
-              LatLon2Screen(lon, lat, sc);
+              const POINT sc = _Proj.LonLat2Screen(lon, lat);
               hAirspaceWarning.Draw(Surface, sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10));              
               
               Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));

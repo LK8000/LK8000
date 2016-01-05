@@ -22,10 +22,6 @@ extern bool HaveGaugesDrawn(void);
 int	Current_Multimap_SizeY=SIZE1;
 // TopRect is the geometry of topview. Can be 0,0,0,0  if it is off.
 RECT	Current_Multimap_TopRect={0,0,1,1};
-// The view angle  in topview
-double	Current_Multimap_TopAngle=0;
-double	Current_Multimap_TopZoom=1;
-POINT	Current_Multimap_TopOrig={0,0};
 
 
 
