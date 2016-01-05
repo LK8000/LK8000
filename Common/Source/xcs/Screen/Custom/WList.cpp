@@ -49,6 +49,27 @@ WindowList::Contains(const Window &w) const
 }
 
 bool
+WindowList::IsCoveredByChild(const Window &w) const
+{
+  const PixelRect rc{{0,0}, w.GetSize()};
+
+  /* find the last full window which covers all the other windows
+     behind it */
+  for (auto i : list) {
+    Window &child = *i;
+
+    if (child.IsVisible() &&
+        child.GetLeft() <= rc.left &&
+        child.GetRight() >= rc.right &&
+        child.GetTop() <= rc.top &&
+        child.GetBottom() >= rc.bottom)
+      /* this sibling covers the specified window completely */
+      return true;
+  }
+  return false;
+}
+
+bool
 WindowList::IsCovered(const Window &w) const
 {
   const PixelRect rc = w.GetPosition();

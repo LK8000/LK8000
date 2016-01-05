@@ -68,6 +68,12 @@ public:
   bool Contains(const Window &w) const;
 
   /**
+   * Is this window covered by a child?
+   */
+  gcc_pure
+  bool IsCoveredByChild(const Window &w) const;
+  
+  /**
    * Is this window covered by a sibling?
    */
   gcc_pure
