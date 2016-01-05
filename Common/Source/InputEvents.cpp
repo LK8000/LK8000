@@ -2865,6 +2865,36 @@ void InputEvents::eventChangeHGPS(const TCHAR *misc) {
   }
 }
 
+double InputEvents::getIncStep(const TCHAR *misc, double step) {
+static time_t upTime = 0;
+static int upCount = 0;
+static time_t downTime = 0;
+static int downCount = 0;
+
+if (_tcscmp(misc, TEXT("up")) == 0 || (HasKeyboard()&&(_tcscmp(misc, TEXT("kup")) == 0))){
+    step = getIncStep(step, &upTime, &upCount, &downCount);	
+} else if (_tcscmp(misc, TEXT("down")) == 0 || (HasKeyboard()&&(_tcscmp(misc, TEXT("kdown")) == 0))){
+    step = getIncStep(step, &downTime, &downCount, &upCount);
+}
+return step;
+}
+    
+double InputEvents::getIncStep(double step, time_t *myTime, int *count, int *otherCount) {
+
+    *otherCount = 0;
+    if (*myTime >= (time(NULL)-1)) {
+        (*count) ++;
+    } else {
+        *count = 1;
+    }
+    *myTime = time(NULL);
+    if (*count >= 20) {
+        step = step *10;
+    }    
+    
+    return step;
+}
+
 // 10 Kmh
 void InputEvents::eventChangeGS(const TCHAR *misc) {
 double step=0;
@@ -2875,8 +2905,10 @@ double step=0;
   if (Units::GetUserHorizontalSpeedUnit() == unStatuteMilesPerHour)
 	step=0.44704; //@ 1 mph = 1.6kmh
 
-  if (_tcscmp(misc, TEXT("up")) == 0){
-	if (AircraftCategory == (AircraftCategory_t)umParaglider)
+step = getIncStep(misc, step);
+
+if (_tcscmp(misc, TEXT("up")) == 0){
+    if (AircraftCategory == (AircraftCategory_t)umParaglider)
 		GPS_INFO.Speed += step;
 	else
 		GPS_INFO.Speed += step*5;
