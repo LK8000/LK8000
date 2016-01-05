@@ -37,7 +37,6 @@ void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int sc
         // NOT TESTED!
         cropsize = GetWidth();
     }
-    SetDirty();
     StretchTo(cropsize/scale, GetHeight()/scale, Surface , rcDest.left, rcDest.top, cx, cy);
 }
 

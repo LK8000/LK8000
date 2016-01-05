@@ -101,7 +101,7 @@ class TerrainRenderer {
     TerrainRenderer &operator=(const TerrainRenderer &) = delete; // disallowed
 public:
 
-    TerrainRenderer(const RECT& rc) {
+    TerrainRenderer(const RECT& rc) : _dirty(true) {
 
 #if (WINDOWSPC>0) && TESTBENCH
         StartupStore(_T(".... Init TerrainRenderer area (%ld,%ld) (%ld,%ld)\n"), rc.left, rc.top, rc.right, rc.bottom);
@@ -209,8 +209,17 @@ public:
         }
         terrain_ready = false;
     }
+    
+    void SetDirty() {
+        _dirty = true;
+    }
+    
+    bool IsDirty() const {
+        return _dirty;
+    }
 
 private:
+    bool _dirty; // indicate sbuf is up-to-date
 
     unsigned int ixs, iys; // screen dimensions in coarse pixels
     unsigned int dtquant;
@@ -577,11 +586,17 @@ public:
     }
 
     void Draw(LKSurface& Surface, const RECT& rc) {
+        if(_dirty) {
+            sbuf->SetDirty();
+            
 #ifdef USE_TERRAIN_BLUR
-        if (blursize > 0) {
-            sbuf->Blur(blursize);
-        }
+            if (blursize > 0) {
+                sbuf->Blur(blursize);
+            }
 #endif
+        }
+        
+        _dirty = false;
         sbuf->DrawStretch(Surface, rc, oversampling);
     }
 };
@@ -600,6 +615,35 @@ void CloseTerrainRenderer() {
         delete trenderer;
         trenderer = NULL;
     }
+}
+
+/**
+ * @return true if all terrain parameters are same, false if one or more change
+ */
+static bool UpToDate(short TerrainContrast, short TerrainBrightness, short TerrainRamp, short Shading, const ScreenProjection& _Proj) {
+    
+    static short old_TerrainContrast(TerrainContrast);
+    static short old_TerrainBrightness(TerrainBrightness);
+    static short old_TerrainRamp(TerrainRamp);
+    static short old_Shading(Shading);
+    static ScreenProjection old_ScreenProjection(_Proj);
+
+    if(old_TerrainContrast != TerrainContrast 
+            || old_TerrainBrightness != TerrainBrightness
+            || old_TerrainRamp != TerrainRamp            
+            || old_Shading != Shading
+            || old_ScreenProjection != _Proj) {
+        
+        old_TerrainContrast = TerrainContrast;
+        old_TerrainBrightness = TerrainBrightness;
+        old_TerrainRamp = TerrainRamp;
+        old_Shading = Shading;
+        old_ScreenProjection = _Proj;
+               
+        return false;
+    }
+    
+    return true;
 }
 
 void DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
@@ -662,40 +706,43 @@ _redo:
         goto _redo;
     }
 
-    if (!trenderer->SetMap()) {
-        return;
+    if( !UpToDate(TerrainContrast, TerrainBrightness, TerrainRamp, Shading, _Proj) || !trenderer->IsDirty()) {
+        trenderer->SetDirty();
     }
 
-    // load terrain shading parameters
-    // Make them instead dynamically calculated based on previous average terrain illumination
-    tshadow_r = terrain_shadow[TerrainRamp].r;
-    tshadow_g = terrain_shadow[TerrainRamp].g;
-    tshadow_b = terrain_shadow[TerrainRamp].b;
-    tshadow_h = terrain_shadow[TerrainRamp].h;
+    if(trenderer->IsDirty()) {
+        if (!trenderer->SetMap()) {
+            return;
+        }
 
-    thighlight_r = terrain_highlight[TerrainRamp].r;
-    thighlight_g = terrain_highlight[TerrainRamp].g;
-    thighlight_b = terrain_highlight[TerrainRamp].b;
-    thighlight_h = terrain_highlight[TerrainRamp].h;
+        // load terrain shading parameters
+        // Make them instead dynamically calculated based on previous average terrain illumination
+        tshadow_r = terrain_shadow[TerrainRamp].r;
+        tshadow_g = terrain_shadow[TerrainRamp].g;
+        tshadow_b = terrain_shadow[TerrainRamp].b;
+        tshadow_h = terrain_shadow[TerrainRamp].h;
 
-    // step 1: calculate sunlight vector
-    int sx, sy, sz;
-    double fudgeelevation = (10.0 + 80.0 * TerrainBrightness / 255.0);
+        thighlight_r = terrain_highlight[TerrainRamp].r;
+        thighlight_g = terrain_highlight[TerrainRamp].g;
+        thighlight_b = terrain_highlight[TerrainRamp].b;
+        thighlight_h = terrain_highlight[TerrainRamp].h;
 
-    sx = (int) (255 * (fastcosine(fudgeelevation) * fastsine(sunazimuth)));
-    sy = (int) (255 * (fastcosine(fudgeelevation) * fastcosine(sunazimuth)));
-    sz = (int) (255 * fastsine(fudgeelevation));
+        trenderer->SetShading();
+        trenderer->ColorTable();
+        // step 1: fill height buffer
+        trenderer->Height({rc.left, rc.top}, _Proj);
 
-    trenderer->SetShading();
-    trenderer->ColorTable();
-    // step 2: fill height buffer
-
-    trenderer->Height({rc.left, rc.top}, _Proj);
-
-    // step 3: calculate derivatives of height buffer
-    // step 4: calculate illumination and colors
-    trenderer->Slope(sx, sy, sz);
-
+        
+        // step 2: calculate sunlight vector
+        const double fudgeelevation = (10.0 + 80.0 * TerrainBrightness / 255.0);
+        const int sx = (255 * (fastcosine(fudgeelevation) * fastsine(sunazimuth)));
+        const int sy = (255 * (fastcosine(fudgeelevation) * fastcosine(sunazimuth)));
+        const int sz = (255 * fastsine(fudgeelevation));
+        
+        // step 3: calculate derivatives of height buffer
+        // step 4: calculate illumination and colors
+        trenderer->Slope(sx, sy, sz);
+    }
     // step 5: draw
     trenderer->Draw(Surface, rc);
 }
