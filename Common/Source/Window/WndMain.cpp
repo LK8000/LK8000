@@ -265,6 +265,10 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
 
     if (ProgramStarted==psInitDone) {
         ProgramStarted = psFirstDrawDone;
+    } else {
+        if (children.IsCoveredByChild(*this)) {
+            return true;
+        }
     }
     if(ProgramStarted >= psNormalOp && THREADRUNNING) {
         UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
