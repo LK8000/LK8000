@@ -622,7 +622,6 @@ protected:
 
   
 private:  
-  static void DrawMapScale2(LKSurface& Surface, const RECT& rc, const POINT& Orig_Aircraft);
   static void DrawFinalGlide(LKSurface& Surface, const RECT& rc);
   static void DrawThermalBand(LKSurface& Surface, const RECT& rc);
   static void DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
