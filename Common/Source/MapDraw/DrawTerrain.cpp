@@ -33,28 +33,20 @@ uint8_t thighlight_r, thighlight_g, thighlight_b, thighlight_h;
 
 static const COLORRAMP* lastColorRamp = NULL;
 
-void ColorRampLookup(const short h,
+static void ColorRampLookup(const short h,
         uint8_t &r, uint8_t &g, uint8_t &b,
         const COLORRAMP* ramp_colors, const int numramp,
         const unsigned char interp_levels) 
 {
 
-    unsigned short f, of;
-    unsigned short is = 1 << interp_levels;
+    const unsigned short is = 1 << interp_levels;
 
-    // gone past end, so use last color
-    if (h >= ramp_colors[numramp - 1].h) {
-        r = ramp_colors[numramp - 1].r;
-        g = ramp_colors[numramp - 1].g;
-        b = ramp_colors[numramp - 1].b;
-        return;
-    }
-    for (unsigned int i = numramp - 2; i--;) {
+    for (unsigned int i = numramp - 1; i--;) {
         if (h >= ramp_colors[i].h) {
-            f = (unsigned short) (h - ramp_colors[i].h) * is /
-                    (unsigned short) (ramp_colors[i + 1].h - ramp_colors[i].h);
+            const unsigned short f = (unsigned short)(h - ramp_colors[i].h) * is /
+                    (unsigned short)(ramp_colors[i + 1].h - ramp_colors[i].h);
             
-            of = is - f;
+            const unsigned short of = is - f;
 
             r = (f * ramp_colors[i + 1].r + of * ramp_colors[i].r) >> interp_levels;
             g = (f * ramp_colors[i + 1].g + of * ramp_colors[i].g) >> interp_levels;
@@ -63,14 +55,11 @@ void ColorRampLookup(const short h,
         }
     }
 
-    // check if h lower than lowest
-    if (h <= ramp_colors[0].h) {
-        r = ramp_colors[0].r;
-        g = ramp_colors[0].g;
-        b = ramp_colors[0].b;
-        return;
-    }
+    r = ramp_colors[0].r;
+    g = ramp_colors[0].g;
+    b = ramp_colors[0].b;
 }
+
 
 
 #define MIX(x,y,i) (uint8_t)((x*i+y*((1<<7)-i))>>7)
