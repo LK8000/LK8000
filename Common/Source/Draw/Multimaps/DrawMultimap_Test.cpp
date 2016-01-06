@@ -178,6 +178,6 @@ Surface.SelectObject(oldpen);
 
 
 #else 
-void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc) {
+void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc) {
 }
 #endif // NOT TESTBENCH
