@@ -58,8 +58,24 @@ extern short ICOSTABLE[4096];
 #define fastsine(x) SINETABLE[DEG_TO_INT(x)]
 
 
-
+#if defined(__i386__) || defined(__x86_64__)
+  /* x86 FPUs are extremely fast */
+inline
+constexpr unsigned int isqrt4(unsigned long val) {
+  return (unsigned)sqrt((double)val);
+}
+#elif defined( __ARM_FP) 
+inline
+unsigned int isqrt4(unsigned long val) {
+  /* use vfp vsqrt.f32 instruction, 14 cycle !! */
+  float result;
+  const float fval = val;
+  __asm ("vsqrt.f32 %0, %1" : "=w" (result) : "w" (fval) ); 
+  return(result);
+}
+#else
 unsigned int isqrt4(unsigned long val);
+#endif
 
 int  roundupdivision(int a, int b);
 

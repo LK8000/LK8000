@@ -361,18 +361,9 @@ void InitSineTable(void)
     }
 }
 
+#if !defined(__i386__) && !defined(__x86_64__) && !defined( __ARM_FP)
 // http://www.azillionmonkeys.com/qed/sqroot.html
 unsigned int isqrt4(unsigned long val) {
-#if defined(__i386__) || defined(__x86_64__)
-  /* x86 FPUs are extremely fast */ 
-  return (unsigned)sqrt((double)val);
-#elif defined( __ARM_FP) 
-  /* use vfp vsqrt.f32 instruction, 14 cycle !! */
-  float result;
-  const float fval = val;
-  __asm ("vsqrt.f32 %0, %1" : "=w" (result) : "w" (fval) ); 
-  return(result);
-#else
   unsigned int temp, g=0;
 
   if (val >= 0x40000000) {
@@ -407,8 +398,8 @@ unsigned int isqrt4(unsigned long val) {
   temp = g+g+1;
   if (val >= temp) g++;
   return g;
-#endif
 }
+#endif
 
 
 int roundupdivision(int a, int b) {
