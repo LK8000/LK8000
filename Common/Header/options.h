@@ -80,11 +80,11 @@
  #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD 
 				// FOR DEVELOPMENT VERSIONS. CAN BE USED FOR SPECIAL BETAs,
 				// but normally should not be used for public releases.
-
+#ifndef NDEBUG
  #define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
 				// For TESTBENCH and beta versions this should be always ENABLED.
 				// Only in official stable versions it should be disabled.
-
+#endif
 
 
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
