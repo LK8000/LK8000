@@ -655,6 +655,8 @@ _Shutdown:
     KoboExecNickel();
   } else {
 #ifdef NDEBUG
+    /* in case of crash, device will reboot on nickel */
+    lk::filesystem::deleteFile("/mnt/onboard/LK8000/kobo/start_nickel");
     KoboPowerOff();
 #endif
   }

@@ -184,5 +184,8 @@ if [ `dd if=/dev/mmcblk0 bs=8 count=1 skip=64` = "SN-N905B" ]; then
     sleep 1
 fi
 
+# that allow to restart on Nickel in case of crash.
+echo " " > /mnt/onboard/LK8000/kobo/start_nickel
+
 # finally, launch LK8000-KOBO
 exec /opt/LK8000/bin/LK8000-KOBO >> /mnt/onboard/LK8000/error.log 2>&1
