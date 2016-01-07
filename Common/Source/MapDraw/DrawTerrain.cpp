@@ -351,12 +351,6 @@ public:
         LKASSERT(hBuf != NULL);
         LKASSERT(DisplayMap->isMapLoaded());
 
-        unsigned short* myhbuf = hBuf;
-#ifndef NDEBUG
-        const unsigned short* hBufTop = hBuf + ixs*iys;
-#endif
-
-
         const double PanLatitude = MapWindow::GetPanLatitude();
         const double PanLongitude = MapWindow::GetPanLongitude();
         const double InvDrawScale = MapWindow::GetInvDrawScale() / 1024.0;
@@ -374,23 +368,25 @@ public:
             minalt = TERRAIN_INVALID;
         }
 
-        for (int y = Y0; y < Y1; y += dtquant) {
-
+        #pragma omp parallel for shared(minalt)
+        for (unsigned int iy=0; iy < iys; iy++) {
+            const int y = Y0 + (iy*dtquant);
             const double ac1 = PanLatitude - y*ac3;
             const double cc1 = y * ac2;
-
-            for (int x = X0; x < X1; x += dtquant, myhbuf++) {
-                assert(myhbuf < hBufTop);
-
+ 
+            for (unsigned int ix=0; ix < ixs; ix++) {
+                const int x = X0 + (ix*dtquant);
                 const double Y = ac1 - x*ac2;
                 const double X = PanLongitude + (invfastcosine(Y) * ((x * ac3) - cc1));
-
+ 
+                unsigned short& hDst = hBuf[iy*ixs+ix];
                 // this is setting to 0 any negative terrain value and can be a problem for dutch people
                 // myhbuf cannot load negative values!
-                *myhbuf = std::max(DisplayMap->GetField(Y, X),(short)0);
-
-                if (*myhbuf < minalt) {
-                    minalt = *myhbuf;
+                hDst = std::max(DisplayMap->GetField(Y, X),(short)0);
+                
+                #pragma omp critical
+                if (hDst < minalt) {
+                    minalt = hDst;
                 }
             }
         }
@@ -432,16 +428,12 @@ public:
         const unsigned int iysbottom = ciys - iepx;
         const int hscale = max(1, (int) (pixelsize_d));
         const int tc = TerrainContrast;
-        unsigned short *thBuf = hBuf;
 
         const BGRColor* oColorBuf = colorBuf + 64 * 256;
         if (!sbuf->GetBuffer()) return;
 
-        unsigned short h;
-
-        BGRColor* RowBuf = sbuf->GetTopRow();
-
-        for (unsigned int y = 0; y < iys; ++y) {
+        #pragma omp parallel for 
+        for (unsigned int y = 0; y < ciys; ++y) {
             const int itss_y = ciys - 1 - y;
             const int itss_y_ixs = itss_y*cixs;
             const int yixs = y*cixs;
@@ -464,14 +456,18 @@ public:
             }
             p31s = p31*hscale;
 
-            BGRColor* imageBuf = RowBuf;
-            RowBuf = sbuf->GetNextRow(RowBuf);
+            BGRColor* RowBuf = sbuf->GetRow(y);
+            unsigned short *RowthBuf = &hBuf[y*cixs];
 
-            for (unsigned int x = 0; x < cixs; ++x, ++thBuf, ++imageBuf) {
+            for (unsigned int x = 0; x < cixs; ++x) {
 
+                BGRColor* imageBuf = &RowBuf[x];
+                unsigned short *thBuf = &RowthBuf[x];
+
+                unsigned short h = *thBuf;
                 // FIX here Netherland dutch terrain problem
                 // if >=0 then the sea disappears...
-                if ((h = *thBuf) != TERRAIN_INVALID) {
+                if (h != TERRAIN_INVALID) {
                     // if (h==0 && LKWaterThreshold==0) { // no LKM coasts, and water altitude
                     if (h == LKWaterThreshold) { // see above.. h cannot be -1000.. so only when LKW is 0 h can be equal
                         *imageBuf = BGRColor(85, 160, 255); // set water color #55 A0 FF

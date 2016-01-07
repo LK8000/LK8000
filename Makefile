@@ -95,6 +95,7 @@ ifeq ($(TARGET),LINUX)
   CONFIG_LINUX   :=y
   CONFIG_ANDROID :=n
   MINIMAL        :=n
+  OPENMP         :=y
 endif
 
 ifeq ($(TARGET),KOBO)
@@ -111,6 +112,7 @@ ifeq ($(TARGET),PI)
   CONFIG_LINUX   :=y
   CONFIG_ANDROID :=n
   MINIMAL        :=n
+  OPENMP         :=y
 endif
 
 include build/pkgconfig.mk
@@ -516,6 +518,11 @@ CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 ####### linker configuration
 LDLIBS :=
 LDFLAGS :=
+
+ifeq ($(OPENMP),y)
+CXXFLAGS += -fopenmp
+LDFLAGS += -fopenmp
+endif
 
 ifeq ($(TARGET_IS_KOBO),y)
  # use our glibc version and its ld.so on the Kobo, not the one from

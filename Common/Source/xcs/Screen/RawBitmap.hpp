@@ -168,6 +168,17 @@ public:
   }
 
   /**
+   * Returns a pointer to the row 
+   */
+  BGRColor *GetRow(unsigned row) {
+#ifndef USE_GDI
+    return GetTopRow() + corrected_width * row;
+#else
+    return GetTopRow() - corrected_width * row;
+#endif
+  }
+
+  /**
    * Returns real width of the screen buffer. It could be slightly more then
    * requested width. This parameter is important only when you work with
    * points array directly (using GetPointsArray function).
