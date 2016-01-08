@@ -522,12 +522,18 @@ static RasterPoint shape2Screen(const lineObj& line, int iskip, const ScreenProj
   const int last = line.numpoints-1;
   points.clear();
   points.reserve((line.numpoints/iskip)+1);
-  for(int i = 0; i < last; i+=iskip) {
+
+  // first point is insertes before loop fore avoid to check "if(first)" inside loop
+  points.push_back(_Proj.LonLat2Screen(line.point[0]));
+  
+  for(int i = 1; i < last; i+=iskip) {
     const RasterPoint pt = _Proj.LonLat2Screen(line.point[i]);
     if (pt.x<=leftPoint.x) {
       leftPoint = pt;
     }
-    points.push_back(std::move(pt));
+    if(manhattan_distance(pt,points.back()) > 2) {
+        points.push_back(std::move(pt));
+    }
   }
   const RasterPoint pt = _Proj.LonLat2Screen(line.point[last]);
   if (pt.x<=leftPoint.x) {
