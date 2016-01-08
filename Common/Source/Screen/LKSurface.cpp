@@ -576,7 +576,7 @@ void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount, RECT
         if(ClipRect) {
             _pCanvas->DrawClippedText(X, Y, *ClipRect, lpString);
         } else {
-            _pCanvas->DrawText(X, Y, lpString, cbCount);
+            _pCanvas->DrawText(X, Y, lpString);
         }
     }    
 #endif    
