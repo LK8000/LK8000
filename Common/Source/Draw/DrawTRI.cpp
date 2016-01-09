@@ -67,7 +67,8 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   double beta=0.0;
   bool disabled=false;
 
-  if (DoInit[MDI_DRAWTRI]) {
+   if (DoInit[MDI_DRAWTRI]) 
+  {
 
   top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
   Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
@@ -321,10 +322,6 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   if (DoInit[MDI_DRAWTRI])
   {
 
-  top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
-  planesize = radius-NIBLSCALE(10);
-  //planeradius = NIBLSCALE(6);
-  //tailsize = planesize/4+NIBLSCALE(2);
   innerradius = radius - NIBLSCALE(8);
 
   double alpha =0;

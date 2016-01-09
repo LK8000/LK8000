@@ -11,8 +11,30 @@
 #include "Globals.h"
 #include "devPVCOM.h"
 #include "device.h"
+#include "devBase.h"
 
 #ifdef RADIO_ACTIVE    
+
+bool PVCOM_ProcessPEYI(PDeviceDescriptor_t d, const TCHAR *, NMEA_INFO *);
+
+
+void ReplaceNMEAControlChars(TCHAR *String)
+{
+ if(String != NULL)
+ {      
+   for (unsigned int i=0; i< _tcslen(String) ; i++)
+   { 
+       if(String[i] == _T('$')) {
+           String[i]=  _T('§');
+       }
+      
+       if(String[i] == _T('*')) {
+          String[i]=  _T('#');
+       }      
+    }    
+  }
+}
+
 BOOL PVCOMInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("PVCOM"));
@@ -103,20 +125,19 @@ BOOL PVCOMPutSquelch(PDeviceDescriptor_t d, int Squelch) {
       if (d->Com)
       {
         d->Com->WriteString(szTmp);
-       //   DeviceList[NUMDEV];
-        {
-    //      DeviceList[0].Com->WriteString(szTmp);
-     //     DeviceList[1].Com->WriteString(szTmp);
-        }
-    //  devB()>Com->WriteString(szTmp);     
       }
   return(TRUE);
 }
 
 
 
-BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
+BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR Station[]) {
   TCHAR  szTmp[255];
+  TCHAR  StationName[255] =_T("???");;
+  if(Station != NULL)
+     _stprintf(StationName, TEXT("%s"), Station);
+  ReplaceNMEAControlChars(StationName);
+          
   _stprintf(szTmp, TEXT("$PVCOM,S,AF,%7.3f,%s"), Freq,StationName);
   StartupStore(_T(". RADIO Active Station  %7.3f %s%s"), Freq,StationName,NEWLINE);
   PVCOMNMEAddCheckSumStrg(szTmp);
@@ -128,8 +149,13 @@ BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[])
 }
 
 
-BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
+BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR Station[]) {
   TCHAR  szTmp[255];
+  TCHAR  StationName[255] =_T("???");;
+  if(Station != NULL)
+     _stprintf(StationName, TEXT("%s"), Station);
+  ReplaceNMEAControlChars(StationName);
+  
   _stprintf(szTmp, TEXT("$PVCOM,S,PF,%7.3f,%s"), Freq,StationName);
     StartupStore(_T(". RADIO Stanby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
   PVCOMNMEAddCheckSumStrg(szTmp);
@@ -168,6 +194,7 @@ BOOL PVCOMRequestAllData(PDeviceDescriptor_t d) {
 }
 
 
+
 BOOL PVCOMParseString(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *info)
 {
 TCHAR  device[250];
@@ -179,12 +206,18 @@ TCHAR  para2[250];
 
 if (!NMEAParser::NMEAChecksum(String) )
 {
-	  DoStatusMessage(_T("RADIO Checksum Error!") );
-//  return FALSE;
+//	  DoStatusMessage(_T("RADIO Checksum Error!") );
+  return FALSE;
 }
 
 
+
+       
+
 NMEAParser::ExtractParameter(String,device,0);
+    if(_tcsncmp(_T("$PEYI"), device, 5) == 0)
+        return PVCOM_ProcessPEYI(d, String + 6, info);
+
 if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
 {
 
@@ -297,5 +330,94 @@ return  RadioPara.Changed;
 
 
 }
+
+bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
+{
+  TCHAR  temp[80];
+  TCHAR* stop;
+  LKASSERT(value!=NULL);
+
+  NMEAParser::ExtractParameter(sentence, temp, parIdx);
+
+  stop = NULL;
+  *value = StrToDouble(temp, &stop);
+
+  if (stop == NULL || *stop != '\0')
+    return(false);
+
+  return(true);
+} // ParToDouble()
+
+
+
+bool PVCOM_ProcessPEYI(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info)
+{
+  TSpaceInfo data = {0};
+  unsigned fieldIdx = 0;
+  bool status = true;
+  double value;
+  
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.eulerRoll = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.eulerPitch = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.rollRate = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.pitchRate = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.yawRate = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.accelX = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.accelY = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.accelZ = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.virosbandometer = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.trueHeading = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.magneticHeading = value;
+  if(status &= ParToDouble(sentence, fieldIdx++, &value))
+    data.localDeclination = value;
+  
+  if(status) {
+
+    info->GyroscopeAvailable = true;    
+    info->Pitch = data.eulerPitch;
+    info->Roll = data.eulerRoll;
+
+    
+    info->MagneticHeadingAvailable = true;
+    info->MagneticHeading = data.magneticHeading;
+    
+    info->AccelerationAvailable = false; //true;
+    info->AccelX = data.accelX;
+    info->AccelY = data.accelY;
+    info->AccelZ = data.accelZ;
+  }
+  
+#ifdef TEST_TRI_PAGE
+static bool TRI_on = false;
+   if(   CURTYPE == IM_TRI)   {
+       if(     TRI_on == false) DoStatusMessage(_T("TRI_ON"));        
+       TRI_on = true;   }  
+   else   {
+       if(     TRI_on == true) DoStatusMessage(_T("TRI_OFF"));        
+       TRI_on = false;  }  
+#endif
+/***********************************************************
+ * this is a hack, to prevent CPU overload on fast Gyro updates  
+ * should be solved with a own thread in case external 
+ * AHRS will become more common
+ ***********************************************************/
+   if(   CURTYPE == IM_TRI)  /* refresh if TRI is active only */
+   {  
+     TriggerGPSUpdate();
+   }
+  return status;
+}
+
 
 #endif  // RADIO_ACTIVE        
