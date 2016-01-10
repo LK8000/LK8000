@@ -29,8 +29,15 @@ Copyright_License {
 #endif
 
 SubCanvas::SubCanvas(Canvas &canvas, RasterPoint _offset, PixelSize _size)
-  :relative(_offset)
+  : relative(_offset)
 {
+  pen = canvas.pen;
+  brush = canvas.brush;
+  font = canvas.font;
+  text_color = canvas.text_color;
+  background_color = canvas.background_color;
+  background_mode = canvas.background_mode;
+  
   assert(canvas.offset == OpenGL::translate);
   offset = canvas.offset + _offset;
   
