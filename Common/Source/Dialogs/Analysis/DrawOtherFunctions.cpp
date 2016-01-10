@@ -13,15 +13,14 @@ void Statistics::DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text
 			   const double xv, const double yv) {
 
   SIZE tsize;
-  Surface.GetTextSize(text, _tcslen(text), &tsize);
+  Surface.GetTextSize(text, &tsize);
   int x = (int)((xv-x_min)*xscale)+rc.left-tsize.cx/2+BORDER_X;
   int y = (int)((y_max-yv)*yscale)+rc.top-tsize.cy/2;
-//  SetBkMode(hdc, OPAQUE);
   if(INVERTCOLORS)
     Surface.SelectObject(LK_BLACK_PEN);
 
 
-  Surface.DrawText(x, y, text, _tcslen(text));
+  Surface.DrawText(x, y, text);
   Surface.SetBackgroundTransparent();
 }
 
@@ -32,13 +31,13 @@ void Statistics::DrawNoData(LKSurface& Surface, const RECT& rc) {
   TCHAR text[80];
 	// LKTOKEN  _@M470_ = "No data" 
   _stprintf(text,TEXT("%s"), gettext(TEXT("_@M470_")));
-  Surface.GetTextSize(text, _tcslen(text), &tsize);
+  Surface.GetTextSize(text, &tsize);
   int x = (int)(rc.left+rc.right-tsize.cx)/2;
   int y = (int)(rc.top+rc.bottom-tsize.cy)/2;
   #if (WINDOWSPC>0)
   Surface.SetBackgroundOpaque();
   #endif
-  Surface.DrawText(x, y, text, _tcslen(text));
+  Surface.DrawText(x, y, text);
   Surface.SetBackgroundTransparent();
 }
 
@@ -47,13 +46,13 @@ void Statistics::DrawNoData(LKSurface& Surface, const RECT& rc) {
 void Statistics::DrawXLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text) {
   SIZE tsize;
   const auto hfOld = Surface.SelectObject(LK8GenericVar03Font);
-  Surface.GetTextSize(text, _tcslen(text), &tsize);
+  Surface.GetTextSize(text, &tsize);
   int x = rc.right-tsize.cx-IBLSCALE(3);
   int y = rc.bottom-tsize.cy;
   if(INVERTCOLORS)
     Surface.SelectObject(LK_BLACK_PEN);
 
-  Surface.DrawText(x, y, text, _tcslen(text));
+  Surface.DrawText(x, y, text);
   Surface.SelectObject(hfOld);
 }
 
@@ -61,14 +60,14 @@ void Statistics::DrawXLabel(LKSurface& Surface, const RECT& rc, const TCHAR *tex
 void Statistics::DrawYLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text) {
   SIZE tsize;
   const auto hfOld = Surface.SelectObject(LK8GenericVar03Font);
-  Surface.GetTextSize(text, _tcslen(text), &tsize);
+  Surface.GetTextSize(text, &tsize);
   int x = max(2,(int)rc.left-(int)tsize.cx);
   int y = rc.top;
   if(INVERTCOLORS)
     Surface.SelectObject(LK_BLACK_PEN);
 
 
-  Surface.DrawText(x, y, text, _tcslen(text));
+  Surface.DrawText(x, y, text);
   Surface.SelectObject(hfOld);
 }
 

@@ -117,7 +117,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 
 			if (DerivedDrawInfo.FarObstacle_AltArriv <=-50 ||  DerivedDrawInfo.FarObstacle_Dist<5000 ) {
 				_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.FarObstacle_AltArriv);
-				TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
+				TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, &tmode,false); 
 				wrotevalue=true;
 			}
 		} // visible far obstacle
@@ -144,7 +144,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 					// and there is a significant difference in the numbers, then paint value also for nearest
 					if (  fabs(DerivedDrawInfo.ObstacleAltArriv - DerivedDrawInfo.FarObstacle_AltArriv) >100 ) {
 						_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.ObstacleAltArriv);
-						TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
+						TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, &tmode,false); 
 					}
 				}
 			} else {
@@ -156,7 +156,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 				 ((DerivedDrawInfo.ObstacleAltArriv<0) && (DerivedDrawInfo.ObstacleDistance<5000)) ) {
 
 					_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.ObstacleAltArriv);
-					TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
+					TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, &tmode,false); 
 				}
 			}
 #endif

@@ -61,17 +61,17 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 	OldBottomMode=BM_FIRST;
 
 	Surface.SelectObject(LK8BottomBarTitleFont);
-	Surface.GetTextSize(_T("M"), 1, &TextSize);
+	Surface.GetTextSize(_T("M"), &TextSize);
 	int syTitle = TextSize.cy;
 
 	Surface.SelectObject(LK8BottomBarUnitFont);
 	// m for meters unit, f is shorter anyway
-	Surface.GetTextSize(_T("m"), 1, &TextSize); 
+	Surface.GetTextSize(_T("m"), &TextSize); 
 	int sxUnit = TextSize.cx;
 
 	Surface.SelectObject(LK8BottomBarValueFont);
         // we need to be able to print 12345f with no problems
-	Surface.GetTextSize(_T("12345"), 5, &TextSize);
+	Surface.GetTextSize(_T("12345"), &TextSize);
 	int syValue = TextSize.cy;
 	int sxValue = TextSize.cx + NIBLSCALE(2) + (HideUnits ? 0 : sxUnit);
 
@@ -249,7 +249,7 @@ _afterautotrm:
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   SECOND VALUE
@@ -332,7 +332,7 @@ _afterautotrm:
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   THIRD VALUE
@@ -440,7 +440,7 @@ _afterautotrm:
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   FOURTH VALUE
@@ -531,7 +531,7 @@ _afterautotrm:
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   FIFTH VALUE
@@ -648,7 +648,7 @@ _afterautotrm:
       #include "LKMW3include_navbox2.cpp"
   }
 
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   SIXTH VALUE
@@ -723,7 +723,7 @@ _afterautotrm:
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
 
   /*
@@ -795,7 +795,7 @@ _afterautotrm:
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
 
   /*
@@ -864,7 +864,7 @@ _afterautotrm:
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   NINTH VALUE
@@ -884,7 +884,7 @@ _afterautotrm:
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   TENTH VALUE
@@ -904,7 +904,7 @@ _afterautotrm:
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *    CLEAN UP 

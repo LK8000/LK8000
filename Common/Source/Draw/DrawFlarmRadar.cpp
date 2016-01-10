@@ -140,7 +140,7 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 	   FormatTicText(unit_text, xval*unit_step/ticstep, unit_step);
 
 
-	   Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+	   Surface.GetTextSize(unit_text, &tsize);
 	   switch(iTextAling)
 	   {
 	     case TEXT_ABOVE_LEFT    : xoff = -tsize.cx  ; yoff= -tsize.cy  ; break;
@@ -155,11 +155,11 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 	     case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2; yoff= -tsize.cy/2; break;
 	   }
 
-	   Surface.DrawText(xmin+xoff, ymax+yoff, unit_text, _tcslen(unit_text));
+	   Surface.DrawText(xmin+xoff, ymax+yoff, unit_text);
 
 	   if(pLable != NULL)
 		if((xval+ticstep) > x_max)
-		  Surface.DrawText(xmin, ymax+yoff, pLable, _tcslen(pLable));
+		  Surface.DrawText(xmin, ymax+yoff, pLable);
 	}
 
   }
@@ -187,7 +187,7 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
     {
 
        FormatTicText(unit_text, xval*unit_step/ticstep, unit_step);
-       Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+       Surface.GetTextSize(unit_text, &tsize);
 	   switch(iTextAling)
 	   {
 	     case TEXT_ABOVE_LEFT    : xoff = -tsize.cx   ; yoff= -tsize.cy  ; break;
@@ -202,7 +202,7 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 	     case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2 ; yoff= -tsize.cy/2; break;
 	   }
 
-       Surface.DrawText(xmin+xoff, ymax+yoff, unit_text, _tcslen(unit_text));
+       Surface.DrawText(xmin+xoff, ymax+yoff, unit_text);
     }
   }
 }
@@ -251,7 +251,7 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 	  if(pUnit != NULL)
             if(yval+ticstep >y_max)
               _stprintf(unit_text + _tcslen(unit_text), TEXT("%s"), pUnit);
-	  Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+	  Surface.GetTextSize(unit_text, &tsize);
 	  switch(iTextAling)
 	  {
 	    case TEXT_ABOVE_LEFT    : xoff = -tsize.cx  ; yoff= -tsize.cy-2  ; break;
@@ -265,7 +265,7 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 	    case TEXT_MIDDLE_RIGHT  : xoff = 1          ; yoff= -tsize.cy/2-1; break;
 	    case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2; yoff= -tsize.cy/2-1; break;
 	  }
-	  Surface.DrawText(xmin+xoff, ymin+yoff, unit_text, _tcslen(unit_text));
+	  Surface.DrawText(xmin+xoff, ymin+yoff, unit_text);
     }
   }
 
@@ -292,7 +292,7 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
     {
 	  TCHAR unit_text[MAX_PATH];
 	  FormatTicText(unit_text, yval*unit_step/ticstep, unit_step);
-	  Surface.GetTextSize(unit_text, _tcslen(unit_text), &tsize);
+	  Surface.GetTextSize(unit_text, &tsize);
 	  switch(iTextAling)
 	  {
 	    case TEXT_ABOVE_LEFT    : xoff = -tsize.cx  ; yoff= -tsize.cy  ; break;
@@ -306,7 +306,7 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 	    case TEXT_MIDDLE_RIGHT  : xoff = 0          ; yoff= -tsize.cy/2; break;
 	    case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2; yoff= -tsize.cy/2; break;
 	  }
-	  Surface.DrawText(xmin+xoff, ymin+yoff, unit_text, _tcslen(unit_text));
+	  Surface.DrawText(xmin+xoff, ymin+yoff, unit_text);
     }
   }
 
@@ -1077,12 +1077,12 @@ if(SPLITSCREEN_FACTOR >0)
 		     *************************************************************************/
 		   _stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*LKTraffic[i].Average30s);
 
-		    SIZE tsize;
 		    Surface.SetBackgroundTransparent();
-		    Surface.GetTextSize(lbuffer, _tcslen(lbuffer), &tsize);
-		    if (_tcslen(lbuffer)>0)
-			  TextInBox(Surface, &rct, lbuffer,x+tscaler, y+tsize.cy/4, 0, &displaymode, false);
-
+		    if (_tcslen(lbuffer)>0) {
+		      SIZE tsize;
+              Surface.GetTextSize(lbuffer, &tsize);
+			  TextInBox(Surface, &rct, lbuffer,x+tscaler, y+tsize.cy/4, &displaymode, false);
+            }
 			break;
 	      }
 	    /*********************************************
@@ -1255,9 +1255,9 @@ if(bSideview)
 
 	  SIZE tsize;
 	  Surface.SetBackgroundTransparent();
-	  Surface.GetTextSize(lbuffer,  _tcslen(lbuffer), &tsize);
+	  Surface.GetTextSize(lbuffer, &tsize);
 	  if (_tcslen(lbuffer)>0)
-		TextInBox(Surface, &rc, lbuffer, x+tscaler,  hy+tsize.cy/4, 0, &displaymode, false);
+		TextInBox(Surface, &rc, lbuffer, x+tscaler,  hy+tsize.cy/4, &displaymode, false);
 	  /*********************************************
 	   * draw lines to target if target selected
 	   */

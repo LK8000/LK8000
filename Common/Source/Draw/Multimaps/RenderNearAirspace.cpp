@@ -361,12 +361,12 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         LK_tcsncpy(Sideview_szNearAS, near_airspace.Name(), TBSIZE);
     } else {
         _stprintf(text, TEXT("%s"), MsgToken(1259)); // LKTOKEN _@M1259_ "Too far, not calculated"
-        Surface.GetTextSize(text, _tcslen(text), &tsize);
+        Surface.GetTextSize(text, &tsize);
         TxYPt.x = (rc.right - rc.left - tsize.cx) / 2;
         TxYPt.y = (rc.bottom - rc.top) / 2;
 
         Surface.SetBackgroundTransparent();
-        Surface.DrawText(TxYPt.x, TxYPt.y - 20, text, _tcslen(text));
+        Surface.DrawText(TxYPt.x, TxYPt.y - 20, text);
 
         _stprintf(Sideview_szNearAS, TEXT("%s"), text);
 
@@ -449,11 +449,11 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
         LK_tcsncpy(text, MsgToken(1742), TBSIZE - _tcslen(buffer)); // AGL:
         _tcscat(text, buffer);
-        Surface.GetTextSize(text, _tcslen(text), &tsize);
+        Surface.GetTextSize(text, &tsize);
         TxYPt.x = CalcDistanceCoordinat(0, &sDia) - tsize.cx / 2;
         TxYPt.y = CalcHeightCoordinat((calc_terrainalt + calc_altitudeagl)*0.8, &sDia);
         if ((tsize.cy) < (CalcHeightCoordinat(calc_terrainalt, &sDia) - TxYPt.y)) {
-            Surface.DrawText(TxYPt.x + IBLSCALE(1), TxYPt.y, text, _tcslen(text));
+            Surface.DrawText(TxYPt.x + IBLSCALE(1), TxYPt.y, text);
         }
     }
 
@@ -468,11 +468,11 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
         LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer)); // ELV:
         _tcscat(text, buffer);
-        Surface.GetTextSize(text, _tcslen(text), &tsize);
+        Surface.GetTextSize(text, &tsize);
         x = CalcDistanceCoordinat(0, &sDia) - tsize.cx / 2;
         y = CalcHeightCoordinat(calc_terrainalt, &sDia);
         if ((ELV_FACT * tsize.cy) < abs(rc.bottom - y)) {
-            Surface.DrawText(x, rc.bottom - (int) (ELV_FACT * tsize.cy), text, _tcslen(text));
+            Surface.DrawText(x, rc.bottom - (int) (ELV_FACT * tsize.cy), text);
         }
     }
 
@@ -533,7 +533,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
 
         Units::FormatUserDistance(iABS_AS_HorDistance, buffer, 7);
         _stprintf(text, _T(" %s"), buffer);
-        Surface.GetTextSize(text, _tcslen(text), &tsize);
+        Surface.GetTextSize(text, &tsize);
 
         if ((GPSalt - sDia.fYMin /*-calc_terrainalt */) < 300)
             TxXPt.y = CalcHeightCoordinat(GPSalt, &sDia) - tsize.cy;
@@ -545,7 +545,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
             TxXPt.x = CalcDistanceCoordinat(iABS_AS_HorDistance, &sDia) - tsize.cx - NIBLSCALE(3);
         else
             TxXPt.x = CalcDistanceCoordinat(iABS_AS_HorDistance / 2.0, &sDia) - tsize.cx / 2;
-        Surface.DrawText(TxXPt.x, TxXPt.y, text, _tcslen(text));
+        Surface.DrawText(TxXPt.x, TxXPt.y, text);
 
 
 
@@ -560,7 +560,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         Surface.DrawDashLine(THICK_LINE, line[0], line[1], Sideview_TextColor, rc);
         Units::FormatUserAltitude((double) abs(iAS_VertDistance), buffer, 7);
         _stprintf(text, _T(" %s"), buffer);
-        Surface.GetTextSize(text, _tcslen(text), &tsize);
+        Surface.GetTextSize(text, &tsize);
 
         if (bLeft)
             TxYPt.x = CalcDistanceCoordinat(iABS_AS_HorDistance, &sDia) - tsize.cx - NIBLSCALE(3);
@@ -570,7 +570,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
             TxYPt.y = CalcHeightCoordinat(GPSalt - (double) iAS_VertDistance / 2.0, &sDia) - tsize.cy / 2;
         else
             TxYPt.y = min(line[0].y, line[1].y) - tsize.cy;
-        Surface.DrawText(TxYPt.x, TxYPt.y, text, _tcslen(text));
+        Surface.DrawText(TxYPt.x, TxYPt.y, text);
         Surface.SelectObject(hfOldU);
     }
 

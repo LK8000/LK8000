@@ -1783,7 +1783,7 @@ void WndForm::Paint(LKSurface& Surface){
         
         Surface.FillRect(&rcLine, LKBrush_Green);
 
-        Surface.DrawText(mTitleRect.left+NIBLSCALE(2), mTitleRect.top, szCaption, nChar);
+        Surface.DrawText(mTitleRect.left+NIBLSCALE(2), mTitleRect.top, szCaption);
 
         Surface.SelectObject(oldFont);
     } 
@@ -1808,7 +1808,7 @@ void WndForm::SetCaption(const TCHAR *Value) {
         SIZE tsize = {0,0};
         LKWindowSurface Surface(*this);
         const auto oldFont = Surface.SelectObject(mhTitleFont);
-        Surface.GetTextSize(Value, nChar, &tsize);
+        Surface.GetTextSize(Value, &tsize);
         Surface.SelectObject(oldFont);
         
         mTitleRect.bottom = mTitleRect.top + tsize.cy;
@@ -2023,7 +2023,7 @@ void WndButton::Paint(LKSurface& Surface){
 
     if (mLastDrawTextHeight < 0){
 
-      Surface.DrawText(szCaption, nSize, &rc,
+      Surface.DrawText(szCaption, &rc,
           DT_CALCRECT
         | DT_EXPANDTABS
         | DT_CENTER
@@ -2042,7 +2042,7 @@ void WndButton::Paint(LKSurface& Surface){
 
     rc.top += ((GetHeight()-4-mLastDrawTextHeight)/2);
 
-    Surface.DrawText(szCaption, nSize, &rc,
+    Surface.DrawText(szCaption, &rc,
         DT_EXPANDTABS
       | DT_CENTER
       | DT_NOCLIP
@@ -2333,7 +2333,7 @@ void WndProperty::Paint(LKSurface& Surface){
 
   const TCHAR * szCaption = GetWndText();
   const size_t nSize = _tcslen(szCaption);
-  Surface.GetTextSize(szCaption, nSize, &tsize);
+  Surface.GetTextSize(szCaption, &tsize);
   if (nSize==0) {
       tsize.cy=0; //@ 101115 BUGFIX
   }
@@ -2350,7 +2350,7 @@ void WndProperty::Paint(LKSurface& Surface){
 	org.x = 1;
   }
 
-  Surface.DrawText(org.x, org.y, szCaption, nSize);
+  Surface.DrawText(org.x, org.y, szCaption);
 
   // these are button left and right icons for waypoint select, for example
   if (mDialogStyle) // can't but dlgComboPicker here b/c it calls paint when combopicker closes too
@@ -2373,22 +2373,10 @@ void WndProperty::Paint(LKSurface& Surface){
     RECT rcText = mEditRect;
     InflateRect(&rcText, -NIBLSCALE(3), -1);
     
-#ifndef USE_GDI
-    // SubCanvas is used for clipping.
-    SubCanvas ClipCanvas(Surface, rcText.GetOrigin(), rcText.GetSize() );
-    rcText.Offset(-rcText.left, -rcText.top);
-
-    ClipCanvas.Select(*mhValueFont);
-    ClipCanvas.SetTextColor(RGB_BLACK);
-    ClipCanvas.SetBackgroundTransparent();
-
-    ClipCanvas.DrawFormattedText(&rcText, mValue.c_str(), DT_EXPANDTABS|(mMultiLine?DT_WORDBREAK:DT_SINGLELINE|DT_VCENTER));
-#else
     Surface.SelectObject(mhValueFont);
     Surface.SetTextColor(RGB_BLACK);
 
-    Surface.DrawText(mValue.c_str(), mValue.size(), &rcText, DT_EXPANDTABS|(mMultiLine?DT_WORDBREAK:DT_SINGLELINE|DT_VCENTER));
-#endif
+    Surface.DrawText(mValue.c_str(), &rcText, DT_EXPANDTABS|(mMultiLine?DT_WORDBREAK:DT_SINGLELINE|DT_VCENTER));
 
     Surface.SelectObject(oldPen);
     Surface.SelectObject(oldBrush);
@@ -2475,7 +2463,7 @@ void WndFrame::Paint(LKSurface& Surface){
     RECT rc = GetClientRect();
     InflateRect(&rc, -2, -2); // todo border width
 
-    Surface.DrawText(szCaption, nSize, &rc,mCaptionStyle);
+    Surface.DrawText(szCaption,&rc,mCaptionStyle);
 
     mLastDrawTextHeight = rc.bottom - rc.top;
 

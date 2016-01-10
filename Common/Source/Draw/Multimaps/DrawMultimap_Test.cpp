@@ -88,7 +88,7 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
   const auto oldpen = Surface.SelectObject(LKPen_White_N1);
   const auto oldbrush = Surface.SelectObject(LKBrush_LightGrey);
 
-  LKWriteBoxedText(Surface, rct, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
+  LKWriteBoxedText(Surface, rct, _T("MULTIMAP PAGE EXAMPLE"), 1, 1, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
 
 
   TCHAR ttext[100];
@@ -153,14 +153,14 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
 		break;
   }
 
-  LKWriteBoxedText(Surface, rct, ttext, 1, 50 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
+  LKWriteBoxedText(Surface, rct, ttext, 1, 50 , WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
 
   //
   // Be sure to check that an EVENT was generated, otherwise you are checking even bottombar key presses.
   //
   if (LKevent!=LKEVENT_NONE) {
 	_stprintf(ttext,_T("Last coords: X=%d Y=%d  , duration=%ld ms"),X,Y,VKtime);
-	LKWriteBoxedText(Surface, rct, ttext, 1, 100 , 0, WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
+	LKWriteBoxedText(Surface, rct, ttext, 1, 100 , WTALIGN_LEFT, RGB_BLACK, RGB_WHITE);
   }
 
 

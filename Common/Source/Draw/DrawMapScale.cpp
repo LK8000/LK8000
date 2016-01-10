@@ -84,7 +84,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
         
         SIZE tsize;
         Surface.SelectObject(MapScaleFont);
-        Surface.GetTextSize(_T("M"),1,&tsize);
+        Surface.GetTextSize(_T("M"),&tsize);
         int ofs=(MAPSCALE_VSIZE - (tsize.cy + tsize.cy))/2;
         ytext=ScaleLine[0].y+ofs;
 
@@ -263,20 +263,20 @@ _skip2:
     const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
     const auto oldBrush = Surface.SelectObject(LKBrush_Black);
 
-    Surface.GetTextSize(Scale, _tcslen(Scale), &tsize);
+    Surface.GetTextSize(Scale, &tsize);
 
     LKColor mapscalecolor = OverColorRef;
     if (OverColorRef==RGB_SBLACK) mapscalecolor=RGB_WHITE;
 
-    LKWriteText(Surface, Scale, rc.right-NIBLSCALE(7)-tsize.cx, ytext, 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+    LKWriteText(Surface, Scale, rc.right-NIBLSCALE(7)-tsize.cx, ytext, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
 
-    Surface.GetTextSize(Scale2, _tcslen(Scale2), &tsize);
+    Surface.GetTextSize(Scale2, &tsize);
 
     if (!DerivedDrawInfo.TerrainValid) {
 	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
     }
 
-    LKWriteText(Surface, Scale2, rc.right-NIBLSCALE(7)-tsize.cx, ytext+tsize.cy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+    LKWriteText(Surface, Scale2, rc.right-NIBLSCALE(7)-tsize.cx, ytext+tsize.cy, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
 
     Surface.SelectObject(oldPen);
     Surface.SelectObject(oldBrush);

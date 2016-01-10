@@ -88,10 +88,10 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
     SIZE textSizeTop, textSizeBot;
     Surface.SelectObject(line1Font);
     _stprintf(tmpT, _T("MMMM"));
-    Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSizeTop);
+    Surface.GetTextSize(tmpT, &textSizeTop);
     Surface.SelectObject(line2Font);
     _stprintf(tmpT, _T("55.5%s 79%s%s "), Units::GetDistanceName(), MsgToken(2179), MsgToken(2183));
-    Surface.GetTextSize(tmpT, _tcslen(tmpT), &textSizeBot);
+    Surface.GetTextSize(tmpT, &textSizeBot);
 
     // we can cut the waypoint name, but not the value data, so we use the second row of data
     // to size the box for everything.
@@ -487,21 +487,8 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     Sideview_VGBox_Number++;
 
     Surface.SelectObject(line1Font);
-    unsigned int tlen = _tcslen(wText1);
-    Surface.GetTextSize(wText1, tlen, &tsize);
+    Surface.GetTextSize(wText1, &tsize);
     int line1fontYsize = tsize.cy;
-
-    // Fit as many characters in the available boxed space
-    if (tsize.cx > maxtSizeX) {
-        LKASSERT(tlen > 0);
-        for (short t = tlen - 1; t > 0; t--) {
-            Surface.GetTextSize(wText1, t, &tsize);
-            if (tsize.cx <= maxtSizeX) {
-                tlen = t;
-                break;
-            }
-        }
-    }
 
     short vy = y + (boxSizeY / 2);
     Surface.SelectObject(bbrush);
@@ -516,13 +503,16 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     Sideview_VGBox[nslot].bottom = vy;
     Sideview_VGBox[nslot].right = x + (boxSizeX / 2);
 
+    PixelRect ClipRect(Sideview_VGBox[nslot]);
+    ClipRect.Grow(-1*NIBLSCALE(2), 0); // text padding
+    
     // 
     // LINE 1
     // 
-    tx = x - (tsize.cx / 2);
+    tx = max(ClipRect.left, x - (tsize.cx / 2));
     ty = y - (vy - y);
-
-    Surface.DrawText(tx, ty, wText1, tlen);
+    
+    Surface.DrawText(tx, ty, wText1, &ClipRect);
 
     if (numlines == 1) goto _end;
 #if BUGSTOP
@@ -535,11 +525,10 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     // 
     Surface.SetTextColor(RGB_BLACK);
     Surface.SelectObject(line2Font);
-    tlen = _tcslen(wText2);
-    Surface.GetTextSize(wText2, tlen, &tsize);
+    Surface.GetTextSize(wText2, &tsize);
     tx = x - (tsize.cx / 2);
     ty += line1fontYsize - NIBLSCALE(2);
-    Surface.DrawText(tx, ty, wText2, tlen);
+    Surface.DrawText(tx, ty, wText2);
 
     if (numlines == 2) goto _end;
 #if BUGSTOP
@@ -551,11 +540,10 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     // LINE 3
     //
     Surface.SetTextColor(RGB_BLACK);
-    tlen = _tcslen(wText3);
-    Surface.GetTextSize(wText3, tlen, &tsize);
+    Surface.GetTextSize(wText3, &tsize);
     tx = x - (tsize.cx / 2);
     ty += tsize.cy - NIBLSCALE(2);
-    Surface.DrawText(tx, ty, wText3, tlen);
+    Surface.DrawText(tx, ty, wText3);
 
 _end:
     Surface.SetTextColor(oldTextColor);

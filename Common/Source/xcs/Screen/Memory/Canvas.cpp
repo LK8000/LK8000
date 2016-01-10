@@ -290,7 +290,7 @@ Canvas::DrawClippedText(int x, int y, unsigned max_width, const TCHAR *text)
   const TCHAR *clipped_text = text;
   unsigned width = Canvas::CalcTextWidth(text);
   if (width > max_width) {
-    // that wrong, does not handle multibyte char.
+    #warning "that wrong, does not handle multibyte char."
     unsigned new_size;
     fixed target_percent = fixed(max_width) / fixed(width);
     new_size = fixed(StringLength(text)) * target_percent;

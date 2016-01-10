@@ -100,10 +100,10 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         Surface.SelectObject(bigFont);
 
         // We want an average size of an alphabet letter and number
-        Surface.GetTextSize(_T("ALPHAROMEO"), 10, &InfoTextSize);
+        Surface.GetTextSize(_T("ALPHAROMEO"), &InfoTextSize);
         InfoTextSize.cx /= 10;
 
-        Surface.GetTextSize(_T("0123456789"), 10, &InfoNumberSize);
+        Surface.GetTextSize(_T("0123456789"), &InfoNumberSize);
         InfoNumberSize.cx /= 10;
 
         //
@@ -112,16 +112,16 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
 #define LKASP_TYPE_LEN  4
         _stprintf(Buffer, TEXT("CTRA")); // ASP TYPE
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K1TextSize[MSM_AIRSPACES]);
+        Surface.GetTextSize(Buffer, &K1TextSize[MSM_AIRSPACES]);
 
         // Flags can be SFE, three chars
         _stprintf(Buffer, TEXT("SFE"));
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K4TextSize[MSM_AIRSPACES]);
+        Surface.GetTextSize(Buffer, &K4TextSize[MSM_AIRSPACES]);
 
         // Thermal average
         _stprintf(Buffer, TEXT("+55.5"));
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K3TextSize[MSM_THERMALS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K3TextSize[MSM_TRAFFIC]);
+        Surface.GetTextSize(Buffer, &K3TextSize[MSM_THERMALS]);
+        Surface.GetTextSize(Buffer, &K3TextSize[MSM_TRAFFIC]);
 
         //
         // COMMON TYPES (Distance, Bearing, Altitude Diff,  Efficiency)
@@ -134,37 +134,38 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             _tcscat(Buffer, _T(" "));
             _tcscat(Buffer, Units::GetDistanceName());
         }
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K1TextSize[MSM_LANDABLE]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K1TextSize[MSM_AIRPORTS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K1TextSize[MSM_NEARTPS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K1TextSize[MSM_COMMON]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K1TextSize[MSM_RECENT]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K2TextSize[MSM_AIRSPACES]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K1TextSize[MSM_THERMALS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K1TextSize[MSM_TRAFFIC]);
+#warning "to much call with same input"
+        Surface.GetTextSize(Buffer, &K1TextSize[MSM_LANDABLE]);
+        Surface.GetTextSize(Buffer, &K1TextSize[MSM_AIRPORTS]);
+        Surface.GetTextSize(Buffer, &K1TextSize[MSM_NEARTPS]);
+        Surface.GetTextSize(Buffer, &K1TextSize[MSM_COMMON]);
+        Surface.GetTextSize(Buffer, &K1TextSize[MSM_RECENT]);
+        Surface.GetTextSize(Buffer, &K2TextSize[MSM_AIRSPACES]);
+        Surface.GetTextSize(Buffer, &K1TextSize[MSM_THERMALS]);
+        Surface.GetTextSize(Buffer, &K1TextSize[MSM_TRAFFIC]);
 
 
         // BEARING
         //
         _stprintf(Buffer, TEXT("<325"));
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K2TextSize[MSM_LANDABLE]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K2TextSize[MSM_AIRPORTS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K2TextSize[MSM_NEARTPS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K2TextSize[MSM_COMMON]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K2TextSize[MSM_RECENT]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K3TextSize[MSM_AIRSPACES]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K2TextSize[MSM_THERMALS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K2TextSize[MSM_TRAFFIC]);
+        Surface.GetTextSize(Buffer, &K2TextSize[MSM_LANDABLE]);
+        Surface.GetTextSize(Buffer, &K2TextSize[MSM_AIRPORTS]);
+        Surface.GetTextSize(Buffer, &K2TextSize[MSM_NEARTPS]);
+        Surface.GetTextSize(Buffer, &K2TextSize[MSM_COMMON]);
+        Surface.GetTextSize(Buffer, &K2TextSize[MSM_RECENT]);
+        Surface.GetTextSize(Buffer, &K3TextSize[MSM_AIRSPACES]);
+        Surface.GetTextSize(Buffer, &K2TextSize[MSM_THERMALS]);
+        Surface.GetTextSize(Buffer, &K2TextSize[MSM_TRAFFIC]);
 
 
         // REQUIRED EFFICIENCY (max 200)
         //
         _stprintf(Buffer, TEXT("255"));
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K3TextSize[MSM_LANDABLE]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K3TextSize[MSM_AIRPORTS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K3TextSize[MSM_NEARTPS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K3TextSize[MSM_COMMON]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K3TextSize[MSM_RECENT]);
+        Surface.GetTextSize(Buffer, &K3TextSize[MSM_LANDABLE]);
+        Surface.GetTextSize(Buffer, &K3TextSize[MSM_AIRPORTS]);
+        Surface.GetTextSize(Buffer, &K3TextSize[MSM_NEARTPS]);
+        Surface.GetTextSize(Buffer, &K3TextSize[MSM_COMMON]);
+        Surface.GetTextSize(Buffer, &K3TextSize[MSM_RECENT]);
 
 
         // REQUIRED ALTITUDE DIFFERENCE
@@ -177,18 +178,18 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             _tcscat(Buffer, _T(" "));
             _tcscat(Buffer, Units::GetAltitudeName());
         }
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K4TextSize[MSM_LANDABLE]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K4TextSize[MSM_AIRPORTS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K4TextSize[MSM_NEARTPS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K4TextSize[MSM_COMMON]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K4TextSize[MSM_RECENT]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K4TextSize[MSM_THERMALS]);
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &K4TextSize[MSM_TRAFFIC]); // we dont use +-
+        Surface.GetTextSize(Buffer, &K4TextSize[MSM_LANDABLE]);
+        Surface.GetTextSize(Buffer, &K4TextSize[MSM_AIRPORTS]);
+        Surface.GetTextSize(Buffer, &K4TextSize[MSM_NEARTPS]);
+        Surface.GetTextSize(Buffer, &K4TextSize[MSM_COMMON]);
+        Surface.GetTextSize(Buffer, &K4TextSize[MSM_RECENT]);
+        Surface.GetTextSize(Buffer, &K4TextSize[MSM_THERMALS]);
+        Surface.GetTextSize(Buffer, &K4TextSize[MSM_TRAFFIC]); // we dont use +-
 
 
         Surface.SelectObject(LK8PanelMediumFont);
         _stprintf(Buffer, TEXT("4.4"));
-        Surface.GetTextSize(Buffer, _tcslen(Buffer), &phdrTextSize);
+        Surface.GetTextSize(Buffer, &phdrTextSize);
 
         // Col0 is where APTS 1/3 can be written, after ModeIndex:Curtype
         Column0[MSM_LANDABLE] = rc.left + phdrTextSize.cx + LEFTLIMITER + NIBLSCALE(5);
@@ -337,7 +338,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         // Vertical alignement
 
         Surface.SelectObject(LK8InfoNearestFont);
-        Surface.GetTextSize(_T("M"), 1, &phdrTextSize);
+        Surface.GetTextSize(_T("M"), &phdrTextSize);
 
         TopSize = rc.top + HEADRAW * 2 + phdrTextSize.cy;
         p1.x = rc.left;
@@ -378,9 +379,9 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         //
         Surface.SelectObject(LK8InfoNearestFont);
         if (ScreenLandscape)
-            Surface.GetTextSize(_T("MMMM 3/3"), 8, &phdrTextSize);
+            Surface.GetTextSize(_T("MMMM 3/3"), &phdrTextSize);
         else
-            Surface.GetTextSize(_T("MMM 3/3"), 7, &phdrTextSize);
+            Surface.GetTextSize(_T("MMM 3/3"), &phdrTextSize);
 
         s_sortBox[0].left = Column0[MSM_LANDABLE] - NIBLSCALE(1);
         s_sortBox[0].right = Column0[MSM_LANDABLE] + phdrTextSize.cx;
@@ -731,7 +732,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     //
     Surface.SelectObject(LK8PanelMediumFont);
     _stprintf(Buffer, TEXT("%d.%d"), ModeIndex, CURTYPE + 1);
-    LKWriteText(Surface, Buffer, rc.left + LEFTLIMITER, rc.top + TOPLIMITER, 0, WTMODE_NORMAL, WTALIGN_LEFT,
+    LKWriteText(Surface, Buffer, rc.left + LEFTLIMITER, rc.top + TOPLIMITER, WTMODE_NORMAL, WTALIGN_LEFT,
 #ifndef UNDITHER
             RGB_LIGHTGREEN, false);
 #else
@@ -748,24 +749,24 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 #else
     tmpcolor = cursortbox == 0 ? RGB_BLACK : RGB_WHITE;
 #endif
-    LKWriteText(Surface, Buffer, Column0[curmapspace], rc.top + HEADRAW - NIBLSCALE(1), 0, WTMODE_NORMAL, WTALIGN_LEFT, tmpcolor, false);
+    LKWriteText(Surface, Buffer, Column0[curmapspace], rc.top + HEADRAW - NIBLSCALE(1), WTMODE_NORMAL, WTALIGN_LEFT, tmpcolor, false);
     if (cursortbox == 99) cursortbox = 0;
 
     _tcscpy(Buffer, MsgToken(headertoken[1]));
     tmpcolor = cursortbox == 1 ? RGB_BLACK : RGB_WHITE;
-    LKWriteText(Surface, Buffer, hColumn2, rc.top + HEADRAW, 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+    LKWriteText(Surface, Buffer, hColumn2, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
     _tcscpy(Buffer, MsgToken(headertoken[2]));
     tmpcolor = cursortbox == 2 ? RGB_BLACK : RGB_WHITE;
-    LKWriteText(Surface, Buffer, hColumn3, rc.top + HEADRAW, 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+    LKWriteText(Surface, Buffer, hColumn3, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
     _tcscpy(Buffer, MsgToken(headertoken[3]));
     tmpcolor = cursortbox == 3 ? RGB_BLACK : RGB_WHITE;
-    LKWriteText(Surface, Buffer, hColumn4, rc.top + HEADRAW, 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+    LKWriteText(Surface, Buffer, hColumn4, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
     _tcscpy(Buffer, MsgToken(headertoken[4]));
     tmpcolor = cursortbox == 4 ? RGB_BLACK : RGB_WHITE;
-    LKWriteText(Surface, Buffer, hColumn5, rc.top + HEADRAW, 0, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+    LKWriteText(Surface, Buffer, hColumn5, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
     Surface.SelectObject(bigFont); // Text font for Nearest
 
@@ -1210,18 +1211,18 @@ _KeepOldAirspacesValues:
         } // MSMTRAFFIC
 
         if (!usetwolines) {
-            LKWriteText(Surface, Buffer1[i][curpage], Column1[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
-            LKWriteText(Surface, Buffer2[i][curpage], Column2[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-            LKWriteText(Surface, Buffer3[i][curpage], Column3[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-            LKWriteText(Surface, Buffer4[i][curpage], Column4[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-            LKWriteText(Surface, Buffer5[i][curpage], Column5[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface, Buffer1[i][curpage], Column1[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+            LKWriteText(Surface, Buffer2[i][curpage], Column2[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface, Buffer3[i][curpage], Column3[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface, Buffer4[i][curpage], Column4[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface, Buffer5[i][curpage], Column5[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
         } else {
-            LKWriteText(Surface, Buffer1[i][curpage], Column1[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
-            LKWriteText(Surface, Buffer2[i][curpage], Column5[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface, Buffer1[i][curpage], Column1[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+            LKWriteText(Surface, Buffer2[i][curpage], Column5[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
             iRaw += s_rawspace;
-            LKWriteText(Surface, Buffer3[i][curpage], Column2[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-            LKWriteText(Surface, Buffer4[i][curpage], Column3[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
-            LKWriteText(Surface, Buffer5[i][curpage], Column4[curmapspace], iRaw, 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface, Buffer3[i][curpage], Column2[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface, Buffer4[i][curpage], Column3[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+            LKWriteText(Surface, Buffer5[i][curpage], Column4[curmapspace], iRaw, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
         }
 
     } // for loop

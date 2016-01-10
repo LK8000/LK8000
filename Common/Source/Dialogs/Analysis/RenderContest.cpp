@@ -348,13 +348,13 @@ ResetScale();
 		  SIZE tsize;
 		  fTotalPercent -= fDist/result.Distance();
 		  _stprintf(text, TEXT("%3.1f%%"), (fDist/result.Distance()*100.0));
-		  Surface.GetTextSize(text, _tcslen(text), &tsize);
+		  Surface.GetTextSize(text, &tsize);
                   #ifndef UNDITHER
 		  Surface.SetTextColor(RGB_BLUE);
                   #else
 		  Surface.SetTextColor(RGB_BLACK);
                   #endif
-	      Surface.DrawText(ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), text, _tcslen(text));
+	      Surface.DrawText(ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), text);
 	    }
 	#endif
 
@@ -394,13 +394,13 @@ ResetScale();
 	    TCHAR text[180];
 	    SIZE tsize;
 	    _stprintf(text, TEXT("%3.1f%%"), (fTotalPercent*100.0));
-	    Surface.GetTextSize(text, _tcslen(text), &tsize);
+	    Surface.GetTextSize(text, &tsize);
             #ifndef UNDITHER
 	    Surface.SetTextColor(RGB_LIGHTBLUE);
             #else
 	    Surface.SetTextColor(RGB_RED);
             #endif
-	    Surface.DrawText(ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), text, _tcslen(text));
+	    Surface.DrawText(ScaleX(rc, x1 +( x2-x1)/2)-tsize.cx/2,   ScaleY(rc,y1 + (y2-y1)/2), text);
 #endif
 
 	    lat0 = CContestMgr::Instance().GetClosingPoint().Latitude();

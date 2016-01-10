@@ -242,7 +242,7 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   else
 	_tcscpy(Buffer, TEXT("--"));
 
-  LKWriteText(Surface, Buffer, Start.x , bankindy, 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
+  LKWriteText(Surface, Buffer, Start.x , bankindy, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
 
 //  MapDirty = true;
 //  if (!disabled) MapWindow::RefreshMap();
@@ -611,7 +611,7 @@ double vscale = 0.25;
   else
 	_tcscpy(Buffer, TEXT("--"));
 
-  LKWriteText(Surface, Buffer, Start.x , bankindy, 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
+  LKWriteText(Surface, Buffer, Start.x , bankindy, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
 
 //  MapDirty = true;
 //  if (!disabled) MapWindow::RefreshMap();

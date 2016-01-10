@@ -44,7 +44,7 @@ static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
       LKASSERT(DrawListIndex>=0);
       const TCHAR* szText = aTextLine[DrawListIndex];
       Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawText(2*ScreenScale, 2*ScreenScale, szText, _tcslen(szText));
+      Surface.DrawText(2*ScreenScale, 2*ScreenScale, szText);
   }
 }
 

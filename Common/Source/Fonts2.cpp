@@ -654,13 +654,12 @@ void Init_Fonts_2(void)
   LKWindowSurface windowSurface;
   LKBitmapSurface tmpSurface;
   tmpSurface.Create(windowSurface, 1, 1);
-  SIZE TextSize = {0,0};
+
   const auto oldFont = tmpSurface.SelectObject(LK8BottomBarTitleFont);
-  tmpSurface.GetTextSize(_T("M"), 1, &TextSize);
-  int syTitle = TextSize.cy;
+  const int syTitle = tmpSurface.GetTextHeight(_T("M"));;
+
   tmpSurface.SelectObject(LK8BottomBarValueFont);
-  tmpSurface.GetTextSize(_T("5"), 1, &TextSize);
-  int syValue = TextSize.cy;
+  const int syValue = tmpSurface.GetTextHeight(_T("5"));;
 
   if (ScreenLandscape)
       BottomSize = syValue + syTitle;

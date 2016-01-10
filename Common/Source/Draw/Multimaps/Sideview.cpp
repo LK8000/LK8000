@@ -123,8 +123,8 @@ void DrawWindRoseDirection(LKSurface& Surface, double fAngle, int x, int y) {
     else
         Surface.SetTextColor(RGB_WHITE);
 
-    Surface.GetTextSize(text, _tcslen(text), &tsize);
-    Surface.DrawText(x - tsize.cx / 2, y - tsize.cy / 2, text, _tcslen(text));
+    Surface.GetTextSize(text, &tsize);
+    Surface.DrawText(x - tsize.cx / 2, y - tsize.cy / 2, text);
 
     return;
 }
