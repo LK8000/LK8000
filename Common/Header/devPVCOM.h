@@ -2,6 +2,37 @@
 #define DEV_PVCOM_H
 
 
+struct TAtmosphericInfo {
+  double pStatic;
+  double pTotal;
+  double pAlt;
+  double qnh;
+  double windDirection;
+  double windSpeed;
+  double tas;
+  double vzp;
+  double oat;
+  double humidity;
+  double cloudBase;
+  double cloudTemp;
+  double groundTemp;
+};
+
+struct TSpaceInfo {
+  double eulerRoll;
+  double eulerPitch;
+  double rollRate;
+  double pitchRate;
+  double yawRate;
+  double accelX;
+  double accelY;
+  double accelZ;
+  double virosbandometer;
+  double trueHeading;
+  double magneticHeading;
+  double localDeclination;
+};
+
 BOOL PVCOMRegister(void);
 
 int PVCOMNMEAddCheckSumStrg( TCHAR szStrg[] );
