@@ -465,7 +465,7 @@ int iCnt = 0;
     else
       _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
     bFirstUnit = false;
-    Surface.GetTextSize(text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, &tsize);
     #ifndef UNDITHER
     Surface.SetTextColor(RGB_GREY);
     #else
@@ -524,7 +524,7 @@ int iCnt = 0;
 
       if(j==0)
       {
-        Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
+        Surface.DrawText(line[0].x, line[0].y, text);
         j=1;
 
       }

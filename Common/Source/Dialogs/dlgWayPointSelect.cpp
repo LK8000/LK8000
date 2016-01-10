@@ -705,17 +705,17 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         // Draw Distance : right justified after waypoint Name
         _stprintf(sTmp, TEXT("%.0f%s"), WayPointSelectInfo[i].Distance, Units::GetDistanceName());
         const int x2 = width - w3 - Surface.GetTextWidth(sTmp);
-        Surface.DrawText(x2, TextPos, sTmp, _tcslen(sTmp));
+        Surface.DrawText(x2, TextPos, sTmp);
 
         // Draw Bearing right justified after distance
         _stprintf(sTmp, TEXT("%d%s"), iround(WayPointSelectInfo[i].Direction), gettext(_T("_@M2179_")));
         const int x3 = width - Surface.GetTextWidth(sTmp);
-        Surface.DrawText(x3, TextPos, sTmp, _tcslen(sTmp));
+        Surface.DrawText(x3, TextPos, sTmp);
     } else {
         if (DrawListIndex == 0) {
             // LKTOKEN  _@M466_ = "No Match!" 
             _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
-            Surface.DrawText(IBLSCALE(2), TextPos, sTmp, _tcslen(sTmp));
+            Surface.DrawText(IBLSCALE(2), TextPos, sTmp);
         }
     }
 }

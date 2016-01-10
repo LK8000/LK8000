@@ -72,10 +72,10 @@ void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, cons
     }
     Surface.SetBackgroundTransparent();
     SIZE tsize;
-    Surface.GetTextSize(text, _tcslen(text), &tsize);
+    Surface.GetTextSize(text, &tsize);
     const int y = tsize.cy * (line - 1) + (tsize.cy / 2);
 
-    MapWindow::LKWriteText(Surface, text, ScreenSizeX / 2, y, 0, wtmode, WTALIGN_CENTER, rgbcolor, false);
+    MapWindow::LKWriteText(Surface, text, ScreenSizeX / 2, y, wtmode, WTALIGN_CENTER, rgbcolor, false);
     Surface.SelectObject(oldfont);
 }
 

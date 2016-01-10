@@ -117,7 +117,7 @@ void Message::Resize() {
                                               ? LK8InfoBigFont
                                               : MapWindowBoldFont);
 
-    Surface.GetTextSize(msgText.c_str(), size, &tsize);
+    Surface.GetTextSize(msgText.c_str(), &tsize);
 
     Surface.SelectObject(oldfont); // 100215
 

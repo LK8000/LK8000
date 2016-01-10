@@ -82,7 +82,7 @@ void MapWindow::DrawLKAlarms(LKSurface& Surface, const RECT& rc) {
 	TextInBoxMode.Border = 1;
 
 	// same position for gps warnings: if navwarning, then no alarms. So no overlapping.
-        TextInBox(Surface, &rc, textalarm , (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode);
+        TextInBox(Surface, &rc, textalarm , (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 
 	Surface.SelectObject(oldfont);
   }

@@ -20,17 +20,17 @@
 ////////////////////////////////////////////////////////////////////////////////////
 void drawOutlineText(LKSurface& Surface,int x,int y,const TCHAR * textBuffer, const LKColor& color )
 {
-	size_t len = _tcslen(textBuffer);
-
-
+#ifdef USE_FREETYPE
+#warning "to slow, rewrite using freetype outline"
+#endif
 	Surface.SetTextColor(RGB_BLACK);
-	Surface.DrawText(x -1, y -1, textBuffer , len);
-	Surface.DrawText(x +1, y +1, textBuffer , len);
-	Surface.DrawText(x -1, y   , textBuffer , len);
-	Surface.DrawText(x   , y +1, textBuffer , len);
+	Surface.DrawText(x -1, y -1, textBuffer);
+	Surface.DrawText(x +1, y +1, textBuffer);
+	Surface.DrawText(x -1, y   , textBuffer);
+	Surface.DrawText(x   , y +1, textBuffer);
 
 	Surface.SetTextColor(color);
-	Surface.DrawText(x , y , textBuffer , len);
+	Surface.DrawText(x , y , textBuffer);
 }
 
 
@@ -116,7 +116,7 @@ int MapWindow::DrawCompassArc(LKSurface& Surface, long x, long y, int radius, co
 					}
 
 					SIZE textSize;
-					Surface.GetTextSize(textBuffer, _tcslen(textBuffer), &textSize);
+					Surface.GetTextSize(textBuffer, &textSize);
 
 					int textX = x + (long) ((radius - (textSize.cy/2)-2) * fastsine(screenAngle) ) - textSize.cx/2;
 					int textY = y - (long) ((radius - (textSize.cy/2)-2) * fastcosine(screenAngle) );
@@ -177,7 +177,7 @@ void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc
 	_stprintf(brgText,_T("%03d"),bearing);
 
 	SIZE brgSize;
-	Surface.GetTextSize(brgText, _tcslen(brgText), &brgSize);
+	Surface.GetTextSize(brgText, &brgSize);
 	drawOutlineText(Surface, rcx -(brgSize.cx/2), 0 ,brgText,RGB_WHITE);
 
 	//Draw pointer

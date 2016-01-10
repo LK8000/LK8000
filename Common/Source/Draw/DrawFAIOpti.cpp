@@ -589,7 +589,7 @@ int iCnt = 0;
         else
           _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
         bFirstUnit = false;
-        Surface.GetTextSize(text, _tcslen(text), &tsize);
+        Surface.GetTextSize(text, &tsize);
 
         int j=0;
 
@@ -642,7 +642,7 @@ int iCnt = 0;
 
       if(j==0)
       {
-        Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
+        Surface.DrawText(line[0].x, line[0].y, text);
         j=1;
 
       }
@@ -652,17 +652,17 @@ int iCnt = 0;
         _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
       else
         _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
-      Surface.GetTextSize(text, _tcslen(text), &tsize);
+      Surface.GetTextSize(text, &tsize);
       if(i == 0)
-        Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
+        Surface.DrawText(line[0].x, line[0].y, text);
 
       if(iCnt > 1)
         if(i == FAI_SECTOR_STEPS-1)
-          Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
+          Surface.DrawText(line[0].x, line[0].y, text);
 
       if(iCnt > 2)
         if((i== (FAI_SECTOR_STEPS/2)))
-          Surface.DrawText(line[0].x, line[0].y, text, _tcslen(text));
+          Surface.DrawText(line[0].x, line[0].y, text);
 
       line[1] =  line[0];
 

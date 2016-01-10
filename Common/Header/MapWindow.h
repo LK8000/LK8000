@@ -474,8 +474,8 @@ class MapWindow {
   static void SuspendDrawingThread(void);
   static void ResumeDrawingThread(void);
   
-  static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, const LKColor& rgb_tex, bool invertable, RECT* ClipRect = nullptr);
-  static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
+  static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, const bool mode, const short align, const LKColor& rgb_tex, bool invertable, RECT* ClipRect = nullptr);
+  static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
 
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
   static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
@@ -632,7 +632,7 @@ private:
 
   static void DoSonar(void);
 
-  static bool TextInBox(LKSurface& Surface, const RECT *area, const TCHAR* Value, int x, int y, int size, TextInBoxMode_t *Mode, bool noOverlap=false);
+  static bool TextInBox(LKSurface& Surface, const RECT *area, const TCHAR* Value, int x, int y, TextInBoxMode_t *Mode, bool noOverlap=false);
   static void VGTextInBox(LKSurface& Surface, const unsigned short nslot, const short numlines, const TCHAR* wText1, const TCHAR *wText2, const TCHAR *wText3, int x, int y, const LKColor& trgb, const LKBrush& bbrush);
   static void ToggleFullScreenStart();
   static bool WaypointInTask(int ind);

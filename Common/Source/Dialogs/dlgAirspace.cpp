@@ -73,12 +73,12 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
       if (iswarn) {
 	// LKTOKEN  _@M789_ = "Warn" 
         _tcscpy(label, gettext(TEXT("_@M789_")));
-        Surface.DrawText(w0-w1-w2, 2*ScreenScale, label, _tcslen(label));
+        Surface.DrawText(w0-w1-w2, 2*ScreenScale, label);
       }
       if (isdisplay) {
 	// LKTOKEN  _@M241_ = "Display" 
         _tcscpy(label, gettext(TEXT("_@M241_")));
-        Surface.DrawText(w0-w2, 2*ScreenScale, label, _tcslen(label));
+        Surface.DrawText(w0-w2, 2*ScreenScale, label);
       }
 
     }

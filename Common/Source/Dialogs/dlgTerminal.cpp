@@ -51,13 +51,13 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
   _stprintf(tmps,_T("[ Rx=%ld ErrRx=%ld Tx=%ld ErrTx=%ld ]"),
       ComPortRx[active],ComPortErrRx[active],ComPortTx[active],ComPortErrTx[active]);
-  Surface.DrawText(0, 0, tmps, _tcslen(tmps));
+  Surface.DrawText(0, 0, tmps);
   y+=hline;
 
 
   if (ComCheck_Reset>=0 || (ComCheck_LastLine==0 && ComCheck_BufferFull==false)) {
       _stprintf(tmps,_T("%s"),MsgToken(1872)); // NO DATA RECEIVED
-      Surface.DrawText(0, y, tmps, _tcslen(tmps));
+      Surface.DrawText(0, y, tmps);
       return;
   }
 
