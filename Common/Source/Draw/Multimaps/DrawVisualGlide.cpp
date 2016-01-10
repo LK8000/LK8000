@@ -509,7 +509,7 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     // 
     // LINE 1
     // 
-    tx = max(ClipRect.left, x - (tsize.cx / 2));
+    tx = max<PixelScalar>(ClipRect.left, x - (tsize.cx / 2));
     ty = y - (vy - y);
     
     Surface.DrawText(tx, ty, wText1, &ClipRect);
