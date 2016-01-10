@@ -769,7 +769,7 @@ bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& Cl
 
 	SIZE tsize;
 	RECT brect;
-	Surface.GetTextSize(label, size, &tsize);
+	Surface.GetTextSize(label, &tsize);
 
 	// shift label from center point of shape
 	x+= NIBLSCALE(2); 
@@ -795,7 +795,7 @@ bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& Cl
 	Surface.SetTextColor(LKColor(0,50,50)); // PETROL too light at 66
         #endif
     
-	Surface.DrawText(x, y, label, size);
+	Surface.DrawText(x, y, label);
 	return true; // 101016
   }
   return false; // 101016

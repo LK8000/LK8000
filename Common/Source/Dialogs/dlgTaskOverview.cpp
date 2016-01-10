@@ -127,10 +127,10 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
       _stprintf(sTmp, TEXT("%.0f %s"), 
 		Task[i].Leg*DISTANCEMODIFY,
 		Units::GetDistanceName());
-      Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp, _tcslen(sTmp));
+      Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
       _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),gettext(_T("_@M2179_")));
-      Surface.DrawText(Sender->GetHeight()+p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp, _tcslen(sTmp));
+      Surface.DrawText(Sender->GetHeight()+p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
       
     }
 
@@ -143,13 +143,13 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
 	// LKTOKEN  _@M832_ = "add waypoint" 
       _stprintf(sTmp, TEXT("  (%s)"), gettext(TEXT("_@M832_")));
-      Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp, _tcslen(sTmp));
+      Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
     } else if ((DrawListIndex==n+1) && ValidTaskPoint(0)) {
 
       if (!AATEnabled || ISPARAGLIDER) {
 	// LKTOKEN  _@M735_ = "Total:" 
 	_tcscpy(sTmp, gettext(TEXT("_@M735_")));
-	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp, _tcslen(sTmp));
+	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
       
 	if (fai_ok) {
 	  _stprintf(sTmp, TEXT("%.0f %s FAI"), lengthtotal*DISTANCEMODIFY,
@@ -158,7 +158,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 	  _stprintf(sTmp, TEXT("%.0f %s"), lengthtotal*DISTANCEMODIFY,
 		    Units::GetDistanceName());
 	}
-	Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp, _tcslen(sTmp));
+	Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
       } else {
 
@@ -178,7 +178,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 		  DISTANCEMODIFY*lengthtotal,
 		  DISTANCEMODIFY*d1,
 		  Units::GetDistanceName());
-	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp, _tcslen(sTmp));
+	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
       } 
     }
   }

@@ -217,7 +217,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			_stprintf(Buffer,_T("error"));
 			break;
 	}
-        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], 0, WTMODE_NORMAL, WTALIGN_LEFT,
+        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], WTMODE_NORMAL, WTALIGN_LEFT,
             #ifndef UNDITHER
             RGB_LIGHTGREEN, false);
             #else
@@ -287,7 +287,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			icolor=AMBERCOLOR;
 			break;
 	}
-        LKWriteText(Surface, Buffer, qcolumn[8],qrow[1], 0, WTMODE_NORMAL, WTALIGN_CENTER, icolor, false);
+        LKWriteText(Surface, Buffer, qcolumn[8],qrow[1], WTMODE_NORMAL, WTALIGN_CENTER, icolor, false);
 
 	// R0 C2	= time of day
 	if ( (curtype == (IM_TOP+IM_TRF)) || (curtype == (IM_TOP+IM_TARGET)) ) {
@@ -309,15 +309,15 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 					_stprintf(Buffer,_T("??? %s\""),tpas);
 					break;
 			}
-        		LKWriteText(Surface, Buffer, qcolumn[16],qrow[0], 0, WTMODE_NORMAL, WTALIGN_RIGHT, icolor, false);
+        		LKWriteText(Surface, Buffer, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, icolor, false);
 		} else {
 			LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle); // 091219
-        		LKWriteText(Surface, BufferValue, qcolumn[16],qrow[0], 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+        		LKWriteText(Surface, BufferValue, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 		}
 		if ( curtype == (IM_TOP+IM_TARGET) ) goto label_Target;
 	} else {
 		LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle); // 091219
-        	LKWriteText(Surface, BufferValue, qcolumn[16],qrow[0], 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+        	LKWriteText(Surface, BufferValue, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	}
 
 	if (curtype == IM_TRI) goto label_TRI;
@@ -905,7 +905,7 @@ label_TRI:
 #endif
 	_tcscpy(BufferTitle, gettext(TEXT("_@M915_"))); // NOT FOR IFR USAGE
 	Surface.SelectObject(LK8PanelSmallFont);
-	LKWriteText(Surface,  BufferTitle, qcolumn[8],qrow[12], 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
+	LKWriteText(Surface,  BufferTitle, qcolumn[8],qrow[12], WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
 #endif // not in LKCOMPETITION 
 	goto label_End; // End of TRI
 
@@ -956,7 +956,7 @@ label_HSI:
 		}
 	}
 	Surface.SelectObject(LK8PanelMediumFont);
-	LKWriteText(Surface,  Buffer, qcolumn[8],qrow[1], 0, WTMODE_NORMAL, WTALIGN_CENTER, icolor, false);
+	LKWriteText(Surface,  Buffer, qcolumn[8],qrow[1], WTMODE_NORMAL, WTALIGN_CENTER, icolor, false);
 	showunit=true;
 	if (ScreenLandscape) {
 		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
@@ -1139,19 +1139,19 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
 
   Surface.SelectObject(LK8PanelBigFont);
   if (*showunit)
-	LKWriteText(Surface, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_WHITE, false);
+	LKWriteText(Surface, BufferValue, *columnvalue,*row1, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_WHITE, false);
   else
-	LKWriteText(Surface, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, AMBERCOLOR, false);
+	LKWriteText(Surface, BufferValue, *columnvalue,*row1, WTMODE_NORMAL,WTALIGN_RIGHT, AMBERCOLOR, false);
 
   if (*showunit==true && !HideUnits) {
        	Surface.SelectObject(LK8PanelUnitFont); // 091230
-        LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
+        LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
   }
   Surface.SelectObject(LK8PanelSmallFont);
   #ifndef UNDITHER
-  LKWriteText(Surface, BufferTitle, *columntitle,*row3, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
+  LKWriteText(Surface, BufferTitle, *columntitle,*row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
   #else
-  LKWriteText(Surface, BufferTitle, *columntitle,*row3, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+  LKWriteText(Surface, BufferTitle, *columntitle,*row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
   #endif
 
 }

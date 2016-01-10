@@ -724,11 +724,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
             Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
             LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
-            Surface.GetTextSize(text, _tcslen(text), &tsize);
+            Surface.GetTextSize(text, &tsize);
             x = CalcDistanceCoordinat(0, &sDia) - tsize.cx / 2;
             y = CalcHeightCoordinat((calc_terrainalt), &sDia);
             if ((ELV_FACT * tsize.cy) < abs(rc.bottom - y)) {
-                Surface.DrawText(x, rc.bottom - (int) (ELV_FACT * tsize.cy) /* rc.top-tsize.cy*/, text, _tcslen(text));
+                Surface.DrawText(x, rc.bottom - (int) (ELV_FACT * tsize.cy) /* rc.top-tsize.cy*/, text);
             }
         }
 
@@ -739,12 +739,12 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
             Units::FormatUserAltitude(wpt_altitude, buffer, 7);
             LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
-            Surface.GetTextSize(text, _tcslen(text), &tsize);
+            Surface.GetTextSize(text, &tsize);
             x0 = CalcDistanceCoordinat(wpt_dist, &sDia) - tsize.cx / 2;
             if (abs(x - x0) > tsize.cx) {
                 y = CalcHeightCoordinat((wpt_altitude), &sDia);
                 if ((ELV_FACT * tsize.cy) < abs(rc.bottom - y)) {
-                    Surface.DrawText(x0, rc.bottom - (int) (ELV_FACT * tsize.cy) /* rc.top-tsize.cy*/, text, _tcslen(text));
+                    Surface.DrawText(x0, rc.bottom - (int) (ELV_FACT * tsize.cy) /* rc.top-tsize.cy*/, text);
                 }
             }
         }
@@ -765,7 +765,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         Units::FormatUserDistance(wpt_dist, text2, 7);
         _tcscat(text, text2);
 
-        Surface.GetTextSize(text, _tcslen(text), &tsize);
+        Surface.GetTextSize(text, &tsize);
         x = line[0].x - tsize.cx - NIBLSCALE(5);
 
         if (x < x0) bDrawRightSide = true;
@@ -781,7 +781,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         Surface.SelectObject(INVERTCOLORS?LKBrush_Black:LKBrush_White);
         #endif
 
-        MapWindow::LKWriteBoxedText(Surface, rc, text, line[0].x, y - 3, 0, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
+        MapWindow::LKWriteBoxedText(Surface, rc, text, line[0].x, y - 3, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
 
         y = line[0].y - 2 * tsize.cy;
 
@@ -798,7 +798,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
         // size a template
         _stprintf(text, TEXT("Mc 99.9: +12345"));
-        Surface.GetTextSize(text, _tcslen(text), &tsize);
+        Surface.GetTextSize(text, &tsize);
 
         if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL / 10);
 
@@ -821,7 +821,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         Surface.SelectObject(LKBrush_White);
         #endif
 
-        MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
+        MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
 
 _skip_mc0:
 
@@ -835,14 +835,14 @@ _skip_mc0:
                 Units::FormatUserAltitude(altarriv, buffer, 7);
                 LK_tcsncpy(text, MsgToken(1742), TBSIZE - _tcslen(buffer));
                 _tcscat(text, buffer);
-                Surface.GetTextSize(text, _tcslen(text), &tsize);
+                Surface.GetTextSize(text, &tsize);
                 x = line[0].x - NIBLSCALE(5);
 
                 y = CalcHeightCoordinat((SAFETYALTITUDEARRIVAL / 10 + wpt_altitude + altarriv)*7 / 10, &sDia);
                 Surface.SelectObject(LK_BLACK_PEN);
                 Surface.SelectObject(LKBrush_Nlight);
 
-                MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_RIGHT, RGB_BLACK, RGB_BLACK);
+                MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, WTALIGN_RIGHT, RGB_BLACK, RGB_BLACK);
             }
         }
 
@@ -858,7 +858,7 @@ _skip_mc0:
         } else {
             _tcscat(text, TEXT("---"));
         }
-        Surface.GetTextSize(text, _tcslen(text), &tsize);
+        Surface.GetTextSize(text, &tsize);
         Surface.SelectObject(LK_BLACK_PEN);
         if (ValidWayPoint(overindex) && WayPointList[overindex].Reachable) {
             Surface.SelectObject(LKBrush_LightGreen);
@@ -877,17 +877,10 @@ _skip_mc0:
             y -= tsize.cy / 2;
 
         #ifndef UNDITHER
-        MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
+        MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
         #else
-        MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
+        MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
         #endif
-        /*
-            y = CalcHeightCoordinat  ( SAFETYALTITUDEARRIVAL/10+wpt_altarriv_mc0,  &sDia)-2*tsize.cy;
-            // We don't know if there are obstacles for mc0
-
-            MapWindow::LKWriteBoxedText(hdc,&rc,text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
-         */
-
 
         //
         // FINAL GLIDE MACCREADY
@@ -901,7 +894,7 @@ _skip_mc0:
       if (bDrawRightSide) {
           x = BestReach.x + NIBLSCALE(5);
       }
-      Surface.GetTextSize(text, _tcslen(text), &tsize);
+      Surface.GetTextSize(text, &tsize);
       int yn = BestReach.y;
       if(mc > MACCREADY) {
         if(yn > y + tsize.cy) {
@@ -917,7 +910,7 @@ _skip_mc0:
         }
       }
       Surface.SelectObject(LKBrush_Nlight);
-      MapWindow::LKWriteBoxedText(Surface, rc, text,  x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
+      MapWindow::LKWriteBoxedText(Surface, rc, text,  x, y, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
      }
   } else {
 
@@ -960,7 +953,7 @@ _skip_mc0:
 
             x = line[0].x - tsize.cx - NIBLSCALE(5);
             if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
-            Surface.GetTextSize(text, _tcslen(text), &tsize);
+            Surface.GetTextSize(text, &tsize);
             int yn = CalcHeightCoordinat(SAFETYALTITUDEARRIVAL / 10 + wpt_altitude, &sDia); //+0.5*tsize.cy;
             if (yn > y + tsize.cy)
                 y = yn;
@@ -974,7 +967,7 @@ _skip_mc0:
             Surface.SelectObject(LKBrush_White);
             #endif
 
-            MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, 0, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
+            MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, WTALIGN_LEFT, RGB_BLACK, RGB_BLACK);
 
         }
   }
@@ -989,7 +982,7 @@ _after_additionals:
         if (altarriv > 0) {
             // Print GR
             _stprintf(text, TEXT("1/%i"), (int) fLD);
-            Surface.GetTextSize(text, _tcslen(text), &tsize);
+            Surface.GetTextSize(text, &tsize);
             x = CalcDistanceCoordinat(wpt_dist / 2, &sDia) - tsize.cx / 2;
             y = CalcHeightCoordinat((DerivedDrawInfo.NavAltitude + altarriv) / 2 + wpt_altitude, &sDia) + tsize.cy;
             if (WayPointList[overindex].Reachable) {
@@ -997,7 +990,7 @@ _after_additionals:
             } else {
                 SelectObject(hdc, LKBrush_Orange);
             }
-            MapWindow::LKWriteBoxedText(hdc, &rc, text, x, y, 0, WTALIGN_CENTER, RGB_BLACK, RGB_BLACK);
+            MapWindow::LKWriteBoxedText(hdc, &rc, text, x, y, WTALIGN_CENTER, RGB_BLACK, RGB_BLACK);
         }
 #endif
 
@@ -1011,11 +1004,11 @@ _after_additionals:
             Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
             LK_tcsncpy(text, MsgToken(1742), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
-            Surface.GetTextSize(text, _tcslen(text), &tsize);
+            Surface.GetTextSize(text, &tsize);
             x = CalcDistanceCoordinat(0, &sDia) - tsize.cx / 2;
             y = CalcHeightCoordinat((calc_terrainalt + calc_altitudeagl)*0.8, &sDia);
             if ((tsize.cy) < (CalcHeightCoordinat(calc_terrainalt, &sDia) - y)) {
-                Surface.DrawText(x, y, text, _tcslen(text));
+                Surface.DrawText(x, y, text);
             }
         }
         Surface.SetBackgroundTransparent();

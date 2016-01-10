@@ -99,22 +99,22 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
         TCHAR Tdummy[] = _T("E");
         Surface.SelectObject(LK8OverlayBigFont);
-        Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &SizeBigFont);
+        Surface.GetTextSize(Tdummy, &SizeBigFont);
 
         Surface.SelectObject(LK8OverlayMediumFont);
-        Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &SizeMediumFont);
+        Surface.GetTextSize(Tdummy, &SizeMediumFont);
 
         Surface.SelectObject(LK8OverlaySmallFont);
-        Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &SizeSmallFont);
+        Surface.GetTextSize(Tdummy, &SizeSmallFont);
 
         Surface.SelectObject(LK8OverlayMcModeFont);
-        Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &SizeMcModeFont);
+        Surface.GetTextSize(Tdummy, &SizeMcModeFont);
 
         Surface.SelectObject(LK8OverlayGatesFont);
-        Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &SizeGatesFont);
+        Surface.GetTextSize(Tdummy, &SizeGatesFont);
 
         Surface.SelectObject(MapScaleFont);
-        Surface.GetTextSize(Tdummy, _tcslen(Tdummy), &SizeUnitFont);
+        Surface.GetTextSize(Tdummy, &SizeUnitFont);
 
         //
         // TIME GATES OFFSETS FOR PARAGLIDERS
@@ -228,12 +228,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 _stprintf(Buffer, _T("%s%d/%d"), StartGateName, gateinuse + 1, PGNumberOfGates);
             }
 
-            LKWriteText(Surface, Buffer, rcx , topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+            LKWriteText(Surface, Buffer, rcx , topmargin, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         } else {
             if (Overlay_TopLeft) {
                 GetOvertargetName(Buffer);
                 RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + SizeMediumFont.cy };
-                LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
+                LKWriteText(Surface, Buffer, rcx, topmargin, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
             }
         }
 
@@ -289,16 +289,14 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
         if ( !OverlayClock && ScreenLandscape && (!(ISPARAGLIDER && UseGates()))) {
             _stprintf(BufferValue + _tcslen(BufferValue), _T(" %s"), BufferUnit);
-            LKWriteText(Surface, BufferValue, compass.cx, topmargin, 
-                0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+            LKWriteText(Surface, BufferValue, compass.cx, topmargin, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
         } else {
-            LKWriteText(Surface, BufferValue, rcx , topmargin + SizeMediumFont.cy, 
-                0, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
+            LKWriteText(Surface, BufferValue, rcx , topmargin + SizeMediumFont.cy, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
             
             if (!HideUnits) {
-                Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
+                Surface.GetTextSize(BufferValue, &TextSize);
                 Surface.SelectObject(MapScaleFont); 
-                LKWriteText(Surface, BufferUnit, rcx + TextSize.cx, yDistUnit, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                LKWriteText(Surface, BufferUnit, rcx + TextSize.cx, yDistUnit, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
 
         }
@@ -346,8 +344,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             }
 
             Surface.SelectObject(LK8OverlayMediumFont); // restore previously selected font
-            LKWriteText(Surface, BufferValue, topbearing.cx,  topbearing.cy, 0,
-                WTMODE_OUTLINED, WTALIGN_CENTER, OverColorRef, true);
+            LKWriteText(Surface, BufferValue, topbearing.cx,  topbearing.cy, WTMODE_OUTLINED, WTALIGN_CENTER, OverColorRef, true);
         }
         _skip_TopMid:
 
@@ -402,7 +399,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             Surface.SelectObject(LK8OverlayBigFont); // use this font for big values
             rcy = yrightoffset - SizeBigFont.cy;
             color=(redwarning&&Overlay_RightMid<OAUX)?AMBERCOLOR:OverColorRef;
-            LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true);
+            LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true);
             
             _skip_glider_RightMid:
 
@@ -447,8 +444,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     break;
             }
             color=(redwarning&&Overlay_RightBottom<OAUX)?AMBERCOLOR:OverColorRef;
-            LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, 0,
-                WTMODE_OUTLINED, WTALIGN_RIGHT, color, true); 
+            LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true); 
 
             //
             // (GLIDERS) SAFETY ALTITUDE INDICATOR 
@@ -459,8 +455,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 Surface.SelectObject(LK8OverlaySmallFont);
                 _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
                         Units::GetUnitName(Units::GetUserAltitudeUnit()));
-                LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety,
-                    0, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
+                LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
             }
             _skip_glider_RightBottom: ;
         } // ISGLIDER
@@ -475,7 +470,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             CharUpper(Buffer);
             Surface.SelectObject(LK8OverlayBigFont); // use this font for big values
             RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + SizeBigFont.cy };
-            LKWriteText(Surface, Buffer, rcx, topmargin, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
+            LKWriteText(Surface, Buffer, rcx, topmargin, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
         }
     }
 
@@ -492,28 +487,27 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 Units::TimeToTextDown(BufferValue, gatechrono);
                 rcx= rc.right-RIGHTMARGIN;
                 rcy = yrightoffset - SizeBigFont.cy-NIBLSCALE(6); // 101112
-                LKWriteText(Surface, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+                LKWriteText(Surface, BufferValue, rcx,rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
 
                 // Gate ETE Diff 
                 Value = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].NextETE - gatechrono;
                 Units::TimeToTextDown(BufferValue, (int) Value);
                 rcy += SizeBigFont.cy-NIBLSCALE(2);
                 color=(Value<=0)?AMBERCOLOR:OverColorRef;
-                LKWriteText(Surface, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED,WTALIGN_RIGHT,color, true);
+                LKWriteText(Surface, BufferValue, rcx,rcy, WTMODE_OUTLINED,WTALIGN_RIGHT,color, true);
 
                 // Req. Speed For reach Gate
                 if (LKFormatValue(LK_START_SPEED, false, BufferValue, BufferUnit, BufferTitle)) {
                     Surface.SelectObject(LK8TargetFont);
-                    Surface.GetTextSize(BufferUnit, _tcslen(BufferUnit), &TextSize);
+                    Surface.GetTextSize(BufferUnit, &TextSize);
                     rcx -= TextSize.cx;
-                    Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
+                    Surface.GetTextSize(BufferValue, &TextSize);
                     rcx -= (TextSize.cx + NIBLSCALE(2));
                     rcy += TextSize.cy-NIBLSCALE(2);
 
-                    LKWriteText(Surface, BufferValue, rcx, rcy + (TextSize.cy / 3), 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                    LKWriteText(Surface, BufferValue, rcx, rcy + (TextSize.cy / 3), WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
 
-                    LKWriteText(Surface, BufferUnit, rcx + TextSize.cx + NIBLSCALE(2), rcy + (TextSize.cy / 3), 0,
-                            WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                    LKWriteText(Surface, BufferUnit, rcx + TextSize.cx + NIBLSCALE(2), rcy + (TextSize.cy / 3), WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
                     Surface.SelectObject(LK8OverlayBigFont);
                 }
             }
@@ -532,7 +526,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
             rcy = yrightoffset - SizeBigFont.cy;
             rcx = rightmargin;
-            LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+            LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
             _skip_para_RightMid:
 
             // Altitude difference with current MC
@@ -573,8 +567,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     break;
             }
             color=(redwarning&&Overlay_RightBottom<OAUX)?AMBERCOLOR:OverColorRef;
-            LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, 0,
-                WTMODE_OUTLINED, WTALIGN_RIGHT,color, true);  
+            LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, WTMODE_OUTLINED, WTALIGN_RIGHT,color, true);  
 
             //
             // SAFETY ALTITUDE INDICATOR (FOR PARAGLIDERS)
@@ -584,8 +577,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 Surface.SelectObject(LK8OverlaySmallFont);
                 _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
                         Units::GetUnitName(Units::GetUserAltitudeUnit()));
-                LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety,
-                    0, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
+                LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
 
             }
             _skip_para_RightBottom: ;
@@ -608,7 +600,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         }
         rcy = yrightoffset - SizeBigFont.cy - (SizeGatesFont.cy * 2);
         rcx = rc.right - RIGHTMARGIN;
-        LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+        LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
 
         // USE THIS SPACE FOR MESSAGES TO THE PILOT
         rcy += SizeGatesFont.cy;
@@ -663,7 +655,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             // LKTOKEN  _@M925_ = "NO TSK START"
             _tcscpy(BufferValue, MsgToken(925));
         }
-        LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
+        LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
     } else 
     if ( (ISGLIDER || ISPARAGLIDER) && Overlay_RightTop) {
@@ -676,7 +668,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             LKFormatValue(GetInfoboxType(1), true, BufferValue, BufferUnit, BufferTitle);
         else
             LKFormatValue(LK_MC, false, BufferValue, BufferUnit, BufferTitle);
-        LKWriteText(Surface, BufferValue, rightmargin, yMcValue, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+        LKWriteText(Surface, BufferValue, rightmargin, yMcValue, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
 
         //
         // SAFETY MAC CREADY INDICATOR
@@ -686,7 +678,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             Surface.SelectObject(LK8OverlaySmallFont);
             _stprintf(BufferValue, _T(" %.1f %s "), GlidePolar::SafetyMacCready*LIFTMODIFY,
                 Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
-            LKWriteBoxedText(Surface, rc, BufferValue, rightmargin, yMcSafety, 0, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
+            LKWriteBoxedText(Surface, rc, BufferValue, rightmargin, yMcSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
         }
 
         //
@@ -719,7 +711,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             Surface.Rectangle( rightmargin, yMcMode, rc.right, yMcMode + SizeMcModeFont.cy);
             LKWriteText(Surface, amcmode, rightmargin + NIBLSCALE(1), yMcMode,
                     // We paint white on black always here, but WriteText can invert them. So we reverse. 
-                    0, WTMODE_NORMAL, WTALIGN_LEFT, INVERTCOLORS?RGB_WHITE:RGB_BLACK, true);
+                    WTMODE_NORMAL, WTALIGN_LEFT, INVERTCOLORS?RGB_WHITE:RGB_BLACK, true);
 
         } // AutoMacCready true AUTO MC INDICATOR
     } // overlay RighTop
@@ -755,12 +747,11 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         // CENTER THE LEFT OVERLAYS
         //
         rcy = yMcValue;
-        LKWriteText(Surface, BufferValue, rcx, rcy+yoffset, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+        LKWriteText(Surface, BufferValue, rcx, rcy+yoffset, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         if (!HideUnits) {
-            Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
+            Surface.GetTextSize(BufferValue, &TextSize);
             Surface.SelectObject(MapScaleFont); 
-            LKWriteText(Surface, BufferUnit, rcx + TextSize.cx, rcy+yoffset+unitbigoffset, 
-                0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+            LKWriteText(Surface, BufferUnit, rcx + TextSize.cx, rcy+yoffset+unitbigoffset, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         }
    } // LeftTop
 
@@ -791,11 +782,11 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         Surface.SelectObject(LK8OverlayBigFont);
         rcy = yrightoffset - SizeBigFont.cy +yoffset;
 
-        LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+        LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         if (!HideUnits) {
-            Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
+            Surface.GetTextSize(BufferValue, &TextSize);
             Surface.SelectObject(MapScaleFont);
-            LKWriteText(Surface, BufferUnit, rcx + TextSize.cx , rcy + unitbigoffset, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+            LKWriteText(Surface, BufferUnit, rcx + TextSize.cx , rcy + unitbigoffset, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         }
     } // LeftMid
 
@@ -818,12 +809,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         }
         Surface.SelectObject(LK8OverlayBigFont);
         rcy=yrightoffset - fixBigInterline+yoffset;
-        LKWriteText(Surface, BufferValue, rcx, rcy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+        LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         if (!HideUnits) {
-            Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
+            Surface.GetTextSize(BufferValue, &TextSize);
             Surface.SelectObject(MapScaleFont);
             LKWriteText(Surface, BufferUnit, rcx + TextSize.cx, rcy + unitbigoffset, 
-                0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         }
     }
 
@@ -835,10 +826,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         Surface.SelectObject(LK8OverlayMediumFont);
         if (!ScreenLandscape) {
             LKWriteText(Surface, BufferValue, rightmargin, compass.cy,
-                0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+                WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
         } else { 
             LKWriteText(Surface, BufferValue, compass.cx, topmargin,
-                0, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+                WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
         }
     }
 
@@ -857,13 +848,13 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 LKFormatValue(LK_WIND, false, BufferValue, BufferUnit, BufferTitle);
         }
         LKWriteText(Surface, BufferValue, leftmargin, yLeftWind,
-            0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true); 
+            WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true); 
 
         if (!HideUnits) {
-            Surface.GetTextSize(BufferValue, _tcslen(BufferValue), &TextSize);
+            Surface.GetTextSize(BufferValue, &TextSize);
             Surface.SelectObject(MapScaleFont);
             LKWriteText(Surface, BufferUnit, leftmargin + TextSize.cx, yLeftWind + unitmediumoffset, 
-                0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         }
     } // LeftDown
 

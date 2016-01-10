@@ -196,7 +196,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         SIZE aispacesize = {rcd.right - rcd.left, rcd.bottom - rcd.top};
 
         LK_tcsncpy(text, Sideview_pHandeled[iSizeIdx].szAS_Name, NAME_SIZE - 1/* sizeof(text)/sizeof(text[0])*/);
-        Surface.GetTextSize(text, _tcslen(text), &textsize);
+        Surface.GetTextSize(text, &textsize);
 
         int x = rcd.left + aispacesize.cx / 2;
         ;
@@ -210,18 +210,18 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
 
 
         if ((textsize.cx < aispacesize.cx) && (textsize.cy < aispacesize.cy)) {
-            Surface.DrawText(x - textsize.cx / 2, y - iOffset - textsize.cy / 2, text, _tcslen(text));
+            Surface.DrawText(x - textsize.cx / 2, y - iOffset - textsize.cy / 2, text);
             blongtext = true;
         }
 
         LK_tcsncpy(text, CAirspaceManager::Instance().GetAirspaceTypeShortText(Sideview_pHandeled[iSizeIdx].iType), NAME_SIZE);
-        Surface.GetTextSize(text, _tcslen(text), &textsize);
+        Surface.GetTextSize(text, &textsize);
         if (textsize.cx < aispacesize.cx) {
             if (2 * textsize.cy < aispacesize.cy) {
-                Surface.DrawText(x - textsize.cx / 2, y + iOffset - textsize.cy / 2, text, _tcslen(text));
+                Surface.DrawText(x - textsize.cx / 2, y + iOffset - textsize.cy / 2, text);
             } else {
                 if ((textsize.cy < aispacesize.cy) && (!blongtext))
-                    Surface.DrawText(x - textsize.cx / 2, y - iOffset - textsize.cy / 2, text, _tcslen(text));
+                    Surface.DrawText(x - textsize.cx / 2, y - iOffset - textsize.cy / 2, text);
             }
         }
     }

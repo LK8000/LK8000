@@ -299,14 +299,14 @@ _skipout:
         GlideBarOffset -= LKVarioSize;
 
         LKSurface::OldFont hfOld = Surface.SelectObject(MapWaypointBoldFont);
-        Surface.GetTextSize(Value, _tcslen(Value), &TextSize);
+        Surface.GetTextSize(Value, &TextSize);
         GlideBarOffset = std::max<int>(GlideBarOffset, TextSize.cx+NIBLSCALE(1))+1; 
 
         TextInBoxMode_t TextInBoxMode = {0};
         TextInBoxMode.Border = true; //={1|8};
         TextInBoxMode.Reachable = false;
         TextInBoxMode.NoSetFont = true;
-        TextInBox(Surface, &rc, Value, lkVarioOffset , (int) Offset, 0, &TextInBoxMode);
+        TextInBox(Surface, &rc, Value, lkVarioOffset , (int) Offset, &TextInBoxMode);
 
         Surface.SelectObject(hfOld);
         Surface.SelectObject(hbOld);

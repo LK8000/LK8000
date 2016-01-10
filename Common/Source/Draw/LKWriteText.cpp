@@ -49,12 +49,11 @@ static const Color2Outline_t ColorOutLine [] = {
 //
 
 void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y,
-        int maxsize, const bool lwmode, const short align, const LKColor& rgb_text, bool invertable, RECT* ClipRect) {
+        const bool lwmode, const short align, const LKColor& rgb_text, bool invertable, RECT* ClipRect) {
 
     SIZE tsize;
-    if (maxsize == 0) maxsize = _tcslen(wText);
 
-    Surface.GetTextSize(wText, maxsize, &tsize);
+    Surface.GetTextSize(wText, &tsize);
     LKColor textColor = rgb_text;
     // by default, LK8000 is white on black, i.e. inverted
     if ((!INVERTCOLORS) || (LKTextBlack && invertable)) {
@@ -109,30 +108,33 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
             // Simplified, shadowing better and faster
             // ETO_OPAQUE not necessary since we pass a NULL rect
             //
-            Surface.DrawText(x - 1, y - 1, wText, maxsize, ClipRect);
-            Surface.DrawText(x - 1, y + 1, wText, maxsize, ClipRect);
-            Surface.DrawText(x + 1, y - 1, wText, maxsize, ClipRect);
-            Surface.DrawText(x + 1, y + 1, wText, maxsize, ClipRect);
+#ifdef USE_FREETYPE
+#warning "to slow, rewrite using freetype outline"
+#endif
+            Surface.DrawText(x - 1, y - 1, wText, ClipRect);
+            Surface.DrawText(x - 1, y + 1, wText, ClipRect);
+            Surface.DrawText(x + 1, y - 1, wText, ClipRect);
+            Surface.DrawText(x + 1, y + 1, wText, ClipRect);
 
             // SetTextColor(hDC,RGB_GREY);  // This would give an Emboss effect
             // Surface.DrawText(x, y+2, 0, wText, maxsize);
 
             if (moreoutline) {
-                Surface.DrawText(x - 2, y, wText, maxsize, ClipRect);
-                Surface.DrawText(x + 2, y, wText, maxsize, ClipRect);
-                Surface.DrawText(x, y - 2, wText, maxsize, ClipRect);
-                Surface.DrawText(x, y + 2, wText, maxsize, ClipRect);
+                Surface.DrawText(x - 2, y, wText, ClipRect);
+                Surface.DrawText(x + 2, y, wText, ClipRect);
+                Surface.DrawText(x, y - 2, wText, ClipRect);
+                Surface.DrawText(x, y + 2, wText, ClipRect);
             }
 
             Surface.SetTextColor(textColor);
-            Surface.DrawText(x, y, wText, maxsize, ClipRect);
+            Surface.DrawText(x, y, wText, ClipRect);
             Surface.SetTextColor(RGB_BLACK);
             break;
         }
         case WTMODE_NORMAL:
 
             Surface.SetTextColor(textColor);
-            Surface.DrawText(x, y, wText, maxsize, ClipRect);
+            Surface.DrawText(x, y, wText, ClipRect);
             Surface.SetTextColor(RGB_BLACK);
             break;
 
@@ -150,15 +152,13 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
 // A note about DrawRect: in main moving map, DrawRect is the part of screen excluding BottomBar, 
 // when the bottom bar is opaque. So choose carefully.
 //
-void MapWindow::LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align ,
+void MapWindow::LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, const short align ,
 	const LKColor& dir_rgb, const LKColor& inv_rgb  ) {
 
   LKColor oldTextColor = Surface.SetTextColor(INVERTCOLORS?dir_rgb:inv_rgb);
 
   SIZE tsize;
-  if (maxsize==0) maxsize=_tcslen(wText);
-  
-  Surface.GetTextSize(wText, maxsize, &tsize);
+  Surface.GetTextSize(wText, &tsize);
   short vy;
   switch(align) {
 	case WTALIGN_LEFT:
@@ -193,7 +193,7 @@ void MapWindow::LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const
   #endif
 
 
-  Surface.DrawText(x, y, wText, maxsize);
+  Surface.DrawText(x, y, wText);
 
   //SetTextColor(hDC,RGB_BLACK);   THIS WAS FORCED BLACk SO FAR 121005
   Surface.SetTextColor(oldTextColor);

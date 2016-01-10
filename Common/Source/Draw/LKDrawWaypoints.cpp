@@ -465,7 +465,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 	      } // end intask/irange/dowrite
 
     if (MapWindow::zoom.RealScale()<20 && islandable && dowrite) {
-      TextInBox(Surface, &rc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, &TextDisplayMode, true);
+      TextInBox(Surface, &rc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, &TextDisplayMode, true);
       dowrite=false; // do not pass it along
     }
 
@@ -522,7 +522,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     if ( E->inTask || (E->isLandable && !E->isExcluded) ) { 
     const LKIcon* pWptBmp = NULL;
 
-	TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), false);
+	TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, &(E->Mode), false);
 
 	// At low zoom, dont print the bitmap because drawn task would make it look offsetted
 	if(MapWindow::zoom.RealScale() > 2) continue;
@@ -553,7 +553,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     if (!E->inTask && !E->isLandable ) {
       const LKIcon* pWptBmp = NULL;
 
-      if ( TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), true) == true) {
+      if ( TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, &(E->Mode), true) == true) {
 
 	// If we are at low zoom, use a dot for icons, so we dont clutter the screen
 	if(MapWindow::zoom.RealScale() > 4) {

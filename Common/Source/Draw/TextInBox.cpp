@@ -105,7 +105,7 @@ bool TextInBoxMoveInView(const RECT *clipRect, POINT *offset, RECT *brect){
 
 
 bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR* Value, int x, int y, 
-                          int size, TextInBoxMode_t *Mode, bool noOverlap) {
+                          TextInBoxMode_t *Mode, bool noOverlap) {
 
   SIZE tsize;
   RECT brect;
@@ -121,10 +121,6 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
 
   if (Mode == NULL) return false;
 
-  if (size==0) {
-    size = _tcslen(Value);
-  }
-  
   const auto hbOld = Surface.SelectObject(LKBrush_White);
   const auto hpOld = Surface.SelectObject(LK_BLACK_PEN);
 
@@ -146,7 +142,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     }
   }
   
-  Surface.GetTextSize(Value, size, &tsize);
+  Surface.GetTextSize(Value, &tsize);
 
   if (Mode->AlligneRight){
     x -= tsize.cx;
@@ -192,7 +188,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
       Surface.RoundRect(brect, NIBLSCALE(4), NIBLSCALE(4));
       Surface.SelectObject(oldPen);
       if (Mode->SetTextColor) Surface.SetTextColor(Mode->Color); else Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawText(x, y, Value, size);
+      Surface.DrawText(x, y, Value);
       drawn=true;
     }
 
@@ -222,7 +218,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
   
     if (!noOverlap || notoverlapping) {
       LKColor oldColor = Surface.SetBkColor(RGB_WHITE);
-      Surface.DrawText(x, y, Value, size);
+      Surface.DrawText(x, y, Value);
       Surface.SetBkColor(oldColor);
       drawn=true;
     }
@@ -280,16 +276,19 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     // Simplified, shadowing better and faster
     // ETO_OPAQUE not necessary since we pass a NULL rect
     //
-    Surface.DrawText(x-1, y-1, Value, size);
-    Surface.DrawText(x-1, y+1, Value, size);
-    Surface.DrawText(x+1, y-1, Value, size);
-    Surface.DrawText(x+1, y+1, Value, size);
+#ifdef USE_FREETYPE
+#warning "to slow, rewrite using freetype outline"
+#endif
+    Surface.DrawText(x-1, y-1, Value);
+    Surface.DrawText(x-1, y+1, Value);
+    Surface.DrawText(x+1, y-1, Value);
+    Surface.DrawText(x+1, y+1, Value);
 
     if (OutlinedTp && 1) {
-        Surface.DrawText(x-2, y, Value, size);
-        Surface.DrawText(x+2, y, Value, size);
-        Surface.DrawText(x, y-2, Value, size);
-        Surface.DrawText(x, y+2, Value, size);
+        Surface.DrawText(x-2, y, Value);
+        Surface.DrawText(x+2, y, Value);
+        Surface.DrawText(x, y-2, Value);
+        Surface.DrawText(x, y+2, Value);
     }
 
       if (OutlinedTp) {
@@ -297,7 +296,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
       } else {
         Surface.SetTextColor(RGB_BLACK);
       }
-      Surface.DrawText(x, y, Value, size);
+      Surface.DrawText(x, y, Value);
 
       if (OutlinedTp)
         Surface.SetTextColor(RGB_BLACK); // TODO somewhere else text color is not set correctly
@@ -346,7 +345,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
   
     if (!noOverlap || notoverlapping) {
       Surface.SetTextColor(Mode->Color);
-      Surface.DrawText(x, y, Value, size);
+      Surface.DrawText(x, y, Value);
       Surface.SetTextColor(RGB_BLACK);
       drawn=true;
     }

@@ -236,13 +236,13 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	Surface.SelectObject(LK8PanelBigFont);
 	switch ( LKTraffic[LKTargetIndex].Status ) {
 		case LKT_GHOST:
-			LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
+			LKWriteText(Surface,  tbear, ncenterx,ncentery, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
 			break;
 		case LKT_ZOMBIE:
-			LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
+			LKWriteText(Surface,  tbear, ncenterx,ncentery, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
 			break;
 		default:
-			LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
+			LKWriteText(Surface,  tbear, ncenterx,ncentery, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 			break;
 	}
 
@@ -254,7 +254,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	} else {
 		_stprintf(tbear, TEXT("0%s"), gettext(_T("_@M2179_")));
 	}
-	LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
+	LKWriteText(Surface,  tbear, ncenterx,ncentery, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 	#endif
   }
 
@@ -379,19 +379,15 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	} else
 		yposbear=altline_left[5].y;
 
-//	LKWriteText(Surface,  tbear, ncenterx,altline_left[5].y, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 	switch ( LKTraffic[LKTargetIndex].Status ) {
 		case LKT_GHOST:
-			//LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
-			LKWriteText(Surface,  tbear, ncenterx,yposbear, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
+			LKWriteText(Surface,  tbear, ncenterx,yposbear, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
 			break;
 		case LKT_ZOMBIE:
-			//LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
-			LKWriteText(Surface,  tbear, ncenterx,yposbear, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
+			LKWriteText(Surface,  tbear, ncenterx,yposbear, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTRED, false);
 			break;
 		default:
-			//LKWriteText(Surface,  tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
-			LKWriteText(Surface,  tbear, ncenterx,yposbear, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
+			LKWriteText(Surface,  tbear, ncenterx,yposbear, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 			break;
 	}
   }

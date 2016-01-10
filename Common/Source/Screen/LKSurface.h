@@ -185,9 +185,9 @@ public:
 #ifdef USE_MEMORY_CANVAS
     void AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
 #endif    
-    bool GetTextSize(const TCHAR* lpString, int cbString, SIZE* lpSize);
-    void DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount, RECT* ClipRect = nullptr);
-    int DrawText(const TCHAR* lpchText, int nCount, RECT *lpRect, UINT uFormat);
+    bool GetTextSize(const TCHAR* lpString, SIZE* lpSize);
+    void DrawText(int X, int Y, const TCHAR* lpString, RECT* ClipRect = nullptr);
+    int DrawText(const TCHAR* lpchText, RECT *lpRect, UINT uFormat);
 
     int GetTextWidth(const TCHAR *text);
     int GetTextHeight(const TCHAR *text);

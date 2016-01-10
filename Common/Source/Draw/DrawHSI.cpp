@@ -201,7 +201,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
     Surface.SelectObject(LK8TitleFont);
     for(int i=0;i<12;i++) {
         int deg=i*30+angle;
-        LKWriteText(Surface,label[i],centerX+(int)(labelsRadius*fastsine(deg)),centerY-(int)(labelsRadius*fastcosine(deg)),0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
+        LKWriteText(Surface,label[i],centerX+(int)(labelsRadius*fastsine(deg)),centerY-(int)(labelsRadius*fastcosine(deg)),WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
     }
 
     //Draw true heading mark on the top of the compass rose
@@ -219,9 +219,9 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
     Surface.SelectObject(LK8InfoSmallFont);
     _stprintf(Buffer, TEXT("%03d%s"),(int)round(DrawInfo.TrackBearing),gettext(_T("_@M2179_")));
     #ifndef UNDITHER
-    LKWriteText(Surface,Buffer,posTRKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
+    LKWriteText(Surface,Buffer,posTRKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
     #else
-    LKWriteText(Surface,Buffer,posTRKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
+    LKWriteText(Surface,Buffer,posTRKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
     #endif
 
     //Copies of the data needed from Task and WayPointList
@@ -263,17 +263,17 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             _tcscpy(Buffer,gettext(TEXT("_@M784_"))); //"Vario"
             Surface.SelectObject(LK8PanelSmallFont);
             #ifndef UNDITHER
-            LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedLabelY,0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_LIGHTGREEN,false);
+            LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedLabelY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_LIGHTGREEN,false);
             #else
-            LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedLabelY,0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
+            LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedLabelY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
             #endif
             _stprintf(Buffer, TEXT("%+.0f"),varioFtMin); //print the value
             if(!ScreenLandscape || (ScreenSize!=ss800x480 && ScreenSize!=ss480x272)) Surface.SelectObject(LK8PanelMediumFont);
             else Surface.SelectObject(LK8PanelBigFont);
-            LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedValueY,0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
+            LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedValueY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
             _stprintf(Buffer,TEXT("FPM")); //measure unit
             Surface.SelectObject(LK8PanelUnitFont);
-            LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedUnitY,0, WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
+            LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedUnitY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
             if(DerivedDrawInfo.WaypointDistance<fiveNauticalMiles && WPstyle>=STYLE_AIRFIELDGRASS && WPstyle<=STYLE_AIRFIELDSOLID) { //if we are close to the destination airport
                 if(DerivedDrawInfo.WaypointDistance<1500) returnStruct.landing=true; //if at less than 1.5 Km don't show glide slope bar
                 else { //Build glide slope bar
@@ -341,22 +341,22 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                         for(int i=0;i<=6;i++) {
                             _stprintf(Buffer, TEXT("%d"),i);
                             #ifndef UNDITHER
-                            LKWriteText(Surface,Buffer,gssLabelX,gssStart+gssIncrementX2*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+                            LKWriteText(Surface,Buffer,gssLabelX,gssStart+gssIncrementX2*i,WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
                             #else
-                            LKWriteText(Surface,Buffer,gssLabelX,gssStart+gssIncrementX2*i,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_WHITE:RGB_WHITE,false);
+                            LKWriteText(Surface,Buffer,gssLabelX,gssStart+gssIncrementX2*i,WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_WHITE:RGB_WHITE,false);
                             #endif
                         }
                     } else {
                         #ifndef UNDITHER
                         _stprintf(Buffer, TEXT("0"));
-                        LKWriteText(Surface,Buffer,gssLabelX,gssStart,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+                        LKWriteText(Surface,Buffer,gssLabelX,gssStart,WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
                         _stprintf(Buffer, TEXT("6"));
-                        LKWriteText(Surface,Buffer,gssLabelX,gssEnd,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+                        LKWriteText(Surface,Buffer,gssLabelX,gssEnd,WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
                         #else
                         _stprintf(Buffer, TEXT("0"));
-                        LKWriteText(Surface,Buffer,gssLabelX,gssStart,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_WHITE:RGB_WHITE,false);
+                        LKWriteText(Surface,Buffer,gssLabelX,gssStart,WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_WHITE:RGB_WHITE,false);
                         _stprintf(Buffer, TEXT("6"));
-                        LKWriteText(Surface,Buffer,gssLabelX,gssEnd,0, WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_WHITE:RGB_WHITE,false);
+                        LKWriteText(Surface,Buffer,gssLabelX,gssEnd,WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_WHITE:RGB_WHITE,false);
                         #endif
                     }
                 } //end of glide slope bar
@@ -376,9 +376,9 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         Surface.SelectObject(LK8InfoSmallFont);
         _stprintf(Buffer, TEXT("%03d%s"),(int)round(course),gettext(_T("_@M2179_")));
         #ifndef UNDITHER
-        LKWriteText(Surface,Buffer,posDTKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
+        LKWriteText(Surface,Buffer,posDTKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
         #else
-        LKWriteText(Surface,Buffer,posDTKx,posTRKy,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
+        LKWriteText(Surface,Buffer,posDTKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
         #endif
 
         //Calculate rotation angle
@@ -497,9 +497,9 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                 else _stprintf(Buffer,TEXT("%d %s"),(int)round(xtk),Units::GetDistanceName());
             }
             #ifndef UNDITHER
-            LKWriteText(Surface,Buffer,posXTKx,posXTKy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,cdiColor,false);
+            LKWriteText(Surface,Buffer,posXTKx,posXTKy+NIBLSCALE(2),WTMODE_NORMAL,WTALIGN_CENTER,cdiColor,false);
             #else
-            LKWriteText(Surface,Buffer,posXTKx,posXTKy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
+            LKWriteText(Surface,Buffer,posXTKx,posXTKy+NIBLSCALE(2),WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
             #endif
 
             //Draw bearing pointer to next waypoint
@@ -537,9 +537,9 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             Surface.SelectObject(LK8InfoSmallFont);
             _stprintf(Buffer, TEXT("%03d%s"),(int)round(DerivedDrawInfo.WaypointBearing),gettext(_T("_@M2179_")));
             #ifndef UNDITHER
-            LKWriteText(Surface,Buffer,posDTKx,posBRGy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_MAGENTA,false);
+            LKWriteText(Surface,Buffer,posDTKx,posBRGy+NIBLSCALE(2),WTMODE_NORMAL,WTALIGN_CENTER,RGB_MAGENTA,false);
             #else
-            LKWriteText(Surface,Buffer,posDTKx,posBRGy+NIBLSCALE(2),0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
+            LKWriteText(Surface,Buffer,posDTKx,posBRGy+NIBLSCALE(2),WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
             #endif
         } else { //flying to the departure or a direct GOTO without information for landing: don't draw CDI
             //Draw anyway the CDI scale in grey (disabled)
@@ -649,15 +649,15 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         if(scale<10000) _stprintf(Buffer, TEXT("+%.0fft"),scale);
         else _stprintf(Buffer, TEXT("+%.0ff"),scale);
         #ifndef UNDITHER
-        LKWriteText(Surface,Buffer,VSIlabelX,VSIlabelUpY,0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+        LKWriteText(Surface,Buffer,VSIlabelX,VSIlabelUpY, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
         if(scale<10000) _stprintf(Buffer, TEXT("-%.0fft"),scale);
         else _stprintf(Buffer, TEXT("-%.0ff"),scale);
-        LKWriteText(Surface,Buffer,VSIlabelX,VSIlabelDwY,0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
+        LKWriteText(Surface,Buffer,VSIlabelX,VSIlabelDwY, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
         #else
-        LKWriteText(Surface,Buffer,VSIlabelX,VSIlabelUpY,0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_WHITE:RGB_WHITE,false);
+        LKWriteText(Surface,Buffer,VSIlabelX,VSIlabelUpY, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_WHITE:RGB_WHITE,false);
         if(scale<10000) _stprintf(Buffer, TEXT("-%.0fft"),scale);
         else _stprintf(Buffer, TEXT("-%.0ff"),scale);
-        LKWriteText(Surface,Buffer,VSIlabelX,VSIlabelDwY,0, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_WHITE:RGB_WHITE,false);
+        LKWriteText(Surface,Buffer,VSIlabelX,VSIlabelDwY, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_WHITE:RGB_WHITE,false);
         #endif
 
         //Draw expected in route altitude marker

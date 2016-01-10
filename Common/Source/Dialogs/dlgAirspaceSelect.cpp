@@ -523,19 +523,19 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 	  LK_tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
       // left justified
      
-      Surface.DrawText(x1, 2*ScreenScale, sTmp, _tcslen(sTmp));
+      Surface.DrawText(x1, 2*ScreenScale, sTmp);
 
       // right justified after airspace type
       _stprintf(sTmp, TEXT("%.0f%s"), 
                 AirspaceSelectInfo[i].Distance,
                 Units::GetDistanceName());
       x2 = w0-w3-Surface.GetTextWidth(sTmp);
-      Surface.DrawText(x2, 2*ScreenScale, sTmp, _tcslen(sTmp));
+      Surface.DrawText(x2, 2*ScreenScale, sTmp);
       
       // right justified after distance
       _stprintf(sTmp, TEXT("%d%s"),  iround(AirspaceSelectInfo[i].Direction), gettext(_T("_@M2179_")));
       x3 = w0-Surface.GetTextWidth(sTmp);
-      Surface.DrawText(x3, 2*ScreenScale, sTmp, _tcslen(sTmp));
+      Surface.DrawText(x3, 2*ScreenScale, sTmp);
     } else {
       // should never get here!
     }
@@ -543,7 +543,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
     if (DrawListIndex == 0){
 	// LKTOKEN  _@M466_ = "No Match!" 
       _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
-      Surface.DrawText(2*ScreenScale, 2*ScreenScale, sTmp, _tcslen(sTmp));
+      Surface.DrawText(2*ScreenScale, 2*ScreenScale, sTmp);
     }
   }
 }

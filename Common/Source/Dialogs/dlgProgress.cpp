@@ -51,7 +51,7 @@ static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
   InflateRect(&PrintAreaR, -NIBLSCALE(2), -NIBLSCALE(2));
   
   const TCHAR* text = Sender->GetCaption();
-  Surface.DrawText(text,_tcslen(text), &PrintAreaR, DT_VCENTER|DT_SINGLELINE);
+  Surface.DrawText(text, &PrintAreaR, DT_VCENTER|DT_SINGLELINE);
 
   Surface.SelectObject(ohB);
   Surface.SelectObject(ohP);

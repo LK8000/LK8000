@@ -175,7 +175,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
     TextDisplayMode.AlligneCenter = 1;
     Surface.SelectObject(LK8TargetFont);
     _stprintf(Buffer,TEXT("MapSpaceMode=%d"),MapSpaceMode);
-    TextInBox(Surface, &rc, Buffer, (rc.right+rc.left)/2, NIBLSCALE(50) , 0, &TextDisplayMode, false);
+    TextInBox(Surface, &rc, Buffer, (rc.right+rc.left)/2, NIBLSCALE(50) , &TextDisplayMode, false);
     break;
   }
 #ifdef DRAWLKSTATUS

@@ -555,26 +555,26 @@ void LKSurface::AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface
 }
 #endif    
 
-bool LKSurface::GetTextSize(const TCHAR* lpString, int cbString, SIZE* lpSize) {
-	LKASSERT(cbString <= (int)_tcslen(lpString));
+bool LKSurface::GetTextSize(const TCHAR* lpString, SIZE* lpSize) {
 #ifdef WIN32
-    return ::GetTextExtentPoint(*this, lpString, cbString, lpSize);
+    return ::GetTextExtentPoint(*this, lpString, _tcslen(lpString), lpSize);
 #else
     if(_pCanvas) {
-        *lpSize = _pCanvas->CalcTextSize(lpString, cbString);
+        *lpSize = _pCanvas->CalcTextSize(lpString);
         return true;
     }
     return false;
 #endif    
 }
 
-void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, UINT cbCount, RECT* ClipRect) {
+void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, RECT* ClipRect) {
 #ifdef WIN32
-    ::ExtTextOut(*this, X, Y,ETO_CLIPPED, ClipRect, lpString, cbCount, NULL);
+    ::ExtTextOut(*this, X, Y,ETO_CLIPPED, ClipRect, lpString, _tcslen(lpString), NULL);
 #else
     if(_pCanvas) {
         if(ClipRect) {
-            _pCanvas->DrawClippedText(X, Y, *ClipRect, lpString);
+            SubCanvas ClipCanvas(*_pCanvas, ClipRect->GetOrigin(), ClipRect->GetSize() );
+            _pCanvas->DrawText(X-ClipRect->left, Y-ClipRect->top, lpString);
         } else {
             _pCanvas->DrawText(X, Y, lpString);
         }
@@ -594,12 +594,20 @@ void LKSurface::DrawPushButton(const RECT& rc, bool bPushed) {
 #endif    
 }
 
-int LKSurface::DrawText(const TCHAR* lpchText, int nCount, RECT *lpRect, UINT uFormat) {
+int LKSurface::DrawText(const TCHAR* lpchText, RECT *lpRect, UINT uFormat) {
+    assert(lpRect);
 #ifdef WIN32
-    return ::DrawText(*this, lpchText, nCount, lpRect, uFormat);
+    return ::DrawText(*this, lpchText, _tcslen(lpchText), lpRect, uFormat);
 #else
     if(_pCanvas) {
-        _pCanvas->DrawFormattedText(lpRect, lpchText, uFormat);
+        if(!(uFormat&DT_CALCRECT)) {
+            PixelRect rcText(*lpRect);
+            SubCanvas ClipCanvas(*_pCanvas, rcText.GetOrigin(), rcText.GetSize() );
+            rcText.Offset(-rcText.left, -rcText.top);
+            _pCanvas->DrawFormattedText(&rcText, lpchText, uFormat);
+        } else {
+            _pCanvas->DrawFormattedText(lpRect, lpchText, uFormat);
+        }
     }
     return false;
 #endif    
@@ -608,14 +616,13 @@ int LKSurface::DrawText(const TCHAR* lpchText, int nCount, RECT *lpRect, UINT uF
 void LKSurface::DrawTextClip(int x, int y, const TCHAR *text, PixelScalar width) {
     int len = _tcslen(text);
     if (len > 0) {
-        SIZE tsize;
-        GetTextSize(text, len, &tsize);
-        RECT rc = {x, y, x + std::min(width, tsize.cx), y + tsize.cy};
 #ifdef WIN32
+        const RECT rc = {x, 0, x + width, std::numeric_limits<PixelScalar>::max()};
         ::ExtTextOut(*this, x, y, ETO_CLIPPED, &rc, text, len, NULL);
 #else
         if(_pCanvas) {
-            _pCanvas->DrawClippedText(x,y, rc, text);
+            SubCanvas ClipCanvas(*_pCanvas, {x, 0}, {(unsigned)width, _pCanvas->GetHeight()});
+            _pCanvas->DrawText(0,y, text);
         }
 #endif
     }
@@ -623,13 +630,13 @@ void LKSurface::DrawTextClip(int x, int y, const TCHAR *text, PixelScalar width)
 
 int LKSurface::GetTextWidth(const TCHAR *text) {
     SIZE tsize;
-    GetTextSize(text, _tcslen(text), &tsize);
+    GetTextSize(text, &tsize);
     return tsize.cx;
 }
 
 int LKSurface::GetTextHeight(const TCHAR *text) {
     SIZE tsize;
-    GetTextSize(text, _tcslen(text), &tsize);
+    GetTextSize(text, &tsize);
     return tsize.cy;
 }
 

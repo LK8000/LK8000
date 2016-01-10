@@ -128,11 +128,11 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 
       for(unsigned i = 0; i<array_size(text); ++i) {
         SIZE sizeTmp;
-        Surface.GetTextSize(text[i], _tcslen(text[i]), &sizeTmp);
+        Surface.GetTextSize(text[i], &sizeTmp);
         tsize.cx = std::max(tsize.cx, sizeTmp.cx);
         tsize.cy = std::max(tsize.cy, sizeTmp.cy);
 
-        Surface.GetTextSize(value[i], _tcslen(value[i]), &sizeTmp);
+        Surface.GetTextSize(value[i], &sizeTmp);
         vsize.cx = std::max(vsize.cx, sizeTmp.cx);
         vsize.cy = std::max(vsize.cy, sizeTmp.cy);
 
@@ -148,8 +148,8 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
       Surface.FillRect(&blockR, INVERTCOLORS?LKBrush_White:LKBrush_Black);
 
       for(unsigned i = 0; i<array_size(text); ++i) {
-        Surface.DrawText(blockR.left, blockR.top+tsize.cy*i, text[i], _tcslen(text[i]), NULL);
-        Surface.DrawText(blockR.left+tsize.cx, rc.top+tsize.cy*i, value[i], _tcslen(value[i]), NULL);
+        Surface.DrawText(blockR.left, blockR.top+tsize.cy*i, text[i]);
+        Surface.DrawText(blockR.left+tsize.cx, rc.top+tsize.cy*i, value[i]);
       }
       Surface.SelectObject(hfOldU);
     }
@@ -181,14 +181,14 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
     _stprintf(text,TEXT("%s %.1f kg/m2"),
 	             gettext(TEXT("_@M821_")), // Wing load
 	             GlidePolar::WingLoading);
-    Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(90), text, _tcslen(text), NULL);
+    Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(90), text);
   }
   _stprintf(text, TEXT("%s: %3.1f  @ %3.0f %s"),
 		MsgToken(140), // Best LD
                   GlidePolar::bestld,
                   GlidePolar::Vbestld()*SPEEDMODIFY,
                   Units::GetHorizontalSpeedName());
-  Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(70), text, _tcslen(text));
+  Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(70), text);
 
   _stprintf(text, TEXT("%s: %3.2f %s @ %3.0f %s"),
 		MsgToken(437), // Min sink
@@ -196,7 +196,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
                   Units::GetVerticalSpeedName(),
                   GlidePolar::Vminsink()*SPEEDMODIFY,
                   Units::GetHorizontalSpeedName());
-  Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(50), text, _tcslen(text));
+  Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(50), text);
 
   Surface.SelectObject(hfOldU);
   Surface.SetBackgroundTransparent();

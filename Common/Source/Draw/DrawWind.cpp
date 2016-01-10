@@ -22,7 +22,7 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   if (tsize.cx == 0){
 
     const auto oldFont = Surface.SelectObject(MapWindowBoldFont);
-    Surface.GetTextSize(TEXT("99"), 2, &tsize);
+    Surface.GetTextSize(TEXT("99"), &tsize);
     Surface.SelectObject(oldFont);
     tsize.cx = tsize.cx/2;
   }
@@ -69,9 +69,9 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
     TextInBoxMode.AlligneCenter = true;   // { 16 | 32 }; // JMW test {2 | 16};
     TextInBoxMode.WhiteBorder = true;
     if (Arrow[5].y>=Arrow[6].y) {
-      TextInBox(Surface, &rc, sTmp, Arrow[5].x-kx, Arrow[5].y, 0, &TextInBoxMode);
+      TextInBox(Surface, &rc, sTmp, Arrow[5].x-kx, Arrow[5].y, &TextInBoxMode);
     } else {
-      TextInBox(Surface, &rc, sTmp, Arrow[6].x-kx, Arrow[6].y, 0, &TextInBoxMode);
+      TextInBox(Surface, &rc, sTmp, Arrow[6].x-kx, Arrow[6].y, &TextInBoxMode);
     }
   }
   const auto hpOld = Surface.SelectObject(LKPen_Black_N2);

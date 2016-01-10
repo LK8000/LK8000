@@ -417,12 +417,12 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         int iLen = _tcslen(text1);
         if (iLen > 100)
             iLen = 100;
-        Surface.DrawText((int) (PICTO_WIDTH * 1.1) * ScreenScale, 2 * ScreenScale, text1, iLen);
+        Surface.DrawText((int) (PICTO_WIDTH * 1.1) * ScreenScale, 2 * ScreenScale, text1);
         Surface.SetTextColor(RGB_DARKBLUE);
         iLen = _tcslen(text2);
         if (iLen > 100)
             iLen = 100;
-        Surface.DrawText((int) (PICTO_WIDTH * 1.1) * ScreenScale, 15 * ScreenScale, text2, iLen);
+        Surface.DrawText((int) (PICTO_WIDTH * 1.1) * ScreenScale, 15 * ScreenScale, text2);
 
     }
 }

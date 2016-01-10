@@ -44,7 +44,7 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
   // Duration of key is inside long VKtime, in milliseconds.
   //
 
-  LKWriteBoxedText(hdc, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+  LKWriteBoxedText(hdc, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
 
 
   TCHAR ttext[100];
@@ -134,14 +134,14 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		break;
   }
 
-  LKWriteBoxedText(hdc, ttext, 1, 50 , 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+  LKWriteBoxedText(hdc, ttext, 1, 50 , WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
 
   //
   // Be sure to check that an EVENT was generated, otherwise you are checking even bottombar key presses.
   //
   if (LKevent!=LKEVENT_NONE) {
 	_stprintf(ttext,_T("Last coords: X=%d Y=%d  , duration=%ld ms"),X,Y,VKtime);
-	LKWriteBoxedText(hdc, ttext, 1, 100 , 0, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+	LKWriteBoxedText(hdc, ttext, 1, 100 , WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
   }
 
 
