@@ -574,7 +574,7 @@ void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, RECT* ClipRect) {
     if(_pCanvas) {
         if(ClipRect) {
             SubCanvas ClipCanvas(*_pCanvas, ClipRect->GetOrigin(), ClipRect->GetSize() );
-            _pCanvas->DrawText(X-ClipRect->left, Y-ClipRect->top, lpString);
+            ClipCanvas.DrawText(X-ClipRect->left, Y-ClipRect->top, lpString);
         } else {
             _pCanvas->DrawText(X, Y, lpString);
         }
@@ -604,7 +604,7 @@ int LKSurface::DrawText(const TCHAR* lpchText, RECT *lpRect, UINT uFormat) {
             PixelRect rcText(*lpRect);
             SubCanvas ClipCanvas(*_pCanvas, rcText.GetOrigin(), rcText.GetSize() );
             rcText.Offset(-rcText.left, -rcText.top);
-            _pCanvas->DrawFormattedText(&rcText, lpchText, uFormat);
+            ClipCanvas.DrawFormattedText(&rcText, lpchText, uFormat);
         } else {
             _pCanvas->DrawFormattedText(lpRect, lpchText, uFormat);
         }
@@ -622,7 +622,7 @@ void LKSurface::DrawTextClip(int x, int y, const TCHAR *text, PixelScalar width)
 #else
         if(_pCanvas) {
             SubCanvas ClipCanvas(*_pCanvas, {x, 0}, {(unsigned)width, _pCanvas->GetHeight()});
-            _pCanvas->DrawText(0,y, text);
+            ClipCanvas.DrawText(0,y, text);
         }
 #endif
     }
