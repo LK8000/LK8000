@@ -1241,21 +1241,23 @@ bool WindowControl::OnPaint(LKSurface& Surface, const RECT& Rect) {
     const int win_height = GetHeight();
 
     LKBitmapSurface MemSurface(Surface, win_width, win_height);
-    Paint(MemSurface);
 
-    POINT ptOffset = {GetLeft(), GetTop() };
-    ClientToScreen(_hWnd, &ptOffset);
     HWND hChildWnd = NULL;
     if ((hChildWnd = GetWindow(_hWnd, GW_CHILD)) != NULL) {
+        RECT Client_Rect;
         while ((hChildWnd = GetWindow(hChildWnd, GW_HWNDNEXT)) != NULL) {
             if (::IsWindowVisible(hChildWnd)) {
-                RECT Client_Rect;
-                GetWindowRect(hChildWnd, &Client_Rect);
-                OffsetRect(&Client_Rect, -ptOffset.x, -ptOffset.y);
+                ::GetWindowRect(hChildWnd, &Client_Rect);
+                
+                ::ScreenToClient(_hWnd, (LPPOINT)&Client_Rect.left);
+                ::ScreenToClient(_hWnd, (LPPOINT)&Client_Rect.right);                
+
                 ::ExcludeClipRect(MemSurface, Client_Rect.left, Client_Rect.top, Client_Rect.right, Client_Rect.bottom );
+                ::ExcludeClipRect(Surface, Client_Rect.left, Client_Rect.top, Client_Rect.right, Client_Rect.bottom );
             }
         }
     }
+    Paint(MemSurface);
 
     Surface.Copy(0, 0, win_width, win_height, MemSurface, 0, 0);
 #endif
