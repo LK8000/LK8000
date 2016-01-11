@@ -25,7 +25,7 @@ void ReplaceNMEAControlChars(TCHAR *String)
    for (unsigned int i=0; i< _tcslen(String) ; i++)
    { 
        if(String[i] == _T('$')) {
-           String[i]=  _T('§');
+           String[i]=  _T('_');
        }
       
        if(String[i] == _T('*')) {
