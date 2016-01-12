@@ -17,8 +17,11 @@ void MapWindow::DrawHeading(LKSurface& Surface, const POINT& Orig, const RECT& r
     if(DrawInfo.NAVWarning) return; // 100214
     if(mode.Is(MapWindow::Mode::MODE_CIRCLING)) return;
 
+    // Reduce the rectangle for a better effect
+    const PixelRect ClipRect = { rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
+
+    int tmp = isqrt4((ClipRect.GetSize().cx*ClipRect.GetSize().cx) + (ClipRect.GetSize().cy*ClipRect.GetSize().cy));
     POINT p2;
-    double tmp = 200000*zoom.ResScaleOverDistanceModify();
     if (!(DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE)) {
         p2.y= Orig.y - (int)(tmp*fastcosine(DrawInfo.TrackBearing));
         p2.x= Orig.x + (int)(tmp*fastsine(DrawInfo.TrackBearing));
@@ -27,8 +30,6 @@ void MapWindow::DrawHeading(LKSurface& Surface, const POINT& Orig, const RECT& r
         p2.y=Orig.y - (int)tmp;
     }
 
-    // Reduce the rectangle for a better effect
-    const RECT ClipRect = {rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
 
     Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), Orig, p2, BlackScreen ? RGB_INVDRAW : RGB_BLACK, ClipRect); // 091109
 }
