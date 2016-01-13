@@ -75,11 +75,19 @@ class IOLoop final {
       bool operator()(const File &a, FileDescriptor b) const {
         return a.fd.Get() < b.Get();
       }
+
+      gcc_pure
+      bool operator()(const File &a, const File &b) const {
+        return a.fd.Get() < b.fd.Get();
+      }
     };
 
-    static void Dispose(File *f) {
-      delete f;
-    }
+    struct Dispose {
+      template<typename T>
+      void operator()(T *f) {
+        delete f;
+      }
+    };
   };
 
   Poll poll;

@@ -26,7 +26,7 @@ Copyright_License {
 
 IOLoop::~IOLoop()
 {
-  files.clear_and_dispose(File::Dispose);
+  files.clear_and_dispose(File::Dispose());
 }
 
 void
@@ -95,7 +95,7 @@ IOLoop::Update()
 
     poll.SetMask(file.fd.Get(), file.mask);
     if (file.mask == 0)
-      i = files.erase_and_dispose(i, File::Dispose);
+      i = files.erase_and_dispose(i, File::Dispose());
     else
       ++i;
   }
