@@ -36,6 +36,7 @@
 #include "MapWindow.h"
 #include "Sound/Sound.h"
 #include "OS/RotateScreen.h"
+#include "Time/PeriodClock.hpp"
 
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
@@ -134,6 +135,8 @@ const TCHAR *Text2GCE[GCE_COUNT+1];
 const TCHAR *Text2NE[NE_COUNT+1];
 
 static Mutex  CritSec_EventQueue;
+
+static PeriodClock myPeriodClock;
 
 
 // Read the data files
@@ -2865,6 +2868,34 @@ void InputEvents::eventChangeHGPS(const TCHAR *misc) {
   }
 }
 
+double InputEvents::getIncStep(const TCHAR *misc, double step) {
+static int upCount = 0;
+static int downCount = 0;
+
+if (_tcscmp(misc, TEXT("up")) == 0 || (HasKeyboard()&&(_tcscmp(misc, TEXT("kup")) == 0))){
+    step = getIncStep(step, &upCount, &downCount);	
+} else if (_tcscmp(misc, TEXT("down")) == 0 || (HasKeyboard()&&(_tcscmp(misc, TEXT("kdown")) == 0))){
+    step = getIncStep(step, &downCount, &upCount);
+}
+return step;
+}
+    
+double InputEvents::getIncStep(double step, int *count, int *otherCount) {
+
+    *otherCount = 0;
+    
+    if (!myPeriodClock.CheckAlwaysUpdate(300)) {
+        (*count) ++;
+    } else {
+        *count = 1;
+    }
+    if (*count >= 20) {
+        step = step *10;
+    }   
+    
+    return step;
+}
+
 // 10 Kmh
 void InputEvents::eventChangeGS(const TCHAR *misc) {
 double step=0;
@@ -2875,8 +2906,10 @@ double step=0;
   if (Units::GetUserHorizontalSpeedUnit() == unStatuteMilesPerHour)
 	step=0.44704; //@ 1 mph = 1.6kmh
 
-  if (_tcscmp(misc, TEXT("up")) == 0){
-	if (AircraftCategory == (AircraftCategory_t)umParaglider)
+step = getIncStep(misc, step);
+
+if (_tcscmp(misc, TEXT("up")) == 0){
+    if (AircraftCategory == (AircraftCategory_t)umParaglider)
 		GPS_INFO.Speed += step;
 	else
 		GPS_INFO.Speed += step*5;

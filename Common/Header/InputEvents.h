@@ -13,7 +13,11 @@
 typedef void (*pt2Event)(const TCHAR *);
 
 class InputEvents {
- public:
+private:
+  static double getIncStep(const TCHAR *misc, double step);
+  static double getIncStep(double step, int *count, int *otherCount);
+    
+public:
   
   typedef enum {
     PopupWaypoint,
@@ -125,7 +129,7 @@ class InputEvents {
   // -------
 
   static void showErrors();
-
+  
 #ifdef LXMINIMAP
   static unsigned getSelectedButtonId();
   static void eventChangeSorting(const TCHAR *misc);
