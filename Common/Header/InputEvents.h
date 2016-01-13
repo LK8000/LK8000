@@ -9,14 +9,13 @@
 #ifndef INPUTEVENTS_H
 #define INPUTEVENTS_H
 
-#include "time.h"
 
 typedef void (*pt2Event)(const TCHAR *);
 
 class InputEvents {
 private:
   static double getIncStep(const TCHAR *misc, double step);
-  static double getIncStep(double step, time_t *myTime, int *count, int *otherCount);
+  static double getIncStep(double step, int *count, int *otherCount);
     
 public:
   
