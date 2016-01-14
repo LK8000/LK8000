@@ -1,0 +1,17 @@
+### LK8000 DEVICE PROFILE - DO NOT EDIT
+### THIS FILE IS ENCODED IN UTF8
+LKVERSION="3.1k"
+PROFILEVERSION=2
+DeviceA="Generic"
+DeviceB="Generic"
+PortIndex=1
+Port2Index=1
+SpeedIndex=2
+Speed2Index=2
+Bit1Index=0
+Bit2Index=0
+UseGeoidSeparation=1
+PollingMode=0
+CheckSum=1
+AppInfoBoxModel=10000
+

@@ -1,0 +1,14 @@
+### LK8000 AICRAFT PROFILE - DO NOT EDIT
+### THIS FILE IS ENCODED IN UTF8
+LKVERSION="3.1o0"
+PROFILEVERSION=2
+AircraftCategory1=2
+PolarFile1="%LOCAL_PATH%\\_Polars\CAR.plr"
+SafteySpeed1=55556
+Handicap1=100
+BallastSecsToEmpty1=120
+AircraftType1="NOFLY"
+AircraftRego1="LK8000"
+CompetitionClass1="PERSONAL"
+CompetitionID1="LK"
+
