@@ -1,0 +1,349 @@
+*############################################################
+*
+*
+*           >>>>>>>>>> UNOFFICIAL, USE AT YOUR OWN RISK <<<<<<<<<<
+*
+*         Do not use for navigation, for flight verification only.
+*
+*                  Always consult the relevant publications
+*                  for current and correct information. This
+*                   service is provided free of charge with
+*                    no warrantees, expressed or implied.
+*                        User assumes all risk of use.
+*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*         by Paso,   OpenAir format fixed by Coolwind
+*
+*         ADDITIONAL LUGANO AND LOCARNO SWISS AIRSPACE ADDED
+*         Only relevant airspaces kept. NO DANGER AREAS, no RESTRICTED.
+*         2010 Paolo
+* 
+*    Source: AIP Italia
+*
+*      June 7, 2006
+*
+****USE AT YOUR OWN RISK***       
+*
+* Area Types
+* Written as			Strepla	Used for	
+* 'CLASS A'			A	Y			ICAO A
+* 'CLASS B'			B	Protected		ICAO B
+* 'CLASS C' or 'A'		C	Y			ICAO C
+* 'CLASS D' or 'D' or 'TMA'	D	CTR			ICAO D
+* 'CTA'				E				ICAO E
+* 'CLASS F'			F	Military Training	ICAO F
+* ?????				G				ICAO G
+*
+* 'C' or 'CTLZ'			CTR				Control Zone
+* 'P'				P	Prohibited		Protected (Prohibited) Area
+* 'R'				R	Restricted		Restricted Area
+* 'D'				D	Dengerous, Para, Aero	Dangerous Area
+* 'I'				SA	Temporary Segragated	Local Agreement (Segregated Area) [not in See You]
+* ?????				x				Transponder Mandatory Area
+* 'O' or 'Z'			GPA				Glider Protected Area
+*
+* Abbreviations Used in this File
+* M= Military C= Civil
+* A= Activity, Aero= Aerobatics, E= Exercises, F= Firing
+* P= Parashuting, T= Technological, Tr= Traffic, NatP= Natural Park
+* (i.e. TA= Technological Activity; MA= Military Activity; MFA= Military Firing Activity)
+* 
+* Date Format MM/DD. J=Ephemeris H=Hours. All Hours are Zulu
+* M= Mon, T= Tue, W= Wed, Th= Thu, F= Fri, S= Sat, Su= Sun (i.e. M-F= Mon to Fri; M,F= Mon and Fri)
+* Hol= Holiday
+* APP=Approach
+*
+* In Area Names only L=Low H=High
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+* CTRs
+* Source AIP ENR 2.1.3
+* Airspace Class C or D
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+AC CTR
+AN CTR M AVIANO L (APP 120.125)
+AL GND
+AH FL195
+DP 46:01:30 N 011:54:30 E
+DP 46:14:30 N 012:50:00 E
+DP 46:17:00 N 013:11:00 E
+DP 45:52:54 N 013:30:48 E
+DP 45:37:30 N 013:26:50 E
+DP 45:31:30 N 012:50:00 E
+DP 45:48:30 N 012:50:00 E
+DP 45:43:40 N 012:04:00 E
+DP 45:43:34 N 011:58:07 E
+DP 45:48:28 N 011:54:45 E
+DP 46:01:30 N 011:54:30 E
+
+
+AC CTR
+AN CTR C BERGAMO
+AL GND
+AH 1500AGL
+DP 45:43:15 N 009:39:10 E
+DP 45:44:29 N 009:49:00 E
+V D=+
+V X=45:40:08 N   009:42:01 E
+DB  45:44:29 N 009:49:00 E,  45:32:35 N 009:50:44 E
+DP 45:32:25 N 009:42:01 E
+V D=+
+V X=45:40:25 N   009:41:42 E
+DB  45:32:25 N 009:42:01 E,  45:37:39 N 009:30:58 E
+DP 45:43:15 N 009:39:10 E
+
+
+AC A
+AN CTR M GARDA 1
+AL GND
+AH 1500AGL
+DP 45:31:00 N 010:12:00 E
+DP 45:30:00 N 010:25:00 E
+DP 45:24:00 N 010:37:00 E
+DP 45:31:30 N 010:50:20 E
+DP 45:31:20 N 010:58:00 E
+DP 45:25:30 N 011:04:55 E
+DP 45:21:00 N 011:04:55 E
+DP 45:06:00 N 010:40:00 E
+DP 45:06:00 N 010:30:00 E
+DP 45:26:15 N 010:05:28 E
+DP 45:31:00 N 010:12:00 E
+
+AC A
+AN CTR M GARDA 2L
+AL 1500AGL
+AH FL195
+DP 45:34:00 N 010:07:00 E
+DP 45:33:40 N 010:56:28 E
+DP 45:29:57 N 011:08:00 E
+DP 45:25:30 N 011:08:00 E
+DP 45:11:03 N 011:17:01 E
+DP 45:03:16 N 011:13:46 E
+*Follow Po river from here
+DP 45:03:53 N 011:11:02 E
+DP 45:03:04 N 011:09:42 E
+DP 45:04:20 N 011:07:15 E
+DP 45:02:46 N 011:03:34 E
+DP 45:04:35 N 010:58:36 E
+DP 45:04:50 N 010:54:20 E
+DP 45:03:21 N 010:54:07 E
+DP 45:03:16 N 010:39:30 E
+DP 45:00:42 N 010:41:22 E
+DP 44:55:40 N 010:36:16 E
+DP 44:55:38 N 010:30:16 E
+DP 44:59:29 N 010:24:43 E
+DP 44:59:03 N 010:21:58 E
+DP 44:58:09 N 010:21:40 E
+*Follow Po river to here
+DP 44:59:00 N 010:16:00 E
+DP 45:16:00 N 010:00:00 E
+DP 45:29:00 N 010:00:00 E
+DP 45:34:00 N 010:07:00 E
+
+
+AC A
+AN CTR M GARDA 3L
+AL 3000AGL
+AH FL195
+DP 45:03:16 N 011:13:46 E
+*Follow Po river from here
+DP 45:03:53 N 011:11:02 E
+DP 45:03:04 N 011:09:42 E
+DP 45:04:20 N 011:07:15 E
+DP 45:02:46 N 011:03:34 E
+DP 45:04:35 N 010:58:36 E
+DP 45:04:50 N 010:54:20 E
+DP 45:03:21 N 010:54:07 E
+DP 45:03:16 N 010:39:30 E
+DP 45:00:42 N 010:41:22 E
+DP 44:55:40 N 010:36:16 E
+DP 44:55:38 N 010:30:16 E
+DP 44:59:29 N 010:24:43 E
+DP 44:59:03 N 010:21:58 E
+DP 44:58:09 N 010:21:40 E
+*Follow Po river to here
+DP 44:59:00 N 010:16:00 E
+DP 44:42:00 N 010:32:00 E
+DP 44:42:00 N 010:46:00 E
+DP 44:49:08 N 011:07:53 E
+DP 45:03:16 N 011:13:46 E
+
+
+AC CTR
+AN CTR C LINATE
+AL GND
+AH 1500MSL
+DP 45:34:50 N 009:12:40 E
+V D=+
+V X=45:35:00 N   009:19:48 E
+DB  45:34:50 N 009:12:40 E,  45:34:50 N 009:26:46 E
+DP 45:16:03 N 009:26:01 E
+V D=+
+V X=45:16:15 N   009:17:30 E
+DB  45:16:03 N 009:26:01 E,  45:16:26 N 009:09:10 E
+DP 45:27:30 N 009:09:30 E
+DP 45:31:15 N 009:13:08 E
+DP 45:34:50 N 009:13:08 E
+DP 45:34:50 N 009:12:40 E
+
+****************************************************
+*
+*##    (CLASS D) LOCARNO CTLZ   ###
+AC CTR
+SB 0,255,0
+AN Locarno: 134.825     
+AL SFC         
+AH FL 130   
+V D=+
+V X=46:09:53 N   008:56:09 E 
+* radius 0.97 nm
+DB 46:10:48 N   008:56:34 E , 46:08:55 N   008:56:12 E 
+DP 46:08:55 N   008:56:12 E 
+V D=+
+V X=46:09:46 N   008:50:13 E 
+* radius 0.97 nm
+DB 46:08:47 N   008:50:16 E , 46:10:44 N   008:50:16 E 
+DP 46:10:44 N   008:50:11 E 
+*
+
+
+****************************************************
+*
+*##    (CLASS D) LUGANO CTLZ   ###
+AC CTR
+SB 0,255,0
+AN Lugano: 120.250     
+AL SFC         
+AH 6500AGL     
+V D=+
+V X=46:02:26 N   008:57:10 E 
+* radius 2.16 nm
+DB 46:03:43 N   008:54:41 E , 46:01:21 N   008:59:51 E 
+DP 46:01:21 N   008:59:51 E 
+V D=+
+V X=45:54:15 N   008:49:29 E 
+* radius 2.70 nm
+DB 45:52:31 N   008:52:27 E , 45:55:51 N   008:46:22 E
+DP 45:55:51 N   008:46:22 E 
+*
+*
+AC CTR
+AN CTR C MALPENSA 1L
+AL GND
+AH 1500MSL
+DP 45:44:00 N 008:37:01 E
+DP 45:44:00 N 008:48:01 E
+V D=+
+V X=45:38:00 N   008:48:00 E
+DB  45:44:00 N 008:48:01 E,  45:35:48 N 008:55:59 E
+DP 45:27:35 N 008:51:22 E
+DP 45:25:44 N 008:44:40 E
+DP 45:29:58 N 008:27:45 E
+DP 45:38:21 N 008:28:26 E
+V D=+
+V X=45:38:00 N   008:37:00 E
+DB  45:38:21 N 008:28:26 E,  45:44:00 N 008:37:01 E
+
+AC CTR
+AN CTR C MALPENSA 1H
+AL 1500MSL
+AH 2500MSL
+DP 45:44:00 N 008:37:01 E
+DP 45:44:00 N 008:48:01 E
+V D=+
+V X=45:38:00 N   008:48:00 E
+DB  45:44:00 N 008:48:01 E,  45:35:48 N 008:55:59 E
+DP 45:27:35 N 008:51:22 E
+DP 45:25:44 N 008:44:40 E
+DP 45:29:58 N 008:27:45 E
+DP 45:38:21 N 008:28:26 E
+V D=+
+V X=45:38:00 N   008:37:00 E
+DB  45:38:21 N 008:28:26 E,  45:44:00 N 008:37:01 E
+
+
+AC CTR
+AN CTR C MALPENSA 3
+AL 1500MSL
+AH 2500MSL
+DP 45:29:58 N 008:27:45 E
+DP 45:25:44 N 008:44:40 E
+DP 45:27:35 N 008:51:22 E
+DP 45:18:27 N 008:46:17 E
+V D=+
+V X=45:21:00 N   008:37:00 E
+DB  45:18:27 N 008:46:17 E,  45:21:24 N 008:27:03 E
+DP 45:29:58 N 008:27:45 E
+
+
+AC CTR
+AN CTR C TORINO 1
+AL GND
+AH 2500AGL
+DP 45:12:03 N 007:31:51 E
+V D=+
+V X=45:12:04 N   007:43:08 E
+DB  45:12:03 N 007:31:51 E,  45:12:04 N 007:54:26 E
+DP 45:03:58 N 007:53:50 E
+V D=+
+V X=45:04:00 N   007:42:32 E
+DB  45:03:58 N 007:53:50 E,  45:04:01 N 007:31:10 E
+
+AC A
+AN CTR C TORINO 2
+AL 1500AGL
+AH FL85
+DP 45:13:52 N 007:23:29 E
+V D=+
+V X=45:12:04 N   007:38:53 E
+DB  45:13:52 N 007:23:29 E,  45:22:19 N 007:44:33 E
+DP 45:14:43 N 008:12:05 E
+V D=+
+V X=45:11:00 N   008:10:00 E
+DB  45:14:43 N 008:12:05 E,  45:10:52 N 008:15:40 E
+DP 44:55:34 N 008:15:39 E
+V D=+
+V X=44:55:29 N   007:51:43 E
+DB  44:55:34 N 008:15:39 E,  44:40:48 N 008:03:41 E
+DP 44:37:00 N 007:54:30 E
+DP 44:37:00 N 007:15:00 E
+DP 45:13:52 N 007:23:29 E
+
+AC A
+AN CTR C TORINO 3
+AL 1500AGL
+AH 6000MSL
+DP 44:25:00 N 007:18:40 E
+DP 44:37:00 N 007:15:00 E
+DP 44:37:00 N 007:54:30 E
+DP 44:25:00 N 007:54:30 E
+DP 44:25:00 N 007:18:40 E
+
+
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+* ATZs of Military Airports - Not Open to Civil Traffic
+* Source AIP ENR 2.1.5
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+AC CTR
+AN ATZ M AVIANO
+AL GND
+AH 2500MSL
+DP 46:01:48 N 012:28:40 E
+V D=+
+V X=46:01:48 N   012:35:51 E
+DB  46:01:48 N 012:28:40 E,  46:01:48 N 012:28:39 E
+
+
+AC CTR
+AN ATZ M GHEDI
+AL GND
+AH 3000MSL
+DP 45:30:18 N 010:11:12 E
+DP 45:22:34 N 010:22:23 E
+V D=+
+V X=45:26:25 N   010:16:45 E
+DB  45:22:34 N 010:22:23 E,  45:30:18 N 010:11:12 E
+
