@@ -18,22 +18,51 @@
 bool PVCOM_ProcessPEYI(PDeviceDescriptor_t d, const TCHAR *, NMEA_INFO *);
 
 
+
 void ReplaceNMEAControlChars(TCHAR *String)
 {
- if(String != NULL)
- {      
-   for (unsigned int i=0; i< _tcslen(String) ; i++)
-   { 
-       if(String[i] == _T('$')) {
-           String[i]=  _T('_');
-       }
-      
-       if(String[i] == _T('*')) {
-          String[i]=  _T('#');
-       }      
-    }    
-  }
+  if(String != NULL)
+  {      
+    for (unsigned int i=0; i< _tcslen(String) ; i++)
+   {
+     switch ((int)String[i])
+     {          
+       case  _T('$'): String[i]  = 's'; break;
+       case  _T('*'): String[i]  = '#'; break;
+#if ((WINDOWSPC >0)    ||  (PNA > 0))           
+       case  (int)_T('ü'): String[i]  = 'u'; break;
+       case  _T('ö'): String[i]  = 'o'; break;
+
+       case  _T('î'): 
+       case  _T('ì'): 
+       case  _T('ï'): String[i]  = 'i'; break;
+
+       case  _T('æ'): 
+       case  _T('ä'): 
+       case  _T('à'): 
+       case  _T('å'): 
+       case  _T('â'): String[i]  = 'a'; break;
+       case  _T('ß'): String[i]  = 's'; break;           
+       case  _T('Ü'): String[i]  = 'U'; break;
+       case  _T('Ö'): String[i]  = 'O'; break;
+
+       case  _T('é'): 
+       case  _T('ç'): 
+       case  _T('ê'): 
+       case  _T('ë'):                
+       case  _T('è'): String[i]  = 'e'; break;
+       case  _T('É'): String[i]  = 'E'; break;
+       case  _T('Å'): 
+       case  _T('Ä'): String[i]  = 'A'; break;       
+#endif                  
+       default:  String[i]  = String[i]; break;
+     }       
+     if(String[i] < 32) String[i]  = _T('_');
+     if(String[i] > 126) String[i]  = _T('_');
+   }
+ }
 }
+
 
 BOOL PVCOMInstall(PDeviceDescriptor_t d){
 
