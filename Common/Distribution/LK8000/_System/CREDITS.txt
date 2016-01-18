@@ -1,53 +1,133 @@
-[AUTHORS]
-WWW.LK8000.ORG
-2012.02.15
+[LK8000 AUTHORS]
+LK8000 Tactical Flight Computer - http://www.lk8000.org
 
-Original concept, design and development of LK8000 Project by Paolo Ventafridda, Italy
+Original concept, design and development of LK8000 Project by Paolo Ventafridda
+Core developers: Bruno de Lacheisserie, Ulli Heynen, Paolo Ventafridda
+Tobias Bieniek
+Eric Carden
+Oren Cohen
+Jozef Hartinger
+Max Kellermann
+Kuba Kubrynski
+Richard Pecl
+Mateusz Pusz
+Alberto Realis-Luc
+Kalman Rozsahegyi
+Karim Trojette
 
-  LK8000 Project Copyrights (c) by:
+LK8000 Project Copyrights:
 
-    Tobias Bieniek
-    Eric Carden
-    Oren Cohen
-    Jozef Hartinger
-    Ulli Heynen
-    Bruno de Lacheisserie
-    Kuba Kubrynski
-    Richard Pecl
-    Mateusz Pusz
-    Alberto Realis-Luc
-    Kalman Rozsahegyi
-    Karim Trojette
-    Paolo Ventafridda
-    John Wharington
+Bruno de Lacheisserie
+Ulli Heynen
+Paolo Ventafridda
 
-  Graphics by Jiri Bergman
-  Complete copyrights and contributors list is available on the main website.
+Tobias Bieniek
+Eric Carden
+Oren Cohen
+Jozef Hartinger
+Max Kellermann
+Kuba Kubrynski
+Richard Pecl
+Mateusz Pusz
+Alberto Realis-Luc
+Kalman Rozsahegyi
+Karim Trojette
 
+Graphics by Jiri Bergman
+Complete copyrights and contributors list is available on the main website.
 
-  LK8000 was forked off Xcsoar in year 2009.
-  Copyright (C) 2000 - 2009 XCSoar Authors from the 5.2.2/5.2.3 version:
+LK8000 was forked off Xcsoar in year 2009.
+Copyright (C) 2000 - 2009 XCSoar Authors from the 5.2.2/5.2.3 version:
 
-    M Roberts (original release)
-    Robin Birch
-    Samuel Gisiger
-    Jeff Goodenough
-    Alastair Harrison
-    Scott Penrose
-    John Wharington
-    Lars H
-    Rob Dunning
-    Russell King 
-    Paolo Ventafridda
-    Tobias Lohner
-    Simon Taylor
+M Roberts (original release)
+Robin Birch
+Samuel Gisiger
+Jeff Goodenough
+Alastair Harrison
+Scott Penrose
+John Wharington
+Lars H
+Rob Dunning
+Russell King 
+Paolo Ventafridda
+Tobias Lohner
+Simon Taylor
 
+Other contributors may be missing from the old 2009 xcsoar file, and will be added on demand.
+Since LK version 6 we are using code from XCSOAR contributed after the fork in 2009.
+Next page is dedicated to an updated list of XCSOAR current authors, some of which are also copyright owners of LK. 
 
-  Other contributors may be missing from the old xcsoar file, and will be added on demand.
+[XCsoar authors]
+XCSoar Glide Computer - http://www.xcsoar.org/
+Copyright (C) 2000-2015 The XCSoar Project
+
+The following people and organizations have contributed code to XCSoar.
+Some of them are also copyright owners of LK, some are not. Never mind.
+
+ Mike Roberts (original release)
+ Robin Birch <robinb@ruffnready.co.uk>
+ Samuel Gisiger <samuel.gisiger@triadis.ch>
+ Jeff Goodenough <jeff@enborne.f2s.com>
+ Alastair Harrison <aharrison@magic.force9.co.uk>
+ Scott Penrose <scottp@dd.com.au>
+ John Wharington <jwharington@gmail.com>
+ Lars H <lars_hn@hotmail.com>
+ Rob Dunning <rob@raspberryridgesheepfarm.com>
+ Russell King <rmk@arm.linux.org.uk>
+ Paolo Ventafridda <coolwind@email.it>
+ Tobias Lohner <tobias@lohner-net.de>
+ Mirek Jezek <mjezek@ipplc.cz>
+ Max Kellermann <max@duempel.org>
+ Tobias Bieniek <tobias.bieniek@gmx.de>
+ Simon Taylor <simon.taylor.uk@gmail.com>
+ Matthew Scutter <yellowplantain@gmail.com>
+ Gabor Liptak <liptakgabor@freemail.hu>
+ Matthew Turnbull <matthewt@talk21.com>
+ Olaf Hartmann <olaf.hartmann@s1998.tu-chemnitz.de>
+ Andreas Pfaller <pfaller@gmail.com>
+ Florian Reuter <flo.reuter@web.de>
+ Christophe Mutricy <xtophe@chewa.net>
+ Philipp Wollschlegel <folken@kabelsalat.ch>
+ Roman Stoklasa <rstoki@gmail.com>
+ Mateusz Pusz <mateusz.pusz@gmail.com>
+ Google Inc., incl. Tom Stepleton <stepleton@google.com>
+ James Ward <jamesward22@gmail.com>
+ Santiago Berca <santiberca@yahoo.com.ar>
+ Winfried Simon <winfried.simon@googlemail.com>
+ Damiano Bortolato <damiano@damib.net>
+ Ulrich Heynen <u.heynen@web.de>
+ David Wheeler <davidrwheeler@gmail.com>
+ Henrik Bieler <Henrik.Bieler@nospamgmx.de>
+ Andreas K. Wasserbauer <akw@alpensegler.org>
+ Frank Paynter <paynterf@gmail.com>
+ Frank van der Hulst <drifter.frank@gmail.com>
+ Felix Hädicke <felixhaedicke@web.de>
+ Melissa Jenkins <melissa-xcsoar@littlebluecar.co.uk>
+ Alexander Lehmann <a.lehm@gmx.de>
+ Christian Körner <christian_koerner@web.de>
+ Mindaugas Milasauskas <mindmil@gmail.com>
+ Benjamin Tissoires <benjamin.tissoires@gmail.com>
+ Florian Mösch <florian@moesch.org>
+ Lloyd Bailey <3dairspace@lloydbailey.net>
+ Timo Bruderek <timo.bruderek@gmx.de>
+ Steffen Engel <steffen.engel@nutrimat.de>
+ Alex Graf <xcsoar@grafitation.ch>
+ Thomas Ruf <Thomas.Ruf@computer.org>
+ Fabian Berstecher <fabian.berstecher@rbe-avionik.de>
+
 
 [GPL LICENCE]  
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; 
+either version 2 of the License, or (at your option) any later version.
 
-You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; 
+if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+Source code can be found at http://www.github.com/LK8000
+
+
+
