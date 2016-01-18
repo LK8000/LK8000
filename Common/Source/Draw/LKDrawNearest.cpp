@@ -1270,7 +1270,11 @@ _KeepOldAirspacesValues:
         invsel.bottom -= NIBLSCALE(1); // interline
 #endif
 
+#ifdef UNDITHER
+        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_WHITE : RGB_BLACK));
+#else
         LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN));
+#endif
         Surface.SelectObject(SelectBorder);
         Surface.SelectObject(LK_HOLLOW_BRUSH);
         invsel.left -= NIBLSCALE(2); invsel.right += NIBLSCALE(2);
