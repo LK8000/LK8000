@@ -134,7 +134,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             _tcscat(Buffer, _T(" "));
             _tcscat(Buffer, Units::GetDistanceName());
         }
-#warning "to much call with same input"
+        // #warning "to much call with same input"
+        // We do like this for better code understanding
         Surface.GetTextSize(Buffer, &K1TextSize[MSM_LANDABLE]);
         Surface.GetTextSize(Buffer, &K1TextSize[MSM_AIRPORTS]);
         Surface.GetTextSize(Buffer, &K1TextSize[MSM_NEARTPS]);
