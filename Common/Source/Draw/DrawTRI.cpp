@@ -430,13 +430,10 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
 
   double gamma =  -DrawInfo.Pitch;
 beta = -beta;
-#ifdef KOBO
+
   double beta_sine = fastsine(beta+360);
   double beta_cosine = fastcosine(beta+360);
-#else
-  double beta_sine = fastsine(beta);
-  double beta_cosine = fastcosine(beta);
-#endif
+
   const BrushReference hbWhite =LKBrush_Lake;// LKBrush_White;
   const BrushReference hbBorder = LKBrush_Grey;
 
@@ -532,11 +529,9 @@ for (int i = -30; i <= 30 ; i+=5)
     lenght = radius/5;
   int offaxis;
   POINT newcenter;
-#ifdef KOBO
+
   offaxis = (int)(radius * fastsine(i+360));
-#else
-  offaxis = (int)(radius * fastsine(i));
-#endif
+  
   newcenter.x = (long)(offaxis * beta_sine);
   newcenter.y = (long)(-offaxis * beta_cosine);
 
