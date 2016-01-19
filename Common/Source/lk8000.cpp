@@ -228,6 +228,12 @@ int main(int argc, char *argv[]) {
     #endif
   StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
+  #if BUGSTOP
+  StartupStore(TEXT(". BUGSTOP option enabled%s"),NEWLINE);
+  #endif
+  #if USELKASSERT
+  StartupStore(TEXT(". USELKASSERT option enabled%s"),NEWLINE);
+  #endif
 
   ScreenGlobalInit InitScreen;
   SoundGlobalInit InitSound;
