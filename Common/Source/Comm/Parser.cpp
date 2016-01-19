@@ -773,7 +773,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	#ifdef DEBUG_GPS
 	if (ggafix>5) StartupStore(_T("------ GGA DEAD RECKON fix skipped%s"),NEWLINE);
 	#endif
-#ifndef NDEBUG
+#ifdef YDEBUG
     // in debug we need accept manual or simulated fix
     gpsValid = (ggafix == 7 || ggafix == 8); 
 #else

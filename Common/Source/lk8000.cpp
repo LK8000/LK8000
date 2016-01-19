@@ -188,7 +188,7 @@ int main(int argc, char *argv[]) {
   StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
   #ifdef __linux__
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
-  
+ 
   struct utsname sysinfo = {};
   if(uname(&sysinfo) == 0) {
     StartupStore(". System Name:    %s %s" NEWLINE, sysinfo.sysname, sysinfo.nodename);
@@ -226,7 +226,15 @@ int main(int argc, char *argv[]) {
 
         #endif
     #endif
-  StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
+    StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
+  #endif
+
+  // WE NEED TO KNOW IN RUNTIME WHEN THERE OPTIONS ARE ENABLED, EVEN WITH NO TESTBENCH!
+  #ifndef NDEBUG
+  StartupStore(TEXT(". DEBUG enabled in makefile%s"),NEWLINE);
+  #endif
+  #if YDEBUG
+  StartupStore(TEXT(". YDEBUG option enabled%s"),NEWLINE);
   #endif
   #if BUGSTOP
   StartupStore(TEXT(". BUGSTOP option enabled%s"),NEWLINE);
