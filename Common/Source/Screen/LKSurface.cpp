@@ -660,6 +660,27 @@ void LKSurface::Rectangle(int nLeftRect, int nTopRect, int nRightRect, int nBott
 #endif
 }
 
+
+#ifndef ENABLE_OPENGL
+// Do not use InvertRect with OPENGL, yet
+bool LKSurface::InvertRect(const RECT& rc) {
+#ifdef WIN32
+    return ::InvertRect(*this, &rc);
+#elif !defined(ENABLE_OPENGL)
+    if(_pCanvas) {
+        _pCanvas->InvertRectangle(rc);
+        return true;
+    }
+    return false;
+#else
+#warning "Not Implemented"
+    return false;
+#endif
+}
+#endif
+
+
+
 bool LKSurface::RoundRect(const RECT& rc, int nWidth, int nHeight) {
 #ifdef WIN32
     return ::RoundRect(*this, rc.left, rc.top, rc.right, rc.bottom, nWidth, nHeight);

@@ -1271,6 +1271,9 @@ _KeepOldAirspacesValues:
         invsel.bottom -= NIBLSCALE(1); // interline
 #endif
 
+        // HIGHLIGHT user selection. Bordering will not be the same, under the sun not visible!
+        // TO BE CHECKED CAREFULLY
+#ifdef ENABLE_OPENGL
 #ifdef UNDITHER
         LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_WHITE : RGB_BLACK));
 #else
@@ -1280,6 +1283,10 @@ _KeepOldAirspacesValues:
         Surface.SelectObject(LK_HOLLOW_BRUSH);
         invsel.left -= NIBLSCALE(2); invsel.right += NIBLSCALE(2);
         Surface.RoundRect(invsel, 5, 5);
+#else
+        Surface.InvertRect(invsel);
+#endif
+
     }
 
     LKevent = LKEVENT_NONE;
