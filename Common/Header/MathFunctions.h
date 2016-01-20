@@ -39,11 +39,7 @@ double ScreenAngle(int x1, int y1, int x2, int y2);
 // Fast trig functions
 void InitSineTable(void);
 
-#ifdef __MINGW32__
 #define DEG_TO_INT(x) ((unsigned short)(int)((x)*(65536.0/360.0)))>>4
-#else
-#define DEG_TO_INT(x) ((unsigned short)((x)*(65536.0/360.0)))>>4
-#endif
 
 extern double COSTABLE[4096];
 extern double SINETABLE[4096];
