@@ -24,6 +24,8 @@
 #define MAXNOTELIMITER 50	// character reserved for last line comment on note oversized
 #define NOTECONTINUED		"\r\n          >>>>>\r\n"
 
+#define ENDOFLINE  "\n"         // \r\n  in v5
+
 int page=0;
 WndForm *wf=NULL;
 WndListFrame *wDetails=NULL;
@@ -213,7 +215,7 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
   if (TempString[0]=='[') { // Look for start
     // we found the beginning of a new note, so we may save the last one, if not empty
     if (inDetails) {
-      _tcscat(Details,TEXT("\r\n"));
+      _tcscat(Details,TEXT(ENDOFLINE));
       addChecklist(Name, Details);
       Details[0]= 0;
       Name[0]= 0;
@@ -235,7 +237,7 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
     // append text to details string
     // we already know we have enough space
     _tcsncat(Details,TempString,MAXNOTEDETAILS-2);
-    _tcscat(Details,TEXT("\r\n"));
+    _tcscat(Details,TEXT(ENDOFLINE));
   } // not a new start line
 } // AddChecklistLine
 
@@ -255,7 +257,7 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
   }
 
   #if TESTBENCH
-  StartupStore(_T(". Loading notes <%s>%s"),fileName,NEWLINE);
+  StartupStore(_T(". Loading Ascii notes <%s>%s"),fileName,NEWLINE);
   #endif
 
   TCHAR TempString[MAXNOTEDETAILS+1];
@@ -269,6 +271,7 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
 
   charset cs = charset::unknown;  
   while (ReadStringX(stream, MAXNOTETITLE, TempString, cs)) {
+/*
     size_t len = _tcslen(TempString);
     if (len > 0) {
       if (TempString[len - 1] == '\r') {
@@ -282,12 +285,13 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
         TempString[len - 1]= 0;
       }
     }
-    
+*/
+  
     AddChecklistLine(TempString, Details, Name, inDetails);
   } // while
   
   if (inDetails) {
-    _tcscat(Details,TEXT("\r\n"));
+    _tcscat(Details,TEXT(ENDOFLINE));
     addChecklist(Name, Details);
   }
   
@@ -311,7 +315,7 @@ static bool LoadUtfChecklist(const TCHAR* fileName) {
   }
 
   #if TESTBENCH
-  StartupStore(_T(". Loading notes <%s>%s"),fileName,NEWLINE);
+  StartupStore(_T(". Loading UTF notes <%s>%s"),fileName,NEWLINE);
   #endif
 
   TCHAR TempString[MAXNOTETITLE];
@@ -332,7 +336,7 @@ static bool LoadUtfChecklist(const TCHAR* fileName) {
   } // while
   
   if (inDetails) {
-    _tcscat(Details,TEXT("\r\n"));
+    _tcscat(Details,TEXT(ENDOFLINE));
     addChecklist(Name, Details);
   }
  
