@@ -87,16 +87,16 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
   // if (!ConfIP[ModeIndex][CURTYPE]) NextModeType();
   switch (MapSpaceMode) {
 	case MSM_WELCOME:
-#if 1
+#if 0
 		SetModeType(LKMODE_MAP,MP_MOVING);
 		RefreshMap();
 		break;
 #endif
-#if (0)
+#if (1)
 		if (!DrawInfo.NAVWarning) { 
 		static double firsttime=DrawInfo.Time;
 		// delayed automatic exit from welcome mode
-		if ( DrawInfo.Time > (firsttime+1.0) ) {
+		if ( DrawInfo.Time > (firsttime+3.0) ) {
 			SetModeType(LKMODE_MAP,MP_MOVING);
 			LKevent=LKEVENT_NONE;
 			LKSound(_T("LK_BEEP1.WAV"));

@@ -55,19 +55,31 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   #endif
 
+  if (HaveSystemInfo) {
+     _stprintf(Buffer, _T("CPUs: #%d running at %d Mhz, %d bogoMips"),SystemInfo_Cpus(),
+     SystemInfo_Mhz(), SystemInfo_Bogomips());
+     y+=(textSize.cy);
+     LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
+  }
+
+
+
   _tcscpy(Buffer,_T(""));
-  if (SIMMODE) _stprintf(Buffer,_T("(simul)"));
+  if (SIMMODE) _stprintf(Buffer,_T("SIMU"));
   #if TESTBENCH
-  _tcscat(Buffer,_T(" (test)"));
+  _tcscat(Buffer,_T(",TEST"));
   #endif
   #ifndef NDEBUG
-  _tcscat(Buffer,_T(" (debug)"));
+  _tcscat(Buffer,_T(",DEBG"));
+  #endif
+  #ifdef YDEBUG
+  _tcscat(Buffer,_T(",YDBG"));
   #endif
   #if BUGSTOP
-  _tcscat(Buffer,_T(" (bstop)"));
+  _tcscat(Buffer,_T(",BSTOP"));
   #endif
   #if USELKASSERT
-  _tcscat(Buffer,_T(" (assert)"));
+  _tcscat(Buffer,_T(",ASRT"));
   #endif
   if (_tcslen(Buffer)>0) {
       y+=(textSize.cy);
@@ -88,14 +100,14 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   y+=(textSize.cy)/2; // spacing
 
   if (GPSAltitudeOffset != 0) {
-      _stprintf(Buffer, _T("Reminder: HGPS offset: %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); 
+      _stprintf(Buffer, _T("WARNING: HGPS offset: %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); 
       y+=(textSize.cy);
       LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   }
 
-  _stprintf(Buffer,TEXT("Click to continue"));
+  _stprintf(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
   y= rc.bottom-BottomSize-textSize.cy-NIBLSCALE(2);
-  LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
+  LKWriteText(Surface, Buffer,(rc.right-rc.left)/2, y , WTMODE_NORMAL, WTALIGN_CENTER,RGB_WHITENOREV, false);
 
 
 }
