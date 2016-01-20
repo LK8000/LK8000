@@ -429,14 +429,11 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   }
 
   double gamma =  -DrawInfo.Pitch;
-beta = -beta;
-#ifdef KOBO
-  double beta_sine = fastsine(beta+360);
-  double beta_cosine = fastcosine(beta+360);
-#else
+
+  beta  = -beta;
   double beta_sine = fastsine(beta);
   double beta_cosine = fastcosine(beta);
-#endif
+
   const BrushReference hbWhite =LKBrush_Lake;// LKBrush_White;
   const BrushReference hbBorder = LKBrush_Grey;
 
@@ -447,9 +444,12 @@ beta = -beta;
 /***************************************************************************************/
 
   POINT earth[GC_NO_CIRCLE_PTS+2];
-
+  POINT left, right;
   int alphastep = 360/GC_NO_CIRCLE_PTS;
-
+  right.x  = Start.x + (LONG) ( radius*fastcosine( beta + gamma));
+  right.y  = Start.y + (LONG) ( radius*fastsine  ( beta + gamma));
+  left.x   = Start.x - (LONG) ( radius*fastcosine( beta - gamma));
+  left.y   = Start.y + (LONG) ( radius*fastsine  (-beta + gamma));
 
   int betacircle =  (int)beta%360;
   if (betacircle < 0)
@@ -458,7 +458,7 @@ beta = -beta;
   int angleright  = (int)(betacircle + gamma) + 90;angleright %= 360;
   int iCnt =0;
 
-
+  earth[iCnt++] = right;
   int steps = (angleleft - angleright )/alphastep;
   if(steps <0)
    steps += GC_NO_CIRCLE_PTS;
@@ -474,20 +474,16 @@ beta = -beta;
 	  earth[iCnt++] =  circle[alpha];
     alpha++;
   }
-	
   if(iCnt <= GC_NO_CIRCLE_PTS)
-    earth[iCnt++] =  earth[0];
+	earth[iCnt++] =  left;
+
 
 
 
 
   /*********************************************************************************************/
     LKPen   hpHorizonGround(PEN_SOLID, IBLSCALE(1),RGB_BLACK);
-    #ifdef KOBO
-      LKBrush hbHorizonGround(LKColor(125,20,0));
-    #else
-      LKBrush hbHorizonGround(LKColor(255,140,0));
-    #endif    
+    LKBrush hbHorizonGround(LKColor(255,140,0));
     const auto oldpen = Surface.SelectObject(hpHorizonGround);
     const auto oldbrush = Surface.SelectObject(hbHorizonGround);
 
@@ -532,11 +528,7 @@ for (int i = -30; i <= 30 ; i+=5)
     lenght = radius/5;
   int offaxis;
   POINT newcenter;
-#ifdef KOBO
-  offaxis = (int)(radius * fastsine(i+360));
-#else
   offaxis = (int)(radius * fastsine(i));
-#endif
   newcenter.x = (long)(offaxis * beta_sine);
   newcenter.y = (long)(-offaxis * beta_cosine);
 
