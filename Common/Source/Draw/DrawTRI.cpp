@@ -483,7 +483,12 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
 
   /*********************************************************************************************/
     LKPen   hpHorizonGround(PEN_SOLID, IBLSCALE(1),RGB_BLACK);
-    LKBrush hbHorizonGround(LKColor(255,140,0));
+#ifdef KOBO
+  LKBrush hbHorizonGround(LKColor(125,20,0));
+#else
+  LKBrush hbHorizonGround(LKColor(255,140,0));
+#endif
+
     const auto oldpen = Surface.SelectObject(hpHorizonGround);
     const auto oldbrush = Surface.SelectObject(hbHorizonGround);
 
