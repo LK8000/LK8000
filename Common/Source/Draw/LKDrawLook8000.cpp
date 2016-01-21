@@ -466,10 +466,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         // This should never happen, as we always have a valid overmode
         
         if (Overlay_TopLeft) {
+            Surface.SelectObject(LK8OverlayMediumFont);
             GetOvertargetName(Buffer);
             CharUpper(Buffer);
-            Surface.SelectObject(LK8OverlayBigFont); // use this font for big values
-            RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + SizeBigFont.cy };
+            RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + SizeMediumFont.cy };
             LKWriteText(Surface, Buffer, rcx, topmargin, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
         }
     }
