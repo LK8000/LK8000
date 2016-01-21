@@ -172,7 +172,7 @@ _tryagain:
   }
 
   // Skip Last Thermal if no thermal is detected ...
-  if(OvertargetMode==OVT_THER && (!ValidWayPoint(RESWP_LASTTHERMAL))) {
+  if(OvertargetMode==OVT_THER && (!ValidResWayPoint(RESWP_LASTTHERMAL))) {
 	goto _tryagain;
   }
 
