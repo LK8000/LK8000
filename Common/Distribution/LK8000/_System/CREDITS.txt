@@ -6,6 +6,7 @@ Core developers: Bruno de Lacheisserie, Ulli Heynen, Paolo Ventafridda
 Tobias Bieniek
 Eric Carden
 Oren Cohen
+Vladimir Fux
 Jozef Hartinger
 Max Kellermann
 Kuba Kubrynski
