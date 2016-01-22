@@ -188,7 +188,11 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
       Surface.RoundRect(brect, NIBLSCALE(4), NIBLSCALE(4));
       Surface.SelectObject(oldPen);
       if (Mode->SetTextColor) Surface.SetTextColor(Mode->Color); else Surface.SetTextColor(RGB_BLACK);
+#ifndef __linux__
       Surface.DrawText(x, y, Value);
+#else
+      Surface.DrawText(x, y+NIBLSCALE(1), Value);
+#endif
       drawn=true;
     }
 
