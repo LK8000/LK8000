@@ -48,14 +48,12 @@ WndMain MainWindow; // Main Window singleton
 
 BOOL	InitInstance    (int);
 
-extern void FillDataOptions(void);
 extern void StartupLogFreeRamAndStorage();
 extern bool ScreenHasChanged(void);
 
 void PreloadInitialisation(bool ask) {
   LKLanguageReady=false;
   LKReadLanguageFile(szLanguageFile);
-  FillDataOptions(); // Load infobox list
 
   if (ask) {
     // Load default profile and status file: we are at an early stage

@@ -15,8 +15,8 @@
 typedef struct _DATAOPTIONS
 {
   UnitGroup_t UnitGroup;
-  TCHAR Description[DESCRIPTION_SIZE +1];
-  TCHAR Title[TITLE_SIZE + 1];
+  const TCHAR* Description;
+  const TCHAR* Title;
 } DATAOPTIONS;
 
 

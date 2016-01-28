@@ -15,16 +15,14 @@
 //
 bool SetDataOption( int index, UnitGroup_t UnitGroup, const TCHAR *Description, const TCHAR *Title)
 {
-	DATAOPTIONS tag;
 	LKASSERT(index<NUMDATAOPTIONS_MAX);
 	if (index>=NUMDATAOPTIONS_MAX) return false;
 
-	tag.UnitGroup = UnitGroup;
-	// if we have Description, we also have Title
-	LK_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE); 
-	LK_tcsncpy(tag.Title, gettext(Title), TITLE_SIZE);
-
-	memcpy(&Data_Options[index], &tag, sizeof(DATAOPTIONS));
+    Data_Options[index] = {
+        UnitGroup,
+        gettext(Description),
+        gettext(Title)
+    };
 	if (NumDataOptions<=index) NumDataOptions=index+1; //No. of items = max index+1
 
 	return true;
@@ -34,6 +32,9 @@ bool SetDataOption( int index, UnitGroup_t UnitGroup, const TCHAR *Description, 
 
 void FillDataOptions()
 {
+    // cleanup array, madatory for avoid to have pointer to freed string.
+    std::fill(std::begin(Data_Options), std::end(Data_Options), DATAOPTIONS{});
+    
 	// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt"
 	SetDataOption(0, ugAltitude,		TEXT("_@M1001_"), TEXT("_@M1002_"));
 	// LKTOKEN  _@M1003_ = "Altitude AGL", _@M1004_ = "HAGL"
@@ -301,5 +302,16 @@ void FillDataOptions()
 	SetDataOption(130, ugNone, TEXT("_@M1287_"), TEXT("HDG")); // Heading, text is changed in lkprocess
 
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
+    static_assert(130 < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
 
+    
+    // Fill all null string pointer with empty string, avoid to check all time is used.
+    for(auto tag : Data_Options) {
+        if(!tag.Description) {
+            tag.Description = _T("");
+        }
+        if(!tag.Title) {
+            tag.Title = _T("");
+        }
+    }
 }
