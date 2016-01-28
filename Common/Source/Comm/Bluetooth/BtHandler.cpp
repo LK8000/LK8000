@@ -34,11 +34,10 @@ BT_ADDR StrToBTAddr(const TCHAR* szAddr) {
     
     if(iLen>=12) {
         csS = csTmp.substr(0, 4);
-        if (_tscanf(csS.c_str(), _T("%x"), &nap) != 1)
-            nap = 0;
+        nap = _tcstoul(csS.c_str(), nullptr, 16);
+
         csS = csTmp.substr(4, std::string::npos);
-        if (_tscanf(csS.c_str(), _T("%X"), &sap) != 1)
-            sap = 0;
+        sap = _tcstoul(csS.c_str(), nullptr, 16);
 
         ba = SET_NAP_SAP(nap, sap);
     }
