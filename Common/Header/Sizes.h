@@ -65,8 +65,6 @@
 // #define FLARM_MAX_TRAFFIC 15
 #define MAXSATELLITES 12
 
-#define DESCRIPTION_SIZE 40			// Infobox descriptions aka LK DataOptions
-#define TITLE_SIZE 20				// Infobox titles  aka LK DataOptions
 #define FORMAT_SIZE 20
 // task points enlarged from 10 to 20 and then from 20 to 50
 #define MAXTASKPOINTS 50

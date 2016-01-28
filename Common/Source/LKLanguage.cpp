@@ -23,6 +23,8 @@ TCHAR LKLangSuffix[4];
 
 bool LKLoadMessages(bool fillup);
 
+extern void FillDataOptions(void);
+
 // _@Hnnnn@
 // minimal: _@H1_  maximal: _@H1234_
 // this function is not thread safe ...
@@ -305,6 +307,8 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
 	}
   }
   zzip_fclose(langFile);
+
+  FillDataOptions(); // Load infobox list
   return;
 }
 
