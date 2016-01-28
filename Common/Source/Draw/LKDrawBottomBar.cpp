@@ -15,6 +15,7 @@
 #include "DoInits.h"
 #include "McReady.h"
 #include "Screen/LKBitmapSurface.h"
+#include "Util/UTF8.hpp"
 
 
 extern NMEAParser nmeaParser1;
@@ -22,6 +23,19 @@ extern NMEAParser nmeaParser2;
 
 // Approx.size of the bottom-right icon corner on the bottom bar
 #define BB_ICONSIZE NIBLSCALE(26)
+
+void CropString(TCHAR* String, unsigned max_char) {
+#ifdef UNICODE
+    String[max_char] = _T('\0');
+#else
+    // utf8 : number of Char are not equal to Number of Byte, we need to iterate each code point
+    auto next = NextUTF8(String);
+    while (next.second && --max_char) {
+        next = NextUTF8(next.second);
+    }
+    next.second = '\0';
+#endif
+}
 
 void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 {
@@ -183,7 +197,7 @@ _afterautotrm:
 	case BM_TRM:
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CRU:
 		if (ISCAR)
@@ -217,7 +231,7 @@ _afterautotrm:
 		break;
 	case BM_ALT:
 		showunit=LKFormatValue(LK_BESTALTERN_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_SYS:
 		showunit=LKFormatValue(LK_BATTERY, true, BufferValue, BufferUnit, BufferTitle); // 100221
@@ -225,17 +239,17 @@ _afterautotrm:
 	case BM_CUS2:
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CUS3:
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(1);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 
 	default:
@@ -259,7 +273,7 @@ _afterautotrm:
 	case BM_TRM:
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CRU:
 		showunit=LKFormatValue(LK_GNDSPEED, true, BufferValue, BufferUnit, BufferTitle);
@@ -297,7 +311,7 @@ _afterautotrm:
 			_tcscpy(BufferTitle,_T("<<<"));
 		} else {
 			showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle);
-			BufferTitle[7]='\0';
+			CropString(BufferTitle, 7);
 		}
 		break;
 	case BM_SYS:
@@ -307,18 +321,18 @@ _afterautotrm:
 	case BM_CUS2:
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(2);
 		showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 
 	default:
@@ -351,7 +365,7 @@ _afterautotrm:
 	case BM_TRM:
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CRU:
 		showunit=LKFormatValue(LK_HNAV, true, BufferValue, BufferUnit, BufferTitle); // 100221
@@ -385,7 +399,7 @@ _afterautotrm:
 			showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		else
 			showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_SYS:
   		showunit=true;
@@ -417,18 +431,18 @@ _afterautotrm:
 	case BM_CUS2:
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(3);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 
 	default:
@@ -460,7 +474,7 @@ _afterautotrm:
 	case BM_TRM:
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CRU:
 		showunit=LKFormatValue(LK_TRACK, true, BufferValue, BufferUnit, BufferTitle);
@@ -507,18 +521,18 @@ _afterautotrm:
 	case BM_CUS2:
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(4);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 
 	default:
@@ -549,7 +563,7 @@ _afterautotrm:
 	case BM_TRM:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CRU: 
 		if (ISCAR) {
@@ -599,7 +613,7 @@ _afterautotrm:
 	case BM_ALT:
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
-			BufferTitle[7]='\0';
+			CropString(BufferTitle, 7);
 		} else {
 			showunit=LKFormatValue(LK_ALTERN1_ARRIV, false, BufferValue, BufferUnit, BufferTitle); // 100221
 			_tcscpy(BufferTitle,_T(""));
@@ -623,18 +637,18 @@ _afterautotrm:
 	case BM_CUS2:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(5);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 
 	default:
@@ -666,7 +680,7 @@ _afterautotrm:
 	case BM_TRM:
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CRU:
 		if (ISCAR)
@@ -699,18 +713,18 @@ _afterautotrm:
 	case BM_CUS2:
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(6);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 
 	default:
@@ -742,7 +756,7 @@ _afterautotrm:
 	case BM_TRM:
 		index=GetInfoboxIndex(7,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CRU:
 		if (ISCAR)
@@ -771,18 +785,18 @@ _afterautotrm:
 	case BM_CUS2:
 		index=GetInfoboxIndex(7,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(7,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(7);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 
 	default:
@@ -814,7 +828,7 @@ _afterautotrm:
 	case BM_TRM:
 		index=GetInfoboxIndex(8,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CRU:
 		if (ISCAR)
@@ -840,18 +854,18 @@ _afterautotrm:
 	case BM_CUS2:
 		index=GetInfoboxIndex(8,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(8,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(8);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+		CropString(BufferTitle, 7);
 		break;
 
 	default:
