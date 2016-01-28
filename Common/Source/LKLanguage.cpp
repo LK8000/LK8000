@@ -10,6 +10,7 @@
 #include "DoInits.h"
 #include "utils/stl_utils.h"
 #include "utils/openzip.h"
+#include "Util/UTF8.hpp"
 
 //#define DEBUG_GETTEXT	1
 #define LKD_LANGUAGE	"_Language"
@@ -449,16 +450,17 @@ bool LKLoadMessages(bool fillup) {
 				switch(scaptraw[i+1]) {
 					case 'n':
 						tcode='\n';
+						i++;
 						break;
 					case 'r':
 						tcode='\r';
+						i++;
 						break;
 					default:
-						tcode=' ';
+						tcode='\\';
 						break;
 				}
 				scapt[j++]=tcode;
-				i++;
 				donetcode=true;
 			}
 		}
@@ -484,6 +486,10 @@ bool LKLoadMessages(bool fillup) {
 		StartupStore(_T("... Fillup: message index %d is missing from translation\n"),inumber);
 	#endif
 	#endif	
+
+#ifndef UNICODE
+    assert(ValidateUTF8(scapt));
+#endif	
 
 	LKMessages[inumber] = (TCHAR *)malloc((_tcslen(scapt)+1)*sizeof(TCHAR));
 	LKASSERT(LKMessages[inumber]!=NULL);
