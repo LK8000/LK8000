@@ -65,7 +65,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
 
   _tcscpy(Buffer,_T(""));
-  if (SIMMODE) _stprintf(Buffer,_T("SIMU"));
+  if (SIMMODE) _stprintf(Buffer,_T("SIMU")); else _stprintf(Buffer,_T("FLY"));
   #if TESTBENCH
   _tcscat(Buffer,_T(",TEST"));
   #endif
