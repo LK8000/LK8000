@@ -201,14 +201,10 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 13:
-			switch(UseTotalEnergy) {
-				case 0:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2115),MsgToken(894)); // TE ON
-					break;
-				case 1:
-				default:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2115),MsgToken(491)); // TE OFF
-					break;
+			if(UseTotalEnergy) {
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2115),MsgToken(894)); // TE ON
+            } else {
+                _stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2115),MsgToken(491)); // TE OFF
 			}
 			break;
 

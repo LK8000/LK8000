@@ -79,64 +79,60 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
     //rgb_text=RGB_MAGENTA;
     bool moreoutline = false;
 
-    switch (lwmode) {
-        case WTMODE_OUTLINED:
-        {
-            //
-            // First set a background color for outlining
-            // black outline requires more width, to gain contrast.
-            //
+    if(lwmode) { // WTMODE_OUTLINED:
+        //
+        // First set a background color for outlining
+        // black outline requires more width, to gain contrast.
+        //
 
-            const Color2Outline_t* It = std::find_if(std::begin(ColorOutLine), std::end(ColorOutLine),
-                                                        std::bind(
-                                                            std::equal_to<Color2Outline_t::first_type>(),
-                                                            std::bind(&Color2Outline_t::first, _1), textColor));
-            if (It != std::end(ColorOutLine)) {
-                // Here we invert colors, looking at the foreground. The trick is that the foreground
-                // colour is slightly different white to white, in order to understand how to invert it
-                // correctly!
-                Surface.SetTextColor(It->second.first);
-                moreoutline = It->second.second;
-            } else {
-                // this is the default also for white text. Normally we are writing on a 
-                // not-too-light background                
-                Surface.SetTextColor(RGB_BLACK);
-                moreoutline = true;
-            }
+        const Color2Outline_t* It = std::find_if(std::begin(ColorOutLine), std::end(ColorOutLine),
+                                                    std::bind(
+                                                        std::equal_to<Color2Outline_t::first_type>(),
+                                                        std::bind(&Color2Outline_t::first, _1), textColor));
+        if (It != std::end(ColorOutLine)) {
+            // Here we invert colors, looking at the foreground. The trick is that the foreground
+            // colour is slightly different white to white, in order to understand how to invert it
+            // correctly!
+            Surface.SetTextColor(It->second.first);
+            moreoutline = It->second.second;
+        } else {
+            // this is the default also for white text. Normally we are writing on a 
+            // not-too-light background                
+            Surface.SetTextColor(RGB_BLACK);
+            moreoutline = true;
+        }
 
-            // 
-            // Simplified, shadowing better and faster
-            // ETO_OPAQUE not necessary since we pass a NULL rect
-            //
+        // 
+        // Simplified, shadowing better and faster
+        // ETO_OPAQUE not necessary since we pass a NULL rect
+        //
 #ifdef USE_FREETYPE
 #warning "to slow, rewrite using freetype outline"
 #endif
-            Surface.DrawText(x - 1, y - 1, wText, ClipRect);
-            Surface.DrawText(x - 1, y + 1, wText, ClipRect);
-            Surface.DrawText(x + 1, y - 1, wText, ClipRect);
-            Surface.DrawText(x + 1, y + 1, wText, ClipRect);
+        Surface.DrawText(x - 1, y - 1, wText, ClipRect);
+        Surface.DrawText(x - 1, y + 1, wText, ClipRect);
+        Surface.DrawText(x + 1, y - 1, wText, ClipRect);
+        Surface.DrawText(x + 1, y + 1, wText, ClipRect);
 
-            // SetTextColor(hDC,RGB_GREY);  // This would give an Emboss effect
-            // Surface.DrawText(x, y+2, 0, wText, maxsize);
+        // SetTextColor(hDC,RGB_GREY);  // This would give an Emboss effect
+        // Surface.DrawText(x, y+2, 0, wText, maxsize);
 
-            if (moreoutline) {
-                Surface.DrawText(x - 2, y, wText, ClipRect);
-                Surface.DrawText(x + 2, y, wText, ClipRect);
-                Surface.DrawText(x, y - 2, wText, ClipRect);
-                Surface.DrawText(x, y + 2, wText, ClipRect);
-            }
-
-            Surface.SetTextColor(textColor);
-            Surface.DrawText(x, y, wText, ClipRect);
-            Surface.SetTextColor(RGB_BLACK);
-            break;
+        if (moreoutline) {
+            Surface.DrawText(x - 2, y, wText, ClipRect);
+            Surface.DrawText(x + 2, y, wText, ClipRect);
+            Surface.DrawText(x, y - 2, wText, ClipRect);
+            Surface.DrawText(x, y + 2, wText, ClipRect);
         }
-        case WTMODE_NORMAL:
 
-            Surface.SetTextColor(textColor);
-            Surface.DrawText(x, y, wText, ClipRect);
-            Surface.SetTextColor(RGB_BLACK);
-            break;
+        Surface.SetTextColor(textColor);
+        Surface.DrawText(x, y, wText, ClipRect);
+        Surface.SetTextColor(RGB_BLACK);
+
+    } else { // WTMODE_NORMAL:
+
+        Surface.SetTextColor(textColor);
+        Surface.DrawText(x, y, wText, ClipRect);
+        Surface.SetTextColor(RGB_BLACK);
 
     }
 
