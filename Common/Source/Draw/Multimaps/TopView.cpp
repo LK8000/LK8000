@@ -229,7 +229,7 @@ _nomoredeclutter:
   {
      case TRACKUP:
 	// Are we are not topview fullscreen?
-	if (Current_Multimap_SizeY<SIZE4 && !MapSpaceMode==MSM_VISUALGLIDE) {
+	if (Current_Multimap_SizeY<SIZE4 && !(MapSpaceMode==MSM_VISUALGLIDE)) {
 		Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
 	} else {
 	    if (TrackBar) {
