@@ -64,8 +64,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
 
 
-  _tcscpy(Buffer,_T(""));
-  if (SIMMODE) _stprintf(Buffer,_T("SIMU")); else _stprintf(Buffer,_T("FLY"));
+  _tcscpy(Buffer, (SIMMODE) ? _T("SIMU") : _T("FLY"));
   #if TESTBENCH
   _tcscat(Buffer,_T(",TEST"));
   #endif
@@ -105,7 +104,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
       LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   }
 
-  _stprintf(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
+  _tcscpy(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
   y= rc.bottom-BottomSize-textSize.cy-NIBLSCALE(2);
   LKWriteText(Surface, Buffer,(rc.right-rc.left)/2, y , WTMODE_NORMAL, WTALIGN_CENTER,RGB_WHITENOREV, false);
 
