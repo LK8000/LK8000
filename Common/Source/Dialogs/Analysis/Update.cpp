@@ -252,8 +252,8 @@ void UpdateAnalysis(void){
       bool typeFAITriangle = false;
 
       CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, false);
-
-      switch (contestType)
+unsigned int iTmpMainMapOptMode = FAI_OptimizerMode; /* save optimizer mode of main map */
+      switch (contestType) /* temporary change optimizer mode for analyzer calculations */
       {
         case CContestMgr::TYPE_FAI_TRIANGLE:  typeFAITriangle = true; FAI_OptimizerMode =3; break;
         case CContestMgr::TYPE_FAI_TRIANGLE4: typeFAITriangle = true; FAI_OptimizerMode =4; break;
@@ -268,6 +268,7 @@ void UpdateAnalysis(void){
 		 result = CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false);
 		 CContestMgr::Instance().RefreshFAIOptimizer();
 	  }
+
       if ((result.Type() == contestType) || typeFAITriangle)
       {
         BOOL bFAI = CContestMgr::Instance().FAI();
@@ -279,7 +280,7 @@ void UpdateAnalysis(void){
     // 	LKASSERT( fDist >0 );
         if(fDist < 10.0)
           fDist= 1000.0;
-
+        FAI_OptimizerMode = iTmpMainMapOptMode;  /* restore optimizer mode for main map */
 
         TCHAR distStr[50];  TCHAR speedStr[50];
         if(typeFAITriangle && bFAI)
