@@ -610,7 +610,7 @@ if(processed> 0)
         _stprintf(szMessage,_T("%s:%s "),gettext(TEXT("_@M2309_")),szTempStr);
         StartupStore(_T(" %s %s%s"), szMessage,WhatTimeIsIt(),NEWLINE);
 #ifdef TESTBENCH            
-        DoStatusMessage(szMessage); 
+  //      DoStatusMessage(szMessage);
 #endif        
 }
 

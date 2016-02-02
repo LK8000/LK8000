@@ -777,7 +777,10 @@ BOOL devIsBaroSource(PDeviceDescriptor_t d)
 BOOL devIsRadio(PDeviceDescriptor_t d)
 {
   BOOL result = FALSE;
-
+  if (SIMMODE)
+  {
+    return true;
+  }
   LockComm();
   if ((d != NULL) && (d->IsRadio != NULL))
     result = d->IsRadio(d);

@@ -314,7 +314,7 @@ static void OnActiveButton(WndButton* pWnd){
       double  Frequency = StrToDouble(WayPointList[res].Freq,NULL);
       if(!ValidFrequency(Frequency))
       {
-    	DoStatusMessage(_T("No valid Frequency!") );
+   // 	DoStatusMessage(_T("No valid Frequency!") );
     	return;
       }
       devPutFreqActive(devA(), Frequency, WayPointList[res].Name);
@@ -342,7 +342,7 @@ static void OnPassiveButton(WndButton* pWnd){
       double Frequency = StrToDouble(WayPointList[res].Freq,NULL);
       if(Frequency < 100.0)
       {
-         DoStatusMessage(_T("No valid Frequency!") );
+     //    DoStatusMessage(_T("No valid Frequency!") );
         return;
       }
       devPutFreqStandby(devA(), Frequency, WayPointList[res].Name);
