@@ -132,7 +132,7 @@ else ifeq ($(CONFIG_WINE),y)
  MCPU   := -mcpu=$(CPU)
 else ifeq ($(TARGET_IS_KOBO),y)
  TCPATH := arm-unknown-linux-gnueabi-
- MCPU   := -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize
+ MCPU   := -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize -ffast-math -funsafe-loop-optimizations
 else ifeq ($(TARGET_IS_PI),y)
  TCPATH := arm-linux-gnueabihf-
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize
