@@ -34,7 +34,7 @@ Copyright_License {
 #include "Linux/SignalListener.hpp"
 
 #ifdef USE_X11
-#include "X11Queue.hpp"
+#include "X11/X11Queue.hpp"
 #elif defined(USE_WAYLAND)
 #include "WaylandQueue.hpp"
 #elif !defined(NON_INTERACTIVE)

@@ -29,7 +29,7 @@ XCS_EVENT_SDL := \
 	$(SRC)/xcs/Event/SDL/Queue.cpp \
 
 XCS_EVENT_X11 := \
-	$(SRC)/xcs/Event/Poll/X11Queue.cpp \
+	$(SRC)/xcs/Event/Poll/X11/X11Queue.cpp \
 	
 XCS_EVENT_WAYLAND := \
 	$(SRC)/xcs/Event/Poll/WaylandQueue.cpp \

@@ -22,8 +22,8 @@ Copyright_License {
 */
 
 #include "X11Queue.hpp"
-#include "Queue.hpp"
-#include "../Shared/Event.hpp"
+#include "../Queue.hpp"
+#include "../../Shared/Event.hpp"
 #include "IO/Async/IOLoop.hpp"
 
 /* kludges to work around namespace collisions with X11 headers */

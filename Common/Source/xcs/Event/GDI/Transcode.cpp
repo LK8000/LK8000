@@ -22,7 +22,7 @@ Copyright_License {
 */
 
 #include "Transcode.hpp"
-#include "Screen/GDI/Key.h"
+#include "Key.h"
 #include "Asset.hpp"
 
 #include "Modeltype.h"

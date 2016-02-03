@@ -25,15 +25,15 @@ Copyright_License {
 #define XCSOAR_SCREEN_KEY_H
 
 #ifdef ANDROID
-#include "Screen/Android/Key.h"
+#include "Event/Android/Key.h"
 #elif defined(USE_X11)
-#include "Screen/X11/Key.h"
+#include "Event/Poll/X11/Key.h"
 #elif defined(USE_POLL_EVENT)
-#include "Screen/FB/Key.h"
+#include "Event/Poll/Linux/Key.h"
 #elif defined(ENABLE_SDL)
-#include "Screen/SDL/Key.h"
+#include "Event/SDL/Key.h"
 #else
-#include "Screen/GDI/Key.h"
+#include "Event/GDI/Key.h"
 #endif
 
 #endif

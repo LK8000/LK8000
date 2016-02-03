@@ -25,7 +25,7 @@ Copyright_License {
 #include "Event.hpp"
 #include "Queue.hpp"
 #include "Transcode.hpp"
-#include "Screen/GDI/Key.h"
+#include "Key.h"
 #include "Thread/Debug.hpp"
 #include "Asset.hpp"
 
