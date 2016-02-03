@@ -21,7 +21,6 @@
 #include "MathFunctions.h"
 #include "utils/2dpclip.h"
 #include "utils/array_adaptor.h"
-#include "Screen/LKBitmapSurface.h"
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Texture.hpp"
@@ -33,6 +32,8 @@
 #else
 #include "Screen/OpenGL/Compatibility.hpp"
 #endif
+#else
+#include "Screen/LKBitmapSurface.h"
 #endif
 
 #ifdef WIN32

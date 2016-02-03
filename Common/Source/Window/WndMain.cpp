@@ -261,8 +261,6 @@ bool WndMain::OnSize(int cx, int cy) {
 extern StartupState_t ProgramStarted;
 bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
 #ifdef ENABLE_OPENGL
-    UpdateTimeStats(true);
-
     if (ProgramStarted==psInitDone) {
         ProgramStarted = psFirstDrawDone;
     } else {
@@ -270,28 +268,13 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
             return true;
         }
     }
-    if(ProgramStarted >= psNormalOp && THREADRUNNING) {
-        UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
-        RenderMapWindow(Surface, Rect);
-
-        // Draw cross sight for pan mode, in the screen center, 
-        if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
-            const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
-            DrawMapScale(Surface,Rect,false);
-            DrawCompass(Surface, Rect, GetDisplayAngle());
-            DrawCrossHairs(Surface, centerscreen, Rect);
-        }
-        
-        MapDirty = false;
-
-        // we do caching after screen update, to minimise perceived delay
-        // UpdateCaches is updating topology bounds when either forced (only here)
-        // or because MapWindow::ForceVisibilityScan  is set true.
-        static bool first_run = true;
-        UpdateCaches(ScreenProjection(), first_run);
-        first_run=false;
+    if (MapDirty) {
+        BackBufferSurface.Begin(Surface);
+        MapWindow::Render(BackBufferSurface, Rect);
+        BackBufferSurface.Commit(Surface);
+    } else {
+        BackBufferSurface.CopyTo(Surface);
     }
-    UpdateTimeStats(false);
 #else
     if(ProgramStarted >= psFirstDrawDone) {
         ScopeLock Lock(BackBuffer_Mutex);

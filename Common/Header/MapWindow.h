@@ -656,6 +656,12 @@ protected:
   static LKBitmapSurface BackBufferSurface; 
   static Mutex BackBuffer_Mutex;
 #endif
+#else
+protected:
+  void Render(LKSurface& Surface, const PixelRect& Rect);
+  static LKBitmapSurface BackBufferSurface;
+  
+  
 #endif
 private:
   static int iSnailNext;

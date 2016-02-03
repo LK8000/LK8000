@@ -652,8 +652,7 @@ void Init_Fonts_2(void)
   // 
 
   LKWindowSurface windowSurface;
-  LKBitmapSurface tmpSurface;
-  tmpSurface.Create(windowSurface, 1, 1);
+  LKBitmapSurface tmpSurface(windowSurface, 1, 1);
 
   const auto oldFont = tmpSurface.SelectObject(LK8BottomBarTitleFont);
   const int syTitle = tmpSurface.GetTextHeight(_T("M"));;

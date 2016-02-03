@@ -32,7 +32,9 @@
 #include "Screen/Canvas.hpp"
 #endif
 
+#ifndef ENABLE_OPENGL
 class LKBitmapSurface;
+#endif
 
 class LKSurface {
 protected:

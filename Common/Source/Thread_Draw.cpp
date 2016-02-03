@@ -35,6 +35,8 @@ LKBitmapSurface MapWindow::BackBufferSurface;
 Mutex MapWindow::BackBuffer_Mutex;
 #endif
 LKBitmapSurface MapWindow::DrawSurface;
+#else
+LKBitmapSurface MapWindow::BackBufferSurface;   
 #endif
 
 // #define TESTMAPRECT 1

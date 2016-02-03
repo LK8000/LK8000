@@ -14,7 +14,6 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "McReady.h"
-#include "Screen/LKBitmapSurface.h"
 #include "Util/UTF8.hpp"
 
 

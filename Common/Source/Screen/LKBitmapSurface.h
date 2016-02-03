@@ -38,6 +38,11 @@ protected:
     LKBitmap _oldBitmap;
     SIZE _Size;
 #endif
+    
+#ifdef ENABLE_OPENGL
+    void Begin(LKSurface& Surface);
+    void Commit(LKSurface& Surface);
+#endif
 };
 
 class LKMaskBitmapSurface : public LKBitmapSurface {

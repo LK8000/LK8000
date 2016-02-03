@@ -104,6 +104,15 @@ void LKBitmapSurface::CopyTo(LKSurface &other) {
 #endif
 }
 
+#ifdef ENABLE_OPENGL
+void LKBitmapSurface::Begin(LKSurface& Surface) {
+    static_cast<BufferCanvas*>(_pCanvas)->Begin(Surface);
+}
+
+void LKBitmapSurface::Commit(LKSurface& Surface) {
+    static_cast<BufferCanvas*>(_pCanvas)->Commit(Surface);
+}
+#endif
 
 void LKMaskBitmapSurface::Create(const LKSurface& Surface, unsigned width, unsigned height) {
 #ifdef USE_GDI

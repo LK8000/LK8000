@@ -17,12 +17,15 @@
 #include "Multimap.h"
 #include "Logger.h"
 #include "Dialogs.h"
-#include "Screen/LKBitmapSurface.h"
 #include "Event/Event.h"
 #include "Asset.hpp"
 #include "Sound/Sound.h"
 #include "TunedParameter.h"
 #include "ScreenProjection.h"
+
+#ifndef ENABLE_OPENGL
+#include "Screen/LKBitmapSurface.h"
+#endif
 
 #define KEYDEBOUNCE 100
 extern int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode);
@@ -179,11 +182,13 @@ void MapWindow::_OnSize(int cx, int cy) {
 #ifndef ENABLE_OPENGL
     // this is Used for check Thread_Draw don't use surface object.
     ScopeLock Lock(Surface_Mutex);
+#endif
 
 #ifndef USE_GDI
     BackBufferSurface.Resize(cx, cy);
 #endif
 
+#ifndef ENABLE_OPENGL    
     DrawSurface.Resize(cx, cy);
 
     TempSurface.Resize(cx, cy);
@@ -218,7 +223,6 @@ void MapWindow::UpdateActiveScreenZone(RECT rc) {
 }
 
 void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
-#ifndef ENABLE_OPENGL
 #ifdef USE_GDI
     BackBufferSurface.Create(Wnd);
     LKWindowSurface& WindowSurface = BackBufferSurface;
@@ -226,6 +230,8 @@ void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
     LKWindowSurface WindowSurface(Wnd);
     BackBufferSurface.Create(WindowSurface, cx, cy);
 #endif
+
+#ifndef ENABLE_OPENGL    
     DrawSurface.Create(WindowSurface, cx, cy);
     TempSurface.Create(WindowSurface, cx, cy);
     hdcbuffer.Create(WindowSurface, cx, cy);
@@ -234,8 +240,10 @@ void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
 }
 
 void MapWindow::_OnDestroy() {
-#ifndef ENABLE_OPENGL
+
     BackBufferSurface.Release();
+
+#ifndef ENABLE_OPENGL
     DrawSurface.Release();
 
     TempSurface.Release();
@@ -250,6 +258,10 @@ void MapWindow::_OnDestroy() {
 void MapWindow::_OnDragMove(const POINT& Pos) {
     // Consider only pure PAN mode, ignore the rest of cases here
     if (mode.Is(Mode::MODE_PAN) && !mode.Is(Mode::MODE_TARGET_PAN)) {
+
+#ifdef ENABLE_OPENGL
+        MapDirty = true;
+#endif
 
         const ScreenProjection _Proj;
         if (PanRefreshed) {
@@ -1812,3 +1824,36 @@ void MapWindow::key_next_mode() {
     MapWindow::RefreshMap();
     SoundModeIndex();
 }
+
+#ifdef ENABLE_OPENGL
+void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
+    UpdateTimeStats(true);
+
+    if (ProgramStarted==psInitDone) {
+        ProgramStarted = psFirstDrawDone;
+    }
+
+    if(ProgramStarted >= psNormalOp && THREADRUNNING) {
+        UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
+        RenderMapWindow(Surface, Rect);
+
+        // Draw cross sight for pan mode, in the screen center, 
+        if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
+            const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
+            DrawMapScale(Surface,Rect,false);
+            DrawCompass(Surface, Rect, GetDisplayAngle());
+            DrawCrossHairs(Surface, centerscreen, Rect);
+        }
+
+        MapDirty = false;
+
+        // we do caching after screen update, to minimise perceived delay
+        // UpdateCaches is updating topology bounds when either forced (only here)
+        // or because MapWindow::ForceVisibilityScan  is set true.
+        static bool first_run = true;
+        UpdateCaches(ScreenProjection(), first_run);
+        first_run=false;
+    }
+    UpdateTimeStats(false);
+}
+#endif
