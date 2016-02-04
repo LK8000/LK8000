@@ -717,7 +717,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     } // overlay RighTop
 
     short yoffset=0;
-    if (OverlayClock && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
+    if (OverlayClock && Overlay_TopRight && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
 
     if (IsMultimapOverlaysGauges() && !mode.AnyPan())
         rcx = leftmargin + GlideBarOffset;
@@ -821,7 +821,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     //
     // CLOCK
     //
-    if (OverlayClock || (ISPARAGLIDER && UseGates())) {
+    if ((OverlayClock && Overlay_TopRight) || (ISPARAGLIDER && UseGates())) {
         LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
         Surface.SelectObject(LK8OverlayMediumFont);
         if (!ScreenLandscape) {
