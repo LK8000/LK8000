@@ -121,7 +121,7 @@ int numlegs=0;
             }
                 #else
             LKColor rgbCol = RGB_DARKBLUE;
-            switch(ui)
+            switch(i)
             {
               case 0: rgbCol = RGB_LIGHTGREY; break;
               case 1: rgbCol = RGB_GREY  ; break;
