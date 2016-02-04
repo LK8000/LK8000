@@ -85,6 +85,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     oldfont = Surface.SelectObject(LK8OverlaySmallFont);
     oldbrush = Surface.SelectObject(LKBrush_Black);
     oldpen = Surface.SelectObject(LKPen_Grey_N1);
+    
+    Surface.SetBackgroundTransparent();
 
 
     if (++flipflopcount > 2) {
