@@ -104,7 +104,7 @@ void LKSound(const TCHAR *lpName) {
     TCHAR infilename[MAX_PATH];
     _stprintf(infilename, _T("%s%s%s"), szSoundPath, _T(DIRSEP), lpName);
 
-    SF_INFO sfinfo;
+    SF_INFO sfinfo = {};
     SNDFILE* infile = sf_open(infilename, SFM_READ, &sfinfo);
     if (infile) {
         alsa_play(infile, sfinfo);
@@ -206,7 +206,7 @@ void PlayResource(const TCHAR* lpName) {
         };
 
         // Open the sound file
-        SF_INFO sfinfo;
+        SF_INFO sfinfo= {};
         SNDFILE* infile = sf_open_virtual(&VirtualIO, SFM_READ, &sfinfo, &Memory);
         if (infile) {
             alsa_play(infile, sfinfo);
