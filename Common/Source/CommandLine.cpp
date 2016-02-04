@@ -76,7 +76,7 @@ void LK8000GetOpts(const TCHAR *MyCommandLine) {
 
 			int x=_ttoi(stx);
 			int y=_ttoi(sty);
-			if (x>100 && x<3000 && y>100 && y<3000) {
+			if (x>=240 && x<=4000 && y>=240 && y<=4000) {
 				ScreenSizeX=x;
 				ScreenSizeY=y;
                                 CommandResolution=true;
@@ -228,14 +228,14 @@ void LKCmdLineArguments(int argc, char *argv[]) {
         if ( argv[1][0]=='-' && argv[1][1]=='x' && argv[1][2]=='=' ) {
             p=&argv[1][3];
             x=atoi(p);
-            if (x<240 || x>2000) return;
+            if (x<240 || x>4000) return;
 
             // -y=123  minimum is 240
             if ( strlen(argv[2]) >= 6) {
                 if ( argv[2][0]=='-' && argv[2][1]=='y' && argv[2][2]=='=' ) {
                     p=&argv[2][3];
                     y=atoi(p);
-                    if (y<240 || y>2000) return;
+                    if (y<240 || y>4000) return;
                 }
             } else return;
         }
