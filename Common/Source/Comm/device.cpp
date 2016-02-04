@@ -330,6 +330,8 @@ BOOL devInit(LPCTSTR CommandLine) {
     BitIndex_t BitIndex = bit8N1;
 #ifdef RADIO_ACTIVE    
      RadioPara.Enabled = false;
+     if(SIMMODE)
+       RadioPara.Enabled = true;
 #endif     
     static bool doinit = true;
 
@@ -777,7 +779,6 @@ BOOL devIsBaroSource(PDeviceDescriptor_t d)
 BOOL devIsRadio(PDeviceDescriptor_t d)
 {
   BOOL result = FALSE;
-
   LockComm();
   if ((d != NULL) && (d->IsRadio != NULL))
     result = d->IsRadio(d);
