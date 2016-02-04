@@ -38,6 +38,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   static double freeram=CheckFreeRam()/1000000.0;
 
   Surface.SelectObject(MapWindowBoldFont);
+  Surface.SetBackgroundTransparent();
 
 
   #ifndef LKCOMPETITION
