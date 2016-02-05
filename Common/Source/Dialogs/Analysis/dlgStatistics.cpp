@@ -302,6 +302,7 @@ static bool entered = false;
 if (entered == true) /* prevent re entrance */
 	return;
 
+unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode of main map */
   wfa=NULL;
   waGrid=NULL;
   waInfo=NULL;
@@ -397,8 +398,15 @@ if (entered == true) /* prevent re entrance */
 
   penThinSignal.Release();
 
+  if(FAI_OptimizerMode != iTmpMainMapOptMode) /* Analysis let in a different optimizer mode */
+  {
+    FAI_OptimizerMode = iTmpMainMapOptMode; /* restore optimizer mode for main map */
+	CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false); /* recalc optimizer for main map */
+	CContestMgr::Instance().RefreshFAIOptimizer();
+  }
 
   MapWindow::RequestFastRefresh();
+
   FullScreen();
 
   entered = false;
