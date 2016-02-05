@@ -18,7 +18,7 @@
 
 static bool first= true;
 static WndForm *wf=NULL;
-static WndProperty * wKeyboardPopupWndProperty;
+static WndProperty * wKeyboardPopupWndProperty = nullptr;
 
 #define MAX_TEXTENTRY 40
 static unsigned int cursor = 0;
@@ -198,7 +198,9 @@ static void OnClear(WndButton* pWnd)
 }
 
 static void OnHelpClicked(WindowControl* Sender){
-    wKeyboardPopupWndProperty->OnHelp();
+    if(wKeyboardPopupWndProperty) {
+        wKeyboardPopupWndProperty->OnHelp();
+    }
 }
 
 static CallBackTableEntry_t CallBackTable[]={
@@ -240,6 +242,12 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
   }
 
   UpdateTextboxProp();
+
+  WindowControl* pBtHelp = wf->FindByName(TEXT("cmdHelp"));
+  if(pBtHelp) {
+     pBtHelp->SetVisible(wKeyboardPopupWndProperty && wKeyboardPopupWndProperty->HasHelpText());
+  }
+
   wf->SetKeyDownNotify(FormKeyDown);
   wf->ShowModal();
   LK_tcsncpy(text, edittext, max_width-1);
@@ -265,16 +273,19 @@ void dlgNumEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 }
 
 BOOL dlgKeyboard(WndProperty* theProperty){
-    wKeyboardPopupWndProperty = theProperty;
+    BOOL Ret = FALSE;
 
+    wKeyboardPopupWndProperty = theProperty;
 	DataField* pField = theProperty->GetDataField();
 	if(pField) {
 		if(pField->CreateKeyboard()){
 			theProperty->RefreshDisplay();
-			return TRUE;
+			Ret = TRUE;
 		}
 	}
-	return FALSE;
+    wKeyboardPopupWndProperty = nullptr;
+
+	return Ret;
 }
 
 
