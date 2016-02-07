@@ -5,7 +5,7 @@
 
 #define NUM_COLOR_RAMP_LEVELS 13
 // If you change NUMRAMPS, also change the InputEvent SERVICE TERRCOL 
-#define NUMRAMPS        16
+#define NUMRAMPS        15
 
 typedef struct _COLORRAMP
 {
