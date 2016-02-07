@@ -254,9 +254,6 @@ bool Message::Acknowledge(int type) {
 
     Unlock();
     //  Render(); NO! this can cause crashes
-    #ifdef USE_GDI
-    Message::Destroy();
-    #endif
     return ret;
 }
 
