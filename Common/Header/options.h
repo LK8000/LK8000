@@ -77,14 +77,19 @@
  //              . use assert() instead of our own LKASSERT (NOT GOOD FOR BETA, no feedback from users!)
  //              . accept in Comm/Parser.cpp any fix also simulated.
  //              (add here new things performed by YDEBUG please)
+ //
+ //
+ // BY DEFAULT: no DEBUG mode, so we optionally use LKASSERT.
+ // IF DEBUG IS ON -> NDEBUG IS OFF -> We force BUGSTOP,USELKASSERT and use assert() call instead of LKASSERT
+ //
  #ifndef NDEBUG
+ #define BUGSTOP 1
+ #define USELKASSERT 1
  #define YDEBUG  1
  #endif
 
- //
- // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
- // When expire date is reached, unnecessary old stuff can be removed, even if commented
- //
+ //#define YDEBUG       1       // Force using assert() instead of LKASSERT even if DEBUG is off. 
+                                // See above. Should not be necessary, but it is a reminder.
 
  #define BUGSTOP	1	// STOP by LKASSERT even if the condition was managed, to show
 				// the problem during alpha stages. 
@@ -97,6 +102,11 @@
 				// For TESTBENCH and beta versions this should be always ENABLED.
 				// Only in official stable versions it should be disabled.
 
+
+ //
+ // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
+ // When expire date is reached, unnecessary old stuff can be removed, even if commented
+ //
 
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
 
