@@ -14,8 +14,8 @@ void MapWindow::DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKIcon& 
     if (!Icon) return; // don't draw Bitmap if no bitmap
     if (!PointVisible(sc)) return;
 
-    assert(Icon.GetSize().cx == 10);
-    assert(Icon.GetSize().cy == 10);
+    LKASSERT(Icon.GetSize().cx == 10);
+    LKASSERT(Icon.GetSize().cy == 10);
     
     if (autostretch) {
         Icon.Draw(Surface, sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10));

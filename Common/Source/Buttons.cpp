@@ -116,7 +116,7 @@ PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
 
     unsigned i = MenuID - 1;
     
-    assert(i < MenuButtons.size());
+    LKASSERT(i < MenuButtons.size());
     
     const PixelScalar row   = ScreenLandscape ? LandscapeLayout[i].row : PortraitLayout[i].row;
     const PixelScalar col   = ScreenLandscape ? LandscapeLayout[i].col :PortraitLayout[i].col;
@@ -165,7 +165,7 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
 
     unsigned idx = MenuID - 1;
     if(idx >= MenuButtons.size()) {
-        assert(false);
+        BUGSTOP_LKASSERT(false);
         return;
     }
 
@@ -209,7 +209,7 @@ bool ButtonLabel::IsVisible(unsigned MenuID) {
     if(i < MenuButtons.size()) {
         return MenuButtons[i].IsVisible();
     }
-    assert(false);
+    BUGSTOP_LKASSERT(false);
     return false;
 }
 
@@ -218,6 +218,6 @@ bool ButtonLabel::IsEnabled(unsigned MenuID) {
     if(i < MenuButtons.size()) {
         return MenuButtons[i].IsMenuEnabled();
     }
-    assert(false);
+    BUGSTOP_LKASSERT(false);
     return false;
 }

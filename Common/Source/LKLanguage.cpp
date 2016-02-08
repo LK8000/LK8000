@@ -488,7 +488,7 @@ bool LKLoadMessages(bool fillup) {
 	#endif	
 
 #ifndef UNICODE
-    assert(ValidateUTF8(scapt));
+    LKASSERT(ValidateUTF8(scapt));
 #endif	
 
 	LKMessages[inumber] = (TCHAR *)malloc((_tcslen(scapt)+1)*sizeof(TCHAR));

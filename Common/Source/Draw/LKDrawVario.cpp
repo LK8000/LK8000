@@ -84,7 +84,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         const short lkvariobar = (LKVarioBar > vBarVarioGR) ? LKVarioBar - vBarVarioGR : LKVarioBar;
         switch (lkvariobar) {
             default:
-                assert(false); // wrong config value or disabled, in any case, it's BUG
+                LKASSERT(false); // wrong config value or disabled, in any case, it's BUG
                 // no break; for avoid to have unitialized Brush array.
             case vBarVarioColor:
                 // set default background in case of missing values

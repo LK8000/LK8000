@@ -295,8 +295,8 @@ static void NextPage(int Step){
         if (config_page[configMode]<0) { config_page[configMode]=numPages-1; }
     }
 
-    assert((size_t)configMode < array_size(ConfigPageNames));
-    assert((size_t)config_page[configMode] < array_size(ConfigPageNames[0]));
+    LKASSERT((size_t)configMode < array_size(ConfigPageNames));
+    LKASSERT((size_t)config_page[configMode] < array_size(ConfigPageNames[0]));
     
     const ConfigPageNames_t* current = ConfigPageNames[configMode];
     const TCHAR* szCaption = gettext(current[config_page[configMode]].szCpation);

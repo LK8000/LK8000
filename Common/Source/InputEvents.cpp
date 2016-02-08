@@ -289,7 +289,7 @@ void InputEvents::readFile() {
 	  // All modes are valid at this point
 	  int mode_id = mode2int(token, true);
 	  LKASSERT(mode_id >= 0);
-      assert(mode_id < (int)array_size(Key2Event));
+          LKASSERT(mode_id < (int)array_size(Key2Event));
 			  
 	  // Make label event
 	  // TODO code: Consider Reuse existing entries...
@@ -308,7 +308,7 @@ void InputEvents::readFile() {
 	    const int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
 	    if (ikey > 0) {
 #ifdef USE_GDI
-            assert(ikey < (int)array_size(Key2Event[mode_id]));
+            LKASSERT(ikey < (int)array_size(Key2Event[mode_id]));
             Key2Event[mode_id][ikey] = event_id;
 #else
             if(event_id > 0) {
@@ -535,7 +535,7 @@ void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, in
 
         if(ModeLabel[mode_id][LabelIdx].label != nullptr && ModeLabel[mode_id][LabelIdx].label[0] != _T('\0')){
             StartupStore(_T("Menu \"%s\" override Menu \"%s\"" NEWLINE), label, ModeLabel[mode_id][LabelIdx].label);
-            assert(false);
+            BUGSTOP_LKASSERT(false);
         }
         
         ModeLabel[mode_id][LabelIdx].label = label;
@@ -629,7 +629,7 @@ void InputEvents::drawButtons(int Mode) {
 
     for (unsigned i = 0; i < array_size(ModeLabel[Mode]); i++) {
         if ((ModeLabel[Mode][i].MenuId > 0)) {
-            assert(i == (ModeLabel[Mode][i].MenuId - 1));
+            LKASSERT(i == (ModeLabel[Mode][i].MenuId - 1));
 
             ButtonLabel::SetLabelText(
                     ModeLabel[Mode][i].MenuId,
@@ -669,8 +669,8 @@ bool InputEvents::processButton(unsigned MenuId) {
 #endif
     int thismode = getModeID();
     unsigned i = MenuId - 1;
-    assert(i < array_size(ModeLabel[thismode])); // Invalid MenuId
-    assert(ModeLabel[thismode][i].MenuId == MenuId); // Invalid ModeLabel
+    LKASSERT(i < array_size(ModeLabel[thismode])); // Invalid MenuId
+    LKASSERT(ModeLabel[thismode][i].MenuId == MenuId); // Invalid ModeLabel
 
     int lastMode = thismode;
 

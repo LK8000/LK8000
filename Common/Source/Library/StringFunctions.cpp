@@ -83,7 +83,7 @@ static void DetectCharsetAndFixString (char* String, charset& cs) {
         strcpy(String, utf8String.c_str());
     }
     if (!ValidateUTF8(String)) {
-        assert(false);
+        BUGSTOP_LKASSERT(false);
         strcpy(String, "");
     }
 }
