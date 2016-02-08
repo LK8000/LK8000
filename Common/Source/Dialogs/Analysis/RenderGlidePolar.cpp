@@ -159,9 +159,8 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
     Surface.SetTextColor(RGB_DARKGREEN);
   else
     Surface.SetTextColor(RGB_GREEN);
-  #if (WINDOWSPC > 0)
+  
   Surface.SetBackgroundOpaque();
-  #endif
   TCHAR text[80];
   _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
   DrawXLabel(Surface, rc, text);

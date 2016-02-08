@@ -19,7 +19,7 @@ public:
 protected:
     virtual bool OnLButtonUp(const POINT& Pos) {
         Message::Acknowledge(0);
-        return true;
+        return false;
     }
 };
 

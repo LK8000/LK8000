@@ -81,17 +81,20 @@ static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
   const RECT rcgfx = Sender->GetClientRect();
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
-    if(INVERTCOLORS)
-    {
-      Sender->SetBackColor(SKY_HORIZON_COL);
+    if(INVERTCOLORS) {
+      if(Sender->GetBackColor() != SKY_HORIZON_COL) {
+        Sender->SetBackColor(SKY_HORIZON_COL);
+        // we need to fill background if BackColor change because background are already filled.
+        Surface.FillRect(&rcgfx, Sender->GetBackBrush());
+      }
       Surface.SetTextColor(RGB_DARKBLUE);
-    }
-    else
+    } else {
       Surface.SetTextColor(RGB_WHITE);
+    }
+
+    Surface.SetBkColor(Sender->GetBackColor());
 
     Surface.SetBackgroundTransparent();
-//  SetTextColor(hDC, Sender->GetForeColor());
-//  SetTextColor(hDC, Sideview_TextColor);
 
 
   switch (analysis_page) {
