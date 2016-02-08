@@ -52,6 +52,7 @@ void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
 
 //	SetBkMode(hdc, OPAQUE);
 	Surface.GetTextSize(unit_text, &tsize);
+	Surface.SetBackgroundOpaque();
 	Surface.DrawText(xmin-tsize.cx/2, ymax-tsize.cy, unit_text);
 	Surface.SetBackgroundTransparent();
       }
@@ -82,6 +83,7 @@ void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
 	FormatTicText(unit_text, xval*unit_step/tic_step, unit_step);
 //	SetBkMode(hdc, OPAQUE);
 	Surface.GetTextSize(unit_text, &tsize);
+	Surface.SetBackgroundOpaque();
 	Surface.DrawText(xmin-tsize.cx/2, ymax-tsize.cy, unit_text);
 	Surface.SetBackgroundTransparent();
       }
@@ -131,10 +133,10 @@ void Statistics::DrawYGrid(LKSurface& Surface, const RECT& rc,
       if (draw_units) {
 	TCHAR unit_text[MAX_PATH];
 	FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
-//	SetBkMode(hdc, OPAQUE);
 	Surface.GetTextSize(unit_text, &tsize);
+	Surface.SetBackgroundOpaque();
 	Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text);
-//	SetBkMode(hdc, TRANSPARENT);
+    Surface.SetBackgroundTransparent();
       }
     }
   }
@@ -159,10 +161,10 @@ void Statistics::DrawYGrid(LKSurface& Surface, const RECT& rc,
       if (draw_units) {
 	TCHAR unit_text[MAX_PATH];
 	FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
-//	SetBkMode(hdc, OPAQUE);
 	Surface.GetTextSize(unit_text, &tsize);
+    Surface.SetBackgroundOpaque();
 	Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text);
-//	SetBkMode(hdc, TRANSPARENT);
+    Surface.SetBackgroundTransparent();
       }
     }
   }
@@ -207,12 +209,12 @@ void Statistics::DrawYGrid_cor(LKSurface& Surface, const RECT& rc,
       StyleLine(Surface, line[0], line[1], Style, rc);
 
       if (draw_units) {
-	TCHAR unit_text[MAX_PATH];
-	FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
-//	SetBkMode(hdc, OPAQUE);
-	Surface.GetTextSize(unit_text, &tsize);
-	Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text);
-//	SetBkMode(hdc, TRANSPARENT);
+        TCHAR unit_text[MAX_PATH];
+        FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
+        Surface.GetTextSize(unit_text, &tsize);
+        Surface.SetBackgroundOpaque();
+        Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text);
+        Surface.SetBackgroundTransparent();
       }
     }
   }
@@ -235,12 +237,12 @@ void Statistics::DrawYGrid_cor(LKSurface& Surface, const RECT& rc,
       StyleLine(Surface, line[0], line[1], Style, rc);
 
       if (draw_units) {
-	TCHAR unit_text[MAX_PATH];
-	FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
-//	SetBkMode(hdc, OPAQUE);
-	Surface.GetTextSize(unit_text, &tsize);
-	Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text);
-//	SetBkMode(hdc, TRANSPARENT);
+        TCHAR unit_text[MAX_PATH];
+        FormatTicText(unit_text, yval*unit_step/tic_step, unit_step);
+        Surface.GetTextSize(unit_text, &tsize);
+        Surface.SetBackgroundOpaque();
+        Surface.DrawText(xmin, ymin-tsize.cy/2, unit_text);
+        Surface.SetBackgroundTransparent();
       }
     }
   }
