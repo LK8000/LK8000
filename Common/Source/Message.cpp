@@ -17,9 +17,14 @@ public:
     WndMessage() : WndTextEdit() { }
     
 protected:
+    virtual bool OnLButtonDown(const POINT& Pos) {
+        // requiered otherwise on Win32 this windows capture all event and never release.
+        return true;
+    }
+
     virtual bool OnLButtonUp(const POINT& Pos) {
         Message::Acknowledge(0);
-        return false;
+        return true;
     }
 };
 
