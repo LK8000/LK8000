@@ -39,18 +39,17 @@ double ScreenAngle(int x1, int y1, int x2, int y2);
 // Fast trig functions
 void InitSineTable(void);
 
-#define DEG_TO_INT(x) ((unsigned short)(int)((x)*(65536.0/360.0)))>>4
+#define DEG_TO_INT(x) (static_cast<int>((x)*(65536.0/360.0))>>4) & 0x0FFF
+#define DEG_TO_INT_COS(x) ((static_cast<int>((x)*(65536.0/360.0))>>4)+1024) & 0x0FFF
 
-extern double COSTABLE[4096];
 extern double SINETABLE[4096];
 extern double INVCOSINETABLE[4096];
 extern short ISINETABLE[4096];
-extern short ICOSTABLE[4096];
 
 #define invfastcosine(x) INVCOSINETABLE[DEG_TO_INT(x)]
-#define ifastcosine(x) ICOSTABLE[DEG_TO_INT(x)]
+#define ifastcosine(x) ISINETABLE[DEG_TO_INT_COS(x)]
 #define ifastsine(x) ISINETABLE[DEG_TO_INT(x)]
-#define fastcosine(x) COSTABLE[DEG_TO_INT(x)]
+#define fastcosine(x) SINETABLE[DEG_TO_INT_COS(x)]
 #define fastsine(x) SINETABLE[DEG_TO_INT(x)]
 
 

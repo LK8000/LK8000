@@ -16,9 +16,8 @@ void RenderPlaneSideview(LKSurface& Surface, double fDist, double fAltitude,doub
 {
 //BOOL bInvCol = true ; //INVERTCOLORS
   #define NO_AP_PTS 17
-  int deg = DEG_TO_INT(AngleLimit360(brg));
-  double fCos = COSTABLE[deg];
-  double fSin = SINETABLE[deg];
+  const double fCos = fastcosine(brg);
+  const double fSin = fastsine(brg);
 
   int TAIL   = 6;
   int PROFIL = 1;

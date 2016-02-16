@@ -349,9 +349,8 @@ void RenderFlarmPlaneSideview(LKSurface& Surface, const RECT& rc,double fDist, d
 
 
   #define NO_AP_PTS 17
-  int deg = DEG_TO_INT(AngleLimit360(brg));
-  double fCos = COSTABLE[deg];
-  double fSin = SINETABLE[deg];
+  const double fCos = fastcosine(brg);
+  const double fSin = fastsine(brg);
 
   int TAIL   = (int)(6.0  * fScale) ;
   int PROFIL = 1;

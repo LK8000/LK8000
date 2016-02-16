@@ -99,9 +99,8 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
 
   if(angle != lastangle) {
     lastangle = angle;
-    int deg = DEG_TO_INT(AngleLimit360(angle));
-    cost = ICOSTABLE[deg]*ScreenScale;
-    sint = ISINETABLE[deg]*ScreenScale;
+    cost = ifastcosine(angle)*ScreenScale;
+    sint = ifastsine(angle)*ScreenScale;
   }
   const int xxs = xs*1024+512;
   const int yys = ys*1024+512;
@@ -119,9 +118,8 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
 
 void threadsafePolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, const double angle) {
 
-  int deg = DEG_TO_INT(AngleLimit360(angle));
-  int cost = ICOSTABLE[deg]*ScreenScale;
-  int sint = ISINETABLE[deg]*ScreenScale;
+  const int cost = ifastcosine(angle)*ScreenScale;
+  const int sint = ifastsine(angle)*ScreenScale;
 
   const int xxs = xs*1024+512;
   const int yys = ys*1024+512;
@@ -329,11 +327,9 @@ double ScreenAngle(int x1, int y1, int x2, int y2)
 }
 
 
-double COSTABLE[4096];
 double SINETABLE[4096];
 double INVCOSINETABLE[4096];
 short ISINETABLE[4096];
-short ICOSTABLE[4096];
 
 void InitSineTable(void)
 {
@@ -347,9 +343,7 @@ void InitSineTable(void)
       cosa = cos(angle);
       sina = sin(angle);
       SINETABLE[i] = sina;
-      COSTABLE[i] = cosa;
       ISINETABLE[i] = iround(sina*1024);
-      ICOSTABLE[i] = iround(cosa*1024);
       if ((cosa>0) && (cosa<1.0e-8)) {
 	cosa = 1.0e-8;
       }

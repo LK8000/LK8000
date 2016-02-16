@@ -26,9 +26,8 @@ double MapWindow::LKDrawLongTrail( LKSurface& Surface, const POINT& Orig, const 
   point_lastdrawn.x = 0;
   point_lastdrawn.y = 0;
 
-  const int deg = DEG_TO_INT(AngleLimit360(DisplayAngle));
-  const int cost = ICOSTABLE[deg];
-  const int sint = ISINETABLE[deg];
+  const int cost = ifastcosine(DisplayAngle);
+  const int sint = ifastsine(DisplayAngle);
   const int xxs = Orig_Screen.x*1024-512;
   const int yys = Orig_Screen.y*1024+512;
   const double mDrawScale = zoom.DrawScale();
