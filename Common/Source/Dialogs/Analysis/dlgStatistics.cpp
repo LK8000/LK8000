@@ -81,7 +81,7 @@ static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
   const RECT rcgfx = Sender->GetClientRect();
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
-    if(INVERTCOLORS) {
+    if(INVERTCOLORS || IsDithered()) {
       if(Sender->GetBackColor() != SKY_HORIZON_COL) {
         Sender->SetBackColor(SKY_HORIZON_COL);
         // we need to fill background if BackColor change because background are already filled.
@@ -319,7 +319,7 @@ unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode
   if (!wfa) return;
 
   LKColor COL = LKColor(50,243,45);
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
 	COL = COL.ChangeBrightness(0.7);
   penThinSignal.Create(PEN_SOLID, IBLSCALE(2) , COL);
 

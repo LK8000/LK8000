@@ -56,13 +56,13 @@ void Statistics::RenderSpeed(LKSurface& Surface, const RECT& rc)
   DrawTrend(Surface, rc, &flightstats.Task_Speed, STYLE_BLUETHIN);
 
 
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SetTextColor(RGB_DARKGREEN);
   else
     Surface.SetTextColor(RGB_GREEN);
-  #if (WINDOWSPC>0)
+
   Surface.SetBackgroundOpaque();
-  #endif
+
   TCHAR text[80];
   DrawXLabel(Surface, rc, TEXT(" t/h "));
   _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());

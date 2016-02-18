@@ -110,7 +110,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 
       DrawLine(Surface, rc, 0, eqMC, maxSpeed, eqMC-(maxSpeed/ConeSlope), STYLE_BLUETHIN);
 
-      Surface.SetTextColor(INVERTCOLORS?RGB_BLACK:RGB_WHITE);
+      Surface.SetTextColor((INVERTCOLORS || IsDithered())?RGB_BLACK:RGB_WHITE);
 
       auto hfOldU = Surface.SelectObject(LK8InfoSmallFont);
       TCHAR text[3][80]; TCHAR value[3][80];
@@ -145,7 +145,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
           rc.top+tsize.cy*(int)array_size(text)
       };
 
-      Surface.FillRect(&blockR, INVERTCOLORS?LKBrush_White:LKBrush_Black);
+      Surface.FillRect(&blockR, (INVERTCOLORS || IsDithered())?LKBrush_White:LKBrush_Black);
 
       for(unsigned i = 0; i<array_size(text); ++i) {
         Surface.DrawText(blockR.left, blockR.top+tsize.cy*i, text[i]);
@@ -155,7 +155,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
     }
   }
 
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SetTextColor(RGB_DARKGREEN);
   else
     Surface.SetTextColor(RGB_GREEN);
@@ -170,7 +170,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 
 
 
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SetTextColor(RGB_BLACK);
   else
     Surface.SetTextColor(RGB_WHITE);

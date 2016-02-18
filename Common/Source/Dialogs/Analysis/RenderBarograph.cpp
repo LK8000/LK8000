@@ -27,11 +27,7 @@ void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)
   ScaleXFromValue(rc, 1.2f*(flightstats.Altitude.x_min+1.0)); // in case no data
   ScaleXFromValue(rc, flightstats.Altitude.x_min); 
 
-#if  (WINDOWSPC > 0)
-  if(INVERTCOLORS)
-#else
-  if(ISCAR && INVERTCOLORS)
-#endif
+  if((ISCAR && INVERTCOLORS)  || IsDithered())
 	RenderSky( Surface,   rc, SKY_HORIZON_COL , SKY_SPACE_COL, GC_NO_COLOR_STEPS );
 
   for(int j=1;j<MAXTASKPOINTS;j++) {
@@ -76,7 +72,7 @@ void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)
 
   DrawTrend(Surface, rc, &flightstats.Altitude_Ceiling, STYLE_BLUETHIN);
 
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SetTextColor(RGB_DARKGREEN);
   else
     Surface.SetTextColor(RGB_GREEN);

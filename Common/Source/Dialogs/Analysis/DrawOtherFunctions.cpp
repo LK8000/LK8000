@@ -16,7 +16,7 @@ void Statistics::DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text
   Surface.GetTextSize(text, &tsize);
   int x = (int)((xv-x_min)*xscale)+rc.left-tsize.cx/2+BORDER_X;
   int y = (int)((y_max-yv)*yscale)+rc.top-tsize.cy/2;
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SelectObject(LK_BLACK_PEN);
 
 
@@ -47,7 +47,7 @@ void Statistics::DrawXLabel(LKSurface& Surface, const RECT& rc, const TCHAR *tex
   Surface.GetTextSize(text, &tsize);
   int x = rc.right-tsize.cx-IBLSCALE(3);
   int y = rc.bottom-tsize.cy;
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SelectObject(LK_BLACK_PEN);
 
   Surface.DrawText(x, y, text);
@@ -61,7 +61,7 @@ void Statistics::DrawYLabel(LKSurface& Surface, const RECT& rc, const TCHAR *tex
   Surface.GetTextSize(text, &tsize);
   int x = max(2,(int)rc.left-(int)tsize.cx);
   int y = rc.top;
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SelectObject(LK_BLACK_PEN);
 
 
@@ -162,7 +162,7 @@ LKColor Col;
     return;
   }
 
-if(INVERTCOLORS)
+if(INVERTCOLORS || IsDithered())
   Col = RGB_GREEN.ChangeBrightness(0.5);
 else
   Col = RGB_WHITE;

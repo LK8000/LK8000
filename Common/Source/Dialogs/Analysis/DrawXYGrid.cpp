@@ -15,7 +15,7 @@ void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
                            const int Style, 
 			   const double unit_step, bool draw_units) {
 
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SelectObject(LK_BLACK_PEN);
 
 
@@ -105,7 +105,7 @@ void Statistics::DrawYGrid(LKSurface& Surface, const RECT& rc,
   SIZE tsize;
   double yval;
 
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SelectObject(LK_BLACK_PEN);
 
 
@@ -182,7 +182,7 @@ void Statistics::DrawYGrid_cor(LKSurface& Surface, const RECT& rc,
   SIZE tsize;
   double yval;
 
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SelectObject(LK_BLACK_PEN);
 
 

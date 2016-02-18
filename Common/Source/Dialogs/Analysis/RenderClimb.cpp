@@ -48,7 +48,7 @@ void Statistics::RenderClimb(LKSurface& Surface, const RECT& rc)
              &flightstats.ThermalAverage,
              STYLE_BLUETHIN);
   Surface.SelectObject(hfOld);
-  if(INVERTCOLORS)
+  if(INVERTCOLORS || IsDithered())
     Surface.SetTextColor(RGB_DARKGREEN);
   else
     Surface.SetTextColor(RGB_GREEN);

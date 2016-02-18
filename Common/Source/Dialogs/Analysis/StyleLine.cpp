@@ -27,20 +27,20 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
   switch (Style) {
   case STYLE_BLUETHIN:
 	COL = LKColor(0,50,255);
-	if(INVERTCOLORS)
+	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.5);
     Surface.DrawDashLine(minwidth, l1, l2, COL, rc);
     break;
   case STYLE_REDTHICK:
 	COL = LKColor(250,50,50);
-	if(INVERTCOLORS)
+	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.7);
     Surface.DrawDashLine(minwidth, l1, l2, COL, rc);
     break;
 
   case STYLE_GREENMEDIUM:
 	  COL =   LKColor(0,255,0);
-	  if(INVERTCOLORS)
+	  if(INVERTCOLORS || IsDithered())
 		COL = COL.ChangeBrightness(0.7);
 	  line[0].x +=1;
 	  line[1].x +=1;
@@ -53,7 +53,7 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
 
   case STYLE_GREENTHICK:
 	  COL =   LKColor(0,255,0);
-	  if(INVERTCOLORS)
+	  if(INVERTCOLORS || IsDithered())
 		COL = COL.ChangeBrightness(0.7);
 	  line[0].x +=2;
 	  line[1].x +=2;
@@ -66,7 +66,7 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
 
   case STYLE_ORANGETHICK:
 	COL =  LKColor(255,165,0);
-	if(INVERTCOLORS)
+	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.7);
 
 	line[0].x +=2;
@@ -80,7 +80,7 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
 
   case STYLE_ORANGETHIN:
 	COL =  LKColor(255,165,0);
-	if(INVERTCOLORS)
+	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.7);
 
 	line[0].x +=2;
@@ -93,7 +93,7 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
   break;
   case STYLE_DASHGREEN:
 	COL = LKColor(0,255,0);
-	if(INVERTCOLORS)
+	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.7);
 
     Surface.DrawDashLine(IBLSCALE(2),line[0], line[1], COL, rc);
@@ -108,7 +108,7 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
     break;
   case STYLE_WHITETHICK:
 	COL =  RGB_WHITE;
-	if(INVERTCOLORS)
+	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.3);
 
     Surface.DrawDashLine(3, l1, l2, COL, rc);
