@@ -755,8 +755,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) return;
 
 
-  #if SAVESCREEN
-  if(!IsEmbedded()) {
+  if (SaveRuntime) if(!IsEmbedded()) {
     extern bool CommandResolution;
     // Do NOT load resolution from profile, if we have requested a resolution from command line
     // And also, we can only load saved screen parameters from the default profile!
@@ -774,7 +773,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
         }
     }
   }
-  #endif
 
   #if TESTBENCH
   if (!strcmp(sname,"LKVERSION") && !strcmp(sname,"PROFILEVERSION")) {

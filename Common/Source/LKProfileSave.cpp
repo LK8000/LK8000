@@ -413,14 +413,12 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryOverlay_RightBottom, Overlay_RightBottom);
 
 
-  #if SAVESCREEN
   extern bool CommandResolution;
-  if(!IsEmbedded() && !CommandResolution) {
+  if (SaveRuntime) if(!IsEmbedded() && !CommandResolution) {
     rprintf(szRegistryScreenSize   ,ScreenSize);
     rprintf(szRegistryScreenSizeX  ,ScreenSizeX);
     rprintf(szRegistryScreenSizeY  ,ScreenSizeY);
   }
-  #endif
 
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);
