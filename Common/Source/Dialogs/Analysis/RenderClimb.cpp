@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "Asset.hpp"
 
 void Statistics::RenderClimb(LKSurface& Surface, const RECT& rc)
 {

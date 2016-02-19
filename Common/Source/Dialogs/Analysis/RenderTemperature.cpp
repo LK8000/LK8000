@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Atmosphere.h"
+#include "Asset.hpp"
 
 void Statistics::RenderTemperature(LKSurface& Surface, const RECT& rc)
 {

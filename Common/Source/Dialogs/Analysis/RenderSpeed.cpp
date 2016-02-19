@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "Asset.hpp"
 
 void Statistics::RenderSpeed(LKSurface& Surface, const RECT& rc)
 {

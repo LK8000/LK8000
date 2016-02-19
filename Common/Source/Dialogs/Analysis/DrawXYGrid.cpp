@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "Asset.hpp"
 
 void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
 			   const double tic_step, 

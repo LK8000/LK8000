@@ -10,7 +10,7 @@
 #include "McReady.h"
 #include "utils/stl_utils.h"
 #include "LKObjects.h"
-
+#include "Asset.hpp"
 
 
 void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)

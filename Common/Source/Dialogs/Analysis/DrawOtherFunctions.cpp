@@ -7,7 +7,7 @@
 */
 #include "externs.h"
 #include "Sideview.h"
-
+#include "Asset.hpp"
 
 void Statistics::DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text,
 			   const double xv, const double yv) {

@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Sideview.h"
-
+#include "Asset.hpp"
 
 
 void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)

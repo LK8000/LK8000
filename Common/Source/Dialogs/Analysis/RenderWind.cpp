@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "Asset.hpp"
 
 // from Calculations.cpp
 #include "windanalyser.h"

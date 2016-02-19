@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Sideview.h"
-
+#include "Asset.hpp"
 
 
 extern LKPen penThinSignal;

@@ -14,6 +14,7 @@
 #include "dlgTools.h"
 #include "Event/Event.h"
 #include "resource.h"
+#include "Asset.hpp"
 
 double Statistics::yscale;
 double Statistics::xscale;
