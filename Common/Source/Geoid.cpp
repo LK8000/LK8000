@@ -77,7 +77,7 @@ inline double interpolation2d(double x, double y, double z11, double z12, double
 
 
 double LookupGeoidSeparation(double lat, double lon) {
-  if (!egm96data || !OpenGeoid()) {
+  if (!egm96data) {
       return 0.0;
   }
 
