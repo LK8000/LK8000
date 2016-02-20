@@ -2990,7 +2990,6 @@ void MapWindow::LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *Buffe
     
   static int	index;
   static double value;
-  static TCHAR	text[LKSIZEBUFFERVALUE];
 
   index=-1;
 
