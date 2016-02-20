@@ -174,7 +174,9 @@ BOOL KRT2PutVolume(PDeviceDescriptor_t d, int Volume) {
           {
            for (i=0; i < len; i++)
               d->Com->PutChar(szTmp[i]);
+#ifdef TESTBENCH
             StartupStore(_T(". KRT2 Volume  %i%s"), Volume,NEWLINE);
+#endif
             RadioPara.Volume = Volume;
           }
       }
@@ -195,7 +197,9 @@ BOOL KRT2PutSquelch(PDeviceDescriptor_t d, int Squelch) {
           {
            for (i=0; i < len; i++)
               d->Com->PutChar(szTmp[i]);
+#ifdef TESTBENCH
             StartupStore(_T(". KRT2 Squelch  %i%s"), Squelch,NEWLINE);
+#endif
             RadioPara.Squelch = Squelch;
           }
       }
@@ -219,8 +223,10 @@ BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) 
         RadioPara.ActiveFrequency=  Freq;
         if(StationName != NULL)        
           _stprintf(RadioPara.ActiveName,_T("%s"),StationName) ;       
-   
+  
+#ifdef TESTBENCH 
          StartupStore(_T(". KRT2 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+#endif
       }
   return(TRUE);
 }
@@ -242,8 +248,9 @@ BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]
         RadioPara.PassiveFrequency =  Freq;
         if(StationName != NULL)
           _stprintf(RadioPara.PassiveName  ,_T("%s"),StationName) ;       
-            
+         #ifdef TESTBENCH   
          StartupStore(_T(". KRT2 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+         #endif
       }
   return(TRUE);
 }
@@ -260,7 +267,9 @@ BOOL KRT2StationSwap(PDeviceDescriptor_t d) {
           _stprintf(szTmp, _T("%cC"), STX);
           for (i=0; i < 2; i++)
             d->Com->PutChar(szTmp[i]);
+            #ifdef TESTBENCH
            StartupStore(_T(". KRT2  station swap %s"), NEWLINE);
+            #endif
       }
   return(TRUE);
 }
@@ -276,12 +285,16 @@ BOOL KRT2RadioMode(PDeviceDescriptor_t d, int mode) {
          if( mode > 0  )
          {     
             _stprintf(szTmp, _T("%cO"), STX);    // turn Dual Mode On
+            #ifdef TESTBENCH
             StartupStore(_T(". KRT2  Dual on %s"), NEWLINE);
+            #endif
          }
          else
          {
             _stprintf(szTmp, _T("%co"), STX);     // turn Dual Mode Off
+            #ifdef TESTBENCH
             StartupStore(_T(". KRT2  Dual off %s"), NEWLINE);
+            #endif
          }    
           for (i=0; i < 2; i++)
             d->Com->PutChar(szTmp[i]);
@@ -605,14 +618,14 @@ LKASSERT(d !=NULL);
     }
 
 
+#ifdef TESTBENCH            
 if(processed> 0)
 {    
         _stprintf(szMessage,_T("%s:%s "),gettext(TEXT("_@M2309_")),szTempStr);
         StartupStore(_T(" %s %s%s"), szMessage,WhatTimeIsIt(),NEWLINE);
-#ifdef TESTBENCH            
   //      DoStatusMessage(szMessage);
-#endif        
 }
+#endif        
 
  //   if(processed > 0) /* if a valid Answer:  */
 

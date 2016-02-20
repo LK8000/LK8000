@@ -135,7 +135,9 @@ BOOL PVCOMRadioMode(PDeviceDescriptor_t d, int mode) {
 BOOL PVCOMPutVolume(PDeviceDescriptor_t d, int Volume) {
   TCHAR  szTmp[255];
   _stprintf(szTmp, TEXT("$PVCOM,S,VOL,%d"), Volume);
+#ifdef TESTBENCH
     StartupStore(_T(". RADIO Volume  %i%s"), Volume,NEWLINE);
+#endif
   PVCOMNMEAddCheckSumStrg(szTmp);
   if(d != NULL)
 	if(!d->Disabled)
@@ -147,7 +149,9 @@ BOOL PVCOMPutVolume(PDeviceDescriptor_t d, int Volume) {
 BOOL PVCOMPutSquelch(PDeviceDescriptor_t d, int Squelch) {
   TCHAR  szTmp[255];
   _stprintf(szTmp, TEXT("$PVCOM,S,SQL,%d"), Squelch);
+#ifdef TESTBENCH
       StartupStore(_T(". RADIO Squelch  %i%s"), Squelch,NEWLINE);
+#endif
   PVCOMNMEAddCheckSumStrg(szTmp);
   if(d != NULL)
 	if(!d->Disabled)
@@ -168,7 +172,9 @@ BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR Station[]) {
   ReplaceNMEAControlChars(StationName);
           
   _stprintf(szTmp, TEXT("$PVCOM,S,AF,%7.3f,%s"), Freq,StationName);
+#ifdef TESTBENCH
   StartupStore(_T(". RADIO Active Station  %7.3f %s%s"), Freq,StationName,NEWLINE);
+#endif
   PVCOMNMEAddCheckSumStrg(szTmp);
   if(d != NULL)
      if(!d->Disabled)
@@ -186,7 +192,9 @@ BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR Station[]) {
   ReplaceNMEAControlChars(StationName);
   
   _stprintf(szTmp, TEXT("$PVCOM,S,PF,%7.3f,%s"), Freq,StationName);
+#ifdef TESTBENCH
     StartupStore(_T(". RADIO Stanby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+#endif
   PVCOMNMEAddCheckSumStrg(szTmp);
   if(d != NULL)
     if(!d->Disabled)
@@ -198,7 +206,9 @@ BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR Station[]) {
 
 BOOL PVCOMStationSwap(PDeviceDescriptor_t d) {
   TCHAR  szTmp[255];
+#ifdef TESTBENCH
    StartupStore(_T(". RADIO Station swap %s"), NEWLINE);
+#endif
   _stprintf(szTmp, TEXT("$PVCOM,S,CHG"));
   PVCOMNMEAddCheckSumStrg(szTmp);
   if(d != NULL)
