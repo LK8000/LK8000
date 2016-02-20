@@ -3014,7 +3014,6 @@ void MapWindow::LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *Buffe
 	else
 		_stprintf(BufferValue, TEXT("%.1lf"),value);
 
-	_stprintf(BufferValue, TEXT("%s"),text);
   }
 }
 
