@@ -24,8 +24,7 @@ extern HINSTANCE _hInstance;
 const unsigned char* egm96data = NULL;
 #endif
 
-bool OpenGeoid(void) {
-    if(UseGeoidSeparation) {
+void OpenGeoid(void) {
 #ifdef WIN32_RESOURCE
         LKASSERT(!egm96data);
         egm96data = NULL;
@@ -51,8 +50,6 @@ bool OpenGeoid(void) {
 #endif
         // disable use Geoid if resource can't be loaded;
         UseGeoidSeparation = (egm96data);
-    }
-    return (egm96data);
 }
 
 void CloseGeoid(void) {
@@ -77,6 +74,7 @@ inline double interpolation2d(double x, double y, double z11, double z12, double
 
 
 double LookupGeoidSeparation(double lat, double lon) {
+  LKASSERT(egm96data);
   if (!egm96data) {
       return 0.0;
   }
