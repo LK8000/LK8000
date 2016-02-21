@@ -98,7 +98,9 @@ extern void ResetNearestTopology();
 
 void WhereAmI::run(void) {
 
-    StartupStore(_T("Oracle : start to find position") NEWLINE);
+  #ifdef TESTBENCH
+  StartupStore(_T("Oracle : start to find position") NEWLINE);
+  #endif
 
     PeriodClock _time;
     _time.Update();
@@ -378,7 +380,8 @@ _end:
 
   CharUpper(toracle);
 
-
+  #ifdef TESTBENCH
   StartupStore(_T("Oracle : Result found in %d ms") NEWLINE, _time.Elapsed());
+  #endif
 }
 
