@@ -59,8 +59,6 @@ void OpenGeoid(void) {
             egm96data = IDR_RASTER_EGM96S_begin;
         }
 #endif
-        // disable use Geoid if resource can't be loaded;
-        UseGeoidSeparation = (egm96data);
 }
 
 void CloseGeoid(void) {
