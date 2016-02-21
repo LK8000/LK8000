@@ -38,11 +38,22 @@ void OpenGeoid(void) {
                     const size_t len = SizeofResource(_hInstance, hResInfo);
                     if (len == EGM96SIZE) {
                         egm96data = (unsigned char*) malloc(len);
-                        memcpy((char*) egm96data, (char*) lpRes, len);
+                        if (!egm96data) {
+                           StartupStore(_T(". EGM96DATA MALLOC FAILED%s"),NEWLINE);
+                        } else {
+                           memcpy((char*) egm96data, (char*) lpRes, len);
+                        }
+                    } else {
+                        StartupStore(_T(". EGM96SIZE error%s"),NEWLINE);
                     }
                 }
+            } else {
+                StartupStore(_T(". UNABLE TO LOAD RESOURCE FOR OPENGEOID%s"),NEWLINE);
             }
+        } else {
+            StartupStore(_T(". UNABLE TO FIND RESOURCE FOR OPENGEOID%s"),NEWLINE);
         }
+        if (!egm96data) StartupStore(_T(". OPENGEOID FAILURE!%s"),NEWLINE);
 #else
         if(std::distance(IDR_RASTER_EGM96S_begin, IDR_RASTER_EGM96S_end) == EGM96SIZE) {
             egm96data = IDR_RASTER_EGM96S_begin;
