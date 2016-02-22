@@ -10,38 +10,6 @@
 #include "RGB.h"
 
 
-#ifdef CPUSTATS
-void MapWindow::DrawCpuStats(HDC hdc, RECT rc) {
-
-  if (Appearance.InverseInfoBox == true) return;
-
-  TCHAR Buffer[LKSIZEBUFFERLARGE];
-  TextInBoxMode_t TextDisplayMode = {0};
-  TextDisplayMode.Color = RGB_WHITE;
-  TextDisplayMode.WhiteBorder = 1; // inside a white circle
-  TextDisplayMode.Border = 1;      // add a black border to the circle
-
-#if (WINDOWSPC>0)
-  _stprintf(Buffer,_T("CPU Draw=%d Calc=%d us"), Cpu_Draw, Cpu_Calc);
-#else
-  _stprintf(Buffer,_T("CPU Draw=%d Calc=%d ms"), Cpu_Draw, Cpu_Calc);
-#endif
-  TextInBox(hdc, &rc, Buffer, 000, 200 , 0, &TextDisplayMode, false);
-#if (WINDOWSPC>0)
-  _stprintf(Buffer,_T("CPU Inst=%d PortA=%d PortB=%d us"), Cpu_Instrument, Cpu_PortA, Cpu_PortB);
-#else
-  _stprintf(Buffer,_T("CPU Inst=%d PortA=%d PortB=%d ms"), Cpu_Instrument, Cpu_PortA, Cpu_PortB);
-#endif
-  TextInBox(hdc, &rc, Buffer, 000, 240 , 0, &TextDisplayMode, false);
-
-  //_stprintf(Buffer,_T("Landsc=%d Geom=%d"), InfoBoxLayout::landscape, InfoBoxLayout::InfoBoxGeometry);
-  //TextInBox(hdc, Buffer, 000, 280 , 0, TextDisplayMode, false);
-  //_stprintf(Buffer,_T("Recents=%d"), RecentNumber);
-  //TextInBox(hdc, Buffer, 000, 280 , 0, TextDisplayMode, false);
-
-}
-#endif
-
 #ifdef DRAWDEBUG
 void MapWindow::DrawDebug(HDC hdc, RECT rc) {
 

@@ -53,38 +53,6 @@ int MeasureCPULoad() {
 }
 #endif
 
-
-
-// Warning this is called by several concurrent threads, no static variables here
-void Cpustats(int *accounting, FILETIME *kernel_old, FILETIME *kernel_new, FILETIME *user_old, FILETIME *user_new) {
-   __int64 knew=0, kold=0, unew=0, uold=0;
-   int total=2; // show evident problem
-
-   knew = kernel_new->dwHighDateTime;
-   knew <<= 32;
-   knew += kernel_new->dwLowDateTime;
-    
-   unew=user_new->dwHighDateTime;
-   unew <<=32;
-   unew+=user_new->dwLowDateTime;
-
-   kold = kernel_old->dwHighDateTime;
-   kold <<= 32;
-   kold += kernel_old->dwLowDateTime;
-   
-   uold=user_old->dwHighDateTime;
-   uold <<=32;
-   uold+=user_old->dwLowDateTime;
-
-#if (WINDOWSPC>0)   
-   total = (int) ((knew+unew-kold-uold)/10.0);
-   //if (total==0) return;
-#else
-   total = (int) ((knew+unew-kold-uold)/10000.0);
-#endif
-   *accounting=total;
-
-}
 #if !(WINDOWSPC>0)
 class GetCpuLoad_Singleton {
 public:

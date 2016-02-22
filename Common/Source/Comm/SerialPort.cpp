@@ -380,8 +380,6 @@ bool SerialPort::Write(const void *data, size_t length) {
     return (true);
 }
 
-extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
-
 unsigned SerialPort::RxThread() {
 #if ( (WINDOWSPC == 0)) && !NEWCOMM	// 100222
     DWORD dwCommModemStatus = 0;
