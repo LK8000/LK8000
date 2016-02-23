@@ -980,6 +980,7 @@ COMMS	:=\
 	$(CMM)/SerialPort.cpp\
 	$(CMM)/TTYPort.cpp\
 	$(CMM)/SocketPort.cpp\
+	$(CMM)/TCPPort.cpp\
 	$(CMM)/UpdateBaroSource.cpp \
 	$(CMM)/UpdateMonitor.cpp \
 	$(CMM)/UpdateQNH.cpp \

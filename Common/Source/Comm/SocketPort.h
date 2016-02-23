@@ -26,10 +26,12 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
 #define closesocket(s) close(s)
+#define ioctlsocket ioctl
 
 inline unsigned WSAGetLastError() { return errno; }
 inline unsigned GetLastError() { return errno; }
@@ -65,8 +67,6 @@ protected:
     virtual unsigned RxThread();
 
     SOCKET mSocket;
-    
-private:
     unsigned mTimeout;    
 };
 

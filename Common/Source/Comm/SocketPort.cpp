@@ -11,14 +11,6 @@
 #include "externs.h"
 #include "SocketPort.h"
 
-#ifndef WIN32
-#include <sys/ioctl.h>
-
-#define ioctlsocket ioctl
-
-#endif
-
-
 using namespace std::placeholders;
 
 SocketPort::SocketPort(int idx, const std::tstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET), mTimeout(40) {
@@ -74,22 +66,6 @@ int SocketPort::SetRxTimeout(int TimeOut) {
 
     unsigned dwTimeout = mTimeout;
     mTimeout = TimeOut;
-
-    //-------------------------
-    // Set the socket I/O mode: In this case FIONBIO
-    // enables or disables the blocking mode for the 
-    // socket based on the numerical value of iMode.
-    // If iMode = 0, blocking is enabled; 
-    // If iMode != 0, non-blocking mode is enabled.
-
-    u_long iMode = 1;
-    int iResult = ioctlsocket(mSocket, FIONBIO, &iMode);
-    if (iResult == SOCKET_ERROR) {
-        StartupStore(_T(".... ioctlsocket failed with error: %d%s"), iResult, NEWLINE);
-        // if failed, socket still in blocking mode, it's big problem
-        dwTimeout = -1;
-    }
-
     return dwTimeout;
 }
 
@@ -100,12 +76,11 @@ size_t SocketPort::Read(void *szString, size_t size) {
     timeout.tv_sec = mTimeout / 1000;
     timeout.tv_usec = mTimeout % 1000;
 
-    int iResult = 0;
     FD_ZERO(&readfs);
     FD_SET(mSocket, &readfs);
     
     // wait for received data
-    iResult = select(mSocket + 1, &readfs, NULL, NULL, &timeout); 
+    int iResult = select(mSocket + 1, &readfs, NULL, NULL, &timeout); 
     if (iResult == 0) {
         return 0U; // timeout
     }
@@ -121,7 +96,7 @@ size_t SocketPort::Read(void *szString, size_t size) {
 
     if(iResult == SOCKET_ERROR) {
         AddStatErrRx(1);
-        StartupStore(_T("ComPort %u : socket was forcefully disconnected <0x%X>.%s"), (unsigned)GetPortIndex() + 1, WSAGetLastError(), NEWLINE);
+        StartupStore(_T("ComPort %u : socket was forcefully disconnected <%d>.%s"), (unsigned)GetPortIndex() + 1, WSAGetLastError(), NEWLINE);
         closesocket(mSocket);
         mSocket = INVALID_SOCKET;
     }
@@ -181,6 +156,21 @@ unsigned SocketPort::RxThread() {
     unsigned dwWaitTime = 0;
     _Buff_t szString;
     Purge();
+    
+        
+    //-------------------------
+    // Set the socket I/O mode: In this case FIONBIO
+    // enables or disables the blocking mode for the 
+    // socket based on the numerical value of iMode.
+    // If iMode = 0, blocking is enabled; 
+    // If iMode != 0, non-blocking mode is enabled.
+
+    u_long iMode = 1;
+    int iResult = ioctlsocket(mSocket, FIONBIO, &iMode);
+    if (iResult == SOCKET_ERROR) {
+        StartupStore(_T(".... ioctlsocket failed with error: %d%s"), iResult, NEWLINE);
+        // if failed, socket still in blocking mode, it's big problem
+    }
 
     while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(dwWaitTime)) {
 

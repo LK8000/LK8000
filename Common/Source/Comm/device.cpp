@@ -13,6 +13,7 @@
 #include "SerialPort.h"
 #include "Bluetooth/BthPort.h"
 #include "GpsIdPort.h"
+#include "TCPPort.h"
 #include "devPVCOM.h"
 #include <functional>
 #ifdef __linux__
@@ -217,7 +218,6 @@ void RefreshComPortList() {
       COMMPort.push_back(_T("/dev/ttyGS0"));
     }
   }
-
 #elif TESTBENCH
   COMMPort.push_back(_T("/lk/ptycom1"));
   COMMPort.push_back(_T("/lk/ptycom2"));
@@ -237,7 +237,10 @@ void RefreshComPortList() {
         );
     }
 #endif
-    
+
+    COMMPort.push_back(_T("TCPClient"));
+    COMMPort.push_back(_T("TCPServer"));
+
     if(COMMPort.empty()) {
         // avoid segfault on device config  dialog if no comport detected.
         COMMPort.push_back(_T("Null"));
@@ -410,6 +413,10 @@ BOOL devInit(LPCTSTR CommandLine) {
             }
         } else if (_tcscmp(Port, _T("GPSID")) == 0) {
             Com = new GpsIdPort(i, Port);
+        } else if (_tcscmp(Port, _T("TCPClient")) == 0) {
+            Com = new TCPClientPort(i, Port);
+        } else if (_tcscmp(Port, _T("TCPServer")) == 0) {
+            Com = new TCPServerPort(i, Port);
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
         }

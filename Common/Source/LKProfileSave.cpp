@@ -552,6 +552,12 @@ void LKDeviceSave(const TCHAR *szFile)
   rprintf(szRegistryBit1Index,dwBit1Index);
   rprintf(szRegistryBit2Index,dwBit2Index);
 
+  rprintf(szRegistryIpAddress1,szIpAddress1);
+  rprintf(szRegistryIpAddress2,szIpAddress2);
+
+  rprintf(szRegistryIpPort1,dwIpPort1);
+  rprintf(szRegistryIpPort2,dwIpPort2);
+  
   rprintf(szRegistryUseExtSound1,UseExtSound1);
   rprintf(szRegistryUseExtSound2,UseExtSound2);
 

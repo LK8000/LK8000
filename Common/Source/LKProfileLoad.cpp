@@ -508,7 +508,13 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   /***************************************************/
   PREAD(sname,svalue,szRegistryPort1Name,szPort1, array_size(szPort1));
   PREAD(sname,svalue,szRegistryPort2Name,szPort2, array_size(szPort2));
-    
+
+  PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress1, array_size(szIpAddress1));
+  PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress2, array_size(szIpAddress2));
+
+  PREAD(sname,svalue,szRegistryIpPort1,&dwIpPort1);
+  PREAD(sname,svalue,szRegistryIpPort2,&dwIpPort2);
+
   PREAD(sname,svalue,szRegistryPressureHg,&PressureHg);
   PREAD(sname,svalue,szRegistrySafetyAltitudeArrival,&SAFETYALTITUDEARRIVAL);
   PREAD(sname,svalue,szRegistrySafetyAltitudeMode,&SafetyAltitudeMode);

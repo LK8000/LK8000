@@ -871,6 +871,10 @@ GEXTERN unsigned dwBit1Index;
 GEXTERN TCHAR szPort2[MAX_PATH];
 GEXTERN unsigned dwSpeedIndex2;
 GEXTERN unsigned dwBit2Index;
+GEXTERN TCHAR szIpAddress1[16]; // IPv4
+GEXTERN TCHAR szIpAddress2[16]; // IPv4
+GEXTERN unsigned dwIpPort1;
+GEXTERN unsigned dwIpPort2;
 GEXTERN TCHAR dwDeviceName1[DEVNAMESIZE+1];
 GEXTERN TCHAR dwDeviceName2[DEVNAMESIZE+1];
 GEXTERN double LastFlarmCommandTime;
