@@ -861,6 +861,17 @@ int DataFieldInteger::CreateComboList(void) {
   return CreateComboListStepping();
 }
 
+bool DataFieldInteger::CreateKeyboard(void){
+	TCHAR szText[20];
+	_tcscpy(szText, GetAsString());
+	dlgNumEntryShowModal(szText,20, false);
+
+	TCHAR*szStop;
+	SetAsFloat((int)floor((StrToDouble(szText, &szStop)/mStep)+0.5)*mStep);
+
+	return true;
+}
+
 //----------------------------------------------------------
 // DataField Float
 //----------------------------------------------------------

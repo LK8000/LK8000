@@ -398,7 +398,8 @@ class DataFieldInteger:public DataField{
   void Inc(void);
   void Dec(void);
   int CreateComboList(void);
-
+  bool CreateKeyboard(void);
+  
   bool GetAsBoolean(void);
   int GetAsInteger(void);
   double GetAsFloat(void);
