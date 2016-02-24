@@ -113,7 +113,7 @@ start_search:
     UnlockTaskData();
 
     #if (WINDOWSPC>0)
-    if (EnableSoundModes) Poco::Thread::sleep(1000); // let the sound be heard in sequence
+  //  if (EnableSoundModes) Poco::Thread::sleep(1000); // let the sound be heard in sequence
     #endif
     if(dlgGetNoElements() ==0) { 
         if(dyn_range < 120000) {
