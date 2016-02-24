@@ -1050,6 +1050,15 @@ TCHAR *DataFieldString::GetAsDisplayString(void){
   return(mValue);
 }
 
+bool DataFieldString::CreateKeyboard(void){
+	TCHAR szText[EDITSTRINGSIZE];
+	_tcscpy(szText, GetAsString());
+	dlgTextEntryShowModal(szText,EDITSTRINGSIZE, false);
+
+    this->Set(szText);
+
+	return true;
+}
 
 //----------------------------------------------------------
 // ComboList Class
@@ -2419,7 +2428,7 @@ DataField *WndProperty::SetDataField(DataField *Value) {
         Value->Use();
         mDataField = Value;
         mDataField->GetData();
-        mDialogStyle = mDataField->SupportCombo;
+        mDialogStyle = mDataField->SupportCombo||mUseKeyboard;
 
 
         if(GetReadOnly() || mDialogStyle) {

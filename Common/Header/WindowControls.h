@@ -508,6 +508,8 @@ class DataFieldString:public DataField{
   #endif
   TCHAR *GetAsString(void);
   TCHAR *GetAsDisplayString(void);
+  
+  bool CreateKeyboard();
 
 };
 
