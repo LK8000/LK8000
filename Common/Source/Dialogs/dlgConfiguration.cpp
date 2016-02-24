@@ -372,11 +372,15 @@ static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
         bHidePort |= (_tcscmp(Name, _T("Internal")) == 0);
         
         ShowWindowControl(wf, DevicePropName[idx], !bHidePort);
-        ShowWindowControl(wf, SetupButtonName[idx], !bHidePort && false/*DeviceList[idx].DoSetup*/);  
+        ShowWindowControl(wf, SetupButtonName[idx], !bHidePort && false/*DeviceList[idx].DoSetup*/);
         
-        WndProperty* wp = (WndProperty*) wf->FindByName(DevicePropName[idx]);
-        if (wp) {
-            UpdateComPortSetting(idx, wp->GetDataField()->GetAsString());
+        if(!bHidePort) {
+            WndProperty* wp = (WndProperty*) wf->FindByName(DevicePropName[idx]);
+            if (wp) {
+                UpdateComPortSetting(idx, wp->GetDataField()->GetAsString());
+            }
+        } else {
+            UpdateComPortSetting(idx, _T(""));
         }
     }
 }
@@ -1014,10 +1018,22 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
             _T("prpExtSound2")
         };
 
+    const TCHAR * prpIpAddr[2] = {
+            _T("prpComIpAddr1"),
+            _T("prpComIpAddr2")
+        };
+    const TCHAR * prpIpPort[2] = {
+            _T("prpComIpPort1"),
+            _T("prpComIpPort2")
+        };
+
+    
     LKASSERT(szPortName);
     // check if all array have same size ( compil time check );
     static_assert(array_size(DeviceList) == array_size(PortPropName), "PortPropName array size need to be same of DeviceList array size");
     static_assert(array_size(DeviceList) == array_size(prpExtSound), "prpExtSound array size need to be same of DeviceList array size");
+    static_assert(array_size(DeviceList) == array_size(prpIpAddr), "prpIpAddr array size need to be same of DeviceList array size");
+    static_assert(array_size(DeviceList) == array_size(prpIpPort), "prpIpPort array size need to be same of DeviceList array size");
 
 #ifdef DISABLEEXTAUDIO    
     bool bManageExtAudio = false;
@@ -1027,18 +1043,28 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
     bManageExtAudio &= IsSoundInit();
     bool bHide = (DeviceList[idx].Disabled || (_tcscmp(DeviceList[idx].Name, _T("Internal")) == 0));
     bool bBt = ((_tcslen(szPortName) > 3) && (_tcsncmp(szPortName, _T("BT:"), 3) == 0));
+    bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
+    bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);
 
-    // For com port properties, hide them for disable, internal or Bluetooth, show otherwise
+    // For com port properties, hide them for disable, internal, Bluetooth or TCP, show otherwise
     if (std::begin(PortPropName) + idx < std::end(PortPropName)) {
         std::for_each(
                 std::begin(PortPropName[idx]),
                 std::end(PortPropName[idx]),
-                std::bind(ShowWindowControl, wf, _1, !(bHide || bBt))
+                std::bind(ShowWindowControl, wf, _1, !(bHide || bBt || bTCPClient || bTCPServer))
                 );
-    }
-    // Manage external sounds only if necessary
-    if (bManageExtAudio) {
-        ShowWindowControl(wf, prpExtSound[idx], !bHide);
+
+        // Show Ip Addr only for TCPClient Port
+        ShowWindowControl(wf, prpIpAddr[idx], bTCPClient);
+
+        // Show Ip Port for TCPClient and TCPServer Port
+        ShowWindowControl(wf, prpIpPort[idx], bTCPClient || bTCPServer);
+
+
+        // Manage external sounds only if necessary
+        if (bManageExtAudio) {
+            ShowWindowControl(wf, prpExtSound[idx], !bHide);
+        }
     }
 }
 
@@ -1319,6 +1345,18 @@ static void setVariables(void) {
     wp->GetDataField()->Set(UseExtSound1);
     wp->RefreshDisplay();
   }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
+  if (wp) {
+    wp->GetDataField()->Set(szIpAddress1);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort1"));
+  if (wp) {
+    wp->GetDataField()->Set((int)dwIpPort1);
+    wp->RefreshDisplay();
+  }
 
   TCHAR deviceName1[MAX_PATH];
   TCHAR deviceName2[MAX_PATH];
@@ -1373,6 +1411,18 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound2"));
   if (wp) {
     wp->GetDataField()->Set(UseExtSound2);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr2"));
+  if (wp) {
+    wp->GetDataField()->Set(szIpAddress2);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort2"));
+  if (wp) {
+    wp->GetDataField()->Set((int)dwIpPort2);
     wp->RefreshDisplay();
   }
 
@@ -4196,7 +4246,24 @@ int ival;
       COMPORTCHANGED = true;
     }
   }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
+  if (wp) {
+    if (_tcscmp(szIpAddress1, wp->GetDataField()->GetAsString()) != 0) {
+      _tcsncpy(szIpAddress1, wp->GetDataField()->GetAsString(), array_size(szIpAddress1));
+      szIpAddress1[array_size(szIpAddress1)-1] = _T('\0');
+      COMPORTCHANGED = true;
+    }
+  }  
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort1"));
+  if (wp) {
+    if ((int)dwIpPort1 != wp->GetDataField()->GetAsInteger()) {
+      dwIpPort1 = wp->GetDataField()->GetAsInteger();
+      COMPORTCHANGED = true;
+    }
+  }
+  
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
     if (dwDeviceIndex1 != wp->GetDataField()->GetAsInteger()) {
@@ -4232,14 +4299,31 @@ int ival;
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComBit2"));
   if (wp) {
     if ((int)dwBit1Index != wp->GetDataField()->GetAsInteger()) {
       dwBit1Index = wp->GetDataField()->GetAsInteger();
       COMPORTCHANGED = true;
     }
   }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr2"));
+  if (wp) {
+    if (_tcscmp(szIpAddress2, wp->GetDataField()->GetAsString()) != 0) {
+      _tcsncpy(szIpAddress2, wp->GetDataField()->GetAsString(), array_size(szIpAddress2));
+      szIpAddress2[array_size(szIpAddress2)-1] = _T('\0');
+      COMPORTCHANGED = true;
+    }
+  }  
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort2"));
+  if (wp) {
+    if ((int)dwIpPort2 != wp->GetDataField()->GetAsInteger()) {
+      dwIpPort2 = wp->GetDataField()->GetAsInteger();
+      COMPORTCHANGED = true;
+    }
+  }
+    
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice2"));
   if (wp) {
     if (dwDeviceIndex2 != wp->GetDataField()->GetAsInteger()) {
