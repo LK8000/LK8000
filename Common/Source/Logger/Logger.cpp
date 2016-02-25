@@ -124,12 +124,7 @@ void StopLogger(void) {
     LoggerActive = false;
     if (LoggerClearFreeSpace()) {
 
-    #if (TESTBENCH && DEBUG_LOGGER)
-    if (LoggerGActive())
-    #else
-    if (!SIMMODE && LoggerGActive())
-    #endif
-	{
+    if (LoggerGActive()) {
 
 	extern int RunSignature();
 	retval = RunSignature();
@@ -1173,17 +1168,12 @@ bool IGCWriteRecord(const char *szIn) {
 }
 
 
-bool LoggerGActive()
-{
-  #if (WINDOWSPC>0)
-    #if (TESTBENCH && DEBUG_LOGGER)
-    return true;	// THIS IS ONLY for checking Grecord new stuff under testbench
-    #else
-    return false;
-    #endif
-  #else
-  return true;
-  #endif
+bool LoggerGActive() {
+#if defined(YDEBUG) || defined(DEBUG_LOGGER)
+    return true;
+#else
+    return (!SIMMODE);
+#endif
 }
 
 
