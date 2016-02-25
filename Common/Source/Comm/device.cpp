@@ -985,8 +985,12 @@ BOOL devPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[])
 {
 BOOL result = TRUE;
 
-  if (SIMMODE)
+ if (SIMMODE)
+ {
+    RadioPara.ActiveFrequency=  Freq;
+    _stprintf( RadioPara.ActiveName, _T("%s") , StationName);
     return TRUE;
+ }
 
   LockComm();
 
@@ -1016,7 +1020,12 @@ BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq,TCHAR  StationName[])
   BOOL result = TRUE;
 
   if (SIMMODE)
+  {
+     RadioPara.PassiveFrequency=  Freq;
+     _stprintf( RadioPara.PassiveName, _T("%s") , StationName);
     return TRUE;
+  }
+  
   LockComm();
   if (d != NULL)
   {
