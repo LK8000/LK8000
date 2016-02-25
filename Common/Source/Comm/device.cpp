@@ -129,12 +129,11 @@ BOOL devRegister(const TCHAR *Name, int Flags,
   return(TRUE);
 }
 
-BOOL devRegisterGetName(int Index, TCHAR *Name){
-  Name[0] = '\0';
-  if (Index < 0 || Index >= DeviceRegisterCount) 
-    return (FALSE);
-  _tcscpy(Name, DeviceRegister[Index].Name);
-  return(TRUE);
+LPCTSTR devRegisterGetName(int Index){
+  if (Index < 0 || Index >= DeviceRegisterCount) {
+    return _T("");
+  }
+  return DeviceRegister[Index].Name;
 }
 
 // This device is not available if Disabled

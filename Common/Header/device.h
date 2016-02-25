@@ -130,7 +130,7 @@ void LockComm();
 void RefreshComPortList();
 
 BOOL devRegister(const TCHAR *Name,	int	Flags, BOOL (*Installer)(PDeviceDescriptor_t d));
-BOOL devRegisterGetName(int Index, TCHAR *Name);
+LPCTSTR devRegisterGetName(int Index);
 
 void RestartCommPorts();
 

@@ -1183,7 +1183,6 @@ static void GetInfoBoxSelector(int item, int mode)
 
 static  int dwDeviceIndex1=0;
 static  int dwDeviceIndex2=0;
-static  TCHAR DeviceName[DEVNAMESIZE+1];
 static  TCHAR temptext[MAX_PATH];
 
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
@@ -1326,12 +1325,11 @@ static void setVariables(void) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
     for (int i=0; i<DeviceRegisterCount; i++) {
-      devRegisterGetName(i, DeviceName);
-      dfe->addEnumText((DeviceName));
+      LPCTSTR DeviceName = devRegisterGetName(i);
+      dfe->addEnumText(DeviceName);
 
       if (_tcscmp(DeviceName, deviceName1) == 0)
         dwDeviceIndex1 = i;
-
     }
     dfe->Sort(3);
     dfe->Set(dwDeviceIndex1);
@@ -1386,8 +1384,9 @@ static void setVariables(void) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
     for (int i=0; i<DeviceRegisterCount; i++) {
-      devRegisterGetName(i, DeviceName);
-      dfe->addEnumText((DeviceName));
+      LPCTSTR DeviceName = devRegisterGetName(i);
+      dfe->addEnumText(DeviceName);
+      
       if (_tcscmp(DeviceName, deviceName2) == 0)
         dwDeviceIndex2 = i;
     }
@@ -4224,8 +4223,7 @@ int ival;
     if (dwDeviceIndex1 != wp->GetDataField()->GetAsInteger()) {
       dwDeviceIndex1 = wp->GetDataField()->GetAsInteger();
       COMPORTCHANGED = true;
-      devRegisterGetName(dwDeviceIndex1, DeviceName);
-      WriteDeviceSettings(0, DeviceName);  
+      WriteDeviceSettings(0, devRegisterGetName(dwDeviceIndex1));  
     }
   }
 
@@ -4284,8 +4282,7 @@ int ival;
     if (dwDeviceIndex2 != wp->GetDataField()->GetAsInteger()) {
       dwDeviceIndex2 = wp->GetDataField()->GetAsInteger();
       COMPORTCHANGED = true;
-      devRegisterGetName(dwDeviceIndex2, DeviceName);
-      WriteDeviceSettings(1, DeviceName);  
+      WriteDeviceSettings(1, devRegisterGetName(dwDeviceIndex2));  
     }
   }
 
