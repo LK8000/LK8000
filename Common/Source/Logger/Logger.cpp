@@ -124,12 +124,7 @@ void StopLogger(void) {
     LoggerActive = false;
     if (LoggerClearFreeSpace()) {
 
-    #if (TESTBENCH && DEBUG_LOGGER)
-    if (LoggerGActive())
-    #else
-    if (!SIMMODE && LoggerGActive())
-    #endif
-	{
+    if (LoggerGActive()) {
 
 	extern int RunSignature();
 	retval = RunSignature();
@@ -1173,17 +1168,12 @@ bool IGCWriteRecord(const char *szIn) {
 }
 
 
-bool LoggerGActive()
-{
-  #if (WINDOWSPC>0)
-    #if (TESTBENCH && DEBUG_LOGGER)
-    return true;	// THIS IS ONLY for checking Grecord new stuff under testbench
-    #else
-    return false;
-    #endif
-  #else
-  return true;
-  #endif
+bool LoggerGActive() {
+#if defined(YDEBUG) || defined(DEBUG_LOGGER)
+    return true;
+#else
+    return (!SIMMODE);
+#endif
 }
 
 
@@ -1195,73 +1185,6 @@ bool LoggerGActive()
 int RunSignature() {
     TCHAR homedir[MAX_PATH];
     LocalPath(homedir, TEXT(LKD_LOGS));
-       
-#ifndef NO_IGCPLUGIN
-    DWORD retval = 99;
-
-    TCHAR path[MAX_PATH];
-    LocalPath(path, _T(LKD_LOGS));
-#if (WINDOWSPC>0)
-    _tcscat(path, _T("\\LKRECORD_PC.LK8"));
-#endif
-    // CAREFUL!!! PNA is ALSO PPC2003!!
-    // 
-    // ATTENTION: on PNA we are executing LKRECORD_PNA.LK8.EXE really
-#ifdef PNA
-    _tcscat(path, _T("\\LKRECORD_PNA.LK8"));
-#else
-#ifdef PPC2002
-    _tcscat(path, _T("\\LKRECORD_2002.LK8"));
-#endif
-#ifdef PPC2003
-    _tcscat(path, _T("\\LKRECORD_2003.LK8"));
-#endif
-#endif 
-
-#if TESTBENCH
-    StartupStore(_T(".... RunSignature: homedir <%s>%s"), homedir, NEWLINE);
-#endif
-
-    PROCESS_INFORMATION pi;
-
-#if (WINDOWSPC>0)
-    // Sadly, some parameters cannot be passed in the CE version
-    STARTUPINFO si;
-    ZeroMemory(&si, sizeof (STARTUPINFO));
-    si.cb = sizeof (STARTUPINFO);
-    si.wShowWindow = SW_SHOWNORMAL;
-    si.dwFlags = STARTF_USESHOWWINDOW;
-
-    if (::CreateProcess(path, homedir, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
-#else
-    if (::CreateProcess(path, homedir, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, NULL, &pi)) {
-#endif
-
-        ::WaitForSingleObject(pi.hProcess, 30000); // 30s
-        GetExitCodeProcess(pi.hProcess, &retval);
-        // STILL_ACTIVE = 259, this retval should be checked for
-
-#if TESTBENCH
-        StartupStore(_T(".... RunSignature exec <%s> terminated, retval=%lu%s"), path, retval, NEWLINE);
-#endif
-
-        return retval;
-    } else {
-        DWORD lasterr = GetLastError();
-
-        if (lasterr != 2) {
-            // External executable failure, bad !
-            StartupStore(_T(".... RunSignature exec <%s> FAILED, error code=%lu %s"), path, lasterr, NEWLINE);
-#if TESTBENCH
-            StartupStore(_T(".... Trying with DoSignature\n"));
-#endif
-        }
-#if TESTBENCH
-        else
-            StartupStore(_T(".... no executable <%s> found, proceeding with DoSignature\n"), path);
-#endif      
-    }
-#endif
 
     extern int DoSignature(TCHAR * hpath);
     return DoSignature(homedir);

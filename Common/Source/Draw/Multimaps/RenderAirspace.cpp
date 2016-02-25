@@ -556,20 +556,18 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
             if( (OvertargetMode == OVT_TASK) && DoOptimizeRoute() ) {
                 if ( ValidTaskPoint(ActiveTaskPoint)) {
                     double AltBase = 0.0, Radius = 0.0;
-                    double baselon, baselat;
                     LockTaskData();
                     int Type;
                     GetTaskSectorParameter(ActiveTaskPoint, &Type, NULL);
+                    const double baselon = WayPointList[Task[ActiveTaskPoint].Index].Longitude;
+                    const double baselat = WayPointList[Task[ActiveTaskPoint].Index].Latitude;
                     if(Type == CONE) {
                         AltBase = Task[ActiveTaskPoint].PGConeBase;
                         Radius = Task[ActiveTaskPoint].PGConeBaseRadius;
                         Slope = Task[ActiveTaskPoint].PGConeSlope;
-                        baselon = WayPointList[Task[ActiveTaskPoint].Index].Longitude;
-                        baselat = WayPointList[Task[ActiveTaskPoint].Index].Latitude;
-                        bConicalFinal = true;
                     }
                     UnlockTaskData();
-                    if(bConicalFinal && Slope > 0.) {
+                    if(Type == CONE && Slope > 0.) {
                         double basedist = 0.;
                         DistanceBearing(aclat, aclon, baselat, baselon, &basedist, NULL);
                         VOpt = GlidePolar::FindSpeedForSlope(Slope);
@@ -586,6 +584,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                         line[0].y = CalcHeightCoordinatOutbound(ck, &sDia);
 
                         if(AltOpt > ConeBase) {
+                            bConicalFinal = true;
                             show_mc0 = false;
 
                             line[2].x = CalcDistanceCoordinat( 0, &sDia);

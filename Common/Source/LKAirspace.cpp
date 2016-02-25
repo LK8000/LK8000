@@ -1825,20 +1825,22 @@ void CAirspaceManager::ReadAirspaces() {
         ContractLocalPath(szFile1);
         _tcscpy(szAirspaceFile, szFile1);
 
-        // also read any additional airspace
-        if (fp2 != NULL) {
-            FillAirspacesFromOpenAir(fp2);
-            zzip_fclose(fp2);
-
-            // file 2 was OK, so save it
-            ContractLocalPath(szFile2);
-            _tcscpy(szAdditionalAirspaceFile, szFile2);
-        } else {
-            StartupStore(TEXT(". No airspace file 2%s"), NEWLINE);
-        }
     } else {
         StartupStore(TEXT("... No airspace file 1%s"), NEWLINE);
     }
+
+    // also read any additional airspace
+    if (fp2 != NULL) {
+        FillAirspacesFromOpenAir(fp2);
+        zzip_fclose(fp2);
+
+        // file 2 was OK, so save it
+        ContractLocalPath(szFile2);
+        _tcscpy(szAdditionalAirspaceFile, szFile2);
+    } else {
+        StartupStore(TEXT(". No airspace file 2%s"), NEWLINE);
+    }
+
 #if ASPWAVEOFF
     AirspaceDisableWaveSectors();
 #endif
