@@ -318,53 +318,11 @@ static void NextPage(int Step){
     }
 } // NextPage
 
-static void OnSetupDeviceAClicked(WndButton* pWnd) {
-
-#if (ToDo)
-    devA()->DoSetup();
-    wf->FocusNext(NULL);
-#endif
-
-    // this is a hack, devices dont jet support device dependant setup dialogs
-    if (!SIMMODE) {
-        if ((devA() == NULL) || (_tcscmp(devA()->Name, TEXT("Vega")) != 0)) {
-            return;
-        }
-    }
-
-    // this is a hack to get the dialog to retain focus because
-    // the progress dialog in the vario configuration somehow causes
-    // focus problems
-    wf->FocusNext(NULL);
-}
-
-static void OnSetupDeviceBClicked(WndButton* pWnd) {
-
-#if (ToDo)
-    devB()->DoSetup();
-    wf->FocusNext(NULL);
-#endif
-
-    // this is a hack, devices dont jet support device dependant setup dialogs
-    if (!SIMMODE) {
-        if ((devB() == NULL) || (_tcscmp(devB()->Name, TEXT("Vega")) != 0)) {
-            return;
-        }
-    }
-
-    // this is a hack to get the dialog to retain focus because
-    // the progress dialog in the vario configuration somehow causes
-    // focus problems
-    wf->FocusNext(NULL);
-}
-
 static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
     const TCHAR * DevicePropName[] = {_T("prpComPort1"), _T("prpComPort2")};
-    const TCHAR * SetupButtonName[] = {_T("cmdSetupDeviceA"), _T("cmdSetupDeviceB")};
 
     // check if all array have same size ( compil time check );
     static_assert(array_size(DeviceList) == array_size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
-    static_assert(array_size(DeviceList) == array_size(SetupButtonName), "SetupButtonName array size need to be same of DeviceList array size");
 
     if (std::begin(DeviceList) + idx < std::end(DeviceList)) {
         bool bHidePort = DeviceList[idx].Disabled = (_tcslen(Name) == 0) || (_tcscmp(Name, _T(DEV_DISABLED_NAME)) == 0);
@@ -372,7 +330,6 @@ static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
         bHidePort |= (_tcscmp(Name, _T("Internal")) == 0);
         
         ShowWindowControl(wf, DevicePropName[idx], !bHidePort);
-        ShowWindowControl(wf, SetupButtonName[idx], !bHidePort && false/*DeviceList[idx].DoSetup*/);
         
         if(!bHidePort) {
             WndProperty* wp = (WndProperty*) wf->FindByName(DevicePropName[idx]);
@@ -1102,8 +1059,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DataAccessCallbackEntry(OnUTCData),
   ClickNotifyCallbackEntry(OnNextClicked),
   ClickNotifyCallbackEntry(OnPrevClicked),
-  ClickNotifyCallbackEntry(OnSetupDeviceAClicked),
-  ClickNotifyCallbackEntry(OnSetupDeviceBClicked),
   OnHelpCallbackEntry(OnInfoBoxHelp),
   ClickNotifyCallbackEntry(OnWaypointNewClicked),
   ClickNotifyCallbackEntry(OnWaypointDeleteClicked),

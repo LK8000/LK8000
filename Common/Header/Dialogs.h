@@ -45,8 +45,6 @@ typedef	struct{
 } ListElement;
 
 
-bool dlgAirspaceWarningShowDlg(bool force);
-// int dlgWayPointSelect(void);
 int dlgWayPointSelect(double lon=0.0, double lat=90.0, int type=-1, int FilterNear=0);
 int dlgAirspaceColoursShowModal(void);
 ListElement* dlgMultiSelectListShowModal(void);
@@ -57,12 +55,9 @@ int dlgAirspacePatternsShowModal(void);
 #endif
 bool dlgAirspaceShowModal(bool colored);
 void dlgBasicSettingsShowModal(void);
-void dlgBrightnessShowModal(void);
 void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText);
 void dlgChecklistShowModal(short checklistmode);
 void dlgConfigurationShowModal(short mode);
-void dlgVegaDemoShowModal(void);
-bool dlgConfigurationVarioShowModal(void);
 void dlgLoggerReplayShowModal(void);
 short dlgStartupShowModal(void);
 void dlgTaskCalculatorShowModal(void);
@@ -73,7 +68,6 @@ void dlgStatusShowModal(int page);
 void dlgSwitchesShowModal(void);
 void dlgTaskWaypointShowModal(int itemindex, int type, bool addonly=false, bool Moveallowed=false);
 void dlgTaskOverviewShowModal(int Idx=-1);
-void dlgVoiceShowModal(void);
 void dlgWayPointDetailsShowModal(short mypage);
 short dlgWayQuickShowModal(void);
 int  dlgTextEntryShowModal(TCHAR *text, int width=0, bool WPKeyRed= false);
@@ -96,8 +90,6 @@ void dlgProfilesShowModal(short mode);
 void dlgAirspaceWarningParamsShowModal(void);
 void dlgMultimapsShowModal(void);
 void dlgIgcFileShowModal(void);
-
-void WriteMissingTranslations(void);
 
 void dlgTextEntryKeyboardShowModal(TCHAR *text, int width=0);
 void dlgNumEntryShowModal(TCHAR *text, int width,bool WPKeyRed);
