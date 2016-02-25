@@ -225,7 +225,6 @@ short dlgWayQuickShowModal(void){
     }
   } else {
 	if(bRadioFreq) {
-#warning "TODO : don't work on 4/3 Portrait mode"
     } else {
       WindowControl* pWndCancel = wf->FindByName(TEXT("cmdCancel"));
       WindowControl* pWndFreq = wf->FindByName(TEXT("cmdRadioFreq"));

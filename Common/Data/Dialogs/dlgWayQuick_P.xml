@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
   <WndForm Name="frmWayQuick" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="" Font="2" >
-    <WndButton Name="cmdGoto" Caption="_@M330_" X="55" Y="3" Width="180"  Height="48" Font="2" Tag="3" OnClickNotify="OnGotoClicked" />
-    <WndOwnerDrawFrame Name="frmWaypointPicto"     X="3" Y="3" Width="48" Height="48" Font="2"  OnPaint="OnPaintWaypointPicto" />  	  
-    <WndButton Name="cmdSetAlt1" Caption="_@M597_" X="3" Y="-998" Width="232"  Height="48" Font="2" Tag="3" OnClickNotify="OnSetAlt1Clicked" />
-    <WndButton Name="cmdSetAlt2" Caption="_@M598_" X="3" Y="-998" Width="232"  Height="48" Font="2" Tag="3" OnClickNotify= "OnSetAlt2Clicked" />
-    <WndButton Name="cmdDetails" Caption="_@M231_" X="3" Y="-998" Width="232"  Height="48" Font="2" Tag="3" OnClickNotify="OnDetailsClicked" />
-    <WndButton Name="cmdTask" Caption="_@M699_" X="3" Y="-998" Width="232"  Height="48" Font="2" Tag="3" OnClickNotify="OnTaskClicked" />
-    <WndButton Name="cmdRadioFreq" Caption="_@M2174_" X="3" Y="-998" Width="232"  Height="42" Font="2" Tag="3" OnClickNotify="OnRadioFrequencyClicked" />
-    <WndButton Name="cmdCancel" Caption="_@M161_" X="3" Y="-998" Width="232"  Height="44" Font="2" Tag="3" OnClickNotify="OnCancelClicked" />
+    <WndButton Name="cmdGoto" Caption="_@M330_" X="55" Y="2" Width="180"  Height="48" Font="2" Tag="3" OnClickNotify="OnGotoClicked" />
+    <WndOwnerDrawFrame Name="frmWaypointPicto"     X="3" Y="2" Width="48" Height="48" Font="2"  OnPaint="OnPaintWaypointPicto" />  	  
+    <WndButton Name="cmdSetAlt1" Caption="_@M597_" X="3" Y="-998" Width="232"  Height="39" Font="2" Tag="3" OnClickNotify="OnSetAlt1Clicked" />
+    <WndButton Name="cmdSetAlt2" Caption="_@M598_" X="3" Y="-998" Width="232"  Height="39" Font="2" Tag="3" OnClickNotify= "OnSetAlt2Clicked" />
+    <WndButton Name="cmdDetails" Caption="_@M231_" X="3" Y="-998" Width="232"  Height="39" Font="2" Tag="3" OnClickNotify="OnDetailsClicked" />
+    <WndButton Name="cmdTask" Caption="_@M699_" X="3" Y="-998" Width="232"  Height="39" Font="2" Tag="3" OnClickNotify="OnTaskClicked" />
+    <WndButton Name="cmdRadioFreq" Caption="_@M2174_" X="3" Y="-998" Width="232"  Height="39" Font="2" Tag="3" OnClickNotify="OnRadioFrequencyClicked" />
+    <WndButton Name="cmdCancel" Caption="_@M161_" X="3" Y="-998" Width="232"  Height="39" Font="2" Tag="3" OnClickNotify="OnCancelClicked" />
   </WndForm>
 </PMML>
