@@ -413,8 +413,18 @@ BOOL devInit(LPCTSTR CommandLine) {
         } else if (_tcscmp(Port, _T("GPSID")) == 0) {
             Com = new GpsIdPort(i, Port);
         } else if (_tcscmp(Port, _T("TCPClient")) == 0) {
+#ifdef KOBO
+            if(!IsKoboWifiOn()) {
+              KoboWifiOn();
+            }
+#endif
             Com = new TCPClientPort(i, Port);
         } else if (_tcscmp(Port, _T("TCPServer")) == 0) {
+#ifdef KOBO
+            if(!IsKoboWifiOn()) {
+              KoboWifiOn();
+            }
+#endif
             Com = new TCPServerPort(i, Port);
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
