@@ -147,7 +147,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
 BOOL devParseStream(int portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
 BOOL devPutMacCready(PDeviceDescriptor_t d,	double MacCready);
 BOOL devRequestFlarmVersion(PDeviceDescriptor_t d);
-BOOL devPutBugs(PDeviceDescriptor_t	d, double	Bugs);
+BOOL devPutBugs(double	Bugs);
 BOOL devPutBallast(double Ballast);
 BOOL devPutVolume(PDeviceDescriptor_t	d, int Volume);
 BOOL devPutFreqSwap(PDeviceDescriptor_t	d);

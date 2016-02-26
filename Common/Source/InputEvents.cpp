@@ -2354,10 +2354,8 @@ void InputEvents::eventBugs(const TCHAR *misc) {
     DoStatusMessage(TEXT("Bugs Performance"), Temp);    
   } 
   if (BUGS != oldBugs) {
-    CheckSetBugs(min(1.0,max(0.5,BUGS)));
-    
-    devPutBugs(devA(), BUGS);
-    devPutBugs(devB(), BUGS);
+    CheckSetBugs(BUGS);
+    devPutBugs(BUGS);
     GlidePolar::SetBallast();
   }
   UnlockFlightData();

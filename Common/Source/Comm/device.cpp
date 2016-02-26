@@ -707,19 +707,30 @@ BOOL devRequestFlarmVersion(PDeviceDescriptor_t d)
   return FALSE;
 }
 
-
-BOOL devPutBugs(PDeviceDescriptor_t d, double Bugs)
-{
-  BOOL result = TRUE;
-
-  if (SIMMODE)
+/**
+ * Send Bugs % to all connected device.
+ * @param Bugs [0.0 - 1.0]
+ * @return FALSE if error on one device.
+ * 
+ * TODO : report witch device failed (useless still return value are never used).
+ */
+BOOL devPutBugs(double Bugs) {
+    
+  if (SIMMODE) {
     return TRUE;
-  LockComm();
-  if (d != NULL && d->PutBugs != NULL)
-    result = d->PutBugs(d, Bugs);
-  UnlockComm();
+  }
 
-  return result;
+  unsigned nbDeviceFailed = 0;
+
+  DeviceScopeLock Lock(CritSec_Comm);
+  
+  for( DeviceDescriptor_t& d : DeviceList) {
+    if (d.PutBugs != NULL) {
+        nbDeviceFailed +=  d.PutBugs(&d, Bugs) ? 0 : 1;
+    }
+  }
+  
+  return (nbDeviceFailed > 0);    
 }
 
 /**

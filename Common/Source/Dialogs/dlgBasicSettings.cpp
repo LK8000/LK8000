@@ -237,8 +237,7 @@ static void OnBugsData(DataField *Sender, DataField::DataAccessKind_t Mode){
       {
         lastRead = CheckSetBugs(Sender->GetAsFloat()/100.0);
         GlidePolar::SetBallast();
-        devPutBugs(devA(), BUGS);
-        devPutBugs(devB(), BUGS);
+        devPutBugs(BUGS);
       }
     break;
   case DataField::daInc:
