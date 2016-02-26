@@ -149,7 +149,7 @@ BOOL devRequestFlarmVersion(PDeviceDescriptor_t d);
 BOOL devPutBugs(double	Bugs);
 BOOL devPutBallast(double Ballast);
 BOOL devPutVolume(int Volume);
-BOOL devPutFreqSwap(PDeviceDescriptor_t	d);
+BOOL devPutFreqSwap();
 BOOL devPutRadioMode(int Mode);
 BOOL devPutSquelch(int Volume);
 BOOL devPutFreqActive(PDeviceDescriptor_t d,	double Freq, TCHAR StationName[]);

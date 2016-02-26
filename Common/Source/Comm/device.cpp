@@ -1074,25 +1074,33 @@ BOOL devPutRadioMode(int mode) {
   return (nbDeviceFailed > 0);  
 }
 
-BOOL devPutFreqSwap(PDeviceDescriptor_t d)
-{
-BOOL result = TRUE;
+/**
+ * Send FreqSwap cmd to all connected device.
+ * @return FALSE if error on one device.
+ * 
+ * TODO : report witch device failed (useless still return value are never used).
+ */
+BOOL devPutFreqSwap() {
+  if (SIMMODE) {
+    return TRUE;
+  }
 
-      LockComm();
+  unsigned nbDeviceFailed = 0;
 
-      if (d != NULL)
-      {
-        if(!d->Disabled)
-          if (d->Com)
-          {
-            if(d->StationSwap != NULL)
-              result = d->StationSwap(d);
-            if (devDriverActivated(TEXT("PVCOM")))
-              PVCOMStationSwap(d);
-          }
+  DeviceScopeLock Lock(CritSec_Comm);
+  
+  for( DeviceDescriptor_t& d : DeviceList) {
+    if (!d.Disabled && d.Com) {
+      if(d.StationSwap) {
+        nbDeviceFailed +=  d.StationSwap(&d) ? 0 : 1;
       }
-      UnlockComm();
- return result;
+      if (devDriverActivated(TEXT("PVCOM"))) {
+        PVCOMStationSwap(&d);
+      }
+    }
+  }
+  
+  return (nbDeviceFailed > 0);   
 }  
 
 
