@@ -1011,28 +1011,35 @@ BOOL devPutVolume(int Volume) {
   return (nbDeviceFailed > 0);    
 }
 
-BOOL devPutSquelch(PDeviceDescriptor_t d, int Squelch)
-{
-  BOOL result = TRUE;
-
-  if (SIMMODE)
-    return TRUE;
-  LockComm();
-  if (d != NULL)
-  {
-    if(!d->Disabled)
-      if (d->Com)
-      {
-        if(d->PutSquelch != NULL)
-          result = d->PutSquelch(d, Squelch);
+/**
+ * Send Squelch Level to all connected device.
+ * @param Squelch [1 - 10]
+ * @return FALSE if error on one device.
+ * 
+ * TODO : report witch device failed (useless still return value are never used).
+ */
+BOOL devPutSquelch(int Squelch) {
     
-        if (devDriverActivated(TEXT("PVCOM")))
-          PVCOMPutSquelch(d, Squelch);
-      }
+  if (SIMMODE) {
+    return TRUE;
   }
-  UnlockComm();
 
-  return result;
+  unsigned nbDeviceFailed = 0;
+
+  DeviceScopeLock Lock(CritSec_Comm);
+  
+  for( DeviceDescriptor_t& d : DeviceList) {
+    if (!d.Disabled && d.Com) {
+      if(d.PutSquelch) {
+        nbDeviceFailed +=  d.PutSquelch(&d, Squelch) ? 0 : 1;
+      }
+      if (devDriverActivated(TEXT("PVCOM"))) {
+        PVCOMPutSquelch(&d, Squelch);
+      }
+    }
+  }
+  
+  return (nbDeviceFailed > 0);    
 }
 
 

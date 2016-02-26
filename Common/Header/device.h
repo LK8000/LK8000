@@ -152,7 +152,7 @@ BOOL devPutBallast(double Ballast);
 BOOL devPutVolume(int Volume);
 BOOL devPutFreqSwap(PDeviceDescriptor_t	d);
 BOOL devPutRadioMode(PDeviceDescriptor_t	d, int Mode);
-BOOL devPutSquelch(PDeviceDescriptor_t d, int Volume);
+BOOL devPutSquelch(int Volume);
 BOOL devPutFreqActive(PDeviceDescriptor_t d,	double Freq, TCHAR StationName[]);
 BOOL devPutFreqStandby(PDeviceDescriptor_t d,	double Freq, TCHAR StationName[]);
 BOOL devLinkTimeout(PDeviceDescriptor_t	d);

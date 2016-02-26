@@ -485,8 +485,7 @@ static void OnVolUpButton(WndButton* pWnd){
       SqCnt =0;
       if (HoldOff ==0)
       {
-        devPutSquelch(devA(), lSquelch);
-        devPutSquelch(devB(), lSquelch);
+        devPutSquelch(lSquelch);
         HoldOff = HOLDOFF_TIME;
       }
     }
@@ -517,8 +516,7 @@ static void OnVolDownButton(WndButton* pWnd){
 	SqCnt =0;
 	  if (HoldOff ==0)
 	  {
-	      devPutSquelch(devA(), lSquelch);
-	      devPutSquelch(devB(), lSquelch);
+	      devPutSquelch(lSquelch);
 	      HoldOff = HOLDOFF_TIME;
 	  }
   }
