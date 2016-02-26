@@ -1136,34 +1136,33 @@ BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
   return (nbDeviceFailed > 0);    
 }
 
-
-BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq,TCHAR  StationName[])
-{
-  BOOL result = TRUE;
-
-  if (SIMMODE)
-  {
+/**
+ * Send FreqStandby cmd to all connected device.
+ * @return FALSE if error on one device.
+ * 
+ * TODO : report witch device failed (useless still return value are never used).
+ */
+BOOL devPutFreqStandby(double Freq,TCHAR  StationName[]) {
+  if (SIMMODE) {
      RadioPara.PassiveFrequency=  Freq;
      _stprintf( RadioPara.PassiveName, _T("%s") , StationName);
     return TRUE;
   }
+
+  unsigned nbDeviceFailed = 0;
+
+  DeviceScopeLock Lock(CritSec_Comm);
   
-  LockComm();
-  if (d != NULL)
-  {
-    if(!d->Disabled)
-      if (d->Com)
-      {
-        if(d->PutFreqStandby != NULL)
-          result = d->PutFreqStandby(d, Freq,StationName);
-
-         if (devDriverActivated(TEXT("PVCOM")))
-           PVCOMPutFreqStandby(d, Freq,StationName);
+  for( DeviceDescriptor_t& d : DeviceList) {
+    if (!d.Disabled && d.Com) {
+      if(d.PutFreqStandby) {
+        nbDeviceFailed +=  d.PutFreqStandby(&d,Freq,StationName) ? 0 : 1;
       }
+      if (devDriverActivated(TEXT("PVCOM"))) {
+        PVCOMPutFreqStandby(&d,Freq,StationName);
+      }
+    }
   }
-  UnlockComm();
-
-  return result;
 }
 #endif  // RADIO_ACTIVE        
 
