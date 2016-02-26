@@ -101,20 +101,23 @@ class TerrainRenderer {
     TerrainRenderer &operator=(const TerrainRenderer &) = delete; // disallowed
 public:
 
-    TerrainRenderer(const RECT& rc) : _dirty(true) {
+    TerrainRenderer(const RECT& rc) : _dirty(true),  sbuf(), hBuf(), colorBuf()  {
 
 #if (WINDOWSPC>0) && TESTBENCH
         StartupStore(_T(".... Init TerrainRenderer area (%ld,%ld) (%ld,%ld)\n"), rc.left, rc.top, rc.right, rc.bottom);
 #endif
-
-        // WRONG> This will not disable terrain! So we shall get calling here again, but no problem.
-        // CORRECT> We have a crash attempting to delete trenderer later on Close
-        // To test use:  if (1) {
+        static bool error = false;
+        // This will not disable terrain! So we shall get calling here again, but no problem.
         if (rc.right < 1 || rc.bottom < 1) {
-            StartupStore(_T(". CRITICAL PROBLEM, cannot render terrain. rcright=%d rcbottom=%d%s"),rc.right,rc.bottom,NEWLINE);
+            if(!error) {
+                // log error only once
+                StartupStore(_T(". CRITICAL PROBLEM, cannot render terrain. rcright=%d rcbottom=%d%s"),rc.right,rc.bottom,NEWLINE);
+            }
+            error = true;
             LKASSERT(0); // THIS WILL NOT POP UP A DIALOG ERROR!
             return;
         }
+        error = false;
 
         // need at least 2Ghz singlecore CPU here for dtquant 1
         dtquant = 2;
@@ -645,13 +648,13 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
     return true;
 }
 
-void DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
+bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
         const double sunazimuth, const double sunelevation) {
     (void) sunelevation; // TODO feature: sun-based rendering option
     (void) rc;
 
     if (!RasterTerrain::isTerrainLoaded()) {
-        return;
+        return false;
     }
 
 #if TESTBENCH
@@ -684,7 +687,7 @@ _redo:
 #endif
             CloseTerrainRenderer();
         }
-        if (!trenderer || !terrain_ready) return;
+        if (!trenderer || !terrain_ready) return false;
     }
 
     // Resolution has changed, probably PAN mode on with bottombar full opaque
@@ -711,7 +714,7 @@ _redo:
 
     if(trenderer->IsDirty()) {
         if (!trenderer->SetMap()) {
-            return;
+            return false;
         }
 
         // load terrain shading parameters
@@ -744,4 +747,6 @@ _redo:
     }
     // step 5: draw
     trenderer->Draw(Surface, rc);
+    
+    return true;
 }
