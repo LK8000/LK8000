@@ -33,11 +33,13 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
     TextInBoxMode.AlligneCenter = 1;
     TextInBoxMode.WhiteBorder = 1;
     TextInBoxMode.Border = 1;
-    if (ComPortStatus[0]==CPS_OPENKO) {
+    
+    const DeviceDescriptor_t& ComPort = *devA();
+    if (ComPort.Status==CPS_OPENKO) {
       TextInBox(Surface, &rc, MsgToken(971), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode); // No ComPort
     } else {
-	if (ComPortStatus[0]==CPS_OPENOK) {
-		if ((ComPortRx[0]>0) && !firstrun) {
+    	if (ComPort.Status==CPS_OPENOK) {
+            if ((ComPort.Rx>0) && !firstrun) {
 			// GPS IS MISSING
 			TextInBox(Surface, &rc, MsgToken(973), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 			firstrun=false;
@@ -46,7 +48,7 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
 			TextInBox(Surface, &rc, MsgToken(972), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 		}
 	} else  {
-		if (ComPortStatus[0]==CPS_EFRAME)  {
+            if (ComPort.Status==CPS_EFRAME)  {
 			// DATA ERROR
 			TextInBox(Surface, &rc, MsgToken(975), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 		} else {
@@ -54,9 +56,7 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
 			TextInBox(Surface, &rc, MsgToken(974), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 		}
 	}
-
     }
-
 
   } else
     if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {

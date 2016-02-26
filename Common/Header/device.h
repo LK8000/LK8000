@@ -97,6 +97,15 @@ typedef	struct DeviceDescriptor_t{
   int PortNumber;
   bool Disabled;
   
+  // Com port diagnostic
+  int Status;
+  unsigned Rx;
+  unsigned ErrRx;
+  unsigned Tx;
+  unsigned ErrTx;
+  // Com ports hearth beats, based on LKHearthBeats
+  unsigned HB;
+  
   void InitStruct(int i);
 }DeviceDescriptor_t;
 

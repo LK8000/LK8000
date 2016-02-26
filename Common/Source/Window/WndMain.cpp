@@ -5,7 +5,7 @@
  *
  * File:   WndMain.cpp
  * Author: Bruno de Lacheisserie
- *
+ * 
  * Created on 9 novembre 2014, 16:51
  */
 
@@ -101,7 +101,7 @@ void Shutdown(void) {
   // Stop drawing
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(MsgToken(1219));
-
+ 
   // 100526 this is creating problem in SIM mode when quit is called from X button, and we are in waypoint details
   // or probably in other menu related screens. However it cannot happen from real PNA or PDA because we don't have
   // that X button.
@@ -125,7 +125,7 @@ void Shutdown(void) {
   #endif
 
   LockTaskData();
-  Task[0].Index = -1;  ActiveTaskPoint = -1;
+  Task[0].Index = -1;  ActiveTaskPoint = -1; 
   AATEnabled = FALSE;
   CloseWayPoints();
   UnlockTaskData();
@@ -149,7 +149,7 @@ void Shutdown(void) {
 
 #ifndef NO_DATARECORDER
   CloseFlightDataRecorder();
-#endif
+#endif  
   // Stop COM devices
   StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
   devCloseAll();
@@ -163,7 +163,7 @@ void Shutdown(void) {
   StartupStore(TEXT(".... Close Messages%s"),NEWLINE);
   #endif
   Message::Destroy();
-  #if TESTBENCH
+  #if TESTBENCH 
   StartupStore(TEXT(".... Destroy Button Labels%s"),NEWLINE);
   #endif
   ButtonLabel::Destroy();
@@ -171,7 +171,7 @@ void Shutdown(void) {
   #if TESTBENCH
   StartupStore(TEXT(".... Delete Objects%s"),NEWLINE);
   #endif
-
+  
   // Kill graphics objects
 
    CAirspaceManager::Instance().CloseAirspaces();
@@ -195,9 +195,10 @@ void Shutdown(void) {
   #endif
 
   for (i=0;i<NUMDEV;i++) {
-	if (ComPortStatus[i]!=0) {
-		StartupStore(_T(". ComPort %d: status=%d Rx=%ld Tx=%ld ErrRx=%ld + ErrTx=%ld" NEWLINE), i,
-		ComPortStatus[i], ComPortRx[i],ComPortTx[i], ComPortErrRx[i],ComPortErrTx[i]);
+    const DeviceDescriptor_t& ComPort = DeviceList[i];
+	if (ComPort.Status!=0) {
+		StartupStore(_T(". ComPort %d: status=%d Rx=%u Tx=%u ErrRx=%u ErrTx=%u" NEWLINE), i,
+		ComPort.Status, ComPort.Rx, ComPort.Tx, ComPort.ErrRx, ComPort.ErrTx);
 	}
   }
   StartupStore(_T(". Finished shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
@@ -208,14 +209,14 @@ void Shutdown(void) {
   TASK_POINT wp;
   TASK_POINT *wpr = &wp;
   _stprintf(foop,TEXT(". Sizes %d %d %d%s"),
-	    sizeof(TASK_POINT),
+	    sizeof(TASK_POINT), 
 	    ((long)&wpr->AATTargetLocked)-((long)wpr),
 	    ((long)&wpr->Target)-((long)wpr), NEWLINE
 	    );
   StartupStore(foop);
 #endif
   StartupStore(_T(". Destroy MainWindow" NEWLINE));
-
+  
   #if TESTBENCH
   StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
   #endif
@@ -224,7 +225,7 @@ void Shutdown(void) {
 #if TESTBENCH
   StartupLogFreeRamAndStorage();
   #endif
-
+  
   MainWindow.Destroy();
 }
 
@@ -291,7 +292,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     return true;
 }
 
-void WndMain::OnKillFocus() {
+void WndMain::OnKillFocus() { 
     _MouseButtonDown = false;
     return  WndMainBase::OnKillFocus();
 }
@@ -306,7 +307,7 @@ bool WndMain::OnMouseMove(const POINT& Pos) {
 }
 
 bool WndMain::OnLButtonDown(const POINT& Pos) {
-    _MouseButtonDown = true;
+    _MouseButtonDown = true;    
     MapWindow::_OnLButtonDown(Pos);
     return true;
 }
@@ -346,7 +347,7 @@ void AfterStartup() {
 	StartupStore(TEXT(". GCE_STARTUP_REAL%s"),NEWLINE);
 	InputEvents::processGlideComputer(GCE_STARTUP_REAL);
   }
-  StatusMessageData[0].delay_ms = olddelay;
+  StatusMessageData[0].delay_ms = olddelay; 
 
   // Create default task if none exists
   #if TESTBENCH
@@ -355,7 +356,7 @@ void AfterStartup() {
   DefaultTask();
 
   // Trigger first redraw
-  MapWindow::zoom.Reset();
+  MapWindow::zoom.Reset(); 
   FullScreen();
   MapWindow::RefreshMap();
 }

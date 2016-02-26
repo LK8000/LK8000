@@ -49,8 +49,9 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
   unsigned int y=0, first, last;
 
-  _stprintf(tmps,_T("[ Rx=%ld ErrRx=%ld Tx=%ld ErrTx=%ld ]"),
-      ComPortRx[active],ComPortErrRx[active],ComPortTx[active],ComPortErrTx[active]);
+  const DeviceDescriptor_t& ComPort = DeviceList[active];
+  _stprintf(tmps,_T("[ Rx=%u ErrRx=%u Tx=%u ErrTx=%u ]"),
+      ComPort.Rx,ComPort.ErrRx,ComPort.Tx,ComPort.ErrTx);
   Surface.DrawText(0, 0, tmps);
   y+=hline;
 
@@ -72,7 +73,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
           first= (CC_NUMBUFLINES-1) + dif;
   }
 
-  for (unsigned int n=0, curr=first; n<numlines; n++) {
+  for (unsigned int n=0, curr=first; n<numlines; n++) { 
       BUGSTOP_LKASSERT(curr<CC_NUMBUFLINES);
       if (curr>=CC_NUMBUFLINES) break;
       Surface.DrawTextClip(0, y, ComCheckBuffer[curr], wTTYListEntry->GetWidth());
@@ -88,7 +89,7 @@ static bool stopped=false;
 
 static void OnPort1Clicked(WndButton* pWnd) {
   // Name is available only in Fly mode, not inited in SIM mode because no devices, and not inited if disabled
-  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(232),
+  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(232), 
      _tcslen(DeviceList[0].Name)>0?DeviceList[0].Name:MsgToken(1600));
   wf->SetCaption(tmps);
   ComCheck_ActivePort=0; // needed
@@ -99,7 +100,7 @@ static void OnPort1Clicked(WndButton* pWnd) {
 }
 
 static void OnPort2Clicked(WndButton* pWnd) {
-  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(233),
+  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(233), 
       _tcslen(DeviceList[1].Name)>0?DeviceList[1].Name:MsgToken(1600));
   wf->SetCaption(tmps);
   ComCheck_ActivePort=1; // needed
@@ -120,11 +121,11 @@ static void OnStopClicked(WndButton* pWnd) {
       ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(1200)); // Start
   } else {
       if (ComCheck_ActivePort==0) {
-          _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(232),
+          _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(232), 
               _tcslen(DeviceList[0].Name)>0?DeviceList[0].Name:MsgToken(1600));
 
       } else {
-          _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(233),
+          _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(233), 
               _tcslen(DeviceList[1].Name)>0?DeviceList[1].Name:MsgToken(1600));
       }
       wf->SetCaption(tmps);
@@ -134,7 +135,7 @@ static void OnStopClicked(WndButton* pWnd) {
 }
 
 static void OnTTYCloseClicked(WndButton* pWnd) {
-  ComCheck_ActivePort=-1;
+  ComCheck_ActivePort=-1; 
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {

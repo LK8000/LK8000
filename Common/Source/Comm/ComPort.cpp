@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- *
+ * 
  * File:   ComPort.cpp
  * Author: Bruno de Lacheisserie
- *
+ * 
  * Created on 28 juillet 2013, 16:15
  */
 #include "externs.h"
@@ -15,7 +15,7 @@
 #include <algorithm>
 #include "Dialogs.h"
 #include <functional>
-#include <stdarg.h>
+#include <stdarg.h> 
 #include <stdio.h>
 #include "Poco/RunnableAdapter.h"
 #include "ComCheck.h"
@@ -107,7 +107,7 @@ bool ComPort::StopRxThread() {
 bool ComPort::StartRxThread() {
     StopEvt.reset();
 
-
+    
     // Create a read thread for reading data from the communication port.
     ReadThread.start(*this);
     ReadThread.setPriority(Poco::Thread::PRIO_NORMAL); //THREAD_PRIORITY_ABOVE_NORMAL
@@ -166,30 +166,33 @@ void ComPort::ProcessChar(char c) {
 }
 
 void ComPort::AddStatRx(unsigned dwBytes) {
-    if (GetPortIndex() < NUMDEV)
-        ComPortRx[GetPortIndex()] += dwBytes;
+    if (GetPortIndex() < NUMDEV) {
+        DeviceList[GetPortIndex()].Rx += dwBytes;
+    }
 }
 
 void ComPort::AddStatErrRx(unsigned dwBytes) {
-    if (GetPortIndex() < NUMDEV)
-        ComPortErrRx[GetPortIndex()] += dwBytes;
+    if (GetPortIndex() < NUMDEV) {
+        DeviceList[GetPortIndex()].ErrRx += dwBytes;
+    }
 }
 
 void ComPort::AddStatTx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
-        ComPortTx[GetPortIndex()] += dwBytes;
+        DeviceList[GetPortIndex()].Tx += dwBytes;
     }
 }
 
 void ComPort::AddStatErrTx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
-        ComPortErrTx[GetPortIndex()] += dwBytes;
+        DeviceList[GetPortIndex()].ErrTx += dwBytes;
     }
 }
 
+
 void ComPort::SetPortStatus(int nStatus) {
     if (GetPortIndex() < NUMDEV) {
-        ComPortStatus[GetPortIndex()] = nStatus;
+        DeviceList[GetPortIndex()].Status = nStatus;
     }
 }
 

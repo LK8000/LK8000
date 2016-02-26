@@ -320,6 +320,18 @@ void DeviceDescriptor_t::InitStruct(int i) {
     PutFreqActive = NULL;
     PutFreqStandby = NULL;
     Disabled = true;
+    
+    Status = CPS_UNUSED; // 100210
+    HB = 0; // counter
+    static bool doinit = true;
+    if (doinit) {
+        Rx = 0;
+        Tx = 0;
+        ErrTx = 0;
+        ErrRx = 0;
+
+        doinit = false;
+    }    
 }
 
 bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
@@ -393,7 +405,6 @@ BOOL devInit() {
      if(SIMMODE)
        RadioPara.Enabled = true;
 #endif     
-    static bool doinit = true;
 
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
@@ -403,17 +414,6 @@ BOOL devInit() {
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);
 
-        ComPortStatus[i] = CPS_UNUSED; // 100210
-        ComPortHB[i] = 0; // counter
-        if (doinit) {
-            ComPortRx[i] = 0;
-            ComPortTx[i] = 0;
-            ComPortErrTx[i] = 0;
-            ComPortErrRx[i] = 0;
-
-            doinit = false;
-        }
-        
         if (SIMMODE){
             continue;
         }
@@ -496,7 +496,7 @@ BOOL devInit() {
         }
 
         if (Com && Com->Initialize()) {
-            ComPortStatus[i] = CPS_OPENOK;
+            DeviceList[i].Status = CPS_OPENOK;
             pDev->Installer(&DeviceList[i]);
 
             if ((pDevNmeaOut == NULL) && (pDev->Flags & (1l << dfNmeaOut))) {
@@ -517,7 +517,7 @@ BOOL devInit() {
             }
         } else {
             delete Com;
-            ComPortStatus[i] = CPS_OPENKO;
+            DeviceList[i].Status = CPS_OPENKO;
         }
 #ifdef RADIO_ACTIVE    
        if(devIsRadio(&DeviceList[i]))
@@ -581,7 +581,7 @@ BOOL devCloseAll(void){
   LockComm();
   for (unsigned i=0; i<NUMDEV; i++){
     devClose(&DeviceList[i]);
-    ComPortStatus[i]=CPS_CLOSED; // 100210
+    DeviceList[i].Status=CPS_CLOSED; // 100210
   }
   UnlockComm();
   
@@ -605,9 +605,7 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS){
   
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   if (d && d->ParseStream) {
-    if (portNum>=0 && portNum<=1) {
-      ComPortHB[portNum]=LKHearthBeats;
-    }
+    d->HB=LKHearthBeats;
     if (d->ParseStream(d, stream, length, pGPS)) {
           
     }
@@ -621,17 +619,14 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS){
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
 BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
-  PDeviceDescriptor_t d;
-  d = devGetDeviceOnPort(portNum);
 
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
-  if (portNum>=0 && portNum<=1) {
-	ComPortHB[portNum]=LKHearthBeats;
-  }
-
+  PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   // intercept device specific parser routines 
   if (d != NULL){
+	d->HB=LKHearthBeats;
+
     if (d->pDevPipeTo && d->pDevPipeTo->Com) {
 	// stream pipe, pass nmea to other device (NmeaOut)
 	// TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
@@ -1163,6 +1158,7 @@ BOOL devPutFreqStandby(double Freq,TCHAR  StationName[]) {
       }
     }
   }
+  return TRUE;
 }
 #endif  // RADIO_ACTIVE        
 
