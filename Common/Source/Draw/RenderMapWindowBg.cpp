@@ -117,8 +117,6 @@ QuickRedraw:
     // When no terrain is painted, set a background0
     // Remember that in this case we have plenty of cpu time to spend for best result
     if (!IsMultimapTerrain() || !DerivedDrawInfo.TerrainValid || !RasterTerrain::isTerrainLoaded()) {
-        // fill background..
-        Surface.FillRect(&rc, hInvBackgroundBrush[BgMapColor]);
         // We force LK painting black values on screen depending on the background color in use
         // TODO make it an array once settled
         // blackscreen would force everything to be painted white, instead
@@ -155,8 +153,11 @@ QuickRedraw:
             UnlockTerrainDataGraphics();
             goto QuickRedraw;
         }
-        DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation);
-        terrainpainted = true;
+        
+        if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) {
+            terrainpainted = true;
+        }
+        
         if (DONTDRAWTHEMAP) {
             UnlockTerrainDataGraphics();
             goto QuickRedraw;
@@ -185,6 +186,12 @@ QuickRedraw:
         goto QuickRedraw;
     }
 
+    if(!terrainpainted) {
+        // fill background..
+        Surface.FillRect(&rc, hInvBackgroundBrush[BgMapColor]);
+    }
+        
+        
     if (IsMultimapTopology()) {
         DrawTopology(Surface, DrawRect, _Proj);
     } else {
