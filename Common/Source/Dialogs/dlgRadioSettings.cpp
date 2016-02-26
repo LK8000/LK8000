@@ -163,8 +163,7 @@ int Idx=0;
         if( HoldOff ==0)
         {
           HoldOff = HOLDOFF_TIME;
-          devPutFreqActive(devA(), RadioPara.ActiveFrequency, WayPointList[Idx].Name);
-          devPutFreqActive(devB(), RadioPara.ActiveFrequency, WayPointList[Idx].Name);
+          devPutFreqActive(RadioPara.ActiveFrequency, WayPointList[Idx].Name);
         }
     }
     _stprintf(Name,_T("[%s]"),RadioPara.ActiveName);
@@ -317,8 +316,7 @@ static void OnActiveButton(WndButton* pWnd){
    // 	DoStatusMessage(_T("No valid Frequency!") );
     	return;
       }
-      devPutFreqActive(devA(), Frequency, WayPointList[res].Name);
-      devPutFreqActive(devB(), Frequency, WayPointList[res].Name);
+      devPutFreqActive(Frequency, WayPointList[res].Name);
       _stprintf(RadioPara.ActiveName,_T("%s"), WayPointList[res].Name);
       RadioPara.ActiveFrequency = Frequency;
 
@@ -378,8 +376,7 @@ _stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
     	ActiveRadioIndex = iIdx;
 
       }
-      devPutFreqActive(devA(), Frequency,Name);
-      devPutFreqActive(devB(), Frequency,Name);
+      devPutFreqActive(Frequency,Name);
  	  RadioPara.ActiveFrequency = Frequency;
 
       RadioPara.Changed =TRUE;
