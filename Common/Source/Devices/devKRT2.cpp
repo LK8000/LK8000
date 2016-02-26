@@ -12,7 +12,7 @@
 #include "devKRT2.h"
 #include "device.h"
 
-#ifdef RADIO_ACTIVE
+#ifdef RADIO_ACTIVE     
 
  #define min(X,Y) ((X) < (Y) ? : (X) : (Y))
 
@@ -48,7 +48,7 @@ BOOL KRT2Install(PDeviceDescriptor_t d){
   d->StationSwap = KRT2StationSwap;
   d->ParseNMEA    = NULL;
   d->ParseStream   = KRT2ParseString;
-  d->RadioMode    = KRT2RadioMode;
+  d->PutRadioMode    = KRT2RadioMode;
   return(TRUE);
 
 }
@@ -67,7 +67,7 @@ BOOL KRT2Register(void){
 
 BOOL KRT2IsRadio(PDeviceDescriptor_t d){
   (void)d;
-  return(TRUE);
+  return(TRUE); 
 }
 
 
@@ -144,7 +144,7 @@ if(Station != NULL)
  *
  *****************************************************************************/
 int  SetKRT2Audio(TCHAR *Command ,int Vol, int Squelch, int Vox)
-{
+{ 
 LKASSERT(Command !=NULL)
 if(Command == NULL )
     return false;
@@ -164,8 +164,8 @@ unsigned char Checksum = (unsigned char)Squelch + (unsigned char)Vox;
 
 BOOL KRT2PutVolume(PDeviceDescriptor_t d, int Volume) {
   TCHAR  szTmp[255];
-  int i, len;
-
+  int i, len;    
+ 
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
@@ -211,20 +211,20 @@ BOOL KRT2PutSquelch(PDeviceDescriptor_t d, int Squelch) {
 BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
   TCHAR  szTmp[255];
     int i, len;
-
+ 
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
-      {
+      {        
          len = SetKRT2Station(szTmp ,ACTIVE_STATION, Freq, StationName);
          for (i=0; i < len; i++)
            d->Com->PutChar(szTmp[i]);
-
+         
         RadioPara.ActiveFrequency=  Freq;
-        if(StationName != NULL)
-          _stprintf(RadioPara.ActiveName,_T("%s"),StationName) ;
-
-#ifdef TESTBENCH
+        if(StationName != NULL)        
+          _stprintf(RadioPara.ActiveName,_T("%s"),StationName) ;       
+  
+#ifdef TESTBENCH 
          StartupStore(_T(". KRT2 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
 #endif
       }
@@ -235,20 +235,20 @@ BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) 
 BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
   TCHAR  szTmp[255];
   int i, len;
-
+  
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
-      {
+      {        
          len = SetKRT2Station(szTmp ,PASSIVE_STATION, Freq, StationName);
          for (i=0; i < len; i++)
-           d->Com->PutChar(szTmp[i]);
-
-
+           d->Com->PutChar(szTmp[i]);        
+         
+         
         RadioPara.PassiveFrequency =  Freq;
         if(StationName != NULL)
-          _stprintf(RadioPara.PassiveName  ,_T("%s"),StationName) ;
-         #ifdef TESTBENCH
+          _stprintf(RadioPara.PassiveName  ,_T("%s"),StationName) ;       
+         #ifdef TESTBENCH   
          StartupStore(_T(". KRT2 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
          #endif
       }
@@ -283,7 +283,7 @@ BOOL KRT2RadioMode(PDeviceDescriptor_t d, int mode) {
       if (d->Com)
       {
          if( mode > 0  )
-         {
+         {     
             _stprintf(szTmp, _T("%cO"), STX);    // turn Dual Mode On
             #ifdef TESTBENCH
             StartupStore(_T(". KRT2  Dual on %s"), NEWLINE);
@@ -295,7 +295,7 @@ BOOL KRT2RadioMode(PDeviceDescriptor_t d, int mode) {
             #ifdef TESTBENCH
             StartupStore(_T(". KRT2  Dual off %s"), NEWLINE);
             #endif
-         }
+         }    
           for (i=0; i < 2; i++)
             d->Com->PutChar(szTmp[i]);
       }
@@ -333,8 +333,8 @@ if(len == 0) return 0;
  static char  converted[REC_BUFSIZE];
  for (i=0; i < len; i++)
  {
-    LKASSERT(Recbuflen < REC_BUFSIZE);
-     converted[Recbuflen++] =  String[i];
+    LKASSERT(Recbuflen < REC_BUFSIZE);        
+     converted[Recbuflen++] =  String[i];     
      converted[Recbuflen] =0;
  }
 processed = KRT2_Convert_Answer(d, converted , Recbuflen);
@@ -344,8 +344,8 @@ if(processed >0)
   RadioPara.Changed = true;
 
   tmp  = Recbuflen-processed;
-  LKASSERT(tmp< REC_BUFSIZE);
-  LKASSERT(tmp>= 0);
+  LKASSERT(tmp< REC_BUFSIZE);        
+  LKASSERT(tmp>= 0);          
   for (i=0; i < tmp; i++)
      converted[i] =   converted[processed+i];
   Recbuflen = tmp;
@@ -353,7 +353,7 @@ if(processed >0)
 
   //    StartupStore(_T(". KRT2 %s %s"), String, NEWLINE);
 
-
+        
 return  RadioPara.Changed;
 
 
@@ -371,7 +371,7 @@ return  RadioPara.Changed;
  * len            length of the KRT2 binary code to be converted
  ****************************************************************************/
 int KRT2_Convert_Answer(DeviceDescriptor_t *d, char *szCommand, int len)
-{
+{   
 if(d == NULL) return 0;
 if(szCommand == NULL) return 0;
 if(len == 0)          return 0;
@@ -386,12 +386,12 @@ static int iInvalidCount =0;
 
 
 int i;
-LKASSERT(szCommand !=NULL);
-LKASSERT(d !=NULL);
+LKASSERT(szCommand !=NULL);   
+LKASSERT(d !=NULL);   
 
     if(szCommand[0] == 'S')
     {
-        d->Com->WriteString(_T("x"));
+        d->Com->WriteString(_T("x"));        
         if(bFound == false)
         {
           bFound = true;
@@ -400,11 +400,11 @@ LKASSERT(d !=NULL);
             DoStatusMessage(gettext(TEXT("RADIO DETECTED"))); // RADIO DETECTED
           else
               if(iDetected == 10)
-                 DoStatusMessage(gettext(TEXT("Radio Message disabled")));
-
+                 DoStatusMessage(gettext(TEXT("Radio Message disabled"))); 
+   
         }
         else
-        {
+        {            
          //   bFound = false;
         }
       processed++;
@@ -449,11 +449,11 @@ LKASSERT(d !=NULL);
             if(len >= 13)
             {
               if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
-                  DoStatusMessage(_T("Checksum Fail"));
-              {
-                RadioPara.ActiveFrequency=  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
+                  DoStatusMessage(_T("Checksum Fail"));               
+              {               
+                RadioPara.ActiveFrequency=  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;                
                 for(i=0; i < 8; i++)
-                  RadioPara.ActiveName[i] =   szCommand[4+i];
+                  RadioPara.ActiveName[i] =   szCommand[4+i]; 
                 RadioPara.ActiveName[8] =0;
                    _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
                 processed = 13;
@@ -465,12 +465,12 @@ LKASSERT(d !=NULL);
             if(len >= 13)
             {
               if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
-                  DoStatusMessage(_T("Checksum Fail"));
+                  DoStatusMessage(_T("Checksum Fail"));               
               {
                 RadioPara.PassiveFrequency =  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
                 for(i=0; i < 8; i++)
-                  RadioPara.PassiveName[i] =   szCommand[4+i];
-                RadioPara.PassiveName[8] =0;
+                  RadioPara.PassiveName[i] =   szCommand[4+i]; 
+                RadioPara.PassiveName[8] =0;                 
                 _stprintf(szTempStr,_T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName,RadioPara.PassiveFrequency );
                 processed = 13;
               }
@@ -481,7 +481,7 @@ LKASSERT(d !=NULL);
             if(len >= 6)
             {
               if( szCommand[5] != (szCommand[3]+ szCommand[4]))
-                  DoStatusMessage(_T("Checksum Fail"));
+                  DoStatusMessage(_T("Checksum Fail"));               
               {
                 if(RadioPara.Volume != (int)szCommand[2])
                 {
@@ -516,21 +516,21 @@ LKASSERT(d !=NULL);
 
             }
           break;
-          case 'O':
-             if(len >= 2)
+          case 'O':             
+             if(len >= 2)        
              {
-               RadioPara.Dual = true;
+               RadioPara.Dual = true;             
                _stprintf(szTempStr,_T("Dual ON "));
              }
           break;
           case 'o':
-             if(len >= 2)
+             if(len >= 2)            
              {
-               RadioPara.Dual = false;
+               RadioPara.Dual = false;             
                _stprintf(szTempStr,_T("Dual OFF "));
 
              }
-          break;
+          break;      
           case '8':  _stprintf(szTempStr,_T("STA,8_33KHZ"));
           break;
           case '6':  _stprintf(szTempStr,_T("STA,25KHZ"));
@@ -541,64 +541,64 @@ LKASSERT(d !=NULL);
           break;
           case '3': _stprintf(szTempStr,_T("INTERCOM"));
           break;
-          case '4': _stprintf(szTempStr,_T("EXT_AUD"));
+          case '4': _stprintf(szTempStr,_T("EXT_AUD")); 
           break;
 
           /**********************************************************************************/
-
+          
           case 'B':  _stprintf(szTempStr,_T("BAT_LOW"));
           break;
-          case 'D':  _stprintf(szTempStr,_T("STA,BAT_OK"));
+          case 'D':  _stprintf(szTempStr,_T("STA,BAT_OK")); 
+          break;          
+          case 'J':  _stprintf(szTempStr,_T("STA,RX_ON"));  
           break;
-          case 'J':  _stprintf(szTempStr,_T("STA,RX_ON"));
+          case 'V':  _stprintf(szTempStr,_T("RX_OFF"));  
           break;
-          case 'V':  _stprintf(szTempStr,_T("RX_OFF"));
+          case 'K':  _stprintf(szTempStr,_T("TX_ON"));  
           break;
-          case 'K':  _stprintf(szTempStr,_T("TX_ON"));
-          break;
-          case 'L': _stprintf(szTempStr,_T("TE_ON"));
+          case 'L': _stprintf(szTempStr,_T("TE_ON"));  
           break;
 
-          case 'Y': _stprintf(szTempStr,_T("RX_TX_OFF"));
+          case 'Y': _stprintf(szTempStr,_T("RX_TX_OFF"));   
           break;
-          case 'M':  _stprintf(szTempStr,_T("RX_AF"));
+          case 'M':  _stprintf(szTempStr,_T("RX_AF")); 
           break;
-          case 'm': _stprintf(szTempStr,_T("RX_SF"));
+          case 'm': _stprintf(szTempStr,_T("RX_SF"));  
           break;
-          case 'E': _stprintf(szTempStr,_T("STX_E"));
+          case 'E': _stprintf(szTempStr,_T("STX_E"));  
           break;
-          case 'H': _stprintf(szTempStr,_T("STX_H"));
+          case 'H': _stprintf(szTempStr,_T("STX_H"));  
           break;
 
           /*************************************************************************************/
-          case 'e':  _stprintf(szTempStr,_T("ERR,PLL"));
+          case 'e':  _stprintf(szTempStr,_T("ERR,PLL"));   
           break;
-          case 'F': _stprintf(szTempStr,_T("ERR,RELEASE"));
+          case 'F': _stprintf(szTempStr,_T("ERR,RELEASE")); 
           break;
-          case 'a': _stprintf(szTempStr,_T("ERR,ADC"));
+          case 'a': _stprintf(szTempStr,_T("ERR,ADC"));  
           break;
-          case 'b': _stprintf(szTempStr,_T("ERR,ANT"));
+          case 'b': _stprintf(szTempStr,_T("ERR,ANT"));   
           break;
-          case 'c': _stprintf(szTempStr,_T("ERR,FPA"));
+          case 'c': _stprintf(szTempStr,_T("ERR,FPA"));   
           break;
-          case 'd': _stprintf(szTempStr,_T("ERR,FUSE"));
+          case 'd': _stprintf(szTempStr,_T("ERR,FUSE"));  
           break;
-          case 'f': _stprintf(szTempStr,_T("ERR,KEYBLOCK"));
+          case 'f': _stprintf(szTempStr,_T("ERR,KEYBLOCK"));   
           break;
-          case 'g':_stprintf(szTempStr,_T("ERR,I2C"));
+          case 'g':_stprintf(szTempStr,_T("ERR,I2C"));   
           break;
-          case 'h': _stprintf(szTempStr,_T("ERR,ID10"));
+          case 'h': _stprintf(szTempStr,_T("ERR,ID10"));    
           break;
           default:
-            _stprintf(szTempStr,_T("ERR,UNKNOWN COMMAND 0x%X "),(int)szCommand[1]);
+            _stprintf(szTempStr,_T("ERR,UNKNOWN COMMAND 0x%X "),(int)szCommand[1]);    
 
-          break;
+          break;          
       }
       }
       else
       {             /* try up to 30 times this is getting a valid command */
 
- // processed=0;
+ // processed=0;        
         if( iInvalidCount++ < 30)
           processed=0;
         else        /* no! remove the  fragment in the  message queue */
@@ -618,18 +618,18 @@ LKASSERT(d !=NULL);
     }
 
 
-#ifdef TESTBENCH
+#ifdef TESTBENCH            
 if(processed> 0)
-{
-        TCHAR szMessage[180] = _T("");
+{    
+        TCHAR szMessage[180] = _T("");    
         _stprintf(szMessage,_T("%s:%s "), MsgToken(2309),szTempStr);
         StartupStore(_T(" %s %s%s"), szMessage,WhatTimeIsIt(),NEWLINE);
   //      DoStatusMessage(szMessage);
 }
-#endif
+#endif        
 
  //   if(processed > 0) /* if a valid Answer:  */
 
     return processed;  /* return the number of converted characters */
 }
-#endif  // RADIO_ACTIVE
+#endif  // RADIO_ACTIVE        

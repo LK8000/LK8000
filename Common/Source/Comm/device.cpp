@@ -1042,26 +1042,36 @@ BOOL devPutSquelch(int Squelch) {
   return (nbDeviceFailed > 0);    
 }
 
-
-BOOL devPutRadioMode(PDeviceDescriptor_t d, int mode)
-{
-BOOL result = TRUE;
-
-  LockComm();
-  if (d != NULL)
-  {
-    if(!d->Disabled)
-      if (d->Com)
-      {
-        if(d->RadioMode != NULL)
-          result = d->RadioMode(d,mode);
-
-        if (devDriverActivated(TEXT("PVCOM")))
-          PVCOMRadioMode(d,mode);
-      }
+/**
+ * Set RadioMode to all connected device.
+ * @param mode 
+ *      0 : Dual On
+ *      1 : Dual Off
+ * @return FALSE if error on one device.
+ * 
+ * TODO : report witch device failed (useless still return value are never used).
+ */
+BOOL devPutRadioMode(int mode) {
+  if (SIMMODE) {
+    return TRUE;
   }
-  UnlockComm();
- return result;
+
+  unsigned nbDeviceFailed = 0;
+
+  DeviceScopeLock Lock(CritSec_Comm);
+  
+  for( DeviceDescriptor_t& d : DeviceList) {
+    if (!d.Disabled && d.Com) {
+      if(d.PutRadioMode) {
+        nbDeviceFailed +=  d.PutRadioMode(&d, mode) ? 0 : 1;
+      }
+      if (devDriverActivated(TEXT("PVCOM"))) {
+        PVCOMRadioMode(&d, mode);
+      }
+    }
+  }
+  
+  return (nbDeviceFailed > 0);  
 }
 
 BOOL devPutFreqSwap(PDeviceDescriptor_t d)

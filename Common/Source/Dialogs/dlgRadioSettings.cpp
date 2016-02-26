@@ -292,9 +292,7 @@ static void OnDualButton(WndButton* pWnd){
 TCHAR Name[250];
 
     RadioPara.Dual = !RadioPara.Dual;
-    devPutRadioMode(devA(), (int)RadioPara.Dual);
-    devPutRadioMode(devB(), (int)RadioPara.Dual);
-
+    devPutRadioMode((int)RadioPara.Dual);
     if(RadioPara.Dual)
       _stprintf(Name,_T("Dual Off"));
     else
