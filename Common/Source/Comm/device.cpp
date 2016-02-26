@@ -970,34 +970,36 @@ bool devDriverActivated(const TCHAR *DeviceName) {
     return false;
 }
 
-
-BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
-{
-  BOOL result = TRUE;
-
-  if (SIMMODE)
+/**
+ * Send Volume Level to all connected device.
+ * @param Volume [1 - 20]
+ * @return FALSE if error on one device.
+ * 
+ * TODO : report witch device failed (useless still return value are never used).
+ */
+BOOL devPutVolume(int Volume) {
+    
+  if (SIMMODE) {
     return TRUE;
-  LockComm();
-
-
-  if (d != NULL)
-  {
-    if(!d->Disabled)
-      if (d->Com)
-      {
-        if(d->PutVolume != NULL)
-          result = d->PutVolume(d, Volume);
-
-        if (devDriverActivated(TEXT("PVCOM")))
-          PVCOMPutVolume(d, Volume);
-      }
   }
 
-  UnlockComm();
+  unsigned nbDeviceFailed = 0;
 
-  return result;
+  DeviceScopeLock Lock(CritSec_Comm);
+  
+  for( DeviceDescriptor_t& d : DeviceList) {
+    if (!d.Disabled && d.Com) {
+      if(d.PutVolume) {
+        nbDeviceFailed +=  d.PutVolume(&d, Volume) ? 0 : 1;
+      }
+      if (devDriverActivated(TEXT("PVCOM"))) {
+        PVCOMPutVolume(&d, Volume);
+      }
+    }
+  }
+  
+  return (nbDeviceFailed > 0);    
 }
-
 
 BOOL devPutSquelch(PDeviceDescriptor_t d, int Squelch)
 {
