@@ -107,9 +107,12 @@ public:
         StartupStore(_T(".... Init TerrainRenderer area (%ld,%ld) (%ld,%ld)\n"), rc.left, rc.top, rc.right, rc.bottom);
 #endif
 
-        // This will not disable terrain! So we shall get calling here again, but no problem.
+        // WRONG> This will not disable terrain! So we shall get calling here again, but no problem.
+        // CORRECT> We have a crash attempting to delete trenderer later on Close
+        // To test use:  if (1) {
         if (rc.right < 1 || rc.bottom < 1) {
-            LKASSERT(0);
+            StartupStore(_T(". CRITICAL PROBLEM, cannot render terrain. rcright=%d rcbottom=%d%s"),rc.right,rc.bottom,NEWLINE);
+            LKASSERT(0); // THIS WILL NOT POP UP A DIALOG ERROR!
             return;
         }
 
