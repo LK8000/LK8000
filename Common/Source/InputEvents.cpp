@@ -3326,8 +3326,7 @@ void	MacCreadyProcessing(int UpDown)
       AutoMcMode=amcFinalAndClimb;
     }
   
-  devPutMacCready(devA(), MACCREADY); 
-  devPutMacCready(devB(), MACCREADY);
+  devPutMacCready(MACCREADY); 
   
   return;
 }

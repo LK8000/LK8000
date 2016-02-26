@@ -671,20 +671,30 @@ BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable)
   return result;
 }
 
-BOOL devPutMacCready(PDeviceDescriptor_t d, double MacCready)
-{
-  BOOL result = TRUE;
-
-  if (SIMMODE)
+/**
+ * Send MacCready to all connected device.
+ * @param MacCready
+ * @return FALSE if error on one device.
+ * 
+ * TODO : report witch device failed (useless still return value are never used).
+ */
+BOOL devPutMacCready(double MacCready) {
+  if (SIMMODE) {
     return TRUE;
-  LockComm();
-  if (d != NULL && d->PutMacCready != NULL)
-    result = d->PutMacCready(d, MacCready);
-  UnlockComm();
+  }
 
-  return result;
+  unsigned nbDeviceFailed = 0;
+
+  DeviceScopeLock Lock(CritSec_Comm);
+  
+  for( DeviceDescriptor_t& d : DeviceList) {
+    if (d.PutMacCready != NULL) {
+        nbDeviceFailed +=  d.PutMacCready(&d, MacCready) ? 0 : 1;
+    }
+  }
+  
+  return (nbDeviceFailed > 0);
 }
-
 
 BOOL devRequestFlarmVersion(PDeviceDescriptor_t d)
 {
