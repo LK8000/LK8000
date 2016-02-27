@@ -36,22 +36,22 @@ sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
     make install
 cd ..
 
-# install boostlib ( 1.59.0 - 2015-08-13 )
-wget http://netcologne.dl.sourceforge.net/project/boost/boost/1.59.0/boost_1_59_0.tar.gz
-tar xzf boost_1_59_0.tar.gz
-cd boost_1_59_0
+# install boostlib ( 1.60.0 - 2015-12-17 )
+wget http://netcologne.dl.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.gz
+tar xzf boost_1_60_0.tar.gz
+cd boost_1_60_0
 ./bootstrap.sh
 echo "using gcc : arm : arm-unknown-linux-gnueabi-g++ : cxxflags=-march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize ;" > user-config.jam
 sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
     ./bjam toolset=gcc target-os=linux variant=release link=shared runtime-link=shared --prefix=/opt/kobo/arm-unknown-linux-gnueabi --user-config=user-config.jam install
 cd ..
 
-# install libpng ( 1.6.19 - 2015-11-12 )
-wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.19/libpng-1.6.19.tar.gz
-tar xzf libpng-1.6.19.tar.gz
+# install libpng ( 1.6.21 - 2016-01-15 )
+wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.21/libpng-1.6.21.tar.gz
+tar xzf libpng-1.6.21.tar.gz
 mkdir libpng-build
 cd libpng-build
-../libpng-1.6.19/configure \
+../libpng-1.6.21/configure \
     --host=arm-unknown-linux-gnueabi \
     CC=arm-unknown-linux-gnueabi-gcc \
     AR=arm-unknown-linux-gnueabi-ar \
@@ -65,14 +65,14 @@ sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
     make install
 cd ..
 
-# install freetype2 ( 2.6.1 - 2015-10-04 )
-wget http://download.savannah.gnu.org/releases/freetype/freetype-2.6.1.tar.gz
-tar xzf freetype-2.6.1.tar.gz
+# install freetype2 ( 2.6.3 - 2016-02-09 )
+wget http://download.savannah.gnu.org/releases/freetype/freetype-2.6.3.tar.gz
+tar xzf freetype-2.6.3.tar.gz
 mkdir freetype-build
 cd freetype-build
 CFLAGS="-O2 -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize" \
 LDFLAGS="-L/opt/kobo/arm-unknown-linux-gnueabi/lib"  \
-../freetype-2.6.1/configure \
+../freetype-2.6.3/configure \
     --host=arm-unknown-linux-gnueabi \
     --target=arm-unknown-linux-gnueabi \
     --prefix=/opt/kobo/arm-unknown-linux-gnueabi \
