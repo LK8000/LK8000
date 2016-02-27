@@ -75,8 +75,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
   for (unsigned int n=0, curr=first; n<numlines; n++) { 
       BUGSTOP_LKASSERT(curr<CC_NUMBUFLINES);
       if (curr>=CC_NUMBUFLINES) break;
-      _stprintf(tmps,_T("%s"), ComCheckBuffer[curr]);
-      Surface.DrawTextClip(0, y, tmps, wTTYListEntry->GetWidth());
+      Surface.DrawTextClip(0, y, ComCheckBuffer[curr], wTTYListEntry->GetWidth());
       y+=hline;
       if (curr==last) break;
       if (++curr>(CC_NUMBUFLINES-1)) curr=0;
