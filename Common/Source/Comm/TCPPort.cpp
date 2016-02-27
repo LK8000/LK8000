@@ -159,8 +159,10 @@ unsigned TCPServerPort::RxThread() {
             if(mSocket != INVALID_SOCKET) {
                 SocketPort::RxThread();
             }
-            closesocket(mSocket);
-            mSocket = INVALID_SOCKET;            
+            if(mSocket != INVALID_SOCKET) {
+                closesocket(mSocket);
+                mSocket = INVALID_SOCKET;
+            }
         }
     }
     return 0U;
