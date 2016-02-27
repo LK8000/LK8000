@@ -341,7 +341,7 @@ static WndForm* InitFlySim() {
 
 #ifdef KOBO
             lx += w + SPACEBORDER;
-            WndButton* pWndNickel = new WndButton(pWndForm, _T("cmdNICKEL"), _T("NICKEL"), lx , IBLSCALE(205), w, IBLSCALE(30), &OnNickelClick );
+            WndButton* pWndNickel = new WndButton(pWndForm, _T("cmdNICKEL"), _T("KOBO"), lx , IBLSCALE(205), w, IBLSCALE(30), &OnNickelClick );
             if(pWndNickel) {
                 
             }
@@ -396,7 +396,7 @@ static WndForm* InitFlySim() {
 #ifdef KOBO
             lx = SPACEBORDER - 1; // count from 0
             
-            WndButton* pWndNickel = new WndButton(pWndForm, _T("cmdNICKEL"), _T("NICKEL"), lx , h, w, IBLSCALE(40), &OnNickelClick );
+            WndButton* pWndNickel = new WndButton(pWndForm, _T("cmdNICKEL"), _T("KOBO"), lx , h, w, IBLSCALE(40), &OnNickelClick );
             if(pWndNickel) {
                 w = (ScreenSizeX - (SPACEBORDER * 4)) / 3;
                 pWndNickel->SetTop(h);
