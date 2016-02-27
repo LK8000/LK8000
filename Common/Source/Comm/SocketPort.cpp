@@ -132,7 +132,14 @@ bool SocketPort::Write(const void *data, size_t length) {
     
     if ((iResult != SOCKET_ERROR) && FD_ISSET(mSocket, &writefs)) {
         // socket ready, Write data.
-        iResult = send(mSocket, (const char*) data, length, 0);
+        
+#ifdef __linux        
+        const int flags = MSG_NOSIGNAL; // avoid SIGPIPE if socket is closed by peer.
+#else
+        const int flags = 0;
+#endif
+        
+        iResult = send(mSocket, (const char*) data, length, flags);
         if (iResult > 0) {
             AddStatTx(iResult);
             return true;
