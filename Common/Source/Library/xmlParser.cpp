@@ -85,7 +85,7 @@ typedef struct ClearTag
 // Main structure used for parsing XML
 typedef struct XML
 {
-    LPTSTR                 lpXML;
+    LPCTSTR                lpXML;
     int                    nIndex;
     enum XMLError          error;
     LPCTSTR                lpEndTag;
@@ -99,7 +99,7 @@ typedef struct XML
 typedef struct 
 {
     ClearTag    *pClr;
-    LPTSTR     pStr;
+    LPCTSTR     pStr;
 } NextToken;
 
 // Enumeration used when parsing attributes
@@ -173,7 +173,7 @@ LPTSTR toXMLStringFast(LPTSTR *dest,int *destSz, LPCTSTR source)
 }
 
 // private:
-LPTSTR fromXMLString(LPTSTR s, int lo)
+LPTSTR fromXMLString(LPCTSTR s, int lo)
 {
     // This function is the opposite of the function "toXMLString". It decodes the escape 
     // sequences &amp;, &quot;, &apos;, &lt;, &gt; and replace them by the characters 
@@ -186,7 +186,7 @@ LPTSTR fromXMLString(LPTSTR s, int lo)
 
     int ll=0;
     LPTSTR d;
-    LPTSTR ss=s;
+    LPCTSTR ss=s;
     while (((lo--)>0)&&(*s))
     {
         if (*s==_T('&'))
@@ -221,7 +221,7 @@ LPTSTR fromXMLString(LPTSTR s, int lo)
 
     d=(LPTSTR)malloc((ll+1)*sizeof(TCHAR));
     LKASSERT(d);
-    s=d;
+    LPTSTR r=d;
     while (ll--)
     {
         if (*ss==_T('&'))
@@ -236,7 +236,7 @@ LPTSTR fromXMLString(LPTSTR s, int lo)
         } else { *(d++)=*ss; ss++; }
     }
     *d=0;
-    return s;
+    return r;
 }
 
 // private:
@@ -314,7 +314,7 @@ static TCHAR FindNonWhiteSpace(XML *pXML)
 static NextToken GetNextToken(XML *pXML, int *pcbToken, enum TokenTypeTag *pType)
 {
     NextToken        result = { 0 };
-    LPTSTR           lpXML;
+    LPCTSTR           lpXML;
     TCHAR            ch;
     TCHAR            chTemp;
     int              nSize;
@@ -749,7 +749,7 @@ int XMLNode::ParseXMLElement(void *pa)
     LPCTSTR lpszTemp = NULL;
     int cbTemp;
     int nDeclaration;
-    LPTSTR lpszText = NULL;
+    LPCTSTR lpszText = NULL;
     XMLNode pNew;
     enum Status status; // inside or outside a tag
     enum Attrib attrib = eAttribName;
@@ -1214,7 +1214,7 @@ static void CountLinesAndColumns(LPCTSTR lpXML, int nUpto, XMLResults *pResults)
 }
 
 // Parse XML and return the root element.
-XMLNode XMLNode::parseString(LPTSTR lpszXML, LPCTSTR tag, 
+XMLNode XMLNode::parseString(const TCHAR *lpszXML, LPCTSTR tag, 
 			     XMLResults *pResults)
 {
     if (!lpszXML) 

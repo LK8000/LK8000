@@ -145,7 +145,7 @@ typedef struct XMLNode
     // You must create your first instance of XMLNode with these 3 parse functions:
     // (see complete explanation of parameters below)
     static XMLNode createXMLTopNode()  { return XMLNode(NULL,NULL,FALSE); }
-    static XMLNode parseString   (LPTSTR     lpszXML, LPCTSTR tag=NULL, XMLResults *pResults=NULL);
+    static XMLNode parseString   (const TCHAR *lpszXML, LPCTSTR tag=NULL, XMLResults *pResults=NULL);
     static XMLNode parseFile     (const TCHAR *lpszXML, LPCTSTR tag=NULL, XMLResults *pResults=NULL);
     static XMLNode openFileHelper(const TCHAR *lpszXML, LPCTSTR tag);
 
