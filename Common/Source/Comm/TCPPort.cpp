@@ -139,7 +139,7 @@ unsigned TCPServerPort::RxThread() {
     // If iMode != 0, non-blocking mode is enabled.
 
     u_long iMode = 1;
-    int iResult = ioctlsocket(mSocket, FIONBIO, &iMode);
+    int iResult = ioctlsocket(mServerSocket, FIONBIO, &iMode);
     if (iResult == SOCKET_ERROR) {
         StartupStore(_T(".... ioctlsocket failed with error: %d%s"), iResult, NEWLINE);
         // if failed, socket still in blocking mode, it's big problem
