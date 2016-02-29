@@ -85,8 +85,8 @@ private:
 
     void run();
 
-    size_t devIdx;
-    std::tstring sPortName;
+    const size_t devIdx;
+    const std::tstring sPortName;
 
     _NmeaString_t _NmeaString;
     TCHAR * pLastNmea;
