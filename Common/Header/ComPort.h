@@ -25,6 +25,9 @@ public:
     ComPort( const ComPort& ) = delete;
     ComPort& operator=( const ComPort& ) = delete;    
 
+    ComPort( ComPort&& ) = delete;
+    ComPort& operator=( ComPort&& ) = delete;    
+
     bool StopRxThread();
     bool StartRxThread();
 
