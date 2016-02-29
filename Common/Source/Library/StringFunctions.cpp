@@ -475,7 +475,13 @@ TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
 	/* NOTREACHED */
 }
 
-
+// Trim trailing space
+void TrimRight(TCHAR* str) {
+    TCHAR * end = str + _tcslen(str);
+    while(end > str && _istspace(*(end-1))) end--;
+    // Write new null terminator
+    *(end) = 0;  
+}
 
 TCHAR* StringMallocParse(const TCHAR* old_string) {
   TCHAR buffer[2048];	// Note - max size of any string we cope with here !

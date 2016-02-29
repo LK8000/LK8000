@@ -89,6 +89,7 @@ void *bsearch(void *key, void *base0, size_t nmemb, size_t size, int (*compar)(c
 
 TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
+void TrimRight(TCHAR* str);
 
 void SaveRegistryToFile(const TCHAR* szFile); 
 void LoadRegistryFromFile(const TCHAR* szFile); 

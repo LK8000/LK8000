@@ -239,7 +239,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   if (pToken == NULL) return false;
   if (_tcslen(pToken)>CUPSIZE_FREQ) pToken[CUPSIZE_FREQ-1]= _T('\0');
   _tcscpy(Temp->Freq, pToken); 
-  for (i=_tcslen(Temp->Freq)-1; i>1; i--) if (Temp->Freq[i]==' ') Temp->Freq[i]=0; else break;
+  TrimRight(Temp->Freq);
   _tcscpy(Tname,Temp->Freq);
   for (j=0, i=0; i<_tcslen(Tname); i++) 
 	if ( (Tname[i]!='\"') && (Tname[i]!=DUMCHAR) ) Temp->Freq[j++]=Tname[i];
