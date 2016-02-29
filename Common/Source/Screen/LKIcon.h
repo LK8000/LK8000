@@ -28,7 +28,6 @@ public:
     LKIcon(LKIcon&& orig) = delete;
 	LKIcon(const LKIcon& orig) = delete;
 	LKIcon& operator=(LKIcon&& orig) = delete;
-	LKIcon& operator=(const LKIcon&& orig) = delete;
 
     inline
 	void Release() { 
