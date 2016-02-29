@@ -32,7 +32,13 @@ void CropString(TCHAR* String, unsigned max_char) {
     while (next.second && --max_char) {
         next = NextUTF8(next.second);
     }
-    next.second = '\0';
+    // we can use const cast here "next.second" are inside String content.
+    char* pend = const_cast<char*>(next.second);
+    if(pend) {
+        // check if pend are inside String.
+        assert(static_cast<size_t>(pend - String) <= strlen(String));
+        (*pend) = '\0';
+    }
 #endif
 }
 
