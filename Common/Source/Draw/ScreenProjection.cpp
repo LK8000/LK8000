@@ -13,13 +13,28 @@ ScreenProjection::ScreenProjection() :
     _PanLat(MapWindow::GetPanLatitude()),
     _PanLon(MapWindow::GetPanLongitude()),
     _Zoom(MapWindow::GetDrawScale()),
+    _Angle(MapWindow::GetDisplayAngle()),
     _Origin(MapWindow::GetOrigScreen()),
     _CosAngle(ifastcosine(MapWindow::GetDisplayAngle())),
     _SinAngle(ifastsine(MapWindow::GetDisplayAngle()))
-{
+{    
 }
 
-ScreenProjection::~ScreenProjection() {
+double ScreenProjection::GetPixelSize() const {
+    double lon0, lat0, lon1, lat1, dlon, dlat;
+    
+    Screen2LonLat(_Origin, lon0, lat0);
+
+    Screen2LonLat({_Origin.x+1,_Origin.y}, lon1, lat1);
+    DistanceBearing(lat0, lon0, lat1, lon1, &dlon, NULL);
+
+    Screen2LonLat({ _Origin.x, _Origin.y+1 }, lon1, lat1);
+    DistanceBearing(lat0, lon0, lat1, lon1, &dlat, NULL);
+
+    return std::min(dlon, dlat);
+}
+
+ScreenProjection::~ScreenProjection() {    
 }
 
 void ScreenProjection::Screen2LonLat(const POINT& pt, double &Lon, double &Lat) const {
@@ -31,10 +46,16 @@ void ScreenProjection::Screen2LonLat(const POINT& pt, double &Lon, double &Lat) 
 }
 
 bool ScreenProjection::operator!=(const ScreenProjection& _Proj) const {
-    return ( _PanLat != _Proj._PanLat
-            || _PanLon != _Proj._PanLon
-            || _Zoom != _Proj._Zoom
+    if ( _Zoom != _Proj._Zoom 
+            || _Origin != _Proj._Origin 
             || _Origin != _Proj._Origin
-            || _CosAngle != _Proj._CosAngle
-            || _SinAngle != _Proj._SinAngle);
+            || fabs(_Angle - _Proj._Angle) >= 0.5 ) 
+    {
+        return true;
+    }
+
+    double offset;
+    DistanceBearing(_PanLat, _PanLon, _Proj._PanLat, _Proj._PanLon, &offset, NULL);
+
+    return (offset >= GetPixelSize());
 }

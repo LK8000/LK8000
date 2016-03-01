@@ -708,7 +708,7 @@ _redo:
         goto _redo;
     }
 
-    if( !UpToDate(TerrainContrast, TerrainBrightness, TerrainRamp, Shading, _Proj) || !trenderer->IsDirty()) {
+    if(trenderer->IsDirty() || (!UpToDate(TerrainContrast, TerrainBrightness, TerrainRamp, Shading, _Proj))) {
         trenderer->SetDirty();
     }
 

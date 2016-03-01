@@ -35,15 +35,20 @@ public:
     void Screen2LonLat(const POINT& pt, double &Lon, double &Lat) const;
     
     bool operator!=(const ScreenProjection& _Proj) const; 
-        
+
+protected:
+    double GetPixelSize() const;
+    
 protected:
     double _PanLat;
     double _PanLon;
     double _Zoom;
+    double _Angle;
     RasterPoint _Origin;
     short _CosAngle;
     short _SinAngle;
-
+    
+    double _PixelSize;
 };
 
 #endif	/* SCREENPROJECTION_H */
