@@ -122,7 +122,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
 	} else
 		_tcscpy(comment,_T(""));
-	fprintf(fp,"\"" PF_ASCIISTR"\"," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR ",%d.0m,%d," PF_ASCIISTR"," PF_ASCIISTR "," PF_ASCIISTR" ," PF_ASCIISTR "\r\n",
+	fprintf(fp,"\"" PF_ASCIISTR"\"," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR ",%d.0m,%d," PF_ASCIISTR"," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "\r\n",
 		wpt->Name,
 		wpt->Code,
 		wpt->Country,
