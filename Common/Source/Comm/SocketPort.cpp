@@ -114,6 +114,10 @@ bool SocketPort::Close() {
 }
 
 bool SocketPort::Write(const void *data, size_t length) {
+    if(mSocket == INVALID_SOCKET) {
+        return false; // socket not connect,that can happen with TCPServer Port.
+    }
+    
     struct timeval timeout;
     fd_set writefs;
     timeout.tv_sec = mTimeout / 1000;
@@ -126,7 +130,7 @@ bool SocketPort::Write(const void *data, size_t length) {
     // wait for socket ready to write
     iResult = select(mSocket + 1, NULL, &writefs, NULL, &timeout); 
     if (iResult == 0) {
-        StartupStore(_T("ComPort %u : write to socket timeout.%s"), (unsigned)GetPortIndex() + 1, NEWLINE);
+        AddStatErrTx(1);
         return false; // timeout
     }
     
