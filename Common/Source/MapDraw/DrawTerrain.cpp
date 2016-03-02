@@ -126,9 +126,11 @@ public:
         // scale dtquant so resolution is not too high on large displays
         dtquant *= ScreenScale; // lower resolution a bit.. (no need for CPU >800mHz)
 
+#ifndef KOBO
         if (ScreenSize != ss640x480) {
             if (dtquant > 3) dtquant = 3; // .. but not too much
         }
+#endif
 #endif
 #ifdef USE_TERRAIN_BLUR
         blursize = max((unsigned int) 0, (dtquant - 1) / 2); // always 0
