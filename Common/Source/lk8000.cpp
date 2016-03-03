@@ -664,7 +664,6 @@ _Shutdown:
 
 #ifdef KOBO
   extern bool RestartToNickel;
-#warning "Temporary : remove when we have KoboMenu"  
   if(RestartToNickel) {
     KoboExecNickel();
   } else {

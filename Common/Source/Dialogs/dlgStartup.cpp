@@ -20,7 +20,8 @@
 #include "Asset.hpp"
 
 #ifdef KOBO
-bool RestartToNickel = false;
+#warning "Temporary : remove when we have KoboMenu"  
+bool RestartToNickel = true; // default to true, mandatory for avoid to brick device in case of abnormal termination.
 #endif
 
 extern void Shutdown(void);

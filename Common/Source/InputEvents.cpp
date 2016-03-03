@@ -2836,6 +2836,10 @@ void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
 
 void InputEvents::eventExit(const TCHAR *misc) {
 	(void)misc;
+#ifdef KOBO
+    extern bool RestartToNickel;
+    RestartToNickel = false;
+#endif
     MainWindow.Close();
 }
 
