@@ -16,7 +16,7 @@
 #define IMG_EXT "PNG"
 #endif
 
-void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
+LKBitmap LoadSplash(const TCHAR *splashfile) {
 
  LKBitmap hWelcomeBitmap;
  TCHAR sDir[MAX_PATH];
@@ -54,10 +54,15 @@ void LoadSplash(LKSurface& Surface, const TCHAR *splashfile){
     	}
     }
 
-    if(hWelcomeBitmap.LoadFromFile(srcfile) && hWelcomeBitmap) {
-        const PixelSize bmSize = hWelcomeBitmap.GetSize();
+    hWelcomeBitmap.LoadFromFile(srcfile);
+    return hWelcomeBitmap;
+}
 
-        Surface.Blackness(0,0,ScreenSizeX,ScreenSizeY);
-        Surface.DrawBitmap(0,0,ScreenSizeX,MulDiv(bmSize.cy,ScreenSizeX,bmSize.cx),hWelcomeBitmap,bmSize.cx,bmSize.cy);
+
+void DrawSplash(LKSurface& Surface, const LKBitmap& Bmp) {
+    Surface.Blackness(0,0,ScreenSizeX,ScreenSizeY);
+    if(Bmp) {
+        const PixelSize bmSize = Bmp.GetSize();
+        Surface.DrawBitmap(0,0,ScreenSizeX,MulDiv(bmSize.cy,ScreenSizeX,bmSize.cx),Bmp,bmSize.cx,bmSize.cy);
     }
 }

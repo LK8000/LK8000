@@ -15,8 +15,7 @@
 #include "Sideview.h"
 #include "Multimap.h"
 #include "Sound/Sound.h"
-
-extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
+#include "LoadSplash.h"
 
 //
 // Called by LKDrawLook8000, this is what happens when we change mapspace mode, advancing through types.
@@ -57,7 +56,10 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
 
   const auto oldfont = Surface.SelectObject(LKINFOFONT); // save font
   if (MapSpaceMode==MSM_WELCOME) {
-      LoadSplash(Surface,_T("LKPROFILE"));
+      LKBitmap WelcomeBitmap = LoadSplash(_T("LKPROFILE"));
+      if(WelcomeBitmap) {
+          DrawSplash(Surface, WelcomeBitmap);
+      }
   } else {
       Surface.FillRect(&rc, hB);
   }

@@ -15,11 +15,15 @@
 #include "dlgTools.h"
 #include "LKObjects.h"
 #include "resource.h"
+#include "Draw/LoadSplash.h"
 
-extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
+static LKBitmap SplashBitmap;
 
 static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
-    LoadSplash(Surface, _T("LKSTART"));
+    if(!SplashBitmap) {
+        SplashBitmap = LoadSplash(_T("LKSTART"));
+    }
+    DrawSplash(Surface, SplashBitmap);
 }
 
 static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
@@ -120,6 +124,7 @@ static dlgProgress* pWndProgress = NULL;
 void CloseProgressDialog() {
     delete pWndProgress;
     pWndProgress = NULL;
+    SplashBitmap.Release();
 }
 
 void CreateProgressDialog(const TCHAR* text) {

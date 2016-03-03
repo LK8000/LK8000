@@ -18,6 +18,7 @@
 #include "Sound/Sound.h"
 #include "ScreenGeometry.h"
 #include "Asset.hpp"
+#include "Draw/LoadSplash.h"
 
 #ifdef KOBO
 #warning "Temporary : remove when we have KoboMenu"  
@@ -25,9 +26,10 @@ bool RestartToNickel = true; // default to true, mandatory for avoid to brick de
 #endif
 
 extern void Shutdown(void);
-extern void LoadSplash(LKSurface& Surface, const TCHAR *splashfile);
 
 static WndForm *wf = NULL;
+static LKBitmap StartBitmap;
+static LKBitmap ProfileBitmap;
 
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
@@ -86,8 +88,22 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
 
     if (RUN_MODE == RUN_SHUTDOWN) return;
 
-    LoadSplash(Surface, (RUN_MODE == RUN_WELCOME) ? _T("LKSTART") : _T("LKPROFILE"));
-
+    if(RUN_MODE == RUN_WELCOME) {
+        if(!StartBitmap) {
+            StartBitmap = LoadSplash(_T("LKSTART"));
+        }
+        if(StartBitmap) {
+            DrawSplash(Surface, StartBitmap);
+        }
+    } else {
+        if(!ProfileBitmap) {
+            ProfileBitmap = LoadSplash(_T("LKPROFILE"));
+        }
+        if(ProfileBitmap) {
+            DrawSplash(Surface, ProfileBitmap);
+        }
+    }
+    
     if (RUN_MODE == RUN_WELCOME) {
         TCHAR mes[100];
         int pos = 0;
@@ -856,6 +872,10 @@ _exit:
         delete wf;
         wf = NULL;
     }
+
+    StartBitmap.Release();
+    ProfileBitmap.Release();
+
 
     if (RUN_MODE == RUN_FLY || RUN_MODE == RUN_SIM) {
         LKSound(_T("LK_SLIDE.WAV"));
