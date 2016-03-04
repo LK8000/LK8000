@@ -93,10 +93,10 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
     	DoInit[MDI_DRAWMAPSCALE]=false;
     }
 
-    TCHAR Scale[200];
-    TCHAR Scale1[200];
-    TCHAR Scale2[200];
-    TCHAR TEMP[20];
+    TCHAR Scale[200] = {};
+    TCHAR Scale1[200] = {};
+    TCHAR Scale2[200] = {};
+    TCHAR TEMP[20] = {};
 
     Surface.FillRect(&ScaleLineBck[0], LKBrush_Black);
     Surface.FillRect(&ScaleLineBck[1], LKBrush_Black);
@@ -107,8 +107,6 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
     Surface.SelectObject(hpOld);
 
     flipflop=!flipflop;
-
-    _tcscpy(Scale2,TEXT(""));
 
     if (inpanmode) {
 	if (DerivedDrawInfo.TerrainValid) {
