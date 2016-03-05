@@ -541,6 +541,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
     }
   } else {
     if (DrawListIndex == 0){
+      Surface.SetTextColor(RGB_BLACK);
 	// LKTOKEN  _@M466_ = "No Match!" 
       _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
       Surface.DrawText(2*ScreenScale, 2*ScreenScale, sTmp);
