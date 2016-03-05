@@ -332,10 +332,10 @@ Canvas::DrawText(int x, int y, const TCHAR *text)
   assert(ValidateUTF8(text));
 #endif
 
-#ifdef ENABLE_OPENGL
+#ifndef ENABLE_OPENGL
   /*
    * RenderText return buffer owned by TextCache, this can be delete by GUI Thread
-   *  lock is need for avoid to used alredy deleted buffer.
+   *  lock is need for avoid to use already deleted buffer.
    */
   TextCache::Lock();
 #endif
@@ -362,7 +362,7 @@ Canvas::DrawText(int x, int y, const TCHAR *text)
     }
   }
 
-#ifdef ENABLE_OPENGL  
+#ifndef ENABLE_OPENGL  
   TextCache::Unlock();
 #endif
 }
@@ -375,10 +375,10 @@ Canvas::DrawTransparentText(int x, int y, const TCHAR *text)
   assert(ValidateUTF8(text));
 #endif
 
-#ifdef ENABLE_OPENGL
+#ifndef ENABLE_OPENGL
   /*
    * RenderText return buffer owned by TextCache, this can be delete by GUI Thread
-   *  lock is need for avoid to used alredy deleted buffer.
+   *  lock is need for avoid to use already deleted buffer.
    */
   TextCache::Lock();
 #endif
@@ -395,7 +395,7 @@ Canvas::DrawTransparentText(int x, int y, const TCHAR *text)
        s.pitch, transparent);
   }
   
-#ifdef ENABLE_OPENGL  
+#ifndef ENABLE_OPENGL  
   TextCache::Unlock();
 #endif  
 }
