@@ -6,7 +6,7 @@
 #include "ComPort.h"
 #include "BtHandler.h"
 #include <vector>
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 
 #define DEVNAMESIZE  32
 #define	NUMDEV		 2
@@ -44,8 +44,8 @@ public:
     inline const TCHAR* GetLabel() const { return _sLabel.empty()?_sName.c_str():_sLabel.c_str(); }
     
 protected:
-    std::tstring _sName;
-    std::tstring _sLabel;
+    tstring _sName;
+    tstring _sLabel;
 };
 
 typedef std::vector<COMMPortItem_t> COMMPort_t;

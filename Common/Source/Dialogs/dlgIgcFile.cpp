@@ -20,7 +20,7 @@
 
 namespace DlgIgcFile {
     WndForm *wfDlg = NULL;
-    typedef std::vector<std::tstring> FileList_t;
+    typedef std::vector<tstring> FileList_t;
     FileList_t FileList;
     size_t DrawListIndex = (~0);
     size_t ItemIndex = (~0);

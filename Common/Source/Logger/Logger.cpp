@@ -1066,7 +1066,7 @@ bool DeleteOldIGCFile(TCHAR *pathname) {
   TCHAR searchpath[MAX_PATH+1];
   TCHAR fullname[MAX_PATH+1];
   _stprintf(searchpath, TEXT("%s*.igc"),pathname);
-    std::tstring oldestname;
+    tstring oldestname;
     lk::filesystem::directory_iterator It(searchpath);
     if (It) {
         oldestname = It.getName();

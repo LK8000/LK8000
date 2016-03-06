@@ -9,7 +9,7 @@
 #ifndef devCProbe_h__
 #define devCProbe_h__
 #include "devBase.h"
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 #include "nmeaistream.h"
 #include "dlgTools.h"
 
@@ -48,7 +48,7 @@ private:
 
 // Send Command
 	static BOOL GetDeviceName( PDeviceDescriptor_t d );
-	static BOOL SetDeviceName( PDeviceDescriptor_t d, const std::tstring& strName );
+	static BOOL SetDeviceName( PDeviceDescriptor_t d, const tstring& strName );
 	static BOOL GetFirmwareVersion( PDeviceDescriptor_t d );
 	static BOOL SetBaroOn( PDeviceDescriptor_t d );
 	static BOOL SetBaroOff( PDeviceDescriptor_t d );

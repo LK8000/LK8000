@@ -17,7 +17,7 @@
 
 class BthPort : public SocketPort {
 public:
-    BthPort(int idx, const std::tstring& sName) : SocketPort(idx, sName) { }
+    BthPort(int idx, const tstring& sName) : SocketPort(idx, sName) { }
     
 protected:
     virtual bool Connect();

@@ -42,7 +42,7 @@ public:
             : _Code(), _MinHWVersion(), _Type(), _Factor(), _MinHWVal(), _MaxHWVal() {    
     }
     
-    CHardwareParameter(const std::tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal)
+    CHardwareParameter(const tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal)
             : _Code(code), _MinHWVersion(minHWVersion), _Type(type), _Factor(factor), _MinHWVal(minHWVal), _MaxHWVal(maxHWVal) {
     }
 
@@ -50,12 +50,12 @@ public:
 
     }
 
-    inline void Value(const std::tstring& Val) { _Value = Val; }
-    inline const std::tstring& Value() const { return _Value; }
+    inline void Value(const tstring& Val) { _Value = Val; }
+    inline const tstring& Value() const { return _Value; }
 
     inline operator bool ()  const { return !_Code.empty(); }
 
-    inline const std::tstring& Code() const { return _Code; }
+    inline const tstring& Code() const { return _Code; }
     inline ValueType Type() const { return _Type; }
     inline int MinHwVersion() const { return _MinHWVersion; }
     
@@ -124,18 +124,18 @@ public:
     }
 
 private:
-    const std::tstring _Code;
+    const tstring _Code;
     const int _MinHWVersion;
     const ValueType _Type;
     const double _Factor;
     const int _MinHWVal;
     const int _MaxHWVal;
 
-    std::tstring _Value;
+    tstring _Value;
 };
 
 class CHardwareParameters {
-    typedef std::map<std::tstring, CHardwareParameter> ParameterList_t;
+    typedef std::map<tstring, CHardwareParameter> ParameterList_t;
 
 public: 
     typedef ParameterList_t::const_iterator const_iterator;
@@ -146,7 +146,7 @@ public:
 
     }
 
-    inline void Add(const std::tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal) {
+    inline void Add(const tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal) {
         _ParameterList.insert(std::make_pair(code, CHardwareParameter(code, minHWVersion, type, factor, minHWVal, maxHWVal)));
     }
 
@@ -156,7 +156,7 @@ public:
     inline iterator begin() { return _ParameterList.begin(); }
     inline iterator end() { return _ParameterList.end(); }
 
-    CHardwareParameter& GetParameter(const std::tstring& Key) {
+    CHardwareParameter& GetParameter(const tstring& Key) {
         static CHardwareParameter nullParameter;
         iterator It = _ParameterList.find(Key);
         if(It != _ParameterList.end()) {
@@ -211,8 +211,8 @@ public:
 private:
     ParameterList_t _ParameterList;
 
-    std::tstring _Keys;
-    std::tstring _Values;
+    tstring _Keys;
+    tstring _Values;
     int _HwVersion;
 };
 
@@ -229,7 +229,7 @@ namespace dlgBlueFlyConfig {
     lstPageWnd_t lstPageWnd;
     unsigned CurrentPage = 0;
 
-    typedef std::map<DataField*, std::tstring> DataField2Parameter_t;
+    typedef std::map<DataField*, tstring> DataField2Parameter_t;
     DataField2Parameter_t AssocFieldParam;
 
     void NextPage(int Step) {
@@ -442,7 +442,7 @@ BOOL BlueFlyVarioOpen(PDeviceDescriptor_t d, int Port) {
     d->Com->Read(szFirstString, sizeof(szFirstString));
     if(strncmp(szFirstString, "BFV ", 4) == 0) {
         char* pChar = &szFirstString[4];
-        std::tstring sLine;
+        tstring sLine;
         for(;pChar && *pChar != '\n' && *pChar !='\0'; ++pChar);
         sLine.assign(&szFirstString[4], pChar);
         HardwareParameters.SetHardwareVersion(sLine.c_str());

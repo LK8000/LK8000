@@ -57,7 +57,7 @@ Message::messages_t Message::messagesHistory; // from newer to older
 bool Message::hidden=false;
 int Message::nvisible=0;
 
-std::tstring Message::msgText;
+tstring Message::msgText;
 
 // Get start time to reduce overrun errors
 PeriodClock startTime;

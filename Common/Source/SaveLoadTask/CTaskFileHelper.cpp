@@ -13,7 +13,7 @@
 #include <string>
 #include <stdarg.h>
 #include "CTaskFileHelper.h"
-#include "../utils/tstring.h"
+#include "Util/tstring.hpp"
 #include "utils/fileext.h"
 #include "utils/stringext.h"
 #include "Waypointparser.h"
@@ -513,7 +513,7 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
         if (idx >= MAXTASKPOINTS || szName == NULL) {
             return false; // invalide TaskPoint index
         }
-        std::map<std::tstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
+        std::map<tstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
         if (it == mWayPointLoaded.end()) {
             return false; // non existing Waypoint
         }
@@ -571,7 +571,7 @@ bool CTaskFileHelper::LoadStartPoint(XMLNode node) {
         if (idx >= MAXSTARTPOINTS || szName == NULL) {
             return false; // invalide TaskPoint index
         }
-        std::map<std::tstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
+        std::map<tstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
         if (it == mWayPointLoaded.end()) {
             return false; // non existing Waypoint
         }

@@ -15,7 +15,7 @@
 
 class TCPClientPort : public SocketPort {
 public:
-    TCPClientPort(int idx, const std::tstring& sName) : SocketPort(idx, sName) { }
+    TCPClientPort(int idx, const tstring& sName) : SocketPort(idx, sName) { }
     
 protected:
     virtual bool Connect();
@@ -23,7 +23,7 @@ protected:
 
 class TCPServerPort : public SocketPort {
 public:
-    TCPServerPort(int idx, const std::tstring& sName) : SocketPort(idx, sName),  mServerSocket(INVALID_SOCKET) { }
+    TCPServerPort(int idx, const tstring& sName) : SocketPort(idx, sName),  mServerSocket(INVALID_SOCKET) { }
     
     virtual bool Close();
     virtual int SetRxTimeout(int TimeOut) { return 0; }

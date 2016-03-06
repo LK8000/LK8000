@@ -29,7 +29,7 @@ static TCHAR szSoundPath[MAX_PATH] = {}; // path of Sound file, initialized by  
  * all sound a free at shutdown.
  * for free before, we need to detect when sound play is end.
  */
-typedef std::map<std::tstring, Mix_Chunk*> audioChunkCache_t;
+typedef std::map<tstring, Mix_Chunk*> audioChunkCache_t;
 static audioChunkCache_t audioChunkCache; 
 /*
  * Sound can be play from more than one thread, so we need use mutex for protect audioChunkCache.

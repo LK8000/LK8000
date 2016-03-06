@@ -18,9 +18,9 @@ using namespace std::placeholders;
 
 #ifndef NO_BLUETOOTH
 
-const std::tstring BTPortPrefix(_T("BT:"));
+const tstring BTPortPrefix(_T("BT:"));
 
-std::tstring BTAddrToStr(BT_ADDR ba) {
+tstring BTAddrToStr(BT_ADDR ba) {
     TCHAR szAddress[25] = {0};
     _stprintf(szAddress, _T("%04x%08x"), GET_NAP(ba), (unsigned int)GET_SAP(ba));
     return szAddress;
@@ -28,7 +28,7 @@ std::tstring BTAddrToStr(BT_ADDR ba) {
 
 BT_ADDR StrToBTAddr(const TCHAR* szAddr) {
     DWORD nap = 0, sap = 0;
-    std::tstring csS, csTmp(szAddr);
+    tstring csS, csTmp(szAddr);
     int iLen = csTmp.length();
     BT_ADDR ba = 0;
     
@@ -44,7 +44,7 @@ BT_ADDR StrToBTAddr(const TCHAR* szAddr) {
     return ba;
 }
 
-std::tstring GetHandleFile(const TCHAR* szPort) {
+tstring GetHandleFile(const TCHAR* szPort) {
     TCHAR szFile[25] = {0};
     _stprintf(szFile, _T("\\N%s.VPH"), szPort);
     return szFile;
@@ -52,18 +52,18 @@ std::tstring GetHandleFile(const TCHAR* szPort) {
 
 //-------------
 
-CBtDevice::CBtDevice(const BT_ADDR& ba, const std::tstring& csName) : m_ba(ba), m_csName(csName) {
+CBtDevice::CBtDevice(const BT_ADDR& ba, const tstring& csName) : m_ba(ba), m_csName(csName) {
 
 }
 
-std::tstring CBtDevice::GetName() const {
-    std::tstring csTmp(m_csName);
+tstring CBtDevice::GetName() const {
+    tstring csTmp(m_csName);
     if (csTmp.empty())
         csTmp = BTAddrToStr(m_ba);
     return csTmp;
 }
 
-std::tstring CBtDevice::BTPortName() const {
+tstring CBtDevice::BTPortName() const {
     return BTPortPrefix + BTAddrToStr(m_ba);
 }
 
@@ -139,8 +139,8 @@ void CBtHandler::IntRestorePowerState() {
     RestorePowerState(m_iSavedHWState, m_bSavedScanMask);
 }
 
-std::tstring CBtHandler::CleanPort(const TCHAR* szPort) const {
-    std::tstring csPort(szPort);
+tstring CBtHandler::CleanPort(const TCHAR* szPort) const {
+    tstring csPort(szPort);
     int i;
 
     i = csPort.find(_T(':'));
@@ -149,7 +149,7 @@ std::tstring CBtHandler::CleanPort(const TCHAR* szPort) const {
     return csPort;
 }
 
-std::tstring CBtHandler::GetPortSection(const TCHAR* szPort) const {
+tstring CBtHandler::GetPortSection(const TCHAR* szPort) const {
     return _T("VCP_") + CleanPort(szPort);
 }
 

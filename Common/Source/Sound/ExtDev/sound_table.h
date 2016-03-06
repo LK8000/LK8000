@@ -19,7 +19,7 @@
 #ifndef SOUND_TABLE_H
 #define	SOUND_TABLE_H
 
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 #include "tchar.h"
 #include "utils/EnumString.h"
 #include <array>
@@ -261,13 +261,13 @@ private:
     void set(sound_code_t code, const TCHAR * nmeaStr);
    
     // This array is loaded at init phase and contain association between enum sound code and nmea string
-    std::array<std::tstring, sound_code_t::last> table;
+    std::array<tstring, sound_code_t::last> table;
 
 public:
     sound_table() {}
     ~sound_table() {}
 
-    const std::tstring& getNmeaStr(sound_code_t code) const;
+    const tstring& getNmeaStr(sound_code_t code) const;
 
 protected:   
     // this 2 method can only b used by SoundGlobalInit !

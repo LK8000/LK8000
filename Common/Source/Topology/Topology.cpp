@@ -838,8 +838,8 @@ void XShapeLabel::setlabel(const char* src) {
     }
 #else
     // from Latin1 (ISO-8859-1) To Utf8
-    std::tstring Latin1String(src);
-    std::tstring utf8String;
+    tstring Latin1String(src);
+    tstring utf8String;
 
     Poco::Latin1Encoding Latin1Encoding;
     Poco::UTF8Encoding utf8Encoding;

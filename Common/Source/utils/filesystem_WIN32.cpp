@@ -11,7 +11,7 @@
 
 #include <windows.h>
 #include <shlobj.h>
-#include "tstring.h"
+#include "Util/tstring.hpp"
 
 bool lk::filesystem::exist(const TCHAR* szPath) {
     DWORD dwAttribut = GetFileAttributes(szPath);
@@ -41,7 +41,7 @@ bool lk::filesystem::createDirectory(const TCHAR* szPath) {
 
     if (!isDirectory(szPath)) {
         // if directory not Exists, try to create parent directory before create this !
-        std::tstring sPath(szPath);
+        tstring sPath(szPath);
         if ((*sPath.rbegin()) == _T('\\')) {
             // remove trailing directory separators.
             sPath.erase(sPath.length() - 1);

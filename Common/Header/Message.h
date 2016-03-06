@@ -13,7 +13,7 @@ enum {
 
 
 struct Message_t {
-  std::tstring text;
+  tstring text;
   int type;
   unsigned tstart; // time message was created
   unsigned texpiry; // time message will expire
@@ -49,7 +49,7 @@ class Message {
   static messages_t messagesHistory; // from newer to older
   static RECT rcmsg; // maximum message size
   static WndMessage WndMsg;
-  static std::tstring msgText;
+  static tstring msgText;
   static void Resize();
   static bool hidden;
   static int nvisible;

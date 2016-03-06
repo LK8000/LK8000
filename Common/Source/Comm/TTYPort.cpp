@@ -25,7 +25,7 @@
 
 using namespace std::tr1::placeholders;
 
-TTYPort::TTYPort(int idx, const std::tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling) :
+TTYPort::TTYPort(int idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling) :
         ComPort(idx, sName),
         _dwPortSpeed(dwSpeed),
         _dwPortBit(BitSize),
@@ -76,7 +76,7 @@ bool TTYPort::Initialize() {
     }
 #endif
 
-    std::tstring szPath = GetPortName();
+    tstring szPath = GetPortName();
     if(szPath.compare(0, 3, _T("id:")) == 0) {
         szPath.replace(szPath.begin(), std::next(szPath.begin(), 3), _T("/dev/serial/by-id/"));
     }

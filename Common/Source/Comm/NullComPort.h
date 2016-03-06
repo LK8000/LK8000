@@ -15,7 +15,7 @@
 
 class NullComPort : public ComPort {
 public:
-    NullComPort(int idx, const std::tstring& sName) : ComPort(idx, sName) {}
+    NullComPort(int idx, const tstring& sName) : ComPort(idx, sName) {}
 
     virtual void Flush() { }
     virtual void Purge() { }

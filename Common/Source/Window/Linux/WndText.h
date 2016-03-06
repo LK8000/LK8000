@@ -123,7 +123,7 @@ protected:
     LKColor _BkColor;
     LKBrush _BkBrush;
 
-    std::tstring _Text;
+    tstring _Text;
     
 #ifdef ENABLE_OPENGL
     BufferCanvas _canvas;

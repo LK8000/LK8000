@@ -977,7 +977,7 @@ class WndProperty:public WindowControl{
     int DecValue(void);
 
     DataField *mDataField;
-    std::tstring mValue;
+    tstring mValue;
 
     void UpdateButtonData();
     bool mDialogStyle;

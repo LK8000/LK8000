@@ -128,7 +128,7 @@ bool ReadWinPilotPolar(void) {
     if(!stream){
         // polar file name can be an old name, convert to new name and retry.
         bool bRetry = false;
-        std::tstring str (szPolarFile);
+        tstring str (szPolarFile);
         const TCHAR strReplace[] = _T(" ()");
         for(std::size_t found = str.find_first_of(strReplace); found!=std::string::npos; found=str.find_first_of(strReplace,found+1)) {
           str[found]=_T('_');

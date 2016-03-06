@@ -40,8 +40,8 @@ public:
     virtual bool OnLButtonUp(const POINT& Pos) { return true; }    
     
 protected:
-    std::tstring _szWndName;
-    std::tstring _szWndText;
+    tstring _szWndName;
+    tstring _szWndText;
         
 };
 

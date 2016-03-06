@@ -43,7 +43,7 @@ typedef int SOCKET;
 
 class SocketPort : public ComPort {
 public:
-    SocketPort(int idx, const std::tstring& sName);
+    SocketPort(int idx, const tstring& sName);
     virtual ~SocketPort();
     
     virtual bool Initialize();

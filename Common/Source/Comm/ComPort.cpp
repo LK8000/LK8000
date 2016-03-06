@@ -20,7 +20,7 @@
 #include "Poco/RunnableAdapter.h"
 #include "ComCheck.h"
 
-ComPort::ComPort(int idx, const std::tstring& sName) : StopEvt(false), devIdx(idx), sPortName(sName) {
+ComPort::ComPort(int idx, const tstring& sName) : StopEvt(false), devIdx(idx), sPortName(sName) {
     pLastNmea = std::begin(_NmeaString);
 }
 

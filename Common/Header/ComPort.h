@@ -13,13 +13,13 @@
 #define	COMPORT_H
 
 #include "Sizes.h"
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 #include "Poco/Event.h"
 #include "Poco/Thread.h"
 
 class ComPort : public Poco::Runnable {
 public:
-    ComPort(int idx, const std::tstring& sName);
+    ComPort(int idx, const tstring& sName);
     virtual ~ComPort();
     
     ComPort( const ComPort& ) = delete;
@@ -89,7 +89,7 @@ private:
     void run();
 
     const size_t devIdx;
-    const std::tstring sPortName;
+    const tstring sPortName;
 
     _NmeaString_t _NmeaString;
     TCHAR * pLastNmea;

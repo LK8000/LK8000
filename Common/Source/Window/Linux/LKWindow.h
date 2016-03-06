@@ -16,7 +16,7 @@
 #include <tchar.h>
 #include <list>
 #include "utils/stl_utils.h"
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 #include "Compiler.h"
 #include "Screen/FontReference.h"
 #include "Screen/LKFont.h"
@@ -154,7 +154,7 @@ protected:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) { return false; }
     
 private:
-    std::tstring _szWndName;
+    tstring _szWndName;
 };
 
 #endif // _LINUX_WINDOW_H_

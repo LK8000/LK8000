@@ -72,11 +72,11 @@ bool sound_table::init() {
 }
 
 void sound_table::reset() {
-    std::for_each(table.begin(), table.end(), std::bind(&std::tstring::clear, _1) );
+    std::for_each(table.begin(), table.end(), std::bind(&tstring::clear, _1) );
 }
 
-const std::tstring& sound_table::getNmeaStr(sound_code_t code) const {
-    static const std::tstring empty;
+const tstring& sound_table::getNmeaStr(sound_code_t code) const {
+    static const tstring empty;
     if(code > table.size()) {
         return empty;
     }

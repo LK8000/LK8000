@@ -14,34 +14,34 @@
 #ifndef NO_BLUETOOTH
 #include <list>
 #include "bthapi.h"
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 
 #define BDSRC_LOOKUP 1
 #define BDSRC_REGSVC 2
 #define BDSRC_REGNAV 4
 #define BDSRC_REGPIN 8
 
-std::tstring BTAddrToStr(BT_ADDR ba);
+tstring BTAddrToStr(BT_ADDR ba);
 BT_ADDR StrToBTAddr(const TCHAR* szAddr);
 
-extern const std::tstring BTPortPrefix;
+extern const tstring BTPortPrefix;
 
 class CBtDevice {
     friend class CBtHandler;
 public:
-    CBtDevice(const BT_ADDR& ba, const std::tstring& csName );
+    CBtDevice(const BT_ADDR& ba, const tstring& csName );
     
     BT_ADDR m_ba;
     BYTE m_src;
 
-    std::tstring GetName() const;
-	std::tstring BTPortName() const;
+    tstring GetName() const;
+	tstring BTPortName() const;
 
     inline bool Equal_to(const BT_ADDR ba) const {
         return m_ba == ba;
     }
 protected:
-    std::tstring m_csName;
+    tstring m_csName;
 };
 
 
@@ -69,8 +69,8 @@ public:
     void IntSavePowerState();
     void IntRestorePowerState();
 
-    std::tstring CleanPort(const TCHAR* szPort) const;
-    std::tstring GetPortSection(const TCHAR* szPort) const;
+    tstring CleanPort(const TCHAR* szPort) const;
+    tstring GetPortSection(const TCHAR* szPort) const;
     CBtDevice* FindDevice(const BT_ADDR& ba) const;
     CBtDevice* AddDevice(CBtDevice *bt, BYTE bSrc);
     CBtDevice* GetDevice(size_t idx) const;

@@ -13,7 +13,7 @@
 #ifndef RESOURCE_SOUND_H
 #define	RESOURCE_SOUND_H
 
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 #include "sound_table.h"
 #include "utils/EnumString.h"
 

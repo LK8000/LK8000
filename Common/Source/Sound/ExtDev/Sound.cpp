@@ -73,7 +73,7 @@ void LKSound(const TCHAR *lpName) {
         sound_code = sound_code_t::DEFAULT;
     }
     
-    const std::tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
+    const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
         if (UseExtSound1) {
@@ -104,7 +104,7 @@ void PlayResource (const TCHAR* lpName) {
         sound_code = static_cast<sound_code_t>(resource_sound);
     }
     
-    const std::tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
+    const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
         if (UseExtSound1) {

@@ -23,7 +23,7 @@ public:
     }
     
 protected:    
-    std::tstring _szWindowName;
+    tstring _szWindowName;
 };
 
 #endif	/* _WIN32_WNDCTRLBASE_H */

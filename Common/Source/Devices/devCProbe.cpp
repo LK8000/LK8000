@@ -310,7 +310,7 @@ BOOL CDevCProbe::GetDeviceName( PDeviceDescriptor_t d ){
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetDeviceName( PDeviceDescriptor_t d, const std::tstring& strName ){
+BOOL CDevCProbe::SetDeviceName( PDeviceDescriptor_t d, const tstring& strName ){
 	if (d && d->Com && strName.size() <= 15) {
 		d->Com->WriteString(TEXT("$PCPILOT,C,SET,"));
 		d->Com->WriteString(strName.c_str());

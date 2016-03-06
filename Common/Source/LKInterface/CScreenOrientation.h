@@ -12,7 +12,7 @@
 #ifndef CSCREENORIENTATION_H
 #define	CSCREENORIENTATION_H
 #include <tchar.h>
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 
 class CScreenOrientation {
 public:
@@ -33,8 +33,8 @@ private:
     
     static bool SetScreenSetting(unsigned short);
 
-    std::tstring mLKFilePath; // file used for save screen orientation of LK.
-    std::tstring mOSFilePath; // file used for save screen orientation at startup and restore it at shutdown.
+    tstring mLKFilePath; // file used for save screen orientation of LK.
+    tstring mOSFilePath; // file used for save screen orientation at startup and restore it at shutdown.
     
     static const unsigned short invalid = (~0);
 };

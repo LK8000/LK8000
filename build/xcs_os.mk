@@ -14,8 +14,11 @@ XCS_OS_LINUX := \
 	$(SRC)/xcs/IO/InflateSource.cpp \
 	$(SRC)/xcs/IO/LineSplitter.cpp \
 
+XCS_UTIL := \
+	$(SRC)/xcs/Util/tstring.cpp\
 
 XCS_OS := \
+	$(XCS_UTIL) \
 	$(SRC)/xcs/OS/Clock.cpp\
 
 ifeq ($(CONFIG_LINUX),y) 

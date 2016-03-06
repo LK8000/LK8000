@@ -72,8 +72,8 @@ static void DetectCharsetAndFixString (char* String, charset& cs) {
     }
     if(cs == charset::latin1) {
         // from Latin1 (ISO-8859-1) To Utf8
-        std::tstring Latin1String(String);
-        std::tstring utf8String;
+        tstring Latin1String(String);
+        tstring utf8String;
 
         Poco::Latin1Encoding Latin1Encoding;
         Poco::UTF8Encoding utf8Encoding;

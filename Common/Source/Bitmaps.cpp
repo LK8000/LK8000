@@ -19,7 +19,7 @@
 using std::placeholders::_1;
 
 unsigned short Bitmaps_Errors = 0;
-static std::set<std::tstring> setMissingBitmap;
+static std::set<tstring> setMissingBitmap;
 
 #ifdef USE_GDI
     #define IMG_EXT "BMP"

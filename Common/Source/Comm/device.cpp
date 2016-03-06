@@ -358,7 +358,7 @@ BOOL devInit(LPCTSTR CommandLine) {
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
-    std::set<std::tstring> UsedPort; // list of already used port
+    std::set<tstring> UsedPort; // list of already used port
     
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);

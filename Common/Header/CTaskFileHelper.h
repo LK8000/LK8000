@@ -14,7 +14,7 @@
 
 #include "externs.h"
 #include "xmlParser.h"
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 
 class CTaskFileHelper final {
 public:
@@ -62,7 +62,7 @@ protected:
 
 private:
     std::set<size_t> mWayPointToSave;
-    std::map<std::tstring, size_t> mWayPointLoaded;
+    std::map<tstring, size_t> mWayPointLoaded;
     unsigned mFinishIndex;
 };
 

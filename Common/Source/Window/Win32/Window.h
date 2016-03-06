@@ -16,7 +16,7 @@
 #include <tchar.h>
 #include <assert.h>
 #include "utils/stl_utils.h"
-#include "utils/tstring.h"
+#include "Util/tstring.hpp"
 #include "Screen/FontReference.h"
 
 #ifndef GET_X_LPARAM
@@ -220,9 +220,9 @@ protected:
 protected:
     HWND _hWnd;
     DWORD _dwStyles;
-    std::tstring _szClassName;
-    std::tstring _szWindowText;
-    std::tstring _szWindowName;
+    tstring _szClassName;
+    tstring _szWindowText;
+    tstring _szWindowName;
 
     WNDPROC _OriginalWndProc;
     

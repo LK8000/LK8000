@@ -11,10 +11,10 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
-#include "../utils/tstring.h"
+#include "Util/tstring.hpp"
 
 
-typedef std::map<std::tstring, WAYPOINT> mapCode2Waypoint_t;
+typedef std::map<tstring, WAYPOINT> mapCode2Waypoint_t;
 
 class CupObsZoneUpdater {
 public:
