@@ -95,19 +95,11 @@ int numlegs=0;
       LKASSERT (numlegs <10);
     }
 
-    double ftmp;
-    int itmp, i ,j ;
-    for( i = 0; i < numlegs; i++)  {
-      for(  j = 0; j < i; j++)  {
-        if( Legs[j].LegDist < Legs[i].LegDist) 	{
-          itmp = Legs[j].LegIdx  ; Legs[j].LegIdx   = Legs[i].LegIdx  ; Legs[i].LegIdx   = itmp;
-          ftmp = Legs[j].LegDist ; Legs[j].LegDist  = Legs[i].LegDist ; Legs[i].LegDist  = ftmp;
-        }
-      }
-    }
+    std::sort(std::begin(Legs), std::next(Legs, numlegs), [](const legtype& a, const legtype& b) {
+        return (a.LegDist > b.LegDist);
+    } );
 
-
-    for(i= 0 ; i < min(numlegs,2); i++)
+    for(int i= 0 ; i < min(numlegs,2); i++)
     {
         #ifndef UNDITHER
             LKColor rgbCol = RGB_BLUE;
