@@ -651,10 +651,10 @@ turnpoint:
 		} // switch estyle
 	} // below zoom threshold
 
-	// We dont do stretching here. We are using different bitmaps for hi res.
-	// The 20x20 size is large enough to make much bigger icons than the old ones.
     if(pWptBmp) {
-        pWptBmp->Draw(Surface, E->Pos.x - 10, E->Pos.y - 10, 20, 20);
+        // Stretch only if Scaled size is greater than 20
+        const unsigned IconSize = std::max(NIBLSCALE(10), 20);
+        pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
     }
       }
     }
