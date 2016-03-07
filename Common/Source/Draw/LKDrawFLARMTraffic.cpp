@@ -139,7 +139,7 @@ static int	iRectangleSize = 4;
 
 		// red circle
 		if ((DrawInfo.FLARM_Traffic[i].AlarmLevel>0) && (DrawInfo.FLARM_Traffic[i].AlarmLevel<4)) {
-			DrawBitmapIn(Surface, sc, hFLARMTraffic,true);
+			DrawBitmapIn(Surface, sc, hFLARMTraffic);
 		}
 #if 1 // 1
 		Arrow[0].x = -4;

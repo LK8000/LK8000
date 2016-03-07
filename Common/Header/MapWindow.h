@@ -461,7 +461,7 @@ class MapWindow {
 			   const LKColor& , const LKColor&,
 			   const RECT&);
 
-  static void DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKIcon& Icon, const bool autostretch);
+  static void DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKIcon& Icon);
 
   // ...
   static void RequestToggleFullScreen();

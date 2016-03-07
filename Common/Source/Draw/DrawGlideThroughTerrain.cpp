@@ -113,7 +113,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 		if (DerivedDrawInfo.FarObstacle_Lon >0) 
 		if (PointVisible(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat)) {
 			const POINT sc = _Proj.LonLat2Screen(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat);
-			DrawBitmapIn(Surface, sc, hTerrainWarning,true);
+			DrawBitmapIn(Surface, sc, hTerrainWarning);
 
 			if (DerivedDrawInfo.FarObstacle_AltArriv <=-50 ||  DerivedDrawInfo.FarObstacle_Dist<5000 ) {
 				_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.FarObstacle_AltArriv);
@@ -124,7 +124,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 
 		if (PointVisible(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude)) {
 			const POINT sc = _Proj.LonLat2Screen(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude);
-			DrawBitmapIn(Surface, sc, hTerrainWarning,true);
+			DrawBitmapIn(Surface, sc, hTerrainWarning);
 #if 0
 			// 091203 add obstacle altitude on moving map
 			h =  max(0,RasterTerrain::GetTerrainHeight(DerivedDrawInfo.TerrainWarningLatitude, 

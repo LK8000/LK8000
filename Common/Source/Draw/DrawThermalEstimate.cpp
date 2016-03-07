@@ -20,7 +20,7 @@ void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc, const Sc
   if (mode.Is(Mode::MODE_CIRCLING)) {
 	if (DerivedDrawInfo.ThermalEstimate_R>0) {
 		const POINT screen = _Proj.LonLat2Screen(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude);
-		DrawBitmapIn(Surface, screen, hBmpThermalSource,true);
+		DrawBitmapIn(Surface, screen, hBmpThermalSource);
 
 		const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
 		double tradius;
@@ -42,7 +42,7 @@ void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc, const Sc
 	if (zoom.RealScale() <= 4) {
 		for (int i=0; i<MAX_THERMAL_SOURCES; i++) {
 			if (DerivedDrawInfo.ThermalSources[i].Visible) {
-				DrawBitmapIn(Surface, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource,true);
+				DrawBitmapIn(Surface, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource);
 			}
 		}
 	}

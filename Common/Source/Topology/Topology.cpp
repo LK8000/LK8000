@@ -630,7 +630,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection&
 				if (dobitmap) {
 					// bugfix 101212 missing case for scaleCategory 0 (markers)
 					if (scaleCategory==0||cshape->renderSpecial(Surface, sc.x, sc.y, rc)) {
-						MapWindow::DrawBitmapIn(Surface, sc, hBitmap,true);
+						MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
 					}
 				} else {
 					cshape->renderSpecial(Surface, sc.x, sc.y, rc);
