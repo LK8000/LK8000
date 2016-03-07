@@ -162,6 +162,7 @@ namespace lk {
 #ifdef  _DIRENT_HAVE_D_TYPE
                 return S_ISDIR(DTTOIF(entry.d_type));
 #else
+                struct stat st;
                 if (fstatat(dirfd(dirp), entry.d_name, &st, 0) == -1) {
                     return S_ISDIR(st.st_mode);
                 }
@@ -261,6 +262,9 @@ bool lk::filesystem::getBasePath(TCHAR* szPath, size_t MaxSize) {
 
 bool lk::filesystem::getUserPath(TCHAR* szPath, size_t MaxSize) {
 
+#ifdef ANDROID
+#warning "not inplemented"
+#else
     szPath[0] = '\0';
     char* szHome = getenv("HOME");
     if (szHome) {
@@ -290,7 +294,7 @@ bool lk::filesystem::getUserPath(TCHAR* szPath, size_t MaxSize) {
         }
         return true;
     }
-    
+#endif
     return false;
 }
 
