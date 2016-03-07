@@ -310,9 +310,9 @@ void LKUnloadFixedBitmaps(void) {
     hBmpTarget.Release();
     hBmpMarker.Release();
     hBmpTeammatePosition.Release();
-    hAboveTerrainBitmap.Release();
 
 #ifdef HAVE_HATCHED_BRUSH
+    hAboveTerrainBitmap.Release();
     std::for_each(std::begin(hAirspaceBitmap), std::end(hAirspaceBitmap), std::bind(&LKBitmap::Release, _1));
 #endif
 

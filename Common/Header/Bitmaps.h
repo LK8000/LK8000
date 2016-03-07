@@ -80,9 +80,10 @@ BEXTMODE LKIcon hBmpThermalSource;
 BEXTMODE LKIcon hBmpTarget;
 BEXTMODE LKIcon hBmpMarker;
 BEXTMODE LKIcon hBmpTeammatePosition;
-BEXTMODE LKBitmap hAboveTerrainBitmap;
+
 
 #ifdef HAVE_HATCHED_BRUSH
+BEXTMODE LKBitmap hAboveTerrainBitmap;
 BEXTMODE LKBitmap hAirspaceBitmap[NUMAIRSPACEBRUSHES];
 #endif
 
