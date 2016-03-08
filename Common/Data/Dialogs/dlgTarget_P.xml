@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmTarget" Type="Dialog" X="1" Y="1" Width="240" Height="145" Caption="_@M684_" Font="2"  Popup="1" >
+  <WndForm Name="frmTarget" Type="Dialog" X="1" Y="1" Width="240" Height="145" Caption="_@M684_" Font="2"  Popup="1" Modal="0">
     <WndButton  Name="btnOK" Caption="OK" X="2" Y="2" Width="50"  Height="22" Font="2" OnClickNotify="OnOKClicked" Tag="1"/>
     <WndProperty Name="prpTaskPoint" Caption="_@M689_" X="55" Y="2"   Width="180" Height="22" CaptionWidth="60" Font="2" Help="_@H460_">
       <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnTaskPointData"/>
