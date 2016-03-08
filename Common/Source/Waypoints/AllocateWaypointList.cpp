@@ -12,10 +12,15 @@
 #include <exception>
 
 
-bool AddWaypoint(WAYPOINT&& Waypoint) {
+bool AddWaypoint(WAYPOINT& Waypoint) {
     
     try {
         WayPointList.push_back(Waypoint);
+        // WAYPOINT struct contains pointer to malloc string,
+        // ownership of this string is transfered to WayPointList
+        // Reset all content by security 
+        Waypoint = {0};
+
     } catch (std::exception& e) {
         StartupStore(_T("FAILED! <%s>%s"), e.what(), NEWLINE);
         MessageBoxX(gettext(TEXT("_@M486_")), // "Not Enough Memory For Waypoints"

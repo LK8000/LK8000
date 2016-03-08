@@ -62,7 +62,7 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         #endif
 
         new_waypoint.FileNum=-1; // HERE WE SET THE FLAG FOR "DO NOT SAVE TO WAYPOINT FILE"
-        if(AddWaypoint(std::move(new_waypoint))) {
+        if(AddWaypoint(new_waypoint)) {
             waypoint_index = WayPointList.size() -1;
         }
     }

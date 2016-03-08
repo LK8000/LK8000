@@ -830,7 +830,7 @@ static void OnWaypointNewClicked(WndButton* pWnd){
 
   if (_tcslen(edit_waypoint.Name)>0) {
     LockTaskData();
-    if(AddWaypoint(std::move(edit_waypoint))) {
+    if(AddWaypoint(edit_waypoint)) {
       waypointneedsave = true;
     } 
     UnlockTaskData();

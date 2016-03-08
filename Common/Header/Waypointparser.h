@@ -26,7 +26,7 @@ void WaypointAltitudeFromTerrain(WAYPOINT* wpt);
 double AltitudeFromTerrain(double Lat, double Lon);
 void UpdateTargetAltitude(TASK_POINT& TskPt);
 
-bool AddWaypoint(WAYPOINT&& waypoint);
+bool AddWaypoint(WAYPOINT& waypoint);
 int FindMatchingWaypoint(WAYPOINT *waypoint);
 int FindMatchingAirfield(WAYPOINT *waypoint);
 int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield);

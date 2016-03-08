@@ -3096,7 +3096,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   edit_waypoint.Details = 0;
   edit_waypoint.Number = WayPointList.size();
   
-  AddWaypoint(std::move(edit_waypoint));
+  AddWaypoint(edit_waypoint);
 
   UnlockTaskData();
 }
