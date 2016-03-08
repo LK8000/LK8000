@@ -456,8 +456,11 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilenam
       X=0;
       Y=0;
     }
+    
+    LPCTSTR szModal = xNode.getAttribute(_T("Modal"));
+    const bool bModal = (!szModal || _tcscmp(szModal, _T("1")) == 0);
 
-    theForm = new WndForm(Name, sTmp, X, Y, Width, Height);
+    theForm = new WndForm(Name, sTmp, X, Y, Width, Height, bModal);
 
     if (Font != -1)
       theForm->SetTitleFont(FontMap[Font]);

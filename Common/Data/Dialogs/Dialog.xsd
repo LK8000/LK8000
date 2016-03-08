@@ -61,6 +61,8 @@
   <xs:attribute name="Name" type="string64" />
   <xs:attribute name="CaptionWidth" type="xs:integer" />
   <xs:attribute name="Caption" type="string128" />
+  <xs:attribute name="Modal" type="enumBool" />
+  
   <xs:element name="WndProperty">
     <xs:complexType mixed="true">
       <xs:choice>
@@ -148,6 +150,7 @@
       <xs:attribute ref="Font" use="required"/>
       <xs:attribute ref="Caption"/>
       <xs:attribute ref="BackColor"/>
+      <xs:attribute ref="Modal"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="WndButton">

@@ -836,6 +836,8 @@ class WndForm:public WindowControl{
     WindowControl *mClientWindow;
     RECT mClientRect;
     RECT mTitleRect;
+    
+    bool mModal;
 
     OnTimerNotify_t mOnTimerNotify;
     OnKeyDownNotify_t mOnKeyDownNotify;
@@ -845,11 +847,10 @@ class WndForm:public WindowControl{
 
   public:
 
-    WndForm(const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height);
+    WndForm(const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, bool Modal = true);
     ~WndForm(void);
     virtual void Destroy(void);
 
-    bool bLButtonDown; //RLD
     WindowControl* GetClientArea() { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
 	virtual WindowControl* GetTopOwner(void) {return(this);}
 

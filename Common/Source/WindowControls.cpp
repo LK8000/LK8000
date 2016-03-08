@@ -1640,16 +1640,16 @@ void InitWindowControlModule(void){
 }
 
 WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption, 
-                 int X, int Y, int Width, int Height):
-  WindowControl(NULL, Name, X, Y, Width, Height, false) {
+                 int X, int Y, int Width, int Height, bool Modal)
+        : WindowControl(NULL, Name, X, Y, Width, Height, false)
+        , mModal(Modal) 
+{
 
   mClientWindow = NULL;
   
   mOnTimerNotify = NULL;
   mOnKeyDownNotify = NULL;
   mOnKeyUpNotify = NULL;
-
-  bLButtonDown= false; 
 
   mColorTitle = RGB_MENUTITLEBG;
 
@@ -1724,10 +1724,10 @@ int WndForm::ShowModal(void) {
 #endif
     Event event;
     while (mModalResult == 0 && loop.Get(event)) {
-        if (!MainWindow.FilterEvent(event, this)) {
+        if (mModal && !MainWindow.FilterEvent(event, this)) {
             continue;
         }
-
+        
         if (event.IsKeyDown()) {
 #ifndef WIN32
             Window* w = GetFocusedWindow();
