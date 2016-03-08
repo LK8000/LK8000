@@ -41,8 +41,6 @@ static int NoAirspace = 0;
 static void UpdateList(void) {
     wMultiSelectListList->ResetList();
     wMultiSelectListList->Redraw();
-
-    wMultiSelectListListEntry->SetFocus();
 }
 
 static int DrawListIndex = 0;
