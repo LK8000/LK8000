@@ -656,10 +656,6 @@ protected:
     virtual void OnSetFocus();
     virtual void OnKillFocus();
 
-    virtual void OnDestroy() {
-        Close();
-        WndCtrlBase::OnDestroy();
-    }
     virtual bool OnClose() {
         Close();
         return true;
@@ -857,8 +853,8 @@ class WndForm:public WindowControl{
     void AddClient(WindowControl *Client);
 
     void Close(void){
-      WindowControl::Close();
       mModalResult = mrCancel;
+      WindowControl::Close();
     }
 
     PeriodClock enterTime;
@@ -909,6 +905,11 @@ protected:
         if(mOnTimerNotify) {
             mOnTimerNotify();
         }
+    }
+    
+    virtual void OnDestroy() {
+        mModalResult = mrCancel;
+        WndCtrlBase::OnDestroy();
     }
 };
 
