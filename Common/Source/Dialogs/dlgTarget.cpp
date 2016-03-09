@@ -196,6 +196,9 @@ static void MoveTarget(double target_longitude, double target_latitude) {
   UnlockTaskData();
 }
 
+//
+// This is working only with real keypresses, not with touch screen
+//
 static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
     switch (KeyCode & 0xffff) {
         case '2':
@@ -212,7 +215,6 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
             return true;
     }
     if (TargetMoveMode) {
-        StartupStore(TEXT("... moving%s"), NEWLINE);
         switch (KeyCode & 0xffff) {
             case KEY_UP:
                 MoveTarget(0);

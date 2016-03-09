@@ -16,7 +16,7 @@
 bool MapWindow::WaypointInTask(int ind) {
   bool retval = false;
   LockTaskData();
-  if ((ind<0)||(ind>=(int)WayPointList.size())) {
+  if ((ind>=0)&&(ind<(int)WayPointList.size())) {
     retval = WayPointList[ind].InTask;
   }
   UnlockTaskData();
