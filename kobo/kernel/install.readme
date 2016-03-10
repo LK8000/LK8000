@@ -1,0 +1,46 @@
+=======================================
+information about kobo usb host support
+=======================================
+
+kobo usb can't work in dual role, so we need custom kernel for usb host.
+if usb host kernel is used, usb device mode don't work, so PC connection can work only after reboot to Nickel (auto kernel switch).
+
+
+=======================================
+compatible device
+=======================================
+
+officialy tested & supported:
+    - kobo Mini
+    - kobo GloHD
+    - kobo Touch 2.0
+
+not tested and not officaly compatible, but probably compatible:
+    - kobo Glo
+    - kobo Touch
+
+All other model are not compatible, so don't try if you don't want brick your device.
+
+
+=======================================
+How To install
+=======================================
+
+for kobo Mini ( Glo and touch ) :
+
+  - copy "uImage-mx50-ntx" into "LK8000/kobo/" folder of your device
+  - reboot your device
+  - connect USB/rs232 converteur and external battery to usb port using OTG Y cable.
+  - go to Device Config, chose ttyUSB0 ComPort and choose right Speed for you external device.
+
+
+for kobo GloHD and kobo Touch 2 : 
+
+  - copy "uImage-mx6sl-ntx" into "LK8000/kobo/" folder of your device
+  - reboot your device
+  - connect USB/rs232 converteur and external battery to usb port using OTG Y cable.
+  - go to Device Config, chose ttyUSB0 ComPort and choose right Speed for you external device.
+
+
+kernel binary are available here ( click on "View Raw" for download file ) :
+  https://github.com/LK8000/LK8000/tree/master/kobo/kernel
