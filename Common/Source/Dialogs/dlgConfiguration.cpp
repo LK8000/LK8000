@@ -62,43 +62,47 @@ typedef struct {
     bool CopyPaste;
 } ConfigPageNames_t;
 
+/* 
+ * carefull : if order change, check all "config_page" array use...
+ *    like "OnInfoBoxHelp", "page2mode" and "InfoBoxPropName" function
+ */
 const ConfigPageNames_t ConfigPageNames[4][25] = {
     { // config system
-        { _T("frmSite"),                _T("_@M10_"), false }, // "1 Site"
-        { _T("frmAirspace"),            _T("_@M22_"), false }, // "2 Airspace"
-        { _T("frmDisplay"),             _T("_@M28_"), false }, // "3 Map Display" 
-        { _T("frmTerrain"),             _T("_@M32_"), false },	// "4 Terrain Display" 
-        { _T("frmFinalGlide"),          _T("_@M33_"), false }, // "5 Glide Computer" 
-        { _T("frmSafety"),              _T("_@M34_"), false },	// "6 Safety factors" 
-        { _T("frmUnits"),               _T("_@M38_"), false },	// "9 Units" 
-        { _T("frmInterface"),           _T("_@M11_"), false },	// "10 Interface" 
-        { _T("frmAppearance"),          _T("_@M12_"), false },	// "11 Appearance" 
-        { _T("frmFonts"),               _T("_@M13_"), false },	// "12 Fonts" 
-        { _T("frmVarioAppearance"),     _T("_@M14_"), false },	// "13 Map Overlays " 
-        { _T("frmTask"),                _T("_@M15_"), false },	// "14 Task" 
-        { _T("frmAlarms"),              _T("_@M1646_"), false },//"15 Alarms"
-        { _T("frmInfoBoxCruise"),       _T("_@M18_"), true }, // "16 InfoBox Cruise" 
-        { _T("frmInfoBoxCircling"),     _T("_@M19_"), true }, // "17 InfoBox Thermal" 
-        { _T("frmInfoBoxFinalGlide"),   _T("_@M20_"), true },	// "18 InfoBox Final Glide" 
-        { _T("frmInfoBoxAuxiliary"),    _T("_@M21_"), true },	// "19 InfoBox Auxiliary" 
-        { _T("frmLogger"),              _T("_@M24_"), false },	// "20 Logger" 
-        { _T("frmWaypointEdit"),        _T("_@M25_"), false },	// "21 Waypoint Edit" 
-        { _T("frmSpecials1"),           _T("_@M26_"), false }, // "22 System" 
-        { _T("frmSpecials2"),           _T("_@M27_"), false },	// "23 Paragliders/Delta specials" 
-        { _T("frmEngineering1"),        _T("24 Engineering Menu 1"), false },
-        { _T("frmEngineering2"),        _T("25 Engineering Menu 1"), false },
+      /*0 */  { _T("frmSite"),                _T("_@M10_"), false },  // "1 Site"
+      /*1 */  { _T("frmAirspace"),            _T("_@M22_"), false },  // "2 Airspace"
+      /*2 */  { _T("frmDisplay"),             _T("_@M28_"), false },  // "3 Map Display" 
+      /*3 */  { _T("frmTerrain"),             _T("_@M32_"), false },  // "4 Terrain Display" 
+      /*4 */  { _T("frmFinalGlide"),          _T("_@M33_"), false },  // "5 Glide Computer" 
+      /*5 */  { _T("frmSafety"),              _T("_@M34_"), false },  // "6 Safety factors" 
+      /*6 */  { _T("frmUnits"),               _T("_@M38_"), false },  // "9 Units" 
+      /*7 */  { _T("frmInterface"),           _T("_@M11_"), false },  // "10 Interface" 
+      /*8 */  { _T("frmAppearance"),          _T("_@M12_"), false },  // "11 Appearance" 
+      /*9 */  { _T("frmFonts"),               _T("_@M13_"), false },  // "12 Fonts" 
+      /*10*/  { _T("frmVarioAppearance"),     _T("_@M14_"), false },  // "13 Map Overlays " 
+      /*11*/  { _T("frmTask"),                _T("_@M15_"), false },  // "14 Task" 
+      /*12*/  { _T("frmAlarms"),              _T("_@M1646_"), false },// "15 Alarms"
+      /*13*/  { _T("frmInfoBoxCruise"),       _T("_@M18_"), true },   // "16 InfoBox Cruise" 
+      /*14*/  { _T("frmInfoBoxCircling"),     _T("_@M19_"), true },   // "17 InfoBox Thermal" 
+      /*15*/  { _T("frmInfoBoxFinalGlide"),   _T("_@M20_"), true },	  // "18 InfoBox Final Glide" 
+      /*16*/  { _T("frmInfoBoxAuxiliary"),    _T("_@M21_"), true },	  // "19 InfoBox Auxiliary" 
+      /*17*/  { _T("frmLogger"),              _T("_@M24_"), false },  // "20 Logger" 
+      /*18*/  { _T("frmWaypointEdit"),        _T("_@M25_"), false },  // "21 Waypoint Edit" 
+      /*19*/  { _T("frmSpecials1"),           _T("_@M26_"), false },  // "22 System" 
+      /*20*/  { _T("frmSpecials2"),           _T("_@M27_"), false },  // "23 Paragliders/Delta specials" 
+      /*21*/  { _T("frmEngineering1"),        _T("24 Engineering Menu 1"), false },
+      /*22*/  { _T("frmEngineering2"),        _T("25 Engineering Menu 1"), false },
     }, 
     { // config Pilot
-    	{ _T("frmPilot"),                _T("_@M1785_"), false }, // pilot configuration
-        {},
+      /*0 */  { _T("frmPilot"),                _T("_@M1785_"), false }, // pilot configuration
+              {},
     }, 
     { // config aircraft
-    	{ _T("frmPolar"),                _T("_@M1786_"), false }, // aircraft configuration
-        {},
+      /*0 */  { _T("frmPolar"),                _T("_@M1786_"), false }, // aircraft configuration
+              {},
     },
     { // config device
-    	{ _T("frmComm"),                _T("_@M1820_"), false }, // // device configuration
-        {},
+      /*0 */  { _T("frmComm"),                _T("_@M1820_"), false }, // // device configuration
+              {},
     },
 };
 
@@ -640,8 +644,8 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 static int cpyInfoBox[10];
 
-static int page2mode(void) {
-  return config_page[configMode]-15;
+int page2mode(void) {
+  return config_page[configMode]-13;
 }
 
 

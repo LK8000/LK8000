@@ -12,8 +12,7 @@
 #include "Dialogs.h"
 
 
-extern short config_page[];
-extern short configMode;
+extern int page2mode(void);
 
 void OnInfoBoxHelp(WindowControl * Sender){
 
@@ -23,26 +22,27 @@ void OnInfoBoxHelp(WindowControl * Sender){
   TCHAR mode[20];
   TCHAR shelp[20];
 
-  switch (config_page[configMode]) {
-  case 15:
+  switch (page2mode()) {
+  case 0:
 	// LKTOKEN  _@M835_ = "cruise" 
     _tcscpy(mode,gettext(TEXT("_@M835_")));
     break;
-  case 16:
+  case 1:
 	// LKTOKEN  _@M834_ = "circling" 
     _tcscpy(mode,gettext(TEXT("_@M834_")));
     break;
-  case 17:
+  case 2:
 	// LKTOKEN  _@M836_ = "final glide" 
     _tcscpy(mode,gettext(TEXT("_@M836_")));
     break;
-  case 18:
+  case 3:
 	// LKTOKEN  _@M833_ = "auxiliary" 
     _tcscpy(mode,gettext(TEXT("_@M833_")));
     break;
   default:
 	// LKTOKEN  _@M266_ = "Error" 
     _tcscpy(mode,gettext(TEXT("_@M266_")));
+    assert(false);
     return;
   }
 
