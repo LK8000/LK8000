@@ -324,31 +324,6 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
                 }
             } // minimal movement detected
         } // mouse moved with Lbutton (dragging)
-
-        if (ValidTaskPoint(PanTaskEdit)) {
-            LockTaskData();
-            PanLongitude = WayPointList[Task[PanTaskEdit].Index].Longitude;
-            PanLatitude = WayPointList[Task[PanTaskEdit].Index].Latitude;
-
-            if ((mode.Is(Mode::MODE_PAN)) || (mode.Is(Mode::MODE_TARGET_PAN))) {
-                {
-                    if (Task[PanTaskEdit].Index != RESWP_PANPOS) {
-                        RealActiveWaypoint = Task[PanTaskEdit].Index;
-                        LKASSERT(ValidWayPoint(Task[PanTaskEdit].Index));
-                        WayPointList[RESWP_PANPOS].Latitude =
-                                WayPointList[RealActiveWaypoint].Latitude;
-                        WayPointList[RESWP_PANPOS].Longitude =
-                                WayPointList[RealActiveWaypoint].Longitude;
-                        WayPointList[RESWP_PANPOS].Altitude =
-                                WayPointList[RealActiveWaypoint].Altitude;
-
-                        Task[PanTaskEdit].Index = RESWP_PANPOS;
-                        RefreshMap();
-                    }
-                }
-            }
-            UnlockTaskData();
-        }
     }
 }
 

@@ -704,6 +704,8 @@ private:
   static double LimitMapScale(double value);
 
   static void SetTargetPan(bool dopan, int task_index, unsigned dlgSize = 0);
+  
+  static void SetPanTaskEdit(unsigned TskPoint);
 
   static double GetPanLatitude() { return PanLatitude; }
   static double GetPanLongitude() { return PanLongitude; }
