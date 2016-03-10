@@ -59,6 +59,7 @@ static constexpr struct {
   { "SN-N905", KoboModel::TOUCH },
   { "SN-613A4", KoboModel::GLO },
   { "SN-N4375", KoboModel::GLOHD },
+  { "SN-N5875", KoboModel::TOUCH2 },
 };
 
 static KoboModel
