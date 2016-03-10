@@ -499,7 +499,7 @@ static void OnCloseClicked(WndButton* pWnd){
 
 static void OnMoveClicked(WndButton* pWnd){
     wf->SetModalResult(mrOK);
-    PanTaskEdit = twItemIndex;
+    MapWindow::SetPanTaskEdit(twItemIndex);
 }
 
 static void OnStartPointClicked(WndButton* pWnd){

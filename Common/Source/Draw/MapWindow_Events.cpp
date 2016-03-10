@@ -125,9 +125,6 @@ start_search:
     } else {
         LKSound(TEXT("LK_GREEN.WAV"));
         dlgMultiSelectListShowModal();
-        if(ValidTaskPoint(PanTaskEdit)) {
-            MapWindow::Event_Pan(1);
-        }
         return true;
     }
 

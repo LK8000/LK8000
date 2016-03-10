@@ -61,6 +61,7 @@ void Shutdown(void) {
 	CloseGeoid();
 	DeInitCustomHardware();
 	LKRunStartEnd(false);
+    CloseProgressDialog();
 	return;
   }
 
@@ -181,10 +182,6 @@ void Shutdown(void) {
   WaitThreadCalculation();
 
   #if TESTBENCH
-  StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
-  #endif
-  CloseProgressDialog();
-  #if TESTBENCH
   StartupStore(TEXT(".... Close Calculations%s"),NEWLINE);
   #endif
   CloseCalculations();
@@ -196,9 +193,6 @@ void Shutdown(void) {
   StartupStore(TEXT(".... Close Windows%s"),NEWLINE);
   #endif
 
-  #if TESTBENCH
-  StartupLogFreeRamAndStorage();
-  #endif
   for (i=0;i<NUMDEV;i++) {
 	if (ComPortStatus[i]!=0) {
 		StartupStore(_T(". ComPort %d: status=%d Rx=%ld Tx=%ld ErrRx=%ld + ErrTx=%ld (==%ld)%s"), i,
@@ -220,6 +214,16 @@ void Shutdown(void) {
   StartupStore(foop);
 #endif
   StartupStore(_T("Destroy MainWindow" NEWLINE));
+  
+  #if TESTBENCH
+  StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
+  #endif
+  CloseProgressDialog();
+
+#if TESTBENCH
+  StartupLogFreeRamAndStorage();
+  #endif
+  
   MainWindow.Destroy();
 }
 

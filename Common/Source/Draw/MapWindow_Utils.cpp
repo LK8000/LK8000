@@ -263,7 +263,36 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
   }
 
 
+void MapWindow::SetPanTaskEdit(unsigned TskPoint) {
+    LockTaskData();
+    if (ValidTaskPointFast(TskPoint)) {
 
+        MapWindow::Event_Pan(1);
+
+        PanTaskEdit = TskPoint;
+        PanLongitude = WayPointList[Task[PanTaskEdit].Index].Longitude;
+        PanLatitude = WayPointList[Task[PanTaskEdit].Index].Latitude;
+
+        if ((mode.Is(Mode::MODE_PAN)) || (mode.Is(Mode::MODE_TARGET_PAN))) {
+            {
+                if (Task[PanTaskEdit].Index != RESWP_PANPOS) {
+                    RealActiveWaypoint = Task[PanTaskEdit].Index;
+                    LKASSERT(ValidWayPoint(Task[PanTaskEdit].Index));
+                    WayPointList[RESWP_PANPOS].Latitude =
+                            WayPointList[RealActiveWaypoint].Latitude;
+                    WayPointList[RESWP_PANPOS].Longitude =
+                            WayPointList[RealActiveWaypoint].Longitude;
+                    WayPointList[RESWP_PANPOS].Altitude =
+                            WayPointList[RealActiveWaypoint].Altitude;
+
+                    Task[PanTaskEdit].Index = RESWP_PANPOS;
+                    RefreshMap();
+                }
+            }
+        }
+    }
+    UnlockTaskData();
+}
 
 
 bool MapWindow::TargetMoved(double &longitude, double &latitude) {
