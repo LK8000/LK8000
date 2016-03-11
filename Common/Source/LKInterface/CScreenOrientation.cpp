@@ -70,7 +70,7 @@ unsigned short CScreenOrientation::GetSavedSetting(LPCTSTR szFileName) {
 
 bool CScreenOrientation::Save(LPCTSTR szFileName) {
     unsigned short ScreenO = GetScreenSetting();
-    if(ScreenO >=0) {
+    if(ScreenO != invalid) {
         FILE *fp = _tfopen(szFileName, _T("wb"));
         if(fp) {
             fprintf(fp, "%d", ScreenO);
@@ -112,7 +112,7 @@ unsigned short CScreenOrientation::GetScreenSetting() {
         }
     }
 #endif
-    return -1;
+    return invalid;
 }
 
 bool CScreenOrientation::SetScreenSetting(unsigned short NewO) {

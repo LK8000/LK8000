@@ -246,7 +246,7 @@ int main(int argc, char *argv[]) {
   ScreenGlobalInit InitScreen;
   SoundGlobalInit InitSound;
 
-  CScreenOrientation SaveScreen(LKGetLocalPath());
+  std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
 
   
   // This is needed otherwise LKSound will be silent until we init Globals.
@@ -662,6 +662,7 @@ _Shutdown:
   #endif
   #endif
 
+  pSaveScreen = nullptr;
 #ifdef KOBO
   extern bool RestartToNickel;
   if(RestartToNickel) {
