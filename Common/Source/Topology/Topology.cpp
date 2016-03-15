@@ -311,14 +311,6 @@ Topology::~Topology() {
 
 
 bool Topology::CheckScale(void) {
-  // Special case: all topology items are loaded ignoring their scaleThresholds
-  if (LKSW_ForceNearestTopologyCalculation) {
-	if ( scaleCategory==10|| (scaleCategory>=70 && scaleCategory<=100))
-		return true;
-	else
-		return false;
-  }
-
   if (scaleCategory==10||scaleCategory==5)
 	return (MapWindow::zoom.RealScale() <= scaleDefaultThreshold);
   else
@@ -965,33 +957,47 @@ void TopologyWriter::addPoint(double x, double y) {
 #endif // USETOPOMARKS
 // //////////////////////////////////////////////////////////////
 
-void Topology::SearchNearest(RECT rc) {
+void Topology::SearchNearest(const rectObj& bounds) {
 
   if (!shapefileopen) return;
 
-  rectObj screenRect = MapWindow::screenbounds_latlon;
+  if(msRectOverlap(&shpfile.bounds, &bounds) != MS_TRUE) {
+      return;
+  }
+  
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
     
+    std::unique_ptr<XShape> shape_tmp;
 	XShape *cshape = shpCache[ixshp];
+    if(!cshape) {
+      if((cache_mode == 1) && (msRectOverlap(&shpBounds[ixshp], &bounds) != MS_TRUE)) {
+          // if bounds is in cache and does not overlap no need to load shape;
+          continue;
+      }
+      shape_tmp.reset(addShape(ixshp));
+      cshape = shape_tmp.get();
+    }
+    
 	if (!cshape || cshape->hide || !cshape->HasLabel()) continue;    
 	const shapeObj& shape = cshape->shape;
+    
+    if(msRectOverlap(&(cshape->shape.bounds), &bounds) != MS_TRUE) {
+        continue;
+    }
 
 	switch(shape.type) {
 
 	   case(MS_SHAPE_POINT):
 
-		if (checkVisible(shape, screenRect)) {
 			for (int tt = 0; tt < shape.numlines; tt++) {
 				for (int jj=0; jj< shape.line[tt].numpoints; jj++) {
 					cshape->nearestItem(scaleCategory, shape.line[tt].point[jj].x, shape.line[tt].point[jj].y);
 				}
 			}
-		}
 		break;
 
 	   case(MS_SHAPE_LINE):
 /*
-		if (checkVisible(*shape, screenRect)) {
 			for (int tt = 0; tt < shape->numlines; tt ++) {
           
 				int minx = rc.right;
@@ -1008,13 +1014,11 @@ void Topology::SearchNearest(RECT rc) {
 
 				cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y);
 			}
-		}
 */
 		break;
       
 	   case(MS_SHAPE_POLYGON):
 
-		if (checkVisible(shape, screenRect)) {
 			for (int tt = 0; tt < shape.numlines; tt ++) {
                 // TODO : check if that is good 
                 //  it's surprising distance to Polygon are not distance to first point but
@@ -1022,8 +1026,7 @@ void Topology::SearchNearest(RECT rc) {
                 //  right implementation is in #msDistancePointToShape, but this don't use great circle ditance.
 	  			cshape->nearestItem(scaleCategory, shape.line[tt].point[0].x, shape.line[tt].point[0].y);
 			}
-		}
-		break;
+        break;
       
 	   default:
 		break;

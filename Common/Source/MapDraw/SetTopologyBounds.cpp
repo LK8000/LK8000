@@ -79,10 +79,10 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
 	recompute = true;
   }
 
-  if (recompute || force || LKSW_ForceNearestTopologyCalculation) {
+  if (recompute || force) {
 
     #if DEBUG_STB
-    StartupStore(_T("..... Run Recompute, Force=%d LKSW=%d unchanged=%d\n"),force,LKSW_ForceNearestTopologyCalculation,unchanged);
+    StartupStore(_T("..... Run Recompute, Force=%d,  unchanged=%d\n"),force,unchanged);
     #endif
 
     #if 0 // 121208

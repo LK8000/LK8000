@@ -948,10 +948,6 @@ GEXTERN bool SonarWarning_Config;
 // ---------------------------------------------------------------------------
 //
 
-// This will calculate nearest topology without painting it, for 1s only.
-// It will be automatically cleared by Terrain  DrawTopology()
-GEXTERN bool LKSW_ForceNearestTopologyCalculation GEXTFALSE;
-
 // Force freeflight restart for motorgliders
 GEXTERN bool LKSW_ForceFreeFlightRestart GEXTFALSE;
 

@@ -108,21 +108,32 @@ void WhereAmI::run(void) {
   ResetNearestTopology();
 
   LockTerrainDataGraphics();
-  // Since the topology search is made in the cache, and the cache has only items that
-  // are ok to be printed for the current scale, and we want also items for high zoom,
-  // we force high zoom and refresh. First we save current scale, of course.
-  double oldzoom=MapWindow::zoom.Scale();
-  // set a zoom level for topology visibility scan
-  MapWindow::zoom.EventSetZoom(3);
-  const ScreenProjection _Proj;
-  SetTopologyBounds(MapWindow::DrawRect, _Proj, true);
+
+  const vectorObj center = {
+      MapWindow::GetPanLongitude(),
+      MapWindow::GetPanLatitude()
+  };
+  rectObj bounds = { 
+      center.x, center.y, 
+      center.x, center.y 
+  };
+
+  for(int i = 0; i < 10; ++i) {
+      double X, Y;
+      FindLatitudeLongitude(center.y, center.x, i*360/10, 30*1000, &Y, &X );
+      bounds.minx = std::min(bounds.minx, X); 
+      bounds.maxx = std::max(bounds.maxx, X);
+      bounds.miny = std::min(bounds.miny, Y); 
+      bounds.maxy = std::max(bounds.maxy, Y);
+  }
+
 
   for (int z=0; z<MAXTOPOLOGY; z++) {
     if (TopoStore[z]) {
       // See also CheckScale for category checks! We should use a function in fact.
       if ( TopoStore[z]->scaleCategory == 10 ||
         (TopoStore[z]->scaleCategory >= 70 && TopoStore[z]->scaleCategory <=100)) {
-        TopoStore[z]->SearchNearest(MapWindow::DrawRect);
+        TopoStore[z]->SearchNearest(bounds);
       }
     }
   }
@@ -364,11 +375,6 @@ _dowp:
 
 _end:
             
-#ifndef NDEBUG
-  Poco::Thread::sleep(2000);
-#endif
-  MapWindow::zoom.EventSetZoom(oldzoom);
-  SetTopologyBounds(MapWindow::DrawRect, _Proj, true);
   UnlockTerrainDataGraphics();
 
 #ifdef ULLIS_PRIVATE_FEATURES
