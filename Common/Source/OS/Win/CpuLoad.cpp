@@ -109,15 +109,12 @@ GetCpuLoad_Singleton GetGpuLoad;
 #endif
 
 int CpuSummary() {
-#if (WINDOWSPC>0)
-  int s=((Cpu_Draw+Cpu_Calc+Cpu_PortA+Cpu_PortB)/10000);
+#if (WINDOWSPC>0 || (!PNA && PPC2003))
+  return INVALID_VALUE;
 #else
   int s = GetGpuLoad();
-  if(s == -1) { // TRUE Cpu Load invalide, use Drawing Time Instead...
-        s=((Cpu_Draw+Cpu_Calc+Cpu_PortA+Cpu_PortB)/10);
-  }
-#endif
   if (s<0 || s>999) s=INVALID_VALUE;
   return s;
+#endif
 } 
 

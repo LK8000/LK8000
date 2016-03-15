@@ -482,14 +482,6 @@ GEXTERN long ComPortErrors[NUMDEV+1];
 // Com ports hearth beats, based on LKHearthBeats
 GEXTERN unsigned ComPortHB[NUMDEV+1];
 
-// Cpu stats
-GEXTERN int Cpu_Draw;
-GEXTERN int Cpu_Calc;
-GEXTERN int Cpu_Instrument;
-GEXTERN int Cpu_PortA;
-GEXTERN int Cpu_PortB;
-GEXTERN int Cpu_Aver;
-
 GEXTERN double	NearestAirspaceHDist;
 GEXTERN double	NearestAirspaceVDist;
 GEXTERN TCHAR    NearestAirspaceName[NAME_SIZE+1];
