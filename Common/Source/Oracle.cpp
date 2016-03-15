@@ -274,7 +274,36 @@ void WhereAmI::run(void) {
 
   _tcscat(toracle,_T("\n"));
 
-  int j=FindNearestFarVisibleWayPoint(GPS_INFO.Longitude,GPS_INFO.Latitude,70000,WPT_UNKNOWN);
+
+  // find nearest turnpoint & nearest Landable  
+  unsigned idx_nearest_airport = 0;
+  unsigned idx_nearest_unknown = 0;
+  {
+    double dist_airport = std::numeric_limits<double>::max();
+    double dist_unknown = std::numeric_limits<double>::max();
+
+    for(unsigned i=NUMRESWP; i<WayPointList.size(); ++i) {
+
+        DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, 
+                      WayPointList[i].Latitude, WayPointList[i].Longitude, 
+                      &(WayPointCalc[i].Distance), &(WayPointCalc[i].Bearing));
+        
+        if(WayPointCalc[i].Distance > 70000) continue; // To Far
+
+        if(WayPointCalc[i].WpType == WPT_AIRPORT) {
+            if(WayPointCalc[i].Distance < dist_airport) {
+                dist_airport = WayPointCalc[i].Distance;
+                idx_nearest_airport = i;
+            }
+        } 
+        if(WayPointCalc[i].Distance < dist_unknown) {
+            dist_unknown = WayPointCalc[i].Distance;
+            idx_nearest_unknown = i;
+        }
+    }
+  }
+  
+  int j = idx_nearest_unknown;
   if (!ValidNotResWayPoint(j)) goto _end;
 
   found=true;
@@ -369,7 +398,7 @@ _dowp:
   if (!needmorewp) goto _end;
   if (secondwpdone) goto _end;
 
-  j=FindNearestFarVisibleWayPoint(GPS_INFO.Longitude,GPS_INFO.Latitude,70000,WPT_AIRPORT);
+  j=idx_nearest_airport;
   if (!ValidNotResWayPoint(j)) goto _end;
   secondwpdone=true;
   goto _dowp;
