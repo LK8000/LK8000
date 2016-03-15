@@ -17,7 +17,7 @@
 ///int ReadWayPointFile(HANDLE hFile);
 void ReadWayPoints(void);
 void SetHome(bool reset);
-int FindNearestWayPoint(double X, double Y, double MaxRange, bool exhaustive=false);
+int FindNearestWayPoint(double X, double Y, double MaxRange);
 int FindNearestFarVisibleWayPoint(double X, double Y, double MaxRange, short wpType);
 void CloseWayPoints(void);
 int dlgWaypointOutOfTerrain(TCHAR *Message);

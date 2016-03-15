@@ -13,8 +13,7 @@
 
 
 // This is slow, careful!
-int FindNearestWayPoint(double X, double Y, double MaxRange,
-                        bool exhaustive)
+int FindNearestWayPoint(double X, double Y, double MaxRange)
 {
   int NearestIndex = -1;
   double NearestDistance, Dist;

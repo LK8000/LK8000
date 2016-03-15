@@ -768,7 +768,7 @@ void dlgStatusShowModal(int start_page){
 
   nearest_waypoint = FindNearestWayPoint(GPS_INFO.Longitude,
                                          GPS_INFO.Latitude,
-                                         100000.0, true); // big range limit
+                                         100000.0); // big range limit
 
   UpdateValuesSystem();
   UpdateValuesFlight();
