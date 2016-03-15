@@ -15,6 +15,7 @@
 #include <iterator>
 #include <functional>
 #include "resource.h"
+#include "LKStyle.h"
 
 using namespace std::placeholders;
 
@@ -517,7 +518,7 @@ static void GetValues(void) {
 	#if 100825
 	if ( global_wpt->Format == LKW_CUP) {
 		// set normal turnpoint style
-		global_wpt->Style = 1;
+		global_wpt->Style = STYLE_NORMAL;
 	}
 	#endif
       break;
@@ -526,7 +527,7 @@ static void GetValues(void) {
 	#if 100825
 	if ( global_wpt->Format == LKW_CUP) {
 		// set airfield style
-		global_wpt->Style = 5;
+		global_wpt->Style = STYLE_AIRFIELDSOLID;
 	}
 	#endif
       break;
@@ -535,7 +536,7 @@ static void GetValues(void) {
 	#if 100825
 	if ( global_wpt->Format == LKW_CUP) {
 		// set outlanding style
-		global_wpt->Style = 3;
+		global_wpt->Style = STYLE_OUTLANDING;
 	}
 	#endif
       break;

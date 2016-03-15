@@ -14,6 +14,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "resource.h"
+#include "LKStyle.h"
 
 static WndForm *wf=NULL;
 #define WPLSEL WayPointList[SelectedWaypoint]
@@ -132,7 +133,7 @@ short dlgWayQuickShowModal(void){
   if (WPLSEL.Format == LKW_CUP) {
         TCHAR ttmp[50];
         // and it is landable
-        if ((WPLSEL.Style>1) && (WPLSEL.Style<6) ) {
+        if ((WPLSEL.Style >= STYLE_AIRFIELDGRASS) && (WPLSEL.Style <= STYLE_AIRFIELDSOLID) ) {
 
                 _stprintf(sTmp, TEXT("%s "), WPLSEL.Name);
 		if (_tcslen(sTmp)>9) {

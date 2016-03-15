@@ -16,6 +16,7 @@
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
 #include "resource.h"
+#include "LKStyle.h"
 
 static int page=0;
 static WndForm *wf=NULL;
@@ -325,7 +326,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   if (WPLSEL.Format == LKW_CUP) { 
 	TCHAR ttmp[50];
 	// and it is landable
-	if ((WPLSEL.Style>1) && (WPLSEL.Style<6) ) {
+	if ((WPLSEL.Style >= STYLE_AIRFIELDGRASS) && (WPLSEL.Style <= STYLE_AIRFIELDSOLID) ) {
 
 		_stprintf(sTmp, TEXT("%s "), WPLSEL.Name);
 		// ICAO name probably, let's print it

@@ -31,6 +31,7 @@
 #include <functional>
 #include "Sound/Sound.h"
 #include "resource.h"
+#include "LKStyle.h"
 
 using namespace std::placeholders;
 
@@ -814,7 +815,7 @@ static void OnWaypointNewClicked(WndButton* pWnd){
   edit_waypoint.Format = LKW_NEW;	// 100208
   edit_waypoint.RunwayLen = 0;
   edit_waypoint.RunwayDir = -1;
-  edit_waypoint.Style = 1; // normal turnpoint
+  edit_waypoint.Style = STYLE_NORMAL; // normal turnpoint
   edit_waypoint.Code[0]=0;
   edit_waypoint.Freq[0]=0;
   edit_waypoint.Country[0]=0;
@@ -823,10 +824,10 @@ static void OnWaypointNewClicked(WndButton* pWnd){
   // SeeYou style not correct when new waypoint created
   // This setting will override Flags when reloading the file after changes!
   if ( (edit_waypoint.Flags & AIRPORT) == AIRPORT) {
-	edit_waypoint.Style=5;  // airport
+	edit_waypoint.Style=STYLE_AIRFIELDSOLID;  // airport
   } else {
 	if ( (edit_waypoint.Flags & LANDPOINT) == LANDPOINT) {
-		edit_waypoint.Style=3;  // outlanding
+		edit_waypoint.Style=STYLE_OUTLANDING;  // outlanding
 	}
   }
   // else it is already a turnpoint

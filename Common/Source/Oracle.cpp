@@ -13,6 +13,7 @@
 #include "Topology.h"
 #include "Terrain.h"
 #include "Draw/ScreenProjection.h"
+#include "LKStyle.h"
 
 
 const TCHAR *DegreesToText(double brg) {
@@ -287,15 +288,15 @@ _dowp:
 
   TCHAR wptype[100];
   switch(WayPointList[j].Style) {
-	case 2:
-	case 4:
+	case STYLE_AIRFIELDGRASS:
+	case STYLE_GLIDERSITE:
  		_stprintf(wptype,_T("%s "), gettext(_T("_@M1720_")));	// the airfield of
 		break;
-	case 3:
+	case STYLE_OUTLANDING:
  		_stprintf(wptype,_T("%s "), gettext(_T("_@M1721_")));	// the field of
 		needmorewp=true;
 		break;
-	case 5:
+	case STYLE_AIRFIELDSOLID:
  		_stprintf(wptype,_T("%s "), gettext(_T("_@M1722_")));	// the airport of
 		break;
 	default:
