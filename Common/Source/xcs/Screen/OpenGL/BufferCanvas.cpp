@@ -160,6 +160,8 @@ BufferCanvas::Begin(Canvas &other)
     glPushMatrix();
 #endif
 
+    push_scissor = std::make_unique<GLPushScissor>();
+    
     old_translate = OpenGL::translate;
     old_size = OpenGL::viewport_size;
 
@@ -171,6 +173,7 @@ BufferCanvas::Begin(Canvas &other)
     /* configure a new viewport */
     OpenGL::SetupViewport({GetWidth(), GetHeight()});
     OpenGL::translate = {0, 0};
+    ::glDisable(GL_SCISSOR_TEST);
 
 #ifdef USE_GLSL
     glVertexAttrib4f(OpenGL::Attribute::TRANSLATE,
@@ -221,6 +224,7 @@ BufferCanvas::Commit(Canvas &other)
 
     OpenGL::translate = old_translate;
     OpenGL::viewport_size = old_size;
+    push_scissor = nullptr;
 
 #ifdef USE_GLSL
     glVertexAttrib4f(OpenGL::Attribute::TRANSLATE,

@@ -28,6 +28,8 @@ Copyright_License {
 #include "Math/Point2D.hpp"
 #include "Util/DebugFlag.hpp"
 #include "Screen/OpenGL/Surface.hpp"
+#include "Screen/OpenGL/Scope.hpp"
+#include <utils/make_unique.h>
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
 #include <stdint.h>
@@ -58,6 +60,7 @@ class BufferCanvas : public Canvas, private GLSurfaceListener {
 
   RasterPoint old_translate;
   Point2D<unsigned> old_size;
+  std::unique_ptr<GLPushScissor> push_scissor;
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
   DisplayOrientation_t old_orientation;
