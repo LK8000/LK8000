@@ -226,10 +226,64 @@ int main(int argc, char *argv[]) {
 
         #endif
     #endif
+
+    StartupStore(_T(". Compiler options:%s"),NEWLINE);
+    #ifdef ENABLE_OPENGL
+    StartupStore(_T("    + ENABLE_OPENGL%s"),NEWLINE);
+    #endif
+    #ifdef HAVE_GLES
+    StartupStore(_T("    + HAVE_GLES%s"),NEWLINE);
+    #endif
+    #ifdef USE_WAYLAND
+    StartupStore(_T("    + USE_WAYLAND%s"),NEWLINE);
+    #endif
+    #ifdef USE_X11
+    StartupStore(_T("    + USE_X11%s"),NEWLINE);
+    #endif
+    #ifdef USE_CONSOLE
+    StartupStore(_T("    + USE_CONSOLE%s"),NEWLINE);
+    #endif
+    #ifdef ENABLE_SDL
+    StartupStore(_T("    + ENABLE_SDL%s"),NEWLINE);
+    #endif
+    #ifdef USE_EGL
+    StartupStore(_T("    + USE_EGL%s"),NEWLINE);
+    #endif
+    #ifdef USE_FB
+    StartupStore(_T("    + USE_FB%s"),NEWLINE);
+    #endif
+    #ifdef USE_MEMORY_CANVAS
+    StartupStore(_T("    + USE_MEMORY_CANVAS%s"),NEWLINE);
+    #endif
+    #ifdef GREYSCALE
+    StartupStore(_T("    + GREYSCALE%s"),NEWLINE);
+    #endif
+    #ifdef DITHER
+    StartupStore(_T("    + DITHER%s"),NEWLINE);
+    #endif
+    #ifdef USE_ALSO
+    StartupStore(_T("    + USE_ALSA%s"),NEWLINE);
+    #endif
+    #ifdef USE_FREETYPE
+    StartupStore(_T("    + USE_FREETYPE%s"),NEWLINE);
+    #endif
+    #ifdef USE_FULLSCREEN
+    StartupStore(_T("    + USE_FULLSCREEN%s"),NEWLINE);
+    #endif
+    #ifdef HC_MALLOC
+    StartupStore(_T("    + HC_MALLOC%s"),NEWLINE);
+    #endif
+    #ifdef POCO_STATIC
+    StartupStore(_T("    + POCO_STATIC%s"),NEWLINE);
+    #endif
+    #ifdef INT_OVERFLOW
+    StartupStore(_T("    + INT_OVERFLOW%s"),NEWLINE);
+    #endif
+
     StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
 
-  // WE NEED TO KNOW IN RUNTIME WHEN THERE OPTIONS ARE ENABLED, EVEN WITH NO TESTBENCH!
+  // WE NEED TO KNOW IN RUNTIME WHEN THESE OPTIONS ARE ENABLED, EVEN WITH NO TESTBENCH!
   #ifndef NDEBUG
   StartupStore(TEXT(". DEBUG enabled in makefile%s"),NEWLINE);
   #endif
