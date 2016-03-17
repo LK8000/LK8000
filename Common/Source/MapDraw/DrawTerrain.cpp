@@ -533,9 +533,9 @@ public:
                             dd1 /= scale;
                             dd2 /= scale;
 
-                            int mag = (dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
+                            int mag = isqrt4(dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
                             if (mag > 0) {
-                                mag = (dd2 * sz + dd0 * sx + dd1 * sy) / isqrt4(mag);
+                                mag = (dd2 * sz + dd0 * sx + dd1 * sy) / mag;
                                 mag = max(-64, min(63, (mag - sz) * tc / 128));
                                 *imageBuf = oColorBuf[h + mag * 256];
                             } else {
