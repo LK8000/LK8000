@@ -370,13 +370,7 @@ public:
         const double ac2 = sint*InvDrawScale;
         const double ac3 = cost*InvDrawScale;
 
-        if (!terrain_minalt[TerrainRamp]) {
-            minalt = 0; //@ 101110  
-        } else {
-            minalt = TERRAIN_INVALID;
-        }
-
-        #pragma omp parallel for shared(minalt)
+        #pragma omp parallel for
         for (unsigned int iy=0; iy < iys; iy++) {
             const int y = Y0 + (iy*dtquant);
             const double ac1 = PanLatitude - y*ac3;
@@ -391,14 +385,15 @@ public:
                 // this is setting to 0 any negative terrain value and can be a problem for dutch people
                 // myhbuf cannot load negative values!
                 hDst = std::max(DisplayMap->GetField(Y, X),(short)0);
-                
-                #pragma omp critical
-                if (hDst < minalt) {
-                    minalt = hDst;
-                }
             }
         }
 
+        if (!terrain_minalt[TerrainRamp]) {
+            minalt = 0; //@ 101110  
+        } else {
+            minalt = *std::min_element(hBuf, hBuf+(ixs*iys));
+        }
+        
 
         if (TerrainRamp == 13) {
             if (!GPS_INFO.NAVWarning) {
