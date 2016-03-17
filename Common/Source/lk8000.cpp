@@ -261,8 +261,8 @@ int main(int argc, char *argv[]) {
     #ifdef DITHER
     StartupStore(_T("    + DITHER%s"),NEWLINE);
     #endif
-    #ifdef USE_ALSO
-    StartupStore(_T("    + USE_ALSO%s"),NEWLINE);
+    #ifdef USE_ALSA
+    StartupStore(_T("    + USE_ALSA%s"),NEWLINE);
     #endif
     #ifdef USE_FREETYPE
     StartupStore(_T("    + USE_FREETYPE%s"),NEWLINE);
