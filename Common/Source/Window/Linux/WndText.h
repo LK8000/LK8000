@@ -15,21 +15,56 @@
 #include "WndPaint.h"
 #include "Screen/LKColor.h"
 #include "Screen/LKBrush.h"
+#include "Screen/BufferCanvas.hpp"
 
 template<class _Base>
 class WndText : public WndPaint<_Base> {
 public:
-    WndText(const LKColor& TextColor, const LKColor& BkColor) : _TextColor(TextColor), _BkColor(BkColor), _BkBrush(BkColor) {
+    WndText(const LKColor& TextColor, const LKColor& BkColor) 
+        : _TextColor(TextColor)
+        , _BkColor(BkColor)
+        , _BkBrush(BkColor)
+#ifdef ENABLE_OPENGL
+        , _Dirty(true)
+#endif
+    {
         
     }
 
+#ifdef ENABLE_OPENGL        
+    virtual void OnCreate() {
+        WndPaint<_Base>::OnCreate();
+        _canvas.Create(this->GetSize());
+    }
+    
+    virtual void OnDestroy() {
+        WndPaint<_Base>::OnDestroy();
+        _canvas.Destroy();
+    }
+    
+    virtual void OnResize(PixelSize new_size) {
+        WndPaint<_Base>::OnResize(new_size);
+        _canvas.Resize(new_size);
+        _Dirty= true;
+    }
+
+    virtual void Invalidate() {
+        _Dirty = true;
+        WndPaint<_Base>::Invalidate();
+    }
+    
+#endif
+
+
     void SetTextColor(const LKColor& color) {
         _TextColor = color;
+        this->Invalidate();
     }
 
     void SetBkColor(const LKColor& color) {
         _BkColor = color;
         _BkBrush.Create(_BkColor);
+        this->Invalidate();
     }
     
     const LKColor& GetBkColor() const {
@@ -38,30 +73,47 @@ public:
     
     virtual void SetWndText(const TCHAR* lpszText) {
         _Text = lpszText?lpszText:_T("");
+        this->Invalidate();
     }
 
     virtual const TCHAR* GetWndText() const {
         return _Text.c_str();
     }
-
+    
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) {
-        Canvas& canvas = Surface;
         
-        PixelRect rc(0, 0, canvas.GetWidth(), canvas.GetHeight());
+#ifdef ENABLE_OPENGL        
+        if (_Dirty) {
+            this->Setup(_canvas);
+            
+            _canvas.Begin(Surface);
+#else
+            Canvas& _canvas = Surface;
+#endif
 
-        canvas.DrawFilledRectangle(rc, this->GetBkColor());
-        canvas.DrawOutlineRectangle(rc.left, rc.top, rc.right, rc.bottom, COLOR_BLACK);
+            PixelRect rc(0, 0, _canvas.GetWidth(), _canvas.GetHeight());
 
-        if (this->_Text.empty())
-          return true;
+            _canvas.DrawFilledRectangle(rc, this->GetBkColor());
+            _canvas.DrawOutlineRectangle(rc.left, rc.top, rc.right, rc.bottom, COLOR_BLACK);
 
-//        const PixelScalar padding = Layout::GetTextPadding();
-//        rc.Grow(-1);
+            if (!this->_Text.empty()) {
 
-        canvas.SetBackgroundTransparent();
-        canvas.SetTextColor(this->_TextColor);
+        //        const PixelScalar padding = Layout::GetTextPadding();
+        //        rc.Grow(-1);
 
-        canvas.DrawFormattedText(&rc, this->_Text.c_str(), this->GetTextStyle());        
+                _canvas.SetBackgroundTransparent();
+                _canvas.SetTextColor(this->_TextColor);
+
+                _canvas.DrawFormattedText(&rc, this->_Text.c_str(), this->GetTextStyle());        
+            }
+
+#ifdef ENABLE_OPENGL
+            _canvas.Commit(Surface);
+            _Dirty = false;
+        } else {
+            _canvas.CopyTo(Surface);
+        }
+#endif
         
         return true;
     }    
@@ -72,6 +124,11 @@ protected:
     LKBrush _BkBrush;
 
     std::tstring _Text;
+    
+#ifdef ENABLE_OPENGL
+    BufferCanvas _canvas;
+    bool _Dirty;
+#endif
 };
 
 #endif	/* WNDTEXT_H */
