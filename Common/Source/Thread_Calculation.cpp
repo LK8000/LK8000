@@ -13,8 +13,9 @@
 #include "TraceThread.h"
 #include "Hardware/CPU.hpp"
 
-
+#ifndef ENABLE_OPENGL
 extern bool OnFastPanning;
+#endif
 // PulseEvent is unreliable. But it does not matter anymore, since we should
 // change approach for compatibility with unix.
 
@@ -22,16 +23,20 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
     (void) nmea_info;
     (void) derived_info;
     
+#ifndef ENABLE_OPENGL    
     if (MapWindow::IsDisplayRunning()) {
         // 121028 Do not set MapDirty when we are fast panning, otherwise we shall overpass the
         // timeout (700ms) there, resulting in messy refreshes.
-        
+
         if (OnFastPanning) {
             MapWindow::RequestFastRefresh();
         } else {
             MapWindow::RefreshMap();
         }
     }
+#else
+    MapWindow::RefreshMap();
+#endif
 }
 
 

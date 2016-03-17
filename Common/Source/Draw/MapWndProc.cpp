@@ -38,7 +38,10 @@ static bool isListPage(void);
 LKColor taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
 static bool MouseWasPanMoving=false;
+
+#ifndef ENABLE_OPENGL
 bool OnFastPanning=false;
+#endif
 
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
@@ -258,12 +261,9 @@ void MapWindow::_OnDestroy() {
 void MapWindow::_OnDragMove(const POINT& Pos) {
     // Consider only pure PAN mode, ignore the rest of cases here
     if (mode.Is(Mode::MODE_PAN) && !mode.Is(Mode::MODE_TARGET_PAN)) {
-
-#ifdef ENABLE_OPENGL
-        MapDirty = true;
-#endif
-
         const ScreenProjection _Proj;
+
+#ifndef ENABLE_OPENGL
         if (PanRefreshed) {
             // if map was redrawn, we update our position as well. just like
             // we just clicked on mouse from here, like in BUTTONDOWN
@@ -274,6 +274,7 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
             // NO! This is causing false clicks passing underneath CANCEL button!
             // dwDownTime.update();
         } else {
+#endif            
             // set a min mouse move to trigger panning
             if ((abs(startScreen.x - Pos.x) + abs(startScreen.y - Pos.y))
                     > (ScreenScale + 1)) {
@@ -296,6 +297,11 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
                 ignorenext = true;
                 MouseWasPanMoving = true;
 
+#ifdef ENABLE_OPENGL
+                RefreshMap();
+            }
+#else
+                
                 // With OnFastPanning we are saying: Since we are dragging the bitmap around,
                 // forget the Redraw requests from other parts of LK, which would cause PanRefreshed.
                 // We have no control on those requests issued for example by Calc thread.
@@ -324,6 +330,7 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
                 }
             } // minimal movement detected
         } // mouse moved with Lbutton (dragging)
+#endif
     }
 }
 
@@ -346,7 +353,11 @@ void MapWindow::_OnLButtonDown(const POINT& Pos) {
 #endif
         // When we have buttondown these flags should be set off.
         MouseWasPanMoving = false;
+
+#ifndef ENABLE_OPENGL        
         OnFastPanning = false;
+#endif
+
         // After calling a menu, on exit as we touch the screen we fall back here
         if (ignorenext) {
 #ifdef DEBUG_MAPINPUT
@@ -412,7 +423,11 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         // Otherwise process virtual keys etc. as usual
         if (MouseWasPanMoving) {
             MouseWasPanMoving = false;
+
+#ifndef ENABLE_OPENGL
             OnFastPanning = false;
+#endif
+
             ignorenext = false;
             RefreshMap();
             tsDownTime.Reset(); // otherwise we shall get a fake click passthrough
