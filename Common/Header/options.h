@@ -90,7 +90,7 @@
  //#define YDEBUG       1       // Force using assert() instead of LKASSERT even if DEBUG is off. 
                                 // See above. Should not be necessary, but it is a reminder.
 
- //#define BUGSTOP	1	// STOP by LKASSERT even if the condition was managed, to show
+ #define BUGSTOP	1	// STOP by LKASSERT even if the condition was managed, to show
 				// the problem during alpha stages. 
 				// Normally these conditions should not exist
 
