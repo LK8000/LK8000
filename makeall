@@ -2,7 +2,7 @@
 start=`date`
 make clean
 #make -j 4 TARGET=PPC2002
-#make -j 4 TARGET=PPC2003
+make -j 4 TARGET=PPC2003
 make -j 4 TARGET=PNA
 make -j 4 TARGET=PC
 make -j 4 TARGET=LINUX
