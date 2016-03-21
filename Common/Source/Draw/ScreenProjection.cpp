@@ -48,7 +48,6 @@ void ScreenProjection::Screen2LonLat(const POINT& pt, double &Lon, double &Lat) 
 bool ScreenProjection::operator!=(const ScreenProjection& _Proj) const {
     if ( _Zoom != _Proj._Zoom 
             || _Origin != _Proj._Origin 
-            || _Origin != _Proj._Origin
             || fabs(_Angle - _Proj._Angle) >= 0.5 ) 
     {
         return true;
