@@ -45,7 +45,8 @@
 #define MAX_MODE 100
 #define MAX_MODE_STRING 25
 #define MAX_KEY 255
-#define MAX_EVENTS 2048
+#define MAX_EVENTS 2048  // max number of menu events items
+#define MAX_TEXT2EVENTS_COUNT  256 
 #define MAX_LABEL NUMBUTTONLABELS
 
 extern AATDistance aatdistance;
@@ -77,8 +78,8 @@ typedef struct {
   int next;       // Next in event list - eg: Macros
 } EventSTRUCT;
 
-static EventSTRUCT Events[MAX_EVENTS];	
-static int Events_count;				// How many have we defined
+static EventSTRUCT Events[MAX_EVENTS];	 // the menu events items
+static int Events_count=0;				// How many have we defined
 
 // Labels - defined per mode
 typedef struct {
@@ -125,8 +126,8 @@ typedef struct {
   const TCHAR *text;
   pt2Event event;
 } Text2EventSTRUCT;
-Text2EventSTRUCT Text2Event[256];  // why 256?
-size_t Text2Event_count;
+Text2EventSTRUCT Text2Event[MAX_TEXT2EVENTS_COUNT];
+size_t Text2Event_count=0;
 
 // Mapping text names of events to the real thing
 const TCHAR *Text2GCE[GCE_COUNT+1];
@@ -155,6 +156,9 @@ void InputEvents::readFile() {
   if (!InitONCE) {
 	#include "InputEvents_LK8000.cpp"  
 	#include "InputEvents_Text2Event.cpp"
+        #ifdef TESTBENCH
+        StartupStore(_T("... Loaded %d Text2Event (max is %d)%s"),Text2Event_count,MAX_TEXT2EVENTS_COUNT,NEWLINE);
+        #endif
     InitONCE = true;
   }
 
@@ -404,6 +408,9 @@ void InputEvents::readFile() {
     }
 	
   } // end while
+  #ifdef TESTBENCH
+  StartupStore(_T("... Loaded %d Menu Events (Max is %d)%s"),Events_count,MAX_EVENTS,NEWLINE);
+  #endif
 
   // file was ok, so save it to registry
   ContractLocalPath(szFile1);
@@ -479,6 +486,7 @@ int InputEvents::findKey(const TCHAR *data) {
 }
 
 pt2Event InputEvents::findEvent(const TCHAR *data) {
+  LKASSERT(Text2Event_count<MAX_TEXT2EVENTS_COUNT);
   for (size_t i = 0; i < Text2Event_count; i++) {
     if (_tcscmp(data, Text2Event[i].text) == 0)
       return Text2Event[i].event;
@@ -979,7 +987,8 @@ void InputEvents::processGo(int eventid) {
 
   // evnentid 0 is special for "noop" - otherwise check event
   // exists (pointer to function)
-  if (eventid) {
+  BUGSTOP_LKASSERT(eventid<=Events_count);
+  if (eventid>0 && eventid<=Events_count) {  // should be ok the =
     if (Events[eventid].event) {
       Events[eventid].event(Events[eventid].misc);
       MenuTimeOut = 0;
