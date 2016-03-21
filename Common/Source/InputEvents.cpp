@@ -2120,7 +2120,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
   if (_tcscmp(misc, TEXT("TERRCOLBACK")) == 0) {
 	if (TerrainRamp-1<0)
-		TerrainRamp=14;  
+		TerrainRamp=NUMRAMPS-1;  
 	else
 		--TerrainRamp;
 	MapWindow::RefreshMap();
