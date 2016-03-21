@@ -651,7 +651,7 @@ void Init_Fonts_2(void)
   // We need to calculate it here because it is used by other draw functions.
   // 
 
-  LKWindowSurface windowSurface;
+  LKWindowSurface windowSurface(MainWindow);
   LKBitmapSurface tmpSurface(windowSurface, 1, 1);
 
   const auto oldFont = tmpSurface.SelectObject(LK8BottomBarTitleFont);
