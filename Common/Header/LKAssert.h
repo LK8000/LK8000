@@ -9,12 +9,15 @@
 #if !defined(LKASSERT_H)
 #define LKASSERT_H
 
+#include "options.h"
 #include "MessageLog.h"
 
 #if USELKASSERT
 #if YDEBUG
+  #include <assert.h>
   #define LKASSERT(arg) assert(arg);
 #else
+  #include <stdlib.h>
   extern void MSG_ASSERTION(int line, const TCHAR *filename);
   #define LKASSERT(arg) {;if (!(arg)) {; StartupStore(_T("[ASSERT FAILURE] in %s line %d\n"),_T(__FILE__),__LINE__); MSG_ASSERTION(__LINE__,_T(__FILE__)); exit(0);}}
 #endif
