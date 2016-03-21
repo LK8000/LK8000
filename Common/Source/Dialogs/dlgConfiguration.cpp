@@ -2762,6 +2762,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M340_")));
     dfe->addEnumText(TEXT("GA Relative"));
     dfe->addEnumText(TEXT("LiteAlps"));
+    dfe->addEnumText(TEXT("Low Hills"));
     dfe->Set(TerrainRamp_Config);
     wp->RefreshDisplay();
   }

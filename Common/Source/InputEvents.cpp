@@ -2112,7 +2112,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("TERRCOL")) == 0) {
 	if (TerrainRamp+1>=NUMRAMPS)
-		TerrainRamp=0;  // 14 = NUMRAMPS -1
+		TerrainRamp=0;  // 15 = NUMRAMPS -1
 	else
 		++TerrainRamp;
 	MapWindow::RefreshMap();

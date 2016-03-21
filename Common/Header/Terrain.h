@@ -4,8 +4,7 @@
 #include "Topology.h"
 
 #define NUM_COLOR_RAMP_LEVELS 13
-// If you change NUMRAMPS, also change the InputEvent SERVICE TERRCOL 
-#define NUMRAMPS        15
+#define NUMRAMPS        16
 
 typedef struct _COLORRAMP
 {
