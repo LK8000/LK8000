@@ -95,6 +95,10 @@ public:
     void RemoveChild(Window* pWnd);
     
     virtual void OnTimer() {}
+    
+    virtual bool OnTimer(WindowTimer &timer) {
+        return _Base::OnTimer(timer);
+    }
 
     virtual void OnPaint(Canvas &canvas) {
         LKSurface Surface; 

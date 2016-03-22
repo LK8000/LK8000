@@ -203,12 +203,21 @@ endif
 ######## tools
 
 EXE		:=$(findstring .exe,$(MAKE))
+
+ifeq ($(CLANG),y)
+ CXX		:=$(TCPATH)clang++$(EXE)
+ CC		:=$(TCPATH)clang$(EXE)
+ AS		:=$(TCPATH)clang$(EXE) -c
+ STRIP		:=$(TCPATH)strip$(EXE)
+else
+ CXX		:=$(TCPATH)g++$(EXE)
+ CC		:=$(TCPATH)gcc$(EXE)
+ AS		:=$(TCPATH)as$(EXE)
+ STRIP		:=$(TCPATH)strip$(EXE)	
+endif
+
 AR		:=$(TCPATH)ar$(EXE)
-AS		:=$(TCPATH)as$(EXE)
-CXX		:=$(TCPATH)g++$(EXE)
-CC		:=$(TCPATH)gcc$(EXE)
 SIZE		:=$(TCPATH)size$(EXE)
-STRIP		:=$(TCPATH)strip$(EXE)
 WINDRES		:=$(TCPATH)windres$(EXE)
 LD		:=$(TCPATH)ld$(EXE)
 OBJCOPY		:=$(TCPATH)objcopy$(EXE)
@@ -1509,25 +1518,25 @@ $(BIN)/resource.a: $(BIN)/Resource/resource_data.o $(BIN)/Resource/resource_xml.
 $(BIN)/Resource/resource_xml.o:  $(BIN)/Resource/resource_xml.min.S
 	@$(NQ)echo "  AS     $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)$(AS) -I'$(dir $<)' $(OUTPUT_OPTION) $<
+	$(Q)$(AS) $(OUTPUT_OPTION) $<
 
 $(BIN)/Resource/resource_data.o:  $(RSCSRC)/resource_data.S
 	@$(NQ)echo "  AS     $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)$(AS) -I'$(dir $<)' $(OUTPUT_OPTION) $<
+	$(Q)$(AS) $(OUTPUT_OPTION) $<
 
 $(BIN)/Resource/resource_bmp.o:  $(BIN)/Resource/resource_bmp.png.S
 	@$(NQ)echo "  AS     $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)$(AS) -I'$(dir $<)' $(OUTPUT_OPTION) $<
+	$(Q)$(AS) $(OUTPUT_OPTION) $<
 
 $(BIN)/Resource/resource_bmp.png.S : $(RSCSRC)/resource_bmp.S $(patsubst Common/Data/Bitmaps/%.bmp,$(BIN)/Data/Bitmaps/%.png,$(BITMAP_RES))
 	@$(NQ)echo "  update $@"
-	@sed -r 's|(^.*")\.\./\.\./(Data/Bitmaps[^"]+)(.bmp)".*$$|\1\.\./\.\./\.\./$(BIN)/\2.png"|g' $< > $@
+	@sed -r 's|(^.*)Common/(Data/Bitmaps[^"]+)(.bmp).*$$|\1$(BIN)/\2.png|g' $< > $@
 
 $(BIN)/Resource/resource_xml.min.S :  $(RSCSRC)/resource_xml.S $(patsubst Common/Data/Dialogs/%.xml,$(BIN)/Data/Dialogs/%.min.xml,$(DIALOG_XML))
 	@$(NQ)echo "  update $@"
-	@sed -r 's|(^.*")\.\./\.\./(Data/Dialogs[^"]+)(.xml".*)$$|\1\.\./\.\./\.\./$(BIN)/\2.min\3|g' $< > $@
+	@sed -r 's|(^.*)Common/(Data/Dialogs[^"]+)(.xml.*)$$|\1$(BIN)/\2.min\3|g' $< > $@
 
 $(BIN)/%.rsc: $(BIN)/%.min.rc 
 	@$(NQ)echo "  WINDRES $@"

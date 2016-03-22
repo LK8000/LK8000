@@ -56,7 +56,7 @@ extern short ISINETABLE[4096];
 #if defined(__i386__) || defined(__x86_64__) || defined(__ARM_FP)
   /* x86 FPUs are extremely fast */
 inline
-constexpr unsigned int isqrt4(unsigned long val) {
+unsigned int isqrt4(unsigned long val) {
   return (unsigned)sqrtf((float)val);
 }
 #else
