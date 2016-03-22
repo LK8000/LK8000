@@ -68,7 +68,7 @@ static const int k_nAreaType[k_nAreaCount] = {
 
 
 // CAirspaceManager class attributes
-CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager::_instance);
+CAirspaceManager CAirspaceManager::_instance;
 
 // CAirspace class attributes
 #ifndef LKAIRSP_INFOBOX_USE_SELECTED 
@@ -1942,9 +1942,9 @@ int CAirspaceManager::ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], dou
                         /*********************************************************************/
                         airspacetype[iSelAS].psAS = (*it);
                         airspacetype[iSelAS].iType = (*it)->Type();
-                        if (airspacetype[iSelAS].szAS_Name != NULL) {
-                            LK_tcsncpy(airspacetype[iSelAS].szAS_Name, (*it)->Name(), NAME_SIZE - 1);
-                        }
+
+                        LK_tcsncpy(airspacetype[iSelAS].szAS_Name, (*it)->Name(), NAME_SIZE - 1);
+
                         airspacetype[iSelAS].iIdx = iSelAS;
                         airspacetype[iSelAS].bRectAllowed = true;
                         airspacetype[iSelAS].bEnabled = (*it)->Enabled();
