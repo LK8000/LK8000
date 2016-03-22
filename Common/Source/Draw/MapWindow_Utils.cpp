@@ -90,7 +90,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
   static float oldzoomscale=0;
   static unsigned lasthere=0;
 
-  if (oldbounds.minx==0) goto _normal_run; // careful, bounds can be negative
+  if (oldbounds.minx==0||MapWindow::ForceVisibilityScan) goto _normal_run; // careful, bounds can be negative
 
   #if DEBUG_SCANVIS
   StartupStore(_T("OLD BOUNDS: %f %f %f %f  scale=%f\n"),oldbounds.minx, oldbounds.maxx, oldbounds.miny, oldbounds.maxy,oldzoomscale);

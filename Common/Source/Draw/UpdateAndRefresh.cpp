@@ -56,15 +56,16 @@ void MapWindow::UpdateCaches(const ScreenProjection& _Proj, bool force) {
   // map was dirtied while we were drawing, so skip slow process
   // (unless we haven't done it for 2000 ms)
 
-  if (MapWindow::ForceVisibilityScan) {
-    force = true;
-    MapWindow::ForceVisibilityScan = false;
-  }
-
   // have some time, do shape file cache update if necessary
   LockTerrainDataGraphics();
-  SetTopologyBounds(DrawRect, _Proj, force);
+  SetTopologyBounds(DrawRect, _Proj, force||MapWindow::ForceVisibilityScan);
   UnlockTerrainDataGraphics();
+  //
+  // ForceVisibilityScan is checked and actively used only here, and in ScanVisibility since v6
+  // ScanVisibility is called by SetTopologyBounds. We need to wait to clear ForceVisibility after
+  // the SetTopologyBounds(), not before.
+  //
+  MapWindow::ForceVisibilityScan = false; // and no problem if it was already false
 }
 
 
