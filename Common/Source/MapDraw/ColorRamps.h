@@ -392,8 +392,20 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {50,         0xff, 0xff, 0xff},
 #else
     {0,           0xff, 0xff, 0xff},
-    {35,           0xff, 0xff, 0xff},
+    {25,           0xff, 0xff, 0xff},
 #endif
+    {150,         0xca, 0xe7, 0xb9},    // very light green
+    {200,         0x3d, 0xb3, 0x8b},   // darker green
+    {250,         0x7f, 0xc7, 0x5c},   // green/yellow
+    {300,         0x37, 0xa0, 0x7d},   // green
+    {350,        0xf4, 0xea, 0xaf},   // yellow
+    {400,        0xdc, 0xb2, 0x82},   // yellow brown
+    {550,         0x99, 0x33, 0x00}, // brown
+    {650,        0xca, 0x8e, 0x72}, // light brown
+    {750,        0xde, 0xc8, 0xbd}, // very light brown
+    {1000,        0xe3, 0xe4, 0xe9}  // light ice
+  }
+/*
     {60,         0xca, 0xe7, 0xb9},    // very light green
     {100,         0x3d, 0xb3, 0x8b},   // darker green
     {150,         0x7f, 0xc7, 0x5c},   // green/yellow
@@ -404,7 +416,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {650,        0xca, 0x8e, 0x72}, // light brown
     {750,        0xde, 0xc8, 0xbd}, // very light brown
     {1000,        0xe3, 0xe4, 0xe9}  // light ice
-  }
+*/
 
 };
 
