@@ -88,7 +88,7 @@ const bool terrain_minalt[NUMRAMPS] = {
 	1, 	// YouSee HiContrast
 	1, 	// Obstacles
 	1, 	// Lite Alps
-        0       // Low Hills
+        1       // Low Hills
 };
 
 const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = { 
