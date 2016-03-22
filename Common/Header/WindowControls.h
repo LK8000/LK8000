@@ -629,8 +629,8 @@ class WindowControl : public WndCtrlBase {
 
     virtual WindowControl* GetClientArea(void) { return (this); }
 
-    WindowControl *GetParent(void) const {return(mOwner);};
-    virtual WindowControl *GetTopOwner(void) const {return(mTopOwner);}
+    virtual WindowControl *GetParent(void) const {return(mOwner);};
+    virtual WindowControl *GetTopOwner(void) {return(mTopOwner);}
 
     int GetTag(void){return(mTag);};
     int SetTag(int Value){mTag = Value; return(mTag);};
@@ -850,8 +850,8 @@ class WndForm:public WindowControl{
     ~WndForm(void);
     virtual void Destroy(void);
 
-    WindowControl* GetClientArea() { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
-	virtual WindowControl* GetTopOwner(void) {return(this);}
+    virtual WindowControl* GetClientArea() { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
+	virtual WindowControl* GetTopOwner(void) { return (this);}
 
     void AddClient(WindowControl *Client);
 
