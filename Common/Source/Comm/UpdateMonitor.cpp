@@ -34,6 +34,14 @@ void NMEAParser::UpdateMonitor(void)
   short invalidBaro=0;
   short validBaro=0; 
 
+  // TODO: PRINT THIS INFORMATION IN THE IGC LOG FILE, ABSOLUTELY!
+  static double oldoffset=0;
+  if (GPSAltitudeOffset!=oldoffset) {
+     StartupStore(_T(". GPS ALTITUDE OFFSET CHANGED FROM: %f TO: %f%s"),oldoffset,GPSAltitudeOffset,NEWLINE);
+     oldoffset=GPSAltitudeOffset;
+  }
+     
+
   // does anyone have GPS?
   if (nmeaParser1.gpsValid || nmeaParser2.gpsValid) {
 	if (nmeaParser1.gpsValid && nmeaParser2.gpsValid) {
