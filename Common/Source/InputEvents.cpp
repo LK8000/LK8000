@@ -157,7 +157,7 @@ void InputEvents::readFile() {
 	#include "InputEvents_LK8000.cpp"  
 	#include "InputEvents_Text2Event.cpp"
         #ifdef TESTBENCH
-        StartupStore(_T("... Loaded %d Text2Event (max is %d)%s"),Text2Event_count,MAX_TEXT2EVENTS_COUNT,NEWLINE);
+        StartupStore(_T("... Loaded %d Text2Event (max is %u)%s"),(unsigned)Text2Event_count,MAX_TEXT2EVENTS_COUNT,NEWLINE);
         #endif
     InitONCE = true;
   }
