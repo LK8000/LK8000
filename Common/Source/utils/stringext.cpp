@@ -19,6 +19,7 @@
 
 //______________________________________________________________________________
 
+#ifdef _UNICODE
 /// maximum UTF-16 code convertable through utf16toAscii[] map
 static const unsigned int maxUtf16toAscii = 0x024F;
 
@@ -619,7 +620,7 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
   'Y',  // 024E ? Latin Capital Letter Y with stroke
   'y'   // 024F ? Latin Small Letter Y with stroke
 }; // utf16toAscii[]
-
+#endif
 
 //______________________________________________________________________________
 
