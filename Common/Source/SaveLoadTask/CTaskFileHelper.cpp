@@ -501,10 +501,11 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
             return false; // non existing Waypoint
         }
         // cannot happen
-        if (it->second<0) {
+        if (!ValidWayPointFast(it->second)) {
             StartupStore(_T("... LoadTaskPoint invalid, ignored\n"));
             return false;
         }
+
         Task[idx].Index = it->second;
 
         mFinishIndex = std::max(mFinishIndex, idx);
@@ -558,10 +559,11 @@ bool CTaskFileHelper::LoadStartPoint(XMLNode node) {
             return false; // non existing Waypoint
         }
         // cannot happen, but if it happens..
-        if (it->second<0) {
+        if (!ValidWayPointFast(it->second)) {
             StartupStore(_T("... LoadStartPoint invalid, ignored\n"));
             return false;
         }
+        
         StartPoints[idx].Index = it->second;
         StartPoints[idx].Active = true;
     }
