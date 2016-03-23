@@ -956,7 +956,6 @@ class WndProperty:public WindowControl{
 
     RECT mEditRect;
 
-    FontReference mhCaptionFont;
     FontReference mhValueFont;
     int  mBitmapSize;
     int  mCaptionWidth;
