@@ -71,7 +71,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             LKASSERT((flightstats.ThermalAverage.sum_n + 1) != 0);
 #endif
             if (flightstats.ThermalAverage.sum_n == -1) {
-                flightstats.ThermalAverage.sum_n = -0.99;
+                flightstats.ThermalAverage.sum_n = 0;
             }
             av_thermal = (flightstats.ThermalAverage.y_ave
                     * flightstats.ThermalAverage.sum_n
