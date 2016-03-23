@@ -19,12 +19,14 @@
 // #define DEBUG_LOGGER	1
 
 #ifdef _UNICODE
+    #define A_RECORD                "A%s%C%C%C\r\n"
     #define HFPLTPILOT              "HFPLTPILOT:%S\r\n"
     #define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%S\r\n"
     #define HFGIDGLIDERID           "HFGIDGLIDERID:%S\r\n"
     #define HFCCLCOMPETITIONCLASS   "HFCCLCOMPETITIONCLASS:%S\r\n"
     #define HFCIDCOMPETITIONID      "HFCIDCOMPETITIONID:%S\r\n"
 #else
+    #define A_RECORD                "A%s%c%c%c\r\n"
     #define HFPLTPILOT              "HFPLTPILOT:%s\r\n"
     #define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%s\r\n"
     #define HFGIDGLIDERID           "HFGIDGLIDERID:%s\r\n"
@@ -630,7 +632,7 @@ void LoggerHeader(void)
   strAssetNumber[2]= IsAlphaNum(strAssetNumber[0]) ? strAssetNumber[2] : _T('A');
 
   sprintf(temp,
-	  "A%s%C%C%C\r\n",
+	  A_RECORD,
 	  LOGGER_MANUFACTURER,
 	  strAssetNumber[0],
 	  strAssetNumber[1],
