@@ -123,7 +123,7 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
     j++;
     dwTotalNumBytesRead++;
 
-    if((c == '\n')){
+    if(c == '\n'){
       break;
     }
 
