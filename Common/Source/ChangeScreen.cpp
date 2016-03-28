@@ -40,6 +40,10 @@ bool ScreenHasChanged(void) {
 	oldSCREENWIDTH=GetSystemMetrics(SM_CXSCREEN);
 	oldSCREENHEIGHT=GetSystemMetrics(SM_CYSCREEN);
 #endif
+
+        #ifdef TESTBENCH 
+        StartupStore(_T("... First ScreenHasChanged: %d x %d\n"),oldSCREENWIDTH, oldSCREENHEIGHT);
+        #endif
 	doinit=false;
 	return false;
   }
