@@ -328,6 +328,9 @@ bool ReplayLogger::UpdateInternal(void) {
   deltatimereal = time-timelast;
 
   if (init) {
+#if DEBUG_REPLAY
+    StartupStore(_T("........ REPLAY: UpdateInternal init\n"));
+#endif
     time_lstart = time;
     time = 0;
     deltatimereal = 0;
