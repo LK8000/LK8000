@@ -251,7 +251,7 @@ typedef struct _DERIVED_INFO
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);
 #endif
 bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-bool DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+void DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
