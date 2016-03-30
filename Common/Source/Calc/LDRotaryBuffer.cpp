@@ -18,7 +18,7 @@ char ventabuffer[200];
 FILE *fp;
 #endif
 	#if TESTBENCH
-	StartupStore(_T("... Init LDRotary\n"));
+	StartupStore(_T("... Init LDRotary @%s%s"),WhatTimeIsIt(),NEWLINE);
 	#endif
 
 	switch (AverEffTime) {
@@ -91,12 +91,13 @@ FILE *fp;
 #endif
 	if (LKSW_ResetLDRotary) {
 		#if TESTBENCH
-		StartupStore(_T("... LD ROTARY SWITCH RESET\n"));
+		StartupStore(_T("... LD ROTARY SWITCH RESET @%s%s"),WhatTimeIsIt(),NEWLINE);
 		#endif
 		LKSW_ResetLDRotary=false;
 		InitLDRotary(&rotaryLD);
 	}
 
+        // For IGC Replay, we are never OnGround, see Calc/TakeoffLanding.cpp
 	if (Calculated->OnGround) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"OnGround, ignore LDrotary\r\n");
@@ -120,6 +121,9 @@ FILE *fp;
 	}
 
 	if (distance<3 || distance>150) { // just ignore, no need to reset rotary
+                #ifdef TESTBENCH
+                StartupStore(_T("... InsertLDRotary distance error=%f @%s%s"),distance,WhatTimeIsIt(),NEWLINE);
+                #endif
 		if (errs==9) {
 #ifdef DEBUG_ROTARY
 			sprintf(ventabuffer,"Rotary reset after exceeding errors\r\n");
@@ -127,7 +131,7 @@ FILE *fp;
 				    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
 			#if TESTBENCH
-			StartupStore(_T("... LDROTARY RESET, distance errors\n"));
+			StartupStore(_T("... LDROTARY RESET, distance errors%s"),NEWLINE);
 			#endif
 			InitLDRotary(&rotaryLD);
 			errs=10; // an no more here until errs reset with valid data

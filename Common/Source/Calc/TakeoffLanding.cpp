@@ -96,6 +96,9 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	// Don't allow 'OnGround' calculations if in IGC replay mode
 	// This is creating a possible problem: there is a time when we are not
 	// OnGround and we are not Flying! Careful.
+        #ifdef TESTBENCH
+        StartupStore(_T("... We are NOT OnGround%s"),NEWLINE);
+        #endif
 	Calculated->OnGround = false;
   }
 
@@ -126,6 +129,9 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if (!SIMMODE || ReplayLogger::IsEnabled())
 		  ResetFlightStats(Basic, Calculated);
 
+                #ifdef TESTBENCH
+                StartupStore(_T("... We are Flying%s"),NEWLINE);
+                #endif
 		Calculated->Flying = true;
 
 		// For paragliders assign ff values here, because the ff is not calculated, being always true
@@ -158,6 +164,9 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	}
 	if (time_on_ground>10) {
 		Calculated->OnGround = true;
+                #ifdef TESTBENCH
+                StartupStore(_T("... We are OnGround%s"),NEWLINE);
+                #endif
 		DoAutoQNH(Basic, Calculated);
 		// Do not reset QFE after landing.
 		if (!WasFlying) QFEAltitudeOffset=ALTITUDEMODIFY*Calculated->NavAltitude;
@@ -199,6 +208,9 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			Calculated->TakeOffTime = takeofftime;
 		}
 		Calculated->Flying = false;
+                #ifdef TESTBENCH
+                StartupStore(_T("... We are NOT Flying%s"),NEWLINE);
+                #endif
 		getTakeOffPosition=true;
 	}
 
