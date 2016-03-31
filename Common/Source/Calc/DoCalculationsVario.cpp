@@ -8,23 +8,13 @@
 
 #include "externs.h"
 
+extern void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
-bool DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
-{
-  static double LastTime = 0;
-
+void DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+    
+  Vario(Basic,Calculated);
   NettoVario(Basic, Calculated);
   SpeedToFly(Basic, Calculated);
-
-  // has GPS time advanced?
-  if(Basic->Time <= LastTime)
-    {
-      LastTime = Basic->Time; 
-      return FALSE;      
-    }
-  LastTime = Basic->Time;
-
-  return true;
 }

@@ -12,7 +12,6 @@
 #include "Sideview.h"
 #include "Multimap.h"
 
-extern void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void CruiseLD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -66,7 +65,6 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   DistanceToHome(Basic, Calculated);
   DetectFreeFlying(Basic,Calculated);	// check ongoing powerless flight
   DoLogging(Basic, Calculated);
-  Vario(Basic,Calculated);
   TerrainHeight(Basic, Calculated);
   AltitudeRequired(Basic, Calculated, MACCREADY);
   DoAlternates(Basic,Calculated,TASKINDEX); 

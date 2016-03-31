@@ -15,23 +15,19 @@ void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   static double LastTime = 0;
   static double LastAlt = 0;
-  double myTime;
 
-  myTime=Basic->Time; 
-
-  if(myTime <= LastTime) {
-    LastTime = myTime;
-    LastAlt = Calculated->NavAltitude;
-  } else {
-    double Gain = Calculated->NavAltitude - LastAlt;
-    double dT = (Basic->Time - LastTime);
-    LKASSERT(dT!=0);
-    if (dT==0) dT=1;
+  const double myTime = Basic->Time; 
+  const double myAlt = Calculated->NavAltitude;
+  
+  const double dT = (myTime - LastTime);
+  if(dT > 0) {
+    const double Gain = myAlt - LastAlt;
     Calculated->GPSVario = Gain / dT;
-    LastAlt = Calculated->NavAltitude;
-    LastTime = myTime;
   }
 
+  LastTime = myTime;
+  LastAlt = myAlt;
+  
   if (!Basic->VarioAvailable || ReplayLogger::IsEnabled()) {
     Calculated->Vario = Calculated->GPSVario;
   } else {
