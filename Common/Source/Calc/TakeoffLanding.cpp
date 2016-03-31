@@ -97,7 +97,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	// This is creating a possible problem: there is a time when we are not
 	// OnGround and we are not Flying! Careful.
         #ifdef TESTBENCH
-        StartupStore(_T("... We are NOT OnGround%s"),NEWLINE);
+        if (Calculated->OnGround) StartupStore(_T("... We are NOT OnGround%s"),NEWLINE);
         #endif
 	Calculated->OnGround = false;
   }
@@ -163,10 +163,10 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	}
 	if (time_on_ground>10) {
-		Calculated->OnGround = true;
                 #ifdef TESTBENCH
-                StartupStore(_T("... We are OnGround%s"),NEWLINE);
+                if (!Calculated->OnGround) StartupStore(_T("... We are OnGround%s"),NEWLINE);
                 #endif
+		Calculated->OnGround = true;
 		DoAutoQNH(Basic, Calculated);
 		// Do not reset QFE after landing.
 		if (!WasFlying) QFEAltitudeOffset=ALTITUDEMODIFY*Calculated->NavAltitude;
