@@ -49,13 +49,15 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
     }
 
+    double netto; if (Basic->NettoVarioAvailable) netto=Basic->NettoVario; else netto=Calculated->NettoVario;
+
     // this is IAS for best Ground Glide ratio acounting current air mass ( wind / Netto vario )
-    double VOptnew = GlidePolar::STF(MACCREADY, Calculated->NettoVario, HeadWind);
+    double VOptnew = GlidePolar::STF(MACCREADY, netto, HeadWind);
 
     // apply cruises efficiency factor.
     VOptnew *= CRUISE_EFFICIENCY;
-    
-    if (Calculated->NettoVario > MACCREADY) {
+
+    if (netto > MACCREADY) {
         // this air mass is better than maccready, so don't fly at speed less than minimum sink speed adjusted for load factor
         double n = fabs((Basic->AccelerationAvailable) ? Basic->AccelZ : Calculated->Gload);
         VOptnew = max(VOptnew, GlidePolar::Vminsink() * sqrt(n));
