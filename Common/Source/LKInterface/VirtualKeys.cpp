@@ -560,6 +560,7 @@ int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode) {
     TCHAR buf[100];
     _stprintf(buf,_T("SubScreen Key: X=%d Y=%d kt=%ld vk=%d"),X,Y,keytime,vkmode);
     DoStatusMessage(buf);
+    StartupStore(_T(".... %s%s"),buf,NEWLINE);
     #endif
 
     return 0; // unmanaged keypress

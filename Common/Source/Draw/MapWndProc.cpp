@@ -27,6 +27,11 @@
 #include "Screen/LKBitmapSurface.h"
 #endif
 
+#ifdef TESTBENCH
+// USE ONLY FOR DEBUGGING PURPOSES! Normally disabled.
+// #define TRACE_KEYMISSES
+#endif
+
 #define KEYDEBOUNCE 100
 extern int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode);
 
@@ -374,6 +379,9 @@ void MapWindow::_OnLButtonDown(const POINT& Pos) {
             LKevent = LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
         }
     }
+    #ifdef TRACE_KEYMISSES
+    else StartupStore(_T(".... OnButtonDown in LockMode, keypress ignored  (pressed=%d)%s"),pressed,NEWLINE);
+    #endif
 }
 
 /*
@@ -410,6 +418,9 @@ void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
 
             }
         }
+        #ifdef TRACE_KEYMISSES
+        else StartupStore(_T(".... DoubleClick out of range, ignored. Screen is locked, pressed=%d%s"),pressed,NEWLINE);
+        #endif
     }
 }
 
@@ -543,7 +554,13 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         if (!CustomKeyHandler(CKI_BOTTOMICON)) {
                             ShowMenu();
                         }
+                        #ifdef TRACE_KEYMISSES
+                        else StartupStore(_T(".... CustomKeyHandler is CKI_BOTTOMICON%s"),NEWLINE);
+                        #endif
                     }
+                    #ifdef TRACE_KEYMISSES
+                    else StartupStore(_T(".... dwInterval<VKLONGCLICK%s"),NEWLINE);
+                    #endif
                     return;
                 }
             }
@@ -583,6 +600,9 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         MapWindow::zoom.EventScaleZoom(1);
                         return;
                     }
+                    #ifdef TRACE_KEYMISSES
+                    else StartupStore(_T(".... CustomKeyHandler is CKI TOPLEFT%s"),NEWLINE);
+                    #endif
                     MapWindow::RefreshMap();
                     return;
                 }
@@ -627,6 +647,9 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         MapWindow::zoom.EventScaleZoom(1);
                         return;
                     }
+                    #ifdef TRACE_KEYMISSES
+                    else StartupStore(_T(".... CustomKeyHandler is CKI TOPRIGHT%s"),NEWLINE);
+                    #endif
                     MapWindow::RefreshMap();
                     return;
                 }
@@ -693,6 +716,9 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
 
         if (dwInterval == 0) {
+            #ifdef TRACE_KEYMISSES
+            StartupStore(_T("... dwInterval == 0 !%s"),NEWLINE);
+            #endif
             return; // should be impossible
         }
 
@@ -785,6 +811,9 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         } else {
                             // process center key, do nothing 
                             // v5 obsoleted, should not happen
+                            #ifdef TRACE_KEYMISSES
+                            StartupStore(_T(".... ignored process center key%s"),NEWLINE);
+                            #endif
                             return;
                         }
                     }
@@ -801,11 +830,17 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
                 if (!mode.AnyPan()) {
                     // match only center screen
+                    #ifdef TRACE_KEYMISSES
+                    StartupStore(_T(".... not mode anyPan! ignored%s"),NEWLINE);
+                    #endif
                 }
                 return;
             }
         } // !TargetPan
     }
+    #ifdef TRACE_KEYMISSES
+    else StartupStore(_T(".... OnButtonUp ignored! LockModeStatus=%d pressed=%d%s"),LockModeStatus,pressed,NEWLINE);
+    #endif
 }
 
 extern void SimFastForward(void);
