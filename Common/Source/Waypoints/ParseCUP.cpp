@@ -215,7 +215,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   if ((_tcslen(pToken) == 1) && (pToken[0]==DUMCHAR))
 	Temp->RunwayDir=-1;
   else
-	Temp->RunwayDir = (int)_tcstol(pToken, NULL, 10);
+	Temp->RunwayDir = (int)AngleLimit360(_tcstol(pToken, NULL, 10));
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP RUNWAY DIRECTION=<%d>%s"),Temp->RunwayDir,NEWLINE);
   #endif
