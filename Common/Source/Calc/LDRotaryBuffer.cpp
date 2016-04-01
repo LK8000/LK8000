@@ -85,6 +85,9 @@ FILE *fp;
 //
 void InsertLDRotary(ldrotary_s *buf, double distance, NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 static unsigned short errs=0;
+#ifdef TESTBENCH
+static bool zeroerrs=true;
+#endif
 #ifdef DEBUG_ROTARY
 char ventabuffer[200];
 FILE *fp;
@@ -122,7 +125,10 @@ FILE *fp;
 
 	if (distance<3 || distance>150) { // just ignore, no need to reset rotary
                 #ifdef TESTBENCH
-                StartupStore(_T("... InsertLDRotary distance error=%f @%s%s"),distance,WhatTimeIsIt(),NEWLINE);
+                if (distance==0 && zeroerrs) {
+                   StartupStore(_T("... InsertLDRotary distance error=%f @%s%s"),distance,WhatTimeIsIt(),NEWLINE);
+                   zeroerrs=false;
+                }
                 #endif
 		if (errs==9) {
 #ifdef DEBUG_ROTARY
@@ -147,6 +153,9 @@ FILE *fp;
 		return;
 	}
 	errs=0;
+        #ifdef TESTBENCH
+        zeroerrs=true;
+        #endif
 
 _noautoreset:
 
