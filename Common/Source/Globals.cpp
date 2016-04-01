@@ -133,7 +133,7 @@ void Globals_Init(void) {
   GPSCONNECT = FALSE;
 
   time_in_flight=0;
-  time_on_ground=0;
+  time_on_ground=20; // on startup we are flying or on ground, we cant be none of them! see TakeoffLanding
   TakeOffSpeedThreshold=0.0;
 
   RUN_MODE=RUN_WELCOME;
