@@ -1863,36 +1863,45 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode& node, AIRSPACE_ALT* Alt) con
     return true;
 }
 
+
+//TCHAR sTmp[100];
+//_stprintf(sTmp, TEXT("Parse error:\r\n\"%s\"\r\nLine skipped."), p);
+//if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return false;
+//StartupStore(TEXT(". Reading OpenAIP airspace file: %s%s"), aipFile, NEWLINE);
+
+
 // Reads airspaces from an OpenAIP file
 bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
-    StartupStore(TEXT(". Reading OpenAIP airspace file%s"), NEWLINE);
-
+    StartupStore(TEXT(". Reading OpenAIP airspace file: %s%s"), aipFile, NEWLINE);
     FILE* fp = _tfopen(aipFile, TEXT("rb"));
-    if(fp == nullptr) return false;
-
+    if(fp == nullptr) {
+        StartupStore(TEXT(". Failed to open  OpenAIP airspace file%s"), NEWLINE);
+        return false;
+    }
     fseek(fp, 0, SEEK_END); // seek to end of file
     long size = ftell(fp); // get current file pointer
     fseek(fp, 0, SEEK_SET); // seek back to beginning of file
-    char* buff = (char*) calloc(size + 1, sizeof (char));
-    if(buff==nullptr) return false; ////////////////////////////////////////
+    char* buff = (char*) calloc(size + 1, sizeof(char));
+    if(buff==nullptr) return false;
     long nRead = fread(buff, sizeof (char), size, fp);
     fclose(fp);
     if(nRead != size) {
-        printf("ERRORE File non letto tutto!\n");
+        StartupStore(TEXT(". OpenAIP error: not able to read all airspace file.%s"), NEWLINE);
         free(buff);
         return false;
     }
     TCHAR* szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
     if(szXML==nullptr) {
+        StartupStore(TEXT(". OpenAIP error: not able to allocate memory to read airspace file.%s"), NEWLINE);
         free(buff);
-        return false; //////////////////////////////////////////
+        return false;
     }
     utf2TCHAR(buff, szXML, size + 1);
     free(buff);
     XMLNode rootNode = XMLNode::parseString(szXML, _T("OPENAIP"));
     free(szXML);
     if(rootNode.isEmpty()) {
-        printf("OPENAIP not found\n");
+        StartupStore(TEXT(". OpenAIP error: OPENAIP tag not found.%s"), NEWLINE);
         return false;
     }
 
@@ -1901,12 +1910,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
 
     XMLNode airspacesNode=rootNode.getChildNode(TEXT("AIRSPACES"));
     if(airspacesNode.isEmpty()) { //ERROR no AIRSPACES tag found in AIP file
-        printf("ERROR no AIRSPACES tag found in AIP file\n");
+        StartupStore(TEXT(". OpenAIP error: AIRSPACES tag not found.%s"), NEWLINE);
         return false;
     }
     int numOfAirspaces=airspacesNode.nChildNode(TEXT("ASP")); //count number of WPs in the route
     if(numOfAirspaces<1 || numOfAirspaces!=airspacesNode.nChildNode()) {
-        printf("ERRORE all'interno di AIRSPACES ci devono essere solo ASP! ed almeno uno\n");
+        StartupStore(TEXT(". OpenAIP error: expected to find only and at least one ASP tags inside AIRSPACES tag.%s"), NEWLINE);
         return false;
     }
     LPCTSTR dataStr=nullptr;
@@ -1915,9 +1924,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
         ASPnode=airspacesNode.getChildNode(i);
         if(_tcscmp(ASPnode.getName(),TEXT("ASP"))==0) {
             dataStr=ASPnode.getAttribute(TEXT("CATEGORY"));
-            if(!dataStr) { //ERROR: ASP without required parameter CATEGORY
-                printf("ERROR: ASP without required parameter CATEGORY\n");
-                return false;
+            if(dataStr==nullptr) {
+                if (MessageBoxX(TEXT("OpenAIP error: ASP tag without required parameter CATEGORY, continue?"), gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return false;
+                else continue;
             }
             size_t len=_tcslen(dataStr);
             int Type=-1;
@@ -1976,8 +1985,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
                 return false;
             }
             if(Type<0) {
-                printf("ERROR: Unknown airspace CATEGORY: %s\n", dataStr);
-                return false;
+                if (MessageBoxX(TEXT("OpenAIP error: found unknown airspace CATEGORY continue?"), gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return false;
+                else continue;
             }
 
             XMLNode node;
@@ -1986,8 +1995,10 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
             // Airspace Name
             node=ASPnode.getChildNode(TEXT("NAME"),0);
             if(node.isEmpty()) {
-                printf("Airspace NAME not found\n");
-                return false;
+                printf("\n");
+                if (MessageBoxX(TEXT("OpenAIP error: airspace NAME not found continue?"), gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return false;
+                else continue;
+
             }
             dataStr=node.getText(0);
             TCHAR Name[NAME_SIZE + 1] = {0};
@@ -2058,14 +2069,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
                     _airspaces.push_back(newairspace);
                 }
             }
-
-//_stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
-//if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return false;
-
-
         } // ASP node
     } // for each ASP
-
 
     ScopeLock guard(_csairspaces);
     StartupStore(TEXT(". Now we have %u airspaces%s"), (unsigned)_airspaces.size(), NEWLINE);
@@ -2074,14 +2079,15 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
 }
 
 void CAirspaceManager::ReadAirspaces() {
-    int fileCounter(0);
+    int fileCounter=0;
     for (TCHAR* airSpaceFile : {szAirspaceFile, szAdditionalAirspaceFile}) {
+        fileCounter++;
         TCHAR szFile[MAX_PATH] = TEXT("\0");
         _tcscpy(szFile, airSpaceFile);
         _tcscpy(airSpaceFile, _T(""));
-        bool readOk=false;
         ExpandLocalPath(szFile);
         if (_tcslen(szFile) > 0) {
+            bool readOk=false;
             LPCTSTR wextension = _tcsrchr(szFile, _T('.'));
             if (wextension != nullptr) {
                 if(_tcsicmp(wextension,_T(".txt"))==0) {
@@ -2091,13 +2097,17 @@ void CAirspaceManager::ReadAirspaces() {
                         zzip_fclose(fp);
                         readOk=true;
                     } else readOk=false;
-                } else if(_tcsicmp(wextension,_T(".aip"))==0) readOk=FillAirspacesFromOpenAIP(szFile);
+                } else if(_tcsicmp(wextension,_T(".aip"))==0) {
+                    readOk=FillAirspacesFromOpenAIP(szFile);
+                    //if(readOk) LoadSettings();
+                }
             }
-        }
-        if(readOk) { // if file was OK remember otherwise forget it
-            ContractLocalPath(szFile);
-            _tcscpy(airSpaceFile, szFile);
-        } else StartupStore(TEXT("... No airspace file %d%s"),++fileCounter, NEWLINE);
+            if(readOk) { // if file was OK remember otherwise forget it
+                ContractLocalPath(szFile);
+                _tcscpy(airSpaceFile, szFile);
+            } else StartupStore(TEXT("... Failed to read airspace file %d%s"),fileCounter, NEWLINE);
+        } else StartupStore(TEXT("... No airspace file %d%s"),fileCounter, NEWLINE);
+
     }
 
 #if ASPWAVEOFF
