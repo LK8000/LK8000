@@ -14,6 +14,9 @@
 # DEVELOPERS ADDING MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT TO PAOLO
 
 
+
+
+
 _@M1_ " Razlika"
 _@M2_ " Rastojanje"
 _@M3_ " GS"
@@ -65,7 +68,7 @@ _@M48_ "Prihvatiti"
 _@M49_ "Postoći MacCready"
 _@M50_ "Postići brzinu"
 _@M51_ "Priznato za dan?"
-_@M52_ "Priznato vreme*"
+_@M52_ "Potvrđemo vreme*"
 _@M53_ "Aktivna mapa "
 _@M54_ "Dodaj tačku 'Waypoint'"
 _@M55_ "Napredno.."
@@ -107,11 +110,13 @@ _@M90_ "Uvek korisiti MC=0"
 _@M91_ "Uvek koristi sigurnosni MC"
 _@M92_ "Cilibar"
 _@M93_ "Analize"
+# 94 REMOVED after v2.3
 _@M94_ "Animacija "
 _@M95_ "Dodaj u zadatka"
 _@M96_ "Arm start"
 _@M97_ "Arm"
 _@M98_ "Dolazna Visina"
+# 99 REMOVED after v2.3
 _@M99_ "Vrh strelice"
 _@M100_ "Pitaj"
 _@M101_ "Naznačeno vreme zadatka"
@@ -159,6 +164,7 @@ _@M142_ "Veliki grad "
 _@M143_ "Veliki put "
 _@M144_ "Crno"
 _@M145_ "Prazno!"
+# 146 REMOVED after v2.3
 _@M146_ "Blokiraj speed to fly "
 _@M147_ "Plavo jezero"
 _@M148_ "Sve (Fin+Ave)"
@@ -176,6 +182,7 @@ _@M159_ "POTVRDI idi na, PREKID zadatka?"
 _@M160_ "Račun."
 _@M161_ "Prekid"
 _@M162_ "Nemoguće prepisivanje!"
+#M163 unused, changed to CarTrek
 _@M163_ "Kola"
 _@M164_ "Kategorija "
 _@M165_ "Pravac plafona"
@@ -189,6 +196,7 @@ _@M172_ "Uvećanje kruženja ISK."
 _@M173_ "Uvećanje kruženja UKLJ."
 _@M174_ "Kružno uvećanje "
 _@M175_ "Kruženje"
+# 176 UNUSED after v2.3
 _@M176_ "Klasičan"
 _@M177_ "Bris. Smenj."
 _@M178_ "Bris. zadat."
@@ -323,6 +331,7 @@ _@M306_ "Vreme letenja"
 _@M307_ "Slobodno"
 _@M308_ "Frekf."
 _@M309_ "Drugarski kod "
+# 310 REMOVED after v2.3
 _@M310_ "Puna strelica"
 _@M311_ "Puno preklapanje"
 _@M312_ "Puno"
@@ -354,7 +363,9 @@ _@M337_ "Skrivanje jedinice "
 _@M338_ "Visina Alps"
 _@M339_ "Visina"
 _@M340_ "Visoki kontrast"
+# 341 REMOVED after v2.3
 _@M341_ "Stil visokog rezultata"
+# 342 UNUSED after v2.3
 _@M342_ "Vislji"
 _@M343_ "U (Izlaz)"
 _@M344_ "PODATAK POGLAVLJA ILI PREJAK VETAR"
@@ -365,9 +376,11 @@ _@M348_ "Ikona "
 _@M349_ "Ignoriši"
 _@M350_ "Uključeno"
 _@M351_ "InfoBox nazivi"
+# 352 REMOVED after v2.3
 _@M352_ "InfoBox mala vrednost"
 _@M353_ "InfoBox vrednost"
 _@M354_ "InfoBox nalepiti"
+# 355 REMOVED after v2.3
 _@M355_ "Infobox Geometrija"
 _@M356_ "Informacije"
 _@M357_ "Umetni 'Waypoint'"
@@ -383,6 +396,7 @@ _@M366_ "MOLIMO VAS, ZADRZITE BRZINU VETRA KONSANTNU DUŽE"
 _@M367_ "MOLIM VAS, ODRZAVAJTE VOĐSTVO DUŽE"
 _@M368_ "MOLIM VAS, ODRZAVAJTE BRZINU I VOĐSTVO DUŽE"
 _@M369_ "MOLIM VAS, ODRZAVAJTE BRZINU DUŽE"
+# 370 REMOVED after v2.3
 _@M370_ "Tastatura"
 _@M371_ "Prosecni period L/D "
 _@M372_ "Poslednja kapija je OTVORENA"
@@ -402,6 +416,7 @@ _@M385_ "Sletišta"
 _@M386_ "Vreme sletanja"
 _@M387_ "Jezik "
 _@M388_ "Levo "
+# 389 UNUSED after v2.3
 _@M389_ "Manje"
 _@M390_ "Lift "
 _@M391_ "Svetlo zeleno"
@@ -428,10 +443,12 @@ _@M411_ "Pogledaj"
 _@M412_ "Niski Alps"
 _@M413_ "Nisko zemlja"
 _@M414_ "Nisko"
+# 415 UNUSED after v2.3
 _@M415_ "Najnize"
 _@M416_ "MacCready vrednost "
 _@M417_ "Margenta"
-_@M418_ "Uputstvo"
+_@M418_ "Ručno"
+# 419 no more used after 2.3
 _@M419_ "Zaključavanje mape "
 _@M420_ "Fajl mape "
 _@M421_ "Imena na mapi ISK."
@@ -451,6 +468,7 @@ _@M434_ "Vreme Menija "
 _@M435_ "Meni"
 _@M436_ "Metrični"
 _@M437_ "Min. prop."
+# 438 UNUSED after v2.3
 _@M438_ "Više"
 _@M439_ "Planinski"
 _@M440_ "Pomeri dole"
@@ -459,6 +477,7 @@ _@M442_ "Pomeri wp dole"
 _@M443_ "Pomeri wp gore"
 _@M444_ "Pomeri"
 _@M445_ "Pomeranje"
+# 446 REMOVED after v2.3
 _@M446_ "Prozor Poruke"
 _@M447_ "Višeciljni meni"
 _@M448_ "Višeciljno rotiranje"
@@ -488,7 +507,8 @@ _@M471_ "Nema polozaja"
 _@M472_ "Nema glider-a"
 _@M473_ "Bez sletišta"
 _@M474_ "Nije dnevnik konektovan"
-_@M475_ "No overlay"
+#475 unused since 3.1i
+_@M475_ "Bez prevlačenja"
 _@M476_ "Nema zadatka"
 _@M477_ "Nema validne putanje"
 _@M478_ "Nije selektovan 'waypoint' fajl, nemoguce snimanje."
@@ -585,12 +605,13 @@ _@M568_ "Desno "
 _@M569_ "SIM"
 _@M570_ "SIMULATOR"
 _@M571_ "START"
+# 572 REMOVED after v2.3
 _@M572_ "STF rizični faktor"
 _@M573_ "ZAUSTAVI PRAZNJENJE"
 _@M574_ "Sigurni Mc "
 _@M575_ "Sigurni visinski mod "
-_@M576_ "Sigurna visina "
-_@M577_ "Sigurno zaključav. "
+_@M576_ "Bezbedna visina "
+_@M577_ "Bezbedno zaključav. "
 _@M578_ "Satelit u pogledu"
 _@M579_ "Snimi ?"
 _@M580_ "Snimi kao.."
@@ -646,7 +667,9 @@ _@M629_ "Prosečna brzina"
 _@M630_ "Procenjena brzina"
 _@M631_ "Preostala brzina"
 _@M632_ "Brzina"
+# 633 UNUSED after v2.3
 _@M633_ "Trčanje"
+# 634 UNUSED after v2.3
 _@M634_ "Standard"
 _@M635_ "Start "
 _@M636_ "Start u svakom slucaju"
@@ -723,6 +746,7 @@ _@M706_ "Fajl terena "
 _@M707_ "Visina terena "
 _@M708_ "Teren"
 _@M709_ "Teren\n ISK."
+# 710 REMOVED in v2.3
 _@M710_ "Unosni stil teksta "
 _@M711_ "Tekst:"
 _@M712_ "Termički panel "
@@ -755,6 +779,7 @@ _@M738_ "Saobracaj"
 _@M739_ "Pravac staze "
 _@M740_ "Dužina staze "
 _@M741_ "Širina staze "
+# 742 UNUSED after v2.3
 _@M742_ "Torugao"
 _@M743_ "Ispravan Tip"
 _@M744_ "TrueWind IAS "
@@ -768,6 +793,7 @@ _@M751_ "Certifikat letelice "
 _@M752_ "Tip"
 _@M753_ "NEPOZNATO! "
 _@M754_ "OTKLJUČANO"
+# Unused 755 and 756 since  v3.2 
 _@M755_ "KORIŠĆENJE SLOBODNE BARO VISINE"
 _@M756_ "KORIŠĆENJE BARO VISINE"
 _@M757_ "KORIŠĆENJE GPS VISINA"
@@ -800,6 +826,7 @@ _@M783_ "Vario crvena+plava"
 _@M784_ "Vario"
 _@M785_ "Variometar Panel "
 _@M786_ "Veoma Visoko"
+# REMOVED after v2.3
 _@M787_ "Virtuelni tasteri "
 _@M788_ "Jačina "
 _@M789_ "UPOZ."
@@ -819,11 +846,11 @@ _@M802_ "Waypoint\nSledeći"
 _@M803_ "Waypoint\nPredhodni"
 _@M804_ "Waypoint\nStart"
 _@M805_ "Waypoint fajl Parse Greska"
-_@M806_ "Tačke 1 "
-_@M807_ "Tačke 2 "
-_@M808_ "Stil teksta tačke "
-_@M809_ "Waypoints edited"
-_@M810_ "Tačka nemoguća, snimi svejedno?"
+_@M806_ "WP Tačka 1 "
+_@M807_ "WP Tačka 2 "
+_@M808_ "Stil WP tačke "
+_@M809_ "Ažuriranje WP-a"
+_@M810_ "WP tačka izuzeta, snimi svejedno?"
 _@M811_ "Tačka je izvan terena"
 _@M812_ "Vodeni proračun"
 _@M813_ "Vodeni parametri"
@@ -832,9 +859,11 @@ _@M815_ "Bela spolj.linija"
 _@M816_ "Belo"
 _@M817_ "Da li će to biti?"
 _@M818_ "Podešavanja vetra"
+# 819 REMOVED after 2.3
 _@M819_ "Strelica vetra"
 _@M820_ "Vetar po visini"
 _@M821_ "Opterecenje krila "
+# 822 REMOVED after 3.0
 _@M822_ "Winpilot"
 _@M823_ "Radna širina"
 _@M824_ "Tačka izvan terena "
@@ -922,7 +951,7 @@ _@M911_ "Pogled"
 _@M912_ "[bez destin.]"
 _@M913_ "Eksperimentalno"
 _@M914_ "[bez cilja]"
-_@M915_ "NIJE ZA KORIŠĆENJE U IFR-U"
+_@M915_ "NIJE ZA IFR KORIŠĆENJE"
 _@M916_ "UPOZORENJE, BEZ SLETANJA"
 _@M917_ "Lat/Lon "
 _@M918_ "Lat/Lon"
@@ -943,10 +972,8 @@ _@M932_ "Iznad Finalnog klizanja"
 _@M933_ "Ispod Finaklnog klizanja"
 _@M934_ "Krajnje klizanje kroz terena"
 _@M935_ "Marker očišćen"
-
-# TODO - Translate new tokens below, according to the localized manual, if available
-_@M936_ "Klasa Takničenja"
-_@M937_ "Klasa Takničenja: "
+_@M936_ "Klasa Takmičenja"
+_@M937_ "Klasa Takmičenja: "
 _@M938_ "Takmičarski ID"
 _@M939_ "Takmičarski ID: "
 _@M940_ "Popunjavanje "
@@ -954,6 +981,11 @@ _@M941_ "Samo spoljne linije"
 _@M942_ "Sare"
 _@M943_ "Polu-Providno"
 _@M944_ "Neprozirnost "
+_@M945_ "Šara, samo granične"
+_@M946_ "Semi-Transparent, samo granične"
+_@M947_ "IZGUBLJEN FLARM SIGNAL"
+_@M948_ "Pronadjen"
+_@M949_ "TP"
 _@M950_ "BottomBar neprozirnost "
 _@M951_ "Nemoguće zaustav. RX niti!"
 _@M952_ "Nemoguće pisanje podataka u Port!"
@@ -975,13 +1007,16 @@ _@M960_ "POTVRDA OTKLJUČAVANJA EKRANA?"
 _@M961_ "POTVRDA ZAKLJUČAVANJA EKRANA?"
 # 962 max 35 characters!
 _@M962_ "EKRAN JE ZAKLJUČAN DOK POLEĆETE"
+# 963 unused since 2.3
 _@M963_ "DVA KLIK-A NA EKRAN ZA NASILNO OTKLJ."
 _@M964_ "EKRAN JE OTKLJUČAN"
 #
 # Menu buttons, MAX 8 character per line! Keep \n !
 _@M965_ "OTKLJ.\nEKRANA"
 _@M966_ "ZAKLJ.\nEKRANA"
-
+_@M967_ "Promena Vazd.Prostora "
+_@M968_ "samo ovaj put"
+_@M969_ "Uporan"
 #
 # GPS and COM port warnings
 #
@@ -1010,7 +1045,7 @@ _@M1010_ "E.20s"
 _@M1011_ "Efek.krstarenje u posl. termal."
 _@M1012_ "E.Cru"
 _@M1013_ "Brzina na zemlji"
-_@M1014_ "BZ"
+_@M1014_ "GS"
 _@M1015_ "Proseč.posl. Termal"
 _@M1016_ "PT.pros"
 _@M1017_ "Poslednji termalni dobitak"
@@ -1025,7 +1060,8 @@ _@M1025_ "Sled.dolaz.Visina"
 _@M1026_ "SldDol."
 _@M1027_ "Sled.zahtev.Visina"
 _@M1028_ "SldZVis"
-_@M1029_ "Sledeći Waypoint"
+# 1029 UNUSED REMOVED
+_@M1029_ "_Rezervicano 2"
 _@M1030_ "Sledeći"
 _@M1031_ "Zadat.Zahtev.Visine"
 _@M1032_ "ZadDol"
@@ -1125,6 +1161,7 @@ _@M1125_ "AA Delta Time"
 _@M1126_ "AAdT"
 _@M1127_ "Svi Termali"
 _@M1128_ "SviTerm"
+# 1129 and 1130 unused, can be used again
 _@M1129_ "Rastojanje Vario"
 _@M1130_ "RVario"
 _@M1131_ "Procenat baterije"
@@ -1255,6 +1292,78 @@ _@M1237_ "A"
 _@M1238_ "Z"
 _@M1239_ "O"
 
+# dlgLKAirspaceWarning - Airspace warning messages
+_@M1240_ "Ulazak"
+_@M1241_ "Izlazlazak"
+_@M1242_ "Let u zoni LETENJA"
+_@M1243_ "Predviđ. izlaska iz zone LETENJA"
+_@M1244_ "Blizina izlaska iz zone LETENJA"
+_@M1245_ "Napuštanje zone LETENJA"
+_@M1246_ "Predviđ. ulaska u zonu LETENJA"
+_@M1247_ "Ulazak u zonu LETENJA"
+_@M1248_ "Let izvan zone LETENJA"
+_@M1249_ "Let izvan zone ZAB.LETENJA"
+_@M1250_ "Predviđ. ulazak u zonu ZAB.LETENJA"
+_@M1251_ "Blizina ulaska u zonu ZAB.LETENJA"
+_@M1252_ "Ulazak u zonu ZAB.LETENJA"
+_@M1253_ "Let u zoni ZAB.LETENJA"
+_@M1254_ "Napuštanje zone ZAB.LETENJA"
+_@M1255_ "ŽUTO UPOZORENJE"
+_@M1256_ "CRVENO UPOZORENJE"
+_@M1257_ "za izlazak"
+_@M1258_ "za ulazak"
+_@M1259_ "Previđe daleko, nije računato"
+_@M1260_ "ispod"
+_@M1261_ "iznad"
+_@M1262_ "Poruka"
+_@M1263_ "NivoUpoz."
+_@M1264_ "HDist"
+_@M1265_ "VDist"
+
+# dlgAirspaceDetails - Airspace details
+_@M1266_ "NivoPOTV."
+_@M1267_ "Žuta POTVRDA"
+_@M1268_ "Crvena POTVRDA"
+_@M1269_ "Izgašeno"
+_@M1270_ "LET - U"
+_@M1271_ "LET-IZVAN"
+_@M1272_ "Podešeno kao zona LETA?"
+_@M1273_ "Podešeno kao yona ZAB.LETENJA?"
+
+# dlgConfig - Airspace warnings
+_@M1274_ "Upozorenja"
+_@M1275_ "Param.upozorenja Vazd.Prostora"
+_@M1276_ "Snimljeni parametri upoz. Vazd.Prostora."
+_@M1277_ "Vreme ponavlj. poruke Vazd.Prost. "
+_@M1278_ "Vertical margin "
+_@M1279_ "Vreme isteka poruke "
+_@M1280_ "Paljenje ovog Vayd.Prostora?"
+_@M1281_ "Map labels "
+_@M1282_ "UKLJUCENO"
+_@M1283_ "ISKLJUĆENO"
+_@M1284_ "Gašenje ovog Vaz.Prostora?"
+
+# new airspace infobox
+_@M1285_ "Airspace Vertical Dist"
+_@M1286_ "ArSpcV"
+
+# airspace analysis dialog page
+_@M1287_ "Kurs"
+# 1288 UNUSED REMOVED
+_@M1288_ "Pokazivanje prema sledećem WP"
+_@M1289_ "Sledeći WP"
+# M1290 UNUSED REMOVED
+_@M1290_ "Pogled u sleru leta"
+_@M1291_ "Blizu VP"
+_@M1292_ "Najbliži Vazd.Prostor"
+_@M1293_ "SONAR"
+#1294 REMOVED UNUSED
+_@M1294_ "Sonar OFF"
+_@M1295_ "Pogled sa strane"
+_@M1296_ "Optimizer"
+_@M1297_ "FAI Start on turnpoint"
+_@M1298_ "FAI Start on leg"
+_@M1299_ "FAI Mercedes star"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1274,6 +1383,7 @@ _@M1312_ "LNDB"
 _@M1313_ "APT"
 _@M1314_ "APTS"
 _@M1315_ "TPS"
+# ASP for nearest airspaces is M1642
 
 # Reserved waypoint names, comments
 _@M1316_ "POLETANJE"
@@ -1427,3 +1537,661 @@ _@M1503_ "OLC Plus Rezultat"
 _@M1504_ "PLS Rez"
 _@M1505_ "OLC Plus*Predviđen rezultat"
 _@M1506_ "PLS*Rez"
+
+_@M1507_ "OLC FAI triangle Distance to close"
+_@M1508_ "C:"
+_@M1509_ "OLC FAI triangle Distance close %"
+_@M1510_ "%C:"
+_@M1511_ "B:"
+# #############################
+# NEW 2.4 messages
+# #############################
+
+# Device name for "no device"
+_@M1600_ "DISABLED"
+# Ex-963, new message for screen unlock
+_@M1601_ "Double-Click on Low-Right Corner to UNLOCK"
+
+# Config system menu page 
+_@M1602_ "Configure Bottom Bar"
+_@M1603_ "Configure Info Pages"
+_@M1604_ "Configure xxxx"
+_@M1605_ "Bottom Bar"
+_@M1606_ "Info Pages"
+_@M1607_ "Bottom Bar Config Saved"
+_@M1608_ "Info Pages Config Saved"
+
+# Config InfoPages
+_@M1610_ "1.1 Cruise "
+_@M1611_ "1.2 Thermal "
+_@M1612_ "1.3 Task "
+_@M1613_ "1.4 Custom "
+_@M1614_ "1.5 Contest "
+_@M1615_ "1.6 Turn "
+_@M1616_ "2.1 APT "
+_@M1617_ "2.2 LND "
+_@M1618_ "2.3 TPS "
+_@M1619_ "2.4 ASP "
+_@M1620_ "3.1 COMN "
+_@M1621_ "3.2 HIST "
+_@M1622_ "3.3 THERM "
+_@M1623_ "1.7 HSI "
+
+# New airspace messages
+_@M1630_ "Height margin "
+
+# Navboxes
+_@M1640_ "Current Flaps"
+_@M1641_ "Flaps"
+
+# Header nearest Airspaces
+_@M1642_ "ASP"
+
+_@M1643_ "ENABLED"
+
+_@M1644_ "Home Alt.Arrival"
+_@M1645_ "HomeArr"
+
+# Menu Config 15, Alarms
+_@M1646_ "15 Alarms"
+_@M1647_ "Maks. Visina 1 "
+_@M1648_ "Maks. Visina 2 "
+_@M1649_ "Maks. Visina 3 "
+
+# "ALARM x ALTITUDE 1234"   warning message
+_@M1650_ "ALARM"
+_@M1651_ "VISINA"
+
+# customkey for airspace analysis
+_@M1652_ "Analiza Vazd.Prostora"
+_@M1653_ "Isključi Mapu<>InfoStr. Vaz.Pros."
+
+# Airspace details buttons
+_@M1654_ "OZNAČITI"
+_@M1655_ "ANALIZA"
+_@M1656_ "*ODZNAČITI*"
+
+# customkeys zoom 
+_@M1657_ "Zumiraj"
+_@M1658_ "Odzumiraj"
+_@M1659_ "Zumiraj JOŠ"
+_@M1660_ "Odzumiraj JOŠ"
+
+# Active map indicator in map scale (with AZM, NAV1 etc.), 3 letters!
+_@M1661_ "ACT"
+
+# Error message
+_@M1662_ "GREŠKA U SISTEMU"
+_@M1663_ "NEMA VIŠE MEMORIJE"
+
+# Total energy configuration 
+# Toggle is for customkey config
+_@M1666_ "Prebaci na UKUP.ENERGIJU"
+_@M1667_ "UKUP.ENERGIJA SE KORISTI!"
+_@M1668_ "UKUP.ENERGIJA SE NE KORISTI"
+_@M1669_ "Koristi UKUP.ENERGIJU "
+
+# Header Thermal History keep short!
+_@M1670_ "THR"
+# average lift 
+_@M1671_ "ThAvg"
+_@M1672_ "Thermal Details"
+_@M1673_ "Avg"
+
+# Auto MC configuration
+_@M1674_ "Auto Mc "
+# Menu buttons MacCready, keep very short! - F C E are the overlay indicators
+# Fin Th Equ  are fron button shortcuts, max 3 letters!
+_@M1675_ "Final"
+_@M1676_ "F"
+_@M1677_ "ThAll"
+_@M1678_ "T"
+_@M1679_ "Equiv"
+_@M1680_ "E"
+_@M1681_ "Fin"
+_@M1682_ "Th"
+_@M1683_ "Eq"
+# Change 118 average climb with average thermal
+_@M1684_ "Average thermal (Th.All)"
+# Change 148 with 1685
+_@M1685_ "Both Final+Average"
+
+# Optimized routes for paraglider
+_@M1686_ "Optimized route "
+_@M1687_ "Optimized route toggle"
+
+# Customkey name
+_@M1688_ "Screen Lock"
+_@M1689_ "Oracle"
+
+# ORACLE
+_@M1690_ "THE LK8000 ORACLE"
+_@M1691_ "THE ORACLE IS THINKING"
+_@M1692_ "PLEASE WAIT..."
+
+# Customkey
+_@M1693_ "Change+ Terrain Colors"
+
+# Safety Altitude indicator on overlay
+_@M1694_ "+ SAFETY"
+
+#infobox Logger status
+_@M1695_ "Logger"
+# max 3-4 chars!
+_@M1696_ "auto"
+
+# PG autozoom threshold on config page 23
+_@M1697_ "Autozoom threshold "
+
+#Multitarget bearing infobox
+_@M1698_ "Multitarget Bearing"
+_@M1699_ "BrgMtg"
+
+# Logger status
+_@M1700_ "ON"
+_@M1701_ "no"
+
+# dialogs for The Oracle
+_@M1702_ "ORACLE WANTS GPS FIX"
+_@M1703_ "North"
+_@M1704_ "North-East"
+_@M1705_ "East"
+_@M1706_ "South-East"
+_@M1707_ "South"
+_@M1708_ "South-West"
+_@M1709_ "West"
+_@M1710_ "North-West"
+# 3km south-west of ..
+_@M1711_ "of"
+_@M1712_ "Near"
+_@M1713_ "Over"
+_@M1714_ "the city"
+# 2km South of the city
+_@M1715_ "of the city"
+_@M1716_ "Over the city"
+# over the city and (lake)
+_@M1717_ "and"
+# 2km south of city , over (lake)
+_@M1718_ "over"
+_@M1719_ "near to"
+# grass airport, small airport
+_@M1720_ "the airfield of"
+# outlanding field, not an airport/airfield
+_@M1721_ "the field of"
+_@M1722_ "the airport of"
+_@M1723_ "Near to"
+_@M1724_ "YOUR POSITION:"
+_@M1725_ "VERY SORRY"
+_@M1726_ "YOUR POSITION IS UNKNOWN!"
+# 1727-1739 reserved for The Oracle
+_@M1740_ "OLC analysis"
+_@M1741_ "FULL RESET LK8000 PROFILES!"
+_@M1742_ "AGL:"
+_@M1743_ "ELV:"
+# this was the old V rough air. Leave a trailing space!
+_@M1744_ "Max Speed "
+# new startup profile buttons
+_@M1745_ "AIRCRAFT"
+_@M1746_ "SYSTEM"
+# new button caption on task overview dialog, appears only in PG/HG mode
+_@M1747_ "Time Gates"
+_@M1748_ "Logbook"
+_@M1749_ "File not found"
+_@M1750_ "Empty"
+_@M1751_ "CONFIRM FLIGHT BOOK RESET?"
+_@M1752_ "FLIGHT BOOK RESET"
+_@M1753_ "List of flights"
+_@M1754_ "Free Flight start"
+_@M1755_ "Towing"
+_@M1756_ "PILOT"
+_@M1757_ "LK8000 PROFILES RESET"
+_@M1758_ "THIS WOULD RESET ALL PROFILES TO FACTORY DEFAULTS"
+_@M1759_ "SELECTED IN SYSTEM"
+
+#
+# These are new infoboxes:
+_@M1761_ "Alternate1 bearing"
+_@M1762_ "Alternate2 bearing"
+_@M1763_ "BestAlternate bearing"
+_@M1764_ "Alternate1 distance"
+_@M1765_ "Alternate2 distance"
+_@M1766_ "BestAlternate distance"
+_@M1767_ "Max Altitude reached"
+_@M1768_ "MaxAlt"
+_@M1769_ "Max Height gained"
+_@M1770_ "Hgain"
+_@M1771_ "Head Wind speed"
+_@M1772_ "HdWind"
+# Customkey
+_@M1774_ "Change- Terrain Colors"
+
+# New AverEfficiency intervals
+_@M1775_ "3 seconds"
+_@M1776_ "5 seconds"
+_@M1777_ "10 seconds"
+_@M1778_ "45 seconds"
+
+# New livetracker configuration
+_@M1779_ "Live tracker log interval "
+_@M1780_ "User"
+_@M1781_ "Password"
+_@M1782_ "LT Server"
+
+# configuration SETUP save 
+_@M1783_ "Aircraft Profiles"
+_@M1784_ "Pilot Profiles"
+# page names
+_@M1785_ "Pilot configuration"
+_@M1786_ "Aircraft configuration"
+
+# Page names in configuration
+_@M1787_ "Custom Menu"
+_@M1788_ "Configure Custom Menu"
+
+_@M1789_ "Delete task file"
+_@M1790_ "No task file to delete"
+
+# Customkey configuration item
+_@M1791_ "Arm toggle advance"
+
+# configuration PG/Hg specials
+_@M1792_ "Quick gestures "
+
+# Wind mode configuration, "External" (from external instrument)
+_@M1793_ "External"
+
+# Safety takeoff alarm
+_@M1794_ "Takeoff safety "
+
+# Replacing 120, 755 and 756
+_@M1795_ "BARO ALTITUDE IS AVAILABLE"
+_@M1796_ "USING BARO ALTITUDE"
+
+# Replacing 822
+_@M1797_ "Vector"
+
+_@M1798_ "Arm TPs"
+_@M1799_ "Stop moving!"
+
+_@M1800_ "no trace"
+_@M1801_ "climb trace"
+_@M1802_ "climb/sink trace"
+_@M1803_ "Head Up"
+_@M1804_ "Head Right"
+_@M1805_ "Line+NextWP"
+_@M1806_ "Shade+NextWP"
+_@M1807_ "_Reserved 2"
+_@M1808_ "Loading FLARMNET database"
+
+# Trip computer, Infobox title, max 6-7 chars
+_@M1809_ "Moving"
+_@M1810_ "Steady"
+_@M1811_ "Total"
+_@M1812_ "Chrono"
+
+# New virtual waypoints
+_@M1813_ "FAI CLOSE"
+_@M1814_ "FREEFLY"
+# 1815 can be changed anytime, do not reuse!
+_@M1815_ "UNUSED"
+_@M1816_ "FAI closing point"
+_@M1817_ "out and return closing point"
+
+# profile button, keep short!
+_@M1818_ "DEVICE"
+# configuration SETUP save 
+_@M1819_ "Device Profiles"
+# page name
+_@M1820_ "Device configuration"
+# Bottom bar configuration button
+_@M1821_ "AUTO"
+_@M1822_ "Configure Multimaps"
+// leave a space after Ack
+_@M1823_ "Group Ack "
+
+// Task buttons (keep SHORT text!)
+_@M1824_ "Insert as START"
+_@M1825_ "Insert before"
+_@M1826_ "Replace"
+_@M1827_ "Append before finish"
+_@M1828_ "Append after finish"
+
+# Gear warning alarm
+_@M1829_ "Upozorenje opreme"
+_@M1830_ "Visinsko upozorenje opreme"
+_@M1831_ "Off"
+_@M1832_ "Near landables"
+_@M1833_ "Uvek"
+_@M1834_ "Proveri opremu !"
+
+# oudie 2 bluetooth
+_@M1835_ "Failed to pair device"
+_@M1836_ "Lookup"
+_@M1837_ "Pair"
+_@M1838_ "Unpair"
+
+_@M1840_ "BestAlternate:"
+#infobox
+_@M1841_ "Alternate1 radial"
+_@M1842_ "Alternate2 radial"
+
+# Reverse task
+_@M1850_ "Reverse\nTask"
+_@M1851_ "Reverse task"
+_@M1852_ "Reverse task?"
+_@M1853_ "TASK REVERSED"
+
+# HSI
+_@M1860_ "HSI"
+
+_@M1870_ "Airspace Sonar "
+_@M1871_ "Terminal"
+_@M1872_ "NO DATA RECEIVED"
+
+# Menu 12 font edit
+_@M1880_ "Map waypoints "
+_@M1881_ "Map topology "
+_@M1882_ "Nearest "
+_@M1883_ "Bottom bar "
+_@M1884_ "Overlay type "
+_@M1885_ "Info on 2 lines "
+_@M1886_ "Overlay target "
+_@M1887_ "Overlay values "
+_@M1888_ "VisualGlide "
+
+_@M1891_ "Top Left "
+_@M1892_ "Top Center "
+_@M1893_ "Top Right "
+_@M1894_ "Right Top "
+_@M1895_ "Right Center "
+_@M1896_ "Right Bottom "
+_@M1897_ "Left Top "
+_@M1898_ "Left Center "
+_@M1899_ "Left Bottom "
+_@M1900_ "Left Corner "
+_@M1901_ "POWER OFF"
+
+############################################################
+#                  - MENU MESSAGES - 
+#
+#             DO NOT REMOVE OR CHANGE \n  
+#       it means New Line, for line splitting!!
+#
+############################################################
+
+_@M2001_ "POVEĆANJE"
+_@M2002_ "SMANJENJE"
+_@M2003_ "Whats\nhere?"
+_@M2004_ "Pan\n"
+_@M2005_ "Pun\nEkran"
+_@M2006_ "Ekran\n1/3"
+_@M2007_ "Ekran\n2/3"
+_@M2008_ "Ekran\n3/3"
+_@M2009_ "Povećanje"
+_@M2010_ "Nav\n1/3"
+_@M2011_ "Prekini"
+_@M2012_ "Nazad"
+_@M2013_ "DIGIT.\nZadat."
+_@M2014_ "Napredno\n"
+_@M2015_ "Pogledaj\nTačke"
+_@M2016_ "Nav\n2/3"
+_@M2017_ "Promena\nZadat."
+_@M2018_ "Brisanje\nZadat."
+_@M2019_ "Task\nRestart"
+_@M2020_ "Cilj"
+_@M2021_ "Team\nCode"
+_@M2022_ "Nav\n3/3"
+_@M2023_ "Reserv"
+_@M2024_ "Time\nGates"
+_@M2025_ "Multi\nTarget"
+_@M2026_ "Labels"
+_@M2027_ "Topologija"
+_@M2028_ "Teren"
+_@M2029_ "Vazd.Prost."
+_@M2030_ "VisualGld"
+_@M2031_ "TERMAL"
+_@M2032_ "JEDRENJE"
+_@M2033_ "Final"
+_@M2034_ "Auto"
+_@M2035_ "Putanja"
+_@M2036_ "Invert\nText"
+_@M2037_ "Topo\nBack"
+_@M2038_ "Map\nOrient"
+_@M2039_ "KONFIG\n1/3"
+_@M2040_ "KONFIG\n2/3"
+_@M2041_ "KONFIG\n3/3"
+_@M2042_ "Osnovna\nPodesav."
+_@M2043_ "Podesav.\nVETRA"
+_@M2044_ "Aktiv.Mapa"
+_@M2045_ "Nav by"
+#2046 UNUSED
+_@M2046_ ""
+_@M2047_ "Obrisi\nMarker"
+_@M2048_ "Dnevnik"
+_@M2049_ "Dnevnik\nReplay"
+_@M2050_ "NMEA\nLogger"
+_@M2051_ "Podešav."
+_@M2052_ "Zero\nQFE"
+_@M2053_ "Resetov.\nComms"
+_@M2054_ "Profili"
+_@M2055_ "Zvuci"
+_@M2056_ "Info\n1/2"
+_@M2057_ "Info\n2/2"
+_@M2058_ "Oracle"
+_@M2059_ "Najbliza\nTacka"
+_@M2060_ "Najblizi\nVazd.Prost."
+_@M2061_ "Status"
+_@M2062_ "Analiza"
+_@M2063_ "Notepad"
+_@M2064_ "Ponavljanje\nPoruke"
+_@M2065_ "Orbiter"
+_@M2066_ "Nav"
+_@M2067_ "Info"
+_@M2068_ "KONFIG."
+_@M2069_ "Ekran"
+_@M2070_ "Lokacija\nMarkera"
+_@M2071_ "TrueWind\nDIGIT."
+_@M2072_ "Pregled\nEkrana"
+_@M2073_ "IZLAZ"
+_@M2074_ "SIM\nMENU"
+_@M2075_ "Terma."
+_@M2076_ "Ekvival."
+_@M2077_ "Ručno"
+_@M2078_ "OK"
+_@M2079_ "Prekrivač"
+_@M2080_ "Senčenje"
+_@M2081_ "Podešav.\nMape"
+_@M2082_ "PAN"
+_@M2083_ "Sever\nGore"
+_@M2084_ "Zapis\nUp"
+_@M2085_ "Sever\nKruženje"
+_@M2086_ "Cilj\nKruženje"
+_@M2087_ "Pametni\nSever"
+_@M2088_ "REBOOT"
+_@M2089_ "Najniži"
+_@M2090_ "Podrazumevani"
+_@M2091_ "Prosek"
+_@M2092_ "Najviši"
+_@M2093_ "UKLJ."
+_@M2094_ "ISKL."
+_@M2095_ "Normalno\nSVE UKLJ"
+_@M2096_ "Led+Buz\nSVE ISKLJ"
+_@M2097_ "Led OFF\nBuz ON"
+_@M2098_ "Led ON\nBuz OFF"
+_@M2099_ "<< Levo"
+_@M2100_ "GORE"
+_@M2101_ "Podrazum.\nCentar"
+_@M2102_ "DOLE"
+_@M2103_ "Desno >>"
+_@M2104_ "F>\nFlarm"
+_@M2105_ "M>\nTim"
+_@M2106_ "L>\nTermal"
+_@M2107_ "T>\nZadatak"
+_@M2108_ "B>\nNajb.Vis."
+_@M2109_ "1>\nAltern1"
+_@M2110_ "2>\nAltern2"
+_@M2111_ "H>\nDomaća"
+_@M2112_ "Brzina"
+_@M2113_ "Visina"
+_@M2114_ "Okret"
+# better not to translate this TE button!
+_@M2115_ "TEnergy"
+_@M2116_ "Change\nTerrain"
+# Auto MC thermal+final glide mode, keep max 7 chars!
+_@M2117_ "Thr+Fin"
+_@M2118_ "Dnevnik"
+_@M2119_ "Detalji\nDnevnika"
+_@M2120_ "Reset\nKnjige"
+_@M2121_ "Lista\nDnevnika"
+_@M2122_ "Snimanje\nSistema"
+_@M2123_ "Okretanje\nEkrana"
+_@M2124_ "Screen\nModes"
+_@M2125_ "Podešav.\nLetelice"
+_@M2126_ "Snimanje\nLetelice"
+_@M2127_ "Podešav.\nPilota"
+_@M2128_ "Snimanje\nPilota"
+_@M2129_ "LK8000\nPodešav."
+_@M2130_ "Podešav.\nSistema"
+_@M2131_ "IZBORNI\nMeni"
+_@M2132_ "Brisanje\nAltern."
+
+_@M2133_ "Pozicija"
+
+_@M2134_ "Uredj.A"
+_@M2135_ "Uredj.B"
+_@M2136_ "Rotate C-Probe 360° around it's 3 axis\nthe order and direction is not important"
+
+_@M2143_ "KONFIG. Uredj.A"
+_@M2144_ "KONFIG. Uredj.B"
+
+
+# Paraglider Waypoint Type
+_@M2145_ "Ulazak"
+_@M2146_ "Izlaz"
+_@M2147_ "Izlaz/Ulazak"
+
+_@M2148_ "Auto, Bicikala & Pešačenje"
+
+# Thermal Bar
+_@M2149_ "u termalu"
+_@M2150_ "u termalu i krstarenju"
+
+_@M2151_ "T>\nTP Centar"
+_@M2153_ "Zatvaranje startnog vremena"
+
+_@M2154_ "IGC\nPošalji fajl"
+_@M2155_ "Pošalji"
+_@M2156_ "IGC pošalji fajl"
+_@M2157_ "Izaberi uređaj"
+
+#BlueFlyVario
+_@M2158_ "Output QNH"
+_@M2159_ "Lift Threshold"
+_@M2160_ "Lift Off Threshold"
+_@M2161_ "Sink Threshold"
+_@M2162_ "Sink Off Threshold"
+_@M2163_ "Position Noise"
+_@M2164_ "Lift Freq. Base"
+_@M2165_ "Lift Freq. Increment"
+_@M2166_ "Sink Freq. Base"
+_@M2167_ "Sink Freq. Increment"
+_@M2168_ "Volume"
+_@M2169_ "Rate Multiplier"
+_@M2170_ "Audio Connected"
+_@M2171_ "Audio Disconnected"
+_@M2172_ "Bluetooth Wait"
+_@M2173_ "Output Mode"
+_@M2174_ "Output Frequency"
+
+_@M2175_ "Conical ESS"
+_@M2176_ "Cone Slope"
+_@M2177_ "Base Altitude"
+_@M2178_ "Base Radius"
+_@M2179_ "°"
+_@M2180_ "°C"
+_@M2181_ "°F"
+_@M2182_ "«"
+_@M2183_ "»"
+_@M2184_ "‹"
+_@M2185_ "›"
+_@M2186_ "*"
+_@M2187_ "Speed Opt."
+_@M2188_ "Thermal Min"
+
+# New CustomKey labels for Custom Menu
+_@M2200_ "----"
+_@M2201_ "Meni"
+_@M2202_ "Stranica\nNazad"
+_@M2203_ "Toggle\nMap"
+_@M2204_ "Toggle\nLandb"
+_@M2205_ "Landab\nles"
+_@M2206_ "Toggle\nCommon"
+_@M2207_ "Commons"
+_@M2208_ "Toggle\nTraffic"
+_@M2209_ "Traffic"
+_@M2210_ "Auto\nZoom"
+_@M2211_ "Therm\nSound"
+_@M2212_ "Goto\nHome"
+_@M2213_ "Zoom\nOut20"
+_@M2214_ "Multi\nTarg+"
+_@M2215_ "Use\nHBAR"
+_@M2216_ "SIM\nMENU"
+_@M2217_ "Airsp\nAnalys"
+_@M2218_ "Toggle\nAirsp"
+_@M2219_ "Zoom\nin++"
+_@M2220_ "Zoom\nout++"
+_@M2221_ "Route\nOptim"
+_@M2222_ "OLC\nAnalys"
+_@M2223_ "Color+\nterrain"
+_@M2224_ "Color-\nterrain"
+_@M2225_ "Free\nFlight"
+_@M2226_ "Arm\nToggle"
+_@M2227_ "Toggle\nWndRose"
+_@M2228_ "FLARM\nRadar"
+_@M2229_ "Reset\nOPredj.Puta"
+_@M2230_ "Nasilno\nSleteno"
+_@M2231_ "AKTIVNO"
+_@M2232_ "abcd"
+_@M2233_ "Overlay"
+_@M2234_ "TEXT"
+_@M2235_ "GAUGES"
+_@M2236_ "Reset\nTrip"
+_@M2237_ "Sonar\nToggle"
+_@M2238_ "Nacrtaj\nZadatak"
+_@M2239_ "Nacrtaj\nFAI"
+_@M2240_ "NoDraw\nTaskFAI"
+_@M2241_ "Draw\nTaskFAI"
+_@M2242_ "Sonar\nON"
+_@M2243_ "Sonar\nOFF"
+_@M2244_ "Podešav.\nUređaja"
+_@M2245_ "Snimanje\nUređaja"
+_@M2246_ "Reset\nView"
+_@M2247_ "28/45 FAI threshold "
+_@M2248_  "No Near Object found!"
+
+# DO NOT TRANSLATE 2249
+_@M2249_  "DspMode"
+
+_@M2250_ "Ext. Sound"
+_@M2251_  "Optimizer\nmode"
+
+
+# MAX 2500! 
+# (Reserved for custom menus up to 2300!)
+# Note for developers: remember LKLanguage MAX_MESSAGE limit (2500)
+
+# S = Start Task point
+_@M2301  "S" 
+# T = Task Point
+_@M2302_  "T"  
+# F = Finish point
+_@M2303_  "F" 
+_@M2304_  "GEAR WARNING DISABLED NOW!" 
+_@M2305_  "Save runtime"
+
+_@M2306_  "Setup\nRadio"
+_@M2307_  "Radio Settings"
+_@M2308_  "Frequency"
+_@M2309_  "RADIO"
+_@M2310_  "Vol"
+_@M2311_  "Sqw"
